@@ -135,6 +135,16 @@ return dest;
 }
 
 // ------------------------------------------------------------------------
+
+fVector3 *VmVecAvgf (fVector3 *dest, fVector3 *src0, fVector3 *src1)
+{
+dest->p.x = (src0->p.x + src1->p.x) / 2;
+dest->p.y = (src0->p.y + src1->p.y) / 2;
+dest->p.z = (src0->p.z + src1->p.z) / 2;
+return dest;
+}
+
+// ------------------------------------------------------------------------
 //scales a vector in place.  returns ptr to vector
 vmsVector *VmVecScale (vmsVector *dest, fix s)
 {

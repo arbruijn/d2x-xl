@@ -154,16 +154,15 @@ if (mlP) {
 		mlP->tris [0] = nTri;
 	else
 		mlP->tris [1] = nTri;
+	return mlP - meshLines;
 	}
-else {
-	if ((++nMeshLines == nMaxMeshLines) && !AllocMeshData ())
-		return -1;
-	mlP = meshLines + nMeshLines;
-	mlP->tris [0] = nTri;
-	mlP->verts [0] = nVert1;
-	mlP->verts [1] = nVert2;
-	}
-return nMeshLines - 1;
+if ((nMeshLines == nMaxMeshLines - 1) && !AllocMeshData ())
+	return -1;
+mlP = meshLines + nMeshLines++;
+mlP->tris [0] = nTri;
+mlP->verts [0] = nVert1;
+mlP->verts [1] = nVert2;
+return nMeshLines;
 }
 
 //------------------------------------------------------------------------------
@@ -175,15 +174,15 @@ static tMeshTri *CreateMeshTri (tMeshTri *mtP, ushort index [], short nFace, sho
 if (mtP) 
 	mtP->nIndex = nIndex;
 else {
-	if ((++nMeshTris == nMaxMeshTris) && !AllocMeshData ())
+	if ((nMeshTris == nMaxMeshTris - 1) && !AllocMeshData ())
 		return NULL;
-	mtP = meshTris + nMeshTris;
+	mtP = meshTris + nMeshTris++;
 	mtP->nIndex = nIndex;
 	if (nIndex >= 0) {
 		i = gameData.segs.faces.tris [nIndex].nIndex;
-		memcpy (mtP->color, gameData.segs.faces.color + i, sizeof (mtP->color));
 		memcpy (mtP->texCoord, gameData.segs.faces.texCoord + i, sizeof (mtP->texCoord));
 		memcpy (mtP->ovlTexCoord, gameData.segs.faces.ovlTexCoord + i, sizeof (mtP->ovlTexCoord));
+		memcpy (mtP->color, gameData.segs.faces.color + i, sizeof (mtP->color));
 		}
 	}
 for (i = 0; i < 3; i++) {
@@ -260,10 +259,8 @@ static int SplitMeshTriByLine (int nTri, int nVert1, int nVert2)
 // find insertion point for the new vertex
 for (i = 0; i < 3; i++) {
 	h = indexP [i];
-	if ((h == nVert1) || (h == nVert2)) {
-		i;
+	if ((h == nVert1) || (h == nVert2))
 		break;
-		}
 	}
 
 h = indexP [(i + 1) % 3]; //check next vertex index
@@ -303,7 +300,7 @@ memcpy (mtP->texCoord, texCoord, sizeof (mtP->texCoord));
 memcpy (mtP->ovlTexCoord, ovlTexCoord, sizeof (mtP->ovlTexCoord));
 
 index [1] = index [0];
-if (!(mtP = CreateMeshTri (NULL, index, nFace, -1))) //create a new triangle (append)
+if (!(mtP = CreateMeshTri (NULL, index + 1, nFace, -1))) //create a new triangle (append)
 	return 0;
 texCoord [1] = texCoord [0];
 ovlTexCoord [1] = ovlTexCoord [0];
@@ -319,17 +316,18 @@ return 1;
 static int SplitMeshLine (tMeshLine *mlP)
 {
 	int			i = 0;
-	ushort		nVerts [2];
-	fVector3		vNewVert;
+	ushort		tris [2], verts [2];
 
-memcpy (nVerts, mlP->verts, sizeof (nVerts));
-VmVecScalef ((fVector3 *) (gameData.segs.fVertices + gameData.segs.nVertices), 
-				 VmVecAddf (&vNewVert, 
-								gameData.segs.faces.vertices + nVerts [0], 
-								gameData.segs.faces.vertices + nVerts [1]), 0.5f);
+memcpy (tris, mlP->tris, sizeof (tris));
+memcpy (verts, mlP->verts, sizeof (verts));
+VmVecAvgf (gameData.segs.fVertices + gameData.segs.nVertices, 
+			  gameData.segs.fVertices + verts [0], 
+			  gameData.segs.fVertices + verts [1]);
 mlP->verts [1] = gameData.segs.nVertices;
-if (!SplitMeshTriByLine (mlP->tris [0], nVerts [0], nVerts [1]))
-	return 1;
+if (!SplitMeshTriByLine (tris [0], verts [0], verts [1]))
+	return 0;
+if (!SplitMeshTriByLine (tris [1], verts [0], verts [1]))
+	return 0;
 gameData.segs.nVertices++;
 return 1;
 }
@@ -365,7 +363,7 @@ while (i < nMeshTris) {
 	h = SplitMeshTri (meshTris + i);
 	if (!h)
 		return 0;
-	if (h > 0)
+	if (h < 0)
 		i++;
 	}
 return 1;
