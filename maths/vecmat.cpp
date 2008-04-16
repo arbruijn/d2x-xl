@@ -379,6 +379,13 @@ return v0->p.x * v1->p.x + v0->p.y * v1->p.y + v0->p.z * v1->p.z;
 
 // ------------------------------------------------------------------------
 
+float VmVecDotf (fVector3 *v0, fVector3 *v1)
+{
+return v0->p.x * v1->p.x + v0->p.y * v1->p.y + v0->p.z * v1->p.z;
+}
+
+// ------------------------------------------------------------------------
+
 fix VmVecDot3(fix x, fix y, fix z, vmsVector *v)
 {
 #if 0

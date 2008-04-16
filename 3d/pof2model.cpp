@@ -162,7 +162,7 @@ pmf->nVerts = nVerts;
 if ((pmf->bGlow = (nGlow >= 0)))
 	nGlow = -1;
 uvl = (tUVL *) (p + 30 + (nVerts | 1) * 2);
-VmVecFixToFloat3 (&n, pn);
+VmVecFixToFloat (&n, pn);
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
 	pmv->vertex = pm->pVerts [j];
@@ -219,7 +219,7 @@ for (;;) {
 			fVector3 *pfv = pm->pVerts;
 			vmsVector *pv = VECPTR(p+4);
 			for (i = n; i; i--)
-				VmVecFixToFloat3 (pfv++, pv++);
+				VmVecFixToFloat (pfv++, pv++);
 			p += n * sizeof (vmsVector) + 4;
 			break;
 			}
@@ -230,7 +230,7 @@ for (;;) {
 			fVector3 *pfv = pm->pVerts + s;
 			vmsVector *pv = VECPTR (p+8);
 			for (i = n; i; i--)
-				VmVecFixToFloat3 (pfv++, pv++);
+				VmVecFixToFloat (pfv++, pv++);
 			p += n * sizeof (vmsVector) + 8;
 			break;
 			}

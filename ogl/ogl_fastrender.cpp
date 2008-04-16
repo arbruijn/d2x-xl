@@ -759,7 +759,7 @@ glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
 if (gameOpts->render.bWireFrame) {
 	glDisable (GL_TEXTURE_2D);
 	glLineWidth (2);
-	for (int = 0; i < faceP->nTris; i++)
+	for (int i = 0; i < faceP->nTris; i++)
 		glDrawArrays (GL_LINES, faceP->nIndex, 3);
 	glLineWidth (1);
 	glEnable (GL_TEXTURE_2D);

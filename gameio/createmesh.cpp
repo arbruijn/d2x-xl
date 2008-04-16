@@ -79,12 +79,13 @@ typedef struct tMeshLine {
 	} tMeshLine;
 
 typedef struct tMeshTri {
+	ushort		nFace;
+	int			nIndex;
 	ushort		lines [3];
 	ushort		index [3];
 	tTexCoord2f	texCoord [3];
 	tTexCoord2f	ovlTexCoord [3];
 	tRgbaColorf	color [3];
-	grsTri		*triP;
 } tMeshTri;
 
 static tMeshLine	*meshLines;
@@ -167,24 +168,29 @@ return nMeshLines - 1;
 
 //------------------------------------------------------------------------------
 
-static tMeshTri *CreateMeshTri (tMeshTri *mtP, ushort index [], grsTri *triP)
+static tMeshTri *CreateMeshTri (tMeshTri *mtP, ushort index [], short nFace, short nIndex)
 {
 	int	h, i;
 
-if (!mtP) {
+if (mtP) 
+	mtP->nIndex = nIndex;
+else {
 	if ((++nMeshTris == nMaxMeshTris) && !AllocMeshData ())
 		return NULL;
 	mtP = meshTris + nMeshTris;
-	memcpy (mtP->color, gameData.segs.faces.color + triP->nIndex, sizeof (mtP->color));
-	memcpy (mtP->texCoord, gameData.segs.faces.texCoord + triP->nIndex, sizeof (mtP->texCoord));
-	memcpy (mtP->ovlTexCoord, gameData.segs.faces.ovlTexCoord + triP->nIndex, sizeof (mtP->ovlTexCoord));
+	mtP->nIndex = nIndex;
+	if (nIndex >= 0) {
+		memcpy (mtP->color, gameData.segs.faces.color + nIndex, sizeof (mtP->color));
+		memcpy (mtP->texCoord, gameData.segs.faces.texCoord + nIndex, sizeof (mtP->texCoord));
+		memcpy (mtP->ovlTexCoord, gameData.segs.faces.ovlTexCoord + nIndex, sizeof (mtP->ovlTexCoord));
+		}
 	}
 for (i = 0; i < 3; i++) {
 	if (0 > (h = AddMeshLine (nMeshTris - 1, index [i], index [(i + 1) % 3])))
 		return NULL;
 	mtP->lines [i] = h;
 	}
-mtP->triP = triP;
+mtP->nFace = nFace;
 memcpy (mtP->index, index, sizeof (mtP->index));
 return mtP;
 }
@@ -198,7 +204,7 @@ static int AddMeshTri (tMeshTri *mtP, ushort index [], grsTri *triP)
 for (h = i = 0; i < 3; i++)
 	if (VmVecDistf ((fVector *) (gameData.segs.faces.vertices + index [i]), 
 						 (fVector *) (gameData.segs.faces.vertices + index [(i + 1) % 3])) > 30.0f)
-		return CreateMeshTri (mtP, index, triP) ? nMeshTris : 0;
+		return CreateMeshTri (mtP, index, triP->nFace, triP->nIndex) ? nMeshTris : 0;
 return nMeshTris;
 }
 
@@ -245,9 +251,8 @@ return nMeshTris;
 static int SplitMeshTriByLine (int nTri, int nVert1, int nVert2)
 {
 	tMeshTri		*mtP = meshTris + nTri;
-	grsTri		*triP = mtP->triP;
-	int			h, i, j;
-	ushort		index [4], *indexP = mtP->index;
+	int			h, i, j, nIndex = mtP->nIndex;
+	ushort		nFace = mtP->nFace, *indexP = mtP->index, index [4];
 	tTexCoord2f	texCoord [4], ovlTexCoord [4];
 	tRgbaColorf	color [4];
 
@@ -290,14 +295,14 @@ color [h].blue = (color [i].blue + color [j].blue) / 2;
 color [h].alpha = (color [i].alpha + color [j].alpha) / 2;
 
 DeleteMeshTri (mtP); //remove any references to this triangle
-if (!(mtP = CreateMeshTri (mtP, index, triP))) //create a new triangle at this location (insert)
+if (!(mtP = CreateMeshTri (mtP, index, nFace, nIndex))) //create a new triangle at this location (insert)
 	return 0;
 memcpy (mtP->color, color, sizeof (mtP->color));
 memcpy (mtP->texCoord, texCoord, sizeof (mtP->texCoord));
 memcpy (mtP->ovlTexCoord, ovlTexCoord, sizeof (mtP->ovlTexCoord));
 
 index [1] = index [0];
-if (!(mtP = CreateMeshTri (NULL, index, triP))) //create a new triangle (append)
+if (!(mtP = CreateMeshTri (NULL, index, nFace, -1))) //create a new triangle (append)
 	return 0;
 texCoord [1] = texCoord [0];
 ovlTexCoord [1] = ovlTexCoord [0];

@@ -284,6 +284,7 @@ fix VmVecCopyNormalizeQuick (vmsVector *dest, vmsVector *src);
 ////returns dot product of two vectors
 fix VmVecDotProd (vmsVector *v0, vmsVector *v1);
 float VmVecDotf (fVector *v0, fVector *v1);
+float VmVecDotf (fVector3 *v0, fVector3 *v1);
 
 #define VmVecDot(v0,v1) VmVecDotProd((v0),(v1))
 
