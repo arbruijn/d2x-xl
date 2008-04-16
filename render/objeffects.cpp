@@ -1228,9 +1228,9 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 	G3TransformPointf (vCorona + 3, vCorona + 3, 0);
 	VmVecNormalf (&vNorm, &vPos, vCorona, &vEye);
 	fScale *= fRad;
-	VmVecScaleIncf3 (vCorona, &vNorm, fScale);
+	VmVecScaleIncf (vCorona, &vNorm, fScale);
 	VmVecScaleAddf (vCorona + 1, vCorona, &vNorm, -2 * fScale);
-	VmVecScaleIncf3 (vCorona + 3, &vNorm, fScale);
+	VmVecScaleIncf (vCorona + 3, &vNorm, fScale);
 	VmVecScaleAddf (vCorona + 2, vCorona + 3, &vNorm, -2 * fScale);
 	VmVecNormalf (&vNorm, vCorona, vCorona + 1, vCorona + 2);
 	VmVecScaleAddf (vh, vCorona, vCorona + 1, 0.5f);
@@ -1411,7 +1411,7 @@ else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
 			glBegin (GL_QUADS);
 			for (j = 0; j < 4; j++) {
 				VmVecSubf (&v, quad + j, &vCenter);
-				VmVecScaleIncf3 (quad + j, &v, fScale);
+				VmVecScaleIncf (quad + j, &v, fScale);
  				glTexCoord2fv ((GLfloat *) (tcCorona + j));
 				glVertex3fv ((GLfloat *) (quad + j));
 				}
@@ -1693,7 +1693,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 
 		VmVecFixToFloat (&vOffsf, &objP->position.mOrient.fVec);
 		VmVecFixToFloat (vTrailVerts, &objP->position.vPos);
-		VmVecScaleIncf3 (vTrailVerts, &vOffsf, l);// * -0.75f);
+		VmVecScaleIncf (vTrailVerts, &vOffsf, l);// * -0.75f);
 		VmVecScaleAddf (vTrailVerts + 2, vTrailVerts, &vOffsf, -100);
 		G3TransformPointf (vTrailVerts, vTrailVerts, 0);
 		G3TransformPointf (vTrailVerts + 2, vTrailVerts + 2, 0);

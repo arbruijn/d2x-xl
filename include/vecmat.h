@@ -98,6 +98,7 @@ extern vmsMatrix vmdIdentityMatrix;
 //returns magnitude of a vector
 fix VmVecMag (vmsVector *v);
 float VmVecMagf (fVector *v);
+float VmVecMagf (fVector3 *v);
 
 //Here's a handy constant
 
@@ -109,6 +110,9 @@ static inline vmsVector *VmVecNegate (vmsVector *v)
 	{v->p.x = -v->p.x; v->p.y = -v->p.y; v->p.z = -v->p.z; return v;}
 
 static inline fVector *VmVecNegatef (fVector *v)
+	{v->p.x = -v->p.x; v->p.y = -v->p.y; v->p.z = -v->p.z; return v;}
+
+static inline fVector3 *VmVecNegatef (fVector3 *v)
 	{v->p.x = -v->p.x; v->p.y = -v->p.y; v->p.z = -v->p.z; return v;}
 
 //Functions in library
@@ -128,7 +132,13 @@ static inline vmsVector *VmVecSub (vmsVector *d, vmsVector *s0, vmsVector *s1)
 static inline fVector *VmVecAddf (fVector *d, fVector *s0, fVector *s1)
 	{d->p.x = s0->p.x + s1->p.x; d->p.y = s0->p.y + s1->p.y; d->p.z = s0->p.z + s1->p.z; return d;}
 
+static inline fVector3 *VmVecAddf (fVector3 *d, fVector3 *s0, fVector3 *s1)
+	{d->p.x = s0->p.x + s1->p.x; d->p.y = s0->p.y + s1->p.y; d->p.z = s0->p.z + s1->p.z; return d;}
+
 static inline fVector *VmVecSubf (fVector *d, fVector *s0, fVector *s1)
+	{d->p.x = s0->p.x - s1->p.x; d->p.y = s0->p.y - s1->p.y; d->p.z = s0->p.z - s1->p.z; return d;}
+
+static inline fVector3 *VmVecSubf (fVector3 *d, fVector3 *s0, fVector3 *s1)
 	{d->p.x = s0->p.x - s1->p.x; d->p.y = s0->p.y - s1->p.y; d->p.z = s0->p.z - s1->p.z; return d;}
 
 static inline vmsVector *VmVecDec (vmsVector *d, vmsVector *s)
@@ -140,22 +150,28 @@ static inline vmsVector *VmVecInc (vmsVector *d, vmsVector *s)
 static inline fVector *VmVecIncf (fVector *d, fVector *s)
 	{d->p.x += s->p.x; d->p.y += s->p.y; d->p.z += s->p.z; return d;}
 
-static inline fVector3 *VmVecIncf3 (fVector3 *d, fVector3 *s)
+static inline fVector3 *VmVecIncf (fVector3 *d, fVector3 *s)
 	{d->p.x += s->p.x; d->p.y += s->p.y; d->p.z += s->p.z; return d;}
 
 static inline fVector *VmVecDecf (fVector *d, fVector *s)
 	{d->p.x -= s->p.x; d->p.y -= s->p.y; d->p.z -= s->p.z; return d;}
 
+static inline fVector3 *VmVecDecf (fVector3 *d, fVector3 *s)
+	{d->p.x -= s->p.x; d->p.y -= s->p.y; d->p.z -= s->p.z; return d;}
+
 static inline fVector *VmVecFixToFloat (fVector *d, vmsVector *s)
 	{d->p.x = f2fl (s->p.x); d->p.y = f2fl (s->p.y); d->p.z = f2fl (s->p.z); d->p.w = 1; return d;}
 
-static inline fVector3 *VmVecFixToFloat3 (fVector3 *d, vmsVector *s)
+static inline fVector3 *VmVecFixToFloat (fVector3 *d, vmsVector *s)
 	{d->p.x = f2fl (s->p.x); d->p.y = f2fl (s->p.y); d->p.z = f2fl (s->p.z); return d;}
 
 static inline vmsVector *VmVecFloatToFix (vmsVector *d, fVector *s)
 	{d->p.x = fl2f (s->p.x); d->p.y = fl2f (s->p.y); d->p.z = fl2f (s->p.z); return d;}
 
-static inline fix VmVecDist(vmsVector *v0, vmsVector *v1) {vmsVector d; VmVecSub (&d, v0, v1); return VmVecMag (&d); }
+static inline vmsVector *VmVecFloatToFix (vmsVector *d, fVector3 *s)
+	{d->p.x = fl2f (s->p.x); d->p.y = fl2f (s->p.y); d->p.z = fl2f (s->p.z); return d;}
+
+static inline fix VmVecDist (vmsVector *v0, vmsVector *v1) {vmsVector d; VmVecSub (&d, v0, v1); return VmVecMag (&d); }
 
 fMatrix *VmsMatToFloat (fMatrix *dest, vmsMatrix *src);
 
@@ -212,6 +228,7 @@ vmsVector *VmVecAvg4 (vmsVector *dest, vmsVector *src0, vmsVector *src1, vmsVect
 //scales a vector in place.  returns ptr to vector
 vmsVector *VmVecScale (vmsVector *dest, fix s);
 fVector *VmVecScalef (fVector *dest, fVector *src, float scale);
+fVector3 *VmVecScalef (fVector3 *dest, fVector3 *src, float scale);
 
 //scales and copies a vector.  returns ptr to dest
 vmsVector *VmVecCopyScale (vmsVector *dest, vmsVector *src, fix s);
@@ -224,7 +241,8 @@ fVector *VmVecScaleAddf (fVector *dest, fVector *src1, fVector *src2, float scal
 //scales a vector and adds it to another
 //dest += k * src
 vmsVector *VmVecScaleInc (vmsVector *dest, vmsVector *src, fix k);
-fVector *VmVecScaleIncf3 (fVector *dest, fVector *src, float scale);
+fVector *VmVecScaleIncf (fVector *dest, fVector *src, float scale);
+fVector3 *VmVecScaleIncf (fVector3 *dest, fVector3 *src, float scale);
 
 //scales a vector in place, taking n/d for scale.  returns ptr to vector
 //dest *= n/d
@@ -233,6 +251,7 @@ vmsVector *VmVecScaleFrac (vmsVector *dest, fix n, fix d);
 //computes the distance between two points. (does sub and mag)
 fix VmVecDist (vmsVector *v0, vmsVector *v1);
 float VmVecDistf (fVector *v0, fVector *v1);
+float VmVecDistf (fVector3 *v0, fVector3 *v1);
 
 //computes an approximation of the magnitude of the vector
 //uses dist = largest + next_largest*3/8 + smallest*3/16
@@ -371,6 +390,7 @@ fVector *VmVecReflectf (fVector *vReflect, fVector *vDir, fVector *vNormal);
 fVector *VmVecCrossProdf (fVector *dest, fVector *src0, fVector *src1);
 fVector *VmVecPerpf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
 fVector *VmVecNormalf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
+fVector3 *VmVecNormalf (fVector3 *dest, fVector3 *p0, fVector3 *p1, fVector3 *p2);
 fMatrix *VmSinCos2Matrixf (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh);
 fMatrix *VmSinCos2Matrixd (fMatrix *m, double sinp, double cosp, double sinb, double cosb, double sinh, double cosh);
 

@@ -79,7 +79,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 	psm->iFrame = 0;
 	psm->tFrame = 0;
 	psm->nFrames = psa->bBarrel ? 32 : 0;
-	VmVecFloatToFix (&psm->vOffset, (fVector *) &psa->vOffset);
+	VmVecFloatToFix (&psm->vOffset, &psa->vOffset);
 	G3InitSubModelMinMax (psm);
 	for (pfa = psa->pFaces, iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
 		pmf->nIndex = nIndex;
@@ -93,7 +93,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 		pmf->nBitmap = bTextured ? i : -1;
 		pmf->nVerts = 3;
 		pmf->nId = iFace;
-		VmVecFloatToFix (&pmf->vNormal, (fVector *) &pfa->vNormal);
+		VmVecFloatToFix (&pmf->vNormal, &pfa->vNormal);
 		for (i = 0; i < 3; i++, pmv++) {
 			h = pfa->nVerts [i];
 			if ((pmv->bTextured = bTextured))
@@ -108,7 +108,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 			pmv->baseColor.alpha = 1;
 			pmv->renderColor = pmv->baseColor;
 			pmv->normal = psa->pVerts [h].normal;
-			VmVecScalef ((fVector *) &pmv->vertex, (fVector *) &psa->pVerts [h].vertex, fScale);
+			VmVecScalef ((fVector *) &pmv->vertex, &psa->pVerts [h].vertex, fScale);
 			if (psa->pTexCoord)
 				pmv->texCoord = psa->pTexCoord [pfa->nTexCoord [i]];
 			h += nVerts;

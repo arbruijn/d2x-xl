@@ -217,12 +217,16 @@ int G3SetupPerPixelLighting (grsFace *faceP, int bColorKey, int bMultiTexture, i
 	int						h, i, nLights;
 	tRgbaColorf				ambient, diffuse;
 	tRgbaColorf				black = {0,0,0,0};
-	tRgbaColorf				specular = {1,1,1,1};
+	tRgbaColorf				specular = {0.5f,0.5f,0.5f,0.5f};
 	fVector3					vPos = {{0,0,0}};
 	GLenum					hLight;
 	tActiveShaderLight	*activeLightsP;
 	tShaderLight			*psl;
 
+#ifdef _DEBUG
+if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 if (!(nLights = (faceP && gameOpts->ogl.bPerPixelLighting) ? SetNearestFaceLights (faceP, bTextured) : 0))
 	return 0;
 OglEnableLighting (0);
@@ -232,7 +236,6 @@ h = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.light
 for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
-	gameData.render.ogl.lightRads [i] = psl->rad;
 	hLight = GL_LIGHT0 + i;
 	ambient.red = psl->color.c.r * 0.1f;
 	ambient.green = psl->color.c.g * 0.1f;
@@ -258,14 +261,17 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
 		//gameData.render.ogl.lightRads [i] *= 10;
 		}
+	gameData.render.ogl.lightRads [i] = (psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : (psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
 	i++;
 	}
 for (; i < MAX_LIGHTS_PER_PIXEL; i++) {
-	glEnable (GL_LIGHT0 + i);
+	hLight = GL_LIGHT0 + i;
+	glEnable (hLight);
 	glLightfv (hLight, GL_POSITION, (GLfloat *) &vPos);
 	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &black);
 	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &black);
 	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &black);
+	gameData.render.ogl.lightRads [i] = 0;
 	}
 if (InitPerPixelLightingShader (bColorKey ? 3 : bMultiTexture ? 2 : bTextured, nLights))
 	return nLights;
@@ -341,6 +347,7 @@ else if (nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTe
 				}
 			}
 		}
+	glUniform1f (glGetUniformLocation (tmProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
 	glUniform1fv (glGetUniformLocation (tmProg, "lightRad"), nLights, (GLfloat *) gameData.render.ogl.lightRads);
 	}
 else if (bColorKey || bMultiTexture) {
@@ -614,9 +621,6 @@ else {
 #if G3_BUFFER_FACES
 	G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
 #endif
-#if 1
-glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
-#endif
 if (bTextured) {
 	bColored = !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment];
 	if (bmTop && !bMonitor) {
@@ -748,7 +752,21 @@ for (i = 0; i < 4; i++) {
 glEnd ();
 }
 #else
-glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+#	if 1
+glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
+#	endif
+#ifdef _DEBUG
+if (gameOpts->render.bWireFrame) {
+	glDisable (GL_TEXTURE_2D);
+	glLineWidth (2);
+	for (int = 0; i < faceP->nTris; i++)
+		glDrawArrays (GL_LINES, faceP->nIndex, 3);
+	glLineWidth (1);
+	glEnable (GL_TEXTURE_2D);
+	return 0;
+	}
+#endif
+glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
 #if 0
 fVector vNormalf, vCenterf, vBasef;
 VmVecFixToFloat (&vBasef, SEGMENT_CENTER_I (faceP->nSegment));
@@ -787,7 +805,7 @@ if (!bMultiTexture && (bOverlay || bMonitor)) {
 		OGL_BINDTEX (0);
 		}
 	glTexCoordPointer (2, GL_FLOAT, 0, ovlTexCoordP);
-	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+	glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
 	gameStates.render.history.bmBot = bmTop;
 	}

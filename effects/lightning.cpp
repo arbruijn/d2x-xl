@@ -2274,8 +2274,8 @@ if (i < 0) {
 		memcpy (&vEndf, &pVerts [1 + d_rand () % (nVertices - 1)].vertex, sizeof (fVector3));
 		memcpy (&v, &pVerts [1].vertex, sizeof (fVector3));
 		VmVecNormalf (&vNormf, &vPosf, &v, &vEndf);
-		VmVecScaleIncf3 (&vPosf, &vNormf, 1.0f / 64.0f);
-		VmVecScaleIncf3 (&vEndf, &vNormf, 1.0f / 64.0f);
+		VmVecScaleIncf (&vPosf, &vNormf, 1.0f / 64.0f);
+		VmVecScaleIncf (&vEndf, &vNormf, 1.0f / 64.0f);
 		VmVecNormalf (&vDeltaf, &vNormf, &vPosf, &vEndf);
 		h = fl2f (VmVecDistf (&vPosf, &vEndf));
 		vPos.p.x = fl2f (vPosf.p.x);

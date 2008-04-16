@@ -4012,6 +4012,10 @@
 					Name="Source Files"
 					>
 					<File
+						RelativePath="..\..\gameio\createmesh.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\ogl\fbuffer.cpp"
 						>
 					</File>
@@ -4563,11 +4567,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

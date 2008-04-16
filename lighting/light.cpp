@@ -372,6 +372,14 @@ if (objP && SHOW_DYN_LIGHT) {
 			RemoveDynLight (-1, -1, nObject);
 			return;
 			}
+		if (gameOpts->ogl.bPerPixelLighting) {
+			int id = objP->id;
+			if ((id != POW_EXTRA_LIFE) && (id != POW_ENERGY) && (id != POW_SHIELD_BOOST) && 
+				 (id != POW_HOARD_ORB) && (id != POW_MONSTERBALL) && (id != POW_INVUL)) {
+				RemoveDynLight (-1, -1, nObject);
+				return;
+				}
+			}
 		xObjIntensity /= 4;
 		}
 	else if (objP->nType == OBJ_ROBOT)

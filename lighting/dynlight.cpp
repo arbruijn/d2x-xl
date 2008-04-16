@@ -762,13 +762,15 @@ if (left < r)
 
 static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight *psl, short nType, int nThread)
 {
-fix xDist = (psl->xDistance / 1000 + 5) / 10;
+fix xDist = (psl->xDistance / 2000 + 5) / 10;
 if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
 if (xDist < 0)
 	xDist = 0;
+else if (psl->nSegment >= 0)
+	xDist /= 2;
 if (activeLightsP [xDist].nType) {
-	for (int j = xDist + 1; j < MAX_SHADER_LIGHTS - 1; j++)
+	for (int j = xDist; j < MAX_SHADER_LIGHTS - 1; j++) {
 		if (!activeLightsP [j].nType) {
 			memmove (activeLightsP + xDist + 1, activeLightsP + xDist, (j - xDist) * sizeof (tActiveShaderLight));
 			xDist = j;
@@ -776,6 +778,7 @@ if (activeLightsP [xDist].nType) {
 			}
 		else if (activeLightsP [j].psl == psl)
 			return 0;
+		}
 	}
 activeLightsP [xDist].nType = nType;
 activeLightsP [xDist].psl = psl;
@@ -812,7 +815,7 @@ void SetNearestVertexLights (int nVertex, vmsVector *vNormalP, ubyte nType, int 
 	tShaderLight			*psl;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
-	fix						xLightDist;
+	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
 
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -849,7 +852,7 @@ if (nVertex == nDbgVertex)
 		psl->xDistance = (fix) (xLightDist / psl->range);
 		if (psl->nSegment >= 0)
 			psl->xDistance -= AvgSegRad (psl->nSegment);
-		if (psl->xDistance > MAX_LIGHT_RANGE)
+		if (psl->xDistance > xMaxLightRange)
 			continue;
 		if (SetActiveShaderLight (activeLightsP, psl, 2, nThread)) {
 			psl->nType = nType;
@@ -989,7 +992,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameOpts->render.bDynLighting) {
 	short						h, i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
-	fix						xSegRad = AvgSegRad (nSegment) + MAX_LIGHT_RANGE;
+	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
@@ -1026,7 +1029,7 @@ if (gameOpts->render.bDynLighting) {
 			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
 				continue;
 			psl->xDistance = (fix) (VmVecDist (&c, &psl->vPos) / psl->range);
-			if (psl->xDistance > xSegRad)
+			if (psl->xDistance > xMaxLightRange)
 				continue;
 			}
 		SetActiveShaderLight (activeLightsP, psl, 1, nThread);
@@ -1242,29 +1245,29 @@ char *ppLightingFS [] = {
 	"varying float lightDist [X];\r\n" \
 	"void main() {\r\n" \
 	"	vec3 halfV;\r\n" \
-	"	float NdotL, NdotHV;\r\n" \
-	"	vec4 color = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
+	"	float att, dist, NdotL, NdotHV;\r\n" \
+	"	vec4 color = gl_Color;\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < X; i++) {\r\n" \
 	"		NdotL = max (dot (n, normalize (lightDir [i])), 0.0);\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			float d = lightDist [i] - lightRad [i];\r\n" \
-	"			if (lightRad [i] > 0.0) NdotL = 1.0;\r\n" \
-	"			if (d <= 0.0)\r\n" \
+	"			att = 1.0;\r\n" \
+	"			dist = lightDist [i] - lightRad [i];\r\n" \
+	"			if (dist <= 0.0) {\r\n" \
+	"				NdotL = 1.0;\r\n" \
 	"				color += gl_LightSource [i].diffuse;\r\n" \
-	"			else {\r\n" \
-	"				float att = 1.0 / (gl_LightSource [i].constantAttenuation +\r\n" \
-	"										 gl_LightSource [i].linearAttenuation * d +\r\n" \
-	"										 gl_LightSource [i].quadraticAttenuation * d * d);\r\n" \
-	"				color += att * (/*gl_FrontMaterial.diffuse **/ gl_LightSource [i].diffuse * NdotL + /*gl_FrontMaterial.ambient **/ gl_LightSource [i].ambient);\r\n" \
 	"				}\r\n" \
-	"			/*halfV = normalize (halfVector [i]);\r\n" \
+	"			else {\r\n" \
+	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"				}\r\n" \
+	"			halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += att * gl_FrontMaterial.specular * gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess);*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, /*gl_FrontMaterial.shininess*/ 8.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	color = min (color + gl_Color, vec4 (1.0, 1.0, 1.0, 1.0));\r\n" \
+	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \
 	"	gl_FragColor = color;\r\n" \
 	"	}"
 	,
@@ -1275,30 +1278,30 @@ char *ppLightingFS [] = {
 	"varying float lightDist [X];\r\n" \
 	"void main() {\r\n" \
 	"	vec3 halfV;\r\n" \
-	"	float NdotL, NdotHV;\r\n" \
-	"	vec4 color = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
+	"	float att, dist, NdotL, NdotHV;\r\n" \
+	"	vec4 color = gl_Color;\r\n" \
 	"	vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < X; i++) {\r\n" \
 	"		NdotL = max (dot (n, normalize (lightDir [i])), 0.0);\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			float d = lightDist [i] - lightRad [i];\r\n" \
-	"			if (lightRad [i] > 0.0) NdotL = 1.0;\r\n" \
-	"			if (d <= 0.0)\r\n" \
+	"			att = 1.0;\r\n" \
+	"			dist = lightDist [i] - lightRad [i];\r\n" \
+	"			if (dist <= 0.0) {\r\n" \
+	"				NdotL = 1.0;\r\n" \
 	"				color += gl_LightSource [i].diffuse;\r\n" \
-	"			else {\r\n" \
-	"				float att = 1.0 / (gl_LightSource [i].constantAttenuation +\r\n" \
-	"										 gl_LightSource [i].linearAttenuation * d +\r\n" \
-	"										 gl_LightSource [i].quadraticAttenuation * d * d);\r\n" \
-	"				color += att * (/*gl_FrontMaterial.diffuse **/ gl_LightSource [i].diffuse * NdotL + /*gl_FrontMaterial.ambient **/ gl_LightSource [i].ambient);\r\n" \
 	"				}\r\n" \
-	"			/*halfV = normalize (halfVector [i]);\r\n" \
+	"			else {\r\n" \
+	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"				}\r\n" \
+	"			halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += att * gl_FrontMaterial.specular * gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess);*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, /*gl_FrontMaterial.shininess*/ 8.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	color = min (color + gl_Color, vec4 (1.0, 1.0, 1.0, 1.0));\r\n" \
+	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \
 	"	gl_FragColor = btmColor * color;\r\n" \
 	"	}"
 	,
@@ -1309,8 +1312,8 @@ char *ppLightingFS [] = {
 	"varying float lightDist [X];\r\n" \
 	"void main() {\r\n" \
 	"	vec3 halfV;\r\n" \
-	"	float NdotL, NdotHV;\r\n" \
-	"	vec4 color = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
+	"	float att, dist, NdotL, NdotHV;\r\n" \
+	"	vec4 color = gl_Color;\r\n" \
 	"	vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
 	"  vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
@@ -1318,22 +1321,22 @@ char *ppLightingFS [] = {
 	"	for (i = 0; i < X; i++) {\r\n" \
 	"		NdotL = max (dot (n, normalize (lightDir [i])), 0.0);\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			float d = lightDist [i] - lightRad [i];\r\n" \
-	"			if (lightRad [i] > 0.0) NdotL = 1.0;\r\n" \
-	"			if (d <= 0.0)\r\n" \
+	"			att = 1.0;\r\n" \
+	"			dist = lightDist [i] - lightRad [i];\r\n" \
+	"			if (dist <= 0.0) {\r\n" \
+	"				NdotL = 1.0;\r\n" \
 	"				color += gl_LightSource [i].diffuse;\r\n" \
-	"			else {\r\n" \
-	"				float att = 1.0 / (gl_LightSource [i].constantAttenuation +\r\n" \
-	"										 gl_LightSource [i].linearAttenuation * d +\r\n" \
-	"										 gl_LightSource [i].quadraticAttenuation * d * d);\r\n" \
-	"				color += att * (/*gl_FrontMaterial.diffuse **/ gl_LightSource [i].diffuse * NdotL + /*gl_FrontMaterial.ambient **/ gl_LightSource [i].ambient);\r\n" \
 	"				}\r\n" \
-	"			/*halfV = normalize (halfVector [i]);\r\n" \
+	"			else {\r\n" \
+	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"				}\r\n" \
+	"			halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += att * gl_FrontMaterial.specular * gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess);*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, /*gl_FrontMaterial.shininess*/ 8.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	color = min (color + gl_Color, vec4 (1.0, 1.0, 1.0, 1.0));\r\n" \
+	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \
 	"	gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a)) * color;\r\n" \
 	"	}"
 	,
@@ -1345,54 +1348,56 @@ char *ppLightingFS [] = {
 	"void main() {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;\r\n" \
 	"if (bMask < 0.5)\r\n" \
-	"   discard;\r\n" \
+	"  discard;\r\n" \
 	"else {\r\n" \
-	"   vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
-	"   vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
-	"	 vec3 halfV;\r\n" \
-	"	 float NdotL, NdotHV;\r\n" \
-	"	 vec4 color = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
-	"	 vec3 n = normalize (normal);\r\n" \
-	"	 int i;\r\n" \
-	"	 for (i = 0; i < X; i++) {\r\n" \
-	"		 NdotL = max (dot (n, normalize (lightDir [i])), 0.0);\r\n" \
-	"		 if (NdotL >= 0.0) {\r\n" \
-	"			 float d = lightDist [i] - lightRad [i];\r\n" \
-	"			if (lightRad [i] > 0.0) NdotL = 1.0;\r\n" \
-	"			 if (d <= 0.0)\r\n" \
-	"			 	 color += gl_LightSource [i].diffuse;\r\n" \
-	"			 else {\r\n" \
-	"				 float att = 1.0 / (gl_LightSource [i].constantAttenuation +\r\n" \
-	"										  gl_LightSource [i].linearAttenuation * d +\r\n" \
-	"										  gl_LightSource [i].quadraticAttenuation * d * d);\r\n" \
-	"				 color += att * (/*gl_FrontMaterial.diffuse **/ gl_LightSource [i].diffuse * NdotL + /*gl_FrontMaterial.ambient **/ gl_LightSource [i].ambient);\r\n" \
-	"				 }\r\n" \
-	"			 /*halfV = normalize (halfVector [i]);\r\n" \
-	"			 NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			 color += att * gl_FrontMaterial.specular * gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess);*/\r\n" \
-	"			 }\r\n" \
-	"      }\r\n" \
-	"	color = min (color + gl_Color, vec4 (1.0, 1.0, 1.0, 1.0));\r\n" \
-	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a)) * color;\r\n" \
-	"   }\r\n" \
+	"  vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
+	"  vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
+	"	vec3 halfV;\r\n" \
+	"	float att, dist, NdotL, NdotHV;\r\n" \
+	"	vec4 color = gl_Color;\r\n" \
+	"	vec3 n = normalize (normal);\r\n" \
+	"	int i;\r\n" \
+	"	for (i = 0; i < X; i++) {\r\n" \
+	"		NdotL = max (dot (n, normalize (lightDir [i])), 0.0);\r\n" \
+	"		if (NdotL >= 0.0) {\r\n" \
+	"			att = 1.0;\r\n" \
+	"			dist = lightDist [i] - lightRad [i];\r\n" \
+	"			if (dist <= 0.0) {\r\n" \
+	"				NdotL = 1.0;\r\n" \
+	"				color += gl_LightSource [i].diffuse;\r\n" \
+	"				}\r\n" \
+	"			else {\r\n" \
+	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"				}\r\n" \
+	"			halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, /*gl_FrontMaterial.shininess*/ 8.0)) / att;\r\n" \
+	"			}\r\n" \
+	"		}\r\n" \
+	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \
+	"  gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a)) * color;\r\n" \
+	"  }\r\n" \
 	"}"
 	};
+
 
 char *ppLightingVS [] = {
 	"varying vec3 normal;\r\n" \
 	"varying vec3 lightDir [X]/*, halfVector [X]*/;\r\n" \
 	"varying float lightDist [X];\r\n" \
+	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
 	"	vec3 lightVec;\r\n" \
 	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
+	"	vertPos.x *= aspect;\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < X; i++) {\r\n" \
 	"		lightVec = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
 	"		lightDir [i] = normalize (lightVec);\r\n" \
 	"		lightDist [i] = length (lightVec);\r\n" \
-	"		/*halfVector [i] = normalize (gl_LightSource [i].halfVector.xyz);*/\r\n" \
 	"		}\r\n" \
 	"	gl_Position = ftransform();\r\n" \
    "	gl_FrontColor = gl_Color;\r\n" \
@@ -1401,17 +1406,18 @@ char *ppLightingVS [] = {
 	"varying vec3 normal;\r\n" \
 	"varying vec3 lightDir [X]/*, halfVector [X]*/;\r\n" \
 	"varying float lightDist [X];\r\n" \
+	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
 	"	vec3 lightVec;\r\n" \
 	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
+	"	vertPos.x *= aspect;\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < X; i++) {\r\n" \
 	"		lightVec = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
 	"		lightDir [i] = normalize (lightVec);\r\n" \
 	"		lightDist [i] = length (lightVec);\r\n" \
-	"		/*halfVector [i] = normalize (gl_LightSource [i].halfVector.xyz);*/\r\n" \
 	"		}\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
@@ -1421,17 +1427,18 @@ char *ppLightingVS [] = {
 	"varying vec3 normal;\r\n" \
 	"varying vec3 lightDir [X]/*, halfVector [X]*/;\r\n" \
 	"varying float lightDist [X];\r\n" \
+	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
 	"	vec3 lightVec;\r\n" \
 	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
+	"	vertPos.x *= aspect;\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < X; i++) {\r\n" \
 	"		lightVec = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
 	"		lightDir [i] = normalize (lightVec);\r\n" \
 	"		lightDist [i] = length (lightVec);\r\n" \
-	"		/*halfVector [i] = normalize (gl_LightSource [i].halfVector.xyz);*/\r\n" \
 	"		}\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
@@ -1442,17 +1449,18 @@ char *ppLightingVS [] = {
 	"varying vec3 normal;\r\n" \
 	"varying vec3 lightDir [X]/*, halfVector [X]*/;\r\n" \
 	"varying float lightDist [X];\r\n" \
+	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
 	"	vec3 lightVec;\r\n" \
 	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
+	"	vertPos.x *= aspect;\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < X; i++) {\r\n" \
 	"		lightVec = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
 	"		lightDir [i] = normalize (lightVec);\r\n" \
 	"		lightDist [i] = length (lightVec);\r\n" \
-	"		/*halfVector [i] = normalize (gl_LightSource [i].halfVector.xyz);*/\r\n" \
 	"		}\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\

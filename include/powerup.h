@@ -29,9 +29,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define POW_HOARD_ORB				7       // use unused slot
 #define POW_MONSTERBALL				8
 
-//#define POW_RADAR_ROBOTS        8
-//#define POW_RADAR_POWERUPS      9
-
 #define POW_CONCUSSION_1        	10
 #define POW_CONCUSSION_4        	11      // 4-pack MUST follow single missile
 

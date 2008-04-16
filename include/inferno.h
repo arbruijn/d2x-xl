@@ -1560,6 +1560,7 @@ typedef struct tSlideSegs {
 
 typedef struct tFaceData {
 	grsFace				*faces;
+	grsTri				*tris;
 	fVector3				*vertices;
 	fVector3				*normals;
 	tTexCoord2f			*texCoord;

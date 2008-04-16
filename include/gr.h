@@ -683,9 +683,17 @@ typedef union tTexCoord3f {
 		} v;
 	} tTexCoord3f;
 
+typedef struct grsTri {
+	ushort				nFace;
+	ushort				index [3];
+	int					nIndex;
+	} grsTriangle;
+
 typedef struct grsFace {
 	ushort				index [4];
 	int					nIndex;
+	int					nTriIndex;
+	int					nTris;
 	grsBitmap			*bmBot;
 	grsBitmap			*bmTop;
 	tTexCoord2f			*pTexCoord;	//needed to override default tex coords, e.g. for camera outputs

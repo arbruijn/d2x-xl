@@ -155,6 +155,16 @@ return dest;
 }
 
 // ------------------------------------------------------------------------
+
+fVector3 *VmVecScalef (fVector3 *dest, fVector3 *src, float scale)
+{
+dest->p.x = src->p.x * scale;
+dest->p.y = src->p.y * scale;
+dest->p.z = src->p.z * scale;
+return dest;
+}
+
+// ------------------------------------------------------------------------
 //scales and copies a vector.  returns ptr to dest
 vmsVector *VmVecCopyScale (vmsVector *dest, vmsVector *src, fix s)
 {
@@ -210,7 +220,18 @@ return dest;
 // ------------------------------------------------------------------------
 //scales a vector and adds it to another
 //dest += k * src
-fVector *VmVecScaleIncf3 (fVector *dest, fVector *src, float scale)
+fVector *VmVecScaleIncf (fVector *dest, fVector *src, float scale)
+{
+dest->p.x += src->p.x * scale;
+dest->p.y += src->p.y * scale;
+dest->p.z += src->p.z * scale;
+return dest;
+}
+
+// ------------------------------------------------------------------------
+//scales a vector and adds it to another
+//dest += k * src
+fVector3 *VmVecScaleIncf (fVector3 *dest, fVector3 *src, float scale)
 {
 dest->p.x += src->p.x * scale;
 dest->p.y += src->p.y * scale;
@@ -523,6 +544,13 @@ return (float) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((do
 }
 
 // ------------------------------------------------------------------------
+
+float VmVecMagf (fVector3 *v)
+{
+return (float) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((double) v->p.z)); 
+}
+
+// ------------------------------------------------------------------------
 //computes the distance between two points. (does sub and mag)
 #if !INLINE_VEC_ADD
 
@@ -575,6 +603,15 @@ return VmVecMagf (VmVecSubf (&t, v0, v1));
 }
 
 // ------------------------------------------------------------------------
+
+float VmVecDistf (fVector3 *v0, fVector3 *v1)
+{
+	fVector3	t;
+
+return VmVecMagf (VmVecSubf (&t, v0, v1));
+}
+
+// ------------------------------------------------------------------------
 //computes an approximation of the distance between two points.
 //uses dist = largest + next_largest*3/8 + smallest*3/16
 #if 0//QUICK_VEC_MATH
@@ -604,6 +641,19 @@ return m;
 // ------------------------------------------------------------------------
 //normalize a vector. returns mag of source vec
 float VmVecNormalizef (fVector *dest, fVector *src)
+{
+float m = VmVecMagf (src);
+if (m) {
+	dest->p.x = src->p.x / m;
+	dest->p.y = src->p.y / m;
+	dest->p.z = src->p.z / m;
+	}
+return m;
+}
+
+// ------------------------------------------------------------------------
+
+float VmVecNormalizef (fVector3 *dest, fVector3 *src)
 {
 float m = VmVecMagf (src);
 if (m) {
@@ -701,6 +751,16 @@ return dest;
 }
 
 // ------------------------------------------------------------------------
+
+fVector3 *VmVecCrossProdf (fVector3 *dest, fVector3 *src0, fVector3 *src1)
+{
+dest->p.x = src0->p.y * src1->p.z - src0->p.z * src1->p.y;
+dest->p.y = src0->p.z * src1->p.x - src0->p.x * src1->p.z;
+dest->p.z = src0->p.x * src1->p.y - src0->p.y * src1->p.x;
+return dest;
+}
+
+// ------------------------------------------------------------------------
 //computes non-normalized surface normal from three points. 
 //returns ptr to dest
 //dest CANNOT equal either source
@@ -714,10 +774,29 @@ return VmVecCrossProdf (dest, &t0, &t1);
 }
 
 // ------------------------------------------------------------------------
+
+fVector3 *VmVecPerpf (fVector3 *dest, fVector3 *p0, fVector3 *p1, fVector3 *p2)
+{
+	fVector3 t0, t1;
+
+VmVecSubf (&t0, p1, p0);
+VmVecSubf (&t1, p2, p1);
+return VmVecCrossProdf (dest, &t0, &t1);
+}
+
+// ------------------------------------------------------------------------
 //computes surface normal from three points. result is normalized
 //returns ptr to dest
 //dest CANNOT equal either source
 fVector *VmVecNormalf (fVector *dest, fVector *p0, fVector *p1, fVector *p2)
+{
+VmVecNormalizef (dest, VmVecPerpf (dest, p0, p1, p2));
+return dest;
+}
+
+// ------------------------------------------------------------------------
+
+fVector3 *VmVecNormalf (fVector3 *dest, fVector3 *p0, fVector3 *p1, fVector3 *p2)
 {
 VmVecNormalizef (dest, VmVecPerpf (dest, p0, p1, p2));
 return dest;

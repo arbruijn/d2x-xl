@@ -1047,8 +1047,8 @@ int ComputeNearestVertexLights (int nVertex)
 	vmsVector			*vertP;
 	tDynLight			*pl;
 	tSide					*sideP;
-	int					h, j, k, l, n, dot, nMaxLights;
-	vmsVector			vLightToVert, v;
+	int					h, j, k, l, n, nMaxLights;
+	vmsVector			vLightToVert;
 	struct tLightDist	*pDists;
 
 PrintLog ("computing nearest vertex lights (%d)\n", nVertex);
@@ -1133,127 +1133,6 @@ return 0;
 }
 
 #endif
-
-//------------------------------------------------------------------------------
-
-void CreateFaceList (void)
-{
-	grsFace		*faceP = gameData.segs.faces.faces;
-	fVector3		*vertexP = gameData.segs.faces.vertices;
-	fVector3		*normalP = gameData.segs.faces.normals, vNormalf;
-	tTexCoord2f	*texCoordP = gameData.segs.faces.texCoord;
-	tTexCoord2f	*ovlTexCoordP = gameData.segs.faces.ovlTexCoord;
-	tRgbaColorf	*faceColorP = gameData.segs.faces.color;
-	tFaceColor	*colorP = gameData.render.color.ambient;
-	tSegment		*segP = SEGMENTS;
-	tSegFaces	*segFaceP = SEGFACES;
-	tSide			*sideP;
-	vmsVector	vNormal;
-	short			nSegment, nWall, nOvlTexCount, i, sideVerts [4];
-	ubyte			nSide, bColoredSeg, bWall;
-	char			*pszName;
-
-PrintLog ("   Creating face list\n");
-gameData.segs.nFaces = 0;
-for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFaceP++) {
-	bColoredSeg = ((gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_WATER) &&
-					   (gameData.segs.segment2s [nSegment].special <= SEGMENT_IS_TEAM_RED)) ||
-					   (gameData.segs.xSegments [nSegment].group >= 0);
-#ifdef _DEBUG
-	if (nSegment == nDbgSeg)
-		faceP = faceP;
-#endif
-	faceP->nSegment = nSegment;
-	nOvlTexCount = 0;
-	segFaceP->nFaces = 0;
-	for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
-		nWall = WallNumI (nSegment, nSide);
-		bWall = IS_WALL (nWall) ? 2 : (segP->children [nSide] == -1) ? 1 : 0;
-		if (bColoredSeg || bWall) {
-			GetSideVertIndex (sideVerts, nSegment, nSide);
-			for (i = 0; i < 4; i++) {
-				texCoordP->v.u = f2fl (sideP->uvls [i].u);
-				texCoordP->v.v = f2fl (sideP->uvls [i].v);
-				RotateTexCoord2f (ovlTexCoordP, texCoordP, (ubyte) sideP->nOvlOrient);
-				texCoordP++;
-				ovlTexCoordP++;
-				colorP = gameData.render.color.ambient + sideVerts [i];
-				*faceColorP++ = colorP->color;
-				colorP++;
-				}
-#ifdef _DEBUG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-				faceP = faceP;
-#endif
-			faceP->nSegment = nSegment;
-			memset (faceP, 0, sizeof (*faceP));
-			if (bWall) {
-				faceP->nBaseTex = sideP->nBaseTex;
-				if ((faceP->nOvlTex = sideP->nOvlTex))
-					nOvlTexCount++;
-				faceP->bSlide = (gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_u || gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_v);
-				faceP->bIsLight = IsLight (faceP->nBaseTex) || (faceP->nOvlTex && IsLight (faceP->nOvlTex));
-				faceP->nOvlOrient = (ubyte) sideP->nOvlOrient;
-				faceP->bTextured = 1;
-				faceP->bTransparent = 0;
-				pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [faceP->nBaseTex].index].name;
-				faceP->bSparks = (strstr (pszName, "misc17") != NULL);
-				if (bWall < 2)
-					faceP->bAdditive = 0;
-				else if (WALLS [nWall].flags & WALL_RENDER_ADDITIVE)
-					faceP->bAdditive = 2;
-				else if (strstr (pszName, "lava"))
-					faceP->bAdditive = 3;
-				else
-					faceP->bAdditive = (strstr (pszName, "force") || faceP->bSparks) ? 1 : 0;
-				} 
-			else if (bColoredSeg) {
-				faceP->nBaseTex = -1;
-				faceP->bTransparent = 1;
-				faceP->bAdditive = gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_LAVA;
-				}
-			faceP->nType = -1;
-			faceP->nSegment = nSegment;
-			faceP->nSide = nSide;
-			faceP->nWall = gameStates.app.bD2XLevel ? nWall : IS_WALL (nWall) ? nWall : (ushort) -1;
-			faceP->bAnimation = IsAnimatedTexture (faceP->nBaseTex) || IsAnimatedTexture (faceP->nOvlTex);
-			faceP->nIndex = 4 * gameData.segs.nFaces++;
-			memcpy (faceP->index, sideVerts, sizeof (faceP->index));
-			VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
-			VmVecScale (&vNormal, F1_0 / 2);
-			VmVecFixToFloat3 (&vNormalf, &vNormal);
-			for (i = 0; i < 4; i++) {
-				memcpy (vertexP++, gameData.segs.fVertices + sideVerts [i], sizeof (fVector3));
-				*normalP++ = vNormalf;
-				}
-			if (!segFaceP->nFaces++)
-				segFaceP->pFaces = faceP;
-			faceP++;
-			}
-		else {
-			colorP += 4;
-			}
-		}
-#if 1
-	if (gameStates.ogl.bGlTexMerge && nOvlTexCount) {	//allow for splitting multi-textured faces into two single textured ones
-		gameData.segs.nFaces += nOvlTexCount;
-		faceP += nOvlTexCount;
-		vertexP += nOvlTexCount * 4;
-		normalP += nOvlTexCount * 4;
-		texCoordP += nOvlTexCount * 4;
-		ovlTexCoordP += nOvlTexCount * 4;
-		faceColorP += nOvlTexCount * 4;
-		}
-#endif
-	}
-for (colorP = gameData.render.color.ambient, i = gameData.segs.nVertices; i; i--, colorP++)
-	if (colorP->color.alpha > 1) {
-		colorP->color.red /= colorP->color.alpha;
-		colorP->color.green /= colorP->color.alpha;
-		colorP->color.blue /= colorP->color.alpha;
-		colorP->color.alpha = 1;
-		}
-}
 
 //------------------------------------------------------------------------------
 

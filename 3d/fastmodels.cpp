@@ -226,7 +226,7 @@ void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector
 {
 	tG3Model				*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3ModelVertex		*pmv = NULL;
-	fVector				v = {{0,0,0}}, vn, vo, vForward = {{0,0,1}};
+	fVector3				v = {{0,0,0}}, vn, vo, vForward = {{0,0,1}};
 	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
 	int					i, j = 0;
 	float					h, nSize;
@@ -251,7 +251,7 @@ else
 	v.p.x = v.p.y = v.p.z = 0;
 v.p.z -= 1.0f / 16.0f;
 #if 0
-G3TransformPoint (&v, &v, 0);
+G3TransformPointf (&v, &v, 0);
 #else
 #	if 1
 if (vOffset) {
@@ -274,7 +274,7 @@ if (!mtP->nCount) {
 		mtP->fSize = f2fl (nRad);
 	else {
 		for (i = 0, nSize = 1000000000; i < j; i++)
-			if (nSize > (h = VmVecDistf (&v, (fVector *) &pmv [i].vertex)))
+			if (nSize > (h = VmVecDistf (&v, &pmv [i].vertex)))
 				nSize = h;
 		mtP->fSize = nSize;// * 1.25f;
 		}

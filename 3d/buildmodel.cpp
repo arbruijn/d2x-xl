@@ -393,7 +393,7 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 	tG3SubModel		*psm;
 	tG3ModelFace	*pmf;
 	tG3ModelVertex	*pmv;
-	fVector			vOffset, vo, v;
+	fVector3			vOffset, vo, v;
 	float				fRad = 0, r;
 	int				i, j, k;
 
@@ -407,7 +407,7 @@ for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++)
 		VmVecFixToFloat (&vo, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
 		for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
 			for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++) {
-				VmVecAddf (&v, (fVector *) &pmv->vertex, &vo);
+				VmVecAddf (&v, &pmv->vertex, &vo);
 				if (fRad < (r = VmVecDistf (&vOffset, &v))) {
 					fRad = r;
 					}
