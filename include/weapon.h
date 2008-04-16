@@ -29,7 +29,7 @@ typedef struct tWeaponInfo {
 	short   nModel;          // Model num if rendertype==2.
 	short   nInnerModel;    // Model num of inner part if rendertype==2.
 
-	sbyte   flash_vclip;        // What tVideoClip to use for muzzle flash
+	sbyte   nFlashVClip;        // What tVideoClip to use for muzzle flash
 	sbyte   robot_hit_vclip;    // What tVideoClip for impact with robot
 	short   flashSound;        // What sound to play when fired
 
@@ -65,7 +65,7 @@ typedef struct tWeaponInfo {
 	tBitmapIndex bitmap;        // Pointer to bitmap if rendertype==0 or 1.
 
 	fix blob_size;              // Size of blob if blob nType
-	fix flash_size;             // How big to draw the flash
+	fix xFlashSize;             // How big to draw the flash
 	fix impact_size;            // How big of an impact
 	fix strength[NDL];          // How much damage it can inflict
 	fix speed[NDL];             // How fast it can move, difficulty level based.
@@ -89,7 +89,7 @@ typedef struct tD1WeaponInfo {
 	sbyte	nInnerModel;			// Model num of inner part if rendertype==2.
 	sbyte	persistent;					//	0 = dies when it hits something, 1 = continues (eg, fusion cannon)
 
-	sbyte	flash_vclip;				// What tVideoClip to use for muzzle flash
+	sbyte	nFlashVClip;				// What tVideoClip to use for muzzle flash
 	short	flashSound;				// What sound to play when fired
 	sbyte	robot_hit_vclip;			// What tVideoClip for impact with robot
 	short	robot_hitSound;			// What sound for impact with robot
@@ -113,7 +113,7 @@ typedef struct tD1WeaponInfo {
 	tBitmapIndex bitmap;				// Pointer to bitmap if rendertype==0 or 1.
 
 	fix	blob_size;					// Size of blob if blob nType
-	fix	flash_size;					// How big to draw the flash
+	fix	xFlashSize;					// How big to draw the flash
 	fix	impact_size;				// How big of an impact
 	fix	strength[NDL];				// How much damage it can inflict
 	fix	speed[NDL];					// How fast it can move, difficulty level based.

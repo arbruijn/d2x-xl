@@ -335,7 +335,7 @@ if (matCenP->bEnabled)
 if (!matCenP->nLives)
 	return 0;
 //	MK: 11/18/95, At insane, matcens work forever!
-if (gameStates.app.nDifficultyLevel+1 < NDL)
+if (gameStates.app.nDifficultyLevel + 1 < NDL)
 	matCenP->nLives--;
 
 matCenP->xTimer = F1_0*1000;	//	Make sure the first robot gets emitted right away.
@@ -347,7 +347,7 @@ matCenP->xDisableTime = MATCEN_LIFE;
 pos = matCenP->vCenter;
 VmVecSub (&delta, gameData.segs.vertices + gameData.segs.segments [nSegment].verts [0], &matCenP->vCenter);
 VmVecScaleInc (&pos, &delta, F1_0/2);
-nObject = CreateObject (OBJ_LIGHT, 0, -1, nSegment, &pos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
+nObject = CreateObject (OBJ_LIGHT, SINGLE_LIGHT_ID, -1, nSegment, &pos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
 if (nObject != -1) {
 	gameData.objs.objects [nObject].lifeleft = MATCEN_LIFE;
 	gameData.objs.objects [nObject].cType.lightInfo.intensity = i2f (8);	//	Light cast by a fuelcen.

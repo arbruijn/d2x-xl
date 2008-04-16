@@ -310,25 +310,32 @@ float fLightRanges [5] = {5, 7.071f, 10, 14.142f, 20};
 
 int G3AccumVertColor (int nVertex, fVector *pColorSum, tVertColorData *vcdP, int nThread)
 {
-	int				h, i, j, nType, bInRad, 
-						bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState, 
-						nSaturation = gameOpts->render.color.nSaturation;
-	int				nBrightness, nMaxBrightness = 0;
-	float				fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
-	fVector			spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
-						vertColor = {{0.0f, 0.0f, 0.0f, 1.0f}};
-	tShaderLight	*psl;
-	tVertColorData	vcd = *vcdP;
+	int						i, j, nLights, nType, bInRad, 
+								bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState, 
+								nSaturation = gameOpts->render.color.nSaturation;
+	int						nBrightness, nMaxBrightness = 0;
+	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
+	fVector					spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
+								vertColor = {{0.0f, 0.0f, 0.0f, 1.0f}};
+	tShaderLight			*psl;
+	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + gameData.render.lights.dynamic.shader.nFirstLight [nThread];
+	tVertColorData			vcd = *vcdP;
 
 r_tvertexc++;
 colorSum = *pColorSum;
-h = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
-if (h > gameData.render.lights.dynamic.nLights)
-	return 0;
-for (i = j = 0; i < h; i++) {
-	psl = gameData.render.lights.dynamic.shader.activeLights [nThread][i];
+nLights = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
+if (nLights > gameData.render.lights.dynamic.nLights)
+	nLights = gameData.render.lights.dynamic.nLights;
+i = gameData.render.lights.dynamic.shader.nLastLight [nThread] - gameData.render.lights.dynamic.shader.nFirstLight [nThread] + 1;
+for (j = 0; (i > 0); activeLightsP++, i--) {
+	if (!(psl = GetActiveShaderLight (activeLightsP, nThread)))
+		continue;
+	if (!nLights--)
+		continue;
+#if 0
 	if (i == vcd.nMatLight)
 		continue;
+#endif
 	nType = psl->nType;
 	if (bSkipHeadLight && (nType == 3))
 		continue;
@@ -446,6 +453,8 @@ if (j) {
 		}
 	*pColorSum = colorSum;
 	}
+if (nLights)
+	nLights = 0;
 return j;
 }
 
@@ -453,29 +462,32 @@ return j;
 
 int G3AccumVertColor (int nVertex, fVector *pColorSum, tVertColorData *vcdP, int nThread)
 {
-	int				h, i, j, nType, bInRad, 
-						bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState, 
-						nSaturation = gameOpts->render.color.nSaturation;
-	int				nBrightness, nMaxBrightness = 0;
-	float				fLightDist, fAttenuation, spotEffect, fMag, NdotL, RdotE;
-	fVector			spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
-						vertColor = {{0.0f, 0.0f, 0.0f, 1.0f}};
-	tShaderLight	*psl;
-	tVertColorData	vcd = *vcdP;
+	int						h, i, j, nLights, nType, bInRad, 
+								bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState, 
+								nSaturation = gameOpts->render.color.nSaturation;
+	int						nBrightness, nMaxBrightness = 0;
+	float						fLightDist, fAttenuation, spotEffect, fMag, NdotL, RdotE;
+	fVector					spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
+								vertColor = {{0.0f, 0.0f, 0.0f, 1.0f}};
+	tShaderLight			*psl;
+	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + gameData.render.lights.dynamic.shader.nFirstLight [nThread];
+	tVertColorData			vcd = *vcdP;
 
 r_tvertexc++;
 colorSum = *pColorSum;
-h = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
+nLights = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
+if (nLights > gameData.render.lights.dynamic.nLights)
+	nLights = gameData.render.lights.dynamic.nLights;
+i = gameData.render.lights.dynamic.shader.nLastLight [nThread] - gameData.render.lights.dynamic.shader.nFirstLight [nThread] + 1;
+for (j = 0; (i > 0); activeLightsP++, i--) {
+	if (!(psl = GetActiveShaderLight (activeLightsP, nThread)))
+		continue;
+	if (!nLights--)
+		continue;
 #if 0
-if (h > MAX_NEAREST_LIGHTS)
-	h = MAX_NEAREST_LIGHTS;
-#endif
-if (h > gameData.render.lights.dynamic.nLights)
-	return 0;
-for (i = j = 0; i < h; i++) {
-	psl = gameData.render.lights.dynamic.shader.activeLights [nThread][i];
 	if (i == vcd.nMatLight)
 		continue;
+#endif
 	nType = psl->nType;
 	if (bSkipHeadLight && (nType == 3))
 		continue;
@@ -870,11 +882,20 @@ if (pVertColor) {
 if (!gameStates.render.nState && (nVertex == nDbgVertex))
 	nVertex = nVertex;
 #endif
+#if 0
 if (bVertexLights)
 	gameData.render.lights.dynamic.shader.nActiveLights [nThread] = gameData.render.lights.dynamic.shader.iVertexLights [nThread];
+#endif
 #if PROFILING
 tG3VertexColor += clock () - t;
 #endif
+for (int k = 0; k < MAX_SHADER_LIGHTS; k++)
+	if (gameData.render.lights.dynamic.shader.activeLights [0][k].nType > 1) {
+		gameData.render.lights.dynamic.shader.activeLights [0][k].nType = 0;
+		gameData.render.lights.dynamic.shader.activeLights [0][k].psl = NULL;
+		}
+	else if (gameData.render.lights.dynamic.shader.activeLights [0][k].nType == 1)
+		gameData.render.lights.dynamic.shader.activeLights [0][k].nType = 1;
 } 
 
 //------------------------------------------------------------------------------

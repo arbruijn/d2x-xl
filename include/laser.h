@@ -109,8 +109,7 @@ void LaserDoWeaponSequence(tObject *obj);
 void CreateFlare(tObject *obj);
 int LasersAreRelated(int o1, int o2);
 int LaserPlayerFireSpreadDelay (tObject *objP, ubyte laserType, int gun_num, fix spreadr, 
-										  fix spreadu, fix delayTime, int makeSound, int harmless);
-
+										  fix spreadu, fix delayTime, int makeSound, int harmless, short nLightObj);
 int LocalPlayerFireLaser(void);
 void DoMissileFiring(int do_autoselect);
 void NetMissileFiring(int tPlayer, int weapon, int flags);
@@ -168,16 +167,17 @@ extern int nOmegaDuration [7];
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static inline int LaserPlayerFireSpread (tObject *objP, ubyte laserType, int nGun, fix spreadr, fix spreadu, int makeSound, int harmless)
+static inline int LaserPlayerFireSpread (tObject *objP, ubyte laserType, int nGun, fix spreadr, fix spreadu, 
+									int makeSound, int harmless, short nLightObj)
 {
-return LaserPlayerFireSpreadDelay (objP, laserType, nGun, spreadr, spreadu, 0, makeSound, harmless);
+return LaserPlayerFireSpreadDelay (objP, laserType, nGun, spreadr, spreadu, 0, makeSound, harmless, nLightObj);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static int inline LaserPlayerFire (tObject *objP, ubyte laserType, int nGun, int makeSound, int harmless)
+static int inline LaserPlayerFire (tObject *objP, ubyte laserType, int nGun, int makeSound, int harmless, short nLightObj)
 {
-return LaserPlayerFireSpread (objP, laserType, nGun, 0, 0, makeSound, harmless);
+return LaserPlayerFireSpread (objP, laserType, nGun, 0, 0, makeSound, harmless, nLightObj);
 }
 
 //	-----------------------------------------------------------------------------------------------------------

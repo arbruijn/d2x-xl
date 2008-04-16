@@ -254,6 +254,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 #endif
 G3DrawFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, 
 				!bDepthOnly && faceP->bTextured, bDepthOnly, bVertexArrays);
+//gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iVertexLights [0];
 #ifdef _DEBUG
 prevFaceP = faceP;
 #endif
@@ -649,7 +650,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static void RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bLighting, int bAutomap)
+static void RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bAutomap)
 {
 	tSegFaces	*segFaceP = SEGFACES + nSegment;
 	grsFace		*faceP;
@@ -661,8 +662,7 @@ if (!VisitSegment (nSegment, bAutomap))
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-if (bLighting)
-	SetNearestSegmentLights (nSegment, 0, 0, 0);
+gameData.render.lights.dynamic.shader.nActiveLights [0] = -1;
 for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 #ifdef _DEBUG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -676,15 +676,15 @@ for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 
 void RenderSegments (int nType, int bVertexArrays, int bDepthOnly)
 {
-	int	i, bAutomap = (nType == 0), bLighting = gameOpts->ogl.bPerPixelLighting && (nType < 3) && !bDepthOnly;
+	int	i, bAutomap = (nType == 0);
 
 if (nType) {
 	for (i = gameData.render.mine.nRenderSegs; i; )
-		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bVertexArrays, bDepthOnly, bLighting, bAutomap);
+		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bVertexArrays, bDepthOnly, bAutomap);
 	}
 else {
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
-		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bLighting, bAutomap);
+		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap);
 	}
 }
 
@@ -1145,7 +1145,7 @@ else if (nState == 1) {
 		nDbgVertex = nDbgVertex;
 #endif
 	for (nLights = 0, i = vld.nLights, j = 0; j < h; i++, j++) {
-		psl = gameData.render.lights.dynamic.shader.activeLights [0][j];
+		psl = gameData.render.lights.dynamic.shader.activeLights [0][j].psl;
 		if (bSkipHeadLight && (psl->nType == 3))
 			continue;
 		vld.buffers [0][i] = vPos;
@@ -1165,8 +1165,7 @@ else if (nState == 1) {
 		vld.nVertices++;
 		vld.nLights += nLights;
 		}
-
-	gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iVertexLights [0];
+	//gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iVertexLights [0];
 	}	
 else if (nState == 2) {
 	RenderVertLightBuffers ();
@@ -1236,7 +1235,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		nSegment = nSegment;
 #endif
 	if (!(gameStates.render.bFullBright || gameOpts->ogl.bPerPixelLighting))
-		SetNearestSegmentLights (nSegment, 0, 0, nThread);
+		SetNearestSegmentLights (nSegment, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 		nSide = faceP->nSide;
 #ifdef _DEBUG
@@ -1514,7 +1513,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 			gameStates.render.bApplyDynLight = 0;
 		RenderObjList (nListPos, gameStates.render.nWindow);
 		gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
-		gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iStaticLights [0];
+		//gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iStaticLights [0];
 		}
 	else if (nType == 2)	// render objects containing transparency, like explosions
 		RenderObjList (nListPos, gameStates.render.nWindow);

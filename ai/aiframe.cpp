@@ -883,7 +883,7 @@ if (siP->botInfoP->companion) {
 			; 
 
 		if (bDoStuff && (VmVecDot (&objP->position.mOrient.fVec, &gameData.ai.vVecToPlayer) < F1_0 / 2)) {
-			CreateNewLaserEasy ( &objP->position.mOrient.fVec, &objP->position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
+			CreateNewLaserEasy (&objP->position.mOrient.fVec, &objP->position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = F1_0/2;
 			if (!gameData.escort.bMayTalk) // If buddy not talking, make him fire flares less often.
 				siP->ailP->nextPrimaryFire += d_rand ()*4;
@@ -912,8 +912,8 @@ if (siP->botInfoP->thief) {
 			bDoStuff = 1;
 		if (bDoStuff) {
 			// @mk, 05/08/95: Firing flare from center of tObject, this is dumb...
-			CreateNewLaserEasy ( &objP->position.mOrient.fVec, &objP->position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
-			siP->ailP->nextPrimaryFire = F1_0/2;
+			CreateNewLaserEasy (&objP->position.mOrient.fVec, &objP->position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
+			siP->ailP->nextPrimaryFire = F1_0 / 2;
 			if (gameData.thief.nStolenItem == 0)     // If never stolen an item, fire flares less often (bad: gameData.thief.nStolenItem wraps, but big deal)
 				siP->ailP->nextPrimaryFire += d_rand ()*4;
 			}

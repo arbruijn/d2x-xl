@@ -15,6 +15,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _DYNLIGHT_H
 #define _DYNLIGHT_H
 
+#define	MAX_LIGHTS_PER_PIXEL 5
+
 void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
 int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner, vmsVector *vPos);
 int RemoveDynLight (short nSegment, short nSide, short nObject);
@@ -36,6 +38,7 @@ void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread
 short SetNearestSegmentLights (int nSegment, int bVariable, int nType, int nThread);
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (void);
+tShaderLight *GetActiveShaderLight (tActiveShaderLight *activeLightsP, int nThread);
 int InitPerPixelLightingShader (int nType, int nLights);
 void InitHeadlightShaders (int nLights);
 char *BuildLightingShader (char *pszTemplate, int nLights);

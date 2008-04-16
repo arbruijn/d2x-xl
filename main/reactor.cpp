@@ -379,7 +379,7 @@ if ((rStatP->nNextFireTime < 0) &&
 			}
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
-		CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 1);
+		CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 1);
 		//	some of time, based on level, fire another thing, not directly at tPlayer, so it might hit him if he's constantly moving.
 		nRandProb = F1_0 / (abs (gameData.missions.nCurrentLevel) / 4 + 2);
 		count = 0;
@@ -391,7 +391,7 @@ if ((rStatP->nNextFireTime < 0) &&
 			VmVecNormalize (&vecToGoal);
 			if (IsMultiGame)
 				MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
-			CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);
+			CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);
 			count++;
 			}
 		xDeltaFireTime = (NDL - gameStates.app.nDifficultyLevel) * F1_0/4;

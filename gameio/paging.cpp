@@ -129,8 +129,8 @@ if ((nWeaponType < 0) || (nWeaponType > gameData.weapons.nTypes [0]))
 	return;
 if (gameData.weapons.info [nWeaponType].picture.index)
 	PIGGY_PAGE_IN (gameData.weapons.info [nWeaponType].picture.index, 0);
-if (gameData.weapons.info [nWeaponType].flash_vclip > -1)
-	PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].flash_vclip], 0);
+if (gameData.weapons.info [nWeaponType].nFlashVClip > -1)
+	PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].nFlashVClip], 0);
 if (gameData.weapons.info [nWeaponType].wall_hit_vclip > -1)
 	PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].wall_hit_vclip], 0);
 if (WI_damage_radius (nWeaponType))	{

@@ -1095,11 +1095,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 		pDists [n].nDist = h;
 		pDists [n].nIndex = l;
 		n++;
-	sideP = SEGMENTS [pl->nSegment].sides + pl->nSide;
-	dot = VmVecDot (sideP->normals, &vLightToVert);
-	dot = VmVecDot (sideP->normals + 1, &vLightToVert);
-	COMPUTE_SIDE_CENTER_I (&v, pl->nSegment, pl->nSide);
-	}
+		}
 	if (n)
 		QSortLightDist (pDists, 0, n - 1);
 	h = (nMaxLights < n) ? nMaxLights : n;

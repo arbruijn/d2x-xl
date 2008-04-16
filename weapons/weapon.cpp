@@ -872,7 +872,7 @@ for (i = 0; i < n; i++, pwi++) {
 	pwi->persistent = CFReadByte (fp);
 	pwi->nModel = CFReadShort (fp);
 	pwi->nInnerModel = CFReadShort (fp);
-	pwi->flash_vclip = CFReadByte (fp);
+	pwi->nFlashVClip = CFReadByte (fp);
 	pwi->robot_hit_vclip = CFReadByte (fp);
 	pwi->flashSound = CFReadShort (fp);
 	pwi->wall_hit_vclip = CFReadByte (fp);
@@ -922,7 +922,7 @@ for (i = 0; i < n; i++, pwi++) {
 		pwi->multi_damage_scale = F1_0;
 	BitmapIndexRead (&pwi->bitmap, fp);
 	pwi->blob_size = CFReadFix (fp);
-	pwi->flash_size = CFReadFix (fp);
+	pwi->xFlashSize = CFReadFix (fp);
 	pwi->impact_size = CFReadFix (fp);
 	for (j = 0; j < NDL; j++)
 		pwi->strength [j] = CFReadFix (fp);

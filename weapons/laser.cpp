@@ -287,11 +287,12 @@ return nObject;
 int CreateNewLaser (vmsVector *vDirection, vmsVector *vPosition, short nSegment, 
 						  short nParent, ubyte nWeaponType, int bMakeSound)
 {
-	int		nObject, nViewer, bBigMsl;
-	tObject	*objP, *pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;
-	fix		xParentSpeed, xWeaponSpeed;
-	fix		volume;
-	fix		xLaserLength = 0;
+	int			nObject, nViewer, bBigMsl;
+	tObject		*objP, *parentP = (nParent < 0) ? NULL : gameData.objs.objects + nParent;
+	tWeaponInfo	*weaponInfoP;
+	fix			xParentSpeed, xWeaponSpeed;
+	fix			volume;
+	fix			xLaserLength = 0;
 
 	static int	nMslSounds [2] = {SND_ADDON_MISSILE_SMALL, SND_ADDON_MISSILE_BIG};
 	static int	nGatlingSounds [2] = {SND_ADDON_VULCAN, SND_ADDON_GAUSS};
@@ -300,10 +301,10 @@ Assert (nWeaponType < gameData.weapons.nTypes [0]);
 if (nWeaponType >= gameData.weapons.nTypes [0])
 	nWeaponType = 0;
 //	Don't let homing blobs make muzzle flash.
-if (pParent->nType == OBJ_ROBOT)
+if (parentP->nType == OBJ_ROBOT)
 	DoMuzzleStuff (nSegment, vPosition);
 else if (gameStates.app.bD2XLevel && 
-			(pParent == gameData.objs.console) && 
+			(parentP == gameData.objs.console) && 
 			(gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return -1;
 #if 1
@@ -328,7 +329,7 @@ nObject = CreateWeaponObject (nWeaponType, nSegment, vPosition);
 if (nObject < 0)
 	return -1;
 #if 0
-if (pParent == gameData.objs.console) {
+if (parentP == gameData.objs.console) {
 	switch (nWeaponType) {
 		case LASER_ID:
 		case LASER_ID + 1:
@@ -360,19 +361,20 @@ if ((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID))
 	gameData.objs.nTracers [nParent] = (gameData.objs.nTracers [nParent] + 1) % 3;
 objP = gameData.objs.objects + nObject;
 objP->cType.laserInfo.nParentObj = nParent;
-objP->cType.laserInfo.parentType = pParent->nType;
-objP->cType.laserInfo.nParentSig = pParent->nSignature;
+objP->cType.laserInfo.parentType = parentP->nType;
+objP->cType.laserInfo.nParentSig = parentP->nSignature;
 //	Do the special Omega Cannon stuff.  Then return on account of everything that follows does
 //	not apply to the Omega Cannon.
 nViewer = OBJ_IDX (gameData.objs.viewer);
+weaponInfoP = gameData.weapons.info + nWeaponType;
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
-	VmVector2Matrix (&objP->position.mOrient, vDirection, SPECTATOR (pParent) ? &gameStates.app.playerPos.mOrient.uVec : &pParent->position.mOrient.uVec, NULL);
-	if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->nType != OBJ_WEAPON)) {
+	int bSpectator = SPECTATOR (parentP);
+	VmVector2Matrix (&objP->position.mOrient, vDirection, bSpectator ? &gameStates.app.playerPos.mOrient.uVec : &parentP->position.mOrient.uVec, NULL);
+	if (((nParent != nViewer) || bSpectator) && (parentP->nType != OBJ_WEAPON)) {
 		// Muzzle flash	
-		if (gameData.weapons.info [objP->id].flash_vclip > -1)
-			ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
-											 gameData.weapons.info [objP->id].flash_vclip);
+		if (weaponInfoP->nFlashVClip > -1)
+			ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashVClip);
 		}
 	DoOmegaStuff (gameData.objs.objects + nParent, vPosition, objP);
 	return nObject;
@@ -384,7 +386,7 @@ else if (nWeaponType == FUSION_ID) {
 	objP->mType.physInfo.rotVel.p.y = 0;
 	objP->mType.physInfo.rotVel.p.z = nRotDir ? -F1_0 : F1_0;
 	}
-if (pParent->nType == OBJ_PLAYER) {
+if (parentP->nType == OBJ_PLAYER) {
 	if (nWeaponType == FUSION_ID) {
 		if (gameData.fusion.xCharge <= 0)
 			objP->cType.laserInfo.multiplier = F1_0;
@@ -394,7 +396,7 @@ if (pParent->nType == OBJ_PLAYER) {
 			objP->cType.laserInfo.multiplier = 4 * F1_0;
 		}
 	else if (/* (nWeaponType >= LASER_ID) &&*/ (nWeaponType <= MAX_SUPER_LASER_LEVEL) && 
-				(gameData.multiplayer.players [pParent->id].flags & PLAYER_FLAGS_QUAD_LASERS))
+				(gameData.multiplayer.players [parentP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
 		objP->cType.laserInfo.multiplier = 3 * F1_0 / 4;
 	else if (nWeaponType == GUIDEDMSL_ID) {
 		if (nParent == LOCALPLAYER.nObject) {
@@ -414,61 +416,65 @@ if ((nWeaponType == SMARTMSL_BLOB_ID) ||
 	 (nWeaponType == ROBOT_SMARTMINE_BLOB_ID) || 
 	 (nWeaponType == EARTHSHAKER_MEGA_ID))
 	objP->mType.physInfo.flags |= PF_BOUNCE;
-if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL)
+if (weaponInfoP->renderType == WEAPON_RENDER_POLYMODEL)
 	xLaserLength = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad * 2;
 if (nWeaponType == FLARE_ID)
 	objP->mType.physInfo.flags |= PF_STICK;		//this obj sticks to walls
-objP->shields = WI_strength (objP->id,gameStates.app.nDifficultyLevel);
+objP->shields = WI_strength (nWeaponType, gameStates.app.nDifficultyLevel);
 // Fill in laser-specific data
-objP->lifeleft							= WI_lifetime (objP->id);
-objP->cType.laserInfo.parentType	= pParent->nType;
-objP->cType.laserInfo.nParentSig = pParent->nSignature;
+objP->lifeleft							= WI_lifetime (nWeaponType);
+objP->cType.laserInfo.parentType	= parentP->nType;
+objP->cType.laserInfo.nParentSig = parentP->nSignature;
 objP->cType.laserInfo.nParentObj	= nParent;
 //	Assign nParent nType to highest level creator.  This propagates nParent nType down from
 //	the original creator through weapons which create children of their own (ie, smart missile)
-if (pParent->nType == OBJ_WEAPON) {
+if (parentP->nType == OBJ_WEAPON) {
 	int	nHighestParent = nParent;
 	int	count = 0;
-	while ((count++ < 10) && (gameData.objs.objects [nHighestParent].nType == OBJ_WEAPON)) {
-		int	nNextParent = gameData.objs.objects [nHighestParent].cType.laserInfo.nParentObj;
-		if (gameData.objs.objects [nNextParent].nSignature != gameData.objs.objects [nHighestParent].cType.laserInfo.nParentSig)
+	tObject	*parentObjP = OBJECTS + nHighestParent;
+
+	while ((count++ < 10) && (parentObjP->nType == OBJ_WEAPON)) {
+		int nNextParent = parentObjP->cType.laserInfo.nParentObj;
+		if (gameData.objs.objects [nNextParent].nSignature != parentObjP->cType.laserInfo.nParentSig)
 			break;	//	Probably means nParent was killed.  Just continue.
 		if (nNextParent == nHighestParent) {
 			Int3 ();	//	Hmm, tObject is nParent of itself.  This would seem to be bad, no?
 			break;
 			}
 		nHighestParent = nNextParent;
+		parentObjP = OBJECTS + nHighestParent;
 		objP->cType.laserInfo.nParentObj	= nHighestParent;
-		objP->cType.laserInfo.parentType	= gameData.objs.objects [nHighestParent].nType;
-		objP->cType.laserInfo.nParentSig = gameData.objs.objects [nHighestParent].nSignature;
+		objP->cType.laserInfo.parentType	= parentObjP->nType;
+		objP->cType.laserInfo.nParentSig = parentObjP->nSignature;
 		}
 	}
 // Create orientation matrix so we can look from this pov
 //	Homing missiles also need an orientation matrix so they know if they can make a turn.
 //if ((objP->renderType == RT_POLYOBJ) || (WI_homingFlag (objP->id)))
-	VmVector2Matrix (&objP->position.mOrient, vDirection, &pParent->position.mOrient.uVec ,NULL);
-if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->nType != OBJ_WEAPON)) {
+	VmVector2Matrix (&objP->position.mOrient, vDirection, &parentP->position.mOrient.uVec, NULL);
+if (((nParent != nViewer) || SPECTATOR (parentP)) && (parentP->nType != OBJ_WEAPON)) {
 	// Muzzle flash	
-	if (gameData.weapons.info [objP->id].flash_vclip > -1)
-		ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
-										 gameData.weapons.info [objP->id].flash_vclip);
+	if (weaponInfoP->nFlashVClip > -1)
+		ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, weaponInfoP->xFlashSize, 
+										 weaponInfoP->nFlashVClip);
 	}
 volume = F1_0;
-if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1)) {
+if (bMakeSound && (weaponInfoP->flashSound > -1)) {
+	int bGatling = (nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID);
 	if (nParent != nViewer) {
-		if (((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID)) && (pParent->nType == OBJ_PLAYER) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
-			DigiLinkSoundToPos2 (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume, F1_0 * 256,
+		if (bGatling && (parentP->nType == OBJ_PLAYER) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
+			DigiLinkSoundToPos2 (weaponInfoP->flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume, F1_0 * 256,
 										AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
 		else
-			DigiLinkSoundToPos (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume);
+			DigiLinkSoundToPos (weaponInfoP->flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume);
 		}
 	else {
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
 			volume = F1_0 / 2;
-		if (((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID)) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
+		if (bGatling && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
 			DigiPlaySampleClass (-1, AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]), volume, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER);
 		else
-			DigiPlaySampleClass (gameData.weapons.info [objP->id].flashSound, NULL, volume, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER);
+			DigiPlaySampleClass (weaponInfoP->flashSound, NULL, volume, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER);
 		}
 	if (gameOpts->sound.bMissiles && gameData.objs.bIsMissile [nWeaponType]) {
 		bBigMsl = (nWeaponType == SMARTMSL_ID) ||
@@ -487,7 +493,7 @@ if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1)) {
 // Move 1 frame, so that the end-tip of the laser is touching the gun barrel.
 // This also jitters the laser a bit so that it doesn't alias.
 //	Don't do for weapons created by weapons.
-if ((pParent->nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID)) {
+if ((parentP->nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID)) {
 	vmsVector	vEndPos;
 	int			nEndSeg;
 
@@ -506,15 +512,15 @@ if ((pParent->nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].rende
 if (!WeaponIsMine (nWeaponType)) 
 	xParentSpeed = 0;
 else {
-	xParentSpeed = VmVecMagQuick (&pParent->mType.physInfo.velocity);
-	if (VmVecDot (&pParent->mType.physInfo.velocity, 
-						&pParent->position.mOrient.fVec) < 0)
+	xParentSpeed = VmVecMagQuick (&parentP->mType.physInfo.velocity);
+	if (VmVecDot (&parentP->mType.physInfo.velocity, 
+						&parentP->position.mOrient.fVec) < 0)
 		xParentSpeed = -xParentSpeed;
 	} 
 
 xWeaponSpeed = WI_speed (objP->id, gameStates.app.nDifficultyLevel);
-if (gameData.weapons.info [objP->id].speedvar != 128) {
-	fix randval = F1_0 - ((d_rand () * gameData.weapons.info [objP->id].speedvar) >> 6);	//	Get a scale factor between speedvar% and 1.0.
+if (weaponInfoP->speedvar != 128) {
+	fix randval = F1_0 - ((d_rand () * weaponInfoP->speedvar) >> 6);	//	Get a scale factor between speedvar% and 1.0.
 	xWeaponSpeed = FixMul (xWeaponSpeed, randval);
 	}
 //	Ugly hack (too bad we're on a deadline), for homing missiles dropped by smart bomb, start them out slower.
@@ -527,8 +533,8 @@ if ((objP->id == SMARTMSL_BLOB_ID) ||
 if (WIThrust (objP->id) != 0)
 	xWeaponSpeed /= 2;
 /*test*/VmVecCopyScale (&objP->mType.physInfo.velocity, vDirection, (xWeaponSpeed + xParentSpeed));
-if (pParent)
-	gameData.objs.vStartVel [nObject] = pParent->mType.physInfo.velocity;
+if (parentP)
+	gameData.objs.vStartVel [nObject] = parentP->mType.physInfo.velocity;
 //	Set thrust 
 if (WIThrust (nWeaponType) != 0) {
 	objP->mType.physInfo.thrust = objP->mType.physInfo.velocity;
@@ -653,7 +659,8 @@ int LaserPlayerFireSpreadDelay (
 	fix xSpreadU, 
 	fix xDelay, 
 	int bMakeSound, 
-	int bHarmless)
+	int bHarmless,
+	short	nLightObj)
 {
 	short			nLaserSeg;
 	int			nFate; 
@@ -778,6 +785,9 @@ if (gameStates.app.cheats.bHomingWeapons || gameData.weapons.info [nLaserType].h
 		laserP->cType.laserInfo.nMslLock = gameData.multigame.laser.nTrack;
 		}
 	}
+gameData.objs.lightObjs [nObject].nObject = nLightObj;
+if (nLightObj >= 0)
+	gameData.objs.lightObjs [nObject].nSignature = OBJECTS [nObject].nSignature;
 return nObject;
 }
 
@@ -793,7 +803,7 @@ LOCALPLAYER.energy -= xEnergyUsage;
 if (LOCALPLAYER.energy <= 0) {
 	LOCALPLAYER.energy = 0;
 	}
-LaserPlayerFire (objP, FLARE_ID, 6, 1, 0);
+LaserPlayerFire (objP, FLARE_ID, 6, 1, 0, -1);
 if (IsMultiGame) {
 	gameData.multigame.laser.bFired = 1;
 	gameData.multigame.laser.nGun = FLARE_ADJUST;
@@ -1206,6 +1216,16 @@ return rVal;
 // -- 	}
 // -- }
 
+//	-----------------------------------------------------------------------------------------------------------
+
+inline short CreateClusterLight (tObject *objP)
+{
+short nObject = CreateObject (OBJ_LIGHT, CLUSTER_LIGHT_ID, -1, objP->nSegment, &OBJPOS (objP)->vPos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
+if (nObject >= 0)
+	OBJECTS [nObject].lifeleft = IMMORTAL_TIME;
+return nObject;
+}
+
 //	--------------------------------------------------------------------------------------------------
 
 #ifdef _WIN32
@@ -1219,14 +1239,15 @@ typedef int (* pWeaponHandler) (tObject *, int, int, int);
 int LaserHandler (tObject *objP, int nLevel, int nFlags, int nFires)
 {
 	ubyte	nLaser = (nLevel <= MAX_LASER_LEVEL) ? LASER_ID + nLevel : SUPERLASER_ID + (nLevel - MAX_LASER_LEVEL - 1);
+	short	nLightObj = CreateClusterLight (objP);
 
 gameData.laser.nOffset = (F1_0 * 2 * (d_rand () % 8)) / 8;
-LaserPlayerFire (objP, nLaser, 0, 1, 0);
-LaserPlayerFire (objP, nLaser, 1, 0, 0);
+LaserPlayerFire (objP, nLaser, 0, 1, 0, nLightObj);
+LaserPlayerFire (objP, nLaser, 1, 0, 0, nLightObj);
 if (nFlags & LASER_QUAD) {
 	//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt bHarmless
-	LaserPlayerFire (objP, nLaser, 2, 0, 0);
-	LaserPlayerFire (objP, nLaser, 3, 0, 0);
+	LaserPlayerFire (objP, nLaser, 2, 0, 0, nLightObj);
+	LaserPlayerFire (objP, nLaser, 3, 0, 0, nLightObj);
 	}
 return nFires;
 }
@@ -1242,11 +1263,11 @@ int VulcanHandler (tObject *objP, int nLevel, int nFlags, int nFires)
 if (bGatlingSound && (gameData.weapons.firing [objP->id].nDuration <= GATLING_DELAY))
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
-LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 1, 0);
+LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 1, 0, -1);
 if (nFires > 1) {
-	LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0);
+	LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1);
 	if (nFires > 2)
-		LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0);
+		LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1);
 	}
 return nFires;
 }
@@ -1255,15 +1276,17 @@ return nFires;
 
 int SpreadfireHandler (tObject *objP, int nLevel, int nFlags, int nFires)
 {
+	short	nLightObj = CreateClusterLight (objP);
+
 if (nFlags & LASER_SPREADFIRE_TOGGLED) {
-	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, F1_0/16, 0, 0, 0);
-	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, -F1_0/16, 0, 0, 0);
+	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, F1_0/16, 0, 0, 0, nLightObj);
+	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, -F1_0/16, 0, 0, 0, nLightObj);
 	}
 else {
-	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, F1_0/16, 0, 0);
-	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, -F1_0/16, 0, 0);
+	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, F1_0/16, 0, 0, nLightObj);
+	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, -F1_0/16, 0, 0, nLightObj);
 	}
-LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0);
+LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0, nLightObj);
 return nFires;
 }
 
@@ -1271,11 +1294,15 @@ return nFires;
 
 int PlasmaHandler (tObject *objP, int nLevel, int nFlags, int nFires)
 {
-LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0);
-LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0);
+	short	nLightObj = CreateClusterLight (objP);
+
+LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0, nLightObj);
+LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0, nLightObj);
 if (nFires > 1) {
-	LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0);
-	LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0);
+	nLightObj = CreateClusterLight (objP);
+
+	LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj);
+	LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj);
 	}
 return nFires;
 }
@@ -1284,15 +1311,16 @@ return nFires;
 
 int FusionHandler (tObject *objP, int nLevel, int nFlags, int nFires)
 {
-		vmsVector	vForce;
+	vmsVector	vForce;
+	short			nLightObj = CreateClusterLight (objP);
 
-LaserPlayerFire (objP, FUSION_ID, 0, 1, 0);
-LaserPlayerFire (objP, FUSION_ID, 1, 1, 0);
+LaserPlayerFire (objP, FUSION_ID, 0, 1, 0, nLightObj);
+LaserPlayerFire (objP, FUSION_ID, 1, 1, 0, nLightObj);
 if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [objP->id].bTripleFusion)
 #if 1
-	LaserPlayerFire (objP, FUSION_ID, 6, 1, 0);
+	LaserPlayerFire (objP, FUSION_ID, 6, 1, 0, nLightObj);
 #else
-	LaserPlayerFire (objP, FUSION_ID, -1, 1, 0);
+	LaserPlayerFire (objP, FUSION_ID, -1, 1, 0, nLightObj);
 #endif
 nFlags = (sbyte) (gameData.fusion.xCharge >> 12);
 gameData.fusion.xCharge = 0;
@@ -1312,14 +1340,15 @@ return nFires;
 int SuperlaserHandler (tObject *objP, int nLevel, int nFlags, int nFires)
 {
 	ubyte nSuperLevel = 3;		//make some new kind of laser eventually
+	short	nLightObj = CreateClusterLight (objP);
 
-LaserPlayerFire (objP, nSuperLevel, 0, 1, 0);
-LaserPlayerFire (objP, nSuperLevel, 1, 0, 0);
+LaserPlayerFire (objP, nSuperLevel, 0, 1, 0, nLightObj);
+LaserPlayerFire (objP, nSuperLevel, 1, 0, 0, nLightObj);
 
 if (nFlags & LASER_QUAD) {
 	//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt bHarmless
-	LaserPlayerFire (objP, nSuperLevel, 2, 0, 0);
-	LaserPlayerFire (objP, nSuperLevel, 3, 0, 0);
+	LaserPlayerFire (objP, nSuperLevel, 2, 0, 0, nLightObj);
+	LaserPlayerFire (objP, nSuperLevel, 3, 0, 0, nLightObj);
 	}
 return nFires;
 }
@@ -1338,11 +1367,11 @@ if (bGatlingSound && (fP->nDuration <= GATLING_DELAY))
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
 LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 
-							  (objP->id != gameData.multiplayer.nLocalPlayer) || (gameData.laser.xNextFireTime > gameData.time.xGame), 0);
+							  (objP->id != gameData.multiplayer.nLocalPlayer) || (gameData.laser.xNextFireTime > gameData.time.xGame), 0, -1);
 if (nFires > 1) {
-	LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0);
+	LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1);
 	if (nFires > 2)
-		LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0);
+		LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1);
 	}
 return nFires;
 }
@@ -1367,12 +1396,13 @@ int HelixHandler (tObject *objP, int nLevel, int nFlags, int nFires)
 		};
 
 	tSpread	spread = spreadTable [(nFlags >> LASER_HELIX_SHIFT) & LASER_HELIX_MASK];
+	short		nLightObj = CreateClusterLight (objP);
 
-LaserPlayerFireSpread (objP, HELIX_ID, 6,  0,  0, 1, 0);
-LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r,  spread.u, 0, 0);
-LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r, -spread.u, 0, 0);
-LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r * 2,  spread.u * 2, 0, 0);
-LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r * 2, -spread.u * 2, 0, 0);
+LaserPlayerFireSpread (objP, HELIX_ID, 6,  0,  0, 1, 0, nLightObj);
+LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r,  spread.u, 0, 0, nLightObj);
+LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r, -spread.u, 0, 0, nLightObj);
+LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r * 2,  spread.u * 2, 0, 0, nLightObj);
+LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r * 2, -spread.u * 2, 0, 0, nLightObj);
 return nFires;
 }
 
@@ -1380,11 +1410,14 @@ return nFires;
 
 int PhoenixHandler (tObject *objP, int nLevel, int nFlags, int nFires)
 {
-LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0);
-LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0);
+	short	nLightObj = CreateClusterLight (objP);
+
+LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0, nLightObj);
+LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0, nLightObj);
 if (nFires > 1) {
-	LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0);
-	LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0);
+	nLightObj = CreateClusterLight (objP);
+	LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj);
+	LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj);
 	}
 return nFires;
 }
@@ -1393,7 +1426,7 @@ return nFires;
 
 int OmegaHandler (tObject *objP, int nLevel, int nFlags, int nFires)
 {
-LaserPlayerFire (objP, OMEGA_ID, 6, 1, 0);
+LaserPlayerFire (objP, OMEGA_ID, 6, 1, 0, -1);
 return nFires;
 }
 
@@ -1629,7 +1662,7 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		nGun += (gunFlag = (gameData.laser.nMissileGun & 1));
 		gameData.laser.nMissileGun++;
 		}
-	nObject = LaserPlayerFire (gameData.objs.console, nWeaponId, nGun, 1, 0);
+	nObject = LaserPlayerFire (gameData.objs.console, nWeaponId, nGun, 1, 0, -1);
 	if (gameData.weapons.nSecondary == PROXMINE_INDEX) {
 		if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 			if (++nProximityDropped == 4) {

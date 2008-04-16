@@ -101,7 +101,7 @@ for (i = 0; i < vc->nFrameCount; i++) {
 
 void OglCacheWeaponTextures (tWeaponInfo *w)
 {
-OglCacheVClipTexturesN (w->flash_vclip, 1);
+OglCacheVClipTexturesN (w->nFlashVClip, 1);
 OglCacheVClipTexturesN (w->robot_hit_vclip, 1);
 OglCacheVClipTexturesN (w->wall_hit_vclip, 1);
 if (w->renderType == WEAPON_RENDER_VCLIP)

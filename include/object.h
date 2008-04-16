@@ -108,6 +108,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SMOKE_ID			0
 #define LIGHTNING_ID		1
 
+#define SINGLE_LIGHT_ID		0
+#define CLUSTER_LIGHT_ID	1
+
 // misc tObject flags
 #define OF_EXPLODING        1   // this tObject is exploding
 #define OF_SHOULD_BE_DEAD   2   // this tObject should be dead, so next time we can, we should delete this tObject.
@@ -184,28 +187,31 @@ typedef struct tPhysicsInfo {
 
 typedef struct tLaserInfo  {
 	short   parentType;        // The nType of the parent of this tObject
-	short   nParentObj;         // The tObject's parent's number
+	short   nParentObj;        // The tObject's parent's number
 	int     nParentSig;			// The tObject's parent's nSignature...
 	fix     creationTime;      // Absolute time of creation.
-	short   nLastHitObj;        // For persistent weapons (survive tObject collision), tObject it most recently hit.
-	short   nMslLock;         // Object this tObject is tracking.
-	fix     multiplier;         // Power if this is a fusion bolt (or other super weapon to be added).
+	short   nLastHitObj;       // For persistent weapons (survive tObject collision), tObject it most recently hit.
+	short   nMslLock;				// Object this tObject is tracking.
+	fix     multiplier;        // Power if this is a fusion bolt (or other super weapon to be added).
 } __pack__ tLaserInfo;
 
 typedef struct tExplosionInfo {
-    fix     nSpawnTime;         // when lifeleft is < this, spawn another
-    fix     nDeleteTime;        // when to delete tObject
-    short   nDeleteObj;      // and what tObject to delete
-    short   nAttachParent;      // explosion is attached to this tObject
-    short   nPrevAttach;        // previous explosion in attach list
-    short   nNextAttach;        // next explosion in attach list
+    fix     nSpawnTime;       // when lifeleft is < this, spawn another
+    fix     nDeleteTime;      // when to delete tObject
+    short   nDeleteObj;			// and what tObject to delete
+    short   nAttachParent;    // explosion is attached to this tObject
+    short   nPrevAttach;      // previous explosion in attach list
+    short   nNextAttach;      // next explosion in attach list
 } __pack__ tExplosionInfo;
 
 typedef struct tObjLightInfo {
-    fix     intensity;          // how bright the light is
+    fix				intensity;  // how bright the light is
+	 short			nSegment;
+	 short			nObjects;
+	 tRgbaColorf	color;
 } __pack__ tObjLightInfo;
 
-#define PF_SPAT_BY_PLAYER   1   //this powerup was spat by the tPlayer
+#define PF_SPAT_BY_PLAYER   1 //this powerup was spat by the tPlayer
 
 typedef struct tPowerupInfo {
 	int     count;          // how many/much we pick up (vulcan cannon only?)
@@ -568,6 +574,7 @@ extern tObject *dbgObjP;
 #define DISABLE_COLLISION(type1, type2)	SET_COLLISION(type1, type2, RESULT_NOTHING)
 
 #define OBJECT_EXISTS(_objP)	 ((_objP) && !((_objP)->flags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+
 
 //	-----------------------------------------------------------------------------------------------------------
 

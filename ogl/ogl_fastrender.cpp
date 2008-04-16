@@ -124,14 +124,14 @@ faceBuffer.nFaces++;
 
 int OglVertexLight (int nLights, int nPass, int iVertex)
 {
-	tShaderLight	*psl;
-	int				iLightSource, iLight;
-	tRgbaColorf		color = {1,1,1,1};
-	GLenum			hLight;
+	tActiveShaderLight	*activeLightsP;
+	tShaderLight			*psl;
+	int						iLight;
+	tRgbaColorf				color = {1,1,1,1};
+	GLenum					hLight;
 
 if (nLights < 0)
 	nLights = gameData.render.lights.dynamic.shader.nActiveLights [iVertex];
-iLightSource = gameData.render.lights.dynamic.shader.nActiveLights [iVertex] - nLights;
 if (nLights) {
 	if (nPass) {
 		glActiveTexture (GL_TEXTURE1);
@@ -146,15 +146,18 @@ if (nLights) {
 else
 	glColor4f (0,0,0,0);
 #endif
-for (iLight = 0; (iLight < 8) && nLights; iLight++, nLights--, iLightSource++) { 
-	psl = gameData.render.lights.dynamic.shader.activeLights [iVertex][iLightSource];
+activeLightsP = gameData.render.lights.dynamic.shader.activeLights [iVertex];
+for (iLight = 0; (iLight < 8) && nLights; activeLightsP++) { 
+	if (!(psl = GetActiveShaderLight (activeLightsP, iVertex)))
+		continue;
 #if 0
 	if (psl->nType > 1) {
 		iLight--;
 		continue;
 		}
 #endif
-	hLight = GL_LIGHT0 + iLight;
+	nLights--;
+	hLight = GL_LIGHT0 + iLight++;
 	glEnable (hLight);
 	color.red = psl->color.c.r;
 	color.green = psl->color.c.g;
@@ -204,24 +207,31 @@ return h;
 //------------------------------------------------------------------------------
 
 extern GLhandleARB headlightShaderProgs [4];
-extern GLhandleARB perPixelLightingShaderProgs [4];
+extern GLhandleARB perPixelLightingShaderProgs [MAX_LIGHTS_PER_PIXEL][4];
+
 
 //------------------------------------------------------------------------------
 
 int G3SetupPerPixelLighting (grsFace *faceP, int bColorKey, int bMultiTexture, int bTextured)
 {
-	int				i, nLights;
-	tRgbaColorf		ambient, diffuse;
-	tRgbaColorf		specular = {1,1,1,1};
-	GLenum			hLight;
-	tShaderLight	*psl;
+	int						h, i, nLights;
+	tRgbaColorf				ambient, diffuse;
+	tRgbaColorf				black = {0,0,0,0};
+	tRgbaColorf				specular = {1,1,1,1};
+	fVector3					vPos = {{0,0,0}};
+	GLenum					hLight;
+	tActiveShaderLight	*activeLightsP;
+	tShaderLight			*psl;
 
 if (!(nLights = (faceP && gameOpts->ogl.bPerPixelLighting) ? SetNearestFaceLights (faceP, bTextured) : 0))
 	return 0;
 OglEnableLighting (0);
 glDisable (GL_LIGHTING);
-for (i = 0; i < nLights; i++) { 
-	psl = gameData.render.lights.dynamic.shader.activeLights [0][i];
+activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameData.render.lights.dynamic.shader.nFirstLight [0];
+h = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
+for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) { 
+	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
+		continue;
 	gameData.render.ogl.lightRads [i] = psl->rad;
 	hLight = GL_LIGHT0 + i;
 	ambient.red = psl->color.c.r * 0.1f;
@@ -244,13 +254,19 @@ for (i = 0; i < nLights; i++) {
 		}
 	else {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.05f / psl->brightness);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / psl->brightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
 		//gameData.render.ogl.lightRads [i] *= 10;
 		}
+	i++;
 	}
-for (; i < 8; i++)
-	glDisable (GL_LIGHT0 + i);
+for (; i < MAX_LIGHTS_PER_PIXEL; i++) {
+	glEnable (GL_LIGHT0 + i);
+	glLightfv (hLight, GL_POSITION, (GLfloat *) &vPos);
+	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &black);
+	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &black);
+	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &black);
+	}
 if (InitPerPixelLightingShader (bColorKey ? 3 : bMultiTexture ? 2 : bTextured, nLights))
 	return nLights;
 OglDisableLighting ();
@@ -315,8 +331,7 @@ else if (nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTe
 	nShader = bColorKey ? 3 : bMultiTexture ? 2 : bTextured + 10;
 	if (nShader != gameStates.render.history.nShader) {
 		glUseProgramObject (0);
-		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nShader - 10]);
-		glUniform1fv (glGetUniformLocation (tmProg, "lightRad"), nLights, (GLfloat *) gameData.render.ogl.lightRads);
+		glUseProgramObject (tmProg = perPixelLightingShaderProgs [MAX_LIGHTS_PER_PIXEL - 1][nShader - 10]);
 		if (bTextured) {
 			glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
 			if (bColorKey || bMultiTexture) {
@@ -326,6 +341,7 @@ else if (nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTe
 				}
 			}
 		}
+	glUniform1fv (glGetUniformLocation (tmProg, "lightRad"), nLights, (GLfloat *) gameData.render.ogl.lightRads);
 	}
 else if (bColorKey || bMultiTexture) {
 	nShader = bColorKey ? 2 : 0;
@@ -527,10 +543,12 @@ for (h = 0; h < nTextures; ) {
 		break;
 	INIT_TMU (InitTMU0, GL_TEXTURE0, bmP [h], 0);
 	}
+#if 0
 if (bLighting) {
 	for (i = 0; i < 4; i++)
 		gameData.render.lights.dynamic.shader.nActiveLights [i] = gameData.render.lights.dynamic.shader.iVertexLights [i];
 	}
+#endif
 if (!bBlend)
 	glEnable (GL_BLEND);
 return 0;
@@ -689,6 +707,8 @@ if (bTextured) {
 			G3SetupShader (faceP, 0, bMultiTexture, bmBot != NULL, bColored, bmBot ? NULL : &faceP->color);
 			}
 		}
+	else
+		G3SetupShader (faceP, 0, bMultiTexture, bmBot != NULL, bColored, bmBot ? NULL : &faceP->color);
 	gameStates.render.history.bOverlay = bOverlay;
 	gameStates.render.history.bColored = bColored;
 	}

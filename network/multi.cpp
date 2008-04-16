@@ -1168,7 +1168,7 @@ if (gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject].nType
 	MultiMakeGhostPlayer (nPlayer);
 if (weapon == FLARE_ADJUST)
 	LaserPlayerFire (gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject, 
-						  FLARE_ID, 6, 1, 0);
+						  FLARE_ID, 6, 1, 0, -1);
 else if (weapon >= MISSILE_ADJUST) {
 	int h = weapon - MISSILE_ADJUST;
 	ubyte weapon_id = secondaryWeaponToWeaponInfo [h];
@@ -1179,7 +1179,7 @@ else if (weapon >= MISSILE_ADJUST) {
 	if (playerP->secondaryAmmo [h] > 0)
 		playerP->secondaryAmmo [h]--;
 	LaserPlayerFire (gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject, 
-						  weapon_id, weapon_gun, 1, 0);
+						  weapon_id, weapon_gun, 1, 0, -1);
 	}
 else {
 	fix xSaveCharge = gameData.fusion.xCharge;

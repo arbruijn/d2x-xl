@@ -122,6 +122,90 @@ tTexBright texBrightD2 [NUM_LIGHTS_D2] = {
 
 //--------------------------------------------------------------------------
 
+static void ResetClusterLights (void)
+{
+	tObject	*objP = OBJECTS;
+	int		i;
+
+for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
+	if ((objP->nType == OBJ_LIGHT) && (objP->id == CLUSTER_LIGHT_ID))
+		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
+}
+
+//--------------------------------------------------------------------------
+
+static void SetClusterLights (void)
+{
+	tObject	*objP = OBJECTS;
+	int		h, i;
+
+for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+	if ((objP->nType == OBJ_LIGHT) && (objP->id == CLUSTER_LIGHT_ID))	{
+		if (!(h = objP->cType.lightInfo.nObjects)) {
+			RemoveDynLight (-1, -1, i);
+			KillObject (objP);
+			}
+		else {
+			if (h > 1) {
+				objP->position.vPos.p.x /= h;
+				objP->position.vPos.p.y /= h;
+				objP->position.vPos.p.z /= h;
+				objP->cType.lightInfo.color.red /= h;
+				objP->cType.lightInfo.color.green /= h;
+				objP->cType.lightInfo.color.blue /= h;
+				objP->cType.lightInfo.color.alpha /= h;
+				}
+			if (1 || (objP->cType.lightInfo.nSegment < 0)) {
+				h = FindSegByPoint (&objP->position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
+				objP->cType.lightInfo.nSegment = (h < 0) ? abs (objP->cType.lightInfo.nSegment) : h;
+				}
+			if (objP->nSegment != objP->cType.lightInfo.nSegment)
+				RelinkObject (i, objP->cType.lightInfo.nSegment);
+			AddDynLight (&objP->cType.lightInfo.color, objP->cType.lightInfo.intensity, -1, -1, i, NULL);
+			}
+		}
+	}
+}
+
+//--------------------------------------------------------------------------
+
+int InitClusterLight (short nObject, tRgbaColorf *color, fix xObjIntensity)
+{
+	short nLightObj = gameData.objs.lightObjs [nObject].nObject;
+
+if (0 > nLightObj)
+	return 0;
+tObject *objP = OBJECTS + nObject;
+tObject *lightObjP = OBJECTS + nLightObj;
+if (objP->nSignature != gameData.objs.lightObjs [nObject].nSignature)
+	return 0;
+if (!lightObjP->cType.lightInfo.nObjects++) {
+	lightObjP->position.vPos = objP->position.vPos;
+	lightObjP->cType.lightInfo.nSegment = objP->nSegment;
+	}
+else {
+	VmVecInc (&lightObjP->position.vPos, &objP->position.vPos);
+	if (lightObjP->cType.lightInfo.nSegment != objP->nSegment)
+		lightObjP->cType.lightInfo.nSegment = -lightObjP->nSegment;
+	}
+lightObjP->cType.lightInfo.intensity += xObjIntensity;
+if (color) {
+	lightObjP->cType.lightInfo.color.red += color->red;
+	lightObjP->cType.lightInfo.color.green += color->green;
+	lightObjP->cType.lightInfo.color.blue += color->blue;
+	lightObjP->cType.lightInfo.color.alpha += color->alpha;
+	}
+else {
+	lightObjP->cType.lightInfo.color.red += 1;
+	lightObjP->cType.lightInfo.color.green += 1;
+	lightObjP->cType.lightInfo.color.blue += 1;
+	lightObjP->cType.lightInfo.color.alpha += 1;
+	}
+return 1;
+}
+
+//--------------------------------------------------------------------------
+
 int LightingMethod (void)
 {
 if (gameOpts->render.bDynLighting)
@@ -259,9 +343,10 @@ void ApplyLight (
 	int			iVertex, bUseColor, bForceColor;
 	int			nVertex;
 	int			bApplyLight;
+	short			nLightObj;
 	vmsVector	*vVertPos;
 	fix			dist, xOrigIntensity = xObjIntensity;
-	tObject		*objP = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
+	tObject		*lightObjP, *objP = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
 	tPlayer		*playerP = objP ? gameData.multiplayer.players + objP->id : NULL;
 
 if (objP && SHOW_DYN_LIGHT) {
@@ -293,7 +378,12 @@ if (objP && SHOW_DYN_LIGHT) {
 		xObjIntensity /= 4;
 	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 		xObjIntensity /= 2; 
-	AddDynLight (color, xObjIntensity, -1, -1, nObject, NULL);
+	if (0 > (nLightObj = gameData.objs.lightObjs [nObject].nObject))
+		lightObjP = NULL;
+	else
+		lightObjP = OBJECTS + nLightObj;
+	if (!InitClusterLight (nObject, color, xObjIntensity))
+		AddDynLight (color, xObjIntensity, -1, -1, nObject, NULL);
 	return;
 	}
 if (xObjIntensity) {
@@ -615,6 +705,7 @@ gameData.render.lights.bStartDynColoring = 1;
 if (gameData.render.lights.bInitDynColoring) {
 	InitDynColoring ();
 	}
+ResetClusterLights ();
 //	Create list of vertices that need to be looked at for setting of ambient light.
 nRenderVertices = 0;
 if (!gameOpts->render.bDynLighting) {
@@ -704,6 +795,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 			}
 		} 
 	}
+SetClusterLights ();
 if (!bKeepDynColoring)
 	InitDynColoring ();
 }

@@ -1180,6 +1180,7 @@ typedef struct tSphereData {
 
 #define USE_OGL_LIGHTS	0
 #define MAX_OGL_LIGHTS  (64 * 64) //MUST be a power of 2!
+#define MAX_SHADER_LIGHTS	1000
 
 typedef struct tDynLight {
 	vmsVector	vPos;
@@ -1254,14 +1255,21 @@ typedef struct tShaderLight {
 
 //------------------------------------------------------------------------------
 
+typedef struct tActiveShaderLight {
+	short				nType;
+	tShaderLight	*psl;
+} tActiveShaderLight;
+
 typedef struct tShaderLightData {
-	tShaderLight	lights [MAX_OGL_LIGHTS];
-	int				nLights;
-	tShaderLight	*activeLights [4][MAX_OGL_LIGHTS];
-	short				nActiveLights [4];
-	short				iVertexLights [4];
-	short				iStaticLights [4];
-	GLuint			nTexHandle;
+	tShaderLight			lights [MAX_OGL_LIGHTS];
+	int						nLights;
+	tActiveShaderLight	activeLights [4][MAX_OGL_LIGHTS];
+	short						nFirstLight [4];
+	short						nLastLight [4];
+	short						nActiveLights [4];
+	short						iVertexLights [4];
+	short						iStaticLights [4];
+	GLuint					nTexHandle;
 } tShaderLightData;
 
 //------------------------------------------------------------------------------
@@ -1319,7 +1327,7 @@ typedef struct tLightData {
 	int					nStatic;
 	int					nCoronas;
 	fix					*segDeltas;
-	tLightDeltaIndex				*deltaIndices;
+	tLightDeltaIndex	*deltaIndices;
 	tLightDelta			*deltas;
 	ubyte					*subtracted;
 	tDynLightData		dynamic;
@@ -1717,6 +1725,11 @@ typedef struct tObjectViewData {
 	int					nFrame;
 } tObjectViewData;
 
+typedef struct tLightObjId {
+	short				nObject;
+	int				nSignature;
+} tLightObjId;
+
 typedef struct tObjectData {
 	tObjTypeData		types;
 	tObject				*objects;
@@ -1724,6 +1737,7 @@ typedef struct tObjectData {
 	short					*parentObjs;
 	tObjectRef			*childObjs;
 	short					*firstChild;
+	tLightObjId			*lightObjs;
 	tObject				*init;
 	tObjDropInfo		*dropInfo;
 	tSpeedBoostData	*speedBoost;
@@ -3135,8 +3149,8 @@ return (short) (i / sizeof (tObject));
 
 //	-----------------------------------------------------------------------------------------------------------
 
-#define	NO_WALL		(gameStates.app.bD2XLevel ? 2047 : 255)
-#define  IS_WALL(_wallnum)	((ushort) (_wallnum) < NO_WALL)
+#define	NO_WALL					(gameStates.app.bD2XLevel ? 2047 : 255)
+#define  IS_WALL(_wallnum)		((ushort) (_wallnum) < NO_WALL)
 
 #define SEG_IDX(_segP)			((short) ((_segP) - gameData.segs.segments))
 #define SEG2_IDX(_seg2P)		((short) ((_seg2P) - gameData.segs.segment2s))

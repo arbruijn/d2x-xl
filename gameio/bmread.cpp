@@ -1853,9 +1853,9 @@ void bm_read_weapon(int unusedFlag)
 	Weapon_info[n].nModel = -1;
 	Weapon_info[n].nInnerModel = -1;
 	Weapon_info[n].blob_size = 0x1000;									// size of blob
-	Weapon_info[n].flash_vclip = -1;
+	Weapon_info[n].nFlashVClip = -1;
 	Weapon_info[n].flashSound = SOUND_LASER_FIRED;
-	Weapon_info[n].flash_size = 0;
+	Weapon_info[n].xFlashSize = 0;
 	Weapon_info[n].robot_hit_vclip = -1;
 	Weapon_info[n].robot_hitSound = -1;
 	Weapon_info[n].wall_hit_vclip = -1;
@@ -1968,12 +1968,12 @@ void bm_read_weapon(int unusedFlag)
 				Weapon_info[n].speed[i] = i2f(atoi(equal_ptr);
 			} else if (!stricmp( arg, "speedvar" ))	{
 				Weapon_info[n].speedvar = (atoi(equal_ptr) * 128) / 100;
-			} else if (!stricmp( arg, "flash_vclip" ))	{
-				Weapon_info[n].flash_vclip = atoi(equal_ptr);
+			} else if (!stricmp( arg, "nFlashVClip" ))	{
+				Weapon_info[n].nFlashVClip = atoi(equal_ptr);
 			} else if (!stricmp( arg, "flashSound" ))	{
 				Weapon_info[n].flashSound = atoi(equal_ptr);
-			} else if (!stricmp( arg, "flash_size" ))	{
-				Weapon_info[n].flash_size = fl2f(atof(equal_ptr);
+			} else if (!stricmp( arg, "xFlashSize" ))	{
+				Weapon_info[n].xFlashSize = fl2f(atof(equal_ptr);
 			} else if (!stricmp( arg, "blob_size" ))	{
 				Weapon_info[n].blob_size = fl2f(atof(equal_ptr);
 			} else if (!stricmp( arg, "robot_hit_vclip" ))	{
