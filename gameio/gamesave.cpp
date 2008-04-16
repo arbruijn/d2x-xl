@@ -1495,7 +1495,7 @@ int no_oldLevel_file_error=0;
 // ----------------------------------------------------------------------------
 //loads a level (.LVL) file from disk
 //returns 0 if success, else error code
-int LoadLevelSub(char * filename_passed)
+int LoadLevelSub (char * filename_passed)
 {
 #ifdef EDITOR
 	int bUseCompiledLevel = 1;

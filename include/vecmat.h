@@ -21,17 +21,18 @@
 
 //#define INLINE 1              //are some of these functions inline?
 
-typedef union fVector {
-	float v [4];
-	struct {float x, y, z, w;} p;
-	struct {float r, g, b, a;} c;
-} fVector;
-
 typedef union fVector3 {
 	float v [3];
 	struct {float x, y, z;} p;
 	struct {float r, g, b;} c;
 } fVector3;
+
+typedef union fVector {
+	float v [4];
+	struct {float x, y, z, w;} p;
+	struct {float r, g, b, a;} c;
+	fVector3 v3;
+} fVector;
 
 //The basic fixed-point vector.  Access elements by name or position
 typedef union vmsVector {

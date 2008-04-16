@@ -2423,7 +2423,7 @@ GETMEM (ubyte, gameData.segs.bSegVis, MAX_SEGMENTS * MAX_SEGVIS_FLAGS, 0);
 GETMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS, 0);
 GETMEM (tSegFaces, gameData.segs.segFaces, MAX_SEGMENTS, 0);
 GETMEM (grsFace, gameData.segs.faces.faces, MAX_SEGMENTS * 6 * 2, 0);
-GETMEM (grsTri, gameData.segs.faces.tris, MAX_SEGMENTS * 6 * 8, 0);
+GETMEM (grsTriangle, gameData.segs.faces.tris, MAX_SEGMENTS * 6 * 8, 0);
 GETMEM (fVector3, gameData.segs.faces.vertices, MAX_SEGMENTS * 6 * 4 * 8, 0);
 GETMEM (fVector3, gameData.segs.faces.normals, MAX_SEGMENTS * 6 * 4 * 8, 0);
 GETMEM (tRgbaColorf, gameData.segs.faces.color, MAX_SEGMENTS * 6 * 4 * 8, 0);
@@ -2603,7 +2603,7 @@ FREEMEM (tSegExtent, gameData.segs.extent, MAX_SEGMENTS);
 #endif
 FREEMEM (tSegFaces, gameData.segs.segFaces, MAX_SEGMENTS);
 FREEMEM (grsFace, gameData.segs.faces.faces, MAX_SEGMENTS * 6 * 2);
-FREEMEM (grsTri, gameData.segs.faces.tris, MAX_SEGMENTS * 6 * 8);
+FREEMEM (grsTriangle, gameData.segs.faces.tris, MAX_SEGMENTS * 6 * 8);
 FREEMEM (fVector3, gameData.segs.faces.vertices, MAX_SEGMENTS * 6 * 4 * 8);
 FREEMEM (fVector3, gameData.segs.faces.normals, MAX_SEGMENTS * 6 * 4 * 8);
 FREEMEM (tRgbaColorf, gameData.segs.faces.color, MAX_SEGMENTS * 6 * 4 * 8);

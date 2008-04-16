@@ -2017,8 +2017,8 @@ memset (gameData.segs.segments, 0, MAX_SEGMENTS * sizeof (tSegment));
 #if TRACE
 con_printf (CONDBG, "   loading segments ...\n");
 #endif
-gameData.segs.nLastVertex = gameData.segs.nVertices-1;
-gameData.segs.nLastSegment = gameData.segs.nSegments-1;
+gameData.segs.nLastVertex = gameData.segs.nVertices - 1;
+gameData.segs.nLastSegment = gameData.segs.nSegments - 1;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	LoadSegmentsGauge (loadFile);
 else {

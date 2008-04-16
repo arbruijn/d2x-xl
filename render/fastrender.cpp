@@ -1200,7 +1200,7 @@ void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 	tSegment		*segP;
 	tSegFaces	*segFaceP;
 	grsFace		*faceP;
-	grsTri		*triP;
+	grsTriangle	*triP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
 #if 0

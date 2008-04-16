@@ -242,7 +242,7 @@ if (VmVecDotf (&vn, &vForward) > -1.0f / 3.0f)
 	return;
 if (pmf) {
 	for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
-		VmVecIncf (&v, (fVector *) &pmv [i].vertex);
+		VmVecIncf (&v, &pmv [i].vertex);
 	v.p.x /= j;
 	v.p.y /= j;
 	v.p.z /= j;

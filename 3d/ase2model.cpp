@@ -108,7 +108,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 			pmv->baseColor.alpha = 1;
 			pmv->renderColor = pmv->baseColor;
 			pmv->normal = psa->pVerts [h].normal;
-			VmVecScalef ((fVector *) &pmv->vertex, &psa->pVerts [h].vertex, fScale);
+			VmVecScalef (&pmv->vertex, &psa->pVerts [h].vertex, fScale);
 			if (psa->pTexCoord)
 				pmv->texCoord = psa->pTexCoord [pfa->nTexCoord [i]];
 			h += nVerts;
