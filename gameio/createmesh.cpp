@@ -108,11 +108,15 @@ D2_FREE (meshLines);
 static int AllocMeshData (void)
 {
 if (nMaxMeshLines && nMaxMeshTris) {
-	if (!((meshLines = (tMeshLine *) D2_REALLOC (meshLines, nMaxMeshLines * sizeof (tMeshLine))) &&
-			(meshTris = (tMeshTri *) D2_REALLOC (meshTris, nMaxMeshTris * sizeof (tMeshTri))))) {
+	if (!((meshLines = (tMeshLine *) D2_REALLOC (meshLines, 2 * nMaxMeshLines * sizeof (tMeshLine))) &&
+			(meshTris = (tMeshTri *) D2_REALLOC (meshTris, 2 * nMaxMeshTris * sizeof (tMeshTri))))) {
 		FreeMeshData ();
 		return 0;
 		}
+	memset (meshLines + nMaxMeshLines, 0xff, nMaxMeshLines * sizeof (tMeshLine));
+	memset (meshTris + nMaxMeshTris, 0xff, nMaxMeshTris * sizeof (tMeshLine));
+	nMaxMeshLines *= 2;
+	nMaxMeshTris *= 2;
 	}
 else {
 	nMaxMeshLines = gameData.segs.nFaces * 4;
@@ -123,6 +127,8 @@ else {
 		FreeMeshData ();
 		return 0;
 		}
+	memset (meshLines, 0xff, nMaxMeshLines * sizeof (tMeshLine));
+	memset (meshTris, 0xff, nMaxMeshTris * sizeof (tMeshLine));
 	}
 return 1;
 }
@@ -148,6 +154,10 @@ if (nVert2 < nVert1) {
 	nVert1 = nVert2;
 	nVert2 = h;
 	}
+#ifdef _DEBUG
+if ((nTri < 0) || (nTri >= nMeshTris))
+	return -1;
+#endif
 tMeshLine *mlP = FindMeshLine (nVert1, nVert2);
 if (mlP) {
 	if (mlP->tris [0] < 0)
@@ -158,11 +168,11 @@ if (mlP) {
 	}
 if ((nMeshLines == nMaxMeshLines - 1) && !AllocMeshData ())
 	return -1;
-mlP = meshLines + nMeshLines++;
+mlP = meshLines + nMeshLines;
 mlP->tris [0] = nTri;
 mlP->verts [0] = nVert1;
 mlP->verts [1] = nVert2;
-return nMeshLines;
+return nMeshLines++;
 }
 
 //------------------------------------------------------------------------------
@@ -185,9 +195,11 @@ else {
 		memcpy (mtP->color, gameData.segs.faces.color + i, sizeof (mtP->color));
 		}
 	}
+nIndex = mtP - meshTris;
 for (i = 0; i < 3; i++) {
 	if (0 > (h = AddMeshLine (nMeshTris - 1, index [i], index [(i + 1) % 3])))
 		return NULL;
+	mtP = meshTris + nIndex;
 	mtP->lines [i] = h;
 	}
 mtP->nFace = nFace;
@@ -210,6 +222,26 @@ return nMeshTris;
 
 //------------------------------------------------------------------------------
 
+static void DeleteMeshLine (tMeshLine *mlP)
+{
+	tMeshTri	*mtP;
+	int		h = mlP - meshLines, i, j;
+
+if (h < --nMeshLines) {
+	*mlP = meshLines [nMeshLines];
+	for (i = 0; i < 2; i++) {
+		if (mlP->tris [i] != 65535) {
+			mtP = meshTris + mlP->tris [i];
+			for (j = 0; j < 3; j++)
+				if (mtP->lines [j] == nMeshLines)
+					mtP->lines [j] = h;
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 static void DeleteMeshTri (tMeshTri *mtP)
 {
 	tMeshLine	*mlP;
@@ -219,8 +251,9 @@ for (i = 0; i < 3; i++) {
 	mlP = meshLines + mtP->lines [i];
 	if (mlP->tris [0] == nTri)
 		mlP->tris [0] = mlP->tris [1];
-	else
-		mlP->tris [1] = -1;
+	mlP->tris [1] = 65535;
+	if (mlP->tris [0] == 65535)
+		DeleteMeshLine (mlP);
 	}
 }
 
@@ -250,8 +283,11 @@ return nMeshTris;
 
 static int SplitMeshTriByLine (int nTri, int nVert1, int nVert2)
 {
+if (nTri == 65535)
+	return 1;
+
 	tMeshTri		*mtP = meshTris + nTri;
-	int			h, i, j, nIndex = mtP->nIndex;
+	int			h, i, nIndex = mtP->nIndex;
 	ushort		nFace = mtP->nFace, *indexP = mtP->index, index [4];
 	tTexCoord2f	texCoord [4], ovlTexCoord [4];
 	tRgbaColorf	color [4];
@@ -271,26 +307,24 @@ else
 
 // build new quad index containing the new vertex
 // the two triangle indices will be derived from it (indices 0,1,2 and 1,2,3)
-for (j = i = 0; i < 3; i++, j++) {
-	if (i == h)
-		index [j++] = gameData.segs.nVertices;
-	index [j] = indexP [i];
-	texCoord [j] = mtP->texCoord [i];
-	ovlTexCoord [j] = mtP->ovlTexCoord [i];
-	color [j] = mtP->color [i];
+index [0] = gameData.segs.nVertices;
+for (i = 1; i < 4; i++) {
+	index [i] = indexP [h];
+	texCoord [i] = mtP->texCoord [h];
+	ovlTexCoord [i] = mtP->ovlTexCoord [h];
+	color [i] = mtP->color [h++];
+	h %= 3;
 	}
 
 // interpolate texture coordinates and color for the new vertex
-i = h ? h - 1 : 2;
-j = h + 1;
-texCoord [h].v.v = (texCoord [i].v.v + texCoord [j].v.v) / 2;
-texCoord [h].v.u = (texCoord [i].v.u + texCoord [j].v.u) / 2;
-ovlTexCoord [h].v.v = (ovlTexCoord [i].v.v + ovlTexCoord [j].v.v) / 2;
-ovlTexCoord [h].v.u = (ovlTexCoord [i].v.u + ovlTexCoord [j].v.u) / 2;
-color [h].red = (color [i].red + color [j].red) / 2;
-color [h].green = (color [i].green + color [j].green) / 2;
-color [h].blue = (color [i].blue + color [j].blue) / 2;
-color [h].alpha = (color [i].alpha + color [j].alpha) / 2;
+texCoord [0].v.v = (texCoord [1].v.v + texCoord [3].v.v) / 2;
+texCoord [0].v.u = (texCoord [1].v.u + texCoord [3].v.u) / 2;
+ovlTexCoord [0].v.v = (ovlTexCoord [1].v.v + ovlTexCoord [3].v.v) / 2;
+ovlTexCoord [0].v.u = (ovlTexCoord [1].v.u + ovlTexCoord [3].v.u) / 2;
+color [0].red = (color [1].red + color [3].red) / 2;
+color [0].green = (color [1].green + color [3].green) / 2;
+color [0].blue = (color [1].blue + color [3].blue) / 2;
+color [0].alpha = (color [1].alpha + color [3].alpha) / 2;
 
 DeleteMeshTri (mtP); //remove any references to this triangle
 if (!(mtP = CreateMeshTri (mtP, index, nFace, nIndex))) //create a new triangle at this location (insert)
@@ -323,7 +357,6 @@ memcpy (verts, mlP->verts, sizeof (verts));
 VmVecAvgf (gameData.segs.fVertices + gameData.segs.nVertices, 
 			  gameData.segs.fVertices + verts [0], 
 			  gameData.segs.fVertices + verts [1]);
-mlP->verts [1] = gameData.segs.nVertices;
 if (!SplitMeshTriByLine (tris [0], verts [0], verts [1]))
 	return 0;
 if (!SplitMeshTriByLine (tris [1], verts [0], verts [1]))
@@ -602,7 +635,9 @@ for (colorP = gameData.render.color.ambient, i = gameData.segs.nVertices; i; i--
 		colorP->color.blue /= colorP->color.alpha;
 		colorP->color.alpha = 1;
 		}
+#ifdef _DEBUG
 BuildTriangleMesh ();
+#endif
 }
 
 //------------------------------------------------------------------------------
