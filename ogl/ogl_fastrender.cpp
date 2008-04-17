@@ -756,17 +756,24 @@ glEnd ();
 glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
 #	endif
 #ifdef _DEBUG
-if (gameOpts->render.bWireFrame) {
-	glDisable (GL_TEXTURE_2D);
-	glLineWidth (2);
-	for (int i = 0; i < faceP->nTris; i++)
-		glDrawArrays (GL_LINES, faceP->nIndex, 3);
-	glLineWidth (1);
-	glEnable (GL_TEXTURE_2D);
-	return 0;
+if (!bDepthOnly && gameOpts->render.bWireFrame) {
+	if ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)) {
+		grsTriangle	*triP = gameData.segs.faces.tris + faceP->nTriIndex;
+		glDisableClientState (GL_COLOR_ARRAY);
+		if (bTextured)
+			glDisable (GL_TEXTURE_2D);
+		glLineWidth (2);
+		glColor3f (1,1,1);
+		for (int i = 0; i < faceP->nTris; i++, triP++)
+			glDrawArrays (GL_LINE_LOOP, triP->nIndex, 3);
+		glLineWidth (1);
+		if (bTextured)
+			glEnable (GL_TEXTURE_2D);
+		}
 	}
+if (gameOpts->render.bTextures && ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)))
 #endif
-glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
+	glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
 #if 0
 fVector vNormalf, vCenterf, vBasef;
 VmVecFixToFloat (&vBasef, SEGMENT_CENTER_I (faceP->nSegment));

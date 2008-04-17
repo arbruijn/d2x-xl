@@ -96,6 +96,8 @@ static int nMeshTris = 0;
 static int nMaxMeshLines = 0;
 static int nMaxMeshTris = 0;
 
+#define	MAX_LINE_LEN	41.0f
+
 //------------------------------------------------------------------------------
 
 static void FreeMeshData (void)
@@ -212,13 +214,18 @@ return mtP;
 
 static int AddMeshTri (tMeshTri *mtP, ushort index [], grsTriangle *triP)
 {
+#if 1
+return CreateMeshTri (mtP, index, triP->nFace, triP - gameData.segs.faces.tris) ? nMeshTris : 0;
+#else
 	int		h, i;
+	float		l;
 	
 for (h = i = 0; i < 3; i++)
-	if (VmVecDistf ((fVector *) (gameData.segs.faces.vertices + index [i]), 
-						 (fVector *) (gameData.segs.faces.vertices + index [(i + 1) % 3])) > 30.0f)
+	if ((l = VmVecDistf ((fVector *) (gameData.segs.fVertices + index [i]), 
+								(fVector *) (gameData.segs.fVertices + index [(i + 1) % 3]))) > MAX_LINE_LEN)
 		return CreateMeshTri (mtP, index, triP->nFace, triP - gameData.segs.faces.tris) ? nMeshTris : 0;
 return nMeshTris;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -299,6 +306,8 @@ for (i = 0; i < 3; i++) {
 	if ((h == nVert1) || (h == nVert2))
 		break;
 	}
+if (i == 3)
+	return 0;
 
 h = indexP [(i + 1) % 3]; //check next vertex index
 if ((h == nVert1) || (h == nVert2))
@@ -346,12 +355,12 @@ index [1] = index [0];
 if (!(mtP = CreateMeshTri (NULL, index + 1, nFace, -1))) //create a new triangle (append)
 	return 0;
 mtP->nPass = nPass;
-texCoord [1] = texCoord [0];
-ovlTexCoord [1] = ovlTexCoord [0];
-color [1] = color [0];
-memcpy (mtP->color, color, sizeof (mtP->color));
-memcpy (mtP->texCoord, texCoord, sizeof (mtP->texCoord));
-memcpy (mtP->ovlTexCoord, ovlTexCoord, sizeof (mtP->ovlTexCoord));
+mtP->texCoord [0] = texCoord [0];
+mtP->ovlTexCoord [0] = ovlTexCoord [0];
+mtP->color [0] = color [0];
+memcpy (mtP->color + 1, color + 2, 2 * sizeof (mtP->color [0]));
+memcpy (mtP->texCoord + 1, texCoord + 2, 2 * sizeof (mtP->texCoord [0]));
+memcpy (mtP->ovlTexCoord + 1, ovlTexCoord + 2, 2 * sizeof (mtP->ovlTexCoord [0]));
 return 1;
 }
 
@@ -391,7 +400,7 @@ for (i = 0; i < 3; i++) {
 		h = i;
 		}
 	}
-if (lMax <= 30.0f)
+if (lMax <= MAX_LINE_LEN)
 	return -1;
 return SplitMeshLine (meshLines + mtP->lines [h], nPass);
 }
@@ -411,6 +420,8 @@ do {
 		if (meshTris [i].nPass == nPass)
 			continue;
 		h = SplitMeshTri (meshTris + i, nPass);
+		if ((gameData.segs.nVertices == 65535) || (nMeshTris == 65535))
+			return 1;
 		if (!h)
 			return 0;
 		if (h > 0)
@@ -422,90 +433,75 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void QSortTriangleMesh (int left, int right)
+void QSortMeshTris (int left, int right)
 {
 	int	l = left,
 			r = right,
-			m = gameData.segs.faces.tris [(l + r) / 2].nFace;
+			m = meshTris [(l + r) / 2].nFace;
 
 do {
-	while (gameData.segs.faces.tris [l].nFace < m)
+	while (meshTris [l].nFace < m)
 		l++;
-	while (gameData.segs.faces.tris [r].nFace > m)
+	while (meshTris [r].nFace > m)
 		r--;
 	if (l <= r) {
 		if (l < r) {
-			grsTriangle	h = gameData.segs.faces.tris [l];
-			gameData.segs.faces.tris [l] = gameData.segs.faces.tris [r];
-			gameData.segs.faces.tris [r] = h;
+			tMeshTri h = meshTris [l];
+			meshTris [l] = meshTris [r];
+			meshTris [r] = h;
 			}
 		l++;
 		r--;
 		}	
 	} while (l <= r);
 if (l < right)
-	QSortTriangleMesh (l, right);
+	QSortMeshTris (l, right);
 if (left < r)
-	QSortTriangleMesh (left, r);
+	QSortMeshTris (left, r);
 }
-
-//------------------------------------------------------------------------------
-
-int AssignTriangleMesh (int nTris)
-{
-	grsFace		*faceP = gameData.segs.faces.faces;
-	grsTriangle	*triP = gameData.segs.faces.tris;
-	int			i, nFace = -1;
-
-for (i = 0; i < nTris; i++, triP++) {
-	if (triP->nFace != nFace) {
-		nFace = triP->nFace;
-		if (faceP - gameData.segs.faces.faces != nFace)
-			return 0;
-		faceP->nTriIndex = i;
-		faceP++;
-		}
-	}
-return 1;
-}
-
 
 //------------------------------------------------------------------------------
 
 int InsertMeshTris (void)
 {
 	tMeshTri		*mtP = meshTris;
-	grsTriangle	*triP;
-	int			h, i, j, nTris = gameData.segs.nFaces * 2, nIndex = nTris * 3;
+	grsTriangle	*triP = gameData.segs.faces.tris;
+	grsFace		*faceP = NULL;
+	int			h, i, nIndex = 0, nFace = -1;
 
-for (h = nMeshTris; h; h--, mtP++) {
-	if (0 > (i = mtP->nIndex))
-		i = nTris++;
-	triP = gameData.segs.faces.tris + i;
+QSortMeshTris (0, nMeshTris - 1);
+for (h = 0; h < nMeshTris; h++, mtP++, triP++, nIndex += 3) {
 	triP->nFace = mtP->nFace;
-	if (0 > (i = mtP->nIndex)) {
-		i = nIndex;
-		nIndex += 3;
+	if (triP->nFace == nFace) 
+		faceP->nTris++;
+	else {
+		if (faceP)
+			faceP++;
+		else
+			faceP = gameData.segs.faces.faces;
+		nFace = triP->nFace;
+		if (faceP - gameData.segs.faces.faces != nFace)
+			return 0;
+		faceP->nIndex = nIndex;
+		faceP->nTriIndex = h;
+		faceP->nTris = 1;
 		}
-	triP->nIndex = i;
-	for (j = 0; j < 3; j++)
-		gameData.segs.faces.vertices [i + j] = gameData.segs.fVertices [mtP->index [j]].v3;
-	if (0 > mtP->nIndex) {
-		gameData.segs.faces.faces [mtP->nFace].nTris++;
-		VmVecNormalf (gameData.segs.faces.normals + i,
-						  gameData.segs.faces.vertices + i, 
-						  gameData.segs.faces.vertices + i + 1, 
-						  gameData.segs.faces.vertices + i + 2);
-		for (j = 1; j < 3; j++)
-			gameData.segs.faces.normals [i + j] = gameData.segs.faces.normals [i];
-		}
-	memcpy (gameData.segs.faces.texCoord, mtP->texCoord, sizeof (mtP->texCoord));
-	memcpy (gameData.segs.faces.ovlTexCoord, mtP->ovlTexCoord, sizeof (mtP->ovlTexCoord));
-	memcpy (gameData.segs.faces.color, mtP->color, sizeof (mtP->color));
+	triP->nIndex = nIndex;
+	memcpy (triP->index, mtP->index, sizeof (triP->index));
+	for (i = 0; i < 3; i++)
+		gameData.segs.faces.vertices [nIndex + i] = gameData.segs.fVertices [mtP->index [i]].v3;
+	VmVecNormalf (gameData.segs.faces.normals + nIndex,
+					  gameData.segs.faces.vertices + nIndex, 
+					  gameData.segs.faces.vertices + nIndex + 1, 
+					  gameData.segs.faces.vertices + nIndex + 2);
+	for (i = 1; i < 3; i++)
+		gameData.segs.faces.normals [nIndex + i] = gameData.segs.faces.normals [i];
+	memcpy (gameData.segs.faces.texCoord + nIndex, mtP->texCoord, sizeof (mtP->texCoord));
+	memcpy (gameData.segs.faces.ovlTexCoord + nIndex, mtP->ovlTexCoord, sizeof (mtP->ovlTexCoord));
+	memcpy (gameData.segs.faces.color + nIndex, mtP->color, sizeof (mtP->color));
 	}
 FreeMeshData ();
-QSortTriangleMesh (0, nTris - 1);
-return AssignTriangleMesh (nTris);
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -540,6 +536,7 @@ void CreateFaceList (void)
 	short			nSegment, nWall, nOvlTexCount, h, i, j, k, v, sideVerts [4];
 	ubyte			nSide, bColoredSeg, bWall;
 	char			*pszName;
+	short			*triVertP;
 
 	short			nTriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
 
@@ -565,16 +562,16 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 			faceP->nIndex = vertexP - gameData.segs.faces.vertices;
 			faceP->nTriIndex = triP - gameData.segs.faces.tris;
 			GetSideVertIndex (sideVerts, nSegment, nSide);
-			VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
-			VmVecScale (&vNormal, F1_0 / 2);
+			VmVecAvg (&vNormal, sideP->normals, sideP->normals + 1);
 			VmVecFixToFloat (&vNormalf, &vNormal);
 			h = (sideP->nType == SIDE_IS_TRI_13);
 			for (i = 0; i < 2; i++, triP++) {
 				faceP->nTris++;
 				triP->nFace = faceP - gameData.segs.faces.faces;
 				triP->nIndex = vertexP - gameData.segs.faces.vertices;
+				triVertP = nTriVerts [h][i];
 				for (j = 0; j < 3; j++) {
-					k = nTriVerts [h][i][j];
+					k = triVertP [j];
 					v = sideVerts [k];
 					triP->index [j] = v;
 					memcpy (vertexP++, gameData.segs.fVertices + v, sizeof (fVector3));
