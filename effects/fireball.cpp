@@ -605,7 +605,7 @@ if (objP->renderType == RT_SHRAPNELS) {
 	return;
 	}
 //See if we should create a secondary explosion
-if (objP->lifeleft <= objP->cType.explInfo.nSpawnTime) {
+if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo.nDeleteObj >= 0)) {
 	tObject		*explObjP, *delObjP = gameData.objs.objects + objP->cType.explInfo.nDeleteObj;
 	ubyte			nVClip;
 	vmsVector	*vSpawnPos;

@@ -756,19 +756,29 @@ glEnd ();
 glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
 #	endif
 #ifdef _DEBUG
+if ((nDbgFace >= 0) && (faceP - gameData.segs.faces.faces != nDbgFace))
+	return 0;
 if (!bDepthOnly && gameOpts->render.bWireFrame) {
 	if ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)) {
 		grsTriangle	*triP = gameData.segs.faces.tris + faceP->nTriIndex;
 		glDisableClientState (GL_COLOR_ARRAY);
 		if (bTextured)
 			glDisable (GL_TEXTURE_2D);
+#	if 0
+		glColor3f (1.0f, 0.5f, 0.0f);
+		glLineWidth (6);
+		glBegin (GL_LINE_LOOP);
+		for (int i = 0; i < 4; i++)
+			glVertex3fv ((GLfloat *) (gameData.segs.fVertices + faceP->index [i]));
+		glEnd ();
+#	endif
 		glLineWidth (2);
 		glColor3f (1,1,1);
 		for (int i = 0; i < faceP->nTris; i++, triP++)
 			glDrawArrays (GL_LINE_LOOP, triP->nIndex, 3);
+		glLineWidth (1);
 		if (gameOpts->render.bDynamicLight)
 			glEnableClientState (GL_COLOR_ARRAY);
-		glLineWidth (1);
 		if (bTextured)
 			glEnable (GL_TEXTURE_2D);
 		}
@@ -796,7 +806,10 @@ glEnable (GL_TEXTURE_2D);
 #endif
 
 #endif
-
+#ifdef _DEBUG
+if (!gameOpts->render.bTextures)
+	return 0;
+#endif
 if (!bMultiTexture && (bOverlay || bMonitor)) {
 	ovlTexCoordP = bMonitor ? faceP->pTexCoord - faceP->nIndex : gameData.segs.faces.ovlTexCoord;
 	if (bTextured) {

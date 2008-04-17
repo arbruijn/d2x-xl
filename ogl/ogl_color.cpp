@@ -375,7 +375,10 @@ for (j = 0; (i > 0); activeLightsP++, i--) {
 		fLightDist *= fLightDist;
 		if (nType < 2)
 			fLightDist *= 2.0f;
-		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+		if (vcd.vertNorm.p.x != 0 || vcd.vertNorm.p.y != 0 || vcd.vertNorm.p.z != 0)
+			NdotL = sqrt (VmVecDot (&vcd.vertNorm, &lightDir));
+		else
+			NdotL = 0;
 		}
 	fAttenuation = fLightDist / psl->brightness;
 	if (psl->bSpot) {
@@ -412,10 +415,10 @@ for (j = 0; (i > 0); activeLightsP++, i--) {
 		VmVecReflect (&vReflect, &lightDir, &vcd.vertNorm);
 		VmVecNormalize (&vReflect, &vReflect);
 		RdotE = VmVecDot (&vReflect, &lightPos);
-		if (RdotE < 0)
-			RdotE = 0;
-		VmVecScale (&lightColor, &lightColor, (float) pow (RdotE, vcd.fMatShininess));
-		VmVecInc (&vertColor, &lightColor);
+		if (RdotE > 0) {
+			VmVecScale (&lightColor, &lightColor, (float) pow (RdotE, vcd.fMatShininess));
+			VmVecInc (&vertColor, &lightColor);
+			}
 		}
 	if (nSaturation < 2)	{//sum up color components
 		VmVecScaleAdd (&colorSum, &colorSum, &vertColor, 1.0f / fAttenuation);
@@ -629,10 +632,9 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 			}
 #endif
 		RdotE = G3_DOTF (vReflect, lightPos);
-		if (RdotE < 0.0)
-			RdotE = 0.0;
-		//vertColor += matSpecular * lightColor * pow (RdotE, fMatShininess);
-		if ((RdotE != 0) && (vcd.fMatShininess > 0)) {
+		//if (RdotE > 0.0)
+		//	vertColor += matSpecular * lightColor * pow (RdotE, fMatShininess);
+		if ((RdotE > 0) && (vcd.fMatShininess > 0)) {
 #if VECMAT_CALLS
 			VmVecScale (&lightColor, &lightColor, (float) pow (RdotE, vcd.fMatShininess));
 #else
@@ -889,6 +891,7 @@ if (bVertexLights)
 #if PROFILING
 tG3VertexColor += clock () - t;
 #endif
+#ifdef _DEBUG
 for (int k = 0; k < MAX_SHADER_LIGHTS; k++)
 	if (gameData.render.lights.dynamic.shader.activeLights [0][k].nType > 1) {
 		gameData.render.lights.dynamic.shader.activeLights [0][k].nType = 0;
@@ -896,6 +899,7 @@ for (int k = 0; k < MAX_SHADER_LIGHTS; k++)
 		}
 	else if (gameData.render.lights.dynamic.shader.activeLights [0][k].nType == 1)
 		gameData.render.lights.dynamic.shader.activeLights [0][k].nType = 1;
+#endif
 } 
 
 //------------------------------------------------------------------------------

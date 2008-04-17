@@ -1551,6 +1551,23 @@ for (sideP = SEGMENTS [nStartSeg].sides, nSide = 6; nSide; nSide--, sideP++) {
 			continue;
 		while (!SetSegVis (nStartSeg, nSegment))
 			;
+#if 1
+		tSegFaces	*segFaceP = SEGFACES + nSegment;
+		grsFace		*faceP;
+		grsTriangle	*triP;
+		int			nFaces, nTris;
+
+		for (nFaces = segFaceP->nFaces, faceP = segFaceP->pFaces; nFaces; nFaces--, faceP++) {
+#ifdef _DEBUG
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+			nSegment = nSegment;
+#endif
+			for (nTris = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; nTris; nTris--, triP++)
+				for (j = 0; j < 3; j++)
+					while (!SetVertVis (nStartSeg, triP->index [j], 1))
+						;
+			}
+#else
 		for (j = 8, vertP = SEGMENTS [nSegment].verts; j; j--, vertP++) {
 #ifdef _DEBUG
 			if ((*vertP < 0) || (*vertP >= gameData.segs.nVertices))
@@ -1559,6 +1576,7 @@ for (sideP = SEGMENTS [nStartSeg].sides, nSide = 6; nSide; nSide--, sideP++) {
 			while (!SetVertVis (nStartSeg, *vertP, 1))
 				;
 			}
+#endif
 		}
 	}
 gameStates.ogl.bUseTransform = 0;

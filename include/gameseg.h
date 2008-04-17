@@ -157,6 +157,9 @@ void PickRandomPointInSeg(vmsVector *new_pos, int nSegment);
 int GetVertsForNormal (int v0, int v1, int v2, int v3, int *pv0, int *pv1, int *pv2, int *pv3);
 int GetVertsForNormalTri (int v0, int v1, int v2, int *pv0, int *pv1, int *pv2);
 
+void ComputeVertexNormals (void);
+void ResetVertexNormals (void);
+
 #endif
 
 

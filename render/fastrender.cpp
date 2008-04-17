@@ -196,8 +196,10 @@ if (!faceP->bVisible)
 	return;
 if ((nType < 4) && !(faceP->widFlags & WID_RENDER_FLAG))
 	return;
+#if 0
 if (faceP->nType < 0)
 	FixTriangleFan (segP, faceP);
+#endif
 #ifdef _DEBUG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nSegment = nSegment;
@@ -1287,7 +1289,8 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #	if SHADER_VERTEX_LIGHTING
 								if (!ComputeVertexLight (nVertex, 1, &c))
 #	endif
-								G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, gameData.segs.fVertices + nVertex, nVertex, 
+								G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, 
+													gameData.segs.fVertices + nVertex, nVertex, 
 													NULL, &c, 1, 0, nThread);
 #if 0
 							if (gameStates.app.bMultiThreaded)

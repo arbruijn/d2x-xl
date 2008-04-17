@@ -1262,9 +1262,9 @@ char *ppLightingFS [] = {
 	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, /*gl_FrontMaterial.shininess*/ 8.0)) / att;\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \
@@ -1296,9 +1296,9 @@ char *ppLightingFS [] = {
 	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, /*gl_FrontMaterial.shininess*/ 8.0)) / att;\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \
@@ -1331,9 +1331,9 @@ char *ppLightingFS [] = {
 	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, /*gl_FrontMaterial.shininess*/ 8.0)) / att;\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \
@@ -1370,9 +1370,9 @@ char *ppLightingFS [] = {
 	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, /*gl_FrontMaterial.shininess*/ 8.0)) / att;\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \

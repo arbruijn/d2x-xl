@@ -1995,6 +1995,21 @@ for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
 }
 
 // -------------------------------------------------------------------------------
+
+void ResetVertexNormals (void)
+{
+	int		i;
+	g3sPoint	*pp;
+
+for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
+	pp->p3_normal.vNormal.p.x =
+	pp->p3_normal.vNormal.p.y =
+	pp->p3_normal.vNormal.p.z = 0;
+	pp->p3_normal.nFaces = 0;
+	}
+}
+
+// -------------------------------------------------------------------------------
 //	Make a just-modified tSegment valid.
 //		check all sides to see how many faces they each should have (0, 1, 2)
 //		create new vector normals
