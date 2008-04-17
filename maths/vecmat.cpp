@@ -1795,6 +1795,46 @@ return bClamped;
 
 // ------------------------------------------------------------------------
 
+int VmPointLineIntersectionf (fVector3 *hitP, fVector3 *p1, fVector3 *p2, fVector3 *p3, fVector3 *vPos, int bClamp)
+{
+	fVector3	d31, d21;
+	double	m, u;
+	int		bClamped = 0;
+
+VmVecSubf (&d21, p2, p1);
+m = fabs (d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z);
+if (!m) {
+	if (hitP)
+		*hitP = *p1;
+	return 0;
+	}
+VmVecSubf (&d31, p3, p1);
+u = (double) VmVecDotf (&d31, &d21);
+u /= m;
+if (u < 0)
+	bClamped = 2;
+else if (u > 1)
+	bClamped = 1;
+else
+	bClamped = 0;
+// limit the intersection to [p1,p2]
+if (hitP) {
+	if (bClamp && bClamped) {
+		if (vPos)
+			bClamped = (VmVecDistf (vPos, p1) < VmVecDistf (vPos, p2)) ? 2 : 1;
+		*hitP = (bClamped == 1) ? *p1 : * p2;
+		}
+	else {
+		hitP->p.x = p1->p.x + (fix) (u * d21.p.x);
+		hitP->p.y = p1->p.y + (fix) (u * d21.p.y);
+		hitP->p.z = p1->p.z + (fix) (u * d21.p.z);
+		}
+	}
+return bClamped;
+}
+
+// ------------------------------------------------------------------------
+
 fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p)
 {
 #if 1
@@ -1820,6 +1860,16 @@ return (fix) ((double) VmVecMag (&abxap) / magab * F1_0);
 float VmLinePointDistf (fVector *a, fVector *b, fVector *p, int bClamp)
 {
 	fVector	h;
+
+VmPointLineIntersectionf (&h, a, b, p, NULL, bClamp);
+return VmVecDistf (&h, p);
+}
+
+// ------------------------------------------------------------------------
+
+float VmLinePointDistf (fVector3 *a, fVector3 *b, fVector3 *p, int bClamp)
+{
+	fVector3	h;
 
 VmPointLineIntersectionf (&h, a, b, p, NULL, bClamp);
 return VmVecDistf (&h, p);

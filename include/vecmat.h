@@ -386,7 +386,9 @@ vmsMatrix *VmSinCos2Matrix (vmsMatrix *m, fix sinp, fix cosp, fix sinb, fix cosb
 int VmPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos, int bClampToFarthest);
 fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p);
 int VmPointLineIntersectionf (fVector *hitP, fVector *p1, fVector *p2, fVector *p3, fVector *vPos, int bClamp);
+int VmPointLineIntersectionf (fVector3 *hitP, fVector3 *p1, fVector3 *p2, fVector3 *p3, fVector3 *vPos, int bClamp);
 float VmLinePointDistf (fVector *a, fVector *b, fVector *p, int bClamp);
+float VmLinePointDistf (fVector3 *a, fVector3 *b, fVector3 *p, int bClamp);
 vmsVector *VmVecReflect (vmsVector *vReflect, vmsVector *vDir, vmsVector *vNormal);
 fVector *VmVecReflectf (fVector *vReflect, fVector *vDir, fVector *vNormal);
 

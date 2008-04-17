@@ -79,6 +79,7 @@ typedef struct tMeshLine {
 	} tMeshLine;
 
 typedef struct tMeshTri {
+	ushort		nPass;
 	ushort		nFace;
 	int			nIndex;
 	ushort		lines [3];
@@ -160,7 +161,7 @@ if ((nTri < 0) || (nTri >= nMeshTris))
 #endif
 tMeshLine *mlP = FindMeshLine (nVert1, nVert2);
 if (mlP) {
-	if (mlP->tris [0] < 0)
+	if (mlP->tris [0] == 65535)
 		mlP->tris [0] = nTri;
 	else
 		mlP->tris [1] = nTri;
@@ -197,7 +198,7 @@ else {
 	}
 nIndex = mtP - meshTris;
 for (i = 0; i < 3; i++) {
-	if (0 > (h = AddMeshLine (nMeshTris - 1, index [i], index [(i + 1) % 3])))
+	if (0 > (h = AddMeshLine (nIndex, index [i], index [(i + 1) % 3])))
 		return NULL;
 	mtP = meshTris + nIndex;
 	mtP->lines [i] = h;
@@ -281,7 +282,7 @@ return nMeshTris;
 
 //------------------------------------------------------------------------------
 
-static int SplitMeshTriByLine (int nTri, int nVert1, int nVert2)
+static int SplitMeshTriByLine (int nTri, int nVert1, int nVert2, ushort nPass)
 {
 if (nTri == 65535)
 	return 1;
@@ -325,10 +326,18 @@ color [0].red = (color [1].red + color [3].red) / 2;
 color [0].green = (color [1].green + color [3].green) / 2;
 color [0].blue = (color [1].blue + color [3].blue) / 2;
 color [0].alpha = (color [1].alpha + color [3].alpha) / 2;
-
+#if 0//def _DEBUG
+if (VmLinePointDistf (gameData.segs.fVertices + index [1], gameData.segs.fVertices + index [2], gameData.segs.fVertices + index [0], 0) < 1)
+	return 0;
+if (VmLinePointDistf (gameData.segs.fVertices + index [2], gameData.segs.fVertices + index [3], gameData.segs.fVertices + index [0], 0) < 1)
+	return 0;
+if (VmLinePointDistf (gameData.segs.fVertices + index [3], gameData.segs.fVertices + index [4], gameData.segs.fVertices + index [0], 0) < 1)
+	return 0;
+#endif
 DeleteMeshTri (mtP); //remove any references to this triangle
 if (!(mtP = CreateMeshTri (mtP, index, nFace, nIndex))) //create a new triangle at this location (insert)
 	return 0;
+mtP->nPass = nPass;
 memcpy (mtP->color, color, sizeof (mtP->color));
 memcpy (mtP->texCoord, texCoord, sizeof (mtP->texCoord));
 memcpy (mtP->ovlTexCoord, ovlTexCoord, sizeof (mtP->ovlTexCoord));
@@ -336,6 +345,7 @@ memcpy (mtP->ovlTexCoord, ovlTexCoord, sizeof (mtP->ovlTexCoord));
 index [1] = index [0];
 if (!(mtP = CreateMeshTri (NULL, index + 1, nFace, -1))) //create a new triangle (append)
 	return 0;
+mtP->nPass = nPass;
 texCoord [1] = texCoord [0];
 ovlTexCoord [1] = ovlTexCoord [0];
 color [1] = color [0];
@@ -347,7 +357,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int SplitMeshLine (tMeshLine *mlP)
+static int SplitMeshLine (tMeshLine *mlP, ushort nPass)
 {
 	int			i = 0;
 	ushort		tris [2], verts [2];
@@ -357,9 +367,9 @@ memcpy (verts, mlP->verts, sizeof (verts));
 VmVecAvgf (gameData.segs.fVertices + gameData.segs.nVertices, 
 			  gameData.segs.fVertices + verts [0], 
 			  gameData.segs.fVertices + verts [1]);
-if (!SplitMeshTriByLine (tris [0], verts [0], verts [1]))
+if (!SplitMeshTriByLine (tris [0], verts [0], verts [1], nPass))
 	return 0;
-if (!SplitMeshTriByLine (tris [1], verts [0], verts [1]))
+if (!SplitMeshTriByLine (tris [1], verts [0], verts [1], nPass))
 	return 0;
 gameData.segs.nVertices++;
 return 1;
@@ -367,7 +377,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int SplitMeshTri (tMeshTri *mtP)
+static int SplitMeshTri (tMeshTri *mtP, ushort nPass)
 {
 	tMeshLine	*mlP;
 	int			h, i;
@@ -383,22 +393,30 @@ for (i = 0; i < 3; i++) {
 	}
 if (lMax <= 30.0f)
 	return -1;
-return SplitMeshLine (meshLines + mtP->lines [h]);
+return SplitMeshLine (meshLines + mtP->lines [h], nPass);
 }
 
 //------------------------------------------------------------------------------
 
 static int SplitMeshTris (void)
 {
-	int		h, i = 0;
+	int		bSplit = 0, h, i, j;
+	ushort	nPass = 0;
 
-while (i < nMeshTris) {
-	h = SplitMeshTri (meshTris + i);
-	if (!h)
-		return 0;
-	if (h < 0)
-		i++;
-	}
+do {
+	bSplit = 0;
+	j = nMeshTris;
+	nPass++;
+	for (i = 0; i < j; i++) {
+		if (meshTris [i].nPass == nPass)
+			continue;
+		h = SplitMeshTri (meshTris + i, nPass);
+		if (!h)
+			return 0;
+		if (h > 0)
+			bSplit = 1;
+		}
+	} while (bSplit);
 return 1;
 }
 
@@ -454,7 +472,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int InsertTriangleMesh (void)
+int InsertMeshTris (void)
 {
 	tMeshTri		*mtP = meshTris;
 	grsTriangle	*triP;
@@ -498,7 +516,7 @@ if (!CreateMeshTris ())
 	return 0;
 if (!SplitMeshTris ())
 	return 0;
-return InsertTriangleMesh ();
+return InsertMeshTris ();
 }
 
 //------------------------------------------------------------------------------
