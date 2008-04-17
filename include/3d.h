@@ -213,18 +213,18 @@ return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.pos), viewInfo.vie
 
 static inline fVector *G3TranslatePointf (fVector *pDest, fVector *pSrc)
 {
-return VmVecSubf (pDest, pSrc, &viewInfo.posf);
+return VmVecSub (pDest, pSrc, &viewInfo.posf);
 }
 
 static inline fVector *G3RotatePointf (fVector *pDest, fVector *pSrc, int bUnscaled)
 {
-return VmVecRotatef (pDest, pSrc, viewInfo.viewf + bUnscaled);
+return VmVecRotate (pDest, pSrc, viewInfo.viewf + bUnscaled);
 }
 
 static inline fVector *G3TransformPointf (fVector *pDest, fVector *pSrc, int bUnscaled)
 {
 fVector vTrans;
-return VmVecRotatef (pDest, VmVecSubf (&vTrans, pSrc, &viewInfo.posf), viewInfo.viewf + bUnscaled);
+return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.posf), viewInfo.viewf + bUnscaled);
 }
 
 static inline ubyte G3TransformAndEncodePoint (g3sPoint *pDest, vmsVector *pSrc)

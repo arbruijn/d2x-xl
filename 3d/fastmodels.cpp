@@ -90,7 +90,7 @@ if (!gameStates.render.bBrightObject) {
 		  i < nVerts; 
 		  i++, pv++, pn++, pc++) {
 		pc->index = 0;
-		VmVecAddf (&vVertex, &vPos, (fVector *) pv);
+		VmVecAdd (&vVertex, &vPos, (fVector *) pv);
 		G3VertexColor ((fVector *) pn, &vVertex, i, pc, NULL, 1, 0, 0);
 		}
 	}
@@ -238,11 +238,11 @@ if (!pm->bRendered || gameData.models.nScale)
 else if (mtP->nCount >= (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) ? 2 : 1))
 	return;
 VmVecFixToFloat (&vn, pmf ? &pmf->vNormal : vNormal);
-if (VmVecDotf (&vn, &vForward) > -1.0f / 3.0f)
+if (VmVecDot (&vn, &vForward) > -1.0f / 3.0f)
 	return;
 if (pmf) {
 	for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
-		VmVecIncf (&v, &pmv [i].vertex);
+		VmVecInc (&v, &pmv [i].vertex);
 	v.p.x /= j;
 	v.p.y /= j;
 	v.p.z /= j;
@@ -256,7 +256,7 @@ G3TransformPointf (&v, &v, 0);
 #	if 1
 if (vOffset) {
 	VmVecFixToFloat (&vo, vOffset);
-	VmVecIncf (&v, &vo);
+	VmVecInc (&v, &vo);
 	}
 #	endif
 #endif
@@ -266,7 +266,7 @@ mtP->vPos [mtP->nCount].p.x = fl2f (v.p.x);
 mtP->vPos [mtP->nCount].p.y = fl2f (v.p.y);
 mtP->vPos [mtP->nCount].p.z = fl2f (v.p.z);
 if (vOffset)
-	VmVecDecf (&v, &vo);
+	VmVecDec (&v, &vo);
 mtP->vDir [mtP->nCount] = *vNormal;
 VmVecNegate (mtP->vDir + mtP->nCount);
 if (!mtP->nCount) {
@@ -274,7 +274,7 @@ if (!mtP->nCount) {
 		mtP->fSize = f2fl (nRad);
 	else {
 		for (i = 0, nSize = 1000000000; i < j; i++)
-			if (nSize > (h = VmVecDistf (&v, &pmv [i].vertex)))
+			if (nSize > (h = VmVecDist (&v, &pmv [i].vertex)))
 				nSize = h;
 		mtP->fSize = nSize;// * 1.25f;
 		}

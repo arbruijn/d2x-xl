@@ -355,8 +355,8 @@ p1 = objP1->position.vPos;
 v0 = objP0->mType.physInfo.velocity;
 v1 = objP1->mType.physInfo.velocity;
 mag = VmVecDot (&v0, &v1);
-m0 = VmVecCopyNormalize (&vn0, &v0);
-m1 = VmVecCopyNormalize (&vn1, &v1);
+m0 = VmVecNormalize (&vn0, &v0);
+m1 = VmVecNormalize (&vn1, &v1);
 if (m0 && m1) {
 	if (m0 > m1) {
 		VmVecScaleFrac (&vn0, m1, m0);

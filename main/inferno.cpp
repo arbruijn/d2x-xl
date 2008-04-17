@@ -2425,6 +2425,7 @@ GETMEM (tSegFaces, gameData.segs.segFaces, MAX_SEGMENTS, 0);
 GETMEM (grsFace, gameData.segs.faces.faces, MAX_SEGMENTS * 6 * 2, 0);
 GETMEM (grsTriangle, gameData.segs.faces.tris, MAX_SEGMENTS * 6 * 8, 0);
 GETMEM (fVector3, gameData.segs.faces.vertices, MAX_SEGMENTS * 6 * 4 * 8, 0);
+GETMEM (ushort, gameData.segs.faces.vertIndex, MAX_SEGMENTS * 6 * 4 * 8, 0);
 GETMEM (fVector3, gameData.segs.faces.normals, MAX_SEGMENTS * 6 * 4 * 8, 0);
 GETMEM (tRgbaColorf, gameData.segs.faces.color, MAX_SEGMENTS * 6 * 4 * 8, 0);
 GETMEM (tTexCoord2f, gameData.segs.faces.texCoord, MAX_SEGMENTS * 6 * 4 * 16, 0);

@@ -237,11 +237,11 @@ VmVecFixToFloat (pvNormal, &vNormal);
 fVector *G3Reflect (fVector *vReflect, fVector *vLight, fVector *vNormal)
 {
 //2 * n * (l dot n) - l
-	float		LdotN = 2 * VmVecDotf (vLight, vNormal);
+	float		LdotN = 2 * VmVecDot (vLight, vNormal);
 
 #if 0
-VmVecScalef (vReflect, vNormal, LdotN);
-VmVecDecf (vReflect, vLight);
+VmVecScale (vReflect, vNormal, LdotN);
+VmVecDec (vReflect, vLight);
 #else
 vReflect->p.x = vNormal->p.x * LdotN - vLight->p.x;
 vReflect->p.y = vNormal->p.y * LdotN - vLight->p.y;

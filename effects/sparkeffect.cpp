@@ -75,7 +75,7 @@ void CreateSegmentSparks (short nSegment)
 	int				i;
 
 VmVecFixToFloat (&vMaxf, &gameData.segs.extent [nSegment].vMax);
-VmVecScalef (&vMax2f, &vMaxf, 2);
+VmVecScale (&vMax2f, &vMaxf, 2);
 for (i = segP->nMaxSparks; i; i--, sparkP++) {
 	if (sparkP->tRender)
 		continue;

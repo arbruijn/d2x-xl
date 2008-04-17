@@ -921,9 +921,9 @@ for (i = 0; i < vld.nLights; i++) {
 	nType = vertNorm->p.w;
 	radius = lightPos->p.w;
 	brightness = lightColor.p.w;
-	VmVecSubf (&lightDir, lightPos, vertPos);
-	lightDist = VmVecMagf (&lightDir) / lightRange;
-	VmVecNormalizef (&lightDir, &lightDir);
+	VmVecSub (&lightDir, lightPos, vertPos);
+	lightDist = VmVecMag (&lightDir) / lightRange;
+	VmVecNormalize (&lightDir, &lightDir);
 	if (nType)
 		lightDist -= radius;
 	if (lightDist < 1.0f) {
@@ -934,7 +934,7 @@ for (i = 0; i < vld.nLights; i++) {
 		lightDist *= lightDist;
 		if (nType)
 			lightDist *= 2.0f;
-		NdotL = VmVecDotf (vertNorm, &lightDir);
+		NdotL = VmVecDot (vertNorm, &lightDir);
 		if (NdotL < 0.0f)
 			NdotL = 0.0f;
 		}	
@@ -943,10 +943,10 @@ for (i = 0; i < vld.nLights; i++) {
 	vertColor.c.g = (matAmbient.c.g + NdotL) * lightColor.c.g;
 	vertColor.c.b = (matAmbient.c.b + NdotL) * lightColor.c.b;
 	if (NdotL > 0.0f) {
-		VmVecReflectf (&vReflect, VmVecNegatef (&lightDir), vertNorm);
-		VmVecNormalizef (&vReflect, &vReflect);
-		VmVecNormalizef (lightPos, VmVecNegatef (lightPos));
-		RdotE = VmVecDotf (&vReflect, lightPos);
+		VmVecReflect (&vReflect, VmVecNegate (&lightDir), vertNorm);
+		VmVecNormalize (&vReflect, &vReflect);
+		VmVecNormalize (lightPos, VmVecNegate (lightPos));
+		RdotE = VmVecDot (&vReflect, lightPos);
 		if (RdotE < 0.0f)
 			RdotE = 0.0f;
 		specular = (float) pow (RdotE, shininess);
@@ -1484,6 +1484,10 @@ void RenderMineObjects (int nType)
 	int	nListPos;
 	short	nSegment;
 
+#ifdef _DEBUG
+if (!gameOpts->render.bObjects)
+	return;
+#endif
 if ((nType < 1) || (nType > 2))
 	return;
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {

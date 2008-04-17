@@ -768,7 +768,7 @@ for (i = MAX_SIDES_PER_SEGMENT; --i >= 0;) {
 	if (segP->children [i] != -1) {
 		COMPUTE_SIDE_CENTER (&sidevec, segP, i);
 		VmVecNormalizedDir (&sidevec, &sidevec, &segcenter);
-		d = VmVecDotProd (&sidevec, &prefvec);
+		d = VmVecDot (&sidevec, &prefvec);
 		if (labs (d) < MIN_D) 
 			d = 0;
 		if (d > best_val) {

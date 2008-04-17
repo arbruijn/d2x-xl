@@ -60,8 +60,8 @@ vDelta.p.y = FixDiv (vDelta.p.y, viewInfo.scale.p.y);
 //do lots of normalizing to prevent overflowing.  When this code works, 
 //it should be optimized
 VmVecNormalize (&vDelta);
-VmVecCopyNormalize (&vTop, &topPoint->p3_vec);
-VmVecCross (&vRodNorm, &vDelta, &vTop);
+VmVecNormalize (&vTop, &topPoint->p3_vec);
+VmVecCrossProd (&vRodNorm, &vDelta, &vTop);
 VmVecNormalize (&vRodNorm);
 //scale for aspect
 #if RESCALE_ROD

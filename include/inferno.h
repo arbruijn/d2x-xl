@@ -1566,6 +1566,7 @@ typedef struct tFaceData {
 	tTexCoord2f			*texCoord;
 	tTexCoord2f			*ovlTexCoord;
 	tRgbaColorf			*color;
+	ushort				*vertIndex;
 	} tFaceData;
 
 typedef struct tSegList {
@@ -1601,6 +1602,7 @@ typedef struct tSegmentData {
 	int					nSegments;
 	int					nLastSegment;
 	int					nFaces;
+	int					nTris;
 	int					nLevelVersion;
 	char					szLevelFilename [FILENAME_LEN];
 	tSecretData			secret;

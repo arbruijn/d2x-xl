@@ -116,15 +116,15 @@ for (i = 0; i < gameData.render.lights.dynamic.headLights.nLights; i++) {
 	if (gameStates.ogl.bHeadLight && gameOpts->ogl.bHeadLight && !gameStates.render.automap.bDisplay) {
 #if HEADLIGHT_TRANSFORMATION == 0
 		G3TransformPointf (&vPos, psl->pos, 0);
-		G3TransformPointf (&vDir, VmVecAddf (&vDir, psl->pos, &psl->dir), 0);
-		VmVecNormalizef (&vDir, VmVecDecf (&vDir, &vPos));
+		G3TransformPointf (&vDir, VmVecAdd (&vDir, psl->pos, &psl->dir), 0);
+		VmVecNormalize (&vDir, VmVecDec (&vDir, &vPos));
 		//vDir.p.z = -vDir.p.z;
 		memcpy (gameData.render.lights.dynamic.headLights.pos + i, &vPos, sizeof (fVector3));
 		memcpy (gameData.render.lights.dynamic.headLights.dir + i, &vDir, sizeof (fVector3));
 #elif HEADLIGHT_TRANSFORMATION == 1
 		// method 2: translate, but let OpenGL do the scaling and rotating
-		VmVecSubf ((fVector *) (gameData.render.lights.dynamic.headLights.pos + i), psl->pos, &viewInfo.posf);
-		VmVecIncf (&vPos, &psl->dir);
+		VmVecSub ((fVector *) (gameData.render.lights.dynamic.headLights.pos + i), psl->pos, &viewInfo.posf);
+		VmVecInc (&vPos, &psl->dir);
 		memcpy (gameData.render.lights.dynamic.headLights.dir + i, &psl->dir, sizeof (fVector3));
 #else
 		// method 3: let OpenGL do the translating, scaling and rotating (pass &viewInfo.posf to the headlight shader's vEye value)

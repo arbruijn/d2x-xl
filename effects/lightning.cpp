@@ -180,7 +180,7 @@ vmsVector *DirectedRandomVector (vmsVector *vRand, vmsVector *vDir, int nMinDot,
 	vmsVector	vr, vd, vSign;
 	int			nDot, nSign, i = 0;
 
-VmVecCopyNormalize (&vd, vDir);
+VmVecNormalize (&vd, vDir);
 vSign.p.x = vd.p.x ? vd.p.x / abs (vd.p.x) : 0;
 vSign.p.y = vd.p.y ? vd.p.y / abs (vd.p.y) : 0;
 vSign.p.z = vd.p.z ? vd.p.z / abs (vd.p.z) : 0;
@@ -583,7 +583,7 @@ vmsVector *CreateLightningPathPoint (vmsVector *vOffs, vmsVector *vAttract, int 
 
 if (nDist < F1_0 / 16)
 	return VmRandomVector (vOffs);
-VmVecCopyNormalize (&va, vAttract);
+VmVecNormalize (&va, vAttract);
 if (!(va.p.x && va.p.y && va.p.z))
 	i = 0;
 do {
@@ -1265,12 +1265,12 @@ if (bPlasma) {
 				glEnd ();
 				}
 			if (!i) {	//resize plasma quad for inner, white plasma path
-				VmVecScalef (&vDelta, VmVecSubf (&vDelta, vPlasma, vPlasma + 1), 0.25f);
-				VmVecDecf (vPlasma, &vDelta);
-				VmVecIncf (vPlasma + 1, &vDelta);
-				VmVecScalef (&vDelta, VmVecSubf (&vDelta, vPlasma + 2, vPlasma + 3), 0.25f);
-				VmVecDecf (vPlasma + 2, &vDelta);
-				VmVecIncf (vPlasma + 3, &vDelta);
+				VmVecScale (&vDelta, VmVecSub (&vDelta, vPlasma, vPlasma + 1), 0.25f);
+				VmVecDec (vPlasma, &vDelta);
+				VmVecInc (vPlasma + 1, &vDelta);
+				VmVecScale (&vDelta, VmVecSub (&vDelta, vPlasma + 2, vPlasma + 3), 0.25f);
+				VmVecDec (vPlasma + 2, &vDelta);
+				VmVecInc (vPlasma + 3, &vDelta);
 				}
 			}
 		}
@@ -1315,47 +1315,47 @@ void ComputePlasmaSegment (fVector *vPosf, int bScale, short nSegment, char bSta
 
 memcpy (vNormal, vNormal + 1, 2 * sizeof (fVector));
 if (bStart) {
-	VmVecNormalf (vNormal + 1, vPosf, vPosf + 1, &vEye);
+	VmVecNormal (vNormal + 1, vPosf, vPosf + 1, &vEye);
 	vn [0] = vNormal [1];
 	}
 else
-	VmVecScalef (vn, VmVecAddf (vn, vNormal, vNormal + 1), 0.5f);
+	VmVecScale (vn, VmVecAdd (vn, vNormal, vNormal + 1), 0.5f);
 if (bEnd) {
 	vn [1] = vNormal [1];
-	VmVecSubf (&vd, vPosf + 1, vPosf);
-	VmVecScalef (&vd, &vd, bScale ? 0.25f : 0.5f);
-	VmVecIncf (vPosf + 1, &vd);
+	VmVecSub (&vd, vPosf + 1, vPosf);
+	VmVecScale (&vd, &vd, bScale ? 0.25f : 0.5f);
+	VmVecInc (vPosf + 1, &vd);
 	}
 else {
-	VmVecNormalf (vNormal + 2, vPosf + 1, vPosf + 2, &vEye);
-	if (VmVecDotf (vNormal + 1, vNormal + 2) < 0)
-		VmVecNegatef (vNormal + 2);
-	VmVecScalef (vn + 1, VmVecAddf (vn + 1, vNormal + 1, vNormal + 2), 0.5f);
+	VmVecNormal (vNormal + 2, vPosf + 1, vPosf + 2, &vEye);
+	if (VmVecDot (vNormal + 1, vNormal + 2) < 0)
+		VmVecNegate (vNormal + 2);
+	VmVecScale (vn + 1, VmVecAdd (vn + 1, vNormal + 1, vNormal + 2), 0.5f);
 	}
 if (!(nDepth || bScale)) {
-	VmVecScalef (vn, vn, 2);
-	VmVecScalef (vn + 1, vn + 1, 2);
+	VmVecScale (vn, vn, 2);
+	VmVecScale (vn + 1, vn + 1, 2);
 	}
 if (!bScale && nDepth) {
-	VmVecScalef (vn, vn, 0.5f);
-	VmVecScalef (vn + 1, vn + 1, 0.5f);
+	VmVecScale (vn, vn, 0.5f);
+	VmVecScale (vn + 1, vn + 1, 0.5f);
 	}
 if (bStart) {
-	VmVecAddf (vPlasma, vPosf, vn);
-	VmVecSubf (vPlasma + 1, vPosf, vn);
-	VmVecSubf (&vd, vPosf, vPosf + 1);
-	VmVecNormalizef (&vd, &vd);
+	VmVecAdd (vPlasma, vPosf, vn);
+	VmVecSub (vPlasma + 1, vPosf, vn);
+	VmVecSub (&vd, vPosf, vPosf + 1);
+	VmVecNormalize (&vd, &vd);
 	if (bScale)
-		VmVecScalef (&vd, &vd, 0.5f);
-	VmVecIncf (vPlasma, &vd);
-	VmVecIncf (vPlasma + 1, &vd);
+		VmVecScale (&vd, &vd, 0.5f);
+	VmVecInc (vPlasma, &vd);
+	VmVecInc (vPlasma + 1, &vd);
 	}
 else {
 	vPlasma [0] = vPlasma [-1];
 	vPlasma [1] = vPlasma [-2];
 	}
-VmVecAddf (vPlasma + 3, vPosf + 1, vn + 1);
-VmVecSubf (vPlasma + 2, vPosf + 1, vn + 1);
+VmVecAdd (vPlasma + 3, vPosf + 1, vn + 1);
+VmVecSub (vPlasma + 2, vPosf + 1, vn + 1);
 memcpy (plasmaBuffers [nThread][bScale].texCoord + 4 * nSegment, plasmaTexCoord [bStart + 2 * bEnd], 4 * sizeof (tTexCoord2f));
 }
 
@@ -1559,48 +1559,48 @@ void RenderLightningPlasma (fVector *vPosf, tRgbaColorf *color, int bScale, int 
 
 memcpy (vNormal, vNormal + 1, 2 * sizeof (fVector));
 if (bStart) {
-	VmVecNormalf (vNormal + 1, vPosf, vPosf + 1, &vEye);
+	VmVecNormal (vNormal + 1, vPosf, vPosf + 1, &vEye);
 	vn [0] = vNormal [1];
 	}
 else
-	VmVecScalef (vn, VmVecAddf (vn, vNormal, vNormal + 1), 0.5f);
+	VmVecScale (vn, VmVecAdd (vn, vNormal, vNormal + 1), 0.5f);
 if (bEnd)
 	vn [1] = vNormal [1];
 else {
-	VmVecNormalf (vNormal + 2, vPosf + 1, vPosf + 2, &vEye);
-	VmVecScalef (vn + 1, VmVecAddf (vn + 1, vNormal + 1, vNormal + 2), 0.5f);
+	VmVecNormal (vNormal + 2, vPosf + 1, vPosf + 2, &vEye);
+	VmVecScale (vn + 1, VmVecAdd (vn + 1, vNormal + 1, vNormal + 2), 0.5f);
 	}
 if (!(nDepth || bScale)) {
-	VmVecScalef (vn, vn, 2);
-	VmVecScalef (vn + 1, vn + 1, 2);
+	VmVecScale (vn, vn, 2);
+	VmVecScale (vn + 1, vn + 1, 2);
 	}
 if (!bScale && nDepth) {
-	VmVecScalef (vn, vn, 0.5f);
-	VmVecScalef (vn + 1, vn + 1, 0.5f);
+	VmVecScale (vn, vn, 0.5f);
+	VmVecScale (vn + 1, vn + 1, 0.5f);
 	}
 if (bStart) {
-	VmVecAddf (vPlasma, vPosf, vn);
-	VmVecSubf (vPlasma + 1, vPosf, vn);
-	VmVecSubf (&vd, vPosf, vPosf + 1);
-	VmVecNormalizef (&vd, &vd);
+	VmVecAdd (vPlasma, vPosf, vn);
+	VmVecSub (vPlasma + 1, vPosf, vn);
+	VmVecSub (&vd, vPosf, vPosf + 1);
+	VmVecNormalize (&vd, &vd);
 	if (bScale)
-		VmVecScalef (&vd, &vd, 0.5f);
-	VmVecIncf (vPlasma, &vd);
-	VmVecIncf (vPlasma + 1, &vd);
+		VmVecScale (&vd, &vd, 0.5f);
+	VmVecInc (vPlasma, &vd);
+	VmVecInc (vPlasma + 1, &vd);
 	}
 else {
 	vPlasma [0] = vPlasma [3];
 	vPlasma [1] = vPlasma [2];
 	}
-VmVecAddf (vPlasma + 3, vPosf + 1, vn + 1);
-VmVecSubf (vPlasma + 2, vPosf + 1, vn + 1);
+VmVecAdd (vPlasma + 3, vPosf + 1, vn + 1);
+VmVecSub (vPlasma + 2, vPosf + 1, vn + 1);
 if (bEnd) {
-	VmVecSubf (&vd, vPosf + 1, vPosf);
-	VmVecNormalizef (&vd, &vd);
+	VmVecSub (&vd, vPosf + 1, vPosf);
+	VmVecNormalize (&vd, &vd);
 	if (bScale)
-		VmVecScalef (&vd, &vd, 0.5f);
-	VmVecIncf (vPlasma + 2, &vd);
-	VmVecIncf (vPlasma + 3, &vd);
+		VmVecScale (&vd, &vd, 0.5f);
+	VmVecInc (vPlasma + 2, &vd);
+	VmVecInc (vPlasma + 3, &vd);
 	}
 if (bDepthSort) {
 	RIAddLightningSegment (vPosf, vPlasma, color, bPlasma, bStart, bEnd, nDepth);
@@ -1615,9 +1615,9 @@ else {
 	else {
 #if 0
 		float		fDot;
-		VmVecNormalf (vn, vPlasma, vPlasma + 1, vPlasma + 2);
-		VmVecNormalf (vn + 1, vPlasma, vPlasma + 2, vPlasma + 3);
-		fDot = VmVecDotf (vn, vn + 1);
+		VmVecNormal (vn, vPlasma, vPlasma + 1, vPlasma + 2);
+		VmVecNormal (vn + 1, vPlasma, vPlasma + 2, vPlasma + 3);
+		fDot = VmVecDot (vn, vn + 1);
 		if (fDot >= 0) {
 			glBegin (GL_TRIANGLES);
 			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j]));
@@ -2273,11 +2273,11 @@ if (i < 0) {
 		memcpy (&vPosf, &pVerts->vertex, sizeof (fVector3));
 		memcpy (&vEndf, &pVerts [1 + d_rand () % (nVertices - 1)].vertex, sizeof (fVector3));
 		memcpy (&v, &pVerts [1].vertex, sizeof (fVector3));
-		VmVecNormalf (&vNormf, &vPosf, &v, &vEndf);
-		VmVecScaleIncf (&vPosf, &vNormf, 1.0f / 64.0f);
-		VmVecScaleIncf (&vEndf, &vNormf, 1.0f / 64.0f);
-		VmVecNormalf (&vDeltaf, &vNormf, &vPosf, &vEndf);
-		h = fl2f (VmVecDistf (&vPosf, &vEndf));
+		VmVecNormal (&vNormf, &vPosf, &v, &vEndf);
+		VmVecScaleInc (&vPosf, &vNormf, 1.0f / 64.0f);
+		VmVecScaleInc (&vEndf, &vNormf, 1.0f / 64.0f);
+		VmVecNormal (&vDeltaf, &vNormf, &vPosf, &vEndf);
+		h = fl2f (VmVecDist (&vPosf, &vEndf));
 		vPos.p.x = fl2f (vPosf.p.x);
 		vPos.p.y = fl2f (vPosf.p.y);
 		vPos.p.z = fl2f (vPosf.p.z);

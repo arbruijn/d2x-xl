@@ -76,19 +76,19 @@ int FindPointLineIntersectionf (vmsVector *pv1, vmsVector *pv2, vmsVector *pv3)
 VmVecFixToFloat (&p1, pv1);
 VmVecFixToFloat (&p2, pv2);
 VmVecFixToFloat (&p3, pv3);
-VmVecSubf (&d21, &p2, &p1);
+VmVecSub (&d21, &p2, &p1);
 if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z))
 	return 0;
-VmVecSubf (&d31, &p3, &p1);
-u = VmVecDotf (&d31, &d21);
+VmVecSub (&d31, &p3, &p1);
+u = VmVecDot (&d31, &d21);
 u /= m;
 h.p.x = p1.p.x + u * d21.p.x;
 h.p.y = p1.p.y + u * d21.p.y;
 h.p.z = p1.p.z + u * d21.p.z;
 // limit the intersection to [p1,p2]
-VmVecSubf (v, &p1, &h);
-VmVecSubf (v + 1, &p2, &h);
-m = VmVecDotf (v, v + 1);
+VmVecSub (v, &p1, &h);
+VmVecSub (v + 1, &p2, &h);
+m = VmVecDot (v, v + 1);
 if (m >= 1)
 	return 1;
 return 0;
@@ -115,8 +115,8 @@ if (!den) {
 	float denf;
 	VmVecFixToFloat (&nf, vPlaneNorm);
 	VmVecFixToFloat (&df, &d);
-	denf = -VmVecDotf (&nf, &df);
-	denf = -VmVecDotf (&nf, &df);
+	denf = -VmVecDot (&nf, &df);
+	denf = -VmVecDot (&nf, &df);
 	return 0;
 	}
 if (den > 0) {
@@ -655,8 +655,8 @@ int CheckLineToLine (fix *t1, fix *t2, vmsVector *p1, vmsVector *v1, vmsVector *
 
 //PrintLog ("         VmVecSub\n");
 VmVecSub (&det.rVec, p2, p1);
-//PrintLog ("         VmVecCross\n");
-VmVecCross (&det.fVec, v1, v2);
+//PrintLog ("         VmVecCrossProd\n");
+VmVecCrossProd (&det.fVec, v1, v2);
 //PrintLog ("         VmVecDot\n");
 cross_mag2 = VmVecDot (&det.fVec, &det.fVec);
 if (!cross_mag2)
@@ -782,7 +782,7 @@ int CheckVectorToSphere1 (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVect
 
 VmVecSub (&d, p1, p0);
 VmVecSub (&w, vSpherePos, p0);
-mag_d = VmVecCopyNormalize (&dn, &d);
+mag_d = VmVecNormalize (&dn, &d);
 if (mag_d == 0) {
 	intDist = VmVecMag (&w);
 	*intP = *p0;

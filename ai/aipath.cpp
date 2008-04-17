@@ -223,8 +223,8 @@ for (i = 1, --j; i < j; i++) {
 			}
 		}
 	else {
-		VmVecCross (&d, &a, &b);
-		VmVecCross (&e, &c, &d);
+		VmVecCrossProd (&d, &a, &b);
+		VmVecCrossProd (&e, &c, &d);
 		VmVecNormalize (&e);
 		}
 #ifdef _DEBUG

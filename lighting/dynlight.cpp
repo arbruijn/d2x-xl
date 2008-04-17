@@ -1118,14 +1118,14 @@ else {
 			if (pvPos) {
 				vVertex = gameData.segs.vertices [*pv];
 				//G3TransformPoint (&vVertex, &vVertex);
-				fLightDist = VmVecDistf (psl->pos, &vPosf) / fLightRange;
+				fLightDist = VmVecDist (psl->pos, &vPosf) / fLightRange;
 				fAttenuation = fLightDist / psl->brightness;
-				VmVecScaleAddf ((fVector *) &c.color, (fVector *) &c.color, (fVector *) &psl->color, 1.0f / fAttenuation);
+				VmVecScaleAdd ((fVector *) &c.color, (fVector *) &c.color, (fVector *) &psl->color, 1.0f / fAttenuation);
 				}
 			else 
 #endif
 				{
-				VmVecIncf ((fVector *) &psc->color, (fVector *) &psl->color);
+				VmVecInc ((fVector *) &psc->color, (fVector *) &psl->color);
 				}
 			}
 		}

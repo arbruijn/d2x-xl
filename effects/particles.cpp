@@ -937,7 +937,7 @@ if (gameStates.render.bVertexArrays) {
 		mRot.uVec.p.y = sinCosPart [nFrame].fCos;
 		mRot.uVec.p.x = sinCosPart [nFrame].fSin;
 		mRot.rVec.p.y = -mRot.uVec.p.x;
-		VmVecRotatef (&vOffset, &vOffset, &mRot);
+		VmVecRotate (&vOffset, &vOffset, &mRot);
 		pb [0].vertex.p.x = vCenter.p.x - vOffset.p.x;
 		pb [0].vertex.p.y = vCenter.p.y + vOffset.p.y;
 		pb [1].vertex.p.x = vCenter.p.x + vOffset.p.y;
@@ -1301,7 +1301,7 @@ else
 				}
 			c.nParts += h;
 			for (; h; h--, j = (j + 1) % c.nPartLimit) {
-				VmVecIncf (&vPosf, &vDeltaf);
+				VmVecInc (&vPosf, &vDeltaf);
 				vPos.p.x = (fix) (vPosf.p.x * 65536.0f);
 				vPos.p.y = (fix) (vPosf.p.y * 65536.0f);
 				vPos.p.z = (fix) (vPosf.p.z * 65536.0f);

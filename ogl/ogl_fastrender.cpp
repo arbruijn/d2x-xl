@@ -766,6 +766,8 @@ if (!bDepthOnly && gameOpts->render.bWireFrame) {
 		glColor3f (1,1,1);
 		for (int i = 0; i < faceP->nTris; i++, triP++)
 			glDrawArrays (GL_LINE_LOOP, triP->nIndex, 3);
+		if (gameOpts->render.bDynamicLight)
+			glEnableClientState (GL_COLOR_ARRAY);
 		glLineWidth (1);
 		if (bTextured)
 			glEnable (GL_TEXTURE_2D);
@@ -780,8 +782,8 @@ VmVecFixToFloat (&vBasef, SEGMENT_CENTER_I (faceP->nSegment));
 //G3RotatePointf (&vNormalf, (fVector *) (gameData.segs.faces.normals + faceP->nIndex), 0);
 memcpy (&vNormalf, gameData.segs.faces.normals + faceP->nIndex, sizeof (fVector3));
 //G3TransformPointf (&vBasef, &vCenterf, 0);
-VmVecScalef (&vNormalf, &vNormalf, 5);
-VmVecIncf (&vNormalf, &vBasef);
+VmVecScale (&vNormalf, &vNormalf, 5);
+VmVecInc (&vNormalf, &vBasef);
 glDisable (GL_TEXTURE_2D);
 glLineWidth (5);
 glColor3f (1,0,0);

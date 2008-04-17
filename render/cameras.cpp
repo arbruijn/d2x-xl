@@ -403,8 +403,8 @@ else
 		if (!bFitToWall && gameOpts->render.nPath) {
 			aImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) grdCurCanv->cvBitmap.bmProps.w;
 			if (vertexP)
-				aFace = VmVecDistf ((fVector *) vertexP, (fVector *) (vertexP + 1)) / 
-						  VmVecDistf ((fVector *) (vertexP + 1), (fVector *) (vertexP + 2));
+				aFace = VmVecDist ((fVector *) vertexP, (fVector *) (vertexP + 1)) / 
+						  VmVecDist ((fVector *) (vertexP + 1), (fVector *) (vertexP + 2));
 			else
 				aFace = dvFace / duFace;
 			dv = (aImage - aFace) / 2.0f;

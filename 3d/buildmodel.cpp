@@ -407,8 +407,8 @@ for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++)
 		VmVecFixToFloat (&vo, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
 		for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
 			for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++) {
-				VmVecAddf (&v, &pmv->vertex, &vo);
-				if (fRad < (r = VmVecDistf (&vOffset, &v))) {
+				VmVecAdd (&v, &pmv->vertex, &vo);
+				if (fRad < (r = VmVecDist (&vOffset, &v))) {
 					fRad = r;
 					}
 				}

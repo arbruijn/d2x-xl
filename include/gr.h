@@ -693,6 +693,8 @@ typedef struct grsFace {
 	ushort				index [4];
 	int					nIndex;
 	int					nTriIndex;
+	ushort				*vertIndex;
+	int					nVerts;
 	int					nTris;
 	grsBitmap			*bmBot;
 	grsBitmap			*bmTop;

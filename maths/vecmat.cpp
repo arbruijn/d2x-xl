@@ -68,7 +68,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector *VmVecSubf (fVector *dest, fVector *src0, fVector *src1)
+fVector *VmVecSub (fVector *dest, fVector *src0, fVector *src1)
 {
 dest->p.x = src0->p.x - src1->p.x;
 dest->p.y = src0->p.y - src1->p.y;
@@ -126,7 +126,7 @@ return dest;
 // ------------------------------------------------------------------------
 //averages two vectors. returns ptr to dest
 //dest can equal either source
-fVector *VmVecAvgf (fVector *dest, fVector *src0, fVector *src1)
+fVector *VmVecAvg (fVector *dest, fVector *src0, fVector *src1)
 {
 dest->p.x = (src0->p.x + src1->p.x) / 2;
 dest->p.y = (src0->p.y + src1->p.y) / 2;
@@ -136,7 +136,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector3 *VmVecAvgf (fVector3 *dest, fVector3 *src0, fVector3 *src1)
+fVector3 *VmVecAvg (fVector3 *dest, fVector3 *src0, fVector3 *src1)
 {
 dest->p.x = (src0->p.x + src1->p.x) / 2;
 dest->p.y = (src0->p.y + src1->p.y) / 2;
@@ -156,7 +156,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector *VmVecScalef (fVector *dest, fVector *src, float scale)
+fVector *VmVecScale (fVector *dest, fVector *src, float scale)
 {
 dest->p.x = src->p.x * scale;
 dest->p.y = src->p.y * scale;
@@ -166,7 +166,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector3 *VmVecScalef (fVector3 *dest, fVector3 *src, float scale)
+fVector3 *VmVecScale (fVector3 *dest, fVector3 *src, float scale)
 {
 dest->p.x = src->p.x * scale;
 dest->p.y = src->p.y * scale;
@@ -197,7 +197,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector *VmVecScaleAddf (fVector *dest, fVector *src1, fVector *src2, float scale)
+fVector *VmVecScaleAdd (fVector *dest, fVector *src1, fVector *src2, float scale)
 {
 dest->p.x = src1->p.x + src2->p.x * scale;
 dest->p.y = src1->p.y + src2->p.y * scale;
@@ -230,7 +230,7 @@ return dest;
 // ------------------------------------------------------------------------
 //scales a vector and adds it to another
 //dest += k * src
-fVector *VmVecScaleIncf (fVector *dest, fVector *src, float scale)
+fVector *VmVecScaleInc (fVector *dest, fVector *src, float scale)
 {
 dest->p.x += src->p.x * scale;
 dest->p.y += src->p.y * scale;
@@ -241,7 +241,7 @@ return dest;
 // ------------------------------------------------------------------------
 //scales a vector and adds it to another
 //dest += k * src
-fVector3 *VmVecScaleIncf (fVector3 *dest, fVector3 *src, float scale)
+fVector3 *VmVecScaleInc (fVector3 *dest, fVector3 *src, float scale)
 {
 dest->p.x += src->p.x * scale;
 dest->p.y += src->p.y * scale;
@@ -269,7 +269,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector *VmVecMulf (fVector *dest, fVector *src0, fVector *src1)
+fVector *VmVecMul (fVector *dest, fVector *src0, fVector *src1)
 {
 #if ENABLE_SSE
 if (gameStates.render.bEnableSSE) {
@@ -307,7 +307,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fix VmVecDotProd (vmsVector *v0, vmsVector *v1)
+fix VmVecDot (vmsVector *v0, vmsVector *v1)
 {
 #if 0
 #if ENABLE_SSE
@@ -353,7 +353,7 @@ else
 
 // ------------------------------------------------------------------------
 
-float VmVecDotf (fVector *v0, fVector *v1)
+float VmVecDot (fVector *v0, fVector *v1)
 {
 #if ENABLE_SSE
 if (gameStates.render.bEnableSSE) {
@@ -389,7 +389,7 @@ return v0->p.x * v1->p.x + v0->p.y * v1->p.y + v0->p.z * v1->p.z;
 
 // ------------------------------------------------------------------------
 
-float VmVecDotf (fVector3 *v0, fVector3 *v1)
+float VmVecDot (fVector3 *v0, fVector3 *v1)
 {
 return v0->p.x * v1->p.x + v0->p.y * v1->p.y + v0->p.z * v1->p.z;
 }
@@ -531,7 +531,7 @@ else
 
 // ------------------------------------------------------------------------
 
-float VmVecMagf (fVector *v)
+float VmVecMag (fVector *v)
 {
 #if ENABLE_SSE
 if (gameStates.render.bEnableSSE) {
@@ -562,7 +562,7 @@ return (float) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((do
 
 // ------------------------------------------------------------------------
 
-float VmVecMagf (fVector3 *v)
+float VmVecMag (fVector3 *v)
 {
 return (float) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((double) v->p.z)); 
 }
@@ -583,7 +583,7 @@ return VmVecMag (&d);
 
 // ------------------------------------------------------------------------
 
-float VmVecDistf (fVector *v0, fVector *v1)
+float VmVecDist (fVector *v0, fVector *v1)
 {
 	fVector	t;
 
@@ -616,16 +616,16 @@ if (gameStates.render.bEnableSSE) {
 	return (float) sqrt (t.p.x + t.p.y + t.p.z);
 	}
 #endif
-return VmVecMagf (VmVecSubf (&t, v0, v1));
+return VmVecMag (VmVecSub (&t, v0, v1));
 }
 
 // ------------------------------------------------------------------------
 
-float VmVecDistf (fVector3 *v0, fVector3 *v1)
+float VmVecDist (fVector3 *v0, fVector3 *v1)
 {
 	fVector3	t;
 
-return VmVecMagf (VmVecSubf (&t, v0, v1));
+return VmVecMag (VmVecSub (&t, v0, v1));
 }
 
 // ------------------------------------------------------------------------
@@ -640,8 +640,10 @@ return FixVecMagQuick (v0->p.x - v1->p.x, v0->p.y - v1->p.y, v0->p.z - v1->p.z);
 
 // ------------------------------------------------------------------------
 //normalize a vector. returns mag of source vec
-fix VmVecCopyNormalize (vmsVector *dest, vmsVector *src)
+fix VmVecNormalize (vmsVector *dest, vmsVector *src)
 {
+if (!src)
+	src = dest;
 fix m = VmVecMag (src);
 if (m) {
 	dest->p.x = FixDiv (src->p.x, m);
@@ -657,9 +659,11 @@ return m;
 
 // ------------------------------------------------------------------------
 //normalize a vector. returns mag of source vec
-float VmVecNormalizef (fVector *dest, fVector *src)
+float VmVecNormalize (fVector *dest, fVector *src)
 {
-float m = VmVecMagf (src);
+if (!src)
+	src = dest;
+float m = VmVecMag (src);
 if (m) {
 	dest->p.x = src->p.x / m;
 	dest->p.y = src->p.y / m;
@@ -670,9 +674,11 @@ return m;
 
 // ------------------------------------------------------------------------
 
-float VmVecNormalizef (fVector3 *dest, fVector3 *src)
+float VmVecNormalize (fVector3 *dest, fVector3 *src)
 {
-float m = VmVecMagf (src);
+if (!src)
+	src = dest;
+float m = VmVecMag (src);
 if (m) {
 	dest->p.x = src->p.x / m;
 	dest->p.y = src->p.y / m;
@@ -759,7 +765,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector *VmVecCrossProdf (fVector *dest, fVector *src0, fVector *src1)
+fVector *VmVecCrossProd (fVector *dest, fVector *src0, fVector *src1)
 {
 dest->p.x = src0->p.y * src1->p.z - src0->p.z * src1->p.y;
 dest->p.y = src0->p.z * src1->p.x - src0->p.x * src1->p.z;
@@ -769,7 +775,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector3 *VmVecCrossProdf (fVector3 *dest, fVector3 *src0, fVector3 *src1)
+fVector3 *VmVecCrossProd (fVector3 *dest, fVector3 *src0, fVector3 *src1)
 {
 dest->p.x = src0->p.y * src1->p.z - src0->p.z * src1->p.y;
 dest->p.y = src0->p.z * src1->p.x - src0->p.x * src1->p.z;
@@ -781,41 +787,41 @@ return dest;
 //computes non-normalized surface normal from three points. 
 //returns ptr to dest
 //dest CANNOT equal either source
-fVector *VmVecPerpf (fVector *dest, fVector *p0, fVector *p1, fVector *p2)
+fVector *VmVecPerp (fVector *dest, fVector *p0, fVector *p1, fVector *p2)
 {
 	fVector t0, t1;
 
-VmVecSubf (&t0, p1, p0);
-VmVecSubf (&t1, p2, p1);
-return VmVecCrossProdf (dest, &t0, &t1);
+VmVecSub (&t0, p1, p0);
+VmVecSub (&t1, p2, p1);
+return VmVecCrossProd (dest, &t0, &t1);
 }
 
 // ------------------------------------------------------------------------
 
-fVector3 *VmVecPerpf (fVector3 *dest, fVector3 *p0, fVector3 *p1, fVector3 *p2)
+fVector3 *VmVecPerp (fVector3 *dest, fVector3 *p0, fVector3 *p1, fVector3 *p2)
 {
 	fVector3 t0, t1;
 
-VmVecSubf (&t0, p1, p0);
-VmVecSubf (&t1, p2, p1);
-return VmVecCrossProdf (dest, &t0, &t1);
+VmVecSub (&t0, p1, p0);
+VmVecSub (&t1, p2, p1);
+return VmVecCrossProd (dest, &t0, &t1);
 }
 
 // ------------------------------------------------------------------------
 //computes surface normal from three points. result is normalized
 //returns ptr to dest
 //dest CANNOT equal either source
-fVector *VmVecNormalf (fVector *dest, fVector *p0, fVector *p1, fVector *p2)
+fVector *VmVecNormal (fVector *dest, fVector *p0, fVector *p1, fVector *p2)
 {
-VmVecNormalizef (dest, VmVecPerpf (dest, p0, p1, p2));
+VmVecNormalize (dest, VmVecPerp (dest, p0, p1, p2));
 return dest;
 }
 
 // ------------------------------------------------------------------------
 
-fVector3 *VmVecNormalf (fVector3 *dest, fVector3 *p0, fVector3 *p1, fVector3 *p2)
+fVector3 *VmVecNormal (fVector3 *dest, fVector3 *p0, fVector3 *p1, fVector3 *p2)
 {
-VmVecNormalizef (dest, VmVecPerpf (dest, p0, p1, p2));
+VmVecNormalize (dest, VmVecPerp (dest, p0, p1, p2));
 return dest;
 }
 
@@ -922,8 +928,8 @@ fixang VmVecDeltaAng (vmsVector *v0, vmsVector *v1, vmsVector *fVec)
 {
 vmsVector t0, t1;
 
-VmVecCopyNormalize (&t0, v0);
-VmVecCopyNormalize (&t1, v1);
+VmVecNormalize (&t0, v0);
+VmVecNormalize (&t1, v1);
 return VmVecDeltaAngNorm (&t0, &t1, fVec);
 }
 
@@ -946,23 +952,23 @@ return a;
 //the forward vector (third parameter) can be NULL, in which case the absolute
 //value of the angle in returned.  Otherwise the angle around that vector is
 //returned.
-float VmVecDeltaAngf (fVector *v0, fVector *v1, fVector *fVec)
+float VmVecDeltaAng (fVector *v0, fVector *v1, fVector *fVec)
 {
 fVector t0, t1;
 
-VmVecNormalizef (&t0, v0);
-VmVecNormalizef (&t1, v1);
-return VmVecDeltaAngNormf (&t0, &t1, fVec);
+VmVecNormalize (&t0, v0);
+VmVecNormalize (&t1, v1);
+return VmVecDeltaAngNorm (&t0, &t1, fVec);
 }
 
 // ------------------------------------------------------------------------
 //computes the delta angle between two normalized vectors. 
-float VmVecDeltaAngNormf (fVector *v0, fVector *v1, fVector *fVec)
+float VmVecDeltaAngNorm (fVector *v0, fVector *v1, fVector *fVec)
 {
-float a = (float) acos ((double) VmVecDotf (v0, v1));
+float a = (float) acos ((double) VmVecDot (v0, v1));
 if (fVec) {
 	fVector t;
-	if (VmVecDotf (VmVecCrossProdf (&t, v0, v1), fVec) < 0)
+	if (VmVecDot (VmVecCrossProd (&t, v0, v1), fVec) < 0)
 		a = -a;
 	}
 return a;
@@ -992,7 +998,7 @@ return m;
 
 // ------------------------------------------------------------------------
 
-fMatrix *VmSinCos2Matrixd (fMatrix *m, double sinp, double cosp, double sinb, double cosb, double sinh, double cosh)
+fMatrix *VmSinCos2Matrix (fMatrix *m, double sinp, double cosp, double sinb, double cosb, double sinh, double cosh)
 {
 #if 0
 	double sbsh, cbch, cbsh, sbch;
@@ -1017,7 +1023,7 @@ return m;
 
 // ------------------------------------------------------------------------
 
-fMatrix *VmSinCos2Matrixf (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh)
+fMatrix *VmSinCos2Matrix (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh)
 {
 	float sbsh, cbch, cbsh, sbch;
 
@@ -1080,7 +1086,7 @@ vmsMatrix *VmVector2Matrix (vmsMatrix *m, vmsVector *fVec, vmsVector *uVec, vmsV
 					*zvec = &m->fVec;
 
 Assert(fVec != NULL);
-if (VmVecCopyNormalize (zvec, fVec) == 0) {
+if (VmVecNormalize (zvec, fVec) == 0) {
 	Int3();		//forward vec should not be zero-length
 	return m;
 	}
@@ -1103,7 +1109,7 @@ bad_vector2:
 			}
 		}
 	else {						//use right vec
-		if (VmVecCopyNormalize (xvec, rVec) == 0)
+		if (VmVecNormalize (xvec, rVec) == 0)
 			goto bad_vector2;
 		VmVecCrossProd (yvec, zvec, xvec);
 		//normalize new perpendicular vector
@@ -1114,7 +1120,7 @@ bad_vector2:
 		}
 	}
 else {		//use up vec
-	if (VmVecCopyNormalize (yvec, uVec) == 0)
+	if (VmVecNormalize (yvec, uVec) == 0)
 		goto bad_vector2;
 	VmVecCrossProd (xvec, yvec, zvec);
 	//normalize new perpendicular vector
@@ -1286,7 +1292,7 @@ return dest;
 // ------------------------------------------------------------------------
 //rotates a vector through a matrix. returns ptr to dest vector
 
-fVector *VmVecRotatef (fVector *dest, fVector *src, fMatrix *m)
+fVector *VmVecRotate (fVector *dest, fVector *src, fMatrix *m)
 {
 #if ENABLE_SSE
 if (gameStates.render.bEnableSSE) {
@@ -1356,9 +1362,9 @@ else
 		h = *src;
 		src = &h;
 		}
-	dest->p.x = VmVecDotf (src, &m->rVec);
-	dest->p.y = VmVecDotf (src, &m->uVec);
-	dest->p.z = VmVecDotf (src, &m->fVec);
+	dest->p.x = VmVecDot (src, &m->rVec);
+	dest->p.y = VmVecDot (src, &m->uVec);
+	dest->p.z = VmVecDot (src, &m->fVec);
 	}
 return dest;
 }
@@ -1377,7 +1383,7 @@ return m;
 
 // ------------------------------------------------------------------------
 //transpose a matrix in place. returns ptr to matrix
-fMatrix *VmTransposeMatrixf (fMatrix *m)
+fMatrix *VmTransposeMatrix (fMatrix *m)
 {
 	float	t;
 
@@ -1408,9 +1414,9 @@ return pDest;
 
 // ------------------------------------------------------------------------
 
-fMatrix *VmInvertMatrixf (fMatrix *pDest, fMatrix *pSrc)
+fMatrix *VmInvertMatrix (fMatrix *pDest, fMatrix *pSrc)
 {
-	float		fDet = VmMatrixDetValuef (pSrc);
+	float		fDet = VmMatrixDetValue (pSrc);
 	fMatrix	m = *pSrc;
 
 pDest->rVec.p.x = (m.uVec.p.y * m.fVec.p.z - m.uVec.p.z * m.fVec.p.y) / fDet;
@@ -1445,7 +1451,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fMatrix *VmCopyTransposeMatrixf (fMatrix *dest, fMatrix *src)
+fMatrix *VmCopyTransposeMatrix (fMatrix *dest, fMatrix *src)
 {
 Assert(dest != src);
 dest->rVec.p.x = src->rVec.p.x;
@@ -1557,7 +1563,7 @@ return FixMul (m->rVec.p.x, FixMul (m->uVec.p.y, m->fVec.p.z)) -
 
 //	-----------------------------------------------------------------------------
 //returns the value of a determinant
-float VmMatrixDetValuef (fMatrix *m)
+float VmMatrixDetValue (fMatrix *m)
 {
 return m->rVec.p.x * m->uVec.p.y * m->fVec.p.z -
 		 m->rVec.p.x * m->uVec.p.z * m->fVec.p.y -
@@ -1583,7 +1589,7 @@ vmsAngVec *VmExtractAnglesVector (vmsAngVec *a, vmsVector *v)
 {
 	vmsVector t;
 
-if (VmVecCopyNormalize (&t, v))
+if (VmVecNormalize (&t, v))
 	VmExtractAnglesVecNorm (a, &t);
 return a;
 }
@@ -1755,21 +1761,21 @@ return bClamped;
 
 // ------------------------------------------------------------------------
 
-int VmPointLineIntersectionf (fVector *hitP, fVector *p1, fVector *p2, fVector *p3, fVector *vPos, int bClamp)
+int VmPointLineIntersection (fVector *hitP, fVector *p1, fVector *p2, fVector *p3, fVector *vPos, int bClamp)
 {
 	fVector	d31, d21;
 	double	m, u;
 	int		bClamped = 0;
 
-VmVecSubf (&d21, p2, p1);
+VmVecSub (&d21, p2, p1);
 m = fabs (d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z);
 if (!m) {
 	if (hitP)
 		*hitP = *p1;
 	return 0;
 	}
-VmVecSubf (&d31, p3, p1);
-u = (double) VmVecDotf (&d31, &d21);
+VmVecSub (&d31, p3, p1);
+u = (double) VmVecDot (&d31, &d21);
 u /= m;
 if (u < 0)
 	bClamped = 2;
@@ -1781,7 +1787,7 @@ else
 if (hitP) {
 	if (bClamp && bClamped) {
 		if (vPos)
-			bClamped = (VmVecDistf (vPos, p1) < VmVecDistf (vPos, p2)) ? 2 : 1;
+			bClamped = (VmVecDist (vPos, p1) < VmVecDist (vPos, p2)) ? 2 : 1;
 		*hitP = (bClamped == 1) ? *p1 : * p2;
 		}
 	else {
@@ -1795,21 +1801,21 @@ return bClamped;
 
 // ------------------------------------------------------------------------
 
-int VmPointLineIntersectionf (fVector3 *hitP, fVector3 *p1, fVector3 *p2, fVector3 *p3, fVector3 *vPos, int bClamp)
+int VmPointLineIntersection (fVector3 *hitP, fVector3 *p1, fVector3 *p2, fVector3 *p3, fVector3 *vPos, int bClamp)
 {
 	fVector3	d31, d21;
 	double	m, u;
 	int		bClamped = 0;
 
-VmVecSubf (&d21, p2, p1);
+VmVecSub (&d21, p2, p1);
 m = fabs (d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z);
 if (!m) {
 	if (hitP)
 		*hitP = *p1;
 	return 0;
 	}
-VmVecSubf (&d31, p3, p1);
-u = (double) VmVecDotf (&d31, &d21);
+VmVecSub (&d31, p3, p1);
+u = (double) VmVecDot (&d31, &d21);
 u /= m;
 if (u < 0)
 	bClamped = 2;
@@ -1821,7 +1827,7 @@ else
 if (hitP) {
 	if (bClamp && bClamped) {
 		if (vPos)
-			bClamped = (VmVecDistf (vPos, p1) < VmVecDistf (vPos, p2)) ? 2 : 1;
+			bClamped = (VmVecDist (vPos, p1) < VmVecDist (vPos, p2)) ? 2 : 1;
 		*hitP = (bClamped == 1) ? *p1 : * p2;
 		}
 	else {
@@ -1857,22 +1863,22 @@ return (fix) ((double) VmVecMag (&abxap) / magab * F1_0);
 
 // ------------------------------------------------------------------------
 
-float VmLinePointDistf (fVector *a, fVector *b, fVector *p, int bClamp)
+float VmLinePointDist (fVector *a, fVector *b, fVector *p, int bClamp)
 {
 	fVector	h;
 
-VmPointLineIntersectionf (&h, a, b, p, NULL, bClamp);
-return VmVecDistf (&h, p);
+VmPointLineIntersection (&h, a, b, p, NULL, bClamp);
+return VmVecDist (&h, p);
 }
 
 // ------------------------------------------------------------------------
 
-float VmLinePointDistf (fVector3 *a, fVector3 *b, fVector3 *p, int bClamp)
+float VmLinePointDist (fVector3 *a, fVector3 *b, fVector3 *p, int bClamp)
 {
 	fVector3	h;
 
-VmPointLineIntersectionf (&h, a, b, p, NULL, bClamp);
-return VmVecDistf (&h, p);
+VmPointLineIntersection (&h, a, b, p, NULL, bClamp);
+return VmVecDist (&h, p);
 }
 
 //------------------------------------------------------------------------------
@@ -1892,13 +1898,101 @@ return vReflect;
 // Reflect vDir at surface with normal vNormal. Return result in vReflect
 // 2 * n * (l dot n) - l
 
-fVector *VmVecReflectf (fVector *vReflect, fVector *vDir, fVector *vNormal)
+fVector *VmVecReflect (fVector *vReflect, fVector *vDir, fVector *vNormal)
 {
-	float dot = VmVecDotf (vDir, vNormal);
+	float dot = VmVecDot (vDir, vNormal);
 
-VmVecScalef (vReflect, vNormal, 2 * dot);
-VmVecDecf (vReflect, vDir);
-return VmVecNegatef (vReflect);
+VmVecScale (vReflect, vNormal, 2 * dot);
+VmVecDec (vReflect, vDir);
+return VmVecNegate (vReflect);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+float VmLineLineIntersection (fVector3 *v1, fVector3 *v2, fVector3 *v3, fVector3 *v4, fVector3 *va, fVector3 *vb)
+{
+   fVector3	v13, v43, v21;
+   float		d1343, d4321, d1321, d4343, d2121;
+   float		num, den, mua, mub;
+
+VmVecSub (&v13, v1, v3);
+VmVecSub (&v43, v4, v3);
+if (VmVecMag (&v43) < 0.00001f) {
+	*va = *vb = *v4;
+	return 0;
+	}
+VmVecSub (&v21, v2, v1);
+if (VmVecMag (&v43) < 0.00001f)  {
+	*va = *vb = *v2;
+	return 0;
+	}
+d1343 = VmVecDot (&v13, &v43);
+d4321 = VmVecDot (&v43, &v21);
+d1321 = VmVecDot (&v13, &v21);
+d4343 = VmVecDot (&v43, &v43);
+d2121 = VmVecDot (&v21, &v21);
+den = d2121 * d4343 - d4321 * d4321;
+if (abs (den) < 0.00001f) {
+	VmVecAvg (va, v1, v2);
+	VmVecAvg (vb, v3, v4);
+	VmVecAvg (va, va, vb);
+	*vb = *va;
+	return 0;
+	}
+num = d1343 * d4321 - d1321 * d4343;
+mua = num / den;
+mub = (d1343 + d4321 * mua) / d4343;
+va->p.x = v1->p.x + mua * v21.p.x;
+va->p.y = v1->p.y + mua * v21.p.y;
+va->p.z = v1->p.z + mua * v21.p.z;
+vb->p.x = v3->p.x + mub * v43.p.x;
+vb->p.y = v3->p.y + mub * v43.p.y;
+vb->p.z = v3->p.z + mub * v43.p.z;
+return VmVecDist (va, vb);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+float VmLineLineIntersection (fVector *v1, fVector *v2, fVector *v3, fVector *v4, fVector *va, fVector *vb)
+{
+   fVector	v13, v43, v21;
+   float		d1343, d4321, d1321, d4343, d2121;
+   float		num, den, mua, mub;
+
+VmVecSub (&v13, v1, v3);
+VmVecSub (&v43, v4, v3);
+if (VmVecMag (&v43) < 0.00001f) {
+	*va = *vb = *v4;
+	return 0;
+	}
+VmVecSub (&v21, v2, v1);
+if (VmVecMag (&v43) < 0.00001f)  {
+	*va = *vb = *v2;
+	return 0;
+	}
+d1343 = VmVecDot (&v13, &v43);
+d4321 = VmVecDot (&v43, &v21);
+d1321 = VmVecDot (&v13, &v21);
+d4343 = VmVecDot (&v43, &v43);
+d2121 = VmVecDot (&v21, &v21);
+den = d2121 * d4343 - d4321 * d4321;
+if (abs (den) < 0.00001f) {
+	VmVecAvg (va, v1, v2);
+	VmVecAvg (vb, v3, v4);
+	VmVecAvg (va, va, vb);
+	*vb = *va;
+	return 0;
+	}
+num = d1343 * d4321 - d1321 * d4343;
+mua = num / den;
+mub = (d1343 + d4321 * mua) / d4343;
+va->p.x = v1->p.x + mua * v21.p.x;
+va->p.y = v1->p.y + mua * v21.p.y;
+va->p.z = v1->p.z + mua * v21.p.z;
+vb->p.x = v3->p.x + mub * v43.p.x;
+vb->p.y = v3->p.y + mub * v43.p.y;
+vb->p.z = v3->p.z + mub * v43.p.z;
+return VmVecDist (va, vb);
 }
 
 // --------------------------------------------------------------------------------------------------------------------

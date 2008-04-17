@@ -1989,7 +1989,7 @@ for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
 	pp->p3_normal.vNormal.p.x /= pp->p3_normal.nFaces;
 	pp->p3_normal.vNormal.p.y /= pp->p3_normal.nFaces;
 	pp->p3_normal.vNormal.p.z /= pp->p3_normal.nFaces;
-	VmVecNormalizef (&pp->p3_normal.vNormal, &pp->p3_normal.vNormal);
+	VmVecNormalize (&pp->p3_normal.vNormal, &pp->p3_normal.vNormal);
 	pp->p3_normal.nFaces = 1;
 	}
 }

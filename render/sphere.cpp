@@ -496,7 +496,7 @@ else {
 		for (j = 0; j < h; j++) {
 			for (i = 0; i < nQuads; i++, psc [0]++) {
 				p [i] = psc [0]->vPos;
-				VmVecScalef (p + i, p + i, fRadius);
+				VmVecScale (p + i, p + i, fRadius);
 				G3TransformPointf (p + i, p + i, 0);
 				if (bTextured) {
 					tc [i].v.u = psc [0]->uvl.v.u * nTiles;
@@ -508,7 +508,7 @@ else {
 			if (!bTextured) {
 				for (i = 0; i < nQuads; i++, psc [1]++) {
 					p [i] = psc [1]->vPos;
-					VmVecScalef (p + i, p + i, fRadius);
+					VmVecScale (p + i, p + i, fRadius);
 					G3TransformPointf (p + i, p + i, 0);
 					if (bTextured) {
 						tc [i].v.u = psc [1]->uvl.v.u * nTiles;

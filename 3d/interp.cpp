@@ -126,7 +126,7 @@ while (n--) {
 			norms->vNormal.p.y /= norms->nFaces;
 			norms->vNormal.p.z /= norms->nFaces;
 			norms->nFaces = 1;
-			VmVecNormalizef (&norms->vNormal, &norms->vNormal);
+			VmVecNormalize (&norms->vNormal, &norms->vNormal);
 			}
 		dest->p3_normal = *norms++;
 		}

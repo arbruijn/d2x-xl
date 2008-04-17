@@ -471,7 +471,7 @@ else {
 	VmVecFixToFloat (&nf, pn);
 	for (i = 0; i < nVerts; i++) {
 		pvn = po->pVertNorms + pfv [i];
-		VmVecIncf (&pvn->vNormal, &nf);
+		VmVecInc (&pvn->vNormal, &nf);
 		pvn->nFaces++;
 		}
 	}
