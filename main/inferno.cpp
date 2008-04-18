@@ -1133,8 +1133,6 @@ if ((t = FindArg ("-mathformat")))
 if ((t = FindArg ("-enable_sse")))
 	gameStates.render.bEnableSSE = NumArg (t, 1);
 #endif
-if ((t = FindArg ("-render_opt")))
-	gameOptions [0].render.bOptimize = NumArg (t, 1);
 #ifdef _DEBUG
 if ((t = FindArg ("-gl_transform")))
 	gameStates.ogl.bUseTransform = NumArg (t, 1);
@@ -1319,7 +1317,7 @@ if (i) {
 	gameOptions [1].render.bUseShaders = 1;
 	gameOptions [1].render.bHiresModels = 0;
 	gameOptions [1].render.effects.bAutoTransparency = 0;
-	gameOptions [1].render.bOptimize = 0;
+	gameOptions [1].render.nMeshQuality = 0;
 	gameOptions [1].render.nMathFormat = 0;
 	gameOptions [1].render.nDefMathFormat = 0;
 	gameOptions [1].render.nDebrisLife = 0;
@@ -1485,11 +1483,7 @@ else {
 	gameOptions [0].render.weaponIcons.alpha = 4;
 	gameOptions [0].render.textures.bUseHires = 0;
 	gameOptions [0].render.textures.nQuality = 3;
-#if APPEND_LAYERED_TEXTURES
-	gameOptions [0].render.bOptimize = 1;
-#else
-	gameOptions [0].render.bOptimize = 0;
-#endif
+	gameOptions [0].render.nMeshQuality = 0;
 	gameOptions [0].render.cockpit.bMissileView = 1;
 	gameOptions [0].render.cockpit.bGuidedInMainView = 1;
 	gameOptions [0].render.smoke.nDens [0] =

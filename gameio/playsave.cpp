@@ -1177,7 +1177,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[1].multi.bUseMacros", "0"},
 	{"gameOptions[1].ogl.bSetGammaRamp", "0"},
 	{"gameOptions[1].render.bAllSegs", "0"},
-	{"gameOptions[1].render.bOptimize", "0"},
+	{"gameOptions[1].render.nMeshQuality", "0"},
 	{"gameOptions[1].render.cockpit.bMissileView", "0"},
 	{"gameOptions[1].render.cockpit.bHUD", "0"},
 	{"gameOptions[1].render.cockpit.bReticle", "0"},
@@ -2325,7 +2325,7 @@ for (i = 0; i < 2; i++) {
 		CFWriteInt(mpParams.udpClientPort, &cf);
 		CFWrite(mpParams.szServerIpAddr, 16, 1, &cf);
 		}
-	CFWriteByte ((sbyte) gameOptions [i].render.bOptimize, &cf);
+	CFWriteByte ((sbyte) gameOptions [i].render.nMeshQuality, &cf);
 	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [1].bRotateLevels, &cf);
 		CFWriteByte ((sbyte) extraGameInfo [1].bDisableReactor, &cf);

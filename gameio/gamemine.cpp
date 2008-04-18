@@ -1514,7 +1514,6 @@ return 0;
 void ComputeSingleSegmentVisibility (short nStartSeg)
 {
 	tSide			*sideP;
-	short			*vertP;
 	short			nSegment, nSide, i, j;
 	vmsVector	vNormal;
 	vmsAngVec	vAngles;

@@ -1458,10 +1458,6 @@ void HandleGameKey(int key)
 			gameStates.app.bSingleStep = 1;
 			break;
 
-		case KEY_ALTED + KEY_O:
-			gameOpts->render.bOptimize = !gameOpts->render.bOptimize;
-			break;
-
 		case KEY_F5 + KEY_SHIFTED:
 		   DropCurrentWeapon();
 			break;

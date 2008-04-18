@@ -426,6 +426,9 @@ int LoadPlayList (char *pszPlayList)
 	int	l, bRead, nSongs, bMP3;
 
 CFSplitPath (pszPlayList, szListFolder, NULL, NULL);
+for (l = (int) strlen (pszPlayList) - 1; (l >= 0) && isspace (pszPlayList [l]); l--)
+	;
+pszPlayList [l] = '\0';
 for (bRead = 0; bRead < 2; bRead++) {
 	if (!CFOpen (&cf, pszPlayList, "", "rt", 0))
 		return 0;
