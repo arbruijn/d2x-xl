@@ -146,7 +146,7 @@ if (gameStates.app.bD2XLevel) {
 			return 1;
 		}
 	}
-return gameOpts->render.bAutoTransparency && IsTransparentTexture (sideP->nBaseTex);
+return gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (sideP->nBaseTex);
 }
 
 //-----------------------------------------------------------------

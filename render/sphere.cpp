@@ -336,7 +336,7 @@ if (alpha < 0)
 	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
 if (alpha < 1.0f) {
 #if ADDITIVE_SPHERE_BLENDING
-	fScale *= coronaIntensities [gameOpts->render.nObjCoronaIntensity];
+	fScale *= coronaIntensities [gameOpts->render.coronas.nObjIntensity];
 #endif
 	if (sdP->pPulse && sdP->pPulse->fScale) {
 		red *= fScale;

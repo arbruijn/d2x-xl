@@ -605,7 +605,7 @@ int SetupCoronaFaces (void)
 	grsFace		*faceP;
 	int			i, j, nSegment;
 
-if (!gameOpts->render.bCoronas)
+if (!gameOpts->render.coronas.bUse)
 	return 0;
 gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
@@ -710,7 +710,7 @@ RenderSegments (nType, bVertexArrays, RENDER_DEPTHMASK_FIRST);
 #if RENDER_DEPTHMASK_FIRST
 EndRenderFaces (0, bVertexArrays, 1);
 nFaces = SortFaces ();
-if (gameOpts->render.bCoronas && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && (CoronaStyle () == 1)) {
+if (gameOpts->render.coronas.bUse && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && (CoronaStyle () == 1)) {
 	gameStates.render.bQueryCoronas = 2;
 	gameStates.render.nType = 1;
 	RenderMineObjects (1);
@@ -1251,7 +1251,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #endif
 		if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
 			continue;
-		if (faceP->bSparks && gameOpts->render.bEnergySparks) {
+		if (faceP->bSparks && gameOpts->render.effects.bEnergySparks) {
 			faceP->bVisible = 0;
 			continue;
 			}
@@ -1362,7 +1362,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nSegment = nSegment;
 #endif
-		if (faceP->bSparks && gameOpts->render.bEnergySparks) {
+		if (faceP->bSparks && gameOpts->render.effects.bEnergySparks) {
 			faceP->bVisible = 0;
 			continue;
 			}
@@ -1488,7 +1488,7 @@ void RenderMineObjects (int nType)
 	short	nSegment;
 
 #ifdef _DEBUG
-if (!gameOpts->render.bObjects)
+if (!gameOpts->render.debug.bObjects)
 	return;
 #endif
 if ((nType < 1) || (nType > 2))

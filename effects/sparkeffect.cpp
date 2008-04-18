@@ -172,7 +172,7 @@ void DoEnergySparkFrame (void)
 {
 	short	nSegment;
 
-if (gameOpts->render.bEnergySparks)
+if (gameOpts->render.effects.bEnergySparks)
 	for (nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
 		UpdateSegmentSparks (nSegment);
 }
@@ -184,7 +184,7 @@ void RenderEnergySparks (void)
 {
 	short	nSegment;
 
-if (gameOpts->render.bEnergySparks)
+if (gameOpts->render.effects.bEnergySparks)
 	for (nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
 		RenderSegmentSparks (nSegment);
 }
@@ -210,7 +210,7 @@ void AllocEnergySparks (void)
 {
 	short	nSegment;
 
-if (gameOpts->render.bEnergySparks && BuildSparkSegList ()) {
+if (gameOpts->render.effects.bEnergySparks && BuildSparkSegList ()) {
 	if (BM_ADDON (BM_ADDON_FUELSPARK) && BM_ADDON (BM_ADDON_REPAIRSPARK)) {
 		PageInAddonBitmap (-(BM_ADDON_FUELSPARK) - 1);
 		PageInAddonBitmap (-(BM_ADDON_REPAIRSPARK) - 1);
@@ -221,7 +221,7 @@ if (gameOpts->render.bEnergySparks && BuildSparkSegList ()) {
 		d_srand ((uint) gameStates.app.nSDLTicks);
 		}
 	else
-		gameOpts->render.bEnergySparks = 0;
+		gameOpts->render.effects.bEnergySparks = 0;
 	}
 }
 
@@ -231,7 +231,7 @@ void FreeEnergySparks (void)
 {
 	short	nSegment;
 
-if (gameOpts->render.bEnergySparks)
+if (gameOpts->render.effects.bEnergySparks)
 	for (nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
 		FreeSegmentSparks (nSegment);
 }

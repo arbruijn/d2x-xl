@@ -633,14 +633,14 @@ int CreateShrapnels (tObject *parentObjP)
 	tShrapnelData	*sdP;
 	tShrapnel		*shrapnelP;
 	vmsVector		vDir;
-	int				i, h = (int) (f2fl (parentObjP->size) * fShrapnelScale [gameOpts->render.nExplShrapnels] + 0.5);
+	int				i, h = (int) (f2fl (parentObjP->size) * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
 	short				nObject;
 	tObject			*objP;
 	tRgbaColorf		color = {1,1,1,0.5};
 
 if (!SHOW_SMOKE)
 	return 0;
-if (!gameOpts->render.nExplShrapnels)
+if (!gameOpts->render.effects.nShrapnels)
 	return 0;
 if (parentObjP->flags & OF_ARMAGEDDON)
 	return 0;

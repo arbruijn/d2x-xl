@@ -154,6 +154,7 @@ static struct {
 	int	nMaxFPS;
 	int	nRenderQual;
 	int	nTexQual;
+	int	nMeshQual;
 	int	nWallTransp;
 } renderOpts;
 
@@ -273,6 +274,7 @@ static struct {
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
 static char *pszTexQual [4];
+static char *pszMeshQual [4];
 static char *pszRendQual [5];
 static char *pszSmokeAmount [5];
 static char *pszSmokeSize [4];
@@ -924,7 +926,7 @@ if (gameStates.app.bNostalgia || !gameStates.app.bUseDefaults)
 	
 SetMaxCustomDetails ();
 gameOpts->render.nMaxFPS = 60;
-gameOpts->render.bTransparentEffects = 1;
+gameOpts->render.effects.bTransparent = 1;
 gameOpts->render.color.nLightMapRange = 5;
 gameOpts->render.color.bMix = 1;
 gameOpts->render.color.bWalls = 1;
@@ -942,10 +944,10 @@ if (gameStates.app.nCompSpeed == 0) {
 	gameOpts->movies.bResize = 0;
 	gameOpts->render.shadows.nClip = 0;
 	gameOpts->render.shadows.nReach = 0;
-	gameOpts->render.nExplShrapnels = 0;
+	gameOpts->render.effects.nShrapnels = 0;
 	gameOpts->render.smoke.bAuxViews = 0;
 	gameOpts->render.lightnings.bAuxViews = 0;
-	gameOpts->render.nCoronaStyle = 0;
+	gameOpts->render.coronas.nStyle = 0;
 	gameOpts->ogl.nMaxLights = 4;
 	extraGameInfo [0].bShadows = 0;
 	extraGameInfo [0].bUseSmoke = 0;
@@ -962,7 +964,7 @@ else if (gameStates.app.nCompSpeed == 1) {
 	gameOpts->render.smoke.bRobots = 1;
 	gameOpts->render.smoke.bMissiles = 1;
 	gameOpts->render.smoke.bCollisions = 0;
-	gameOpts->render.nExplShrapnels = 1;
+	gameOpts->render.effects.nShrapnels = 1;
 	gameOpts->render.smoke.bStatic = 0;
 	gameOpts->render.smoke.bAuxViews = 0;
 	gameOpts->render.lightnings.bAuxViews = 0;
@@ -987,7 +989,7 @@ else if (gameStates.app.nCompSpeed == 1) {
 	gameOpts->render.smoke.nAlpha [3] =
 	gameOpts->render.smoke.nAlpha [4] = 0;
 	gameOpts->render.smoke.bPlasmaTrails = 0;
-	gameOpts->render.nCoronaStyle = 0;
+	gameOpts->render.coronas.nStyle = 0;
 	gameOpts->render.cockpit.bTextGauges = 1;
 	gameOpts->render.bDynLighting = 0;
 	gameOpts->render.smoke.bAuxViews = 0;
@@ -1014,7 +1016,7 @@ else if (gameStates.app.nCompSpeed == 2) {
 	gameOpts->render.smoke.bRobots = 1;
 	gameOpts->render.smoke.bMissiles = 1;
 	gameOpts->render.smoke.bCollisions = 0;
-	gameOpts->render.nExplShrapnels = 2;
+	gameOpts->render.effects.nShrapnels = 2;
 	gameOpts->render.smoke.bStatic = 1;
 	gameOpts->render.smoke.nDens [0] =
 	gameOpts->render.smoke.nDens [1] =
@@ -1037,7 +1039,7 @@ else if (gameStates.app.nCompSpeed == 2) {
 	gameOpts->render.smoke.nAlpha [3] =
 	gameOpts->render.smoke.nAlpha [4] = 0;
 	gameOpts->render.smoke.bPlasmaTrails = 0;
-	gameOpts->render.nCoronaStyle = 1;
+	gameOpts->render.coronas.nStyle = 1;
 	gameOpts->render.cockpit.bTextGauges = 0;
 	gameOpts->render.bDynLighting = 1;
 	gameOpts->render.smoke.bAuxViews = 0;
@@ -1073,7 +1075,7 @@ else if (gameStates.app.nCompSpeed == 3) {
 	gameOpts->render.smoke.bRobots = 1;
 	gameOpts->render.smoke.bMissiles = 1;
 	gameOpts->render.smoke.bCollisions = 0;
-	gameOpts->render.nExplShrapnels = 3;
+	gameOpts->render.effects.nShrapnels = 3;
 	gameOpts->render.smoke.bStatic = 1;
 	gameOpts->render.smoke.nDens [0] =
 	gameOpts->render.smoke.nDens [1] =
@@ -1096,7 +1098,7 @@ else if (gameStates.app.nCompSpeed == 3) {
 	gameOpts->render.smoke.nAlpha [3] =
 	gameOpts->render.smoke.nAlpha [4] = 0;
 	gameOpts->render.smoke.bPlasmaTrails = 1;
-	gameOpts->render.nCoronaStyle = 2;
+	gameOpts->render.coronas.nStyle = 2;
 	gameOpts->render.cockpit.bTextGauges = 0;
 	gameOpts->render.bDynLighting = 1;
 	gameOpts->render.smoke.bAuxViews = 0;
@@ -1132,7 +1134,7 @@ else if (gameStates.app.nCompSpeed == 4) {
 	gameOpts->render.smoke.bRobots = 1;
 	gameOpts->render.smoke.bMissiles = 1;
 	gameOpts->render.smoke.bCollisions = 1;
-	gameOpts->render.nExplShrapnels = 4;
+	gameOpts->render.effects.nShrapnels = 4;
 	gameOpts->render.smoke.bStatic = 1;
 	gameOpts->render.smoke.nDens [0] =
 	gameOpts->render.smoke.nDens [1] =
@@ -1155,7 +1157,7 @@ else if (gameStates.app.nCompSpeed == 4) {
 	gameOpts->render.smoke.nAlpha [3] =
 	gameOpts->render.smoke.nAlpha [4] = 0;
 	gameOpts->render.smoke.bPlasmaTrails = 1;
-	gameOpts->render.nCoronaStyle = 2;
+	gameOpts->render.coronas.nStyle = 2;
 	gameOpts->render.bDynLighting = 1;
 	gameOpts->render.smoke.bAuxViews = 1;
 	gameOpts->render.lightnings.nQuality = 1;
@@ -2184,21 +2186,21 @@ if (extraGameInfo [0].bLightTrails != v) {
 	}
 m = menus + effectOpts.nCoronas;
 v = m->value;
-if (gameOpts->render.bCoronas != v) {
-	gameOpts->render.bCoronas = v;
+if (gameOpts->render.coronas.bUse != v) {
+	gameOpts->render.coronas.bUse = v;
 	*key = -2;
 	}
 m = menus + effectOpts.nShotCoronas;
 v = m->value;
-if (gameOpts->render.bShotCoronas != v) {
-	gameOpts->render.bShotCoronas = v;
+if (gameOpts->render.coronas.bShots != v) {
+	gameOpts->render.coronas.bShots = v;
 	*key = -2;
 	}
 if (effectOpts.nCoronaStyle >= 0) {
 	m = menus + effectOpts.nCoronaStyle;
 	v = m->value;
-	if (gameOpts->render.nCoronaStyle != v) {
-		gameOpts->render.nCoronaStyle = v;
+	if (gameOpts->render.coronas.nStyle != v) {
+		gameOpts->render.coronas.nStyle = v;
 		sprintf (m->text, TXT_CORONA_QUALITY, pszCoronaQual [v]);
 		m->rebuild = -1;
 		}
@@ -2206,8 +2208,8 @@ if (effectOpts.nCoronaStyle >= 0) {
 if (effectOpts.nCoronaIntensity >= 0) {
 	m = menus + effectOpts.nCoronaIntensity;
 	v = m->value;
-	if (gameOpts->render.nCoronaIntensity != v) {
-		gameOpts->render.nCoronaIntensity = v;
+	if (gameOpts->render.coronas.nIntensity != v) {
+		gameOpts->render.coronas.nIntensity = v;
 		sprintf (m->text, TXT_CORONA_INTENSITY, pszCoronaInt [v]);
 		m->rebuild = -1;
 		}
@@ -2215,8 +2217,8 @@ if (effectOpts.nCoronaIntensity >= 0) {
 if (effectOpts.nObjCoronaIntensity >= 0) {
 	m = menus + effectOpts.nObjCoronaIntensity;
 	v = m->value;
-	if (gameOpts->render.nObjCoronaIntensity != v) {
-		gameOpts->render.nObjCoronaIntensity = v;
+	if (gameOpts->render.coronas.nObjIntensity != v) {
+		gameOpts->render.coronas.nObjIntensity = v;
 		sprintf (m->text, TXT_OBJCORONA_INTENSITY, pszCoronaInt [v]);
 		m->rebuild = -1;
 		}
@@ -2245,37 +2247,37 @@ do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 
-	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.bCoronas, KEY_C, HTX_ADVRND_CORONAS);
+	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.coronas.bUse, KEY_C, HTX_ADVRND_CORONAS);
 	effectOpts.nCoronas = opt++;
-	ADD_CHECK (opt, TXT_SHOT_CORONAS, gameOpts->render.bShotCoronas, KEY_S, HTX_SHOT_CORONAS);
+	ADD_CHECK (opt, TXT_SHOT_CORONAS, gameOpts->render.coronas.bShots, KEY_S, HTX_SHOT_CORONAS);
 	effectOpts.nShotCoronas = opt++;
-	ADD_CHECK (opt, TXT_POWERUP_CORONAS, gameOpts->render.bPowerupCoronas, KEY_P, HTX_POWERUP_CORONAS);
+	ADD_CHECK (opt, TXT_POWERUP_CORONAS, gameOpts->render.coronas.bPowerups, KEY_P, HTX_POWERUP_CORONAS);
 	effectOpts.nPowerupCoronas = opt++;
-	ADD_CHECK (opt, TXT_WEAPON_CORONAS, gameOpts->render.bWeaponCoronas, KEY_W, HTX_WEAPON_CORONAS);
+	ADD_CHECK (opt, TXT_WEAPON_CORONAS, gameOpts->render.coronas.bWeapons, KEY_W, HTX_WEAPON_CORONAS);
 	effectOpts.nWeaponCoronas = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	ADD_CHECK (opt, TXT_ADDITIVE_CORONAS, gameOpts->render.bAdditiveCoronas, KEY_A, HTX_ADDITIVE_CORONAS);
+	ADD_CHECK (opt, TXT_ADDITIVE_CORONAS, gameOpts->render.coronas.bAdditive, KEY_A, HTX_ADDITIVE_CORONAS);
 	effectOpts.nAdditiveCoronas = opt++;
-	ADD_CHECK (opt, TXT_ADDITIVE_OBJCORONAS, gameOpts->render.bAdditiveObjCoronas, KEY_O, HTX_ADDITIVE_OBJCORONAS);
+	ADD_CHECK (opt, TXT_ADDITIVE_OBJCORONAS, gameOpts->render.coronas.bAdditiveObjs, KEY_O, HTX_ADDITIVE_OBJCORONAS);
 	effectOpts.nAdditiveObjCoronas = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
 
-	sprintf (szCoronaQual + 1, TXT_CORONA_QUALITY, pszCoronaQual [gameOpts->render.nCoronaStyle]);
+	sprintf (szCoronaQual + 1, TXT_CORONA_QUALITY, pszCoronaQual [gameOpts->render.coronas.nStyle]);
 	*szCoronaQual = *(TXT_CORONA_QUALITY - 1);
-	ADD_SLIDER (opt, szCoronaQual + 1, gameOpts->render.nCoronaStyle, 0, 1 + gameStates.ogl.bDepthBlending, KEY_Q, HTX_CORONA_QUALITY);
+	ADD_SLIDER (opt, szCoronaQual + 1, gameOpts->render.coronas.nStyle, 0, 1 + gameStates.ogl.bDepthBlending, KEY_Q, HTX_CORONA_QUALITY);
 	effectOpts.nCoronaStyle = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
 
-	sprintf (szCoronaInt + 1, TXT_CORONA_INTENSITY, pszCoronaInt [gameOpts->render.nCoronaIntensity]);
+	sprintf (szCoronaInt + 1, TXT_CORONA_INTENSITY, pszCoronaInt [gameOpts->render.coronas.nIntensity]);
 	*szCoronaInt = *(TXT_CORONA_INTENSITY - 1);
-	ADD_SLIDER (opt, szCoronaInt + 1, gameOpts->render.nCoronaIntensity, 0, 3, KEY_I, HTX_CORONA_INTENSITY);
+	ADD_SLIDER (opt, szCoronaInt + 1, gameOpts->render.coronas.nIntensity, 0, 3, KEY_I, HTX_CORONA_INTENSITY);
 	effectOpts.nCoronaIntensity = opt++;
-	sprintf (szObjCoronaInt + 1, TXT_OBJCORONA_INTENSITY, pszCoronaInt [gameOpts->render.nObjCoronaIntensity]);
+	sprintf (szObjCoronaInt + 1, TXT_OBJCORONA_INTENSITY, pszCoronaInt [gameOpts->render.coronas.nObjIntensity]);
 	*szObjCoronaInt = *(TXT_OBJCORONA_INTENSITY - 1);
-	ADD_SLIDER (opt, szObjCoronaInt + 1, gameOpts->render.nObjCoronaIntensity, 0, 3, KEY_N, HTX_CORONA_INTENSITY);
+	ADD_SLIDER (opt, szObjCoronaInt + 1, gameOpts->render.coronas.nObjIntensity, 0, 3, KEY_N, HTX_CORONA_INTENSITY);
 	effectOpts.nObjCoronaIntensity = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
@@ -2298,12 +2300,12 @@ do {
 		if (i < 0)
 			break;
 		} 
-	gameOpts->render.bCoronas = m [effectOpts.nCoronas].value;
-	gameOpts->render.bShotCoronas = m [effectOpts.nShotCoronas].value;
-	gameOpts->render.bPowerupCoronas = m [effectOpts.nPowerupCoronas].value;
-	gameOpts->render.bWeaponCoronas = m [effectOpts.nWeaponCoronas].value;
-	gameOpts->render.bAdditiveCoronas = m [effectOpts.nAdditiveCoronas].value;
-	gameOpts->render.bAdditiveObjCoronas = m [effectOpts.nAdditiveObjCoronas].value;
+	gameOpts->render.coronas.bUse = m [effectOpts.nCoronas].value;
+	gameOpts->render.coronas.bShots = m [effectOpts.nShotCoronas].value;
+	gameOpts->render.coronas.bPowerups = m [effectOpts.nPowerupCoronas].value;
+	gameOpts->render.coronas.bWeapons = m [effectOpts.nWeaponCoronas].value;
+	gameOpts->render.coronas.bAdditive = m [effectOpts.nAdditiveCoronas].value;
+	gameOpts->render.coronas.bAdditiveObjs = m [effectOpts.nAdditiveObjCoronas].value;
 	if (optTrailType >= 0)
 		gameOpts->render.smoke.bPlasmaTrails = (m [optTrailType].value == 0);
 	} while (i == -2);
@@ -2320,8 +2322,8 @@ void EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 
 m = menus + effectOpts.nExplShrapnels;
 v = m->value;
-if (gameOpts->render.nExplShrapnels != v) {
-	gameOpts->render.nExplShrapnels = v;
+if (gameOpts->render.effects.nShrapnels != v) {
+	gameOpts->render.effects.nShrapnels = v;
 	sprintf (m->text, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [v]);
 	m->rebuild = -1;
 	}
@@ -2339,7 +2341,7 @@ void EffectOptionsMenu ()
 #if 0
 	int	optShockwaves;
 #endif
-	int	bEnergySparks = gameOpts->render.bEnergySparks;
+	int	bEnergySparks = gameOpts->render.effects.bEnergySparks;
 	char	szExplShrapnels [50];
 
 pszExplShrapnels [0] = TXT_NONE;
@@ -2352,11 +2354,11 @@ do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 
-	sprintf (szExplShrapnels + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.nExplShrapnels]);
+	sprintf (szExplShrapnels + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
 	*szExplShrapnels = *(TXT_EXPLOSION_SHRAPNELS - 1);
-	ADD_SLIDER (opt, szExplShrapnels + 1, gameOpts->render.nExplShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
+	ADD_SLIDER (opt, szExplShrapnels + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
 	effectOpts.nExplShrapnels = opt++;
-	ADD_CHECK (opt, TXT_EXPLOSION_BLAST, gameOpts->render.bExplBlast, KEY_B, HTX_EXPLOSION_BLAST);
+	ADD_CHECK (opt, TXT_EXPLOSION_BLAST, gameOpts->render.effects.bExplBlasts, KEY_B, HTX_EXPLOSION_BLAST);
 	optExplBlast = opt++;
 	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
 	optDmgExpl = opt++;
@@ -2367,21 +2369,21 @@ do {
 	ADD_RADIO (opt, TXT_3D_THRUSTER_FLAME, 0, KEY_3, 1, HTX_RENDER_THRUSTER);
 	opt++;
 	m [optThrusterFlame + extraGameInfo [0].bThrusterFlames].value = 1;
-	ADD_CHECK (opt, TXT_RENDER_SPARKS, gameOpts->render.bEnergySparks, KEY_P, HTX_RENDER_SPARKS);
+	ADD_CHECK (opt, TXT_RENDER_SPARKS, gameOpts->render.effects.bEnergySparks, KEY_P, HTX_RENDER_SPARKS);
 	optSparks = opt++;
 	if (gameOpts->render.textures.bUseHires)
 		optTranspExpl = -1;
 	else {
-		ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
+		ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.effects.bTransparent, KEY_E, HTX_ADVRND_TRANSPFX);
 		optTranspExpl = opt++;
 		}
-	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_A, HTX_RENDER_AUTOTRANSP);
+	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.effects.bAutoTransparency, KEY_A, HTX_RENDER_AUTOTRANSP);
 	optAutoTransp = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bPlayerShield, KEY_P, HTX_RENDER_SHIELDS);
 	optPlayerShields = opt++;
-	ADD_CHECK (opt, TXT_ROBOT_SHIELDS, gameOpts->render.bRobotShields, KEY_O, HTX_ROBOT_SHIELDS);
+	ADD_CHECK (opt, TXT_ROBOT_SHIELDS, gameOpts->render.effects.bRobotShields, KEY_O, HTX_ROBOT_SHIELDS);
 	optRobotShields = opt++;
-	ADD_CHECK (opt, TXT_SHIELD_HITS, gameOpts->render.bOnlyShieldHits, KEY_H, HTX_SHIELD_HITS);
+	ADD_CHECK (opt, TXT_SHIELD_HITS, gameOpts->render.effects.bOnlyShieldHits, KEY_H, HTX_SHIELD_HITS);
 	optShieldHits = opt++;
 	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
 	optTracers = opt++;
@@ -2395,16 +2397,16 @@ do {
 		if (i < 0)
 			break;
 		} 
-	gameOpts->render.bEnergySparks = m [optSparks].value;
-	if ((gameOpts->render.bEnergySparks != bEnergySparks) && gameStates.app.bGameRunning) {
-		if (gameOpts->render.bEnergySparks)
+	gameOpts->render.effects.bEnergySparks = m [optSparks].value;
+	if ((gameOpts->render.effects.bEnergySparks != bEnergySparks) && gameStates.app.bGameRunning) {
+		if (gameOpts->render.effects.bEnergySparks)
 			AllocEnergySparks ();
 		else
 			FreeEnergySparks ();
 		}
-	GET_VAL (gameOpts->render.bTransparentEffects, optTranspExpl);
-	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
-	gameOpts->render.bExplBlast = m [optExplBlast].value;
+	GET_VAL (gameOpts->render.effects.bTransparent, optTranspExpl);
+	gameOpts->render.effects.bAutoTransparency = m [optAutoTransp].value;
+	gameOpts->render.effects.bExplBlasts = m [optExplBlast].value;
 	extraGameInfo [0].bTracers = m [optTracers].value;
 	extraGameInfo [0].bShockwaves = 0; //m [optShockwaves].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
@@ -2419,14 +2421,14 @@ do {
 			break;
 			}
 	extraGameInfo [0].bPlayerShield = m [optPlayerShields].value;
-	gameOpts->render.bRobotShields = m [optRobotShields].value;
-	gameOpts->render.bOnlyShieldHits = m [optShieldHits].value;
+	gameOpts->render.effects.bRobotShields = m [optRobotShields].value;
+	gameOpts->render.effects.bOnlyShieldHits = m [optShieldHits].value;
 #if EXPMODE_DEFAULTS
 	if (!gameOpts->app.bExpertMode) {
-		gameOpts->render.bTransparentEffects = 1;
-	gameOpts->render.bAutoTransparency = 1;
-	gameOpts->render.bCoronas = 0;
-	gameOpts->render.bShotCoronas = 0;
+		gameOpts->render.effects.bTransparent = 1;
+	gameOpts->render.effects.bAutoTransparency = 1;
+	gameOpts->render.coronas.bUse = 0;
+	gameOpts->render.coronas.bShots = 0;
 	extraGameInfo [0].bLightTrails = 1;
 	extraGameInfo [0].bTracers = 1;
 	extraGameInfo [0].bShockwaves = 1;
@@ -3303,6 +3305,15 @@ if (gameOpts->app.bExpertMode) {
 			m->rebuild = 1;
 			}
 		}
+	if (renderOpts.nMeshQual > 0) {
+		m = menus + renderOpts.nMeshQual;
+		v = m->value;
+		if (gameOpts->render.nMeshQuality != v) {
+			gameOpts->render.nMeshQuality = v;
+			sprintf (m->text, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
+			m->rebuild = 1;
+			}
+		}
 	m = menus + renderOpts.nWallTransp;
 	v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
 	if (extraGameInfo [0].grWallTransparency != v) {
@@ -3901,6 +3912,15 @@ if (gameOpts->app.bExpertMode) {
 			m->rebuild = 1;
 			}
 		}
+	if (renderOpts.nMeshQual > 0) {
+		m = menus + renderOpts.nMeshQual;
+		v = m->value;
+		if (gameOpts->render.nMeshQuality != v) {
+			gameOpts->render.nMeshQuality = v;
+			sprintf (m->text, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
+			m->rebuild = 1;
+			}
+		}
 	m = menus + renderOpts.nWallTransp;
 	v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
 	if (extraGameInfo [0].grWallTransparency != v) {
@@ -3929,6 +3949,7 @@ void RenderOptionsMenu (void)
 	char szWallTransp [50];
 	char szRendQual [50];
 	char szTexQual [50];
+	char szMeshQual [50];
 	char szContrast [50];
 
 	int nRendQualSave = gameOpts->render.nQuality;
@@ -3943,6 +3964,11 @@ void RenderOptionsMenu (void)
 	pszTexQual [1] = TXT_QUALITY_MED;
 	pszTexQual [2] = TXT_QUALITY_HIGH;
 	pszTexQual [3] = TXT_QUALITY_MAX;
+
+	pszMeshQual [0] = TXT_NONE;
+	pszMeshQual [1] = TXT_SMALL;
+	pszMeshQual [2] = TXT_MEDIUM;
+	pszMeshQual [3] = TXT_HIGH;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -3971,12 +3997,17 @@ do {
 		ADD_SLIDER (opt, szRendQual + 1, gameOpts->render.nQuality, 0, 4, KEY_Q, HTX_ADVRND_RENDQUAL);
 		renderOpts.nRenderQual = opt++;
 		if (gameStates.app.bGameRunning)
-			renderOpts.nTexQual = -1;
+			renderOpts.nTexQual =
+			renderOpts.nMeshQual = -1;
 		else {
 			sprintf (szTexQual + 1, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
 			*szTexQual = *(TXT_TEXQUAL + 1);
 			ADD_SLIDER (opt, szTexQual + 1, gameOpts->render.textures.nQuality, 0, 3, KEY_U, HTX_ADVRND_TEXQUAL);
 			renderOpts.nTexQual = opt++;
+			sprintf (szMeshQual + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
+			*szMeshQual = *(TXT_MESH_QUALITY + 1);
+			ADD_SLIDER (opt, szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 3, KEY_M, HTX_MESH_QUALITY);
+			renderOpts.nMeshQual = opt++;
 			}
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -4031,6 +4062,7 @@ do {
 	else
 		renderOpts.nRenderQual =
 		renderOpts.nTexQual =
+		renderOpts.nMeshQual =
 		renderOpts.nWallTransp = 
 		optUseGamma = 
 		optColoredWalls =
@@ -4050,15 +4082,15 @@ do {
 #ifdef _DEBUG
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	ADD_CHECK (opt, "Draw wire frame", gameOpts->render.bWireFrame, 0, NULL);
+	ADD_CHECK (opt, "Draw wire frame", gameOpts->render.debug.bWireFrame, 0, NULL);
 	optWireFrame = opt++;
-	ADD_CHECK (opt, "Draw textures", gameOpts->render.bTextures, 0, NULL);
+	ADD_CHECK (opt, "Draw textures", gameOpts->render.debug.bTextures, 0, NULL);
 	optTextures = opt++;
-	ADD_CHECK (opt, "Draw walls", gameOpts->render.bWalls, 0, NULL);
+	ADD_CHECK (opt, "Draw walls", gameOpts->render.debug.bWalls, 0, NULL);
 	optWalls = opt++;
-	ADD_CHECK (opt, "Draw objects", gameOpts->render.bObjects, 0, NULL);
+	ADD_CHECK (opt, "Draw objects", gameOpts->render.debug.bObjects, 0, NULL);
 	optObjects = opt++;
-	ADD_CHECK (opt, "Dynamic Light", gameOpts->render.bDynamicLight, 0, NULL);
+	ADD_CHECK (opt, "Dynamic Light", gameOpts->render.debug.bDynamicLight, 0, NULL);
 	optDynLight = opt++;
 #endif
 
@@ -4112,7 +4144,7 @@ do {
 		gameOpts->render.color.bMix = 1;
 		gameOpts->render.nQuality = 3;
 		gameOpts->render.color.bWalls = 1;
-		gameOpts->render.bTransparentEffects = 1;
+		gameOpts->render.effects.bTransparent = 1;
 		gameOpts->render.smoke.bPlayers = 0;
 		gameOpts->render.smoke.bRobots =
 		gameOpts->render.smoke.bMissiles = 1;
@@ -4130,11 +4162,11 @@ do {
 		}
 #endif
 #ifdef _DEBUG
-	gameOpts->render.bWireFrame = m [optWireFrame].value;
-	gameOpts->render.bTextures = m [optTextures].value;
-	gameOpts->render.bObjects = m [optObjects].value;
-	gameOpts->render.bWalls = m [optWalls].value;
-	gameOpts->render.bDynamicLight = m [optDynLight].value;
+	gameOpts->render.debug.bWireFrame = m [optWireFrame].value;
+	gameOpts->render.debug.bTextures = m [optTextures].value;
+	gameOpts->render.debug.bObjects = m [optObjects].value;
+	gameOpts->render.debug.bWalls = m [optWalls].value;
+	gameOpts->render.debug.bDynamicLight = m [optDynLight].value;
 #endif
 	} while (i == -2);
 }

@@ -1806,8 +1806,8 @@ char *defaultGameTexts [][2] = {
 	{"unerforschte Bereiche schwarz/weiss", "gra~Y out unexplored areas"},
 	{"Initialisiere...", "Initializing..."},
 	{"ro~Boter-Omega schiesst blitze", "ro~Bot omega fires lightnings"},
+	{"~Geometrie-Verbesserung: %s", "~Mesh improvement: %s"},
 #if 0
-	{"", ""},
 #endif
 	{"", ""}
 	};
@@ -2431,6 +2431,8 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann die Lieblings-Schiffsfarbe ausgesucht werden\n(nur Einzelspieler).", "Chose your favorite ship color here (singleplayer only)."},
 	{"Wenn angekreuzt, werden unerforschte Minenbereiche\nschwarz/weiss dargestellt", "If checked, unexplored mine areas are drawn black and white."},
 	{"Wenn angekreuzt, erzeugen auch von Robotern abgefeuerte\nOmega-Kanonen Blitzeffekte.", "If checked, omega cannons fired by robots\nwill create lightning effects, too."},
+	{"Je nach Einstellung werden grosse Flaechen in mehr oder\nweniger viele kleinere zerteilt. Dadurch wird die Beleuchtung\nverbessert, das Program u.U. aber auch langsamer.", 
+	 "Depending on the setting, huge faces will be split in\nmore or less many smaller ones. That will improve the lighting,\nbut may also slow down the program."},
 #if 0
 	{"", ""},
 #endif

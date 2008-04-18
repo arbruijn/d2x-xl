@@ -86,7 +86,7 @@ tObject *CreateExplBlast (tObject *parentObjP)
 	short		nObject, id;
 	tObject	*objP;
 
-if (!gameOpts->render.bExplBlast)
+if (!gameOpts->render.effects.bExplBlasts)
 	return NULL;
 nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
 								2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_EXPLBLAST, 1);

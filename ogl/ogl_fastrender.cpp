@@ -783,7 +783,7 @@ if ((gameStates.render.history.nShader >= 10) && (gameStates.render.history.nSha
 #ifdef _DEBUG
 if ((nDbgFace >= 0) && (faceP - gameData.segs.faces.faces != nDbgFace))
 	return 0;
-if (!bDepthOnly && gameOpts->render.bWireFrame) {
+if (!bDepthOnly && gameOpts->render.debug.bWireFrame) {
 	if ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)) {
 		grsTriangle	*triP = gameData.segs.faces.tris + faceP->nTriIndex;
 		glDisableClientState (GL_COLOR_ARRAY);
@@ -802,13 +802,13 @@ if (!bDepthOnly && gameOpts->render.bWireFrame) {
 		for (int i = 0; i < faceP->nTris; i++, triP++)
 			glDrawArrays (GL_LINE_LOOP, triP->nIndex, 3);
 		glLineWidth (1);
-		if (gameOpts->render.bDynamicLight)
+		if (gameOpts->render.debug.bDynamicLight)
 			glEnableClientState (GL_COLOR_ARRAY);
 		if (bTextured)
 			glEnable (GL_TEXTURE_2D);
 		}
 	}
-if (gameOpts->render.bTextures && ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)))
+if (gameOpts->render.debug.bTextures && ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)))
 #endif
 	glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
 #if 0
@@ -832,7 +832,7 @@ glEnable (GL_TEXTURE_2D);
 
 #endif
 #ifdef _DEBUG
-if (!gameOpts->render.bTextures)
+if (!gameOpts->render.debug.bTextures)
 	return 0;
 #endif
 if (!bMultiTexture && (bOverlay || bMonitor)) {

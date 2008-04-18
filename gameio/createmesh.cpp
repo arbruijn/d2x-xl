@@ -97,7 +97,9 @@ static int nMaxMeshLines = 0;
 static int nMaxMeshTris = 0;
 static int nVertices = 0;
 
-#define	MAX_SIDE_LEN	30.5f
+static float fMaxSideLen [] = {1e30f, 20.5f, 30.5f, 40.5f};
+
+#define	MAX_SIDE_LEN	fMaxSideLen [gameOpts->render.nMeshQuality]
 
 //------------------------------------------------------------------------------
 

@@ -320,7 +320,7 @@ void DrawObjectBlob (tObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *
 if ((objP->nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->id == nDbgObjId)))
 	nDbgObjType = nDbgObjType;
 #endif
-if (gameOpts->render.textures.bUseHires || gameOpts->render.bTransparentEffects) {
+if (gameOpts->render.textures.bUseHires || gameOpts->render.effects.bTransparent) {
 	if (fAlpha) {
 		bAdditive = (nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION);
 #if 0
@@ -383,9 +383,9 @@ if (colorP && (bmi >= 0))
 
 xSize = objP->size;
 
-if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.bPowerupCoronas) || (!bEnergy && gameOpts->render.bWeaponCoronas)))
+if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
 	RenderPowerupCorona (objP, color.red, color.green, color.blue, 
-								coronaIntensities [gameOpts->render.nObjCoronaIntensity]);
+								coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 if (gameOpts->render.bDepthSort > 0) {
 	if (bAdditive) {
 #if 1
@@ -999,7 +999,7 @@ switch (objP->renderType) {
 					gameData.models.nScale = 2 * F1_0;
 				else
 					gameData.models.nScale = 3 * F1_0 / 2;
-				RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.nObjCoronaIntensity]);
+				RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 				if (!DrawPolygonObject (objP, bDepthSort, 0))
 					ConvertWeaponToPowerup (objP);
 				else {
@@ -1116,7 +1116,7 @@ switch (objP->renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (ConvertPowerupToWeapon (objP)) {
-			RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.nObjCoronaIntensity]);
+			RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 			DrawPolygonObject (objP, bDepthSort, 0);
 			}
 		else if (gameStates.render.nShadowPass != 2)

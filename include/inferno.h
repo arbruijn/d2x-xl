@@ -286,38 +286,53 @@ typedef struct tShipRenderOptions {
 	int nWingtip;
 	int bBullets;
 	int nColor;
-	} tShipRenderOptions;
+} tShipRenderOptions;
+
+//------------------------------------------------------------------------------
+
+typedef struct tCoronaRenderOptions {
+	int bUse;
+	int nStyle;
+	int bShots;
+	int bWeapons;
+	int bPowerups;
+	int bAdditive; //additive corona blending for wall lights 
+	int bAdditiveObjs; //additive corona blending for light emitting weapons
+	int nIntensity;
+	int nObjIntensity;
+} tCoronaRenderOptions;
+
+//------------------------------------------------------------------------------
+
+typedef struct tEffectRenderOptions {
+	int bExplBlasts;
+	int nShrapnels;
+	int bEnergySparks;
+	int bRobotShields;
+	int bOnlyShieldHits;
+	int bAutoTransparency;
+	int bTransparent;
+} tEffectRenderOptions;
+
+//------------------------------------------------------------------------------
+
+typedef struct tDebugRenderOptions {
+	int bDynamicLight;
+	int bObjects;
+	int bTextures;
+	int bWalls;
+	int bWireFrame;
+} tDebugRenderOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tRenderOptions {
 	int bAllSegs;
-	int bDynamicLight;
 	int bDynLighting;
-	int bObjects;
-	int bTextures;
-	int bWalls;
-	int bWireFrame;
-	int bOptimize;
-	int bTransparentEffects;
-	int bExplBlast;
-	int nExplShrapnels;
-	int bCoronas;
-	int nCoronaStyle;
-	int bShotCoronas;
-	int bWeaponCoronas;
-	int bPowerupCoronas;
-	int bAdditiveCoronas; //additive corona blending for wall lights 
-	int bAdditiveObjCoronas; //additive corona blending for light emitting weapons
-	int nCoronaIntensity;
-	int nObjCoronaIntensity;
-	int bEnergySparks;
-	int bUseShaders;
 	int bHiresModels;
+	int nMeshQuality;
+	int bUseShaders;
 	int bBrightObjects;
-	int bRobotShields;
-	int bOnlyShieldHits;
-	int bAutoTransparency;
 	int nMathFormat;
 	int nDefMathFormat;
 	short nMaxFPS;
@@ -337,6 +352,9 @@ typedef struct tRenderOptions {
 	tPowerupOptions powerups;
 	tAutomapOptions automap;
 	tShipRenderOptions ship;
+	tCoronaRenderOptions coronas;
+	tEffectRenderOptions effects;
+	tDebugRenderOptions debug;
 } tRenderOptions;
 
 //------------------------------------------------------------------------------

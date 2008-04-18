@@ -403,23 +403,23 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.nDebrisLife, i, 0);
 
 		RP (gameOptions [i].render.textures.nQuality, i, 0);
-		RP (gameOptions [i].render.bAutoTransparency, i, 0);
-		RP (gameOptions [i].render.bExplBlast, i, 0);
-		RP (gameOptions [i].render.nExplShrapnels, i, 0);
-		RP (gameOptions [i].render.bCoronas, i, 0);
-		RP (gameOptions [i].render.nCoronaStyle, i, 0);
-		RP (gameOptions [i].render.bShotCoronas, i, 0);
-		RP (gameOptions [i].render.bPowerupCoronas, i, 0);
-		RP (gameOptions [i].render.bWeaponCoronas, i, 0);
-		RP (gameOptions [i].render.nCoronaIntensity, i, 0);
-		RP (gameOptions [i].render.nObjCoronaIntensity, i, 0);
-		RP (gameOptions [i].render.bAdditiveCoronas, i, 0);
-		RP (gameOptions [i].render.bAdditiveObjCoronas, i, 0);
-		RP (gameOptions [i].render.bEnergySparks, i, 0);
+		RP (gameOptions [i].render.effects.bAutoTransparency, i, 0);
+		RP (gameOptions [i].render.effects.bExplBlasts, i, 0);
+		RP (gameOptions [i].render.effects.nShrapnels, i, 0);
+		RP (gameOptions [i].render.coronas.bUse, i, 0);
+		RP (gameOptions [i].render.coronas.nStyle, i, 0);
+		RP (gameOptions [i].render.coronas.bShots, i, 0);
+		RP (gameOptions [i].render.coronas.bPowerups, i, 0);
+		RP (gameOptions [i].render.coronas.bWeapons, i, 0);
+		RP (gameOptions [i].render.coronas.nIntensity, i, 0);
+		RP (gameOptions [i].render.coronas.nObjIntensity, i, 0);
+		RP (gameOptions [i].render.coronas.bAdditive, i, 0);
+		RP (gameOptions [i].render.coronas.bAdditiveObjs, i, 0);
+		RP (gameOptions [i].render.effects.bEnergySparks, i, 0);
 		RP (gameOptions [i].render.bBrightObjects, i, 0);
-		RP (gameOptions [i].render.bRobotShields, i, 0);
-		RP (gameOptions [i].render.bOnlyShieldHits, 0, 0);
-		RP (gameOptions [i].render.bTransparentEffects, i, 0);
+		RP (gameOptions [i].render.effects.bRobotShields, i, 0);
+		RP (gameOptions [i].render.effects.bOnlyShieldHits, 0, 0);
+		RP (gameOptions [i].render.effects.bTransparent, i, 0);
 		RP (gameOptions [i].render.bDepthSort, i, 0);
 
 		RP (gameOptions [i].render.lightnings.bAuxViews, i, 0);
@@ -570,7 +570,7 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].ogl.bSetGammaRamp, i, 0);
 
 	RP (gameOptions [i].render.bAllSegs, i, 0);
-	RP (gameOptions [i].render.bOptimize, i, 0);
+	RP (gameOptions [i].render.nMeshQuality, i, 0);
 
 	RP (gameOptions [i].render.cockpit.bMissileView, i, 0);
 	RP (gameOptions [i].render.cockpit.bHUD, i, 0);
@@ -973,22 +973,22 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.bDynLighting", "0"},
 	{"gameOptions[0].render.nDebrisLife", "0"},
 	{"gameOptions[0].render.textures.nQuality", "2"},
-	{"gameOptions[0].render.bAutoTransparency", "1"},
-	{"gameOptions[0].render.bExplBlast", "1"},
-	{"gameOptions[0].render.nExplShrapnels", "1"},
-	{"gameOptions[0].render.bCoronas", "1"},
-	{"gameOptions[0].render.nCoronaStyle", "1"},
-	{"gameOptions[0].render.bShotCoronas", "1"},
-	{"gameOptions[0].render.bPowerupCoronas", "1"},
-	{"gameOptions[0].render.bWeaponCoronas", "0"},
-	{"gameOptions[0].render.nCoronaIntensity", "2"},
-	{"gameOptions[0].render.nObjCoronaIntensity", "1"},
-	{"gameOptions[0].render.bAdditiveCoronas", "0"},
-	{"gameOptions[0].render.bEnergySparks", "0"},
+	{"gameOptions[0].render.effects.bAutoTransparency", "1"},
+	{"gameOptions[0].render.effects.bExplBlasts", "1"},
+	{"gameOptions[0].render.effects.nShrapnels", "1"},
+	{"gameOptions[0].render.coronas.bUse", "1"},
+	{"gameOptions[0].render.coronas.nStyle", "1"},
+	{"gameOptions[0].render.coronas.bShots", "1"},
+	{"gameOptions[0].render.coronas.bPowerups", "1"},
+	{"gameOptions[0].render.coronas.bWeapons", "0"},
+	{"gameOptions[0].render.coronas.nIntensity", "2"},
+	{"gameOptions[0].render.coronas.nObjIntensity", "1"},
+	{"gameOptions[0].render.coronas.bAdditive", "0"},
+	{"gameOptions[0].render.effects.bEnergySparks", "0"},
 	{"gameOptions[0].render.bBrightObjects", "0"},
-	{"gameOptions[0].render.bRobotShields", "0"},
-	{"gameOptions[0].render.bOnlyShieldHits", "0"},
-	{"gameOptions[0].render.bTransparentEffects", "1"},
+	{"gameOptions[0].render.effects.bRobotShields", "0"},
+	{"gameOptions[0].render.effects.bOnlyShieldHits", "0"},
+	{"gameOptions[0].render.effects.bTransparent", "1"},
 	{"gameOptions[0].render.bDepthSort", "1"},
 	{"gameOptions[0].render.cameras.bFitToWall", "0"},
 	{"gameOptions[0].render.cameras.nFPS", "0"},
@@ -1126,7 +1126,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].multi.bUseMacros", "1"},
 	{"gameOptions[0].ogl.bSetGammaRamp", "0"},
 	{"gameOptions[0].render.bAllSegs", "0"},
-	{"gameOptions[0].render.bOptimize", "0"},
+	{"gameOptions[0].render.nMeshQuality", "0"},
 	{"gameOptions[0].render.cockpit.bMissileView", "0"},
 	{"gameOptions[0].render.cockpit.bHUD", "1"},
 	{"gameOptions[0].render.cockpit.bReticle", "1"},
@@ -1569,7 +1569,7 @@ for (i = 0; i < 2; i++) {
 		gameStates.app.nDifficultyLevel = NMCLAMP (gameStates.app.nDifficultyLevel, 0, 4);
 		}
 	if (gameStates.input.nPlrFileVersion >= 48)
-		gameOptions [i].render.bTransparentEffects = (int) CFReadByte (pcf);
+		gameOptions [i].render.effects.bTransparent = (int) CFReadByte (pcf);
 	if (!i && (gameStates.input.nPlrFileVersion >= 49))
 		extraGameInfo [0].bRobotsOnRadar = (int) CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 50)
@@ -1680,7 +1680,7 @@ for (i = 0; i < 2; i++) {
 		CFRead(mpParams.szServerIpAddr, 16, 1, pcf);
 		}
 	if (gameStates.input.nPlrFileVersion >= 80)
-		gameOptions [i].render.bOptimize = (int) CFReadByte (pcf);
+		CFReadByte (pcf);
 	if (!i && (gameStates.input.nPlrFileVersion >= 81)) {
 		extraGameInfo [1].bRotateLevels = (int) CFReadByte (pcf);
 		extraGameInfo [1].bDisableReactor = (int) CFReadByte (pcf);
@@ -1848,7 +1848,7 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 123)
 		gameOptions [i].render.smoke.bDecreaseLag = CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 124)
-		gameOptions [i].render.bAutoTransparency = CFReadByte (pcf);
+		gameOptions [i].render.effects.bAutoTransparency = CFReadByte (pcf);
 	if (!i) {
 		if (gameStates.input.nPlrFileVersion >= 125)
 			extraGameInfo [i].bUseHitAngles = CFReadByte (pcf);
@@ -1934,7 +1934,7 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 151)
 		gameOptions [i].render.cockpit.bPlayerStats = (int) CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 152)
-		gameOptions [i].render.bCoronas = (int) CFReadByte (pcf);
+		gameOptions [i].render.coronas.bUse = (int) CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 153) {
 		gameOptions [i].render.automap.bTextured = (int) CFReadByte (pcf);
 		gameOptions [i].render.automap.bBright = (int) CFReadByte (pcf);
@@ -2244,7 +2244,7 @@ for (i = 0; i < 2; i++) {
 	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bDualMissileLaunch, &cf);
 	CFWriteByte ((sbyte) gameStates.app.nDifficultyLevel, &cf);
-	CFWriteByte ((sbyte) gameOptions [i].render.bTransparentEffects, &cf);
+	CFWriteByte ((sbyte) gameOptions [i].render.effects.bTransparent, &cf);
 	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bRobotsOnRadar, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.bAllSegs, &cf);
@@ -2426,7 +2426,7 @@ for (i = 0; i < 2; i++) {
 	CFWriteByte (extraGameInfo [i].nSpotSize, &cf);
 	CFWriteByte (extraGameInfo [i].bTowFlags, &cf);
 	CFWriteByte (gameOptions [i].render.smoke.bDecreaseLag, &cf);
-	CFWriteByte (gameOptions [i].render.bAutoTransparency, &cf);
+	CFWriteByte (gameOptions [i].render.effects.bAutoTransparency, &cf);
 	if (!i) {
 		CFWriteByte (extraGameInfo [i].bUseHitAngles, &cf);
 		CFWriteByte (extraGameInfo [i].bLightTrails, &cf);
@@ -2475,7 +2475,7 @@ for (i = 0; i < 2; i++) {
 	CFWriteByte ((sbyte) extraGameInfo [i].bKillMissiles, &cf);
 	CFWriteByte ((sbyte) extraGameInfo [i].nHitboxes, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.bPlayerStats, &cf);
-	CFWriteByte ((sbyte) gameOptions [i].render.bCoronas, &cf);
+	CFWriteByte ((sbyte) gameOptions [i].render.coronas.bUse, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.automap.bTextured, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.automap.bBright, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.automap.bCoronas, &cf);

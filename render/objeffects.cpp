@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void RenderObjectHalo (vmsVector *vPos, fix xSize, float red, float green, float blue, float alpha, int bCorona)
 {
-if ((gameOpts->render.bShotCoronas && (bCorona ? LoadCorona () : LoadHalo ()))) {
+if ((gameOpts->render.coronas.bShots && (bCorona ? LoadCorona () : LoadHalo ()))) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	glDepthMask (0);
 	G3DrawSprite (vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1);
@@ -60,9 +60,9 @@ if ((gameOpts->render.bShotCoronas && (bCorona ? LoadCorona () : LoadHalo ()))) 
 
 void RenderPowerupCorona (tObject *objP, float red, float green, float blue, float alpha)
 {
-	int	bAdditive = gameOpts->render.bAdditiveObjCoronas;
+	int	bAdditive = gameOpts->render.coronas.bAdditiveObjs;
 
-if ((IsEnergyPowerup (objP->id) ? gameOpts->render.bPowerupCoronas : gameOpts->render.bWeaponCoronas) &&
+if ((IsEnergyPowerup (objP->id) ? gameOpts->render.coronas.bPowerups : gameOpts->render.coronas.bWeapons) &&
 	 (bAdditive ? LoadGlare () : LoadCorona ())) {
 	static tRgbaColorf keyColors [3] = {
 		{0.2f, 0.2f, 0.9f, 0.2f},
@@ -92,7 +92,7 @@ if ((IsEnergyPowerup (objP->id) ? gameOpts->render.bPowerupCoronas : gameOpts->r
 		}
 	color.alpha = alpha;
 	if (bAdditive) {
-		fScale = coronaIntensities [gameOpts->render.nObjCoronaIntensity] / 2;
+		fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
 		color.red *= fScale;
 		color.green *= fScale;
 		color.blue *= fScale;
@@ -100,7 +100,7 @@ if ((IsEnergyPowerup (objP->id) ? gameOpts->render.bPowerupCoronas : gameOpts->r
 	bDepthSort = gameOpts->render.bDepthSort;
 	gameOpts->render.bDepthSort = -1;
 	glDepthMask (0);
-	G3DrawSprite (&objP->position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.bAdditiveObjCoronas);
+	G3DrawSprite (&objP->position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.coronas.bAdditiveObjs);
 	glDepthMask (1);
 	gameOpts->render.bDepthSort = bDepthSort;
 	}
@@ -153,7 +153,7 @@ if ((objP->nType == OBJ_PLAYER) {
 
 	}
 else if ((objP->nType == OBJ_ROBOT) {
-	if (!gameOpts->render.bRobotShields)
+	if (!gameOpts->render.effects.bRobotShields)
 		return;
 	if (objP->cType.aiInfo.CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
@@ -263,7 +263,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.4f);
 			}
 		}
-	if (gameOpts->render.bOnlyShieldHits && !gameData.multiplayer.bWasHit [i])
+	if (gameOpts->render.effects.bOnlyShieldHits && !gameData.multiplayer.bWasHit [i])
 		return;
 	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
 		nColor = 2;
@@ -272,7 +272,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 	else
 		nColor = 0;
 	if (gameData.multiplayer.bWasHit [i]) {
-		alpha = (gameOpts->render.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1);
+		alpha = (gameOpts->render.effects.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1);
 		scale *= alpha;
 		}
 	else if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
@@ -305,7 +305,7 @@ void RenderRobotShield (tObject *objP)
 #if RENDER_HITBOX
 RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #else
-if (!gameOpts->render.bRobotShields)
+if (!gameOpts->render.effects.bRobotShields)
 	return;
 if ((objP->nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 	if (!GetCloakInfo (objP, 0, 0, &ci))
@@ -315,10 +315,10 @@ if ((objP->nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 	}
 dt = gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)];
 if (dt < 300) {
-	scale *= gameOpts->render.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1;
+	scale *= gameOpts->render.effects.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1;
 	DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale);
 	}
-else if (!gameOpts->render.bOnlyShieldHits) {
+else if (!gameOpts->render.effects.bOnlyShieldHits) {
 	if ((objP->nType != OBJ_ROBOT) || ROBOTINFO (objP->id).companion)
 		DrawShieldSphere (objP, 0.0f, 0.5f * scale, 1.0f * scale, ObjectDamage (objP) / 2 * scale);
 	else
@@ -1201,7 +1201,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ())) {
+if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ())) {
 	int			bStencil, bDrawArrays, i;
 	float			a1, a2;
 	fVector		vCorona [4], vh [5], vPos, vNorm, vDir;
@@ -1254,7 +1254,7 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 	glColor4fv ((GLfloat *) colorP);
 #endif
 	if (bAdditive) {
-		float fScale = coronaIntensities [gameOpts->render.nObjCoronaIntensity] / 2;
+		float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
 		color = *colorP;
 		colorP = &color;
 		color.red *= fScale;
@@ -1340,7 +1340,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 #endif
 if ((objP->nType == OBJ_WEAPON) && (objP->renderType == RT_POLYOBJ))
 	RenderLaserCorona (objP, colorP, alpha, fScale);
-else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
+else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	int			bStencil;
 	fix			xSize;
 	tRgbaColorf	color;
@@ -1362,7 +1362,7 @@ else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
 	if (xSize < F1_0)
 		xSize = F1_0;
 	color.alpha = alpha;
-	alpha = coronaIntensities [gameOpts->render.nObjCoronaIntensity] / 2;
+	alpha = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
 	color.red = colorP->red * alpha;
 	color.green = colorP->green * alpha;
 	color.blue = colorP->blue * alpha;
@@ -1637,7 +1637,7 @@ static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,
 void RenderLightTrail (tObject *objP)
 {
 	tRgbaColorf		color, *colorP;
-	int				bAdditive = 1; //gameOpts->render.bAdditiveObjCoronas;
+	int				bAdditive = 1; //gameOpts->render.coronas.bAdditiveObjs;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -1708,7 +1708,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 		bmP = bAdditive ? bmpGlare : bmpCorona;
 		memcpy (&trailColor, colorP, 3 * sizeof (float));
 		if (bAdditive) {
-			float fScale = coronaIntensities [gameOpts->render.nObjCoronaIntensity] / 2;
+			float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
 			trailColor.red *= fScale;
 			trailColor.green *= fScale;
 			trailColor.blue *= fScale;

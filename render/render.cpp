@@ -310,7 +310,7 @@ if (IS_WALL (nWallNum)) {
 		if (c && (c < GR_ACTUAL_FADE_LEVELS))
 			gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - c);
 		}
-	else if (gameOpts->render.bAutoTransparency && IsTransparentFace (propsP))
+	else if (gameOpts->render.effects.bAutoTransparency && IsTransparentFace (propsP))
 		gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS * 0.8f;
 	else
 		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
@@ -362,7 +362,7 @@ gameData.render.vertexList = gameData.segs.fVertices;
 Assert(props.nVertices <= 4);
 for (i = 0, pp = pointList; i < props.nVertices; i++, pp++)
 	*pp = gameData.segs.points + props.vp [i];
-if (!(gameOpts->render.bTextures || IsMultiGame))
+if (!(gameOpts->render.debug.bTextures || IsMultiGame))
 	goto drawWireFrame;
 #if 1
 if (gameStates.render.nShadowBlurPass == 1) {
@@ -515,7 +515,7 @@ if (bOutLineMode)
 
 drawWireFrame:
 
-if (gameOpts->render.bWireFrame && !IsMultiGame)
+if (gameOpts->render.debug.bWireFrame && !IsMultiGame)
 	DrawOutline (props.nVertices, pointList);
 }
 
@@ -556,7 +556,7 @@ if ((props.segNum == nDbgSeg) && ((nDbgSide < 0) || (props.sideNum == nDbgSide))
 	segP = segP;
 #endif
 props.widFlags = WALL_IS_DOORWAY (segP, props.sideNum, NULL);
-if (!(gameOpts->render.bWalls || IsMultiGame) && IS_WALL (WallNumP (segP, props.sideNum)))
+if (!(gameOpts->render.debug.bWalls || IsMultiGame) && IS_WALL (WallNumP (segP, props.sideNum)))
 	return;
 switch (gameStates.render.nType) {
 	case -1:
@@ -703,7 +703,7 @@ void DoRenderObject (int nObject, int nWindow)
 	int nType, count = 0;
 	int n;
 
-if (!(IsMultiGame || gameOpts->render.bObjects))
+if (!(IsMultiGame || gameOpts->render.debug.bObjects))
 	return;
 Assert(nObject < MAX_OBJECTS);
 #if 0
@@ -2081,7 +2081,7 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 	RenderSegmentList (2, 1);	// render transparent geometry
 	glDepthFunc (GL_LESS);
 	if (!gameStates.app.bNostalgia &&
-		 (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.bCoronas) {
+		 (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.coronas.bUse) {
  		glEnable (GL_TEXTURE_2D);
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

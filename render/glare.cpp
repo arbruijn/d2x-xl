@@ -54,7 +54,7 @@ static GLuint hDepthBuffer = 0;
 
 int CoronaStyle (void)
 {
-switch (gameOpts->render.nCoronaStyle) {
+switch (gameOpts->render.coronas.nStyle) {
 	case 2:
 		if (!gameStates.render.cameras.bActive)
 			return 2;
@@ -260,7 +260,7 @@ if (IS_WALL (nWall)) {
 // get and check the corona emitting texture
 if (sideP->nOvlTex && (0 < (nBrightness = IsLight (sideP->nOvlTex)))) {
 	nTexture = sideP->nOvlTex;
-	bAdditive = gameOpts->render.bAdditiveCoronas;
+	bAdditive = gameOpts->render.coronas.bAdditive;
 	}
 else if ((nBrightness = IsLight (sideP->nBaseTex))) {
 	nTexture = sideP->nBaseTex;
@@ -578,7 +578,7 @@ for (i = 0; i < 3; i++) {
 	sprite [3].v [i] = v.v [i] - s.v [i] + t.v [i];
 	}
 cosine = VmVecDot (&e, &n);
-return (float) sqrt (cosine) * coronaIntensities [gameOpts->render.nCoronaIntensity];
+return (float) sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nIntensity];
 }
 
 // -----------------------------------------------------------------------------------
@@ -689,7 +689,7 @@ else {
 		fIntensity *= 1 - fAngle / 0.25f;
 		}
 	//move corona in towards viewer
-	fIntensity *= coronaIntensities [gameOpts->render.nCoronaIntensity];
+	fIntensity *= coronaIntensities [gameOpts->render.coronas.nIntensity];
 	if (0 == (fIntensity = MoveSpriteIn (sprite, &vCenter, &zRange, fIntensity)))
 		return;
 	ComputeHardGlare (sprite, &vCenter, &vNormal);

@@ -1848,10 +1848,10 @@ void LoadGameTexts(void);
 #define TXT_AUTOMAP_GRAYOUT		GT(1055)
 #define TXT_INITIALIZING			GT(1056)
 #define TXT_LIGHTNING_ROBOT_OMEGA	GT(1057)
+#define TXT_MESH_QUALITY			GT(1058)
 
 #if 0
 
-#define TXT_				GT(1058)
 #define TXT_				GT(1059)
 #define TXT_				GT(1060)
 #define TXT_				GT(1061)
@@ -2368,10 +2368,10 @@ void LoadGameTexts(void);
 #define HTX_SHIPCOLOR				HT(354)			
 #define HTX_AUTOMAP_GRAYOUT		HT(355)			
 #define HTX_LIGHTNING_ROBOT_OMEGA	HT(356)			
+#define HTX_MESH_QUALITY			HT(357)			
 
 #if 0
 
-#define HTX_					HT(357)			
 #define HTX_					HT(358)			
 #define HTX_					HT(359)			
 #define HTX_					HT(360)			

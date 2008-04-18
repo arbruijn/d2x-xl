@@ -699,7 +699,7 @@ if (gameStates.app.bD2XLevel) {
 	c = wallP->cloakValue;
 	return colorP->alpha = (c && (c < GR_ACTUAL_FADE_LEVELS)) ? (float) (GR_ACTUAL_FADE_LEVELS - c) / (float) GR_ACTUAL_FADE_LEVELS : 1;
 	}
-if (gameOpts->render.bAutoTransparency && IsTransparentTexture (gameData.segs.segments [nSegment].sides [nSide].nBaseTex))
+if (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (gameData.segs.segments [nSegment].sides [nSide].nBaseTex))
 	return colorP->alpha = 0.8f;
 return colorP->alpha = 1;
 }

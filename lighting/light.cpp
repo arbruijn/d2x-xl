@@ -705,7 +705,7 @@ void SetDynamicLight (void)
 	tRgbaColorf	color;
 	nHeadLights = 0;
 
-if (!gameOpts->render.bDynamicLight)
+if (!gameOpts->render.debug.bDynamicLight)
 	return;
 memset (gameData.render.lights.vertexFlags, 0, gameData.segs.nLastVertex + 1);
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
