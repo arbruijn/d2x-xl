@@ -762,12 +762,14 @@ glEnd ();
 #else
 #	if 1
 #		if 1
-//glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
+glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
+/*
 grsTriangle	*triP = gameData.segs.faces.tris + faceP->nTriIndex;
 fVector vNormal;
 VmVecNormal (&vNormal, gameData.segs.fVertices + triP->index [0], 
 				 gameData.segs.fVertices + triP->index [1], gameData.segs.fVertices + triP->index [2]);
 glNormal3fv ((GLfloat *) &vNormal.v3);
+*/
 #		else
 if ((gameStates.render.history.nShader >= 10) && (gameStates.render.history.nShader < 20)) {
 	fVector vNormal;
