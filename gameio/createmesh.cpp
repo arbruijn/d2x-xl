@@ -564,6 +564,20 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+fVector3 *SetTriNormals (grsTriangle *triP, fVector3 *normalP)
+{
+	fVector	vNormalf;
+
+VmVecNormal (&vNormalf, gameData.segs.fVertices + triP->index [0], 
+				 gameData.segs.fVertices + triP->index [1], gameData.segs.fVertices + triP->index [2]);
+*normalP++ = vNormalf.v3;
+*normalP++ = vNormalf.v3;
+*normalP++ = vNormalf.v3;
+return normalP;
+}
+
+//------------------------------------------------------------------------------
+
 #define FACE_VERTS	6
 
 void CreateFaceList (void)
@@ -571,7 +585,7 @@ void CreateFaceList (void)
 	grsFace		*faceP = gameData.segs.faces.faces;
 	grsTriangle	*triP = gameData.segs.faces.tris;
 	fVector3		*vertexP = gameData.segs.faces.vertices;
-	fVector3		*normalP = gameData.segs.faces.normals, vNormalf;
+	fVector3		*normalP = gameData.segs.faces.normals;
 	tTexCoord2f	*texCoordP = gameData.segs.faces.texCoord;
 	tTexCoord2f	*ovlTexCoordP = gameData.segs.faces.ovlTexCoord;
 	tRgbaColorf	*faceColorP = gameData.segs.faces.color;
@@ -579,7 +593,6 @@ void CreateFaceList (void)
 	tSegment		*segP = SEGMENTS;
 	tSegFaces	*segFaceP = SEGFACES;
 	tSide			*sideP;
-	vmsVector	vNormal;
 	short			nSegment, nWall, nOvlTexCount, h, i, j, k, v, sideVerts [5];
 	ubyte			nSide, bColoredSeg, bWall;
 	char			*pszName;
@@ -617,7 +630,6 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 			faceP->nTriIndex = triP - gameData.segs.faces.tris;
 			GetSideVertIndex (sideVerts, nSegment, nSide);
 			memcpy (faceP->index, sideVerts, sizeof (faceP->index));
-			VmVecFixToFloat (&vNormalf, VmVecAvg (&vNormal, sideP->normals, sideP->normals + 1));
 			// split in four triangles, using the quad's center of gravity as additional vertex
 			if (!gameOpts->ogl.bPerPixelLighting && (sideP->nType == SIDE_IS_QUAD) && IsBigFace (sideVerts)) {
 				fVector		vSide [4];
@@ -657,7 +669,6 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 						v = sideVerts [k];
 						triP->index [j] = v;
 						*vertexP++ = gameData.segs.fVertices [v].v3;
-						*normalP++ = vNormalf;
 						if (j == 2) {
 							texCoordP [2] = texCoord;
 							faceColorP [2] = color;
@@ -671,6 +682,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 						RotateTexCoord2f (ovlTexCoordP, texCoordP + j, (ubyte) sideP->nOvlOrient);
 						ovlTexCoordP++;
 						}
+					normalP = SetTriNormals (triP, normalP);
 					texCoordP += 3;
 					faceColorP += 3;
 					}
@@ -688,7 +700,6 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 						v = sideVerts [k];
 						triP->index [j] = v;
 						*vertexP++ = gameData.segs.fVertices [v].v3;
-						*normalP++ = vNormalf;
 						texCoordP->v.u = f2fl (sideP->uvls [k].u);
 						texCoordP->v.v = f2fl (sideP->uvls [k].v);
 						RotateTexCoord2f (ovlTexCoordP, texCoordP, (ubyte) sideP->nOvlOrient);
@@ -697,6 +708,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 						colorP = gameData.render.color.ambient + v;
 						*faceColorP++ = colorP->color;
 						}
+					normalP = SetTriNormals (triP, normalP);
 					}
 				}
 #ifdef _DEBUG
