@@ -617,9 +617,8 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 			faceP->nTriIndex = triP - gameData.segs.faces.tris;
 			GetSideVertIndex (sideVerts, nSegment, nSide);
 			memcpy (faceP->index, sideVerts, sizeof (faceP->index));
-			VmVecAvg (&vNormal, sideP->normals, sideP->normals + 1);
-			VmVecFixToFloat (&vNormalf, &vNormal);
-			// split in four triangles, using the quads center of gravity as additional vertex
+			VmVecFixToFloat (&vNormalf, VmVecAvg (&vNormal, sideP->normals, sideP->normals + 1));
+			// split in four triangles, using the quad's center of gravity as additional vertex
 			if (!gameOpts->ogl.bPerPixelLighting && (sideP->nType == SIDE_IS_QUAD) && IsBigFace (sideVerts)) {
 				fVector		vSide [4];
 				tRgbaColorf	color;

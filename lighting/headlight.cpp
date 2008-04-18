@@ -119,8 +119,8 @@ for (i = 0; i < gameData.render.lights.dynamic.headLights.nLights; i++) {
 		G3TransformPoint (&vDir, VmVecAdd (&vDir, psl->pos, &psl->dir), 0);
 		VmVecNormalize (&vDir, VmVecDec (&vDir, &vPos));
 		//vDir.p.z = -vDir.p.z;
-		memcpy (gameData.render.lights.dynamic.headLights.pos + i, &vPos, sizeof (fVector3));
-		memcpy (gameData.render.lights.dynamic.headLights.dir + i, &vDir, sizeof (fVector3));
+		gameData.render.lights.dynamic.headLights.pos [i] = vPos.v3;
+		gameData.render.lights.dynamic.headLights.dir [i] = vDir.v3;
 #elif HEADLIGHT_TRANSFORMATION == 1
 		// method 2: translate, but let OpenGL do the scaling and rotating
 		VmVecSub ((fVector *) (gameData.render.lights.dynamic.headLights.pos + i), psl->pos, &viewInfo.posf);
@@ -322,15 +322,16 @@ char *lightingFS [8] = {
 	,
 	// --------------------------------------------------------------------------------
 	//multiplayer version - 1 - 8 players
+	"#define LIGHTS 8\r\n" \
 	"varying vec3 vertPos;\r\n" \
-	"uniform vec3 lightPos [X], lightDir [X];\r\n" \
+	"uniform vec3 lightPos [LIGHTS], lightDir [LIGHTS];\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"/*uniform float grAlpha, cutOff, spotExp, brightness [X];*/\r\n" \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness [LIGHTS];*/\r\n" \
 	"void main (void) {\r\n" \
 	"vec3 lightVec, spotColor;\r\n" \
 	"float spotEffect, lightDist, spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
-	"for (i = 0; i < X; i++) {\r\n" \
+	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"   lightVec = vertPos - lightPos [i];\r\n" \
 	"   lightDist = length (lightVec);\r\n" \
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
@@ -345,17 +346,18 @@ char *lightingFS [8] = {
 	"}" 
 	,
 	//only base texture
+	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D btmTex;\r\n" \
 	"varying vec3 vertPos;\r\n" \
-	"uniform vec3 lightPos [X], lightDir [X];\r\n" \
+	"uniform vec3 lightPos [LIGHTS], lightDir [LIGHTS];\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"/*uniform float grAlpha, cutOff, spotExp, brightness [X];*/\r\n" \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness [LIGHTS];*/\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
 	"vec3 lightVec, spotColor;\r\n" \
 	"float spotEffect, lightDist, spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
-	"for (i = 0; i < X; i++) {\r\n" \
+	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"   lightVec = vertPos - lightPos [i];\r\n" \
 	"   lightDist = length (lightVec);\r\n" \
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
@@ -370,18 +372,19 @@ char *lightingFS [8] = {
 	"}" 
 	,
 	//base texture and decal
+	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D btmTex, topTex;\r\n" \
 	"varying vec3 vertPos;\r\n" \
-	"uniform vec3 lightPos [X], lightDir [X];\r\n" \
+	"uniform vec3 lightPos [LIGHTS], lightDir [LIGHTS];\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"/*uniform float grAlpha, cutOff, spotExp, brightness [X];*/\r\n" \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness [LIGHTS];*/\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
 	"vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
 	"vec3 lightVec, spotColor;\r\n" \
 	"float spotEffect, lightDist, spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
-	"for (i = 0; i < X; i++) {\r\n" \
+	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"   lightVec = vertPos - lightPos [i];\r\n" \
 	"   lightDist = length (lightVec);\r\n" \
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
@@ -396,11 +399,12 @@ char *lightingFS [8] = {
 	"}" 
 	,
 	//base texture and decal with color key
+	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D btmTex, topTex, maskTex;\r\n" \
 	"varying vec3 vertPos;\r\n" \
-	"uniform vec3 lightPos [X], lightDir [X];\r\n" \
+	"uniform vec3 lightPos [LIGHTS], lightDir [LIGHTS];\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"/*uniform float grAlpha, cutOff, spotExp, brightness [X];*/\r\n" \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness [LIGHTS];*/\r\n" \
 	"void main (void) {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;\r\n" \
 	"if (bMask < 0.5)\r\n" \
@@ -411,7 +415,7 @@ char *lightingFS [8] = {
 	"   vec3 lightVec, spotColor;\r\n" \
 	"   float spotEffect, lightDist, spotBrightness = 0.0;\r\n" \
 	"   int i;\r\n" \
-	"   for (i = 0; i < X; i++) {\r\n" \
+	"   for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"      lightVec = vertPos - lightPos [i];\r\n" \
 	"      lightDist = length (lightVec);\r\n" \
 	"      spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
@@ -433,7 +437,7 @@ char *lightingVS [4] = {
 	"void main (void) {\r\n" \
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"vertPos.x *= aspect;\r\n" \
-	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
+	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 vertPos;\r\n" \
@@ -442,7 +446,7 @@ char *lightingVS [4] = {
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"vertPos.x *= aspect;\r\n" \
-	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
+	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 vertPos;\r\n" \
@@ -452,7 +456,7 @@ char *lightingVS [4] = {
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"vertPos.x *= aspect;\r\n" \
-	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
+	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 vertPos;\r\n" \
@@ -463,7 +467,7 @@ char *lightingVS [4] = {
 	"gl_TexCoord [2] = gl_MultiTexCoord2;\r\n"\
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"vertPos.x *= aspect;\r\n" \
-	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
+	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	};
 
