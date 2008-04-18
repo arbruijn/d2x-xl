@@ -97,7 +97,7 @@ static int nMaxMeshLines = 0;
 static int nMaxMeshTris = 0;
 static int nVertices = 0;
 
-static float fMaxSideLen [] = {1e30f, 40.5f, 30.5f, 20.5f, 10.5f};
+static float fMaxSideLen [] = {1e30f, 40, 30, 20, 10};
 
 #define	MAX_SIDE_LEN	fMaxSideLen [gameOpts->render.nMeshQuality]
 
@@ -225,7 +225,7 @@ return CreateMeshTri (mtP, index, triP->nFace, triP - gameData.segs.faces.tris) 
 	
 for (h = i = 0; i < 3; i++)
 	if ((l = VmVecDist ((fVector *) (gameData.segs.fVertices + index [i]), 
-								(fVector *) (gameData.segs.fVertices + index [(i + 1) % 3]))) > MAX_SIDE_LEN)
+								(fVector *) (gameData.segs.fVertices + index [(i + 1) % 3]))) >= MAX_SIDE_LEN)
 		return CreateMeshTri (mtP, index, triP->nFace, triP - gameData.segs.faces.tris) ? nMeshTris : 0;
 return nMeshTris;
 #endif
@@ -414,7 +414,7 @@ for (i = 0; i < 3; i++) {
 		h = i;
 		}
 	}
-if (lMax <= MAX_SIDE_LEN)
+if (lMax < MAX_SIDE_LEN)
 	return -1;
 return SplitMeshLine (meshLines + mtP->lines [h], nPass);
 }
@@ -559,7 +559,7 @@ return InsertMeshTris ();
 int IsBigFace (short *sideVerts)
 {
 for (int i = 0; i < 4; i++) 
-	if (VmVecDist (gameData.segs.fVertices + sideVerts [i], gameData.segs.fVertices + sideVerts [(i + 1) % 4]) > MAX_SIDE_LEN)
+	if (VmVecDist (gameData.segs.fVertices + sideVerts [i], gameData.segs.fVertices + sideVerts [(i + 1) % 4]) >= MAX_SIDE_LEN)
 		return 1;
 return 0;
 }
