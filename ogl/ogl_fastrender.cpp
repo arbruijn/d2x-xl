@@ -789,7 +789,7 @@ if (!bDepthOnly && gameOpts->render.debug.bWireFrame) {
 		glDisableClientState (GL_COLOR_ARRAY);
 		if (bTextured)
 			glDisable (GL_TEXTURE_2D);
-#	if 0
+#	if 1
 		glColor3f (1.0f, 0.5f, 0.0f);
 		glLineWidth (6);
 		glBegin (GL_LINE_LOOP);
