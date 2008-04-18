@@ -263,7 +263,7 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 		}
 	gameData.render.ogl.lightRads [i] = 
 		(psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : (psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
-	gameData.render.ogl.lightPos [i] = psl->pos [0];
+	G3TranslatePoint (&gameData.render.ogl.lightPos [i], &psl->pos [0]);
 	i++;
 	}
 for (; i < MAX_LIGHTS_PER_PIXEL; i++) {
@@ -353,7 +353,7 @@ else if (nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTe
 		}
 	glUniform1f (glGetUniformLocation (tmProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
 	glUniform1fv (glGetUniformLocation (tmProg, "lightRad"), nLights, (GLfloat *) gameData.render.ogl.lightRads);
-	glUniform4fv (glGetUniformLocation (tmProg, "lightPos"), nLights, (GLfloat *) gameData.render.ogl.lightPos);
+	//glUniform4fv (glGetUniformLocation (tmProg, "lightPos"), nLights, (GLfloat *) gameData.render.ogl.lightPos);
 	}
 else if (bColorKey || bMultiTexture) {
 	//texture mapping
@@ -762,7 +762,12 @@ glEnd ();
 #else
 #	if 1
 #		if 1
-glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
+//glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
+grsTriangle	*triP = gameData.segs.faces.tris + faceP->nTriIndex;
+fVector vNormal;
+VmVecNormal (&vNormal, gameData.segs.fVertices + triP->index [0], 
+				 gameData.segs.fVertices + triP->index [1], gameData.segs.fVertices + triP->index [2]);
+glNormal3fv ((GLfloat *) &vNormal.v3);
 #		else
 if ((gameStates.render.history.nShader >= 10) && (gameStates.render.history.nShader < 20)) {
 	fVector vNormal;
