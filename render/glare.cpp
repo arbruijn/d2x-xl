@@ -347,12 +347,12 @@ GetSideVertIndex (sideVerts, nSegment, nSide);
 for (i = 0; i < 4; i++) {
 	fLight += f2fl (sideP->uvls [i].l);
 	if (gameOpts->render.nPath)
-		G3TransformPointf (sprite + i, gameData.segs.fVertices + sideVerts [i], 0);
+		G3TransformPoint (sprite + i, gameData.segs.fVertices + sideVerts [i], 0);
 	else
 		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
 	}
 VmVecFixToFloat (&v, SIDE_CENTER_I (nSegment, nSide));
-G3TransformPointf (vCenter, &v, 0);
+G3TransformPoint (vCenter, &v, 0);
 #if 0
 if (gameStates.render.bQueryCoronas) {
 	for (i = 0; i < 4; i++) {

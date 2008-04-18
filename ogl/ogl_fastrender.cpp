@@ -753,7 +753,15 @@ glEnd ();
 }
 #else
 #	if 1
+#		if 1
 glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
+#		else
+if ((gameStates.render.history.nShader >= 10) && (gameStates.render.history.nShader < 20)) {
+	fVector vNormal;
+	G3RotatePoint (&vNormal, (fVector *) (gameData.segs.faces.normals + faceP->nIndex), 0);
+	glUniform3fv (glGetUniformLocation (tmProg, "normal"), 1, (GLfloat *) &vNormal);
+	}
+#		endif
 #	endif
 #ifdef _DEBUG
 if ((nDbgFace >= 0) && (faceP - gameData.segs.faces.faces != nDbgFace))
@@ -789,9 +797,9 @@ if (gameOpts->render.bTextures && ((nDbgFace < 0) || (faceP - gameData.segs.face
 #if 0
 fVector vNormalf, vCenterf, vBasef;
 VmVecFixToFloat (&vBasef, SEGMENT_CENTER_I (faceP->nSegment));
-//G3RotatePointf (&vNormalf, (fVector *) (gameData.segs.faces.normals + faceP->nIndex), 0);
+//G3RotatePoint (&vNormalf, (fVector *) (gameData.segs.faces.normals + faceP->nIndex), 0);
 memcpy (&vNormalf, gameData.segs.faces.normals + faceP->nIndex, sizeof (fVector3));
-//G3TransformPointf (&vBasef, &vCenterf, 0);
+//G3TransformPoint (&vBasef, &vCenterf, 0);
 VmVecScale (&vNormalf, &vNormalf, 5);
 VmVecInc (&vNormalf, &vBasef);
 glDisable (GL_TEXTURE_2D);

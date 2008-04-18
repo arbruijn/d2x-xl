@@ -354,7 +354,7 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 #endif
 for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	if (gameStates.render.automap.bDisplay)
-		G3TransformPointf (vertices + i, gameData.segs.fVertices + faceP->index [i], 0);
+		G3TransformPoint (vertices + i, gameData.segs.fVertices + faceP->index [i], 0);
 	else
 		VmVecFixToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
 	}

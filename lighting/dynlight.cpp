@@ -665,7 +665,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	if (gameStates.ogl.bUseTransform)
 		psl->pos [1] = psl->pos [0];
 	else {
-		G3TransformPointf (psl->pos + 1, psl->pos, 0);
+		G3TransformPoint (psl->pos + 1, psl->pos, 0);
 		psl->pos [1].p.w = 1;
 		}
 	psl->pos [0].p.w = 1;
@@ -1225,7 +1225,7 @@ v.p.x = f2fl (pv->p.x);
 v.p.y = f2fl (pv->p.y);
 v.p.z = f2fl (pv->p.z);
 if (!gameStates.ogl.bUseTransform)
-	G3TransformPointf (&v, &v, 0);
+	G3TransformPoint (&v, &v, 0);
 for (i = gameData.render.lights.dynamic.nLights; i; i--, pl++, psl++) {
 	d.p.x = v.p.x - psl->pos [1].p.x;
 	d.p.y = v.p.y - psl->pos [1].p.y;
@@ -1264,7 +1264,7 @@ char *ppLightingFS [] = {
 	"				}\r\n" \
 	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \
@@ -1298,7 +1298,7 @@ char *ppLightingFS [] = {
 	"				}\r\n" \
 	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \
@@ -1333,7 +1333,7 @@ char *ppLightingFS [] = {
 	"				}\r\n" \
 	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \
@@ -1372,7 +1372,7 @@ char *ppLightingFS [] = {
 	"				}\r\n" \
 	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, gl_FrontMaterial.shininess 8.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	color = min (color, vec4 (2.0, 2.0, 2.0, 2.0));\r\n" \

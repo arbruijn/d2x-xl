@@ -807,7 +807,7 @@ else {
 	if (!gameStates.render.nState)
 		VmVecNormalize (&vcd.vertNorm, pvVertNorm);
 	else 
-		G3RotatePointf (&vcd.vertNorm, pvVertNorm, 0);
+		G3RotatePoint (&vcd.vertNorm, pvVertNorm, 0);
 	}
 if ((bVertexLights = !(gameStates.render.nState || pVertColor))) {
 	VmVecFixToFloat (&vertPos, gameData.segs.vertices + nVertex);

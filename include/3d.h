@@ -211,17 +211,17 @@ vmsVector	vTrans;
 return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.pos), viewInfo.view + bUnscaled);
 }
 
-static inline fVector *G3TranslatePointf (fVector *pDest, fVector *pSrc)
+static inline fVector *G3TranslatePoint (fVector *pDest, fVector *pSrc)
 {
 return VmVecSub (pDest, pSrc, &viewInfo.posf);
 }
 
-static inline fVector *G3RotatePointf (fVector *pDest, fVector *pSrc, int bUnscaled)
+static inline fVector *G3RotatePoint (fVector *pDest, fVector *pSrc, int bUnscaled)
 {
 return VmVecRotate (pDest, pSrc, viewInfo.viewf + bUnscaled);
 }
 
-static inline fVector *G3TransformPointf (fVector *pDest, fVector *pSrc, int bUnscaled)
+static inline fVector *G3TransformPoint (fVector *pDest, fVector *pSrc, int bUnscaled)
 {
 fVector vTrans;
 return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.posf), viewInfo.viewf + bUnscaled);

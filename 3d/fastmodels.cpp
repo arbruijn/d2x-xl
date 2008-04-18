@@ -251,7 +251,7 @@ else
 	v.p.x = v.p.y = v.p.z = 0;
 v.p.z -= 1.0f / 16.0f;
 #if 0
-G3TransformPointf (&v, &v, 0);
+G3TransformPoint (&v, &v, 0);
 #else
 #	if 1
 if (vOffset) {

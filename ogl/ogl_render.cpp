@@ -510,7 +510,7 @@ if (!bDepthSort) {
 #if USE_VERTNORMS
 		if (pvNormal) {
 			VmVecFixToFloat (&vNormal, pvNormal);
-			G3RotatePointf (&vNormal, &vNormal, 0);
+			G3RotatePoint (&vNormal, &vNormal, 0);
 			}
 	else
 			G3CalcNormal (pointList, &vNormal);

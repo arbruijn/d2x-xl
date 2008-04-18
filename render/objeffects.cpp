@@ -121,7 +121,7 @@ for (i = 0; i < 8; i++) {
 	hv.p.x = f2fl (hitBoxOffsets [i].p.x ? vMin.p.x : vMax.p.x);
 	hv.p.y = f2fl (hitBoxOffsets [i].p.y ? vMin.p.y : vMax.p.y);
 	hv.p.z = f2fl (hitBoxOffsets [i].p.z ? vMin.p.z : vMax.p.z);
-	G3TransformPointf (vertList + i, &hv, 0);
+	G3TransformPoint (vertList + i, &hv, 0);
 	}
 }
 
@@ -376,7 +376,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	bStencil = StencilOff ();
 	pc = ObjectFrameColor (objP, pc);
 	VmVecFixToFloat (&fPos, &objP->position.vPos);
-	G3TransformPointf (&fPos, &fPos, 0);
+	G3TransformPoint (&fPos, &fPos, 0);
 	r = f2fl (objP->size);
 	r2 = r / 10;
 	r = r2 * 9;
@@ -469,7 +469,7 @@ if (gameStates.app.nSDLTicks - t0 [bMarker] > tDelay [bMarker]) {
 	nMslLockIndPos [bMarker] = (nMslLockIndPos [bMarker] + 1) % INDICATOR_POSITIONS;
 	}
 VmVecFixToFloat (&fPos, &objP->position.vPos);
-G3TransformPointf (&fPos, &fPos, 0);
+G3TransformPoint (&fPos, &fPos, 0);
 r = f2fl (objP->size);
 if (bMarker)
 	r = 17 * r / 12;
@@ -627,7 +627,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ? 
 		  (tRgbColorf *) &trackGoalColor [0] : ObjectFrameColor (objP, pc);
 	VmVecFixToFloat (&fPos, &objP->position.vPos);
-	G3TransformPointf (&fPos, &fPos, 0);
+	G3TransformPoint (&fPos, &fPos, 0);
 	r = f2fl (objP->size);
 	glColor3fv ((GLfloat *) pc);
 	fVerts [0].p.w = fVerts [1].p.w = fVerts [2].p.w = fVerts [3].p.w = 1;
@@ -760,7 +760,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 			vPosf.p.x = 0;
 			vPosf.p.y = fVerts [i].p.y * r;
 			vPosf.p.z = fVerts [i].p.z * r;
-			G3TransformPointf (&vPosf, &vPosf, 0);
+			G3TransformPoint (&vPosf, &vPosf, 0);
 			glTexCoord2fv ((GLfloat *) (texCoordList + i));
 			glVertex3fv ((GLfloat *) &vPosf);
 			}
@@ -768,7 +768,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 			vPosf.p.x = 0;
 			vPosf.p.y = fVerts [i].p.y * r;
 			vPosf.p.z = fVerts [i].p.z * r;
-			G3TransformPointf (&vPosf, &vPosf, 0);
+			G3TransformPoint (&vPosf, &vPosf, 0);
 			glTexCoord2fv ((GLfloat *) (texCoordList + i));
 			glVertex3fv ((GLfloat *) &vPosf);
 			}
@@ -1061,8 +1061,8 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 			VmVecFixToFloat (&fVecf, ti.vDir + h);
 		VmVecFixToFloat (&vPosf, ti.vPos + h);
 		VmVecScaleAdd (vFlame + 2, &vPosf, &fVecf, -ti.fLength);
-		G3TransformPointf (vFlame + 2, vFlame + 2, 0);
-		G3TransformPointf (&vPosf, &vPosf, 0);
+		G3TransformPoint (vFlame + 2, vFlame + 2, 0);
+		G3TransformPoint (&vPosf, &vPosf, 0);
 		VmVecNormal (&vNormf, vFlame + 2, &vPosf, &vEye);
 		VmVecScaleAdd (vFlame, &vPosf, &vNormf, ti.fSize);
 		VmVecScaleAdd (vFlame + 1, &vPosf, &vNormf, -ti.fSize);
@@ -1137,7 +1137,7 @@ else {
 					v.p.x *= ti.fSize;
 					v.p.y *= ti.fSize;
 					v.p.z *= ti.fLength;
-					G3TransformPointf (&v, &v, 0);
+					G3TransformPoint (&v, &v, 0);
 					if (bTextured) {
 						tTexCoord2fl.v.v = 0.25f + tTexCoord2flStep.v.v * (i + l);
 						glTexCoord2fv ((GLfloat *) &tTexCoord2fl);
@@ -1152,7 +1152,7 @@ else {
 			glBegin (GL_LINE_LOOP);
 			glColor4f (c [1].red, c [1].green, c [1].blue, c [1].alpha);
 			for (j = 0; j < RING_SIZE; j++) {
-				G3TransformPointf (&v, vFlame [i] + j);
+				G3TransformPoint (&v, vFlame [i] + j);
 				glVertex3fv ((GLfloat *) &v);
 				}
 			glEnd ();
@@ -1160,7 +1160,7 @@ else {
 			}
 		glBegin (GL_TRIANGLE_STRIP);
 		for (j = 0; j < RING_SIZE; j++) {
-			G3TransformPointf (&v, vFlame [0] + nStripIdx [j], 0);
+			G3TransformPoint (&v, vFlame [0] + nStripIdx [j], 0);
 			glVertex3fv ((GLfloat *) &v);
 			}
 		glEnd ();
@@ -1223,9 +1223,9 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 	VmVecScaleAdd (vCorona, &vPos, &vDir, fScale * fLength);
 	vh [4] = vCorona [0];
 	VmVecScaleAdd (vCorona + 3, &vPos, &vDir, -fScale * fLength);
-	G3TransformPointf (&vPos, &vPos, 0);
-	G3TransformPointf (vCorona, vCorona, 0);
-	G3TransformPointf (vCorona + 3, vCorona + 3, 0);
+	G3TransformPoint (&vPos, &vPos, 0);
+	G3TransformPoint (vCorona, vCorona, 0);
+	G3TransformPoint (vCorona + 3, vCorona + 3, 0);
 	VmVecNormal (&vNorm, &vPos, vCorona, &vEye);
 	fScale *= fRad;
 	VmVecScaleInc (vCorona, &vNorm, fScale);
@@ -1485,7 +1485,7 @@ if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id]) {
 					vPosf.p.x *= r [n];
 					vPosf.p.y *= r [n];
 					vPosf.p.z = -l [n];
-					G3TransformPointf (&vPosf, &vPosf, 0);
+					G3TransformPoint (&vPosf, &vPosf, 0);
 					glVertex3fv ((GLfloat *) &vPosf);
 					}
 				}
@@ -1501,7 +1501,7 @@ if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id]) {
 				vPosf.p.x *= r [h];
 				vPosf.p.y *= r [h];
 				vPosf.p.z = -l [h];
-				G3TransformPointf (&vPosf, &vPosf, 0);
+				G3TransformPoint (&vPosf, &vPosf, 0);
 				glVertex3fv ((GLfloat *) &vPosf);
 				}
 			glEnd ();
@@ -1545,13 +1545,13 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 
 	VmVecFixToFloat (vPosf, &objP->position.vPos);
 	VmVecFixToFloat (vPosf + 1, &objP->vLastPos);
-	G3TransformPointf (vPosf, vPosf, 0);
-	G3TransformPointf (vPosf + 1, vPosf + 1, 0);
+	G3TransformPoint (vPosf, vPosf, 0);
+	G3TransformPoint (vPosf + 1, vPosf + 1, 0);
 	VmVecSub (&vDirf, vPosf, vPosf + 1);
 	if (!(vDirf.p.x || vDirf.p.y || vDirf.p.z)) {
 		//return;
 		VmVecFixToFloat (vPosf + 1, &gameData.objs.objects [objP->cType.laserInfo.nParentObj].position.vPos);
-		G3TransformPointf (vPosf + 1, vPosf + 1, 0);
+		G3TransformPoint (vPosf + 1, vPosf + 1, 0);
 		VmVecSub (&vDirf, vPosf, vPosf + 1);
 		if (!(vDirf.p.x || vDirf.p.y || vDirf.p.z))
 			return;
@@ -1695,8 +1695,8 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 		VmVecFixToFloat (vTrailVerts, &objP->position.vPos);
 		VmVecScaleInc (vTrailVerts, &vOffsf, l);// * -0.75f);
 		VmVecScaleAdd (vTrailVerts + 2, vTrailVerts, &vOffsf, -100);
-		G3TransformPointf (vTrailVerts, vTrailVerts, 0);
-		G3TransformPointf (vTrailVerts + 2, vTrailVerts + 2, 0);
+		G3TransformPoint (vTrailVerts, vTrailVerts, 0);
+		G3TransformPoint (vTrailVerts + 2, vTrailVerts + 2, 0);
 		VmVecSub (&vOffsf, vTrailVerts + 2, vTrailVerts);
 		VmVecScale (&vOffsf, &vOffsf, r * 0.04f);
 		VmVecNormal (&vNormf, vTrailVerts, vTrailVerts + 2, &vEye);

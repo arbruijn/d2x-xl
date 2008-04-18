@@ -1371,13 +1371,13 @@ for (bScale = 0; bScale < 2; bScale++) {
 	pln = pl->pNodes;
 	VmVecFixToFloat (vPosf + 2, &(pln++)->vPos);
 	if (!gameStates.ogl.bUseTransform)
-		G3TransformPointf (vPosf + 2, vPosf + 2, 0);
+		G3TransformPoint (vPosf + 2, vPosf + 2, 0);
 	for (i = pl->nNodes - 2, j = 0; j <= i; j++) {
 		TRAP (pln);
 		memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
 		VmVecFixToFloat (vPosf + 2, &(++pln)->vPos);
 		if (!gameStates.ogl.bUseTransform)
-			G3TransformPointf (vPosf + 2, vPosf + 2, 0);
+			G3TransformPoint (vPosf + 2, vPosf + 2, 0);
 		TRAP (pln);
 		ComputePlasmaSegment (vPosf, bScale, j, j == 1, j == i, nDepth, nThread);
 		TRAP (pln);
@@ -1467,7 +1467,7 @@ glBegin (GL_LINE_STRIP);
 for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++) {
 	TRAP (pln);
 	VmVecFixToFloat (vPosf, &pln->vNewPos);
-	G3TransformPointf (vPosf, vPosf, 0);
+	G3TransformPoint (vPosf, vPosf, 0);
 	glVertex3fv ((GLfloat *) vPosf);
 	}
 glEnd ();
@@ -1732,11 +1732,11 @@ if (bDepthSort > 0) {
 				memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
 			if (!j) {
 				VmVecFixToFloat (vPosf + 1, &(pln++)->vPos);
-				G3TransformPointf (vPosf + 1, vPosf + 1, 0);
+				G3TransformPoint (vPosf + 1, vPosf + 1, 0);
 				}
 			if (j < i) {
 				VmVecFixToFloat (vPosf + 2, &(++pln)->vPos);
-				G3TransformPointf (vPosf + 2, vPosf + 2, 0);
+				G3TransformPoint (vPosf + 2, vPosf + 2, 0);
 				}
 			if (j)
 				RenderLightningPlasma (vPosf, &color, 0, 0, j == 1, j == i, 1, nDepth, 1);
@@ -1802,12 +1802,12 @@ else {
 					if (!j) {
 						VmVecFixToFloat (vPosf + 1, &(pln++)->vPos);
 						if (!gameStates.ogl.bUseTransform)
-							G3TransformPointf (vPosf + 1, vPosf + 1, 0);
+							G3TransformPoint (vPosf + 1, vPosf + 1, 0);
 						}
 					if (j < i) {
 						VmVecFixToFloat (vPosf + 2, &(++pln)->vPos);
 						if (!gameStates.ogl.bUseTransform)
-							G3TransformPointf (vPosf + 2, vPosf + 2, 0);
+							G3TransformPoint (vPosf + 2, vPosf + 2, 0);
 						}
 					if (j)
 						RenderLightningPlasma (vPosf, &color, h != 0, bPlasma, j == 1, j == i, 1, nDepth, 0);
@@ -1831,7 +1831,7 @@ else {
 		for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++) {
 			VmVecFixToFloat (vPosf, &pln->vPos);
 			if (!gameStates.ogl.bUseTransform)
-				G3TransformPointf (vPosf, vPosf, 0);
+				G3TransformPoint (vPosf, vPosf, 0);
 			glVertex3fv ((GLfloat *) vPosf);
 			}
 		glEnd ();
@@ -1846,7 +1846,7 @@ else {
 		glBegin (GL_LINE_STRIP);
 		for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++) {
 			VmVecFixToFloat (vPosf, &pln->vNewPos);
-			G3TransformPointf (vPosf, vPosf, 0);
+			G3TransformPoint (vPosf, vPosf, 0);
 			glVertex3fv ((GLfloat *) vPosf);
 			}
 		glEnd ();

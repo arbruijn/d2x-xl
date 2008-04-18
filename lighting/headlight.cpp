@@ -110,13 +110,13 @@ for (i = 0; i < gameData.render.lights.dynamic.headLights.nLights; i++) {
 	psl = gameData.render.lights.dynamic.headLights.psl [i];
 	VmVecFixToFloat (&psl->dir, &pl->vDir);
 	if (pl->bTransform && !gameStates.ogl.bUseTransform)
-		G3RotatePointf (&psl->dir, &psl->dir, 0);
+		G3RotatePoint (&psl->dir, &psl->dir, 0);
 	psl->spotAngle = pl->spotAngle;
 	psl->spotExponent = pl->spotExponent;
 	if (gameStates.ogl.bHeadLight && gameOpts->ogl.bHeadLight && !gameStates.render.automap.bDisplay) {
 #if HEADLIGHT_TRANSFORMATION == 0
-		G3TransformPointf (&vPos, psl->pos, 0);
-		G3TransformPointf (&vDir, VmVecAdd (&vDir, psl->pos, &psl->dir), 0);
+		G3TransformPoint (&vPos, psl->pos, 0);
+		G3TransformPoint (&vDir, VmVecAdd (&vDir, psl->pos, &psl->dir), 0);
 		VmVecNormalize (&vDir, VmVecDec (&vDir, &vPos));
 		//vDir.p.z = -vDir.p.z;
 		memcpy (gameData.render.lights.dynamic.headLights.pos + i, &vPos, sizeof (fVector3));
