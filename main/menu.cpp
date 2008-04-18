@@ -274,7 +274,7 @@ static struct {
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
 static char *pszTexQual [4];
-static char *pszMeshQual [4];
+static char *pszMeshQual [5];
 static char *pszRendQual [5];
 static char *pszSmokeAmount [5];
 static char *pszSmokeSize [4];
@@ -3969,6 +3969,7 @@ void RenderOptionsMenu (void)
 	pszMeshQual [1] = TXT_SMALL;
 	pszMeshQual [2] = TXT_MEDIUM;
 	pszMeshQual [3] = TXT_HIGH;
+	pszMeshQual [4] = TXT_EXTREME;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -4006,7 +4007,7 @@ do {
 			renderOpts.nTexQual = opt++;
 			sprintf (szMeshQual + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
 			*szMeshQual = *(TXT_MESH_QUALITY + 1);
-			ADD_SLIDER (opt, szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 3, KEY_M, HTX_MESH_QUALITY);
+			ADD_SLIDER (opt, szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 4, KEY_M, HTX_MESH_QUALITY);
 			renderOpts.nMeshQual = opt++;
 			}
 		ADD_TEXT (opt, "", 0);
