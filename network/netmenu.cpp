@@ -2453,18 +2453,20 @@ return 0;
 extern tNetgameInfo activeNetGames [];
 extern tExtraGameInfo activeExtraGameInfo [];
 
+char szHighlight [] = {1, (char) 255, (char) 192, (char) 128, 0};
+
 #define FLAGTEXT(_b)	((_b) ? TXT_ON : TXT_OFF)
 
 #define	INITFLAGS(_t) \
-			{sprintf (mTexts [opt], _t); j = 0;}
+			{sprintf (mTexts [opt], _t); strcat (mTexts [opt], szHighlight); j = 0;}
 
 #define	ADDFLAG(_f,_t) \
-		if (_f) {if (j) strcat (mTexts [opt], ", "); strcat (mTexts [opt], _t); j++; }
+	if (_f) {if (j) strcat (mTexts [opt], ", "); strcat (mTexts [opt], _t); if (++j == 5) {opt++; INITFLAGS ("   ")}; }
 
 void ShowNetGameInfo (int choice)
  {
-	tMenuItem	m [20];
-   char			mTexts [20][200];
+	tMenuItem	m [30];
+   char			mTexts [30][200];
 	int			i, j, nInMenu, opt = 0;
 
 #ifndef _DEBUG
@@ -2477,13 +2479,13 @@ for (i = 0; i < 20; i++) {
 	m [i].text = (char *) (mTexts + i);
 	m [i].nType = NM_TYPE_TEXT;	
 	}
-sprintf (mTexts [opt], TXT_NGI_GAME, AGI.szGameName); 
+sprintf (mTexts [opt], TXT_NGI_GAME, szHighlight, AGI.szGameName); 
 opt++;
-sprintf (mTexts [opt], TXT_NGI_MISSION, AGI.szMissionTitle); 
+sprintf (mTexts [opt], TXT_NGI_MISSION, szHighlight, AGI.szMissionTitle); 
 opt++;
-sprintf (mTexts [opt], TXT_NGI_LEVEL, AGI.nLevel); 
+sprintf (mTexts [opt], TXT_NGI_LEVEL, szHighlight, AGI.nLevel); 
 opt++;
-sprintf (mTexts [opt], TXT_NGI_SKILL, MENU_DIFFICULTY_TEXT (AGI.difficulty)); 
+sprintf (mTexts [opt], TXT_NGI_SKILL, szHighlight, MENU_DIFFICULTY_TEXT (AGI.difficulty)); 
 opt++;
 opt++;
 #ifndef _DEBUG
@@ -2575,7 +2577,10 @@ else
 bAlreadyShowingInfo = 1;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
+gameStates.menus.bNoBackground = 0;
 ExecMenutiny2 (NULL, TXT_NETGAME_INFO, opt, m, NULL);
+gameStates.menus.bNoBackground = 0;
+gameStates.app.bGameRunning = 0;
 gameStates.menus.nInMenu = nInMenu;
 bAlreadyShowingInfo = 0;
  }

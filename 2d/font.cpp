@@ -774,10 +774,10 @@ while (next_row != NULL) {
 				if (*++text_ptr) {
 					if (grMsgColorLevel >= c) {
 						FG_COLOR.rgb = 1;
-						FG_COLOR.color.red = text_ptr [0] - 128;
-						FG_COLOR.color.green = text_ptr [1] - 128;
-						FG_COLOR.color.blue = text_ptr [2] - 128;
-						FG_COLOR.color.alpha = 0;
+						FG_COLOR.color.red = (text_ptr [0] - 128) * 2;
+						FG_COLOR.color.green = (text_ptr [1] - 128) * 2;
+						FG_COLOR.color.blue = (text_ptr [2] - 128) * 2;
+						FG_COLOR.color.alpha = 255;
 						}
 					text_ptr += 3;
 					}

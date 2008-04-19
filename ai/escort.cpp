@@ -329,7 +329,7 @@ void ChangeGuidebotName ()
 	m.nType=NM_TYPE_INPUT; 
 	m.text_len = GUIDEBOT_NAME_LEN; 
 	m.text = text;
-	item = ExecMenu ( NULL, "Enter Guide-bot name:", 1, &m, NULL, NULL );
+	item = ExecMenu (NULL, "Enter Guide-bot name:", 1, &m, NULL, NULL);
 
 	if (item != -1) {
 		strcpy (gameData.escort.szName,text);

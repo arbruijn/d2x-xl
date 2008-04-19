@@ -368,7 +368,7 @@ if (!(bRedraw && gameOpts->menus.nStyle && bg && bmP)) {
 	}
 if (!bmP)
 	return;
-if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle))
+if (!((gameStates.menus.bNoBackground || gameStates.app.bGameRunning) && gameOpts->menus.nStyle))
 	ShowFullscreenImage (bmP);
 if (bg)
 	bg->background = bmP;
@@ -1583,7 +1583,7 @@ if (gameStates.app.bGameRunning && IsMultiGame)
 	gameData.multigame.nTypingTimeout = 0;
 
 SetPopupScreenMode ();
-if (!gameOpts->menus.nStyle && gameStates.app.bGameRunning) {
+if (!gameOpts->menus.nStyle && (gameStates.menus.bNoBackground || gameStates.app.bGameRunning)) {
 	OglDrawBuffer (GL_FRONT, 1);
 	NMLoadBackground (NULL, NULL, 0);
 	GrUpdate (0);

@@ -627,6 +627,7 @@ typedef struct tMenuStates {
 	int bUseTracker;
 	int bFullScreen;
 	int bReordering;
+	int bNoBackground;
 } tMenuStates;
 
 //------------------------------------------------------------------------------
