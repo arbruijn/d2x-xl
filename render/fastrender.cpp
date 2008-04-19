@@ -196,8 +196,8 @@ if (!faceP->bVisible)
 	return;
 if ((nType < 4) && !(faceP->widFlags & WID_RENDER_FLAG))
 	return;
-#if 0
-if (faceP->nType < 0)
+#if 1
+if (!gameStates.render.bTriangleMesh && (faceP->nType < 0))
 	FixTriangleFan (segP, faceP);
 #endif
 #ifdef _DEBUG
@@ -1198,6 +1198,130 @@ return 1;
 //------------------------------------------------------------------------------
 
 void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
+{
+	tSegment		*segP;
+	tSegFaces	*segFaceP;
+	grsFace		*faceP;
+	tRgbaColorf	*pc;
+	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
+#if 0
+	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
+#endif
+	short			nVertex, nSegment, nSide;
+	float			fAlpha;
+	int			h, i, j, nColor, 
+					nIncr = nStart ? -1 : 1;
+
+	static		tFaceColor brightColor = {{1,1,1,1},1};
+
+gameData.render.lights.dynamic.shader.nActiveLights [0] =
+gameData.render.lights.dynamic.shader.nActiveLights [1] =
+gameData.render.lights.dynamic.shader.nActiveLights [2] =
+gameData.render.lights.dynamic.shader.nActiveLights [3] = 0;
+gameStates.ogl.bUseTransform = 1;
+gameStates.render.nState = 0;
+#	if SHADER_VERTEX_LIGHTING
+if (gameStates.ogl.bVertexLighting)
+	gameStates.ogl.bVertexLighting = ComputeVertexLight (-1, 0, NULL);
+#endif
+for (i = nStart; i != nEnd; i += nIncr) {
+	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
+		continue;
+	segP = SEGMENTS + nSegment;
+	segFaceP = SEGFACES + nSegment;
+	if (!(gameStates.app.bMultiThreaded || SegmentIsVisible (segP))) {
+		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
+		continue;
+		}
+#ifdef _DEBUG
+	if (nSegment == nDbgSeg)
+		nSegment = nSegment;
+#endif
+	if (!(gameStates.render.bFullBright || gameOpts->ogl.bPerPixelLighting))
+		SetNearestSegmentLights (nSegment, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
+		nSide = faceP->nSide;
+#ifdef _DEBUG
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
+			nSegment = nSegment;
+			if (gameData.render.lights.dynamic.shader.nActiveLights [nThread])
+				nSegment = nSegment;
+			}
+#endif
+		if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
+			continue;
+		if (faceP->bSparks && gameOpts->render.effects.bEnergySparks) {
+			faceP->bVisible = 0;
+			continue;
+			}
+		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
+			faceP->bVisible = 0;
+			continue;
+			}
+		faceP->color = faceColor [nColor].color;
+//			SetDynLightMaterial (nSegment, faceP->nSide, -1);
+		pc = gameData.segs.faces.color + faceP->nIndex;
+		for (h = 0; h < 4; h++, pc++) {
+			if (gameStates.render.bFullBright) 
+				*pc = nColor ? faceColor [nColor].color : brightColor.color;
+			else {
+				c = faceColor [nColor];
+				if (nColor)
+					*pc = c.color;
+				else {
+					nVertex = faceP->index [h];
+#ifdef _DEBUG
+					if (nVertex == nDbgVertex)
+						nDbgVertex = nDbgVertex;
+#endif
+					if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
+#if 0
+						if (gameStates.app.bMultiThreaded) {
+							if (gameData.render.mine.bCalcVertexColor [nVertex] & nThreadFlags [1])
+								goto skipVertex;
+							}
+#endif
+						if (gameOpts->ogl.bPerPixelLighting)
+							c.color = gameData.render.color.ambient [nVertex].color;
+						else
+#	if SHADER_VERTEX_LIGHTING
+							if (!ComputeVertexLight (nVertex, 1, &c))
+#	endif
+							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, 
+												gameData.segs.fVertices + nVertex, nVertex, 
+												NULL, &c, 1, 0, nThread);
+#if 0
+						if (gameStates.app.bMultiThreaded)
+							gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
+#endif
+#ifdef _DEBUG
+						if (nVertex == nDbgVertex)
+							nVertex = nVertex;
+#endif
+						}
+					*pc = gameData.render.color.vertices [nVertex].color;
+					}
+				if (nColor == 1) {
+					pc->red *= fAlpha;
+					pc->blue *= fAlpha;
+					pc->green *= fAlpha;
+					}
+				pc->alpha = fAlpha;
+				}
+			}
+		gameData.render.lights.dynamic.material.bValid = 0;
+		}
+	}
+#	if SHADER_VERTEX_LIGHTING
+if (gameStates.ogl.bVertexLighting)
+	ComputeVertexLight (-1, 2, NULL);
+#endif
+gameStates.ogl.bUseTransform = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
 {
 	tSegment		*segP;
 	tSegFaces	*segFaceP;

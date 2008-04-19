@@ -568,7 +568,7 @@ m_faceP->nIndex = m_vertexP - gameData.segs.faces.vertices;
 if (gameStates.render.bTriangleMesh)
 	m_faceP->nTriIndex = m_triP - gameData.segs.faces.tris;
 memcpy (m_faceP->index, m_sideVerts, sizeof (m_faceP->index));
-m_faceP->nType = m_sideP->nType;
+m_faceP->nType = gameStates.render.bTriangleMesh ? m_sideP->nType : -1;
 m_faceP->nSegment = nSegment;
 m_faceP->nSide = nSide;
 m_faceP->nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWall : (ushort) -1;
@@ -612,13 +612,17 @@ m_faceP->bAdditive = gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_LA
 
 void CFaceMeshBuilder::SetupFace (void)
 {
-for (int i = 0; i < 4; i++) {
+	int	i, j;
+
+for (i = 0; i < 4; i++) {
+	j = m_sideVerts [i];
+	*m_vertexP++ = gameData.segs.fVertices [j].v3;
 	m_texCoordP->v.u = f2fl (m_sideP->uvls [i].u);
 	m_texCoordP->v.v = f2fl (m_sideP->uvls [i].v);
 	RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);
 	m_texCoordP++;
 	m_ovlTexCoordP++;
-	*m_faceColorP++ = gameData.render.color.ambient [m_sideVerts [i]].color;
+	*m_faceColorP++ = gameData.render.color.ambient [j].color;
 	}
 }
 

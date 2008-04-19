@@ -23,6 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void QSortFaces (int left, int right);
 void RenderFaceList (int nType);
 void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread);
+void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread);
 void ComputeStaticFaceLight (int nStart, int nEnd, int nThread);
 void UpdateSlidingFaces (void);
 int CountRenderFaces (void);
@@ -34,8 +35,12 @@ void RenderSkyBoxFaces (void);
 
 static inline void ComputeFaceLight (int nStart, int nEnd, int nThread)
 {
-if (gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE))
-	ComputeDynamicFaceLight (nStart, nEnd, nThread);
+if (gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE)) {
+	if (gameStates.render.bTriangleMesh)
+		ComputeDynamicTriangleLight (nStart, nEnd, nThread);
+	else
+		ComputeDynamicFaceLight (nStart, nEnd, nThread);
+	}
 else
 	ComputeStaticFaceLight (nStart, nEnd, nThread);
 }
