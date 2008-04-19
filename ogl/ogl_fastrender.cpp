@@ -780,37 +780,41 @@ if ((gameStates.render.history.nShader >= 10) && (gameStates.render.history.nSha
 	}
 #		endif
 #	endif
+if (gameStates.render.bTriangleMesh) {
 #ifdef _DEBUG
-if ((nDbgFace >= 0) && (faceP - gameData.segs.faces.faces != nDbgFace))
-	return 0;
-if (!bDepthOnly && gameOpts->render.debug.bWireFrame) {
-	if ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)) {
-		grsTriangle	*triP = gameData.segs.faces.tris + faceP->nTriIndex;
-		glDisableClientState (GL_COLOR_ARRAY);
-		if (bTextured)
-			glDisable (GL_TEXTURE_2D);
+	if ((nDbgFace >= 0) && (faceP - gameData.segs.faces.faces != nDbgFace))
+		return 0;
+	if (!bDepthOnly && gameOpts->render.debug.bWireFrame) {
+		if ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)) {
+			grsTriangle	*triP = gameData.segs.faces.tris + faceP->nTriIndex;
+			glDisableClientState (GL_COLOR_ARRAY);
+			if (bTextured)
+				glDisable (GL_TEXTURE_2D);
 #	if 1
-		glColor3f (1.0f, 0.5f, 0.0f);
-		glLineWidth (6);
-		glBegin (GL_LINE_LOOP);
-		for (int i = 0; i < 4; i++)
-			glVertex3fv ((GLfloat *) (gameData.segs.fVertices + faceP->index [i]));
-		glEnd ();
+			glColor3f (1.0f, 0.5f, 0.0f);
+			glLineWidth (6);
+			glBegin (GL_LINE_LOOP);
+			for (int i = 0; i < 4; i++)
+				glVertex3fv ((GLfloat *) (gameData.segs.fVertices + faceP->index [i]));
+			glEnd ();
 #	endif
-		glLineWidth (2);
-		glColor3f (1,1,1);
-		for (int i = 0; i < faceP->nTris; i++, triP++)
-			glDrawArrays (GL_LINE_LOOP, triP->nIndex, 3);
-		glLineWidth (1);
-		if (gameOpts->render.debug.bDynamicLight)
-			glEnableClientState (GL_COLOR_ARRAY);
-		if (bTextured)
-			glEnable (GL_TEXTURE_2D);
+			glLineWidth (2);
+			glColor3f (1,1,1);
+			for (int i = 0; i < faceP->nTris; i++, triP++)
+				glDrawArrays (GL_LINE_LOOP, triP->nIndex, 3);
+			glLineWidth (1);
+			if (gameOpts->render.debug.bDynamicLight)
+				glEnableClientState (GL_COLOR_ARRAY);
+			if (bTextured)
+				glEnable (GL_TEXTURE_2D);
+			}
 		}
-	}
-if (gameOpts->render.debug.bTextures && ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)))
+	if (gameOpts->render.debug.bTextures && ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)))
 #endif
-	glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
+		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
+	}	
+else
+	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 #if 0
 fVector vNormalf, vCenterf, vBasef;
 VmVecFixToFloat (&vBasef, SEGMENT_CENTER_I (faceP->nSegment));

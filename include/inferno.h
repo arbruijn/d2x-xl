@@ -922,6 +922,7 @@ typedef struct tRenderStates {
 	fix nMinZoomFactor;
 	fix nMaxZoomFactor;
 	int bDetriangulation;
+	GLenum nFacePrimitive;
 	double glFOV;
 	double glAspect;
 	float grAlpha;

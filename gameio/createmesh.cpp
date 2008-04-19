@@ -76,6 +76,10 @@ char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
 
 CFaceMeshBuilder faceMeshBuilder;
 
+float fMaxSideLen [] = {1e30f, 40, 30, 20, 10};
+
+#define	MAX_SIDE_LEN	fMaxSideLen [gameOpts->render.nMeshQuality]
+
 //------------------------------------------------------------------------------
 
 void CTriMeshBuilder::FreeMeshData (void)
@@ -561,7 +565,8 @@ memset (m_faceP, 0, sizeof (*m_faceP));
 m_faceP->nSegment = nSegment;
 m_faceP->nVerts = 4;
 m_faceP->nIndex = m_vertexP - gameData.segs.faces.vertices;
-m_faceP->nTriIndex = m_triP - gameData.segs.faces.tris;
+if (gameStates.render.bTriangleMesh)
+	m_faceP->nTriIndex = m_triP - gameData.segs.faces.tris;
 memcpy (m_faceP->index, m_sideVerts, sizeof (m_faceP->index));
 m_faceP->nType = m_sideP->nType;
 m_faceP->nSegment = nSegment;
@@ -735,6 +740,7 @@ m_segFaceP = SEGFACES;
 	ubyte			nSide;
 	
 gameStates.render.bTriangleMesh = gameOpts->ogl.bPerPixelLighting || gameOpts->render.nMeshQuality;
+gameStates.render.nFacePrimitive = gameStates.render.bTriangleMesh ? GL_TRIANGLES : GL_TRIANGLE_FAN;
 if (gameStates.render.bSplitPolys)
 	gameStates.render.bSplitPolys = (gameOpts->ogl.bPerPixelLighting || !gameOpts->render.nMeshQuality) ? 1 : -1;
 

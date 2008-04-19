@@ -17,10 +17,6 @@ typedef struct tMeshTri {
 	tRgbaColorf	color [3];
 } tMeshTri;
 
-float fMaxSideLen [] = {1e30f, 40, 30, 20, 10};
-
-#define	MAX_SIDE_LEN	fMaxSideLen [gameOpts->render.nMeshQuality]
-
 class CTriMeshBuilder {
 	private:
 		tMeshLine	*m_meshLines;

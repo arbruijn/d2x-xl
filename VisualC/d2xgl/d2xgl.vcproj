@@ -3332,11 +3332,11 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\..\main\bm.h"
+						RelativePath="..\..\include\bmread.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\bmread.h"
+						RelativePath="..\..\include\createmesh.h"
 						>
 					</File>
 					<File
@@ -3344,11 +3344,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\gamemine.h"
+						RelativePath="..\..\include\gamemine.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\gamesave.h"
+						RelativePath="..\..\include\gamesave.h"
 						>
 					</File>
 					<File
@@ -3356,15 +3356,15 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\loadgame.h"
+						RelativePath="..\..\include\loadgame.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\mission.h"
+						RelativePath="..\..\include\mission.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\paging.h"
+						RelativePath="..\..\include\paging.h"
 						>
 					</File>
 					<File
@@ -3376,7 +3376,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\tga.h"
+						RelativePath="..\..\include\tga.h"
 						>
 					</File>
 				</Filter>
@@ -4591,14 +4591,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\bm.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\bmread.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\include\byteswap.h"
 				>
 			</File>
@@ -4624,10 +4616,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\fvi_a.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\gamemine.h"
 				>
 			</File>
 			<File

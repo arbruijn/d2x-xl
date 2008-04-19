@@ -66,6 +66,7 @@ char gamesave_rcsid [] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 #include "gameseg.h"
 #include "light.h"
 #include "objrender.h"
+#include "createmesh.h"
 
 #define GAME_VERSION            32
 #define GAME_COMPATIBLE_VERSION 22
@@ -1652,7 +1653,7 @@ if (game_err == -1) {   //error!!
 	return 3;
 	}
 CFClose(&cf);
-CreateFaceList ();
+faceMeshBuilder.BuildMesh ();
 SetAmbientSoundFlags ();
 #ifdef EDITOR
 write_game_text_file(filename);
