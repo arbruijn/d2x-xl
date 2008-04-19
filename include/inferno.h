@@ -1923,6 +1923,7 @@ typedef struct tG3ModelFace {
 	short						nBitmap;
 	short						nIndex;
 	short						nId;
+	ubyte						nSubModel;
 	ubyte						bGlow :1;
 	ubyte						bThruster :1;
 } tG3ModelFace;

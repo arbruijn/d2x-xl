@@ -152,6 +152,7 @@ else {
 	if (pObjColor)
 		*pObjColor = baseColor;
 	}
+pmf->nSubModel = psm - pm->pSubModels;
 pmf->vNormal = *pn;
 pmf->nIndex = pm->iFaceVert;
 pmv = pm->pFaceVerts + pm->iFaceVert;
@@ -176,10 +177,9 @@ for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	G3SetSubModelMinMax (psm, &pmv->vertex);
 	}
 pm->iFaceVert += nVerts;
-pmf++;
 pm->iFace++;
 psm->nFaces++;
-return pmf;
+return ++pmf;
 }
 
 //------------------------------------------------------------------------------
@@ -217,7 +217,7 @@ for (;;) {
 		case OP_DEFPOINTS: {
 			int i, n = WORDVAL (p+2);
 			fVector3 *pfv = pm->pVerts;
-			vmsVector *pv = VECPTR(p+4);
+			vmsVector *pv = VECPTR (p+4);
 			for (i = n; i; i--)
 				VmVecFixToFloat (pfv++, pv++);
 			p += n * sizeof (vmsVector) + 4;
@@ -250,12 +250,12 @@ for (;;) {
 			}
 
 		case OP_SORTNORM:
-			pmf = pm->pFaces + pm->iFace;
 			if (!G3GetPOFModelItems (p + WORDVAL (p+28), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, pObjColor))
 				return 0;
 			pmf = pm->pFaces + pm->iFace;
 			if (!G3GetPOFModelItems (p + WORDVAL (p+30), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, pObjColor))
 				return 0;
+			pmf = pm->pFaces + pm->iFace;
 			p += 32;
 			break;
 
@@ -289,6 +289,50 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+void G3SortModelFaces (tG3ModelFace *pmf, int left, int right)
+{
+	int	l = left,
+			r = right;
+	ubyte	m = pmf [(l + r) / 2].nSubModel;
+
+do {
+	while (pmf [l].nSubModel < m)
+		l++;
+	while (pmf [r].nSubModel > m)
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			tG3ModelFace h = pmf [l];
+			pmf [l] = pmf [r];
+			pmf [r] = h;
+			}
+		l++;
+		r--;
+		}
+	} while (l <= r);
+if (l < right)
+	G3SortModelFaces (pmf, l, right);
+if (left < r)
+	G3SortModelFaces (pmf, left, r);
+}
+
+//------------------------------------------------------------------------------
+
+void G3AssignModelFaces (tG3Model *pm)
+{
+	int				i;
+	ubyte				nSubModel = 255;
+	tG3ModelFace	*pmf;
+
+for (pmf = pm->pFaces, i = pm->nFaces; i; i--, pmf++)
+	if (pmf->nSubModel != nSubModel) {
+		nSubModel = pmf->nSubModel;
+		pm->pSubModels [nSubModel].pFaces = pmf;
+		}
+}
+
+//------------------------------------------------------------------------------
+
 int G3BuildModelFromPOF (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
 {
 	tG3Model	*pm = gameData.models.g3Models [0] + nModel;
@@ -310,6 +354,8 @@ PrintLog ("building model for object type %d, id %d\n", objP->nType, objP->id);
 #endif
 if (!G3GetPOFModelItems (pp->modelData, NULL, pm, 0, -1, 1, modelBitmaps, pObjColor))
 	return 0;
+G3SortModelFaces (pm->pFaces, 0, pm->nFaces - 1);
+G3AssignModelFaces (pm);
 memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 0);
 G3SetupModel (pm, 0, 1);
