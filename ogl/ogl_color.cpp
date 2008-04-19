@@ -327,11 +327,10 @@ nLights = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
 if (nLights > gameData.render.lights.dynamic.nLights)
 	nLights = gameData.render.lights.dynamic.nLights;
 i = gameData.render.lights.dynamic.shader.nLastLight [nThread] - gameData.render.lights.dynamic.shader.nFirstLight [nThread] + 1;
-for (j = 0; (i > 0); activeLightsP++, i--) {
+for (j = 0; (i > 0) && nLights; activeLightsP++, i--) {
 	if (!(psl = GetActiveShaderLight (activeLightsP, nThread)))
 		continue;
-	if (!nLights--)
-		continue;
+	nLights--;
 #if 0
 	if (i == vcd.nMatLight)
 		continue;

@@ -612,11 +612,17 @@ m_faceP->bAdditive = gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_LA
 
 void CFaceMeshBuilder::SetupFace (void)
 {
-	int	i, j;
+	int			i, j;
+	vmsVector	vNormal;
+	fVector3		vNormalf;
 
+VmVecAdd (&vNormal, m_sideP->normals, m_sideP->normals + 1);
+VmVecScale (&vNormal, F1_0 / 2);
+VmVecFixToFloat (&vNormalf, &vNormal);
 for (i = 0; i < 4; i++) {
 	j = m_sideVerts [i];
 	*m_vertexP++ = gameData.segs.fVertices [j].v3;
+	*m_normalP++ = vNormalf;
 	m_texCoordP->v.u = f2fl (m_sideP->uvls [i].u);
 	m_texCoordP->v.v = f2fl (m_sideP->uvls [i].v);
 	RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);

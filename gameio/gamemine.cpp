@@ -1561,10 +1561,17 @@ for (sideP = SEGMENTS [nStartSeg].sides, nSide = 6; nSide; nSide--, sideP++) {
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 			nSegment = nSegment;
 #endif
-			for (nTris = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; nTris; nTris--, triP++)
-				for (j = 0; j < 3; j++)
-					while (!SetVertVis (nStartSeg, triP->index [j], 1))
+			if (gameStates.render.bTriangleMesh) {
+				for (nTris = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; nTris; nTris--, triP++)
+					for (j = 0; j < 3; j++)
+						while (!SetVertVis (nStartSeg, triP->index [j], 1))
+							;
+				}
+			else {
+				for (j = 0; j < 4; j++)
+					while (!SetVertVis (nStartSeg, faceP->index [j], 1))
 						;
+				}	
 			}
 #else
 		for (j = 8, vertP = SEGMENTS [nSegment].verts; j; j--, vertP++) {

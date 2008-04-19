@@ -1001,13 +1001,6 @@ if (gameOpts->render.bDynLighting) {
 	if (h > 0)
 		memset (activeLightsP + gameData.render.lights.dynamic.shader.nFirstLight [nThread], 0, sizeof (tActiveShaderLight) * h);
 	gameData.render.lights.dynamic.shader.nActiveLights [nThread] = 0;
-#ifdef _DEBUG
-	for (h = 0; h < MAX_SHADER_LIGHTS; h++)
-		if (activeLightsP [h].nType) {
-			activeLightsP [h].nType = 0;
-			activeLightsP [h].psl = NULL;
-			}
-#endif
 	gameData.render.lights.dynamic.shader.nFirstLight [nThread] = MAX_SHADER_LIGHTS;
 	gameData.render.lights.dynamic.shader.nLastLight [nThread] = 0;
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
@@ -1242,8 +1235,7 @@ char *ppLightingFS [] = {
 	"#define LIGHTS 5\r\n" \
 	"uniform float lightRad [LIGHTS];\r\n" \
 	"varying vec3 normal;\r\n" \
-	"varying vec3 lightDir [LIGHTS];\r\n" \
-	"varying float lightDist [LIGHTS];\r\n" \
+	"varying vec3 lightVec [LIGHTS];\r\n" \
 	"void main() {\r\n" \
 	"	vec3 halfV;\r\n" \
 	"	float att, dist, NdotL, NdotHV;\r\n" \
@@ -1251,10 +1243,10 @@ char *ppLightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"		NdotL = max (dot (n, normalize (lightDir [i])), 0.0);\r\n" \
+	"		NdotL = max (dot (n, normalize (lightVec [i])), 0.0);\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
 	"			att = 1.0;\r\n" \
-	"			dist = lightDist [i] - lightRad [i];\r\n" \
+	"			dist = length (lightDist [i]) - lightRad [i];\r\n" \
 	"			if (dist <= 0.0) {\r\n" \
 	"				vec4 diffuse = gl_LightSource [i].diffuse;\r\n" \
 	"				vec4 constant = diffuse * -dist / lightRad [i];\r\n" \
@@ -1278,8 +1270,7 @@ char *ppLightingFS [] = {
 	"uniform sampler2D btmTex;\r\n" \
 	"uniform float lightRad [LIGHTS];\r\n" \
 	"varying vec3 normal;\r\n" \
-	"varying vec3 lightDir [LIGHTS];\r\n" \
-	"varying float lightDist [LIGHTS];\r\n" \
+	"varying vec3 lightVec [LIGHTS];\r\n" \
 	"void main() {\r\n" \
 	"	vec3 halfV;\r\n" \
 	"	float att, dist, NdotL, NdotHV;\r\n" \
@@ -1288,7 +1279,7 @@ char *ppLightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"		NdotL = max (dot (n, normalize (lightDir [i])), 0.0);\r\n" \
+	"		NdotL = max (dot (n, normalize (lightVec [i])), 0.0);\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
 	"			att = 1.0;\r\n" \
 	"			dist = lightDist [i] - lightRad [i];\r\n" \
@@ -1315,8 +1306,7 @@ char *ppLightingFS [] = {
 	"uniform sampler2D btmTex, topTex;\r\n" \
 	"uniform float lightRad [LIGHTS];\r\n" \
 	"varying vec3 normal;\r\n" \
-	"varying vec3 lightDir [LIGHTS];\r\n" \
-	"varying float lightDist [LIGHTS];\r\n" \
+	"varying vec3 lightVec [LIGHTS];\r\n" \
 	"void main() {\r\n" \
 	"	vec3 halfV;\r\n" \
 	"	float att, dist, NdotL, NdotHV;\r\n" \
@@ -1326,7 +1316,7 @@ char *ppLightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"		NdotL = max (dot (n, normalize (lightDir [i])), 0.0);\r\n" \
+	"		NdotL = max (dot (n, normalize (lightVec [i])), 0.0);\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
 	"			att = 1.0;\r\n" \
 	"			dist = lightDist [i] - lightRad [i];\r\n" \
@@ -1353,8 +1343,7 @@ char *ppLightingFS [] = {
 	"uniform sampler2D btmTex, topTex, maskTex;\r\n" \
 	"uniform float lightRad [LIGHTS];\r\n" \
 	"varying vec3 normal;\r\n" \
-	"varying vec3 lightDir [LIGHTS];\r\n" \
-	"varying float lightDist [LIGHTS];\r\n" \
+	"varying vec3 lightVec [LIGHTS];\r\n" \
 	"void main() {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;\r\n" \
 	"if (bMask < 0.5)\r\n" \
@@ -1368,7 +1357,7 @@ char *ppLightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"		NdotL = max (dot (n, normalize (lightDir [i])), 0.0);\r\n" \
+	"		NdotL = max (dot (n, normalize (lightVec [i])), 0.0);\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
 	"			att = 1.0;\r\n" \
 	"			dist = lightDist [i] - lightRad [i];\r\n" \
@@ -1397,9 +1386,7 @@ char *ppLightingFS [] = {
 char *ppLightingVS [] = {
 	"#define LIGHTS 5\r\n" \
 	"varying vec3 normal;\r\n" \
-	"varying vec3 lightDir [LIGHTS];\r\n" \
-	"varying float lightDist [LIGHTS];\r\n" \
-	"/*uniform vec4 lightPos [LIGHTS];*/\r\n" \
+	"varying vec3 lightVec [LIGHTS];\r\n" \
 	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
@@ -1408,20 +1395,15 @@ char *ppLightingVS [] = {
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
 	"	/*vertPos.x *= aspect;*/\r\n" \
 	"	int i;\r\n" \
-	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"		lightVec = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
-	"		lightDir [i] = normalize (lightVec);\r\n" \
-	"		lightDist [i] = length (lightVec);\r\n" \
-	"		}\r\n" \
+	"	for (i = 0; i < LIGHTS; i++)\r\n" \
+	"		lightVec [i] = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 5\r\n" \
 	"varying vec3 normal;\r\n" \
-	"varying vec3 lightDir [LIGHTS];\r\n" \
-	"varying float lightDist [LIGHTS];\r\n" \
-	"/*uniform vec4 lightPos [LIGHTS];*/\r\n" \
+	"varying vec3 lightVec [LIGHTS];\r\n" \
 	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
@@ -1430,11 +1412,8 @@ char *ppLightingVS [] = {
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
 	"	/*vertPos.x *= aspect;*/\r\n" \
 	"	int i;\r\n" \
-	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"		lightVec = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
-	"		lightDir [i] = normalize (lightVec);\r\n" \
-	"		lightDist [i] = length (lightVec);\r\n" \
-	"		}\r\n" \
+	"	for (i = 0; i < LIGHTS; i++)\r\n" \
+	"		lightVec [i] = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
    "	gl_FrontColor = gl_Color;\r\n" \
@@ -1442,9 +1421,7 @@ char *ppLightingVS [] = {
 	,
 	"#define LIGHTS 5\r\n" \
 	"varying vec3 normal;\r\n" \
-	"varying vec3 lightDir [LIGHTS];\r\n" \
-	"varying float lightDist [LIGHTS];\r\n" \
-	"/*uniform vec4 lightPos [LIGHTS];*/\r\n" \
+	"varying vec3 lightVec [LIGHTS];\r\n" \
 	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
@@ -1453,11 +1430,8 @@ char *ppLightingVS [] = {
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
 	"	/*vertPos.x *= aspect;*/\r\n" \
 	"	int i;\r\n" \
-	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"		lightVec = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
-	"		lightDir [i] = normalize (lightVec);\r\n" \
-	"		lightDist [i] = length (lightVec);\r\n" \
-	"		}\r\n" \
+	"	for (i = 0; i < LIGHTS; i++)\r\n" \
+	"		lightVec [i] = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"	gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
@@ -1466,9 +1440,7 @@ char *ppLightingVS [] = {
 	,
 	"#define LIGHTS 5\r\n" \
 	"varying vec3 normal;\r\n" \
-	"varying vec3 lightDir [LIGHTS];\r\n" \
-	"varying float lightDist [LIGHTS];\r\n" \
-	"/*uniform vec4 lightPos [LIGHTS];*/\r\n" \
+	"varying vec3 lightVec [LIGHTS];\r\n" \
 	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
@@ -1477,11 +1449,8 @@ char *ppLightingVS [] = {
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
 	"	/*vertPos.x *= aspect;*/\r\n" \
 	"	int i;\r\n" \
-	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"		lightVec = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
-	"		lightDir [i] = normalize (lightVec);\r\n" \
-	"		lightDist [i] = length (lightVec);\r\n" \
-	"		}\r\n" \
+	"	for (i = 0; i < LIGHTS; i++)\r\n" \
+	"		lightVec [i] = vec3 (gl_LightSource [i].position - vertPos);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"	gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\

@@ -856,7 +856,10 @@ if (!bMultiTexture && (bOverlay || bMonitor)) {
 		OGL_BINDTEX (0);
 		}
 	glTexCoordPointer (2, GL_FLOAT, 0, ovlTexCoordP);
-	glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
+	if (gameStates.render.bTriangleMesh)
+		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
+	else
+		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
 	gameStates.render.history.bmBot = bmTop;
 	}
