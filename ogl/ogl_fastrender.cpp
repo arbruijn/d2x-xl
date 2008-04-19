@@ -263,7 +263,7 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 		}
 	gameData.render.ogl.lightRads [i] = 
 		(psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : (psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
-	G3TranslatePoint (&gameData.render.ogl.lightPos [i], &psl->pos [0]);
+	//G3TranslatePoint (&gameData.render.ogl.lightPos [i], &psl->pos [0]);
 	i++;
 	}
 for (; i < MAX_LIGHTS_PER_PIXEL; i++) {

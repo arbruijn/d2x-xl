@@ -3474,7 +3474,7 @@ do {
 		opt++;
 #endif
 #ifdef _DEBUG
-		if (gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk) {
+		if (!gameStates.app.bGameRunning && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk) {
 			ADD_CHECK (opt, TXT_PER_PIXEL_LIGHTING, gameOpts->ogl.bPerPixelLighting, KEY_P, HTX_PER_PIXEL_LIGHTING);
 			lightOpts.nPerPixelLighting = opt++;
 			}
