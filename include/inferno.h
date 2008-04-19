@@ -900,6 +900,7 @@ typedef struct tRenderStates {
 	int bDoCameras;
 	int bRenderIndirect;
 	int bBuildModels;
+	int bTriangleMesh;
 	int nFrameFlipFlop;
 	int nModelQuality;
 	int nState;	//0: render geometry, 1: render objects

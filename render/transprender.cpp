@@ -302,7 +302,7 @@ if ((item.nColors = nColors)) {
 	}
 memcpy (item.vertices, vertices, nVertices * sizeof (fVector));
 #if RI_SPLIT_POLYS
-if (bDepthMask && gameStates.render.bSplitPolys) {
+if (bDepthMask && (gameStates.render.bSplitPolys > 0)) {
 	for (i = 0; i < nVertices; i++)
 		item.sideLength [i] = (short) (VmVecDist (vertices + i, vertices + (i + 1) % nVertices) + 0.5f);
 	return RISplitPoly (&item, 0);
@@ -342,7 +342,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int RIAddFace (grsFace *faceP)
+int RIAddFaceTris (grsFace *faceP)
 {
 	grsTriangle	*triP;
 	fVector		vertices [3];
@@ -353,17 +353,47 @@ int RIAddFace (grsFace *faceP)
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	faceP = faceP;
 #endif
-for (h = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; h; h--, triP++)
+for (h = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; h; h--, triP++) {
 	for (i = 0, j = triP->nIndex; i < 3; i++, j++) {
 		if (gameStates.render.automap.bDisplay)
 			G3TransformPoint (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
 		else
 			VmVecFixToFloat (vertices + i, &gameData.segs.points [triP->index [i]].p3_vec);
 		}
-	return RIAddPoly (faceP, faceP->bTextured ? bmP : NULL, vertices, 3, gameData.segs.faces.texCoord + triP->nIndex, 
-							gameData.segs.faces.color + triP->nIndex,
-							NULL, 3, 1, GL_TRIANGLES, GL_REPEAT, 
-							FaceIsAdditive (faceP), faceP->nSegment);
+	if (!RIAddPoly (faceP, faceP->bTextured ? bmP : NULL, vertices, 3, gameData.segs.faces.texCoord + triP->nIndex, 
+						 gameData.segs.faces.color + triP->nIndex,
+						 NULL, 3, 1, GL_TRIANGLES, GL_REPEAT, 
+						 FaceIsAdditive (faceP), faceP->nSegment))
+		return 0;
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int RIAddFace (grsFace *faceP)
+{
+if (gameStates.render.bTriangleMesh)
+	return RIAddFaceTris (faceP);
+
+	fVector		vertices [4];
+	int			i, j;
+	grsBitmap	*bmP = BmOverride (faceP->bmBot, -1);
+
+#ifdef _DEBUG
+if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	faceP = faceP;
+#endif
+for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
+	if (gameStates.render.automap.bDisplay)
+		G3TransformPoint (vertices + i, gameData.segs.fVertices + faceP->index [i], 0);
+	else
+		VmVecFixToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
+	}
+return RIAddPoly (faceP, faceP->bTextured ? bmP : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
+						gameData.segs.faces.color + faceP->nIndex,
+						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, 
+						FaceIsAdditive (faceP), faceP->nSegment);
 }
 
 //------------------------------------------------------------------------------

@@ -375,10 +375,13 @@ for (j = 0; (i > 0); activeLightsP++, i--) {
 		fLightDist *= fLightDist;
 		if (nType < 2)
 			fLightDist *= 2.0f;
-		if (vcd.vertNorm.p.x != 0 || vcd.vertNorm.p.y != 0 || vcd.vertNorm.p.z != 0)
-			NdotL = sqrt (VmVecDot (&vcd.vertNorm, &lightDir));
-		else
+		if (vcd.vertNorm.p.x == 0 && vcd.vertNorm.p.y == 0 && vcd.vertNorm.p.z == 0) 
 			NdotL = 0;
+		else {
+			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+			if (NdotL > 0)
+				NdotL = sqrt (NdotL);
+			}
 		}
 	fAttenuation = fLightDist / psl->brightness;
 	if (psl->bSpot) {
@@ -537,6 +540,8 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 			if (nType < 2)
 				fLightDist *= 2.0f;
 			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+			if (NdotL > 0)
+				NdotL = sqrt (NdotL);
 			}
 		fAttenuation = fLightDist / psl->brightness;
 		}
@@ -851,6 +856,10 @@ else
 		colorSum.c.r += pc->color.red;
 		colorSum.c.g += pc->color.green;
 		colorSum.c.b += pc->color.blue;
+#ifdef _DEBUG
+		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum.c.r + colorSum.c.g + colorSum.c.b < 0.1f))
+			nVertex = nVertex;
+#endif
 		}
 	if (colorSum.c.r > 1.0)
 		colorSum.c.r = 1.0;
