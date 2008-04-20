@@ -1252,7 +1252,7 @@ char *ppLightingFS [] = {
 	"				}\r\n" \
 	"			else {\r\n" \
 	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"				color += (gl_LightSource [i].diffuse * sqrt (NdotL) + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
 	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
@@ -1285,7 +1285,7 @@ char *ppLightingFS [] = {
 	"				}\r\n" \
 	"			else {\r\n" \
 	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"				color += (gl_LightSource [i].diffuse * sqrt (NdotL) + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
 	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
@@ -1319,7 +1319,7 @@ char *ppLightingFS [] = {
 	"				}\r\n" \
 	"			else {\r\n" \
 	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"				color += (gl_LightSource [i].diffuse * sqrt (NdotL) + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
 	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
@@ -1357,7 +1357,7 @@ char *ppLightingFS [] = {
 	"				}\r\n" \
 	"			else {\r\n" \
 	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"				color += (gl_LightSource [i].diffuse * sqrt (NdotL) + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
 	"			/*halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			NdotHV = max (dot (n, halfV), 0.0);\r\n" \
@@ -1378,7 +1378,7 @@ char *ppLightingVS [] = {
 	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
-	"	normal = normalize (vec3 (gl_ModelViewMatrix * vec4 (gl_Normal, 0.0)));\r\n" \
+	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
 	"	/*vertPos.x *= aspect;*/\r\n" \
 	"	int i;\r\n" \
@@ -1395,7 +1395,7 @@ char *ppLightingVS [] = {
 	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
-	"	normal = normalize (vec3 (gl_ModelViewMatrix * vec4 (gl_Normal, 0.0)));\r\n" \
+	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
 	"	/*vertPos.x *= aspect;*/\r\n" \
 	"	int i;\r\n" \
@@ -1413,7 +1413,7 @@ char *ppLightingVS [] = {
 	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
-	"	normal = normalize (vec3 (gl_ModelViewMatrix * vec4 (gl_Normal, 0.0)));\r\n" \
+	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
 	"	/*vertPos.x *= aspect;*/\r\n" \
 	"	int i;\r\n" \
@@ -1432,7 +1432,7 @@ char *ppLightingVS [] = {
 	"uniform float aspect;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 vertPos;\r\n" \
-	"	normal = normalize (vec3 (gl_ModelViewMatrix * vec4 (gl_Normal, 0.0)));\r\n" \
+	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = gl_ModelViewMatrix * gl_Vertex;\r\n" \
 	"	/*vertPos.x *= aspect;*/\r\n" \
 	"	int i;\r\n" \

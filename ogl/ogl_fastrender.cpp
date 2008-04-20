@@ -163,7 +163,7 @@ for (iLight = 0; (iLight < 8) && nLights; activeLightsP++) {
 	color.green = psl->color.c.g;
 	color.blue = psl->color.c.b;
 //			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);
-	glLightfv (hLight, GL_POSITION, (GLfloat *) psl->pos + 1);
+	glLightfv (hLight, GL_POSITION, (GLfloat *) psl->pos);
 	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &color);
 	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &color);
 	if (psl->nType == 2) {
@@ -261,8 +261,8 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
 		//gameData.render.ogl.lightRads [i] *= 10;
 		}
-	gameData.render.ogl.lightRads [i] = 0;
-		//(psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : (psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
+	gameData.render.ogl.lightRads [i] =
+		(psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : (psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
 	//G3TranslatePoint (&gameData.render.ogl.lightPos [i], &psl->pos [0]);
 	i++;
 	}
@@ -318,10 +318,18 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.brightness);
 #	endif
 		glUniform1f (glGetUniformLocation (tmProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
-		glUniform3fv (glGetUniformLocation (tmProg, "lightPos"), nLights, 
+#if 1
+		for (int i = 0; i < nLights; i++) {
+			glEnable (GL_LIGHT0 + i);
+			glLightfv (GL_LIGHT0 + i, GL_POSITION, (GLfloat *) (gameData.render.lights.dynamic.headLights.pos + i));
+			glLightfv (GL_LIGHT0 + i, GL_SPOT_DIRECTION, (GLfloat *) (gameData.render.lights.dynamic.headLights.dir + i));
+			}
+#else
+		glUniform3fv (glGetUniformLocation (tmProg, "lightPosWorld"), nLights, 
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.pos);
-		glUniform3fv (glGetUniformLocation (tmProg, "lightDir"), nLights, 
+		glUniform3fv (glGetUniformLocation (tmProg, "lightDirWorld"), nLights, 
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.dir);
+#endif
 #endif
 		if (colorP) {
 			color.red = colorP->red * 1.1f;
@@ -763,7 +771,7 @@ for (i = 0; i < 4; i++) {
 glEnd ();
 }
 #else
-#	if 1
+#	if 0
 glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
 #	endif
 if (gameStates.render.bTriangleMesh) {

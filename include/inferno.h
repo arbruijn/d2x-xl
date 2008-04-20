@@ -1300,7 +1300,7 @@ typedef struct tShaderLightData {
 typedef struct tHeadLightData {
 	tDynLight			*pl [MAX_PLAYERS];
 	tShaderLight		*psl [MAX_PLAYERS];
-	fVector3				pos [MAX_PLAYERS];
+	fVector				pos [MAX_PLAYERS];
 	fVector3				dir [MAX_PLAYERS];
 	float					brightness [MAX_PLAYERS];
 	int					nLights;
