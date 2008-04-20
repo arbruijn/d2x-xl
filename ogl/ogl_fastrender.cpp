@@ -252,8 +252,8 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &ambient);
 	if (psl->nType == 2) {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / psl->brightness);
-		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.002f / psl->brightness);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / psl->brightness);
+		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
 		}
 	else {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
@@ -285,7 +285,7 @@ return 0;
 
 int G3SetupShader (grsFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP)
 {
-	int			oglRes, nLights, nShader = gameStates.render.history.nShader;
+	int			oglRes, nLights, nType, nShader = gameStates.render.history.nShader;
 	tRgbaColorf	color;
 
 if (!gameStates.ogl.bShadersOk)
@@ -294,12 +294,13 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 	//headlights
 	nLights = IsMultiGame ? /*gameData.multiplayer.nPlayers*/gameData.render.lights.dynamic.headLights.nLights : 1;
 	InitHeadlightShaders (nLights);
-	nShader = (bColorKey ? 3 : bMultiTexture ? 2 : bTextured) + 20;
+	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
+	nShader = 10 + nType;
 	if (nShader != gameStates.render.history.nShader) {
 		glEnable (GL_TEXTURE_2D);
 		glActiveTexture (GL_TEXTURE0);
 		glUseProgramObject (0);
-		glUseProgramObject (tmProg = headlightShaderProgs [nShader - 20]);
+		glUseProgramObject (tmProg = headlightShaderProgs [nType]);
 		if (bTextured) {
 			glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
 			if (bColorKey || bMultiTexture) {
@@ -338,10 +339,12 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 	}
 else if (nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTextured)) {
 	//per pixel lighting
-	nShader = bColorKey ? 3 : bMultiTexture ? 2 : bTextured + 10;
+	nLights = MAX_LIGHTS_PER_PIXEL;
+	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
+	nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
 	if (nShader != gameStates.render.history.nShader) {
 		glUseProgramObject (0);
-		glUseProgramObject (tmProg = perPixelLightingShaderProgs [MAX_LIGHTS_PER_PIXEL - 1][nShader - 10]);
+		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nLights - 1][nType]);
 		if (bTextured) {
 			glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
 			if (bColorKey || bMultiTexture) {
@@ -761,24 +764,7 @@ glEnd ();
 }
 #else
 #	if 1
-#		if 1
 glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
-/*
-grsTriangle	*triP = gameData.segs.faces.tris + faceP->nTriIndex;
-fVector vNormal;
-VmVecNormal (&vNormal, gameData.segs.fVertices + triP->index [0], 
-				 gameData.segs.fVertices + triP->index [1], gameData.segs.fVertices + triP->index [2]);
-glNormal3fv ((GLfloat *) &vNormal.v3);
-*/
-#		else
-if ((gameStates.render.history.nShader >= 10) && (gameStates.render.history.nShader < 20)) {
-	fVector vNormal;
-	vNormal.v3 = gameData.segs.faces.normals [faceP->nIndex];
-	G3RotatePoint (&vNormal, &vNormal, 1);
-	VmVecNormalize (&vNormal, &vNormal);
-	glUniform3fv (glGetUniformLocation (tmProg, "normal"), 1, (GLfloat *) &vNormal);
-	}
-#		endif
 #	endif
 if (gameStates.render.bTriangleMesh) {
 #ifdef _DEBUG

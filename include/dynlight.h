@@ -15,7 +15,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _DYNLIGHT_H
 #define _DYNLIGHT_H
 
-#define	MAX_LIGHTS_PER_PIXEL 8
+#define	MAX_LIGHTS_PER_PIXEL 5
 
 void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
 int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner, vmsVector *vPos);
