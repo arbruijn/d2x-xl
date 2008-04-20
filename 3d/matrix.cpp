@@ -81,6 +81,7 @@ if (bOglScale)
 else {
 	//VmVecScale (&viewInfo.view [0].rVec, viewInfo.scale.p.x);
 	//VmVecScale (&viewInfo.view [0].uVec, viewInfo.scale.p.y);
+	//viewInfo.scale.p.x = viewInfo.scale.p.y = viewInfo.scale.p.z = F1_0;
 	VmVecScale (&viewInfo.view [0].fVec, -viewInfo.scale.p.z);
 	glScalef (1, 1, 1);
 	}
