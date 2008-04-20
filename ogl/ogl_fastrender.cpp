@@ -261,8 +261,8 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
 		//gameData.render.ogl.lightRads [i] *= 10;
 		}
-	gameData.render.ogl.lightRads [i] = 
-		(psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : (psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
+	gameData.render.ogl.lightRads [i] = 0;
+		//(psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : (psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
 	//G3TranslatePoint (&gameData.render.ogl.lightPos [i], &psl->pos [0]);
 	i++;
 	}

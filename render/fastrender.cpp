@@ -375,7 +375,7 @@ return tiRender.nFaces;
 
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
-	int	bVertexArrays, bNormals = !bDepthOnly && gameOpts->ogl.bPerPixelLighting;
+	int	bVertexArrays, bNormals = 0 && !bDepthOnly && gameOpts->ogl.bPerPixelLighting;
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
@@ -433,6 +433,8 @@ if ((bVertexArrays = G3EnableClientStates (!bDepthOnly, !bDepthOnly, bNormals, G
 			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 			}
 		}
+	if (bNormals)
+		G3EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 	}
 else {
 	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
