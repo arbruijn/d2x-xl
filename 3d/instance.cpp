@@ -117,7 +117,8 @@ if (gameStates.ogl.bUseTransform) {
 		}
 	else {
 		glLoadIdentity ();
-		glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
+		//glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
+		glScalef (1, 1, -1);
 		OglRot (viewInfo.glViewf);
 		VmVecSub (&h, &viewInfo.pos, vPos);
 		VmsMove (&h);

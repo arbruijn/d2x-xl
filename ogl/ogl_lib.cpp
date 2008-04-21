@@ -339,7 +339,7 @@ return 1;
 
 void OglSetFOV (double fov)
 {
-gameStates.render.glFOV = fov;
+gameStates.render.glFOV = 90.0;
 #if 0
 gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #else
@@ -351,7 +351,9 @@ else
 glMatrixMode (GL_PROJECTION);
 if (gameStates.render.bRearView)
 	glScalef (-1.0f, 1.0f, 1.0f);
-gluPerspective (gameStates.render.glFOV, gameStates.render.glAspect, ZNEAR, ZFAR);
+gluPerspective (gameStates.render.glFOV * ((double) viewInfo.zoom / 65536.0), 
+					 ((double) grdCurScreen->scWidth / (double) grdCurScreen->scHeight), 
+					 ZNEAR, ZFAR);
 gameData.render.ogl.depthScale.p.x = (float) (ZFAR / (ZFAR - ZNEAR));
 gameData.render.ogl.depthScale.p.y = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
 gameData.render.ogl.depthScale.p.z = (float) (ZFAR - ZNEAR);
@@ -735,7 +737,8 @@ if (gameStates.ogl.bUseTransform || bForce) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();
-	glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
+	//glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
+	glScalef (1, 1, -1);
 	glMultMatrixf (viewInfo.glViewf);
 	glTranslatef (-viewInfo.glPosf [0], -viewInfo.glPosf [1], -viewInfo.glPosf [2]);
 	}

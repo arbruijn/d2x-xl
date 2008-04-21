@@ -262,7 +262,7 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 		//gameData.render.ogl.lightRads [i] *= 10;
 		}
 	gameData.render.ogl.lightRads [i] =
-		(psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : (psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
+		(psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : 0; //(psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
 	//G3TranslatePoint (&gameData.render.ogl.lightPos [i], &psl->pos [0]);
 	i++;
 	}
@@ -317,7 +317,8 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 		glUniform1fv (glGetUniformLocation (tmProg, "brightness"), nLights, 
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.brightness);
 #	endif
-		glUniform1f (glGetUniformLocation (tmProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
+		//glUniform1f (glGetUniformLocation (tmProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
+		//glUniform1f (glGetUniformLocation (tmProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
 #if 1
 		for (int i = 0; i < nLights; i++) {
 			glEnable (GL_LIGHT0 + i);

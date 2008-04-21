@@ -223,6 +223,7 @@ char *lightingFS [8] = {
 	//single player version - one player
 	//untextured
 	"varying vec3 normal;\r\n" \
+	"uniform float zoom;\r\n" \
 	"varying vec3 lightVec;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"/*uniform float grAlpha, cutOff, spotExp, brightness;*/\r\n" \
@@ -236,7 +237,7 @@ char *lightingFS [8] = {
 	"      gl_FragColor = vec4 (matColor.rgb * vec3 (gl_Color), (matColor.a + gl_Color.a) /** grAlpha*/);"  \
 	"   else {\r\n" \
 	"      vec3 spotColor;\r\n" \
-	"	    float attenuation = min (100.0 /*brightness*/ / lightDist, 1.0);\r\n" \
+	"	    float attenuation = min (1600.0 / 9.0 /*brightness*/ / lightDist, 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
 	"      gl_FragColor = vec4 (matColor.rgb * spotColor.rgb, matColor.a /** grAlpha*/);"  \
@@ -246,6 +247,7 @@ char *lightingFS [8] = {
 	,
 	//only base texture
 	"uniform sampler2D btmTex;\r\n" \
+	"uniform float zoom;\r\n" \
 	"varying vec3 normal;\r\n" \
 	"varying vec3 lightVec;\r\n" \
 	"uniform vec4 matColor;\r\n" \
@@ -261,7 +263,7 @@ char *lightingFS [8] = {
 	"      gl_FragColor = btmColor /*vec4 (btmColor.rgb, btmColor.a * grAlpha)*/ * gl_Color;\r\n" \
 	"   else {\r\n" \
 	"      vec3 spotColor;\r\n" \
-	"	    float attenuation = min (100.0 /*brightness*/ / lightDist, 1.0);\r\n" \
+	"	    float attenuation = min (1600.0 / 9.0 /*brightness*/ / lightDist, 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
 	"      spotColor = min (spotColor, matColor.rgb);\r\n" \
@@ -272,6 +274,7 @@ char *lightingFS [8] = {
 	,
 	//base texture and decal
 	"uniform sampler2D btmTex, topTex;\r\n" \
+	"uniform float zoom;\r\n" \
 	"varying vec3 normal;\r\n" \
 	"varying vec3 lightVec;\r\n" \
 	"uniform vec4 matColor;\r\n" \
@@ -288,7 +291,7 @@ char *lightingFS [8] = {
 	"      gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) /** grAlpha*/) * gl_Color;\r\n" \
 	"   else {\r\n" \
 	"      vec3 spotColor;\r\n" \
-	"      float attenuation = min (100.0 /*brightness*/ / lightDist, 1.0);\r\n" \
+	"      float attenuation = min (1600.0 / 9.0 /*brightness*/ / lightDist, 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
 	"      spotColor = min (spotColor, matColor.rgb);\r\n" \
@@ -299,6 +302,7 @@ char *lightingFS [8] = {
 	,
 	//base texture and decal with color key
 	"uniform sampler2D btmTex, topTex, maskTex;\r\n" \
+	"uniform float zoom;\r\n" \
 	"varying vec3 normal;\r\n" \
 	"varying vec3 lightVec;\r\n" \
 	"uniform vec4 matColor;\r\n" \
@@ -319,7 +323,7 @@ char *lightingFS [8] = {
 	"         gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) /** grAlpha*/) * gl_Color;\r\n" \
 	"      else {\r\n" \
 	"         vec3 spotColor;\r\n" \
-	" 		    float attenuation = min (100.0 /*brightness*/ / lightDist, 1.0);\r\n" \
+	" 		    float attenuation = min (1600.0 / 9.0 /*brightness*/ / lightDist, 1.0);\r\n" \
 	"         spotEffect = pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	"         spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
 	"         spotColor = min (spotColor, matColor.rgb);\r\n" \
@@ -345,7 +349,7 @@ char *lightingFS [8] = {
 	"   lightDist = length (lightVec);\r\n" \
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
 	"   if (spotEffect >= 0.5 /*cutOff*/) {\r\n" \
-	"   	float attenuation = min (100.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
+	"   	float attenuation = min (1600.0 / 9.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
 	" 	   spotBrightness += pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
@@ -371,7 +375,7 @@ char *lightingFS [8] = {
 	"   lightDist = length (lightVec);\r\n" \
 	"   spotEffect = dot (normalize (gl_NormalMatrix * lightDir) [i], lightVec / lightDist);\r\n" \
 	"   if (spotEffect >= 0.5 /*cutOff*/) {\r\n" \
-	"   	float attenuation = min (100.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
+	"   	float attenuation = min (1600.0 / 9.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
 	" 	   spotBrightness += pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
@@ -398,7 +402,7 @@ char *lightingFS [8] = {
 	"   lightDist = length (lightVec);\r\n" \
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
 	"   if (spotEffect >= 0.5 /*cutOff*/) {\r\n" \
-	"   	float attenuation = min (100.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
+	"   	float attenuation = min (1600.0 / 9.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
 	" 	   spotBrightness += pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
@@ -429,7 +433,7 @@ char *lightingFS [8] = {
 	"      lightDist = length (lightVec);\r\n" \
 	"      spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
 	"      if (spotEffect >= 0.5 /*cutOff*/) {\r\n" \
-	"      	 float attenuation = min (100.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
+	"      	 float attenuation = min (1600.0 / 9.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
 	" 	       spotBrightness += pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	"    	    }\r\n" \
 	"      }\r\n" \
@@ -444,53 +448,57 @@ char *lightingVS [4] = {
 	"varying vec3 normal;\r\n" \
 	"varying vec3 lightVec;\r\n" \
 	"uniform vec3 lightPosWorld, lightDirWorld;\r\n" \
-	"uniform float aspect;\r\n" \
+	"uniform float aspect, zoom;\r\n" \
 	"void main (void) {\r\n" \
 	"vec3 vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"vertPos.x *= aspect;\r\n" \
-	"lightVec = vertPos - vec3 (gl_LightSource [0].position);\r\n" \
+	"vec3 lightPos = vec3 (gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 ((vertPos.x - lightPos.x) * aspect, vertPos.x - lightPos.y, (vertPos.z - lightPos.z) * zoom);\r\n" \
+	"lightVec = vertPos - lightPos;\r\n" \
 	"normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 normal;\r\n" \
-	"varying vec3 lightVec, lightPos, lightDir;\r\n" \
+	"varying vec3 lightVec;\r\n" \
 	"uniform vec3 lightPosWorld, lightDirWorld;\r\n" \
-	"uniform float aspect;\r\n" \
+	"uniform float aspect, zoom;\r\n" \
 	"void main (void) {\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"vec3 vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"vertPos.x *= aspect;\r\n" \
-	"lightVec = vertPos - vec3 (gl_LightSource [0].position);\r\n" \
+	"vec3 lightPos = vec3 (gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 ((vertPos.x - lightPos.x) * aspect, vertPos.x - lightPos.y, (vertPos.z - lightPos.z) * zoom);\r\n" \
+	"lightVec = vertPos - lightPos;\r\n" \
 	"normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 normal;\r\n" \
-	"varying vec3 lightVec, lightPos, lightDir;\r\n" \
+	"varying vec3 lightVec;\r\n" \
 	"uniform vec3 lightPosWorld, lightDirWorld;\r\n" \
-	"uniform float aspect;\r\n" \
+	"uniform float aspect, zoom;\r\n" \
 	"void main (void) {\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"vec3 vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"vertPos.x *= aspect;\r\n" \
-	"lightVec = vertPos - vec3 (gl_LightSource [0].position);\r\n" \
+	"vec3 lightPos = vec3 (gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 ((vertPos.x - lightPos.x) * aspect, vertPos.x - lightPos.y, (vertPos.z - lightPos.z) * zoom);\r\n" \
+	"lightVec = vertPos - lightPos;\r\n" \
 	"normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 normal;\r\n" \
-	"varying vec3 lightVec, lightPos, lightDir;\r\n" \
+	"varying vec3 lightVec;\r\n" \
 	"uniform vec3 lightPosWorld, lightDirWorld;\r\n" \
-	"uniform float aspect;\r\n" \
+	"uniform float aspect, zoom;\r\n" \
 	"void main (void) {\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_TexCoord [2] = gl_MultiTexCoord2;\r\n"\
 	"vec3 vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"vertPos.x *= aspect;\r\n" \
-	"lightVec = vertPos - vec3 (gl_LightSource [0].position);\r\n" \
+	"vec3 lightPos = vec3 (gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 ((vertPos.x - lightPos.x) * aspect, vertPos.x - lightPos.y, (vertPos.z - lightPos.z) * zoom);\r\n" \
+	"lightVec = vertPos - lightPos;\r\n" \
 	"normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"

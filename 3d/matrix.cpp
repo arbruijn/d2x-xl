@@ -75,9 +75,11 @@ else {			//xZoom out by scaling x&y
 	viewInfo.scale.p.x = FixMul (viewInfo.scale.p.x, s);
 	viewInfo.scale.p.y = FixMul (viewInfo.scale.p.y, s);
 	}
+//viewInfo.scale.p.x = viewInfo.scale.p.y = viewInfo.scale.p.z = F1_0;
 //now scale matrix elements
 if (bOglScale)
-	glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
+	//glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
+	glScalef (1, 1, -1);
 else {
 	//VmVecScale (&viewInfo.view [0].rVec, viewInfo.scale.p.x);
 	//VmVecScale (&viewInfo.view [0].uVec, viewInfo.scale.p.y);

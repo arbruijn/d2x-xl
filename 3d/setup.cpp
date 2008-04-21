@@ -30,6 +30,7 @@ static char rcsid[] = "$Id: setup.c,v 1.5 2003/03/19 19:21:34 btb Exp $";
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 
+//------------------------------------------------------------------------------
 //initialize the 3d system
 void g3_init(void)
 {
@@ -37,9 +38,11 @@ void g3_init(void)
 	atexit(g3_close);
 }
 
+//------------------------------------------------------------------------------
 //close down the 3d system
 void _CDECL_ g3_close(void) {}
 
+//------------------------------------------------------------------------------
 //start the frame
 void G3StartFrame (int bFlat, int bResetColorBuf)
 {
@@ -70,6 +73,7 @@ if (gameOpts->render.nPath)
 	gameOpts->render.bDepthSort = 1;
 }
 
+//------------------------------------------------------------------------------
 //this doesn't do anything, but is here for completeness
 void G3EndFrame(void)
 {
@@ -78,4 +82,5 @@ OglEndFrame();
 free_point_num = 0;
 }
 
-
+//------------------------------------------------------------------------------
+//eof
