@@ -342,7 +342,7 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 			color.red = color.green = color.blue = 2.0f;
 			color.alpha = 1;
 			}
-		glUniform4fv (glGetUniformLocation (tmProg, "matColor"), 1, (GLfloat *) &color);
+		glUniform4fv (glGetUniformLocation (tmProg, "maxColor"), 1, (GLfloat *) &color);
 		oglRes = glGetError ();
 		}
 	}

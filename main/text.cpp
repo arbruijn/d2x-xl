@@ -1806,7 +1806,7 @@ char *defaultGameTexts [][2] = {
 	{"unerforschte Bereiche schwarz/weiss", "gra~Y out unexplored areas"},
 	{"Initialisiere...", "Initializing..."},
 	{"ro~Boter-Omega schiesst blitze", "ro~Bot omega fires lightnings"},
-	{"~Geometrie-Verbesserung: %s", "~Mesh improvement: %s"},
+	{"~Geometrie-Verbesserung: %s", "Mes~H improvement: %s"},
 #if 0
 #endif
 	{"", ""}
