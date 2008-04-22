@@ -3,14 +3,14 @@
 
 typedef struct tMeshLine {
 	ushort		verts [2];
-	ushort		tris [2];
+	int			tris [2];
 	} tMeshLine;
 
 typedef struct tMeshTri {
 	ushort		nPass;
-	ushort		nFace;
+	int			nFace;
 	int			nIndex;
-	ushort		lines [3];
+	int			lines [3];
 	ushort		index [3];
 	tTexCoord2f	texCoord [3];
 	tTexCoord2f	ovlTexCoord [3];
@@ -30,14 +30,14 @@ class CTriMeshBuilder {
 	private:
 		void FreeMeshData (void);
 		int AllocMeshData (void);
-		tMeshLine *FindMeshLine (short nVert1, short nVert2);
-		int AddMeshLine (short nTri, short nVert1, short nVert2);
-		tMeshTri *CreateMeshTri (tMeshTri *mtP, ushort index [], short nFace, short nIndex);
+		tMeshLine *FindMeshLine (ushort nVert1, ushort nVert2);
+		int AddMeshLine (int nTri, ushort nVert1, ushort nVert2);
+		tMeshTri *CreateMeshTri (tMeshTri *mtP, ushort index [], int nFace, int nIndex);
 		int AddMeshTri (tMeshTri *mtP, ushort index [], grsTriangle *triP);
 		void DeleteMeshLine (tMeshLine *mlP);
 		void DeleteMeshTri (tMeshTri *mtP);
 		int CreateMeshTris (void);
-		int SplitMeshTriByLine (int nTri, int nVert1, int nVert2, ushort nPass);
+		int SplitMeshTriByLine (int nTri, ushort nVert1, ushort nVert2, ushort nPass);
 		int SplitMeshLine (tMeshLine *mlP, ushort nPass);
 		int SplitMeshTri (tMeshTri *mtP, ushort nPass);
 		int SplitMeshTris (void);

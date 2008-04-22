@@ -2399,12 +2399,12 @@ exit (1);
 
 void AllocSegmentData (void)
 {
-GETMEM (vmsVector, gameData.segs.vertices, MAX_VERTICES, 0);
-GETMEM (fVector, gameData.segs.fVertices, MAX_VERTICES, 0);
+GETMEM (vmsVector, gameData.segs.vertices, 65536, 0);
+GETMEM (fVector, gameData.segs.fVertices, 65536, 0);
 GETMEM (tSegment, gameData.segs.segments, MAX_SEGMENTS, 0);
 GETMEM (tSegment2, gameData.segs.segment2s, MAX_SEGMENTS, 0);
 GETMEM (xsegment, gameData.segs.xSegments, MAX_SEGMENTS, 0);
-GETMEM (g3sPoint, gameData.segs.points, MAX_VERTICES, 0);
+GETMEM (g3sPoint, gameData.segs.points, 65536, 0);
 #if CALC_SEGRADS
 GETMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS, 0);
 GETMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS, 0);

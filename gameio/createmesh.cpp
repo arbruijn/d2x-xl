@@ -120,7 +120,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-tMeshLine *CTriMeshBuilder::FindMeshLine (short nVert1, short nVert2)
+tMeshLine *CTriMeshBuilder::FindMeshLine (ushort nVert1, ushort nVert2)
 {
 	tMeshLine	*mlP = m_meshLines;
 
@@ -132,10 +132,10 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::AddMeshLine (short nTri, short nVert1, short nVert2)
+int CTriMeshBuilder::AddMeshLine (int nTri, ushort nVert1, ushort nVert2)
 {
 if (nVert2 < nVert1) {
-	short h = nVert1;
+	ushort h = nVert1;
 	nVert1 = nVert2;
 	nVert2 = h;
 	}
@@ -145,7 +145,7 @@ if ((nTri < 0) || (nTri >= m_nMeshTris))
 #endif
 tMeshLine *mlP = FindMeshLine (nVert1, nVert2);
 if (mlP) {
-	if (mlP->tris [0] == 65535)
+	if (mlP->tris [0] < 0)
 		mlP->tris [0] = nTri;
 	else
 		mlP->tris [1] = nTri;
@@ -162,7 +162,7 @@ return m_nMeshLines++;
 
 //------------------------------------------------------------------------------
 
-tMeshTri *CTriMeshBuilder::CreateMeshTri (tMeshTri *mtP, ushort index [], short nFace, short nIndex)
+tMeshTri *CTriMeshBuilder::CreateMeshTri (tMeshTri *mtP, ushort index [], int nFace, int nIndex)
 {
 	int	h, i;
 
@@ -220,7 +220,7 @@ void CTriMeshBuilder::DeleteMeshLine (tMeshLine *mlP)
 if (h < --m_nMeshLines) {
 	*mlP = m_meshLines [m_nMeshLines];
 	for (i = 0; i < 2; i++) {
-		if (mlP->tris [i] != 65535) {
+		if (mlP->tris [i] >= 0) {
 			mtP = m_meshTris + mlP->tris [i];
 			for (j = 0; j < 3; j++)
 				if (mtP->lines [j] == m_nMeshLines)
@@ -241,8 +241,8 @@ for (i = 0; i < 3; i++) {
 	mlP = m_meshLines + mtP->lines [i];
 	if (mlP->tris [0] == nTri)
 		mlP->tris [0] = mlP->tris [1];
-	mlP->tris [1] = 65535;
-	if (mlP->tris [0] == 65535)
+	mlP->tris [1] = -1;
+	if (mlP->tris [0] < 0)
 		DeleteMeshLine (mlP);
 	}
 }
@@ -273,9 +273,9 @@ return m_nMeshTris;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitMeshTriByLine (int nTri, int nVert1, int nVert2, ushort nPass)
+int CTriMeshBuilder::SplitMeshTriByLine (int nTri, ushort nVert1, ushort nVert2, ushort nPass)
 {
-if (nTri == 65535)
+if (nTri < 0)
 	return 1;
 
 	tMeshTri		*mtP = m_meshTris + nTri;
@@ -352,17 +352,15 @@ return 1;
 
 int CTriMeshBuilder::SplitMeshLine (tMeshLine *mlP, ushort nPass)
 {
-	int			i = 0;
-	ushort		tris [2], verts [2];
+	int		i = 0;
+	int		tris [2];
+	ushort	verts [2];
 
 memcpy (tris, mlP->tris, sizeof (tris));
 memcpy (verts, mlP->verts, sizeof (verts));
 VmVecAvg (gameData.segs.fVertices + gameData.segs.nVertices, 
 			  gameData.segs.fVertices + verts [0], 
 			  gameData.segs.fVertices + verts [1]);
-if (/*(gameData.segs.faces.faces [m_meshTris [tris [0]].nFace].nSegment == 12) &&*/
-	 (((verts [0] == 13) && (verts [1] == 33)) || ((verts [1] == 13) && (verts [0] == 33))))
-	i = 1;
 if (!SplitMeshTriByLine (tris [0], verts [0], verts [1], nPass))
 	return 0;
 if (tris [1] > m_nMeshTris)
@@ -402,25 +400,29 @@ return SplitMeshLine (m_meshLines + mtP->lines [h], nPass);
 
 int CTriMeshBuilder::SplitMeshTris (void)
 {
-	int		bSplit = 0, h, i, j;
+	int		bSplit = 0, h, i, j, nSplitRes;
 	ushort	nPass = 0;
 
+h = 0;
 do {
 	bSplit = 0;
 	j = m_nMeshTris;
-	nPass++;
 	PrintLog ("   splitting triangles (pass %d)\n", nPass);
-	for (i = 0; i < j; i++) {
-		if (m_meshTris [i].nPass == nPass)
+	for (i = h, h = 0; i < j; i++) {
+		if (m_meshTris [i].nPass != (ushort) (nPass - 1))
 			continue;
-		h = SplitMeshTri (m_meshTris + i, nPass);
-		if ((gameData.segs.nVertices == 65535) || (m_nMeshTris == 65535))
+		nSplitRes = SplitMeshTri (m_meshTris + i, nPass);
+		if (gameData.segs.nVertices == 65535)
 			return 1;
-		if (!h)
+		if (!nSplitRes)
 			return 0;
-		if (h > 0)
+		if (nSplitRes > 0) {
 			bSplit = 1;
+			if (!h)
+				h = i;
+			}
 		}
+	nPass++;
 	} while (bSplit);
 return 1;
 }
