@@ -4,6 +4,7 @@
 typedef struct tMeshLine {
 	ushort		verts [2];
 	int			tris [2];
+	int			nNext;
 	} tMeshLine;
 
 typedef struct tMeshTri {
@@ -22,6 +23,7 @@ class CTriMeshBuilder {
 		tMeshLine	*m_meshLines;
 		tMeshTri		*m_meshTris;
 		int			m_nMeshLines;
+		int			m_nFreeLines;
 		int			m_nMeshTris;
 		int			m_nMaxMeshTris;
 		int			m_nMaxMeshLines;

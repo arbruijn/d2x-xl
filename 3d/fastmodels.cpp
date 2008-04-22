@@ -552,10 +552,10 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		else
 			if (bUseVBO)
 				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
-									nVerts, GL_UNSIGNED_SHORT, G3_BUFFER_OFFSET (nIndex * sizeof (short)));
+									 nVerts, GL_UNSIGNED_SHORT, G3_BUFFER_OFFSET (nIndex * sizeof (short)));
 			else
 				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
-									nVerts, GL_UNSIGNED_SHORT, pm->pIndex + nIndex);
+									 nVerts, GL_UNSIGNED_SHORT, pm->pIndex + nIndex);
 #	else
 		glDrawArrays ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, nIndex, nVerts);
 #	endif

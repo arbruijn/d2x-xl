@@ -151,9 +151,20 @@ if (mlP) {
 		mlP->tris [1] = nTri;
 	return mlP - m_meshLines;
 	}
-if ((m_nMeshLines == m_nMaxMeshLines - 1) && !AllocMeshData ())
-	return -1;
-mlP = m_meshLines + m_nMeshLines;
+if (m_nFreeLines) {
+	mlP = m_meshLines + m_nFreeLines;
+	m_nFreeLines = mlP->nNext;
+	mlP->nNext = -1;
+	}
+else {
+	if ((m_nMeshLines == m_nMaxMeshLines - 1) && !AllocMeshData ())
+		return -1;
+	mlP = m_meshLines + m_nMeshLines;
+	}
+#ifdef _DEBUG
+if (m_nMeshLines == 70939)
+	mlP = mlP;
+#endif
 mlP->tris [0] = nTri;
 mlP->verts [0] = nVert1;
 mlP->verts [1] = nVert2;
@@ -214,6 +225,10 @@ return m_nMeshTris;
 
 void CTriMeshBuilder::DeleteMeshLine (tMeshLine *mlP)
 {
+#if 1
+mlP->nNext = m_nFreeLines;
+m_nFreeLines = mlP - m_meshLines;
+#else
 	tMeshTri	*mtP;
 	int		h = mlP - m_meshLines, i, j;
 
@@ -228,6 +243,7 @@ if (h < --m_nMeshLines) {
 			}
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -241,6 +257,10 @@ for (i = 0; i < 3; i++) {
 	mlP = m_meshLines + mtP->lines [i];
 	if (mlP->tris [0] == nTri)
 		mlP->tris [0] = mlP->tris [1];
+#ifdef _DEBUG
+	if (mlP - m_meshLines == 70939)
+		mlP = mlP;
+#endif
 	mlP->tris [1] = -1;
 	if (mlP->tris [0] < 0)
 		DeleteMeshLine (mlP);
@@ -256,6 +276,7 @@ m_nMeshLines = 0;
 m_nMeshTris = 0;
 m_nMaxMeshTris = 0;
 m_nMaxMeshTris = 0;
+m_nFreeLines = 0;
 m_nVertices = gameData.segs.nVertices;
 if (!AllocMeshData ())
 	return 0;
@@ -363,12 +384,12 @@ VmVecAvg (gameData.segs.fVertices + gameData.segs.nVertices,
 			  gameData.segs.fVertices + verts [1]);
 if (!SplitMeshTriByLine (tris [0], verts [0], verts [1], nPass))
 	return 0;
-if (tris [1] > m_nMeshTris)
+if (tris [1] < 0)
 	m_nMeshTris = m_nMeshTris;
 if (!SplitMeshTriByLine (tris [1], verts [0], verts [1], nPass))
 	return 0;
 gameData.segs.faces.faces [m_meshTris [tris [0]].nFace].nVerts++;
-if ((tris [0] != tris [1]) && (tris [1] < m_nMeshTris))
+if ((tris [0] != tris [1]) && (tris [1] >= 0))
 	gameData.segs.faces.faces [m_meshTris [tris [1]].nFace].nVerts++;
 VmVecFloatToFix (gameData.segs.vertices + gameData.segs.nVertices, gameData.segs.fVertices + gameData.segs.nVertices);
 gameData.segs.nVertices++;
@@ -411,8 +432,12 @@ do {
 	for (i = h, h = 0; i < j; i++) {
 		if (m_meshTris [i].nPass != (ushort) (nPass - 1))
 			continue;
+#ifdef _DEBUG
+		if (i == 48936)
+			i = i;
+#endif
 		nSplitRes = SplitMeshTri (m_meshTris + i, nPass);
-		if (gameData.segs.nVertices == 65535)
+		if (gameData.segs.nVertices == 65536)
 			return 1;
 		if (!nSplitRes)
 			return 0;
@@ -464,12 +489,12 @@ int CTriMeshBuilder::InsertMeshTris (void)
 	grsTriangle	*triP = gameData.segs.faces.tris;
 	grsFace		*m_faceP = NULL;
 	vmsVector	vNormal;
-	int			h, i, nVertex, nIndex = 0, nVertIndex = 0, nFace = -1;
+	int			h, i, nVertex, nIndex = 0, nTriVertIndex = 0, nFace = -1;
 
 PrintLog ("   inserting new triangles\n");
 QSortMeshTris (0, m_nMeshTris - 1);
 ResetVertexNormals ();
-for (h = 0; h < m_nMeshTris; h++, mtP++, triP++, nIndex += 3) {
+for (h = 0; h < m_nMeshTris; h++, mtP++, triP++) {
 	triP->nFace = mtP->nFace;
 	if (triP->nFace == nFace) 
 		m_faceP->nTris++;
@@ -484,11 +509,12 @@ for (h = 0; h < m_nMeshTris; h++, mtP++, triP++, nIndex += 3) {
 		m_faceP->nIndex = nIndex;
 		m_faceP->nTriIndex = h;
 		m_faceP->nTris = 1;
-		m_faceP->vertIndex = gameData.segs.faces.vertIndex + nVertIndex;
-		nVertIndex += m_faceP->nVerts;
+		m_faceP->vertIndex = gameData.segs.faces.vertIndex + nIndex;
 		}
 	triP->nIndex = nIndex;
+#ifdef _DEBUG
 	memcpy (triP->index, mtP->index, sizeof (triP->index));
+#endif
 	for (i = 0; i < 3; i++)
 		gameData.segs.faces.vertices [nIndex + i] = gameData.segs.fVertices [mtP->index [i]].v3;
 	VmVecNormal (gameData.segs.faces.normals + nIndex,
@@ -514,6 +540,9 @@ for (h = 0; h < m_nMeshTris; h++, mtP++, triP++, nIndex += 3) {
 	memcpy (gameData.segs.faces.texCoord + nIndex, mtP->texCoord, sizeof (mtP->texCoord));
 	memcpy (gameData.segs.faces.ovlTexCoord + nIndex, mtP->ovlTexCoord, sizeof (mtP->ovlTexCoord));
 	memcpy (gameData.segs.faces.color + nIndex, mtP->color, sizeof (mtP->color));
+	gameData.segs.faces.vertIndex [nIndex] = nIndex++;
+	gameData.segs.faces.vertIndex [nIndex] = nIndex++;
+	gameData.segs.faces.vertIndex [nIndex] = nIndex++;
 	}
 ComputeVertexNormals ();
 FreeMeshData ();
