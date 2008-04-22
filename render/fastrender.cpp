@@ -375,7 +375,7 @@ return tiRender.nFaces;
 
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
-	int	bVertexArrays, bNormals = !bDepthOnly && gameOpts->ogl.bPerPixelLighting;
+	int	bVertexArrays, bNormals = !bDepthOnly; // && gameOpts->ogl.bPerPixelLighting;
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
