@@ -1,18 +1,19 @@
 #ifndef _CREATEMESH_H
 #define _CREATEMESH_H
 
-typedef struct tMeshLine {
+typedef struct tMeshEdge {
+	int			nNext;
 	ushort		verts [2];
 	int			tris [2];
-	int			nNext;
-	} tMeshLine;
+	} tMeshEdge;
 
 typedef struct tMeshTri {
-	ushort		nPass;
+	int			nNext;
 	int			nFace;
 	int			nIndex;
 	int			lines [3];
 	ushort		index [3];
+	ushort		nPass;
 	tTexCoord2f	texCoord [3];
 	tTexCoord2f	ovlTexCoord [3];
 	tRgbaColorf	color [3];
@@ -20,27 +21,28 @@ typedef struct tMeshTri {
 
 class CTriMeshBuilder {
 	private:
-		tMeshLine	*m_meshLines;
+		tMeshEdge	*m_meshEdges;
 		tMeshTri		*m_meshTris;
-		int			m_nMeshLines;
-		int			m_nFreeLines;
+		int			m_nMeshEdges;
+		int			m_nFreeEdges;
 		int			m_nMeshTris;
+		int			m_nFreeTris;
 		int			m_nMaxMeshTris;
-		int			m_nMaxMeshLines;
+		int			m_nMaxMeshEdges;
 		int			m_nVertices;
 
 	private:
 		void FreeMeshData (void);
 		int AllocMeshData (void);
-		tMeshLine *FindMeshLine (ushort nVert1, ushort nVert2);
-		int AddMeshLine (int nTri, ushort nVert1, ushort nVert2);
+		tMeshEdge *FindMeshEdge (ushort nVert1, ushort nVert2, int i);
+		int AddMeshEdge (int nTri, ushort nVert1, ushort nVert2);
 		tMeshTri *CreateMeshTri (tMeshTri *mtP, ushort index [], int nFace, int nIndex);
 		int AddMeshTri (tMeshTri *mtP, ushort index [], grsTriangle *triP);
-		void DeleteMeshLine (tMeshLine *mlP);
+		void DeleteMeshEdge (tMeshEdge *mlP);
 		void DeleteMeshTri (tMeshTri *mtP);
 		int CreateMeshTris (void);
-		int SplitMeshTriByLine (int nTri, ushort nVert1, ushort nVert2, ushort nPass);
-		int SplitMeshLine (tMeshLine *mlP, ushort nPass);
+		int SplitMeshTriByEdge (int nTri, ushort nVert1, ushort nVert2, ushort nPass);
+		int SplitMeshEdge (tMeshEdge *mlP, ushort nPass);
 		int SplitMeshTri (tMeshTri *mtP, ushort nPass);
 		int SplitMeshTris (void);
 		void QSortMeshTris (int left, int right);

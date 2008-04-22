@@ -85,34 +85,34 @@ float fMaxSideLen [] = {1e30f, 40, 30, 20, 10};
 void CTriMeshBuilder::FreeMeshData (void)
 {
 D2_FREE (m_meshTris);
-D2_FREE (m_meshLines);
+D2_FREE (m_meshEdges);
 }
 
 //------------------------------------------------------------------------------
 
 int CTriMeshBuilder::AllocMeshData (void)
 {
-if (m_nMaxMeshTris && m_nMaxMeshLines) {
-	if (!((m_meshLines = (tMeshLine *) D2_REALLOC (m_meshLines, 2 * m_nMaxMeshTris * sizeof (tMeshLine))) &&
+if (m_nMaxMeshTris && m_nMaxMeshEdges) {
+	if (!((m_meshEdges = (tMeshEdge *) D2_REALLOC (m_meshEdges, 2 * m_nMaxMeshTris * sizeof (tMeshEdge))) &&
 			(m_meshTris = (tMeshTri *) D2_REALLOC (m_meshTris, 2 * m_nMaxMeshTris * sizeof (tMeshTri))))) {
 		FreeMeshData ();
 		return 0;
 		}
-	memset (m_meshLines + m_nMaxMeshTris, 0xff, m_nMaxMeshTris * sizeof (tMeshLine));
-	memset (m_meshTris + m_nMaxMeshLines, 0xff, m_nMaxMeshTris * sizeof (tMeshTri));
+	memset (m_meshEdges + m_nMaxMeshTris, 0xff, m_nMaxMeshTris * sizeof (tMeshEdge));
+	memset (m_meshTris + m_nMaxMeshEdges, 0xff, m_nMaxMeshTris * sizeof (tMeshTri));
 	m_nMaxMeshTris *= 2;
-	m_nMaxMeshLines *= 2;
+	m_nMaxMeshEdges *= 2;
 	}
 else {
 	m_nMaxMeshTris = gameData.segs.nFaces * 4;
-	m_nMaxMeshLines = gameData.segs.nFaces * 4;
-	if (!(m_meshLines = (tMeshLine *) D2_ALLOC (m_nMaxMeshLines * sizeof (tMeshLine))))
+	m_nMaxMeshEdges = gameData.segs.nFaces * 4;
+	if (!(m_meshEdges = (tMeshEdge *) D2_ALLOC (m_nMaxMeshEdges * sizeof (tMeshEdge))))
 		return 0;
 	if (!(m_meshTris = (tMeshTri *) D2_ALLOC (m_nMaxMeshTris * sizeof (tMeshTri)))) {
 		FreeMeshData ();
 		return 0;
 		}
-	memset (m_meshLines, 0xff, m_nMaxMeshTris * sizeof (tMeshLine));
+	memset (m_meshEdges, 0xff, m_nMaxMeshTris * sizeof (tMeshEdge));
 	memset (m_meshTris, 0xff, m_nMaxMeshTris * sizeof (tMeshTri));
 	}
 return 1;
@@ -120,11 +120,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-tMeshLine *CTriMeshBuilder::FindMeshLine (ushort nVert1, ushort nVert2)
+tMeshEdge *CTriMeshBuilder::FindMeshEdge (ushort nVert1, ushort nVert2, int i)
 {
-	tMeshLine	*mlP = m_meshLines;
+	tMeshEdge	*mlP = m_meshEdges + i;
 
-for (int i = m_nMeshLines; i; i--, mlP++)
+for (; ++i < m_nMeshEdges; mlP++)
 	if ((mlP->verts [0] == nVert1) && (mlP->verts [1] == nVert2))
 		return mlP;
 return NULL;
@@ -132,7 +132,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::AddMeshLine (int nTri, ushort nVert1, ushort nVert2)
+int CTriMeshBuilder::AddMeshEdge (int nTri, ushort nVert1, ushort nVert2)
 {
 if (nVert2 < nVert1) {
 	ushort h = nVert1;
@@ -143,32 +143,40 @@ if (nVert2 < nVert1) {
 if ((nTri < 0) || (nTri >= m_nMeshTris))
 	return -1;
 #endif
-tMeshLine *mlP = FindMeshLine (nVert1, nVert2);
-if (mlP) {
-	if (mlP->tris [0] < 0)
+tMeshEdge *mlP;
+int i = -1;
+for (;;) {
+	if (!(mlP = FindMeshEdge (nVert1, nVert2, i)))
+		break;
+	i = mlP - m_meshEdges;
+	if (mlP->tris [0] < 0) {
 		mlP->tris [0] = nTri;
-	else
+		return i;
+		}
+	if (mlP->tris [1] < 0) {
 		mlP->tris [1] = nTri;
-	return mlP - m_meshLines;
+		return i;
+		}
 	}
-if (m_nFreeLines) {
-	mlP = m_meshLines + m_nFreeLines;
-	m_nFreeLines = mlP->nNext;
+for (int i = 0; ;  + 1)
+if (m_nFreeEdges >= 0) {
+	mlP = m_meshEdges + m_nFreeEdges;
+	m_nFreeEdges = mlP->nNext;
 	mlP->nNext = -1;
 	}
 else {
-	if ((m_nMeshLines == m_nMaxMeshLines - 1) && !AllocMeshData ())
+	if ((m_nMeshEdges == m_nMaxMeshEdges - 1) && !AllocMeshData ())
 		return -1;
-	mlP = m_meshLines + m_nMeshLines;
+	mlP = m_meshEdges + m_nMeshEdges;
 	}
 #ifdef _DEBUG
-if (m_nMeshLines == 70939)
+if (m_nMeshEdges == 6752)
 	mlP = mlP;
 #endif
 mlP->tris [0] = nTri;
 mlP->verts [0] = nVert1;
 mlP->verts [1] = nVert2;
-return m_nMeshLines++;
+return m_nMeshEdges++;
 }
 
 //------------------------------------------------------------------------------
@@ -177,12 +185,22 @@ tMeshTri *CTriMeshBuilder::CreateMeshTri (tMeshTri *mtP, ushort index [], int nF
 {
 	int	h, i;
 
+#if 0
 if (mtP) 
 	mtP->nIndex = nIndex;
-else {
-	if ((m_nMeshTris == m_nMaxMeshTris - 1) && !AllocMeshData ())
-		return NULL;
-	mtP = m_meshTris + m_nMeshTris++;
+else 
+#endif
+	{
+	if (m_nFreeTris >= 0) {
+		mtP = m_meshTris + m_nFreeTris;
+		m_nFreeTris = mtP->nNext;
+		mtP->nNext = -1;
+		}	
+	else {
+		if ((m_nMeshTris == m_nMaxMeshTris - 1) && !AllocMeshData ())
+			return NULL;
+		mtP = m_meshTris + m_nMeshTris++;
+		}
 	mtP->nIndex = nIndex;
 	if (nIndex >= 0) {
 		i = gameData.segs.faces.tris [nIndex].nIndex;
@@ -193,7 +211,7 @@ else {
 	}
 nIndex = mtP - m_meshTris;
 for (i = 0; i < 3; i++) {
-	if (0 > (h = AddMeshLine (nIndex, index [i], index [(i + 1) % 3])))
+	if (0 > (h = AddMeshEdge (nIndex, index [i], index [(i + 1) % 3])))
 		return NULL;
 	mtP = m_meshTris + nIndex;
 	mtP->lines [i] = h;
@@ -223,22 +241,22 @@ return m_nMeshTris;
 
 //------------------------------------------------------------------------------
 
-void CTriMeshBuilder::DeleteMeshLine (tMeshLine *mlP)
+void CTriMeshBuilder::DeleteMeshEdge (tMeshEdge *mlP)
 {
 #if 1
-mlP->nNext = m_nFreeLines;
-m_nFreeLines = mlP - m_meshLines;
+mlP->nNext = m_nFreeEdges;
+m_nFreeEdges = mlP - m_meshEdges;
 #else
 	tMeshTri	*mtP;
-	int		h = mlP - m_meshLines, i, j;
+	int		h = mlP - m_meshEdges, i, j;
 
-if (h < --m_nMeshLines) {
-	*mlP = m_meshLines [m_nMeshLines];
+if (h < --m_nMeshEdges) {
+	*mlP = m_meshEdges [m_nMeshEdges];
 	for (i = 0; i < 2; i++) {
 		if (mlP->tris [i] >= 0) {
 			mtP = m_meshTris + mlP->tris [i];
 			for (j = 0; j < 3; j++)
-				if (mtP->lines [j] == m_nMeshLines)
+				if (mtP->lines [j] == m_nMeshEdges)
 					mtP->lines [j] = h;
 			}
 		}
@@ -250,21 +268,23 @@ if (h < --m_nMeshLines) {
 
 void CTriMeshBuilder::DeleteMeshTri (tMeshTri *mtP)
 {
-	tMeshLine	*mlP;
+	tMeshEdge	*mlP;
 	int			i, nTri = mtP - m_meshTris;
 
 for (i = 0; i < 3; i++) {
-	mlP = m_meshLines + mtP->lines [i];
+	mlP = m_meshEdges + mtP->lines [i];
 	if (mlP->tris [0] == nTri)
 		mlP->tris [0] = mlP->tris [1];
 #ifdef _DEBUG
-	if (mlP - m_meshLines == 70939)
+	if (mlP - m_meshEdges == 6752)
 		mlP = mlP;
 #endif
 	mlP->tris [1] = -1;
 	if (mlP->tris [0] < 0)
-		DeleteMeshLine (mlP);
+		DeleteMeshEdge (mlP);
 	}
+m_nFreeTris = mtP - m_meshTris;
+mtP->nNext = m_nFreeTris;
 }
 
 //------------------------------------------------------------------------------
@@ -272,11 +292,12 @@ for (i = 0; i < 3; i++) {
 int CTriMeshBuilder::CreateMeshTris (void)
 {
 PrintLog ("   adding existing triangles\n");
-m_nMeshLines = 0;
+m_nMeshEdges = 0;
 m_nMeshTris = 0;
 m_nMaxMeshTris = 0;
 m_nMaxMeshTris = 0;
-m_nFreeLines = 0;
+m_nFreeEdges = -1;
+m_nFreeTris = -1;
 m_nVertices = gameData.segs.nVertices;
 if (!AllocMeshData ())
 	return 0;
@@ -294,7 +315,7 @@ return m_nMeshTris;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitMeshTriByLine (int nTri, ushort nVert1, ushort nVert2, ushort nPass)
+int CTriMeshBuilder::SplitMeshTriByEdge (int nTri, ushort nVert1, ushort nVert2, ushort nPass)
 {
 if (nTri < 0)
 	return 1;
@@ -341,11 +362,11 @@ color [0].green = (color [1].green + color [3].green) / 2;
 color [0].blue = (color [1].blue + color [3].blue) / 2;
 color [0].alpha = (color [1].alpha + color [3].alpha) / 2;
 #if 0//def _DEBUG
-if (VmLinePointDist (gameData.segs.fVertices + index [1], gameData.segs.fVertices + index [2], gameData.segs.fVertices + index [0], 0) < 1)
+if (VmEdgePointDist (gameData.segs.fVertices + index [1], gameData.segs.fVertices + index [2], gameData.segs.fVertices + index [0], 0) < 1)
 	return 0;
-if (VmLinePointDist (gameData.segs.fVertices + index [2], gameData.segs.fVertices + index [3], gameData.segs.fVertices + index [0], 0) < 1)
+if (VmEdgePointDist (gameData.segs.fVertices + index [2], gameData.segs.fVertices + index [3], gameData.segs.fVertices + index [0], 0) < 1)
 	return 0;
-if (VmLinePointDist (gameData.segs.fVertices + index [3], gameData.segs.fVertices + index [4], gameData.segs.fVertices + index [0], 0) < 1)
+if (VmEdgePointDist (gameData.segs.fVertices + index [3], gameData.segs.fVertices + index [4], gameData.segs.fVertices + index [0], 0) < 1)
 	return 0;
 #endif
 DeleteMeshTri (mtP); //remove any references to this triangle
@@ -371,7 +392,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitMeshLine (tMeshLine *mlP, ushort nPass)
+int CTriMeshBuilder::SplitMeshEdge (tMeshEdge *mlP, ushort nPass)
 {
 	int		i = 0;
 	int		tris [2];
@@ -379,14 +400,14 @@ int CTriMeshBuilder::SplitMeshLine (tMeshLine *mlP, ushort nPass)
 
 memcpy (tris, mlP->tris, sizeof (tris));
 memcpy (verts, mlP->verts, sizeof (verts));
+if (tris [1] < 0)
+	m_nMeshTris = m_nMeshTris;
 VmVecAvg (gameData.segs.fVertices + gameData.segs.nVertices, 
 			  gameData.segs.fVertices + verts [0], 
 			  gameData.segs.fVertices + verts [1]);
-if (!SplitMeshTriByLine (tris [0], verts [0], verts [1], nPass))
+if (!SplitMeshTriByEdge (tris [0], verts [0], verts [1], nPass))
 	return 0;
-if (tris [1] < 0)
-	m_nMeshTris = m_nMeshTris;
-if (!SplitMeshTriByLine (tris [1], verts [0], verts [1], nPass))
+if (!SplitMeshTriByEdge (tris [1], verts [0], verts [1], nPass))
 	return 0;
 gameData.segs.faces.faces [m_meshTris [tris [0]].nFace].nVerts++;
 if ((tris [0] != tris [1]) && (tris [1] >= 0))
@@ -400,12 +421,12 @@ return 1;
 
 int CTriMeshBuilder::SplitMeshTri (tMeshTri *mtP, ushort nPass)
 {
-	tMeshLine	*mlP;
+	tMeshEdge	*mlP;
 	int			h, i;
 	float			l, lMax = 0;
 
 for (i = 0; i < 3; i++) {
-	mlP = m_meshLines + mtP->lines [i];
+	mlP = m_meshEdges + mtP->lines [i];
 	l = VmVecDist (gameData.segs.fVertices + mlP->verts [0], gameData.segs.fVertices + mlP->verts [1]);
 	if (lMax < l) {
 		lMax = l;
@@ -414,7 +435,7 @@ for (i = 0; i < 3; i++) {
 	}
 if (lMax <= MAX_SIDE_LEN)
 	return -1;
-return SplitMeshLine (m_meshLines + mtP->lines [h], nPass);
+return SplitMeshEdge (m_meshEdges + mtP->lines [h], nPass);
 }
 
 //------------------------------------------------------------------------------
@@ -433,7 +454,7 @@ do {
 		if (m_meshTris [i].nPass != (ushort) (nPass - 1))
 			continue;
 #ifdef _DEBUG
-		if (i == 48936)
+		if (i == 4586)
 			i = i;
 #endif
 		nSplitRes = SplitMeshTri (m_meshTris + i, nPass);
