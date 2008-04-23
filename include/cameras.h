@@ -24,7 +24,7 @@ typedef struct tCamera {
 	char			bTeleport;
 	int			nWaitFrames;
 	tUVL			uvlList [4];
-	tTexCoord2f	texCoord [4];
+	tTexCoord2f	texCoord [6];
 #if RENDER2TEXTURE == 1
 	tPixelBuffer	pb;
 	tOglTexture	glTex;

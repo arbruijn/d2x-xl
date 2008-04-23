@@ -762,7 +762,7 @@ if (bBlend) {
 else
 	glDisable (GL_BLEND);
 #endif
-if (gameStates.render.bTriangleMesh) {
+if (gameStates.render.bTriangleMesh && !bMonitor) {
 #ifdef _DEBUG
 	if ((nDbgFace >= 0) && (faceP - gameData.segs.faces.faces != nDbgFace))
 		return 0;

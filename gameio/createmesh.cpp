@@ -845,7 +845,8 @@ gameStates.render.bTriangleMesh = !gameOpts->ogl.bPerPixelLighting && gameOpts->
 gameStates.render.nFacePrimitive = gameStates.render.bTriangleMesh ? GL_TRIANGLES : GL_TRIANGLE_FAN;
 if (gameStates.render.bSplitPolys)
 	gameStates.render.bSplitPolys = (gameOpts->ogl.bPerPixelLighting || !gameOpts->render.nMeshQuality) ? 1 : -1;
-
+if (gameStates.render.bTriangleMesh)
+	CreateCameras ();
 PrintLog ("   Creating face list\n");
 gameData.segs.nFaces = 0;
 gameData.segs.nTris = 0;
@@ -876,7 +877,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 				InitColoredFace (nSegment);
 			if (gameStates.render.bTriangleMesh) {
 				// split in four triangles, using the quad's center of gravity as additional vertex
-				if (!gameOpts->ogl.bPerPixelLighting && (m_sideP->nType == SIDE_IS_QUAD) && !m_faceP->bSlide && IsBigFace (m_sideVerts))
+				if (!gameOpts->ogl.bPerPixelLighting && (m_sideP->nType == SIDE_IS_QUAD) && !m_faceP->bSlide && (m_faceP->nCamera < 0) && IsBigFace (m_sideVerts))
 					SplitIn4Tris ();
 				else // split in two triangles, regarding any non-planarity
 					SplitIn2Tris ();
@@ -918,6 +919,8 @@ for (m_colorP = gameData.render.color.ambient, i = gameData.segs.nVertices; i; i
 if (!gameOpts->ogl.bPerPixelLighting && gameOpts->render.nMeshQuality)
 	m_triMeshBuilder.Build ();
 #endif
+if (gameStates.render.bTriangleMesh)
+	DestroyCameras ();
 }
 
 //------------------------------------------------------------------------------

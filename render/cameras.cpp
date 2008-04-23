@@ -344,14 +344,14 @@ gameData.cameras.nCameras = 0;
 
 void GetCameraUVL (tCamera *pc, grsFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP)
 {
-	int i2, i3;
+	int i2, i3, nType;
 
 if (gameStates.render.bTriangleMesh) {
-	if (faceP->nType == SIDE_IS_TRI_13) {
-		i2 = 2;
+	if ((nType = faceP->nType == SIDE_IS_TRI_13)) {
+		i2 = 4;
 		}
 	else {
-		i2 = 4;
+		i2 = 2;
 		}
 	i3 = 5;
 	}
@@ -395,7 +395,6 @@ else
 		duFace = f2fl (uvlP [2].u - uvlP [0].u);
 		}
 	else {
-		static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
 		rotLeft = (texCoordP [1].v.u < texCoordP [0].v.u);
 		rotRight = (texCoordP [1].v.u > texCoordP [0].v.u);
 		if (rotLeft) {
@@ -458,7 +457,8 @@ else
 			memcpy (pc->uvlList, uvlP, sizeof (pc->uvlList));
 		}
 	else {
-		tTexCoord2f texCoord [4];
+		tTexCoord2f texCoord [6];
+		int h;
 
 		texCoord [0].v.v = 
 		texCoord [3].v.v = yFlip ? dvImage : dv;
@@ -468,14 +468,31 @@ else
 		texCoord [1].v.u = xFlip ? duImage : du / 2;
 		texCoord [2].v.u = 
 		texCoord [3].v.u = xFlip ? du / 2 : duImage;
+		if (gameStates.render.bTriangleMesh) {
+			h = 6;
+			if (nType) {
+				texCoord [5] = texCoord [3];
+				texCoord [4] = texCoord [2];
+				texCoord [3] = texCoord [0];
+				}
+			else {
+		static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
+				texCoord [5] = texCoord [3];
+				texCoord [4] = texCoord [2];
+				texCoord [3] = texCoord [1];
+				texCoord [2] = texCoord [5];
+				}
+			}
+		else
+			h = 4;
 		if (rotLeft) {
-			for (i = 1; i < 5; i++) {
-				pc->texCoord [i - 1] = texCoord [i % 4];
+			for (i = 1; i <= h; i++) {
+				pc->texCoord [i - 1] = texCoord [i % h];
 				}
 			}
 		else if (rotRight) {
-			for (i = 0; i < 4; i++) {
-				pc->texCoord [i] = texCoord [(i + 1) % 4];
+			for (i = 0; i < h; i++) {
+				pc->texCoord [i] = texCoord [(i + 1) % h];
 				}
 			}
 		else
