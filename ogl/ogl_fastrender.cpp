@@ -669,7 +669,6 @@ if (bTextured) {
 		if (bmBot && strstr (bmBot->szName, "door"))
 			bmBot = bmBot;
 #endif
-			bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL;
 			// set base texture
 			if (bmBot != gameStates.render.history.bmBot) {
 				INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, 1);
@@ -684,9 +683,13 @@ if (bTextured) {
 						return 1;
 					}
 				}
-			INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, 2);
-			if (!G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2))
-				return 1;
+			if (!(bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL))
+				bColorKey = 0;
+			else {
+				INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, 2);
+				if (!G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2))
+					return 1;
+				}
 			gameStates.render.history.bmMask = bmMask;
 			G3SetupShader (faceP, bColorKey, 1, 1, bColored, NULL);
 			}

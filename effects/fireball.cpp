@@ -606,10 +606,11 @@ if (objP->renderType == RT_SHRAPNELS) {
 	}
 //See if we should create a secondary explosion
 if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo.nDeleteObj >= 0)) {
-	tObject		*explObjP, *delObjP = gameData.objs.objects + objP->cType.explInfo.nDeleteObj;
+	tObject		*explObjP, *delObjP;
 	ubyte			nVClip;
 	vmsVector	*vSpawnPos;
-	fix			xBadAss = (fix) ROBOTINFO (delObjP->id).badass;
+	fix			xBadAss;
+
 	if ((objP->cType.explInfo.nDeleteObj < 0) || 
 		 (objP->cType.explInfo.nDeleteObj > gameData.objs.nLastObject)) {
 #if TRACE
@@ -618,6 +619,8 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 		Int3 (); // get Rob, please... thanks
 		return;
 		}
+	delObjP = gameData.objs.objects + objP->cType.explInfo.nDeleteObj;
+	xBadAss = (fix) ROBOTINFO (delObjP->id).badass;
 	vSpawnPos = &delObjP->position.vPos;
 	t = delObjP->nType;
 	if (((t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_REACTOR) && (t != OBJ_PLAYER)) || 
@@ -691,7 +694,7 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 		}
 	}
 	//See if we should delete an tObject
-if (objP->lifeleft <= objP->cType.explInfo.nDeleteTime) {
+if ((objP->lifeleft <= objP->cType.explInfo.nDeleteTime) && (objP->cType.explInfo.nDeleteObj >= 0)) {
 	tObject *delObjP = gameData.objs.objects + objP->cType.explInfo.nDeleteObj;
 	objP->cType.explInfo.nDeleteTime = -1;
 	MaybeDeleteObject (delObjP);

@@ -1342,7 +1342,7 @@ char *ppLightingFS [] = {
 	"uniform float lightRad [LIGHTS];\r\n" \
 	"varying vec3 normal, lightVec [LIGHTS];\r\n" \
 	"void main() {\r\n" \
-	"if (texture2D (maskTex, gl_TexCoord [2].xy).r < 0.5)\r\n" \
+	"if (texture2D (maskTex, gl_TexCoord [2].xy).r) < 0.5)\r\n" \
 	"  discard;\r\n" \
 	"else {\r\n" \
 	"  vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
