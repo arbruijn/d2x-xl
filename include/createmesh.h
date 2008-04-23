@@ -15,7 +15,8 @@ namespace mesh {
 		int			nIndex;
 		int			lines [3];
 		ushort		index [3];
-		ushort		nPass;
+		short			nPass;
+		short			nId;
 		tTexCoord2f	texCoord [3];
 		tTexCoord2f	ovlTexCoord [3];
 		tRgbaColorf	color [3];
@@ -23,7 +24,7 @@ namespace mesh {
 
 class CTriMeshBuilder {
 	private:
-		tEdge	*m_edges;
+		tEdge			*m_edges;
 		tTriangle	*m_triangles;
 		int			m_nEdges;
 		int			m_nFreeEdges;
@@ -43,9 +44,9 @@ class CTriMeshBuilder {
 		void DeleteEdge (tEdge *mlP);
 		void DeleteTriangle (tTriangle *mtP);
 		int CreateTriangles (void);
-		int SplitTriangleByEdge (int nTri, ushort nVert1, ushort nVert2, ushort nPass);
-		int SplitEdge (tEdge *mlP, ushort nPass);
-		int SplitTriangle (tTriangle *mtP, ushort nPass);
+		int SplitTriangleByEdge (int nTri, ushort nVert1, ushort nVert2, short nPass);
+		int SplitEdge (tEdge *mlP, short nPass);
+		int SplitTriangle (tTriangle *mtP, short nPass);
 		int SplitTriangles (void);
 		void QSortTriangles (int left, int right);
 		int InsertTriangles (void);
@@ -56,7 +57,7 @@ class CTriMeshBuilder {
 		int Build (void);
 	};
 
-class CFaceMeshBuilder {
+class CQuadMeshBuilder {
 	private:
 		grsFace		*m_faceP;
 		grsTriangle	*m_triP;
@@ -89,13 +90,16 @@ class CFaceMeshBuilder {
 		fVector3 *SetTriNormals (grsTriangle *triP, fVector3 *m_normalP);
 
 	public:
-		CFaceMeshBuilder (void) {};
-		~CFaceMeshBuilder (void) {};
+		CQuadMeshBuilder (void) {};
+		~CQuadMeshBuilder (void) {};
 		void Build (void);
 	};
 
-};
+}
+#ifdef __unix__
+;
+#endif
 
-extern mesh::CFaceMeshBuilder faceMeshBuilder;
+extern mesh::CQuadMeshBuilder quadMeshBuilder;
 
 #endif //_CREATEMESH_H

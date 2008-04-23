@@ -76,7 +76,7 @@ char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
 
 using namespace mesh;
 
-CFaceMeshBuilder faceMeshBuilder;
+CQuadMeshBuilder quadMeshBuilder;
 
 float fMaxEdgeLen [] = {1e30f, 30.9f, 20.9f, 19.9f, 9.9f};
 
@@ -279,30 +279,55 @@ m_nVertices = gameData.segs.nVertices;
 if (!AllocData ())
 	return 0;
 
+grsFace *faceP;
 grsTriangle *grsTriP;
 tTriangle *triP;
-int i;
+int i, nFace = -1;
+short nId;
 
 for (i = gameData.segs.nTris, grsTriP = gameData.segs.faces.tris; i; i--, grsTriP++) {
 	if (!(triP = AddTriangle (NULL, grsTriP->index, grsTriP))) {
 		FreeData ();
 		return 0;
 		}
+	if (nFace == grsTriP->nFace) 
+		nId++;
+	else {
+		nFace = grsTriP->nFace;
+		nId = 0;
+		}
+	triP->nId = nId;
+#ifdef _DEBUG
+	faceP = gameData.segs.faces.faces + grsTriP->nFace;
+	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 	if (gameData.segs.faces.faces [grsTriP->nFace].bSlide)
-		triP->nPass = (ushort) -2;
+		triP->nPass = -2;
 	}
 return m_nTris = m_nTriangles;
 }
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitTriangleByEdge (int nTri, ushort nVert1, ushort nVert2, ushort nPass)
+int CTriMeshBuilder::SplitTriangleByEdge (int nTri, ushort nVert1, ushort nVert2, short nPass)
 {
 if (nTri < 0)
 	return 1;
 
 	tTriangle	*triP = m_triangles + nTri;
+	grsFace		*faceP = gameData.segs.faces.faces + triP->nFace;
+
+if (triP->nPass < -1)
+	return 1;
+
+#ifdef _DEBUG
+if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
+
 	int			h, i, nIndex = triP->nIndex;
+	short			nId = triP->nId;
 	ushort		nFace = triP->nFace, *indexP = triP->index, index [4];
 	tTexCoord2f	texCoord [4], ovlTexCoord [4];
 	tRgbaColorf	color [4];
@@ -354,6 +379,7 @@ DeleteTriangle (triP); //remove any references to this triangle
 if (!(triP = CreateTriangle (triP, index, nFace, nIndex))) //create a new triangle at this location (insert)
 	return 0;
 triP->nPass = nPass;
+triP->nId = (faceP->nTris)++;
 memcpy (triP->color, color, sizeof (triP->color));
 memcpy (triP->texCoord, texCoord, sizeof (triP->texCoord));
 memcpy (triP->ovlTexCoord, ovlTexCoord, sizeof (triP->ovlTexCoord));
@@ -362,6 +388,7 @@ index [1] = index [0];
 if (!(triP = CreateTriangle (NULL, index + 1, nFace, -1))) //create a new triangle (append)
 	return 0;
 triP->nPass = nPass;
+triP->nId = (faceP->nTris)++;
 triP->texCoord [0] = texCoord [0];
 triP->ovlTexCoord [0] = ovlTexCoord [0];
 triP->color [0] = color [0];
@@ -373,7 +400,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitEdge (tEdge *edgeP, ushort nPass)
+int CTriMeshBuilder::SplitEdge (tEdge *edgeP, short nPass)
 {
 	int		i = 0;
 	int		tris [2];
@@ -400,7 +427,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitTriangle (tTriangle *triP, ushort nPass)
+int CTriMeshBuilder::SplitTriangle (tTriangle *triP, short nPass)
 {
 	int	h, i;
 	float	l, lMax = 0;
@@ -421,8 +448,8 @@ return SplitEdge (m_edges + triP->lines [h], nPass);
 
 int CTriMeshBuilder::SplitTriangles (void)
 {
-	int		bSplit = 0, h, i, j, nSplitRes;
-	ushort	nPass = 0;
+	int	bSplit = 0, h, i, j, nSplitRes;
+	short	nPass = 0;
 
 h = 0;
 do {
@@ -434,11 +461,12 @@ do {
 		if (i == 296)
 			i = i;
 #endif
-		if (m_triangles [i].nPass != (ushort) (nPass - 1))
+		if (m_triangles [i].nPass != nPass - 1)
 			continue;
 #ifdef _DEBUG
-		if (i == 296)
-			i = i;
+		grsFace *faceP = gameData.segs.faces.faces + m_triangles [i].nFace;
+		if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
 #endif
 		nSplitRes = SplitTriangle (m_triangles + i, nPass);
 		if (gameData.segs.nVertices == 65536)
@@ -463,11 +491,12 @@ void CTriMeshBuilder::QSortTriangles (int left, int right)
 	int	l = left,
 			r = right,
 			m = m_triangles [(l + r) / 2].nFace;
+	short i = m_triangles [(l + r) / 2].nId;
 
 do {
-	while (m_triangles [l].nFace < m)
+	while ((m_triangles [l].nFace < m) || ((m_triangles [l].nFace == m) && (m_triangles [l].nId < i)))
 		l++;
-	while (m_triangles [r].nFace > m)
+	while ((m_triangles [r].nFace > m) || ((m_triangles [r].nFace == m) && (m_triangles [r].nId > i)))
 		r--;
 	if (l <= r) {
 		if (l < r) {
@@ -572,7 +601,7 @@ return InsertTriangles ();
 
 //------------------------------------------------------------------------------
 
-int CFaceMeshBuilder::IsBigFace (short *m_sideVerts)
+int CQuadMeshBuilder::IsBigFace (short *m_sideVerts)
 {
 for (int i = 0; i < 4; i++) 
 	if (VmVecDist (gameData.segs.fVertices + m_sideVerts [i], gameData.segs.fVertices + m_sideVerts [(i + 1) % 4]) > MAX_EDGE_LEN)
@@ -582,7 +611,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-fVector3 *CFaceMeshBuilder::SetTriNormals (grsTriangle *triP, fVector3 *m_normalP)
+fVector3 *CQuadMeshBuilder::SetTriNormals (grsTriangle *triP, fVector3 *m_normalP)
 {
 	fVector	vNormalf;
 
@@ -596,7 +625,7 @@ return m_normalP;
 
 //------------------------------------------------------------------------------
 
-void CFaceMeshBuilder::InitFace (short nSegment, ubyte nSide)
+void CQuadMeshBuilder::InitFace (short nSegment, ubyte nSide)
 {
 memset (m_faceP, 0, sizeof (*m_faceP));
 m_faceP->nSegment = nSegment;
@@ -614,7 +643,7 @@ m_faceP->bAnimation = IsAnimatedTexture (m_faceP->nBaseTex) || IsAnimatedTexture
 
 //------------------------------------------------------------------------------
 
-void CFaceMeshBuilder::InitTexturedFace (void)
+void CQuadMeshBuilder::InitTexturedFace (void)
 {
 m_faceP->nBaseTex = m_sideP->nBaseTex;
 if ((m_faceP->nOvlTex = m_sideP->nOvlTex))
@@ -638,7 +667,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void CFaceMeshBuilder::InitColoredFace (short nSegment)
+void CQuadMeshBuilder::InitColoredFace (short nSegment)
 {
 m_faceP->nBaseTex = -1;
 m_faceP->bTransparent = 1;
@@ -647,7 +676,7 @@ m_faceP->bAdditive = gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_LA
 
 //------------------------------------------------------------------------------
 
-void CFaceMeshBuilder::SetupFace (void)
+void CQuadMeshBuilder::SetupFace (void)
 {
 	int			i, j;
 	vmsVector	vNormal;
@@ -671,7 +700,7 @@ for (i = 0; i < 4; i++) {
 
 //------------------------------------------------------------------------------
 
-void CFaceMeshBuilder::SplitIn2Tris (void)
+void CQuadMeshBuilder::SplitIn2Tris (void)
 {
 	static short	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
 
@@ -704,7 +733,7 @@ for (i = 0; i < 2; i++, m_triP++) {
 
 //------------------------------------------------------------------------------
 
-void CFaceMeshBuilder::SplitIn4Tris (void)
+void CQuadMeshBuilder::SplitIn4Tris (void)
 {
 	static short	n4TriVerts [4][3] = {{0,1,4},{1,2,4},{2,3,4},{3,0,4}};
 
@@ -770,7 +799,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 
 #define FACE_VERTS	6
 
-void CFaceMeshBuilder::Build (void)
+void CQuadMeshBuilder::Build (void)
 {
 m_faceP = gameData.segs.faces.faces;
 m_triP = gameData.segs.faces.tris;

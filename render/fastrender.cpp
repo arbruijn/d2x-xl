@@ -828,7 +828,7 @@ for (i = gameData.segs.nSegments, segP = SEGMENTS, segFaceP = SEGFACES; i; i--, 
 			uvlP = segP->sides [faceP->nSide].uvls;
 			nOffset = faceP->nType == SIDE_IS_TRI_13;
 			if (gameStates.render.bTriangleMesh) {
-				static short nTriVerts [2][6] = {{0,1,3,1,2,3},{0,1,2,0,2,3}};
+				static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
 				for (h = 0; h < 6; h++) {
 					k = nTriVerts [nOffset][h];
 					texCoordP [h].v.u = f2fl (uvlP [k].u);

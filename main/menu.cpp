@@ -4007,7 +4007,7 @@ do {
 			renderOpts.nTexQual = opt++;
 			sprintf (szMeshQual + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
 			*szMeshQual = *(TXT_MESH_QUALITY + 1);
-			ADD_SLIDER (opt, szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 4, KEY_H, HTX_MESH_QUALITY);
+			ADD_SLIDER (opt, szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 4, KEY_O, HTX_MESH_QUALITY);
 			renderOpts.nMeshQual = opt++;
 			}
 		ADD_TEXT (opt, "", 0);

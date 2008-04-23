@@ -1653,7 +1653,7 @@ if (game_err == -1) {   //error!!
 	return 3;
 	}
 CFClose(&cf);
-faceMeshBuilder.Build ();
+quadMeshBuilder.Build ();
 SetAmbientSoundFlags ();
 #ifdef EDITOR
 write_game_text_file(filename);
