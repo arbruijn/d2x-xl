@@ -246,6 +246,7 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 	diffuse.blue = psl->color.c.b * 0.9f;
 	diffuse.alpha = 1.0f;
 	glEnable (hLight);
+	specular.alpha = (psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : 0; //krasser Missbrauch!
 	glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->pos));
 	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &diffuse);
 	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &specular);
@@ -363,9 +364,7 @@ else if (nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTe
 				}
 			}
 		}
-	glUniform1f (glGetUniformLocation (tmProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
-	glUniform1fv (glGetUniformLocation (tmProg, "lightRad"), nLights, (GLfloat *) gameData.render.ogl.lightRads);
-	//glUniform4fv (glGetUniformLocation (tmProg, "lightPos"), nLights, (GLfloat *) gameData.render.ogl.lightPos);
+	//glUniform1fv (glGetUniformLocation (tmProg, "lightRad"), nLights, (GLfloat *) gameData.render.ogl.lightRads);
 	}
 else if (bColorKey || bMultiTexture) {
 	//texture mapping
@@ -651,7 +650,7 @@ if (bTextured) {
 		else
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		bOverlay = (bColorKey && gameStates.ogl.bGlTexMerge) ? 1 : -1;
-		bMultiTexture = HW_GEO_LIGHTING && ((bOverlay > 0) || ((bOverlay < 0) && !bMonitor));
+		bMultiTexture = gameOpts->ogl.bPerPixelLighting && ((bOverlay > 0) || ((bOverlay < 0) && !bMonitor));
 		}
 	else
 		bOverlay = 0;
