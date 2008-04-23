@@ -355,10 +355,14 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 #endif
 for (h = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; h; h--, triP++) {
 	for (i = 0, j = triP->nIndex; i < 3; i++, j++) {
+#if 1
+		G3TransformPoint (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
+#else
 		if (gameStates.render.automap.bDisplay)
 			G3TransformPoint (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
 		else
 			VmVecFixToFloat (vertices + i, &gameData.segs.points [triP->index [i]].p3_vec);
+#endif
 		}
 	if (!RIAddPoly (faceP, faceP->bTextured ? bmP : NULL, vertices, 3, gameData.segs.faces.texCoord + triP->nIndex, 
 						 gameData.segs.faces.color + triP->nIndex,
@@ -627,7 +631,7 @@ return (renderItems.bClientState == bClientState);
 void RIRenderPoly (tRIPoly *item)
 {
 	int	i, j;
-
+return;
 if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
 #if RI_POLY_OFFSET
@@ -939,6 +943,7 @@ void RenderItems (void)
 	struct tRenderItem	**pd, *pl, *pn;
 	int						nDepth, nType, bParticles, bStencil;
 
+#if 1//ndef _DEBUG
 if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
@@ -1007,7 +1012,6 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 		*pd = NULL;
 		}
 	}
-renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 RIFlushParticleBuffer (-1);
 EndRenderSmoke (NULL);
 RIResetShader ();
@@ -1017,6 +1021,8 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (1);
 StencilOn (bStencil);
+#endif
+renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 return;
 }
 

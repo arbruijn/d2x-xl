@@ -609,7 +609,7 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	tG3Model					*pm;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameData.render.lights.dynamic.shader.nFirstLight [0];
 	tShaderLight			*psl;
-	int						nPass, iLightSource = 0, iLight, nLights;
+	int						nPass, iLightSource = 0, iLight, nLights, i;
 	int						bEmissive = objP && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive);
 	GLenum					hLight;
@@ -641,7 +641,8 @@ for (nPass = 0; nLights || !nPass; nPass++) {
 			glDepthMask (0);
 			}
 		OglSetupTransform (1);
-		for (iLight = 0; (iLight < 8) && nLights; activeLightsP++) { 
+		i = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
+		for (iLight = 0; (i > 0) && (iLight < 8) && nLights; activeLightsP++, i--) { 
 			if ((psl = GetActiveShaderLight (activeLightsP, 0))) {
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);

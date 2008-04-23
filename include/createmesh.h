@@ -46,6 +46,7 @@ class CTriMeshBuilder {
 		int CreateTriangles (void);
 		int SplitTriangleByEdge (int nTri, ushort nVert1, ushort nVert2, short nPass);
 		int SplitEdge (tEdge *mlP, short nPass);
+		float NewEdgeLen (int nTri, int nVert1, int nVert2);
 		int SplitTriangle (tTriangle *mtP, short nPass);
 		int SplitTriangles (void);
 		void QSortTriangles (int left, int right);

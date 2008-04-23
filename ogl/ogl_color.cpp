@@ -379,7 +379,7 @@ for (j = 0; (i > 0) && nLights; activeLightsP++, i--) {
 		else {
 			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
 			if (NdotL > 0)
-				NdotL = sqrt (NdotL);
+				NdotL = NdotL;
 			}
 		}
 	fAttenuation = fLightDist / psl->brightness;
@@ -540,7 +540,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 				fLightDist *= 2.0f;
 			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
 			if (NdotL > 0)
-				NdotL = sqrt (NdotL);
+				NdotL = NdotL;
 			}
 		fAttenuation = fLightDist / psl->brightness;
 		}

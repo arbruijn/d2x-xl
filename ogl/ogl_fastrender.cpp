@@ -53,9 +53,9 @@ GLhandleARB gsv = 0;
 char *grayScaleFS =
 	"uniform sampler2D btmTex;\r\n" \
 	"void main(void){" \
-	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
-	"float l = (btmColor.r + btmColor.g + btmColor.b) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, btmColor.a);}";
+	"vec4 texColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
+	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, texColor.a);}";
 
 char *grayScaleVS =
 	"void main(void){" \
@@ -224,7 +224,7 @@ int G3SetupPerPixelLighting (grsFace *faceP, int bColorKey, int bMultiTexture, i
 	tShaderLight			*psl;
 
 #ifdef _DEBUG
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 if (!(nLights = (faceP && gameOpts->ogl.bPerPixelLighting) ? SetNearestFaceLights (faceP, bTextured) : 0))
@@ -262,7 +262,7 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 		//gameData.render.ogl.lightRads [i] *= 10;
 		}
 	gameData.render.ogl.lightRads [i] =
-		(psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : 0; //(psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
+		(psl->nSegment >= 0) ? MaxSegRadf (psl->nSegment) : 0; //(psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
 	//G3TranslatePoint (&gameData.render.ogl.lightPos [i], &psl->pos [0]);
 	i++;
 	}
@@ -406,7 +406,7 @@ int G3DrawFaceSimple (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bB
 	tTexCoord2f	*texCoordP, *ovlTexCoordP;
 
 #ifdef _DEBUG
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 if (!faceP->bTextured)
@@ -506,7 +506,7 @@ if (!bBlend)
 	glDisable (GL_BLEND);
 
 #ifdef _DEBUG
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	if (bDepthOnly)
 		nDbgSeg = nDbgSeg;
 	else
@@ -590,7 +590,7 @@ int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bB
 	tTexCoord2f	*ovlTexCoordP;
 
 #ifdef _DEBUG
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	if (bDepthOnly)
 		nDbgSeg = nDbgSeg;
 	else
@@ -661,7 +661,7 @@ if (bTextured) {
 		 (bColored != gameStates.render.history.bColored)) {
 		if (bOverlay > 0) {
 #ifdef _DEBUG
-		if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 			if (bDepthOnly)
 				nDbgSeg = nDbgSeg;
 			else
@@ -760,21 +760,6 @@ if (bBlend) {
 else
 	glDisable (GL_BLEND);
 #endif
-#if 0
-{
-	int i;
-glBegin (GL_TRIANGLE_FAN);
-for (i = 0; i < 4; i++) {
-	glTexCoord2fv ((GLfloat *) (gameData.segs.faces.texCoord + faceP->nIndex + i));
-	glColor3fv ((GLfloat *) (gameData.segs.faces.color + faceP->nIndex + i));
-	glVertex3fv ((GLfloat *) (gameData.segs.faces.vertices + faceP->nIndex + i));
-	}
-glEnd ();
-}
-#else
-#	if 0
-glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
-#	endif
 if (gameStates.render.bTriangleMesh) {
 #ifdef _DEBUG
 	if ((nDbgFace >= 0) && (faceP - gameData.segs.faces.faces != nDbgFace))
@@ -814,26 +799,7 @@ if (gameStates.render.bTriangleMesh) {
 	}	
 else
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-#if 0
-fVector vNormalf, vCenterf, vBasef;
-VmVecFixToFloat (&vBasef, SEGMENT_CENTER_I (faceP->nSegment));
-//G3RotatePoint (&vNormalf, (fVector *) (gameData.segs.faces.normals + faceP->nIndex), 0);
-memcpy (&vNormalf, gameData.segs.faces.normals + faceP->nIndex, sizeof (fVector3));
-//G3TransformPoint (&vBasef, &vCenterf, 0);
-VmVecScale (&vNormalf, &vNormalf, 5);
-VmVecInc (&vNormalf, &vBasef);
-glDisable (GL_TEXTURE_2D);
-glLineWidth (5);
-glColor3f (1,0,0);
-glBegin (GL_LINES);
-glVertex3fv ((GLfloat *) &vBasef);
-glVertex3fv ((GLfloat *) &vNormalf);
-glEnd ();
-glLineWidth (1);
-glEnable (GL_TEXTURE_2D);
-#endif
 
-#endif
 #ifdef _DEBUG
 if (!gameOpts->render.debug.bTextures)
 	return 0;

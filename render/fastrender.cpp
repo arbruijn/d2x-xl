@@ -209,6 +209,10 @@ if (nType == 0) {
 		return;
 	}
 else if (nType == 1) {
+#ifdef _DEBUG
+	if (!gameOpts->render.debug.bWalls)
+		return;
+#endif
 	if (!IS_WALL (faceP->nWall))
 		return;
 	}

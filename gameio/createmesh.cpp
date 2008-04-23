@@ -315,11 +315,12 @@ int CTriMeshBuilder::SplitTriangleByEdge (int nTri, ushort nVert1, ushort nVert2
 if (nTri < 0)
 	return 1;
 
-	tTriangle	*triP = m_triangles + nTri;
-	grsFace		*faceP = gameData.segs.faces.faces + triP->nFace;
+tTriangle *triP = m_triangles + nTri;
 
 if (triP->nPass < -1)
 	return 1;
+
+grsFace *faceP = gameData.segs.faces.faces + triP->nFace;
 
 #ifdef _DEBUG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -349,7 +350,7 @@ else
 
 // build new quad index containing the new vertex
 // the two triangle indices will be derived from it (indices 0,1,2 and 1,2,3)
-index [0] = gameData.segs.nVertices;
+index [0] = gameData.segs.nVertices - 1;
 for (i = 1; i < 4; i++) {
 	index [i] = indexP [h];
 	texCoord [i] = triP->texCoord [h];
@@ -395,33 +396,49 @@ triP->color [0] = color [0];
 memcpy (triP->color + 1, color + 2, 2 * sizeof (triP->color [0]));
 memcpy (triP->texCoord + 1, texCoord + 2, 2 * sizeof (triP->texCoord [0]));
 memcpy (triP->ovlTexCoord + 1, ovlTexCoord + 2, 2 * sizeof (triP->ovlTexCoord [0]));
+gameData.segs.faces.faces [triP->nFace].nVerts++;
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+float CTriMeshBuilder::NewEdgeLen (int nTri, int nVert1, int nVert2)
+{
+	tTriangle	*triP = m_triangles + nTri;
+	int			h, i;
+
+for (i = 0; i < 3; i++) {
+	h = triP->index [i];
+	if ((h != nVert1) && (h != nVert2))
+		break;
+	}
+return VmVecDist (gameData.segs.fVertices + h, gameData.segs.fVertices + gameData.segs.nVertices);
 }
 
 //------------------------------------------------------------------------------
 
 int CTriMeshBuilder::SplitEdge (tEdge *edgeP, short nPass)
 {
-	int		i = 0;
 	int		tris [2];
 	ushort	verts [2];
 
 memcpy (tris, edgeP->tris, sizeof (tris));
 memcpy (verts, edgeP->verts, sizeof (verts));
-if (tris [1] < 0)
-	m_nTriangles = m_nTriangles;
 VmVecAvg (gameData.segs.fVertices + gameData.segs.nVertices, 
-			  gameData.segs.fVertices + verts [0], 
-			  gameData.segs.fVertices + verts [1]);
+			 gameData.segs.fVertices + verts [0], 
+			 gameData.segs.fVertices + verts [1]);
+VmVecFloatToFix (gameData.segs.vertices + gameData.segs.nVertices, gameData.segs.fVertices + gameData.segs.nVertices);
+#if 0
+if (tris [1] >= 0) {
+	if (NewEdgeLen (tris [0], verts [0], verts [1]) + NewEdgeLen (tris [1], verts [0], verts [1]) < MAX_EDGE_LEN)
+		return -1;
+	}
+#endif
+gameData.segs.nVertices++;
 if (!SplitTriangleByEdge (tris [0], verts [0], verts [1], nPass))
 	return 0;
 if (!SplitTriangleByEdge (tris [1], verts [0], verts [1], nPass))
 	return 0;
-gameData.segs.faces.faces [m_triangles [tris [0]].nFace].nVerts++;
-if ((tris [0] != tris [1]) && (tris [1] >= 0))
-	gameData.segs.faces.faces [m_triangles [tris [1]].nFace].nVerts++;
-VmVecFloatToFix (gameData.segs.vertices + gameData.segs.nVertices, gameData.segs.fVertices + gameData.segs.nVertices);
-gameData.segs.nVertices++;
 return 1;
 }
 
@@ -458,7 +475,7 @@ do {
 	PrintLog ("   splitting triangles (pass %d)\n", nPass);
 	for (i = h, h = 0; i < j; i++) {
 #ifdef _DEBUG
-		if (i == 296)
+		if (i == 86)
 			i = i;
 #endif
 		if (m_triangles [i].nPass != nPass - 1)
@@ -473,14 +490,16 @@ do {
 			return 1;
 		if (!nSplitRes)
 			return 0;
-		if (nSplitRes > 0) {
+		if (nSplitRes < 0) 
+			m_triangles [i].nPass = -2;
+		else {
 			bSplit = 1;
 			if (!h)
 				h = i;
 			}
 		}
 	nPass++;
-	} while (bSplit);
+	} while (bSplit && (nPass < 10));
 return 1;
 }
 
