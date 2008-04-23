@@ -146,8 +146,7 @@ if ((nTri < 0) || (nTri >= m_nTriangles))
 	return -1;
 #endif
 tEdge *edgeP;
-int i = -1;
-for (;;) {
+for (int i = -1;;) {
 	if (!(edgeP = FindEdge (nVert1, nVert2, i)))
 		break;
 	i = edgeP - m_edges;
@@ -168,7 +167,7 @@ if (m_nFreeEdges >= 0) {
 else {
 	if ((m_nEdges == m_nMaxEdges - 1) && !AllocData ())
 		return -1;
-	edgeP = m_edges + m_nEdges;
+	edgeP = m_edges + m_nEdges++;
 	}
 #ifdef _DEBUG
 if (m_nEdges == 6752)
@@ -178,7 +177,7 @@ edgeP->tris [0] = nTri;
 edgeP->verts [0] = nVert1;
 edgeP->verts [1] = nVert2;
 edgeP->fLength = VmVecDist (gameData.segs.fVertices + nVert1, gameData.segs.fVertices + nVert2);
-return m_nEdges++;
+return edgeP - m_edges;
 }
 
 //------------------------------------------------------------------------------
@@ -218,7 +217,7 @@ return triP;
 int CTriMeshBuilder::AddTriangle (tTriangle *triP, ushort index [], grsTriangle *grsTriP)
 {
 #if 1
-return CreateTriangle (triP, index, triP->nFace, grsTriP - gameData.segs.faces.tris) ? m_nTriangles : 0;
+return CreateTriangle (triP, index, grsTriP->nFace, grsTriP - gameData.segs.faces.tris) ? m_nTriangles : 0;
 #else
 	int		h, i;
 	float		l;
@@ -309,7 +308,7 @@ int CTriMeshBuilder::SplitTriangleByEdge (int nTri, ushort nVert1, ushort nVert2
 if (nTri < 0)
 	return 1;
 
-	tTriangle		*triP = m_triangles + nTri;
+	tTriangle	*triP = m_triangles + nTri;
 	int			h, i, nIndex = triP->nIndex;
 	ushort		nFace = triP->nFace, *indexP = triP->index, index [4];
 	tTexCoord2f	texCoord [4], ovlTexCoord [4];
@@ -441,7 +440,7 @@ do {
 		if (m_triangles [i].nPass != (ushort) (nPass - 1))
 			continue;
 #ifdef _DEBUG
-		if (i == 4586)
+		if (i == 158)
 			i = i;
 #endif
 		nSplitRes = SplitTriangle (m_triangles + i, nPass);
@@ -521,7 +520,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 		m_faceP->nTris = 1;
 		m_faceP->vertIndex = gameData.segs.faces.vertIndex + nIndex;
 		}
-	triP->nIndex = nIndex;
+	grsTriP->nIndex = nIndex;
 #ifdef _DEBUG
 	memcpy (grsTriP->index, triP->index, sizeof (triP->index));
 #endif

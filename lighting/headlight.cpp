@@ -234,7 +234,7 @@ char *lightingFS [8] = {
 	"      gl_FragColor = vec4 (maxColor.rgb * vec3 (gl_Color), (maxColor.a + gl_Color.a));"  \
 	"   else {\r\n" \
 	"      vec3 spotColor;\r\n" \
-	"	    float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
+	"	    float attenuation = min (300.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
 	"      gl_FragColor = vec4 (maxColor.rgb * spotColor.rgb, maxColor.a);"  \
@@ -257,7 +257,7 @@ char *lightingFS [8] = {
 	"      gl_FragColor = btmColor * gl_Color;\r\n" \
 	"   else {\r\n" \
 	"      vec3 spotColor;\r\n" \
-	"	    float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
+	"	    float attenuation = min (300.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
 	"      spotColor = min (spotColor, maxColor.rgb);\r\n" \
@@ -282,7 +282,7 @@ char *lightingFS [8] = {
 	"      gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a)) * gl_Color;\r\n" \
 	"   else {\r\n" \
 	"      vec3 spotColor;\r\n" \
-	"      float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
+	"      float attenuation = min (300.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
 	"      spotColor = min (spotColor, maxColor.rgb);\r\n" \
@@ -312,7 +312,7 @@ char *lightingFS [8] = {
 	"         gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a)) * gl_Color;\r\n" \
 	"      else {\r\n" \
 	"         vec3 spotColor;\r\n" \
-	" 		    float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
+	" 		    float attenuation = min (300.0 / length (lightVec), 1.0);\r\n" \
 	"         spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"         spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
 	"         spotColor = min (spotColor, maxColor.rgb);\r\n" \
@@ -336,7 +336,7 @@ char *lightingFS [8] = {
 	"   if (dot (normalize (normal), -lv) > 0.0)\r\n" \
 	"      spotEffect = dot (gl_LightSource [i].spotDirection, lv);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
-	"      	float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
+	"      	float attenuation = min (300.0 / length (lightVec), 1.0);\r\n" \
 	" 	      spotBrightness += pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"    	   }\r\n" \
 	" 	   }\r\n" \
@@ -361,7 +361,7 @@ char *lightingFS [8] = {
 	"   if (dot (normalize (normal), -lv) > 0.0)\r\n" \
 	"      spotEffect = dot (gl_LightSource [i].spotDirection, lv);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
-	"   	   float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
+	"   	   float attenuation = min (300.0 / length (lightVec), 1.0);\r\n" \
 	" 	      spotBrightness += pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	" 	      }\r\n" \
 	" 	   }\r\n" \
@@ -387,7 +387,7 @@ char *lightingFS [8] = {
 	"   if (dot (normalize (normal), -lv) > 0.0)\r\n" \
 	"      spotEffect = dot (gl_LightSource [i].spotDirection, lv);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
-	"   	   float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
+	"   	   float attenuation = min (300.0 / length (lightVec), 1.0);\r\n" \
 	" 	      spotBrightness += pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	" 	      }\r\n" \
 	" 	   }\r\n" \
@@ -417,7 +417,7 @@ char *lightingFS [8] = {
 	"      if (dot (normalize (normal), -lv) > 0.0)\r\n" \
 	"         spotEffect = dot (normalize (gl_LightSource [i].spotDirection), lv);\r\n" \
 	"         if (spotEffect >= 0.5) {\r\n" \
-	"      	    float attenuation = min (200.0 / length (lightVec [i]), 1.0);\r\n" \
+	"      	    float attenuation = min (300.0 / length (lightVec [i]), 1.0);\r\n" \
 	" 	          spotBrightness += pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"    	       }\r\n" \
 	"         }\r\n" \
