@@ -49,7 +49,6 @@ void OglComputeSinCos (int nSides, tSinCosf *sinCosP);
 int CircleListInit (int nSides, int nType, int mode); 
 void G3Normal (g3sPoint **pointList, vmsVector *pvNormal);
 void G3CalcNormal (g3sPoint **pointList, fVector *pvNormal);
-static inline fVector *G3GetNormal (g3sPoint *pPoint, fVector *pvNormal);
 fVector *G3Reflect (fVector *vReflect, fVector *vLight, fVector *vNormal);
 int G3EnableClientState (GLuint nState, int nTMU);
 int G3DisableClientState (GLuint nState, int nTMU);
@@ -84,9 +83,9 @@ return gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.hFBO &
 
 //------------------------------------------------------------------------------
 
-static inline fVector *G3GetNormal (g3sPoint *pPoint, fVector *pvNormal)
+static inline fVector3 *G3GetNormal (g3sPoint *pPoint, fVector *pvNormal)
 {
-return pPoint->p3_normal.nFaces ? &pPoint->p3_normal.vNormal : pvNormal;
+return pPoint->p3_normal.nFaces ? &pPoint->p3_normal.vNormal.v3 : &pvNormal->v3;
 }
 
 //------------------------------------------------------------------------------

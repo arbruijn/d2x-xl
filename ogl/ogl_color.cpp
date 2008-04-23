@@ -315,8 +315,8 @@ int G3AccumVertColor (int nVertex, fVector *pColorSum, tVertColorData *vcdP, int
 								nSaturation = gameOpts->render.color.nSaturation;
 	int						nBrightness, nMaxBrightness = 0;
 	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
-	fVector					spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
-								vertColor = {{0.0f, 0.0f, 0.0f, 1.0f}};
+	fVector3					spotDir, lightDir, lightPos, vReflect;
+	fVector					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f, 1.0f}};
 	tShaderLight			*psl;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + gameData.render.lights.dynamic.shader.nFirstLight [nThread];
 	tVertColorData			vcd = *vcdP;
@@ -345,7 +345,7 @@ for (j = 0; (i > 0) && nLights; activeLightsP++, i--) {
 	if (psl->bVariable && gameData.render.vertColor.bDarkness)
 		continue;
 	lightColor = *((fVector *) &psl->color);
-	lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
+	lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].v3;
 	VmVecSub (&lightDir, &lightPos, vcd.pVertPos);
 	//scaled quadratic attenuation depending on brightness
 	bInRad = 0;
@@ -386,7 +386,7 @@ for (j = 0; (i > 0) && nLights; activeLightsP++, i--) {
 	if (psl->bSpot) {
 		if (NdotL <= 0)
 			continue;
-		VmVecNormalize (&spotDir, &psl->dir);
+		VmVecNormalize (&spotDir, &psl->dir.v3);
 		lightDir.p.x = -lightDir.p.x;
 		lightDir.p.y = -lightDir.p.y;
 		lightDir.p.z = -lightDir.p.z;
@@ -714,13 +714,13 @@ extern int nDbgVertex;
 time_t tG3VertexColor = 0;
 #endif
 
-void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, 
+void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, 
 						  tFaceColor *pVertColor, tFaceColor *pBaseColor, 
 						  float fScale, int bSetColor, int nThread)
 {
 	fVector			matSpecular = {{1.0f, 1.0f, 1.0f, 1.0f}},
 						colorSum = {{0.0f, 0.0f, 0.0f, 1.0f}};
-	fVector			vertPos;
+	fVector3			vertPos;
 	tFaceColor		*pc = NULL;
 	int				bVertexLights;
 #if PROFILING

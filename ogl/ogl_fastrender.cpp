@@ -793,8 +793,11 @@ if (gameStates.render.bTriangleMesh) {
 		}
 	if (gameOpts->render.debug.bTextures && ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)))
 #endif
-#if 1
-		glDrawElements (GL_TRIANGLES, faceP->nTris * 3, GL_UNSIGNED_SHORT, faceP->vertIndex);
+#if USE_RANGE_ELEMENTS
+		{
+		GLsizei nElements = faceP->nTris * 3;
+		glDrawRangeElements (GL_TRIANGLES, faceP->vertIndex [0], faceP->vertIndex [nElements - 1], nElements, GL_UNSIGNED_INT, faceP->vertIndex);
+		}	
 #else
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
 #endif

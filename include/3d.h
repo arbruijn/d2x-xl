@@ -196,14 +196,10 @@ ubyte G3EncodePoint(g3sPoint *point);
 #endif
 
 static inline vmsVector *G3TranslatePoint (vmsVector *pDest, vmsVector *pSrc)
-{
-return VmVecSub (pDest, pSrc, &viewInfo.pos);
-}
+	{return VmVecSub (pDest, pSrc, &viewInfo.pos);}
 
 static inline vmsVector *G3RotatePoint (vmsVector *pDest, vmsVector *pSrc, int bUnscaled)
-{
-return VmVecRotate (pDest, pSrc, viewInfo.view + bUnscaled);
-}
+	{return VmVecRotate (pDest, pSrc, viewInfo.view + bUnscaled);}
 
 static inline vmsVector *G3TransformPoint (vmsVector *pDest, vmsVector *pSrc, int bUnscaled)
 {
@@ -212,14 +208,13 @@ return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.pos), viewInfo.vie
 }
 
 static inline fVector *G3TranslatePoint (fVector *pDest, fVector *pSrc)
-{
-return VmVecSub (pDest, pSrc, &viewInfo.posf);
-}
+	{return VmVecSub (pDest, pSrc, &viewInfo.posf);}
 
 static inline fVector *G3RotatePoint (fVector *pDest, fVector *pSrc, int bUnscaled)
-{
-return VmVecRotate (pDest, pSrc, viewInfo.viewf + bUnscaled);
-}
+	{return VmVecRotate (pDest, pSrc, viewInfo.viewf + bUnscaled);}
+
+static inline fVector3 *G3RotatePoint (fVector3 *pDest, fVector3 *pSrc, int bUnscaled)
+	{return VmVecRotate (pDest, pSrc, viewInfo.viewf + bUnscaled);}
 
 static inline fVector *G3TransformPoint (fVector *pDest, fVector *pSrc, int bUnscaled)
 {

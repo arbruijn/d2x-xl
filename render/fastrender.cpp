@@ -1304,8 +1304,8 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #	if SHADER_VERTEX_LIGHTING
 							if (!ComputeVertexLight (nVertex, 1, &c))
 #	endif
-							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, 
-												gameData.segs.fVertices + nVertex, nVertex, 
+							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, 
+												&gameData.segs.fVertices [nVertex].v3, nVertex, 
 												NULL, &c, 1, 0, nThread);
 #if 0
 						if (gameStates.app.bMultiThreaded)
@@ -1351,7 +1351,7 @@ void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, k, nColor, 
+	int			h, i, j, k, nIndex, nColor, 
 					nIncr = nStart ? -1 : 1;
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
@@ -1403,8 +1403,9 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		faceP->color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
 		for (k = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; k; k--, triP++) {
-			pc = gameData.segs.faces.color + triP->nIndex;
-			for (h = 0; h < 3; h++, pc++) {
+			nIndex = triP->nIndex;
+			pc = gameData.segs.faces.color + nIndex;
+			for (h = 0; h < 3; h++, pc++, nIndex++) {
 				if (gameStates.render.bFullBright) 
 					*pc = nColor ? faceColor [nColor].color : brightColor.color;
 				else {
@@ -1430,8 +1431,8 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #	if SHADER_VERTEX_LIGHTING
 								if (!ComputeVertexLight (nVertex, 1, &c))
 #	endif
-								G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, 
-													gameData.segs.fVertices + nVertex, nVertex, 
+								G3VertexColor (gameData.segs.faces.normals + nIndex, 
+													gameData.segs.faces.vertices + nIndex, nVertex, 
 													NULL, &c, 1, 0, nThread);
 #if 0
 							if (gameStates.app.bMultiThreaded)

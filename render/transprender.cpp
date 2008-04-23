@@ -631,7 +631,7 @@ return (renderItems.bClientState == bClientState);
 void RIRenderPoly (tRIPoly *item)
 {
 	int	i, j;
-return;
+
 if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
 #if RI_POLY_OFFSET

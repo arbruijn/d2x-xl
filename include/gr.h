@@ -693,7 +693,9 @@ typedef struct grsFace {
 	ushort				index [4];
 	int					nIndex;
 	int					nTriIndex;
-	ushort				*vertIndex;
+#if USE_RANGE_ELEMENTS
+	uint					*vertIndex;
+#endif
 	int					nVerts;
 	int					nTris;
 	grsBitmap			*bmBot;

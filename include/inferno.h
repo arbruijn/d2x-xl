@@ -1526,9 +1526,9 @@ typedef struct tVertColorData {
 	fVector	matAmbient;
 	fVector	matDiffuse;
 	fVector	matSpecular;
-	fVector	vertNorm;
 	fVector	colorSum;
-	fVector	*pVertPos;
+	fVector3	vertNorm;
+	fVector3	*pVertPos;
 	float		fMatShininess;
 	} tVertColorData;
 
@@ -1580,6 +1580,8 @@ typedef struct tSlideSegs {
 #define SEGVIS_FLAGS			((gameData.segs.nSegments + 7) >> 3)
 #define VERTVIS_FLAGS		((gameData.segs.nVertices + 7) >> 3)
 
+#define USE_RANGE_ELEMENTS	0
+
 typedef struct tFaceData {
 	grsFace				*faces;
 	grsTriangle			*tris;
@@ -1588,7 +1590,9 @@ typedef struct tFaceData {
 	tTexCoord2f			*texCoord;
 	tTexCoord2f			*ovlTexCoord;
 	tRgbaColorf			*color;
-	ushort				*vertIndex;
+#if USE_RANGE_ELEMENTS
+	GLuint				*vertIndex;
+#endif
 	} tFaceData;
 
 typedef struct tSegList {

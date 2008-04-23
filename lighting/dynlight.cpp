@@ -1159,7 +1159,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	gameData.render.lights.dynamic.shader.nLastLight [nThread] = 0;
 	SetNearestVertexLights (nVertex, NULL, 1, 1, bColorize, nThread);
 	gameData.render.color.vertices [nVertex].index = 0;
-	G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, NULL, 1, 0, nThread);
+	G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, &vVertex.v3, nVertex, pf, NULL, 1, 0, nThread);
 	}
 }
 

@@ -1370,6 +1370,23 @@ return dest;
 }
 
 // ------------------------------------------------------------------------
+//rotates a vector through a matrix. returns ptr to dest vector
+
+fVector3 *VmVecRotate (fVector3 *dest, fVector3 *src, fMatrix *m)
+{
+	fVector3 h;
+
+if (src == dest) {
+	h = *src;
+	src = &h;
+	}
+dest->p.x = VmVecDot (src, &m->rVec.v3);
+dest->p.y = VmVecDot (src, &m->uVec.v3);
+dest->p.z = VmVecDot (src, &m->fVec.v3);
+return dest;
+}
+
+// ------------------------------------------------------------------------
 //transpose a matrix in place. returns ptr to matrix
 vmsMatrix *VmTransposeMatrix (vmsMatrix *m)
 {
@@ -1899,6 +1916,19 @@ return vReflect;
 // 2 * n * (l dot n) - l
 
 fVector *VmVecReflect (fVector *vReflect, fVector *vDir, fVector *vNormal)
+{
+	float dot = VmVecDot (vDir, vNormal);
+
+VmVecScale (vReflect, vNormal, 2 * dot);
+VmVecDec (vReflect, vDir);
+return VmVecNegate (vReflect);
+}
+
+//------------------------------------------------------------------------------
+// Reflect vDir at surface with normal vNormal. Return result in vReflect
+// 2 * n * (l dot n) - l
+
+fVector3 *VmVecReflect (fVector3 *vReflect, fVector3 *vDir, fVector3 *vNormal)
 {
 	float dot = VmVecDot (vDir, vNormal);
 

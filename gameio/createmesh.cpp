@@ -541,7 +541,8 @@ int CTriMeshBuilder::InsertTriangles (void)
 	grsTriangle	*grsTriP = gameData.segs.faces.tris;
 	grsFace		*m_faceP = NULL;
 	vmsVector	vNormal;
-	int			h, i, nVertex, nIndex = 0, nTriVertIndex = 0, nFace = -1;
+	int			h, i, nVertex, nTriVertIndex = 0, nFace = -1;
+	GLuint		nIndex = 0;
 
 PrintLog ("   inserting new triangles\n");
 QSortTriangles (0, m_nTriangles - 1);
@@ -563,7 +564,9 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 		m_faceP->nIndex = nIndex;
 		m_faceP->nTriIndex = h;
 		m_faceP->nTris = 1;
+#if USE_RANGE_ELEMENTS
 		m_faceP->vertIndex = gameData.segs.faces.vertIndex + nIndex;
+#endif
 		}
 	grsTriP->nIndex = nIndex;
 #ifdef _DEBUG
@@ -594,9 +597,10 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	memcpy (gameData.segs.faces.texCoord + nIndex, triP->texCoord, sizeof (triP->texCoord));
 	memcpy (gameData.segs.faces.ovlTexCoord + nIndex, triP->ovlTexCoord, sizeof (triP->ovlTexCoord));
 	memcpy (gameData.segs.faces.color + nIndex, triP->color, sizeof (triP->color));
-	gameData.segs.faces.vertIndex [nIndex] = nIndex++;
-	gameData.segs.faces.vertIndex [nIndex] = nIndex++;
-	gameData.segs.faces.vertIndex [nIndex] = nIndex++;
+#if USE_RANGE_ELEMENTS
+	for (i = 0; i < 3; i++, nIndex++)
+		gameData.segs.faces.vertIndex [nIndex] = nIndex;
+#endif
 	}
 ComputeVertexNormals ();
 FreeData ();

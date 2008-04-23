@@ -336,6 +336,7 @@ vmsMatrix *VmVector2MatrixNorm (vmsMatrix * m, vmsVector *fVec, vmsVector *uVec,
 //dest CANNOT equal either source
 vmsVector *VmVecRotate (vmsVector *dest, vmsVector *src, vmsMatrix * m);
 fVector *VmVecRotate (fVector *dest, fVector *src, fMatrix *m);
+fVector3 *VmVecRotate (fVector3 *dest, fVector3 *src, fMatrix *m);
 
 //transpose a matrix in place. returns ptr to matrix
 vmsMatrix *VmTransposeMatrix (vmsMatrix *m);
@@ -385,6 +386,7 @@ float VmLineLineIntersection (fVector3 *v1, fVector3 *v2, fVector3 *v3, fVector3
 float VmLineLineIntersection (fVector *v1, fVector *v2, fVector *v3, fVector *v4, fVector *va, fVector *vb);
 vmsVector *VmVecReflect (vmsVector *vReflect, vmsVector *vDir, vmsVector *vNormal);
 fVector *VmVecReflect (fVector *vReflect, fVector *vDir, fVector *vNormal);
+fVector3 *VmVecReflect (fVector3 *vReflect, fVector3 *vDir, fVector3 *vNormal);
 
 fVector *VmVecCrossProd (fVector *dest, fVector *src0, fVector *src1);
 fVector *VmVecPerp (fVector *dest, fVector *p0, fVector *p1, fVector *p2);

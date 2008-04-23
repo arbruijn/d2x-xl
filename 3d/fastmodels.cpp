@@ -91,7 +91,7 @@ if (!gameStates.render.bBrightObject) {
 		  i++, pv++, pn++, pc++) {
 		pc->index = 0;
 		VmVecAdd (&vVertex, &vPos, (fVector *) pv);
-		G3VertexColor ((fVector *) pn, &vVertex, i, pc, NULL, 1, 0, 0);
+		G3VertexColor ((fVector3 *) pn, &vVertex.v3, i, pc, NULL, 1, 0, 0);
 		}
 	}
 for (i = iFaceVerts, h = iFaceVerts, pmv = pm->pFaceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {

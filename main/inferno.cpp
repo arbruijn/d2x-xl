@@ -2419,7 +2419,9 @@ GETMEM (tSegFaces, gameData.segs.segFaces, MAX_SEGMENTS, 0);
 GETMEM (grsFace, gameData.segs.faces.faces, MAX_FACES, 0);
 GETMEM (grsTriangle, gameData.segs.faces.tris, MAX_TRIANGLES, 0);
 GETMEM (fVector3, gameData.segs.faces.vertices, MAX_TRIANGLES * 3, 0);
-GETMEM (ushort, gameData.segs.faces.vertIndex, MAX_TRIANGLES * 3, 0);
+#if USE_RANGE_ELEMENTS
+GETMEM (GLuint, gameData.segs.faces.vertIndex, MAX_TRIANGLES * 3, 0);
+#endif
 GETMEM (fVector3, gameData.segs.faces.normals, MAX_TRIANGLES * 3 * 2, 0);
 GETMEM (tRgbaColorf, gameData.segs.faces.color, MAX_TRIANGLES * 3, 0);
 GETMEM (tTexCoord2f, gameData.segs.faces.texCoord, MAX_TRIANGLES * 2 * 3, 0);
@@ -2600,6 +2602,9 @@ FREEMEM (tSegFaces, gameData.segs.segFaces, MAX_SEGMENTS);
 FREEMEM (grsFace, gameData.segs.faces.faces, MAX_FACES);
 FREEMEM (grsTriangle, gameData.segs.faces.tris, MAX_TRIANGLES);
 FREEMEM (fVector3, gameData.segs.faces.vertices, MAX_TRIANGLES * 3);
+#if USE_RANGE_ELEMENTS
+FREEMEM (GLuint, gameData.segs.faces.vertIndex, MAX_TRIANGLES * 3, 0);
+#endif
 FREEMEM (fVector3, gameData.segs.faces.normals, MAX_TRIANGLES * 3);
 FREEMEM (tRgbaColorf, gameData.segs.faces.color, MAX_TRIANGLES * 3 * 2);
 FREEMEM (tTexCoord2f, gameData.segs.faces.texCoord, MAX_TRIANGLES * 3 * 2);
