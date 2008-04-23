@@ -51,9 +51,9 @@ GLhandleARB gsf = 0;
 GLhandleARB gsv = 0; 
 
 char *grayScaleFS =
-	"uniform sampler2D btmTex;\r\n" \
+	"uniform sampler2D baseTex;\r\n" \
 	"void main(void){" \
-	"vec4 texColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
 	"gl_FragColor = vec4 (l, l, l, texColor.a);}";
 
@@ -262,7 +262,7 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 		//gameData.render.ogl.lightRads [i] *= 10;
 		}
 	gameData.render.ogl.lightRads [i] =
-		(psl->nSegment >= 0) ? MaxSegRadf (psl->nSegment) : 0; //(psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
+		(psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : 0; //(psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
 	//G3TranslatePoint (&gameData.render.ogl.lightPos [i], &psl->pos [0]);
 	i++;
 	}
@@ -302,9 +302,9 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 		glUseProgramObject (0);
 		glUseProgramObject (tmProg = headlightShaderProgs [nType]);
 		if (bTextured) {
-			glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
+			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
 			if (bColorKey || bMultiTexture) {
-				glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
+				glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 1);
 				if (bColorKey)
 					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
 				}
@@ -355,9 +355,9 @@ else if (nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTe
 		glUseProgramObject (0);
 		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nLights - 1][nType]);
 		if (bTextured) {
-			glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
+			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
 			if (bColorKey || bMultiTexture) {
-				glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
+				glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 1);
 				if (bColorKey)
 					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
 				}
@@ -372,8 +372,8 @@ else if (bColorKey || bMultiTexture) {
 	nShader = bColorKey ? 2 : 0;
 	if (nShader != gameStates.render.history.nShader)
 		glUseProgramObject (tmProg = tmShaderProgs [nShader + bColored * 3]);
-	glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
-	glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
+	glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
+	glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 1);
 	glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
 	glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 1.0f);
 	}
@@ -382,7 +382,7 @@ else if (!bColored && gameOpts->render.automap.bGrayOut) {
 	nShader = 99;
 	if (nShader != gameStates.render.history.nShader)
 		glUseProgramObject (tmProg = gsShaderProg);
-	glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
+	glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
 	}
 else if (gameStates.render.history.nShader >= 0) {
 	//no shaders
@@ -809,7 +809,7 @@ if (!bMultiTexture && (bOverlay || bMonitor)) {
 	if (bTextured) {
 		INIT_TMU (InitTMU0, GL_TEXTURE0, bmTop, 1);
 		if (gameData.render.lights.dynamic.headLights.nLights)
-			glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
+			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
 		glActiveTexture (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
 		glEnableClientState (GL_TEXTURE_COORD_ARRAY);

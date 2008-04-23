@@ -243,11 +243,11 @@ char *lightingFS [8] = {
 	"}" 
 	,
 	//only base texture
-	"uniform sampler2D btmTex;\r\n" \
+	"uniform sampler2D baseTex;\r\n" \
 	"uniform vec4 maxColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"vec4 texColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"vec3 lv = normalize (lightVec);\r\n" \
 	"if (dot (normalize (normal), -lv) <= 0.0)\r\n" \
 	"   gl_FragColor = texColor * gl_Color;\r\n" \
@@ -267,12 +267,12 @@ char *lightingFS [8] = {
 	"}" 
 	,
 	//base texture and decal
-	"uniform sampler2D btmTex, topTex;\r\n" \
+	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"uniform vec4 maxColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"vec4 texColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
-	"vec4 decalColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"vec3 lv = normalize (lightVec);\r\n" \
 	"if (dot (normalize (normal), -lv) <= 0.0)\r\n" \
 	"   gl_FragColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a)) * gl_Color;\r\n" \
@@ -292,7 +292,7 @@ char *lightingFS [8] = {
 	"}" 
 	,
 	//base texture and decal with color key
-	"uniform sampler2D btmTex, topTex, maskTex;\r\n" \
+	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
 	"uniform vec4 maxColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
@@ -300,8 +300,8 @@ char *lightingFS [8] = {
 	"if (bMask < 0.5)\r\n" \
 	"   discard;\r\n" \
 	"else {\r\n" \
-	"   vec4 texColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
-	"   vec4 decalColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
+	"   vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"   vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"	 vec3 spotColor, lv = normalize (lightVec);\r\n" \
 	"   float spotBrightness;\r\n" \
 	"   if (dot (normalize (normal), -lv) > 0.0)\r\n" \
@@ -348,11 +348,11 @@ char *lightingFS [8] = {
 	,
 	//only base texture
 	"#define LIGHTS 8\r\n" \
-	"uniform sampler2D btmTex;\r\n" \
+	"uniform sampler2D baseTex;\r\n" \
 	"uniform vec4 maxColor;\r\n" \
 	"varying vec3 lightVec [LIGHTS];\r\n" \
 	"void main (void) {\r\n" \
-	"vec4 texColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"vec3 lv, spotColor;\r\n" \
 	"float spotEffect, spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
@@ -373,12 +373,12 @@ char *lightingFS [8] = {
 	,
 	//base texture and decal
 	"#define LIGHTS 8\r\n" \
-	"uniform sampler2D btmTex, topTex;\r\n" \
+	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"uniform vec4 maxColor;\r\n" \
 	"varying vec3 lightVec [LIGHTS];\r\n" \
 	"void main (void) {\r\n" \
-	"vec4 texColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
-	"vec4 decalColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"vec3 lv, spotColor;\r\n" \
 	"float spotEffect, spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
@@ -399,7 +399,7 @@ char *lightingFS [8] = {
 	,
 	//base texture and decal with color key
 	"#define LIGHTS 8\r\n" \
-	"uniform sampler2D btmTex, topTex, maskTex;\r\n" \
+	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
 	"uniform vec4 maxColor;\r\n" \
 	"varying vec3 lightVec [LIGHTS];\r\n" \
 	"void main (void) {\r\n" \
@@ -407,8 +407,8 @@ char *lightingFS [8] = {
 	"if (bMask < 0.5)\r\n" \
 	"   discard;\r\n" \
 	"else {\r\n" \
-	"   vec4 texColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
-	"   vec4 decalColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
+	"   vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"   vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"   vec3 lv, spotColor;\r\n" \
 	"   float spotEffect, spotBrightness = 0.0;\r\n" \
 	"   int i;\r\n" \
