@@ -430,10 +430,14 @@ do {
 	j = m_nTriangles;
 	PrintLog ("   splitting triangles (pass %d)\n", nPass);
 	for (i = h, h = 0; i < j; i++) {
+#ifdef _DEBUG
+		if (i == 296)
+			i = i;
+#endif
 		if (m_triangles [i].nPass != (ushort) (nPass - 1))
 			continue;
 #ifdef _DEBUG
-		if (i == 158)
+		if (i == 296)
 			i = i;
 #endif
 		nSplitRes = SplitTriangle (m_triangles + i, nPass);
