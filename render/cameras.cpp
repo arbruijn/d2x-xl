@@ -473,14 +473,13 @@ else
 			if (nType) {
 				texCoord [5] = texCoord [3];
 				texCoord [4] = texCoord [2];
-				texCoord [3] = texCoord [0];
-				}
-			else {
-		static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
-				texCoord [5] = texCoord [3];
-				texCoord [4] = texCoord [2];
 				texCoord [3] = texCoord [1];
 				texCoord [2] = texCoord [5];
+				}
+			else {
+				texCoord [5] = texCoord [3];
+				texCoord [4] = texCoord [2];
+				texCoord [3] = texCoord [0];
 				}
 			}
 		else

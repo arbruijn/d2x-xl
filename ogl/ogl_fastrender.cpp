@@ -810,6 +810,13 @@ if (!gameOpts->render.debug.bTextures)
 	return 0;
 #endif
 if (!bMultiTexture && (bOverlay || bMonitor)) {
+#ifdef _DEBUG
+	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		if (bDepthOnly)
+			nDbgSeg = nDbgSeg;
+		else
+			nDbgSeg = nDbgSeg;
+#endif
 	ovlTexCoordP = bMonitor ? faceP->pTexCoord - faceP->nIndex : gameData.segs.faces.ovlTexCoord;
 	if (bTextured) {
 		INIT_TMU (InitTMU0, GL_TEXTURE0, bmTop, 1);
