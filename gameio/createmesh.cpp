@@ -122,9 +122,9 @@ return 1;
 
 tMeshEdge *CTriMeshBuilder::FindMeshEdge (ushort nVert1, ushort nVert2, int i)
 {
-	tMeshEdge	*mlP = m_meshEdges + i;
+	tMeshEdge	*mlP = m_meshEdges + ++i;
 
-for (; ++i < m_nMeshEdges; mlP++)
+for (; i < m_nMeshEdges; i++, mlP++)
 	if ((mlP->verts [0] == nVert1) && (mlP->verts [1] == nVert2))
 		return mlP;
 return NULL;
@@ -158,7 +158,6 @@ for (;;) {
 		return i;
 		}
 	}
-for (int i = 0; ;  + 1)
 if (m_nFreeEdges >= 0) {
 	mlP = m_meshEdges + m_nFreeEdges;
 	m_nFreeEdges = mlP->nNext;
