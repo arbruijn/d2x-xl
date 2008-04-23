@@ -1,57 +1,58 @@
 #ifndef _CREATEMESH_H
 #define _CREATEMESH_H
 
-typedef struct tMeshEdge {
-	int			nNext;
-	ushort		verts [2];
-	int			tris [2];
-	} tMeshEdge;
+namespace mesh {
 
-typedef struct tMeshTri {
-	int			nNext;
-	int			nFace;
-	int			nIndex;
-	int			lines [3];
-	ushort		index [3];
-	ushort		nPass;
-	tTexCoord2f	texCoord [3];
-	tTexCoord2f	ovlTexCoord [3];
-	tRgbaColorf	color [3];
-} tMeshTri;
+	typedef struct tEdge {
+		int			nNext;
+		ushort		verts [2];
+		int			tris [2];
+		float			fLength;
+		} tEdge;
+
+	typedef struct tTriangle {
+		int			nFace;
+		int			nIndex;
+		int			lines [3];
+		ushort		index [3];
+		ushort		nPass;
+		tTexCoord2f	texCoord [3];
+		tTexCoord2f	ovlTexCoord [3];
+		tRgbaColorf	color [3];
+	} tTriangle;
 
 class CTriMeshBuilder {
 	private:
-		tMeshEdge	*m_meshEdges;
-		tMeshTri		*m_meshTris;
-		int			m_nMeshEdges;
+		tEdge	*m_edges;
+		tTriangle	*m_triangles;
+		int			m_nEdges;
 		int			m_nFreeEdges;
-		int			m_nMeshTris;
-		int			m_nFreeTris;
-		int			m_nMaxMeshTris;
-		int			m_nMaxMeshEdges;
+		int			m_nTriangles;
+		int			m_nMaxTriangles;
+		int			m_nMaxEdges;
 		int			m_nVertices;
 
 	private:
-		void FreeMeshData (void);
-		int AllocMeshData (void);
-		tMeshEdge *FindMeshEdge (ushort nVert1, ushort nVert2, int i);
-		int AddMeshEdge (int nTri, ushort nVert1, ushort nVert2);
-		tMeshTri *CreateMeshTri (tMeshTri *mtP, ushort index [], int nFace, int nIndex);
-		int AddMeshTri (tMeshTri *mtP, ushort index [], grsTriangle *triP);
-		void DeleteMeshEdge (tMeshEdge *mlP);
-		void DeleteMeshTri (tMeshTri *mtP);
-		int CreateMeshTris (void);
-		int SplitMeshTriByEdge (int nTri, ushort nVert1, ushort nVert2, ushort nPass);
-		int SplitMeshEdge (tMeshEdge *mlP, ushort nPass);
-		int SplitMeshTri (tMeshTri *mtP, ushort nPass);
-		int SplitMeshTris (void);
-		void QSortMeshTris (int left, int right);
-		int InsertMeshTris (void);
+		void FreeData (void);
+		int AllocData (void);
+		tEdge *FindEdge (ushort nVert1, ushort nVert2, int i);
+		int AddEdge (int nTri, ushort nVert1, ushort nVert2);
+		tTriangle *CreateTriangle (tTriangle *mtP, ushort index [], int nFace, int nIndex);
+		int AddTriangle (tTriangle *mtP, ushort index [], grsTriangle *triP);
+		void DeleteEdge (tEdge *mlP);
+		void DeleteTriangle (tTriangle *mtP);
+		int CreateTriangles (void);
+		int SplitTriangleByEdge (int nTri, ushort nVert1, ushort nVert2, ushort nPass);
+		int SplitEdge (tEdge *mlP, ushort nPass);
+		int SplitTriangle (tTriangle *mtP, ushort nPass);
+		int SplitTriangles (void);
+		void QSortTriangles (int left, int right);
+		int InsertTriangles (void);
 
 	public:
 		CTriMeshBuilder (void) {};
 		~CTriMeshBuilder (void) {};
-		int BuildMesh (void);
+		int Build (void);
 	};
 
 class CFaceMeshBuilder {
@@ -89,9 +90,11 @@ class CFaceMeshBuilder {
 	public:
 		CFaceMeshBuilder (void) {};
 		~CFaceMeshBuilder (void) {};
-		void BuildMesh (void);
+		void Build (void);
 	};
 
-extern CFaceMeshBuilder faceMeshBuilder;
+};
+
+extern mesh::CFaceMeshBuilder faceMeshBuilder;
 
 #endif //_CREATEMESH_H
