@@ -78,9 +78,9 @@ using namespace mesh;
 
 CFaceMeshBuilder faceMeshBuilder;
 
-float fMaxSideLen [] = {1e30f, 40, 30, 20, 10};
+float fMaxEdgeLen [] = {1e30f, 40.1f, 30.1f, 20.1f, 10.1f};
 
-#define	MAX_SIDE_LEN	fMaxSideLen [gameOpts->render.nMeshQuality]
+#define	MAX_EDGE_LEN	fMaxEdgeLen [gameOpts->render.nMeshQuality]
 
 //------------------------------------------------------------------------------
 
@@ -177,6 +177,7 @@ if (m_nEdges == 6752)
 edgeP->tris [0] = nTri;
 edgeP->verts [0] = nVert1;
 edgeP->verts [1] = nVert2;
+edgeP->fLength = VmVecDist (gameData.segs.fVertices + nVert1, gameData.segs.fVertices + nVert2);
 return m_nEdges++;
 }
 
@@ -224,7 +225,7 @@ return CreateTriangle (triP, index, triP->nFace, grsTriP - gameData.segs.faces.t
 	
 for (h = i = 0; i < 3; i++)
 	if ((l = VmVecDist ((fVector *) (gameData.segs.fVertices + index [i]), 
-								(fVector *) (gameData.segs.fVertices + index [(i + 1) % 3]))) > MAX_SIDE_LEN)
+								(fVector *) (gameData.segs.fVertices + index [(i + 1) % 3]))) > MAX_EDGE_LEN)
 		return CreateTriangle (triP, index, triP->nFace, triP - gameData.segs.faces.tris) ? m_nTriangles : 0;
 return m_nTriangles;
 #endif
@@ -409,19 +410,17 @@ return 1;
 
 int CTriMeshBuilder::SplitTriangle (tTriangle *triP, ushort nPass)
 {
-	tEdge	*edgeP;
-	int			h, i;
-	float			l, lMax = 0;
+	int	h, i;
+	float	l, lMax = 0;
 
 for (i = 0; i < 3; i++) {
-	edgeP = m_edges + triP->lines [i];
-	l = VmVecDist (gameData.segs.fVertices + edgeP->verts [0], gameData.segs.fVertices + edgeP->verts [1]);
+	l = m_edges [triP->lines [i]].fLength;
 	if (lMax < l) {
 		lMax = l;
 		h = i;
 		}
 	}
-if (lMax <= MAX_SIDE_LEN)
+if (lMax <= MAX_EDGE_LEN)
 	return -1;
 return SplitEdge (m_edges + triP->lines [h], nPass);
 }
@@ -580,7 +579,7 @@ return InsertTriangles ();
 int CFaceMeshBuilder::IsBigFace (short *m_sideVerts)
 {
 for (int i = 0; i < 4; i++) 
-	if (VmVecDist (gameData.segs.fVertices + m_sideVerts [i], gameData.segs.fVertices + m_sideVerts [(i + 1) % 4]) > MAX_SIDE_LEN)
+	if (VmVecDist (gameData.segs.fVertices + m_sideVerts [i], gameData.segs.fVertices + m_sideVerts [(i + 1) % 4]) > MAX_EDGE_LEN)
 		return 1;
 return 0;
 }
