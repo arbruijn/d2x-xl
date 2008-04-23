@@ -706,9 +706,9 @@ return colorP->alpha = 1;
 
 //------------------------------------------------------------------------------
 
-int IsMonitorFace (short nSegment, short nSide)
+int IsMonitorFace (short nSegment, short nSide, int bForce)
 {
-return (gameStates.render.bDoCameras && gameData.cameras.nSides) ? gameData.cameras.nSides [nSegment * 6 + nSide] : -1;
+return ((bForce || gameStates.render.bDoCameras) && gameData.cameras.nSides) ? gameData.cameras.nSides [nSegment * 6 + nSide] : -1;
 }
 
 //------------------------------------------------------------------------------
@@ -732,7 +732,7 @@ bHaveMonitorBg = pc->bValid && /*!pc->bShadowMap &&*/
 					  (pc->texBuf.glTexture || bCamBufAvail) &&
 					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 if (bHaveMonitorBg) {
-	GetCameraUVL (pc, NULL, gameData.segs.faces.texCoord + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex);
+	GetCameraUVL (pc, faceP, NULL, gameData.segs.faces.texCoord + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex);
 	pc->texBuf.glTexture->wrapstate = -1;
 	if (bIsTeleCam) {
 #ifdef _DEBUG

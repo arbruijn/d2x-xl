@@ -342,8 +342,24 @@ gameData.cameras.nCameras = 0;
 
 //------------------------------------------------------------------------------
 
-void GetCameraUVL (tCamera *pc, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP)
+void GetCameraUVL (tCamera *pc, grsFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP)
 {
+	int i2, i3;
+
+if (gameStates.render.bTriangleMesh) {
+	if (faceP->nType == SIDE_IS_TRI_13) {
+		i2 = 2;
+		}
+	else {
+		i2 = 4;
+		}
+	i3 = 5;
+	}
+else {
+	i2 = 2;
+	i3 = 3;
+	}
+
 #ifndef _DEBUG
 if (pc->bHaveUVL) {
 	if (uvlP)
@@ -379,22 +395,23 @@ else
 		duFace = f2fl (uvlP [2].u - uvlP [0].u);
 		}
 	else {
+		static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
 		rotLeft = (texCoordP [1].v.u < texCoordP [0].v.u);
 		rotRight = (texCoordP [1].v.u > texCoordP [0].v.u);
 		if (rotLeft) {
-			yFlip = (texCoordP [1].v.u > texCoordP [2].v.u);
-			xFlip = (texCoordP [3].v.v < texCoordP [1].v.v);
+			yFlip = (texCoordP [1].v.u > texCoordP [i2].v.u);
+			xFlip = (texCoordP [i3].v.v < texCoordP [1].v.v);
 			}
 		else if (rotRight) {
-			yFlip = (texCoordP [3].v.u > texCoordP [0].v.u);
-			xFlip = (texCoordP [1].v.v < texCoordP [3].v.v);
+			yFlip = (texCoordP [i3].v.u > texCoordP [0].v.u);
+			xFlip = (texCoordP [1].v.v < texCoordP [i3].v.v);
 			}
 		else {
-			xFlip = (texCoordP [2].v.u < texCoordP [0].v.u);
+			xFlip = (texCoordP [i2].v.u < texCoordP [0].v.u);
 			yFlip = (texCoordP [1].v.v > texCoordP [0].v.v);
 			}
 		dvFace = (float) fabs (texCoordP [1].v.v - texCoordP [0].v.v);
-		duFace = (float) fabs (texCoordP [2].v.u - texCoordP [0].v.u);
+		duFace = (float) fabs (texCoordP [i2].v.u - texCoordP [0].v.u);
 		}
 	du = dv = 0;
 	if (bCamBufAvail) {
@@ -404,7 +421,7 @@ else
 			aImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) grdCurCanv->cvBitmap.bmProps.w;
 			if (vertexP)
 				aFace = VmVecDist ((fVector *) vertexP, (fVector *) (vertexP + 1)) / 
-						  VmVecDist ((fVector *) (vertexP + 1), (fVector *) (vertexP + 2));
+						  VmVecDist ((fVector *) (vertexP + 1), (fVector *) (vertexP + i2));
 			else
 				aFace = dvFace / duFace;
 			dv = (aImage - aFace) / 2.0f;

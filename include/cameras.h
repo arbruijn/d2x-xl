@@ -42,7 +42,7 @@ int CreateCameras (void);
 void DestroyCameras (void);
 int RenderCameras (void);
 int RenderCamera (tCamera *pc);
-void GetCameraUVL (tCamera *pc, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP);
+void GetCameraUVL (tCamera *pc, grsFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP);
 #if RENDER2TEXTURE
 int OglCamBufAvail (tCamera *pc, int bCheckTexture);
 #endif

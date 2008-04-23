@@ -793,7 +793,7 @@ if (FACE_IDX (faceP) == nDbgFace)
 faceP->widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
 if (!(faceP->widFlags & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)))
 	return -1;
-faceP->nCamera = IsMonitorFace (nSegment, nSide);
+faceP->nCamera = IsMonitorFace (nSegment, nSide, 0);
 bTextured = 1;
 *pfAlpha = WallAlpha (nSegment, nSide, faceP->nWall, faceP->widFlags, faceP->nCamera >= 0, 
 							 &pFaceColor [1].color, &nColor, &bTextured);

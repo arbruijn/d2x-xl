@@ -297,12 +297,12 @@ for (i = gameData.segs.nTris, grsTriP = gameData.segs.faces.tris; i; i--, grsTri
 		nId = 0;
 		}
 	triP->nId = nId;
-#ifdef _DEBUG
 	faceP = gameData.segs.faces.faces + grsTriP->nFace;
+#ifdef _DEBUG
 	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (gameData.segs.faces.faces [grsTriP->nFace].bSlide)
+	if (faceP->bSlide || (faceP->nCamera >= 0))
 		triP->nPass = -2;
 	}
 return m_nTris = m_nTriangles;
@@ -600,6 +600,8 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 #if USE_RANGE_ELEMENTS
 	for (i = 0; i < 3; i++, nIndex++)
 		gameData.segs.faces.vertIndex [nIndex] = nIndex;
+#else
+	nIndex += 3;
 #endif
 	}
 ComputeVertexNormals ();
@@ -672,6 +674,7 @@ m_faceP->nBaseTex = m_sideP->nBaseTex;
 if ((m_faceP->nOvlTex = m_sideP->nOvlTex))
 	m_nOvlTexCount++;
 m_faceP->bSlide = (gameData.pig.tex.pTMapInfo [m_faceP->nBaseTex].slide_u || gameData.pig.tex.pTMapInfo [m_faceP->nBaseTex].slide_v);
+m_faceP->nCamera = IsMonitorFace (m_faceP->nSegment, m_faceP->nSide, 1);
 m_faceP->bIsLight = IsLight (m_faceP->nBaseTex) || (m_faceP->nOvlTex && IsLight (m_faceP->nOvlTex));
 m_faceP->nOvlOrient = (ubyte) m_sideP->nOvlOrient;
 m_faceP->bTextured = 1;

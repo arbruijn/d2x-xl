@@ -381,7 +381,7 @@ if (gameStates.render.nType == 2) {
 	gameData.render.vertexList = NULL;
 	return;
 	}
-nCamNum = IsMonitorFace (props.segNum, props.sideNum);
+nCamNum = IsMonitorFace (props.segNum, props.sideNum, 0);
 if ((bIsMonitor = gameStates.render.bUseCameras && (nCamNum >= 0))) {
 	pc = gameData.cameras.cameras + nCamNum;
 	pc->bVisible = 1;
@@ -441,7 +441,7 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 	}
 
 if (bHaveMonitorBg) {
-	GetCameraUVL (pc, props.uvls, NULL, NULL);
+	GetCameraUVL (pc, NULL, props.uvls, NULL, NULL);
 	pc->texBuf.glTexture->wrapstate = -1;
 	if (bIsTeleCam) {
 #ifdef _DEBUG
