@@ -806,7 +806,7 @@ if (gameStates.render.bTriangleMesh) {
 		}
 	if (gameOpts->render.debug.bTextures && ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)))
 #endif
-#if 0
+#if 1
 		glDrawElements (GL_TRIANGLES, faceP->nTris * 3, GL_UNSIGNED_SHORT, faceP->vertIndex);
 #else
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);

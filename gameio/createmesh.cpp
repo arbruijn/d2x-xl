@@ -78,7 +78,7 @@ using namespace mesh;
 
 CFaceMeshBuilder faceMeshBuilder;
 
-float fMaxEdgeLen [] = {1e30f, 40.1f, 30.1f, 20.1f, 10.1f};
+float fMaxEdgeLen [] = {1e30f, 30.9f, 20.9f, 19.9f, 9.9f};
 
 #define	MAX_EDGE_LEN	fMaxEdgeLen [gameOpts->render.nMeshQuality]
 
@@ -214,20 +214,9 @@ return triP;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::AddTriangle (tTriangle *triP, ushort index [], grsTriangle *grsTriP)
+tTriangle *CTriMeshBuilder::AddTriangle (tTriangle *triP, ushort index [], grsTriangle *grsTriP)
 {
-#if 1
-return CreateTriangle (triP, index, grsTriP->nFace, grsTriP - gameData.segs.faces.tris) ? m_nTriangles : 0;
-#else
-	int		h, i;
-	float		l;
-	
-for (h = i = 0; i < 3; i++)
-	if ((l = VmVecDist ((fVector *) (gameData.segs.fVertices + index [i]), 
-								(fVector *) (gameData.segs.fVertices + index [(i + 1) % 3]))) > MAX_EDGE_LEN)
-		return CreateTriangle (triP, index, triP->nFace, triP - gameData.segs.faces.tris) ? m_nTriangles : 0;
-return m_nTriangles;
-#endif
+return CreateTriangle (triP, index, grsTriP->nFace, grsTriP - gameData.segs.faces.tris);
 }
 
 //------------------------------------------------------------------------------
@@ -290,15 +279,19 @@ m_nVertices = gameData.segs.nVertices;
 if (!AllocData ())
 	return 0;
 
-grsTriangle *triP;
+grsTriangle *grsTriP;
+tTriangle *triP;
 int i;
 
-for (i = gameData.segs.nTris, triP = gameData.segs.faces.tris; i; i--, triP++)
-	if (!AddTriangle (NULL, triP->index, triP)) {
+for (i = gameData.segs.nTris, grsTriP = gameData.segs.faces.tris; i; i--, grsTriP++) {
+	if (!(triP = AddTriangle (NULL, grsTriP->index, grsTriP))) {
 		FreeData ();
 		return 0;
 		}
-return m_nTriangles;
+	if (gameData.segs.faces.faces [grsTriP->nFace].bSlide)
+		triP->nPass = (ushort) -2;
+	}
+return m_nTris = m_nTriangles;
 }
 
 //------------------------------------------------------------------------------
@@ -556,7 +549,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 ComputeVertexNormals ();
 FreeData ();
 PrintLog ("   created %d new triangles and %d new vertices\n", 
-			 m_nTriangles - gameData.segs.nTris, gameData.segs.nVertices - m_nVertices);
+			 m_nTriangles - m_nTris, gameData.segs.nVertices - m_nVertices);
 gameData.segs.nTris = m_nTriangles;
 return 1;
 }
@@ -824,7 +817,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 				InitColoredFace (nSegment);
 			if (gameStates.render.bTriangleMesh) {
 				// split in four triangles, using the quad's center of gravity as additional vertex
-				if (!gameOpts->ogl.bPerPixelLighting && (m_sideP->nType == SIDE_IS_QUAD) && IsBigFace (m_sideVerts))
+				if (!gameOpts->ogl.bPerPixelLighting && (m_sideP->nType == SIDE_IS_QUAD) && !m_faceP->bSlide && IsBigFace (m_sideVerts))
 					SplitIn4Tris ();
 				else // split in two triangles, regarding any non-planarity
 					SplitIn2Tris ();

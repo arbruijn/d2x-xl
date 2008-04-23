@@ -31,6 +31,7 @@ class CTriMeshBuilder {
 		int			m_nMaxTriangles;
 		int			m_nMaxEdges;
 		int			m_nVertices;
+		int			m_nTris;
 
 	private:
 		void FreeData (void);
@@ -38,7 +39,7 @@ class CTriMeshBuilder {
 		tEdge *FindEdge (ushort nVert1, ushort nVert2, int i);
 		int AddEdge (int nTri, ushort nVert1, ushort nVert2);
 		tTriangle *CreateTriangle (tTriangle *mtP, ushort index [], int nFace, int nIndex);
-		int AddTriangle (tTriangle *mtP, ushort index [], grsTriangle *triP);
+		tTriangle *AddTriangle (tTriangle *mtP, ushort index [], grsTriangle *triP);
 		void DeleteEdge (tEdge *mlP);
 		void DeleteTriangle (tTriangle *mtP);
 		int CreateTriangles (void);
