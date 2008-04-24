@@ -367,10 +367,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 #endif
 	else {	//make it decay faster
-		if (nMeshQuality) {
-			if (fLightDist > 1)
-				fLightDist *= sqrt (fLightDist);
-			}
+		if (nMeshQuality)
+			fLightDist *= sqrt (fLightDist);
 		else
 			fLightDist *= fLightDist;
 		if (nType < 2)
@@ -468,10 +466,10 @@ return j;
 
 int G3AccumVertColor (int nVertex, fVector *pColorSum, tVertColorData *vcdP, int nThread)
 {
-	int						h, i, j, nLights, nType, bInRad, 
+	int						i, j, nLights, nType, bInRad, 
 								bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState, 
 								nSaturation = gameOpts->render.color.nSaturation;
-	int						nBrightness, nMaxBrightness = 0;
+	int						nBrightness, nMaxBrightness = 0, nMeshQuality = gameOpts->render.nMeshQuality;
 	float						fLightDist, fAttenuation, spotEffect, fMag, NdotL, RdotE;
 	fVector					spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
 								vertColor = {{0.0f, 0.0f, 0.0f, 1.0f}};
@@ -536,7 +534,10 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 			NdotL = 1;
 			}
 		else {	//make it decay faster
-			fLightDist *= fLightDist;
+			if (nMeshQuality)
+				fLightDist *= sqrt (fLightDist);
+			else
+				fLightDist *= fLightDist;
 			if (nType < 2)
 				fLightDist *= 2.0f;
 			NdotL = VmVecDot (&vcd.vertNorm, &lightDir.v3);
