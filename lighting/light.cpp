@@ -624,6 +624,16 @@ switch (nObjType) {
 			if (objP->renderType != RT_THRUSTER)
 				xLight /= 8;
 #endif
+			float maxColor = color->red;
+			if (maxColor < color->green)
+				maxColor = color->green;
+			if (maxColor < color->blue)
+				maxColor = color->blue;
+			if (maxColor > 1) {
+				color->red /= maxColor;
+				color->green /= maxColor;
+				color->blue /= maxColor;
+				}
 			if (objP->lifeleft < F1_0*4)
 				return FixMul (FixDiv (objP->lifeleft, 
 								   gameData.eff.vClips [0][objP->id].xTotalTime), xLight);

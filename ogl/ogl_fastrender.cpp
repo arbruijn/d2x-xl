@@ -147,7 +147,7 @@ else
 	glColor4f (0,0,0,0);
 #endif
 activeLightsP = gameData.render.lights.dynamic.shader.activeLights [iVertex];
-for (iLight = 0; (iLight < 8) && nLights; activeLightsP++) { 
+for (iLight = 0; (iLight < 8) && (nLights > 0); activeLightsP++) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, iVertex)))
 		continue;
 #if 0

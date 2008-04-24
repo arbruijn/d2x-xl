@@ -609,7 +609,7 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	tG3Model					*pm;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameData.render.lights.dynamic.shader.nFirstLight [0];
 	tShaderLight			*psl;
-	int						nPass, iLightSource = 0, iLight, nLights, i;
+	int						nPass, iLightSource = 0, iLight, nLights, h;
 	int						bEmissive = objP && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive);
 	GLenum					hLight;
@@ -634,15 +634,19 @@ else if (bTransparency) {
 	}
 else
 	glBlendFunc (GL_ONE, GL_ZERO);
-for (nPass = 0; nLights || !nPass; nPass++) {
+for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 	if (bLighting) {
 		if (nPass) {
 			glBlendFunc (GL_ONE, GL_ONE);
 			glDepthMask (0);
 			}
 		OglSetupTransform (1);
-		i = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
-		for (iLight = 0; (i > 0) && (iLight < 8) && nLights; activeLightsP++, i--) { 
+		h = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
+		for (iLight = 0; (h > 0) && (iLight < 8) && (nLights > 0); activeLightsP++, h--) { 
+#ifdef _DEBUG
+			if (gameData.render.lights.dynamic.shader.nActiveLights [0] <= 0)
+				h = h;
+#endif
 			if ((psl = GetActiveShaderLight (activeLightsP, 0))) {
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
@@ -678,8 +682,7 @@ for (nPass = 0; nLights || !nPass; nPass++) {
 		G3StartInstanceMatrix (&posP->vPos, &posP->mOrient);
 	pm = gameData.models.g3Models [bHires] + nModel;
 	if (bHires) {
-		int i;
-		for (i = 0; i < pm->nSubModels; i++)
+		for (int i = 0; i < pm->nSubModels; i++)
 			if (pm->pSubModels [i].nParent == -1) 
 				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->pSubModels->vOffset : vOffset, 
 									 bHires, bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);

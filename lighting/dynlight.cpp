@@ -300,6 +300,10 @@ if (xBrightness > F1_0)
 #ifdef _DEBUG
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	nSegment = nSegment;
+if ((nDbgObj >= 0) && (nObject == nDbgObj))
+	nDbgObj = nDbgObj;
+if (pc && ((pc->red > 1) || (pc->green > 1) || (pc->blue > 1)))
+	pc = pc;
 #endif
 if (pc)
 	pc->alpha = 1.0f;
@@ -767,8 +771,10 @@ if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
 if (xDist < 0)
 	xDist = 0;
+#if 0
 else if (psl->nSegment >= 0)
 	xDist /= 2;
+#endif
 if (activeLightsP [xDist].nType) {
 	for (int j = xDist; j < MAX_SHADER_LIGHTS - 1; j++) {
 		if (!activeLightsP [j].nType) {

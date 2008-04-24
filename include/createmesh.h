@@ -97,9 +97,6 @@ class CQuadMeshBuilder {
 	};
 
 }
-#ifdef __unix__
-;
-#endif
 
 extern mesh::CQuadMeshBuilder quadMeshBuilder;
 

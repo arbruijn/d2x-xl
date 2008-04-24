@@ -327,7 +327,7 @@ nLights = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
 if (nLights > gameData.render.lights.dynamic.nLights)
 	nLights = gameData.render.lights.dynamic.nLights;
 i = gameData.render.lights.dynamic.shader.nLastLight [nThread] - gameData.render.lights.dynamic.shader.nFirstLight [nThread] + 1;
-for (j = 0; (i > 0) && nLights; activeLightsP++, i--) {
+for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (!(psl = GetActiveShaderLight (activeLightsP, nThread)))
 		continue;
 	nLights--;
@@ -538,7 +538,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 			fLightDist *= fLightDist;
 			if (nType < 2)
 				fLightDist *= 2.0f;
-			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+			NdotL = VmVecDot (&vcd.vertNorm, &lightDir.v3);
 			if (NdotL > 0)
 				NdotL = NdotL;
 			}
