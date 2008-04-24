@@ -283,7 +283,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nObject, vmsVector *vPos)
+int AddDynLight (grsFace *faceP, tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nObject, vmsVector *vPos)
 {
 	tDynLight	*pl;
 	short			h, i;
@@ -338,6 +338,7 @@ if (pl->handle == 0xffffffff)
 if (i < gameData.render.lights.dynamic.nLights)
 	SwapDynLights (pl, gameData.render.lights.dynamic.lights + gameData.render.lights.dynamic.nLights);
 #endif
+pl->faceP = faceP;
 pl->nSegment = nSegment;
 pl->nSide = nSide;
 pl->nObject = nObject;
@@ -368,7 +369,7 @@ else if (nSegment >= 0) {
 			COMPUTE_SEGMENT_CENTER_I (&pl->vPos, nSegment);
 		}
 	else {
-		int	t = gameData.segs.segments [nSegment].sides [nSide].nOvlTex;
+		int t = gameData.segs.segments [nSegment].sides [nSide].nOvlTex;
 		pl->nType = 0;
 		ComputeSideRads (nSegment, nSide, &rMin, &rMax);
 #if 0
@@ -380,7 +381,6 @@ else if (nSegment >= 0) {
 #endif
 		//RegisterLight (NULL, nSegment, nSide);
 		pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide) || IS_WALL (SEGMENTS [nSegment].sides [nSide].nWall);
-		GetSideVertIndex (pl->nVerts, nSegment, nSide);
 		COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
 		}
 #if 1
@@ -569,11 +569,10 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-void AddDynLights (void)
+void AddDynGeometryLights (void)
 {
-	int			nSegment, nSide, t, nLight;
-	tSegment		*segP;
-	tSide			*sideP;
+	int			nFace, nSegment, nSide, t, nLight;
+	grsFace		*faceP;
 	tFaceColor	*pc;
 	short			*pSegLights, *pVertLights, *pOwners;
 
@@ -600,37 +599,35 @@ gameData.render.lights.dynamic.nNearestVertLights = pVertLights;
 gameData.render.lights.dynamic.owners = pOwners;
 gameData.render.lights.dynamic.nLights = 0;
 gameData.render.lights.dynamic.material.bValid = 0;
-for (nSegment = 0, segP = gameData.segs.segments; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
+for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces; nFace; nFace--, faceP++) {
+	nSegment = faceP->nSegment;
 	if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX)
 		continue;
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
-	for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
+	nSide = faceP->nSide;
 #ifdef _DEBUG
-		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-			nDbgSeg = nDbgSeg;
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
 #endif
-		if ((segP->children [nSide] >= 0) && !IS_WALL (sideP->nWall))
-			continue;
-		t = sideP->nBaseTex;
-		if (t >= MAX_WALL_TEXTURES) 
-			continue;
+	t = faceP->nBaseTex;
+	if (t >= MAX_WALL_TEXTURES) 
+		continue;
+	pc = gameData.render.color.textures + t;
+	if ((nLight = IsLight (t)))
+		AddDynLight (faceP, &pc->color, nLight, (short) nSegment, (short) nSide, -1, NULL);
+	t = faceP->nOvlTex;
+	if ((t > 0) && (t < MAX_WALL_TEXTURES) && (nLight = IsLight (t)) /*gameData.pig.tex.brightness [t]*/) {
 		pc = gameData.render.color.textures + t;
-		if ((nLight = IsLight (t)))
-			AddDynLight (&pc->color, nLight, (short) nSegment, (short) nSide, -1, NULL);
-		t = sideP->nOvlTex;
-		if ((t > 0) && (t < MAX_WALL_TEXTURES) && (nLight = IsLight (t)) /*gameData.pig.tex.brightness [t]*/) {
-			pc = gameData.render.color.textures + t;
-			AddDynLight (&pc->color, nLight, (short) nSegment, (short) nSide, -1, NULL);
-			}
-		//if (gameData.render.lights.dynamic.nLights)
-		//	return;
-		if (!gameStates.render.bHaveDynLights) {
-			RemoveDynLights ();
-			return;
-			}
+		AddDynLight (faceP, &pc->color, nLight, (short) nSegment, (short) nSide, -1, NULL);
+		}
+	//if (gameData.render.lights.dynamic.nLights)
+	//	return;
+	if (!gameStates.render.bHaveDynLights) {
+		RemoveDynLights ();
+		return;
 		}
 	}
 QSortStaticLights (0, gameData.render.lights.dynamic.nLights);
@@ -662,6 +659,7 @@ gameData.render.lights.dynamic.shader.nLights = 0;
 memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 UpdateOglHeadLight ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
+	psl->faceP = pl->faceP;
 	memcpy (&psl->color, &pl->color, sizeof (pl->color));
 	psl->color.c.a = 1.0f;
 	psl->vPos = pl->vPos;
@@ -683,8 +681,6 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	psl->nType = pl->nType;
 	psl->nSegment = pl->nSegment;
 	psl->nObject = pl->nObject;
-	if (psl->nType < 2)
-		memcpy (psl->nVerts, pl->nVerts, sizeof (pl->nVerts));
 	psl->bLightning = (pl->nObject < 0) && (pl->nSide < 0);
 	psl->bShadow =
 	psl->bExclusive = 0;

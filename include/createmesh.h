@@ -51,6 +51,8 @@ class CTriMeshBuilder {
 		int SplitTriangles (void);
 		void QSortTriangles (int left, int right);
 		int InsertTriangles (void);
+		void CreateFaceVertLists (void);
+		void SortFaceVertList (ushort *vertList, int left, int right);
 
 	public:
 		CTriMeshBuilder (void) {};

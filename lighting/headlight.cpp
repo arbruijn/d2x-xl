@@ -166,7 +166,7 @@ if (gameOpts->render.bDynLighting && (gameData.render.lights.dynamic.nHeadLights
 		tDynLight	*pl;
 		int			nLight;
 
-	nLight = AddDynLight (&c, F1_0 * 200, -1, -1, -1, NULL);
+	nLight = AddDynLight (NULL, &c, F1_0 * 200, -1, -1, -1, NULL);
 	if (nLight >= 0) {
 		gameData.render.lights.dynamic.nHeadLights [objP->id] = nLight;
 		pl = gameData.render.lights.dynamic.lights + nLight;

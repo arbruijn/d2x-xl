@@ -970,18 +970,15 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-static inline int IsLightVert (int nVertex, tDynLight *pl)
+static inline int IsLightVert (int nVertex, grsFace *faceP)
 {
-		short	*pv = pl->nVerts;
+	ushort	*pv;
+	int		i;
 
-if (*pv == nVertex)
-	return 1;
-if (*++pv == nVertex)
-	return 1;
-if (*++pv == nVertex)
-	return 1;
-if (*++pv == nVertex)
-	return 1;
+pv = gameStates.render.bTriangleMesh ? faceP->triIndex : faceP->index;
+for (i = faceP->nVerts; i; i--, pv++)
+	if (*pv == (ushort) nVertex)
+		return 1;
 return 0;
 }
 
@@ -1084,13 +1081,15 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 			continue;
 		VmVecSub (&vLightToVert, vertP, &pl->vPos);
 		h = VmVecNormalize (&vLightToVert) - (int) (pl->rad * 65536);
-		if (!IsLightVert (nVertex, pl) && (h > MAX_LIGHT_RANGE * pl->range))
-			continue;
-		if ((pl->nSegment >= 0) && (pl->nSide >= 0)) {
-			sideP = SEGMENTS [pl->nSegment].sides + pl->nSide;
-			if ((VmVecDot (sideP->normals, &vLightToVert) < -F1_0 / 6) && 
-				 ((sideP->nType == SIDE_IS_QUAD) || (VmVecDot (sideP->normals + 1, &vLightToVert) < -F1_0 / 6)))
+		if (!IsLightVert (nVertex, pl->faceP)) {
+			if (h > MAX_LIGHT_RANGE * pl->range)
 				continue;
+			if ((pl->nSegment >= 0) && (pl->nSide >= 0)) {
+				sideP = SEGMENTS [pl->nSegment].sides + pl->nSide;
+				if ((VmVecDot (sideP->normals, &vLightToVert) < -F1_0 / 6) && 
+					 ((sideP->nType == SIDE_IS_QUAD) || (VmVecDot (sideP->normals + 1, &vLightToVert) < -F1_0 / 6)))
+					continue;
+				}	
 			}
 		pDists [n].nDist = h;
 		pDists [n].nIndex = l;
@@ -2062,7 +2061,7 @@ if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
 #endif
 	{
 	if (!gameStates.app.bNostalgia)
-		AddDynLights ();
+		AddDynGeometryLights ();
 	}
 return 0;
 }

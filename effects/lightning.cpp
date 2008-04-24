@@ -2072,7 +2072,7 @@ if (SHOW_LIGHTNINGS) {
 			pll->color.blue /= n;
 			pll->nBrightness = fl2f ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha);
 			if (bDynLighting)
-				pll->nDynLight = AddDynLight (&pll->color, pll->nBrightness, pll->nSegment, -1, -1, &pll->vPos);
+				pll->nDynLight = AddDynLight (NULL, &pll->color, pll->nBrightness, pll->nSegment, -1, -1, &pll->vPos);
 			}
 		}
 	}

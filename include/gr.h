@@ -691,6 +691,7 @@ typedef struct grsTriangle {
 
 typedef struct grsFace {
 	ushort				index [4];
+	ushort				*triIndex;
 	int					nIndex;
 	int					nTriIndex;
 #if USE_RANGE_ELEMENTS

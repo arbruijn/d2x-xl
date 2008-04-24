@@ -829,7 +829,7 @@ o.rType.polyObjInfo.nTexOverride = -1;
 #if 0
 gameData.models.nScale = (fix) (sqrt (fScale) * F1_0);
 tFaceColor *psc = AvgSgmColor (pParticle->nSegment, NULL);
-int nLight = AddDynLight (&psc->color, F1_0, pParticle->nSegment, -1, -1, &o.position.vPos);
+int nLight = AddDynLight (NULL, &psc->color, F1_0, pParticle->nSegment, -1, -1, &o.position.vPos);
 #endif
 DrawPolygonObject (&o, 0, 1);
 #if 0

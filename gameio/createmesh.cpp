@@ -169,10 +169,6 @@ else {
 		return -1;
 	edgeP = m_edges + m_nEdges++;
 	}
-#ifdef _DEBUG
-if (m_nEdges == 6752)
-	edgeP = edgeP;
-#endif
 edgeP->tris [0] = nTri;
 edgeP->verts [0] = nVert1;
 edgeP->verts [1] = nVert2;
@@ -194,7 +190,7 @@ else {
 	triP = m_triangles + m_nTriangles++;
 	triP->nIndex = nIndex;
 	if (nIndex >= 0) {
-		i = gameData.segs.faces.tris [nIndex].nIndex;
+		i = TRIANGLES [nIndex].nIndex;
 		memcpy (triP->texCoord, gameData.segs.faces.texCoord + i, sizeof (triP->texCoord));
 		memcpy (triP->ovlTexCoord, gameData.segs.faces.ovlTexCoord + i, sizeof (triP->ovlTexCoord));
 		memcpy (triP->color, gameData.segs.faces.color + i, sizeof (triP->color));
@@ -216,7 +212,7 @@ return triP;
 
 tTriangle *CTriMeshBuilder::AddTriangle (tTriangle *triP, ushort index [], grsTriangle *grsTriP)
 {
-return CreateTriangle (triP, index, grsTriP->nFace, grsTriP - gameData.segs.faces.tris);
+return CreateTriangle (triP, index, grsTriP->nFace, grsTriP - TRIANGLES);
 }
 
 //------------------------------------------------------------------------------
@@ -255,10 +251,6 @@ for (i = 0; i < 3; i++) {
 	edgeP = m_edges + triP->lines [i];
 	if (edgeP->tris [0] == nTri)
 		edgeP->tris [0] = edgeP->tris [1];
-#ifdef _DEBUG
-	if (edgeP - m_edges == 6752)
-		edgeP = edgeP;
-#endif
 	edgeP->tris [1] = -1;
 	if (edgeP->tris [0] < 0)
 		DeleteEdge (edgeP);
@@ -285,7 +277,7 @@ tTriangle *triP;
 int i, nFace = -1;
 short nId;
 
-for (i = gameData.segs.nTris, grsTriP = gameData.segs.faces.tris; i; i--, grsTriP++) {
+for (i = gameData.segs.nTris, grsTriP = TRIANGLES; i; i--, grsTriP++) {
 	if (!(triP = AddTriangle (NULL, grsTriP->index, grsTriP))) {
 		FreeData ();
 		return 0;
@@ -297,7 +289,7 @@ for (i = gameData.segs.nTris, grsTriP = gameData.segs.faces.tris; i; i--, grsTri
 		nId = 0;
 		}
 	triP->nId = nId;
-	faceP = gameData.segs.faces.faces + grsTriP->nFace;
+	faceP = FACES + grsTriP->nFace;
 #ifdef _DEBUG
 	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
@@ -320,7 +312,7 @@ tTriangle *triP = m_triangles + nTri;
 if (triP->nPass < -1)
 	return 1;
 
-grsFace *faceP = gameData.segs.faces.faces + triP->nFace;
+grsFace *faceP = FACES + triP->nFace;
 
 #ifdef _DEBUG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -396,7 +388,7 @@ triP->color [0] = color [0];
 memcpy (triP->color + 1, color + 2, 2 * sizeof (triP->color [0]));
 memcpy (triP->texCoord + 1, texCoord + 2, 2 * sizeof (triP->texCoord [0]));
 memcpy (triP->ovlTexCoord + 1, ovlTexCoord + 2, 2 * sizeof (triP->ovlTexCoord [0]));
-gameData.segs.faces.faces [triP->nFace].nVerts++;
+FACES [triP->nFace].nVerts++;
 return 1;
 }
 
@@ -481,7 +473,7 @@ do {
 		if (m_triangles [i].nPass != nPass - 1)
 			continue;
 #ifdef _DEBUG
-		grsFace *faceP = gameData.segs.faces.faces + m_triangles [i].nFace;
+		grsFace *faceP = FACES + m_triangles [i].nFace;
 		if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
@@ -538,7 +530,7 @@ if (left < r)
 int CTriMeshBuilder::InsertTriangles (void)
 {
 	tTriangle	*triP = m_triangles;
-	grsTriangle	*grsTriP = gameData.segs.faces.tris;
+	grsTriangle	*grsTriP = TRIANGLES;
 	grsFace		*m_faceP = NULL;
 	vmsVector	vNormal;
 	int			h, i, nVertex, nTriVertIndex = 0, nFace = -1;
@@ -555,10 +547,10 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 		if (m_faceP)
 			m_faceP++;
 		else
-			m_faceP = gameData.segs.faces.faces;
+			m_faceP = FACES;
 		nFace = grsTriP->nFace;
 #ifdef _DEBUG
-		if (m_faceP - gameData.segs.faces.faces != nFace)
+		if (m_faceP - FACES != nFace)
 			return 0;
 #endif
 		m_faceP->nIndex = nIndex;
@@ -609,7 +601,81 @@ FreeData ();
 PrintLog ("   created %d new triangles and %d new vertices\n", 
 			 m_nTriangles - m_nTris, gameData.segs.nVertices - m_nVertices);
 gameData.segs.nTris = m_nTriangles;
+CreateFaceVertLists ();
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CTriMeshBuilder::SortFaceVertList (ushort *vertList, int left, int right)
+{
+	int	l = left,
+			r = right,
+			m = vertList [(l + r) / 2];
+
+do {
+	while (vertList [l] < m)
+		l++;
+	while (vertList [r] > m)
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			int h = vertList [l];
+			vertList [l] = vertList [r];
+			vertList [r] = h;
+			}
+		l++;
+		r--;
+		}
+	} while (l <= r);
+if (l < right)
+	SortFaceVertList (vertList, l, right);
+if (left < r)
+	SortFaceVertList (vertList, left, r);
+}
+
+//------------------------------------------------------------------------------
+
+void CTriMeshBuilder::CreateFaceVertLists (void)
+{
+	int			*bTags = new int [gameData.segs.nVertices];
+	grsFace		*faceP;
+	grsTriangle	*triP;
+	int			h, i, j, k, nFace, nVerts;
+
+//count the vertices of each face
+memset (bTags, 0xFF, gameData.segs.nVertices);
+for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0, nVerts = 0; i; i--, faceP++, nFace++) {
+	faceP->nVerts = 0;
+	for (j = faceP->nTris, triP = TRIANGLES + faceP->nTriIndex; j; j--, triP++) {
+		for (k = 0; k < 3; k++) {
+			h = triP->index [k];
+			if (bTags [h] != nFace) {
+				bTags [h] = nFace;
+				faceP->nVerts++;
+				nVerts++;
+				}
+			}
+		}
+	}
+//insert each face's vertices' indices in the vertex index buffer
+for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0, nVerts = 0; i; i--, faceP++, nFace++) {
+	faceP->triIndex = gameData.segs.faces.faceVerts + nVerts;
+	for (j = faceP->nTris, triP = TRIANGLES + faceP->nTriIndex; j; j--, triP++) {
+		for (k = 0; k < 3; k++) {
+			h = triP->index [k];
+			if (bTags [h] != nFace) {
+				bTags [h] = nFace;
+				gameData.segs.faces.faceVerts [nVerts++] = h;
+				}
+			}
+		}
+	}
+#if 0
+//sort each face's vertex index list
+for (i = gameData.segs.nFaces, faceP = FACES; i; i--, faceP++)
+	SortFaceVertList (faceP->triIndex, 0, faceP->nVerts - 1);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -657,7 +723,7 @@ m_faceP->nSegment = nSegment;
 m_faceP->nVerts = 4;
 m_faceP->nIndex = m_vertexP - gameData.segs.faces.vertices;
 if (gameStates.render.bTriangleMesh)
-	m_faceP->nTriIndex = m_triP - gameData.segs.faces.tris;
+	m_faceP->nTriIndex = m_triP - TRIANGLES;
 memcpy (m_faceP->index, m_sideVerts, sizeof (m_faceP->index));
 m_faceP->nType = gameStates.render.bTriangleMesh ? m_sideP->nType : -1;
 m_faceP->nSegment = nSegment;
@@ -737,7 +803,7 @@ h = (m_sideP->nType == SIDE_IS_TRI_13);
 for (i = 0; i < 2; i++, m_triP++) {
 	gameData.segs.nTris++;
 	m_faceP->nTris++;
-	m_triP->nFace = m_faceP - gameData.segs.faces.faces;
+	m_triP->nFace = m_faceP - FACES;
 	m_triP->nIndex = m_vertexP - gameData.segs.faces.vertices;
 	triVertP = n2TriVerts [h][i];
 	for (j = 0; j < 3; j++) {
@@ -794,7 +860,7 @@ m_faceP->nVerts++;
 for (i = 0; i < 4; i++, m_triP++) {
 	gameData.segs.nTris++;
 	m_faceP->nTris++;
-	m_triP->nFace = m_faceP - gameData.segs.faces.faces;
+	m_triP->nFace = m_faceP - FACES;
 	m_triP->nIndex = m_vertexP - gameData.segs.faces.vertices;
 	triVertP = n4TriVerts [i];
 	for (j = 0; j < 3; j++) {
@@ -827,8 +893,8 @@ for (i = 0; i < 4; i++, m_triP++) {
 
 void CQuadMeshBuilder::Build (void)
 {
-m_faceP = gameData.segs.faces.faces;
-m_triP = gameData.segs.faces.tris;
+m_faceP = FACES;
+m_triP = TRIANGLES;
 m_vertexP = gameData.segs.faces.vertices;
 m_normalP = gameData.segs.faces.normals;
 m_texCoordP = gameData.segs.faces.texCoord;

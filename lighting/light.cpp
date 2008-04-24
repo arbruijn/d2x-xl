@@ -161,7 +161,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 				}
 			if (objP->nSegment != objP->cType.lightInfo.nSegment)
 				RelinkObject (i, objP->cType.lightInfo.nSegment);
-			AddDynLight (&objP->cType.lightInfo.color, objP->cType.lightInfo.intensity, -1, -1, i, NULL);
+			AddDynLight (NULL, &objP->cType.lightInfo.color, objP->cType.lightInfo.intensity, -1, -1, i, NULL);
 			}
 		}
 	}
@@ -391,7 +391,7 @@ if (objP && SHOW_DYN_LIGHT) {
 	else
 		lightObjP = OBJECTS + nLightObj;
 	if (!InitClusterLight (nObject, color, xObjIntensity))
-		AddDynLight (color, xObjIntensity, -1, -1, nObject, NULL);
+		AddDynLight (NULL, color, xObjIntensity, -1, -1, nObject, NULL);
 	return;
 	}
 if (xObjIntensity) {

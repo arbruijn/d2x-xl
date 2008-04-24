@@ -284,16 +284,12 @@ return i * i;
 static inline int IsLightVert (int nVertex, tShaderLight *psl)
 {
 if (psl->nType < 2) {
-		short	*pv = psl->nVerts;
-
-	if (*pv == nVertex)
-		return 1;
-	if (*++pv == nVertex)
-		return 1;
-	if (*++pv == nVertex)
-		return 1;
-	if (*++pv == nVertex)
-		return 1;
+	ushort	*pv = gameStates.render.bTriangleMesh ? psl->faceP->triIndex : psl->faceP->index;
+	int		i;
+	
+	for (i = psl->faceP->nVerts; i; i--, pv++)
+		if (*pv == (ushort) nVertex)
+			return 1;
 	}
 return 0;
 }

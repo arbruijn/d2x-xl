@@ -1204,6 +1204,7 @@ typedef struct tSphereData {
 #define MAX_SHADER_LIGHTS	1000
 
 typedef struct tDynLight {
+	grsFace		*faceP;
 	vmsVector	vPos;
 	vmsVector	vDir;
 	tRgbaColorf	color;
@@ -1223,7 +1224,6 @@ typedef struct tDynLight {
 	short			nSegment;
 	short			nSide;
 	short			nObject;
-	short			nVerts [4];
 	ubyte			nPlayer;
 	ubyte			nType;
 	ubyte			bState;
@@ -1251,6 +1251,7 @@ typedef struct tOglMaterial {
 //------------------------------------------------------------------------------
 
 typedef struct tShaderLight {
+	grsFace		*faceP;
 	vmsVector	vPos;
 	fVector		pos [2];
 	fVector		dir;
@@ -1590,6 +1591,7 @@ typedef struct tFaceData {
 	tTexCoord2f			*texCoord;
 	tTexCoord2f			*ovlTexCoord;
 	tRgbaColorf			*color;
+	ushort				*faceVerts;
 #if USE_RANGE_ELEMENTS
 	GLuint				*vertIndex;
 #endif
@@ -3251,6 +3253,8 @@ extern fix nDebrisLife [];
 #define SEGFACES	gameData.segs.segFaces
 #define OBJECTS	gameData.objs.objects
 #define WALLS		gameData.walls.walls
+#define FACES		gameData.segs.faces.faces
+#define TRIANGLES	gameData.segs.faces.tris
 
 #define MAXFPS		((gameStates.render.automap.bDisplay && !(gameStates.render.automap.bRadar || gameStates.render.frameRate.value)) ? 40 : gameOpts->render.nMaxFPS)
 
