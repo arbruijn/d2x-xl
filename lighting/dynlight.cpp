@@ -36,7 +36,8 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "headlight.h"
 #include "dynlight.h"
 
-#define	SORT_LIGHTS 0
+#define SORT_LIGHTS 0
+#define PREFER_GEOMETRY_LIGHTS 1
 
 //------------------------------------------------------------------------------
 
@@ -767,7 +768,7 @@ if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
 if (xDist < 0)
 	xDist = 0;
-#if 0
+#if PREFER_GEOMETRY_LIGHTS
 else if (psl->nSegment >= 0)
 	xDist /= 2;
 #endif
