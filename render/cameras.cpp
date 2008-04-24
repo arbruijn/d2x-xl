@@ -458,7 +458,6 @@ else
 		}
 	else {
 		tTexCoord2f texCoord [6];
-		int h;
 
 		texCoord [0].v.v = 
 		texCoord [3].v.v = yFlip ? dvImage : dv;
@@ -468,8 +467,21 @@ else
 		texCoord [1].v.u = xFlip ? duImage : du / 2;
 		texCoord [2].v.u = 
 		texCoord [3].v.u = xFlip ? du / 2 : duImage;
+		if (rotLeft) {
+			tTexCoord2f h = texCoord [0];
+			texCoord [0] = texCoord [1];
+			texCoord [1] = texCoord [2];
+			texCoord [2] = texCoord [3];
+			texCoord [3] = h;
+			}
+		else if (rotRight) {
+			tTexCoord2f h = texCoord [3];
+			texCoord [3] = texCoord [2];
+			texCoord [2] = texCoord [1];
+			texCoord [1] = texCoord [0];
+			texCoord [0] = h;
+			}
 		if (gameStates.render.bTriangleMesh) {
-			h = 6;
 			if (nType) {
 				texCoord [5] = texCoord [3];
 				texCoord [4] = texCoord [2];
@@ -482,20 +494,7 @@ else
 				texCoord [3] = texCoord [0];
 				}
 			}
-		else
-			h = 4;
-		if (rotLeft) {
-			for (i = 1; i <= h; i++) {
-				pc->texCoord [i - 1] = texCoord [i % h];
-				}
-			}
-		else if (rotRight) {
-			for (i = 0; i < h; i++) {
-				pc->texCoord [i] = texCoord [(i + 1) % h];
-				}
-			}
-		else
-			memcpy (pc->texCoord, texCoord, sizeof (pc->texCoord));
+		memcpy (pc->texCoord, texCoord, sizeof (pc->texCoord));
 		}
 	pc->bHaveUVL = 1;
 	}
