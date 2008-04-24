@@ -175,10 +175,16 @@ int InitClusterLight (short nObject, tRgbaColorf *color, fix xObjIntensity)
 
 if (0 > nLightObj)
 	return 0;
-tObject *objP = OBJECTS + nObject;
+#ifdef _DEBUG
+if (nDbgObj == nLightObj)
+	nDbgObj = nDbgObj;
+#endif
 tObject *lightObjP = OBJECTS + nLightObj;
-if (objP->nSignature != gameData.objs.lightObjs [nObject].nSignature)
+if (lightObjP->nSignature != gameData.objs.lightObjs [nObject].nSignature) {
+	gameData.objs.lightObjs [nObject].nObject = -1;
 	return 0;
+	}
+tObject *objP = OBJECTS + nObject;
 if (!lightObjP->cType.lightInfo.nObjects++) {
 	lightObjP->position.vPos = objP->position.vPos;
 	lightObjP->cType.lightInfo.nSegment = objP->nSegment;

@@ -786,8 +786,10 @@ if (gameStates.app.cheats.bHomingWeapons || gameData.weapons.info [nLaserType].h
 		}
 	}
 gameData.objs.lightObjs [nObject].nObject = nLightObj;
-if (nLightObj >= 0)
-	gameData.objs.lightObjs [nObject].nSignature = OBJECTS [nObject].nSignature;
+if (nLightObj >= 0) {
+	gameData.objs.lightObjs [nObject].nSignature = OBJECTS [nLightObj].nSignature;
+	OBJECTS [nLightObj].cType.lightInfo.nObjects++;
+	}
 return nObject;
 }
 

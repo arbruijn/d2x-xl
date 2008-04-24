@@ -238,28 +238,41 @@ void AICreateClusterLight (tObject *objP, short nObject, short nShot)
 {
 	short nPrevShot = gameData.objs.shots [nObject].nObject;
 
+#ifdef _DEBUG
+if (nObject == nDbgObj)
+	nObject = nDbgObj;
+#endif
 if (nPrevShot >= 0) {
 	tObject *prevShotP = OBJECTS + nPrevShot;
 	if (prevShotP->nSignature == gameData.objs.shots [nObject].nSignature) {
 		tObject *lightP, *shotP = OBJECTS + nShot;
 		short nLight = gameData.objs.lightObjs [nPrevShot].nObject;
-		if (nLight >= 0)
-			lightP = OBJECTS + nLight;
-		else {
+		if (nLight < 0)
 			lightP = prevShotP;
-			nLight = nPrevShot;
+		else {
+			lightP = OBJECTS + nLight;
+			if (lightP->nSignature != gameData.objs.lightObjs [nPrevShot].nSignature) {
+				lightP = prevShotP;
+				nLight = -1;
+				}
 			}
-		if (VmVecDist (&objP->position.vPos, &lightP->position.vPos) < 10 * F1_0) {
-			if (nLight >= 0)
+		if (VmVecDist (&shotP->position.vPos, &lightP->position.vPos) < 10 * F1_0) {
+			if (nLight >= 0) {
 				gameData.objs.lightObjs [nShot].nObject = nLight;
+				lightP->cType.lightInfo.nObjects++;
+				}
 			else {
 				nLight = CreateClusterLight (prevShotP);
 				gameData.objs.lightObjs [nShot].nObject =
 				gameData.objs.lightObjs [nPrevShot].nObject = nLight;
 				if (nLight >= 0) {
+#ifdef _DEBUG
+					HUDMessage (0, "new robot shot light cluster");
+#endif
 					lightP = OBJECTS + nLight;
-					gameData.objs.lightObjs [nShot].nObject =
-					gameData.objs.lightObjs [nPrevShot].nObject = OBJECTS [nLight].nSignature;
+					gameData.objs.lightObjs [nShot].nSignature =
+					gameData.objs.lightObjs [nPrevShot].nSignature = lightP->nSignature;
+					lightP->cType.lightInfo.nObjects = 2;
 					}
 				}
 			}
