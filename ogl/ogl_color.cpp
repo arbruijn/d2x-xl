@@ -367,7 +367,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 #endif
 	else {	//make it decay faster
-		fLightDist *= fLightDist;
+		if (gameOpts->render.nMeshQuality)
+			fLightDist *= fLightDist / 2;
+		else
+			fLightDist *= fLightDist;
 		if (nType < 2)
 			fLightDist *= 2.0f;
 		if (vcd.vertNorm.p.x == 0 && vcd.vertNorm.p.y == 0 && vcd.vertNorm.p.z == 0) 

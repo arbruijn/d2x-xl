@@ -674,13 +674,17 @@ if (gameData.render.monsterball.nFaces > 0) {
 	if ((gameOpts->render.bDepthSort > 0) || (gameOpts->render.nPath && !gameOpts->render.bDepthSort))
 		RIAddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {
-		tOOF_vector	p;
+		static tOOF_vector p = {0,0,0};
 		float r = f2fl (objP->size);
+		gameStates.ogl.bUseTransform = 1;
+		OglSetupTransform (0);
 		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
-		RenderSphere (&gameData.render.monsterball, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos), 
+		RenderSphere (&gameData.render.monsterball, &p,  
 						  r, r, r, red, green, blue, gameData.hoard.monsterball.bm.bmTexBuf ? 1.0f : alpha, 
 						  &gameData.hoard.monsterball.bm, 4);
 		G3DoneInstance ();
+		OglResetTransform (1);
+		gameStates.ogl.bUseTransform = 0;
 		}
 	}
 }
