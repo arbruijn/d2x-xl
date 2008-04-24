@@ -642,12 +642,25 @@ for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 			}
 		OglSetupTransform (1);
 		h = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
-		for (iLight = 0; (h > 0) && (iLight < 8) && (nLights > 0); activeLightsP++, h--) { 
+		for (iLight = 0; (h > 0) && (iLight < 8) && nLights; activeLightsP++, h--) { 
 #ifdef _DEBUG
 			if (gameData.render.lights.dynamic.shader.nActiveLights [0] <= 0)
 				h = h;
 #endif
-			if ((psl = GetActiveShaderLight (activeLightsP, 0))) {
+			if (nLights < 0) {
+				tFaceColor *psc = AvgSgmColor (objP->nSegment, NULL);
+				fVector3 vPos;
+				hLight = GL_LIGHT0 + iLight++;
+				glEnable (hLight);
+				glLightfv (hLight, GL_POSITION, (GLfloat *) VmVecFixToFloat (&vPos, &objP->position.vPos));
+				glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &psc->color);
+				glLightfv (hLight, GL_SPECULAR, (GLfloat *) &psc->color);
+				glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f);
+				glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f);
+				glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f);
+				nLights = 0;
+				}
+			else if ((psl = GetActiveShaderLight (activeLightsP, 0))) {
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
 	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);

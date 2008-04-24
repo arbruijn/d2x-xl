@@ -853,9 +853,16 @@ oldViewer = viewer;
 //object's center point is rotated.
 fix ComputeObjectLight (tObject *objP, vmsVector *vRotated)
 {
+#ifdef _DEBUG
+   if (!objP)
+      return 0;
+#endif
 	fix light;
 	int nObject = OBJ_IDX (objP);
-
+	if (nObject < 0)
+		return F1_0;
+	if (nObject >= gameData.objs.nLastObject)
+		return 0;
 	//First, get static light for this tSegment
 if (gameOpts->render.bDynLighting && !((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
 	gameData.objs.color = *AvgSgmColor (objP->nSegment, &objP->position.vPos);
