@@ -35,6 +35,7 @@ char gamesave_rcsid [] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 #	include "editor/editor.h"
 #endif
 #include "error.h"
+#include "dynlight.h"
 #include "object.h"
 #include "game.h"
 #include "screens.h"
@@ -1654,6 +1655,13 @@ if (game_err == -1) {   //error!!
 	}
 CFClose(&cf);
 quadMeshBuilder.Build ();
+#if !SHADOWS
+if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
+#endif
+	{
+	if (!gameStates.app.bNostalgia)
+		AddDynGeometryLights ();
+	}
 SetAmbientSoundFlags ();
 #ifdef EDITOR
 write_game_text_file(filename);

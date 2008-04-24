@@ -31,13 +31,13 @@ char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
 #include "mono.h"
 
 #include "inferno.h"
+#include "error.h"
 #include "text.h"
 #include "segment.h"
 #include "textures.h"
 #include "wall.h"
 #include "object.h"
 #include "gamemine.h"
-#include "error.h"
 #include "gameseg.h"
 #include "switch.h"
 #include "ogl_defs.h"
@@ -644,7 +644,7 @@ void CTriMeshBuilder::CreateFaceVertLists (void)
 	int			h, i, j, k, nFace, nVerts;
 
 //count the vertices of each face
-memset (bTags, 0xFF, gameData.segs.nVertices);
+memset (bTags, 0xFF, gameData.segs.nVertices * sizeof (bTags [0]));
 for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0, nVerts = 0; i; i--, faceP++, nFace++) {
 	faceP->nVerts = 0;
 	for (j = faceP->nTris, triP = TRIANGLES + faceP->nTriIndex; j; j--, triP++) {
@@ -659,8 +659,13 @@ for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0, nVerts = 0; i; i--, fac
 		}
 	}
 //insert each face's vertices' indices in the vertex index buffer
+memset (bTags, 0xFF, gameData.segs.nVertices * sizeof (bTags [0]));
 for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0, nVerts = 0; i; i--, faceP++, nFace++) {
 	faceP->triIndex = gameData.segs.faces.faceVerts + nVerts;
+#ifdef _DEBUG
+	if (faceP->nSegment == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
 	for (j = faceP->nTris, triP = TRIANGLES + faceP->nTriIndex; j; j--, triP++) {
 		for (k = 0; k < 3; k++) {
 			h = triP->index [k];
@@ -671,7 +676,7 @@ for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0, nVerts = 0; i; i--, fac
 			}
 		}
 	}
-#if 0
+#if 1
 //sort each face's vertex index list
 for (i = gameData.segs.nFaces, faceP = FACES; i; i--, faceP++)
 	SortFaceVertList (faceP->triIndex, 0, faceP->nVerts - 1);
@@ -918,8 +923,8 @@ gameData.segs.nFaces = 0;
 gameData.segs.nTris = 0;
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_segFaceP++) {
 	m_bColoredSeg = ((gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_WATER) &&
-					   (gameData.segs.segment2s [nSegment].special <= SEGMENT_IS_TEAM_RED)) ||
-					   (gameData.segs.xSegments [nSegment].group >= 0);
+					     (gameData.segs.segment2s [nSegment].special <= SEGMENT_IS_TEAM_RED)) ||
+					     (gameData.segs.xSegments [nSegment].group >= 0);
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
 		m_faceP = m_faceP;

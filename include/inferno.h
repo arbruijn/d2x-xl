@@ -1761,6 +1761,11 @@ typedef struct tLightObjId {
 	int				nSignature;
 } tLightObjId;
 
+typedef struct tShotInfo {
+	short					nObject;
+	int					nSignature;
+} tShotInfo;
+
 typedef struct tObjectData {
 	tObjTypeData		types;
 	tObject				*objects;
@@ -1769,6 +1774,7 @@ typedef struct tObjectData {
 	tObjectRef			*childObjs;
 	short					*firstChild;
 	tLightObjId			*lightObjs;
+	tShotInfo			*shots;
 	tObject				*init;
 	tObjDropInfo		*dropInfo;
 	tSpeedBoostData	*speedBoost;

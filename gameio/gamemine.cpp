@@ -2056,13 +2056,6 @@ else {
 if (!(gameStates.app.bNostalgia || gameStates.render.bColored || (gameStates.render.bColored = HasColoredLight ())))
 	InitTexColors ();
 ResetObjects (1);		//one tObject, the player
-#if !SHADOWS
-if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
-#endif
-	{
-	if (!gameStates.app.bNostalgia)
-		AddDynGeometryLights ();
-	}
 return 0;
 }
 

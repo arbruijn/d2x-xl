@@ -229,7 +229,7 @@ if (gameData.muzzle.queueIndex >= MUZZLE_QUEUE_MAX)
 
 //---------------------------------------------------------------------------------
 //creates a weapon tObject
-int CreateWeaponObject (ubyte nWeaponType, short nSegment, vmsVector *vPosition)
+int CreateWeaponObject (ubyte nWeaponType, short nSegment, vmsVector *vPosition, short nParent)
 {
 	int		rType = -1;
 	fix		xLaserRadius = -1;
@@ -263,7 +263,7 @@ switch (gameData.weapons.info [nWeaponType].renderType)	{
 
 Assert (xLaserRadius != -1);
 Assert (rType != -1);
-nObject = CreateObject ((ubyte) OBJ_WEAPON, nWeaponType, -1, nSegment, vPosition, NULL, xLaserRadius, (ubyte) CT_WEAPON, (ubyte) MT_PHYSICS, (ubyte) rType, 1);
+nObject = CreateObject ((ubyte) OBJ_WEAPON, nWeaponType, nParent, nSegment, vPosition, NULL, xLaserRadius, (ubyte) CT_WEAPON, (ubyte) MT_PHYSICS, (ubyte) rType, 1);
 objP = gameData.objs.objects + nObject;
 if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->id].nModel;
@@ -325,7 +325,7 @@ if ((nParent == LOCALPLAYER.nObject) &&
 	return -1;
 	}
 #endif
-nObject = CreateWeaponObject (nWeaponType, nSegment, vPosition);
+nObject = CreateWeaponObject (nWeaponType, nSegment, vPosition, nParent);
 if (nObject < 0)
 	return -1;
 #if 0
@@ -1218,7 +1218,7 @@ return rVal;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-inline short CreateClusterLight (tObject *objP)
+short CreateClusterLight (tObject *objP)
 {
 short nObject = CreateObject (OBJ_LIGHT, CLUSTER_LIGHT_ID, -1, objP->nSegment, &OBJPOS (objP)->vPos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
 if (nObject >= 0)

@@ -2436,6 +2436,7 @@ void AllocObjectData (void)
 GETMEM (tObject, gameData.objs.objects, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.freeList, MAX_OBJECTS, 0);
 GETMEM (tLightObjId, gameData.objs.lightObjs, MAX_OBJECTS, (char) 0xff);
+GETMEM (tShotInfo, gameData.objs.shots, MAX_OBJECTS, (char) 0xff);
 GETMEM (short, gameData.objs.parentObjs, MAX_OBJECTS, (char) 0xff);
 GETMEM (tObjectRef, gameData.objs.childObjs, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.firstChild, MAX_OBJECTS, (char) 0xff);
@@ -2624,6 +2625,7 @@ void FreeObjectData (void)
 FREEMEM (tObject, gameData.objs.objects, MAX_OBJECTS);
 FREEMEM (short, gameData.objs.freeList, MAX_OBJECTS);
 FREEMEM (tLightObjId, gameData.objs.lightObjs, MAX_OBJECTS);
+FREEMEM (tShotInfo, gameData.objs.shots, MAX_OBJECTS);
 FREEMEM (short, gameData.objs.parentObjs, MAX_OBJECTS);
 FREEMEM (tObjectRef, gameData.objs.childObjs, MAX_OBJECTS);
 FREEMEM (short, gameData.objs.firstChild, MAX_OBJECTS);

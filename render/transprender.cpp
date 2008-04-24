@@ -327,7 +327,7 @@ else
 			zMax = z;
 		}
 	if ((zMax < renderItems.zMin) || (zMin > renderItems.zMax))
-		return 0;
+		return -1;
 #if RI_POLY_CENTER
 	zCenter /= item.nVertices;
 	if (zCenter < zMin)
@@ -398,7 +398,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 return RIAddPoly (faceP, faceP->bTextured ? bmP : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
 						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, 
-						FaceIsAdditive (faceP), faceP->nSegment);
+						FaceIsAdditive (faceP), faceP->nSegment) > 0;
 }
 
 //------------------------------------------------------------------------------

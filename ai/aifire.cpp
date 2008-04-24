@@ -233,12 +233,47 @@ int LeadPlayer (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayer
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+
+void AICreateClusterLight (tObject *objP, short nObject, short nShot)
+{
+	short nPrevShot = gameData.objs.shots [nObject].nObject;
+
+if (nPrevShot >= 0) {
+	tObject *prevShotP = OBJECTS + nPrevShot;
+	if (prevShotP->nSignature == gameData.objs.shots [nObject].nSignature) {
+		tObject *lightP, *shotP = OBJECTS + nShot;
+		short nLight = gameData.objs.lightObjs [nPrevShot].nObject;
+		if (nLight >= 0)
+			lightP = OBJECTS + nLight;
+		else {
+			lightP = prevShotP;
+			nLight = nPrevShot;
+			}
+		if (VmVecDist (&objP->position.vPos, &lightP->position.vPos) < 10 * F1_0) {
+			if (nLight >= 0)
+				gameData.objs.lightObjs [nShot].nObject = nLight;
+			else {
+				nLight = CreateClusterLight (prevShotP);
+				gameData.objs.lightObjs [nShot].nObject =
+				gameData.objs.lightObjs [nPrevShot].nObject = nLight;
+				if (nLight >= 0) {
+					lightP = OBJECTS + nLight;
+					gameData.objs.lightObjs [nShot].nObject =
+					gameData.objs.lightObjs [nPrevShot].nObject = OBJECTS [nLight].nSignature;
+					}
+				}
+			}
+		}
+	}
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 //	Note: Parameter gameData.ai.vVecToPlayer is only passed now because guns which aren't on the forward vector from the
 //	center of the robot will not fire right at the player.  We need to aim the guns at the player.  Barring that, we cheat.
 //	When this routine is complete, the parameter gameData.ai.vVecToPlayer should not be necessary.
 void AIFireLaserAtPlayer (tObject *objP, vmsVector *vFirePoint, int nGun, vmsVector *vBelievedPlayerPos)
 {
-	short			nObject = OBJ_IDX (objP);
+	short			nShot, nObject = OBJ_IDX (objP);
 	tAILocal		*ailP = gameData.ai.localInfo + nObject;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->id);
 	vmsVector	fire_vec;
@@ -353,7 +388,13 @@ if ((botInfoP->nSecWeaponType != -1) && ((nWeaponType < 0) || !nGun))
 	nWeaponType = botInfoP->nSecWeaponType;
 if (nWeaponType < 0)
 	return;
-CreateNewLaserEasy (&fire_vec, vFirePoint, OBJ_IDX (objP), (ubyte) nWeaponType, 1);
+if (0 > (nShot = CreateNewLaserEasy (&fire_vec, vFirePoint, OBJ_IDX (objP), (ubyte) nWeaponType, 1)))
+	return;
+
+AICreateClusterLight (objP, nObject, nShot);
+gameData.objs.shots [nObject].nObject = nShot;
+gameData.objs.shots [nObject].nSignature = OBJECTS [nShot].nSignature;
+
 if (IsMultiGame) {
 	AIMultiSendRobotPos (nObject, -1);
 	MultiSendRobotFire (nObject, objP->cType.aiInfo.CURRENT_GUN, &fire_vec);
@@ -522,12 +563,14 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 				aiP->GOAL_STATE = AIS_RECOVER;
 				ailP->goalState [aiP->CURRENT_GUN] = AIS_RECOVER;
 				// Switch to next gun for next fire.
+#if 0
 				if (++(aiP->CURRENT_GUN) >= botInfoP->nGuns) {
 					if ((botInfoP->nGuns == 1) || (botInfoP->nSecWeaponType == -1))
 						aiP->CURRENT_GUN = 0;
 					else
 						aiP->CURRENT_GUN = 1;
 					}
+#endif
 				}
 			}
 		}

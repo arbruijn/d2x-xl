@@ -3940,7 +3940,7 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\..\main\laser.h"
+						RelativePath="..\..\include\laser.h"
 						>
 					</File>
 					<File
@@ -4567,11 +4567,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

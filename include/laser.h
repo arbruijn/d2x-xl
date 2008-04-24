@@ -132,10 +132,12 @@ extern int LaserFireObject(short nObject, ubyte weapon_id, int level, int flags,
 // direction "direction" from the position "position"
 // Returns tObject number of laser fired or -1 if not possible to fire
 // laser.
+short CreateClusterLight (tObject *objP);
+
 int CreateNewLaserEasy(vmsVector * direction, vmsVector * position, short parent, ubyte weaponType, int makeSound);
 
 // creates a weapon tObject
-int CreateWeaponObject(ubyte weaponType, short nSegment,vmsVector *position);
+int CreateWeaponObject (ubyte weaponType, short nSegment,vmsVector *position, short nParent);
 
 // give up control of the guided missile
 void ReleaseGuidedMissile(int player_num);
