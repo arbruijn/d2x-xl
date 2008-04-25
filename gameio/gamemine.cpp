@@ -972,11 +972,8 @@ if (left < r)
 
 static inline int IsLightVert (int nVertex, grsFace *faceP)
 {
-	ushort	*pv;
-	int		i;
-
-pv = gameStates.render.bTriangleMesh ? faceP->triIndex : faceP->index;
-for (i = faceP->nVerts; i; i--, pv++)
+ushort *pv = (gameStates.render.bTriangleMesh ? faceP->triIndex : faceP->index);
+for (int i = faceP->nVerts; i; i--, pv++)
 	if (*pv == (ushort) nVertex)
 		return 1;
 return 0;

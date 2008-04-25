@@ -360,14 +360,6 @@ color [0].red = (color [1].red + color [3].red) / 2;
 color [0].green = (color [1].green + color [3].green) / 2;
 color [0].blue = (color [1].blue + color [3].blue) / 2;
 color [0].alpha = (color [1].alpha + color [3].alpha) / 2;
-#if 0//def _DEBUG
-if (VmEdgePointDist (gameData.segs.fVertices + index [1], gameData.segs.fVertices + index [2], gameData.segs.fVertices + index [0], 0) < 1)
-	return 0;
-if (VmEdgePointDist (gameData.segs.fVertices + index [2], gameData.segs.fVertices + index [3], gameData.segs.fVertices + index [0], 0) < 1)
-	return 0;
-if (VmEdgePointDist (gameData.segs.fVertices + index [3], gameData.segs.fVertices + index [4], gameData.segs.fVertices + index [0], 0) < 1)
-	return 0;
-#endif
 DeleteTriangle (triP); //remove any references to this triangle
 if (!(triP = CreateTriangle (triP, index, nFace, nIndex))) //create a new triangle at this location (insert)
 	return 0;
@@ -466,10 +458,6 @@ do {
 	j = m_nTriangles;
 	PrintLog ("   splitting triangles (pass %d)\n", nPass);
 	for (i = h, h = 0; i < j; i++) {
-#ifdef _DEBUG
-		if (i == 86)
-			i = i;
-#endif
 		if (m_triangles [i].nPass != nPass - 1)
 			continue;
 #ifdef _DEBUG
@@ -561,9 +549,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 #endif
 		}
 	grsTriP->nIndex = nIndex;
-#ifdef _DEBUG
 	memcpy (grsTriP->index, triP->index, sizeof (triP->index));
-#endif
 	for (i = 0; i < 3; i++)
 		gameData.segs.faces.vertices [nIndex + i] = gameData.segs.fVertices [triP->index [i]].v3;
 	VmVecNormal (gameData.segs.faces.normals + nIndex,
@@ -986,10 +972,8 @@ for (m_colorP = gameData.render.color.ambient, i = gameData.segs.nVertices; i; i
 		m_colorP->color.blue /= m_colorP->color.alpha;
 		m_colorP->color.alpha = 1;
 		}
-#ifdef _DEBUG
 if (!gameOpts->ogl.bPerPixelLighting && gameOpts->render.nMeshQuality)
 	m_triMeshBuilder.Build ();
-#endif
 if (gameStates.render.bTriangleMesh)
 	DestroyCameras ();
 }
