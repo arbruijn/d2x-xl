@@ -1228,7 +1228,7 @@ for (i = gameData.render.lights.dynamic.nLights; i; i--, pl++, psl++) {
 
 // ----------------------------------------------------------------------------------------------
 
-char *ppLightingFS [] = {
+char *pszPPLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D lMapTex;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
@@ -1361,7 +1361,7 @@ char *ppLightingFS [] = {
 	};
 
 
-char *ppLightingVS [] = {
+char *pszPPLightingVS [] = {
 	"#define LIGHTS 8\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
@@ -1415,7 +1415,7 @@ char *ppLightingVS [] = {
 	
 //-------------------------------------------------------------------------
 
-char *lightingFS [] = {
+char *pszLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"void main() {\r\n" \
 	"gl_FragColor = color = gl_Color * texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
@@ -1452,7 +1452,7 @@ char *lightingFS [] = {
 	};
 
 
-char *lightingVS [] = {
+char *pszLightingVS [] = {
 	"void main() {\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"	gl_Position = ftransform();\r\n" \
@@ -1532,14 +1532,14 @@ gameOpts->ogl.bPerPixelLighting = 0;
 if (!gameOpts->ogl.bPerPixelLighting)
 	return 0;
 if (nLights) {
-	fsP = ppLightingFS;
-	vsP = ppLightingVS;
+	fsP = pszPPLightingFS;
+	vsP = pszPPLightingVS;
 	nLights = MAX_LIGHTS_PER_PIXEL;
 	i = nLights - 1;
 	}
 else {
-	fsP = lightingFS;
-	vsP = lightingVS;
+	fsP = pszLightingFS;
+	vsP = pszLightingVS;
 	i = 0;
 	}
 if (perPixelLightingShaderProgs [i][nType])
