@@ -130,10 +130,10 @@ OglSetAttribute (NULL, "SDL_GL_DOUBLEBUFFER", SDL_GL_DOUBLEBUFFER, 1);
 
 void OglInitState (void)
 {
-/* select clearing (background) color   */
+// select clearing (background) color 
 glClearColor (0, 0, 0, 0);
 glShadeModel (GL_SMOOTH);
-/* initialize viewing values */
+// initialize viewing values
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();
 glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);

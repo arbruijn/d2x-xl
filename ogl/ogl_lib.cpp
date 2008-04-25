@@ -349,10 +349,11 @@ else
 	gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #endif
 glMatrixMode (GL_PROJECTION);
+glLoadIdentity ();//clear matrix
 if (gameStates.render.bRearView)
 	glScalef (-1.0f, 1.0f, 1.0f);
 gluPerspective (gameStates.render.glFOV * ((double) viewInfo.zoom / 65536.0), 
-					 ((double) grdCurScreen->scWidth / (double) grdCurScreen->scHeight), 
+					 (double) grdCurScreen->scWidth / (double) grdCurScreen->scHeight, 
 					 ZNEAR, ZFAR);
 gameData.render.ogl.depthScale.p.x = (float) (ZFAR / (ZFAR - ZNEAR));
 gameData.render.ogl.depthScale.p.y = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
@@ -540,8 +541,6 @@ else
 
 	//if (gameStates.render.nShadowBlurPass < 2) 
 		{
-		glMatrixMode (GL_PROJECTION);
-		glLoadIdentity ();//clear matrix
 		OglSetFOV (gameStates.render.glFOV);
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();
