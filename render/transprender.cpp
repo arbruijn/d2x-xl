@@ -817,7 +817,6 @@ gameOpts->render.bDepthSort = bDepthSort;
 void RIRenderBullet (tParticle *pParticle)
 {
 	tObject	o;
-	float		fScale = (float) pParticle->nLife / (float) pParticle->nTTL;
 
 memset (&o, 0, sizeof (o));
 o.nType = OBJ_POWERUP;
@@ -826,15 +825,7 @@ o.position.mOrient = pParticle->orient;
 o.renderType = RT_POLYOBJ;
 o.rType.polyObjInfo.nModel = BULLET_MODEL;
 o.rType.polyObjInfo.nTexOverride = -1;
-#if 0
-gameData.models.nScale = (fix) (sqrt (fScale) * F1_0);
-tFaceColor *psc = AvgSgmColor (pParticle->nSegment, NULL);
-int nLight = AddDynLight (NULL, &psc->color, F1_0, pParticle->nSegment, -1, -1, &o.position.vPos);
-#endif
 DrawPolygonObject (&o, 0, 1);
-#if 0
-DeleteDynLight (nLight);
-#endif
 glDisable (GL_TEXTURE_2D);
 renderItems.bTextured = 0;
 renderItems.bClientState = 0;

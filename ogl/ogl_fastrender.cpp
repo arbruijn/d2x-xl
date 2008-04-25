@@ -347,7 +347,7 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 		oglRes = glGetError ();
 		}
 	}
-else if (nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTextured)) {
+else if ((nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTextured))) {
 	//per pixel lighting
 	nLights = MAX_LIGHTS_PER_PIXEL;
 	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;

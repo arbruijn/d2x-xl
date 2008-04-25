@@ -976,8 +976,9 @@ short SetNearestSegmentLights (int nSegment, int bVariable, int nType, int nThre
 	static int nActiveLights [4] = {-1, -1, -1, -1};
 	static int nFrameFlipFlop = 0;
 #endif
+#if SORT_LIGHTS
 	int	nMaxLights = (nType && gameOpts->ogl.bObjLighting) ? 8 : gameOpts->ogl.nMaxLights;
-
+#endif
 #if PROFILING
 	time_t t = clock ();
 #endif
