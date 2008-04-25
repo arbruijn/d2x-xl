@@ -367,8 +367,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 #endif
 	else {	//make it decay faster
-		fLightDist *= fLightDist;
-		if (!nMeshQuality && (nType < 2))
+		if (nMeshQuality && (nType < 2))
+			fLightDist *= sqrt (fLightDist);
+		else
+			fLightDist *= fLightDist;
+		if (nType < 2)
 			fLightDist *= 2.0f;
 		if (vcd.vertNorm.p.x == 0 && vcd.vertNorm.p.y == 0 && vcd.vertNorm.p.z == 0) 
 			NdotL = 0;
@@ -531,8 +534,11 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 			NdotL = 1;
 			}
 		else {	//make it decay faster
-			fLightDist *= fLightDist;
-			if (!nMeshQuality && (nType < 2))
+			if (nMeshQuality && (nType < 2))
+				fLightDist *= sqrt (fLightDist);
+			else
+				fLightDist *= fLightDist;
+			if (nType < 2)
 				fLightDist *= 2.0f;
 			NdotL = VmVecDot (&vcd.vertNorm, &lightDir.v3);
 			if (NdotL > 0)
