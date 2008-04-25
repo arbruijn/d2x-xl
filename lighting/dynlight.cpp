@@ -787,9 +787,9 @@ activeLightsP [xDist].nType = nType;
 activeLightsP [xDist].psl = psl;
 gameData.render.lights.dynamic.shader.nActiveLights [nThread]++;
 if (gameData.render.lights.dynamic.shader.nFirstLight [nThread] > xDist)
-	gameData.render.lights.dynamic.shader.nFirstLight [nThread] = xDist;
+	gameData.render.lights.dynamic.shader.nFirstLight [nThread] = (short) xDist;
 if (gameData.render.lights.dynamic.shader.nLastLight [nThread] < xDist)
-	gameData.render.lights.dynamic.shader.nLastLight [nThread] = xDist;
+	gameData.render.lights.dynamic.shader.nLastLight [nThread] = (short) xDist;
 return 1;
 }
 

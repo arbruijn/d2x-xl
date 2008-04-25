@@ -535,7 +535,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 			}
 		else {	//make it decay faster
 			if (nMeshQuality && (nType < 2))
-				fLightDist *= sqrt (fLightDist);
+				fLightDist *= (float) sqrt (fLightDist);
 			else
 				fLightDist *= fLightDist;
 			if (nType < 2)
