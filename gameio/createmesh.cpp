@@ -743,7 +743,7 @@ if (m_nWallType < 2)
 else if (WALLS [m_nWall].flags & WALL_RENDER_ADDITIVE)
 	m_faceP->bAdditive = 2;
 else if (strstr (pszName, "lava"))
-	m_faceP->bAdditive = 3;
+	m_faceP->bAdditive = 2;
 else
 	m_faceP->bAdditive = (strstr (pszName, "force") || m_faceP->bSparks) ? 1 : 0;
 }

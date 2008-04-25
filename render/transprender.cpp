@@ -347,8 +347,8 @@ int RIAddFaceTris (grsFace *faceP)
 {
 	grsTriangle	*triP;
 	fVector		vertices [3];
-	int			h, i, j;
-	grsBitmap	*bmP = BmOverride (faceP->bmBot, -1);
+	int			h, i, j, bAdditive = FaceIsAdditive (faceP);
+	grsBitmap	*bmP = faceP->bTextured ? BmOverride (faceP->bmBot, -1) : NULL;
 
 #ifdef _DEBUG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -365,10 +365,10 @@ for (h = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; h; h-
 			VmVecFixToFloat (vertices + i, &gameData.segs.points [triP->index [i]].p3_vec);
 #endif
 		}
-	if (!RIAddPoly (faceP, faceP->bTextured ? bmP : NULL, vertices, 3, gameData.segs.faces.texCoord + triP->nIndex, 
+	if (!RIAddPoly (faceP, bmP, vertices, 3, gameData.segs.faces.texCoord + triP->nIndex, 
 						 gameData.segs.faces.color + triP->nIndex,
 						 NULL, 3, 1, GL_TRIANGLES, GL_REPEAT, 
-						 FaceIsAdditive (faceP), faceP->nSegment))
+						 bAdditive, faceP->nSegment))
 		return 0;
 	}
 return 1;
@@ -383,7 +383,6 @@ if (gameStates.render.bTriangleMesh)
 
 	fVector		vertices [4];
 	int			i, j;
-	grsBitmap	*bmP = BmOverride (faceP->bmBot, -1);
 
 #ifdef _DEBUG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -395,7 +394,8 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	else
 		VmVecFixToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
 	}
-return RIAddPoly (faceP, faceP->bTextured ? bmP : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
+return RIAddPoly (faceP, faceP->bTextured ? BmOverride (faceP->bmBot, -1) : NULL, 
+						vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
 						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, 
 						FaceIsAdditive (faceP), faceP->nSegment) > 0;
