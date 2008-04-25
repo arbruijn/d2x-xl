@@ -124,18 +124,26 @@ tTexBright texBrightD2 [NUM_LIGHTS_D2] = {
 
 static void ResetClusterLights (void)
 {
+if (!gameStates.render.bClusterLights)
+	return;
+
 	tObject	*objP = OBJECTS;
 	int		i;
 
 for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
-	if ((objP->nType == OBJ_LIGHT) && (objP->id == CLUSTER_LIGHT_ID))
+	if ((objP->nType == OBJ_LIGHT) && (objP->id == CLUSTER_LIGHT_ID)) {
+		objP->lifeleft = 0;
 		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
+		}
 }
 
 //--------------------------------------------------------------------------
 
 static void SetClusterLights (void)
 {
+if (!gameStates.render.bClusterLights)
+	return;
+
 	tObject	*objP = OBJECTS;
 	int		h, i;
 
@@ -150,14 +158,16 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 				objP->position.vPos.p.x /= h;
 				objP->position.vPos.p.y /= h;
 				objP->position.vPos.p.z /= h;
+#if 1
 				objP->cType.lightInfo.color.red /= h;
 				objP->cType.lightInfo.color.green /= h;
 				objP->cType.lightInfo.color.blue /= h;
 				objP->cType.lightInfo.color.alpha /= h;
+#endif
 				}
 			if (1 || (objP->cType.lightInfo.nSegment < 0)) {
-				h = FindSegByPoint (&objP->position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
-				objP->cType.lightInfo.nSegment = (h < 0) ? abs (objP->cType.lightInfo.nSegment) : h;
+				short nSegment = FindSegByPoint (&objP->position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
+				objP->cType.lightInfo.nSegment = (nSegment < 0) ? abs (objP->cType.lightInfo.nSegment) : nSegment;
 				}
 			if (objP->nSegment != objP->cType.lightInfo.nSegment)
 				RelinkObject (i, objP->cType.lightInfo.nSegment);
@@ -171,7 +181,10 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 
 int InitClusterLight (short nObject, tRgbaColorf *color, fix xObjIntensity)
 {
-	short nLightObj = gameData.objs.lightObjs [nObject].nObject;
+if (!gameStates.render.bClusterLights)
+	return 0;
+
+short nLightObj = gameData.objs.lightObjs [nObject].nObject;
 
 if (0 > nLightObj)
 	return 0;
@@ -185,6 +198,8 @@ if (lightObjP->nSignature != gameData.objs.lightObjs [nObject].nSignature) {
 	return 0;
 	}
 tObject *objP = OBJECTS + nObject;
+if (lightObjP->lifeleft < objP->lifeleft)
+	lightObjP->lifeleft = objP->lifeleft;
 if (!lightObjP->cType.lightInfo.nObjects++) {
 	lightObjP->position.vPos = objP->position.vPos;
 	lightObjP->cType.lightInfo.nSegment = objP->nSegment;

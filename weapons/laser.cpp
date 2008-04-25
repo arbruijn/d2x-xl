@@ -1222,6 +1222,8 @@ return rVal;
 
 short CreateClusterLight (tObject *objP)
 {
+if (!gameStates.render.bClusterLights)
+	return -1;
 short nObject = CreateObject (OBJ_LIGHT, CLUSTER_LIGHT_ID, -1, objP->nSegment, &OBJPOS (objP)->vPos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
 if (nObject >= 0)
 	OBJECTS [nObject].lifeleft = IMMORTAL_TIME;

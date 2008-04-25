@@ -1149,6 +1149,8 @@ if ((t = FindArg ("-renderpath")))
 	gameOptions [0].render.nPath = NumArg (t, 1);
 if ((t = FindArg ("-split_polys")))
 	gameStates.render.bSplitPolys = NumArg (t, 1);
+if ((t = FindArg ("-cluster_lights")))
+	gameStates.render.bClusterLights = NumArg (t, 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -2058,6 +2060,7 @@ gameStates.render.nInterpolationMethod = 0;
 gameStates.render.bTMapFlat = 0;
 gameStates.render.nLighting = 1;
 gameStates.render.bTransparency = 0;
+gameStates.render.bClusterLights = 1;
 gameStates.render.bSplitPolys = 1;
 gameStates.render.bHaveStencilBuffer = 0;
 gameStates.render.nRenderPass = -1;

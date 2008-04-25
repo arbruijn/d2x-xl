@@ -888,6 +888,7 @@ typedef struct tRenderStates {
 	int bUseCameras;
 	int bUseDynLight;
 	int bApplyDynLight;
+	int bClusterLights;
 	int nSoften;
 	int bHeadLightOn;
 	int bHaveSkyBox;

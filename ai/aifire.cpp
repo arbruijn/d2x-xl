@@ -236,7 +236,10 @@ int LeadPlayer (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayer
 
 void AICreateClusterLight (tObject *objP, short nObject, short nShot)
 {
-	short nPrevShot = gameData.objs.shots [nObject].nObject;
+if (!gameStates.render.bClusterLights)
+	return;
+	
+short nPrevShot = gameData.objs.shots [nObject].nObject;
 
 #ifdef _DEBUG
 if (nObject == nDbgObj)
