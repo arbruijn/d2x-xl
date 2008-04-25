@@ -16,6 +16,7 @@ extern tLightMap		*lightMaps;
 extern GLhandleARB	lmShaderProgs [3];
 
 void InitLightmapShaders (void);
+void RestoreLights (int bVariable);
 void CreateLightMaps (void);
 void DestroyLightMaps (void);
 int OglCreateLightMaps (void);

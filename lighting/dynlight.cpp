@@ -33,6 +33,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "endlevel.h"
 #include "renderthreads.h"
 #include "light.h"
+#include "lightmap.h"
 #include "headlight.h"
 #include "dynlight.h"
 
@@ -1168,6 +1169,13 @@ extern int nDbgVertex;
 
 void ComputeStaticDynLighting (void)
 {
+if (gameOpts->ogl.bPerPixelLighting) {
+	CreateLightMaps ();
+	if (!lightMaps) {
+		gameOpts->ogl.bPerPixelLighting = gameStates.ogl.bPerPixelLightingOk = 0; 
+		RestoreLights (0);
+		}
+	}
 memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 if (gameStates.app.bNostalgia)
 	return;

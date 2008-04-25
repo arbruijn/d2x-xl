@@ -2972,7 +2972,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\renderthreads.h"
+						RelativePath="..\..\include\renderthreads.h"
 						>
 					</File>
 					<File

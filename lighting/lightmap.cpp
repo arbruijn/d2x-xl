@@ -71,11 +71,30 @@ int InitLightData (int bVariable);
 
 //------------------------------------------------------------------------------
 
+int HaveLightMaps (void)
+{
+return (lightMapInfo != NULL);
+}
+
+//------------------------------------------------------------------------------
+
 inline void FindOffset (vmsVector *outvec, vmsVector vec1, vmsVector vec2, double f_offset)
 {
 outvec->p.x = (fix) (f_offset * (vec2.p.x - vec1.p.x)); 
 outvec->p.y = (fix) (f_offset * (vec2.p.y - vec1.p.y)); 
 outvec->p.z = (fix) (f_offset * (vec2.p.z - vec1.p.z)); 
+}
+
+//------------------------------------------------------------------------------
+
+void RestoreLights (int bVariable)
+{
+	tDynLight	*pl;
+	int			i;
+
+for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
+	if (!(pl->nType || (pl->bVariable && !bVariable)))
+		pl->bOn = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -136,7 +155,7 @@ int OglCreateLightMaps (void)
 {
 	tLightMap	*lmP = lightMaps;
 
-for (int i = gameData.segs.nFaces; i; i--, lmP++) {
+for (int i = gameData.segs.nFaces + 1; i; i--, lmP++) {
 	OglGenTextures (1, &lmP->handle);
 	if (!lmP->handle)
 		return 0;
@@ -154,7 +173,7 @@ void OglDestroyLightMaps (void)
 {
 if (lightMaps) { 
 	tLightMap *lmP = lightMaps;
-	for (int i = gameData.segs.nFaces; i; i--, lmP++)
+	for (int i = gameData.segs.nFaces + 1; i; i--, lmP++)
 		if (lmP->handle) {
 			OglDeleteTextures (1, (GLuint *) &lmP->handle);
 			lmP->handle = 0;
@@ -511,14 +530,18 @@ if (!(nLights = CountLights (bVariable)))
 	return 0;
 if (!(lightMapInfo = (tLightMapInfo *) D2_ALLOC (sizeof (tLightMapInfo) * nLights)))
 	return nLights = 0; 
-if (!(lightMaps = (tLightMap *) D2_ALLOC (gameData.segs.nFaces * sizeof (tLightMap)))) {
+if (!(lightMaps = (tLightMap *) D2_ALLOC ((gameData.segs.nFaces + 1) * sizeof (tLightMap)))) {
 	D2_FREE (lightMapInfo);
 	return nLights = 0; 
 	}
 memset (lightMaps, 0, sizeof (tLightMap) * gameData.segs.nFaces); 
 memset (lightMapInfo, 0, sizeof (tLightMapInfo) * nLights); 
 nLights = 0; 
-lmiP = lightMapInfo;
+//first lightmap is dummy lightmap for multi pass lighting
+float *colorP = &lightMaps->bmP [0][0].red;
+for (int i = LIGHTMAP_WIDTH * LIGHTMAP_WIDTH * 4; i; i--)
+	*colorP++ = 1.0f;
+lmiP = lightMapInfo; 
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++) {
 	if (pl->nType || (pl->bVariable && !bVariable))
 		continue;
@@ -641,7 +664,10 @@ if (nFace <= 0) {
 	memset (&lMapUVL, 0, sizeof (lMapUVL));
 #endif
 	}
-INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
+if (gameStates.app.bMultiThreaded)
+	nLastFace = nFace ? gameData.segs.nFaces : gameData.segs.nFaces / 2;
+else
+	INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
 //Next Go through each surface and create a lightmap for it.
 for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 	sideP = SEGMENTS [faceP->nSegment].sides + faceP->nSide;
@@ -803,16 +829,48 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 				for (s = 0; s < 3; s++)
 					pTexColor [s] /= tempBright; 
 			}
-	memcpy (&lightMaps [nFace].bmP, texColor, sizeof (texColor));
+	memcpy (&lightMaps [nFace + 1].bmP, texColor, sizeof (texColor));
 #endif
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int HaveLightMaps (void)
+static tThreadInfo	ti [2];
+
+int _CDECL_ LightMapThread (void *pThreadId)
 {
-return (lightMapInfo != NULL);
+	int		nId = *((int *) pThreadId);
+
+ComputeLightMaps (nId ? gameData.segs.nFaces / 2 : 0);
+SDL_SemPost (ti [nId].done);
+ti [nId].bDone = 1;
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+static void StartLightMapThreads (pThreadFunc pFunc)
+{
+	int	i;
+
+for (i = 0; i < 2; i++) {
+	ti [i].bDone = 0;
+	ti [i].done = SDL_CreateSemaphore (0);
+	ti [i].nId = i;
+	ti [i].pThread = SDL_CreateThread (pFunc, &ti [i].nId);
+	}
+#if 1
+SDL_SemWait (ti [0].done);
+SDL_SemWait (ti [1].done);
+#else
+while (!(ti [0].bDone && ti [1].bDone))
+	G3_SLEEP (0);
+#endif
+for (i = 0; i < 2; i++) {
+	SDL_WaitThread (ti [i].pThread, NULL);
+	SDL_DestroySemaphore (ti [i].done);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -840,13 +898,15 @@ return;
 
 //------------------------------------------------------------------------------
 
-void CreateLightMaps ()
+void CreateLightMaps (void)
 {
 DestroyLightMaps ();
 if (gameStates.render.color.bLightMapsOk && 
 	 gameOpts->render.color.bUseLightMaps && 
 	 gameData.segs.nSegments) {
-	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
+	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 8))
+		StartLightMapThreads (LightMapThread);
+	else if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 		nFace = 0;
 		NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreateLightMapsPoll);
 		}
