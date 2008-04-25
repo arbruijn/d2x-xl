@@ -1962,7 +1962,7 @@ d1321 = VmVecDot (&v13, &v21);
 d4343 = VmVecDot (&v43, &v43);
 d2121 = VmVecDot (&v21, &v21);
 den = d2121 * d4343 - d4321 * d4321;
-if (abs (den) < 0.00001f) {
+if (fabs (den) < 0.00001f) {
 	VmVecAvg (va, v1, v2);
 	VmVecAvg (vb, v3, v4);
 	VmVecAvg (va, va, vb);
@@ -2006,7 +2006,7 @@ d1321 = VmVecDot (&v13, &v21);
 d4343 = VmVecDot (&v43, &v43);
 d2121 = VmVecDot (&v21, &v21);
 den = d2121 * d4343 - d4321 * d4321;
-if (abs (den) < 0.00001f) {
+if (fabs (den) < 0.00001f) {
 	VmVecAvg (va, v1, v2);
 	VmVecAvg (vb, v3, v4);
 	VmVecAvg (va, va, vb);
