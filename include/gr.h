@@ -703,6 +703,7 @@ typedef struct grsFace {
 	grsBitmap			*bmTop;
 	tTexCoord2f			*pTexCoord;	//needed to override default tex coords, e.g. for camera outputs
 	tRgbaColorf			color;
+	float					rad;
 	short					nWall;
 	short					nBaseTex;
 	short					nOvlTex;

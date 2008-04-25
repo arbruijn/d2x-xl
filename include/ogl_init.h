@@ -383,7 +383,7 @@ int G3DrawTexPolyMulti (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tOglTexture	*lightMap, 
+	tLightMap	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend);
@@ -395,7 +395,7 @@ int G3DrawTexPolyLightmap (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tOglTexture	*lightMap, 
+	tLightMap	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend);
@@ -407,7 +407,7 @@ int G3DrawTexPolyFlat (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tOglTexture	*lightMap, 
+	tLightMap	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend);

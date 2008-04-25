@@ -709,6 +709,8 @@ return m_normalP;
 
 void CQuadMeshBuilder::InitFace (short nSegment, ubyte nSide)
 {
+	fix	rMin, rMax;
+
 memset (m_faceP, 0, sizeof (*m_faceP));
 m_faceP->nSegment = nSegment;
 m_faceP->nVerts = 4;
@@ -721,6 +723,11 @@ m_faceP->nSegment = nSegment;
 m_faceP->nSide = nSide;
 m_faceP->nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWall : (ushort) -1;
 m_faceP->bAnimation = IsAnimatedTexture (m_faceP->nBaseTex) || IsAnimatedTexture (m_faceP->nOvlTex);
+ComputeSideRads (nSegment, nSide, &rMin, &rMax);
+float rMinf = f2fl (rMin);
+float rMaxf = f2fl (rMax);
+m_faceP->rad  = (float) (sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2) / 10.0);
+
 }
 
 //------------------------------------------------------------------------------

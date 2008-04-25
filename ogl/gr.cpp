@@ -38,6 +38,7 @@
 #include "render.h"
 #include "particles.h"
 #include "glare.h"
+#include "lightmap.h"
 #include "newmenu.h"
 
 #define DECLARE_VARS
@@ -175,6 +176,9 @@ void ResetTextures (int bReload, int bGame)
 {
 if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 	OglSmashTextureListInternal (); 
+#if LIGHTMAPS
+	OglDestroyLightMaps ();
+#endif
 	DestroyGlareDepthTexture ();
 	NMFreeAltBg (1);
 	if (bReload)

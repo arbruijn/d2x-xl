@@ -288,8 +288,6 @@ int AddDynLight (grsFace *faceP, tRgbaColorf *pc, fix xBrightness, short nSegmen
 {
 	tDynLight	*pl;
 	short			h, i;
-	fix			rMin, rMax;
-	float			rMinf, rMaxf;
 #if USE_OGL_LIGHTS
 	GLint			nMaxLights;
 #endif
@@ -372,14 +370,7 @@ else if (nSegment >= 0) {
 	else {
 		int t = gameData.segs.segments [nSegment].sides [nSide].nOvlTex;
 		pl->nType = 0;
-		ComputeSideRads (nSegment, nSide, &rMin, &rMax);
-#if 0
-		pl->rad = f2fl ((rMin + rMax) / 20);
-#else
-		rMinf = f2fl (rMin);
-		rMaxf = f2fl (rMax);
-		pl->rad  = (float) (sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2) / 10.0);
-#endif
+		pl->rad = faceP ? faceP->rad : 0;
 		//RegisterLight (NULL, nSegment, nSide);
 		pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide) || IS_WALL (SEGMENTS [nSegment].sides [nSide].nWall);
 		COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
@@ -660,6 +651,8 @@ gameData.render.lights.dynamic.shader.nLights = 0;
 memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 UpdateOglHeadLight ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
+	if (!pl->bOn)
+		continue;
 	psl->faceP = pl->faceP;
 	memcpy (&psl->color, &pl->color, sizeof (pl->color));
 	psl->color.c.a = 1.0f;

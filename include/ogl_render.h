@@ -9,6 +9,7 @@
 
 #include "ogl_defs.h"
 #include "ogl_lib.h"
+#include "lightmap.h"
 
 void OglDrawEllipse (int nSides, int nType, float xsc, float xo, float ysc, float yo, tSinCosf *sinCosP);
 void OglDrawCircle (int nSides, int nType);
@@ -23,7 +24,7 @@ int G3DrawTexPolyMulti (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tOglTexture	*lightMap, 
+	tLightMap	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend,
@@ -36,7 +37,7 @@ int G3DrawTexPolyLightmap (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tOglTexture	*lightMap, 
+	tLightMap	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend,
@@ -49,7 +50,7 @@ int G3DrawTexPolyFlat (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tOglTexture	*lightMap, 
+	tLightMap	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend,
@@ -75,7 +76,7 @@ void InitGrayScaleShader (void);
 
 //------------------------------------------------------------------------------
 
-typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, tOglTexture *, vmsVector *, int, int, short);
+typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, tLightMap *, vmsVector *, int, int, short);
 
 extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
 

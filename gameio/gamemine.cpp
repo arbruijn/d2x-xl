@@ -1309,17 +1309,17 @@ if (gameStates.app.bD2XLevel) {
 void InitTexColors (void)
 {
 	int			i;
-	tLightMap	lm;
+	GLfloat		color [3];
 	tFaceColor	*pf = gameData.render.color.textures;
 
 // get the default colors
 memset (gameData.render.color.textures, 0, sizeof (gameData.render.color.textures));
 for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
-	if (GetLightColor (i, &lm)) {
+	if (GetLightColor (i, color) > 0) {
 		pf->index = 1;
-		pf->color.red = lm.color [0];
-		pf->color.green = lm.color [1];
-		pf->color.blue = lm.color [2];
+		pf->color.red = color [0];
+		pf->color.green = color [1];
+		pf->color.blue = color [2];
 		}
 	}
 }

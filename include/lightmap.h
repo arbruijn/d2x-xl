@@ -4,25 +4,24 @@
 #include "ogl_defs.h"
 #include "ogl_texture.h"
 
+#define LIGHTMAP_WIDTH	8
+
 typedef struct tLightMap {
-	vmsVector	pos;
-	GLfloat		color[4];
-	//float		bright;
-	double		range;
-	vmsVector  dir;  //currently based on face normals
-	int			refside;  //(seg*6)+tSide ie which tSide the light is on
+	GLuint		handle;
+	tRgbaColorf	bmP [LIGHTMAP_WIDTH][LIGHTMAP_WIDTH];
 } tLightMap;
 
-extern int				numLightMaps;
-extern tOglTexture	*lightMaps;  //Level Lightmaps - currently hardset to 5400, probably need to change this to a variable number
-extern tLightMap		*lightData;  //Level lights
+//extern tOglTexture	*lightMaps;
+extern tLightMap		*lightMaps;
 extern GLhandleARB	lmShaderProgs [3];
 
 void InitLightmapShaders (void);
 void CreateLightMaps (void);
 void DestroyLightMaps (void);
+int OglCreateLightMaps (void);
+void OglDestroyLightMaps (void);
 int HaveLightMaps (void);
-int GetLightColor (int tMapNum, tLightMap *pTempLight);
+double GetLightColor (int tMapNum, GLfloat *colorP);
 
 #define	USE_LIGHTMAPS \
 			(gameStates.render.color.bLightMapsOk && \
