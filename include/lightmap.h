@@ -32,7 +32,6 @@ void CreateLightMaps (void);
 void DestroyLightMaps (void);
 int OglCreateLightMaps (void);
 void OglDestroyLightMaps (void);
-int HaveLightMaps (void);
 double GetLightColor (int tMapNum, GLfloat *colorP);
 
 #define	USE_LIGHTMAPS \
