@@ -450,7 +450,7 @@ return SplitEdge (m_edges + triP->lines [h], nPass);
 int CTriMeshBuilder::SplitTriangles (void)
 {
 	int	bSplit = 0, h, i, j, nSplitRes;
-	short	nPass = 0;
+	short	nPass = 0, nMaxPasses = 10 * gameOpts->render.nMeshQuality;
 
 h = 0;
 do {
@@ -479,7 +479,7 @@ do {
 			}
 		}
 	nPass++;
-	} while (bSplit && (nPass < 10));
+	} while (bSplit && (nPass < nMaxPasses));
 return 1;
 }
 

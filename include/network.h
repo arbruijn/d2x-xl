@@ -280,7 +280,7 @@ typedef struct tMpParams {
 	ubyte	nKillGoal;
 	ubyte	bInvul;
 	ubyte	bMarkerView;
-	ubyte	bAlwaysBright;
+	ubyte	bIndestructibleLights;
 	ubyte	bBrightPlayers;
 	ubyte bDarkness;
 	ubyte bTeamDoors;

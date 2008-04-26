@@ -244,7 +244,7 @@ typedef struct {
 	ubyte   pad[3];    //keep alignment
 	fix     lighting;  //how much light this casts
 	fix     damage;    //how much damage being against this does (for lava)
-	short   eclip_num; //the tEffectClip that changes this, or -1
+	short   nEffectClip; //the tEffectClip that changes this, or -1
 	short   destroyed; //bitmap to show when destroyed, or -1
 	short   slide_u,slide_v;    //slide rates of texture, stored in 8:8 fix
 	#ifdef EDITOR
@@ -258,7 +258,7 @@ typedef struct {
 	ubyte			flags;
 	fix			lighting;		// 0 to 1
 	fix			damage;			//how much damage being against this does
-	int			eclip_num;		//if not -1, the tEffectClip that changes this   
+	int			nEffectClip;		//if not -1, the tEffectClip that changes this   
 } D1_tmap_info;
 
 extern int Num_tmaps;

@@ -1662,7 +1662,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 			int	ec, db;
 			tEffectClip *ecP;
 
-			ec=gameData.pig.tex.pTMapInfo [tm].eclip_num;
+			ec=gameData.pig.tex.pTMapInfo [tm].nEffectClip;
 			ecP = (ec < 0) ? NULL : gameData.eff.pEffects + ec;
 			db = ecP ? ecP->nDestBm : -1;
 

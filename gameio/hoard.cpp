@@ -180,7 +180,7 @@ if (!gameData.hoard.bInitialized) {
 
 	i = gameData.pig.tex.nTextures [0];
 	gameData.pig.tex.pTMapInfo [i] = gameData.pig.tex.pTMapInfo [MultiFindGoalTexture (TMI_GOAL_BLUE)];
-	gameData.pig.tex.pTMapInfo [i].eclip_num = gameData.hoard.goal.nClip;
+	gameData.pig.tex.pTMapInfo [i].nEffectClip = gameData.hoard.goal.nClip;
 	gameData.pig.tex.pTMapInfo [i].flags = TMI_GOAL_HOARD;
 	gameData.pig.tex.nTextures [0]++;
 	Assert (gameData.pig.tex.nTextures [0] < MAX_TEXTURES);

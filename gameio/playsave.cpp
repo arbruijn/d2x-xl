@@ -281,7 +281,7 @@ for (i = 0; i < 2; i++) {
 		RP (mpParams.nKillGoal, 0, 0);
 		RP (mpParams.bInvul, 0, 0);
 		RP (mpParams.bMarkerView, 0, 0);
-		RP (mpParams.bAlwaysBright, 0, 0);
+		RP (mpParams.bIndestructibleLights, 0, 0);
 		RP (mpParams.bBrightPlayers, 0, 0);
 		RP (mpParams.bShowAllNames, 0, 0);
 		RP (mpParams.bShortPackets, 0, 0);
@@ -783,7 +783,7 @@ tParamValue defaultParams [] = {
 	{"mpParams.nKillGoal", "2"},
 	{"mpParams.bInvul", "-1"},
 	{"mpParams.bMarkerView", "0"},
-	{"mpParams.bAlwaysBright", "0"},
+	{"mpParams.bIndestructibleLights", "0"},
 	{"mpParams.bBrightPlayers", "0"},
 	{"mpParams.bShowAllNames", "0"},
 	{"mpParams.bShortPackets", "0"},
@@ -1671,7 +1671,7 @@ for (i = 0; i < 2; i++) {
 		mpParams.nKillGoal = CFReadByte (pcf);
 		mpParams.bInvul = CFReadByte (pcf);
 		mpParams.bMarkerView = CFReadByte (pcf);
-		mpParams.bAlwaysBright = CFReadByte (pcf);
+		mpParams.bIndestructibleLights = CFReadByte (pcf);
 		mpParams.bBrightPlayers = CFReadByte (pcf);
 		mpParams.bShowAllNames = CFReadByte (pcf);
 		mpParams.bShortPackets = CFReadByte (pcf);
@@ -2317,7 +2317,7 @@ for (i = 0; i < 2; i++) {
 		CFWriteByte ((sbyte) mpParams.nKillGoal, &cf);
 		CFWriteByte ((sbyte) mpParams.bInvul, &cf);
 		CFWriteByte ((sbyte) mpParams.bMarkerView, &cf);
-		CFWriteByte ((sbyte) mpParams.bAlwaysBright, &cf);
+		CFWriteByte ((sbyte) mpParams.bIndestructibleLights, &cf);
 		CFWriteByte ((sbyte) mpParams.bBrightPlayers, &cf);
 		CFWriteByte ((sbyte) mpParams.bShowAllNames, &cf);
 		CFWriteByte ((sbyte) mpParams.bShortPackets, &cf);

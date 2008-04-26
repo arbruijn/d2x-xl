@@ -608,9 +608,9 @@ for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLas
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (!(WALL_IS_DOORWAY (segP,nSide, NULL) & WID_RENDER_FLAG))
 			continue;
-		nEffect = (nOvlTex = segP->sides [nSide].nOvlTex) ? gameData.pig.tex.pTMapInfo [nOvlTex].eclip_num : -1;
+		nEffect = (nOvlTex = segP->sides [nSide].nOvlTex) ? gameData.pig.tex.pTMapInfo [nOvlTex].nEffectClip : -1;
 		if (nEffect < 0)
-			nEffect = gameData.pig.tex.pTMapInfo [segP->sides [nSide].nBaseTex].eclip_num;
+			nEffect = gameData.pig.tex.pTMapInfo [segP->sides [nSide].nBaseTex].nEffectClip;
 		if (nEffect < 0)
 			continue;
 		if ((nSound = gameData.eff.pEffects [nEffect].nSound) == -1)

@@ -436,7 +436,7 @@ int bm_init_use_tbl()
 	}
 
 	for (i=0; i<MAX_TEXTURES; i++ ) {
-		TmapInfo [gameStates.app.bD1Data][i].eclip_num = -1;
+		TmapInfo [gameStates.app.bD1Data][i].nEffectClip = -1;
 		TmapInfo [gameStates.app.bD1Data][i].flags = 0;
 		TmapInfo [gameStates.app.bD1Data][i].slide_u = TmapInfo [gameStates.app.bD1Data][i].slide_v = 0;
 		TmapInfo [gameStates.app.bD1Data][i].destroyed = -1;
@@ -830,7 +830,7 @@ void bm_read_eclip()
 			set_texture_name(arg);
 			Assert(textureCount < MAX_TEXTURES);
 			textureCount++;
-			TmapInfo [gameStates.app.bD1Data][textureCount].eclip_num = nClip;
+			TmapInfo [gameStates.app.bD1Data][textureCount].nEffectClip = nClip;
 			NumTextures = textureCount;
 		}
 
@@ -857,7 +857,7 @@ void bm_read_eclip()
 			Textures [gameStates.app.bD1Data][textureCount] = bm[clipCount];
 			set_texture_name( arg );
 			Assert(textureCount < MAX_TEXTURES);
-			TmapInfo [gameStates.app.bD1Data][textureCount].eclip_num = nClip;
+			TmapInfo [gameStates.app.bD1Data][textureCount].nEffectClip = nClip;
 			textureCount++;
 			NumTextures = textureCount;
 		}
@@ -1200,16 +1200,16 @@ grsBitmap *load_polymodel_bitmap(char *name)
 //	Assert( gameData.pig.tex.nObjBitmaps == N_ObjBitmapPtrs );
 
 	if (name[0] == '%') {		//an animating bitmap!
-		int eclip_num;
+		int nEffectClip;
 
-		eclip_num = atoi(name+1);
+		nEffectClip = atoi(name+1);
 
-		if (Effects [gameStates.app.bD1Data][eclip_num].changingObjectTexture == -1) {		//first time referenced
-			Effects [gameStates.app.bD1Data][eclip_num].changingObjectTexture = gameData.pig.tex.nObjBitmaps;
+		if (Effects [gameStates.app.bD1Data][nEffectClip].changingObjectTexture == -1) {		//first time referenced
+			Effects [gameStates.app.bD1Data][nEffectClip].changingObjectTexture = gameData.pig.tex.nObjBitmaps;
 			gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = gameData.pig.tex.nObjBitmaps;
 			gameData.pig.tex.nObjBitmaps++;
 		} else {
-			gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = Effects [gameStates.app.bD1Data][eclip_num].changingObjectTexture;
+			gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = Effects [gameStates.app.bD1Data][nEffectClip].changingObjectTexture;
 		}
 		Assert(gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 		Assert(N_ObjBitmapPtrs < MAX_OBJ_BITMAPS);

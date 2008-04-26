@@ -115,7 +115,7 @@ for (i = 0;i < n;i++) {
 	ti [i].pad [2] = CFReadByte (fp);
 	ti [i].lighting = CFReadFix (fp);
 	ti [i].damage = CFReadFix (fp);
-	ti [i].eclip_num = CFReadShort (fp);
+	ti [i].nEffectClip = CFReadShort (fp);
 	ti [i].destroyed = CFReadShort (fp);
 	ti [i].slide_u = CFReadShort (fp);
 	ti [i].slide_v = CFReadShort (fp);
@@ -135,7 +135,7 @@ for (i = 0;i < n;i++) {
 	ti [i].flags = CFReadByte (fp);
 	ti [i].lighting = CFReadFix (fp);
 	ti [i].damage = CFReadFix (fp);
-	ti [i].eclip_num = CFReadInt (fp);
+	ti [i].nEffectClip = CFReadInt (fp);
 	}
 return i;
 }
@@ -600,7 +600,7 @@ for (i = 0, pt = &gameData.pig.tex.tMapInfo [1][0]; i < j; i++, pt++) {
 	pt->flags = (ubyte) CFReadByte (cfp);
 	pt->lighting = CFReadFix (cfp);
 	pt->damage = CFReadFix (cfp);
-	pt->eclip_num = CFReadInt (cfp);
+	pt->nEffectClip = CFReadInt (cfp);
 	pt->slide_u = 
 	pt->slide_v = 0;
 	pt->destroyed = -1;

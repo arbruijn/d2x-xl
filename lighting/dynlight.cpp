@@ -272,15 +272,15 @@ static int IsDestructibleLight (short nTexture)
 {
 if (!nTexture)
 	return 0;
-else {
-	short nClip = gameData.pig.tex.pTMapInfo [nTexture].eclip_num;
-	tEffectClip	*ecP = (nClip < 0) ? NULL : gameData.eff.pEffects + nClip;
-	short	nDestBM = ecP ? ecP->nDestBm : -1;
-	ubyte	bOneShot = ecP ? (ecP->flags & EF_ONE_SHOT) != 0 : 0;
-	if (nClip == -1) 
-		return gameData.pig.tex.pTMapInfo [nTexture].destroyed != -1;
-	return (nDestBM != -1) && !bOneShot;
-	}
+if (IsMultiGame && netGame.bIndestructibleLights)
+	return 0;
+short nClip = gameData.pig.tex.pTMapInfo [nTexture].nEffectClip;
+tEffectClip	*ecP = (nClip < 0) ? NULL : gameData.eff.pEffects + nClip;
+short	nDestBM = ecP ? ecP->nDestBm : -1;
+ubyte	bOneShot = ecP ? (ecP->flags & EF_ONE_SHOT) != 0 : 0;
+if (nClip == -1) 
+	return gameData.pig.tex.pTMapInfo [nTexture].destroyed != -1;
+return (nDestBM != -1) && !bOneShot;
 }
 
 //------------------------------------------------------------------------------

@@ -707,7 +707,7 @@ if (!(tm = segP->sides [nSide].nOvlTex))
 	return 0;
 
 tmf = segP->sides [nSide].nOvlOrient;		//tm flags
-ec = gameData.pig.tex.pTMapInfo [tm].eclip_num;
+ec = gameData.pig.tex.pTMapInfo [tm].nEffectClip;
 if (ec < 0) {
 	if (gameData.pig.tex.pTMapInfo [tm].destroyed == -1)
 		return 0;
@@ -734,7 +734,7 @@ if (!bForceBlowup) {
 if (!bForceBlowup) 
 	return 0;
 
-if (IsMultiGame && netGame.AlwaysLighting && !nSwitchType)
+if (IsMultiGame && netGame.bIndestructibleLights && !nSwitchType)
 	return 0;
 //note: this must get called before the texture changes, 
 //because we use the light value of the texture to change

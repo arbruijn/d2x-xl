@@ -347,7 +347,7 @@ typedef struct tNetgameInfo {
 	short DoEarthShaker:1;
 	short DoMercury:1;
 	short bAllowMarkerView:1;
-	short AlwaysLighting:1;
+	short bIndestructibleLights:1;
 	short DoAmmoRack:1;
 	short DoConverter:1;
 	short DoHeadlight:1;
@@ -385,7 +385,7 @@ typedef struct tNetgameInfo {
 	short DoHeadlight:1;
 	short DoConverter:1;
 	short DoAmmoRack:1;
-	short AlwaysLighting:1;
+	short bIndestructibleLights:1;
 	short bAllowMarkerView:1;
 	short DoMercury:1;
 	short DoEarthShaker:1;

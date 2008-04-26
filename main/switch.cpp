@@ -1226,7 +1226,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 	nOvlTex = gameData.segs.segments [nSegSide / 65536].sides [nSegSide & 0xffff].nOvlTex;
 	if (nOvlTex <= 0)
 		continue;
-	ec = gameData.pig.tex.pTMapInfo [nOvlTex].eclip_num;
+	ec = gameData.pig.tex.pTMapInfo [nOvlTex].nEffectClip;
 	if (ec < 0) {
 		if (gameData.pig.tex.pTMapInfo [nOvlTex].destroyed == -1)
 			continue;

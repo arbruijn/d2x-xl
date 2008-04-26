@@ -446,7 +446,8 @@ int LastKillGoal;
 // Jeez -- mac compiler can't handle all of these on the same decl line.
 int optSetPower, optPlayTime, optKillGoal, optSocket, optMarkerView, optLight;
 int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
-int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optMslLockInd, optFriendlyInd, optHitInd;
+int optDarkness, optTeamDoors, optMultiCheats, optTgtInd;
+int optDmgIndicator, optMslLockIndicator, optFriendlyIndicator, optHitIndicator;
 int optHeadlights, optPowerupLights, optSpotSize;
 int optShowNames, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPenalty;
@@ -514,7 +515,7 @@ do {
 	optStartInvul = opt++;
 	ADD_CHECK (opt, TXT_MARKER_CAMS, mpParams.bMarkerView, KEY_C, HTX_MULTI2_MARKERCAMS);
 	optMarkerView = opt++;
-	ADD_CHECK (opt, TXT_KEEP_LIGHTS, mpParams.bAlwaysBright, KEY_L, HTX_MULTI2_KEEPLIGHTS);
+	ADD_CHECK (opt, TXT_KEEP_LIGHTS, mpParams.bIndestructibleLights, KEY_L, HTX_MULTI2_KEEPLIGHTS);
 	optLight = opt++;
 	ADD_CHECK (opt, TXT_BRIGHT_SHIPS, mpParams.bBrightPlayers ? 0 : 1, KEY_S, HTX_MULTI2_BRIGHTSHIP);
 	optBrightPlayers = opt++;
@@ -598,8 +599,8 @@ NetworkAdjustMaxDataSize ();
 
 netGame.bAllowMarkerView = m [optMarkerView].value;
 mpParams.bMarkerView = (ubyte) netGame.bAllowMarkerView;
-netGame.AlwaysLighting = m [optLight].value; 
-mpParams.bAlwaysBright = (ubyte) netGame.AlwaysLighting;
+netGame.bIndestructibleLights = m [optLight].value; 
+mpParams.bIndestructibleLights = (ubyte) netGame.bIndestructibleLights;
 mpParams.nDifficulty = gameStates.app.nDifficultyLevel = m [optDifficulty].value;
 if ((mpParams.bShowPlayersOnAutomap = m [optPlayersOnMap].value))
 	netGame.gameFlags |= NETGAME_FLAG_SHOW_MAP;
@@ -646,8 +647,8 @@ if (optTgtInd >= 0) {
 		return;
 		}
 	}
-if (optDmgInd >= 0) {
-	v = menus [optDmgInd].value;
+if (optDmgIndicator >= 0) {
+	v = menus [optDmgIndicator].value;
 	if (v != extraGameInfo [1].bDamageIndicators) {
 		extraGameInfo [1].bDamageIndicators = v;
 		*key = -2;
@@ -787,21 +788,21 @@ do {
 		m [optTgtInd + extraGameInfo [1].bTargetIndicators].value = 1;
 		if (extraGameInfo [1].bTargetIndicators) {
 			ADD_CHECK (opt, TXT_FRIENDLY_INDICATOR, extraGameInfo [1].bFriendlyIndicators, KEY_F, HTX_FRIENDLY_INDICATOR);
-			optFriendlyInd = opt++;
+			optFriendlyIndicator = opt++;
 			}
 		else
-			optFriendlyInd = -1;
+			optFriendlyIndicator = -1;
 		ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [1].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
-		optDmgInd = opt++;
+		optDmgIndicator = opt++;
 		ADD_CHECK (opt, TXT_MSLLOCK_INDICATOR, extraGameInfo [1].bMslLockIndicators, KEY_G, HTX_CPIT_MSLLOCKIND);
-		optMslLockInd = opt++;
+		optMslLockIndicator = opt++;
 		if (extraGameInfo [1].bTargetIndicators || extraGameInfo [1].bDamageIndicators) {
 			ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [1].bTagOnlyHitObjs, KEY_T, HTX_HIT_INDICATOR);
-			optHitInd = opt++;
+			optHitIndicator = opt++;
 			}
 		else {
 			optPenalty =
-			optHitInd = -1;
+			optHitIndicator = -1;
 			extraGameInfo [1].nCoopPenalty = 0;
 			}
 		ADD_TEXT (opt, "", 0);
@@ -809,8 +810,8 @@ do {
 		}
 	else
 		optTgtInd =
-		optDmgInd =
-		optMslLockInd = -1;
+		optDmgIndicator =
+		optMslLockIndicator = -1;
 	i = ExecMenu1 (NULL, TXT_D2XOPTIONS_TITLE, opt, m, NetworkD2XOptionsPoll, &choice);
   //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
 	extraGameInfo [1].bDarkness = (ubyte) m [optDarkness].value;
@@ -846,11 +847,11 @@ do {
 					extraGameInfo [1].bTargetIndicators = j;
 					break;
 					}
-			GET_VAL (extraGameInfo [1].bFriendlyIndicators, optFriendlyInd);
+			GET_VAL (extraGameInfo [1].bFriendlyIndicators, optFriendlyIndicator);
 			}
-		GET_VAL (extraGameInfo [1].bDamageIndicators, optDmgInd);
-		GET_VAL (extraGameInfo [1].bMslLockIndicators, optMslLockInd);
-		GET_VAL (extraGameInfo [1].bTagOnlyHitObjs, optHitInd);
+		GET_VAL (extraGameInfo [1].bDamageIndicators, optDmgIndicator);
+		GET_VAL (extraGameInfo [1].bMslLockIndicators, optMslLockIndicator);
+		GET_VAL (extraGameInfo [1].bTagOnlyHitObjs, optHitIndicator);
 		}
 	} while (i == -2);
 }
