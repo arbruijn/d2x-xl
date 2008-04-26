@@ -761,7 +761,8 @@ ResetTextures (1, bGame);
 G3FreeAllPolyModelItems ();
 InitShaders ();
 #if LIGHTMAPS
-OglCreateLightMaps ();
+if (HaveLightMaps ())
+	OglCreateLightMaps ();
 #endif
 CloseDynLighting ();
 InitDynLighting ();

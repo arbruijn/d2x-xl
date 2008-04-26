@@ -177,7 +177,8 @@ void ResetTextures (int bReload, int bGame)
 if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 	OglSmashTextureListInternal (); 
 #if LIGHTMAPS
-	OglDestroyLightMaps ();
+	if (HaveLightMaps ())
+		OglDestroyLightMaps ();
 #endif
 	DestroyGlareDepthTexture ();
 	NMFreeAltBg (1);
