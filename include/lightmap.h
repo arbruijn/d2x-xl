@@ -4,16 +4,27 @@
 #include "ogl_defs.h"
 #include "ogl_texture.h"
 
+//------------------------------------------------------------------------------
+
 #define LIGHTMAP_WIDTH	8
+
+//------------------------------------------------------------------------------
+
+typedef struct tLightMapInfo {
+	vmsVector	vPos;
+	vmsVector	vDir;  //currently based on face normals
+	GLfloat		color [3];
+	//float		bright;
+	double		range;
+	int			nIndex;  //(seg*6)+tSide ie which tSide the light is on
+} tLightMapInfo;
 
 typedef struct tLightMap {
 	GLuint		handle;
 	tRgbaColorf	bmP [LIGHTMAP_WIDTH][LIGHTMAP_WIDTH];
 } tLightMap;
 
-//extern tOglTexture	*lightMaps;
-extern tLightMap		*lightMaps;
-extern GLhandleARB	lmShaderProgs [3];
+//------------------------------------------------------------------------------
 
 void InitLightmapShaders (void);
 void RestoreLights (int bVariable);
@@ -32,9 +43,17 @@ double GetLightColor (int tMapNum, GLfloat *colorP);
 
 //------------------------------------------------------------------------------
 
+//extern tOglTexture	*lightMaps;
+extern tLightMapInfo	*lightMapInfo;
+extern tLightMap		*lightMaps;
+extern tLightMap		dummyLightMap;
+extern GLhandleARB	lmShaderProgs [3];
+
+//------------------------------------------------------------------------------
+
 static inline int HaveLightMaps (void)
 {
-return (lightMaps != NULL);
+return (lightMapInfo != NULL);
 }
 
 //------------------------------------------------------------------------------

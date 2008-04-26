@@ -615,7 +615,6 @@ return 0;
 
 int CreateShieldSphere (void)
 {
-PrintLog ("   creating shield sphere\n");
 if (!LoadShield ())
 	return 0;
 #if !SIMPLE_SPHERE
@@ -666,10 +665,12 @@ if (gameData.render.shield.nFaces > 0)
 
 void DrawMonsterball (tObject *objP, float red, float green, float blue, float alpha)
 {
+#if !SIMPLE_SPHERE
 if (!gameData.render.monsterball.pSphere) {
 	gameData.render.monsterball.nTessDepth = 3;
 	gameData.render.monsterball.nFaces = CreateSphere (&gameData.render.monsterball);
 	}
+#endif
 if (gameData.render.monsterball.nFaces > 0) {
 	if ((gameOpts->render.bDepthSort > 0) || (gameOpts->render.nPath && !gameOpts->render.bDepthSort))
 		RIAddSphere (riMonsterball, red, green, blue, alpha, objP);

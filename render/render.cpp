@@ -478,7 +478,7 @@ if (bmTop)
 #	endif
 		bmBot, bmTop, 
 #	if LIGHTMAPS
-		lightMaps + props.segNum * 6 + props.sideNum, 
+		NULL, //lightMaps + props.segNum * 6 + props.sideNum, 
 #	endif
 		&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam, props.segNum); 
 else
@@ -487,7 +487,7 @@ else
 #	else
 	fpDrawTexPolyMulti (
 		props.nVertices, pointList, props.uvls, props.uvl_lMaps, bmBot, NULL, 
-		lightMaps + props.segNum * 6 + props.sideNum, 
+		NULL, //lightMaps + props.segNum * 6 + props.sideNum, 
 		&props.vNormal, 0, !bIsMonitor || bIsTeleCam, props.segNum);
 #	endif
 #else
@@ -498,7 +498,7 @@ fpDrawTexPolyMulti (
 #	endif
 	bmBot, bmTop, 
 #	if LIGHTMAPS
-	lightMaps + props.segNum * 6 + props.sideNum, 
+	NULL, //lightMaps + props.segNum * 6 + props.sideNum, 
 #	endif
 	&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam,
 	props.segNum); 

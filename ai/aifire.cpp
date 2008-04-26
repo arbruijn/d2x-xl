@@ -269,9 +269,6 @@ if (nPrevShot >= 0) {
 				gameData.objs.lightObjs [nShot].nObject =
 				gameData.objs.lightObjs [nPrevShot].nObject = nLight;
 				if (nLight >= 0) {
-#ifdef _DEBUG
-					HUDMessage (0, "new robot shot light cluster");
-#endif
 					lightP = OBJECTS + nLight;
 					gameData.objs.lightObjs [nShot].nSignature =
 					gameData.objs.lightObjs [nPrevShot].nSignature = lightP->nSignature;

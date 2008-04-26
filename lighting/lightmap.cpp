@@ -44,17 +44,6 @@ there I just had it exit instead.
 
 //------------------------------------------------------------------------------
 
-typedef struct tLightMapInfo {
-	vmsVector	vPos;
-	vmsVector	vDir;  //currently based on face normals
-	GLfloat		color [3];
-	//float		bright;
-	double		range;
-	int			nIndex;  //(seg*6)+tSide ie which tSide the light is on
-} tLightMapInfo;
-
-//------------------------------------------------------------------------------
-
 #define LMAP_REND2TEX	0
 
 GLhandleARB lmShaderProgs [3] = {0,0,0}; 
@@ -64,6 +53,7 @@ GLhandleARB lmVS [3] = {0,0,0};
 int nLights; 
 tLightMap *lightMaps = NULL;  //Level Lightmaps
 tLightMapInfo *lightMapInfo = NULL;  //Level lights
+tLightMap dummyLightMap;
 
 #define TEXTURE_CHECK 1
 
@@ -181,7 +171,10 @@ void DestroyLightMaps (void)
 if (lightMapInfo) { 
 	OglDestroyLightMaps ();
 	D2_FREE (lightMapInfo);
-	D2_FREE (lightMaps);
+	if (lightMaps == &dummyLightMap)
+		lightMaps = NULL;
+	else
+		D2_FREE (lightMaps);
 	}
 }
 
@@ -508,6 +501,15 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+void InitLightMapTexture (tLightMap *lmP, float fColor)
+{
+float *colorP = (float *) (&lmP->bmP);
+for (int i = LIGHTMAP_WIDTH * LIGHTMAP_WIDTH * 4; i; i--)
+	*colorP++ = fColor;
+}
+
+//------------------------------------------------------------------------------
+
 int InitLightData (int bVariable)
 {
 	tDynLight		*pl;
@@ -531,9 +533,7 @@ memset (lightMaps, 0, sizeof (tLightMap) * gameData.segs.nFaces);
 memset (lightMapInfo, 0, sizeof (tLightMapInfo) * nLights); 
 nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
-float *colorP = &lightMaps->bmP [0][0].red;
-for (int i = LIGHTMAP_WIDTH * LIGHTMAP_WIDTH * 4; i; i--)
-	*colorP++ = 1.0f;
+InitLightMapTexture (lightMaps, 1.0f);
 lmiP = lightMapInfo; 
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++) {
 	if (pl->nType || (pl->bVariable && !bVariable))
@@ -894,6 +894,7 @@ return;
 void CreateLightMaps (void)
 {
 DestroyLightMaps ();
+InitLightMapTexture (&dummyLightMap, 1.0f);
 if (gameStates.render.color.bLightMapsOk && 
 	 gameOpts->render.color.bUseLightMaps && 
 	 gameData.segs.nSegments) {
@@ -906,6 +907,8 @@ if (gameStates.render.color.bLightMapsOk &&
 	else
 		ComputeLightMaps (-1);
 	}
+if (!lightMaps)
+	lightMaps = &dummyLightMap;
 }
 
 //------------------------------------------------------------------------------

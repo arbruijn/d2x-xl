@@ -418,7 +418,7 @@ if (!(bVertexArrays = G3EnableClientStates (!bDepthOnly, !bDepthOnly, bNormals, 
 else {
 	if (bNormals)
 		glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals);
-	if (!bLightMaps) {
+	if (!(bLightMaps || bDepthOnly)) {
 		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
 		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 		}
@@ -433,7 +433,7 @@ else {
 				glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 				}
 			}
-		if (bVertexArrays && (bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1 + bLightMaps))) {
+		if (!(bVertexArrays && (bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1 + bLightMaps)))) {
 			if (bLightMaps)
 				G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
 			G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
