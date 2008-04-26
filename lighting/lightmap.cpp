@@ -71,13 +71,6 @@ int InitLightData (int bVariable);
 
 //------------------------------------------------------------------------------
 
-int HaveLightMaps (void)
-{
-return (lightMapInfo != NULL);
-}
-
-//------------------------------------------------------------------------------
-
 inline void FindOffset (vmsVector *outvec, vmsVector vec1, vmsVector vec2, double f_offset)
 {
 outvec->p.x = (fix) (f_offset * (vec2.p.x - vec1.p.x)); 

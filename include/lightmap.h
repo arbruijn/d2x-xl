@@ -30,4 +30,13 @@ double GetLightColor (int tMapNum, GLfloat *colorP);
 			 !IsMultiGame && \
 			 !gameOpts->render.bDynLighting)
 
+//------------------------------------------------------------------------------
+
+static inline int HaveLightMaps (void)
+{
+return (lightMaps != NULL);
+}
+
+//------------------------------------------------------------------------------
+
 #endif //__lightmap_h
