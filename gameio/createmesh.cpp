@@ -768,6 +768,7 @@ m_faceP->bAdditive = gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_LA
 
 void CQuadMeshBuilder::SetupFace (void)
 {
+	static tTexCoord2f	defaultTC [4] = {{0,0},{1,0},{1,1},{0,1}};
 	int			i, j;
 	vmsVector	vNormal;
 	fVector3		vNormalf;
@@ -784,6 +785,8 @@ for (i = 0; i < 4; i++) {
 	RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);
 	m_texCoordP++;
 	m_ovlTexCoordP++;
+	if (HaveLightMaps ())
+		*m_lMapTexCoordP++ = defaultTC [i];
 	*m_faceColorP++ = gameData.render.color.ambient [j].color;
 	}
 }
@@ -897,6 +900,7 @@ m_vertexP = gameData.segs.faces.vertices;
 m_normalP = gameData.segs.faces.normals;
 m_texCoordP = gameData.segs.faces.texCoord;
 m_ovlTexCoordP = gameData.segs.faces.ovlTexCoord;
+m_lMapTexCoordP = gameData.segs.faces.lMapTexCoord;
 m_faceColorP = gameData.segs.faces.color;
 m_colorP = gameData.render.color.ambient;
 m_segP = SEGMENTS;

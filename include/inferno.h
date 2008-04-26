@@ -1591,6 +1591,7 @@ typedef struct tFaceData {
 	fVector3				*normals;
 	tTexCoord2f			*texCoord;
 	tTexCoord2f			*ovlTexCoord;
+	tTexCoord2f			*lMapTexCoord;
 	tRgbaColorf			*color;
 	ushort				*faceVerts;
 #if USE_RANGE_ELEMENTS

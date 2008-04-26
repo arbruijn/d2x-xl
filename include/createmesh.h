@@ -68,6 +68,7 @@ class CQuadMeshBuilder {
 		fVector3		*m_normalP;
 		tTexCoord2f	*m_texCoordP;
 		tTexCoord2f	*m_ovlTexCoordP;
+		tTexCoord2f	*m_lMapTexCoordP;
 		tRgbaColorf	*m_faceColorP;
 		tFaceColor	*m_colorP;
 		tSegment		*m_segP;
