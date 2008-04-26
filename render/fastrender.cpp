@@ -408,41 +408,40 @@ if (nType == 3) {
 else if (gameOpts->ogl.bPerPixelLighting)
 	OglEnableLighting (1);
 OglSetupTransform (1);
-if (HW_GEO_LIGHTING) {
-	G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
-	G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
-	G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
-	return 0;
+if (!(bVertexArrays = G3EnableClientStates (!bDepthOnly, !bDepthOnly, bNormals, GL_TEXTURE0))) {
+	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
+	G3DisableClientStates (1, 1, bNormals, GL_TEXTURE0);
+	gameOpts->ogl.bPerPixelLighting = gameStates.ogl.bPerPixelLightingOk = 0;
 	}
-if ((bVertexArrays = G3EnableClientStates (!bDepthOnly, !bDepthOnly, bNormals, GL_TEXTURE0))) {
-	if (!bDepthOnly) {
-		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
-		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
-		if (bNormals)
-			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals);
-		}
+else {
+	if (bNormals)
+		glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals);
 	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 
 	if (!bDepthOnly) {
-		if ((bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1))) {
-			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
-			glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
-			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
-			}
-		else
+		if (!(bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1)))
 			G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
-		if (G3EnableClientStates (1, 1, 0, GL_TEXTURE2)) {
-			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+		else {
+			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
 			glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
-			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+			if ((bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE2))) {
+				G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
+				G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
+				}
+			else {
+				glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+				glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+				glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+				if (G3EnableClientStates (1, 1, 0, GL_TEXTURE2)) {
+					glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+					glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+					glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+					}
+				}
 			}
 		}
 	if (bNormals)
 		G3EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
-	}
-else {
-	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
-	G3DisableClientStates (1, 1, bNormals, GL_TEXTURE0);
 	}
 return bVertexArrays;
 }

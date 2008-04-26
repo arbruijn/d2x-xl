@@ -44,7 +44,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-static inline void InitTMU0 (int bVertexArrays)
+static inline void InitTMU0 (int bVertexArrays, int bPerPixelLighting = 0)
 {
 if (glIsList (g3InitTMU [0][bVertexArrays]))
 	glCallList (g3InitTMU [0][bVertexArrays]);
@@ -67,7 +67,7 @@ else
 
 //------------------------------------------------------------------------------
 
-static inline void InitTMU1 (int bVertexArrays)
+static inline void InitTMU1 (int bVertexArrays, int bPerPixelLighting = 0)
 {
 if (glIsList (g3InitTMU [1][bVertexArrays]))
 	glCallList (g3InitTMU [1][bVertexArrays]);
@@ -80,7 +80,7 @@ else
 		glClientActiveTexture (GL_TEXTURE1);
 	glActiveTexture (GL_TEXTURE1);
 	glEnable (GL_TEXTURE_2D);
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bPerPixelLighting ? GL_MODULATE : GL_DECAL);
 	if (g3InitTMU [1][bVertexArrays]) {
 		glEndList ();
 		InitTMU1 (bVertexArrays);
@@ -90,7 +90,7 @@ else
 
 //------------------------------------------------------------------------------
 
-static inline void InitTMU2 (int bVertexArrays)
+static inline void InitTMU2 (int bVertexArrays, int bPerPixelLighting = 0)
 {
 if (glIsList (g3InitTMU [2][bVertexArrays]))
 	glCallList (g3InitTMU [2][bVertexArrays]);
@@ -103,7 +103,7 @@ else
 		glClientActiveTexture (GL_TEXTURE2);
 	glActiveTexture (GL_TEXTURE2);
 	glEnable (GL_TEXTURE_2D);
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bPerPixelLighting ? GL_DECAL : GL_MODULATE);
 	if (g3InitTMU [2][bVertexArrays]) {
 		glEndList ();
 		InitTMU2 (bVertexArrays);
@@ -113,7 +113,7 @@ else
 
 //------------------------------------------------------------------------------
 
-static inline void InitTMU3 (int bVertexArrays)
+static inline void InitTMU3 (int bVertexArrays, int bPerPixelLighting = 0)
 {
 if (glIsList (g3InitTMU [3][bVertexArrays]))
 	glCallList (g3InitTMU [3][bVertexArrays]);
@@ -126,6 +126,7 @@ else
 	if (bVertexArrays)
 		glClientActiveTexture (GL_TEXTURE2_ARB);
 	glEnable (GL_TEXTURE_2D);
+	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (g3InitTMU [3][bVertexArrays]) {
 		glEndList ();
 		InitTMU3 (bVertexArrays);
@@ -177,8 +178,8 @@ else
 			(_bmP) = BmCurFrame (_bmP, -1); \
 			OglTexWrap ((_bmP)->glTexture, GL_REPEAT);
 
-#define	INIT_TMU(_initTMU,_tmu,_bmP,_bClient) \
-			_initTMU (_bClient); \
+#define	INIT_TMU(_initTMU,_tmu,_bmP,_bClient,_bPerPixelLighting) \
+			_initTMU (_bClient, _bPerPixelLighting); \
 			G3_BIND (_tmu,_bmP,_bClient)
 
 
