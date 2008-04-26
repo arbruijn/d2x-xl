@@ -1274,6 +1274,7 @@ char *pszPPLightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
+	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float NdotL = max (dot (n, normalize (lightVec)), 0.0);\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
 	"			float att = 1.0;\r\n" \
@@ -1371,7 +1372,6 @@ char *pszPPLightingVS [] = {
 	"#define LIGHTS 8\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 vertPos;\r\n" \
 	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
@@ -1382,7 +1382,6 @@ char *pszPPLightingVS [] = {
 	"#define LIGHTS 8\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 vertPos;\r\n" \
 	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
@@ -1394,7 +1393,6 @@ char *pszPPLightingVS [] = {
 	"#define LIGHTS 8\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 vertPos;\r\n" \
 	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
@@ -1407,7 +1405,6 @@ char *pszPPLightingVS [] = {
 	"#define LIGHTS 8\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 vertPos;\r\n" \
 	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
