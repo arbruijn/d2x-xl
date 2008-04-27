@@ -354,7 +354,7 @@ else if (gameOpts->ogl.bPerPixelLighting) {
 	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 	nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
 	if (bLightMaps = HaveLightMaps ()) {
-		G3DisableClientState (GL_COLOR_ARRAY, GL_TEXTURE0);
+		//G3DisableClientState (GL_COLOR_ARRAY, GL_TEXTURE0);
 		glActiveTexture (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
 		glEnable (GL_TEXTURE_2D);
@@ -730,11 +730,11 @@ if (bTextured) {
 					glActiveTexture (GL_TEXTURE1 + bLightMaps);
 					if (bmTop) {
 						if (bLightMaps) {
-							glClientActiveTexture (GL_TEXTURE2);
+							//glClientActiveTexture (GL_TEXTURE2);
 							{INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, 1, 1);}
 							}
 						else {
-							glClientActiveTexture (GL_TEXTURE1);
+							//glClientActiveTexture (GL_TEXTURE1);
 							{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, 1, 0);}
 							}
 						}

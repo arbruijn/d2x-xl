@@ -566,10 +566,10 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 		//find light direction, currently based on first 3 points of tSide, not always right.
 		vmsVector *normalP = SEGMENTS [faceP->nSegment].sides [faceP->nSide].normals;
 		VmVecAvg (&lmiP->vDir, normalP, normalP + 1);
-		nLights++; 
+		lmiP++; 
 		}
 	}
-return nLights; 
+return nLights = (int) (lmiP - lightMapInfo); 
 }
 
 //------------------------------------------------------------------------------
@@ -630,10 +630,10 @@ void ComputeLightMaps (int nFace)
 #else
 	double		pixelOffset = 0; //0.5
 #endif
-	int			l, s, nMethod, sideRad; 
+	int			l, s, nMethod; 
 	GLfloat		tempBright = 0; 
-	vmsVector	OffsetU, OffsetV, pixelPos [LM_W][LM_H], *pPixelPos, rayVec, faceNorm, sidePos; 
-	double		brightPrct, pixelDist; 
+	vmsVector	OffsetU, OffsetV, pixelPos [LM_W][LM_H], *pPixelPos, rayVec, vFaceNorms [4], vNormalP, sidePos; 
+	double		brightPrct, sideRad, lightRange, pixelDist; 
 	double		delta; 
 	double		f_offset [8] = {
 						0.0 / (LM_W - 1), 1.0 / (LM_W - 1), 2.0 / (LM_W - 1), 3.0 / (LM_W - 1),
@@ -654,6 +654,10 @@ else
 	INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
 //Next Go through each surface and create a lightmap for it.
 for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
+#ifdef _DEBUG
+if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 	sideP = SEGMENTS [faceP->nSegment].sides + faceP->nSide;
 	memcpy (sideVerts, faceP->index, sizeof (sideVerts));
 #if LMAP_REND2TEX
@@ -662,6 +666,12 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 #else
 	nMethod = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
 	pPixelPos = &pixelPos [0][0];
+#if 0
+	VmVecNormal (vFaceNorms, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v1); 
+	VmVecNormal (vFaceNorms + 1, gameData.segs.vertices + v0, gameData.segs.vertices + v3, gameData.segs.vertices + v2); 
+	VmVecNormal (vFaceNorms + 2, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3); 
+	VmVecNormal (vFaceNorms + 3, gameData.segs.vertices + v2, gameData.segs.vertices + v1, gameData.segs.vertices + v3); 
+#endif
 	for (x = 0; x < LM_W; x++) {
 		for (y = 0; y < LM_H; y++, pPixelPos++) {
 			if (nMethod) {
@@ -675,7 +685,7 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 					VmVecAdd (pPixelPos, &OffsetU, &OffsetV); 
 					VmVecInc (pPixelPos, gameData.segs.vertices + v0);  //This should be the real world position of the pixel.
 					//Find Normal
-					VmVecNormal (&faceNorm, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v1); 
+					//vNormalP = vFaceNorms;
 					}
 				else {
 					//Next calculate this pixel's place in the world (tricky stuff)
@@ -684,7 +694,7 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 					FindOffset (&OffsetU, gameData.segs.vertices [v3], gameData.segs.vertices [v2], f_offset [x]); //(((double) x) + pixelOffset) / (LM_H - 1)); 
 					VmVecAdd (pPixelPos, &OffsetU, &OffsetV); 
 					VmVecInc (pPixelPos, gameData.segs.vertices + v0);  //This should be the real world position of the pixel.
-					VmVecNormal (&faceNorm, gameData.segs.vertices + v0, gameData.segs.vertices + v3, gameData.segs.vertices + v2); 
+					//vNormalP = vFaceNorms + 1;
 					}
 				}
 			else {//SIDE_IS_TRI_02
@@ -696,6 +706,7 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 					FindOffset (&OffsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], f_offset [y]); //(((double) y) + pixelOffset) / (LM_W - 1)); 
 					VmVecAdd (pPixelPos, &OffsetU, &OffsetV); 
 					VmVecInc (pPixelPos, gameData.segs.vertices + v0);  //This should be the real world position of the pixel.
+					//vNormalP = vFaceNorms + 2;
 					}
 				else {
 					v2 = sideVerts [2]; 
@@ -704,6 +715,7 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 					FindOffset (&OffsetU, gameData.segs.vertices [v2], gameData.segs.vertices [v3], f_offset [LM_W - 1 - x]); //((double) ((LM_W - 1) - x) + pixelOffset) / (LM_W - 1)); 
 					VmVecAdd (pPixelPos, &OffsetU, &OffsetV); 
 					VmVecInc (pPixelPos, gameData.segs.vertices + v2);  //This should be the real world position of the pixel.
+					//vNormalP = vFaceNorms + 3;
 					}
 				}
 			}
@@ -711,7 +723,7 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 #endif
 	//Calculate LightVal
 	//Next iterate through all the lights and add the light to the pixel every iteration.
-	sideRad = (int) (faceP->rad + 0.5);
+	sideRad = (double) faceP->rad;
 	VmVecAvg4 (
 		&sidePos, 
 		&pixelPos [0][0],
@@ -721,6 +733,7 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 #if LMAP_REND2TEX
 	bStart = 1;
 #endif
+	memset (texColor, 0, sizeof (texColor));
 	for (l = 0, lmiP = lightMapInfo; l < nLights; l++, lmiP++) {
 #if LMAP_REND2TEX
 		nMinDist = 0x7FFFFFFF;
@@ -768,7 +781,8 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 			bStart = 0;
 			}
 #else
-		if (f2i (VmVecDist (&sidePos, &lmiP->vPos)) < lmiP->range + sideRad) {
+		lightRange = lmiP->range + sideRad;
+		if (f2fl (VmVecDist (&sidePos, &lmiP->vPos)) <= lightRange) {
 			pPixelPos = &pixelPos [0][0];
 			pTexColor = texColor [0][0];
 #if 1
@@ -778,17 +792,21 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 				for (y = 0; y < LM_H; y++, pPixelPos++, pTexColor += 3) {
 #endif
 					//Find angle to this light.
-					pixelDist = f2i (VmVecDist (pPixelPos, &lmiP->vPos)); 
-					if (pixelDist >= lmiP->range)
+					pixelDist = f2fl (VmVecDist (pPixelPos, &lmiP->vPos)); 
+					if (pixelDist > lightRange)
 						continue;
 					VmVecSub (&rayVec, &lmiP->vPos, pPixelPos); 
 					delta = f2db (VmVecDeltaAng (&lmiP->vDir, &rayVec, NULL)); 
 					if (delta < 0)
 						delta = -delta; 
-					brightPrct = 1 - (pixelDist / lmiP->range); 
-					brightPrct *= brightPrct; //square result
-					if (delta < 0.245)
-						brightPrct /= 4; 
+					if (pixelDist <= sideRad)
+						brightPrct = 1;
+					else {
+						brightPrct = 1 - (pixelDist / lmiP->range); 
+						brightPrct *= brightPrct; //square result
+						if (delta < 0.245)
+							brightPrct /= 4; 
+						}
 					pTexColor [0] += (GLfloat) (brightPrct * lmiP->color [0]); 
 					pTexColor [1] += (GLfloat) (brightPrct * lmiP->color [1]); 
 					pTexColor [2] += (GLfloat) (brightPrct * lmiP->color [2]); 

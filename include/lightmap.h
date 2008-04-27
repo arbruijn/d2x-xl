@@ -21,7 +21,7 @@ typedef struct tLightMapInfo {
 
 typedef struct tLightMap {
 	GLuint		handle;
-	tRgbaColorf	bmP [LIGHTMAP_WIDTH][LIGHTMAP_WIDTH];
+	tRgbColorf	bmP [LIGHTMAP_WIDTH][LIGHTMAP_WIDTH];
 } tLightMap;
 
 //------------------------------------------------------------------------------
