@@ -353,7 +353,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			fLightDist = 0;
 		else
 #endif
-			fLightDist -= psl->rad;	//make light brighter close to light source
+			fLightDist -= psl->rad / 10.0f;	//make light brighter close to light source
 		}
 	if (fLightDist < 1.0f) {
 		bInRad = 1;
@@ -522,7 +522,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 				fLightDist = 0;
 			else
 #endif
-				fLightDist -= psl->rad;	//make light brighter close to light source
+				fLightDist -= psl->rad / 10.0f;	//make light brighter close to light source
 			}
 		if (fLightDist < 1.0f) {
 			bInRad = 1;

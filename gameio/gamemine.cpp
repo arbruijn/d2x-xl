@@ -1011,7 +1011,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 		m = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
 		if (!SEGVIS (m, i))
 			continue;
-		h = VmVecDist (&center, &pl->vPos) - fl2f (pl->rad);
+		h = VmVecDist (&center, &pl->vPos) - fl2f (pl->rad) / 10.0f;
 		if (h > MAX_LIGHT_RANGE * pl->range)
 			continue;
 		pDists [n].nDist = h;
@@ -1073,12 +1073,14 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 		if (pl->nSegment == nDbgSeg)
 			nDbgSeg = nDbgSeg;
 #endif
-		h = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
-		if (!VERTVIS (h, nVertex))
-			continue;
-		VmVecSub (&vLightToVert, vertP, &pl->vPos);
-		h = VmVecNormalize (&vLightToVert) - (int) (pl->rad * 65536);
-		if (!IsLightVert (nVertex, pl->faceP)) {
+		if (IsLightVert (nVertex, pl->faceP)) 
+			h = 0;
+		else {
+			h = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
+			if (!VERTVIS (h, nVertex))
+				continue;
+			VmVecSub (&vLightToVert, vertP, &pl->vPos);
+			h = VmVecNormalize (&vLightToVert) - (int) (pl->rad * 6553.6f);
 			if (h > MAX_LIGHT_RANGE * pl->range)
 				continue;
 			if ((pl->nSegment >= 0) && (pl->nSide >= 0)) {

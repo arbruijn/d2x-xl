@@ -151,6 +151,7 @@ return nLight;
 int LastEnabledDynLight (void)
 {
 	short	i = gameData.render.lights.dynamic.nLights;
+
 while (i)
 	if (gameData.render.lights.dynamic.lights [--i].bState)
 		return i;
@@ -441,8 +442,12 @@ void DeleteDynLight (short nLight)
 {
 if ((nLight >= 0) && (nLight < gameData.render.lights.dynamic.nLights)) {
 	tDynLight *pl = gameData.render.lights.dynamic.lights + nLight;
+#ifdef _DEBUG
+	if ((nDbgSeg >= 0) && (nDbgSeg == pl->nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->nSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 	if (!pl->nType) {
-		// do not remove static lights, or the nearest lights to tSegment info will get messed up!
+		// do not remove static lights, or the nearest lights to segment info will get messed up!
 		pl->bState = pl->bOn = 0;
 		return;
 		}
@@ -470,6 +475,7 @@ for (nLight = gameData.render.lights.dynamic.nLights, pl = gameData.render.light
 int RemoveDynLight (short nSegment, short nSide, short nObject)
 {
 	int	nLight = FindDynLight (nSegment, nSide, nObject);
+
 if (nLight < 0)
 	return 0;
 DeleteDynLight (nLight);
@@ -483,8 +489,8 @@ return 1;
 void RemoveDynLightningLights (void)
 {
 	tDynLight	*pl = gameData.render.lights.dynamic.lights;
-	short			i;
-for (i = 0; i < gameData.render.lights.dynamic.nLights; )
+	
+for (short i = 0; i < gameData.render.lights.dynamic.nLights; )
 	if ((pl->nSegment >= 0) && (pl->nSide < 0)) {
 		RemoveDynLightFromList (pl, i);
 		}
@@ -498,8 +504,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; )
 
 void RemoveDynLights (void)
 {
-	short	i;
-for (i = 0; i < gameData.render.lights.dynamic.nLights; i++)
+for (short i = 0; i < gameData.render.lights.dynamic.nLights; i++)
 	DeleteDynLight (i);
 }
 
@@ -652,8 +657,10 @@ gameData.render.lights.dynamic.shader.nLights = 0;
 memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 UpdateOglHeadLight ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
-	if (!pl->bOn)
-		continue;
+#ifdef _DEBUG
+	if ((nDbgSeg >= 0) && (nDbgSeg == pl->nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->nSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 	psl->faceP = pl->faceP;
 	memcpy (&psl->color, &pl->color, sizeof (pl->color));
 	psl->color.c.a = 1.0f;
@@ -827,6 +834,10 @@ if (nVertex == nDbgVertex)
 			break;
 #endif
 		psl = gameData.render.lights.dynamic.shader.lights + j;
+#ifdef _DEBUG
+		if ((nDbgSeg >= 0) && (psl->nSegment == nDbgSeg))
+			nDbgSeg = nDbgSeg;
+#endif
 		if (gameData.threads.vertColor.data.bNoShadow && psl->bShadow)
 			continue;
 		if (psl->bVariable) {
@@ -1003,6 +1014,10 @@ if (gameOpts->render.bDynLighting) {
 	gameData.render.lights.dynamic.shader.nLastLight [nThread] = 0;
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
 	while (i--) {
+#ifdef _DEBUG
+		if ((nDbgSeg >= 0) && (psl->nSegment == nDbgSeg))
+			psl = psl;
+#endif
 		if ((--psl)->nType < 2) {
 			if (!bVariable)
 				break;

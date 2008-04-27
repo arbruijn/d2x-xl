@@ -943,12 +943,13 @@ if (objP->nType == OBJ_PLAYER) {
 
 //-----------------------------------------------------------------------------
 
-void FlickerLights ()
+void FlickerLights (void)
 {
 	tVariableLight	*flP = gameData.render.lights.flicker.lights;
-	int					l;
-	tSide					*sideP;
-	short					nSegment, nSide;
+	int				l;
+	tSide				*sideP;
+	short				nSegment, nSide;
+
 for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 	//make sure this is actually a light
 	if (!(WALL_IS_DOORWAY (gameData.segs.segments + flP->nSegment, flP->nSide, NULL) & WID_RENDER_FLAG))
@@ -976,9 +977,9 @@ for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 //returns ptr to flickering light structure, or NULL if can't find
 tVariableLight *FindVariableLight (int nSegment,int nSide)
 {
-	int l;
 	tVariableLight *flP = gameData.render.lights.flicker.lights;
-for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++)
+
+for (int l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++)
 	if ((flP->nSegment == nSegment) && (flP->nSide == nSide))	//found it!
 		return flP;
 return NULL;
@@ -1146,6 +1147,249 @@ switch (tMapNum) {
 		break;
 	}
 return 0;
+}
+
+//	------------------------------------------------------------------------------------------
+//cast static light from a tSegment to nearby segments
+//these constants should match the ones in seguvs
+#define	LIGHT_DISTANCE_THRESHOLD	 (F1_0*80)
+#define	MAGIC_LIGHT_CONSTANT			 (F1_0*16)
+
+#define MAX_CHANGED_SEGS 30
+short changedSegs [MAX_CHANGED_SEGS];
+int nChangedSegs;
+
+void ApplyLightToSegment (tSegment *segP, vmsVector *vSegCenter, fix xBrightness, int nCallDepth)
+{
+	vmsVector	rSegmentCenter;
+	fix			xDistToRSeg;
+	int 			i;
+	short			nSide, 
+					nSegment = SEG_IDX (segP);
+
+for (i = 0; i <nChangedSegs; i++)
+	if (changedSegs [i] == nSegment)
+		break;
+if (i == nChangedSegs) {
+	COMPUTE_SEGMENT_CENTER (&rSegmentCenter, segP);
+	xDistToRSeg = VmVecDistQuick (&rSegmentCenter, vSegCenter);
+
+	if (xDistToRSeg <= LIGHT_DISTANCE_THRESHOLD) {
+		fix	xLightAtPoint = (xDistToRSeg > F1_0) ? 
+									 FixDiv (MAGIC_LIGHT_CONSTANT, xDistToRSeg) :
+									 MAGIC_LIGHT_CONSTANT;
+
+		if (xLightAtPoint >= 0) {
+			tSegment2 *seg2P = gameData.segs.segment2s + nSegment;
+			xLightAtPoint = FixMul (xLightAtPoint, xBrightness);
+			if (xLightAtPoint >= F1_0)
+				xLightAtPoint = F1_0-1;
+			else if (xLightAtPoint <= -F1_0)
+				xLightAtPoint = - (F1_0-1);
+			seg2P->xAvgSegLight += xLightAtPoint;
+			if (seg2P->xAvgSegLight < 0)	// if it went negative, saturate
+				seg2P->xAvgSegLight = 0;
+			}	//	end if (xLightAtPoint...
+		}	//	end if (xDistToRSeg...
+	changedSegs [nChangedSegs++] = nSegment;
+	}
+
+if (nCallDepth < 2)
+	for (nSide=0; nSide<6; nSide++) {
+		if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_RENDPAST_FLAG)
+			ApplyLightToSegment (&gameData.segs.segments [segP->children [nSide]], vSegCenter, xBrightness, nCallDepth+1);
+		}
+}
+
+extern tObject *oldViewer;
+
+//	------------------------------------------------------------------------------------------
+//update the xAvgSegLight field in a tSegment, which is used for tObject lighting
+//this code is copied from the editor routine calim_process_all_lights ()
+void ChangeSegmentLight (short nSegment, short nSide, int dir)
+{
+	tSegment *segP = gameData.segs.segments+nSegment;
+
+if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_RENDER_FLAG) {
+	tSide	*sideP = segP->sides+nSide;
+	fix	xBrightness;
+	xBrightness = gameData.pig.tex.pTMapInfo [sideP->nBaseTex].lighting + gameData.pig.tex.pTMapInfo [sideP->nOvlTex].lighting;
+	xBrightness *= dir;
+	nChangedSegs = 0;
+	if (xBrightness) {
+		vmsVector	vSegCenter;
+		COMPUTE_SEGMENT_CENTER (&vSegCenter, segP);
+		ApplyLightToSegment (segP, &vSegCenter, xBrightness, 0);
+		}
+	}
+//this is a horrible hack to get around the horrible hack used to
+//smooth lighting values when an tObject moves between segments
+oldViewer = NULL;
+}
+
+//	------------------------------------------------------------------------------------------
+
+int FindDLIndexD2X (short nSegment, short nSide)
+{
+int	m, 
+		l = 0, 
+		r = gameData.render.lights.nStatic;
+tLightDeltaIndex	*p;
+do {
+	m = (l + r) / 2;
+	p = gameData.render.lights.deltaIndices + m;
+	if ((nSegment < p->d2x.nSegment) || ((nSegment == p->d2x.nSegment) && (nSide < p->d2x.nSide)))
+		r = m - 1;
+	else if ((nSegment > p->d2x.nSegment) || ((nSegment == p->d2x.nSegment) && (nSide > p->d2x.nSide)))
+		l = m + 1;
+	else {
+		while ((p->d2x.nSegment == nSegment) && (p->d2x.nSide == nSide))
+			p--;
+		return (int) ((p + 1) - gameData.render.lights.deltaIndices);
+		}
+	} while (l <= r);
+return 0;
+}
+
+//	------------------------------------------------------------------------------------------
+
+int FindDLIndexD2 (short nSegment, short nSide)
+{
+int	m, 
+		l = 0, 
+		r = gameData.render.lights.nStatic;
+
+tLightDeltaIndex	*p;
+do {
+	m = (l + r) / 2;
+	p = gameData.render.lights.deltaIndices + m;
+	if ((nSegment < p->d2.nSegment) || ((nSegment == p->d2.nSegment) && (nSide < p->d2.nSide)))
+		r = m - 1;
+	else if ((nSegment > p->d2.nSegment) || ((nSegment == p->d2.nSegment) && (nSide > p->d2.nSide)))
+		l = m + 1;
+	else {
+		while ((p->d2.nSegment == nSegment) && (p->d2.nSide == nSide))
+			p--;
+		return (int) ((p + 1) - gameData.render.lights.deltaIndices);
+		}
+	} while (l <= r);
+return 0;
+}
+
+//	------------------------------------------------------------------------------------------
+
+int FindDLIndex (short nSegment, short nSide)
+{
+return gameStates.render.bD2XLights ? 
+		 FindDLIndexD2X (nSegment, nSide) : 
+		 FindDLIndexD2 (nSegment, nSide);
+}
+
+//	------------------------------------------------------------------------------------------
+//	dir = +1 -> add light
+//	dir = -1 -> subtract light
+//	dir = 17 -> add 17x light
+//	dir =  0 -> you are dumb
+void ChangeLight (short nSegment, short nSide, int dir)
+{
+	int					i, j, k;
+	fix					dl, lNew, *pSegLightDelta;
+	tUVL					*uvlP;
+	tLightDeltaIndex	*dliP;
+	tLightDelta			*dlP;
+	short					iSeg, iSide;
+
+if ((dir < 0) && RemoveDynLight (nSegment, nSide, -1))
+	return;
+if (ToggleDynLight (nSegment, nSide, -1, dir >= 0) >= 0)
+	return;
+i = FindDLIndex (nSegment, nSide);
+for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.nStatic; i++, dliP++) {
+	if (gameStates.render.bD2XLights) {
+		iSeg = dliP->d2x.nSegment;
+		iSide = dliP->d2x.nSide;
+		}
+	else {
+		iSeg = dliP->d2.nSegment;
+		iSide = dliP->d2.nSide;
+		}
+#ifndef _DEBUG
+	if ((iSeg > nSegment) || ((iSeg == nSegment) && (iSide > nSide)))
+		return;
+#endif
+	if ((iSeg == nSegment) && (iSide == nSide)) {
+		if (dliP->d2.index >= MAX_DELTA_LIGHTS)
+			continue;	//ouch - bogus data!
+		dlP = gameData.render.lights.deltas + dliP->d2.index;
+		for (j = (gameStates.render.bD2XLights ? dliP->d2x.count : dliP->d2.count); j; j--, dlP++) {
+			if (!dlP->bValid)
+				continue;	//bogus data!
+			uvlP = gameData.segs.segments [dlP->nSegment].sides [dlP->nSide].uvls;
+			pSegLightDelta = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
+			for (k = 0; k < 4; k++, uvlP++) {
+				dl = dir * dlP->vertLight [k] * DL_SCALE;
+				lNew = (uvlP->l += dl);
+				if (lNew < 0)
+					uvlP->l = 0;
+				*pSegLightDelta += dl;
+				}
+			}
+		}
+	}
+//recompute static light for tSegment
+ChangeSegmentLight (nSegment, nSide, dir);
+}
+
+//	-----------------------------------------------------------------------------
+//	Subtract light cast by a light source from all surfaces to which it applies light.
+//	This is precomputed data, stored at static light application time in the editor (the slow lighting function).
+// returns 1 if lights actually subtracted, else 0
+int SubtractLight (short nSegment, short nSide)
+{
+if (gameData.render.lights.subtracted [nSegment] & (1 << nSide)) 
+	return 0;
+gameData.render.lights.subtracted [nSegment] |= (1 << nSide);
+ChangeLight (nSegment, nSide, -1);
+return 1;
+}
+
+//	-----------------------------------------------------------------------------
+//	Add light cast by a light source from all surfaces to which it applies light.
+//	This is precomputed data, stored at static light application time in the editor (the slow lighting function).
+//	You probably only want to call this after light has been subtracted.
+// returns 1 if lights actually added, else 0
+int AddLight (short nSegment, short nSide)
+{
+if (!(gameData.render.lights.subtracted [nSegment] & (1 << nSide)))
+	return 0;
+gameData.render.lights.subtracted [nSegment] &= ~ (1 << nSide);
+ChangeLight (nSegment, nSide, 1);
+return 1;
+}
+
+//	-----------------------------------------------------------------------------
+//	Parse the gameData.render.lights.subtracted array, turning on or off all lights.
+void ApplyAllChangedLight (void)
+{
+	short	i, j;
+	ubyte	h;
+
+for (i=0; i <= gameData.segs.nLastSegment; i++) {
+	h = gameData.render.lights.subtracted [i];
+	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
+		if (h & (1 << j))
+			ChangeLight (i, j, -1);
+	}
+}
+
+//	-----------------------------------------------------------------------------
+//	Should call this whenever a new mine gets loaded.
+//	More specifically, should call this whenever something global happens
+//	to change the status of static light in the mine.
+void ClearLightSubtracted (void)
+{
+memset (gameData.render.lights.subtracted, 0, 
+		  gameData.segs.nLastSegment * sizeof (gameData.render.lights.subtracted [0]));
 }
 
 // ----------------------------------------------------------------------------------------------
