@@ -380,7 +380,7 @@ return tiRender.nFaces;
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	bVertexArrays, 
-			bLightMaps = HaveLightMaps (),
+			bLightMaps = gameOpts->ogl.bPerPixelLighting,
 			bNormals = !bDepthOnly; // && gameOpts->ogl.bPerPixelLighting;
 
 gameData.threads.vertColor.data.bDarkness = 0;

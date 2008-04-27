@@ -2429,7 +2429,7 @@ GETMEM (ushort, gameData.segs.faces.faceVerts, MAX_FACES * 16, 0);
 GETMEM (fVector3, gameData.segs.faces.normals, MAX_TRIANGLES * 3 * 2, 0);
 GETMEM (tRgbaColorf, gameData.segs.faces.color, MAX_TRIANGLES * 3, 0);
 GETMEM (tTexCoord2f, gameData.segs.faces.texCoord, MAX_TRIANGLES * 2 * 3, 0);
-GETMEM (tTexCoord2f, gameData.segs.faces.lMapCoord, MAX_FACES, 0);
+GETMEM (tTexCoord2f, gameData.segs.faces.lMapTexCoord, MAX_FACES, 0);
 gameData.segs.faces.ovlTexCoord = gameData.segs.faces.texCoord + MAX_FACES * 4;
 }
 
@@ -2615,7 +2615,7 @@ FREEMEM (ushort, gameData.segs.faces.faceVerts, MAX_FACES * 16);
 FREEMEM (fVector3, gameData.segs.faces.normals, MAX_TRIANGLES * 3);
 FREEMEM (tRgbaColorf, gameData.segs.faces.color, MAX_TRIANGLES * 3 * 2);
 FREEMEM (tTexCoord2f, gameData.segs.faces.texCoord, MAX_TRIANGLES * 3 * 2);
-FREEMEM (tTexCoord2f, gameData.segs.faces.lMapCoord, MAX_FACES);
+FREEMEM (tTexCoord2f, gameData.segs.faces.lMapTexCoord, MAX_FACES);
 FREEMEM (vmsVector, gameData.segs.segCenters [0], MAX_SEGMENTS);
 FREEMEM (vmsVector, gameData.segs.segCenters [1], MAX_SEGMENTS);
 FREEMEM (vmsVector, gameData.segs.sideCenters, MAX_SEGMENTS * 6);

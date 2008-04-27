@@ -138,7 +138,7 @@ int OglCreateLightMaps (void)
 {
 	tLightMap	*lmP = lightMaps;
 
-for (int i = gameData.segs.nFaces + 1; i; i--, lmP++) {
+for (int i = HaveLightMaps () ? gameData.segs.nFaces : 1; i; i--, lmP++) {
 	OglGenTextures (1, &lmP->handle);
 	if (!lmP->handle)
 		return 0;
@@ -909,6 +909,7 @@ if (gameStates.render.color.bLightMapsOk &&
 	}
 if (!lightMaps)
 	lightMaps = &dummyLightMap;
+OglCreateLightMaps ();
 }
 
 //------------------------------------------------------------------------------
