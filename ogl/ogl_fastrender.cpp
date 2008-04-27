@@ -286,7 +286,7 @@ return 0;
 
 int G3SetupShader (grsFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP)
 {
-	int			oglRes, nLights, nType, nShader = gameStates.render.history.nShader;
+	int			oglRes, bLightMaps, nLights, nType, nShader = gameStates.render.history.nShader;
 	tRgbaColorf	color;
 
 if (!gameStates.ogl.bShadersOk)
@@ -353,22 +353,25 @@ else if (gameOpts->ogl.bPerPixelLighting) {
 		nLights = MAX_LIGHTS_PER_PIXEL;
 	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 	nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
-	G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
-	glActiveTexture (GL_TEXTURE0);
-	glClientActiveTexture (GL_TEXTURE0);
-	glEnable (GL_TEXTURE_2D);
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBindTexture (GL_TEXTURE_2D, lightMaps [(HaveLightMaps () && nLights) ? faceP - gameData.segs.faces.faces + 1 : 0].handle);
+	if (bLightMaps = HaveLightMaps ()) {
+		G3DisableClientState (GL_COLOR_ARRAY, GL_TEXTURE0);
+		glActiveTexture (GL_TEXTURE0);
+		glClientActiveTexture (GL_TEXTURE0);
+		glEnable (GL_TEXTURE_2D);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glBindTexture (GL_TEXTURE_2D, lightMaps [nLights ? faceP - gameData.segs.faces.faces + 1 : 0].handle);
+		}
 	if (nShader != gameStates.render.history.nShader) {
 		glUseProgramObject (0);
 		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nLights ? nLights - 1 : 0][nType]);
-		glUniform1i (glGetUniformLocation (tmProg, "lMapTex"), 0);
+		if (bLightMaps)
+			glUniform1i (glGetUniformLocation (tmProg, "lMapTex"), 0);
 		if (bTextured) {
-			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 1);
+			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), bLightMaps);
 			if (bColorKey || bMultiTexture) {
-				glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 2);
+				glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 1 + bLightMaps);
 				if (bColorKey)
-					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 3);
+					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2 + bLightMaps);
 				}
 			}
 		}
