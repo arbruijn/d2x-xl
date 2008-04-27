@@ -1066,7 +1066,7 @@ if (!texP->bFrameBuf)
 		else
 			glTexImage2D (
 				GL_TEXTURE_2D, 0, texP->internalformat,
-				texP->tw, texP->th, 0, texP->format, // RGBA textures.
+				texP->tw, texP->th, 0, texP->format, // RGB(A) textures.
 				GL_UNSIGNED_BYTE, // imageData is a GLubyte pointer.
 				bufP);
 #if TEXTURE_COMPRESSION

@@ -145,7 +145,7 @@ for (int i = HaveLightMaps () ? gameData.segs.nFaces : 1; i; i--, lmP++) {
 	OGL_BINDTEX (lmP->handle); 
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_WIDTH, LIGHTMAP_WIDTH, 0, gameStates.ogl.nRGBFormat, GL_FLOAT, lmP->bmP);
+	glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_WIDTH, LIGHTMAP_WIDTH, 0, GL_RGB, GL_FLOAT, lmP->bmP);
 	}
 return 1;
 }
@@ -547,7 +547,7 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 	if (0 == (lmiP->range = GetLightColor (t, &lmiP->color [0])))
 		continue;
 	bIsLight = 1;
-	sideRad = (double) faceP->rad;
+	sideRad = (double) faceP->rad / 10.0;
 	nIndex = faceP->nSegment * 6 + faceP->nSide;
 	if (gameStates.app.bD2XLevel && (gameData.render.color.lights [nIndex].index)) { 
 		bIsLight = 1;
@@ -726,7 +726,7 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 #endif
 	//Calculate LightVal
 	//Next iterate through all the lights and add the light to the pixel every iteration.
-	sideRad = (double) faceP->rad;
+	sideRad = (double) faceP->rad / 10.0;
 	VmVecAvg4 (
 		&sidePos, 
 		&pixelPos [0][0],

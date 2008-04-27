@@ -767,7 +767,15 @@ m_faceP->bAdditive = gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_LA
 
 void CQuadMeshBuilder::SetupFace (void)
 {
-	static tTexCoord2f	defaultTC [4] = {{0,0},{1,0},{1,1},{0,1}};
+#define	LMAP_SIZE	(1.0f / 16.0f)
+
+	static tTexCoord2f lMapTexCoord [4] = {
+		{{LMAP_SIZE, LMAP_SIZE}}, 
+		{{1.0f - LMAP_SIZE, LMAP_SIZE}}, 
+		{{1.0f - LMAP_SIZE, 1.0f - LMAP_SIZE}}, 
+		{{LMAP_SIZE, 1.0f - LMAP_SIZE}}
+	};
+
 	int			i, j;
 	vmsVector	vNormal;
 	fVector3		vNormalf;
@@ -784,9 +792,10 @@ for (i = 0; i < 4; i++) {
 	RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);
 	m_texCoordP++;
 	m_ovlTexCoordP++;
-	*m_lMapTexCoordP++ = defaultTC [i];
 	*m_faceColorP++ = gameData.render.color.ambient [j].color;
 	}
+memcpy (m_lMapTexCoordP, lMapTexCoord, sizeof (lMapTexCoord));
+m_lMapTexCoordP += 4;
 }
 
 //------------------------------------------------------------------------------
@@ -963,7 +972,8 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 			m_colorP += FACE_VERTS;
 			}
 		}
-	if (!gameStates.render.bTriangleMesh && gameStates.ogl.bGlTexMerge && m_nOvlTexCount) { //allow for splitting multi-textured faces into two single textured ones
+	if (!(gameStates.render.bTriangleMesh || gameOpts->ogl.bPerPixelLighting) && 
+		 gameStates.ogl.bGlTexMerge && m_nOvlTexCount) { //allow for splitting multi-textured faces into two single textured ones
 		gameData.segs.nFaces += m_nOvlTexCount;
 		m_faceP += m_nOvlTexCount;
 		m_triP += 2;

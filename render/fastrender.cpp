@@ -171,6 +171,9 @@ if (((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//r
 	tTexCoord2f h = gameData.segs.faces.texCoord [faceP->nIndex];
 	memcpy (gameData.segs.faces.texCoord + faceP->nIndex, gameData.segs.faces.texCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
 	gameData.segs.faces.texCoord [faceP->nIndex + 3] = h;
+	h = gameData.segs.faces.lMapTexCoord [faceP->nIndex];
+	memcpy (gameData.segs.faces.lMapTexCoord + faceP->nIndex, gameData.segs.faces.lMapTexCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
+	gameData.segs.faces.lMapTexCoord [faceP->nIndex + 3] = h;
 	if (faceP->nOvlTex) {
 		h = gameData.segs.faces.ovlTexCoord [faceP->nIndex];
 		memcpy (gameData.segs.faces.ovlTexCoord + faceP->nIndex, gameData.segs.faces.ovlTexCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));

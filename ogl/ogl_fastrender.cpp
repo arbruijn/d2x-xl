@@ -233,6 +233,9 @@ OglEnableLighting (0);
 glDisable (GL_LIGHTING);
 activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameData.render.lights.dynamic.shader.nFirstLight [0];
 h = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
+#ifdef _DEBUG
+nLights = 0;
+#endif
 for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
@@ -246,7 +249,7 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 	diffuse.blue = psl->color.c.b * 0.9f;
 	diffuse.alpha = 1.0f;
 	glEnable (hLight);
-	specular.alpha = (psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : 0; //krasser Missbrauch!
+	specular.alpha = (psl->nSegment >= 0) ? psl->rad : 0; //krasser Missbrauch!
 	glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->pos));
 	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &diffuse);
 	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &specular);
@@ -353,13 +356,16 @@ else if (gameOpts->ogl.bPerPixelLighting) {
 		nLights = MAX_LIGHTS_PER_PIXEL;
 	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 	nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
+#ifdef _DEBUG
+	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 	if (bLightMaps = HaveLightMaps ()) {
-		//G3DisableClientState (GL_COLOR_ARRAY, GL_TEXTURE0);
 		glActiveTexture (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
 		glEnable (GL_TEXTURE_2D);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glBindTexture (GL_TEXTURE_2D, lightMaps [nLights ? faceP - gameData.segs.faces.faces + 1 : 0].handle);
+		glBindTexture (GL_TEXTURE_2D, lightMaps [faceP - gameData.segs.faces.faces + 1].handle);
 		}
 	if (nShader != gameStates.render.history.nShader) {
 		glUseProgramObject (0);
@@ -836,9 +842,11 @@ if (gameStates.render.bTriangleMesh && !bMonitor) {
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
 #endif
 	}	
+else if (gameOpts->ogl.bPerPixelLighting)
+	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 else {
 #if 1
-	// this is a work around for OpenGL per vertex light interpolation
+	// this is a work around for OpenGL's per vertex light interpolation
 	// rendering a quad is always started with the brightest vertex
 	tRgbaColorf	*pc = gameData.segs.faces.color + faceP->nIndex;
 	float l, lMax = 0;
