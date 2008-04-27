@@ -785,8 +785,7 @@ for (i = 0; i < 4; i++) {
 	RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);
 	m_texCoordP++;
 	m_ovlTexCoordP++;
-	if (HaveLightMaps ())
-		*m_lMapTexCoordP++ = defaultTC [i];
+	*m_lMapTexCoordP++ = defaultTC [i];
 	*m_faceColorP++ = gameData.render.color.ambient [j].color;
 	}
 }

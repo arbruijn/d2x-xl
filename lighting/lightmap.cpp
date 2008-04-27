@@ -87,7 +87,7 @@ int CountLights (int bVariable)
 	tDynLight	*pl;
 	int			i, nLights = 0;
 
-if (!(gameOpts->render.color.bUseLightMaps && gameStates.render.color.bLightMapsOk))
+if (!(gameOpts->ogl.bPerPixelLighting && gameStates.render.color.bLightMapsOk))
 	return 0;
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
 	if (!(pl->nType || (pl->bVariable && !bVariable)))
@@ -648,15 +648,6 @@ void ComputeLightMaps (int nFace)
 	int			bStart;
 #endif
 
-if (nFace <= 0) {
-	DestroyLightMaps ();
-	if (!InitLightData (0))
-		return;
-#if LMAP_REND2TEX
-	InitBrightMap (brightMap);
-	memset (&lMapUVL, 0, sizeof (lMapUVL));
-#endif
-	}
 if (gameStates.app.bMultiThreaded)
 	nLastFace = nFace ? gameData.segs.nFaces : gameData.segs.nFaces / 2;
 else
@@ -894,10 +885,15 @@ return;
 void CreateLightMaps (void)
 {
 DestroyLightMaps ();
-InitLightMapTexture (&dummyLightMap, 1.0f);
+if (!InitLightData (0))
+	return;
+#if LMAP_REND2TEX
+InitBrightMap (brightMap);
+memset (&lMapUVL, 0, sizeof (lMapUVL));
+#endif
 if (gameStates.render.color.bLightMapsOk && 
-	 gameOpts->render.color.bUseLightMaps && 
-	 gameData.segs.nSegments) {
+	 gameOpts->ogl.bPerPixelLighting && 
+	 gameData.segs.nFaces) {
 	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 8))
 		StartLightMapThreads (LightMapThread);
 	else if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
@@ -907,8 +903,10 @@ if (gameStates.render.color.bLightMapsOk &&
 	else
 		ComputeLightMaps (-1);
 	}
-if (!lightMaps)
+if (!lightMaps) {
+	InitLightMapTexture (&dummyLightMap, 1.0f);
 	lightMaps = &dummyLightMap;
+	}
 OglCreateLightMaps ();
 }
 

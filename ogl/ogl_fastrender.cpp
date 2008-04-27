@@ -596,7 +596,7 @@ return 0;
 int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 	int			bOverlay, bColored, bTransparent, bColorKey = 0, bMonitor = 0, bMultiTexture = 0,
-					bLightMaps = gameOpts->ogl.bPerPixelLighting;
+					bLightMaps = HaveLightMaps ();
 	grsBitmap	*bmMask = NULL;
 	tTexCoord2f	*ovlTexCoordP;
 
