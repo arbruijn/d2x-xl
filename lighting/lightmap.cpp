@@ -533,7 +533,7 @@ memset (lightMaps, 0, sizeof (tLightMap) * gameData.segs.nFaces);
 memset (lightMapInfo, 0, sizeof (tLightMapInfo) * nLights); 
 nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
-InitLightMapTexture (lightMaps, 1.0f);
+InitLightMapTexture (lightMaps, 0.0f);
 lmiP = lightMapInfo; 
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++) {
 	if (pl->nType || (pl->bVariable && !bVariable))
@@ -922,7 +922,7 @@ if (gameStates.render.color.bLightMapsOk &&
 		ComputeLightMaps (-1);
 	}
 if (!lightMaps) {
-	InitLightMapTexture (&dummyLightMap, 1.0f);
+	InitLightMapTexture (&dummyLightMap, 0.0f);
 	lightMaps = &dummyLightMap;
 	}
 OglCreateLightMaps ();

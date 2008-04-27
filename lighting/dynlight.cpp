@@ -1239,7 +1239,7 @@ char *pszPPLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = gl_Color * texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"	vec4 color = gl_Color + texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
@@ -1269,7 +1269,7 @@ char *pszPPLightingFS [] = {
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = gl_Color * texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"	vec4 color = gl_Color + texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
@@ -1300,7 +1300,7 @@ char *pszPPLightingFS [] = {
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = gl_Color * texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"	vec4 color = gl_Color + texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -1337,7 +1337,7 @@ char *pszPPLightingFS [] = {
 	"if (bMask < 0.5)\r\n" \
 	"  discard;\r\n" \
 	"else {\r\n" \
-	"	vec4 color = gl_Color * texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"	vec4 color = gl_Color + texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -1421,19 +1421,19 @@ char *pszPPLightingVS [] = {
 char *pszLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"void main() {\r\n" \
-	"gl_FragColor = color = gl_Color * texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"gl_FragColor = color = gl_Color + texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = gl_Color * texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"	vec4 color = gl_Color + texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"	gl_FragColor = texColor * color;\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = gl_Color * texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"	vec4 color = gl_Color + texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -1446,7 +1446,7 @@ char *pszLightingFS [] = {
 	"if (bMask < 0.5)\r\n" \
 	"  discard;\r\n" \
 	"else {\r\n" \
-	"	vec4 color = gl_Color * texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"	vec4 color = gl_Color + texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
