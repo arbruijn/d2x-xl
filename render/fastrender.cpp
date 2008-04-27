@@ -1313,13 +1313,14 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #endif
 						if (gameOpts->ogl.bPerPixelLighting)
 							c.color = gameData.render.color.ambient [nVertex].color;
-						else
+						else {
 #	if SHADER_VERTEX_LIGHTING
 							if (!ComputeVertexLight (nVertex, 1, &c))
 #	endif
 							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, 
 												&gameData.segs.fVertices [nVertex].v3, nVertex, 
 												NULL, &c, 1, 0, nThread);
+							}
 #if 0
 						if (gameStates.app.bMultiThreaded)
 							gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];

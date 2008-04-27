@@ -100,7 +100,7 @@ void G3FlushFaceBuffer (int bForce)
 {
 #if G3_BUFFER_FACES
 if ((faceBuffer.nFaces && bForce) || (faceBuffer.nFaces >= FACE_BUFFER_SIZE)) {
-	glDrawElements (GL_QUADS, faceBuffer.nElements, GL_UNSIGNED_SHORT, faceBuffer.index);
+	glDrawElements (GL_TRIANGLE_FAN, faceBuffer.nElements, GL_UNSIGNED_SHORT, faceBuffer.index);
 	faceBuffer.nFaces = 
 	faceBuffer.nElements = 0;
 	}
@@ -606,6 +606,10 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 		nDbgSeg = nDbgSeg;
 	else
 		nDbgSeg = nDbgSeg;
+#if 0
+else
+	return 1;
+#endif
 if (bmBot && strstr (bmBot->szName, "door45#4"))
 	bmBot = bmBot;
 if (bmTop && strstr (bmTop->szName, "door35#4"))
@@ -832,8 +836,33 @@ if (gameStates.render.bTriangleMesh && !bMonitor) {
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
 #endif
 	}	
-else
+else {
+#if 1
+	// this is a work around for OpenGL per vertex light interpolation
+	// rendering a quad is always started with the brightest vertex
+	tRgbaColorf	*pc = gameData.segs.faces.color + faceP->nIndex;
+	float l, lMax = 0;
+	int i, j, iMax = 0, nIndex, index [4];
+
+	for (i = 0; i < 4; i++, pc++) {
+		l = pc->red + pc->green + pc->blue;
+		if (lMax < l) {
+			lMax = l;
+			iMax = i;
+			}
+		}
+	if (!iMax)
+		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+	else {
+		nIndex = faceP->nIndex;
+		for (i = 0, j = iMax; i < 4; i++, j %= 4)
+			index [i] = nIndex + j++;
+		glDrawElements (GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, index);
+		}
+#else
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+#endif
+	}
 
 #ifdef _DEBUG
 if (!gameOpts->render.debug.bTextures)

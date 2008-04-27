@@ -632,7 +632,10 @@ void ComputeLightMaps (int nFace)
 #endif
 	int			l, s, nMethod; 
 	GLfloat		tempBright = 0; 
-	vmsVector	OffsetU, OffsetV, pixelPos [LM_W][LM_H], *pPixelPos, rayVec, vFaceNorms [4], vNormalP, sidePos; 
+	vmsVector	OffsetU, OffsetV, pixelPos [LM_W][LM_H], *pPixelPos, rayVec, sidePos; 
+#if 0
+	vmsVector	vFaceNorms [4], vNormalP;
+#endif
 	double		brightPrct, sideRad, lightRange, pixelDist; 
 	double		delta; 
 	double		f_offset [8] = {
