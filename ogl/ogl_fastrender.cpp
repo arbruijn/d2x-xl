@@ -353,23 +353,22 @@ else if (gameOpts->ogl.bPerPixelLighting) {
 		nLights = MAX_LIGHTS_PER_PIXEL;
 	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 	nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
-	if (HaveLightMaps ()) {
-		G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
-		glActiveTexture (GL_TEXTURE0);
-		glClientActiveTexture (GL_TEXTURE0);
-		glEnable (GL_TEXTURE_2D);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glBindTexture (GL_TEXTURE_2D, lightMaps [nLights ? faceP - gameData.segs.faces.faces + 1 : 0].handle);
-		}
+	G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
+	glActiveTexture (GL_TEXTURE0);
+	glClientActiveTexture (GL_TEXTURE0);
+	glEnable (GL_TEXTURE_2D);
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glBindTexture (GL_TEXTURE_2D, lightMaps [(HaveLightMaps () && nLights) ? faceP - gameData.segs.faces.faces + 1 : 0].handle);
 	if (nShader != gameStates.render.history.nShader) {
 		glUseProgramObject (0);
 		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nLights ? nLights - 1 : 0][nType]);
+		glUniform1i (glGetUniformLocation (tmProg, "lMapTex"), 0);
 		if (bTextured) {
-			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
+			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 1);
 			if (bColorKey || bMultiTexture) {
-				glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 1);
+				glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 2);
 				if (bColorKey)
-					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
+					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 3);
 				}
 			}
 		}

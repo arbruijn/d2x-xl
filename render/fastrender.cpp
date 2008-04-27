@@ -435,6 +435,7 @@ else {
 			else {
 				glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
 				glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+				glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 				}
 			}
 		if (!(bVertexArrays && (bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1 + bLightMaps)))) {
