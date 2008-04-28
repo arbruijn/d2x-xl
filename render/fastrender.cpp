@@ -414,7 +414,7 @@ if (nType == 3) {
 else if (gameOpts->ogl.bPerPixelLighting)
 	OglEnableLighting (1);
 OglSetupTransform (1);
-if (!(bVertexArrays = G3EnableClientStates (!bDepthOnly, !(bDepthOnly || bLightMaps), bNormals, GL_TEXTURE0))) {
+if (!(bVertexArrays = G3EnableClientStates (!bDepthOnly, !(bDepthOnly /*|| bLightMaps*/), bNormals, GL_TEXTURE0))) {
 	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
 	G3DisableClientStates (1, 1, bNormals, GL_TEXTURE0);
 	gameOpts->ogl.bPerPixelLighting = gameStates.ogl.bPerPixelLightingOk = 0;
@@ -427,8 +427,8 @@ else {
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord);
 		else {
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
-			glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 			}
+		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 		}
 	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 

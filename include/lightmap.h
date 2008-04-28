@@ -6,7 +6,10 @@
 
 //------------------------------------------------------------------------------
 
-#define LIGHTMAP_WIDTH	8
+#define LIGHTMAP_WIDTH		8
+#define LIGHTMAP_BUFWIDTH	512
+#define LIGHTMAP_ROWSIZE	(LIGHTMAP_BUFWIDTH / LIGHTMAP_WIDTH)
+#define LIGHTMAP_BUFSIZE	(LIGHTMAP_ROWSIZE * LIGHTMAP_ROWSIZE)
 
 //------------------------------------------------------------------------------
 
@@ -20,9 +23,20 @@ typedef struct tLightMapInfo {
 } tLightMapInfo;
 
 typedef struct tLightMap {
-	GLuint		handle;
 	tRgbColorf	bmP [LIGHTMAP_WIDTH][LIGHTMAP_WIDTH];
 } tLightMap;
+
+typedef struct tLightMapBuffer {
+	GLuint		handle;
+	tRgbColorf	bmP [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
+} tLightMapBuffer;
+
+typedef struct tLightMapData {
+	tLightMapInfo		*info;
+	tLightMapBuffer	*buffers;
+	int					nBuffers;
+	int					nLights; 
+} tLightMapData;
 
 //------------------------------------------------------------------------------
 
@@ -44,16 +58,14 @@ double GetLightColor (int tMapNum, GLfloat *colorP);
 //------------------------------------------------------------------------------
 
 //extern tOglTexture	*lightMaps;
-extern tLightMapInfo	*lightMapInfo;
-extern tLightMap		*lightMaps;
-extern tLightMap		dummyLightMap;
-extern GLhandleARB	lmShaderProgs [3];
+extern tLightMapData		lightMapData;
+extern GLhandleARB		lmShaderProgs [3];
 
 //------------------------------------------------------------------------------
 
 static inline int HaveLightMaps (void)
 {
-return (lightMapInfo != NULL);
+return (lightMapData.info != NULL);
 }
 
 //------------------------------------------------------------------------------

@@ -364,15 +364,15 @@ else if (gameOpts->ogl.bPerPixelLighting) {
 #endif
 	if (bLightMaps = HaveLightMaps ()) {
 		int i = faceP - gameData.segs.faces.faces + 1;
+		glClientActiveTexture (GL_TEXTURE0);
+		glActiveTexture (GL_TEXTURE0);
+		glEnable (GL_TEXTURE_2D);
 		if (OglCreateLightMap (i)) {
-			glClientActiveTexture (GL_TEXTURE0);
-			glActiveTexture (GL_TEXTURE0);
-			glEnable (GL_TEXTURE_2D);
-			glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+#if 1
+			//glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			glBindTexture (GL_TEXTURE_2D, lightMaps [i].handle);
 			OglTexWrap (NULL, GL_CLAMP);
 			}
-#if 1
 #else
 			{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightMaps + i, 1, 1);}
 #endif

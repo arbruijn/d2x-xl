@@ -50,10 +50,9 @@ GLhandleARB lmShaderProgs [3] = {0,0,0};
 GLhandleARB lmFS [3] = {0,0,0}; 
 GLhandleARB lmVS [3] = {0,0,0}; 
 
-int nLights; 
-tLightMap *lightMaps = NULL;  //Level Lightmaps
-tLightMapInfo *lightMapInfo = NULL;  //Level lights
 tLightMap dummyLightMap;
+
+tLightMapData lightMapData = {NULL, NULL, 0};
 
 #define TEXTURE_CHECK 1
 
@@ -145,9 +144,9 @@ for (int i = LIGHTMAP_WIDTH * LIGHTMAP_WIDTH * 3; i; i--)
 
 int OglCreateLightMap (int nLightMap)
 {
-	tLightMap	*lmP = lightMaps + nLightMap;
+#if 0
+	tLightMap	*lmP = lightMapData.buffers + nLightMap;
 	int			nError;
-
 if (lmP->handle)
 	return 1;
 OglGenTextures (1, &lmP->handle);
@@ -159,9 +158,12 @@ if ((nError = glGetError ()))
 	return 0;
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_WIDTH, LIGHTMAP_WIDTH, 0, GL_RGB, GL_FLOAT, lmP->bmP);
 if ((nError = glGetError ()))
 	return 0;
+#endif
 return 1;
 }
 
@@ -182,9 +184,9 @@ return 1;
 
 void OglDestroyLightMaps (void)
 {
-if (lightMaps) { 
-	tLightMap *lmP = lightMaps;
-	for (int i = gameData.segs.nFaces + 1; i; i--, lmP++)
+if (lightMapData.buffers) { 
+	tLightMapBuffer *lmP = lightMapData.buffers;
+	for (int i = lightMapData.nBuffers; i; i--, lmP++)
 		if (lmP->handle) {
 			OglDeleteTextures (1, (GLuint *) &lmP->handle);
 			lmP->handle = 0;
@@ -196,13 +198,10 @@ if (lightMaps) {
 
 void DestroyLightMaps (void)
 {
-if (lightMapInfo) { 
+if (lightMapData.info) { 
 	OglDestroyLightMaps ();
-	D2_FREE (lightMapInfo);
-	if (lightMaps == &dummyLightMap)
-		lightMaps = NULL;
-	else
-		D2_FREE (lightMaps);
+	D2_FREE (lightMapData.info);
+	D2_FREE (lightMapData.buffers);
 	}
 }
 
@@ -540,20 +539,20 @@ int InitLightData (int bVariable)
 	double			baseRange = LightMapRange ();
 
 //first step find all the lights in the level.  By iterating through every surface in the level.
-if (!(nLights = CountLights (bVariable)))
+if (!(lightMapData.nLights = CountLights (bVariable)))
 	return 0;
-if (!(lightMapInfo = (tLightMapInfo *) D2_ALLOC (sizeof (tLightMapInfo) * nLights)))
-	return nLights = 0; 
-if (!(lightMaps = (tLightMap *) D2_ALLOC ((gameData.segs.nFaces + 1) * sizeof (tLightMap)))) {
-	D2_FREE (lightMapInfo);
-	return nLights = 0; 
+if (!(lightMapData.info = (tLightMapInfo *) D2_ALLOC (sizeof (tLightMapInfo) * lightMapData.nLights)))
+	return lightMapData.nLights = 0; 
+lightMapData.nBuffers = (gameData.segs.nFaces + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
+if (!(lightMapData.buffers = (tLightMapBuffer *) D2_ALLOC (lightMapData.nBuffers * sizeof (tLightMapBuffer)))) {
+	D2_FREE (lightMapData.info);
+	return lightMapData.nLights = 0; 
 	}
-memset (lightMaps, 0, sizeof (tLightMap) * gameData.segs.nFaces); 
-memset (lightMapInfo, 0, sizeof (tLightMapInfo) * nLights); 
-nLights = 0; 
+memset (lightMapData.buffers, 0, sizeof (tLightMap) * gameData.segs.nFaces); 
+memset (lightMapData.info, 0, sizeof (tLightMapInfo) * lightMapData.nLights); 
+lightMapData.nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
-InitLightMapTexture (lightMaps, 0.0f);
-lmiP = lightMapInfo; 
+lmiP = lightMapData.info; 
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++) {
 	if (pl->nType || (pl->bVariable && !bVariable))
 		continue;
@@ -588,7 +587,7 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 		lmiP++; 
 		}
 	}
-return nLights = (int) (lmiP - lightMapInfo); 
+return lightMapData.nLights = (int) (lmiP - lightMapData.info); 
 }
 
 //------------------------------------------------------------------------------
@@ -683,8 +682,8 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 	sideP = SEGMENTS [faceP->nSegment].sides + faceP->nSide;
 	memcpy (sideVerts, faceP->index, sizeof (sideVerts));
 #if LMAP_REND2TEX
-	OglCreateFBuffer (&lightMaps [nFace].fbuffer, 64, 64);
-	OglEnableFBuffer (&lightMaps [nFace].fbuffer);
+	OglCreateFBuffer (&lightMapData.buffers [nFace].fbuffer, 64, 64);
+	OglEnableFBuffer (&lightMapData.buffers [nFace].fbuffer);
 #else
 	nMethod = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
 	pPixelPos = &pixelPos [0][0];
@@ -756,7 +755,7 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 	bStart = 1;
 #endif
 	memset (texColor, 0, sizeof (texColor));
-	for (l = 0, lmiP = lightMapInfo; l < nLights; l++, lmiP++) {
+	for (l = 0, lmiP = lightMapData.info; l < lightMapData.nLights; l++, lmiP++) {
 #if LMAP_REND2TEX
 		nMinDist = 0x7FFFFFFF;
 		// get the distances of all 4 tSide corners to the light source center 
@@ -837,9 +836,9 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 #endif
 		}
 #if LMAP_REND2TEX
-	lightMaps [nFace].handle = lightMaps [nFace].fbuffer.texId;
-	lightMaps [nFace].fbuffer.texId = 0;
-	OglDestroyFBuffer (&lightMaps [nFace].fbuffer);
+	lightMapData.buffers [nFace].handle = lightMapData.buffers [nFace].fbuffer.texId;
+	lightMapData.buffers [nFace].fbuffer.texId = 0;
+	OglDestroyFBuffer (&lightMapData.buffers [nFace].fbuffer);
 #else
 	pPixelPos = &pixelPos [0][0];
 	pTexColor = texColor [0][0];
@@ -853,7 +852,12 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 				for (s = 0; s < 3; s++)
 					pTexColor [s] /= tempBright; 
 			}
-	memcpy (&lightMaps [nFace + 1].bmP, texColor, sizeof (texColor));
+	tLightMapBuffer *bufP = lightMapData.buffers + nFace / LIGHTMAP_BUFSIZE;
+	int i = nFace % LIGHTMAP_BUFSIZE;
+	int x = (i % LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH;
+	int y = (i / LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH;
+	for (i = 0; i < LM_H; i++, y++)
+		memcpy (&bufP->bmP [y][x], &texColor [i][0], LM_W * sizeof (tRgbColorf));
 #endif
 	}
 }
@@ -942,10 +946,6 @@ if (gameStates.render.color.bLightMapsOk &&
 		}
 	else
 		ComputeLightMaps (-1);
-	}
-if (!lightMaps) {
-	InitLightMapTexture (&dummyLightMap, 0.0f);
-	lightMaps = &dummyLightMap;
 	}
 OglCreateLightMaps ();
 }
