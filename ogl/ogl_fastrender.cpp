@@ -845,6 +845,24 @@ if (gameStates.render.bTriangleMesh && !bMonitor) {
 else if (gameOpts->ogl.bPerPixelLighting)
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 else {
+#ifdef _DEBUG
+	if (!bDepthOnly && gameOpts->render.debug.bWireFrame) {
+		if ((nDbgFace < 0) || (faceP - gameData.segs.faces.faces == nDbgFace)) {
+			glColor3f (1.0f, 0.5f, 0.0f);
+			glLineWidth (6);
+			glBegin (GL_LINE_LOOP);
+			for (int i = 0; i < 4; i++)
+				glVertex3fv ((GLfloat *) (gameData.segs.fVertices + faceP->index [i]));
+			glEnd ();
+			glLineWidth (1);
+			if (gameOpts->render.debug.bDynamicLight)
+				glEnableClientState (GL_COLOR_ARRAY);
+			if (bTextured)
+				glEnable (GL_TEXTURE_2D);
+			}
+		}
+	if (gameOpts->render.debug.bTextures) {
+#endif
 #if 1
 	// this is a work around for OpenGL's per vertex light interpolation
 	// rendering a quad is always started with the brightest vertex
@@ -869,6 +887,9 @@ else {
 		}
 #else
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+#endif
+#ifdef _DEBUG
+	}
 #endif
 	}
 
