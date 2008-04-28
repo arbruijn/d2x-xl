@@ -473,14 +473,14 @@ if (bShaderMerge) {
 	bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL;
 	nShader = bSuperTransp ? bmMask ? 2 : 1 : 0;
 	glUseProgramObject (tmProg = tmShaderProgs [nShader]);
-	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, bVertexArrays, 0);
+	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightMaps, bVertexArrays, 0);
 	glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
-	INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, bVertexArrays, 0);
+	INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMaps, bVertexArrays, 0);
 	glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
 	if (bmMask) {
 #ifdef _DEBUG
 		InitTMU2 (bVertexArrays);
-		G3_BIND (GL_TEXTURE2, bmMask, bVertexArrays);
+		G3_BIND (GL_TEXTURE2, bmMask, lightMaps, bVertexArrays);
 #else
 		INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, bVertexArrays, 0);
 #endif

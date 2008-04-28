@@ -32,9 +32,9 @@ else {
 	if (i == 0)
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	else if (i == 1)
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+		glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	else
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (g3InitTMU [i][bVertexArrays]) {
 		glEndList ();
 		InitTMU (i, bVertexArrays);
@@ -57,7 +57,7 @@ else
 		glClientActiveTexture (GL_TEXTURE0);
 	glActiveTexture (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (g3InitTMU [0][bVertexArrays]) {
 		glEndList ();
 		InitTMU0 (bVertexArrays);
@@ -169,18 +169,24 @@ else
 
 //------------------------------------------------------------------------------
 
-#define	G3_BIND(_tmu,_bmP,_bClient) \
+#define	G3_BIND(_tmu,_bmP,_lmP,_bClient) \
 			glActiveTexture (_tmu); \
 			if (_bClient) \
 				glClientActiveTexture (_tmu); \
-			if (OglBindBmTex (_bmP, 1, 3)) \
-				return 1; \
-			(_bmP) = BmCurFrame (_bmP, -1); \
-			OglTexWrap ((_bmP)->glTexture, GL_REPEAT);
+			if (_bmP) {\
+				if (OglBindBmTex (_bmP, 1, 3)) \
+					return 1; \
+				(_bmP) = BmCurFrame (_bmP, -1); \
+				OglTexWrap ((_bmP)->glTexture, GL_REPEAT); \
+				} \
+			else { \
+				OGL_BINDTEX ((_lmP)->handle); \
+				OglTexWrap (NULL, GL_CLAMP); \
+				}
 
-#define	INIT_TMU(_initTMU,_tmu,_bmP,_bClient,bLightMaps) \
+#define	INIT_TMU(_initTMU,_tmu,_bmP,_lmP,_bClient,bLightMaps) \
 			_initTMU (_bClient, bLightMaps); \
-			G3_BIND (_tmu,_bmP,_bClient)
+			G3_BIND (_tmu,_bmP,_lmP,_bClient)
 
 
 //------------------------------------------------------------------------------

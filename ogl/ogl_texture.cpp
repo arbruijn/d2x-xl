@@ -444,7 +444,7 @@ return bmP;
 
 //------------------------------------------------------------------------------
 //little hack to find the largest or equal multiple of 2 for a given number
-int pow2ize (int x)
+int Pow2ize (int x)
 {
 	int i;
 
@@ -957,14 +957,14 @@ if (texP) {
 		texP->h = bmP->bmProps.h;
 		}
 #endif
-	texP->tw = pow2ize (texP->w);
-	texP->th = pow2ize (texP->h);
+	texP->tw = Pow2ize (texP->w);
+	texP->th = Pow2ize (texP->h);
 	}
 else {
 	bLocalTexture = 1;
 	texP = &tex;
-	tex.tw = pow2ize (tex.w = bmP->bmProps.w);
-	tex.th = pow2ize (tex.h = bmP->bmProps.h);
+	tex.tw = Pow2ize (tex.w = bmP->bmProps.w);
+	tex.th = Pow2ize (tex.h = bmP->bmProps.h);
 	if (bmP->bmBPP == 3) {
 		texP->format = GL_RGB;
 		texP->internalformat = 3;
@@ -1028,7 +1028,7 @@ if (!texP->bFrameBuf)
 	OglGenTextures (1, (GLuint *) &texP->handle);
 	if (!texP->handle) {
 #ifdef _DEBUG
-		int i = glGetError ();
+		int nError = glGetError ();
 #endif
 		return 1;
 		}
@@ -1306,7 +1306,7 @@ else if ((t = bmP->glTexture)) {
 void OglTexWrap (tOglTexture *tex, int state)
 {
 #if 0
-if (tex->handle < 0)
+if (!tex || (tex->handle < 0))
 	state = GL_CLAMP;
 if (!tex || (tex->wrapstate != state) || (tex->numrend < 1)) {
 #endif

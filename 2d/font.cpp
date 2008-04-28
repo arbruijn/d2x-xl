@@ -444,7 +444,7 @@ VideoOffset1 = y * ROWSIZE + x;
 #include "args.h"
 //font handling routines for OpenGL - Added 9/25/99 Matthew Mueller - they are here instead of in arch/ogl because they use all these defines
 
-int pow2ize (int x);//from ogl.c
+int Pow2ize (int x);//from ogl.c
 
 //------------------------------------------------------------------------------
 
@@ -470,14 +470,14 @@ void OglFontChooseSize (grsFont * font, int gap, int *rw, int *rh){
 	int smallprop=10000;
 	int h, w;
 	for (h=32;h<=256;h*=2){
-//		h=pow2ize (font->ftHeight*rows+gap* (rows-1);
+//		h=Pow2ize (font->ftHeight*rows+gap* (rows-1);
 		if (font->ftHeight>h)continue;
 		r= (h/ (font->ftHeight+gap));
-		w = pow2ize ((get_fontTotal_width (font)+ (nchars-r)*gap)/r);
+		w = Pow2ize ((get_fontTotal_width (font)+ (nchars-r)*gap)/r);
 		tries=0;
 		do {
 			if (tries)
-				w = pow2ize (w+1);
+				w = Pow2ize (w+1);
 			if (tries>3){
 				break;
 			}

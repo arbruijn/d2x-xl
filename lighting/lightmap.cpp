@@ -134,19 +134,47 @@ return sqrt (dx * dx + dy * dy + dz * dz) / (2 * (double) F1_0);
 
 //------------------------------------------------------------------------------
 
+void InitLightMapTexture (tLightMap *lmP, float fColor)
+{
+float *colorP = (float *) (&lmP->bmP);
+for (int i = LIGHTMAP_WIDTH * LIGHTMAP_WIDTH * 3; i; i--)
+	*colorP++ = fColor;
+}
+
+//------------------------------------------------------------------------------
+
+int OglCreateLightMap (int nLightMap)
+{
+	tLightMap	*lmP = lightMaps + nLightMap;
+	int			nError;
+
+if (lmP->handle)
+	return 1;
+OglGenTextures (1, &lmP->handle);
+if ((nError = glGetError ()))
+	return 0;
+InitLightMapTexture (lmP, 1.0f);
+OGL_BINDTEX (lmP->handle); 
+if ((nError = glGetError ()))
+	return 0;
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_WIDTH, LIGHTMAP_WIDTH, 0, GL_RGB, GL_FLOAT, lmP->bmP);
+if ((nError = glGetError ()))
+	return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int OglCreateLightMaps (void)
 {
-	tLightMap	*lmP = lightMaps;
-
-for (int i = HaveLightMaps () ? gameData.segs.nFaces : 1; i; i--, lmP++) {
-	OglGenTextures (1, &lmP->handle);
-	if (!lmP->handle)
+#if 0
+glEnable (GL_TEXTURE_2D);
+for (int i = 0, j = HaveLightMaps () ? gameData.segs.nFaces : 1; i < j; i++)
+	if (!OglCreateLightMap (i))
 		return 0;
-	OGL_BINDTEX (lmP->handle); 
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_WIDTH, LIGHTMAP_WIDTH, 0, GL_RGB, GL_FLOAT, lmP->bmP);
-	}
+#endif
 return 1;
 }
 
@@ -497,15 +525,6 @@ if (bIsLight) {
 #endif
 	}
 return 0;
-}
-
-//------------------------------------------------------------------------------
-
-void InitLightMapTexture (tLightMap *lmP, float fColor)
-{
-float *colorP = (float *) (&lmP->bmP);
-for (int i = LIGHTMAP_WIDTH * LIGHTMAP_WIDTH * 4; i; i--)
-	*colorP++ = fColor;
 }
 
 //------------------------------------------------------------------------------

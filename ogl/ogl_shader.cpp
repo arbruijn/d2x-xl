@@ -341,6 +341,7 @@ PrintLog ("   initializing glare shader programs\n");
 InitGlareShader ();
 PrintLog ("   initializing gray scale shader programs\n");
 InitGrayScaleShader ();
+ResetPerPixelLightingShaders ();
 LinkShaderProg (NULL);
 }
 

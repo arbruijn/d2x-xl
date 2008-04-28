@@ -1505,7 +1505,7 @@ char *defaultGameTexts [][2] = {
 	{"Tasten und Hats", "Buttons and Hats"},
 	{"Erzeuge Guidebot!", "Creating Guidebot!"},
 	{"auf Abstieg vorbereiten", "Prepare for Descent"},
-	{"Berechne Beleuchtung", "Computing Illumination"},
+	{"Berechne Lightmaps", "Computing Lightmaps"},
 	{"Spe~Zielle Aufloesung", "C~Ustom Resolution"},
 	{"Mausp~Osition anzeigen", "Display Mouse Indicat~Or"},
 	{"Teleporter zeigen Zielgebiet", "~Teleports show destination"},

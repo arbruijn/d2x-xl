@@ -40,6 +40,7 @@ void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (void);
 tShaderLight *GetActiveShaderLight (tActiveShaderLight *activeLightsP, int nThread);
 int InitPerPixelLightingShader (int nType, int nLights);
+void ResetPerPixelLightingShaders (void);
 void InitHeadlightShaders (int nLights);
 char *BuildLightingShader (char *pszTemplate, int nLights);
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);

@@ -767,7 +767,7 @@ m_faceP->bAdditive = gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_LA
 
 void CQuadMeshBuilder::SetupFace (void)
 {
-#define	LMAP_SIZE	(1.0f / 16.0f)
+#define	LMAP_SIZE	0.0f //(1.0f / 16.0f)
 
 	static tTexCoord2f lMapTexCoord [4] = {
 		{{LMAP_SIZE, LMAP_SIZE}}, 
