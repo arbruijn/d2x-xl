@@ -52,6 +52,8 @@ GLhandleARB lmShaderProgs [3] = {0,0,0};
 GLhandleARB lmFS [3] = {0,0,0}; 
 GLhandleARB lmVS [3] = {0,0,0}; 
 
+int lightMapWidth [4] = {8, 16, 32, 64};
+
 tLightMap dummyLightMap;
 
 tLightMapData lightMapData = {NULL, NULL, 0};
@@ -93,9 +95,6 @@ if (!(gameOpts->ogl.bPerPixelLighting))
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
 	if (!(pl->nType || (pl->bVariable && !bVariable)))
 		nLights++;
-if (!nLights)
-	return 0;
-TransformDynLights (1, 0);
 return nLights; 
 }
 
@@ -640,12 +639,12 @@ void ComputeLightMaps (int nFace, int nThread)
 	ushort			sideVerts [4]; 
 
 #if 1
-#	define		LM_W LIGHTMAP_WIDTH
-#	define		LM_H LIGHTMAP_WIDTH
+#	define		LM_W MAX_LIGHTMAP_WIDTH
+#	define		LM_H MAX_LIGHTMAP_WIDTH
 #else
 	int			LM_W = 8, LM_H = 8; 
 #endif
-	int			x, y, xy; 
+	int			x, y, i; 
 	int			v0, v1, v2, v3; 
 	GLfloat		*pTexColor;// = {0.0, 0.0, 0.0, 1.0}; 
 	GLfloat		texColor [LM_W][LM_H][3];
@@ -659,12 +658,11 @@ void ComputeLightMaps (int nFace, int nThread)
 	GLfloat		maxColor = 0; 
 	vmsVector	offsetU, offsetV, pixelPos [LM_W][LM_H], *pPixelPos; 
 	vmsVector	vNormal;
-	double		fOffset [8] = {
-						0.0 / (LM_W - 1), 1.0 / (LM_W - 1), 2.0 / (LM_W - 1), 3.0 / (LM_W - 1),
-						4.0 / (LM_W - 1), 5.0 / (LM_W - 1), 6.0 / (LM_W - 1), 7.0 / (LM_W - 1)
-						};
+	double		fOffset [16];
 	tVertColorData	vcd;
 
+for (i = 0; i < LM_W; i++)
+	fOffset [i] = (double) i / (double) (LM_W - 1);
 InitVertColorData (vcd);
 vcd.pVertPos = &vcd.vertPos;
 
@@ -730,16 +728,24 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 				}
 			}
 		}
+#ifdef _DEBUG
+	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 	VmVecAvg (&vNormal, sideP->normals, sideP->normals + 1);
 	VmVecFixToFloat (&vcd.vertNorm, &vNormal);
+	memset (texColor, 0, sizeof (texColor));
 	pPixelPos = &pixelPos [0][0];
 	pTexColor = texColor [0][0];
-	for (xy = LM_W * LM_H; xy; xy--, pPixelPos++, pTexColor += 3) { 
-		SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->rad / 10.0f, nThread);
-		VmVecFixToFloat (&vcd.vertPos, pPixelPos);
-		G3AccumVertColor (-1, (fVector3 *) pTexColor, &vcd, nThread);
+	for (x = 0; x < LM_W; x++) { 
+		for (y = 0; y < LM_H; y++, pPixelPos++) { 
+			if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->rad / 10.0f, nThread)) {
+				VmVecFixToFloat (&vcd.vertPos, pPixelPos);
+				G3AccumVertColor (-1, (fVector3 *) (&texColor [y][x][0]), &vcd, nThread);
+				}
+			}
 		}
-
+#if 0
 	pPixelPos = &pixelPos [0][0];
 	pTexColor = texColor [0][0];
 	for (xy = LM_W * LM_H; xy; xy--, pTexColor += 3) { 
@@ -756,6 +762,7 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 			pTexColor [2] /= maxColor; 
 			}
 		}
+#endif
 	tLightMapBuffer *bufP = lightMapData.buffers + nFace / LIGHTMAP_BUFSIZE;
 	int i = nFace % LIGHTMAP_BUFSIZE;
 	int x = (i % LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH;
@@ -773,6 +780,8 @@ int _CDECL_ LightMapThread (void *pThreadId)
 {
 	int		nId = *((int *) pThreadId);
 
+gameData.render.lights.dynamic.shader.nFirstLight [nId] = MAX_SHADER_LIGHTS;
+gameData.render.lights.dynamic.shader.nLastLight [nId] = 0;
 ComputeLightMaps (nId ? gameData.segs.nFaces / 2 : 0, nId);
 SDL_SemPost (ti [nId].done);
 ti [nId].bDone = 1;
@@ -834,19 +843,20 @@ void CreateLightMaps (void)
 DestroyLightMaps ();
 if (!InitLightData (0))
 	return;
-#if LMAP_REND2TEX
-InitBrightMap (brightMap);
-memset (&lMapUVL, 0, sizeof (lMapUVL));
-#endif
+TransformDynLights (1, 0);
 if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 8))
 		StartLightMapThreads (LightMapThread);
-	else if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
-		nFace = 0;
-		NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreateLightMapsPoll);
+	else {
+		gameData.render.lights.dynamic.shader.nFirstLight [0] = MAX_SHADER_LIGHTS;
+		gameData.render.lights.dynamic.shader.nLastLight [0] = 0;
+		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
+			nFace = 0;
+			NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreateLightMapsPoll);
+			}
+		else
+			ComputeLightMaps (-1, 0);
 		}
-	else
-		ComputeLightMaps (-1, 0);
 	}
 OglCreateLightMaps ();
 }

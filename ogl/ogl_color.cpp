@@ -309,7 +309,7 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 	int						i, j, nLights, nType, bInRad, 
 								bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState, 
 								nSaturation = gameOpts->render.color.nSaturation;
-	int						nBrightness, nMaxBrightness = 0, nMeshQuality = gameOpts->render.nMeshQuality;
+	int						nBrightness, nMaxBrightness = 0, nMeshQuality = gameOpts->ogl.bPerPixelLighting ? 0 : gameOpts->render.nMeshQuality;
 	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
 	fVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	fVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};

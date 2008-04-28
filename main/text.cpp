@@ -1807,7 +1807,9 @@ char *defaultGameTexts [][2] = {
 	{"Initialisiere...", "Initializing..."},
 	{"ro~Boter-Omega schiesst blitze", "ro~Bot omega fires lightnings"},
 	{"~Geometrie-Verbesserung: %s", "Mesh impr~Ovement: %s"},
+	{"~Lightmap-Qualitaet: %s", "~Lightmap quality: %s"},
 #if 0
+	{"", ""},
 #endif
 	{"", ""}
 	};
@@ -2433,6 +2435,8 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, erzeugen auch von Robotern abgefeuerte\nOmega-Kanonen Blitzeffekte.", "If checked, omega cannons fired by robots\nwill create lightning effects, too."},
 	{"Je nach Einstellung werden grosse Flaechen in mehr oder\nweniger viele kleinere zerteilt. Dadurch wird die Beleuchtung\nverbessert, das Program u.U. aber auch langsamer.", 
 	 "Depending on the setting, huge faces will be split in\nmore or less many smaller ones. That will improve the lighting,\nbut may also slow down the program."},
+	{"Je hoeher die Qualitaet der Lightmaps, desto besser\nsieht die Beleuchtung mit Lightmaps aus,\ndesto laenger benoetigt aber auch ihre\nBerechnung.", 
+	 "The higher lightmap quality, the better lighting\nwith lightmaps look, but the longer it takes\nto compute them."},
 #if 0
 	{"", ""},
 #endif

@@ -331,6 +331,7 @@ typedef struct tRenderOptions {
 	int bDynLighting;
 	int bHiresModels;
 	int nMeshQuality;
+	int nLightmapQuality;
 	int bUseShaders;
 	int bBrightObjects;
 	int nMathFormat;

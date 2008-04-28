@@ -797,14 +797,14 @@ for (i = 0; i < 4; i++) {
 i = (m_faceP - gameData.segs.faces.faces) % LIGHTMAP_BUFSIZE;
 float x = (float) (i % LIGHTMAP_ROWSIZE);
 float y = (float) (i / LIGHTMAP_ROWSIZE);
-m_lMapTexCoordP [0].v.u = x / 64.0f + 1.0f / (64.0f * 16.0f);
-m_lMapTexCoordP [0].v.v = y / 64.0f + 1.0f / (64.0f * 16.0f);
+m_lMapTexCoordP [0].v.u = x / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+m_lMapTexCoordP [0].v.v = y / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
 m_lMapTexCoordP [1].v.u = 
-m_lMapTexCoordP [2].v.u = (x + 1) / 64.0f - 1.0f / (64.0f * 16.0f);
-m_lMapTexCoordP [1].v.v = y / 64.0f + 1.0f / (64.0f * 16.0f);
-m_lMapTexCoordP [2].v.v = (y + 1) / 64.0f - 1.0f / (64.0f * 16.0f);
-m_lMapTexCoordP [3].v.u = x / 64.0f + 1.0f / (64.0f * 16.0f);
-m_lMapTexCoordP [3].v.v = (y + 1) / 64.0f - 1.0f / (64.0f * 16.0f);
+m_lMapTexCoordP [2].v.u = (x + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+m_lMapTexCoordP [1].v.v = y / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+m_lMapTexCoordP [2].v.v = (y + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+m_lMapTexCoordP [3].v.u = x / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+m_lMapTexCoordP [3].v.v = (y + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
 m_lMapTexCoordP += 4;
 }
 

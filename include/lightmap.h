@@ -6,7 +6,8 @@
 
 //------------------------------------------------------------------------------
 
-#define LIGHTMAP_WIDTH		8
+#define MAX_LIGHTMAP_WIDTH	64
+#define LIGHTMAP_WIDTH		lightMapWidth [gameOpts->render.nLightmapQuality]
 #define LIGHTMAP_BUFWIDTH	512
 #define LIGHTMAP_ROWSIZE	(LIGHTMAP_BUFWIDTH / LIGHTMAP_WIDTH)
 #define LIGHTMAP_BUFSIZE	(LIGHTMAP_ROWSIZE * LIGHTMAP_ROWSIZE)
@@ -23,7 +24,7 @@ typedef struct tLightMapInfo {
 } tLightMapInfo;
 
 typedef struct tLightMap {
-	tRgbColorf	bmP [LIGHTMAP_WIDTH][LIGHTMAP_WIDTH];
+	tRgbColorf	*bmP;
 } tLightMap;
 
 typedef struct tLightMapBuffer {
@@ -59,6 +60,7 @@ double GetLightColor (int tMapNum, GLfloat *colorP);
 
 //extern tOglTexture	*lightMaps;
 extern tLightMapData		lightMapData;
+extern int					lightMapWidth [4];
 extern GLhandleARB		lmShaderProgs [3];
 
 //------------------------------------------------------------------------------

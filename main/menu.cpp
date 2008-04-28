@@ -155,6 +155,7 @@ static struct {
 	int	nRenderQual;
 	int	nTexQual;
 	int	nMeshQual;
+	int	nLMapQual;
 	int	nWallTransp;
 } renderOpts;
 
@@ -275,6 +276,7 @@ static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150
 
 static char *pszTexQual [4];
 static char *pszMeshQual [5];
+static char *pszLMapQual [4];
 static char *pszRendQual [5];
 static char *pszSmokeAmount [5];
 static char *pszSmokeSize [4];
@@ -3314,6 +3316,15 @@ if (gameOpts->app.bExpertMode) {
 			m->rebuild = 1;
 			}
 		}
+	if (renderOpts.nLMapQual > 0) {
+		m = menus + renderOpts.nLMapQual;
+		v = m->value;
+		if (gameOpts->render.nLightmapQuality != v) {
+			gameOpts->render.nLightmapQuality = v;
+			sprintf (m->text, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
+			m->rebuild = 1;
+			}
+		}
 	m = menus + renderOpts.nWallTransp;
 	v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
 	if (extraGameInfo [0].grWallTransparency != v) {
@@ -3921,6 +3932,15 @@ if (gameOpts->app.bExpertMode) {
 			m->rebuild = 1;
 			}
 		}
+	if (renderOpts.nLMapQual > 0) {
+		m = menus + renderOpts.nLMapQual;
+		v = m->value;
+		if (gameOpts->render.nLightmapQuality != v) {
+			gameOpts->render.nLightmapQuality = v;
+			sprintf (m->text, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
+			m->rebuild = 1;
+			}
+		}
 	m = menus + renderOpts.nWallTransp;
 	v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
 	if (extraGameInfo [0].grWallTransparency != v) {
@@ -3950,6 +3970,7 @@ void RenderOptionsMenu (void)
 	char szRendQual [50];
 	char szTexQual [50];
 	char szMeshQual [50];
+	char szLMapQual [50];
 	char szContrast [50];
 
 	int nRendQualSave = gameOpts->render.nQuality;
@@ -3970,6 +3991,11 @@ void RenderOptionsMenu (void)
 	pszMeshQual [2] = TXT_MEDIUM;
 	pszMeshQual [3] = TXT_HIGH;
 	pszMeshQual [4] = TXT_EXTREME;
+
+	pszLMapQual [0] = TXT_SMALL;
+	pszLMapQual [1] = TXT_MEDIUM;
+	pszLMapQual [2] = TXT_HIGH;
+	pszLMapQual [3] = TXT_EXTREME;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -3999,7 +4025,8 @@ do {
 		renderOpts.nRenderQual = opt++;
 		if (gameStates.app.bGameRunning)
 			renderOpts.nTexQual =
-			renderOpts.nMeshQual = -1;
+			renderOpts.nMeshQual = 
+			renderOpts.nLMapQual = -1;
 		else {
 			sprintf (szTexQual + 1, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
 			*szTexQual = *(TXT_TEXQUAL + 1);
@@ -4009,6 +4036,14 @@ do {
 			*szMeshQual = *(TXT_MESH_QUALITY + 1);
 			ADD_SLIDER (opt, szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 4, KEY_O, HTX_MESH_QUALITY);
 			renderOpts.nMeshQual = opt++;
+			if (!gameOpts->ogl.bPerPixelLighting)
+				renderOpts.nLMapQual = -1;
+			else {
+				sprintf (szLMapQual + 1, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
+				*szLMapQual = *(TXT_LMAP_QUALITY + 1);
+				ADD_SLIDER (opt, szLMapQual + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_L, HTX_LMAP_QUALITY);
+				renderOpts.nLMapQual = opt++;
+				}
 			}
 		ADD_TEXT (opt, "", 0);
 		opt++;
