@@ -144,23 +144,29 @@ for (int i = LIGHTMAP_WIDTH * LIGHTMAP_WIDTH * 3; i; i--)
 
 int OglCreateLightMap (int nLightMap)
 {
-#if 0
-	tLightMap	*lmP = lightMapData.buffers + nLightMap;
-	int			nError;
+	tLightMapBuffer	*lmP = lightMapData.buffers + nLightMap;
+#ifdef _DEBUG
+	int					nError;
+#endif
+
 if (lmP->handle)
 	return 1;
 OglGenTextures (1, &lmP->handle);
+#ifdef _DEBUG
 if ((nError = glGetError ()))
 	return 0;
-InitLightMapTexture (lmP, 1.0f);
+#endif
 OGL_BINDTEX (lmP->handle); 
+#ifdef _DEBUG
 if ((nError = glGetError ()))
 	return 0;
+#endif
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_WIDTH, LIGHTMAP_WIDTH, 0, GL_RGB, GL_FLOAT, lmP->bmP);
+#ifdef _DEBUG
 if ((nError = glGetError ()))
 	return 0;
 #endif
@@ -171,12 +177,9 @@ return 1;
 
 int OglCreateLightMaps (void)
 {
-#if 0
-glEnable (GL_TEXTURE_2D);
-for (int i = 0, j = HaveLightMaps () ? gameData.segs.nFaces : 1; i < j; i++)
+for (int i = 0; i < lightMapData.nBuffers; i++)
 	if (!OglCreateLightMap (i))
 		return 0;
-#endif
 return 1;
 }
 

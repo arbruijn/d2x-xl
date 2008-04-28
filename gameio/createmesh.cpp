@@ -794,7 +794,17 @@ for (i = 0; i < 4; i++) {
 	m_ovlTexCoordP++;
 	*m_faceColorP++ = gameData.render.color.ambient [j].color;
 	}
-memcpy (m_lMapTexCoordP, lMapTexCoord, sizeof (lMapTexCoord));
+i = (m_faceP - gameData.segs.faces.faces) % LIGHTMAP_BUFSIZE;
+float x = (float) ((i % LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH);
+float y = (float) ((i / LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH);
+m_lMapTexCoordP [0].v.u = x / 64.0f + 1.0f / (64.0f * 16.0f);
+m_lMapTexCoordP [0].v.v = y / 64.0f + 1.0f / (64.0f * 16.0f);
+m_lMapTexCoordP [1].v.u = 
+m_lMapTexCoordP [2].v.u = (x + 1) / 64.0f - 1.0f / (64.0f * 16.0f);
+m_lMapTexCoordP [1].v.v = y / 64.0f + 1.0f / (64.0f * 16.0f);
+m_lMapTexCoordP [2].v.v = (y + 1) / 64.0f - 1.0f / (64.0f * 16.0f);
+m_lMapTexCoordP [3].v.u = x / 64.0f + 1.0f / (64.0f * 16.0f);
+m_lMapTexCoordP [3].v.v = (y + 1) / 64.0f - 1.0f / (64.0f * 16.0f);
 m_lMapTexCoordP += 4;
 }
 
