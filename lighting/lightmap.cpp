@@ -646,7 +646,7 @@ void ComputeLightMaps (int nFace, int nThread)
 #endif
 	int			x, y, i; 
 	int			v0, v1, v2, v3; 
-	fVector3		*texColor, *pTexColor;
+	fVector3		texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH], *pTexColor;
 
 #if 1
 #	define		pixelOffset 0.0
@@ -655,13 +655,11 @@ void ComputeLightMaps (int nFace, int nThread)
 #endif
 	int			nType; 
 	GLfloat		maxColor = 0; 
-	vmsVector	offsetU, offsetV, *pixelPos, *pPixelPos; 
+	vmsVector	offsetU, offsetV, pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH], *pPixelPos; 
 	vmsVector	vNormal;
-	double		fOffset [64];
+	double		fOffset [MAX_LIGHTMAP_WIDTH];
 	tVertColorData	vcd;
 
-texColor = new fVector3 [LM_W * LM_H];
-pixelPos = new vmsVector [LM_W * LM_H];
 for (i = 0; i < LM_W; i++)
 	fOffset [i] = (double) i / (double) (LM_W - 1);
 InitVertColorData (vcd);
@@ -743,6 +741,8 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 			if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->rad / 10.0f, nThread)) {
 				VmVecFixToFloat (&vcd.vertPos, pPixelPos);
 				G3AccumVertColor (-1, &texColor [y * LM_W + x], &vcd, nThread);
+				if (y >= LM_H)
+					break;
 				}
 			}
 		}
@@ -771,8 +771,6 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 	for (i = 0; i < LM_H; i++, y++)
 		memcpy (&bufP->bmP [y][x], &texColor [i * LM_W], LM_W * sizeof (tRgbColorf));
 	}
-delete texColor;
-delete pixelPos;
 }
 
 //------------------------------------------------------------------------------
