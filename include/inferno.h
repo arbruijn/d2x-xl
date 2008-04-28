@@ -1530,6 +1530,7 @@ typedef struct tVertColorData {
 	fVector	matSpecular;
 	fVector	colorSum;
 	fVector3	vertNorm;
+	fVector3	vertPos;
 	fVector3	*pVertPos;
 	float		fMatShininess;
 	} tVertColorData;

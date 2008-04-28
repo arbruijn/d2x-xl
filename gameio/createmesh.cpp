@@ -795,8 +795,8 @@ for (i = 0; i < 4; i++) {
 	*m_faceColorP++ = gameData.render.color.ambient [j].color;
 	}
 i = (m_faceP - gameData.segs.faces.faces) % LIGHTMAP_BUFSIZE;
-float x = (float) ((i % LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH);
-float y = (float) ((i / LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH);
+float x = (float) (i % LIGHTMAP_ROWSIZE);
+float y = (float) (i / LIGHTMAP_ROWSIZE);
 m_lMapTexCoordP [0].v.u = x / 64.0f + 1.0f / (64.0f * 16.0f);
 m_lMapTexCoordP [0].v.v = y / 64.0f + 1.0f / (64.0f * 16.0f);
 m_lMapTexCoordP [1].v.u = 

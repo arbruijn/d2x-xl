@@ -38,10 +38,11 @@ void OglPalColor (ubyte *palette, int c);
 void OglGrsColor (grsColor *pc);
 void OglColor4sf (float r, float g, float b, float s);
 void SetTMapColor (tUVL *uvlList, int i, grsBitmap *bmP, int bResetColor, tFaceColor *vertColor);
-int G3AccumVertColor (int nVertex, fVector *pColorSum, tVertColorData *vcdP, int nThread);
+int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, int nThread);
 void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, 
 						  tFaceColor *pVertColor, tFaceColor *pBaseColor, 
 						  float fScale, int bSetColor, int nThread);
+void InitVertColorData (tVertColorData& vcd);
 
 //------------------------------------------------------------------------------
 

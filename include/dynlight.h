@@ -34,6 +34,7 @@ int ToggleDynLight (short nSegment, short nSide, short nObject, int bState);
 void SetDynLightMaterial (short nSegment, short nSide, short nObject);
 void SetNearestVertexLights (int nVertex, vmsVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
 int SetNearestFaceLights (grsFace *faceP, int bTextured);
+short SetNearestPixelLights (int nSegment, vmsVector *vPixelPos, float fLightRad, int nThread);
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread);
 short SetNearestSegmentLights (int nSegment, int bVariable, int nType, int nThread);
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);

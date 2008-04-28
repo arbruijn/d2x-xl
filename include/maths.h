@@ -39,7 +39,7 @@ tQuadInt;
 
 //Convert fix to double and double to fix
 #define f2fl(f) (((float)  (f)) / (float) 65536)
-#define f2db(f) (((float) (f)) / (float) 65536)
+#define f2db(f) (((double) (f)) / (double) 65536)
 #define fl2f(f) ((fix) ((f) * 65536))
 
 //Some handy constants

@@ -28,7 +28,9 @@ there I just had it exit instead.
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_shader.h"
+#include "ogl_color.h"
 #include "light.h"
+#include "dynlight.h"
 #include "lightmap.h"
 #include "gameseg.h"
 #include "wall.h"
@@ -60,11 +62,11 @@ int InitLightData (int bVariable);
 
 //------------------------------------------------------------------------------
 
-inline void FindOffset (vmsVector *outvec, vmsVector vec1, vmsVector vec2, double f_offset)
+inline void ComputePixelPos (vmsVector *vPos, vmsVector vVertex1, vmsVector vVertex2, double fOffset)
 {
-outvec->p.x = (fix) (f_offset * (vec2.p.x - vec1.p.x)); 
-outvec->p.y = (fix) (f_offset * (vec2.p.y - vec1.p.y)); 
-outvec->p.z = (fix) (f_offset * (vec2.p.z - vec1.p.z)); 
+vPos->p.x = (fix) (fOffset * (vVertex2.p.x - vVertex1.p.x)); 
+vPos->p.y = (fix) (fOffset * (vVertex2.p.y - vVertex1.p.y)); 
+vPos->p.z = (fix) (fOffset * (vVertex2.p.z - vVertex1.p.z)); 
 }
 
 //------------------------------------------------------------------------------
@@ -83,14 +85,17 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 
 int CountLights (int bVariable)
 {
-	tDynLight	*pl;
-	int			i, nLights = 0;
+	tDynLight		*pl;
+	int				i, nLights = 0;
 
-if (!(gameOpts->ogl.bPerPixelLighting && gameStates.render.color.bLightMapsOk))
+if (!(gameOpts->ogl.bPerPixelLighting))
 	return 0;
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
 	if (!(pl->nType || (pl->bVariable && !bVariable)))
 		nLights++;
+if (!nLights)
+	return 0;
+TransformDynLights (1, 0);
 return nLights; 
 }
 
@@ -165,7 +170,7 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_WIDTH, LIGHTMAP_WIDTH, 0, GL_RGB, GL_FLOAT, lmP->bmP);
+glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_BUFWIDTH, LIGHTMAP_BUFWIDTH, 0, GL_RGB, GL_FLOAT, lmP->bmP);
 #ifdef _DEBUG
 if ((nError = glGetError ()))
 	return 0;
@@ -627,11 +632,10 @@ for (i = 512; i; i--, brightMap++)
 
 //------------------------------------------------------------------------------
 
-void ComputeLightMaps (int nFace)
+void ComputeLightMaps (int nFace, int nThread)
 {
 	grsFace			*faceP;
 	tSide				*sideP; 
-	tLightMapInfo	*lmiP; 
 	int				nLastFace; 
 	ushort			sideVerts [4]; 
 
@@ -651,26 +655,18 @@ void ComputeLightMaps (int nFace)
 #else
 	double		pixelOffset = 0; //0.5
 #endif
-	int			l, s, nMethod; 
-	GLfloat		tempBright = 0; 
-	vmsVector	OffsetU, OffsetV, pixelPos [LM_W][LM_H], *pPixelPos, rayVec, sidePos; 
-#if 0
-	vmsVector	vFaceNorms [4], vNormalP;
-#endif
-	double		brightPrct, sideRad, lightRange, pixelDist; 
-	double		delta; 
-	double		f_offset [8] = {
+	int			nType; 
+	GLfloat		maxColor = 0; 
+	vmsVector	offsetU, offsetV, pixelPos [LM_W][LM_H], *pPixelPos; 
+	vmsVector	vNormal;
+	double		fOffset [8] = {
 						0.0 / (LM_W - 1), 1.0 / (LM_W - 1), 2.0 / (LM_W - 1), 3.0 / (LM_W - 1),
 						4.0 / (LM_W - 1), 5.0 / (LM_W - 1), 6.0 / (LM_W - 1), 7.0 / (LM_W - 1)
 						};
-#if LMAP_REND2TEX
-	ubyte			brightMap [512];
-	ubyte			lightMap [512*3];
-	tUVL			lMapUVL [4];
-	fix			nDist, nMinDist;
-	GLuint		lightMapId;
-	int			bStart;
-#endif
+	tVertColorData	vcd;
+
+InitVertColorData (vcd);
+vcd.pVertPos = &vcd.vertPos;
 
 if (gameStates.app.bMultiThreaded)
 	nLastFace = nFace ? gameData.segs.nFaces : gameData.segs.nFaces / 2;
@@ -684,29 +680,19 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 #endif
 	sideP = SEGMENTS [faceP->nSegment].sides + faceP->nSide;
 	memcpy (sideVerts, faceP->index, sizeof (sideVerts));
-#if LMAP_REND2TEX
-	OglCreateFBuffer (&lightMapData.buffers [nFace].fbuffer, 64, 64);
-	OglEnableFBuffer (&lightMapData.buffers [nFace].fbuffer);
-#else
-	nMethod = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
+	nType = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
 	pPixelPos = &pixelPos [0][0];
-#if 0
-	VmVecNormal (vFaceNorms, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v1); 
-	VmVecNormal (vFaceNorms + 1, gameData.segs.vertices + v0, gameData.segs.vertices + v3, gameData.segs.vertices + v2); 
-	VmVecNormal (vFaceNorms + 2, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3); 
-	VmVecNormal (vFaceNorms + 3, gameData.segs.vertices + v2, gameData.segs.vertices + v1, gameData.segs.vertices + v3); 
-#endif
 	for (x = 0; x < LM_W; x++) {
 		for (y = 0; y < LM_H; y++, pPixelPos++) {
-			if (nMethod) {
+			if (nType) {
 				v0 = sideVerts [0]; 
 				v2 = sideVerts [2]; 
 				if (x >= y)	{
 					v1 = sideVerts [1]; 
 					//Next calculate this pixel's place in the world (tricky stuff)
-					FindOffset (&OffsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], f_offset [x]); //(((double) x) + pixelOffset) / (LM_W - 1)); //took me forever to figure out this should be an inverse thingy
-					FindOffset (&OffsetV, gameData.segs.vertices [v1], gameData.segs.vertices [v2], f_offset [y]); //(((double) y) + pixelOffset) / (LM_H - 1)); 
-					VmVecAdd (pPixelPos, &OffsetU, &OffsetV); 
+					ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], fOffset [x]); //(((double) x) + pixelOffset) / (LM_W - 1)); //took me forever to figure out this should be an inverse thingy
+					ComputePixelPos (&offsetV, gameData.segs.vertices [v1], gameData.segs.vertices [v2], fOffset [y]); //(((double) y) + pixelOffset) / (LM_H - 1)); 
+					VmVecAdd (pPixelPos, &offsetU, &offsetV); 
 					VmVecInc (pPixelPos, gameData.segs.vertices + v0);  //This should be the real world position of the pixel.
 					//Find Normal
 					//vNormalP = vFaceNorms;
@@ -714,9 +700,9 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 				else {
 					//Next calculate this pixel's place in the world (tricky stuff)
 					v3 = sideVerts [3]; 
-					FindOffset (&OffsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], f_offset [y]); //(((double) y) + pixelOffset) / (LM_W - 1)); //Notice y/x and OffsetU/OffsetV are swapped from above
-					FindOffset (&OffsetU, gameData.segs.vertices [v3], gameData.segs.vertices [v2], f_offset [x]); //(((double) x) + pixelOffset) / (LM_H - 1)); 
-					VmVecAdd (pPixelPos, &OffsetU, &OffsetV); 
+					ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], fOffset [y]); //(((double) y) + pixelOffset) / (LM_W - 1)); //Notice y/x and offsetU/offsetV are swapped from above
+					ComputePixelPos (&offsetU, gameData.segs.vertices [v3], gameData.segs.vertices [v2], fOffset [x]); //(((double) x) + pixelOffset) / (LM_H - 1)); 
+					VmVecAdd (pPixelPos, &offsetU, &offsetV); 
 					VmVecInc (pPixelPos, gameData.segs.vertices + v0);  //This should be the real world position of the pixel.
 					//vNormalP = vFaceNorms + 1;
 					}
@@ -726,142 +712,56 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 				v3 = sideVerts [3]; 
 				if (LM_W - x >= y) {
 					v0 = sideVerts [0]; 
-					FindOffset (&OffsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], f_offset [x]); //(((double) x) + pixelOffset) / (LM_W - 1)); 
-					FindOffset (&OffsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], f_offset [y]); //(((double) y) + pixelOffset) / (LM_W - 1)); 
-					VmVecAdd (pPixelPos, &OffsetU, &OffsetV); 
+					ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], fOffset [x]); //(((double) x) + pixelOffset) / (LM_W - 1)); 
+					ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], fOffset [y]); //(((double) y) + pixelOffset) / (LM_W - 1)); 
+					VmVecAdd (pPixelPos, &offsetU, &offsetV); 
 					VmVecInc (pPixelPos, gameData.segs.vertices + v0);  //This should be the real world position of the pixel.
 					//vNormalP = vFaceNorms + 2;
 					}
 				else {
 					v2 = sideVerts [2]; 
 					//Not certain this is correct, may need to subtract something
-					FindOffset (&OffsetV, gameData.segs.vertices [v2], gameData.segs.vertices [v1], f_offset [LM_W - 1 - y]); //((double) ((LM_W - 1) - y) + pixelOffset) / (LM_W - 1)); 
-					FindOffset (&OffsetU, gameData.segs.vertices [v2], gameData.segs.vertices [v3], f_offset [LM_W - 1 - x]); //((double) ((LM_W - 1) - x) + pixelOffset) / (LM_W - 1)); 
-					VmVecAdd (pPixelPos, &OffsetU, &OffsetV); 
+					ComputePixelPos (&offsetV, gameData.segs.vertices [v2], gameData.segs.vertices [v1], fOffset [LM_W - 1 - y]); //((double) ((LM_W - 1) - y) + pixelOffset) / (LM_W - 1)); 
+					ComputePixelPos (&offsetU, gameData.segs.vertices [v2], gameData.segs.vertices [v3], fOffset [LM_W - 1 - x]); //((double) ((LM_W - 1) - x) + pixelOffset) / (LM_W - 1)); 
+					VmVecAdd (pPixelPos, &offsetU, &offsetV); 
 					VmVecInc (pPixelPos, gameData.segs.vertices + v2);  //This should be the real world position of the pixel.
 					//vNormalP = vFaceNorms + 3;
 					}
 				}
 			}
 		}
-#endif
-	//Calculate LightVal
-	//Next iterate through all the lights and add the light to the pixel every iteration.
-	sideRad = (double) faceP->rad / 10.0;
-	VmVecAvg4 (
-		&sidePos, 
-		&pixelPos [0][0],
-		&pixelPos [LM_W-1][0],
-		&pixelPos [LM_W-1][LM_H-1],
-		&pixelPos [0][LM_H-1]);
-#if LMAP_REND2TEX
-	bStart = 1;
-#endif
-	memset (texColor, 0, sizeof (texColor));
-	for (l = 0, lmiP = lightMapData.info; l < lightMapData.nLights; l++, lmiP++) {
-#if LMAP_REND2TEX
-		nMinDist = 0x7FFFFFFF;
-		// get the distances of all 4 tSide corners to the light source center 
-		// scaled by the light source range
-		for (i = 0; i < 4; i++) {
-			int svi = sideVerts [i];
-			sidePos.x = gameData.segs.vertices [svi].x;
-			sidePos.y = gameData.segs.vertices [svi].y;
-			sidePos.z = gameData.segs.vertices [svi].z;
-			nDist = f2i (VmVecDist (&sidePos, &lmiP->vPos));	// calc distance
-			if (nMinDist > nDist)
-				nMinDist = nDist;
-			lMapUVL [i].u = F1_0 * (double) nDist / (double) lmiP->range;	// scale distance
-			}
-		if ((lmiP->color [0] + lmiP->color [1] + lmiP->color [2] < 3) &&
-			(nMinDist < lmiP->range + sideRad)) {
-			// create and initialize an OpenGL texture for the lightmap
-			InitLightMapInfo (lightMap, brightMap, lmiP->color);
-			OglGenTextures (1, &lightMapId); 
-			glTexImage1D (GL_TEXTURE_1D, 0, GL_RGB, 512, 1, GL_RGB, GL_UNSIGNED_BYTE, lightMap);
-			OglActiveTexture (GL_TEXTURE0);
-			glEnable (GL_TEXTURE_1D);
-			glEnable (GL_BLEND);
-			glBlendFunc (GL_ONE, bStart ? GL_ZERO : GL_ONE);
-			// If processing first light, set the lightmap, else modify it
-			glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bStart ? GL_REPLACE : GL_ADD);
-			glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, GL_RGBA);
-			glBindTexture (GL_TEXTURE_1D, lightMapId); 
-			// extend the lightmap to the texture edges
-			glTexParameteri (GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-			glTexParameteri (GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-			glBegin (GL_QUADS);
-			glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
-			for (i = 0; i < 4; i++) {
-				glMultiTexCoord2f (GL_TEXTURE0, f2fl (lMapUVL [i].u), f2fl (lMapUVL [i].v));
-				glVertex3f (f2fl (gameData.segs.vertices [sideVerts [i]].x), 
-								f2fl (gameData.segs.vertices [sideVerts [i]].y), 
-							   f2fl (gameData.segs.vertices [sideVerts [i]].z));
-				}
-			glEnd ();
-			glDisable (GL_BLEND);
-			glDisable (GL_TEXTURE_1D);
-			OglDeleteTextures (1, &lightMapId);
-			bStart = 0;
-			}
-#else
-		lightRange = lmiP->range + sideRad;
-		if (f2fl (VmVecDist (&sidePos, &lmiP->vPos)) <= lightRange) {
-			pPixelPos = &pixelPos [0][0];
-			pTexColor = texColor [0][0];
-#if 1
-			for (xy = LM_W * LM_H; xy; xy--, pPixelPos++, pTexColor += 3) { 
-#else
-			for (x = 0; x < LM_W; x++)
-				for (y = 0; y < LM_H; y++, pPixelPos++, pTexColor += 3) {
-#endif
-					//Find angle to this light.
-					pixelDist = f2fl (VmVecDist (pPixelPos, &lmiP->vPos)); 
-					if (pixelDist > lightRange)
-						continue;
-					VmVecSub (&rayVec, &lmiP->vPos, pPixelPos); 
-					delta = f2db (VmVecDeltaAng (&lmiP->vDir, &rayVec, NULL)); 
-					if (delta < 0)
-						delta = -delta; 
-					if (pixelDist <= sideRad)
-						brightPrct = 1;
-					else {
-						brightPrct = 1 - (pixelDist / lmiP->range); 
-						brightPrct *= brightPrct; //square result
-						if (delta < 0.245)
-							brightPrct /= 4; 
-						}
-					pTexColor [0] += (GLfloat) (brightPrct * lmiP->color [0]); 
-					pTexColor [1] += (GLfloat) (brightPrct * lmiP->color [1]); 
-					pTexColor [2] += (GLfloat) (brightPrct * lmiP->color [2]); 
-					}
-			}
-#endif
-		}
-#if LMAP_REND2TEX
-	lightMapData.buffers [nFace].handle = lightMapData.buffers [nFace].fbuffer.texId;
-	lightMapData.buffers [nFace].fbuffer.texId = 0;
-	OglDestroyFBuffer (&lightMapData.buffers [nFace].fbuffer);
-#else
+	VmVecAvg (&vNormal, sideP->normals, sideP->normals + 1);
+	VmVecFixToFloat (&vcd.vertNorm, &vNormal);
 	pPixelPos = &pixelPos [0][0];
 	pTexColor = texColor [0][0];
-	for (x = 0; x < LM_W; x++)
-		for (y = 0; y < LM_H; y++, pPixelPos++, pTexColor += 3) {
-			tempBright = pTexColor [0];
-			for (s = 1; s < 3; s++)
-				if (pTexColor [s] > tempBright)
-					tempBright = pTexColor [s]; 
-			if (tempBright > 1.0)
-				for (s = 0; s < 3; s++)
-					pTexColor [s] /= tempBright; 
+	for (xy = LM_W * LM_H; xy; xy--, pPixelPos++, pTexColor += 3) { 
+		SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->rad / 10.0f, nThread);
+		VmVecFixToFloat (&vcd.vertPos, pPixelPos);
+		G3AccumVertColor (-1, (fVector3 *) pTexColor, &vcd, nThread);
+		}
+
+	pPixelPos = &pixelPos [0][0];
+	pTexColor = texColor [0][0];
+	for (xy = LM_W * LM_H; xy; xy--, pTexColor += 3) { 
+		maxColor = pTexColor [0];
+		if (pTexColor [1] > maxColor)
+			maxColor = pTexColor [1]; 
+		if (pTexColor [2] > maxColor)
+			maxColor = pTexColor [2]; 
+		if (pTexColor [3] > maxColor)
+			maxColor = pTexColor [3]; 
+		if (maxColor > 1.0) {
+			pTexColor [0] /= maxColor; 
+			pTexColor [1] /= maxColor; 
+			pTexColor [2] /= maxColor; 
 			}
+		}
 	tLightMapBuffer *bufP = lightMapData.buffers + nFace / LIGHTMAP_BUFSIZE;
 	int i = nFace % LIGHTMAP_BUFSIZE;
 	int x = (i % LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH;
 	int y = (i / LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH;
 	for (i = 0; i < LM_H; i++, y++)
 		memcpy (&bufP->bmP [y][x], &texColor [i][0], LM_W * sizeof (tRgbColorf));
-#endif
 	}
 }
 
@@ -873,7 +773,7 @@ int _CDECL_ LightMapThread (void *pThreadId)
 {
 	int		nId = *((int *) pThreadId);
 
-ComputeLightMaps (nId ? gameData.segs.nFaces / 2 : 0);
+ComputeLightMaps (nId ? gameData.segs.nFaces / 2 : 0, nId);
 SDL_SemPost (ti [nId].done);
 ti [nId].bDone = 1;
 return 0;
@@ -912,7 +812,7 @@ static void CreateLightMapsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 GrPaletteStepLoad (NULL);
 if (nFace < gameData.segs.nFaces) {
-	ComputeLightMaps (nFace);
+	ComputeLightMaps (nFace, 0);
 	nFace += PROGRESS_INCR;
 	}
 else {
@@ -938,9 +838,7 @@ if (!InitLightData (0))
 InitBrightMap (brightMap);
 memset (&lMapUVL, 0, sizeof (lMapUVL));
 #endif
-if (gameStates.render.color.bLightMapsOk && 
-	 gameOpts->ogl.bPerPixelLighting && 
-	 gameData.segs.nFaces) {
+if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 8))
 		StartLightMapThreads (LightMapThread);
 	else if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
@@ -948,7 +846,7 @@ if (gameStates.render.color.bLightMapsOk &&
 		NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreateLightMapsPoll);
 		}
 	else
-		ComputeLightMaps (-1);
+		ComputeLightMaps (-1, 0);
 	}
 OglCreateLightMaps ();
 }
@@ -967,9 +865,9 @@ char *lightMapFS [3] = {
 	"float maxC;" \
 	"vec4 btmColor,topColor,lMapColor;" \
 	"void main(void){" \
-	"btmColor=texture2D(btmTex,vec2(gl_TexCoord[0]));" \
-	"topColor=texture2D(topTex,vec2(gl_TexCoord[1]));" \
-	"lMapColor=texture2D(lMapTex,vec2(gl_TexCoord[2]))+((gl_Color)-0.5);" \
+	"btmColor=texture2D(btmTex,vVertex2(gl_TexCoord[0]));" \
+	"topColor=texture2D(topTex,vVertex2(gl_TexCoord[1]));" \
+	"lMapColor=texture2D(lMapTex,vVertex2(gl_TexCoord[2]))+((gl_Color)-0.5);" \
 	"maxC=lMapColor.r;" \
 	"if(lMapColor.g>maxC)maxC=lMapColor.g;" \
 	"if(lMapColor.b>maxC)maxC=lMapColor.b;" \
@@ -981,11 +879,11 @@ char *lightMapFS [3] = {
 	"float maxC;" \
 	"vec4 btmColor,topColor,lMapColor;" \
 	"void main(void){" \
-	"topColor=texture2D(topTex,vec2(gl_TexCoord[1]));" \
+	"topColor=texture2D(topTex,vVertex2(gl_TexCoord[1]));" \
 	"if(abs(topColor.a-1.0/255.0)<0.25)discard;" \
 	"if((topColor.a==0.0)&&(abs(topColor.r-120.0/255.0)<8.0/255.0)&&(abs(topColor.g-88.0/255.0)<8.0/255.0)&&(abs(topColor.b-128.0/255.0)<8.0/255.0))discard;" \
-	"else {btmColor=texture2D(btmTex,vec2(gl_TexCoord[0]));" \
-	"lMapColor=texture2D(lMapTex,vec2(gl_TexCoord[2]))+((gl_Color)-0.5);" \
+	"else {btmColor=texture2D(btmTex,vVertex2(gl_TexCoord[0]));" \
+	"lMapColor=texture2D(lMapTex,vVertex2(gl_TexCoord[2]))+((gl_Color)-0.5);" \
 	"maxC=lMapColor.r;" \
 	"if(lMapColor.g>maxC)maxC=lMapColor.g;" \
 	"if(lMapColor.b>maxC)maxC=lMapColor.b;" \
@@ -999,11 +897,11 @@ char *lightMapFS [3] = {
 	"vec4 btmColor,topColor,lMapColor;" \
 	"float bMask;" \
 	"void main(void){" \
-	"bMask=texture2D(maskTex,vec2(gl_TexCoord[1])).a;" \
+	"bMask=texture2D(maskTex,vVertex2(gl_TexCoord[1])).a;" \
 	"if(bMask<0.5)discard;" \
-	"else {btmColor=texture2D(btmTex,vec2(gl_TexCoord[0]));" \
-	"topColor=texture2D(topTex,vec2(gl_TexCoord[1]));" \
-	"lMapColor=texture2D(lMapTex,vec2(gl_TexCoord[2]))+((gl_Color)-0.5);" \
+	"else {btmColor=texture2D(btmTex,vVertex2(gl_TexCoord[0]));" \
+	"topColor=texture2D(topTex,vVertex2(gl_TexCoord[1]));" \
+	"lMapColor=texture2D(lMapTex,vVertex2(gl_TexCoord[2]))+((gl_Color)-0.5);" \
 	"maxC=lMapColor.r;" \
 	"if(lMapColor.g>maxC)maxC=lMapColor.g;" \
 	"if(lMapColor.b>maxC)maxC=lMapColor.b;" \

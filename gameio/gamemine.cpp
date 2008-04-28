@@ -1011,7 +1011,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 		m = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
 		if (!SEGVIS (m, i))
 			continue;
-		h = VmVecDist (&center, &pl->vPos) - fl2f (pl->rad) / 10.0f;
+		h = (int) (VmVecDist (&center, &pl->vPos) - fl2f (pl->rad) / 10.0f);
 		if (h > MAX_LIGHT_RANGE * pl->range)
 			continue;
 		pDists [n].nDist = h;

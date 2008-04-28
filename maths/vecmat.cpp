@@ -207,6 +207,16 @@ return dest;
 
 // ------------------------------------------------------------------------
 
+fVector3 *VmVecScaleAdd (fVector3 *dest, fVector3 *src1, fVector3 *src2, float scale)
+{
+dest->p.x = src1->p.x + src2->p.x * scale;
+dest->p.y = src1->p.y + src2->p.y * scale;
+dest->p.z = src1->p.z + src2->p.z * scale;
+return dest;
+}
+
+// ------------------------------------------------------------------------
+
 fVector *VmVecScaleAddf4 (fVector *dest, fVector *src1, fVector *src2, float scale)
 {
 dest->c.r = src1->c.r + src2->c.r * scale;
@@ -299,6 +309,16 @@ if (gameStates.render.bEnableSSE) {
 	return dest;
 	}
 #endif
+dest->p.x = src0->p.x * src1->p.x;
+dest->p.y = src0->p.y * src1->p.y;
+dest->p.z = src0->p.z * src1->p.z;
+return dest;
+}
+
+// ------------------------------------------------------------------------
+
+fVector3 *VmVecMul (fVector3 *dest, fVector3 *src0, fVector3 *src1)
+{
 dest->p.x = src0->p.x * src1->p.x;
 dest->p.y = src0->p.y * src1->p.y;
 dest->p.z = src0->p.z * src1->p.z;

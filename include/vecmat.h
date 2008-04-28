@@ -215,6 +215,7 @@ vmsVector *VmVecDec (vmsVector *dest, vmsVector *src);
  */
 
 fVector *VmVecMul (fVector *dest, fVector *src0, fVector *src1);
+fVector3 *VmVecMul (fVector3 *dest, fVector3 *src0, fVector3 *src1);
 
 //averages two vectors. returns ptr to dest
 //dest can equal either source
@@ -239,6 +240,7 @@ vmsVector *VmVecCopyScale (vmsVector *dest, vmsVector *src, fix s);
 //dest = src1 + k * src2
 vmsVector *VmVecScaleAdd (vmsVector *dest, vmsVector *src1, vmsVector *src2, fix k);
 fVector *VmVecScaleAdd (fVector *dest, fVector *src1, fVector *src2, float scale);
+fVector3 *VmVecScaleAdd (fVector3 *dest, fVector3 *src1, fVector3 *src2, float scale);
 
 //scales a vector and adds it to another
 //dest += k * src

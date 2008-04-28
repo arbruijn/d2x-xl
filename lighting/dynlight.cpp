@@ -1059,6 +1059,54 @@ return gameData.render.lights.dynamic.shader.nActiveLights [nThread];
 
 //------------------------------------------------------------------------------
 
+short SetNearestPixelLights (int nSegment, vmsVector *vPixelPos, float fLightRad, int nThread)
+{
+#ifdef _DEBUG
+if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
+	nDbgSeg = nDbgSeg;
+#endif
+if (gameOpts->render.bDynLighting) {
+	int						nLightSeg;
+	short						h, i = gameData.render.lights.dynamic.shader.nLights;
+	fix						xMaxLightRange = fl2f (fLightRad) + MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
+	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights;
+	vmsVector				c;
+	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
+
+	h = gameData.render.lights.dynamic.shader.nLastLight [nThread] - gameData.render.lights.dynamic.shader.nFirstLight [nThread] + 1;
+	if (h > 0)
+		memset (activeLightsP + gameData.render.lights.dynamic.shader.nFirstLight [nThread], 0, sizeof (tActiveShaderLight) * h);
+	gameData.render.lights.dynamic.shader.nActiveLights [nThread] = 0;
+	gameData.render.lights.dynamic.shader.nFirstLight [nThread] = MAX_SHADER_LIGHTS;
+	gameData.render.lights.dynamic.shader.nLastLight [nThread] = 0;
+	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
+	while (i--) {
+#ifdef _DEBUG
+		if ((nDbgSeg >= 0) && (psl->nSegment == nDbgSeg))
+			psl = psl;
+#endif
+		if (psl->nType)
+			break;
+#ifdef _DEBUG
+		if ((nDbgSeg >= 0) && (psl->nSegment == nDbgSeg))
+			psl = psl;
+#endif
+		if (psl->nType < 3) {
+			nLightSeg = psl->nSegment;
+			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
+				continue;
+			psl->xDistance = (fix) (VmVecDist (vPixelPos, &psl->vPos) / psl->range);
+			if (psl->xDistance > xMaxLightRange)
+				continue;
+			}
+		SetActiveShaderLight (activeLightsP, psl, 1, nThread);
+		}
+	}
+return gameData.render.lights.dynamic.shader.nActiveLights [nThread];
+}
+
+//------------------------------------------------------------------------------
+
 extern short nDbgSeg;
 
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *pvPos)
