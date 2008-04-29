@@ -641,7 +641,10 @@ for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 			glDepthMask (0);
 			}
 		OglSetupTransform (1);
-		h = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
+		if (gameData.render.lights.dynamic.shader.nLastLight [0] < 0)
+			h = 0;
+		else
+			h = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
 		for (iLight = 0; (h > 0) && (iLight < 8) && nLights; activeLightsP++, h--) { 
 #ifdef _DEBUG
 			if (gameData.render.lights.dynamic.shader.nActiveLights [0] <= 0)

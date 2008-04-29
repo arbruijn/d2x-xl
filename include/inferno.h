@@ -709,6 +709,9 @@ typedef struct tOglStates {
 	int nLastH;
 	int nCurWidth;
 	int nCurHeight;
+	int nLights;
+	int iLight;
+	int nFirstLight;
 	int bCurFullScreen;
 	int nReticle;
 	int bpp;

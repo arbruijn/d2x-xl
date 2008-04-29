@@ -805,6 +805,8 @@ if (psl && (activeLightsP->nType > 1)) {
 	activeLightsP->psl = NULL;
 	gameData.render.lights.dynamic.shader.nActiveLights [nThread]--;
 	}
+if (psl == (tShaderLight *) 0xffffffff)
+	return NULL;
 return psl;
 }
 
@@ -1845,7 +1847,7 @@ if (HaveLightMaps ()) {
 	if (nLights) {
 		fsP = pszPPLMLightingFS;
 		vsP = pszPPLMLightingVS;
-		nLights = MAX_LIGHTS_PER_PIXEL;
+		//nLights = MAX_LIGHTS_PER_PIXEL;
 		}
 	else {
 		fsP = pszLMLightingFS;
@@ -1856,7 +1858,7 @@ else {
 	if (nLights) {
 		fsP = pszPPLightingFS;
 		vsP = pszPPLightingVS;
-		nLights = MAX_LIGHTS_PER_PIXEL;
+		//nLights = MAX_LIGHTS_PER_PIXEL;
 		}
 	else {
 		fsP = pszLightingFS;

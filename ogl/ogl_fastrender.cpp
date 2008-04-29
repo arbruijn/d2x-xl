@@ -214,11 +214,11 @@ extern GLhandleARB perPixelLightingShaderProgs [MAX_LIGHTS_PER_PIXEL][4];
 
 int G3SetupPerPixelLighting (grsFace *faceP, int bColorKey, int bMultiTexture, int bTextured)
 {
-	int						h, i, nLights;
+	int						nLightRange, nLights;
 	tRgbaColorf				ambient, diffuse;
 	tRgbaColorf				black = {0,0,0,0};
 	tRgbaColorf				specular = {0.5f,0.5f,0.5f,0.5f};
-	fVector3					vPos = {{0,0,0}};
+	fVector					vPos = {{0,0,0,1}};
 	GLenum					hLight;
 	tActiveShaderLight	*activeLightsP;
 	tShaderLight			*psl;
@@ -227,15 +227,18 @@ int G3SetupPerPixelLighting (grsFace *faceP, int bColorKey, int bMultiTexture, i
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-nLights = SetNearestFaceLights (faceP, bTextured);
+if (!gameStates.ogl.iLight) {
+	gameStates.ogl.nLights = SetNearestFaceLights (faceP, bTextured);
+	gameStates.ogl.nFirstLight = gameData.render.lights.dynamic.shader.nFirstLight [0];
+	}
 OglEnableLighting (0);
 glDisable (GL_LIGHTING);
-activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameData.render.lights.dynamic.shader.nFirstLight [0];
-h = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
-for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) { 
+activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameStates.ogl.nFirstLight;
+nLightRange = gameData.render.lights.dynamic.shader.nLastLight [0] - gameStates.ogl.nFirstLight + 1;
+for (; (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0); activeLightsP++, nLightRange--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
-	hLight = GL_LIGHT0 + i;
+	hLight = GL_LIGHT0 + gameStates.ogl.iLight++;
 	ambient.red = psl->color.c.r * 0.05f;
 	ambient.green = psl->color.c.g * 0.05f;
 	ambient.blue = psl->color.c.b * 0.05f;
@@ -260,9 +263,10 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / psl->brightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
 		}
-	i++;
 	}
-for (; i < MAX_LIGHTS_PER_PIXEL; i++) {
+gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
+#ifdef _DEBUG
+for (int i = gameStates.ogl.iLight; i < MAX_LIGHTS_PER_PIXEL; i++) {
 	hLight = GL_LIGHT0 + i;
 	glEnable (hLight);
 	glLightfv (hLight, GL_POSITION, (GLfloat *) &vPos);
@@ -270,6 +274,8 @@ for (; i < MAX_LIGHTS_PER_PIXEL; i++) {
 	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &black);
 	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &black);
 	}
+#endif
+nLights = min (gameStates.ogl.nLights, MAX_LIGHTS_PER_PIXEL);
 if (InitPerPixelLightingShader (bColorKey ? 3 : bMultiTexture ? 2 : bTextured, nLights))
 	return nLights;
 OglDisableLighting ();
@@ -293,8 +299,9 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 #endif
 if (gameOpts->ogl.bPerPixelLighting) {
 	//per pixel lighting
+	gameStates.ogl.iLight = 0;
 	if ((nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTextured)))
-		nLights = MAX_LIGHTS_PER_PIXEL; //it's better to process a few "black" lights than switch shader programs all the time
+		;//nLights = MAX_LIGHTS_PER_PIXEL; //it's better to process a few "black" lights than switch shader programs all the time
 	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 	nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
 #ifdef _DEBUG
@@ -1106,7 +1113,14 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	else
 		nDbgSeg = nDbgSeg;
 #endif
-glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+for (;;) {
+	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+	if (gameStates.ogl.iLight >= gameStates.ogl.nLights)
+		break;
+	G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bmBot != NULL);
+	glBlendFunc (GL_ONE, GL_ONE);
+	}
+
 if (bMonitor) {
 #ifdef _DEBUG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
