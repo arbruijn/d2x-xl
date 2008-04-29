@@ -1244,7 +1244,8 @@ void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
 	int			h, i, j, nColor, 
-					nIncr = nStart ? -1 : 1;
+					nIncr = nStart ? -1 : 1,
+					bVertexLight = !gameOpts->ogl.bPerPixelLighting;
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
@@ -1252,6 +1253,7 @@ gameData.render.lights.dynamic.shader.nActiveLights [0] =
 gameData.render.lights.dynamic.shader.nActiveLights [1] =
 gameData.render.lights.dynamic.shader.nActiveLights [2] =
 gameData.render.lights.dynamic.shader.nActiveLights [3] = 0;
+memset (gameData.segs.faces.color, 0, gameData.segs.nFaces * sizeof (*gameData.segs.faces.color));
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
 #	if SHADER_VERTEX_LIGHTING
@@ -1263,7 +1265,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
-	if (!(gameStates.app.bMultiThreaded || SegmentIsVisible (segP))) {
+	if (bVertexLight && !(gameStates.app.bMultiThreaded || SegmentIsVisible (segP))) {
 		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
 		continue;
 		}
@@ -1292,6 +1294,8 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			faceP->bVisible = 0;
 			continue;
 			}
+		if (!bVertexLight)
+			continue;
 		faceP->color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
 		pc = gameData.segs.faces.color + faceP->nIndex;

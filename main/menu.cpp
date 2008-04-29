@@ -3460,22 +3460,10 @@ do {
 	optColorSat = 
 	lightOpts.nObjectLight = -1;
 	if (!gameStates.app.bGameRunning) {
-		ADD_RADIO (opt, TXT_STD_LIGHTING, !(gameOpts->render.color.bUseLightMaps || gameOpts->render.bDynLighting), KEY_S, 1, NULL);
+		ADD_RADIO (opt, TXT_STD_LIGHTING, !gameOpts->render.bDynLighting, KEY_S, 1, NULL);
 		lightOpts.nMethod = opt++;
-		ADD_RADIO (opt, TXT_OGL_LIGHTING, gameOpts->render.bDynLighting && !gameOpts->render.color.bUseLightMaps, KEY_G, 1, HTX_OGL_LIGHTING);
+		ADD_RADIO (opt, TXT_OGL_LIGHTING, gameOpts->render.bDynLighting, KEY_G, 1, HTX_OGL_LIGHTING);
 		opt++;
-		if (gameStates.render.color.bLightMapsOk) {
-			ADD_RADIO (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps && !gameOpts->render.bDynLighting, KEY_M, 1, HTX_RENDER_LIGHTMAPS);
-			opt++;
-			}
-		ADD_TEXT (opt, "", 0);
-		opt++;
-		}
-	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps) {
-		sprintf (szLightRange + 1, TXT_LMAP_RANGE, 50 + gameOpts->render.color.nLightMapRange * 10, '%');
-		*szLightRange = *(TXT_LMAP_RANGE - 1);
-		ADD_SLIDER (opt, szLightRange + 1, gameOpts->render.color.nLightMapRange, 0, 10, KEY_R, HTX_ADVRND_LMAPRANGE);
-		lightOpts.nLMapRange = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}

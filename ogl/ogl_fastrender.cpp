@@ -233,9 +233,6 @@ OglEnableLighting (0);
 glDisable (GL_LIGHTING);
 activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameData.render.lights.dynamic.shader.nFirstLight [0];
 h = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
-#ifdef _DEBUG
-nLights = 0;
-#endif
 for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;

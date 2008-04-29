@@ -64,79 +64,6 @@ int InitLightData (int bVariable);
 
 //------------------------------------------------------------------------------
 
-inline void ComputePixelPos (vmsVector *vPos, vmsVector v1, vmsVector v2, double fOffset)
-{
-vPos->p.x = (fix) (fOffset * (v2.p.x - v1.p.x)); 
-vPos->p.y = (fix) (fOffset * (v2.p.y - v1.p.y)); 
-vPos->p.z = (fix) (fOffset * (v2.p.z - v1.p.z)); 
-}
-
-//------------------------------------------------------------------------------
-
-void RestoreLights (int bVariable)
-{
-	tDynLight	*pl;
-	int			i;
-
-for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
-	if (!(pl->nType || (pl->bVariable && !bVariable)))
-		pl->bOn = 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CountLights (int bVariable)
-{
-	tDynLight		*pl;
-	int				i, nLights = 0;
-
-if (!(gameOpts->ogl.bPerPixelLighting))
-	return 0;
-for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
-	if (!(pl->nType || (pl->bVariable && !bVariable)))
-		nLights++;
-return nLights; 
-}
-
-//------------------------------------------------------------------------------
-
-double SideRad (int nSegment, int nSide)
-{
-	int			i;
-	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
-	double		dx, dy, dz;
-	short			sideVerts [4];
-	vmsVector	*v;
-
-GetSideVertIndex (sideVerts, nSegment, nSide); 
-xMin = yMin = zMin = 1e300;
-xMax = yMax = zMax = -1e300;
-for (i = 0; i < 4; i++) {
-	v = gameData.segs.vertices + sideVerts [i];
-	h = v->p.x;
-	if (xMin > h)
-		xMin = h;
-	if (xMax < h)
-		xMax = h;
-	h = v->p.y;
-	if (yMin > h)
-		yMin = h;
-	if (yMax < h)
-		yMax = h;
-	h = v->p.z;
-	if (zMin > h)
-		zMin = h;
-	if (zMax < h)
-		zMax = h;
-	}
-dx = xMax - xMin;
-dy = yMax - yMin;
-dz = zMax - zMin;
-return sqrt (dx * dx + dy * dy + dz * dz) / (2 * (double) F1_0);
-}
-
-//------------------------------------------------------------------------------
-
 void InitLightMapTexture (tLightMap *lmP, float fColor)
 {
 float *colorP = (float *) (&lmP->bmP);
@@ -212,6 +139,79 @@ if (lightMapData.info) {
 	D2_FREE (lightMapData.info);
 	D2_FREE (lightMapData.buffers);
 	}
+}
+
+//------------------------------------------------------------------------------
+
+inline void ComputePixelPos (vmsVector *vPos, vmsVector v1, vmsVector v2, double fOffset)
+{
+vPos->p.x = (fix) (fOffset * (v2.p.x - v1.p.x)); 
+vPos->p.y = (fix) (fOffset * (v2.p.y - v1.p.y)); 
+vPos->p.z = (fix) (fOffset * (v2.p.z - v1.p.z)); 
+}
+
+//------------------------------------------------------------------------------
+
+void RestoreLights (int bVariable)
+{
+	tDynLight	*pl;
+	int			i;
+
+for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
+	if (!(pl->nType || (pl->bVariable && !bVariable)))
+		pl->bOn = 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CountLights (int bVariable)
+{
+	tDynLight		*pl;
+	int				i, nLights = 0;
+
+if (!(gameOpts->ogl.bPerPixelLighting))
+	return 0;
+for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
+	if (!(pl->nType || (pl->bVariable && !bVariable)))
+		nLights++;
+return nLights; 
+}
+
+//------------------------------------------------------------------------------
+
+double SideRad (int nSegment, int nSide)
+{
+	int			i;
+	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
+	double		dx, dy, dz;
+	short			sideVerts [4];
+	vmsVector	*v;
+
+GetSideVertIndex (sideVerts, nSegment, nSide); 
+xMin = yMin = zMin = 1e300;
+xMax = yMax = zMax = -1e300;
+for (i = 0; i < 4; i++) {
+	v = gameData.segs.vertices + sideVerts [i];
+	h = v->p.x;
+	if (xMin > h)
+		xMin = h;
+	if (xMax < h)
+		xMax = h;
+	h = v->p.y;
+	if (yMin > h)
+		yMin = h;
+	if (yMax < h)
+		yMax = h;
+	h = v->p.z;
+	if (zMin > h)
+		zMin = h;
+	if (zMax < h)
+		zMax = h;
+	}
+dx = xMax - xMin;
+dy = yMax - yMin;
+dz = zMax - zMin;
+return sqrt (dx * dx + dy * dy + dz * dz) / (2 * (double) F1_0);
 }
 
 //------------------------------------------------------------------------------
