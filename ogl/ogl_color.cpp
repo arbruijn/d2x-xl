@@ -622,7 +622,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].
 	vertColor.p.x *= lightColor.p.x;
 	vertColor.p.y *= lightColor.p.y;
 	vertColor.p.z *= lightColor.p.z;
-	if ((NdotL > 0.0) /* && vcd.bMatSpecular */) {
+	if ((NdotL > 0.0) && (vcd.fMatShininess > 0)/* && vcd.bMatSpecular */) {
 		//spec = pow (reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
 		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
 		if (!psl->bSpot) {	//need direction from light to vertex now
