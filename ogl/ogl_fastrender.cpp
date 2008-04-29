@@ -829,7 +829,14 @@ if (gameStates.render.bTriangleMesh && !bMonitor) {
 #endif
 	}	
 else if (gameOpts->ogl.bPerPixelLighting) {
-	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+	for (;;) {
+		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+		if (gameStates.ogl.iLight >= gameStates.ogl.nLights)
+			break;
+		G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bmBot != NULL);
+		glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 0.0f);
+		glBlendFunc (GL_ONE, GL_ONE);
+		}
 	}
 else {
 #ifdef _DEBUG
