@@ -156,10 +156,12 @@ int OglCreateLightMap (int nLightMap)
 if (lmP->handle)
 	return 1;
 OglGenTextures (1, &lmP->handle);
+if (!lmP->handle) {
 #ifdef _DEBUG
-if ((nError = glGetError ()))
-	return 0;
+	nError = glGetError ();
 #endif
+	return 0;
+	}
 OGL_BINDTEX (lmP->handle); 
 #ifdef _DEBUG
 if ((nError = glGetError ()))
@@ -664,7 +666,7 @@ for (i = 0; i < LM_W; i++)
 	fOffset [i] = (double) i / (double) (LM_W - 1);
 InitVertColorData (vcd);
 vcd.pVertPos = &vcd.vertPos;
-vcd.fMatShininess /= 4;
+vcd.fMatShininess = 8;
 
 if (gameStates.app.bMultiThreaded)
 	nLastFace = nFace ? gameData.segs.nFaces : gameData.segs.nFaces / 2;
