@@ -454,7 +454,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	j++;
 	}
 if (j) {
-	if (nSaturation == 1) {	//if a color component is > 1, cap color components using highest component value
+	if ((nSaturation == 1) || gameStates.render.bLightMaps) { //if a color component is > 1, cap color components using highest component value
 		float	cMax = colorSum.c.r;
 		if (cMax < colorSum.c.g)
 			cMax = colorSum.c.g;
@@ -475,7 +475,7 @@ return j;
 
 #else //RELEASE
 
-int G3AccumVertColor (int nVertex, fVector *pColorSum, tVertColorData *vcdP, int nThread)
+int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, int nThread)
 {
 	int						i, j, nLights, nType, bInRad, 
 								bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState, 
@@ -514,7 +514,7 @@ for (j = 0; (i > 0); activeLightsP++, i--) {
 #endif
 	if (psl->bVariable && gameData.render.vertColor.bDarkness)
 		continue;
-	lightColor = *((fVector *) &psl->color);
+	lightColor = psl->color.v3;
 lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].v3;
 #if VECMAT_CALLS
 	VmVecSub (&lightDir, &lightPos, vcd.pVertPos);
@@ -692,7 +692,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].
 	j++;
 	}
 if (j) {
-	if (nSaturation == 1) {	//if a color component is > 1, cap color components using highest component value
+	if ((nSaturation == 1) || gameStates.render.bLightMaps) { //if a color component is > 1, cap color components using highest component value
 		float	cMax = colorSum.c.r;
 		if (cMax < colorSum.c.g)
 			cMax = colorSum.c.g;

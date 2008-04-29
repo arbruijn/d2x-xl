@@ -1080,25 +1080,25 @@ if (gameOpts->render.bDynLighting) {
 	gameData.render.lights.dynamic.shader.nFirstLight [nThread] = MAX_SHADER_LIGHTS;
 	gameData.render.lights.dynamic.shader.nLastLight [nThread] = 0;
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
-	while (i--) {
+	for (; i; i--, psl++) {
 #ifdef _DEBUG
 		if ((nDbgSeg >= 0) && (psl->nSegment == nDbgSeg))
 			psl = psl;
 #endif
 		if (psl->nType)
 			break;
+		if (psl->bVariable)
+			continue;
 #ifdef _DEBUG
 		if ((nDbgSeg >= 0) && (psl->nSegment == nDbgSeg))
 			psl = psl;
 #endif
-		if (psl->nType < 3) {
-			nLightSeg = psl->nSegment;
-			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
-				continue;
-			psl->xDistance = (fix) (VmVecDist (vPixelPos, &psl->vPos) / psl->range);
-			if (psl->xDistance > xMaxLightRange)
-				continue;
-			}
+		nLightSeg = psl->nSegment;
+		if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
+			continue;
+		psl->xDistance = (fix) (VmVecDist (vPixelPos, &psl->vPos) / psl->range);
+		if (psl->xDistance > xMaxLightRange)
+			continue;
 		SetActiveShaderLight (activeLightsP, psl, 1, nThread);
 		}
 	}
@@ -1232,6 +1232,7 @@ extern int nDbgVertex;
 
 void ComputeStaticDynLighting (void)
 {
+gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 if (gameOpts->ogl.bPerPixelLighting) {
 	CreateLightMaps ();
 	if (!HaveLightMaps ())
@@ -1246,7 +1247,6 @@ if (gameOpts->render.bDynLighting || (gameOpts->render.color.bAmbientLight && !g
 		tSegment2		*seg2P;
 
 	PrintLog ("Computing static lighting\n");
-	gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 	gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 	gameStates.render.nState = 0;
 	TransformDynLights (1, bColorize);

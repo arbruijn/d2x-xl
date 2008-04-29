@@ -664,6 +664,7 @@ for (i = 0; i < LM_W; i++)
 	fOffset [i] = (double) i / (double) (LM_W - 1);
 InitVertColorData (vcd);
 vcd.pVertPos = &vcd.vertPos;
+vcd.fMatShininess /= 4;
 
 if (gameStates.app.bMultiThreaded)
 	nLastFace = nFace ? gameData.segs.nFaces : gameData.segs.nFaces / 2;
@@ -733,7 +734,7 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 #endif
 	VmVecAvg (&vNormal, sideP->normals, sideP->normals + 1);
 	VmVecFixToFloat (&vcd.vertNorm, &vNormal);
-	memset (texColor, 0, sizeof (texColor));
+	memset (texColor, 0, LM_W * LM_H * sizeof (fVector3));
 	pPixelPos = pixelPos;
 	pTexColor = texColor;
 	for (x = 0; x < LM_W; x++) { 
@@ -958,6 +959,7 @@ if (!gameStates.ogl.bShadersOk)
 	gameStates.render.color.bLightMapsOk = 0;
 if (gameStates.render.color.bLightMapsOk) {
 	PrintLog ("building lightmap shader programs\n");
+	gameStates.render.bLightMaps = 1;
 	for (i = 0; i < 2; i++) {
 		if (lmShaderProgs [i])
 			DeleteShaderProg (lmShaderProgs + i);
@@ -971,6 +973,7 @@ if (gameStates.render.color.bLightMapsOk) {
 			break;
 			}
 		}
+	gameStates.render.bLightMaps = 0;
 	}
 }
 

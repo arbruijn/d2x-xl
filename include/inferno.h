@@ -856,6 +856,7 @@ typedef struct tRenderStates {
 	int bPointSprites;
 	int bVertexArrays;
 	int bAutoMap;
+	int bLightMaps;
 	int bDisableFades;
 	int bBlendBackground;
 	int bDropAfterburnerBlob;
