@@ -52,7 +52,7 @@ GLhandleARB lmShaderProgs [3] = {0,0,0};
 GLhandleARB lmFS [3] = {0,0,0}; 
 GLhandleARB lmVS [3] = {0,0,0}; 
 
-int lightMapWidth [4] = {8, 16, 32, 64};
+int lightMapWidth [5] = {8, 16, 32, 64, 128};
 
 tLightMap dummyLightMap;
 

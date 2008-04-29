@@ -3996,6 +3996,7 @@ void RenderOptionsMenu (void)
 	pszLMapQual [1] = TXT_MEDIUM;
 	pszLMapQual [2] = TXT_HIGH;
 	pszLMapQual [3] = TXT_VERY_HIGH;
+	pszLMapQual [4] = TXT_EXTREME;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -4041,7 +4042,7 @@ do {
 			else {
 				sprintf (szLMapQual + 1, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
 				*szLMapQual = *(TXT_LMAP_QUALITY + 1);
-				ADD_SLIDER (opt, szLMapQual + 1, gameOpts->render.nLightmapQuality, 0, 3, KEY_L, HTX_LMAP_QUALITY);
+				ADD_SLIDER (opt, szLMapQual + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_L, HTX_LMAP_QUALITY);
 				renderOpts.nLMapQual = opt++;
 				}
 			}

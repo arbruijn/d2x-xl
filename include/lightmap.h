@@ -60,7 +60,7 @@ double GetLightColor (int tMapNum, GLfloat *colorP);
 
 //extern tOglTexture	*lightMaps;
 extern tLightMapData		lightMapData;
-extern int					lightMapWidth [4];
+extern int					lightMapWidth [5];
 extern GLhandleARB		lmShaderProgs [3];
 
 //------------------------------------------------------------------------------
