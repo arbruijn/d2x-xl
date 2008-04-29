@@ -1265,7 +1265,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
-	if (bVertexLight && !(gameStates.app.bMultiThreaded || SegmentIsVisible (segP))) {
+	if (!(gameStates.app.bMultiThreaded || SegmentIsVisible (segP))) {
 		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
 		continue;
 		}
@@ -1273,7 +1273,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	if (!(gameStates.render.bFullBright || gameOpts->ogl.bPerPixelLighting))
+	if (bVertexLight && !gameStates.render.bFullBright)
 		SetNearestSegmentLights (nSegment, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 		nSide = faceP->nSide;

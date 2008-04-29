@@ -523,7 +523,7 @@ int RISetClientState (char bClientState, char bTexCoord, char bColor)
 {
 if (renderItems.bClientState == bClientState) {
 	if (bClientState) {
-		glClientActiveTexture (GL_TEXTURE0);
+		glClientActiveTexture (GL_TEXTURE0 + renderItems.bLightMaps);
 		if (renderItems.bClientTexCoord != bTexCoord) {
 			if ((renderItems.bClientTexCoord = bTexCoord))
 				glEnableClientState (GL_TEXTURE_COORD_ARRAY);
@@ -541,7 +541,7 @@ if (renderItems.bClientState == bClientState) {
 	}
 else if (bClientState) {
 	renderItems.bClientState = 1;
-	glClientActiveTexture (GL_TEXTURE0);
+	glClientActiveTexture (GL_TEXTURE0 + renderItems.bLightMaps);
 	if (!G3EnableClientState (GL_VERTEX_ARRAY, -1))
 		return 0;
 	if (bTexCoord) {
@@ -566,8 +566,8 @@ else if (bClientState) {
 		glDisableClientState (GL_COLOR_ARRAY);
 	}
 else {
-	glActiveTexture (GL_TEXTURE0);
-	glClientActiveTexture (GL_TEXTURE0);
+	glActiveTexture (GL_TEXTURE0 + renderItems.bLightMaps);
+	glClientActiveTexture (GL_TEXTURE0 + renderItems.bLightMaps);
 	if (renderItems.bClientTexCoord) {
 		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 		renderItems.bClientTexCoord = 0;
@@ -948,18 +948,19 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	}
 RIResetShader ();
 bStencil = StencilOff ();
-G3DisableClientStates (1, 1, 0, GL_TEXTURE2);
-G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
-G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 renderItems.bTextured = -1;
 renderItems.bClientState = -1;
 renderItems.bClientTexCoord = 0;
 renderItems.bClientColor = 0;
 renderItems.bDepthMask = 0;
+renderItems.bLightMaps = gameOpts->ogl.bPerPixelLighting;
 renderItems.nWrap = 0;
 renderItems.nFrame = -1;
 renderItems.bmP = NULL;
 renderItems.nItems = ITEM_BUFFER_SIZE - renderItems.nFreeItems;
+G3DisableClientStates (1, 1, 0, GL_TEXTURE2 + renderItems.bLightMaps);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE1 + renderItems.bLightMaps);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + renderItems.bLightMaps);
 pl = renderItems.pItemList + ITEM_BUFFER_SIZE - 1;
 bParticles = LoadParticleImages ();
 glEnable (GL_BLEND);

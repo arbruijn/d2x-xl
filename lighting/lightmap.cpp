@@ -557,7 +557,7 @@ if (!(lightMapData.buffers = (tLightMapBuffer *) D2_ALLOC (lightMapData.nBuffers
 	D2_FREE (lightMapData.info);
 	return lightMapData.nLights = 0; 
 	}
-memset (lightMapData.buffers, 0, sizeof (tLightMap) * gameData.segs.nFaces); 
+memset (lightMapData.buffers, 0, lightMapData.nBuffers * sizeof (tLightMapBuffer)); 
 memset (lightMapData.info, 0, sizeof (tLightMapInfo) * lightMapData.nLights); 
 lightMapData.nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
@@ -744,8 +744,6 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 			if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->rad / 10.0f, nThread)) {
 				VmVecFixToFloat (&vcd.vertPos, pPixelPos);
 				G3AccumVertColor (-1, &texColor [y * LM_W + x], &vcd, nThread);
-				if (y >= LM_H)
-					break;
 				}
 			}
 		}
