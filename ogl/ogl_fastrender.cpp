@@ -320,6 +320,8 @@ if (gameOpts->ogl.bPerPixelLighting) {
 		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nLights ? nLights - 1 : 0][nType]);
 		if (bLightMaps)
 			glUniform1i (glGetUniformLocation (tmProg, "lMapTex"), 0);
+		if (nLights)
+			glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 1.0f);
 		if (bTextured) {
 			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), bLightMaps);
 			if (bColorKey || bMultiTexture) {
@@ -1118,6 +1120,7 @@ for (;;) {
 	if (gameStates.ogl.iLight >= gameStates.ogl.nLights)
 		break;
 	G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bmBot != NULL);
+	glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 0.0f);
 	glBlendFunc (GL_ONE, GL_ONE);
 	}
 
