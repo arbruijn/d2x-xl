@@ -28,6 +28,7 @@
 #include "ogl_color.h"
 
 #define CHECK_LIGHT_VERT 1
+#define BRIGHT_SHOTS 1
 
 #ifdef _DEBUG
 #	define ONLY_HEADLIGHT 0
@@ -384,7 +385,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (nType < 2)
 			fLightDist *= 2.0f;
 #endif
-		fAttenuation = 1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist;
+#if BRIGHT_SHOTS
+		if (nType == 2)
+			fAttenuation = 1.0f + 0.05f * fLightDist + 0.005f * fLightDist * fLightDist;
+		else
+#endif
+			fAttenuation = 1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist;
 		fAttenuation /= psl->brightness;
 		if (vcd.vertNorm.p.x == 0 && vcd.vertNorm.p.y == 0 && vcd.vertNorm.p.z == 0) 
 			NdotL = 0;
@@ -560,8 +566,12 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].
 			fAttenuation = 1.0f / psl->brightness;
 			}
 		else {	//make it decay faster
-			fAttenuation = 1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist;
-			fAttenuation /= psl->brightness;
+#if BRIGHT_SHOTS
+			if (nType == 2)
+				fAttenuation = (1.0f + 0.05f * fLightDist + 0.005f * fLightDist * fLightDist) / psl->brightness;
+			else
+#endif
+			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist) / psl->brightness;
 			if (vcd.vertNorm.p.x == 0 && vcd.vertNorm.p.y == 0 && vcd.vertNorm.p.z == 0) 
 				NdotL = 0;
 			else {

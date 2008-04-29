@@ -1807,7 +1807,7 @@ char *defaultGameTexts [][2] = {
 	{"Initialisiere...", "Initializing..."},
 	{"ro~Boter-Omega schiesst blitze", "ro~Bot omega fires lightnings"},
 	{"~Geometrie-Verbesserung: %s", "Mesh impr~Ovement: %s"},
-	{"~Lightmap-Qualitaet: %s", "~Lightmap quality: %s"},
+	{"li~Ghtmap-Qualitaet: %s", "li~Ghtmap quality: %s"},
 #if 0
 	{"", ""},
 #endif

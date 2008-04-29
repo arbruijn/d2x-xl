@@ -4042,7 +4042,7 @@ do {
 			else {
 				sprintf (szLMapQual + 1, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
 				*szLMapQual = *(TXT_LMAP_QUALITY + 1);
-				ADD_SLIDER (opt, szLMapQual + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_L, HTX_LMAP_QUALITY);
+				ADD_SLIDER (opt, szLMapQual + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_G, HTX_LMAP_QUALITY);
 				renderOpts.nLMapQual = opt++;
 				}
 			}
