@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "render.h"
 #include "renderlib.h"
 #include "objrender.h"
+#include "lightmap.h"
 #include "lightning.h"
 #include "sphere.h"
 #include "network.h"
@@ -657,7 +658,7 @@ if (item->bmP && strstr (item->bmP->szName, "door45#5"))
 	item = item;
 #endif
 #if 1
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, item->faceP != NULL)) {
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, HaveLightMaps () && (item->faceP != NULL))) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	if (renderItems.bTextured)
 		glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
@@ -686,7 +687,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, item
 	}
 else 
 #endif
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1, item->faceP != NULL)) {
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1, HaveLightMaps () && (item->faceP != NULL))) {
 	if (item->bAdditive == 1) {
 		RIResetShader ();
 		glBlendFunc (GL_ONE, GL_ONE);

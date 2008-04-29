@@ -228,7 +228,6 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	nDbgSeg = nDbgSeg;
 #endif
 nLights = SetNearestFaceLights (faceP, bTextured);
-nLights = 0;
 OglEnableLighting (0);
 glDisable (GL_LIGHTING);
 activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameData.render.lights.dynamic.shader.nFirstLight [0];
@@ -237,13 +236,13 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
 	hLight = GL_LIGHT0 + i;
-	ambient.red = psl->color.c.r * 0.1f;
-	ambient.green = psl->color.c.g * 0.1f;
-	ambient.blue = psl->color.c.b * 0.1f;
+	ambient.red = psl->color.c.r * 0.05f;
+	ambient.green = psl->color.c.g * 0.05f;
+	ambient.blue = psl->color.c.b * 0.05f;
 	ambient.alpha = 1.0f;
-	diffuse.red = psl->color.c.r * 0.9f;
-	diffuse.green = psl->color.c.g * 0.9f;
-	diffuse.blue = psl->color.c.b * 0.9f;
+	diffuse.red = psl->color.c.r * 0.95f;
+	diffuse.green = psl->color.c.g * 0.95f;
+	diffuse.blue = psl->color.c.b * 0.95f;
 	diffuse.alpha = 1.0f;
 	glEnable (hLight);
 	specular.alpha = (psl->nSegment >= 0) ? psl->rad : 0; //krasser Missbrauch!
@@ -253,18 +252,14 @@ for (i = 0; (i < nLights) & (h > 0); activeLightsP++, h--) {
 	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &ambient);
 	if (psl->nType == 2) {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / psl->brightness);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / psl->brightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
 		}
 	else {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / psl->brightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
-		//gameData.render.ogl.lightRads [i] *= 10;
 		}
-	gameData.render.ogl.lightRads [i] =
-		(psl->nSegment >= 0) ? AvgSegRadf (psl->nSegment) : 0; //(psl->nObject >= 0) ? f2fl (OBJECTS [psl->nObject].size) : psl->rad;
-	//G3TranslatePoint (&gameData.render.ogl.lightPos [i], &psl->pos [0]);
 	i++;
 	}
 for (; i < MAX_LIGHTS_PER_PIXEL; i++) {
@@ -274,7 +269,6 @@ for (; i < MAX_LIGHTS_PER_PIXEL; i++) {
 	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &black);
 	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &black);
 	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &black);
-	gameData.render.ogl.lightRads [i] = 0;
 	}
 if (InitPerPixelLightingShader (bColorKey ? 3 : bMultiTexture ? 2 : bTextured, nLights))
 	return nLights;
@@ -297,7 +291,40 @@ if (!gameStates.ogl.bShadersOk)
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
+if (gameOpts->ogl.bPerPixelLighting) {
+	//per pixel lighting
+	if ((nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTextured)))
+		nLights = MAX_LIGHTS_PER_PIXEL; //it's better to process a few "black" lights than switch shader programs all the time
+	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
+	nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
+#ifdef _DEBUG
+	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
+	if (bLightMaps = HaveLightMaps ()) {
+		int i = (faceP - gameData.segs.faces.faces) / LIGHTMAP_BUFSIZE;
+#ifdef _DEBUG
+		if (OglCreateLightMap (i))
+#endif
+			{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightMapData.buffers + i, 1, 1);}
+		}
+	if (nShader != gameStates.render.history.nShader) {
+		glUseProgramObject (0);
+		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nLights ? nLights - 1 : 0][nType]);
+		if (bLightMaps)
+			glUniform1i (glGetUniformLocation (tmProg, "lMapTex"), 0);
+		if (bTextured) {
+			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), bLightMaps);
+			if (bColorKey || bMultiTexture) {
+				glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 1 + bLightMaps);
+				if (bColorKey)
+					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2 + bLightMaps);
+				}
+			}
+		}
+	//glUniform1fv (glGetUniformLocation (tmProg, "lightRad"), nLights, (GLfloat *) gameData.render.ogl.lightRads);
+	}
+else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
 	//headlights
 	nLights = IsMultiGame ? /*gameData.multiplayer.nPlayers*/gameData.render.lights.dynamic.headLights.nLights : 1;
 	InitHeadlightShaders (nLights);
@@ -352,39 +379,6 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 		glUniform4fv (glGetUniformLocation (tmProg, "maxColor"), 1, (GLfloat *) &color);
 		oglRes = glGetError ();
 		}
-	}
-else if (gameOpts->ogl.bPerPixelLighting) {
-	//per pixel lighting
-	if ((nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTextured)))
-		nLights = MAX_LIGHTS_PER_PIXEL; //it's better to process a few "black" lights than switch shader programs all the time
-	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
-	nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
-#ifdef _DEBUG
-	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
-#endif
-	if (bLightMaps = HaveLightMaps ()) {
-		int i = (faceP - gameData.segs.faces.faces) / LIGHTMAP_BUFSIZE;
-#ifdef _DEBUG
-		if (OglCreateLightMap (i))
-#endif
-			{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightMapData.buffers + i, 1, 1);}
-		}
-	if (nShader != gameStates.render.history.nShader) {
-		glUseProgramObject (0);
-		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nLights ? nLights - 1 : 0][nType]);
-		if (bLightMaps)
-			glUniform1i (glGetUniformLocation (tmProg, "lMapTex"), 0);
-		if (bTextured) {
-			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), bLightMaps);
-			if (bColorKey || bMultiTexture) {
-				glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 1 + bLightMaps);
-				if (bColorKey)
-					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2 + bLightMaps);
-				}
-			}
-		}
-	//glUniform1fv (glGetUniformLocation (tmProg, "lightRad"), nLights, (GLfloat *) gameData.render.ogl.lightRads);
 	}
 else if (bColorKey || bMultiTexture) {
 	//texture mapping
@@ -826,7 +820,6 @@ if (gameStates.render.bTriangleMesh && !bMonitor) {
 #endif
 	}	
 else if (gameOpts->ogl.bPerPixelLighting) {
-	glColor3f (1,1,1);
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 	}
 else {
