@@ -64,11 +64,11 @@ int InitLightData (int bVariable);
 
 //------------------------------------------------------------------------------
 
-inline void ComputePixelPos (vmsVector *vPos, vmsVector vVertex1, vmsVector vVertex2, double fOffset)
+inline void ComputePixelPos (vmsVector *vPos, vmsVector v1, vmsVector v2, double fOffset)
 {
-vPos->p.x = (fix) (fOffset * (vVertex2.p.x - vVertex1.p.x)); 
-vPos->p.y = (fix) (fOffset * (vVertex2.p.y - vVertex1.p.y)); 
-vPos->p.z = (fix) (fOffset * (vVertex2.p.z - vVertex1.p.z)); 
+vPos->p.x = (fix) (fOffset * (v2.p.x - v1.p.x)); 
+vPos->p.y = (fix) (fOffset * (v2.p.y - v1.p.y)); 
+vPos->p.z = (fix) (fOffset * (v2.p.z - v1.p.z)); 
 }
 
 //------------------------------------------------------------------------------
@@ -849,6 +849,9 @@ if (!InitLightData (0))
 	return;
 TransformDynLights (1, 0);
 if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
+	int nSaturation = gameOpts->render.color.nSaturation;
+	gameOpts->render.color.nSaturation = 1;
+	gameStates.render.bLightMaps = 1;
 	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 8))
 		StartLightMapThreads (LightMapThread);
 	else {
@@ -861,6 +864,9 @@ if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 		else
 			ComputeLightMaps (-1, 0);
 		}
+	gameStates.render.bLightMaps = 0;
+	gameStates.render.nState = 0;
+	gameOpts->render.color.nSaturation = nSaturation;
 	}
 OglCreateLightMaps ();
 }
@@ -879,9 +885,9 @@ char *lightMapFS [3] = {
 	"float maxC;" \
 	"vec4 btmColor,topColor,lMapColor;" \
 	"void main(void){" \
-	"btmColor=texture2D(btmTex,vVertex2(gl_TexCoord[0]));" \
-	"topColor=texture2D(topTex,vVertex2(gl_TexCoord[1]));" \
-	"lMapColor=texture2D(lMapTex,vVertex2(gl_TexCoord[2]))+((gl_Color)-0.5);" \
+	"btmColor=texture2D(btmTex,gl_TexCoord[0].xy);" \
+	"topColor=texture2D(topTex,gl_TexCoord[1].xy);" \
+	"lMapColor=texture2D(lMapTex,gl_TexCoord[2].xy)+(gl_Color-0.5);" \
 	"maxC=lMapColor.r;" \
 	"if(lMapColor.g>maxC)maxC=lMapColor.g;" \
 	"if(lMapColor.b>maxC)maxC=lMapColor.b;" \
@@ -893,11 +899,11 @@ char *lightMapFS [3] = {
 	"float maxC;" \
 	"vec4 btmColor,topColor,lMapColor;" \
 	"void main(void){" \
-	"topColor=texture2D(topTex,vVertex2(gl_TexCoord[1]));" \
+	"topColor=texture2D(topTex,gl_TexCoord[1].xy);" \
 	"if(abs(topColor.a-1.0/255.0)<0.25)discard;" \
 	"if((topColor.a==0.0)&&(abs(topColor.r-120.0/255.0)<8.0/255.0)&&(abs(topColor.g-88.0/255.0)<8.0/255.0)&&(abs(topColor.b-128.0/255.0)<8.0/255.0))discard;" \
-	"else {btmColor=texture2D(btmTex,vVertex2(gl_TexCoord[0]));" \
-	"lMapColor=texture2D(lMapTex,vVertex2(gl_TexCoord[2]))+((gl_Color)-0.5);" \
+	"else {btmColor=texture2D(btmTex,gl_TexCoord[0].xy);" \
+	"lMapColor=texture2D(lMapTex,gl_TexCoord[2].xy)+(gl_Color-0.5);" \
 	"maxC=lMapColor.r;" \
 	"if(lMapColor.g>maxC)maxC=lMapColor.g;" \
 	"if(lMapColor.b>maxC)maxC=lMapColor.b;" \
@@ -911,11 +917,11 @@ char *lightMapFS [3] = {
 	"vec4 btmColor,topColor,lMapColor;" \
 	"float bMask;" \
 	"void main(void){" \
-	"bMask=texture2D(maskTex,vVertex2(gl_TexCoord[1])).a;" \
+	"bMask=texture2D(maskTex,gl_TexCoord[1].xy).a;" \
 	"if(bMask<0.5)discard;" \
-	"else {btmColor=texture2D(btmTex,vVertex2(gl_TexCoord[0]));" \
-	"topColor=texture2D(topTex,vVertex2(gl_TexCoord[1]));" \
-	"lMapColor=texture2D(lMapTex,vVertex2(gl_TexCoord[2]))+((gl_Color)-0.5);" \
+	"else {btmColor=texture2D(btmTex,gl_TexCoord[0].xy);" \
+	"topColor=texture2D(topTex,gl_TexCoord[1].xy);" \
+	"lMapColor=texture2D(lMapTex,gl_TexCoord[2].xy)+(gl_Color-0.5);" \
 	"maxC=lMapColor.r;" \
 	"if(lMapColor.g>maxC)maxC=lMapColor.g;" \
 	"if(lMapColor.b>maxC)maxC=lMapColor.b;" \

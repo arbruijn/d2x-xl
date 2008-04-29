@@ -276,7 +276,7 @@ static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150
 
 static char *pszTexQual [4];
 static char *pszMeshQual [5];
-static char *pszLMapQual [4];
+static char *pszLMapQual [5];
 static char *pszRendQual [5];
 static char *pszSmokeAmount [5];
 static char *pszSmokeSize [4];
@@ -4132,35 +4132,35 @@ do {
 #endif
 
 	Assert (sizeofa (m) >= opt);
-	for (;;) {
+	do {
 		i = ExecMenu1 (NULL, TXT_RENDER_OPTS, opt, m, &RenderOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		if (gameOpts->app.bExpertMode) {
 			if ((optLightOpts >= 0) && (i == optLightOpts))
-				LightOptionsMenu ();
+				i = -2, LightOptionsMenu ();
 			else if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
-				SmokeOptionsMenu ();
+				i = -2, SmokeOptionsMenu ();
 			else if ((optLightningOpts >= 0) && (i == optLightningOpts))
-				LightningOptionsMenu ();
+				i = -2, LightningOptionsMenu ();
 			else if ((optShadowOpts >= 0) && (i == optShadowOpts))
-				ShadowOptionsMenu ();
+				i = -2, ShadowOptionsMenu ();
 			else if ((optEffectOpts >= 0) && (i == optEffectOpts))
-				EffectOptionsMenu ();
+				i = -2, EffectOptionsMenu ();
 			else if ((optCoronaOpts >= 0) && (i == optCoronaOpts))
-				CoronaOptionsMenu ();
+				i = -2, CoronaOptionsMenu ();
 			else if ((optCameraOpts >= 0) && (i == optCameraOpts))
-				CameraOptionsMenu ();
+				i = -2, CameraOptionsMenu ();
 			else if ((optPowerupOpts >= 0) && (i == optPowerupOpts))
-				PowerupOptionsMenu ();
+				i = -2, PowerupOptionsMenu ();
 			else if ((optAutomapOpts >= 0) && (i == optAutomapOpts))
-				AutomapOptionsMenu ();
+				i = -2, AutomapOptionsMenu ();
 			else if ((optMovieOpts >= 0) && (i == optMovieOpts))
-				MovieOptionsMenu ();
+				i = -2, MovieOptionsMenu ();
 			else if ((optShipRenderOpts >= 0) && (i == optShipRenderOpts))
-				ShipRenderOptionsMenu ();
+				i = -2, ShipRenderOptionsMenu ();
 			}
-		} 
+		} while (i >= 0);
 	if (!gameStates.app.bNostalgia)
 		GrSetPaletteGamma (m [optBrightness].value);
 	if (gameOpts->app.bExpertMode) {

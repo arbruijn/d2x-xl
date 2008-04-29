@@ -300,7 +300,7 @@ return 0;
 
 #define VECMAT_CALLS 0
 
-float fLightRanges [5] = {5, 7.071f, 10, 14.142f, 20};
+float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
 #ifdef _DEBUG
 
@@ -351,7 +351,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	VmVecSub (&lightDir, &lightPos, vcd.pVertPos);
 	//scaled quadratic attenuation depending on brightness
 	bInRad = 0;
-	fLightDist = VmVecMag (&lightDir) / gameStates.ogl.fLightRange;
+	fLightDist = VmVecMag (&lightDir) * gameStates.ogl.fLightRange;
 	VmVecNormalize (&lightDir, &lightDir);
 	if (gameStates.render.nState || (nType < 2)) {
 #if CHECK_LIGHT_VERT == 2
@@ -359,32 +359,42 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			fLightDist = 0;
 		else
 #endif
-			fLightDist -= psl->rad / 10.0f;	//make light brighter close to light source
+			fLightDist -= psl->rad * gameStates.ogl.fLightRange; //make light brighter close to light source
 		}
-	if (fLightDist < 1.0f) {
+	if (fLightDist <= 0.0f) {
 		bInRad = 1;
-		fLightDist = 1.4142f;
 		NdotL = 1;
+		fLightDist = 0;//.4142f;
+		fAttenuation = 1.0f / psl->brightness;
 		}
 #if CHECK_LIGHT_VERT == 1
 	else if (IsLightVert (nVertex, psl)) {
 		bInRad = 1;
 		NdotL = 1;
+		fLightDist = 0;//.4142f;
+		fAttenuation = 1.0f / psl->brightness;
 		}
 #endif
 	else {	//make it decay faster
+#if 0
 		if (nMeshQuality && (nType < 2))
 			fLightDist *= sqrt (fLightDist);
 		else
 			fLightDist *= fLightDist;
 		if (nType < 2)
 			fLightDist *= 2.0f;
+#endif
+		fAttenuation = 1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist;
+		fAttenuation /= psl->brightness;
 		if (vcd.vertNorm.p.x == 0 && vcd.vertNorm.p.y == 0 && vcd.vertNorm.p.z == 0) 
 			NdotL = 0;
-		else 
+		else {
 			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+			if ((psl->rad > 0))
+				NdotL += (1.0f - NdotL) / fAttenuation;
+			}
 		}
-	fAttenuation = fLightDist / psl->brightness;
+//	fAttenuation = fLightDist / psl->brightness;
 	if (psl->bSpot) {
 		if (NdotL <= 0)
 			continue;
@@ -409,7 +419,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		VmVecScaleAdd (&vertColor, &gameData.render.vertColor.matAmbient.v3, &gameData.render.vertColor.matDiffuse.v3, NdotL);
 		}
 	VmVecMul (&vertColor, &vertColor, &lightColor);
-	if ((NdotL > 0.0) /* && vcd.bMatSpecular */) {
+	if ((NdotL > 0.0) && vcd.fMatShininess/* && vcd.bMatSpecular */) {
 		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
 #if 1
 		lightPos = vertPos;
@@ -535,30 +545,34 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].
 				fLightDist = 0;
 			else
 #endif
-				fLightDist -= psl->rad / 10.0f;	//make light brighter close to light source
+				fLightDist -= psl->rad / gameStates.ogl.fLightRange;	//make light brighter close to light source
 			}
-		if (fLightDist < 1.0f) {
+		if (fLightDist < 0.0f) {
 			bInRad = 1;
-			fLightDist = 1.4142f;
 			NdotL = 1;
+			fLightDist = 0;//.4142f;
+			fAttenuation = 1.0f / psl->brightness;
 			}
 		else if (IsLightVert (nVertex, psl)) {
 			bInRad = 1;
 			NdotL = 1;
+			fLightDist = 0;//.4142f;
+			fAttenuation = 1.0f / psl->brightness;
 			}
 		else {	//make it decay faster
-			if (nMeshQuality && (nType < 2))
-				fLightDist *= (float) sqrt (fLightDist);
-			else
-				fLightDist *= fLightDist;
-			if (nType < 2)
-				fLightDist *= 2.0f;
-			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-			if (NdotL > 0)
-				NdotL = NdotL;
+			fAttenuation = 1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist;
+			fAttenuation /= psl->brightness;
+			if (vcd.vertNorm.p.x == 0 && vcd.vertNorm.p.y == 0 && vcd.vertNorm.p.z == 0) 
+				NdotL = 0;
+			else {
+				NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+				if ((psl->rad > 0))
+					NdotL += (1.0f - NdotL) / fAttenuation;
+				}
 			}
-		fAttenuation = fLightDist / psl->brightness;
 		}
+	if (!bInRad && (psl->rad > 0))
+		NdotL += (1.0f - NdotL) / fAttenuation;
 #if VECMAT_CALLS
 	VmVecNormalize (&lightDir, &lightDir);
 #else

@@ -603,8 +603,7 @@ return 0;
 
 int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
-	int			bOverlay, bColored, bTransparent, bColorKey = 0, bMonitor = 0, bMultiTexture = 0,
-					bLightMaps = HaveLightMaps ();
+	int			bOverlay, bColored, bTransparent, bColorKey = 0, bMonitor = 0, bMultiTexture = 0;
 	grsBitmap	*bmMask = NULL;
 	tTexCoord2f	*ovlTexCoordP;
 
@@ -694,18 +693,12 @@ if (bTextured) {
 #endif
 			// set base texture
 			if (bmBot != gameStates.render.history.bmBot) {
-				if (bLightMaps)
-					{INIT_TMU (InitTMU1, GL_TEXTURE1, bmBot, lightMapData.buffers, 1, 1);}
-				else
-					{INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightMapData.buffers, 1, 0);}
+				{INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightMapData.buffers, 1, 0);}
 				gameStates.render.history.bmBot = bmBot;
 				}
 			// set overlay texture
 			if (bmTop != gameStates.render.history.bmTop) {
-				if (bLightMaps)
-					{INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, lightMapData.buffers, 1, 1);}
-				else
-					{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, 1, 0);}
+				{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, 1, 0);}
 				gameStates.render.history.bmTop = bmTop;
 				if (gameStates.render.history.bOverlay != 1) {	//enable multitexturing
 					if (!G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE1))
@@ -715,10 +708,7 @@ if (bTextured) {
 			if (!(bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL))
 				bColorKey = 0;
 			else {
-				if (bLightMaps)
-					{INIT_TMU (InitTMU3, GL_TEXTURE3, bmMask, lightMapData.buffers, 2, 1);}
-				else
-					{INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, lightMapData.buffers, 2, 0);}
+				{INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, lightMapData.buffers, 2, 0);}
 				if (!G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2))
 					return 1;
 				}
@@ -730,8 +720,8 @@ if (bTextured) {
 				if (gameStates.ogl.bShadersOk)
 					glUseProgramObject (0);
 				if (gameStates.render.history.bmMask) {
-					glActiveTexture (GL_TEXTURE2 + bLightMaps);
-					glClientActiveTexture (GL_TEXTURE2 + bLightMaps);
+					glActiveTexture (GL_TEXTURE2);
+					glClientActiveTexture (GL_TEXTURE2);
 					glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 					OGL_BINDTEX (0);
 					gameStates.render.history.bmMask = NULL;
@@ -739,19 +729,12 @@ if (bTextured) {
 				}
 			if (bMultiTexture) {
 				if (bmTop != gameStates.render.history.bmTop) {
-					glActiveTexture (GL_TEXTURE1 + bLightMaps);
+					glActiveTexture (GL_TEXTURE1);
 					if (bmTop) {
-						if (bLightMaps) {
-							//glClientActiveTexture (GL_TEXTURE2);
-							{INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, lightMapData.buffers, 1, 1);}
-							}
-						else {
-							//glClientActiveTexture (GL_TEXTURE1);
-							{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, 1, 0);}
-							}
+						{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, 1, 0);}
 						}
 					else {
-						glClientActiveTexture (GL_TEXTURE1 + bLightMaps);
+						glClientActiveTexture (GL_TEXTURE1);
 						OGL_BINDTEX (0);
 						}
 					gameStates.render.history.bmTop = bmTop;
@@ -759,17 +742,14 @@ if (bTextured) {
 				}
 			else {
 				if (gameStates.render.history.bmTop) {
-					glActiveTexture (GL_TEXTURE1 + bLightMaps);
-					glClientActiveTexture (GL_TEXTURE1 + bLightMaps);
+					glActiveTexture (GL_TEXTURE1);
+					glClientActiveTexture (GL_TEXTURE1);
 					OGL_BINDTEX (0);
 					gameStates.render.history.bmTop = NULL;
 					}
 				}
 			if (bmBot != gameStates.render.history.bmBot) {
-				if (bLightMaps)
-					{INIT_TMU (InitTMU1, GL_TEXTURE1, bmBot, lightMapData.buffers, 1, 1);}
-				else
-					{INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightMapData.buffers, 1, 0);}
+				{INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightMapData.buffers, 1, 0);}
 				gameStates.render.history.bmBot = bmBot;
 				}
 			G3SetupShader (faceP, 0, bMultiTexture, bmBot != NULL, bColored, bmBot ? NULL : &faceP->color);
@@ -911,19 +891,16 @@ if (!bMultiTexture && (bOverlay || bMonitor)) {
 #endif
 	ovlTexCoordP = bMonitor ? faceP->pTexCoord - faceP->nIndex : gameData.segs.faces.ovlTexCoord;
 	if (bTextured) {
-		if (bLightMaps)
-			{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, 1, 0);}
-		else
-			{INIT_TMU (InitTMU0, GL_TEXTURE0, bmTop, lightMapData.buffers, 1, 0);}
+		{INIT_TMU (InitTMU0, GL_TEXTURE0, bmTop, lightMapData.buffers, 1, 0);}
 		if (gameData.render.lights.dynamic.headLights.nLights)
 			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
-		glActiveTexture (GL_TEXTURE0 + bLightMaps);
-		glClientActiveTexture (GL_TEXTURE0 + bLightMaps);
+		glActiveTexture (GL_TEXTURE0);
+		glClientActiveTexture (GL_TEXTURE0);
 		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 		}
 	else {
-		glActiveTexture (GL_TEXTURE0 + bLightMaps);
-		glClientActiveTexture (GL_TEXTURE0 + bLightMaps);
+		glActiveTexture (GL_TEXTURE0);
+		glClientActiveTexture (GL_TEXTURE0);
 		glDisable (GL_TEXTURE_2D);
 		OGL_BINDTEX (0);
 		}
