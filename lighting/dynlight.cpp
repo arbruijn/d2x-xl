@@ -1001,7 +1001,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameOpts->render.bDynLighting) {
 	short						h, i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
-	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE * 2 (gameOpts->ogl.bPerPixelLighting + 1);
+	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
