@@ -1356,7 +1356,7 @@ char *pszPPLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 8.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
+	"	gl_FragColor = texColor * color;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -1389,7 +1389,7 @@ char *pszPPLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 8.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
+	"	gl_FragColor = texColor * color;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -1426,7 +1426,7 @@ char *pszPPLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 8.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color);}\r\n" \
+	"	gl_FragColor = texColor * color;}\r\n" \
 	"	}"
 	};
 

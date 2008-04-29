@@ -519,8 +519,17 @@ return AddRenderItem (riThruster, &item, sizeof (item), fl2f (z), fl2f (z));
 
 //------------------------------------------------------------------------------
 
-int RISetClientState (char bClientState, char bTexCoord, char bColor)
+int RISetClientState (char bClientState, char bTexCoord, char bColor, char bLightMaps)
 {
+if (renderItems.bLightMaps != bLightMaps) {
+	glActiveTexture (GL_TEXTURE0);
+	glClientActiveTexture (GL_TEXTURE0);
+	if (bLightMaps)
+		glEnable (GL_TEXTURE_2D);
+	else
+		glDisable (GL_TEXTURE_2D);
+	renderItems.bLightMaps = bLightMaps;
+	}
 if (renderItems.bClientState == bClientState) {
 	if (bClientState) {
 		glClientActiveTexture (GL_TEXTURE0 + renderItems.bLightMaps);
@@ -548,7 +557,7 @@ else if (bClientState) {
 		if (G3EnableClientState (GL_TEXTURE_COORD_ARRAY, -1))
 			renderItems.bClientTexCoord = 1;
 		else {
-			RISetClientState (0, 0, 0);
+			RISetClientState (0, 0, 0, 0);
 			return 0;
 			}
 		}
@@ -558,7 +567,7 @@ else if (bClientState) {
 		if (G3EnableClientState (GL_COLOR_ARRAY, -1))
 			renderItems.bClientColor = 1;
 		else {
-			RISetClientState (0, 0, 0);
+			RISetClientState (0, 0, 0, 0);
 			return 0;
 			}
 		}
@@ -595,10 +604,11 @@ if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
 
 //------------------------------------------------------------------------------
 
-int LoadRenderItemImage (grsBitmap *bmP, char nColors, char nFrame, int nWrap, int bClientState, int nTransp, int bShader)
+int LoadRenderItemImage (grsBitmap *bmP, char nColors, char nFrame, int nWrap, 
+								 int bClientState, int nTransp, int bShader, int bLightMaps)
 {
 if (bmP) {
-	if (RISetClientState (bClientState, 1, nColors > 1) || (renderItems.bTextured < 1)) {
+	if (RISetClientState (bClientState, 1, nColors > 1, bLightMaps) || (renderItems.bTextured < 1)) {
 		glEnable (GL_TEXTURE_2D);
 		//glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		renderItems.bTextured = 1;
@@ -618,7 +628,7 @@ if (bmP) {
 			OGL_BINDTEX (0);
 		}
 	}
-else if (RISetClientState (bClientState, 0, nColors > 1) || renderItems.bTextured) {
+else if (RISetClientState (bClientState, 0, nColors > 1, bLightMaps) || renderItems.bTextured) {
 	glDisable (GL_TEXTURE_2D);
 	renderItems.bTextured = 0;
 	}
@@ -647,7 +657,7 @@ if (item->bmP && strstr (item->bmP->szName, "door45#5"))
 	item = item;
 #endif
 #if 1
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1)) {
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, item->faceP != NULL)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	if (renderItems.bTextured)
 		glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
@@ -676,7 +686,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1)) {
 	}
 else 
 #endif
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1)) {
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1, item->faceP != NULL)) {
 	if (item->bAdditive == 1) {
 		RIResetShader ();
 		glBlendFunc (GL_ONE, GL_ONE);
@@ -751,7 +761,7 @@ renderItems.bClientState = 0;
 
 void RIRenderSprite (tRISprite *item)
 {
-if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 0)) {
+if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 0, 0)) {
 	float		h, w, u, v;
 	fVector	fPos = item->position;
 
@@ -798,7 +808,7 @@ void RIRenderSphere (tRISphere *item)
 	int bDepthSort = gameOpts->render.bDepthSort;
 
 gameOpts->render.bDepthSort = -1;
-RISetClientState (0, 0, 0);
+RISetClientState (0, 0, 0, 0);
 RIResetShader ();
 if (item->nType == riSphereShield)
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
@@ -839,7 +849,7 @@ void RIRenderParticle (tRIParticle *item)
 if (item->particle->nType == 2)
 	RIRenderBullet (item->particle);
 else {
-	RISetClientState (0, 0, 0);
+	RISetClientState (0, 0, 0, 0);
 	RIResetShader ();
 	if (renderItems.nPrevType != riParticle) {
 		glEnable (GL_TEXTURE_2D);
@@ -861,7 +871,7 @@ void RIRenderLightning (tRILightning *item)
 {
 if (renderItems.bDepthMask)
 	glDepthMask (renderItems.bDepthMask = 0);
-RISetClientState (0, 0, 0);
+RISetClientState (0, 0, 0, 0);
 RIResetShader ();
 RenderLightning (item->lightning, item->nLightnings, item->nDepth, 0);
 renderItems.bmP = NULL;
@@ -875,7 +885,7 @@ void RIRenderLightningSegment (tRILightningSegment *item)
 {
 if (renderItems.bDepthMask)
 	glDepthMask (renderItems.bDepthMask = 0);
-RISetClientState (0, 0, 0);
+RISetClientState (0, 0, 0, 0);
 RIResetShader ();
 RenderLightningSegment (item->vLine, item->vPlasma, &item->color, item->bPlasma, item->bStart, item->bEnd, item->nDepth);
 if (item->bPlasma) {
@@ -893,8 +903,8 @@ if (!renderItems.bDepthMask)
 glBlendFunc (GL_ONE, GL_ONE);
 glColor3f (0.75f, 0.75f, 0.75f);
 glDisable (GL_CULL_FACE);
-#if 0
-if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1, 1, 0)) {
+#if 1
+if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1, 1, 0, 0)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	if (item->bFlame)
@@ -903,7 +913,7 @@ if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1, 1, 0)) {
 	}
 else 
 #endif
-if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 0, 1, 0)) {
+if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 0, 1, 0, 0)) {
 	int i;
 	if (item->bFlame) {
 		glBegin (GL_TRIANGLES);

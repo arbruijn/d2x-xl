@@ -228,6 +228,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	nDbgSeg = nDbgSeg;
 #endif
 nLights = SetNearestFaceLights (faceP, bTextured);
+nLights = 0;
 OglEnableLighting (0);
 glDisable (GL_LIGHTING);
 activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameData.render.lights.dynamic.shader.nFirstLight [0];
