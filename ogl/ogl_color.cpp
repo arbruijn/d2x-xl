@@ -28,7 +28,7 @@
 #include "ogl_color.h"
 
 #define CHECK_LIGHT_VERT 1
-#define BRIGHT_SHOTS 1
+#define BRIGHT_SHOTS 0
 
 #ifdef _DEBUG
 #	define ONLY_HEADLIGHT 0
@@ -387,18 +387,14 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 #if BRIGHT_SHOTS
 		if (nType == 2)
-			fAttenuation = 1.0f + 0.05f * fLightDist + 0.005f * fLightDist * fLightDist;
+			fAttenuation = (1.0f + 0.05f * fLightDist + 0.005f * fLightDist * fLightDist);
 		else
 #endif
-			fAttenuation = 1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist;
+			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist);
+		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+		if ((psl->rad > 0))
+			NdotL += (1.0f - NdotL) / fAttenuation;
 		fAttenuation /= psl->brightness;
-		if (vcd.vertNorm.p.x == 0 && vcd.vertNorm.p.y == 0 && vcd.vertNorm.p.z == 0) 
-			NdotL = 0;
-		else {
-			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-			if ((psl->rad > 0))
-				NdotL += (1.0f - NdotL) / fAttenuation;
-			}
 		}
 //	fAttenuation = fLightDist / psl->brightness;
 	if (psl->bSpot) {
@@ -416,23 +412,17 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		fAttenuation /= spotEffect * 10;
 		VmVecScaleAdd (&vertColor, &gameData.render.vertColor.matAmbient.v3, &gameData.render.vertColor.matDiffuse.v3, NdotL);
 		}
-	else if (NdotL < 0) {
-		NdotL = 0;
-		VmVecInc (&vertColor, &gameData.render.vertColor.matAmbient.v3);
-		}
 	else {
-		//vertColor = lightColor * (gl_FrontMaterial.diffuse * NdotL + matAmbient);
-		VmVecScaleAdd (&vertColor, &gameData.render.vertColor.matAmbient.v3, &gameData.render.vertColor.matDiffuse.v3, NdotL);
+		vertColor = gameData.render.vertColor.matAmbient.v3;
+		if (NdotL < 0)
+			NdotL = 0;
+		else
+			//vertColor = lightColor * (matAmbient + gl_FrontMaterial.diffuse * NdotL);
+			VmVecScaleInc (&vertColor, &gameData.render.vertColor.matDiffuse.v3, NdotL);
 		}
 	VmVecMul (&vertColor, &vertColor, &lightColor);
 	if ((NdotL > 0.0) && vcd.fMatShininess/* && vcd.bMatSpecular */) {
 		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
-#if 1
-		lightPos = vertPos;
-#else
-		VmVecNegate (&lightPos);	//create vector from light to eye
-		VmVecNormalize (&lightPos, &lightPos);
-#endif
 		if (!psl->bSpot)	//need direction from light to vertex now
 			VmVecNegate (&lightDir);
 		VmVecReflect (&vReflect, &lightDir, &vcd.vertNorm);
@@ -441,11 +431,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (nVertex == nDbgVertex)
 			nDbgVertex = nDbgVertex;
 #endif
-		RdotE = VmVecDot (&vReflect, &lightPos);
+		RdotE = VmVecDot (&vReflect, &vertPos);
 		if (RdotE > 0) {
 			//spec = pow (reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
-			VmVecScale (&lightColor, &lightColor, (float) pow (RdotE, vcd.fMatShininess));
-			VmVecInc (&vertColor, &lightColor);
+			VmVecScaleInc (&vertColor, &lightColor, (float) pow (RdotE, vcd.fMatShininess));
 			}
 		}
 	if (nSaturation < 2)	{//sum up color components
@@ -568,17 +557,14 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].
 		else {	//make it decay faster
 #if BRIGHT_SHOTS
 			if (nType == 2)
-				fAttenuation = (1.0f + 0.05f * fLightDist + 0.005f * fLightDist * fLightDist) / psl->brightness;
+				fAttenuation = (1.0f + 0.05f * fLightDist + 0.005f * fLightDist * fLightDist);
 			else
 #endif
-			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist) / psl->brightness;
-			if (vcd.vertNorm.p.x == 0 && vcd.vertNorm.p.y == 0 && vcd.vertNorm.p.z == 0) 
-				NdotL = 0;
-			else {
-				NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-				if ((psl->rad > 0))
-					NdotL += (1.0f - NdotL) / fAttenuation;
-				}
+			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist);
+			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+			if ((psl->rad > 0))
+				NdotL += (1.0f - NdotL) / fAttenuation;
+			fAttenuation /= psl->brightness;
 			}
 		}
 	if (!bInRad && (psl->rad > 0))
@@ -618,30 +604,25 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].
 #if VECMAT_CALLS
 		VmVecScaleAdd (&vertColor, &gameData.render.vertColor.matAmbient, &gameData.render.vertColor.matDiffuse, NdotL);
 #else
-		vertColor.p.x = gameData.render.vertColor.matAmbient.p.x + /* gameData.render.vertColor.matDiffuse.p.x * */ NdotL;
-		vertColor.p.y = gameData.render.vertColor.matAmbient.p.y + /* gameData.render.vertColor.matDiffuse.p.y * */ NdotL;
-		vertColor.p.z = gameData.render.vertColor.matAmbient.p.z + /* gameData.render.vertColor.matDiffuse.p.z * */ NdotL;
-#endif
-		}
-	else if (NdotL < 0) {
-		NdotL = 0;
-#if VECMAT_CALLS
-		VmVecInc (&vertColor, &gameData.render.vertColor.matAmbient);
-#else
-		vertColor.p.x += gameData.render.vertColor.matAmbient.p.x;
-		vertColor.p.y += gameData.render.vertColor.matAmbient.p.y;
-		vertColor.p.z += gameData.render.vertColor.matAmbient.p.z;
+		vertColor.p.x = gameData.render.vertColor.matAmbient.p.x + gameData.render.vertColor.matDiffuse.p.x * NdotL;
+		vertColor.p.y = gameData.render.vertColor.matAmbient.p.y + gameData.render.vertColor.matDiffuse.p.y * NdotL;
+		vertColor.p.z = gameData.render.vertColor.matAmbient.p.z + gameData.render.vertColor.matDiffuse.p.z * NdotL;
 #endif
 		}
 	else {
+		vertColor.p = gameData.render.vertColor.matAmbient.v3.p;
+		if (NdotL < 0)
+			NdotL = 0;
+		else {
 		//vertColor = lightColor * (gl_FrontMaterial.diffuse * NdotL + matAmbient);
 #if VECMAT_CALLS
-		VmVecScaleAdd (&vertColor, &gameData.render.vertColor.matAmbient, &gameData.render.vertColor.matDiffuse, NdotL);
+			VmVecScaleInc (&vertColor, &gameData.render.vertColor.matDiffuse, NdotL);
 #else
-		vertColor.p.x = gameData.render.vertColor.matAmbient.p.x + /* gameData.render.vertColor.matDiffuse.p.x * */ NdotL;
-		vertColor.p.y = gameData.render.vertColor.matAmbient.p.y + /* gameData.render.vertColor.matDiffuse.p.y * */ NdotL;
-		vertColor.p.z = gameData.render.vertColor.matAmbient.p.z + /* gameData.render.vertColor.matDiffuse.p.z * */ NdotL;
+			vertColor.p.x += gameData.render.vertColor.matDiffuse.p.x * NdotL;
+			vertColor.p.y += gameData.render.vertColor.matDiffuse.p.y * NdotL;
+			vertColor.p.z += gameData.render.vertColor.matDiffuse.p.z * NdotL;
 #endif
+			}
 		}
 	vertColor.p.x *= lightColor.p.x;
 	vertColor.p.y *= lightColor.p.y;

@@ -666,7 +666,7 @@ for (i = 0; i < LM_W; i++)
 	fOffset [i] = (double) i / (double) (LM_W - 1);
 InitVertColorData (vcd);
 vcd.pVertPos = &vcd.vertPos;
-vcd.fMatShininess = 8;
+vcd.fMatShininess = 4;
 
 if (gameStates.app.bMultiThreaded)
 	nLastFace = nFace ? gameData.segs.nFaces : gameData.segs.nFaces / 2;
