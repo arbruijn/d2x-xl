@@ -764,7 +764,7 @@ if (left < r)
 
 static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight *psl, short nType, int nThread)
 {
-fix xDist = (psl->xDistance / 2000 + 5) / 10;
+fix xDist = (psl->xDistance / 10000 + 5) / 10;
 if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
 if (xDist < 0)
@@ -821,7 +821,7 @@ void SetNearestVertexLights (int nVertex, vmsVector *vNormalP, ubyte nType, int 
 	tShaderLight			*psl;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
-	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
+	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE;// * (gameOpts->ogl.bPerPixelLighting * 3 + 1);
 
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -914,7 +914,7 @@ if (gameData.render.lights.dynamic.shader.nActiveLights [0]) {
 		gameData.render.lights.dynamic.shader.nActiveLights [0] = MAX_LIGHTS_PER_PIXEL;
 		}
 	}
-#else
+#elif 0
 if (gameData.render.lights.dynamic.shader.nActiveLights [0] > MAX_LIGHTS_PER_PIXEL)
 	gameData.render.lights.dynamic.shader.nActiveLights [0] = MAX_LIGHTS_PER_PIXEL;
 #endif
@@ -1003,7 +1003,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameOpts->render.bDynLighting) {
 	short						h, i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
-	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
+	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE;// * (gameOpts->ogl.bPerPixelLighting * 3 + 1);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
@@ -1070,7 +1070,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameOpts->render.bDynLighting) {
 	int						nLightSeg;
 	short						h, i = gameData.render.lights.dynamic.shader.nLights;
-	fix						xMaxLightRange = fl2f (fLightRad) + MAX_LIGHT_RANGE * 2 /*(gameOpts->ogl.bPerPixelLighting + 1)*/;
+	fix						xMaxLightRange = fl2f (fLightRad) + MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
@@ -1735,19 +1735,19 @@ char *pszPPLMLightingVS [] = {
 char *pszLMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"void main() {\r\n" \
-	"gl_FragColor = color = texture2D (lMapTex, gl_TexCoord [0].xy) * bStaticColor;\r\n" \
+	"gl_FragColor = color = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * bStaticColor;\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"	gl_FragColor = min (vec4 (1.1, 1.1, 1.1, 1.0), texColor * color);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * bStaticColor;\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -1760,7 +1760,7 @@ char *pszLMLightingFS [] = {
 	"if (bMask < 0.5)\r\n" \
 	"  discard;\r\n" \
 	"else {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * bStaticColor;\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \

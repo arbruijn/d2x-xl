@@ -647,6 +647,10 @@ for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 			h = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
 		for (iLight = 0; (h > 0) && (iLight < 8) && nLights; activeLightsP++, h--) { 
 #ifdef _DEBUG
+			if (activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0] >= MAX_SHADER_LIGHTS)
+				break;
+			if (activeLightsP < gameData.render.lights.dynamic.shader.activeLights [0])
+				break;
 			if (gameData.render.lights.dynamic.shader.nActiveLights [0] <= 0)
 				h = h;
 #endif
