@@ -674,8 +674,8 @@ else
 //Next Go through each surface and create a lightmap for it.
 for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 #ifdef _DEBUG
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
 #endif
 	sideP = SEGMENTS [faceP->nSegment].sides + faceP->nSide;
 	memcpy (sideVerts, faceP->index, sizeof (sideVerts));

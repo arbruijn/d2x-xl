@@ -328,7 +328,7 @@ if (faceP && gameOpts->ogl.bPerPixelLighting) {
 		}
 	if (nShader != gameStates.render.history.nShader) {
 		glUseProgramObject (0);
-		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nLights ? nLights - 1 : 0][nType]);
+		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nLights][nType]);
 		if (bLightMaps)
 			glUniform1i (glGetUniformLocation (tmProg, "lMapTex"), 0);
 		if (bTextured) {

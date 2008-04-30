@@ -138,6 +138,10 @@ if (nLight >= 0) {
 		pc = &pl->color;
 	if (nObject >= 0)
 		pl->vPos = OBJECTS [nObject].position.vPos;
+#if 1
+	if (gameOpts->ogl.bPerPixelLighting && (pl->nType < 2))
+		brightness /= 2;
+#endif
 	if ((pl->brightness != brightness) || 
 		 (pl->color.red != pc->red) || (pl->color.green != pc->green) || (pl->color.blue != pc->blue)) {
 		SetDynLightColor (nLight, pc->red, pc->green, pc->blue, brightness);
@@ -386,6 +390,9 @@ else if (nSegment >= 0) {
 		VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
 		VmVecScaleFrac (&vOffs, 1, 4);
 		VmVecInc (&pl->vPos, &vOffs);
+#	if 1
+		xBrightness /= 2;
+#	endif
 		}
 #endif
 	}
@@ -767,7 +774,7 @@ if (left < r)
 
 static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight *psl, short nType, int nThread)
 {
-fix xDist = (psl->xDistance / 10000 + 5) / 10;
+fix xDist = (psl->xDistance / 2000 + 5) / 10;
 if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
 if (xDist < 0)
