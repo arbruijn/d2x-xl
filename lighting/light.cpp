@@ -386,11 +386,7 @@ if (objP && SHOW_DYN_LIGHT) {
 			}
 		if (gameData.render.vertColor.bDarkness)
 			return;
-#ifdef _DEBUG
-		xObjIntensity = 0;
-#else
 		xObjIntensity /= 4;
-#endif
 		}
 	else if (objP->nType == OBJ_POWERUP) {
 		if (!EGI_FLAG (bPowerupLights, 0, 0, 0)) {
@@ -566,7 +562,7 @@ fix	objLightXlat [16] =
 	 0x2123, 0x39af, 0x0f03, 0x132a,
 	 0x3123, 0x29af, 0x1f03, 0x032a};
 
-fix ComputeLightIntensity (int nObject, tRgbaColorf *color, char *pbGotColor)
+fix ComputeLightIntensity (int nObject, tRgbaColorf *colorP, char *pbGotColor)
 {
 	tObject		*objP = gameData.objs.objects + nObject;
 	int			nObjType = objP->nType;
@@ -574,10 +570,11 @@ fix ComputeLightIntensity (int nObject, tRgbaColorf *color, char *pbGotColor)
 	static tRgbaColorf powerupColors [9] = {
 		{0,1,0,1},{1,0.8f,0,1},{0,0,1,1},{1,1,1,1},{0,0,1,1},{1,0,0,1},{1,0.8f,0,1},{0,1,0,1},{1,0.8f,0,1}
 	};
+	static tRgbaColorf missileColor = {1,0.3f,0,1};
 
-color->red =
-color->green =
-color->blue = 1.0;
+colorP->red =
+colorP->green =
+colorP->blue = 1.0;
 *pbGotColor = 0;
 switch (nObjType) {
 	case OBJ_PLAYER:
@@ -619,29 +616,29 @@ switch (nObjType) {
 			int i, j;
 			grsBitmap *bmP;
 			if ((bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + vcP->frames [0].index))) {
-				color->red = (float) bmP->bmAvgRGB.red;
-				color->green = (float) bmP->bmAvgRGB.green;
-				color->blue = (float) bmP->bmAvgRGB.blue;
+				colorP->red = (float) bmP->bmAvgRGB.red;
+				colorP->green = (float) bmP->bmAvgRGB.green;
+				colorP->blue = (float) bmP->bmAvgRGB.blue;
 				*pbGotColor = 1;
 				}
 			else {
-				color->red =
-				color->green =
-				color->blue = 0.0f;
+				colorP->red =
+				colorP->green =
+				colorP->blue = 0.0f;
 				for (i = j = 0; i < vcP->nFrameCount; i++) {
 					bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [i].index;
 					if (bmP->bmAvgRGB.red + bmP->bmAvgRGB.green + bmP->bmAvgRGB.blue == 0)
 						if (!BitmapColor (bmP, bmP->bmTexBuf))
 							continue;
-					color->red += (float) bmP->bmAvgRGB.red / 255.0f;
-					color->green += (float) bmP->bmAvgRGB.green / 255.0f;
-					color->blue += (float) bmP->bmAvgRGB.blue / 255.0f;
+					colorP->red += (float) bmP->bmAvgRGB.red / 255.0f;
+					colorP->green += (float) bmP->bmAvgRGB.green / 255.0f;
+					colorP->blue += (float) bmP->bmAvgRGB.blue / 255.0f;
 					j++;
 					}
 				if (j) {
-					color->red /= j;
-					color->green /= j;
-					color->blue /= j;
+					colorP->red /= j;
+					colorP->green /= j;
+					colorP->blue /= j;
 					*pbGotColor = 1;
 					}
 				}
@@ -649,15 +646,15 @@ switch (nObjType) {
 			if (objP->renderType != RT_THRUSTER)
 				xLight /= 8;
 #endif
-			float maxColor = color->red;
-			if (maxColor < color->green)
-				maxColor = color->green;
-			if (maxColor < color->blue)
-				maxColor = color->blue;
+			float maxColor = colorP->red;
+			if (maxColor < colorP->green)
+				maxColor = colorP->green;
+			if (maxColor < colorP->blue)
+				maxColor = colorP->blue;
 			if (maxColor > 1) {
-				color->red /= maxColor;
-				color->green /= maxColor;
-				color->blue /= maxColor;
+				colorP->red /= maxColor;
+				colorP->green /= maxColor;
+				colorP->blue /= maxColor;
 				}
 			if (objP->lifeleft < F1_0*4)
 				return FixMul (FixDiv (objP->lifeleft, 
@@ -678,10 +675,12 @@ switch (nObjType) {
 
 	case OBJ_WEAPON: {
 		fix tval = gameData.weapons.info [objP->id].light;
-		if (gameOpts->render.color.bGunLight)
-			*color = gameData.weapons.color [objP->id];
+		if (gameData.objs.bIsMissile [objP->id])
+			*colorP = missileColor;
+		else if (gameOpts->render.color.bGunLight)
+			*colorP = gameData.weapons.color [objP->id];
 		*pbGotColor = 1;
-		if (gameData.app.nGameMode & GM_MULTI)
+		if (IsMultiGame)
 			if (objP->id == OMEGA_ID)
 				if (d_rand () > 8192)
 					return 0;		//	3/4 of time, omega blobs will cast 0 light!
@@ -697,16 +696,16 @@ switch (nObjType) {
 		lightval = 8 * abs (F1_0/2 - lightval);
 		if (objP->lifeleft < F1_0*1000)
 			objP->lifeleft += F1_0;	//	Make sure this tObject doesn't go out.
-		color->red = 0.1f;
-		color->green = 1.0f;
-		color->blue = 0.1f;
+		colorP->red = 0.1f;
+		colorP->green = 1.0f;
+		colorP->blue = 0.1f;
 		*pbGotColor = 1;
 		return lightval;
 		}
 
 	case OBJ_POWERUP:
 		if (objP->id < 9)
-			*color = powerupColors [objP->id];
+			*colorP = powerupColors [objP->id];
 		*pbGotColor = 1;
 		return gameData.objs.pwrUp.info [objP->id].light;
 		break;

@@ -273,7 +273,7 @@ for (nLights = 0;
 if (!nLightRange)
 	gameStates.ogl.iLight = gameStates.ogl.nLights;
 gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
-#ifdef _DEBUG
+#if 0//def _DEBUG
 for (int i = nLights; i < MAX_LIGHTS_PER_PIXEL; i++) {
 #if 1
 	glDisable (GL_LIGHT0 + i);

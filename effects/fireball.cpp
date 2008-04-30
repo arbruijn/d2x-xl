@@ -322,7 +322,7 @@ return explObjP;
 //------------------------------------------------------------------------------
 //blows up a xBadAss weapon, creating the xBadAss explosion
 //return the explosion tObject
-tObject *ExplodeBadassWeapon (tObject *objP, vmsVector *pos)
+tObject *ExplodeBadassWeapon (tObject *objP, vmsVector *vPos)
 {
 	tWeaponInfo *wi = &gameData.weapons.info [objP->id];
 
@@ -330,7 +330,16 @@ Assert (wi->damage_radius);
 if ((objP->id == EARTHSHAKER_ID) || (objP->id == ROBOT_EARTHSHAKER_ID))
 	ShakerRockStuff ();
 DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0, SOUNDCLASS_EXPLOSION);
-return ObjectCreateBadassExplosion (objP, objP->nSegment, pos, 
+vmsVector v;
+if (gameOpts->ogl.bPerPixelLighting) { //make sure explosion center is not behind some wall
+	VmVecSub (&v, &objP->vLastPos, &objP->position.vPos);
+	VmVecNormalize (&v, &v);
+//VmVecScale (&v, F1_0 * 10);
+	VmVecInc (&v, vPos);
+	}
+else
+	v = *vPos;
+return ObjectCreateBadassExplosion (objP, objP->nSegment, &v, //objP->vLastPos, //vPos
                                     wi->impact_size, 
                                     wi->robot_hit_vclip, 
                                     wi->strength [gameStates.app.nDifficultyLevel], 

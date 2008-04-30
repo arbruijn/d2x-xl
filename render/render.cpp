@@ -1263,6 +1263,8 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0)) {
   
 StartLightingFrame (gameData.objs.viewer);		//this is for ugly light-smoothing hack
 gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
+if (!nWindow)
+	gameData.render.dAspect = (double) grdCurCanv->cvBitmap.bmProps.w / (double) grdCurCanv->cvBitmap.bmProps.h;
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
 SetRenderView (nEyeOffset, &nStartSeg, 1);
 gameStates.render.nStartSeg = nStartSeg;
