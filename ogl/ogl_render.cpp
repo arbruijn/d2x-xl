@@ -480,7 +480,7 @@ if (bShaderMerge) {
 	if (bmMask) {
 #ifdef _DEBUG
 		InitTMU2 (bVertexArrays);
-		G3_BIND (GL_TEXTURE2, bmMask, bVertexArrays);
+		G3_BIND (GL_TEXTURE2, bmMask, lightMapData.buffers, bVertexArrays);
 #else
 		INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, lightMapData.buffers, bVertexArrays, 0);
 #endif
