@@ -1115,6 +1115,7 @@ if ((t = FindArg ("-maxfps"))) {
 		t = 250;
 	gameOpts->render.nMaxFPS = t;
 	}
+#ifdef _DEBUG
 if ((t = FindArg ("-maxLightsPerPass"))) {
 	t = NumArg (t, 1);
 	if (t < 1)
@@ -1123,6 +1124,7 @@ if ((t = FindArg ("-maxLightsPerPass"))) {
 		t = 8;
 	gameStates.render.nMaxLightsPerPass = t;
 	}
+#endif
 #if RENDER2TEXTURE
 if ((t = FindArg ("-render2texture")))
 	gameStates.ogl.bUseRender2Texture = NumArg (t, 1);
@@ -2103,6 +2105,7 @@ gameStates.render.detail.nObjectDetail = 2;
 gameStates.render.detail.nWallDetail = 2; 
 gameStates.render.detail.nWallRenderDepth = 2; 
 gameStates.render.detail.nDebrisAmount = 2; 
+gameStates.render.nMaxLightsPerPass = 1;
 }
 
 // ----------------------------------------------------------------------------

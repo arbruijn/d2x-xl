@@ -218,6 +218,7 @@ extern GLhandleARB perPixelLightingShaderProgs [MAX_LIGHTS_PER_PIXEL][4];
 int G3SetupPerPixelLighting (grsFace *faceP, int bColorKey, int bMultiTexture, int bTextured)
 {
 	int						nLightRange, nLights;
+	float						fBrightness;
 	tRgbaColorf				ambient, diffuse;
 	tRgbaColorf				black = {0,0,0,0};
 	tRgbaColorf				specular = {0.5f,0.5f,0.5f,0.5f};
@@ -244,30 +245,40 @@ for (nLights = 0;
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
 	hLight = GL_LIGHT0 + nLights++;
-	ambient.red = psl->color.c.r * 0.05f;
-	ambient.green = psl->color.c.g * 0.05f;
-	ambient.blue = psl->color.c.b * 0.05f;
-	ambient.alpha = 1.0f;
-	diffuse.red = psl->color.c.r * 0.95f;
-	diffuse.green = psl->color.c.g * 0.95f;
-	diffuse.blue = psl->color.c.b * 0.95f;
-	diffuse.alpha = 1.0f;
 	glEnable (hLight);
 	specular.alpha = (psl->nSegment >= 0) ? psl->rad : 0; //krasser Missbrauch!
-	glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->pos));
-	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &diffuse);
-	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &specular);
-	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &ambient);
+	fBrightness = psl->brightness;
 	if (psl->nType == 2) {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / psl->brightness);
-		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
+		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
+		ambient.red = psl->color.c.r * 0.05f;
+		ambient.green = psl->color.c.g * 0.05f;
+		ambient.blue = psl->color.c.b * 0.05f;
+		ambient.alpha = 1.0f;
+		diffuse.red = psl->color.c.r * 0.95f;
+		diffuse.green = psl->color.c.g * 0.95f;
+		diffuse.blue = psl->color.c.b * 0.95f;
+		diffuse.alpha = 1.0f;
 		}
 	else {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / psl->brightness);
-		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
+		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
+		ambient.red = psl->color.c.r * 0.025f;
+		ambient.green = psl->color.c.g * 0.025f;
+		ambient.blue = psl->color.c.b * 0.025f;
+		ambient.alpha = 1.0f;
+		fBrightness *= 0.475f;
+		diffuse.red = psl->color.c.r * fBrightness;
+		diffuse.green = psl->color.c.g * fBrightness;
+		diffuse.blue = psl->color.c.b * fBrightness;
+		diffuse.alpha = 1.0f;
 		}
+	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &diffuse);
+	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &specular);
+	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &ambient);
+	glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->pos));
 	gameStates.ogl.iLight++;
 	}
 if (!nLightRange)

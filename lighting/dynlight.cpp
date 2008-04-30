@@ -138,7 +138,7 @@ if (nLight >= 0) {
 		pc = &pl->color;
 	if (nObject >= 0)
 		pl->vPos = OBJECTS [nObject].position.vPos;
-#if 1
+#if 0
 	if (gameOpts->ogl.bPerPixelLighting && (pl->nType < 2))
 		brightness /= 2;
 #endif
@@ -390,7 +390,7 @@ else if (nSegment >= 0) {
 		VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
 		VmVecScaleFrac (&vOffs, 1, 4);
 		VmVecInc (&pl->vPos, &vOffs);
-#	if 1
+#	if 0
 		xBrightness /= 2;
 #	endif
 		}
@@ -1343,9 +1343,9 @@ char *pszPPXLightingFS [] = {
 	"					NdotL += (1.0 - NdotL) / att;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (vec4 (1.0, 1.0, 1.0, 1.0), color);\r\n" \
@@ -1375,9 +1375,9 @@ char *pszPPXLightingFS [] = {
 	"					NdotL += (1.0 - NdotL) / att;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
@@ -1409,9 +1409,9 @@ char *pszPPXLightingFS [] = {
 	"					NdotL += (1.0 - NdotL) / att;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
@@ -1447,9 +1447,9 @@ char *pszPPXLightingFS [] = {
 	"					NdotL += (1.0 - NdotL) / att;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			vec3 NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);}\r\n" \
@@ -1479,9 +1479,9 @@ char *pszPP1LightingFS [] = {
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
-	"		/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"		color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (vec4 (1.0, 1.0, 1.0, 1.0), color);\r\n" \
 	"	}"
@@ -1507,9 +1507,9 @@ char *pszPP1LightingFS [] = {
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
-	"		/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"		color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
 	"	}"
@@ -1537,9 +1537,9 @@ char *pszPP1LightingFS [] = {
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
-	"		/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"		color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
 	"	}"
@@ -1572,9 +1572,9 @@ char *pszPP1LightingFS [] = {
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
-	"		/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		vec3 NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"		color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);}\r\n" \
 	"	}"
@@ -1714,9 +1714,9 @@ char *pszPPLMXLightingFS [] = {
 	"					NdotL += (1.0 - NdotL) / att;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (vec4 (1.0, 1.0, 1.0, 1.0), color);\r\n" \
@@ -1746,9 +1746,9 @@ char *pszPPLMXLightingFS [] = {
 	"					NdotL += (1.0 - NdotL) / att;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
@@ -1780,9 +1780,9 @@ char *pszPPLMXLightingFS [] = {
 	"					NdotL += (1.0 - NdotL) / att;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
@@ -1818,9 +1818,9 @@ char *pszPPLMXLightingFS [] = {
 	"					NdotL += (1.0 - NdotL) / att;\r\n" \
 	"				color += (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"				}\r\n" \
-	"			/*vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			vec3 NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);}\r\n" \
@@ -1851,9 +1851,9 @@ char *pszPPLM1LightingFS [] = {
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"			}\r\n" \
-	"		/*vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
+	"		vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [0].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"		color += (gl_LightSource [0].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (vec4 (1.0, 1.0, 1.0, 1.0), color);\r\n" \
 	"	}"
@@ -1879,9 +1879,9 @@ char *pszPPLM1LightingFS [] = {
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"			}\r\n" \
-	"		/*vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
+	"		vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [0].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"		color += (gl_LightSource [0].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
 	"	}"
@@ -1909,9 +1909,9 @@ char *pszPPLM1LightingFS [] = {
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"			}\r\n" \
-	"		/*vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
+	"		vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [0].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"		color += (gl_LightSource [0].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
 	"	}"
@@ -1943,9 +1943,9 @@ char *pszPPLM1LightingFS [] = {
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"			}\r\n" \
-	"		/*vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
+	"		vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
 	"		vec3 NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [0].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
+	"		color += (gl_LightSource [0].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);}\r\n" \
 	"	}"
