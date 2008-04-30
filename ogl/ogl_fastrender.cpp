@@ -1137,7 +1137,7 @@ for (;;) {
 	G3SetupShader (faceP, bColorKey, bMultiTexture, bmBot != NULL, bColored, NULL);
 	glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 0.0f);
 	glEnable (GL_BLEND);
-	glBlendFunc (GL_ONE, GL_ONE);//_MINUS_SRC_COLOR);
+	glBlendFunc (GL_ONE, GL_ONE);
 	glDepthFunc (GL_EQUAL);
 	}
 

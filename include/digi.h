@@ -34,26 +34,16 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifdef _MSC_VER
 #	ifdef _DEBUG
-#		define USE_
-MIXER	1
+#		define USE_SDL_MIXER	1
 #	else
-#		define USE_
-MIXER	1
+#		define USE_SDL_MIXER	1
 #	endif
 #else
 #	include "conf.h"
-#	if !defined (USE_
-MIXER)
-#		define USE_
-MIXER	0
+#	if !defined (USE_SDL_MIXER)
+#		define USE_SDL_MIXER	0
 #	endif
 #endif
-
-/*
-#ifdef __DJGPP__
-#define ALLEGRO
-#endif
-*/
 
 #ifdef ALLEGRO
 #include "allg_snd.h"
@@ -84,15 +74,6 @@ typedef struct tDigiSound {
 #define SOUNDCLASS_LASER			4
 #define SOUNDCLASS_MISSILE			5
 #define SOUNDCLASS_EXPLOSION		6
-
-#ifdef __DJGPP__
-extern int digi_driver_board;
-extern int digi_driver_port;
-extern int digi_driver_irq;
-extern int digi_driver_dma;
-extern int digi_midiType;
-extern int digi_midi_port;
-#endif
 
 extern int digi_sample_rate;
 extern int digiVolume;

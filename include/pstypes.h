@@ -35,9 +35,8 @@ typedef unsigned int uint;
 #endif
 
 #if defined(_WIN32) || defined(__sun__) // platforms missing (u_)int??_t
-# include <
-types.h>
-#endif // macintosh
+# include <SDL_types.h>
+#endif
 #ifndef __MINGW32__
 #	if defined(_WIN32)// platforms missing int??_t
  		typedef Sint16 int16_t;
@@ -83,11 +82,6 @@ types.h>
 
 #ifdef __macosx__
 #define ushort unsigned short
-#endif
-
-#if !defined(__cplusplus) && !defined(__obj_c)
-//define a boolean
-typedef ubyte int;
 #endif
 
 #ifndef NULL

@@ -119,14 +119,11 @@
 /* Define if you want an SVGALib build */
 /* #undef SVGA */
 
-/* define to not use the 
-Joystick routines. */
+/* define to not use the SDL_Joystick routines. */
 /* #undef USE_LINUX_JOY */
 
-/* Define to enable MIDI playback using 
-mixer */
-#define USE_
-MIXER 1
+/* Define to enable MIDI playback using SDL_mixer */
+#define USE_SDL_MIXER 1
 
 /* Version number of package */
 #define VERSION "1.12.87"
@@ -164,28 +161,22 @@ MIXER 1
 #   define SVGALIB_INPUT 1
 #   define SVGALIB_VIDEO 1
 #  else
-#   define 
-INPUT 1
+#   define SDL_INPUT 1
 #   ifdef OGL
-#    define 
-GL_VIDEO 1
+#    define SDL_GL_VIDEO 1
 #   else
-#    define 
-VIDEO 1
+#    define SDL_VIDEO 1
 #   endif
 #  endif
 # endif
 #endif
 
 #ifdef _WIN32
-# define 
-INPUT 1
+# define SDL_INPUT 1
 # ifdef OGL
-#  define 
-GL_VIDEO 1
+#  define SDL_GL_VIDEO 1
 # else
-#  define 
-VIDEO 1
+#  define SDL_VIDEO 1
 # endif
 #endif
         

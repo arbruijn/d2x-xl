@@ -1382,10 +1382,8 @@ void LoadGameTexts(void);
 #define TXT_BAN2						GT(590)
 #define TXT_MOVE2						GT(591)
 #define TXT_CRIPPLED					GT(592)
-#define TXT_
-OPEN_AUDIO			GT(593)
-#define TXT_
-INIT_LIB			GT(594)
+#define TXT_SDL_OPEN_AUDIO			GT(593)
+#define TXT_SDL_INIT_LIB			GT(594)
 #define TXT_CDROM_NONE				GT(595)
 #define TXT_CDROM_OPEN				GT(596)
 #define TXT_EXIT_TERRAIN			GT(597)
@@ -1425,10 +1423,8 @@ INIT_LIB			GT(594)
 #define TXT_FONT_FILE				GT(630)
 #define TXT_FONT_FILETYPE			GT(631)
 #define TXT_PAL_FILES				GT(632)
-#define TXT_
-INIT_AUDIO			GT(633)
-#define TXT_
-INIT_VIDEO			GT(634)
+#define TXT_SDL_INIT_AUDIO			GT(633)
+#define TXT_SDL_INIT_VIDEO			GT(634)
 #define TXT_HUD_BURN					GT(635)
 #define TXT_SHORT_FLASH				GT(636)
 #define TXT_SHORT_GUIDED			GT(637)

@@ -219,8 +219,7 @@ extern PFNGLACTIVESTENCILFACEEXTPROC	glActiveStencilFaceEXT;
 #	endif
 
 #	ifndef _WIN32
-#	define	wglGetProcAddress	
-GL_GetProcAddress
+#	define	wglGetProcAddress	SDL_GL_GetProcAddress
 #	endif
 
 #endif

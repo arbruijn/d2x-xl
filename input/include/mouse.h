@@ -11,29 +11,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- * $Source: /cvs/cvsroot/d2x/arch/include/mouse.h,v $
- * $Revision: 1.4 $
- * $Author: bradleyb $
- * $Date: 2001/11/14 11:02:55 $
- *
- * Header for mouse functions
- *
- * $Log: mouse.h,v $
- * Revision 1.4  2001/11/14 11:02:55  bradleyb
- * use mouse wheel to emulate 3rd axis
- *
- * Revision 1.3  2001/10/12 00:18:37  bradleyb
- * Switched from Cygwin to mingw32 on MS boxes.  Vastly improved compilability.
- *
- * Revision 1.2  2001/01/31 16:31:13  bradleyb
- * OpenGL support under Cygwin/SDL
- *
- * Revision 1.1  2001/01/28 05:46:33  bradleyb
- * Unified arch headers
- *
- */
-
 #ifndef MOUSE_H
 #define MOUSE_H
 
@@ -67,8 +44,7 @@ void MouseFlush (void);	// clears all mice events...
 // Shutdowns mouse system.
 void MouseGetPos (int *x, int *y);
 void MouseGetDelta (int *dx, int *dy);
-#ifdef 
-INPUT
+#ifdef SDL_INPUT
 void MouseGetPosZ (int *x, int *y, int *z);
 void MouseGetDeltaZ (int *dx, int *dy, int *dz);
 #endif
@@ -106,3 +82,4 @@ typedef struct tMouseInfo {
 extern tMouseInfo mouseData;
 
 #endif
+	

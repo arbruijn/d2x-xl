@@ -651,8 +651,6 @@ for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 				break;
 			if (activeLightsP < gameData.render.lights.dynamic.shader.activeLights [0])
 				break;
-			if (gameData.render.lights.dynamic.shader.nActiveLights [0] <= 0)
-				h = h;
 #endif
 			if (nLights < 0) {
 				tFaceColor *psc = AvgSgmColor (objP->nSegment, NULL);

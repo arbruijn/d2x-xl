@@ -62,10 +62,8 @@ don't. */
 #define OGL_ZBUF 1
 
 
-/* Define if you have the 
-image library */
-/* #undef 
-IMAGE */
+/* Define if you have the SDL_image library */
+/* #undef SDL_IMAGE */
 
 /* Define this to be the shared game directory root */
 #define SHAREPATH "/usr/local/share/games/d2x-xl"
@@ -77,7 +75,5 @@ IMAGE */
 #define PIGGY_USE_PAGING 1
 #define NEWDEMO 1
 
-#define 
-INPUT 1
-#define 
-GL_VIDEO 1
+#define SDL_INPUT 1
+#define SDL_GL_VIDEO 1
