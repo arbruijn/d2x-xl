@@ -913,6 +913,7 @@ typedef struct tRenderStates {
 	int nState;	//0: render geometry, 1: render objects
 	int nType;
 	int nFrameCount;
+	int nMaxLightsPerPass;
 	fix xZoom;
 	fix xZoomScale;
 	ubyte nRenderingType;
@@ -1269,6 +1270,7 @@ typedef struct tShaderLight {
 	float			spotExponent;
 	fix			xDistance;
 	short			nSegment;
+	short			nSide;
 	short			nObject;
 	short			nVerts [4];
 	ubyte			nType;

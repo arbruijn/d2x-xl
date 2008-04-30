@@ -2772,7 +2772,6 @@ void DoCockpitWindowView (int win, tObject *viewer, int bRearView, int user, cha
 	tGaugeBox *box;
 	int bRearViewSave = gameStates.render.bRearView;
 	int w, h, dx;
-	fix nZoomSave;
 
 if (HIDE_HUD)
 	return;

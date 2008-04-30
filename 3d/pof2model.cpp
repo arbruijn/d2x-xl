@@ -166,6 +166,7 @@ uvl = (tUVL *) (p + 30 + (nVerts | 1) * 2);
 VmVecFixToFloat (&n, pn);
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
+	Assert (pmv - pm->pFaceVerts < pm->nFaceVerts);
 	pmv->vertex = pm->pVerts [j];
 	pmv->texCoord.v.u = f2fl (uvl->u);
 	pmv->texCoord.v.v = f2fl (uvl->v);

@@ -1115,6 +1115,14 @@ if ((t = FindArg ("-maxfps"))) {
 		t = 250;
 	gameOpts->render.nMaxFPS = t;
 	}
+if ((t = FindArg ("-maxLightsPerPass"))) {
+	t = NumArg (t, 1);
+	if (t < 1)
+		t = 1;
+	else if (t > 8)
+		t = 8;
+	gameStates.render.nMaxLightsPerPass = t;
+	}
 #if RENDER2TEXTURE
 if ((t = FindArg ("-render2texture")))
 	gameStates.ogl.bUseRender2Texture = NumArg (t, 1);

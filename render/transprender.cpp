@@ -520,20 +520,22 @@ return AddRenderItem (riThruster, &item, sizeof (item), fl2f (z), fl2f (z));
 
 //------------------------------------------------------------------------------
 
-int RISetClientState (char bClientState, char bTexCoord, char bColor, char bLightMaps)
+int RISetClientState (char bClientState, char bTexCoord, char bColor, char bUseLightMaps)
 {
-if (renderItems.bLightMaps != bLightMaps) {
-	glActiveTexture (GL_TEXTURE0);
-	glClientActiveTexture (GL_TEXTURE0);
-	if (bLightMaps)
+if (renderItems.bUseLightMaps != bUseLightMaps) {
+	if (bUseLightMaps) {
+		glActiveTexture (GL_TEXTURE0);
+		glClientActiveTexture (GL_TEXTURE0);
 		glEnable (GL_TEXTURE_2D);
-	else
-		glDisable (GL_TEXTURE_2D);
-	renderItems.bLightMaps = bLightMaps;
+		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+		glDisableClientState (GL_COLOR_ARRAY);
+		glEnableClientState (GL_VERTEX_ARRAY);
+		}
+	renderItems.bUseLightMaps = bUseLightMaps;
 	}
 if (renderItems.bClientState == bClientState) {
 	if (bClientState) {
-		glClientActiveTexture (GL_TEXTURE0 + renderItems.bLightMaps);
+		glClientActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 		if (renderItems.bClientTexCoord != bTexCoord) {
 			if ((renderItems.bClientTexCoord = bTexCoord))
 				glEnableClientState (GL_TEXTURE_COORD_ARRAY);
@@ -551,7 +553,7 @@ if (renderItems.bClientState == bClientState) {
 	}
 else if (bClientState) {
 	renderItems.bClientState = 1;
-	glClientActiveTexture (GL_TEXTURE0 + renderItems.bLightMaps);
+	glClientActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 	if (!G3EnableClientState (GL_VERTEX_ARRAY, -1))
 		return 0;
 	if (bTexCoord) {
@@ -576,8 +578,8 @@ else if (bClientState) {
 		glDisableClientState (GL_COLOR_ARRAY);
 	}
 else {
-	glActiveTexture (GL_TEXTURE0 + renderItems.bLightMaps);
-	glClientActiveTexture (GL_TEXTURE0 + renderItems.bLightMaps);
+	glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
+	glClientActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 	if (renderItems.bClientTexCoord) {
 		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 		renderItems.bClientTexCoord = 0;
@@ -606,10 +608,10 @@ if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
 //------------------------------------------------------------------------------
 
 int LoadRenderItemImage (grsBitmap *bmP, char nColors, char nFrame, int nWrap, 
-								 int bClientState, int nTransp, int bShader, int bLightMaps)
+								 int bClientState, int nTransp, int bShader, int bUseLightMaps)
 {
 if (bmP) {
-	if (RISetClientState (bClientState, 1, nColors > 1, bLightMaps) || (renderItems.bTextured < 1)) {
+	if (RISetClientState (bClientState, 1, nColors > 1, bUseLightMaps) || (renderItems.bTextured < 1)) {
 		glEnable (GL_TEXTURE_2D);
 		//glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		renderItems.bTextured = 1;
@@ -629,7 +631,7 @@ if (bmP) {
 			OGL_BINDTEX (0);
 		}
 	}
-else if (RISetClientState (bClientState, 0, nColors > 1, bLightMaps) || renderItems.bTextured) {
+else if (RISetClientState (bClientState, 0, nColors > 1, bUseLightMaps) || renderItems.bTextured) {
 	glDisable (GL_TEXTURE_2D);
 	renderItems.bTextured = 0;
 	}
@@ -964,7 +966,8 @@ renderItems.bClientState = -1;
 renderItems.bClientTexCoord = 0;
 renderItems.bClientColor = 0;
 renderItems.bDepthMask = 0;
-renderItems.bLightMaps = gameOpts->ogl.bPerPixelLighting;
+renderItems.bUseLightMaps = 0;
+renderItems.bLightMaps = HaveLightMaps ();
 renderItems.nWrap = 0;
 renderItems.nFrame = -1;
 renderItems.bmP = NULL;
@@ -972,6 +975,7 @@ renderItems.nItems = ITEM_BUFFER_SIZE - renderItems.nFreeItems;
 G3DisableClientStates (1, 1, 0, GL_TEXTURE2 + renderItems.bLightMaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE1 + renderItems.bLightMaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + renderItems.bLightMaps);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 pl = renderItems.pItemList + ITEM_BUFFER_SIZE - 1;
 bParticles = LoadParticleImages ();
 glEnable (GL_BLEND);

@@ -565,7 +565,6 @@ lmiP = lightMapData.info;
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++) {
 	if (pl->nType || (pl->bVariable && !bVariable))
 		continue;
-	pl->bOn = 0; //replaced by lightmaps
 	if (faceP == pl->faceP)
 		continue;
 	faceP = pl->faceP;

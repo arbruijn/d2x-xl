@@ -239,7 +239,7 @@ glDisable (GL_LIGHTING);
 activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameStates.ogl.nFirstLight;
 nLightRange = gameData.render.lights.dynamic.shader.nLastLight [0] - gameStates.ogl.nFirstLight + 1;
 for (nLights = 0; 
-	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < MAX_PP_LIGHTS_PER_PASS); 
+	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < gameStates.render.nMaxLightsPerPass); 
 	  activeLightsP++, nLightRange--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
@@ -308,7 +308,7 @@ if (!gameStates.ogl.bShadersOk)
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if (gameOpts->ogl.bPerPixelLighting) {
+if (faceP && gameOpts->ogl.bPerPixelLighting) {
 	//per pixel lighting
 	bStaticColor = (gameStates.ogl.iLight == 0);
 	if ((nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTextured)))
@@ -1147,6 +1147,7 @@ for (;;) {
 	glDepthFunc (GL_EQUAL);
 	}
 glDepthFunc (GL_LEQUAL);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 if (bMonitor) {
 #ifdef _DEBUG

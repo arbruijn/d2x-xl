@@ -405,8 +405,12 @@ if (objP && SHOW_DYN_LIGHT) {
 		}
 	else if (objP->nType == OBJ_ROBOT)
 		xObjIntensity /= 4;
-	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
-		xObjIntensity /= 2; 
+	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
+		if (gameOpts->ogl.bPerPixelLighting)
+			xObjIntensity = (fix) sqrt ((float) xObjIntensity);
+		else
+			xObjIntensity /= 2; 
+		}
 	if (0 > (nLightObj = gameData.objs.lightObjs [nObject].nObject))
 		lightObjP = NULL;
 	else
