@@ -386,7 +386,11 @@ if (objP && SHOW_DYN_LIGHT) {
 			}
 		if (gameData.render.vertColor.bDarkness)
 			return;
+#ifdef _DEBUG
+		xObjIntensity = 0;
+#else
 		xObjIntensity /= 4;
+#endif
 		}
 	else if (objP->nType == OBJ_POWERUP) {
 		if (!EGI_FLAG (bPowerupLights, 0, 0, 0)) {

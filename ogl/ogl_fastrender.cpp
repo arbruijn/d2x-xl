@@ -44,6 +44,9 @@
 #include "transprender.h"
 #include "gameseg.h"
 
+#define MAX_PP_LIGHTS_PER_FACE 32
+#define MAX_PP_LIGHTS_PER_PASS 1
+
 //------------------------------------------------------------------------------
 
 GLhandleARB gsShaderProg = 0;
@@ -236,7 +239,7 @@ glDisable (GL_LIGHTING);
 activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameStates.ogl.nFirstLight;
 nLightRange = gameData.render.lights.dynamic.shader.nLastLight [0] - gameStates.ogl.nFirstLight + 1;
 for (nLights = 0; 
-	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < 1 /*MAX_LIGHTS_PER_PIXEL*/); 
+	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < MAX_PP_LIGHTS_PER_PASS); 
 	  activeLightsP++, nLightRange--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
@@ -272,12 +275,16 @@ if (!nLightRange)
 gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
 #ifdef _DEBUG
 for (int i = nLights; i < MAX_LIGHTS_PER_PIXEL; i++) {
+#if 1
+	glDisable (GL_LIGHT0 + i);
+#else
 	hLight = GL_LIGHT0 + i;
 	glEnable (hLight);
 	glLightfv (hLight, GL_POSITION, (GLfloat *) &vPos);
 	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &black);
 	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &black);
 	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &black);
+#endif
 	}
 #endif
 if (InitPerPixelLightingShader (bColorKey ? 3 : bMultiTexture ? 2 : bTextured, nLights))
@@ -292,7 +299,7 @@ int G3SetupShader (grsFace *faceP, int bColorKey, int bMultiTexture, int bTextur
 {
 	static grsBitmap	*nullBmP = NULL;
 
-	int			oglRes, bLightMaps, nLights, nType, nShader = gameStates.render.history.nShader;
+	int			oglRes, bLightMaps, bStaticColor, nLights, nType, nShader = gameStates.render.history.nShader;
 	tRgbaColorf	color;
 
 if (!gameStates.ogl.bShadersOk)
@@ -303,8 +310,9 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 #endif
 if (gameOpts->ogl.bPerPixelLighting) {
 	//per pixel lighting
+	bStaticColor = (gameStates.ogl.iLight == 0);
 	if ((nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTextured)))
-		;//nLights = MAX_LIGHTS_PER_PIXEL; //it's better to process a few "black" lights than switch shader programs all the time
+		;//nLights = MAX_LIGHTS_PER_PIXEL; //better to process a few "black" lights than switch shader programs all the time?
 	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 	nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
 #ifdef _DEBUG
@@ -333,7 +341,7 @@ if (gameOpts->ogl.bPerPixelLighting) {
 			}
 		}
 	if (nLights)
-		glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 1.0f);
+		glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), bStaticColor ? 1.0f : 0.0f);
 	//glUniform1fv (glGetUniformLocation (tmProg, "lightRad"), nLights, (GLfloat *) gameData.render.ogl.lightRads);
 	}
 else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
@@ -839,7 +847,9 @@ else if (gameOpts->ogl.bPerPixelLighting) {
 		G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bmBot != NULL);
 		glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 0.0f);
 		glBlendFunc (GL_ONE, GL_ONE);
+		glDepthFunc (GL_EQUAL);
 		}
+	glDepthFunc (GL_LEQUAL);
 	}
 else {
 #ifdef _DEBUG
@@ -1096,10 +1106,6 @@ else {
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	}
-if (!bDepthOnly) {
-	gameStates.ogl.iLight = 0;
-	G3SetupShader (faceP, bColorKey, bMultiTexture, bmBot != NULL, bColored, NULL);
-	}
 #if G3_BUFFER_FACES
 if (!(bMonitor || bOverlay)) {
 	G3FillFaceBuffer (faceP, bTextured);
@@ -1127,19 +1133,20 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	else
 		nDbgSeg = nDbgSeg;
 #endif
-for (;;) {
-	glDepthFunc (GL_LEQUAL);
+if (bDepthOnly) {
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-	if (bDepthOnly)
-		return 1;
-	if (gameStates.ogl.iLight >= gameStates.ogl.nLights)
-		break;
+	return 1;
+	}
+gameStates.ogl.iLight = 0;
+for (;;) {
 	G3SetupShader (faceP, bColorKey, bMultiTexture, bmBot != NULL, bColored, NULL);
-	glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 0.0f);
-	glEnable (GL_BLEND);
+	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+	if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= MAX_PP_LIGHTS_PER_FACE))
+		break;
 	glBlendFunc (GL_ONE, GL_ONE);
 	glDepthFunc (GL_EQUAL);
 	}
+glDepthFunc (GL_LEQUAL);
 
 if (bMonitor) {
 #ifdef _DEBUG
