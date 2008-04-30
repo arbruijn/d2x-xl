@@ -4,7 +4,8 @@
 /*! \mainpage
  
 \section intro Introduction
-SDL_Console is a console that can be added to any SDL application. It is similar to Quake and other games consoles.
+
+Console is a console that can be added to any SDL application. It is similar to Quake and other games consoles.
 A console is meant to be a very simple way of interacting with a program and executing commands. You can also have 
 more than one console at a time. 
  
@@ -115,12 +116,15 @@ extern "C" {
 	/*! printf for the console */
 	void _CDECL_ CON_Out(ConsoleInformation *console, const char *str, ...);
 #if 0
-	/*! Sets the alpha channel of an SDL_Surface to the specified value (0 - transparend,
+	/*! Sets the alpha channel of an 
+Surface to the specified value (0 - transparend,
 		255 - opaque). Use this function also for OpenGL. */
 	void CON_Alpha(ConsoleInformation *console, unsigned char alpha);
-	/*! Internal: Sets the alpha channel of an SDL_Surface to the specified value.
+	/*! Internal: Sets the alpha channel of an 
+Surface to the specified value.
 		Preconditions: the surface in question is RGBA. 0 <= a <= 255, where 0 is transparent and 255 opaque */
-	void CON_AlphaGL(SDL_Surface *s, int alpha);
+	void CON_AlphaGL(
+Surface *s, int alpha);
 	/*! Sets a background image for the console */
 #endif
 	int CON_Background(ConsoleInformation *console, grsBitmap *image);

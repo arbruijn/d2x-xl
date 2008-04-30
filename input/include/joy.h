@@ -18,9 +18,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "fix.h"
 #ifdef __macosx__
-#	include "SDL/SDL_joystick.h"
+#	include "SDL/
+joystick.h"
 #else
-#	include "SDL_joystick.h"
+#	include "
+joystick.h"
 #endif
 
 #define JOY_1_BUTTON_A  1
@@ -79,7 +81,8 @@ struct joyaxis {
 };
 
 typedef struct tSdlJoystick {
-	SDL_Joystick *handle;
+	
+Joystick *handle;
 	int n_axes;
 	int n_buttons;
 	int n_hats;
@@ -88,7 +91,8 @@ typedef struct tSdlJoystick {
 	int button_map [MAX_BUTTONS_PER_JOYSTICK];
 } tSdlJoystick;
 
-extern struct tSdlJoystick /*SDL_Joystick*/ sdlJoysticks [MAX_JOYSTICKS];
+extern struct tSdlJoystick /*
+Joystick*/ sdlJoysticks [MAX_JOYSTICKS];
 
 //==========================================================================
 // This initializes the joy and does a "quick" calibration which

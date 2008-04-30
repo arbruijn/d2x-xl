@@ -265,9 +265,11 @@ extern char *szAddonTextures [MAX_ADDON_BITMAP_FILES];
 extern hashtable soundNames [2];
 extern int soundOffset [2][MAX_SOUND_FILES];
 
-#if USE_SDL_MIXER
+#if USE_
+MIXER
 
-#	include <SDL_mixer.h>
+#	include <
+mixer.h>
 
 char *AddonSoundName (int nSound);
 Mix_Chunk *LoadAddonSound (char *pszSoundFile);

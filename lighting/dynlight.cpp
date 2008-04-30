@@ -764,7 +764,7 @@ if (left < r)
 
 static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight *psl, short nType, int nThread)
 {
-fix xDist = (psl->xDistance / 10000 + 5) / 10;
+fix xDist = (psl->xDistance / 18000 + 5) / 10;
 if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
 if (xDist < 0)
@@ -821,7 +821,7 @@ void SetNearestVertexLights (int nVertex, vmsVector *vNormalP, ubyte nType, int 
 	tShaderLight			*psl;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
-	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE;// * (gameOpts->ogl.bPerPixelLighting * 3 + 1);
+	fix						xLightDist, xMaxLightRange = 2 * MAX_LIGHT_RANGE;// * (gameOpts->ogl.bPerPixelLighting * 3 + 1);
 
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -1003,7 +1003,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameOpts->render.bDynLighting) {
 	short						h, i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
-	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE;// * (gameOpts->ogl.bPerPixelLighting * 3 + 1);
+	fix						xMaxLightRange = AvgSegRad (nSegment) + 2 * MAX_LIGHT_RANGE;// * (gameOpts->ogl.bPerPixelLighting * 3 + 1);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
@@ -1359,7 +1359,7 @@ char *pszPPLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (vec4 (1.1, 1.1, 1.1, 1.0), texColor * color);\r\n" \
+	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -1393,7 +1393,7 @@ char *pszPPLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (vec4 (1.1, 1.1, 1.1, 1.0), texColor * color);\r\n" \
+	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -1431,7 +1431,7 @@ char *pszPPLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (vec4 (1.1, 1.1, 1.1, 1.0), texColor * color);}\r\n" \
+	"	gl_FragColor = min (texColor, texColor * color);}\r\n" \
 	"	}"
 	};
 
@@ -1605,7 +1605,7 @@ char *pszPPLMLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (vec4 (1.1, 1.1, 1.1, 1.0), texColor * color);\r\n" \
+	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -1639,7 +1639,7 @@ char *pszPPLMLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (vec4 (1.1, 1.1, 1.1, 1.0), texColor * color);\r\n" \
+	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -1677,7 +1677,7 @@ char *pszPPLMLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 2.0)) / att;*/\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (vec4 (1.1, 1.1, 1.1, 1.0), texColor * color);}\r\n" \
+	"	gl_FragColor = min (texColor, texColor * color);}\r\n" \
 	"	}"
 	};
 
@@ -1742,7 +1742,7 @@ char *pszLMLightingFS [] = {
 	"void main() {\r\n" \
 	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"	gl_FragColor = min (vec4 (1.1, 1.1, 1.1, 1.0), texColor * color);\r\n" \
+	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
@@ -1751,7 +1751,7 @@ char *pszLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	gl_FragColor = min (vec4 (1.1, 1.1, 1.1, 1.0), texColor * color);\r\n" \
+	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
@@ -1764,7 +1764,7 @@ char *pszLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	gl_FragColor = min (vec4 (1.1, 1.1, 1.1, 1.0), texColor * color);}\r\n" \
+	"	gl_FragColor = min (texColor, texColor * color);}\r\n" \
 	"	}"
 	};
 

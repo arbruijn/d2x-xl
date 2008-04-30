@@ -35,7 +35,8 @@ typedef unsigned int uint;
 #endif
 
 #if defined(_WIN32) || defined(__sun__) // platforms missing (u_)int??_t
-# include <SDL_types.h>
+# include <
+types.h>
 #endif // macintosh
 #ifndef __MINGW32__
 #	if defined(_WIN32)// platforms missing int??_t

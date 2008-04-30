@@ -236,11 +236,11 @@ glDisable (GL_LIGHTING);
 activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameStates.ogl.nFirstLight;
 nLightRange = gameData.render.lights.dynamic.shader.nLastLight [0] - gameStates.ogl.nFirstLight + 1;
 for (nLights = 0; 
-	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < MAX_LIGHTS_PER_PIXEL); 
+	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < 1 /*MAX_LIGHTS_PER_PIXEL*/); 
 	  activeLightsP++, nLightRange--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
-	hLight = GL_LIGHT0 + gameStates.ogl.iLight++;
+	hLight = GL_LIGHT0 + nLights++;
 	ambient.red = psl->color.c.r * 0.05f;
 	ambient.green = psl->color.c.g * 0.05f;
 	ambient.blue = psl->color.c.b * 0.05f;
@@ -257,7 +257,7 @@ for (nLights = 0;
 	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &ambient);
 	if (psl->nType == 2) {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / psl->brightness);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / psl->brightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
 		}
 	else {
@@ -265,13 +265,13 @@ for (nLights = 0;
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / psl->brightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
 		}
-	nLights++;
+	gameStates.ogl.iLight++;
 	}
 if (!nLightRange)
 	gameStates.ogl.iLight = gameStates.ogl.nLights;
 gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
 #ifdef _DEBUG
-for (int i = gameStates.ogl.iLight; i < MAX_LIGHTS_PER_PIXEL; i++) {
+for (int i = nLights; i < MAX_LIGHTS_PER_PIXEL; i++) {
 	hLight = GL_LIGHT0 + i;
 	glEnable (hLight);
 	glLightfv (hLight, GL_POSITION, (GLfloat *) &vPos);
@@ -323,8 +323,6 @@ if (gameOpts->ogl.bPerPixelLighting) {
 		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nLights ? nLights - 1 : 0][nType]);
 		if (bLightMaps)
 			glUniform1i (glGetUniformLocation (tmProg, "lMapTex"), 0);
-		if (nLights)
-			glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 1.0f);
 		if (bTextured) {
 			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), bLightMaps);
 			if (bColorKey || bMultiTexture) {
@@ -334,6 +332,8 @@ if (gameOpts->ogl.bPerPixelLighting) {
 				}
 			}
 		}
+	if (nLights)
+		glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 1.0f);
 	//glUniform1fv (glGetUniformLocation (tmProg, "lightRad"), nLights, (GLfloat *) gameData.render.ogl.lightRads);
 	}
 else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
@@ -1128,12 +1128,17 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 		nDbgSeg = nDbgSeg;
 #endif
 for (;;) {
+	glDepthFunc (GL_LEQUAL);
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+	if (bDepthOnly)
+		return 1;
 	if (gameStates.ogl.iLight >= gameStates.ogl.nLights)
 		break;
 	G3SetupShader (faceP, bColorKey, bMultiTexture, bmBot != NULL, bColored, NULL);
 	glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 0.0f);
+	glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE, GL_ONE);//_MINUS_SRC_COLOR);
+	glDepthFunc (GL_EQUAL);
 	}
 
 if (bMonitor) {

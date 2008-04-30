@@ -211,7 +211,8 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 //------------------------------------------------------------------------------
 
 #	ifndef _WIN32
-#	define	wglGetProcAddress	SDL_GL_GetProcAddress
+#	define	wglGetProcAddress	
+GL_GetProcAddress
 #	endif
 
 #else //GL_VERSION_20

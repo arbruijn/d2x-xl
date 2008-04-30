@@ -34,14 +34,18 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifdef _MSC_VER
 #	ifdef _DEBUG
-#		define USE_SDL_MIXER	1
+#		define USE_
+MIXER	1
 #	else
-#		define USE_SDL_MIXER	1
+#		define USE_
+MIXER	1
 #	endif
 #else
 #	include "conf.h"
-#	if !defined (USE_SDL_MIXER)
-#		define USE_SDL_MIXER	0
+#	if !defined (USE_
+MIXER)
+#		define USE_
+MIXER	0
 #	endif
 #endif
 

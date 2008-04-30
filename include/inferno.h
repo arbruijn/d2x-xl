@@ -87,10 +87,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifdef __macosx__
 # include <SDL/SDL.h>
-# include <SDL/SDL_thread.h>
+# include <SDL/
+thread.h>
 #else
 # include <SDL.h>
-# include <SDL_thread.h>
+# include <
+thread.h>
 #endif
 
 /**
@@ -123,9 +125,12 @@ typedef int _CDECL_	tThreadFunc (void *);
 typedef tThreadFunc *pThreadFunc;
 
 typedef struct tThreadInfo {
-	SDL_Thread		*pThread;
-	SDL_sem			*done;
-	SDL_sem			*exec;
+	
+Thread		*pThread;
+	
+sem			*done;
+	
+sem			*exec;
 	int				nId;
 	int				bExec;
 	int				bDone;
