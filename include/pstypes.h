@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 /*
  *
- * Common types for use in Miner
+ * Common types for use in Descent
  *
  */
 
@@ -56,10 +56,10 @@ typedef unsigned int uint;
 # include <stdlib.h> // this is where min and max are defined
 #endif
 #ifndef min
-#define min(a,b) (((a)>(b))?(b):(a))
+#	define min(a,b) (((a)>(b))?(b):(a))
 #endif
 #ifndef max
-#define max(a,b) (((a)<(b))?(b):(a))
+#	define max(a,b) (((a)<(b))?(b):(a))
 #endif
 
 #if defined(_WIN32)
@@ -81,11 +81,11 @@ typedef unsigned int uint;
 #endif
 
 #ifdef __macosx__
-#define ushort unsigned short
+#	define ushort unsigned short
 #endif
 
 #ifndef NULL
-#define NULL 0
+#	define NULL 0
 #endif
 
 // the following stuff has nothing to do with types but needed everywhere,
