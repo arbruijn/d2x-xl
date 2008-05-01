@@ -698,6 +698,9 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 	int		nRooms, bRetry = 0, nLoadRes;
 
 /*---*/PrintLog ("Loading level...\n");
+#if !PER_PIXEL_LIGHTING
+gameOpts->ogl.bPerPixelLighting = 0;
+#endif
 gameStates.app.bBetweenLevels = 1;
 gameStates.app.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;

@@ -62,6 +62,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define FBO_DRAW_BUFFER 1
 #endif
 
+#ifdef _DEBUG
+#	define PER_PIXEL_LIGHTING 1
+#else
+#	define PER_PIXEL_LIGHTING 0
+#endif
+
 #include "vers_id.h"
 #include "pstypes.h"
 #include "3d.h"

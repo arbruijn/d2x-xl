@@ -3472,7 +3472,7 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 #endif
-#ifdef _DEBUG
+#if PER_PIXEL_LIGHTING
 		if (!gameStates.app.bGameRunning && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk) {
 			ADD_CHECK (opt, TXT_PER_PIXEL_LIGHTING, gameOpts->ogl.bPerPixelLighting, KEY_P, HTX_PER_PIXEL_LIGHTING);
 			lightOpts.nPerPixelLighting = opt++;

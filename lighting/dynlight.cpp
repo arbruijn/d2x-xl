@@ -2094,13 +2094,13 @@ return pszFS;
 
 //-------------------------------------------------------------------------
 
-GLhandleARB perPixelLightingShaderProgs [][4] = 
+GLhandleARB perPixelLightingShaderProgs [9][4] = 
 	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 
-GLhandleARB ppLvs [][4] = 
+GLhandleARB ppLvs [9][4] = 
 	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; 
 
-GLhandleARB ppLfs [][4] = 
+GLhandleARB ppLfs [9][4] = 
 	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; 
 
 int InitPerPixelLightingShader (int nType, int nLights)
@@ -2109,7 +2109,7 @@ int InitPerPixelLightingShader (int nType, int nLights)
 	char	*pszFS, *pszVS;
 	char	**fsP, **vsP;
 
-#ifdef RELEASE
+#if !PER_PIXEL_LIGHTING
 gameStates.ogl.bPerPixelLightingOk =
 gameOpts->ogl.bPerPixelLighting = 0;
 #endif

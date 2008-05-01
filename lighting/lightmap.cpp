@@ -841,6 +841,7 @@ return;
 
 void CreateLightMaps (void)
 {
+#if PER_PIXEL_LIGHTING
 DestroyLightMaps ();
 if (!InitLightData (0))
 	return;
@@ -866,6 +867,7 @@ if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 	gameOpts->render.color.nSaturation = nSaturation;
 	}
 OglCreateLightMaps ();
+#endif
 }
 
 //------------------------------------------------------------------------------
