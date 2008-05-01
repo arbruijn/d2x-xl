@@ -1933,7 +1933,7 @@ char *pszPPLM1LightingFS [] = {
 	"			color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"			}\r\n" \
 	"		vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
-	"		vec3 NdotHV = max (dot (n, halfV), 0.0);\r\n" \
+	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [0].specular * pow (NdotHV, 2.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = min (texColor, texColor * color);}\r\n" \
