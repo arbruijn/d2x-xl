@@ -1216,14 +1216,28 @@ typedef struct tSphereData {
 #define MAX_OGL_LIGHTS  (64 * 64) //MUST be a power of 2!
 #define MAX_SHADER_LIGHTS	1000
 
-typedef struct tDynLight {
+typedef struct tDynLightInfo {
 	grsFace		*faceP;
 	vmsVector	vPos;
-	vmsVector	vDir;
 	tRgbaColorf	color;
-	float			brightness;
-	float			range;
-	float			rad;
+	float			fBrightness;
+	float			fBoost;
+	float			fRange;
+	float			fRad;
+	float			fSpotAngle;
+	float			fSpotExponent;
+	short			nSegment;
+	short			nSide;
+	short			nObject;
+	ubyte			nType;
+	ubyte			bState;
+	ubyte			bOn;
+	ubyte			bSpot;
+	} tDynLightInfo;
+
+typedef struct tDynLight {
+	vmsVector	vDir;
+	fVector		color;
 #if USE_OGL_LIGHTS
 	unsigned		handle;
 	fVector		fAttenuation;	// constant, linear quadratic
@@ -1232,18 +1246,10 @@ typedef struct tDynLight {
 #endif
 	fVector		fSpecular;
 	fVector		fEmissive;
-	float			spotAngle;
-	float			spotExponent;
-	short			nSegment;
-	short			nSide;
-	short			nObject;
 	ubyte			nPlayer;
-	ubyte			nType;
-	ubyte			bState;
-	ubyte			bOn;
-	ubyte			bSpot;
 	ubyte			bTransform;
 	ubyte			bVariable;
+	tDynLightInfo info;
 	tShadowLightInfo	shadow;
 } tDynLight;
 
@@ -1264,29 +1270,16 @@ typedef struct tOglMaterial {
 //------------------------------------------------------------------------------
 
 typedef struct tShaderLight {
-	grsFace		*faceP;
-	vmsVector	vPos;
-	fVector		pos [2];
-	fVector		dir;
-	fVector		color;
-	float			rad;
-	float			brightness;
-	float			range;
-	float			spotAngle;
-	float			spotExponent;
+	fVector		vPosf [2];
+	fVector		vDirf;
 	fix			xDistance;
-	short			nSegment;
-	short			nSide;
-	short			nObject;
 	short			nVerts [4];
-	ubyte			nType;
-	ubyte			bState;
 	ubyte			bVariable;
-	ubyte			bOn;
 	ubyte			bSpot;
 	ubyte			bShadow;
 	ubyte			bLightning;
 	ubyte			bExclusive;
+	tDynLightInfo info;
 } tShaderLight;
 
 //------------------------------------------------------------------------------

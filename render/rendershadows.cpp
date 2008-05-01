@@ -230,7 +230,7 @@ if (gameData.render.shadows.nShadowMaps == MAX_SHADOW_MAPS)
 pLight->shadow.nFrame = !pLight->shadow.nFrame;
 gameStates.render.nShadowPass = 2;
 pc = gameData.render.shadows.shadowMaps + gameData.render.shadows.nShadowMaps++;
-CreateCamera (pc, pLight->nSegment, pLight->nSide, pLight->nSegment, pLight->nSide, NULL, 1, 0);
+CreateCamera (pc, pLight->info.nSegment, pLight->info.nSide, pLight->info.nSegment, pLight->info.nSide, NULL, 1, 0);
 RenderCamera (pc);
 gameStates.render.nShadowPass = 2;
 return 1;
@@ -362,11 +362,11 @@ for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
 	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
 		psl = gameData.render.lights.dynamic.shader.lights + *pnl;
-		if (!psl->bState)
+		if (!psl->info.bState)
 			continue;
-		if (!CanSeePoint (objP, &objP->position.vPos, &psl->vPos, objP->nSegment))
+		if (!CanSeePoint (objP, &objP->position.vPos, &psl->info.vPos, objP->nSegment))
 			continue;
-		VmVecSub (&vLightDir, &objP->position.vPos, &psl->vPos);
+		VmVecSub (&vLightDir, &objP->position.vPos, &psl->info.vPos);
 		VmVecNormalize (&vLightDir);
 		if (n) {
 			for (j = 0; j < n; j++)
@@ -447,7 +447,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, psl++) {
 #if 1
 	gameStates.render.nShadowPass = 2;
 	OglStartFrame (0, 0);
-	memcpy (&gameData.render.shadows.vLightPos, psl->pos + 1, sizeof (tOOF_vector));
+	memcpy (&gameData.render.shadows.vLightPos, psl->vPosf + 1, sizeof (tOOF_vector));
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	RenderMine (nStartSeg, nEyeOffset, nWindow);
 #endif

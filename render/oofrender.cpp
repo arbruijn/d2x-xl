@@ -613,10 +613,10 @@ int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 gameData.render.shadows.nLight = 0; 
 for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
 	gameData.render.shadows.pLight = gameData.render.lights.dynamic.shader.lights + *pnl;
-	if (!gameData.render.shadows.pLight->bState)
+	if (!gameData.render.shadows.pLight->info.bState)
 		continue;
 	gameData.render.shadows.nLight++;
-	memcpy (&vrLightPos, gameData.render.shadows.pLight->pos + 1, sizeof (tOOF_vector));
+	memcpy (&vrLightPos, gameData.render.shadows.pLight->vPosf + 1, sizeof (tOOF_vector));
 	if (!OOF_RenderModel (objP, po, fLight))
 		return 0;
 	if (FAST_SHADOWS)

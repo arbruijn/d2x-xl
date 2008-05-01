@@ -669,12 +669,12 @@ for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
 	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);
-				fBrightness = psl->brightness * fLightScale;
-				color = psl->color;
+				fBrightness = psl->info.fBrightness * fLightScale;
+				color = *((fVector *) &psl->info.color);
 				color.c.r *= fLightScale;
 				color.c.g *= fLightScale;
 				color.c.b *= fLightScale;
-				glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->pos));
+				glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->vPosf));
 				glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &color);
 				glLightfv (hLight, GL_SPECULAR, (GLfloat *) &color);
 				glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / fBrightness);
@@ -686,7 +686,7 @@ for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 #else
 					glLighti (hLight, GL_SPOT_EXPONENT, 12);
 					glLighti (hLight, GL_SPOT_CUTOFF, 25);
-					glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &psl->dir);
+					glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &psl->vDirf);
 #endif
 					}
 				nLights--;

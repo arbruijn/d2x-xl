@@ -1477,11 +1477,11 @@ gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
 		gameData.render.shadows.pLight = gameData.render.lights.dynamic.shader.lights + *pnl;
-		if (!gameData.render.shadows.pLight->bState)
+		if (!gameData.render.shadows.pLight->info.bState)
 			continue;
-		if (!CanSeePoint (objP, &objP->position.vPos, &gameData.render.shadows.pLight->vPos, objP->nSegment))
+		if (!CanSeePoint (objP, &objP->position.vPos, &gameData.render.shadows.pLight->info.vPos, objP->nSegment))
 			continue;
-		VmVecSub (&vLightDir, &objP->position.vPos, &gameData.render.shadows.pLight->vPos);
+		VmVecSub (&vLightDir, &objP->position.vPos, &gameData.render.shadows.pLight->info.vPos);
 		VmVecNormalize (&vLightDir);
 		if (gameData.render.shadows.nLight) {
 			for (j = 0; j < gameData.render.shadows.nLight; j++)
@@ -1495,7 +1495,7 @@ if (FAST_SHADOWS) {
 			RenderShadowMap (gameData.render.lights.dynamic.lights + (gameData.render.shadows.pLight - gameData.render.lights.dynamic.shader.lights));
 		else {
 			gameStates.render.bRendering = 1;
-			G3TransformPoint (&vLightPos, &gameData.render.shadows.pLight->vPos, 0);
+			G3TransformPoint (&vLightPos, &gameData.render.shadows.pLight->info.vPos, 0);
 			OOF_VecVms2Oof (&vLightPosf, &vLightPos);
 			if (gameOpts->render.shadows.nClip) {
 				// get a default clipping distance using the model position as fall back

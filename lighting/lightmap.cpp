@@ -158,8 +158,8 @@ void RestoreLights (int bVariable)
 	int			i;
 
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
-	if (!(pl->nType || (pl->bVariable && !bVariable)))
-		pl->bOn = 1;
+	if (!(pl->info.nType || (pl->bVariable && !bVariable)))
+		pl->info.bOn = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ int CountLights (int bVariable)
 if (!(gameOpts->ogl.bPerPixelLighting))
 	return 0;
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
-	if (!(pl->nType || (pl->bVariable && !bVariable)))
+	if (!(pl->info.nType || (pl->bVariable && !bVariable)))
 		nLights++;
 return nLights; 
 }
@@ -563,17 +563,17 @@ lightMapData.nLights = 0;
 //first lightmap is dummy lightmap for multi pass lighting
 lmiP = lightMapData.info; 
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++) {
-	if (pl->nType || (pl->bVariable && !bVariable))
+	if (pl->info.nType || (pl->bVariable && !bVariable))
 		continue;
-	if (faceP == pl->faceP)
+	if (faceP == pl->info.faceP)
 		continue;
-	faceP = pl->faceP;
+	faceP = pl->info.faceP;
 	bIsLight = 0; 
 	t = IsLight (faceP->nBaseTex) ? faceP->nBaseTex : faceP->nOvlTex;
 	if (0 == (lmiP->range = GetLightColor (t, &lmiP->color [0])))
 		continue;
 	bIsLight = 1;
-	sideRad = (double) faceP->rad / 10.0;
+	sideRad = (double) faceP->fRad / 10.0;
 	nIndex = faceP->nSegment * 6 + faceP->nSide;
 	if (gameStates.app.bD2XLevel && (gameData.render.color.lights [nIndex].index)) { 
 		bIsLight = 1;
@@ -740,7 +740,7 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 	pTexColor = texColor;
 	for (x = 0; x < LM_W; x++) { 
 		for (y = 0; y < LM_H; y++, pPixelPos++) { 
-			if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->rad / 10.0f, nThread)) {
+			if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->fRad / 10.0f, nThread)) {
 				VmVecFixToFloat (&vcd.vertPos, pPixelPos);
 				G3AccumVertColor (-1, &texColor [y * LM_W + x], &vcd, nThread);
 				}

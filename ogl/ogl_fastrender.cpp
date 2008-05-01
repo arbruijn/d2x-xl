@@ -154,7 +154,7 @@ for (iLight = 0; (iLight < 8) && (nLights > 0); activeLightsP++) {
 	if (!(psl = GetActiveShaderLight (activeLightsP, iVertex)))
 		continue;
 #if 0
-	if (psl->nType > 1) {
+	if (psl->info.nType > 1) {
 		iLight--;
 		continue;
 		}
@@ -162,22 +162,22 @@ for (iLight = 0; (iLight < 8) && (nLights > 0); activeLightsP++) {
 	nLights--;
 	hLight = GL_LIGHT0 + iLight++;
 	glEnable (hLight);
-	color.red = psl->color.c.r;
-	color.green = psl->color.c.g;
-	color.blue = psl->color.c.b;
+	color.red = psl->info.color.red;
+	color.green = psl->info.color.green;
+	color.blue = psl->info.color.blue;
 //			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);
-	glLightfv (hLight, GL_POSITION, (GLfloat *) psl->pos);
+	glLightfv (hLight, GL_POSITION, (GLfloat *) psl->vPosf);
 	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &color);
 	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &color);
-	if (psl->nType == 2) {
+	if (psl->info.nType == 2) {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION,1.0f);
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / psl->brightness);
-		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / psl->brightness);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / psl->info.fBrightness);
+		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / psl->info.fBrightness);
 		}
 	else {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / psl->brightness);
-		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / psl->brightness);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / psl->info.fBrightness);
+		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / psl->info.fBrightness);
 		}
 	}
 for (; iLight < 8; iLight++)
@@ -246,39 +246,39 @@ for (nLights = 0;
 		continue;
 	hLight = GL_LIGHT0 + nLights++;
 	glEnable (hLight);
-	specular.alpha = (psl->nSegment >= 0) ? psl->rad : 0; //krasser Missbrauch!
-	fBrightness = psl->brightness;
-	if (psl->nType == 2) {
+	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : 0; //krasser Missbrauch!
+	fBrightness = psl->info.fBrightness;
+	if (psl->info.nType == 2) {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
-		ambient.red = psl->color.c.r * 0.05f;
-		ambient.green = psl->color.c.g * 0.05f;
-		ambient.blue = psl->color.c.b * 0.05f;
+		ambient.red = psl->info.color.red * 0.05f;
+		ambient.green = psl->info.color.green * 0.05f;
+		ambient.blue = psl->info.color.blue * 0.05f;
 		ambient.alpha = 1.0f;
-		diffuse.red = psl->color.c.r * 0.95f;
-		diffuse.green = psl->color.c.g * 0.95f;
-		diffuse.blue = psl->color.c.b * 0.95f;
+		diffuse.red = psl->info.color.red * 0.95f;
+		diffuse.green = psl->info.color.green * 0.95f;
+		diffuse.blue = psl->info.color.blue * 0.95f;
 		diffuse.alpha = 1.0f;
 		}
 	else {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
-		ambient.red = psl->color.c.r * 0.025f;
-		ambient.green = psl->color.c.g * 0.025f;
-		ambient.blue = psl->color.c.b * 0.025f;
+		ambient.red = psl->info.color.red * 0.025f;
+		ambient.green = psl->info.color.green * 0.025f;
+		ambient.blue = psl->info.color.blue * 0.025f;
 		ambient.alpha = 1.0f;
 		fBrightness *= 0.475f;
-		diffuse.red = psl->color.c.r * fBrightness;
-		diffuse.green = psl->color.c.g * fBrightness;
-		diffuse.blue = psl->color.c.b * fBrightness;
+		diffuse.red = psl->info.color.red * fBrightness;
+		diffuse.green = psl->info.color.green * fBrightness;
+		diffuse.blue = psl->info.color.blue * fBrightness;
 		diffuse.alpha = 1.0f;
 		}
 	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &diffuse);
 	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &specular);
 	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &ambient);
-	glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->pos));
+	glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->vPosf));
 	gameStates.ogl.iLight++;
 	}
 if (!nLightRange)

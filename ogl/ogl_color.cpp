@@ -284,11 +284,11 @@ return i * i;
 
 static inline int IsLightVert (int nVertex, tShaderLight *psl)
 {
-if ((nVertex >= 0) && psl->faceP) {
-	ushort	*pv = gameStates.render.bTriangleMesh ? psl->faceP->triIndex : psl->faceP->index;
+if ((nVertex >= 0) && psl->info.faceP) {
+	ushort	*pv = gameStates.render.bTriangleMesh ? psl->info.faceP->triIndex : psl->info.faceP->index;
 	int		i;
 	
-	for (i = psl->faceP->nVerts; i; i--, pv++)
+	for (i = psl->info.faceP->nVerts; i; i--, pv++)
 		if (*pv == (ushort) nVertex)
 			return 1;
 	}
@@ -338,7 +338,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (i == vcd.nMatLight)
 		continue;
 #endif
-	nType = psl->nType;
+	nType = psl->info.nType;
 	if (bSkipHeadLight && (nType == 3))
 		continue;
 #if ONLY_HEADLIGHT
@@ -347,8 +347,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 	if (psl->bVariable && gameData.render.vertColor.bDarkness)
 		continue;
-	lightColor.c = psl->color.v3.c;
-	lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].v3;
+	lightColor = *((fVector3 *) &psl->info.color);
+	lightPos = psl->vPosf [gameStates.render.nState && !gameStates.ogl.bUseTransform].v3;
 	VmVecSub (&lightDir, &lightPos, vcd.pVertPos);
 	//scaled quadratic attenuation depending on brightness
 	bInRad = 0;
@@ -360,20 +360,20 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			fLightDist = 0;
 		else
 #endif
-			fLightDist -= psl->rad * gameStates.ogl.fLightRange; //make light brighter close to light source
+			fLightDist -= psl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
 		}
 	if (fLightDist <= 0.0f) {
 		bInRad = 1;
 		NdotL = 1;
 		fLightDist = 0;//.4142f;
-		fAttenuation = 1.0f / psl->brightness;
+		fAttenuation = 1.0f / psl->info.fBrightness;
 		}
 #if CHECK_LIGHT_VERT == 1
 	else if (IsLightVert (nVertex, psl)) {
 		bInRad = 1;
 		NdotL = 1;
 		fLightDist = 0;//.4142f;
-		fAttenuation = 1.0f / psl->brightness;
+		fAttenuation = 1.0f / psl->info.fBrightness;
 		}
 #endif
 	else {	//make it decay faster
@@ -392,23 +392,23 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist);
 		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-		if ((psl->rad > 0))
+		if ((psl->info.fRad > 0))
 			NdotL += (1.0f - NdotL) / fAttenuation;
-		fAttenuation /= psl->brightness;
+		fAttenuation /= psl->info.fBrightness;
 		}
-//	fAttenuation = fLightDist / psl->brightness;
-	if (psl->bSpot) {
+//	fAttenuation = fLightDist / psl->info.fBrightness;
+	if (psl->info.bSpot) {
 		if (NdotL <= 0)
 			continue;
-		VmVecNormalize (&spotDir, &psl->dir.v3);
+		VmVecNormalize (&spotDir, &psl->vDirf.v3);
 		lightDir.p.x = -lightDir.p.x;
 		lightDir.p.y = -lightDir.p.y;
 		lightDir.p.z = -lightDir.p.z;
 		spotEffect = G3_DOTF (spotDir, lightDir);
-		if (spotEffect <= psl->spotAngle)
+		if (spotEffect <= psl->info.fSpotAngle)
 			continue;
-		if (psl->spotExponent)
-			spotEffect = (float) pow (spotEffect, psl->spotExponent);
+		if (psl->info.fSpotExponent)
+			spotEffect = (float) pow (spotEffect, psl->info.fSpotExponent);
 		fAttenuation /= spotEffect * 10;
 		VmVecScaleAdd (&vertColor, &gameData.render.vertColor.matAmbient.v3, &gameData.render.vertColor.matDiffuse.v3, NdotL);
 		}
@@ -423,7 +423,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	VmVecMul (&vertColor, &vertColor, &lightColor);
 	if ((NdotL > 0.0) && vcd.fMatShininess/* && vcd.bMatSpecular */) {
 		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
-		if (!psl->bSpot)	//need direction from light to vertex now
+		if (!psl->info.bSpot)	//need direction from light to vertex now
 			VmVecNegate (&lightDir);
 		VmVecReflect (&vReflect, &lightDir, &vcd.vertNorm);
 		VmVecNormalize (&vReflect, &vReflect);
@@ -510,17 +510,17 @@ for (j = 0; (i > 0); activeLightsP++, i--) {
 	if (i == vcd.nMatLight)
 		continue;
 #endif
-	nType = psl->nType;
+	nType = psl->info.nType;
 	if (bSkipHeadLight && (nType == 3))
 		continue;
 #if ONLY_HEADLIGHT
 	if (nType != 3)
 		continue;
 #endif
-	if (psl->bVariable && gameData.render.vertColor.bDarkness)
+	if (psl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
-	lightColor = psl->color.v3;
-lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].v3;
+	lightColor = psl->info.color.v3;
+lightPos = psl->info.vPosf [gameStates.render.nState && !gameStates.ogl.bUseTransform].v3;
 #if VECMAT_CALLS
 	VmVecSub (&lightDir, &lightPos, vcd.pVertPos);
 #else
@@ -530,7 +530,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].
 #endif
 	//scaled quadratic attenuation depending on brightness
 	bInRad = 0;
-	if (psl->brightness < 0)
+	if (psl->info.fBrightness < 0)
 		fAttenuation = 0.01f;
 	else {
 		fLightDist = VmVecMag (&lightDir) / gameStates.ogl.fLightRange;
@@ -540,19 +540,19 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].
 				fLightDist = 0;
 			else
 #endif
-				fLightDist -= psl->rad / gameStates.ogl.fLightRange;	//make light brighter close to light source
+				fLightDist -= psl->info.fRad / gameStates.ogl.fLightRange;	//make light brighter close to light source
 			}
 		if (fLightDist < 0.0f) {
 			bInRad = 1;
 			NdotL = 1;
 			fLightDist = 0;//.4142f;
-			fAttenuation = 1.0f / psl->brightness;
+			fAttenuation = 1.0f / psl->info.fBrightness;
 			}
 		else if (IsLightVert (nVertex, psl)) {
 			bInRad = 1;
 			NdotL = 1;
 			fLightDist = 0;//.4142f;
-			fAttenuation = 1.0f / psl->brightness;
+			fAttenuation = 1.0f / psl->info.fBrightness;
 			}
 		else {	//make it decay faster
 #if BRIGHT_SHOTS
@@ -562,12 +562,12 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].
 #endif
 			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist);
 			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-			if ((psl->rad > 0))
+			if ((psl->info.fRad > 0))
 				NdotL += (1.0f - NdotL) / fAttenuation;
-			fAttenuation /= psl->brightness;
+			fAttenuation /= psl->info.fBrightness;
 			}
 		}
-	if (!bInRad && (psl->rad > 0))
+	if (!bInRad && (psl->info.fRad > 0))
 		NdotL += (1.0f - NdotL) / fAttenuation;
 #if VECMAT_CALLS
 	VmVecNormalize (&lightDir, &lightDir);
@@ -579,27 +579,27 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].
 		}
 #endif
 	NdotL = bInRad ? 1 : G3_DOTF (vcd.vertNorm, lightDir);
-	if (psl->bSpot) {
+	if (psl->info.bSpot) {
 		if (NdotL <= 0)
 			continue;
 #if VECMAT_CALLS
-		VmVecNormalize (&spotDir, &psl->dir);
+		VmVecNormalize (&spotDir, &psl->vDirf);
 #else
-		fMag = VmVecMag (&psl->dir);
-		spotDir.p.x = psl->dir.p.x / fMag;
-		spotDir.p.y = psl->dir.p.y / fMag;
-		spotDir.p.z = psl->dir.p.z / fMag;
+		fMag = VmVecMag (&psl->vDirf);
+		spotDir.p.x = psl->vDirf.p.x / fMag;
+		spotDir.p.y = psl->vDirf.p.y / fMag;
+		spotDir.p.z = psl->vDirf.p.z / fMag;
 #endif
 		lightDir.p.x = -lightDir.p.x;
 		lightDir.p.y = -lightDir.p.y;
 		lightDir.p.z = -lightDir.p.z;
 		spotEffect = G3_DOTF (spotDir, lightDir);
 #if 1
-		if (spotEffect <= psl->spotAngle)
+		if (spotEffect <= psl->info.fSpotAngle)
 			continue;
 #endif
-		if (psl->spotExponent)
-			spotEffect = (float) pow (spotEffect, psl->spotExponent);
+		if (psl->info.fSpotExponent)
+			spotEffect = (float) pow (spotEffect, psl->info.fSpotExponent);
 		fAttenuation /= spotEffect * 10;
 #if VECMAT_CALLS
 		VmVecScaleAdd (&vertColor, &gameData.render.vertColor.matAmbient, &gameData.render.vertColor.matDiffuse, NdotL);
@@ -630,7 +630,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform].
 	if ((NdotL > 0.0) && (vcd.fMatShininess > 0)/* && vcd.bMatSpecular */) {
 		//spec = pow (reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
 		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
-		if (!psl->bSpot) {	//need direction from light to vertex now
+		if (!psl->info.bSpot) {	//need direction from light to vertex now
 			lightDir.p.x = -lightDir.p.x;
 			lightDir.p.y = -lightDir.p.y;
 			lightDir.p.z = -lightDir.p.z;

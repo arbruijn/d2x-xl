@@ -1183,16 +1183,16 @@ else if (nState == 1) {
 #endif
 	for (nLights = 0, i = vld.nLights, j = 0; j < h; i++, j++) {
 		psl = gameData.render.lights.dynamic.shader.activeLights [0][j].psl;
-		if (bSkipHeadLight && (psl->nType == 3))
+		if (bSkipHeadLight && (psl->info.nType == 3))
 			continue;
 		vld.buffers [0][i] = vPos;
 		vld.buffers [1][i] = vNormal;
-		vld.buffers [2][i] = psl->pos [0];
-		vld.buffers [3][i] = psl->color;
+		vld.buffers [2][i] = psl->vPosf [0];
+		vld.buffers [3][i] = *((fVector *) &psl->info.color);
 		vld.buffers [0][i].p.w = 1.0f;
-		vld.buffers [1][i].p.w = (psl->nType < 2) ? 1.0f : 0.0f;
-		vld.buffers [2][i].p.w = psl->rad;
-		vld.buffers [3][i].p.w = psl->brightness;
+		vld.buffers [1][i].p.w = (psl->info.nType < 2) ? 1.0f : 0.0f;
+		vld.buffers [2][i].p.w = psl->info.fRad;
+		vld.buffers [3][i].p.w = psl->info.fBrightness;
 		nLights++;
 		}
 	if (nLights) {

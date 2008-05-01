@@ -107,29 +107,29 @@ SetRenderView (gameStates.render.nEyeOffset, NULL, 0);
 for (i = 0; i < gameData.render.lights.dynamic.headLights.nLights; i++) {
 	pl = gameData.render.lights.dynamic.headLights.pl [i];
 	psl = gameData.render.lights.dynamic.headLights.psl [i];
-	VmVecFixToFloat (&psl->dir, &pl->vDir);
+	VmVecFixToFloat (&psl->vDirf, &pl->vDir);
 	if (pl->bTransform && !gameStates.ogl.bUseTransform)
-		G3RotatePoint (&psl->dir, &psl->dir, 0);
-	psl->spotAngle = pl->spotAngle;
-	psl->spotExponent = pl->spotExponent;
+		G3RotatePoint (&psl->vDirf, &psl->vDirf, 0);
+	psl->info.fSpotAngle = pl->info.fSpotAngle;
+	psl->info.fSpotExponent = pl->info.fSpotExponent;
 	if (gameStates.ogl.bHeadLight && gameOpts->ogl.bHeadLight && !gameStates.render.automap.bDisplay) {
 #if HEADLIGHT_TRANSFORMATION == 0
 		fVector	vPos, vDir;
-		G3TransformPoint (&vPos, psl->pos, 0);
-		G3TransformPoint (&vDir, VmVecAdd (&vDir, psl->pos, &psl->dir), 0);
+		G3TransformPoint (&vPos, psl->vPosf, 0);
+		G3TransformPoint (&vDir, VmVecAdd (&vDir, psl->vPosf, &psl->vDirf), 0);
 		VmVecNormalize (&vDir, VmVecDec (&vDir, &vPos));
 		gameData.render.lights.dynamic.headLights.pos [i] = vPos;
 		gameData.render.lights.dynamic.headLights.dir [i] = vDir.v3;
 #elif HEADLIGHT_TRANSFORMATION == 1
 		// method 2: translate, but let OpenGL do the scaling and rotating
 		fVector	vPos, vDir;
-		VmVecSub (gameData.render.lights.dynamic.headLights.pos + i, psl->pos, &viewInfo.posf);
-		VmVecInc (&vPos, &psl->dir);
-		gameData.render.lights.dynamic.headLights.dir [i] = psl->dir.v3;
+		VmVecSub (gameData.render.lights.dynamic.headLights.pos + i, psl->vPosf, &viewInfo.posf);
+		VmVecInc (&vPos, &psl->vDirf);
+		gameData.render.lights.dynamic.headLights.dir [i] = psl->vDirf.v3;
 #else
 		// method 3: let OpenGL do the translating, scaling and rotating (pass &viewInfo.posf to the headlight shader's vEye value)
-		gameData.render.lights.dynamic.headLights.pos [i] = psl->pos [0];
-		gameData.render.lights.dynamic.headLights.dir [i] = psl->dir.v3;
+		gameData.render.lights.dynamic.headLights.pos [i] = psl->vPosf [0];
+		gameData.render.lights.dynamic.headLights.dir [i] = psl->vDirf.v3;
 #endif
 		gameData.render.lights.dynamic.headLights.brightness [i] = 100.0f;
 		}
@@ -171,9 +171,9 @@ if (gameOpts->render.bDynLighting && (gameData.render.lights.dynamic.nHeadLights
 		gameData.render.lights.dynamic.nHeadLights [objP->id] = nLight;
 		pl = gameData.render.lights.dynamic.lights + nLight;
 		pl->nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : 1;
-		pl->bSpot = 1;
-		pl->spotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
-		pl->spotExponent = 12.0f; //spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
+		pl->info.bSpot = 1;
+		pl->info.fSpotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
+		pl->info.fSpotExponent = 12.0f; //spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
 		pl->bTransform = 0;
 		}
 	return nLight;
@@ -205,9 +205,9 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 		continue;
 	pl = gameData.render.lights.dynamic.lights + gameData.render.lights.dynamic.nHeadLights [nPlayer];
 	objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
-	pl->vPos = OBJPOS (objP)->vPos;
+	pl->info.vPos = OBJPOS (objP)->vPos;
 	pl->vDir = OBJPOS (objP)->mOrient.fVec;
-	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size / 4);
+	VmVecScaleInc (&pl->info.vPos, &pl->vDir, objP->size / 4);
 	}
 }
 

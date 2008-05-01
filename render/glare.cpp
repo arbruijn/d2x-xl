@@ -272,7 +272,7 @@ else
 	return 0;
 if (gameOpts->render.bDynLighting) {
 	i = FindDynLight (nSegment, nSide, -1);
-	if ((i < 0) || !gameData.render.lights.dynamic.lights [i].bOn)
+	if ((i < 0) || !gameData.render.lights.dynamic.lights [i].info.bOn)
 		return 0;
 	}
 #if 0

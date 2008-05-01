@@ -726,7 +726,7 @@ m_faceP->bAnimation = IsAnimatedTexture (m_faceP->nBaseTex) || IsAnimatedTexture
 ComputeSideRads (nSegment, nSide, &rMin, &rMax);
 float rMinf = f2fl (rMin);
 float rMaxf = f2fl (rMax);
-m_faceP->rad = rMaxf; //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+m_faceP->fRad = rMaxf; //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
 }
 
 //------------------------------------------------------------------------------
