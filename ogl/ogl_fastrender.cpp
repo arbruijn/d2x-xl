@@ -248,8 +248,8 @@ for (nLights = 0;
 	glEnable (hLight);
 	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : 0; //krasser Missbrauch!
 	fBrightness = psl->info.fBrightness;
+	glLightf (hLight, GL_CONSTANT_ATTENUATION, psl->fBoost);
 	if (psl->info.nType == 2) {
-		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
 		ambient.red = psl->info.color.red * 0.05f;
@@ -262,7 +262,6 @@ for (nLights = 0;
 		diffuse.alpha = 1.0f;
 		}
 	else {
-		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
 		ambient.red = psl->info.color.red * 0.025f;
