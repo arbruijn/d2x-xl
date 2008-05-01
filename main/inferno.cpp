@@ -1115,13 +1115,21 @@ if ((t = FindArg ("-maxfps"))) {
 		t = 250;
 	gameOpts->render.nMaxFPS = t;
 	}
-#ifdef _DEBUG
+#ifdef PER_PIXEL_LIGHTING
 if ((t = FindArg ("-maxLightsPerPass"))) {
 	t = NumArg (t, 1);
 	if (t < 1)
 		t = 1;
 	else if (t > 8)
 		t = 8;
+	gameStates.render.nMaxLightsPerPass = t;
+	}
+if ((t = FindArg ("-maxLightsPerFace"))) {
+	t = NumArg (t, 1);
+	if (t < 1)
+		t = 16;
+	else if (t > 32)
+		t = 32;
 	gameStates.render.nMaxLightsPerPass = t;
 	}
 #endif
@@ -2106,6 +2114,7 @@ gameStates.render.detail.nWallDetail = 2;
 gameStates.render.detail.nWallRenderDepth = 2; 
 gameStates.render.detail.nDebrisAmount = 2; 
 gameStates.render.nMaxLightsPerPass = 1;
+gameStates.render.nMaxLightsPerFace = 32;
 }
 
 // ----------------------------------------------------------------------------
