@@ -997,6 +997,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameOpts->render.bDynLighting) {
 	short						h, i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
+	int						bSkipHeadLight = !gameStates.render.nState && (gameOpts->ogl.bPerPixelLighting || gameStates.ogl.bHeadLight);
 	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE;// * (gameOpts->ogl.bPerPixelLighting * 3 + 1);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
@@ -1014,7 +1015,10 @@ if (gameOpts->render.bDynLighting) {
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			psl = psl;
 #endif
-		if ((--psl)->info.nType < 2) {
+		psl--;
+		if (bSkipHeadLight && (psl->info.nType == 3))
+			continue;
+		if (psl->info.nType < 2) {
 			if (!bVariable)
 				break;
 			if (!(psl->info.bVariable && psl->info.bOn))

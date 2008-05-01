@@ -1162,6 +1162,12 @@ if (bDepthOnly) {
 	}
 gameStates.ogl.iLight = 0;
 gameStates.render.history.nType = bColorKey ? 3 : bMultiTexture ? 2 : (bmBot != NULL);
+if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
+	G3SetupHeadLightShader (gameStates.render.history.nType, bmTop ? NULL : &faceP->color);
+	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	glDepthFunc (GL_EQUAL);
+	}
 for (;;) {
 	G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
@@ -1169,10 +1175,6 @@ for (;;) {
 		break;
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	glDepthFunc (GL_EQUAL);
-	}
-if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
-	G3SetupHeadLightShader (gameStates.render.history.nType, bmTop ? NULL : &faceP->color);
-	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 	}
 glDepthFunc (GL_LEQUAL);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
