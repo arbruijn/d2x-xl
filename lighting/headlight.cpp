@@ -170,7 +170,7 @@ if (gameOpts->render.bDynLighting && (gameData.render.lights.dynamic.nHeadLights
 	if (nLight >= 0) {
 		gameData.render.lights.dynamic.nHeadLights [objP->id] = nLight;
 		pl = gameData.render.lights.dynamic.lights + nLight;
-		pl->nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : 1;
+		pl->info.nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : 1;
 		pl->info.bSpot = 1;
 		pl->info.fSpotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
 		pl->info.fSpotExponent = 12.0f; //spotExps [extraGameInfo [IsMultiGame].nSpotStrength];

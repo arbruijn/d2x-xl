@@ -1229,10 +1229,12 @@ typedef struct tDynLightInfo {
 	short			nSegment;
 	short			nSide;
 	short			nObject;
+	ubyte			nPlayer;
 	ubyte			nType;
 	ubyte			bState;
 	ubyte			bOn;
 	ubyte			bSpot;
+	ubyte			bVariable;
 	} tDynLightInfo;
 
 typedef struct tDynLight {
@@ -1246,9 +1248,7 @@ typedef struct tDynLight {
 #endif
 	fVector		fSpecular;
 	fVector		fEmissive;
-	ubyte			nPlayer;
 	ubyte			bTransform;
-	ubyte			bVariable;
 	tDynLightInfo info;
 	tShadowLightInfo	shadow;
 } tDynLight;
@@ -1274,7 +1274,6 @@ typedef struct tShaderLight {
 	fVector		vDirf;
 	fix			xDistance;
 	short			nVerts [4];
-	ubyte			bVariable;
 	ubyte			bSpot;
 	ubyte			bShadow;
 	ubyte			bLightning;

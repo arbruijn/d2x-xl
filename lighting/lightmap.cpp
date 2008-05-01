@@ -158,7 +158,7 @@ void RestoreLights (int bVariable)
 	int			i;
 
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
-	if (!(pl->info.nType || (pl->bVariable && !bVariable)))
+	if (!(pl->info.nType || (pl->info.bVariable && !bVariable)))
 		pl->info.bOn = 1;
 }
 
@@ -172,7 +172,7 @@ int CountLights (int bVariable)
 if (!(gameOpts->ogl.bPerPixelLighting))
 	return 0;
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
-	if (!(pl->info.nType || (pl->bVariable && !bVariable)))
+	if (!(pl->info.nType || (pl->info.bVariable && !bVariable)))
 		nLights++;
 return nLights; 
 }
@@ -563,7 +563,7 @@ lightMapData.nLights = 0;
 //first lightmap is dummy lightmap for multi pass lighting
 lmiP = lightMapData.info; 
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++) {
-	if (pl->info.nType || (pl->bVariable && !bVariable))
+	if (pl->info.nType || (pl->info.bVariable && !bVariable))
 		continue;
 	if (faceP == pl->info.faceP)
 		continue;

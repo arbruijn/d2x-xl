@@ -345,7 +345,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (nType != 3)
 		continue;
 #endif
-	if (psl->bVariable && gameData.render.vertColor.bDarkness)
+	if (psl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
 	lightColor = *((fVector3 *) &psl->info.color);
 	lightPos = psl->vPosf [gameStates.render.nState && !gameStates.ogl.bUseTransform].v3;

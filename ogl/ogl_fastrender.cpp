@@ -284,20 +284,6 @@ for (nLights = 0;
 if (!nLightRange)
 	gameStates.ogl.iLight = gameStates.ogl.nLights;
 gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
-#if 0//def _DEBUG
-for (int i = nLights; i < MAX_LIGHTS_PER_PIXEL; i++) {
-#if 1
-	glDisable (GL_LIGHT0 + i);
-#else
-	hLight = GL_LIGHT0 + i;
-	glEnable (hLight);
-	glLightfv (hLight, GL_POSITION, (GLfloat *) &vPos);
-	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &black);
-	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &black);
-	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &black);
-#endif
-	}
-#endif
 if (InitPerPixelLightingShader (bColorKey ? 3 : bMultiTexture ? 2 : bTextured, nLights))
 	return nLights;
 OglDisableLighting ();
@@ -322,8 +308,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 if (faceP && gameOpts->ogl.bPerPixelLighting) {
 	//per pixel lighting
 	bStaticColor = (gameStates.ogl.iLight == 0);
-	if ((nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTextured)))
-		;//nLights = MAX_LIGHTS_PER_PIXEL; //better to process a few "black" lights than switch shader programs all the time?
+	nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTextured);
 	nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 	nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
 #ifdef _DEBUG

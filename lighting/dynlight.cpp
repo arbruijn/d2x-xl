@@ -350,7 +350,7 @@ pl->info.faceP = faceP;
 pl->info.nSegment = nSegment;
 pl->info.nSide = nSide;
 pl->info.nObject = nObject;
-pl->nPlayer = -1;
+pl->info.nPlayer = -1;
 pl->info.bState = 1;
 pl->info.bSpot = 0;
 //0: static light
@@ -369,7 +369,7 @@ else if (nSegment >= 0) {
 #endif
 	if (nSide < 0) {
 		pl->info.nType = 2;
-		pl->bVariable = 0;
+		pl->info.bVariable = 0;
 		pl->info.fRad = 0;
 		if (vPos)
 			pl->info.vPos = *vPos;
@@ -381,7 +381,7 @@ else if (nSegment >= 0) {
 		pl->info.nType = 0;
 		pl->info.fRad = faceP ? faceP->fRad : 0;
 		//RegisterLight (NULL, nSegment, nSide);
-		pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide) || IS_WALL (SEGMENTS [nSegment].sides [nSide].nWall);
+		pl->info.bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide) || IS_WALL (SEGMENTS [nSegment].sides [nSide].nWall);
 		COMPUTE_SIDE_CENTER_I (&pl->info.vPos, nSegment, nSide);
 		}
 #if 1
@@ -399,7 +399,7 @@ else if (nSegment >= 0) {
 	}
 else {
 	pl->info.nType = 3;
-	pl->bVariable = 0;
+	pl->info.bVariable = 0;
 	}
 #if USE_OGL_LIGHTS
 #	if 0
@@ -441,8 +441,8 @@ if (nLight < --gameData.render.lights.dynamic.nLights) {
 	*pl = gameData.render.lights.dynamic.lights [gameData.render.lights.dynamic.nLights];
 	if (pl->info.nObject >= 0)
 		gameData.render.lights.dynamic.owners [pl->info.nObject] = nLight;
-	if (pl->nPlayer < MAX_PLAYERS)
-		gameData.render.lights.dynamic.nHeadLights [pl->nPlayer] = nLight;
+	if (pl->info.nPlayer < MAX_PLAYERS)
+		gameData.render.lights.dynamic.nHeadLights [pl->info.nPlayer] = nLight;
 	}
 }
 
@@ -543,7 +543,7 @@ gameData.render.lights.dynamic.material.bValid = 0;
 
 static inline int QCmpStaticLights (tDynLight *pl, tDynLight *pm)
 {
-return (pl->bVariable == pm->bVariable) ? 0 : pl->bVariable ? 1 : -1;
+return (pl->info.bVariable == pm->info.bVariable) ? 0 : pl->info.bVariable ? 1 : -1;
 }
 
 //------------------------------------------------------------------------------
@@ -687,9 +687,9 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	psl->bShadow =
 	psl->bExclusive = 0;
 	if (psl->info.bState) {
-		if (!bStatic && (pl->info.nType == 1) && !pl->bVariable)
+		if (!bStatic && (pl->info.nType == 1) && !pl->info.bVariable)
 			psl->info.bState = 0;
-		if (!bVariable && ((pl->info.nType > 1) || pl->bVariable))
+		if (!bVariable && ((pl->info.nType > 1) || pl->info.bVariable))
 			psl->info.bState = 0;
 		}
 	gameData.render.lights.dynamic.shader.nLights++;
@@ -850,7 +850,7 @@ if (nVertex == nDbgVertex)
 #endif
 		if (gameData.threads.vertColor.data.bNoShadow && psl->bShadow)
 			continue;
-		if (psl->bVariable) {
+		if (psl->info.bVariable) {
 			if (!(bVariable && psl->info.bOn))
 				continue;
 			}
@@ -964,7 +964,7 @@ if (gameOpts->render.bDynLighting) {
 		if (gameData.threads.vertColor.data.bNoShadow && gameData.render.lights.dynamic.shader.lights [j].bShadow)
 			continue;
 		psl = gameData.render.lights.dynamic.shader.lights + j;
-		if (psl->bVariable) {
+		if (psl->info.bVariable) {
 			if (!psl->info.bOn)
 				continue;
 			}
@@ -1031,7 +1031,7 @@ if (gameOpts->render.bDynLighting) {
 		if ((--psl)->info.nType < 2) {
 			if (!bVariable)
 				break;
-			if (!(psl->bVariable && psl->info.bOn))
+			if (!(psl->info.bVariable && psl->info.bOn))
 				continue;
 			}
 		if (gameData.threads.vertColor.data.bNoShadow && psl->bShadow)
@@ -1097,7 +1097,7 @@ if (gameOpts->render.bDynLighting) {
 #endif
 		if (psl->info.nType)
 			break;
-		if (psl->bVariable)
+		if (psl->info.bVariable)
 			continue;
 #ifdef _DEBUG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
