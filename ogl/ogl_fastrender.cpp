@@ -444,8 +444,7 @@ else if (gameStates.render.history.nShader >= 0) {
 	nShader = -1;
 	}
 gameStates.render.history.nType = nType;
-gameStates.render.history.nShader = nShader;
-return nShader;
+return gameStates.render.history.nShader = nShader;
 }
 
 //------------------------------------------------------------------------------
