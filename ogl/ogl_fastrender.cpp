@@ -334,24 +334,25 @@ return nShader;
 
 int G3SetupHeadLightShader (int nType, tRgbaColorf *colorP)
 {
-	int			oglRes, nLights, nShader;
+	int			oglRes, bLightMaps, nLights, nShader;
 	tRgbaColorf	color;
 
 //headlights
 nLights = IsMultiGame ? /*gameData.multiplayer.nPlayers*/gameData.render.lights.dynamic.headLights.nLights : 1;
 InitHeadlightShaders (nLights);
-nShader = 10 + nType;
+bLightMaps = HaveLightMaps ();
+nShader = 10 + bLightMaps * 4 + nType;
 if (nShader != gameStates.render.history.nShader) {
 	glEnable (GL_TEXTURE_2D);
 	glActiveTexture (GL_TEXTURE0);
 	glUseProgramObject (0);
 	glUseProgramObject (tmProg = headlightShaderProgs [nType]);
 	if (nType) {
-		glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
+		glUniform1i (glGetUniformLocation (tmProg, "baseTex"), bLightMaps);
 		if (nType > 1) {
-			glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 1);
+			glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 1 + bLightMaps);
 			if (nType > 2)
-				glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
+				glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2 + bLightMaps);
 			}
 		}
 #if 1
@@ -1165,6 +1166,7 @@ gameStates.render.history.nType = bColorKey ? 3 : bMultiTexture ? 2 : (bmBot != 
 if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
 	G3SetupHeadLightShader (gameStates.render.history.nType, bmTop ? NULL : &faceP->color);
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+	return 0;
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	glDepthFunc (GL_EQUAL);
 	}
