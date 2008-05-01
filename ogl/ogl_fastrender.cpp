@@ -343,8 +343,6 @@ InitHeadlightShaders (nLights);
 bLightMaps = HaveLightMaps ();
 nShader = 10 + bLightMaps * 4 + nType;
 if (nShader != gameStates.render.history.nShader) {
-	glEnable (GL_TEXTURE_2D);
-	glActiveTexture (GL_TEXTURE0);
 	glUseProgramObject (0);
 	glUseProgramObject (tmProg = headlightShaderProgs [nType]);
 	if (nType) {

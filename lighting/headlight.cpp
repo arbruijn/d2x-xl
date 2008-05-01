@@ -228,7 +228,7 @@ char *headLightFS [2][8] = {
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
-	"if (dot (normalize (normal), -lvNorm) <= 0.0)\r\n" \
+	"if (dot (normalize (normal), lvNorm) > 0.0)\r\n" \
 	"   gl_FragColor = vec4 (maxColor.rgb * vec3 (gl_Color), (maxColor.a + gl_Color.a));"  \
 	"else {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
@@ -251,7 +251,7 @@ char *headLightFS [2][8] = {
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
-	"if (dot (normalize (normal), -lvNorm) <= 0.0)\r\n" \
+	"if (dot (normalize (normal), lvNorm) > 0.0)\r\n" \
 	"   gl_FragColor = texColor * gl_Color;\r\n" \
 	"else {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
@@ -276,7 +276,7 @@ char *headLightFS [2][8] = {
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
-	"if (dot (normalize (normal), -lvNorm) <= 0.0)\r\n" \
+	"if (dot (normalize (normal), lvNorm) > 0.0)\r\n" \
 	"   gl_FragColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a)) * gl_Color;\r\n" \
 	"else {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
@@ -446,7 +446,7 @@ char *headLightFS [2][8] = {
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
-	"if (dot (normalize (normal), -lvNorm) <= 0.0)\r\n" \
+	"if (dot (normalize (normal), lvNorm) > 0.0)\r\n" \
 	"   gl_FragColor = vec4 (maxColor.rgb * vec3 (gl_Color), (maxColor.a + gl_Color.a));"  \
 	"else {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
@@ -469,7 +469,7 @@ char *headLightFS [2][8] = {
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
-	"if (dot (normalize (normal), -lvNorm) <= 0.0)\r\n" \
+	"if (dot (normalize (normal), lvNorm) > 0.0)\r\n" \
 	"   gl_FragColor = texColor * gl_Color;\r\n" \
 	"else {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
@@ -494,7 +494,7 @@ char *headLightFS [2][8] = {
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
-	"if (dot (normalize (normal), -lvNorm) <= 0.0)\r\n" \
+	"if (dot (normalize (normal), lvNorm) > 0.0)\r\n" \
 	"   gl_FragColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a)) * gl_Color;\r\n" \
 	"else {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
@@ -824,12 +824,12 @@ if (nLights < 0) {
 	nLights = gameData.render.ogl.nHeadLights;
 	gameData.render.ogl.nHeadLights = 0;
 	}
-if (nLights == gameData.render.ogl.nHeadLights)
+bLightMaps = HaveLightMaps ();
+if ((nLights == gameData.render.ogl.nHeadLights) && (bLightMaps == gameData.render.ogl.bLightMaps))
 	return;
 gameStates.render.bHaveDynLights = 0;
 PrintLog ("building lighting shader programs\n");
 if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.nPath))) {
-	bLightMaps = HaveLightMaps ();
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 4; i++) {
 		if (headlightShaderProgs [i])

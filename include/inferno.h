@@ -1438,6 +1438,7 @@ typedef struct tOglData {
 	int						nPerPixelLights [8];
 	float						lightRads [8];
 	fVector					lightPos [8];
+	int						bLightMaps;
 	int						nHeadLights;
 } tOglData;
 
