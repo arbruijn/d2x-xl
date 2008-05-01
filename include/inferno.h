@@ -856,6 +856,7 @@ typedef struct tRenderHistory {
 	int			bOverlay;
 	int			bColored;
 	int			nShader;
+	int			nType;
 } tRenderHistory;
 
 typedef struct tRenderStates {

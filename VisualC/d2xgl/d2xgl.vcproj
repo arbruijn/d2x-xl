@@ -3063,6 +3063,10 @@
 						RelativePath="..\..\lighting\lightmap.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\..\lighting\lightshaders.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Header Files"
@@ -4567,11 +4571,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
