@@ -327,7 +327,7 @@ if (nShader != gameStates.render.history.nShader) {
 	}
 if (nLights)
 	glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), bStaticColor ? 1.0f : 0.0f);
-return nShader;
+return gameStates.render.history.nShader = nShader;
 }
 
 //------------------------------------------------------------------------------
@@ -389,7 +389,7 @@ if (nShader != gameStates.render.history.nShader) {
 	glUniform4fv (glGetUniformLocation (tmProg, "maxColor"), 1, (GLfloat *) &color);
 	oglRes = glGetError ();
 	}
-return nShader;
+return gameStates.render.history.nShader = nShader;
 }
 
 //------------------------------------------------------------------------------
@@ -403,7 +403,7 @@ glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
 glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 1);
 glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
 glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 1.0f);
-return nShader;
+return gameStates.render.history.nShader = nShader;
 }
 
 //------------------------------------------------------------------------------
@@ -413,7 +413,7 @@ int G3SetupGrayScaleShader (void)
 if (gameStates.render.history.nShader != 99)
 	glUseProgramObject (tmProg = gsShaderProg);
 glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
-return 99;
+return gameStates.render.history.nShader = 99;
 }
 
 //------------------------------------------------------------------------------
@@ -1161,9 +1161,8 @@ if (bDepthOnly) {
 gameStates.ogl.iLight = 0;
 gameStates.render.history.nType = bColorKey ? 3 : bMultiTexture ? 2 : (bmBot != NULL);
 if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
-	G3SetupHeadLightShader (gameStates.render.history.nType, bmTop ? NULL : &faceP->color);
+	G3SetupHeadLightShader (gameStates.render.history.nType, bmBot ? NULL : &faceP->color);
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-	return 0;
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	glDepthFunc (GL_EQUAL);
 	}
