@@ -637,7 +637,7 @@ else
 for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 	if (bLighting) {
 		if (nPass) {
-			glBlendFunc (GL_ONE, GL_ONE);
+			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			glDepthMask (0);
 			}
 		OglSetupTransform (1);
