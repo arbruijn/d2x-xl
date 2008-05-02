@@ -1034,15 +1034,15 @@ CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName 
 				 NULL, szFilename, NULL);
 if (nType < 0) {
 	if (nLevel < 0)
-		sprintf (pszFilename, "%s-s%d.%s", szFilename, pszExt, -nLevel);
+		sprintf (pszFilename, "%s-s%d.%s", szFilename, -nLevel, pszExt);
 	else
-		sprintf (pszFilename, "%s-%d.%s", szFilename, pszExt, nLevel);
+		sprintf (pszFilename, "%s-%d.%s", szFilename, nLevel, pszExt);
 	}
 else {
 	if (nLevel < 0)
-		sprintf (pszFilename, "%s-s%d.%s%d", szFilename, pszExt, -nLevel, nType);
+		sprintf (pszFilename, "%s-s%d.%s%d", szFilename, -nLevel, pszExt, nType);
 	else
-		sprintf (pszFilename, "%s-%d.%s%d", szFilename, pszExt, nLevel, nType);
+		sprintf (pszFilename, "%s-%d.%s%d", szFilename, nLevel, pszExt, nType);
 	}
 return pszFilename;
 }
