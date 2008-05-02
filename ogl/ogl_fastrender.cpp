@@ -639,7 +639,8 @@ return 0;
 
 int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
-	int			bOverlay, bColored, bTransparent, bColorKey = 0, bMonitor = 0, bMultiTexture = 0;
+	int			bOverlay, bColored, bTransparent, bColorKey = 0, bMonitor = 0, bMultiTexture = 0, 
+					iMax = 0, index [4];
 	grsBitmap	*bmMask = NULL;
 	tTexCoord2f	*ovlTexCoordP;
 
@@ -896,7 +897,7 @@ else {
 	// rendering a quad is always started with the brightest vertex
 	tRgbaColorf	*pc = gameData.segs.faces.color + faceP->nIndex;
 	float l, lMax = 0;
-	int i, j, iMax = 0, nIndex, index [4];
+	int i, j, nIndex;
 
 	for (i = 0; i < 4; i++, pc++) {
 		l = pc->red + pc->green + pc->blue;
@@ -951,6 +952,8 @@ if (!bMultiTexture && (bOverlay || bMonitor)) {
 	glTexCoordPointer (2, GL_FLOAT, 0, ovlTexCoordP);
 	if (gameStates.render.bTriangleMesh)
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
+	else if (iMax)
+		glDrawElements (GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, index);
 	else
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
