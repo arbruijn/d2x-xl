@@ -743,7 +743,7 @@ if (bOk)
 		 sizeof (*gameData.segs.faces.color)) * mdh.nTris * 3 +
 		 sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces * 2 + 
 		 sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts;
-bOk = ((bufP = (char *) D2_ALLOC (nSize)) != NULL);
+bOk = ((ioBuffer = (char *) D2_ALLOC (nSize)) != NULL);
 if (bOk)
 	bOk = CFRead (ioBuffer, nSize, 1, &cf) == 1;
 if (bOk) {
