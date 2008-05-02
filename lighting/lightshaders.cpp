@@ -104,7 +104,7 @@ char *pszPPXLightingFS [] = {
 	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * colorSum);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -140,7 +140,7 @@ char *pszPPXLightingFS [] = {
 	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * colorSum);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -180,7 +180,7 @@ char *pszPPXLightingFS [] = {
 	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * colorSum);}\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);}\r\n" \
 	"	}"
 	};
 
@@ -239,7 +239,7 @@ char *pszPP1LightingFS [] = {
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;*/\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color * gl_LightSource [0].constantAttenuation);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * color * gl_LightSource [0].constantAttenuation);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D baseTex, decalTex;\r\n" \
@@ -269,7 +269,7 @@ char *pszPP1LightingFS [] = {
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;*/\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color * gl_LightSource [0].constantAttenuation);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * color * gl_LightSource [0].constantAttenuation);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -304,7 +304,7 @@ char *pszPP1LightingFS [] = {
 	"		vec3 NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;*/\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color * gl_LightSource [0].constantAttenuation);}\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * color * gl_LightSource [0].constantAttenuation);}\r\n" \
 	"	}"
 	};
 
@@ -450,7 +450,7 @@ char *pszPPLMXLightingFS [] = {
 	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * colorSum);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -484,7 +484,7 @@ char *pszPPLMXLightingFS [] = {
 	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * colorSum);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -520,7 +520,7 @@ char *pszPPLMXLightingFS [] = {
 	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * colorSum);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -560,7 +560,7 @@ char *pszPPLMXLightingFS [] = {
 	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * colorSum);}\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);}\r\n" \
 	"	}"
 	};
 
@@ -593,7 +593,7 @@ char *pszPPLM1LightingFS [] = {
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [0].specular * pow (NdotHV, 16.0)) / att;*/\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color * gl_LightSource [0].constantAttenuation);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * color * gl_LightSource [0].constantAttenuation);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
@@ -621,7 +621,7 @@ char *pszPPLM1LightingFS [] = {
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [0].specular * pow (NdotHV, 16.0)) / att;*/\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color * gl_LightSource [0].constantAttenuation);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * color * gl_LightSource [0].constantAttenuation);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
@@ -651,7 +651,7 @@ char *pszPPLM1LightingFS [] = {
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [0].specular * pow (NdotHV, 16.0)) / att;*/\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color * gl_LightSource [0].constantAttenuation);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * color * gl_LightSource [0].constantAttenuation);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
@@ -685,7 +685,7 @@ char *pszPPLM1LightingFS [] = {
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [0].specular * pow (NdotHV, 16.0)) / att;*/\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color * gl_LightSource [0].constantAttenuation);}\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * color * gl_LightSource [0].constantAttenuation);}\r\n" \
 	"	}"
 	};
 
@@ -747,7 +747,7 @@ char *pszLMLightingFS [] = {
 	"void main() {\r\n" \
 	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * color);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
@@ -756,7 +756,7 @@ char *pszLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * color);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
@@ -769,7 +769,7 @@ char *pszLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	gl_FragColor = min (texColor, texColor * color);}\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * color);}\r\n" \
 	"	}"
 	};
 
