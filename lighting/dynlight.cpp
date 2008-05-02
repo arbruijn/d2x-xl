@@ -1230,14 +1230,14 @@ for (; nVertex < nMax; nVertex++, pf++) {
 extern int nDbgVertex;
 #endif
 
-void ComputeStaticDynLighting (void)
+void ComputeStaticDynLighting (int nLevel)
 {
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 if (gameStates.app.bNostalgia)
 	return;
 if (gameOpts->ogl.bPerPixelLighting) {
-	CreateLightMaps ();
+	CreateLightMaps (nLevel);
 	if (HaveLightMaps ())
 		return;
 	}

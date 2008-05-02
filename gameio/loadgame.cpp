@@ -951,7 +951,7 @@ if (!bRestore) {
 	SetMaxOmegaCharge ();
 	ConvertObjects ();
 	ComputeNearestLights (nLevel);
-	ComputeStaticDynLighting ();
+	ComputeStaticDynLighting (nLevel);
 	SetEquipGenStates ();
 	gameData.time.nPaused = 0;
 	}

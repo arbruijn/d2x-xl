@@ -491,7 +491,7 @@ return GameDataFilename (pszFilename, "light", nLevel, -1);
 
 //------------------------------------------------------------------------------
 
-int LoadPrecompiledLights (int nLevel)
+int LoadLightData (int nLevel)
 {
 	CFILE					cf;
 	tLightDataHeader	ldh;
@@ -524,7 +524,7 @@ return bOk;
 
 //------------------------------------------------------------------------------
 
-int SavePrecompiledLights (int nLevel)
+int SaveLightData (int nLevel)
 {
 	CFILE				cf;
 	tLightDataHeader ldh = {LIGHT_DATA_VERSION, 
@@ -621,7 +621,7 @@ if (!(SHOW_DYN_LIGHT ||
 loadOp = 0;
 loadIdx = 0;
 PrintLog ("Looking for precompiled light data\n");
-if (LoadPrecompiledLights (nLevel))
+if (LoadLightData (nLevel))
 	return;
 else 
 #if MULTI_THREADED_PRECALC
@@ -655,7 +655,7 @@ else {
 	}
 D2_FREE (gameData.segs.bVertVis);
 PrintLog ("Saving precompiled light data\n");
-SavePrecompiledLights (nLevel);
+SaveLightData (nLevel);
 }
 
 //------------------------------------------------------------------------------

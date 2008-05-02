@@ -47,6 +47,23 @@ there I just had it exit instead.
 //------------------------------------------------------------------------------
 
 #define LMAP_REND2TEX	0
+#define TEXTURE_CHECK	1
+
+#define LIGHTMAP_DATA_VERSION 1
+
+//------------------------------------------------------------------------------
+
+typedef struct tLightMapDataHeader {
+	int	nVersion;
+	int	nSegments;
+	int	nVertices;
+	int	nFaces;
+	int	nLights;
+	int	nBuffers;
+	int	nMaxLightRange;
+	} tLightMapDataHeader;
+
+//------------------------------------------------------------------------------
 
 GLhandleARB lmShaderProgs [3] = {0,0,0}; 
 GLhandleARB lmFS [3] = {0,0,0}; 
@@ -58,7 +75,7 @@ tLightMap dummyLightMap;
 
 tLightMapData lightMapData = {NULL, NULL, 0};
 
-#define TEXTURE_CHECK 1
+//------------------------------------------------------------------------------
 
 int InitLightData (int bVariable);
 
@@ -839,11 +856,84 @@ return;
 
 //------------------------------------------------------------------------------
 
-void CreateLightMaps (void)
+char *LightMapDataFilename (char *pszFilename, int nLevel)
+{
+return GameDataFilename (pszFilename, "lmap", nLevel, gameOpts->render.nLightmapQuality);
+}
+
+//------------------------------------------------------------------------------
+
+int SaveLightMapData (int nLevel)
+{
+	CFILE				cf;
+	tLightMapDataHeader ldh = {LIGHTMAP_DATA_VERSION, 
+										gameData.segs.nSegments, 
+										gameData.segs.nVertices, 
+										gameData.segs.nFaces, 
+										lightMapData.nLights, 
+										lightMapData.nBuffers, 
+										MAX_LIGHT_RANGE};
+	int				i, bOk;
+	char				szFilename [FILENAME_LEN];
+
+if (!(gameStates.app.bCacheLightMaps && lightMapData.nLights && lightMapData.nBuffers))
+	return 0;
+if (!CFOpen (&cf, LightMapDataFilename (szFilename, nLevel), gameFolders.szTempDir, "wb", 0))
+	return 0;
+bOk = (CFWrite (&ldh, sizeof (ldh), 1, &cf) == 1);
+if (bOk) {
+	for (i = 0; i < lightMapData.nBuffers; i++) {
+		bOk = CFWrite (lightMapData.buffers [i].bmP, sizeof (lightMapData.buffers [i].bmP), 1, &cf) == 1;
+		if (!bOk)
+			break;
+		}
+	}
+CFClose (&cf);
+return bOk;
+}
+
+//------------------------------------------------------------------------------
+
+int LoadLightMapData (int nLevel)
+{
+	CFILE				cf;
+	tLightMapDataHeader ldh;
+	int				i, bOk;
+	char				szFilename [FILENAME_LEN];
+
+if (!gameStates.app.bCacheLightMaps)
+	return 0;
+if (!CFOpen (&cf, LightMapDataFilename (szFilename, nLevel), gameFolders.szTempDir, "rb", 0))
+	return 0;
+bOk = (CFRead (&ldh, sizeof (ldh), 1, &cf) == 1);
+if (bOk)
+	bOk = (ldh.nVersion == LIGHTMAP_DATA_VERSION) && 
+			(ldh.nSegments == gameData.segs.nSegments) && 
+			(ldh.nVertices == gameData.segs.nVertices) && 
+			(ldh.nFaces == gameData.segs.nFaces) && 
+			(ldh.nLights == lightMapData.nLights) && 
+			(ldh.nBuffers == lightMapData.nBuffers) && 
+			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
+if (bOk) {
+	for (i = 0; i < lightMapData.nBuffers; i++) {
+		bOk = CFRead (lightMapData.buffers [i].bmP, sizeof (lightMapData.buffers [i].bmP), 1, &cf) == 1;
+		if (!bOk)
+			break;
+		}
+	}
+CFClose (&cf);
+return bOk;
+}
+
+//------------------------------------------------------------------------------
+
+void CreateLightMaps (int nLevel)
 {
 #if PER_PIXEL_LIGHTING
 DestroyLightMaps ();
 if (!InitLightData (0))
+	return;
+if (LoadLightMapData ())
 	return;
 TransformDynLights (1, 0);
 if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
@@ -867,6 +957,7 @@ if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 	gameOpts->render.color.nSaturation = nSaturation;
 	}
 OglCreateLightMaps ();
+SaveLightMapData ();
 #endif
 }
 

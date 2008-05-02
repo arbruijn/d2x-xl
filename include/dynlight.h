@@ -38,7 +38,7 @@ short SetNearestPixelLights (int nSegment, vmsVector *vPixelPos, float fLightRad
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread);
 short SetNearestSegmentLights (int nSegment, int bVariable, int nType, int nThread);
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
-void ComputeStaticDynLighting (void);
+void ComputeStaticDynLighting (int nLevel);
 tShaderLight *GetActiveShaderLight (tActiveShaderLight *activeLightsP, int nThread);
 int InitPerPixelLightingShader (int nType, int nLights);
 void ResetPerPixelLightingShaders (void);

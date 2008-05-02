@@ -110,9 +110,9 @@ static int	*segQueue = NULL;
 static int AllocQueue (int bResize)
 {
 if (bResize) {
-	if (!(segQueue = (int *) D2_REALLOC ((void *) segQueue, (size_t) nQueueSize * 4)))
-		return 0;
 	nQueueSize *= 2;
+	if (!(segQueue = (int *) D2_REALLOC ((void *) segQueue, (size_t) nQueueSize * 2)))
+		return 0;
 	}
 else if (!(segQueue || (segQueue = (int *) D2_ALLOC (nQueueSize * 2))))
 	return 0;
@@ -121,34 +121,38 @@ return 1;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int PickConnectedSegment (tObject *objP, int max_depth)
+int PickConnectedSegment (tObject *objP, int nMaxDepth)
 {
 	int		i;
-	int		cur_depth;
-	int		start_seg;
+	int		nCurDepth;
+	int		nStartSeg;
 	int		head, tail;
+	int		nSide, count;
+	int		ind1, ind2, temp;
+	short		nRndSide, nWall;
+	tSegment	*segP;
 	sbyte		bVisited [MAX_SEGMENTS_D2X];
 	sbyte		depth [MAX_SEGMENTS_D2X];
 	sbyte		rndSide [MAX_SIDES_PER_SEGMENT];
 
+if (!objP)
+	return -1;
 if (!AllocQueue (0))
 	return -1;
-start_seg = objP->nSegment;
-head = 0;
+nStartSeg = objP->nSegment;
+head =
 tail = 0;
-segQueue [head++] = start_seg;
+segQueue [head++] = nStartSeg;
 
 memset (bVisited, 0, gameData.segs.nLastSegment+1);
 memset (depth, 0, gameData.segs.nLastSegment+1);
-cur_depth = 0;
+nCurDepth = 0;
 
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 	rndSide [i] = i;
 
 //	Now, randomize a bit to start, so we don't always get started in the same direction.
 for (i = 0; i < 4; i++) {
-	int	ind1, temp;
-
 	ind1 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
 	temp = rndSide [ind1];
 	rndSide [ind1] = rndSide [i];
@@ -157,13 +161,11 @@ for (i = 0; i < 4; i++) {
 
 
 while (tail != head) {
-	int		nSide, count;
-	tSegment	*segP;
-	int		ind1, ind2, temp;
-
-	if (cur_depth >= max_depth)
+	Assert (tail < 2 * nQueueSize);
+	if (nCurDepth >= nMaxDepth)
 		return segQueue [tail];
-	segP = gameData.segs.segments + segQueue [tail++];
+	Assert ((segQueue [tail] >= 0) && (segQueue [tail] < gameData.segs.nSegments));
+	segP = SEGMENTS + segQueue [tail++];
 	tail &= nQueueSize - 1;
 
 	//	to make random, switch a pair of entries in rndSide.
@@ -175,17 +177,16 @@ while (tail != head) {
 
 	count = 0;
 	for (nSide = ind1; count < MAX_SIDES_PER_SEGMENT; count++) {
-		short	snrand, nWall;
-		if (nSide == MAX_SIDES_PER_SEGMENT)
+		nRndSide = rndSide [nSide];
+		if (++nSide == MAX_SIDES_PER_SEGMENT)
 			nSide = 0;
-		snrand = rndSide [nSide];
-		nWall = WallNumP (segP, snrand);
-		nSide++;
-		if (((!IS_WALL (nWall)) && (segP->children [snrand] > -1)) || PlayerCanOpenDoor (segP, snrand)) {
-			if (!bVisited [segP->children [snrand]]) {
-				segQueue [head++] = segP->children [snrand];
-				bVisited [segP->children [snrand]] = 1;
-				depth [segP->children [snrand]] = cur_depth+1;
+		nWall = WallNumP (segP, nRndSide);
+		if (((!IS_WALL (nWall)) && (segP->children [nRndSide] > -1)) || PlayerCanOpenDoor (segP, nRndSide)) {
+			if (!bVisited [segP->children [nRndSide]]) {
+				Assert (head < 2 * nQueueSize);
+				segQueue [head++] = segP->children [nRndSide];
+				bVisited [segP->children [nRndSide]] = 1;
+				depth [segP->children [nRndSide]] = nCurDepth+1;
 				head &= nQueueSize - 1;
 				if (head > tail) {
 					if ((head == tail + nQueueSize - 1) && !AllocQueue (1))
@@ -202,10 +203,10 @@ while (tail != head) {
 		// -- Int3 ();	//	Something bad has happened.  Queue is trashed.  --MK, 12/13/94
 		return -1;
 		}
-	cur_depth = depth [segQueue [tail]];
+	nCurDepth = depth [segQueue [tail]];
 	}
 #if TRACE
-con_printf (CONDBG, "...failed at depth %i, returning -1\n", cur_depth);
+con_printf (CONDBG, "...failed at depth %i, returning -1\n", nCurDepth);
 #endif
 return -1;
 }

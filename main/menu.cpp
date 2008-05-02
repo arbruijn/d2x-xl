@@ -3555,13 +3555,6 @@ do {
 		if (i < 0)
 			break;
 		} 
-	if (gameStates.render.color.bLightMapsOk) {
-		// (re-) calc lightmaps if either lightmaps turned on and no lightmaps yet computed
-		// or lightmap range has changed
-		if (gameStates.app.bGameRunning && gameOpts->render.color.bUseLightMaps && 
-			 !bLightMaps && !HaveLightMaps ())
-			CreateLightMaps ();
-		}
 	if (gameOpts->render.bDynLighting) {
 		if (lightOpts.nObjectLight >= 0) {
 			gameOpts->ogl.bLightObjects = m [lightOpts.nObjectLight].value;
@@ -3596,10 +3589,6 @@ if (optColorSat >= 0) {
 			break;
 			}
 	}
-if (gameOpts->ogl.bObjLighting) {
-	}
-if (nLightRange != extraGameInfo [0].nLightRange)
-	ComputeStaticDynLighting ();
 }
 
 //------------------------------------------------------------------------------

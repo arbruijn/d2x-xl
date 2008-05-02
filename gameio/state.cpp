@@ -2742,7 +2742,7 @@ if (!i) {
 FixObjectSegs ();
 FixObjectSizes ();
 ComputeNearestLights (nLevel);
-ComputeStaticDynLighting ();
+ComputeStaticDynLighting (nLevel);
 InitReactorForLevel (1);
 SetMaxOmegaCharge ();
 SetEquipGenStates ();
