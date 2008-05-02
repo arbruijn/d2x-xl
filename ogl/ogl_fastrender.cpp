@@ -821,6 +821,13 @@ if (bBlend) {
 else
 	glDisable (GL_BLEND);
 #endif
+#ifdef _DEBUG
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	if (bDepthOnly)
+		nDbgSeg = nDbgSeg;
+	else
+		nDbgSeg = nDbgSeg;
+#endif
 if (gameStates.render.bTriangleMesh && !bMonitor) {
 #ifdef _DEBUG
 	if ((nDbgFace >= 0) && (faceP - gameData.segs.faces.faces != nDbgFace))
@@ -1161,6 +1168,17 @@ if (bDepthOnly) {
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 	return 1;
 	}
+if (bMonitor) {
+	ovlTexCoordP = bMonitor ? faceP->pTexCoord - faceP->nIndex : gameData.segs.faces.ovlTexCoord;
+	glActiveTexture (GL_TEXTURE2);
+	glClientActiveTexture (GL_TEXTURE2);
+	if (bTextured)
+		glTexCoordPointer (2, GL_FLOAT, 0, ovlTexCoordP);
+	else {
+		glDisable (GL_TEXTURE_2D);
+		OGL_BINDTEX (0);
+		}
+	}
 gameStates.ogl.iLight = 0;
 gameStates.render.history.nType = bColorKey ? 3 : bMultiTexture ? 2 : (bmBot != NULL);
 if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
@@ -1177,37 +1195,12 @@ for (;;) {
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	glDepthFunc (GL_EQUAL);
 	}
+if (bMonitor)
+	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
+
 glDepthFunc (GL_LEQUAL);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-if (bMonitor) {
-#ifdef _DEBUG
-	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-		if (bDepthOnly)
-			nDbgSeg = nDbgSeg;
-		else
-			nDbgSeg = nDbgSeg;
-#endif
-	ovlTexCoordP = bMonitor ? faceP->pTexCoord - faceP->nIndex : gameData.segs.faces.ovlTexCoord;
-	if (bTextured) {
-		{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, 1, 0);}
-		if (gameData.render.lights.dynamic.headLights.nLights)
-			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
-		glActiveTexture (GL_TEXTURE1);
-		glClientActiveTexture (GL_TEXTURE1);
-		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
-		}
-	else {
-		glActiveTexture (GL_TEXTURE1);
-		glClientActiveTexture (GL_TEXTURE1);
-		glDisable (GL_TEXTURE_2D);
-		OGL_BINDTEX (0);
-		}
-	glTexCoordPointer (2, GL_FLOAT, 0, ovlTexCoordP);
-	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
-	gameStates.render.history.bmBot = bmTop;
-	}
 #if 0
 if (!bBlend)
 	glEnable (GL_BLEND);

@@ -670,8 +670,9 @@ if (!gameData.render.monsterball.pSphere) {
 	gameData.render.monsterball.nTessDepth = 3;
 	gameData.render.monsterball.nFaces = CreateSphere (&gameData.render.monsterball);
 	}
+if (gameData.render.monsterball.nFaces > 0) 
 #endif
-if (gameData.render.monsterball.nFaces > 0) {
+	{
 	if ((gameOpts->render.bDepthSort > 0) || (gameOpts->render.nPath && !gameOpts->render.bDepthSort))
 		RIAddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {

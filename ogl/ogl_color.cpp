@@ -868,10 +868,10 @@ else
 		G3AccumVertColor (nVertex, &colorSum, &vcd, nThread);
 		}
 	if ((nVertex >= 0) && !(gameStates.render.nState || gameData.render.vertColor.bDarkness)) {
-		tFaceColor *pc = gameData.render.color.ambient + nVertex;
-		colorSum.c.r += pc->color.red;
-		colorSum.c.g += pc->color.green;
-		colorSum.c.b += pc->color.blue;
+		tFaceColor *pfc = gameData.render.color.ambient + nVertex;
+		colorSum.c.r += pfc->color.red;
+		colorSum.c.g += pfc->color.green;
+		colorSum.c.b += pfc->color.blue;
 #ifdef _DEBUG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum.c.r + colorSum.c.g + colorSum.c.b < 0.1f))
 			nVertex = nVertex;

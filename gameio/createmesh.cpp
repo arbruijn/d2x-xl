@@ -547,6 +547,10 @@ for (i = gameData.segs.nVertices, pointP = gameData.segs.points; i; i--, pointP+
 for (h = 0, triP = gameData.segs.faces.tris; h < gameData.segs.nTris; h++, triP++) {
 	for (i = 0; i < 3; i++) {
 		nVertex = triP->index [i];
+#ifdef _DEBUG
+		if (nVertex == nDbgVertex)
+			nVertex = nVertex;
+#endif
 		VmVecInc (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, gameData.segs.faces.normals + 3 * h);
 		gameData.segs.points [nVertex].p3_normal.nFaces++;
 		}
@@ -614,11 +618,11 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	nIndex += 3;
 #endif
 	}
+gameData.segs.nTris = m_nTriangles;
 SetupVertexNormals ();
 FreeData ();
 PrintLog ("   created %d new triangles and %d new vertices\n", 
 			 m_nTriangles - m_nTris, gameData.segs.nVertices - m_nVertices);
-gameData.segs.nTris = m_nTriangles;
 CreateFaceVertLists ();
 return 1;
 }

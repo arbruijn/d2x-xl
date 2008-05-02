@@ -425,9 +425,8 @@ else {
 	if (!bDepthOnly) {
 		if (bLightMaps)
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord);
-		else {
+		else
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
-			}
 		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 		}
 	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
