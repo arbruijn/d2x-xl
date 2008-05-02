@@ -1130,7 +1130,7 @@ if ((t = FindArg ("-maxLightsPerFace"))) {
 		t = 16;
 	else if (t > 32)
 		t = 32;
-	gameStates.render.nMaxLightsPerPass = t;
+	gameStates.render.nMaxLightsPerFace = t;
 	}
 #endif
 #if RENDER2TEXTURE
