@@ -3064,6 +3064,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\lighting\lightprecalc.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\lighting\lightshaders.cpp"
 						>
 					</File>
@@ -4571,11 +4575,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
