@@ -407,7 +407,7 @@ if (objP && SHOW_DYN_LIGHT) {
 		xObjIntensity /= 4;
 	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
 		if (gameOpts->ogl.bPerPixelLighting)
-			xObjIntensity = (fix) sqrt ((float) xObjIntensity);
+			xObjIntensity = fl2f (sqrt (f2fl (xObjIntensity)));
 		else
 			xObjIntensity /= 2; 
 		}
