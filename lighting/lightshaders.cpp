@@ -740,8 +740,8 @@ char *pszPPLMLightingVS [] = {
 char *pszLMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"void main() {\r\n" \
-	"gl_FragColor = texture2D (lMapTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
-	"	}"
+	"gl_FragColor = /*texture2D (lMapTex, gl_TexCoord [0].xy) **/ gl_Color;\r\n" \
+	"}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"void main() {\r\n" \

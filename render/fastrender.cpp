@@ -1293,8 +1293,6 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			faceP->bVisible = 0;
 			continue;
 			}
-		if (bLightMaps)
-			continue;
 		faceP->color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
 		pc = gameData.segs.faces.color + faceP->nIndex;
@@ -1305,7 +1303,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 				c = faceColor [nColor];
 				if (nColor)
 					*pc = c.color;
-				else {
+				else if (!bLightMaps) {
 					nVertex = faceP->index [h];
 #ifdef _DEBUG
 					if (nVertex == nDbgVertex)

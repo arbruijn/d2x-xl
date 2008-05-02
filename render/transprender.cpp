@@ -43,6 +43,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RI_POLY_OFFSET 0
 #define RI_POLY_CENTER 1
 
+static int nPolys = 0, nDbgPoly = -1;
+
 //------------------------------------------------------------------------------
 
 tRenderItemBuffer	renderItems;
@@ -535,6 +537,7 @@ if (renderItems.bUseLightMaps != bUseLightMaps) {
 	}
 if (renderItems.bClientState == bClientState) {
 	if (bClientState) {
+		glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 		glClientActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 		if (renderItems.bClientTexCoord != bTexCoord) {
 			if ((renderItems.bClientTexCoord = bTexCoord))
@@ -661,6 +664,11 @@ if (item->bmP && strstr (item->bmP->szName, "door45#5"))
 #endif
 #if 1
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, HaveLightMaps () && (item->faceP != NULL))) {
+#ifdef _DEBUG
+	nPolys++;
+	if ((nDbgPoly >= 0) && (nPolys != nDbgPoly))
+		return;
+#endif
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	if (renderItems.bTextured)
 		glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
@@ -688,7 +696,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, Have
 	bMultiPass = (item->faceP != NULL) && gameOpts->ogl.bPerPixelLighting;
 	for (;;) {
 		glDrawArrays (item->nPrimitive, 0, item->nVertices);
-		if (bMultiPass)
+		if (!bMultiPass)
 			break;
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 			break;
@@ -972,6 +980,7 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	return;
 	}
 RIResetShader ();
+nPolys = 0;
 bStencil = StencilOff ();
 renderItems.bTextured = -1;
 renderItems.bClientState = -1;
