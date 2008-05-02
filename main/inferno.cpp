@@ -1165,7 +1165,7 @@ if ((t = FindArg ("-gl_texcompress")))
 #endif
 if ((t = FindArg ("-cache_meshes")))
 	gameStates.app.bCacheMeshes = NumArg (t, 1);
-if ((t = FindArg ("-cache_lightmas")))
+if ((t = FindArg ("-cache_lightmaps")))
 	gameStates.app.bCacheLightMaps = NumArg (t, 1);
 if ((t = FindArg ("-renderpath")))
 	gameOptions [0].render.nPath = NumArg (t, 1);
