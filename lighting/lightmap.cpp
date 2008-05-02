@@ -933,7 +933,7 @@ void CreateLightMaps (int nLevel)
 DestroyLightMaps ();
 if (!InitLightData (0))
 	return;
-if (LoadLightMapData ())
+if (LoadLightMapData (nLevel))
 	return;
 TransformDynLights (1, 0);
 if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
@@ -957,7 +957,7 @@ if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 	gameOpts->render.color.nSaturation = nSaturation;
 	}
 OglCreateLightMaps ();
-SaveLightMapData ();
+SaveLightMapData (nLevel);
 #endif
 }
 
