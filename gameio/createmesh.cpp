@@ -89,7 +89,6 @@ typedef struct tMeshDataHeader {
 	int	nSegments;
 	int	nVertices;
 	int	nFaceVerts;
-	int	nLights;
 	int	nFaces;
 	int	nTris;
 	} tMeshHeaderData;
@@ -741,9 +740,9 @@ if (bOk)
 		 sizeof (*gameData.segs.faces.normals) +
 		 sizeof (*gameData.segs.faces.texCoord) + 
 		 sizeof (*gameData.segs.faces.ovlTexCoord) +
-		 sizeof (*gameData.segs.faces.lMapTexCoord) +
-		 sizeof (*gameData.segs.faces.color) +
-		 sizeof (*gameData.segs.faces.faceVerts)) * mdh.nFaceVerts;
+		 sizeof (*gameData.segs.faces.color)) * mdh.nTris * 3 +
+		 sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces * 2 + 
+		 sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts;
 bOk = ((bufP = (char *) D2_ALLOC (nSize)) != NULL);
 if (bOk)
 	bOk = CFRead (bufP, nSize, 1, &cf) == 1;
@@ -764,10 +763,10 @@ if (bOk) {
 	bufP += sizeof (*gameData.segs.faces.texCoord) * mdh.nTris * 3;
 	memcpy (gameData.segs.faces.ovlTexCoord, bufP, sizeof (*gameData.segs.faces.ovlTexCoord) * mdh.nTris * 3);
 	bufP += sizeof (*gameData.segs.faces.ovlTexCoord) * mdh.nTris * 3;
-	memcpy (gameData.segs.faces.lMapTexCoord, bufP, sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nTris * 3);
-	bufP += sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nTris * 3;
 	memcpy (gameData.segs.faces.color, bufP, sizeof (*gameData.segs.faces.color) * mdh.nTris * 3);
 	bufP += sizeof (*gameData.segs.faces.color) * mdh.nTris * 3;
+	memcpy (gameData.segs.faces.lMapTexCoord, bufP, sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces * 2);
+	bufP += sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces * 2;
 	memcpy (gameData.segs.faces.faceVerts, bufP, sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts);
 	}
 if (bufP)
@@ -794,7 +793,6 @@ bool CTriMeshBuilder::Save (int nLevel)
 								  gameData.segs.nSegments, 
 								  gameData.segs.nVertices, 
 								  gameData.segs.nFaceVerts, 
-							     gameData.render.lights.dynamic.nLights, 
 								  gameData.segs.nFaces, 
 								  gameData.segs.nTris};
 
@@ -811,8 +809,8 @@ bOk = (CFWrite (&mdh, sizeof (mdh), 1, &cf) == 1) &&
 		(CFWrite (gameData.segs.faces.normals, sizeof (*gameData.segs.faces.normals) * mdh.nTris, 3, &cf) == 3) &&
 		(CFWrite (gameData.segs.faces.texCoord, sizeof (*gameData.segs.faces.texCoord) * mdh.nTris, 3, &cf) == 3) &&
 		(CFWrite (gameData.segs.faces.ovlTexCoord, sizeof (*gameData.segs.faces.ovlTexCoord) * mdh.nTris, 3, &cf) == 3) &&
-		(CFWrite (gameData.segs.faces.lMapTexCoord, sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nTris, 3, &cf) == 3) &&
 		(CFWrite (gameData.segs.faces.color, sizeof (*gameData.segs.faces.color) * mdh.nTris, 3, &cf) == 3) &&
+		(CFWrite (gameData.segs.faces.lMapTexCoord, sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces, 2, &cf) == 2) &&
 		(CFWrite (gameData.segs.faces.faceVerts, sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts, 1, &cf) == 1);
 CFClose (&cf);
 return bOk;
