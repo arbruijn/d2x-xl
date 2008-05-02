@@ -719,7 +719,7 @@ bool CTriMeshBuilder::Load (int nLevel)
 	int					nSize;
 	bool					bOk;
 	char					szFilename [FILENAME_LEN];
-	char					*bufP = NULL;
+	char					*ioBuffer = NULL, *bufP;
 
 if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 	return false;
@@ -745,8 +745,9 @@ if (bOk)
 		 sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts;
 bOk = ((bufP = (char *) D2_ALLOC (nSize)) != NULL);
 if (bOk)
-	bOk = CFRead (bufP, nSize, 1, &cf) == 1;
+	bOk = CFRead (ioBuffer, nSize, 1, &cf) == 1;
 if (bOk) {
+	bufP = ioBuffer;
 	memcpy (gameData.segs.vertices, bufP, sizeof (*gameData.segs.vertices) * mdh.nVertices);
 	bufP += sizeof (*gameData.segs.vertices) * mdh.nVertices;
 	memcpy (gameData.segs.fVertices, bufP, sizeof (*gameData.segs.fVertices) * mdh.nVertices);
@@ -769,8 +770,8 @@ if (bOk) {
 	bufP += sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces * 2;
 	memcpy (gameData.segs.faces.faceVerts, bufP, sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts);
 	}
-if (bufP)
-	D2_FREE (bufP);
+if (ioBuffer)
+	D2_FREE (ioBuffer);
 if (bOk) {
 	gameData.segs.nVertices = mdh.nVertices;
 	gameData.segs.nTris = mdh.nTris;
