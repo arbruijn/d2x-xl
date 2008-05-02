@@ -76,11 +76,28 @@ char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
 
 using namespace mesh;
 
-CQuadMeshBuilder quadMeshBuilder;
+//------------------------------------------------------------------------------
+
+#define	MAX_EDGE_LEN	fMaxEdgeLen [gameOpts->render.nMeshQuality]
+
+#define MESH_DATA_VERSION 1
+
+//------------------------------------------------------------------------------
+
+typedef struct tMeshDataHeader {
+	int	nVersion;
+	int	nSegments;
+	int	nVertices;
+	int	nLights;
+	int	nFaces;
+	int	nTris;
+	} tMeshHeaderData;
+
+//------------------------------------------------------------------------------
 
 float fMaxEdgeLen [] = {1e30f, 30.9f, 20.9f, 19.9f, 9.9f};
 
-#define	MAX_EDGE_LEN	fMaxEdgeLen [gameOpts->render.nMeshQuality]
+CQuadMeshBuilder quadMeshBuilder;
 
 //------------------------------------------------------------------------------
 
@@ -671,14 +688,132 @@ for (i = gameData.segs.nFaces, faceP = FACES; i; i--, faceP++)
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::Build (void)
+char *CTriMeshBuilder::DataFilename (char *pszFilename, int nLevel)
+{
+return GameDataFilename (pszFilename, "mesh", nLevel, gameOpts->render.nMeshQuality);
+}
+
+//------------------------------------------------------------------------------
+
+bool CTriMeshBuilder::Load (int nLevel)
+{
+	CFILE					cf;
+	tMeshDataHeader	mdh;
+	int					nSize;
+	bool					bOk;
+	char					szFilename [FILENAME_LEN];
+	char					*bufP = NULL;
+
+if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
+	return false;
+if (!CFOpen (&cf, DataFilename (szFilename, nLevel), gameFolders.szTempDir, "rb", 0))
+	return false;
+bOk = (CFRead (&mdh, sizeof (mdh), 1, &cf) == 1);
+if (bOk)
+	bOk = (mdh.nVersion == MESH_DATA_VERSION) && 
+			(mdh.nSegments == gameData.segs.nSegments) && 
+			(mdh.nFaces == gameData.segs.nFaces); 
+if (bOk)
+	nSize = 
+		(sizeof (*gameData.segs.vertices) + 
+		 sizeof (*gameData.segs.fVertices)) * mdh.nVertices + 
+		sizeof (*gameData.segs.faces.faces) * mdh.nFaces + 
+		sizeof (*gameData.segs.faces.tris) * mdh.nTris + 
+		(sizeof (*gameData.segs.faces.vertices) + 
+		 sizeof (*gameData.segs.faces.normals) +
+		 sizeof (*gameData.segs.faces.texCoord) + 
+		 sizeof (*gameData.segs.faces.ovlTexCoord) +
+		 sizeof (*gameData.segs.faces.lMapTexCoord) +
+		 sizeof (*gameData.segs.faces.color) +
+		 sizeof (*gameData.segs.faces.faceVerts)) * mdh.nTris * 3;
+bOk = ((bufP = (char *) D2_ALLOC (nSize)) != NULL);
+if (bOk)
+	bOk = CFRead (bufP, nSize, 1, &cf) == 1;
+if (bOk) {
+	memcpy (gameData.segs.vertices, bufP, sizeof (*gameData.segs.vertices) * mdh.nVertices);
+	bufP += sizeof (*gameData.segs.vertices) * mdh.nVertices;
+	memcpy (gameData.segs.fVertices, bufP, sizeof (*gameData.segs.fVertices) * mdh.nVertices);
+	bufP += sizeof (*gameData.segs.fVertices) * mdh.nVertices;
+	memcpy (gameData.segs.faces.faces, bufP, sizeof (*gameData.segs.faces.faces) * mdh.nFaces);
+	bufP += sizeof (*gameData.segs.faces.faces) * mdh.nFaces;
+	memcpy (gameData.segs.faces.tris, bufP, sizeof (*gameData.segs.faces.tris) * mdh.nTris);
+	bufP += sizeof (*gameData.segs.faces.tris) * mdh.nTris;
+	memcpy (gameData.segs.faces.vertices, bufP, sizeof (*gameData.segs.faces.vertices) * mdh.nTris * 3);
+	bufP +=  sizeof (*gameData.segs.faces.vertices) * mdh.nTris * 3;
+	memcpy (gameData.segs.faces.normals, bufP, sizeof (*gameData.segs.faces.normals) * mdh.nTris * 3);
+	bufP += sizeof (*gameData.segs.faces.normals) * mdh.nTris * 3;
+	memcpy (gameData.segs.faces.texCoord, bufP, sizeof (*gameData.segs.faces.texCoord) * mdh.nTris * 3);
+	bufP += sizeof (*gameData.segs.faces.texCoord) * mdh.nTris * 3;
+	memcpy (gameData.segs.faces.ovlTexCoord, bufP, sizeof (*gameData.segs.faces.ovlTexCoord) * mdh.nTris * 3);
+	bufP += sizeof (*gameData.segs.faces.ovlTexCoord) * mdh.nTris * 3;
+	memcpy (gameData.segs.faces.lMapTexCoord, bufP, sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nTris * 3);
+	bufP += sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nTris * 3;
+	memcpy (gameData.segs.faces.color, bufP, sizeof (*gameData.segs.faces.color) * mdh.nTris * 3);
+	bufP += sizeof (*gameData.segs.faces.color) * mdh.nTris * 3;
+	memcpy (gameData.segs.faces.faceVerts, bufP, sizeof (*gameData.segs.faces.faceVerts) * mdh.nTris * 3);
+	bufP += sizeof (*gameData.segs.faces.faceVerts) * mdh.nTris * 3;
+	}
+if (bufP)
+	D2_FREE (bufP);
+if (bOk) {
+	gameData.segs.nVertices = mdh.nVertices;
+	gameData.segs.nTris = mdh.nTris;
+	}
+CFClose (&cf);
+return bOk;
+}
+
+//------------------------------------------------------------------------------
+
+bool CTriMeshBuilder::Save (int nLevel)
+{
+	CFILE					cf;
+	bool					bOk;
+	char					szFilename [FILENAME_LEN];
+	char					*bufP = NULL;
+
+	tMeshDataHeader mdh = {MESH_DATA_VERSION, 
+								  gameData.segs.nSegments, 
+								  gameData.segs.nVertices, 
+							     gameData.render.lights.dynamic.nLights, 
+								  gameData.segs.nFaces, 
+								  gameData.segs.nTris};
+
+if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
+	return 0;
+if (!CFOpen (&cf, DataFilename (szFilename, nLevel), gameFolders.szTempDir, "wb", 0))
+	return 0;
+bOk = (CFWrite (&mdh, sizeof (mdh), 1, &cf) == 1) &&
+		(CFWrite (gameData.segs.vertices, sizeof (*gameData.segs.vertices) * mdh.nVertices, 1, &cf) == 1) &&
+		(CFWrite (gameData.segs.fVertices, sizeof (*gameData.segs.fVertices) * mdh.nVertices, 1, &cf) == 1) &&
+		(CFWrite (gameData.segs.faces.faces, sizeof (*gameData.segs.faces.faces) * mdh.nFaces, 1, &cf) == 1) &&
+		(CFWrite (gameData.segs.faces.tris, sizeof (*gameData.segs.faces.tris) * mdh.nTris, 1, &cf) == 1) &&
+		(CFWrite (gameData.segs.faces.vertices, sizeof (*gameData.segs.faces.vertices) * mdh.nTris, 3, &cf) == 3) &&
+		(CFWrite (gameData.segs.faces.normals, sizeof (*gameData.segs.faces.normals) * mdh.nTris, 3, &cf) == 3) &&
+		(CFWrite (gameData.segs.faces.texCoord, sizeof (*gameData.segs.faces.texCoord) * mdh.nTris, 3, &cf) == 3) &&
+		(CFWrite (gameData.segs.faces.ovlTexCoord, sizeof (*gameData.segs.faces.ovlTexCoord) * mdh.nTris, 3, &cf) == 3) &&
+		(CFWrite (gameData.segs.faces.lMapTexCoord, sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nTris, 3, &cf) == 3) &&
+		(CFWrite (gameData.segs.faces.color, sizeof (*gameData.segs.faces.color) * mdh.nTris, 3, &cf) == 3) &&
+		(CFWrite (gameData.segs.faces.faceVerts, sizeof (*gameData.segs.faces.faceVerts) * mdh.nTris, 3, &cf) == 3);
+CFClose (&cf);
+return bOk;
+}
+
+//------------------------------------------------------------------------------
+
+int CTriMeshBuilder::Build (int nLevel)
 {
 PrintLog ("creating triangle mesh\n");
+if (Load (nLevel))
+	return 1;
 if (!CreateTriangles ())
 	return 0;
 if (!SplitTriangles ())
 	return 0;
-return InsertTriangles ();
+if (!InsertTriangles ())
+	return 0;
+Save (nLevel);
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -909,7 +1044,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 
 #define FACE_VERTS	6
 
-void CQuadMeshBuilder::Build (void)
+void CQuadMeshBuilder::Build (int nLevel)
 {
 m_faceP = FACES;
 m_triP = TRIANGLES;
@@ -1002,7 +1137,7 @@ for (m_colorP = gameData.render.color.ambient, i = gameData.segs.nVertices; i; i
 		m_colorP->color.alpha = 1;
 		}
 if (!gameOpts->ogl.bPerPixelLighting && gameOpts->render.nMeshQuality)
-	m_triMeshBuilder.Build ();
+	m_triMeshBuilder.Build (nLevel);
 if (gameStates.render.bTriangleMesh)
 	DestroyCameras ();
 }

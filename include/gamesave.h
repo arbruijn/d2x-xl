@@ -99,8 +99,8 @@ void LoadGame(void);
 void SaveGame(void);
 void getLevel_name(void);
 
-extern int LoadLevelSub(char *filename);
-extern int SaveLevel(char *filename);
+int LoadLevelSub(char *filename, int nLevel);
+int SaveLevel(char *filename);
 
 // called in place of load_game() to only load the .min data
 extern void load_mine_only(char * filename);

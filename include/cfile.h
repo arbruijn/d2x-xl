@@ -144,6 +144,8 @@ FILE *CFFindHogFile (tHogFileList *hog, char *folder, char *name, int *length);
 
 int CFExtract (char *filename, char *folder, int bUseD1Hog, char *szDest);
 
+char *GameDataFilename (char *pszFilename, char *pszExt, int nLevel, int nType);
+
 // prototypes for reading basic types from fp
 int CFReadInt (CFILE *file);
 short CFReadShort (CFILE *file);

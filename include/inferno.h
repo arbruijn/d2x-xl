@@ -1089,6 +1089,8 @@ typedef struct tApplicationStates {
 	int bEnableFreeCam;
 	int bCacheTextures;
 	int bCacheLights;
+	int bCacheMeshes;
+	int bCacheLightMaps;
 	int bUseSwapFile;
 	int bSingleStep;
 	int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu

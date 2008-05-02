@@ -16,8 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#define LIGHT_VERSION 4
-
 #ifdef RCS
 static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
 #endif
@@ -75,8 +73,21 @@ static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Ex
 
 //------------------------------------------------------------------------------
 
+#define LIGHT_DATA_VERSION 4
+
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
+
+//------------------------------------------------------------------------------
+
+typedef struct tLightDataHeader {
+	int	nVersion;
+	int	nSegments;
+	int	nVertices;
+	int	nLights;
+	int	nMaxLightRange;
+	int	nMethod;
+	} tLightDataHeader;
 
 //------------------------------------------------------------------------------
 
@@ -473,49 +484,40 @@ return
 
 //------------------------------------------------------------------------------
 
-typedef struct tPreFileHeader {
-	int	nVersion;
-	int	nSegments;
-	int	nVertices;
-	int	nLights;
-	int	nMaxLightRange;
-	int	nMethod;
-	} tPreFileHeader;
+char *LightDataFilename (char *pszFilename, int nLevel)
+{
+return GameDataFilename (pszFilename, "light", nLevel, -1);
+}
+
+//------------------------------------------------------------------------------
 
 int LoadPrecompiledLights (int nLevel)
 {
-	CFILE				cf;
-	tPreFileHeader	pfh;
-	int				bOk;
-	char				szFilename [FILENAME_LEN], szFullname [FILENAME_LEN];
+	CFILE					cf;
+	tLightDataHeader	ldh;
+	int					bOk;
+	char					szFilename [FILENAME_LEN];
 
 if (!gameStates.app.bCacheLights)
 	return 0;
-CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : 
-				 gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, 
-				 NULL, szFilename, NULL);
-if (nLevel < 0)
-	sprintf (szFullname, "%s-s%d.pre", szFilename, -nLevel);
-else
-	sprintf (szFullname, "%s-%d.pre", szFilename, nLevel);
-if (!CFOpen (&cf, szFullname, gameFolders.szTempDir, "rb", 0))
+if (!CFOpen (&cf, LightDataFilename (szFilename, nLevel), gameFolders.szTempDir, "rb", 0))
 	return 0;
-bOk = (CFRead (&pfh, sizeof (pfh), 1, &cf) == 1);
+bOk = (CFRead (&ldh, sizeof (ldh), 1, &cf) == 1);
 if (bOk)
-	bOk = (pfh.nVersion == LIGHT_VERSION) && 
-			(pfh.nSegments == gameData.segs.nSegments) && 
-			(pfh.nVertices == gameData.segs.nVertices) && 
-			(pfh.nLights == gameData.render.lights.dynamic.nLights) && 
-			(pfh.nMaxLightRange == MAX_LIGHT_RANGE) &&
-			(pfh.nMethod = LightingMethod ());
+	bOk = (ldh.nVersion == LIGHT_DATA_VERSION) && 
+			(ldh.nSegments == gameData.segs.nSegments) && 
+			(ldh.nVertices == gameData.segs.nVertices) && 
+			(ldh.nLights == gameData.render.lights.dynamic.nLights) && 
+			(ldh.nMaxLightRange == MAX_LIGHT_RANGE) &&
+			(ldh.nMethod = LightingMethod ());
 if (bOk)
 	bOk = 
-			(CFRead (gameData.segs.bSegVis, sizeof (ubyte) * pfh.nSegments * SEGVIS_FLAGS, 1, &cf) == 1) &&
+			(CFRead (gameData.segs.bSegVis, sizeof (ubyte) * ldh.nSegments * SEGVIS_FLAGS, 1, &cf) == 1) &&
 #if 0
-			(CFRead (gameData.segs.bVertVis, sizeof (ubyte) * pfh.nVertices * VERTVIS_FLAGS, 1, &cf) == 1) &&
+			(CFRead (gameData.segs.bVertVis, sizeof (ubyte) * ldh.nVertices * VERTVIS_FLAGS, 1, &cf) == 1) &&
 #endif
-			(CFRead (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * pfh.nSegments * MAX_NEAREST_LIGHTS, 1, &cf) == 1) &&
-			(CFRead (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * pfh.nVertices * MAX_NEAREST_LIGHTS, 1, &cf) == 1);
+			(CFRead (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1, &cf) == 1) &&
+			(CFRead (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1, &cf) == 1);
 CFClose (&cf);
 return bOk;
 }
@@ -525,33 +527,26 @@ return bOk;
 int SavePrecompiledLights (int nLevel)
 {
 	CFILE				cf;
-	tPreFileHeader pfh = {LIGHT_VERSION, 
-								 gameData.segs.nSegments, 
-								 gameData.segs.nVertices, 
-								 gameData.render.lights.dynamic.nLights, 
-								 MAX_LIGHT_RANGE, 
-								 LightingMethod ()};
+	tLightDataHeader ldh = {LIGHT_DATA_VERSION, 
+								   gameData.segs.nSegments, 
+								   gameData.segs.nVertices, 
+								   gameData.render.lights.dynamic.nLights, 
+									MAX_LIGHT_RANGE, 
+									LightingMethod ()};
 	int				bOk;
-	char				szFilename [FILENAME_LEN], szFullname [FILENAME_LEN];
+	char				szFilename [FILENAME_LEN];
 
 if (!gameStates.app.bCacheLights)
 	return 0;
-CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : 
-				 gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, 
-				 NULL, szFilename, NULL);
-if (nLevel < 0)
-	sprintf (szFullname, "%s-s%d.pre", szFilename, -nLevel);
-else
-	sprintf (szFullname, "%s-%d.pre", szFilename, nLevel);
-if (!CFOpen (&cf, szFullname, gameFolders.szTempDir, "wb", 0))
+if (!CFOpen (&cf, LightDataFilename (szFilename, nLevel), gameFolders.szTempDir, "wb", 0))
 	return 0;
-bOk = (CFWrite (&pfh, sizeof (pfh), 1, &cf) == 1) &&
-		(CFWrite (gameData.segs.bSegVis, sizeof (ubyte) * pfh.nSegments * SEGVIS_FLAGS, 1, &cf) == 1) &&
+bOk = (CFWrite (&ldh, sizeof (ldh), 1, &cf) == 1) &&
+		(CFWrite (gameData.segs.bSegVis, sizeof (ubyte) * ldh.nSegments * SEGVIS_FLAGS, 1, &cf) == 1) &&
 #if 0
-		(CFWrite (gameData.segs.bVertVis, sizeof (ubyte) * pfh.nVertices * VERTVIS_FLAGS, 1, &cf) == 1) &&
+		(CFWrite (gameData.segs.bVertVis, sizeof (ubyte) * ldh.nVertices * VERTVIS_FLAGS, 1, &cf) == 1) &&
 #endif
-		(CFWrite (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * pfh.nSegments * MAX_NEAREST_LIGHTS, 1, &cf) == 1) &&
-		(CFWrite (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * pfh.nVertices * MAX_NEAREST_LIGHTS, 1, &cf) == 1);
+		(CFWrite (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1, &cf) == 1) &&
+		(CFWrite (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1, &cf) == 1);
 CFClose (&cf);
 return bOk;
 }

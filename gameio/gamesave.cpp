@@ -1497,7 +1497,7 @@ int no_oldLevel_file_error=0;
 // ----------------------------------------------------------------------------
 //loads a level (.LVL) file from disk
 //returns 0 if success, else error code
-int LoadLevelSub (char * filename_passed)
+int LoadLevelSub (char * pszFilename, int nLevel)
 {
 #ifdef EDITOR
 	int bUseCompiledLevel = 1;
@@ -1514,15 +1514,15 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
 	}
 #ifdef _DEBUG
-Level_being_loaded = filename_passed;
+Level_being_loaded = pszFilename;
 #endif
-strcpy(filename,filename_passed);
+strcpy(filename,pszFilename);
 #ifdef EDITOR
 	//if we have the editor, try the LVL first, no matter what was passed.
 	//if we don't have an LVL, try RDL  
 	//if we don't have the editor, we just use what was passed
 
-	ChangeFilenameExtension(filename,filename_passed,".lvl");
+	ChangeFilenameExtension(filename,pszFilename,".lvl");
 	bUseCompiledLevel = 0;
 
 	if (!CFExist(filename))	{
@@ -1654,7 +1654,7 @@ if (game_err == -1) {   //error!!
 	return 3;
 	}
 CFClose(&cf);
-quadMeshBuilder.Build ();
+quadMeshBuilder.Build (nLevel);
 #if !SHADOWS
 if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
 #endif

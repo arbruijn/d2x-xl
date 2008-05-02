@@ -1163,6 +1163,10 @@ if ((t = FindArg ("-model_quality")) && *Args [t+1])
 if ((t = FindArg ("-gl_texcompress")))
 	gameStates.ogl.bTextureCompression = NumArg (t, 1);
 #endif
+if ((t = FindArg ("-cache_meshes")))
+	gameStates.app.bCacheMeshes = NumArg (t, 1);
+if ((t = FindArg ("-cache_lightmas")))
+	gameStates.app.bCacheLightMaps = NumArg (t, 1);
 if ((t = FindArg ("-renderpath")))
 	gameOptions [0].render.nPath = NumArg (t, 1);
 if ((t = FindArg ("-split_polys")))

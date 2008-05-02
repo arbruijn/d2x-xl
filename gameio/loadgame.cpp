@@ -832,7 +832,7 @@ memset (gameData.objs.xCreationTime, 0, sizeof (*gameData.objs.xCreationTime) * 
 SetDataVersion (-1);
 LoadTextureBrightness (pszLevelName);
 for (;;) {
-	if (!(nLoadRes = LoadLevelSub (pszLevelName)))
+	if (!(nLoadRes = LoadLevelSub (pszLevelName, nLevel)))
 		break;	//actually load the data from disk!
 	nLoadRes = 1;
 	if (bRetry)

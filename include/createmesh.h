@@ -53,33 +53,36 @@ class CTriMeshBuilder {
 		int InsertTriangles (void);
 		void CreateFaceVertLists (void);
 		void SortFaceVertList (ushort *vertList, int left, int right);
+		char *DataFilename (char *pszFilename, int nLevel);
+		bool Load (int nLevel);
+		bool Save (int nLevel);
 
 	public:
 		CTriMeshBuilder (void) {};
 		~CTriMeshBuilder (void) {};
-		int Build (void);
+		int Build (int nLevel);
 	};
 
 class CQuadMeshBuilder {
 	private:
-		grsFace		*m_faceP;
-		grsTriangle	*m_triP;
-		fVector3		*m_vertexP;
-		fVector3		*m_normalP;
-		tTexCoord2f	*m_texCoordP;
-		tTexCoord2f	*m_ovlTexCoordP;
-		tTexCoord2f	*m_lMapTexCoordP;
-		tRgbaColorf	*m_faceColorP;
-		tFaceColor	*m_colorP;
-		tSegment		*m_segP;
-		tSegFaces	*m_segFaceP;
-		tSide			*m_sideP;
+		grsFace			*m_faceP;
+		grsTriangle		*m_triP;
+		fVector3			*m_vertexP;
+		fVector3			*m_normalP;
+		tTexCoord2f		*m_texCoordP;
+		tTexCoord2f		*m_ovlTexCoordP;
+		tTexCoord2f		*m_lMapTexCoordP;
+		tRgbaColorf		*m_faceColorP;
+		tFaceColor		*m_colorP;
+		tSegment			*m_segP;
+		tSegFaces		*m_segFaceP;
+		tSide				*m_sideP;
 
-		short			m_sideVerts [5];
-		short			m_nOvlTexCount;
-		short			m_nWall;
-		short			m_nWallType;
-		bool			m_bColoredSeg;
+		short				m_sideVerts [5];
+		short				m_nOvlTexCount;
+		short				m_nWall;
+		short				m_nWallType;
+		bool				m_bColoredSeg;
 
 		CTriMeshBuilder	m_triMeshBuilder;
 
@@ -96,7 +99,7 @@ class CQuadMeshBuilder {
 	public:
 		CQuadMeshBuilder (void) {};
 		~CQuadMeshBuilder (void) {};
-		void Build (void);
+		void Build (int nLevel);
 	};
 
 }

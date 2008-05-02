@@ -1,4 +1,3 @@
-/* $Id: cfp.c,v 1.23 2003/11/27 00:36:14 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -1022,6 +1021,30 @@ if (!CFOpen (&cf, filename, folder, "rb", bUseD1Hog))
 fstat (fileno (cf.file), &statbuf);
 CFClose (&cf);
 return statbuf.st_mtime;
+}
+
+//------------------------------------------------------------------------------
+
+char *GameDataFilename (char *pszFilename, char *pszExt, int nLevel, int nType)
+{
+	char	szFilename [FILENAME_LEN];
+
+CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : 
+				 gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, 
+				 NULL, szFilename, NULL);
+if (nType < 0) {
+	if (nLevel < 0)
+		sprintf (pszFilename, "%s-s%d.%s", szFilename, pszExt, -nLevel);
+	else
+		sprintf (pszFilename, "%s-%d.%s", szFilename, pszExt, nLevel);
+	}
+else {
+	if (nLevel < 0)
+		sprintf (pszFilename, "%s-s%d.%s%d", szFilename, pszExt, -nLevel, nType);
+	else
+		sprintf (pszFilename, "%s-%d.%s%d", szFilename, pszExt, nLevel, nType);
+	}
+return pszFilename;
 }
 
 // ----------------------------------------------------------------------------
