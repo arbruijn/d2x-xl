@@ -215,7 +215,7 @@ extern GLhandleARB perPixelLightingShaderProgs [MAX_LIGHTS_PER_PIXEL][4];
 
 //------------------------------------------------------------------------------
 
-int G3SetupPerPixelLighting (grsFace *faceP, int nType)
+int SetupPerPixelLighting (grsFace *faceP, int nType)
 {
 	int						nLightRange, nLights;
 	float						fBrightness;
@@ -298,7 +298,7 @@ int G3SetupPerPixelShader (grsFace *faceP, int nType)
 	int	bLightMaps, bStaticColor, nLights, nShader;
 
 bStaticColor = (gameStates.ogl.iLight == 0);
-nLights = G3SetupPerPixelLighting (faceP, nType);
+nLights = SetupPerPixelLighting (faceP, nType);
 nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
 #ifdef _DEBUG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -873,7 +873,7 @@ else if (gameOpts->ogl.bPerPixelLighting) {
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 		if (gameStates.ogl.iLight >= gameStates.ogl.nLights)
 			break;
-		G3SetupPerPixelLighting (faceP, gameStates.render.history.nType);
+		SetupPerPixelLighting (faceP, gameStates.render.history.nType);
 		glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 0.0f);
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		glDepthFunc (GL_EQUAL);
