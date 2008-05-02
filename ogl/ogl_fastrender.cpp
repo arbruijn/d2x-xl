@@ -1169,7 +1169,7 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 for (;;) {
 	G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-	if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= MAX_PP_LIGHTS_PER_FACE))
+	if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 		break;
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	glDepthFunc (GL_EQUAL);

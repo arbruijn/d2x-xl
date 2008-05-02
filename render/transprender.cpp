@@ -644,7 +644,7 @@ return (renderItems.bClientState == bClientState);
 
 void RIRenderPoly (tRIPoly *item)
 {
-	int	i, j;
+	int	i, j, bMultiPass;
 
 if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
@@ -685,7 +685,19 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, Have
 		G3SetupShader (item->faceP, 0, 0, item->bmP != NULL, 
 							(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
 							item->bmP ? NULL : item->color);
-	glDrawArrays (item->nPrimitive, 0, item->nVertices);
+	bMultiPass = (item->faceP != NULL) && gameOpts->ogl.bPerPixelLighting;
+	for (;;) {
+		glDrawArrays (item->nPrimitive, 0, item->nVertices);
+		if (bMultiPass)
+			break;
+		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
+			break;
+		G3SetupPerPixelShader (item->faceP, gameStates.render.history.nType);
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		glDepthFunc (GL_EQUAL);
+		}
+	glDepthFunc (GL_LEQUAL);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 else 
 #endif
