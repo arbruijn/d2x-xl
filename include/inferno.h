@@ -1640,6 +1640,7 @@ typedef struct tSegmentData {
 	ubyte					*bVertVis;
 	ubyte					*bSegVis;
 	int					nVertices;
+	int					nFaceVerts;
 	int					nLastVertex;
 	int					nSegments;
 	int					nLastSegment;

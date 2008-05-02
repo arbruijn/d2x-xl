@@ -50,6 +50,7 @@ class CTriMeshBuilder {
 		int SplitTriangle (tTriangle *mtP, short nPass);
 		int SplitTriangles (void);
 		void QSortTriangles (int left, int right);
+		void SetupVertexNormals (void);
 		int InsertTriangles (void);
 		void CreateFaceVertLists (void);
 		void SortFaceVertList (ushort *vertList, int left, int right);

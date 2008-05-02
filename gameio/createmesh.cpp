@@ -88,6 +88,7 @@ typedef struct tMeshDataHeader {
 	int	nVersion;
 	int	nSegments;
 	int	nVertices;
+	int	nFaceVerts;
 	int	nLights;
 	int	nFaces;
 	int	nTris;
@@ -532,13 +533,37 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
+void CTriMeshBuilder::SetupVertexNormals (void)
+{
+	grsTriangle		*triP;
+	g3sPoint			*pointP;
+	int				h, i, nVertex;
+
+for (i = gameData.segs.nVertices, pointP = gameData.segs.points; i; i--, pointP++) {
+	pointP->p3_normal.vNormal.v3.p.x = 
+	pointP->p3_normal.vNormal.v3.p.y = 
+	pointP->p3_normal.vNormal.v3.p.z = 0;
+	pointP->p3_normal.nFaces = 0;
+	}
+for (h = 0, triP = gameData.segs.faces.tris; h < gameData.segs.nTris; h++, triP++) {
+	for (i = 0; i < 3; i++) {
+		nVertex = triP->index [i];
+		VmVecInc (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, gameData.segs.faces.normals + 3 * h);
+		gameData.segs.points [nVertex].p3_normal.nFaces++;
+		}
+	}
+ComputeVertexNormals ();
+}
+
+//------------------------------------------------------------------------------
+
 int CTriMeshBuilder::InsertTriangles (void)
 {
 	tTriangle	*triP = m_triangles;
 	grsTriangle	*grsTriP = TRIANGLES;
 	grsFace		*m_faceP = NULL;
 	vmsVector	vNormal;
-	int			h, i, nVertex, nTriVertIndex = 0, nFace = -1;
+	int			h, i, nTriVertIndex = 0, nFace = -1;
 	GLuint		nIndex = 0;
 
 PrintLog ("   inserting new triangles\n");
@@ -580,15 +605,6 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	VmVecFloatToFix (&vNormal, gameData.segs.faces.normals + nIndex);
 	for (i = 1; i < 3; i++)
 		gameData.segs.faces.normals [nIndex + i] = gameData.segs.faces.normals [nIndex];
-	for (i = 0; i < 3; i++) {
-		nVertex = triP->index [i];
-#ifdef _DEBUG
-		if (nVertex == nDbgVertex)
-			nVertex = nVertex;
-#endif
-		VmVecInc (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, gameData.segs.faces.normals + nIndex);
-		gameData.segs.points [nVertex].p3_normal.nFaces++;
-		}
 	memcpy (gameData.segs.faces.texCoord + nIndex, triP->texCoord, sizeof (triP->texCoord));
 	memcpy (gameData.segs.faces.ovlTexCoord + nIndex, triP->ovlTexCoord, sizeof (triP->ovlTexCoord));
 	memcpy (gameData.segs.faces.color + nIndex, triP->color, sizeof (triP->color));
@@ -599,7 +615,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	nIndex += 3;
 #endif
 	}
-ComputeVertexNormals ();
+SetupVertexNormals ();
 FreeData ();
 PrintLog ("   created %d new triangles and %d new vertices\n", 
 			 m_nTriangles - m_nTris, gameData.segs.nVertices - m_nVertices);
@@ -644,11 +660,12 @@ void CTriMeshBuilder::CreateFaceVertLists (void)
 	int			*bTags = new int [gameData.segs.nVertices];
 	grsFace		*faceP;
 	grsTriangle	*triP;
-	int			h, i, j, k, nFace, nVerts;
+	int			h, i, j, k, nFace;
 
 //count the vertices of each face
 memset (bTags, 0xFF, gameData.segs.nVertices * sizeof (bTags [0]));
-for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0, nVerts = 0; i; i--, faceP++, nFace++) {
+gameData.segs.nFaceVerts = 0;
+for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0; i; i--, faceP++, nFace++) {
 	faceP->nVerts = 0;
 	for (j = faceP->nTris, triP = TRIANGLES + faceP->nTriIndex; j; j--, triP++) {
 		for (k = 0; k < 3; k++) {
@@ -656,15 +673,16 @@ for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0, nVerts = 0; i; i--, fac
 			if (bTags [h] != nFace) {
 				bTags [h] = nFace;
 				faceP->nVerts++;
-				nVerts++;
+				gameData.segs.nFaceVerts++;
 				}
 			}
 		}
 	}
 //insert each face's vertices' indices in the vertex index buffer
 memset (bTags, 0xFF, gameData.segs.nVertices * sizeof (bTags [0]));
-for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0, nVerts = 0; i; i--, faceP++, nFace++) {
-	faceP->triIndex = gameData.segs.faces.faceVerts + nVerts;
+gameData.segs.nFaceVerts = 0;
+for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0; i; i--, faceP++, nFace++) {
+	faceP->triIndex = gameData.segs.faces.faceVerts + gameData.segs.nFaceVerts;
 #ifdef _DEBUG
 	if (faceP->nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
@@ -674,7 +692,7 @@ for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0, nVerts = 0; i; i--, fac
 			h = triP->index [k];
 			if (bTags [h] != nFace) {
 				bTags [h] = nFace;
-				gameData.segs.faces.faceVerts [nVerts++] = h;
+				gameData.segs.faces.faceVerts [gameData.segs.nFaceVerts++] = h;
 				}
 			}
 		}
@@ -725,7 +743,7 @@ if (bOk)
 		 sizeof (*gameData.segs.faces.ovlTexCoord) +
 		 sizeof (*gameData.segs.faces.lMapTexCoord) +
 		 sizeof (*gameData.segs.faces.color) +
-		 sizeof (*gameData.segs.faces.faceVerts)) * mdh.nTris * 3;
+		 sizeof (*gameData.segs.faces.faceVerts)) * mdh.nFaceVerts;
 bOk = ((bufP = (char *) D2_ALLOC (nSize)) != NULL);
 if (bOk)
 	bOk = CFRead (bufP, nSize, 1, &cf) == 1;
@@ -750,14 +768,14 @@ if (bOk) {
 	bufP += sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nTris * 3;
 	memcpy (gameData.segs.faces.color, bufP, sizeof (*gameData.segs.faces.color) * mdh.nTris * 3);
 	bufP += sizeof (*gameData.segs.faces.color) * mdh.nTris * 3;
-	memcpy (gameData.segs.faces.faceVerts, bufP, sizeof (*gameData.segs.faces.faceVerts) * mdh.nTris * 3);
-	bufP += sizeof (*gameData.segs.faces.faceVerts) * mdh.nTris * 3;
+	memcpy (gameData.segs.faces.faceVerts, bufP, sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts);
 	}
 if (bufP)
 	D2_FREE (bufP);
 if (bOk) {
 	gameData.segs.nVertices = mdh.nVertices;
 	gameData.segs.nTris = mdh.nTris;
+	SetupVertexNormals ();
 	}
 CFClose (&cf);
 return bOk;
@@ -775,6 +793,7 @@ bool CTriMeshBuilder::Save (int nLevel)
 	tMeshDataHeader mdh = {MESH_DATA_VERSION, 
 								  gameData.segs.nSegments, 
 								  gameData.segs.nVertices, 
+								  gameData.segs.nFaceVerts, 
 							     gameData.render.lights.dynamic.nLights, 
 								  gameData.segs.nFaces, 
 								  gameData.segs.nTris};
@@ -794,7 +813,7 @@ bOk = (CFWrite (&mdh, sizeof (mdh), 1, &cf) == 1) &&
 		(CFWrite (gameData.segs.faces.ovlTexCoord, sizeof (*gameData.segs.faces.ovlTexCoord) * mdh.nTris, 3, &cf) == 3) &&
 		(CFWrite (gameData.segs.faces.lMapTexCoord, sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nTris, 3, &cf) == 3) &&
 		(CFWrite (gameData.segs.faces.color, sizeof (*gameData.segs.faces.color) * mdh.nTris, 3, &cf) == 3) &&
-		(CFWrite (gameData.segs.faces.faceVerts, sizeof (*gameData.segs.faces.faceVerts) * mdh.nTris, 3, &cf) == 3);
+		(CFWrite (gameData.segs.faces.faceVerts, sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts, 1, &cf) == 1);
 CFClose (&cf);
 return bOk;
 }
