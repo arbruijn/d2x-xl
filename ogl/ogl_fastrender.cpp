@@ -1184,7 +1184,6 @@ gameStates.render.history.nType = bColorKey ? 3 : bMultiTexture ? 2 : (bmBot != 
 if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
 	G3SetupHeadLightShader (gameStates.render.history.nType, bmBot ? NULL : &faceP->color);
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-	return 0;
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	glDepthFunc (GL_EQUAL);
 	}
