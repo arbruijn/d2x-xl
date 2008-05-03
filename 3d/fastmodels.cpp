@@ -677,10 +677,7 @@ for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 				glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->vPosf));
 				glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &color);
 				glLightfv (hLight, GL_SPECULAR, (GLfloat *) &color);
-				glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / fBrightness);
-				glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
-				glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
-				if (psl->bSpot) {
+				if (psl->info.bSpot) {
 #if 0
 					psl = psl;
 #else
@@ -688,6 +685,14 @@ for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 					glLighti (hLight, GL_SPOT_CUTOFF, 25);
 					glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &psl->vDirf);
 #endif
+					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / fBrightness);
+					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);
+					glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / fBrightness);
+					}
+				else {
+					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / fBrightness);
+					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
+					glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
 					}
 				nLights--;
 				}

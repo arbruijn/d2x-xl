@@ -679,7 +679,8 @@ if (item->bmP && strstr (item->bmP->szName, "door45#5"))
 	if ((nDbgPoly >= 0) && (nPolys != nDbgPoly))
 		return;
 #endif
-faceP = ((triP = item->triP)) ? NULL : item->faceP;
+faceP = item->faceP;
+triP = item->triP;
 bLightMaps = renderItems.bLightMaps && (faceP != NULL);
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLightMaps)) {
 	if (item->nColors > 1) {
@@ -688,6 +689,10 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 			glClientActiveTexture (GL_TEXTURE0);
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord + faceP->nIndex);
 			glColorPointer (4, GL_FLOAT, 0, item->color);
+			if (triP)
+				glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + triP->nIndex);
+			else if (faceP)
+				glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + faceP->nIndex);
 			glActiveTexture (GL_TEXTURE1);
 			glClientActiveTexture (GL_TEXTURE1);
 			}
@@ -701,11 +706,13 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 	if (renderItems.bTextured)
 		glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	if (triP) {
-		glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + triP->nIndex));
+		if (!bLightMaps)
+			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + triP->nIndex);
 		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + triP->nIndex);
 		}
 	else if (faceP) {
-		glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
+		if (!bLightMaps)
+			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + faceP->nIndex);
 		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + faceP->nIndex);
 		}
 	else

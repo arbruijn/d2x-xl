@@ -1278,7 +1278,6 @@ typedef struct tShaderLight {
 	fVector		vDirf;
 	fix			xDistance;
 	short			nVerts [4];
-	ubyte			bSpot;
 	ubyte			bShadow;
 	ubyte			bLightning;
 	ubyte			bExclusive;
