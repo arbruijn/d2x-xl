@@ -38,7 +38,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "dynlight.h"
 
 #define SORT_LIGHTS 0
-#define PREFER_GEOMETRY_LIGHTS 1
+#define PREFER_GEOMETRY_LIGHTS 0
 
 //------------------------------------------------------------------------------
 
@@ -823,7 +823,7 @@ void SetNearestVertexLights (int nVertex, vmsVector *vNormalP, ubyte nType, int 
 	tShaderLight			*psl;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
-	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE;// * (gameOpts->ogl.bPerPixelLighting * 3 + 1);
+	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
 
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -1008,7 +1008,7 @@ if (gameOpts->render.bDynLighting) {
 	short						h, i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
 	int						bSkipHeadLight = !gameStates.render.nState && (gameOpts->ogl.bPerPixelLighting || gameStates.ogl.bHeadLight);
-	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE;// * (gameOpts->ogl.bPerPixelLighting * 3 + 1);
+	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
@@ -1110,6 +1110,7 @@ if (gameOpts->render.bDynLighting) {
 		psl->xDistance = (fix) (VmVecDist (vPixelPos, &psl->info.vPos) / psl->info.fRange);
 		if (psl->xDistance > xMaxLightRange)
 			continue;
+		psl->bUsed = 0;
 		SetActiveShaderLight (activeLightsP, psl, 1, nThread);
 		}
 	}

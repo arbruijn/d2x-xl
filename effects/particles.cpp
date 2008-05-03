@@ -31,6 +31,7 @@
 #include "network.h"
 #include "light.h"
 #include "dynlight.h"
+#include "lightmap.h"
 #include "render.h"
 #include "transprender.h"
 #include "objsmoke.h"
@@ -699,6 +700,7 @@ if (bufferBrightness < 0)
 	bufferBrightness = brightness;
 if (iBuffer) {
 	tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
+	int bLightMaps = HaveLightMaps ();
 	bufferBrightness = brightness;
 	glEnable (GL_BLEND);
 	if (gameStates.ogl.bShadersOk) {
@@ -707,13 +709,13 @@ if (iBuffer) {
 		else
 			G3SetupShader (NULL, 0, 0, 1, 1, &color);
 		}
-	if (InitParticleBuffer ()) { //gameStates.render.bVertexArrays) {
+	if (InitParticleBuffer (bLightMaps)) { //gameStates.render.bVertexArrays) {
 #if 1
 		grsBitmap *bmP;
 		if (!(bmP = bmpParticle [0][gameData.smoke.nLastType]))
 			return;
+		glActiveTexture (GL_TEXTURE0 + bLightMaps);
 		glEnable (GL_TEXTURE_2D);
-		glActiveTexture (GL_TEXTURE0);
 		if (BM_CURFRAME (bmP))
 			bmP = BM_CURFRAME (bmP);
 		if (OglBindBmTex (bmP, 0, 1))
@@ -1000,10 +1002,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int InitParticleBuffer (void)
+int InitParticleBuffer (int bLightMaps)
 {
 if (gameStates.render.bVertexArrays)
-	gameStates.render.bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE0);
+	gameStates.render.bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE0 + bLightMaps);
 if (gameStates.render.bVertexArrays) {
 	glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
 	glColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
@@ -1019,7 +1021,7 @@ int CloseParticleBuffer (void)
 if (!gameStates.render.bVertexArrays)
 	return 0;
 FlushParticleBuffer (-1);
-G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + HaveLightMaps ());
 return 1;
 }
 
@@ -1028,6 +1030,7 @@ return 1;
 int BeginRenderSmoke (int nType, float nScale)
 {
 	grsBitmap	*bmP;
+	int			bLightMaps = HaveLightMaps ();
 	static time_t	t0 = 0;
 
 if (gameOpts->render.bDepthSort <= 0) {
@@ -1036,9 +1039,9 @@ if (gameOpts->render.bDepthSort <= 0) {
 		AnimateParticle (nType);
 	bmP = bmpParticle [0][nType];
 	gameData.smoke.bStencil = StencilOff ();
-	InitParticleBuffer ();
-	glActiveTexture (GL_TEXTURE0);
-	glClientActiveTexture (GL_TEXTURE0);
+	InitParticleBuffer (bLightMaps);
+	glActiveTexture (GL_TEXTURE0 + bLightMaps);
+	glClientActiveTexture (GL_TEXTURE0 + bLightMaps);
 	glDisable (GL_CULL_FACE);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

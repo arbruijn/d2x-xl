@@ -472,20 +472,22 @@ G3FlushFaceBuffer (1);
 #endif
 if (bVertexArrays) {
 	if (!bDepthOnly) {
+		G3DisableClientStates (1, 1, 0, GL_TEXTURE3);
+		glEnable (GL_TEXTURE_2D);
+		OGL_BINDTEX (0);
+		glDisable (GL_TEXTURE_2D);
+
 		G3DisableClientStates (1, 1, 0, GL_TEXTURE2);
-		glActiveTexture (GL_TEXTURE2);
 		glEnable (GL_TEXTURE_2D);
 		OGL_BINDTEX (0);
 		glDisable (GL_TEXTURE_2D);
 
 		G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
-		glActiveTexture (GL_TEXTURE1);
 		glEnable (GL_TEXTURE_2D);
 		OGL_BINDTEX (0);
 		glDisable (GL_TEXTURE_2D);
 		}
-	G3DisableClientStates (!bDepthOnly, !bDepthOnly, 0, GL_TEXTURE0);
-	glActiveTexture (GL_TEXTURE0);
+	G3DisableClientStates (!bDepthOnly, !bDepthOnly, 1, GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);

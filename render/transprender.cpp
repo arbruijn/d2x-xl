@@ -929,7 +929,7 @@ else {
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		gameData.smoke.nLastType = -1;
 		renderItems.bTextured = 1;
-		InitParticleBuffer ();
+		InitParticleBuffer (renderItems.bLightMaps);
 		}
 	if (renderItems.bDepthMask)
 		glDepthMask (renderItems.bDepthMask = 0);
@@ -1102,7 +1102,13 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 RIFlushParticleBuffer (-1);
 EndRenderSmoke (NULL);
 RIResetShader ();
-G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
+G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
+OGL_BINDTEX (0);
+G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
+OGL_BINDTEX (0);
+G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
+OGL_BINDTEX (0);
+G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
 OGL_BINDTEX (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);

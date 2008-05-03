@@ -869,6 +869,14 @@ SOURCE=..\..\lighting\light.cpp
 
 SOURCE=..\..\lighting\lightmap.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\lighting\lightprecalc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\lighting\lightshaders.cpp
+# End Source File
 # End Group
 # Begin Group "models"
 

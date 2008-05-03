@@ -519,8 +519,8 @@ for (j = 0; (i > 0); activeLightsP++, i--) {
 #endif
 	if (psl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
-	lightColor = psl->info.color.v3;
-lightPos = psl->info.vPosf [gameStates.render.nState && !gameStates.ogl.bUseTransform].v3;
+	lightColor = *((fVector3 *) &psl->info.color);
+	lightPos = psl->vPosf [gameStates.render.nState && !gameStates.ogl.bUseTransform].v3;
 #if VECMAT_CALLS
 	VmVecSub (&lightDir, &lightPos, vcd.pVertPos);
 #else
