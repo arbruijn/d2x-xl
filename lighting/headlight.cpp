@@ -111,6 +111,8 @@ for (i = 0; i < gameData.render.lights.dynamic.headLights.nLights; i++) {
 	VmVecFixToFloat (&psl->vDirf, &pl->vDir);
 	if (pl->bTransform && !gameStates.ogl.bUseTransform)
 		G3RotatePoint (&psl->vDirf, &psl->vDirf, 0);
+	pl->info.bSpot = 1;
+	psl->info.bSpot = 1;
 	psl->info.fSpotAngle = pl->info.fSpotAngle;
 	psl->info.fSpotExponent = pl->info.fSpotExponent;
 	if (gameStates.ogl.bHeadLight && gameOpts->ogl.bHeadLight && !gameStates.render.automap.bDisplay) {

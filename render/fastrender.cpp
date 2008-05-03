@@ -1659,6 +1659,7 @@ if (!gameOpts->render.debug.bObjects)
 #endif
 if ((nType < 1) || (nType > 2))
 	return;
+gameStates.render.nState = 1;
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 	nSegment = gameData.render.mine.nSegRenderList [--nListPos];
 	if (nSegment < 0) {
