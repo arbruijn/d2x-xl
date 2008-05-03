@@ -1300,10 +1300,12 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			if (gameStates.render.bFullBright) 
 				*pc = nColor ? faceColor [nColor].color : brightColor.color;
 			else {
-				c = faceColor [nColor];
-				if (nColor)
-					*pc = c.color;
-				else if (!bLightMaps) {
+				if (bLightMaps) {
+					c = faceColor [nColor];
+					if (nColor)
+						*pc = c.color;
+					}
+				else {
 					nVertex = faceP->index [h];
 #ifdef _DEBUG
 					if (nVertex == nDbgVertex)
@@ -1316,9 +1318,8 @@ for (i = nStart; i != nEnd; i += nIncr) {
 								goto skipVertex;
 							}
 #endif
-						if (gameOpts->ogl.bPerPixelLighting)
-							c.color = gameData.render.color.ambient [nVertex].color;
-						else {
+						c.color = gameData.render.color.ambient [nVertex].color;
+						if (!gameOpts->ogl.bPerPixelLighting) {
 #	if SHADER_VERTEX_LIGHTING
 							if (!ComputeVertexLight (nVertex, 1, &c))
 #	endif
@@ -1336,11 +1337,12 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #endif
 						}
 					*pc = gameData.render.color.vertices [nVertex].color;
-					}
-				if (nColor == 1) {
-					pc->red *= fAlpha;
-					pc->blue *= fAlpha;
-					pc->green *= fAlpha;
+					if (nColor == 1) {
+						c = faceColor [nColor];
+						pc->red *= c.color.red;
+						pc->blue *= c.color.green;
+						pc->green *= c.color.blue;
+						}
 					}
 				pc->alpha = fAlpha;
 				}
@@ -1428,10 +1430,13 @@ for (i = nStart; i != nEnd; i += nIncr) {
 				if (gameStates.render.bFullBright) 
 					*pc = nColor ? faceColor [nColor].color : brightColor.color;
 				else {
+#if 0
 					c = faceColor [nColor];
 					if (nColor)
 						*pc = c.color;
-					else {
+					else 
+#endif
+					{
 						nVertex = triP->index [h];
 #ifdef _DEBUG
 						if (nVertex == nDbgVertex)
@@ -1444,9 +1449,8 @@ for (i = nStart; i != nEnd; i += nIncr) {
 									goto skipVertex;
 								}
 #endif
-							if (gameOpts->ogl.bPerPixelLighting)
-								c.color = gameData.render.color.ambient [nVertex].color;
-							else
+							c.color = gameData.render.color.ambient [nVertex].color;
+							if (!gameOpts->ogl.bPerPixelLighting)
 #	if SHADER_VERTEX_LIGHTING
 								if (!ComputeVertexLight (nVertex, 1, &c))
 #	endif
@@ -1463,11 +1467,12 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #endif
 							}
 						*pc = gameData.render.color.vertices [nVertex].color;
-						}
-					if (nColor == 1) {
-						pc->red *= fAlpha;
-						pc->blue *= fAlpha;
-						pc->green *= fAlpha;
+						if (nColor) {
+							c = faceColor [nColor];
+							pc->red *= c.color.red;
+							pc->blue *= c.color.green;
+							pc->green *= c.color.blue;
+							}
 						}
 					pc->alpha = fAlpha;
 					}
