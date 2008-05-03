@@ -47,6 +47,8 @@
 #define MAX_PP_LIGHTS_PER_FACE 32
 #define MAX_PP_LIGHTS_PER_PASS 1
 
+#define HW_VERTEX_LIGHTING 0
+
 //------------------------------------------------------------------------------
 
 GLhandleARB gsShaderProg = 0;
@@ -215,7 +217,7 @@ extern GLhandleARB perPixelLightingShaderProgs [MAX_LIGHTS_PER_PIXEL][4];
 
 //------------------------------------------------------------------------------
 
-int SetupPerPixelLighting (grsFace *faceP, int nType)
+int SetupHardwareLighting (grsFace *faceP, int nType)
 {
 	int						nLightRange, nLights;
 	float						fBrightness;
@@ -236,7 +238,9 @@ if (!gameStates.ogl.iLight) {
 	gameStates.ogl.nFirstLight = gameData.render.lights.dynamic.shader.nFirstLight [0];
 	}
 OglEnableLighting (0);
+#if HW_VERTEX_LIGHTING == 0
 glDisable (GL_LIGHTING);
+#endif
 activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameStates.ogl.nFirstLight;
 nLightRange = gameData.render.lights.dynamic.shader.nLastLight [0] - gameStates.ogl.nFirstLight + 1;
 for (nLights = 0; 
@@ -246,10 +250,12 @@ for (nLights = 0;
 		continue;
 	hLight = GL_LIGHT0 + nLights++;
 	glEnable (hLight);
+#if HW_VERTEX_LIGHTING == 0
 	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : 0; //krasser Missbrauch!
+#endif
 	fBrightness = psl->info.fBrightness;
-	glLightf (hLight, GL_CONSTANT_ATTENUATION, psl->info.fBoost);
 	if (psl->info.nType == 2) {
+		glLightf (hLight, GL_CONSTANT_ATTENUATION, psl->info.fBoost);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
 		ambient.red = psl->info.color.red * 0.05f;
@@ -262,13 +268,18 @@ for (nLights = 0;
 		diffuse.alpha = 1.0f;
 		}
 	else {
+#if HW_VERTEX_LIGHTING
+		glLightf (hLight, GL_CONSTANT_ATTENUATION, min (1.0f, 1.0f / psl->info.fRad));
+#else
+		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
+#endif
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
-		ambient.red = psl->info.color.red * 0.025f;
-		ambient.green = psl->info.color.green * 0.025f;
-		ambient.blue = psl->info.color.blue * 0.025f;
+		ambient.red = psl->info.color.red * 0.05f;
+		ambient.green = psl->info.color.green * 0.05f;
+		ambient.blue = psl->info.color.blue * 0.05f;
 		ambient.alpha = 1.0f;
-		fBrightness *= 0.475f;
+		fBrightness *= 0.95f;
 		diffuse.red = psl->info.color.red * fBrightness;
 		diffuse.green = psl->info.color.green * fBrightness;
 		diffuse.blue = psl->info.color.blue * fBrightness;
@@ -283,9 +294,14 @@ for (nLights = 0;
 if (!nLightRange)
 	gameStates.ogl.iLight = gameStates.ogl.nLights;
 gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
+#if HW_VERTEX_LIGHTING
+for (int i = nLights; i < 8; i++)
+	glDisable (GL_LIGHT0 + i);
+#else
 if (InitPerPixelLightingShader (nType, nLights))
 	return nLights;
 OglDisableLighting ();
+#endif
 return 0;
 }
 
@@ -298,7 +314,10 @@ int G3SetupPerPixelShader (grsFace *faceP, int nType)
 	int	bLightMaps, bStaticColor, nLights, nShader;
 
 bStaticColor = (gameStates.ogl.iLight == 0);
-nLights = SetupPerPixelLighting (faceP, nType);
+nLights = SetupHardwareLighting (faceP, nType);
+#if HW_VERTEX_LIGHTING
+return gameStates.render.history.nShader;
+#endif
 nShader = 20 + nLights * MAX_LIGHTS_PER_PIXEL + nType;
 #ifdef _DEBUG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -873,7 +892,7 @@ else if (gameOpts->ogl.bPerPixelLighting) {
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 		if (gameStates.ogl.iLight >= gameStates.ogl.nLights)
 			break;
-		SetupPerPixelLighting (faceP, gameStates.render.history.nType);
+		SetupHardwareLighting (faceP, gameStates.render.history.nType);
 		glUniform1f (glGetUniformLocation (tmProg, "bStaticColor"), 0.0f);
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		glDepthFunc (GL_EQUAL);

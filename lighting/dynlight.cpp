@@ -670,6 +670,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 		SetupHeadLight (pl, psl);
 	psl->info.bState = pl->info.bState && (pl->info.color.red + pl->info.color.green + pl->info.color.blue > 0.0);
 	psl->bLightning = (pl->info.nObject < 0) && (pl->info.nSide < 0);
+	psl->bUsed = 
 	psl->bShadow =
 	psl->bExclusive = 0;
 	if (psl->info.bState) {
@@ -749,6 +750,9 @@ if (left < r)
 
 static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight *psl, short nType, int nThread)
 {
+if (psl->bUsed)
+	return 0;
+psl->bUsed = (ubyte) nType;
 fix xDist = (psl->xDistance / 2000 + 5) / 10;
 if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
@@ -794,10 +798,14 @@ tShaderLight *GetActiveShaderLight (tActiveShaderLight *activeLightsP, int nThre
 {
 	tShaderLight	*psl = activeLightsP->psl;
 
-if (psl && (activeLightsP->nType > 1)) {
-	activeLightsP->nType = 0;
-	activeLightsP->psl = NULL;
-	gameData.render.lights.dynamic.shader.nActiveLights [nThread]--;
+if (psl) {
+	if (psl->bUsed > 1)
+		psl->bUsed = 0;
+	if (activeLightsP->nType > 1) {
+		activeLightsP->nType = 0;
+		activeLightsP->psl = NULL;
+		gameData.render.lights.dynamic.shader.nActiveLights [nThread]--;
+		}
 	}
 if (psl == (tShaderLight *) 0xffffffff)
 	return NULL;
@@ -830,6 +838,8 @@ if (nVertex == nDbgVertex)
 			break;
 #endif
 		psl = gameData.render.lights.dynamic.shader.lights + j;
+		if (psl->bUsed)
+			continue;
 #ifdef _DEBUG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			nDbgSeg = nDbgSeg;
@@ -1016,6 +1026,7 @@ if (gameOpts->render.bDynLighting) {
 			psl = psl;
 #endif
 		psl--;
+		psl->bUsed = 0;
 		if (bSkipHeadLight && (psl->info.nType == 3))
 			continue;
 		if (psl->info.nType < 2) {
