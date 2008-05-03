@@ -291,7 +291,7 @@ if (gameOpts->render.bDepthSort > 0) {
 
 	for (i = 0; i < nVertices; i++)
 		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
-	RIAddPoly (NULL, NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
+	RIAddPoly (NULL, NULL, NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 	}
 else 
 #endif
@@ -560,7 +560,7 @@ if (bVertexArrays || bDepthSort) {
 #if 1
 	if (gameOpts->render.bDepthSort > 0) {
 		OglLoadBmTexture (bmBot, 1, 3, 0);
-		RIAddPoly (NULL, bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
+		RIAddPoly (NULL, NULL, bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 		return 0;
 		}
 #endif

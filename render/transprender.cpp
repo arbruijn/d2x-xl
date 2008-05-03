@@ -262,7 +262,7 @@ return AddRenderItem (riObject, &item, sizeof (item), vPos.p.z, vPos.p.z);
 
 //------------------------------------------------------------------------------
 
-int RIAddPoly (grsFace *faceP, grsTriangle triP, grsBitmap *bmP, 
+int RIAddPoly (grsFace *faceP, grsTriangle *triP, grsBitmap *bmP, 
 					fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color, 
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 					short nSegment)
