@@ -701,9 +701,9 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 	if (renderItems.bTextured)
 		glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	if (triP)
-		glVertexPointer (3, GL_FLOAT, sizeof (fVector), gameData.segs.faces.vertices + triP->nIndex);
-	if (faceP)
-		glVertexPointer (3, GL_FLOAT, sizeof (fVector), gameData.segs.faces.vertices + faceP->nIndex);
+		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + triP->nIndex);
+	else if (faceP)
+		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + faceP->nIndex);
 	else
 		glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	OglSetupTransform (faceP || triP);

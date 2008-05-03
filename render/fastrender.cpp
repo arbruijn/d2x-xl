@@ -1337,12 +1337,12 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #endif
 						}
 					*pc = gameData.render.color.vertices [nVertex].color;
-					if (nColor == 1) {
-						c = faceColor [nColor];
-						pc->red *= c.color.red;
-						pc->blue *= c.color.green;
-						pc->green *= c.color.blue;
-						}
+					}
+				if (nColor == 1) {
+					c = faceColor [nColor];
+					pc->red *= c.color.red;
+					pc->blue *= c.color.green;
+					pc->green *= c.color.blue;
 					}
 				pc->alpha = fAlpha;
 				}

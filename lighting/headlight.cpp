@@ -233,7 +233,7 @@ char *headLightFS [2][8] = {
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.5) {\r\n" \
 	"	    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
-	"      spotEffect = 1.0 + pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
+	"      spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = vec3 (spotEffect, spotEffect, spotEffect);\r\n" \
 	"      }\r\n" \
 	"   }\r\n" \
