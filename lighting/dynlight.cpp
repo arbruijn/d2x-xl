@@ -753,7 +753,7 @@ static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight
 if (psl->bUsed)
 	return 0;
 psl->bUsed = (ubyte) nType;
-fix xDist = (psl->xDistance / 2000 + 5) / 10;
+fix xDist = (psl->xDistance / (gameOpts->ogl.bPerPixelLighting ? 3000 : 2000) + 5) / 10;
 if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
 if (xDist < 0)
