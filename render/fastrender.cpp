@@ -1695,6 +1695,8 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		else
 			gameStates.render.bApplyDynLight = 0;
 		RenderObjList (nListPos, gameStates.render.nWindow);
+		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas)
+			ResetNearestStaticLights (nSegment);
 		gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
 		//gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iStaticLights [0];
 		}

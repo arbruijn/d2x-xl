@@ -335,6 +335,8 @@ for (nLights = 0;
 	  activeLightsP++, nLightRange--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
+	if (psl->bUsed == 2)	//nearest vertex light
+		psl->bUsed = 0;
 	hLight = GL_LIGHT0 + nLights++;
 	glEnable (hLight);
 #if HW_VERTEX_LIGHTING == 0
@@ -401,7 +403,8 @@ int G3SetupPerPixelShader (grsFace *faceP, int nType)
 	int	bLightMaps, bStaticColor, nLights, nShader;
 
 bStaticColor = (gameStates.ogl.iLight == 0);
-nLights = SetupHardwareLighting (faceP, nType);
+if (!(nLights = SetupHardwareLighting (faceP, nType)))
+	return 0;
 #if HW_VERTEX_LIGHTING
 return gameStates.render.history.nShader;
 #endif
@@ -1319,7 +1322,8 @@ else {
 		glDepthFunc (GL_EQUAL);
 		}
 	for (;;) {
-		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
+		if (!G3SetupPerPixelShader (faceP, gameStates.render.history.nType))
+			break;
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 			break;

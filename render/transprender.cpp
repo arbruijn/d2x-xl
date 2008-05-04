@@ -749,7 +749,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (faceP && gameOpts->ogl.bPerPixelLighting) {
 		if (!faceP->bColored) {
-			G3SetupGrayScaleShader (faceP->nType, &faceP->color);
+			G3SetupGrayScaleShader ((int) faceP->nRenderType, &faceP->color);
 			glDrawArrays (item->nPrimitive, 0, item->nVertices);
 			}
 		else {
@@ -761,7 +761,8 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 				}
 			gameStates.ogl.iLight = 0;
 			for (;;) {
-				G3SetupPerPixelShader (faceP, faceP->nType);
+				if (!G3SetupPerPixelShader (faceP, (int) faceP->nRenderType))
+					break;
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
 				if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 					break;

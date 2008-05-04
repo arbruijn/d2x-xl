@@ -36,6 +36,7 @@ void SetNearestVertexLights (int nVertex, vmsVector *vNormalP, ubyte nType, int 
 int SetNearestFaceLights (grsFace *faceP, int bTextured);
 short SetNearestPixelLights (int nSegment, vmsVector *vPixelPos, float fLightRad, int nThread);
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread);
+void ResetNearestStaticLights (int nSegment);
 short SetNearestSegmentLights (int nSegment, int bVariable, int nType, int nThread);
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (int nLevel);

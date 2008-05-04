@@ -797,7 +797,7 @@ return 1;
 tShaderLight *GetActiveShaderLight (tActiveShaderLight *activeLightsP, int nThread)
 {
 	tShaderLight	*psl = activeLightsP->psl;
-
+#if 0
 if (psl) {
 	if (psl->bUsed > 1)
 		psl->bUsed = 0;
@@ -807,6 +807,7 @@ if (psl) {
 		gameData.render.lights.dynamic.shader.nActiveLights [nThread]--;
 		}
 	}
+#endif
 if (psl == (tShaderLight *) 0xffffffff)
 	return NULL;
 return psl;
@@ -935,7 +936,7 @@ void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread
 	static int nLastSeg [4] = {-1, -1, -1, -1};
 	static ubyte nLastType [4] = {255, 255, 255, 255};
 #endif
-	int	nMaxLights = gameOpts->ogl.bObjLighting ? 8 : gameOpts->ogl.nMaxLights;
+	int	nMaxLights = (gameOpts->ogl.bPerPixelLighting || gameOpts->ogl.bObjLighting) ? 8 : gameOpts->ogl.nMaxLights;
 
 #if 0
 if ((nFrameFlipFlop == gameStates.render.nFrameFlipFlop + 1) && (nLastSeg [nThread] == nSegment) && (nLastType [nThread] == nType)) {
@@ -972,6 +973,27 @@ if (gameOpts->render.bDynLighting) {
 		}
 	}
 nActiveLights [nThread] = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
+}
+
+//------------------------------------------------------------------------------
+
+void ResetNearestStaticLights (int nSegment)
+{
+	int	nMaxLights = (gameOpts->ogl.bPerPixelLighting || gameOpts->ogl.bObjLighting) ? 8 : gameOpts->ogl.nMaxLights;
+
+if (gameOpts->render.bDynLighting) {
+	short						*pnl = gameData.render.lights.dynamic.nNearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
+	short						i, j;
+	tShaderLight			*psl;
+
+	for (i = nMaxLights; i; i--, pnl++) {
+		if ((j = *pnl) < 0)
+			break;
+		psl = gameData.render.lights.dynamic.shader.lights + j;
+		if (psl->bUsed == 3)
+			psl->bUsed = 0;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
