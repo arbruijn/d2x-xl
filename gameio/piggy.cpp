@@ -314,7 +314,7 @@ Assert (bitmapCacheSize > 0);
 #	else
 	if (bitmapCacheSize > 1024 * 1024 * 1024)
 		gameStates.render.nMaxTextureQuality = 3;
-	else if (bitmapCacheSize > 512 * 1024 * 1024)
+	else if (bitmapCacheSize > 256 * 1024 * 1024)
 		gameStates.render.nMaxTextureQuality = 2;
 	else
 		gameStates.render.nMaxTextureQuality = 1;

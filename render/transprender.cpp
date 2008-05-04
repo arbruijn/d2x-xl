@@ -39,11 +39,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 #include "renderthreads.h"
 
+#define RENDER_TRANSPARENCY 1
+
 #define RI_SPLIT_POLYS 1
 #define RI_POLY_OFFSET 0
 #define RI_POLY_CENTER 1
 
-static int nPolys = 0, nDbgPoly = -1;
+static int nPolys = 0, nDbgPoly = -1, nDbgItem = -1;
 
 //------------------------------------------------------------------------------
 
@@ -101,6 +103,7 @@ else if (renderItems.zScale > 1)
 
 int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDepth, int nIndex)
 {
+#if RENDER_TRANSPARENCY
 	tRenderItem *ph, *pi, *pj, **pd;
 	int			nOffset;
 
@@ -129,6 +132,7 @@ if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 pd = renderItems.pDepthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 ph = renderItems.pItemList + --renderItems.nFreeItems;
+ph->nItem = renderItems.nItems++;
 ph->nType = nType;
 ph->z = nDepth;
 memcpy (&ph->item, itemData, itemSize);
@@ -145,6 +149,9 @@ else {
 	*pd = ph;
 	}
 return renderItems.nFreeItems;
+#else
+return 0;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -458,7 +465,7 @@ int RIAddParticle (tParticle *particle, float fBrightness, int nThread)
 
 item.particle = particle;
 item.fBrightness = fBrightness;
-G3TransformPoint (&particle->transPos, &particle->pos, 0);
+G3TransformPoint (&particle->transPos, &particle->pos, gameOpts->ogl.bPerPixelLighting);
 return AddRenderItemMT (riParticle, &item, sizeof (item), particle->transPos.p.z, particle->transPos.p.z, nThread);
 }
 
@@ -539,8 +546,9 @@ if (renderItems.bUseLightMaps != bUseLightMaps) {
 		glActiveTexture (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
 		glEnable (GL_TEXTURE_2D);
+		glEnableClientState (GL_NORMAL_ARRAY);
 		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
-		glEnableClientState (GL_COLOR_ARRAY);
+		glDisableClientState (GL_COLOR_ARRAY);
 		glEnableClientState (GL_VERTEX_ARRAY);
 		}
 	renderItems.bUseLightMaps = bUseLightMaps;
@@ -548,16 +556,14 @@ if (renderItems.bUseLightMaps != bUseLightMaps) {
 #endif
 if (renderItems.bClientState == bClientState) {
 	if (bClientState) {
+		glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
+		glClientActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 		if (renderItems.bClientColor != bColor) {
-			glActiveTexture (GL_TEXTURE0);
-			glClientActiveTexture (GL_TEXTURE0);
 			if ((renderItems.bClientColor = bColor))
 				glEnableClientState (GL_COLOR_ARRAY);
 			else
 				glDisableClientState (GL_COLOR_ARRAY);
 			}
-		glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
-		glClientActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 		if (renderItems.bClientTexCoord != bTexCoord) {
 			if ((renderItems.bClientTexCoord = bTexCoord))
 				glEnableClientState (GL_TEXTURE_COORD_ARRAY);
@@ -565,12 +571,14 @@ if (renderItems.bClientState == bClientState) {
 				glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 			}
 		}
+	else
+		glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 	return 1;
 	}
 else if (bClientState) {
 	renderItems.bClientState = 1;
-	glActiveTexture (GL_TEXTURE0);
-	glClientActiveTexture (GL_TEXTURE0);
+	glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
+	glClientActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 	if (bColor) {
 		if (G3EnableClientState (GL_COLOR_ARRAY, -1))
 			renderItems.bClientColor = 1;
@@ -581,8 +589,6 @@ else if (bClientState) {
 		}
 	else
 		glDisableClientState (GL_COLOR_ARRAY);
-	glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
-	glClientActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 	if (bTexCoord) {
 		if (G3EnableClientState (GL_TEXTURE_COORD_ARRAY, -1))
 			renderItems.bClientTexCoord = 1;
@@ -597,18 +603,22 @@ else if (bClientState) {
 		return 0;
 	}
 else {
-	glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
-	glClientActiveTexture (GL_TEXTURE0 + bUseLightMaps);
-	if (renderItems.bClientTexCoord) {
-		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
-		renderItems.bClientTexCoord = 0;
-		}
-	if (renderItems.bClientColor) {
-		glDisableClientState (GL_COLOR_ARRAY);
-		renderItems.bClientColor = 0;
-		}
-	glDisableClientState (GL_VERTEX_ARRAY);
-	renderItems.bClientState = 0;
+	if (renderItems.bLightMaps) {
+		glActiveTexture (GL_TEXTURE1);
+		glClientActiveTexture (GL_TEXTURE1);
+		OGL_BINDTEX (0);
+		if (renderItems.bClientTexCoord) {
+			glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+			renderItems.bClientTexCoord = 0;
+			}
+		if (renderItems.bClientColor) {
+			glDisableClientState (GL_COLOR_ARRAY);
+			renderItems.bClientColor = 0;
+			}
+		glDisableClientState (GL_VERTEX_ARRAY);
+		renderItems.bClientState = 0;
+		}	
+	glActiveTexture (GL_TEXTURE0);
 	}
 renderItems.bmP = NULL;
 return 1;
@@ -618,7 +628,7 @@ return 1;
 
 void RIResetShader (void)
 {
-if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
+	{//if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
 	}
@@ -695,7 +705,6 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 			glActiveTexture (GL_TEXTURE0);
 			glClientActiveTexture (GL_TEXTURE0);
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord + faceP->nIndex);
-			glColorPointer (4, GL_FLOAT, 0, item->color);
 			if (triP)
 				glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + triP->nIndex);
 			else if (faceP)
@@ -703,28 +712,32 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 			glActiveTexture (GL_TEXTURE1);
 			glClientActiveTexture (GL_TEXTURE1);
 			}
-		else
-			glColorPointer (4, GL_FLOAT, 0, item->color);
+		glColorPointer (4, GL_FLOAT, 0, item->color);
 		}
 	else if (item->nColors == 1)
 		glColor4fv ((GLfloat *) item->color);
 	else
 		glColor3d (1, 1, 1);
-	if (renderItems.bTextured)
-		glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	if (triP) {
 		if (!bLightMaps)
 			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + triP->nIndex);
+		if (renderItems.bTextured)
+			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord + triP->nIndex);
 		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + triP->nIndex);
 		}
 	else if (faceP) {
 		if (!bLightMaps)
 			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + faceP->nIndex);
+		if (renderItems.bTextured)
+			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord + faceP->nIndex);
 		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + faceP->nIndex);
 		}
-	else
+	else {
+		if (renderItems.bTextured)
+			glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 		glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
-	OglSetupTransform (faceP || triP);
+		}
+	OglSetupTransform (faceP != NULL);
 	i = item->bAdditive;
 	if (i == 1)
 		glBlendFunc (GL_ONE, GL_ONE);
@@ -735,23 +748,29 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 	else 
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (faceP && gameOpts->ogl.bPerPixelLighting) {
-		if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
-			G3SetupHeadLightShader (renderItems.bTextured, renderItems.bTextured ? NULL : &faceP->color);
+		if (!faceP->bColored) {
+			G3SetupGrayScaleShader (faceP->nType, &faceP->color);
 			glDrawArrays (item->nPrimitive, 0, item->nVertices);
-			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-			glDepthFunc (GL_EQUAL);
 			}
-		gameStates.ogl.iLight = 0;
-		for (;;) {
-			G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
-			glDrawArrays (item->nPrimitive, 0, item->nVertices);
-			if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
-				break;
-			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-			glDepthFunc (GL_EQUAL);
+		else {
+			if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
+				G3SetupHeadLightShader (renderItems.bTextured, renderItems.bTextured ? NULL : &faceP->color);
+				glDrawArrays (item->nPrimitive, 0, item->nVertices);
+				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+				glDepthFunc (GL_EQUAL);
+				}
+			gameStates.ogl.iLight = 0;
+			for (;;) {
+				G3SetupPerPixelShader (faceP, faceP->nType);
+				glDrawArrays (item->nPrimitive, 0, item->nVertices);
+				if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
+					break;
+				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+				glDepthFunc (GL_EQUAL);
+				}
+			glDepthFunc (GL_LEQUAL);
+			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			}
-		glDepthFunc (GL_LEQUAL);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	else {
 		if (i && !gameStates.render.automap.bDisplay)
@@ -762,7 +781,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 								renderItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
 		glDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
-	OglResetTransform (faceP || triP);
+	OglResetTransform (faceP != NULL);
 	}
 else 
 #endif
@@ -1022,6 +1041,10 @@ void RIFlushParticleBuffer (int nType)
 if ((nType != riParticle) && (gameData.smoke.nLastType >= 0)) {
 	FlushParticleBuffer (-1.0f);
 	CloseParticleBuffer ();
+#if 0
+	renderItems.bmP = NULL;
+	gameStates.render.history.nShader = -1;
+#endif
 	gameData.smoke.nLastType = -1;
 	renderItems.bUseLightMaps = 0;
 	}
@@ -1031,10 +1054,10 @@ if ((nType != riParticle) && (gameData.smoke.nLastType >= 0)) {
 
 void RenderItems (void)
 {
+#if RENDER_TRANSPARENCY
 	struct tRenderItem	**pd, *pl, *pn;
 	int						nDepth, nType, bParticles, bStencil;
 
-#if 1//ndef _DEBUG
 if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
@@ -1052,7 +1075,6 @@ renderItems.bSplitPolys = !gameOpts->ogl.bPerPixelLighting && (gameStates.render
 renderItems.nWrap = 0;
 renderItems.nFrame = -1;
 renderItems.bmP = NULL;
-renderItems.nItems = ITEM_BUFFER_SIZE - renderItems.nFreeItems;
 G3DisableClientStates (1, 1, 0, GL_TEXTURE2 + renderItems.bLightMaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE1 + renderItems.bLightMaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + renderItems.bLightMaps);
@@ -1067,11 +1089,16 @@ glEnable (GL_CULL_FACE);
 BeginRenderSmoke (-1, 1);
 nType = -1;
 for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1; 
-	  pd >= renderItems.pDepthBuffer; 
+	  (pd >= renderItems.pDepthBuffer) && renderItems.nItems; 
 	  pd--) {
 	if ((pl = *pd)) {
 		nDepth = 0;
 		do {
+#ifdef _DEBUG
+			if (pl->nItem == nDbgItem)
+				nDbgItem = nDbgItem;
+#endif
+			renderItems.nItems--;
 			renderItems.nPrevType = nType;
 			nType = pl->nType;
 			RIFlushParticleBuffer (nType);

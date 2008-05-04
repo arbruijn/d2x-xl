@@ -704,21 +704,10 @@ if (iBuffer) {
 	bufferBrightness = brightness;
 	glEnable (GL_BLEND);
 	if (gameStates.ogl.bShadersOk) {
-		if (gameData.smoke.nLastType)
-			glUseProgramObject (0);
-#if 0
-		else if (!bLightMaps)
-			G3SetupShader (NULL, 0, 0, 1, 1, &color);
-#endif
-		else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
-			G3SetupHeadLightShader (1, &color);
-		else
-			glUseProgramObject (0);
-		}
 	if (InitParticleBuffer (bLightMaps)) { //gameStates.render.bVertexArrays) {
 #if 1
-		grsBitmap *bmP;
-		if (!(bmP = bmpParticle [0][gameData.smoke.nLastType]))
+		grsBitmap *bmP = bmpParticle [0][gameData.smoke.nLastType];
+		if (!bmP)
 			return;
 		glActiveTexture (GL_TEXTURE0/* + bLightMaps*/);
 		glClientActiveTexture (GL_TEXTURE0/* + bLightMaps*/);
@@ -728,8 +717,19 @@ if (iBuffer) {
 		if (OglBindBmTex (bmP, 0, 1))
 			return;
 #endif
+		if (gameData.smoke.nLastType)
+			glUseProgramObject (0);
+#if 0
+		else if (!bLightMaps)
+			G3SetupShader (NULL, 0, 0, 1, 1, &color);
+#endif
+		else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
+			G3SetupHeadLightShader (1, &color);
+		}
 		glDrawArrays (GL_QUADS, 0, iBuffer);
+#if 0
 		gameStates.render.bVertexArrays = (glGetError () == 0);
+#endif
 		}
 	else {
 		tParticleVertex	*pb;
@@ -869,7 +869,7 @@ else {
 	d = deltaUV;
 	}
 if (!nType) {
-	if (SHOW_DYN_LIGHT) {
+	if (!gameOpts->ogl.bPerPixelLighting && SHOW_DYN_LIGHT) {
 		tFaceColor *psc = AvgSgmColor (pParticle->nSegment, NULL);
 		if (psc->index == gameStates.render.nFrameFlipFlop + 1) {
 			pc.red *= (float) psc->color.red;
@@ -1012,8 +1012,10 @@ return 1;
 int InitParticleBuffer (int bLightMaps)
 {
 if (gameStates.render.bVertexArrays) {
+	G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
+	G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
 	if (bLightMaps)
-		G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
+		G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
 	gameStates.render.bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightMaps*/);
 	}
 if (gameStates.render.bVertexArrays) {
@@ -1937,6 +1939,7 @@ return nClouds;
 int ParticleCount (void)
 {
 	int			i, j, nParts, nFirstPart, nPartLimit, z;
+	int			bUnscaled = gameOpts->ogl.bPerPixelLighting;
 	tSmoke		*pSmoke = gameData.smoke.buffer;
 	tCloud		*pCloud;
 	tParticle	*pParticle;
@@ -1961,7 +1964,7 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 						nFirstPart = 0;
 						pParticle = pCloud->pParticles;
 						}
-					G3TransformPoint (&pParticle->transPos, &pParticle->pos, 0);
+					G3TransformPoint (&pParticle->transPos, &pParticle->pos, bUnscaled);
 					z = pParticle->transPos.p.z;
 #if 0
 					if ((z < gameData.render.zMin) || (z > gameData.render.zMax))

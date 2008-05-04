@@ -95,6 +95,7 @@ typedef struct tRIThruster {
 typedef struct tRenderItem {
 	struct tRenderItem	*pNextItem;
 	tRenderItemType		nType;
+	int						nItem;
 	int						z;
 	union {
 		tRIPoly					poly;

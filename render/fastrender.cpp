@@ -411,8 +411,11 @@ if (nType == 3) {
 		LoadGlareShader ();
 	return 0;
 	}
-else if (gameOpts->ogl.bPerPixelLighting)
+else if (gameOpts->ogl.bPerPixelLighting) {
 	OglEnableLighting (1);
+	glDisable (GL_LIGHTING);
+	glColor4i (1,1,1,1);
+	}
 OglSetupTransform (1);
 if (!(bVertexArrays = G3EnableClientStates (!bDepthOnly, !(bDepthOnly /*|| bLightMaps*/), bNormals, GL_TEXTURE0))) {
 	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);

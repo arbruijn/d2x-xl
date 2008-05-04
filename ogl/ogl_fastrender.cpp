@@ -51,22 +51,99 @@
 
 //------------------------------------------------------------------------------
 
-GLhandleARB gsShaderProg = 0;
-GLhandleARB gsf = 0; 
-GLhandleARB gsv = 0; 
+GLhandleARB gsShaderProg [2][3] = {{0,0,0},{0,0,0}};
+GLhandleARB gsf [2][3] = {{0,0,0},{0,0,0}};
+GLhandleARB gsv [2][3] = {{0,0,0},{0,0,0}};
 
-char *grayScaleFS =
+char *grayScaleFS [2][3] = {{
+	"uniform sampler2D baseTex;\r\n" \
+	"uniform vec4 faceColor;\r\n" \
+	"void main(void){" \
+	"float l = (faceColor.r + faceColor.g + faceColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, faceColor.a);}"
+	,
 	"uniform sampler2D baseTex;\r\n" \
 	"void main(void){" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, texColor.a);}";
+	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
+	,
+	"uniform sampler2D baseTex, decalTex;\r\n" \
+	"void main(void){" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
+	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
+	},
+	{
+	"uniform sampler2D baseTex;\r\n" \
+	"uniform vec4 faceColor;\r\n" \
+	"void main(void){" \
+	"float l = (faceColor.r + faceColor.g + faceColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, faceColor.a);}"
+	,
+	"uniform sampler2D baseTex;\r\n" \
+	"void main(void){" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
+	,
+	"uniform sampler2D baseTex, decalTex;\r\n" \
+	"void main(void){" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [2].xy);\r\n" \
+	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
+	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
+	}};
 
-char *grayScaleVS =
+char *grayScaleVS [2][3] = {{
+	"void main(void){" \
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	,
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}";
+	"gl_FrontColor=gl_Color;}"
+	,
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	},
+	{
+	"void main(void){" \
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	,
+	"void main(void){" \
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	,
+	"void main(void){" \
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	}};
+
+//-------------------------------------------------------------------------
+
+void DeleteGrayScaleShader (void)
+{
+for (int i = 0; i < 2; i++) {
+	for (int j = 0; j < 3; j++) {
+		if (gsShaderProg [i][j]) {
+			DeleteShaderProg (&gsShaderProg [i][j]);
+			gsShaderProg [i][j] = 0;
+			}
+		}
+	}
+}
 
 //-------------------------------------------------------------------------
 
@@ -76,12 +153,20 @@ if (!gameStates.ogl.bShadersOk)
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
 	PrintLog ("building grayscale shader programs\n");
-	if (gsShaderProg)
-		DeleteShaderProg (&gsShaderProg);
-	gameStates.render.textures.bHaveGrayScaleShader = 
-		CreateShaderProg (&gsShaderProg) &&
-		CreateShaderFunc (&gsShaderProg, &gsf, &gsv, grayScaleFS, grayScaleVS, 1) &&
-		LinkShaderProg (&gsShaderProg);
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (gsShaderProg [i][j])
+				DeleteShaderProg (&gsShaderProg [i][j]);
+			gameStates.render.textures.bHaveGrayScaleShader = 
+				CreateShaderProg (&gsShaderProg [i][j]) &&
+				CreateShaderFunc (&gsShaderProg [i][j], &gsf [i][j], &gsv [i][j], grayScaleFS [i][j], grayScaleVS [i][j], 1) &&
+				LinkShaderProg (&gsShaderProg [i][j]);
+			if (!gameStates.render.textures.bHaveGrayScaleShader) {
+				DeleteGrayScaleShader ();
+				return;
+				}
+			}
+		}
 	}
 }
 
@@ -217,6 +302,9 @@ extern GLhandleARB perPixelLightingShaderProgs [MAX_LIGHTS_PER_PIXEL][4];
 
 //------------------------------------------------------------------------------
 
+#define AMBIENT_LIGHT	0.1f
+#define DIFFUSE_LIGHT	0.9f
+
 int SetupHardwareLighting (grsFace *faceP, int nType)
 {
 	int						nLightRange, nLights;
@@ -237,7 +325,6 @@ if (!gameStates.ogl.iLight) {
 	gameStates.ogl.nLights = SetNearestFaceLights (faceP, nType != 0);
 	gameStates.ogl.nFirstLight = gameData.render.lights.dynamic.shader.nFirstLight [0];
 	}
-OglEnableLighting (0);
 #if HW_VERTEX_LIGHTING == 0
 glDisable (GL_LIGHTING);
 #endif
@@ -258,13 +345,13 @@ for (nLights = 0;
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, psl->info.fBoost);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
-		ambient.red = psl->info.color.red * 0.05f;
-		ambient.green = psl->info.color.green * 0.05f;
-		ambient.blue = psl->info.color.blue * 0.05f;
+		ambient.red = psl->info.color.red * AMBIENT_LIGHT;
+		ambient.green = psl->info.color.green * AMBIENT_LIGHT;
+		ambient.blue = psl->info.color.blue * AMBIENT_LIGHT;
 		ambient.alpha = 1.0f;
-		diffuse.red = psl->info.color.red * 0.95f;
-		diffuse.green = psl->info.color.green * 0.95f;
-		diffuse.blue = psl->info.color.blue * 0.95f;
+		diffuse.red = psl->info.color.red * DIFFUSE_LIGHT;
+		diffuse.green = psl->info.color.green * DIFFUSE_LIGHT;
+		diffuse.blue = psl->info.color.blue * DIFFUSE_LIGHT;
 		diffuse.alpha = 1.0f;
 		}
 	else {
@@ -275,11 +362,11 @@ for (nLights = 0;
 #endif
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
-		ambient.red = psl->info.color.red * 0.05f;
-		ambient.green = psl->info.color.green * 0.05f;
-		ambient.blue = psl->info.color.blue * 0.05f;
+		ambient.red = psl->info.color.red * AMBIENT_LIGHT;
+		ambient.green = psl->info.color.green * AMBIENT_LIGHT;
+		ambient.blue = psl->info.color.blue * AMBIENT_LIGHT;
 		ambient.alpha = 1.0f;
-		fBrightness *= 0.95f;
+		fBrightness *= DIFFUSE_LIGHT;
 		diffuse.red = psl->info.color.red * fBrightness;
 		diffuse.green = psl->info.color.green * fBrightness;
 		diffuse.blue = psl->info.color.blue * fBrightness;
@@ -427,12 +514,26 @@ return gameStates.render.history.nShader = nShader;
 
 //------------------------------------------------------------------------------
 
-int G3SetupGrayScaleShader (void)
+int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP)
 {
-if (gameStates.render.history.nShader != 99)
-	glUseProgramObject (tmProg = gsShaderProg);
-glUniform1i (glGetUniformLocation (tmProg, "baseTex"), 0);
-return gameStates.render.history.nShader = 99;
+if (gameStates.render.textures.bHaveGrayScaleShader) {
+	if (nType > 2)
+		nType = 2;
+	int bLightMaps = HaveLightMaps ();
+	int nShader = 90 + 3 * bLightMaps + nType;
+	if (gameStates.render.history.nShader != nShader) {
+		glUseProgramObject (tmProg = gsShaderProg [bLightMaps][nType]);
+		if (!nType) 
+			glUniform4fv (glGetUniformLocation (tmProg, "faceColor"), 1, (GLfloat *) colorP);
+		else {
+			glUniform1i (glGetUniformLocation (tmProg, "baseTex"), bLightMaps);
+			if (nType > 1)
+				glUniform1i (glGetUniformLocation (tmProg, "decalTex"), 1 + bLightMaps);
+			}
+		gameStates.render.history.nShader = nShader;
+		}
+	}
+return gameStates.render.history.nShader;
 }
 
 //------------------------------------------------------------------------------
@@ -450,17 +551,16 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	nDbgSeg = nDbgSeg;
 #endif
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
+if (!bColored && gameOpts->render.automap.bGrayOut) 
+	nShader = G3SetupGrayScaleShader (nType, colorP);
 #if PER_PIXEL_LIGHTING
-if (faceP && gameOpts->ogl.bPerPixelLighting)
+else if (faceP && gameOpts->ogl.bPerPixelLighting)
 	nShader = G3SetupPerPixelShader (faceP, nType);
-else 
 #endif
-if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
+else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
 	nShader = G3SetupHeadLightShader (nType, colorP);
 else if (bColorKey || bMultiTexture) 
 	nShader = G3SetupTexMergeShader (bColorKey, bColored);
-else if (!bColored && gameOpts->render.automap.bGrayOut) 
-	nShader = G3SetupGrayScaleShader ();
 else if (gameStates.render.history.nShader >= 0) {
 	glUseProgramObject (0);
 	nShader = -1;
@@ -700,29 +800,6 @@ if (bDepthOnly) {
 	}
 else {
 	bMonitor = (faceP->nCamera >= 0);
-#ifdef _DEBUG
-	if (bMonitor)
-		faceP = faceP;
-#endif
-	if (bTransparent && (gameStates.render.nType < 4) && !(bMonitor || bmTop || faceP->bSplit || faceP->bOverlay)) {
-#ifdef _DEBUG
-		if (gameOpts->render.bDepthSort > 0) 
-#endif
-			{
-#if 0//def _DEBUG
-			if ((faceP->nSegment != nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide != nDbgSide)))
-				return 1;
-#endif
-			RIAddFace (faceP);
-			return 0;
-			}
-		}
-	}
-
-#if G3_BUFFER_FACES
-	G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
-#endif
-if (bTextured) {
 	bColored = !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment];
 	if (bmTop && !bMonitor) {
 		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
@@ -736,6 +813,31 @@ if (bTextured) {
 		}
 	else
 		bOverlay = 0;
+#ifdef _DEBUG
+	if (bMonitor)
+		faceP = faceP;
+#endif
+	if (bTransparent && (gameStates.render.nType < 4) && !(bMonitor || bmTop || faceP->bSplit || faceP->bOverlay)) {
+#ifdef _DEBUG
+		if (gameOpts->render.bDepthSort > 0) 
+#endif
+			{
+#if 0//def _DEBUG
+			if ((faceP->nSegment != nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide != nDbgSide)))
+				return 1;
+#endif
+			faceP->nRenderType = gameStates.render.history.nType;
+			faceP->bColored = bColored;
+			RIAddFace (faceP);
+			return 0;
+			}
+		}
+	}
+
+#if G3_BUFFER_FACES
+	G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
+#endif
+if (bTextured) {
 	if ((bmBot != gameStates.render.history.bmBot) || 
 		 (bmTop != gameStates.render.history.bmTop) || 
 		 (bOverlay != gameStates.render.history.bOverlay) || 
@@ -1019,6 +1121,7 @@ if (bmTop && strstr (bmTop->szName, "door35#4"))
 	bmTop = bmTop;
 #endif
 
+bColored = bDepthOnly || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment];
 if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
@@ -1037,6 +1140,19 @@ if (bDepthOnly) {
 	}
 else {
 	bMonitor = (faceP->nCamera >= 0);
+	if (bmTop && !bMonitor) {
+		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
+			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bmTop = BM_CURFRAME (bmTop);
+			}
+		else
+			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bOverlay = bColorKey ? 1 : -1;
+		bMultiTexture = (bOverlay != 0) && !bMonitor;
+		}
+	else
+		bOverlay = 0;
+	gameStates.render.history.nType = bColorKey ? 3 : bMultiTexture ? 2 : (bmBot != NULL);
 #ifdef _DEBUG
 	if (bMonitor)
 		faceP = faceP;
@@ -1050,6 +1166,8 @@ else {
 			if ((faceP->nSegment != nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide != nDbgSide)))
 				return 1;
 #endif
+			faceP->nRenderType = gameStates.render.history.nType;
+			faceP->bColored = bColored;
 			RIAddFace (faceP);
 			return 0;
 			}
@@ -1060,19 +1178,6 @@ else {
 	G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
 #endif
 if (bTextured) {
-	bColored = !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment];
-	if (bmTop && !bMonitor) {
-		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
-			bmTop = BM_CURFRAME (bmTop);
-			}
-		else
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
-		bOverlay = bColorKey ? 1 : -1;
-		bMultiTexture = (bOverlay != 0) && !bMonitor;
-		}
-	else
-		bOverlay = 0;
 	if ((bmBot != gameStates.render.history.bmBot) || 
 		 (bmTop != gameStates.render.history.bmTop) || 
 		 (bOverlay != gameStates.render.history.bOverlay) || 
@@ -1202,20 +1307,25 @@ if (bMonitor) {
 		}
 	}
 gameStates.ogl.iLight = 0;
-gameStates.render.history.nType = bColorKey ? 3 : bMultiTexture ? 2 : (bmBot != NULL);
-if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
-	G3SetupHeadLightShader (gameStates.render.history.nType, bmBot ? NULL : &faceP->color);
+if (!bColored) {
+	G3SetupGrayScaleShader (gameStates.render.history.nType, &faceP->color);
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-	glDepthFunc (GL_EQUAL);
 	}
-for (;;) {
-	G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
-	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-	if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
-		break;
-	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-	glDepthFunc (GL_EQUAL);
+else {
+	if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
+		G3SetupHeadLightShader (gameStates.render.history.nType, bmBot ? NULL : &faceP->color);
+		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		glDepthFunc (GL_EQUAL);
+		}
+	for (;;) {
+		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
+		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
+			break;
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		glDepthFunc (GL_EQUAL);
+		}
 	}
 if (bMonitor)
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);

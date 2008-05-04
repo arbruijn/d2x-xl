@@ -1979,6 +1979,7 @@ gameStates.ogl.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.
 gameStates.ogl.bScaleLight = 0;
 #endif
 gameStates.render.bUseCameras = USE_CAMERAS;
+renderItems.nItems = 0;
 return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ_ROBOT);
 }
 

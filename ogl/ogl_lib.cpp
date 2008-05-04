@@ -729,9 +729,11 @@ if (!gameStates.menus.nInMenu || bForce) {
 
 // -----------------------------------------------------------------------------------
 
+static int nOglTransformCalls = 0;
+
 void OglSetupTransform (int bForce)
 {
-if (gameStates.ogl.bUseTransform || bForce) {
+if (!nOglTransformCalls && (gameStates.ogl.bUseTransform || bForce)) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();
@@ -740,13 +742,14 @@ if (gameStates.ogl.bUseTransform || bForce) {
 	glMultMatrixf (viewInfo.glViewf);
 	glTranslatef (-viewInfo.glPosf [0], -viewInfo.glPosf [1], -viewInfo.glPosf [2]);
 	}
+++nOglTransformCalls;
 }
 
 // -----------------------------------------------------------------------------------
 
 void OglResetTransform (int bForce)
 {
-if (gameStates.ogl.bUseTransform || bForce) {
+if ((nOglTransformCalls > 0) && !--nOglTransformCalls && (gameStates.ogl.bUseTransform || bForce)) {
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
 	}
