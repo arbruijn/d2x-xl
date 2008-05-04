@@ -750,16 +750,18 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	VmVecAvg (&vNormal, sideP->normals, sideP->normals + 1);
-	VmVecFixToFloat (&vcd.vertNorm, &vNormal);
-	memset (texColor, 0, LM_W * LM_H * sizeof (fVector3));
-	pPixelPos = pixelPos;
-	pTexColor = texColor;
-	for (x = 0; x < LM_W; x++) { 
-		for (y = 0; y < LM_H; y++, pPixelPos++) { 
-			if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->fRad / 10.0f, nThread)) {
-				VmVecFixToFloat (&vcd.vertPos, pPixelPos);
-				G3AccumVertColor (-1, &texColor [y * LM_W + x], &vcd, nThread);
+	if (SEGMENT2S [faceP->nSegment].special != SEGMENT_IS_SKYBOX) {
+		VmVecAvg (&vNormal, sideP->normals, sideP->normals + 1);
+		VmVecFixToFloat (&vcd.vertNorm, &vNormal);
+		memset (texColor, 0, LM_W * LM_H * sizeof (fVector3));
+		pPixelPos = pixelPos;
+		pTexColor = texColor;
+		for (x = 0; x < LM_W; x++) { 
+			for (y = 0; y < LM_H; y++, pPixelPos++) { 
+				if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->fRad / 10.0f, nThread)) {
+					VmVecFixToFloat (&vcd.vertPos, pPixelPos);
+					G3AccumVertColor (-1, &texColor [y * LM_W + x], &vcd, nThread);
+					}
 				}
 			}
 		}

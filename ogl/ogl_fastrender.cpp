@@ -51,127 +51,6 @@
 
 //------------------------------------------------------------------------------
 
-GLhandleARB gsShaderProg [2][3] = {{0,0,0},{0,0,0}};
-GLhandleARB gsf [2][3] = {{0,0,0},{0,0,0}};
-GLhandleARB gsv [2][3] = {{0,0,0},{0,0,0}};
-
-char *grayScaleFS [2][3] = {{
-	"uniform sampler2D baseTex;\r\n" \
-	"uniform vec4 faceColor;\r\n" \
-	"void main(void){" \
-	"float l = (faceColor.r + faceColor.g + faceColor.b) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, faceColor.a);}"
-	,
-	"uniform sampler2D baseTex;\r\n" \
-	"void main(void){" \
-	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
-	,
-	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"void main(void){" \
-	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
-	},
-	{
-	"uniform sampler2D baseTex;\r\n" \
-	"uniform vec4 faceColor;\r\n" \
-	"void main(void){" \
-	"float l = (faceColor.r + faceColor.g + faceColor.b) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, faceColor.a);}"
-	,
-	"uniform sampler2D baseTex;\r\n" \
-	"void main(void){" \
-	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
-	,
-	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"void main(void){" \
-	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [2].xy);\r\n" \
-	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
-	}};
-
-char *grayScaleVS [2][3] = {{
-	"void main(void){" \
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	},
-	{
-	"void main(void){" \
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	,
-	"void main(void){" \
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	,
-	"void main(void){" \
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	}};
-
-//-------------------------------------------------------------------------
-
-void DeleteGrayScaleShader (void)
-{
-for (int i = 0; i < 2; i++) {
-	for (int j = 0; j < 3; j++) {
-		if (gsShaderProg [i][j]) {
-			DeleteShaderProg (&gsShaderProg [i][j]);
-			gsShaderProg [i][j] = 0;
-			}
-		}
-	}
-}
-
-//-------------------------------------------------------------------------
-
-void InitGrayScaleShader (void)
-{
-if (!gameStates.ogl.bShadersOk)
-	gameOpts->ogl.bGlTexMerge = 0;
-else {
-	PrintLog ("building grayscale shader programs\n");
-	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < 3; j++) {
-			if (gsShaderProg [i][j])
-				DeleteShaderProg (&gsShaderProg [i][j]);
-			gameStates.render.textures.bHaveGrayScaleShader = 
-				CreateShaderProg (&gsShaderProg [i][j]) &&
-				CreateShaderFunc (&gsShaderProg [i][j], &gsf [i][j], &gsv [i][j], grayScaleFS [i][j], grayScaleVS [i][j], 1) &&
-				LinkShaderProg (&gsShaderProg [i][j]);
-			if (!gameStates.render.textures.bHaveGrayScaleShader) {
-				DeleteGrayScaleShader ();
-				return;
-				}
-			}
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
 #define FACE_BUFFER_SIZE	100
 
 typedef struct tFaceBuffer {
@@ -296,9 +175,9 @@ return h;
 
 //------------------------------------------------------------------------------
 
-extern GLhandleARB headlightShaderProgs [4];
+extern GLhandleARB headLightShaderProgs [2][4];
 extern GLhandleARB perPixelLightingShaderProgs [MAX_LIGHTS_PER_PIXEL][4];
-
+extern GLhandleARB gsShaderProg [2][3];
 
 //------------------------------------------------------------------------------
 
@@ -441,19 +320,18 @@ return gameStates.render.history.nShader = nShader;
 
 //------------------------------------------------------------------------------
 
-int G3SetupHeadLightShader (int nType, tRgbaColorf *colorP)
+int G3SetupHeadLightShader (int nType, int bLightMaps, tRgbaColorf *colorP)
 {
-	int			oglRes, bLightMaps, nLights, nShader;
+	int			oglRes, nLights, nShader;
 	tRgbaColorf	color;
 
 //headlights
 nLights = IsMultiGame ? /*gameData.multiplayer.nPlayers*/gameData.render.lights.dynamic.headLights.nLights : 1;
 InitHeadlightShaders (nLights);
-bLightMaps = HaveLightMaps ();
 nShader = 10 + bLightMaps * 4 + nType;
 if (nShader != gameStates.render.history.nShader) {
 	glUseProgramObject (0);
-	glUseProgramObject (tmProg = headlightShaderProgs [nType]);
+	glUseProgramObject (tmProg = headLightShaderProgs [bLightMaps][nType]);
 	if (nType) {
 		glUniform1i (glGetUniformLocation (tmProg, "baseTex"), bLightMaps);
 		if (nType > 1) {
@@ -545,7 +423,7 @@ int G3SetupShader (grsFace *faceP, int bColorKey, int bMultiTexture, int bTextur
 {
 	static grsBitmap	*nullBmP = NULL;
 
-	int			nType, nShader = gameStates.render.history.nShader;
+	int	nType, nShader = gameStates.render.history.nShader;
 
 if (!gameStates.ogl.bShadersOk)
 	return -1;
@@ -561,7 +439,7 @@ else if (faceP && gameOpts->ogl.bPerPixelLighting)
 	nShader = G3SetupPerPixelShader (faceP, nType);
 #endif
 else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
-	nShader = G3SetupHeadLightShader (nType, colorP);
+	nShader = G3SetupHeadLightShader (nType, HaveLightMaps (), colorP);
 else if (bColorKey || bMultiTexture) 
 	nShader = G3SetupTexMergeShader (bColorKey, bColored);
 else if (gameStates.render.history.nShader >= 0) {
@@ -1314,9 +1192,18 @@ if (!bColored) {
 	G3SetupGrayScaleShader (gameStates.render.history.nType, &faceP->color);
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 	}
+else if (gameStates.render.bFullBright) {
+	if (bColorKey)
+		G3SetupTexMergeShader (1, 0);
+	else {
+		glUseProgramObject (0);
+		gameStates.render.history.nShader = -1;
+		}
+	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+	}
 else {
 	if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
-		G3SetupHeadLightShader (gameStates.render.history.nType, bmBot ? NULL : &faceP->color);
+		G3SetupHeadLightShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		glDepthFunc (GL_EQUAL);

@@ -724,7 +724,7 @@ if (iBuffer) {
 			G3SetupShader (NULL, 0, 0, 1, 1, &color);
 #endif
 		else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
-			G3SetupHeadLightShader (1, &color);
+			G3SetupHeadLightShader (1, 0, &color);
 		}
 		glDrawArrays (GL_QUADS, 0, iBuffer);
 #if 0

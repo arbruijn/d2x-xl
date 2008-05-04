@@ -754,7 +754,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 			}
 		else {
 			if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
-				G3SetupHeadLightShader (renderItems.bTextured, renderItems.bTextured ? NULL : &faceP->color);
+				G3SetupHeadLightShader (renderItems.bTextured, 1, renderItems.bTextured ? NULL : &faceP->color);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
 				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 				glDepthFunc (GL_EQUAL);

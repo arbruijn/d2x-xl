@@ -464,7 +464,7 @@ char *headLightFS [2][8] = {
 	"      float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = vec3 (spotEffect, spotEffect, spotEffect);\r\n" \
-	"      /*spotColor = min (spotColor, maxColor.rgb)*/;\r\n" \
+	"      spotColor = min (spotColor, maxColor.rgb);\r\n" \
 	"	    }\r\n" \
 	"	 }\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
@@ -790,52 +790,66 @@ char *headLightVS [2][8] = {
 
 //-------------------------------------------------------------------------
 
-GLhandleARB headlightShaderProgs [4] = {0,0,0,0};
-GLhandleARB lvs [4] = {0,0,0,0}; 
-GLhandleARB lfs [4] = {0,0,0,0}; 
+GLhandleARB headLightShaderProgs [2][4] = {{0,0,0,0},{0,0,0,0}};
+GLhandleARB lvs [2][4] = {{0,0,0,0},{0,0,0,0}};
+GLhandleARB lfs [2][4] = {{0,0,0,0},{0,0,0,0}}; 
+
+//-------------------------------------------------------------------------
+
+void DeleteHeadLightShader (void)
+{
+for (int i = 0; i < 2; i++) {
+	for (int j = 0; j < 4; j++) {
+		if (headLightShaderProgs [i][j]) {
+			DeleteShaderProg (&headLightShaderProgs [i][j]);
+			headLightShaderProgs [i][j] = 0;
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------------
 
 void InitHeadlightShaders (int nLights)
 {
-	int	bLightMaps, i, bOk;
+	int	i, j, bOk;
 	char	*pszFS;
 
 if (nLights < 0) {
 	nLights = gameData.render.ogl.nHeadLights;
 	gameData.render.ogl.nHeadLights = 0;
 	}
-bLightMaps = HaveLightMaps ();
-if ((nLights == gameData.render.ogl.nHeadLights) && (bLightMaps == gameData.render.ogl.bLightMaps))
+if (nLights == gameData.render.ogl.nHeadLights)
 	return;
 gameStates.render.bHaveDynLights = 0;
 PrintLog ("building lighting shader programs\n");
 if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.nPath))) {
 	gameStates.render.bHaveDynLights = 1;
-	for (i = 0; i < 4; i++) {
-		if (headlightShaderProgs [i])
-			DeleteShaderProg (headlightShaderProgs + i);
+	for (i = 0; i < 2; i++) {
+		for (j = 0; j < 4; j++) {
+			if (headLightShaderProgs [i][j])
+				DeleteShaderProg (&headLightShaderProgs [i][j]);
 #if 1//ndef _DEBUG
-		if (nLights == 1)
-			pszFS = headLightFS [bLightMaps][i];
-		else
+			if (nLights == 1)
+				pszFS = headLightFS [i][j];
+			else
 #endif
-			pszFS = BuildLightingShader (headLightFS [bLightMaps][i + 4], nLights);
-		bOk = (pszFS != NULL) &&
-				CreateShaderProg (headlightShaderProgs + i) &&
-				CreateShaderFunc (headlightShaderProgs + i, lfs + i, lvs + i, pszFS, headLightVS [bLightMaps][i], 1) &&
-				LinkShaderProg (headlightShaderProgs + i);
-		if (pszFS && (nLights > 1))
-			D2_FREE (pszFS);
-		if (!bOk) {
-			gameStates.ogl.bHeadLight = 0;
-			while (i)
-				DeleteShaderProg (headlightShaderProgs + --i);
-			nLights = 0;
-			break;
+				pszFS = BuildLightingShader (headLightFS [i][j + 4], nLights);
+			bOk = (pszFS != NULL) &&
+					CreateShaderProg (&headLightShaderProgs [i][j]) &&
+					CreateShaderFunc (&headLightShaderProgs [i][j], &lfs [i][j], &lvs [i][j], pszFS, headLightVS [i][j], 1) &&
+					LinkShaderProg (&headLightShaderProgs [i][j]);
+			if (pszFS && (nLights > 1))
+				D2_FREE (pszFS);
+			if (!bOk) {
+				DeleteHeadLightShader ();
+				nLights = 0;
+				break;
+				}
 			}
 		}
 	}
 gameData.render.ogl.nHeadLights = nLights;
-gameData.render.ogl.bLightMaps = bLightMaps;
 }
 
 // ----------------------------------------------------------------------------------------------

@@ -37,6 +37,127 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "headlight.h"
 #include "dynlight.h"
 
+//------------------------------------------------------------------------------
+
+GLhandleARB gsShaderProg [2][3] = {{0,0,0},{0,0,0}};
+GLhandleARB gsf [2][3] = {{0,0,0},{0,0,0}};
+GLhandleARB gsv [2][3] = {{0,0,0},{0,0,0}};
+
+char *grayScaleFS [2][3] = {{
+	"uniform sampler2D baseTex;\r\n" \
+	"uniform vec4 faceColor;\r\n" \
+	"void main(void){" \
+	"float l = (faceColor.r + faceColor.g + faceColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, faceColor.a);}"
+	,
+	"uniform sampler2D baseTex;\r\n" \
+	"void main(void){" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
+	,
+	"uniform sampler2D baseTex, decalTex;\r\n" \
+	"void main(void){" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
+	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
+	},
+	{
+	"uniform sampler2D baseTex;\r\n" \
+	"uniform vec4 faceColor;\r\n" \
+	"void main(void){" \
+	"float l = (faceColor.r + faceColor.g + faceColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, faceColor.a);}"
+	,
+	"uniform sampler2D baseTex;\r\n" \
+	"void main(void){" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
+	,
+	"uniform sampler2D baseTex, decalTex;\r\n" \
+	"void main(void){" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [2].xy);\r\n" \
+	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
+	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
+	}};
+
+char *grayScaleVS [2][3] = {{
+	"void main(void){" \
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	,
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	,
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	},
+	{
+	"void main(void){" \
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	,
+	"void main(void){" \
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	,
+	"void main(void){" \
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	}};
+
+//-------------------------------------------------------------------------
+
+void DeleteGrayScaleShader (void)
+{
+for (int i = 0; i < 2; i++) {
+	for (int j = 0; j < 3; j++) {
+		if (gsShaderProg [i][j]) {
+			DeleteShaderProg (&gsShaderProg [i][j]);
+			gsShaderProg [i][j] = 0;
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------------
+
+void InitGrayScaleShader (void)
+{
+if (!gameStates.ogl.bShadersOk)
+	gameOpts->ogl.bGlTexMerge = 0;
+else {
+	PrintLog ("building grayscale shader programs\n");
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (gsShaderProg [i][j])
+				DeleteShaderProg (&gsShaderProg [i][j]);
+			gameStates.render.textures.bHaveGrayScaleShader = 
+				CreateShaderProg (&gsShaderProg [i][j]) &&
+				CreateShaderFunc (&gsShaderProg [i][j], &gsf [i][j], &gsv [i][j], grayScaleFS [i][j], grayScaleVS [i][j], 1) &&
+				LinkShaderProg (&gsShaderProg [i][j]);
+			if (!gameStates.render.textures.bHaveGrayScaleShader) {
+				DeleteGrayScaleShader ();
+				return;
+				}
+			}
+		}
+	}
+}
+
 // ----------------------------------------------------------------------------------------------
 // per pixel lighting, no lightmaps
 // 2 - 8 light sources
