@@ -104,8 +104,15 @@ int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDep
 	tRenderItem *ph, *pi, *pj, **pd;
 	int			nOffset;
 
+#ifdef _DEBUG
+if (nDepth < renderItems.zMin)
+	return renderItems.nFreeItems;
+if (nDepth > renderItems.zMax)
+	return renderItems.nFreeItems;
+#else
 if ((nDepth < renderItems.zMin) || (nDepth > renderItems.zMax))
 	return renderItems.nFreeItems;
+#endif
 AllocRenderItems ();
 if (!renderItems.nFreeItems)
 	return 0;
@@ -935,6 +942,7 @@ else {
 		glDepthMask (renderItems.bDepthMask = 0);
 	RenderParticle (item->particle, item->fBrightness);
 	renderItems.bTextured = 0;
+	renderItems.bUseLightMaps = 0;
 	}
 }
 
@@ -1012,9 +1020,10 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 void RIFlushParticleBuffer (int nType)
 {
 if ((nType != riParticle) && (gameData.smoke.nLastType >= 0)) {
-	FlushParticleBuffer (-1);
+	FlushParticleBuffer (-1.0f);
 	CloseParticleBuffer ();
 	gameData.smoke.nLastType = -1;
+	renderItems.bUseLightMaps = 0;
 	}
 }
 

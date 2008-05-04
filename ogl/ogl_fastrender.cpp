@@ -450,9 +450,12 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	nDbgSeg = nDbgSeg;
 #endif
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
+#if PER_PIXEL_LIGHTING
 if (faceP && gameOpts->ogl.bPerPixelLighting)
 	nShader = G3SetupPerPixelShader (faceP, nType);
-else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
+else 
+#endif
+if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
 	nShader = G3SetupHeadLightShader (nType, colorP);
 else if (bColorKey || bMultiTexture) 
 	nShader = G3SetupTexMergeShader (bColorKey, bColored);

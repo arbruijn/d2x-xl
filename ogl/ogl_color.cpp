@@ -392,7 +392,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist);
 		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-		if ((psl->info.fRad > 0))
+		if (psl->info.fRad > 0)
 			NdotL += (1.0f - NdotL) / fAttenuation;
 		fAttenuation /= psl->info.fBrightness;
 		}
