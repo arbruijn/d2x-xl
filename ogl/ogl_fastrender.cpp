@@ -1209,8 +1209,7 @@ else {
 		glDepthFunc (GL_EQUAL);
 		}
 	for (;;) {
-		if (!G3SetupPerPixelShader (faceP, gameStates.render.history.nType))
-			break;
+		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 			break;
