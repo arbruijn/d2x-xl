@@ -3088,11 +3088,11 @@ if (gameStates.app.bMultiThreaded) {
 StartSoundThread ();
 gameData.render.vertColor.matAmbient.c.r = 
 gameData.render.vertColor.matAmbient.c.g = 
-gameData.render.vertColor.matAmbient.c.b = 0.05f;
+gameData.render.vertColor.matAmbient.c.b = 0.1f;
 gameData.render.vertColor.matAmbient.c.a = 1.0f;
 gameData.render.vertColor.matDiffuse.c.r = 
 gameData.render.vertColor.matDiffuse.c.g = 
-gameData.render.vertColor.matDiffuse.c.b = 0.95f;
+gameData.render.vertColor.matDiffuse.c.b = 0.9f;
 gameData.render.vertColor.matDiffuse.c.a = 1.0f;
 gameData.render.vertColor.matSpecular.c.r = 
 gameData.render.vertColor.matSpecular.c.g = 
