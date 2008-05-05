@@ -392,10 +392,17 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist);
 		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-#if 1
-		if (psl->info.fRad > 0)
-			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
+#if 0
+		if (NdotL > 0) {
+			if (gameStates.render.bLightMaps) 
+				NdotL = 1;
+			else 
 #endif
+#if 1
+			if (psl->info.fRad > 0)
+				NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
+#endif
+			}
 		fAttenuation /= psl->info.fBrightness;
 		}
 //	fAttenuation = fLightDist / psl->info.fBrightness;

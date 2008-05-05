@@ -214,8 +214,12 @@ for (nLights = 0;
 	  activeLightsP++, nLightRange--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
-	if (psl->bUsed == 2)	//nearest vertex light
+	if (psl->bUsed == 2)	{//nearest vertex light
 		psl->bUsed = 0;
+		activeLightsP->nType = NULL;
+		activeLightsP->psl = NULL;
+		gameData.render.lights.dynamic.shader.nActiveLights [0]--;
+		}
 	hLight = GL_LIGHT0 + nLights++;
 	glEnable (hLight);
 #if HW_VERTEX_LIGHTING == 0
@@ -266,11 +270,11 @@ gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shad
 for (int i = nLights; i < 8; i++)
 	glDisable (GL_LIGHT0 + i);
 #else
-if (InitPerPixelLightingShader (nType, nLights))
+if (InitPerPixelLightingShader (nType, nLights) >= 0)
 	return nLights;
 OglDisableLighting ();
 #endif
-return 0;
+return -1;
 }
 
 //------------------------------------------------------------------------------
@@ -282,7 +286,7 @@ int G3SetupPerPixelShader (grsFace *faceP, int nType)
 	int	bLightMaps, bStaticColor, nLights, nShader;
 
 bStaticColor = (gameStates.ogl.iLight == 0);
-if (!(nLights = SetupHardwareLighting (faceP, nType)))
+if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
 	return 0;
 #if HW_VERTEX_LIGHTING
 return gameStates.render.history.nShader;

@@ -753,7 +753,7 @@ static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight
 if (psl->bUsed)
 	return 0;
 psl->bUsed = (ubyte) nType;
-fix xDist = (psl->xDistance / (gameOpts->ogl.bPerPixelLighting ? 3000 : 2000) + 5) / 10;
+fix xDist = (psl->xDistance / (gameOpts->ogl.bPerPixelLighting ? 2000 : 2000) + 5) / 10;
 if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
 if (xDist < 0)
@@ -825,6 +825,7 @@ void SetNearestVertexLights (int nVertex, vmsVector *vNormalP, ubyte nType, int 
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
 	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
+	int						nLightType = bStatic ? 0 : 2;
 
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -869,7 +870,7 @@ if (nVertex == nDbgVertex)
 			psl->xDistance -= AvgSegRad (psl->info.nSegment);
 		if (psl->xDistance > xMaxLightRange)
 			continue;
-		if (SetActiveShaderLight (activeLightsP, psl, 2, nThread)) {
+		if (SetActiveShaderLight (activeLightsP, psl, nLightType, nThread)) {
 			psl->info.nType = nType;
 			psl->info.bState = 1;
 			}
@@ -998,6 +999,16 @@ if (gameOpts->render.bDynLighting) {
 
 //------------------------------------------------------------------------------
 
+void ResetUsedLights (void)
+{
+	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
+
+for (int i = gameData.render.lights.dynamic.shader.nLights; i; i--, psl++)
+	psl->bUsed = 0;
+}
+
+//------------------------------------------------------------------------------
+
 #if PROFILING
 time_t tSetNearestDynamicLights = 0;
 #endif
@@ -1042,13 +1053,13 @@ if (gameOpts->render.bDynLighting) {
 	gameData.render.lights.dynamic.shader.nFirstLight [nThread] = MAX_SHADER_LIGHTS;
 	gameData.render.lights.dynamic.shader.nLastLight [nThread] = 0;
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
+	ResetUsedLights ();
 	while (i--) {
 #ifdef _DEBUG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			psl = psl;
 #endif
 		psl--;
-		psl->bUsed = 0;
 		if (bSkipHeadLight && (psl->info.nType == 3))
 			continue;
 		if (psl->info.nType < 2) {
