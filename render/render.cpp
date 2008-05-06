@@ -2055,7 +2055,8 @@ void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 #if PROFILING
 	time_t	t = clock ();
 #endif
-g3FaceDrawer = (gameOpts->ogl.bPerPixelLighting && HaveLightMaps ()) ? G3DrawFaceArraysPPLM : G3DrawFaceArrays;
+gameStates.render.bPerPixelLighting = HaveLightMaps () ? 2 : gameOpts->ogl.bPerPixelLighting : 1 : 0;
+g3FaceDrawer = (gameStates.render.bPerPixelLighting == 2) ? G3DrawFaceArraysPPLM : G3DrawFaceArrays;
 gameData.render.vertColor.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4);
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameStates.render.bApplyDynLight =

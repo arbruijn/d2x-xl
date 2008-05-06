@@ -1152,9 +1152,27 @@ return gameData.render.lights.dynamic.shader.nActiveLights [nThread];
 
 //------------------------------------------------------------------------------
 
+int SetNearestAvgSgmLights (short nSegment)
+{
+	int			i;
+	tSegment		*segP = SEGMENTS + nSegment;
+
+#ifdef _DEBUG
+if (nSegment == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
+if (gameData.render.lights.dynamic.shader.nActiveLights [0] < 0)
+	SetNearestSegmentLights (nSegment, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+for (i = 0; i < 8; i++)
+	SetNearestVertexLights (segP->verts [i], NULL, 0, 1, 1, 0);
+return gameData.render.lights.dynamic.shader.nActiveLights [0];
+}
+
+//------------------------------------------------------------------------------
+
 extern short nDbgSeg;
 
-tFaceColor *AvgSgmColor (int nSegment, vmsVector *pvPos)
+tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPosP)
 {
 	tFaceColor	c, *pvc, *psc = gameData.render.color.segments + nSegment;
 	short			i, *pv;
@@ -1171,8 +1189,25 @@ if (SEGMENT2S [nSegment].special == SEGMENT_IS_SKYBOX) {
 	psc->color.red = psc->color.green = psc->color.blue = 1.0f;
 	psc->index = 1;
 	}
+else if (gameStates.render.bPerPixelLighting == 2) {
+	if (SetNearestAvgSgmLights (nSegment)) {
+			tVertColorData	vcd;
+
+		InitVertColorData (vcd);
+		if (vPosP)
+			VmVecFixToFloat (vPosP, &vCenter);
+		else {
+			COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
+			VmVecFixToFloat (&vcd.vertPos, &vCenter);
+			}
+		vcd.pVertPos = &vcd.vertPos;
+		vcd.fMatShininess = 4;
+		G3AccumVertColor (-1, (fVector3 *) psc, &vcd, -1);
+		ResetUsedLights ();
+		}
+	}
 else {
-	if (pvPos) {
+	if (vPosP) {
 		COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
 		//G3TransformPoint (&vCenter, &vCenter);
 		ds = 0.0f;
@@ -1184,10 +1219,10 @@ else {
 	c.index = 0;
 	for (i = 0; i < 8; i++, pv++) {
 		pvc = gameData.render.color.vertices + *pv;
-		if (pvPos) {
+		if (vPosP) {
 			vVertex = gameData.segs.vertices [*pv];
 			//G3TransformPoint (&vVertex, &vVertex);
-			d = 2.0f - f2fl (VmVecDist (&vVertex, pvPos)) / f2fl (VmVecDist (&vCenter, &vVertex));
+			d = 2.0f - f2fl (VmVecDist (&vVertex, vPosP)) / f2fl (VmVecDist (&vCenter, &vVertex));
 			c.color.red += pvc->color.red * d;
 			c.color.green += pvc->color.green * d;
 			c.color.blue += pvc->color.blue * d;
@@ -1209,12 +1244,12 @@ else {
 		float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightfRange];
 		float				fLightDist, fAttenuation;
 		fVector			vPosf;
-		if (pvPos)
-			VmVecFixToFloat (&vPosf, pvPos);
+		if (vPosP)
+			VmVecFixToFloat (&vPosf, vPosP);
 		for (i = 0; i < gameData.render.lights.dynamic.shader.nActiveLights; i++) {
 			psl = gameData.render.lights.dynamic.shader.activeLights [i];
 #if 1
-			if (pvPos) {
+			if (vPosP) {
 				vVertex = gameData.segs.vertices [*pv];
 				//G3TransformPoint (&vVertex, &vVertex);
 				fLightDist = VmVecDist (psl->vPosf, &vPosf) / fLightRange;
