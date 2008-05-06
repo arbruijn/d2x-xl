@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "piggy.h"
 #include "ogl_defs.h"
 #include "ogl_shader.h"
+#include "ogl_render.h"
 
 #define MAX_NUM_CACHE_BITMAPS 200
 
