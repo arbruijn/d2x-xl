@@ -77,6 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 #include "ogl_color.h"
 #include "ogl_render.h"
+#include "ogl_fastrender.h"
 #include "lightmap.h"
 #include "gauges.h"
 #include "sphere.h"
@@ -2054,6 +2055,7 @@ void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 #if PROFILING
 	time_t	t = clock ();
 #endif
+g3FaceDrawer = (gameOpts->ogl.bPerPixelLighting && HaveLightMaps ()) ? G3DrawFaceArraysPPLM : G3DrawFaceArrays;
 gameData.render.vertColor.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4);
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameStates.render.bApplyDynLight =

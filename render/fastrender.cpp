@@ -185,8 +185,7 @@ if (((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//r
 
 //------------------------------------------------------------------------------
 
-void RenderMineFace (tSegment *segP, tSegFaces *segFaceP, grsFace *faceP, short nSegment, 
-							int nType, int bVertexArrays, int bDepthOnly, int bPPLM)
+void RenderMineFace (tSegment *segP, tSegFaces *segFaceP, grsFace *faceP, short nSegment, int nType, int bDepthOnly)
 {
 	short				special;
 
@@ -263,8 +262,8 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	else
 		nSegment = nSegment;
 #endif
-G3DrawFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, 
-				!bDepthOnly && faceP->bTextured, bDepthOnly, bVertexArrays, bPPLM);
+g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, 
+				  !bDepthOnly && faceP->bTextured, bDepthOnly);
 //gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iVertexLights [0];
 #ifdef _DEBUG
 prevFaceP = faceP;
@@ -532,7 +531,7 @@ if (gameStates.render.bHaveSkyBox) {
 		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 			if (!(faceP->bVisible = FaceIsVisible (nSegment, faceP->nSide)))
 				continue;
-			RenderMineFace (SEGMENTS + nSegment, segFaceP, faceP, nSegment, 4, bVertexArrays, 0, 0);
+			RenderMineFace (SEGMENTS + nSegment, segFaceP, faceP, nSegment, 4, 0);
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
@@ -680,7 +679,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static void RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bAutomap, int bPPLM)
+static void RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bAutomap)
 {
 	tSegFaces	*segFaceP = SEGFACES + nSegment;
 	grsFace		*faceP;
@@ -698,7 +697,7 @@ for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nSegment = nSegment;
 #endif
-	RenderMineFace (SEGMENTS + nSegment, segFaceP, faceP, nSegment, nType, bVertexArrays, bDepthOnly, bPPLM);
+	RenderMineFace (SEGMENTS + nSegment, segFaceP, faceP, nSegment, nType, bDepthOnly);
 	}
 }
 
@@ -706,15 +705,15 @@ for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 
 void RenderSegments (int nType, int bVertexArrays, int bDepthOnly)
 {
-	int	i, bAutomap = (nType == 0), bPPLM = bVertexArrays && gameOpts->ogl.bPerPixelLighting && HaveLightMaps ();
+	int	i, bAutomap = (nType == 0);
 
 if (nType) {
 	for (i = gameData.render.mine.nRenderSegs; i; )
-		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bVertexArrays, bDepthOnly, bAutomap, bPPLM);
+		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bVertexArrays, bDepthOnly, bAutomap);
 	}
 else {
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
-		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap, bPPLM);
+		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap);
 	}
 }
 
@@ -782,7 +781,7 @@ else {	//front to back
 				if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [pfr [i].nSegment].special == SEGMENT_IS_SKYBOX))
 					continue;
 				}
-			RenderMineFace (SEGMENTS + nSegment, SEGFACES + nSegment, pfr [i].faceP, nSegment, nType, bVertexArrays, 0, 0);
+			RenderMineFace (SEGMENTS + nSegment, SEGFACES + nSegment, pfr [i].faceP, nSegment, nType, 0);
 			}
 		}
 	glDepthMask (1);

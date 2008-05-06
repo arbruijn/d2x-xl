@@ -28,6 +28,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "ogl_defs.h"
 #include "ogl_color.h"
 #include "ogl_shader.h"
+#include "ogl_render.h"
 #include "render.h"
 #include "dynlight.h"
 #include "lightmap.h"
@@ -850,6 +851,67 @@ if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.
 		}
 	}
 gameData.render.ogl.nHeadLights = nLights;
+}
+
+//------------------------------------------------------------------------------
+
+int G3SetupHeadLightShader (int nType, int bLightMaps, tRgbaColorf *colorP)
+{
+	int			oglRes, nLights, nShader;
+	tRgbaColorf	color;
+
+//headlights
+nLights = IsMultiGame ? /*gameData.multiplayer.nPlayers*/gameData.render.lights.dynamic.headLights.nLights : 1;
+InitHeadlightShaders (nLights);
+nShader = 10 + bLightMaps * 4 + nType;
+if (nShader != gameStates.render.history.nShader) {
+	glUseProgramObject (0);
+	glUseProgramObject (activeShaderProg = headLightShaderProgs [bLightMaps][nType]);
+	if (nType) {
+		glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightMaps);
+		if (nType > 1) {
+			glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1 + bLightMaps);
+			if (nType > 2)
+				glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2 + bLightMaps);
+			}
+		}
+#if 1
+#	if 0
+	glUniform1f (glGetUniformLocation (activeShaderProg, "cutOff"), 0.5f);
+	glUniform1f (glGetUniformLocation (activeShaderProg, "spotExp"), 8.0f);
+	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"), 1.0f);
+	glUniform1fv (glGetUniformLocation (activeShaderProg, "brightness"), nLights, 
+					  (GLfloat *) gameData.render.lights.dynamic.headLights.brightness);
+#	endif
+	//glUniform1f (glGetUniformLocation (activeShaderProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
+	//glUniform1f (glGetUniformLocation (activeShaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
+#if 1
+	for (int i = 0; i < nLights; i++) {
+		glEnable (GL_LIGHT0 + i);
+		glLightfv (GL_LIGHT0 + i, GL_POSITION, (GLfloat *) (gameData.render.lights.dynamic.headLights.pos + i));
+		glLightfv (GL_LIGHT0 + i, GL_SPOT_DIRECTION, (GLfloat *) (gameData.render.lights.dynamic.headLights.dir + i));
+		}
+#else
+	glUniform3fv (glGetUniformLocation (activeShaderProg, "lightPosWorld"), nLights, 
+					  (GLfloat *) gameData.render.lights.dynamic.headLights.pos);
+	glUniform3fv (glGetUniformLocation (activeShaderProg, "lightDirWorld"), nLights, 
+					  (GLfloat *) gameData.render.lights.dynamic.headLights.dir);
+#endif
+#endif
+	if (colorP) {
+		color.red = colorP->red * 1.1f;
+		color.green = colorP->green * 1.1f;
+		color.blue = colorP->blue * 1.1f;
+		color.alpha = colorP->alpha;
+		}
+	else {
+		color.red = color.green = color.blue = 2.0f;
+		color.alpha = 1;
+		}
+	glUniform4fv (glGetUniformLocation (activeShaderProg, "maxColor"), 1, (GLfloat *) &color);
+	oglRes = glGetError ();
+	}
+return gameStates.render.history.nShader = nShader;
 }
 
 // ----------------------------------------------------------------------------------------------

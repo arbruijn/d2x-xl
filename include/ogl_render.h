@@ -82,8 +82,7 @@ extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
 
 //------------------------------------------------------------------------------
 
-extern GLhandleARB	lmProg;
-extern GLhandleARB	tmProg;
+extern GLhandleARB	activeShaderProg;
 
 //------------------------------------------------------------------------------
 

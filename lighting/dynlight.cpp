@@ -1314,31 +1314,5 @@ if (gameOpts->render.bDynLighting || (gameOpts->render.color.bAmbientLight && !g
 	}
 }
 
-//------------------------------------------------------------------------------
-
-void CalcDynLightAttenuation (vmsVector *pv)
-{
-#if !USE_OGL_LIGHTS
-	int				i;
-	tDynLight		*pl = gameData.render.lights.dynamic.lights;
-	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
-	fVector			v, d;
-	float				l;
-
-v.p.x = f2fl (pv->p.x);
-v.p.y = f2fl (pv->p.y);
-v.p.z = f2fl (pv->p.z);
-if (!gameStates.ogl.bUseTransform)
-	G3TransformPoint (&v, &v, 0);
-for (i = gameData.render.lights.dynamic.nLights; i; i--, pl++, psl++) {
-	d.p.x = v.p.x - psl->vPosf [1].p.x;
-	d.p.y = v.p.y - psl->vPosf [1].p.y;
-	d.p.z = v.p.z - psl->vPosf [1].p.z;
-	l = (float) (sqrt (d.p.x * d.p.x + d.p.y * d.p.y + d.p.z * d.p.z) / 625.0);
-	psl->info.fBrightness = l / pl->info.fBrightness;
-	}
-#endif
-}
-
 // ----------------------------------------------------------------------------------------------
 //eof

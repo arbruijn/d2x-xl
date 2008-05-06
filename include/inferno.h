@@ -123,6 +123,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define FLASH_CYCLE_RATE f1_0
 
+#define AMBIENT_LIGHT	0.1f
+#define DIFFUSE_LIGHT	0.9f
+
 //------------------------------------------------------------------------------
 
 typedef int _CDECL_	tThreadFunc (void *);

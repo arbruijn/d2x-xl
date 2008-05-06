@@ -55,7 +55,7 @@
 //------------------------------------------------------------------------------
 
 GLhandleARB	lmProg = (GLhandleARB) 0;
-GLhandleARB	tmProg = (GLhandleARB) 0;
+GLhandleARB	activeShaderProg = (GLhandleARB) 0;
 
 tTexPolyMultiDrawer	*fpDrawTexPolyMulti = NULL;
 
@@ -472,11 +472,11 @@ retry:
 if (bShaderMerge) {
 	bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL;
 	nShader = bSuperTransp ? bmMask ? 2 : 1 : 0;
-	glUseProgramObject (tmProg = tmShaderProgs [nShader]);
+	glUseProgramObject (activeShaderProg = tmShaderProgs [nShader]);
 	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightMapData.buffers, bVertexArrays, 0);
-	glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
+	glUniform1i (glGetUniformLocation (activeShaderProg, "btmTex"), 0);
 	INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, bVertexArrays, 0);
-	glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
+	glUniform1i (glGetUniformLocation (activeShaderProg, "topTex"), 1);
 	if (bmMask) {
 #ifdef _DEBUG
 		InitTMU2 (bVertexArrays);
@@ -484,9 +484,9 @@ if (bShaderMerge) {
 #else
 		INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, lightMapData.buffers, bVertexArrays, 0);
 #endif
-		glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
+		glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2);
 		}
-	glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 
+	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"), 
 					 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
 	}
 else if (!bDepthSort) {
@@ -707,7 +707,7 @@ else if (bShaderMerge) {
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D); // Disable the 2nd texture
 #endif
-	glUseProgramObject (tmProg = 0);
+	glUseProgramObject (activeShaderProg = 0);
 	}
 OglActiveTexture (GL_TEXTURE0, bVertexArrays);
 OGL_BINDTEX (0);

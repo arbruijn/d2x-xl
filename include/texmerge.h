@@ -20,6 +20,7 @@ grsBitmap *TexMergeGetCachedBitmap (int nBaseTex, int nOvlTex, int nOrient);
 void _CDECL_ TexMergeClose (void);
 void TexMergeFlush ();
 void InitTexMergeShaders ();
+int G3SetupTexMergeShader (int bColorKey, int bColored);
 
 extern int bGlsTexMergeOk;
 extern GLhandleARB tmShaderProgs [3]; 

@@ -22,6 +22,10 @@ int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP);
 int G3SetupShader (grsFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
 void InitGrayScaleShader (void);
 
+typedef int (*tG3FaceDrawerP) (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+
+extern tG3FaceDrawerP g3FaceDrawer;
+
 //------------------------------------------------------------------------------
 
 static inline int FaceIsAdditive (grsFace *faceP)
