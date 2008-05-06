@@ -1195,7 +1195,7 @@ else if (gameStates.render.bPerPixelLighting == 2) {
 
 		InitVertColorData (vcd);
 		if (vPosP)
-			VmVecFixToFloat (vPosP, &vCenter);
+			VmVecFixToFloat (&vcd.vertPos, vPosP);
 		else {
 			COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
 			VmVecFixToFloat (&vcd.vertPos, &vCenter);
