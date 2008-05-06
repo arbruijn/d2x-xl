@@ -353,7 +353,7 @@ glLoadIdentity ();//clear matrix
 if (gameStates.render.bRearView)
 	glScalef (-1.0f, 1.0f, 1.0f);
 gluPerspective (gameStates.render.glFOV * ((double) viewInfo.zoom / 65536.0), 
-					 gameData.render.dAspect, ZNEAR, ZFAR);
+					 (double) grdCurCanv->cvBitmap.bmProps.w / (double) grdCurCanv->cvBitmap.bmProps.h, ZNEAR, ZFAR);
 gameData.render.ogl.depthScale.p.x = (float) (ZFAR / (ZFAR - ZNEAR));
 gameData.render.ogl.depthScale.p.y = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
 gameData.render.ogl.depthScale.p.z = (float) (ZFAR - ZNEAR);

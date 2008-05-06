@@ -1202,7 +1202,7 @@ else if (gameStates.render.bPerPixelLighting == 2) {
 			}
 		vcd.pVertPos = &vcd.vertPos;
 		vcd.fMatShininess = 4;
-		G3AccumVertColor (-1, (fVector3 *) psc, &vcd, -1);
+		G3AccumVertColor (-1, (fVector3 *) psc, &vcd, 0);
 		ResetUsedLights ();
 		}
 	}

@@ -53,11 +53,12 @@ gsrCanvas *GrCreateCanvas(int w, int h)
 
 //	-----------------------------------------------------------------------------
 
-gsrCanvas *GrCreateSubCanvas(gsrCanvas *canv, int x, int y, int w, int h)
+gsrCanvas *GrCreateSubCanvas (gsrCanvas *canv, int x, int y, int w, int h)
 {
 	gsrCanvas *newCanv;
 
-newCanv = (gsrCanvas *)D2_ALLOC( sizeof(gsrCanvas) );
+if (!(newCanv = (gsrCanvas *) D2_ALLOC (sizeof (gsrCanvas))))
+	return NULL;
 GrInitSubBitmap (&newCanv->cvBitmap, &canv->cvBitmap, x, y, w, h);
 newCanv->cvColor = canv->cvColor;
 newCanv->cvDrawMode = canv->cvDrawMode;

@@ -3040,114 +3040,6 @@
 						>
 					</File>
 				</Filter>
-				<Filter
-					Name="cockpit"
-					>
-					<Filter
-						Name="Source Files"
-						>
-						<File
-							RelativePath="..\..\cockpit\gauges.cpp"
-							>
-							<FileConfiguration
-								Name="Debug|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-							<FileConfiguration
-								Name="Release|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-						</File>
-						<File
-							RelativePath="..\..\cockpit\hud.cpp"
-							>
-							<FileConfiguration
-								Name="Debug|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-							<FileConfiguration
-								Name="Release|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-						</File>
-						<File
-							RelativePath="..\..\cockpit\hudicons.cpp"
-							>
-							<FileConfiguration
-								Name="Debug|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-							<FileConfiguration
-								Name="Release|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-						</File>
-						<File
-							RelativePath="..\..\cockpit\statusbar.cpp"
-							>
-							<FileConfiguration
-								Name="Debug|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-							<FileConfiguration
-								Name="Release|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-						</File>
-					</Filter>
-					<Filter
-						Name="Header Files"
-						>
-						<File
-							RelativePath="..\..\include\gauges.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\main\hud_defs.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\main\hudicons.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\main\hudmsg.h"
-							>
-						</File>
-					</Filter>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="lighting"
@@ -3956,7 +3848,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\weapon.h"
+						RelativePath="..\..\include\weapon.h"
 						>
 					</File>
 				</Filter>
@@ -4557,6 +4449,114 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="cockpit"
+				>
+				<Filter
+					Name="Source Files"
+					>
+					<File
+						RelativePath="..\..\cockpit\gauges.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\cockpit\hud.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\cockpit\hudicons.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\cockpit\statusbar.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+				</Filter>
+				<Filter
+					Name="Header Files"
+					>
+					<File
+						RelativePath="..\..\include\gauges.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\hud_defs.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\hudicons.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\main\hudmsg.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -4575,11 +4575,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
