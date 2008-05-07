@@ -647,7 +647,7 @@ if (!(bMonitor || bOverlay)) {
 	return 0;
 	}
 #endif
-#if 1
+#if 0
 if (bBlend) {
 	glEnable (GL_BLEND);
 	if (FaceIsAdditive (faceP))
@@ -683,6 +683,8 @@ if (bMonitor) {
 		OGL_BINDTEX (0);
 		}
 	}
+glEnable (GL_BLEND);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 gameStates.ogl.iLight = 0;
 if (!bColored) {
 	G3SetupGrayScaleShader (gameStates.render.history.nType, &faceP->color);
@@ -702,13 +704,15 @@ else {
 		G3SetupHeadLightShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		glDepthFunc (GL_EQUAL);
+		//glDepthFunc (GL_EQUAL);
 		}
 	bool bStart = true;
 	for (;;) {
 		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
+		//break;
+		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
+			 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 			break;
 		if (bStart) {
 			bStart = false;

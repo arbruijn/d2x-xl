@@ -1171,7 +1171,7 @@ else if (nState == 1) {
 	fVector			vPos = gameData.segs.fVertices [nVertex],
 						vNormal = gameData.segs.points [nVertex].p3_normal.vNormal;
 		
-	SetNearestVertexLights (nVertex, NULL, 1, 0, 1, 0);
+	SetNearestVertexLights (-1, nVertex, NULL, 1, 0, 1, 0);
 	if (!(h = gameData.render.lights.dynamic.shader.index [0][0].nActive))
 		return 1;
 	if (h > VLBUF_SIZE)
