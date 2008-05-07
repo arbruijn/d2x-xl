@@ -1885,7 +1885,7 @@ else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref 
 	gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && ((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
 	RenderObjList (nListPos, gameStates.render.nWindow);
 	gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
-	//gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iStaticLights [0];
+	//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 	}	
 else if (gameStates.render.nType == 2)	// render objects containing transparency, like explosions
 	RenderObjList (nListPos, gameStates.render.nWindow);

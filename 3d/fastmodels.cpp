@@ -607,7 +607,7 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	tG3Model					*pm;
-	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameData.render.lights.dynamic.shader.nFirstLight [0];
+	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameData.render.lights.dynamic.shader.index [0][0].nFirst;
 	tShaderLight			*psl;
 	int						nPass, iLightSource = 0, iLight, nLights, h;
 	int						bEmissive = objP && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
@@ -618,7 +618,7 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	tPosition				*posP = OBJPOS (objP);
 
 if (bLighting) {
-	nLights = gameData.render.lights.dynamic.shader.nActiveLights [0];
+	nLights = gameData.render.lights.dynamic.shader.index [0][0].nActive;
 	OglEnableLighting (0); 
 	}
 else
@@ -641,10 +641,10 @@ for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 			glDepthMask (0);
 			}
 		OglSetupTransform (1);
-		if (gameData.render.lights.dynamic.shader.nLastLight [0] < 0)
+		if (gameData.render.lights.dynamic.shader.index [0][0].nLast < 0)
 			h = 0;
 		else
-			h = gameData.render.lights.dynamic.shader.nLastLight [0] - gameData.render.lights.dynamic.shader.nFirstLight [0] + 1;
+			h = gameData.render.lights.dynamic.shader.index [0][0].nLast - gameData.render.lights.dynamic.shader.index [0][0].nFirst + 1;
 		for (iLight = 0; (h > 0) && (iLight < 8) && nLights; activeLightsP++, h--) { 
 #ifdef _DEBUG
 			if (activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0] >= MAX_SHADER_LIGHTS)

@@ -101,13 +101,13 @@ if (lmP->handle)
 	return 1;
 OglGenTextures (1, &lmP->handle);
 if (!lmP->handle) {
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	nError = glGetError ();
 #endif
 	return 0;
 	}
 OGL_BINDTEX (lmP->handle); 
-#ifdef _DEBUG
+#if 0//def _DEBUG
 if ((nError = glGetError ()))
 	return 0;
 #endif
@@ -800,8 +800,8 @@ int _CDECL_ LightMapThread (void *pThreadId)
 {
 	int		nId = *((int *) pThreadId);
 
-gameData.render.lights.dynamic.shader.nFirstLight [nId] = MAX_SHADER_LIGHTS;
-gameData.render.lights.dynamic.shader.nLastLight [nId] = 0;
+gameData.render.lights.dynamic.shader.index [0][nId].nFirst = MAX_SHADER_LIGHTS;
+gameData.render.lights.dynamic.shader.index [0][nId].nLast = 0;
 ComputeLightMaps (nId ? gameData.segs.nFaces / 2 : 0, nId);
 SDL_SemPost (ti [nId].done);
 ti [nId].bDone = 1;
@@ -945,8 +945,8 @@ if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 8))
 		StartLightMapThreads (LightMapThread);
 	else {
-		gameData.render.lights.dynamic.shader.nFirstLight [0] = MAX_SHADER_LIGHTS;
-		gameData.render.lights.dynamic.shader.nLastLight [0] = 0;
+		gameData.render.lights.dynamic.shader.index [0][0].nFirst = MAX_SHADER_LIGHTS;
+		gameData.render.lights.dynamic.shader.index [0][0].nLast = 0;
 		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 			nFace = 0;
 			NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreateLightMapsPoll);

@@ -513,6 +513,10 @@ if (bDepthOnly) {
 	}
 else {
 	bMonitor = (faceP->nCamera >= 0);
+#ifdef _DEBUG
+	if (bmTop)
+		bmTop = bmTop;
+#endif
 	if (bmTop && !bMonitor) {
 		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
@@ -700,20 +704,25 @@ else {
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		glDepthFunc (GL_EQUAL);
 		}
+	bool bStart = true;
 	for (;;) {
 		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 			break;
-		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		glDepthFunc (GL_EQUAL);
+		if (bStart) {
+			bStart = false;
+			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			glDepthFunc (GL_EQUAL);
+			}
+		}
+	if (!bStart) {
+		glDepthFunc (GL_LEQUAL);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	}
 if (bMonitor)
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
-
-glDepthFunc (GL_LEQUAL);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 #if 0
 if (!bBlend)
@@ -790,7 +799,7 @@ return nLights;
 
 int G3SetupFaceLight (grsFace *faceP, int bTextured)
 {
-	int	h, i, nLights = gameData.render.lights.dynamic.shader.nActiveLights [0];
+	int	h, i, nLights = gameData.render.lights.dynamic.shader.index [0][0].nActive;
 
 for (h = i = 0; i < 4; i++) {
 	if (i) {

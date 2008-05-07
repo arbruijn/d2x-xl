@@ -1296,15 +1296,19 @@ typedef struct tActiveShaderLight {
 	tShaderLight	*psl;
 } tActiveShaderLight;
 
+typedef struct tShaderLightIndex {
+	short	nFirst;
+	short	nLast;
+	short	nActive;
+	short	iVertex;
+	short	iStatic;
+	} tShaderLightIndex;
+
 typedef struct tShaderLightData {
 	tShaderLight			lights [MAX_OGL_LIGHTS];
 	int						nLights;
 	tActiveShaderLight	activeLights [4][MAX_OGL_LIGHTS];
-	short						nFirstLight [4];
-	short						nLastLight [4];
-	short						nActiveLights [4];
-	short						iVertexLights [4];
-	short						iStaticLights [4];
+	tShaderLightIndex		index [2][4];
 	GLuint					nTexHandle;
 } tShaderLightData;
 

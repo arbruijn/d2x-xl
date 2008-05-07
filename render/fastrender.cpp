@@ -264,7 +264,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 #endif
 g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, 
 				  !bDepthOnly && faceP->bTextured, bDepthOnly);
-//gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iVertexLights [0];
+//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iVertexLights [0];
 #ifdef _DEBUG
 prevFaceP = faceP;
 #endif
@@ -691,7 +691,7 @@ if (!VisitSegment (nSegment, bAutomap))
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-gameData.render.lights.dynamic.shader.nActiveLights [0] = -1;
+gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 #ifdef _DEBUG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -1172,7 +1172,7 @@ else if (nState == 1) {
 						vNormal = gameData.segs.points [nVertex].p3_normal.vNormal;
 		
 	SetNearestVertexLights (nVertex, NULL, 1, 0, 1, 0);
-	if (!(h = gameData.render.lights.dynamic.shader.nActiveLights [0]))
+	if (!(h = gameData.render.lights.dynamic.shader.index [0][0].nActive))
 		return 1;
 	if (h > VLBUF_SIZE)
 		h = VLBUF_SIZE;
@@ -1205,7 +1205,7 @@ else if (nState == 1) {
 		vld.nVertices++;
 		vld.nLights += nLights;
 		}
-	//gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iVertexLights [0];
+	//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iVertexLights [0];
 	}	
 else if (nState == 2) {
 	RenderVertLightBuffers ();
@@ -1253,10 +1253,7 @@ void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-gameData.render.lights.dynamic.shader.nActiveLights [0] =
-gameData.render.lights.dynamic.shader.nActiveLights [1] =
-gameData.render.lights.dynamic.shader.nActiveLights [2] =
-gameData.render.lights.dynamic.shader.nActiveLights [3] = 0;
+memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
 #	if SHADER_VERTEX_LIGHTING
@@ -1283,7 +1280,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #ifdef _DEBUG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nSegment = nSegment;
-			if (gameData.render.lights.dynamic.shader.nActiveLights [nThread])
+			if (gameData.render.lights.dynamic.shader.index [0][nThread].nActive)
 				nSegment = nSegment;
 			}
 #endif
@@ -1323,7 +1320,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 							}
 #endif
 						c.color = gameData.render.color.ambient [nVertex].color;
-						if (!gameOpts->ogl.bPerPixelLighting) {
+						if (!gameStates.render.bPerPixelLighting) {
 #	if SHADER_VERTEX_LIGHTING
 							if (!ComputeVertexLight (nVertex, 1, &c))
 #	endif
@@ -1381,10 +1378,7 @@ void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-gameData.render.lights.dynamic.shader.nActiveLights [0] =
-gameData.render.lights.dynamic.shader.nActiveLights [1] =
-gameData.render.lights.dynamic.shader.nActiveLights [2] =
-gameData.render.lights.dynamic.shader.nActiveLights [3] = 0;
+memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
 #	if SHADER_VERTEX_LIGHTING
@@ -1411,7 +1405,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #ifdef _DEBUG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nSegment = nSegment;
-			if (gameData.render.lights.dynamic.shader.nActiveLights [nThread])
+			if (gameData.render.lights.dynamic.shader.index [0][nThread].nActive)
 				nSegment = nSegment;
 			}
 #endif
@@ -1697,7 +1691,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas)
 			ResetNearestStaticLights (nSegment);
 		gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
-		//gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iStaticLights [0];
+		//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 		}
 	else if (nType == 2)	// render objects containing transparency, like explosions
 		RenderObjList (nListPos, gameStates.render.nWindow);

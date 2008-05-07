@@ -701,6 +701,7 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 #if !PER_PIXEL_LIGHTING
 gameOpts->ogl.bPerPixelLighting = 0;
 #endif
+DestroyLightMaps ();
 gameStates.app.bBetweenLevels = 1;
 gameStates.app.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;
