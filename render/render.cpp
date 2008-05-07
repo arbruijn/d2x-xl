@@ -682,7 +682,7 @@ gameStates.render.nState = 0;
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-SetNearestSegmentLights (nSegment, 0, 0, 0);
+SetNearestSegmentLights (nSegment, -1, 0, 0, 0);
 for (nSide = 0; nSide < 6; nSide++) //segP->nFaces, faceP = segP->pFaces; nSide; nSide--, faceP++)
 	RenderSide (segP, nSide);
 OglResetTransform (0);
@@ -2040,6 +2040,7 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.
 		}
 	}
 RenderMineObjects (nType);
+ResetUsedLights ();
 return 1;
 }
 

@@ -37,7 +37,7 @@ int SetNearestFaceLights (grsFace *faceP, int bTextured);
 short SetNearestPixelLights (int nSegment, vmsVector *vPixelPos, float fLightRad, int nThread);
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread);
 void ResetNearestStaticLights (int nSegment);
-short SetNearestSegmentLights (int nSegment, int bVariable, int nType, int nThread);
+short SetNearestSegmentLights (int nSegment, int nFace, int bVariable, int nType, int nThread);
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (int nLevel);
 tShaderLight *GetActiveShaderLight (tActiveShaderLight *activeLightsP, int nThread);
@@ -48,6 +48,7 @@ char *BuildLightingShader (char *pszTemplate, int nLights);
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 int IsLight (int tMapNum);
 void ResetUsedLight (tShaderLight *psl);
+void ResetUsedLights (void);
 
 #define	SHOW_DYN_LIGHT \
 			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) && \

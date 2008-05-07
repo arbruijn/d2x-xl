@@ -1274,7 +1274,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		nSegment = nSegment;
 #endif
 	if (bVertexLight && !gameStates.render.bFullBright)
-		SetNearestSegmentLights (nSegment, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+		SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 		nSide = faceP->nSide;
 #ifdef _DEBUG
@@ -1399,7 +1399,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		nSegment = nSegment;
 #endif
 	if (!(gameStates.render.bFullBright || gameOpts->ogl.bPerPixelLighting))
-		SetNearestSegmentLights (nSegment, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+		SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 		nSide = faceP->nSide;
 #ifdef _DEBUG
@@ -1648,7 +1648,7 @@ for (h = 0; h < gameData.render.mine.nRenderSegs; h++) {
 
 void RenderMineObjects (int nType)
 {
-	int	nListPos;
+	int	nListPos, nSegLights = 0;
 	short	nSegment;
 
 #ifdef _DEBUG
@@ -1681,15 +1681,16 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 			nSegment = nSegment;
 #endif
 		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
-			SetNearestSegmentLights (nSegment, 0, 1, 0);
+			nSegLights = SetNearestSegmentLights (nSegment, -1, 0, 1, 0);
 			SetNearestStaticLights (nSegment, 1, 1, 0);
 			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
 			}
 		else
 			gameStates.render.bApplyDynLight = 0;
 		RenderObjList (nListPos, gameStates.render.nWindow);
-		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas)
+		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
 			ResetNearestStaticLights (nSegment);
+			}
 		gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
 		//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 		}

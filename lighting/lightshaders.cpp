@@ -1096,11 +1096,16 @@ int SetupHardwareLighting (grsFace *faceP, int nType)
 #ifdef _DEBUG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
+if (faceP - FACES == nDbgFace)
+	nDbgFace = nDbgFace;
 #endif
+retry:
 if (!gameStates.ogl.iLight) {
 #ifdef _DEBUG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
+	if (faceP - FACES == nDbgFace)
+		nDbgFace = nDbgFace;
 #endif
 	gameStates.ogl.nLights = SetNearestFaceLights (faceP, nType != 0);
 	if (gameStates.ogl.nLights > gameStates.render.nMaxLightsPerFace)
@@ -1117,9 +1122,17 @@ for (nLights = 0;
 	  activeLightsP++, nLightRange--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
+#ifdef _DEBUG
+	if ((psl->nTarget < 0) && (-psl->nTarget - 1 != faceP->nSegment))
+		faceP = faceP;
+	else if ((psl->nTarget > 0) && (psl->nTarget != faceP - FACES + 1))
+		faceP = faceP;
+	if (!psl->nTarget)
+		psl = psl;
+#endif
 	if (psl->bUsed == 2)	{//nearest vertex light
 		ResetUsedLight (psl);
-		gameData.render.lights.dynamic.shader.index [0][0].nActive--;
+		sliP->nActive--;
 		}
 	hLight = GL_LIGHT0 + nLights++;
 	glEnable (hLight);
@@ -1164,17 +1177,21 @@ for (nLights = 0;
 	glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->vPosf));
 	gameStates.ogl.iLight++;
 	}
+if (!nLightRange)
+	gameStates.ogl.iLight = gameStates.ogl.nLights;
+gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
 #ifdef _DEBUG
-if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) && (gameStates.ogl.nFirstLight < sliP->nLast))
+if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;
+if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) && (gameStates.ogl.nFirstLight < sliP->nLast)) {
+	gameStates.ogl.iLight = 0;
+	goto retry;
+	}
 #endif
 #if 0
 for (int i = nLights; i < 8; i++)
 	glDisable (GL_LIGHT0 + i);
 #endif
-if (!nLightRange)
-	gameStates.ogl.iLight = gameStates.ogl.nLights;
-gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
 #if HW_VERTEX_LIGHTING
 for (int i = nLights; i < 8; i++)
 	glDisable (GL_LIGHT0 + i);

@@ -54,6 +54,16 @@ for (int i = MAX_SHADER_LIGHTS; i; i--, activeLightsP++)
 return 0;
 }
 
+int CheckUsedLights1 (void)
+{
+	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
+
+for (int i = gameData.render.lights.dynamic.shader.nLights; i; i--, psl++)
+	if (psl->bUsed == 1)
+		return 1;
+return 0;
+}
+
 int CheckUsedLights2 (void)
 {
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
@@ -908,6 +918,7 @@ if (nVertex == nDbgVertex)
 			psl->info.nType = nType;
 			psl->info.bState = 1;
 			psl->nTarget = nFace + 1;
+			psl->nFrame = gameData.app.nFrameCount;
 			}
 		}
 	}
@@ -937,15 +948,15 @@ nLastSide = faceP->nSide;
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-#if 1
+#if 0
 if (gameData.render.lights.dynamic.shader.index [0][0].nActive < 0)
-	SetNearestSegmentLights (faceP->nSegment, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+	SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 else {
 	CheckUsedLights2 ();
 	gameData.render.lights.dynamic.shader.index [0][0] = gameData.render.lights.dynamic.shader.index [1][0];
 	}
 #else
-	SetNearestSegmentLights (faceP->nSegment, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 #endif
 VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
 VmVecScale (&vNormal, F1_0 / 2);
@@ -1069,7 +1080,7 @@ for (int i = gameData.render.lights.dynamic.shader.nLights; i; i--, psl++)
 time_t tSetNearestDynamicLights = 0;
 #endif
 
-short SetNearestSegmentLights (int nSegment, int bVariable, int nType, int nThread)
+short SetNearestSegmentLights (int nSegment, int nFace, int bVariable, int nType, int nThread)
 {
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 #if CACHE_LIGHTS
@@ -1114,6 +1125,7 @@ if (gameOpts->render.bDynLighting) {
 	if (gameStates.render.bPerPixelLighting) {
 #ifdef _DEBUG
 		CheckUsedLights ();
+		CheckUsedLights1 ();
 #endif
 		ResetUsedLights ();
 		}
@@ -1146,7 +1158,17 @@ if (gameOpts->render.bDynLighting) {
 				continue;
 			}
 		if (SetActiveShaderLight (activeLightsP, psl, 1, nThread))
-			psl->nTarget = -nSegment - 1;
+#ifdef _DEBUG
+			{
+			if (nFace < 0)
+				psl->nTarget = -nSegment - 1;
+			else
+				psl->nTarget = nFace + 1;
+			psl->nFrame = gameData.app.nFrameCount;
+			}
+#else
+			;
+#endif
 		}
 	gameData.render.lights.dynamic.shader.index [1][nThread] = *sliP;
 #ifdef _DEBUG
@@ -1234,7 +1256,7 @@ if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 if (gameData.render.lights.dynamic.shader.index [0][0].nActive < 0)
-	SetNearestSegmentLights (nSegment, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+	SetNearestSegmentLights (nSegment, -1, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 else
 	gameData.render.lights.dynamic.shader.index [0][0] = gameData.render.lights.dynamic.shader.index [1][0];
 for (i = 0; i < 8; i++)
