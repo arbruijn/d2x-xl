@@ -391,12 +391,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		else
 #endif
 			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist);
-			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-			if (psl->info.fRad > 0)
-				NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
+		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+		if (psl->info.fRad > 0)
+			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
 		fAttenuation /= psl->info.fBrightness;
 		}
-//	fAttenuation = fLightDist / psl->info.fBrightness;
 	if (psl->info.bSpot) {
 		if (NdotL <= 0)
 			continue;
@@ -437,7 +436,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			VmVecScaleInc (&vertColor, &lightColor, (float) pow (RdotE, vcd.fMatShininess));
 			}
 		}
-	if (nSaturation < 2)	{//sum up color components
+	if ((nSaturation < 2) || gameStates.render.bLightMaps)	{//sum up color components
 		VmVecScaleAdd (&colorSum, &colorSum, &vertColor, 1.0f / fAttenuation);
 		}
 	else {	//use max. color components
@@ -561,14 +560,12 @@ for (j = 0; (i > 0); activeLightsP++, i--) {
 			else
 #endif
 			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist);
-			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-			if ((psl->info.fRad > 0))
+			NdotL = G3_DOTF (vcd.vertNorm, lightDir);
+			if (psl->info.fRad > 0)
 				NdotL += (1.0f - NdotL) / fAttenuation;
 			fAttenuation /= psl->info.fBrightness;
 			}
 		}
-	if (!bInRad && (psl->info.fRad > 0))
-		NdotL += (1.0f - NdotL) / fAttenuation;
 #if VECMAT_CALLS
 	VmVecNormalize (&lightDir, &lightDir);
 #else
@@ -578,7 +575,6 @@ for (j = 0; (i > 0); activeLightsP++, i--) {
 		lightDir.p.z /= fMag;
 		}
 #endif
-	NdotL = bInRad ? 1 : G3_DOTF (vcd.vertNorm, lightDir);
 	if (psl->info.bSpot) {
 		if (NdotL <= 0)
 			continue;
@@ -667,7 +663,7 @@ for (j = 0; (i > 0); activeLightsP++, i--) {
 		vertColor.p.z += lightColor.p.z /* * vcd.matSpecular.p.z */;
 #endif
 		}
-	if (nSaturation < 2)	{//sum up color components
+	if ((nSaturation < 2) || gameStates.render.bLightMaps)	{//sum up color components
 #if VECMAT_CALLS
 		VmVecScaleAdd (&colorSum, &colorSum, &vertColor, 1.0f / fAttenuation);
 #else
