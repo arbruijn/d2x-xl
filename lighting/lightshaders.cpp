@@ -1015,7 +1015,7 @@ gameOpts->ogl.bPerPixelLighting = 0;
 #endif
 if (!gameOpts->ogl.bPerPixelLighting)
 	return -1;
-#if 1
+#if 0
 i = nLights;
 if (perPixelLightingShaderProgs [i][nType])
 	return nLights;
