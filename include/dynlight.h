@@ -47,6 +47,7 @@ void InitHeadlightShaders (int nLights);
 char *BuildLightingShader (char *pszTemplate, int nLights);
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 int IsLight (int tMapNum);
+void ResetUsedLight (tShaderLight *psl);
 
 #define	SHOW_DYN_LIGHT \
 			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) && \

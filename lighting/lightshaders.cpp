@@ -1091,6 +1091,7 @@ int SetupHardwareLighting (grsFace *faceP, int nType)
 	GLenum					hLight;
 	tActiveShaderLight	*activeLightsP;
 	tShaderLight			*psl;
+	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
 
 #ifdef _DEBUG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -1111,9 +1112,7 @@ for (nLights = 0;
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
 	if (psl->bUsed == 2)	{//nearest vertex light
-		psl->bUsed = 0;
-		activeLightsP->nType = NULL;
-		activeLightsP->psl = NULL;
+		ResetUsedLight (psl);
 		gameData.render.lights.dynamic.shader.index [0][0].nActive--;
 		}
 	hLight = GL_LIGHT0 + nLights++;

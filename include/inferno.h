@@ -1277,6 +1277,8 @@ typedef struct tOglMaterial {
 
 //------------------------------------------------------------------------------
 
+struct tActiveShaderLight;
+
 typedef struct tShaderLight {
 	fVector		vPosf [2];
 	fVector		vDirf;
@@ -1286,6 +1288,7 @@ typedef struct tShaderLight {
 	ubyte			bShadow;
 	ubyte			bLightning;
 	ubyte			bExclusive;
+	struct tActiveShaderLight *activeLightsP;
 	tDynLightInfo info;
 } tShaderLight;
 
