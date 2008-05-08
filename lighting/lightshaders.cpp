@@ -1019,16 +1019,11 @@ if (!gameStates.render.bUsePerPixelLighting)
 	gameOpts->ogl.bPerPixelLighting = 0;
 if (!gameOpts->ogl.bPerPixelLighting)
 	return -1;
-#if 0
-i = nLights;
-if (perPixelLightingShaderProgs [i][nType])
+if (perPixelLightingShaderProgs [i = nLights][nType])
 	return nLights;
-	{
-#else
 for (i = 0; i <= gameStates.render.nMaxLightsPerPass; i++) {
-if (perPixelLightingShaderProgs [i][nType])
-	continue;
-#endif
+	if (perPixelLightingShaderProgs [i][nType])
+		continue;
 	if (HaveLightMaps ()) {
 		if (nLights) {
 			fsP = (nLights == 1) ? pszPPLM1LightingFS : pszPPLMXLightingFS;
@@ -1187,7 +1182,7 @@ for (nLights = 0;
 	glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->vPosf));
 	gameStates.ogl.iLight++;
 	}
-if (!nLightRange) {
+if (nLightRange <= 0) {
 	gameStates.ogl.iLight = gameStates.ogl.nLights;
 	CheckUsedLights2 ();
 	}
@@ -1258,7 +1253,7 @@ if (nShader != gameStates.render.history.nShader) {
 if (nLights)
 	glUniform1f (glGetUniformLocation (activeShaderProg, "bStaticColor"), 
 #if 1
-					 (float) nLights / (float) gameStates.ogl.nLights);
+					 nLights ? (float) nLights / (float) gameStates.ogl.nLights : 1.0f);
 #else
 					 bStaticColor ? 1.0f : 0.0f);
 #endif

@@ -1214,13 +1214,14 @@ if (gameOpts->render.bDynLighting) {
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
+	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 
-	h = gameData.render.lights.dynamic.shader.index [0][nThread].nLast - gameData.render.lights.dynamic.shader.index [0][nThread].nFirst + 1;
+	h = sliP->nLast - sliP->nFirst + 1;
 	if (h > 0)
-		memset (activeLightsP + gameData.render.lights.dynamic.shader.index [0][nThread].nFirst, 0, sizeof (tActiveShaderLight) * h);
-	gameData.render.lights.dynamic.shader.index [0][nThread].nActive = 0;
-	gameData.render.lights.dynamic.shader.index [0][nThread].nFirst = MAX_SHADER_LIGHTS;
-	gameData.render.lights.dynamic.shader.index [0][nThread].nLast = 0;
+		memset (activeLightsP + sliP->nFirst, 0, sizeof (tActiveShaderLight) * h);
+	sliP->nActive = 0;
+	sliP->nFirst = MAX_SHADER_LIGHTS;
+	sliP->nLast = 0;
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
 	for (; i; i--, psl++) {
 #ifdef _DEBUG
