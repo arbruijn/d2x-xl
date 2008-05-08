@@ -660,7 +660,7 @@ if (bmP) {
 			OGL_BINDTEX (0);
 		}
 	}
-else if (RISetClientState (bClientState, 0, nColors > 1, bUseLightMaps) || renderItems.bTextured) {
+else if (RISetClientState (bClientState, 0, !renderItems.bLightMaps && (nColors > 1), bUseLightMaps) || renderItems.bTextured) {
 	glDisable (GL_TEXTURE_2D);
 	renderItems.bTextured = 0;
 	}
@@ -785,6 +785,10 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 			G3SetupShader (faceP, 0, 0, item->bmP != NULL, 
 								(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
 								renderItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
+		if (triP)
+			glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + triP->nIndex));
+		else if (faceP)
+			glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
 		glDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
 	OglResetTransform (faceP != NULL);

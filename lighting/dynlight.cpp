@@ -694,6 +694,10 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 		nDbgSeg = nDbgSeg;
 #endif
 	psl->info = pl->info;
+#ifdef _DEBUG
+	if (psl->info.bSpot)
+		psl = psl;
+#endif
 	VmVecFixToFloat (psl->vPosf, &psl->info.vPos);
 	if (gameStates.ogl.bUseTransform)
 		psl->vPosf [1] = psl->vPosf [0];
@@ -1157,10 +1161,14 @@ if (gameOpts->render.bDynLighting) {
 			nLightSeg = (psl->info.nSegment < 0) ? (psl->info.nObject < 0) ? -1 : gameData.objs.objects [psl->info.nObject].nSegment : psl->info.nSegment;
 			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
 				continue;
-			psl->xDistance = (fix) ((VmVecDist (&c, &psl->info.vPos) /*- fl2f (psl->info.fRad)*/) / psl->info.fRange);
-			if (psl->xDistance > xMaxLightRange)
-				continue;
 			}
+#ifdef _DEBUG
+		else
+			psl = psl;
+#endif
+		psl->xDistance = (fix) ((VmVecDist (&c, &psl->info.vPos) /*- fl2f (psl->info.fRad)*/) / psl->info.fRange);
+		if (psl->xDistance > xMaxLightRange)
+			continue;
 		if (SetActiveShaderLight (activeLightsP, psl, 1, nThread))
 #ifdef _DEBUG
 			{

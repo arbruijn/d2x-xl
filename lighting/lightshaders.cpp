@@ -1250,12 +1250,11 @@ if (nShader != gameStates.render.history.nShader) {
 			}
 		}
 	}
-if (nLights)
-	glUniform1f (glGetUniformLocation (activeShaderProg, "bStaticColor"), 
+glUniform1f (glGetUniformLocation (activeShaderProg, "bStaticColor"), 
 #if 1
-					 nLights ? (float) nLights / (float) gameStates.ogl.nLights : 1.0f);
+				 nLights ? (float) nLights / (float) gameStates.ogl.nLights : 1.0f);
 #else
-					 bStaticColor ? 1.0f : 0.0f);
+				 (!nLights || bStaticColor) ? 1.0f : 0.0f);
 #endif
 return gameStates.render.history.nShader = nShader;
 }
