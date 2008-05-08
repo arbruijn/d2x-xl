@@ -969,8 +969,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].ogl.bLightObjects", "1"},
 	{"gameOptions[0].ogl.bHeadLights", "0"},
 	{"gameOptions[0].ogl.bLightPowerups", "0"},
-	if (gameStates.render.bUsePerPixelLighting)
-		{"gameOptions[0].ogl.bPerPixelLighting", "0"},
+	{"gameOptions[0].ogl.bPerPixelLighting", "0"},
 	{"gameOptions[0].ogl.bObjLighting", "0"},
 	{"gameOptions[0].ogl.nMaxLights", "4"},
 	{"gameOptions[0].render.bDynLighting", "0"},

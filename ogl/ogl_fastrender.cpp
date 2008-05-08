@@ -114,7 +114,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 if (!bColored && gameOpts->render.automap.bGrayOut) 
 	nShader = G3SetupGrayScaleShader (nType, colorP);
-else if (faceP && gameStates.ogl.bPerPixelLighting)
+else if (faceP && gameStates.render.bPerPixelLighting)
 	nShader = G3SetupPerPixelShader (faceP, nType);
 else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
 	nShader = G3SetupHeadLightShader (nType, HaveLightMaps (), colorP);

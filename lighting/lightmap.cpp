@@ -961,7 +961,6 @@ if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 	}
 OglCreateLightMaps ();
 SaveLightMapData (nLevel);
-#endif
 }
 
 //------------------------------------------------------------------------------

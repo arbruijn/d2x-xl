@@ -1090,7 +1090,7 @@ if ((t = FindArg ("-render_indirect")))
 	gameStates.render.bRenderIndirect = NumArg (t, 1);
 #endif
 if ((t = FindArg ("-usePerPixelLighting")))
-	gameOptions [0].render.bUsePerPixelLighting = NumArg (t, 1);
+	gameStates.render.bUsePerPixelLighting = NumArg (t, 1);
 if ((t = FindArg ("-use_shaders")))
 	gameOptions [0].render.bUseShaders = NumArg (t, 1);
 if ((t = FindArg ("-shadows")))
