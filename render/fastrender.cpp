@@ -462,6 +462,8 @@ else {
 	if (bNormals)
 		G3EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 	}
+glEnable (GL_BLEND);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 return bVertexArrays;
 }
 

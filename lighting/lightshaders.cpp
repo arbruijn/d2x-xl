@@ -576,7 +576,7 @@ char *pszPPLMXLightingFS [] = {
 	"		if (dist <= 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			float NdotL = max (dot (n, lightVec / lightDist), 0.0);\r\n" \
+	"			float NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
@@ -613,7 +613,9 @@ char *pszPPLMXLightingFS [] = {
 	"		if (dist <= 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			NdotL = max (dot (n, lightVec / lightDist), 0.0);\r\n" \
+	"			NdotL = dot (n, lightVec / lightDist);\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.9);*/\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
@@ -628,7 +630,7 @@ char *pszPPLMXLightingFS [] = {
 	"		<<<<< specular highlight*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = /*min (texColor, */(texColor * colorSum * bStaticColor);\r\n" \
+	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -652,7 +654,9 @@ char *pszPPLMXLightingFS [] = {
 	"		if (dist <= 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			NdotL = max (dot (n, lightVec / lightDist), 0.0);\r\n" \
+	"			NdotL = dot (n, lightVec / lightDist);\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.9);*/\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
@@ -695,7 +699,8 @@ char *pszPPLMXLightingFS [] = {
 	"		if (dist <= 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			NdotL = max (dot (n, lightVec / lightDist), 0.0);\r\n" \
+	"			NdotL = dot (n, lightVec / lightDist);\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.9);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
@@ -1245,8 +1250,11 @@ if (nShader != gameStates.render.history.nShader) {
 	}
 if (nLights)
 	glUniform1f (glGetUniformLocation (activeShaderProg, "bStaticColor"), 
+#if 0
 					 (float) nLights / (float) gameStates.ogl.nLights);
-					 //bStaticColor ? 1.0f : 0.0f);
+#else
+					 bStaticColor ? 1.0f : 0.0f);
+#endif
 return gameStates.render.history.nShader = nShader;
 }
 

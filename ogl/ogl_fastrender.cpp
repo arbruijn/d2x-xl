@@ -683,8 +683,6 @@ if (bMonitor) {
 		OGL_BINDTEX (0);
 		}
 	}
-glEnable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 gameStates.ogl.iLight = 0;
 if (!bColored) {
 	G3SetupGrayScaleShader (gameStates.render.history.nType, &faceP->color);
@@ -710,7 +708,7 @@ else {
 	for (;;) {
 		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-		//break;
+		break;
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 			 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 			break;
