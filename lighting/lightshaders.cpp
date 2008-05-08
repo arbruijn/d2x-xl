@@ -589,7 +589,7 @@ char *pszPPLMXLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		<<<<< specular highlight*/\r\n" \
-	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
+	"		colorSum += color * gl_LightSource [i].constantAttenuation * bStaticColor;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);\r\n" \
 	"	}"
@@ -601,7 +601,6 @@ char *pszPPLMXLightingFS [] = {
 	"void main() {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) * bStaticColor;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"	vec4 maxColor = texColor;\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
@@ -670,7 +669,7 @@ char *pszPPLMXLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		<<<<< specular highlight*/\r\n" \
-	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
+	"		colorSum += color * gl_LightSource [i].constantAttenuation * bStaticColor;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);\r\n" \
 	"	}"
@@ -714,7 +713,7 @@ char *pszPPLMXLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		<<<<< specular highlight*/\r\n" \
-	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
+	"		colorSum += color * gl_LightSource [i].constantAttenuation * bStaticColor;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);}\r\n" \
 	"	}"
@@ -1258,7 +1257,7 @@ if (nShader != gameStates.render.history.nShader) {
 	}
 if (nLights)
 	glUniform1f (glGetUniformLocation (activeShaderProg, "bStaticColor"), 
-#if 0
+#if 1
 					 (float) nLights / (float) gameStates.ogl.nLights);
 #else
 					 bStaticColor ? 1.0f : 0.0f);
