@@ -3472,12 +3472,12 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 #endif
-#if PER_PIXEL_LIGHTING
-		if (!gameStates.app.bGameRunning && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk) {
-			ADD_CHECK (opt, TXT_PER_PIXEL_LIGHTING, gameOpts->ogl.bPerPixelLighting, KEY_P, HTX_PER_PIXEL_LIGHTING);
-			lightOpts.nPerPixelLighting = opt++;
+		if (gameStates.render.bUsePerPixelLighting) {
+			if (!gameStates.app.bGameRunning && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk) {
+				ADD_CHECK (opt, TXT_PER_PIXEL_LIGHTING, gameOpts->ogl.bPerPixelLighting, KEY_P, HTX_PER_PIXEL_LIGHTING);
+				lightOpts.nPerPixelLighting = opt++;
+				}
 			}
-#endif
 		if (gameStates.ogl.bHeadLight) {
 			ADD_CHECK (opt, TXT_HW_HEADLIGHT, gameOpts->ogl.bHeadLight, KEY_H, HTX_HW_HEADLIGHT);
 			lightOpts.nHWHeadLight = opt++;

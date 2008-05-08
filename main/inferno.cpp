@@ -1089,6 +1089,8 @@ if ((t = FindArg ("-render_quality")) && *Args [t+1]) {
 if ((t = FindArg ("-render_indirect")))
 	gameStates.render.bRenderIndirect = NumArg (t, 1);
 #endif
+if ((t = FindArg ("-usePerPixelLighting")))
+	gameOptions [0].render.bUsePerPixelLighting = NumArg (t, 1);
 if ((t = FindArg ("-use_shaders")))
 	gameOptions [0].render.bUseShaders = NumArg (t, 1);
 if ((t = FindArg ("-shadows")))
@@ -1115,24 +1117,24 @@ if ((t = FindArg ("-maxfps"))) {
 		t = 250;
 	gameOpts->render.nMaxFPS = t;
 	}
-#ifdef PER_PIXEL_LIGHTING
-if ((t = FindArg ("-maxLightsPerPass"))) {
-	t = NumArg (t, 1);
-	if (t < 1)
-		t = 1;
-	else if (t > 8)
-		t = 8;
-	gameStates.render.nMaxLightsPerPass = t;
+if (!gameStates.render.bUsePerPixelLighting) {
+	if ((t = FindArg ("-maxLightsPerPass"))) {
+		t = NumArg (t, 1);
+		if (t < 1)
+			t = 1;
+		else if (t > 8)
+			t = 8;
+		gameStates.render.nMaxLightsPerPass = t;
+		}
+	if ((t = FindArg ("-maxLightsPerFace"))) {
+		t = NumArg (t, 1);
+		if (t < 1)
+			t = 16;
+		else if (t > 32)
+			t = 32;
+		gameStates.render.nMaxLightsPerFace = t;
+		}
 	}
-if ((t = FindArg ("-maxLightsPerFace"))) {
-	t = NumArg (t, 1);
-	if (t < 1)
-		t = 16;
-	else if (t > 32)
-		t = 32;
-	gameStates.render.nMaxLightsPerFace = t;
-	}
-#endif
 #if RENDER2TEXTURE
 if ((t = FindArg ("-render2texture")))
 	gameStates.ogl.bUseRender2Texture = NumArg (t, 1);

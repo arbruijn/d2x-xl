@@ -601,6 +601,7 @@ char *pszPPLMXLightingFS [] = {
 	"void main() {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) * bStaticColor;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"	vec4 maxColor = texColor;\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) {\r\n" \
@@ -628,7 +629,7 @@ char *pszPPLMXLightingFS [] = {
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
 	"		<<<<< specular highlight*/\r\n" \
-	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
+	"		colorSum += color * gl_LightSource [i].constantAttenuation * bStaticColor;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = /*min (texColor, */(texColor * colorSum);\r\n" \
 	"	}"
@@ -1014,10 +1015,9 @@ int InitPerPixelLightingShader (int nType, int nLights)
 	char	*pszFS, *pszVS;
 	char	**fsP, **vsP;
 
-#if !PER_PIXEL_LIGHTING
-gameStates.ogl.bPerPixelLightingOk =
-gameOpts->ogl.bPerPixelLighting = 0;
-#endif
+if (!gameStates.render.bUsePerPixelLighting)
+	gameStates.ogl.bPerPixelLightingOk =
+	gameOpts->ogl.bPerPixelLighting = 0;
 if (!gameOpts->ogl.bPerPixelLighting)
 	return -1;
 #if 0
@@ -1085,6 +1085,8 @@ memset (perPixelLightingShaderProgs, 0, sizeof (perPixelLightingShaderProgs));
 
 //------------------------------------------------------------------------------
 
+int CheckUsedLights2 (void);
+
 int SetupHardwareLighting (grsFace *faceP, int nType)
 {
 	int						nLightRange, nLights;
@@ -1128,6 +1130,10 @@ for (nLights = 0;
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
 #ifdef _DEBUG
+	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+	if (faceP - FACES == nDbgFace)
+		nDbgFace = nDbgFace;
 	if ((psl->nTarget < 0) && (-psl->nTarget - 1 != faceP->nSegment))
 		faceP = faceP;
 	else if ((psl->nTarget > 0) && (psl->nTarget != faceP - FACES + 1))
@@ -1182,8 +1188,10 @@ for (nLights = 0;
 	glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->vPosf));
 	gameStates.ogl.iLight++;
 	}
-if (!nLightRange)
+if (!nLightRange) {
 	gameStates.ogl.iLight = gameStates.ogl.nLights;
+	CheckUsedLights2 ();
+	}
 gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
 #ifdef _DEBUG
 if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)

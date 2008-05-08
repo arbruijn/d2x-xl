@@ -796,6 +796,8 @@ if (xDist < 0)
 #if PREFER_GEOMETRY_LIGHTS
 else if (psl->info.nSegment >= 0)
 	xDist /= 2;
+else
+	xDist += (MAX_SHADER_LIGHTS - xDist) / 2;
 #endif
 #if 1
 while (activeLightsP [xDist].nType) {
@@ -947,8 +949,10 @@ nLastSide = faceP->nSide;
 #ifdef _DEBUG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
+if (faceP - FACES == nDbgFace)
+	nDbgFace = nDbgFace;
 #endif
-#if 1
+#if 0
 if (gameData.render.lights.dynamic.shader.index [0][0].nActive < 0)
 	SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 else {

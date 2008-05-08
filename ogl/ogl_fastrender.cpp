@@ -114,10 +114,8 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 if (!bColored && gameOpts->render.automap.bGrayOut) 
 	nShader = G3SetupGrayScaleShader (nType, colorP);
-#if PER_PIXEL_LIGHTING
-else if (faceP && gameOpts->ogl.bPerPixelLighting)
+else if (faceP && gameStates.ogl.bPerPixelLighting)
 	nShader = G3SetupPerPixelShader (faceP, nType);
-#endif
 else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
 	nShader = G3SetupHeadLightShader (nType, HaveLightMaps (), colorP);
 else if (bColorKey || bMultiTexture) 
@@ -684,6 +682,7 @@ if (bMonitor) {
 		}
 	}
 gameStates.ogl.iLight = 0;
+glBlendFunc (GL_ONE, GL_ZERO);
 if (!bColored) {
 	G3SetupGrayScaleShader (gameStates.render.history.nType, &faceP->color);
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
@@ -708,7 +707,6 @@ else {
 	for (;;) {
 		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-		break;
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 			 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 			break;

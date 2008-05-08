@@ -62,11 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define FBO_DRAW_BUFFER 1
 #endif
 
-#ifdef _DEBUG
-#	define PER_PIXEL_LIGHTING 1
-#else
-#	define PER_PIXEL_LIGHTING 1
-#endif
+#define PER_PIXEL_LIGHTING 1
 
 #include "vers_id.h"
 #include "pstypes.h"
@@ -895,6 +891,7 @@ typedef struct tRenderStates {
 	int bHaveDynLights;
 	int bPaletteFadedOut;
 	int bHaveStencilBuffer;
+	int bUsePerPixelLighting;
 	int nRenderPass;
 	int nShadowPass;
 	int nShadowBlurPass;

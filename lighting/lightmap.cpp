@@ -931,7 +931,8 @@ return bOk;
 
 void CreateLightMaps (int nLevel)
 {
-#if PER_PIXEL_LIGHTING
+if (!gameStates.render.bUsePerPixelLighting)
+	return;
 DestroyLightMaps ();
 if (!InitLightData (0))
 	return;
