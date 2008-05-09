@@ -1241,7 +1241,10 @@ if (bLightMaps = HaveLightMaps ()) {
 #endif
 		{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightMapData.buffers + i, 1, 1);}
 	}
-if (nShader != gameStates.render.history.nShader) {
+#if 1//ndef _DEBUG
+if (nShader != gameStates.render.history.nShader) 
+#endif
+	{
 	glUseProgramObject (0);
 	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [nLights][nType]);
 	if (bLightMaps)

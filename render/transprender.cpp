@@ -641,6 +641,8 @@ int LoadRenderItemImage (grsBitmap *bmP, char nColors, char nFrame, int nWrap,
 {
 if (bmP) {
 	if (RISetClientState (bClientState, 1, nColors > 1, bUseLightMaps) || (renderItems.bTextured < 1)) {
+		glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
+		glClientActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 		glEnable (GL_TEXTURE_2D);
 		//glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		renderItems.bTextured = 1;
@@ -699,11 +701,16 @@ if (item->bmP && strstr (item->bmP->szName, "door45#5"))
 faceP = item->faceP;
 triP = item->triP;
 bLightMaps = renderItems.bLightMaps && (faceP != NULL);
+#ifdef _DEBUG
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLightMaps)) {
 	if (item->nColors > 1) {
 		if (bLightMaps) {
 			glActiveTexture (GL_TEXTURE0);
 			glClientActiveTexture (GL_TEXTURE0);
+			glEnableClientState (GL_NORMAL_ARRAY);
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord + faceP->nIndex);
 			if (triP)
 				glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + triP->nIndex);
@@ -742,11 +749,15 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 	if (i == 1)
 		glBlendFunc (GL_ONE, GL_ONE);
 	else if (i == 2)
-		glBlendFunc (GL_ONE, GL_ONE_MINUS_DST_COLOR);
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	else if (i == 3)
-		glBlendFunc (GL_ONE, GL_ONE_MINUS_DST_ALPHA);
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	else 
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#ifdef _DEBUG
+	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 	if (faceP && gameOpts->ogl.bPerPixelLighting) {
 		if (!faceP->bColored) {
 			G3SetupGrayScaleShader ((int) faceP->nRenderType, &faceP->color);
@@ -757,24 +768,30 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 			if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
 				G3SetupHeadLightShader (renderItems.bTextured, 1, renderItems.bTextured ? NULL : &faceP->color);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
+#if 1
 				bResetBlendMode = true;
 				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-				glDepthFunc (GL_EQUAL);
+				glDepthFunc (GL_LEQUAL);
+#endif
 				}
+#if 1
 			gameStates.ogl.iLight = 0;
 			for (;;) {
 				G3SetupPerPixelShader (faceP, (int) faceP->nRenderType);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
-				if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
+				if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
+					 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 					break;
+#if 1
 				if (!bResetBlendMode) {
 					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-					glDepthFunc (GL_EQUAL);
+					glDepthFunc (GL_LEQUAL);
 					}
+#endif
 				}
+#endif
 			if (bResetBlendMode) {
-				glDepthFunc (GL_LEQUAL);
-				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				glDepthFunc (GL_LESS);
 				}
 			}
 		}
