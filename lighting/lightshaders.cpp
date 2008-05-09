@@ -857,7 +857,7 @@ char *pszPPLM1LightingFS [] = {
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);\r\n" \
+	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);}\r\n" \
 	"	}"
 	};
 
@@ -1015,7 +1015,7 @@ GLhandleARB ppLfs [9][4] =
 
 int InitPerPixelLightingShader (int nType, int nLights)
 {
-	int	i, j, bOk;
+	int	h, i, j, bOk;
 	char	*pszFS, *pszVS;
 	char	**fsP, **vsP;
 
@@ -1024,51 +1024,53 @@ if (!gameStates.render.bUsePerPixelLighting)
 	gameOpts->ogl.bPerPixelLighting = 0;
 if (!gameOpts->ogl.bPerPixelLighting)
 	return -1;
-if (perPixelLightingShaderProgs [i = nLights][nType])
+if (perPixelLightingShaderProgs [nLights][nType])
 	return nLights;
-for (i = 0; i <= gameStates.render.nMaxLightsPerPass; i++) {
-	if (perPixelLightingShaderProgs [i][nType])
-		continue;
-	if (HaveLightMaps ()) {
-		if (i) {
-			fsP = (i == 1) ? pszPPLM1LightingFS : pszPPLMXLightingFS;
-			vsP = pszPPLMLightingVS;
-			//nLights = MAX_LIGHTS_PER_PIXEL;
+for (h = 0; h <= 3; h++) {
+	for (i = 0; i <= gameStates.render.nMaxLightsPerPass; i++) {
+		if (perPixelLightingShaderProgs [i][h])
+			continue;
+		if (HaveLightMaps ()) {
+			if (i) {
+				fsP = (i == 1) ? pszPPLM1LightingFS : pszPPLMXLightingFS;
+				vsP = pszPPLMLightingVS;
+				//nLights = MAX_LIGHTS_PER_PIXEL;
+				}
+			else {
+				fsP = pszLMLightingFS;
+				vsP = pszLMLightingVS;
+				}
 			}
 		else {
-			fsP = pszLMLightingFS;
-			vsP = pszLMLightingVS;
+			if (i) {
+				fsP = (i == 1) ? pszPP1LightingFS : pszPPXLightingFS;
+				vsP = pszPPLightingVS;
+				//nLights = MAX_LIGHTS_PER_PIXEL;
+				}
+			else {
+				fsP = pszLightingFS;
+				vsP = pszLightingVS;
+				}
 			}
-		}
-	else {
-		if (i) {
-			fsP = (i == 1) ? pszPP1LightingFS : pszPPXLightingFS;
-			vsP = pszPPLightingVS;
-			//nLights = MAX_LIGHTS_PER_PIXEL;
-			}
-		else {
-			fsP = pszLightingFS;
-			vsP = pszLightingVS;
-			}
-		}
-	PrintLog ("building lighting shader programs\n");
-	if ((gameStates.ogl.bPerPixelLightingOk = (gameStates.ogl.bShadersOk && gameOpts->render.nPath))) {
-		pszFS = BuildLightingShader (fsP [nType], i);
-		pszVS = BuildLightingShader (vsP [nType], i);
-		bOk = (pszFS != NULL) && (pszVS != NULL) &&
-				CreateShaderProg (perPixelLightingShaderProgs [i] + nType) &&
-				CreateShaderFunc (perPixelLightingShaderProgs [i] + nType, ppLfs [i] + nType, ppLvs [i] + nType, pszFS, pszVS, 1) &&
-				LinkShaderProg (perPixelLightingShaderProgs [i] + nType);
-		D2_FREE (pszFS);
-		D2_FREE (pszVS);
-		if (!bOk) {
-			gameStates.ogl.bPerPixelLightingOk =
-			gameOpts->ogl.bPerPixelLighting = 0;
-			for (i = 0; i <= MAX_LIGHTS_PER_PIXEL; i++)
-				for (j = 0; j < 4; j++)
-					DeleteShaderProg (perPixelLightingShaderProgs [i] + j);
-			nLights = 0;
-			return -1;
+		PrintLog ("building lighting shader programs\n");
+		if ((gameStates.ogl.bPerPixelLightingOk = (gameStates.ogl.bShadersOk && gameOpts->render.nPath))) {
+			pszFS = BuildLightingShader (fsP [h], i);
+			pszVS = BuildLightingShader (vsP [h], i);
+			bOk = (pszFS != NULL) && (pszVS != NULL) &&
+					CreateShaderProg (perPixelLightingShaderProgs [i] + h) &&
+					CreateShaderFunc (perPixelLightingShaderProgs [i] + h, ppLfs [i] + h, ppLvs [i] + h, pszFS, pszVS, 1) &&
+					LinkShaderProg (perPixelLightingShaderProgs [i] + h);
+			D2_FREE (pszFS);
+			D2_FREE (pszVS);
+			if (!bOk) {
+				gameStates.ogl.bPerPixelLightingOk =
+				gameOpts->ogl.bPerPixelLighting = 0;
+				for (i = 0; i <= MAX_LIGHTS_PER_PIXEL; i++)
+					for (j = 0; j < 4; j++)
+						DeleteShaderProg (perPixelLightingShaderProgs [i] + j);
+				nLights = 0;
+				return -1;
+				}
 			}
 		}
 	}
