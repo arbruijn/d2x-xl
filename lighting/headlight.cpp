@@ -227,10 +227,10 @@ char *headLightFS [2][8] = {
 	//----------------------------------------
 	//single player version - one player
 	//untextured
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"vec4 texColor = maxColor;\r\n" \
+	"vec4 texColor = matColor;\r\n" \
 	"vec3 spotColor = gl_Color.rgb;\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
 	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
@@ -246,7 +246,7 @@ char *headLightFS [2][8] = {
 	,
 	//only base texture
 	"uniform sampler2D baseTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
@@ -258,7 +258,7 @@ char *headLightFS [2][8] = {
 	"	    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), spotColor);\r\n" \
-	"      spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"      spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"	    }\r\n" \
 	"	 }\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n"  \
@@ -266,7 +266,7 @@ char *headLightFS [2][8] = {
 	,
 	//base texture and decal
 	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
@@ -280,7 +280,7 @@ char *headLightFS [2][8] = {
 	"      float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), spotColor);\r\n" \
-	"      spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"      spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"	    }\r\n" \
 	"	 }\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n"  \
@@ -288,7 +288,7 @@ char *headLightFS [2][8] = {
 	,
 	//base texture and decal with color key
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;\r\n" \
@@ -307,7 +307,7 @@ char *headLightFS [2][8] = {
 	" 		    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
 	"         spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"         spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), spotColor);\r\n" \
-	"         spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"         spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"   	    }\r\n" \
 	"   	 }\r\n" \
 	"	 gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n"  \
@@ -317,7 +317,7 @@ char *headLightFS [2][8] = {
 	// --------------------------------------------------------------------------------
 	//multiplayer version - 1 - 8 players
 	"#define LIGHTS 8\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vec3 lightVec, lvNorm, spotColor;\r\n" \
@@ -336,14 +336,14 @@ char *headLightFS [2][8] = {
 	" 	   }\r\n" \
 	" 	}\r\n" \
 	"spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"spotColor = min (spotColor, maxColor.rgb);\r\n" \
-	"gl_FragColor = vec4 (maxColor.rgb * spotColor.rgb, maxColor.a);"  \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"gl_FragColor = vec4 (matColor.rgb * spotColor.rgb, matColor.a);"  \
 	"}" 
 	,
 	//only base texture
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
@@ -363,14 +363,14 @@ char *headLightFS [2][8] = {
 	" 	   }\r\n" \
 	" 	}\r\n" \
 	"spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"}" 
 	,
 	//base texture and decal
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
@@ -392,14 +392,14 @@ char *headLightFS [2][8] = {
 	" 	   }\r\n" \
 	" 	}\r\n" \
 	"spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"}" 
 	,
 	//base texture and decal with color key
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;\r\n" \
@@ -425,7 +425,7 @@ char *headLightFS [2][8] = {
 	" 		    }\r\n" \
 	" 		 }\r\n" \
 	"   spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"   spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"   spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"	 gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"   }\r\n" \
 	"}" 
@@ -434,7 +434,7 @@ char *headLightFS [2][8] = {
 	//----------------------------------------
 	//single player version - one player
 	//untextured
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"vec3 spotColor = vec3 (0.0, 0.0, 0.0);\r\n" \
@@ -447,12 +447,12 @@ char *headLightFS [2][8] = {
 	"      spotColor = vec3 (spotEffect, spotEffect, spotEffect);\r\n" \
 	"      }\r\n" \
 	"   }\r\n" \
-	"gl_FragColor = vec4 (min (maxColor.rgb, maxColor.rgb * spotColor), maxColor.a);\r\n" \
+	"gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * spotColor), matColor.a);\r\n" \
 	"}" 
 	,
 	//only base texture
 	"uniform sampler2D baseTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
@@ -464,7 +464,7 @@ char *headLightFS [2][8] = {
 	"      float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = vec3 (spotEffect, spotEffect, spotEffect);\r\n" \
-	"      spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"      spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"	    }\r\n" \
 	"	 }\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a);\r\n" \
@@ -472,7 +472,7 @@ char *headLightFS [2][8] = {
 	,
 	//base texture and decal
 	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
@@ -486,7 +486,7 @@ char *headLightFS [2][8] = {
 	"      float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = vec3 (spotEffect, spotEffect, spotEffect);\r\n" \
-	"      spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"      spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"	    }\r\n" \
 	"	 }\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a);\r\n" \
@@ -494,7 +494,7 @@ char *headLightFS [2][8] = {
 	,
 	//base texture and decal with color key
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [3].xy).r;\r\n" \
@@ -512,7 +512,7 @@ char *headLightFS [2][8] = {
 	" 		    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
 	"         spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"         spotColor = vec3 (spotEffect, spotEffect, spotEffect);\r\n" \
-	"         spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"         spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"   	    }\r\n" \
 	"   	 }\r\n" \
 	"	 gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a);\r\n" \
@@ -522,7 +522,7 @@ char *headLightFS [2][8] = {
 	// --------------------------------------------------------------------------------
 	//multiplayer version - 1 - 8 players
 	"#define LIGHTS 8\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vec3 lightVec, lvNorm, spotColor;\r\n" \
@@ -541,14 +541,14 @@ char *headLightFS [2][8] = {
 	" 	   }\r\n" \
 	" 	}\r\n" \
 	"spotColor =vec3 (spotBrightness, spotBrightness, spotBrightness);\r\n" \
-	"spotColor = min (spotColor, maxColor.rgb);\r\n" \
-	"gl_FragColor = vec4 (maxColor.rgb * spotColor.rgb, maxColor.a);"  \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"gl_FragColor = vec4 (matColor.rgb * spotColor.rgb, matColor.a);"  \
 	"}" 
 	,
 	//only base texture
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
@@ -568,14 +568,14 @@ char *headLightFS [2][8] = {
 	" 	   }\r\n" \
 	" 	}\r\n" \
 	"spotColor = vec3 (spotBrightness, spotBrightness, spotBrightness);\r\n" \
-	"spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"}" 
 	,
 	//base texture and decal
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
@@ -597,14 +597,14 @@ char *headLightFS [2][8] = {
 	" 	   }\r\n" \
 	" 	}\r\n" \
 	"spotColor = vec3 (spotBrightness, spotBrightness, spotBrightness));\r\n" \
-	"spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"}" 
 	,
 	//base texture and decal with color key
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
-	"uniform vec4 maxColor;\r\n" \
+	"uniform vec4 matColor;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [3].xy).r;\r\n" \
@@ -630,7 +630,7 @@ char *headLightFS [2][8] = {
 	" 		    }\r\n" \
 	" 		 }\r\n" \
 	"   spotColor = vec3 (spotBrightness, spotBrightness, spotBrightness);\r\n" \
-	"   spotColor = min (spotColor, maxColor.rgb);\r\n" \
+	"   spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"	 gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"   }\r\n" \
 	"}" 
@@ -907,7 +907,7 @@ if (nShader != gameStates.render.history.nShader) {
 		color.red = color.green = color.blue = 2.0f;
 		color.alpha = 1;
 		}
-	glUniform4fv (glGetUniformLocation (activeShaderProg, "maxColor"), 1, (GLfloat *) &color);
+	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &color);
 #ifdef _DEBUG
 	oglRes = glGetError ();
 #endif
