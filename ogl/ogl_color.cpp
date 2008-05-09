@@ -324,7 +324,7 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 	tVertColorData			vcd = *vcdP;
 
 r_tvertexc++;
-fAttScale = (float) (2 - gameOpts->ogl.bPerPixelLighting);
+fAttScale = (float) (2 - (gameOpts->ogl.bPerPixelLighting || (nMeshQuality != 0)));
 colorSum = *pColorSum;
 nLights = gameData.render.lights.dynamic.shader.index [0][nThread].nActive;
 if (nLights > gameData.render.lights.dynamic.nLights)

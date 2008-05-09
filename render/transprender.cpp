@@ -554,6 +554,7 @@ if (renderItems.bUseLightMaps != bUseLightMaps) {
 	renderItems.bUseLightMaps = bUseLightMaps;
 	}
 #endif
+#if 0
 if (renderItems.bClientState == bClientState) {
 	if (bClientState) {
 		glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
@@ -575,7 +576,9 @@ if (renderItems.bClientState == bClientState) {
 		glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 	return 1;
 	}
-else if (bClientState) {
+else 
+#endif
+if (bClientState) {
 	renderItems.bClientState = 1;
 	glActiveTexture (GL_TEXTURE0 + bUseLightMaps);
 	glClientActiveTexture (GL_TEXTURE0 + bUseLightMaps);
@@ -616,8 +619,8 @@ else {
 			renderItems.bClientColor = 0;
 			}
 		glDisableClientState (GL_VERTEX_ARRAY);
-		renderItems.bClientState = 0;
 		}	
+	renderItems.bClientState = 0;
 	glActiveTexture (GL_TEXTURE0);
 	}
 renderItems.bmP = NULL;
@@ -802,10 +805,12 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 			G3SetupShader (faceP, 0, 0, item->bmP != NULL, 
 								(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
 								renderItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
+#if 0
 		if (triP)
 			glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + triP->nIndex));
 		else if (faceP)
 			glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
+#endif
 		glDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
 	OglResetTransform (faceP != NULL);

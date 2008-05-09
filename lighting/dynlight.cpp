@@ -1083,8 +1083,8 @@ if (gameOpts->render.bDynLighting) {
 		CheckUsedLights ();
 		CheckUsedLights1 ();
 #endif
-		ResetUsedLights ();
 		}
+	ResetUsedLights ();
 	while (i--) {
 #ifdef _DEBUG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
