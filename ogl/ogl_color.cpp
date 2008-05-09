@@ -316,7 +316,7 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 								bSkipHeadLight = gameStates.ogl.bHeadLight && !gameStates.render.nState, 
 								nSaturation = gameOpts->render.color.nSaturation;
 	int						nBrightness, nMaxBrightness = 0, nMeshQuality = gameOpts->ogl.bPerPixelLighting ? 0 : gameOpts->render.nMeshQuality;
-	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
+	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE, fAttScale;
 	fVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	fVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};
 	tShaderLight			*psl;
@@ -324,6 +324,7 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 	tVertColorData			vcd = *vcdP;
 
 r_tvertexc++;
+fAttScale = (float) (2 - gameOpts->ogl.bPerPixelLighting);
 colorSum = *pColorSum;
 nLights = gameData.render.lights.dynamic.shader.index [0][nThread].nActive;
 if (nLights > gameData.render.lights.dynamic.nLights)
@@ -392,10 +393,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 #if BRIGHT_SHOTS
 		if (nType == 2)
-			fAttenuation = (1.0f + OBJ_LIN_ATT * fLightDist + OBJ_QUAD_ATT * fLightDist * fLightDist);
+			fAttenuation = (1.0f + OBJ_LIN_ATT * fAttScale  * fLightDist + OBJ_QUAD_ATT * fAttScale  * fLightDist * fLightDist);
 		else
 #endif
-			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
+			fAttenuation = (1.0f + GEO_LIN_ATT * fAttScale * fLightDist + GEO_QUAD_ATT * fAttScale  * fLightDist * fLightDist);
 		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
 		if (psl->info.fRad > 0)
 			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);

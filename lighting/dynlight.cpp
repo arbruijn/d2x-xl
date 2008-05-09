@@ -643,7 +643,7 @@ for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces; nFace; nFa
 		nDbgSeg = nDbgSeg;
 #endif
 	t = faceP->nBaseTex;
-	if (t >= MAX_WALL_TEXTURES) 
+	if ((t < 0) || (t >= MAX_WALL_TEXTURES))
 		continue;
 	pc = gameData.render.color.textures + t;
 	if ((nLight = IsLight (t)))
@@ -956,11 +956,13 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 if (faceP - FACES == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
-#if 0
+#if 1
 if (gameData.render.lights.dynamic.shader.index [0][0].nActive < 0)
 	SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 else {
+#ifdef _DEBUG
 	CheckUsedLights2 ();
+#endif
 	gameData.render.lights.dynamic.shader.index [0][0] = gameData.render.lights.dynamic.shader.index [1][0];
 	}
 #else
@@ -1394,9 +1396,11 @@ return psc;
 
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread)
 {
-	tFaceColor	*pf = gameData.render.color.ambient + nVertex;
-	fVector		vVertex;
-	int			bColorize = !gameOpts->render.bDynLighting;
+	tFaceColor				*pf = gameData.render.color.ambient + nVertex;
+	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
+	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+	fVector					vVertex;
+	int						h, bColorize = !gameOpts->render.bDynLighting;
 
 for (; nVertex < nMax; nVertex++, pf++) {
 #ifdef _DEBUG
@@ -1404,9 +1408,12 @@ for (; nVertex < nMax; nVertex++, pf++) {
 		nVertex = nVertex;
 #endif
 	VmVecFixToFloat (&vVertex, gameData.segs.vertices + nVertex);
-	gameData.render.lights.dynamic.shader.index [0][nThread].nActive = 0;
-	gameData.render.lights.dynamic.shader.index [0][nThread].nFirst = MAX_SHADER_LIGHTS;
-	gameData.render.lights.dynamic.shader.index [0][nThread].nLast = 0;
+	if (0 < (h = sliP->nLast - sliP->nFirst + 1))
+		memset (activeLightsP + sliP->nFirst, 0, sizeof (tActiveShaderLight) * h);
+	sliP->nActive = 0;
+	sliP->nFirst = MAX_SHADER_LIGHTS;
+	sliP->nLast = 0;
+	ResetUsedLights ();
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 1, bColorize, nThread);
 	gameData.render.color.vertices [nVertex].index = 0;
 	G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, &vVertex.v3, nVertex, pf, NULL, 1, 0, nThread);

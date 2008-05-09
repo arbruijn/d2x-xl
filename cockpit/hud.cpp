@@ -93,7 +93,11 @@ for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 	pMsgs->xTimer = 0;
 	ClearBackgroundMessages ();
 	for (i = 0; i < HUD_MAX_MSGS; i++)
+#if 1
+		*pMsgs->szMsgs [i] = '\0';
+#else
 		sprintf (pMsgs->szMsgs [i], TXT_SLAGEL);
+#endif
 	}
 }
 
