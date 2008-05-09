@@ -1962,26 +1962,30 @@ else {
 
 //------------------------------------------------------------------------------
 
-void SetLightningSegLight (short nSegment, vmsVector *vPos, tRgbaColorf *colorP)
+void SetLightningSegLight (short nSegment, vmsVector *vPosP, tRgbaColorf *colorP)
 {
 if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments))
 	return;
 else {
 		tLightningLight	*pll = gameData.lightnings.lights + nSegment;
 
-	if (pll->nFrameFlipFlop != gameStates.render.nFrameFlipFlop + 1) {
+#ifdef _DEBUG
+	if (nSegment == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
+	if (pll->nFrame != gameData.app.nFrameCount) {
 		memset (pll, 0, sizeof (*pll));
-		pll->nFrameFlipFlop = gameStates.render.nFrameFlipFlop + 1;
+		pll->nFrame = gameData.app.nFrameCount;
+		pll->nSegment = nSegment;
 		pll->nNext = gameData.lightnings.nFirstLight;
 		gameData.lightnings.nFirstLight = nSegment;
 		}
 	pll->nLights++;
-	VmVecInc (&pll->vPos, vPos);
+	VmVecInc (&pll->vPos, vPosP);
 	pll->color.red += colorP->red;
 	pll->color.green += colorP->green;
 	pll->color.blue += colorP->blue;
 	pll->color.alpha += colorP->alpha;
-	pll->nSegment = nSegment;
 	}
 }
 
@@ -1990,26 +1994,30 @@ else {
 int SetLightningLight (tLightning *pl, int i)
 {
 	tLightningNode	*pln;
-	vmsVector		*vPos;
+	vmsVector		*vPosP;
 	short				nSegment;
 	int				j, nLights, nStride;
 	double			h, nStep;
 
-SetLightningSegLight (pl->nSegment, &pl->vPos, &pl->color);
+//SetLightningSegLight (pl->nSegment, &pl->vPos, &pl->color);
 for (nLights = 1; i > 0; i--, pl++) {
 	if (0 < (j = pl->nNodes)) {
-		if (!(nStride = (int) ((double) pl->nLength / F1_0 / 20 + 0.5)))
+		if (!(nStride = (int) ((double) pl->nLength / (F1_0 * 20) + 0.5)))
 			nStride = 1;
 		if (!(nStep = (double) (j - 1) / (double) nStride))
 			nStep = (double) ((int) (j + 0.5));
 		nSegment = pl->nSegment;
+#ifdef _DEBUG
+		if (nSegment == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
 		pln = pl->pNodes;
-		for (h = nStep; h < j; h += nStep) {
+		for (h = nStep / 2; h < j; h += nStep) {
 			TRAP (pln);
-			vPos = &pln [(int) h].vPos;
-			if (0 > (nSegment = FindSegByPoint (vPos, nSegment, 0, 0)))
+			vPosP = &pln [(int) h].vPos;
+			if (0 > (nSegment = FindSegByPoint (vPosP, nSegment, 0, 0)))
 				break;
-			SetLightningSegLight (nSegment, vPos, &pl->color);
+			SetLightningSegLight (nSegment, vPosP, &pl->color);
 			nLights++;
 			}
 		}
@@ -2030,7 +2038,11 @@ if (SHOW_LIGHTNINGS || bForce) {
 			continue;
 		pll = gameData.lightnings.lights + i;
 		i = pll->nNext;
+		pll->nLights = 0;
 		pll->nNext = -1;
+		pll->vPos.p.x = 
+		pll->vPos.p.y = 
+		pll->vPos.p.z = 0;
 		pll->color.red =
 		pll->color.green =
 		pll->color.blue = 0;
@@ -2051,8 +2063,8 @@ void SetLightningLights (void)
 ResetLightningLights (0);
 if (SHOW_LIGHTNINGS) {
 		tLightningBundle	*plb;
-		tLightningLight		*pll = NULL;
-		int				i, n, nLights = 0, bDynLighting = gameOpts->render.bDynLighting;
+		tLightningLight	*pll = NULL;
+		int					i, n, nLights = 0, bDynLighting = gameOpts->render.bDynLighting;
 
 	gameData.lightnings.nFirstLight = -1;
 	for (i = gameData.lightnings.iUsed; i >= 0; i = n) {
@@ -2065,11 +2077,20 @@ if (SHOW_LIGHTNINGS) {
 			if ((i < 0) || (i >= MAX_SEGMENTS))
 				continue;
 			pll = gameData.lightnings.lights + i;
+#ifdef _DEBUG
+			if (pll->nSegment == nDbgSeg)
+				nDbgSeg = nDbgSeg;
+#endif
 			n = pll->nLights;
-			VmVecScale (&pll->vPos, F1_0 / n);
+			pll->vPos.p.x /= n;
+			pll->vPos.p.y /= n;
+			pll->vPos.p.z /= n;
 			pll->color.red /= n;
 			pll->color.green /= n;
 			pll->color.blue /= n;
+#ifdef _DEBUG
+			short nSegment = FindSegByPoint (&pll->vPos, pll->nSegment, 0, 0);
+#endif
 			pll->nBrightness = fl2f ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha);
 			if (bDynLighting)
 				pll->nDynLight = AddDynLight (NULL, &pll->color, pll->nBrightness, pll->nSegment, -1, -1, &pll->vPos);

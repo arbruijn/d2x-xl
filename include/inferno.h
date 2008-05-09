@@ -2828,7 +2828,7 @@ typedef struct tLightningLight {
 	int				nBrightness;
 	int				nDynLight;
 	short				nSegment;
-	char				nFrameFlipFlop;
+	int				nFrame;
 } tLightningLight;
 
 typedef struct tLightningData {

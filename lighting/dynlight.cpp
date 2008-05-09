@@ -970,8 +970,10 @@ SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get li
 #endif
 VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
 VmVecScale (&vNormal, F1_0 / 2);
+#if 0
 for (i = 0; i < 4; i++)
 	SetNearestVertexLights (faceP - FACES, faceP->index [i], &vNormal, 0, 0, 1, 0);
+#endif
 #if SORT_LIGHTS
 if (gameData.render.lights.dynamic.shader.index [0][0].nActive) {
 	if (gameData.render.lights.dynamic.shader.index [0][0].nActive > MAX_LIGHTS_PER_PIXEL) {
@@ -1158,6 +1160,10 @@ if (gameOpts->render.bDynLighting) {
 #ifdef _DEBUG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			psl = psl;
+		if ((psl->info.nSegment >= 0) && (psl->info.nSide < 0))
+			psl = psl;
+		else
+			continue;
 #endif
 		if (psl->info.nType < 3) {
 			nLightSeg = (psl->info.nSegment < 0) ? (psl->info.nObject < 0) ? -1 : gameData.objs.objects [psl->info.nObject].nSegment : psl->info.nSegment;

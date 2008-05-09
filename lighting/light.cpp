@@ -793,7 +793,7 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.bDynLighting) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
 		pll = gameData.lightnings.lights + nSegment;
-		if (pll->nFrameFlipFlop == gameStates.render.nFrameFlipFlop)
+		if (pll->nFrame == gameData.app.nFrameCount)
 			ApplyLight (pll->nBrightness, nSegment, &pll->vPos, nRenderVertices, gameData.render.lights.vertices, -1, &pll->color);
 		}
 	}

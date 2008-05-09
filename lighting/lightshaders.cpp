@@ -1105,7 +1105,9 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 if (faceP - FACES == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
+#ifdef _DEBUG
 retry:
+#endif
 if (!gameStates.ogl.iLight) {
 #ifdef _DEBUG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -1195,10 +1197,12 @@ gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shad
 #ifdef _DEBUG
 if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;
+#if 0
 if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) && (gameStates.ogl.nFirstLight < sliP->nLast)) {
 	gameStates.ogl.iLight = 0;
 	goto retry;
 	}
+#endif
 #endif
 #if 0
 for (int i = nLights; i < 8; i++)
