@@ -40,6 +40,11 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "headlight.h"
 #include "dynlight.h"
 
+#define GEO_LIN_ATT	0.05f
+#define GEO_QUAD_ATT	0.005f
+#define OBJ_LIN_ATT	0.05f
+#define OBJ_QUAD_ATT	0.005f
+
 //------------------------------------------------------------------------------
 
 GLhandleARB gsShaderProg [2][3] = {{0,0,0},{0,0,0}};
@@ -1147,8 +1152,8 @@ for (nLights = 0;
 	fBrightness = psl->info.fBrightness;
 	if (psl->info.nType == 2) {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, max (1.0f, psl->info.fBoost));
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
-		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, OBJ_LIN_ATT / fBrightness);
+		glLightf (hLight, GL_QUADRATIC_ATTENUATION, OBJ_QUAD_ATT / fBrightness);
 		ambient.red = psl->info.color.red * AMBIENT_LIGHT;
 		ambient.green = psl->info.color.green * AMBIENT_LIGHT;
 		ambient.blue = psl->info.color.blue * AMBIENT_LIGHT;
@@ -1164,8 +1169,8 @@ for (nLights = 0;
 #else
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 #endif
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
-		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, GEO_LIN_ATT / fBrightness);
+		glLightf (hLight, GL_QUADRATIC_ATTENUATION, GEO_QUAD_ATT / fBrightness);
 		ambient.red = psl->info.color.red * AMBIENT_LIGHT;
 		ambient.green = psl->info.color.green * AMBIENT_LIGHT;
 		ambient.blue = psl->info.color.blue * AMBIENT_LIGHT;

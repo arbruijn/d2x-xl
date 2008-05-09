@@ -36,6 +36,11 @@
 #	define ONLY_HEADLIGHT 0
 #endif
 
+#define GEO_LIN_ATT	0.05f
+#define GEO_QUAD_ATT	0.005f
+#define OBJ_LIN_ATT	0.05f
+#define OBJ_QUAD_ATT	0.005f
+
 //------------------------------------------------------------------------------
 
 tFaceColor lightColor = {{1.0f, 1.0f, 1.0f, 1.0f}, 0};
@@ -387,10 +392,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 #if BRIGHT_SHOTS
 		if (nType == 2)
-			fAttenuation = (1.0f + 0.05f * fLightDist + 0.005f * fLightDist * fLightDist);
+			fAttenuation = (1.0f + OBJ_LIN_ATT * fLightDist + OBJ_QUAD_ATT * fLightDist * fLightDist);
 		else
 #endif
-			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist);
+			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
 		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
 		if (psl->info.fRad > 0)
 			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);

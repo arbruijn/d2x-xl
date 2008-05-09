@@ -515,7 +515,7 @@ else {
 	if (bmTop)
 		bmTop = bmTop;
 #endif
-	if (bmTop && !bMonitor) {
+	if (bmTop) {
 		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 			bmTop = BM_CURFRAME (bmTop);
@@ -523,7 +523,7 @@ else {
 		else
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		bOverlay = bColorKey ? 1 : -1;
-		bMultiTexture = (bOverlay != 0) && !bMonitor;
+		bMultiTexture = 1;
 		}
 	else
 		bOverlay = 0;
@@ -671,11 +671,10 @@ if (bDepthOnly) {
 	return 1;
 	}
 if (bMonitor) {
-	ovlTexCoordP = bMonitor ? faceP->pTexCoord - faceP->nIndex : gameData.segs.faces.ovlTexCoord;
 	glActiveTexture (GL_TEXTURE2);
 	glClientActiveTexture (GL_TEXTURE2);
 	if (bTextured)
-		glTexCoordPointer (2, GL_FLOAT, 0, ovlTexCoordP);
+		glTexCoordPointer (2, GL_FLOAT, 0, faceP->pTexCoord - faceP->nIndex);
 	else {
 		glDisable (GL_TEXTURE_2D);
 		OGL_BINDTEX (0);
@@ -722,9 +721,12 @@ else {
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	}
-if (bMonitor)
-	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
-
+if (bMonitor) {
+	glActiveTexture (GL_TEXTURE2);
+	glClientActiveTexture (GL_TEXTURE2);
+	glEnable (GL_TEXTURE_2D);
+	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+	}
 #if 0
 if (!bBlend)
 	glEnable (GL_BLEND);
