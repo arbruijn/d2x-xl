@@ -706,8 +706,10 @@ else {
 	for (;;) {
 		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+#if 1
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 			 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
+#endif
 			break;
 		if (!bResetBlendMode) {
 			bResetBlendMode = true;

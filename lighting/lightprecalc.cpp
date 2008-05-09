@@ -73,7 +73,7 @@ static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Ex
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 4
+#define LIGHT_DATA_VERSION 5
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
@@ -319,8 +319,9 @@ return 0;
 
 void ComputeSingleSegmentVisibility (short nStartSeg)
 {
+	tSegment		*segP, *childP;
 	tSide			*sideP;
-	short			nSegment, nSide, i, j;
+	short			nSegment, nSide, nChildSeg, nChildSide, i, j;
 	vmsVector	vNormal;
 	vmsAngVec	vAngles;
 	tObject		viewer;
@@ -334,7 +335,19 @@ if (nStartSeg == nDbgSeg)
 gameData.objs.viewer = &viewer;
 viewer.nSegment = nStartSeg;
 COMPUTE_SEGMENT_CENTER_I (&viewer.position.vPos, nStartSeg);
-for (sideP = SEGMENTS [nStartSeg].sides, nSide = 6; nSide; nSide--, sideP++) {
+segP = SEGMENTS + nStartSeg;
+for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
+	if (0 <= (nChildSeg = segP->children [nSide])) {
+		while (!SetSegVis (nStartSeg, nChildSeg))
+			;
+		childP = SEGMENTS + nChildSeg;
+		for (nChildSide = 0; nChildSide < 6; nChildSide++) {
+			if (0 <= (nSegment = childP->children [nSide])) {
+				while (!SetSegVis (nChildSeg, nSegment))
+					;
+				}
+			}
+		}
 	VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
 	VmVecScale (&vNormal, -F1_0 / 2);
 	VmExtractAnglesVector (&vAngles, &vNormal);

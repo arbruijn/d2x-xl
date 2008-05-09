@@ -42,8 +42,8 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 
 #define GEO_LIN_ATT	0.05f
 #define GEO_QUAD_ATT	0.005f
-#define OBJ_LIN_ATT	0.05f
-#define OBJ_QUAD_ATT	0.005f
+#define OBJ_LIN_ATT	0.1f
+#define OBJ_QUAD_ATT	0.01f
 
 //------------------------------------------------------------------------------
 

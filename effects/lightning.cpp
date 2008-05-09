@@ -2090,8 +2090,14 @@ if (SHOW_LIGHTNINGS) {
 			pll->color.blue /= n;
 #ifdef _DEBUG
 			short nSegment = FindSegByPoint (&pll->vPos, pll->nSegment, 0, 0);
+			vmsVector c;
+			COMPUTE_SEGMENT_CENTER_I (&c, 332);
+			int d = VmVecDist (&c, &pll->vPos);
 #endif
-			pll->nBrightness = fl2f ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha);
+			if (gameOpts->ogl.bPerPixelLighting)
+				pll->nBrightness = fl2f (sqrt ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha));
+			else
+				pll->nBrightness = fl2f ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha);
 			if (bDynLighting)
 				pll->nDynLight = AddDynLight (NULL, &pll->color, pll->nBrightness, pll->nSegment, -1, -1, &pll->vPos);
 			}

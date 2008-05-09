@@ -424,17 +424,17 @@ else if (nSegment >= 0) {
 		//RegisterLight (NULL, nSegment, nSide);
 		pl->info.bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide) || IS_WALL (SEGMENTS [nSegment].sides [nSide].nWall);
 		COMPUTE_SIDE_CENTER_I (&pl->info.vPos, nSegment, nSide);
-		}
-#if 1
-	if (gameOpts->ogl.bPerPixelLighting) {
-		tSide			*sideP = SEGMENTS [nSegment].sides + nSide;
-		vmsVector	vOffs;
-		VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
-		VmVecScaleFrac (&vOffs, 1, 4);
-		VmVecInc (&pl->info.vPos, &vOffs);
-#	if 0
-		fBrightness /= 2;
-#	endif
+	#if 1
+		if (gameOpts->ogl.bPerPixelLighting) {
+			tSide			*sideP = SEGMENTS [nSegment].sides + nSide;
+			vmsVector	vOffs;
+			VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
+			VmVecScaleFrac (&vOffs, 1, 4);
+			VmVecInc (&pl->info.vPos, &vOffs);
+	#	if 0
+			fBrightness /= 2;
+	#	endif
+			}
 		}
 #endif
 	}
@@ -956,7 +956,7 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 if (faceP - FACES == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
-#if 1
+#if 0
 if (gameData.render.lights.dynamic.shader.index [0][0].nActive < 0)
 	SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 else {
@@ -1162,8 +1162,10 @@ if (gameOpts->render.bDynLighting) {
 			psl = psl;
 		if ((psl->info.nSegment >= 0) && (psl->info.nSide < 0))
 			psl = psl;
+#	if 0
 		else
 			continue;
+#	endif
 #endif
 		if (psl->info.nType < 3) {
 			nLightSeg = (psl->info.nSegment < 0) ? (psl->info.nObject < 0) ? -1 : gameData.objs.objects [psl->info.nObject].nSegment : psl->info.nSegment;
