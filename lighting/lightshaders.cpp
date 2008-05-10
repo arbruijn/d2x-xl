@@ -1183,7 +1183,7 @@ for (nLights = 0;
 #endif
 	fBrightness = psl->info.fBrightness;
 	if (psl->info.nType == 2) {
-		glLightf (hLight, GL_CONSTANT_ATTENUATION, max (1.0f, psl->info.fBoost));
+		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f); //max (1.0f, psl->info.fBoost));
 		glLightf (hLight, GL_LINEAR_ATTENUATION, OBJ_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, OBJ_QUAD_ATT / fBrightness);
 		ambient.red = psl->info.color.red * AMBIENT_LIGHT;

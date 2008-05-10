@@ -618,6 +618,7 @@ if (bTextured) {
 				if (gameStates.render.history.bmTop) {
 					glActiveTexture (GL_TEXTURE2);
 					glClientActiveTexture (GL_TEXTURE2);
+					glEnable (GL_TEXTURE_2D);
 					OGL_BINDTEX (0);
 					gameStates.render.history.bmTop = NULL;
 					}
@@ -670,8 +671,14 @@ if (bDepthOnly) {
 	return 1;
 	}
 if (bMonitor) {
-	glActiveTexture (GL_TEXTURE2);
-	glClientActiveTexture (GL_TEXTURE2);
+	if (bOverlay) {
+		glActiveTexture (GL_TEXTURE2);
+		glClientActiveTexture (GL_TEXTURE2);
+		}
+	else {
+		glActiveTexture (GL_TEXTURE1);
+		glClientActiveTexture (GL_TEXTURE1);
+		}
 	if (bTextured)
 		glTexCoordPointer (2, GL_FLOAT, 0, faceP->pTexCoord - faceP->nIndex);
 	else {
@@ -723,10 +730,19 @@ else {
 		}
 	}
 if (bMonitor) {
-	glActiveTexture (GL_TEXTURE2);
-	glClientActiveTexture (GL_TEXTURE2);
-	glEnable (GL_TEXTURE_2D);
-	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+	if (bOverlay) {
+		glActiveTexture (GL_TEXTURE2);
+		glClientActiveTexture (GL_TEXTURE2);
+		glEnable (GL_TEXTURE_2D);
+		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+		gameStates.render.history.bmTop = NULL;
+		}
+	else {
+		glActiveTexture (GL_TEXTURE1);
+		glClientActiveTexture (GL_TEXTURE1);
+		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
+		gameStates.render.history.bmBot = NULL;
+		}
 	}
 #if 0
 if (!bBlend)
