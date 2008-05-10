@@ -190,7 +190,7 @@ char *pszPPXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			float NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"			NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
@@ -228,7 +228,7 @@ char *pszPPXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			float NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"			NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
@@ -268,7 +268,7 @@ char *pszPPXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			float NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"			NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
@@ -312,7 +312,7 @@ char *pszPPXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			float NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"			NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
@@ -351,7 +351,7 @@ char *pszPP1LightingFS [] = {
 	"	else {\r\n" \
 	"		att = 1.0 + gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"		NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
@@ -384,7 +384,7 @@ char *pszPP1LightingFS [] = {
 	"	else {\r\n" \
 	"		att = 1.0 + gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"		NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
@@ -418,7 +418,7 @@ char *pszPP1LightingFS [] = {
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"		NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
@@ -456,7 +456,7 @@ char *pszPP1LightingFS [] = {
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"		NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
@@ -604,7 +604,7 @@ char *pszPPLMXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			float NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"			NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
@@ -642,7 +642,7 @@ char *pszPPLMXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"			NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
@@ -683,7 +683,7 @@ char *pszPPLMXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"			NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
@@ -728,7 +728,7 @@ char *pszPPLMXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"			NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
@@ -768,7 +768,7 @@ char *pszPPLM1LightingFS [] = {
 	"	else {\r\n" \
 	"		att = 1.0 + gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"		NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
@@ -801,7 +801,7 @@ char *pszPPLM1LightingFS [] = {
 	"	else {\r\n" \
 	"		att = 1.0 + gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"		NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
@@ -835,7 +835,7 @@ char *pszPPLM1LightingFS [] = {
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"		NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
@@ -873,7 +873,7 @@ char *pszPPLM1LightingFS [] = {
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
-	"		NdotL = 1.0 - ((1.0 - NdotL) * 0.95);\r\n" \
+	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \

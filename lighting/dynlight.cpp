@@ -1116,7 +1116,7 @@ if (gameOpts->render.bDynLighting) {
 		else
 			psl = psl;
 #endif
-		psl->xDistance = (fix) ((VmVecDist (&c, &psl->info.vPos) /*- fl2f (psl->info.fRad)*/) / psl->info.fRange);
+		psl->xDistance = (fix) ((VmVecDist (&c, &psl->info.vPos) /*- fl2f (psl->info.fRad)*/) / (psl->info.fRange * psl->info.fBoost));
 		if (psl->xDistance > xMaxLightRange)
 			continue;
 		if (SetActiveShaderLight (activeLightsP, psl, 1, nThread))
