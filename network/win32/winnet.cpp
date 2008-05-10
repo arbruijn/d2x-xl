@@ -190,8 +190,8 @@ int IpxInit (int nSocket)
 if (WSAStartup (wVersionRequested, &wsaData))
 	return IPX_SOCKET_ALREADY_OPEN;
 
-if ((i = FindArg ("-ipxnetwork")) && Args [i + 1]) {
-	unsigned long n = strtol (Args [i + 1], NULL, 16);
+if ((i = FindArg ("-ipxnetwork")) && pszArgList [i + 1]) {
+	unsigned long n = strtol (pszArgList [i + 1], NULL, 16);
 	for (i = 3; i >= 0; i--, n >>= 8)
 		ipx_MyAddress [i] = (unsigned char) n & 0xff; 
 	}

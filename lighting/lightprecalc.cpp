@@ -73,7 +73,7 @@ static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Ex
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 5
+#define LIGHT_DATA_VERSION 6
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
@@ -313,6 +313,39 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
+
+static void SetSegAndVertVis (short nStartSeg, short nSegment)
+{
+if (SEGVIS (nStartSeg, nSegment))
+	return;
+while (!SetSegVis (nStartSeg, nSegment))
+	;
+
+	tSegFaces	*segFaceP = SEGFACES + nSegment;
+	grsFace		*faceP;
+	grsTriangle	*triP;
+	int			i, nFaces, nTris;
+
+for (nFaces = segFaceP->nFaces, faceP = segFaceP->pFaces; nFaces; nFaces--, faceP++) {
+#ifdef _DEBUG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nSegment = nSegment;
+#endif
+	if (gameStates.render.bTriangleMesh) {
+		for (nTris = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; nTris; nTris--, triP++)
+			for (i = 0; i < 3; i++)
+				while (!SetVertVis (nStartSeg, triP->index [i], 1))
+					;
+		}
+	else {
+		for (i = 0; i < 4; i++)
+			while (!SetVertVis (nStartSeg, faceP->index [i], 1))
+				;
+		}	
+	}
+}
+
+//------------------------------------------------------------------------------
 // Check segment to segment visibility by calling the renderer's visibility culling routine
 // Do this for each side of the current segment, using the side normal(s) as forward vector
 // of the viewer
@@ -321,7 +354,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg)
 {
 	tSegment		*segP, *childP;
 	tSide			*sideP;
-	short			nSegment, nSide, nChildSeg, nChildSide, i, j;
+	short			nSegment, nSide, nChildSeg, nChildSide, i;
 	vmsVector	vNormal;
 	vmsAngVec	vAngles;
 	tObject		viewer;
@@ -365,43 +398,8 @@ for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 		if (nSegment >= gameData.segs.nSegments)
 			continue;
 #endif
-		if (SEGVIS (nStartSeg, nSegment))
-			continue;
-		while (!SetSegVis (nStartSeg, nSegment))
-			;
-#if 1
-		tSegFaces	*segFaceP = SEGFACES + nSegment;
-		grsFace		*faceP;
-		grsTriangle	*triP;
-		int			nFaces, nTris;
-
-		for (nFaces = segFaceP->nFaces, faceP = segFaceP->pFaces; nFaces; nFaces--, faceP++) {
-#ifdef _DEBUG
-		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-			nSegment = nSegment;
-#endif
-			if (gameStates.render.bTriangleMesh) {
-				for (nTris = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; nTris; nTris--, triP++)
-					for (j = 0; j < 3; j++)
-						while (!SetVertVis (nStartSeg, triP->index [j], 1))
-							;
-				}
-			else {
-				for (j = 0; j < 4; j++)
-					while (!SetVertVis (nStartSeg, faceP->index [j], 1))
-						;
-				}	
-			}
-#else
-		for (j = 8, vertP = SEGMENTS [nSegment].verts; j; j--, vertP++) {
-#ifdef _DEBUG
-			if ((*vertP < 0) || (*vertP >= gameData.segs.nVertices))
-				continue;
-#endif
-			while (!SetVertVis (nStartSeg, *vertP, 1))
-				;
-			}
-#endif
+		SetSegAndVertVis (nStartSeg, nSegment);
+		SetSegAndVertVis (nSegment, nStartSeg);
 		}
 	}
 gameStates.ogl.bUseTransform = 0;

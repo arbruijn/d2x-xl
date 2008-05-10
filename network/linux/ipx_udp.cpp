@@ -759,7 +759,7 @@ char *s,*s2,*ns;
 
 if (!have_empty_address ())
 	return 0;
-if (!((i=FindArg ("-udp")) && (s=Args [i+1]) && (*s=='=' || *s=='+' || *s=='@'))) 
+if (!((i=FindArg ("-udp")) && (s=pszArgList [i+1]) && (*s=='=' || *s=='+' || *s=='@'))) 
 	s = NULL;
 if (gethostname (buf,sizeof (buf))) 
 	FAIL ("Error getting my hostname");

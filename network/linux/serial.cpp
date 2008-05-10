@@ -45,12 +45,12 @@ int com_init(void)
  char *modem=MODEMDEVICE;
  int t;
  if ((t = FindArg( "-serialdevice" ))) {
-	 modem=Args[t+1];
+	 modem=pszArgList[t+1];
  }
  //edited 03/05/99 Matt Mueller - allow reading from different device
  if ((t = FindArg( "-serialread" ))) {
      char *readpipe=NULL;
-     readpipe=Args[t+1];
+     readpipe=pszArgList[t+1];
      rfd=open(readpipe, O_RDONLY | O_NOCTTY | O_NONBLOCK);
      if (rfd < 0) { perror(readpipe); return -1; }
  }else

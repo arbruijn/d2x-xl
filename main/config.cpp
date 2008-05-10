@@ -247,7 +247,7 @@ int ReadConfigFile()
 	i = FindArg( "-volume" );
 
 	if ( i > 0 )	{
-		i = atoi( Args[i+1] );
+		i = atoi( pszArgList[i+1] );
 		if ( i < 0 ) i = 0;
 		if ( i > 100 ) i = 100;
 		gameConfig.nDigiVolume = (i*8)/100;

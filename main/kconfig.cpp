@@ -1762,7 +1762,7 @@ void KCInitExternalControls (int intno, int address)
 
 	i = FindArg ("-xname");
 	if (i)
-		kc_external_name = (ubyte *) Args [i+1];
+		kc_external_name = (ubyte *) pszArgList [i+1];
 	else
 		kc_external_name = (ubyte *) "External Controller";
 
@@ -1772,7 +1772,7 @@ void KCInitExternalControls (int intno, int address)
 
 	i = FindArg ("-xver");
 	if (i)
-		kc_externalVersion = atoi (Args [i+1]);
+		kc_externalVersion = atoi (pszArgList [i+1]);
 }
 
 /*void KCReadExternalControls ()

@@ -613,13 +613,13 @@ void GetAppFolders (void)
 *gameFolders.szGameDir =
 *gameFolders.szDataDir =
 *szDataRootDir = '\0';
-if ((i = FindArg ("-userdir")) && GetAppFolder ("", gameFolders.szGameDir, Args [i + 1], D2X_APPNAME))
+if ((i = FindArg ("-userdir")) && GetAppFolder ("", gameFolders.szGameDir, pszArgList [i + 1], D2X_APPNAME))
 	*gameFolders.szGameDir = '\0';
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, getenv ("DESCENT2"), D2X_APPNAME))
 	*gameFolders.szGameDir = '\0';
 #ifdef _WIN32
 if (!*gameFolders.szGameDir) {
-	psz = Args [0];
+	psz = pszArgList [0];
 	for (j = (int) strlen (psz); j; ) {
 		c = psz [--j];
 		if ((c == '\\') || (c == '/')) {
@@ -652,8 +652,8 @@ strcpy (szDataRootDir, gameFolders.szGameDir);
 if (*gameFolders.szGameDir)
 	chdir (gameFolders.szGameDir);
 #endif //Linux, OS X
-if ((i = FindArg ("-hogdir")) && !GetAppFolder ("", gameFolders.szDataDir, Args [i + 1], "descent2.hog"))
-	strcpy (szDataRootDir, Args [i + 1]);
+if ((i = FindArg ("-hogdir")) && !GetAppFolder ("", gameFolders.szDataDir, pszArgList [i + 1], "descent2.hog"))
+	strcpy (szDataRootDir, pszArgList [i + 1]);
 else {
 	sprintf (gameFolders.szDataDir, "%s%s", gameFolders.szGameDir, DATADIR);
 	if (GetAppFolder ("", gameFolders.szDataDir, gameFolders.szDataDir, "descent2.hog") &&
@@ -748,7 +748,7 @@ sprintf (gameFolders.szMissionDir, "%s%s", gameFolders.szGameDir, BASE_MISSION_D
 sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_DIR);
 #endif
 //if (i = FindArg ("-hogdir"))
-//	CFUseAltHogDir (Args [i + 1]);
+//	CFUseAltHogDir (pszArgList [i + 1]);
 }
 
 // ----------------------------------------------------------------------------
@@ -786,29 +786,29 @@ void EvalAutoNetGameArgs (void)
 	static char	*pszConnect [] = {"ipx", "udp", "", "multicast", NULL};
 
 memset (&gameData.multiplayer.autoNG, 0, sizeof (gameData.multiplayer.autoNG));
-if ((t = FindArg ("-ng_player")) && (p = Args [t+1])) {
-	strncpy (gameData.multiplayer.autoNG.szPlayer, Args [t+1], 8);
+if ((t = FindArg ("-ng_player")) && (p = pszArgList [t+1])) {
+	strncpy (gameData.multiplayer.autoNG.szPlayer, pszArgList [t+1], 8);
 	gameData.multiplayer.autoNG.szPlayer [8] = '\0';
 	}
-if ((t = FindArg ("-ng_file")) && (p = Args [t+1])) {
-	strncpy (gameData.multiplayer.autoNG.szFile, Args [t+1], FILENAME_LEN - 1);
+if ((t = FindArg ("-ng_file")) && (p = pszArgList [t+1])) {
+	strncpy (gameData.multiplayer.autoNG.szFile, pszArgList [t+1], FILENAME_LEN - 1);
 	gameData.multiplayer.autoNG.szFile [FILENAME_LEN - 1] = '\0';
 	}
-if ((t = FindArg ("-ng_mission")) && (p = Args [t+1])) {
-	strncpy (gameData.multiplayer.autoNG.szMission, Args [t+1], 12);
+if ((t = FindArg ("-ng_mission")) && (p = pszArgList [t+1])) {
+	strncpy (gameData.multiplayer.autoNG.szMission, pszArgList [t+1], 12);
 	gameData.multiplayer.autoNG.szMission [12] = '\0';
 	}
 if ((t = FindArg ("-ngLevel")))
 	gameData.multiplayer.autoNG.nLevel = NumArg (t, 1);
 else
 	gameData.multiplayer.autoNG.nLevel = 1;
-if ((t = FindArg ("-ng_name")) && (p = Args [t+1])) {
-	strncpy (gameData.multiplayer.autoNG.szName, Args [t+1], 80);
+if ((t = FindArg ("-ng_name")) && (p = pszArgList [t+1])) {
+	strncpy (gameData.multiplayer.autoNG.szName, pszArgList [t+1], 80);
 	gameData.multiplayer.autoNG.szName [80] = '\0';
 	}
-if ((t = FindArg ("-ng_ipaddr")) && (p = Args [t+1]))
-	bHaveIp = stoip (Args [t+1], gameData.multiplayer.autoNG.ipAddr);
-if ((t = FindArg ("-ng_connect")) && (p = Args [t+1])) {
+if ((t = FindArg ("-ng_ipaddr")) && (p = pszArgList [t+1]))
+	bHaveIp = stoip (pszArgList [t+1], gameData.multiplayer.autoNG.ipAddr);
+if ((t = FindArg ("-ng_connect")) && (p = pszArgList [t+1])) {
 	strlwr (p);
 	for (t = 0; pszTypes [t]; t++)
 		if (*pszConnect [t] && !strcmp (p, pszConnect [t])) {
@@ -816,11 +816,11 @@ if ((t = FindArg ("-ng_connect")) && (p = Args [t+1])) {
 			break;
 			}
 	}
-if ((t = FindArg ("-ng_join")) && (p = Args [t+1])) {
+if ((t = FindArg ("-ng_join")) && (p = pszArgList [t+1])) {
 	strlwr (p);
 	gameData.multiplayer.autoNG.bHost = !strcmp (p, "host");
 	}
-if ((t = FindArg ("-ngType")) && (p = Args [t+1])) {
+if ((t = FindArg ("-ngType")) && (p = pszArgList [t+1])) {
 	strlwr (p);
 	for (t = 0; pszTypes [t]; t++)
 		if (!strcmp (p, pszTypes [t])) {
@@ -865,7 +865,7 @@ if ((t = FindArg ("-spawndelay"))) {
 	extraGameInfo [0].nSpawnDelay *= 1000;
 	}
 if ((t = FindArg ("-pps"))) {
-	mpParams.nPPS = atoi(Args [t+1]);
+	mpParams.nPPS = atoi(pszArgList [t+1]);
 	if (mpParams.nPPS < 1)
 		mpParams.nPPS = 1;
 	else if (mpParams.nPPS > 20)
@@ -946,15 +946,15 @@ void EvalMusicArgs (void)
 	int	t;
 	char	*p;
 
-if ((t = FindArg ("-playlist")) && (p = Args [t+1]))
+if ((t = FindArg ("-playlist")) && (p = pszArgList [t+1]))
 	LoadPlayList (p);
-if ((t = FindArg ("-introsong")) && (p = Args [t+1]))
+if ((t = FindArg ("-introsong")) && (p = pszArgList [t+1]))
 	strncpy (gameData.songs.user.szIntroSong, p, FILENAME_LEN);
-if ((t = FindArg ("-briefingsong")) && (p = Args [t+1]))
+if ((t = FindArg ("-briefingsong")) && (p = pszArgList [t+1]))
 	strncpy (gameData.songs.user.szBriefingSong, p, FILENAME_LEN);
-if ((t = FindArg ("-creditssong")) && (p = Args [t+1]))
+if ((t = FindArg ("-creditssong")) && (p = pszArgList [t+1]))
 	strncpy (gameData.songs.user.szCreditsSong, p, FILENAME_LEN);
-if ((t = FindArg ("-menusong")) && (p = Args [t+1]))
+if ((t = FindArg ("-menusong")) && (p = pszArgList [t+1]))
 	strncpy (gameData.songs.user.szMenuSong, p, FILENAME_LEN);
 }
 
@@ -969,22 +969,22 @@ if (!gameStates.app.bNostalgia)
 		gameOptions [0].menus.nStyle = NumArg (t, 1);
 if ((t = FindArg ("-fastmenus")))
 	gameOptions [0].menus.bFastMenus = NumArg (t, 1);
-if ((t = FindArg ("-altbg_alpha")) && *Args [t+1]) {
-	gameOptions [0].menus.altBg.alpha = atof (Args [t+1]);
+if ((t = FindArg ("-altbg_alpha")) && *pszArgList [t+1]) {
+	gameOptions [0].menus.altBg.alpha = atof (pszArgList [t+1]);
 	if (gameOptions [0].menus.altBg.alpha < 0)
 		gameOptions [0].menus.altBg.alpha = -1.0;
 	else if ((gameOptions [0].menus.altBg.alpha == 0) || (gameOptions [0].menus.altBg.alpha > 1.0))
 		gameOptions [0].menus.altBg.alpha = 1.0;
 	}
-if ((t = FindArg ("-altbg_brightness")) && *Args [t+1]) {
-	gameOptions [0].menus.altBg.brightness = atof (Args [t+1]);
+if ((t = FindArg ("-altbg_brightness")) && *pszArgList [t+1]) {
+	gameOptions [0].menus.altBg.brightness = atof (pszArgList [t+1]);
 	if ((gameOptions [0].menus.altBg.brightness <= 0) || (gameOptions [0].menus.altBg.brightness > 1.0))
 		gameOptions [0].menus.altBg.brightness = 1.0;
 	}
 if ((t = FindArg ("-altbg_grayscale")))
 	gameOptions [0].menus.altBg.grayscale = NumArg (t, 1);
-if ((t = FindArg ("-altbg_name")) && *Args [t+1])
-	strncpy (gameOptions [0].menus.altBg.szName, Args [t+1], sizeof (gameOptions [0].menus.altBg.szName));
+if ((t = FindArg ("-altbg_name")) && *pszArgList [t+1])
+	strncpy (gameOptions [0].menus.altBg.szName, pszArgList [t+1], sizeof (gameOptions [0].menus.altBg.szName));
 if ((t = FindArg ("-menu_hotkeys")))
 	gameOptions [0].menus.nHotKeys = NumArg (t, 1);
 if ((t = FindArg ("-use_swapfile")))
@@ -1078,7 +1078,7 @@ void EvalRenderArgs (void)
 {
 	int	t;
 
-if ((t = FindArg ("-render_quality")) && *Args [t+1]) {
+if ((t = FindArg ("-render_quality")) && *pszArgList [t+1]) {
 	gameOpts->render.nQuality = NumArg (t, 3);
 	if (gameOpts->render.nQuality < 0)
 		gameOpts->render.nQuality = 0;
@@ -1106,7 +1106,7 @@ if ((t = FindArg ("-enable_lightmaps")))
 if ((t = FindArg ("-blend_background")))
 	gameStates.render.bBlendBackground = NumArg (t, 1);
 if ((t = FindArg ("-tmap")))
-	select_tmap (Args [t+1]);
+	select_tmap (pszArgList [t+1]);
 else
 	select_tmap (NULL);
 if ((t = FindArg ("-maxfps"))) {
@@ -1159,7 +1159,7 @@ if ((t = FindArg ("-gl_transform")))
 #endif
 if ((t = FindArg ("-cache_textures")))
 	gameStates.app.bCacheTextures = NumArg (t, 1);
-if ((t = FindArg ("-model_quality")) && *Args [t+1])
+if ((t = FindArg ("-model_quality")) && *pszArgList [t+1])
 	gameStates.render.nModelQuality = NumArg (t, 3);
 #if 0
 if ((t = FindArg ("-gl_texcompress")))
@@ -1183,7 +1183,7 @@ void EvalAppArgs (void)
 {
 	int	t;
 
-if ((t = FindArg ("-max_segments")) && *Args [t+1]) {
+if ((t = FindArg ("-max_segments")) && *pszArgList [t+1]) {
 	t = NumArg (t, MAX_SEGMENTS_D2X);
 	if (t < MAX_SEGMENTS_D2)
 		t = MAX_SEGMENTS_D2;
@@ -1202,7 +1202,7 @@ if ((t = FindArg ("-enable_freecam")))
 if ((t = FindArg ("-pured2")))
 	gameStates.app.bNostalgia = 3;
 else if ((t = FindArg ("-nostalgia"))) {
-	if (Args [t+1]) {
+	if (pszArgList [t+1]) {
 		gameStates.app.bNostalgia = NumArg (t, 0);
 		if (gameStates.app.bNostalgia < 0)
 			gameStates.app.bNostalgia = 0;
@@ -1236,15 +1236,15 @@ if ((t = FindArg ("-altLanguage")))
 
 if ((t = FindArg ("-auto_hogfile"))) {
 	strcpy (szAutoHogFile, "missions/");
-	strcat (szAutoHogFile, Args [t+1]);
+	strcat (szAutoHogFile, pszArgList [t+1]);
 	if (*szAutoHogFile && !strchr (szAutoHogFile, '.'))
 		strcat (szAutoHogFile, ".hog");
 	}
 if ((t = FindArg ("-auto_mission"))) {
-	char	c = *Args [++t];
+	char	c = *pszArgList [++t];
 	int		bDelim = ((c == '\'') || (c == '"'));
 
-	strcpy (szAutoMission, &Args [t][bDelim]);
+	strcpy (szAutoMission, &pszArgList [t][bDelim]);
 	if (bDelim)
 		szAutoMission [strlen (szAutoMission) - 1] = '\0';
 	if (*szAutoMission && !strchr (szAutoMission, '.'))
@@ -1258,7 +1258,7 @@ else
 	con_threshold.value = -1.0;
 if ((t = FindArg ("-autodemo"))) {
 	gameData.demo.bAuto = 1;
-	strncpy (gameData.demo.fnAuto, *Args [t+1] ? Args [t+1] : "descent.dem", sizeof (gameData.demo.fnAuto));
+	strncpy (gameData.demo.fnAuto, *pszArgList [t+1] ? pszArgList [t+1] : "descent.dem", sizeof (gameData.demo.fnAuto));
 	}
 else
 	gameData.demo.bAuto = 0;
@@ -3235,7 +3235,7 @@ switch (loadOp) {
 	case 5:
 		int i;
 		if ((i = FindArg ("-xcontrol")) > 0)
-			KCInitExternalControls (strtol (Args [i+1], NULL, 0), strtol (Args [i+2], NULL, 0));
+			KCInitExternalControls (strtol (pszArgList [i+1], NULL, 0), strtol (pszArgList [i+2], NULL, 0));
 		break;
 	case 6:
 		/*---*/PrintLog ("Initializing movies\n");
@@ -3440,7 +3440,7 @@ if (Initialize (argc, argv))
 #ifdef	EDITOR
 if ((i = FindArg ("-autoload"))) {
 	Auto_exit = 1;
-	strcpy (Auto_file, Args[i+1]);
+	strcpy (Auto_file, pszArgList[i+1]);
 	}
 if (Auto_exit) {
 	strcpy (gameData.multiplayer.players[0].callsign, "dummy");

@@ -33,11 +33,11 @@ static char rcsid [] = "$Id: args.c,v 1.10 2003/11/26 12:26:33 btb Exp $";
 #include "error.h"
 #include "findfile.h"
 
-int Num_args = 0;
+int nArgCount = 0;
 
 #define MAX_ARGS	1000
 
-char * Args [MAX_ARGS], *ps;
+char * pszArgList [MAX_ARGS], *ps;
 
 //------------------------------------------------------------------------------
 
@@ -45,8 +45,8 @@ int FindArg (char * s)
 {
 	int i;
   
-for (i = 0; i < Num_args; i++)
-	if (Args [i] && *Args [i] && !stricmp (Args [i], s))
+for (i = 0; i < nArgCount; i++)
+	if (pszArgList [i] && *pszArgList [i] && !stricmp (pszArgList [i], s))
 		return i;
 return 0;
 }
@@ -58,11 +58,11 @@ void _CDECL_ args_exit (void)
 	int i;
 
 PrintLog ("unloading program arguments\n");
-for (i = 0; i < Num_args; i++)
-	if (Args [i])
-		D2_FREE (Args [i]);
-memset (Args, 0, sizeof (Args));
-Num_args = 0;
+for (i = 0; i < nArgCount; i++)
+	if (pszArgList [i])
+		D2_FREE (pszArgList [i]);
+memset (pszArgList, 0, sizeof (pszArgList));
+nArgCount = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ char *GetIniFileName (char *fnIni, int bDebug)
 	int	i;
 
 if ((i = FindArg ("-ini")))
-	strncpy (fnIni, Args [i + 1], sizeof (fnIni) - 1);
+	strncpy (fnIni, pszArgList [i + 1], sizeof (fnIni) - 1);
 else {
 #if defined(__unix__)
 	FFS		ffs;
@@ -120,11 +120,11 @@ else
 PrintLog ("Loading program arguments\n");
 args_exit ();
 for (i = 0; i < argc; i++)
-	Args [Num_args++] = D2_STRDUP (argv [i]);
+	pszArgList [nArgCount++] = D2_STRDUP (argv [i]);
 
-for (i = 0; i < Num_args; i++)
-	if (Args [i] [0] == '-')
-		strlwr (Args [i]);  // Convert all args to lowercase
+for (i = 0; i < nArgCount; i++)
+	if (pszArgList [i] [0] == '-')
+		strlwr (pszArgList [i]);  // Convert all args to lowercase
 
 // look for the ini file
 // for unix, allow both ~/.d2x-xl and <config dir>/d2x.ini
@@ -145,15 +145,15 @@ if (cf.file) {
 		pszLine = fsplitword (&cf, '\n');
 		if (*pszLine && (*pszLine != ';')) {
 			pszToken = splitword (pszLine, ' ');
-			if (Num_args >= MAX_ARGS)
+			if (nArgCount >= MAX_ARGS)
 				break;
-			Args [Num_args++] = pszToken;
+			pszArgList [nArgCount++] = pszToken;
 			if (pszLine) {
-				if (Num_args >= MAX_ARGS) {
+				if (nArgCount >= MAX_ARGS) {
 					PrintLog ("too many program arguments\n");
 					break;
 					}
-				Args [Num_args++] = *pszLine ? D2_STRDUP (pszLine) : NULL;
+				pszArgList [nArgCount++] = *pszLine ? D2_STRDUP (pszLine) : NULL;
 				}
 			}
 		D2_FREE (pszLine); 
@@ -161,14 +161,14 @@ if (cf.file) {
 	CFClose (&cf);
 	}
 PrintLog ("   ");
-for (i = j = 0; i < Num_args; i++, j++) {
-	if (!Args [i]) 
+for (i = j = 0; i < nArgCount; i++, j++) {
+	if (!pszArgList [i]) 
 		continue;
-	if ((Args [i][0] == '-') && (isalpha (Args [i][1]) || (j == 2))) {
+	if ((pszArgList [i][0] == '-') && (isalpha (pszArgList [i][1]) || (j == 2))) {
 		PrintLog ("\n   ");
 		j = 0;
 		}
-	PrintLog (Args [i]);
+	PrintLog (pszArgList [i]);
 	PrintLog (" ");
 	}
 PrintLog ("\n");
@@ -179,7 +179,7 @@ atexit (args_exit);
 
 int NumArg (int t, int nDefault)
 {
-	char *psz = Args [t+1];
+	char *psz = pszArgList [t+1];
 
 if (!psz)
 	return nDefault;

@@ -2702,8 +2702,8 @@ if (LOCALPLAYER.callsign [0] == 0)	{
 	}
 if ((bAutoPlr = gameData.multiplayer.autoNG.bValid))
 	strncpy (filename, gameData.multiplayer.autoNG.szPlayer, 8);
-else if ((bAutoPlr = bStartup && (i = FindArg ("-player")) && *Args [++i]))
-	strncpy (filename, Args [i], 8);
+else if ((bAutoPlr = bStartup && (i = FindArg ("-player")) && *pszArgList [++i]))
+	strncpy (filename, pszArgList [i], 8);
 if (bAutoPlr) {
 	char *psz;
 	strlwr (filename);

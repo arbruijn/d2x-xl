@@ -236,10 +236,10 @@ if ((t = FindArg("-fullscreen"))) {
 	}
 SetRenderQuality ();
 if ((t=FindArg ("-gl_vidmem"))){
-	nOglMemTarget=atoi(Args[t+1])*1024*1024;
+	nOglMemTarget=atoi(pszArgList[t+1])*1024*1024;
 }
 if ((t=FindArg ("-gl_reticle"))){
-	gameStates.ogl.nReticle=atoi(Args[t+1]);
+	gameStates.ogl.nReticle=atoi(pszArgList[t+1]);
 }
 /***/PrintLog ("   initializing internal texture list\n");
 OglInitTextureListInternal();
@@ -314,7 +314,7 @@ int SCREENMODE (int x, int y, int c)
 {
 	int i = FindArg (ScrSizeArg (x, y));
 
-if (i && (i < Num_args)) {
+if (i && (i < nArgCount)) {
 	gameStates.gfx.bOverride = 1; 
 	gameData.render.window.w = x;
 	gameData.render.window.h = y;
@@ -330,7 +330,7 @@ int S_MODE (u_int32_t *VV, int *VG)
 	int	h, i;
 
 for (i = 0; scrSizes [i].x && scrSizes [i].y; i++)
-	if ((h = FindArg (ScrSizeArg (scrSizes [i].x, scrSizes [i].y))) && (h < Num_args)) {
+	if ((h = FindArg (ScrSizeArg (scrSizes [i].x, scrSizes [i].y))) && (h < nArgCount)) {
 		*VV = SM (scrSizes [i].x, scrSizes [i].y);
 		*VG = 1; //always 1 in d2x-xl
 		return h;

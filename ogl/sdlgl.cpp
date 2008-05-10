@@ -88,8 +88,8 @@ int OglSetAttribute (char *szSwitch, char *szAttr, SDL_GLattr attr, int value)
 {
 	int	i;
 	
-if (szSwitch && (i = FindArg (szSwitch)) && Args [i + 1])
-	attr = (SDL_GLattr) atoi (Args [i + 1]);
+if (szSwitch && (i = FindArg (szSwitch)) && pszArgList [i + 1])
+	attr = (SDL_GLattr) atoi (pszArgList [i + 1]);
 i = SDL_GL_SetAttribute (attr, value);
 /***/PrintLog ("   setting %s to %d %s\n", szAttr, value, (i == -1) ? "failed" : "succeeded");
 return i;
@@ -109,8 +109,8 @@ OglSetAttribute ("-gl_blue", "SDL_GL_BLUE_SIZE", SDL_GL_BLUE_SIZE, 8);
 OglSetAttribute ("-gl_alpha", "SDL_GL_ALPHA_SIZE", SDL_GL_ALPHA_SIZE, 8);
 OglSetAttribute ("-gl_buffer", "SDL_GL_BUFFER_SIZE", SDL_GL_BUFFER_SIZE, 32);
 OglSetAttribute ("-gl_stencil", "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
-if ((t = FindArg ("-gl_depth")) && Args [t+1]) {
-	gameStates.ogl.nDepthBits = atoi (Args [t + 1]);
+if ((t = FindArg ("-gl_depth")) && pszArgList [t+1]) {
+	gameStates.ogl.nDepthBits = atoi (pszArgList [t + 1]);
 	if (gameStates.ogl.nDepthBits <= 0)
 		gameStates.ogl.nDepthBits = 24;
 	else if (gameStates.ogl.nDepthBits > 24)

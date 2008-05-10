@@ -327,7 +327,7 @@ if ((t = FindArg ("-test_tracker")))
 	bTestTracker = 1;
 if (!(t = FindArg ("-num_trackers")))
 	return;
-if (!(i = atoi (Args [t + 1])))
+if (!(i = atoi (pszArgList [t + 1])))
 	return;
 if (i > MAX_TRACKER_SERVERS)
 	i = MAX_TRACKER_SERVERS;
@@ -335,7 +335,7 @@ for (j = 0; j < i; j++) {
 	sprintf (szKwd, "-tracker%d", j + 1);
 	if (!(t = FindArg (szKwd)))
 		continue;
-	if (ParseIpAndPort (Args [t + 1], &tracker))
+	if (ParseIpAndPort (pszArgList [t + 1], &tracker))
 		AddTracker (&tracker);
 	}
 }
@@ -356,7 +356,7 @@ void CreateTrackerList (void)
 	int	a;
 
 ResetTrackerList ();
-if (!(a = FindArg ("-internal_tracker")) || atoi (Args [a + 1])) {
+if (!(a = FindArg ("-internal_tracker")) || atoi (pszArgList [a + 1])) {
 	AddTracker (&d2xTracker);
 	AddTracker (&kbTracker);
 	}

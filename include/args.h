@@ -59,8 +59,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _ARGS_H
 #define _ARGS_H
 
-extern int Num_args;					
-extern char * Args[];					
+extern int nArgCount;					
+extern char * pszArgList[];					
 extern int Inferno_verbose;
 
 int FindArg( char * s );

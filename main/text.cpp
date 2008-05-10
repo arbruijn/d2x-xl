@@ -2640,7 +2640,7 @@ for (i = 0; *GT (i); i++)
 fclose (fTxt);
 #endif
 if ((i = FindArg ("-text")))
-	filename = Args [i+1];
+	filename = pszArgList [i+1];
 if (!CFOpen (&tFile, filename, gameFolders.szDataDir, "rt", 0)) {
 	filename = "descent.txb";
 	if (!CFOpen (&iFile, filename, gameFolders.szDataDir, "rb", 0)) {

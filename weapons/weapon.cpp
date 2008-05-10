@@ -839,7 +839,7 @@ void TactileSetButtonJolt ()
 if (TactileStick) {
 	if (stickmag==-1) {
 		if (t=FindArg("-stickmag"))
-			stickmag=atoi (Args [t+1]);
+			stickmag=atoi (pszArgList [t+1]);
 		else
 			stickmag=50;
 		infile=(FILE *)fopen ("stick.val","rt");
