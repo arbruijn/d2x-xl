@@ -1049,6 +1049,7 @@ for (int i = gameData.render.lights.dynamic.shader.nLights; i; i--, psl++)
 void ResetActiveLights (int nThread, int nActive)
 {
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+	int						h;
 
 if (0 < (h = sliP->nLast - sliP->nFirst + 1))
 	memset (gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst, 0, sizeof (tActiveShaderLight) * h);
@@ -1077,7 +1078,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
 if (gameOpts->render.bDynLighting) {
-	short						h, i = gameData.render.lights.dynamic.shader.nLights,
+	short						i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
 	int						bSkipHeadLight = !gameStates.render.nState && (gameOpts->ogl.bPerPixelLighting || gameStates.ogl.bHeadLight);
 	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
@@ -1085,15 +1086,15 @@ if (gameOpts->render.bDynLighting) {
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 
-	ResetActiveLights (nThread, 0);
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
-	if (gameStates.render.bPerPixelLighting) {
+	ResetUsedLights ();
 #ifdef _DEBUG
+	if (gameStates.render.bPerPixelLighting) {
 		CheckUsedLights ();
 		CheckUsedLights1 ();
-#endif
 		}
-	ResetUsedLights ();
+#endif
+	ResetActiveLights (nThread, 0);
 	while (i--) {
 #ifdef _DEBUG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
@@ -1166,7 +1167,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 #endif
 if (gameOpts->render.bDynLighting) {
 	int						nLightSeg;
-	short						h, i = gameData.render.lights.dynamic.shader.nLights;
+	short						i = gameData.render.lights.dynamic.shader.nLights;
 	fix						xMaxLightRange = fl2f (fLightRad) + MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights;
 	vmsVector				c;
@@ -1253,7 +1254,7 @@ else if (gameStates.render.bPerPixelLighting == 2) {
 		vcd.fMatShininess = 4;
 		G3AccumVertColor (-1, (fVector3 *) psc, &vcd, 0);
 		ResetUsedLights ();
-		ResetActiveLights (0, -1);
+		gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 		}
 	}
 else {
@@ -1338,7 +1339,7 @@ void ComputeStaticVertexLights (int nVertex, int nMax, int nThread)
 	tFaceColor				*pf = gameData.render.color.ambient + nVertex;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	fVector					vVertex;
-	int						h, bColorize = !gameOpts->render.bDynLighting;
+	int						bColorize = !gameOpts->render.bDynLighting;
 
 for (; nVertex < nMax; nVertex++, pf++) {
 #ifdef _DEBUG

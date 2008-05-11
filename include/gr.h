@@ -629,7 +629,6 @@ void GrMergeTextures3(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, 
 void GrUpdate (int bClear);
 void SaveScreenShot (unsigned char *buf, int automapFlag);
 
-extern int bSaveScreenShot;
 /*
  * currently SDL and OGL are the only things that supports toggling
  * fullscreen.  otherwise add other checks to the #if -MPM

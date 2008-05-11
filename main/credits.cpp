@@ -411,7 +411,7 @@ get_line:;
 #endif
 
 	if ((k == KEY_PRINT_SCREEN) || (k == KEY_ALTED+KEY_F9)) {
-		bSaveScreenShot = 1;
+		gameStates.app.bSaveScreenshot = 1;
 		SaveScreenShot (NULL, 0);
 		k = 0;
 		}

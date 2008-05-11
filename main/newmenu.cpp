@@ -137,8 +137,6 @@ typedef struct nm_control {
 
 //------------------------------------------------------------------------------
 
-extern int bSaveScreenShot;
-
 void GameRenderFrame ();
 
 int ExecMenu4 (char * title, char * subtitle, int nItems, tMenuItem * item, 
@@ -2000,7 +1998,7 @@ launchOption:
 
 		case KEY_COMMAND+KEY_SHIFTED+KEY_P:
 		case KEY_ALTED + KEY_F9:
-			bSaveScreenShot = 1;
+			gameStates.app.bSaveScreenshot = 1;
 			SaveScreenShot (NULL, 0);
 			for (i=0;i<nItems;i++)
 				item [i].redraw=1;
@@ -2799,7 +2797,7 @@ ReadFileNames:
 			
 		case KEY_COMMAND+KEY_SHIFTED+KEY_P:
 		case KEY_ALTED + KEY_F9:
-			bSaveScreenShot = 1;
+			gameStates.app.bSaveScreenshot = 1;
 			SaveScreenShot (NULL, 0);
 			break;
 

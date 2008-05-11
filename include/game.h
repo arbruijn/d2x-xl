@@ -103,7 +103,7 @@ extern int Game_suspended;          // if non-zero, nothing moves but tPlayer
 
 // from game.c
 void InitGame(void);
-void game(void);
+void RunGame (void);
 void _CDECL_ CloseGame(void);
 void InitCockpit(void);
 void CalcFrameTime(void);
@@ -211,6 +211,8 @@ void GetSlowTicks (void);
 
 void SetFunctionMode (int newFuncMode);
 int GameLoop (int RenderFlag, int bReadControls);
+
+void FullPaletteSave (void);
 
 /*
  * reads a tVariableLight structure from a CFILE

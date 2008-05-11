@@ -776,7 +776,7 @@ while ((c = KeyInKey ())) {
 		case KEY_PRINT_SCREEN: {
 			if (amData.bHires)
 				GrSetCurrentCanvas (NULL);
-			bSaveScreenShot = 1;
+			gameStates.app.bSaveScreenshot = 1;
 			SaveScreenShot (NULL, 1);
 			break;
 			}
@@ -851,7 +851,7 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_ALTED + KEY_R:
-			gameStates.render.frameRate.value = !gameStates.render.frameRate.value;
+			gameStates.render.bShowFrameRate = !gameStates.render.bShowFrameRate;
 			break;
 
 #ifdef _DEBUG

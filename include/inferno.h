@@ -914,6 +914,7 @@ typedef struct tRenderStates {
 	int bDoCameras;
 	int bRenderIndirect;
 	int bBuildModels;
+	int bShowFrameRate;
 	int bTriangleMesh;
 	int nFrameFlipFlop;
 	int nModelQuality;
@@ -928,7 +929,6 @@ typedef struct tRenderStates {
 	ubyte nRenderingType;
 	fix nFlashScale;
 	fix nFlashRate;
-	cvar_t frameRate;
 	tCameraStates cameras;
 	tCockpitStates cockpit;
 	tVRStates vr;
@@ -1049,6 +1049,7 @@ typedef struct tApplicationStates {
 	int bD2XLevel;
 	int bEnterGame;
 	int bFreeCam;
+	int bSaveScreenshot;
 	int bGameRunning;
 	int bGameSuspended;
 	int bGameAborted;
@@ -1580,6 +1581,8 @@ typedef struct tRenderData {
 	fix						zMax;
 	double					dAspect;
 	tFrameBuffer			glareBuffer;
+	int						nTotalFaces;
+	int						nTotalLights;
 } tRenderData;
 
 //------------------------------------------------------------------------------
@@ -3287,7 +3290,7 @@ extern fix nDebrisLife [];
 #define FACES		gameData.segs.faces.faces
 #define TRIANGLES	gameData.segs.faces.tris
 
-#define MAXFPS		((gameStates.render.automap.bDisplay && !(gameStates.render.automap.bRadar || gameStates.render.frameRate.value)) ? 40 : gameOpts->render.nMaxFPS)
+#define MAXFPS		((gameStates.render.automap.bDisplay && !(gameStates.render.automap.bRadar || gameStates.render.bShowFrameRate == 1)) ? 40 : gameOpts->render.nMaxFPS)
 
 #define SPECTATOR(_objP)	(gameStates.app.bFreeCam && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
 #define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->position)

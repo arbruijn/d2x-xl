@@ -3883,6 +3883,10 @@
 						RelativePath="..\..\input\mouse.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\..\input\systemkeys.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Header Files"
@@ -4575,11 +4579,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

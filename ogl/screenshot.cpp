@@ -122,7 +122,6 @@ else {
 #  define   access   _access
 #endif
 
-extern int bSaveScreenShot;
 extern char *pszSystemNames [];
 
 void SaveScreenShot (unsigned char *buf, int bAutomap)
@@ -133,9 +132,9 @@ void SaveScreenShot (unsigned char *buf, int bAutomap)
 	static int		nSaveNum = 0;
 	GLenum			glErrCode;
 
-if (!bSaveScreenShot)
+if (!gameStates.app.bSaveScreenshot)
 	return;
-bSaveScreenShot = 0;
+gameStates.app.bSaveScreenshot = 0;
 if (!gameStates.ogl.bReadPixels) {
 	if (!bAutomap)
 		HUDMessage (MSGC_GAME_FEEDBACK, "Screenshots not supported on your configuration");

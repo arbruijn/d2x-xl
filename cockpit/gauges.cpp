@@ -2939,16 +2939,18 @@ gameStates.render.bRearView = bRearViewSave;
 
 //------------------------------------------------------------------------------
 
-void ftoa (char *string, fix f)
+char *ftoa (char *pszVal, fix f)
 {
 	int decimal, fractional;
 
-	decimal = f2i (f);
-	fractional = ((f & 0xffff)*100)/65536;
-	if (fractional < 0)
-		fractional *= -1;
-	if (fractional > 99) fractional = 99;
-	sprintf (string, "%d.%02d", decimal, fractional);
+decimal = f2i (f);
+fractional = ((f & 0xffff) * 100) / 65536;
+if (fractional < 0)
+	fractional = -fractional;
+if (fractional > 99) 
+	fractional = 99;
+sprintf (pszVal, "%d.%02d", decimal, fractional);
+return pszVal;
 }
 
 //------------------------------------------------------------------------------
@@ -2957,64 +2959,52 @@ fix frameTimeList [8] = {0, 0, 0, 0, 0, 0, 0, 0};
 fix frameTimeTotal = 0;
 int frameTimeCounter = 0;
 
-void ShowRenderItems ()
-{
-	static int nIdRenderItems = 0;
-
-if ((gameOpts->render.bDepthSort > 0) && renderItems.bDisplay) {
-		char szItems [50];
-		int x = 9, y = 5; // position measured from lower right corner
-	   //static int q;
-
-	GrSetCurFont (GAME_FONT);
-	GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
-	sprintf (szItems, "Polys: %d", renderItems.nItems);	// Convert fixed to string
-	if (gameStates.render.automap.bDisplay)
-		y = 1;
-	if (IsMultiGame)
-		y = 6;
-	nIdRenderItems = GrPrintF (&nIdRenderItems, 
-										grdCurCanv->cv_w - (x * GAME_FONT->ftWidth), 
-										grdCurCanv->cv_h - y * (GAME_FONT->ftHeight + GAME_FONT->ftHeight / 4), 
-										szItems);
-	}
-}
-
 //	-----------------------------------------------------------------------------
 
 void ShowFrameRate ()
 {
 	static int nIdFrameRate = 0;
 
-if (gameStates.render.frameRate.value) {
-		char szRate [50];
+if (gameStates.render.bShowFrameRate) {
 		static time_t t, t0 = -1;
-		static fix rate = 0;
-		int x = 11, y = 6; // position measured from lower right corner
-	   //static int q;
+
+		char	szItem [50];
+		int	y; // position measured from lower right corner
 
 	frameTimeTotal += gameData.time.xRealFrame - frameTimeList [frameTimeCounter];
 	frameTimeList [frameTimeCounter] = gameData.time.xRealFrame;
 	frameTimeCounter = (frameTimeCounter + 1) % 8;
-	t = SDL_GetTicks ();
-	if ((t0 < 0) || (t - t0 >= 500)) {
-		t0 = t;
-		rate = frameTimeTotal ? FixDiv (f1_0 * 8, frameTimeTotal) : 0;
-		}
-	GrSetCurFont (GAME_FONT);
-	GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
+	if (gameStates.render.bShowFrameRate == 1) {
+		static fix xRate = 0;
 
-	ftoa (szRate, rate);	// Convert fixed to string
+		char szRate [20];
+		t = SDL_GetTicks ();
+		if ((t0 < 0) || (t - t0 >= 500)) {
+			t0 = t;
+			xRate = frameTimeTotal ? FixDiv (f1_0 * 8, frameTimeTotal) : 0;
+			}
+		sprintf (szItem, "%s FPS ", ftoa (szRate, xRate));
+			// Convert fixed to string
+		}
+	else if (gameStates.render.bShowFrameRate == 2) 
+		sprintf (szItem, "%d Polys ", renderItems.nItems);
+	else if (gameStates.render.bShowFrameRate == 3) 
+		sprintf (szItem, "%d Faces ", gameData.render.nTotalFaces);
+	else if (gameStates.render.bShowFrameRate == 4) 
+		sprintf (szItem, "%1.2f Lights/Face ", (float) gameData.render.nTotalLights / (float) gameData.render.nTotalFaces);
 	if (gameStates.render.automap.bDisplay)
 		y = 2;
-	if (IsMultiGame)
+	else if (IsMultiGame)
 		y = 7;
+	else
+		y = 6;
+	GrSetCurFont (GAME_FONT);
+	GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
 	nIdFrameRate = GrPrintF (&nIdFrameRate, 
-									 grdCurCanv->cv_w - (x * GAME_FONT->ftWidth), 
+									 grdCurCanv->cv_w - ((strlen (szItem) + 1) * GAME_FONT->ftWidth), 
 									 grdCurCanv->cv_h - y * (GAME_FONT->ftHeight + GAME_FONT->ftHeight / 4), 
-									 "      FPS: %s", szRate);
+									 szItem);
 	}
-ShowRenderItems ();
 }
 
 //------------------------------------------------------------------------------

@@ -129,6 +129,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "slowmotion.h"
 #include "soundthreads.h"
 #include "sparkeffect.h"
+#include "systemkeys.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -1062,49 +1063,6 @@ GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameS
 
 //------------------------------------------------------------------------------
 
-tRgbColors palAddSave;
-
-void PaletteSave (void)
-{
-palAddSave = gameStates.ogl.palAdd;
-}
-
-//------------------------------------------------------------------------------
-
-extern void GrPaletteStepUpVR (int r, int g, int b, int white, int black);
-
-void GamePaletteStepUp (int r, int g, int b)
-{
-if (gameStates.render.vr.bUseRegCode)
-	;//GrPaletteStepUpVR (r, g, b, VR_WHITE_INDEX, VR_BLACK_INDEX);
-else
-	GrPaletteStepUp (r, g, b);
-}
-
-//------------------------------------------------------------------------------
-
-void PaletteRestore (void)
-{
-gameStates.ogl.palAdd = palAddSave; 
-GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
-//	Forces flash effect to fixup palette next frame.
-gameData.render.xTimeFlashLastPlayed = 0;
-}
-
-void DeadPlayerFrame (void);
-
-//------------------------------------------------------------------------------
-
-void FullPaletteSave (void)
-{
-	PaletteSave ();
-	ApplyModifiedPalette ();
-	ResetPaletteAdd ();
-	GrPaletteStepLoad (NULL);
-}
-
-//------------------------------------------------------------------------------
-
 #define ADD_HELP_OPT(_text)	m [opt].nType = NM_TYPE_TEXT; m [opt++].text = (_text);
 
 void ShowHelp ()
@@ -1363,7 +1321,7 @@ if (gameStates.app.nFunctionMode != newFuncMode) {
 //	------------------------------------------------------------------------------------
 //this function is the game.  called when game mode selected.  runs until
 //editor mode or exit selected
-void game ()
+void RunGame (void)
 {
 	int c;
 
@@ -1409,7 +1367,6 @@ for (;;) {
 		if (!IsMultiGame) {
 			PaletteSave (); 
 			ResetPaletteAdd ();
-			ApplyModifiedPalette (); 
 			GrPaletteStepLoad (NULL); 
 			}
 		ConfigMenu ();
@@ -1440,7 +1397,6 @@ for (;;) {
 		fmode = gameStates.app.nFunctionMode;
 		SetFunctionMode (FMODE_GAME);
 		PaletteSave ();
-		ApplyModifiedPalette ();
 		ResetPaletteAdd ();
 		GrPaletteStepLoad (NULL);
 		choice = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
@@ -1847,7 +1803,7 @@ if (!(h = screenShotIntervals [gameOpts->app.nScreenShotInterval]))
 if (gameStates.app.nSDLTicks - t0 < h * 1000)
 	return;
 t0 = gameStates.app.nSDLTicks;
-bSaveScreenShot = 1;
+gameStates.app.bSaveScreenshot = 1;
 SaveScreenShot (0, 0);
 }
 

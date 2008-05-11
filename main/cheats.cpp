@@ -484,7 +484,7 @@ KillEverything (bVerbose);
 
 void FramerateCheat (int bVerbose)
 {
-gameStates.render.frameRate.value = !gameStates.render.frameRate.value;
+gameStates.render.bShowFrameRate = !gameStates.render.bShowFrameRate;
 }
 
 //------------------------------------------------------------------------------

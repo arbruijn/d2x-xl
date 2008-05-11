@@ -83,7 +83,6 @@ extern int bSavingMovieFrames;
 #endif
 
 //------------------------------------------------------------------------------
-int bSaveScreenShot = 0;
 
 void UpdateCockpits (int bForceRedraw);
 
@@ -955,7 +954,7 @@ else
 	HUDShowIcons ();
 con_update ();
 OglSwapBuffers (0, 0);
-if (bSaveScreenShot)
+if (gameStates.app.bSaveScreenshot)
 	SaveScreenShot (NULL, 0);
 }
 

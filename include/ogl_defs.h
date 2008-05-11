@@ -2,6 +2,10 @@
 #ifndef _OGL_DEFS_H
 #define _OGL_DEFS_H
 
+#ifdef HAVE_CONFIG_H
+#	include <conf.h>
+#endif  
+
 #ifdef _WIN32
 #	include <windows.h>
 #	include <stddef.h>

@@ -57,6 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "network.h"
 #include "gameseg.h"
+#include "systemkeys.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -1163,11 +1164,8 @@ void DoEscortMenu (void)
 		StopTime ();
 
 	PaletteSave ();
-	ApplyModifiedPalette ();
 	ResetPaletteAdd ();
-
 	GameFlushInputs ();
-
 	paused = 1;
 
 //	SetScreenMode ( SCREEN_MENU );

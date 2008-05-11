@@ -815,6 +815,8 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 		glDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
 	OglResetTransform (faceP != NULL);
+	if (faceP)
+		gameData.render.nTotalFaces++;
 	}
 else 
 #endif
@@ -1089,7 +1091,7 @@ void RenderItems (void)
 {
 #if RENDER_TRANSPARENCY
 	struct tRenderItem	**pd, *pl, *pn;
-	int						nDepth, nType, bParticles, bStencil;
+	int						nDepth, nType, nItems, bParticles, bStencil;
 
 if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
@@ -1121,8 +1123,8 @@ glDepthMask (0);
 glEnable (GL_CULL_FACE);
 BeginRenderSmoke (-1, 1);
 nType = -1;
-for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1; 
-	  (pd >= renderItems.pDepthBuffer) && renderItems.nItems; 
+for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1, nItems = renderItems.nItems; 
+	  (pd >= renderItems.pDepthBuffer) && nItems; 
 	  pd--) {
 	if ((pl = *pd)) {
 		nDepth = 0;
@@ -1131,7 +1133,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 			if (pl->nItem == nDbgItem)
 				nDbgItem = nDbgItem;
 #endif
-			renderItems.nItems--;
+			nItems--;
 			renderItems.nPrevType = nType;
 			nType = pl->nType;
 			RIFlushParticleBuffer (nType);

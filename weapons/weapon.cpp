@@ -45,6 +45,7 @@ static char rcsid [] = "$Id: weapon.c,v 1.9 2003/10/11 09:28:38 btb Exp $";
 #include "network.h"
 #include "u_mem.h"
 #include "input.h"
+#include "headlight.h"
 
 #if defined (TACTILE)
 #include "tactile.h"
@@ -817,6 +818,85 @@ for (i = nStart; i <= gameData.objs.nLastObject; i += nStep) {
 			}
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+//returns which bomb will be dropped next time the bomb key is pressed
+int ArmedBomb (void)
+{
+	int bomb, otherBomb;
+
+	//use the last one selected, unless there aren't any, in which case use
+	//the other if there are any
+   // If hoard game, only let the tPlayer drop smart mines
+if (gameData.app.nGameMode & GM_ENTROPY)
+   return PROXMINE_INDEX; //allow for dropping orbs
+if (gameData.app.nGameMode & GM_HOARD)
+	return SMARTMINE_INDEX;
+
+bomb = bLastSecondaryWasSuper [PROXMINE_INDEX] ? SMARTMINE_INDEX : PROXMINE_INDEX;
+otherBomb = SMARTMINE_INDEX + PROXMINE_INDEX - bomb;
+
+if (!LOCALPLAYER.secondaryAmmo [bomb] && LOCALPLAYER.secondaryAmmo [otherBomb]) {
+	bomb = otherBomb;
+	bLastSecondaryWasSuper [bomb % SUPER_WEAPON] = (bomb == SMARTMINE_INDEX);
+	}
+return bomb;
+}
+
+//------------------------------------------------------------------------------
+
+void DoWeaponStuff (void)
+{
+  int i;
+
+if (Controls [0].useCloakDownCount)
+	ApplyCloak (0, -1);
+if (Controls [0].useInvulDownCount)
+	ApplyInvul (0, -1);
+if (Controls [0].fireFlareDownCount)
+	if (AllowedToFireFlare ())
+		CreateFlare(gameData.objs.console);
+if (AllowedToFireMissile (-1, 1)) {
+	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
+	gameData.missiles.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].fireSecondaryState || Controls [0].fireSecondaryDownCount);
+	}
+if (gameData.missiles.nGlobalFiringCount) {
+	DoMissileFiring (1);			//always enable autoselect for normal missile firing
+	gameData.missiles.nGlobalFiringCount--;
+	}
+if (Controls [0].cyclePrimaryCount) {
+	for (i = 0; i < Controls [0].cyclePrimaryCount; i++)
+	CyclePrimary ();
+	}
+if (Controls [0].cycleSecondaryCount) {
+	for (i = 0; i < Controls [0].cycleSecondaryCount; i++)
+	CycleSecondary ();
+	}
+if (Controls [0].headlightCount) {
+	for (i = 0; i < Controls [0].headlightCount; i++)
+	ToggleHeadLight ();
+	}
+if (gameData.missiles.nGlobalFiringCount < 0)
+	gameData.missiles.nGlobalFiringCount = 0;
+//	Drop proximity bombs.
+if (Controls [0].dropBombDownCount) {
+	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
+		Controls [0].dropBombDownCount = 0;
+	else {
+		int ssw_save = gameData.weapons.nSecondary;
+		while (Controls [0].dropBombDownCount--) {
+			int ssw_save2 = gameData.weapons.nSecondary = ArmedBomb();
+			if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
+				DropSecondaryWeapon (-1);
+			else
+				DoMissileFiring (gameData.weapons.nSecondary == ssw_save);	//only allow autoselect if bomb is actually selected
+			if (gameData.weapons.nSecondary != ssw_save2 && ssw_save == ssw_save2)
+				ssw_save = gameData.weapons.nSecondary;    //if bomb was selected, and we ran out & autoselect, then stick with new selection
+			}
+		gameData.weapons.nSecondary = ssw_save;
+	}
+}
 }
 
 //	-----------------------------------------------------------------------------

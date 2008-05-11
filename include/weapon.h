@@ -340,5 +340,7 @@ void InitSeismicDisturbances (void);
 int POrderList (int nWeapon);
 int SOrderList (int nWeapon);
 int CheckToUsePrimary (int nWeaponIndex);
+void DoWeaponStuff (void);
+int ArmedBomb (void);
 
 #endif

@@ -299,5 +299,45 @@ gameData.render.pal.palettes = NULL;
 gameData.render.pal.nPalettes = 0;
 }
 
+//------------------------------------------------------------------------------
+
+tRgbColors palAddSave;
+
+void PaletteSave (void)
+{
+palAddSave = gameStates.ogl.palAdd;
+}
+
+//------------------------------------------------------------------------------
+
+void GamePaletteStepUp (int r, int g, int b)
+{
+if (gameStates.render.vr.bUseRegCode)
+	;//GrPaletteStepUpVR (r, g, b, VR_WHITE_INDEX, VR_BLACK_INDEX);
+else
+	GrPaletteStepUp (r, g, b);
+}
+
+//------------------------------------------------------------------------------
+
+void PaletteRestore (void)
+{
+gameStates.ogl.palAdd = palAddSave; 
+GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
+//	Forces flash effect to fixup palette next frame.
+gameData.render.xTimeFlashLastPlayed = 0;
+}
+
+void DeadPlayerFrame (void);
+
+//------------------------------------------------------------------------------
+
+void FullPaletteSave (void)
+{
+PaletteSave ();
+ResetPaletteAdd ();
+GrPaletteStepLoad (NULL);
+}
+
 //	-----------------------------------------------------------------------------
 //eof

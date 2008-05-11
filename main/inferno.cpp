@@ -2057,10 +2057,7 @@ gameStates.render.bTopDownRadar = 0;
 gameStates.render.bDisableFades = 0;
 gameStates.render.bDropAfterburnerBlob = 0;
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-gameStates.render.frameRate.name = "r_framerate";
-cvar_registervariable (&gameStates.render.frameRate);
-gameStates.render.frameRate.string = "0";
-gameStates.render.frameRate.value = 0;
+gameStates.render.bShowFrameRate = 0;
 gameStates.render.cameras.bActive = 0;
 gameStates.render.color.bLightMapsOk = 1;
 gameStates.render.nZoomFactor = F1_0;
@@ -3024,7 +3021,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			gameStates.input.keys.bEditorMode = 0;
 #endif
 			GrabMouse (1, 1);
-			game ();
+			RunGame ();
 			GrabMouse (0, 1);
 			GrPaletteFadeIn (NULL, 0, 0);
 			ResetPaletteAdd ();

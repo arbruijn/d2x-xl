@@ -40,6 +40,10 @@ extern int GrFindClosestColorCurrent ( int r, int g, int b);
 extern void GrPaletteRead (ubyte * palette);
 extern void init_computed_colors (void);
 
+void FullPaletteSave (void);
+void PaletteRestore (void);
+void GamePaletteStepUp (int r, int g, int b);
+
 ubyte *FindPalette (ubyte *palP);
 ubyte *AddPalette (ubyte *palP);
 void FreePalettes (void);
