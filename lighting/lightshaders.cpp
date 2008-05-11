@@ -619,7 +619,7 @@ char *pszPPLMXLightingFS [] = {
 	"		<<<<< specular highlight*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb), texColor.a) * fColorScale;\r\n" \
+	"	gl_FragColor = /*min (texColor, */vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb), matColor.a) * fColorScale;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -939,8 +939,11 @@ char *pszPPLMLightingVS [] = {
 
 char *pszLMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
+	"uniform vec4 matColor;\r\n" \
+	"uniform float fColorScale;\r\n" \
 	"void main() {\r\n" \
-	"gl_FragColor = texture2D (lMapTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
+	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fColorScale;\r\n" \
+	"gl_FragColor = /*min (texColor, */vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * fColorScale);\r\n" \
 	"}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
@@ -1114,7 +1117,9 @@ memset (perPixelLightingShaderProgs, 0, sizeof (perPixelLightingShaderProgs));
 
 //------------------------------------------------------------------------------
 
+#ifdef _DEBUG
 int CheckUsedLights2 (void);
+#endif
 
 int SetupHardwareLighting (grsFace *faceP, int nType)
 {
@@ -1221,7 +1226,9 @@ for (nLights = 0;
 	}
 if (nLightRange <= 0) {
 	gameStates.ogl.iLight = gameStates.ogl.nLights;
+#ifdef _DEBUG
 	CheckUsedLights2 ();
+#endif
 	}
 gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
 #ifdef _DEBUG
@@ -1282,9 +1289,7 @@ if (nShader != gameStates.render.history.nShader)
 	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [nLights][nType]);
 	if (bLightMaps)
 		glUniform1i (glGetUniformLocation (activeShaderProg, "lMapTex"), 0);
-	if (!nType) 
-		glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &faceP->color);
-	else {
+	if (nType) {
 		glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightMaps);
 		if (nType > 1) {
 			glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1 + bLightMaps);
@@ -1293,6 +1298,8 @@ if (nShader != gameStates.render.history.nShader)
 			}
 		}
 	}
+if (!nType) 
+	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &faceP->color);
 glUniform1f (glGetUniformLocation (activeShaderProg, "fColorScale"), 
 #if 1
 				 nLights ? (float) nLights / (float) gameStates.ogl.nLights : 1.0f);

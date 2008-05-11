@@ -666,6 +666,7 @@ if (bmP) {
 		}
 	}
 else if (RISetClientState (bClientState, 0, !renderItems.bLightMaps && (nColors > 1), bUseLightMaps) || renderItems.bTextured) {
+	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	renderItems.bTextured = 0;
 	}

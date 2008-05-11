@@ -1089,8 +1089,6 @@ if ((t = FindArg ("-render_quality")) && *pszArgList [t+1]) {
 if ((t = FindArg ("-render_indirect")))
 	gameStates.render.bRenderIndirect = NumArg (t, 1);
 #endif
-if ((t = FindArg ("-usePerPixelLighting")))
-	gameStates.render.bUsePerPixelLighting = NumArg (t, 1);
 if ((t = FindArg ("-use_shaders")))
 	gameOptions [0].render.bUseShaders = NumArg (t, 1);
 if ((t = FindArg ("-shadows")))
@@ -1117,7 +1115,9 @@ if ((t = FindArg ("-maxfps"))) {
 		t = 250;
 	gameOpts->render.nMaxFPS = t;
 	}
-if (!gameStates.render.bUsePerPixelLighting) {
+if ((t = FindArg ("-usePerPixelLighting")))
+	gameStates.render.bUsePerPixelLighting = NumArg (t, 1);
+if (gameStates.render.bUsePerPixelLighting) {
 	if ((t = FindArg ("-maxLightsPerPass"))) {
 		t = NumArg (t, 1);
 		if (t < 1)

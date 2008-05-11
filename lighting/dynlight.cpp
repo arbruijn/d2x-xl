@@ -1046,6 +1046,19 @@ for (int i = gameData.render.lights.dynamic.shader.nLights; i; i--, psl++)
 
 //------------------------------------------------------------------------------
 
+void ResetActiveLights (int nThread, int nActive)
+{
+	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+
+if (0 < (h = sliP->nLast - sliP->nFirst + 1))
+	memset (gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst, 0, sizeof (tActiveShaderLight) * h);
+sliP->nActive = nActive;
+sliP->nFirst = MAX_SHADER_LIGHTS;
+sliP->nLast = 0;
+}
+
+//------------------------------------------------------------------------------
+
 #if PROFILING
 time_t tSetNearestDynamicLights = 0;
 #endif
@@ -1072,11 +1085,7 @@ if (gameOpts->render.bDynLighting) {
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 
-	if (0 < (h = sliP->nLast - sliP->nFirst + 1))
-		memset (activeLightsP + sliP->nFirst, 0, sizeof (tActiveShaderLight) * h);
-	sliP->nActive = 0;
-	sliP->nFirst = MAX_SHADER_LIGHTS;
-	sliP->nLast = 0;
+	ResetActiveLights (nThread, 0);
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
 	if (gameStates.render.bPerPixelLighting) {
 #ifdef _DEBUG
@@ -1162,14 +1171,8 @@ if (gameOpts->render.bDynLighting) {
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
-	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 
-	h = sliP->nLast - sliP->nFirst + 1;
-	if (h > 0)
-		memset (activeLightsP + sliP->nFirst, 0, sizeof (tActiveShaderLight) * h);
-	sliP->nActive = 0;
-	sliP->nFirst = MAX_SHADER_LIGHTS;
-	sliP->nLast = 0;
+	ResetActiveLights (nThread, 0);
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
 	for (; i; i--, psl++) {
 #ifdef _DEBUG
@@ -1208,10 +1211,7 @@ int SetNearestAvgSgmLights (short nSegment)
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-if (gameData.render.lights.dynamic.shader.index [0][0].nActive < 0)
-	SetNearestSegmentLights (nSegment, -1, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
-else
-	gameData.render.lights.dynamic.shader.index [0][0] = gameData.render.lights.dynamic.shader.index [1][0];
+SetNearestSegmentLights (nSegment, -1, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 for (i = 0; i < 8; i++)
 	SetNearestVertexLights (-1, segP->verts [i], NULL, 0, 1, 1, 0);
 return gameData.render.lights.dynamic.shader.index [0][0].nActive;
@@ -1253,6 +1253,7 @@ else if (gameStates.render.bPerPixelLighting == 2) {
 		vcd.fMatShininess = 4;
 		G3AccumVertColor (-1, (fVector3 *) psc, &vcd, 0);
 		ResetUsedLights ();
+		ResetActiveLights (0, -1);
 		}
 	}
 else {
@@ -1336,7 +1337,6 @@ void ComputeStaticVertexLights (int nVertex, int nMax, int nThread)
 {
 	tFaceColor				*pf = gameData.render.color.ambient + nVertex;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
-	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 	fVector					vVertex;
 	int						h, bColorize = !gameOpts->render.bDynLighting;
 
@@ -1346,11 +1346,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 		nVertex = nVertex;
 #endif
 	VmVecFixToFloat (&vVertex, gameData.segs.vertices + nVertex);
-	if (0 < (h = sliP->nLast - sliP->nFirst + 1))
-		memset (activeLightsP + sliP->nFirst, 0, sizeof (tActiveShaderLight) * h);
-	sliP->nActive = 0;
-	sliP->nFirst = MAX_SHADER_LIGHTS;
-	sliP->nLast = 0;
+	ResetActiveLights (nThread, 0);
 	ResetUsedLights ();
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 1, bColorize, nThread);
 	gameData.render.color.vertices [nVertex].index = 0;
