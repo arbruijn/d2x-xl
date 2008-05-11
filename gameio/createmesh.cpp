@@ -16,8 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#define LIGHT_VERSION 4
-
 #ifdef RCS
 char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
 #endif
@@ -80,7 +78,7 @@ using namespace mesh;
 
 #define	MAX_EDGE_LEN	fMaxEdgeLen [gameOpts->render.nMeshQuality]
 
-#define MESH_DATA_VERSION 1
+#define MESH_DATA_VERSION 2
 
 //------------------------------------------------------------------------------
 
@@ -923,7 +921,7 @@ m_faceP->bAdditive = gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_LA
 
 //------------------------------------------------------------------------------
 
-void CQuadMeshBuilder::SetupFace (void)
+void CQuadMeshBuilder::SetupLMapTexCoord (tTexCoord2f *texCoordP)
 {
 #define	LMAP_SIZE	0.0f //(1.0f / 16.0f)
 
@@ -934,6 +932,23 @@ void CQuadMeshBuilder::SetupFace (void)
 		{{LMAP_SIZE, 1.0f - LMAP_SIZE}}
 	};
 
+int i = (m_faceP - gameData.segs.faces.faces) % LIGHTMAP_BUFSIZE;
+float x = (float) (i % LIGHTMAP_ROWSIZE);
+float y = (float) (i / LIGHTMAP_ROWSIZE);
+texCoordP [0].v.u = x / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+texCoordP [0].v.v = y / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+texCoordP [1].v.u = 
+texCoordP [2].v.u = (x + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+texCoordP [1].v.v = y / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+texCoordP [2].v.v = (y + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+texCoordP [3].v.u = x / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+texCoordP [3].v.v = (y + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+}
+
+//------------------------------------------------------------------------------
+
+void CQuadMeshBuilder::SetupFace (void)
+{
 	int			i, j;
 	vmsVector	vNormal;
 	fVector3		vNormalf;
@@ -952,17 +967,7 @@ for (i = 0; i < 4; i++) {
 	m_ovlTexCoordP++;
 	*m_faceColorP++ = gameData.render.color.ambient [j].color;
 	}
-i = (m_faceP - gameData.segs.faces.faces) % LIGHTMAP_BUFSIZE;
-float x = (float) (i % LIGHTMAP_ROWSIZE);
-float y = (float) (i / LIGHTMAP_ROWSIZE);
-m_lMapTexCoordP [0].v.u = x / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-m_lMapTexCoordP [0].v.v = y / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-m_lMapTexCoordP [1].v.u = 
-m_lMapTexCoordP [2].v.u = (x + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-m_lMapTexCoordP [1].v.v = y / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-m_lMapTexCoordP [2].v.v = (y + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-m_lMapTexCoordP [3].v.u = x / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-m_lMapTexCoordP [3].v.v = (y + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
+SetupLMapTexCoord (m_lMapTexCoordP);
 m_lMapTexCoordP += 4;
 }
 
@@ -972,9 +977,11 @@ void CQuadMeshBuilder::SplitIn2Tris (void)
 {
 	static short	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
 
-	int	h, i, j, k, v;
-	short	*triVertP;
+	int			h, i, j, k, v;
+	short			*triVertP;
+	tTexCoord2f	lMapTexCoord [4];
 
+SetupLMapTexCoord (lMapTexCoord);
 h = (m_sideP->nType == SIDE_IS_TRI_13);
 for (i = 0; i < 2; i++, m_triP++) {
 	gameData.segs.nTris++;
@@ -990,8 +997,10 @@ for (i = 0; i < 2; i++, m_triP++) {
 		m_texCoordP->v.u = f2fl (m_sideP->uvls [k].u);
 		m_texCoordP->v.v = f2fl (m_sideP->uvls [k].v);
 		RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);
+		*m_lMapTexCoordP = lMapTexCoord [k];
 		m_texCoordP++;
 		m_ovlTexCoordP++;
+		m_lMapTexCoordP++;
 		m_colorP = gameData.render.color.ambient + v;
 		*m_faceColorP++ = m_colorP->color;
 		}

@@ -89,6 +89,7 @@ class CQuadMeshBuilder {
 
 	private:
 		void InitFace (short nSegment, ubyte nSide);
+		void SetupLMapTexCoord (tTexCoord2f *texCoordP);
 		void SetupFace (void);
 		void InitTexturedFace (void);
 		void InitColoredFace (short nSegment);
