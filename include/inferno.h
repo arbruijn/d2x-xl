@@ -1583,6 +1583,7 @@ typedef struct tRenderData {
 	tFrameBuffer			glareBuffer;
 	int						nTotalFaces;
 	int						nTotalLights;
+	int						nMaxLights;
 } tRenderData;
 
 //------------------------------------------------------------------------------

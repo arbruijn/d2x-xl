@@ -1155,6 +1155,8 @@ if (!gameStates.ogl.iLight) {
 		gameStates.ogl.nLights = gameStates.render.nMaxLightsPerFace;
 	gameStates.ogl.nFirstLight = sliP->nFirst;
 	gameData.render.nTotalLights += gameStates.ogl.nLights;
+	if (gameData.render.nMaxLights < gameStates.ogl.nLights)
+		gameData.render.nMaxLights = gameStates.ogl.nLights;
 	}
 #if HW_VERTEX_LIGHTING == 0
 glDisable (GL_LIGHTING);

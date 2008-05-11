@@ -829,6 +829,10 @@ SOURCE=..\..\input\key.cpp
 
 SOURCE=..\..\input\mouse.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\input\systemkeys.cpp
+# End Source File
 # End Group
 # Begin Group "io"
 

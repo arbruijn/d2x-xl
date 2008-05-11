@@ -2995,7 +2995,9 @@ if (gameStates.render.bShowFrameRate) {
 		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 4) {
-		sprintf (szItem, "Lights/Face: %1.2f", (float) gameData.render.nTotalLights / (float) gameData.render.nTotalFaces);
+		sprintf (szItem, "Lights/Face: %1.2f (%d)", 
+					(float) gameData.render.nTotalLights / (float) gameData.render.nTotalFaces,
+					gameData.render.nMaxLights);
 		x = 19;
 		}
 	if (gameStates.render.automap.bDisplay)
