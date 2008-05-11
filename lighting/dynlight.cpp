@@ -879,7 +879,7 @@ void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte 
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
 	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
-	int						nLightType = (bStatic || !gameStates.render.bPerPixelLighting) ? 0 : 2;
+	int						nLightType = !gameStates.render.bPerPixelLighting ? 0 : 2;
 
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -1221,8 +1221,10 @@ if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 SetNearestSegmentLights (nSegment, -1, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+#if 1
 for (i = 0; i < 8; i++)
 	SetNearestVertexLights (-1, segP->verts [i], NULL, 0, 1, 1, 0);
+#endif
 return gameData.render.lights.dynamic.shader.index [0][0].nActive;
 }
 
@@ -1261,9 +1263,9 @@ else if (gameStates.render.bPerPixelLighting == 2) {
 		vcd.pVertPos = &vcd.vertPos;
 		vcd.fMatShininess = 4;
 		G3AccumVertColor (-1, (fVector3 *) psc, &vcd, 0);
-		ResetUsedLights ();
-		gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 		}
+	ResetUsedLights ();
+	gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 	}
 else {
 	if (vPosP) {
