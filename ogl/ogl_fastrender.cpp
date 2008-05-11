@@ -130,6 +130,8 @@ return gameStates.render.history.nShader = nShader;
 
 //------------------------------------------------------------------------------
 
+#ifdef _DEBUG
+
 void RenderWireFrame (grsFace *faceP, int bTextured)
 {
 if (gameOpts->render.debug.bWireFrame) {
@@ -158,6 +160,8 @@ if (gameOpts->render.debug.bWireFrame) {
 		}
 	}
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
