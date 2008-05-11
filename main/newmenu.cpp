@@ -340,9 +340,8 @@ if (!(bRedraw && gameOpts->menus.nStyle && bg && bmP)) {
 		nPCXResult = PCXGetDimensions (filename, &width, &height);
 		if (nPCXResult != PCX_ERROR_NONE)
 			Error ("Could not open pcx file <%s>\n", filename);
-		bmP = GrCreateBitmap (width, height, 1);
-		strcpy (bmP->szName, filename);
-		Assert (bmP != NULL);
+		if ((bmP = GrCreateBitmap (width, height, 1)))
+			strcpy (bmP->szName, filename);
 		}
 	nPCXResult = PCXReadBitmap (filename, (pAltBg && (bmP == pAltBg)) ? NULL : bmP, bmP ? bmP->bmProps.nType : 0, 0);
 	Assert (nPCXResult == PCX_ERROR_NONE);

@@ -856,7 +856,10 @@ gameData.render.ogl.nHeadLights = nLights;
 
 int G3SetupHeadLightShader (int nType, int bLightMaps, tRgbaColorf *colorP)
 {
-	int			oglRes, nLights, nShader;
+#ifdef _DEBUG
+	int			oglRes;
+#endif
+	int			nLights, nShader;
 	tRgbaColorf	color;
 
 //headlights

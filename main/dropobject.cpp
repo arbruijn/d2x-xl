@@ -218,12 +218,12 @@ return -1;
 //	Don't drop if control center in tSegment.
 int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState)
 {
-	int			pnum = 0;
+	int			nPlayer = 0;
 	short			nSegment = -1;
 	int			nCurDropDepth;
 	int			special, count;
-	short			player_seg;
-	vmsVector	tempv, *player_pos;
+	short			nPlayerSeg;
+	vmsVector	tempv, *vPlayerPos;
 	fix			nDist;
 	int			bUseInitSgm = 
 						objP &&
@@ -246,23 +246,23 @@ if (pbFixedPos)
 	*pbFixedPos = 0;
 d_srand (TimerGetFixedSeconds ());
 nCurDropDepth = BASE_NET_DROP_DEPTH + ((d_rand () * BASE_NET_DROP_DEPTH*2) >> 15);
-player_pos = &gameData.objs.objects [LOCALPLAYER.nObject].position.vPos;
-player_seg = gameData.objs.objects [LOCALPLAYER.nObject].nSegment;
+vPlayerPos = &gameData.objs.objects [LOCALPLAYER.nObject].position.vPos;
+nPlayerSeg = gameData.objs.objects [LOCALPLAYER.nObject].nSegment;
 while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
-	pnum = (d_rand () * gameData.multiplayer.nPlayers) >> 15;
+	nPlayer = (d_rand () * gameData.multiplayer.nPlayers) >> 15;
 	count = 0;
 	while ((count < gameData.multiplayer.nPlayers) && 
-				 ((gameData.multiplayer.players [pnum].connected == 0) || (pnum==gameData.multiplayer.nLocalPlayer) || ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && 
-				 (GetTeam (pnum)==GetTeam (gameData.multiplayer.nLocalPlayer))))) {
-		pnum = (pnum+1)%gameData.multiplayer.nPlayers;
+				 ((gameData.multiplayer.players [nPlayer].connected == 0) || (nPlayer==gameData.multiplayer.nLocalPlayer) || ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && 
+				 (GetTeam (nPlayer)==GetTeam (gameData.multiplayer.nLocalPlayer))))) {
+		nPlayer = (nPlayer+1)%gameData.multiplayer.nPlayers;
 		count++;
 		}
 	if (count == gameData.multiplayer.nPlayers) {
 		//if can't valid non-tPlayer person, use the tPlayer
-		pnum = gameData.multiplayer.nLocalPlayer;
+		nPlayer = gameData.multiplayer.nLocalPlayer;
 		//return (d_rand () * gameData.segs.nLastSegment) >> 15;
 		}
-	nSegment = PickConnectedSegment (gameData.objs.objects + gameData.multiplayer.players [pnum].nObject, nCurDropDepth);
+	nSegment = PickConnectedSegment (gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject, nCurDropDepth);
 #if TRACE
 	con_printf (CONDBG, " %d", nSegment);
 #endif
@@ -281,9 +281,9 @@ while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 		nSegment = -1;
 	else {	//don't drop in any children of control centers
 		int i;
-		for (i=0;i<6;i++) {
-			int ch = gameData.segs.segments [nSegment].children [i];
-			if (IS_CHILD (ch) && gameData.segs.segment2s [ch].special == SEGMENT_IS_CONTROLCEN) {
+		for (i = 0; i < 6; i++) {
+			int nChild = gameData.segs.segments [nSegment].children [i];
+			if (IS_CHILD (nChild) && gameData.segs.segment2s [nChild].special == SEGMENT_IS_CONTROLCEN) {
 				nSegment = -1;
 				break;
 				}
@@ -292,7 +292,7 @@ while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 	//bail if not far enough from original position
 	if (nSegment != -1) {
 		COMPUTE_SEGMENT_CENTER_I (&tempv, nSegment);
-		nDist = FindConnectedDistance (player_pos, player_seg, &tempv, nSegment, -1, WID_FLY_FLAG, 0);
+		nDist = FindConnectedDistance (vPlayerPos, nPlayerSeg, &tempv, nSegment, -1, WID_FLY_FLAG, 0);
 		if ((nDist >= 0) && (nDist < i2f (20) * nCurDropDepth)) {
 			nSegment = -1;
 			}
@@ -393,11 +393,10 @@ gameData.objs.nDropped--;
 
 int MaybeDropNetPowerup (short nObject, int nPowerupType, int nDropState)
 {
-if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || 
-		 ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))) {
-	short	nSegment;
-	int h, bFixedPos = 0;
-	vmsVector vNewPos;
+if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
+	short			nSegment;
+	int			h, bFixedPos = 0;
+	vmsVector	vNewPos;
 
 	MultiSendWeapons (1);
 #if 0
@@ -434,6 +433,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) ||
 											 1, OBJ_POWERUP, nPowerupType);
 	if (nObject < 0)
 		return 0;
+	return 1;
 	nSegment = ChooseDropSegment (gameData.objs.objects + nObject, &bFixedPos, nDropState);
 	if (bFixedPos)
 		vNewPos = gameData.objs.objects [nObject].position.vPos;
@@ -733,7 +733,7 @@ return nObject;
 // If tObject dropped by tPlayer, set flag.
 int ObjectCreateEgg (tObject *objP)
 {
-	int	rval;
+	int	nObject;
 
 if (!IsMultiGame & (objP->nType != OBJ_PLAYER)) {
 	if (objP->containsType == OBJ_POWERUP) {
@@ -776,7 +776,7 @@ if (!IsMultiGame & (objP->nType != OBJ_PLAYER)) {
 		}
 	}
 
-rval = DropPowerup (
+nObject = DropPowerup (
 	objP->containsType, 
 	 (ubyte) objP->containsId, 
 	 (short) (
@@ -789,17 +789,21 @@ rval = DropPowerup (
 	objP->containsCount, 
 	&objP->mType.physInfo.velocity, 
 	&objP->position.vPos, objP->nSegment);
-if (rval >= 0) {
-	if ((objP->nType == OBJ_PLAYER) && (objP->id == gameData.multiplayer.nLocalPlayer))
-		gameData.objs.objects [rval].flags |= OF_PLAYER_DROPPED;
-	if (objP->nType == OBJ_ROBOT && objP->containsType==OBJ_POWERUP) {
-		if (objP->containsId == POW_VULCAN || objP->containsId == POW_GAUSS)
-			gameData.objs.objects [rval].cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
-		else if (objP->containsId == POW_OMEGA)
-			gameData.objs.objects [rval].cType.powerupInfo.count = MAX_OMEGA_CHARGE;
+if (nObject >= 0) {
+	if (objP->nType == OBJ_PLAYER) {
+		if (objP->id == gameData.multiplayer.nLocalPlayer)
+			gameData.objs.objects [nObject].flags |= OF_PLAYER_DROPPED;
+		}
+	else if (objP->nType == OBJ_ROBOT) {
+		if (objP->containsType == OBJ_POWERUP) {
+			if (objP->containsId == POW_VULCAN || objP->containsId == POW_GAUSS)
+				gameData.objs.objects [nObject].cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
+			else if (objP->containsId == POW_OMEGA)
+				gameData.objs.objects [nObject].cType.powerupInfo.count = MAX_OMEGA_CHARGE;
+			}
 		}
 	}
-return rval;
+return nObject;
 }
 
 // -- extern int Items_destroyed;

@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "makesig.h"
 
-#define STRINGPOOL 1
+#define STRINGPOOL 0
 #define MAX_OPEN_FONTS	50
 #define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)
 
