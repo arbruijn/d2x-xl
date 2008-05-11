@@ -390,7 +390,7 @@ pl->info.nObject = nObject;
 pl->info.nPlayer = -1;
 pl->info.bState = 1;
 pl->info.bSpot = 0;
-pl->info.fBoost = 1.0f;
+pl->info.fBoost = 0;
 //0: static light
 //2: object/lightning
 //3: headlight
@@ -398,9 +398,17 @@ if (nObject >= 0) {
 	tObject *objP = OBJECTS + nObject;
 	pl->info.nType = 2;
 	pl->info.vPos = objP->position.vPos;
-	if ((fBrightness > 1) && ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)))
-		pl->info.fBoost = sqrt (fBrightness);
 	pl->info.fRad = 0; //f2fl (gameData.objs.objects [nObject].size) / 2;
+	if (fBrightness > 1) {
+		if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
+			pl->info.fBoost = 1;
+			pl->info.fRad = fBrightness;
+			}
+		else if ((objP->nType == OBJ_WEAPON) && (objP->id == FLARE_ID)) {
+			pl->info.fBoost = 1;
+			pl->info.fRad = 2 * fBrightness;
+			}
+		}
 	gameData.render.lights.dynamic.owners [nObject] = gameData.render.lights.dynamic.nLights;
 	}
 else if (nSegment >= 0) {

@@ -711,7 +711,8 @@ for (i = gameData.segs.nFaces, faceP = FACES; i; i--, faceP++)
 
 char *CTriMeshBuilder::DataFilename (char *pszFilename, int nLevel)
 {
-return GameDataFilename (pszFilename, "mesh", nLevel, gameOpts->render.nMeshQuality);
+return GameDataFilename (pszFilename, "mesh", nLevel, 
+								 (gameStates.render.bTriangleMesh < 0) ? -1 : gameOpts->render.nMeshQuality);
 }
 
 //------------------------------------------------------------------------------
@@ -830,7 +831,7 @@ if (Load (nLevel))
 	return 1;
 if (!CreateTriangles ())
 	return 0;
-if (!SplitTriangles ())
+if ((gameStates.render.bTriangleMesh > 0) && !SplitTriangles ())
 	return 0;
 if (!InsertTriangles ())
 	return 0;
@@ -1083,7 +1084,7 @@ m_segFaceP = SEGFACES;
 	short			nSegment, i;
 	ubyte			nSide;
 	
-gameStates.render.bTriangleMesh = !gameOpts->ogl.bPerPixelLighting && gameOpts->render.nMeshQuality;
+gameStates.render.bTriangleMesh = gameOpts->ogl.bPerPixelLighting ? -1 : gameOpts->render.nMeshQuality;
 gameStates.render.nFacePrimitive = gameStates.render.bTriangleMesh ? GL_TRIANGLES : GL_TRIANGLE_FAN;
 if (gameStates.render.bSplitPolys)
 	gameStates.render.bSplitPolys = (gameOpts->ogl.bPerPixelLighting || !gameOpts->render.nMeshQuality) ? 1 : -1;
@@ -1158,7 +1159,7 @@ for (m_colorP = gameData.render.color.ambient, i = gameData.segs.nVertices; i; i
 		m_colorP->color.blue /= m_colorP->color.alpha;
 		m_colorP->color.alpha = 1;
 		}
-if (!gameOpts->ogl.bPerPixelLighting && gameOpts->render.nMeshQuality)
+if (gameOpts->ogl.bPerPixelLighting || gameOpts->render.nMeshQuality)
 	m_triMeshBuilder.Build (nLevel);
 if (gameStates.render.bTriangleMesh)
 	DestroyCameras ();

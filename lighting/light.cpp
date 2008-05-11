@@ -406,9 +406,11 @@ if (objP && SHOW_DYN_LIGHT) {
 	else if (objP->nType == OBJ_ROBOT)
 		xObjIntensity /= 4;
 	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
+#if 0
 		if (gameOpts->ogl.bPerPixelLighting)
 			xObjIntensity = fl2f (sqrt (f2fl (xObjIntensity)));
 		else
+#endif
 			xObjIntensity /= 2; 
 		}
 	if (0 > (nLightObj = gameData.objs.lightObjs [nObject].nObject))
@@ -688,8 +690,9 @@ switch (nObjType) {
 			if (objP->id == OMEGA_ID)
 				if (d_rand () > 8192)
 					return 0;		//	3/4 of time, omega blobs will cast 0 light!
-		if (objP->id == FLARE_ID)
-			return 2* (min (tval, objP->lifeleft) + ((gameData.time.xGame ^ objLightXlat [nObject & 0x0f]) & 0x3fff));
+		if (objP->id == FLARE_ID) {
+			return 2 * (min (tval, objP->lifeleft) + ((gameData.time.xGame ^ objLightXlat [nObject & 0x0f]) & 0x3fff));
+			}
 		else
 			return tval;
 		}

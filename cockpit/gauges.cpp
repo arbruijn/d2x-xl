@@ -2969,7 +2969,7 @@ if (gameStates.render.bShowFrameRate) {
 		static time_t t, t0 = -1;
 
 		char	szItem [50];
-		int	y; // position measured from lower right corner
+		int	x, y; // position measured from lower right corner
 
 	frameTimeTotal += gameData.time.xRealFrame - frameTimeList [frameTimeCounter];
 	frameTimeList [frameTimeCounter] = gameData.time.xRealFrame;
@@ -2983,15 +2983,21 @@ if (gameStates.render.bShowFrameRate) {
 			t0 = t;
 			xRate = frameTimeTotal ? FixDiv (f1_0 * 8, frameTimeTotal) : 0;
 			}
-		sprintf (szItem, "%s FPS ", ftoa (szRate, xRate));
-			// Convert fixed to string
+		sprintf (szItem, "FPS: %s", ftoa (szRate, xRate));
+		x = 11;
 		}
-	else if (gameStates.render.bShowFrameRate == 2) 
-		sprintf (szItem, "%d Polys ", renderItems.nItems);
-	else if (gameStates.render.bShowFrameRate == 3) 
-		sprintf (szItem, "%d Faces ", gameData.render.nTotalFaces);
-	else if (gameStates.render.bShowFrameRate == 4) 
-		sprintf (szItem, "%1.2f Lights/Face ", (float) gameData.render.nTotalLights / (float) gameData.render.nTotalFaces);
+	else if (gameStates.render.bShowFrameRate == 2) {
+		sprintf (szItem, "Polys: %d ", renderItems.nItems);
+		x = 11;
+		}
+	else if (gameStates.render.bShowFrameRate == 3) {
+		sprintf (szItem, "Faces: %d ", gameData.render.nTotalFaces);
+		x = 11;
+		}
+	else if (gameStates.render.bShowFrameRate == 4) {
+		sprintf (szItem, "Lights/Face: %1.2f", (float) gameData.render.nTotalLights / (float) gameData.render.nTotalFaces);
+		x = 19;
+		}
 	if (gameStates.render.automap.bDisplay)
 		y = 2;
 	else if (IsMultiGame)
@@ -3001,7 +3007,7 @@ if (gameStates.render.bShowFrameRate) {
 	GrSetCurFont (GAME_FONT);
 	GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
 	nIdFrameRate = GrPrintF (&nIdFrameRate, 
-									 grdCurCanv->cv_w - ((strlen (szItem) + 1) * GAME_FONT->ftWidth), 
+									 grdCurCanv->cv_w - (x * GAME_FONT->ftWidth), 
 									 grdCurCanv->cv_h - y * (GAME_FONT->ftHeight + GAME_FONT->ftHeight / 4), 
 									 szItem);
 	}

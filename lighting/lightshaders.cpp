@@ -1185,11 +1185,16 @@ for (nLights = 0;
 	hLight = GL_LIGHT0 + nLights++;
 	glEnable (hLight);
 #if HW_VERTEX_LIGHTING == 0
-	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : 0; //krasser Missbrauch!
+	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
 #endif
 	fBrightness = psl->info.fBrightness;
+#ifdef _DEBUG
+	if ((psl->info.nObject >= 0) && (OBJECTS [psl->info.nObject].nType == nDbgObjType) &&
+		 ((nDbgObjId < 0) || (OBJECTS [psl->info.nObject].id == nDbgObjId)))
+		nDbgObjType = nDbgObjType;
+#endif
 	if (psl->info.nType == 2) {
-		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f); //max (1.0f, psl->info.fBoost));
+		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, OBJ_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, OBJ_QUAD_ATT / fBrightness);
 		ambient.red = psl->info.color.red * AMBIENT_LIGHT;
