@@ -419,6 +419,7 @@ pl->info.fBoost = 0;
 //3: headlight
 if (nObject >= 0) {
 	tObject *objP = OBJECTS + nObject;
+//	HUDMessage (0, "Adding object light %d, type %d", gameData.render.lights.dynamic.nLights, objP->nType);
 	pl->info.nType = 2;
 	pl->info.vPos = objP->position.vPos;
 	pl->info.fRad = 0; //f2fl (gameData.objs.objects [nObject].size) / 2;
@@ -1097,7 +1098,7 @@ void ResetUsedLights (int bVariable, int nThread)
 
 for (; i; i--) {
 	--psl;
-	if (!bVariable && psl->info.nType < 2)
+	if (!bVariable && (psl->info.nType < 2))
 		break;
 	ResetUsedLight (psl, nThread);
 	}
