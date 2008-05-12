@@ -327,7 +327,30 @@ return (nDestBM != -1) && !bOneShot;
 
 //------------------------------------------------------------------------------
 
-int AddDynLight (grsFace *faceP, tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nObject, vmsVector *vPos)
+bool IsVolatileWall (short nWall)
+{
+if (!IS_WALL (nWall))
+	return false;
+tWall	*wallP = WALLS + nWall;
+if ((wallP->nType == WALL_DOOR) || (wallP->nType == WALL_BLASTABLE))
+	return true;
+short nSegment = wallP->nSegment;
+short nSide = wallP->nSide;
+tTrigger *triggerP = gameData.trigs.triggers;
+for (int i = gameData.trigs.nTriggers; i; i--, triggerP++) {
+	short *nSegP = triggerP->nSegment;
+	short *nSideP = triggerP->nSide;
+	for (int j = triggerP->nLinks; j; j--, nSegP++, nSideP++)
+		if ((*nSegP == nSegment) && (*nSideP == nSide))
+			return true;
+	}
+return false;
+}
+
+//------------------------------------------------------------------------------
+
+int AddDynLight (grsFace *faceP, tRgbaColorf *pc, fix xBrightness, short nSegment, 
+					  short nSide, short nObject, short nTexture, vmsVector *vPos)
 {
 	tDynLight	*pl;
 	short			h, i;
@@ -426,11 +449,10 @@ else if (nSegment >= 0) {
 			COMPUTE_SEGMENT_CENTER_I (&pl->info.vPos, nSegment);
 		}
 	else {
-		int t = gameData.segs.segments [nSegment].sides [nSide].nOvlTex;
 		pl->info.nType = 0;
 		pl->info.fRad = faceP ? faceP->fRad : 0;
 		//RegisterLight (NULL, nSegment, nSide);
-		pl->info.bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide) || IS_WALL (SEGMENTS [nSegment].sides [nSide].nWall);
+		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || IsVolatileWall (SEGMENTS [nSegment].sides [nSide].nWall);
 		COMPUTE_SIDE_CENTER_I (&pl->info.vPos, nSegment, nSide);
 	#if 1
 		if (gameOpts->ogl.bPerPixelLighting) {
@@ -655,11 +677,11 @@ for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces; nFace; nFa
 		continue;
 	pc = gameData.render.color.textures + t;
 	if ((nLight = IsLight (t)))
-		AddDynLight (faceP, &pc->color, nLight, (short) nSegment, (short) nSide, -1, NULL);
+		AddDynLight (faceP, &pc->color, nLight, (short) nSegment, (short) nSide, -1, t, NULL);
 	t = faceP->nOvlTex;
 	if ((t > 0) && (t < MAX_WALL_TEXTURES) && (nLight = IsLight (t)) /*gameData.pig.tex.info.fBrightness [t]*/) {
 		pc = gameData.render.color.textures + t;
-		AddDynLight (faceP, &pc->color, nLight, (short) nSegment, (short) nSide, -1, NULL);
+		AddDynLight (faceP, &pc->color, nLight, (short) nSegment, (short) nSide, -1, t, NULL);
 		}
 	//if (gameData.render.lights.dynamic.nLights)
 	//	return;

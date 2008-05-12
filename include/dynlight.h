@@ -18,7 +18,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	MAX_LIGHTS_PER_PIXEL 8
 
 void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
-int AddDynLight (grsFace *faceP, tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner, vmsVector *vPos);
+int AddDynLight (grsFace *faceP, tRgbaColorf *pc, fix xBrightness, 
+					  short nSegment, short nSide, short nOwner, short nTexture, vmsVector *vPos);
 int RemoveDynLight (short nSegment, short nSide, short nObject);
 void AddDynGeometryLights (void);
 void DeleteDynLight (short nLight);

@@ -157,10 +157,10 @@ typedef struct tWall {
 } __pack__ tWall;
 
 typedef struct tActiveDoor {
-	int     nPartCount;            // for linked walls
-	short   nFrontWall[2];   // front tWall numbers for this door
-	short   nBackWall[2];    // back tWall numbers for this door
-	fix     time;               // how long been opening, closing, waiting
+	int     nPartCount;           // for linked walls
+	short   nFrontWall[2];			// front tWall numbers for this door
+	short   nBackWall[2];			// back tWall numbers for this door
+	fix     time;						// how long been opening, closing, waiting
 } __pack__ tActiveDoor;
 
 // data for exploding walls (such as hostage door)

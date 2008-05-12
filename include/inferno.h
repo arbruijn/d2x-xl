@@ -3223,7 +3223,7 @@ return (short) (i / sizeof (tObject));
 #define SEG2_IDX(_seg2P)		((short) ((_seg2P) - gameData.segs.segment2s))
 #define WALL_IDX(_wallP)		((short) ((_wallP) - gameData.walls.walls))
 #define OBJ_IDX(_objP)			ObjIdx (_objP)
-#define TRIG_IDX(_trigP)		((short) ((_trigP) - gameData.trigs.triggers))
+#define TRIG_IDX(_triggerP)		((short) ((_triggerP) - gameData.trigs.triggers))
 #define FACE_IDX(_faceP)		((int) ((_faceP) - gameData.segs.faces.faces))
 
 #ifdef PIGGY_USE_PAGING
