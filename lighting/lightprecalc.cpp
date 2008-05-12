@@ -73,7 +73,7 @@ static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Ex
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 7
+#define LIGHT_DATA_VERSION 8
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
@@ -87,6 +87,7 @@ typedef struct tLightDataHeader {
 	int	nLights;
 	int	nMaxLightRange;
 	int	nMethod;
+	int	bPerPixelLighting;
 	} tLightDataHeader;
 
 //------------------------------------------------------------------------------
@@ -370,14 +371,16 @@ viewer.nSegment = nStartSeg;
 COMPUTE_SEGMENT_CENTER_I (&viewer.position.vPos, nStartSeg);
 segP = SEGMENTS + nStartSeg;
 for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
-	if (0 <= (nChildSeg = segP->children [nSide])) {
-		while (!SetSegVis (nStartSeg, nChildSeg))
-			;
-		childP = SEGMENTS + nChildSeg;
-		for (nChildSide = 0; nChildSide < 6; nChildSide++) {
-			if (0 <= (nSegment = childP->children [nSide])) {
-				while (!SetSegVis (nChildSeg, nSegment))
-					;
+	if (gameOpts->ogl.bPerPixelLighting) {
+		if (0 <= (nChildSeg = segP->children [nSide])) {
+			while (!SetSegVis (nStartSeg, nChildSeg))
+				;
+			childP = SEGMENTS + nChildSeg;
+			for (nChildSide = 0; nChildSide < 6; nChildSide++) {
+				if (0 <= (nSegment = childP->children [nSide])) {
+					while (!SetSegVis (nChildSeg, nSegment))
+						;
+					}
 				}
 			}
 		}
@@ -520,7 +523,8 @@ if (bOk)
 			(ldh.nVertices == gameData.segs.nVertices) && 
 			(ldh.nLights == gameData.render.lights.dynamic.nLights) && 
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE) &&
-			(ldh.nMethod = LightingMethod ());
+			(ldh.nMethod = LightingMethod () &&
+			(ldh.bPerPixelLighting == gameOpts->ogl.bPerPixelLighting));
 if (bOk)
 	bOk = 
 			(CFRead (gameData.segs.bSegVis, sizeof (ubyte) * ldh.nSegments * SEGVIS_FLAGS, 1, &cf) == 1) &&
@@ -543,6 +547,7 @@ int SaveLightData (int nLevel)
 								   gameData.segs.nVertices, 
 								   gameData.render.lights.dynamic.nLights, 
 									MAX_LIGHT_RANGE, 
+									gameOpts->ogl.bPerPixelLighting,
 									LightingMethod ()};
 	int				bOk;
 	char				szFilename [FILENAME_LEN];

@@ -1326,9 +1326,11 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #	if SHADER_VERTEX_LIGHTING
 							if (!ComputeVertexLight (nVertex, 1, &c))
 #	endif
+							ResetActiveLights (nThread, 0);
 							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, 
 												&gameData.segs.fVertices [nVertex].v3, nVertex, 
 												NULL, &c, 1, 0, nThread);
+							ResetNearestVertexLights (nVertex);
 							}
 #if 0
 						if (gameStates.app.bMultiThreaded)
@@ -1454,9 +1456,11 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #	if SHADER_VERTEX_LIGHTING
 								if (!ComputeVertexLight (nVertex, 1, &c))
 #	endif
+								ResetActiveLights (nThread, 0);
 								G3VertexColor (gameData.segs.faces.normals + nIndex, 
 													gameData.segs.faces.vertices + nIndex, nVertex, 
 													NULL, &c, 1, 0, nThread);
+								ResetNearestVertexLights (nVertex);
 #if 0
 							if (gameStates.app.bMultiThreaded)
 								gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];

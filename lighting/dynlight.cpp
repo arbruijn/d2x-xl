@@ -1053,6 +1053,30 @@ if (gameOpts->render.bDynLighting) {
 
 //------------------------------------------------------------------------------
 
+void ResetNearestVertexLights (int nVertex)
+{
+//if (gameOpts->render.bDynLighting) 
+	{
+	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
+	short						i, j;
+	tShaderLight			*psl;
+
+#ifdef _DEBUG
+	if (nVertex == nDbgVertex)
+		nDbgVertex = nDbgVertex;
+#endif
+	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
+		if ((j = *pnl) < 0)
+			break;
+		psl = gameData.render.lights.dynamic.shader.lights + j;
+		if (psl->bUsed == 2)
+			psl->bUsed = 0;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void ResetUsedLight (tShaderLight *psl)
 {
 if (psl->activeLightsP) {
@@ -1395,6 +1419,7 @@ extern int nDbgVertex;
 
 void ComputeStaticDynLighting (int nLevel)
 {
+gameData.render.fAttScale = gameOpts->ogl.bPerPixelLighting ? 1.0f : 2.0f;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 if (gameStates.app.bNostalgia)
