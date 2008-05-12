@@ -73,7 +73,7 @@ static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Ex
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 6
+#define LIGHT_DATA_VERSION 7
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segs.bVertVis ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
