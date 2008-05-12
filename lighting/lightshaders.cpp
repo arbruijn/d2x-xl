@@ -40,7 +40,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "headlight.h"
 #include "dynlight.h"
 
-#define ONLY_LIGHTMAPS 2
+#define ONLY_LIGHTMAPS 0
 
 #define GEO_LIN_ATT	0.05f
 #define GEO_QUAD_ATT	0.005f
