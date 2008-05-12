@@ -122,6 +122,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AMBIENT_LIGHT	0.1f
 #define DIFFUSE_LIGHT	0.9f
 
+#define MAX_THREADS		4
+
 //------------------------------------------------------------------------------
 
 typedef int _CDECL_	tThreadFunc (void *);
@@ -1284,11 +1286,11 @@ typedef struct tShaderLight {
 	short			nVerts [4];
 	int			nTarget;	//lit segment/face
 	int			nFrame;
-	ubyte			bUsed;
 	ubyte			bShadow;
 	ubyte			bLightning;
 	ubyte			bExclusive;
-	struct tActiveShaderLight *activeLightsP;
+	ubyte			bUsed [MAX_THREADS];
+	struct tActiveShaderLight *activeLightsP [MAX_THREADS];
 	tDynLightInfo info;
 } tShaderLight;
 
@@ -1310,8 +1312,8 @@ typedef struct tShaderLightIndex {
 typedef struct tShaderLightData {
 	tShaderLight			lights [MAX_OGL_LIGHTS];
 	int						nLights;
-	tActiveShaderLight	activeLights [4][MAX_OGL_LIGHTS];
-	tShaderLightIndex		index [2][4];
+	tActiveShaderLight	activeLights [MAX_THREADS][MAX_OGL_LIGHTS];
+	tShaderLightIndex		index [2][MAX_THREADS];
 	GLuint					nTexHandle;
 } tShaderLightData;
 

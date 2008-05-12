@@ -59,7 +59,7 @@ int CheckUsedLights1 (void)
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
 
 for (int i = gameData.render.lights.dynamic.shader.nLights; i; i--, psl++)
-	if (psl->bUsed == 1)
+	if (psl->bUsed [0] == 1)
 		return 1;
 return 0;
 }
@@ -69,7 +69,7 @@ int CheckUsedLights2 (void)
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
 
 for (int i = gameData.render.lights.dynamic.shader.nLights; i; i--, psl++)
-	if (psl->bUsed == 2)
+	if (psl->bUsed [0] == 2)
 		return 1;
 return 0;
 }
@@ -740,7 +740,9 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 		SetupHeadLight (pl, psl);
 	psl->info.bState = pl->info.bState && (pl->info.color.red + pl->info.color.green + pl->info.color.blue > 0.0);
 	psl->bLightning = (pl->info.nObject < 0) && (pl->info.nSide < 0);
-	ResetUsedLight (psl);
+	ResetUsedLight (psl, 0);
+	if (gameStates.app.bMultiThreaded)
+		ResetUsedLight (psl, 1);
 	psl->bShadow =
 	psl->bExclusive = 0;
 	if (psl->info.bState) {
@@ -820,7 +822,7 @@ if (left < r)
 
 static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight *psl, short nType, int nThread)
 {
-if (psl->bUsed)
+if (psl->bUsed [nThread])
 	return 0;
 fix xDist = (psl->xDistance / (gameOpts->ogl.bPerPixelLighting ? 2000 : 2000) + 5) / 10;
 if (xDist >= MAX_SHADER_LIGHTS)
@@ -855,8 +857,8 @@ if (activeLightsP [xDist].info.nType) {
 #endif
 activeLightsP [xDist].nType = nType;
 activeLightsP [xDist].psl = psl;
-psl->activeLightsP = activeLightsP + xDist;
-psl->bUsed = (ubyte) nType;
+psl->activeLightsP [nThread] = activeLightsP + xDist;
+psl->bUsed [nThread] = (ubyte) nType;
 
 tShaderLightIndex	*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 
@@ -875,8 +877,8 @@ tShaderLight *GetActiveShaderLight (tActiveShaderLight *activeLightsP, int nThre
 	tShaderLight	*psl = activeLightsP->psl;
 #if 0
 if (psl) {
-	if (psl->bUsed > 1)
-		psl->bUsed = 0;
+	if (psl->bUsed [nThread] > 1)
+		psl->bUsed [nThread] = 0;
 	if (activeLightsP->nType > 1) {
 		activeLightsP->nType = 0;
 		activeLightsP->psl = NULL;
@@ -916,7 +918,7 @@ if (nVertex == nDbgVertex)
 			break;
 #endif
 		psl = gameData.render.lights.dynamic.shader.lights + j;
-		if (psl->bUsed)
+		if (psl->bUsed [nThread])
 			continue;
 #ifdef _DEBUG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
@@ -1032,7 +1034,7 @@ nActiveLights [nThread] = gameData.render.lights.dynamic.shader.index [0][nThrea
 
 //------------------------------------------------------------------------------
 
-void ResetNearestStaticLights (int nSegment)
+void ResetNearestStaticLights (int nSegment, int nThread)
 {
 	int	nMaxLights = (gameOpts->ogl.bPerPixelLighting || gameOpts->ogl.bObjLighting) ? 8 : gameOpts->ogl.nMaxLights;
 
@@ -1045,21 +1047,20 @@ if (gameOpts->render.bDynLighting) {
 		if ((j = *pnl) < 0)
 			break;
 		psl = gameData.render.lights.dynamic.shader.lights + j;
-		if (psl->bUsed == 3)
-			ResetUsedLight (psl);
+		if (psl->bUsed [nThread] == 3)
+			ResetUsedLight (psl, nThread);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void ResetNearestVertexLights (int nVertex)
+void ResetNearestVertexLights (int nVertex, int nThread)
 {
 //if (gameOpts->render.bDynLighting) 
 	{
 	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	short						i, j;
-	tShaderLight			*psl;
 
 #ifdef _DEBUG
 	if (nVertex == nDbgVertex)
@@ -1068,34 +1069,33 @@ void ResetNearestVertexLights (int nVertex)
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
-		psl = gameData.render.lights.dynamic.shader.lights + j;
-		if (psl->bUsed == 2)
-			psl->bUsed = 0;
+		gameData.render.lights.dynamic.shader.lights [j].bUsed [nThread] = 0;
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void ResetUsedLight (tShaderLight *psl)
+void ResetUsedLight (tShaderLight *psl, int nThread)
 {
-if (psl->activeLightsP) {
-	psl->activeLightsP->psl = NULL;
-	psl->activeLightsP->nType = 0;
-	psl->activeLightsP = NULL;
+	tActiveShaderLight *activeLightsP = psl->activeLightsP [nThread];
+
+if (activeLightsP) {
+	activeLightsP->psl = NULL;
+	activeLightsP->nType = 0;
+	psl->activeLightsP [nThread] = NULL;
 	}
-if (psl->bUsed)
-	psl->bUsed = 0;
+psl->bUsed [nThread] = 0;
 }
 
 //------------------------------------------------------------------------------
 
-void ResetUsedLights (void)
+void ResetUsedLights (int nThread)
 {
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
 
 for (int i = gameData.render.lights.dynamic.shader.nLights; i; i--, psl++)
-	ResetUsedLight (psl);
+	ResetUsedLight (psl, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -1141,7 +1141,7 @@ if (gameOpts->render.bDynLighting) {
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
-	ResetUsedLights ();
+	ResetUsedLights (nThread);
 #ifdef _DEBUG
 	if (gameStates.render.bPerPixelLighting) {
 		CheckUsedLights ();
@@ -1248,7 +1248,7 @@ if (gameOpts->render.bDynLighting) {
 		psl->xDistance = (fix) ((VmVecDist (vPixelPos, &psl->info.vPos) /*- fl2f (psl->info.fRad)*/) / psl->info.fRange);
 		if (psl->xDistance > xMaxLightRange)
 			continue;
-		ResetUsedLight (psl);
+		ResetUsedLight (psl, nThread);
 		SetActiveShaderLight (activeLightsP, psl, 1, nThread);
 		}
 	}
@@ -1310,7 +1310,7 @@ else if (gameStates.render.bPerPixelLighting == 2) {
 		vcd.fMatShininess = 4;
 		G3AccumVertColor (-1, (fVector3 *) psc, &vcd, 0);
 		}
-	ResetUsedLights ();
+	ResetUsedLights (0);
 	gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 	}
 else {
@@ -1404,7 +1404,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 #endif
 	VmVecFixToFloat (&vVertex, gameData.segs.vertices + nVertex);
 	ResetActiveLights (nThread, 0);
-	ResetUsedLights ();
+	ResetUsedLights (nThread);
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 1, bColorize, nThread);
 	gameData.render.color.vertices [nVertex].index = 0;
 	G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, &vVertex.v3, nVertex, pf, NULL, 1, 0, nThread);

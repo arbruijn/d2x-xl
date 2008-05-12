@@ -37,8 +37,8 @@ void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte 
 int SetNearestFaceLights (grsFace *faceP, int bTextured);
 short SetNearestPixelLights (int nSegment, vmsVector *vPixelPos, float fLightRad, int nThread);
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread);
-void ResetNearestStaticLights (int nSegment);
-void ResetNearestVertexLights (int nVertex);
+void ResetNearestStaticLights (int nSegment, int nThread);
+void ResetNearestVertexLights (int nVertex, int nThread);
 short SetNearestSegmentLights (int nSegment, int nFace, int bVariable, int nType, int nThread);
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (int nLevel);
@@ -49,8 +49,8 @@ void InitHeadlightShaders (int nLights);
 char *BuildLightingShader (char *pszTemplate, int nLights);
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 int IsLight (int tMapNum);
-void ResetUsedLight (tShaderLight *psl);
-void ResetUsedLights (void);
+void ResetUsedLight (tShaderLight *psl, int nThread);
+void ResetUsedLights (int nThread);
 void ResetActiveLights (int nThread, int nActive);
 
 #define	SHOW_DYN_LIGHT \
