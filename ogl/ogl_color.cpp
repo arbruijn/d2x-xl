@@ -523,7 +523,11 @@ VmVecSub (&vertPos, vcd.pVertPos, (fVector3 *) &viewInfo.glPosf);
 VmVecNormalize (&vertPos, VmVecNegate (&vertPos));
 i = gameData.render.lights.dynamic.shader.index [0][nThread].nLast - gameData.render.lights.dynamic.shader.index [0][nThread].nFirst + 1;
 for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
+#if 1
+	if (!(psl = activeLightsP->psl))
+#else
 	if (!(psl = GetActiveShaderLight (activeLightsP, nThread)))
+#endif
 		continue;
 #if 0
 	if (i == vcd.nMatLight)
