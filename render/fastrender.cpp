@@ -1329,7 +1329,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, 
 												&gameData.segs.fVertices [nVertex].v3, nVertex, 
 												NULL, &c, 1, 0, nThread);
-							ResetActiveLights (nThread, 0);
+							gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 							ResetNearestVertexLights (nVertex, nThread);
 							}
 #if 0
@@ -1459,7 +1459,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 								G3VertexColor (gameData.segs.faces.normals + nIndex, 
 													gameData.segs.faces.vertices + nIndex, nVertex, 
 													NULL, &c, 1, 0, nThread);
-								ResetActiveLights (nThread, 0);
+								gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 								ResetNearestVertexLights (nVertex, nThread);
 #if 0
 							if (gameStates.app.bMultiThreaded)

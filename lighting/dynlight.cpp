@@ -327,28 +327,6 @@ return (nDestBM != -1) && !bOneShot;
 
 //------------------------------------------------------------------------------
 
-bool IsVolatileWall (short nWall)
-{
-if (!IS_WALL (nWall))
-	return false;
-tWall	*wallP = WALLS + nWall;
-if ((wallP->nType == WALL_DOOR) || (wallP->nType == WALL_BLASTABLE))
-	return true;
-short nSegment = wallP->nSegment;
-short nSide = wallP->nSide;
-tTrigger *triggerP = gameData.trigs.triggers;
-for (int i = gameData.trigs.nTriggers; i; i--, triggerP++) {
-	short *nSegP = triggerP->nSegment;
-	short *nSideP = triggerP->nSide;
-	for (int j = triggerP->nLinks; j; j--, nSegP++, nSideP++)
-		if ((*nSegP == nSegment) && (*nSideP == nSide))
-			return true;
-	}
-return false;
-}
-
-//------------------------------------------------------------------------------
-
 int AddDynLight (grsFace *faceP, tRgbaColorf *pc, fix xBrightness, short nSegment, 
 					  short nSide, short nObject, short nTexture, vmsVector *vPos)
 {
@@ -419,7 +397,7 @@ pl->info.fBoost = 0;
 //3: headlight
 if (nObject >= 0) {
 	tObject *objP = OBJECTS + nObject;
-//	HUDMessage (0, "Adding object light %d, type %d", gameData.render.lights.dynamic.nLights, objP->nType);
+	//HUDMessage (0, "Adding object light %d, type %d", gameData.render.lights.dynamic.nLights, objP->nType);
 	pl->info.nType = 2;
 	pl->info.vPos = objP->position.vPos;
 	pl->info.fRad = 0; //f2fl (gameData.objs.objects [nObject].size) / 2;
@@ -453,7 +431,7 @@ else if (nSegment >= 0) {
 		pl->info.nType = 0;
 		pl->info.fRad = faceP ? faceP->fRad : 0;
 		//RegisterLight (NULL, nSegment, nSide);
-		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || IsVolatileWall (SEGMENTS [nSegment].sides [nSide].nWall);
+		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || WallIsVolatile (SEGMENTS [nSegment].sides [nSide].nWall);
 		COMPUTE_SIDE_CENTER_I (&pl->info.vPos, nSegment, nSide);
 	#if 1
 		if (gameOpts->ogl.bPerPixelLighting) {
@@ -904,7 +882,6 @@ void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte 
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
 	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
-	int						nLightType = !gameStates.render.bPerPixelLighting ? 0 : 2;
 
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -953,7 +930,7 @@ if (nVertex == nDbgVertex)
 #endif
 		if (psl->xDistance > xMaxLightRange)
 			continue;
-		if (SetActiveShaderLight (activeLightsP, psl, nLightType, nThread)) {
+		if (SetActiveShaderLight (activeLightsP, psl, 2, nThread)) {
 			psl->info.nType = nType;
 			psl->info.bState = 1;
 			psl->nTarget = nFace + 1;
@@ -1040,9 +1017,9 @@ void ResetNearestStaticLights (int nSegment, int nThread)
 	int	nMaxLights = (gameOpts->ogl.bPerPixelLighting || gameOpts->ogl.bObjLighting) ? 8 : gameOpts->ogl.nMaxLights;
 
 if (gameOpts->render.bDynLighting) {
-	short						*pnl = gameData.render.lights.dynamic.nNearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
-	short						i, j;
-	tShaderLight			*psl;
+	short				*pnl = gameData.render.lights.dynamic.nNearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
+	short				i, j;
+	tShaderLight	*psl;
 
 	for (i = nMaxLights; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
@@ -1060,8 +1037,9 @@ void ResetNearestVertexLights (int nVertex, int nThread)
 {
 //if (gameOpts->render.bDynLighting) 
 	{
-	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
-	short						i, j;
+	short				*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
+	short				i, j;
+	tShaderLight	*psl;
 
 #ifdef _DEBUG
 	if (nVertex == nDbgVertex)
@@ -1070,7 +1048,9 @@ void ResetNearestVertexLights (int nVertex, int nThread)
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
-		gameData.render.lights.dynamic.shader.lights [j].bUsed [nThread] = 0;
+		psl = gameData.render.lights.dynamic.shader.lights + j;
+		if (psl->bUsed [nThread] == 2)
+			ResetUsedLight (psl, nThread);
 		}
 	}
 }
@@ -1098,7 +1078,7 @@ void ResetUsedLights (int bVariable, int nThread)
 
 for (; i; i--) {
 	--psl;
-	if (!bVariable && (psl->info.nType < 2))
+	if (bVariable && (psl->info.nType < 2))
 		break;
 	ResetUsedLight (psl, nThread);
 	}

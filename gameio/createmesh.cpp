@@ -78,7 +78,7 @@ using namespace mesh;
 
 #define	MAX_EDGE_LEN	fMaxEdgeLen [gameOpts->render.nMeshQuality]
 
-#define MESH_DATA_VERSION 2
+#define MESH_DATA_VERSION 3
 
 //------------------------------------------------------------------------------
 
@@ -1119,7 +1119,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 	m_segFaceP->nFaces = 0;
 	for (nSide = 0, m_sideP = m_segP->sides; nSide < 6; nSide++, m_sideP++) {
 		m_nWall = WallNumI (nSegment, nSide);
-		m_nWallType = IS_WALL (m_nWall) ? 2 : (m_segP->children [nSide] == -1) ? 1 : 0;
+		m_nWallType = IS_WALL (m_nWall) ? WallIsInvisible (m_nWall) ? 0 : 2 : (m_segP->children [nSide] == -1) ? 1 : 0;
 		if (m_bColoredSeg || m_nWallType) {
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))

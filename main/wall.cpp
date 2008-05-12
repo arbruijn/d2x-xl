@@ -1694,6 +1694,48 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 }
 
 // -----------------------------------------------------------------------------------
+
+bool WallIsTriggerTarget (short nWall)
+{
+tWall	*wallP = WALLS + nWall;
+short nSegment = wallP->nSegment;
+short nSide = wallP->nSide;
+tTrigger *triggerP = gameData.trigs.triggers;
+for (int i = gameData.trigs.nTriggers; i; i--, triggerP++) {
+	short *nSegP = triggerP->nSegment;
+	short *nSideP = triggerP->nSide;
+	for (int j = triggerP->nLinks; j; j--, nSegP++, nSideP++)
+		if ((*nSegP == nSegment) && (*nSideP == nSide))
+			return true;
+	}
+return false;
+}
+
+// -----------------------------------------------------------------------------------
+
+bool WallIsVolatile (short nWall)
+{
+if (!IS_WALL (nWall))
+	return false;
+tWall	*wallP = WALLS + nWall;
+if ((wallP->nType == WALL_DOOR) || (wallP->nType == WALL_BLASTABLE))
+	return true;
+return WallIsTriggerTarget (nWall);
+}
+
+// -----------------------------------------------------------------------------------
+
+bool WallIsInvisible (short nWall)
+{
+if (!IS_WALL (nWall))
+	return false;
+tWall	*wallP = WALLS + nWall;
+if ((wallP->nType != WALL_OPEN) && ((wallP->nType != WALL_CLOAKED) || (wallP->cloakValue <  GR_ACTUAL_FADE_LEVELS)))
+	return false;
+return WallIsTriggerTarget (nWall);
+}
+
+// -----------------------------------------------------------------------------------
 //	objP is going to detonate
 //	blast nearby monitors, lights, maybe other things
 void BlastNearbyGlass(tObject *objP, fix damage)

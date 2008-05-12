@@ -286,6 +286,10 @@ void KillStuckObjects(int wallnum);
 void StartWallCloak(tSegment *seg, short tSide);
 void StartWallDecloak(tSegment *seg, short tSide);
 
+bool WallIsTriggerTarget (short nWall);
+bool WallIsVolatile (short nWall);
+bool WallIsInvisible (short nWall);
+
 extern int wclip_read_n_d1(tWallClip *wc, int n, CFILE *fp);
 #if 0
 #define WClipReadN(wc, n, fp) CFRead(wc, sizeof(tWallClip), n, fp)

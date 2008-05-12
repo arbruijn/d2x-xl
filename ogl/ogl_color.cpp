@@ -320,7 +320,8 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 	fVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	fVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};
 	tShaderLight			*psl;
-	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + gameData.render.lights.dynamic.shader.index [0][nThread].nFirst;
+	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + 
+													  gameData.render.lights.dynamic.shader.index [0][nThread].nFirst;
 	tVertColorData			vcd = *vcdP;
 
 r_tvertexc++;
