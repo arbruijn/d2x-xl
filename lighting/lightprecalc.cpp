@@ -446,7 +446,7 @@ if (loadOp == 0) {
 		loadOp = 1;
 		}
 	}
-if (loadOp == 1) {
+else if (loadOp == 1) {
 	ComputeNearestSegmentLights (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {

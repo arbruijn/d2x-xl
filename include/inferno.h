@@ -1584,6 +1584,7 @@ typedef struct tRenderData {
 	int						nTotalFaces;
 	int						nTotalLights;
 	int						nMaxLights;
+	float						fAttScale;
 } tRenderData;
 
 //------------------------------------------------------------------------------

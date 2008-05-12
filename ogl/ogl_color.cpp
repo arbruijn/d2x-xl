@@ -36,10 +36,10 @@
 #	define ONLY_HEADLIGHT 0
 #endif
 
-#define GEO_LIN_ATT	0.05f
-#define GEO_QUAD_ATT	0.005f
-#define OBJ_LIN_ATT	0.05f
-#define OBJ_QUAD_ATT	0.005f
+#define GEO_LIN_ATT	(0.05f * gameData.render.fAttScale)
+#define GEO_QUAD_ATT	(0.005f * gameData.render.fAttScale)
+#define OBJ_LIN_ATT	(0.05f * gameData.render.fAttScale)
+#define OBJ_QUAD_ATT	(0.005f * gameData.render.fAttScale)
 
 //------------------------------------------------------------------------------
 
@@ -397,6 +397,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
 		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+#if 0
+		NdotL = 1 - ((1 - NdotL) * 0.9f);
+#endif
 		if (psl->info.fRad > 0)
 			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
 		fAttenuation /= psl->info.fBrightness;

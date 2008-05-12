@@ -1093,6 +1093,10 @@ m_segFaceP = SEGFACES;
 	short			nSegment, i;
 	ubyte			nSide;
 	
+#ifdef RELEASE
+if (gameOpts->render.nMeshQuality > 2)
+	gameOpts->render.nMeshQuality = 2;
+#endif
 gameStates.render.bTriangleMesh = gameOpts->ogl.bPerPixelLighting ? -1 : gameOpts->render.nMeshQuality;
 gameStates.render.nFacePrimitive = gameStates.render.bTriangleMesh ? GL_TRIANGLES : GL_TRIANGLE_FAN;
 if (gameStates.render.bSplitPolys)

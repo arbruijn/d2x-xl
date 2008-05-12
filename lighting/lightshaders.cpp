@@ -40,6 +40,8 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "headlight.h"
 #include "dynlight.h"
 
+#define ONLY_LIGHTMAPS 2
+
 #define GEO_LIN_ATT	0.05f
 #define GEO_QUAD_ATT	0.005f
 #define OBJ_LIN_ATT	0.05f
@@ -938,13 +940,22 @@ char *pszPPLMLightingVS [] = {
 //-------------------------------------------------------------------------
 
 char *pszLMLightingFS [] = {
+#if ONLY_LIGHTMAPS
+	"uniform sampler2D lMapTex;\r\n" \
+	"uniform vec4 matColor;\r\n" \
+	"uniform float fColorScale;\r\n" \
+	"void main() {\r\n" \
+	"gl_FragColor = texture2D (lMapTex, gl_TexCoord [0].xy) * fColorScale;\r\n" \
+	"}"
+#else
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fColorScale;\r\n" \
 	"void main() {\r\n" \
 	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fColorScale;\r\n" \
-	"gl_FragColor = /*min (texColor, */vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * fColorScale);\r\n" \
+	"gl_FragColor = /*min (texColor, vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * fColorScale)*/;\r\n" \
 	"}"
+#endif
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"void main() {\r\n" \
@@ -1150,7 +1161,11 @@ if (!gameStates.ogl.iLight) {
 	if (faceP - FACES == nDbgFace)
 		nDbgFace = nDbgFace;
 #endif
+#if ONLY_LIGHTMAPS == 2
+	gameStates.ogl.nLights = 0;
+#else
 	gameStates.ogl.nLights = SetNearestFaceLights (faceP, nType != 0);
+#endif
 	if (gameStates.ogl.nLights > gameStates.render.nMaxLightsPerFace)
 		gameStates.ogl.nLights = gameStates.render.nMaxLightsPerFace;
 	gameStates.ogl.nFirstLight = sliP->nFirst;
@@ -1276,6 +1291,9 @@ if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
 	return 0;
 #if HW_VERTEX_LIGHTING
 return gameStates.render.history.nShader;
+#endif
+#if ONLY_LIGHTMAPS == 2
+nType = 0;
 #endif
 nShader = 20 + 4 * nLights + nType;
 #ifdef _DEBUG

@@ -933,6 +933,10 @@ void CreateLightMaps (int nLevel)
 {
 if (!gameStates.render.bUsePerPixelLighting)
 	return;
+#ifdef RELEASE
+if (gameOpts->render.nLightmapQuality > 2)
+	gameOpts->render.nLightmapQuality = 2;
+#endif
 DestroyLightMaps ();
 if (!InitLightData (0))
 	return;
