@@ -801,6 +801,10 @@ if (left < r)
 
 static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight *psl, short nType, int nThread)
 {
+#ifdef _DEBUG
+if (((char *) psl - (char *) gameData.render.lights.dynamic.shader.lights) % sizeof (*psl))
+	return 0;
+#endif
 if (psl->bUsed [nThread])
 	return 0;
 fix xDist = (psl->xDistance / (gameOpts->ogl.bPerPixelLighting ? 2000 : 2000) + 5) / 10;
@@ -877,7 +881,8 @@ void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte 
 //if (gameOpts->render.bDynLighting) 
 	{
 	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
-	short						i, j, nActiveLightI = gameData.render.lights.dynamic.shader.index [0][nThread].nActive;
+	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+	short						i, j, nActiveLightI = sliP->nActive;
 	tShaderLight			*psl;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
@@ -887,7 +892,7 @@ void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte 
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
-	gameData.render.lights.dynamic.shader.index [0][nThread].iVertex = nActiveLightI;
+	sliP->iVertex = nActiveLightI;
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
@@ -933,8 +938,10 @@ if (nVertex == nDbgVertex)
 		if (SetActiveShaderLight (activeLightsP, psl, 2, nThread)) {
 			psl->info.nType = nType;
 			psl->info.bState = 1;
+#ifdef _DEBUG
 			psl->nTarget = nFace + 1;
 			psl->nFrame = gameData.app.nFrameCount;
+#endif
 			}
 		}
 	}
@@ -1405,7 +1412,7 @@ extern int nDbgVertex;
 
 void ComputeStaticDynLighting (int nLevel)
 {
-gameData.render.fAttScale = gameOpts->ogl.bPerPixelLighting ? 1.0f : 2.0f;
+gameData.render.fAttScale = gameStates.render.bTriangleMesh ? 1.0f : 2.0f;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 if (gameStates.app.bNostalgia)

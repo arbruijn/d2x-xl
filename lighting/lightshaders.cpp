@@ -1195,7 +1195,7 @@ for (nLights = 0;
 	if (!psl->nTarget)
 		psl = psl;
 #endif
-	if (psl->bUsed [0] == 2)	{//nearest vertex light
+	if (psl->bUsed [0] == 2) {//nearest vertex light
 		ResetUsedLight (psl, 0);
 		sliP->nActive--;
 		}

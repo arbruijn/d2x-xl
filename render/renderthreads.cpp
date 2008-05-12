@@ -73,7 +73,7 @@ while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t1 < 1000
 			}
 		}
 	}
-#ifdef _DEBUG
+#if 0//def _DEBUG
 if (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 	gameStates.app.bMultiThreaded = 0;
 #endif

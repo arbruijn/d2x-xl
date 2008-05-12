@@ -315,30 +315,44 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 	int						i, j, nLights, nType, bInRad, 
 								bSkipHeadLight = gameStates.ogl.bHeadLight && !gameStates.render.nState, 
 								nSaturation = gameOpts->render.color.nSaturation;
-	int						nBrightness, nMaxBrightness = 0, nMeshQuality = gameOpts->ogl.bPerPixelLighting ? 0 : gameOpts->render.nMeshQuality;
+	int						nBrightness, nMaxBrightness = 0;
 	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
 	fVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	fVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};
 	tShaderLight			*psl;
-	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + 
-													  gameData.render.lights.dynamic.shader.index [0][nThread].nFirst;
+	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
 	tVertColorData			vcd = *vcdP;
 
 r_tvertexc++;
+#ifdef _DEBUG
+if (nThread == 0)
+	nThread = nThread;
+if (nThread == 1)
+	nThread = nThread;
+#endif
 colorSum = *pColorSum;
-nLights = gameData.render.lights.dynamic.shader.index [0][nThread].nActive;
+nLights = sliP->nActive;
 if (nLights > gameData.render.lights.dynamic.nLights)
 	nLights = gameData.render.lights.dynamic.nLights;
 VmVecSub (&vertPos, vcd.pVertPos, (fVector3 *) &viewInfo.glPosf);
 VmVecNormalize (&vertPos, VmVecNegate (&vertPos));
-i = gameData.render.lights.dynamic.shader.index [0][nThread].nLast - gameData.render.lights.dynamic.shader.index [0][nThread].nFirst + 1;
+i = sliP->nLast - sliP->nFirst + 1;
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
 for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
+#if 1
+	if (!(psl = activeLightsP->psl))
+#else
 	if (!(psl = GetActiveShaderLight (activeLightsP, nThread)))
+#endif
 		continue;
+#ifdef _DEBUG
+	if (((char *) psl - (char *) gameData.render.lights.dynamic.shader.lights) % sizeof (*psl))
+		continue;
+#endif
 	nLights--;
 #if 0
 	if (i == vcd.nMatLight)
@@ -919,7 +933,7 @@ if (bVertexLights)
 #if PROFILING
 tG3VertexColor += clock () - t;
 #endif
-#ifdef _DEBUG
+#if 0//def _DEBUG
 for (int k = 0; k < MAX_SHADER_LIGHTS; k++)
 	if (gameData.render.lights.dynamic.shader.activeLights [0][k].nType > 1) {
 		gameData.render.lights.dynamic.shader.activeLights [0][k].nType = 0;

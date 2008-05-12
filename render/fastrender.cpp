@@ -693,7 +693,8 @@ if (!VisitSegment (nSegment, bAutomap))
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
+if (gameOpts->ogl.bPerPixelLighting)
+	gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 #ifdef _DEBUG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
