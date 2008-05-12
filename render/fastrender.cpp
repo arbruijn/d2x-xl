@@ -1330,7 +1330,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 												&gameData.segs.fVertices [nVertex].v3, nVertex, 
 												NULL, &c, 1, 0, nThread);
 							ResetActiveLights (nThread, 0);
-							ResetNearestVertexLights (nVertex);
+							ResetNearestVertexLights (nVertex, nThread);
 							}
 #if 0
 						if (gameStates.app.bMultiThreaded)
@@ -1460,7 +1460,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 													gameData.segs.faces.vertices + nIndex, nVertex, 
 													NULL, &c, 1, 0, nThread);
 								ResetActiveLights (nThread, 0);
-								ResetNearestVertexLights (nVertex);
+								ResetNearestVertexLights (nVertex, nThread);
 #if 0
 							if (gameStates.app.bMultiThreaded)
 								gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
@@ -1695,7 +1695,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 			gameStates.render.bApplyDynLight = 0;
 		RenderObjList (nListPos, gameStates.render.nWindow);
 		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
-			ResetNearestStaticLights (nSegment);
+			ResetNearestStaticLights (nSegment, 0);
 			}
 		gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
 		//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];

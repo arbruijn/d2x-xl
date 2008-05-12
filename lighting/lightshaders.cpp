@@ -1195,8 +1195,8 @@ for (nLights = 0;
 	if (!psl->nTarget)
 		psl = psl;
 #endif
-	if (psl->bUsed == 2)	{//nearest vertex light
-		ResetUsedLight (psl);
+	if (psl->bUsed [0] == 2)	{//nearest vertex light
+		ResetUsedLight (psl, 0);
 		sliP->nActive--;
 		}
 	hLight = GL_LIGHT0 + nLights++;
