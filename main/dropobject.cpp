@@ -105,110 +105,57 @@ return 1;
 // --------------------------------------------------------------------------------------------------------------------
 
 static int	nQueueSize = 64;
-static int	*segQueue = NULL;
+static int	segQueue [MAX_SEGMENTS_D2X];
 
-static int AllocQueue (int bResize)
+
+int PickConnectedSegment (tObject *objP, int nMaxDepth, int *nDepthP)
 {
-if (bResize) {
-	nQueueSize *= 2;
-	if (!(segQueue = (int *) D2_REALLOC ((void *) segQueue, (size_t) nQueueSize * 2)))
-		return 0;
-	}
-else if (!(segQueue || (segQueue = (int *) D2_ALLOC (nQueueSize * 2))))
-	return 0;
-return 1;
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-int PickConnectedSegment (tObject *objP, int nMaxDepth)
-{
-	int		i;
 	int		nCurDepth;
 	int		nStartSeg;
-	int		head, tail;
-	int		nSide, count;
-	int		ind1, ind2, temp;
-	short		nRndSide, nWall;
+	int		nHead, nTail;
+	short		nSide, nWall, nChild;
 	tSegment	*segP;
-	sbyte		bVisited [MAX_SEGMENTS_D2X];
-	sbyte		depth [MAX_SEGMENTS_D2X];
-	sbyte		rndSide [MAX_SIDES_PER_SEGMENT];
+	ubyte		bVisited [MAX_SEGMENTS_D2X];
 
 if (!objP)
 	return -1;
-if (!AllocQueue (0))
-	return -1;
 nStartSeg = objP->nSegment;
-head =
-tail = 0;
-segQueue [head++] = nStartSeg;
+nHead =
+nTail = 0;
+segQueue [nHead++] = nStartSeg;
 
-memset (bVisited, 0, gameData.segs.nLastSegment+1);
-memset (depth, 0, gameData.segs.nLastSegment+1);
-nCurDepth = 0;
+memset (bVisited, 0, gameData.segs.nSegments);
 
-for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
-	rndSide [i] = i;
-
-//	Now, randomize a bit to start, so we don't always get started in the same direction.
-for (i = 0; i < 4; i++) {
-	ind1 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
-	temp = rndSide [ind1];
-	rndSide [ind1] = rndSide [i];
-	rndSide [i] = temp;
-	}
-
-
-while (tail != head) {
-	Assert (tail < 2 * nQueueSize);
-	if (nCurDepth >= nMaxDepth)
-		return segQueue [tail];
-	Assert ((segQueue [tail] >= 0) && (segQueue [tail] < gameData.segs.nSegments));
-	segP = SEGMENTS + segQueue [tail++];
-	tail &= nQueueSize - 1;
+while (nTail != nHead) {
+	nCurDepth = bVisited [segQueue [nTail]];
+	if (nCurDepth >= nMaxDepth) {
+		if (nDepthP)
+			*nDepthP = nCurDepth;
+		return segQueue [nTail + d_rand () % (nHead - nTail)];
+		}
+	segP = SEGMENTS + segQueue [nTail++];
 
 	//	to make random, switch a pair of entries in rndSide.
-	ind1 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
-	ind2 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
-	temp = rndSide [ind1];
-	rndSide [ind1] = rndSide [ind2];
-	rndSide [ind2] = temp;
-
-	count = 0;
-	for (nSide = ind1; count < MAX_SIDES_PER_SEGMENT; count++) {
-		nRndSide = rndSide [nSide];
-		if (++nSide == MAX_SIDES_PER_SEGMENT)
-			nSide = 0;
-		nWall = WallNumP (segP, nRndSide);
-		if (((!IS_WALL (nWall)) && (segP->children [nRndSide] > -1)) || PlayerCanOpenDoor (segP, nRndSide)) {
-			if (!bVisited [segP->children [nRndSide]]) {
-				Assert (head < 2 * nQueueSize);
-				segQueue [head++] = segP->children [nRndSide];
-				bVisited [segP->children [nRndSide]] = 1;
-				depth [segP->children [nRndSide]] = nCurDepth+1;
-				head &= nQueueSize - 1;
-				if (head > tail) {
-					if ((head == tail + nQueueSize - 1) && !AllocQueue (1))
-						return -1;	//	queue overflow.  Make it bigger!
-					}
-				else {
-					if ((head + nQueueSize == tail + nQueueSize - 1) && !AllocQueue (1))
-						return -1;	//	queue overflow.  Make it bigger!
-					}
-				}
-			}
+	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+		if (0 > (nChild = segP->children [nSide]))
+			continue;
+		if (bVisited [nChild]) 
+			continue;
+		nWall = WallNumP (segP, nSide);
+		if (IS_WALL (nWall) && !PlayerCanOpenDoor (segP, nSide)) 
+			continue;
+		segQueue [nHead++] = segP->children [nSide];
+		bVisited [nChild] = nCurDepth + 1;
 		}
-	if ((segQueue [tail] < 0) || (segQueue [tail] > gameData.segs.nLastSegment)) {
-		// -- Int3 ();	//	Something bad has happened.  Queue is trashed.  --MK, 12/13/94
-		return -1;
-		}
-	nCurDepth = depth [segQueue [tail]];
 	}
 #if TRACE
 con_printf (CONDBG, "...failed at depth %i, returning -1\n", nCurDepth);
 #endif
-return -1;
+while ((nTail > 0) && (bVisited [segQueue [nTail]] == nCurDepth))
+	nTail--;
+if (nDepthP)
+	*nDepthP = nCurDepth + 1;
+return segQueue [nTail + d_rand () % (nHead - nTail + 1)];
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -220,7 +167,7 @@ int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState)
 {
 	int			nPlayer = 0;
 	short			nSegment = -1;
-	int			nCurDropDepth;
+	int			nDepth, nDropDepth;
 	int			special, count;
 	short			nPlayerSeg;
 	vmsVector	tempv, *vPlayerPos;
@@ -245,29 +192,32 @@ if (bUseInitSgm) {
 if (pbFixedPos)
 	*pbFixedPos = 0;
 d_srand (TimerGetFixedSeconds ());
-nCurDropDepth = BASE_NET_DROP_DEPTH + ((d_rand () * BASE_NET_DROP_DEPTH*2) >> 15);
+nDepth = BASE_NET_DROP_DEPTH + ((d_rand () * BASE_NET_DROP_DEPTH*2) >> 15);
 vPlayerPos = &gameData.objs.objects [LOCALPLAYER.nObject].position.vPos;
 nPlayerSeg = gameData.objs.objects [LOCALPLAYER.nObject].nSegment;
-while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
-	nPlayer = (d_rand () * gameData.multiplayer.nPlayers) >> 15;
-	count = 0;
-	while ((count < gameData.multiplayer.nPlayers) && 
-				 ((gameData.multiplayer.players [nPlayer].connected == 0) || (nPlayer==gameData.multiplayer.nLocalPlayer) || ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && 
-				 (GetTeam (nPlayer)==GetTeam (gameData.multiplayer.nLocalPlayer))))) {
-		nPlayer = (nPlayer+1)%gameData.multiplayer.nPlayers;
-		count++;
-		}
-	if (count == gameData.multiplayer.nPlayers) {
-		//if can't valid non-tPlayer person, use the tPlayer
+while (nSegment == -1) {
+	if (!IsMultiGame)
 		nPlayer = gameData.multiplayer.nLocalPlayer;
-		//return (d_rand () * gameData.segs.nLastSegment) >> 15;
+	else {
+		nPlayer = (d_rand () * gameData.multiplayer.nPlayers) >> 15;
+		count = 0;
+		while ((count < gameData.multiplayer.nPlayers) && 
+				 ((gameData.multiplayer.players [nPlayer].connected == 0) || (nPlayer == gameData.multiplayer.nLocalPlayer) || ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && 
+				 (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer))))) {
+			nPlayer = ++nPlayer % gameData.multiplayer.nPlayers;
+			count++;
+			}
+		if (count == gameData.multiplayer.nPlayers) 
+			nPlayer = gameData.multiplayer.nLocalPlayer;
 		}
-	nSegment = PickConnectedSegment (gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject, nCurDropDepth);
+	nSegment = PickConnectedSegment (gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject, nDepth, &nDropDepth);
+	if (nDropDepth < BASE_NET_DROP_DEPTH / 2)
+		return -1;
 #if TRACE
 	con_printf (CONDBG, " %d", nSegment);
 #endif
 	if (nSegment == -1) {
-		nCurDropDepth--;
+		nDepth--;
 		continue;
 		}
 	special = gameData.segs.segment2s [nSegment].special;
@@ -280,25 +230,23 @@ while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 		 (special == SEGMENT_IS_TEAM_RED))
 		nSegment = -1;
 	else {	//don't drop in any children of control centers
-		int i;
-		for (i = 0; i < 6; i++) {
+		for (int i = 0; i < 6; i++) {
 			int nChild = gameData.segs.segments [nSegment].children [i];
-			if (IS_CHILD (nChild) && gameData.segs.segment2s [nChild].special == SEGMENT_IS_CONTROLCEN) {
+			if (IS_CHILD (nChild) && (gameData.segs.segment2s [nChild].special == SEGMENT_IS_CONTROLCEN)) {
 				nSegment = -1;
 				break;
 				}
 			}
 		}
 	//bail if not far enough from original position
-	if (nSegment != -1) {
+	if (nSegment > -1) {
 		COMPUTE_SEGMENT_CENTER_I (&tempv, nSegment);
 		nDist = FindConnectedDistance (vPlayerPos, nPlayerSeg, &tempv, nSegment, -1, WID_FLY_FLAG, 0);
-		if ((nDist >= 0) && (nDist < i2f (20) * nCurDropDepth)) {
-			nSegment = -1;
-			}
+		if ((nDist < 0) || (nDist >= i2f (20) * nDepth))
+			break;
 		}
-	nCurDropDepth--;
-}
+	nDepth--;
+	}
 #if TRACE
 if (nSegment != -1)
 	con_printf (CONDBG, " dist=%x\n", nDist);
@@ -309,8 +257,7 @@ if (nSegment == -1) {
 #endif
 	return (d_rand () * gameData.segs.nLastSegment) >> 15;
 	}
-else
-	return nSegment;
+return nSegment;
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -433,8 +380,9 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 											 1, OBJ_POWERUP, nPowerupType);
 	if (nObject < 0)
 		return 0;
-	return 1;
 	nSegment = ChooseDropSegment (gameData.objs.objects + nObject, &bFixedPos, nDropState);
+	return 1;
+	VmVecZero (&gameData.objs.objects [nObject].mType.physInfo.velocity);
 	if (bFixedPos)
 		vNewPos = gameData.objs.objects [nObject].position.vPos;
 	else
@@ -442,7 +390,6 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	MultiSendCreatePowerup (nPowerupType, nSegment, nObject, &vNewPos);
 	if (!bFixedPos)
 		gameData.objs.objects [nObject].position.vPos = vNewPos;
-	VmVecZero (&gameData.objs.objects [nObject].mType.physInfo.velocity);
 	RelinkObject (nObject, nSegment);
 	ObjectCreateExplosion (nSegment, &vNewPos, i2f (5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;

@@ -34,6 +34,6 @@ int MaybeDropPrimaryWeaponEgg (tObject *playerObjP, int weapon_index);
 void MaybeDropSecondaryWeaponEgg (tObject *playerObjP, int weapon_index, int count);
 void DropPlayerEggs (tObject *playerObjP);
 int ReturnFlagHome (tObject *pObj);
-int PickConnectedSegment (tObject *objP, int max_depth);
+int PickConnectedSegment (tObject *objP, int nMaxDepth, int *nDepthP);
 
 #endif /* _DROPOBJECT_H */

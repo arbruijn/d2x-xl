@@ -98,15 +98,16 @@ HUDInitMessage(szMsg);
 int ChooseThiefRecreationSegment (void)
 {
 	static int	nSegment = -1;
-	int	nCurDropDepth;
+	int	nDepth, nDropDepth;
 
-	nCurDropDepth = THIEF_DEPTH;
-
-while ((nSegment == -1) && (nCurDropDepth > THIEF_DEPTH / 2)) {
-	nSegment = PickConnectedSegment (gameData.objs.objects + LOCALPLAYER.nObject, nCurDropDepth);
+nDepth = THIEF_DEPTH;
+while (nSegment == -1) {
+	nSegment = PickConnectedSegment (gameData.objs.objects + LOCALPLAYER.nObject, nDepth, &nDropDepth);
+	if (nDropDepth < THIEF_DEPTH / 2)
+		return (d_rand() * gameData.segs.nLastSegment) >> 15;
 	if ((nSegment >= 0) && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_CONTROLCEN))
 		nSegment = -1;
-	nCurDropDepth--;
+	nDepth--;
 	}
 
 if (nSegment >= 0)
