@@ -2040,9 +2040,9 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.
 		}
 	}
 RenderMineObjects (nType);
-ResetUsedLights (0);
+ResetUsedLights (1, 0);
 if (gameStates.app.bMultiThreaded)
-	ResetUsedLights (1);
+	ResetUsedLights (1, 1);
 return 1;
 }
 

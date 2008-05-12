@@ -50,7 +50,7 @@ char *BuildLightingShader (char *pszTemplate, int nLights);
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 int IsLight (int tMapNum);
 void ResetUsedLight (tShaderLight *psl, int nThread);
-void ResetUsedLights (int nThread);
+void ResetUsedLights (int bVariable, int nThread);
 void ResetActiveLights (int nThread, int nActive);
 
 #define	SHOW_DYN_LIGHT \
