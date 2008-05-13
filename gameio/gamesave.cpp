@@ -1507,6 +1507,7 @@ int LoadLevelSub (char * pszFilename, int nLevel)
 	int sig, minedata_offset, gamedata_offset;
 	int mine_err, game_err;
 	//int i;
+
 SetDataVersion (-1);
 gameData.segs.bHaveSlideSegs = 0;
 if (gameData.app.nGameMode & GM_NETWORK) {
@@ -1516,32 +1517,14 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 #ifdef _DEBUG
 Level_being_loaded = pszFilename;
 #endif
-strcpy(filename,pszFilename);
-#ifdef EDITOR
-	//if we have the editor, try the LVL first, no matter what was passed.
-	//if we don't have an LVL, try RDL  
-	//if we don't have the editor, we just use what was passed
 
-	ChangeFilenameExtension(filename,pszFilename,".lvl");
-	bUseCompiledLevel = 0;
+gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
 
-	if (!CFExist(filename))	{
-		ChangeFilenameExtension(filename,filename,".rl2");
-		bUseCompiledLevel = 1;
-	}	
-#endif
+reloadLevel:
 
-if (!CFOpen (&cf, filename, "", "rb", gameStates.app.bD1Mission)) {
-	#ifdef EDITOR
-#if TRACE
-		con_printf (CONDBG,"Can't open level file <%s>\n", filename);
-#endif
-		return 1;
-	#else
-//			Warning ("Can't open file <%s>\n",filename);
-		return 1;
-	#endif
-}
+strcpy (filename, pszFilename);
+if (!CFOpen (&cf, filename, "", "rb", gameStates.app.bD1Mission))
+	return 1;
 
 strcpy(gameData.segs.szLevelFilename, filename);
 
@@ -1625,24 +1608,11 @@ if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.returnOrient.uVec.p.z = CFReadInt (&cf);
 }
 
-#ifdef EDITOR
-if (!bUseCompiledLevel) {
-	CFSeek (&cf,minedata_offset, SEEK_SET);
-	mine_err = load_mine_data(&cf);
-#if 0 // get from d1src if needed
-	// Compress all uv coordinates in mine, improves texmap precision. --MK, 02/19/96
-	compress_uv_coordinates_all();
-#endif
-	}
-else
-#endif
-	{
-	//NOTE LINK TO ABOVE!!
-	CFSeek (&cf, gamedata_offset, SEEK_SET);
-	game_err = LoadMineDataCompiled (&cf, 1);
-	CFSeek (&cf, minedata_offset, SEEK_SET);
-	mine_err = LoadMineSegmentsCompiled (&cf);
-	}
+//NOTE LINK TO ABOVE!!
+CFSeek (&cf, gamedata_offset, SEEK_SET);
+game_err = LoadMineDataCompiled (&cf, 1);
+CFSeek (&cf, minedata_offset, SEEK_SET);
+mine_err = LoadMineSegmentsCompiled (&cf);
 if (mine_err == -1) {   //error!!
 	CFClose(&cf);
 	return 2;
@@ -1654,7 +1624,10 @@ if (game_err == -1) {   //error!!
 	return 3;
 	}
 CFClose(&cf);
-quadMeshBuilder.Build (nLevel);
+
+if (!quadMeshBuilder.Build (nLevel))
+	goto reloadLevel;
+
 #if !SHADOWS
 if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
 #endif

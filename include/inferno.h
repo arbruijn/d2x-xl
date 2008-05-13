@@ -920,6 +920,7 @@ typedef struct tRenderStates {
 	int bTriangleMesh;
 	int nFrameFlipFlop;
 	int nModelQuality;
+	int nMeshQuality;
 	int nState;	//0: render geometry, 1: render objects
 	int nType;
 	int nFrameCount;

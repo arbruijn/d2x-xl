@@ -482,7 +482,7 @@ do {
 #endif
 		nSplitRes = SplitTriangle (m_triangles + i, nPass);
 		if (gameData.segs.nVertices == 65536)
-			return 1;
+			return 0;
 		if (!nSplitRes)
 			return 0;
 		if (nSplitRes < 0) 
@@ -827,12 +827,18 @@ int CTriMeshBuilder::Build (int nLevel)
 PrintLog ("creating triangle mesh\n");
 if (Load (nLevel))
 	return 1;
-if (!CreateTriangles ())
+if (!CreateTriangles ()) {
+	gameData.segs.nVertices = m_nVertices;
 	return 0;
-if ((gameStates.render.bTriangleMesh > 0) && !SplitTriangles ())
+	}
+if ((gameStates.render.bTriangleMesh > 0) && !SplitTriangles ()) {
+	gameData.segs.nVertices = m_nVertices;
 	return 0;
-if (!InsertTriangles ())
+	}
+if (!InsertTriangles ()) {
+	gameData.segs.nVertices = m_nVertices;
 	return 0;
+	}
 Save (nLevel);
 return 1;
 }
@@ -1076,7 +1082,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 
 #define FACE_VERTS	6
 
-void CQuadMeshBuilder::Build (int nLevel)
+int CQuadMeshBuilder::Build (int nLevel)
 {
 m_faceP = FACES;
 m_triP = TRIANGLES;
@@ -1097,7 +1103,7 @@ m_segFaceP = SEGFACES;
 if (gameOpts->render.nMeshQuality > 2)
 	gameOpts->render.nMeshQuality = 2;
 #endif
-gameStates.render.bTriangleMesh = gameOpts->ogl.bPerPixelLighting ? -1 : gameOpts->render.nMeshQuality;
+gameStates.render.bTriangleMesh = gameOpts->ogl.bPerPixelLighting ? -1 : gameStates.render.nMeshQuality;
 gameStates.render.nFacePrimitive = gameStates.render.bTriangleMesh ? GL_TRIANGLES : GL_TRIANGLE_FAN;
 if (gameStates.render.bSplitPolys)
 	gameStates.render.bSplitPolys = (gameOpts->ogl.bPerPixelLighting || !gameOpts->render.nMeshQuality) ? 1 : -1;
@@ -1172,10 +1178,14 @@ for (m_colorP = gameData.render.color.ambient, i = gameData.segs.nVertices; i; i
 		m_colorP->color.blue /= m_colorP->color.alpha;
 		m_colorP->color.alpha = 1;
 		}
-if (gameOpts->ogl.bPerPixelLighting || gameOpts->render.nMeshQuality)
-	m_triMeshBuilder.Build (nLevel);
+if ((gameStates.render.nMeshQuality > 0) && !m_triMeshBuilder.Build (nLevel)) {
+	gameStates.render.nMeshQuality = 0;
+	return 0;
+	}
 if (gameStates.render.bTriangleMesh)
 	DestroyCameras ();
+gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
+return 1;
 }
 
 //------------------------------------------------------------------------------

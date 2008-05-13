@@ -101,7 +101,7 @@ class CQuadMeshBuilder {
 	public:
 		CQuadMeshBuilder (void) {};
 		~CQuadMeshBuilder (void) {};
-		void Build (int nLevel);
+		int Build (int nLevel);
 	};
 
 }
