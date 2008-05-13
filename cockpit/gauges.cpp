@@ -2771,7 +2771,7 @@ void DoCockpitWindowView (int win, tObject *viewer, int bRearView, int user, cha
 	static int window_x, window_y;
 	tGaugeBox *box;
 	int bRearViewSave = gameStates.render.bRearView;
-	int w, h, dx;
+	int w, h, dx, nZoomSave;
 
 if (HIDE_HUD)
 	return;
@@ -2866,7 +2866,7 @@ else {
 
 GrSetCurrentCanvas (&window_canv);
 G3PushMatrix ();
-int nZoomSave = gameStates.render.nZoomFactor;
+nZoomSave = gameStates.render.nZoomFactor;
 gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the tPlayer's zoom factor
 if ((user == WBU_RADAR_TOPDOWN) || (user == WBU_RADAR_HEADSUP)) {
 	gameStates.render.bTopDownRadar = (user == WBU_RADAR_TOPDOWN);
