@@ -617,6 +617,7 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	fVector					color;
 	tPosition				*posP = OBJPOS (objP);
 
+OglSetupTransform (1);
 if (bLighting) {
 	nLights = gameData.render.lights.dynamic.shader.index [0][0].nActive;
 	OglEnableLighting (0); 
@@ -640,7 +641,6 @@ for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			glDepthMask (0);
 			}
-		OglSetupTransform (1);
 		if (gameData.render.lights.dynamic.shader.index [0][0].nLast < 0)
 			h = 0;
 		else
@@ -697,7 +697,6 @@ for (nPass = 0; (nLights > 0) || !nPass; nPass++) {
 				nLights--;
 				}
 			}
-		OglResetTransform (1);
 		for (; iLight < 8; iLight++)
 			glDisable (GL_LIGHT0 + iLight);
 		}
@@ -723,6 +722,7 @@ if (bLighting) {
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask (1);
 	}
+OglResetTransform (1);
 //HUDMessage (0, "%s", szLightSources);
 }
 

@@ -2866,6 +2866,7 @@ else {
 
 GrSetCurrentCanvas (&window_canv);
 G3PushMatrix ();
+int nZoomSave = gameStates.render.nZoomFactor;
 gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the tPlayer's zoom factor
 if ((user == WBU_RADAR_TOPDOWN) || (user == WBU_RADAR_HEADSUP)) {
 	gameStates.render.bTopDownRadar = (user == WBU_RADAR_TOPDOWN);
@@ -2876,6 +2877,7 @@ if ((user == WBU_RADAR_TOPDOWN) || (user == WBU_RADAR_HEADSUP)) {
 	}
 else
 	RenderFrame (0, win+1);
+gameStates.render.nZoomFactor = nZoomSave;
 G3PopMatrix ();
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewer->nType == OBJ_WEAPON) {

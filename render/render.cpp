@@ -2058,6 +2058,12 @@ void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 #if PROFILING
 	time_t	t = clock ();
 #endif
+#ifdef _DEBUG
+if (nWindow)
+	nWindow = nWindow;
+else
+	nWindow = nWindow;
+#endif
 if (gameStates.render.bUsePerPixelLighting)
 	gameStates.render.bPerPixelLighting = HaveLightMaps () ? 2 : gameOpts->ogl.bPerPixelLighting ? 1 : 0;
 else
