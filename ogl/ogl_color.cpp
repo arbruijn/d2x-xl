@@ -313,7 +313,7 @@ float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, int nThread)
 {
 	int						i, j, nLights, nType, bInRad, 
-								bSkipHeadLight = gameStates.ogl.bHeadLight && !gameStates.render.nState, 
+								bSkipHeadLight = gameOpts->ogl.bHeadLight && !gameStates.render.nState, 
 								nSaturation = gameOpts->render.color.nSaturation;
 	int						nBrightness, nMaxBrightness = 0;
 	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
@@ -397,14 +397,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 #endif
 	else {	//make it decay faster
-#if 0
-		if (nMeshQuality && (nType < 2))
-			fLightDist *= sqrt (fLightDist);
-		else
-			fLightDist *= fLightDist;
-		if (nType < 2)
-			fLightDist *= 2.0f;
-#endif
 #if BRIGHT_SHOTS
 		if (nType == 2)
 			fAttenuation = (1.0f + OBJ_LIN_ATT * fLightDist + OBJ_QUAD_ATT * fLightDist * fLightDist);

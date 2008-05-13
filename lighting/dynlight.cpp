@@ -1127,7 +1127,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameOpts->render.bDynLighting) {
 	short						i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
-	int						bSkipHeadLight = !gameStates.render.nState && (gameOpts->ogl.bPerPixelLighting || gameStates.ogl.bHeadLight);
+	int						bSkipHeadLight = !gameStates.render.nState && (gameOpts->ogl.bPerPixelLighting || gameOpts->ogl.bHeadLight);
 	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
@@ -1412,7 +1412,7 @@ extern int nDbgVertex;
 
 void ComputeStaticDynLighting (int nLevel)
 {
-gameData.render.fAttScale = gameStates.render.bTriangleMesh ? 1.0f : 2.0f;
+gameData.render.fAttScale = gameOpts->ogl.bPerPixelLighting ? 1.0f : 2.0f;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 if (gameStates.app.bNostalgia)

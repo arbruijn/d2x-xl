@@ -698,10 +698,14 @@ gameStates.ogl.iLight = 0;
 glBlendFunc (GL_ONE, GL_ZERO);
 if (!bColored) {
 	G3SetupGrayScaleShader (gameStates.render.history.nType, &faceP->color);
+#if 1
+	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
+#else
 	if (gameStates.render.bTriangleMesh)
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 	else
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+#endif
 	}
 else if (gameStates.render.bFullBright) {
 	if (bColorKey)
@@ -710,29 +714,41 @@ else if (gameStates.render.bFullBright) {
 		glUseProgramObject (0);
 		gameStates.render.history.nShader = -1;
 		}
+#if 1
+	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
+#else
 	if (gameStates.render.bTriangleMesh)
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 	else
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+#endif
 	}
 else {
 	bool bResetBlendMode = false;
 	if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
 		G3SetupHeadLightShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
+#if 1
+		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
+#else
 		if (gameStates.render.bTriangleMesh)
 			glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 		else
 			glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+#endif
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		bResetBlendMode = true;
 		//glDepthFunc (GL_EQUAL);
 		}
 	for (;;) {
 		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
+#if 1
+		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
+#else
 		if (gameStates.render.bTriangleMesh)
 			glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 		else
 			glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+#endif
 #if 1
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 			 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))

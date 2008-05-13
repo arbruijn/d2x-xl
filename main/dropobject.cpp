@@ -381,7 +381,6 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (nObject < 0)
 		return 0;
 	nSegment = ChooseDropSegment (gameData.objs.objects + nObject, &bFixedPos, nDropState);
-	return 1;
 	VmVecZero (&gameData.objs.objects [nObject].mType.physInfo.velocity);
 	if (bFixedPos)
 		vNewPos = gameData.objs.objects [nObject].position.vPos;
