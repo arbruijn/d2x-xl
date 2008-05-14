@@ -68,6 +68,7 @@ char gamesave_rcsid [] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 #include "light.h"
 #include "objrender.h"
 #include "createmesh.h"
+#include "lightmap.h"
 
 #define GAME_VERSION            32
 #define GAME_COMPATIBLE_VERSION 22
@@ -1504,8 +1505,8 @@ int LoadLevelSub (char * pszFilename, int nLevel)
 #endif
 	CFILE cf;
 	char filename [128];
-	int sig, minedata_offset, gamedata_offset;
-	int mine_err, game_err;
+	int sig, nMineDataOffset, nGameDataOffset;
+	int nError;
 	//int i;
 
 SetDataVersion (-1);
@@ -1539,8 +1540,8 @@ gameStates.app.bD2XLevel = (gameData.segs.nLevelVersion >= 10);
 #if TRACE
 con_printf (CONDBG, "gameData.segs.nLevelVersion = %d\n", gameData.segs.nLevelVersion);
 #endif
-minedata_offset = CFReadInt (&cf);
-gamedata_offset = CFReadInt (&cf);
+nMineDataOffset = CFReadInt (&cf);
+nGameDataOffset = CFReadInt (&cf);
 
 Assert(sig == MAKE_SIG('P','L','V','L'));
 if (gameData.segs.nLevelVersion >= 8) {    //read dummy data
@@ -1609,17 +1610,17 @@ if (gameData.segs.nLevelVersion < 6) {
 }
 
 //NOTE LINK TO ABOVE!!
-CFSeek (&cf, gamedata_offset, SEEK_SET);
-game_err = LoadMineDataCompiled (&cf, 1);
-CFSeek (&cf, minedata_offset, SEEK_SET);
-mine_err = LoadMineSegmentsCompiled (&cf);
-if (mine_err == -1) {   //error!!
+CFSeek (&cf, nGameDataOffset, SEEK_SET);
+nError = LoadMineDataCompiled (&cf, 1);
+CFSeek (&cf, nMineDataOffset, SEEK_SET);
+nError = LoadMineSegmentsCompiled (&cf);
+if (nError == -1) {   //error!!
 	CFClose(&cf);
 	return 2;
 }
-CFSeek (&cf, gamedata_offset, SEEK_SET);
-game_err = LoadMineDataCompiled (&cf, 0);
-if (game_err == -1) {   //error!!
+CFSeek (&cf, nGameDataOffset, SEEK_SET);
+nError = LoadMineDataCompiled (&cf, 0);
+if (nError == -1) {   //error!!
 	CFClose(&cf);
 	return 3;
 	}
@@ -1632,8 +1633,11 @@ if (!quadMeshBuilder.Build (nLevel))
 if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
 #endif
 	{
-	if (!gameStates.app.bNostalgia)
+	if (!gameStates.app.bNostalgia) {
 		AddDynGeometryLights ();
+		if (gameOpts->ogl.bPerPixelLighting)
+			CreateLightMaps (nLevel);
+		}
 	}
 SetAmbientSoundFlags ();
 #ifdef EDITOR
@@ -1658,7 +1662,7 @@ if (Errors_in_mine) {
 #ifdef EDITOR
 //If an old version, ask the use if he wants to save as new version
 if (!no_oldLevel_file_error && (gameStates.app.nFunctionMode == FMODE_EDITOR) && 
-    (((LEVEL_FILE_VERSION > 3) && gameData.segs.nLevelVersion < LEVEL_FILE_VERSION) || mine_err == 1 || game_err == 1)) {
+    (((LEVEL_FILE_VERSION > 3) && gameData.segs.nLevelVersion < LEVEL_FILE_VERSION) || nError == 1 || nError == 1)) {
 	char  ErrorMessage [200];
 
 	sprintf(ErrorMessage,
@@ -1893,7 +1897,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 	FILE * SaveFile;
 	char temp_filename [128];
 	int sig = MAKE_SIG('P','L','V','L'),version=LEVEL_FILE_VERSION;
-	int minedata_offset=0,gamedata_offset=0;
+	int nMineDataOffset=0,nGameDataOffset=0;
 
 	if (!compiledVersion)	{
 		write_game_text_file(filename);
@@ -1960,8 +1964,8 @@ int saveLevel_sub(char * filename, int compiledVersion)
 	gs_write_int(version,SaveFile);
 
 	//save placeholders
-	gs_write_int(minedata_offset,SaveFile);
-	gs_write_int(gamedata_offset,SaveFile);
+	gs_write_int(nMineDataOffset,SaveFile);
+	gs_write_int(nGameDataOffset,SaveFile);
 
 	//Now write the damn data
 
@@ -1990,17 +1994,17 @@ int saveLevel_sub(char * filename, int compiledVersion)
 	gs_write_int(gameData.segs.secret.returnOrient.uVec.p.y, SaveFile);
 	gs_write_int(gameData.segs.secret.returnOrient.uVec.p.z, SaveFile);
 
-	minedata_offset = ftell(SaveFile);
+	nMineDataOffset = ftell(SaveFile);
 	if (!compiledVersion)
 		save_mine_data(SaveFile);
 	else
 		save_mine_data_compiled(SaveFile);
-	gamedata_offset = ftell(SaveFile);
+	nGameDataOffset = ftell(SaveFile);
 	SaveGameData(SaveFile);
 
 	fseek(SaveFile,sizeof(sig)+sizeof(version), SEEK_SET);
-	gs_write_int(minedata_offset,SaveFile);
-	gs_write_int(gamedata_offset,SaveFile);
+	gs_write_int(nMineDataOffset,SaveFile);
+	gs_write_int(nGameDataOffset,SaveFile);
 
 	//==================== CLOSE THE FILE =============================
 	fclose(SaveFile);

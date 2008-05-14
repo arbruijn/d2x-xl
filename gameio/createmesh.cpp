@@ -938,7 +938,7 @@ void CQuadMeshBuilder::SetupLMapTexCoord (tTexCoord2f *texCoordP)
 		{{LMAP_SIZE, 1.0f - LMAP_SIZE}}
 	};
 
-int i = (m_faceP - gameData.segs.faces.faces) % LIGHTMAP_BUFSIZE;
+int i = m_faceP->nLightmap % LIGHTMAP_BUFSIZE;
 float x = (float) (i % LIGHTMAP_ROWSIZE);
 float y = (float) (i / LIGHTMAP_ROWSIZE);
 texCoordP [0].v.u = x / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);

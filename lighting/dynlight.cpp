@@ -620,6 +620,9 @@ for (nTexture = 0; nTexture < 910; nTexture++)
 	nLight = IsLight (nTexture);
 #endif
 gameStates.render.bHaveDynLights = 1;
+gameData.render.fAttScale = gameOpts->ogl.bPerPixelLighting ? 1.0f : 2.0f;
+gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
+memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 //glEnable (GL_LIGHTING);
 if (gameOpts->render.bDynLighting)
 	memset (gameData.render.color.vertices, 0, sizeof (*gameData.render.color.vertices) * MAX_VERTICES);
@@ -1412,16 +1415,10 @@ extern int nDbgVertex;
 
 void ComputeStaticDynLighting (int nLevel)
 {
-gameData.render.fAttScale = gameOpts->ogl.bPerPixelLighting ? 1.0f : 2.0f;
-gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
-memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 if (gameStates.app.bNostalgia)
 	return;
-if (gameOpts->ogl.bPerPixelLighting) {
-	CreateLightMaps (nLevel);
-	if (HaveLightMaps ())
-		return;
-	}
+if (gameOpts->ogl.bPerPixelLighting && HaveLightMaps ())
+	return;
 if (gameOpts->render.bDynLighting || (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
 		int				i, j, bColorize = !gameOpts->render.bDynLighting;
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient;

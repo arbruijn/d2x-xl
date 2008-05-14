@@ -51,6 +51,9 @@ there I just had it exit instead.
 
 #define LIGHTMAP_DATA_VERSION 2
 
+#define LM_W	LIGHTMAP_WIDTH
+#define LM_H	LIGHTMAP_WIDTH
+
 //------------------------------------------------------------------------------
 
 typedef struct tLightMapDataHeader {
@@ -649,6 +652,29 @@ for (i = 512; i; i--, brightMap++)
 
 //------------------------------------------------------------------------------
 
+void CopyLightMap (fVector3 *texColorP, ushort nLightmap)
+{
+tLightMapBuffer *bufP = lightMapData.buffers + nLightmap / LIGHTMAP_BUFSIZE;
+int i = nLightmap % LIGHTMAP_BUFSIZE;
+int x = (i % LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH;
+int y = (i / LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH;
+for (i = 0; i < LM_H; i++, y++)
+	memcpy (&bufP->bmP [y][x], texColorP + i * LM_W, LM_W * sizeof (tRgbColorf));
+}
+
+//------------------------------------------------------------------------------
+
+void CreateSpecialLightMap (fVector3 *texColor, ushort nLightmap, float fColor)
+{
+	float	*colorP = (float *) texColor;
+
+for (int i = LM_W * LM_H * 3; i; i--, colorP++)
+	*colorP = fColor;
+CopyLightMap (texColor, nLightmap);
+}
+
+//------------------------------------------------------------------------------
+
 void ComputeLightMaps (int nFace, int nThread)
 {
 	grsFace			*faceP;
@@ -656,27 +682,24 @@ void ComputeLightMaps (int nFace, int nThread)
 	int				nLastFace; 
 	ushort			sideVerts [4]; 
 
-#if 0
-#	define		LM_W MAX_LIGHTMAP_WIDTH
-#	define		LM_H MAX_LIGHTMAP_WIDTH
-#else
-	int			LM_W = LIGHTMAP_WIDTH, LM_H = LIGHTMAP_WIDTH; 
-#endif
 	int			x, y, i; 
 	int			v0, v1, v2, v3; 
-	fVector3		texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH], *pTexColor;
+	fVector3		texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH], *texColorP;
 
 #if 1
 #	define		pixelOffset 0.0
 #else
 	double		pixelOffset = 0; //0.5
 #endif
-	int			nType; 
+	int			nType, nBlackLightmaps = 0, nWhiteLightmaps = 0; 
 	GLfloat		maxColor = 0; 
 	vmsVector	offsetU, offsetV, pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH], *pPixelPos; 
 	vmsVector	vNormal;
 	double		fOffset [MAX_LIGHTMAP_WIDTH];
+	bool			bBlack, bWhite;
 	tVertColorData	vcd;
+
+	static ushort nLightmap;
 
 for (i = 0; i < LM_W; i++)
 	fOffset [i] = (double) i / (double) (LM_W - 1);
@@ -688,6 +711,11 @@ if (gameStates.app.bMultiThreaded)
 	nLastFace = nFace ? gameData.segs.nFaces : gameData.segs.nFaces / 2;
 else
 	INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
+if (nFace <= 0) {
+	CreateSpecialLightMap (texColor, 0, 0);
+	CreateSpecialLightMap (texColor, 1, 1);
+	nLightmap = 2;
+	}
 //Next Go through each surface and create a lightmap for it.
 for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 #ifdef _DEBUG
@@ -755,40 +783,42 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 		VmVecFixToFloat (&vcd.vertNorm, &vNormal);
 		memset (texColor, 0, LM_W * LM_H * sizeof (fVector3));
 		pPixelPos = pixelPos;
-		pTexColor = texColor;
+		texColorP = texColor;
+		bBlack = 
+		bWhite = true;
 		for (x = 0; x < LM_W; x++) { 
-			for (y = 0; y < LM_H; y++, pPixelPos++) { 
+			for (y = 0; y < LM_H; y++, pPixelPos++, texColorP++) { 
 				if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->fRad / 10.0f, nThread)) {
 					VmVecFixToFloat (&vcd.vertPos, pPixelPos);
-					G3AccumVertColor (-1, &texColor [y * LM_W + x], &vcd, nThread);
+					G3AccumVertColor (-1, texColorP /*&texColor [y * LM_W + x]*/, &vcd, nThread);
+					if ((texColorP->c.r > 0) || (texColorP->c.g > 0) || (texColorP->c.b > 0))
+						bBlack = false;
+					if (texColorP->c.r >= 1)
+						texColorP->c.r = 1;
+					else
+						bWhite = false;
+					if (texColorP->c.g >= 1)
+						texColorP->c.g = 1;
+					else
+						bWhite = false;
+					if (texColorP->c.b >= 1)
+						texColorP->c.b = 1;
+					else
+						bWhite = false;
 					}
 				}
 			}
 		}
-#if 0
-	pPixelPos = &pixelPos [0][0];
-	pTexColor = texColor [0][0];
-	for (xy = LM_W * LM_H; xy; xy--, pTexColor += 3) { 
-		maxColor = pTexColor [0];
-		if (pTexColor [1] > maxColor)
-			maxColor = pTexColor [1]; 
-		if (pTexColor [2] > maxColor)
-			maxColor = pTexColor [2]; 
-		if (pTexColor [3] > maxColor)
-			maxColor = pTexColor [3]; 
-		if (maxColor > 1.0) {
-			pTexColor [0] /= maxColor; 
-			pTexColor [1] /= maxColor; 
-			pTexColor [2] /= maxColor; 
-			}
+	if (bBlack) {
+		faceP->nLightmap = 0;
+		nBlackLightmaps++;
 		}
-#endif
-	tLightMapBuffer *bufP = lightMapData.buffers + nFace / LIGHTMAP_BUFSIZE;
-	int i = nFace % LIGHTMAP_BUFSIZE;
-	int x = (i % LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH;
-	int y = (i / LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH;
-	for (i = 0; i < LM_H; i++, y++)
-		memcpy (&bufP->bmP [y][x], &texColor [i * LM_W], LM_W * sizeof (tRgbColorf));
+	else if (bWhite) {
+		faceP->nLightmap = 1;
+		nWhiteLightmaps++;
+		}
+	CopyLightMap (texColor, nLightmap);
+	faceP->nLightmap = nLightmap++;
 	}
 }
 
@@ -877,12 +907,20 @@ int SaveLightMapData (int nLevel)
 										MAX_LIGHT_RANGE};
 	int				i, bOk;
 	char				szFilename [FILENAME_LEN];
+	grsFace			*faceP;
 
 if (!(gameStates.app.bCacheLightMaps && lightMapData.nLights && lightMapData.nBuffers))
 	return 0;
 if (!CFOpen (&cf, LightMapDataFilename (szFilename, nLevel), gameFolders.szTempDir, "wb", 0))
 	return 0;
 bOk = (CFWrite (&ldh, sizeof (ldh), 1, &cf) == 1);
+if (bOk) {
+	for (i = gameData.segs.nFaces, faceP = gameData.segs.faces.faces; i; i--, faceP++) {
+		bOk = CFWrite (&faceP->nLightmap, sizeof (faceP->nLightmap), 1, &cf) == 1;
+		if (!bOk)
+			break;
+		}
+	}
 if (bOk) {
 	for (i = 0; i < lightMapData.nBuffers; i++) {
 		bOk = CFWrite (lightMapData.buffers [i].bmP, sizeof (lightMapData.buffers [i].bmP), 1, &cf) == 1;
@@ -902,6 +940,7 @@ int LoadLightMapData (int nLevel)
 	tLightMapDataHeader ldh;
 	int				i, bOk;
 	char				szFilename [FILENAME_LEN];
+	grsFace			*faceP;
 
 if (!gameStates.app.bCacheLightMaps)
 	return 0;
@@ -916,6 +955,13 @@ if (bOk)
 			(ldh.nLights == lightMapData.nLights) && 
 			(ldh.nBuffers == lightMapData.nBuffers) && 
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
+if (bOk) {
+	for (i = gameData.segs.nFaces, faceP = gameData.segs.faces.faces; i; i--, faceP++) {
+		bOk = CFRead (&faceP->nLightmap, sizeof (faceP->nLightmap), 1, &cf) == 1;
+		if (!bOk)
+			break;
+		}
+	}
 if (bOk) {
 	for (i = 0; i < lightMapData.nBuffers; i++) {
 		bOk = CFRead (lightMapData.buffers [i].bmP, sizeof (lightMapData.buffers [i].bmP), 1, &cf) == 1;
@@ -947,12 +993,15 @@ if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 	int nSaturation = gameOpts->render.color.nSaturation;
 	gameOpts->render.color.nSaturation = 1;
 	gameStates.render.bLightMaps = 1;
+#if 0
 	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 8))
 		StartLightMapThreads (LightMapThread);
-	else {
+	else 
+#endif
+		{
 		gameData.render.lights.dynamic.shader.index [0][0].nFirst = MAX_SHADER_LIGHTS;
 		gameData.render.lights.dynamic.shader.index [0][0].nLast = 0;
-		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
+		if (0 && gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 			nFace = 0;
 			NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreateLightMapsPoll);
 			}

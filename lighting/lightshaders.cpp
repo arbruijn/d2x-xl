@@ -953,7 +953,7 @@ char *pszLMLightingFS [] = {
 	"uniform float fColorScale;\r\n" \
 	"void main() {\r\n" \
 	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fColorScale;\r\n" \
-	"gl_FragColor = /*min (texColor, vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * fColorScale)*/;\r\n" \
+	"gl_FragColor = /*min (texColor,*/ vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * fColorScale);\r\n" \
 	"}"
 #endif
 	,
@@ -1301,7 +1301,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	nDbgSeg = nDbgSeg;
 #endif
 if (bLightMaps = HaveLightMaps ()) {
-	int i = (faceP - gameData.segs.faces.faces) / LIGHTMAP_BUFSIZE;
+	int i = faceP->nLightmap / LIGHTMAP_BUFSIZE;
 #if 1//def _DEBUG
 	if (OglCreateLightMap (i))
 #endif

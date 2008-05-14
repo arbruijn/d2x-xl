@@ -206,7 +206,7 @@ if (bDepthOnly) {
 	}
 else {
 	bMonitor = (faceP->nCamera >= 0);
-	bColored = !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment];
+	bColored = !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment] || !gameOpts->render.automap.bGrayOut;
 	if (bmTop && !bMonitor) {
 		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
@@ -439,7 +439,7 @@ gameData.render.nTotalFaces++;
 #endif
 	ovlTexCoordP = bMonitor ? faceP->pTexCoord - faceP->nIndex : gameData.segs.faces.ovlTexCoord;
 	if (bTextured) {
-		{INIT_TMU (InitTMU0, GL_TEXTURE0, bmTop, lightMapData.buffers, 1, 0);}
+		{INIT_TMU (InitTMU0, GL_TEXTURE0, bmTop ? bmTop : bmBot, lightMapData.buffers, 1, 0);}
 		if (gameData.render.lights.dynamic.headLights.nLights)
 			glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), 0);
 		glActiveTexture (GL_TEXTURE0);
@@ -492,7 +492,6 @@ if (bmTop && strstr (bmTop->szName, "door35#4"))
 	bmTop = bmTop;
 #endif
 
-bColored = bDepthOnly || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment];
 if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
@@ -507,9 +506,11 @@ else
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)
 		return 0;
+	bColored =
 	bOverlay = 0;
 	}
 else {
+	bColored = !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment] || !gameOpts->render.automap.bGrayOut;
 	bMonitor = (faceP->nCamera >= 0);
 #ifdef _DEBUG
 	if (bmTop)

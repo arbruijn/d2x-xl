@@ -708,6 +708,7 @@ typedef struct grsFace {
 	short					nOvlTex;
 	short					nCorona;
 	short					nSegment;
+	ushort				nLightmap;
 	ubyte					nSide;
 	ubyte					nOvlOrient :2;
 	ubyte					bVisible :1;
