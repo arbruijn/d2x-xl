@@ -30,6 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "ogl_fastrender.h"
 #include "render.h"
+#include "gameseg.h"
 #include "renderlib.h"
 #include "objrender.h"
 #include "lightmap.h"
@@ -966,16 +967,17 @@ memset (&o, 0, sizeof (o));
 o.nType = OBJ_POWERUP;
 o.position.vPos = pParticle->pos;
 o.position.mOrient = pParticle->orient;
-o.nSegment = FindSegByPos (&o.position.vPos, pParticle->nSegment, 0, 0);
-gameData.render.lights.dynamic.shader.index [0][0].nActive = 0;
-o.renderType = RT_POLYOBJ;
-o.rType.polyObjInfo.nModel = BULLET_MODEL;
-o.rType.polyObjInfo.nTexOverride = -1;
-DrawPolygonObject (&o, 0, 1);
-glDisable (GL_TEXTURE_2D);
-renderItems.bTextured = 0;
-renderItems.bClientState = 0;
-gameData.models.nScale = 0;
+if (0 <= (o.nSegment = FindSegByPos (&o.position.vPos, pParticle->nSegment, 0, 0))) {
+	gameData.render.lights.dynamic.shader.index [0][0].nActive = 0;
+	o.renderType = RT_POLYOBJ;
+	o.rType.polyObjInfo.nModel = BULLET_MODEL;
+	o.rType.polyObjInfo.nTexOverride = -1;
+	DrawPolygonObject (&o, 0, 1);
+	glDisable (GL_TEXTURE_2D);
+	renderItems.bTextured = 0;
+	renderItems.bClientState = 0;
+	gameData.models.nScale = 0;
+	}
 }
 
 //------------------------------------------------------------------------------
