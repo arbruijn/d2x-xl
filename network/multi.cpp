@@ -3760,7 +3760,7 @@ bufP += 4;
 v.p.z = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 if (!gameData.hoard.monsterballP) {
-	gameData.hoard.nMonsterballSeg = FindSegByPoint (&v, nSegment, 1, 0);
+	gameData.hoard.nMonsterballSeg = FindSegByPos (&v, nSegment, 1, 0);
 	CreateMonsterball ();
 	gameData.hoard.monsterballP->position.vPos = v;
 	}

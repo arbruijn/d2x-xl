@@ -93,7 +93,7 @@ fq.p0	= pos;
 if ((pos->p.x != objP->position.vPos.p.x) || 
 	 (pos->p.y != objP->position.vPos.p.y) || 
 	 (pos->p.z != objP->position.vPos.p.z)) {
-	short nSegment = FindSegByPoint (pos, objP->nSegment, 1, 0);
+	short nSegment = FindSegByPos (pos, objP->nSegment, 1, 0);
 	if (nSegment == -1) {
 		fq.startSeg = objP->nSegment;
 		*pos = objP->position.vPos;
@@ -144,7 +144,7 @@ if ((vGun->p.x == objP->position.vPos.p.x) &&
 	 (vGun->p.z == objP->position.vPos.p.z))
 	fq.startSeg	= objP->nSegment;
 else {
-	short nSegment = FindSegByPoint (vGun, objP->nSegment, 1, 0);
+	short nSegment = FindSegByPos (vGun, objP->nSegment, 1, 0);
 	if (nSegment == -1)
 		return -1;
 	if (nSegment != objP->nSegment)

@@ -753,7 +753,7 @@ else if (i < 0)
 				objP->next = objP->prev = objP->nSegment = -1;
 				objP->attachedObj = -1;
 				if (nSegment < 0)
-					nSegment = FindSegByPoint (&objP->position.vPos, -1, 1, 0);
+					nSegment = FindSegByPos (&objP->position.vPos, -1, 1, 0);
 				LinkObject (OBJ_IDX (objP), nSegment);
 				if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_GHOST))
 					RemapLocalPlayerObject (nObject, nRemoteObj);

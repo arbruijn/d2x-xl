@@ -498,7 +498,7 @@ if ((parentP->nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].rende
 	int			nEndSeg;
 
 	VmVecScaleAdd (&vEndPos, &objP->position.vPos, vDirection, gameData.laser.nOffset + (xLaserLength / 2));
-	nEndSeg = FindSegByPoint (&vEndPos, objP->nSegment, 1, 0);
+	nEndSeg = FindSegByPos (&vEndPos, objP->nSegment, 1, 0);
 	if (nEndSeg == objP->nSegment) 
 		objP->position.vPos = vEndPos;
 	else if (nEndSeg != -1) {
@@ -1178,7 +1178,7 @@ return rVal;
 // -- 		tObject		*obj;
 // -- 
 // -- 		VmVecInc (&point_pos, &delta_pos);
-// -- 		tPointSeg = FindSegByPoint (&point_pos, start_segnum, 1, 0);
+// -- 		tPointSeg = FindSegByPos (&point_pos, start_segnum, 1, 0);
 // -- 		if (tPointSeg == -1)	//	Hey, we thought we were creating points on a line, but we left the mine!
 // -- 			continue;
 // -- 

@@ -166,7 +166,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 #endif
 				}
 			if (1 || (objP->cType.lightInfo.nSegment < 0)) {
-				short nSegment = FindSegByPoint (&objP->position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
+				short nSegment = FindSegByPos (&objP->position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
 				objP->cType.lightInfo.nSegment = (nSegment < 0) ? abs (objP->cType.lightInfo.nSegment) : nSegment;
 				}
 			if (objP->nSegment != objP->cType.lightInfo.nSegment)
@@ -272,7 +272,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 	int			nSegment, hitType;
 	nSegment = -1;
 	#ifdef _DEBUG
-	nSegment = FindSegByPoint (vObjPos, nObjSeg, 1, 0);
+	nSegment = FindSegByPos (vObjPos, nObjSeg, 1, 0);
 	if (nSegment == -1) {
 		Int3 ();		//	Obj_pos is not in nObjSeg!
 		return 0;		//	Done processing this tObject.

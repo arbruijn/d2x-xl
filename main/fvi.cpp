@@ -1402,11 +1402,11 @@ nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
 nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1, 
 							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, 
 							  hitData->segList, &hitData->nSegments, -2);
-//!!nHitSegment = FindSegByPoint(&vHitPoint, fq->startSeg, 1, 0);
+//!!nHitSegment = FindSegByPos(&vHitPoint, fq->startSeg, 1, 0);
 if ((nHitSegment2 != -1) && !GetSegMasks (&vHitPoint, nHitSegment2, 0).centerMask)
 	nHitSegment = nHitSegment2;
 else {
-	nHitSegment = FindSegByPoint (&vHitPoint, fq->startSeg, 1, 0);
+	nHitSegment = FindSegByPos (&vHitPoint, fq->startSeg, 1, 0);
 	}
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((nHitType == HIT_WALL) && (nHitSegment == -1))
@@ -1700,7 +1700,7 @@ fq.radP1 = 0;
 fq.thisObjNum = objP ? OBJ_IDX (objP) : -1;
 fq.flags = FQ_TRANSWALL;
 if (SPECTATOR (objP))
-	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1, 0);
+	fq.startSeg = FindSegByPos (&objP->position.vPos, objP->nSegment, 1, 0);
 else
 	fq.startSeg = objP ? objP->nSegment : nSegment;
 fq.ignoreObjList = NULL;
@@ -1719,8 +1719,8 @@ int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 
 do {
 	if (nTries++)
-		fq.startSeg		= bSpectate ? FindSegByPoint (&gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) : 
-							  FindSegByPoint (&objP1->position.vPos, objP1->nSegment, 1, 0);
+		fq.startSeg		= bSpectate ? FindSegByPos (&gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) : 
+							  FindSegByPos (&objP1->position.vPos, objP1->nSegment, 1, 0);
 	else
 		fq.startSeg		= bSpectate ? gameStates.app.nPlayerSegment : objP1->nSegment;
 	fq.p0					= bSpectate ? &gameStates.app.playerPos.vPos : &objP1->position.vPos;

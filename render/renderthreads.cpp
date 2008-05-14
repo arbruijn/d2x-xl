@@ -33,6 +33,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 tRenderThreadInfo tiRender;
 tRenderItemThreadInfo tiRenderItems;
 
+int bUseMultiThreading [rtPolyModel + 1] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+
 //------------------------------------------------------------------------------
 
 int RunRenderThreads (int nTask)
@@ -43,6 +45,8 @@ int RunRenderThreads (int nTask)
 #endif
 
 if (!gameStates.app.bMultiThreaded)
+	return 0;
+if (!bUseMultiThreading [nTask])
 	return 0;
 #if 0
 while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)

@@ -305,7 +305,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		VmVecScaleInc (&vPerturb, &vTemp, F1_0/4);
 		}
 	VmVecScaleAdd (&vTempPos, &vBlobPos, &vPerturb, xPerturbArray [i]);
-	nSegment = FindSegByPoint (&vTempPos, nLastSeg, 1, 0);
+	nSegment = FindSegByPos (&vTempPos, nLastSeg, 1, 0);
 	if (nSegment != -1) {
 		tObject		*objP;
 
@@ -433,7 +433,7 @@ else
 	nTargetObj = FindHomingObject (vMuzzle, weaponObjP);
 nParentSeg = bSpectate ? gameStates.app.nPlayerSegment : parentObjP->nSegment;
 
-if (0 > (nFiringSeg = FindSegByPoint (vMuzzle, nParentSeg, 1, 0))) {
+if (0 > (nFiringSeg = FindSegByPos (vMuzzle, nParentSeg, 1, 0))) {
 	DestroyOmegaLightnings (OBJ_IDX (parentObjP));
 	return;
 	}

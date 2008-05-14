@@ -1150,7 +1150,7 @@ else {
 	if (!pnStartSeg)
 		nStartSeg = gameStates.render.nStartSeg;
 	else {
-		nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0);
+		nStartSeg = FindSegByPos (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0);
 		if (!gameStates.render.nWindow && (gameData.objs.viewer == gameData.objs.console)) {
 			SetPathPoint (&externalView, gameData.objs.viewer);
 			if (nStartSeg == -1)

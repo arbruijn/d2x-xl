@@ -1152,7 +1152,7 @@ int CheckSegmentConnections (void)
 
 // -------------------------------------------------------------------------------
 //	Used to become a constant based on editor, but I wanted to be able to set
-//	this for omega blob FindSegByPoint calls.  Would be better to pass a paremeter
+//	this for omega blob FindSegByPos calls.  Would be better to pass a paremeter
 //	to the routine...--MK, 01/17/96
 int	bDoingLightingHack=0;
 
@@ -1216,7 +1216,7 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 // 2. Recursively trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPoint (vmsVector *p, int nSegment, int bExhaustive, int bSkyBox)
+int FindSegByPos (vmsVector *p, int nSegment, int bExhaustive, int bSkyBox)
 {
 	int			nNewSeg = -1, i;
 	short		*segP;

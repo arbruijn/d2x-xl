@@ -368,7 +368,7 @@ MakeRandomVector (&rand_vec);
 VmVecScale (&rand_vec, objP->size / 2);
 VmVecInc (&pos, &rand_vec);
 size = FixMul (size_scale, F1_0 / 2 + d_rand () * 4 / 2);
-nSegment = FindSegByPoint (&pos, objP->nSegment, 1, 0);
+nSegment = FindSegByPos (&pos, objP->nSegment, 1, 0);
 if (nSegment != -1) {
 	tObject *explObjP = ObjectCreateExplosion (nSegment, &pos, size, VCLIP_SMALL_EXPLOSION);
 	if (!explObjP)
@@ -397,7 +397,7 @@ MakeRandomVector (&rand_vec);
 VmVecScale (&rand_vec, objP->size / 2);
 VmVecInc (&pos, &rand_vec);
 size = FixMul (size_scale, F1_0 + d_rand ()*4);
-nSegment = FindSegByPoint (&pos, objP->nSegment, 1, 0);
+nSegment = FindSegByPos (&pos, objP->nSegment, 1, 0);
 if (nSegment != -1) {
 	tObject *explObjP = ObjectCreateExplosion (nSegment, &pos, size, vclip_num);
 	if (!explObjP)
@@ -659,7 +659,7 @@ objP = gameData.objs.objects + nObject;
 Assert (objP->nSegment == -1);
 Assert (nSegment >= 0 && nSegment <= gameData.segs.nLastSegment);
 if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
-	nSegment = FindSegByPoint (&objP->position.vPos, 0, 0, 0);
+	nSegment = FindSegByPos (&objP->position.vPos, 0, 0, 0);
 	if (nSegment < 0)
 		return;
 	}
@@ -976,7 +976,7 @@ Assert (cType <= CT_CNTRLCEN);
 if ((nType == OBJ_DEBRIS) && (nDebrisObjectCount >= gameStates.render.detail.nMaxDebrisObjects))
 	return -1;
 if (GetSegMasks (pos, nSegment, 0).centerMask)
-	if ((nSegment = FindSegByPoint (pos, nSegment, 1, 0)) == -1) {
+	if ((nSegment = FindSegByPos (pos, nSegment, 1, 0)) == -1) {
 #ifdef _DEBUG
 #	if TRACE			
 		con_printf (CONDBG, "Bad segment in CreateObject (nType=%d)\n", nType);
@@ -1025,9 +1025,9 @@ objP->shields = 20 * F1_0;
 #ifdef _DEBUG
 i = nSegment;
 #endif
-if (0 > (nSegment = FindSegByPoint (pos, nSegment, 1, 0))) {	//find correct tSegment
+if (0 > (nSegment = FindSegByPos (pos, nSegment, 1, 0))) {	//find correct tSegment
 #ifdef _DEBUG
-	FindSegByPoint (pos, i, 1, 0);
+	FindSegByPos (pos, i, 1, 0);
 #endif
 	return -1;
 	}
@@ -2227,10 +2227,10 @@ nDebrisObjectCount = 0;
 }
 
 //------------------------------------------------------------------------------
-//Tries to find a tSegment for an tObject, using FindSegByPoint ()
+//Tries to find a tSegment for an tObject, using FindSegByPos ()
 int FindObjectSeg (tObject * objP)
 {
-return FindSegByPoint (&objP->position.vPos, objP->nSegment, 1, 0);
+return FindSegByPos (&objP->position.vPos, objP->nSegment, 1, 0);
 }
 
 //------------------------------------------------------------------------------

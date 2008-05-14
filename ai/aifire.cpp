@@ -331,7 +331,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	//	Well, the gun point is in a different tSegment than the robot's center.
 	//	This is almost always ok, but it is not ok if something solid is in between.
-	int	nGunSeg = FindSegByPoint (vFirePoint, objP->nSegment, 1, 0);
+	int	nGunSeg = FindSegByPos (vFirePoint, objP->nSegment, 1, 0);
 	//	See if these segments are connected, which should almost always be the case.
 	short nConnSide = FindConnectedSide (&gameData.segs.segments [nGunSeg], &gameData.segs.segments [objP->nSegment]);
 	if (nConnSide != -1) {

@@ -2015,7 +2015,7 @@ for (nLights = 1; i > 0; i--, pl++) {
 		for (h = nStep / 2; h < j; h += nStep) {
 			TRAP (pln);
 			vPosP = &pln [(int) h].vPos;
-			if (0 > (nSegment = FindSegByPoint (vPosP, nSegment, 0, 0)))
+			if (0 > (nSegment = FindSegByPos (vPosP, nSegment, 0, 0)))
 				break;
 			SetLightningSegLight (nSegment, vPosP, &pl->color);
 			nLights++;
@@ -2089,7 +2089,7 @@ if (SHOW_LIGHTNINGS) {
 			pll->color.green /= n;
 			pll->color.blue /= n;
 #ifdef _DEBUG
-			short nSegment = FindSegByPoint (&pll->vPos, pll->nSegment, 0, 0);
+			short nSegment = FindSegByPos (&pll->vPos, pll->nSegment, 0, 0);
 			vmsVector c;
 			COMPUTE_SEGMENT_CENTER_I (&c, 332);
 			int d = VmVecDist (&c, &pll->vPos);

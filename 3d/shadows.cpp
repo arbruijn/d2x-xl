@@ -962,7 +962,7 @@ float NearestShadowedWallDist (short nObject, short nSegment, vmsVector *vPos, f
 	static		unsigned int nVisited = 0;
 	static		unsigned int bVisited [MAX_SEGMENTS_D2X];
 
-if (0 > (nSegment = FindSegByPoint (vPos, nSegment, 1, 0)))
+if (0 > (nSegment = FindSegByPos (vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
 VmVecSub (&v, vPos, &vLightPos);
 VmVecNormalize (&v);
@@ -1053,7 +1053,7 @@ return G3_INFINITY;
 
 if (!gameOpts->render.shadows.nClip)
 	return G3_INFINITY;
-if (0 > (nSegment = FindSegByPoint (vPos, nSegment, 1, 0)))
+if (0 > (nSegment = FindSegByPos (vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
 fq.p0				  = vPos;
 VmVecSub (&v, fq.p0, &vLightPos);
@@ -1130,7 +1130,7 @@ for (m = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces + i; i < m; i += incr,
 			v.p.x = (fix) (pv [h].x * 65536.0f);
 			v.p.y = (fix) (pv [h].y * 65536.0f);
 			v.p.z = (fix) (pv [h].z * 65536.0f);
-			nPointSeg = FindSegByPoint (&v, nSegment, 1, 0);
+			nPointSeg = FindSegByPos (&v, nSegment, 1, 0);
 			if (nPointSeg < 0)
 				continue;
 			pfc [h] = fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
@@ -1170,7 +1170,7 @@ for (j = po->nVerts; i < j; i += incr, pvf += incr) {
 		v.p.x = (fix) (pv [i].x * 65536.0f);
 		v.p.y = (fix) (pv [i].y * 65536.0f);
 		v.p.z = (fix) (pv [i].z * 65536.0f);
-		nPointSeg = FindSegByPoint (&v, nSegment, 1, 0);
+		nPointSeg = FindSegByPos (&v, nSegment, 1, 0);
 		if (nPointSeg < 0)
 			continue;
 		pfc [i] = fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);

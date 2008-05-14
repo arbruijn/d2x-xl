@@ -21,13 +21,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "particles.h"
 
 typedef enum {
+	rtStaticVertLight,
 	rtComputeFaceLight,
 	rtSortFaces,
 	rtInitSegZRef,
 	rtSortSegZRef,
 	rtAnimateLightnings,
 	rtRenderLightnings,
-	rtStaticVertLight,
 	rtUpdateParticles,
 	rtRenderParticles,
 	rtPolyModel
@@ -48,6 +48,7 @@ typedef struct tRenderThreadInfo {
 	} tRenderThreadInfo;
 
 extern tRenderThreadInfo tiRender;
+extern int bUseMultiThreading [];
 
 typedef struct tRenderItemThreadInfo {
 	tRenderItemData	itemData [2];

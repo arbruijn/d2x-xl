@@ -92,6 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 #include "objrender.h"
 #include "sparkeffect.h"
+#include "renderthreads.h"
 #ifdef _WIN32
 #	include "../network/win32/include/ipx_udp.h"
 #else
@@ -4775,12 +4776,27 @@ if (IsMultiGame)
 
 //------------------------------------------------------------------------------
 
+void MultiThreadingOptionsMenu (void)
+{
+	tMenuItem	m [10];
+	int			i, choice = 0;
+
+memset (m, 0, sizeof (m));
+for (i = rtStaticVertLight; i <= rtPolyModel; i++)
+	ADD_CHECK (i, GT (1060 + i), bUseMultiThreading [i], 0, HT (359 + i));
+i = ExecMenu1 (NULL, TXT_MT_MENU_TITLE, 10, m, NULL, &choice);
+for (i = rtStaticVertLight; i <= rtPolyModel; i++)
+	bUseMultiThreading [i] = (m [i].value != 0);
+}
+
+//------------------------------------------------------------------------------
+
 void ConfigMenu (void)
 {
 	tMenuItem	m [20];
 	int			i, opt, choice = 0;
 	int			optSound, optConfig, optJoyCal, optPerformance, optScrRes, optReorderPrim, optReorderSec, 
-					optToggles, optRender, optGameplay, optCockpit, optPhysics = -1;
+					optMiscellaneous, optMultiThreading = -1, optRender, optGameplay, optCockpit, optPhysics = -1;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -4823,7 +4839,7 @@ do {
 	ADD_MENU (opt, TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
 	optReorderSec = opt++;
 	ADD_MENU (opt, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISCELLANEOUS, gameStates.app.bNostalgia ? KEY_T : KEY_I, HTX_OPTIONS_MISC);
-	optToggles = opt++;
+	optMiscellaneous = opt++;
 	if (!gameStates.app.bNostalgia) {
 		ADD_MENU (opt, TXT_COCKPIT_OPTS2, KEY_C, HTX_OPTIONS_COCKPIT);
 		optCockpit = opt++;
@@ -4837,6 +4853,10 @@ do {
 			optGameplay = opt++;
 			ADD_MENU (opt, TXT_PHYSICS_MENUCALL, KEY_Y, HTX_OPTIONS_PHYSICS);
 			optPhysics = opt++;
+			}
+		if (gameStates.app.bMultiThreaded) {
+			ADD_MENU (opt, TXT_MT_MENU_OPTION, KEY_U, HTX_MULTI_THREADING);
+			optMultiThreading = opt++;
 			}
 		}
 
@@ -4860,7 +4880,7 @@ do {
 			ReorderPrimary ();		
 		else if (i == optReorderSec)
 			ReorderSecondary ();	
-		else if (i == optToggles)
+		else if (i == optMiscellaneous)
 			MiscellaneousMenu ();		
 		else if (!gameStates.app.bNostalgia) {
 			if (i == optCockpit)
@@ -4871,6 +4891,8 @@ do {
 				GameplayOptionsMenu ();        
 			else if ((optPhysics >= 0) && (i == optPhysics))
 				PhysicsOptionsMenu ();        
+			else if ((optMultiThreading >= 0) && (i == optMultiThreading))
+				MultiThreadingOptionsMenu ();        
 			}
 		}
 	} while (i > -1);

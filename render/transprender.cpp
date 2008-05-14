@@ -966,6 +966,8 @@ memset (&o, 0, sizeof (o));
 o.nType = OBJ_POWERUP;
 o.position.vPos = pParticle->pos;
 o.position.mOrient = pParticle->orient;
+o.nSegment = FindSegByPos (&o.position.vPos, pParticle->nSegment, 0, 0);
+gameData.render.lights.dynamic.shader.index [0][0].nActive = 0;
 o.renderType = RT_POLYOBJ;
 o.rType.polyObjInfo.nModel = BULLET_MODEL;
 o.rType.polyObjInfo.nTexOverride = -1;
@@ -1096,6 +1098,7 @@ void RenderItems (void)
 if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
+gameStates.render.nState = 2;
 RIResetShader ();
 nPolys = 0;
 bStencil = StencilOff ();
@@ -1187,6 +1190,7 @@ glDepthMask (1);
 StencilOn (bStencil);
 #endif
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
+gameStates.render.nState = 0;
 return;
 }
 

@@ -335,7 +335,7 @@ if (!bObjTrigger && FindObjTrigger (OBJ_IDX (objP), TT_SPAWN_BOT, -1))
 	return -1;
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
-nSegment = pos ? FindSegByPoint (pos, objP->nSegment, 1, 0) : objP->nSegment;
+nSegment = pos ? FindSegByPos (pos, objP->nSegment, 1, 0) : objP->nSegment;
 if (nSegment == -1) {
 #if TRACE
 	con_printf (CONDBG, "Tried to spew a bot outside the mine! Aborting!\n");

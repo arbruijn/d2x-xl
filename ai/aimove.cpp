@@ -448,7 +448,7 @@ else {
 			if (ObjectIntersectsWall (objP))
 				objP->position.vPos = vOrigPos;
 			else {
-				int nNewSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1, 0);
+				int nNewSeg = FindSegByPos (&objP->position.vPos, objP->nSegment, 1, 0);
 				if (nNewSeg != -1) {
 					RelinkObject (OBJ_IDX (objP), nNewSeg);
 					return;
@@ -499,7 +499,7 @@ else {
 	//	Move one radius towards center.
 	VmVecScale (&vGoalDir, xScale);
 	VmVecInc (&objP->position.vPos, &vGoalDir);
-	nNewSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1, 0);
+	nNewSeg = FindSegByPos (&objP->position.vPos, objP->nSegment, 1, 0);
 	if (nNewSeg == -1) {
 		objP->position.vPos = *vGoal;
 		MoveObjectToLegalSpot (objP, xMinDist > 0);
