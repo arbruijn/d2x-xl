@@ -49,7 +49,7 @@ there I just had it exit instead.
 #define LMAP_REND2TEX	0
 #define TEXTURE_CHECK	1
 
-#define LIGHTMAP_DATA_VERSION 4
+#define LIGHTMAP_DATA_VERSION 5
 
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
@@ -63,6 +63,7 @@ typedef struct tLightMapDataHeader {
 	int	nFaces;
 	int	nLights;
 	int	nMaxLightRange;
+	int	nBuffers;
 	} tLightMapDataHeader;
 
 //------------------------------------------------------------------------------
@@ -904,7 +905,8 @@ int SaveLightMapData (int nLevel)
 										gameData.segs.nVertices, 
 										gameData.segs.nFaces, 
 										lightMapData.nLights, 
-										MAX_LIGHT_RANGE};
+										MAX_LIGHT_RANGE,
+										lightMapData.nBuffers};
 	int				i, bOk;
 	char				szFilename [FILENAME_LEN];
 	grsFace			*faceP;
@@ -930,6 +932,16 @@ if (bOk) {
 	}
 CFClose (&cf);
 return bOk;
+}
+
+//------------------------------------------------------------------------------
+
+void ReallocLightMaps (int nBuffers)
+{
+if (lightMapData.nBuffers > nBuffers) {
+	lightMapData.buffers = (tLightMapBuffer *) D2_REALLOC (lightMapData.buffers, nBuffers * sizeof (tLightMapBuffer));
+	lightMapData.nBuffers = nBuffers;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -962,12 +974,14 @@ if (bOk) {
 		}
 	}
 if (bOk) {
-	for (i = 0; i < lightMapData.nBuffers; i++) {
+	for (i = 0; i < ldh.nBuffers; i++) {
 		bOk = CFRead (lightMapData.buffers [i].bmP, sizeof (lightMapData.buffers [i].bmP), 1, &cf) == 1;
 		if (!bOk)
 			break;
 		}
 	}
+if (bOk)
+	ReallocLightMaps (ldh.nBuffers);
 CFClose (&cf);
 return bOk;
 }
@@ -1007,17 +1021,13 @@ if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 		else
 			ComputeLightMaps (-1, 0);
 		}
-	int nBuffers = (lightMapData.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
-	if (lightMapData.nBuffers > nBuffers) {
-		lightMapData.buffers = (tLightMapBuffer *) D2_REALLOC (lightMapData.buffers, nBuffers * sizeof (tLightMapBuffer));
-		lightMapData.nBuffers = nBuffers;
-		}
 	gameStates.render.bLightMaps = 0;
 	gameStates.render.nState = 0;
 	gameOpts->render.color.nSaturation = nSaturation;
+	ReallocLightMaps ((lightMapData.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);
+	OglCreateLightMaps ();
+	SaveLightMapData (nLevel);
 	}
-OglCreateLightMaps ();
-SaveLightMapData (nLevel);
 }
 
 //------------------------------------------------------------------------------
