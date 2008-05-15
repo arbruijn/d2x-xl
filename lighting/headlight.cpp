@@ -456,18 +456,18 @@ char *headLightFS [2][8] = {
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"vec3 spotColor = vec3 (0.0, 0.0, 0.0);\r\n" \
+	"vec4 spotColor = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
 	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.5) {\r\n" \
 	"      float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.025, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
-	"      spotColor = vec3 (spotEffect, spotEffect, spotEffect);\r\n" \
-	"      spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"      spotColor = vec4 (spotEffect, spotEffect, spotEffect, 1.0);\r\n" \
+	"      spotColor.rgb = min (spotColor.rgb, matColor.rgb);\r\n" \
 	"	    }\r\n" \
 	"	 }\r\n" \
-	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a);\r\n" \
+	"gl_FragColor = texColor * spotColor;\r\n" \
 	"}" 
 	,
 	//base texture and decal
@@ -863,7 +863,7 @@ int G3SetupHeadLightShader (int nType, int bLightMaps, tRgbaColorf *colorP)
 	tRgbaColorf	color;
 
 //headlights
-nLights = IsMultiGame ? /*gameData.multiplayer.nPlayers*/gameData.render.lights.dynamic.headLights.nLights : 1;
+nLights = IsMultiGame ? gameData.render.lights.dynamic.headLights.nLights : 1;
 InitHeadlightShaders (nLights);
 nShader = 10 + bLightMaps * 4 + nType;
 if (nShader != gameStates.render.history.nShader) {

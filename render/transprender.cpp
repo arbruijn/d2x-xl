@@ -723,8 +723,13 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 				glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + faceP->nIndex);
 			glActiveTexture (GL_TEXTURE1);
 			glClientActiveTexture (GL_TEXTURE1);
+			if (renderItems.bTextured)
+				glDisableClientState (GL_COLOR_ARRAY);
+			else
+				glColorPointer (4, GL_FLOAT, 0, item->color);
 			}
-		glColorPointer (4, GL_FLOAT, 0, item->color);
+		else
+			glColorPointer (4, GL_FLOAT, 0, item->color);
 		}
 	else if (item->nColors == 1)
 		glColor4fv ((GLfloat *) item->color);
@@ -770,15 +775,15 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 			}
 		else {
 			bool bResetBlendMode = false;
+#if 0
 			if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
 				G3SetupHeadLightShader (renderItems.bTextured, 1, renderItems.bTextured ? NULL : &faceP->color);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
-#if 1
 				bResetBlendMode = true;
 				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 				glDepthFunc (GL_LEQUAL);
-#endif
 				}
+#endif
 #if 1
 			gameStates.ogl.iLight = 0;
 			for (;;) {
@@ -787,17 +792,26 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 				if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 					 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 					break;
-#if 1
 				if (!bResetBlendMode) {
+					bResetBlendMode = true;
 					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 					glDepthFunc (GL_LEQUAL);
 					}
-#endif
 				}
 #endif
-			if (bResetBlendMode) {
+#if 1
+			if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
+				G3SetupHeadLightShader (renderItems.bTextured, 1, renderItems.bTextured ? NULL : &faceP->color);
+				if (!bResetBlendMode && gameStates.ogl.nLights) {
+					bResetBlendMode = true;
+					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+					glDepthFunc (GL_LEQUAL);
+					}
+				glDrawArrays (item->nPrimitive, 0, item->nVertices);
+				}
+#endif
+			if (bResetBlendMode)
 				glDepthFunc (GL_LESS);
-				}
 			}
 		}
 	else {
@@ -1100,7 +1114,6 @@ void RenderItems (void)
 if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
-gameStates.render.nState = 2;
 RIResetShader ();
 nPolys = 0;
 bStencil = StencilOff ();
@@ -1192,7 +1205,6 @@ glDepthMask (1);
 StencilOn (bStencil);
 #endif
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
-gameStates.render.nState = 0;
 return;
 }
 

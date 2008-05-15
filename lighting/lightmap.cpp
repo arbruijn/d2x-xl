@@ -793,7 +793,8 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 						else
 							bWhite = false;
 						}
-					if (!(bBlack || bWhite)) {
+					//if (!(bBlack || bWhite)) 
+						{
 						texColorP = &texColor [y * LM_W + x];
 						texColorP->red = (ubyte) (255 * color.c.r);
 						texColorP->green = (ubyte) (255 * color.c.g);
