@@ -952,6 +952,8 @@ else if (nType == OBJ_REACTOR)
 	nType = nType;
 else if (nType == OBJ_DEBRIS)
 	nType = nType;
+else if (nType == OBJ_MARKER)
+	nType = nType;
 else if (nType == OBJ_PLAYER)
 	nType = nType;
 else

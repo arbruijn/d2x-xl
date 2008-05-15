@@ -38,7 +38,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "dynlight.h"
 
 #define SORT_LIGHTS 0
-#define PREFER_GEOMETRY_LIGHTS 0
+#define PREFER_GEOMETRY_LIGHTS 1
 
 //------------------------------------------------------------------------------
 

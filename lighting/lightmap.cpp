@@ -49,7 +49,7 @@ there I just had it exit instead.
 #define LMAP_REND2TEX	0
 #define TEXTURE_CHECK	1
 
-#define LIGHTMAP_DATA_VERSION 3
+#define LIGHTMAP_DATA_VERSION 4
 
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
@@ -62,7 +62,6 @@ typedef struct tLightMapDataHeader {
 	int	nVertices;
 	int	nFaces;
 	int	nLights;
-	int	nBuffers;
 	int	nMaxLightRange;
 	} tLightMapDataHeader;
 
@@ -81,15 +80,6 @@ tLightMapData lightMapData = {NULL, NULL, 0, 0};
 //------------------------------------------------------------------------------
 
 int InitLightData (int bVariable);
-
-//------------------------------------------------------------------------------
-
-void InitLightMapTexture (tLightMap *lmP, float fColor)
-{
-float *colorP = (float *) (&lmP->bmP);
-for (int i = LIGHTMAP_WIDTH * LIGHTMAP_WIDTH * 3; i; i--)
-	*colorP++ = fColor;
-}
 
 //------------------------------------------------------------------------------
 
@@ -118,7 +108,7 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_BUFWIDTH, LIGHTMAP_BUFWIDTH, 0, GL_RGB, GL_FLOAT, lmP->bmP);
+glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_BUFWIDTH, LIGHTMAP_BUFWIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, lmP->bmP);
 #ifdef _DEBUG
 if ((nError = glGetError ()))
 	return 0;
@@ -652,25 +642,22 @@ for (i = 512; i; i--, brightMap++)
 
 //------------------------------------------------------------------------------
 
-void CopyLightMap (fVector3 *texColorP, ushort nLightmap)
+void CopyLightMap (tRgbColorb *texColorP, ushort nLightmap)
 {
 tLightMapBuffer *bufP = lightMapData.buffers + nLightmap / LIGHTMAP_BUFSIZE;
 int i = nLightmap % LIGHTMAP_BUFSIZE;
 int x = (i % LIGHTMAP_ROWSIZE) * LM_W;
 int y = (i / LIGHTMAP_ROWSIZE) * LM_H;
-for (i = 0; i < LM_H; i++, y++)
-	memcpy (&bufP->bmP [y][x], texColorP + i * LM_W, LM_W * sizeof (tRgbColorf));
+for (i = 0; i < LM_H; i++, y++, texColorP += LM_W)
+	memcpy (&bufP->bmP [y][x], texColorP, LM_W * sizeof (tRgbColorb));
 }
 
 //------------------------------------------------------------------------------
 
-void CreateSpecialLightMap (fVector3 *texColor, ushort nLightmap, float fColor)
+void CreateSpecialLightMap (tRgbColorb *texColorP, ushort nLightmap, ubyte nColor)
 {
-	float	*colorP = (float *) texColor;
-
-for (int i = LM_W * LM_H * 3; i; i--, colorP++)
-	*colorP = fColor;
-CopyLightMap (texColor, nLightmap);
+memset (texColorP, nColor, LM_W * LM_H * sizeof (tRgbColorb));
+CopyLightMap (texColorP, nLightmap);
 }
 
 //------------------------------------------------------------------------------
@@ -684,7 +671,8 @@ void ComputeLightMaps (int nFace, int nThread)
 
 	int			x, y, i; 
 	int			v0, v1, v2, v3; 
-	fVector3		texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH], *texColorP;
+	fVector3		color;
+	tRgbColorb	texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH], *texColorP;
 
 #if 1
 #	define		pixelOffset 0.0
@@ -711,7 +699,7 @@ else
 	INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
 if (nFace <= 0) {
 	CreateSpecialLightMap (texColor, 0, 0);
-	CreateSpecialLightMap (texColor, 1, 1);
+	CreateSpecialLightMap (texColor, 1, 255);
 	lightMapData.nLightmaps = 2;
 	}
 //Next Go through each surface and create a lightmap for it.
@@ -779,30 +767,37 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 	if (SEGMENT2S [faceP->nSegment].special != SEGMENT_IS_SKYBOX) {
 		VmVecAvg (&vNormal, sideP->normals, sideP->normals + 1);
 		VmVecFixToFloat (&vcd.vertNorm, &vNormal);
-		memset (texColor, 0, LM_W * LM_H * sizeof (fVector3));
 		pPixelPos = pixelPos;
 		texColorP = texColor;
 		bBlack = 
 		bWhite = true;
+		memset (texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
 		for (x = 0; x < LM_W; x++) { 
 			for (y = 0; y < LM_H; y++, pPixelPos++) { 
 				if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->fRad / 10.0f, nThread)) {
 					VmVecFixToFloat (&vcd.vertPos, pPixelPos);
-					G3AccumVertColor (-1, texColorP = &texColor [y * LM_W + x], &vcd, nThread);
-					if ((texColorP->c.r > 0.001f) || (texColorP->c.g > 0.001f) || (texColorP->c.b > 0.001f)) {
+					color.c.r = color.c.g = color.c.b = 0;
+					G3AccumVertColor (-1, &color, &vcd, nThread);
+					if ((color.c.r > 0.001f) || (color.c.g > 0.001f) || (color.c.b > 0.001f)) {
 							bBlack = false;
-						if (texColorP->c.r >= 0.999f)
-							texColorP->c.r = 1;
+						if (color.c.r >= 0.999f)
+							color.c.r = 1;
 						else
 							bWhite = false;
-						if (texColorP->c.g >= 0.999f)
-							texColorP->c.g = 1;
+						if (color.c.g >= 0.999f)
+							color.c.g = 1;
 						else
 							bWhite = false;
-						if (texColorP->c.b >= 0.999f)
-							texColorP->c.b = 1;
+						if (color.c.b >= 0.999f)
+							color.c.b = 1;
 						else
 							bWhite = false;
+						}
+					if (!(bBlack || bWhite)) {
+						texColorP = &texColor [y * LM_W + x];
+						texColorP->red = (ubyte) (255 * color.c.r);
+						texColorP->green = (ubyte) (255 * color.c.g);
+						texColorP->blue = (ubyte) (255 * color.c.b);
 						}
 					}
 				}
@@ -908,7 +903,6 @@ int SaveLightMapData (int nLevel)
 										gameData.segs.nVertices, 
 										gameData.segs.nFaces, 
 										lightMapData.nLights, 
-										lightMapData.nBuffers, 
 										MAX_LIGHT_RANGE};
 	int				i, bOk;
 	char				szFilename [FILENAME_LEN];
@@ -958,7 +952,6 @@ if (bOk)
 			(ldh.nVertices == gameData.segs.nVertices) && 
 			(ldh.nFaces == gameData.segs.nFaces) && 
 			(ldh.nLights == lightMapData.nLights) && 
-			(ldh.nBuffers == lightMapData.nBuffers) && 
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk) {
 	for (i = ldh.nFaces, faceP = gameData.segs.faces.faces; i; i--, faceP++) {
@@ -1013,7 +1006,11 @@ if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 		else
 			ComputeLightMaps (-1, 0);
 		}
-	lightMapData.nBuffers = (lightMapData.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
+	int nBuffers = (lightMapData.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
+	if (lightMapData.nBuffers > nBuffers) {
+		lightMapData.buffers = (tLightMapBuffer *) D2_REALLOC (lightMapData.buffers, nBuffers * sizeof (tLightMapBuffer));
+		lightMapData.nBuffers = nBuffers;
+		}
 	gameStates.render.bLightMaps = 0;
 	gameStates.render.nState = 0;
 	gameOpts->render.color.nSaturation = nSaturation;

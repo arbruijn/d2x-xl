@@ -569,7 +569,7 @@ char *headLightFS [2][8] = {
 	" 	}\r\n" \
 	"spotColor = vec3 (spotBrightness, spotBrightness, spotBrightness);\r\n" \
 	"spotColor = min (spotColor, matColor.rgb);\r\n" \
-	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
+	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a /** gl_Color.a*/);\r\n" \
 	"}" 
 	,
 	//base texture and decal
@@ -598,7 +598,7 @@ char *headLightFS [2][8] = {
 	" 	}\r\n" \
 	"spotColor = vec3 (spotBrightness, spotBrightness, spotBrightness));\r\n" \
 	"spotColor = min (spotColor, matColor.rgb);\r\n" \
-	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
+	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a /** gl_Color.a*/);\r\n" \
 	"}" 
 	,
 	//base texture and decal with color key

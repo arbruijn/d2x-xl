@@ -29,7 +29,7 @@ typedef struct tLightMap {
 
 typedef struct tLightMapBuffer {
 	GLuint		handle;
-	tRgbColorf	bmP [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
+	tRgbColorb	bmP [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
 } tLightMapBuffer;
 
 typedef struct tLightMapData {

@@ -671,10 +671,11 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 			}
 		if (botInfoP->thief)
 			DropStolenItems (delObjP);
-		if (botInfoP->companion) {
+#ifndef _DEBUG
+		if (botInfoP->companion)
 			DropBuddyMarker (delObjP);
+#endif
 		}
-	}
 	if (ROBOTINFO (delObjP->id).nExp2Sound > -1)
 		DigiLinkSoundToPos (ROBOTINFO (delObjP->id).nExp2Sound, delObjP->nSegment, 0, vSpawnPos, 0, F1_0);
 		//PLAY_SOUND_3D (ROBOTINFO (delObjP->id).nExp2Sound, vSpawnPos, delObjP->nSegment);
@@ -688,7 +689,7 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 			explObjP->movementType = MT_PHYSICS;
 			explObjP->mType.physInfo = delObjP->mType.physInfo;
 			}
-		explObjP->cType.explInfo.nDeleteTime = explObjP->lifeleft/2;
+		explObjP->cType.explInfo.nDeleteTime = explObjP->lifeleft / 2;
 		explObjP->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
 #ifdef _DEBUG
 		if (objP->cType.explInfo.nDeleteObj < 0)
