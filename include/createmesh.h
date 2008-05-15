@@ -88,7 +88,7 @@ class CQuadMeshBuilder {
 		CTriMeshBuilder	m_triMeshBuilder;
 
 	private:
-		void InitFace (short nSegment, ubyte nSide);
+		void InitFace (short nSegment, ubyte nSide, bool bRebuild);
 		void SetupLMapTexCoord (tTexCoord2f *texCoordP);
 		void SetupFace (void);
 		void InitTexturedFace (void);
@@ -101,7 +101,8 @@ class CQuadMeshBuilder {
 	public:
 		CQuadMeshBuilder (void) {};
 		~CQuadMeshBuilder (void) {};
-		int Build (int nLevel);
+		void RebuildLightMapTexCoord (void);
+		int Build (int nLevel, bool bRebuild = false);
 	};
 
 }

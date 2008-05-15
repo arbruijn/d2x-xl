@@ -1629,16 +1629,21 @@ CFClose(&cf);
 if (!quadMeshBuilder.Build (nLevel))
 	goto reloadLevel;
 
+if (!gameStates.app.bNostalgia) {
 #if !SHADOWS
-if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
+	if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
 #endif
-	{
-	if (!gameStates.app.bNostalgia) {
+		{
 		AddDynGeometryLights ();
-		if (gameOpts->ogl.bPerPixelLighting)
+		ComputeNearestLights (nLevel);
+		if (gameOpts->ogl.bPerPixelLighting) {
 			CreateLightMaps (nLevel);
+			if (HaveLightMaps ())
+				quadMeshBuilder.RebuildLightMapTexCoord ();	//rebuild to create proper lightmap texture coordinates
+			}
 		}
 	}
+
 SetAmbientSoundFlags ();
 #ifdef EDITOR
 write_game_text_file(filename);

@@ -869,11 +869,14 @@ return m_normalP;
 
 //------------------------------------------------------------------------------
 
-void CQuadMeshBuilder::InitFace (short nSegment, ubyte nSide)
+void CQuadMeshBuilder::InitFace (short nSegment, ubyte nSide, bool bRebuild)
 {
 	fix	rMin, rMax;
 
-memset (m_faceP, 0, sizeof (*m_faceP));
+if (bRebuild)
+	m_faceP->nTris = 0;
+else
+	memset (m_faceP, 0, sizeof (*m_faceP));
 m_faceP->nSegment = nSegment;
 m_faceP->nVerts = 4;
 m_faceP->nIndex = m_vertexP - gameData.segs.faces.vertices;
@@ -1016,6 +1019,32 @@ for (i = 0; i < 2; i++, m_triP++) {
 
 //------------------------------------------------------------------------------
 
+void CQuadMeshBuilder::RebuildLightMapTexCoord (void)
+{
+	static short	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
+
+	int			h, i, j, k, nFace;
+	short			*triVertP;
+	tTexCoord2f	lMapTexCoord [4];
+
+m_faceP = FACES;
+m_lMapTexCoordP = gameData.segs.faces.lMapTexCoord;
+for (nFace = gameData.segs.nFaces; nFace; nFace--, m_faceP++) {
+	SetupLMapTexCoord (lMapTexCoord);
+	h = (SEGMENTS [m_faceP->nSegment].sides [m_faceP->nSide].nType == SIDE_IS_TRI_13);
+	for (i = 0; i < 2; i++, m_triP++) {
+		triVertP = n2TriVerts [h][i];
+		for (j = 0; j < 3; j++) {
+			k = triVertP [j];
+			*m_lMapTexCoordP = lMapTexCoord [k];
+			m_lMapTexCoordP++;
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void CQuadMeshBuilder::SplitIn4Tris (void)
 {
 	static short	n4TriVerts [4][3] = {{0,1,4},{1,2,4},{2,3,4},{3,0,4}};
@@ -1082,7 +1111,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 
 #define FACE_VERTS	6
 
-int CQuadMeshBuilder::Build (int nLevel)
+int CQuadMeshBuilder::Build (int nLevel, bool bRebuild)
 {
 m_faceP = FACES;
 m_triP = TRIANGLES;
@@ -1132,7 +1161,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 				nDbgSeg = nDbgSeg;
 #endif
 			GetSideVertIndex (m_sideVerts, nSegment, nSide);
-			InitFace (nSegment, nSide);
+			InitFace (nSegment, nSide, bRebuild);
 			if (m_nWallType)
 				InitTexturedFace ();
 			else if (m_bColoredSeg)

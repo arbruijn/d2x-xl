@@ -950,7 +950,6 @@ if (!bRestore) {
 	gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
 	SetMaxOmegaCharge ();
 	ConvertObjects ();
-	ComputeNearestLights (nLevel);
 	ComputeStaticDynLighting (nLevel);
 	SetEquipGenStates ();
 	gameData.time.nPaused = 0;

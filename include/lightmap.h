@@ -37,6 +37,7 @@ typedef struct tLightMapData {
 	tLightMapBuffer	*buffers;
 	int					nBuffers;
 	int					nLights; 
+	ushort				nLightmaps;
 } tLightMapData;
 
 //------------------------------------------------------------------------------

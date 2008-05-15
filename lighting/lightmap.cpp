@@ -76,7 +76,7 @@ int lightMapWidth [5] = {8, 16, 32, 64, 128};
 
 tLightMap dummyLightMap;
 
-tLightMapData lightMapData = {NULL, NULL, 0};
+tLightMapData lightMapData = {NULL, NULL, 0, 0};
 
 //------------------------------------------------------------------------------
 
@@ -656,8 +656,8 @@ void CopyLightMap (fVector3 *texColorP, ushort nLightmap)
 {
 tLightMapBuffer *bufP = lightMapData.buffers + nLightmap / LIGHTMAP_BUFSIZE;
 int i = nLightmap % LIGHTMAP_BUFSIZE;
-int x = (i % LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH;
-int y = (i / LIGHTMAP_ROWSIZE) * LIGHTMAP_WIDTH;
+int x = (i % LIGHTMAP_ROWSIZE) * LM_W;
+int y = (i / LIGHTMAP_ROWSIZE) * LM_H;
 for (i = 0; i < LM_H; i++, y++)
 	memcpy (&bufP->bmP [y][x], texColorP + i * LM_W, LM_W * sizeof (tRgbColorf));
 }
@@ -699,8 +699,6 @@ void ComputeLightMaps (int nFace, int nThread)
 	bool			bBlack, bWhite;
 	tVertColorData	vcd;
 
-	static ushort nLightmap;
-
 for (i = 0; i < LM_W; i++)
 	fOffset [i] = (double) i / (double) (LM_W - 1);
 InitVertColorData (vcd);
@@ -714,7 +712,7 @@ else
 if (nFace <= 0) {
 	CreateSpecialLightMap (texColor, 0, 0);
 	CreateSpecialLightMap (texColor, 1, 1);
-	nLightmap = 2;
+	lightMapData.nLightmaps = 2;
 	}
 //Next Go through each surface and create a lightmap for it.
 for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
@@ -787,38 +785,45 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 		bBlack = 
 		bWhite = true;
 		for (x = 0; x < LM_W; x++) { 
-			for (y = 0; y < LM_H; y++, pPixelPos++, texColorP++) { 
+			for (y = 0; y < LM_H; y++, pPixelPos++) { 
 				if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->fRad / 10.0f, nThread)) {
 					VmVecFixToFloat (&vcd.vertPos, pPixelPos);
-					G3AccumVertColor (-1, texColorP /*&texColor [y * LM_W + x]*/, &vcd, nThread);
-					if ((texColorP->c.r > 0) || (texColorP->c.g > 0) || (texColorP->c.b > 0))
-						bBlack = false;
-					if (texColorP->c.r >= 1)
-						texColorP->c.r = 1;
-					else
-						bWhite = false;
-					if (texColorP->c.g >= 1)
-						texColorP->c.g = 1;
-					else
-						bWhite = false;
-					if (texColorP->c.b >= 1)
-						texColorP->c.b = 1;
-					else
-						bWhite = false;
+					G3AccumVertColor (-1, texColorP = &texColor [y * LM_W + x], &vcd, nThread);
+					if ((texColorP->c.r > 0.001f) || (texColorP->c.g > 0.001f) || (texColorP->c.b > 0.001f)) {
+							bBlack = false;
+						if (texColorP->c.r >= 0.999f)
+							texColorP->c.r = 1;
+						else
+							bWhite = false;
+						if (texColorP->c.g >= 0.999f)
+							texColorP->c.g = 1;
+						else
+							bWhite = false;
+						if (texColorP->c.b >= 0.999f)
+							texColorP->c.b = 1;
+						else
+							bWhite = false;
+						}
 					}
 				}
 			}
+#ifdef _DEBUG
+		if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
+#endif
+		if (bBlack) {
+			faceP->nLightmap = 0;
+			nBlackLightmaps++;
+			}
+		else if (bWhite) {
+			faceP->nLightmap = 1;
+			nWhiteLightmaps++;
+			}
+		else {
+			CopyLightMap (texColor, lightMapData.nLightmaps);
+			faceP->nLightmap = lightMapData.nLightmaps++;
+			}
 		}
-	if (bBlack) {
-		faceP->nLightmap = 0;
-		nBlackLightmaps++;
-		}
-	else if (bWhite) {
-		faceP->nLightmap = 1;
-		nWhiteLightmaps++;
-		}
-	CopyLightMap (texColor, nLightmap);
-	faceP->nLightmap = nLightmap++;
 	}
 }
 
@@ -956,7 +961,7 @@ if (bOk)
 			(ldh.nBuffers == lightMapData.nBuffers) && 
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk) {
-	for (i = gameData.segs.nFaces, faceP = gameData.segs.faces.faces; i; i--, faceP++) {
+	for (i = ldh.nFaces, faceP = gameData.segs.faces.faces; i; i--, faceP++) {
 		bOk = CFRead (&faceP->nLightmap, sizeof (faceP->nLightmap), 1, &cf) == 1;
 		if (!bOk)
 			break;
@@ -1001,13 +1006,14 @@ if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
 		{
 		gameData.render.lights.dynamic.shader.index [0][0].nFirst = MAX_SHADER_LIGHTS;
 		gameData.render.lights.dynamic.shader.index [0][0].nLast = 0;
-		if (0 && gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
+		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 			nFace = 0;
 			NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreateLightMapsPoll);
 			}
 		else
 			ComputeLightMaps (-1, 0);
 		}
+	lightMapData.nBuffers = (lightMapData.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
 	gameStates.render.bLightMaps = 0;
 	gameStates.render.nState = 0;
 	gameOpts->render.color.nSaturation = nSaturation;

@@ -245,7 +245,7 @@ char *pszPPXLightingFS [] = {
 	"		*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -285,7 +285,7 @@ char *pszPPXLightingFS [] = {
 	"		*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -329,8 +329,9 @@ char *pszPPXLightingFS [] = {
 	"		*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;\r\n" \
-	"	}"
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;\r\n" \
+	"	}\r\n" \
+	"}"
 	};
 
 // ----------------------------------------------------------------------------------------------
@@ -341,7 +342,7 @@ char *pszPP1LightingFS [] = {
 	"uniform float fColorScale, fBoost;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = gl_Color * fColorScale;\r\n" \
+	"	vec4 color = vec4 (gl_Color.rgb * fColorScale, gl_Color.a);\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
@@ -365,15 +366,14 @@ char *pszPP1LightingFS [] = {
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	color *= gl_LightSource [0].constantAttenuation);\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (min (matColor.rgb, matColor.rgb * color.rgb), texColor.a * fColorScale);\r\n" \
+	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation), color.a * fColorScale);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D baseTex;\r\n" \
 	"uniform float fColorScale, fBoost;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = gl_Color * fColorScale;\r\n" \
+	"	vec4 color = vec4 (gl_Color.rgb * fColorScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
@@ -398,14 +398,14 @@ char *pszPP1LightingFS [] = {
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"uniform float fColorScale, fBoost;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = gl_Color * fColorScale;\r\n" \
+	"	vec4 color = vec4 (gl_Color.rgb * fColorScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -432,7 +432,7 @@ char *pszPP1LightingFS [] = {
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
@@ -443,7 +443,7 @@ char *pszPP1LightingFS [] = {
 	"if (bMask < 0.5)\r\n" \
 	"  discard;\r\n" \
 	"else {\r\n" \
-	"	vec4 color = gl_Color * fColorScale;\r\n" \
+	"	vec4 color = vec4 (gl_Color.rgb * fColorScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -470,7 +470,7 @@ char *pszPP1LightingFS [] = {
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);}\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);}\r\n" \
 	"	}"
 	};
 
@@ -621,7 +621,7 @@ char *pszPPLMXLightingFS [] = {
 	"		<<<<< specular highlight*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb), matColor.a) * fColorScale;\r\n" \
+	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb), matColor.a) * fColorScale;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -660,7 +660,7 @@ char *pszPPLMXLightingFS [] = {
 	"		<<<<< specular highlight*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -701,7 +701,7 @@ char *pszPPLMXLightingFS [] = {
 	"		<<<<< specular highlight*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -745,7 +745,7 @@ char *pszPPLMXLightingFS [] = {
 	"		<<<<< specular highlight*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;}\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a) * fColorScale;}\r\n" \
 	"	}"
 	};
 
@@ -783,7 +783,7 @@ char *pszPPLM1LightingFS [] = {
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
 	"	color *= gl_LightSource [0].constantAttenuation;\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * fColorScale);\r\n" \
+	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * fColorScale);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
@@ -815,7 +815,7 @@ char *pszPPLM1LightingFS [] = {
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
@@ -849,7 +849,7 @@ char *pszPPLM1LightingFS [] = {
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
@@ -887,7 +887,7 @@ char *pszPPLM1LightingFS [] = {
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = /*min (texColor, */vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);}\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fColorScale);}\r\n" \
 	"	}"
 	};
 
@@ -961,7 +961,7 @@ char *pszLMLightingFS [] = {
 	"void main() {\r\n" \
 	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"	gl_FragColor = /*min (texColor, */(texColor * color);\r\n" \
+	"	gl_FragColor = (texColor * color);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
@@ -970,7 +970,7 @@ char *pszLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	gl_FragColor = /*min (texColor, */(texColor * color);\r\n" \
+	"	gl_FragColor = (texColor * color);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
@@ -983,7 +983,7 @@ char *pszLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	gl_FragColor = /*min (texColor, */(texColor * color);}\r\n" \
+	"	gl_FragColor = (texColor * color);}\r\n" \
 	"	}"
 	};
 
