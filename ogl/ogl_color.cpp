@@ -308,7 +308,7 @@ return 0;
 
 float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
-#ifdef _DEBUG
+#if 1//def _DEBUG
 
 int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, int nThread)
 {
@@ -324,7 +324,6 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
 	tVertColorData			vcd = *vcdP;
 
-r_tvertexc++;
 #ifdef _DEBUG
 if (nThread == 0)
 	nThread = nThread;
@@ -332,11 +331,11 @@ if (nThread == 1)
 	nThread = nThread;
 #endif
 colorSum = *pColorSum;
+VmVecSub (&vertPos, vcd.pVertPos, (fVector3 *) &viewInfo.glPosf);
+VmVecNormalize (&vertPos, VmVecNegate (&vertPos));
 nLights = sliP->nActive;
 if (nLights > gameData.render.lights.dynamic.nLights)
 	nLights = gameData.render.lights.dynamic.nLights;
-VmVecSub (&vertPos, vcd.pVertPos, (fVector3 *) &viewInfo.glPosf);
-VmVecNormalize (&vertPos, VmVecNegate (&vertPos));
 i = sliP->nLast - sliP->nFirst + 1;
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -370,7 +369,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	lightColor = *((fVector3 *) &psl->info.color);
 	lightPos = psl->vPosf [gameStates.render.nState && !gameStates.ogl.bUseTransform].v3;
 	VmVecSub (&lightDir, &lightPos, vcd.pVertPos);
-	//scaled quadratic attenuation depending on brightness
 	bInRad = 0;
 	fLightDist = VmVecMag (&lightDir) * gameStates.ogl.fLightRange;
 	VmVecNormalize (&lightDir, &lightDir);
@@ -496,35 +494,28 @@ return j;
 int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, int nThread)
 {
 	int						i, j, nLights, nType, bInRad, 
-								bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState, 
+								bSkipHeadLight = gameOpts->ogl.bHeadLight && !gameStates.render.nState, 
 								nSaturation = gameOpts->render.color.nSaturation;
 	int						nBrightness, nMaxBrightness = 0, nMeshQuality = gameOpts->render.nMeshQuality;
 	float						fLightDist, fAttenuation, spotEffect, fMag, NdotL, RdotE;
 	fVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	fVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};
 	tShaderLight			*psl;
-	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + gameData.render.lights.dynamic.shader.index [0][nThread].nFirst;
+	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
+	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
 	tVertColorData			vcd = *vcdP;
 
-r_tvertexc++;
 colorSum = *pColorSum;
-nLights = gameData.render.lights.dynamic.shader.index [0][nThread].nActive;
-if (nLights > gameData.render.lights.dynamic.nLights)
-	nLights = gameData.render.lights.dynamic.nLights;
 VmVecSub (&vertPos, vcd.pVertPos, (fVector3 *) &viewInfo.glPosf);
 VmVecNormalize (&vertPos, VmVecNegate (&vertPos));
-i = gameData.render.lights.dynamic.shader.index [0][nThread].nLast - gameData.render.lights.dynamic.shader.index [0][nThread].nFirst + 1;
+nLights = sliP->nActive;
+if (nLights > gameData.render.lights.dynamic.nLights)
+	nLights = gameData.render.lights.dynamic.nLights;
+i = sliP->nLast - sliP->nFirst + 1;
 for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
-#if 1
 	if (!(psl = activeLightsP->psl))
-#else
-	if (!(psl = GetActiveShaderLight (activeLightsP, nThread)))
-#endif
 		continue;
-#if 0
-	if (i == vcd.nMatLight)
-		continue;
-#endif
+	nLights--;
 	nType = psl->info.nType;
 	if (bSkipHeadLight && (nType == 3))
 		continue;
@@ -555,9 +546,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		lightDir.p.z /= fMag;
 		}
 #endif
+#if 0
 	if (psl->info.fBrightness < 0)
 		fAttenuation = 0.01f;
-	else {
+	else 
+#endif
+		{
 #if VECMAT_CALLS
 		fLightDist = VmVecMag (&lightDir) / gameStates.ogl.fLightRange;
 #else
@@ -584,11 +578,14 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		else {	//make it decay faster
 #if BRIGHT_SHOTS
 			if (nType == 2)
-				fAttenuation = (1.0f + 0.05f * fLightDist + 0.005f * fLightDist * fLightDist);
+				fAttenuation = (1.0f + OBJ_LIN_ATT * fLightDist + OBJ_QUAD_ATT * fLightDist * fLightDist);
 			else
 #endif
-			fAttenuation = (1.0f + 0.1f * fLightDist + 0.01f * fLightDist * fLightDist);
-			NdotL = G3_DOTF (vcd.vertNorm, lightDir);
+				fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
+			NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+#if 0
+			NdotL = 1 - ((1 - NdotL) * 0.9f);
+#endif
 			if (psl->info.fRad > 0)
 				NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
 			fAttenuation /= psl->info.fBrightness;
