@@ -230,10 +230,10 @@ return 1;
 int LightingMethod (void)
 {
 if (gameOpts->render.nLightingMethod == 1)
-	return 2 + gameOpts->render.color.bAmbientLight;
+	return 2 + gameStates.render.bAmbientColor;
 else if (gameOpts->render.nLightingMethod == 2)
 	return 4;
-return gameOpts->render.color.bAmbientLight;
+return gameStates.render.bAmbientColor;
 }
 
 //--------------------------------------------------------------------------

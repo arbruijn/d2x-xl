@@ -3581,6 +3581,7 @@ gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod;
 gameStates.render.bPerPixelLighting = (gameStates.render.nLightingMethod == 2);
 gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
 gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
+gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
 }
 
 //------------------------------------------------------------------------------

@@ -483,7 +483,7 @@ if (gameStates.app.bNostalgia)
 if (gameStates.app.bMultiThreaded)
 	return 0;
 if (!(gameOpts->render.nLightingMethod || 
-	  (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored) ||
+	  (gameStates.render.bAmbientColor && !gameStates.render.bColored) ||
 	   gameStates.app.bEnableShadows))
 	return 0;
 return
@@ -630,7 +630,7 @@ void ComputeNearestLights (int nLevel)
 if (gameStates.app.bNostalgia)
 	return;
 if (!(SHOW_DYN_LIGHT || 
-	  (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored) ||
+	  (gameStates.render.bAmbientColor && !gameStates.render.bColored) ||
 	   (gameStates.app.bEnableShadows && !COMPETITION)))
 	return;
 loadOp = 0;

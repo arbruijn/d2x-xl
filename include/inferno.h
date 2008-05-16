@@ -913,6 +913,7 @@ typedef struct tRenderStates {
 	int bFullBright;
 	int bQueryCoronas;
 	int bDoLightMaps;
+	int bAmbientColor;
 	int bDoCameras;
 	int bRenderIndirect;
 	int bBuildModels;

@@ -2081,7 +2081,7 @@ gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras &&
 										 !gameStates.render.cameras.bActive;
 gameStates.render.bDoLightMaps = gameStates.render.color.bLightMapsOk && 
 											gameOpts->render.color.bUseLightMaps && 
-											gameOpts->render.color.bAmbientLight && 
+											gameStates.render.bAmbientColor && 
 											!IsMultiGame;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);

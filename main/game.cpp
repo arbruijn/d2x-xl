@@ -263,7 +263,7 @@ nClearWindow = 2;		//	do portal only window clear.
 InitDetailLevels (gameStates.app.nDetailLevel);
 gameStates.render.color.bRenderLightMaps =
 	gameStates.render.color.bLightMapsOk && 
-	gameOpts->render.color.bAmbientLight && 
+	gameStates.render.bAmbientColor && 
 	gameOpts->render.color.bUseLightMaps;
 gameStates.ogl.bGlTexMerge = 
 	gameOpts->ogl.bGlTexMerge && 

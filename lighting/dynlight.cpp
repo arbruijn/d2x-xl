@@ -100,7 +100,7 @@ void SetDynLightColor (short nLight, float red, float green, float blue, float f
 	tDynLight	*pl = gameData.render.lights.dynamic.lights + nLight;
 	int			i;
 
-if ((pl->info.nType == 1) ? gameOpts->render.color.bGunLight : gameOpts->render.color.bAmbientLight) {
+if ((pl->info.nType == 1) ? gameOpts->render.color.bGunLight : gameStates.render.bAmbientColor) {
 	pl->info.color.red = red;
 	pl->info.color.green = green;
 	pl->info.color.blue = blue;
@@ -1416,7 +1416,7 @@ if (gameStates.app.bNostalgia)
 	return;
 if (gameStates.render.bPerPixelLighting && HaveLightMaps ())
 	return;
-if (gameOpts->render.nLightingMethod || (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
+if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
 		int				i, j, bColorize = !gameOpts->render.nLightingMethod;
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient;
 		tSegment2		*seg2P;
