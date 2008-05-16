@@ -156,7 +156,6 @@ static struct {
 	int	nRenderQual;
 	int	nTexQual;
 	int	nMeshQual;
-	int	nLMapQual;
 	int	nWallTransp;
 } renderOpts;
 
@@ -166,7 +165,7 @@ static struct {
 	int	nHWHeadLight;
 	int	nMaxLightsPerFace;
 	int	nMaxLightsPerPass;
-	int	nLightmapRange;
+	int	nLightmapQual;
 	int	nGunColor;
 	int	nObjectLight;
 } lightOpts;
@@ -3324,15 +3323,6 @@ if (gameOpts->app.bExpertMode) {
 			m->rebuild = 1;
 			}
 		}
-	if (renderOpts.nLMapQual > 0) {
-		m = menus + renderOpts.nLMapQual;
-		v = m->value;
-		if (gameOpts->render.nLightmapQuality != v) {
-			gameOpts->render.nLightmapQuality = v;
-			sprintf (m->text, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
-			m->rebuild = 1;
-			}
-		}
 	m = menus + renderOpts.nWallTransp;
 	v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
 	if (extraGameInfo [0].grWallTransparency != v) {
@@ -3362,8 +3352,8 @@ if (lightOpts.nMethod >= 0) {
 		return;
 		}
 	}
-if (renderOpts.nLMapQual > 0) {
-	m = menus + renderOpts.nLMapQual;
+if (lightOpts.nLightmapQual > 0) {
+	m = menus + lightOpts.nLightmapQual;
 	v = m->value;
 	if (gameOpts->render.nLightmapQuality != v) {
 		gameOpts->render.nLightmapQuality = v;
@@ -3400,7 +3390,7 @@ if (lightOpts.nObjectLight >= 0) {
 	}
 if (lightOpts.nMaxLightsPerFace >= 0) {
 	m = menus + lightOpts.nMaxLightsPerFace;
-	v = m->value + 4;
+	v = m->value + 3;
 	if (v != gameOpts->ogl.nMaxLightsPerFace) {
 		gameOpts->ogl.nMaxLightsPerFace = v;
 		sprintf (m->text, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFace [gameOpts->ogl.nMaxLightsPerFace]);
@@ -3422,7 +3412,7 @@ if (lightOpts.nMaxLightsPerPass >= 0) {
 
 //------------------------------------------------------------------------------
 
-void LightOptionsMenu ()
+void LightOptionsMenu (void)
 {
 	tMenuItem m [30];
 	int	i, choice = 0, nLightRange = extraGameInfo [0].nLightRange;
@@ -3434,23 +3424,31 @@ void LightOptionsMenu ()
 
 	char szMaxLightsPerFace [50];
 	char szMaxLightsPerPass [50];
+	char szLightmapQual [50];
+
+	pszLMapQual [0] = TXT_LOW;
+	pszLMapQual [1] = TXT_MEDIUM;
+	pszLMapQual [2] = TXT_HIGH;
+	pszLMapQual [3] = TXT_VERY_HIGH;
+	pszLMapQual [4] = TXT_EXTREME;
 
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
+	optColorSat = 
 	lightOpts.nMethod =
-	lightOpts.nLightmapRange =
+	lightOpts.nLightmapQual = 
 	lightOpts.nMaxLightsPerFace = 
+	lightOpts.nMaxLightsPerPass = 
 	lightOpts.nHWObjLighting =
 	lightOpts.nHWHeadLight =
-	optColorSat = 
 	lightOpts.nObjectLight = -1;
 	if (!gameStates.app.bGameRunning) {
 		if ((gameOpts->render.nLightingMethod == 2) && !(gameStates.render.bUsePerPixelLighting && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk))
 			gameOpts->render.nLightingMethod = 1;
 		ADD_RADIO (opt, TXT_STD_LIGHTING, gameOpts->render.nLightingMethod == 0, KEY_S, 1, NULL);
 		lightOpts.nMethod = opt++;
-		ADD_RADIO (opt, TXT_OGL_LIGHTING, gameOpts->render.nLightingMethod == 1, KEY_G, 1, HTX_OGL_LIGHTING);
+		ADD_RADIO (opt, TXT_VERTEX_LIGHTING, gameOpts->render.nLightingMethod == 1, KEY_V, 1, HTX_VERTEX_LIGHTING);
 		opt++;
 		if (gameStates.render.bUsePerPixelLighting && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk) {
 			ADD_RADIO (opt, TXT_PER_PIXEL_LIGHTING, gameOpts->render.nLightingMethod == 2, KEY_P, 1, HTX_PER_PIXEL_LIGHTING);
@@ -3484,13 +3482,17 @@ do {
 			}
 		sprintf (szMaxLightsPerFace + 1, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFace [gameOpts->ogl.nMaxLightsPerFace]);
 		*szMaxLightsPerFace = *(TXT_MAX_LIGHTS_PER_FACE - 1);
-		ADD_SLIDER (opt, szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace - 4, 0, sizeofa (nMaxLightsPerFace) - 5, KEY_I, HTX_MAX_LIGHTS_PER_FACE);
+		ADD_SLIDER (opt, szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace - 3, 0, sizeofa (nMaxLightsPerFace) - 4, KEY_I, HTX_MAX_LIGHTS_PER_FACE);
 		lightOpts.nMaxLightsPerFace = opt++;
 		if (gameOpts->render.nLightingMethod == 2) {
 			sprintf (szMaxLightsPerPass + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 			*szMaxLightsPerPass = *(TXT_MAX_LIGHTS_PER_PASS - 1);
 			ADD_SLIDER (opt, szMaxLightsPerPass + 1, gameOpts->ogl.nMaxLightsPerPass - 1, 0, 7, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
 			lightOpts.nMaxLightsPerPass = opt++;
+			sprintf (szLightmapQual + 1, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
+			*szLightmapQual = *(TXT_LMAP_QUALITY + 1);
+			ADD_SLIDER (opt, szLightmapQual + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_G, HTX_LMAP_QUALITY);
+			lightOpts.nLightmapQual = opt++;
 			}
 
 		ADD_TEXT (opt, "", 0);
@@ -3518,12 +3520,14 @@ do {
 	optMixColors = 
 	optPowerupLights = -1;
 	if (gameOpts->app.bExpertMode) {
-		if (gameOpts->render.color.bGunLight) {
+		if (!gameOpts->render.nLightingMethod && gameOpts->render.color.bGunLight) {
 			ADD_CHECK (opt, TXT_MIX_COLOR, gameOpts->render.color.bMix, KEY_X, HTX_ADVRND_MIXCOLOR);
 			optMixColors = opt++;
 			}
-		ADD_CHECK (opt, TXT_POWERUPLIGHTS, !extraGameInfo [0].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
-		optPowerupLights = opt++;
+		if (gameOpts->render.nLightingMethod < 2) {
+			ADD_CHECK (opt, TXT_POWERUPLIGHTS, !extraGameInfo [0].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
+			optPowerupLights = opt++;
+			}
 		}
 	ADD_CHECK (opt, TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_F, HTX_FLICKERLIGHTS);
 	optFlickerLights = opt++;
@@ -3539,7 +3543,7 @@ do {
 		if (i < 0)
 			break;
 		} 
-	if (gameOpts->render.nLightingMethod) {
+	if (gameOpts->render.nLightingMethod == 1) {
 		if (lightOpts.nObjectLight >= 0) {
 			gameOpts->ogl.bLightObjects = m [lightOpts.nObjectLight].value;
 			if (nPowerupLight >= 0)
@@ -3574,6 +3578,7 @@ if (optColorSat >= 0) {
 			}
 	}
 gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod;
+gameStates.render.bPerPixelLighting = (gameStates.render.nLightingMethod == 2);
 gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
 gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 }
@@ -3925,7 +3930,6 @@ void RenderOptionsMenu (void)
 	char szRendQual [50];
 	char szTexQual [50];
 	char szMeshQual [50];
-	char szLMapQual [50];
 	char szContrast [50];
 
 	int nRendQualSave = gameOpts->render.nQuality;
@@ -3946,12 +3950,6 @@ void RenderOptionsMenu (void)
 	pszMeshQual [2] = TXT_MEDIUM;
 	pszMeshQual [3] = TXT_HIGH;
 	pszMeshQual [4] = TXT_EXTREME;
-
-	pszLMapQual [0] = TXT_LOW;
-	pszLMapQual [1] = TXT_MEDIUM;
-	pszLMapQual [2] = TXT_HIGH;
-	pszLMapQual [3] = TXT_VERY_HIGH;
-	pszLMapQual [4] = TXT_EXTREME;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -3982,7 +3980,7 @@ do {
 		if (gameStates.app.bGameRunning)
 			renderOpts.nTexQual =
 			renderOpts.nMeshQual = 
-			renderOpts.nLMapQual = -1;
+			lightOpts.nLightmapQual = -1;
 		else {
 			sprintf (szTexQual + 1, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
 			*szTexQual = *(TXT_TEXQUAL + 1);
@@ -3992,14 +3990,6 @@ do {
 			*szMeshQual = *(TXT_MESH_QUALITY + 1);
 			ADD_SLIDER (opt, szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 4, KEY_O, HTX_MESH_QUALITY);
 			renderOpts.nMeshQual = opt++;
-			if (!gameStates.render.bPerPixelLighting)
-				renderOpts.nLMapQual = -1;
-			else {
-				sprintf (szLMapQual + 1, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
-				*szLMapQual = *(TXT_LMAP_QUALITY + 1);
-				ADD_SLIDER (opt, szLMapQual + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_G, HTX_LMAP_QUALITY);
-				renderOpts.nLMapQual = opt++;
-				}
 			}
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -4452,11 +4442,12 @@ do {
 	ADD_MENU (opt, TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
 	optLoadout = opt++;
 	Assert (sizeofa (m) >= opt);
-	do {
-		i = ExecMenu1 (NULL, TXT_GAMEPLAY_OPTS, opt, m, &GameplayOptionsCallback, &choice);
+	for (;;) {
+		if (0 > (i = ExecMenu1 (NULL, TXT_GAMEPLAY_OPTS, opt, m, &GameplayOptionsCallback, &choice)))
+			break;
 		if (choice == optLoadout)
 			LoadoutOptions ();
-		} while (i >= 0);
+		};
 	} while (i == -2);
 if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].headlight.bAvailable = m [gplayOpts.nHeadLightAvailable].value;

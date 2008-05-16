@@ -504,7 +504,7 @@ color.alpha = VmVecMag (vCenter);
 if (color.alpha < zRangeP->fRad)
 	fIntensity *= color.alpha / zRangeP->fRad;
 
-if (gameOpts->render.color.bAmbientLight) {
+if (gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight) {
 	color = gameData.render.color.textures [nTexture].color;
 	color.alpha = (float) (color.red * 3 + color.green * 5 + color.blue * 2) / 30 * 2;
 	}
@@ -601,7 +601,7 @@ else {
 		glBlendFunc (GL_ONE, GL_ONE);	
 	bmP = bAdditive ? bmpGlare : bmpCorona;
 	}
-if (gameOpts->render.color.bAmbientLight)
+if (gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight)
 	color = gameData.render.color.textures [nTexture].color;
 else
 	color.red = color.green = color.blue = f2fl (IsLight (nTexture)) / 2;

@@ -2147,6 +2147,7 @@ if (bRewriteIt)
 	WritePlayerFile ();
 
 gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod;
+gameStates.render.bPerPixelLighting = (gameStates.render.nLightingMethod == 2);
 gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
 gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 

@@ -229,9 +229,9 @@ return 1;
 
 int LightingMethod (void)
 {
-if (gameOpts->render.nLightingMethod)
+if (gameOpts->render.nLightingMethod == 1)
 	return 2 + gameOpts->render.color.bAmbientLight;
-if (gameOpts->render.color.bUseLightMaps)
+else if (gameOpts->render.nLightingMethod == 2)
 	return 4;
 return gameOpts->render.color.bAmbientLight;
 }
@@ -323,8 +323,6 @@ gameData.render.lights.bStartDynColoring = 0;
 
 void SetDynColor (tRgbaColorf *color, tRgbColorf *pDynColor, int nVertex, char *pbGotDynColor, int bForce)
 {
-if (0 && gameOpts->render.nLightingMethod)
-	return;
 if (!color)
 	return;
 #if 1

@@ -462,7 +462,7 @@ int SetVertexColor (int nVertex, tFaceColor *pc)
 if (nVertex == nDbgVertex)
 	nVertex = nVertex;
 #endif
-if (gameOpts->render.color.bAmbientLight && !USE_LIGHTMAPS) { 
+if (gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight) { 
 	pc->color.red += gameData.render.color.ambient [nVertex].color.red;
 	pc->color.green += gameData.render.color.ambient [nVertex].color.green;
 	pc->color.blue += gameData.render.color.ambient [nVertex].color.blue;
@@ -484,7 +484,7 @@ if (SHOW_DYN_LIGHT) {
 	return 0;
 	}
 memset (vertColors, 0, sizeof (vertColors));
-if (gameOpts->render.color.bAmbientLight && !USE_LIGHTMAPS) { 
+if (gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight) { 
 	int i, j = propsP->nVertices;
 	for (i = 0; i < j; i++)
 		SetVertexColor (propsP->vp [i], vertColors + i);
@@ -533,7 +533,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 		pdc = gameData.render.lights.dynamicColor + nVertex;
 		if (gameOpts->render.color.bMix) {
 			if (gameOpts->render.color.bGunLight) {
-				if (gameOpts->render.color.bAmbientLight && !gameOpts->render.color.bUseLightMaps) {
+				if (gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight) {
 					if ((fl != 0) && gameData.render.color.vertBright [nVertex]) {
 						hl = fl / gameData.render.color.vertBright [nVertex];
 						pc->color.red = pc->color.red * hl + pdc->red * dl;
@@ -796,7 +796,7 @@ void AdjustVertexColor (grsBitmap *bmP, tFaceColor *pc, fix xLight)
 if (gameStates.ogl.bScaleLight)
 	s *= gameStates.render.bHeadLightOn ? 0.4f : 0.3f;
 #endif
-if (!pc->index || !gameOpts->render.color.bAmbientLight || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) {
+if (!pc->index || !(gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight) || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) {
 	pc->color.red =
 	pc->color.green =
 	pc->color.blue = l * s;
