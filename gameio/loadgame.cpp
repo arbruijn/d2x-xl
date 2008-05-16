@@ -699,7 +699,7 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 
 /*---*/PrintLog ("Loading level...\n");
 if (!gameStates.render.bUsePerPixelLighting)
-	gameOpts->ogl.bPerPixelLighting = 0;
+	gameStates.render.bPerPixelLighting = 0;
 DestroyLightMaps ();
 gameStates.app.bBetweenLevels = 1;
 gameStates.app.bFreeCam = 0;

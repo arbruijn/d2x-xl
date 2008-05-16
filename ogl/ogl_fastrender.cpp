@@ -215,7 +215,7 @@ else {
 		else
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		bOverlay = (bColorKey && gameStates.ogl.bGlTexMerge) ? 1 : -1;
-		bMultiTexture = gameOpts->ogl.bPerPixelLighting && ((bOverlay > 0) || ((bOverlay < 0) && !bMonitor));
+		bMultiTexture = gameStates.render.bPerPixelLighting && ((bOverlay > 0) || ((bOverlay < 0) && !bMonitor));
 		}
 	else
 		bOverlay = 0;
@@ -376,7 +376,7 @@ if (gameStates.render.bTriangleMesh && !bMonitor) {
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
 #endif
 	}	
-else if (gameOpts->ogl.bPerPixelLighting) {
+else if (gameStates.render.bPerPixelLighting) {
 	for (;;) {
 		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 		if (gameStates.ogl.iLight >= gameStates.ogl.nLights)

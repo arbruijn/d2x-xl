@@ -56,7 +56,7 @@ void ResetActiveLights (int nThread, int nActive);
 #define	SHOW_DYN_LIGHT \
 			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) && \
 			 /*gameStates.render.bHaveDynLights &&*/ \
-			 gameOpts->render.bDynLighting)
+			 gameOpts->render.nLightingMethod)
 
 #define HAVE_DYN_LIGHT	(gameStates.render.bHaveDynLights && SHOW_DYN_LIGHT)
 

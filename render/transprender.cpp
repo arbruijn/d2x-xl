@@ -466,7 +466,7 @@ int RIAddParticle (tParticle *particle, float fBrightness, int nThread)
 
 item.particle = particle;
 item.fBrightness = fBrightness;
-G3TransformPoint (&particle->transPos, &particle->pos, gameOpts->ogl.bPerPixelLighting);
+G3TransformPoint (&particle->transPos, &particle->pos, gameStates.render.bPerPixelLighting);
 return AddRenderItemMT (riParticle, &item, sizeof (item), particle->transPos.p.z, particle->transPos.p.z, nThread);
 }
 
@@ -768,7 +768,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (faceP && gameOpts->ogl.bPerPixelLighting) {
+	if (faceP && gameStates.render.bPerPixelLighting) {
 		if (!faceP->bColored) {
 			G3SetupGrayScaleShader ((int) faceP->nRenderType, &faceP->color);
 			glDrawArrays (item->nPrimitive, 0, item->nVertices);
@@ -1124,7 +1124,7 @@ renderItems.bClientColor = 0;
 renderItems.bDepthMask = 0;
 renderItems.bUseLightMaps = 0;
 renderItems.bLightMaps = HaveLightMaps ();
-renderItems.bSplitPolys = !gameOpts->ogl.bPerPixelLighting && (gameStates.render.bSplitPolys > 0);
+renderItems.bSplitPolys = !gameStates.render.bPerPixelLighting && (gameStates.render.bSplitPolys > 0);
 renderItems.nWrap = 0;
 renderItems.nFrame = -1;
 renderItems.bmP = NULL;

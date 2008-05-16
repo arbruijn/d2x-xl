@@ -2064,7 +2064,7 @@ ResetLightningLights (0);
 if (SHOW_LIGHTNINGS) {
 		tLightningBundle	*plb;
 		tLightningLight	*pll = NULL;
-		int					i, n, nLights = 0, bDynLighting = gameOpts->render.bDynLighting;
+		int					i, n, nLights = 0, bDynLighting = gameOpts->render.nLightingMethod;
 
 	gameData.lightnings.nFirstLight = -1;
 	for (i = gameData.lightnings.iUsed; i >= 0; i = n) {
@@ -2094,7 +2094,7 @@ if (SHOW_LIGHTNINGS) {
 			COMPUTE_SEGMENT_CENTER_I (&c, 332);
 			int d = VmVecDist (&c, &pll->vPos);
 #endif
-			if (gameOpts->ogl.bPerPixelLighting)
+			if (gameStates.render.bPerPixelLighting)
 				pll->nBrightness = fl2f (sqrt ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha));
 			else
 				pll->nBrightness = fl2f ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha);

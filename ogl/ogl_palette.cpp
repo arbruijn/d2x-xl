@@ -94,7 +94,7 @@ void GrPaletteStepUp (int r, int g, int b)
 if (gameStates.render.bPaletteFadedOut)
 	return;
 #if 0
-if (!gameOpts->render.bDynLighting || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
+if (!gameOpts->render.nLightingMethod || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
 #endif
 	{
 	r += gameData.render.nPaletteGamma;

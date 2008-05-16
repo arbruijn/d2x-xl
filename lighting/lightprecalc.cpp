@@ -143,8 +143,6 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int nMaxNearestLights [21] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,24,28,32};
-
 int ComputeNearestSegmentLights (int i)
 {
 	tSegment				*segP;
@@ -157,7 +155,7 @@ PrintLog ("computing nearest segment lights (%d)\n", i);
 if (!gameData.render.lights.dynamic.nLights)
 	return 0;
 if (!(pDists = (tLightDist *) D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
-	gameOpts->render.bDynLighting = 0;
+	gameOpts->render.nLightingMethod = 0;
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
@@ -211,7 +209,7 @@ PrintLog ("computing nearest vertex lights (%d)\n", nVertex);
 if (!gameData.render.lights.dynamic.nLights)
 	return 0;
 if (!(pDists = (tLightDist *) D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
-	gameOpts->render.bDynLighting = 0;
+	gameOpts->render.nLightingMethod = 0;
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
@@ -371,7 +369,7 @@ viewer.nSegment = nStartSeg;
 COMPUTE_SEGMENT_CENTER_I (&viewer.position.vPos, nStartSeg);
 segP = SEGMENTS + nStartSeg;
 for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
-	if (gameOpts->ogl.bPerPixelLighting) {
+	if (gameStates.render.bPerPixelLighting) {
 		if (0 <= (nChildSeg = segP->children [nSide])) {
 			while (!SetSegVis (nStartSeg, nChildSeg))
 				;
@@ -483,7 +481,7 @@ int SortLightsGaugeSize (void)
 if (gameStates.app.bNostalgia)
 	return 0;
 if (gameStates.app.bMultiThreaded ||
-	 !(gameOpts->render.bDynLighting || 
+	 !(gameOpts->render.nLightingMethod || 
 	  (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored) ||
 	   gameStates.app.bEnableShadows))
 	return 0;
@@ -524,7 +522,7 @@ if (bOk)
 			(ldh.nLights == gameData.render.lights.dynamic.nLights) && 
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE) &&
 			(ldh.nMethod = LightingMethod () &&
-			(ldh.bPerPixelLighting == gameOpts->ogl.bPerPixelLighting));
+			(ldh.bPerPixelLighting == gameStates.render.bPerPixelLighting));
 if (bOk)
 	bOk = 
 			(CFRead (gameData.segs.bSegVis, sizeof (ubyte) * ldh.nSegments * SEGVIS_FLAGS, 1, &cf) == 1) &&
@@ -547,7 +545,7 @@ int SaveLightData (int nLevel)
 								   gameData.segs.nVertices, 
 								   gameData.render.lights.dynamic.nLights, 
 									MAX_LIGHT_RANGE, 
-									gameOpts->ogl.bPerPixelLighting,
+									gameStates.render.bPerPixelLighting,
 									LightingMethod ()};
 	int				bOk;
 	char				szFilename [FILENAME_LEN];

@@ -1185,7 +1185,7 @@ void LoadTexColorsCompiled (int i, CFILE *loadFile)
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, MAX_WALL_TEXTURES);
 	for (; i < j; i++)
-		ReadColor (gameData.render.color.textures + i, loadFile, gameData.segs.nLevelVersion <= 15, gameOpts->render.bDynLighting);
+		ReadColor (gameData.render.color.textures + i, loadFile, gameData.segs.nLevelVersion <= 15, gameOpts->render.nLightingMethod);
 	}
 }
 

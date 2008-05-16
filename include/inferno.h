@@ -335,7 +335,7 @@ typedef struct tDebugRenderOptions {
 
 typedef struct tRenderOptions {
 	int bAllSegs;
-	int bDynLighting;
+	int nLightingMethod;
 	int bHiresModels;
 	int nMeshQuality;
 	int nLightmapQuality;
@@ -374,8 +374,8 @@ typedef struct tOglOptions {
 	int bLightPowerups;
 	int bObjLighting;
 	int bHeadLight;
-	int bPerPixelLighting;
-	int nMaxLights;
+	int nMaxLightsPerFace;
+	int nMaxLightsPerPass;
 	int bVoodooHack;
 } tOglOptions;
 
@@ -924,9 +924,10 @@ typedef struct tRenderStates {
 	int nState;	//0: render geometry, 1: render objects
 	int nType;
 	int nFrameCount;
+	int nLightingMethod;
+	int bPerPixelLighting;
 	int nMaxLightsPerPass;
 	int nMaxLightsPerFace;
-	int bPerPixelLighting;
 	fix xZoom;
 	fix xZoomScale;
 	ubyte nRenderingType;

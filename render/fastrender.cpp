@@ -115,7 +115,7 @@ void SplitFace (tSegFaces *segFaceP, grsFace *faceP)
 {
 	grsFace *newFaceP;
 
-if (gameOpts->ogl.bPerPixelLighting)
+if (gameStates.render.bPerPixelLighting)
 	return;
 if (!gameStates.ogl.bGlTexMerge)
 	return;
@@ -384,7 +384,7 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	bVertexArrays, 
 			bLightMaps = HaveLightMaps (),
-			bNormals = !bDepthOnly; // && gameOpts->ogl.bPerPixelLighting;
+			bNormals = !bDepthOnly; // && gameStates.render.bPerPixelLighting;
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
@@ -410,7 +410,7 @@ if (nType == 3) {
 		LoadGlareShader ();
 	return 0;
 	}
-else if (gameOpts->ogl.bPerPixelLighting) {
+else if (gameStates.render.bPerPixelLighting) {
 	OglEnableLighting (1);
 	glDisable (GL_LIGHTING);
 	glColor4i (1,1,1,1);
@@ -419,7 +419,7 @@ OglSetupTransform (1);
 if (!(bVertexArrays = G3EnableClientStates (!bDepthOnly, !(bDepthOnly /*|| bLightMaps*/), bNormals, GL_TEXTURE0))) {
 	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
 	G3DisableClientStates (1, 1, bNormals, GL_TEXTURE0);
-	gameOpts->ogl.bPerPixelLighting = gameStates.ogl.bPerPixelLightingOk = 0;
+	gameStates.render.bPerPixelLighting = gameStates.ogl.bPerPixelLightingOk = 0;
 	}
 else {
 	if (bNormals)
@@ -502,7 +502,7 @@ if (gameStates.ogl.bShadersOk) {
 	gameStates.render.history.nShader = -1;
 	}
 if (nType != 3) {
-	if (gameOpts->ogl.bPerPixelLighting)
+	if (gameStates.render.bPerPixelLighting)
 		OglDisableLighting ();
 	OglResetTransform (1);
 	}
@@ -693,7 +693,7 @@ if (!VisitSegment (nSegment, bAutomap))
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-if (gameOpts->ogl.bPerPixelLighting)
+if (gameStates.render.bPerPixelLighting)
 	gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 #ifdef _DEBUG
@@ -769,7 +769,7 @@ else {	//front to back
 		j = SortFaces ();
 	bVertexArrays = BeginRenderFaces (0, 0);
 	glColorMask (1,1,1,1);
-	if (gameOpts->ogl.bPerPixelLighting) {
+	if (gameStates.render.bPerPixelLighting) {
 		gameData.render.mine.nVisited++;
 		RenderSegments (nType, bVertexArrays, 0);
 		}
@@ -1251,7 +1251,7 @@ void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 	float			fAlpha;
 	int			h, i, j, nColor, 
 					nIncr = nStart ? -1 : 1,
-					bVertexLight = !gameOpts->ogl.bPerPixelLighting,
+					bVertexLight = !gameStates.render.bPerPixelLighting,
 					bLightMaps = HaveLightMaps ();
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
@@ -1403,7 +1403,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	if (!(gameStates.render.bFullBright || gameOpts->ogl.bPerPixelLighting))
+	if (!(gameStates.render.bFullBright || gameStates.render.bPerPixelLighting))
 		SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 		nSide = faceP->nSide;
@@ -1453,7 +1453,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 								}
 #endif
 							c.color = gameData.render.color.ambient [nVertex].color;
-							if (!gameOpts->ogl.bPerPixelLighting)
+							if (!gameStates.render.bPerPixelLighting)
 #	if SHADER_VERTEX_LIGHTING
 								if (!ComputeVertexLight (nVertex, 1, &c))
 #	endif
@@ -1698,7 +1698,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
 			ResetNearestStaticLights (nSegment, 0);
 			}
-		gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
+		gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
 		//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 		}
 	else if (nType == 2)	// render objects containing transparency, like explosions

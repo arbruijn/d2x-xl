@@ -229,7 +229,7 @@ return 1;
 
 int LightingMethod (void)
 {
-if (gameOpts->render.bDynLighting)
+if (gameOpts->render.nLightingMethod)
 	return 2 + gameOpts->render.color.bAmbientLight;
 if (gameOpts->render.color.bUseLightMaps)
 	return 4;
@@ -311,7 +311,7 @@ return cache_vis;
 
 void InitDynColoring (void)
 {
-if (!gameOpts->render.bDynLighting && gameData.render.lights.bInitDynColoring) {
+if (!gameOpts->render.nLightingMethod && gameData.render.lights.bInitDynColoring) {
 	gameData.render.lights.bInitDynColoring = 0;
 	memset (gameData.render.lights.bGotDynColor, 0, sizeof (*gameData.render.lights.bGotDynColor) * MAX_VERTICES);
 	}
@@ -323,7 +323,7 @@ gameData.render.lights.bStartDynColoring = 0;
 
 void SetDynColor (tRgbaColorf *color, tRgbColorf *pDynColor, int nVertex, char *pbGotDynColor, int bForce)
 {
-if (0 && gameOpts->render.bDynLighting)
+if (0 && gameOpts->render.nLightingMethod)
 	return;
 if (!color)
 	return;
@@ -393,7 +393,7 @@ if (objP && SHOW_DYN_LIGHT) {
 			RemoveDynLight (-1, -1, nObject);
 			return;
 			}
-		if (gameOpts->ogl.bPerPixelLighting) {
+		if (gameStates.render.bPerPixelLighting) {
 			int id = objP->id;
 			if ((id != POW_EXTRA_LIFE) && (id != POW_ENERGY) && (id != POW_SHIELD_BOOST) && 
 				 (id != POW_HOARD_ORB) && (id != POW_MONSTERBALL) && (id != POW_INVUL)) {
@@ -407,7 +407,7 @@ if (objP && SHOW_DYN_LIGHT) {
 		xObjIntensity /= 4;
 	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
 #if 0
-		if (gameOpts->ogl.bPerPixelLighting)
+		if (gameStates.render.bPerPixelLighting)
 			xObjIntensity = fl2f (sqrt (f2fl (xObjIntensity)));
 		else
 #endif
@@ -761,7 +761,7 @@ if (gameData.render.lights.bInitDynColoring) {
 ResetClusterLights ();
 //	Create list of vertices that need to be looked at for setting of ambient light.
 nRenderVertices = 0;
-if (!gameOpts->render.bDynLighting) {
+if (!gameOpts->render.nLightingMethod) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
 		if (nSegment != -1) {
@@ -795,7 +795,7 @@ if (!gameOpts->render.bDynLighting) {
 	}
 CastMuzzleFlashLight (nRenderVertices, gameData.render.lights.vertices);
 memset (gameData.render.lights.newObjects, 0, sizeof (gameData.render.lights.newObjects));
-if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.bDynLighting) {
+if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.nLightingMethod) {
 	tLightningLight	*pll;
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
@@ -899,7 +899,7 @@ fix ComputeObjectLight (tObject *objP, vmsVector *vRotated)
 	if (nObject >= gameData.objs.nLastObject)
 		return 0;
 	//First, get static light for this tSegment
-if (gameOpts->render.bDynLighting && !((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
+if (gameOpts->render.nLightingMethod && !((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
 	gameData.objs.color = *AvgSgmColor (objP->nSegment, &objP->position.vPos);
 	light = F1_0;
 	}

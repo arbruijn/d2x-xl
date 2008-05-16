@@ -1063,8 +1063,8 @@ int InitPerPixelLightingShader (int nType, int nLights)
 
 if (!gameStates.render.bUsePerPixelLighting)
 	gameStates.ogl.bPerPixelLightingOk =
-	gameOpts->ogl.bPerPixelLighting = 0;
-if (!gameOpts->ogl.bPerPixelLighting)
+	gameStates.render.bPerPixelLighting = 0;
+if (!gameStates.render.bPerPixelLighting)
 	return -1;
 if (perPixelLightingShaderProgs [nLights][nType])
 	return nLights;
@@ -1106,7 +1106,7 @@ for (h = 0; h <= 3; h++) {
 			D2_FREE (pszVS);
 			if (!bOk) {
 				gameStates.ogl.bPerPixelLightingOk =
-				gameOpts->ogl.bPerPixelLighting = 0;
+				gameStates.render.bPerPixelLighting = 0;
 				for (i = 0; i <= MAX_LIGHTS_PER_PIXEL; i++)
 					for (j = 0; j < 4; j++)
 						DeleteShaderProg (perPixelLightingShaderProgs [i] + j);

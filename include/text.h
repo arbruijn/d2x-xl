@@ -1571,7 +1571,7 @@ void LoadGameTexts(void);
 #define TXT_MBALL_PYROFORCE		GT(778)
 #define TXT_OGL_LIGHTING			GT(779)
 #define TXT_OBJECT_LIGHTING		GT(780)
-#define TXT_OGL_MAXLIGHTS			GT(781)
+#define TXT_MAX_LIGHTS_PER_FACE	GT(781)
 #define TXT_DARKNESS					GT(782)
 #define TXT_TEAMDOORS				GT(783)
 #define TXT_MULTICHEATS				GT(784)
@@ -1862,10 +1862,10 @@ void LoadGameTexts(void);
 #define TXT_MT_3DMODEL_LIGHTING	GT(1069)
 #define TXT_MT_MENU_OPTION			GT(1070)
 #define TXT_MT_MENU_TITLE			GT(1071)
+#define TXT_MAX_LIGHTS_PER_PASS	GT(1072)
 
 #if 0
 
-#define TXT_				GT(1072)
 #define TXT_				GT(1073)
 #define TXT_				GT(1074)
 #define TXT_				GT(1075)
@@ -2210,7 +2210,7 @@ void LoadGameTexts(void);
 #define HTX_MBALL_SIZE				HT(196)			
 #define HTX_OGL_LIGHTING			HT(197)
 #define HTX_OBJECT_LIGHTING		HT(198)
-#define HTX_OGL_MAXLIGHTS			HT(199)			
+#define HTX_MAX_LIGHTS_PER_FACE	HT(199)			
 #define HTX_DARKNESS					HT(200)			
 #define HTX_TEAMDOORS				HT(201)			
 #define HTX_MULTICHEATS				HT(202)			
@@ -2382,10 +2382,10 @@ void LoadGameTexts(void);
 #define HTX_MT_PARTICLE_RENDER	HT(367)
 #define HTX_MT_3DMODEL_LIGHTING	HT(368)
 #define HTX_MULTI_THREADING		HT(369)			
+#define HTX_MAX_LIGHTS_PER_PASS	HT(370)			
 
 #if 0
 
-#define HTX_					HT(370)			
 #define HTX_					HT(371)			
 #define HTX_					HT(372)			
 #define HTX_					HT(373)			

@@ -1939,7 +1939,7 @@ return nClouds;
 int ParticleCount (void)
 {
 	int			i, j, nParts, nFirstPart, nPartLimit, z;
-	int			bUnscaled = gameOpts->ogl.bPerPixelLighting;
+	int			bUnscaled = gameStates.render.bPerPixelLighting;
 	tSmoke		*pSmoke = gameData.smoke.buffer;
 	tCloud		*pCloud;
 	tParticle	*pParticle;

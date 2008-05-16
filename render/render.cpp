@@ -1882,9 +1882,9 @@ else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref 
 		nSegment = nSegment;
 #endif
 	SetNearestStaticLights (nSegment, 1, 1, 0);
-	gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && ((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
+	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0) && ((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
 	RenderObjList (nListPos, gameStates.render.nWindow);
-	gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
+	gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
 	//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 	}	
 else if (gameStates.render.nType == 2)	// render objects containing transparency, like explosions
@@ -2064,8 +2064,8 @@ if (nWindow)
 else
 	nWindow = nWindow;
 #endif
-if (gameStates.render.bUsePerPixelLighting)
-	gameStates.render.bPerPixelLighting = HaveLightMaps () ? 2 : gameOpts->ogl.bPerPixelLighting ? 1 : 0;
+if (gameStates.render.nLightingMethod == 2)
+	gameStates.render.bPerPixelLighting = HaveLightMaps () ? 2 : gameStates.render.bPerPixelLighting ? 1 : 0;
 else
 	gameStates.render.bPerPixelLighting = 0;
 gameData.render.nTotalFaces =

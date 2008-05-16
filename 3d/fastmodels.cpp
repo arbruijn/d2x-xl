@@ -621,6 +621,8 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 OglSetupTransform (1);
 if (bLighting) {
 	nLights = sliP->nActive;
+	if (nLights > gameStates.render.nMaxLightsPerFace)
+		nLights = gameStates.render.nMaxLightsPerFace;
 	OglEnableLighting (0); 
 	}
 else

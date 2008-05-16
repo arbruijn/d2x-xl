@@ -396,11 +396,10 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].ogl.bLightObjects, i, 0);
 		RP (gameOptions [i].ogl.bHeadLight, i, 0);
 		RP (gameOptions [i].ogl.bLightPowerups, i, 0);
-		if (gameStates.render.bUsePerPixelLighting)
-			RP (gameOptions [i].ogl.bPerPixelLighting, i, 0);
 		RP (gameOptions [i].ogl.bObjLighting, i, 0);
-		RP (gameOptions [i].ogl.nMaxLights, i, 0);
-		RP (gameOptions [i].render.bDynLighting, i, 0);
+		RP (gameOptions [i].ogl.nMaxLightsPerFace, i, 0);
+		RP (gameOptions [i].ogl.nMaxLightsPerPass, i, 0);
+		RP (gameOptions [i].render.nLightingMethod, i, 0);
 		RP (gameOptions [i].render.nDebrisLife, i, 0);
 
 		RP (gameOptions [i].render.textures.nQuality, i, 0);
@@ -969,10 +968,10 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].ogl.bLightObjects", "1"},
 	{"gameOptions[0].ogl.bHeadLights", "0"},
 	{"gameOptions[0].ogl.bLightPowerups", "0"},
-	{"gameOptions[0].ogl.bPerPixelLighting", "0"},
 	{"gameOptions[0].ogl.bObjLighting", "0"},
-	{"gameOptions[0].ogl.nMaxLights", "4"},
-	{"gameOptions[0].render.bDynLighting", "0"},
+	{"gameOptions[0].ogl.nMaxLightsPerFace", "16"},
+	{"gameOptions[0].ogl.nMaxLightsPerPass", "8"},
+	{"gameOptions[0].render.nLightingMethod", "0"},
 	{"gameOptions[0].render.nDebrisLife", "0"},
 	{"gameOptions[0].render.textures.nQuality", "2"},
 	{"gameOptions[0].render.effects.bAutoTransparency", "1"},
@@ -1825,9 +1824,9 @@ for (i = 0; i < 2; i++) {
 		if (!i)
 			extraGameInfo [0].monsterball.nSizeMod = CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 117) {
-		gameOptions [i].render.bDynLighting = CFReadInt (pcf);
+		gameOptions [i].render.nLightingMethod = CFReadInt (pcf);
 		gameOptions [i].ogl.bLightObjects = CFReadInt (pcf);
-		gameOptions [i].ogl.nMaxLights = CFReadInt (pcf);
+		gameOptions [i].ogl.nMaxLightsPerFace = CFReadInt (pcf);
 		}
 	if (gameStates.input.nPlrFileVersion >= 118)
 		extraGameInfo [i].bDarkness = CFReadByte (pcf);
@@ -2146,6 +2145,11 @@ if (CFClose (&cf))
 		funcRes = errno;
 if (bRewriteIt)
 	WritePlayerFile ();
+
+gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod;
+gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
+gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
+
 return funcRes;
 }
 
@@ -2415,7 +2419,7 @@ for (i = 0; i < 2; i++) {
 		}
 	if (!i)
 		CFWriteByte (extraGameInfo [0].monsterball.nSizeMod, &cf);
-	CFWriteInt (gameOptions [i].render.bDynLighting, &cf);
+	CFWriteInt (gameOptions [i].render.nLightingMethod, &cf);
 	CFWriteInt (gameOptions [i].ogl.bLightObjects, &cf);
 	CFWriteInt (gameOptions [i].ogl.nMaxLights, &cf);
 	CFWriteByte (extraGameInfo [i].bDarkness, &cf);

@@ -1132,10 +1132,10 @@ m_segFaceP = SEGFACES;
 if (gameOpts->render.nMeshQuality > 2)
 	gameOpts->render.nMeshQuality = 2;
 #endif
-gameStates.render.bTriangleMesh = gameOpts->ogl.bPerPixelLighting ? -1 : gameStates.render.nMeshQuality;
+gameStates.render.bTriangleMesh = gameStates.render.bPerPixelLighting ? -1 : gameStates.render.nMeshQuality;
 gameStates.render.nFacePrimitive = gameStates.render.bTriangleMesh ? GL_TRIANGLES : GL_TRIANGLE_FAN;
 if (gameStates.render.bSplitPolys)
-	gameStates.render.bSplitPolys = (gameOpts->ogl.bPerPixelLighting || !gameOpts->render.nMeshQuality) ? 1 : -1;
+	gameStates.render.bSplitPolys = (gameStates.render.bPerPixelLighting || !gameOpts->render.nMeshQuality) ? 1 : -1;
 if (gameStates.render.bTriangleMesh)
 	CreateCameras ();
 PrintLog ("   Creating face list\n");
@@ -1153,6 +1153,10 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 	m_nOvlTexCount = 0;
 	m_segFaceP->nFaces = 0;
 	for (nSide = 0, m_sideP = m_segP->sides; nSide < 6; nSide++, m_sideP++) {
+#ifdef _DEBUG
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
+#endif
 		m_nWall = WallNumI (nSegment, nSide);
 		m_nWallType = IS_WALL (m_nWall) ? WallIsInvisible (m_nWall) ? 0 : 2 : (m_segP->children [nSide] == -1) ? 1 : 0;
 		if (m_bColoredSeg || m_nWallType) {
@@ -1168,7 +1172,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 				InitColoredFace (nSegment);
 			if (gameStates.render.bTriangleMesh) {
 				// split in four triangles, using the quad's center of gravity as additional vertex
-				if (!gameOpts->ogl.bPerPixelLighting && (m_sideP->nType == SIDE_IS_QUAD) && !m_faceP->bSlide && (m_faceP->nCamera < 0) && IsBigFace (m_sideVerts))
+				if (!gameStates.render.bPerPixelLighting && (m_sideP->nType == SIDE_IS_QUAD) && !m_faceP->bSlide && (m_faceP->nCamera < 0) && IsBigFace (m_sideVerts))
 					SplitIn4Tris ();
 				else // split in two triangles, regarding any non-planarity
 					SplitIn2Tris ();
@@ -1188,7 +1192,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 			m_colorP += FACE_VERTS;
 			}
 		}
-	if (!(gameStates.render.bTriangleMesh || gameOpts->ogl.bPerPixelLighting) && 
+	if (!(gameStates.render.bTriangleMesh || gameStates.render.bPerPixelLighting) && 
 		 gameStates.ogl.bGlTexMerge && m_nOvlTexCount) { //allow for splitting multi-textured faces into two single textured ones
 		gameData.segs.nFaces += m_nOvlTexCount;
 		m_faceP += m_nOvlTexCount;

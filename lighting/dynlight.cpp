@@ -149,7 +149,7 @@ if (SHOW_DYN_LIGHT) {
 
 short FindDynLight (short nSegment, short nSide, short nObject)
 {
-if (gameOpts->render.bDynLighting) {
+if (gameOpts->render.nLightingMethod) {
 		tDynLight	*pl = gameData.render.lights.dynamic.lights;
 		short			i;
 
@@ -176,7 +176,7 @@ if (nLight >= 0) {
 	if (nObject >= 0)
 		pl->info.vPos = OBJECTS [nObject].position.vPos;
 #if 0
-	if (gameOpts->ogl.bPerPixelLighting && (pl->info.nType < 2))
+	if (gameStates.render.bPerPixelLighting && (pl->info.nType < 2))
 		info.fBrightness /= 2;
 #endif
 	if ((pl->info.fBrightness != fBrightness) || 
@@ -434,7 +434,7 @@ else if (nSegment >= 0) {
 		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || WallIsVolatile (SEGMENTS [nSegment].sides [nSide].nWall);
 		COMPUTE_SIDE_CENTER_I (&pl->info.vPos, nSegment, nSide);
 	#if 1
-		if (gameOpts->ogl.bPerPixelLighting) {
+		if (gameStates.render.bPerPixelLighting) {
 			tSide			*sideP = SEGMENTS [nSegment].sides + nSide;
 			vmsVector	vOffs;
 			VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
@@ -620,11 +620,11 @@ for (nTexture = 0; nTexture < 910; nTexture++)
 	nLight = IsLight (nTexture);
 #endif
 gameStates.render.bHaveDynLights = 1;
-gameData.render.fAttScale = gameOpts->ogl.bPerPixelLighting ? 1.0f : 2.0f;
+gameData.render.fAttScale = gameStates.render.bPerPixelLighting ? 1.0f : 2.0f;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 //glEnable (GL_LIGHTING);
-if (gameOpts->render.bDynLighting)
+if (gameOpts->render.nLightingMethod)
 	memset (gameData.render.color.vertices, 0, sizeof (*gameData.render.color.vertices) * MAX_VERTICES);
 //memset (gameData.render.color.ambient, 0, sizeof (*gameData.render.color.ambient) * MAX_VERTICES);
 pSegLights = gameData.render.lights.dynamic.nNearestSegLights;
@@ -810,7 +810,7 @@ if (((char *) psl - (char *) gameData.render.lights.dynamic.shader.lights) % siz
 #endif
 if (psl->bUsed [nThread])
 	return 0;
-fix xDist = (psl->xDistance / (gameOpts->ogl.bPerPixelLighting ? 2000 : 2000) + 5) / 10;
+fix xDist = (psl->xDistance / (gameStates.render.bPerPixelLighting ? 2000 : 2000) + 5) / 10;
 if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
 if (xDist < 0)
@@ -881,7 +881,7 @@ return psl;
 
 void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread)
 {
-//if (gameOpts->render.bDynLighting) 
+//if (gameOpts->render.nLightingMethod) 
 	{
 	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
@@ -889,7 +889,7 @@ void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte 
 	tShaderLight			*psl;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
-	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
+	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE * (gameStates.render.bPerPixelLighting + 1);
 
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -990,16 +990,15 @@ return gameData.render.lights.dynamic.shader.index [0][0].nActive;
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread)
 {
 	static short nActiveLights [4] = {-1, -1, -1, -1};
-	int	nMaxLights = (gameOpts->ogl.bPerPixelLighting || gameOpts->ogl.bObjLighting) ? 8 : gameOpts->ogl.nMaxLights;
 
-if (gameOpts->render.bDynLighting) {
+if (gameOpts->render.nLightingMethod) {
 	short						*pnl = gameData.render.lights.dynamic.nNearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	short						i, j;
 	tShaderLight			*psl;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 
 	//gameData.render.lights.dynamic.shader.iStaticLights [nThread] = gameData.render.lights.dynamic.shader.index [0][nThread].nActive;
-	for (i = nMaxLights; i; i--, pnl++) {
+	for (i = gameStates.render.nMaxLightsPerFace; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
 		//gameData.render.lights.dynamic.shader.lights [j].info.nType = nType;
@@ -1024,14 +1023,12 @@ nActiveLights [nThread] = gameData.render.lights.dynamic.shader.index [0][nThrea
 
 void ResetNearestStaticLights (int nSegment, int nThread)
 {
-	int	nMaxLights = (gameOpts->ogl.bPerPixelLighting || gameOpts->ogl.bObjLighting) ? 8 : gameOpts->ogl.nMaxLights;
-
-if (gameOpts->render.bDynLighting) {
+if (gameOpts->render.nLightingMethod) {
 	short				*pnl = gameData.render.lights.dynamic.nNearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	short				i, j;
 	tShaderLight	*psl;
 
-	for (i = nMaxLights; i; i--, pnl++) {
+	for (i = gameStates.render.nMaxLightsPerFace; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
 		psl = gameData.render.lights.dynamic.shader.lights + j;
@@ -1045,7 +1042,7 @@ if (gameOpts->render.bDynLighting) {
 
 void ResetNearestVertexLights (int nVertex, int nThread)
 {
-//if (gameOpts->render.bDynLighting) 
+//if (gameOpts->render.nLightingMethod) 
 	{
 	short				*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	short				i, j;
@@ -1127,11 +1124,11 @@ short SetNearestSegmentLights (int nSegment, int nFace, int bVariable, int nType
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
-if (gameOpts->render.bDynLighting) {
+if (gameOpts->render.nLightingMethod) {
 	short						i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
-	int						bSkipHeadLight = !gameStates.render.nState && (gameOpts->ogl.bPerPixelLighting || gameOpts->ogl.bHeadLight);
-	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
+	int						bSkipHeadLight = !gameStates.render.nState && (gameStates.render.bPerPixelLighting || gameOpts->ogl.bHeadLight);
+	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE * (gameStates.render.bPerPixelLighting + 1);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
@@ -1215,10 +1212,10 @@ short SetNearestPixelLights (int nSegment, vmsVector *vPixelPos, float fLightRad
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
-if (gameOpts->render.bDynLighting) {
+if (gameOpts->render.nLightingMethod) {
 	int						nLightSeg;
 	short						i = gameData.render.lights.dynamic.shader.nLights;
-	fix						xMaxLightRange = fl2f (fLightRad) + MAX_LIGHT_RANGE * (gameOpts->ogl.bPerPixelLighting + 1);
+	fix						xMaxLightRange = fl2f (fLightRad) + MAX_LIGHT_RANGE * (gameStates.render.bPerPixelLighting + 1);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
@@ -1391,7 +1388,7 @@ void ComputeStaticVertexLights (int nVertex, int nMax, int nThread)
 	tFaceColor				*pf = gameData.render.color.ambient + nVertex;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	fVector					vVertex;
-	int						bColorize = !gameOpts->render.bDynLighting;
+	int						bColorize = !gameOpts->render.nLightingMethod;
 
 for (; nVertex < nMax; nVertex++, pf++) {
 #ifdef _DEBUG
@@ -1417,10 +1414,10 @@ void ComputeStaticDynLighting (int nLevel)
 {
 if (gameStates.app.bNostalgia)
 	return;
-if (gameOpts->ogl.bPerPixelLighting && HaveLightMaps ())
+if (gameStates.render.bPerPixelLighting && HaveLightMaps ())
 	return;
-if (gameOpts->render.bDynLighting || (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
-		int				i, j, bColorize = !gameOpts->render.bDynLighting;
+if (gameOpts->render.nLightingMethod || (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
+		int				i, j, bColorize = !gameOpts->render.nLightingMethod;
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient;
 		tSegment2		*seg2P;
 

@@ -1117,24 +1117,6 @@ if ((t = FindArg ("-maxfps"))) {
 	}
 if ((t = FindArg ("-usePerPixelLighting")))
 	gameStates.render.bUsePerPixelLighting = NumArg (t, 1);
-if (gameStates.render.bUsePerPixelLighting) {
-	if ((t = FindArg ("-maxLightsPerPass"))) {
-		t = NumArg (t, 1);
-		if (t < 1)
-			t = 1;
-		else if (t > 8)
-			t = 8;
-		gameStates.render.nMaxLightsPerPass = t;
-		}
-	if ((t = FindArg ("-maxLightsPerFace"))) {
-		t = NumArg (t, 1);
-		if (t < 1)
-			t = 16;
-		else if (t > 32)
-			t = 32;
-		gameStates.render.nMaxLightsPerFace = t;
-		}
-	}
 #if RENDER2TEXTURE
 if ((t = FindArg ("-render2texture")))
 	gameStates.ogl.bUseRender2Texture = NumArg (t, 1);
@@ -1828,29 +1810,25 @@ else {
 void InitOglOptions (int i)
 {
 if (i) {
-	gameOptions [1].render.bDynLighting = 0;
+	gameOptions [1].render.nLightingMethod = 0;
 	gameOptions [1].ogl.bLightObjects = 0;
 	gameOptions [1].ogl.bHeadLight = 0;
 	gameOptions [1].ogl.bLightPowerups = 0;
-	gameOptions [1].ogl.bPerPixelLighting = 0;
 	gameOptions [1].ogl.bObjLighting = 0;
-	gameOptions [1].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [1].ogl.bSetGammaRamp = 0;
 	gameOptions [1].ogl.bVoodooHack = 0;
 	gameOptions [1].ogl.bGlTexMerge = 0;
 	}
 else {
 #ifdef _DEBUG
-	gameOptions [0].render.bDynLighting = 0;
+	gameOptions [0].render.nLightingMethod = 0;
 #else
-	gameOptions [0].render.bDynLighting = 0;
+	gameOptions [0].render.nLightingMethod = 0;
 #endif
 	gameOptions [0].ogl.bLightObjects = 0;
 	gameOptions [0].ogl.bHeadLight = 0;
 	gameOptions [0].ogl.bLightPowerups = 0;
-	gameOptions [0].ogl.bPerPixelLighting = 0;
 	gameOptions [0].ogl.bObjLighting = 0;
-	gameOptions [0].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [0].ogl.bSetGammaRamp = 0;
 	gameOptions [0].ogl.bVoodooHack = 0;
 	gameOptions [0].ogl.bGlTexMerge = 0;

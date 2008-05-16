@@ -180,7 +180,7 @@ int CountLights (int bVariable)
 	tDynLight		*pl;
 	int				i, nLights = 0;
 
-if (!(gameOpts->ogl.bPerPixelLighting))
+if (!(gameStates.render.bPerPixelLighting))
 	return 0;
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
 	if (!(pl->info.nType || (pl->info.bVariable && !bVariable)))
@@ -1002,7 +1002,7 @@ if (!InitLightData (0))
 if (LoadLightMapData (nLevel))
 	return;
 TransformDynLights (1, 0);
-if (gameOpts->ogl.bPerPixelLighting && gameData.segs.nFaces) {
+if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	int nSaturation = gameOpts->render.color.nSaturation;
 	gameOpts->render.color.nSaturation = 1;
 	gameStates.render.bLightMaps = 1;

@@ -55,7 +55,7 @@ double GetLightColor (int tMapNum, GLfloat *colorP);
 			(gameStates.render.color.bLightMapsOk && \
 			 gameOpts->render.color.bUseLightMaps && \
 			 !IsMultiGame && \
-			 !gameOpts->render.bDynLighting)
+			 (gameOpts->render.nLightingMethod == 0))
 
 //------------------------------------------------------------------------------
 

@@ -1636,7 +1636,7 @@ if (!gameStates.app.bNostalgia) {
 		{
 		AddDynGeometryLights ();
 		ComputeNearestLights (nLevel);
-		if (gameOpts->ogl.bPerPixelLighting) {
+		if (gameStates.render.bPerPixelLighting) {
 			CreateLightMaps (nLevel);
 			if (HaveLightMaps ())
 				quadMeshBuilder.RebuildLightMapTexCoord ();	//rebuild to create proper lightmap texture coordinates
