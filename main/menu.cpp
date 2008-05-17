@@ -3992,10 +3992,14 @@ do {
 			*szTexQual = *(TXT_TEXQUAL + 1);
 			ADD_SLIDER (opt, szTexQual + 1, gameOpts->render.textures.nQuality, 0, 3, KEY_U, HTX_ADVRND_TEXQUAL);
 			renderOpts.nTexQual = opt++;
-			sprintf (szMeshQual + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
-			*szMeshQual = *(TXT_MESH_QUALITY + 1);
-			ADD_SLIDER (opt, szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 4, KEY_O, HTX_MESH_QUALITY);
-			renderOpts.nMeshQual = opt++;
+			if (gameOpts->render.nLightingMethod != 1) {
+				sprintf (szMeshQual + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
+				*szMeshQual = *(TXT_MESH_QUALITY + 1);
+				ADD_SLIDER (opt, szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 4, KEY_O, HTX_MESH_QUALITY);
+				renderOpts.nMeshQual = opt++;
+				}
+			else
+				renderOpts.nMeshQual = -1;
 			}
 		ADD_TEXT (opt, "", 0);
 		opt++;
