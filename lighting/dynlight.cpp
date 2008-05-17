@@ -1293,6 +1293,9 @@ else if (gameStates.render.bPerPixelLighting == 2) {
 			tVertColorData	vcd;
 
 		InitVertColorData (vcd);
+		vcd.vertNorm.p.x =
+		vcd.vertNorm.p.y =
+		vcd.vertNorm.p.z = 0;
 		if (vPosP)
 			VmVecFixToFloat (&vcd.vertPos, vPosP);
 		else {

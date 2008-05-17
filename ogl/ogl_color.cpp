@@ -380,20 +380,13 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 			fLightDist -= psl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
 		}
-	if (fLightDist <= 0.0f) {
+	NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+	if	((NdotL >= -0.5f) && ((fLightDist <= 0.0f) || IsLightVert (nVertex, psl))) {
 		bInRad = 1;
 		NdotL = 1;
-		fLightDist = 0;//.4142f;
+		fLightDist = 0;
 		fAttenuation = 1.0f / psl->info.fBrightness;
 		}
-#if CHECK_LIGHT_VERT == 1
-	else if (IsLightVert (nVertex, psl)) {
-		bInRad = 1;
-		NdotL = 1;
-		fLightDist = 0;//.4142f;
-		fAttenuation = 1.0f / psl->info.fBrightness;
-		}
-#endif
 	else {	//make it decay faster
 #if BRIGHT_SHOTS
 		if (nType == 2)
@@ -401,7 +394,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		else
 #endif
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
-		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
 #if 0
 		NdotL = 1 - ((1 - NdotL) * 0.9f);
 #endif

@@ -703,29 +703,31 @@ if (iBuffer) {
 	int bLightMaps = HaveLightMaps ();
 	bufferBrightness = brightness;
 	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthFunc (GL_LESS);
 	if (gameStates.ogl.bShadersOk) {
-	if (InitParticleBuffer (bLightMaps)) { //gameStates.render.bVertexArrays) {
+		if (InitParticleBuffer (bLightMaps)) { //gameStates.render.bVertexArrays) {
 #if 1
-		grsBitmap *bmP = bmpParticle [0][gameData.smoke.nLastType];
-		if (!bmP)
-			return;
-		glActiveTexture (GL_TEXTURE0/* + bLightMaps*/);
-		glClientActiveTexture (GL_TEXTURE0/* + bLightMaps*/);
-		glEnable (GL_TEXTURE_2D);
-		if (BM_CURFRAME (bmP))
-			bmP = BM_CURFRAME (bmP);
-		if (OglBindBmTex (bmP, 0, 1))
-			return;
+			grsBitmap *bmP = bmpParticle [0][gameData.smoke.nLastType];
+			if (!bmP)
+				return;
+			glActiveTexture (GL_TEXTURE0);
+			glClientActiveTexture (GL_TEXTURE0);
+			glEnable (GL_TEXTURE_2D);
+			if (BM_CURFRAME (bmP))
+				bmP = BM_CURFRAME (bmP);
+			if (OglBindBmTex (bmP, 0, 1))
+				return;
 #endif
-		if (gameData.smoke.nLastType)
-			glUseProgramObject (0);
+			if (gameData.smoke.nLastType)
+				glUseProgramObject (0);
 #if 0
-		else if (!bLightMaps)
-			G3SetupShader (NULL, 0, 0, 1, 1, &color);
+			else if (!bLightMaps)
+				G3SetupShader (NULL, 0, 0, 1, 1, &color);
 #endif
-		else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
-			G3SetupHeadLightShader (1, 0, &color);
-		}
+			else if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay)
+				G3SetupHeadLightShader (1, 0, &color);
+			}
 		glDrawArrays (GL_QUADS, 0, iBuffer);
 #if 0
 		gameStates.render.bVertexArrays = (glGetError () == 0);
@@ -1052,8 +1054,8 @@ if (gameOpts->render.bDepthSort <= 0) {
 	bmP = bmpParticle [0][nType];
 	gameData.smoke.bStencil = StencilOff ();
 	InitParticleBuffer (bLightMaps);
-	glActiveTexture (GL_TEXTURE0/* + bLightMaps*/);
-	glClientActiveTexture (GL_TEXTURE0/* + bLightMaps*/);
+	glActiveTexture (GL_TEXTURE0);
+	glClientActiveTexture (GL_TEXTURE0);
 	glDisable (GL_CULL_FACE);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

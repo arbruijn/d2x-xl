@@ -466,7 +466,7 @@ int RIAddParticle (tParticle *particle, float fBrightness, int nThread)
 
 item.particle = particle;
 item.fBrightness = fBrightness;
-G3TransformPoint (&particle->transPos, &particle->pos, gameStates.render.bPerPixelLighting);
+G3TransformPoint (&particle->transPos, &particle->pos, gameStates.render.bPerPixelLighting > 0);
 return AddRenderItemMT (riParticle, &item, sizeof (item), particle->transPos.p.z, particle->transPos.p.z, nThread);
 }
 
