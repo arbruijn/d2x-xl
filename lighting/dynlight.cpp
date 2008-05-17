@@ -1221,6 +1221,7 @@ if (gameOpts->render.nLightingMethod) {
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 
 	ResetActiveLights (nThread, 0);
+	ResetUsedLights (0, nThread);
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
 	for (; i; i--, psl++) {
 #ifdef _DEBUG
@@ -1241,7 +1242,6 @@ if (gameOpts->render.nLightingMethod) {
 		psl->xDistance = (fix) ((VmVecDist (vPixelPos, &psl->info.vPos) /*- fl2f (psl->info.fRad)*/) / psl->info.fRange);
 		if (psl->xDistance > xMaxLightRange)
 			continue;
-		ResetUsedLight (psl, nThread);
 		SetActiveShaderLight (activeLightsP, psl, 1, nThread);
 		}
 	}

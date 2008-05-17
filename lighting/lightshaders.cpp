@@ -186,15 +186,14 @@ char *pszPPXLightingFS [] = {
 	"		float lightDist = length (lightVec);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
 	"		float dist = lightDist - lightRad;\r\n" \
-	"		float att = 1.0, NdotL = 1.0;\r\n" \
+	"		float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		vec4 color;\r\n" \
-	"		if (dist <= 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			float NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
+	"			if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
@@ -224,15 +223,14 @@ char *pszPPXLightingFS [] = {
 	"		float lightDist = length (lightVec);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
 	"		float dist = lightDist - lightRad;\r\n" \
-	"		float att = 1.0, NdotL = 1.0;\r\n" \
+	"		float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		vec4 color;\r\n" \
-	"		if (dist <= 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			float NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
+	"			if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
@@ -264,15 +262,14 @@ char *pszPPXLightingFS [] = {
 	"		float lightDist = length (lightVec);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
 	"		float dist = lightDist - lightRad;\r\n" \
-	"		float att = 1.0, NdotL = 1.0;\r\n" \
+	"		float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		vec4 color;\r\n" \
-	"		if (dist <= 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			float NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
+	"			if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
@@ -308,15 +305,14 @@ char *pszPPXLightingFS [] = {
 	"		float lightDist = length (lightVec);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
 	"		float dist = lightDist - lightRad;\r\n" \
-	"		float att = 1.0, NdotL = 1.0;\r\n" \
+	"		float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		vec4 color;\r\n" \
-	"		if (dist <= 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			float NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
+	"			if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
@@ -348,14 +344,13 @@ char *pszPP1LightingFS [] = {
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
 	"	float dist = lightDist - lightRad;\r\n" \
-	"  float att = 1.0, NdotL = 1.0;\r\n" \
-	"	if (dist <= 0.0)\r\n" \
+	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
+	"	if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att = 1.0 + gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
-	"		if (lightRad > 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
@@ -380,14 +375,13 @@ char *pszPP1LightingFS [] = {
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
 	"	float dist = lightDist - lightRad;\r\n" \
-	"  float att = 1.0, NdotL = 1.0;\r\n" \
-	"	if (dist <= 0.0)\r\n" \
+	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
+	"	if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att = 1.0 + gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
-	"		if (lightRad > 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
@@ -414,14 +408,13 @@ char *pszPP1LightingFS [] = {
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
 	"	float dist = lightDist - lightRad;\r\n" \
-	"  float att = 1.0, NdotL = 1.0;\r\n" \
-	"	if (dist <= 0.0)\r\n" \
+	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
+	"	if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
-	"		if (lightRad > 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
@@ -452,14 +445,13 @@ char *pszPP1LightingFS [] = {
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
 	"	float dist = lightDist - lightRad;\r\n" \
-	"  float att = 1.0, NdotL = 1.0;\r\n" \
-	"	if (dist <= 0.0)\r\n" \
+	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
+	"	if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
-	"		if (lightRad > 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
@@ -600,15 +592,14 @@ char *pszPPLMXLightingFS [] = {
 	"		float att = 1.0;\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
 	"		float dist = lightDist - lightRad;\r\n" \
-	"		float NdotL = 1.0;\r\n" \
+	"		float NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		vec4 color;\r\n" \
-	"		if (dist <= 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			float NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
+	"			if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
@@ -638,16 +629,15 @@ char *pszPPLMXLightingFS [] = {
 	"		float lightDist = length (lightVec);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
 	"		float dist = lightDist - lightRad;\r\n" \
-	"		float att = 1.0, NdotL = 1.0;\r\n" \
+	"		float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		vec4 color;\r\n" \
-	"		if (dist <= 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
+	"			if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
@@ -679,16 +669,15 @@ char *pszPPLMXLightingFS [] = {
 	"		float lightDist = length (lightVec);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
 	"		float dist = lightDist - lightRad;\r\n" \
-	"		float att = 1.0, NdotL = 1.0;\r\n" \
+	"		float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		vec4 color;\r\n" \
-	"		if (dist <= 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
+	"			if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
@@ -724,15 +713,14 @@ char *pszPPLMXLightingFS [] = {
 	"		float lightDist = length (lightVec);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
 	"		float dist = lightDist - lightRad;\r\n" \
-	"		float att = 1.0, NdotL = 1.0;\r\n" \
+	"		float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		vec4 color;\r\n" \
-	"		if (dist <= 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
-	"			NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
+	"			if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"				NdotL += (1.0 - NdotL) / att;\r\n" \
 	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
@@ -764,14 +752,13 @@ char *pszPPLM1LightingFS [] = {
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
 	"	float dist = lightDist - lightRad;\r\n" \
-	"  float att = 1.0, NdotL = 1.0;\r\n" \
-	"	if (dist <= 0.0)\r\n" \
+	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
+	"	if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att = 1.0 + gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
-	"		if (lightRad > 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
@@ -797,14 +784,13 @@ char *pszPPLM1LightingFS [] = {
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
 	"	float dist = lightDist - lightRad;\r\n" \
-	"  float att = 1.0, NdotL = 1.0;\r\n" \
-	"	if (dist <= 0.0)\r\n" \
+	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
+	"	if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att = 1.0 + gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
-	"		if (lightRad > 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
@@ -831,14 +817,13 @@ char *pszPPLM1LightingFS [] = {
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
 	"	float dist = lightDist - lightRad;\r\n" \
-	"  float att = 1.0, NdotL = 1.0;\r\n" \
-	"	if (dist <= 0.0)\r\n" \
+	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
+	"	if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
-	"		if (lightRad > 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
@@ -870,13 +855,13 @@ char *pszPPLM1LightingFS [] = {
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
 	"	float dist = lightDist - lightRad;\r\n" \
 	"  float att = 1.0, NdotL = 1.0;\r\n" \
-	"	if (dist <= 0.0)\r\n" \
+	"	if ((NdotL > -0.125) && (dist <= 0.0))\r\n" \
 	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"		/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
-	"		if (lightRad > 0.0)\r\n" \
+	"		if ((NdotL > -0.125) && (lightRad > 0.0))\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \

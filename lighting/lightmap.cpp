@@ -777,6 +777,10 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 		memset (texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
 		for (x = 0; x < LM_W; x++) { 
 			for (y = 0; y < LM_H; y++, pPixelPos++) { 
+#ifdef _DEBUG
+				if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)) && (y * LM_W + x == 627))
+					nDbgSeg = nDbgSeg;
+#endif
 				if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->fRad / 10.0f, nThread)) {
 					VmVecFixToFloat (&vcd.vertPos, pPixelPos);
 					color.c.r = color.c.g = color.c.b = 0;
@@ -804,6 +808,10 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 						texColorP->blue = (ubyte) (255 * color.c.b);
 						}
 					}
+#ifdef _DEBUG
+				else
+					nDbgSeg = nDbgSeg;
+#endif
 				}
 			}
 #ifdef _DEBUG
