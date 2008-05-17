@@ -399,7 +399,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if 0
 		NdotL = 1 - ((1 - NdotL) * 0.9f);
 #endif
-		if (psl->info.fRad > 0)
+		if ((NdotL >= -0.125f) && (psl->info.fRad > 0))
 			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
 		fAttenuation /= psl->info.fBrightness;
 		}

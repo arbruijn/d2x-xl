@@ -274,7 +274,7 @@ static struct {
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
-static int nMaxLightsPerFace [12] = {0,1,2,3,4,5,6,7,8,16,24,32};
+static int nMaxLightsPerFace [12] = {3,4,5,6,7,8,16,24,32};
 
 static char *pszTexQual [4];
 static char *pszMeshQual [5];
@@ -3390,7 +3390,7 @@ if (lightOpts.nObjectLight >= 0) {
 	}
 if (lightOpts.nMaxLightsPerFace >= 0) {
 	m = menus + lightOpts.nMaxLightsPerFace;
-	v = m->value + 3;
+	v = m->value;
 	if (v != gameOpts->ogl.nMaxLightsPerFace) {
 		gameOpts->ogl.nMaxLightsPerFace = v;
 		sprintf (m->text, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFace [gameOpts->ogl.nMaxLightsPerFace]);
@@ -3480,9 +3480,13 @@ do {
 					nPowerupLight = -1;
 				}
 			}
+		for (i = 0; i < sizeofa (nMaxLightsPerFace); i++)
+			if (gameOpts->ogl.nMaxLightsPerFace < nMaxLightsPerFace [i])
+				break;
+		gameOpts->ogl.nMaxLightsPerFace = i ? i - 1 : 0;
 		sprintf (szMaxLightsPerFace + 1, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFace [gameOpts->ogl.nMaxLightsPerFace]);
 		*szMaxLightsPerFace = *(TXT_MAX_LIGHTS_PER_FACE - 1);
-		ADD_SLIDER (opt, szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace - 3, 0, sizeofa (nMaxLightsPerFace) - 4, KEY_I, HTX_MAX_LIGHTS_PER_FACE);
+		ADD_SLIDER (opt, szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace, 0, sizeofa (nMaxLightsPerFace) - 1, KEY_I, HTX_MAX_LIGHTS_PER_FACE);
 		lightOpts.nMaxLightsPerFace = opt++;
 		if (gameOpts->render.nLightingMethod == 2) {
 			sprintf (szMaxLightsPerPass + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
@@ -3580,7 +3584,8 @@ if (optColorSat >= 0) {
 gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod;
 gameStates.render.bPerPixelLighting = (gameStates.render.nLightingMethod == 2);
 gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
-gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
+gameOpts->ogl.nMaxLightsPerFace =
+gameStates.render.nMaxLightsPerFace = nMaxLightsPerFace [gameOpts->ogl.nMaxLightsPerFace];
 gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
 }
 

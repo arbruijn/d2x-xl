@@ -1172,6 +1172,10 @@ if (!gameStates.ogl.iLight) {
 	gameData.render.nTotalLights += gameStates.ogl.nLights;
 	if (gameData.render.nMaxLights < gameStates.ogl.nLights)
 		gameData.render.nMaxLights = gameStates.ogl.nLights;
+#ifdef _DEBUG
+	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		HUDMessage (0, "%d lights", gameStates.ogl.nLights);
+#endif
 	}
 #if HW_VERTEX_LIGHTING == 0
 glDisable (GL_LIGHTING);
