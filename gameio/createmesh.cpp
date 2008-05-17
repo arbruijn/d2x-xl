@@ -1132,7 +1132,7 @@ m_segFaceP = SEGFACES;
 if (gameOpts->render.nMeshQuality > 2)
 	gameOpts->render.nMeshQuality = 2;
 #endif
-gameStates.render.bTriangleMesh = gameStates.render.bPerPixelLighting ? -1 : gameStates.render.nMeshQuality;
+gameStates.render.bTriangleMesh = gameStates.render.bPerPixelLighting ? -1 : gameOpts->render.nLightingMethod ? gameStates.render.nMeshQuality : 0;
 gameStates.render.nFacePrimitive = gameStates.render.bTriangleMesh ? GL_TRIANGLES : GL_TRIANGLE_FAN;
 if (gameStates.render.bSplitPolys)
 	gameStates.render.bSplitPolys = (gameStates.render.bPerPixelLighting || !gameOpts->render.nMeshQuality) ? 1 : -1;
