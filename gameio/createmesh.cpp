@@ -1214,7 +1214,7 @@ for (m_colorP = gameData.render.color.ambient, i = gameData.segs.nVertices; i; i
 		m_colorP->color.blue /= m_colorP->color.alpha;
 		m_colorP->color.alpha = 1;
 		}
-if ((gameStates.render.nMeshQuality > 0) && !m_triMeshBuilder.Build (nLevel)) {
+if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel)) {
 	gameStates.render.nMeshQuality = 0;
 	return 0;
 	}

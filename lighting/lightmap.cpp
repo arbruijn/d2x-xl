@@ -49,7 +49,7 @@ there I just had it exit instead.
 #define LMAP_REND2TEX	0
 #define TEXTURE_CHECK	1
 
-#define LIGHTMAP_DATA_VERSION 6
+#define LIGHTMAP_DATA_VERSION 7
 
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
