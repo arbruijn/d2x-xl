@@ -694,9 +694,11 @@ InitVertColorData (vcd);
 vcd.pVertPos = &vcd.vertPos;
 vcd.fMatShininess = 4;
 
+#if 0
 if (gameStates.app.bMultiThreaded)
 	nLastFace = nFace ? gameData.segs.nFaces : gameData.segs.nFaces / 2;
 else
+#endif
 	INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
 if (nFace <= 0) {
 	CreateSpecialLightMap (texColor, 0, 0);

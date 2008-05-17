@@ -351,6 +351,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #ifdef _DEBUG
 	if (((char *) psl - (char *) gameData.render.lights.dynamic.shader.lights) % sizeof (*psl))
 		continue;
+	if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (psl->info.nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
 #endif
 	nLights--;
 #if 0
@@ -381,7 +383,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			fLightDist -= psl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
 		}
 	NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-	if	((NdotL >= -0.5f) && ((fLightDist <= 0.0f) || IsLightVert (nVertex, psl))) {
+	if	((NdotL >= -0.125f) && ((fLightDist <= 0.0f) || IsLightVert (nVertex, psl))) {
 		bInRad = 1;
 		NdotL = 1;
 		fLightDist = 0;
