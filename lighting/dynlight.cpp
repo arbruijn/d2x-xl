@@ -966,7 +966,7 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 if (faceP - FACES == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
-#if 1
+#if 1//def RELEASE
 if (gameData.render.lights.dynamic.shader.index [0][0].nActive < 0)
 	SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 else {

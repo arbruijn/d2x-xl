@@ -696,7 +696,10 @@ if (bMonitor) {
 	}
 gameData.render.nTotalFaces++;
 gameStates.ogl.iLight = 0;
-glBlendFunc (GL_ONE, GL_ZERO);
+if (faceP->bTransparent)
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+else
+	glBlendFunc (GL_ONE, GL_ZERO);
 if (!bColored) {
 	G3SetupGrayScaleShader (gameStates.render.history.nType, &faceP->color);
 #if 1

@@ -416,7 +416,7 @@ else if (gameStates.render.bPerPixelLighting) {
 	glColor4i (1,1,1,1);
 	}
 OglSetupTransform (1);
-if (!(bVertexArrays = G3EnableClientStates (!bDepthOnly, !(bDepthOnly /*|| bLightMaps*/), bNormals, GL_TEXTURE0))) {
+if (!(bVertexArrays = G3EnableClientStates (!bDepthOnly, !bDepthOnly, bNormals, GL_TEXTURE0))) {
 	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
 	G3DisableClientStates (1, 1, bNormals, GL_TEXTURE0);
 	gameStates.render.bPerPixelLighting = gameStates.ogl.bPerPixelLightingOk = 0;
