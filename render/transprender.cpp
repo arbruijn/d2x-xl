@@ -723,9 +723,11 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 				glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + faceP->nIndex);
 			glActiveTexture (GL_TEXTURE1);
 			glClientActiveTexture (GL_TEXTURE1);
+#if 0
 			if (renderItems.bTextured)
 				glDisableClientState (GL_COLOR_ARRAY);
 			else
+#endif
 				glColorPointer (4, GL_FLOAT, 0, item->color);
 			}
 		else
