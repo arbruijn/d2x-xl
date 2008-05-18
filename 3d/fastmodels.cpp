@@ -643,7 +643,7 @@ if (sliP->nLast < 0)
 	nLightRange = 0;
 else
 	nLightRange = sliP->nLast - sliP->nFirst + 1;
-for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass); nPass++) {
+for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (bLighting) {
 		if (nPass) {
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
