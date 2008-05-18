@@ -1858,7 +1858,7 @@ while (!bDone) {
 					}
 				}
 			else {
-				//gameData.objs.viewer=&gameData.objs.objects [0];
+				gameData.objs.viewer = gameData.objs.objects;
 				NDReadObject (gameData.objs.viewer);
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ

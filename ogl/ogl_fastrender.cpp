@@ -158,6 +158,7 @@ if (gameOpts->render.debug.bWireFrame) {
 		if (bTextured)
 			glEnable (GL_TEXTURE_2D);
 		}
+	glLineWidth (1);
 	}
 }
 
