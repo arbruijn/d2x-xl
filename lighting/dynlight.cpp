@@ -922,12 +922,12 @@ if (nVertex == nDbgVertex)
 			}
 		VmVecSub (&vLightDir, &vVertex, &psl->info.vPos);
 		xLightDist = VmVecMag (&vLightDir);
-#if 0
+#if 1
 		if (vNormalP) {
 			vLightDir.p.x = FixDiv (vLightDir.p.x, xLightDist);
 			vLightDir.p.y = FixDiv (vLightDir.p.y, xLightDist);
 			vLightDir.p.z = FixDiv (vLightDir.p.z, xLightDist);
-			if (VmVecDot (vNormalP, &vLightDir) > F1_0 / 8)
+			if (VmVecDot (vNormalP, &vLightDir) > F1_0 / 2)
 				continue;
 			}
 #endif
