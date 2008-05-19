@@ -274,7 +274,7 @@ static struct {
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
-static int nMaxLightsPerFaceTable [] = {3,4,5,6,7,8,12,16,24,32};
+static int nMaxLightsPerFaceTable [] = {3,4,5,6,7,8,12,16,20,24,32};
 
 static char *pszTexQual [4];
 static char *pszMeshQual [5];
