@@ -54,6 +54,8 @@ there I just had it exit instead.
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
 
+extern int HW_VERTEX_LIGHTING;
+
 //------------------------------------------------------------------------------
 
 typedef struct tLightMapDataHeader {
@@ -987,7 +989,7 @@ return bOk;
 
 void CreateLightMaps (int nLevel)
 {
-if (!gameStates.render.bUsePerPixelLighting)
+if (HW_VERTEX_LIGHTING || !gameStates.render.bUsePerPixelLighting)
 	return;
 #ifdef RELEASE
 if (gameOpts->render.nLightmapQuality > 2)

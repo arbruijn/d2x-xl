@@ -383,7 +383,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			fLightDist -= psl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
 		}
 	NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-	if	((NdotL >= -0.125f) && ((fLightDist <= 0.0f) || IsLightVert (nVertex, psl))) {
+	if	((NdotL >= -0.125f) && ((fLightDist <= 0.0f)) || IsLightVert (nVertex, psl)) {
 		bInRad = 1;
 		NdotL = 1;
 		fLightDist = 0;

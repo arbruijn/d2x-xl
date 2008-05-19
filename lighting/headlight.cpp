@@ -271,7 +271,7 @@ char *headLightFS [2][8] = {
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
-	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a)) * gl_Color;\r\n" \
+	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"vec3 spotColor = gl_Color.rgb;\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
 	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
@@ -297,7 +297,7 @@ char *headLightFS [2][8] = {
 	"else {\r\n" \
 	"   vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"   vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
-	"   texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a)) * gl_Color;\r\n" \
+	"   texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	 vec3 spotColor = gl_Color.rgb;\r\n" \
 	"	 vec3 lvNorm = normalize (lightVec);\r\n" \
 	"   float spotBrightness;\r\n" \

@@ -42,13 +42,15 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 
 #define ONLY_LIGHTMAPS 0
 
-#define PPL_AMBIENT_LIGHT	0.3f
-#define PPL_DIFFUSE_LIGHT	0.7f
+#define PPL_AMBIENT_LIGHT	0.0f
+#define PPL_DIFFUSE_LIGHT	1.0f
 
 #define GEO_LIN_ATT	0.05f
 #define GEO_QUAD_ATT	0.005f
 #define OBJ_LIN_ATT	0.05f
 #define OBJ_QUAD_ATT	0.005f
+
+extern int HW_VERTEX_LIGHTING;
 
 //------------------------------------------------------------------------------
 
@@ -1167,9 +1169,6 @@ if (!gameStates.ogl.iLight) {
 		HUDMessage (0, "%d lights", gameStates.ogl.nLights);
 #endif
 	}
-#if HW_VERTEX_LIGHTING == 0
-glDisable (GL_LIGHTING);
-#endif
 activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameStates.ogl.nFirstLight;
 nLightRange = sliP->nLast - gameStates.ogl.nFirstLight + 1;
 for (nLights = 0; 
@@ -1195,9 +1194,8 @@ for (nLights = 0;
 		}
 	hLight = GL_LIGHT0 + nLights++;
 	glEnable (hLight);
-#if HW_VERTEX_LIGHTING == 0
-	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
-#endif
+	if (!HW_VERTEX_LIGHTING)
+		specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
 	fBrightness = psl->info.fBrightness;
 #ifdef _DEBUG
 	if ((psl->info.nObject >= 0) && (OBJECTS [psl->info.nObject].nType == nDbgObjType) &&
@@ -1218,18 +1216,17 @@ for (nLights = 0;
 		diffuse.alpha = 1.0f;
 		}
 	else {
-#if HW_VERTEX_LIGHTING
-		glLightf (hLight, GL_CONSTANT_ATTENUATION, min (1.0f, 1.0f / psl->info.fRad));
-#else
-		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
-#endif
+		if (HW_VERTEX_LIGHTING)
+			glLightf (hLight, GL_CONSTANT_ATTENUATION, min (1.0f, 1.0f / psl->info.fRad));
+		else
+			glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, GEO_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, GEO_QUAD_ATT / fBrightness);
 		ambient.red = psl->info.color.red * PPL_AMBIENT_LIGHT;
 		ambient.green = psl->info.color.green * PPL_AMBIENT_LIGHT;
 		ambient.blue = psl->info.color.blue * PPL_AMBIENT_LIGHT;
 		ambient.alpha = 1.0f;
-		fBrightness *= PPL_DIFFUSE_LIGHT;
+		fBrightness = min (fBrightness, 1.0f) * PPL_DIFFUSE_LIGHT;
 		diffuse.red = psl->info.color.red * fBrightness;
 		diffuse.green = psl->info.color.green * fBrightness;
 		diffuse.blue = psl->info.color.blue * fBrightness;
@@ -1262,14 +1259,15 @@ if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) && (gameStates.ogl.nFirstL
 for (int i = nLights; i < 8; i++)
 	glDisable (GL_LIGHT0 + i);
 #endif
-#if HW_VERTEX_LIGHTING
-for (int i = nLights; i < 8; i++)
-	glDisable (GL_LIGHT0 + i);
-#else
-if (InitPerPixelLightingShader (nType, nLights) >= 0)
-	return nLights;
-OglDisableLighting ();
-#endif
+if (HW_VERTEX_LIGHTING) {
+	for (int i = nLights; i < 8; i++)
+		glDisable (GL_LIGHT0 + i);
+	}
+else {
+	if (InitPerPixelLightingShader (nType, nLights) >= 0)
+		return nLights;
+	OglDisableLighting ();
+	}
 return -1;
 }
 
@@ -1283,9 +1281,8 @@ int G3SetupPerPixelShader (grsFace *faceP, int nType)
 
 if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
 	return 0;
-#if HW_VERTEX_LIGHTING
-return gameStates.render.history.nShader;
-#endif
+if (HW_VERTEX_LIGHTING)
+	return gameStates.render.history.nShader;
 #if ONLY_LIGHTMAPS == 2
 nType = 0;
 #endif

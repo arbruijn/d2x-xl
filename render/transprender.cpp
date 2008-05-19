@@ -820,7 +820,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 		if (i && !gameStates.render.automap.bDisplay)
 			RIResetShader ();
 		else 
-			G3SetupShader (faceP, 0, 0, item->bmP != NULL, 
+			G3SetupShader (faceP, 0, 0, 0, item->bmP != NULL, 
 								(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
 								renderItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
 #if 0
@@ -848,7 +848,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1, Have
 		}
 	else {
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		G3SetupShader (faceP, 0, 0, item->bmP != NULL, 
+		G3SetupShader (faceP, 0, 0, 0, item->bmP != NULL, 
 							(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment], 
 							item->bmP ? NULL : item->color);
 		}
