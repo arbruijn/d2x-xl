@@ -721,6 +721,10 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (!bLighting)
 		break;
 	}
+#ifdef _DEBUG
+if (!nLightRange && nLights)
+	nLights = 0;
+#endif
 if (bLighting) {
 	OglDisableLighting ();
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

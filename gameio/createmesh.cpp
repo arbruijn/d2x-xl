@@ -1175,7 +1175,8 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 				InitColoredFace (nSegment);
 			if (gameStates.render.bTriangleMesh) {
 				// split in four triangles, using the quad's center of gravity as additional vertex
-				if (!gameStates.render.bPerPixelLighting && (m_sideP->nType == SIDE_IS_QUAD) && !m_faceP->bSlide && (m_faceP->nCamera < 0) && IsBigFace (m_sideVerts))
+				if (!gameStates.render.bPerPixelLighting && (m_sideP->nType == SIDE_IS_QUAD) && 
+					 !m_faceP->bSlide && (m_faceP->nCamera < 0) && IsBigFace (m_sideVerts))
 					SplitIn4Tris ();
 				else // split in two triangles, regarding any non-planarity
 					SplitIn2Tris ();

@@ -44,7 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 #include "fastrender.h"
 
-#define RENDER_DEPTHMASK_FIRST 1
+#define RENDER_DEPTHMASK_FIRST 0
 
 #ifdef _DEBUG
 #	define SHADER_VERTEX_LIGHTING 0
@@ -396,7 +396,6 @@ gameStates.render.history.bmMask = NULL;
 gameStates.render.bQueryCoronas = 0;
 glEnable (GL_CULL_FACE);
 OglTexWrap (NULL, GL_REPEAT);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (!bDepthOnly) 
 	glDepthFunc (GL_LEQUAL);
 else {
@@ -412,7 +411,7 @@ if (nType == 3) {
 else if (gameStates.render.bPerPixelLighting) {
 	OglEnableLighting (1);
 	glDisable (GL_LIGHTING);
-	glColor4i (1,1,1,1);
+	glColor4f (1,1,1,1);
 	}
 OglSetupTransform (1);
 G3EnableClientStates (!bDepthOnly, !bDepthOnly, bNormals, GL_TEXTURE0);
@@ -443,7 +442,7 @@ glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 if (bNormals)
 	G3EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 glEnable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glBlendFunc (GL_ONE, GL_ZERO);
 return 1;
 }
 
@@ -704,22 +703,20 @@ else {
 
 int SetupCoronas (int nType)
 {
-	int	nFaces, bVertexArrays;
-
-#if RENDER_DEPTHMASK_FIRST
-if (SetupCoronaFaces ()) {
-	if ((CoronaStyle () == 1) && gameStates.ogl.bOcclusionQuery) {
-		glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
-		QueryCoronas (0, 1);
-		}
+if (!SetupCoronaFaces ())
+	return 0;
+int nCoronaStyle = CoronaStyle ();
+if (nCoronaStyle != 1)
+	return 0;
+if (gameStates.ogl.bOcclusionQuery) {
+	glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
+	QueryCoronas (0, 1);
 	}
-#endif
-bVertexArrays = BeginRenderFaces (0, RENDER_DEPTHMASK_FIRST);
-RenderSegments (nType, bVertexArrays, RENDER_DEPTHMASK_FIRST);
-#if RENDER_DEPTHMASK_FIRST
+int bVertexArrays = BeginRenderFaces (0, 1);
+RenderSegments (nType, bVertexArrays, 1);
 EndRenderFaces (0, bVertexArrays, 1);
-nFaces = SortFaces ();
-if (gameOpts->render.coronas.bUse && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && (CoronaStyle () == 1)) {
+int nFaces = SortFaces ();
+if (gameOpts->render.coronas.bUse && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
 	gameStates.render.bQueryCoronas = 2;
 	gameStates.render.nType = 1;
 	RenderMineObjects (1);
@@ -728,6 +725,16 @@ if (gameOpts->render.coronas.bUse && gameStates.ogl.bOcclusionQuery && gameData.
 	}
 EndRenderFaces (0, bVertexArrays, 1);
 return nFaces;
+}
+
+//------------------------------------------------------------------------------
+
+int SetupDepthBuffer (int nType)
+{
+int bVertexArrays = BeginRenderFaces (0, 1);
+RenderSegments (nType, bVertexArrays, 1);
+EndRenderFaces (0, bVertexArrays, 1);
+return SortFaces ();
 }
 
 //------------------------------------------------------------------------------
@@ -746,10 +753,10 @@ else {	//front to back
 	if (!gameStates.render.nWindow)
 		j = SetupCoronas (nType);
 	else
-		j = SortFaces ();
+		j = gameStates.render.bPerPixelLighting ? 0 : SetupDepthBuffer (nType);
 	bVertexArrays = BeginRenderFaces (0, 0);
 	glColorMask (1,1,1,1);
-	if (gameStates.render.bPerPixelLighting) {
+	if (!j) {
 		gameData.render.mine.nVisited++;
 		RenderSegments (nType, bVertexArrays, 0);
 		}
@@ -768,7 +775,6 @@ else {	//front to back
 			}
 		}
 	glDepthMask (1);
-#endif
 	}
 EndRenderFaces (nType, bVertexArrays, 0);
 }

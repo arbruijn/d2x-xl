@@ -301,8 +301,8 @@ if (!pc || pc->index) {
 static int IsFlickeringLight (short nSegment, short nSide)
 {
 	tVariableLight	*flP = gameData.render.lights.flicker.lights;
-	int					l;
-for (l = gameData.render.lights.flicker.nLights; l; l--, flP++)
+
+for (int l = gameData.render.lights.flicker.nLights; l; l--, flP++)
 	if ((flP->nSegment == nSegment) && (flP->nSide == nSide))
 		return 1;
 return 0;
@@ -428,6 +428,10 @@ else if (nSegment >= 0) {
 			COMPUTE_SEGMENT_CENTER_I (&pl->info.vPos, nSegment);
 		}
 	else {
+#ifdef _DEBUG
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
+#endif
 		pl->info.nType = 0;
 		pl->info.fRad = faceP ? faceP->fRad : 0;
 		//RegisterLight (NULL, nSegment, nSide);
@@ -1175,7 +1179,7 @@ if (gameOpts->render.nLightingMethod) {
 		else
 			psl = psl;
 #endif
-		psl->xDistance = (fix) ((VmVecDist (&c, &psl->info.vPos) /*- fl2f (psl->info.fRad)*/) / (psl->info.fRange * psl->info.fBoost));
+		psl->xDistance = (fix) ((VmVecDist (&c, &psl->info.vPos) /*- fl2f (psl->info.fRad)*/) / (psl->info.fRange * max (psl->info.fRad, 1.0f)));
 		if (psl->xDistance > xMaxLightRange)
 			continue;
 		if (SetActiveShaderLight (activeLightsP, psl, 1, nThread))

@@ -1261,14 +1261,20 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int G3SetupPerPixelShader (grsFace *faceP, int nType)
+int G3SetupPerPixelShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadLight)
 {
 	static grsBitmap	*nullBmP = NULL;
 
 	int	bLightMaps, nLights, nShader;
 
-if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
-	return 0;
+if (bDepthOnly)
+	nLights = 0;
+else {
+	if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
+		return 0;
+	if (bHeadLight && !nLights)
+		return 0;
+	}
 #if ONLY_LIGHTMAPS == 2
 nType = 0;
 #endif

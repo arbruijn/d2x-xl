@@ -480,6 +480,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 		}
 	}
 G3EndFrame ();
+gameData.app.nFrameCount++;
 if (gameStates.render.automap.bRadar) {
 	gameStates.ogl.bEnableScissor = 0;
 	return;
@@ -851,7 +852,7 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_ALTED + KEY_R:
-			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (4 + gameStates.render.bPerPixelLighting);
+			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (3 + gameStates.render.bPerPixelLighting);
 			break;
 
 #ifdef _DEBUG

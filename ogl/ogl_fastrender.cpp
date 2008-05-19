@@ -113,7 +113,7 @@ nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 if (!bColored && gameOpts->render.automap.bGrayOut) 
 	nShader = G3SetupGrayScaleShader (nType, colorP);
 else if (faceP && gameStates.render.bPerPixelLighting)
-	nShader = G3SetupPerPixelShader (faceP, nType);
+	nShader = G3SetupPerPixelShader (faceP, bDepthOnly, nType, false);
 else if (gameData.render.lights.dynamic.headLights.nLights && !(bDepthOnly || gameStates.render.automap.bDisplay))
 	nShader = G3SetupHeadLightShader (nType, HaveLightMaps (), colorP);
 else if (bColorKey || bMultiTexture) 
@@ -377,11 +377,10 @@ if (bMonitor) {
 if (gameStates.render.bPerPixelLighting) {
 	bool bAdditive = false;
 	for (;;) {
-		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
 		if (gameStates.ogl.iLight >= gameStates.ogl.nLights)
 			break;
-		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
+		G3SetupPerPixelShader (faceP, 0, gameStates.render.history.nType, false);
 		if (!bAdditive) {
 			bAdditive = true;
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -642,12 +641,8 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	else
 		nDbgSeg = nDbgSeg;
 #endif
-glBlendFunc (GL_ONE, GL_ZERO);
 if (bDepthOnly) {
-	if (gameStates.render.bTriangleMesh)
-		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
-	else
-		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 	return 1;
 	}
 #ifdef _DEBUG
@@ -676,14 +671,7 @@ gameData.render.nTotalFaces++;
 gameStates.ogl.iLight = 0;
 if (!bColored) {
 	G3SetupGrayScaleShader (gameStates.render.history.nType, &faceP->color);
-#if 1
 	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
-#else
-	if (gameStates.render.bTriangleMesh)
-		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
-	else
-		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-#endif
 	}
 else if (gameStates.render.bFullBright) {
 	if (bColorKey)
@@ -692,45 +680,25 @@ else if (gameStates.render.bFullBright) {
 		glUseProgramObject (0);
 		gameStates.render.history.nShader = -1;
 		}
-#if 1
 	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
-#else
-	if (gameStates.render.bTriangleMesh)
-		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
-	else
-		glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-#endif
 	}
 else {
 	bool bAdditive = false;
-	if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
+	bool bHeadLight = gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay;
+	if (bHeadLight) {
 		G3SetupHeadLightShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
-#if 1
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
-#else
-		if (gameStates.render.bTriangleMesh)
-			glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
-		else
-			glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-#endif
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		bAdditive = true;
 		//glDepthFunc (GL_EQUAL);
 		}
 	for (;;) {
-		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
-#if 1
+		G3SetupPerPixelShader (faceP, 0, gameStates.render.history.nType, bHeadLight);
+		if (bHeadLight && !gameStates.ogl.nLights)
+			break;
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
-#else
-		if (gameStates.render.bTriangleMesh)
-			glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
-		else
-			glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
-#endif
-#if 1
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 			 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
-#endif
 			break;
 		if (!bAdditive) {
 			bAdditive = true;
@@ -738,8 +706,10 @@ else {
 			glDepthFunc (GL_EQUAL);
 			}
 		}
-	if (bAdditive)
+	if (bAdditive) {
 		glDepthFunc (GL_LEQUAL);
+		glBlendFunc (GL_ONE, GL_ZERO);
+		}
 	}
 
 if (bMonitor) {

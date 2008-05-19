@@ -789,7 +789,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 #if 1
 			gameStates.ogl.iLight = 0;
 			for (;;) {
-				G3SetupPerPixelShader (faceP, (int) faceP->nRenderType);
+				G3SetupPerPixelShader (faceP, 0, (int) faceP->nRenderType, false);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
 				if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 					 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))

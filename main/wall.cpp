@@ -1720,7 +1720,7 @@ if (!IS_WALL (nWall))
 tWall	*wallP = WALLS + nWall;
 if ((wallP->nType == WALL_DOOR) || (wallP->nType == WALL_BLASTABLE))
 	return true;
-return !WallIsTriggerTarget (nWall);
+return WallIsTriggerTarget (nWall);
 }
 
 // -----------------------------------------------------------------------------------

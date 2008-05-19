@@ -2963,7 +2963,7 @@ int frameTimeCounter = 0;
 
 //	-----------------------------------------------------------------------------
 
-void ShowFrameRate ()
+void ShowFrameRate (void)
 {
 	static int nIdFrameRate = 0;
 
