@@ -274,7 +274,7 @@ static struct {
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
-static int nMaxLightsPerFaceTable [] = {3,4,5,6,7,8,16,24,32};
+static int nMaxLightsPerFaceTable [] = {3,4,5,6,7,8,12,16,24,32};
 
 static char *pszTexQual [4];
 static char *pszMeshQual [5];
@@ -3994,7 +3994,7 @@ do {
 			*szTexQual = *(TXT_TEXQUAL + 1);
 			ADD_SLIDER (opt, szTexQual + 1, gameOpts->render.textures.nQuality, 0, 3, KEY_U, HTX_ADVRND_TEXQUAL);
 			renderOpts.nTexQual = opt++;
-			if (gameOpts->render.nLightingMethod != 1) {
+			if (gameOpts->render.nLightingMethod == 1) {
 				sprintf (szMeshQual + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
 				*szMeshQual = *(TXT_MESH_QUALITY + 1);
 				ADD_SLIDER (opt, szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 4, KEY_O, HTX_MESH_QUALITY);
