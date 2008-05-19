@@ -1314,6 +1314,10 @@ for (i = nStart; i != nEnd; i += nIncr) {
 					else {
 						c.color = gameData.render.color.ambient [nVertex].color;
 						if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
+#ifdef _DEBUG
+							if (nVertex == nDbgVertex)
+								nDbgVertex = nDbgVertex;
+#endif
 							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, 
 												&gameData.segs.fVertices [nVertex].v3, nVertex, 
 												NULL, &c, 1, 0, nThread);

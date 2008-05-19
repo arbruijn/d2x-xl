@@ -689,6 +689,10 @@ if (m) {
 	dest->p.y = src->p.y / m;
 	dest->p.z = src->p.z / m;
 	}
+else
+	dest->p.x = 
+	dest->p.y = 
+	dest->p.z = 0;
 return m;
 }
 
@@ -704,6 +708,10 @@ if (m) {
 	dest->p.y = src->p.y / m;
 	dest->p.z = src->p.z / m;
 	}
+else
+	dest->p.x = 
+	dest->p.y = 
+	dest->p.z = 0;
 return m;
 }
 

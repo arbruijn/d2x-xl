@@ -724,15 +724,8 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 				glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + faceP->nIndex);
 			glActiveTexture (GL_TEXTURE1);
 			glClientActiveTexture (GL_TEXTURE1);
-#if 0
-			if (renderItems.bTextured)
-				glDisableClientState (GL_COLOR_ARRAY);
-			else
-#endif
-				glColorPointer (4, GL_FLOAT, 0, item->color);
 			}
-		else
-			glColorPointer (4, GL_FLOAT, 0, item->color);
+		glColorPointer (4, GL_FLOAT, 0, item->color);
 		}
 	else if (item->nColors == 1)
 		glColor4fv ((GLfloat *) item->color);
@@ -767,7 +760,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	else 
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#if 1//def _DEBUG
+#ifdef _DEBUG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif

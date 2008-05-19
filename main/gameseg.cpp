@@ -1861,6 +1861,10 @@ void AddToVertexNormal (int nVertex, vmsVector *pvNormal)
 {
 	g3sNormal	*pn = &gameData.segs.points [nVertex].p3_normal;
 
+#if 1//def _DEBUG
+if (nVertex == nDbgVertex)
+	nDbgVertex = nDbgVertex;
+#endif
 pn->nFaces++;
 pn->vNormal.p.x += f2fl (pvNormal->p.x);
 pn->vNormal.p.y += f2fl (pvNormal->p.y);
@@ -1960,8 +1964,8 @@ else {
 
 void ValidateRemovableWall (tSegment *segP, int nSide, int nTexture)
 {
-	CreateWallsOnSide (segP, nSide);
-	segP->sides [nSide].nBaseTex = nTexture;
+CreateWallsOnSide (segP, nSide);
+segP->sides [nSide].nBaseTex = nTexture;
 //	assign_default_uvs_to_side (segP, nSide);
 //	assign_light_to_side (segP, nSide);
 }
@@ -1982,14 +1986,16 @@ extern int check_for_degenerate_segment (tSegment *segP);
 
 void ComputeVertexNormals (void)
 {
-	int		i;
+	int		h, i;
 	g3sPoint	*pp;
 
 for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
-	pp->p3_normal.vNormal.p.x /= pp->p3_normal.nFaces;
-	pp->p3_normal.vNormal.p.y /= pp->p3_normal.nFaces;
-	pp->p3_normal.vNormal.p.z /= pp->p3_normal.nFaces;
-	VmVecNormalize (&pp->p3_normal.vNormal, &pp->p3_normal.vNormal);
+	if (1 < (h = pp->p3_normal.nFaces)) {
+		pp->p3_normal.vNormal.p.x /= h;
+		pp->p3_normal.vNormal.p.y /= h;
+		pp->p3_normal.vNormal.p.z /= h;
+		VmVecNormalize (&pp->p3_normal.vNormal, &pp->p3_normal.vNormal);
+		}
 	pp->p3_normal.nFaces = 1;
 	}
 }
