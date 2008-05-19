@@ -3574,6 +3574,8 @@ do {
 	extraGameInfo [0].bFlickerLights = m [optFlickerLights].value;
 	GET_VAL (gameOpts->ogl.bHeadLight, lightOpts.nHWHeadLight);
 	GET_VAL (extraGameInfo [0].bBrightObjects, optBrightObjects);
+	gameOpts->ogl.nMaxLightsPerFace = nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace];
+
 	} while (i == -2);
 if (optColorSat >= 0) {
 	for (i = 0; i < 3; i++)
@@ -3585,8 +3587,7 @@ if (optColorSat >= 0) {
 gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod;
 gameStates.render.bPerPixelLighting = (gameStates.render.nLightingMethod == 2);
 gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
-gameOpts->ogl.nMaxLightsPerFace =
-gameStates.render.nMaxLightsPerFace = nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace];
+gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
 }
 

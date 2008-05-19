@@ -581,30 +581,17 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 	faceP = pl->info.faceP;
 	bIsLight = 0; 
 	t = IsLight (faceP->nBaseTex) ? faceP->nBaseTex : faceP->nOvlTex;
-	if (0 == (lmiP->range = GetLightColor (t, &lmiP->color [0])))
-		continue;
-	bIsLight = 1;
 	sideRad = (double) faceP->fRad / 10.0;
 	nIndex = faceP->nSegment * 6 + faceP->nSide;
-	if (gameStates.app.bD2XLevel && (gameData.render.color.lights [nIndex].index)) { 
-		bIsLight = 1;
-		lmiP->color [0] = (GLfloat) gameData.render.color.lights [nIndex].color.red; 
-		lmiP->color [1] = (GLfloat) gameData.render.color.lights [nIndex].color.green; 
-		lmiP->color [2] = (GLfloat) gameData.render.color.lights [nIndex].color.blue; 
-		lmiP->range = baseRange; 
-		}
 	//Process found light.
-	if (bIsLight) {
-		lmiP->range += sideRad;
-		//find where it is in the level.
-		lmiP->vPos = SIDE_CENTER_V (faceP->nSegment, faceP->nSide);
-		lmiP->nIndex = nIndex; 
-
-		//find light direction, currently based on first 3 points of tSide, not always right.
-		vmsVector *normalP = SEGMENTS [faceP->nSegment].sides [faceP->nSide].normals;
-		VmVecAvg (&lmiP->vDir, normalP, normalP + 1);
-		lmiP++; 
-		}
+	lmiP->range += sideRad;
+	//find where it is in the level.
+	lmiP->vPos = SIDE_CENTER_V (faceP->nSegment, faceP->nSide);
+	lmiP->nIndex = nIndex; 
+	//find light direction, currently based on first 3 points of tSide, not always right.
+	vmsVector *normalP = SEGMENTS [faceP->nSegment].sides [faceP->nSide].normals;
+	VmVecAvg (&lmiP->vDir, normalP, normalP + 1);
+	lmiP++; 
 	}
 return lightMapData.nLights = (int) (lmiP - lightMapData.info); 
 }
