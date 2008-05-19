@@ -436,6 +436,7 @@ else if (nSegment >= 0) {
 		pl->info.fRad = faceP ? faceP->fRad : 0;
 		//RegisterLight (NULL, nSegment, nSide);
 		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || WallIsVolatile (SEGMENTS [nSegment].sides [nSide].nWall);
+		gameData.render.lights.dynamic.nVariable += pl->info.bVariable;
 		COMPUTE_SIDE_CENTER_I (&pl->info.vPos, nSegment, nSide);
 	#if 1
 		if (gameStates.render.bPerPixelLighting) {
@@ -643,7 +644,8 @@ memset (pOwners, 0xff, sizeof (*pOwners) * MAX_OBJECTS);
 gameData.render.lights.dynamic.nNearestSegLights = pSegLights;
 gameData.render.lights.dynamic.nNearestVertLights = pVertLights;
 gameData.render.lights.dynamic.owners = pOwners;
-gameData.render.lights.dynamic.nLights = 0;
+gameData.render.lights.dynamic.nLights =
+gameData.render.lights.dynamic.nVariable = 0;
 gameData.render.lights.dynamic.material.bValid = 0;
 for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces; nFace; nFace--, faceP++) {
 	nSegment = faceP->nSegment;
@@ -885,7 +887,7 @@ return psl;
 
 void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread)
 {
-//if (gameOpts->render.nLightingMethod) 
+if (bStatic || gameData.render.lights.dynamic.nVariable) 
 	{
 	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
