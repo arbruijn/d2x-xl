@@ -230,7 +230,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if 1//def _DEBUG
 
 short nDbgSeg = -1;
 short nDbgSide = -1;
@@ -242,6 +242,10 @@ short nDbgModel = -1;
 int nDbgVertex = -1;
 int nDbgBaseTex = -1;
 int nDbgOvlTex = -1;
+
+#endif
+
+#ifdef _DEBUG
 
 int TrapSeg (short nSegment)
 {

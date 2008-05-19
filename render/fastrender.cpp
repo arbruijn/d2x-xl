@@ -761,7 +761,7 @@ else {	//front to back
 	if (!gameStates.render.nWindow)
 		j = SetupCoronas (nType);
 	else
-		j = gameStates.render.bPerPixelLighting ? 0 : SetupDepthBuffer (nType);
+		j = 0; //gameStates.render.bPerPixelLighting ? 0 : SetupDepthBuffer (nType);
 	bVertexArrays = BeginRenderFaces (0, 0);
 	glColorMask (1,1,1,1);
 	if (!j) {

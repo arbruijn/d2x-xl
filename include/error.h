@@ -38,10 +38,14 @@ void Assert(int expr);
 void _CDECL_ PrintLog (char *fmt, ...);
 void Int3();
 
-#ifdef _DEBUG
+#if 1//def _DEBUG
 
 extern short nDbgSeg, nDbgSide, nDbgFace, nDbgObj, nDbgObjType, nDbgObjId, nDbgModel;
 extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex;
+
+#endif
+
+#ifdef _DEBUG
 
 int TrapSeg (short nSegment);
 int TrapSegSide (short nSegment, short nSide);

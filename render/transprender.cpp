@@ -26,6 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "u_mem.h"
+#include "error.h"
 #include "ogl_lib.h"
 #include "dynlight.h"
 #include "ogl_fastrender.h"
@@ -766,7 +767,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	else 
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#ifdef _DEBUG
+#if 1//def _DEBUG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
