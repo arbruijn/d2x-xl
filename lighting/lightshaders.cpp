@@ -50,8 +50,6 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #define OBJ_LIN_ATT	0.05f
 #define OBJ_QUAD_ATT	0.005f
 
-extern int HW_VERTEX_LIGHTING;
-
 //------------------------------------------------------------------------------
 
 GLhandleARB gsShaderProg [2][3] = {{0,0,0},{0,0,0}};
@@ -198,10 +196,10 @@ char *pszPPXLightingFS [] = {
 	"		else {\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
@@ -236,10 +234,10 @@ char *pszPPXLightingFS [] = {
 	"		else {\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
@@ -276,10 +274,10 @@ char *pszPPXLightingFS [] = {
 	"		else {\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
@@ -320,10 +318,10 @@ char *pszPPXLightingFS [] = {
 	"		else {\r\n" \
 	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
@@ -358,10 +356,10 @@ char *pszPP1LightingFS [] = {
 	"		color = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
-	"			NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"		color = (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		color = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
@@ -389,10 +387,10 @@ char *pszPP1LightingFS [] = {
 	"		color = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
-	"			NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"		color = (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		color = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
@@ -422,10 +420,10 @@ char *pszPP1LightingFS [] = {
 	"		color = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
-	"			NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"		color = (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		color = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
@@ -459,10 +457,10 @@ char *pszPP1LightingFS [] = {
 	"		color = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
-	"			NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"		color = (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		color = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
@@ -607,10 +605,10 @@ char *pszPPLMXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
@@ -644,10 +642,10 @@ char *pszPPLMXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
@@ -683,10 +681,10 @@ char *pszPPLMXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
@@ -726,10 +724,10 @@ char *pszPPLMXLightingFS [] = {
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
 	"		else {\r\n" \
 	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"			/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
 	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"			color = (gl_LightSource [i].diffuse * max (NdotL, 0.0) + gl_LightSource [i].ambient) / att;\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
@@ -764,10 +762,10 @@ char *pszPPLM1LightingFS [] = {
 	"		color = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
-	"			NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
@@ -796,10 +794,10 @@ char *pszPPLM1LightingFS [] = {
 	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
-	"			NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
@@ -829,10 +827,10 @@ char *pszPPLM1LightingFS [] = {
 	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
-	"			NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
@@ -866,10 +864,10 @@ char *pszPPLM1LightingFS [] = {
 	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"		/*NdotL = max (NdotL, 0.0);*/\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
-	"			NdotL += (1.0 - max (NdotL, 0.0)) / att;\r\n" \
-	"		color += (gl_LightSource [0].diffuse * max (NdotL, 0.0) + gl_LightSource [0].ambient) / att;\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
@@ -1194,8 +1192,7 @@ for (nLights = 0;
 		}
 	hLight = GL_LIGHT0 + nLights++;
 	glEnable (hLight);
-	if (!HW_VERTEX_LIGHTING)
-		specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
+	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
 	fBrightness = psl->info.fBrightness;
 #ifdef _DEBUG
 	if ((psl->info.nObject >= 0) && (OBJECTS [psl->info.nObject].nType == nDbgObjType) &&
@@ -1216,10 +1213,7 @@ for (nLights = 0;
 		diffuse.alpha = 1.0f;
 		}
 	else {
-		if (HW_VERTEX_LIGHTING)
-			glLightf (hLight, GL_CONSTANT_ATTENUATION, min (1.0f, 1.0f / psl->info.fRad));
-		else
-			glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
+		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, GEO_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, GEO_QUAD_ATT / fBrightness);
 		ambient.red = psl->info.color.red * PPL_AMBIENT_LIGHT;
@@ -1259,15 +1253,9 @@ if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) && (gameStates.ogl.nFirstL
 for (int i = nLights; i < 8; i++)
 	glDisable (GL_LIGHT0 + i);
 #endif
-if (HW_VERTEX_LIGHTING) {
-	for (int i = nLights; i < 8; i++)
-		glDisable (GL_LIGHT0 + i);
-	}
-else {
-	if (InitPerPixelLightingShader (nType, nLights) >= 0)
-		return nLights;
-	OglDisableLighting ();
-	}
+if (InitPerPixelLightingShader (nType, nLights) >= 0)
+	return nLights;
+OglDisableLighting ();
 return -1;
 }
 
@@ -1281,8 +1269,6 @@ int G3SetupPerPixelShader (grsFace *faceP, int nType)
 
 if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
 	return 0;
-if (HW_VERTEX_LIGHTING)
-	return gameStates.render.history.nShader;
 #if ONLY_LIGHTMAPS == 2
 nType = 0;
 #endif

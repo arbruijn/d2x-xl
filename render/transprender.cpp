@@ -776,12 +776,12 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 			glDrawArrays (item->nPrimitive, 0, item->nVertices);
 			}
 		else {
-			bool bResetBlendMode = false;
+			bool bAdditive = false;
 #if 0
 			if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
 				G3SetupHeadLightShader (renderItems.bTextured, 1, renderItems.bTextured ? NULL : &faceP->color);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
-				bResetBlendMode = true;
+				bAdditive = true;
 				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 				glDepthFunc (GL_LEQUAL);
 				}
@@ -794,8 +794,8 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 				if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 					 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 					break;
-				if (!bResetBlendMode) {
-					bResetBlendMode = true;
+				if (!bAdditive) {
+					bAdditive = true;
 					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 					glDepthFunc (GL_LEQUAL);
 					}
@@ -804,15 +804,15 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLig
 #if 1
 			if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
 				G3SetupHeadLightShader (renderItems.bTextured, 1, renderItems.bTextured ? NULL : &faceP->color);
-				if (!bResetBlendMode && gameStates.ogl.nLights) {
-					bResetBlendMode = true;
+				if (!bAdditive && gameStates.ogl.nLights) {
+					bAdditive = true;
 					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 					glDepthFunc (GL_LEQUAL);
 					}
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 #endif
-			if (bResetBlendMode)
+			if (bAdditive)
 				glDepthFunc (GL_LESS);
 			}
 		}

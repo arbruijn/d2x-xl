@@ -47,8 +47,6 @@
 #define MAX_PP_LIGHTS_PER_FACE 32
 #define MAX_PP_LIGHTS_PER_PASS 1
 
-int HW_VERTEX_LIGHTING = 0;
-
 extern tG3FaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
 
 //------------------------------------------------------------------------------
@@ -114,7 +112,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 if (!bColored && gameOpts->render.automap.bGrayOut) 
 	nShader = G3SetupGrayScaleShader (nType, colorP);
-else if (!HW_VERTEX_LIGHTING && faceP && gameStates.render.bPerPixelLighting)
+else if (faceP && gameStates.render.bPerPixelLighting)
 	nShader = G3SetupPerPixelShader (faceP, nType);
 else if (gameData.render.lights.dynamic.headLights.nLights && !(bDepthOnly || gameStates.render.automap.bDisplay))
 	nShader = G3SetupHeadLightShader (nType, HaveLightMaps (), colorP);
@@ -168,8 +166,7 @@ if (gameOpts->render.debug.bWireFrame) {
 
 int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
-	int			bOverlay, bColored, bTransparent, bColorKey = 0, bMonitor = 0, bMultiTexture = 0, 
-					iMax = 0, index [4];
+	int			bOverlay, bColored, bTransparent, bColorKey = 0, bMonitor = 0, bMultiTexture = 0;
 	grsBitmap	*bmMask = NULL;
 
 #ifdef _DEBUG
@@ -237,6 +234,7 @@ else {
 #if G3_BUFFER_FACES
 	G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
 #endif
+gameStates.ogl.iLight = 0;
 if (bTextured) {
 	if ((bmBot != gameStates.render.history.bmBot) || 
 		 (bmTop != gameStates.render.history.bmTop) || 
@@ -375,25 +373,15 @@ if (bMonitor) {
 		}
 	}
 
-#if 0
-G3DisableClientState (GL_COLOR_ARRAY, GL_TEXTURE2);
-glEnable (GL_TEXTURE_2D);
-G3DisableClientState (GL_COLOR_ARRAY, GL_TEXTURE1);
-glEnable (GL_TEXTURE_2D);
-G3DisableClientState (GL_COLOR_ARRAY, GL_TEXTURE0);
-glEnable (GL_TEXTURE_2D);
-glColor4f (1,1,1,1);
-#endif
-if (0 && gameStates.render.bPerPixelLighting) {
+
+if (gameStates.render.bPerPixelLighting) {
 	bool bAdditive = false;
-	OglEnableLighting (0);
-	glDisable (GL_COLOR_MATERIAL);
 	for (;;) {
 		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
 		if (gameStates.ogl.iLight >= gameStates.ogl.nLights)
 			break;
-		//G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
+		G3SetupPerPixelShader (faceP, gameStates.render.history.nType);
 		if (!bAdditive) {
 			bAdditive = true;
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -424,6 +412,7 @@ else {
 	tRgbaColorf	*pc = gameData.segs.faces.color + faceP->nIndex;
 	float l, lMax = 0;
 	int i, j, nIndex;
+	int iMax = 0, index [4];
 
 	for (i = 0; i < 4; i++, pc++) {
 		l = pc->red + pc->green + pc->blue;

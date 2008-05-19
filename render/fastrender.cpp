@@ -62,8 +62,6 @@ GLhandleARB hVertLightShader = 0;
 GLhandleARB hVertLightVS = 0; 
 GLhandleARB hVertLightFS = 0; 
 
-extern int HW_VERTEX_LIGHTING;
-
 //------------------------------------------------------------------------------
 
 void LoadFaceBitmaps (tSegment *segP, grsFace *faceP)
@@ -413,8 +411,7 @@ if (nType == 3) {
 	}
 else if (gameStates.render.bPerPixelLighting) {
 	OglEnableLighting (1);
-	if (!HW_VERTEX_LIGHTING)
-		glDisable (GL_LIGHTING);
+	glDisable (GL_LIGHTING);
 	glColor4i (1,1,1,1);
 	}
 OglSetupTransform (1);
