@@ -139,7 +139,7 @@ void RenderHitbox (tObject *objP, float red, float green, float blue, float alph
 
 if (!SHOW_OBJ_FX)
 	return;
-if ((objP->nType == OBJ_PLAYER) {
+if (objP->nType == OBJ_PLAYER) {
 	if (!EGI_FLAG (bPlayerShield, 0, 1, 0))
 		return;
 	if (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) {
@@ -152,7 +152,7 @@ if ((objP->nType == OBJ_PLAYER) {
 		}
 
 	}
-else if ((objP->nType == OBJ_ROBOT) {
+else if (objP->nType == OBJ_ROBOT) {
 	if (!gameOpts->render.effects.bRobotShields)
 		return;
 	if (objP->cType.aiInfo.CLOAKED) {

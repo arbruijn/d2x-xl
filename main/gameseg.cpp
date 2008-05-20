@@ -1861,7 +1861,7 @@ void AddToVertexNormal (int nVertex, vmsVector *pvNormal)
 {
 	g3sNormal	*pn = &gameData.segs.points [nVertex].p3_normal;
 
-#if 1//def _DEBUG
+#ifdef _DEBUG
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif

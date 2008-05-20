@@ -110,6 +110,7 @@ while (nSubModel != 0) {
 	nSubModel = pm->subModels.parents [nSubModel];
 	}
 //now instance for the entire tObject
+VmVecInc (&vGunPos, gameData.models.offsets + botInfoP->nModel);
 VmVecRotate (vGunPoint, &vGunPos, ObjectView (objP));
 VmVecInc (vGunPoint, &objP->position.vPos);
 return 1;

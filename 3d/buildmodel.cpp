@@ -315,7 +315,7 @@ G3_FREE (pm->pSortedVerts);
 
 //------------------------------------------------------------------------------
 
-int G3ShiftModel (tObject *objP, int nModel, int bHires)
+int G3ShiftModel (tObject *objP, int nModel, int bHires, fVector3 *vOffsetfP)
 {
 #if 0
 return 0;
@@ -323,7 +323,7 @@ return 0;
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel		*psm;
 	int				i;
-	fVector			vOffset;
+	fVector3			vOffsetf;
 	tG3ModelVertex	*pmv;
 
 if (objP->nType == OBJ_PLAYER) {
@@ -332,21 +332,28 @@ if (objP->nType == OBJ_PLAYER) {
 	}
 else if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_HOSTAGE) && (objP->nType != OBJ_POWERUP))
 	return 0;
-VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
-if (!(vOffset.p.x || vOffset.p.y || vOffset.p.z))
+if (vOffsetfP)
+	vOffsetf = *vOffsetfP;
+else
+	VmVecFixToFloat (&vOffsetf, gameData.models.offsets + nModel);
+if (!(vOffsetf.p.x || vOffsetf.p.y || vOffsetf.p.z))
 	return 0;
-for (i = pm->nFaceVerts, pmv = pm->pFaceVerts; i; i--, pmv++) {
-	pmv->vertex.p.x += vOffset.p.x;
-	pmv->vertex.p.y += vOffset.p.y;
-	pmv->vertex.p.z += vOffset.p.z;
+if (vOffsetfP) {
+	for (i = pm->nFaceVerts, pmv = pm->pFaceVerts; i; i--, pmv++) {
+		pmv->vertex.p.x += vOffsetf.p.x;
+		pmv->vertex.p.y += vOffsetf.p.y;
+		pmv->vertex.p.z += vOffsetf.p.z;
+		}
 	}
-for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
-	psm->vMin.p.x += vOffset.p.x;
-	psm->vMin.p.y += vOffset.p.y;
-	psm->vMin.p.z += vOffset.p.z;
-	psm->vMax.p.x += vOffset.p.x;
-	psm->vMax.p.y += vOffset.p.y;
-	psm->vMax.p.z += vOffset.p.z;
+else {
+	for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
+		psm->vMin.p.x += vOffsetf.p.x;
+		psm->vMin.p.y += vOffsetf.p.y;
+		psm->vMin.p.z += vOffsetf.p.z;
+		psm->vMax.p.x += vOffsetf.p.x;
+		psm->vMax.p.y += vOffsetf.p.y;
+		psm->vMax.p.z += vOffsetf.p.z;
+		}
 	}
 return 1;
 #endif
@@ -393,7 +400,7 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 	tG3SubModel		*psm;
 	tG3ModelFace	*pmf;
 	tG3ModelVertex	*pmv;
-	fVector3			vOffset, vo, v;
+	fVector3			vOffset = {{0,0,0}}, vo, v;
 	float				fRad = 0, r;
 	int				i, j, k;
 
@@ -401,7 +408,7 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
-VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
+//VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
 for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) 
 	if (psm->nHitbox > 0) {
 		VmVecFixToFloat (&vo, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
@@ -426,6 +433,7 @@ fix G3ModelSize (tObject *objP, tG3Model *pm, int nModel, int bHires)
 	int			i, j;
 	tHitbox		*phb = gameData.models.hitboxes [nModel].hitboxes;
 	vmsVector	hv;
+	fVector3		vOffset;
 	double		dx, dy, dz, r;
 
 #ifdef _DEBUG
@@ -433,6 +441,8 @@ if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
 psm = pm->pSubModels;
+vOffset = psm->vMin;
+
 j = 1;
 if (nSubModels == 1) {
 	psm->nHitbox = 1;
@@ -454,10 +464,10 @@ do {
 	if (bHires) {
 		for (i = 0; i < pm->nSubModels; i++)
 			if (pm->pSubModels [i].nParent == -1) 
-				G3SubModelSize (objP, nModel, i, NULL, bHires);
+				G3SubModelSize (objP, nModel, i, NULL, 1);
 		}
 	else
-		G3SubModelSize (objP, nModel, 0, NULL, bHires);
+		G3SubModelSize (objP, nModel, 0, NULL, 0);
 	// determine min and max size
 	for (i = 0, psm = pm->pSubModels; i < nSubModels; i++, psm++) {
 		if (0 < (j = psm->nHitbox)) {
@@ -499,13 +509,27 @@ do {
 		gameData.models.offsets [nModel].p.y = (phb [0].vMin.p.y + phb [0].vMax.p.y) / -2;
 		gameData.models.offsets [nModel].p.z = (phb [0].vMin.p.z + phb [0].vMax.p.z) / -2;
 		}
-	} while (G3ShiftModel (objP, nModel, bHires));
+	} while (G3ShiftModel (objP, nModel, bHires, NULL));
+
+psm = pm->pSubModels;
+VmVecSub (&vOffset, &psm->vMin, &vOffset);
+VmVecFloatToFix (gameData.models.offsets + nModel, &vOffset);
+#ifdef _DEBUG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
+#if 1
+VmVecInc (&psm [0].vOffset, gameData.models.offsets + nModel);
+#else
+G3ShiftModel (objP, nModel, bHires, &vOffset);
+#endif
 dx = (phb [0].vMax.p.x - phb [0].vMin.p.x);
 dy = (phb [0].vMax.p.y - phb [0].vMin.p.y);
 dz = (phb [0].vMax.p.z - phb [0].vMin.p.z);
 phb [0].vSize.p.x = (fix) dx / 2;
 phb [0].vSize.p.y = (fix) dy / 2;
 phb [0].vSize.p.z = (fix) dz / 2;
+phb [0].vOffset = gameData.models.offsets [nModel];
 for (i = 0; i <= j; i++)
 	ComputeHitbox (nModel, i);
 return G3ModelRad (objP, nModel, bHires);

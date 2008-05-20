@@ -329,6 +329,8 @@ for (pmf = pm->pFaces, i = pm->nFaces; i; i--, pmf++)
 	if (pmf->nSubModel != nSubModel) {
 		nSubModel = pmf->nSubModel;
 		pm->pSubModels [nSubModel].pFaces = pmf;
+		if (nSubModel == pm->nSubModels - 1)
+			break;
 		}
 }
 
@@ -343,6 +345,8 @@ if (!pp->modelData)
 pm->nSubModels = 1;
 #ifdef _DEBUG
 HUDMessage (0, "optimizing model");
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
 #endif
 PrintLog ("         optimizing POF model %d\n", nModel);
 if (!G3CountPOFModelItems (pp->modelData, &pm->nSubModels, &pm->nVerts, &pm->nFaces, &pm->nFaceVerts))
