@@ -601,7 +601,7 @@ void SetSoundSources (void)
 	vmsVector	v;
 	int			i, nOvlTex, nEffect;
 
-gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
+gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
 DigiInitSounds ();		//clear old sounds
 gameStates.sound.bDontStartObjects = 1;
 for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++)
@@ -641,7 +641,7 @@ if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
 			DigiSetObjectSound (i, nSound, NULL);
 			}
 	}
-//gameOpts->sound.bD1Sound = 0;
+//gameStates.sound.bD1Sound = 0;
 gameStates.sound.bDontStartObjects = 0;
 }
 
@@ -1155,7 +1155,7 @@ ResetRearView ();
 gameData.fusion.xAutoFireTime = 0;
 gameData.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
-gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
+gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
 if (gameStates.app.bD1Mission) {
 	if (LOCALPLAYER.energy < INITIAL_ENERGY)
 		LOCALPLAYER.energy = INITIAL_ENERGY;
@@ -1319,7 +1319,7 @@ if (!gameStates.app.bD1Mission && CFExist (SECRETB_FILENAME, gameFolders.szSaveD
 
 	ReturningToLevelMessage ();
 	StateRestoreAll (1, 1, SECRETB_FILENAME);
-	gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
+	gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
 	SetDataVersion (-1);
 	gameData.weapons.nPrimary = pw_save;
 	gameData.weapons.nSecondary = sw_save;
@@ -2187,7 +2187,7 @@ gameData.fusion.xAutoFireTime = 0;
 gameData.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
 gameStates.app.cheats.bD1CheatsEnabled = 0;
-gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
+gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
 SetDataVersion (-1);
 }
 

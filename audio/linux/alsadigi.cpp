@@ -344,7 +344,7 @@ int DigiXlatSound(int soundno)
 		soundno = AltSounds[soundno];
 		if (soundno == 255) return -1;
 	}
-	return Sounds [gameOpts->sound.bD1Sound][soundno];
+	return Sounds [gameStates.sound.bD1Sound][soundno];
 }
 
 static int get_free_slot()

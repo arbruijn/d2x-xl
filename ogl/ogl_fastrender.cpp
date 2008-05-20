@@ -164,6 +164,18 @@ if (gameOpts->render.debug.bWireFrame) {
 
 //------------------------------------------------------------------------------
 
+static inline void G3SetBlendMode (grsFace *faceP)
+{
+if (faceP->bAdditive)
+	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+else if (faceP->bTransparent)
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+else
+	glBlendFunc (GL_ONE, GL_ZERO);
+}
+
+//------------------------------------------------------------------------------
+
 int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 	int			bOverlay, bColored, bTransparent, bColorKey = 0, bMonitor = 0, bMultiTexture = 0;
@@ -340,7 +352,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	else
 		nDbgSeg = nDbgSeg;
 #endif
-glBlendFunc (GL_ONE, GL_ZERO);
+G3SetBlendMode (faceP);
 if (bDepthOnly) {
 	if (gameStates.render.bTriangleMesh)
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
@@ -372,7 +384,6 @@ if (bMonitor) {
 		OGL_BINDTEX (0);
 		}
 	}
-
 
 if (gameStates.render.bPerPixelLighting) {
 	bool bAdditive = false;
@@ -645,11 +656,14 @@ if (bDepthOnly) {
 	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 	return 1;
 	}
+
 #ifdef _DEBUG
 RenderWireFrame (faceP, bTextured);
 if (!gameOpts->render.debug.bTextures)
 	return 0;
 #endif
+
+G3SetBlendMode (faceP);
 
 if (bMonitor) {
 	if (bOverlay) {
@@ -708,7 +722,6 @@ else {
 		}
 	if (bAdditive) {
 		glDepthFunc (GL_LEQUAL);
-		glBlendFunc (GL_ONE, GL_ZERO);
 		}
 	}
 

@@ -1704,10 +1704,6 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\main\irrstuff.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\..\main\kconfig.cpp"
 						>
 						<FileConfiguration
@@ -4579,11 +4575,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

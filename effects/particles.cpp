@@ -403,9 +403,13 @@ if (nType == 2) {
 else {
 	pParticle->bBright = (rand () % 50) == 0;
 	if ((pParticle->bColored = (pColor != NULL))) {
-		pParticle->color.red = pColor->red * RANDOM_FADE;
-		pParticle->color.green = pColor->green * RANDOM_FADE;
-		pParticle->color.blue = pColor->blue * RANDOM_FADE;
+		if (nType == 1)
+			pParticle->color = *pColor;
+		else {
+			pParticle->color.red = pColor->red * RANDOM_FADE;
+			pParticle->color.green = pColor->green * RANDOM_FADE;
+			pParticle->color.blue = pColor->blue * RANDOM_FADE;
+			}
 		pParticle->nFade = 0;
 		}
 	else {
@@ -414,7 +418,10 @@ else {
 		pParticle->color.blue = 0.0f;//(float) (64 + randN (64)) / 255.0f;
 		pParticle->nFade = 2;
 		}
-	pParticle->color.alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
+	if (nType == 1)
+		pParticle->color.alpha = (float) (SMOKE_START_ALPHA + 64) / 255.0f;
+	else
+		pParticle->color.alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
 #if 1
 	if (gameOpts->render.smoke.bDisperse && !pParticle->bBright) {
 		fBrightness = 1.0f - fBrightness;
@@ -703,7 +710,7 @@ if (iBuffer) {
 	int bLightMaps = HaveLightMaps ();
 	bufferBrightness = brightness;
 	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthFunc (GL_LESS);
 	if (gameStates.ogl.bShadersOk) {
 		if (InitParticleBuffer (bLightMaps)) { //gameStates.render.bVertexArrays) {
@@ -888,7 +895,7 @@ vCenter.p.x = f2fl (hp.p.x);
 vCenter.p.y = f2fl (hp.p.y);
 vCenter.p.z = f2fl (hp.p.z);
 i = pParticle->nOrient; 
-if (nType == 1) {
+if (nType == 1) { //scale light trail particle color to reduce saturation
 	pc.red /= 50.0f;
 	pc.green /= 50.0f;
 	pc.blue /= 50.0f;

@@ -4691,7 +4691,7 @@ pingStats [0].launchTime = 0;
 void MultiQuickSoundHack (int nSound)
 {
 	int			l, i, j;
-	tDigiSound	*dsP = gameData.pig.sound.sounds [gameOpts->sound.bD1Sound] + nSound;
+	tDigiSound	*dsP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound;
 	ubyte			*dataP;
 
 nSound = DigiXlatSound ((short) nSound);

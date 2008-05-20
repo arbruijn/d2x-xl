@@ -100,14 +100,14 @@ short DigiXlatSound (short nSound)
 if (nSound < 0)
 	return -1;
 if (gameStates.sound.digi.bLoMem) {
-	nSound = AltSounds [gameOpts->sound.bD1Sound][nSound];
+	nSound = AltSounds [gameStates.sound.bD1Sound][nSound];
 	if (nSound == 255)
 		return -1;
 	}
-//Assert (Sounds [gameOpts->sound.bD1Sound][nSound] != 255);	//if hit this, probably using undefined sound
-if (Sounds [gameOpts->sound.bD1Sound][nSound] == 255)
+//Assert (Sounds [gameStates.sound.bD1Sound][nSound] != 255);	//if hit this, probably using undefined sound
+if (Sounds [gameStates.sound.bD1Sound][nSound] == 255)
 	return -1;
-return Sounds [gameOpts->sound.bD1Sound][nSound];
+return Sounds [gameStates.sound.bD1Sound][nSound];
 }
 
 //------------------------------------------------------------------------------
@@ -115,7 +115,7 @@ return Sounds [gameOpts->sound.bD1Sound][nSound];
 int DigiUnXlatSound (int nSound)
 {
 	int i;
-	ubyte *table = (gameStates.sound.digi.bLoMem ? AltSounds [gameOpts->sound.bD1Sound] :Sounds [gameOpts->sound.bD1Sound]);
+	ubyte *table = (gameStates.sound.digi.bLoMem ? AltSounds [gameStates.sound.bD1Sound] :Sounds [gameStates.sound.bD1Sound]);
 
 if (nSound < 0) 
 	return -1;
@@ -389,7 +389,7 @@ if (!(pszSound && *pszSound)) {
 	nSound = DigiXlatSound (nOrgSound);
 	if (nSound < 0) 
 		return -1;
-	if (!gameData.pig.sound.sounds [gameOpts->sound.bD1Sound][nSound].data) {
+	if (!gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
 		Int3 ();
 		return -1;
 		}
@@ -482,7 +482,7 @@ if (maxVolume < 0)
 //	if (maxVolume > F1_0) maxVolume = F1_0;
 if (nSound < 0) 
 	return -1;
-if (!gameData.pig.sound.sounds [gameOpts->sound.bD1Sound][nSound].data) {
+if (!gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
 	Int3 ();
 	return -1;
 	}

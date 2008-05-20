@@ -644,7 +644,7 @@ if (!gameStates.sound.digi.bAvailable)
 if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	if (nSound < 0)
 		return -1;
-	dsP = gameData.pig.sound.sounds [gameOpts->sound.bD1Sound] + nSound % gameData.pig.sound.nSoundFiles [gameOpts->sound.bD1Sound];
+	dsP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound % gameData.pig.sound.nSoundFiles [gameStates.sound.bD1Sound];
 	if (!(dsP->data && dsP->nLength))
 		return -1;
 	Assert (dsP->data != (void *) -1);
@@ -718,7 +718,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		else {
 			if (gameOpts->sound.bHires)
 				return -1;	//cannot mix hires and standard sounds
-			l = DigiResampleSound (dsP, ssP, gameOpts->sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K), gameData.songs.user.bMP3);
+			l = DigiResampleSound (dsP, ssP, gameStates.sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K), gameData.songs.user.bMP3);
 			if (l <= 0)
 				return -1;
 			if (nSpeed < F1_0)
@@ -735,7 +735,7 @@ if (pszWAV && *pszWAV)
 	return -1;
 #endif
 	{
-	if (gameOpts->sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K)) {
+	if (gameStates.sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K)) {
 		int l = DigiResampleSound (dsP, ssP, 0, 0);
 		if (l <= 0)
 			return -1;
@@ -778,7 +778,7 @@ if (!gameStates.sound.digi.bAvailable)
 	return -1;
 if (nSound < 0)
 	return -1;
-if (gameData.pig.sound.sounds [gameOpts->sound.bD1Sound][nSound].data == NULL) {
+if (gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound].data == NULL) {
 	Int3 ();
 	return -1;
 	}

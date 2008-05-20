@@ -1426,8 +1426,8 @@ for (;;) {
 ProfilerSetStatus (0);
 #endif
 DigiStopAll ();
-if (gameOpts->sound.bD1Sound) {
-	gameOpts->sound.bD1Sound = 0;
+if (gameStates.sound.bD1Sound) {
+	gameStates.sound.bD1Sound = 0;
 	//DigiClose ();
 	//DigiInit ();
 	}

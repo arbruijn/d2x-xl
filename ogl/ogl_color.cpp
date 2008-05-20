@@ -481,8 +481,12 @@ if (j) {
 		}
 	*pColorSum = colorSum;
 	}
+#ifdef _DEBUG
 if (nLights)
 	nLights = 0;
+#endif
+if (!gameOpts->render.nPath)
+	ResetNearestVertexLights (nVertex, nThread);
 return j;
 }
 

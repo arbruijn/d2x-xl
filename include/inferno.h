@@ -468,7 +468,6 @@ typedef struct tInputOptions {
 typedef struct tSoundOptions {
 	int bUseD1Sounds;
 	int bUseRedbook;
-	int bD1Sound;
 	int bHires;
 	int bUseSDLMixer;
 	int bUseOpenAL;
@@ -982,6 +981,7 @@ typedef struct tSoundStates {
 	int bDontStartObjects;
 	int nConquerWarningSoundChannel;
 	int nSoundChannels;
+	int bD1Sound;
 	tDigiStates digi;
 } tSoundStates;
 
