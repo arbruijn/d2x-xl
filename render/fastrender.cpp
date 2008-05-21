@@ -1243,11 +1243,10 @@ void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, nColor, 
+	int			h, i, j, nColor, nLights = 0,
 					nIncr = nStart ? -1 : 1,
 					bVertexLight = !gameStates.render.bPerPixelLighting,
 					bLightMaps = HaveLightMaps ();
-
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
 memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
@@ -1271,7 +1270,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		nSegment = nSegment;
 #endif
 	if (bVertexLight && !gameStates.render.bFullBright)
-		SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+		nLights = SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 		nSide = faceP->nSide;
 #ifdef _DEBUG
@@ -1313,22 +1312,26 @@ for (i = nStart; i != nEnd; i += nIncr) {
 						*pc = gameData.render.color.ambient [nVertex].color;
 					else {
 						c.color = gameData.render.color.ambient [nVertex].color;
-						if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
+						if (nLights + gameData.render.lights.dynamic.nVariableVertLights [nVertex] == 0)
+							*pc = c.color;
+						else {
+							if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
+#ifdef _DEBUG
+								if (nVertex == nDbgVertex)
+									nDbgVertex = nDbgVertex;
+#endif
+								G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, 
+													&gameData.segs.fVertices [nVertex].v3, nVertex, 
+													NULL, &c, 1, 0, nThread);
+								gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
+								ResetNearestVertexLights (nVertex, nThread);
+								}
 #ifdef _DEBUG
 							if (nVertex == nDbgVertex)
-								nDbgVertex = nDbgVertex;
+								nVertex = nVertex;
 #endif
-							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, 
-												&gameData.segs.fVertices [nVertex].v3, nVertex, 
-												NULL, &c, 1, 0, nThread);
-							gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
-							ResetNearestVertexLights (nVertex, nThread);
+							*pc = gameData.render.color.vertices [nVertex].color;
 							}
-#ifdef _DEBUG
-						if (nVertex == nDbgVertex)
-							nVertex = nVertex;
-#endif
-						*pc = gameData.render.color.vertices [nVertex].color;
 						}
 					}
 				if (nColor == 1) {
@@ -1365,7 +1368,7 @@ void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, k, nIndex, nColor, 
+	int			h, i, j, k, nIndex, nColor, nLights = 0,
 					nIncr = nStart ? -1 : 1;
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
@@ -1391,7 +1394,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		nSegment = nSegment;
 #endif
 	if (!(gameStates.render.bFullBright || gameStates.render.bPerPixelLighting))
-		SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
+		nLights = SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 		nSide = faceP->nSide;
 #ifdef _DEBUG
@@ -1429,18 +1432,22 @@ for (i = nStart; i != nEnd; i += nIncr) {
 						*pc = gameData.render.color.ambient [nVertex].color;
 					else {
 						c.color = gameData.render.color.ambient [nVertex].color;
-						if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
-							G3VertexColor (gameData.segs.faces.normals + nIndex, 
-												gameData.segs.faces.vertices + nIndex, nVertex, 
-												NULL, &c, 1, 0, nThread);
-							gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
-							ResetNearestVertexLights (nVertex, nThread);
-							}
+						if (nLights + gameData.render.lights.dynamic.nVariableVertLights [nVertex] == 0)
+							*pc = c.color;
+						else {
+							if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
+								G3VertexColor (gameData.segs.faces.normals + nIndex, 
+													gameData.segs.faces.vertices + nIndex, nVertex, 
+													NULL, &c, 1, 0, nThread);
+								gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
+								ResetNearestVertexLights (nVertex, nThread);
+								}
 #ifdef _DEBUG
-						if (nVertex == nDbgVertex)
-							nVertex = nVertex;
+							if (nVertex == nDbgVertex)
+								nVertex = nVertex;
 #endif
-						*pc = gameData.render.color.vertices [nVertex].color;
+							*pc = gameData.render.color.vertices [nVertex].color;
+							}
 						}
 					if (nColor) {
 						c = faceColor [nColor];

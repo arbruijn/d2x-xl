@@ -2989,11 +2989,11 @@ if (gameStates.render.bShowFrameRate) {
 		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 2) {
-		sprintf (szItem, "Polys: %d ", renderItems.nItems);
+		sprintf (szItem, "Faces: %d ", gameData.render.nTotalFaces);
 		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 3) {
-		sprintf (szItem, "Faces: %d ", gameData.render.nTotalFaces);
+		sprintf (szItem, "Transp: %d ", renderItems.nItems);
 		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 4) {

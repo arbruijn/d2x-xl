@@ -423,7 +423,7 @@ if (!gameStates.app.bPlayerIsDead)
 
 #ifdef DOORDBGGING
 		case KEY_LAPOSTRO+KEY_SHIFTED:
-			dump_door_debugging_info();
+			dumpf_door_debugging_info();
 			break;
 #endif
 
@@ -857,7 +857,7 @@ void HandleGameKey(int key)
 			break;
 
 		case KEY_ALTED + KEY_R:
-			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (3 + gameStates.render.bPerPixelLighting);
+			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (4 + gameStates.render.bPerPixelLighting);
 			break;
 
 		case KEY_CTRLED + KEY_ALTED + KEY_R:

@@ -545,9 +545,9 @@ int SaveLightData (int nLevel)
 								   gameData.segs.nSegments, 
 								   gameData.segs.nVertices, 
 								   gameData.render.lights.dynamic.nLights, 
-									MAX_LIGHT_RANGE, 
-									gameStates.render.bPerPixelLighting,
-									LightingMethod ()};
+									MAX_LIGHT_RANGE,
+									LightingMethod (), 
+									gameStates.render.bPerPixelLighting};
 	int				bOk;
 	char				szFilename [FILENAME_LEN];
 

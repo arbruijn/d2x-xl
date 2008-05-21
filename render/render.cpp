@@ -97,11 +97,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define bDrawBoxes			0
 #define bWindowCheck			1
 #define bDrawEdges			0
-#define bNewSegSorting		1
 #define bPreDrawSegs			0
 #define bMigrateSegs			0
 #define bMigrateObjects		1
 #define check_bWindowCheck	0
+
+#define SORT_RENDERSEG_SIDES	0
 
 //------------------------------------------------------------------------------
 
@@ -864,24 +865,24 @@ window renderWindows [MAX_SEGMENTS_D2X];
 //Given two sides of tSegment, tell the two verts which form the 
 //edge between them
 short edgeBetweenTwoSides [6][6][2] = {
-	{ {-1, -1}, {3, 7}, {-1, -1}, {2, 6}, {6, 7}, {2, 3} }, 
-	{ {3, 7}, {-1, -1}, {0, 4}, {-1, -1}, {4, 7}, {0, 3} }, 
-	{ {-1, -1}, {0, 4}, {-1, -1}, {1, 5}, {4, 5}, {0, 1} }, 
-	{ {2, 6}, {-1, -1}, {1, 5}, {-1, -1}, {5, 6}, {1, 2} }, 
-	{ {6, 7}, {4, 7}, {4, 5}, {5, 6}, {-1, -1}, {-1, -1} }, 
-	{ {2, 3}, {0, 3}, {0, 1}, {1, 2}, {-1, -1}, {-1, -1} }
+	{{-1, -1}, {3, 7}, {-1, -1}, {2, 6}, {6, 7}, {2, 3}}, 
+	{{3, 7}, {-1, -1}, {0, 4}, {-1, -1}, {4, 7}, {0, 3}}, 
+	{{-1, -1}, {0, 4}, {-1, -1}, {1, 5}, {4, 5}, {0, 1}}, 
+	{{2, 6}, {-1, -1}, {1, 5}, {-1, -1}, {5, 6}, {1, 2}}, 
+	{{6, 7}, {4, 7}, {4, 5}, {5, 6}, {-1, -1}, {-1, -1}}, 
+	{{2, 3}, {0, 3}, {0, 1}, {1, 2}, {-1, -1}, {-1, -1}}
 };
 
 //given an edge specified by two verts, give the two sides on that edge
 int edgeToSides [8][8][2] = {
-	{ {-1, -1}, {2, 5}, {-1, -1}, {1, 5}, {1, 2}, {-1, -1}, {-1, -1}, {-1, -1} }, 
-	{ {2, 5}, {-1, -1}, {3, 5}, {-1, -1}, {-1, -1}, {2, 3}, {-1, -1}, {-1, -1} }, 
-	{ {-1, -1}, {3, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {0, 3}, {-1, -1} }, 
-	{ {1, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {0, 1} }, 
-	{ {1, 2}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {1, 4} }, 
-	{ {-1, -1}, {2, 3}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {3, 4}, {-1, -1} }, 
-	{ {-1, -1}, {-1, -1}, {0, 3}, {-1, -1}, {-1, -1}, {3, 4}, {-1, -1}, {0, 4} }, 
-	{ {-1, -1}, {-1, -1}, {-1, -1}, {0, 1}, {1, 4}, {-1, -1}, {0, 4}, {-1, -1} }, 
+	{{-1, -1}, {2, 5}, {-1, -1}, {1, 5}, {1, 2}, {-1, -1}, {-1, -1}, {-1, -1}}, 
+	{{2, 5}, {-1, -1}, {3, 5}, {-1, -1}, {-1, -1}, {2, 3}, {-1, -1}, {-1, -1}}, 
+	{{-1, -1}, {3, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {0, 3}, {-1, -1}}, 
+	{{1, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {0, 1}}, 
+	{{1, 2}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {1, 4}}, 
+	{{-1, -1}, {2, 3}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {3, 4}, {-1, -1}}, 
+	{{-1, -1}, {-1, -1}, {0, 3}, {-1, -1}, {-1, -1}, {3, 4}, {-1, -1}, {0, 4}}, 
+	{{-1, -1}, {-1, -1}, {-1, -1}, {0, 1}, {1, 4}, {-1, -1}, {0, 4}, {-1, -1}}, 
 };
 
 //@@//perform simple check on tables
@@ -904,12 +905,12 @@ int edgeToSides [8][8][2] = {
 
 
 //------------------------------------------------------------------------------
-//given an edge and one tSide adjacent to that edge, return the other adjacent tSide
+//given an edge of a segment and one segment side adjacent to that edge, 
+//return the other side of the segment that is adjacent to that edge
 
-int FindOtherSideOnEdge (tSegment *seg, short *verts, int notside)
+int FindOtherSideOnEdge (tSegment *segP, short *verts, int nSide)
 {
-	int	i;
-	int	vv0 = -1, vv1 = -1;
+	int	sv, i0 = -1, i1 = -1, i;
 	int	side0, side1;
 	int	*eptr;
 	int	v0, v1;
@@ -919,37 +920,47 @@ int FindOtherSideOnEdge (tSegment *seg, short *verts, int notside)
 
 v0 = verts [0];
 v1 = verts [1];
-vp = seg->verts;
+vp = segP->verts;
+// find the indices of v0 and v1 in segP->verts
 for (i = 0; i < 8; i++) {
-	int svv = *vp++;	// seg->verts [i];
-	if (vv0 == -1 && svv == v0) {
-		vv0 = i;
-		if (vv1 != -1)
+	sv = *vp++;	
+#if 1
+	if (sv == v0) {
+		i0 = i;
+		if (i1 > -1)
 			break;
 		}
-	if (vv1 == -1 && svv == v1) {
-		vv1 = i;
-		if (vv0 != -1)
+	else if (sv == v1) {
+		i1 = i;
+		if (i0 > -1)
 			break;
 		}
+#else
+	if ((i0 == -1) && (sv == v0)) {
+		i0 = i;
+		if (i1 != -1)
+			break;
+		}
+	if ((i1 == -1) && (sv == v1)) {
+		i1 = i;
+		if (i0 != -1)
+			break;
+		}
+#endif
 	}
-Assert(vv0 != -1 && vv1 != -1);
-
-eptr = edgeToSides [vv0][vv1];
+eptr = edgeToSides [i0][i1];
 side0 = eptr [0];
 side1 = eptr [1];
-Assert(side0 != -1 && side1 != -1);
-if (side0 != notside) {
-	Assert(side1==notside);
-	return side0;
-}
-Assert(side0==notside);
-return side1;
+return (side0 == nSide) ? side1 : side0;
 }
 
 //------------------------------------------------------------------------------
-//find the two segments that join a given seg through two sides, and
-//the sides of those segments the abut. 
+// first find the two segments joined to two sides of a reference segment which
+// sharing the same (reference) edge.
+// Next find the connecting sides of these two segments.
+// Then find those sides of the two segments sharing the reference edge with the
+// connected sides.
+// The normals of these edges are used for culling operations.
 
 typedef struct tSideNormData {
 	vmsVector	n [2];
@@ -957,52 +968,46 @@ typedef struct tSideNormData {
 	short			t;
 } tSideNormData;
 
-int FindAdjacentSideNorms (tSegment *seg, short s0, short s1, tSideNormData *s)
+int FindAdjacentSideNorms (tSegment *segP, short s0, short s1, tSideNormData *s)
 {
 	tSegment	*seg0, *seg1;
 	tSide		*side0, *side1;
-	short		edge_verts [2];
-	int		notside0, notside1;
-	int		edgeside0, edgeside1;
+	short		edgeVerts [2];
+	int		connSide0, connSide1;
+	int		otherSide0, otherSide1;
 
-Assert(s0 != -1 && s1 != -1);
-seg0 = gameData.segs.segments + seg->children [s0];
-seg1 = gameData.segs.segments + seg->children [s1];
-edge_verts [0] = seg->verts [edgeBetweenTwoSides [s0][s1][0]];
-edge_verts [1] = seg->verts [edgeBetweenTwoSides [s0][s1][1]];
-Assert(edge_verts [0] != -1 && edge_verts [1] != -1);
-notside0 = FindConnectedSide (seg, seg0);
-Assert (notside0 != -1);
-notside1 = FindConnectedSide (seg, seg1);
-Assert (notside1 != -1);
-edgeside0 = FindOtherSideOnEdge (seg0, edge_verts, notside0);
-edgeside1 = FindOtherSideOnEdge (seg1, edge_verts, notside1);
-side0 = seg0->sides + edgeside0;
-side1 = seg1->sides + edgeside1;
+seg0 = gameData.segs.segments + segP->children [s0];
+seg1 = gameData.segs.segments + segP->children [s1];
+edgeVerts [0] = segP->verts [edgeBetweenTwoSides [s0][s1][0]];
+edgeVerts [1] = segP->verts [edgeBetweenTwoSides [s0][s1][1]];
+connSide0 = FindConnectedSide (segP, seg0);
+connSide1 = FindConnectedSide (segP, seg1);
+otherSide0 = FindOtherSideOnEdge (seg0, edgeVerts, connSide0);
+otherSide1 = FindOtherSideOnEdge (seg1, edgeVerts, connSide1);
+side0 = seg0->sides + otherSide0;
+side1 = seg1->sides + otherSide1;
 memcpy (s [0].n, side0->normals, 2 * sizeof (vmsVector));
 memcpy (s [1].n, side1->normals, 2 * sizeof (vmsVector));
-s [0].p = gameData.segs.vertices + seg0->verts [sideToVerts [edgeside0][(s [0].t = side0->nType) == 3]];
-s [1].p = gameData.segs.vertices + seg1->verts [sideToVerts [edgeside1][(s [1].t = side1->nType) == 3]];
+s [0].p = gameData.segs.vertices + seg0->verts [sideToVerts [otherSide0][(s [0].t = side0->nType) == 3]];
+s [1].p = gameData.segs.vertices + seg1->verts [sideToVerts [otherSide1][(s [1].t = side1->nType) == 3]];
 return 1;
 }
 
 //------------------------------------------------------------------------------
 //see if the order matters for these two children.
 //returns 0 if order doesn't matter, 1 if c0 before c1, -1 if c1 before c0
-static int CompareChildren (tSegment *seg, short c0, short c1)
+static int CompareChildren (tSegment *segP, short nChild0, short nChild1)
 {
 	tSideNormData	s [2];
 	vmsVector		temp;
 	fix				d0, d1;
 
-if (sideOpposite [c0] == c1) 
+if (sideOpposite [nChild0] == nChild1) //sides oppose each other, i.e. are not connected via an edge
 	return 0;
-
-Assert(c0 != -1 && c1 != -1);
-
+// examine connected sides
+Assert(nChild0 != -1 && nChild1 != -1);
 //find normals of adjoining sides
-FindAdjacentSideNorms (seg, c0, c1, s);
-
+FindAdjacentSideNorms (segP, nChild0, nChild1, s);
 VmVecSub (&temp, &gameData.render.mine.viewerEye, s [0].p);
 d0 = VmVecDot (s [0].n, &temp);
 if (s [0].t != 1)	// triangularized face -> 2 different normals
@@ -1011,11 +1016,6 @@ VmVecSub (&temp, &gameData.render.mine.viewerEye, s [1].p);
 d1 = VmVecDot (s [1].n, &temp);
 if (s [1].t != 1) 
 	d1 |= VmVecDot (s [1].n + 1, &temp);
-
-#if 0
-d0 = (d0_0 < 0) || (d0_1 < 0) ? -1 : 1;
-d1 = (d1_0 < 0) || (d1_1 < 0) ? -1 : 1;
-#endif
 if ((d0 & d1) < 0)	// only < 0 if both negative due to bitwise and
 	return 0;
 if (d0 < 0)
@@ -1027,7 +1027,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int QuicksortSegChildren (tSegment *seg, short left, short right, short *childList)
+int QuickSortSegChildren (tSegment *segP, short left, short right, short *childList)
 {
 	short	h, 
 			l = left, 
@@ -1037,9 +1037,9 @@ int QuicksortSegChildren (tSegment *seg, short left, short right, short *childLi
 			bSwap = 0;
 
 do {
-	while ((l < m) && CompareChildren (seg, childList [l], median) >= 0)
+	while ((l < m) && CompareChildren (segP, childList [l], median) >= 0)
 		l++;
-	while ((r > m) && CompareChildren (seg, childList [r], median) <= 0)
+	while ((r > m) && CompareChildren (segP, childList [r], median) <= 0)
 		r--;
 	if (l <= r) {
 		if (l < r) {
@@ -1053,9 +1053,9 @@ do {
 		}
 	} while (l <= r);
 if (l < right)
-	bSwap |= QuicksortSegChildren (seg, l, right, childList);
+	bSwap |= QuickSortSegChildren (segP, l, right, childList);
 if (left < r)
-	bSwap |= QuicksortSegChildren (seg, left, r, childList);
+	bSwap |= QuickSortSegChildren (segP, left, r, childList);
 return bSwap;
 }
 
@@ -1063,22 +1063,28 @@ return bSwap;
 
 int sscTotal=0, ssc_swaps=0;
 
-//short the children of tSegment to render in the correct order
+//sort the children of tSegment to render in the correct order
 //returns non-zero if swaps were made
-int SortSegChildren (tSegment *seg, int n_children, short *childList)
+static inline int SortSegChildren (tSegment *segP, int nChildren, short *childList)
 {
 #if 1
-
-if (n_children < 2) 
+if (nChildren < 2) 
 	return 0;
-return QuicksortSegChildren (seg, (short) 0, (short) (n_children - 1), childList);
-
+if (nChildren == 2) {
+	if (CompareChildren (segP, childList [0], childList [1]) >= 0)
+		return 0;
+	int h = childList [0];
+	childList [0] = childList [1];
+	childList [1] = h;
+	return 1;
+	}
+return QuickSortSegChildren (segP, (short) 0, (short) (nChildren - 1), childList);
 #else
 	int i, j;
 	int r;
 	int made_swaps, count;
 
-if (n_children < 2) 
+if (nChildren < 2) 
 	return 0;
 sscTotal++;
 	//for each child,  compare with other children and see if order matters
@@ -1089,8 +1095,8 @@ count = 0;
 do {
 	made_swaps = 0;
 
-	for (i=0;i<n_children-1;i++)
-		for (j=i+1;childList [i]!=-1 && j<n_children;j++)
+	for (i=0;i<nChildren-1;i++)
+		for (j=i+1;childList [i]!=-1 && j<nChildren;j++)
 			if (childList [j]!=-1) {
 				r = CompareChildren(seg, childList [i], childList [j]);
 
@@ -1102,7 +1108,7 @@ do {
 				}
 			}
 
-} while (made_swaps && ++count<n_children);
+} while (made_swaps && ++count<nChildren);
 if (count)
 	ssc_swaps++;
 return count;
@@ -1566,7 +1572,7 @@ if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && 
 			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
 			VISIT (i);
 			}
-	SortRenderSegs ();
+	//SortRenderSegs ();
 	return;
 	}
 
@@ -1633,8 +1639,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 				}
 			}
 		//now order the sides in some magical way
-#if 1
-		if (bNewSegSorting && (nChildren > 1))
+#if SORT_RENDERSEG_SIDES
+		if (nChildren > 1)
 			SortSegChildren (segP, nChildren, childList);
 #endif
 		for (nChild = 0; nChild < nChildren; nChild++) {

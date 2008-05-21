@@ -852,7 +852,7 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_ALTED + KEY_R:
-			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (3 + gameStates.render.bPerPixelLighting);
+			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (4 + gameStates.render.bPerPixelLighting);
 			break;
 
 #ifdef _DEBUG

@@ -1335,8 +1335,9 @@ typedef struct tHeadLightData {
 
 typedef struct tDynLightData {
 	tDynLight			lights [MAX_OGL_LIGHTS];
-	short					*nNearestSegLights;	//the 8 nearest static lights for every tSegment
-	short					*nNearestVertLights;	//the 8 nearest static lights for every tSegment
+	short					*nNearestSegLights;		//the 8 nearest static lights for every tSegment
+	short					*nNearestVertLights;		//the 8 nearest static lights for every tSegment
+	ubyte					*nVariableVertLights;	//the 8 nearest static lights for every tSegment
 	short					*owners;
 	short					nLights;
 	short					nVariable;

@@ -336,18 +336,25 @@ vp->p.z /= 8;
 }
 
 // -----------------------------------------------------------------------------
-//	Given two segments, return the tSide index in the connecting tSegment which connects to the base tSegment
-//	Optimized by MK on 4/21/94 because it is a 2% load.
+//	Given two segments, return the side index in the connecting segment which connects to the base segment
+
 int FindConnectedSide (tSegment *baseSegP, tSegment *connSegP)
 {
-	int	s;
 	short	nBaseSeg = SEG_IDX (baseSegP);
-	short *childs = connSegP->children;
+	short *childP = connSegP->children;
 
-for (s = 0; s < MAX_SIDES_PER_SEGMENT; s++)
-	if (*childs++ == nBaseSeg)
-		return s;
-// legal to return -1, used in UpdateObject (), mk, 06/08/94: Assert (0);		// Illegal -- there is no connecting tSide between these two segments
+if (childP [0] == nBaseSeg)
+		return 0;
+if (childP [1] == nBaseSeg)
+		return 1;
+if (childP [2] == nBaseSeg)
+		return 2;
+if (childP [3] == nBaseSeg)
+		return 3;
+if (childP [4] == nBaseSeg)
+		return 4;
+if (childP [5] == nBaseSeg)
+		return 5;
 return -1;
 }
 
@@ -355,18 +362,13 @@ return -1;
 //	Given a tSide, return the number of faces
 int GetNumFaces (tSide *sideP)
 {
-switch (sideP->nType) {
-	case SIDE_IS_QUAD:
-		return 1;
-		break;
-	case SIDE_IS_TRI_02:
-	case SIDE_IS_TRI_13:
-		return 2;
-		break;
-	default:
-		Error ("Illegal nType = %i\n", sideP->nType);
-		break;
-	}
+	short nType = sideP->nType;
+
+if (nType == SIDE_IS_QUAD)
+	return 1;
+if ((nType == SIDE_IS_TRI_02) || (nType == SIDE_IS_TRI_13))
+	return 2;
+Error ("Illegal nType = %i\n", sideP->nType);
 return 0;
 }
 
