@@ -888,6 +888,26 @@ return psl;
 
 //------------------------------------------------------------------------------
 
+ubyte CountVariableVertexLights (int nVertex)
+{
+	short	*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
+	short	i, j;
+	ubyte	h;
+
+#ifdef _DEBUG
+if (nVertex == nDbgVertex)
+	nDbgVertex = nDbgVertex;
+#endif
+for (h = 0, i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
+	if ((j = *pnl) < 0)
+		break;
+	h += gameData.render.lights.dynamic.shader.lights [j].info.bVariable;
+	}
+return h;
+}
+
+//------------------------------------------------------------------------------
+
 void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread)
 {
 if (bStatic || gameData.render.lights.dynamic.nVariable) 
@@ -1431,10 +1451,15 @@ void ComputeStaticDynLighting (int nLevel)
 {
 if (gameStates.app.bNostalgia)
 	return;
+
+int i, j, bColorize = !gameOpts->render.nLightingMethod;
+
+TransformDynLights (1, bColorize);
+for (i = 0; i < gameData.segs.nVertices; i++)
+	gameData.render.lights.dynamic.nVariableVertLights [i] = CountVariableVertexLights (i);
 if (gameStates.render.bPerPixelLighting && HaveLightMaps ())
 	return;
 if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
-		int				i, j, bColorize = !gameOpts->render.nLightingMethod;
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient;
 		tSegment2		*seg2P;
 

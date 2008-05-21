@@ -119,6 +119,7 @@ else if (gameData.render.lights.dynamic.headLights.nLights && !(bDepthOnly || ga
 else if (bColorKey || bMultiTexture) 
 	nShader = G3SetupTexMergeShader (bColorKey, bColored);
 else if (gameStates.render.history.nShader >= 0) {
+	gameData.render.nStateChanges++;
 	glUseProgramObject (0);
 	nShader = -1;
 	}
