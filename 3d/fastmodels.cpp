@@ -374,10 +374,10 @@ return (objP->nType == OBJ_PLAYER) ||
 
 //------------------------------------------------------------------------------
 
-int G3AnimateSubModel (tObject *objP, tG3SubModel *psm)
+int G3AnimateSubModel (tObject *objP, tG3SubModel *psm, short nModel)
 {
 	tFiringData	*fP;
-	float			nTimeout;
+	float			nTimeout, y;
 	int			nDelay;
 
 if (!psm->nFrames)
@@ -404,9 +404,10 @@ if (gameStates.app.nSDLTicks - psm->tFrame > nTimeout) {
 	psm->iFrame = ++psm->iFrame % psm->nFrames;
 	}
 glPushMatrix ();
-glTranslatef (0, f2fl (psm->vCenter.p.y), 0);
+y = f2fl (psm->vCenter.p.y - gameData.models.offsets [nModel].p.y);
+glTranslatef (0, y, 0);
 glRotatef (360 * (float) psm->iFrame / (float) psm->nFrames, 0, 0, 1);
-glTranslatef (0, -f2fl (psm->vCenter.p.y), 0);
+glTranslatef (0, -y, 0);
 return 1;
 }
 
@@ -449,7 +450,7 @@ if (vOffsetP && (nExclusive < 0)) {
 	VmVecInc (&vo, vOffsetP);
 	}
 #endif
-bAnimate = G3AnimateSubModel (objP, psm);
+bAnimate = G3AnimateSubModel (objP, psm, nModel);
 #if G3_DRAW_SUBMODELS
 // render any dependent submodels
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
