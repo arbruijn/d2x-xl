@@ -910,7 +910,7 @@ return h;
 
 void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread)
 {
-if (bStatic || gameData.render.lights.dynamic.nVariable) 
+if (bStatic || gameData.render.lights.dynamic.nVariableVertLights [nVertex]) 
 	{
 	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
@@ -918,7 +918,7 @@ if (bStatic || gameData.render.lights.dynamic.nVariable)
 	tShaderLight			*psl;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
-	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE * (gameStates.render.bPerPixelLighting + 1);
+	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE /** (gameStates.render.bPerPixelLighting + 1)*/;
 
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -933,6 +933,10 @@ if (nVertex == nDbgVertex)
 			break;
 #endif
 		psl = gameData.render.lights.dynamic.shader.lights + j;
+#ifdef _DEBUG
+		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
+			nDbgSeg = nDbgSeg;
+#endif
 		if (psl->bUsed [nThread])
 			continue;
 #ifdef _DEBUG
@@ -1160,7 +1164,7 @@ if (gameOpts->render.nLightingMethod) {
 								nLightSeg;
 	int						bSkipHeadLight = !gameStates.render.nState && (gameStates.render.bPerPixelLighting || gameOpts->ogl.bHeadLight);
 	int						bPowerups = EGI_FLAG (bPowerupLights, 0, 0, 0);
-	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE * (gameStates.render.bPerPixelLighting + 1);
+	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE /** (gameStates.render.bPerPixelLighting + 1)*/;
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
@@ -1454,6 +1458,9 @@ if (gameStates.app.bNostalgia)
 
 int i, j, bColorize = !gameOpts->render.nLightingMethod;
 
+PrintLog ("Computing static lighting\n");
+gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
+gameStates.render.nState = 0;
 TransformDynLights (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++)
 	gameData.render.lights.dynamic.nVariableVertLights [i] = VariableVertexLights (i);
@@ -1463,10 +1470,6 @@ if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gam
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient;
 		tSegment2		*seg2P;
 
-	PrintLog ("Computing static lighting\n");
-	gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
-	gameStates.render.nState = 0;
-	TransformDynLights (1, bColorize);
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
 	if (!RunRenderThreads (rtStaticVertLight))
 		ComputeStaticVertexLights (0, gameData.segs.nVertices, 0);
