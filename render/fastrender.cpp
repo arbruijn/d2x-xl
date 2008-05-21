@@ -251,7 +251,7 @@ if (((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//r
 
 //------------------------------------------------------------------------------
 
-void RenderSolidFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bDepthOnly)
+void RenderSolidFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return;
@@ -263,7 +263,7 @@ g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->
 
 //------------------------------------------------------------------------------
 
-void RenderWallFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bDepthOnly)
+void RenderWallFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return;
@@ -275,12 +275,13 @@ g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->
 
 //------------------------------------------------------------------------------
 
-void RenderColoredFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bDepthOnly)
+void RenderColoredFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return;
 if (faceP->bmBot)
 	return;
+short nSegment = faceP->nSegment;
 short special = gameData.segs.segment2s [nSegment].special;
 if ((special < SEGMENT_IS_WATER) || (special > SEGMENT_IS_TEAM_RED) || 
 	 (gameData.segs.xSegments [nSegment].group < 0) || (gameData.segs.xSegments [nSegment].owner < 1))
@@ -290,17 +291,17 @@ g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->
 
 //------------------------------------------------------------------------------
 
-void RenderCoronaFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bDepthOnly)
+void RenderCoronaFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return;
 if (faceP->nCorona)
-	RenderCorona (nSegment, faceP->nSide, CoronaVisibility (faceP->nCorona));
+	RenderCorona (faceP->nSegment, faceP->nSide, CoronaVisibility (faceP->nCorona));
 }
 
 //------------------------------------------------------------------------------
 
-void RenderSkyBoxFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bDepthOnly)
+void RenderSkyBoxFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
 LoadFaceBitmaps (segP, faceP);
 g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, !bDepthOnly && faceP->bTextured, bDepthOnly);
@@ -309,23 +310,23 @@ g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->
 //------------------------------------------------------------------------------
 
 #ifdef _WIN32
-typedef void (__fastcall * pRenderHandler) (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bDepthOnly);
+typedef void (__fastcall * pRenderHandler) (tSegment *segP, grsFace *faceP, int bDepthOnly);
 #else
-typedef void (* pRenderHandler) (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bDepthOnly);
+typedef void (* pRenderHandler) (tSegment *segP, grsFace *faceP, int bDepthOnly);
 #endif
 
 static pRenderHandler renderHandlers [] = {RenderSolidFace, RenderWallFace, RenderColoredFace, RenderCoronaFace, RenderSkyBoxFace};
 
 
-static inline void RenderMineFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bDepthOnly)
+static inline void RenderMineFace (tSegment *segP, grsFace *faceP, int nType, int bDepthOnly)
 {
 if (!faceP->bVisible)
 	return;
 #ifdef _DEBUG
-if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-	nSegment = nSegment;
+if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
 #endif
-renderHandlers [nType] (segP, faceP, nSegment, nType, bDepthOnly);
+renderHandlers [nType] (segP, faceP, bDepthOnly);
 #if 0//RENDER_DEPTHMASK_FIRST
 if (faceP->bTextured)
 	SplitFace (segFaceP, faceP);
@@ -580,7 +581,7 @@ if (gameStates.render.bHaveSkyBox) {
 		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 			if (!(faceP->bVisible = FaceIsVisible (nSegment, faceP->nSide)))
 				continue;
-			RenderMineFace (SEGMENTS + nSegment, faceP, nSegment, 4, 0);
+			RenderMineFace (SEGMENTS + nSegment, faceP, 4, 0);
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
@@ -747,7 +748,7 @@ for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nSegment = nSegment;
 #endif
-	RenderMineFace (SEGMENTS + nSegment, faceP, nSegment, nType, bDepthOnly);
+	RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly);
 	}
 }
 
@@ -772,12 +773,13 @@ else {
 			fliP = gameData.render.faceList + j;
 			faceP = fliP->faceP;
 			if (nSegment != faceP->nSegment) {
+				nSegment = faceP->nSegment;
+				VisitSegment (nSegment, bAutomap);
 				if (gameStates.render.bPerPixelLighting)
 					gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
-				nSegment = faceP->nSegment;
 				}
 			faceP = fliP->faceP;
-			RenderMineFace (SEGMENTS + nSegment, faceP, nSegment, nType, bDepthOnly);
+			RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly);
 			}
 		}
 #else
@@ -859,7 +861,7 @@ else {	//front to back
 				if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [pfr [i].nSegment].special == SEGMENT_IS_SKYBOX))
 					continue;
 				}
-			RenderMineFace (SEGMENTS + nSegment, pfr [i].faceP, nSegment, nType, 0);
+			RenderMineFace (SEGMENTS + nSegment, pfr [i].faceP, nType, 0);
 			}
 		}
 	glDepthMask (1);
