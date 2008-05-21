@@ -1821,6 +1821,7 @@ char *defaultGameTexts [][2] = {
 	{"M~Ulti-Threading...", "m~Ulti threading..."},
 	{"Multi-Threading", "multi threading"},
 	{"max. Lichter/D~Urchgang: %d", "max. lights/~Pass: %d"},
+	{"max. Lichter/~Objekt: %d", "max. lights/~Object: %d"},
 #if 0
 	{"", ""},
 #endif
@@ -2466,6 +2467,8 @@ char *defaultHelpTexts [][2] = {
 	{"In diesem Menue koennen Feineinstellungen fuer das Multi-\nThreading vorgenommen werden.", "Fine tune multi threading in this menu."},
 	{"Hier kann eingestellt werden, wieviele Lichter gleichzeitig\nverwendet werden, um eine Flaeche darzustellen.\nJe mehr Lichter, desto schneller wird gezeichnet,\naber desto eher ueberstrahlen viele Lichter.",
 	 "Adjust how many lights are used simultaneously when\nrendering a face. The higher the number, the faster\nthe renderer, but the more likely saturation will occur."},
+	{"Hier kann eingestellt werden, wieviele Lichter maximal die \nBeleuchtung eines Objekts bestimmen. Werte ueber\n8 koennen die Geschwindigkeit bei vielen sichtbaren Objekten stark verringern.", 
+	 "Here you can adjust how many lights will maximally influence\nthe brightness of an object. Values greater than 8 can\nsignificantly reduce rendering speed if many objects are visible."},
 #if 0
 	{"", ""},
 #endif

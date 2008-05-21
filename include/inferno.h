@@ -376,6 +376,7 @@ typedef struct tOglOptions {
 	int bHeadLight;
 	int nMaxLightsPerFace;
 	int nMaxLightsPerPass;
+	int nMaxLightsPerObject;
 	int bVoodooHack;
 } tOglOptions;
 
@@ -928,6 +929,7 @@ typedef struct tRenderStates {
 	int bPerPixelLighting;
 	int nMaxLightsPerPass;
 	int nMaxLightsPerFace;
+	int nMaxLightsPerObject;
 	fix xZoom;
 	fix xZoomScale;
 	ubyte nRenderingType;
@@ -3263,10 +3265,14 @@ void GrabMouse (int bGrab, int bForce);
 void InitGameOptions (int i);
 void SetDataVersion (int v);
 
+//	-----------------------------------------------------------------------------------------------------------
+
 static inline void OglVertex3x (fix x, fix y, fix z)
 {
 glVertex3f ((float) x / 65536.0f, (float) y / 65536.0f, (float) z / 65536.0f);
 }
+
+//	-----------------------------------------------------------------------------------------------------------
 
 static inline void OglVertex3f (g3sPoint *p)
 {
@@ -3276,12 +3282,16 @@ else
 	glVertex3fv ((GLfloat *) (gameData.render.pVerts + p->p3_index));
 }
 
+//	-----------------------------------------------------------------------------------------------------------
+
 static inline float GrAlpha (void)
 {
 if (gameStates.render.grAlpha >= (float) GR_ACTUAL_FADE_LEVELS)
 	return 1.0f;
 return 1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 }
+
+//	-----------------------------------------------------------------------------------------------------------
 
 #define	CLAMP(_val,_minVal,_maxVal)	\
 			{if ((_val) < (_minVal)) (_val) = (_minVal); else if ((_val) > (_maxVal)) (_val) = (_maxVal);}

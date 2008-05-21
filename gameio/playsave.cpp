@@ -399,6 +399,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].ogl.bObjLighting, i, 0);
 		RP (gameOptions [i].ogl.nMaxLightsPerFace, i, 0);
 		RP (gameOptions [i].ogl.nMaxLightsPerPass, i, 0);
+		RP (gameOptions [i].ogl.nMaxLightsPerObject, i, 0);
 		RP (gameOptions [i].render.nLightingMethod, i, 0);
 		RP (gameOptions [i].render.nDebrisLife, i, 0);
 
@@ -971,6 +972,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].ogl.bObjLighting", "0"},
 	{"gameOptions[0].ogl.nMaxLightsPerFace", "16"},
 	{"gameOptions[0].ogl.nMaxLightsPerPass", "8"},
+	{"gameOptions[0].ogl.nMaxLightsPerObject", "8"},
 	{"gameOptions[0].render.nLightingMethod", "0"},
 	{"gameOptions[0].render.nDebrisLife", "0"},
 	{"gameOptions[0].render.textures.nQuality", "2"},

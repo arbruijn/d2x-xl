@@ -1863,6 +1863,7 @@ void LoadGameTexts(void);
 #define TXT_MT_MENU_OPTION			GT(1070)
 #define TXT_MT_MENU_TITLE			GT(1071)
 #define TXT_MAX_LIGHTS_PER_PASS	GT(1072)
+#define TXT_MAX_LIGHTS_PER_OBJECT	GT(1073)
 
 #if 0
 
@@ -2383,6 +2384,7 @@ void LoadGameTexts(void);
 #define HTX_MT_3DMODEL_LIGHTING	HT(368)
 #define HTX_MULTI_THREADING		HT(369)			
 #define HTX_MAX_LIGHTS_PER_PASS	HT(370)			
+#define HTX_MAX_LIGHTS_PER_OBJECT	HT(371)			
 
 #if 0
 

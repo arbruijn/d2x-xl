@@ -1203,6 +1203,10 @@ if (gameOpts->render.nLightingMethod) {
 		if (psl->info.nType < 3) {
 			if (!bPowerups && (psl->info.nObject >= 0) && (OBJECTS [psl->info.nObject].nType == OBJ_POWERUP))
 				continue;
+#ifdef _DEBUG
+			if (psl->info.nObject >= 0)
+				nDbgObj = nDbgObj;
+#endif
 			nLightSeg = (psl->info.nSegment < 0) ? (psl->info.nObject < 0) ? -1 : gameData.objs.objects [psl->info.nObject].nSegment : psl->info.nSegment;
 			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
 				continue;
