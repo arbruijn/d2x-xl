@@ -512,11 +512,14 @@ else {
 	G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
 #endif
 if (bTextured) {
+	bool bStateChange = false;
 	if (bmBot != gameStates.render.history.bmBot) {
+		bStateChange = true;
 		gameStates.render.history.bmBot = bmBot;
 		{INIT_TMU (InitTMU1, GL_TEXTURE1, bmBot, lightMapData.buffers, 1, 0);}
 		}
 	if (bmTop != gameStates.render.history.bmTop) {
+		bStateChange = true;
 		gameStates.render.history.bmTop = bmTop;
 		if (bmTop) {
 			{INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, lightMapData.buffers, 1, 0);}
@@ -530,6 +533,7 @@ if (bTextured) {
 			}
 		}
 	if (bmMask != gameStates.render.history.bmMask) {
+		bStateChange = true;
 		gameStates.render.history.bmMask = bmMask;
 		if (bmMask) {
 			{INIT_TMU (InitTMU3, GL_TEXTURE3, bmMask, lightMapData.buffers, 2, 0);}
@@ -545,6 +549,8 @@ if (bTextured) {
 	if (bColored != gameStates.render.history.bColored) {
 		gameStates.render.history.bColored = bColored;
 		}
+	if (bStateChange)
+		gameData.render.nStateChanges++;
 	}
 else {
 	gameStates.render.history.bmBot = NULL;
@@ -606,9 +612,10 @@ if (!bColored) {
 else if (gameStates.render.bFullBright) {
 	if (bColorKey)
 		G3SetupTexMergeShader (1, 0);
-	else {
+	else if (gameStates.render.history.nShader != -1) {
 		glUseProgramObject (0);
 		gameStates.render.history.nShader = -1;
+		gameData.render.nStateChanges++;
 		}
 	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 	}
@@ -624,8 +631,6 @@ else {
 		}
 	for (;;) {
 		G3SetupPerPixelShader (faceP, 0, gameStates.render.history.nType, bHeadLight);
-		if (bHeadLight && !gameStates.ogl.nLights)
-			break;
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 			 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))

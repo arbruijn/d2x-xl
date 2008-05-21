@@ -549,8 +549,10 @@ if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 int G3SetupTexMergeShader (int bColorKey, int bColored)
 {
 int nShader = bColorKey ? 2 : 0;
-if (nShader != gameStates.render.history.nShader)
+if (nShader != gameStates.render.history.nShader) {
+	gameData.render.nStateChanges++;
 	glUseProgramObject (activeShaderProg = tmShaderProgs [nShader + bColored * 3]);
+	}
 glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), 0);
 glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1);
 glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2);

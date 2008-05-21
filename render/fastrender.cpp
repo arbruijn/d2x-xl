@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define RENDER_DEPTHMASK_FIRST 0
 
-#define SORT_FACES 1
+#define SORT_FACES 2
 
 #ifdef _DEBUG
 #	define SHADER_VERTEX_LIGHTING 0
@@ -66,18 +66,27 @@ GLhandleARB hVertLightFS = 0;
 
 //------------------------------------------------------------------------------
 
-#if SORT_FACES == 1
+#if SORT_FACES > 1
 
 void ResetFaceList (void)
 {
-#ifdef _DEBUG
-memset (gameData.render.faceRefs, 0xff, sizeof (gameData.render.faceRefs));
+#if SORT_FACES == 2
+#	if 0//def _DEBUG
+memset (gameData.render.faceRoots, 0xff, sizeof (gameData.render.faceRoots));
+#	else
+for (int i = 0; i < gameData.render.nUsedFaceKeys; i++) 
+	gameData.render.faceRoots [gameData.render.usedFaceKeys [i]] = -1;
+#	endif
 #else
-for (int i = 0; i < gameData.render.nUsedFaceRefs; i++)
-	gameData.render.faceRefs [gameData.render.usedFaceRefs [i]] = -1;
+#	if 0//def _DEBUG
+memset (gameData.render.faceTails, 0xff, sizeof (gameData.render.faceTails));
+#	else
+for (int i = 0; i < gameData.render.nUsedFaceKeys; i++) 
+	gameData.render.faceTails [gameData.render.usedFaceKeys [i]] = -1;
+#	endif
 #endif
 gameData.render.nUsedFaces =
-gameData.render.nUsedFaceRefs = 0;
+gameData.render.nUsedFaceKeys = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -86,18 +95,33 @@ void AddFaceListItem (grsFace *faceP)
 {
 	short				i, j, nKey = faceP->nBaseTex;
 
+if (nKey < 0)
+	return;
 if (faceP->nOvlTex)
 	nKey += MAX_WALL_TEXTURES + faceP->nOvlTex;
 i = gameData.render.nUsedFaces++;
-j = gameData.render.faceRefs [nKey];
+#if SORT_FACES == 2
+j = gameData.render.faceRoots [nKey];
 if (j < 0)
-	gameData.render.usedFaceRefs [gameData.render.nUsedFaceRefs++] = nKey;
+	gameData.render.usedFaceKeys [gameData.render.nUsedFaceKeys++] = nKey;
 gameData.render.faceList [i].nNextItem = j;
 gameData.render.faceList [i].faceP = faceP;
-gameData.render.faceRefs [nKey] = i;
+gameData.render.faceRoots [nKey] = i;
+#else
+j = gameData.render.faceTails [nKey];
+if (j < 0) {
+	gameData.render.usedFaceKeys [gameData.render.nUsedFaceKeys++] = nKey;
+	gameData.render.faceRoots [nKey] = i;
+	}
+else
+	gameData.render.faceList [j].nNextItem = i;
+gameData.render.faceList [i].nNextItem = -1;
+gameData.render.faceList [i].faceP = faceP;
+gameData.render.faceTails [nKey] = i;
+#endif
 }
 
-#endif //SORT_FACES == 1
+#endif //SORT_FACES > 1
 
 //------------------------------------------------------------------------------
 
@@ -452,6 +476,8 @@ if (nType == 3) {
 	}
 else if (gameStates.render.bPerPixelLighting) {
 	OglEnableLighting (1);
+	for (int i = 0; i < 8; i++)
+		glEnable (GL_LIGHT0 + i);
 	glDisable (GL_LIGHTING);
 	glColor4f (1,1,1,1);
 	}
@@ -736,16 +762,18 @@ if (nType) {
 		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bVertexArrays, bDepthOnly, bAutomap);
 	}
 else {
-#if SORT_FACES == 1
+#if SORT_FACES > 1
 	tFaceListItem	*fliP;
 	grsFace			*faceP;
 	short				j, nSegment = -1;
 
-	for (i = 0; i < gameData.render.nUsedFaceRefs; i++) {
-		for (j = gameData.render.faceRefs [gameData.render.usedFaceRefs [i]]; j >= 0; j = fliP->nNextItem) {
+	for (i = 0; i < gameData.render.nUsedFaceKeys; i++) {
+		for (j = gameData.render.faceRoots [gameData.render.usedFaceKeys [i]]; j >= 0; j = fliP->nNextItem) {
 			fliP = gameData.render.faceList + j;
-			if (gameStates.render.bPerPixelLighting && (nSegment != faceP->nSegment)) {
-				gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
+			faceP = fliP->faceP;
+			if (nSegment != faceP->nSegment) {
+				if (gameStates.render.bPerPixelLighting)
+					gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 				nSegment = faceP->nSegment;
 				}
 			faceP = fliP->faceP;
@@ -813,7 +841,7 @@ else {	//front to back
 	if (!gameStates.render.nWindow)
 		j = SetupCoronas (nType);
 	else
-		j = 0; //SetupDepthBuffer (nType);
+		j = 0;
 	bVertexArrays = BeginRenderFaces (0, 0);
 	glColorMask (1,1,1,1);
 	if (!j) {
@@ -1301,7 +1329,7 @@ void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 					bLightMaps = HaveLightMaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-#if SORT_FACES == 1
+#if SORT_FACES > 1
 ResetFaceList ();
 #endif
 memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
@@ -1345,7 +1373,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			faceP->bVisible = 0;
 			continue;
 			}
-#if SORT_FACES == 1
+#if SORT_FACES > 1
 		AddFaceListItem (faceP);
 #endif
 		faceP->color = faceColor [nColor].color;
@@ -1434,7 +1462,7 @@ void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-#if SORT_FACES == 1
+#if SORT_FACES > 1
 ResetFaceList ();
 #endif
 memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
@@ -1478,7 +1506,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			faceP->bVisible = 0;
 			continue;
 			}
-#if SORT_FACES == 1
+#if SORT_FACES > 1
 		AddFaceListItem (faceP);
 #endif
 		faceP->color = faceColor [nColor].color;

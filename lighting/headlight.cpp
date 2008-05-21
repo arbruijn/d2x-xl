@@ -872,7 +872,8 @@ nLights = IsMultiGame ? gameData.render.lights.dynamic.headLights.nLights : 1;
 InitHeadlightShaders (nLights);
 nShader = 10 + bLightMaps * 4 + nType;
 if (nShader != gameStates.render.history.nShader) {
-	glUseProgramObject (0);
+	//glUseProgramObject (0);
+	gameData.render.nStateChanges++;
 	glUseProgramObject (activeShaderProg = headLightShaderProgs [bLightMaps][nType]);
 	if (nType) {
 		glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightMaps);

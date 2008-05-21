@@ -1575,10 +1575,11 @@ typedef struct tRenderData {
 	tSphereData				shield;
 	tSphereData				monsterball;
 	tFaceListItem			faceList [MAX_WALL_TEXTURES * 3];
-	short						faceRefs [MAX_WALL_TEXTURES * 3];
-	short						usedFaceRefs [MAX_WALL_TEXTURES * 3];
+	short						faceRoots [MAX_WALL_TEXTURES * 3];
+	short						faceTails [MAX_WALL_TEXTURES * 3];
+	short						usedFaceKeys [MAX_WALL_TEXTURES * 3];
 	short						nUsedFaces;
-	short						nUsedFaceRefs;
+	short						nUsedFaceKeys;
 	int						nPaletteGamma;
 	int						nComputedColors;
 	fix						xFlashEffect;

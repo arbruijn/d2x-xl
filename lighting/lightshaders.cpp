@@ -41,6 +41,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "dynlight.h"
 
 #define ONLY_LIGHTMAPS 0
+#define CONST_LIGHTS_PER_PASS 0
 
 #define PPL_AMBIENT_LIGHT	0.0f
 #define PPL_DIFFUSE_LIGHT	1.0f
@@ -1191,7 +1192,7 @@ for (nLights = 0;
 		sliP->nActive--;
 		}
 	hLight = GL_LIGHT0 + nLights++;
-	glEnable (hLight);
+	//glEnable (hLight);
 	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
 	fBrightness = psl->info.fBrightness;
 #ifdef _DEBUG
@@ -1238,6 +1239,20 @@ if (nLightRange <= 0) {
 	CheckUsedLights2 ();
 #endif
 	}
+#if CONST_LIGHTS_PER_PASS
+ambient.red = 
+ambient.green =
+ambient.blue = 0;
+ambient.alpha = 0;
+for (; nLights < gameStates.render.nMaxLightsPerPass; nLights++) {
+	hLight = GL_LIGHT0 + nLights;
+	//glEnable (hLight);
+	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &ambient);
+	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &ambient);
+	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &ambient);
+	glLightfv (hLight, GL_POSITION, (GLfloat *) &ambient);
+	}
+#endif
 gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
 #ifdef _DEBUG
 if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
@@ -1278,6 +1293,9 @@ else {
 #if ONLY_LIGHTMAPS == 2
 nType = 0;
 #endif
+#if CONST_LIGHTS_PER_PASS
+nLights = gameStates.render.nMaxLightsPerPass;
+#endif
 nShader = 20 + 4 * nLights + nType;
 #ifdef _DEBUG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -1294,7 +1312,8 @@ if (bLightMaps = HaveLightMaps ()) {
 if (nShader != gameStates.render.history.nShader) 
 #endif
 	{
-	glUseProgramObject (0);
+	gameData.render.nStateChanges++;
+	//glUseProgramObject (0);
 	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [nLights][nType]);
 	if (bLightMaps)
 		glUniform1i (glGetUniformLocation (activeShaderProg, "lMapTex"), 0);
@@ -1328,6 +1347,7 @@ if (gameStates.render.textures.bHaveGrayScaleShader) {
 	int bLightMaps = HaveLightMaps ();
 	int nShader = 90 + 3 * bLightMaps + nType;
 	if (gameStates.render.history.nShader != nShader) {
+		gameData.render.nStateChanges++;
 		glUseProgramObject (activeShaderProg = gsShaderProg [bLightMaps][nType]);
 		if (!nType) 
 			glUniform4fv (glGetUniformLocation (activeShaderProg, "faceColor"), 1, (GLfloat *) colorP);

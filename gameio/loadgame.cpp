@@ -726,9 +726,10 @@ memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLast
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
 memset (gameData.objs.lightObjs, (char) 0xff, MAX_OBJECTS * sizeof (*gameData.objs.lightObjs));
 memset (gameData.objs.shots, (char) 0xff, MAX_OBJECTS * sizeof (*gameData.objs.shots));
-memset (gameData.render.faceRefs, 0xff, sizeof (gameData.render.faceRefs));
+memset (gameData.render.faceRoots, 0xff, sizeof (gameData.render.faceRoots));
+memset (gameData.render.faceTails, 0xff, sizeof (gameData.render.faceTails));
 gameData.render.nUsedFaces =
-gameData.render.nUsedFaceRefs = 0;
+gameData.render.nUsedFaceKeys = 0;
 gameData.omega.lightnings.nHandles = 0;
 gameData.multiplayer.bMoving = -1;
 #if 1
