@@ -1563,12 +1563,22 @@ typedef struct tVertColorData {
 	float		fMatShininess;
 	} tVertColorData;
 
+typedef struct tFaceListItem {
+	grsFace					*faceP;
+	short						nNextItem;
+} tFaceListItem;
+
 typedef struct tRenderData {
 	tColorData				color;
 	int						transpColor;
 	tVertColorData			vertColor;
 	tSphereData				shield;
 	tSphereData				monsterball;
+	tFaceListItem			faceList [MAX_WALL_TEXTURES * 3];
+	short						faceRefs [MAX_WALL_TEXTURES * 3];
+	short						usedFaceRefs [MAX_WALL_TEXTURES * 3];
+	short						nUsedFaces;
+	short						nUsedFaceRefs;
 	int						nPaletteGamma;
 	int						nComputedColors;
 	fix						xFlashEffect;
@@ -1591,6 +1601,7 @@ typedef struct tRenderData {
 	int						nTotalFaces;
 	int						nTotalLights;
 	int						nMaxLights;
+	int						nStateChanges;
 	float						fAttScale;
 } tRenderData;
 

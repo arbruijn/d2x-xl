@@ -932,13 +932,13 @@ int CreateObject (ubyte nType, ubyte id, short owner, short nSegment, vmsVector 
 
 #ifdef _DEBUG
 if (nType == OBJ_WEAPON) {
-	i = nType;
+	nType = nType;
 	if ((owner >= 0) && (gameData.objs.objects [owner].nType == OBJ_ROBOT))
-		i = nType;
+		nType = nType;
 	if (id == FLARE_ID)
-		i = nType;
+		nType = nType;
 	if (gameData.objs.bIsMissile [id])
-		i = nType;
+		nType = nType;
 	}
 else if (nType == OBJ_ROBOT) {
 	if (ROBOTINFO (id).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))

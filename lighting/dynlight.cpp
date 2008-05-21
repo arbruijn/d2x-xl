@@ -888,29 +888,9 @@ return psl;
 
 //------------------------------------------------------------------------------
 
-void CountVariableVertexLights (int nVertex)
-{
-	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
-	short						i, j;
-	ubyte						h = 0;
-
-#ifdef _DEBUG
-if (nVertex == nDbgVertex)
-	nDbgVertex = nDbgVertex;
-#endif
-for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
-	if ((j = *pnl) < 0)
-		break;
-	h += gameData.render.lights.dynamic.shader.lights [j].info.bVariable;
-	}
-gameData.render.lights.dynamic.nVariableVertLights [nVertex] = h;
-}
-
-//------------------------------------------------------------------------------
-
 void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread)
 {
-if (bStatic || gameData.render.lights.dynamic.nVariableVertLights [nVertex]) 
+if (bStatic || gameData.render.lights.dynamic.nVariable) 
 	{
 	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
@@ -1196,9 +1176,9 @@ if (gameOpts->render.nLightingMethod) {
 		if ((psl->info.nSegment >= 0) && (psl->info.nSide < 0))
 			psl = psl;
 #endif
-		if (!bPowerups && (psl->info.nObject >= 0) && (OBJECTS [psl->info.nObject].nType == OBJ_POWERUP))
-			continue;
 		if (psl->info.nType < 3) {
+			if (!bPowerups && (psl->info.nObject >= 0) && (OBJECTS [psl->info.nObject].nType == OBJ_POWERUP))
+				continue;
 			nLightSeg = (psl->info.nSegment < 0) ? (psl->info.nObject < 0) ? -1 : gameData.objs.objects [psl->info.nObject].nSegment : psl->info.nSegment;
 			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
 				continue;
@@ -1451,8 +1431,6 @@ void ComputeStaticDynLighting (int nLevel)
 {
 if (gameStates.app.bNostalgia)
 	return;
-for (int i = 0; i < gameData.segs.nVertices; i++)
-	CountVariableVertexLights (i);
 if (gameStates.render.bPerPixelLighting && HaveLightMaps ())
 	return;
 if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {

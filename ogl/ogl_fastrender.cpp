@@ -248,90 +248,51 @@ else {
 #endif
 gameStates.ogl.iLight = 0;
 if (bTextured) {
-	if ((bmBot != gameStates.render.history.bmBot) || 
-		 (bmTop != gameStates.render.history.bmTop) || 
-		 (bOverlay != gameStates.render.history.bOverlay) || 
-		 (bColored != gameStates.render.history.bColored)) {
-		if (bOverlay > 0) {
-#ifdef _DEBUG
-		if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-			if (bDepthOnly)
-				nDbgSeg = nDbgSeg;
-			else
-				nDbgSeg = nDbgSeg;
-		if (bmBot && strstr (bmBot->szName, "door"))
-			bmBot = bmBot;
-#endif
-			// set base texture
-			if (bmBot != gameStates.render.history.bmBot) {
-				{INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightMapData.buffers, 1, 0);}
-				gameStates.render.history.bmBot = bmBot;
-				}
-			// set overlay texture
-			if (bmTop != gameStates.render.history.bmTop) {
-				{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, 1, 0);}
-				gameStates.render.history.bmTop = bmTop;
-				if (gameStates.render.history.bOverlay != 1) {	//enable multitexturing
-					if (!G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE1))
-						return 1;
-					}
-				}
-			if (!(bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL))
-				bColorKey = 0;
-			else {
-				{INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, lightMapData.buffers, 2, 0);}
-				if (!G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2))
-					return 1;
-				}
-			gameStates.render.history.bmMask = bmMask;
-			G3SetupShader (faceP, bDepthOnly, bColorKey, 1, 1, bColored, NULL);
+	bool bStateChange = false;
+	if (bmBot != gameStates.render.history.bmBot) {
+		bStateChange = true;
+		gameStates.render.history.bmBot = bmBot;
+		{INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightMapData.buffers, 1, 0);}
+		}
+	if (bmTop != gameStates.render.history.bmTop) {
+		bStateChange = true;
+		gameStates.render.history.bmTop = bmTop;
+		if (bmTop) {
+			{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, 1, 0);}
+			bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
 			}
 		else {
-			if (gameStates.render.history.bOverlay > 0) {
-				if (gameStates.ogl.bShadersOk)
-					glUseProgramObject (0);
-				if (gameStates.render.history.bmMask) {
-					glActiveTexture (GL_TEXTURE2);
-					glClientActiveTexture (GL_TEXTURE2);
-					glDisableClientState (GL_TEXTURE_COORD_ARRAY);
-					OGL_BINDTEX (0);
-					gameStates.render.history.bmMask = NULL;
-					}
-				}
-			if (bMultiTexture) {
-				if (bmTop != gameStates.render.history.bmTop) {
-					glActiveTexture (GL_TEXTURE1);
-					if (bmTop) {
-						{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, 1, 0);}
-						}
-					else {
-						glClientActiveTexture (GL_TEXTURE1);
-						OGL_BINDTEX (0);
-						}
-					gameStates.render.history.bmTop = bmTop;
-					}
-				}
-			else {
-				if (gameStates.render.history.bmTop) {
-					glActiveTexture (GL_TEXTURE1);
-					glClientActiveTexture (GL_TEXTURE1);
-					OGL_BINDTEX (0);
-					gameStates.render.history.bmTop = NULL;
-					}
-				}
-			if (bmBot != gameStates.render.history.bmBot) {
-				{INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightMapData.buffers, 1, 0);}
-				gameStates.render.history.bmBot = bmBot;
-				}
-			G3SetupShader (faceP, 0, bDepthOnly, bMultiTexture, bmBot != NULL, bColored, bmBot ? NULL : &faceP->color);
+			glActiveTexture (GL_TEXTURE1);
+			glClientActiveTexture (GL_TEXTURE1);
+			OGL_BINDTEX (0);
+			bmMask = NULL;
 			}
 		}
-	else
-		G3SetupShader (faceP, bDepthOnly, 0, bMultiTexture, bmBot != NULL, bColored, bmBot ? NULL : &faceP->color);
-	gameStates.render.history.bOverlay = bOverlay;
-	gameStates.render.history.bColored = bColored;
+	if (bmMask != gameStates.render.history.bmMask) {
+		bStateChange = true;
+		gameStates.render.history.bmMask = bmMask;
+		if (bmMask) {
+			{INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, lightMapData.buffers, 2, 0);}
+			G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
+			}
+		else {
+			glActiveTexture (GL_TEXTURE2);
+			glClientActiveTexture (GL_TEXTURE2);
+			OGL_BINDTEX (0);
+			bColorKey = 0;
+			}
+		}
+	if (bColored != gameStates.render.history.bColored) {
+		bStateChange = true;
+		gameStates.render.history.bColored = bColored;
+		}
+	if (bStateChange) {
+		gameData.render.nStateChanges++;
+		G3SetupShader (faceP, bDepthOnly, bColorKey, bMultiTexture, bmBot != NULL, bColored, bmBot ? NULL : &faceP->color);
+		}
 	}
 else {
+	gameStates.render.history.bmBot = NULL;
 	bOverlay = 0;
 	glActiveTexture (GL_TEXTURE0);
 	glClientActiveTexture (GL_TEXTURE0);
@@ -551,87 +512,42 @@ else {
 	G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
 #endif
 if (bTextured) {
-	if ((bmBot != gameStates.render.history.bmBot) || 
-		 (bmTop != gameStates.render.history.bmTop) || 
-		 (bOverlay != gameStates.render.history.bOverlay) || 
-		 (bColored != gameStates.render.history.bColored)) {
-		if (bOverlay > 0) {
-#ifdef _DEBUG
-			if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-				if (bDepthOnly)
-					nDbgSeg = nDbgSeg;
-				else
-					nDbgSeg = nDbgSeg;
-			if (bmBot && strstr (bmBot->szName, "door"))
-				bmBot = bmBot;
-#endif
-			// set base texture
-			if (bmBot != gameStates.render.history.bmBot) {
-				{INIT_TMU (InitTMU1, GL_TEXTURE1, bmBot, lightMapData.buffers, 1, 1);}
-				gameStates.render.history.bmBot = bmBot;
-				}
-			// set overlay texture
-			if (bmTop != gameStates.render.history.bmTop) {
-				{INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, lightMapData.buffers, 1, 1);}
-				gameStates.render.history.bmTop = bmTop;
-				if (gameStates.render.history.bOverlay != 1) {	//enable multitexturing
-					if (!G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2))
-						return 1;
-					}
-				}
-			if (!(bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL))
-				bColorKey = 0;
-			else {
-				{INIT_TMU (InitTMU3, GL_TEXTURE3, bmMask, lightMapData.buffers, 2, 1);}
-				if (!G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE3))
-					return 1;
-				}
-			gameStates.render.history.bmMask = bmMask;
+	if (bmBot != gameStates.render.history.bmBot) {
+		gameStates.render.history.bmBot = bmBot;
+		{INIT_TMU (InitTMU1, GL_TEXTURE1, bmBot, lightMapData.buffers, 1, 0);}
+		}
+	if (bmTop != gameStates.render.history.bmTop) {
+		gameStates.render.history.bmTop = bmTop;
+		if (bmTop) {
+			{INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, lightMapData.buffers, 1, 0);}
+			bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
 			}
 		else {
-			if (gameStates.render.history.bOverlay > 0) {
-				if (gameStates.ogl.bShadersOk)
-					glUseProgramObject (0);
-				if (gameStates.render.history.bmMask) {
-					glActiveTexture (GL_TEXTURE3);
-					glClientActiveTexture (GL_TEXTURE3);
-					glDisableClientState (GL_TEXTURE_COORD_ARRAY);
-					OGL_BINDTEX (0);
-					gameStates.render.history.bmMask = NULL;
-					}
-				}
-			if (bMultiTexture) {
-				if (bmTop != gameStates.render.history.bmTop) {
-					if (bmTop) {
-						{INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, lightMapData.buffers, 1, 1);}
-						}
-					else {
-						glClientActiveTexture (GL_TEXTURE2);
-						glActiveTexture (GL_TEXTURE2);
-						OGL_BINDTEX (0);
-						}
-					gameStates.render.history.bmTop = bmTop;
-					}
-				}
-			else {
-				if (gameStates.render.history.bmTop) {
-					glActiveTexture (GL_TEXTURE2);
-					glClientActiveTexture (GL_TEXTURE2);
-					glEnable (GL_TEXTURE_2D);
-					OGL_BINDTEX (0);
-					gameStates.render.history.bmTop = NULL;
-					}
-				}
-			if (bmBot != gameStates.render.history.bmBot) {
-				{INIT_TMU (InitTMU1, GL_TEXTURE1, bmBot, lightMapData.buffers, 1, 1);}
-				gameStates.render.history.bmBot = bmBot;
-				}
+			glActiveTexture (GL_TEXTURE2);
+			glClientActiveTexture (GL_TEXTURE2);
+			OGL_BINDTEX (0);
+			bmMask = NULL;
 			}
 		}
-	gameStates.render.history.bOverlay = bOverlay;
-	gameStates.render.history.bColored = bColored;
+	if (bmMask != gameStates.render.history.bmMask) {
+		gameStates.render.history.bmMask = bmMask;
+		if (bmMask) {
+			{INIT_TMU (InitTMU3, GL_TEXTURE3, bmMask, lightMapData.buffers, 2, 0);}
+			G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
+			}
+		else {
+			glActiveTexture (GL_TEXTURE3);
+			glClientActiveTexture (GL_TEXTURE3);
+			OGL_BINDTEX (0);
+			bColorKey = 0;
+			}
+		}
+	if (bColored != gameStates.render.history.bColored) {
+		gameStates.render.history.bColored = bColored;
+		}
 	}
 else {
+	gameStates.render.history.bmBot = NULL;
 	bOverlay = 0;
 	glActiveTexture (GL_TEXTURE1);
 	glClientActiveTexture (GL_TEXTURE1);
