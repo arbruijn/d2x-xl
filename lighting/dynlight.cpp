@@ -888,7 +888,7 @@ return psl;
 
 //------------------------------------------------------------------------------
 
-ubyte CountVariableVertexLights (int nVertex)
+ubyte VariableVertexLights (int nVertex)
 {
 	short	*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	short	i, j;
@@ -1456,7 +1456,7 @@ int i, j, bColorize = !gameOpts->render.nLightingMethod;
 
 TransformDynLights (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++)
-	gameData.render.lights.dynamic.nVariableVertLights [i] = CountVariableVertexLights (i);
+	gameData.render.lights.dynamic.nVariableVertLights [i] = VariableVertexLights (i);
 if (gameStates.render.bPerPixelLighting && HaveLightMaps ())
 	return;
 if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
