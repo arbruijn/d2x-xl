@@ -3601,7 +3601,7 @@ do {
 	GET_VAL (gameOpts->ogl.bHeadLight, lightOpts.nHWHeadLight);
 	GET_VAL (extraGameInfo [0].bBrightObjects, optBrightObjects);
 	gameOpts->ogl.nMaxLightsPerFace = nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace];
-
+	gameOpts->ogl.nMaxLightsPerObject = nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerObject];
 	} while (i == -2);
 if (optColorSat >= 0) {
 	for (i = 0; i < 3; i++)

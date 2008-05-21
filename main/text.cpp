@@ -2453,7 +2453,7 @@ char *defaultHelpTexts [][2] = {
 	{"Je nach Einstellung werden grosse Flaechen in mehr oder\nweniger viele kleinere zerteilt. Dadurch wird die Beleuchtung\nverbessert, das Program u.U. aber auch langsamer.", 
 	 "Depending on the setting, huge faces will be split in\nmore or less many smaller ones. That will improve the lighting,\nbut may also slow down the program."},
 	{"Je hoeher die Qualitaet der Lightmaps, desto besser\nsieht die Beleuchtung mit Lightmaps aus,\ndesto laenger benoetigt aber auch ihre\nBerechnung.", 
-	 "The higher lightmap quality, the better lighting\nwith lightmaps look, but the longer it takes\nto compute them."},
+	 "The higher lightmap quality, the better lighting with lightmaps\ndoes look, but the longer it takes to compute them."},
 	{"", "Use multi threading for computing static lighting\n(happens once during level load)."},
 	{"", "Use multi threading for computing dynamic lighting.\n(happens every frame, can almost double the frame rate)."},
 	{"", "Use multi threading for face sorting\n(happens every frame, small frame rate improvement)."},
