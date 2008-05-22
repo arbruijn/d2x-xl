@@ -4416,6 +4416,8 @@ do {
 			}
 		ADD_CHECK (opt, TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_V, HTX_GPLAY_INVENTORY);
 		optInventory = opt++;
+		ADD_CHECK (opt, TXT_ROTATE_MARKERS, extraGameInfo [0].bRotateMarkers, KEY_K, HTX_ROTATE_MARKERS);
+		optRotateMarkers = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_CHECK (opt, TXT_MULTI_BOSSES, extraGameInfo [0].bMultiBosses, KEY_M, HTX_GPLAY_MULTIBOSS);
@@ -4440,8 +4442,6 @@ do {
 		optTripleFusion = opt++;
 		ADD_CHECK (opt, TXT_ENHANCED_SHAKERS, extraGameInfo [0].bEnhancedShakers, KEY_B, HTX_ENHANCED_SHAKERS);
 		optEnhancedShakers = opt++;
-		ADD_CHECK (opt, TXT_ROTATE_MARKERS, extraGameInfo [0].bRotateMarkers, KEY_K, HTX_ROTATE_MARKERS);
-		optRotateMarkers = opt++;
 		if (extraGameInfo [0].bSmokeGrenades) {
 			ADD_TEXT (opt, "", 0);
 			opt++;

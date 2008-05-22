@@ -303,8 +303,10 @@ if (faceP->nCorona)
 
 void RenderSkyBoxFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
+#if 1
 LoadFaceBitmaps (segP, faceP);
-g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, !bDepthOnly && faceP->bTextured, bDepthOnly);
+G3DrawFaceArrays (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, !bDepthOnly && faceP->bTextured, bDepthOnly);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -449,7 +451,7 @@ return tiRender.nFaces;
 
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
-	int	bLightMaps = HaveLightMaps (),
+	int	bLightMaps = (nType < 4) && HaveLightMaps (),
 			bNormals = !bDepthOnly; // && gameStates.render.bPerPixelLighting;
 
 gameData.threads.vertColor.data.bDarkness = 0;
@@ -475,7 +477,7 @@ if (nType == 3) {
 		LoadGlareShader ();
 	return 0;
 	}
-else if (gameStates.render.bPerPixelLighting) {
+else if ((nType < 4) && gameStates.render.bPerPixelLighting) {
 	OglEnableLighting (1);
 	for (int i = 0; i < 8; i++)
 		glEnable (GL_LIGHT0 + i);

@@ -1577,7 +1577,7 @@ typedef struct tRenderData {
 	tVertColorData			vertColor;
 	tSphereData				shield;
 	tSphereData				monsterball;
-	tFaceListItem			faceList [MAX_WALL_TEXTURES * 3];
+	tFaceListItem			*faceList;
 	short						faceRoots [MAX_WALL_TEXTURES * 3];
 	short						faceTails [MAX_WALL_TEXTURES * 3];
 	short						usedFaceKeys [MAX_WALL_TEXTURES * 3];

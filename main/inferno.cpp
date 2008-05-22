@@ -2525,6 +2525,13 @@ GETMEM (GLuint, gameData.render.lights.coronaSamples, MAX_OGL_LIGHTS, 0);
 
 // ----------------------------------------------------------------------------
 
+void AllocRenderData (void)
+{
+GETMEM (tFaceListItem, gameData.render.faceList, MAX_FACES, 0);
+}
+
+// ----------------------------------------------------------------------------
+
 void AllocPhysicsData (void)
 {
 GETMEM (short, gameData.physics.ignoreObjs, MAX_OBJECTS, 0);
@@ -2581,6 +2588,7 @@ AllocLightningData ();
 AllocCameraData ();
 AllocRenderColorData ();
 AllocRenderLightData ();
+AllocRenderData ();
 AllocShadowData ();
 AllocPhysicsData ();
 AllocWeaponData ();
@@ -2718,6 +2726,13 @@ FREEMEM (GLuint, gameData.render.lights.coronaSamples, MAX_OGL_LIGHTS);
 
 // ----------------------------------------------------------------------------
 
+void FreeRenderData (void)
+{
+FREEMEM (tFaceListItem, gameData.render.faceList, MAX_FACES);
+}
+
+// ----------------------------------------------------------------------------
+
 void FreePhysicsData (void)
 {
 FREEMEM (short, gameData.physics.ignoreObjs, MAX_OBJECTS);
@@ -2774,6 +2789,7 @@ FreeLightningData ();
 FreeCameraData ();
 FreeRenderColorData ();
 FreeRenderLightData ();
+FreeRenderData ();
 FreeShadowData ();
 FreePhysicsData ();
 FreeWeaponData ();
