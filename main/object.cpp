@@ -1532,7 +1532,7 @@ if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted) {
 
 //--------------------------------------------------------------------
 
-void MoveCamera (tObject *objP)
+void RotateCamera (tObject *objP)
 {
 
 #define	DEG90		 (F1_0 / 4)	
@@ -1576,6 +1576,20 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 	VmMatMul (&objP->position.mOrient, &pc->orient, &r);
 	pc->curAngle = curAngle;
 	pc->curDelta = curDelta;
+	}
+}
+
+//--------------------------------------------------------------------
+
+void RotateMarker (tObject *objP)
+{
+if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
+	vmsAngVec a = {0, 0, F1_0 / 512};
+	vmsMatrix mRotate, mOrient;
+
+	VmAngles2Matrix (&mRotate, &a);
+	VmMatMul (&mOrient, &objP->position.mOrient, &mRotate);
+	objP->position.mOrient = mOrient;
 	}
 }
 
@@ -1718,7 +1732,7 @@ switch (objP->controlType) {
 		break;
 
 	case CT_CAMERA:	
-		MoveCamera (objP); 
+		RotateCamera (objP); 
 		break;
 
 	case CT_WEAPON:	
@@ -1795,6 +1809,9 @@ gameData.multiplayer.bMoving = nSpeed;
 
 void HandleObjectMovement (tObject *objP)
 {
+if (objP->nType == OBJ_MARKER)
+	RotateMarker (objP);
+
 switch (objP->movementType) {
 	case MT_NONE:		
 		break;								//this doesn't move

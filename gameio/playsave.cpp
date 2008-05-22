@@ -319,6 +319,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bUseHitAngles, 0, 0);
 		RP (extraGameInfo [i].bWiggle, 0, 0);
 		RP (extraGameInfo [i].bGatlingSpeedUp, i, 0);
+		RP (extraGameInfo [i].bRotateMarkers, i, 0);
 
 		RP (extraGameInfo [i].grWallTransparency, 0, 0);
 
@@ -821,6 +822,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bUseLightnings", "1"},
 	{"extraGameInfo[0].bUseHitAngles", "0"},
 	{"extraGameInfo[0].bGatlingSpeedUp", "0"},
+	{"extraGameInfo[0].bRotateMarkers", "0"},
 	{"extraGameInfo[0].bWiggle", "1"},
 	{"extraGameInfo[0].grWallTransparency", "19"},
 	{"extraGameInfo[0].nFusionRamp", "4"},

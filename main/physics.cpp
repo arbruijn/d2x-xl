@@ -258,13 +258,13 @@ if (objP->mType.physInfo.drag) {
 //now rotate tObject
 //unrotate tObject for bank caused by turn
 if (objP->mType.physInfo.turnRoll) {
-	vmsMatrix new_pm;
+	vmsMatrix mOrient;
 
 	tangles.p = tangles.h = 0;
 	tangles.b = -objP->mType.physInfo.turnRoll;
 	VmAngles2Matrix (&mRotate, &tangles);
-	VmMatMul (&new_pm, &objP->position.mOrient, &mRotate);
-	objP->position.mOrient = new_pm;
+	VmMatMul (&mOrient, &objP->position.mOrient, &mRotate);
+	objP->position.mOrient = mOrient;
 	}
 tangles.p = (fixang) FixMul (objP->mType.physInfo.rotVel.p.x, gameData.physics.xTime);
 tangles.h = (fixang) FixMul (objP->mType.physInfo.rotVel.p.y, gameData.physics.xTime);

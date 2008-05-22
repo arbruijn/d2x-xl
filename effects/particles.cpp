@@ -1023,8 +1023,13 @@ int InitParticleBuffer (int bLightMaps)
 if (gameStates.render.bVertexArrays) {
 	G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
 	G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
-	if (bLightMaps)
+	if (bLightMaps) {
+		glActiveTexture (GL_TEXTURE1);
+		glClientActiveTexture (GL_TEXTURE1);
+		OGL_BINDTEX (0);
+		glDisable (GL_TEXTURE_2D);
 		G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
+		}
 	gameStates.render.bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightMaps*/);
 	}
 if (gameStates.render.bVertexArrays) {

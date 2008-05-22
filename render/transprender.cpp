@@ -1099,7 +1099,7 @@ void RIFlushParticleBuffer (int nType)
 if ((nType != riParticle) && (gameData.smoke.nLastType >= 0)) {
 	FlushParticleBuffer (-1.0f);
 	CloseParticleBuffer ();
-#if 0
+#if 1
 	renderItems.bmP = NULL;
 	gameStates.render.history.nShader = -1;
 #endif

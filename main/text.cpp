@@ -1822,6 +1822,7 @@ char *defaultGameTexts [][2] = {
 	{"Multi-Threading", "multi threading"},
 	{"max. Lichter/D~Urchgang: %d", "max. lights/~Pass: %d"},
 	{"max. Lichter/~Objekt: %d", "max. lights/~Object: %d"},
+	{"Bojen ~Drehen sich", "mar~Kers rotate"},
 #if 0
 	{"", ""},
 #endif
@@ -2469,6 +2470,7 @@ char *defaultHelpTexts [][2] = {
 	 "Adjust how many lights are used simultaneously when\nrendering a face. The higher the number, the faster\nthe renderer, but the more likely saturation will occur."},
 	{"Hier kann eingestellt werden, wieviele Lichter maximal die \nBeleuchtung eines Objekts bestimmen. Werte ueber\n8 koennen die Geschwindigkeit bei vielen sichtbaren Objekten stark verringern.", 
 	 "Here you can adjust how many lights will maximally influence\nthe brightness of an object. Values greater than 8 can\nsignificantly reduce rendering speed if many objects are visible."},
+	{"Wenn angekreuzt, drehen Bojen sich langsam um ihre Laengs-\nachse und zeigen in der Bojensicht eine 360-Grad-Ansicht\nihrer Umgebung.", "If checked, markers will spin slowly, giving you a 360 degree view\nof their environment in the marker view."},
 #if 0
 	{"", ""},
 #endif

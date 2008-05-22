@@ -256,6 +256,7 @@ typedef struct tExtraGameInfo {
 	char		nDrag;
 	char		nSpotSize;
 	char		nSpotStrength;
+	char		bRotateMarkers;
 	int		nLightRange;
 	tMonsterballInfo	monsterball;
 	char		szGameName [NETGAME_NAME_LEN + 1];

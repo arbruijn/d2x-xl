@@ -121,7 +121,8 @@ void G3LightModel (tObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 	tRgbaColorf		baseColor, *colorP;
 	float				fLight, fAlpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS; 
 	int				h, i, j, l;
-	int				bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
+	int				bEmissive = (objP->nType == OBJ_MARKER) ||
+										((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id]);
 
 #ifdef _DEBUG
 if (OBJ_IDX (objP) == nDbgObj)
@@ -616,8 +617,9 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + sliP->nFirst;
 	tShaderLight			*psl;
 	int						nPass, iLightSource = 0, iLight, nLights, nLightRange;
+	int						bBright = objP && (objP->nType == OBJ_MARKER);
 	int						bEmissive = objP && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
-	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive);
+	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? f2fl (gameData.models.nLightScale) : 1.0f;
 	fVector					color;
