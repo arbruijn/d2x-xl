@@ -927,7 +927,7 @@ if (bStatic || gameData.render.lights.dynamic.nVariableVertLights [nVertex])
 	tShaderLight			*psl;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
-	fix						xLightDist, xMaxLightRange = MAX_LIGHT_RANGE /** (gameStates.render.bPerPixelLighting + 1)*/;
+	fix						xLightDist, xMaxLightRange = (gameStates.render.bPerPixelLighting ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
 
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -1173,7 +1173,7 @@ if (gameOpts->render.nLightingMethod) {
 	short						i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
 	int						bSkipHeadLight = !gameStates.render.nState && (gameStates.render.bPerPixelLighting || gameOpts->ogl.bHeadLight);
-	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE /** (gameStates.render.bPerPixelLighting + 1)*/;
+	fix						xMaxLightRange = AvgSegRad (nSegment) + (gameStates.render.bPerPixelLighting ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
@@ -1199,7 +1199,7 @@ if (gameOpts->render.nLightingMethod) {
 			}
 		if (nType < 2) {
 			if (!bVariable)
-				continue; //break;
+				break;
 			if (!(psl->info.bVariable && psl->info.bOn))
 				continue;
 			}
@@ -1268,7 +1268,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameOpts->render.nLightingMethod) {
 	int						nLightSeg;
 	short						i = gameData.render.lights.dynamic.shader.nLights;
-	fix						xMaxLightRange = fl2f (fLightRad) + MAX_LIGHT_RANGE * (gameStates.render.bPerPixelLighting + 1);
+	fix						xMaxLightRange = fl2f (fLightRad) + (gameStates.render.bPerPixelLighting ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights;
 	vmsVector				c;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];

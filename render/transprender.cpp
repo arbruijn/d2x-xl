@@ -553,6 +553,12 @@ if (renderItems.bUseLightMaps != bUseLightMaps) {
 		glDisableClientState (GL_COLOR_ARRAY);
 		glEnableClientState (GL_VERTEX_ARRAY);
 		}
+	else {
+		glActiveTexture (GL_TEXTURE1);
+		glClientActiveTexture (GL_TEXTURE1);
+		OGL_BINDTEX (0);
+		glDisable (GL_TEXTURE_2D);
+		}
 	renderItems.bUseLightMaps = bUseLightMaps;
 	}
 #endif
@@ -625,7 +631,7 @@ else {
 	renderItems.bClientState = 0;
 	glActiveTexture (GL_TEXTURE0);
 	}
-renderItems.bmP = NULL;
+//renderItems.bmP = NULL;
 return 1;
 }
 
@@ -633,7 +639,7 @@ return 1;
 
 void RIResetShader (void)
 {
-	{//if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
+if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
 	}
@@ -662,6 +668,7 @@ if (bmP) {
 			OglTexWrap (bmP->glTexture, nWrap);
 			renderItems.bmP = bmP;
 			renderItems.nWrap = nWrap;
+			renderItems.nFrame = nFrame;
 			}
 		else
 			OGL_BINDTEX (0);
@@ -708,10 +715,12 @@ faceP = item->faceP;
 triP = item->triP;
 bLightMaps = renderItems.bLightMaps && (faceP != NULL);
 #ifdef _DEBUG
+if (!bLightMaps)
+	bLightMaps = bLightMaps;
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1, bLightMaps)) {
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP != NULL, bLightMaps)) {
 	if (item->nColors > 1) {
 		if (bLightMaps) {
 			glActiveTexture (GL_TEXTURE0);

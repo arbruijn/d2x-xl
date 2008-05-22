@@ -1287,8 +1287,6 @@ if (bDepthOnly)
 else {
 	if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
 		return 0;
-	if (bHeadLight && !nLights)
-		return 0;
 	}
 #if ONLY_LIGHTMAPS == 2
 nType = 0;
