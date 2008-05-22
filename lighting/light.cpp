@@ -350,6 +350,22 @@ else {
 
 // ----------------------------------------------------------------------------------------------
 
+bool SkipPowerup (tObject *objP)
+{
+if (!EGI_FLAG (bPowerupLights, 0, 0, 0))
+	return true;
+if (gameStates.render.bPerPixelLighting) {
+	int id = objP->id;
+	if ((id != POW_EXTRA_LIFE) && (id != POW_ENERGY) && (id != POW_SHIELD_BOOST) && 
+		 (id != POW_HOARD_ORB) && (id != POW_MONSTERBALL) && (id != POW_INVUL)) {
+		return true;
+		}
+	}
+return false;
+}
+
+// ----------------------------------------------------------------------------------------------
+
 void ApplyLight (
 	fix			xObjIntensity, 
 	int			nObjSeg, 
@@ -387,18 +403,6 @@ if (objP && SHOW_DYN_LIGHT) {
 		xObjIntensity /= 4;
 		}
 	else if (objP->nType == OBJ_POWERUP) {
-		if (!EGI_FLAG (bPowerupLights, 0, 0, 0)) {
-			RemoveDynLight (-1, -1, nObject);
-			return;
-			}
-		if (gameStates.render.bPerPixelLighting) {
-			int id = objP->id;
-			if ((id != POW_EXTRA_LIFE) && (id != POW_ENERGY) && (id != POW_SHIELD_BOOST) && 
-				 (id != POW_HOARD_ORB) && (id != POW_MONSTERBALL) && (id != POW_INVUL)) {
-				RemoveDynLight (-1, -1, nObject);
-				return;
-				}
-			}
 		xObjIntensity /= 4;
 		}
 	else if (objP->nType == OBJ_ROBOT)
@@ -809,7 +813,7 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.nLightingMethod) {
 for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastObject; nObject++, objP++) {
 	if (objP->nType == OBJ_NONE)
 		continue;
-	if (objP && (objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0)) 
+	if (SkipPowerup (objP))
 		continue;
 	objPos = &objP->position.vPos;
 	xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);

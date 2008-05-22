@@ -392,6 +392,7 @@ pl->info.nPlayer = -1;
 pl->info.bState = 1;
 pl->info.bSpot = 0;
 pl->info.fBoost = 0;
+pl->info.bPowerup = 0;
 //0: static light
 //2: object/lightning
 //3: headlight
@@ -399,6 +400,14 @@ if (nObject >= 0) {
 	tObject *objP = OBJECTS + nObject;
 	//HUDMessage (0, "Adding object light %d, type %d", gameData.render.lights.dynamic.nLights, objP->nType);
 	pl->info.nType = 2;
+	if (objP->nType == OBJ_POWERUP) {
+		int id = objP->id;
+		if ((id == POW_EXTRA_LIFE) || (id == POW_ENERGY) || (id == POW_SHIELD_BOOST) || 
+			 (id == POW_HOARD_ORB) || (id == POW_MONSTERBALL) || (id == POW_INVUL))
+			pl->info.bPowerup = 1;
+		else
+			pl->info.bPowerup = 2;
+		}
 	pl->info.vPos = objP->position.vPos;
 	pl->info.fRad = 0; //f2fl (gameData.objs.objects [nObject].size) / 2;
 	if (fBrightness > 1) {
@@ -1163,7 +1172,6 @@ if (gameOpts->render.nLightingMethod) {
 	short						i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
 	int						bSkipHeadLight = !gameStates.render.nState && (gameStates.render.bPerPixelLighting || gameOpts->ogl.bHeadLight);
-	int						bPowerups = EGI_FLAG (bPowerupLights, 0, 0, 0);
 	fix						xMaxLightRange = AvgSegRad (nSegment) + MAX_LIGHT_RANGE /** (gameStates.render.bPerPixelLighting + 1)*/;
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
@@ -1201,7 +1209,7 @@ if (gameOpts->render.nLightingMethod) {
 			psl = psl;
 #endif
 		if (psl->info.nType < 3) {
-			if (!bPowerups && (psl->info.nObject >= 0) && (OBJECTS [psl->info.nObject].nType == OBJ_POWERUP))
+			if (psl->info.bPowerup > gameData.render.nPowerupFilter)
 				continue;
 #ifdef _DEBUG
 			if (psl->info.nObject >= 0)

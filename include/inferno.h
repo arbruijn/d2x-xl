@@ -1248,6 +1248,7 @@ typedef struct tDynLightInfo {
 	ubyte			bOn;
 	ubyte			bSpot;
 	ubyte			bVariable;
+	ubyte			bPowerup;
 	} tDynLightInfo;
 
 typedef struct tDynLight {
@@ -1606,6 +1607,7 @@ typedef struct tRenderData {
 	int						nMaxLights;
 	int						nStateChanges;
 	float						fAttScale;
+	ubyte						nPowerupFilter;
 } tRenderData;
 
 //------------------------------------------------------------------------------

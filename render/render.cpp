@@ -2068,6 +2068,12 @@ gameData.render.vertColor.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShado
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameStates.render.bApplyDynLight =
 gameStates.render.bUseDynLight = SHOW_DYN_LIGHT;
+if (EGI_FLAG (bPowerupLights, 0, 0, 0))
+	gameData.render.nPowerupFilter = 0;
+else if (gameStates.render.bPerPixelLighting)
+	gameData.render.nPowerupFilter = 1;
+else
+	gameData.render.nPowerupFilter = 2;
 gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras && 
 									    (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) && 
 										 !gameStates.render.cameras.bActive;
