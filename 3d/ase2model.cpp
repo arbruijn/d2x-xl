@@ -152,7 +152,7 @@ for (i = 0; i < pm->nTextures; i++)
 	if ((j = (int) pm->pTextures [i].bmTeam))
 		pm->teamTextures [j - 1] = i;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
-G3SetupModel (pm, 1, 0);
+G3SetupModel (pm, 1, 1);
 #if 1
 G3SetGunPoints (objP, pm, nModel, 1);
 #endif

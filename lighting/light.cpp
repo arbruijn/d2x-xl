@@ -352,6 +352,8 @@ else {
 
 bool SkipPowerup (tObject *objP)
 {
+if (objP->nType != OBJ_POWERUP)
+	return false;
 if (!EGI_FLAG (bPowerupLights, 0, 0, 0))
 	return true;
 if (gameStates.render.bPerPixelLighting) {

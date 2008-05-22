@@ -3615,6 +3615,7 @@ if (gameStates.render.bPerPixelLighting = (gameStates.render.nLightingMethod == 
 	gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
 	gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 	}
+gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
 gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
 }
 

@@ -1169,6 +1169,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
 if (gameOpts->render.nLightingMethod) {
+	ubyte						nType;
 	short						i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
 	int						bSkipHeadLight = !gameStates.render.nState && (gameStates.render.bPerPixelLighting || gameOpts->ogl.bHeadLight);
@@ -1191,12 +1192,14 @@ if (gameOpts->render.nLightingMethod) {
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			psl = psl;
 #endif
-		psl--;
-		if (bSkipHeadLight && (psl->info.nType == 3))
-			continue;
-		if (psl->info.nType < 2) {
+		nType = (--psl)->info.nType;
+		if (nType == 3) {
+			if (bSkipHeadLight)
+				continue;
+			}
+		if (nType < 2) {
 			if (!bVariable)
-				break;
+				continue; //break;
 			if (!(psl->info.bVariable && psl->info.bOn))
 				continue;
 			}
@@ -1208,7 +1211,7 @@ if (gameOpts->render.nLightingMethod) {
 		if ((psl->info.nSegment >= 0) && (psl->info.nSide < 0))
 			psl = psl;
 #endif
-		if (psl->info.nType < 3) {
+		if (nType < 3) {
 			if (psl->info.bPowerup > gameData.render.nPowerupFilter)
 				continue;
 #ifdef _DEBUG

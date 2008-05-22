@@ -271,7 +271,6 @@ for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
 		pfi->nId = nId;
 		pfj = pfi++;
 		if (G3CmpFaces (pfi, pfj, pTextures))
-			G3CmpFaces (pfi, pfj, pTextures);
 			nId++;
 #if G3_ALLOW_TRANSPARENCY
 		if (pTextures && (pTextures [pfi->nBitmap].bmProps.flags & BM_FLAG_TRANSPARENT))
