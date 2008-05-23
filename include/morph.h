@@ -65,7 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "object.h"
 
-#define MAX_VECS 200
+#define MAX_VECS 10000
 
 typedef struct tMorphInfo {
 	tObject			*objP;                                // tObject which is morphing
