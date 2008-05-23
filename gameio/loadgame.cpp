@@ -726,12 +726,14 @@ memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLast
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
 memset (gameData.objs.lightObjs, (char) 0xff, MAX_OBJECTS * sizeof (*gameData.objs.lightObjs));
 memset (gameData.objs.shots, (char) 0xff, MAX_OBJECTS * sizeof (*gameData.objs.shots));
-memset (gameData.render.faceLists [0].roots, 0xff, sizeof (gameData.render.faceLists [0].roots));
-memset (gameData.render.faceLists [1].roots, 0xff, sizeof (gameData.render.faceLists [1].roots));
-memset (gameData.render.faceLists [0].tails, 0xff, sizeof (gameData.render.faceLists [0].tails));
-memset (gameData.render.faceLists [1].tails, 0xff, sizeof (gameData.render.faceLists [1].tails));
-gameData.render.nUsedFaces =
-gameData.render.nUsedFaceKeys = 0;
+memset (gameData.render.faceIndex [0].roots, 0xff, sizeof (gameData.render.faceIndex [0].roots));
+memset (gameData.render.faceIndex [1].roots, 0xff, sizeof (gameData.render.faceIndex [1].roots));
+memset (gameData.render.faceIndex [0].tails, 0xff, sizeof (gameData.render.faceIndex [0].tails));
+memset (gameData.render.faceIndex [1].tails, 0xff, sizeof (gameData.render.faceIndex [1].tails));
+gameData.render.faceIndex [0].nUsedFaces = 0;
+gameData.render.faceIndex [0].nUsedKeys = 0;
+gameData.render.faceIndex [1].nUsedFaces = sizeof (gameData.render.faceList);
+gameData.render.faceIndex [0].nUsedKeys = 0;
 gameData.omega.lightnings.nHandles = 0;
 gameData.multiplayer.bMoving = -1;
 #if 1

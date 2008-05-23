@@ -70,35 +70,35 @@ GLhandleARB hVertLightFS = 0;
 
 void ResetFaceList (int nThread)
 {
-	tFaceListData *flP = gameData.render.faceLists + nThread;
+	tFaceListIndex *flxP = gameData.render.faceIndex + nThread;
 #if SORT_FACES == 2
 #	if 0//def _DEBUG
-memset (flP->roots, 0xff, sizeof (flP->roots));
+memset (flxP->roots, 0xff, sizeof (flxP->roots));
 #	else
-short *roots = flP->roots,
-		*usedKeys = flP->usedKeys;
-for (int i = 0, h = flP->nUsedKeys; i < h; i++) 
+short *roots = flxP->roots,
+		*usedKeys = flxP->usedKeys;
+for (int i = 0, h = flxP->nUsedKeys; i < h; i++) 
 	roots [usedKeys [i]] = -1;
 #	endif
 #else
 #	if 0//def _DEBUG
-memset (flP->tails, 0xff, sizeof (flP->tails));
+memset (flxP->tails, 0xff, sizeof (flxP->tails));
 #	else
-short *tails = flP->tails,
-		*usedKeys = flP->usedKeys;
-for (int i = 0, h = flP->nUsedKeys; i < h; i++) 
+short *tails = flxP->tails,
+		*usedKeys = flxP->usedKeys;
+for (int i = 0, h = flxP->nUsedKeys; i < h; i++) 
 	tails [usedKeys [i]] = -1;
 #	endif
 #endif
-flP->nUsedFaces = nThread ? sizeof (gameData.render.faceList) : 0;
-flP->nUsedKeys = 0;
+flxP->nUsedFaces = nThread ? sizeof (gameData.render.faceList) : 0;
+flxP->nUsedKeys = 0;
 }
 
 //------------------------------------------------------------------------------
 
 void AddFaceListItem (grsFace *faceP, int nThread)
 {
-	tFaceListData  *flP = gameData.render.faceLists + nThread;
+	tFaceListIndex	*flxP = gameData.render.faceIndex + nThread;
 	short				i, j, nKey = faceP->nBaseTex;
 
 if (nKey < 0)
@@ -106,27 +106,27 @@ if (nKey < 0)
 if (faceP->nOvlTex)
 	nKey += MAX_WALL_TEXTURES + faceP->nOvlTex;
 if (nThread)
-	i = --flP->nUsedFaces;
+	i = --flxP->nUsedFaces;
 else
-	i = flP->nUsedFaces++;
+	i = flxP->nUsedFaces++;
 #if SORT_FACES == 2
-j = flP->roots [nKey];
+j = flxP->roots [nKey];
 if (j < 0)
-	flP->usedKeys [flP->nUsedKeys++] = nKey;
+	flxP->usedKeys [flxP->nUsedKeys++] = nKey;
 gameData.render.faceList [i].nNextItem = j;
 gameData.render.faceList [i].faceP = faceP;
-flP->roots [nKey] = i;
+flxP->roots [nKey] = i;
 #else
-j = flP->tails [nKey];
+j = flxP->tails [nKey];
 if (j < 0) {
-	flP->usedKeys [flP->nUsedKeys++] = nKey;
-	flP->roots [nKey] = i;
+	flxP->usedKeys [flxP->nUsedKeys++] = nKey;
+	flxP->roots [nKey] = i;
 	}
 else
 	gameData.render.faceList [j].nNextItem = i;
 gameData.render.faceList [i].nNextItem = -1;
 gameData.render.faceList [i].faceP = faceP;
-flP->tails [nKey] = i;
+flxP->tails [nKey] = i;
 #endif
 }
 
@@ -765,16 +765,16 @@ for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 
 //------------------------------------------------------------------------------
 
-void RenderFaceList (tFaceListData *flP, int nType, int bDepthOnly)
+void RenderFaceList (tFaceListIndex *flxP, int nType, int bDepthOnly)
 {
-	tFaceListData	fl = *flP;
+	tFaceListIndex	flx = *flxP;
 	tFaceListItem	*fliP;
 	grsFace			*faceP;
 	short				i, j, nSegment = -1;
 	int				bAutomap = (nType == 0);
 
-for (i = 0; i < fl.nUsedKeys; i++) {
-	for (j = fl.roots [fl.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
+for (i = 0; i < flx.nUsedKeys; i++) {
+	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
 		fliP = gameData.render.faceList + j;
 		faceP = fliP->faceP;
 		if (nSegment != faceP->nSegment) {
@@ -801,9 +801,9 @@ if (nType) {
 	}
 else {
 #if SORT_FACES > 1
-	RenderFaceList (gameData.render.faceLists, nType, bDepthOnly);
+	RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly);
 	if (gameStates.app.bMultiThreaded)
-		RenderFaceList (gameData.render.faceLists + 1, nType, bDepthOnly);
+		RenderFaceList (gameData.render.faceIndex + 1, nType, bDepthOnly);
 #else
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
 		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap);
