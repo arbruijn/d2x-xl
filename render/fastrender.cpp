@@ -1614,6 +1614,9 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
+#if SORT_FACES > 1
+ResetFaceList (nThread);
+#endif
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
 for (i = nStart; i != nEnd; i += nIncr) {
@@ -1641,6 +1644,9 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			faceP->bVisible = 0;
 			continue;
 			}
+#if SORT_FACES > 1
+		AddFaceListItem (faceP, nThread);
+#endif
 		faceP->color = faceColor [nColor].color;
 		pc = gameData.segs.faces.color + faceP->nIndex;
 		uvlP = segP->sides [nSide].uvls;
