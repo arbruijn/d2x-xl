@@ -833,10 +833,9 @@ if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && gameOpts->r
 				LinkShaderProg (hGlareShader + i);
 		if (!bOk) {
 			gameStates.ogl.bDepthBlending = 0;
-			while (--i) {
+			while (--i)
 				DeleteShaderProg (hGlareShader + i);
-				return;
-				}
+			return;
 			}
 		}
 	}
