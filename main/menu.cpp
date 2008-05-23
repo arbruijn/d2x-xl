@@ -4856,7 +4856,7 @@ do {
 		optCockpit = opt++;
 		ADD_MENU (opt, TXT_RENDER_OPTS2, KEY_R, HTX_OPTIONS_RENDER);
 		optRender = opt++;
-		if (IsMultiGame && !IsCoopGame) 
+		if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame) 
 			optPhysics =
 			optGameplay = -1;
 		else {
