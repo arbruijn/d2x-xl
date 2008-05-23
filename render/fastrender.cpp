@@ -68,56 +68,65 @@ GLhandleARB hVertLightFS = 0;
 
 #if SORT_FACES > 1
 
-void ResetFaceList (void)
+void ResetFaceList (int nThread)
 {
+	tFaceListData *flP = gameData.render.faceLists + nThread;
 #if SORT_FACES == 2
 #	if 0//def _DEBUG
-memset (gameData.render.faceRoots, 0xff, sizeof (gameData.render.faceRoots));
+memset (flP->roots, 0xff, sizeof (flP->roots));
 #	else
-for (int i = 0; i < gameData.render.nUsedFaceKeys; i++) 
-	gameData.render.faceRoots [gameData.render.usedFaceKeys [i]] = -1;
+short *roots = flP->roots,
+		*usedKeys = flP->usedKeys;
+for (int i = 0, h = flP->nUsedKeys; i < h; i++) 
+	roots [usedKeys [i]] = -1;
 #	endif
 #else
 #	if 0//def _DEBUG
-memset (gameData.render.faceTails, 0xff, sizeof (gameData.render.faceTails));
+memset (flP->tails, 0xff, sizeof (flP->tails));
 #	else
-for (int i = 0; i < gameData.render.nUsedFaceKeys; i++) 
-	gameData.render.faceTails [gameData.render.usedFaceKeys [i]] = -1;
+short *tails = flP->tails,
+		*usedKeys = flP->usedKeys;
+for (int i = 0, h = flP->nUsedKeys; i < h; i++) 
+	tails [usedKeys [i]] = -1;
 #	endif
 #endif
-gameData.render.nUsedFaces =
-gameData.render.nUsedFaceKeys = 0;
+flP->nUsedFaces = nThread ? sizeof (gameData.render.faceList) : 0;
+flP->nUsedKeys = 0;
 }
 
 //------------------------------------------------------------------------------
 
-void AddFaceListItem (grsFace *faceP)
+void AddFaceListItem (grsFace *faceP, int nThread)
 {
+	tFaceListData  *flP = gameData.render.faceLists + nThread;
 	short				i, j, nKey = faceP->nBaseTex;
 
 if (nKey < 0)
 	return;
 if (faceP->nOvlTex)
 	nKey += MAX_WALL_TEXTURES + faceP->nOvlTex;
-i = gameData.render.nUsedFaces++;
+if (nThread)
+	i = --flP->nUsedFaces;
+else
+	i = flP->nUsedFaces++;
 #if SORT_FACES == 2
-j = gameData.render.faceRoots [nKey];
+j = flP->roots [nKey];
 if (j < 0)
-	gameData.render.usedFaceKeys [gameData.render.nUsedFaceKeys++] = nKey;
+	flP->usedKeys [flP->nUsedKeys++] = nKey;
 gameData.render.faceList [i].nNextItem = j;
 gameData.render.faceList [i].faceP = faceP;
-gameData.render.faceRoots [nKey] = i;
+flP->roots [nKey] = i;
 #else
-j = gameData.render.faceTails [nKey];
+j = flP->tails [nKey];
 if (j < 0) {
-	gameData.render.usedFaceKeys [gameData.render.nUsedFaceKeys++] = nKey;
-	gameData.render.faceRoots [nKey] = i;
+	flP->usedKeys [flP->nUsedKeys++] = nKey;
+	flP->roots [nKey] = i;
 	}
 else
 	gameData.render.faceList [j].nNextItem = i;
 gameData.render.faceList [i].nNextItem = -1;
 gameData.render.faceList [i].faceP = faceP;
-gameData.render.faceTails [nKey] = i;
+flP->tails [nKey] = i;
 #endif
 }
 
@@ -756,6 +765,32 @@ for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 
 //------------------------------------------------------------------------------
 
+void RenderFaceList (tFaceListData *flP, int nType, int bDepthOnly)
+{
+	tFaceListData	fl = *flP;
+	tFaceListItem	*fliP;
+	grsFace			*faceP;
+	short				i, j, nSegment = -1;
+	int				bAutomap = (nType == 0);
+
+for (i = 0; i < fl.nUsedKeys; i++) {
+	for (j = fl.roots [fl.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
+		fliP = gameData.render.faceList + j;
+		faceP = fliP->faceP;
+		if (nSegment != faceP->nSegment) {
+			nSegment = faceP->nSegment;
+			VisitSegment (nSegment, bAutomap);
+			if (gameStates.render.bPerPixelLighting)
+				gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
+			}
+		faceP = fliP->faceP;
+		RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void RenderSegments (int nType, int bVertexArrays, int bDepthOnly)
 {
 	int	i, bAutomap = (nType == 0);
@@ -766,24 +801,9 @@ if (nType) {
 	}
 else {
 #if SORT_FACES > 1
-	tFaceListItem	*fliP;
-	grsFace			*faceP;
-	short				j, nSegment = -1;
-
-	for (i = 0; i < gameData.render.nUsedFaceKeys; i++) {
-		for (j = gameData.render.faceRoots [gameData.render.usedFaceKeys [i]]; j >= 0; j = fliP->nNextItem) {
-			fliP = gameData.render.faceList + j;
-			faceP = fliP->faceP;
-			if (nSegment != faceP->nSegment) {
-				nSegment = faceP->nSegment;
-				VisitSegment (nSegment, bAutomap);
-				if (gameStates.render.bPerPixelLighting)
-					gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
-				}
-			faceP = fliP->faceP;
-			RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly);
-			}
-		}
+	RenderFaceList (gameData.render.faceLists, nType, bDepthOnly);
+	if (gameStates.app.bMultiThreaded)
+		RenderFaceList (gameData.render.faceLists + 1, nType, bDepthOnly);
 #else
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
 		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap);
@@ -1334,7 +1354,9 @@ void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
 #if SORT_FACES > 1
-ResetFaceList ();
+ResetFaceList (0);
+if (gameStates.app.bMultiThreaded)
+	ResetFaceList (1);
 #endif
 memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 gameStates.ogl.bUseTransform = 1;
@@ -1378,7 +1400,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			continue;
 			}
 #if SORT_FACES > 1
-		AddFaceListItem (faceP);
+		AddFaceListItem (faceP, nThread);
 #endif
 		faceP->color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
@@ -1467,7 +1489,9 @@ void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
 #if SORT_FACES > 1
-ResetFaceList ();
+ResetFaceList (0);
+if (gameStates.app.bMultiThreaded)
+	ResetFaceList (1);
 #endif
 memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 gameStates.ogl.bUseTransform = 1;
@@ -1511,7 +1535,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			continue;
 			}
 #if SORT_FACES > 1
-		AddFaceListItem (faceP);
+		AddFaceListItem (faceP, nThread);
 #endif
 		faceP->color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);

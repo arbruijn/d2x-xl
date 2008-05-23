@@ -1571,18 +1571,22 @@ typedef struct tFaceListItem {
 	short						nNextItem;
 } tFaceListItem;
 
+typedef struct tFaceListData {
+	short						roots [MAX_WALL_TEXTURES * 3];
+	short						tails [MAX_WALL_TEXTURES * 3];
+	short						usedKeys [MAX_WALL_TEXTURES * 3];
+	short						nUsedFaces;
+	short						nUsedKeys;
+	} tFaceListData;
+
 typedef struct tRenderData {
 	tColorData				color;
 	int						transpColor;
+	tFaceListData			faceLists [2];
 	tVertColorData			vertColor;
 	tSphereData				shield;
 	tSphereData				monsterball;
 	tFaceListItem			*faceList;
-	short						faceRoots [MAX_WALL_TEXTURES * 3];
-	short						faceTails [MAX_WALL_TEXTURES * 3];
-	short						usedFaceKeys [MAX_WALL_TEXTURES * 3];
-	short						nUsedFaces;
-	short						nUsedFaceKeys;
 	int						nPaletteGamma;
 	int						nComputedColors;
 	fix						xFlashEffect;
