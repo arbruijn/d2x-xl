@@ -90,7 +90,7 @@ for (int i = 0, h = flxP->nUsedKeys; i < h; i++)
 	tails [usedKeys [i]] = -1;
 #	endif
 #endif
-flxP->nUsedFaces = nThread ? sizeof (gameData.render.faceList) : 0;
+flxP->nUsedFaces = nThread ? MAX_FACES : 0;
 flxP->nUsedKeys = 0;
 }
 
@@ -801,13 +801,15 @@ if (nType) {
 	}
 else {
 #if SORT_FACES > 1
-	RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly);
-	if (gameStates.app.bMultiThreaded)
-		RenderFaceList (gameData.render.faceIndex + 1, nType, bDepthOnly);
-#else
+	if (1 || !gameStates.app.bMultiThreaded) {
+		RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly);
+		if (gameStates.app.bMultiThreaded)
+			RenderFaceList (gameData.render.faceIndex + 1, nType, bDepthOnly);
+		}
+	else
+#endif
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
 		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap);
-#endif
 	}
 }
 
@@ -1354,9 +1356,7 @@ void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
 #if SORT_FACES > 1
-ResetFaceList (0);
-if (gameStates.app.bMultiThreaded)
-	ResetFaceList (1);
+ResetFaceList (nThread);
 #endif
 memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 gameStates.ogl.bUseTransform = 1;
@@ -1489,9 +1489,7 @@ void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
 #if SORT_FACES > 1
-ResetFaceList (0);
-if (gameStates.app.bMultiThreaded)
-	ResetFaceList (1);
+ResetFaceList (nThread);
 #endif
 memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 gameStates.ogl.bUseTransform = 1;

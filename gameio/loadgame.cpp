@@ -732,8 +732,8 @@ memset (gameData.render.faceIndex [0].tails, 0xff, sizeof (gameData.render.faceI
 memset (gameData.render.faceIndex [1].tails, 0xff, sizeof (gameData.render.faceIndex [1].tails));
 gameData.render.faceIndex [0].nUsedFaces = 0;
 gameData.render.faceIndex [0].nUsedKeys = 0;
-gameData.render.faceIndex [1].nUsedFaces = sizeof (gameData.render.faceList);
-gameData.render.faceIndex [0].nUsedKeys = 0;
+gameData.render.faceIndex [1].nUsedFaces = MAX_FACES;
+gameData.render.faceIndex [1].nUsedKeys = 0;
 gameData.omega.lightnings.nHandles = 0;
 gameData.multiplayer.bMoving = -1;
 #if 1
