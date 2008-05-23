@@ -1557,7 +1557,7 @@ if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && 
 			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
 			VISIT (i);
 			}
-	//SortRenderSegs ();
+	SortRenderSegs ();
 	return;
 	}
 
