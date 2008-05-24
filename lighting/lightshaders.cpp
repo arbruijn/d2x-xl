@@ -41,7 +41,8 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "dynlight.h"
 
 #define ONLY_LIGHTMAPS 0
-#define CONST_LIGHTS_PER_PASS 1
+#define COMBINE_SHADERS == 2 0
+#define COMBINE_SHADERS 1
 
 #define PPL_AMBIENT_LIGHT	0.0f
 #define PPL_DIFFUSE_LIGHT	1.0f
@@ -1239,10 +1240,10 @@ if (nLightRange <= 0) {
 	CheckUsedLights2 ();
 #endif
 	}
-#if CONST_LIGHTS_PER_PASS
+#if COMBINE_SHADERS == 2
 ambient.red = 
 ambient.green =
-ambient.blue = 0;
+ambient.blue =
 ambient.alpha = 0;
 for (; nLights < gameStates.render.nMaxLightsPerPass; nLights++) {
 	hLight = GL_LIGHT0 + nLights;
@@ -1250,6 +1251,7 @@ for (; nLights < gameStates.render.nMaxLightsPerPass; nLights++) {
 	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &ambient);
 	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &ambient);
 	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &ambient);
+	glLightfv (hLight, GL_POSITION, (GLfloat *) &ambient);
 	glLightfv (hLight, GL_POSITION, (GLfloat *) &ambient);
 	}
 #endif
@@ -1291,8 +1293,10 @@ else {
 #if ONLY_LIGHTMAPS == 2
 nType = 0;
 #endif
-#if CONST_LIGHTS_PER_PASS
+#if COMBINE_SHADERS == 2
 nLights = gameStates.render.nMaxLightsPerPass;
+#endif
+#if COMBINE_SHADERS
 if (nType == 2)
 	bDecal = 1;
 else if (nType == 1) {
@@ -1301,6 +1305,8 @@ else if (nType == 1) {
 	}
 else
 	bDecal = -1;
+#else
+bDecal = (nType == 2) ? 1 : -1;
 #endif
 nShader = 20 + 4 * nLights + nType;
 #ifdef _DEBUG
@@ -1338,7 +1344,11 @@ if (bDecal >= 0)
 	glUniform1f (glGetUniformLocation (activeShaderProg, "bDecal"), (GLfloat) bDecal);
 glUniform1f (glGetUniformLocation (activeShaderProg, "fLightScale"), 
 #if 1
+#	if COMBINE_SHADERS == 2
+				 (nLights ? (float) nLights / (float) (((gameStates.ogl.nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass) * gameStates.render.nMaxLightsPerPass) : 1.0f));
+#	else
 				 (nLights ? (float) nLights / (float) gameStates.ogl.nLights : 1.0f));
+#	endif
 #else
 				 (nLights && gameStates.ogl.iLight) ? 0.0f : 1.0f);
 #endif

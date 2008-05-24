@@ -2094,8 +2094,9 @@ gameStates.render.detail.nObjectDetail = 2;
 gameStates.render.detail.nWallDetail = 2; 
 gameStates.render.detail.nWallRenderDepth = 2; 
 gameStates.render.detail.nDebrisAmount = 2; 
-gameStates.render.nMaxLightsPerPass = 1;
-gameStates.render.nMaxLightsPerFace = 32;
+gameStates.render.bUsePerPixelLighting = 1;
+gameStates.render.nMaxLightsPerPass = 8;
+gameStates.render.nMaxLightsPerFace = 16;
 }
 
 // ----------------------------------------------------------------------------
