@@ -2997,7 +2997,7 @@ if (gameStates.render.bShowFrameRate) {
 		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 4) {
-		sprintf (szItem, "States: %d ", gameData.render.nStateChanges);
+		sprintf (szItem, "States: %d/%d ", gameData.render.nStateChanges, gameData.render.nShaderChanges);
 		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 5) {

@@ -41,7 +41,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "dynlight.h"
 
 #define ONLY_LIGHTMAPS 0
-#define CONST_LIGHTS_PER_PASS 0
+#define CONST_LIGHTS_PER_PASS 1
 
 #define PPL_AMBIENT_LIGHT	0.0f
 #define PPL_DIFFUSE_LIGHT	1.0f
@@ -254,12 +254,12 @@ char *pszPPXLightingFS [] = {
 	,
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"uniform float fLightScale;\r\n" \
+	"uniform float fLightScale, bDecal;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
+	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy) * bDecal;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
@@ -404,12 +404,12 @@ char *pszPP1LightingFS [] = {
 	"	}"
 	,
 	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"uniform float fLightScale;\r\n" \
+	"uniform float fLightScale, bDecal;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 color = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
+	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy) * bDecal;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
@@ -662,12 +662,12 @@ char *pszPPLMXLightingFS [] = {
 	,
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
-	"uniform float fLightScale;\r\n" \
+	"uniform float fLightScale, bDecal;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
+	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy) * bDecal;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
@@ -811,12 +811,12 @@ char *pszPPLM1LightingFS [] = {
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
-	"uniform float fLightScale;\r\n" \
+	"uniform float fLightScale, bDecal;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
+	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy) * bDecal;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
@@ -1280,7 +1280,7 @@ int G3SetupPerPixelShader (grsFace *faceP, int bDepthOnly, int nType, bool bHead
 {
 	static grsBitmap	*nullBmP = NULL;
 
-	int	bLightMaps, nLights, nShader;
+	int	bLightMaps, bDecal, nLights, nShader;
 
 if (bDepthOnly)
 	nLights = 0;
@@ -1293,6 +1293,14 @@ nType = 0;
 #endif
 #if CONST_LIGHTS_PER_PASS
 nLights = gameStates.render.nMaxLightsPerPass;
+if (nType == 2)
+	bDecal = 1;
+else if (nType == 1) {
+	bDecal = 0;
+	nType = 2;
+	}
+else
+	bDecal = -1;
 #endif
 nShader = 20 + 4 * nLights + nType;
 #ifdef _DEBUG
@@ -1310,7 +1318,7 @@ if (bLightMaps = HaveLightMaps ()) {
 if (nShader != gameStates.render.history.nShader) 
 #endif
 	{
-	gameData.render.nStateChanges++;
+	gameData.render.nShaderChanges++;
 	//glUseProgramObject (0);
 	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [nLights][nType]);
 	if (bLightMaps)
@@ -1326,6 +1334,8 @@ if (nShader != gameStates.render.history.nShader)
 	}
 if (!nType) 
 	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &faceP->color);
+if (bDecal >= 0)
+	glUniform1f (glGetUniformLocation (activeShaderProg, "bDecal"), (GLfloat) bDecal);
 glUniform1f (glGetUniformLocation (activeShaderProg, "fLightScale"), 
 #if 1
 				 (nLights ? (float) nLights / (float) gameStates.ogl.nLights : 1.0f));
@@ -1345,7 +1355,7 @@ if (gameStates.render.textures.bHaveGrayScaleShader) {
 	int bLightMaps = HaveLightMaps ();
 	int nShader = 90 + 3 * bLightMaps + nType;
 	if (gameStates.render.history.nShader != nShader) {
-		gameData.render.nStateChanges++;
+		gameData.render.nShaderChanges++;
 		glUseProgramObject (activeShaderProg = gsShaderProg [bLightMaps][nType]);
 		if (!nType) 
 			glUniform4fv (glGetUniformLocation (activeShaderProg, "faceColor"), 1, (GLfloat *) colorP);

@@ -550,7 +550,7 @@ int G3SetupTexMergeShader (int bColorKey, int bColored)
 {
 int nShader = bColorKey ? 2 : 0;
 if (nShader != gameStates.render.history.nShader) {
-	gameData.render.nStateChanges++;
+	gameData.render.nShaderChanges++;
 	glUseProgramObject (activeShaderProg = tmShaderProgs [nShader + bColored * 3]);
 	}
 glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), 0);

@@ -119,7 +119,7 @@ else if (gameData.render.lights.dynamic.headLights.nLights && !(bDepthOnly || ga
 else if (bColorKey || bMultiTexture) 
 	nShader = G3SetupTexMergeShader (bColorKey, bColored);
 else if (gameStates.render.history.nShader >= 0) {
-	gameData.render.nStateChanges++;
+	gameData.render.nShaderChanges++;
 	glUseProgramObject (0);
 	nShader = -1;
 	}
@@ -618,7 +618,7 @@ else if (gameStates.render.bFullBright) {
 	else if (gameStates.render.history.nShader != -1) {
 		glUseProgramObject (0);
 		gameStates.render.history.nShader = -1;
-		gameData.render.nStateChanges++;
+		gameData.render.nShaderChanges++;
 		}
 	glColor3f (1,1,1);
 	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);

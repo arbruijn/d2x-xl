@@ -1610,6 +1610,7 @@ typedef struct tRenderData {
 	int						nTotalLights;
 	int						nMaxLights;
 	int						nStateChanges;
+	int						nShaderChanges;
 	float						fAttScale;
 	ubyte						nPowerupFilter;
 } tRenderData;

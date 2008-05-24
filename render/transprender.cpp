@@ -640,6 +640,7 @@ return 1;
 void RIResetShader (void)
 {
 if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
+	gameData.render.nShaderChanges++;
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
 	}
@@ -659,6 +660,7 @@ if (bmP) {
 		renderItems.bTextured = 1;
 		}
 	if ((bmP != renderItems.bmP) || (nFrame != renderItems.nFrame) || (nWrap != renderItems.nWrap)) {
+		gameData.render.nStateChanges++;
 		if (bmP) {
 			if (OglBindBmTex (bmP, 1, nTransp)) {
 				renderItems.bmP = NULL;

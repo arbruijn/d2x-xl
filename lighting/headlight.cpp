@@ -874,7 +874,7 @@ InitHeadlightShaders (nLights);
 nShader = 10 + bLightMaps * 4 + nType;
 if (nShader != gameStates.render.history.nShader) {
 	//glUseProgramObject (0);
-	gameData.render.nStateChanges++;
+	gameData.render.nShaderChanges++;
 	glUseProgramObject (activeShaderProg = headLightShaderProgs [bLightMaps][nType]);
 	if (nType) {
 		glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightMaps);
