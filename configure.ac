@@ -1,8 +1,8 @@
 # -*- mode: shell-script -*-
 
 define([D2X_MAJOR],1)
-define([D2X_MINOR],12)
-define([D2X_MICRO],110)
+define([D2X_MINOR],13)
+define([D2X_MICRO],0)
 
 AC_INIT(d2x-xl,[D2X_MAJOR.D2X_MINOR.D2X_MICRO],[karx11erx@hotmail.com])
 AC_PREREQ(2.52)
