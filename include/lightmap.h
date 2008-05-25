@@ -49,7 +49,6 @@ void DestroyLightMaps (void);
 int OglCreateLightMap (int nLightMap);
 int OglCreateLightMaps (void);
 void OglDestroyLightMaps (void);
-double GetLightColor (int tMapNum, GLfloat *colorP);
 
 #define	USE_LIGHTMAPS \
 			(gameStates.render.color.bLightMapsOk && \

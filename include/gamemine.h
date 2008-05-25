@@ -117,6 +117,7 @@ int load_mine_data(CFILE *LoadFile);
 int LoadMineSegmentsCompiled (CFILE *LoadFile);
 void CreateFaceList (void);
 void ComputeNearestLights (int nLevel);
+void InitTexColors (void);
 
 extern short tmap_xlate_table[];
 extern fix Level_shake_frequency, Level_shake_duration;

@@ -1132,26 +1132,6 @@ if (gameStates.app.bD2XLevel) {
 
 //------------------------------------------------------------------------------
 
-void InitTexColors (void)
-{
-	int			i;
-	GLfloat		color [3];
-	tFaceColor	*pf = gameData.render.color.textures;
-
-// get the default colors
-memset (gameData.render.color.textures, 0, sizeof (gameData.render.color.textures));
-for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
-	if (GetLightColor (i, color) > 0) {
-		pf->index = 1;
-		pf->color.red = color [0];
-		pf->color.green = color [1];
-		pf->color.blue = color [2];
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
 int HasColoredLight (void)
 {
 	int			i, bColored = 0;
@@ -1173,6 +1153,23 @@ for (i = 0; i < gameData.segs.nVertices; i++, pvc++) {
 		bColored = 1;
 	}
 return bColored;
+}
+
+//------------------------------------------------------------------------------
+
+void InitTexColors (void)
+{
+	int			i;
+	tFaceColor	*pf = gameData.render.color.textures;
+	int			bBW = gameStates.app.bNostalgia || !(gameStates.render.bColored || (gameStates.render.bColored = HasColoredLight ()));
+
+for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
+	pf->index = IsLight (i);
+	if (bBW)
+		pf->color.red =
+		pf->color.green =
+		pf->color.blue = 1;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1422,7 +1419,6 @@ for (i = 0; i < MAX_TEXTURES; i++)
 
 //	memset ( gameData.segs.segments, 0, sizeof (tSegment)*MAX_SEGMENTS );
 FuelCenReset ();
-InitTexColors ();
 //=============================== Reading part ==============================
 nCompiledVersion = CFReadByte (loadFile);
 //Assert ( nCompiledVersion==COMPILED_MINE_VERSION );
@@ -1469,8 +1465,6 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
-if (!(gameStates.app.bNostalgia || gameStates.render.bColored || (gameStates.render.bColored = HasColoredLight ())))
-	InitTexColors ();
 ResetObjects (1);		//one tObject, the player
 return 0;
 }

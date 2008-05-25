@@ -76,8 +76,8 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 short *d1_tmap_nums = NULL;
 
 ubyte bogus_data [4096*4096];
-grsBitmap bogus_bitmap;
-ubyte bogus_bitmap_initialized=0;
+grsBitmap bogusBitmap;
+ubyte bogusBitmap_initialized=0;
 tDigiSound bogusSound;
 
 #define RLE_REMAP_MAX_INCREASE 132 /* is enough for d1 pc registered */
@@ -696,7 +696,7 @@ int ReadHamFile (void)
 
 int PiggyInit (void)
 {
-	int bHamOk=0,bSoundOk=0;
+	int bHamOk = 0, bSoundOk = 0;
 	int i;
 
 /*---*/PrintLog ("   Initializing hash tables\n");
@@ -717,17 +717,17 @@ for (i=0; i<MAX_SOUND_FILES; i++)	{
 for (i = 0; i < MAX_BITMAP_FILES; i++)     
 	gameData.pig.tex.bitmapXlat [i] = i;
 
-if (!bogus_bitmap_initialized) {
+if (!bogusBitmap_initialized) {
 	int i;
 	ubyte c;
 /*---*/PrintLog ("   Initializing placeholder bitmap\n");
-	bogus_bitmap_initialized = 1;
-	memset (&bogus_bitmap, 0, sizeof (grsBitmap));
-	bogus_bitmap.bmProps.w = 
-	bogus_bitmap.bmProps.h = 
-	bogus_bitmap.bmProps.rowSize = 64;
-	bogus_bitmap.bmTexBuf = bogus_data;
-	bogus_bitmap.bmPalette = gamePalette;
+	bogusBitmap_initialized = 1;
+	memset (&bogusBitmap, 0, sizeof (grsBitmap));
+	bogusBitmap.bmProps.w = 
+	bogusBitmap.bmProps.h = 
+	bogusBitmap.bmProps.rowSize = 64;
+	bogusBitmap.bmTexBuf = bogus_data;
+	bogusBitmap.bmPalette = gamePalette;
 	c = GrFindClosestColor (gamePalette, 0, 0, 63);
 	memset (bogus_data, c, 4096);
 	c = GrFindClosestColor (gamePalette, 63, 0, 0);
@@ -736,7 +736,7 @@ if (!bogus_bitmap_initialized) {
 		bogus_data [i * 1024 + i] = c;
 		bogus_data [i * 1024 + (1023 - i)] = c;
 		}
-	PiggyRegisterBitmap (&bogus_bitmap, "bogus", 1);
+	PiggyRegisterBitmap (&bogusBitmap, "bogus", 1);
 	bogusSound.nLength [0] = 1024*1024;
 	bogusSound.data [0] = bogus_data;
 	bitmapOffsets [0][0] =
@@ -767,19 +767,21 @@ if (gameData.pig.tex.nHamFileVersion >= 3) {
 	}
 if (gameStates.app.bFixModels)
 	gameStates.app.bFixModels = gameStates.app.bDemoData ? 0 : LoadRobotReplacements ("d2x-xl", 0, 1) > 0;
-LoadTextureColors ("descent2", gameData.render.color.defaultTextures + 1);
-LoadTextureColors ("descent", gameData.render.color.defaultTextures + 1);
-LoadTextureBrightness ("descent2", gameData.pig.tex.defaultBrightness);
-LoadTextureBrightness ("descent", gameData.pig.tex.defaultBrightness + 1);
+LoadTextureColors ("descent2", gameData.render.color.defaultTextures [1]);
+LoadTextureColors ("descent", gameData.render.color.defaultTextures [0]);
+LoadTextureBrightness ("descent2", gameData.pig.tex.defaultBrightness [0]);
+LoadTextureBrightness ("descent", gameData.pig.tex.defaultBrightness [1]);
 atexit (PiggyClose);
 return (bHamOk && bSoundOk);               //read ok
 }
 
 //------------------------------------------------------------------------------
 
-char * crit_errors [13] = { "Write Protected", "Unknown Unit", "Drive Not Ready", "Unknown Command", "CRC Error", \
-"Bad struct length", "Seek Error", "Unknown media nType", "Sector not found", "Printer out of paper", "Write Fault", \
-"Read fault", "General Failure" };
+char * crit_errors [13] = { 
+	"Write Protected", "Unknown Unit", "Drive Not Ready", "Unknown Command", "CRC Error",
+	"Bad struct length", "Seek Error", "Unknown media nType", "Sector not found", "Printer out of paper", 
+	"Write Fault",	"Read fault", "General Failure"
+	};
 
 void PiggyCriticalError (void)
 {
@@ -1052,7 +1054,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		}
 	CFSeek (cfPiggy + 1, nBmHdrOffs, SEEK_SET);
 	gameData.pig.tex.nBitmaps [1] = 0;
-	PiggyRegisterBitmap (&bogus_bitmap, "bogus", 1);
+	PiggyRegisterBitmap (&bogusBitmap, "bogus", 1);
 	for (i = 0; i < nBitmapNum; i++) {
 		PIGBitmapHeaderD1Read (&bmh, cfPiggy + 1);
 		memcpy (temp_name_read, bmh.name, 8);
