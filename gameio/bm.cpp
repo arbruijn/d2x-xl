@@ -1619,15 +1619,17 @@ gameData.bots.nJoints = gameData.bots.nDefaultJoints;
 
 //------------------------------------------------------------------------------
 
-void LoadTextureBrightness (char *pszLevel)
+void LoadTextureBrightness (char *pszLevel, int *brightnessP)
 {
 	CFILE		cf;
 	char		szFile [FILENAME_LEN];
 	int		i, *pb;
 
+if (!brightnessP)
+	brightnessP = gameData.pig.tex.brightness;
 ChangeFilenameExtension (szFile, pszLevel, ".lgt");
 if (CFOpen (&cf, szFile, gameFolders.szDataDir, "rb", 0) &&
-	 (CFRead (gameData.pig.tex.brightness, sizeof (gameData.pig.tex.brightness), 1, &cf) == 1)) {
+	 (CFRead (brightnessP, sizeof (*brightnessP) * MAX_WALL_TEXTURES, 1, &cf) == 1)) {
 	for (i = MAX_WALL_TEXTURES, pb = gameData.pig.tex.brightness; i; i--, pb++)
 		*pb = INTEL_INT (*pb);
 	CFClose (&cf);

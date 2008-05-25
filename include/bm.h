@@ -303,7 +303,7 @@ void BMReadGameDataD1 (CFILE * fp);
 void RestoreDefaultRobots (void);
 int ComputeAvgPixel(grsBitmap *newBm);
 
-void LoadTextureBrightness (char *pszLevel);
+void LoadTextureBrightness (char *pszLevel, int *brightnessP);
 int LoadExitModels();
 int BMReadExtraRobots (char *fname, char *folder, int nType);
 void BMFreeExtraModels (void);

@@ -1200,6 +1200,7 @@ typedef struct tColorData {
 	float			*vertBright;
 	tFaceColor	*ambient;	//static light values
 	tFaceColor	textures [MAX_WALL_TEXTURES];
+	tFaceColor	defaultTextures [2][MAX_WALL_TEXTURES];
 	tLightRef	*visibleLights;
 	int			nVisibleLights;
 	tRgbColorf	flagTag;
@@ -2151,6 +2152,7 @@ typedef struct tTextureData {
 	tTexMapInfo			*pTMapInfo;
 	ubyte					*rleBuffer;
 	int					brightness [MAX_WALL_TEXTURES];
+	int					defaultBrightness [2][MAX_WALL_TEXTURES];
 } tTextureData;
 
 //------------------------------------------------------------------------------

@@ -1023,7 +1023,7 @@ else
 //-----------------------------------------------------------------
 // Turns off an illusionary tWall (This will be used primarily for
 //  tWall switches or triggers that can turn on/off illusionary walls.)
-void WallIllusionOff(tSegment *segP, short nSide)
+void WallIllusionOff (tSegment *segP, short nSide)
 {
 	tSegment *connSegP;
 	short cSide;

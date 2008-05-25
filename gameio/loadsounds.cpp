@@ -427,21 +427,26 @@ return ((nSound < 0) || (nSound >= MAX_ADDON_SOUND_FILES)) ? (char *) "" : addon
 
 //------------------------------------------------------------------------------
 
-Mix_Chunk *LoadAddonSound (char *pszSoundFile)
+Mix_Chunk *LoadAddonSound (char *pszSoundFile, ubyte *bBuiltIn)
 {
-if (!::isdigit (*pszSoundFile))
-	return NULL;
+	char	szWAV [FILENAME_LEN];
+	;
+
+if (!::isdigit (*pszSoundFile)) {
+	*bBuiltIn = 0;
+	return Mix_LoadWAV (pszSoundFile);
+	}
 int i = atoi (pszSoundFile);
 if (i >= MAX_ADDON_SOUND_FILES)
 	return NULL;
 if (!addonSounds [i].chunkP) {
-	char	szWAV [FILENAME_LEN];
 	if (!(CFExtract (pszSoundFile + 3, gameFolders.szDataDir, 0, "d2x-temp.wav") ||
 			CFExtract (pszSoundFile + 3, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], 0, "d2x-temp.wav")))
 		return NULL;
 	sprintf (szWAV, "%s%sd2x-temp.wav", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "");
 	addonSounds [i].chunkP = Mix_LoadWAV (szWAV);
 	}
+*bBuiltIn = 1;
 return addonSounds [i].chunkP;
 }
 

@@ -40,6 +40,7 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 #include "songs.h"
 #include "bm.h"
 #include "bmread.h"
+#include "gamemine.h"
 #include "hash.h"
 #include "args.h"
 #include "palette.h"
@@ -861,6 +862,26 @@ if (CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
 	CFClose (&cf);
 	szLastPalettePig [0] = 0;  //force pig re-load
 	TexMergeFlush ();       //for re-merging with new textures
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void LoadTextureColors (char *pszLevelName, tFaceColor *colorP)
+{
+	char			szFilename [SHORT_FILENAME_LEN];
+	CFILE			cf;
+	int			i;
+
+	//first, D2_FREE up data allocated for old bitmaps
+PrintLog ("   loading texture colors\n");
+ChangeFilenameExtension (szFilename, pszLevelName, ".clr");
+if (CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
+	if (!colorP)
+		colorP = gameData.render.color.textures;
+	for (i = MAX_WALL_TEXTURES; i; i--, colorP++)
+		ReadColor (colorP, &cf, 0, gameOpts->render.nLightingMethod);
+	CFClose (&cf);
 	}
 }
 

@@ -130,7 +130,7 @@ typedef struct tSoundSlot {
 	ubyte				bLooped;			// Play this sample looped?
 	ubyte				bPersistent;	// This can't be pre-empted
 	ubyte				bResampled;
-	ubyte				bAddon;
+	ubyte				bBuiltIn;
 #if USE_SDL_MIXER
 	Mix_Chunk		*mixChunkP;
 	int				nChannel;
@@ -686,8 +686,8 @@ if (ssP->source == 0xFFFFFFFF) {
 #if USE_SDL_MIXER
 if (ssP->mixChunkP) {
 	Mix_HaltChannel (ssP->nChannel);
-	if (ssP->bAddon)
-		ssP->bAddon = 0;
+	if (ssP->bBuiltIn)
+		ssP->bBuiltIn = 0;
 	else
 		Mix_FreeChunk (ssP->mixChunkP);
 	ssP->mixChunkP = NULL;
@@ -705,9 +705,8 @@ if (gameOpts->sound.bUseSDLMixer) {
 	//resample to two channels
 	ssP->nChannel = gameStates.sound.digi.nFreeChannel;
 	if (pszWAV && *pszWAV) {
-		if (!(ssP->mixChunkP = LoadAddonSound (pszWAV)))
+		if (!(ssP->mixChunkP = LoadAddonSound (pszWAV, &ssP->bBuiltIn)))
 			return -1;
-		ssP->bAddon = 1;
 		}
 	else {
 		int l;
@@ -920,8 +919,8 @@ if (gameOpts->sound.bUseOpenAL) {
 if (gameStates.sound.digi.bAvailable && gameOpts->sound.bUseSDLMixer) {
 	if (ssP->mixChunkP) {
 		Mix_HaltChannel (nChannel);
-		if (ssP->bAddon)
-			ssP->bAddon = 0;
+		if (ssP->bBuiltIn)
+			ssP->bBuiltIn = 0;
 		else
 			Mix_FreeChunk (ssP->mixChunkP);
 		ssP->mixChunkP = NULL;
