@@ -839,6 +839,16 @@ memset (gameData.objs.xCreationTime, 0, sizeof (*gameData.objs.xCreationTime) * 
 /*---*/PrintLog ("   loading texture brightness info\n");
 SetDataVersion (-1);
 
+memcpy (gameData.pig.tex.brightness, 
+		  gameData.pig.tex.defaultBrightness + gameStates.app.bD1Mission,
+		  sizeof (gameData.pig.tex.brightness));
+LoadTextureBrightness (pszLevelName, NULL);
+memcpy (gameData.render.color.textures, 
+		  gameData.render.color.defaultTextures [gameStates.app.bD1Mission], 
+		  sizeof (gameData.render.color.textures));
+LoadTextureColors (pszLevelName, NULL);
+InitTexColors ();
+
 for (;;) {
 	if (!(nLoadRes = LoadLevelSub (pszLevelName, nLevel)))
 		break;	//actually load the data from disk!
@@ -863,16 +873,6 @@ if (nLoadRes) {
 
 gameData.missions.nCurrentLevel = nLevel;
 gamePalette = LoadPalette (szCurrentLevelPalette, pszLevelName, 1, 1, 1);		//don't change screen
-memcpy (gameData.pig.tex.brightness, 
-		  gameData.pig.tex.defaultBrightness + gameStates.app.bD1Mission,
-		  sizeof (gameData.pig.tex.brightness));
-LoadTextureBrightness (pszLevelName, NULL);
-memcpy (gameData.render.color.textures, 
-		  gameData.render.color.defaultTextures [gameStates.app.bD1Mission], 
-		  sizeof (gameData.render.color.textures));
-LoadTextureColors (pszLevelName, NULL);
-InitTexColors ();
-
 InitGaugeCanvases ();
 ResetPogEffects ();
 if (gameStates.app.bD1Mission) {
