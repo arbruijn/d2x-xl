@@ -304,18 +304,18 @@ typedef struct tNetworkObjInfo {
 
 static inline int EGIFlag (char bLocalFlag, char bMultiFlag, char bDefault, int bAllowLocalFlagOn, int bAllowLocalFlagOff)
 {
-if (!IsMultiGame)
+if (!IsMultiGame || IsCoopGame)
 	return bLocalFlag;
 if (!gameStates.app.bHaveExtraGameInfo [1])	//host doesn't use d2x-xl or runs in pure D2 mode
 	return bDefault;
 if (bLocalFlag == bMultiFlag)
 	return bMultiFlag;
 if (bLocalFlag) {
-	if (bAllowLocalFlagOn || IsCoopGame)
+	if (bAllowLocalFlagOn)
 		return bLocalFlag;
 	}
 else {
-	if (bAllowLocalFlagOff || IsCoopGame)
+	if (bAllowLocalFlagOff)
 		return bLocalFlag;
 	}
 return bMultiFlag;

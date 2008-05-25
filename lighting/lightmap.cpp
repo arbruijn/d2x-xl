@@ -49,7 +49,7 @@ there I just had it exit instead.
 #define LMAP_REND2TEX	0
 #define TEXTURE_CHECK	1
 
-#define LIGHTMAP_DATA_VERSION 7
+#define LIGHTMAP_DATA_VERSION 8
 
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
@@ -765,10 +765,10 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 		for (x = 0; x < LM_W; x++) { 
 			for (y = 0; y < LM_H; y++, pPixelPos++) { 
 #ifdef _DEBUG
-				if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)) && (y * LM_W + x == 627))
+				if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 					nDbgSeg = nDbgSeg;
 #endif
-				if (0 < SetNearestPixelLights (faceP->nSegment, pPixelPos, faceP->fRad / 10.0f, nThread)) {
+				if (0 < SetNearestPixelLights (faceP->nSegment, &vNormal, pPixelPos, faceP->fRad / 10.0f, nThread)) {
 					VmVecFixToFloat (&vcd.vertPos, pPixelPos);
 					color.c.r = color.c.g = color.c.b = 0;
 					G3AccumVertColor (-1, &color, &vcd, nThread);

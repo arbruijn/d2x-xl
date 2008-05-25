@@ -606,7 +606,7 @@ HUDToggleWeaponIcons ();
 if (gameOpts->render.cockpit.bHUD || SHOW_COCKPIT) {
 	HUDShowPlayerStats ();
 	HUDShowObjTally ();
-	if (!gameStates.app.bDemoData && EGI_FLAG (nWeaponIcons, 0, 1, 0)) {
+	if (!gameStates.app.bDemoData && EGI_FLAG (nWeaponIcons, 1, 1, 0)) {
 		cmScaleX *= HUD_ASPECT;
 		HUDShowWeaponIcons ();
 		if (gameOpts->render.weaponIcons.bEquipment) {

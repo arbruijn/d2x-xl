@@ -12,32 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * code to swap bytes because of big/little endian problems.
- * contains the macros:
- * SWAP{INT,SHORT}(x): returns a swapped version of x
- * INTEL_{INT,SHORT}(x): returns x after conversion to/from little endian
- * GET_INTEL_{INT,SHORT}(src): gets value from little-endian buffer src
- * PUT_INTEL_{INT,SHORT}(dest, src): puts src into little-endian buffer dest
- *
- * the GET/PUT macros are safe to use on platforms which segfault on unaligned word access
- *
- * Old Log:
- * Revision 1.4  1995/08/23  21:28:15  allender
- * fix mcc compiler warning
- *
- * Revision 1.3  1995/08/18  15:51:42  allender
- * put back in old byteswapping code
- *
- * Revision 1.2  1995/05/04  20:10:18  allender
- * proper prototypes
- *
- * Revision 1.1  1995/03/30  15:02:11  allender
- * Initial revision
- *
- */
-
 #ifndef _BYTESWAP_H
 #define _BYTESWAP_H
 

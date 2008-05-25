@@ -1065,8 +1065,10 @@ int AddVariableLight (int nSegment, int nSide, fix delay, unsigned int mask)
 
 int IsLight (int tMapNum) 
 {
+#if 0
 if (gameStates.app.bD1Mission)
 	tMapNum = ConvertD1Texture (tMapNum, 1);
+#endif
 #if 1
 if (gameData.pig.tex.brightness [tMapNum] > 0)
 	return gameData.pig.tex.brightness [tMapNum];
@@ -1075,6 +1077,8 @@ if (gameData.pig.tex.pTMapInfo [tMapNum].lighting > 0)
 	return gameData.pig.tex.pTMapInfo [tMapNum].lighting;
 #endif
 if (gameStates.app.bD2XLevel && gameStates.render.bColored)
+	return 0;
+if (gameStates.app.bD1Mission)
 	return 0;
 switch (tMapNum) {
 	case 275:

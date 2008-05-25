@@ -260,7 +260,6 @@ if (bTextured) {
 		gameStates.render.history.bmTop = bmTop;
 		if (bmTop) {
 			{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, 1, 0);}
-			bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
 			}
 		else {
 			glActiveTexture (GL_TEXTURE1);
@@ -269,6 +268,8 @@ if (bTextured) {
 			bmMask = NULL;
 			}
 		}
+	if (bColorKey)
+		bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
 	if (bmMask != gameStates.render.history.bmMask) {
 		bStateChange = true;
 		gameStates.render.history.bmMask = bmMask;
@@ -526,7 +527,6 @@ if (bTextured) {
 		gameStates.render.history.bmTop = bmTop;
 		if (bmTop) {
 			{INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, lightMapData.buffers, 1, 0);}
-			bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
 			}
 		else {
 			glActiveTexture (GL_TEXTURE2);
@@ -535,6 +535,8 @@ if (bTextured) {
 			bmMask = NULL;
 			}
 		}
+	if (bColorKey)
+		bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
 	if (bmMask != gameStates.render.history.bmMask) {
 		bStateChange = true;
 		gameStates.render.history.bmMask = bmMask;

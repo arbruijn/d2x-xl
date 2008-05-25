@@ -636,6 +636,10 @@ for (nTexture = 0; nTexture < 910; nTexture++)
 #endif
 gameStates.render.bHaveDynLights = 1;
 gameData.render.fAttScale = gameStates.render.bPerPixelLighting ? 1.0f : 2.0f;
+#if 0
+if (gameStates.app.bD1Mission)
+	gameData.render.fAttScale *= 2;
+#endif
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
 //glEnable (GL_LIGHTING);
@@ -679,6 +683,10 @@ for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces; nFace; nFa
 	if ((nLight = IsLight (nTexture)))
 		AddDynLight (faceP, &pc->color, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL);
 	nTexture = faceP->nOvlTex;
+#if 0//def _DEBUG
+	if (gameStates.app.bD1Mission && (nTexture == 289)) //empty, light
+		continue;
+#endif
 	if ((nTexture > 0) && (nTexture < MAX_WALL_TEXTURES) && (nLight = IsLight (nTexture)) /*gameData.pig.tex.info.fBrightness [nTexture]*/) {
 		pc = gameData.render.color.textures + nTexture;
 		AddDynLight (faceP, &pc->color, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL);
@@ -1259,7 +1267,7 @@ return sliP->nActive;
 
 //------------------------------------------------------------------------------
 
-short SetNearestPixelLights (int nSegment, vmsVector *vPixelPos, float fLightRad, int nThread)
+short SetNearestPixelLights (int nSegment, vmsVector *vNormal, vmsVector *vPixelPos, float fLightRad, int nThread)
 {
 #ifdef _DEBUG
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
@@ -1268,14 +1276,13 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameOpts->render.nLightingMethod) {
 	int						nLightSeg;
 	short						i = gameData.render.lights.dynamic.shader.nLights;
-	fix						xMaxLightRange = fl2f (fLightRad) + (gameStates.render.bPerPixelLighting ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
+	fix						xLightDist, xMaxLightRange = fl2f (fLightRad) + (gameStates.render.bPerPixelLighting ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights;
-	vmsVector				c;
+	vmsVector				vLightDir;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
 
 	ResetActiveLights (nThread, 0);
 	ResetUsedLights (0, nThread);
-	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
 	for (; i; i--, psl++) {
 #ifdef _DEBUG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
@@ -1288,6 +1295,15 @@ if (gameOpts->render.nLightingMethod) {
 #ifdef _DEBUG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			psl = psl;
+#endif
+		VmVecSub (&vLightDir, vPixelPos, &psl->info.vPos);
+		xLightDist = VmVecMag (&vLightDir);
+#if 1
+		vLightDir.p.x = FixDiv (vLightDir.p.x, xLightDist);
+		vLightDir.p.y = FixDiv (vLightDir.p.y, xLightDist);
+		vLightDir.p.z = FixDiv (vLightDir.p.z, xLightDist);
+		if (VmVecDot (vNormal, &vLightDir) >= 0)
+			continue;
 #endif
 		nLightSeg = psl->info.nSegment;
 		if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
