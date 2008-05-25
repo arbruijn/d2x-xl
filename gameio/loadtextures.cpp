@@ -879,8 +879,10 @@ ChangeFilenameExtension (szFilename, pszLevelName, ".clr");
 if (CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
 	if (!colorP)
 		colorP = gameData.render.color.textures;
-	for (i = MAX_WALL_TEXTURES; i; i--, colorP++)
+	for (i = MAX_WALL_TEXTURES; i; i--, colorP++) {
 		ReadColor (colorP, &cf, 0, 0);
+		colorP->index = 0;
+		}
 	CFClose (&cf);
 	}
 }

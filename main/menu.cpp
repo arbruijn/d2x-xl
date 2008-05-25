@@ -3453,6 +3453,7 @@ do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 	optColorSat = 
+	optColoredLight =
 	lightOpts.nMethod =
 	lightOpts.nLightmapQual = 
 	lightOpts.nMaxLightsPerFace = 

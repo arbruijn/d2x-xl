@@ -1161,7 +1161,7 @@ void InitTexColors (void)
 {
 	int			i;
 	tFaceColor	*pf = gameData.render.color.textures;
-	int			bBW = gameStates.app.bNostalgia || !(gameStates.render.bColored || (gameStates.render.bColored = HasColoredLight ()));
+	int			bBW = gameStates.app.bNostalgia || !gameOpts->render.color.bAmbientLight;
 
 for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
 	pf->index = IsLight (i);
@@ -1182,7 +1182,8 @@ void LoadTexColorsCompiled (int i, CFILE *loadFile)
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, MAX_WALL_TEXTURES);
 	for (; i < j; i++)
-		ReadColor (gameData.render.color.textures + i, loadFile, gameData.segs.nLevelVersion <= 15, gameOpts->render.nLightingMethod);
+		ReadColor (gameData.render.color.textures + i, loadFile, gameData.segs.nLevelVersion <= 15, 
+					  gameOpts->render.nLightingMethod);
 	}
 }
 
