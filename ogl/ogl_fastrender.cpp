@@ -627,12 +627,6 @@ else if (gameStates.render.bFullBright) {
 	}
 else {
 	bool bAdditive = false;
-	if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
-		G3SetupHeadLightShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
-		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
-		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		bAdditive = true;
-		}
 	for (;;) {
 		G3SetupPerPixelShader (faceP, 0, gameStates.render.history.nType, false);
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
@@ -644,6 +638,14 @@ else {
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			glDepthFunc (GL_EQUAL);
 			}
+		}
+	if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
+		if (!bAdditive) {
+			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			bAdditive = true;
+			}
+		G3SetupHeadLightShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
+		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 		}
 	if (bAdditive) {
 		glDepthFunc (GL_LEQUAL);
