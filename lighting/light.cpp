@@ -236,24 +236,6 @@ else if (gameOpts->render.nLightingMethod == 2)
 return gameStates.render.bAmbientColor;
 }
 
-//--------------------------------------------------------------------------
-
-void InitTextureBrightness (void)
-{
-	tTexBright	*ptb = gameStates.app.bD1Mission ? texBrightD1  : texBrightD2;
-	int			i, j, h = (gameStates.app.bD1Mission ? sizeof (texBrightD1) : sizeof (texBrightD2)) / sizeof (tTexBright);
-
-memset (gameData.pig.tex.brightness, 0, sizeof (gameData.pig.tex.brightness));
-for (i = 0; i < MAX_WALL_TEXTURES; i++) {
-	j = gameStates.app.bD1Mission ? ConvertD1Texture (i, 1) : i;
-	if (gameData.pig.tex.pTMapInfo [j].lighting)
-		gameData.pig.tex.brightness [j] = gameData.pig.tex.pTMapInfo [j].lighting;
-	}
-for (i = h; --i; ) {
-	gameData.pig.tex.brightness [ptb [i].nTexture] = 
-		 ((ptb [i].nBrightness * 100 + MAX_BRIGHTNESS / 2) / MAX_BRIGHTNESS) * (MAX_BRIGHTNESS / 100);
-	}
-}
 // ----------------------------------------------------------------------------------------------
 //	Return true if we think vertex nVertex is visible from tSegment nSegment.
 //	If some amount of time has gone by, then recompute, else use cached value.

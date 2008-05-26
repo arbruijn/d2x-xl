@@ -227,43 +227,6 @@ return sqrt (dx * dx + dy * dy + dz * dz) / (2 * (double) F1_0);
 
 //------------------------------------------------------------------------------
 
-int IsBigLight (int t)
-{
-if (gameStates.app.bD1Mission)
-	t = ConvertD1Texture (t, 1);
-switch (t) {
-	case 302:
-	case 378:
-	case 405:
-	case 406:
-	case 407:
-	case 408:
-	case 409:
-	case 420:
-	case 426:
-	case 432:
-	case 433:
-	case 434:
-		return 1;
-	default:
-		break;
-	}
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-#define		BASERANGE	32.5	//75.0
-
-//------------------------------------------------------------------------------
-
-inline double LightMapRange (void)
-{
-return BASERANGE + (double) gameOpts->render.color.nLightMapRange * 6.5;
-}
-
-//------------------------------------------------------------------------------
-
 int InitLightData (int bVariable)
 {
 	tDynLight		*pl;

@@ -327,6 +327,28 @@ return (nDestBM != -1) && !bOneShot;
 
 //------------------------------------------------------------------------------
 
+static inline float Intensity (float r, float g, float b)
+{
+   float i = 0;
+   int   j = 0;
+   
+ if (r > 0) {
+   i += r;
+   j++;
+   }
+ if (g > 0) {
+   i += g;
+   j++;
+   }
+ if (b > 0) {
+   i += b;
+   j++;
+   }
+return j ? i / j : 0;
+}
+
+//------------------------------------------------------------------------------
+
 int AddDynLight (grsFace *faceP, tRgbaColorf *pc, fix xBrightness, short nSegment, 
 					  short nSide, short nObject, short nTexture, vmsVector *vPos)
 {
@@ -350,6 +372,16 @@ if ((nDbgObj >= 0) && (nObject == nDbgObj))
 	nDbgObj = nDbgObj;
 if (pc && ((pc->red > 1) || (pc->green > 1) || (pc->blue > 1)))
 	pc = pc;
+if (gameOpts->render.nLightingMethod && (nSegment >= 0) && (nSide >= 0)) {
+#if 1
+	fBrightness /= Intensity (pc->red, pc->green, pc->blue);
+#else
+	if (fBrightness < 1)
+		fBrightness = (float) sqrt (fBrightness);
+	else
+		fBrightness *= fBrightness;
+#endif
+	}
 #endif
 if (pc)
 	pc->alpha = 1.0f;

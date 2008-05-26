@@ -1634,10 +1634,6 @@ if (CFOpen (&cf, szFile, gameFolders.szDataDir, "rb", 0) &&
 		*pb = INTEL_INT (*pb);
 	CFClose (&cf);
 	}
-#if 0
-else
-	InitTextureBrightness ();
-#endif
 }
 
 
