@@ -2059,6 +2059,7 @@ if (gameStates.render.nLightingMethod == 2)
 	gameStates.render.bPerPixelLighting = HaveLightMaps () ? 2 : gameStates.render.bPerPixelLighting ? 1 : 0;
 else
 	gameStates.render.bPerPixelLighting = 0;
+gameStates.render.bHeadLights = gameData.render.lights.dynamic.headLights.nLights && !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
 gameData.render.nTotalFaces =
 gameData.render.nTotalLights = 
 gameData.render.nMaxLights = 

@@ -905,6 +905,7 @@ typedef struct tRenderStates {
 	int bClusterLights;
 	int nSoften;
 	int bHeadLightOn;
+	int bHeadLights;
 	int bHaveSkyBox;
 	int bAllVisited;
 	int bViewDist;

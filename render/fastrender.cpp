@@ -815,6 +815,18 @@ else {
 
 //------------------------------------------------------------------------------
 
+void RenderHeadLights (int nType, int bVertexArrays)
+{
+if ((gameStates.render.bPerPixelLighting == 2) && gameStates.render.bHeadLights) {
+	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	g3FaceDrawer = G3DrawHeadLightsPPLM;
+	RenderSegments (nType, bVertexArrays, 0);
+	g3FaceDrawer = G3DrawFaceArraysPPLM;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int SetupCoronas (int nType)
 {
 if (!SetupCoronaFaces ())
@@ -828,6 +840,8 @@ if (gameStates.ogl.bOcclusionQuery) {
 	}
 int bVertexArrays = BeginRenderFaces (0, 1);
 RenderSegments (nType, bVertexArrays, 1);
+if (nType < 2)
+	RenderHeadLights (nType, bVertexArrays);
 EndRenderFaces (0, bVertexArrays, 1);
 int nFaces = SortFaces ();
 if (gameOpts->render.coronas.bUse && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
