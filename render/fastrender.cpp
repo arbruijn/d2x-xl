@@ -801,15 +801,13 @@ if (nType) {
 	}
 else {
 #if SORT_FACES > 1
-	if (1 || !gameStates.app.bMultiThreaded) {
-		RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly);
-		if (gameStates.app.bMultiThreaded)
-			RenderFaceList (gameData.render.faceIndex + 1, nType, bDepthOnly);
-		}
-	else
-#endif
+	RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly);
+	if (gameStates.app.bMultiThreaded)
+		RenderFaceList (gameData.render.faceIndex + 1, nType, bDepthOnly);
+#else
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
 		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap);
+#endif
 	}
 }
 
@@ -840,8 +838,6 @@ if (gameStates.ogl.bOcclusionQuery) {
 	}
 int bVertexArrays = BeginRenderFaces (0, 1);
 RenderSegments (nType, bVertexArrays, 1);
-if (nType < 2)
-	RenderHeadLights (nType, bVertexArrays);
 EndRenderFaces (0, bVertexArrays, 1);
 int nFaces = SortFaces ();
 if (gameOpts->render.coronas.bUse && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
@@ -876,6 +872,8 @@ void RenderFaceList (int nType)
 if (nType) {	//back to front
 	bVertexArrays = BeginRenderFaces (nType, 0);
 	RenderSegments (nType, bVertexArrays, 0);
+	if (nType < 2)
+		RenderHeadLights (nType, bVertexArrays);
 	}
 else {	//front to back
 	if (!gameStates.render.nWindow)
@@ -903,6 +901,7 @@ else {	//front to back
 			}
 		}
 	glDepthMask (1);
+	RenderHeadLights (0, bVertexArrays);
 	}
 EndRenderFaces (nType, bVertexArrays, 0);
 }

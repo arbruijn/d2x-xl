@@ -807,9 +807,9 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 				}
 #endif
 #if 1
-			if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
+			if (gameStates.render.bHeadLights) {
 				G3SetupHeadLightShader (renderItems.bTextured, 1, renderItems.bTextured ? NULL : &faceP->color);
-				if (!bAdditive && gameStates.ogl.nLights) {
+				if (!bAdditive) {
 					bAdditive = true;
 					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 					glDepthFunc (GL_LEQUAL);

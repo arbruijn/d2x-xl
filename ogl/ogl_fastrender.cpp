@@ -511,7 +511,7 @@ else {
 	}
 
 gameStates.ogl.iLight = 0;
-G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
+G3SetRenderStatesLM (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 if (bDepthOnly) {
 	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 	return 1;
@@ -554,7 +554,7 @@ else {
 			glDepthFunc (GL_EQUAL);
 			}
 		}
-#if 1
+#if 0
 	if (gameStates.render.bHeadLights) {
 		if (!bAdditive) {
 			bAdditive = true;
