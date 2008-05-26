@@ -815,12 +815,14 @@ else {
 
 void RenderHeadLights (int nType, int bVertexArrays)
 {
+#if 1
 if ((gameStates.render.bPerPixelLighting == 2) && gameStates.render.bHeadLights) {
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	g3FaceDrawer = G3DrawHeadLightsPPLM;
 	RenderSegments (nType, bVertexArrays, 0);
 	g3FaceDrawer = G3DrawFaceArraysPPLM;
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

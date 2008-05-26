@@ -635,7 +635,6 @@ if (bMonitor)
 gameData.render.nTotalFaces++;
 G3SetupHeadLightShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
 glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
-
 if (bMonitor)
 	G3ResetMonitor (bmTop, 1);
 return 0;
