@@ -3358,7 +3358,7 @@ if (lightOpts.nMethod >= 0) {
 		return;
 		}
 	}
-if (lightOpts.nLightmapQual > 0) {
+if (lightOpts.nLightmapQual >= 0) {
 	m = menus + lightOpts.nLightmapQual;
 	v = m->value;
 	if (gameOpts->render.nLightmapQuality != v) {
@@ -3428,10 +3428,22 @@ if (lightOpts.nMaxLightsPerPass >= 0) {
 
 //------------------------------------------------------------------------------
 
+static int LightTableIndex (int nValue)
+{
+	int i, h = sizeofa (nMaxLightsPerFaceTable);
+
+for (i = 0; i < h; i++)
+	if (nValue < nMaxLightsPerFaceTable [i])
+		break;
+return i ? i - 1 : 0;
+}
+
+//------------------------------------------------------------------------------
+
 void LightOptionsMenu (void)
 {
 	tMenuItem m [30];
-	int	h, i, choice = 0, nLightRange = extraGameInfo [0].nLightRange;
+	int	i, choice = 0, nLightRange = extraGameInfo [0].nLightRange;
 	int	opt;
 	int	optColoredLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat, optBrightObjects, nPowerupLight = -1;
 #if 0
@@ -3454,16 +3466,12 @@ do {
 	opt = 0;
 	optColorSat = 
 	optColoredLight =
-	lightOpts.nMethod =
-	lightOpts.nLightmapQual = 
-	lightOpts.nMaxLightsPerFace = 
-	lightOpts.nMaxLightsPerPass = 
-	lightOpts.nMaxLightsPerObject = 
-	lightOpts.nHWObjLighting =
-	lightOpts.nHWHeadLight =
-	lightOpts.nObjectLight = -1;
+	optMixColors = 
+	optPowerupLights = -1;
+	memset (&lightOpts, 0xff, sizeof (lightOpts));
 	if (!gameStates.app.bGameRunning) {
-		if ((gameOpts->render.nLightingMethod == 2) && !(gameStates.render.bUsePerPixelLighting && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk))
+		if ((gameOpts->render.nLightingMethod == 2) && 
+			 !(gameStates.render.bUsePerPixelLighting && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk))
 			gameOpts->render.nLightingMethod = 1;
 		ADD_RADIO (opt, TXT_STD_LIGHTING, gameOpts->render.nLightingMethod == 0, KEY_S, 1, NULL);
 		lightOpts.nMethod = opt++;
@@ -3476,6 +3484,8 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
+	gameOpts->ogl.nMaxLightsPerObject = LightTableIndex (gameOpts->ogl.nMaxLightsPerObject);
+	gameOpts->ogl.nMaxLightsPerFace = LightTableIndex (gameOpts->ogl.nMaxLightsPerFace);
 	if (gameOpts->render.nLightingMethod) {
 #if 0
 		ADD_TEXT (opt, "", 0);
@@ -3499,25 +3509,15 @@ do {
 					nPowerupLight = -1;
 				}
 			}
-		h = sizeofa (nMaxLightsPerFaceTable);
-		for (i = 0; i < h; i++)
-			if (gameOpts->ogl.nMaxLightsPerObject < nMaxLightsPerFaceTable [i])
-				break;
-		gameOpts->ogl.nMaxLightsPerObject = i ? i - 1 : 0;
 		sprintf (szMaxLightsPerObject + 1, TXT_MAX_LIGHTS_PER_OBJECT, nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerObject]);
 		*szMaxLightsPerObject = *(TXT_MAX_LIGHTS_PER_OBJECT - 1);
-		ADD_SLIDER (opt, szMaxLightsPerObject + 1, gameOpts->ogl.nMaxLightsPerObject, 0, h - 1, KEY_I, HTX_MAX_LIGHTS_PER_OBJECT);
+		ADD_SLIDER (opt, szMaxLightsPerObject + 1, gameOpts->ogl.nMaxLightsPerObject, 0, sizeofa (nMaxLightsPerFaceTable) - 1, KEY_I, HTX_MAX_LIGHTS_PER_OBJECT);
 		lightOpts.nMaxLightsPerObject = opt++;
 
 		if (gameOpts->render.nLightingMethod == 2) {
-			h = sizeofa (nMaxLightsPerFaceTable);
-			for (i = 0; i < h; i++)
-				if (gameOpts->ogl.nMaxLightsPerFace < nMaxLightsPerFaceTable [i])
-					break;
-			gameOpts->ogl.nMaxLightsPerFace = i ? i - 1 : 0;
 			sprintf (szMaxLightsPerFace + 1, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace]);
 			*szMaxLightsPerFace = *(TXT_MAX_LIGHTS_PER_FACE - 1);
-			ADD_SLIDER (opt, szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace, 0, h - 1, KEY_I, HTX_MAX_LIGHTS_PER_FACE);
+			ADD_SLIDER (opt, szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace, 0,  sizeofa (nMaxLightsPerFaceTable) - 1, KEY_I, HTX_MAX_LIGHTS_PER_FACE);
 			lightOpts.nMaxLightsPerFace = opt++;
 			sprintf (szMaxLightsPerPass + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 			*szMaxLightsPerPass = *(TXT_MAX_LIGHTS_PER_PASS - 1);
@@ -3545,22 +3545,18 @@ do {
 		ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_C, HTX_RENDER_AMBICOLOR);
 		optColoredLight = opt++;
 		}
-	if (gameOpts->render.nLightingMethod)
-		lightOpts.nGunColor = -1;
-	else {
+	if (!gameOpts->render.nLightingMethod) {
 		ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_W, HTX_RENDER_WPNCOLOR);
 		lightOpts.nGunColor = opt++;
-		}
-	optMixColors = 
-	optPowerupLights = -1;
-	if (gameOpts->app.bExpertMode) {
-		if (!gameOpts->render.nLightingMethod && gameOpts->render.color.bGunLight) {
-			ADD_CHECK (opt, TXT_MIX_COLOR, gameOpts->render.color.bMix, KEY_X, HTX_ADVRND_MIXCOLOR);
-			optMixColors = opt++;
+		if (gameOpts->app.bExpertMode) {
+			if (!gameOpts->render.nLightingMethod && gameOpts->render.color.bGunLight) {
+				ADD_CHECK (opt, TXT_MIX_COLOR, gameOpts->render.color.bMix, KEY_X, HTX_ADVRND_MIXCOLOR);
+				optMixColors = opt++;
+				}
 			}
-		ADD_CHECK (opt, TXT_POWERUPLIGHTS, !extraGameInfo [0].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
-		optPowerupLights = opt++;
 		}
+	ADD_CHECK (opt, TXT_POWERUPLIGHTS, !extraGameInfo [0].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
+	optPowerupLights = opt++;
 	ADD_CHECK (opt, TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_F, HTX_FLICKERLIGHTS);
 	optFlickerLights = opt++;
 	if (gameOpts->render.bHiresModels) {
@@ -3582,22 +3578,24 @@ do {
 				gameOpts->ogl.bLightPowerups = m [nPowerupLight].value;
 			}
 		}
-	if (optColoredLight >= 0)
-		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
-	if (lightOpts.nGunColor >= 0)
-		gameOpts->render.color.bGunLight = m [lightOpts.nGunColor].value;
-	if (gameOpts->app.bExpertMode) {
-		if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
+	if (gameOpts->render.nLightingMethod < 2) {
+		if (optColoredLight >= 0)
+			gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
+		if (lightOpts.nGunColor >= 0)
+			gameOpts->render.color.bGunLight = m [lightOpts.nGunColor].value;
+		if (gameOpts->app.bExpertMode) {
+			if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
 			gameStates.ogl.nContrast = 8;
-		if (gameOpts->render.color.bGunLight)
-			GET_VAL (gameOpts->render.color.bMix, optMixColors);
+			if (gameOpts->render.color.bGunLight)
+				GET_VAL (gameOpts->render.color.bMix, optMixColors);
 #if EXPMODE_DEFAULTS
-			else
-				gameOpts->render.color.bMix = 1;
+				else
+					gameOpts->render.color.bMix = 1;
 #endif
-		if (optPowerupLights >= 0)
-			extraGameInfo [0].bPowerupLights = !m [optPowerupLights].value;
+			}
 		}
+	if (optPowerupLights >= 0)
+		extraGameInfo [0].bPowerupLights = !m [optPowerupLights].value;
 	extraGameInfo [0].bFlickerLights = m [optFlickerLights].value;
 	GET_VAL (gameOpts->ogl.bHeadLight, lightOpts.nHWHeadLight);
 	GET_VAL (extraGameInfo [0].bBrightObjects, optBrightObjects);
