@@ -2059,7 +2059,6 @@ if (gameStates.render.nLightingMethod == 2)
 	gameStates.render.bPerPixelLighting = HaveLightMaps () ? 2 : gameStates.render.bPerPixelLighting ? 1 : 0;
 else
 	gameStates.render.bPerPixelLighting = 0;
-gameStates.render.bHeadLights = gameData.render.lights.dynamic.headLights.nLights && !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
 gameData.render.nTotalFaces =
 gameData.render.nTotalLights = 
 gameData.render.nMaxLights = 
@@ -2093,6 +2092,7 @@ if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameState
 	UpdateSlidingFaces ();
 	}
 InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
+gameStates.render.bHeadLights = gameData.render.lights.dynamic.headLights.nLights && !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
 RenderSegmentList (0, 1);	// render opaque geometry
 if ((gameOpts->render.bDepthSort < 1) && !gameOpts->render.nPath)
 	RenderSkyBox (nWindow);
