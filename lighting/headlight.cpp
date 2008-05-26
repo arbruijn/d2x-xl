@@ -335,8 +335,7 @@ char *headLightFS [2][8] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (matColor.rgb * spotColor, matColor.a);"  \
 	"}" 
 	,
@@ -361,8 +360,7 @@ char *headLightFS [2][8] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"}" 
 	,
@@ -389,8 +387,7 @@ char *headLightFS [2][8] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"}" 
 	,
@@ -421,8 +418,7 @@ char *headLightFS [2][8] = {
 	" 		       }\r\n" \
 	" 		    }\r\n" \
 	" 		 }\r\n" \
-	"   vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"   spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"   vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"	 gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"   }\r\n" \
 	"}" 
@@ -537,8 +533,7 @@ char *headLightFS [2][8] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (matColor.rgb * spotColor, matColor.a);"  \
 	"}" 
 	,
@@ -563,8 +558,7 @@ char *headLightFS [2][8] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"}" 
 	,
@@ -591,8 +585,7 @@ char *headLightFS [2][8] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"}" 
 	,
@@ -623,8 +616,7 @@ char *headLightFS [2][8] = {
 	" 		       }\r\n" \
 	" 		    }\r\n" \
 	" 		 }\r\n" \
-	"   vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"   spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"   vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"   gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"   }\r\n" \
 	"}" 
@@ -823,7 +815,7 @@ if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.
 		for (j = 0; j < 4; j++) {
 			if (headLightShaderProgs [i][j])
 				DeleteShaderProg (&headLightShaderProgs [i][j]);
-#if 0//ndef _DEBUG
+#if 1//ndef _DEBUG
 			if (nLights == 1)
 				pszFS = headLightFS [i][h = j];
 			else

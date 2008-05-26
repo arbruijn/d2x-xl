@@ -613,6 +613,10 @@ int G3DrawHeadLightsPPLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, in
 {
 	int			bColorKey = 0, bMonitor = 0;
 
+#ifdef _DEBUG
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)

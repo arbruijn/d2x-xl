@@ -740,13 +740,20 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static void RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bAutomap)
+static void RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bAutomap, int bHeadLight)
 {
+if (nSegment < 0)
+	return;
+
 	tSegFaces	*segFaceP = SEGFACES + nSegment;
 	grsFace		*faceP;
 	int			i;
 
-if (!VisitSegment (nSegment, bAutomap))
+#ifdef _DEBUG
+if (nSegment == nDbgSeg)
+	nSegment = nSegment;
+#endif
+if (!(bHeadLight || VisitSegment (nSegment, bAutomap)))
 	return;
 #ifdef _DEBUG
 if (nSegment == nDbgSeg)
@@ -765,7 +772,7 @@ for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 
 //------------------------------------------------------------------------------
 
-void RenderFaceList (tFaceListIndex *flxP, int nType, int bDepthOnly)
+void RenderFaceList (tFaceListIndex *flxP, int nType, int bDepthOnly, int bHeadLight)
 {
 	tFaceListIndex	flx = *flxP;
 	tFaceListItem	*fliP;
@@ -779,7 +786,12 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		faceP = fliP->faceP;
 		if (nSegment != faceP->nSegment) {
 			nSegment = faceP->nSegment;
-			VisitSegment (nSegment, bAutomap);
+#ifdef _DEBUG
+			if (nSegment == nDbgSeg)
+				nDbgSeg = nDbgSeg;
+#endif
+			if (!bHeadLight)
+				VisitSegment (nSegment, bAutomap);
 			if (gameStates.render.bPerPixelLighting)
 				gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 			}
@@ -791,22 +803,22 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 
 //------------------------------------------------------------------------------
 
-void RenderSegments (int nType, int bVertexArrays, int bDepthOnly)
+void RenderSegments (int nType, int bVertexArrays, int bDepthOnly, int bHeadLight)
 {
 	int	i, bAutomap = (nType == 0);
 
 if (nType) {
 	for (i = gameData.render.mine.nRenderSegs; i; )
-		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bVertexArrays, bDepthOnly, bAutomap);
+		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bVertexArrays, bDepthOnly, bAutomap, bHeadLight);
 	}
 else {
 #if SORT_FACES > 1
-	RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly);
+	RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly, bHeadLight);
 	if (gameStates.app.bMultiThreaded)
-		RenderFaceList (gameData.render.faceIndex + 1, nType, bDepthOnly);
+		RenderFaceList (gameData.render.faceIndex + 1, nType, bDepthOnly, bHeadLight);
 #else
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
-		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap);
+		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap, bHeadLight);
 #endif
 	}
 }
@@ -819,7 +831,7 @@ void RenderHeadLights (int nType, int bVertexArrays)
 if ((gameStates.render.bPerPixelLighting == 2) && gameStates.render.bHeadLights) {
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	g3FaceDrawer = G3DrawHeadLightsPPLM;
-	RenderSegments (nType, bVertexArrays, 0);
+	RenderSegments (nType, bVertexArrays, 0, 1);
 	g3FaceDrawer = G3DrawFaceArraysPPLM;
 	}
 #endif
@@ -839,7 +851,7 @@ if (gameStates.ogl.bOcclusionQuery) {
 	QueryCoronas (0, 1);
 	}
 int bVertexArrays = BeginRenderFaces (0, 1);
-RenderSegments (nType, bVertexArrays, 1);
+RenderSegments (nType, bVertexArrays, 1, 0);
 EndRenderFaces (0, bVertexArrays, 1);
 int nFaces = SortFaces ();
 if (gameOpts->render.coronas.bUse && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
@@ -858,7 +870,7 @@ return nFaces;
 int SetupDepthBuffer (int nType)
 {
 int bVertexArrays = BeginRenderFaces (0, 1);
-RenderSegments (nType, bVertexArrays, 1);
+RenderSegments (nType, bVertexArrays, 1, 0);
 EndRenderFaces (0, bVertexArrays, 1);
 return SortFaces ();
 }
@@ -873,7 +885,7 @@ void RenderFaceList (int nType)
 
 if (nType) {	//back to front
 	bVertexArrays = BeginRenderFaces (nType, 0);
-	RenderSegments (nType, bVertexArrays, 0);
+	RenderSegments (nType, bVertexArrays, 0, 0);
 	if (nType < 2)
 		RenderHeadLights (nType, bVertexArrays);
 	}
@@ -886,7 +898,7 @@ else {	//front to back
 	glColorMask (1,1,1,1);
 	if (!j) {
 		gameData.render.mine.nVisited++;
-		RenderSegments (nType, bVertexArrays, 0);
+		RenderSegments (nType, bVertexArrays, 0, 0);
 		}
 	else {
 		for (i = 0, pfr = faceRef [gameStates.app.bMultiThreaded]; i < j; i++) {
