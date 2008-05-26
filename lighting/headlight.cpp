@@ -92,56 +92,30 @@ fix ComputeHeadlightLightOnObject (tObject *objP)
 
 void TransformHeadLights (void)
 {
+if (!gameData.render.lights.dynamic.headLights.nLights || gameStates.render.automap.bDisplay)
+	return;
+
 	tDynLight		*pl;
 	tShaderLight	*psl;
 	int				i;
+	bool				bHWHeadLight = gameStates.render.bPerPixelLighting || (gameStates.ogl.bHeadLight && gameOpts->ogl.bHeadLight);
 
-if (!gameData.render.lights.dynamic.headLights.nLights || gameStates.render.automap.bDisplay)
-	return;
-	// method 1: Emulate OpenGL's transformation
-#if 0
-G3PushMatrix ();
-glPushMatrix ();
-#endif
-#if HEADLIGHT_TRANSFORMATION == 0
-SetRenderView (gameStates.render.nEyeOffset, NULL, 0);
-#endif
 for (i = 0; i < gameData.render.lights.dynamic.headLights.nLights; i++) {
 	pl = gameData.render.lights.dynamic.headLights.pl [i];
 	psl = gameData.render.lights.dynamic.headLights.psl [i];
-	VmVecFixToFloat (&psl->vDirf, &pl->vDir);
-	if (pl->bTransform && !gameStates.ogl.bUseTransform)
-		G3RotatePoint (&psl->vDirf, &psl->vDirf, 0);
-	pl->info.bSpot = 1;
+	pl->info.bSpot =
 	psl->info.bSpot = 1;
 	psl->info.fSpotAngle = pl->info.fSpotAngle;
 	psl->info.fSpotExponent = pl->info.fSpotExponent;
-	if (gameStates.ogl.bHeadLight && gameOpts->ogl.bHeadLight && !gameStates.render.automap.bDisplay) {
-#if HEADLIGHT_TRANSFORMATION == 0
-		fVector	vPos, vDir;
-		G3TransformPoint (&vPos, psl->vPosf, 0);
-		G3TransformPoint (&vDir, VmVecAdd (&vDir, psl->vPosf, &psl->vDirf), 0);
-		VmVecNormalize (&vDir, VmVecDec (&vDir, &vPos));
-		gameData.render.lights.dynamic.headLights.pos [i] = vPos;
-		gameData.render.lights.dynamic.headLights.dir [i] = vDir.v3;
-#elif HEADLIGHT_TRANSFORMATION == 1
-		// method 2: translate, but let OpenGL do the scaling and rotating
-		fVector	vPos, vDir;
-		VmVecSub (gameData.render.lights.dynamic.headLights.pos + i, psl->vPosf, &viewInfo.posf);
-		VmVecInc (&vPos, &psl->vDirf);
-		gameData.render.lights.dynamic.headLights.dir [i] = psl->vDirf.v3;
-#else
-		// method 3: let OpenGL do the translating, scaling and rotating (pass &viewInfo.posf to the headlight shader's vEye value)
+	VmVecFixToFloat (&psl->vDirf, &pl->vDir);
+	if (bHWHeadLight) {
 		gameData.render.lights.dynamic.headLights.pos [i] = psl->vPosf [0];
 		gameData.render.lights.dynamic.headLights.dir [i] = psl->vDirf.v3;
-#endif
 		gameData.render.lights.dynamic.headLights.brightness [i] = 100.0f;
 		}
+	else if (pl->bTransform && !gameStates.ogl.bUseTransform)
+		G3RotatePoint (&psl->vDirf, &psl->vDirf, 0);
 	}
-#	if 0
-G3PopMatrix ();
-glPopMatrix ();
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -815,7 +789,7 @@ if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.
 		for (j = 0; j < 4; j++) {
 			if (headLightShaderProgs [i][j])
 				DeleteShaderProg (&headLightShaderProgs [i][j]);
-#if 1//ndef _DEBUG
+#if 0//ndef _DEBUG
 			if (nLights == 1)
 				pszFS = headLightFS [i][h = j];
 			else
