@@ -49,8 +49,8 @@ int FindConnectedSide (tSegment *base_seg, tSegment *con_seg);
 #define	COMPUTE_SIDE_CENTER_I(_pc,_nSeg,_nSide) \
 			*(_pc) = SIDE_CENTER_V (_nSeg, _nSide)
 
-#define	COMPUTE_SEGMENT_RAD_I(_pc,_nSeg,_nSide) \
-			*(_pc) = gameData.segs.segRads [_nSeg]
+#define	COMPUTE_SEGMENT_RAD_I(_rad,_nSeg) \
+			*(_rad) = gameData.segs.segRads [_nSeg]
 
 #define	COMPUTE_SEGMENT_CENTER(_pc,_segP) \
 			COMPUTE_SEGMENT_CENTER_I (_pc, SEG_IDX (_segP))
@@ -58,8 +58,8 @@ int FindConnectedSide (tSegment *base_seg, tSegment *con_seg);
 #define	COMPUTE_SIDE_CENTER(_pc,_segP,_nSide) \
 			COMPUTE_SIDE_CENTER_I (_pc, SEG_IDX (_segP), _nSide)
 
-#define	COMPUTE_SEGMENT_RAD(_pc,_segP) \
-			COMPUTE_SEGMENT_RAD_I (_pc, SEG_IDX (_segP))
+#define	COMPUTE_SEGMENT_RAD(_rad,_segP) \
+			COMPUTE_SEGMENT_RAD_I (_rad, SEG_IDX (_segP))
 
 // Fill in array with four absolute point numbers for a given tSide
 void GetSideVertIndex (short *vertIndex, int nSegment, int nSide);

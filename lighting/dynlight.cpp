@@ -519,7 +519,7 @@ if (nLight < --gameData.render.lights.dynamic.nLights) {
 	if (pl->info.nObject >= 0)
 		gameData.render.lights.dynamic.owners [pl->info.nObject] = nLight;
 	if (pl->info.nPlayer < MAX_PLAYERS)
-		gameData.render.lights.dynamic.nHeadLights [pl->info.nPlayer] = nLight;
+		gameData.render.lights.dynamic.nHeadlights [pl->info.nPlayer] = nLight;
 	}
 }
 
@@ -673,7 +673,7 @@ if (gameStates.app.bD1Mission)
 	gameData.render.fAttScale *= 2;
 #endif
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
-memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
+memset (&gameData.render.lights.dynamic.headlights, 0, sizeof (gameData.render.lights.dynamic.headlights));
 //glEnable (GL_LIGHTING);
 if (gameOpts->render.nLightingMethod)
 	memset (gameData.render.color.vertices, 0, sizeof (*gameData.render.color.vertices) * MAX_VERTICES);
@@ -737,27 +737,13 @@ QSortStaticLights (0, gameData.render.lights.dynamic.nLights);
 
 void TransformDynLights (int bStatic, int bVariable)
 {
-	int			i;
-	tDynLight	*pl = gameData.render.lights.dynamic.lights;
-#if USE_OGL_LIGHTS
-OglSetupTransform ();
-for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
-	if (gameStates.ogl.bUseTransform)
-		vPos = pl->info.vPos;
-	else
-		G3TransformPoint (&vPos, &pl->info.vPos);
-	fPos [0] = f2fl (vPos.x);
-	fPos [1] = f2fl (vPos.y);
-	fPos [2] = f2fl (vPos.z);
-	glLightfv (pl->info.handle, GL_POSITION, fPos);
-	}
-OglResetTransform ();
-#else
+	int				i;
+	tDynLight		*pl = gameData.render.lights.dynamic.lights;
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
 
 gameData.render.lights.dynamic.shader.nLights = 0;
-memset (&gameData.render.lights.dynamic.headLights, 0, sizeof (gameData.render.lights.dynamic.headLights));
-UpdateOglHeadLight ();
+memset (&gameData.render.lights.dynamic.headlights, 0, sizeof (gameData.render.lights.dynamic.headlights));
+UpdateOglHeadlight ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 #ifdef _DEBUG
 	if ((nDbgSeg >= 0) && (nDbgSeg == pl->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->info.nSide)))
@@ -777,7 +763,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 		}
 	psl->vPosf [0].p.w = 1;
 	if (psl->info.bSpot)
-		SetupHeadLight (pl, psl);
+		SetupHeadlight (pl, psl);
 	psl->info.bState = pl->info.bState && (pl->info.color.red + pl->info.color.green + pl->info.color.blue > 0.0);
 	psl->bLightning = (pl->info.nObject < 0) && (pl->info.nSide < 0);
 	ResetUsedLight (psl, 0);
@@ -794,34 +780,6 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	gameData.render.lights.dynamic.shader.nLights++;
 	psl++;
 	}
-#	if 0
-if (gameData.render.lights.dynamic.shader.nTexHandle)
-	OglDeleteTextures (1, &gameData.render.lights.dynamic.shader.nTexHandle);
-gameData.render.lights.dynamic.shader.nTexHandle = 0;
-OglGenTextures (1, &gameData.render.lights.dynamic.shader.nTexHandle);
-glBindTexture (GL_TEXTURE_2D, gameData.render.lights.dynamic.shader.nTexHandle);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_COMPRESSED_RGBA_ARB,
-				  GL_FLOAT, gameData.render.lights.dynamic.shader.lights);
-#	endif
-#endif
-#if 0 //HEADLIGHT_TRANSFORMATION == 0
-if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
-#if 0
-	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity ();
-#else
-	G3StartFrame (0, 0);
-#endif
-	G3SetViewMatrix (&gameData.objs.viewer->position.vPos, 
-						  &gameData.objs.viewer->position.mOrient, 
-						  gameStates.render.xZoom, 1);
-	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1212,7 +1170,7 @@ if (gameOpts->render.nLightingMethod) {
 	ubyte						nType;
 	short						i = gameData.render.lights.dynamic.shader.nLights,
 								nLightSeg;
-	int						bSkipHeadLight = !gameStates.render.nState && (gameStates.render.bPerPixelLighting || gameOpts->ogl.bHeadLight);
+	int						bSkipHeadlight = !gameStates.render.nState && (gameStates.render.bPerPixelLighting || gameOpts->ogl.bHeadlight);
 	fix						xMaxLightRange = AvgSegRad (nSegment) + (gameStates.render.bPerPixelLighting ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector				c;
@@ -1234,7 +1192,7 @@ if (gameOpts->render.nLightingMethod) {
 #endif
 		nType = (--psl)->info.nType;
 		if (nType == 3) {
-			if (bSkipHeadLight)
+			if (bSkipHeadlight)
 				continue;
 			}
 		if (nType < 2) {
@@ -1527,7 +1485,7 @@ gameStates.render.nState = 0;
 TransformDynLights (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++)
 	gameData.render.lights.dynamic.nVariableVertLights [i] = VariableVertexLights (i);
-if (gameStates.render.bPerPixelLighting && HaveLightMaps ())
+if (gameStates.render.bPerPixelLighting && HaveLightmaps ())
 	return;
 if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient;

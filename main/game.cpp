@@ -1334,7 +1334,8 @@ if (pfnTIRStart)
 	pfnTIRStart ();
 if (!setjmp (gameExitPoint)) {
 for (;;) {
-	int player_shields;
+	PROF_START
+	int playerShields;
 		// GAME LOOP!
 #ifdef _DEBUG
 	if (gameStates.render.automap.bDisplay)
@@ -1347,10 +1348,12 @@ for (;;) {
 #endif
 	    //Assert (gameData.objs.console == &gameData.objs.objects[LOCALPLAYER.nObject]);
 		}
-	player_shields = LOCALPLAYER.shields;
+	playerShields = LOCALPLAYER.shields;
 	gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
-	if (!GameLoop (1, 1))		// Do game loop with rendering and reading controls.
+	if (!GameLoop (1, 1)) {		// Do game loop with rendering and reading controls.
+		PROF_END(ptFrame);
 		continue;
+		}
 	if (gameStates.app.bSingleStep) {
 		while (!(c = KeyInKey ()))
 			;
@@ -1358,7 +1361,7 @@ for (;;) {
 			gameStates.app.bSingleStep = 0;
 		}
 	//if the tPlayer is taking damage, give up guided missile control
-	if (LOCALPLAYER.shields != player_shields)
+	if (LOCALPLAYER.shields != playerShields)
 		ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
 	//see if redbook song needs to be restarted
 	SongsCheckRedbookRepeat ();	// Handle RedBook Audio Repeating.
@@ -1418,6 +1421,9 @@ for (;;) {
 			SetFunctionMode (FMODE_GAME);
 		}
 	gameStates.multi.bIWasKicked = 0;
+	PROF_END(ptFrame);
+	if (gameData.app.nFrameCount % 10000 == 0)
+		memset (&gameData.profiler, 0, sizeof (gameData.profiler));
 	if (gameStates.app.nFunctionMode != FMODE_GAME)
 		longjmp (gameExitPoint, 0);
 		}

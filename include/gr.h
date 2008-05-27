@@ -731,6 +731,7 @@ typedef struct grsFace {
 	char					nType;
 	char					nSegColor;
 	char					nShader;
+	struct grsFace		*nextSlidingFace;
 	} grsFace;
 
 typedef struct grsString {

@@ -36,10 +36,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern int nCanvasWidth,nCanvasHeight;	//the actual width & height
 extern fix xCanvW2,xCanvH2;				//fixed-point width,height/2
-
-#ifdef __powerc
 extern double fxCanvW2, fxCanvH2;
-#endif
 
 typedef struct tViewInfo {
 	vmsVector	pos;
@@ -47,6 +44,7 @@ typedef struct tViewInfo {
 	int			bUsePlayerHeadAngles;
 	vmsMatrix	view [2];
 	vmsVector	scale;
+	fVector		scalef;
 	vmsVector	windowScale;		//scaling for window aspect
 	fVector		posf;
 	fMatrix		viewf [2];

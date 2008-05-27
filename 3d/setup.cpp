@@ -23,6 +23,7 @@ static char rcsid[] = "$Id: setup.c,v 1.5 2003/03/19 19:21:34 btb Exp $";
 #include <stdlib.h>
 
 #include "inferno.h"
+#include "globvars.h"
 #include "error.h"
 #include "3d.h"
 #include "globvars.h"
@@ -49,12 +50,10 @@ void G3StartFrame (int bFlat, int bResetColorBuf)
 	fix s;
 
 //set int w,h & fixed-point w,h/2
-xCanvW2 = (nCanvasWidth  = grdCurCanv->cvBitmap.bmProps.w) << 15;
+xCanvW2 = (nCanvasWidth = grdCurCanv->cvBitmap.bmProps.w) << 15;
 xCanvH2 = (nCanvasHeight = grdCurCanv->cvBitmap.bmProps.h) << 15;
-#ifdef __powerc
-fxCanvW2 = f2fl ((nCanvasWidth  = grdCurCanv->cvBitmap.bmProps.w) << 15);
-fxCanvH2 = f2fl ((nCanvasHeight = grdCurCanv->cvBitmap.bmProps.h) << 15);
-#endif
+fxCanvW2 = f2fl (xCanvW2);
+fxCanvH2 = f2fl (xCanvH2);
 //compute aspect ratio for this canvas
 s = FixMulDiv (grdCurScreen->scAspect, nCanvasHeight, nCanvasWidth);
 if (s <= f1_0) {	   //scale x

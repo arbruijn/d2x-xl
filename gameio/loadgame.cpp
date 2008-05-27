@@ -715,6 +715,7 @@ gameStates.render.nFlashScale = F1_0;
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
 gameStates.render.automap.bFull = 0;
 gameData.render.ogl.nHeadlights = -1;
+gameData.render.nColoredFaces = 0;
 gameData.app.nFrameCount = 0;
 #if PROFILING
 memset (&gameData.profiler, 0, sizeof (gameData.profiler));

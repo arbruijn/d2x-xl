@@ -106,9 +106,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-typedef struct window {
+typedef struct tPortal {
 	short left, top, right, bot;
-} window;
+} tPortal;
 
 // ------------------------------------------------------------------------------
 
@@ -118,7 +118,7 @@ void StartLightingFrame (tObject *viewer);
 void ShowReticle(int force_big);
 
 unsigned int	nClearWindowColor = 0;
-int				nClearWindow = 2;	// 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
+int				nClearWindow = 2;	// 1 = Clear whole background tPortal, 2 = clear view portals into rest of world, 0 = no clear
 
 void RenderSkyBox (int nWindow);
 
@@ -716,7 +716,7 @@ if (!(nWindow || gameStates.render.cameras.bActive) && (gameStates.render.nShado
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->nType == OBJ_PLAYER) {
 		// A nice fat hack: keeps the tPlayer ship from showing up in the
-		// small extra view when guiding a missile in the big window
+		// small extra view when guiding a missile in the big tPortal
   		return; 
 		}
 	}
@@ -813,7 +813,7 @@ if (r > left)
 
 //------------------------------------------------------------------------------
 
-ubyte CodeWindowPoint (fix x, fix y, window *w)
+ubyte CodeWindowPoint (fix x, fix y, tPortal *w)
 {
 	ubyte code = 0;
 
@@ -860,7 +860,7 @@ GrLine(i2f(l), i2f(b), i2f(l), i2f(t));
 
 //------------------------------------------------------------------------------
 
-window renderWindows [MAX_SEGMENTS_D2X];
+tPortal renderWindows [MAX_SEGMENTS_D2X];
 
 //Given two sides of tSegment, tell the two verts which form the 
 //edge between them
@@ -1522,6 +1522,25 @@ if (!gameOpts->render.nPath) {
 
 //------------------------------------------------------------------------------
 
+void CalcRenderDepth (void)
+{
+vmsVector vCenter;
+G3TransformPoint (&vCenter, SEGMENT_CENTER_I (gameData.objs.viewer->nSegment), 0);
+vmsVector v;
+G3TransformPoint (&v, &gameData.segs.vMin, 0);
+fix d1 = VmVecDist (&v, &vCenter);
+G3TransformPoint (&v, &gameData.segs.vMax, 0);
+fix d2 = VmVecDist (&v, &vCenter);
+
+if (d1 < d2)
+	d1 = d2;
+fix r = gameData.segs.segRads [1][gameData.objs.viewer->nSegment];
+gameData.render.zMin = 0;
+gameData.render.zMax = vCenter.p.z + d1 + r;
+}
+
+//------------------------------------------------------------------------------
+
 void BuildRenderSegList (short nStartSeg, int nWindow)
 {
 PROF_START
@@ -1534,7 +1553,7 @@ PROF_START
 	sbyte		*s2v;
 	ubyte		andCodes, andCodes3D, andCodes2D;
 	int		bRotated, nSegment, bNotProjected;
-	window	*curPortal;
+	tPortal	*curPortal;
 	short		childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
 	int		nChildren, bCullIfBehind;					//how many sides in childList
 	tSegment	*segP;
@@ -1561,7 +1580,11 @@ if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && 
 			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
 			VISIT (i);
 			}
+#if 1
+	CalcRenderDepth ();
+#else
 	SortRenderSegs ();
+#endif
 	PROF_END(ptBuildSegList)
 	return;
 	}
@@ -1640,11 +1663,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
-#if 0
-			if ((bWindowCheck || !gameData.render.mine.bVisited [nChildSeg]) && (WALL_IS_DOORWAY (segP, nChild, NULL))) {
-#else
 			if (bWindowCheck) {
-#endif
 				short x, y, xMin = 32767, xMax = -32767, yMin = 32767, yMax = -32767;
 				bNotProjected = 0;	//a point wasn't projected
 				if (bRotated < 2) {
@@ -1676,36 +1695,36 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					}
 				if (bNotProjected || !(andCodes3D || andCodes2D)) {	//maybe add this tSegment
 					int rp = gameData.render.mine.nRenderPos [nChildSeg];
-					window *pNewWin = renderWindows + lCnt;
+					tPortal *newPortal = renderWindows + lCnt;
 
 					if (bNotProjected) 
-						*pNewWin = *curPortal;
+						*newPortal = *curPortal;
 					else {
-						pNewWin->left  = max (curPortal->left, xMin);
-						pNewWin->right = min (curPortal->right, xMax);
-						pNewWin->top   = max (curPortal->top, yMin);
-						pNewWin->bot   = min (curPortal->bot, yMax);
+						newPortal->left  = max (curPortal->left, xMin);
+						newPortal->right = min (curPortal->right, xMax);
+						newPortal->top   = max (curPortal->top, yMin);
+						newPortal->bot   = min (curPortal->bot, yMax);
 						}
-					//see if this segment already visited, and if so, does current window
-					//expand the old window?
+					//see if this segment already visited, and if so, does current tPortal
+					//expand the old tPortal?
 					if (rp != -1) {
-						window *rwP = renderWindows + rp;
-						if ((pNewWin->left >= rwP->left) && (pNewWin->top >= rwP->top) && (pNewWin->right <= rwP->right) && (pNewWin->bot <= rwP->bot))
+						tPortal *rwP = renderWindows + rp;
+						if ((newPortal->left >= rwP->left) && (newPortal->top >= rwP->top) && (newPortal->right <= rwP->right) && (newPortal->bot <= rwP->bot))
 							goto dontAdd;
 						else {
-							if (pNewWin->left > rwP->left)
-								pNewWin->left = rwP->left;
-							if (pNewWin->right < rwP->right)
-								pNewWin->right = rwP->right;
-							if (pNewWin->top > rwP->top)
-								pNewWin->top = rwP->top;
-							if (pNewWin->bot < rwP->bot)
-								pNewWin->bot = rwP->bot;
+							if (newPortal->left > rwP->left)
+								newPortal->left = rwP->left;
+							if (newPortal->right < rwP->right)
+								newPortal->right = rwP->right;
+							if (newPortal->top > rwP->top)
+								newPortal->top = rwP->top;
+							if (newPortal->bot < rwP->bot)
+								newPortal->bot = rwP->bot;
 							if (bMigrateSegs)
 								gameData.render.mine.nSegRenderList [rp] = -0x7fff;
 							else {
 								gameData.render.mine.nSegRenderList [lCnt] = -0x7fff;
-								*rwP = *pNewWin;		//get updated window
+								*rwP = *newPortal;		//get updated tPortal
 								gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
 								goto dontAdd;
 								}
@@ -1893,7 +1912,8 @@ else if (gameStates.render.nType == 2)	// render objects containing transparency
 
 int BeginRenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
-	window	*rwP;
+PROF_START
+	tPortal	*rwP;
 #if 0//def _DEBUG
 	int		i;
 #endif
@@ -1978,6 +1998,7 @@ gameStates.ogl.bScaleLight = 0;
 #endif
 gameStates.render.bUseCameras = USE_CAMERAS;
 renderItems.nItems = 0;
+PROF_END(ptAux);
 return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ_ROBOT);
 }
 
@@ -1998,6 +2019,7 @@ for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i
 
 void RenderSkyBox (int nWindow)
 {
+PROF_START
 if (gameStates.render.bHaveSkyBox && (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bSkybox)) {
 	glDepthMask (1);
 	if (gameOpts->render.nPath)
@@ -2014,12 +2036,14 @@ if (gameStates.render.bHaveSkyBox && (!gameStates.render.automap.bDisplay || gam
 		}
 	RenderSkyBoxObjects ();
 	}
+PROF_END(ptRenderPass)
 }
 
 //------------------------------------------------------------------------------
 
 inline int RenderSegmentList (int nType, int bFrontToBack)
 {
+PROF_START
 gameStates.render.nType = nType;
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
 	BumpVisitedFlag ();
@@ -2040,6 +2064,7 @@ RenderMineObjects (nType);
 ResetUsedLights (1, 0);
 if (gameStates.app.bMultiThreaded)
 	ResetUsedLights (1, 1);
+PROF_END(ptRenderPass)
 return 1;
 }
 
@@ -2083,24 +2108,32 @@ gameStates.render.bDoLightmaps = gameStates.render.color.bLightmapsOk &&
 											gameStates.render.bAmbientColor && 
 											!IsMultiGame;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
+PROF_END(ptAux)
 gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	if (!gameStates.ogl.bVertexLighting && gameStates.app.bMultiThreaded && (CountRenderFaces () > 15)) 
 		RunRenderThreads (rtComputeFaceLight);
+	else if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments)
+		ComputeFaceLight (0, gameData.segs.nFaces, 0);
 	else
 		ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
+	PROF_START
 	UpdateSlidingFaces ();
+	PROF_END(ptAux);
 	}
 InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
-gameStates.render.bHeadlights = gameData.render.lights.dynamic.headlights.nLights && !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
+gameStates.render.bHeadlights = gameData.render.lights.dynamic.headlights.nLights && 
+										  !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
 RenderSegmentList (0, 1);	// render opaque geometry
 if ((gameOpts->render.bDepthSort < 1) && !gameOpts->render.nPath)
 	RenderSkyBox (nWindow);
 RenderSegmentList (1, 1);		// render objects
 if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {
-	glDepthFunc (GL_LEQUAL);
-	RenderSegmentList (2, 1);	// render transparent geometry
-	glDepthFunc (GL_LESS);
+	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces) {
+		glDepthFunc (GL_LEQUAL);
+		RenderSegmentList (2, 1);	// render transparent geometry
+		glDepthFunc (GL_LESS);
+		}
 	if (!gameStates.app.bNostalgia &&
 		 (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.coronas.bUse) {
  		glEnable (GL_TEXTURE_2D);
@@ -2205,7 +2238,7 @@ void RenderObjectSearch(tObject *objP)
 
 #ifdef EDITOR
 
-extern int render_3d_in_big_window;
+extern int render_3d_in_big_tPortal;
 
 //finds what tSegment is at a given x&y -  seg, tSide, face are filled in
 //works on last frame rendered. returns true if found
@@ -2215,7 +2248,7 @@ int FindSegSideFace(short x, short y, int *seg, int *tSide, int *face, int *poly
 	bSearchMode = -1;
 	_search_x = x; _search_y = y;
 	found_seg = -1;
-	if (render_3d_in_big_window) {
+	if (render_3d_in_big_tPortal) {
 		gsrCanvas temp_canvas;
 
 		GrInitSubCanvas(&temp_canvas, canv_offscreen, 0, 0, 

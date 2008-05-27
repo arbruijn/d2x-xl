@@ -303,8 +303,6 @@ if (nTMU >= 0) {
 	glActiveTexture (nTMU);
 	glClientActiveTexture (nTMU);
 	}
-if (!G3EnableClientState (GL_VERTEX_ARRAY, -1))
-	return 0;
 if (bNormals) {
 	if (!G3EnableClientState (GL_NORMAL_ARRAY, -1)) {
 		G3DisableClientStates (0, 0, 0, -1);
@@ -329,7 +327,7 @@ if (bColor) {
 	}
 else
 	glDisableClientState (GL_COLOR_ARRAY);
-return 1;
+return G3EnableClientState (GL_VERTEX_ARRAY, -1);
 }
 
 //------------------------------------------------------------------------------
@@ -701,16 +699,33 @@ if (!gameStates.menus.nInMenu || bForce) {
 #if 1//def _DEBUG
 	if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu && FONT && SMALL_FONT) {
 #	if PROFILING
+		static time_t t0 = -1000;
+		time_t t1 = clock ();
+		static tProfilerData p;
+		if (t1 - t0 >= 500) {
+			memcpy (&p, &gameData.profiler, sizeof (p));
+			t0 = t1;
+			}
 		int h = SMALL_FONT->ftHeight + 3, i = 3;
-		GrPrintF (NULL, 5, h * i++, "scene:%ld", gameData.profiler.t [ptRenderMine]);
-		GrPrintF (NULL, 5, h * i++, "faces:%ld", gameData.profiler.t [ptRenderFaces]);
-		GrPrintF (NULL, 5, h * i++, "face list:%ld", gameData.profiler.t [ptFaceList]);
-		GrPrintF (NULL, 5, h * i++, "light:%ld", gameData.profiler.t [ptLighting]);
-		GrPrintF (NULL, 5, h * i++, "objects:%ld ", gameData.profiler.t [ptRenderObjects]);
-		GrPrintF (NULL, 5, h * i++, "states:%ld", gameData.profiler.t [ptRenderStates]);
-		GrPrintF (NULL, 5, h * i++, "shaders:%ld", gameData.profiler.t [ptShaderStates]);
-		GrPrintF (NULL, 5, h * i++, "transform:%ld ", gameData.profiler.t [ptTransform]);
-//		memset (&gameData.profiler, 0, sizeof (gameData.profiler));
+		GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
+		float t, s = 0;
+		GrPrintF (NULL, 5, h * i++, "frame: %ld", p.t [ptFrame]);
+		GrPrintF (NULL, 5, h * i++, "  scene: %1.2f %c", 100.0f * (float) p.t [ptRenderMine] / (float) p.t [ptFrame], '%');
+		GrPrintF (NULL, 5, h * i++, "    light: %1.2f %c", t = 100.0f * (float) p.t [ptLighting] / (float) p.t [ptRenderMine], '%');
+		s += t;
+		GrPrintF (NULL, 5, h * i++, "  render: %1.2f %c", t = 100.0f * (float) p.t [ptRenderPass] / (float) p.t [ptRenderMine], '%');
+		s += t;
+		GrPrintF (NULL, 5, h * i++, "    face list: %1.2f %c", t = 100.0f * (float) p.t [ptFaceList] / (float) p.t [ptRenderMine], '%');
+		GrPrintF (NULL, 5, h * i++, "    faces: %1.2f %c", t = 100.0f * (float) p.t [ptRenderFaces] / (float) p.t [ptRenderMine], '%');
+		GrPrintF (NULL, 5, h * i++, "    objects: %1.2f %c ", t = 100.0f * (float) p.t [ptRenderObjects] / (float) p.t [ptRenderMine], '%');
+		GrPrintF (NULL, 5, h * i++, "    states: %1.2f %c", t = 100.0f * (float) p.t [ptRenderStates] / (float) p.t [ptRenderMine], '%');
+		GrPrintF (NULL, 5, h * i++, "    shaders: %1.2f %c", t = 100.0f * (float) p.t [ptShaderStates] / (float) p.t [ptRenderMine], '%');
+		GrPrintF (NULL, 5, h * i++, "  other: %1.2f %c", t = 100.0f * (float) p.t [ptAux] / (float) p.t [ptRenderMine], '%');
+		s += t;
+		GrPrintF (NULL, 5, h * i++, "    transform: %1.2f %c ", t = 100.0f * (float) p.t [ptTransform] / (float) p.t [ptRenderMine], '%');
+		GrPrintF (NULL, 5, h * i++, "    seg list: %1.2f %c", t = 100.0f * (float) p.t [ptBuildSegList] / (float) p.t [ptRenderMine], '%');
+		GrPrintF (NULL, 5, h * i++, "    obj list: %1.2f %c", t = 100.0f * (float) p.t [ptBuildObjList] / (float) p.t [ptRenderMine], '%');
+		GrPrintF (NULL, 5, h * i++, "  total: %1.2f %c", s, '%');
 #	endif
 		}
 #endif

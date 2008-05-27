@@ -75,6 +75,7 @@ else {			//xZoom out by scaling x&y
 	viewInfo.scale.p.x = FixMul (viewInfo.scale.p.x, s);
 	viewInfo.scale.p.y = FixMul (viewInfo.scale.p.y, s);
 	}
+VmVecFixToFloat (&viewInfo.scalef, &viewInfo.scale);
 //viewInfo.scale.p.x = viewInfo.scale.p.y = viewInfo.scale.p.z = F1_0;
 //now scale matrix elements
 if (bOglScale)

@@ -89,7 +89,7 @@ typedef struct v16_segment {
 	#ifdef EDITOR
 	short   nSegment;             // tSegment number, not sure what it means
 	#endif
-	tSide    sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
+	tSide   sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
 	short   children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
 	short   verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
 	#ifdef  EDITOR
@@ -867,12 +867,12 @@ int load_mine_data (CFILE *loadFile)
 
 //------------------------------------------------------------------------------
 
-void ReadSegChildren (int nSegment, ubyte bit_mask, CFILE *loadFile)
+void ReadSegChildren (int nSegment, ubyte bitMask, CFILE *loadFile)
 {
 	int bit;
 
 	for (bit=0; bit<MAX_SIDES_PER_SEGMENT; bit++) {
-		if (bit_mask & (1 << bit)) {
+		if (bitMask & (1 << bit)) {
 			gameData.segs.segments [nSegment].children [bit] = CFReadShort (loadFile);
 		} else
 			gameData.segs.segments [nSegment].children [bit] = -1;
@@ -917,9 +917,9 @@ for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
 
 //------------------------------------------------------------------------------
 
-void ReadSegSpecialType (int nSegment, ubyte bit_mask, CFILE *loadFile)
+void ReadSegSpecialType (int nSegment, ubyte bitMask, CFILE *loadFile)
 {
-if (bit_mask & (1 << MAX_SIDES_PER_SEGMENT)) {
+if (bitMask & (1 << MAX_SIDES_PER_SEGMENT)) {
 	gameData.segs.segment2s [nSegment].special = CFReadByte (loadFile);
 	gameData.segs.segment2s [nSegment].nMatCen = CFReadByte (loadFile);
 	gameData.segs.segment2s [nSegment].value = (char) CFReadShort (loadFile);
@@ -967,7 +967,7 @@ void LoadSegmentsCompiled (short nSegment, CFILE *loadFile)
 	short			temp_short;
 	ushort		nWall, temp_ushort = 0;
 	short			sideVerts [4];
-	ubyte			bit_mask;
+	ubyte			bitMask;
 
 INIT_PROGRESS_LOOP (nSegment, lastSeg, gameData.segs.nSegments);
 for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < lastSeg; nSegment++, segP++, segFaceP++) {
@@ -991,20 +991,20 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 		gameData.segs.xSegments [nSegment].group = -1;
 		}
 	if (bNewFileFormat)
-		bit_mask = CFReadByte (loadFile);
+		bitMask = CFReadByte (loadFile);
 	else
-		bit_mask = 0x7f; // read all six children and special stuff...
+		bitMask = 0x7f; // read all six children and special stuff...
 
 	if (gameData.segs.nLevelVersion == 5) { // d2 SHAREWARE level
-		ReadSegSpecialType (nSegment, bit_mask, loadFile);
+		ReadSegSpecialType (nSegment, bitMask, loadFile);
 		ReadSegVerts (nSegment, loadFile);
-		ReadSegChildren (nSegment, bit_mask, loadFile);
+		ReadSegChildren (nSegment, bitMask, loadFile);
 		}
 	else {
-		ReadSegChildren (nSegment, bit_mask, loadFile);
+		ReadSegChildren (nSegment, bitMask, loadFile);
 		ReadSegVerts (nSegment, loadFile);
 		if (gameData.segs.nLevelVersion <= 1) { // descent 1 level
-			ReadSegSpecialType (nSegment, bit_mask, loadFile);
+			ReadSegSpecialType (nSegment, bitMask, loadFile);
 			}
 		}
 	segP->objects = -1;
@@ -1022,12 +1022,12 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 		}
 
 	if (bNewFileFormat)
-		bit_mask = CFReadByte (loadFile);
+		bitMask = CFReadByte (loadFile);
 	else
-		bit_mask = 0x3f; // read all six sides
+		bitMask = 0x3f; // read all six sides
 	for (nSide = 0, sideP = segP->sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
 		sideP->nWall = (ushort) -1;
-		if (bit_mask & (1 << nSide)) {
+		if (bitMask & (1 << nSide)) {
 			if (gameData.segs.nLevelVersion >= 13)
 				nWall = (ushort) CFReadShort (loadFile);
 			else
@@ -1407,6 +1407,12 @@ int LoadMineSegmentsCompiled (CFILE *loadFile)
 	ubyte			nCompiledVersion;
 	char			*psz;
 
+gameData.segs.vMin.p.x =
+gameData.segs.vMin.p.y =
+gameData.segs.vMin.p.y = 0x7fffffff;
+gameData.segs.vMax.p.x =
+gameData.segs.vMax.p.y =
+gameData.segs.vMax.p.y = -0x7fffffff;
 gameStates.render.bColored = 0;
 bD1PigPresent = CFExist (D1_PIGFILE, gameFolders.szDataDir, 0);
 psz = strchr (gameData.segs.szLevelFilename, '.');
@@ -1449,6 +1455,18 @@ for (i = 0; i < gameData.segs.nVertices; i++) {
 	gameData.segs.fVertices [i].p.z = f2fl (gameData.segs.vertices [i].p.z);
 #endif
 	}
+if (gameData.segs.vMin.p.x > gameData.segs.vertices [i].p.x)
+	gameData.segs.vMin.p.x = gameData.segs.vertices [i].p.x;
+if (gameData.segs.vMin.p.y > gameData.segs.vertices [i].p.y)
+	gameData.segs.vMin.p.y = gameData.segs.vertices [i].p.y;
+if (gameData.segs.vMin.p.z > gameData.segs.vertices [i].p.z)
+	gameData.segs.vMin.p.z = gameData.segs.vertices [i].p.z;
+if (gameData.segs.vMax.p.x < gameData.segs.vertices [i].p.x)
+	gameData.segs.vMax.p.x = gameData.segs.vertices [i].p.x;
+if (gameData.segs.vMax.p.y < gameData.segs.vertices [i].p.y)
+	gameData.segs.vMax.p.y = gameData.segs.vertices [i].p.y;
+if (gameData.segs.vMax.p.z < gameData.segs.vertices [i].p.z)
+	gameData.segs.vMax.p.z = gameData.segs.vertices [i].p.z;
 memset (gameData.segs.segments, 0, MAX_SEGMENTS * sizeof (tSegment));
 #if TRACE
 con_printf (CONDBG, "   loading segments ...\n");
@@ -1466,6 +1484,7 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
+gameData.segs.fRad = f2fl (VmVecDist (&gameData.segs.vMax, &gameData.segs.vMin));
 ResetObjects (1);		//one tObject, the player
 return 0;
 }

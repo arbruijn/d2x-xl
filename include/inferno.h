@@ -1611,6 +1611,7 @@ typedef struct tRenderData {
 	int						nTotalFaces;
 	int						nTotalLights;
 	int						nMaxLights;
+	int						nColoredFaces;
 	int						nStateChanges;
 	int						nShaderChanges;
 	float						fAttScale;
@@ -1651,6 +1652,7 @@ typedef struct tFaceData {
 	tTexCoord2f			*lMapTexCoord;
 	tRgbaColorf			*color;
 	ushort				*faceVerts;
+	grsFace				*slidingFaces;
 #if USE_RANGE_ELEMENTS
 	GLuint				*vertIndex;
 #endif
@@ -1680,6 +1682,9 @@ typedef struct tSegmentData {
 	fix					*segRads [2];
 	tSegExtent			*extent;
 #endif
+	vmsVector			vMin;
+	vmsVector			vMax;
+	float					fRad;
 	vmsVector			*segCenters [2];
 	vmsVector			*sideCenters;
 	ubyte					*bVertVis;
@@ -2507,12 +2512,14 @@ int						nLifetimeChecksum;
 #if PROFILING
 
 typedef enum tProfilerTags {
+	ptFrame,
 	ptRenderMine,
 	ptBuildSegList,
 	ptBuildObjList,
 	ptRenderObjects,
 	ptRenderObjectsFast,
 	ptLighting,
+	ptRenderPass,
 	ptSegmentLighting,
 	ptVertexLighting,
 	ptPerPixelLighting,
@@ -2523,6 +2530,7 @@ typedef enum tProfilerTags {
 	ptTransform,
 	ptVertexColor,
 	ptFaceList,
+	ptAux,
 	ptTagCount
 	} tProfilerTags;
 

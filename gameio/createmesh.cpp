@@ -917,6 +917,10 @@ else if (strstr (pszName, "lava"))
 	m_faceP->bAdditive = 2;
 else
 	m_faceP->bAdditive = (strstr (pszName, "force") || m_faceP->bSparks) ? 1 : 0;
+if (m_faceP->bSlide) {
+	m_faceP->nextSlidingFace = gameData.segs.faces.slidingFaces;
+	gameData.segs.faces.slidingFaces = m_faceP;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1124,6 +1128,7 @@ m_faceColorP = gameData.segs.faces.color;
 m_colorP = gameData.render.color.ambient;
 m_segP = SEGMENTS;
 m_segFaceP = SEGFACES;
+gameData.segs.faces.slidingFaces = NULL;
 
 	short			nSegment, i;
 	ubyte			nSide;

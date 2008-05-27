@@ -115,10 +115,18 @@ do {
 			QSortFaces (0, tiRender.nFaces / 2 - 1);
 		}
 	else if (tiRender.nTask == rtComputeFaceLight) {
-		if (nId)
-			ComputeFaceLight (gameData.render.mine.nRenderSegs - 1, tiRender.nMiddle - 1, nId);
-		else
-			ComputeFaceLight (0, tiRender.nMiddle, nId);
+		if (gameData.render.mine.nRenderSegs < 0) {
+			if (nId)
+				ComputeFaceLight (gameData.segs.nFaces / 2, gameData.segs.nFaces, nId);
+			else
+				ComputeFaceLight (0, gameData.segs.nFaces / 2, nId);
+			}
+		else {
+			if (nId)
+				ComputeFaceLight (gameData.render.mine.nRenderSegs - 1, tiRender.nMiddle - 1, nId);
+			else
+				ComputeFaceLight (0, tiRender.nMiddle, nId);
+			}
 		}
 	else if (tiRender.nTask == rtAnimateLightnings) {
 		if (nId)
