@@ -77,7 +77,7 @@ extern GLhandleARB gsShaderProg [2][3];
 // this is a work around for OpenGL's per vertex light interpolation
 // rendering a quad is always started with the brightest vertex
 
-void G3QuadIndex (grsFace *faceP, int *indexP)
+void G3BuildQuadIndex (grsFace *faceP, int *indexP)
 {
 	tRgbaColorf	*pc = gameData.segs.faces.color + faceP->nIndex;
 	float			l, lMax = 0;
@@ -138,7 +138,7 @@ if (gameStates.render.bTriangleMesh) {
 		faceBuffer.index [faceBuffer.nElements++] = i++;
 	}
 else {
-	G3QuadIndex (faceP, faceBuffer.index + faceBuffer.nElements);
+	G3BuildQuadIndex (faceP, faceBuffer.index + faceBuffer.nElements);
 	faceBuffer.nElements += 4;
 	}
 faceBuffer.nFaces++;
@@ -490,7 +490,7 @@ else {
 #if 1
 	int	index [4];
 
-	G3QuadIndex (faceP, index);
+	G3BuildQuadIndex (faceP, index);
 	glDrawElements (GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, index);
 #else
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
