@@ -700,7 +700,7 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 /*---*/PrintLog ("Loading level...\n");
 if (!gameStates.render.bUsePerPixelLighting)
 	gameStates.render.bPerPixelLighting = 0;
-DestroyLightMaps ();
+DestroyLightmaps ();
 gameStates.app.bBetweenLevels = 1;
 gameStates.app.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;
@@ -714,7 +714,11 @@ gameStates.gameplay.bKillBossCheat = 0;
 gameStates.render.nFlashScale = F1_0;
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
 gameStates.render.automap.bFull = 0;
-gameData.render.ogl.nHeadLights = -1;
+gameData.render.ogl.nHeadlights = -1;
+gameData.app.nFrameCount = 0;
+#if PROFILING
+memset (&gameData.profiler, 0, sizeof (gameData.profiler));
+#endif
 DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 memset (gameData.render.mine.bObjectRendered, 0xff, sizeof (gameData.render.mine.bObjectRendered));
@@ -730,6 +734,7 @@ memset (gameData.render.faceIndex [0].roots, 0xff, sizeof (gameData.render.faceI
 memset (gameData.render.faceIndex [1].roots, 0xff, sizeof (gameData.render.faceIndex [1].roots));
 memset (gameData.render.faceIndex [0].tails, 0xff, sizeof (gameData.render.faceIndex [0].tails));
 memset (gameData.render.faceIndex [1].tails, 0xff, sizeof (gameData.render.faceIndex [1].tails));
+memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 gameData.render.faceIndex [0].nUsedFaces = 0;
 gameData.render.faceIndex [0].nUsedKeys = 0;
 gameData.render.faceIndex [1].nUsedFaces = MAX_FACES;

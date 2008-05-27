@@ -261,14 +261,14 @@ InitSmoke ();
 LoadBackgroundBitmap ();
 nClearWindow = 2;		//	do portal only window clear.
 InitDetailLevels (gameStates.app.nDetailLevel);
-gameStates.render.color.bRenderLightMaps =
-	gameStates.render.color.bLightMapsOk && 
+gameStates.render.color.bRenderLightmaps =
+	gameStates.render.color.bLightmapsOk && 
 	gameStates.render.bAmbientColor && 
-	gameOpts->render.color.bUseLightMaps;
+	gameOpts->render.color.bUseLightmaps;
 gameStates.ogl.bGlTexMerge = 
 	gameOpts->ogl.bGlTexMerge && 
 	gameStates.render.textures.bGlsTexMergeOk;
-fpDrawTexPolyMulti = gameStates.render.color.bRenderLightMaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
+fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
 }
 
 //------------------------------------------------------------------------------
@@ -1505,7 +1505,7 @@ FreeHiresModels (0);
 PrintLog ("unloading tracker list\n");
 DestroyTrackerList ();
 PrintLog ("unloading lightmap data\n");
-DestroyLightMaps ();
+DestroyLightmaps ();
 PrintLog ("unloading particle data\n");
 DestroyAllSmoke ();
 PrintLog ("unloading shield sphere data\n");
@@ -1809,7 +1809,7 @@ SaveScreenShot (0, 0);
 
 //-----------------------------------------------------------------------------
 
-int PlayerHasHeadLight (int nPlayer)
+int PlayerHasHeadlight (int nPlayer)
 {
 return EGI_FLAG (headlight.bAvailable, 0, 0, 0) &&
 		 (EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) || 
@@ -1818,22 +1818,22 @@ return EGI_FLAG (headlight.bAvailable, 0, 0, 0) &&
 
 //-----------------------------------------------------------------------------
 
-int HeadLightIsOn (int nPlayer)
+int HeadlightIsOn (int nPlayer)
 {
 #ifdef _DEBUG
-if (!PlayerHasHeadLight (nPlayer))
+if (!PlayerHasHeadlight (nPlayer))
 	return 0;
 if (!(gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON))
 	return 0;
 return 1;
 #else
-return PlayerHasHeadLight (nPlayer) && ((gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0);
+return PlayerHasHeadlight (nPlayer) && ((gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0);
 #endif
 }
 
 //-----------------------------------------------------------------------------
 
-void SetPlayerHeadLight (int nPlayer, int bOn)
+void SetPlayerHeadlight (int nPlayer, int bOn)
 {
 if (bOn)
 	gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags |= PLAYER_FLAGS_HEADLIGHT_ON;
@@ -1843,13 +1843,13 @@ else
 
 //-----------------------------------------------------------------------------
 
-void DrainHeadLightPower (void)
+void DrainHeadlightPower (void)
 {
 	static int bTurnedOff = 0;
 
 if (!EGI_FLAG (headlight.bDrainPower, 0, 0, 1))
 	return;
-if (!HeadLightIsOn (-1))
+if (!HeadlightIsOn (-1))
 	return;
 
 LOCALPLAYER.energy -= (gameData.time.xFrame * 3 / 8);
@@ -1933,7 +1933,7 @@ if (nDebugSlowdown) {
 	DoFinalBossFrame ();
 // -- lightning_frame ();
 	// -- recharge_energy_frame ();
-DrainHeadLightPower ();
+DrainHeadlightPower ();
 #ifdef EDITOR
 	check_create_player_path ();
 	player_follow_path (gameData.objs.console);

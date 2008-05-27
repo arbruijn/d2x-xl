@@ -1293,7 +1293,7 @@ static void LoadSegmentsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 	int	bLightmaps = 0, bShadows = 0;
 
 #if LIGHTMAPS
-if (gameStates.app.bD2XLevel && gameStates.render.color.bLightMapsOk)
+if (gameStates.app.bD2XLevel && gameStates.render.color.bLightmapsOk)
 	bLightmaps = 1;
 #endif
 #if SHADOWS
@@ -1369,7 +1369,7 @@ int LoadMineGaugeSize (void)
 	int	bLightmaps = 0, bShadows = 0;
 
 #if LIGHTMAPS
-	if (gameStates.render.color.bLightMapsOk)
+	if (gameStates.render.color.bLightmapsOk)
 		bLightmaps = 1;
 #endif
 #if SHADOWS

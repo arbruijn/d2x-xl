@@ -101,7 +101,7 @@ class CQuadMeshBuilder {
 	public:
 		CQuadMeshBuilder (void) {};
 		~CQuadMeshBuilder (void) {};
-		void RebuildLightMapTexCoord (void);
+		void RebuildLightmapTexCoord (void);
 		int Build (int nLevel, bool bRebuild = false);
 	};
 

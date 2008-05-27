@@ -792,10 +792,9 @@ return bOk;
 
 int G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
-time_t tRenderObject;
-
 int RenderObject (tObject *objP, int nWindowNum, int bForce)
 {
+PROF_START
 	short			nObject = OBJ_IDX (objP);
 	int			mldSave, bSpectate = 0, bDepthSort = gameOpts->render.nPath || (gameOpts->render.bDepthSort > 0);
 	int			bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
@@ -827,7 +826,7 @@ if (bEmissive && gameStates.render.bQueryCoronas)
 if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]) && 
 	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]) &&
 	 (gameStates.render.nShadowPass != 2)) {
-	tRenderObject += clock () - t;
+	PROF_END(ptRenderObjects)
 	return 0;
 	}
 if (nObject != LOCALPLAYER.nObject) {
@@ -849,7 +848,7 @@ else if ((gameData.objs.viewer == gameData.objs.console) && !gameStates.render.a
 #endif	 
 		if (gameOpts->render.smoke.bPlayers)
 			DoPlayerSmoke (objP, -1);
-		tRenderObject += clock () - t;
+		PROF_END(ptRenderObjects)
 		return 0;	
 		}
 	}
@@ -857,7 +856,7 @@ if ((objP->nType == OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
 #if TRACE			
 	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", nObject, objP->nSegment);
 #endif
-	tRenderObject += clock () - t;
+	PROF_END(ptRenderObjects)
 	return 0;
 	}
 mldSave = gameStates.render.detail.nMaxLinearDepth;
@@ -1152,7 +1151,7 @@ if (objP->renderType != RT_NONE)
 	}
 #endif
 gameStates.render.detail.nMaxLinearDepth = mldSave;
-tRenderObject += clock () - t;
+PROF_END(ptRenderObjects)
 return 1;
 }
 

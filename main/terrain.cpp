@@ -43,18 +43,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define GRID_SIZE				(gameData.render.terrain.nGridW * gameData.render.terrain.nGridH)
 #define GRID_OFFS(_i,_j)	((_i) * gameData.render.terrain.nGridW + (_j))
-#define HEIGHT(_i,_j)		(gameData.render.terrain.pHeightMap [GRID_OFFS (_i,_j)])
-#define LIGHT(_i,_j)			(gameData.render.terrain.pLightMap [GRID_OFFS (_i,_j)])
+#define HEIGHT(_i,_j)		(gameData.render.terrain.pHeightmap [GRID_OFFS (_i,_j)])
+#define LIGHT(_i,_j)			(gameData.render.terrain.pLightmap [GRID_OFFS (_i,_j)])
 
-//!!#define HEIGHT (_i, _j)   gameData.render.terrain.pHeightMap [(gameData.render.terrain.nGridH - 1-j)*gameData.render.terrain.nGridW+ (_i)]
-//!!#define LIGHT (_i, _j)    gameData.render.terrain.pLightMap [(gameData.render.terrain.nGridH - 1-j)*gameData.render.terrain.nGridW+ (_i)]
+//!!#define HEIGHT (_i, _j)   gameData.render.terrain.pHeightmap [(gameData.render.terrain.nGridH - 1-j)*gameData.render.terrain.nGridW+ (_i)]
+//!!#define LIGHT (_i, _j)    gameData.render.terrain.pLightmap [(gameData.render.terrain.nGridH - 1-j)*gameData.render.terrain.nGridW+ (_i)]
 
 #define LIGHTVAL(_i,_j) (((fix) LIGHT (_i,_j))) // << 8)
 
 
 // LINT: adding function prototypes
-void BuildTerrainLightMap (void);
-void _CDECL_ FreeTerrainLightMap (void);
+void BuildTerrainLightmap (void);
+void _CDECL_ FreeTerrainLightmap (void);
 
 // ------------------------------------------------------------------------
 
@@ -283,11 +283,11 @@ for (i = iHigh - 1; i >= iViewer; i--) {
 
 //-----------------------------------------------------------------------------
 
-void _CDECL_ FreeTerrainHeightMap (void)
+void _CDECL_ FreeTerrainHeightmap (void)
 {
-if (gameData.render.terrain.pHeightMap) {
+if (gameData.render.terrain.pHeightmap) {
 	PrintLog ("unloading terrain height map\n");
-	D2_FREE (gameData.render.terrain.pHeightMap);
+	D2_FREE (gameData.render.terrain.pHeightmap);
 	}
 }
 
@@ -308,16 +308,16 @@ if (iff_error != IFF_NO_ERROR) {
 #endif	
 	Error ("File %s - IFF error: %s", filename, iff_errormsg (iff_error));
 }
-if (gameData.render.terrain.pHeightMap)
-	D2_FREE (gameData.render.terrain.pHeightMap)
+if (gameData.render.terrain.pHeightmap)
+	D2_FREE (gameData.render.terrain.pHeightmap)
 else
-	atexit (FreeTerrainHeightMap);		//first time
+	atexit (FreeTerrainHeightmap);		//first time
 gameData.render.terrain.nGridW = bmHeight.bmProps.w;
 gameData.render.terrain.nGridH = bmHeight.bmProps.h;
 Assert (gameData.render.terrain.nGridW <= TERRAIN_GRID_MAX_SIZE);
 Assert (gameData.render.terrain.nGridH <= TERRAIN_GRID_MAX_SIZE);
 PrintLog ("heightmap loaded, size=%dx%d\n", gameData.render.terrain.nGridW, gameData.render.terrain.nGridH);
-gameData.render.terrain.pHeightMap = bmHeight.bmTexBuf;
+gameData.render.terrain.pHeightmap = bmHeight.bmTexBuf;
 hMax = 0;
 hMin = 255;
 for (i = 0; i < gameData.render.terrain.nGridW; i++)
@@ -343,7 +343,7 @@ gameData.render.terrain.bmP->bmTexBuf = D2_ALLOC (gameData.render.terrain.bmP->b
 memset (gameData.render.terrain.bmP->bmTexBuf, 0xFF, gameData.render.terrain.bmP->bmProps.h * gameData.render.terrain.bmP->bmProps.rowSize);
 #endif
 PrintLog ("            building terrain light map\n");
-BuildTerrainLightMap ();
+BuildTerrainLightmap ();
 }
 
 
@@ -351,7 +351,7 @@ BuildTerrainLightMap ();
 
 static void GetTerrainPoint (vmsVector *p, int i, int j)
 {
-if (!gameData.render.terrain.pHeightMap) {
+if (!gameData.render.terrain.pHeightmap) {
 	PrintLog ("no heightmap available\n");
 	return;
 	}
@@ -399,11 +399,11 @@ return totalLight / 6;
 
 //-----------------------------------------------------------------------------
 
-void _CDECL_ FreeTerrainLightMap ()
+void _CDECL_ FreeTerrainLightmap ()
 {
-if (gameData.render.terrain.pLightMap) {
+if (gameData.render.terrain.pLightmap) {
 	PrintLog ("unloading terrain light map\n");
-	D2_FREE (gameData.render.terrain.pLightMap);
+	D2_FREE (gameData.render.terrain.pLightmap);
 	}
 }
 
@@ -426,19 +426,19 @@ for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 
 //-----------------------------------------------------------------------------
 
-void BuildTerrainLightMap ()
+void BuildTerrainLightmap ()
 {
 	int i, j;
 	fix l, l2, lMin = 0x7fffffff, lMax = 0;
 
 
-if (gameData.render.terrain.pLightMap)
-	D2_FREE (gameData.render.terrain.pLightMap)
+if (gameData.render.terrain.pLightmap)
+	D2_FREE (gameData.render.terrain.pLightmap)
 else
-	atexit (FreeTerrainLightMap);		//first time
+	atexit (FreeTerrainLightmap);		//first time
 
 gameData.render.terrain.pPoints = (vmsVector *) D2_ALLOC (GRID_SIZE * sizeof (vmsVector));
-gameData.render.terrain.pLightMap = (fix *) D2_ALLOC (GRID_SIZE * sizeof (fix));
+gameData.render.terrain.pLightmap = (fix *) D2_ALLOC (GRID_SIZE * sizeof (fix));
 ComputeTerrainPoints ();
 for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 	for (j = 0; j < gameData.render.terrain.nGridH; j++) {

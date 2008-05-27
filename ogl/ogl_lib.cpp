@@ -694,27 +694,24 @@ if (gameOpts->ogl.bObjLighting || gameStates.render.bPerPixelLighting) {
 
 //------------------------------------------------------------------------------
 
-#if PROFILING
-extern time_t tRenderMine, tRenderObject, tG3VertexColor, tSetNearestDynamicLights, tTransform;
-#endif
-
 void OglSwapBuffers (int bForce, int bClear)
 {
 if (!gameStates.menus.nInMenu || bForce) {
 	OglCleanTextureCache ();
 #if 1//def _DEBUG
-	if (gr_renderstats) {
-		if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu && FONT && SMALL_FONT) {
-			GrPrintF (NULL, 5, SMALL_FONT->ftHeight * 2 + 2, "flat:%i tex:%i vert:%i sprite:%i msg:%i", r_polyc, r_tpolyc, r_tvertexc, r_bitmapc, r_ubitmapc);
+	if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu && FONT && SMALL_FONT) {
 #	if PROFILING
-			GrPrintF (NULL, 5, SMALL_FONT->ftHeight * 3 + 3, "mine:%ld", tRenderMine);
-			GrPrintF (NULL, 5, SMALL_FONT->ftHeight * 4 + 4, "obj:%ld ", tRenderObject);
-			GrPrintF (NULL, 5, SMALL_FONT->ftHeight * 5 + 5, "rot:%ld ", tTransform);
-			GrPrintF (NULL, 5, SMALL_FONT->ftHeight * 6 + 6, "color:%ld", tG3VertexColor);
-			GrPrintF (NULL, 5, SMALL_FONT->ftHeight * 7 + 7, "lights:%ld", tSetNearestDynamicLights);
-			tRenderMine = tRenderObject = tG3VertexColor = tSetNearestDynamicLights = tTransform = 0;
+		int h = SMALL_FONT->ftHeight + 3, i = 3;
+		GrPrintF (NULL, 5, h * i++, "scene:%ld", gameData.profiler.t [ptRenderMine]);
+		GrPrintF (NULL, 5, h * i++, "faces:%ld", gameData.profiler.t [ptRenderFaces]);
+		GrPrintF (NULL, 5, h * i++, "face list:%ld", gameData.profiler.t [ptFaceList]);
+		GrPrintF (NULL, 5, h * i++, "light:%ld", gameData.profiler.t [ptLighting]);
+		GrPrintF (NULL, 5, h * i++, "objects:%ld ", gameData.profiler.t [ptRenderObjects]);
+		GrPrintF (NULL, 5, h * i++, "states:%ld", gameData.profiler.t [ptRenderStates]);
+		GrPrintF (NULL, 5, h * i++, "shaders:%ld", gameData.profiler.t [ptShaderStates]);
+		GrPrintF (NULL, 5, h * i++, "transform:%ld ", gameData.profiler.t [ptTransform]);
+//		memset (&gameData.profiler, 0, sizeof (gameData.profiler));
 #	endif
-			}
 		}
 #endif
 	//if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
@@ -763,8 +760,8 @@ ResetTextures (1, bGame);
 G3FreeAllPolyModelItems ();
 InitShaders ();
 #if LIGHTMAPS
-if (HaveLightMaps ())
-	OglCreateLightMaps ();
+if (HaveLightmaps ())
+	OglCreateLightmaps ();
 #endif
 CloseDynLighting ();
 InitDynLighting ();

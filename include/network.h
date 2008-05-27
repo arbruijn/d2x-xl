@@ -168,11 +168,11 @@ typedef struct tMonsterballInfo {
 	tMonsterballForce forces [MAX_MONSTERBALL_FORCES];
 } tMonsterballInfo;
 
-typedef struct tHeadLightInfo {
+typedef struct tHeadlightInfo {
 	int bAvailable;
 	int bDrainPower;
 	int bBuiltIn;
-}  tHeadLightInfo;
+}  tHeadlightInfo;
 
 typedef struct tLoadoutInfo {
 	uint					nGuns;
@@ -261,7 +261,7 @@ typedef struct tExtraGameInfo {
 	tMonsterballInfo	monsterball;
 	char		szGameName [NETGAME_NAME_LEN + 1];
 	int		nSecurity;
-	tHeadLightInfo	headlight;
+	tHeadlightInfo	headlight;
 	tLoadoutInfo	loadout;
 } __pack__ tExtraGameInfo;
 

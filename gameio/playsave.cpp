@@ -395,7 +395,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].input.keyboard.nRamp, i, 0);
 
 		RP (gameOptions [i].ogl.bLightObjects, i, 0);
-		RP (gameOptions [i].ogl.bHeadLight, i, 0);
+		RP (gameOptions [i].ogl.bHeadlight, i, 0);
 		RP (gameOptions [i].ogl.bLightPowerups, i, 0);
 		RP (gameOptions [i].ogl.bObjLighting, i, 0);
 		RP (gameOptions [i].ogl.nMaxLightsPerFace, i, 0);
@@ -468,8 +468,8 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.color.bMix, i, 0);
 		RP (gameOptions [i].render.color.nSaturation, i, 0);
 		RP (gameOptions [i].render.color.bWalls, i, 0);
-		RP (gameOptions [i].render.color.bUseLightMaps, i, 0);
-		RP (gameOptions [i].render.color.nLightMapRange, i, 0);
+		RP (gameOptions [i].render.color.bUseLightmaps, i, 0);
+		RP (gameOptions [i].render.color.nLightmapRange, i, 0);
 
 		RP (gameOptions [i].render.powerups.b3D, i, 0);
 		RP (gameOptions [i].render.powerups.nSpin, i, 0);
@@ -969,7 +969,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].input.trackIR.nDeadzone", "4"},
 	{"gameOptions[0].input.keyboard.nRamp", "50"},
 	{"gameOptions[0].ogl.bLightObjects", "1"},
-	{"gameOptions[0].ogl.bHeadLights", "0"},
+	{"gameOptions[0].ogl.bHeadlights", "0"},
 	{"gameOptions[0].ogl.bLightPowerups", "0"},
 	{"gameOptions[0].ogl.bObjLighting", "0"},
 	{"gameOptions[0].ogl.nMaxLightsPerFace", "16"},
@@ -1024,8 +1024,8 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.color.bMix", "1"},
 	{"gameOptions[0].render.color.nColorSaturation", "0"},
 	{"gameOptions[0].render.color.bWalls", "1"},
-	{"gameOptions[0].render.color.bUseLightMaps", "0"},
-	{"gameOptions[0].render.color.nLightMapRange", "0"},
+	{"gameOptions[0].render.color.bUseLightmaps", "0"},
+	{"gameOptions[0].render.color.nLightmapRange", "0"},
 	{"gameOptions[0].render.lightnings.bAuxViews", "0"},
 	{"gameOptions[0].render.lightnings.bDamage", "1"},
 	{"gameOptions[0].render.lightnings.bExplosions", "1"},
@@ -1104,7 +1104,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bFastPitch", "2"},
 	{"extraGameInfo[0].bFlickerLights", "1"},
 	{"extraGameInfo[0].bFriendlyIndicators", "0"},
-	{"extraGameInfo[0].bHeadLights", "0"},
+	{"extraGameInfo[0].bHeadlights", "0"},
 	{"extraGameInfo[0].bMslLockIndicators", "1"},
 	{"extraGameInfo[0].bMouseLook", "0"},
 	{"extraGameInfo[0].bPowerupLights", "1"},
@@ -1157,7 +1157,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[1].bFastPitch", "2"},
 	{"extraGameInfo[1].bFlickerLights", "1"},
 	{"extraGameInfo[1].bFriendlyIndicators", "1"},
-	{"extraGameInfo[1].bHeadLights", "1"},
+	{"extraGameInfo[1].bHeadlights", "1"},
 	{"extraGameInfo[1].bMslLockIndicators", "1"},
 	{"extraGameInfo[1].bMouseLook", "0"},
 	{"extraGameInfo[1].bPowerupLights", "0"},
@@ -1613,11 +1613,11 @@ for (i = 0; i < 2; i++) {
 			extraGameInfo [0].nFusionRamp = (int) CFReadByte (pcf);
 		}
 	if (gameStates.input.nPlrFileVersion >= 62)
-		gameOptions [i].render.color.bUseLightMaps = (int) CFReadByte (pcf);
+		gameOptions [i].render.color.bUseLightmaps = (int) CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 63)
 		gameOptions [i].render.cockpit.bHUD = (int) CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 64)
-		gameOptions [i].render.color.nLightMapRange = (int) CFReadByte (pcf);
+		gameOptions [i].render.color.nLightmapRange = (int) CFReadByte (pcf);
 	if (!i) {
 		if (gameStates.input.nPlrFileVersion >= 65)
 			extraGameInfo [0].bMouseLook = (int) CFReadByte (pcf);
@@ -2282,9 +2282,9 @@ for (i = 0; i < 2; i++) {
 	CFWriteByte ((sbyte) gameOptions [i].render.cameras.nFPS, &cf);
 	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].nFusionRamp, &cf);
-	CFWriteByte ((sbyte) gameOptions [i].render.color.bUseLightMaps, &cf);
+	CFWriteByte ((sbyte) gameOptions [i].render.color.bUseLightmaps, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.bHUD, &cf);
-	CFWriteByte ((sbyte) gameOptions [i].render.color.nLightMapRange, &cf);
+	CFWriteByte ((sbyte) gameOptions [i].render.color.nLightmapRange, &cf);
 	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [0].bMouseLook, &cf);
 		CFWriteByte ((sbyte) extraGameInfo [0].bMultiBosses, &cf);
@@ -2436,7 +2436,7 @@ for (i = 0; i < 2; i++) {
 	CFWriteByte (extraGameInfo [i].bDamageIndicators, &cf);
 	CFWriteByte (extraGameInfo [i].bFriendlyIndicators, &cf);
 	CFWriteByte (extraGameInfo [i].bCloakedIndicators, &cf);
-	CFWriteByte (extraGameInfo [i].bHeadLights, &cf);
+	CFWriteByte (extraGameInfo [i].bHeadlights, &cf);
 	CFWriteByte (extraGameInfo [i].bPowerupLights, &cf);
 	CFWriteByte (extraGameInfo [i].nSpotSize, &cf);
 	CFWriteByte (extraGameInfo [i].bTowFlags, &cf);

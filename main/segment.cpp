@@ -28,7 +28,7 @@ void ReadSegment2 (tSegment2 *s2, CFILE *fp)
 //------------------------------------------------------------------------------
 // reads a tLightDelta structure from a CFILE
 
-void ReadLightDelta (tLightDelta *dlP, CFILE *fp)
+void ReadlightDelta (tLightDelta *dlP, CFILE *fp)
 {
 dlP->nSegment = CFReadShort (fp);
 dlP->nSide = CFReadByte (fp);
@@ -42,7 +42,7 @@ CFRead (dlP->vertLight, sizeof (dlP->vertLight [0]), sizeofa (dlP->vertLight), f
 //------------------------------------------------------------------------------
 // reads a tLightDeltaIndex structure from a CFILE
 
-void ReadLightDeltaIndex (tLightDeltaIndex *di, CFILE *fp)
+void ReadlightDeltaIndex (tLightDeltaIndex *di, CFILE *fp)
 {
 if (gameStates.render.bD2XLights) {
 	short	i, j;

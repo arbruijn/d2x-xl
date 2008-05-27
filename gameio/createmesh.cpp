@@ -1019,7 +1019,7 @@ for (i = 0; i < 2; i++, m_triP++) {
 
 //------------------------------------------------------------------------------
 
-void CQuadMeshBuilder::RebuildLightMapTexCoord (void)
+void CQuadMeshBuilder::RebuildLightmapTexCoord (void)
 {
 	static short	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
 

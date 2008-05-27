@@ -1221,7 +1221,7 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadLightDeltaIndexInfo (CFILE *cfp)
+static int ReadlightDeltaIndexInfo (CFILE *cfp)
 {
 if (gameFileInfo.lightDeltaIndices.offset > -1) {
 	int	i;
@@ -1241,7 +1241,7 @@ if (gameFileInfo.lightDeltaIndices.offset > -1) {
 	else {
 		for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
 			//PrintLog ("reading DL index %d\n", i);
-			ReadLightDeltaIndex (gameData.render.lights.deltaIndices + i, cfp);
+			ReadlightDeltaIndex (gameData.render.lights.deltaIndices + i, cfp);
 			}
 		}
 	}
@@ -1251,7 +1251,7 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadLightDeltaInfo (CFILE *cfp)
+static int ReadlightDeltaInfo (CFILE *cfp)
 {
 if (gameFileInfo.lightDeltas.offset > -1) {
 	int	i;
@@ -1265,7 +1265,7 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 		}
 	for (i = 0; i < gameFileInfo.lightDeltas.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 29) 
-			ReadLightDelta (gameData.render.lights.deltas + i, cfp);
+			ReadlightDelta (gameData.render.lights.deltas + i, cfp);
 		else {
 #if TRACE
 			con_printf (CONDBG, "Warning: Old mine version.  Not reading delta light info.\n");
@@ -1447,9 +1447,9 @@ if (ReadBotGenInfo (cfp))
 	return -1;
 if (ReadEquipGenInfo (cfp))
 	return -1;
-if (ReadLightDeltaIndexInfo (cfp))
+if (ReadlightDeltaIndexInfo (cfp))
 	return -1;
-if (ReadLightDeltaInfo (cfp))
+if (ReadlightDeltaInfo (cfp))
 	return -1;
 ClearLightSubtracted ();
 ResetObjects (gameFileInfo.objects.count);
@@ -1637,9 +1637,9 @@ if (!gameStates.app.bNostalgia) {
 		AddDynGeometryLights ();
 		ComputeNearestLights (nLevel);
 		if (gameStates.render.bPerPixelLighting) {
-			CreateLightMaps (nLevel);
-			if (HaveLightMaps ())
-				quadMeshBuilder.RebuildLightMapTexCoord ();	//rebuild to create proper lightmap texture coordinates
+			CreateLightmaps (nLevel);
+			if (HaveLightmaps ())
+				quadMeshBuilder.RebuildLightmapTexCoord ();	//rebuild to create proper lightmap texture coordinates
 			}
 		}
 	}

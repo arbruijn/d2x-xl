@@ -985,7 +985,7 @@ Assert (nObject >= 0);
 gameData.escort.nObjNum = nObject;
 if (player_visibility) {
 	xBuddyLastSeenPlayer = gameData.time.xGame;
-	if (PlayerHasHeadLight (-1) && EGI_FLAG (headlight.bDrainPower, 0, 0, 1))	//	DAMN!MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON
+	if (PlayerHasHeadlight (-1) && EGI_FLAG (headlight.bDrainPower, 0, 0, 1))	//	DAMN!MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON
 		if (f2i (LOCALPLAYER.energy) < 40)
 			if ((f2i (LOCALPLAYER.energy)/2) & 2)
 				if (!gameStates.app.bPlayerIsDead)

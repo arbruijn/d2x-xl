@@ -102,17 +102,11 @@ modelPointList = pointlist;
 
 //------------------------------------------------------------------------------
 
-#if PROFILING
-time_t tTransform = 0;
-#endif
-
 void RotatePointList (g3sPoint *dest, vmsVector *src, g3sNormal *norms, int n, int o)
 {
+PROF_START
 	fVector	*pfv = gameData.models.fPolyModelVerts + o;
 	float		fScale;
-#if PROFILING
-	time_t	t = clock ();
-#endif
 
 dest += o;
 if (norms)
@@ -165,9 +159,7 @@ while (n--) {
 	dest++;
 	pfv++;
 	}
-#if PROFILING
-tTransform += clock () - t;
-#endif
+PROF_END(ptTransform)
 }
 
 //------------------------------------------------------------------------------

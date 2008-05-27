@@ -1984,7 +1984,7 @@ if (objP->nType == OBJ_ROBOT) {
 	if (objP->shields > xMaxShields)
 		objP->shields = xMaxShields;
 #ifdef _DEBUG
-	//AddOglHeadLight (objP);
+	//AddOglHeadlight (objP);
 #endif
 	}
 objP->vLastPos = objP->position.vPos;			// Save the current position

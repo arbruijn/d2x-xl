@@ -7,67 +7,67 @@
 //------------------------------------------------------------------------------
 
 #define MAX_LIGHTMAP_WIDTH	128
-#define LIGHTMAP_WIDTH		lightMapWidth [gameOpts->render.nLightmapQuality]
+#define LIGHTMAP_WIDTH		lightmapWidth [gameOpts->render.nLightmapQuality]
 #define LIGHTMAP_BUFWIDTH	512
 #define LIGHTMAP_ROWSIZE	(LIGHTMAP_BUFWIDTH / LIGHTMAP_WIDTH)
 #define LIGHTMAP_BUFSIZE	(LIGHTMAP_ROWSIZE * LIGHTMAP_ROWSIZE)
 
 //------------------------------------------------------------------------------
 
-typedef struct tLightMapInfo {
+typedef struct tLightmapInfo {
 	vmsVector	vPos;
 	vmsVector	vDir;  //currently based on face normals
 	GLfloat		color [3];
 	//float		bright;
 	double		range;
 	int			nIndex;  //(seg*6)+tSide ie which tSide the light is on
-} tLightMapInfo;
+} tLightmapInfo;
 
-typedef struct tLightMap {
+typedef struct tLightmap {
 	tRgbColorf	*bmP;
-} tLightMap;
+} tLightmap;
 
-typedef struct tLightMapBuffer {
+typedef struct tLightmapBuffer {
 	GLuint		handle;
 	tRgbColorb	bmP [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
-} tLightMapBuffer;
+} tLightmapBuffer;
 
-typedef struct tLightMapData {
-	tLightMapInfo		*info;
-	tLightMapBuffer	*buffers;
+typedef struct tLightmapData {
+	tLightmapInfo		*info;
+	tLightmapBuffer	*buffers;
 	int					nBuffers;
 	int					nLights; 
 	ushort				nLightmaps;
-} tLightMapData;
+} tLightmapData;
 
 //------------------------------------------------------------------------------
 
 void InitLightmapShaders (void);
 void RestoreLights (int bVariable);
-void CreateLightMaps (int nLevel);
-void DestroyLightMaps (void);
-int OglCreateLightMap (int nLightMap);
-int OglCreateLightMaps (void);
-void OglDestroyLightMaps (void);
+void CreateLightmaps (int nLevel);
+void DestroyLightmaps (void);
+int OglCreateLightmap (int nLightmap);
+int OglCreateLightmaps (void);
+void OglDestroyLightmaps (void);
 
 #define	USE_LIGHTMAPS \
-			(gameStates.render.color.bLightMapsOk && \
-			 gameOpts->render.color.bUseLightMaps && \
+			(gameStates.render.color.bLightmapsOk && \
+			 gameOpts->render.color.bUseLightmaps && \
 			 !IsMultiGame && \
 			 (gameOpts->render.nLightingMethod == 0))
 
 //------------------------------------------------------------------------------
 
-//extern tOglTexture	*lightMaps;
-extern tLightMapData		lightMapData;
-extern int					lightMapWidth [5];
+//extern tOglTexture	*lightmaps;
+extern tLightmapData		lightmapData;
+extern int					lightmapWidth [5];
 extern GLhandleARB		lmShaderProgs [3];
 
 //------------------------------------------------------------------------------
 
-static inline int HaveLightMaps (void)
+static inline int HaveLightmaps (void)
 {
-return (lightMapData.info != NULL);
+return (lightmapData.info != NULL);
 }
 
 //------------------------------------------------------------------------------

@@ -480,7 +480,7 @@ if (bmTop)
 #	endif
 		bmBot, bmTop, 
 #	if LIGHTMAPS
-		NULL, //lightMaps + props.segNum * 6 + props.sideNum, 
+		NULL, //lightmaps + props.segNum * 6 + props.sideNum, 
 #	endif
 		&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam, props.segNum); 
 else
@@ -489,7 +489,7 @@ else
 #	else
 	fpDrawTexPolyMulti (
 		props.nVertices, pointList, props.uvls, props.uvl_lMaps, bmBot, NULL, 
-		NULL, //lightMaps + props.segNum * 6 + props.sideNum, 
+		NULL, //lightmaps + props.segNum * 6 + props.sideNum, 
 		&props.vNormal, 0, !bIsMonitor || bIsTeleCam, props.segNum);
 #	endif
 #else
@@ -500,7 +500,7 @@ fpDrawTexPolyMulti (
 #	endif
 	bmBot, bmTop, 
 #	if LIGHTMAPS
-	NULL, //lightMaps + props.segNum * 6 + props.sideNum, 
+	NULL, //lightmaps + props.segNum * 6 + props.sideNum, 
 #	endif
 	&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam,
 	props.segNum); 
@@ -584,7 +584,7 @@ switch (gameStates.render.nType) {
 		return;
 	}
 #if LIGHTMAPS
-if (gameStates.render.bDoLightMaps) {
+if (gameStates.render.bDoLightmaps) {
 		float	Xs = 8;
 		float	h = 0.5f / (float) Xs;
 
@@ -605,7 +605,7 @@ props.nOvlOrient = sideP->nOvlOrient;
 	//	========== Mark: Here is the change...beginning here: ==========
 
 #if LIGHTMAPS
-	if (gameStates.render.bDoLightMaps) {
+	if (gameStates.render.bDoLightmaps) {
 		memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (tUVL) * 4);
 #if LMAP_LIGHTADJUST
 		props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = props.uvls [3].l = F1_0 / 2;
@@ -1375,6 +1375,7 @@ pi->xDist = VmVecDistQuick (&gameData.objs.objects [nObject].position.vPos, &gam
 
 void BuildRenderObjLists (int nSegCount)
 {
+PROF_START
 	tObject	*objP;
 	tSegment	*segP;
 	tSegMasks	mask;
@@ -1416,6 +1417,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		AddObjectToSegList (nObject, nNewSeg);
 		}
 	}
+PROF_END(ptBuildObjList)
 }
 
 //------------------------------------------------------------------------------
@@ -1522,6 +1524,8 @@ if (!gameOpts->render.nPath) {
 
 void BuildRenderSegList (short nStartSeg, int nWindow)
 {
+PROF_START
+
 	int		lCnt, sCnt, eCnt, wid, nSide;
 	int		l, i, j;
 	short		nChild;
@@ -1558,6 +1562,7 @@ if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && 
 			VISIT (i);
 			}
 	SortRenderSegs ();
+	PROF_END(ptBuildSegList)
 	return;
 	}
 
@@ -1748,6 +1753,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 	if (gameData.render.mine.nSegRenderList [i] >= 0)
 		gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [i]] = gameData.render.mine.nVisible;
 	}
+PROF_END(ptBuildSegList)
 }
 
 //------------------------------------------------------------------------------
@@ -1941,7 +1947,7 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 		}
 	gameStates.ogl.bUseTransform = 0;
 	TransformDynLights (0, 1);
-	TransformHeadLights ();
+	TransformHeadlights ();
 	}
 if (nClearWindow == 2) {
 	if (nFirstTerminalSeg < gameData.render.mine.nRenderSegs) {
@@ -2040,15 +2046,9 @@ return 1;
 //------------------------------------------------------------------------------
 //renders onto current canvas
 
-#if PROFILING
-time_t tRenderMine = 0;
-#endif
-
 void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
-#if PROFILING
-	time_t	t = clock ();
-#endif
+PROF_START
 #ifdef _DEBUG
 if (nWindow)
 	nWindow = nWindow;
@@ -2056,7 +2056,7 @@ else
 	nWindow = nWindow;
 #endif
 if (gameStates.render.nLightingMethod == 2)
-	gameStates.render.bPerPixelLighting = HaveLightMaps () ? 2 : gameStates.render.bPerPixelLighting ? 1 : 0;
+	gameStates.render.bPerPixelLighting = HaveLightmaps () ? 2 : gameStates.render.bPerPixelLighting ? 1 : 0;
 else
 	gameStates.render.bPerPixelLighting = 0;
 gameData.render.nTotalFaces =
@@ -2078,8 +2078,8 @@ else
 gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras && 
 									    (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) && 
 										 !gameStates.render.cameras.bActive;
-gameStates.render.bDoLightMaps = gameStates.render.color.bLightMapsOk && 
-											gameOpts->render.color.bUseLightMaps && 
+gameStates.render.bDoLightmaps = gameStates.render.color.bLightmapsOk && 
+											gameOpts->render.color.bUseLightmaps && 
 											gameStates.render.bAmbientColor && 
 											!IsMultiGame;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
@@ -2092,7 +2092,7 @@ if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameState
 	UpdateSlidingFaces ();
 	}
 InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
-gameStates.render.bHeadLights = gameData.render.lights.dynamic.headLights.nLights && !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
+gameStates.render.bHeadlights = gameData.render.lights.dynamic.headlights.nLights && !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
 RenderSegmentList (0, 1);	// render opaque geometry
 if ((gameOpts->render.bDepthSort < 1) && !gameOpts->render.nPath)
 	RenderSkyBox (nWindow);
@@ -2125,9 +2125,7 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 			RenderEnergySparks ();
 		}
 	}
-#if PROFILING
-tRenderMine += clock () - t;
-#endif
+PROF_END(ptRenderMine)
 }
 
 // ----------------------------------------------------------------------------

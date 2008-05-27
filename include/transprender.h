@@ -126,8 +126,8 @@ typedef struct tRenderItemBuffer {
 	char				bClientTexCoord;
 	char				bDepthMask;
 	char				bDisplay;
-	char				bLightMaps;
-	char				bUseLightMaps;
+	char				bLightmaps;
+	char				bUseLightmaps;
 	char				bSplitPolys;
 	grsBitmap		*bmP;
 } tRenderItemBuffer;

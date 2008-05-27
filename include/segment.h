@@ -287,8 +287,8 @@ extern void med_check_all_vertices();
 
 #if 0
 #define ReadSegment2(s2, fp) CFRead(s2, sizeof(tSegment2), 1, fp)
-#define ReadLightDelta(dl, fp) CFRead(dl, sizeof(tLightDelta), 1, fp)
-#define ReadLightDeltaIndex(di, fp) CFRead(di, sizeof(tLightDeltaIndex), 1, fp)
+#define ReadlightDelta(dl, fp) CFRead(dl, sizeof(tLightDelta), 1, fp)
+#define ReadlightDeltaIndex(di, fp) CFRead(di, sizeof(tLightDeltaIndex), 1, fp)
 #else
 /*
  * reads a tSegment2 structure from a CFILE
@@ -298,12 +298,12 @@ void ReadSegment2(tSegment2 *s2, CFILE *fp);
 /*
  * reads a tLightDelta structure from a CFILE
  */
-void ReadLightDelta(tLightDelta *dl, CFILE *fp);
+void ReadlightDelta(tLightDelta *dl, CFILE *fp);
 
 /*
  * reads a tLightDeltaIndex structure from a CFILE
  */
-void ReadLightDeltaIndex(tLightDeltaIndex *di, CFILE *fp);
+void ReadlightDeltaIndex(tLightDeltaIndex *di, CFILE *fp);
 #endif
 
 int CountSkyBoxSegments (void);

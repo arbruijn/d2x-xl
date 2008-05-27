@@ -14,11 +14,11 @@
 int G3DrawFaceSimple (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int G3DrawFaceArraysPPLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-int G3DrawHeadLights (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-int G3DrawHeadLightsPPLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int G3DrawHeadlights (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int G3DrawHeadlightsPPLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 void G3FlushFaceBuffer (int bForce);
-int G3SetupPerPixelShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadLight);
-int G3SetupHeadLightShader (int nType, int bLightMaps, tRgbaColorf *colorP);
+int G3SetupPerPixelShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadlight);
+int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP);
 int G3SetupTexMergeShader (int bColorKey, int bColored);
 int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP);
 int G3SetupShader (grsFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);

@@ -794,11 +794,12 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
 	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && gameOpts->ogl.bObjLighting,
 				nGunId, nBombId, nMissileId, nMissiles;
-
+return 1;
 if (!objP)
 	return 0;
 if (gameStates.render.bQueryCoronas && 
-	 (((objP->nType == OBJ_WEAPON) && (objP->id < MAX_WEAPONS) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id]) || gameStates.render.bCloaked))
+	 (((objP->nType == OBJ_WEAPON) && (objP->id < MAX_WEAPONS) &&
+	  gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id]) || gameStates.render.bCloaked))
 	return 1;
 #if G3_FAST_MODELS
 if (!gameOpts->render.nPath)
@@ -831,6 +832,7 @@ if (pm->bValid < 1) {
 			}
 		}
 	}
+PROF_START
 if (!(gameStates.render.bCloaked ? 
 	   G3EnableClientStates (0, 0, 0, GL_TEXTURE0) : 
 		G3EnableClientStates (1, 1, gameOpts->ogl.bObjLighting, GL_TEXTURE0)))
@@ -901,6 +903,7 @@ if (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP-
 	G3DoneInstance ();
 	}
 pm->bRendered = 1;
+PROF_END(ptRenderObjectsFast)
 return 1;
 }
 

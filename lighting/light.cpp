@@ -371,13 +371,13 @@ void ApplyLight (
 if (objP && SHOW_DYN_LIGHT) {
 	if (objP->nType == OBJ_PLAYER) {
 		if (EGI_FLAG (headlight.bAvailable, 0, 0, 0)) {
-			if (!HeadLightIsOn (objP->id)) 
-				RemoveOglHeadLight (objP);
-			else if (gameData.render.lights.dynamic.nHeadLights [objP->id] < 0)
-				gameData.render.lights.dynamic.nHeadLights [objP->id] = AddOglHeadLight (objP);
+			if (!HeadlightIsOn (objP->id)) 
+				RemoveOglHeadlight (objP);
+			else if (gameData.render.lights.dynamic.nHeadlights [objP->id] < 0)
+				gameData.render.lights.dynamic.nHeadlights [objP->id] = AddOglHeadlight (objP);
 			}
 		else {
-			if (HeadLightIsOn (objP->id)) {
+			if (HeadlightIsOn (objP->id)) {
 				playerP->flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 				HUDInitMessage (TXT_NO_HEADLIGHTS);
 				}
@@ -449,7 +449,7 @@ if (xObjIntensity) {
 		int	headlightShift = 0;
 		fix	maxHeadlightDist = F1_0 * 200;
 		if (objP && (objP->nType == OBJ_PLAYER))
-			if ((gameStates.render.bHeadLightOn = HeadLightIsOn (objP->id))) {
+			if ((gameStates.render.bHeadlightOn = HeadlightIsOn (objP->id))) {
 				headlightShift = 3;
 				if (color) {
 					bUseColor = bForceColor = 1;
@@ -575,9 +575,9 @@ colorP->blue = 1.0;
 switch (nObjType) {
 	case OBJ_PLAYER:
 		*pbGotColor = 1;
-		 if (HeadLightIsOn (objP->id)) {
-			if (nHeadLights < MAX_HEADLIGHTS)
-				Headlights [nHeadLights++] = objP;
+		 if (HeadlightIsOn (objP->id)) {
+			if (nHeadlights < MAX_HEADLIGHTS)
+				Headlights [nHeadlights++] = objP;
 			return HEADLIGHT_SCALE;
 			}
 		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->id].secondaryAmmo [PROXMINE_INDEX]) {
@@ -734,7 +734,7 @@ void SetDynamicLight (void)
 	vmsVector	*objPos;
 	fix			xObjIntensity;
 	tRgbaColorf	color;
-	nHeadLights = 0;
+	nHeadlights = 0;
 
 if (!gameOpts->render.debug.bDynamicLight)
 	return;
@@ -910,7 +910,7 @@ else {		//new tObject, initialize
 	gameData.objs.xLight [nObject] = light;
 	}
 //Next, add in headlight on this tObject
-// -- Matt code: light += ComputeHeadLight (vRotated,f1_0);
+// -- Matt code: light += ComputeHeadlight (vRotated,f1_0);
 light += ComputeHeadlightLightOnObject (objP);
 //Finally, add in dynamic light for this tSegment
 light += ComputeSegDynamicLight (objP->nSegment);
@@ -934,8 +934,8 @@ if (objP->movementType == MT_PHYSICS) {
 	}
 //set value for tPlayer headlight
 if (objP->nType == OBJ_PLAYER) {
-	if (PlayerHasHeadLight (objP->id) &&  !gameStates.app.bEndLevelSequence)
-		xEngineGlowValue [1] = HeadLightIsOn (objP->id) ? -2 : -1;
+	if (PlayerHasHeadlight (objP->id) &&  !gameStates.app.bEndLevelSequence)
+		xEngineGlowValue [1] = HeadlightIsOn (objP->id) ? -2 : -1;
 	else
 		xEngineGlowValue [1] = -3;			//don't draw
 	}

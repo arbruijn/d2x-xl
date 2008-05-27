@@ -56,7 +56,7 @@ line_drawer_ptr = (line_drawer)?line_drawer:GrLine;
 if (tmap_drawer == DrawTexPolyFlat)
 	fpDrawTexPolyMulti = G3DrawTexPolyFlat;
 else
-	fpDrawTexPolyMulti = gameStates.render.color.bRenderLightMaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
+	fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
 }
 
 //------------------------------------------------------------------------------

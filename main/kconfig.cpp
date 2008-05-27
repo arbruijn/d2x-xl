@@ -1892,7 +1892,7 @@ void KCReadExternalControls ()
 	  {
 	   advanced_ext_control_info *temp_ptr= (advanced_ext_control_info *)kc_external_control;
  
-      temp_ptr->headlightState = PlayerHasHeadLight (-1);
+      temp_ptr->headlightState = PlayerHasHeadlight (-1);
 		temp_ptr->primaryWeaponFlags = LOCALPLAYER.primaryWeaponFlags;
 		temp_ptr->secondaryWeaponFlags = LOCALPLAYER.secondaryWeaponFlags;
       temp_ptr->currentPrimary_weapon = gameData.weapons.nPrimary;

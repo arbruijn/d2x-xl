@@ -24,7 +24,7 @@ int G3DrawTexPolyMulti (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tLightMap	*lightMap, 
+	tLightmap	*lightmap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend,
@@ -37,7 +37,7 @@ int G3DrawTexPolyLightmap (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tLightMap	*lightMap, 
+	tLightmap	*lightmap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend,
@@ -50,7 +50,7 @@ int G3DrawTexPolyFlat (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tLightMap	*lightMap, 
+	tLightmap	*lightmap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend,
@@ -76,7 +76,7 @@ void InitGrayScaleShader (void);
 
 //------------------------------------------------------------------------------
 
-typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, tLightMap *, vmsVector *, int, int, short);
+typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, tLightmap *, vmsVector *, int, int, short);
 
 extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
 

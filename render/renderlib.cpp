@@ -794,7 +794,7 @@ void AdjustVertexColor (grsBitmap *bmP, tFaceColor *pc, fix xLight)
 
 #if SHADOWS
 if (gameStates.ogl.bScaleLight)
-	s *= gameStates.render.bHeadLightOn ? 0.4f : 0.3f;
+	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 #endif
 if (!pc->index || !gameStates.render.bAmbientColor || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) {
 	pc->color.red =

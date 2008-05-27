@@ -1062,7 +1062,7 @@ for (h = 0; h <= 3; h++) {
 	for (i = 0; i <= gameStates.render.nMaxLightsPerPass; i++) {
 		if (perPixelLightingShaderProgs [i][h])
 			continue;
-		if (HaveLightMaps ()) {
+		if (HaveLightmaps ()) {
 			if (i) {
 				fsP = (i == 1) ? pszPPLM1LightingFS : pszPPLMXLightingFS;
 				vsP = pszPPLMLightingVS;
@@ -1124,6 +1124,7 @@ int CheckUsedLights2 (void);
 
 int SetupHardwareLighting (grsFace *faceP, int nType)
 {
+PROF_START
 	int						nLightRange, nLights;
 	float						fBrightness;
 	tRgbaColorf				ambient, diffuse;
@@ -1253,19 +1254,23 @@ if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) && (gameStates.ogl.nFirstL
 for (int i = nLights; i < 8; i++)
 	glDisable (GL_LIGHT0 + i);
 #endif
-if (InitPerPixelLightingShader (nType, nLights) >= 0)
+if (InitPerPixelLightingShader (nType, nLights) >= 0) {
+	PROF_END(ptPerPixelLighting)
 	return nLights;
+	}
 OglDisableLighting ();
+PROF_END(ptPerPixelLighting)
 return -1;
 }
 
 //------------------------------------------------------------------------------
 
-int G3SetupPerPixelShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadLight)
+int G3SetupPerPixelShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadlight)
 {
+PROF_START
 	static grsBitmap	*nullBmP = NULL;
 
-	int	bLightMaps, nLights, nShader;
+	int	bLightmaps, nLights, nShader;
 
 if (bDepthOnly)
 	nLights = 0;
@@ -1281,12 +1286,12 @@ nShader = 20 + 4 * nLights + nType;
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if (bLightMaps = HaveLightMaps ()) {
+if (bLightmaps = HaveLightmaps ()) {
 	int i = faceP->nLightmap / LIGHTMAP_BUFSIZE;
 #if 1//def _DEBUG
-	if (OglCreateLightMap (i))
+	if (OglCreateLightmap (i))
 #endif
-		{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightMapData.buffers + i, 1, 1);}
+		{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapData.buffers + i, 1, 1);}
 	}
 #if 1//ndef _DEBUG
 if (nShader != gameStates.render.history.nShader) 
@@ -1295,14 +1300,14 @@ if (nShader != gameStates.render.history.nShader)
 	gameData.render.nShaderChanges++;
 	//glUseProgramObject (0);
 	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [nLights][nType]);
-	if (bLightMaps)
+	if (bLightmaps)
 		glUniform1i (glGetUniformLocation (activeShaderProg, "lMapTex"), 0);
 	if (nType) {
-		glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightMaps);
+		glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightmaps);
 		if (nType > 1) {
-			glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1 + bLightMaps);
+			glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1 + bLightmaps);
 			if (nType > 2)
-				glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2 + bLightMaps);
+				glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2 + bLightmaps);
 			}
 		}
 	}
@@ -1314,6 +1319,7 @@ glUniform1f (glGetUniformLocation (activeShaderProg, "fLightScale"),
 #else
 				 (nLights && gameStates.ogl.iLight) ? 0.0f : 1.0f);
 #endif
+PROF_END(ptShaderStates)
 return gameStates.render.history.nShader = nShader;
 }
 
@@ -1324,17 +1330,17 @@ int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP)
 if (gameStates.render.textures.bHaveGrayScaleShader) {
 	if (nType > 2)
 		nType = 2;
-	int bLightMaps = HaveLightMaps ();
-	int nShader = 90 + 3 * bLightMaps + nType;
+	int bLightmaps = HaveLightmaps ();
+	int nShader = 90 + 3 * bLightmaps + nType;
 	if (gameStates.render.history.nShader != nShader) {
 		gameData.render.nShaderChanges++;
-		glUseProgramObject (activeShaderProg = gsShaderProg [bLightMaps][nType]);
+		glUseProgramObject (activeShaderProg = gsShaderProg [bLightmaps][nType]);
 		if (!nType) 
 			glUniform4fv (glGetUniformLocation (activeShaderProg, "faceColor"), 1, (GLfloat *) colorP);
 		else {
-			glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightMaps);
+			glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightmaps);
 			if (nType > 1)
-				glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1 + bLightMaps);
+				glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1 + bLightmaps);
 			}
 		gameStates.render.history.nShader = nShader;
 		}

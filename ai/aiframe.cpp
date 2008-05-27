@@ -935,7 +935,7 @@ if (siP->ailP->playerAwarenessType >= PA_PLAYER_COLLISION) {
 else if (!(siP->nObjRef & 3) && !siP->nPrevVisibility && (gameData.ai.xDistToPlayer < MAX_WAKEUP_DIST)) {
 	fix rval = d_rand ();
 	fix sval = (gameData.ai.xDistToPlayer * (gameStates.app.nDifficultyLevel + 1)) / 64;
-	if ((FixMul (rval, sval) < gameData.time.xFrame) || HeadLightIsOn (-1)) {
+	if ((FixMul (rval, sval) < gameData.time.xFrame) || HeadlightIsOn (-1)) {
 		siP->ailP->playerAwarenessType = PA_PLAYER_COLLISION;
 		siP->ailP->playerAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][1];
 		ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);

@@ -50,7 +50,6 @@
 #define USE_VERTNORMS		1
 #define G3_DRAW_ARRAYS		0
 #define G3_MULTI_TEXTURE	0
-#define G3_BUFFER_FACES		0
 
 //------------------------------------------------------------------------------
 
@@ -347,7 +346,7 @@ int G3DrawTexPolyFlat (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tLightMap	*lightMap, 
+	tLightmap	*lightmap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend,
@@ -395,7 +394,7 @@ int G3DrawTexPolyMulti (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tLightMap	*lightMap, 
+	tLightmap	*lightmap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend,
@@ -473,16 +472,16 @@ if (bShaderMerge) {
 	bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL;
 	nShader = bSuperTransp ? bmMask ? 2 : 1 : 0;
 	glUseProgramObject (activeShaderProg = tmShaderProgs [nShader]);
-	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightMapData.buffers, bVertexArrays, 0);
+	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapData.buffers, bVertexArrays, 0);
 	glUniform1i (glGetUniformLocation (activeShaderProg, "btmTex"), 0);
-	INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightMapData.buffers, bVertexArrays, 0);
+	INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapData.buffers, bVertexArrays, 0);
 	glUniform1i (glGetUniformLocation (activeShaderProg, "topTex"), 1);
 	if (bmMask) {
 #ifdef _DEBUG
 		InitTMU2 (bVertexArrays);
-		G3_BIND (GL_TEXTURE2, bmMask, lightMapData.buffers, bVertexArrays);
+		G3_BIND (GL_TEXTURE2, bmMask, lightmapData.buffers, bVertexArrays);
 #else
-		INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, lightMapData.buffers, bVertexArrays, 0);
+		INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, lightmapData.buffers, bVertexArrays, 0);
 #endif
 		glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2);
 		}
@@ -728,7 +727,7 @@ int G3DrawTexPolyLightmap (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	tLightMap	*lightMap, 
+	tLightmap	*lightmap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend,
@@ -768,8 +767,8 @@ if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
 	}
 else
 	nFrame = -1;
-if (!lightMap) //lightMapping enabled
-	return fpDrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightMap, pvNormal, orient, bBlend, nSegment);
+if (!lightmap) //lightmapping enabled
+	return fpDrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightmap, pvNormal, orient, bBlend, nSegment);
 // chose shaders depending on whether overlay bitmap present or not
 if ((bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge)) {
 	lmProg = lmShaderProgs [(bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0];
@@ -792,7 +791,7 @@ if (bmTop) { // use render pipeline 1 for overlay texture
 	}
 // use render pipeline 2 for lightmap texture
 InitTMU2 (0);
-//OGL_BINDTEX (lightMap->handle);
+//OGL_BINDTEX (lightmap->handle);
 if (bShaderMerge)
 	glUniform1i (glGetUniformLocation (lmProg, "lMapTex"), 2);
 glBegin (GL_TRIANGLE_FAN);

@@ -179,8 +179,8 @@ typedef struct tColorOptions {
 	int bGunLight;
 	int bWalls;
 	int bMix;
-	int bUseLightMaps;
-	int nLightMapRange;
+	int bUseLightmaps;
+	int nLightmapRange;
 	int nSaturation;
 } tColorOptions;
 
@@ -373,7 +373,7 @@ typedef struct tOglOptions {
 	int bLightObjects;
 	int bLightPowerups;
 	int bObjLighting;
-	int bHeadLight;
+	int bHeadlight;
 	int nMaxLightsPerFace;
 	int nMaxLightsPerPass;
 	int nMaxLightsPerObject;
@@ -401,7 +401,7 @@ typedef struct tGameplayOptions {
 	int nAutoLeveling;
 	int bEscortHotKeys;
 	int bSkipBriefingScreens;
-	int bHeadLightOnWhenPickedUp;
+	int bHeadlightOnWhenPickedUp;
 	int bShieldWarning;
 	int bInventory;
 	int bIdleAnims;
@@ -725,7 +725,7 @@ typedef struct tOglStates {
 	int bScaleLight;
 	int bDynObjLight;
 	int bVertexLighting;
-	int bHeadLight;
+	int bHeadlight;
 	int bStandardContrast;
 	int nRGBAFormat;
 	int nRGBFormat;
@@ -758,8 +758,8 @@ typedef struct tCameraStates {
 //------------------------------------------------------------------------------
 
 typedef struct tColorStates {
-	int bLightMapsOk;
-	int bRenderLightMaps;
+	int bLightmapsOk;
+	int bRenderLightmaps;
 } tColorStates;
 
 //------------------------------------------------------------------------------
@@ -867,7 +867,7 @@ typedef struct tRenderStates {
 	int bPointSprites;
 	int bVertexArrays;
 	int bAutoMap;
-	int bLightMaps;
+	int bLightmaps;
 	int bDisableFades;
 	int bBlendBackground;
 	int bDropAfterburnerBlob;
@@ -904,8 +904,8 @@ typedef struct tRenderStates {
 	int bApplyDynLight;
 	int bClusterLights;
 	int nSoften;
-	int bHeadLightOn;
-	int bHeadLights;
+	int bHeadlightOn;
+	int bHeadlights;
 	int bHaveSkyBox;
 	int bAllVisited;
 	int bViewDist;
@@ -913,7 +913,7 @@ typedef struct tRenderStates {
 	int bRendering;
 	int bFullBright;
 	int bQueryCoronas;
-	int bDoLightMaps;
+	int bDoLightmaps;
 	int bAmbientColor;
 	int bDoCameras;
 	int bRenderIndirect;
@@ -1100,7 +1100,7 @@ typedef struct tApplicationStates {
 	int bCacheTextures;
 	int bCacheLights;
 	int bCacheMeshes;
-	int bCacheLightMaps;
+	int bCacheLightmaps;
 	int bUseSwapFile;
 	int bSingleStep;
 	int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
@@ -1329,14 +1329,14 @@ typedef struct tShaderLightData {
 
 #define MAX_NEAREST_LIGHTS 32
 
-typedef struct tHeadLightData {
+typedef struct tHeadlightData {
 	tDynLight			*pl [MAX_PLAYERS];
 	tShaderLight		*psl [MAX_PLAYERS];
 	fVector				pos [MAX_PLAYERS];
 	fVector3				dir [MAX_PLAYERS];
 	float					brightness [MAX_PLAYERS];
 	int					nLights;
-} tHeadLightData;
+} tHeadlightData;
 
 typedef struct tDynLightData {
 	tDynLight			lights [MAX_OGL_LIGHTS];
@@ -1348,10 +1348,10 @@ typedef struct tDynLightData {
 	short					nVariable;
 	short					nDynLights;
 	short					nVertLights;
-	short					nHeadLights [MAX_PLAYERS];
+	short					nHeadlights [MAX_PLAYERS];
 	short					nSegment;
 	tShaderLightData	shader;
-	tHeadLightData		headLights;
+	tHeadlightData		headlights;
 	tOglMaterial		material;
 	tFrameBuffer		fb;
 } tDynLightData;
@@ -1464,8 +1464,8 @@ typedef struct tOglData {
 	int						nPerPixelLights [8];
 	float						lightRads [8];
 	fVector					lightPos [8];
-	int						bLightMaps;
-	int						nHeadLights;
+	int						bLightmaps;
+	int						nHeadlights;
 } tOglData;
 
 //------------------------------------------------------------------------------
@@ -1475,8 +1475,8 @@ typedef struct tOglData {
 #define TERRAIN_HEIGHT_SCALE    f1_0
 
 typedef struct tTerrainRenderData {
-	ubyte			*pHeightMap;
-	fix			*pLightMap;
+	ubyte			*pHeightmap;
+	fix			*pLightmap;
 	vmsVector	*pPoints;
 	grsBitmap	*bmP;
 	g3sPoint	saveRow [TERRAIN_GRID_MAX_SIZE];
@@ -2504,6 +2504,44 @@ int						nLifetimeChecksum;
 
 //------------------------------------------------------------------------------
 
+#if PROFILING
+
+typedef enum tProfilerTags {
+	ptRenderMine,
+	ptBuildSegList,
+	ptBuildObjList,
+	ptRenderObjects,
+	ptRenderObjectsFast,
+	ptLighting,
+	ptSegmentLighting,
+	ptVertexLighting,
+	ptPerPixelLighting,
+	ptRenderFaces,
+	ptRenderStates,
+	ptShaderStates,
+	ptTranspPolys,
+	ptTransform,
+	ptVertexColor,
+	ptFaceList,
+	ptTagCount
+	} tProfilerTags;
+
+typedef struct tProfilerData {
+	time_t				t [ptTagCount];
+} tProfilerData;
+
+#define PROF_START		time_t	tProf = clock ();
+#define PROF_END(_tag)	(gameData.profiler.t [_tag]) += clock () - tProf;
+
+#else
+
+#define PROF_START	
+#define PROF_END(_tAcc)
+
+#endif
+
+//------------------------------------------------------------------------------
+
 #define MAX_SEGS_VISITED			1000
 #define MAX_BOSS_COUNT				50
 #define MAX_BOSS_TELEPORT_SEGS	MAX_SEGS_VISITED
@@ -3184,6 +3222,9 @@ typedef struct tGameData {
 	tTextData			messages [2];
 	tTextData			sounds;
 	tApplicationData	app;
+#if PROFILING
+	tProfilerData		profiler;
+#endif
 } tGameData;
 
 extern tGameData gameData;

@@ -924,7 +924,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CONVERTER, POW_CONVERTER);
 		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_SLOWMOTION, POW_SLOWMOTION);
 		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_BULLETTIME, POW_BULLETTIME);
-		if (PlayerHasHeadLight (nPlayerId) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) &&
+		if (PlayerHasHeadlight (nPlayerId) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) &&
 			 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame && extraGameInfo [1].bDarkness))
 			MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_HEADLIGHT, POW_HEADLIGHT);
 		// drop the other enemies flag if you have it

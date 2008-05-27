@@ -476,7 +476,7 @@ switch (bFlag) {
 	case PLAYER_FLAGS_CONVERTER:
 		return gameStates.app.bUsingConverter;
 	case PLAYER_FLAGS_HEADLIGHT:
-		return HeadLightIsOn (-1) != 0;
+		return HeadlightIsOn (-1) != 0;
 	case PLAYER_FLAGS_FULLMAP:
 		return 0;
 	case PLAYER_FLAGS_AMMO_RACK:
@@ -543,7 +543,7 @@ for (j = firstItem; j < n; j++) {
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_HEADLIGHT)
-		bHave = PlayerHasHeadLight (-1);
+		bHave = PlayerHasHeadlight (-1);
 	else if (j == INV_ITEM_INVUL) {
 		if ((bHave = (LOCALPLAYER.nInvuls > 0)))
 			sprintf (szCount, "%d", LOCALPLAYER.nInvuls);

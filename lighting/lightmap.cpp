@@ -1,13 +1,13 @@
 /*
-Here is all the code for gameOpts->render.color.bUseLightMaps.  Some parts need 
+Here is all the code for gameOpts->render.color.bUseLightmaps.  Some parts need 
 to be optamized but the core functionality is there.
 The thing you will need to add is the menu code to change
-the value of int gameOpts->render.color.bUseLightMaps.  THIS CANNOT BE CHANGED IF
+the value of int gameOpts->render.color.bUseLightmaps.  THIS CANNOT BE CHANGED IF
 A GAME IS RUNNING.  It would likely cause it to crash.
 
 Almost forgot there are a few lines that read exit (0) after 
 checking certain capabilties.  This should really just 
-disable the gameOpts->render.color.bUseLightMaps option, because the person's computer 
+disable the gameOpts->render.color.bUseLightmaps option, because the person's computer 
 doesn't support shaders.  But since the menu option isn't 
 there I just had it exit instead.
 */
@@ -56,7 +56,7 @@ there I just had it exit instead.
 
 //------------------------------------------------------------------------------
 
-typedef struct tLightMapDataHeader {
+typedef struct tLightmapDataHeader {
 	int	nVersion;
 	int	nSegments;
 	int	nVertices;
@@ -64,7 +64,7 @@ typedef struct tLightMapDataHeader {
 	int	nLights;
 	int	nMaxLightRange;
 	int	nBuffers;
-	} tLightMapDataHeader;
+	} tLightmapDataHeader;
 
 //------------------------------------------------------------------------------
 
@@ -72,11 +72,11 @@ GLhandleARB lmShaderProgs [3] = {0,0,0};
 GLhandleARB lmFS [3] = {0,0,0}; 
 GLhandleARB lmVS [3] = {0,0,0}; 
 
-int lightMapWidth [5] = {8, 16, 32, 64, 128};
+int lightmapWidth [5] = {8, 16, 32, 64, 128};
 
-tLightMap dummyLightMap;
+tLightmap dummyLightmap;
 
-tLightMapData lightMapData = {NULL, NULL, 0, 0};
+tLightmapData lightmapData = {NULL, NULL, 0, 0};
 
 //------------------------------------------------------------------------------
 
@@ -84,9 +84,9 @@ int InitLightData (int bVariable);
 
 //------------------------------------------------------------------------------
 
-int OglCreateLightMap (int nLightMap)
+int OglCreateLightmap (int nLightmap)
 {
-	tLightMapBuffer	*lmP = lightMapData.buffers + nLightMap;
+	tLightmapBuffer	*lmP = lightmapData.buffers + nLightmap;
 #ifdef _DEBUG
 	int					nError;
 #endif
@@ -119,21 +119,21 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OglCreateLightMaps (void)
+int OglCreateLightmaps (void)
 {
-for (int i = 0; i < lightMapData.nBuffers; i++)
-	if (!OglCreateLightMap (i))
+for (int i = 0; i < lightmapData.nBuffers; i++)
+	if (!OglCreateLightmap (i))
 		return 0;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void OglDestroyLightMaps (void)
+void OglDestroyLightmaps (void)
 {
-if (lightMapData.buffers) { 
-	tLightMapBuffer *lmP = lightMapData.buffers;
-	for (int i = lightMapData.nBuffers; i; i--, lmP++)
+if (lightmapData.buffers) { 
+	tLightmapBuffer *lmP = lightmapData.buffers;
+	for (int i = lightmapData.nBuffers; i; i--, lmP++)
 		if (lmP->handle) {
 			OglDeleteTextures (1, (GLuint *) &lmP->handle);
 			lmP->handle = 0;
@@ -143,12 +143,12 @@ if (lightMapData.buffers) {
 
 //------------------------------------------------------------------------------
 
-void DestroyLightMaps (void)
+void DestroyLightmaps (void)
 {
-if (lightMapData.info) { 
-	OglDestroyLightMaps ();
-	D2_FREE (lightMapData.info);
-	D2_FREE (lightMapData.buffers);
+if (lightmapData.info) { 
+	OglDestroyLightmaps ();
+	D2_FREE (lightmapData.info);
+	D2_FREE (lightmapData.buffers);
 	}
 }
 
@@ -233,24 +233,24 @@ int InitLightData (int bVariable)
 	grsFace			*faceP = NULL;
 	int				bIsLight, nIndex, i; 
 	short				t; 
-	tLightMapInfo	*lmiP;  //temporary place to put light data.
+	tLightmapInfo	*lmiP;  //temporary place to put light data.
 	double			sideRad;
 
 //first step find all the lights in the level.  By iterating through every surface in the level.
-if (!(lightMapData.nLights = CountLights (bVariable)))
+if (!(lightmapData.nLights = CountLights (bVariable)))
 	return 0;
-if (!(lightMapData.info = (tLightMapInfo *) D2_ALLOC (sizeof (tLightMapInfo) * lightMapData.nLights)))
-	return lightMapData.nLights = 0; 
-lightMapData.nBuffers = (gameData.segs.nFaces + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
-if (!(lightMapData.buffers = (tLightMapBuffer *) D2_ALLOC (lightMapData.nBuffers * sizeof (tLightMapBuffer)))) {
-	D2_FREE (lightMapData.info);
-	return lightMapData.nLights = 0; 
+if (!(lightmapData.info = (tLightmapInfo *) D2_ALLOC (sizeof (tLightmapInfo) * lightmapData.nLights)))
+	return lightmapData.nLights = 0; 
+lightmapData.nBuffers = (gameData.segs.nFaces + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
+if (!(lightmapData.buffers = (tLightmapBuffer *) D2_ALLOC (lightmapData.nBuffers * sizeof (tLightmapBuffer)))) {
+	D2_FREE (lightmapData.info);
+	return lightmapData.nLights = 0; 
 	}
-memset (lightMapData.buffers, 0, lightMapData.nBuffers * sizeof (tLightMapBuffer)); 
-memset (lightMapData.info, 0, sizeof (tLightMapInfo) * lightMapData.nLights); 
-lightMapData.nLights = 0; 
+memset (lightmapData.buffers, 0, lightmapData.nBuffers * sizeof (tLightmapBuffer)); 
+memset (lightmapData.info, 0, sizeof (tLightmapInfo) * lightmapData.nLights); 
+lightmapData.nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
-lmiP = lightMapData.info; 
+lmiP = lightmapData.info; 
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++) {
 	if (pl->info.nType || (pl->info.bVariable && !bVariable))
 		continue;
@@ -271,7 +271,7 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 	VmVecAvg (&lmiP->vDir, normalP, normalP + 1);
 	lmiP++; 
 	}
-return lightMapData.nLights = (int) (lmiP - lightMapData.info); 
+return lightmapData.nLights = (int) (lmiP - lightmapData.info); 
 }
 
 //------------------------------------------------------------------------------
@@ -279,38 +279,38 @@ return lightMapData.nLights = (int) (lmiP - lightMapData.info);
 #if LMAP_REND2TEX
 
 // create 512 brightness values using inverse square
-void InitBrightMap (ubyte *brightMap)
+void InitBrightmap (ubyte *brightmap)
 {
 	int		i;
 	double	h;
 
-for (i = 512; i; i--, brightMap++) {
+for (i = 512; i; i--, brightmap++) {
 	h = (double) i / 512.0;
 	h *= h;
-	*brightMap = (ubyte) ((255 * h) + 0.5);
+	*brightmap = (ubyte) ((255 * h) + 0.5);
 	}
 }
 
 //------------------------------------------------------------------------------
 
 // create a color/brightness table
-void InitLightMapInfo (ubyte *lightMap, ubyte *brightMap, GLfloat *color)
+void InitLightmapInfo (ubyte *lightmap, ubyte *brightmap, GLfloat *color)
 {
 	int		i, j;
 	double	h;
 
-for (i = 512; i; i--, brightMap++)
-	for (j = 0; j < 3; j++, lightMap++)
-		*lightMap = (ubyte) (*brightMap * color [j] + 0.5);
+for (i = 512; i; i--, brightmap++)
+	for (j = 0; j < 3; j++, lightmap++)
+		*lightmap = (ubyte) (*brightmap * color [j] + 0.5);
 }
 
 #endif //LMAP_REND2TEX
 
 //------------------------------------------------------------------------------
 
-void CopyLightMap (tRgbColorb *texColorP, ushort nLightmap)
+void CopyLightmap (tRgbColorb *texColorP, ushort nLightmap)
 {
-tLightMapBuffer *bufP = lightMapData.buffers + nLightmap / LIGHTMAP_BUFSIZE;
+tLightmapBuffer *bufP = lightmapData.buffers + nLightmap / LIGHTMAP_BUFSIZE;
 int i = nLightmap % LIGHTMAP_BUFSIZE;
 int x = (i % LIGHTMAP_ROWSIZE) * LM_W;
 int y = (i / LIGHTMAP_ROWSIZE) * LM_H;
@@ -320,15 +320,15 @@ for (i = 0; i < LM_H; i++, y++, texColorP += LM_W)
 
 //------------------------------------------------------------------------------
 
-void CreateSpecialLightMap (tRgbColorb *texColorP, ushort nLightmap, ubyte nColor)
+void CreateSpecialLightmap (tRgbColorb *texColorP, ushort nLightmap, ubyte nColor)
 {
 memset (texColorP, nColor, LM_W * LM_H * sizeof (tRgbColorb));
-CopyLightMap (texColorP, nLightmap);
+CopyLightmap (texColorP, nLightmap);
 }
 
 //------------------------------------------------------------------------------
 
-void ComputeLightMaps (int nFace, int nThread)
+void ComputeLightmaps (int nFace, int nThread)
 {
 	grsFace			*faceP;
 	tSide				*sideP; 
@@ -366,9 +366,9 @@ else
 #endif
 	INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
 if (nFace <= 0) {
-	CreateSpecialLightMap (texColor, 0, 0);
-	CreateSpecialLightMap (texColor, 1, 255);
-	lightMapData.nLightmaps = 2;
+	CreateSpecialLightmap (texColor, 0, 0);
+	CreateSpecialLightmap (texColor, 1, 255);
+	lightmapData.nLightmaps = 2;
 	}
 //Next Go through each surface and create a lightmap for it.
 for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
@@ -492,8 +492,8 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 			nWhiteLightmaps++;
 			}
 		else {
-			CopyLightMap (texColor, lightMapData.nLightmaps);
-			faceP->nLightmap = lightMapData.nLightmaps++;
+			CopyLightmap (texColor, lightmapData.nLightmaps);
+			faceP->nLightmap = lightmapData.nLightmaps++;
 			}
 		}
 	}
@@ -503,13 +503,13 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 
 static tThreadInfo	ti [2];
 
-int _CDECL_ LightMapThread (void *pThreadId)
+int _CDECL_ LightmapThread (void *pThreadId)
 {
 	int		nId = *((int *) pThreadId);
 
 gameData.render.lights.dynamic.shader.index [0][nId].nFirst = MAX_SHADER_LIGHTS;
 gameData.render.lights.dynamic.shader.index [0][nId].nLast = 0;
-ComputeLightMaps (nId ? gameData.segs.nFaces / 2 : 0, nId);
+ComputeLightmaps (nId ? gameData.segs.nFaces / 2 : 0, nId);
 SDL_SemPost (ti [nId].done);
 ti [nId].bDone = 1;
 return 0;
@@ -517,7 +517,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static void StartLightMapThreads (pThreadFunc pFunc)
+static void StartLightmapThreads (pThreadFunc pFunc)
 {
 	int	i;
 
@@ -544,11 +544,11 @@ for (i = 0; i < 2; i++) {
 
 static int nFace = 0;
 
-static void CreateLightMapsPoll (int nItems, tMenuItem *m, int *key, int cItem)
+static void CreateLightmapsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 GrPaletteStepLoad (NULL);
 if (nFace < gameData.segs.nFaces) {
-	ComputeLightMaps (nFace, 0);
+	ComputeLightmaps (nFace, 0);
 	nFace += PROGRESS_INCR;
 	}
 else {
@@ -565,30 +565,30 @@ return;
 
 //------------------------------------------------------------------------------
 
-char *LightMapDataFilename (char *pszFilename, int nLevel)
+char *LightmapDataFilename (char *pszFilename, int nLevel)
 {
 return GameDataFilename (pszFilename, "lmap", nLevel, gameOpts->render.nLightmapQuality);
 }
 
 //------------------------------------------------------------------------------
 
-int SaveLightMapData (int nLevel)
+int SaveLightmapData (int nLevel)
 {
 	CFILE				cf;
-	tLightMapDataHeader ldh = {LIGHTMAP_DATA_VERSION, 
+	tLightmapDataHeader ldh = {LIGHTMAP_DATA_VERSION, 
 										gameData.segs.nSegments, 
 										gameData.segs.nVertices, 
 										gameData.segs.nFaces, 
-										lightMapData.nLights, 
+										lightmapData.nLights, 
 										MAX_LIGHT_RANGE,
-										lightMapData.nBuffers};
+										lightmapData.nBuffers};
 	int				i, bOk;
 	char				szFilename [FILENAME_LEN];
 	grsFace			*faceP;
 
-if (!(gameStates.app.bCacheLightMaps && lightMapData.nLights && lightMapData.nBuffers))
+if (!(gameStates.app.bCacheLightmaps && lightmapData.nLights && lightmapData.nBuffers))
 	return 0;
-if (!CFOpen (&cf, LightMapDataFilename (szFilename, nLevel), gameFolders.szTempDir, "wb", 0))
+if (!CFOpen (&cf, LightmapDataFilename (szFilename, nLevel), gameFolders.szTempDir, "wb", 0))
 	return 0;
 bOk = (CFWrite (&ldh, sizeof (ldh), 1, &cf) == 1);
 if (bOk) {
@@ -599,8 +599,8 @@ if (bOk) {
 		}
 	}
 if (bOk) {
-	for (i = 0; i < lightMapData.nBuffers; i++) {
-		bOk = CFWrite (lightMapData.buffers [i].bmP, sizeof (lightMapData.buffers [i].bmP), 1, &cf) == 1;
+	for (i = 0; i < lightmapData.nBuffers; i++) {
+		bOk = CFWrite (lightmapData.buffers [i].bmP, sizeof (lightmapData.buffers [i].bmP), 1, &cf) == 1;
 		if (!bOk)
 			break;
 		}
@@ -611,27 +611,27 @@ return bOk;
 
 //------------------------------------------------------------------------------
 
-void ReallocLightMaps (int nBuffers)
+void ReallocLightmaps (int nBuffers)
 {
-if (lightMapData.nBuffers > nBuffers) {
-	lightMapData.buffers = (tLightMapBuffer *) D2_REALLOC (lightMapData.buffers, nBuffers * sizeof (tLightMapBuffer));
-	lightMapData.nBuffers = nBuffers;
+if (lightmapData.nBuffers > nBuffers) {
+	lightmapData.buffers = (tLightmapBuffer *) D2_REALLOC (lightmapData.buffers, nBuffers * sizeof (tLightmapBuffer));
+	lightmapData.nBuffers = nBuffers;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int LoadLightMapData (int nLevel)
+int LoadLightmapData (int nLevel)
 {
 	CFILE				cf;
-	tLightMapDataHeader ldh;
+	tLightmapDataHeader ldh;
 	int				i, bOk;
 	char				szFilename [FILENAME_LEN];
 	grsFace			*faceP;
 
-if (!gameStates.app.bCacheLightMaps)
+if (!gameStates.app.bCacheLightmaps)
 	return 0;
-if (!CFOpen (&cf, LightMapDataFilename (szFilename, nLevel), gameFolders.szTempDir, "rb", 0))
+if (!CFOpen (&cf, LightmapDataFilename (szFilename, nLevel), gameFolders.szTempDir, "rb", 0))
 	return 0;
 bOk = (CFRead (&ldh, sizeof (ldh), 1, &cf) == 1);
 if (bOk)
@@ -639,7 +639,7 @@ if (bOk)
 			(ldh.nSegments == gameData.segs.nSegments) && 
 			(ldh.nVertices == gameData.segs.nVertices) && 
 			(ldh.nFaces == gameData.segs.nFaces) && 
-			(ldh.nLights == lightMapData.nLights) && 
+			(ldh.nLights == lightmapData.nLights) && 
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk) {
 	for (i = ldh.nFaces, faceP = gameData.segs.faces.faces; i; i--, faceP++) {
@@ -650,20 +650,20 @@ if (bOk) {
 	}
 if (bOk) {
 	for (i = 0; i < ldh.nBuffers; i++) {
-		bOk = CFRead (lightMapData.buffers [i].bmP, sizeof (lightMapData.buffers [i].bmP), 1, &cf) == 1;
+		bOk = CFRead (lightmapData.buffers [i].bmP, sizeof (lightmapData.buffers [i].bmP), 1, &cf) == 1;
 		if (!bOk)
 			break;
 		}
 	}
 if (bOk)
-	ReallocLightMaps (ldh.nBuffers);
+	ReallocLightmaps (ldh.nBuffers);
 CFClose (&cf);
 return bOk;
 }
 
 //------------------------------------------------------------------------------
 
-void CreateLightMaps (int nLevel)
+void CreateLightmaps (int nLevel)
 {
 if (!gameStates.render.bUsePerPixelLighting)
 	return;
@@ -671,19 +671,19 @@ if (!gameStates.render.bUsePerPixelLighting)
 if (gameOpts->render.nLightmapQuality > 2)
 	gameOpts->render.nLightmapQuality = 2;
 #endif
-DestroyLightMaps ();
+DestroyLightmaps ();
 if (!InitLightData (0))
 	return;
-if (LoadLightMapData (nLevel))
+if (LoadLightmapData (nLevel))
 	return;
 TransformDynLights (1, 0);
 if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	int nSaturation = gameOpts->render.color.nSaturation;
 	gameOpts->render.color.nSaturation = 1;
-	gameStates.render.bLightMaps = 1;
+	gameStates.render.bLightmaps = 1;
 #if 0
 	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 8))
-		StartLightMapThreads (LightMapThread);
+		StartLightmapThreads (LightmapThread);
 	else 
 #endif
 		{
@@ -691,17 +691,17 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		gameData.render.lights.dynamic.shader.index [0][0].nLast = 0;
 		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 			nFace = 0;
-			NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreateLightMapsPoll);
+			NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreateLightmapsPoll);
 			}
 		else
-			ComputeLightMaps (-1, 0);
+			ComputeLightmaps (-1, 0);
 		}
-	gameStates.render.bLightMaps = 0;
+	gameStates.render.bLightmaps = 0;
 	gameStates.render.nState = 0;
 	gameOpts->render.color.nSaturation = nSaturation;
-	ReallocLightMaps ((lightMapData.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);
-	OglCreateLightMaps ();
-	SaveLightMapData (nLevel);
+	ReallocLightmaps ((lightmapData.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);
+	OglCreateLightmaps ();
+	SaveLightmapData (nLevel);
 	}
 }
 
@@ -709,12 +709,12 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 
 #if DBG_SHADERS
 
-char *lightMapFS [3] = {"lightmaps1.frag", "lightmaps2.frag", "lightmaps3.frag"};
-char *lightMapVS [3] = {"lightmaps1.vert", "lightmaps2.vert", "lightmaps3.vert"};
+char *lightmapFS [3] = {"lightmaps1.frag", "lightmaps2.frag", "lightmaps3.frag"};
+char *lightmapVS [3] = {"lightmaps1.vert", "lightmaps2.vert", "lightmaps3.vert"};
 
 #else
 
-char *lightMapFS [3] = {
+char *lightmapFS [3] = {
 	"uniform sampler2D btmTex,topTex,lMapTex;" \
 	"float maxC;" \
 	"vec4 btmColor,topColor,lMapColor;" \
@@ -765,7 +765,7 @@ char *lightMapFS [3] = {
 	"gl_FragColor = vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a))*lMapColor;}}}"
 	};
 
-char *lightMapVS [3] = {
+char *lightmapVS [3] = {
 	"void main(void) {" \
 	"gl_TexCoord[0]=gl_MultiTexCoord0;" \
 	"gl_TexCoord[1]=gl_MultiTexCoord1;" \
@@ -798,24 +798,24 @@ void InitLightmapShaders (void)
 	int	i;
 
 if (!gameStates.ogl.bShadersOk)
-	gameStates.render.color.bLightMapsOk = 0;
-if (gameStates.render.color.bLightMapsOk) {
+	gameStates.render.color.bLightmapsOk = 0;
+if (gameStates.render.color.bLightmapsOk) {
 	PrintLog ("building lightmap shader programs\n");
-	gameStates.render.bLightMaps = 1;
+	gameStates.render.bLightmaps = 1;
 	for (i = 0; i < 2; i++) {
 		if (lmShaderProgs [i])
 			DeleteShaderProg (lmShaderProgs + i);
-		gameStates.render.color.bLightMapsOk = 
+		gameStates.render.color.bLightmapsOk = 
 			CreateShaderProg (lmShaderProgs + i) &&
-			CreateShaderFunc (lmShaderProgs + i, lmFS + i, lmVS + i, lightMapFS [i], lightMapVS [i], 1) &&
+			CreateShaderFunc (lmShaderProgs + i, lmFS + i, lmVS + i, lightmapFS [i], lightmapVS [i], 1) &&
 			LinkShaderProg (lmShaderProgs + i);
-		if (!gameStates.render.color.bLightMapsOk) {
+		if (!gameStates.render.color.bLightmapsOk) {
 			while (i)
 				DeleteShaderProg (lmShaderProgs + --i);
 			break;
 			}
 		}
-	gameStates.render.bLightMaps = 0;
+	gameStates.render.bLightmaps = 0;
 	}
 }
 
