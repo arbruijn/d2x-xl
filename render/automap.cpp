@@ -334,6 +334,7 @@ int automap_height = 480;
 
 void DrawAutomap (void)
 {
+PROF_START
 	int			i, color, size;
 	tObject		*objP;
 	g3sPoint		spherePoint;
@@ -506,6 +507,7 @@ if (gameOpts->render.cockpit.bHUD) {
 	if (gameOpts->render.automap.bTextured)
 		ShowFrameRate ();
 	}
+PROF_END(ptFrame)
 OglSwapBuffers (0, 0);
 }
 
