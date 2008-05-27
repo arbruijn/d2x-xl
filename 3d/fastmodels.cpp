@@ -794,7 +794,7 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
 	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && gameOpts->ogl.bObjLighting,
 				nGunId, nBombId, nMissileId, nMissiles;
-return 1;
+
 if (!objP)
 	return 0;
 if (gameStates.render.bQueryCoronas && 
