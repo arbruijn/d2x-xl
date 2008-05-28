@@ -1125,8 +1125,6 @@ if ((t = FindArg ("-render2texture")))
 if ((t = FindArg ("-point_sprites")))
 	gameStates.render.bPointSprites = NumArg (t, 1);
 #endif
-if ((t = FindArg ("-vertex_arrays")))
-	gameStates.render.bVertexArrays = NumArg (t, 1);
 if ((t = FindArg ("-nofade")))
 	gameStates.render.bDisableFades = NumArg (t, 1);
 if ((t = FindArg ("-mathformat")))
@@ -2029,7 +2027,7 @@ gameStates.render.xZoomScale = 1;
 gameStates.render.nFrameCount = -1;
 gameStates.render.bQueryOcclusion = 0;
 gameStates.render.bPointSprites = 0;
-gameStates.render.bVertexArrays = 0;
+gameStates.render.bVertexArrays = 1;
 gameStates.render.bExternalView = 0;
 gameStates.render.bTopDownRadar = 0;
 gameStates.render.bDisableFades = 0;

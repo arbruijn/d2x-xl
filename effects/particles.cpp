@@ -728,7 +728,7 @@ if (iBuffer) {
 #endif
 			if (gameData.render.lights.dynamic.headlights.nLights && !gameStates.render.automap.bDisplay)
 				G3SetupHeadlightShader (1, 0, &color);
-			else if (gameData.smoke.nLastType && (gameStates.render.history.nShader >= 0)) {
+			else if (gameStates.render.history.nShader >= 0) {
 				glUseProgramObject (0);
 				gameStates.render.history.nShader = -1;
 				}
@@ -739,13 +739,11 @@ if (iBuffer) {
 			}
 		glNormal3f (0, 0, 0);
 		glDrawArrays (GL_QUADS, 0, iBuffer);
-#if 0
-		gameStates.render.bVertexArrays = (glGetError () == 0);
-#endif
 		}
 	else {
-		tParticleVertex	*pb;
+		tParticleVertex *pb;
 		glEnd ();
+		glNormal3f (0, 0, 0);
 		glBegin (GL_QUADS);
 		for (pb = particleBuffer; iBuffer; iBuffer--, pb++) {
 			glTexCoord2fv ((GLfloat *) &pb->texCoord);
@@ -1033,7 +1031,7 @@ if (gameStates.render.bVertexArrays) {
 		glDisable (GL_TEXTURE_2D);
 		G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
 		}
-	gameStates.render.bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
+	G3EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
 	}
 if (gameStates.render.bVertexArrays) {
 	glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);

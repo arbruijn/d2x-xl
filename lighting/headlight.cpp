@@ -65,25 +65,25 @@ fix ComputeHeadlightLightOnObject (tObject *objP)
 	int	i;
 	fix	light;
 	//	Let's just illuminate players and robots for speed reasons, ok?
-	if ((objP->nType != OBJ_ROBOT) && (objP->nType	!= OBJ_PLAYER))
-		return 0;
-	light = 0;
-	for (i = 0; i < nHeadlights; i++) {
-		fix			dot, dist;
-		vmsVector	vecToObj;
-		tObject		*lightObjP;
-		lightObjP = Headlights [i];
-		VmVecSub (&vecToObj, &objP->position.vPos, &lightObjP->position.vPos);
-		dist = VmVecNormalize (&vecToObj);
-		if (dist > 0) {
-			dot = VmVecDot (&lightObjP->position.mOrient.fVec, &vecToObj);
-			if (dot < F1_0/2)
-				light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
-			else
-				light += FixMul (FixMul (dot, dot), HEADLIGHT_SCALE)/8;
+if ((objP->nType != OBJ_ROBOT) && (objP->nType	!= OBJ_PLAYER))
+	return 0;
+light = 0;
+for (i = 0; i < nHeadlights; i++) {
+	fix			dot, dist;
+	vmsVector	vecToObj;
+	tObject		*lightObjP;
+	lightObjP = Headlights [i];
+	VmVecSub (&vecToObj, &objP->position.vPos, &lightObjP->position.vPos);
+	dist = VmVecNormalize (&vecToObj);
+	if (dist > 0) {
+		dot = VmVecDot (&lightObjP->position.mOrient.fVec, &vecToObj);
+		if (dot < F1_0/2)
+			light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
+		else
+			light += FixMul (FixMul (dot, dot), HEADLIGHT_SCALE)/8;
 		}
 	}
-	return light;
+return light;
 }
 
 //------------------------------------------------------------------------------
