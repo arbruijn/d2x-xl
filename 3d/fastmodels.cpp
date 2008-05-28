@@ -71,8 +71,6 @@ extern int bZPass;
 #define G3_USE_VBOS					1 //G3_HW_LIGHTING
 #define G3_ALLOW_TRANSPARENCY		1
 
-#define G3_BUFFER_OFFSET(_i)	(GLvoid *) ((char *) NULL + (_i))
-
 //------------------------------------------------------------------------------
 
 void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts)
@@ -888,6 +886,12 @@ else
 nGunId = EquippedPlayerGun (objP);
 nBombId = EquippedPlayerBomb (objP);
 nMissileId = EquippedPlayerMissile (objP, &nMissiles);
+if (!bHires) {
+	if ((objP->id == POW_SMARTMINE) || (objP->id == POW_PROXMINE))
+		gameData.models.nScale = 2 * F1_0;
+	else
+		gameData.models.nScale = 3 * F1_0 / 2;
+	}
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 0,
 				 nGunId, nBombId, nMissileId, nMissiles);
 if ((objP->nType != OBJ_DEBRIS) && bHires && pm->bHasTransparency)

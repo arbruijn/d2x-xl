@@ -85,6 +85,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "shadows.h"
 #include "textdata.h"
 #include "sparkeffect.h"
+#include "createmesh.h"
 
 //------------------------------------------------------------------------------
 
@@ -2121,6 +2122,9 @@ if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameState
 	UpdateSlidingFaces ();
 	PROF_END(ptAux);
 	}
+if (gameStates.render.bPerPixelLighting && !gameData.app.nFrameCount)
+	meshBuilder.BuildVBOs ();
+
 InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
 gameStates.render.bHeadlights = gameData.render.lights.dynamic.headlights.nLights && 
 										  !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);

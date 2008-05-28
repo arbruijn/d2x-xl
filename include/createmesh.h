@@ -103,10 +103,12 @@ class CQuadMeshBuilder {
 		~CQuadMeshBuilder (void) {};
 		void RebuildLightmapTexCoord (void);
 		int Build (int nLevel, bool bRebuild = false);
+		bool BuildVBOs ();
+		void DestroyVBOs ();
 	};
 
 }
 
-extern mesh::CQuadMeshBuilder quadMeshBuilder;
+extern mesh::CQuadMeshBuilder meshBuilder;
 
 #endif //_CREATEMESH_H

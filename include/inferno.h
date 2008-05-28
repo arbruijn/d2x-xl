@@ -33,8 +33,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_THREADED_LIGHTS		0
 #define MULTI_THREADED_PRECALC	1
 
-#define USE_SEGRADS	0
-#define CALC_SEGRADS	1
+#define USE_SEGRADS		0
+#define CALC_SEGRADS		1
+#define GEOMETRY_VBOS	0
 
 #ifdef _DEBUG
 #	define	SHADOWS	1
@@ -1643,6 +1644,17 @@ typedef struct tSlideSegs {
 
 #define USE_RANGE_ELEMENTS	0
 
+//------------------------------------------------------------------------------
+
+typedef struct tFaceRenderVertex {
+	fVector3				vertex;
+	fVector3				normal;
+	tRgbaColorf			color;
+	tTexCoord2f			texCoord;
+	tTexCoord2f			ovlTexCoord;
+	tTexCoord2f			lMapTexCoord;
+	} tFaceRenderVertex;
+
 typedef struct tFaceData {
 	grsFace				*faces;
 	grsTriangle			*tris;
@@ -1657,6 +1669,17 @@ typedef struct tFaceData {
 #if USE_RANGE_ELEMENTS
 	GLuint				*vertIndex;
 #endif
+	GLuint				vboDataHandle;
+	GLuint				vboIndexHandle;
+	ubyte					*vertexP;
+	ushort				*indexP;
+	int					nVertices;
+	int					iVertices;
+	int					iNormals;
+	int					iColor;
+	int					iTexCoord;
+	int					iOvlTexCoord;
+	int					iLMapTexCoord;
 	} tFaceData;
 
 typedef struct tSegList {
@@ -1977,6 +2000,8 @@ typedef struct tPOFObject {
 } tPOFObject;
 
 //	-----------------------------------------------------------------------------
+
+#define G3_BUFFER_OFFSET(_i)	(GLvoid *) ((char *) NULL + (_i))
 
 typedef struct tG3RenderVertex {
 	fVector3					vertex;

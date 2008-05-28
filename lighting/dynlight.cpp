@@ -826,7 +826,7 @@ if (((char *) psl - (char *) gameData.render.lights.dynamic.shader.lights) % siz
 #endif
 if (psl->bUsed [nThread])
 	return 0;
-fix xDist = (psl->xDistance / (gameStates.render.bPerPixelLighting ? 2000 : 2000) + 5) / 10;
+fix xDist = psl->info.bSpot ? 0 : (psl->xDistance / (gameStates.render.bPerPixelLighting ? 2000 : 2000) + 5) / 10;
 if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
 if (xDist < 0)
@@ -834,7 +834,7 @@ if (xDist < 0)
 #if PREFER_GEOMETRY_LIGHTS
 else if (psl->info.nSegment >= 0)
 	xDist /= 2;
-else
+else if (!psl->info.bSpot)
 	xDist += (MAX_SHADER_LIGHTS - xDist) / 2;
 #endif
 #if 1

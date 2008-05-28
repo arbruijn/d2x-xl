@@ -1626,7 +1626,7 @@ if (nError == -1) {   //error!!
 	}
 CFClose(&cf);
 
-if (!quadMeshBuilder.Build (nLevel))
+if (!meshBuilder.Build (nLevel))
 	goto reloadLevel;
 
 if (!gameStates.app.bNostalgia) {
@@ -1639,7 +1639,7 @@ if (!gameStates.app.bNostalgia) {
 		if (gameStates.render.bPerPixelLighting) {
 			CreateLightmaps (nLevel);
 			if (HaveLightmaps ())
-				quadMeshBuilder.RebuildLightmapTexCoord ();	//rebuild to create proper lightmap texture coordinates
+				meshBuilder.RebuildLightmapTexCoord ();	//rebuild to create proper lightmap texture coordinates
 			}
 		}
 	}

@@ -47,6 +47,7 @@ char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
 #include "game.h"
 #include "menu.h"
 #include "newmenu.h"
+#include "createmesh.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -95,7 +96,7 @@ typedef struct tMeshDataHeader {
 
 float fMaxEdgeLen [] = {1e30f, 30.9f, 20.9f, 19.9f, 9.9f};
 
-CQuadMeshBuilder quadMeshBuilder;
+CQuadMeshBuilder meshBuilder;
 
 //------------------------------------------------------------------------------
 
@@ -1109,6 +1110,95 @@ for (i = 0; i < 4; i++, m_triP++) {
 	m_texCoordP += 3;
 	m_faceColorP += 3;
 	}
+}
+
+//------------------------------------------------------------------------------
+
+bool CQuadMeshBuilder::BuildVBOs (void)
+{
+#if GEOMETRY_VBOS
+if (!gameStates.ogl.bHaveVBOs)
+	return false;
+DestroyVBOs ();
+int h, i;
+glGenBuffersARB (1, &gameData.segs.faces.vboDataHandle);
+if ((i = glGetError ())) {
+	glGenBuffersARB (1, &gameData.segs.faces.vboDataHandle);
+	if ((i = glGetError ())) {
+#	ifdef _DEBUG
+		HUDMessage (0, "glGenBuffersARB failed (%d)", i);
+#	endif
+		gameStates.ogl.bHaveVBOs = 0;
+		return false;
+		}
+	}
+glBindBufferARB (GL_ARRAY_BUFFER_ARB, gameData.segs.faces.vboDataHandle);
+if ((i = glGetError ())) {
+#	ifdef _DEBUG
+	HUDMessage (0, "glBindBufferARB failed (%d)", i);
+#	endif
+	gameStates.ogl.bHaveVBOs = 0;
+	return false;
+	}
+gameData.segs.faces.nVertices = gameStates.render.bTriangleMesh ? gameData.segs.nTris * 3 : gameData.segs.nFaces * 4;
+glBufferDataARB (GL_ARRAY_BUFFER, gameData.segs.faces.nVertices * sizeof (tFaceRenderVertex), NULL, GL_STATIC_DRAW_ARB);
+gameData.segs.faces.vertexP = (ubyte *) glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
+gameData.segs.faces.vboIndexHandle = 0;
+glGenBuffersARB (1, &gameData.segs.faces.vboIndexHandle);
+if (gameData.segs.faces.vboIndexHandle) {
+	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, gameData.segs.faces.vboIndexHandle);
+	glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, gameData.segs.faces.nVertices * sizeof (ushort), NULL, GL_STATIC_DRAW_ARB);
+	gameData.segs.faces.indexP = (ushort *) glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
+	}
+else
+	gameData.segs.faces.indexP = NULL;
+
+ubyte *vertexP = gameData.segs.faces.vertexP;
+i = 0;
+gameData.segs.faces.iVertices = 0;
+memcpy (vertexP, gameData.segs.faces.vertices, h = gameData.segs.faces.nVertices * sizeof (gameData.segs.faces.vertices [0]));
+i += h;
+gameData.segs.faces.iNormals = i;
+memcpy (vertexP + i, gameData.segs.faces.normals, h = gameData.segs.faces.nVertices * sizeof (gameData.segs.faces.normals [0]));
+i += h;
+gameData.segs.faces.iColor = i;
+memcpy (vertexP + i, gameData.segs.faces.color, h = gameData.segs.faces.nVertices * sizeof (gameData.segs.faces.color [0]));
+i += h;
+gameData.segs.faces.iTexCoord = i;
+memcpy (vertexP + i, gameData.segs.faces.texCoord, h = gameData.segs.faces.nVertices * sizeof (gameData.segs.faces.texCoord [0]));
+i += h;
+gameData.segs.faces.iOvlTexCoord = i;
+memcpy (vertexP + i, gameData.segs.faces.ovlTexCoord, h = gameData.segs.faces.nVertices * sizeof (gameData.segs.faces.ovlTexCoord [0]));
+i += h;
+gameData.segs.faces.iLMapTexCoord = i;
+memcpy (vertexP + i, gameData.segs.faces.lMapTexCoord, h = gameData.segs.faces.nVertices * sizeof (gameData.segs.faces.lMapTexCoord [0]));
+for (int i = 0; i < gameData.segs.faces.nVertices; i++)
+	gameData.segs.faces.indexP [i] = i;
+
+glUnmapBufferARB (GL_ARRAY_BUFFER_ARB);
+glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
+glUnmapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB);
+glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+return true;
+#else
+return false;
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void CQuadMeshBuilder::DestroyVBOs (void)
+{
+#if GEOMETRY_VBOS
+if (gameData.segs.faces.vboDataHandle) {
+	glDeleteBuffersARB (1, &gameData.segs.faces.vboDataHandle);
+	gameData.segs.faces.vboDataHandle = 0;
+	}
+if (gameData.segs.faces.vboIndexHandle) {
+	glDeleteBuffersARB (1, &gameData.segs.faces.vboIndexHandle);
+	gameData.segs.faces.vboIndexHandle = 0;
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------

@@ -499,6 +499,26 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+#if GEOMETRY_VBOS
+
+inline void RenderFacePP (grsFace *faceP)
+{
+if (gameData.segs.faces.vboDataHandle) {
+	int i = faceP->nIndex;
+	glDrawRangeElements (GL_TRIANGLES, i, i + 5, 6, GL_UNSIGNED_SHORT, G3_BUFFER_OFFSET (i * sizeof (ushort)));
+	}
+else
+	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
+}
+
+#else
+
+#define RenderFacePP(_faceP)	glDrawArrays (GL_TRIANGLES, (_faceP)->nIndex, 6)
+
+#endif
+
+//------------------------------------------------------------------------------
+
 int G3DrawFaceArraysPPLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 PROF_START
@@ -550,7 +570,7 @@ else {
 gameStates.ogl.iLight = 0;
 G3SetRenderStatesLM (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 if (bDepthOnly) {
-	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
+	RenderFacePP (faceP);
 	PROF_END(ptRenderFaces)
 	return 1;
 	}
@@ -565,7 +585,7 @@ if (bMonitor)
 gameData.render.nTotalFaces++;
 if (!bColored) {
 	G3SetupGrayScaleShader (gameStates.render.history.nType, &faceP->color);
-	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
+	RenderFacePP (faceP);
 	}
 else if (gameStates.render.bFullBright) {
 	if (bColorKey)
@@ -576,13 +596,13 @@ else if (gameStates.render.bFullBright) {
 		gameData.render.nShaderChanges++;
 		}
 	glColor3f (1,1,1);
-	glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
+	RenderFacePP (faceP);
 	}
 else {
 	bool bAdditive = false;
 	for (;;) {
 		G3SetupPerPixelShader (faceP, 0, gameStates.render.history.nType, false);	
-		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
+		RenderFacePP (faceP);
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 			 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 			break;
@@ -642,7 +662,7 @@ if (bMonitor)
 	G3SetupMonitor (faceP, bmTop, bTextured, 1);
 gameData.render.nTotalFaces++;
 G3SetupHeadlightShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->color);
-glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
+RenderFacePP (faceP);
 
 if (bMonitor)
 	G3ResetMonitor (bmTop, 1);

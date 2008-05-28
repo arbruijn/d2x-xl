@@ -130,6 +130,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "soundthreads.h"
 #include "sparkeffect.h"
 #include "systemkeys.h"
+#include "createmesh.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -1463,6 +1464,7 @@ SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
 #endif
 if (pfnTIRStop)
 	pfnTIRStop ();
+meshBuilder.DestroyVBOs ();
 }
 
 //-----------------------------------------------------------------------------

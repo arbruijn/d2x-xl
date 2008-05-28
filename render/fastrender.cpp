@@ -471,7 +471,8 @@ return tiRender.nFaces;
 
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
-	int	bLightmaps = (nType < 4) && HaveLightmaps (),
+	int	bVBO = 0,
+			bLightmaps = (nType < 4) && HaveLightmaps (),
 			bNormals = !bDepthOnly; // && gameStates.render.bPerPixelLighting;
 
 gameData.threads.vertColor.data.bDarkness = 0;
@@ -497,46 +498,88 @@ if (nType == 3) {
 		LoadGlareShader ();
 	return 0;
 	}
-else if ((nType < 4) && gameStates.render.bPerPixelLighting) {
-	OglEnableLighting (1);
-	if (gameStates.render.bPerPixelLighting == 1) 
-		glDisable (GL_COLOR_MATERIAL);
-	else {
-		for (int i = 0; i < 8; i++)
-			glEnable (GL_LIGHT0 + i);
-		glDisable (GL_LIGHTING);
+else {
+#if GEOMETRY_VBOS
+	if (gameData.segs.faces.vboDataHandle) {
+		glBindBufferARB (GL_ARRAY_BUFFER_ARB, gameData.segs.faces.vboDataHandle);
+		bVBO = 1;
 		}
-	glColor4f (1,1,1,1);
+#endif
+	if ((nType < 4) && gameStates.render.bPerPixelLighting) {
+		OglEnableLighting (1);
+		if (gameStates.render.bPerPixelLighting == 1) 
+			glDisable (GL_COLOR_MATERIAL);
+		else {
+			for (int i = 0; i < 8; i++)
+				glEnable (GL_LIGHT0 + i);
+			glDisable (GL_LIGHTING);
+			}
+		glColor4f (1,1,1,1);
+		}
 	}
 OglSetupTransform (1);
 G3EnableClientStates (!bDepthOnly, !bDepthOnly, bNormals, GL_TEXTURE0);
-if (bNormals)
-	glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals);
-if (!bDepthOnly) {
-	if (bLightmaps)
-		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord);
-	else
+#if GEOMETRY_VBOS
+if (bVBO) {
+	if (bNormals)
+		glNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iNormals));
+	if (!bDepthOnly) {
+		if (bLightmaps)
+			glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iLMapTexCoord));
+		else
+			glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iTexCoord));
+		glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iColor));
+		}
+	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iVertices));
+	if (bLightmaps) {
+		G3EnableClientStates (1, 1, bNormals, GL_TEXTURE1);
+		glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iTexCoord));
+		glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iColor));
+		glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iVertices));
+		}
+	G3EnableClientStates (1, 1, gameStates.render.bPerPixelLighting == 1, GL_TEXTURE1 + bLightmaps);
+	if (gameStates.render.bPerPixelLighting == 1)
+		glNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iNormals));
+	glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iOvlTexCoord));
+	glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iColor));
+	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iVertices));
+	G3EnableClientStates (1, 1, 0, GL_TEXTURE2 + bLightmaps);
+	glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iOvlTexCoord));
+	glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iColor));
+	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iVertices));
+	if (gameData.segs.faces.vboIndexHandle)
+		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, gameData.segs.faces.vboIndexHandle);
+	}	
+else 
+#endif
+	{
+	if (bNormals)
+		glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals);
+	if (!bDepthOnly) {
+		if (bLightmaps)
+			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord);
+		else
+			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
+		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+		}
+	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+	if (bLightmaps) {
+		G3EnableClientStates (1, 1, bNormals, GL_TEXTURE1);
 		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
+		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+		}
+	G3EnableClientStates (1, 1, bNormals, GL_TEXTURE1 + bLightmaps);
+	if (gameStates.render.bPerPixelLighting == 1)
+		glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals);
+	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
 	glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
-	}
-//glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
-if (bLightmaps) {
-	G3EnableClientStates (1, 1, 0, GL_TEXTURE1);
-	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
+	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+	G3EnableClientStates (1, 1, 0, GL_TEXTURE2 + bLightmaps);
+	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
 	glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
-	//glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 	}
-G3EnableClientStates (1, 1, gameStates.render.bPerPixelLighting == 1, GL_TEXTURE1 + bLightmaps);
-if (gameStates.render.bPerPixelLighting == 1)
-	glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals);
-glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
-glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
-//glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
-G3EnableClientStates (1, 1, 0, GL_TEXTURE2 + bLightmaps);
-glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
-glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
-//glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
-glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 if (bNormals)
 	G3EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 glEnable (GL_BLEND);
@@ -582,6 +625,8 @@ if (nType != 3) {
 	if (gameStates.render.bPerPixelLighting)
 		OglDisableLighting ();
 	OglResetTransform (1);
+	if (gameData.segs.faces.vboDataHandle)
+		glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 	}
 else 	if (CoronaStyle () == 2)
 	UnloadGlareShader ();
@@ -1705,6 +1750,8 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		AddFaceListItem (faceP, nThread);
 #endif
 		faceP->color = faceColor [nColor].color;
+		if (gameData.app.nFrameCount)
+			continue;
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
 		for (k = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; k; k--, triP++) {
 			nIndex = triP->nIndex;
