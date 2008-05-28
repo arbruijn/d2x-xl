@@ -696,9 +696,8 @@ void OglSwapBuffers (int bForce, int bClear)
 {
 if (!gameStates.menus.nInMenu || bForce) {
 	OglCleanTextureCache ();
-#if 1//def _DEBUG
-	if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu && FONT && SMALL_FONT) {
 #	if PROFILING
+	if (gameStates.render.bShowProfiler && gameStates.app.bGameRunning && !gameStates.menus.nInMenu && FONT && SMALL_FONT) {
 		static time_t t0 = -1000;
 		time_t t1 = clock ();
 		static tProfilerData p;
@@ -726,7 +725,6 @@ if (!gameStates.menus.nInMenu || bForce) {
 		GrPrintF (NULL, 5, h * i++, "    seg list: %1.2f %c", t = 100.0f * (float) p.t [ptBuildSegList] / (float) p.t [ptRenderMine], '%');
 		GrPrintF (NULL, 5, h * i++, "    obj list: %1.2f %c", t = 100.0f * (float) p.t [ptBuildObjList] / (float) p.t [ptRenderMine], '%');
 		GrPrintF (NULL, 5, h * i++, "  total: %1.2f %c", s, '%');
-#	endif
 		}
 #endif
 	//if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)

@@ -919,6 +919,7 @@ typedef struct tRenderStates {
 	int bRenderIndirect;
 	int bBuildModels;
 	int bShowFrameRate;
+	int bShowProfiler;
 	int bTriangleMesh;
 	int nFrameFlipFlop;
 	int nModelQuality;

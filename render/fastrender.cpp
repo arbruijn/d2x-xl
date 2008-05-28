@@ -499,9 +499,13 @@ if (nType == 3) {
 	}
 else if ((nType < 4) && gameStates.render.bPerPixelLighting) {
 	OglEnableLighting (1);
-	for (int i = 0; i < 8; i++)
-		glEnable (GL_LIGHT0 + i);
-	glDisable (GL_LIGHTING);
+	if (gameStates.render.bPerPixelLighting == 1) 
+		glDisable (GL_COLOR_MATERIAL);
+	else {
+		for (int i = 0; i < 8; i++)
+			glEnable (GL_LIGHT0 + i);
+		glDisable (GL_LIGHTING);
+		}
 	glColor4f (1,1,1,1);
 	}
 OglSetupTransform (1);
@@ -522,7 +526,9 @@ if (bLightmaps) {
 	glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 	//glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 	}
-G3EnableClientStates (1, 1, 0, GL_TEXTURE1 + bLightmaps);
+G3EnableClientStates (1, 1, gameStates.render.bPerPixelLighting == 1, GL_TEXTURE1 + bLightmaps);
+if (gameStates.render.bPerPixelLighting == 1)
+	glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals);
 glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
 glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 //glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);

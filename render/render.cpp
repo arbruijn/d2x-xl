@@ -2089,7 +2089,7 @@ gameData.render.nTotalLights =
 gameData.render.nMaxLights = 
 gameData.render.nStateChanges = 
 gameData.render.nShaderChanges = 0;
-g3FaceDrawer = (gameStates.render.bPerPixelLighting == 2) ? G3DrawFaceArraysPPLM : G3DrawFaceArrays;
+g3FaceDrawer = (gameStates.render.bPerPixelLighting) ? G3DrawFaceArraysPPLM : G3DrawFaceArrays;
 gameData.render.vertColor.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4);
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameStates.render.bApplyDynLight =

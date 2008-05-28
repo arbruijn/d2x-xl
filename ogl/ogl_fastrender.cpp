@@ -44,9 +44,6 @@
 #include "transprender.h"
 #include "gameseg.h"
 
-#define MAX_PP_LIGHTS_PER_FACE 32
-#define MAX_PP_LIGHTS_PER_PASS 1
-
 extern tG3FaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
 
 //------------------------------------------------------------------------------
@@ -584,7 +581,7 @@ else if (gameStates.render.bFullBright) {
 else {
 	bool bAdditive = false;
 	for (;;) {
-		G3SetupPerPixelShader (faceP, 0, gameStates.render.history.nType, false);
+		G3SetupPerPixelShader (faceP, 0, gameStates.render.history.nType, false);	
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 			 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
@@ -593,9 +590,10 @@ else {
 			bAdditive = true;
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			glDepthFunc (GL_EQUAL);
+			glDepthMask (0);
 			}
 		}
-#if 0
+#if 0 //headlights will be rendered in a separate pass to decrease shader changes
 	if (gameStates.render.bHeadlights) {
 		if (!bAdditive) {
 			bAdditive = true;
@@ -605,8 +603,10 @@ else {
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, 6);
 		}
 #endif
-	if (bAdditive)
+	if (bAdditive) {
 		glDepthFunc (GL_LEQUAL);
+		glDepthMask (1);
+		}
 	}
 
 if (bMonitor)

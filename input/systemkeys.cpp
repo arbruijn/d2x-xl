@@ -856,8 +856,12 @@ void HandleGameKey(int key)
 			HUDMessage (0, "multi-threading %s", gameStates.app.bMultiThreaded ? "ON" : "OFF");
 			break;
 
+		case KEY_ALTED + KEY_P:
+			gameStates.render.bShowProfiler = !gameStates.render.bShowProfiler;
+			break;
+
 		case KEY_ALTED + KEY_R:
-			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (5 + gameStates.render.bPerPixelLighting);
+			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (5 + (gameStates.render.bPerPixelLighting != 0));
 			break;
 
 		case KEY_CTRLED + KEY_ALTED + KEY_R:

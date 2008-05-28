@@ -372,6 +372,7 @@ if ((nDbgObj >= 0) && (nObject == nDbgObj))
 	nDbgObj = nDbgObj;
 if (pc && ((pc->red > 1) || (pc->green > 1) || (pc->blue > 1)))
 	pc = pc;
+#endif
 if (gameOpts->render.nLightingMethod && (nSegment >= 0) && (nSide >= 0)) {
 #if 1
 	fBrightness /= Intensity (pc->red, pc->green, pc->blue);
@@ -382,7 +383,6 @@ if (gameOpts->render.nLightingMethod && (nSegment >= 0) && (nSide >= 0)) {
 		fBrightness *= fBrightness;
 #endif
 	}
-#endif
 if (pc)
 	pc->alpha = 1.0f;
 if (0 <= (h = UpdateDynLight (pc, fBrightness, nSegment, nSide, nObject)))
@@ -917,8 +917,8 @@ return h;
 
 void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread)
 {
-if (bStatic || gameData.render.lights.dynamic.nVariableVertLights [nVertex]) 
-	{
+if (bStatic || gameData.render.lights.dynamic.nVariableVertLights [nVertex]) {
+	PROF_START
 	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 	short						i, j, nActiveLightI = sliP->nActive;
@@ -989,6 +989,7 @@ if (nVertex == nDbgVertex)
 #endif
 			}
 		}
+	PROF_END(ptVertexLighting)
 	}
 }
 
@@ -996,6 +997,7 @@ if (nVertex == nDbgVertex)
 
 int SetNearestFaceLights (grsFace *faceP, int bTextured)
 {
+PROF_START
 	int			i;
 	vmsVector	vNormal;
 	tSide			*sideP = SEGMENTS [faceP->nSegment].sides + faceP->nSide;
@@ -1024,6 +1026,7 @@ VmVecScale (&vNormal, F1_0 / 2);
 for (i = 0; i < 4; i++)
 	SetNearestVertexLights (faceP - FACES, faceP->index [i], &vNormal, 0, 0, 1, 0);
 #endif
+PROF_END(ptPerPixelLighting)
 return gameData.render.lights.dynamic.shader.index [0][0].nActive;
 }
 
@@ -1149,16 +1152,10 @@ sliP->nLast = 0;
 
 //------------------------------------------------------------------------------
 
-#if PROFILING
-time_t tSetNearestDynamicLights = 0;
-#endif
-
 short SetNearestSegmentLights (int nSegment, int nFace, int bVariable, int nType, int nThread)
 {
+PROF_START
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
-#if PROFILING
-	time_t t = clock ();
-#endif
 
 #ifdef _DEBUG
 	static int nPrevSeg = -1;
@@ -1248,12 +1245,10 @@ if (gameOpts->render.nLightingMethod) {
 		nDbgSeg = nDbgSeg;
 #endif
 	}
-#if PROFILING
-tSetNearestDynamicLights += clock () - t;
-#endif
 #ifdef _DEBUG
 nPrevSeg = nSegment;
 #endif
+PROF_END(ptSegmentLighting)
 return sliP->nActive;
 }
 
