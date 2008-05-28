@@ -711,7 +711,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 		float t, s = 0;
 		GrPrintF (NULL, 5, h * i++, "frame: %ld", p.t [ptFrame]);
 		GrPrintF (NULL, 5, h * i++, "  scene: %1.2f %c", 100.0f * (float) p.t [ptRenderMine] / (float) p.t [ptFrame], '%');
-		GrPrintF (NULL, 5, h * i++, "    light: %1.2f %c", t = 100.0f * (float) p.t [ptLighting] / (float) p.t [ptRenderMine], '%');
+		GrPrintF (NULL, 5, h * i++, "  light: %1.2f %c", t = 100.0f * (float) p.t [ptLighting] / (float) p.t [ptRenderMine], '%');
 		s += t;
 		GrPrintF (NULL, 5, h * i++, "  render: %1.2f %c", t = 100.0f * (float) p.t [ptRenderPass] / (float) p.t [ptRenderMine], '%');
 		s += t;

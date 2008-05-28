@@ -595,28 +595,22 @@ if (bClientState) {
 	renderItems.bClientState = 1;
 	glActiveTexture (GL_TEXTURE0 + bUseLightmaps);
 	glClientActiveTexture (GL_TEXTURE0 + bUseLightmaps);
-	if (bColor) {
-		if (G3EnableClientState (GL_COLOR_ARRAY, -1))
-			renderItems.bClientColor = 1;
-		else {
-			RISetClientState (0, 0, 0, 0);
-			return 0;
-			}
+	if (bColor != renderItems.bClientColor) {
+		if (bColor)
+			glEnableClientState (GL_COLOR_ARRAY);
+		else
+			glDisableClientState (GL_COLOR_ARRAY);
+		renderItems.bClientColor = bColor;
 		}
-	else
-		glDisableClientState (GL_COLOR_ARRAY);
-	if (bTexCoord) {
-		if (G3EnableClientState (GL_TEXTURE_COORD_ARRAY, -1))
-			renderItems.bClientTexCoord = 1;
-		else {
-			RISetClientState (0, 0, 0, 0);
-			return 0;
-			}
+	if (bTexCoord != renderItems.bClientTexCoord) {
+		if (bTexCoord)
+			glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+		else
+			glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 		}
-	else
-		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
-	if (!G3EnableClientState (GL_VERTEX_ARRAY, -1))
-		return 0;
+	if (!renderItems.bLightmaps)
+		glEnableClientState (GL_NORMAL_ARRAY);
+	glEnableClientState (GL_VERTEX_ARRAY);
 	}
 else {
 	if (renderItems.bLightmaps) {

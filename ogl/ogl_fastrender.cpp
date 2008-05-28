@@ -47,8 +47,6 @@
 #define MAX_PP_LIGHTS_PER_FACE 32
 #define MAX_PP_LIGHTS_PER_PASS 1
 
-#define G3_BUFFER_FACES		1
-
 extern tG3FaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
 
 //------------------------------------------------------------------------------
@@ -79,6 +77,11 @@ extern GLhandleARB gsShaderProg [2][3];
 
 void G3BuildQuadIndex (grsFace *faceP, int *indexP)
 {
+#if G3_BUFFER_FACES
+int nIndex = faceP->nIndex;
+for (int i = 0; i < 4; i++)
+	*indexP++ = nIndex++;
+#else
 	tRgbaColorf	*pc = gameData.segs.faces.color + faceP->nIndex;
 	float			l, lMax = 0;
 	int			i, j, nIndex;
@@ -100,6 +103,7 @@ else {
 	for (i = 0, j = iMax; i < 4; i++, j %= 4)
 		*indexP++ = nIndex + j++;
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -132,15 +136,8 @@ if ((faceBuffer.bmBot != bmBot) || (faceBuffer.bmTop != bmTop) || (faceBuffer.nE
 	faceBuffer.bmTop = faceP->bmTop;
 	}
 faceBuffer.bTextured = bTextured;
-
-if (gameStates.render.bTriangleMesh) {
-	for (; j; j--)
-		faceBuffer.index [faceBuffer.nElements++] = i++;
-	}
-else {
-	G3BuildQuadIndex (faceP, faceBuffer.index + faceBuffer.nElements);
-	faceBuffer.nElements += 4;
-	}
+for (; j; j--)
+	faceBuffer.index [faceBuffer.nElements++] = i++;
 faceBuffer.nFaces++;
 }
 
@@ -163,7 +160,7 @@ if (!bColored && gameOpts->render.automap.bGrayOut)
 	nShader = G3SetupGrayScaleShader (nType, colorP);
 else if ((gameStates.render.nType != 4) && faceP && gameStates.render.bPerPixelLighting)
 	nShader = G3SetupPerPixelShader (faceP, bDepthOnly, nType, false);
-else if (gameData.render.lights.dynamic.headlights.nLights && !(bDepthOnly || gameStates.render.automap.bDisplay))
+else if (gameStates.render.bHeadlights && !bDepthOnly)
 	nShader = G3SetupHeadlightShader (nType, HaveLightmaps (), colorP);
 else if (bColorKey || bMultiTexture) 
 	nShader = G3SetupTexMergeShader (bColorKey, bColored);
@@ -406,7 +403,7 @@ int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bB
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
 
-#if 0//def _DEBUG
+#ifdef _DEBUG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	if (bDepthOnly)
 		nDbgSeg = nDbgSeg;
@@ -487,7 +484,7 @@ if (gameStates.render.bTriangleMesh) {
 #endif
 	}	
 else {
-#if 1
+#if 0
 	int	index [4];
 
 	G3BuildQuadIndex (faceP, index);

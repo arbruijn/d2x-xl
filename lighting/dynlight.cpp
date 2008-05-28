@@ -1230,6 +1230,8 @@ if (gameOpts->render.nLightingMethod) {
 		if (SetActiveShaderLight (activeLightsP, psl, 1, nThread))
 #ifdef _DEBUG
 			{
+			if ((nSegment == nDbgSeg) && (nDbgObj >= 0) && (psl->info.nObject == nDbgObj))
+				psl = psl;
 			if (nFace < 0)
 				psl->nTarget = -nSegment - 1;
 			else

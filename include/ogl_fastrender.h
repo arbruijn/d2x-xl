@@ -9,6 +9,8 @@
 
 #include "ogl_defs.h"
 
+#define G3_BUFFER_FACES		1
+
 //------------------------------------------------------------------------------
 
 int G3DrawFaceSimple (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
