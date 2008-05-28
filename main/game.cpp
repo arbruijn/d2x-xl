@@ -1422,8 +1422,10 @@ for (;;) {
 		}
 	gameStates.multi.bIWasKicked = 0;
 	PROF_END(ptFrame);
+#if PROFILING
 	if (gameData.app.nFrameCount % 10000 == 0)
 		memset (&gameData.profiler, 0, sizeof (gameData.profiler));
+#endif
 	if (gameStates.app.nFunctionMode != FMODE_GAME)
 		longjmp (gameExitPoint, 0);
 		}

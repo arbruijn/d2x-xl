@@ -741,7 +741,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 
 // -----------------------------------------------------------------------------------
 
-static int nOglTransformCalls = 0;
+int nOglTransformCalls = 0;
 
 void OglSetupTransform (int bForce)
 {

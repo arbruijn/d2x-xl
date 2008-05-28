@@ -994,10 +994,12 @@ switch (objP->renderType) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
 			if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
+#if 0
 				if ((objP->id == POW_SMARTMINE) || (objP->id == POW_PROXMINE))
 					gameData.models.nScale = 2 * F1_0;
 				else
 					gameData.models.nScale = 3 * F1_0 / 2;
+#endif
 				RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 				if (!DrawPolygonObject (objP, bDepthSort, 0))
 					ConvertWeaponToPowerup (objP);

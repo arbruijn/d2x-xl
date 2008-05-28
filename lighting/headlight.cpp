@@ -26,6 +26,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "fix.h"
 #include "vecmat.h"
 #include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "ogl_color.h"
 #include "ogl_shader.h"
 #include "ogl_render.h"
@@ -309,7 +310,8 @@ char *headlightFS [2][8] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
+	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (matColor.rgb * spotColor, matColor.a);"  \
 	"}" 
 	,
@@ -334,7 +336,8 @@ char *headlightFS [2][8] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
+	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"}" 
 	,
@@ -361,7 +364,8 @@ char *headlightFS [2][8] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
+	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"}" 
 	,
@@ -392,7 +396,8 @@ char *headlightFS [2][8] = {
 	" 		       }\r\n" \
 	" 		    }\r\n" \
 	" 		 }\r\n" \
-	"   vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
+	"   vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
+	"   spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"	 gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"   }\r\n" \
 	"}" 
@@ -789,7 +794,7 @@ if ((gameStates.ogl.bHeadlight = (gameStates.ogl.bShadersOk && gameOpts->render.
 		for (j = 0; j < 4; j++) {
 			if (headlightShaderProgs [i][j])
 				DeleteShaderProg (&headlightShaderProgs [i][j]);
-#if 0//ndef _DEBUG
+#if 1//ndef _DEBUG
 			if (nLights == 1)
 				pszFS = headlightFS [i][h = j];
 			else
@@ -814,12 +819,14 @@ gameData.render.ogl.nHeadlights = nLights;
 
 //------------------------------------------------------------------------------
 
+extern int nOglTransformCalls;
+
 int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP)
 {
 #ifdef _DEBUG
 	int			oglRes;
 #endif
-	int			nLights, nShader;
+	int			nLights, nShader, bTransform;
 	tRgbaColorf	color;
 
 //headlights
@@ -849,11 +856,15 @@ if (nShader != gameStates.render.history.nShader) {
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
 #if 1
+	if (bTransform = !nOglTransformCalls)
+		OglSetupTransform (1);
 	for (int i = 0; i < nLights; i++) {
 		glEnable (GL_LIGHT0 + i);
 		glLightfv (GL_LIGHT0 + i, GL_POSITION, (GLfloat *) (gameData.render.lights.dynamic.headlights.pos + i));
 		glLightfv (GL_LIGHT0 + i, GL_SPOT_DIRECTION, (GLfloat *) (gameData.render.lights.dynamic.headlights.dir + i));
 		}
+	if (bTransform)
+		OglResetTransform (1);
 #else
 	glUniform3fv (glGetUniformLocation (activeShaderProg, "lightPosWorld"), nLights, 
 					  (GLfloat *) gameData.render.lights.dynamic.headlights.pos);

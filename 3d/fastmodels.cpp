@@ -425,7 +425,8 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	vmsAngVec		va = pAnimAngles ? pAnimAngles [psm->nAngles] : avZero;
 	vmsVector		vo;
 	int				h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/),
-						bGetThruster = !nPass && ObjectHasThruster (objP);
+						bGetThruster = !nPass && ObjectHasThruster (objP),
+						bPowerup = bHires && (objP->nType == OBJ_POWERUP);
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
 if (objP->nType == OBJ_PLAYER)
@@ -492,55 +493,55 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				}
 			}
 		nIndex = pmf->nIndex;
+		if (bPowerup) {
+			nVerts = pm->nFaces * 3;
+			nFaceVerts = 3;
+			}
+		else {
 #if G3_DRAW_ARRAYS
 #	if G3_ALLOW_TRANSPARENCY
-		if (bHires) {
-			bTransparent = bmP && ((bmP->bmProps.flags & BM_FLAG_TRANSPARENT) != 0);
-			if (bTransparent != bTransparency) {
-				if (bTransparent)
-					pm->bHasTransparency = 1;
-				pmf++;
-				i--;
-				continue;
+			if (bHires) {
+				bTransparent = bmP && ((bmP->bmProps.flags & BM_FLAG_TRANSPARENT) != 0);
+				if (bTransparent != bTransparency) {
+					if (bTransparent)
+						pm->bHasTransparency = 1;
+					pmf++;
+					i--;
+					continue;
+					}
 				}
-			}
 #	endif
 #if G3_DRAW_ARRAYS
-		if ((nFaceVerts = pmf->nVerts) > 4) {
+			if ((nFaceVerts = pmf->nVerts) > 4) {
 #else
-		if ((nFaceVerts = pmf->nVerts) > 0) {
+			if ((nFaceVerts = pmf->nVerts) > 0) {
 #endif
-			if (bGetThruster && pmf->bThruster)
-				G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
+				if (bGetThruster && pmf->bThruster)
+					G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
+				nVerts = nFaceVerts;
+				pmf++;
+				i--;
+				}
+			else { 
+				nId = pmf->nId;
+				nVerts = 0;
+				do {
+					if (bGetThruster && pmf->bThruster)
+						G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
+					nVerts += nFaceVerts;
+					pmf++;
+					i--;
+					} while (i && (pmf->nId == nId));
+				}
+#else
+			nFaceVerts = pmf->nVerts;
+			if (pmf->bThruster)
+				G3GetThrusterPos (objP, nModel, pmf, vOffsetP, &pmf->vNormal, 0, bHires);
 			nVerts = nFaceVerts;
 			pmf++;
 			i--;
-			}
-		else { 
-			nId = pmf->nId;
-			nVerts = 0;
-			do {
-				if (bGetThruster && pmf->bThruster)
-					G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
-				nVerts += nFaceVerts;
-				pmf++;
-				i--;
-				} while (i && (pmf->nId == nId));
-			}
-#else
-		nFaceVerts = pmf->nVerts;
-		if (pmf->bThruster)
-			G3GetThrusterPos (objP, nModel, pmf, vOffsetP, &pmf->vNormal, 0, bHires);
-		nVerts = nFaceVerts;
-		pmf++;
-		i--;
 #endif
-#ifdef _DEBUG
-		if (nFaceVerts == 8)
-			nFaceVerts = nFaceVerts;
-		if (nIndex + nVerts > pm->nFaceVerts)
-			break;
-#endif
+			}
 #if G3_DRAW_ARRAYS
 #	if G3_DRAW_RANGE_ELEMENTS
 		if (glDrawRangeElements)
@@ -596,6 +597,8 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #	endif
 		}
 #endif
+		if (bPowerup)
+			break;
 		}
 	}
 if (bAnimate)
@@ -792,7 +795,7 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 						 vmsAngVec *pAnimAngles, vmsVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
-	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && gameOpts->ogl.bObjLighting,
+	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && (gameStates.render.bPerPixelLighting || gameOpts->ogl.bObjLighting),
 				nGunId, nBombId, nMissileId, nMissiles;
 
 if (!objP)

@@ -706,6 +706,7 @@ void FlushParticleBuffer (float brightness)
 if (bufferBrightness < 0)
 	bufferBrightness = brightness;
 if (iBuffer) {
+	bufferBrightness = 2;
 	tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 	int bLightmaps = HaveLightmaps ();
 	bufferBrightness = brightness;
@@ -726,14 +727,16 @@ if (iBuffer) {
 			if (OglBindBmTex (bmP, 0, 1))
 				return;
 #endif
-			if (gameData.smoke.nLastType)
+			if (gameData.render.lights.dynamic.headlights.nLights && !gameStates.render.automap.bDisplay)
+				G3SetupHeadlightShader (1, 0, &color);
+			else if (gameData.smoke.nLastType && (gameStates.render.history.nShader >= 0)) {
 				glUseProgramObject (0);
+				gameStates.render.history.nShader = -1;
+				}
 #if 0
 			else if (!bLightmaps)
 				G3SetupShader (NULL, 0, 0, 1, 1, &color);
 #endif
-			else if (gameData.render.lights.dynamic.headlights.nLights && !gameStates.render.automap.bDisplay)
-				G3SetupHeadlightShader (1, 0, &color);
 			}
 		glDrawArrays (GL_QUADS, 0, iBuffer);
 #if 0
