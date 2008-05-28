@@ -228,7 +228,7 @@ char *headlightFS [2][8] = {
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"vec3 spotColor = gl_Color.rgb;\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
-	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
+	"if ((length (normal) == 0.0) || (dot (normalize (normal), lvNorm) < 0.0)) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.5) {\r\n" \
 	"	    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
@@ -322,13 +322,13 @@ char *headlightFS [2][8] = {
 	"varying vec3 vertPos, normal;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"float spotBrightness = 0.0;\r\n" \
+	"float spotBrightness = 0.0, normLen = length (normal);\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
-	"   if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
+	"   if ((normLen == 0.0) || (dot (normalize (normal), lvNorm) < 0.0)) {\r\n" \
 	"      float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
 	"   	   float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
@@ -431,7 +431,7 @@ char *headlightFS [2][8] = {
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"vec4 spotColor = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
-	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
+	"if ((length (normal) == 0) || (dot (normalize (normal), lvNorm) < 0.0)) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.5) {\r\n" \
 	"      float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
@@ -523,13 +523,13 @@ char *headlightFS [2][8] = {
 	"varying vec3 vertPos, normal;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"float spotBrightness = 0.0;\r\n" \
+	"float spotBrightness = 0.0, normLen = length (normal);\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
-	"   if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
+	"   if ((normLen == 0.0) || (dot (normalize (normal), lvNorm) < 0.0)) {\r\n" \
 	"      float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
 	"   	   float attenuation = min (400.0 / lightDist, 1.0);\r\n" \

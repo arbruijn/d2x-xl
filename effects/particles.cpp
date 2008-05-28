@@ -706,7 +706,6 @@ void FlushParticleBuffer (float brightness)
 if (bufferBrightness < 0)
 	bufferBrightness = brightness;
 if (iBuffer) {
-	bufferBrightness = 2;
 	tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 	int bLightmaps = HaveLightmaps ();
 	bufferBrightness = brightness;
@@ -738,6 +737,7 @@ if (iBuffer) {
 				G3SetupShader (NULL, 0, 0, 1, 1, &color);
 #endif
 			}
+		glNormal3f (0, 0, 0);
 		glDrawArrays (GL_QUADS, 0, iBuffer);
 #if 0
 		gameStates.render.bVertexArrays = (glGetError () == 0);
