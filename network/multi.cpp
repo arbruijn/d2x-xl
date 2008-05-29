@@ -345,8 +345,8 @@ if (nLocalObj != nRemoteObj)
 		if (gameData.multiplayer.players [i].nObject == nRemoteObj) {
 			gameData.multiplayer.players [i].nObject = nLocalObj;
 			if (nConsole == nRemoteObj) {
-				gameData.objs.objects [nLocalObj] = *gameData.objs.console;
-				gameData.objs.console = gameData.objs.objects + nLocalObj;
+				OBJECTS [nLocalObj] = *gameData.objs.console;
+				gameData.objs.console = OBJECTS + nLocalObj;
 				}
 			break;
 			}
@@ -370,7 +370,7 @@ return;
 }
 
 //-----------------------------------------------------------------------------
-// Add a mapping for our locally created gameData.objs.objects
+// Add a mapping for our locally created OBJECTS
 
 void MapObjnumLocalToLocal (int nLocalObj)
 {
@@ -415,7 +415,7 @@ void SetPlayerPaths (void)
 	int		i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++)
-	SetPathPoint (&gameData.render.thrusters [i].path, gameData.objs.objects + playerP->nObject);
+	SetPathPoint (&gameData.render.thrusters [i].path, OBJECTS + playerP->nObject);
 }
 
 // -----------------------------------------------------------------------------
@@ -428,9 +428,9 @@ void MultiSetFlagPos (void)
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++)
 	if (playerP->flags & PLAYER_FLAGS_FLAG)
-		SetPathPoint (&gameData.pig.flags [!GetTeam (i)].path, gameData.objs.objects + playerP->nObject);
+		SetPathPoint (&gameData.pig.flags [!GetTeam (i)].path, OBJECTS + playerP->nObject);
 #else
-SetPathPoint (&gameData.pig.flags [0].path, gameData.objs.objects + playerP->nObject);
+SetPathPoint (&gameData.pig.flags [0].path, OBJECTS + playerP->nObject);
 #endif
 }
 
@@ -563,7 +563,7 @@ void SetTeam (int nPlayer, int team)
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected)
-		MultiResetObjectTexture (gameData.objs.objects + gameData.multiplayer.players [i].nObject);
+		MultiResetObjectTexture (OBJECTS + gameData.multiplayer.players [i].nObject);
 
 if (team  >= 0) {
 	if (team)
@@ -607,7 +607,7 @@ if (gameStates.app.bHaveExtraGameInfo [1] && (!extraGameInfo [1].bAutoBalanceTea
 	MultiSendSetTeam (nPlayer);
 	if (!bForce) {
 		gameData.multiplayer.players [nPlayer].shields = -1;
-		StartPlayerDeathSequence (gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject);
+		StartPlayerDeathSequence (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 		}
 	}
 }
@@ -734,7 +734,7 @@ if ((nPlayer == gameData.multiplayer.nLocalPlayer) ||
 	Int3 (); // Non-terminal, see Rob
 	return;
 	}
-objP = gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject;
+objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 objP->nType = OBJ_GHOST;
 objP->renderType = RT_NONE;
 objP->movementType = MT_NONE;
@@ -753,7 +753,7 @@ if ((nPlayer == gameData.multiplayer.nLocalPlayer) || (nPlayer  >= MAX_NUM_NET_P
 	Int3 (); // Non-terminal, see rob
 	return;
 	}
-objP = gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject;
+objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 objP->nType = OBJ_PLAYER;
 objP->movementType = MT_PHYSICS;
 MultiResetPlayerObject (objP);
@@ -836,10 +836,10 @@ if ((nKilled < 0) || (nKilled > gameData.objs.nLastObject) ||
 	Int3 (); // See Rob, illegal value passed to computeKill;
 	return;
 	}
-objP = gameData.objs.objects + nKilled;
+objP = OBJECTS + nKilled;
 killedType = objP->nType;
 nKilledPlayer = objP->id;
-objP = gameData.objs.objects + nKiller;
+objP = OBJECTS + nKiller;
 killerType = objP->nType;
 nKillerId = objP->id;
 if ((killedType != OBJ_PLAYER) && (killedType != OBJ_GHOST)) {
@@ -889,7 +889,7 @@ else if ((killerType != OBJ_PLAYER) && (killerType != OBJ_GHOST)) {
 	pKilled->netKilledTotal++;
 	return;
 	}
-nKillerPlayer = gameData.objs.objects [nKiller].id;
+nKillerPlayer = OBJECTS [nKiller].id;
 pKiller = gameData.multiplayer.players + nKillerPlayer;
 if (gameData.app.nGameMode & GM_TEAM)
 	sprintf (szKiller, "%s (%s)", pKiller->callsign, netGame.team_name [GetTeam (nKillerPlayer)]);
@@ -1164,10 +1164,10 @@ void MultiDoFire (char *buf)
 
 gameData.multigame.laser.nTrack = GET_INTEL_SHORT (buf + 6);
 Assert (nPlayer < gameData.multiplayer.nPlayers);
-if (gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject].nType == OBJ_GHOST)
+if (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].nType == OBJ_GHOST)
 	MultiMakeGhostPlayer (nPlayer);
 if (weapon == FLARE_ADJUST)
-	LaserPlayerFire (gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject, 
+	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, 
 						  FLARE_ID, 6, 1, 0, -1);
 else if (weapon >= MISSILE_ADJUST) {
 	int h = weapon - MISSILE_ADJUST;
@@ -1178,7 +1178,7 @@ else if (weapon >= MISSILE_ADJUST) {
 		gameData.multigame.bIsGuided = 1;
 	if (playerP->secondaryAmmo [h] > 0)
 		playerP->secondaryAmmo [h]--;
-	LaserPlayerFire (gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject, 
+	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, 
 						  weapon_id, weapon_gun, 1, 0, -1);
 	}
 else {
@@ -1206,20 +1206,20 @@ void MultiDoPosition (char *buf)
 	tShortPos sp;
 #endif
 int nPlayer = (gameData.multiplayer.nLocalPlayer+1)%2;
-Assert (&gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject] != gameData.objs.console);
+Assert (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject] != gameData.objs.console);
 if (gameData.app.nGameMode & GM_NETWORK) {
 	Int3 (); // Get Jason, what the hell are we doing here?
 	return;
 	}
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-ExtractShortPos (&gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject], (tShortPos *) (buf+1), 0);
+ExtractShortPos (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], (tShortPos *) (buf+1), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + 1), 9);
 memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + 10), 14);
-ExtractShortPos (&gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject], &sp, 1);
+ExtractShortPos (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], &sp, 1);
 #endif
-if (gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject].movementType == MT_PHYSICS)
-	SetThrustFromVelocity (&gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject]);
+if (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].movementType == MT_PHYSICS)
+	SetThrustFromVelocity (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject]);
 }
 
 //-----------------------------------------------------------------------------
@@ -1227,7 +1227,7 @@ if (gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject].movem
 void MultiDoReappear (char *buf)
 {
 	short nObject = GET_INTEL_SHORT (buf + 1);
-	tObject *objP = gameData.objs.objects + nObject;
+	tObject *objP = OBJECTS + nObject;
 
 Assert (nObject >= 0);
 MultiMakeGhostPlayer (objP->id);
@@ -1256,7 +1256,7 @@ if ((nPlayer < 0) || (nPlayer >= gameData.multiplayer.nPlayers))
 Assert (nPlayer >= 0);
 Assert (nPlayer < gameData.multiplayer.nPlayers);
 #endif
-// If we are in the process of sending gameData.objs.objects to a new tPlayer, reset that process
+// If we are in the process of sending OBJECTS to a new tPlayer, reset that process
 if (networkData.bSendObjects)
 	networkData.nSentObjs = -1;
 // Stuff the gameData.multiplayer.players structure to prepare for the explosion
@@ -1286,7 +1286,7 @@ count += 4;
 #if 0
 MultiAdjustRemoteCap (nPlayer);
 #endif
-objP = gameData.objs.objects + playerP->nObject;
+objP = OBJECTS + playerP->nObject;
 nRemoteCreated = buf [count++]; // How many did the other guy create?
 gameData.multigame.create.nLoc = 0;
 shields = playerP->shields;
@@ -1301,7 +1301,7 @@ for (i = 0; i < nRemoteCreated; i++) {
 	count += 2;
 	}
 for (i = nRemoteCreated; i < gameData.multigame.create.nLoc; i++)
-	KillObject (gameData.objs.objects + gameData.multigame.create.nObjNums [i]);
+	KillObject (OBJECTS + gameData.multigame.create.nObjNums [i]);
 if (buf [0] == MULTI_PLAYER_EXPLODE) {
 	KillPlayerSmoke (nPlayer);
 	ExplodeBadassPlayer (objP);
@@ -1349,7 +1349,7 @@ if (gameData.reactor.bDestroyed != 1) {
 	else
 		HUDInitMessage (TXT_CONTROL_DESTROYED);
 	if (nObject != -1)
-		NetDestroyReactor (gameData.objs.objects + nObject);
+		NetDestroyReactor (OBJECTS + nObject);
 	else
 		NetDestroyReactor (NULL);
 	}
@@ -1386,7 +1386,7 @@ else if (buf [2] == 1) {
 	if (!gameData.multigame.bGotoSecret)
 		gameData.multigame.bGotoSecret = 1;
 	}
-CreatePlayerAppearanceEffect (&gameData.objs.objects [nObject]);
+CreatePlayerAppearanceEffect (&OBJECTS [nObject]);
 MultiMakePlayerGhost (buf [1]);
 }
 
@@ -1408,14 +1408,14 @@ if (nObject < 1)
 nLocalObj = ObjnumRemoteToLocal (nObject, obj_owner); // translate to local nObject
 if (nLocalObj < 0)
 	return;
-if ((gameData.objs.objects [nLocalObj].nType != OBJ_POWERUP) && 
-	 (gameData.objs.objects [nLocalObj].nType != OBJ_HOSTAGE))
+if ((OBJECTS [nLocalObj].nType != OBJ_POWERUP) && 
+	 (OBJECTS [nLocalObj].nType != OBJ_HOSTAGE))
 	return;
 if (networkData.bSendObjects && NetworkObjnumIsPast (nLocalObj))
 	networkData.nSentObjs = -1;
-if (gameData.objs.objects [nLocalObj].nType == OBJ_POWERUP)
+if (OBJECTS [nLocalObj].nType == OBJ_POWERUP)
 	if (gameData.app.nGameMode & GM_NETWORK) {
-		id = gameData.objs.objects [nLocalObj].id;
+		id = OBJECTS [nLocalObj].id;
 #if 0//def _DEBUG
 		HUDMessage (0, "removing %s (%d present)", pszPowerup [id], gameData.multiplayer.powerupsInMine [id]);
 #endif
@@ -1428,7 +1428,7 @@ if (gameData.objs.objects [nLocalObj].nType == OBJ_POWERUP)
 				gameData.multiplayer.powerupsInMine [id] -= 4;
 			}
 		}
-KillObject (gameData.objs.objects + nLocalObj); // quick and painless
+KillObject (OBJECTS + nLocalObj); // quick and painless
 }
 
 //-----------------------------------------------------------------------------
@@ -1555,7 +1555,7 @@ else
 void MultiDoCreateExplosion (char *buf)
 {
 int nPlayer = buf [1];
-CreateSmallFireballOnObject (&gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject], F1_0, 1);
+CreateSmallFireballOnObject (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], F1_0, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -1578,7 +1578,7 @@ nGun = buf [count++];
 nObject = GET_INTEL_SHORT (buf + count);      
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject))
 	return;
-if (0 <= (i = FindReactor (gameData.objs.objects + nObject)))
+if (0 <= (i = FindReactor (OBJECTS + nObject)))
 	CreateNewLaserEasy (&to_target, gameData.reactor.states [i].vGunPos + (int) nGun, nObject, CONTROLCEN_WEAPON_NUM, 1);
 }
 
@@ -1618,13 +1618,13 @@ count += sizeof (vmsVector);
 INTEL_VECTOR (&vNewPos);
 #endif
 gameData.multigame.create.nLoc = 0;
-nMyObj = CallObjectCreateEgg (gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject, 1, OBJ_POWERUP, powerupType);
+nMyObj = CallObjectCreateEgg (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, 1, OBJ_POWERUP, powerupType);
 if (nMyObj < 0)
 	return;
 if (networkData.bSendObjects && NetworkObjnumIsPast (nMyObj))
 	networkData.nSentObjs = -1;
-gameData.objs.objects [nMyObj].position.vPos = vNewPos;
-VmVecZero (&gameData.objs.objects [nMyObj].mType.physInfo.velocity);
+OBJECTS [nMyObj].position.vPos = vNewPos;
+VmVecZero (&OBJECTS [nMyObj].mType.physInfo.velocity);
 RelinkObject (nMyObj, nSegment);
 MapObjnumLocalToRemote (nMyObj, nObject, nPlayer);
 ObjectCreateExplosion (nSegment, &vNewPos, i2f (5), VCLIP_POWERUP_DISAPPEARANCE);
@@ -1702,7 +1702,7 @@ if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == 
 	return;
 	}
 gameData.multiplayer.players [nPlayer].shields  = 
-gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject].shields = shields;
+OBJECTS [gameData.multiplayer.players [nPlayer].nObject].shields = shields;
 }
 
 //-----------------------------------------------------------------------------
@@ -1739,13 +1739,13 @@ position.p.y = GET_INTEL_INT (buf + 7);
 position.p.z = GET_INTEL_INT (buf + 11);
 memcpy (gameData.marker.szMessage + 2 * nPlayer + msgNum, buf + 15, 40);
 gameData.marker.point [(nPlayer*2)+msgNum] = position;
-if (gameData.marker.objects [(nPlayer*2)+msgNum] !=-1 && gameData.objs.objects [gameData.marker.objects [(nPlayer*2)+msgNum]].nType!=OBJ_NONE && gameData.marker.objects [(nPlayer*2)+msgNum] !=0)
+if (gameData.marker.objects [(nPlayer*2)+msgNum] !=-1 && OBJECTS [gameData.marker.objects [(nPlayer*2)+msgNum]].nType!=OBJ_NONE && gameData.marker.objects [(nPlayer*2)+msgNum] !=0)
 	ReleaseObject (gameData.marker.objects [(nPlayer*2)+msgNum]);
 gameData.marker.objects [(nPlayer*2)+msgNum] = 
 	DropMarkerObject (
 		&position, 
-		gameData.objs.objects [LOCALPLAYER.nObject].nSegment, 
-		&gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient, 
+		OBJECTS [LOCALPLAYER.nObject].nSegment, 
+		&OBJECTS [LOCALPLAYER.nObject].position.mOrient, 
 		(ubyte) ((nPlayer*2)+msgNum));
 strcpy (gameData.marker.nOwner [(nPlayer*2)+msgNum], gameData.multiplayer.players [nPlayer].callsign);
 }
@@ -1840,7 +1840,7 @@ void MultiResetPlayerObject (tObject *objP)
 	int i;
 
 //Init physics for a non-console tPlayer
-if (objP > gameData.objs.objects + gameData.objs.nLastObject)
+if (objP > OBJECTS + gameData.objs.nLastObject)
 	return;
 if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_GHOST))
 	return;
@@ -2068,7 +2068,7 @@ if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 extern ubyte secondaryWeaponToPowerup [];
 extern ubyte primaryWeaponToPowerup [];
 
-// put a lid on how many gameData.objs.objects will be spewed by an exploding tPlayer
+// put a lid on how many OBJECTS will be spewed by an exploding tPlayer
 // to prevent rampant powerups in netgames
 
 void MultiCapObjects ()
@@ -2270,10 +2270,10 @@ if (gameData.app.nGameMode & GM_NETWORK)
 	return;
 gameData.multigame.msg.buf [count++] = (char)MULTI_POSITION;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-CreateShortPos ((tShortPos *) (gameData.multigame.msg.buf + count), gameData.objs.objects+nObject, 0);
+CreateShortPos ((tShortPos *) (gameData.multigame.msg.buf + count), OBJECTS+nObject, 0);
 count += sizeof (tShortPos);
 #else
-CreateShortPos (&sp, gameData.objs.objects+nObject, 1);
+CreateShortPos (&sp, OBJECTS+nObject, 1);
 memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *) (sp.bytemat), 9);
 count += 9;
 memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *)& (sp.xo), 14);
@@ -2289,7 +2289,7 @@ void MultiSendKill (int nObject)
 {
 	int nKillerObj;
 
-Assert (gameData.objs.objects [nObject].id == gameData.multiplayer.nLocalPlayer);
+Assert (OBJECTS [nObject].id == gameData.multiplayer.nLocalPlayer);
 nKillerObj = LOCALPLAYER.nKillerObj;
 MultiComputeKill (nKillerObj, nObject);
 gameData.multigame.msg.buf [0] = (char) MULTI_KILL;     
@@ -2371,8 +2371,8 @@ void MultiSendRemObj (int nObject)
 	short nRemoteObj;
 	int	id;
 
-if ((gameData.objs.objects [nObject].nType == OBJ_POWERUP) && (gameData.app.nGameMode & GM_NETWORK)) {
-	id = gameData.objs.objects [nObject].id;
+if ((OBJECTS [nObject].nType == OBJ_POWERUP) && (gameData.app.nGameMode & GM_NETWORK)) {
+	id = OBJECTS [nObject].id;
 #if 0//def _DEBUG
 	HUDMessage (0, "requesting to remove %s (%d present)", pszPowerup [id], gameData.multiplayer.powerupsInMine [id]);
 #endif
@@ -2734,7 +2734,7 @@ gameStates.render.bDropAfterburnerBlob = 0;
 networkData.nConsistencyErrorCount = 0;
 memset (gameData.multigame.kills.pFlags, 0, MAX_NUM_NET_PLAYERS * sizeof (gameData.multigame.kills.pFlags [0]));
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
-	objP = gameData.objs.objects + gameData.multiplayer.players [i].nObject;
+	objP = OBJECTS + gameData.multiplayer.players [i].nObject;
 	if (i != gameData.multiplayer.nLocalPlayer)
 		objP->controlType = CT_REMOTE;
 	objP->movementType = MT_PHYSICS;
@@ -2746,7 +2746,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 	gameData.multigame.robots.agitation [i] = 0;
 	gameData.multigame.robots.fired [i] = 0;
 	}
-gameData.objs.viewer = gameData.objs.console = gameData.objs.objects + LOCALPLAYER.nObject;
+gameData.objs.viewer = gameData.objs.console = OBJECTS + LOCALPLAYER.nObject;
 if (!(gameData.app.nGameMode & GM_MULTI_COOP))
 	MultiDeleteExtraObjects (); // Removes monsters from level
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
@@ -3021,10 +3021,10 @@ void MultiSetRobotAI (void)
 	//
 	//      for (i = 0; i <= gameData.objs.nLastObject; i++)
 	// {
-	//              if (gameData.objs.objects [i].nType == OBJ_ROBOT) {
-	//                      gameData.objs.objects [i].aiInfo.REMOTE_OWNER = -1;
-	//                      if (gameData.objs.objects [i].aiInfo.behavior == AIB_STATION)
-	//                              gameData.objs.objects [i].aiInfo.behavior = AIB_NORMAL;
+	//              if (OBJECTS [i].nType == OBJ_ROBOT) {
+	//                      OBJECTS [i].aiInfo.REMOTE_OWNER = -1;
+	//                      if (OBJECTS [i].aiInfo.behavior == AIB_STATION)
+	//                              OBJECTS [i].aiInfo.behavior = AIB_NORMAL;
 	//              }
 	//      }
 }
@@ -3042,7 +3042,7 @@ int MultiDeleteExtraObjects ()
 // This function also prints the total number of available multiplayer
 // positions in this level, even though this should always be 8 or more!
 
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 	nType = objP->nType;
 	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_CAMBOT))
 		nnp++;
@@ -3275,7 +3275,7 @@ void MultiSendDropWeapon (int nObject, int seed)
 
 if (nObject < 0)
 	return;
-objP = gameData.objs.objects + nObject;
+objP = OBJECTS + nObject;
 ammoCount = objP->cType.powerupInfo.count;
 if (objP->id == POW_OMEGA && ammoCount == F1_0)
 	ammoCount = F1_0 - 1; //make fit in short
@@ -3310,11 +3310,11 @@ nPlayer = GET_INTEL_SHORT (buf + 2);
 nRemoteObj = GET_INTEL_SHORT (buf + 4);
 ammo = GET_INTEL_SHORT (buf + 6);
 seed = GET_INTEL_INT (buf + 8);
-objP = gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject;
+objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 nObject = SpitPowerup (objP, powerupId, seed);
 MapObjnumLocalToRemote (nObject, nRemoteObj, nPlayer);
 if (nObject!=-1)
-	gameData.objs.objects [nObject].cType.powerupInfo.count = ammo;
+	OBJECTS [nObject].cType.powerupInfo.count = ammo;
 #if 0
 if (gameData.app.nGameMode & GM_NETWORK)
 	gameData.multiplayer.powerupsInMine [powerupId]++;
@@ -3369,8 +3369,8 @@ else if (++fun >= 50)
 		ReleaseGuidedMissile (nPlayer);
 		return;
 		}
-	if ((gmObj < gameData.objs.objects) || 
-		 (gmObj - gameData.objs.objects > gameData.objs.nLastObject)) {
+	if ((gmObj < OBJECTS) || 
+		 (gmObj - OBJECTS > gameData.objs.nLastObject)) {
 		Int3 ();  // Get Jason immediately!
 		return;
 		}
@@ -3697,7 +3697,7 @@ void MultiDoWeapons (char *buf)
 	int	nPlayer = (int) buf [bufP++];
 
 gameData.multiplayer.players [nPlayer].shields  = 
-gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject].shields = GET_INTEL_INT (buf + bufP);
+OBJECTS [gameData.multiplayer.players [nPlayer].nObject].shields = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 gameData.multiplayer.players [(int) nPlayer].primaryWeaponFlags = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
@@ -3835,7 +3835,7 @@ MultiSendData (gameData.multigame.msg.buf, 2, 0);
 
 void MultiDoDropBlob (char *buf)
 {
-DropAfterburnerBlobs (&gameData.objs.objects [gameData.multiplayer.players [(int) buf [1]].nObject], 2, i2f (1), -1, NULL, 0);
+DropAfterburnerBlobs (&OBJECTS [gameData.multiplayer.players [(int) buf [1]].nObject], 2, i2f (1), -1, NULL, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -4270,7 +4270,7 @@ void MultiSendDropFlag (int nObject, int seed)
 	tObject *objP;
 	int count = 0;
 
-objP = &gameData.objs.objects [nObject];
+objP = &OBJECTS [nObject];
 gameData.multigame.msg.buf [count++] = (char)MULTI_DROP_FLAG;
 gameData.multigame.msg.buf [count++] = (char)objP->id;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.multiplayer.nLocalPlayer); 
@@ -4303,13 +4303,13 @@ nRemoteObj = GET_INTEL_SHORT (buf + 4);
 ammo = GET_INTEL_SHORT (buf + 6);
 seed = GET_INTEL_INT (buf + 8);
 
-objP = gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject;
+objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 nObject = SpitPowerup (objP, powerupId, seed);
 MapObjnumLocalToRemote (nObject, nRemoteObj, nPlayer);
 if (nObject!=-1)
-	gameData.objs.objects [nObject].cType.powerupInfo.count = ammo;
+	OBJECTS [nObject].cType.powerupInfo.count = ammo;
 if (gameData.app.nGameMode & GM_ENTROPY)
-	gameData.objs.objects [nObject].matCenCreator = GetTeam (nPlayer) + 1;
+	OBJECTS [nObject].matCenCreator = GetTeam (nPlayer) + 1;
 else if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 #if 0
 	if (gameData.app.nGameMode & GM_NETWORK)
@@ -4748,12 +4748,12 @@ switch (whichplay) {
 
 void MultiDoReturnFlagHome (char *buf)
 {
-	tObject	*pObj = gameData.objs.objects;
+	tObject	*pObj = OBJECTS;
 	int		i;
 	ushort	nType = buf [1];
 	ushort	id = buf [2];
 
-for (i = 0; i < gameFileInfo.objects.count; i++, pObj = gameData.objs.objects + pObj->next) {
+for (i = 0; i < gameFileInfo.objects.count; i++, pObj = OBJECTS + pObj->next) {
 	if ((pObj->nType == nType) && (pObj->id == id)) {
 		ReturnFlagHome (pObj);
 		break;
@@ -4766,8 +4766,8 @@ for (i = 0; i < gameFileInfo.objects.count; i++, pObj = gameData.objs.objects + 
 void MultiSendReturnFlagHome (short nObject)
 {
 gameData.multigame.msg.buf [0] = (char) MULTI_RETURN_FLAG;
-gameData.multigame.msg.buf [1] = (char) gameData.objs.objects [nObject].nType;
-gameData.multigame.msg.buf [2] = (char) gameData.objs.objects [nObject].id;
+gameData.multigame.msg.buf [1] = (char) OBJECTS [nObject].nType;
+gameData.multigame.msg.buf [2] = (char) OBJECTS [nObject].id;
 MultiSendData (gameData.multigame.msg.buf, 3, 0);
 }
 
@@ -4843,7 +4843,7 @@ void MultiDoTeleport (char *buf)
 //	short	nSide = buf [4];
 
 TriggerSetObjPos (nObject, nSegment);
-CreatePlayerAppearanceEffect (gameData.objs.objects + nObject);
+CreatePlayerAppearanceEffect (OBJECTS + nObject);
 }
 
 //-----------------------------------------------------------------------------

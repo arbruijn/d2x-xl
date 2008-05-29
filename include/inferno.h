@@ -933,6 +933,11 @@ typedef struct tRenderStates {
 	int nMaxLightsPerPass;
 	int nMaxLightsPerFace;
 	int nMaxLightsPerObject;
+	int bGeometry;
+	int bObjects;
+	int bSmoke;
+	int bLightings;
+	int bSparks;
 	fix xZoom;
 	fix xZoomScale;
 	ubyte nRenderingType;
@@ -1857,7 +1862,9 @@ typedef struct tShotInfo {
 
 typedef struct tObjectData {
 	tObjTypeData		types;
-	tObject				*objects;
+	tObject				*objects [2];
+	tObject				*objP;
+	tObject				*renderObjP;
 	short					*freeList;
 	short					*parentObjs;
 	tObjectRef			*childObjs;
@@ -1890,7 +1897,9 @@ typedef struct tObjectData {
 	tObject				*deadPlayerCamera;
 	tObject				*endLevelCamera;
 	int					nObjects;
+	int					nRenderObjs;
 	int					nLastObject;
+	int					nLastRenderObj;
 	int					nObjectLimit;
 	int					nMaxUsedObjects;
 	int					nNextSignature;
@@ -3401,7 +3410,7 @@ extern fix nDebrisLife [];
 #define SEGMENTS	gameData.segs.segments
 #define SEGMENT2S	gameData.segs.segment2s
 #define SEGFACES	gameData.segs.segFaces
-#define OBJECTS	gameData.objs.objects
+#define OBJECTS	gameData.objs.objP
 #define WALLS		gameData.walls.walls
 #define FACES		gameData.segs.faces.faces
 #define TRIANGLES	gameData.segs.faces.tris

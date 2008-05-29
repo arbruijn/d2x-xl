@@ -511,7 +511,7 @@ fpDrawTexPolyMulti (
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 gameStates.ogl.fAlpha = 1;
 	// render the tSegment the tPlayer is in with a transparent color if it is a water or lava tSegment
-	//if (nSegment == gameData.objs.objects->nSegment) 
+	//if (nSegment == gameData.objs.renderObjP->nSegment) 
 #ifdef _DEBUG
 if (bOutLineMode) 
 	DrawOutline (props.nVertices, pointList);
@@ -702,7 +702,7 @@ void DoRenderObject (int nObject, int nWindow)
 #ifdef EDITOR
 	int save_3d_outline=0;
 #endif
-	tObject *objP = gameData.objs.objects + nObject, *hObj;
+	tObject *objP = gameData.objs.renderObjP + nObject, *hObj;
 	tWindowRenderedData *wrd = windowRenderedData + nWindow;
 	int nType, count = 0;
 	int n;
@@ -723,7 +723,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		}
 	}
 //	Added by MK on 09/07/94 (at about 5:28 pm, CDT, on a beautiful, sunny late summer day!) so
-//	that the guided missile system will know what gameData.objs.objects to look at.
+//	that the guided missile system will know what gameData.objs.renderObjP to look at.
 //	I didn't know we had guided missiles before the release of D1. --MK
 nType = objP->nType;
 if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
@@ -757,7 +757,7 @@ if (bSearchMode)
 if (RenderObject (objP, nWindow, 0))
 	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
 for (n = objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {
-	hObj = gameData.objs.objects + n;
+	hObj = gameData.objs.renderObjP + n;
 	Assert (hObj->nType == OBJ_FIREBALL);
 	Assert (hObj->controlType == CT_EXPLOSION);
 	Assert (hObj->flags & OF_ATTACHED);
@@ -1392,7 +1392,7 @@ void AddObjectToSegList (short nObject, short nSegment)
 pi->nNextItem = gameData.render.mine.renderObjs.ref [nSegment];
 gameData.render.mine.renderObjs.ref [nSegment] = gameData.render.mine.renderObjs.nUsed++;
 pi->nObject = nObject;
-pi->xDist = VmVecDistQuick (&gameData.objs.objects [nObject].position.vPos, &gameData.render.mine.viewerEye);
+pi->xDist = VmVecDistQuick (&gameData.objs.renderObjP [nObject].position.vPos, &gameData.render.mine.viewerEye);
 }
 
 //------------------------------------------------------------------------------
@@ -1418,7 +1418,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		nSegment = nSegment;
 #endif
 	for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = objP->next) {
-		objP = gameData.objs.objects + nObject;
+		objP = gameData.objs.renderObjP + nObject;
 		Assert (objP->nSegment == nSegment);
 		if (objP->flags & OF_ATTACHED)
 			continue;		//ignore this tObject

@@ -121,7 +121,7 @@ for (i = 0; i < MAX_BOSS_COUNT; i++)
 void InitBossSegments (int objList, short segListP [], short *segCountP, int bSizeCheck, int bOneWallHack)
 {
 	tSegment		*segP;
-	tObject		*bossObjP = gameData.objs.objects + objList;
+	tObject		*bossObjP = OBJECTS + objList;
 	vmsVector	vBossHomePos;
 	int			nBossHomeSeg;
 	int			head, tail, w, childSeg;
@@ -268,8 +268,8 @@ if (nBoss < 0)
 if (gameData.time.xGame - gameData.boss [nBoss].nLastGateTime < gameData.boss [nBoss].nGateInterval)
 	return -1;
 for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if ((gameData.objs.objects [i].nType == OBJ_ROBOT) &&
-		 (gameData.objs.objects [i].matCenCreator == BOSS_GATE_MATCEN_NUM))
+	if ((OBJECTS [i].nType == OBJ_ROBOT) &&
+		 (OBJECTS [i].matCenCreator == BOSS_GATE_MATCEN_NUM))
 		count++;
 if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
 	gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
@@ -300,7 +300,7 @@ if (nObject < 0) {
 	} 
 // added lifetime increase depending on difficulty level 04/26/06 DM
 gameData.multigame.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
-objP = gameData.objs.objects + nObject;
+objP = OBJECTS + nObject;
 objP->lifeleft = F1_0 * 30 + F0_5 * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
 //Set polygon-tObject-specific data
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
@@ -360,7 +360,7 @@ if (objType == 255) {	// spawn an arbitrary robot
 nObject = CreateGatedRobot (objP, nSegment, (ubyte) objType, pos);
 //	Make spewed robot come tumbling out as if blasted by a flash missile.
 if (nObject != -1) {
-	tObject	*newObjP = gameData.objs.objects + nObject;
+	tObject	*newObjP = OBJECTS + nObject;
 	int		force_val = F1_0 / (gameData.time.xFrame ? gameData.time.xFrame : 1);
 	if (force_val) {
 		newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
@@ -392,7 +392,7 @@ if (nSegment < 0) {
 	nSegment = gameData.boss [i].gateSegs [(d_rand () * gameData.boss [i].nGateSegs) >> 15];
 	}
 Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
-return CreateGatedRobot (gameData.objs.objects + nObject, nSegment, nType, NULL);
+return CreateGatedRobot (OBJECTS + nObject, nSegment, nType, NULL);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -423,7 +423,7 @@ return 0;
 
 int IsValidTeleportDest (vmsVector *vPos, int nMinDist)
 {
-	tObject		*objP = gameData.objs.objects;
+	tObject		*objP = OBJECTS;
 	int			i;
 	vmsVector	vOffs;
 	fix			xDist;
@@ -470,7 +470,7 @@ RelinkObject (nObject, nRandSeg);
 gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
 //	make boss point right at tPlayer
 objP->position.vPos = vNewPos;
-VmVecSub (&vBossDir, &gameData.objs.objects [LOCALPLAYER.nObject].position.vPos, &vNewPos);
+VmVecSub (&vBossDir, &OBJECTS [LOCALPLAYER.nObject].position.vPos, &vNewPos);
 VmVector2Matrix (&objP->position.mOrient, &vBossDir, NULL, NULL);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, &objP->position.vPos, 0 , F1_0);
 DigiKillSoundLinkedToObject (nObject);

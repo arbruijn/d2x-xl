@@ -113,7 +113,7 @@ if (playerP->secondaryAmmo [nWeaponIndex] > max) {
 		short nObject = OBJ_IDX (objP);
 		gameData.multiplayer.leftoverPowerups [nObject].nCount = count - nPickedUp;
 		gameData.multiplayer.leftoverPowerups [nObject].nType = secondaryWeaponToPowerup [nWeaponIndex];
-		gameData.multiplayer.leftoverPowerups [nObject].spitterP = gameData.objs.objects + playerP->nObject;
+		gameData.multiplayer.leftoverPowerups [nObject].spitterP = OBJECTS + playerP->nObject;
 		}
 	}
 if (ISLOCALPLAYER (nPlayer)) {

@@ -185,7 +185,7 @@ void VerifyConsoleObject (void)
 {
 Assert (gameData.multiplayer.nLocalPlayer > -1);
 Assert (LOCALPLAYER.nObject > -1);
-gameData.objs.console = gameData.objs.objects + LOCALPLAYER.nObject;
+gameData.objs.console = OBJECTS + LOCALPLAYER.nObject;
 Assert (gameData.objs.console->nType == OBJ_PLAYER);
 Assert (gameData.objs.console->id==gameData.multiplayer.nLocalPlayer);
 }
@@ -198,7 +198,7 @@ int CountRobotsInLevel (void)
 	int i;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
-	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
+	if (OBJECTS [i].nType == OBJ_ROBOT)
 		robotCount++;
 	}
 return robotCount;
@@ -212,7 +212,7 @@ int CountHostagesInLevel (void)
 	int i;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
-	if (gameData.objs.objects [i].nType == OBJ_HOSTAGE)
+	if (OBJECTS [i].nType == OBJ_HOSTAGE)
 		count++;
 	}
 return count;
@@ -234,14 +234,14 @@ memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsT
 //VerifyConsoleObject ();
 nPlayers = 0;
 j = 0;
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 	t = objP->nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
 		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP)))
 			ReleaseObject ((short) i);
 		else {
 			playerObjs [nPlayers] = i;
-			startSegs [nPlayers] = gameData.objs.objects [i].nSegment;
+			startSegs [nPlayers] = OBJECTS [i].nSegment;
 			nPlayers++;
 			}
 		j++;
@@ -280,7 +280,7 @@ for (i = 0; i < nPlayers; i++) {
 				break;
 			}
 #endif		
-		objP = gameData.objs.objects + playerObjs [j];
+		objP = OBJECTS + playerObjs [j];
 		objP->nType = OBJ_PLAYER;
 		gameData.multiplayer.playerInit [i].position = objP->position;
 		gameData.multiplayer.playerInit [i].nSegment = objP->nSegment;
@@ -291,7 +291,7 @@ for (i = 0; i < nPlayers; i++) {
 		break;
 		}
 	}
-gameData.objs.viewer = gameData.objs.console = gameData.objs.objects; // + LOCALPLAYER.nObject;
+gameData.objs.viewer = gameData.objs.console = OBJECTS; // + LOCALPLAYER.nObject;
 gameData.multiplayer.nPlayerPositions = nPlayers;
 
 #ifdef _DEBUG
@@ -535,7 +535,7 @@ void editor_reset_stuff_onLevel ()
 	GameStartInitNetworkPlayers ();
 	InitPlayerStatsLevel (0);
 	gameData.objs.viewer = gameData.objs.console;
-	gameData.objs.console = gameData.objs.viewer = gameData.objs.objects + LOCALPLAYER.nObject;
+	gameData.objs.console = gameData.objs.viewer = OBJECTS + LOCALPLAYER.nObject;
 	gameData.objs.console->id=gameData.multiplayer.nLocalPlayer;
 	gameData.objs.console->controlType = CT_FLYING;
 	gameData.objs.console->movementType = MT_PHYSICS;
@@ -653,7 +653,7 @@ void SetVertigoRobotFlags (void)
 	int		i;
 
 gameData.objs.nVertigoBotFlags = 0;
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
 	if ((objP->nType == OBJ_ROBOT) && (objP->id >= 66) && !IS_BOSS (objP))
 		gameData.objs.nVertigoBotFlags |= (1 << (objP->id - 64));
 }
@@ -1008,7 +1008,7 @@ if (gameData.multiplayer.nLocalPlayer != 0)	{
 LOCALPLAYER.nObject = 0;
 LOCALPLAYER.nInvuls =
 LOCALPLAYER.nCloaks = 0;
-gameData.objs.console = gameData.objs.objects + LOCALPLAYER.nObject;
+gameData.objs.console = OBJECTS + LOCALPLAYER.nObject;
 gameData.objs.console->nType = OBJ_PLAYER;
 gameData.objs.console->id = gameData.multiplayer.nLocalPlayer;
 gameData.objs.console->controlType	= CT_FLYING;
@@ -1223,7 +1223,7 @@ GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players a
 HUDClearMessages ();
 AutomapClearVisited ();
 // --	InitPlayerStatsLevel ();
-gameData.objs.viewer = gameData.objs.objects + LOCALPLAYER.nObject;
+gameData.objs.viewer = OBJECTS + LOCALPLAYER.nObject;
 GameStartRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
@@ -1670,7 +1670,7 @@ if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] && (gam
 gameStates.entropy.bConquering = 0;
 #ifdef EDITOR
 if (gameData.app.nGameMode == GM_EDITOR) {			//test mine, not real level
-	tObject * playerobj = gameData.objs.objects + LOCALPLAYER.nObject;
+	tObject * playerobj = OBJECTS + LOCALPLAYER.nObject;
 	//ExecMessageBox ("You're Dead!", 1, "Continue", "Not a real game, though.");
 	LoadLevelSub ("gamesave.lvl");
 	InitPlayerStatsNewShip ();
@@ -1756,7 +1756,7 @@ GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players a
 InitHoardData ();
 SetMonsterballForces ();
 #endif
-//	gameData.objs.viewer = gameData.objs.objects + LOCALPLAYER.nObject;
+//	gameData.objs.viewer = OBJECTS + LOCALPLAYER.nObject;
 if (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, "Too many players for this level.");
 	return 0;
@@ -1843,7 +1843,7 @@ return 1;
 
 void BashToShield (int i, char *s)
 {
-	tObject *objP = gameData.objs.objects + i;
+	tObject *objP = OBJECTS + i;
 	int id = objP->id;
 
 gameData.multiplayer.powerupsInMine [id] =
@@ -1861,7 +1861,7 @@ objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo
 
 void BashToEnergy (int i,char *s)
 {
-	tObject *objP = gameData.objs.objects + i;
+	tObject *objP = OBJECTS + i;
 	int id = objP->id;
 
 gameData.multiplayer.powerupsInMine [id] =
@@ -1882,8 +1882,8 @@ void FilterObjectsFromLevel (void)
   int i;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
-	if ((gameData.objs.objects [i].nType == OBJ_POWERUP) &&
-		 ((gameData.objs.objects [i].id == POW_REDFLAG) || (gameData.objs.objects [i].id == POW_BLUEFLAG)))
+	if ((OBJECTS [i].nType == OBJ_POWERUP) &&
+		 ((OBJECTS [i].id == POW_REDFLAG) || (OBJECTS [i].id == POW_BLUEFLAG)))
 		BashToShield (i,"Flag!!!!");
   }
 }
@@ -2046,7 +2046,7 @@ else if (bRandom == 1) {
 		spawnMap [i].xDist = 0x7fffffff;
 		for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
 			if (j != gameData.multiplayer.nLocalPlayer) {
-				objP = gameData.objs.objects + gameData.multiplayer.players [j].nObject; 
+				objP = OBJECTS + gameData.multiplayer.players [j].nObject; 
 				if ((objP->nType == OBJ_PLAYER))	{
 					xDist = FindConnectedDistance (&objP->position.vPos, 
 															 objP->nSegment, 
@@ -2166,8 +2166,8 @@ void CopyDefaultsToRobotsAll ()
 	int	i;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-		CopyDefaultsToRobot (&gameData.objs.objects [i]);
+	if (OBJECTS [i].nType == OBJ_ROBOT)
+		CopyDefaultsToRobot (&OBJECTS [i]);
 
 }
 

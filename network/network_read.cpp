@@ -293,7 +293,7 @@ if (!networkData.nJoinState) {
 		GetPlayerSpawn (j, OBJECTS + gameData.multiplayer.players [i].nObject);
 		}
 	}
-gameData.objs.objects [LOCALPLAYER.nObject].nType = OBJ_PLAYER;
+OBJECTS [LOCALPLAYER.nObject].nType = OBJ_PLAYER;
 networkData.nStatus = (NetworkIAmMaster () || (networkData.nJoinState >= 4)) ? NETSTAT_PLAYING : NETSTAT_WAITING;
 SetFunctionMode (FMODE_GAME);
 networkData.bHaveSync = 1;
@@ -365,7 +365,7 @@ if ((sbyte)pd->level_num != gameData.missions.nCurrentLevel) {
 	return;
 	}
 
-theirObjP = gameData.objs.objects + theirObjNum;
+theirObjP = OBJECTS + theirObjNum;
 //------------- Keep track of missed packets -----------------
 gameData.multiplayer.players [nTheirPlayer].nPacketsGot++;
 networkData.nTotalPacketsGot++;
@@ -406,7 +406,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nTheirPlayer);
 	MultiMakeGhostPlayer (nTheirPlayer);
-	CreatePlayerAppearanceEffect (gameData.objs.objects + theirObjNum);
+	CreatePlayerAppearanceEffect (OBJECTS + theirObjNum);
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 	ClipRank ((char *) &netPlayers.players [nTheirPlayer].rank);
 	if (gameOpts->multi.bNoRankings)      
@@ -506,7 +506,7 @@ if ((sbyte)new_pd.level_num != gameData.missions.nCurrentLevel) {
 #endif
 	return;
 	}
-theirObjP = &gameData.objs.objects [theirObjNum];
+theirObjP = &OBJECTS [theirObjNum];
 //------------- Keep track of missed packets -----------------
 gameData.multiplayer.players [nTheirPlayer].nPacketsGot++;
 networkData.nTotalPacketsGot++;
@@ -543,7 +543,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nTheirPlayer);
 	MultiMakeGhostPlayer (nTheirPlayer);
-	CreatePlayerAppearanceEffect (gameData.objs.objects + theirObjNum);
+	CreatePlayerAppearanceEffect (OBJECTS + theirObjNum);
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 	ClipRank ((char *) &netPlayers.players [nTheirPlayer].rank);
 	if (gameOpts->multi.bNoRankings)
@@ -709,7 +709,7 @@ else if (i < 0)
 			}
 #if 0		
 		con_printf (CONDBG, "Objnum -2 found in frame local %d remote %d.\n", networkData.nPrevFrame, networkData.nSyncFrame);
-		con_printf (CONDBG, "Got %d gameData.objs.objects, zF %d.\n", objectCount, nRemoteObj);
+		con_printf (CONDBG, "Got %d OBJECTS, zF %d.\n", objectCount, nRemoteObj);
 #endif
 #if 1
 		if (NetworkVerifyObjects (nRemoteObj, objectCount)) {
@@ -740,7 +740,7 @@ else if (i < 0)
 				Int3 (); // SEE ROB
 			}
 		if (nObject != -1) {
-			objP = gameData.objs.objects + nObject;
+			objP = OBJECTS + nObject;
 			if (objP->nSegment != -1)
 				UnlinkObject (nObject);
 			Assert (objP->nSegment == -1);

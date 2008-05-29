@@ -754,9 +754,9 @@ DeleteActiveDoor (nDoor);
 
 int CheckPoke (int nObject, int nSegment, short nSide)
 {
-tObject *objP = gameData.objs.objects + nObject;
+tObject *objP = OBJECTS + nObject;
 
-	//note: don't let gameData.objs.objects with zero size block door
+	//note: don't let OBJECTS with zero size block door
 if (nObject == 126)
 	nObject = nObject;
 if (objP->size && GetSideMasks (&objP->position.vPos, nSegment, nSide, objP->size).sideMask)
@@ -779,8 +779,8 @@ Assert(nConnSide != -1);
 //go through each tObject in each of two segments, and see if
 //it pokes into the connecting segP
 
-for (nObject = segP->objects; nObject != -1; nObject = gameData.objs.objects [nObject].next) {
-	t = gameData.objs.objects [nObject].nType;
+for (nObject = segP->objects; nObject != -1; nObject = OBJECTS [nObject].next) {
+	t = OBJECTS [nObject].nType;
 	if ((t == OBJ_WEAPON) || (t == OBJ_FIREBALL) || (t == OBJ_EXPLOSION) || (t == OBJ_EFFECT))
 		continue;
 	if (CheckPoke (nObject, SEG_IDX (segP), nSide) || CheckPoke (nObject, SEG_IDX (connSegP), nConnSide))
@@ -974,7 +974,7 @@ Assert(nDoor != -1);		//Trying to DoDoorOpen on illegal door
 doorP = gameData.walls.activeDoors + nDoor;
 wallP = gameData.walls.walls + doorP->nFrontWall [0];
 
-	//check for gameData.objs.objects in doorway before closing
+	//check for OBJECTS in doorway before closing
 if (wallP->flags & WALL_DOOR_AUTO)
 	if (DoorIsBlocked (gameData.segs.segments + wallP->nSegment,(short) wallP->nSide)) {
 		DigiKillSoundLinkedToSegment ((short) wallP->nSegment,(short) wallP->nSide,-1);
@@ -1524,22 +1524,22 @@ void AddStuckObject(tObject *objP, short nSegment, short nSide)
 }
 
 //	--------------------------------------------------------------------------------------------------
-//	Look at the list of stuck gameData.objs.objects, clean up in case an tObject has gone away, but not been removed here.
+//	Look at the list of stuck OBJECTS, clean up in case an tObject has gone away, but not been removed here.
 //	Removes up to one/frame.
 void RemoveObsoleteStuckObjects(void)
 {
 	int	nObject;
 
-	//	Safety and efficiency code.  If no stuck gameData.objs.objects, should never get inside the IF, but this is faster.
+	//	Safety and efficiency code.  If no stuck OBJECTS, should never get inside the IF, but this is faster.
 	if (!Num_stuckObjects)
 		return;
 
 	nObject = gameData.app.nFrameCount % MAX_STUCK_OBJECTS;
 
 	if (StuckObjects [nObject].wallnum != -1)
-		if ((gameData.walls.walls [StuckObjects [nObject].wallnum].state != WALL_DOOR_CLOSED) || (gameData.objs.objects [StuckObjects [nObject].nObject].nSignature != StuckObjects [nObject].nSignature)) {
+		if ((gameData.walls.walls [StuckObjects [nObject].wallnum].state != WALL_DOOR_CLOSED) || (OBJECTS [StuckObjects [nObject].nObject].nSignature != StuckObjects [nObject].nSignature)) {
 			Num_stuckObjects--;
-			gameData.objs.objects [StuckObjects [nObject].nObject].lifeleft = F1_0/8;
+			OBJECTS [StuckObjects [nObject].nObject].lifeleft = F1_0/8;
 			StuckObjects [nObject].wallnum = -1;
 		}
 
@@ -1550,7 +1550,7 @@ void RemoveObsoleteStuckObjects(void)
 extern void FlushFCDCache(void);
 
 //	----------------------------------------------------------------------------------------------------
-//	Door with tWall index wallnum is opening, kill all gameData.objs.objects stuck in it.
+//	Door with tWall index wallnum is opening, kill all OBJECTS stuck in it.
 void KillStuckObjects(int wallnum)
 {
 	int	i;
@@ -1563,13 +1563,13 @@ void KillStuckObjects(int wallnum)
 
 	for (i=0; i<MAX_STUCK_OBJECTS; i++)
 		if (StuckObjects [i].wallnum == wallnum) {
-			if (gameData.objs.objects [StuckObjects [i].nObject].nType == OBJ_WEAPON) {
-				gameData.objs.objects [StuckObjects [i].nObject].lifeleft = F1_0/8;
+			if (OBJECTS [StuckObjects [i].nObject].nType == OBJ_WEAPON) {
+				OBJECTS [StuckObjects [i].nObject].lifeleft = F1_0/8;
 			} else
 #if TRACE
 				con_printf (1, 
 					"Warning: Stuck tObject of nType %i, expected to be of nType %i, see tWall.c\n", 
-					gameData.objs.objects [StuckObjects [i].nObject].nType, OBJ_WEAPON);
+					OBJECTS [StuckObjects [i].nObject].nType, OBJ_WEAPON);
 #endif
 				// Int3();	//	What?  This looks bad.  Object is not a weapon and it is stuck in a tWall!
 			StuckObjects [i].wallnum = -1;
@@ -1590,7 +1590,7 @@ void KillStuckObjects(int wallnum)
 // -- unused -- 	int	i;
 // -- unused --
 // -- unused -- 	for (i=0; i<Num_stuckObjects; i++) {
-// -- unused -- 		tObject	*objP = &gameData.objs.objects [StuckObjects [i].nObject];
+// -- unused -- 		tObject	*objP = &OBJECTS [StuckObjects [i].nObject];
 // -- unused --
 // -- unused -- 		if ((objP->nType == OBJ_WEAPON) && (objP->id == FLARE_ID)) {
 // -- unused -- 			if (gameData.walls.walls [StuckObjects [i].wallnum].nSegment == SEG_IDX (segp))
@@ -1603,7 +1603,7 @@ void KillStuckObjects(int wallnum)
 // -- unused -- }
 
 // -----------------------------------------------------------------------------------
-// Initialize stuck gameData.objs.objects array.  Called at start of level
+// Initialize stuck OBJECTS array.  Called at start of level
 void InitStuckObjects(void)
 {
 	int	i;
@@ -1615,7 +1615,7 @@ void InitStuckObjects(void)
 }
 
 // -----------------------------------------------------------------------------------
-// Clear out all stuck gameData.objs.objects.  Called for a new ship
+// Clear out all stuck OBJECTS.  Called for a new ship
 void ClearStuckObjects(void)
 {
 	int	i;
@@ -1626,8 +1626,8 @@ void ClearStuckObjects(void)
 
 			nObject = StuckObjects [i].nObject;
 
-			if ((gameData.objs.objects [nObject].nType == OBJ_WEAPON) && (gameData.objs.objects [nObject].id == FLARE_ID))
-				gameData.objs.objects [nObject].lifeleft = F1_0/8;
+			if ((OBJECTS [nObject].nType == OBJ_WEAPON) && (OBJECTS [nObject].id == FLARE_ID))
+				OBJECTS [nObject].lifeleft = F1_0/8;
 
 			StuckObjects [i].wallnum = -1;
 
@@ -1673,7 +1673,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 				if (dist < damage/2) {
 					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->position.vPos, objP->nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
 					if ((dist > 0) && (dist < damage/2))
-						CheckEffectBlowup(segp, nSide, &pnt, gameData.objs.objects + objP->cType.laserInfo.nParentObj, 1);
+						CheckEffectBlowup(segp, nSide, &pnt, OBJECTS + objP->cType.laserInfo.nParentObj, 1);
 				}
 			}
 		}

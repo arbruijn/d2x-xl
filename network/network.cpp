@@ -335,7 +335,7 @@ void NetworkTimeoutPlayer (int nPlayer)
 Assert (nPlayer < gameData.multiplayer.nPlayers);
 Assert (nPlayer > -1);
 NetworkDisconnectPlayer (nPlayer);
-CreatePlayerAppearanceEffect (gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject);
+CreatePlayerAppearanceEffect (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
@@ -456,10 +456,10 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				ubyte send_data [MAX_PACKETSIZE];
 #endif
 				memset (&ShortSyncPack, 0, sizeof (ShortSyncPack));
-				CreateShortPos (&ShortSyncPack.thepos, gameData.objs.objects+nObject, 0);
+				CreateShortPos (&ShortSyncPack.thepos, OBJECTS+nObject, 0);
 				ShortSyncPack.nType = PID_PDATA;
 				ShortSyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
-				ShortSyncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
+				ShortSyncPack.obj_renderType = OBJECTS [nObject].renderType;
 				ShortSyncPack.level_num = gameData.missions.nCurrentLevel;
 				ShortSyncPack.data_size = networkData.syncPack.data_size;
 				memcpy (ShortSyncPack.data, networkData.syncPack.data, networkData.syncPack.data_size);
@@ -481,13 +481,13 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 
 				networkData.syncPack.nType = PID_PDATA;
 				networkData.syncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
-				networkData.syncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
+				networkData.syncPack.obj_renderType = OBJECTS [nObject].renderType;
 				networkData.syncPack.level_num = gameData.missions.nCurrentLevel;
-				networkData.syncPack.obj_segnum = gameData.objs.objects [nObject].nSegment;
-				networkData.syncPack.obj_pos = gameData.objs.objects [nObject].position.vPos;
-				networkData.syncPack.obj_orient = gameData.objs.objects [nObject].position.mOrient;
-				networkData.syncPack.phys_velocity = gameData.objs.objects [nObject].mType.physInfo.velocity;
-				networkData.syncPack.phys_rotvel = gameData.objs.objects [nObject].mType.physInfo.rotVel;
+				networkData.syncPack.obj_segnum = OBJECTS [nObject].nSegment;
+				networkData.syncPack.obj_pos = OBJECTS [nObject].position.vPos;
+				networkData.syncPack.obj_orient = OBJECTS [nObject].position.mOrient;
+				networkData.syncPack.phys_velocity = OBJECTS [nObject].mType.physInfo.velocity;
+				networkData.syncPack.phys_rotvel = OBJECTS [nObject].mType.physInfo.rotVel;
 				send_data_size = networkData.syncPack.data_size;                  // do this so correct size data is sent
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)                        // do the swap stuff
 				if (gameStates.multi.nGameType >= IPX_GAME) {

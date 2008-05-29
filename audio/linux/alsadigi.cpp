@@ -583,7 +583,7 @@ int DigiLinkSoundToObject2(int orgSoundnum, short nObject, int forever, fix maxV
 	if (!forever)	{
 		// Hack to keep sounds from building up...
 		DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
-							 &gameData.objs.objects[nObject].position.vPos, gameData.objs.objects[nObject].nSegment, maxVolume,&volume, &pan, 
+							 &OBJECTS[nObject].position.vPos, OBJECTS[nObject].nSegment, maxVolume,&volume, &pan, 
 							 maxDistance, 0);
 		DigiPlaySample3D(orgSoundnum, pan, volume, 0);
 		return -1;
@@ -594,7 +594,7 @@ int DigiLinkSoundToObject2(int orgSoundnum, short nObject, int forever, fix maxV
 	           break;
 
 	if (i==MAX_SOUND_OBJECTS) {
-		con_printf (1, "Too many sound gameData.objs.objects!\n");
+		con_printf (1, "Too many sound OBJECTS!\n");
 		return -1;
 	}
 
@@ -603,7 +603,7 @@ int DigiLinkSoundToObject2(int orgSoundnum, short nObject, int forever, fix maxV
 	if (forever)
 		SoundObjects[i].flags |= SOF_PLAY_FOREVER;
 	SoundObjects[i].lo_objnum = nObject;
-	SoundObjects[i].lo_objsignature = gameData.objs.objects[nObject].nSignature;
+	SoundObjects[i].lo_objsignature = OBJECTS[nObject].nSignature;
 	SoundObjects[i].maxVolume = maxVolume;
 	SoundObjects[i].maxDistance = maxDistance;
 	SoundObjects[i].volume = 0;
@@ -611,7 +611,7 @@ int DigiLinkSoundToObject2(int orgSoundnum, short nObject, int forever, fix maxV
 	SoundObjects[i].nDecay = 0;
 	SoundObjects[i].nSound = nSound;
 
-	objP = &gameData.objs.objects[SoundObjects[i].lo_objnum];
+	objP = &OBJECTS[SoundObjects[i].lo_objnum];
 	DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
                        &objP->position.vPos, objP->nSegment, maxVolume,
                        &SoundObjects[i].volume, &SoundObjects[i].pan, maxDistance, 0);
@@ -658,7 +658,7 @@ int DigiLinkSoundToPos2(int orgSoundnum, short nSegment, short nSide, vmsVector 
 			break;
 
 	if (i==MAX_SOUND_OBJECTS) {
-		con_printf (1, "Too many sound gameData.objs.objects!\n");
+		con_printf (1, "Too many sound OBJECTS!\n");
 		return -1;
 	}
 
@@ -783,7 +783,7 @@ void DigiSyncSounds()
 			} else if (SoundObjects[i].flags & SOF_LINK_TO_OBJ)	{
 				tObject * objP;
 
-				objP = &gameData.objs.objects[SoundObjects[i].lo_objnum];
+				objP = &OBJECTS[SoundObjects[i].lo_objnum];
 	
 				if ((objP->nType==OBJ_NONE) || (objP->nSignature!=SoundObjects[i].lo_objsignature))  {
 					// The tObject that this is linked to is dead, so just end this sound if it is looping.

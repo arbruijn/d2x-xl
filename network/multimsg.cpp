@@ -407,7 +407,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && (gameData.app.nGameMode & GM_TEAM))
 #endif
 			for (t = 0;t<gameData.multiplayer.nPlayers;t++)
 				if (gameData.multiplayer.players [t].connected)
-					MultiResetObjectTexture (gameData.objs.objects + gameData.multiplayer.players [t].nObject);
+					MultiResetObjectTexture (OBJECTS + gameData.multiplayer.players [t].nObject);
 
 			NetworkSendNetgameUpdate ();
 			sprintf (gameData.multigame.msg.szMsg, TXT_TEAMCHANGE3, gameData.multiplayer.players [i].callsign);

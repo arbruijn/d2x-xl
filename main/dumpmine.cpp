@@ -63,7 +63,7 @@ extern grsBitmap bogus_bitmap;
 // ----------------------------------------------------------------------------
 char	*objectTypes(int nObject)
 {
-	int	nType = gameData.objs.objects[nObject].nType;
+	int	nType = OBJECTS[nObject].nType;
 
 	Assert((nType >= 0) && (nType < MAX_OBJECT_TYPES);
 	return	&szObjectTypeNames[nType];
@@ -72,8 +72,8 @@ char	*objectTypes(int nObject)
 // ----------------------------------------------------------------------------
 char	*object_ids(int nObject)
 {
-	int	nType = gameData.objs.objects[nObject].nType;
-	int	id = gameData.objs.objects[nObject].id;
+	int	nType = OBJECTS[nObject].nType;
+	int	id = OBJECTS[nObject].id;
 
 	switch (nType) {
 		case OBJ_ROBOT:
@@ -249,36 +249,36 @@ void write_key_text(FILE *my_file)
 	goldCount2 = 0;
 
 	for (i=0; i<=gameData.objs.nLastObject; i++) {
-		if (gameData.objs.objects[i].nType == OBJ_POWERUP)
-			if (gameData.objs.objects[i].id == POW_KEY_BLUE) {
-				fprintf(my_file, "The BLUE key is tObject %i in tSegment %i\n", i, gameData.objs.objects[i].nSegment);
+		if (OBJECTS[i].nType == OBJ_POWERUP)
+			if (OBJECTS[i].id == POW_KEY_BLUE) {
+				fprintf(my_file, "The BLUE key is tObject %i in tSegment %i\n", i, OBJECTS[i].nSegment);
 				blueCount2++;
 			}
-		if (gameData.objs.objects[i].nType == OBJ_POWERUP)
-			if (gameData.objs.objects[i].id == POW_KEY_RED) {
-				fprintf(my_file, "The RED key is tObject %i in tSegment %i\n", i, gameData.objs.objects[i].nSegment);
+		if (OBJECTS[i].nType == OBJ_POWERUP)
+			if (OBJECTS[i].id == POW_KEY_RED) {
+				fprintf(my_file, "The RED key is tObject %i in tSegment %i\n", i, OBJECTS[i].nSegment);
 				redCount2++;
 			}
-		if (gameData.objs.objects[i].nType == OBJ_POWERUP)
-			if (gameData.objs.objects[i].id == POW_KEY_GOLD) {
-				fprintf(my_file, "The GOLD key is tObject %i in tSegment %i\n", i, gameData.objs.objects[i].nSegment);
+		if (OBJECTS[i].nType == OBJ_POWERUP)
+			if (OBJECTS[i].id == POW_KEY_GOLD) {
+				fprintf(my_file, "The GOLD key is tObject %i in tSegment %i\n", i, OBJECTS[i].nSegment);
 				goldCount2++;
 			}
 
-		if (gameData.objs.objects[i].containsCount) {
-			if (gameData.objs.objects[i].containsType == OBJ_POWERUP) {
-				switch (gameData.objs.objects[i].containsId) {
+		if (OBJECTS[i].containsCount) {
+			if (OBJECTS[i].containsType == OBJ_POWERUP) {
+				switch (OBJECTS[i].containsId) {
 					case POW_KEY_BLUE:
-						fprintf(my_file, "The BLUE key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].nType], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].nSegment);
-						blueCount2 += gameData.objs.objects[i].containsCount;
+						fprintf(my_file, "The BLUE key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[OBJECTS[i].nType], gameData.bots.names[OBJECTS[i].id], OBJECTS[i].nSegment);
+						blueCount2 += OBJECTS[i].containsCount;
 						break;
 					case POW_KEY_GOLD:
-						fprintf(my_file, "The GOLD key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].nType], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].nSegment);
-						goldCount2 += gameData.objs.objects[i].containsCount;
+						fprintf(my_file, "The GOLD key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[OBJECTS[i].nType], gameData.bots.names[OBJECTS[i].id], OBJECTS[i].nSegment);
+						goldCount2 += OBJECTS[i].containsCount;
 						break;
 					case POW_KEY_RED:
-						fprintf(my_file, "The RED key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].nType], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].nSegment);
-						redCount2 += gameData.objs.objects[i].containsCount;
+						fprintf(my_file, "The RED key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[OBJECTS[i].nType], gameData.bots.names[OBJECTS[i].id], OBJECTS[i].nSegment);
+						redCount2 += OBJECTS[i].containsCount;
 						break;
 					default:
 						break;
@@ -325,14 +325,14 @@ void write_control_center_text(FILE *my_file)
 			nObject = gameData.segs.segments[i].objects;
 			count2 = 0;
 			while (nObject != -1) {
-				if (gameData.objs.objects[nObject].nType == OBJ_REACTOR)
+				if (OBJECTS[nObject].nType == OBJ_REACTOR)
 					count2++;
-				nObject = gameData.objs.objects[nObject].next;
+				nObject = OBJECTS[nObject].next;
 			}
 			if (count2 == 0)
 				fprintf(my_file, "No control center tObject in control center tSegment.\n");
 			else if (count2 != 1)
-				fprintf(my_file, "%i control center gameData.objs.objects in control center tSegment.\n", count2);
+				fprintf(my_file, "%i control center OBJECTS in control center tSegment.\n", count2);
 		}
 
 	if (count == 0)
@@ -383,10 +383,10 @@ void write_segment_text(FILE *my_file)
 		fprintf(my_file, "Segment %4i: ", i);
 		depth=0;
 		if (nObject != -1) {
-			fprintf(my_file, "gameData.objs.objects: ");
+			fprintf(my_file, "OBJECTS: ");
 			while (nObject != -1) {
 				fprintf(my_file, "[%8s %8s %3i] ", objectTypes(nObject), object_ids(nObject), nObject);
-				nObject = gameData.objs.objects[nObject].next;
+				nObject = OBJECTS[nObject].next;
 				if (depth++ > 30) {
 					fprintf(my_file, "\nAborted after %i links\n", depth);
 					break;
@@ -508,16 +508,16 @@ void write_player_text(FILE *my_file)
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "gameData.multiplayer.players:\n");
 	for (i=0; i<=gameData.objs.nLastObject; i++) {
-		if (gameData.objs.objects[i].nType == OBJ_PLAYER) {
+		if (OBJECTS[i].nType == OBJ_PLAYER) {
 			num_players++;
-			fprintf(my_file, "Player %2i is tObject #%3i in tSegment #%3i.\n", gameData.objs.objects[i].id, i, gameData.objs.objects[i].nSegment);
+			fprintf(my_file, "Player %2i is tObject #%3i in tSegment #%3i.\n", OBJECTS[i].id, i, OBJECTS[i].nSegment);
 		}
 	}
 
 	if (num_players != MAX_PLAYERS)
-		err_printf(my_file, "Error: %i tPlayer gameData.objs.objects.  %i are required.\n", num_players, MAX_PLAYERS);
+		err_printf(my_file, "Error: %i tPlayer OBJECTS.  %i are required.\n", num_players, MAX_PLAYERS);
 	if (num_players > MAX_MULTI_PLAYERS)
-		err_printf(my_file, "Error: %i tPlayer gameData.objs.objects.  %i are required.\n", num_players, MAX_PLAYERS);
+		err_printf(my_file, "Error: %i tPlayer OBJECTS.  %i are required.\n", num_players, MAX_PLAYERS);
 }
 
 // ----------------------------------------------------------------------------
@@ -585,7 +585,7 @@ void write_game_text_file(char *filename)
 	sayTotals(my_file, gameData.segs.szLevelFilename);
 
 	fprintf(my_file, "\nNumber of segments:   %4i\n", gameData.segs.nLastSegment+1);
-	fprintf(my_file, "Number of gameData.objs.objects:    %4i\n", gameData.objs.nLastObject+1);
+	fprintf(my_file, "Number of OBJECTS:    %4i\n", gameData.objs.nLastObject+1);
 	fprintf(my_file, "Number of walls:      %4i\n", gameData.walls.nWalls);
 	fprintf(my_file, "Number of open doors: %4i\n", gameData.walls.nOpenDoors);
 	fprintf(my_file, "Number of triggers:   %4i\n", gameData.trigs.nTriggers);
@@ -690,7 +690,7 @@ void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int leve
 
 	//	Process robots.
 	for (nObject=0; nObject<=gameData.objs.nLastObject; nObject++) {
-		tObject *objP = &gameData.objs.objects[nObject];
+		tObject *objP = &OBJECTS[nObject];
 
 		if (objP->renderType == RT_POLYOBJ) {
 			tPolyModel *po = &gameData.models.polyModels[objP->rType.polyObjInfo.nModel];
@@ -881,30 +881,30 @@ sayTotals(FILE *my_file, char *level_name)
 		min_objnum = -1;
 
 		for (j=0; j<=gameData.objs.nLastObject; j++) {
-			if (!usedObjects[j] && gameData.objs.objects[j].nType!=OBJ_NONE) {
-				cur_obj_val = gameData.objs.objects[j].nType * 1000 + gameData.objs.objects[j].id;
+			if (!usedObjects[j] && OBJECTS[j].nType!=OBJ_NONE) {
+				cur_obj_val = OBJECTS[j].nType * 1000 + OBJECTS[j].id;
 				if (cur_obj_val < min_obj_val) {
 					min_objnum = j;
 					min_obj_val = cur_obj_val;
 				}
 			}
 		}
-		if ((min_objnum == -1) || (gameData.objs.objects[min_objnum].nType == 255))
+		if ((min_objnum == -1) || (OBJECTS[min_objnum].nType == 255))
 			break;
 
 		objcount = 0;
 
-		objtype = gameData.objs.objects[min_objnum].nType;
-		objid = gameData.objs.objects[min_objnum].id;
+		objtype = OBJECTS[min_objnum].nType;
+		objid = OBJECTS[min_objnum].id;
 
 		for (i=0; i<=gameData.objs.nLastObject; i++) {
 			if (!usedObjects[i]) {
 
-				if (((gameData.objs.objects[i].nType == objtype) && (gameData.objs.objects[i].id == objid)) ||
-						((gameData.objs.objects[i].nType == objtype) && (objtype == OBJ_PLAYER)) ||
-						((gameData.objs.objects[i].nType == objtype) && (objtype == OBJ_COOP)) ||
-						((gameData.objs.objects[i].nType == objtype) && (objtype == OBJ_HOSTAGE))) {
-					if (gameData.objs.objects[i].nType == OBJ_ROBOT)
+				if (((OBJECTS[i].nType == objtype) && (OBJECTS[i].id == objid)) ||
+						((OBJECTS[i].nType == objtype) && (objtype == OBJ_PLAYER)) ||
+						((OBJECTS[i].nType == objtype) && (objtype == OBJ_COOP)) ||
+						((OBJECTS[i].nType == objtype) && (objtype == OBJ_HOSTAGE))) {
+					if (OBJECTS[i].nType == OBJ_ROBOT)
 						totalRobots++;
 					usedObjects[i] = 1;
 					objcount++;

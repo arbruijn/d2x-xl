@@ -449,8 +449,8 @@ void PrintCmdLineHelp ()
 	con_printf ((int) con_threshold.value, "  -joydeadzone <n>  %s\n", "Set joystick deadzone to <n> percent (0 <= n <= 100)\n");
 	con_printf ((int) con_threshold.value, "  -limitturnrate    %s\n", "Limit max. turn speed in single player mode like in multiplayer\n");
 	con_printf ((int) con_threshold.value, "  -friendlyfire <n> %s\n", "Turn friendly fire on (1) or off (0)\n");
-	con_printf ((int) con_threshold.value, "  -fixedrespawns    %s\n", "Have gameData.objs.objects always respawn at their initial location\n");
-	con_printf ((int) con_threshold.value, "  -respawndelay <n> %s\n", "Delay respawning of gameData.objs.objects for <n> secs (0 <= n <= 60)\n");
+	con_printf ((int) con_threshold.value, "  -fixedrespawns    %s\n", "Have OBJECTS always respawn at their initial location\n");
+	con_printf ((int) con_threshold.value, "  -respawndelay <n> %s\n", "Delay respawning of OBJECTS for <n> secs (0 <= n <= 60)\n");
 	con_printf ((int) con_threshold.value, "\n Help:\n\n");
 	con_printf ((int) con_threshold.value, "  -help, -h, -?, ? %s\n", "View this help screen");
 	con_printf ((int) con_threshold.value, "\n");
@@ -2437,7 +2437,8 @@ gameData.segs.faces.ovlTexCoord = gameData.segs.faces.texCoord + MAX_FACES * 4;
 
 void AllocObjectData (void)
 {
-GETMEM (tObject, gameData.objs.objects, MAX_OBJECTS, 0);
+GETMEM (tObject, OBJECTS [0], MAX_OBJECTS, 0);
+GETMEM (tObject, OBJECTS [1], MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.freeList, MAX_OBJECTS, 0);
 GETMEM (tLightObjId, gameData.objs.lightObjs, MAX_OBJECTS, (char) 0xff);
 GETMEM (tShotInfo, gameData.objs.shots, MAX_OBJECTS, (char) 0xff);
@@ -2459,6 +2460,8 @@ GETMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS, 0);
 GETMEM (tObjectViewData, gameData.objs.viewData, MAX_OBJECTS, (char) 0xFF);
 GETMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS, 0);
+gameData.objs.objP = 
+gameData.objs.renderObjP = gameData.render.objects [0];
 }
 
 // ----------------------------------------------------------------------------
@@ -2636,7 +2639,8 @@ FREEMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS);
 
 void FreeObjectData (void)
 {
-FREEMEM (tObject, gameData.objs.objects, MAX_OBJECTS);
+FREEMEM (tObject, OBJECTS [0], MAX_OBJECTS);
+FREEMEM (tObject, OBJECTS [1], MAX_OBJECTS);
 FREEMEM (short, gameData.objs.freeList, MAX_OBJECTS);
 FREEMEM (tLightObjId, gameData.objs.lightObjs, MAX_OBJECTS);
 FREEMEM (tShotInfo, gameData.objs.shots, MAX_OBJECTS);

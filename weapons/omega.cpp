@@ -66,9 +66,9 @@ void DeleteOldOmegaBlobs (tObject *parentObjP)
 	int	nParentObj = parentObjP->cType.laserInfo.nParentObj;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects [i].nType == OBJ_WEAPON)
-		if (gameData.objs.objects [i].id == OMEGA_ID)
-			if (gameData.objs.objects [i].cType.laserInfo.nParentObj == nParentObj) {
+	if (OBJECTS [i].nType == OBJ_WEAPON)
+		if (OBJECTS [i].id == OMEGA_ID)
+			if (OBJECTS [i].cType.laserInfo.nParentObj == nParentObj) {
 				ReleaseObject (i);
 				count++;
 				}
@@ -315,7 +315,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		if (nBlobObj == -1)
 			break;
 		nLastCreatedObj = nBlobObj;
-		objP = gameData.objs.objects + nBlobObj;
+		objP = OBJECTS + nBlobObj;
 		objP->lifeleft = ONE_FRAME_TIME;
 		objP->mType.physInfo.velocity = vGoal;
 		//	Only make the last one move fast, else multiple blobs might collide with target.
@@ -333,9 +333,9 @@ for (i = 0; i < nOmegaBlobs; i++) {
 	//	Make last one move faster, but it's already moving at speed = F1_0*4.
 if (nLastCreatedObj != -1) {
 	VmVecScale (
-		&gameData.objs.objects [nLastCreatedObj].mType.physInfo.velocity, 
+		&OBJECTS [nLastCreatedObj].mType.physInfo.velocity, 
 		gameData.weapons.info [OMEGA_ID].speed [gameStates.app.nDifficultyLevel]/4);
-	gameData.objs.objects [nLastCreatedObj].movementType = MT_PHYSICS;
+	OBJECTS [nLastCreatedObj].movementType = MT_PHYSICS;
 	}
 }
 
@@ -446,7 +446,7 @@ else
 //	Delete the original tObject.  Its only purpose in life was to determine which tObject to home in on.
 ReleaseObject (OBJ_IDX (weaponObjP));
 if (nTargetObj != -1)
-	vTargetPos = gameData.objs.objects [nTargetObj].position.vPos;
+	vTargetPos = OBJECTS [nTargetObj].position.vPos;
 else {	//	If couldn't lock on anything, fire straight ahead.
 	tVFIQuery	fq;
 	tFVIData		hit_data;

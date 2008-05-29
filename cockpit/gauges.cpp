@@ -2437,7 +2437,7 @@ int CanSeeObject (int nObject, int bCheckObjs)
 	//see if we can see this tPlayer
 
 fq.p0 = &gameData.objs.viewer->position.vPos;
-fq.p1 = &gameData.objs.objects [nObject].position.vPos;
+fq.p1 = &OBJECTS [nObject].position.vPos;
 fq.radP0 = 
 fq.radP1 = 0;
 fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
@@ -2484,8 +2484,8 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 		//if this is a demo, the nObject in the tPlayer struct is wrong, 
 		//so we search the tObject list for the nObject
 		for (nObject = 0;nObject <= gameData.objs.nLastObject; nObject++)
-			if (gameData.objs.objects [nObject].nType==OBJ_PLAYER && 
-				 gameData.objs.objects [nObject].id == p)
+			if (OBJECTS [nObject].nType==OBJ_PLAYER && 
+				 OBJECTS [nObject].id == p)
 				break;
 		if (nObject > gameData.objs.nLastObject)		//not in list, thus not visible
 			bShowName = !bHasFlag;				//..so don't show name
@@ -2495,7 +2495,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 		g3sPoint		vPlayerPos;
 		vmsVector	vPos;
 
-		vPos = gameData.objs.objects [nObject].position.vPos;
+		vPos = OBJECTS [nObject].position.vPos;
 		vPos.p.y += 2 * F1_0;
 		G3TransformAndEncodePoint (&vPlayerPos, &vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
@@ -2533,8 +2533,8 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 					}
 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
-					fix dy = -FixMulDiv (gameData.objs.objects [nObject].size, i2f (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
-//					fix dy = -FixMulDiv (FixMul (gameData.objs.objects [nObject].size, viewInfo.scale.y), i2f (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
+					fix dy = -FixMulDiv (OBJECTS [nObject].size, i2f (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
+//					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, viewInfo.scale.y), i2f (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
 					fix dx = FixMul (dy, grdCurScreen->scAspect);
 					fix w = dx/4;
 					fix h = dy/4;

@@ -92,7 +92,7 @@ if (EGI_FLAG (bDamageExplosions, 1, 0, 0) &&
 	 (gameStates.app.nSDLTicks - gameData.smoke.objExplTime [i] > 100)) {
 	gameData.smoke.objExplTime [i] = gameStates.app.nSDLTicks;
 	if (!RandN (11 - h))
-		CreateSmallFireballOnObject (gameData.objs.objects + i, F1_0, 1);
+		CreateSmallFireballOnObject (OBJECTS + i, F1_0, 1);
 	}
 }
 
@@ -650,7 +650,7 @@ nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->
 								1, CT_EXPLOSION, MT_NONE, RT_SHRAPNELS, 1);
 if (nObject < 0)
 	return 0;
-objP = gameData.objs.objects + nObject;
+objP = OBJECTS + nObject;
 objP->lifeleft = 0;
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
@@ -840,7 +840,7 @@ void PlayerBulletFrame (void)
 if (!gameOpts->render.ship.bBullets)
 	return;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	DoPlayerBullets (gameData.objs.objects + gameData.multiplayer.players [i].nObject);
+	DoPlayerBullets (OBJECTS + gameData.multiplayer.players [i].nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -852,7 +852,7 @@ void PlayerSmokeFrame (void)
 if (!gameOpts->render.smoke.bPlayers)
 	return;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	DoPlayerSmoke (gameData.objs.objects + gameData.multiplayer.players [i].nObject, i);
+	DoPlayerSmoke (OBJECTS + gameData.multiplayer.players [i].nObject, i);
 }
 
 //------------------------------------------------------------------------------
@@ -866,7 +866,7 @@ if (!SHOW_SMOKE)
 	return;
 if (!gameOpts->render.smoke.bRobots)
 	return;
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
 	if (objP->nType == OBJ_NONE)
 		KillObjectSmoke (i);
 }
@@ -875,7 +875,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 
 void StaticSmokeFrame (void)
 {
-	tObject	*objP = gameData.objs.objects;
+	tObject	*objP = OBJECTS;
 	int		i;
 
 if (!SHOW_SMOKE)

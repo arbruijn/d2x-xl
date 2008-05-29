@@ -159,7 +159,7 @@ if (nObject < 0) {
 	return NULL;
 	}
 
-explObjP = gameData.objs.objects + nObject;
+explObjP = OBJECTS + nObject;
 //now set explosion-specific data
 explObjP->lifeleft = gameData.eff.vClips [0][nVClip].xTotalTime;
 explObjP->cType.explInfo.nSpawnTime = -1;
@@ -169,7 +169,7 @@ explObjP->cType.explInfo.nDeleteTime = -1;
 if (xMaxDamage <= 0)
 	return explObjP;
 // -- now legal for xBadAss explosions on a tWall. Assert (objP != NULL);
-for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, obj0P++) {
+for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject; i++, obj0P++) {
 	t = obj0P->nType;
 	id = obj0P->id;
 	//	Weapons used to be affected by xBadAss explosions, but this introduces serious problems.
@@ -186,7 +186,7 @@ for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, 
 	else if (t == OBJ_ROBOT) {
 		if (nParent < 0)
 			continue;
-		if ((gameData.objs.objects [nParent].nType == OBJ_ROBOT) && (gameData.objs.objects [nParent].id == id))
+		if ((OBJECTS [nParent].nType == OBJ_ROBOT) && (OBJECTS [nParent].id == id))
 			continue;
 		}
 	else if ((t != OBJ_REACTOR) && (t != OBJ_PLAYER))
@@ -287,7 +287,7 @@ for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, 
 			killerP = objP;
 		vForce2 = vForce;
 		if (nParent > -1) {
-			killerP = gameData.objs.objects + nParent;
+			killerP = OBJECTS + nParent;
 			if (killerP != gameData.objs.console)		// if someone else whacks you, cut force by 2x
 				vForce2.p.x /= 2;
 				vForce2.p.y /= 2;
@@ -430,7 +430,7 @@ if ((nObject < 0) && (gameData.objs.nLastObject >= MAX_OBJECTS - 1)) {
 	}
 if (nObject < 0)
 	return NULL;				// Not enough debris slots!
-debrisP = gameData.objs.objects + nObject;
+debrisP = OBJECTS + nObject;
 Assert (nSubObj < 32);
 //Set polygon-tObject-specific data
 debrisP->rType.polyObjInfo.nModel = parentObjP->rType.polyObjInfo.nModel;
@@ -546,7 +546,7 @@ if (delayTime) {		//wait a little while before creating explosion
 		Int3 ();
 		return;
 		}
-	objP = gameData.objs.objects + nObject;
+	objP = OBJECTS + nObject;
 	//now set explosion-specific data
 	objP->lifeleft = delayTime;
 	objP->cType.explInfo.nDeleteObj = OBJ_IDX (hitObjP);
@@ -628,7 +628,7 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 		Int3 (); // get Rob, please... thanks
 		return;
 		}
-	delObjP = gameData.objs.objects + objP->cType.explInfo.nDeleteObj;
+	delObjP = OBJECTS + objP->cType.explInfo.nDeleteObj;
 	xBadAss = (fix) ROBOTINFO (delObjP->id).badass;
 	vSpawnPos = &delObjP->position.vPos;
 	t = delObjP->nType;
@@ -705,7 +705,7 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 	}
 	//See if we should delete an tObject
 if ((objP->lifeleft <= objP->cType.explInfo.nDeleteTime) && (objP->cType.explInfo.nDeleteObj >= 0)) {
-	tObject *delObjP = gameData.objs.objects + objP->cType.explInfo.nDeleteObj;
+	tObject *delObjP = OBJECTS + objP->cType.explInfo.nDeleteObj;
 	objP->cType.explInfo.nDeleteTime = -1;
 	MaybeDeleteObject (delObjP);
 	}

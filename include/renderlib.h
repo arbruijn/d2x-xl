@@ -96,6 +96,9 @@ void OutlineSegSide (tSegment *seg, int _side, int edge, int vert);
 void DrawWindowBox (unsigned int color, short left, short top, short right, short bot);
 #endif
 
+void YieldRenderContext (void);
+void ClaimRenderContext (void);
+
 //------------------------------------------------------------------------------
 
 extern grsBitmap *bmpCorona;

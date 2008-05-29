@@ -95,7 +95,7 @@ typedef struct v16_segment {
 	#ifdef  EDITOR
 	short   group;              // group number to which the tSegment belongs.
 	#endif
-	short   objects;            // pointer to gameData.objs.objects in this tSegment
+	short   objects;            // pointer to OBJECTS in this tSegment
 	ubyte   special;            // what nType of center this is
 	sbyte   nMatCen;         // which center tSegment is associated with.
 	short   value;

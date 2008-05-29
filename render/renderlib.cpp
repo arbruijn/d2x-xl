@@ -958,5 +958,34 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 return 0;
 }
 
+// ----------------------------------------------------------------------------
+
+void YieldRenderContext (void)
+{
+#ifdef _WIN32
+if (gameStates.app.bMultiThreaded) {
+		GLuint nError;
+
+	currentDC = wglGetCurrentDC ();
+	currentContext = wglGetCurrentContext ();
+	if (currentDC && currentContext && wglMakeCurrent (0, 0)) {
+		RunRenderThreads (rtRenderInit);
+		WaitForRenderThreads ();
+		nError = wglMakeCurrent (currentDC, currentContext);
+		}
+	}
+#endif
+}
+
+// ----------------------------------------------------------------------------
+
+void ClaimRenderContext (void)
+{
+#ifdef _WIN32
+if (gameStates.app.bMultiThreaded && currentDC && currentContext)
+	wglMakeCurrent (currentDC, currentContext);
+#endif
+}
+
 //------------------------------------------------------------------------------
 // eof

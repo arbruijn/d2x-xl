@@ -116,7 +116,7 @@ void DoAiRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *vCollis
 if (!gameStates.app.cheats.bRobotsFiring)
 	return;
 //	If tPlayer is dead, stop firing.
-if (gameData.objs.objects [LOCALPLAYER.nObject].nType == OBJ_GHOST)
+if (OBJECTS [LOCALPLAYER.nObject].nType == OBJ_GHOST)
 	return;
 if (botInfoP->attackType != 1)
 	return;

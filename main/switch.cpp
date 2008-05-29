@@ -153,7 +153,7 @@ if (!bDamage)
 	return 1;
 if (v >= 10)
 	return 0;
-if ((fix) (ObjectDamage (gameData.objs.objects + nObject) * 100) > v * 10)
+if ((fix) (ObjectDamage (OBJECTS + nObject) * 100) > v * 10)
 	return 0;
 if (!(trigP->flags & TF_PERMANENT))
 	trigP->value = 0;
@@ -164,7 +164,7 @@ return 1;
 
 void DoSpawnBot (tTrigger *trigP, short nObject)
 {
-SpawnBotTrigger (gameData.objs.objects + nObject, trigP->nLinks ? trigP->nSegment [0] : -1);
+SpawnBotTrigger (OBJECTS + nObject, trigP->nLinks ? trigP->nSegment [0] : -1);
 }
 
 //-----------------------------------------------------------------
@@ -172,7 +172,7 @@ SpawnBotTrigger (gameData.objs.objects + nObject, trigP->nLinks ? trigP->nSegmen
 void DoTeleportBot (tTrigger *trigP, short nObject)
 {
 if (trigP->nLinks) {
-	tObject *objP = gameData.objs.objects + nObject;
+	tObject *objP = OBJECTS + nObject;
 	short nSegment = trigP->nSegment [d_rand () % trigP->nLinks];
 	if (objP->nSegment != nSegment) {
 		objP->nSegment = nSegment;
@@ -585,7 +585,7 @@ void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPo
 	vmsAngVec	ad, an, av;
 	vmsVector	vel, n;
 	vmsMatrix	rm;
-	tObject		*objP = gameData.objs.objects + nObject;
+	tObject		*objP = OBJECTS + nObject;
 
 TriggerSetOrient (&objP->position, nSegment, nSide, bSetPos, nStep);
 if (nStep <= 0) {
@@ -674,7 +674,7 @@ void SetSpeedBoostVelocity (short nObject, fix speed,
 									 int bSetOrient)
 {
 	vmsVector			n, h;
-	tObject				*objP = gameData.objs.objects + nObject;
+	tObject				*objP = OBJECTS + nObject;
 	int					v;
 	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
 
@@ -827,7 +827,7 @@ int CheckTriggerSub (short nObject, tTrigger *triggers, int nTriggerCount,
 							int nTrigger, int nPlayer, int shot, int bObjTrigger)
 {
 	tTrigger	*trigP;
-	tObject	*objP = gameData.objs.objects + nObject;
+	tObject	*objP = OBJECTS + nObject;
 	ubyte		bIsPlayer = (objP->nType == OBJ_PLAYER);
 
 if (nTrigger >= nTriggerCount)
@@ -1129,7 +1129,7 @@ void CheckTrigger (tSegment *segP, short nSide, short nObject, int shot)
 {
 	int 		nWall;
 	ubyte		nTrigger;	//, cnTrigger;
-	tObject	*objP = gameData.objs.objects + nObject;
+	tObject	*objP = OBJECTS + nObject;
 
 nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall)) 

@@ -135,7 +135,7 @@ return AIM_IDLING;
 //	initial_mode == -1 means leave mode unchanged.
 void InitAIObject (short nObject, short behavior, short nHideSegment)
 {
-	tObject		*objP = gameData.objs.objects + nObject;
+	tObject		*objP = OBJECTS + nObject;
 	tAIStatic	*aiP = &objP->cType.aiInfo;
 	tAILocal		*ailP = gameData.ai.localInfo + nObject;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->id);
@@ -213,7 +213,7 @@ for (i = 0; i < MAX_BOSS_COUNT; i++) {
 //	gameData.boss [i].xPrevShields = -1;
 #endif
 	}
-for (i = j = 0, objP = gameData.objs.objects; i < MAX_OBJECTS; i++, objP++) {
+for (i = j = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
 	if (objP->controlType == CT_AI)
 		InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
 	if ((objP->nType == OBJ_ROBOT) && (ROBOTINFO (objP->id).bossFlag))

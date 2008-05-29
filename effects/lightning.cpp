@@ -488,6 +488,9 @@ if ((plb->bSound > 0) & (plb->nObject >= 0))
 
 void DestroyLightnings (int iLightning, tLightning *pl, int bDestroy)
 {
+while (gameStates.render.bLightnings)
+	G3_SLEEP (0);
+
 	tLightningBundle	*plh, *plb = NULL;
 	int					i;
 
@@ -985,10 +988,13 @@ int UpdateLightning (tLightning *pl, int nLightnings, int nDepth)
 if (!(pl && nLightnings))
 	return 0;
 CHECK (pl, nLightnings);
+while (gameStates.render.bLightnings)
+	G3_SLEEP (0);
 if (gameStates.app.bMultiThreaded && (nLightnings > 1)) {
 	tiRender.pl = pl;
 	tiRender.nLightnings = nLightnings;
-	RunRenderThreads (rtAnimateLightnings);
+	if (!RunRenderThreads (rtAnimateLightnings))
+		AnimateLightning (pl, 0, nLightnings, nDepth);
 	}
 else
 	AnimateLightning (pl, 0, nLightnings, nDepth);
@@ -1025,6 +1031,9 @@ plb->bSound = -1;
 void UpdateLightnings (void)
 {
 if (SHOW_LIGHTNINGS) {
+	while (gameStates.render.bLightnings)
+		G3_SLEEP (0);
+
 		tLightningBundle	*plb;
 		int					i, n;
 
@@ -1068,6 +1077,9 @@ void MoveLightnings (int i, tLightning *pl, vmsVector *vNewPos, short nSegment, 
 if (nSegment < 0)
 	return;
 if (SHOW_LIGHTNINGS) {
+	while (gameStates.render.bLightnings)
+		G3_SLEEP (0);
+
 		tLightningNode	*pln;
 		vmsVector		vDelta, vOffs;
 		int				h, j, nLightnings; 
@@ -1877,12 +1889,14 @@ if (SHOW_LIGHTNINGS) {
 		tLightningBundle	*plb;
 		int			i, n, bStencil = StencilOff ();
 
+	gameStates.render.bLightnings = 1;
 	for (i = gameData.lightnings.iUsed; i >= 0; i = n) {
 		plb = gameData.lightnings.buffer + i;
 		n = plb->nNext;
 		if (!(plb->nKey [0] | plb->nKey [1]))
 			RenderLightning (plb->pl, plb->nLightnings, 0, gameOpts->render.bDepthSort > 0);
 		}
+	gameStates.render.bLightnings = 0;
 	StencilOn (bStencil);
 	}
 }
@@ -1896,7 +1910,7 @@ vmsVector *FindLightningTargetPos (tObject *emitterP, short nTarget)
 
 if (!nTarget)
 	return 0;
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
 	if ((objP != emitterP) && (objP->nType == OBJ_EFFECT) && (objP->id == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nTarget))
 		return &objP->position.vPos;
 return NULL;
@@ -1916,7 +1930,7 @@ if (!SHOW_LIGHTNINGS)
 	return;
 if (!gameOpts->render.lightnings.bStatic)
 	return;
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 	if ((objP->nType != OBJ_EFFECT) || (objP->id != LIGHTNING_ID))
 		continue;
 	if (gameData.lightnings.objects [i] >= 0)
@@ -2178,7 +2192,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (obj
 void CreatePlayerLightnings (tObject *objP, tRgbaColorf *colorP)
 {
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bPlayers && OBJECT_EXISTS (objP)) {
-		int h, i = OBJ_IDX (objP);
+	int h, i = OBJ_IDX (objP);
 
 	if (0 <= gameData.lightnings.objects [i]) 
 		MoveObjectLightnings (objP);

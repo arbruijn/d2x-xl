@@ -120,7 +120,7 @@ int KillAllBuddyBots (int bVerbose)
 	tObject *objP;
 	//int	boss_index = -1;
 
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
 	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion) {
 		if (gameStates.app.bNostalgia)
 			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -144,7 +144,7 @@ void KillAllRobots (int bVerbose)
 	//int	boss_index = -1;
 
 // Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
 	if ((objP->nType == OBJ_ROBOT) &&
 		 !(ROBOTINFO (objP->id).companion || ROBOTINFO (objP->id).bossFlag)) {
 		nKilled++;
@@ -172,7 +172,7 @@ void KillAllBossRobots (int bVerbose)
 if (gameStates.gameplay.bKillBossCheat)
 	gameStates.gameplay.bKillBossCheat = 0;
 else {
-	for (i = 0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
+	for (i = 0, objP = OBJECTS; i<=gameData.objs.nLastObject; i++, objP++)
 		if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag) {
 			nKilled++;
 			if (gameStates.app.bNostalgia)
@@ -201,13 +201,13 @@ void KillEverything (int bVerbose)
 if (bVerbose)
 	HUDInitMessage (TXT_KILL_ETC);
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
-	switch (gameData.objs.objects [i].nType) {
+	switch (OBJECTS [i].nType) {
 		case OBJ_ROBOT:
 		case OBJ_REACTOR:
-			gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			OBJECTS [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 			break;
 		case OBJ_POWERUP:
-			DoPowerup (gameData.objs.objects + i, -1);
+			DoPowerup (OBJECTS + i, -1);
 			break;
 		}
 	}
@@ -239,7 +239,7 @@ void KillThief (int bVerbose)
 	int     i;
 	tObject *objP;
 
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
 	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).thief) {
 		if (gameStates.app.bNostalgia)
 			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -262,10 +262,10 @@ void KillAllSnipers (int bVerbose)
 
 //	Kill all snipers.
 for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-		if (gameData.objs.objects [i].cType.aiInfo.behavior == AIB_SNIPE) {
+	if (OBJECTS [i].nType == OBJ_ROBOT)
+		if (OBJECTS [i].cType.aiInfo.behavior == AIB_SNIPE) {
 			nKilled++;
-			gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			OBJECTS [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		}
 if (bVerbose)
 	HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
@@ -278,12 +278,12 @@ if (bVerbose)
 void KillBuddy (int bVerbose)
 {
 	int     i;
-	tObject	*objP = gameData.objs.objects;
+	tObject	*objP = OBJECTS;
 
 	//	Kill buddy.
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion) {
-		gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+		OBJECTS [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		if (bVerbose)
 			HUDInitMessage (TXT_BUDDY_TOASTED);
 		}

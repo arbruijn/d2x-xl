@@ -609,7 +609,7 @@ void writeObject(tObject *objP,FILE *f)
 
 		case CT_WEAPON:
 
-			//do I really need to write these gameData.objs.objects?
+			//do I really need to write these OBJECTS?
 
 			gs_write_short(objP->cType.laserInfo.parentType,f);
 			gs_write_short(objP->cType.laserInfo.nParentObj,f);
@@ -916,7 +916,7 @@ static int ReadObjectInfo (CFILE *cfp)
 	int	i;
 
 if (gameFileInfo.objects.offset > -1) {
-	tObject	*objP = gameData.objs.objects;
+	tObject	*objP = OBJECTS;
 	if (CFSeek (cfp, gameFileInfo.objects.offset, SEEK_SET)) {
 		Error ("Error seeking to object data\n(file damaged or invalid)");
 		return -1;
@@ -1283,13 +1283,13 @@ static void CheckAndLinkObjects (void)
 	int	i;
 
 for (i = 0; i < gameFileInfo.objects.count; i++) {
-	gameData.objs.objects [i].next = gameData.objs.objects [i].prev = -1;
-	if (gameData.objs.objects [i].nType != OBJ_NONE) {
-		int objsegnum = gameData.objs.objects [i].nSegment;
+	OBJECTS [i].next = OBJECTS [i].prev = -1;
+	if (OBJECTS [i].nType != OBJ_NONE) {
+		int objsegnum = OBJECTS [i].nSegment;
 		if ((objsegnum < 0) || (objsegnum > gameData.segs.nLastSegment))	
-			gameData.objs.objects [i].nType = OBJ_NONE;
+			OBJECTS [i].nType = OBJ_NONE;
 		else {
-			gameData.objs.objects [i].nSegment = -1;	
+			OBJECTS [i].nSegment = -1;	
 			LinkObject (i, objsegnum);
 			}
 		}
@@ -1827,11 +1827,11 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE OBJECT INFO ===========================
 
 	tObject.offset = ftell(SaveFile);
-	//fwrite(&gameData.objs.objects, sizeof(tObject), gameFileInfo.objects.count, SaveFile);
+	//fwrite(&OBJECTS, sizeof(tObject), gameFileInfo.objects.count, SaveFile);
 	{
 		int i;
 		for (i=0;i<gameFileInfo.objects.count;i++)
-			writeObject(&gameData.objs.objects [i],SaveFile);
+			writeObject(&OBJECTS [i],SaveFile);
 	}
 
 	//==================== SAVE WALL INFO =============================
@@ -1952,10 +1952,10 @@ int saveLevel_sub(char * filename, int compiledVersion)
 
 	ClearTransientObjects(1);		//1 means clear proximity bombs
 
-	compressObjects();		//after this, gameData.objs.nLastObject == num gameData.objs.objects
+	compressObjects();		//after this, gameData.objs.nLastObject == num OBJECTS
 
 	//make sure tPlayer is in a tSegment
-	if (UpdateObjectSeg(&gameData.objs.objects [gameData.multiplayer.players [0].nObject]) == 0) {
+	if (UpdateObjectSeg(&OBJECTS [gameData.multiplayer.players [0].nObject]) == 0) {
 		if (gameData.objs.console->nSegment > gameData.segs.nLastSegment)
 			gameData.objs.console->nSegment = 0;
 		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,&(gameData.segs.segments [gameData.objs.console->nSegment]);

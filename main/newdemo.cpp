@@ -263,7 +263,7 @@ objP->mType.physInfo.velocity.p.z = (spp->velz << VEL_PRECISION);
 int NDFindObject (int nSignature)
 {
 	int i;
-	tObject * objP = gameData.objs.objects;
+	tObject * objP = OBJECTS;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 if ((objP->nType != OBJ_NONE) && (objP->nSignature == nSignature))
@@ -311,7 +311,7 @@ return -1;
 
 /*
  *  The next bunch of files taken from Matt's gamesave.c.  We have to modify
- *  these since the demo must save more information about gameData.objs.objects that
+ *  these since the demo must save more information about OBJECTS that
  *  just a gamesave
 */
 
@@ -736,7 +736,7 @@ switch (objP->controlType) {
 			Assert (prevObjP != NULL);
 			if (prevObjP->controlType == CT_EXPLOSION) {
 				if ((prevObjP->flags & OF_ATTACHED) && (prevObjP->cType.explInfo.nAttachParent != -1))
-					AttachObject (gameData.objs.objects + prevObjP->cType.explInfo.nAttachParent, objP);
+					AttachObject (OBJECTS + prevObjP->cType.explInfo.nAttachParent, objP);
 				else
 					objP->flags &= ~OF_ATTACHED;
 				}
@@ -1066,7 +1066,7 @@ void NDRecordRenderObject (tObject * objP)
 {
 if (gameData.demo.bViewWasRecorded [OBJ_IDX (objP)])
 	return;
-//if (obj==&gameData.objs.objects [LOCALPLAYER.nObject] && !gameStates.app.bPlayerIsDead)
+//if (obj==&OBJECTS [LOCALPLAYER.nObject] && !gameStates.app.bPlayerIsDead)
 //	return;
 StopTime ();
 NDWriteByte (ND_EVENT_RENDER_OBJECT);
@@ -1146,7 +1146,7 @@ void NDRecordLinkSoundToObject3 (int soundno, short nObject, fix maxVolume, fix 
 StopTime ();
 NDWriteByte (ND_EVENT_LINK_SOUND_TO_OBJ);
 NDWriteInt (soundno);
-NDWriteInt (gameData.objs.objects [nObject].nSignature);
+NDWriteInt (OBJECTS [nObject].nSignature);
 NDWriteInt (maxVolume);
 NDWriteInt (maxDistance);
 NDWriteInt (loop_start);
@@ -1160,7 +1160,7 @@ void NDRecordKillSoundLinkedToObject (int nObject)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_KILL_SOUND_TO_OBJ);
-NDWriteInt (gameData.objs.objects [nObject].nSignature);
+NDWriteInt (OBJECTS [nObject].nSignature);
 StartTime (0);
 }
 
@@ -1858,7 +1858,7 @@ while (!bDone) {
 					}
 				}
 			else {
-				gameData.objs.viewer = gameData.objs.objects;
+				gameData.objs.viewer = OBJECTS;
 				NDReadObject (gameData.objs.viewer);
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
@@ -1883,7 +1883,7 @@ while (!bDone) {
 			nObject = AllocObject ();
 			if (nObject == -1)
 				break;
-			objP = gameData.objs.objects + nObject;
+			objP = OBJECTS + nObject;
 			NDReadObject (objP);
 			CATCH_BAD_READ
 			if (objP->controlType == CT_POWERUP)
@@ -1891,7 +1891,7 @@ while (!bDone) {
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 				nSegment = objP->nSegment;
 				objP->next = objP->prev = objP->nSegment = -1;
-				// HACK HACK HACK -- don't render gameData.objs.objects is segments greater than gameData.segs.nLastSegment
+				// HACK HACK HACK -- don't render OBJECTS is segments greater than gameData.segs.nLastSegment
 				// HACK HACK HACK -- (see above)
 				if (nSegment > gameData.segs.nLastSegment)
 					break;
@@ -1978,7 +1978,7 @@ while (!bDone) {
 			tPlayer = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				WallHitProcess (&gameData.segs.segments [nSegment], (short) nSide, damage, tPlayer, &(gameData.objs.objects [0]));
+				WallHitProcess (&gameData.segs.segments [nSegment], (short) nSide, damage, tPlayer, &(OBJECTS [0]));
 			break;
 		}
 
@@ -2017,7 +2017,7 @@ while (!bDone) {
 			nObject = AllocObject ();
 			if (nObject==-1)
 				break;
-			objP = gameData.objs.objects + nObject;
+			objP = OBJECTS + nObject;
 			NDReadObject (objP);
 			objP->renderType = RT_POLYOBJ;
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
@@ -2810,7 +2810,7 @@ for (i = nFrames; i; i--) {
 /*
  *  routine to interpolate the viewer position.  the current position is
  *  stored in the gameData.objs.viewer tObject.  Save this position, and read the next
- *  frame to get all gameData.objs.objects read in.  Calculate the delta playback and
+ *  frame to get all OBJECTS read in.  Calculate the delta playback and
  *  the delta recording frame times between the two frames, then intepolate
  *  the viewers position accordingly.  gameData.demo.xRecordedTime is the time that it
  *  took the recording to render the frame that we are currently looking
@@ -2834,10 +2834,10 @@ if (factor > F1_0)
 	factor = F1_0;
 nCurObjs = gameData.objs.nLastObject;
 #if 1
-memcpy (curObjs, gameData.objs.objects, sizeof (tObject) * (nCurObjs + 1));
+memcpy (curObjs, OBJECTS, sizeof (tObject) * (nCurObjs + 1));
 #else
 for (i = 0; i <= nCurObjs; i++)
-	memcpy (&(curObjs [i]), &(gameData.objs.objects [i]), sizeof (tObject));
+	memcpy (&(curObjs [i]), &(OBJECTS [i]), sizeof (tObject));
 #endif
 gameData.demo.nVcrState = ND_STATE_PAUSED;
 if (NDReadFrameInfo () == -1) {
@@ -2845,7 +2845,7 @@ if (NDReadFrameInfo () == -1) {
 	return;
 	}
 for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
-	for (j = gameData.objs.objects + gameData.objs.nLastObject, objP = gameData.objs.objects; objP < j; objP++) {
+	for (j = OBJECTS + gameData.objs.nLastObject, objP = OBJECTS; objP < j; objP++) {
 		if (curObjP->nSignature == objP->nSignature) {
 			renderType = curObjP->renderType;
 			//fix delta_p, delta_h, delta_b;
@@ -2894,17 +2894,17 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 // get back to original position in the demo file.  Reread the current
 // frame information again to reset all of the tObject stuff not covered
 // with gameData.objs.nLastObject and the tObject array (previously rendered
-// gameData.objs.objects, etc....)
+// OBJECTS, etc....)
 NDBackFrames (1);
 NDBackFrames (1);
 if (NDReadFrameInfo () == -1)
 	NDStopPlayback ();
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
 #if 1
-memcpy (gameData.objs.objects, curObjs, sizeof (tObject) * (nCurObjs + 1));
+memcpy (OBJECTS, curObjs, sizeof (tObject) * (nCurObjs + 1));
 #else
 for (i = 0; i <= nCurObjs; i++)
-	memcpy (&(gameData.objs.objects [i]), &(curObjs [i]), sizeof (tObject));
+	memcpy (&(OBJECTS [i]), &(curObjs [i]), sizeof (tObject));
 #endif
 gameData.objs.nLastObject = nCurObjs;
 }
@@ -3020,7 +3020,7 @@ else {
 					break;
 					}
 				for (i = 0; i <= nObjects; i++)
-					memcpy (curObjs, gameData.objs.objects, (nObjects + 1) * sizeof (tObject));
+					memcpy (curObjs, OBJECTS, (nObjects + 1) * sizeof (tObject));
 				nLevel = gameData.missions.nCurrentLevel;
 				if (NDReadFrameInfo () == -1) {
 					D2_FREE (curObjs);
@@ -3035,11 +3035,11 @@ else {
 					}
 				//  for each new tObject in the frame just read in, determine if there is
 				//  a corresponding tObject that we have been interpolating.  If so, then
-				//  copy that interpolated tObject to the new gameData.objs.objects array so that the
+				//  copy that interpolated tObject to the new OBJECTS array so that the
 				//  interpolated position and orientation can be preserved.
 				for (i = 0; i <= nObjects; i++) {
 					nSig = curObjs [i].nSignature;
-					objP = gameData.objs.objects;
+					objP = OBJECTS;
 					for (j = 0; j <= gameData.objs.nLastObject; j++, objP++) {
 						if (nSig == objP->nSignature) {
 							objP->position.mOrient = curObjs [i].position.mOrient;
@@ -3363,7 +3363,7 @@ else
 bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
 strncpy (gameData.demo.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
-gameData.objs.viewer = gameData.objs.console = gameData.objs.objects;   // play properly as if console tPlayer
+gameData.objs.viewer = gameData.objs.console = OBJECTS;   // play properly as if console tPlayer
 if (NDReadDemoStart (bRandom)) {
 	CFClose (&ndInFile);
 	CFClose (&ndOutFile);
@@ -3389,7 +3389,7 @@ gameStates.render.cockpit.n3DView [1] = CV_NONE;       //turn off 3d views on co
 SDL_ShowCursor (0);
 NDPlayBackOneFrame ();       // this one loads new level
 ResetTime ();
-NDPlayBackOneFrame ();       // get all of the gameData.objs.objects to renderb game
+NDPlayBackOneFrame ();       // get all of the OBJECTS to renderb game
 }
 
 //	-----------------------------------------------------------------------------

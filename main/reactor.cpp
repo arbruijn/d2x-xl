@@ -112,10 +112,10 @@ if (gameStates.gameplay.nReactorCount) {
 
 	for (i = 0; i < gameStates.gameplay.nReactorCount; i++, rStatP++) {
 		if ((rStatP->nDeadObj != -1) && 
-			 (gameData.objs.objects [rStatP->nDeadObj].nType == OBJ_REACTOR) &&
+			 (OBJECTS [rStatP->nDeadObj].nType == OBJ_REACTOR) &&
 			 (gameData.reactor.countdown.nSecsLeft > 0))
 		if (d_rand () < gameData.time.xFrame * 4)
-			CreateSmallFireballOnObject (gameData.objs.objects + rStatP->nDeadObj, F1_0, 1);
+			CreateSmallFireballOnObject (OBJECTS + rStatP->nDeadObj, F1_0, 1);
 		}
 	}
 if (!gameStates.app.bEndLevelSequence)
@@ -316,7 +316,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		// center can spot cloaked dudes.
 
 		if (IsMultiGame)
-			gameData.ai.vBelievedPlayerPos = gameData.objs.objects [LOCALPLAYER.nObject].position.vPos;
+			gameData.ai.vBelievedPlayerPos = OBJECTS [LOCALPLAYER.nObject].position.vPos;
 
 		//	Hack for special control centers which are isolated and not reachable because the
 		//	real control center is inside the boss.
@@ -445,7 +445,7 @@ else {
 	gameStates.gameplay.nLastReactor = -1;
 	memset (gameData.reactor.states, 0xff, sizeof (gameData.reactor.states));
 	}
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 	if (objP->nType == OBJ_REACTOR) {
 		if (gameStates.gameplay.nReactorCount && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
 #if TRACE
@@ -456,7 +456,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 		//else 
 			{
 			//	Compute all gun positions.
-			objP = gameData.objs.objects + i;
+			objP = OBJECTS + i;
 			if ((bNew = (!bRestore || (0 > (j = FindReactor (objP))))))
 				j = gameStates.gameplay.nReactorCount;
 			rStatP = gameData.reactor.states + j;

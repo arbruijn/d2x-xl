@@ -55,7 +55,7 @@ if (PlayerHasHeadlight (-1)) {
 #define	HEADLIGHT_CONE_DOT		(F1_0*9/10)
 #define	HEADLIGHT_SCALE			(F1_0*10)
 
-//	Flag array of gameData.objs.objects lit last frame.  Guaranteed to process this frame if lit last frame.
+//	Flag array of gameData.objs.renderObjP lit last frame.  Guaranteed to process this frame if lit last frame.
 tObject	*Headlights [MAX_HEADLIGHTS];
 int		nHeadlights;
 fix		xBeamBrightness = (F1_0/2);	//global saying how bright the light beam is
@@ -184,7 +184,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	if (gameData.render.lights.dynamic.nHeadlights [nPlayer] < 0)
 		continue;
 	pl = gameData.render.lights.dynamic.lights + gameData.render.lights.dynamic.nHeadlights [nPlayer];
-	objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
+	objP = gameData.objs.renderObjP + gameData.multiplayer.players [nPlayer].nObject;
 	pl->info.vPos = OBJPOS (objP)->vPos;
 	pl->vDir = OBJPOS (objP)->mOrient.fVec;
 	VmVecScaleInc (&pl->info.vPos, &pl->vDir, objP->size / 4);

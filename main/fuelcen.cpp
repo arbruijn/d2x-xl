@@ -349,8 +349,8 @@ VmVecSub (&delta, gameData.segs.vertices + gameData.segs.segments [nSegment].ver
 VmVecScaleInc (&pos, &delta, F1_0/2);
 nObject = CreateObject (OBJ_LIGHT, SINGLE_LIGHT_ID, -1, nSegment, &pos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
 if (nObject != -1) {
-	gameData.objs.objects [nObject].lifeleft = MATCEN_LIFE;
-	gameData.objs.objects [nObject].cType.lightInfo.intensity = i2f (8);	//	Light cast by a fuelcen.
+	OBJECTS [nObject].lifeleft = MATCEN_LIFE;
+	OBJECTS [nObject].cType.lightInfo.intensity = i2f (8);	//	Light cast by a fuelcen.
 	} 
 else {
 #if TRACE
@@ -448,7 +448,7 @@ if (nObject < 0) {
 	Int3 ();
 	return NULL;
 	}
-objP = gameData.objs.objects + nObject;
+objP = OBJECTS + nObject;
 //Set polygon-tObject-specific data
 botInfoP = &ROBOTINFO (objP->id);
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
@@ -542,7 +542,7 @@ if (!matCenP->bFlag) {
 		return;
 	nObject = gameData.segs.segments [matCenP->nSegment].objects;
 	while (nObject >= 0) {
-		objP = gameData.objs.objects + nObject;
+		objP = OBJECTS + nObject;
 		if ((objP->nType == OBJ_POWERUP) || (objP->id == OBJ_PLAYER)) {
 			matCenP->xTimer = 0;
 			return;
@@ -566,7 +566,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 									CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 	if (nObject < 0)
 		return;
-	objP = gameData.objs.objects + nObject;
+	objP = OBJECTS + nObject;
 	if (IsMultiGame) {
 		gameData.multiplayer.maxPowerupsAllowed [nType]++;
 		gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
@@ -608,7 +608,7 @@ if (!matCenP->bFlag) {
 		return;
 	nObject = gameData.segs.segments [matCenP->nSegment].objects;
 	while (nObject >= 0) {
-		objP = gameData.objs.objects + nObject;
+		objP = OBJECTS + nObject;
 		if ((objP->nType == OBJ_POWERUP) && (objP->id == POW_ENTROPY_VIRUS)) {
 			matCenP->xTimer = 0;
 			return;
@@ -628,7 +628,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 									gameData.objs.pwrUp.info [POW_ENTROPY_VIRUS].size, 
 									CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 	if (nObject >= 0) {
-		objP = gameData.objs.objects + nObject;
+		objP = OBJECTS + nObject;
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
 		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
@@ -726,8 +726,8 @@ if (!matCenP->bFlag) {
 
 	//	Make sure this robotmaker hasn't put out its max without having any of them killed.
 	for (i = 0, nCount = 0; i <= gameData.objs.nLastObject; i++)
-		if ((gameData.objs.objects [i].nType == OBJ_ROBOT) &&
-			 ((gameData.objs.objects [i].matCenCreator ^ 0x80) == nMyStation))
+		if ((OBJECTS [i].nType == OBJ_ROBOT) &&
+			 ((OBJECTS [i].matCenCreator ^ 0x80) == nMyStation))
 			nCount++;
 	if (nCount > gameStates.app.nDifficultyLevel + 3) {
 #if TRACE
@@ -741,7 +741,7 @@ if (!matCenP->bFlag) {
 	nSegment = matCenP->nSegment;
 	for (nObject = gameData.segs.segments [nSegment].objects;
 		  nObject != -1;
-		  nObject = gameData.objs.objects [nObject].next) {
+		  nObject = OBJECTS [nObject].next) {
 		nCount++;
 		if (nCount > MAX_OBJECTS) {
 #if TRACE
@@ -750,13 +750,13 @@ if (!matCenP->bFlag) {
 			Int3 ();
 			return;
 			}
-		if (gameData.objs.objects [nObject].nType == OBJ_ROBOT) {
-			CollideRobotAndMatCen (gameData.objs.objects + nObject);
+		if (OBJECTS [nObject].nType == OBJ_ROBOT) {
+			CollideRobotAndMatCen (OBJECTS + nObject);
 			matCenP->xTimer = topTime / 2;
 			return;
 			}
-		else if (gameData.objs.objects [nObject].nType == OBJ_PLAYER) {
-			CollidePlayerAndMatCen (gameData.objs.objects + nObject);
+		else if (OBJECTS [nObject].nType == OBJ_PLAYER) {
+			CollidePlayerAndMatCen (OBJECTS + nObject);
 			matCenP->xTimer = topTime / 2;
 			return;
 			}
@@ -779,7 +779,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 #endif
 	if (!(objP = CreateMorphRobot (gameData.segs.segments + matCenP->nSegment, &vPos, nType))) {
 #if TRACE
-		con_printf (CONDBG, "Warning: CreateMorphRobot returned NULL (no gameData.objs.objects left?)\n");
+		con_printf (CONDBG, "Warning: CreateMorphRobot returned NULL (no OBJECTS left?)\n");
 #endif
 		return;
 		}
@@ -1426,7 +1426,7 @@ int FlagAtHome (int nFlagId)
 
 for (i = flagGoalRoots [nFlagId - POW_BLUEFLAG]; i >= 0; i = flagGoalList [i])
 	for (j = gameData.segs.segments [i].objects; j >= 0; j = objP->next) {
-		objP = gameData.objs.objects + j;
+		objP = OBJECTS + j;
 		if ((objP->nType == OBJ_POWERUP) && (objP->id == nFlagId))
 			return 1;
 		}

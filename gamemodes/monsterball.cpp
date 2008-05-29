@@ -54,7 +54,7 @@ if (nDropSeg >= 0) {
 	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, nDropSeg);
 	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, &vZero, &vSegCenter, nDropSeg);
 	if (nObject >= 0) {
-		gameData.hoard.monsterballP = gameData.objs.objects + nObject;
+		gameData.hoard.monsterballP = OBJECTS + nObject;
 		gameData.hoard.monsterballP->nType = OBJ_MONSTERBALL;
 		gameData.hoard.monsterballP->mType.physInfo.mass = F1_0 * 10;
 		gameData.hoard.nLastHitter = -1;
@@ -79,7 +79,7 @@ int FindMonsterball (void)
 gameData.hoard.monsterballP = NULL;
 gameData.hoard.nMonsterballSeg = -1;
 gameData.hoard.nLastHitter = -1;
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
 	if ((objP->nType == OBJ_MONSTERBALL) || ((objP->nType == OBJ_POWERUP) && (objP->id == POW_MONSTERBALL))) {
 		if (gameData.hoard.nMonsterballSeg < 0)
 			gameData.hoard.nMonsterballSeg = objP->nSegment;

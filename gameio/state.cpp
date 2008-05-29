@@ -566,14 +566,14 @@ CFWrite (&gameStates.app.nDifficultyLevel, sizeof (int), 1, &cf);
 // Save cheats enabled
 CFWrite (&gameStates.app.cheats.bEnabled, sizeof (int), 1, &cf);
 if (!bBetweenLevels)	{
-//Finish all morph gameData.objs.objects
+//Finish all morph OBJECTS
 	for (i = 0; i <= gameData.objs.nLastObject; i++) {
-		if (gameData.objs.objects [i].nType == OBJ_NONE) 
+		if (OBJECTS [i].nType == OBJ_NONE) 
 			continue;
-		if (gameData.objs.objects [i].nType == OBJ_CAMERA)
-			gameData.objs.objects [i].position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
-		else if (gameData.objs.objects [i].renderType==RT_MORPH) {
-			tMorphInfo *md = MorphFindData (gameData.objs.objects + i);
+		if (OBJECTS [i].nType == OBJ_CAMERA)
+			OBJECTS [i].position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
+		else if (OBJECTS [i].renderType==RT_MORPH) {
+			tMorphInfo *md = MorphFindData (OBJECTS + i);
 			if (md) {
 				tObject *objP = md->objP;
 				objP->controlType = md->saveControlType;
@@ -583,17 +583,17 @@ if (!bBetweenLevels)	{
 				md->objP = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
-				KillObject (gameData.objs.objects + i);
-				gameData.objs.objects [i].renderType = RT_POLYOBJ;
-				gameData.objs.objects [i].controlType = CT_NONE;
-				gameData.objs.objects [i].movementType = MT_NONE;
+				KillObject (OBJECTS + i);
+				OBJECTS [i].renderType = RT_POLYOBJ;
+				OBJECTS [i].controlType = CT_NONE;
+				OBJECTS [i].movementType = MT_NONE;
 				}
 			}
 		}
 //Save tObject info
 	i = gameData.objs.nLastObject + 1;
 	CFWrite (&i, sizeof (int), 1, &cf);
-	CFWrite (gameData.objs.objects, sizeof (tObject), i, &cf);
+	CFWrite (OBJECTS, sizeof (tObject), i, &cf);
 //Save tWall info
 	i = gameData.walls.nWalls;
 	CFWrite (&i, sizeof (int), 1, &cf);
@@ -1146,14 +1146,14 @@ for (i = 0; i < 2; i++) {
 for (i = 0; i < MAX_PLAYERS; i++)
 	CFWriteInt (gameData.multiplayer.weaponStates [i].bTripleFusion, cfp);
 if (!bBetweenLevels)	{
-//Finish all morph gameData.objs.objects
+//Finish all morph OBJECTS
 	for (i = 0; i <= gameData.objs.nLastObject; i++) {
-		if (gameData.objs.objects [i].nType == OBJ_NONE) 
+		if (OBJECTS [i].nType == OBJ_NONE) 
 			continue;
-		if (gameData.objs.objects [i].nType == OBJ_CAMERA)
-			gameData.objs.objects [i].position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
-		else if (gameData.objs.objects [i].renderType == RT_MORPH) {
-			tMorphInfo *md = MorphFindData (gameData.objs.objects + i);
+		if (OBJECTS [i].nType == OBJ_CAMERA)
+			OBJECTS [i].position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
+		else if (OBJECTS [i].renderType == RT_MORPH) {
+			tMorphInfo *md = MorphFindData (OBJECTS + i);
 			if (md) {
 				tObject *objP = md->objP;
 				objP->controlType = md->saveControlType;
@@ -1163,10 +1163,10 @@ if (!bBetweenLevels)	{
 				md->objP = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
-				KillObject (gameData.objs.objects + i);
-				gameData.objs.objects [i].renderType = RT_POLYOBJ;
-				gameData.objs.objects [i].controlType = CT_NONE;
-				gameData.objs.objects [i].movementType = MT_NONE;
+				KillObject (OBJECTS + i);
+				OBJECTS [i].renderType = RT_POLYOBJ;
+				OBJECTS [i].controlType = CT_NONE;
+				OBJECTS [i].movementType = MT_NONE;
 				}
 			}
 		}
@@ -1175,7 +1175,7 @@ if (!bBetweenLevels)	{
 	i = gameData.objs.nLastObject + 1;
 	CFWriteInt (i, cfp);
 	for (j = 0; j < i; j++)
-		StateSaveObject (gameData.objs.objects + j, cfp);
+		StateSaveObject (OBJECTS + j, cfp);
 	DBG (fPos = CFTell (cfp));
 //Save tWall info
 	i = gameData.walls.nWalls;
@@ -1398,12 +1398,12 @@ void SetPosFromReturnSegment (int bRelink)
 {
 	int	nPlayerObj = LOCALPLAYER.nObject;
 
-COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [nPlayerObj].position.vPos, 
+COMPUTE_SEGMENT_CENTER_I (&OBJECTS [nPlayerObj].position.vPos, 
 							     gameData.segs.secret.nReturnSegment);
 if (bRelink)
 	RelinkObject (nPlayerObj, gameData.segs.secret.nReturnSegment);
 ResetPlayerObject ();
-gameData.objs.objects [nPlayerObj].position.mOrient = gameData.segs.secret.returnOrient;
+OBJECTS [nPlayerObj].position.mOrient = gameData.segs.secret.returnOrient;
 }
 
 //	-----------------------------------------------------------------------------------
@@ -1631,18 +1631,18 @@ if (NetworkIAmMaster ()) {
 void StateFixNetworkObjects (int nServerPlayer, int nOtherObjNum, int nServerObjNum)
 {
 if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 0)) {
-	tObject h = gameData.objs.objects [nServerObjNum];
-	gameData.objs.objects [nServerObjNum] = gameData.objs.objects [nOtherObjNum];
-	gameData.objs.objects [nOtherObjNum] = h;
-	gameData.objs.objects [nServerObjNum].id = nServerObjNum;
-	gameData.objs.objects [nOtherObjNum].id = 0;
+	tObject h = OBJECTS [nServerObjNum];
+	OBJECTS [nServerObjNum] = OBJECTS [nOtherObjNum];
+	OBJECTS [nOtherObjNum] = h;
+	OBJECTS [nServerObjNum].id = nServerObjNum;
+	OBJECTS [nOtherObjNum].id = 0;
 	if (gameData.multiplayer.nLocalPlayer == nServerObjNum) {
-		gameData.objs.objects [nServerObjNum].controlType = CT_FLYING;
-		gameData.objs.objects [nOtherObjNum].controlType = CT_REMOTE;
+		OBJECTS [nServerObjNum].controlType = CT_FLYING;
+		OBJECTS [nOtherObjNum].controlType = CT_REMOTE;
 		}
 	else if (gameData.multiplayer.nLocalPlayer == nOtherObjNum) {
-		gameData.objs.objects [nServerObjNum].controlType = CT_REMOTE;
-		gameData.objs.objects [nOtherObjNum].controlType = CT_FLYING;
+		OBJECTS [nServerObjNum].controlType = CT_REMOTE;
+		OBJECTS [nOtherObjNum].controlType = CT_FLYING;
 		}
 	}
 }
@@ -1651,7 +1651,7 @@ if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 
 
 void StateFixObjects (void)
 {
-	tObject	*objP = gameData.objs.objects;
+	tObject	*objP = OBJECTS;
 	int		i, j, nSegment;
 
 ConvertObjects ();
@@ -2234,7 +2234,7 @@ if (!bBetweenLevels)	{
 	gameData.objs.nLastObject = h - 1;
 	extraGameInfo [0].nBossCount = 0;
 	for (i = 0; i < h; i++)
-		StateRestoreObject (gameData.objs.objects + i, cfp, sgVersion);
+		StateRestoreObject (OBJECTS + i, cfp, sgVersion);
 	DBG (fPos = CFTell (cfp));
 	StateFixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	gameData.objs.nNextSignature = 0;
@@ -2510,14 +2510,14 @@ CFRead (&gameStates.app.nDifficultyLevel, sizeof (int), 1, cfp);
 CFRead (&gameStates.app.cheats.bEnabled, sizeof (int), 1, cfp);
 if (!bBetweenLevels)	{
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.
-	//Clear out all the gameData.objs.objects from the lvl file
+	//Clear out all the OBJECTS from the lvl file
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
 		gameData.segs.segments [i].objects = -1;
 	ResetObjects (1);
 	//Read objects, and pop 'em into their respective segments.
 	CFRead (&i, sizeof (int), 1, cfp);
 	gameData.objs.nLastObject = i - 1;
-	CFRead (gameData.objs.objects, sizeof (tObject), i, cfp);
+	CFRead (OBJECTS, sizeof (tObject), i, cfp);
 	StateFixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	StateFixObjects ();
 	SpecialResetObjects ();
@@ -2752,12 +2752,12 @@ else {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	  if (!gameData.multiplayer.players [i].connected) {
 			NetworkDisconnectPlayer (i);
-  			CreatePlayerAppearanceEffect (gameData.objs.objects + gameData.multiplayer.players [i].nObject);
+  			CreatePlayerAppearanceEffect (OBJECTS + gameData.multiplayer.players [i].nObject);
 	      }
 		}
 	}
 gameData.objs.viewer = 
-gameData.objs.console = gameData.objs.objects + LOCALPLAYER.nObject;
+gameData.objs.console = OBJECTS + LOCALPLAYER.nObject;
 StartTime (1);
 return 1;
 }

@@ -271,7 +271,7 @@ mdP->nSignature = objP->nSignature;
 mdP->saveControlType = objP->controlType;
 mdP->saveMovementType = objP->movementType;
 mdP->savePhysInfo = objP->mType.physInfo;
-Assert (objP->controlType == CT_AI);		//morph gameData.objs.objects are also AI gameData.objPs.objPects
+Assert (objP->controlType == CT_AI);		//morph OBJECTS are also AI gameData.objPs.objPects
 objP->controlType = CT_MORPH;
 objP->renderType = RT_MORPH;
 objP->movementType = MT_PHYSICS;		//RT_NONE;
@@ -368,21 +368,21 @@ void MorphDrawObject (tObject *objP)
 	fix light;
 	tMorphInfo *mdP;
 
-	mdP = MorphFindData (objP);
-	Assert (mdP != NULL);
-	Assert (objP->rType.polyObjInfo.nModel < gameData.models.nPolyModels);
-	pmP=gameData.models.polyModels+objP->rType.polyObjInfo.nModel;
-	light = ComputeObjectLight (objP, NULL);
-	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
-	G3SetModelPoints (gameData.models.polyModelPoints);
-	gameData.render.pVerts = gameData.models.fPolyModelVerts;
-	MorphDrawModel (pmP, 0, objP->rType.polyObjInfo.animAngles, light, mdP, objP->rType.polyObjInfo.nModel);
-	gameData.render.pVerts = NULL;
-	G3DoneInstance ();
+mdP = MorphFindData (objP);
+Assert (mdP != NULL);
+Assert (objP->rType.polyObjInfo.nModel < gameData.models.nPolyModels);
+pmP = gameData.models.polyModels+objP->rType.polyObjInfo.nModel;
+light = ComputeObjectLight (objP, NULL);
+G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+G3SetModelPoints (gameData.models.polyModelPoints);
+gameData.render.pVerts = gameData.models.fPolyModelVerts;
+MorphDrawModel (pmP, 0, objP->rType.polyObjInfo.animAngles, light, mdP, objP->rType.polyObjInfo.nModel);
+gameData.render.pVerts = NULL;
+G3DoneInstance ();
 
 #ifdef NEWDEMO
-	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordMorphFrame (mdP);
+if (gameData.demo.nState == ND_STATE_RECORDING)
+	NDRecordMorphFrame (mdP);
 #endif
 }
 

@@ -447,10 +447,10 @@ int OpenableDoorsInSegment (short nSegment)
 // -- 	nObject = gameData.segs.segments [nSegment].objects;
 // -- 
 // -- 	while (nObject != -1) {
-// -- 		if ((gameData.objs.objects [nObject].nType == OBJ_PLAYER) || (gameData.objs.objects [nObject].nType == OBJ_REACTOR)) {
+// -- 		if ((OBJECTS [nObject].nType == OBJ_PLAYER) || (OBJECTS [nObject].nType == OBJ_REACTOR)) {
 // -- 			return 1;
 // -- 		} else
-// -- 			nObject = gameData.objs.objects [nObject].next;
+// -- 			nObject = OBJECTS [nObject].next;
 // -- 	}
 // -- 
 // -- 	return 0;
@@ -482,7 +482,7 @@ int CheckObjectObjectIntersection (vmsVector *pos, fix size, tSegment *segP)
 	//	If this would intersect with another tObject (only check those in this tSegment), then try to move.
 	curobjnum = segP->objects;
 	while (curobjnum != -1) {
-		tObject *curObjP = &gameData.objs.objects [curobjnum];
+		tObject *curObjP = &OBJECTS [curobjnum];
 		if ((curObjP->nType == OBJ_PLAYER) || (curObjP->nType == OBJ_ROBOT) || (curObjP->nType == OBJ_REACTOR)) {
 			if (VmVecDistQuick (pos, &curObjP->position.vPos) < size + curObjP->size)
 				return 1;
@@ -499,7 +499,7 @@ int CheckObjectObjectIntersection (vmsVector *pos, fix size, tSegment *segP)
 //	awarenessLevel is in 0..100.  Larger numbers indicate greater awareness (eg, 99 if firing at tPlayer).
 //	In a given frame, might not get called for an tObject, or might be called more than once.
 //	The fact that this routine is not called for a given tObject does not mean that tObject is not interested in the player.
-//	gameData.objs.objects are moved by physics, so they can move even if not interested in a player.  However, if their velocity or
+//	OBJECTS are moved by physics, so they can move even if not interested in a player.  However, if their velocity or
 //	orientation is changing, this routine will be called.
 //	Return value:
 //		0	this tPlayer IS NOT allowed to move this robot.

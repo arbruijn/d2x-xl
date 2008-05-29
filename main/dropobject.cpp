@@ -31,8 +31,8 @@ for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP
 	if ((objP->nType != nType) || (objP->id != id))
 		continue;
 	nTotal++;
-	for (bFree = 1, j = gameData.segs.segments [objP->nSegment].objects; j != -1; j = gameData.objs.objects [j].next)
-		if ((gameData.objs.objects [j].nType == nType) && (gameData.objs.objects [j].id == id)) {
+	for (bFree = 1, j = gameData.segs.segments [objP->nSegment].objects; j != -1; j = OBJECTS [j].next)
+		if ((OBJECTS [j].nType == nType) && (OBJECTS [j].id == id)) {
 			bFree = 0;
 			break;
 			}
@@ -52,10 +52,10 @@ tObject *FindInitObject (tObject *objP)
 	short	nType = objP->nType;
 	short	id = objP->id; 
 
-// due to gameData.objs.objects being deleted from the tObject list when picked up and recreated when dropped, 
+// due to OBJECTS being deleted from the tObject list when picked up and recreated when dropped, 
 // cannot determine exact respawn tSegment, so randomly chose one from all segments where powerups
 // of this nType had initially been placed in the level.
-if (!objCount)		//no gameData.objs.objects of this nType had initially been placed in the mine. 
+if (!objCount)		//no OBJECTS of this nType had initially been placed in the mine. 
 	return NULL;	//can happen with missile packs
 d_srand (TimerGetFixedSeconds ());
 if ((bUseFree = (objCount < 0)))
@@ -67,8 +67,8 @@ for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP
 	// if the current tSegment does not contain a powerup of the nType being looked for, 
 	// return that tSegment
 	if (bUseFree) {
-		for (bUsed = 0, j = gameData.segs.segments [objP->nSegment].objects; j != -1; j = gameData.objs.objects [j].next)
-			if ((gameData.objs.objects [j].nType == nType) && (gameData.objs.objects [j].id == id)) {
+		for (bUsed = 0, j = gameData.segs.segments [objP->nSegment].objects; j != -1; j = OBJECTS [j].next)
+			if ((OBJECTS [j].nType == nType) && (OBJECTS [j].id == id)) {
 				bUsed = 1;
 				break;
 				}
@@ -193,8 +193,8 @@ if (pbFixedPos)
 	*pbFixedPos = 0;
 d_srand (TimerGetFixedSeconds ());
 nDepth = BASE_NET_DROP_DEPTH + ((d_rand () * BASE_NET_DROP_DEPTH*2) >> 15);
-vPlayerPos = &gameData.objs.objects [LOCALPLAYER.nObject].position.vPos;
-nPlayerSeg = gameData.objs.objects [LOCALPLAYER.nObject].nSegment;
+vPlayerPos = &OBJECTS [LOCALPLAYER.nObject].position.vPos;
+nPlayerSeg = OBJECTS [LOCALPLAYER.nObject].nSegment;
 while (nSegment == -1) {
 	if (!IsMultiGame)
 		nPlayer = gameData.multiplayer.nLocalPlayer;
@@ -210,7 +210,7 @@ while (nSegment == -1) {
 		if (count == gameData.multiplayer.nPlayers) 
 			nPlayer = gameData.multiplayer.nLocalPlayer;
 		}
-	nSegment = PickConnectedSegment (gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject, nDepth, &nDropDepth);
+	nSegment = PickConnectedSegment (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, nDepth, &nDropDepth);
 	if (nDropDepth < BASE_NET_DROP_DEPTH / 2)
 		return -1;
 #if TRACE
@@ -376,19 +376,19 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 			DelDropInfo (nObject);
 			}
 		}
-	nObject = CallObjectCreateEgg (gameData.objs.objects + LOCALPLAYER.nObject, 
+	nObject = CallObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject, 
 											 1, OBJ_POWERUP, nPowerupType);
 	if (nObject < 0)
 		return 0;
-	nSegment = ChooseDropSegment (gameData.objs.objects + nObject, &bFixedPos, nDropState);
-	VmVecZero (&gameData.objs.objects [nObject].mType.physInfo.velocity);
+	nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState);
+	VmVecZero (&OBJECTS [nObject].mType.physInfo.velocity);
 	if (bFixedPos)
-		vNewPos = gameData.objs.objects [nObject].position.vPos;
+		vNewPos = OBJECTS [nObject].position.vPos;
 	else
 		PickRandomPointInSeg (&vNewPos, nSegment);
 	MultiSendCreatePowerup (nPowerupType, nSegment, nObject, &vNewPos);
 	if (!bFixedPos)
-		gameData.objs.objects [nObject].position.vPos = vNewPos;
+		OBJECTS [nObject].position.vPos = vNewPos;
 	RelinkObject (nObject, nSegment);
 	ObjectCreateExplosion (nSegment, &vNewPos, i2f (5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;
@@ -406,10 +406,10 @@ if (nSegment == -1)
 	return 0;
 nObject = gameData.segs.segments [nSegment].objects;
 while (nObject != -1)
-	if ((gameData.objs.objects [nObject].nType == objType) && (gameData.objs.objects [nObject].id == obj_id))
+	if ((OBJECTS [nObject].nType == objType) && (OBJECTS [nObject].id == obj_id))
 		return 1;
 	else
-		nObject = gameData.objs.objects [nObject].next;
+		nObject = OBJECTS [nObject].next;
 return 0;
 }
 
@@ -587,7 +587,7 @@ switch (nType) {
 				}
 			if (IsMultiGame)
 				gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
-			objP = gameData.objs.objects + nObject;
+			objP = OBJECTS + nObject;
 			objP->mType.physInfo.velocity = new_velocity;
 			objP->mType.physInfo.drag = 512;	//1024;
 			objP->mType.physInfo.mass = F1_0;
@@ -643,7 +643,7 @@ switch (nType) {
 				}
 			if (gameData.app.nGameMode & GM_MULTI)
 				gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
-			objP = &gameData.objs.objects [nObject];
+			objP = &OBJECTS [nObject];
 			//Set polygon-tObject-specific data
 			objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->id).nModel;
 			objP->rType.polyObjInfo.nSubObjFlags = 0;
@@ -738,14 +738,14 @@ nObject = DropPowerup (
 if (nObject >= 0) {
 	if (objP->nType == OBJ_PLAYER) {
 		if (objP->id == gameData.multiplayer.nLocalPlayer)
-			gameData.objs.objects [nObject].flags |= OF_PLAYER_DROPPED;
+			OBJECTS [nObject].flags |= OF_PLAYER_DROPPED;
 		}
 	else if (objP->nType == OBJ_ROBOT) {
 		if (objP->containsType == OBJ_POWERUP) {
 			if (objP->containsId == POW_VULCAN || objP->containsId == POW_GAUSS)
-				gameData.objs.objects [nObject].cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
+				OBJECTS [nObject].cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
 			else if (objP->containsId == POW_OMEGA)
-				gameData.objs.objects [nObject].cType.powerupInfo.count = MAX_OMEGA_CHARGE;
+				OBJECTS [nObject].cType.powerupInfo.count = MAX_OMEGA_CHARGE;
 			}
 		}
 	}
@@ -755,7 +755,7 @@ return nObject;
 // -- extern int Items_destroyed;
 
 //	-------------------------------------------------------------------------------------------------------
-//	Put count gameData.objs.objects of nType nType (eg, powerup), id = id (eg, energy) into *objP, then drop them! Yippee!
+//	Put count OBJECTS of nType nType (eg, powerup), id = id (eg, energy) into *objP, then drop them! Yippee!
 //	Returns created tObject number.
 int CallObjectCreateEgg (tObject *objP, int count, int nType, int id)
 {
@@ -962,10 +962,10 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 			nVulcanAmmo = VULCAN_AMMO_AMOUNT;	//make sure gun has at least as much as a powerup
 		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, VULCAN_INDEX);
 		if (nObject >= 0)
-			gameData.objs.objects [nObject].cType.powerupInfo.count = nVulcanAmmo;
+			OBJECTS [nObject].cType.powerupInfo.count = nVulcanAmmo;
 		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, GAUSS_INDEX);
 		if (nObject >= 0)
-			gameData.objs.objects [nObject].cType.powerupInfo.count = nVulcanAmmo;
+			OBJECTS [nObject].cType.powerupInfo.count = nVulcanAmmo;
 
 		//	Drop the rest of the primary weapons
 		MaybeDropPrimaryWeaponEgg (playerObjP, SPREADFIRE_INDEX);
@@ -975,7 +975,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		MaybeDropPrimaryWeaponEgg (playerObjP, PHOENIX_INDEX);
 		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, OMEGA_INDEX);
 		if (nObject >= 0)
-			gameData.objs.objects [nObject].cType.powerupInfo.count = 
+			OBJECTS [nObject].cType.powerupInfo.count = 
 				(playerObjP->id == gameData.multiplayer.nLocalPlayer) ? gameData.omega.xCharge [IsMultiGame] : DEFAULT_MAX_OMEGA_CHARGE;
 		//	Drop the secondary weapons
 		//	Note, proximity weapon only comes in packets of 4.  So drop n/2, but a max of 3 (handled inside maybe_drop..)  Make sense?

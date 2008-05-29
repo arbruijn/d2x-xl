@@ -224,7 +224,7 @@ void ConvertAllPowerupsToWeapons (void)
 	int	i;
 	tObject	*objP;
 
-for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = gameData.objs.objP; i < gameData.objs.nLastObject; i++, objP++)
 	if (objP->renderType == RT_POWERUP) {
 		ConvertPowerupToWeapon (objP);
 		PagingTouchObject (objP);
@@ -246,7 +246,7 @@ if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 	//completely ignores z, which may not be good
 	if ((abs (temp.p3_x) < F1_0 * 4) && (abs (temp.p3_y) < F1_0 * 4)) {
 		objP->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
-		objP->cType.aiInfo.nDangerLaserSig = gameData.objs.objects [gameStates.app.bPlayerFiredLaserThisFrame].nSignature;
+		objP->cType.aiInfo.nDangerLaserSig = gameData.objs.renderObjP [gameStates.app.bPlayerFiredLaserThisFrame].nSignature;
 		}
 	}
 }

@@ -581,11 +581,11 @@ return 1;
 void ValidateAllPaths (void)
 {
 	int	i;
-	tObject	*objP = gameData.objs.objects;
+	tObject	*objP = OBJECTS;
 	tAIStatic	*aiP;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
-	if (gameData.objs.objects [i].nType == OBJ_ROBOT) {
+	if (OBJECTS [i].nType == OBJ_ROBOT) {
 		aiP = &objP->cType.aiInfo;
 		if (objP->controlType == CT_AI) {
 			if ((aiP->nHideIndex != -1) && (aiP->nPathLength > 0))
@@ -602,7 +602,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 #endif
 
 // -- //	-------------------------------------------------------------------------------------------------------
-// -- //	Creates a path from the gameData.objs.objects current tSegment (objP->nSegment) to the specified tSegment for the tObject to
+// -- //	Creates a path from the OBJECTS current tSegment (objP->nSegment) to the specified tSegment for the tObject to
 // -- //	hide in gameData.ai.localInfo [nObject].nGoalSegment.
 // -- //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 // -- //			objP->cType.aiInfo.nPathLength, 		length of path
@@ -643,7 +643,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 // -- }
 
 //	-------------------------------------------------------------------------------------------------------
-//	Creates a path from the gameData.objs.objects current tSegment (objP->nSegment) to the specified tSegment for the tObject to
+//	Creates a path from the OBJECTS current tSegment (objP->nSegment) to the specified tSegment for the tObject to
 //	hide in gameData.ai.localInfo [nObject].nGoalSegment.
 //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 //			objP->cType.aiInfo.nPathLength, 		length of path
@@ -716,7 +716,7 @@ MaybeAIPathGarbageCollect ();
 }
 
 //	-------------------------------------------------------------------------------------------------------
-//	Creates a path from the gameData.objs.objects current tSegment (objP->nSegment) to the specified tSegment for the tObject to
+//	Creates a path from the OBJECTS current tSegment (objP->nSegment) to the specified tSegment for the tObject to
 //	hide in gameData.ai.localInfo [nObject].nGoalSegment
 //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 //			objP->cType.aiInfo.nPathLength, 		length of path
@@ -876,7 +876,7 @@ else
 // -- too much work -- 	if (gameData.escort.nKillObject == -1)
 // -- too much work -- 		return 0;
 // -- too much work --
-// -- too much work -- 	kill_objp = &gameData.objs.objects [gameData.escort.nKillObject];
+// -- too much work -- 	kill_objp = &OBJECTS [gameData.escort.nKillObject];
 // -- too much work --
 // -- too much work -- 	fq.p0						= &objP->position.vPos;
 // -- too much work -- 	fq.startSeg				= objP->nSegment;
@@ -1278,8 +1278,8 @@ nLastFrameGarbageCollected = gameData.app.nFrameCount;
 #if PATH_VALIDATION
 ValidateAllPaths ();
 #endif
-	//	Create a list of gameData.objs.objects which have paths of length 1 or more.p.
-objP = gameData.objs.objects;
+	//	Create a list of OBJECTS which have paths of length 1 or more.p.
+objP = OBJECTS;
 for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++, objP++) {
 	if ((objP->nType == OBJ_ROBOT) && 
 		 ((objP->controlType == CT_AI) || (objP->controlType == CT_MORPH))) {
@@ -1296,7 +1296,7 @@ qsort (objectList, nPathObjects, sizeof (objectList [0]),
 
 for (objind=0; objind < nPathObjects; objind++) {
 	nObject = objectList [objind].nObject;
-	objP = gameData.objs.objects + nObject;
+	objP = OBJECTS + nObject;
 	aiP = &objP->cType.aiInfo;
 	nOldIndex = aiP->nHideIndex;
 	aiP->nHideIndex = nFreePathIdx;
@@ -1308,7 +1308,7 @@ gameData.ai.freePointSegs = gameData.ai.pointSegs + nFreePathIdx;
 ////printf ("After garbage collection, D2_FREE index = %i\n", gameData.ai.freePointSegs - gameData.ai.pointSegs);
 #ifdef _DEBUG
 force_dump_aiObjects_all ("***** Finish AIPathGarbageCollect *****");
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 	aiP = &objP->cType.aiInfo;
 	if ((objP->nType == OBJ_ROBOT) && (objP->controlType == CT_AI))
 		if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.freePointSegs - gameData.ai.pointSegs) && 
@@ -1363,7 +1363,7 @@ else if (gameData.ai.freePointSegs - gameData.ai.pointSegs > MAX_POINT_SEGS/2) {
 void AIResetAllPaths (void)
 {
 	int		i;
-	tObject	*objP = gameData.objs.objects;
+	tObject	*objP = OBJECTS;
 
 for (i = gameData.objs.nLastObject; i; i--, objP++)
 	if (objP->controlType == CT_AI) {
@@ -1427,7 +1427,7 @@ void test_create_path_many (void)
 for (i=0; i<Test_size; i++) {
 	Cursegp = &gameData.segs.segments [ (d_rand () * (gameData.segs.nLastSegment + 1)) / D_RAND_MAX];
 	Markedsegp = &gameData.segs.segments [ (d_rand () * (gameData.segs.nLastSegment + 1)) / D_RAND_MAX];
-	CreatePathPoints (&gameData.objs.objects [0], CurSEG_IDX (segp), MarkedSEG_IDX (segp), tPointSegs, &numPoints, -1, 0, 0, -1);
+	CreatePathPoints (&OBJECTS [0], CurSEG_IDX (segp), MarkedSEG_IDX (segp), tPointSegs, &numPoints, -1, 0, 0, -1);
 	}
 
 }
@@ -1437,7 +1437,7 @@ void test_create_path (void)
 	tPointSeg	tPointSegs [200];
 	short			numPoints;
 
-	CreatePathPoints (&gameData.objs.objects [0], CurSEG_IDX (segp), MarkedSEG_IDX (segp), tPointSegs, &numPoints, -1, 0, 0, -1);
+	CreatePathPoints (&OBJECTS [0], CurSEG_IDX (segp), MarkedSEG_IDX (segp), tPointSegs, &numPoints, -1, 0, 0, -1);
 
 }
 
@@ -1463,7 +1463,7 @@ void test_create_all_paths (void)
 		if (gameData.segs.segments [nStartSeg].nSegment != -1) {
 			for (nEndSeg=nStartSeg+1; nEndSeg<=gameData.segs.nLastSegment; nEndSeg++) {
 				if (gameData.segs.segments [nEndSeg].nSegment != -1) {
-					CreatePathPoints (&gameData.objs.objects [0], nStartSeg, nEndSeg, gameData.ai.freePointSegs, &resultant_length, -1, 0, 0, -1);
+					CreatePathPoints (&OBJECTS [0], nStartSeg, nEndSeg, gameData.ai.freePointSegs, &resultant_length, -1, 0, 0, -1);
 					show_path (nStartSeg, nEndSeg, gameData.ai.freePointSegs, resultant_length);
 				}
 			}
@@ -1484,7 +1484,7 @@ void test_create_all_paths (void)
 //--anchor--	minimum_length = 16383;
 //--anchor--
 //--anchor--	for (anchor_index=0; anchor_index<Num_anchors; anchor_index++) {
-//--anchor--		CreatePathPoints (&gameData.objs.objects [0], nSegment, Anchors [anchor_index], gameData.ai.freePointSegs, &resultant_length, -1, 0, 0, -1);
+//--anchor--		CreatePathPoints (&OBJECTS [0], nSegment, Anchors [anchor_index], gameData.ai.freePointSegs, &resultant_length, -1, 0, 0, -1);
 //--anchor--		if (resultant_length != 0)
 //--anchor--			if (resultant_length < minimum_length)
 //--anchor--				minimum_length = resultant_length;
@@ -1531,7 +1531,7 @@ void test_create_all_paths (void)
 //--anchor--	tPointSeg	tPointSegs [200];
 //--anchor--	short			numPoints;
 //--anchor--
-//--anchor--	CreatePathPoints (&gameData.objs.objects [0], CurSEG_IDX (segp), -2, tPointSegs, &numPoints, Test_path_length, 0, 0, -1);
+//--anchor--	CreatePathPoints (&OBJECTS [0], CurSEG_IDX (segp), -2, tPointSegs, &numPoints, Test_path_length, 0, 0, -1);
 //--anchor--}
 
 short	Player_path_length=0;

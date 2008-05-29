@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 tRenderThreadInfo tiRender;
 tRenderItemThreadInfo tiRenderItems;
 
-int bUseMultiThreading [rtTaskCount + 1] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1};
+int bUseMultiThreading [rtTaskCount] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1};
 
 //------------------------------------------------------------------------------
 
@@ -117,14 +117,19 @@ do {
 		if (tiRender.ti [nId].bDone)
 			return 0;
 		}
-	if (tiRender.nTask == rtRenderFrame + 1) {
+	if (tiRender.nTask == rtRenderInit) {
 #ifdef _WIN32
 		if (!wglMakeCurrent (currentDC, currentContext))
 			nError = glGetError ();
 #endif
 		}
 	else if (tiRender.nTask == rtRenderFrame) {
+		memcpy (OBJECTS [1], OBJECTS [0], gameData.objs.nLastObject * sizeof (tObject));
+		gameData.objs.renderObjP = OBJECTS [1]);
+		gameData.obs.nRenderObjs = gameData.objs.nObjects;
+		gameData.obs.nLastRenderObj = gameData.objs.nLastObject;
 		GameRenderFrame ();
+		gameData.objs.renderObjP = OBJECTS [0]);
 		}
 	else if (tiRender.nTask == rtSortSegZRef) {
 		if (nId)

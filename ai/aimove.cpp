@@ -333,7 +333,7 @@ void AIMoveRelativeToPlayer (tObject *objP, tAILocal *ailP, fix xDistToPlayer,
 
 	// New way, green guys don't evade:	if ((botInfoP->attackType == 0) && (objP->cType.aiInfo.nDangerLaser != -1)) {
 if (objP->cType.aiInfo.nDangerLaser != -1) {
-	dObjP = &gameData.objs.objects [objP->cType.aiInfo.nDangerLaser];
+	dObjP = &OBJECTS [objP->cType.aiInfo.nDangerLaser];
 
 	if ((dObjP->nType == OBJ_WEAPON) && (dObjP->nSignature == objP->cType.aiInfo.nDangerLaserSig)) {
 		fix			dot, xDistToLaser, fieldOfView;

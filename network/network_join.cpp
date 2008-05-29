@@ -214,7 +214,7 @@ KillPlayerBullets (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 netPlayers.players [nPlayer].connected = 0;
 if (networkData.bVerifyPlayerJoined == nPlayer)
 	networkData.bVerifyPlayerJoined = -1;
-//      CreatePlayerAppearanceEffect (&gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject]);
+//      CreatePlayerAppearanceEffect (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject]);
 MultiMakePlayerGhost (nPlayer);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiDisconnect (nPlayer);
@@ -273,7 +273,7 @@ else
 MultiMakeGhostPlayer (nPlayer);
 MultiSendScore ();
 MultiSortKillList ();
-//      CreatePlayerAppearanceEffect (&gameData.objs.objects [nObject]);
+//      CreatePlayerAppearanceEffect (&OBJECTS [nObject]);
 }
 
 //------------------------------------------------------------------------------
@@ -455,7 +455,7 @@ else {
 	}
 gameData.multiplayer.players [nPlayer].nKillGoalCount = 0;
 gameData.multiplayer.players [nPlayer].connected = 0;
-// Send updated gameData.objs.objects data to the new/returning tPlayer
+// Send updated OBJECTS data to the new/returning tPlayer
 networkData.playerRejoining = *their;
 networkData.playerRejoining.player.connected = nPlayer;
 networkData.bSyncExtraGameInfo = 0;

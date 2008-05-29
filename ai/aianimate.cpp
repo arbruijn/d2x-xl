@@ -247,7 +247,7 @@ int DoSillyAnimation (tObject *objP)
 }
 
 //	------------------------------------------------------------------------------------------
-//	Move all sub-gameData.objs.objects in an tObject towards their goals.
+//	Move all sub-OBJECTS in an tObject towards their goals.
 //	Current orientation of tObject is at:	polyObjInfo.animAngles
 //	Goal orientation of tObject is at:		aiInfo.goalAngles
 //	Delta orientation of tObject is at:		aiInfo.deltaAngles

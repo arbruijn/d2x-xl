@@ -1417,8 +1417,8 @@ gameStates.input.nCruiseSpeed=0;
 void CybermouseAdjust ()
  {
 /*	if (gameData.multiplayer.nLocalPlayer > -1)	{
-		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
-		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
+		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
+		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
 
 		if (kc_externalVersion > 0) {	
@@ -1430,8 +1430,8 @@ void CybermouseAdjust ()
 
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
-				VmMatMul (&ViewMatrix,&gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient,&tempm);
-				gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;	
+				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].position.mOrient,&tempm);
+				OBJECTS [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;	
 			}
 			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vmsAngVec);
 			if (oem_message [0] != '\0')

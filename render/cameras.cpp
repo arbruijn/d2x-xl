@@ -281,7 +281,7 @@ for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP+
 		}
 #endif
 	}
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 	r = j = gameData.trigs.firstObjTrigger [i];
 	if (j >= 0)
 		j = j;

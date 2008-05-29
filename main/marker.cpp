@@ -162,7 +162,7 @@ return 1;
 void DropMarker (char nPlayerMarker, int bSpawn)
 {
 	ubyte		nMarker = (gameData.multiplayer.nLocalPlayer * 2) + nPlayerMarker;
-	tObject	*playerP = gameData.objs.objects + LOCALPLAYER.nObject;
+	tObject	*playerP = OBJECTS + LOCALPLAYER.nObject;
 
 if (!(bSpawn && MoveSpawnMarker (&playerP->position, playerP->nSegment))) {
 	gameData.marker.point [nMarker] = playerP->position.vPos;

@@ -859,7 +859,7 @@ if (siP->botInfoP->companion) {
 	DoEscortFrame (objP, gameData.ai.xDistToPlayer, gameData.ai.nPlayerVisibility);
 
 	if (objP->cType.aiInfo.nDangerLaser != -1) {
-		tObject *dObjP = &gameData.objs.objects [objP->cType.aiInfo.nDangerLaser];
+		tObject *dObjP = &OBJECTS [objP->cType.aiInfo.nDangerLaser];
 
 		if ((dObjP->nType == OBJ_WEAPON) && (dObjP->nSignature == objP->cType.aiInfo.nDangerLaserSig)) {
 			fix circleDistance = siP->botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.console->size;
@@ -1050,7 +1050,7 @@ return 1;
 int AIPlayerPosHandler (tObject *objP, tAIStateInfo *siP)
 {
 if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileCamera != -1)) {
-	gameData.ai.vBelievedPlayerPos = gameData.objs.objects [gameData.ai.nLastMissileCamera].position.vPos;
+	gameData.ai.vBelievedPlayerPos = OBJECTS [gameData.ai.nLastMissileCamera].position.vPos;
 	return 0;
 	}
 if (gameStates.app.cheats.bRobotsKillRobots) {
@@ -1061,17 +1061,17 @@ if (gameStates.app.cheats.bRobotsKillRobots) {
 		fix curDist, minDist = MAX_WAKEUP_DIST;
 
 		for (j = 0; j <= gameData.objs.nLastObject; j++)
-			if ((gameData.objs.objects [j].nType == OBJ_ROBOT) && (j != siP->nObject)) {
-				curDist = VmVecDistQuick (&objP->position.vPos, &gameData.objs.objects [j].position.vPos);
+			if ((OBJECTS [j].nType == OBJ_ROBOT) && (j != siP->nObject)) {
+				curDist = VmVecDistQuick (&objP->position.vPos, &OBJECTS [j].position.vPos);
 				if ((curDist < MAX_WAKEUP_DIST / 2) && (curDist < minDist) &&
-					 ObjectToObjectVisibility (objP, gameData.objs.objects + j, FQ_TRANSWALL)) {
+					 ObjectToObjectVisibility (objP, OBJECTS + j, FQ_TRANSWALL)) {
 					nMinObj = j;
 					minDist = curDist;
 					}
 				}
 		if (nMinObj >= 0) {
-			gameData.ai.vBelievedPlayerPos = gameData.objs.objects [nMinObj].position.vPos;
-			gameData.ai.nBelievedPlayerSeg = gameData.objs.objects [nMinObj].nSegment;
+			gameData.ai.vBelievedPlayerPos = OBJECTS [nMinObj].position.vPos;
+			gameData.ai.nBelievedPlayerSeg = OBJECTS [nMinObj].nSegment;
 			VmVecNormalizedDir (&gameData.ai.vVecToPlayer, &gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
 			return 0;
 			}
@@ -1382,7 +1382,7 @@ if (AIBossHandler (objP, &si))
 	goto funcExit;
 if (AIStationaryHandler (objP, &si))
 	goto funcExit;
-// Reset time since processed, but skew gameData.objs.objects so not everything
+// Reset time since processed, but skew OBJECTS so not everything
 // processed synchronously, else we get fast frames with the
 // occasional very slow frame.
 // AI_procTime = si.ailP->timeSinceProcessed;

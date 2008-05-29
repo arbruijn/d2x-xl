@@ -362,7 +362,7 @@ soP->channel =
 		soP->nLoopStart, 
 		soP->nLoopEnd, i, F1_0, 
 		soP->szSound,
-		(soP->flags & SOF_LINK_TO_OBJ) ? &gameData.objs.objects [soP->linkType.obj.nObject].position.vPos : &soP->linkType.pos.position,
+		(soP->flags & SOF_LINK_TO_OBJ) ? &OBJECTS [soP->linkType.obj.nObject].position.vPos : &soP->linkType.pos.position,
 		soP->nDecay != 0);
 if (soP->channel > -1)
 	gameStates.sound.digi.nActiveObjects++;
@@ -394,7 +394,7 @@ if (!(pszSound && *pszSound)) {
 		return -1;
 		}
 	}
-objP = gameData.objs.objects + nObject;
+objP = OBJECTS + nObject;
 if (!bForever) { 	// Hack to keep sounds from building up...
 	DigiGetSoundLoc (
 		&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, 
@@ -499,7 +499,7 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)
 	if (soP->flags == 0)
 		break;
 if (i == MAX_SOUND_OBJECTS) {
-	//mprintf ((1, "Too many sound gameData.objs.objects!\n"));
+	//mprintf ((1, "Too many sound OBJECTS!\n"));
 	return -1;
 	}
 soP->nSignature = gameStates.sound.digi.nNextSignature++;
@@ -695,10 +695,10 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 		else if (soP->flags & SOF_LINK_TO_OBJ) {
 			if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 				int nObject = NDFindObject (soP->linkType.obj.nObjSig);
-				objP = gameData.objs.objects + ((nObject > -1) ? nObject : 0);
+				objP = OBJECTS + ((nObject > -1) ? nObject : 0);
 				}
 			else 
-				objP = gameData.objs.objects + soP->linkType.obj.nObject;
+				objP = OBJECTS + soP->linkType.obj.nObject;
 			if ((objP->nType == OBJ_NONE) || (objP->nSignature != soP->linkType.obj.nObjSig)) {
 			// The tObject that this is linked to is dead, so just end this sound if it is looping.
 				if (soP->channel > -1)	{

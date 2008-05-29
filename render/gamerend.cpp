@@ -811,7 +811,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 			if ((nPlayer != -1) && 
 				 gameData.multiplayer.players [nPlayer].connected && 
 				 (IsCoopGame || (IsTeamGame && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer)))))
-				DoCockpitWindowView (w, &gameData.objs.objects [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
+				DoCockpitWindowView (w, &gameData.objs.renderObjP [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
 			else {
 				DoCockpitWindowView (w, NULL, 0, WBU_WEAPON, NULL);
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
@@ -828,7 +828,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 				break;
 				}
 			sprintf (label, "Marker %d", gameData.marker.viewers [w]+1);
-			DoCockpitWindowView (w, gameData.objs.objects+gameData.marker.objects [gameData.marker.viewers [w]], 0, WBU_MARKER, label);
+			DoCockpitWindowView (w, gameData.objs.renderObjP + gameData.marker.objects [gameData.marker.viewers [w]], 0, WBU_MARKER, label);
 			break;
 			}
 

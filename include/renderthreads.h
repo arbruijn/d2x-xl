@@ -31,6 +31,7 @@ typedef enum {
 	rtUpdateParticles,
 	rtRenderParticles,
 	rtPolyModel,
+	rtRenderInit,
 	rtRenderFrame,
 	rtTaskCount
 } tRenderTask;

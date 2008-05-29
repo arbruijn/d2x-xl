@@ -684,7 +684,7 @@ retryMove:
 			fviResult = FindVectorIntersection (&fq, &hi);
 		}
 #	if 0
-		HUDMessage (0, "hit wall %d:%d (%d)", hi.hit.nSideSegment, hi.hit.nSide, gameData.objs.objects->nSegment);
+		HUDMessage (0, "hit wall %d:%d (%d)", hi.hit.nSideSegment, hi.hit.nSide, OBJECTS->nSegment);
 #	endif
 #endif
 #if 1 //make shots and missiles pass through skyboxes
@@ -709,7 +709,7 @@ retryMove:
 		}
 	//	Matt: Mike's hack.
 	else if (fviResult == HIT_OBJECT) {
-		tObject	*hitObjP = gameData.objs.objects + hi.hit.nObject;
+		tObject	*hitObjP = OBJECTS + hi.hit.nObject;
 
 		if (ObjIsPlayerMine (hitObjP))
 			nTries--;
@@ -910,9 +910,9 @@ retryMove:
 		FindVectorIntersection (&fq, &_hi);
 #endif
 		Assert (hi.hit.nObject != -1);
-		ppos0 = &gameData.objs.objects [hi.hit.nObject].position.vPos;
+		ppos0 = &OBJECTS [hi.hit.nObject].position.vPos;
 		ppos1 = &objP->position.vPos;
-		size0 = gameData.objs.objects [hi.hit.nObject].size;
+		size0 = OBJECTS [hi.hit.nObject].size;
 		size1 = objP->size;
 		//	Calculate the hit point between the two objects.
 		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
@@ -936,7 +936,7 @@ retryMove:
 				 (vOldVel.p.x == objP->mType.physInfo.velocity.p.x && 
 				  vOldVel.p.y == objP->mType.physInfo.velocity.p.y && 
 				  vOldVel.p.z == objP->mType.physInfo.velocity.p.z)) {
-				if (gameData.objs.objects [hi.hit.nObject].nType == OBJ_POWERUP)
+				if (OBJECTS [hi.hit.nObject].nType == OBJ_POWERUP)
 					nTries--;
 				gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
 				bRetry = 1;
@@ -1077,7 +1077,7 @@ if (objP->movementType != MT_PHYSICS)
 if ((gameStates.render.automap.bDisplay && (objP == gameData.objs.console)) || SPECTATOR (objP))
 	return;
 #ifdef TACTILE
-  if (TactileStick && (obj == gameData.objs.objects + LOCALPLAYER.nObject))
+  if (TactileStick && (obj == OBJECTS + LOCALPLAYER.nObject))
 	Tactile_apply_force (vForce, &objP->position.mOrient);
 #endif
 //Add in acceleration due to force
@@ -1130,7 +1130,7 @@ if (gameStates.render.automap.bDisplay && (objP == gameData.objs.console))
 	return;
 if ((vGoal->p.x == 0) && (vGoal->p.y == 0) && (vGoal->p.z == 0))
 	return;
-//	Make morph gameData.objs.objects turn more slowly.
+//	Make morph OBJECTS turn more slowly.
 if (objP->controlType == CT_MORPH)
 	rate *= 2;
 

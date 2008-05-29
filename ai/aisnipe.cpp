@@ -86,7 +86,7 @@ for (i = 0; i < nBfsLength; i++) {
 	nObject = gameData.segs.segments [bfsList [i]].objects;
 	Assert (nObject >= 0);
 	while (nObject != -1) {
-		objP = gameData.objs.objects + nObject;
+		objP = OBJECTS + nObject;
 		botInfoP = &ROBOTINFO (objP->id);
 
 		if ((objP->nType == OBJ_ROBOT) && (objP->id != ROBOT_BRAIN) &&

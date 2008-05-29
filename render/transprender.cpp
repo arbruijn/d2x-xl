@@ -1124,6 +1124,9 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	return;
 	}
 PROF_START
+gameStates.render.bGeometry = 
+gameStates.render.bSmoke = 
+gameStates.render.bLightnings = 1;
 RIResetShader ();
 nPolys = 0;
 bStencil = StencilOff ();
@@ -1215,6 +1218,9 @@ glDepthMask (1);
 StencilOn (bStencil);
 #endif
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
+gameStates.render.bGeometry = 
+gameStates.render.bSmoke = 
+gameStates.render.bLightnings = 0;
 PROF_END(ptTranspPolys)
 return;
 }

@@ -1617,8 +1617,8 @@ void ExtractShortPos (tObject *objP, tShortPos *spp, int swap_bytes)
 //--unused-- {
 //--unused-- 	tShortPos	spp;
 //--unused--
-//--unused-- 	CreateShortPos (&spp, &gameData.objs.objects [0]);
-//--unused-- 	ExtractShortPos (&gameData.objs.objects [0], &spp);
+//--unused-- 	CreateShortPos (&spp, &OBJECTS [0]);
+//--unused-- 	ExtractShortPos (&OBJECTS [0], &spp);
 //--unused--
 //--unused-- }
 

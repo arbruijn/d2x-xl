@@ -673,7 +673,7 @@ if (ssP->source == 0xFFFFFFFF) {
 		return -1;
 	alSourcef (ssP->source, AL_GAIN, ((xVolume < F1_0) ? f2fl (xVolume) : 1) * 2 * f2fl (gameStates.sound.digi.nVolume));
 	alSourcei (ssP->source, AL_LOOPING, (ALuint) ((nSoundObj > -1) || bLooping || (xVolume > F1_0)));
-	alSourcefv (ssP->source, AL_POSITION, (ALfloat*) VmVecFixToFloat (&fPos, vPos ? vPos : &gameData.objs.objects [LOCALPLAYER.nObject].nPosition.vPos));
+	alSourcefv (ssP->source, AL_POSITION, (ALfloat*) VmVecFixToFloat (&fPos, vPos ? vPos : &OBJECTS [LOCALPLAYER.nObject].nPosition.vPos));
 	alSource3f (ssP->source, AL_VELOCITY, 0, 0, 0);
 	alSource3f (ssP->source, AL_DIRECTION, 0, 0, 0);
 	if (DigiALError ())

@@ -213,13 +213,13 @@ char *NetworkGetPlayerName (int nObject)
 {
 if (nObject < 0) 
 	return NULL; 
-if (gameData.objs.objects [nObject].nType != OBJ_PLAYER) 
+if (OBJECTS [nObject].nType != OBJ_PLAYER) 
 	return NULL;
-if (gameData.objs.objects [nObject].id >= MAX_PLAYERS) 
+if (OBJECTS [nObject].id >= MAX_PLAYERS) 
 	return NULL;
-if (gameData.objs.objects [nObject].id >= gameData.multiplayer.nPlayers) 
+if (OBJECTS [nObject].id >= gameData.multiplayer.nPlayers) 
 	return NULL;
-return gameData.multiplayer.players [gameData.objs.objects [nObject].id].callsign;
+return gameData.multiplayer.players [OBJECTS [nObject].id].callsign;
 }
 
 //------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ int NetworkObjnumIsPast (int nObject)
 	int nObjMode = !((gameData.multigame.nObjOwner [nObject] == -1) || (gameData.multigame.nObjOwner [nObject] == nPlayer));
 
 if (!networkData.nSyncState)
-	return 0; // We're not sending gameData.objs.objects to a new tPlayer
+	return 0; // We're not sending OBJECTS to a new tPlayer
 if (nObjMode > networkData.bSendObjectMode)
 	return 0;
 else if (nObjMode < networkData.bSendObjectMode)
@@ -382,10 +382,10 @@ void NetworkCountPowerupsInMine (void)
 
 memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
-	if (gameData.objs.objects [i].nType == OBJ_POWERUP) {
-		gameData.multiplayer.powerupsInMine [gameData.objs.objects [i].id]++;
-		if (MultiPowerupIs4Pack (gameData.objs.objects [i].id))
-			gameData.multiplayer.powerupsInMine [gameData.objs.objects [i].id-1]+=4;
+	if (OBJECTS [i].nType == OBJ_POWERUP) {
+		gameData.multiplayer.powerupsInMine [OBJECTS [i].id]++;
+		if (MultiPowerupIs4Pack (OBJECTS [i].id))
+			gameData.multiplayer.powerupsInMine [OBJECTS [i].id-1]+=4;
 		}
 	}
 }

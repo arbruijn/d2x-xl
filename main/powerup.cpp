@@ -928,7 +928,7 @@ spitterP->mType.physInfo.velocity.p.y =
 spitterP->mType.physInfo.velocity.p.z = 0;
 for (i = nCount; i; i--) {
 	nObject = SpitPowerup (spitterP, nId, d_rand ());
-	objP = gameData.objs.objects + nObject;
+	objP = OBJECTS + nObject;
 	MultiSendCreatePowerup (nId, objP->nSegment, nObject, &objP->position.vPos);
 	}
 spitterP->mType.physInfo.velocity = velSave;
@@ -951,7 +951,7 @@ memset (gameData.multiplayer.leftoverPowerups + nObject, 0,
 void CheckInventory (void)
 {
 	tPlayer	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
-	tObject	*objP = gameData.objs.objects + playerP->nObject;
+	tObject	*objP = OBJECTS + playerP->nObject;
 
 if (SpawnPowerup (objP, POW_CLOAK, playerP->nCloaks - MAX_INV_ITEMS))
 	playerP->nCloaks = MAX_INV_ITEMS;

@@ -320,7 +320,7 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 }
 
 //	-----------------------------------------------------------------------------
-//deal with two gameData.objs.objects bumping into each other.  Apply vForce from collision
+//deal with two OBJECTS bumping into each other.  Apply vForce from collision
 //to each robotP.  The flags tells whether the objects should take damage from
 //the collision.
 
@@ -659,7 +659,7 @@ switch (objP->nType) {
 			}
 		break;
 
-	//these two kinds of gameData.objs.objects below shouldn't really slide, so
+	//these two kinds of OBJECTS below shouldn't really slide, so
 	//if this scrape routine gets called (which it might if the
 	//tObject (such as a fusion blob) was created already poking
 	//through the tWall) call the Collide routine.
@@ -693,7 +693,7 @@ int CheckEffectBlowup (tSegment *segP, short nSide, vmsVector *pnt, tObject *blo
 	//	If this tWall has a tTrigger and the blower-upper is not the tPlayer or the buddy, abort!
 
 if (blower->cType.laserInfo.parentType == OBJ_ROBOT)
-	if (ROBOTINFO (gameData.objs.objects [blower->cType.laserInfo.nParentObj].id).companion)
+	if (ROBOTINFO (OBJECTS [blower->cType.laserInfo.nParentObj].id).companion)
 		bOkToBlow = 1;
 
 if (!(bOkToBlow || (blower->cType.laserInfo.parentType == OBJ_PLAYER))) {
@@ -806,13 +806,13 @@ if (IsMultiGame) {
 	int	nParentObj = weaponP->cType.laserInfo.nParentObj;
 	fix	dist;
 
-	if (gameData.objs.objects [nParentObj].nSignature != nParentSig) {
+	if (OBJECTS [nParentObj].nSignature != nParentSig) {
 #if TRACE
 		con_printf (CONDBG, "Parent of omega blob not consistent with tObject information. \n");
 #endif
 		return 1;
 		}
-	dist = VmVecDistQuick (&gameData.objs.objects [nParentObj].position.vPos, &weaponP->position.vPos);
+	dist = VmVecDistQuick (&OBJECTS [nParentObj].position.vPos, &weaponP->position.vPos);
 	if (dist > MAX_OMEGA_DIST)
 		return 0;
 	}
@@ -853,7 +853,7 @@ int CollideWeaponAndWall (tObject *weaponP, fix hitspeed, short hitseg, short hi
 	tSegment		*segP = gameData.segs.segments + hitseg;
 	tSide			*sideP = segP->sides + hitwall;
 	tWeaponInfo *wInfoP = gameData.weapons.info + weaponP->id;
-	tObject		*wObjP = gameData.objs.objects + weaponP->cType.laserInfo.nParentObj;
+	tObject		*wObjP = OBJECTS + weaponP->cType.laserInfo.nParentObj;
 
 	int	bBlewUp, bEscort, wallType, nPlayer;
 	int	bBounce = (weaponP->mType.physInfo.flags & PF_BOUNCE) != 0;
@@ -1106,8 +1106,8 @@ return 1;
 
 int CollideRobotAndRobot (tObject *robotP1, tObject *robotP2, vmsVector *vHitPt) 
 { 
-//		robot1-gameData.objs.objects, f2i (robot1->position.vPos.x), f2i (robot1->position.vPos.y), f2i (robot1->position.vPos.z), 
-//		robot2-gameData.objs.objects, f2i (robot2->position.vPos.x), f2i (robot2->position.vPos.y), f2i (robot2->position.vPos.z), 
+//		robot1-OBJECTS, f2i (robot1->position.vPos.x), f2i (robot1->position.vPos.y), f2i (robot1->position.vPos.z), 
+//		robot2-OBJECTS, f2i (robot2->position.vPos.x), f2i (robot2->position.vPos.y), f2i (robot2->position.vPos.z), 
 //		f2i (vHitPt->x), f2i (vHitPt->y), f2i (vHitPt->z));
 
 BumpTwoObjects (robotP1, robotP2, 1, vHitPt);
@@ -1217,7 +1217,7 @@ void ApplyDamageToReactor (tObject *reactorP, fix xDamage, short nAttacker)
 
 if ((nAttacker < 0) || (nAttacker > gameData.objs.nLastObject))
 	return;
-whotype = gameData.objs.objects [nAttacker].nType;
+whotype = OBJECTS [nAttacker].nType;
 if (whotype != OBJ_PLAYER) {
 #if TRACE
 	con_printf (CONDBG, "Damage to control center by tObject of nType %i prevented by MK! \n", whotype);
@@ -1225,7 +1225,7 @@ if (whotype != OBJ_PLAYER) {
 	return;
 	}
 if (IsMultiGame && !IsCoopGame && (LOCALPLAYER.timeLevel < netGame.control_invulTime)) {
-	if (gameData.objs.objects [nAttacker].id == gameData.multiplayer.nLocalPlayer) {
+	if (OBJECTS [nAttacker].id == gameData.multiplayer.nLocalPlayer) {
 		int t = netGame.control_invulTime - LOCALPLAYER.timeLevel;
 		int secs = f2i (t) % 60;
 		int mins = f2i (t) / 60;
@@ -1233,7 +1233,7 @@ if (IsMultiGame && !IsCoopGame && (LOCALPLAYER.timeLevel < netGame.control_invul
 		}
 	return;
 	}
-if (gameData.objs.objects [nAttacker].id == gameData.multiplayer.nLocalPlayer) {
+if (OBJECTS [nAttacker].id == gameData.multiplayer.nLocalPlayer) {
 	if (0 >= (i = FindReactor (reactorP)))
 		gameData.reactor.states [i].bHit = 1;
 	AIDoCloakStuff ();
@@ -1247,7 +1247,7 @@ if ((reactorP->shields < 0) && !(reactorP->flags & (OF_EXPLODING | OF_DESTROYED)
 	if (IsMultiGame) {
 		if (nAttacker == LOCALPLAYER.nObject)
 			AddPointsToScore (CONTROL_CEN_SCORE);
-		MultiSendDestroyReactor (OBJ_IDX (reactorP), gameData.objs.objects [nAttacker].id);
+		MultiSendDestroyReactor (OBJ_IDX (reactorP), OBJECTS [nAttacker].id);
 		}
 	else
 		AddPointsToScore (CONTROL_CEN_SCORE);
@@ -1298,7 +1298,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 //	If a persistent weapon and other object is not a weaponP, weaken it, else kill it.
-//	If both gameData.objs.objects are weapons, weaken the weapon.
+//	If both OBJECTS are weapons, weaken the weapon.
 void MaybeKillWeapon (tObject *weaponP, tObject *otherObjP)
 {
 if (WeaponIsMine (weaponP->id)) {
@@ -1308,7 +1308,7 @@ if (WeaponIsMine (weaponP->id)) {
 //	Changed, 10/12/95, MK: Make weaponP-weaponP collisions always kill both weapons if not persistent.
 //	Reason: Otherwise you can't use proxbombs to detonate incoming homing missiles (or mega missiles).
 if (weaponP->mType.physInfo.flags & PF_PERSISTENT) {
-	//	Weapons do a lot of damage to weapons, other gameData.objs.objects do much less.
+	//	Weapons do a lot of damage to weapons, other OBJECTS do much less.
 	if (!(otherObjP->mType.physInfo.flags & PF_PERSISTENT)) {
 		weaponP->shields -= otherObjP->shields / ((otherObjP->nType == OBJ_WEAPON) ? 2 : 4);
 		if (weaponP->shields <= 0) {
@@ -1333,7 +1333,7 @@ if (weaponP->id == OMEGA_ID)
 		return 1;
 if (weaponP->cType.laserInfo.parentType == OBJ_PLAYER) {
 	fix damage = weaponP->shields;
-	if (gameData.objs.objects [weaponP->cType.laserInfo.nParentObj].id == gameData.multiplayer.nLocalPlayer)
+	if (OBJECTS [weaponP->cType.laserInfo.nParentObj].id == gameData.multiplayer.nLocalPlayer)
 		if (0 <= (i = FindReactor (reactorP)))
 			gameData.reactor.states [i].bHit = 1;
 	if (WI_damage_radius (weaponP->id))
@@ -1421,7 +1421,7 @@ int ApplyDamageToRobot (tObject *robotP, fix damage, int nKillerObj)
 {
 	char		bIsThief, bIsBoss;
 	char		tempStolen [MAX_STOLEN_ITEMS];
-	tObject	*killerObjP = (nKillerObj < 0) ? NULL : gameData.objs.objects + nKillerObj;
+	tObject	*killerObjP = (nKillerObj < 0) ? NULL : OBJECTS + nKillerObj;
 
 if (robotP->flags & OF_EXPLODING) 
 	return 0;
@@ -1597,7 +1597,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 				vmsVector	vec_to_point;
 				vmsVector	weap_vec;
 				fix			speed;
-				tObject		*newObjP = gameData.objs.objects + nNewObj;
+				tObject		*newObjP = OBJECTS + nNewObj;
 
 				if (weaponP->renderType == RT_POLYOBJ) {
 					newObjP->rType.polyObjInfo.nModel = gameData.weapons.info [newObjP->id].nModel;
@@ -1747,7 +1747,7 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs
 			DoAiRobotHit (robotP, PA_WEAPON_ROBOT_COLLISION);
 			}
 	  	else
-			MultiRobotRequestChange (robotP, gameData.objs.objects [weaponP->cType.laserInfo.nParentObj].id);
+			MultiRobotRequestChange (robotP, OBJECTS [weaponP->cType.laserInfo.nParentObj].id);
 		if (botInfoP->nExp1VClip > -1)
 			explObjP = ObjectCreateExplosion (weaponP->nSegment, vHitPt, (robotP->size/2*3)/4, (ubyte) botInfoP->nExp1VClip);
 		else if (gameData.weapons.info [weaponP->id].robot_hit_vclip > -1)
@@ -1942,7 +1942,7 @@ if (gameStates.app.bEndLevelSequence)
 gameData.multiplayer.bWasHit [playerObjP->id] = -1;
 //for the tPlayer, the 'real' shields are maintained in the gameData.multiplayer.players []
 //array.  The shields value in the tPlayer's tObject are, I think, not
-//used anywhere.  This routine, however, sets the gameData.objs.objects shields to
+//used anywhere.  This routine, however, sets the OBJECTS shields to
 //be a mirror of the value in the Player structure. 
 
 if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {		//is this the local tPlayer?
@@ -2024,7 +2024,7 @@ MaybeKillWeapon (weaponP, playerObjP);
 BumpTwoObjects (playerObjP, weaponP, 0, vHitPt);	//no damage from bump
 if (!WI_damage_radius (weaponP->id)) {
 	if (weaponP->cType.laserInfo.nParentObj > -1)
-		killer = gameData.objs.objects + weaponP->cType.laserInfo.nParentObj;
+		killer = OBJECTS + weaponP->cType.laserInfo.nParentObj;
 	if (!(weaponP->flags & OF_HARMLESS))
 		ApplyDamageToPlayer (playerObjP, killer, damage);
 }

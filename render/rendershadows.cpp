@@ -244,7 +244,7 @@ return 1;
 
 void RenderObjectShadows (void)
 {
-	tObject		*objP = gameData.objs.objects;
+	tObject		*objP = OBJECTS;
 	int			i, j, bSee;
 	tObject		fakePlayerPos = *gameData.objs.viewer;
 
@@ -344,7 +344,7 @@ DestroyShadowMaps ();
 
 int GatherShadowLightSources (void)
 {
-	tObject			*objP = gameData.objs.objects;
+	tObject			*objP = OBJECTS;
 	int				h, i, j, k, n, m = gameOpts->render.shadows.nLights;
 	short				*pnl;
 //	tDynLight		*pl;

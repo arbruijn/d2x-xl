@@ -1198,8 +1198,8 @@ for (nLights = 0;
 	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
 	fBrightness = psl->info.fBrightness;
 #ifdef _DEBUG
-	if ((psl->info.nObject >= 0) && (OBJECTS [psl->info.nObject].nType == nDbgObjType) &&
-		 ((nDbgObjId < 0) || (OBJECTS [psl->info.nObject].id == nDbgObjId)))
+	if ((psl->info.nObject >= 0) && (gameData.objs.renderObjP [psl->info.nObject].nType == nDbgObjType) &&
+		 ((nDbgObjId < 0) || (gameData.objs.renderObjP [psl->info.nObject].id == nDbgObjId)))
 		nDbgObjType = nDbgObjType;
 #endif
 	if (psl->info.nType == 2) {

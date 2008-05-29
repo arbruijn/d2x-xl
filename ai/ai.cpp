@@ -172,19 +172,19 @@ void SetPlayerAwarenessAll (void)
 
 ProcessAwarenessEvents ();
 for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects [i].controlType == CT_AI) {
-		if (newAwareness [gameData.objs.objects [i].nSegment] > gameData.ai.localInfo [i].playerAwarenessType) {
-			gameData.ai.localInfo [i].playerAwarenessType = newAwareness [gameData.objs.objects [i].nSegment];
+	if (OBJECTS [i].controlType == CT_AI) {
+		if (newAwareness [OBJECTS [i].nSegment] > gameData.ai.localInfo [i].playerAwarenessType) {
+			gameData.ai.localInfo [i].playerAwarenessType = newAwareness [OBJECTS [i].nSegment];
 			gameData.ai.localInfo [i].playerAwarenessTime = PLAYER_AWARENESS_INITIAL_TIME;
 			}
 		// Clear the bit that says this robot is only awake because a camera woke it up.
-		if (newAwareness [gameData.objs.objects [i].nSegment] > gameData.ai.localInfo [i].playerAwarenessType)
-			gameData.objs.objects [i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
+		if (newAwareness [OBJECTS [i].nSegment] > gameData.ai.localInfo [i].playerAwarenessType)
+			OBJECTS [i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
 }
 
 // ----------------------------------------------------------------------------------
-// Do things which need to get done for all AI gameData.objs.objects each frame.
+// Do things which need to get done for all AI OBJECTS each frame.
 // This includes:
 //  Setting player_awareness (a fix, time in seconds which tObject is aware of tPlayer)
 void DoAIFrameAll (void)
@@ -194,19 +194,19 @@ void DoAIFrameAll (void)
 SetPlayerAwarenessAll ();
 if (gameData.ai.nLastMissileCamera != -1) {
 	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
-	if (((gameData.app.nFrameCount & 0x0f) == 0) || (gameData.objs.objects [gameData.ai.nLastMissileCamera].nType != OBJ_WEAPON)) {
+	if (((gameData.app.nFrameCount & 0x0f) == 0) || (OBJECTS [gameData.ai.nLastMissileCamera].nType != OBJ_WEAPON)) {
 		gameData.ai.nLastMissileCamera = -1;
 		for (i = 0; i <= gameData.objs.nLastObject; i++)
-			if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-				gameData.objs.objects [i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
+			if (OBJECTS [i].nType == OBJ_ROBOT)
+				OBJECTS [i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
 	}
 for (h = BOSS_COUNT, j = 0; j < h; j++)
 	if (gameData.boss [j].nDying) {
 		if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
-			DoBossDyingFrame (gameData.objs.objects + gameData.boss [j].nDying);
+			DoBossDyingFrame (OBJECTS + gameData.boss [j].nDying);
 		else {
-			tObject *objP = gameData.objs.objects;
+			tObject *objP = OBJECTS;
 			for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 				if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag)
 					DoBossDyingFrame (objP);

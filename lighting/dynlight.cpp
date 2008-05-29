@@ -141,7 +141,7 @@ void SetDynLightPos (short nObject)
 if (SHOW_DYN_LIGHT) {
 	int	nLight = gameData.render.lights.dynamic.owners [nObject];
 	if (nLight >= 0)
-		gameData.render.lights.dynamic.lights [nLight].info.vPos = gameData.objs.objects [nObject].position.vPos;
+		gameData.render.lights.dynamic.lights [nLight].info.vPos = gameData.objs.renderObjP [nObject].position.vPos;
 	}
 }
 
@@ -174,7 +174,7 @@ if (nLight >= 0) {
 	if (!pc)
 		pc = &pl->info.color;
 	if (nObject >= 0)
-		pl->info.vPos = OBJECTS [nObject].position.vPos;
+		pl->info.vPos = gameData.objs.renderObjP [nObject].position.vPos;
 #if 0
 	if (gameStates.render.bPerPixelLighting && (pl->info.nType < 2))
 		info.fBrightness /= 2;
@@ -429,7 +429,7 @@ pl->info.bPowerup = 0;
 //2: object/lightning
 //3: headlight
 if (nObject >= 0) {
-	tObject *objP = OBJECTS + nObject;
+	tObject *objP = gameData.objs.renderObjP + nObject;
 	//HUDMessage (0, "Adding object light %d, type %d", gameData.render.lights.dynamic.nLights, objP->nType);
 	pl->info.nType = 2;
 	if (objP->nType == OBJ_POWERUP) {
@@ -441,7 +441,7 @@ if (nObject >= 0) {
 			pl->info.bPowerup = 2;
 		}
 	pl->info.vPos = objP->position.vPos;
-	pl->info.fRad = 0; //f2fl (gameData.objs.objects [nObject].size) / 2;
+	pl->info.fRad = 0; //f2fl (gameData.objs.renderObjP [nObject].size) / 2;
 	if (fBrightness > 1) {
 		if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
 			pl->info.fBoost = 1;
@@ -1213,7 +1213,7 @@ if (gameOpts->render.nLightingMethod) {
 			if (psl->info.nObject >= 0)
 				nDbgObj = nDbgObj;
 #endif
-			nLightSeg = (psl->info.nSegment < 0) ? (psl->info.nObject < 0) ? -1 : gameData.objs.objects [psl->info.nObject].nSegment : psl->info.nSegment;
+			nLightSeg = (psl->info.nSegment < 0) ? (psl->info.nObject < 0) ? -1 : gameData.objs.renderObjP [psl->info.nObject].nSegment : psl->info.nSegment;
 			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
 				continue;
 			}

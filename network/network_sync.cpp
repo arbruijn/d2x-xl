@@ -163,7 +163,7 @@ void NetworkSyncObjects (void)
 	int		nObjFrames = 0;
 	int		nPlayer = networkData.playerRejoining.player.connected;
 
-// Send clear gameData.objs.objects array tTrigger and send tPlayer num
+// Send clear OBJECTS array tTrigger and send tPlayer num
 Assert (networkData.nSyncState != 0);
 Assert (nPlayer >= 0);
 Assert (nPlayer < gameData.multiplayer.nMaxPlayers);

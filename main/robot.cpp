@@ -163,7 +163,7 @@ void setRobotState(tObject *objP,int state)
 
 //--unused-- test_animStates()
 //--unused-- {
-//--unused-- 	setRobotState(&gameData.objs.objects[1],curState);
+//--unused-- 	setRobotState(&OBJECTS[1],curState);
 //--unused--
 //--unused--
 //--unused-- 	curState = (curState+1)%N_ANIM_STATES;
@@ -217,7 +217,7 @@ void robot_set_angles(tRobotInfo *r,tPolyModel *pm,vmsAngVec angs[N_ANIM_STATES]
 
 void InitCamBots (int bReset)
 {
-	tObject		*objP = gameData.objs.objects;
+	tObject		*objP = OBJECTS;
 	int			i;
 
 if ((gameData.bots.nCamBotId < 0) || gameStates.app.bD1Mission)

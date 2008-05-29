@@ -1047,7 +1047,7 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 	int			widResult;
 	int			nThisType, nOtherType;
 	tObject		*otherObjP,
-					*thisObjP = (nThisObject < 0) ? NULL : gameData.objs.objects + nThisObject;
+					*thisObjP = (nThisObject < 0) ? NULL : OBJECTS + nThisObject;
 #endif
 //PrintLog ("Entry FVICompute\n");
 if (flags & FQ_GET_SEGLIST)
@@ -1055,7 +1055,7 @@ if (flags & FQ_GET_SEGLIST)
 *nSegments = 1;
 gameData.collisions.hitData.nNestCount++;
 //first, see if vector hit any objects in this tSegment
-nThisType = (nThisObject < 0) ? -1 : gameData.objs.objects [nThisObject].nType;
+nThisType = (nThisObject < 0) ? -1 : OBJECTS [nThisObject].nType;
 #if 1
 if (flags & FQ_CHECK_OBJS) {
 	//PrintLog ("   checking objects...");
@@ -1079,7 +1079,7 @@ if (flags & FQ_CHECK_OBJS) {
 	for (iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
 		segP = gameData.segs.segments + nObjSegList [iObjSeg];
 		for (nObject = segP->objects; nObject != -1; nObject = otherObjP->next) {
-			otherObjP = gameData.objs.objects + nObject;
+			otherObjP = OBJECTS + nObject;
 			nOtherType = otherObjP->nType;
 			if (otherObjP->flags & OF_SHOULD_BE_DEAD)
 				continue;
@@ -1175,7 +1175,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 			if (!nFaceHitType) 
 				continue;
 #endif
-			widResult = WALL_IS_DOORWAY (segP, nSide, (nThisObject < 0) ? NULL : gameData.objs.objects + nThisObject);
+			widResult = WALL_IS_DOORWAY (segP, nSide, (nThisObject < 0) ? NULL : OBJECTS + nThisObject);
 			//PrintLog ("done\n");
 			//if what we have hit is a door, check the adjoining segP
 			if ((nThisObject == LOCALPLAYER.nObject) && (gameStates.app.cheats.bPhysics == 0xBADA55)) {
@@ -1361,7 +1361,7 @@ return nHitType;
 //  rad 					the radius of the cylinder
 //  thisObjNum 		used to prevent an tObject with colliding with itself
 //  ingore_obj			ignore collisions with this tObject
-//  check_objFlag	determines whether collisions with gameData.objs.objects are checked
+//  check_objFlag	determines whether collisions with OBJECTS are checked
 //Returns the hitData->nHitType
 int FindVectorIntersection (tVFIQuery *fq, tFVIData *hitData)
 {
@@ -1709,7 +1709,7 @@ return nHitType != HIT_WALL;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Determine if two gameData.objs.objects are on a line of sight.  If so, return true, else return false.
+//	Determine if two OBJECTS are on a line of sight.  If so, return true, else return false.
 //	Calls fvi.
 int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 {

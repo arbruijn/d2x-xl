@@ -390,7 +390,7 @@ color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.mult
 GrSetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 
 if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
-	DrawPlayer (gameData.objs.objects + LOCALPLAYER.nObject);
+	DrawPlayer (gameData.objs.objP + LOCALPLAYER.nObject);
 	if (!gameStates.render.automap.bRadar) {
 		DrawMarkers ();
 		if ((gameData.marker.nHighlight > -1) && (gameData.marker.szMessage [gameData.marker.nHighlight][0] != 0)) {
@@ -405,15 +405,15 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 	if (AM_SHOW_PLAYERS) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((i != gameData.multiplayer.nLocalPlayer) && AM_SHOW_PLAYER (i)) {
-				if (gameData.objs.objects [gameData.multiplayer.players [i].nObject].nType == OBJ_PLAYER)	{
+				if (gameData.objs.objP [gameData.multiplayer.players [i].nObject].nType == OBJ_PLAYER)	{
 					color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
 					GrSetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
-					DrawPlayer (gameData.objs.objects + gameData.multiplayer.players [i].nObject);
+					DrawPlayer (gameData.objs.objP + gameData.multiplayer.players [i].nObject);
 					}
 				}
 			}
 		}
-	objP = gameData.objs.objects;
+	objP = gameData.objs.objP;
 	for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 		size = objP->size;
 		switch (objP->nType)	{
@@ -674,7 +674,7 @@ if (gameStates.render.automap.bRadar)
 	amData.nViewDist = ZOOM_DEFAULT;
 else if (!amData.nViewDist)
 	amData.nViewDist = ZOOM_DEFAULT;
-playerP = gameData.objs.objects + LOCALPLAYER.nObject;
+playerP = gameData.objs.objP + LOCALPLAYER.nObject;
 amData.viewMatrix = playerP->position.mOrient;
 
 pvTAngles->p = PITCH_DEFAULT;
@@ -684,7 +684,7 @@ pvTAngles->b = 0;
 amData.viewTarget = playerP->position.vPos;
 t1 = *pxEntryTime = TimerGetFixedSeconds ();
 t2 = t1;
-//Fill in gameData.render.mine.bAutomapVisited from gameData.objs.objects [LOCALPLAYER.nObject].nSegment
+//Fill in gameData.render.mine.bAutomapVisited from gameData.objs.objP [LOCALPLAYER.nObject].nSegment
 if (gameStates.render.automap.bRadar) {
 	for (i = 0; i < gameData.segs.nSegments; i++)
 		gameData.render.mine.bAutomapVisible [i] = 1;
@@ -697,10 +697,10 @@ else
 	memcpy (gameData.render.mine.bAutomapVisible, 
 			  gameData.render.mine.bAutomapVisited, 
 			  sizeof (gameData.render.mine.bAutomapVisited));
-//gameData.render.mine.bAutomapVisited [gameData.objs.objects [LOCALPLAYER.nObject].nSegment] = 1;
+//gameData.render.mine.bAutomapVisited [gameData.objs.objP [LOCALPLAYER.nObject].nSegment] = 1;
 gameStates.render.automap.nSegmentLimit =
 gameStates.render.automap.nMaxSegsAway = 
-	SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisible);
+	SetSegmentDepths (gameData.objs.objP [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisible);
 AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisible);
 return bPauseGame;
 }
@@ -709,7 +709,7 @@ return bPauseGame;
 
 int UpdateAutomap (vmsAngVec *pvTAngles)
 {
-	tObject		*playerP = gameData.objs.objects + LOCALPLAYER.nObject;
+	tObject		*playerP = gameData.objs.objP + LOCALPLAYER.nObject;
 	vmsMatrix	m;
 
 if (Controls [0].firePrimaryDownCount)	{
@@ -797,7 +797,7 @@ while ((c = KeyInKey ())) {
 			AutomapBuildEdgeList ();
 			gameStates.render.automap.nSegmentLimit = 
 			gameStates.render.automap.nMaxSegsAway = 
-				SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisible);
+				SetSegmentDepths (gameData.objs.objP [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisible);
 			AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisible);
 			}
 			break;
@@ -925,6 +925,7 @@ if (bRadar) {
 	gameStates.render.automap.bDisplay = 0;
 	return;
 	}
+ClaimRenderContext ();
 Controls [0].automapState = 0;
 GetSlowTicks ();
 while (!bDone)	{
@@ -957,6 +958,7 @@ if (gameData.app.bGamePaused)
 	ResumeGame ();
 gameStates.ogl.nContrast = nContrast;
 gameStates.render.automap.bDisplay = 0;
+YieldRenderContext ();
 }
 
 //------------------------------------------------------------------------------

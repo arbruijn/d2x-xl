@@ -139,8 +139,8 @@ u_int32_t nCurrentVGAMode;
 void GamePaletteStepUp (int r, int g, int b);
 
 #ifdef _WIN32
-HDC currentDC;
-HGLRC currentContext;
+HDC currentDC = 0;
+HGLRC currentContext = 0;
 #endif
 
 #ifdef MWPROFILER
@@ -1261,8 +1261,6 @@ void GameDisableCheats ()
 
 void GameSetup (void)
 {
-	GLuint nError;
-
 DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
 DoLunacyOff ();		//	Restore true insane mode.
 gameStates.app.bGameAborted = 0;
@@ -1309,15 +1307,7 @@ if (gameData.missions.nCurrentLevel == 0) {			//not a real level
 //con_printf (CONDBG, "   FixObjectSegs d:\temp\dm_test.\n");
 #endif
 GameFlushInputs ();
-#ifdef _WIN32
-currentDC = wglGetCurrentDC ();
-currentContext = wglGetCurrentContext ();
-if (currentDC && currentContext && wglMakeCurrent (0, 0)) {
-	RunRenderThreads (rtRenderFrame + 1);
-	WaitForRenderThreads ();
-	nError = wglMakeCurrent (currentDC, currentContext);
-	}
-#endif
+YieldRenderContext ();
 }
 
 //------------------------------------------------------------------------------
@@ -1360,11 +1350,11 @@ for (;;) {
 #endif
 	gameStates.render.automap.bDisplay = 0;
 	gameStates.app.bConfigMenu = 0;
-	if (gameData.objs.console != &gameData.objs.objects[LOCALPLAYER.nObject]) {
+	if (gameData.objs.console != &OBJECTS[LOCALPLAYER.nObject]) {
 #if TRACE
 	    //con_printf (CONDBG,"gameData.multiplayer.nLocalPlayer=%d nObject=%d",gameData.multiplayer.nLocalPlayer,LOCALPLAYER.nObject);
 #endif
-	    //Assert (gameData.objs.console == &gameData.objs.objects[LOCALPLAYER.nObject]);
+	    //Assert (gameData.objs.console == &OBJECTS[LOCALPLAYER.nObject]);
 		}
 	playerShields = LOCALPLAYER.shields;
 	gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
@@ -1451,10 +1441,7 @@ for (;;) {
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
 #endif
-#ifdef _WIN32
-if (currentDC && currentContext)
-	wglMakeCurrent (currentDC, currentContext);
-#endif
+ClaimRenderContext ();
 DigiStopAll ();
 if (gameStates.sound.bD1Sound) {
 	gameStates.sound.bD1Sound = 0;
@@ -1608,7 +1595,7 @@ extern void check_create_player_path (void);
 tObject *find_escort ()
 {
 	int 		i;
-	tObject	*objP = gameData.objs.objects;
+	tObject	*objP = OBJECTS;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion)
@@ -2318,9 +2305,9 @@ if (gameStates.app.tick40fps.bTick) {
 	segP = gameData.segs.segments + gameData.objs.console->nSegment;
 	nObject = segP->objects;
 	while (nObject != -1) {
-		if (gameData.objs.objects[nObject].nType == OBJ_POWERUP)
+		if (OBJECTS[nObject].nType == OBJ_POWERUP)
 			PowerupGrabCheat (gameData.objs.console, nObject);
-		nObject = gameData.objs.objects[nObject].next;
+		nObject = OBJECTS[nObject].next;
 		}
 	}
 }
@@ -2373,7 +2360,7 @@ for (i = 1; i < player_path_length; i++) {
 		Int3 ();		//	Unable to drop energy powerup for path
 		return 1;
 		}
-	objP = gameData.objs.objects + nObject;
+	objP = OBJECTS + nObject;
 	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
 	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 	objP->rType.vClipInfo.nCurFrame = 0;
@@ -2403,7 +2390,7 @@ return 0;
 #ifdef _DEBUG
 int	Max_objCount_mike = 0;
 
-//	Shows current number of used gameData.objs.objects.
+//	Shows current number of used OBJECTS.
 void show_freeObjects (void)
 {
 	if (!(gameData.app.nFrameCount & 8)) {
@@ -2414,7 +2401,7 @@ void show_freeObjects (void)
 		//con_printf (CONDBG, "gameData.objs.nLastObject = %3i, MAX_OBJECTS = %3i, now used = ", gameData.objs.nLastObject, MAX_OBJECTS);
 #endif
 		for (i=0; i<=gameData.objs.nLastObject; i++)
-			if (gameData.objs.objects[i].nType != OBJ_NONE)
+			if (OBJECTS[i].nType != OBJ_NONE)
 				count++;
 #if TRACE
 		//con_printf (CONDBG, "%3i", count);

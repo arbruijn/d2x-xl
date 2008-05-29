@@ -275,10 +275,10 @@ if (gameStates.app.bPlayerIsDead || (gameData.objs.console->flags & OF_SHOULD_BE
 	return;				//don't start if dead!
 //	Dematerialize Buddy!
 for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-		if (ROBOTINFO (gameData.objs.objects [i].id).companion) {
-			ObjectCreateExplosion (gameData.objs.objects [i].nSegment, &gameData.objs.objects [i].position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
-			KillObject (gameData.objs.objects + i);
+	if (OBJECTS [i].nType == OBJ_ROBOT)
+		if (ROBOTINFO (OBJECTS [i].id).companion) {
+			ObjectCreateExplosion (OBJECTS [i].nSegment, &OBJECTS [i].position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
+			KillObject (OBJECTS + i);
 		}
 LOCALPLAYER.homingObjectDist = -F1_0; // Turn off homing sound.
 ResetRearView ();		//turn off rear view if set
@@ -598,7 +598,7 @@ switch (gameStates.app.bEndLevelSequence) {
 					StopEndLevelSequence ();
 					return;
 				}
-				gameData.objs.viewer = gameData.objs.endLevelCamera = gameData.objs.objects + nObject;
+				gameData.objs.viewer = gameData.objs.endLevelCamera = OBJECTS + nObject;
 				SelectCockpit (CM_LETTERBOX);
 				gameOpts->render.cockpit.bHUD = 0;	//will be restored by reading plr file when loading next level
 				flyObjects [1] = flyObjects [0];

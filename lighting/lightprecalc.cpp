@@ -168,7 +168,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	COMPUTE_SEGMENT_CENTER (&center, segP);
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
-		m = (pl->info.nSegment < 0) ? gameData.objs.objects [pl->info.nObject].nSegment : pl->info.nSegment;
+		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].nSegment : pl->info.nSegment;
 		if (!SEGVIS (m, i))
 			continue;
 		h = (int) (VmVecDist (&center, &pl->info.vPos) - fl2f (pl->info.fRad) / 10.0f);
@@ -236,7 +236,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 		if (IsLightVert (nVertex, pl->info.faceP)) 
 			h = 0;
 		else {
-			h = (pl->info.nSegment < 0) ? gameData.objs.objects [pl->info.nObject].nSegment : pl->info.nSegment;
+			h = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].nSegment : pl->info.nSegment;
 			if (!VERTVIS (h, nVertex))
 				continue;
 			VmVecSub (&vLightToVert, vertP, &pl->info.vPos);
