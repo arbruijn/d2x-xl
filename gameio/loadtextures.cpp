@@ -473,10 +473,6 @@ int PageInBitmap (grsBitmap *bmP, char *bmName, int nIndex, int bD1)
 	char				fn [FILENAME_LEN], fnShrunk [FILENAME_LEN];
 	tTgaHeader		h;
 
-	static			int bSemaphore = 0;
-
-if (bSemaphore)
-	return -1;
 #ifdef _DEBUG
 if (!bmName)
 	return 0;
