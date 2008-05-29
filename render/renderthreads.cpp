@@ -27,6 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fastrender.h"
 #include "renderthreads.h"
 #include "interp.h"
+#include "SDL_syswm.h"
 
 #define KILL_RENDER_THREADS 0
 
@@ -63,8 +64,9 @@ while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 #endif
 tiRender.nTask = (tRenderTask) nTask;
 tiRender.ti [0].bExec = 1;
-if (nTask != rtRenderFrame)
-	tiRender.ti [1].bExec = 1;
+if (nTask == rtRenderFrame)
+	return 1;
+tiRender.ti [1].bExec = 1;
 #if 0
 PrintLog ("running render threads (task: %d)\n", nTask);
 #endif
@@ -96,6 +98,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+#ifdef _WIN32
+extern HDC currentDC;
+extern HGLRC currentContext;
+#endif
+
 int _CDECL_ RenderThread (void *pThreadId)
 {
 	int	nId = *((int *) pThreadId);
@@ -106,8 +113,14 @@ do {
 		if (tiRender.ti [nId].bDone)
 			return 0;
 		}
-	if (tiRender.nTask == rtRenderFrame) 
-		GameRenderFrame ();
+	if (tiRender.nTask == rtRenderFrame) {
+		GLuint nError;
+		if (wglMakeCurrent (currentDC, currentContext))
+			GameRenderFrame ();
+		else
+			nError = glGetError ();
+		wglMakeCurrent (NULL, NULL);
+		}
 	else if (tiRender.nTask == rtSortSegZRef) {
 		if (nId)
 			QSortSegZRef (gameData.render.mine.nRenderSegs / 2, gameData.render.mine.nRenderSegs - 1);

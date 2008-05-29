@@ -131,12 +131,17 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "sparkeffect.h"
 #include "systemkeys.h"
 #include "createmesh.h"
+#include "SDL_syswm.h"
 #include "renderthreads.h"
 
 u_int32_t nCurrentVGAMode;
 
 void GamePaletteStepUp (int r, int g, int b);
 
+#ifdef _WIN32
+HDC currentDC;
+HGLRC currentContext;
+#endif
 
 #ifdef MWPROFILER
 #include <profiler.h>
@@ -1302,6 +1307,10 @@ if (gameData.missions.nCurrentLevel == 0) {			//not a real level
 //con_printf (CONDBG, "   FixObjectSegs d:\temp\dm_test.\n");
 #endif
 GameFlushInputs ();
+#ifdef _WIN32
+currentDC = wglGetCurrentDC ();
+currentContext = wglGetCurrentContext ();
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1967,11 +1976,24 @@ DrainHeadlightPower ();
 			gameStates.render.cockpit.bRedraw = 0;
 		}
 //PrintLog ("GameRenderFrame\n");
-#if 1
-		WaitForRenderThreads ();
-		if (!RunRenderThreads (rtRenderFrame))
-#endif
+#ifdef _WIN32
+		GLuint nError = glGetError ();
+		if (currentDC && currentContext && wglMakeCurrent (NULL, NULL)) {
+			WaitForRenderThreads ();
+			if (RunRenderThreads (rtRenderFrame))
+				nError = wglMakeCurrent (currentDC, currentContext);
+			else {
+				nError = wglMakeCurrent (currentDC, currentContext);
+				GameRenderFrame ();
+				}
+			}
+		else {
+			nError = glGetError ();
 			GameRenderFrame ();
+			}
+#else
+		GameRenderFrame ();
+#endif
 		gameStates.app.bUsingConverter = 0;
 
 #ifdef _DEBUG

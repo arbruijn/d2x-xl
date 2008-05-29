@@ -895,7 +895,7 @@ if (objP &&
 	GrSetCurFont (GAME_FONT);    //GAME_FONT);
 	GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 	GrGetStringSize (msg, &w, &h, &aw);
-	GrPrintF (NULL, (grdCurCanv->cvBitmap.bmProps.w-w)/2, 3, msg);
+	GrPrintF (NULL, (grdCurCanv->cvBitmap.bmProps.w-w) / 2, 3, msg);
 	DrawGuidedCrosshair ();
 	HUDRenderMessageFrame ();
 	bNoDrawHUD = 1;

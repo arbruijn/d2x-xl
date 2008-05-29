@@ -541,6 +541,7 @@ return 1;
 //mode if cannot init requested mode)
 int SetScreenMode (u_int32_t sm)
 {
+	GLint nError = glGetError ();
 #ifdef EDITOR
 if ((sm == SCREEN_MENU) && (gameStates.video.nScreenMode == SCREEN_EDITOR)) {
 	GrSetCurrentCanvas (Canv_editor);

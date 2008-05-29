@@ -587,22 +587,9 @@ else
 		glCullFace (gameStates.render.bRearView ? GL_FRONT : GL_BACK);
 		glEnable (GL_DEPTH_TEST);
 		glDepthFunc (GL_LESS);
-#if 1
 		glEnable (GL_ALPHA_TEST);
 		glAlphaFunc (GL_GEQUAL, (float) 0.01);
-#endif
 		}
-#if 0
-	if (SHOW_DYN_LIGHT) {//for optional hardware lighting
-		GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
-		glEnable (GL_LIGHTING);
-		glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
-		glLightModeli (GL_LIGHT_MODEL_TWO_SIDE, 0);
-		glShadeModel (GL_SMOOTH);
-		glEnable (GL_COLOR_MATERIAL);
-		glColorMaterial (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-		}
-#endif
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable (GL_STENCIL_TEST);
