@@ -98,7 +98,6 @@ return 1;
 
 int _CDECL_ RenderThread (void *pThreadId)
 {
-	GLuint	nError;
 	int		nId = *((int *) pThreadId);
 #ifdef _WIN32
 	HGLRC		myContext = 0;
