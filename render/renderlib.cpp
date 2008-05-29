@@ -816,38 +816,39 @@ pc->color.alpha = 1;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined 
 //by the vertices passed relative to the viewer
 
+g3sPoint *RotateVertex (int i)
+{
+g3sPoint *p = gameData.segs.points + i;
+if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) {
+	G3TransformAndEncodePoint (p, gameData.segs.vertices + i);
+	if (gameData.render.zMax < p->p3_vec.p.z)
+		gameData.render.zMax = p->p3_vec.p.z;
+	if (!gameStates.ogl.bUseTransform) {
+		gameData.segs.fVertices [i].p.x = f2fl (p->p3_vec.p.x);
+		gameData.segs.fVertices [i].p.y = f2fl (p->p3_vec.p.y);
+		gameData.segs.fVertices [i].p.z = f2fl (p->p3_vec.p.z);
+		}
+	p->p3_index = i;
+	gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;
+	}
+return p;
+}
+
+// -----------------------------------------------------------------------------------
+//Given a list of point numbers, rotate any that haven't been bRotated this frame
+//cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined 
+//by the vertices passed relative to the viewer
+
 g3sCodes RotateVertexList (int nVertices, short *vertexIndexP)
 {
-	int			i, j;
-	g3sPoint		*pnt;
-	g3sCodes		cc;
+	int			i;
+	g3sPoint		*p;
+	g3sCodes		cc = {0, 0xff};
 
-cc.ccAnd = 0xff;  
-cc.ccOr = 0;
 for (i = 0; i < nVertices; i++) {
-	j = vertexIndexP [i];
-	pnt = gameData.segs.points + j;
-	if (gameData.render.mine.nRotatedLast [j] != gameStates.render.nFrameCount) {
-		G3TransformAndEncodePoint (pnt, gameData.segs.vertices + j);
-		if (gameData.render.zMax < pnt->p3_vec.p.z)
-			gameData.render.zMax = pnt->p3_vec.p.z;
-		if (gameStates.ogl.bUseTransform) {
-#if 0
-			gameData.segs.fVertices [j].p.x = f2fl (gameData.segs.vertices [j].p.x);
-			gameData.segs.fVertices [j].p.y = f2fl (gameData.segs.vertices [j].p.y);
-			gameData.segs.fVertices [j].p.z = f2fl (gameData.segs.vertices [j].p.z);
-#endif
-			}
-		else {
-			gameData.segs.fVertices [j].p.x = f2fl (pnt->p3_vec.p.x);
-			gameData.segs.fVertices [j].p.y = f2fl (pnt->p3_vec.p.y);
-			gameData.segs.fVertices [j].p.z = f2fl (pnt->p3_vec.p.z);
-			}
-		gameData.render.mine.nRotatedLast [j] = gameStates.render.nFrameCount;
-		}
-	cc.ccAnd &= pnt->p3_codes;
-	cc.ccOr |= pnt->p3_codes;
-	pnt->p3_index = j;
+	p = RotateVertex (vertexIndexP [i]);
+	cc.ccAnd &= p->p3_codes;
+	cc.ccOr |= p->p3_codes;
 	}
 return cc;
 }

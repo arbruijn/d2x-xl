@@ -58,6 +58,7 @@ void FreeExtraImages (void);
 
 // Given a list of point numbers, rotate any that haven't been rotated
 // this frame
+g3sPoint *RotateVertex (int i);
 g3sCodes RotateVertexList (int nv, short *pointIndex);
 void RotateSideNorms (void);
 // Given a list of point numbers, project any that haven't been projected

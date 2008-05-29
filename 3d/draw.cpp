@@ -133,8 +133,8 @@ int MustClipFlatFace (int nv, g3sCodes cc)
 				goto free_points;
 			}
 
-			polyVertList[i*2]   = p->p3_screen.x;
-			polyVertList[i*2+1] = p->p3_screen.y;
+			polyVertList[i*2]   = i2f (p->p3_screen.x);
+			polyVertList[i*2+1] = i2f (p->p3_screen.y);
 		}
 
 		 (*flat_drawer_ptr) (nv, (int *)polyVertList);

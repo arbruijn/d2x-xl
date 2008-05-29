@@ -1652,7 +1652,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		curPortal = renderPortals + sCnt;
 		//look at all sides of this tSegment.
 		//tricky code to look at sides in correct order follows
-		for (nSide = nChildren = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide ++) { //build list of sides
+		for (nSide = nChildren = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) { //build list of sides
 			if (0 > (nChildSeg = segP->children [nSide]))
 				continue;
 			if (!(bWID [nChildren] = WALL_IS_DOORWAY (segP, nSide, NULL)))
@@ -1670,7 +1670,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 				if (bCullIfBehind) {
 					s2v = sideToVerts [nSide];
 					if (!bTransformed) {
-						RotateVertexList (8, segP->verts);
+						for (j = 0; j < 8; j++)
+							RotateVertex (sv [j]);
 						bTransformed = 1;
 						}
 					sidePortal->bBehind = (0xff & gameData.segs.points [sv [s2v [0]]].p3_codes
@@ -1703,23 +1704,27 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 			{
 				short x, y, xMin = 32767, xMax = -32767, yMin = 32767, yMax = -32767;
 				ubyte bProjected = 1;	//a point wasn't projected
+#if 0
 				if (bTransformed < 2) {
 					if (!bTransformed)
 						RotateVertexList (8, sv);
-					for (int j = 0; j < 8; j++)
+					for (j = 0; j < 8; j++)
 						G3ProjectPoint (gameData.segs.points + sv [j]);
 					bTransformed = 2;
 					}
+#endif
 				s2v = sideToVerts [nSide];
 				for (j = 0, andCodes3D = andCodes2D = 0xff; j < 4; j++) {
-					g3sPoint *pnt = gameData.segs.points + sv [s2v [j]];
-					if (!(pnt->p3_flags & PF_PROJECTED)) {
+					g3sPoint *p = gameData.segs.points + sv [s2v [j]];
+					if (p->p3_codes & CC_BEHIND) {
 						bProjected = 0; 
 						break;
 						}
-					x = (short) pnt->p3_screen.x;
-					y = (short) pnt->p3_screen.y;
-					andCodes3D &= pnt->p3_codes;
+					if (!(p->p3_flags & PF_PROJECTED))
+						G3ProjectPoint (p);
+					x = (short) p->p3_screen.x;
+					y = (short) p->p3_screen.y;
+					andCodes3D &= p->p3_codes;
 					//andCodes2D &= CodePortalPoint (x, y, curPortal);
 					if (x < xMin) 
 						xMin = x;
@@ -1752,49 +1757,35 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						}
 					//see if this segment already visited, and if so, does current tPortal
 					//expand the old tPortal?
-					bool bAdd = true;
 					if (rp != -1) {
 						tPortal *rwP = renderPortals + rp;
-#if 0
-						if ((newPortal->left >= rwP->left) && (newPortal->top >= rwP->top) && (newPortal->right <= rwP->right) && (newPortal->bot <= rwP->bot))
+						if ((newPortal->left >= rwP->left) && (newPortal->top >= rwP->top) && 
+							 (newPortal->right <= rwP->right) && (newPortal->bot <= rwP->bot))
 							goto dontAdd;
-						else 
-#endif
-						{
-						bAdd = false;
-						if (newPortal->left > rwP->left) {
-							newPortal->left = rwP->left;
-							bAdd = true;
-							}
-						if (newPortal->right < rwP->right) {
-							newPortal->right = rwP->right;
-							bAdd = true;
-							}
-						if (newPortal->top > rwP->top) {
-							newPortal->top = rwP->top;
-							bAdd = true;
-							}
-						if (newPortal->bot < rwP->bot) {
-							newPortal->bot = rwP->bot;
-							bAdd = true;
-							}
-						if (bMigrateSegs) {
-							gameData.render.mine.nSegRenderList [rp] = -0x7fff;
-							bAdd = true;
-							}
 						else {
-							gameData.render.mine.nSegRenderList [lCnt] = -0x7fff;
-							*rwP = *newPortal;		//get updated tPortal
-							gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
-							}
+							if (newPortal->left > rwP->left)
+								newPortal->left = rwP->left;
+							if (newPortal->right < rwP->right)
+								newPortal->right = rwP->right;
+							if (newPortal->top > rwP->top)
+								newPortal->top = rwP->top;
+							if (newPortal->bot < rwP->bot)
+								newPortal->bot = rwP->bot;
+							if (bMigrateSegs)
+								gameData.render.mine.nSegRenderList [rp] = -0x7fff;
+							else {
+								gameData.render.mine.nSegRenderList [lCnt] = -0x7fff;
+								*rwP = *newPortal;		//get updated tPortal
+								gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
+								goto dontAdd;
+								}
 							}
 						}
-					if (bAdd) {
-						gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
-						gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
-						gameData.render.mine.nSegDepth [lCnt++] = l;
-						VISIT (nChildSeg);
-						}
+					gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
+					gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
+					gameData.render.mine.nSegDepth [lCnt++] = l;
+					VISIT (nChildSeg);
+dontAdd: ;
 					}
 				}
 #if 0 //!FORCE_WINDOW_CHECK
