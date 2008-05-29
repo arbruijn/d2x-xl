@@ -440,9 +440,9 @@ else {
 #if G3_BUFFER_FACES
 if (!bDepthOnly) {
 	nBlendMode = faceP->bAdditive ? 2 : faceP->bTransparent ? 1 : 0;
-	if (nBlendMode != gameStates.history.nBlendMode) {
-		gameStates.history.nBlendMode = nBlendMode;
-		G3FlushFaceBuffer 1);
+	if (nBlendMode != gameStates.render.history.nBlendMode) {
+		gameStates.render.history.nBlendMode = nBlendMode;
+		G3FlushFaceBuffer (1);
 		}
 	else if (bMonitor)
 		G3FlushFaceBuffer (1);
