@@ -504,38 +504,37 @@ int GetBossId (void)
 //	"special" is used to find OBJECTS spewed by tPlayer which is hacked into flags field of powerup.
 int ExistsInMine2 (int nSegment, int objtype, int objid, int special)
 {
-	if (gameData.segs.segments [nSegment].objects != -1) {
-		int		id, nObject = gameData.segs.segments [nSegment].objects;
+if (gameData.segs.objP [nSegment] != -1) {
+	int		id, nObject = gameData.segs.objP [nSegment];
 
-		while (nObject != -1) {
-			tObject	*curObjP = &OBJECTS [nObject];
+	while (nObject != -1) {
+		tObject	*curObjP = OBJECTS + nObject;
 
-			if (special == ESCORT_GOAL_PLAYER_SPEW) {
-				if (curObjP->flags & OF_PLAYER_DROPPED)
-					return nObject;
+		if (special == ESCORT_GOAL_PLAYER_SPEW) {
+			if (curObjP->flags & OF_PLAYER_DROPPED)
+				return nObject;
 			}
-
-			if (curObjP->nType == objtype) {
-				//	Don't find escort robots if looking for robot!
-				id = curObjP->id;
-				if ((curObjP->nType == OBJ_ROBOT) && ROBOTINFO (id).companion)
-					;
-				else if (objid == -1) {
-					if ((objtype == OBJ_POWERUP) && (id != POW_KEY_BLUE) && (id != POW_KEY_GOLD) && (id != POW_KEY_RED))
-						return nObject;
-					else
-						return nObject;
-				} else if (curObjP->id == objid)
+		if (curObjP->nType == objtype) {
+			//	Don't find escort robots if looking for robot!
+			id = curObjP->id;
+			if ((curObjP->nType == OBJ_ROBOT) && ROBOTINFO (id).companion)
+				;
+			else if (objid == -1) {
+				if ((objtype == OBJ_POWERUP) && (id != POW_KEY_BLUE) && (id != POW_KEY_GOLD) && (id != POW_KEY_RED))
 					return nObject;
-			}
+				else
+					return nObject;
+			} else if (curObjP->id == objid)
+				return nObject;
+		}
 
-			if (objtype == OBJ_POWERUP)
-				if (curObjP->containsCount)
-					if (curObjP->containsType == OBJ_POWERUP)
-						if (curObjP->containsId == objid)
-							return nObject;
+		if (objtype == OBJ_POWERUP)
+			if (curObjP->containsCount)
+				if (curObjP->containsType == OBJ_POWERUP)
+					if (curObjP->containsId == objid)
+						return nObject;
 
-			nObject = curObjP->next;
+		nObject = curObjP->next;
 		}
 	}
 return -1;

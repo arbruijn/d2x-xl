@@ -477,21 +477,18 @@ int OpenableDoorsInSegment (short nSegment)
 //	Return true if placing an tObject of size size at pos *pos intersects a (tPlayer or robot or control center) in tSegment *segP.
 int CheckObjectObjectIntersection (vmsVector *pos, fix size, tSegment *segP)
 {
-	int		curobjnum;
-
-	//	If this would intersect with another tObject (only check those in this tSegment), then try to move.
-	curobjnum = segP->objects;
-	while (curobjnum != -1) {
-		tObject *curObjP = &OBJECTS [curobjnum];
-		if ((curObjP->nType == OBJ_PLAYER) || (curObjP->nType == OBJ_ROBOT) || (curObjP->nType == OBJ_REACTOR)) {
-			if (VmVecDistQuick (pos, &curObjP->position.vPos) < size + curObjP->size)
-				return 1;
+//	If this would intersect with another tObject (only check those in this tSegment), then try to move.
+short nObject = gameData.segs.objP [SEG_IDX (segP)];
+tObject *objP;
+while (nObject != -1) {
+	objP = OBJECTS + nObject;
+	if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR)) {
+		if (VmVecDistQuick (pos, &objP->position.vPos) < size + objP->size)
+			return 1;
 		}
-		curobjnum = curObjP->next;
+	nObject = objP->next;
 	}
-
-	return 0;
-
+return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
