@@ -3327,7 +3327,7 @@ static inline fix SegmentVolume (short nSegment)
 
 static inline short ObjIdx (tObject *objP)
 {
-	size_t	i = (char *) objP - (char *) gameData.objs.objects;
+	size_t	i = (char *) objP - (char *) gameData.objs.objP;
 
 if ((i < 0) || (i > gameData.objs.nLastObject * sizeof (tObject)) || (i % sizeof (tObject)))
 	return -1;
