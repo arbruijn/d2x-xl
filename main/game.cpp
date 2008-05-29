@@ -2304,15 +2304,11 @@ CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
 void PowerupGrabCheatAll (void)
 {
 if (gameStates.app.tick40fps.bTick) {
-	tSegment	*segP;
-	int		nObject;
-
-	segP = gameData.segs.segments + gameData.objs.console->nSegment;
-	nObject = segP->objects;
+	short nObject = gameData.segs.objP [gameData.objs.console->nSegment];
 	while (nObject != -1) {
-		if (OBJECTS[nObject].nType == OBJ_POWERUP)
+		if (OBJECTS [nObject].nType == OBJ_POWERUP)
 			PowerupGrabCheat (gameData.objs.console, nObject);
-		nObject = OBJECTS[nObject].next;
+		nObject = OBJECTS [nObject].next;
 		}
 	}
 }
