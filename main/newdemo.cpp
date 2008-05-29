@@ -1815,7 +1815,7 @@ int NDReadFrameInfo ()
 bDone = 0;
 nTag = 255;
 if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-	memset (gameData.segs.objects [0], 0xff, gameData.segs.nSegments * sizeof (short));
+	memset (gameData.segs.objects, 0xff, gameData.segs.nSegments * sizeof (short));
 ResetObjects (1);
 LOCALPLAYER.homingObjectDist = -F1_0;
 prevObjP = NULL;

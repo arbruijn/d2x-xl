@@ -481,7 +481,7 @@ for (i = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
 	objP->attachedObj = -1;
 	objP->flags = 0;
 	}
-memset (gameData.segs.objects [0], 0xff, MAX_SEGMENTS * sizeof (short));
+memset (gameData.segs.objects, 0xff, MAX_SEGMENTS * sizeof (short));
 gameData.objs.console = 
 gameData.objs.viewer = OBJECTS;
 InitPlayerObject ();

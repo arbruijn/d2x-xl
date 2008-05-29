@@ -2224,7 +2224,7 @@ if (sgVersion > 33) {
 if (!bBetweenLevels)	{
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.
 	//Clear out all the objects from the lvl file
-	memset (gameData.segs.objects [0], 0xff, gameData.segs.nSegments * sizeof (short));
+	memset (gameData.segs.objects, 0xff, gameData.segs.nSegments * sizeof (short));
 	ResetObjects (1);
 
 	//Read objects, and pop 'em into their respective segments.
@@ -2510,7 +2510,7 @@ CFRead (&gameStates.app.cheats.bEnabled, sizeof (int), 1, cfp);
 if (!bBetweenLevels)	{
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.
 	//Clear out all the OBJECTS from the lvl file
-	memset (gameData.segs.objects [0], 0xff, gameData.segs.nSegments * sizeof (short));
+	memset (gameData.segs.objects, 0xff, gameData.segs.nSegments * sizeof (short));
 	ResetObjects (1);
 	//Read objects, and pop 'em into their respective segments.
 	CFRead (&i, sizeof (int), 1, cfp);
