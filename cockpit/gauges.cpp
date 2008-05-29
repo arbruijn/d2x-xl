@@ -2521,8 +2521,8 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multiplayer.players [p].callsign);
 					GrGetStringSize (s, &w, &h, &aw);
 					GrSetFontColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b), 1, 0, 0);
-					x1 = f2i (x) - w / 2;
-					y1 = f2i (y) - h / 2;
+					x1 = x - w / 2;
+					y1 = y - h / 2;
 					//glBlendFunc (GL_ONE, GL_ONE);
 					nIdNames [nCurColor][p] = GrString (x1, y1, s, nIdNames [nCurColor] + p);
 					GrSetColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b));

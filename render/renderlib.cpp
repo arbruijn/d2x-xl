@@ -776,10 +776,12 @@ if (! cc.ccAnd) {		//all off screen?
 	//draw a little cross at the current vert
 	pnt = gameData.segs.points + seg->verts [sideToVerts [_side][vert]];
 	G3ProjectPoint(pnt);		//make sure projected
-	GrLine(pnt->p3_screen.x-CROSS_WIDTH, pnt->p3_screen.y, pnt->p3_screen.x, pnt->p3_screen.y-CROSS_HEIGHT);
-	GrLine(pnt->p3_screen.x, pnt->p3_screen.y-CROSS_HEIGHT, pnt->p3_screen.x+CROSS_WIDTH, pnt->p3_screen.y);
-	GrLine(pnt->p3_screen.x+CROSS_WIDTH, pnt->p3_screen.y, pnt->p3_screen.x, pnt->p3_screen.y+CROSS_HEIGHT);
-	GrLine(pnt->p3_screen.x, pnt->p3_screen.y+CROSS_HEIGHT, pnt->p3_screen.x-CROSS_WIDTH, pnt->p3_screen.y);
+	fix x = i2f (pnt->p3_screen.x);
+	fix y = i2f (pnt->p3_screen.y);
+	GrLine(x-CROSS_WIDTH, y, x, y-CROSS_HEIGHT);
+	GrLine(x, y-CROSS_HEIGHT, x+CROSS_WIDTH, y);
+	GrLine(x+CROSS_WIDTH, y, x, y+CROSS_HEIGHT);
+	GrLine(x, y+CROSS_HEIGHT, x-CROSS_WIDTH, y);
 	}
 }
 

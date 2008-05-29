@@ -1698,7 +1698,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 #endif
 			sidePortal = sidePortals + 6 * nSegment + nSide;
 #if !FORCE_WINDOW_CHECK
-			if (!VISITED (nChildSeg)/* && bWID [nChild]*/) 
+			if (!VISITED (nChildSeg)) 
 #endif
 			{
 				short x, y, xMin = 32767, xMax = -32767, yMin = 32767, yMax = -32767;
@@ -1706,7 +1706,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 				if (bTransformed < 2) {
 					if (!bTransformed)
 						RotateVertexList (8, sv);
-					ProjectVertexList (8, sv);
+					for (int j = 0; j < 8; j++)
+						G3ProjectPoint (gameData.segs.points + sv [j]);
 					bTransformed = 2;
 					}
 				s2v = sideToVerts [nSide];
@@ -1716,10 +1717,10 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						bProjected = 0; 
 						break;
 						}
-					x = (short) f2i (pnt->p3_screen.x);
-					y = (short) f2i (pnt->p3_screen.y);
+					x = (short) pnt->p3_screen.x;
+					y = (short) pnt->p3_screen.y;
 					andCodes3D &= pnt->p3_codes;
-					andCodes2D &= CodePortalPoint (x, y, curPortal);
+					//andCodes2D &= CodePortalPoint (x, y, curPortal);
 					if (x < xMin) 
 						xMin = x;
 					if (x > xMax) 
@@ -1744,41 +1745,56 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					if (!sidePortal->bProjected) 
 						*newPortal = *curPortal;
 					else {
-						newPortal->left  = max (curPortal->left, sidePortal->left);
+						newPortal->left = max (curPortal->left, sidePortal->left);
 						newPortal->right = min (curPortal->right, sidePortal->right);
-						newPortal->top   = max (curPortal->top, sidePortal->top);
-						newPortal->bot   = min (curPortal->bot, sidePortal->bot);
+						newPortal->top = max (curPortal->top, sidePortal->top);
+						newPortal->bot = min (curPortal->bot, sidePortal->bot);
 						}
 					//see if this segment already visited, and if so, does current tPortal
 					//expand the old tPortal?
+					bool bAdd = true;
 					if (rp != -1) {
 						tPortal *rwP = renderPortals + rp;
+#if 0
 						if ((newPortal->left >= rwP->left) && (newPortal->top >= rwP->top) && (newPortal->right <= rwP->right) && (newPortal->bot <= rwP->bot))
 							goto dontAdd;
+						else 
+#endif
+						{
+						bAdd = false;
+						if (newPortal->left > rwP->left) {
+							newPortal->left = rwP->left;
+							bAdd = true;
+							}
+						if (newPortal->right < rwP->right) {
+							newPortal->right = rwP->right;
+							bAdd = true;
+							}
+						if (newPortal->top > rwP->top) {
+							newPortal->top = rwP->top;
+							bAdd = true;
+							}
+						if (newPortal->bot < rwP->bot) {
+							newPortal->bot = rwP->bot;
+							bAdd = true;
+							}
+						if (bMigrateSegs) {
+							gameData.render.mine.nSegRenderList [rp] = -0x7fff;
+							bAdd = true;
+							}
 						else {
-							if (newPortal->left > rwP->left)
-								newPortal->left = rwP->left;
-							if (newPortal->right < rwP->right)
-								newPortal->right = rwP->right;
-							if (newPortal->top > rwP->top)
-								newPortal->top = rwP->top;
-							if (newPortal->bot < rwP->bot)
-								newPortal->bot = rwP->bot;
-							if (bMigrateSegs)
-								gameData.render.mine.nSegRenderList [rp] = -0x7fff;
-							else {
-								gameData.render.mine.nSegRenderList [lCnt] = -0x7fff;
-								*rwP = *newPortal;		//get updated tPortal
-								gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
-								goto dontAdd;
-								}
+							gameData.render.mine.nSegRenderList [lCnt] = -0x7fff;
+							*rwP = *newPortal;		//get updated tPortal
+							gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
+							}
 							}
 						}
-					gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
-					gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
-					gameData.render.mine.nSegDepth [lCnt++] = l;
-					VISIT (nChildSeg);
-dontAdd: ;
+					if (bAdd) {
+						gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
+						gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
+						gameData.render.mine.nSegDepth [lCnt++] = l;
+						VISIT (nChildSeg);
+						}
 					}
 				}
 #if 0 //!FORCE_WINDOW_CHECK

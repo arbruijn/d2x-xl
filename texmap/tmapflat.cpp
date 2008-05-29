@@ -222,8 +222,8 @@ void DrawTexPolyFlat(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 	GrSetColor(color);
 
 	for (i=0;i<nverts;i++) {
-		points[i].x = vertbuf[i]->p3_screen.x;
-		points[i].y = vertbuf[i]->p3_screen.y;
+		points[i].x = i2f (vertbuf[i]->p3_screen.x);
+		points[i].y = i2f (vertbuf[i]->p3_screen.y);
 	}
 
 	gr_upoly_tmap(nverts,(int *) points);

@@ -932,8 +932,8 @@ void draw_tmap(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 		g3ds_vertex	*tvp = &Tmap1.verts[i];
 		g3sPoint	*vp = vertbuf[i];
 
-		tvp->x2d = vp->p3_screen.x;
-		tvp->y2d = vp->p3_screen.y;
+		tvp->x2d = i2f (vp->p3_screen.x);
+		tvp->y2d = i2f (vp->p3_screen.y);
 
 		//	Check for overflow on FixDiv.  Will overflow on vp->z <= something small.  Allow only as low as 256.
 		if (vp->p3_z < 256) {
