@@ -488,9 +488,6 @@ if ((plb->bSound > 0) & (plb->nObject >= 0))
 
 void DestroyLightnings (int iLightning, tLightning *pl, int bDestroy)
 {
-while (gameStates.render.bLightnings)
-	G3_SLEEP (0);
-
 	tLightningBundle	*plh, *plb = NULL;
 	int					i;
 
@@ -988,8 +985,6 @@ int UpdateLightning (tLightning *pl, int nLightnings, int nDepth)
 if (!(pl && nLightnings))
 	return 0;
 CHECK (pl, nLightnings);
-while (gameStates.render.bLightnings)
-	G3_SLEEP (0);
 if (gameStates.app.bMultiThreaded && (nLightnings > 1)) {
 	tiRender.pl = pl;
 	tiRender.nLightnings = nLightnings;
@@ -1031,9 +1026,6 @@ plb->bSound = -1;
 void UpdateLightnings (void)
 {
 if (SHOW_LIGHTNINGS) {
-	while (gameStates.render.bLightnings)
-		G3_SLEEP (0);
-
 		tLightningBundle	*plb;
 		int					i, n;
 
@@ -1077,9 +1069,6 @@ void MoveLightnings (int i, tLightning *pl, vmsVector *vNewPos, short nSegment, 
 if (nSegment < 0)
 	return;
 if (SHOW_LIGHTNINGS) {
-	while (gameStates.render.bLightnings)
-		G3_SLEEP (0);
-
 		tLightningNode	*pln;
 		vmsVector		vDelta, vOffs;
 		int				h, j, nLightnings; 

@@ -34,14 +34,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 tRenderThreadInfo tiRender;
 tRenderItemThreadInfo tiRenderItems;
 
-int bUseMultiThreading [rtTaskCount] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1};
+int bUseMultiThreading [rtTaskCount] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 //------------------------------------------------------------------------------
 
 void WaitForRenderThreads (void)
 {
 if (gameStates.app.bMultiThreaded)
-	while (tiRender.ti [0].bExec)
+	while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 		G3_SLEEP (0);	//already running, so wait
 }
 
@@ -63,9 +63,7 @@ while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 	G3_SLEEP (0);	//already running, so wait
 #endif
 tiRender.nTask = (tRenderTask) nTask;
-tiRender.ti [0].bExec = 1;
-if (nTask == rtRenderFrame)
-	return 1;
+tiRender.ti [0].bExec =
 tiRender.ti [1].bExec = 1;
 #if 0
 PrintLog ("running render threads (task: %d)\n", nTask);
@@ -112,23 +110,7 @@ do {
 		if (tiRender.ti [nId].bDone)
 			return 0;
 		}
-	if (tiRender.nTask == rtRenderInit) {
-#ifdef _WIN32
-		if (!wglMakeCurrent (gameData.render.currentDC, gameData.render.currentRC))
-			nError = glGetError ();
-#endif
-		}
-	else if (tiRender.nTask == rtRenderFrame) {
-		memcpy (gameData.segs.objects [1], gameData.segs.objects [0], gameData.segs.nSegments * sizeof (short));
-		gameData.segs.renderObjP = gameData.segs.objects [1];
-		memcpy (gameData.objs.objects [1], gameData.objs.objects [0], gameData.objs.nLastObject * sizeof (tObject));
-		gameData.objs.renderObjP = gameData.objs.objects [1];
-		gameData.objs.nRenderObjs = gameData.objs.nObjects;
-		gameData.objs.nLastRenderObj = gameData.objs.nLastObject;
-		GameRenderFrame ();
-		gameData.objs.renderObjP = gameData.objs.objects [0];
-		}
-	else if (tiRender.nTask == rtSortSegZRef) {
+	if (tiRender.nTask == rtSortSegZRef) {
 		if (nId)
 			QSortSegZRef (gameData.render.mine.nRenderSegs / 2, gameData.render.mine.nRenderSegs - 1);
 		else
@@ -266,7 +248,7 @@ void StartRenderThreads (void)
 	int	i;
 
 memset (&tiRender, 0, sizeof (tiRender));
-for (i = 0; i < 1; i++) {
+for (i = 0; i < 2; i++) {
 	tiRender.ti [i].nId = i;
 	tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
 	}

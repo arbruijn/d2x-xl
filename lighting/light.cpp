@@ -127,10 +127,10 @@ static void ResetClusterLights (void)
 if (!gameStates.render.bClusterLights)
 	return;
 
-	tObject	*objP = gameData.objs.renderObjP;
+	tObject	*objP = OBJECTS;
 	int		i;
 
-for (i = gameData.objs.nLastRenderObj + 1; i; i--, objP++)
+for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
 	if ((objP->nType == OBJ_LIGHT) && (objP->id == CLUSTER_LIGHT_ID)) {
 		objP->lifeleft = 0;
 		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
@@ -144,10 +144,10 @@ static void SetClusterLights (void)
 if (!gameStates.render.bClusterLights)
 	return;
 
-	tObject	*objP = gameData.objs.renderObjP;
+	tObject	*objP = OBJECTS;
 	int		h, i;
 
-for (i = 0; i <= gameData.objs.nLastRenderObj; i++, objP++) {
+for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	if ((objP->nType == OBJ_LIGHT) && (objP->id == CLUSTER_LIGHT_ID))	{
 		if (!(h = objP->cType.lightInfo.nObjects)) {
 			RemoveDynLight (-1, -1, i);
@@ -192,12 +192,12 @@ if (0 > nLightObj)
 if (nDbgObj == nLightObj)
 	nDbgObj = nDbgObj;
 #endif
-tObject *lightObjP = gameData.objs.renderObjP + nLightObj;
+tObject *lightObjP = OBJECTS + nLightObj;
 if (lightObjP->nSignature != gameData.objs.lightObjs [nObject].nSignature) {
 	gameData.objs.lightObjs [nObject].nObject = -1;
 	return 0;
 	}
-tObject *objP = gameData.objs.renderObjP + nObject;
+tObject *objP = OBJECTS + nObject;
 if (lightObjP->lifeleft < objP->lifeleft)
 	lightObjP->lifeleft = objP->lifeleft;
 if (!lightObjP->cType.lightInfo.nObjects++) {
@@ -365,7 +365,7 @@ void ApplyLight (
 	short			nLightObj;
 	vmsVector	*vVertPos;
 	fix			dist, xOrigIntensity = xObjIntensity;
-	tObject		*lightObjP, *objP = (nObject < 0) ? NULL : gameData.objs.renderObjP + nObject;
+	tObject		*lightObjP, *objP = (nObject < 0) ? NULL : OBJECTS + nObject;
 	tPlayer		*playerP = objP ? gameData.multiplayer.players + objP->id : NULL;
 
 if (objP && SHOW_DYN_LIGHT) {
@@ -406,7 +406,7 @@ if (objP && SHOW_DYN_LIGHT) {
 	if (0 > (nLightObj = gameData.objs.lightObjs [nObject].nObject))
 		lightObjP = NULL;
 	else
-		lightObjP = gameData.objs.renderObjP + nLightObj;
+		lightObjP = OBJECTS + nLightObj;
 	if (!InitClusterLight (nObject, color, xObjIntensity))
 		AddDynLight (NULL, color, xObjIntensity, -1, -1, nObject, -1, NULL);
 	return;
@@ -560,7 +560,7 @@ fix	objLightXlat [16] =
 
 fix ComputeLightIntensity (int nObject, tRgbaColorf *colorP, char *pbGotColor)
 {
-	tObject		*objP = gameData.objs.renderObjP + nObject;
+	tObject		*objP = OBJECTS + nObject;
 	int			nObjType = objP->nType;
    fix			hoardlight, s;
 	static tRgbaColorf powerupColors [9] = {
@@ -792,9 +792,9 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.nLightingMethod) {
 	}
 //	July 5, 1995: New faster dynamic lighting code.  About 5% faster on the PC (un-optimized).
 //	Only objects which are in rendered segments cast dynamic light.  We might want to extend this
-//	one or two segments if we notice light changing as gameData.objs.renderObjP go offscreen.  I couldn't see any
+//	one or two segments if we notice light changing as OBJECTS go offscreen.  I couldn't see any
 //	serious visual degradation.  In fact, I could see no humorous degradation, either. --MK
-for (nObject = 0, objP = gameData.objs.renderObjP; nObject <= gameData.objs.nLastRenderObj; nObject++, objP++) {
+for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject; nObject++, objP++) {
 	if (objP->nType == OBJ_NONE)
 		continue;
 	if (SkipPowerup (objP))
@@ -809,8 +809,8 @@ for (nObject = 0, objP = gameData.objs.renderObjP; nObject <= gameData.objs.nLas
 		}
 	}
 //	Now, process all lights from last frame which haven't been processed this frame.
-for (nObject = 0; nObject <= gameData.objs.nLastRenderObj; nObject++) {
-	//	In multiplayer games, process even unprocessed gameData.objs.renderObjP every 4th frame, else don't know about tPlayer sneaking up.
+for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
+	//	In multiplayer games, process even unprocessed OBJECTS every 4th frame, else don't know about tPlayer sneaking up.
 	if ((gameData.render.lights.objects [nObject]) || 
 		 (IsMultiGame && (((nObject ^ gameData.app.nFrameCount) & 3) == 0))) {
 		if (gameData.render.lights.newObjects [nObject])
@@ -819,7 +819,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastRenderObj; nObject++) {
 			gameData.render.lights.objects [nObject] = gameData.render.lights.newObjects [nObject];
 		else {
 			//	Lit last frame, but not this frame.  Get intensity...
-			objP = gameData.objs.renderObjP + nObject;
+			objP = OBJECTS + nObject;
 			objPos = &objP->position.vPos;
 			xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);
 			if (bGotColor)
@@ -882,7 +882,7 @@ fix ComputeObjectLight (tObject *objP, vmsVector *vRotated)
 	int nObject = OBJ_IDX (objP);
 	if (nObject < 0)
 		return F1_0;
-	if (nObject >= gameData.objs.nLastRenderObj)
+	if (nObject >= gameData.objs.nLastObject)
 		return 0;
 	//First, get static light for this tSegment
 if (gameOpts->render.nLightingMethod && !((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {

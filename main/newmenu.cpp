@@ -1559,7 +1559,6 @@ FlushInput ();
 
 if (nItems < 1)
 	return -1;
-ClaimRenderContext ();
 SDL_ShowCursor (0);
 SDL_EnableKeyRepeat(60, 30);
 gameStates.menus.nInMenu++;
@@ -1697,13 +1696,15 @@ while (!done) {
 			GrSetCurrentCanvas (game_canvas);
 			//GrPaletteStepLoad (gamePalette);
 			//GrCopyPalette (grPalette, gamePalette, sizeof (grPalette));
-			if (gameData.app.bGamePaused /*|| timer_paused*/) {
-				GameRenderFrame ();
-				gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-				G3_SLEEP (0);
-				}
-			else {
-				GameLoop (1, 0);
+			if (!gameStates.app.bShowError) {
+				if (gameData.app.bGamePaused /*|| timer_paused*/) {
+					GameRenderFrame ();
+					gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
+					G3_SLEEP (0);
+					}
+				else {
+					GameLoop (1, 0);
+					}
 				}
 			GrSetCurrentCanvas (save_canvas);
 			GrPaletteStepLoad (menuPalette);
@@ -2444,7 +2445,6 @@ GrPaletteStepUp (0, 0, 0);
 SDL_EnableKeyRepeat (0, 0);
 if (gameStates.app.bGameRunning && IsMultiGame)
 	MultiSendMsgQuit();
-YieldRenderContext ();
 return choice;
 }
 
@@ -2602,7 +2602,6 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	if (! (filenames = (char *) D2_ALLOC (MAX_FILES * (FILENAME_LEN + 1))))
 		return 0;
 
-	ClaimRenderContext ();
 	memset (&bg, 0, sizeof (bg));
 	bg.bIgnoreBg = 1;
 	cItem = 0;
@@ -3118,7 +3117,6 @@ ExitFileMenu:
 		D2_FREE (filenames);
 
 	SDL_EnableKeyRepeat(0, 0);
-	YieldRenderContext ();
 	return exitValue;
 
 }
@@ -3174,7 +3172,6 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 	gameStates.input.keys.bRepeat = 1;
 
 //	SetScreenMode (SCREEN_MENU);
-	ClaimRenderContext ();
 	SetPopupScreenMode ();
 	memset (&bg, 0, sizeof (bg));
 	bg.bIgnoreBg = 1;
@@ -3518,7 +3515,6 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 		GrUpdate (0);
 		}
 SDL_EnableKeyRepeat(0, 0);
-YieldRenderContext ();
 return cItem;
 }
 

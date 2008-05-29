@@ -511,7 +511,7 @@ fpDrawTexPolyMulti (
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 gameStates.ogl.fAlpha = 1;
 	// render the tSegment the tPlayer is in with a transparent color if it is a water or lava tSegment
-	//if (nSegment == gameData.objs.renderObjP->nSegment) 
+	//if (nSegment == OBJECTS->nSegment) 
 #ifdef _DEBUG
 if (bOutLineMode) 
 	DrawOutline (props.nVertices, pointList);
@@ -702,7 +702,7 @@ void DoRenderObject (int nObject, int nWindow)
 #ifdef EDITOR
 	int save_3d_outline=0;
 #endif
-	tObject *objP = gameData.objs.renderObjP + nObject, *hObj;
+	tObject *objP = OBJECTS + nObject, *hObj;
 	tWindowRenderedData *wrd = windowRenderedData + nWindow;
 	int nType, count = 0;
 	int n;
@@ -723,7 +723,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		}
 	}
 //	Added by MK on 09/07/94 (at about 5:28 pm, CDT, on a beautiful, sunny late summer day!) so
-//	that the guided missile system will know what gameData.objs.renderObjP to look at.
+//	that the guided missile system will know what OBJECTS to look at.
 //	I didn't know we had guided missiles before the release of D1. --MK
 nType = objP->nType;
 if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
@@ -757,7 +757,7 @@ if (bSearchMode)
 if (RenderObject (objP, nWindow, 0))
 	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
 for (n = objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {
-	hObj = gameData.objs.renderObjP + n;
+	hObj = OBJECTS + n;
 	Assert (hObj->nType == OBJ_FIREBALL);
 	Assert (hObj->controlType == CT_EXPLOSION);
 	Assert (hObj->flags & OF_ATTACHED);
@@ -1392,7 +1392,7 @@ void AddObjectToSegList (short nObject, short nSegment)
 pi->nNextItem = gameData.render.mine.renderObjs.ref [nSegment];
 gameData.render.mine.renderObjs.ref [nSegment] = gameData.render.mine.renderObjs.nUsed++;
 pi->nObject = nObject;
-pi->xDist = VmVecDistQuick (&gameData.objs.renderObjP [nObject].position.vPos, &gameData.render.mine.viewerEye);
+pi->xDist = VmVecDistQuick (&OBJECTS [nObject].position.vPos, &gameData.render.mine.viewerEye);
 }
 
 //------------------------------------------------------------------------------
@@ -1400,12 +1400,12 @@ pi->xDist = VmVecDistQuick (&gameData.objs.renderObjP [nObject].position.vPos, &
 void BuildRenderObjLists (int nSegCount)
 {
 PROF_START
-	tObject	*objP;
-	tSegment	*segP;
+	tObject		*objP;
+	tSegment		*segP;
 	tSegMasks	mask;
-	short		nSegment, nNewSeg, nChild, nSide, sideFlag;
-	int		nListPos;
-	short		nObject;
+	short			nSegment, nNewSeg, nChild, nSide, sideFlag;
+	int			nListPos;
+	short			nObject;
 
 memset (gameData.render.mine.renderObjs.ref, 0xff, gameData.segs.nSegments * sizeof (gameData.render.mine.renderObjs.ref [0]));
 gameData.render.mine.renderObjs.nUsed = 0;
@@ -1419,7 +1419,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		nSegment = nSegment;
 #endif
 	for (nObject = gameData.segs.renderObjP [nSegment]; nObject != -1; nObject = objP->next) {
-		objP = gameData.objs.renderObjP + nObject;
+		objP = OBJECTS + nObject;
 		Assert (objP->nSegment == nSegment);
 		if (objP->flags & OF_ATTACHED)
 			continue;		//ignore this tObject
@@ -2467,7 +2467,6 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 			RenderEnergySparks ();
 		}
 	}
-PROF_END(ptRenderMine)
 }
 
 // ----------------------------------------------------------------------------

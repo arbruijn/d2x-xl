@@ -1111,6 +1111,7 @@ typedef struct tApplicationStates {
 	int bUseSwapFile;
 	int bSingleStep;
 	int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
+	int bShowError;
 	fix xThisLevelTime;
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
@@ -1623,10 +1624,6 @@ typedef struct tRenderData {
 	int						nShaderChanges;
 	float						fAttScale;
 	ubyte						nPowerupFilter;
-#ifdef _WIN32
-	HDC						currentDC;
-	HGLRC						currentRC;
-#endif
 } tRenderData;
 
 //------------------------------------------------------------------------------
@@ -1710,8 +1707,7 @@ typedef struct tSegmentData {
 	xsegment				*xSegments;
 	tSegFaces			*segFaces;
 	g3sPoint				*points;
-	short					*objects [2];
-	short					*objP;
+	short					*objects;
 	short					*renderObjP;
 	tSegList				skybox;
 #if CALC_SEGRADS
@@ -1869,9 +1865,7 @@ typedef struct tShotInfo {
 
 typedef struct tObjectData {
 	tObjTypeData		types;
-	tObject				*objects [2];
-	tObject				*objP;
-	tObject				*renderObjP;
+	tObject				*objects;
 	short					*freeList;
 	short					*parentObjs;
 	tObjectRef			*childObjs;
@@ -1904,9 +1898,7 @@ typedef struct tObjectData {
 	tObject				*deadPlayerCamera;
 	tObject				*endLevelCamera;
 	int					nObjects;
-	int					nRenderObjs;
 	int					nLastObject;
-	int					nLastRenderObj;
 	int					nObjectLimit;
 	int					nMaxUsedObjects;
 	int					nNextSignature;
@@ -3330,7 +3322,7 @@ static inline fix SegmentVolume (short nSegment)
 
 static inline short ObjIdx (tObject *objP)
 {
-	size_t	i = (char *) objP - (char *) gameData.objs.objP;
+	size_t	i = (char *) objP - (char *) gameData.objs.objects;
 
 if ((i < 0) || (i > gameData.objs.nLastObject * sizeof (tObject)) || (i % sizeof (tObject)))
 	return -1;
@@ -3417,7 +3409,7 @@ extern fix nDebrisLife [];
 #define SEGMENTS	gameData.segs.segments
 #define SEGMENT2S	gameData.segs.segment2s
 #define SEGFACES	gameData.segs.segFaces
-#define OBJECTS	gameData.objs.objP
+#define OBJECTS	gameData.objs.objects
 #define WALLS		gameData.walls.walls
 #define FACES		gameData.segs.faces.faces
 #define TRIANGLES	gameData.segs.faces.tris

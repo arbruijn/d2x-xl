@@ -28,9 +28,6 @@
 
 void AllocSegmentSparks (short nSegment)
 {
-while (gameStates.render.bSparks)
-	G3_SLEEP (0);
-
 	int				nMatCen = nSegment;
 	tSegment2		*seg2P = gameData.segs.segment2s + (nSegment = gameData.matCens.sparkSegs [nSegment]);
 	int				i, bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
@@ -53,9 +50,6 @@ else {
 
 void FreeSegmentSparks (short nSegment)
 {
-while (gameStates.render.bSparks)
-	G3_SLEEP (0);
-
 	int				nMatCen = nSegment;
 	tSegment2		*seg2P = gameData.segs.segment2s + (nSegment = gameData.matCens.sparkSegs [nSegment]);
 	int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
@@ -71,9 +65,6 @@ if (segP->sparks) {
 
 void CreateSegmentSparks (short nSegment)
 {
-while (gameStates.render.bSparks)
-	G3_SLEEP (0);
-
 	int				nMatCen = nSegment;
 	tSegment2		*seg2P = gameData.segs.segment2s + (nSegment = gameData.matCens.sparkSegs [nSegment]);
 	int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
@@ -116,9 +107,6 @@ for (i = segP->nMaxSparks; i; i--, sparkP++) {
 
 void UpdateSegmentSparks (short nSegment)
 {
-while (gameStates.render.bSparks)
-	G3_SLEEP (0);
-
 	int				nMatCen = nSegment;
 	tSegment2		*seg2P = gameData.segs.segment2s + (nSegment = gameData.matCens.sparkSegs [nSegment]);
 	int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
@@ -223,9 +211,6 @@ return gameData.matCens.nSparkSegs;
 
 void AllocEnergySparks (void)
 {
-while (gameStates.render.bSparks)
-	G3_SLEEP (0);
-
 	short	nSegment;
 
 if (gameOpts->render.effects.bEnergySparks && BuildSparkSegList ()) {
@@ -247,9 +232,6 @@ if (gameOpts->render.effects.bEnergySparks && BuildSparkSegList ()) {
 
 void FreeEnergySparks (void)
 {
-while (gameStates.render.bSparks)
-	G3_SLEEP (0);
-
 	short	nSegment;
 
 if (gameOpts->render.effects.bEnergySparks)

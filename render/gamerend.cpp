@@ -811,7 +811,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 			if ((nPlayer != -1) && 
 				 gameData.multiplayer.players [nPlayer].connected && 
 				 (IsCoopGame || (IsTeamGame && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer)))))
-				DoCockpitWindowView (w, &gameData.objs.renderObjP [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
+				DoCockpitWindowView (w, &OBJECTS [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
 			else {
 				DoCockpitWindowView (w, NULL, 0, WBU_WEAPON, NULL);
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
@@ -828,7 +828,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 				break;
 				}
 			sprintf (label, "Marker %d", gameData.marker.viewers [w]+1);
-			DoCockpitWindowView (w, gameData.objs.renderObjP + gameData.marker.objects [gameData.marker.viewers [w]], 0, WBU_MARKER, label);
+			DoCockpitWindowView (w, OBJECTS + gameData.marker.objects [gameData.marker.viewers [w]], 0, WBU_MARKER, label);
 			break;
 			}
 
@@ -1227,6 +1227,7 @@ if (SHOW_COCKPIT)
 
 void GameRenderFrame ()
 {
+PROF_START
 SetScreenMode (SCREEN_GAME);
 PlayHomingWarning ();
 GrPaletteStepLoad (gamePalette);
@@ -1236,6 +1237,7 @@ StopTime ();
 GrPaletteFadeIn (NULL, 32, 0);
 StartTime (0);
 gameData.app.nFrameCount++;
+PROF_END(ptRenderMine)
 }
 
 //------------------------------------------------------------------------------

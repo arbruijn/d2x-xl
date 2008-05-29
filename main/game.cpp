@@ -1302,7 +1302,6 @@ if (gameData.missions.nCurrentLevel == 0) {			//not a real level
 //con_printf (CONDBG, "   FixObjectSegs d:\temp\dm_test.\n");
 #endif
 GameFlushInputs ();
-YieldRenderContext ();
 }
 
 //------------------------------------------------------------------------------
@@ -1436,7 +1435,6 @@ for (;;) {
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
 #endif
-ClaimRenderContext ();
 DigiStopAll ();
 if (gameStates.sound.bD1Sound) {
 	gameStates.sound.bD1Sound = 0;
@@ -1969,32 +1967,7 @@ if (nDebugSlowdown) {
 			gameStates.render.cockpit.bRedraw = 0;
 		}
 //PrintLog ("GameRenderFrame\n");
-#ifdef _WIN32
-		GLuint nError = glGetError ();
-		if (gameStates.app.bMultiThreaded && gameData.render.currentDC && gameData.render.currentRC) {
-			WaitForRenderThreads ();
-			if (!RunRenderThreads (rtRenderFrame)) {
-				nError = wglMakeCurrent (gameData.render.currentDC, gameData.render.currentRC);
-				gameData.segs.renderObjP = gameData.segs.objects [0];
-				gameData.objs.renderObjP = gameData.objs.objects [0];
-				gameData.objs.nRenderObjs = gameData.objs.nObjects;
-				gameData.objs.nLastRenderObj = gameData.objs.nLastObject;
-				GameRenderFrame ();
-				}
-			}
-		else {
-			nError = glGetError ();
-			gameData.objs.renderObjP = gameData.objs.objects [0];
-			gameData.objs.nRenderObjs = gameData.objs.nObjects;
-			gameData.objs.nLastRenderObj = gameData.objs.nLastObject;
-			GameRenderFrame ();
-			}
-#else
-		gameData.objs.renderObjP = gameData.objs.objects [0];
-		gameData.objs.nRenderObjs = gameData.objs.nObjects;
-		gameData.objs.nLastRenderObj = gameData.objs.nLastObject;
 		GameRenderFrame ();
-#endif
 		gameStates.app.bUsingConverter = 0;
 
 #ifdef _DEBUG

@@ -2408,8 +2408,7 @@ GETMEM (tSegment, gameData.segs.segments, MAX_SEGMENTS, 0);
 GETMEM (tSegment2, gameData.segs.segment2s, MAX_SEGMENTS, 0);
 GETMEM (xsegment, gameData.segs.xSegments, MAX_SEGMENTS, 0);
 GETMEM (g3sPoint, gameData.segs.points, 65536, 0);
-GETMEM (short, gameData.segs.objects [0], 2 * MAX_SEGMENTS, 0);
-gameData.segs.objects [1] = gameData.segs.objects [0] + MAX_SEGMENTS;
+GETMEM (short, gameData.segs.objects, MAX_SEGMENTS, 0);
 #if CALC_SEGRADS
 GETMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS, 0);
 GETMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS, 0);
@@ -2433,16 +2432,13 @@ GETMEM (tRgbaColorf, gameData.segs.faces.color, MAX_TRIANGLES * 3, 0);
 GETMEM (tTexCoord2f, gameData.segs.faces.texCoord, MAX_TRIANGLES * 2 * 3, 0);
 GETMEM (tTexCoord2f, gameData.segs.faces.lMapTexCoord, MAX_FACES * 2, 0);
 gameData.segs.faces.ovlTexCoord = gameData.segs.faces.texCoord + MAX_FACES * 4;
-gameData.segs.objP = 
-gameData.segs.renderObjP = gameData.segs.objects [0];
 }
 
 // ----------------------------------------------------------------------------
 
 void AllocObjectData (void)
 {
-GETMEM (tObject, gameData.objs.objects [0], 2 * MAX_OBJECTS, 0);
-gameData.objs.objects [1] = gameData.objs.objects [0] + MAX_OBJECTS;
+GETMEM (tObject, gameData.objs.objects, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.freeList, MAX_OBJECTS, 0);
 GETMEM (tLightObjId, gameData.objs.lightObjs, MAX_OBJECTS, (char) 0xff);
 GETMEM (tShotInfo, gameData.objs.shots, MAX_OBJECTS, (char) 0xff);
@@ -2464,8 +2460,6 @@ GETMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS, 0);
 GETMEM (tObjectViewData, gameData.objs.viewData, MAX_OBJECTS, (char) 0xFF);
 GETMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS, 0);
-gameData.objs.objP = 
-gameData.objs.renderObjP = gameData.objs.objects [0];
 }
 
 // ----------------------------------------------------------------------------
@@ -2615,7 +2609,7 @@ FREEMEM (tSegment, gameData.segs.segments, MAX_SEGMENTS);
 FREEMEM (tSegment2, gameData.segs.segment2s, MAX_SEGMENTS);
 FREEMEM (xsegment, gameData.segs.xSegments, MAX_SEGMENTS);
 FREEMEM (g3sPoint, gameData.segs.points, MAX_VERTICES);
-FREEMEM (short, gameData.segs.objects [0], 2 * MAX_SEGMENTS);
+FREEMEM (short, gameData.segs.objects, MAX_SEGMENTS);
 #if CALC_SEGRADS
 FREEMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS);
 FREEMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS);
@@ -2644,7 +2638,7 @@ FREEMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS);
 
 void FreeObjectData (void)
 {
-FREEMEM (tObject, gameData.objs.objects [0], 2 * MAX_OBJECTS);
+FREEMEM (tObject, gameData.objs.objects, MAX_OBJECTS);
 FREEMEM (short, gameData.objs.freeList, MAX_OBJECTS);
 FREEMEM (tLightObjId, gameData.objs.lightObjs, MAX_OBJECTS);
 FREEMEM (tShotInfo, gameData.objs.shots, MAX_OBJECTS);

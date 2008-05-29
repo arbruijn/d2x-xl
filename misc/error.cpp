@@ -169,7 +169,9 @@ va_start (arglist,fmt);
 vsprintf (szExitMsg + strlen (szExitMsg), fmt, arglist);
 va_end(arglist);
 PrintLog ("ERROR: %s\n", szExitMsg);
+gameStates.app.bShowError = 1;
 D2MsgBox (szExitMsg, MB_ICONERROR);
+gameStates.app.bShowError = 0;
 Int3();
 if (!err_initialized) 
 	print_exit_message();
@@ -205,7 +207,9 @@ va_start (arglist, fmt);
 vsprintf (szWarnMsg + strlen (szWarnMsg), fmt, arglist);
 va_end (arglist);
 	//PrintLog (szWarnMsg);
+gameStates.app.bShowError = 1;
 D2MsgBox (szWarnMsg, MB_ICONWARNING);
+gameStates.app.bShowError = 0;
 }
 
 //------------------------------------------------------------------------------

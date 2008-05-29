@@ -1550,7 +1550,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	VmVecSub (&vDirf, vPosf, vPosf + 1);
 	if (!(vDirf.p.x || vDirf.p.y || vDirf.p.z)) {
 		//return;
-		VmVecFixToFloat (vPosf + 1, &gameData.objs.renderObjP [objP->cType.laserInfo.nParentObj].position.vPos);
+		VmVecFixToFloat (vPosf + 1, &OBJECTS [objP->cType.laserInfo.nParentObj].position.vPos);
 		G3TransformPoint (vPosf + 1, vPosf + 1, 0);
 		VmVecSub (&vDirf, vPosf, vPosf + 1);
 		if (!(vDirf.p.x || vDirf.p.y || vDirf.p.z))
@@ -1594,7 +1594,7 @@ void Laser_draw_one (int nObject, grsBitmap * bmp)
 {
 	int t1, t2, t3;
 	g3sPoint p1, p2;
-	tObject *objP = gameData.objs.renderObjP + nObject;
+	tObject *objP = OBJECTS + nObject;
 	vmsVector start_pos,vEndPos;
 	fix Laser_length = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad * 2;
 	fix Laser_width = Laser_length / 8;

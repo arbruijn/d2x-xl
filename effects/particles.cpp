@@ -375,9 +375,6 @@ int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir, vmsM
 						  float nScale, tRgbaColorf *pColor, int nCurTime, int bBlowUp,
 						  float fBrightness, vmsVector *vEmittingFace)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
-
 	vmsVector	vDrift, vPos;
 	int			nRad, nFrames, nType = ParticleImageType (nSmokeType);
 
@@ -611,9 +608,6 @@ return 0;
 
 int UpdateParticle (tParticle *pParticle, int nCurTime)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
-
 	int			j, nRad;
 	fix			t, dot;
 	vmsVector	pos, drift;
@@ -1679,9 +1673,6 @@ return NULL;
 
 int DestroySmoke (int iSmoke)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
-
 	int		i;
 	tSmoke	*pSmoke;
 
@@ -1730,8 +1721,6 @@ int CreateSmoke (vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
 					  float nPartScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType, 
 					  int nObject, tRgbaColorf *pColor, int bBlowUpParts, char nSide)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
 #if 0
 if (!(EGI_FLAG (bUseSmoke, 0, 1, 0)))
 	return 0;
@@ -1760,7 +1749,7 @@ else {
 		return 0;
 		}
 	if ((pSmoke->nObject = nObject) != 0x7fffffff) {
-		pSmoke->nSignature = OBJECTS [nObject].nSignature;
+ 		pSmoke->nSignature = OBJECTS [nObject].nSignature;
 		pSmoke->nObjType = OBJECTS [nObject].nType;
 		pSmoke->nObjId = OBJECTS [nObject].id;
 		}
@@ -2174,8 +2163,6 @@ gameStates.render.bSmoke = 0;
 
 void SetSmokePos (int i, vmsVector *pos, vmsMatrix *orient, short nSegment)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds)
@@ -2195,8 +2182,6 @@ if (IsUsedSmoke (i)) {
 
 void SetSmokeDensity (int i, int nMaxParts, int nDensity)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
 nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.smoke.nDens [0]);
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
@@ -2210,8 +2195,6 @@ if (IsUsedSmoke (i)) {
 
 void SetSmokePartScale (int i, float nPartScale)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds)
@@ -2224,8 +2207,6 @@ if (IsUsedSmoke (i)) {
 
 void SetSmokeLife (int i, int nLife)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds && (pSmoke->pClouds->nLife != nLife)) {
@@ -2241,8 +2222,6 @@ if (IsUsedSmoke (i)) {
 
 void SetSmokeBrightness (int i, int nBrightness)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds && (pSmoke->pClouds->nDefBrightness != nBrightness)) {
@@ -2258,8 +2237,6 @@ if (IsUsedSmoke (i)) {
 
 void SetSmokeType (int i, int nType)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	pSmoke->nType = nType;
@@ -2272,8 +2249,6 @@ if (IsUsedSmoke (i)) {
 
 void SetSmokeSpeed (int i, int nSpeed)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	pSmoke->nSpeed = nSpeed;
@@ -2286,8 +2261,6 @@ if (IsUsedSmoke (i)) {
 
 void SetSmokeDir (int i, vmsVector *pDir)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	for (i = 0; i < pSmoke->nClouds; i++)
@@ -2299,8 +2272,6 @@ if (IsUsedSmoke (i)) {
 
 int SetSmokeObject (int nObject, int nSmoke)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
 if ((nObject < 0) || (nObject >= MAX_OBJECTS))
 	return -1;
 return gameData.smoke.objects [nObject] = nSmoke;
@@ -2310,8 +2281,6 @@ return gameData.smoke.objects [nObject] = nSmoke;
 
 int GetSmokeType (int i)
 {
-while (gameStates.render.bSmoke)
-	G3_SLEEP (0);
 return (IsUsedSmoke (i)) ? gameData.smoke.buffer [i].nType : -1;
 }
 

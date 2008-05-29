@@ -246,7 +246,7 @@ if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 	//completely ignores z, which may not be good
 	if ((abs (temp.p3_x) < F1_0 * 4) && (abs (temp.p3_y) < F1_0 * 4)) {
 		objP->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
-		objP->cType.aiInfo.nDangerLaserSig = gameData.objs.renderObjP [gameStates.app.bPlayerFiredLaserThisFrame].nSignature;
+		objP->cType.aiInfo.nDangerLaserSig = OBJECTS [gameStates.app.bPlayerFiredLaserThisFrame].nSignature;
 		}
 	}
 }
