@@ -34,14 +34,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 tRenderThreadInfo tiRender;
 tRenderItemThreadInfo tiRenderItems;
 
-int bUseMultiThreading [rtTaskCount] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+int bUseMultiThreading [rtTaskCount + 1] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1};
 
 //------------------------------------------------------------------------------
 
 void WaitForRenderThreads (void)
 {
 if (gameStates.app.bMultiThreaded)
-	while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
+	while (tiRender.ti [0].bExec)
 		G3_SLEEP (0);	//already running, so wait
 }
 
@@ -105,7 +105,11 @@ extern HGLRC currentContext;
 
 int _CDECL_ RenderThread (void *pThreadId)
 {
-	int	nId = *((int *) pThreadId);
+	GLuint	nError;
+	int		nId = *((int *) pThreadId);
+#ifdef _WIN32
+	HGLRC		myContext = 0;
+#endif
 
 do {
 	while (!tiRender.ti [nId].bExec) {
@@ -113,13 +117,14 @@ do {
 		if (tiRender.ti [nId].bDone)
 			return 0;
 		}
-	if (tiRender.nTask == rtRenderFrame) {
-		GLuint nError;
-		if (wglMakeCurrent (currentDC, currentContext))
-			GameRenderFrame ();
-		else
+	if (tiRender.nTask == rtRenderFrame + 1) {
+#ifdef _WIN32
+		if (!wglMakeCurrent (currentDC, currentContext))
 			nError = glGetError ();
-		wglMakeCurrent (NULL, NULL);
+#endif
+		}
+	else if (tiRender.nTask == rtRenderFrame) {
+		GameRenderFrame ();
 		}
 	else if (tiRender.nTask == rtSortSegZRef) {
 		if (nId)
@@ -194,6 +199,10 @@ do {
 		RenderCloud (tiRender.clouds [nId], nId);
 	tiRender.ti [nId].bExec = 0;
 	} while (!tiRender.ti [nId].bDone);
+#ifdef _WIN32
+if (myContext)
+	wglDeleteContext (myContext);
+#endif
 return 0;
 }
 

@@ -1261,6 +1261,8 @@ void GameDisableCheats ()
 
 void GameSetup (void)
 {
+	GLuint nError;
+
 DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
 DoLunacyOff ();		//	Restore true insane mode.
 gameStates.app.bGameAborted = 0;
@@ -1310,6 +1312,11 @@ GameFlushInputs ();
 #ifdef _WIN32
 currentDC = wglGetCurrentDC ();
 currentContext = wglGetCurrentContext ();
+if (currentDC && currentContext && wglMakeCurrent (0, 0)) {
+	RunRenderThreads (rtRenderFrame + 1);
+	WaitForRenderThreads ();
+	nError = wglMakeCurrent (currentDC, currentContext);
+	}
 #endif
 }
 
@@ -1443,6 +1450,10 @@ for (;;) {
 	}
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
+#endif
+#ifdef _WIN32
+if (currentDC && currentContext)
+	wglMakeCurrent (currentDC, currentContext);
 #endif
 DigiStopAll ();
 if (gameStates.sound.bD1Sound) {
@@ -1978,11 +1989,9 @@ DrainHeadlightPower ();
 //PrintLog ("GameRenderFrame\n");
 #ifdef _WIN32
 		GLuint nError = glGetError ();
-		if (currentDC && currentContext && wglMakeCurrent (NULL, NULL)) {
+		if (currentDC && currentContext) {
 			WaitForRenderThreads ();
-			if (RunRenderThreads (rtRenderFrame))
-				nError = wglMakeCurrent (currentDC, currentContext);
-			else {
+			if (!RunRenderThreads (rtRenderFrame)) {
 				nError = wglMakeCurrent (currentDC, currentContext);
 				GameRenderFrame ();
 				}
