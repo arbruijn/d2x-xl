@@ -122,6 +122,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "entropy.h"
 #include "monsterball.h"
 #include "sparkeffect.h"
+#include "transprender.h"
 
 #if defined (TACTILE)
  #include "tactile.h"

@@ -120,11 +120,11 @@ do {
 		}
 	else if (tiRender.nTask == rtRenderFrame) {
 		memcpy (gameData.objs.objects [1], gameData.objs.objects [0], gameData.objs.nLastObject * sizeof (tObject));
-		gameData.objs.renderObjP = gameData.objs.objects [1]);
+		gameData.objs.renderObjP = gameData.objs.objects [1];
 		gameData.objs.nRenderObjs = gameData.objs.nObjects;
 		gameData.objs.nLastRenderObj = gameData.objs.nLastObject;
 		GameRenderFrame ();
-		gameData.objs.renderObjP = gameData.objs.objects [0]);
+		gameData.objs.renderObjP = gameData.objs.objects [0];
 		}
 	else if (tiRender.nTask == rtSortSegZRef) {
 		if (nId)

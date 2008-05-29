@@ -1975,14 +1975,23 @@ DrainHeadlightPower ();
 			WaitForRenderThreads ();
 			if (!RunRenderThreads (rtRenderFrame)) {
 				nError = wglMakeCurrent (gameData.render.currentDC, gameData.render.currentRC);
+				gameData.objs.renderObjP = gameData.objs.objects [0];
+				gameData.objs.nRenderObjs = gameData.objs.nObjects;
+				gameData.objs.nLastRenderObj = gameData.objs.nLastObject;
 				GameRenderFrame ();
 				}
 			}
 		else {
 			nError = glGetError ();
+			gameData.objs.renderObjP = gameData.objs.objects [0];
+			gameData.objs.nRenderObjs = gameData.objs.nObjects;
+			gameData.objs.nLastRenderObj = gameData.objs.nLastObject;
 			GameRenderFrame ();
 			}
 #else
+		gameData.objs.renderObjP = gameData.objs.objects [0];
+		gameData.objs.nRenderObjs = gameData.objs.nObjects;
+		gameData.objs.nLastRenderObj = gameData.objs.nLastObject;
 		GameRenderFrame ();
 #endif
 		gameStates.app.bUsingConverter = 0;
