@@ -504,8 +504,8 @@ int GetBossId (void)
 //	"special" is used to find OBJECTS spewed by tPlayer which is hacked into flags field of powerup.
 int ExistsInMine2 (int nSegment, int objtype, int objid, int special)
 {
-if (gameData.segs.objP [nSegment] != -1) {
-	int		id, nObject = gameData.segs.objP [nSegment];
+if (gameData.segs.objects [nSegment] != -1) {
+	int		id, nObject = gameData.segs.objects [nSegment];
 
 	while (nObject != -1) {
 		tObject	*curObjP = OBJECTS + nObject;

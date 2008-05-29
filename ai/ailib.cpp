@@ -478,7 +478,7 @@ int OpenableDoorsInSegment (short nSegment)
 int CheckObjectObjectIntersection (vmsVector *pos, fix size, tSegment *segP)
 {
 //	If this would intersect with another tObject (only check those in this tSegment), then try to move.
-short nObject = gameData.segs.objP [SEG_IDX (segP)];
+short nObject = gameData.segs.objects [SEG_IDX (segP)];
 tObject *objP;
 while (nObject != -1) {
 	objP = OBJECTS + nObject;

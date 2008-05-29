@@ -31,7 +31,7 @@ for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP
 	if ((objP->nType != nType) || (objP->id != id))
 		continue;
 	nTotal++;
-	for (bFree = 1, j = gameData.segs.objP [objP->nSegment]; j != -1; j = OBJECTS [j].next)
+	for (bFree = 1, j = gameData.segs.objects [objP->nSegment]; j != -1; j = OBJECTS [j].next)
 		if ((OBJECTS [j].nType == nType) && (OBJECTS [j].id == id)) {
 			bFree = 0;
 			break;
@@ -67,7 +67,7 @@ for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP
 	// if the current tSegment does not contain a powerup of the nType being looked for, 
 	// return that tSegment
 	if (bUseFree) {
-		for (bUsed = 0, j = gameData.segs.objP [objP->nSegment]; j != -1; j = OBJECTS [j].next)
+		for (bUsed = 0, j = gameData.segs.objects [objP->nSegment]; j != -1; j = OBJECTS [j].next)
 			if ((OBJECTS [j].nType == nType) && (OBJECTS [j].id == id)) {
 				bUsed = 1;
 				break;
@@ -404,7 +404,7 @@ int SegmentContainsObject (int objType, int obj_id, int nSegment)
 
 if (nSegment == -1)
 	return 0;
-nObject = gameData.segs.objP [nSegment];
+nObject = gameData.segs.objects [nSegment];
 while (nObject != -1)
 	if ((OBJECTS [nObject].nType == objType) && (OBJECTS [nObject].id == obj_id))
 		return 1;

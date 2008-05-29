@@ -540,7 +540,7 @@ if (!matCenP->bFlag) {
 	topTime = EQUIP_GEN_TIME;
 	if (matCenP->xTimer < topTime)
 		return;
-	nObject = gameData.segs.objP [matCenP->nSegment];
+	nObject = gameData.segs.objects [matCenP->nSegment];
 	while (nObject >= 0) {
 		objP = OBJECTS + nObject;
 		if ((objP->nType == OBJ_POWERUP) || (objP->id == OBJ_PLAYER)) {
@@ -606,7 +606,7 @@ if (!matCenP->bFlag) {
 	topTime = i2f (extraGameInfo [1].entropy.nVirusGenTime);
 	if (matCenP->xTimer < topTime)
 		return;
-	nObject = gameData.segs.objP [matCenP->nSegment];
+	nObject = gameData.segs.objects [matCenP->nSegment];
 	while (nObject >= 0) {
 		objP = OBJECTS + nObject;
 		if ((objP->nType == OBJ_POWERUP) && (objP->id == POW_ENTROPY_VIRUS)) {
@@ -739,7 +739,7 @@ if (!matCenP->bFlag) {
 		//	Whack on any robot or tPlayer in the matcen tSegment.
 	nCount = 0;
 	nSegment = matCenP->nSegment;
-	for (nObject = gameData.segs.objP [nSegment]; nObject != -1; nObject = OBJECTS [nObject].next) {
+	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = OBJECTS [nObject].next) {
 		nCount++;
 		if (nCount > MAX_OBJECTS) {
 #if TRACE
@@ -1423,7 +1423,7 @@ int FlagAtHome (int nFlagId)
 	tObject	*objP;
 
 for (i = flagGoalRoots [nFlagId - POW_BLUEFLAG]; i >= 0; i = flagGoalList [i])
-	for (j = gameData.segs.objP [i]; j >= 0; j = objP->next) {
+	for (j = gameData.segs.objects [i]; j >= 0; j = objP->next) {
 		objP = OBJECTS + j;
 		if ((objP->nType == OBJ_POWERUP) && (objP->id == nFlagId))
 			return 1;

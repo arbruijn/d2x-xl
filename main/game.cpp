@@ -2277,7 +2277,7 @@ CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
 void PowerupGrabCheatAll (void)
 {
 if (gameStates.app.tick40fps.bTick) {
-	short nObject = gameData.segs.objP [gameData.objs.console->nSegment];
+	short nObject = gameData.segs.objects [gameData.objs.console->nSegment];
 	while (nObject != -1) {
 		if (OBJECTS [nObject].nType == OBJ_POWERUP)
 			PowerupGrabCheat (gameData.objs.console, nObject);
