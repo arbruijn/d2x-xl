@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_color.h"
 #include "ogl_render.h"
 #include "renderlib.h"
+#include "renderthreads.h"
 
 //------------------------------------------------------------------------------
 
@@ -966,8 +967,8 @@ void YieldRenderContext (void)
 if (gameStates.app.bMultiThreaded) {
 		GLuint nError;
 
-	currentDC = wglGetCurrentDC ();
-	currentRC = wglGetCurrentContext ();
+	gameData.render.currentDC = wglGetCurrentDC ();
+	gameData.render.currentRC = wglGetCurrentContext ();
 	if (gameData.render.currentDC && gameData.render.currentRC && wglMakeCurrent (0, 0)) {
 		RunRenderThreads (rtRenderInit);
 		WaitForRenderThreads ();

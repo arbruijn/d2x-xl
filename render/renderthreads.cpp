@@ -119,12 +119,12 @@ do {
 #endif
 		}
 	else if (tiRender.nTask == rtRenderFrame) {
-		memcpy (OBJECTS [1], OBJECTS [0], gameData.objs.nLastObject * sizeof (tObject));
-		gameData.objs.renderObjP = OBJECTS [1]);
-		gameData.obs.nRenderObjs = gameData.objs.nObjects;
-		gameData.obs.nLastRenderObj = gameData.objs.nLastObject;
+		memcpy (gameData.objs.objects [1], gameData.objs.objects [0], gameData.objs.nLastObject * sizeof (tObject));
+		gameData.objs.renderObjP = gameData.objs.objects [1]);
+		gameData.objs.nRenderObjs = gameData.objs.nObjects;
+		gameData.objs.nLastRenderObj = gameData.objs.nLastObject;
 		GameRenderFrame ();
-		gameData.objs.renderObjP = OBJECTS [0]);
+		gameData.objs.renderObjP = gameData.objs.objects [0]);
 		}
 	else if (tiRender.nTask == rtSortSegZRef) {
 		if (nId)

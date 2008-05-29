@@ -112,6 +112,8 @@ typedef struct tRenderItem {
 typedef struct tRenderItemBuffer {
 	tRenderItem		**pDepthBuffer;
 	tRenderItem		*pItemList;
+	int				nMinOffs;
+	int				nMaxOffs;
 	int				nItems;
 	int				nFreeItems;
 	int				nPrevType;

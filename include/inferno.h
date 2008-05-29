@@ -936,7 +936,7 @@ typedef struct tRenderStates {
 	int bGeometry;
 	int bObjects;
 	int bSmoke;
-	int bLightings;
+	int bLightnings;
 	int bSparks;
 	fix xZoom;
 	fix xZoomScale;
