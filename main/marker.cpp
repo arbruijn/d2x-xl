@@ -284,6 +284,7 @@ return 0;
 void DeleteMarker (int bForce)
 {
 if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
+	gameData.objs.viewer = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
 	if (bForce || !ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_DELETE_MARKER)) {
 		int	h, i;
 		ReleaseObject (gameData.marker.objects [gameData.marker.nHighlight]);
@@ -305,6 +306,7 @@ if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.mark
 			gameData.marker.szMessage [i][0] = '\0';
 			}
 		}				
+	gameData.objs.viewer = gameData.objs.console;
 	}
 }
 
@@ -319,6 +321,7 @@ if (!IsMultiGame || IsCoopGame) {
 	else 
 #endif
 	if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
+		gameData.objs.viewer = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
 		if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
 			tObject	*markerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight]; 
 			
@@ -329,6 +332,7 @@ if (!IsMultiGame || IsCoopGame) {
 			RelinkObject (LOCALPLAYER.nObject, markerP->nSegment);
 			gameStates.render.bDoAppearanceEffect = 1;
 			}
+		gameData.objs.viewer = gameData.objs.console;
 		}				
 	}
 }

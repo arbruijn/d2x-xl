@@ -830,9 +830,11 @@ for (i = 0; i < nVertices; i++) {
 		if (gameData.render.zMax < pnt->p3_vec.p.z)
 			gameData.render.zMax = pnt->p3_vec.p.z;
 		if (gameStates.ogl.bUseTransform) {
+#if 0
 			gameData.segs.fVertices [j].p.x = f2fl (gameData.segs.vertices [j].p.x);
 			gameData.segs.fVertices [j].p.y = f2fl (gameData.segs.vertices [j].p.y);
 			gameData.segs.fVertices [j].p.z = f2fl (gameData.segs.vertices [j].p.z);
+#endif
 			}
 		else {
 			gameData.segs.fVertices [j].p.x = f2fl (pnt->p3_vec.p.x);

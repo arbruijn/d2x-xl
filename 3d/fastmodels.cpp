@@ -886,7 +886,7 @@ else
 nGunId = EquippedPlayerGun (objP);
 nBombId = EquippedPlayerBomb (objP);
 nMissileId = EquippedPlayerMissile (objP, &nMissiles);
-if (!bHires) {
+if (!bHires && (objP->nType == OBJ_POWERUP)) {
 	if ((objP->id == POW_SMARTMINE) || (objP->id == POW_PROXMINE))
 		gameData.models.nScale = 2 * F1_0;
 	else

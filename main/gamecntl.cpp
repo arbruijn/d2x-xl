@@ -381,12 +381,12 @@ int SelectNextWindowFunction(int nWindow)
 			//if not multi, fall through
 		case CV_MARKER:
 		case_marker:;
-			if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_COOP) || netGame.bAllowMarkerView) {	//anarchy only
+			if (!IsMultiGame || IsCoopGame || netGame.bAllowMarkerView) {	//anarchy only
 				gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
-				if (gameData.marker.viewers  [nWindow] == -1)
-					gameData.marker.viewers  [nWindow] = gameData.multiplayer.nLocalPlayer * 2;
-				else if (gameData.marker.viewers  [nWindow] == gameData.multiplayer.nLocalPlayer * 2)
-					gameData.marker.viewers  [nWindow]++;
+				if (gameData.marker.viewers [nWindow] == -1)
+					gameData.marker.viewers [nWindow] = gameData.multiplayer.nLocalPlayer * 3;
+				else if (gameData.marker.viewers [nWindow] < gameData.multiplayer.nLocalPlayer * 3 + MaxDrop ())
+					gameData.marker.viewers [nWindow]++;
 				else
 					gameStates.render.cockpit.n3DView [nWindow] = CV_NONE;
 			}
