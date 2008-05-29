@@ -242,7 +242,7 @@ void StartRenderThreads (void)
 	int	i;
 
 memset (&tiRender, 0, sizeof (tiRender));
-for (i = 0; i < 2; i++) {
+for (i = 0; i < 1; i++) {
 	tiRender.ti [i].nId = i;
 	tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
 	}

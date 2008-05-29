@@ -783,7 +783,6 @@ if (l > bmP->bmProps.h * bmP->bmProps.rowSize)
 	l = bmP->bmProps.h * bmP->bmProps.rowSize;
 memcpy (bmP->bmTexBuf, gameData.pig.tex.rleBuffer, l);
 bmP->bmProps.flags &= ~(BM_FLAG_RLE | BM_FLAG_RLE_BIG);
-bSemaphore = 0;
 return l;
 }
 

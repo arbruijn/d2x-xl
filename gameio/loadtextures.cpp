@@ -477,7 +477,6 @@ int PageInBitmap (grsBitmap *bmP, char *bmName, int nIndex, int bD1)
 if (!bmName)
 	return 0;
 #endif
-bSemaphore = 1;
 if (!bmP->bmTexBuf) {
 	StopTime ();
 	nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
@@ -569,7 +568,6 @@ if (!bmP->bmTexBuf) {
 	if (!altBmP) {
 		if (nIndex < 0) {
 			StartTime (0);
-			bSemaphore = 0;
 			return 0;
 			}
 		cfP = cfPiggy + bD1;
@@ -585,7 +583,6 @@ reloadTextures:
 		StartTime (0);
 		if (!bDefault)
 			CFClose (cfP);
-		bSemaphore = 0;
 		return 0;
 #endif
 		}
@@ -681,7 +678,6 @@ reloadTextures:
 	}
 if (!bDefault)
 	CFClose (cfP);
-bSemaphore = 0;
 return 1;
 }
 

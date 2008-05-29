@@ -1967,13 +1967,12 @@ DrainHeadlightPower ();
 			gameStates.render.cockpit.bRedraw = 0;
 		}
 //PrintLog ("GameRenderFrame\n");
-#if 0
+#if 1
 		WaitForRenderThreads ();
 		if (!RunRenderThreads (rtRenderFrame))
 #endif
 			GameRenderFrame ();
 		gameStates.app.bUsingConverter = 0;
-		//show_extraViews ();		//missile view, buddy bot, etc.
 
 #ifdef _DEBUG
 		if (bSavingMovieFrames)
