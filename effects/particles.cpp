@@ -2154,9 +2154,7 @@ return 1;
 
 int RenderSmoke (void)
 {
-gameStates.render.bSmoke = 1;
 return (gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)) ? RenderParticles () : RenderClouds ();
-gameStates.render.bSmoke = 0;
 }
 
 //------------------------------------------------------------------------------

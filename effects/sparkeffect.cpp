@@ -185,10 +185,8 @@ void RenderEnergySparks (void)
 	short	nSegment;
 
 if (gameOpts->render.effects.bEnergySparks) {
-	gameStates.render.bSparks = 1;
 	for (nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
 		RenderSegmentSparks (nSegment);
-	gameStates.render.bSparks = 0;
 	}
 }
 

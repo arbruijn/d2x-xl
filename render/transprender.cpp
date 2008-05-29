@@ -1128,9 +1128,6 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	return;
 	}
 PROF_START
-gameStates.render.bGeometry = 
-gameStates.render.bSmoke = 
-gameStates.render.bLightnings = 1;
 RIResetShader ();
 nPolys = 0;
 bStencil = StencilOff ();
@@ -1158,7 +1155,7 @@ glDepthMask (0);
 glEnable (GL_CULL_FACE);
 BeginRenderSmoke (-1, 1);
 nType = -1;
-for (pd = renderItems.pDepthBuffer + renderItems.nMaxOffs, nItems = renderItems.nItems; 
+for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1, nItems = renderItems.nItems; 
 	  (pd >= renderItems.pDepthBuffer) && nItems; 
 	  pd--) {
 	if ((pl = *pd)) {
@@ -1224,9 +1221,6 @@ StencilOn (bStencil);
 renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 renderItems.nMaxOffs = 0;
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
-gameStates.render.bGeometry = 
-gameStates.render.bSmoke = 
-gameStates.render.bLightnings = 0;
 PROF_END(ptTranspPolys)
 return;
 }

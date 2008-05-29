@@ -1310,7 +1310,7 @@ if (SHOW_SHADOWS &&
 		OglViewport (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, 128, 128);
 #endif
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
-#ifdef RELEASE
+#if 1//def RELEASE
 		RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
 #else
 		if (FAST_SHADOWS)
@@ -2411,8 +2411,8 @@ gameStates.render.bDoLightmaps = gameStates.render.color.bLightmapsOk &&
 											!IsMultiGame;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 PROF_END(ptAux)
-gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
+	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 #if 0
 	if (!gameStates.ogl.bVertexLighting && gameStates.app.bMultiThreaded && 
 		 (CountRenderFaces () > 15) && !RunRenderThreads (rtComputeFaceLight)) 
@@ -2426,13 +2426,13 @@ if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameState
 	PROF_START
 	UpdateSlidingFaces ();
 	PROF_END(ptAux);
-	}
-if (gameStates.render.bPerPixelLighting && !gameData.app.nFrameCount)
-	meshBuilder.BuildVBOs ();
+	if (gameStates.render.bPerPixelLighting && !gameData.app.nFrameCount)
+		meshBuilder.BuildVBOs ();
 
-InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
-gameStates.render.bHeadlights = gameData.render.lights.dynamic.headlights.nLights && 
-										  !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
+	InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
+	gameStates.render.bHeadlights = gameData.render.lights.dynamic.headlights.nLights && 
+											  !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
+	}
 RenderSegmentList (0, 1);	// render opaque geometry
 if ((gameOpts->render.bDepthSort < 1) && !gameOpts->render.nPath)
 	RenderSkyBox (nWindow);

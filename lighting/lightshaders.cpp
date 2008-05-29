@@ -1143,9 +1143,6 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 if (faceP - FACES == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
-#ifdef _DEBUG
-retry:
-#endif
 if (!gameStates.ogl.iLight) {
 #ifdef _DEBUG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))

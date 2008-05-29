@@ -265,7 +265,6 @@ if (bTextured) {
 		gameStates.render.history.bColored = bColored;
 		}
 	if (bStateChange) {
-
 		gameData.render.nStateChanges++;
 		G3SetupShader (faceP, bDepthOnly, bColorKey, bmTop != NULL, bmBot != NULL, bColored, bmBot ? NULL : &faceP->color);
 		}
@@ -398,7 +397,7 @@ return !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisit
 int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 PROF_START
-	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
+	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0, nBlendMode;
 
 #ifdef _DEBUG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -440,15 +439,20 @@ else {
 
 #if G3_BUFFER_FACES
 if (!bDepthOnly) {
-	if (bMonitor)
+	nBlendMode = faceP->bAdditive ? 2 : faceP->bTransparent ? 1 : 0;
+	if (nBlendMode != gameStates.history.nBlendMode) {
+		gameStates.history.nBlendMode = nBlendMode;
+		G3FlushFaceBuffer 1);
+		}
+	else if (bMonitor)
 		G3FlushFaceBuffer (1);
 	else
 		G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
+	G3SetBlendMode (faceP);
 	}
 #endif
 gameStates.ogl.iLight = 0;
 G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
-G3SetBlendMode (faceP);
 if (bDepthOnly) {
 	if (gameStates.render.bTriangleMesh)
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
@@ -608,7 +612,8 @@ else {
 			break;
 		if (!bAdditive) {
 			bAdditive = true;
-			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			if (!faceP->bTransparent)
+				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			glDepthFunc (GL_EQUAL);
 			glDepthMask (0);
 			}

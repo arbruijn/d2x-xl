@@ -1878,14 +1878,12 @@ if (SHOW_LIGHTNINGS) {
 		tLightningBundle	*plb;
 		int			i, n, bStencil = StencilOff ();
 
-	gameStates.render.bLightnings = 1;
 	for (i = gameData.lightnings.iUsed; i >= 0; i = n) {
 		plb = gameData.lightnings.buffer + i;
 		n = plb->nNext;
 		if (!(plb->nKey [0] | plb->nKey [1]))
 			RenderLightning (plb->pl, plb->nLightnings, 0, gameOpts->render.bDepthSort > 0);
 		}
-	gameStates.render.bLightnings = 0;
 	StencilOn (bStencil);
 	}
 }

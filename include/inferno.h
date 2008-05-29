@@ -859,6 +859,7 @@ typedef struct tRenderHistory {
 	int			bColored;
 	int			nShader;
 	int			nType;
+	int			nBlendMode;
 } tRenderHistory;
 
 typedef struct tRenderStates {
@@ -933,11 +934,6 @@ typedef struct tRenderStates {
 	int nMaxLightsPerPass;
 	int nMaxLightsPerFace;
 	int nMaxLightsPerObject;
-	int bGeometry;
-	int bObjects;
-	int bSmoke;
-	int bLightnings;
-	int bSparks;
 	fix xZoom;
 	fix xZoomScale;
 	ubyte nRenderingType;

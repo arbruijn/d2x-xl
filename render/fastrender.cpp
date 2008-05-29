@@ -480,6 +480,7 @@ gameStates.render.nType = nType;
 gameStates.render.history.nShader = -1;
 gameStates.render.history.bOverlay = -1;
 gameStates.render.history.bColored = 1;
+gameStates.render.history.nBlendMode = -1;
 gameStates.render.history.bmBot = 
 gameStates.render.history.bmTop =
 gameStates.render.history.bmMask = NULL;
