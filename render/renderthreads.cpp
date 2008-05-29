@@ -33,7 +33,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 tRenderThreadInfo tiRender;
 tRenderItemThreadInfo tiRenderItems;
 
-int bUseMultiThreading [rtPolyModel + 1] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+int bUseMultiThreading [rtTaskCount] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+
+//------------------------------------------------------------------------------
+
+void WaitForRenderThreads (void)
+{
+if (gameStates.app.bMultiThreaded)
+	while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
+		G3_SLEEP (0);	//already running, so wait
+}
 
 //------------------------------------------------------------------------------
 
@@ -53,8 +62,9 @@ while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 	G3_SLEEP (0);	//already running, so wait
 #endif
 tiRender.nTask = (tRenderTask) nTask;
-tiRender.ti [0].bExec =
-tiRender.ti [1].bExec = 1;
+tiRender.ti [0].bExec = 1;
+if (nTask != rtRenderFrame)
+	tiRender.ti [1].bExec = 1;
 #if 0
 PrintLog ("running render threads (task: %d)\n", nTask);
 #endif
@@ -96,7 +106,9 @@ do {
 		if (tiRender.ti [nId].bDone)
 			return 0;
 		}
-	if (tiRender.nTask == rtSortSegZRef) {
+	if (tiRender.nTask == rtRenderFrame) 
+		GameRenderFrame ();
+	else if (tiRender.nTask == rtSortSegZRef) {
 		if (nId)
 			QSortSegZRef (gameData.render.mine.nRenderSegs / 2, gameData.render.mine.nRenderSegs - 1);
 		else

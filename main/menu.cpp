@@ -4792,10 +4792,10 @@ void MultiThreadingOptionsMenu (void)
 	int			i, choice = 0;
 
 memset (m, 0, sizeof (m));
-for (i = rtStaticVertLight; i <= rtPolyModel; i++)
+for (i = rtStaticVertLight; i < rtTaskCount; i++)
 	ADD_CHECK (i, GT (1060 + i), bUseMultiThreading [i], 0, HT (359 + i));
 i = ExecMenu1 (NULL, TXT_MT_MENU_TITLE, 10, m, NULL, &choice);
-for (i = rtStaticVertLight; i <= rtPolyModel; i++)
+for (i = rtStaticVertLight; i < rtTaskCount; i++)
 	bUseMultiThreading [i] = (m [i].value != 0);
 }
 

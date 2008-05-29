@@ -1860,15 +1860,15 @@ void LoadGameTexts(void);
 #define TXT_MT_PARTICLE_ANIM		GT(1067)
 #define TXT_MT_PARTICLE_RENDER	GT(1068)
 #define TXT_MT_3DMODEL_LIGHTING	GT(1069)
-#define TXT_MT_MENU_OPTION			GT(1070)
-#define TXT_MT_MENU_TITLE			GT(1071)
-#define TXT_MAX_LIGHTS_PER_PASS	GT(1072)
-#define TXT_MAX_LIGHTS_PER_OBJECT	GT(1073)
-#define TXT_ROTATE_MARKERS				GT(1074)
+#define TXT_RENDER_FRAME			GT(1070)
+#define TXT_MT_MENU_OPTION			GT(1071)
+#define TXT_MT_MENU_TITLE			GT(1072)
+#define TXT_MAX_LIGHTS_PER_PASS	GT(1073)
+#define TXT_MAX_LIGHTS_PER_OBJECT	GT(1074)
+#define TXT_ROTATE_MARKERS				GT(1075)
 
 #if 0
 
-#define TXT_				GT(1075)
 #define TXT_				GT(1076)
 #define TXT_				GT(1077)
 #define TXT_				GT(1078)
@@ -2381,14 +2381,14 @@ void LoadGameTexts(void);
 #define HTX_MT_PARTICLE_ANIM		HT(366)
 #define HTX_MT_PARTICLE_RENDER	HT(367)
 #define HTX_MT_3DMODEL_LIGHTING	HT(368)
-#define HTX_MULTI_THREADING		HT(369)			
-#define HTX_MAX_LIGHTS_PER_PASS	HT(370)			
-#define HTX_MAX_LIGHTS_PER_OBJECT	HT(371)			
-#define HTX_ROTATE_MARKERS			HT(372)			
+#define HTX_MT_RENDER_FRAME		HT(369)			
+#define HTX_MULTI_THREADING		HT(370)			
+#define HTX_MAX_LIGHTS_PER_PASS	HT(371)			
+#define HTX_MAX_LIGHTS_PER_OBJECT	HT(372)			
+#define HTX_ROTATE_MARKERS			HT(373)			
 
 #if 0
 
-#define HTX_					HT(373)			
 #define HTX_					HT(374)			
 #define HTX_					HT(375)			
 #define HTX_					HT(376)			

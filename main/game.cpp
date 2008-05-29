@@ -131,6 +131,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "sparkeffect.h"
 #include "systemkeys.h"
 #include "createmesh.h"
+#include "renderthreads.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -1890,14 +1891,14 @@ void FlickerLights ();
 
 extern time_t t_currentTime, t_savedTime;
 
-int GameLoop (int RenderFlag, int bReadControls)
+int GameLoop (int bRenderFrame, int bReadControls)
 {
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 GetSlowTicks ();
 #ifdef _DEBUG
 //	Used to slow down frame rate for testing things.
-//	RenderFlag = 1; // DEBUG
+//	bRenderFrame = 1; // DEBUG
 //	GrPaletteStepLoad (gamePalette);
 if (nDebugSlowdown) {
 	time_t	t = SDL_GetTicks ();
@@ -1960,14 +1961,17 @@ DrainHeadlightPower ();
 			MultiCheckForEntropyWinner ();
      }
 #endif
-
-	if (RenderFlag) {
+	if (bRenderFrame) {
 		if (gameStates.render.cockpit.bRedraw) {			//screen need redrawing?
 			InitCockpit ();
 			gameStates.render.cockpit.bRedraw = 0;
 		}
 //PrintLog ("GameRenderFrame\n");
-		GameRenderFrame ();
+#if 0
+		WaitForRenderThreads ();
+		if (!RunRenderThreads (rtRenderFrame))
+#endif
+			GameRenderFrame ();
 		gameStates.app.bUsingConverter = 0;
 		//show_extraViews ();		//missile view, buddy bot, etc.
 

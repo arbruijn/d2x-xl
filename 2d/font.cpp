@@ -718,13 +718,22 @@ grsBitmap *CreateStringBitmap (
 	char			*text_ptr, *text_ptr1, *next_row;
 	int			letter;
 
+	static int bSemaphore = 0;
+
+while (bSemaphore)
+	G3_SLEEP (0);
+
 if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
 	return NULL;
+bSemaphore = 1;
 GrGetStringSizeTabbed (s, &w, &h, &aw, nTabs, nMaxWidth);
-if (!(w && h && (bmP = GrCreateBitmap (w, h, 4))))
+if (!(w && h && (bmP = GrCreateBitmap (w, h, 4)))) {
+	bSemaphore = 0;
 	return NULL;
+	}
 if (!bmP->bmTexBuf) {
 	GrFreeBitmap (bmP);
+	bSemaphore = 0;
 	return NULL;
 	}
 memset (bmP->bmTexBuf, 0, w * h * bmP->bmBPP);
@@ -849,6 +858,7 @@ while (next_row != NULL) {
 	}
 bmP->bmPalette = palP;
 OglLoadBmTexture (bmP, 0, 2, 1);
+bSemaphore = 0;
 return bmP;
 }
 

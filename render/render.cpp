@@ -98,10 +98,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define bDrawBoxes			0
 #define bDrawEdges			0
 #define bPreDrawSegs			0
-#define bMigrateSegs			0
 #define bMigrateObjects		1
 
-#define FORCE_WINDOW_CHECK	0
+#define OLD_SEGLIST			1
+#define FORCE_WINDOW_CHECK	1
 #define SORT_RENDER_SEGS	0
 
 //------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct tPortal {
 	short left, right, top, bot;
 	char  bProjected;
-	ubyte bBehind;
+	ubyte bVisible;
 } tPortal;
 
 // ------------------------------------------------------------------------------
@@ -880,8 +880,10 @@ GrLine(i2f(l), i2f(b), i2f(l), i2f(t));
 //------------------------------------------------------------------------------
 
 tPortal renderPortals [MAX_SEGMENTS_D2X];
+#if !OLD_SEGLIST
 tPortal sidePortals [MAX_SEGMENTS_D2X * 6];
-ubyte bBehind [MAX_SEGMENTS_D2X];
+#endif
+ubyte bVisible [MAX_SEGMENTS_D2X];
 
 //Given two sides of tSegment, tell the two verts which form the 
 //edge between them
@@ -1561,13 +1563,245 @@ gameData.render.zMin = 0;
 gameData.render.zMax = vCenter.p.z + d1 + r;
 }
 
-//------------------------------------------------------------------------------
+#if OLD_SEGLIST //-----------------------------------------------------------------
+
+void BuildRenderSegList (short nStartSeg, int nWindow)
+{
+	int		lCnt, sCnt, eCnt, wid, nSide;
+	int		l, i, j;
+	short		nChild;
+	short		nChildSeg;
+	short		*sv;
+	sbyte		*s2v;
+	ubyte		andCodes, andCodes3D;
+	int		bRotated, nSegment, bNotProjected;
+	tPortal	*curPortal;
+	short		childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
+	int		nChildren, bCullIfBehind;					//how many sides in childList
+	tSegment	*segP;
+
+gameData.render.zMin = 0x7fffffff;
+gameData.render.zMax = -0x7fffffff;
+bCullIfBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
+memset (gameData.render.mine.nRenderPos, -1, sizeof (gameData.render.mine.nRenderPos [0]) * (gameData.segs.nSegments));
+BumpVisitedFlag ();
+#if 1
+BumpProcessedFlag ();
+BumpVisibleFlag ();
+#else
+memset (gameData.render.mine.bProcessed, 0, sizeof (gameData.render.mine.bProcessed));
+memset (gameData.render.mine.nSegRenderList, 0xff, sizeof (gameData.render.mine.nSegRenderList));
+#endif
+
+if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && !gameStates.render.automap.bRadar) {
+	for (i = gameData.render.mine.nRenderSegs = 0; i < gameData.segs.nSegments; i++)
+		if ((gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [i]) && 
+			 ((gameStates.render.automap.nSegmentLimit == gameStates.render.automap.nMaxSegsAway) || 
+			  (gameData.render.mine.bAutomapVisible [i] <= gameStates.render.automap.nSegmentLimit))) {
+			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = i;
+			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
+			VISIT (i);
+			}
+	SortRenderSegs ();
+	return;
+	}
+
+gameData.render.mine.nSegRenderList [0] = nStartSeg; 
+gameData.render.mine.nSegDepth [0] = 0;
+VISIT (nStartSeg);
+gameData.render.mine.nRenderPos [nStartSeg] = 0;
+sCnt = 0;
+lCnt = eCnt = 1;
+
+#ifdef _DEBUG
+if (bPreDrawSegs)
+	RenderSegmentFaces (nStartSeg, nWindow);
+#endif
+
+renderPortals [0].left =
+renderPortals [0].top = 0;
+renderPortals [0].right = grdCurCanv->cvBitmap.bmProps.w - 1;
+renderPortals [0].bot = grdCurCanv->cvBitmap.bmProps.h - 1;
+
+//breadth-first renderer
+
+//build list
+for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
+	//while (sCnt < eCnt) {
+	for (sCnt = 0; sCnt < eCnt; sCnt++) {
+		if (gameData.render.mine.bProcessed [sCnt] == gameData.render.mine.nProcessed)
+			continue;
+		gameData.render.mine.bProcessed [sCnt] = gameData.render.mine.nProcessed;
+		nSegment = gameData.render.mine.nSegRenderList [sCnt];
+		curPortal = renderPortals + sCnt;
+		if (nSegment == -1) 
+			continue;
+#ifdef _DEBUG
+		if (nSegment == -32767) 
+			continue;
+		if (nSegment == nDbgSeg)
+			nSegment = nSegment;
+#endif
+		segP = gameData.segs.segments + nSegment;
+		sv = segP->verts;
+		bRotated = 0;
+		//look at all sides of this tSegment.
+		//tricky code to look at sides in correct order follows
+		for (nChild = nChildren = 0; nChild < MAX_SIDES_PER_SEGMENT; nChild++) {		//build list of sides
+			nChildSeg = segP->children [nChild];
+			if (nChildSeg < 0)
+				continue;
+			wid = WALL_IS_DOORWAY (segP, nChild, NULL);
+#ifdef _DEBUG
+			if (nChildSeg == nDbgSeg)
+				nChildSeg = nChildSeg;
+#endif
+			if (bCullIfBehind) {
+				andCodes = 0xff;
+				s2v = sideToVerts [nChild];
+				if (!bRotated) {
+					RotateVertexList (8, sv);
+					bRotated = 1;
+					}
+				if ((0xff & gameData.segs.points [sv [s2v [0]]].p3_codes
+							 & gameData.segs.points [sv [s2v [1]]].p3_codes
+					 	    & gameData.segs.points [sv [s2v [2]]].p3_codes
+						    & gameData.segs.points [sv [s2v [3]]].p3_codes) & CC_BEHIND)
+					continue;
+				}
+			childList [nChildren++] = nChild;
+			}
+		//now order the sides in some magical way
+#if 0
+		if (bNewSegSorting && (nChildren > 1))
+			SortSegChildren (segP, nChildren, childList);
+#endif
+		for (nChild = 0; nChild < nChildren; nChild++) {
+			nSide = childList [nChild];
+			nChildSeg = segP->children [nSide];
+#ifdef _DEBUG
+			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				nChildSeg = nChildSeg;
+#endif
+			short x, y;
+			tPortal p = {32767, -32767, 32767, -32767};
+			bNotProjected = 0;	//a point wasn't projected
+#if 0
+			if (bRotated < 2) {
+				if (!bRotated)
+					RotateVertexList (8, segP->verts);
+				ProjectVertexList (8, segP->verts);
+				bRotated = 2;
+				}
+#endif
+			s2v = sideToVerts [nSide];
+			andCodes3D = 0xff;
+			for (j = 0; j < 4; j++) {
+				g3sPoint *pnt = gameData.segs.points + sv [s2v [j]];
+#if 1
+				if (pnt->p3_codes & CC_BEHIND) {
+					bNotProjected = 1; 
+					break;
+					}
+				if (!(pnt->p3_flags & PF_PROJECTED))
+					G3ProjectPoint (pnt);
+#else
+				if (!(pnt->p3_flags & PF_PROJECTED)) {
+					bNotProjected = 1; 
+					break;
+					}
+#endif
+				x = (short) pnt->p3_screen.x;
+				y = (short) pnt->p3_screen.y;
+				andCodes3D &= pnt->p3_codes;
+				if (p.left > x) 
+					p.left = x; 
+				if (p.right < x) 
+					p.right = x;
+				if (p.top > y) 
+					p.top = y;
+				if (p.bot < y) 
+					p.bot = y;
+				}
+			if (bNotProjected || !(andCodes3D | (0xff & CodePortal (&p, curPortal)))) {	//maybe add this tSegment
+				int rp = gameData.render.mine.nRenderPos [nChildSeg];
+				tPortal *newPortal = renderPortals + lCnt;
+
+				if (bNotProjected) 
+					*newPortal = *curPortal;
+				else {
+					newPortal->left = max (curPortal->left, p.left);
+					newPortal->right = min (curPortal->right, p.right);
+					newPortal->top = max (curPortal->top, p.top);
+					newPortal->bot = min (curPortal->bot, p.bot);
+					}
+				//see if this segment already visited, and if so, does current tPortal
+				//expand the old tPortal?
+				if (rp == -1) {
+					gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
+					gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
+					gameData.render.mine.nSegDepth [lCnt++] = l;
+					VISIT (nChildSeg);
+					}
+				else {
+					tPortal *rwP = renderPortals + rp;
+					bool bExpand = false;
+					int h;
+					h = newPortal->left - rwP->left;
+					if (h > 0)
+						newPortal->left = rwP->left;
+					else if (h < 0)
+						bExpand = true;
+					h = newPortal->right - rwP->right;
+					if (h < 0)
+						newPortal->right = rwP->right;
+					else if (h > 0)
+						bExpand = true;
+					h = newPortal->top - rwP->top;
+					if (h > 0)
+						newPortal->top = rwP->top;
+					else if (h < 0)
+						bExpand = true;
+					h = newPortal->bot - rwP->bot;
+					if (h < 0)
+						newPortal->bot = rwP->bot;
+					else if (h > 0)
+						bExpand = true;
+					if (bExpand) {
+						gameData.render.mine.nSegRenderList [lCnt] = -0x7fff;
+						*rwP = *newPortal;		//get updated tPortal
+						gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
+						}
+					}
+				}
+			}
+		}
+	sCnt = eCnt;
+	eCnt = lCnt;
+	}
+
+gameData.render.mine.lCntSave = lCnt;
+gameData.render.mine.sCntSave = sCnt;
+nFirstTerminalSeg = sCnt;
+gameData.render.mine.nRenderSegs = lCnt;
+
+for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
+#ifdef _DEBUG
+	if (gameData.render.mine.nSegRenderList [i] == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
+	if (gameData.render.mine.nSegRenderList [i] >= 0)
+		gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [i]] = gameData.render.mine.nVisible;
+	}
+}
+
+#else //------------------------------------------------------------------------
 
 void BuildRenderSegList (short nStartSeg, int nWindow)
 {
 PROF_START
 
-	int		lCnt, sCnt, eCnt, bWID [6], nSide;
+	int		lCnt, sCnt, eCnt, nSide;
 	int		l, i, j;
 	short		nChild;
 	short		nChildSeg;
@@ -1628,7 +1862,7 @@ renderPortals [0].top = 0;
 renderPortals [0].right = grdCurCanv->cvBitmap.bmProps.w - 1;
 renderPortals [0].bot = grdCurCanv->cvBitmap.bmProps.h - 1;
 sidePortals [0] = renderPortals [0];
-sidePortals [0].bBehind = 
+sidePortals [0].bVisible = 
 sidePortals [0].bProjected = 0;
 //breadth-first renderer
 
@@ -1643,6 +1877,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		if (nSegment == -1) 
 			continue;
 #ifdef _DEBUG
+		if (nSegment == -32767) 
+			continue;
 		if (nSegment == nDbgSeg)
 			nSegment = nSegment;
 #endif
@@ -1653,13 +1889,17 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		//look at all sides of this tSegment.
 		//tricky code to look at sides in correct order follows
 		for (nSide = nChildren = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) { //build list of sides
+#ifdef _DEBUG
+			nChildSeg = segP->children [nSide];
+			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				nDbgSeg = nDbgSeg;
+#endif
 			if (0 > (nChildSeg = segP->children [nSide]))
 				continue;
-			if (!(bWID [nChildren] = WALL_IS_DOORWAY (segP, nSide, NULL)))
+			if (!(WALL_IS_DOORWAY (segP, nSide, NULL) & WID_RENDPAST_FLAG))
 				continue;
-			; // & WID_RENDPAST_FLAG;
 #ifdef _DEBUG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
 			sidePortal = sidePortals + 6 * nSegment + nSide;
@@ -1674,15 +1914,15 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 							RotateVertex (sv [j]);
 						bTransformed = 1;
 						}
-					sidePortal->bBehind = (0xff & gameData.segs.points [sv [s2v [0]]].p3_codes
-														 & gameData.segs.points [sv [s2v [1]]].p3_codes
-														 & gameData.segs.points [sv [s2v [2]]].p3_codes
-														 & gameData.segs.points [sv [s2v [3]]].p3_codes) & CC_BEHIND;
+					sidePortal->bVisible = ((0xff & gameData.segs.points [sv [s2v [0]]].p3_codes
+													 	   & gameData.segs.points [sv [s2v [1]]].p3_codes
+													 	   & gameData.segs.points [sv [s2v [2]]].p3_codes
+														   & gameData.segs.points [sv [s2v [3]]].p3_codes) & CC_BEHIND) == 0;
 					}
 				else
-					sidePortal->bBehind = 0;
+					sidePortal->bVisible = 0;
 				}
-			if (!sidePortal->bBehind) 
+			if (sidePortal->bVisible) 
 				childList [nChildren++] = nSide;
 			}
 		//now order the sides in some magical way
@@ -1698,13 +1938,14 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 				nDbgSeg = nDbgSeg;
 #endif
 			sidePortal = sidePortals + 6 * nSegment + nSide;
-#if !FORCE_WINDOW_CHECK
+#if 0 //!FORCE_WINDOW_CHECK
 			if (!VISITED (nChildSeg)) 
 #endif
 			{
 				short x, y, xMin = 32767, xMax = -32767, yMin = 32767, yMax = -32767;
 				ubyte bProjected = 1;	//a point wasn't projected
 #if 0
+				tPortal hp = *sidePortal;
 				if (bTransformed < 2) {
 					if (!bTransformed)
 						RotateVertexList (8, sv);
@@ -1714,14 +1955,18 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					}
 #endif
 				s2v = sideToVerts [nSide];
-				for (j = 0, andCodes3D = andCodes2D = 0xff; j < 4; j++) {
+				//andCodes2D = 
+				andCodes3D = 0xff;
+				for (j = 0; j < 4; j++) {
 					g3sPoint *p = gameData.segs.points + sv [s2v [j]];
 					if (p->p3_codes & CC_BEHIND) {
 						bProjected = 0; 
 						break;
 						}
+#if 1
 					if (!(p->p3_flags & PF_PROJECTED))
 						G3ProjectPoint (p);
+#endif
 					x = (short) p->p3_screen.x;
 					y = (short) p->p3_screen.y;
 					andCodes3D &= p->p3_codes;
@@ -1741,9 +1986,17 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					sidePortal->top = yMin;
 					sidePortal->bot = yMax;
 					}	
+#if 0
+				if (VISITED (nChildSeg)) {
+					if ((hp.bProjected == sidePortal->bProjected) && memcmp (&hp, sidePortal, sizeof (tPortal)))
+						nChildSeg = nChildSeg;
+					}
+				else
+#endif
+					VISIT (nChildSeg);
 				}
 			if (sidePortal->bProjected >= 0) {
-				if (!sidePortal->bProjected || !(0xff & CodePortal (sidePortal, curPortal))) {	//maybe add this tSegment
+				if (!(sidePortal->bProjected && (0xff & CodePortal (sidePortal, curPortal)))) {	//maybe add this tSegment
 					int rp = gameData.render.mine.nRenderPos [nChildSeg];
 					tPortal *newPortal = renderPortals + lCnt;
 
@@ -1757,35 +2010,41 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						}
 					//see if this segment already visited, and if so, does current tPortal
 					//expand the old tPortal?
-					if (rp != -1) {
+					if (rp == -1) {
+						gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
+						gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
+						gameData.render.mine.nSegDepth [lCnt++] = l;
+						//VISIT (nChildSeg);
+						}
+					else {
 						tPortal *rwP = renderPortals + rp;
-						if ((newPortal->left >= rwP->left) && (newPortal->top >= rwP->top) && 
-							 (newPortal->right <= rwP->right) && (newPortal->bot <= rwP->bot))
-							goto dontAdd;
-						else {
-							if (newPortal->left > rwP->left)
-								newPortal->left = rwP->left;
-							if (newPortal->right < rwP->right)
-								newPortal->right = rwP->right;
-							if (newPortal->top > rwP->top)
-								newPortal->top = rwP->top;
-							if (newPortal->bot < rwP->bot)
-								newPortal->bot = rwP->bot;
-							if (bMigrateSegs)
-								gameData.render.mine.nSegRenderList [rp] = -0x7fff;
-							else {
-								gameData.render.mine.nSegRenderList [lCnt] = -0x7fff;
-								*rwP = *newPortal;		//get updated tPortal
-								gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
-								goto dontAdd;
-								}
+						bool bExpand = false;
+						int h = newPortal->left - rwP->left;
+						if (h > 0)
+							newPortal->left = rwP->left;
+						else if (h < 0)
+							bExpand = true;
+						h = newPortal->right - rwP->right;
+						if (h < 0)
+							newPortal->right = rwP->right;
+						else if (h > 0)
+							bExpand = true;
+						h = newPortal->top - rwP->top;
+						if (h > 0)
+							newPortal->top = rwP->top;
+						else if (h < 0)
+							bExpand = true;
+						h = newPortal->bot - rwP->bot;
+						if (h < 0)
+							newPortal->bot = rwP->bot;
+						else if (h > 0)
+							bExpand = true;
+						if (bExpand) {
+							*rwP = *newPortal;		//get updated tPortal
+							gameData.render.mine.nSegRenderList [lCnt] = -0x7fff;
+							gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
 							}
 						}
-					gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
-					gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
-					gameData.render.mine.nSegDepth [lCnt++] = l;
-					VISIT (nChildSeg);
-dontAdd: ;
 					}
 				}
 #if 0 //!FORCE_WINDOW_CHECK
@@ -1809,7 +2068,7 @@ gameData.render.mine.nRenderSegs = lCnt;
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 #ifdef _DEBUG
 	if (gameData.render.mine.nSegRenderList [i] == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+			nDbgSeg = nDbgSeg;
 #endif
 	if ((j = gameData.render.mine.nSegRenderList [i]) >= 0)
 		gameData.render.mine.bVisible [j] = gameData.render.mine.nVisible;
@@ -1817,7 +2076,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 PROF_END(ptBuildSegList)
 }
 
-//------------------------------------------------------------------------------
+#endif //------------------------------------------------------------------------
 
 void BuildRenderSegListFast (short nStartSeg, int nWindow)
 {
@@ -2153,12 +2412,16 @@ gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMu
 PROF_END(ptAux)
 gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
-	if (!gameStates.ogl.bVertexLighting && gameStates.app.bMultiThreaded && (CountRenderFaces () > 15)) 
-		RunRenderThreads (rtComputeFaceLight);
-	else if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments)
-		ComputeFaceLight (0, gameData.segs.nFaces, 0);
-	else
-		ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
+#if 0
+	if (!gameStates.ogl.bVertexLighting && gameStates.app.bMultiThreaded && 
+		 (CountRenderFaces () > 15) && !RunRenderThreads (rtComputeFaceLight)) 
+#endif
+		{
+		if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments)
+			ComputeFaceLight (0, gameData.segs.nFaces, 0);
+		else
+			ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
+		}
 	PROF_START
 	UpdateSlidingFaces ();
 	PROF_END(ptAux);

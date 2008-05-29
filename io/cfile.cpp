@@ -82,7 +82,7 @@ int defaultErrorCounter = 0;
 int *criticalErrorCounterPtr = &defaultErrorCounter;
 
 // ----------------------------------------------------------------------------
-//tell cfp about your critical error counter
+//tell cfP about your critical error counter
 void CFSetCriticalErrorCounterPtr (int *ptr)
 {
 criticalErrorCounterPtr = ptr;
@@ -362,20 +362,20 @@ return NULL;
 // past the end of the file. It returns 0 if the current position is not end of file.
 // There is no error return.
 
-int CFEoF (CFILE *cfp)
+int CFEoF (CFILE *cfP)
 {
 #ifdef _DEBUG
-if (!(cfp && cfp->file))
+if (!(cfP && cfP->file))
 	return 1;
 #endif
-return (cfp->raw_position >= cfp->size);
+return (cfP->raw_position >= cfP->size);
 }
 
 // ----------------------------------------------------------------------------
 
-int CFError (CFILE *cfp)
+int CFError (CFILE *cfP)
 {
-return ferror (cfp->file);
+return ferror (cfP->file);
 }
 
 // ----------------------------------------------------------------------------
@@ -449,13 +449,13 @@ int CFMkDir (char *pathname)
 
 // ----------------------------------------------------------------------------
 
-int CFOpen (CFILE *cfp, char *filename, char *folder, char *mode, int bUseD1Hog) 
+int CFOpen (CFILE *cfP, char *filename, char *folder, char *mode, int bUseD1Hog) 
 {
 	int	length = -1;
 	FILE	*fp = NULL;
 	char	*pszHogExt, *pszFileExt;
 
-cfp->file = NULL;
+cfP->file = NULL;
 if (!(filename && *filename))
 	return 0;
 if ((*filename != '\x01') /*&& !bUseD1Hog*/) {
@@ -480,19 +480,19 @@ if (!fp) {
 	}
 if (!fp) 
 	return 0;
-cfp->file = fp;
-cfp->raw_position = 0;
-cfp->size = (length < 0) ? ffilelength (fp) : length;
-cfp->lib_offset = (length < 0) ? 0 : ftell (fp);
-cfp->filename = filename;
+cfP->file = fp;
+cfP->raw_position = 0;
+cfP->size = (length < 0) ? ffilelength (fp) : length;
+cfP->lib_offset = (length < 0) ? 0 : ftell (fp);
+cfP->filename = filename;
 return 1;
 }
 
 // ----------------------------------------------------------------------------
 
-int CFLength (CFILE *cfp, int bUseD1Hog) 
+int CFLength (CFILE *cfP, int bUseD1Hog) 
 {
-return cfp ? cfp->size : 0;
+return cfP ? cfP->size : 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -501,21 +501,21 @@ return cfp ? cfp->size : 0;
 // returns:   number of full elements actually written
 //
 //
-int CFWrite (void *buf, int nElemSize, int nElemCount, CFILE *cfp)
+int CFWrite (void *buf, int nElemSize, int nElemCount, CFILE *cfP)
 {
 	int nWritten;
 
-if (!cfp) {
+if (!cfP) {
 	CFCriticalError (1);
 	return 0;
 	}
-Assert (cfp != NULL);
+Assert (cfP != NULL);
 Assert (buf != NULL);
 Assert (nElemSize > 0);
-Assert (cfp->file != NULL);
-Assert (cfp->lib_offset == 0);
-nWritten = (int) fwrite (buf, nElemSize, nElemCount, cfp->file);
-cfp->raw_position = ftell (cfp->file);
+Assert (cfP->file != NULL);
+Assert (cfP->lib_offset == 0);
+nWritten = (int) fwrite (buf, nElemSize, nElemCount, cfP->file);
+cfP->raw_position = ftell (cfP->file);
 CFCriticalError (nWritten != nElemCount);
 return nWritten;
 }
@@ -526,29 +526,29 @@ return nWritten;
 // returns:   success ==> returns character written
 //            error   ==> EOF
 //
-int CFPutC (int c, CFILE *cfp)
+int CFPutC (int c, CFILE *cfP)
 {
 	int char_written;
 
-Assert (cfp != NULL);
-Assert (cfp->file != NULL);
-Assert (cfp->lib_offset == 0);
-char_written = fputc (c, cfp->file);
-cfp->raw_position = ftell (cfp->file);
+Assert (cfP != NULL);
+Assert (cfP->file != NULL);
+Assert (cfP->lib_offset == 0);
+char_written = fputc (c, cfP->file);
+cfP->raw_position = ftell (cfP->file);
 return char_written;
 }
 
 // ----------------------------------------------------------------------------
 
-int CFGetC (CFILE *cfp) 
+int CFGetC (CFILE *cfP) 
 {
 	int c;
 
-if (cfp->raw_position >= cfp->size) 
+if (cfP->raw_position >= cfP->size) 
 	return EOF;
-c = getc (cfp->file);
+c = getc (cfP->file);
 if (c != EOF)
-	cfp->raw_position = ftell (cfp->file) - cfp->lib_offset;
+	cfP->raw_position = ftell (cfP->file) - cfP->lib_offset;
 return c;
 }
 
@@ -558,21 +558,21 @@ return c;
 // returns:   success ==> non-negative value
 //            error   ==> EOF
 //
-int CFPutS (char *str, CFILE *cfp)
+int CFPutS (char *str, CFILE *cfP)
 {
 	int ret;
 
-Assert (cfp != NULL);
+Assert (cfP != NULL);
 Assert (str != NULL);
-Assert (cfp->file != NULL);
-ret = fputs(str, cfp->file);
-cfp->raw_position = ftell(cfp->file);
+Assert (cfP->file != NULL);
+ret = fputs(str, cfP->file);
+cfP->raw_position = ftell(cfP->file);
 return ret;
 }
 
 // ----------------------------------------------------------------------------
 
-char * CFGetS (char * buf, size_t n, CFILE *cfp) 
+char * CFGetS (char * buf, size_t n, CFILE *cfP) 
 {
 	char * t = buf;
 	size_t i;
@@ -580,18 +580,18 @@ char * CFGetS (char * buf, size_t n, CFILE *cfp)
 
 for (i = 0; i < n - 1; i++) {
 	do {
-		if (cfp->raw_position >= cfp->size) {
+		if (cfP->raw_position >= cfP->size) {
 			*buf = 0;
 			return (buf == t) ? NULL : t;
 			}
-		c = CFGetC (cfp);
+		c = CFGetC (cfP);
 		if (c == 0 || c == 10)       // Unix line ending
 			break;
 		if (c == 13) {      // Mac or DOS line ending
 			int c1;
 
-			c1 = CFGetC (cfp);
-			CFSeek (cfp, -1, SEEK_CUR);
+			c1 = CFGetC (cfP);
+			CFSeek (cfP, -1, SEEK_CUR);
 			if (c1 == 10) // DOS line ending
 				continue;
 			else            // Mac line ending
@@ -610,32 +610,35 @@ return  t;
 
 // ----------------------------------------------------------------------------
 
-size_t CFRead (void * buf, size_t elsize, size_t nelem, CFILE *cfp) 
+size_t CFRead (void * buf, size_t elsize, size_t nelem, CFILE *cfP) 
 {
 unsigned int i, size = (int) (elsize * nelem);
 
-if (!cfp || (size < 1)) {
+if (!cfP || (size < 1)) {
 	CFCriticalError (1);
 	return 0;
 	}
-i = (int) fread (buf, 1, size, cfp->file);
+i = (int) fread (buf, 1, size, cfP->file);
 CFCriticalError (i != size);
-cfp->raw_position += i;
+cfP->raw_position += i;
 return i / elsize;
 }
 
 
 // ----------------------------------------------------------------------------
 
-int CFTell (CFILE *cfp) 
+int CFTell (CFILE *cfP) 
 {
-return cfp ? cfp->raw_position : -1;
+return cfP ? cfP->raw_position : -1;
 }
 
 // ----------------------------------------------------------------------------
 
-int CFSeek (CFILE *cfp, long int offset, int where) 
+int CFSeek (CFILE *cfP, long int offset, int where) 
 {
+if (!cfP)
+	return -1;
+
 	int c, goal_position;
 
 switch (where) {
@@ -643,30 +646,30 @@ switch (where) {
 		goal_position = offset;
 		break;
 	case SEEK_CUR:
-		goal_position = cfp->raw_position+offset;
+		goal_position = cfP->raw_position + offset;
 		break;
 	case SEEK_END:
-		goal_position = cfp->size+offset;
+		goal_position = cfP->size + offset;
 		break;
 	default:
 		return 1;
 	}
-c = fseek (cfp->file, cfp->lib_offset + goal_position, SEEK_SET);
+c = fseek (cfP->file, cfP->lib_offset + goal_position, SEEK_SET);
 CFCriticalError (c);
-cfp->raw_position = ftell(cfp->file)-cfp->lib_offset;
+cfP->raw_position = ftell (cfP->file) - cfP->lib_offset;
 return c;
 }
 
 // ----------------------------------------------------------------------------
 
-int CFClose (CFILE *cfp)
+int CFClose (CFILE *cfP)
 {
 	int result;
 
-if (!(cfp && cfp->file))
+if (!(cfP && cfP->file))
 	return 0;
-result = fclose (cfp->file);
-cfp->file = NULL;
+result = fclose (cfP->file);
+cfP->file = NULL;
 return result;
 }
 

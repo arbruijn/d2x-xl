@@ -184,8 +184,8 @@ void piggy_readSound_data(tDigiSound *snd);
 void PiggyLoadLevelData ();
 
 #ifdef PIGGY_USE_PAGING
-void PiggyBitmapPageIn (int bmi, int bD1);
-void PageInBitmap (grsBitmap *bmP, char *bmName, int nIndex, int bD1);
+int PiggyBitmapPageIn (int bmi, int bD1);
+int PageInBitmap (grsBitmap *bmP, char *bmName, int nIndex, int bD1);
 void PiggyBitmapPageOutAll(int bAll);
 #endif
 

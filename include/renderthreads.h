@@ -30,7 +30,9 @@ typedef enum {
 	rtRenderLightnings,
 	rtUpdateParticles,
 	rtRenderParticles,
-	rtPolyModel
+	rtPolyModel,
+	rtRenderFrame,
+	rtTaskCount
 } tRenderTask;
 
 typedef struct tRenderThreadInfo {
@@ -62,5 +64,15 @@ void StartRenderThreads (void);
 void EndRenderThreads (void);
 void StartRenderItemThread (void);
 void EndRenderItemThread (void);
+void WaitForRenderThreads (void);
+
+//------------------------------------------------------------------------------
+
+inline int RenderThreadsReady (void)
+{
+return !(gameStates.app.bMultiThreaded && (tiRender.ti [0].bExec || tiRender.ti [1].bExec));
+}
+
+//------------------------------------------------------------------------------
 
 #endif // _RENDERTHREADS_H

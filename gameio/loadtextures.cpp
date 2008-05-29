@@ -463,20 +463,25 @@ return (nTexture > 0) && (strchr (gameData.pig.tex.bitmapFiles [gameStates.app.b
 
 //------------------------------------------------------------------------------
 
-void PageInBitmap (grsBitmap *bmP, char *bmName, int nIndex, int bD1)
+int PageInBitmap (grsBitmap *bmP, char *bmName, int nIndex, int bD1)
 {
 	grsBitmap		*altBmP = NULL;
 	int				temp, nSize, nOffset, nFrames, nShrinkFactor, 
 						bRedone = 0, bTGA, bDefault = 0;
 	time_t			tBase, tShrunk;
-	CFILE				cf = {NULL, 0, 0, 0}, *pcf = &cf;
+	CFILE				cf = {NULL, 0, 0, 0}, *cfP = &cf;
 	char				fn [FILENAME_LEN], fnShrunk [FILENAME_LEN];
 	tTgaHeader		h;
 
+	static			int bSemaphore = 0;
+
+if (bSemaphore)
+	return -1;
 #ifdef _DEBUG
 if (!bmName)
-	return;
+	return 0;
 #endif
+bSemaphore = 1;
 if (!bmP->bmTexBuf) {
 	StopTime ();
 	nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
@@ -520,8 +525,8 @@ if (!bmP->bmTexBuf) {
 			}
 		else 
 #endif
-		if ((gameStates.app.bCacheTextures && (nShrinkFactor > 1) && *fnShrunk && CFOpen (pcf, fnShrunk, "", "rb", 0)) || 
-			 CFOpen (pcf, fn, "", "rb", 0)) {
+		if ((gameStates.app.bCacheTextures && (nShrinkFactor > 1) && *fnShrunk && CFOpen (cfP, fnShrunk, "", "rb", 0)) || 
+			 CFOpen (cfP, fn, "", "rb", 0)) {
 			PrintLog ("loading hires texture '%s' (quality: %d)\n", fn, gameOpts->render.nTextureQuality);
 			bTGA = 1;
 			if (nIndex < 0)
@@ -531,11 +536,11 @@ if (!bmP->bmTexBuf) {
 			altBmP->bmType = BM_TYPE_ALT;
 			BM_OVERRIDE (bmP) = altBmP;
 			bmP = altBmP;
-			ReadTGAHeader (pcf, &h, bmP);
+			ReadTGAHeader (cfP, &h, bmP);
 			nSize = (int) h.width * (int) h.height * bmP->bmBPP;
 			nFrames = (h.height % h.width) ? 1 : h.height / h.width;
 			BM_FRAMECOUNT (bmP) = (ubyte) nFrames;
-			nOffset = CFTell (pcf);
+			nOffset = CFTell (cfP);
 			if (nIndex >= 0) {
 				gameData.pig.tex.bitmapFlags [bD1][nIndex] &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 				gameData.pig.tex.bitmapFlags [bD1][nIndex] |= BM_FLAG_TGA;
@@ -568,9 +573,10 @@ if (!bmP->bmTexBuf) {
 	if (!altBmP) {
 		if (nIndex < 0) {
 			StartTime (0);
-			return;
+			bSemaphore = 0;
+			return 0;
 			}
-		pcf = cfPiggy + bD1;
+		cfP = cfPiggy + bD1;
 		nOffset = bitmapOffsets [bD1][nIndex];
 		bDefault = 1;
 		}
@@ -582,13 +588,14 @@ reloadTextures:
 #ifndef _DEBUG
 		StartTime (0);
 		if (!bDefault)
-			CFClose (pcf);
-		return;
+			CFClose (cfP);
+		bSemaphore = 0;
+		return 0;
 #endif
 		}
 
 	bRedone = 1;
-	if (CFSeek (pcf, nOffset, SEEK_SET)) {
+	if (CFSeek (cfP, nOffset, SEEK_SET)) {
 		PiggyCriticalError ();
 		goto reloadTextures;
 		}
@@ -616,12 +623,12 @@ reloadTextures:
 	if (bmP->bmProps.flags & BM_FLAG_RLE) {
 		int zSize = 0;
 		nDescentCriticalError = 0;
-		zSize = CFReadInt (pcf);
+		zSize = CFReadInt (cfP);
 		if (nDescentCriticalError) {
 			PiggyCriticalError ();
 			goto reloadTextures;
 			}
-		temp = (int) CFRead (bmP->bmTexBuf + 4, 1, zSize-4, pcf);
+		temp = (int) CFRead (bmP->bmTexBuf + 4, 1, zSize-4, cfP);
 		if (nDescentCriticalError) {
 			PiggyCriticalError ();
 			goto reloadTextures;
@@ -639,14 +646,14 @@ reloadTextures:
 		{
 		nDescentCriticalError = 0;
 		if (bDefault) {
-			temp = (int) CFRead (bmP->bmTexBuf, 1, nSize, pcf);
+			temp = (int) CFRead (bmP->bmTexBuf, 1, nSize, cfP);
 			if (bD1)
 				GrRemapBitmapGood (bmP, d1Palette, TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			else
 				GrRemapBitmapGood (bmP, gamePalette, TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
 		else {
-			ReadTGAImage (pcf, &h, bmP, -1, 1.0, 0, 0);
+			ReadTGAImage (cfP, &h, bmP, -1, 1.0, 0, 0);
 			if (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 				bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
 			bmP->bmType = BM_TYPE_ALT;
@@ -671,21 +678,23 @@ reloadTextures:
 			}
 		}
 #ifndef MACDATA
-	if (!bTGA && IsMacDataFile (pcf, bD1))
+	if (!bTGA && IsMacDataFile (cfP, bD1))
 		swap_0_255 (bmP);
 #endif
 	StartTime (0);
 	}
 if (!bDefault)
-	CFClose (pcf);
+	CFClose (cfP);
+bSemaphore = 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void PiggyBitmapPageIn (int bmi, int bD1)
+int PiggyBitmapPageIn (int bmi, int bD1)
 {
 	grsBitmap		*bmP;
-	int				bmiSave;
+	int				i, bmiSave;
 
 	//bD1 = gameStates.app.bD1Mission;
 bmiSave = 0;
@@ -696,21 +705,23 @@ Assert (bmi < gameData.pig.tex.nBitmaps [bD1]);
 Assert (bitmapCacheSize > 0);
 #endif
 if (bmi < 1) 
-	return;
+	return 0;
 if (bmi >= MAX_BITMAP_FILES) 
-	return;
+	return 0;
 if (bmi >= gameData.pig.tex.nBitmaps [bD1]) 
-	return;
+	return 0;
 if (bitmapOffsets [bD1][bmi] == 0) 
-	return;		// A read-from-disk bmi!!!
+	return 0;		// A read-from-disk bmi!!!
 
 if (bLowMemory) {
 	bmiSave = bmi;
 	bmi = gameData.pig.tex.bitmapXlat [bmi];          // Xlat for low-memory settings!
 	}
 bmP = BmOverride (gameData.pig.tex.bitmaps [bD1] + bmi, -1);
-PageInBitmap (bmP, gameData.pig.tex.bitmapFiles [bD1][bmi].name, bmi, bD1);
-
+while (0 > (i = PageInBitmap (bmP, gameData.pig.tex.bitmapFiles [bD1][bmi].name, bmi, bD1)))
+	G3_SLEEP (0);
+if (!i)
+	return 0;
 if (bLowMemory) {
 	if (bmiSave != bmi) {
 		gameData.pig.tex.bitmaps [bD1][bmiSave] = gameData.pig.tex.bitmaps [bD1][bmi];
@@ -718,6 +729,7 @@ if (bLowMemory) {
 		}
 	}
 gameData.pig.tex.bitmaps [bD1][bmi].bmProps.flags &= ~BM_FLAG_PAGED_OUT;
+return 1;
 }
 
 //------------------------------------------------------------------------------

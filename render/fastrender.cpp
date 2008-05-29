@@ -1582,7 +1582,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
-	if (!(gameStates.app.bMultiThreaded || SegmentIsVisible (segP))) {
+	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
 		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
 		continue;
 		}
@@ -1717,7 +1717,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
-	if (!(gameStates.app.bMultiThreaded || SegmentIsVisible (segP))) {
+	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
 		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
 		continue;
 		}
@@ -1845,7 +1845,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
-	if (!(gameStates.app.bMultiThreaded || SegmentIsVisible (segP))) {
+	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
 		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
 		continue;
 		}
