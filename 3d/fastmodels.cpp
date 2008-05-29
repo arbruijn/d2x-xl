@@ -403,7 +403,7 @@ if (gameStates.app.nSDLTicks - psm->tFrame > nTimeout) {
 	psm->iFrame = ++psm->iFrame % psm->nFrames;
 	}
 glPushMatrix ();
-y = f2fl (psm->vCenter.p.y - gameData.models.offsets [nModel].p.y);
+y = f2fl (psm->vCenter.p.y);
 glTranslatef (0, y, 0);
 glRotatef (360 * (float) psm->iFrame / (float) psm->nFrames, 0, 0, 1);
 glTranslatef (0, -y, 0);
@@ -441,6 +441,8 @@ if (psm->bThruster) {
 if (G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
 	return;
 #endif
+if (nExclusive > -1)
+	nExclusive = -1;
 vo = psm->vOffset;
 if (gameData.models.nScale)
 	VmVecScale (&vo, gameData.models.nScale);

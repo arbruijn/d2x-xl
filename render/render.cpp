@@ -1418,7 +1418,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	for (nObject = gameData.segs.renderObjP [nSegment]; nObject != -1; nObject = objP->next) {
+	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = objP->next) {
 		objP = OBJECTS + nObject;
 		Assert (objP->nSegment == nSegment);
 		if (objP->flags & OF_ATTACHED)
@@ -2313,7 +2313,7 @@ void RenderSkyBoxObjects (void)
 
 gameStates.render.nType = 1;
 for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++) 
-	for (nObject = gameData.segs.renderObjP [*segP]; nObject != -1; nObject = OBJECTS [nObject].next) 
+	for (nObject = gameData.segs.objects [*segP]; nObject != -1; nObject = OBJECTS [nObject].next) 
 		DoRenderObject (nObject, gameStates.render.nWindow);
 }
 

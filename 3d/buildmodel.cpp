@@ -316,7 +316,7 @@ G3_FREE (pm->pSortedVerts);
 
 int G3ShiftModel (tObject *objP, int nModel, int bHires, fVector3 *vOffsetfP)
 {
-#if 0
+#if 1
 return 0;
 #else
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
@@ -407,7 +407,7 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
-//VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
+VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
 for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) 
 	if (psm->nHitbox > 0) {
 		VmVecFixToFloat (&vo, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
@@ -518,19 +518,23 @@ if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
 #if 1
-VmVecInc (&psm [0].vOffset, gameData.models.offsets + nModel);
+//VmVecInc (&psm [0].vOffset, gameData.models.offsets + nModel);
 #else
 G3ShiftModel (objP, nModel, bHires, &vOffset);
 #endif
-dx = (phb [0].vMax.p.x - phb [0].vMin.p.x);
-dy = (phb [0].vMax.p.y - phb [0].vMin.p.y);
-dz = (phb [0].vMax.p.z - phb [0].vMin.p.z);
-phb [0].vSize.p.x = (fix) dx / 2;
-phb [0].vSize.p.y = (fix) dy / 2;
-phb [0].vSize.p.z = (fix) dz / 2;
-phb [0].vOffset = gameData.models.offsets [nModel];
+dx = (phb [0].vMax.p.x - phb [0].vMin.p.x) / 2;
+dy = (phb [0].vMax.p.y - phb [0].vMin.p.y) / 2;
+dz = (phb [0].vMax.p.z - phb [0].vMin.p.z) / 2;
+phb [0].vSize.p.x = (fix) dx;
+phb [0].vSize.p.y = (fix) dy;
+phb [0].vSize.p.z = (fix) dz;
+gameData.models.offsets [nModel].p.x = (phb [0].vMax.p.x + phb [0].vMin.p.x) / 2;
+gameData.models.offsets [nModel].p.y = (phb [0].vMax.p.y + phb [0].vMin.p.y) / 2;
+gameData.models.offsets [nModel].p.z = (phb [0].vMax.p.z + phb [0].vMin.p.z) / 2;
+//phb [0].vOffset = gameData.models.offsets [nModel];
 for (i = 0; i <= j; i++)
 	ComputeHitbox (nModel, i);
+//return (fix) (sqrt (dx * dx + dy * dy + dz * dz)); 
 return G3ModelRad (objP, nModel, bHires);
 }
 

@@ -642,21 +642,23 @@ if (gameData.render.shield.nFaces > 0)
 	if ((gameOpts->render.bDepthSort > 0) || (gameOpts->render.nPath && !gameOpts->render.bDepthSort))
 		RIAddSphere (riSphereShield, red, green, blue, alpha, objP);
 	else {
-		tOOF_vector	p;
+		tOOF_vector	p = {0, 0, 0};
 		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		float	fScale, r = f2fl (nSize) /** 1.05f*/;
 		tPosition *posP = OBJPOS (objP);
 		vmsVector vPos;
 		gameStates.ogl.bUseTransform = 1;
-		G3StartInstanceMatrix (&posP->vPos, &posP->mOrient);
-		RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, gameData.models.offsets + objP->rType.polyObjInfo.nModel),
-						  r, r, r, red, green, blue, alpha, bmpShield, 1);
+		VmVecAdd (&vPos, &posP->vPos, gameData.models.offsets + objP->rType.polyObjInfo.nModel);
+		G3StartInstanceMatrix (&vPos, &posP->mOrient);
+		RenderSphere (&gameData.render.shield, &p, r, r, r, red, green, blue, alpha, bmpShield, 1);
 		G3DoneInstance ();
 		gameStates.ogl.bUseTransform = 0;
 		fScale = gameData.render.shield.pPulse->fScale;
-		VmVecRotate (&vPos, gameData.models.offsets + objP->rType.polyObjInfo.nModel, ObjectView (objP));
-		VmVecInc (&vPos, &posP->vPos);
+		//VmVecRotate (&vPos, &vPos, ObjectView (objP));
+		G3StartInstanceMatrix (&vPos, &posP->mOrient);
+		vPos.p.x = vPos.p.y = vPos.p.z = 0;
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
+		G3DoneInstance ();
 		}
 	}
 }

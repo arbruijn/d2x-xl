@@ -208,6 +208,7 @@ for (; iBox <= nBoxes; iBox++) {
 		G3DoneInstance ();
 	}
 G3DoneInstance ();
+float r = f2fl (VmVecDist (&pmhb->vMin, &pmhb->vMax) / 2);
 #if 0//def _DEBUG	//display collision point
 if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].tHit < 500) {
 	tObject	o;

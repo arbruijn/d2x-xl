@@ -956,8 +956,12 @@ else {
 	}
 
 	// check hit sphere collisions
+#if 0
 VmVecRotate (&vPos, gameData.models.offsets + thisObjP->rType.polyObjInfo.nModel, ObjectView (thisObjP));
 VmVecInc (&vPos, &thisObjP->position.vPos);
+#else
+vPos = thisObjP->position.vPos;
+#endif
 bThisPoly = UseHitbox (thisObjP);
 bOtherPoly = UseHitbox (otherObjP);
 if (EGI_FLAG (nHitboxes, 0, 0, 0) && 

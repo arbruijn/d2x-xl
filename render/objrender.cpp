@@ -922,6 +922,7 @@ switch (objP->renderType) {
 				return 0;
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_ROBOTS)
 				return 0;
+			gameData.models.nScale = 0;
 			DoObjectSmoke (objP);
 			DrawPolygonObject (objP, bDepthSort, 0);
 			if (!gameStates.render.bQueryCoronas) {

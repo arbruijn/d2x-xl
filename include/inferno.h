@@ -1708,7 +1708,6 @@ typedef struct tSegmentData {
 	tSegFaces			*segFaces;
 	g3sPoint				*points;
 	short					*objects;
-	short					*renderObjP;
 	tSegList				skybox;
 #if CALC_SEGRADS
 	fix					*segRads [2];
