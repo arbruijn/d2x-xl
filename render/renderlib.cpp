@@ -967,11 +967,11 @@ if (gameStates.app.bMultiThreaded) {
 		GLuint nError;
 
 	currentDC = wglGetCurrentDC ();
-	currentContext = wglGetCurrentContext ();
-	if (currentDC && currentContext && wglMakeCurrent (0, 0)) {
+	currentRC = wglGetCurrentContext ();
+	if (gameData.render.currentDC && gameData.render.currentRC && wglMakeCurrent (0, 0)) {
 		RunRenderThreads (rtRenderInit);
 		WaitForRenderThreads ();
-		nError = wglMakeCurrent (currentDC, currentContext);
+		nError = wglMakeCurrent (gameData.render.currentDC, gameData.render.currentRC);
 		}
 	}
 #endif
@@ -982,8 +982,8 @@ if (gameStates.app.bMultiThreaded) {
 void ClaimRenderContext (void)
 {
 #ifdef _WIN32
-if (gameStates.app.bMultiThreaded && currentDC && currentContext)
-	wglMakeCurrent (currentDC, currentContext);
+if (gameStates.app.bMultiThreaded && gameData.render.currentDC && gameData.render.currentRC)
+	wglMakeCurrent (gameData.render.currentDC, gameData.render.currentRC);
 #endif
 }
 

@@ -1623,6 +1623,10 @@ typedef struct tRenderData {
 	int						nShaderChanges;
 	float						fAttScale;
 	ubyte						nPowerupFilter;
+#ifdef _WIN32
+	HDC						currentDC;
+	HGLRC						currentRC;
+#endif
 } tRenderData;
 
 //------------------------------------------------------------------------------

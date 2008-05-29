@@ -138,11 +138,6 @@ u_int32_t nCurrentVGAMode;
 
 void GamePaletteStepUp (int r, int g, int b);
 
-#ifdef _WIN32
-HDC currentDC = 0;
-HGLRC currentContext = 0;
-#endif
-
 #ifdef MWPROFILER
 #include <profiler.h>
 #endif
@@ -1976,10 +1971,10 @@ DrainHeadlightPower ();
 //PrintLog ("GameRenderFrame\n");
 #ifdef _WIN32
 		GLuint nError = glGetError ();
-		if (currentDC && currentContext) {
+		if (gameStates.app.bMultiThreaded && gameData.render.currentDC && gameData.render.currentRC) {
 			WaitForRenderThreads ();
 			if (!RunRenderThreads (rtRenderFrame)) {
-				nError = wglMakeCurrent (currentDC, currentContext);
+				nError = wglMakeCurrent (gameData.render.currentDC, gameData.render.currentRC);
 				GameRenderFrame ();
 				}
 			}

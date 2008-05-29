@@ -98,11 +98,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#ifdef _WIN32
-extern HDC currentDC;
-extern HGLRC currentContext;
-#endif
-
 int _CDECL_ RenderThread (void *pThreadId)
 {
 	GLuint	nError;
@@ -119,7 +114,7 @@ do {
 		}
 	if (tiRender.nTask == rtRenderInit) {
 #ifdef _WIN32
-		if (!wglMakeCurrent (currentDC, currentContext))
+		if (!wglMakeCurrent (gameData.render.currentDC, gameData.render.currentRC))
 			nError = glGetError ();
 #endif
 		}

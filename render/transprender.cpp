@@ -150,6 +150,10 @@ else {
 	ph->pNextItem = *pd;
 	*pd = ph;
 	}
+if (renderItems.nMinOffs > nOffset)
+	renderItems.nMinOffs = nOffset;
+if (renderItems.nMaxOffs < nOffset)
+	renderItems.nMaxOffs = nOffset;
 return renderItems.nFreeItems;
 #else
 return 0;
@@ -1154,7 +1158,7 @@ glDepthMask (0);
 glEnable (GL_CULL_FACE);
 BeginRenderSmoke (-1, 1);
 nType = -1;
-for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1, nItems = renderItems.nItems; 
+for (pd = renderItems.pDepthBuffer + renderItems.nMaxOffs, nItems = renderItems.nItems; 
 	  (pd >= renderItems.pDepthBuffer) && nItems; 
 	  pd--) {
 	if ((pl = *pd)) {
@@ -1217,6 +1221,8 @@ glDepthFunc (GL_LEQUAL);
 glDepthMask (1);
 StencilOn (bStencil);
 #endif
+renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
+renderItems.nMaxOffs = 0;
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 gameStates.render.bGeometry = 
 gameStates.render.bSmoke = 
