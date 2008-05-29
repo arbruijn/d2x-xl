@@ -1404,7 +1404,8 @@ PROF_START
 	tSegment	*segP;
 	tSegMasks	mask;
 	short		nSegment, nNewSeg, nChild, nSide, sideFlag;
-	int		nListPos, nObject;
+	int		nListPos;
+	short		nObject;
 
 memset (gameData.render.mine.renderObjs.ref, 0xff, gameData.segs.nSegments * sizeof (gameData.render.mine.renderObjs.ref [0]));
 gameData.render.mine.renderObjs.nUsed = 0;
@@ -1417,7 +1418,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = objP->next) {
+	for (nObject = gameData.segs.renderObjP [nSegment]; nObject != -1; nObject = objP->next) {
 		objP = gameData.objs.renderObjP + nObject;
 		Assert (objP->nSegment == nSegment);
 		if (objP->flags & OF_ATTACHED)
@@ -2307,12 +2308,12 @@ return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ
 
 void RenderSkyBoxObjects (void)
 {
-	int		i, nObject;
+	short		i, nObject;
 	short		*segP;
 
 gameStates.render.nType = 1;
 for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++) 
-	for (nObject = gameData.segs.segments [*segP].objects; nObject != -1; nObject = OBJECTS [nObject].next) 
+	for (nObject = gameData.segs.renderObjP [*segP]; nObject != -1; nObject = OBJECTS [nObject].next) 
 		DoRenderObject (nObject, gameStates.render.nWindow);
 }
 

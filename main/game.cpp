@@ -1946,7 +1946,7 @@ if (nDebugSlowdown) {
 	DoFinalBossFrame ();
 // -- lightning_frame ();
 	// -- recharge_energy_frame ();
-DrainHeadlightPower ();
+	DrainHeadlightPower ();
 #ifdef EDITOR
 	check_create_player_path ();
 	player_follow_path (gameData.objs.console);
@@ -1975,6 +1975,7 @@ DrainHeadlightPower ();
 			WaitForRenderThreads ();
 			if (!RunRenderThreads (rtRenderFrame)) {
 				nError = wglMakeCurrent (gameData.render.currentDC, gameData.render.currentRC);
+				gameData.segs.renderObjP = gameData.segs.objects [0];
 				gameData.objs.renderObjP = gameData.objs.objects [0];
 				gameData.objs.nRenderObjs = gameData.objs.nObjects;
 				gameData.objs.nLastRenderObj = gameData.objs.nLastObject;

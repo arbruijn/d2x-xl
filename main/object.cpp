@@ -481,8 +481,7 @@ for (i = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
 	objP->attachedObj = -1;
 	objP->flags = 0;
 	}
-for (i = 0; i < MAX_SEGMENTS; i++)
-	SEGMENTS [i].objects = -1;
+memset (gameData.segs.objects [0], 0xff, MAX_SEGMENTS * sizeof (short));
 gameData.objs.console = 
 gameData.objs.viewer = OBJECTS;
 InitPlayerObject ();
@@ -515,11 +514,9 @@ for (i = MAX_OBJECTS; i--; )
 #ifdef _DEBUG
 int IsObjectInSeg (int nSegment, int objn)
 {
-	int nObject, count = 0;
+	short nObject, count = 0;
 
-for (nObject = gameData.segs.segments [nSegment].objects;
-	  nObject != -1;
-	  nObject = OBJECTS [nObject].next)	{
+for (nObject = gameData.segs.objP [nSegment]; nObject != -1; nObject = OBJECTS [nObject].next)	{
 	if (count > MAX_OBJECTS) 	{
 		Int3 ();
 		return count;
@@ -547,12 +544,11 @@ int SearchAllSegsForObject (int nObject)
 
 void JohnsObjUnlink (int nSegment, int nObject)
 {
-	tObject  *objP = OBJECTS+nObject;
-	tSegment *seg = gameData.segs.segments+nSegment;
+	tObject  *objP = OBJECTS + nObject;
 
 Assert (nObject != -1);
 if (objP->prev == -1)
-	seg->objects = objP->next;
+	gameData.segs.objP [nSegment] = objP->next;
 else
 	OBJECTS [objP->prev].next = objP->next;
 if (objP->next != -1)
@@ -567,9 +563,7 @@ void RemoveIncorrectObjects ()
 
 for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	count = 0;
-	for (nObject = gameData.segs.segments [nSegment].objects;
-		  nObject != -1;
-		  nObject=OBJECTS [nObject].next) {
+	for (nObject = gameData.segs.objP [nSegment]; nObject != -1; nObject = OBJECTS [nObject].next) {
 		count++;
 		#ifdef _DEBUG
 		if (count > MAX_OBJECTS)	{
@@ -634,9 +628,7 @@ void list_segObjects (int nSegment)
 {
 	int nObject, count = 0;
 
-for (nObject = gameData.segs.segments [nSegment].objects;
-	  nObject != -1;
-	  nObject = OBJECTS [nObject].next) {
+for (nObject = gameData.segs.objP [nSegment]; nObject != -1; nObject = OBJECTS [nObject].next) {
 	count++;
 	if (count > MAX_OBJECTS) 	{
 		Int3 ();
@@ -664,9 +656,9 @@ if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
 		return;
 	}
 objP->nSegment = nSegment;
-objP->next = gameData.segs.segments [nSegment].objects;
+objP->next = gameData.segs.objP [nSegment];
 objP->prev = -1;
-gameData.segs.segments [nSegment].objects = nObject;
+gameData.segs.objP [nSegment] = nObject;
 if (objP->next != -1)
 		OBJECTS [objP->next].prev = nObject;
 
@@ -687,11 +679,10 @@ if (OBJECTS [0].prev == 0)
 void UnlinkObject (int nObject)
 {
 	tObject  *objP = OBJECTS+nObject;
-	tSegment *segP= gameData.segs.segments+objP->nSegment;
 
 Assert (nObject != -1);
 if (objP->prev == -1)
-	segP->objects = objP->next;
+	gameData.segs.objP [objP->nSegment] = objP->next;
 else
 	OBJECTS [objP->prev].next = objP->next;
 if (objP->next != -1) 

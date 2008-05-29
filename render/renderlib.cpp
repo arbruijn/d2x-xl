@@ -964,7 +964,7 @@ return 0;
 void YieldRenderContext (void)
 {
 #ifdef _WIN32
-if (gameStates.app.bMultiThreaded) {
+if (gameStates.app.bMultiThreaded && gameStates.app.bGameRunning) {
 		GLuint nError;
 
 	gameData.render.currentDC = wglGetCurrentDC ();

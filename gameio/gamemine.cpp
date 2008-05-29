@@ -1007,7 +1007,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 			ReadSegSpecialType (nSegment, bitMask, loadFile);
 			}
 		}
-	segP->objects = -1;
+	gameData.segs.objP [nSegment] = -1;
 
 	if (gameData.segs.nLevelVersion <= 5) { // descent 1 thru d2 SHAREWARE level
 		// Read fix	segP->xAvgSegLight (shift down 5 bits, write as short)

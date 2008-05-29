@@ -2408,6 +2408,8 @@ GETMEM (tSegment, gameData.segs.segments, MAX_SEGMENTS, 0);
 GETMEM (tSegment2, gameData.segs.segment2s, MAX_SEGMENTS, 0);
 GETMEM (xsegment, gameData.segs.xSegments, MAX_SEGMENTS, 0);
 GETMEM (g3sPoint, gameData.segs.points, 65536, 0);
+GETMEM (short, gameData.segs.objects [0], 2 * MAX_SEGMENTS, 0);
+gameData.segs.objects [1] = gameData.segs.objects [0] + MAX_SEGMENTS;
 #if CALC_SEGRADS
 GETMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS, 0);
 GETMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS, 0);
@@ -2431,6 +2433,8 @@ GETMEM (tRgbaColorf, gameData.segs.faces.color, MAX_TRIANGLES * 3, 0);
 GETMEM (tTexCoord2f, gameData.segs.faces.texCoord, MAX_TRIANGLES * 2 * 3, 0);
 GETMEM (tTexCoord2f, gameData.segs.faces.lMapTexCoord, MAX_FACES * 2, 0);
 gameData.segs.faces.ovlTexCoord = gameData.segs.faces.texCoord + MAX_FACES * 4;
+gameData.segs.segObjP = 
+gameData.segs.renderSegObjP = gameData.segs.objects [0];
 }
 
 // ----------------------------------------------------------------------------
@@ -2611,6 +2615,7 @@ FREEMEM (tSegment, gameData.segs.segments, MAX_SEGMENTS);
 FREEMEM (tSegment2, gameData.segs.segment2s, MAX_SEGMENTS);
 FREEMEM (xsegment, gameData.segs.xSegments, MAX_SEGMENTS);
 FREEMEM (g3sPoint, gameData.segs.points, MAX_VERTICES);
+FREEMEM (short, gameData.segs.objects, 2 * MAX_SEGMENTS);
 #if CALC_SEGRADS
 FREEMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS);
 FREEMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS);
