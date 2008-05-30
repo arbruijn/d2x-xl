@@ -441,8 +441,6 @@ if (psm->bThruster) {
 if (G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
 	return;
 #endif
-if (nExclusive > -1)
-	nExclusive = -1;
 vo = psm->vOffset;
 if (gameData.models.nScale)
 	VmVecScale (&vo, gameData.models.nScale);
@@ -462,8 +460,10 @@ for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 #endif
 // render the faces
 if ((nExclusive < 0) || (nSubModel == nExclusive)) {
+#if 0
 	if (vOffsetP && (nSubModel == nExclusive))
 		G3StartInstanceMatrix (vOffsetP, NULL);
+#endif
 	glDisable (GL_TEXTURE_2D);
 	if (gameStates.render.bCloaked)
 		glColor4f (0, 0, 0, GrAlpha ());
@@ -604,7 +604,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 if (bAnimate)
 	glPopMatrix ();
 #if 1
-if ((nExclusive < 0) || (nSubModel == nExclusive))
+if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
 	G3DoneInstance ();
 #endif
 }
@@ -714,7 +714,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 		for (; iLight < 8; iLight++)
 			glDisable (GL_LIGHT0 + iLight);
 		}
-	if (nSubModel < 0)
+	//if (nSubModel < 0)
 		G3StartInstanceMatrix (&posP->vPos, &posP->mOrient);
 	pm = gameData.models.g3Models [bHires] + nModel;
 	if (bHires) {
@@ -726,7 +726,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	else
 		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->pSubModels->vOffset : vOffsetP,
 							 bHires, bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
-	if (nSubModel < 0)
+	//if (nSubModel < 0)
 		G3DoneInstance ();
 	if (!bLighting)
 		break;

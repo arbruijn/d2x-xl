@@ -690,7 +690,7 @@ if (!flags)	{	//draw entire tObject
 else {
 	int i;
 
-	G3StartInstanceMatrix (pos, orient);
+	//G3StartInstanceMatrix (pos, orient);
 	for (i = 0; flags > 0; flags >>= 1, i++)
 		if (flags & 1) {
 			vmsVector vOffset;
@@ -713,7 +713,7 @@ else {
 					}
 				}
 			}
-	G3DoneInstance ();
+	//G3DoneInstance ();
 	}
 gameStates.ogl.bUseTransform = 0;
 gameData.render.pVerts = NULL;

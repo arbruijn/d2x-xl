@@ -1028,6 +1028,8 @@ switch (objP->renderType) {
 			DrawDebrisCorona (objP);
 			if (IsSpawnMarkerObject (objP))
 				RenderMslLockIndicator (objP);
+			else
+				DoObjectSmoke (objP);
 			}
 		break;
 

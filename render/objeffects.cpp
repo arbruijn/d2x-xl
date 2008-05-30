@@ -1794,7 +1794,7 @@ else if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
 			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
 			}
-		RenderWeaponCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 1.5f, 1, 1, 0);
+		RenderWeaponCorona (objP, &debrisGlow, h, 5 * objP->size, 1.5f, 1, 1, 0);
 		}
 	}
 }
