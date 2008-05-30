@@ -116,4 +116,6 @@ tPolyModel *GetPolyModel (tObject *objP, vmsVector *pos, int nModel, int flags);
 
 int LoadModelTextures (tPolyModel *po, tBitmapIndex *altTextures);
 
+//	-----------------------------------------------------------------------------
+
 #endif /* _POLYOBJ_H */

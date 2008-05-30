@@ -3415,6 +3415,20 @@ extern fix nDebrisLife [];
 #define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->position)
 #define OBJSEG(_objP)		(SPECTATOR (_objP) ? gameStates.app.nPlayerSegment : (_objP)->nSegment)
 
+//	-----------------------------------------------------------------------------
+
+static inline vmsVector *PolyObjPos (tObject *objP, vmsVector *vPos)
+{
+if (objP->renderType == RT_POLYOBJ) {
+	VmVecRotate (vPos, gameData.models.offsets + objP->rType.polyObjInfo.nModel, ObjectView (objP));
+	return VmVecInc (vPos, &objP->position.vPos);
+	}
+*vPos = OBJPOS (objP)->vPos;
+return vPos;
+}
+
+//	-----------------------------------------------------------------------------
+
 #ifdef RELEASE
 #	define FAST_SHADOWS	1
 #else

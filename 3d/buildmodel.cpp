@@ -397,29 +397,63 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel		*psm;
-	tG3ModelFace	*pmf;
-	tG3ModelVertex	*pmv;
-	fVector3			vOffset = {{0,0,0}}, vo, v;
+	tG3ModelFace	*pmfi, *pmfj, *pmf;
+	tG3ModelVertex	*pmvi, *pmvj, *pmv;
+	fVector3			vCenter, vOffset, v, vMin, vMax, vi, vj;
 	float				fRad = 0, r;
-	int				i, j, k;
+	int				h, i, j, k, l;
 
 #ifdef _DEBUG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
-VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
-for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) 
-	if (psm->nHitbox > 0) {
-		VmVecFixToFloat (&vo, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
-		for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
-			for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++) {
-				VmVecAdd (&v, &pmv->vertex, &vo);
-				if (fRad < (r = VmVecDist (&vOffset, &v))) {
+#if 1
+h = pm->nFaces;
+for (i = 0, pmfi = pm->pFaces; i < h - 1; i++, pmfi++) {
+	psm = pm->pSubModels + pmfi->nSubModel;
+	VmVecFixToFloat (&vOffset, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
+	for (k = pmfi->nVerts, pmvi = pm->pFaceVerts + pmfi->nIndex; k; k--, pmvi++) {
+		VmVecAdd (&vi, &pmvi->vertex, &vOffset);
+		for (j = i + 1, pmfj = pm->pFaces + j; j < h; j++, pmfj++) {
+			for (l = pmfj->nVerts, pmvj = pm->pFaceVerts + pmfj->nIndex; l; l--, pmvj++) {
+				if (pmfj->nSubModel == pmfi->nSubModel)
+					VmVecAdd (&vj, &pmvj->vertex, &vOffset);
+				else {
+					psm = pm->pSubModels + pmfj->nSubModel;
+					VmVecFixToFloat (&vj, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
+					VmVecInc (&vj, &pmvj->vertex);
+					}
+				if (fRad < (r = VmVecDist (&vi, &vj))) {
 					fRad = r;
+					vMin = vi;
+					vMax = vj;
 					}
 				}
 			}
 		}
+	}
+fRad /= 2;
+//VmVecAvg (&v, &vMin, &vMax);
+//VmVecFloatToFix (gameData.models.offsets + nModel, &v);
+//#else
+VmVecFixToFloat (&vCenter, gameData.models.offsets + nModel);
+for (i = 0, h = pm->nSubModels, psm = pm->pSubModels; i < h; i++, psm++) {
+	if (psm->nHitbox > 0) {
+		VmVecFixToFloat (&vOffset, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
+		//VmVecSub (&vOffset, &vCenter, &vOffset);
+		for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
+			for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++) {
+				VmVecAdd (&v, &pmv->vertex, &vOffset);
+				VmVecDec (&v, &vCenter);
+				r = VmVecMag (&v);
+				if (fRad < r)
+					VmVecScaleInc (&vCenter, &v, (r - fRad) / r);
+				}
+			}
+		}
+	}
+#endif
+VmVecFloatToFix (gameData.models.offsets + nModel, &vCenter);
 return fl2f (fRad);
 }
 
@@ -522,9 +556,9 @@ if (nModel == nDbgModel)
 #else
 G3ShiftModel (objP, nModel, bHires, &vOffset);
 #endif
-dx = (phb [0].vMax.p.x - phb [0].vMin.p.x) / 2;
-dy = (phb [0].vMax.p.y - phb [0].vMin.p.y) / 2;
-dz = (phb [0].vMax.p.z - phb [0].vMin.p.z) / 2;
+dx = (phb [0].vMax.p.x - phb [0].vMin.p.x);
+dy = (phb [0].vMax.p.y - phb [0].vMin.p.y);
+dz = (phb [0].vMax.p.z - phb [0].vMin.p.z);
 phb [0].vSize.p.x = (fix) dx;
 phb [0].vSize.p.y = (fix) dy;
 phb [0].vSize.p.z = (fix) dz;
@@ -534,7 +568,6 @@ gameData.models.offsets [nModel].p.z = (phb [0].vMax.p.z + phb [0].vMin.p.z) / 2
 //phb [0].vOffset = gameData.models.offsets [nModel];
 for (i = 0; i <= j; i++)
 	ComputeHitbox (nModel, i);
-//return (fix) (sqrt (dx * dx + dy * dy + dz * dz)); 
 return G3ModelRad (objP, nModel, bHires);
 }
 

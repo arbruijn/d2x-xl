@@ -648,9 +648,12 @@ if (gameData.render.shield.nFaces > 0)
 		tPosition *posP = OBJPOS (objP);
 		vmsVector vPos;
 		gameStates.ogl.bUseTransform = 1;
-		VmVecAdd (&vPos, &posP->vPos, gameData.models.offsets + objP->rType.polyObjInfo.nModel);
-		G3StartInstanceMatrix (&vPos, &posP->mOrient);
+		//VmVecAdd (&vPos, &posP->vPos, gameData.models.offsets + objP->rType.polyObjInfo.nModel);
+		//vPos = posP->vPos;
+		G3StartInstanceMatrix (&posP->vPos, &posP->mOrient);
+		G3StartInstanceMatrix (gameData.models.offsets + objP->rType.polyObjInfo.nModel, NULL);
 		RenderSphere (&gameData.render.shield, &p, r, r, r, red, green, blue, alpha, bmpShield, 1);
+		G3DoneInstance ();
 		G3DoneInstance ();
 		gameStates.ogl.bUseTransform = 0;
 		fScale = gameData.render.shield.pPulse->fScale;

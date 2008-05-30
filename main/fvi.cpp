@@ -897,6 +897,7 @@ for (; iModel <= nModels; iModel++) {
 #endif
 		h = CheckLineToFace (&hitP, p0, p1, pf->v, pf->n + 1, 4, rad);
 		if (h) {
+		h = CheckLineToFace (&hitP, p0, p1, pf->v, pf->n + 1, 4, rad);
 			d = VmVecNormalize (VmVecSub (&v, &hitP, p0));
 #if 0
 			dot = VmVecDot (pf->n + 1, pn);
@@ -956,14 +957,13 @@ else {
 	}
 
 	// check hit sphere collisions
-#if 0
-VmVecRotate (&vPos, gameData.models.offsets + thisObjP->rType.polyObjInfo.nModel, ObjectView (thisObjP));
-VmVecInc (&vPos, &thisObjP->position.vPos);
-#else
-vPos = thisObjP->position.vPos;
-#endif
-bThisPoly = UseHitbox (thisObjP);
 bOtherPoly = UseHitbox (otherObjP);
+#if 1
+if (bThisPoly = UseHitbox (thisObjP))
+	PolyObjPos (thisObjP, &vPos);
+else
+#endif
+vPos = thisObjP->position.vPos;
 if (EGI_FLAG (nHitboxes, 0, 0, 0) && 
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) && 
 	 (bThisPoly || bOtherPoly)) {
@@ -973,9 +973,14 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		return 0;
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
-		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1)))
-			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, 0)))
+		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1))) {
+			if (!VmVecDist (p0, p1))
 				return 0;
+			dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, 0);
+			if ((dist == 0x7fffffff) || (dist > otherObjP->size))
+				return 0;
+			}
+		CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1);
 		VmPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos, 1);
 		}
 	else {

@@ -286,7 +286,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 		}
 #if RENDER_HITBOX
 	RenderHitbox (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha);
-#else
+//#else
 	DrawShieldSphere (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha);
 #endif
 	StencilOn (bStencil);
@@ -299,13 +299,13 @@ void RenderRobotShield (tObject *objP)
 {
 	static tRgbaColorf shieldColors [3] = {{0.75f, 0, 0.75f, 1}, {0, 0.5f, 1},{1, 0.5f, 0, 1}};
 
-	tCloakInfo	ci;
-	float			scale = 1;
-	fix			dt;
-
 #if RENDER_HITBOX
 RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
-#else
+//#else
+	float			scale = 1;
+	tCloakInfo	ci;
+	fix			dt;
+
 if (!gameOpts->render.effects.bRobotShields)
 	return;
 if ((objP->nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
@@ -359,6 +359,7 @@ return &defaultColor;
 
 void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
 {
+	vmsVector	vPos;
 	fVector		fPos, fVerts [4];
 	float			r, r2, w;
 	int			i, bStencil, bDrawArrays;
@@ -376,7 +377,8 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	 (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
 	bStencil = StencilOff ();
 	pc = ObjectFrameColor (objP, pc);
-	VmVecFixToFloat (&fPos, &objP->position.vPos);
+	PolyObjPos (objP, &vPos);
+	VmVecFixToFloat (&fPos, &vPos);
 	G3TransformPoint (&fPos, &fPos, 0);
 	r = f2fl (objP->size);
 	r2 = r / 10;
@@ -447,6 +449,7 @@ void RenderMslLockIndicator (tObject *objP)
 	static int			nMslLockIndPos [2] = {0, 0};
 	static int			t0 [2] = {0, 0}, tDelay [2] = {25, 40};
 
+	vmsVector			vPos;
 	fVector				fPos, fVerts [3];
 	float					r, r2;
 	int					nTgtInd, bHasDmg, bVertexArrays, bMarker = (objP->nType == OBJ_MARKER);
@@ -469,7 +472,8 @@ if (gameStates.app.nSDLTicks - t0 [bMarker] > tDelay [bMarker]) {
 	trackGoalColor [bMarker].green = fMslLockGreen [bMarker] + (float) nMslLockColor [bMarker] / 100.0f;
 	nMslLockIndPos [bMarker] = (nMslLockIndPos [bMarker] + 1) % INDICATOR_POSITIONS;
 	}
-VmVecFixToFloat (&fPos, &objP->position.vPos);
+PolyObjPos (objP, &vPos);
+VmVecFixToFloat (&fPos, &vPos);
 G3TransformPoint (&fPos, &fPos, 0);
 r = f2fl (objP->size);
 if (bMarker)
@@ -586,6 +590,7 @@ glEnable (GL_CULL_FACE);
 
 void RenderTargetIndicator (tObject *objP, tRgbColorf *pc)
 {
+	vmsVector	vPos;
 	fVector		fPos, fVerts [4];
 	float			r, r2, r3;
 	int			i, bStencil, bDrawArrays, nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : -1;
@@ -627,7 +632,8 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) && 
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ? 
 		  (tRgbColorf *) &trackGoalColor [0] : ObjectFrameColor (objP, pc);
-	VmVecFixToFloat (&fPos, &objP->position.vPos);
+	PolyObjPos (objP, &vPos);
+	VmVecFixToFloat (&fPos, &vPos);
 	G3TransformPoint (&fPos, &fPos, 0);
 	r = f2fl (objP->size);
 	glColor3fv ((GLfloat *) pc);
