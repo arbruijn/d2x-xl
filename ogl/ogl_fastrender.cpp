@@ -443,12 +443,13 @@ if (!bDepthOnly) {
 	if (nBlendMode != gameStates.render.history.nBlendMode) {
 		gameStates.render.history.nBlendMode = nBlendMode;
 		G3FlushFaceBuffer (1);
+		G3SetBlendMode (faceP);
+		G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
 		}
 	else if (bMonitor)
 		G3FlushFaceBuffer (1);
 	else
 		G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
-	G3SetBlendMode (faceP);
 	}
 #endif
 gameStates.ogl.iLight = 0;

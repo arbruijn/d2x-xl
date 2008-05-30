@@ -1036,9 +1036,9 @@ if (!gameData.app.nFrameCount) {
 			*pfAlpha = pFaceColor [2].color.alpha;
 		nColor = 2;
 		}
-	if ((*pfAlpha < 1) || ((nColor == 2) && (faceP->nBaseTex < 0)))
-		faceP->bTransparent = 1;
 	}
+if ((*pfAlpha < 1) || ((nColor == 2) && (faceP->nBaseTex < 0)))
+	faceP->bTransparent = 1;
 return nColor;
 }
 
