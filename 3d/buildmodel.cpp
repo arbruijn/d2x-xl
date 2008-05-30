@@ -407,7 +407,7 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
-#if 1
+//first get the biggest distance between any two model vertices
 h = pm->nFaces;
 for (i = 0, pmfi = pm->pFaces; i < h - 1; i++, pmfi++) {
 	psm = pm->pSubModels + pmfi->nSubModel;
@@ -433,9 +433,8 @@ for (i = 0, pmfi = pm->pFaces; i < h - 1; i++, pmfi++) {
 		}
 	}
 fRad /= 2;
-//VmVecAvg (&v, &vMin, &vMax);
-//VmVecFloatToFix (gameData.models.offsets + nModel, &v);
-//#else
+// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
+// around the center with the radius computed above
 VmVecFixToFloat (&vCenter, gameData.models.offsets + nModel);
 for (i = 0, h = pm->nSubModels, psm = pm->pSubModels; i < h; i++, psm++) {
 	if (psm->nHitbox > 0) {
@@ -452,7 +451,6 @@ for (i = 0, h = pm->nSubModels, psm = pm->pSubModels; i < h; i++, psm++) {
 			}
 		}
 	}
-#endif
 VmVecFloatToFix (gameData.models.offsets + nModel, &vCenter);
 return fl2f (fRad);
 }
