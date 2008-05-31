@@ -2108,6 +2108,14 @@ typedef struct tG3Model {
 	GLuint					vboIndexHandle;
 } tG3Model;
 
+typedef struct tG3ModelSphere {
+	short						nSubModels;
+	short						nFaces;
+	short						nFaceVerts;
+	fix						xRads [3];
+	fix						vOffsets [3];
+} tG3ModelSphere;
+
 //------------------------------------------------------------------------------
 
 #define MAX_POLYGON_VERTS 1000
