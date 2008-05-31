@@ -2,11 +2,7 @@
 
 define([D2X_MAJOR],1)
 define([D2X_MINOR],13)
-<<<<<<< .mine
-define([D2X_MICRO],2)
-=======
-define([D2X_MICRO],3)
->>>>>>> .r1739
+define([D2X_MICRO],4)
 
 AC_INIT(d2x-xl,[D2X_MAJOR.D2X_MINOR.D2X_MICRO],[karx11erx@hotmail.com])
 AC_PREREQ(2.52)

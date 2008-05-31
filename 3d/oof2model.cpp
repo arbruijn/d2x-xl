@@ -158,6 +158,7 @@ if (!G3AllocModel (pm))
 G3GetOOFModelItems (nModel, po, pm, /*((nModel == 108) || (nModel == 110)) ? 0.805f :*/ 1.0f);
 pm->pTextures = po->textures.pBitmaps;
 memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
+pm->nType = -1;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
 G3SetupModel (pm, 1, 1);
 #if 1

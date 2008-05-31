@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------
 
 #ifdef _DEBUG
-#	define	RENDER_HITBOX	1
+#	define	RENDER_HITBOX	0
 #else
 #	define	RENDER_HITBOX	0
 #endif

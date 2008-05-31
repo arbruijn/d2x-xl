@@ -151,6 +151,7 @@ memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
 for (i = 0; i < pm->nTextures; i++)
 	if ((j = (int) pm->pTextures [i].bmTeam))
 		pm->teamTextures [j - 1] = i;
+pm->nType = 2;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
 G3SetupModel (pm, 1, 1);
 #if 1

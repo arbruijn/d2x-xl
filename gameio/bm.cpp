@@ -1207,7 +1207,7 @@ j = N_D2_POLYGON_MODELS; //gameData.models.nPolyModels;
 gameData.models.nPolyModels += t;
 if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
 	Warning ("Too many polygon models (%d)\nin <%s>.\nMax is %d.",
-				t,fname,MAX_POLYGON_MODELS-N_D2_POLYGON_MODELS);
+				t,fname, MAX_POLYGON_MODELS - N_D2_POLYGON_MODELS);
 	return -1;
 	}
 PolyModelReadN (gameData.models.polyModels + j, t, &cf);
@@ -1363,6 +1363,7 @@ for (j = 0; j < t; j++) {
 	if (!PolyModelRead (pm, &cf, 0))
 		return -1;
 	PolyModelDataRead (pm, i, NULL, &cf);
+	pm->nType = bAltModels ? 1 : -1;
 	pm->rad = G3PolyModelSize (pm, i);
 	if (bAltModels) {
 #if 0

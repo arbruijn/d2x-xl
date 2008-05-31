@@ -286,7 +286,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 		}
 #if RENDER_HITBOX
 	RenderHitbox (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha);
-//#else
+#else
 	DrawShieldSphere (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha);
 #endif
 	StencilOn (bStencil);
@@ -301,7 +301,7 @@ void RenderRobotShield (tObject *objP)
 
 #if RENDER_HITBOX
 RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
-//#else
+#else
 	float			scale = 1;
 	tCloakInfo	ci;
 	fix			dt;

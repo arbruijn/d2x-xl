@@ -2090,6 +2090,7 @@ typedef struct tG3Model {
 	short						*pIndex [2];
 	short						nGunSubModels [MAX_GUNS];
 	float						fScale;
+	short						nType; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
 	short						nFaces;
 	short						iFace;
 	short						nVerts;

@@ -929,6 +929,7 @@ pm->rad = CFReadFix (fp);
 pm->nTextures = CFReadByte (fp);
 pm->nFirstTexture = CFReadShort (fp);
 pm->nSimplerModel = CFReadByte (fp);
+pm->nType = 0;
 return 1;
 }
 

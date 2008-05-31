@@ -45,6 +45,7 @@ typedef struct tSubModelData {
 
 //used to describe a polygon model
 typedef struct tPolyModel {
+	short				nType;
 	int				nModels;
 	int				nDataSize;
 	ubyte				*modelData;

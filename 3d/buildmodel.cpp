@@ -393,60 +393,154 @@ for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 
 //------------------------------------------------------------------------------
 
+static inline float G3CmpVerts (fVector3 *pv, fVector3 *pm)
+{
+	float h;
+
+if ((h = (pv->p.x - pm->p.x)))
+	return h;
+if ((h = (pv->p.y - pm->p.y)))
+	return h;
+return pv->p.z - pm->p.z;
+}
+
+//------------------------------------------------------------------------------
+
+static void G3SortModelVerts (fVector3 *vertices, short left, short right)
+{
+	short		l = left,
+				r = right;
+	fVector3	m = vertices [(l + r) / 2];
+
+do {
+	while (G3CmpVerts (vertices + l, &m) < 0)
+		l++;
+	while (G3CmpVerts (vertices + r, &m) > 0)
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			fVector3 h = vertices [l];
+			vertices [l] = vertices [r];
+			vertices [r] = h;
+			}
+		l++;
+		r--;
+		}
+	} while (l <= r);
+if (l < right)
+	G3SortModelVerts (vertices, l, right);
+if (left < r)
+	G3SortModelVerts (vertices, left, r);
+}
+
+//------------------------------------------------------------------------------
+
+short G3FilterModelVerts (fVector3 *vertices, short nVertices)
+{
+	fVector3	*pi, *pj;
+
+for (pi = vertices, pj = vertices + 1; --nVertices; nVertices--, pj++)
+	if (G3CmpVerts (pi, pj))
+		*++pi = *pj;
+return (short) (pi - vertices) + 1;
+}
+
+//------------------------------------------------------------------------------
+
 fix G3ModelRad (tObject *objP, int nModel, int bHires)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel		*psm;
-	tG3ModelFace	*pmfi, *pmfj, *pmf;
-	tG3ModelVertex	*pmvi, *pmvj, *pmv;
-	fVector3			vCenter, vOffset, v, vMin, vMax, vi, vj;
+	tG3ModelFace	*pmf;
+	tG3ModelVertex	*pmv;
+	fVector3			*vertices, vCenter, vOffset, v, vMin, vMax, vi, vj;
 	float				fRad = 0, r;
-	int				h, i, j, k, l;
+	short				h, i, j, k;
 
 #ifdef _DEBUG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
 //first get the biggest distance between any two model vertices
-h = pm->nFaces;
-for (i = 0, pmfi = pm->pFaces; i < h - 1; i++, pmfi++) {
-	psm = pm->pSubModels + pmfi->nSubModel;
-	VmVecFixToFloat (&vOffset, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
-	for (k = pmfi->nVerts, pmvi = pm->pFaceVerts + pmfi->nIndex; k; k--, pmvi++) {
-		VmVecAdd (&vi, &pmvi->vertex, &vOffset);
-		for (j = i + 1, pmfj = pm->pFaces + j; j < h; j++, pmfj++) {
-			for (l = pmfj->nVerts, pmvj = pm->pFaceVerts + pmfj->nIndex; l; l--, pmvj++) {
-				if (pmfj->nSubModel == pmfi->nSubModel)
-					VmVecAdd (&vj, &pmvj->vertex, &vOffset);
-				else {
-					psm = pm->pSubModels + pmfj->nSubModel;
-					VmVecFixToFloat (&vj, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
-					VmVecInc (&vj, &pmvj->vertex);
-					}
-				if (fRad < (r = VmVecDist (&vi, &vj))) {
-					fRad = r;
-					vMin = vi;
-					vMax = vj;
+if ((vertices = (fVector3 *) D2_ALLOC (pm->nFaceVerts * sizeof (fVector3)))) {
+		fVector3	*pv, *pvi, *pvj;
+
+	for (i = 0, h = pm->nSubModels, psm = pm->pSubModels, pv = vertices; i < h; i++, psm++) {
+		if (psm->nHitbox > 0) {
+			VmVecFixToFloat (&vOffset, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
+			for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
+				for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++, pv++)
+					VmVecAdd (pv, &pmv->vertex, &vOffset);
+				}
+			}
+		}
+	G3SortModelVerts (vertices, 0, pm->nFaceVerts - 1);
+	h = G3FilterModelVerts (vertices, pm->nFaceVerts - 1);
+	for (i = 0, pvi = vertices; i < h - 1; i++, pvi++)
+		for (j = i + 1, pvj = vertices + j; j < h; j++, pvj++)
+			if (fRad < (r = VmVecDist (&vi, &vj))) {
+				fRad = r;
+				vMin = vi;
+				vMax = vj;
+				}
+	fRad /= 2;
+	// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
+	// around the center with the radius computed above
+	VmVecFixToFloat (&vCenter, gameData.models.offsets + nModel);
+	for (i = h, pv = vertices; i; i--, pv++) {
+		VmVecSub (&v, pv, &vCenter);
+		r = VmVecMag (&v);
+		if (fRad < r)
+			VmVecScaleInc (&vCenter, &v, (r - fRad) / r);
+		}
+
+	D2_FREE (vertices);
+	}
+else {
+		tG3ModelFace	*pmfi, *pmfj;
+		tG3ModelVertex	*pmvi, *pmvj;
+		short				l;
+
+	h = pm->nFaces;
+	for (i = 0, pmfi = pm->pFaces; i < h - 1; i++, pmfi++) {
+		psm = pm->pSubModels + pmfi->nSubModel;
+		VmVecFixToFloat (&vOffset, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
+		for (k = pmfi->nVerts, pmvi = pm->pFaceVerts + pmfi->nIndex; k; k--, pmvi++) {
+			VmVecAdd (&vi, &pmvi->vertex, &vOffset);
+			for (j = i + 1, pmfj = pm->pFaces + j; j < h; j++, pmfj++) {
+				for (l = pmfj->nVerts, pmvj = pm->pFaceVerts + pmfj->nIndex; l; l--, pmvj++) {
+					if (pmfj->nSubModel == pmfi->nSubModel)
+						VmVecAdd (&vj, &pmvj->vertex, &vOffset);
+					else {
+						psm = pm->pSubModels + pmfj->nSubModel;
+						VmVecFixToFloat (&vj, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
+						VmVecInc (&vj, &pmvj->vertex);
+						}
+					if (fRad < (r = VmVecDist (&vi, &vj))) {
+						fRad = r;
+						vMin = vi;
+						vMax = vj;
+						}
 					}
 				}
 			}
 		}
-	}
-fRad /= 2;
-// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
-// around the center with the radius computed above
-VmVecFixToFloat (&vCenter, gameData.models.offsets + nModel);
-for (i = 0, h = pm->nSubModels, psm = pm->pSubModels; i < h; i++, psm++) {
-	if (psm->nHitbox > 0) {
-		VmVecFixToFloat (&vOffset, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
-		//VmVecSub (&vOffset, &vCenter, &vOffset);
-		for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
-			for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++) {
-				VmVecAdd (&v, &pmv->vertex, &vOffset);
-				VmVecDec (&v, &vCenter);
-				r = VmVecMag (&v);
-				if (fRad < r)
-					VmVecScaleInc (&vCenter, &v, (r - fRad) / r);
+	fRad /= 2;
+	// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
+	// around the center with the radius computed above
+	VmVecFixToFloat (&vCenter, gameData.models.offsets + nModel);
+	for (i = 0, h = pm->nSubModels, psm = pm->pSubModels; i < h; i++, psm++) {
+		if (psm->nHitbox > 0) {
+			VmVecFixToFloat (&vOffset, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
+			//VmVecSub (&vOffset, &vCenter, &vOffset);
+			for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
+				for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++) {
+					VmVecAdd (&v, &pmv->vertex, &vOffset);
+					VmVecDec (&v, &vCenter);
+					r = VmVecMag (&v);
+					if (fRad < r)
+						VmVecScaleInc (&vCenter, &v, (r - fRad) / r);
+					}
 				}
 			}
 		}

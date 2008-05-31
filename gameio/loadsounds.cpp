@@ -429,25 +429,31 @@ return ((nSound < 0) || (nSound >= MAX_ADDON_SOUND_FILES)) ? (char *) "" : addon
 
 Mix_Chunk *LoadAddonSound (char *pszSoundFile, ubyte *bBuiltIn)
 {
-	char	szWAV [FILENAME_LEN];
-	;
+	Mix_Chunk	*chunkP;
+	char			szWAV [FILENAME_LEN];
+	int			i;
 
-if (!::isdigit (*pszSoundFile)) {
-	*bBuiltIn = 0;
-	return Mix_LoadWAV (pszSoundFile);
-	}
-int i = atoi (pszSoundFile);
-if (i >= MAX_ADDON_SOUND_FILES)
-	return NULL;
-if (!addonSounds [i].chunkP) {
-	if (!(CFExtract (pszSoundFile + 3, gameFolders.szDataDir, 0, "d2x-temp.wav") ||
-			CFExtract (pszSoundFile + 3, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], 0, "d2x-temp.wav")))
+if (!::isdigit (*pszSoundFile))
+	i = -1;
+else {
+	i = atoi (pszSoundFile);
+	if (i >= MAX_ADDON_SOUND_FILES)
 		return NULL;
-	sprintf (szWAV, "%s%sd2x-temp.wav", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "");
-	addonSounds [i].chunkP = Mix_LoadWAV (szWAV);
+	*bBuiltIn = 1;
+	if ((chunkP = addonSounds [i].chunkP))
+		return chunkP;
+	pszSoundFile += 3;
 	}
-*bBuiltIn = 1;
-return addonSounds [i].chunkP;
+if (!(CFExtract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav") ||
+		CFExtract (pszSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], 0, "d2x-temp.wav")))
+	return NULL;
+sprintf (szWAV, "%s%sd2x-temp.wav", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "");
+if (!(chunkP = Mix_LoadWAV (szWAV)))
+	return NULL;
+if (i >= 0)
+	addonSounds [i].chunkP = chunkP;
+*bBuiltIn = (i >= 0);
+return chunkP;
 }
 
 //------------------------------------------------------------------------------

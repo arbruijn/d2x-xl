@@ -344,7 +344,7 @@ static inline float Intensity (float r, float g, float b)
    i += b;
    j++;
    }
-return j ? i / j : 0;
+return j ? i / j : 1;
 }
 
 //------------------------------------------------------------------------------
