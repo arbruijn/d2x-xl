@@ -439,7 +439,7 @@ short G3FilterModelVerts (fVector3 *vertices, short nVertices)
 {
 	fVector3	*pi, *pj;
 
-for (pi = vertices, pj = vertices + 1; --nVertices; nVertices--, pj++)
+for (pi = vertices, pj = vertices + 1, --nVertices; nVertices; nVertices--, pj++)
 	if (G3CmpVerts (pi, pj))
 		*++pi = *pj;
 return (short) (pi - vertices) + 1;
@@ -474,18 +474,29 @@ if ((vertices = (fVector3 *) D2_ALLOC (pm->nFaceVerts * sizeof (fVector3)))) {
 				}
 			}
 		}
-	G3SortModelVerts (vertices, 0, pm->nFaceVerts - 1);
-	h = G3FilterModelVerts (vertices, pm->nFaceVerts - 1);
+	h = (short) (pv - vertices) - 1;
+	G3SortModelVerts (vertices, 0, h);
+	h = G3FilterModelVerts (vertices, h);
 	for (i = 0, pvi = vertices; i < h - 1; i++, pvi++)
 		for (j = i + 1, pvj = vertices + j; j < h; j++, pvj++)
-			if (fRad < (r = VmVecDist (&vi, &vj))) {
+			if (fRad < (r = VmVecDist (pvi, pvj))) {
 				fRad = r;
-				vMin = vi;
-				vMax = vj;
+				vMin = *pvi;
+				vMax = *pvj;
 				}
 	fRad /= 2;
 	// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
 	// around the center with the radius computed above
+	
+	for (i = 0, pvi = vertices; i < h - 1; i++, pvi++)
+		for (j = i + 1, pvj = vertices + j; j < h; j++, pvj++)
+			if (fRad < (r = VmVecDist (pvi, pvj))) {
+				fRad = r;
+				vMin = *pvi;
+				vMax = *pvj;
+				}
+	fRad /= 2;
+	
 	VmVecFixToFloat (&vCenter, gameData.models.offsets + nModel);
 	for (i = h, pv = vertices; i; i--, pv++) {
 		VmVecSub (&v, pv, &vCenter);
