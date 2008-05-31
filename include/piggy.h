@@ -177,6 +177,8 @@ int PiggyFindSound (char * name);
 int LoadSoundReplacements (char *pszFileName);
 void FreeSoundReplacements (void);
 void LoadTextureColors (char *pszLevelName, tFaceColor *colorP);
+int LoadModelData (void);
+int SaveModelData (void);
 
 void piggy_read_bitmap_data(grsBitmap * bmp);
 void piggy_readSound_data(tDigiSound *snd);

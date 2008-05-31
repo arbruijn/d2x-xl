@@ -1637,6 +1637,53 @@ if (CFOpen (&cf, szFile, gameFolders.szDataDir, "rb", 0) &&
 	}
 }
 
+//------------------------------------------------------------------------------
+
+#define MODEL_DATA_VERSION 1
+
+typedef struct tModelDataHeader {
+	int					nVersion;
+} tModelDataHeader;
+
+int LoadModelData (void)
+{
+	CFILE					cf;
+	tModelDataHeader	mdh;
+	int					bOk;
+
+if (!gameStates.app.bCacheModelData)
+	return 0;
+if (!CFOpen (&cf, "modeldata.d2x", gameFolders.szTempDir, "rb", 0))
+	return 0;
+bOk = (CFRead (&mdh, sizeof (mdh), 1, &cf) == 1);
+if (bOk)
+	bOk = (mdh.nVersion == MODEL_DATA_VERSION);
+if (bOk)
+	bOk = (CFRead (gameData.models.spheres, sizeof (gameData.models.spheres), 1, &cf) == 1);
+if (!bOk)
+	memset (gameData.models.spheres, 0, sizeof (gameData.models.spheres));
+CFClose (&cf);
+return bOk;
+}
+
+//------------------------------------------------------------------------------
+
+int SaveModelData (void)
+{
+	CFILE				cf;
+	tModelDataHeader mdh = {MODEL_DATA_VERSION};
+	int				bOk;
+	char				szFilename [FILENAME_LEN];
+
+if (!gameStates.app.bCacheModelData)
+	return 0;
+if (!CFOpen (&cf, "modeldata.d2x", gameFolders.szTempDir, "wb", 0))
+	return 0;
+bOk = (CFWrite (&mdh, sizeof (mdh), 1, &cf) == 1) &&
+		(CFWrite (gameData.models.spheres, sizeof (gameData.models.spheres), 1, &cf) == 1) &&
+CFClose (&cf);
+return bOk;
+}
 
 //------------------------------------------------------------------------------
 //eof

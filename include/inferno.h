@@ -1104,6 +1104,7 @@ typedef struct tApplicationStates {
 	int bCacheLights;
 	int bCacheMeshes;
 	int bCacheLightmaps;
+	int bCacheModelData;
 	int bUseSwapFile;
 	int bSingleStep;
 	int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
@@ -2108,14 +2109,6 @@ typedef struct tG3Model {
 	GLuint					vboIndexHandle;
 } tG3Model;
 
-typedef struct tG3ModelSphere {
-	short						nSubModels;
-	short						nFaces;
-	short						nFaceVerts;
-	fix						xRads [3];
-	fix						vOffsets [3];
-} tG3ModelSphere;
-
 //------------------------------------------------------------------------------
 
 #define MAX_POLYGON_VERTS 1000
@@ -2300,6 +2293,14 @@ typedef struct tGunInfo {
 	vmsVector			vGunPoints [MAX_GUNS];
 	} tGunInfo;
 
+typedef struct tModelSphere {
+	short					nSubModels;
+	short					nFaces;
+	short					nFaceVerts;
+	fix					xRads [3];
+	vmsVector			vOffsets [3];
+} tModelSphere;
+
 typedef struct tModelData {
 	int					nLoresModels;
 	int					nHiresModels;
@@ -2329,6 +2330,7 @@ typedef struct tModelData {
 	tG3Model				g3Models [2][MAX_POLYGON_MODELS];
 	vmsVector			offsets [MAX_POLYGON_MODELS];
 	tGunInfo				gunInfo [MAX_POLYGON_MODELS];
+	tModelSphere		spheres [MAX_POLYGON_MODELS];
 	int					nScale;
 	int					nLightScale;
 } tModelData;

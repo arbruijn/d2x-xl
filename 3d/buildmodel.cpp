@@ -461,9 +461,9 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
+tModelSphere *sP = gameData.models.spheres + nModel;
 if (pm->nType >= 0) {
-	tG3ModelSphere	*sP = gameData.models.g3Spheres [nModel];
-	if ((pm->nSubModels == sP->nSubModels) && (pm->nFaces == sP->nFaces) && (pn->nFaceVerts == sP->nFaceVerts)) {
+	if ((pm->nSubModels == sP->nSubModels) && (pm->nFaces == sP->nFaces) && (pm->nFaceVerts == sP->nFaceVerts)) {
 		gameData.models.offsets [nModel] = sP->vOffsets [pm->nType];
 		return sP->xRads [pm->nType];
 		}
@@ -507,6 +507,15 @@ if ((vertices = (fVector3 *) D2_ALLOC (pm->nFaceVerts * sizeof (fVector3)))) {
 			fRad = r;
 
 	D2_FREE (vertices);
+
+	VmVecFloatToFix (gameData.models.offsets + nModel, &vCenter);
+	if (pm->nType >= 0) {
+		sP->nSubModels = pm->nSubModels;
+		sP->nFaces = pm->nFaces;
+		sP->nFaceVerts = pm->nFaceVerts;
+		sP->vOffsets [pm->nType] = gameData.models.offsets [nModel];
+		sP->xRads [pm->nType] = fl2f (fRad);
+		}
 	}
 else {
 	// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
@@ -524,8 +533,8 @@ else {
 				}
 			}
 		}
+	VmVecFloatToFix (gameData.models.offsets + nModel, &vCenter);
 	}
-VmVecFloatToFix (gameData.models.offsets + nModel, &vCenter);
 return fl2f (fRad);
 }
 

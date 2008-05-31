@@ -1139,6 +1139,8 @@ if ((t = FindArg ("-gl_transform")))
 #endif
 if ((t = FindArg ("-cache_textures")))
 	gameStates.app.bCacheTextures = NumArg (t, 1);
+if ((t = FindArg ("-cache_models")))
+	gameStates.app.bCacheModelData = NumArg (t, 1);
 if ((t = FindArg ("-model_quality")) && *pszArgList [t+1])
 	gameStates.render.nModelQuality = NumArg (t, 3);
 #if 0
@@ -3389,6 +3391,7 @@ if (FindArg ("-norun"))
 	return 0;
 /*---*/PrintLog ("Loading hires models\n");
 LoadHiresModels (0);
+LoadModelData ();
 return 0;
 }
 
@@ -3402,6 +3405,7 @@ if (gameStates.input.bHaveTrackIR) {
 	}
 SongsStopAll ();
 DigiStopCurrentSong ();
+SaveModelData ();
 /*---*/PrintLog ("Saving configuration file\n");
 WriteConfigFile ();
 /*---*/PrintLog ("Saving player profile\n");
