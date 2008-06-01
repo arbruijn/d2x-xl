@@ -677,10 +677,12 @@ if (!flags)	{	//draw entire tObject
 		if (objP && (objP->nType == OBJ_ROBOT))
 			G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, colorP);
 #endif
-		if ((objP->id == POW_SMARTMINE) || (objP->id == POW_PROXMINE))
-			gameData.models.nScale = 2 * F1_0;
-		else
-			gameData.models.nScale = 3 * F1_0 / 2;
+		if (objP && (objP->nType == OBJ_POWERUP)) {
+			if ((objP->id == POW_SMARTMINE) || (objP->id == POW_PROXMINE))
+				gameData.models.nScale = 2 * F1_0;
+			else
+				gameData.models.nScale = 3 * F1_0 / 2;
+			}
 		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && ((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
 		G3StartInstanceMatrix (pos, orient);
 		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);

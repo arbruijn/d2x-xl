@@ -1193,7 +1193,7 @@ else {
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
 #endif
-		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, 
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, //gameStates.render.xZoom, bOglScale);
 							  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
 		} 
 	else if ((gameData.objs.viewer == gameData.objs.console) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
@@ -1253,6 +1253,7 @@ else {
 	}
 if (pnStartSeg)
 	*pnStartSeg = nStartSeg;
+OglSetFOV (90);
 }
 
 //------------------------------------------------------------------------------

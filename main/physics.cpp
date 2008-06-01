@@ -134,7 +134,7 @@ else
 	return;
 if (labs (VmVecDot (&desiredUpVec, &objP->position.mOrient.fVec)) < f1_0/2) {
 	fixang save_delta_ang;
-	vmsAngVec tangles;
+	vmsAngVec turnAngles;
 
 	VmVector2Matrix (&temp_matrix, &objP->position.mOrient.fVec, &desiredUpVec, NULL);
 	save_delta_ang = 
@@ -148,9 +148,9 @@ if (labs (VmVecDot (&desiredUpVec, &objP->position.mOrient.fVec)) < f1_0/2) {
 			roll_ang = delta_ang;
 		else if (delta_ang < 0) 
 			roll_ang = -roll_ang;
-		tangles.p = tangles.h = 0;  
-		tangles.b = roll_ang;
-		VmAngles2Matrix (&mRotate, &tangles);
+		turnAngles.p = turnAngles.h = 0;  
+		turnAngles.b = roll_ang;
+		VmAngles2Matrix (&mRotate, &turnAngles);
 		VmMatMul (&new_pm, &objP->position.mOrient, &mRotate);
 		objP->position.mOrient = new_pm;
 		}
@@ -210,7 +210,7 @@ extern int bSimpleFVI;
 // add rotational velocity & acceleration
 void DoPhysicsSimRot (tObject *objP)
 {
-	vmsAngVec	tangles;
+	vmsAngVec	turnAngles;
 	vmsMatrix	mRotate, mNewOrient;
 	//fix			rotdrag_scale;
 	tPhysicsInfo *pi;
@@ -260,37 +260,38 @@ if (objP->mType.physInfo.drag) {
 if (objP->mType.physInfo.turnRoll) {
 	vmsMatrix mOrient;
 
-	tangles.p = tangles.h = 0;
-	tangles.b = -objP->mType.physInfo.turnRoll;
-	VmAngles2Matrix (&mRotate, &tangles);
+	turnAngles.p = turnAngles.h = 0;
+	turnAngles.b = -objP->mType.physInfo.turnRoll;
+	VmAngles2Matrix (&mRotate, &turnAngles);
 	VmMatMul (&mOrient, &objP->position.mOrient, &mRotate);
 	objP->position.mOrient = mOrient;
 	}
-tangles.p = (fixang) FixMul (objP->mType.physInfo.rotVel.p.x, gameData.physics.xTime);
-tangles.h = (fixang) FixMul (objP->mType.physInfo.rotVel.p.y, gameData.physics.xTime);
-tangles.b = (fixang) FixMul (objP->mType.physInfo.rotVel.p.z, gameData.physics.xTime);
+turnAngles.p = (fixang) FixMul (objP->mType.physInfo.rotVel.p.x, gameData.physics.xTime);
+turnAngles.h = (fixang) FixMul (objP->mType.physInfo.rotVel.p.y, gameData.physics.xTime);
+turnAngles.b = (fixang) FixMul (objP->mType.physInfo.rotVel.p.z, gameData.physics.xTime);
 if (!IsMultiGame) {
 	int i = (objP != gameData.objs.console) ? 0 : 1;
 	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
-		tangles.p = (fixang) (tangles.p / gameStates.gameplay.slowmo [i].fSpeed);
-		tangles.h = (fixang) (tangles.h / gameStates.gameplay.slowmo [i].fSpeed);
-		tangles.b = (fixang) (tangles.b / gameStates.gameplay.slowmo [i].fSpeed);
+		turnAngles.p = (fixang) (turnAngles.p / gameStates.gameplay.slowmo [i].fSpeed);
+		turnAngles.h = (fixang) (turnAngles.h / gameStates.gameplay.slowmo [i].fSpeed);
+		turnAngles.b = (fixang) (turnAngles.b / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
-VmAngles2Matrix (&mRotate, &tangles);
+VmAngles2Matrix (&mRotate, &turnAngles);
 VmMatMul (&mNewOrient, &objP->position.mOrient, &mRotate);
 objP->position.mOrient = mNewOrient;
 if (objP->mType.physInfo.flags & PF_TURNROLL)
 	SetObjectTurnRoll (objP);
 //re-rotate object for bank caused by turn
 if (objP->mType.physInfo.turnRoll) {
-	vmsMatrix new_pm;
+	vmsMatrix m;
 
-	tangles.p = tangles.h = 0;
-	tangles.b = objP->mType.physInfo.turnRoll;
-	VmAngles2Matrix (&mRotate, &tangles);
-	VmMatMul (&new_pm, &objP->position.mOrient, &mRotate);
-	objP->position.mOrient = new_pm;
+	turnAngles.p = 
+	turnAngles.h = 0;
+	turnAngles.b = objP->mType.physInfo.turnRoll;
+	VmAngles2Matrix (&mRotate, &turnAngles);
+	VmMatMul (&m, &objP->position.mOrient, &mRotate);
+	objP->position.mOrient = m;
 	}
 CheckAndFixMatrix (&objP->position.mOrient);
 }
@@ -582,9 +583,13 @@ do {
 						MissileSpeedScale (objP) : 1;
 	bRetry = 0;
 	if (fScale < 1) {
-		VmVecSub (&vFrame, &objP->mType.physInfo.velocity, gameData.objs.vStartVel + nObject);
+		vmsVector vStartVel;
+		VmVecNormalize (&vStartVel, gameData.objs.vStartVel + nObject);
+		fix xDot = VmVecDot (&objP->position.mOrient.fVec, &vStartVel);
+		HUDMessage (0, "%1.2f", f2fl (xDot));
+		VmVecAdd (&vFrame, &objP->mType.physInfo.velocity, gameData.objs.vStartVel + nObject);
 		VmVecScale (&vFrame, fl2f (fScale * fScale));
-		VmVecInc (&vFrame, gameData.objs.vStartVel + nObject);
+		VmVecScaleInc (&vFrame, gameData.objs.vStartVel + nObject, -(abs (xDot)));
 		VmVecScale (&vFrame, FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1)));
 		}
 	else
