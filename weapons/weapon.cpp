@@ -472,10 +472,8 @@ else {
 			DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
 		}
 	}
-	if (nWeaponNum % SUPER_WEAPON != PROXMINE_INDEX) {
+	//if (nWeaponNum % SUPER_WEAPON != PROXMINE_INDEX)
 		gameData.weapons.nSecondary = nWeaponNum;
-		//StopSecondaryFire ();
-		}
 	szWeaponName = SECONDARY_WEAPON_NAMES (nWeaponNum);
 	//save flag for whether was super version
 	bLastSecondaryWasSuper [nWeaponNum % SUPER_WEAPON] = (nWeaponNum >= SUPER_WEAPON);
@@ -681,7 +679,7 @@ if (!nWeaponType) {
 	} 
 else {
 	Assert(nWeaponType==1);
-	r = PlayerHasWeapon(gameData.weapons.nSecondary, 1, -1, 0);
+	r = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1, 0);
 	if (r != HAS_ALL || bCycling) {
 		int	bTryAgain = 1;
 		int	iCurWeapon = SOrderList (gameData.weapons.nSecondary);
@@ -708,8 +706,8 @@ else {
 					HUDInitMessage (TXT_NO_SECAVAIL);
 				return;				// Tried all weapons!
 				}
-			else if (PlayerHasWeapon(secondaryOrder [iCurWeapon], 1, -1, 0) == HAS_ALL) {
-				SelectWeapon(secondaryOrder [iCurWeapon], 1, 1, 1);
+			else if (PlayerHasWeapon (secondaryOrder [iCurWeapon], 1, -1, 0) == HAS_ALL) {
+				SelectWeapon (secondaryOrder [iCurWeapon], 1, 1, 1);
 				bTryAgain = 0;
 				}
 			}

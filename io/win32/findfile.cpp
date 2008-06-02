@@ -17,6 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include "cfile.h"
 #include "findfile.h"
 #include "u_mem.h"
 
@@ -25,99 +26,90 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static HANDLE	_FindFileHandle = INVALID_HANDLE_VALUE;
 
 #ifdef _WIN32_WCE
-static char *UnicodeToAsc(const wchar_t *w_str)
+char *UnicodeToAsc (char *str, const wchar_t *w_str)
 {
-	char *str = NULL;
-
-	if (w_str != NULL)
-    {
-		int len = wcslen(w_str) + 1;
-		str = (char *)D2_ALLOC(len);
-
-		if (WideCharToMultiByte(CP_ACP, 0, w_str, -1, str, len, NULL, NULL) == 0)
-		{   //Conversion failed
-			D2_FREE(str);
-			return NULL;
-		}
-		else
-		{   //Conversion successful
-			return(str);
-		}
-	}
-	else
-	{   //Given NULL string
-		return NULL;
-	}
+if (!w_str)
+	return NULL;
+int len = wcslen (w_str) + 1;
+if (WideCharToMultiByte (CP_ACP, 0, w_str, -1, str, len, NULL, NULL)) 
+	return str;
+return NULL;
 }
 
-static wchar_t *AscToUnicode(const char *str)
+// ----------------------------------------------------------------------------
+
+wchar_t *AscToUnicode (wchar_t *w_str, const char *str)
 {
-	wchar_t *w_str = NULL;
-	if (str != NULL)
-	{
-		int len = (int) strlen(str) + 1;
-		w_str = (wchar_t *)D2_ALLOC(sizeof(wchar_t) * len);
-		if (MultiByteToWideChar(CP_ACP, 0, str, -1, w_str, len) == 0)
-		{
-			D2_FREE(w_str);
-			return NULL;
-		}
-		else
-		{
-			return(w_str);
-		}
-	}
-	else
-	{
+	bool bAlloc = false;
+if (!str)
+	return NULL;
+int len = (int) strlen (str) + 1;
+if (!w_str) {
+	bAlloc = true;
+	w_str = (wchar_t *) D2_ALLOC (sizeof (wchar_t) * len);
+	if (!w_str)
 		return NULL;
 	}
+if (MultiByteToWideChar (CP_ACP, 0, str, -1, w_str, len))
+	return w_str;
+if (bAlloc)
+	D2_FREE (w_str);
+return NULL;
 }
 #else
-# define UnicodeToAsc(x) (x)
-# define AscToUnicode(x) ((LPSTR)x)
+# define UnicodeToAsc(_as,_us) (_us)
+# define AscToUnicode(_us,_as) ((LPSTR) _as)
 #endif
 
-//	Functions
+// ----------------------------------------------------------------------------
 
-int	FileFindFirst(char *search_str, FILEFINDSTRUCT *ffstruct, int bFindDirs)
+int FileFindFirst (char *search_str, FILEFINDSTRUCT *ffstruct, int bFindDirs)
 {
 	WIN32_FIND_DATA find;
-
+#ifdef _WIN32_WCE
+	wchar_t	w_str [FILENAME_LEN];
+	char		str [FILENAME_LEN];
+#endif
 	find.dwFileAttributes = bFindDirs ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
-	_FindFileHandle = FindFirstFile (AscToUnicode (search_str), &find);
+	_FindFileHandle = FindFirstFile (AscToUnicode (w_str, search_str), &find);
 	if (_FindFileHandle == INVALID_HANDLE_VALUE) 
 		return 1;
 	else if (bFindDirs != ((find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0))
 		return FileFindNext (ffstruct, bFindDirs);
 	else {
 		ffstruct->size = find.nFileSizeLow;
-		strcpy(ffstruct->name, UnicodeToAsc(find.cFileName));
+		strcpy (ffstruct->name, (UnicodeToAsc (str, find.cFileName)));
 		return 0; 
 	}
 }
 
+// ----------------------------------------------------------------------------
 
-int	FileFindNext(FILEFINDSTRUCT *ffstruct, int bFindDirs)
+int FileFindNext (FILEFINDSTRUCT *ffstruct, int bFindDirs)
 {
 	WIN32_FIND_DATA find;
-
+#ifdef _WIN32_WCE
+	char		str [FILENAME_LEN];
+#endif
 	find.dwFileAttributes = bFindDirs ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
 	while (FindNextFile (_FindFileHandle, &find)) {
 		if (bFindDirs == ((find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0)) {
 		ffstruct->size = find.nFileSizeLow;
-		strcpy(ffstruct->name, UnicodeToAsc(find.cFileName));
+		strcpy (ffstruct->name, UnicodeToAsc (str, find.cFileName));
 		return 0;
 	}
 	}
 return 1;
 }
  
+// ----------------------------------------------------------------------------
 
-int	FileFindClose(void)
+int FileFindClose(void)
 {
-	return FindClose (_FindFileHandle) ? 0 : 1;
+return FindClose (_FindFileHandle) ? 0 : 1;
 }
 
+// ----------------------------------------------------------------------------
 
 #if 0
 int GetFileDateTime(int filehandle, FILETIMESTRUCT *ftstruct)
@@ -133,7 +125,7 @@ int GetFileDateTime(int filehandle, FILETIMESTRUCT *ftstruct)
 	else return 1;
 }
 
-
+// ----------------------------------------------------------------------------
 //returns 0 if no error
 int SetFileDateTime(int filehandle, FILETIMESTRUCT *ftstruct)
 {
@@ -145,4 +137,7 @@ int SetFileDateTime(int filehandle, FILETIMESTRUCT *ftstruct)
 	if (retval) return 0;
 	else return 1;
 }
+
 #endif
+// ----------------------------------------------------------------------------
+

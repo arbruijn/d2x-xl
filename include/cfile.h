@@ -179,8 +179,12 @@ time_t CFDate (char *hogname, char *folder, int bUseD1Hog);
 // writes variable length, null-termined string.
 int CFWriteString (char *buf, CFILE *file);
 
-extern int nCFileError;
+#ifdef _WIN32
+char *UnicodeToAsc (char *str, const wchar_t *w_str);
+wchar_t *AscToUnicode (wchar_t *w_str, const char *str);
+#endif
 
+extern int nCFileError;
 extern tGameHogFiles	gameHogFiles;
 extern tGameFolders	gameFolders;
 

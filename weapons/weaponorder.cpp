@@ -31,6 +31,7 @@ static char rcsid[] = "$Id: weapon.c,v 1.9 2003/10/11 09:28:38 btb Exp $";
 #include "text.h"
 #include "multi.h"
 #include "network.h"
+#include "cfile.h"
 
 //	-----------------------------------------------------------------------------
 
@@ -52,7 +53,7 @@ int SOrderList (int nWeapon)
 	int i;
 
 for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
-	if (secondaryOrder[i] == nWeapon)
+	if (secondaryOrder [i] == nWeapon)
 		return i;
 Error ("Secondary Weapon is not in order list!!!");
 return 0;
@@ -85,16 +86,16 @@ for (i = 0; i <= n; i++)
 void ReorderPrimary (void)
 {
 	tMenuItem	m [MAX_PRIMARY_WEAPONS + 2];
-	int				i;
+	int			i;
 
 ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
 memset (m, 0, sizeof (m));
 for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++) {
 	m [i].nType = NM_TYPE_MENU;
 	if (primaryOrder [i] == 255)
-		m [i].text="������� Never autoselect �������";
+		m [i].text = "\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x88\x88\x88\x88\x88";
 	else
-		m [i].text= (char *) PRIMARY_WEAPON_NAMES (primaryOrder [i]);
+		m [i].text = (char *) PRIMARY_WEAPON_NAMES (primaryOrder [i]);
 	m [i].value = primaryOrder [i];
 }
 gameStates.menus.bReordering = 1;
@@ -118,10 +119,10 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
 {
 	m[i].nType = NM_TYPE_MENU;
 	if (secondaryOrder [i] == 255)
-		m[i].text = "������� Never autoselect �������";
+		m[i].text = "\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x88\x88\x88\x88\x88";
 	else
-		m[i].text = (char *) SECONDARY_WEAPON_NAMES (secondaryOrder[i]);
-	m[i].value=secondaryOrder[i];
+		m[i].text = (char *) SECONDARY_WEAPON_NAMES (secondaryOrder [i]);
+	m[i].value = secondaryOrder [i];
 }
 gameStates.menus.bReordering = 1;
 i = ExecMenu ("Reorder Secondary", "Shift+Up/Down arrow to move item", i, m, NULL, NULL);
@@ -138,17 +139,17 @@ int CheckToUsePrimary (int nWeaponIndex)
 	ushort flag = 1 << nWeaponIndex;
 	int cutpoint;
 
-cutpoint=POrderList (255);
+cutpoint = POrderList (255);
 if (!(oldFlags & flag) && 
 	 (gameOpts->gameplay.nAutoSelectWeapon == 2) &&
-	 POrderList(nWeaponIndex)<cutpoint && 
-	 POrderList(nWeaponIndex)<POrderList(gameData.weapons.nPrimary)) {
+	 (POrderList (nWeaponIndex) < cutpoint) && 
+	 (POrderList (nWeaponIndex) < POrderList (gameData.weapons.nPrimary))) {
 	if (nWeaponIndex==SUPER_LASER_INDEX)
-		SelectWeapon(LASER_INDEX,0,0,1);
+		SelectWeapon (LASER_INDEX, 0, 0, 1);
 	else
-		SelectWeapon(nWeaponIndex,0,0,1);
+		SelectWeapon (nWeaponIndex, 0, 0, 1);
 	}
-PALETTE_FLASH_ADD(7,14,21);
+PALETTE_FLASH_ADD (7, 14, 21);
 return 1;
 }
 

@@ -1670,10 +1670,9 @@ return bOk;
 
 int SaveModelData (void)
 {
-	CFILE				cf;
-	tModelDataHeader mdh = {MODEL_DATA_VERSION};
-	int				bOk;
-	char				szFilename [FILENAME_LEN];
+	CFILE					cf;
+	tModelDataHeader	mdh = {MODEL_DATA_VERSION};
+	int					bOk;
 
 if (!gameStates.app.bCacheModelData)
 	return 0;

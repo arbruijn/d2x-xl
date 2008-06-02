@@ -441,9 +441,9 @@ sprintf (fnn, "%s%s%s", folder, *folder ? "/" : "", newname);
 int CFMkDir (char *pathname)
 {
 #if defined (_WIN32_WCE) || defined (_WIN32)
-	return !CreateDirectory(pathname, NULL);
+return !CreateDirectory (pathname, NULL);
 #else
-	return mkdir(pathname, 0755);
+return mkdir(pathname, 0755);
 #endif
 }
 

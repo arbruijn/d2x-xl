@@ -33,6 +33,7 @@ static char rcsid[] = "$Id: error.c,v 1.6 2003/04/08 00:59:17 btb Exp $";
 #include "gr.h"
 #include "text.h"
 #include "cfile.h"
+#include "u_mem.h"
 #ifdef __macosx__
 #	include "MacErrorMsg.h"
 #endif
@@ -144,7 +145,7 @@ gameData.app.bGamePaused = 1;
 if (grdCurScreen && pWarnFunc)
 	(*pWarnFunc)(pszMsg);
 #if defined (WIN32)
-else
+else 
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
 #elif defined (__linux__)
 	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
