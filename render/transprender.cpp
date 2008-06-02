@@ -553,18 +553,16 @@ int RISetClientState (char bClientState, char bTexCoord, char bColor, char bUseL
 PROF_START
 #if 1
 if (renderItems.bUseLightmaps != bUseLightmaps) {
+	glActiveTexture (GL_TEXTURE0);
+	glClientActiveTexture (GL_TEXTURE0);
 	if (bUseLightmaps) {
-		glActiveTexture (GL_TEXTURE0);
-		glClientActiveTexture (GL_TEXTURE0);
 		glEnable (GL_TEXTURE_2D);
 		glEnableClientState (GL_NORMAL_ARRAY);
 		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState (GL_COLOR_ARRAY);
+		glEnableClientState (GL_COLOR_ARRAY);
 		glEnableClientState (GL_VERTEX_ARRAY);
 		}
 	else {
-		glActiveTexture (GL_TEXTURE1);
-		glClientActiveTexture (GL_TEXTURE1);
 		OGL_BINDTEX (0);
 		glDisable (GL_TEXTURE_2D);
 		}
@@ -681,10 +679,13 @@ if (bmP) {
 		}
 	}
 else if (RISetClientState (bClientState, 0, /*!renderItems.bLightmaps &&*/ (nColors > 1), bUseLightmaps) || renderItems.bTextured) {
-	OGL_BINDTEX (0);
-	glDisable (GL_TEXTURE_2D);
-	renderItems.bmP = NULL;
-	renderItems.bTextured = 0;
+	if (renderItems.bTextured) {
+		OGL_BINDTEX (0);
+		glDisable (GL_TEXTURE_2D);
+		renderItems.bmP = NULL;
+		renderItems.nFrame = -1;
+		renderItems.bTextured = 0;
+		}
 	}
 if (!bShader)
 	RIResetShader ();
@@ -727,22 +728,24 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	nDbgSeg = nDbgSeg;
 #endif
 if (renderItems.bDepthMask != item->bDepthMask)
-	glDepthMask (renderItems.bDepthMask = 1);//item->bDepthMask);
+	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP != NULL, bLightmaps)) {
 	if (item->nColors > 1) {
 		if (bLightmaps) {
 			glActiveTexture (GL_TEXTURE0);
 			glClientActiveTexture (GL_TEXTURE0);
-			glEnableClientState (GL_NORMAL_ARRAY);
+			//glEnableClientState (GL_NORMAL_ARRAY);
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord + faceP->nIndex);
 			if (triP)
 				glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + triP->nIndex);
 			else if (faceP)
 				glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + faceP->nIndex);
+			glColorPointer (item->nColors, GL_FLOAT, 0, item->color);
 			glActiveTexture (GL_TEXTURE1);
 			glClientActiveTexture (GL_TEXTURE1);
 			}
-		glColorPointer (item->nColors, GL_FLOAT, 0, item->color);
+		else
+			glColorPointer (item->nColors, GL_FLOAT, 0, item->color);
 		}
 	else if (item->nColors == 1)
 		glColor4fv ((GLfloat *) item->color);
@@ -798,9 +801,12 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 				}
 #endif
 #if 1
+#	if 0
 			if (faceP)
 				SetNearestFaceLights (faceP, renderItems.bTextured);
+#	endif
 			gameStates.ogl.iLight = 0;
+			gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 			for (;;) {
 				G3SetupPerPixelShader (faceP, 0, (int) faceP->nRenderType, false);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
