@@ -1116,6 +1116,7 @@ if ((nType != riParticle) && (gameData.smoke.nLastType >= 0)) {
 	CloseParticleBuffer ();
 #if 1
 	renderItems.bmP = NULL;
+	renderItems.bTextured = 0;
 	gameStates.render.history.nShader = -1;
 #endif
 	gameData.smoke.nLastType = -1;
