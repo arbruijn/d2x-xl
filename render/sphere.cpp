@@ -552,7 +552,7 @@ else
 glDepthFunc (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
 if (alpha < 1.0f)
-	glBlendFunc (GL_ONE, GL_ONE);
+	glBlendFunc (GL_ONE, GL_ONE_MINUS_DST_COLOR);
 else
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #else

@@ -1190,7 +1190,7 @@ for (nLights = 0;
 		sliP->nActive--;
 		}
 	hLight = GL_LIGHT0 + nLights++;
-	if (gameStates.render.bPerPixelLighting == 1)
+	//if (gameStates.render.bPerPixelLighting == 1)
 		glEnable (hLight);
 	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
 	fBrightness = psl->info.fBrightness;
@@ -1268,8 +1268,10 @@ if (bDepthOnly)
 	return 0;
 if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
 	return 0;
+#if 0
 if (gameStates.render.bPerPixelLighting == 1)
 	return nLights;
+#endif
 #if ONLY_LIGHTMAPS == 2
 nType = 0;
 #endif
@@ -1291,7 +1293,11 @@ if (bLightmaps = HaveLightmaps ()) {
 	}
 if (nShader != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
+#if CONST_LIGHT_COUNT
+	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType]);
+#else
 	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [nLights][nType]);
+#endif
 	if (bLightmaps)
 		glUniform1i (glGetUniformLocation (activeShaderProg, "lMapTex"), 0);
 	if (nType) {

@@ -998,6 +998,15 @@ if (nVertex == nDbgVertex)
 int SetNearestFaceLights (grsFace *faceP, int bTextured)
 {
 PROF_START
+	static		grsFace *prevFaceP = NULL;
+	static		int nFrameCount = -1;
+
+if ((faceP == prevFaceP) && (nFrameCount == gameData.app.nFrameCount))
+	return gameData.render.lights.dynamic.shader.index [0][0].nActive;
+
+prevFaceP = faceP;
+nFrameCount = gameData.app.nFrameCount;
+
 	int			i;
 	vmsVector	vNormal;
 	tSide			*sideP = SEGMENTS [faceP->nSegment].sides + faceP->nSide;

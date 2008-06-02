@@ -680,9 +680,10 @@ if (bmP) {
 			OGL_BINDTEX (0);
 		}
 	}
-else if (RISetClientState (bClientState, 0, !renderItems.bLightmaps && (nColors > 1), bUseLightmaps) || renderItems.bTextured) {
+else if (RISetClientState (bClientState, 0, /*!renderItems.bLightmaps &&*/ (nColors > 1), bUseLightmaps) || renderItems.bTextured) {
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
+	renderItems.bmP = NULL;
 	renderItems.bTextured = 0;
 	}
 if (!bShader)
@@ -699,8 +700,6 @@ PROF_START
 	grsTriangle	*triP;
 	int			i, j, bLightmaps;
 
-if (renderItems.bDepthMask != item->bDepthMask)
-	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
 #if RI_POLY_OFFSET
 if (!item->bmP) {
 	glEnable (GL_POLYGON_OFFSET_FILL);
@@ -727,6 +726,8 @@ if (!bLightmaps)
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
+if (renderItems.bDepthMask != item->bDepthMask)
+	glDepthMask (renderItems.bDepthMask = 1);//item->bDepthMask);
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP != NULL, bLightmaps)) {
 	if (item->nColors > 1) {
 		if (bLightmaps) {
@@ -741,7 +742,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 			glActiveTexture (GL_TEXTURE1);
 			glClientActiveTexture (GL_TEXTURE1);
 			}
-		glColorPointer (4, GL_FLOAT, 0, item->color);
+		glColorPointer (item->nColors, GL_FLOAT, 0, item->color);
 		}
 	else if (item->nColors == 1)
 		glColor4fv ((GLfloat *) item->color);
@@ -797,6 +798,8 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 				}
 #endif
 #if 1
+			if (faceP)
+				SetNearestFaceLights (faceP, renderItems.bTextured);
 			gameStates.ogl.iLight = 0;
 			for (;;) {
 				G3SetupPerPixelShader (faceP, 0, (int) faceP->nRenderType, false);
@@ -977,9 +980,13 @@ if (item->nType == riSphereShield)
 if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 renderItems.bmP = NULL;
-renderItems.bTextured = 1;
+renderItems.bTextured = 0;
+glActiveTexture (GL_TEXTURE0 + renderItems.bLightmaps);
+glClientActiveTexture (GL_TEXTURE0 + renderItems.bLightmaps);
+OGL_BINDTEX (0);
+glDisable (GL_TEXTURE_2D);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glDepthMask (0);
+glDepthMask (renderItems.bDepthMask = 0);
 glEnable (GL_BLEND);
 gameOpts->render.bDepthSort = bDepthSort;
 }
@@ -1142,6 +1149,7 @@ renderItems.bSplitPolys = !gameStates.render.bPerPixelLighting && (gameStates.re
 renderItems.nWrap = 0;
 renderItems.nFrame = -1;
 renderItems.bmP = NULL;
+OglDisableLighting ();
 G3DisableClientStates (1, 1, 0, GL_TEXTURE2 + renderItems.bLightmaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE1 + renderItems.bLightmaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + renderItems.bLightmaps);
@@ -1155,7 +1163,7 @@ glDepthMask (0);
 glEnable (GL_CULL_FACE);
 BeginRenderSmoke (-1, 1);
 nType = -1;
-for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1, nItems = renderItems.nItems; 
+for (pd = renderItems.pDepthBuffer + renderItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZE - 1*/, nItems = renderItems.nItems; 
 	  (pd >= renderItems.pDepthBuffer) && nItems; 
 	  pd--) {
 	if ((pl = *pd)) {
