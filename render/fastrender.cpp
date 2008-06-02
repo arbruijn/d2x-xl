@@ -1751,8 +1751,11 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		AddFaceListItem (faceP, nThread);
 #endif
 		faceP->color = faceColor [nColor].color;
-		if (gameData.app.nFrameCount)
+#if 1
+		if (bNeedLight && faceP->bHasColor)
 			continue;
+		faceP->bHasColor = 1;
+#endif
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
 		for (k = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; k; k--, triP++) {
 			nIndex = triP->nIndex;

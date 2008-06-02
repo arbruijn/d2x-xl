@@ -79,7 +79,7 @@ using namespace mesh;
 
 #define	MAX_EDGE_LEN	fMaxEdgeLen [gameOpts->render.nMeshQuality]
 
-#define MESH_DATA_VERSION 3
+#define MESH_DATA_VERSION 4
 
 //------------------------------------------------------------------------------
 
@@ -889,6 +889,7 @@ m_faceP->nSegment = nSegment;
 m_faceP->nSide = nSide;
 m_faceP->nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWall : (ushort) -1;
 m_faceP->bAnimation = IsAnimatedTexture (m_faceP->nBaseTex) || IsAnimatedTexture (m_faceP->nOvlTex);
+m_faceP->bHasColor = 0;
 ComputeSideRads (nSegment, nSide, &rMin, &rMax);
 float rMinf = f2fl (rMin);
 float rMaxf = f2fl (rMax);

@@ -1021,7 +1021,7 @@ if (faceP - FACES == nDbgFace)
 if (gameData.render.lights.dynamic.shader.index [0][0].nActive < 0)
 	SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 else {
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	CheckUsedLights2 ();
 #endif
 	gameData.render.lights.dynamic.shader.index [0][0] = gameData.render.lights.dynamic.shader.index [1][0];

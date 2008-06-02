@@ -726,6 +726,7 @@ typedef struct grsFace {
 	ubyte					bSparks :1;
 	ubyte					nRenderType : 2;
 	ubyte					bColored :1;
+	ubyte					bHasColor :1;
 	ubyte					widFlags;
 	char					nCamera;
 	char					nType;
