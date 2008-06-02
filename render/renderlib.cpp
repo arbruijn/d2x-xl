@@ -64,7 +64,7 @@ int _CDECL_ D2X_OpenGLThread (void *p);
 #if DBG_SHADOWS
 extern int bShadowTest;
 #endif
-
+				
 #define INITIAL_LOCAL_LIGHT (F1_0/4)    // local light value in tSegment of occurence (of light emission)
 
 #ifdef EDITOR

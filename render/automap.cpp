@@ -378,6 +378,7 @@ else {
 	VmVecScaleAdd (&amData.viewPos, &amData.viewTarget, &amData.viewMatrix.fVec, gameStates.render.automap.bRadar ? -amData.nViewDist : -amData.nViewDist);
 	G3SetViewMatrix (&amData.viewPos, &amData.viewMatrix, gameStates.render.automap.bRadar ? (amData.nZoom * 3) / 2 : amData.nZoom, 1);
 	}
+OglSetFOV (gameStates.render.glFOV);
 if (!gameStates.render.automap.bRadar && gameOpts->render.automap.bTextured) {
 	gameData.render.mine.viewerEye = amData.viewPos;
 	RenderMine (gameData.objs.console->nSegment, 0, 0);
@@ -980,18 +981,20 @@ for (i = 0; i <= nHighestEdgeIndex; i++)	{
 
 //------------------------------------------------------------------------------
 
-void DrawAllEdges ()
+void DrawAllEdges (void)
 {
-	g3sCodes cc;
-	int i,j,nbright;
-	ubyte nfacing,nnfacing;
-	tEdgeInfo *e;
-	vmsVector *tv1;
-	fix distance;
-	fix minDistance = 0x7fffffff;
-	g3sPoint *p1, *p2;
+	g3sCodes		cc;
+	int			i, j, nbright;
+	ubyte			nfacing, nnfacing;
+	tEdgeInfo	*e;
+	vmsVector	*tv1;
+	fix			distance;
+	fix			minDistance = 0x7fffffff;
+	g3sPoint		*p1, *p2;
+	int			bUseTransform = gameStates.ogl.bUseTransform;
 
 nbright = 0;
+gameStates.ogl.bUseTransform = gameOpts->render.nPath;
 for (i = 0; i <= nHighestEdgeIndex; i++)	{
 	//e = &Edges [Edge_used_list [i]];
 	e = Edges + i;
@@ -1094,6 +1097,7 @@ for (i = 0; i < nbright; i++) {
 		}
 	G3DrawLine (p1, p2);
 	}
+gameStates.ogl.bUseTransform = bUseTransform;
 }
 
 

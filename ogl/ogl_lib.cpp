@@ -538,7 +538,7 @@ else
 
 	//if (gameStates.render.nShadowBlurPass < 2) 
 		{
-		OglSetFOV (gameStates.render.glFOV);
+		//OglSetFOV (gameStates.render.glFOV);
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();
 		OglViewport (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, nCanvasWidth, nCanvasHeight);

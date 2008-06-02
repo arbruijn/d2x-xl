@@ -82,6 +82,10 @@ int G3PushMatrix (void)
 if (nInstanceDepth >= MAX_INSTANCE_DEPTH)
 	return 0;
 instanceStack [nInstanceDepth++] = viewInfo;
+glMatrixMode (GL_PROJECTION);
+glPushMatrix ();
+glMatrixMode (GL_MODELVIEW);
+glPushMatrix ();
 return 1;
 }
 
@@ -92,6 +96,10 @@ int G3PopMatrix (void)
 if (nInstanceDepth <= 0)
 	return 0;
 viewInfo = instanceStack [--nInstanceDepth];
+glMatrixMode (GL_PROJECTION);
+glPopMatrix ();
+glMatrixMode (GL_MODELVIEW);
+glPopMatrix ();
 return 1;
 }
 
