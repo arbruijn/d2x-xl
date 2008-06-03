@@ -335,7 +335,10 @@ int automap_height = 480;
 void DrawAutomap (void)
 {
 PROF_START
-	int			i, color, size;
+	int			i, color, size,
+					bAutomapFrame = !gameStates.render.automap.bRadar && 
+										 (gameStates.render.cockpit.nMode != CM_FULL_SCREEN) && 
+										 (gameStates.render.cockpit.nMode != CM_LETTERBOX);
 	tObject		*objP;
 	g3sPoint		spherePoint;
 	vmsMatrix	vmRadar;
@@ -343,6 +346,12 @@ PROF_START
 gameStates.render.automap.bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
 if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
 	vmsMatrix *po = &gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
+#if 1
+	vmRadar.rVec = po->rVec;
+	vmRadar.fVec = po->uVec;
+	vmRadar.fVec.p.y = -vmRadar.fVec.p.y;
+	vmRadar.uVec = po->fVec;
+#else
 	vmRadar.rVec.p.x = po->rVec.p.x;
 	vmRadar.rVec.p.y = po->rVec.p.y;
 	vmRadar.rVec.p.z = po->rVec.p.z;
@@ -352,9 +361,10 @@ if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
 	vmRadar.uVec.p.x = po->fVec.p.x;
 	vmRadar.uVec.p.y = po->fVec.p.y;
 	vmRadar.uVec.p.z = po->fVec.p.z;
+#endif
 	}
 GrClearCanvas (RGBA_PAL2 (0,0,0));
-if (!gameStates.render.automap.bRadar && (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
+if (bAutomapFrame) {
 	ShowFullscreenImage (&bmAutomapBackground);
 	GrSetCurFont (HUGE_FONT);
 	GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
@@ -367,7 +377,7 @@ if (!gameStates.render.automap.bRadar && (gameStates.render.cockpit.nMode != CM_
 	//GrUpdate (0);
 	}
 G3StartFrame (gameStates.render.automap.bRadar || !gameOpts->render.automap.bTextured, 0); //!gameStates.render.automap.bRadar);
-if (!gameStates.render.automap.bRadar && (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
+if (bAutomapFrame)
 	OglViewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
 if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
