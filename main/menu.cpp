@@ -3467,8 +3467,7 @@ do {
 	optColorSat = 
 	optColoredLight =
 	optMixColors = 
-	optPowerupLights = 
-	nPowerupLight = -1;
+	optPowerupLights = -1;
 	memset (&lightOpts, 0xff, sizeof (lightOpts));
 	if (!gameStates.app.bGameRunning) {
 		if ((gameOpts->render.nLightingMethod == 2) && 
@@ -3506,6 +3505,8 @@ do {
 					ADD_CHECK (opt, TXT_POWERUP_LIGHTING, gameOpts->ogl.bLightPowerups, KEY_P, HTX_POWERUP_LIGHTING);
 					nPowerupLight = opt++;
 					}
+				else
+					nPowerupLight = -1;
 				}
 			}
 		sprintf (szMaxLightsPerObject + 1, TXT_MAX_LIGHTS_PER_OBJECT, nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerObject]);
