@@ -3428,14 +3428,15 @@ extern fix nDebrisLife [];
 
 //	-----------------------------------------------------------------------------
 
-static inline vmsVector *PolyObjPos (tObject *objP, vmsVector *vPos)
+static inline vmsVector *PolyObjPos (tObject *objP, vmsVector *vPosP)
 {
+vmsVector vPos = OBJPOS (objP)->vPos;
 if (objP->renderType == RT_POLYOBJ) {
-	VmVecRotate (vPos, gameData.models.offsets + objP->rType.polyObjInfo.nModel, ObjectView (objP));
-	return VmVecInc (vPos, &objP->position.vPos);
+	VmVecRotate (vPosP, gameData.models.offsets + objP->rType.polyObjInfo.nModel, ObjectView (objP));
+	return VmVecInc (vPosP, &vPos);
 	}
-*vPos = OBJPOS (objP)->vPos;
-return vPos;
+*vPosP = vPos;
+return vPosP;
 }
 
 //	-----------------------------------------------------------------------------

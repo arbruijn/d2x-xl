@@ -2635,7 +2635,7 @@ vmsMatrix *ObjectView (tObject *objP)
 	tObjectViewData	*viewP = gameData.objs.viewData + OBJ_IDX (objP);
 
 if (viewP->nFrame != gameData.objs.nFrameCount) {
-	VmCopyTransposeMatrix (&viewP->mView, &objP->position.mOrient);
+	VmCopyTransposeMatrix (&viewP->mView, &OBJPOS (objP)->mOrient);
 	viewP->nFrame = gameStates.render.nFrameCount;
 	}
 return &viewP->mView;

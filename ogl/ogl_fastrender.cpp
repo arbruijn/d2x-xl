@@ -60,7 +60,7 @@ typedef struct tFaceBuffer {
 	int			index [FACE_BUFFER_INDEX_SIZE];
 } tFaceBuffer;
 
-static tFaceBuffer faceBuffer = {NULL, 0, 0, 0, {0}};
+static tFaceBuffer faceBuffer = {NULL, NULL, 0, 0, 0, {0}};
 
 //------------------------------------------------------------------------------
 
