@@ -561,12 +561,21 @@ if (renderItems.bUseLightmaps != bUseLightmaps) {
 		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 		glEnableClientState (GL_COLOR_ARRAY);
 		glEnableClientState (GL_VERTEX_ARRAY);
+		renderItems.bClientTexCoord = 
+		renderItems.bClientColor = 0;
 		}
 	else {
+		glDisableClientState (GL_NORMAL_ARRAY);
+		glActiveTexture (GL_TEXTURE1);
+		glClientActiveTexture (GL_TEXTURE1);
 		OGL_BINDTEX (0);
 		glDisable (GL_TEXTURE_2D);
+		renderItems.bClientTexCoord = 
+		renderItems.bClientColor = 1;
 		}
 	renderItems.bUseLightmaps = bUseLightmaps;
+	renderItems.bTextured = 0;
+	renderItems.bmP = NULL;
 	}
 #endif
 #if 0
@@ -698,7 +707,7 @@ void RIRenderPoly (tRIPoly *item)
 PROF_START
 	grsFace		*faceP;
 	grsTriangle	*triP;
-	int			i, j, bLightmaps;
+	int			i, j, nIndex, bLightmaps;
 
 #if RI_POLY_OFFSET
 if (!item->bmP) {
@@ -723,28 +732,30 @@ bLightmaps = renderItems.bLightmaps && (faceP != NULL);
 #ifdef _DEBUG
 if (!bLightmaps)
 	bLightmaps = bLightmaps;
-if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if (faceP) {
+	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+	}
+else
 	nDbgSeg = nDbgSeg;
 #endif
 if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP != NULL, bLightmaps)) {
+	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
 	if (item->nColors > 1) {
 		if (bLightmaps) {
 			glActiveTexture (GL_TEXTURE0);
 			glClientActiveTexture (GL_TEXTURE0);
-			//glEnableClientState (GL_NORMAL_ARRAY);
-			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord + faceP->nIndex);
-			if (triP)
-				glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + triP->nIndex);
-			else if (faceP)
-				glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + faceP->nIndex);
-			glColorPointer (item->nColors, GL_FLOAT, 0, item->color);
+			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord + nIndex);
+			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + nIndex);
+			glColorPointer (4, GL_FLOAT, 0, item->color);
+			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + nIndex);
 			glActiveTexture (GL_TEXTURE1);
 			glClientActiveTexture (GL_TEXTURE1);
 			}
-		else
-			glColorPointer (item->nColors, GL_FLOAT, 0, item->color);
+		//else
+			glColorPointer (4, GL_FLOAT, 0, item->color);
 		}
 	else if (item->nColors == 1)
 		glColor4fv ((GLfloat *) item->color);
@@ -752,17 +763,17 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 		glColor3d (1, 1, 1);
 	if (triP) {
 		if (!bLightmaps)
-			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + triP->nIndex);
+			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + nIndex);
 		if (renderItems.bTextured)
-			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord + triP->nIndex);
-		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + triP->nIndex);
+			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord + nIndex);
+		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + nIndex);
 		}
 	else if (faceP) {
 		if (!bLightmaps)
-			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + faceP->nIndex);
+			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + nIndex);
 		if (renderItems.bTextured)
-			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord + faceP->nIndex);
-		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + faceP->nIndex);
+			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord + nIndex);
+		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + nIndex);
 		}
 	else {
 		if (renderItems.bTextured)
@@ -814,7 +825,8 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 					break;
 				if (!bAdditive) {
 					bAdditive = true;
-					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+					if (i)
+						glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 					glDepthFunc (GL_LEQUAL);
 					}
 				}
@@ -824,7 +836,8 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 				G3SetupHeadlightShader (renderItems.bTextured, 1, renderItems.bTextured ? NULL : &faceP->color);
 				if (!bAdditive) {
 					bAdditive = true;
-					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+					if (i)
+						glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 					glDepthFunc (GL_LEQUAL);
 					}
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
@@ -1038,6 +1051,7 @@ else {
 	if (renderItems.bDepthMask)
 		glDepthMask (renderItems.bDepthMask = 0);
 	RenderParticle (item->particle, item->fBrightness);
+	renderItems.bmP = NULL;
 	renderItems.bTextured = 0;
 	renderItems.bUseLightmaps = 0;
 	}

@@ -1240,12 +1240,14 @@ gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shad
 if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;
 #endif
+#if 0
 if (gameStates.render.bPerPixelLighting == 1) {
 	for (int i = nLights; i < 8; i++)
 		glDisable (GL_LIGHT0 + i);
 	PROF_END(ptPerPixelLighting)
 	return nLights;
 	}
+#endif
 if (InitPerPixelLightingShader (nType, nLights) >= 0) {
 	PROF_END(ptPerPixelLighting)
 	return nLights;
