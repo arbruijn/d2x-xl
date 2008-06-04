@@ -180,16 +180,22 @@ glPushMatrix ();
 glTranslatef (f2fl (pnt->p3_vec.p.x), f2fl (pnt->p3_vec.p.y), f2fl (pnt->p3_vec.p.z));
 r = f2fl (rad);
 glScaled (r, r, r);
-if (bBigSphere)
+if (bBigSphere) {
+#if 1
+	OglDrawCircle (20, GL_POLYGON);
+#else
 	if (hBigSphere)
 		glCallList (hBigSphere);
 	else
 		hBigSphere = CircleListInit (20, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
-else
+#endif
+	}
+else {
 	if (hSmallSphere)
 		glCallList (hSmallSphere);
 	else
 		hSmallSphere = CircleListInit (12, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
+	}
 glPopMatrix ();
 if (grdCurCanv->cvColor.rgb)
 	glDisable (GL_BLEND);

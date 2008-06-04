@@ -284,40 +284,46 @@ return 1;
 void DrawPlayer (tObject * objP)
 {
 	vmsVector	vArrowPos, vHeadPos;
-	g3sPoint	spherePoint, arrowPoint, headPoint;
-	int size = objP->size * (gameStates.render.automap.bRadar ? 2 : 1);
+	g3sPoint		spherePoint, arrowPoint, headPoint;
+	int			size = objP->size * (gameStates.render.automap.bRadar ? 2 : 1);
+	int			bUseTransform = gameStates.ogl.bUseTransform;
 
+//gameStates.ogl.bUseTransform = gameOpts->render.nPath;
 headPoint.p3_index =
 arrowPoint.p3_index =
 spherePoint.p3_index = -1;
 // Draw Console tPlayer -- shaped like a ellipse with an arrow.
+spherePoint.p3_vec.p.x =
+spherePoint.p3_vec.p.y =
+spherePoint.p3_vec.p.z = 0;
 G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
+//G3RotatePoint (&spherePoint.p3_vec, &objP->position.vPos, 0);
 G3DrawSphere (&spherePoint, gameStates.render.automap.bRadar ? objP->size * 2 : objP->size, !gameStates.render.automap.bRadar);
-//G3DrawSphere3D (&spherePoint, gameStates.render.automap.bRadar ? 8 : 20, objP->size * (gameStates.render.automap.bRadar + 1));
 
 if (gameStates.render.automap.bRadar && (OBJ_IDX (objP) != LOCALPLAYER.nObject))
 	return;
 // Draw shaft of arrow
-VmVecScaleAdd (&vArrowPos, &objP->position.vPos, &objP->position.mOrient.fVec, size*3);
-G3TransformAndEncodePoint (&arrowPoint,&vArrowPos);
+VmVecScaleAdd (&vArrowPos, &objP->position.vPos, &objP->position.mOrient.fVec, size * 3);
+G3TransformAndEncodePoint (&arrowPoint, &vArrowPos);
 G3DrawLine (&spherePoint, &arrowPoint);
 
 // Draw right head of arrow
-VmVecScaleAdd (&vHeadPos, &objP->position.vPos, &objP->position.mOrient.fVec, size*2);
+VmVecScaleAdd (&vHeadPos, &objP->position.vPos, &objP->position.mOrient.fVec, size * 2);
 VmVecScaleInc (&vHeadPos, &objP->position.mOrient.rVec, size*1);
 G3TransformAndEncodePoint (&headPoint,&vHeadPos);
 G3DrawLine (&arrowPoint, &headPoint);
 
 // Draw left head of arrow
-VmVecScaleAdd (&vHeadPos, &objP->position.vPos, &objP->position.mOrient.fVec, size*2);
+VmVecScaleAdd (&vHeadPos, &objP->position.vPos, &objP->position.mOrient.fVec, size * 2);
 VmVecScaleInc (&vHeadPos, &objP->position.mOrient.rVec, size* (-1));
 G3TransformAndEncodePoint (&headPoint,&vHeadPos);
 G3DrawLine (&arrowPoint, &headPoint);
 
 // Draw tPlayer's up vector
-VmVecScaleAdd (&vArrowPos, &objP->position.vPos, &objP->position.mOrient.uVec, size*2);
+VmVecScaleAdd (&vArrowPos, &objP->position.vPos, &objP->position.mOrient.uVec, size * 2);
 G3TransformAndEncodePoint (&arrowPoint,&vArrowPos);
 G3DrawLine (&spherePoint, &arrowPoint);
+gameStates.ogl.bUseTransform = bUseTransform;
 }
 
 //------------------------------------------------------------------------------
@@ -388,7 +394,6 @@ else {
 	VmVecScaleAdd (&amData.viewPos, &amData.viewTarget, &amData.viewMatrix.fVec, gameStates.render.automap.bRadar ? -amData.nViewDist : -amData.nViewDist);
 	G3SetViewMatrix (&amData.viewPos, &amData.viewMatrix, gameStates.render.automap.bRadar ? (amData.nZoom * 3) / 2 : amData.nZoom, 1);
 	}
-OglSetFOV (gameStates.render.glFOV);
 if (!gameStates.render.automap.bRadar && gameOpts->render.automap.bTextured) {
 	gameData.render.mine.viewerEye = amData.viewPos;
 	RenderMine (gameData.objs.console->nSegment, 0, 0);
@@ -405,18 +410,18 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 	if (!gameStates.render.automap.bRadar) {
 		DrawMarkers ();
 		if ((gameData.marker.nHighlight > -1) && (gameData.marker.szMessage [gameData.marker.nHighlight][0] != 0)) {
-			char msg [10+MARKER_MESSAGE_LEN+1];
-			sprintf (msg, TXT_MARKER_MSG, gameData.marker.nHighlight+1,
-						gameData.marker.szMessage [ (gameData.multiplayer.nLocalPlayer*2)+gameData.marker.nHighlight]);
+			char msg [10 + MARKER_MESSAGE_LEN + 1];
+			sprintf (msg, TXT_MARKER_MSG, gameData.marker.nHighlight + 1,
+						gameData.marker.szMessage [(gameData.multiplayer.nLocalPlayer * 2) + gameData.marker.nHighlight]);
 			GrSetColorRGB (196, 0, 0, 255);
-			ModexPrintF (5,20,msg,SMALL_FONT,automapColors.nDkGray);
+			ModexPrintF (5,20,msg,SMALL_FONT, automapColors.nDkGray);
 			}
 		}			
 	// Draw tPlayer (s)...
 	if (AM_SHOW_PLAYERS) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((i != gameData.multiplayer.nLocalPlayer) && AM_SHOW_PLAYER (i)) {
-				if (OBJECTS [gameData.multiplayer.players [i].nObject].nType == OBJ_PLAYER)	{
+				if (OBJECTS [gameData.multiplayer.players [i].nObject].nType == OBJ_PLAYER) {
 					color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
 					GrSetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 					DrawPlayer (OBJECTS + gameData.multiplayer.players [i].nObject);
@@ -430,13 +435,13 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 		switch (objP->nType)	{
 			case OBJ_HOSTAGE:
 				GrSetColorRGBi (automapColors.nHostage);
-				G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
+				G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
 				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);
 				break;
 
 			case OBJ_MONSTERBALL:
 				GrSetColorRGBi (automapColors.nMonsterball);
-				G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
+				G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
 				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);
 				break;
 
@@ -460,7 +465,9 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 						else
 							GrSetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
 					G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
+					//G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 					G3DrawSphere (&spherePoint, (size * 3) / 2, !gameStates.render.automap.bRadar);
+					//G3DoneInstance ();
 					}
 				break;
 
@@ -994,7 +1001,7 @@ for (i = 0; i <= nHighestEdgeIndex; i++)	{
 void DrawAllEdges (void)
 {
 	g3sCodes		cc;
-	int			i, j, nbright;
+	int			i, j, nbright = 0;
 	ubyte			nfacing, nnfacing;
 	tEdgeInfo	*e;
 	vmsVector	*tv1;
@@ -1003,7 +1010,6 @@ void DrawAllEdges (void)
 	g3sPoint		*p1, *p2;
 	int			bUseTransform = gameStates.ogl.bUseTransform;
 
-nbright = 0;
 gameStates.ogl.bUseTransform = gameOpts->render.nPath;
 for (i = 0; i <= nHighestEdgeIndex; i++)	{
 	//e = &Edges [Edge_used_list [i]];
@@ -1071,9 +1077,9 @@ while (incr > 0) {
 
 			if (gameData.segs.points [v1].p3_z < gameData.segs.points [v2].p3_z) {
 				// If not in correct order, them swap 'em
-				t=DrawingListBright [j+incr];
-				DrawingListBright [j+incr]=DrawingListBright [j];
-				DrawingListBright [j]=t;
+				t = DrawingListBright [j+incr];
+				DrawingListBright [j+incr] = DrawingListBright [j];
+				DrawingListBright [j] = t;
 				j -= incr;
 				}
 			else
@@ -1094,7 +1100,7 @@ for (i = 0; i < nbright; i++) {
 	dist = p1->p3_z - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 	if (dist < 0) 
-		dist=0;
+		dist = 0;
 	if (dist >= amData.nMaxDist) 
 		continue;
 

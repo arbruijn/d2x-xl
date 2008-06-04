@@ -335,9 +335,8 @@ return G3EnableClientState (GL_VERTEX_ARRAY, -1);
 #define ZNEAR	gameData.render.ogl.zNear
 #define ZFAR	gameData.render.ogl.zFar
 
-void OglSetFOV (double fov)
+void OglSetFOV (void)
 {
-gameStates.render.glFOV = 90.0;
 #if 0
 gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #else
@@ -358,6 +357,7 @@ gameData.render.ogl.depthScale.p.z = (float) (ZFAR - ZNEAR);
 gameData.render.ogl.screenScale.x = 1.0f / (float) grdCurScreen->scWidth;
 gameData.render.ogl.screenScale.y = 1.0f / (float) grdCurScreen->scHeight;
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+glMatrixMode (GL_MODELVIEW);
 }
 
 //------------------------------------------------------------------------------
@@ -538,7 +538,6 @@ else
 
 	//if (gameStates.render.nShadowBlurPass < 2) 
 		{
-		//OglSetFOV (gameStates.render.glFOV);
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();
 		OglViewport (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, nCanvasWidth, nCanvasHeight);

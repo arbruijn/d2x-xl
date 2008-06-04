@@ -314,7 +314,7 @@ void AcidCheat (int bVerbose)
 if (gameStates.app.cheats.bAcid) {
 	gameStates.app.cheats.bAcid = 0;
 	gameStates.render.nInterpolationMethod = nInterpolationMethodSave;
-	OglSetFOV (DEFAULT_FOV);
+	gameStates.render.glFOV = DEFAULT_FOV;
 	if (bVerbose)
 		HUDInitMessage (TXT_COMING_DOWN);
 	}
@@ -322,7 +322,7 @@ else {
 	gameStates.app.cheats.bAcid = 1;
 	nInterpolationMethodSave=gameStates.render.nInterpolationMethod;
 	gameStates.render.nInterpolationMethod = 1;
-	OglSetFOV (FISHEYE_FOV);
+	gameStates.render.glFOV = FISHEYE_FOV;
 	if (bVerbose)
 		HUDInitMessage (TXT_GOING_UP);
 	}

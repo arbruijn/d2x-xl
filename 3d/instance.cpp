@@ -111,6 +111,9 @@ void G3StartInstanceMatrix (vmsVector *vPos, vmsMatrix *mOrient)
 	vmsVector	vOffs;
 	vmsMatrix	mTrans, mRot;
 
+//Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
+if (!G3PushMatrix ())
+	return;
 if (gameStates.ogl.bUseTransform) {
 	vmsVector	h;
 
@@ -139,9 +142,6 @@ if (gameStates.ogl.bUseTransform) {
 		}
 	}
 
-//Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
-if (!G3PushMatrix ())
-	return;
 //step 1: subtract object position from view position
 VmVecSub (&vOffs, &viewInfo.pos, vPos);
 if (mOrient) {
@@ -176,12 +176,14 @@ void G3DoneInstance ()
 {
 if (!G3PopMatrix ())
 	return;
+#if 0
 if (gameStates.ogl.bUseTransform) {
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
 	}
 VmVecFixToFloat (&viewInfo.posf, &viewInfo.pos);
 VmsMatToFloat (viewInfo.viewf, viewInfo.view);
+#endif
 }
 
 //------------------------------------------------------------------------------

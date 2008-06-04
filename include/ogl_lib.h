@@ -54,7 +54,7 @@ int G3EnableClientState (GLuint nState, int nTMU);
 int G3DisableClientState (GLuint nState, int nTMU);
 void G3DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
 int G3EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
-void OglSetFOV (double fov);
+void OglSetFOV (void);
 void OglStartFrame (int bFlat, int bResetColorBuf);
 void OglEndFrame (void);
 void OglEnableLighting (int bSpecular);

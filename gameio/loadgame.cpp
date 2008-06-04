@@ -1182,7 +1182,7 @@ ResetRearView ();
 gameData.fusion.xAutoFireTime = 0;
 gameData.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
-gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
+gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
 if (gameStates.app.bD1Mission) {
 	if (LOCALPLAYER.energy < INITIAL_ENERGY)
 		LOCALPLAYER.energy = INITIAL_ENERGY;
@@ -1346,7 +1346,7 @@ if (!gameStates.app.bD1Mission && CFExist (SECRETB_FILENAME, gameFolders.szSaveD
 
 	ReturningToLevelMessage ();
 	StateRestoreAll (1, 1, SECRETB_FILENAME);
-	gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
+	gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
 	SetDataVersion (-1);
 	gameData.weapons.nPrimary = pw_save;
 	gameData.weapons.nSecondary = sw_save;
@@ -2214,7 +2214,7 @@ gameData.fusion.xAutoFireTime = 0;
 gameData.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
 gameStates.app.cheats.bD1CheatsEnabled = 0;
-gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
+gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
 SetDataVersion (-1);
 }
 
