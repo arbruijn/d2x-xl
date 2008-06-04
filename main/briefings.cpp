@@ -592,7 +592,9 @@ if (nRobot != -1) {
 		GrPaletteStepLoad (NULL);
 		bInitRobot = 0;
 		}
+	gameStates.render.bFullBright	= 1;
 	DrawModelPicture (ROBOTINFO (nRobot).nModel, &vRobotAngles);
+	gameStates.render.bFullBright = 0;
 	grdCurCanv = curCanvSave;
 	}
 }

@@ -1752,7 +1752,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #endif
 		faceP->color = faceColor [nColor].color;
 #if 1
-		if (bNeedLight && faceP->bHasColor)
+		if (!bNeedLight && faceP->bHasColor)
 			continue;
 		faceP->bHasColor = 1;
 #endif
