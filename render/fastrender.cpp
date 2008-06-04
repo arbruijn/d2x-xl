@@ -1,4 +1,3 @@
-/* $Id: render.c, v 1.18 2003/10/10 09:36:35 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -269,90 +268,90 @@ if (((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//r
 
 //------------------------------------------------------------------------------
 
-void RenderSolidFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
+bool RenderSolidFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
-	return;
+	return false;
 if (IS_WALL (faceP->nWall))
-	return;
+	return false;
 LoadFaceBitmaps (segP, faceP);
 g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, !bDepthOnly && faceP->bTextured, bDepthOnly);
+return true;
 }
 
 //------------------------------------------------------------------------------
 
-void RenderWallFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
+bool RenderWallFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
-	return;
+	return false;
 if (!IS_WALL (faceP->nWall))
-	return;
+	return false;
 LoadFaceBitmaps (segP, faceP);
 g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, !bDepthOnly && faceP->bTextured, bDepthOnly);
+return true;
 }
 
 //------------------------------------------------------------------------------
 
-void RenderColoredFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
+bool RenderColoredFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
-	return;
+	return false;
 if (faceP->bmBot)
-	return;
+	return false;
 short nSegment = faceP->nSegment;
 short special = gameData.segs.segment2s [nSegment].special;
 if ((special < SEGMENT_IS_WATER) || (special > SEGMENT_IS_TEAM_RED) || 
 	 (gameData.segs.xSegments [nSegment].group < 0) || (gameData.segs.xSegments [nSegment].owner < 1))
-	return;
+	return false;
 if (!gameData.app.nFrameCount)
 	gameData.render.nColoredFaces++;
 g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, !bDepthOnly && faceP->bTextured, bDepthOnly);
+return true;
 }
 
 //------------------------------------------------------------------------------
 
-void RenderCoronaFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
+bool RenderCoronaFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
-	return;
-if (faceP->nCorona)
-	RenderCorona (faceP->nSegment, faceP->nSide, CoronaVisibility (faceP->nCorona));
+	return false;
+if (!faceP->nCorona)
+	return false;
+RenderCorona (faceP->nSegment, faceP->nSide, CoronaVisibility (faceP->nCorona));
+return true;
 }
 
 //------------------------------------------------------------------------------
 
-void RenderSkyBoxFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
+bool RenderSkyBoxFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
-#if 1
 LoadFaceBitmaps (segP, faceP);
 G3DrawFaceArrays (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, !bDepthOnly && faceP->bTextured, bDepthOnly);
-#endif
+return true;
 }
 
 //------------------------------------------------------------------------------
 
 #ifdef _WIN32
-typedef void (__fastcall * pRenderHandler) (tSegment *segP, grsFace *faceP, int bDepthOnly);
+typedef bool (__fastcall * pRenderHandler) (tSegment *segP, grsFace *faceP, int bDepthOnly);
 #else
-typedef void (* pRenderHandler) (tSegment *segP, grsFace *faceP, int bDepthOnly);
+typedef bool (* pRenderHandler) (tSegment *segP, grsFace *faceP, int bDepthOnly);
 #endif
 
 static pRenderHandler renderHandlers [] = {RenderSolidFace, RenderWallFace, RenderColoredFace, RenderCoronaFace, RenderSkyBoxFace};
 
 
-static inline void RenderMineFace (tSegment *segP, grsFace *faceP, int nType, int bDepthOnly)
+static inline bool RenderMineFace (tSegment *segP, grsFace *faceP, int nType, int bDepthOnly)
 {
 if (!faceP->bVisible)
-	return;
+	return false;
 #ifdef _DEBUG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-renderHandlers [nType] (segP, faceP, bDepthOnly);
-#if 0//RENDER_DEPTHMASK_FIRST
-if (faceP->bTextured)
-	SplitFace (segFaceP, faceP);
-#endif
+return renderHandlers [nType] (segP, faceP, bDepthOnly);
 }
 
 //------------------------------------------------------------------------------
@@ -666,81 +665,140 @@ if (gameStates.render.bHaveSkyBox) {
 
 //------------------------------------------------------------------------------
 
-void QueryCoronas (int nFaces, int nPass)
+static inline int VisitSegment (short nSegment, int bAutomap)
 {
-	grsFace		*faceP;
-	tFaceRef		*pfr;
-	tSegFaces	*segFaceP;
-	short			nSegment;
-	int			i, j,  bVertexArrays = BeginRenderFaces (3, 0);
+if (nSegment < 0)
+	return 0;
+if (bAutomap) {
+	if (gameStates.render.automap.bDisplay) {
+		if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
+			return 0;
+		if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
+			return 0;
+		}
+	else
+		gameData.render.mine.bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
+	}
+if (VISITED (nSegment))
+	return 0;
+VISIT (nSegment);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+short RenderFaceList (tFaceListIndex *flxP, int nType, int bDepthOnly, int bHeadlight)
+{
+	tFaceListIndex	flx = *flxP;
+	tFaceListItem	*fliP;
+	grsFace			*faceP;
+	short				i, j, nFaces = 0, nSegment = -1;
+	int				bAutomap = (nType == 0);
+
+for (i = 0; i < flx.nUsedKeys; i++) {
+	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
+		fliP = gameData.render.faceList + j;
+		faceP = fliP->faceP;
+		if (nSegment != faceP->nSegment) {
+			nSegment = faceP->nSegment;
+#ifdef _DEBUG
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+				nDbgSeg = nDbgSeg;
+#endif
+			if (!bDepthOnly) {
+				if (!bHeadlight)
+					VisitSegment (nSegment, bAutomap);
+				if (gameStates.render.bPerPixelLighting)
+					gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
+				}
+			}
+		faceP = fliP->faceP;
+		if (RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly))
+			nFaces++;
+		}
+	}
+return nFaces;
+}
+
+//------------------------------------------------------------------------------
+
+void RenderCoronaFaceList (tFaceListIndex *flxP, int nPass)
+{
+	tFaceListIndex	flx = *flxP;
+	tFaceListItem	*fliP;
+	grsFace			*faceP;
+	short				i, j, nSegment;
+
+for (i = 0; i < flx.nUsedKeys; i++) {
+	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
+		fliP = gameData.render.faceList + j;
+		faceP = fliP->faceP;
+		faceP = fliP->faceP;
+		if (!faceP->nCorona)
+			continue;
+		nSegment = faceP->nSegment;
+		if (gameStates.render.automap.bDisplay) {
+			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
+				return;
+			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
+				continue;
+			}
+		if (nPass == 1) {
+#ifdef _DEBUG
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+				nDbgSeg = nDbgSeg;
+#endif
+			CoronaVisibility (faceP->nCorona);
+			}
+		else if (nPass == 2) {
+#ifdef _DEBUG
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+				nDbgSeg = nDbgSeg;
+#endif
+			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
+			if (!glGetError ())
+				RenderCorona (nSegment, faceP->nSide, 1);
+			glEndQuery (GL_SAMPLES_PASSED_ARB);
+			}
+		else {
+#ifdef _DEBUG
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+				nDbgSeg = nDbgSeg;
+#endif
+			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
+			RenderCorona (nSegment, faceP->nSide, 1);
+			glEndQuery (GL_SAMPLES_PASSED_ARB);
+			}	
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void QueryCoronas (short nFaces, int nPass)
+{
+	int	bVertexArrays = BeginRenderFaces (3, 0);
 
 glDepthMask (0);
 glColorMask (1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
 	gameStates.render.bQueryCoronas = 1;
-	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
-		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
-			continue;
-		if (gameStates.render.automap.bDisplay) {
-			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
-				return;
-			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
-				continue;
-			}
-		segFaceP = SEGFACES + nSegment;
-		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++)
-			if (faceP->nCorona) {
-#ifdef _DEBUG
-				if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-					nSegment = nSegment;
-#endif
-				glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
-				RenderCorona (nSegment, faceP->nSide, 1);
-				glEndQuery (GL_SAMPLES_PASSED_ARB);
-				}
-		}
+	RenderCoronaFaceList (gameData.render.faceIndex, 0);
+	if (gameStates.app.bMultiThreaded)
+		RenderCoronaFaceList (gameData.render.faceIndex + 1, 0);
 	glFlush ();
-	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
-		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
-			continue;
-		if (gameStates.render.automap.bDisplay) {
-			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
-				return;
-			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
-				continue;
-			}
-		segFaceP = SEGFACES + nSegment;
-		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++)
-			if (faceP->nCorona) {
-#ifdef _DEBUG
-				if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-					nSegment = nSegment;
-#endif
-				CoronaVisibility (faceP->nCorona);
-				}
-		}
+	RenderCoronaFaceList (gameData.render.faceIndex, 1);
+	if (gameStates.app.bMultiThreaded)
+		RenderCoronaFaceList (gameData.render.faceIndex + 1, 1);
 	}
 else {
 	gameStates.render.bQueryCoronas = 2;
-	for (i = 0, pfr = faceRef [gameStates.app.bMultiThreaded]; i < nFaces; i++) {
-		faceP = pfr [i].faceP;
-		if (!faceP->nCorona)
-			continue;
-		if (gameStates.render.automap.bDisplay) {
-			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [pfr [i].nSegment].special == SEGMENT_IS_SKYBOX))
-				continue;
-			}
-#ifdef _DEBUG
-		if ((pfr->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-			faceP = faceP;
-#endif
-		glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
-		if (!glGetError ())
-			RenderCorona (pfr [i].nSegment, faceP->nSide, 1);
-		glEndQuery (GL_SAMPLES_PASSED_ARB);
-		}
+	RenderCoronaFaceList (gameData.render.faceIndex, 2);
+	if (gameStates.app.bMultiThreaded)
+		RenderCoronaFaceList (gameData.render.faceIndex + 1, 2);
 	glFlush ();
 	}
+glDepthMask (1);
 glClearColor (0,0,0,0);
 glClearDepth (0xffffffff);
 glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -782,35 +840,14 @@ return gameData.render.lights.nCoronas;
 
 //------------------------------------------------------------------------------
 
-static inline int VisitSegment (short nSegment, int bAutomap)
+static short RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bAutomap, int bHeadlight)
 {
 if (nSegment < 0)
 	return 0;
-if (bAutomap) {
-	if (gameStates.render.automap.bDisplay) {
-		if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
-			return 0;
-		if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
-			return 0;
-		}
-	else
-		gameData.render.mine.bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
-	}
-if (VISITED (nSegment))
-	return 0;
-VISIT (nSegment);
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-static void RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bAutomap, int bHeadlight)
-{
-if (nSegment < 0)
-	return;
 
 	tSegFaces	*segFaceP = SEGFACES + nSegment;
 	grsFace		*faceP;
+	short			nFaces = 0;
 	int			i;
 
 #ifdef _DEBUG
@@ -818,7 +855,7 @@ if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 if (!(bHeadlight || VisitSegment (nSegment, bAutomap)))
-	return;
+	return 0;
 #ifdef _DEBUG
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
@@ -830,68 +867,41 @@ for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nSegment = nSegment;
 #endif
-	RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly);
+	if (RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly))
+		nFaces++;
 	}
+return nFaces;
 }
 
 //------------------------------------------------------------------------------
 
-void RenderFaceList (tFaceListIndex *flxP, int nType, int bDepthOnly, int bHeadlight)
+short RenderSegments (int nType, int bVertexArrays, int bDepthOnly, int bHeadlight)
 {
-	tFaceListIndex	flx = *flxP;
-	tFaceListItem	*fliP;
-	grsFace			*faceP;
-	short				i, j, nSegment = -1;
-	int				bAutomap = (nType == 0);
-
-for (i = 0; i < flx.nUsedKeys; i++) {
-	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
-		fliP = gameData.render.faceList + j;
-		faceP = fliP->faceP;
-		if (nSegment != faceP->nSegment) {
-			nSegment = faceP->nSegment;
-#ifdef _DEBUG
-			if (nSegment == nDbgSeg)
-				nDbgSeg = nDbgSeg;
-#endif
-			if (!bHeadlight)
-				VisitSegment (nSegment, bAutomap);
-			if (gameStates.render.bPerPixelLighting)
-				gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
-			}
-		faceP = fliP->faceP;
-		RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly);
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void RenderSegments (int nType, int bVertexArrays, int bDepthOnly, int bHeadlight)
-{
-	int	i, bAutomap = (nType == 0);
+	int	i, nFaces = 0, bAutomap = (nType == 0);
 
 if (nType) {
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		grsFace *faceP = gameData.segs.faces.faces;
 		for (i = gameData.segs.nFaces; i; i--, faceP++)
-			RenderMineFace (SEGMENTS + faceP->nSegment, faceP, nType, bDepthOnly);
+			if (RenderMineFace (SEGMENTS + faceP->nSegment, faceP, nType, bDepthOnly))
+				nFaces++;
 		}
 	else {
 		for (i = gameData.render.mine.nRenderSegs; i; )
-			RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bVertexArrays, bDepthOnly, bAutomap, bHeadlight);
+			nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bVertexArrays, bDepthOnly, bAutomap, bHeadlight);
 		}
 	}
 else {
 #if SORT_FACES > 1
-	RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly, bHeadlight);
+	nFaces += RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly, bHeadlight);
 	if (gameStates.app.bMultiThreaded)
-		RenderFaceList (gameData.render.faceIndex + 1, nType, bDepthOnly, bHeadlight);
+		nFaces += RenderFaceList (gameData.render.faceIndex + 1, nType, bDepthOnly, bHeadlight);
 #else
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
-		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap, bHeadlight);
+		nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap, bHeadlight);
 #endif
 	}
+return nFaces;
 }
 
 //------------------------------------------------------------------------------
@@ -922,9 +932,8 @@ if (gameStates.ogl.bOcclusionQuery) {
 	QueryCoronas (0, 1);
 	}
 int bVertexArrays = BeginRenderFaces (0, 1);
-RenderSegments (nType, bVertexArrays, 1, 0);
+short nFaces = RenderSegments (nType, bVertexArrays, 1, 0);
 EndRenderFaces (0, bVertexArrays, 1);
-int nFaces = SortFaces ();
 if (gameOpts->render.coronas.bUse && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
 	gameStates.render.bQueryCoronas = 2;
 	gameStates.render.nType = 1;
@@ -967,10 +976,12 @@ else {	//front to back
 		j = 0;
 	bVertexArrays = BeginRenderFaces (0, 0);
 	glColorMask (1,1,1,1);
-	if (!j) {
+	//if (!j) 
+		{
 		gameData.render.mine.nVisited++;
 		RenderSegments (nType, bVertexArrays, 0, 0);
 		}
+#if 0
 	else {
 		for (i = 0, pfr = faceRef [gameStates.app.bMultiThreaded]; i < j; i++) {
 			nSegment = pfr [i].nSegment;
@@ -985,6 +996,7 @@ else {	//front to back
 			RenderMineFace (SEGMENTS + nSegment, pfr [i].faceP, nType, 0);
 			}
 		}
+#endif
 	glDepthMask (1);
 	RenderHeadlights (0, bVertexArrays);
 	}
