@@ -117,8 +117,6 @@ if (!G3PushMatrix ())
 if (gameStates.ogl.bUseTransform) {
 	vmsVector	h;
 
-	glMatrixMode (GL_MODELVIEW);
-	glPushMatrix ();
 	if (nInstanceDepth) {
 		glScalef (-1.0f, -1.0f, -1.0f);
 		VmsMove (vPos);
