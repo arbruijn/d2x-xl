@@ -959,9 +959,7 @@ return SortFaces ();
 
 void RenderFaceList (int nType)
 {
-	tFaceRef		*pfr;
-	short			nSegment;
-	int			i, j, bVertexArrays;
+	int	j, bVertexArrays;
 
 if (nType) {	//back to front
 	bVertexArrays = BeginRenderFaces (nType, 0);
@@ -976,27 +974,8 @@ else {	//front to back
 		j = 0;
 	bVertexArrays = BeginRenderFaces (0, 0);
 	glColorMask (1,1,1,1);
-	//if (!j) 
-		{
-		gameData.render.mine.nVisited++;
-		RenderSegments (nType, bVertexArrays, 0, 0);
-		}
-#if 0
-	else {
-		for (i = 0, pfr = faceRef [gameStates.app.bMultiThreaded]; i < j; i++) {
-			nSegment = pfr [i].nSegment;
-#ifdef _DEBUG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (pfr[i].faceP->nSide == nDbgSide)))
-				pfr = pfr;
-#endif
-			if (gameStates.render.automap.bDisplay) {
-				if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [pfr [i].nSegment].special == SEGMENT_IS_SKYBOX))
-					continue;
-				}
-			RenderMineFace (SEGMENTS + nSegment, pfr [i].faceP, nType, 0);
-			}
-		}
-#endif
+	gameData.render.mine.nVisited++;
+	RenderSegments (nType, bVertexArrays, 0, 0);
 	glDepthMask (1);
 	RenderHeadlights (0, bVertexArrays);
 	}
