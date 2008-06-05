@@ -1652,7 +1652,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 			nChildSeg = segP->children [nChild];
 			if (nChildSeg < 0)
 				continue;
-			wid = WALL_IS_DOORWAY (segP, nChild, NULL);
+			if (!(WALL_IS_DOORWAY (segP, nChild, NULL) & WID_RENDPAST_FLAG))
+				continue;
 #ifdef _DEBUG
 			if (nChildSeg == nDbgSeg)
 				nChildSeg = nChildSeg;
