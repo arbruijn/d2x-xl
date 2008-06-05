@@ -1568,7 +1568,7 @@ gameData.render.zMax = vCenter.p.z + d1 + r;
 
 void BuildRenderSegList (short nStartSeg, int nWindow)
 {
-	int		lCnt, sCnt, eCnt, wid, nSide;
+	int		lCnt, sCnt, eCnt, nSide;
 	int		l, i, j;
 	short		nChild;
 	short		nChildSeg;
