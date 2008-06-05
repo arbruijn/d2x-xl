@@ -1614,6 +1614,8 @@ typedef struct tRenderData {
 	double					dAspect;
 	tFrameBuffer			glareBuffer;
 	int						nTotalFaces;
+	int						nTotalObjects;
+	int						nTotalSprites;
 	int						nTotalLights;
 	int						nMaxLights;
 	int						nColoredFaces;

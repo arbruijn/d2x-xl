@@ -2997,10 +2997,14 @@ if (gameStates.render.bShowFrameRate) {
 		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 4) {
-		sprintf (szItem, "States: %d/%d ", gameData.render.nStateChanges, gameData.render.nShaderChanges);
+		sprintf (szItem, "Objects: %d/%d ", gameData.render.nTotalObjects, gameData.render.nTotalSprites);
 		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 5) {
+		sprintf (szItem, "States: %d/%d ", gameData.render.nStateChanges, gameData.render.nShaderChanges);
+		x = 11;
+		}
+	else if (gameStates.render.bShowFrameRate == 6) {
 		sprintf (szItem, "Lights/Face: %1.2f (%d)", 
 					(float) gameData.render.nTotalLights / (float) gameData.render.nTotalFaces,
 					gameData.render.nMaxLights);

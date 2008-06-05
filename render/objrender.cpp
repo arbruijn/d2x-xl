@@ -419,6 +419,7 @@ else {
 		G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, bmP, 
 						  NULL, fAlpha, nTransp);
 	}
+gameData.render.nTotalSprites++;
 }
 
 //------------------------------------------------------------------------------
@@ -1150,6 +1151,7 @@ if (objP->renderType != RT_NONE)
 	}
 #endif
 gameStates.render.detail.nMaxLinearDepth = mldSave;
+gameData.render.nTotalObjects++;
 PROF_END(ptRenderObjects)
 return 1;
 }

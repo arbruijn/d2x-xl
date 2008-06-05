@@ -2388,6 +2388,8 @@ if (gameStates.render.nLightingMethod == 2)
 else
 	gameStates.render.bPerPixelLighting = 0;
 gameData.render.nTotalFaces =
+gameData.render.nTotalObjects =
+gameData.render.nTotalSprites =
 gameData.render.nTotalLights = 
 gameData.render.nMaxLights = 
 gameData.render.nStateChanges = 

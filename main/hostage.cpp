@@ -45,22 +45,24 @@ int nHostageVClips [MAX_HOSTAGE_TYPES] = {33};	// tVideoClip num for each tpye o
 
 //-------------- Renders a hostage --------------------------------------------
 
-void DrawHostage(tObject *objP)
+void DrawHostage (tObject *objP)
 {
-DrawObjectRodTexPoly (objP, gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames [objP->rType.vClipInfo.nCurFrame], 1, objP->rType.vClipInfo.nCurFrame);
+DrawObjectRodTexPoly (objP, gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames [objP->rType.vClipInfo.nCurFrame], 
+							 1, objP->rType.vClipInfo.nCurFrame);
+gameData.render.nTotalSprites++;
 }
 
 
 //------------- Called once when a hostage is rescued -------------------------
-void hostage_rescue(int blah)
+
+void RescueHostage (int nHostage)
 {
-	PALETTE_FLASH_ADD(0, 0, 25);		//small blue flash
-
-	LOCALPLAYER.hostages.nOnBoard++;
-
-	// Do an audio effect
-	if (gameData.demo.nState != ND_STATE_PLAYBACK)
-		DigiPlaySample(SOUND_HOSTAGE_RESCUED, F1_0);
-
-	HUDInitMessage(TXT_HOSTAGE_RESCUED);
+PALETTE_FLASH_ADD(0, 0, 25);		//small blue flash
+LOCALPLAYER.hostages.nOnBoard++;
+// Do an audio effect
+if (gameData.demo.nState != ND_STATE_PLAYBACK)
+	DigiPlaySample (SOUND_HOSTAGE_RESCUED, F1_0);
+HUDInitMessage (TXT_HOSTAGE_RESCUED);
 }
+
+//------------- Called once when a hostage is rescued -------------------------

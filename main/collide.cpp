@@ -1819,7 +1819,7 @@ if (tPlayer == gameData.objs.console) {
 	DetectEscortGoalAccomplished (OBJ_IDX (hostage));
 	AddPointsToScore (HOSTAGE_SCORE);
 	// Do effect
-	hostage_rescue (hostage->id);
+	RescueHostage (hostage->id);
 	// Remove the hostage tObject.
 	KillObject (hostage);
 	if (gameData.app.nGameMode & GM_MULTI)

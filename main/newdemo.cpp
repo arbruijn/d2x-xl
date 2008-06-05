@@ -2008,7 +2008,7 @@ while (!bDone) {
 			hostage_number = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				hostage_rescue (hostage_number);
+				RescueHostage (hostage_number);
 			}
 			break;
 
