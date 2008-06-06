@@ -818,11 +818,11 @@ gameFileInfo.lightDeltas.size		=	sizeof(tLightDelta);
 
 // -----------------------------------------------------------------------------
 
-static int ReadGameFileInfo (CFILE *cfp, int nStartOffset)
+static int ReadGameFileInfo (CFILE *cfP, int nStartOffset)
 {
-gameTopFileInfo.fileinfo_signature = CFReadShort (cfp);
-gameTopFileInfo.fileinfoVersion = CFReadShort (cfp);
-gameTopFileInfo.fileinfo_sizeof = CFReadInt (cfp);
+gameTopFileInfo.fileinfo_signature = CFReadShort (cfP);
+gameTopFileInfo.fileinfoVersion = CFReadShort (cfP);
+gameTopFileInfo.fileinfo_sizeof = CFReadInt (cfP);
 // Check signature
 if (gameTopFileInfo.fileinfo_signature != 0x6705)
 	return -1;
@@ -830,60 +830,60 @@ if (gameTopFileInfo.fileinfo_signature != 0x6705)
 if (gameTopFileInfo.fileinfoVersion < GAME_COMPATIBLE_VERSION)
 	return -1;
 // Now, Read in the fileinfo
-if (CFSeek (cfp, nStartOffset, SEEK_SET)) 
+if (CFSeek (cfP, nStartOffset, SEEK_SET)) 
 	Error ("Error seeking to gameFileInfo in gamesave.c");
-gameFileInfo.fileinfo_signature = CFReadShort (cfp);
-gameFileInfo.fileinfoVersion = CFReadShort (cfp);
-gameFileInfo.fileinfo_sizeof = CFReadInt (cfp);
-CFRead (gameFileInfo.mine_filename, sizeof (char), 15, cfp);
-gameFileInfo.level = CFReadInt (cfp);
-gameFileInfo.player.offset = CFReadInt (cfp);				// Player info
-gameFileInfo.player.size = CFReadInt (cfp);
-gameFileInfo.objects.offset = CFReadInt (cfp);				// Object info
-gameFileInfo.objects.count = CFReadInt (cfp);    
-gameFileInfo.objects.size = CFReadInt (cfp);  
-gameFileInfo.walls.offset = CFReadInt (cfp);
-gameFileInfo.walls.count = CFReadInt (cfp);
-gameFileInfo.walls.size = CFReadInt (cfp);
-gameFileInfo.doors.offset = CFReadInt (cfp);
-gameFileInfo.doors.count = CFReadInt (cfp);
-gameFileInfo.doors.size = CFReadInt (cfp);
-gameFileInfo.triggers.offset = CFReadInt (cfp);
-gameFileInfo.triggers.count = CFReadInt (cfp);
-gameFileInfo.triggers.size = CFReadInt (cfp);
-gameFileInfo.links.offset = CFReadInt (cfp);
-gameFileInfo.links.count = CFReadInt (cfp);
-gameFileInfo.links.size = CFReadInt (cfp);
-gameFileInfo.control.offset = CFReadInt (cfp);
-gameFileInfo.control.count = CFReadInt (cfp);
-gameFileInfo.control.size = CFReadInt (cfp);
-gameFileInfo.botGen.offset = CFReadInt (cfp);
-gameFileInfo.botGen.count = CFReadInt (cfp);
-gameFileInfo.botGen.size = CFReadInt (cfp);
+gameFileInfo.fileinfo_signature = CFReadShort (cfP);
+gameFileInfo.fileinfoVersion = CFReadShort (cfP);
+gameFileInfo.fileinfo_sizeof = CFReadInt (cfP);
+CFRead (gameFileInfo.mine_filename, sizeof (char), 15, cfP);
+gameFileInfo.level = CFReadInt (cfP);
+gameFileInfo.player.offset = CFReadInt (cfP);				// Player info
+gameFileInfo.player.size = CFReadInt (cfP);
+gameFileInfo.objects.offset = CFReadInt (cfP);				// Object info
+gameFileInfo.objects.count = CFReadInt (cfP);    
+gameFileInfo.objects.size = CFReadInt (cfP);  
+gameFileInfo.walls.offset = CFReadInt (cfP);
+gameFileInfo.walls.count = CFReadInt (cfP);
+gameFileInfo.walls.size = CFReadInt (cfP);
+gameFileInfo.doors.offset = CFReadInt (cfP);
+gameFileInfo.doors.count = CFReadInt (cfP);
+gameFileInfo.doors.size = CFReadInt (cfP);
+gameFileInfo.triggers.offset = CFReadInt (cfP);
+gameFileInfo.triggers.count = CFReadInt (cfP);
+gameFileInfo.triggers.size = CFReadInt (cfP);
+gameFileInfo.links.offset = CFReadInt (cfP);
+gameFileInfo.links.count = CFReadInt (cfP);
+gameFileInfo.links.size = CFReadInt (cfP);
+gameFileInfo.control.offset = CFReadInt (cfP);
+gameFileInfo.control.count = CFReadInt (cfP);
+gameFileInfo.control.size = CFReadInt (cfP);
+gameFileInfo.botGen.offset = CFReadInt (cfP);
+gameFileInfo.botGen.count = CFReadInt (cfP);
+gameFileInfo.botGen.size = CFReadInt (cfP);
 if (gameTopFileInfo.fileinfoVersion >= 29) {
-	gameFileInfo.lightDeltaIndices.offset = CFReadInt (cfp);
-	gameFileInfo.lightDeltaIndices.count = CFReadInt (cfp);
-	gameFileInfo.lightDeltaIndices.size = CFReadInt (cfp);
+	gameFileInfo.lightDeltaIndices.offset = CFReadInt (cfP);
+	gameFileInfo.lightDeltaIndices.count = CFReadInt (cfP);
+	gameFileInfo.lightDeltaIndices.size = CFReadInt (cfP);
 
-	gameFileInfo.lightDeltas.offset = CFReadInt (cfp);
-	gameFileInfo.lightDeltas.count = CFReadInt (cfp);
-	gameFileInfo.lightDeltas.size = CFReadInt (cfp);
+	gameFileInfo.lightDeltas.offset = CFReadInt (cfP);
+	gameFileInfo.lightDeltas.count = CFReadInt (cfP);
+	gameFileInfo.lightDeltas.size = CFReadInt (cfP);
 	}
 if (gameData.segs.nLevelVersion >= 17) {
-	gameFileInfo.equipGen.offset = CFReadInt (cfp);
-	gameFileInfo.equipGen.count = CFReadInt (cfp);
-	gameFileInfo.equipGen.size = CFReadInt (cfp);
+	gameFileInfo.equipGen.offset = CFReadInt (cfP);
+	gameFileInfo.equipGen.count = CFReadInt (cfP);
+	gameFileInfo.equipGen.size = CFReadInt (cfP);
 	}
 return 0;
 }
 
 // -----------------------------------------------------------------------------
 
-static int ReadLevelInfo (CFILE *cfp)
+static int ReadLevelInfo (CFILE *cfP)
 {
 if (gameTopFileInfo.fileinfoVersion >= 31) { //load mine filename
 	// read newline-terminated string, not sure what version this changed.
-	CFGetS (gameData.missions.szCurrentLevel, sizeof (gameData.missions.szCurrentLevel), cfp);
+	CFGetS (gameData.missions.szCurrentLevel, sizeof (gameData.missions.szCurrentLevel), cfP);
 
 	if (gameData.missions.szCurrentLevel [strlen (gameData.missions.szCurrentLevel) - 1] == '\n')
 		gameData.missions.szCurrentLevel [strlen (gameData.missions.szCurrentLevel) - 1] = 0;
@@ -893,17 +893,17 @@ else if (gameTopFileInfo.fileinfoVersion >= 14) { //load mine filename
 	char *p = gameData.missions.szCurrentLevel;
 	//must do read one char at a time, since no CFGetS()
 	do {
-		*p = CFGetC (cfp);
+		*p = CFGetC (cfP);
 		} while (*p++);
 }
 else
 	gameData.missions.szCurrentLevel [0] = 0;
 if (gameTopFileInfo.fileinfoVersion >= 19) {	//load pof names
-	nSavePOFNames = CFReadShort (cfp);
+	nSavePOFNames = CFReadShort (cfP);
 	if ((nSavePOFNames != 0x614d) && (nSavePOFNames != 0x5547)) { // "Ma"de w/DMB beta/"GU"ILE
 		if (nSavePOFNames >= MAX_POLYGON_MODELS)
 			return -1;
-		CFRead (szSavePOFNames, nSavePOFNames, SHORT_FILENAME_LEN, cfp);
+		CFRead (szSavePOFNames, nSavePOFNames, SHORT_FILENAME_LEN, cfP);
 		}
 	}
 return 0;
@@ -911,19 +911,19 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadObjectInfo (CFILE *cfp)
+static int ReadObjectInfo (CFILE *cfP)
 {
 	int	i;
 
 if (gameFileInfo.objects.offset > -1) {
 	tObject	*objP = OBJECTS;
-	if (CFSeek (cfp, gameFileInfo.objects.offset, SEEK_SET)) {
+	if (CFSeek (cfP, gameFileInfo.objects.offset, SEEK_SET)) {
 		Error ("Error seeking to object data\n(file damaged or invalid)");
 		return -1;
 		}
 	memset (OBJECTS, 0, gameFileInfo.objects.count * sizeof (tObject));
 	for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
-		ReadObject (objP, cfp, gameTopFileInfo.fileinfoVersion);
+		ReadObject (objP, cfP, gameTopFileInfo.fileinfoVersion);
 		objP->nSignature = gameData.objs.nNextSignature++;
 		VerifyObject (objP);
 		gameData.objs.init [i] = *objP;
@@ -940,21 +940,21 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadWallInfo (CFILE *cfp)
+static int ReadWallInfo (CFILE *cfP)
 {
 if (gameFileInfo.walls.offset > -1) {
 	int	i;
-	if (CFSeek (cfp, gameFileInfo.walls.offset, SEEK_SET)) {
+	if (CFSeek (cfP, gameFileInfo.walls.offset, SEEK_SET)) {
 		Error ("Error seeking to wall data\n(file damaged or invalid)");
 		return -1;
 		}
 	for (i = 0; i <gameFileInfo.walls.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
-			ReadWall(&gameData.walls.walls [i], cfp); // v20 walls and up.
+			ReadWall(&gameData.walls.walls [i], cfP); // v20 walls and up.
 		else if (gameTopFileInfo.fileinfoVersion >= 17) {
 			tWallV19 w;
 
-			ReadWallV19(&w, cfp);
+			ReadWallV19(&w, cfP);
 			gameData.walls.walls [i].nSegment	   = w.nSegment;
 			gameData.walls.walls [i].nSide			= w.nSide;
 			gameData.walls.walls [i].nLinkedWall	= w.nLinkedWall;
@@ -969,7 +969,7 @@ if (gameFileInfo.walls.offset > -1) {
 		else {
 			tWallV16 w;
 
-			ReadWallV16(&w, cfp);
+			ReadWallV16(&w, cfP);
 			gameData.walls.walls [i].nSegment = gameData.walls.walls [i].nSide = gameData.walls.walls [i].nLinkedWall = -1;
 			gameData.walls.walls [i].nType		= w.nType;
 			gameData.walls.walls [i].flags		= w.flags;
@@ -985,23 +985,23 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadDoorInfo (CFILE *cfp)
+static int ReadDoorInfo (CFILE *cfP)
 {
 if (gameFileInfo.doors.offset > -1) {
 	int	i;
-	if (CFSeek (cfp, gameFileInfo.doors.offset, SEEK_SET))	{
+	if (CFSeek (cfP, gameFileInfo.doors.offset, SEEK_SET))	{
 		Error ("Error seeking to door data\n(file damaged or invalid)");
 		return -1;
 		}
 	for (i = 0; i < gameFileInfo.doors.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
-			ReadActiveDoor (&gameData.walls.activeDoors [i], cfp); // version 20 and up
+			ReadActiveDoor (&gameData.walls.activeDoors [i], cfP); // version 20 and up
 		else {
 			v19_door d;
 			int p;
 			short nConnSeg, nConnSide;
 
-			ReadActiveDoorV19(&d, cfp);
+			ReadActiveDoorV19(&d, cfP);
 			gameData.walls.activeDoors [i].nPartCount = d.nPartCount;
 			for (p = 0; p < d.nPartCount; p++) {
 				nConnSeg = gameData.segs.segments [d.seg [p]].children [d.nSide [p]];
@@ -1017,7 +1017,7 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadTriggerInfo (CFILE *cfp)
+static int ReadTriggerInfo (CFILE *cfP)
 {
 	int		h, i, j;
 	tTrigger	*trigP;
@@ -1026,21 +1026,21 @@ if (gameFileInfo.triggers.offset > -1) {
 #if TRACE
 	con_printf(CONDBG, "   loading tTrigger data ...\n");
 #endif
-	if (CFSeek (cfp, gameFileInfo.triggers.offset, SEEK_SET)) {
+	if (CFSeek (cfP, gameFileInfo.triggers.offset, SEEK_SET)) {
 		Error ("Error seeking to trigger data\n(file damaged or invalid)");
 		return -1;
 		}
 	for (i = 0, trigP = gameData.trigs.triggers; i < gameFileInfo.triggers.count; i++, trigP++) {
 		if (gameTopFileInfo.fileinfoVersion >= 31) 
-			TriggerRead (trigP, cfp, 0);
+			TriggerRead (trigP, cfP, 0);
 		else {
 			tTriggerV30 trig;
 			int t, nType = 0, flags = 0;
 			if (gameTopFileInfo.fileinfoVersion == 30)
-				V30TriggerRead (&trig, cfp);
+				V30TriggerRead (&trig, cfP);
 			else {
 				tTriggerV29 trig29;
-				V29TriggerRead (&trig29, cfp);
+				V29TriggerRead (&trig29, cfP);
 				trig.flags = trig29.flags;
 				trig.nLinks	= (char) trig29.nLinks;
 				trig.value = trig29.value;
@@ -1108,25 +1108,25 @@ if (gameFileInfo.triggers.offset > -1) {
 		trigP->nLinks = h;
 		}
 	if (gameTopFileInfo.fileinfoVersion >= 33) {
-		gameData.trigs.nObjTriggers = CFReadInt (cfp);
+		gameData.trigs.nObjTriggers = CFReadInt (cfP);
 		if (gameData.trigs.nObjTriggers) {
 			for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-				TriggerRead (gameData.trigs.objTriggers + i, cfp, 1);
+				TriggerRead (gameData.trigs.objTriggers + i, cfP, 1);
 			for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
-				gameData.trigs.objTriggerRefs [i].prev = CFReadShort (cfp);
-				gameData.trigs.objTriggerRefs [i].next = CFReadShort (cfp);
-				gameData.trigs.objTriggerRefs [i].nObject = CFReadShort (cfp);
+				gameData.trigs.objTriggerRefs [i].prev = CFReadShort (cfP);
+				gameData.trigs.objTriggerRefs [i].next = CFReadShort (cfP);
+				gameData.trigs.objTriggerRefs [i].nObject = CFReadShort (cfP);
 				}
 			}
 		if (gameTopFileInfo.fileinfoVersion < 36) {
 			for (i = 0; i < 700; i++)
-				gameData.trigs.firstObjTrigger [i] = CFReadShort (cfp);
+				gameData.trigs.firstObjTrigger [i] = CFReadShort (cfP);
 			}
 		else {
 			memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (gameData.trigs.firstObjTrigger));
-			for (i = CFReadShort (cfp); i; i--) {
-				j = CFReadShort (cfp);
-				gameData.trigs.firstObjTrigger [j] = CFReadShort (cfp);
+			for (i = CFReadShort (cfP); i; i--) {
+				j = CFReadShort (cfP);
+				gameData.trigs.firstObjTrigger [j] = CFReadShort (cfP);
 				}
 			}
 		}
@@ -1142,29 +1142,29 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadReactorInfo (CFILE *cfp)
+static int ReadReactorInfo (CFILE *cfP)
 {
 if (gameFileInfo.control.offset > -1) {
 #if TRACE
 	con_printf(CONDBG, "   loading reactor data ...\n");
 #endif
-	if (CFSeek (cfp, gameFileInfo.control.offset, SEEK_SET)) {
+	if (CFSeek (cfP, gameFileInfo.control.offset, SEEK_SET)) {
 		Error ("Error seeking to reactor data\n(file damaged or invalid)");
 		return -1;
 		}
-	ControlCenterTriggersReadN (&gameData.reactor.triggers, gameFileInfo.control.count, cfp);
+	ControlCenterTriggersReadN (&gameData.reactor.triggers, gameFileInfo.control.count, cfP);
 	}
 return 0;
 }
 
 // -----------------------------------------------------------------------------
 
-static int ReadBotGenInfo (CFILE *cfp)
+static int ReadBotGenInfo (CFILE *cfP)
 {
 if (gameFileInfo.botGen.offset > -1) {
 	int	i, j;
 
-	if (CFSeek (cfp, gameFileInfo.botGen.offset, SEEK_SET)) {
+	if (CFSeek (cfP, gameFileInfo.botGen.offset, SEEK_SET)) {
 		Error ("Error seeking to robot generator data\n(file damaged or invalid)");
 		return -1;
 		}
@@ -1172,7 +1172,7 @@ if (gameFileInfo.botGen.offset > -1) {
 		if (gameTopFileInfo.fileinfoVersion < 27) {
 			old_tMatCenInfo m;
 
-			OldMatCenInfoRead (&m, cfp);
+			OldMatCenInfoRead (&m, cfP);
 
 			gameData.matCens.botGens [i].objFlags [0] = m.objFlags;
 			gameData.matCens.botGens [i].objFlags [1] = 0;
@@ -1182,7 +1182,7 @@ if (gameFileInfo.botGen.offset > -1) {
 			gameData.matCens.botGens [i].nFuelCen = m.nFuelCen;
 		}
 		else
-			MatCenInfoRead (gameData.matCens.botGens + i, cfp);
+			MatCenInfoRead (gameData.matCens.botGens + i, cfP);
 
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		for (j = 0; j <= gameData.segs.nLastSegment; j++)
@@ -1198,17 +1198,17 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadEquipGenInfo (CFILE *cfp)
+static int ReadEquipGenInfo (CFILE *cfP)
 {
 if (gameFileInfo.equipGen.offset > -1) {
 	int	i, j;
 
-	if (CFSeek (cfp, gameFileInfo.equipGen.offset, SEEK_SET)) {
+	if (CFSeek (cfP, gameFileInfo.equipGen.offset, SEEK_SET)) {
 		Error ("Error seeking to equipment generator data\n(file damaged or invalid)");
 		return -1;
 		}
 	for (i = 0; i < gameFileInfo.equipGen.count; i++) {
-		MatCenInfoRead (gameData.matCens.equipGens + i, cfp);
+		MatCenInfoRead (gameData.matCens.equipGens + i, cfP);
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		for (j = 0; j <= gameData.segs.nLastSegment; j++)
 			if ((gameData.segs.segment2s [j].special == SEGMENT_IS_EQUIPMAKER) &&
@@ -1221,12 +1221,12 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadlightDeltaIndexInfo (CFILE *cfp)
+static int ReadlightDeltaIndexInfo (CFILE *cfP)
 {
 if (gameFileInfo.lightDeltaIndices.offset > -1) {
 	int	i;
 
-	if (CFSeek (cfp, gameFileInfo.lightDeltaIndices.offset, SEEK_SET)) {
+	if (CFSeek (cfP, gameFileInfo.lightDeltaIndices.offset, SEEK_SET)) {
 		Error ("Error seeking to light delta index data\n(file damaged or invalid)");
 		return -1;
 		}
@@ -1241,7 +1241,7 @@ if (gameFileInfo.lightDeltaIndices.offset > -1) {
 	else {
 		for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
 			//PrintLog ("reading DL index %d\n", i);
-			ReadlightDeltaIndex (gameData.render.lights.deltaIndices + i, cfp);
+			ReadlightDeltaIndex (gameData.render.lights.deltaIndices + i, cfP);
 			}
 		}
 	}
@@ -1251,7 +1251,7 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadlightDeltaInfo (CFILE *cfp)
+static int ReadlightDeltaInfo (CFILE *cfP)
 {
 if (gameFileInfo.lightDeltas.offset > -1) {
 	int	i;
@@ -1259,13 +1259,13 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 #if TRACE
 	con_printf(CONDBG, "   loading light data ...\n");
 #endif
-	if (CFSeek (cfp, gameFileInfo.lightDeltas.offset, SEEK_SET)) {
+	if (CFSeek (cfP, gameFileInfo.lightDeltas.offset, SEEK_SET)) {
 		Error ("Error seeking to light delta data\n(file damaged or invalid)");
 		return -1;
 		}
 	for (i = 0; i < gameFileInfo.lightDeltas.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 29) 
-			ReadlightDelta (gameData.render.lights.deltas + i, cfp);
+			ReadlightDelta (gameData.render.lights.deltas + i, cfP);
 		else {
 #if TRACE
 			con_printf (CONDBG, "Warning: Old mine version.  Not reading delta light info.\n");
@@ -1415,15 +1415,15 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 // If level != -1, it loads the filename with extension changed to .min
 // Otherwise it loads the appropriate level mine.
 // returns 0=everything ok, 1=old version, -1=error
-int LoadMineDataCompiled (CFILE *cfp, int bFileInfo)
+int LoadMineDataCompiled (CFILE *cfP, int bFileInfo)
 {
 	int 	nStartOffset;
 
-nStartOffset = CFTell (cfp);
+nStartOffset = CFTell (cfP);
 InitGameFileInfo ();
-if (ReadGameFileInfo (cfp, nStartOffset))
+if (ReadGameFileInfo (cfP, nStartOffset))
 	return -1;
-if (ReadLevelInfo (cfp))
+if (ReadLevelInfo (cfP))
 	return -1;
 gameStates.render.bD2XLights = gameStates.app.bD2XLevel && (gameTopFileInfo.fileinfoVersion >= 34);
 if (bFileInfo)
@@ -1433,23 +1433,23 @@ gameData.objs.nNextSignature = 0;
 gameData.render.lights.nStatic = 0;
 nGameSaveOrgRobots = 0;
 nGameSavePlayers = 0;
-if (ReadObjectInfo (cfp))
+if (ReadObjectInfo (cfP))
 	return -1;
-if (ReadWallInfo (cfp))
+if (ReadWallInfo (cfP))
 	return -1;
-if (ReadDoorInfo (cfp))
+if (ReadDoorInfo (cfP))
 	return -1;
-if (ReadTriggerInfo (cfp))
+if (ReadTriggerInfo (cfP))
 	return -1;
-if (ReadReactorInfo (cfp))
+if (ReadReactorInfo (cfP))
 	return -1;
-if (ReadBotGenInfo (cfp))
+if (ReadBotGenInfo (cfP))
 	return -1;
-if (ReadEquipGenInfo (cfp))
+if (ReadEquipGenInfo (cfP))
 	return -1;
-if (ReadlightDeltaIndexInfo (cfp))
+if (ReadlightDeltaIndexInfo (cfP))
 	return -1;
-if (ReadlightDeltaInfo (cfp))
+if (ReadlightDeltaInfo (cfP))
 	return -1;
 ClearLightSubtracted ();
 ResetObjects (gameFileInfo.objects.count);
@@ -1457,7 +1457,7 @@ CheckAndLinkObjects ();
 ClearTransientObjects (1);		//1 means clear proximity bombs
 CheckAndFixDoors ();
 gameData.walls.nWalls = gameFileInfo.walls.count;
-ResetWalls();
+ResetWalls ();
 gameData.walls.nOpenDoors = gameFileInfo.doors.count;
 gameData.trigs.nTriggers = gameFileInfo.triggers.count;
 CheckAndFixWalls ();
@@ -1554,12 +1554,12 @@ if (gameData.segs.nLevelVersion < 5)
 	CFReadInt (&cf);       //was hostagetext_offset
 
 if (gameData.segs.nLevelVersion > 1) {
-	CFGetS(szCurrentLevelPalette,sizeof(szCurrentLevelPalette),&cf);
-	if (szCurrentLevelPalette [strlen(szCurrentLevelPalette)-1] == '\n')
-		szCurrentLevelPalette [strlen(szCurrentLevelPalette)-1] = 0;
+	CFGetS (szCurrentLevelPalette, sizeof (szCurrentLevelPalette), &cf);
+	if (szCurrentLevelPalette [strlen(szCurrentLevelPalette) - 1] == '\n')
+		szCurrentLevelPalette [strlen(szCurrentLevelPalette) - 1] = 0;
 }
-if (gameData.segs.nLevelVersion <= 1 || szCurrentLevelPalette [0]==0) // descent 1 level
-	strcpy(szCurrentLevelPalette, DEFAULT_LEVEL_PALETTE); //D1_PALETTE
+if ((gameData.segs.nLevelVersion <= 1) || (szCurrentLevelPalette [0] == 0)) // descent 1 level
+	strcpy (szCurrentLevelPalette, DEFAULT_LEVEL_PALETTE); //D1_PALETTE
 
 if (gameData.segs.nLevelVersion >= 3)
 	gameStates.app.nBaseCtrlCenExplTime = CFReadInt (&cf);
@@ -1575,12 +1575,12 @@ if (gameData.segs.nLevelVersion >= 7) {
 	int i;
 
 #if TRACE
-con_printf(CONDBG, "   loading dynamic lights ...\n");
+con_printf (CONDBG, "   loading dynamic lights ...\n");
 #endif
 gameData.render.lights.flicker.nLights = CFReadInt (&cf);
-Assert((gameData.render.lights.flicker.nLights >= 0) && (gameData.render.lights.flicker.nLights < MAX_FLICKERING_LIGHTS));
+Assert ((gameData.render.lights.flicker.nLights >= 0) && (gameData.render.lights.flicker.nLights < MAX_FLICKERING_LIGHTS));
 for (i = 0; i < gameData.render.lights.flicker.nLights; i++)
-	ReadVariableLight(&gameData.render.lights.flicker.lights [i], &cf);
+	ReadVariableLight (&gameData.render.lights.flicker.lights [i], &cf);
 }
 else
 	gameData.render.lights.flicker.nLights = 0;
@@ -1596,7 +1596,8 @@ if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.returnOrient.rVec.p.x =
 	gameData.segs.secret.returnOrient.fVec.p.y =
 	gameData.segs.secret.returnOrient.uVec.p.z = F1_0;
-} else {
+	}
+else {
 	gameData.segs.secret.nReturnSegment = CFReadInt (&cf);
 	gameData.segs.secret.returnOrient.rVec.p.x = CFReadInt (&cf);
 	gameData.segs.secret.returnOrient.rVec.p.y = CFReadInt (&cf);
@@ -1607,7 +1608,7 @@ if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.returnOrient.uVec.p.x = CFReadInt (&cf);
 	gameData.segs.secret.returnOrient.uVec.p.y = CFReadInt (&cf);
 	gameData.segs.secret.returnOrient.uVec.p.z = CFReadInt (&cf);
-}
+	}
 
 //NOTE LINK TO ABOVE!!
 CFSeek (&cf, nGameDataOffset, SEEK_SET);
@@ -1617,7 +1618,7 @@ nError = LoadMineSegmentsCompiled (&cf);
 if (nError == -1) {   //error!!
 	CFClose(&cf);
 	return 2;
-}
+	}
 CFSeek (&cf, nGameDataOffset, SEEK_SET);
 nError = LoadMineDataCompiled (&cf, 0);
 if (nError == -1) {   //error!!

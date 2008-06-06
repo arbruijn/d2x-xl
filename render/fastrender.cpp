@@ -101,6 +101,8 @@ void AddFaceListItem (grsFace *faceP, int nThread)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return;
+if (faceP - gameData.segs.faces.faces >= gameData.segs.nFaces)
+	return;
 
 short	i, j, nKey = faceP->nBaseTex;
 

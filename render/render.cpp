@@ -2421,10 +2421,10 @@ if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameState
 		 (CountRenderFaces () > 15) && !RunRenderThreads (rtComputeFaceLight)) 
 #endif
 		{
-		if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments)
-			ComputeFaceLight (0, gameData.segs.nFaces, 0);
-		else
+		if (gameStates.render.bTriangleMesh || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
 			ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
+		else
+			ComputeFaceLight (0, gameData.segs.nFaces, 0);
 		}
 	PROF_START
 	UpdateSlidingFaces ();

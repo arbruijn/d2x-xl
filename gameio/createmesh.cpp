@@ -919,10 +919,6 @@ else if (strstr (pszName, "lava"))
 	m_faceP->bAdditive = 2;
 else
 	m_faceP->bAdditive = (strstr (pszName, "force") || m_faceP->bSparks) ? 1 : 0;
-if (m_faceP->bSlide) {
-	m_faceP->nextSlidingFace = gameData.segs.faces.slidingFaces;
-	gameData.segs.faces.slidingFaces = m_faceP;
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -1021,6 +1017,20 @@ for (i = 0; i < 2; i++, m_triP++) {
 		}
 	m_normalP = SetTriNormals (m_triP, m_normalP);
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void CQuadMeshBuilder::BuildSlidingFaceList (void)
+{
+	grsFace	*faceP = gameData.segs.faces.faces;
+
+gameData.segs.faces.slidingFaces = NULL;
+for (int i = gameData.segs.nFaces; i; i--, faceP++)
+	if (faceP->bSlide) {
+		faceP->nextSlidingFace = gameData.segs.faces.slidingFaces;
+		gameData.segs.faces.slidingFaces = faceP;
+		}
 }
 
 //------------------------------------------------------------------------------
@@ -1315,6 +1325,7 @@ if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel)) {
 	gameStates.render.nMeshQuality = 0;
 	return 0;
 	}
+BuildSlidingFaceList ();
 if (gameStates.render.bTriangleMesh)
 	DestroyCameras ();
 gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;

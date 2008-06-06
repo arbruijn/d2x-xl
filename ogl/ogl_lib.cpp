@@ -407,8 +407,8 @@ if (gameStates.render.nShadowPass) {
 			infProj [2][3] = -1.0f;
 			glLoadMatrixf ((float *) infProj);
 #endif
-#if 0
 			glMatrixMode (GL_MODELVIEW);
+#if 0
 			glLoadIdentity ();
 #endif
 			glEnable (GL_DEPTH_TEST);

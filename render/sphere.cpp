@@ -648,6 +648,7 @@ if (gameData.render.shield.nFaces > 0)
 		tPosition *posP = OBJPOS (objP);
 		vmsVector vPos;
 		//gameStates.ogl.bUseTransform = 1;
+		glBlendFunc (GL_ONE, GL_ONE);
 		G3StartInstanceMatrix (PolyObjPos (objP, &vPos), &posP->mOrient);
 		RenderSphere (&gameData.render.shield, &p, r, r, r, red, green, blue, alpha, bmpShield, 1);
 		G3DoneInstance ();

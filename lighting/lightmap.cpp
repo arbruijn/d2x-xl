@@ -149,6 +149,7 @@ if (lightmapData.info) {
 	OglDestroyLightmaps ();
 	D2_FREE (lightmapData.info);
 	D2_FREE (lightmapData.buffers);
+	lightmapData.nBuffers = 0;
 	}
 }
 

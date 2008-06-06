@@ -95,6 +95,7 @@ class CQuadMeshBuilder {
 		void InitColoredFace (short nSegment);
 		void SplitIn2Tris (void);
 		void SplitIn4Tris (void);
+		void BuildSlidingFaceList (void);
 		int IsBigFace (short *m_sideVerts);
 		fVector3 *SetTriNormals (grsTriangle *triP, fVector3 *m_normalP);
 

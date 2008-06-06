@@ -493,57 +493,34 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				}
 			}
 		nIndex = pmf->nIndex;
-		if (bPowerup) {
-			nVerts = pm->nFaces * 3;
-			nFaceVerts = 3;
-			}
-		else {
-#if G3_DRAW_ARRAYS
-#	if G3_ALLOW_TRANSPARENCY
-			if (bHires) {
-				bTransparent = bmP && ((bmP->bmProps.flags & BM_FLAG_TRANSPARENT) != 0);
-				if (bTransparent != bTransparency) {
-					if (bTransparent)
-						pm->bHasTransparency = 1;
-					pmf++;
-					i--;
-					continue;
-					}
-				}
-#	endif
-#if G3_DRAW_ARRAYS
-			if ((nFaceVerts = pmf->nVerts) > 4) {
-#else
-			if ((nFaceVerts = pmf->nVerts) > 0) {
-#endif
-				if (bGetThruster && pmf->bThruster)
-					G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
-				nVerts = nFaceVerts;
+		if (bHires) {
+			bTransparent = bmP && ((bmP->bmProps.flags & BM_FLAG_TRANSPARENT) != 0);
+			if (bTransparent != bTransparency) {
+				if (bTransparent)
+					pm->bHasTransparency = 1;
 				pmf++;
 				i--;
+				continue;
 				}
-			else { 
-				nId = pmf->nId;
-				nVerts = 0;
-				do {
-					if (bGetThruster && pmf->bThruster)
-						G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
-					nVerts += nFaceVerts;
-					pmf++;
-					i--;
-					} while (i && (pmf->nId == nId));
-				}
-#else
-			nFaceVerts = pmf->nVerts;
-			if (pmf->bThruster)
-				G3GetThrusterPos (objP, nModel, pmf, vOffsetP, &pmf->vNormal, 0, bHires);
+			}
+		if ((nFaceVerts = pmf->nVerts) > 4) {
+			if (bGetThruster && pmf->bThruster)
+				G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
 			nVerts = nFaceVerts;
 			pmf++;
 			i--;
-#endif
 			}
-#if G3_DRAW_ARRAYS
-#	if G3_DRAW_RANGE_ELEMENTS
+		else { 
+			nId = pmf->nId;
+			nVerts = 0;
+			do {
+				if (bGetThruster && pmf->bThruster)
+					G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
+				nVerts += nFaceVerts;
+				pmf++;
+				i--;
+				} while (i && (pmf->nId == nId));
+			}
 		if (glDrawRangeElements)
 			if (bUseVBO)
 				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
@@ -553,7 +530,6 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
 											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT, 
 											pm->pIndex [0] + nIndex);
-
 		else
 			if (bUseVBO)
 				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
@@ -561,44 +537,6 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			else
 				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
 									 nVerts, GL_UNSIGNED_SHORT, pm->pIndex + nIndex);
-#	else
-		glDrawArrays ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, nIndex, nVerts);
-#	endif
-#else
-		{
-		tG3ModelVertex	*pmv = pm->pFaceVerts + nIndex;
-		glBegin ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN);
-		for (j = nVerts; j; j--, pmv++) {
-			if (!gameStates.render.bCloaked) {
-				glTexCoord2fv ((GLfloat *) &pmv->texCoord);
-				glColor4fv ((GLfloat *) (pm->pVBColor + pmv->nIndex));
-				}
-			if (gameOpts->ogl.bObjLighting)
-				glNormal3fv ((GLfloat *) &pmv->normal);
-			glVertex3fv ((GLfloat *) &pmv->vertex);
-			}
-		glEnd ();
-		pmv -= nVerts;
-#	if 0
-		glDisable (GL_TEXTURE_2D);
-		glBegin (GL_LINE_LOOP);
-		for (j = nVerts; j; j--, pmv++) {
-			if (!gameStates.render.bCloaked) {
-				glTexCoord2fv ((GLfloat *) &pmv->texCoord);
-				glColor4fv ((GLfloat *) (pm->pVBColor + pmv->nIndex));
-				}
-			if (gameOpts->ogl.bObjLighting)
-				glNormal3fv ((GLfloat *) &pmv->normal);
-			glVertex3fv ((GLfloat *) &pmv->vertex);
-			}
-		glEnd ();
-		if (bmP)
-			glEnable (GL_TEXTURE_2D);
-#	endif
-		}
-#endif
-		if (bPowerup)
-			break;
 		}
 	}
 if (bAnimate)
