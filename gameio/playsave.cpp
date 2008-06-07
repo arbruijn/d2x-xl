@@ -63,6 +63,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "args.h"
 #include "collide.h"
 #include "u_mem.h"
+#include "dynlight.h"
 
 //------------------------------------------------------------------------------
 
@@ -573,6 +574,7 @@ for (i = 0; i < 2; i++) {
 
 	RP (gameOptions [i].render.bAllSegs, i, 0);
 	RP (gameOptions [i].render.nMeshQuality, i, 0);
+	RP (gameOptions [i].render.bUseLightmaps, i, 0);
 	RP (gameOptions [i].render.nLightmapQuality, i, 0);
 
 	RP (gameOptions [i].render.cockpit.bMissileView, i, 0);
@@ -1132,6 +1134,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].ogl.bSetGammaRamp", "0"},
 	{"gameOptions[0].render.bAllSegs", "0"},
 	{"gameOptions[0].render.nMeshQuality", "0"},
+	{"gameOptions[0].render.bUseLightmaps", "0"},
 	{"gameOptions[0].render.nLightmapQuality", "1"},
 	{"gameOptions[0].render.cockpit.bMissileView", "0"},
 	{"gameOptions[0].render.cockpit.bHUD", "1"},
@@ -2151,7 +2154,12 @@ if (bRewriteIt)
 	WritePlayerFile ();
 
 gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod;
-gameStates.render.bPerPixelLighting = (gameStates.render.nLightingMethod == 2);
+if (gameStates.render.nLightingMethod == 2)
+	gameStates.render.bPerPixelLighting = 2;
+else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps && InitLightmapShader (0))
+	gameStates.render.bPerPixelLighting = 1;
+else
+	gameStates.render.bPerPixelLighting = 0;
 gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
 gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;

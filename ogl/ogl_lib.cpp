@@ -642,7 +642,7 @@ if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
 
 void OglEnableLighting (int bSpecular)
 {
-if (gameOpts->ogl.bObjLighting || gameStates.render.bPerPixelLighting) {
+if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 		static GLfloat fBlack [] = {0.0f, 0.0f, 0.0f, 1.0f};
 		static GLfloat fWhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
 #if 1		
@@ -670,7 +670,7 @@ if (gameOpts->ogl.bObjLighting || gameStates.render.bPerPixelLighting) {
 
 void OglDisableLighting (void)
 {
-if (gameOpts->ogl.bObjLighting || gameStates.render.bPerPixelLighting) {
+if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 	glDisable (GL_COLOR_MATERIAL);
 	glDisable (GL_LIGHTING);
 	}

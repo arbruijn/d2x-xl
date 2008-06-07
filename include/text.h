@@ -1866,10 +1866,10 @@ void LoadGameTexts(void);
 #define TXT_MAX_LIGHTS_PER_PASS	GT(1073)
 #define TXT_MAX_LIGHTS_PER_OBJECT	GT(1074)
 #define TXT_ROTATE_MARKERS				GT(1075)
+#define TXT_USE_LIGHTMAPS				GT(1076)
 
 #if 0
 
-#define TXT_				GT(1076)
 #define TXT_				GT(1077)
 #define TXT_				GT(1078)
 #define TXT_				GT(1079)
@@ -2386,10 +2386,10 @@ void LoadGameTexts(void);
 #define HTX_MAX_LIGHTS_PER_PASS	HT(371)			
 #define HTX_MAX_LIGHTS_PER_OBJECT	HT(372)			
 #define HTX_ROTATE_MARKERS			HT(373)			
+#define HTX_USE_LIGHTMAPS			HT(374)			
 
 #if 0
 
-#define HTX_					HT(374)			
 #define HTX_					HT(375)			
 #define HTX_					HT(376)			
 #define HTX_					HT(377)			

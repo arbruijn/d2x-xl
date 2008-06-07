@@ -1529,7 +1529,7 @@ char *defaultGameTexts [][2] = {
 	{"~Pyro-Kraft: x %d", "~Pyro Force: x %d"},
 	{"Beleuchtung je ~Vertex", "~Vertex lighting"},
 	{"openGL ~Objekt-Beleuchtung", "openGL ~Object lighting"},
-	{"max. ~Lichter/Flaeche: %d", "max. ~Lights/face: %d"},
+	{"max. lichter/fl~Aeche: %d", "max. lights/f~Ace: %d"},
 	{"~Verdunkelung", "~Darkness game"},
 	{"~Team-Tueren", "~Team Doors"},
 	{"~Cheat Codes zulassen", "Enable ~Cheat Codes"},
@@ -1539,7 +1539,7 @@ char *defaultGameTexts [][2] = {
 	{"~Dreieckige Zielmarkierungen", "~Triangular Target Indicators"},
 	{"~Schadensanzeigen aktivieren", "show ~Damage Indicators"},
 	{"keine Schein~Werfer", "no ~Headlights"},
-	{"kein Licht von ~Powerups", "no light from ~Powerups"},
+	{"kein Licht von po~Werups", "no light from po~Werups"},
 	{"Spot~Groesse: %s", "Sp~Ot size: %s"},
 	{"Nur ~Freundkennungen anzeigen", "show only ~Friendly tags"},
 	{"~Kennungen getarnter Objekte anzeigen", "show tags for ~Cloaked objects"},
@@ -1807,7 +1807,7 @@ char *defaultGameTexts [][2] = {
 	{"Initialisiere...", "Initializing..."},
 	{"ro~Boter-Omega schiesst blitze", "ro~Bot omega fires lightnings"},
 	{"~Geometrie-Verbesserung: %s", "Mesh impr~Ovement: %s"},
-	{"li~Ghtmap-Qualitaet: %s", "li~Ghtmap quality: %s"},
+	{"lightmap-~Qualitaet: %s", "lightmap ~Quality: %s"},
 	{"statische Beleuchtung", "static light calculation"},
 	{"dynamische Beleuchtung", "dynamic light calculation"},
 	{"Polygon-Sortierung", "face sorting"},
@@ -1821,9 +1821,10 @@ char *defaultGameTexts [][2] = {
 	{"Bilddarstellung", "frame rendering"},
 	{"M~Ulti-Threading...", "m~Ulti threading..."},
 	{"Multi-Threading", "multi threading"},
-	{"max. Lichter/D~Urchgang: %d", "max. lights/~Pass: %d"},
+	{"max. Lichter/D~Urchgang: %d", "max. lights/pa~Ss: %d"},
 	{"max. Lichter/~Objekt: %d", "max. lights/~Object: %d"},
 	{"Bojen ~Drehen sich", "mar~Kers rotate"},
+	{"Lightmaps ~Verwenden", "use li~Ghtmaps"},
 #if 0
 	{"", ""},
 #endif
@@ -2473,6 +2474,8 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann eingestellt werden, wieviele Lichter maximal die \nBeleuchtung eines Objekts bestimmen. Werte ueber\n8 koennen die Geschwindigkeit bei vielen sichtbaren Objekten stark verringern.", 
 	 "Here you can adjust how many lights will maximally influence\nthe brightness of an object. Values greater than 8 can\nsignificantly reduce rendering speed if many objects are visible."},
 	{"Wenn angekreuzt, drehen Bojen sich langsam um ihre Laengs-\nachse und zeigen in der Bojensicht eine 360-Grad-Ansicht\nihrer Umgebung.", "If checked, markers will spin slowly, giving you a 360 degree view\nof their environment in the marker view."},
+	{"Wenn angekreuzt, wird die Beleuchtung durch statische Lichter\nmit Lightmaps realisiert, was sehr natuerlich wirkt.", 
+	 "If checked, light cast by static lights is simulated with lightmaps,\nwhich looks very natural."},
 #if 0
 	{"", ""},
 #endif

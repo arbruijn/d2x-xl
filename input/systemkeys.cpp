@@ -864,7 +864,7 @@ void HandleGameKey(int key)
 			break;
 
 		case KEY_ALTED + KEY_R:
-			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting != 0));
+			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
 			break;
 
 		case KEY_CTRLED + KEY_ALTED + KEY_R:

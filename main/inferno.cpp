@@ -1324,6 +1324,7 @@ if (i) {
 	gameOptions [1].render.debug.bWalls = 1;
 	gameOptions [1].render.bUseShaders = 1;
 	gameOptions [1].render.bHiresModels = 0;
+	gameOptions [1].render.bUseLightmaps = 0;
 	gameOptions [1].render.effects.bAutoTransparency = 0;
 	gameOptions [1].render.nMeshQuality = 0;
 	gameOptions [1].render.nMathFormat = 0;
@@ -1436,6 +1437,7 @@ else {
 	gameOptions [0].render.debug.bWalls = 1;
 	gameOptions [0].render.bUseShaders = 1;
 	gameOptions [0].render.bHiresModels = 1;
+	gameOptions [0].render.bUseLightmaps = 0;
 	gameOptions [0].render.effects.bAutoTransparency = 1;
 	gameOptions [0].render.nMathFormat = 0;
 	gameOptions [0].render.nDefMathFormat = 0;

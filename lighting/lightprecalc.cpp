@@ -523,7 +523,7 @@ if (bOk)
 			(ldh.nLights == gameData.render.lights.dynamic.nLights) && 
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE) &&
 			(ldh.nMethod = LightingMethod () &&
-			(ldh.bPerPixelLighting == gameStates.render.bPerPixelLighting));
+			((ldh.bPerPixelLighting != 0) == (gameStates.render.bPerPixelLighting != 0)));
 if (bOk)
 	bOk = 
 			(CFRead (gameData.segs.bSegVis, sizeof (ubyte) * ldh.nSegments * SEGVIS_FLAGS, 1, &cf) == 1) &&

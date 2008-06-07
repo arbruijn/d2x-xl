@@ -133,6 +133,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "createmesh.h"
 #include "SDL_syswm.h"
 #include "renderthreads.h"
+#include "dynlight.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -1344,7 +1345,7 @@ for (;;) {
 #endif
 	gameStates.render.automap.bDisplay = 0;
 	gameStates.app.bConfigMenu = 0;
-	if (gameData.objs.console != &OBJECTS[LOCALPLAYER.nObject]) {
+	if (gameData.objs.console != OBJECTS + LOCALPLAYER.nObject) {
 #if TRACE
 	    //con_printf (CONDBG,"gameData.multiplayer.nLocalPlayer=%d nObject=%d",gameData.multiplayer.nLocalPlayer,LOCALPLAYER.nObject);
 #endif

@@ -331,7 +331,7 @@ if ((objP->id == EARTHSHAKER_ID) || (objP->id == ROBOT_EARTHSHAKER_ID))
 	ShakerRockStuff ();
 DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0, SOUNDCLASS_EXPLOSION);
 vmsVector v;
-if (gameStates.render.bPerPixelLighting) { //make sure explosion center is not behind some wall
+if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
 	VmVecSub (&v, &objP->vLastPos, &objP->position.vPos);
 	VmVecNormalize (&v, &v);
 //VmVecScale (&v, F1_0 * 10);

@@ -99,7 +99,7 @@ if (!gameData.render.lights.dynamic.headlights.nLights || gameStates.render.auto
 	tDynLight		*pl;
 	tShaderLight	*psl;
 	int				i;
-	bool				bHWHeadlight = gameStates.render.bPerPixelLighting || (gameStates.ogl.bHeadlight && gameOpts->ogl.bHeadlight);
+	bool				bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (gameStates.ogl.bHeadlight && gameOpts->ogl.bHeadlight);
 
 for (i = 0; i < gameData.render.lights.dynamic.headlights.nLights; i++) {
 	pl = gameData.render.lights.dynamic.headlights.pl [i];

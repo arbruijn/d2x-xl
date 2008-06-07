@@ -475,7 +475,7 @@ int RIAddParticle (tParticle *particle, float fBrightness, int nThread)
 
 item.particle = particle;
 item.fBrightness = fBrightness;
-G3TransformPoint (&particle->transPos, &particle->pos, gameStates.render.bPerPixelLighting > 0);
+G3TransformPoint (&particle->transPos, &particle->pos, gameStates.render.bPerPixelLighting == 2);
 return AddRenderItemMT (riParticle, &item, sizeof (item), particle->transPos.p.z, particle->transPos.p.z, nThread);
 }
 
@@ -1165,7 +1165,7 @@ renderItems.bClientColor = 0;
 renderItems.bDepthMask = 0;
 renderItems.bUseLightmaps = 0;
 renderItems.bLightmaps = HaveLightmaps ();
-renderItems.bSplitPolys = !gameStates.render.bPerPixelLighting && (gameStates.render.bSplitPolys > 0);
+renderItems.bSplitPolys = (gameStates.render.bPerPixelLighting != 2) && (gameStates.render.bSplitPolys > 0);
 renderItems.nWrap = 0;
 renderItems.nFrame = -1;
 renderItems.bmP = NULL;

@@ -733,7 +733,7 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 						 vmsAngVec *pAnimAngles, vmsVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
-	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && (gameStates.render.bPerPixelLighting || gameOpts->ogl.bObjLighting),
+	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
 				nGunId, nBombId, nMissileId, nMissiles;
 
 if (!objP)

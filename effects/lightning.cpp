@@ -2095,7 +2095,7 @@ if (SHOW_LIGHTNINGS) {
 			COMPUTE_SEGMENT_CENTER_I (&c, 332);
 			int d = VmVecDist (&c, &pll->vPos);
 #endif
-			if (gameStates.render.bPerPixelLighting)
+			if (gameStates.render.bPerPixelLighting == 2)
 				pll->nBrightness = fl2f (sqrt ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha));
 			else
 				pll->nBrightness = fl2f ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha);

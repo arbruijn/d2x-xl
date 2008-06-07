@@ -169,6 +169,7 @@ static struct {
 	int	nLightmapQual;
 	int	nGunColor;
 	int	nObjectLight;
+	int	nLightmaps;
 } lightOpts;
 
 static struct {
@@ -940,7 +941,7 @@ gameOpts->render.cameras.nSpeed = 5000;
 gameOpts->ogl.bSetGammaRamp = 0;
 gameStates.ogl.nContrast = 8;
 if (gameStates.app.nCompSpeed == 0) {
-	gameOpts->render.color.bUseLightmaps = 0;
+	gameOpts->render.bUseLightmaps = 0;
 	gameOpts->render.nQuality = 1;
 	gameOpts->render.cockpit.bTextGauges = 1;
 	gameOpts->render.nLightingMethod = 0;
@@ -3367,6 +3368,15 @@ if (lightOpts.nLightmapQual >= 0) {
 		m->rebuild = 1;
 		}
 	}
+if (lightOpts.nLightmaps >= 0) {
+	m = menus + lightOpts.nLightmaps;
+	v = m->value;
+	if (v != gameOpts->render.bUseLightmaps) {
+		gameOpts->render.bUseLightmaps = v;
+		*key = -2;
+		return;
+		}
+	}
 if (lightOpts.nHWObjLighting >= 0) {
 	m = menus + lightOpts.nHWObjLighting;
 	v = m->value;
@@ -3499,10 +3509,10 @@ do {
 			ADD_CHECK (opt, TXT_OBJECT_HWLIGHTING, gameOpts->ogl.bObjLighting, KEY_A, HTX_OBJECT_HWLIGHTING);
 			lightOpts.nHWObjLighting = opt++;
 			if (!gameOpts->ogl.bObjLighting) {
-				ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
+				ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_B, HTX_OBJECT_LIGHTING);
 				lightOpts.nObjectLight = opt++;
 				if (gameOpts->ogl.bLightObjects) {
-					ADD_CHECK (opt, TXT_POWERUP_LIGHTING, gameOpts->ogl.bLightPowerups, KEY_P, HTX_POWERUP_LIGHTING);
+					ADD_CHECK (opt, TXT_POWERUP_LIGHTING, gameOpts->ogl.bLightPowerups, KEY_W, HTX_POWERUP_LIGHTING);
 					nPowerupLight = opt++;
 					}
 				else
@@ -3511,21 +3521,24 @@ do {
 			}
 		sprintf (szMaxLightsPerObject + 1, TXT_MAX_LIGHTS_PER_OBJECT, nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerObject]);
 		*szMaxLightsPerObject = *(TXT_MAX_LIGHTS_PER_OBJECT - 1);
-		ADD_SLIDER (opt, szMaxLightsPerObject + 1, gameOpts->ogl.nMaxLightsPerObject, 0, sizeofa (nMaxLightsPerFaceTable) - 1, KEY_I, HTX_MAX_LIGHTS_PER_OBJECT);
+		ADD_SLIDER (opt, szMaxLightsPerObject + 1, gameOpts->ogl.nMaxLightsPerObject, 0, sizeofa (nMaxLightsPerFaceTable) - 1, KEY_O, HTX_MAX_LIGHTS_PER_OBJECT);
 		lightOpts.nMaxLightsPerObject = opt++;
 
 		if (gameOpts->render.nLightingMethod == 2) {
 			sprintf (szMaxLightsPerFace + 1, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace]);
 			*szMaxLightsPerFace = *(TXT_MAX_LIGHTS_PER_FACE - 1);
-			ADD_SLIDER (opt, szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace, 0,  sizeofa (nMaxLightsPerFaceTable) - 1, KEY_I, HTX_MAX_LIGHTS_PER_FACE);
+			ADD_SLIDER (opt, szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace, 0,  sizeofa (nMaxLightsPerFaceTable) - 1, KEY_A, HTX_MAX_LIGHTS_PER_FACE);
 			lightOpts.nMaxLightsPerFace = opt++;
 			sprintf (szMaxLightsPerPass + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 			*szMaxLightsPerPass = *(TXT_MAX_LIGHTS_PER_PASS - 1);
-			ADD_SLIDER (opt, szMaxLightsPerPass + 1, gameOpts->ogl.nMaxLightsPerPass - 1, 0, 7, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
+			ADD_SLIDER (opt, szMaxLightsPerPass + 1, gameOpts->ogl.nMaxLightsPerPass - 1, 0, 7, KEY_S, HTX_MAX_LIGHTS_PER_PASS);
 			lightOpts.nMaxLightsPerPass = opt++;
+			}
+		if (!gameStates.app.bGameRunning && 
+			 ((gameOpts->render.nLightingMethod == 2) || ((gameOpts->render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps))) {
 			sprintf (szLightmapQual + 1, TXT_LMAP_QUALITY, pszLMapQual [gameOpts->render.nLightmapQuality]);
 			*szLightmapQual = *(TXT_LMAP_QUALITY + 1);
-			ADD_SLIDER (opt, szLightmapQual + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_G, HTX_LMAP_QUALITY);
+			ADD_SLIDER (opt, szLightmapQual + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_Q, HTX_LMAP_QUALITY);
 			lightOpts.nLightmapQual = opt++;
 			}
 
@@ -3540,6 +3553,12 @@ do {
 		m [optColorSat + NMCLAMP (gameOpts->render.color.nSaturation, 0, 2)].value = 1;
 		ADD_TEXT (opt, "", 0);
 		opt++;
+		}
+	if (gameOpts->render.nLightingMethod != 1)
+		lightOpts.nLightmaps = -1;
+	else {
+		ADD_CHECK (opt, TXT_USE_LIGHTMAPS, gameOpts->render.bUseLightmaps, KEY_G, HTX_USE_LIGHTMAPS);
+		lightOpts.nLightmaps = opt++;
 		}
 	if (gameOpts->render.nLightingMethod < 2) {
 		ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_C, HTX_RENDER_AMBICOLOR);
@@ -3610,7 +3629,13 @@ if (optColorSat >= 0) {
 			}
 	}
 gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod;
-if (gameStates.render.bPerPixelLighting = (gameStates.render.nLightingMethod == 2)) {
+if (gameStates.render.nLightingMethod == 2)
+	gameStates.render.bPerPixelLighting = 2;
+else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps && InitLightmapShader (0))
+	gameStates.render.bPerPixelLighting = 1;
+else
+	gameStates.render.bPerPixelLighting = 0;
+if (gameStates.render.bPerPixelLighting == 2) {
 	gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
 	gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 	}
@@ -3814,7 +3839,7 @@ if (shipRenderOpts.nColor >= 0) {
 
 //------------------------------------------------------------------------------
 
-void ShipRenderOptionsMenu ()
+void ShipRenderOptionsMenu (void)
 {
 	tMenuItem m [10];
 	int	i, j, choice = 0;
@@ -4003,7 +4028,7 @@ do {
 	renderOpts.nMaxFPS = opt++;
 
 	if (gameOpts->app.bExpertMode) {
-		if (!(gameStates.render.color.bLightmapsOk && gameOpts->render.color.bUseLightmaps)) {
+		if ((gameOpts->render.nLightingMethod < 2) && !gameOpts->render.bUseLightmaps) {
 			sprintf (szContrast, TXT_CONTRAST, ContrastText ());
 			ADD_SLIDER (opt, szContrast, gameStates.ogl.nContrast, 0, 16, KEY_C, HTX_ADVRND_CONTRAST);
 			optContrast = opt++;
@@ -4021,7 +4046,7 @@ do {
 			*szTexQual = *(TXT_TEXQUAL + 1);
 			ADD_SLIDER (opt, szTexQual + 1, gameOpts->render.textures.nQuality, 0, 3, KEY_U, HTX_ADVRND_TEXQUAL);
 			renderOpts.nTexQual = opt++;
-			if (gameOpts->render.nLightingMethod == 1) {
+			if ((gameOpts->render.nLightingMethod == 1) && !gameOpts->render.bUseLightmaps) {
 				sprintf (szMeshQual + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
 				*szMeshQual = *(TXT_MESH_QUALITY + 1);
 				ADD_SLIDER (opt, szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 4, KEY_O, HTX_MESH_QUALITY);
@@ -4151,9 +4176,7 @@ do {
 		gameOpts->render.color.bWalls = m [optColoredWalls].value;
 		GET_VAL (gameOpts->render.bDepthSort, optDepthSort);
 		GET_VAL (gameOpts->ogl.bSetGammaRamp, optUseGamma);
-		if (gameStates.render.color.bLightmapsOk && gameOpts->render.color.bUseLightmaps)
-			gameStates.ogl.nContrast = 8;
-		else if (optContrast >= 0)
+		if (optContrast >= 0)
 			gameStates.ogl.nContrast = m [optContrast].value;
 		if (nRendQualSave != gameOpts->render.nQuality)
 			SetRenderQuality ();

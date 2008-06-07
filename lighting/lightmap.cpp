@@ -181,7 +181,7 @@ int CountLights (int bVariable)
 	tDynLight		*pl;
 	int				i, nLights = 0;
 
-if (!(gameStates.render.bPerPixelLighting))
+if (!gameStates.render.bPerPixelLighting)
 	return 0;
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++)
 	if (!(pl->info.nType || (pl->info.bVariable && !bVariable)))
@@ -664,19 +664,19 @@ return bOk;
 
 //------------------------------------------------------------------------------
 
-void CreateLightmaps (int nLevel)
+int CreateLightmaps (int nLevel)
 {
 if (!gameStates.render.bUsePerPixelLighting)
-	return;
+	return 0;
 #ifdef RELEASE
 if (gameOpts->render.nLightmapQuality > 2)
 	gameOpts->render.nLightmapQuality = 2;
 #endif
 DestroyLightmaps ();
 if (!InitLightData (0))
-	return;
+	return 0;
 if (LoadLightmapData (nLevel))
-	return;
+	return 1;
 TransformDynLights (1, 0);
 if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	int nSaturation = gameOpts->render.color.nSaturation;
@@ -704,120 +704,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	OglCreateLightmaps ();
 	SaveLightmapData (nLevel);
 	}
-}
-
-//------------------------------------------------------------------------------
-
-#if DBG_SHADERS
-
-char *lightmapFS [3] = {"lightmaps1.frag", "lightmaps2.frag", "lightmaps3.frag"};
-char *lightmapVS [3] = {"lightmaps1.vert", "lightmaps2.vert", "lightmaps3.vert"};
-
-#else
-
-char *lightmapFS [3] = {
-	"uniform sampler2D btmTex,topTex,lMapTex;" \
-	"float maxC;" \
-	"vec4 btmColor,topColor,lMapColor;" \
-	"void main(void){" \
-	"btmColor=texture2D(btmTex,gl_TexCoord[0].xy);" \
-	"topColor=texture2D(topTex,gl_TexCoord[1].xy);" \
-	"lMapColor=texture2D(lMapTex,gl_TexCoord[2].xy)+(gl_Color-0.5);" \
-	"maxC=lMapColor.r;" \
-	"if(lMapColor.g>maxC)maxC=lMapColor.g;" \
-	"if(lMapColor.b>maxC)maxC=lMapColor.b;" \
-	"if(maxC>1.0){lMapColor.r/=maxC;lMapColor.g/=maxC;lMapColor.b/=maxC;}" \
-	"lMapColor.a = gl_Color.a;" \
-	"gl_FragColor = vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a))*lMapColor;}"
-	,
-	"uniform sampler2D btmTex,topTex,lMapTex;" \
-	"float maxC;" \
-	"vec4 btmColor,topColor,lMapColor;" \
-	"void main(void){" \
-	"topColor=texture2D(topTex,gl_TexCoord[1].xy);" \
-	"if(abs(topColor.a-1.0/255.0)<0.25)discard;" \
-	"if((topColor.a==0.0)&&(abs(topColor.r-120.0/255.0)<8.0/255.0)&&(abs(topColor.g-88.0/255.0)<8.0/255.0)&&(abs(topColor.b-128.0/255.0)<8.0/255.0))discard;" \
-	"else {btmColor=texture2D(btmTex,gl_TexCoord[0].xy);" \
-	"lMapColor=texture2D(lMapTex,gl_TexCoord[2].xy)+(gl_Color-0.5);" \
-	"maxC=lMapColor.r;" \
-	"if(lMapColor.g>maxC)maxC=lMapColor.g;" \
-	"if(lMapColor.b>maxC)maxC=lMapColor.b;" \
-	"if(maxC>1.0){lMapColor.r/=maxC;lMapColor.g/=maxC;lMapColor.b/=maxC;}" \
-	"if(topColor.a==0.0)gl_FragColor = btmColor*lMapColor;" \
-	"else {lMapColor.a = gl_Color.a;" \
-	"gl_FragColor = vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a))*lMapColor;}}}"
-	,
-	"uniform sampler2D btmTex,topTex,lMapTex,maskTex;" \
-	"float maxC,r,g,b;" \
-	"vec4 btmColor,topColor,lMapColor;" \
-	"float bMask;" \
-	"void main(void){" \
-	"bMask=texture2D(maskTex,gl_TexCoord[1].xy).a;" \
-	"if(bMask<0.5)discard;" \
-	"else {btmColor=texture2D(btmTex,gl_TexCoord[0].xy);" \
-	"topColor=texture2D(topTex,gl_TexCoord[1].xy);" \
-	"lMapColor=texture2D(lMapTex,gl_TexCoord[2].xy)+(gl_Color-0.5);" \
-	"maxC=lMapColor.r;" \
-	"if(lMapColor.g>maxC)maxC=lMapColor.g;" \
-	"if(lMapColor.b>maxC)maxC=lMapColor.b;" \
-	"if(maxC>1.0){lMapColor.r/=maxC;lMapColor.g/=maxC;lMapColor.b/=maxC;}" \
-	"if(topColor.a==0.0)gl_FragColor = btmColor*lMapColor;" \
-	"else {lMapColor.a = gl_Color.a;" \
-	"gl_FragColor = vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a))*lMapColor;}}}"
-	};
-
-char *lightmapVS [3] = {
-	"void main(void) {" \
-	"gl_TexCoord[0]=gl_MultiTexCoord0;" \
-	"gl_TexCoord[1]=gl_MultiTexCoord1;" \
-	"gl_TexCoord[2]=gl_MultiTexCoord2;" \
-	"gl_Position=gl_ModelViewProjectionMatrix*gl_Vertex;" \
-	"gl_FrontColor=gl_Color;}"
-	,
-	"void main(void) {" \
-	"gl_TexCoord[0]=gl_MultiTexCoord0;" \
-	"gl_TexCoord[1]=gl_MultiTexCoord1;" \
-	"gl_TexCoord[2]=gl_MultiTexCoord2;" \
-	"gl_Position=gl_ModelViewProjectionMatrix*gl_Vertex;" \
-	"gl_FrontColor=gl_Color;}"
-	,
-	"void main(void) {" \
-	"gl_TexCoord[0]=gl_MultiTexCoord0;" \
-	"gl_TexCoord[1]=gl_MultiTexCoord1;" \
-	"gl_TexCoord[2]=gl_MultiTexCoord2;" \
-	"gl_TexCoord[3]=gl_MultiTexCoord3;" \
-	"gl_Position=gl_ModelViewProjectionMatrix*gl_Vertex;" \
-	"gl_FrontColor=gl_Color;}"
-	};
-
-#endif
-
-//------------------------------------------------------------------------------
-
-void InitLightmapShaders (void)
-{
-	int	i;
-
-if (!gameStates.ogl.bShadersOk)
-	gameStates.render.color.bLightmapsOk = 0;
-if (gameStates.render.color.bLightmapsOk) {
-	PrintLog ("building lightmap shader programs\n");
-	gameStates.render.bLightmaps = 1;
-	for (i = 0; i < 2; i++) {
-		if (lmShaderProgs [i])
-			DeleteShaderProg (lmShaderProgs + i);
-		gameStates.render.color.bLightmapsOk = 
-			CreateShaderProg (lmShaderProgs + i) &&
-			CreateShaderFunc (lmShaderProgs + i, lmFS + i, lmVS + i, lightmapFS [i], lightmapVS [i], 1) &&
-			LinkShaderProg (lmShaderProgs + i);
-		if (!gameStates.render.color.bLightmapsOk) {
-			while (i)
-				DeleteShaderProg (lmShaderProgs + --i);
-			break;
-			}
-		}
-	gameStates.render.bLightmaps = 0;
-	}
+return 1;
 }
 
 //------------------------------------------------------------------------------

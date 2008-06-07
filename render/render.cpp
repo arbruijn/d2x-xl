@@ -2383,10 +2383,16 @@ if (nWindow)
 else
 	nWindow = nWindow;
 #endif
-if (gameStates.render.nLightingMethod == 2)
-	gameStates.render.bPerPixelLighting = HaveLightmaps () ? 2 : gameStates.render.bPerPixelLighting ? 1 : 0;
-else
+if (!HaveLightmaps ())
 	gameStates.render.bPerPixelLighting = 0;
+else {
+	if (gameStates.render.nLightingMethod == 2)
+		gameStates.render.bPerPixelLighting = 2;
+	else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps && InitLightmapShader (0))
+		gameStates.render.bPerPixelLighting = 1;
+	else
+		gameStates.render.bPerPixelLighting = 0;
+	}
 gameData.render.nTotalFaces =
 gameData.render.nTotalObjects =
 gameData.render.nTotalSprites =
@@ -2394,14 +2400,19 @@ gameData.render.nTotalLights =
 gameData.render.nMaxLights = 
 gameData.render.nStateChanges = 
 gameData.render.nShaderChanges = 0;
-g3FaceDrawer = (gameStates.render.bPerPixelLighting) ? G3DrawFaceArraysPPLM : G3DrawFaceArrays;
+if (gameStates.render.bPerPixelLighting == 2)
+	g3FaceDrawer = G3DrawFaceArraysPPLM;
+else if (gameStates.render.bPerPixelLighting == 1)
+	g3FaceDrawer = G3DrawFaceArraysLM;
+else
+	g3FaceDrawer = G3DrawFaceArrays;
 gameData.render.vertColor.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4);
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameStates.render.bApplyDynLight =
 gameStates.render.bUseDynLight = SHOW_DYN_LIGHT;
 if (!EGI_FLAG (bPowerupLights, 0, 0, 0))
 	gameData.render.nPowerupFilter = 0;
-else if (gameStates.render.bPerPixelLighting)
+else if (gameStates.render.bPerPixelLighting == 2)
 	gameData.render.nPowerupFilter = 1;
 else
 	gameData.render.nPowerupFilter = 2;
@@ -2429,7 +2440,7 @@ if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameState
 	PROF_START
 	UpdateSlidingFaces ();
 	PROF_END(ptAux);
-	if (gameStates.render.bPerPixelLighting && !gameData.app.nFrameCount)
+	if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
 		meshBuilder.BuildVBOs ();
 
 	InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);

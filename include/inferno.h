@@ -339,6 +339,7 @@ typedef struct tRenderOptions {
 	int nLightingMethod;
 	int bHiresModels;
 	int nMeshQuality;
+	int bUseLightmaps;
 	int nLightmapQuality;
 	int bUseShaders;
 	int bBrightObjects;
@@ -870,6 +871,7 @@ typedef struct tRenderStates {
 	int bVertexArrays;
 	int bAutoMap;
 	int bLightmaps;
+	int bUseLightmaps;
 	int bDisableFades;
 	int bBlendBackground;
 	int bDropAfterburnerBlob;

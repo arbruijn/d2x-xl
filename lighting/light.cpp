@@ -338,7 +338,7 @@ if (objP->nType != OBJ_POWERUP)
 	return false;
 if (!EGI_FLAG (bPowerupLights, 0, 0, 0))
 	return true;
-if (gameStates.render.bPerPixelLighting) {
+if (gameStates.render.bPerPixelLighting == 2) {
 	int id = objP->id;
 	if ((id != POW_EXTRA_LIFE) && (id != POW_ENERGY) && (id != POW_SHIELD_BOOST) && 
 		 (id != POW_HOARD_ORB) && (id != POW_MONSTERBALL) && (id != POW_INVUL)) {
@@ -392,12 +392,7 @@ if (objP && SHOW_DYN_LIGHT) {
 	else if (objP->nType == OBJ_ROBOT)
 		xObjIntensity /= 4;
 	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
-#if 0
-		if (gameStates.render.bPerPixelLighting)
-			xObjIntensity = fl2f (sqrt (f2fl (xObjIntensity)));
-		else
-#endif
-			xObjIntensity /= 2; 
+		xObjIntensity /= 2; 
 		}
 #ifdef _DEBUG
 	if (nObject == nDbgObj)

@@ -475,7 +475,7 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	bVBO = 0,
 			bLightmaps = (nType < 4) && HaveLightmaps (),
-			bNormals = !bDepthOnly; // && gameStates.render.bPerPixelLighting;
+			bNormals = !bDepthOnly; 
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
@@ -508,15 +508,11 @@ else {
 		bVBO = 1;
 		}
 #endif
-	if ((nType < 4) && gameStates.render.bPerPixelLighting) {
+	if ((nType < 4) && (gameStates.render.bPerPixelLighting == 2)) {
 		OglEnableLighting (1);
-		if (gameStates.render.bPerPixelLighting == 1) 
-			glDisable (GL_COLOR_MATERIAL);
-		else {
-			for (int i = 0; i < 8; i++)
-				glEnable (GL_LIGHT0 + i);
-			glDisable (GL_LIGHTING);
-			}
+		for (int i = 0; i < 8; i++)
+			glEnable (GL_LIGHT0 + i);
+		glDisable (GL_LIGHTING);
 		glColor4f (1,1,1,1);
 		}
 	}
@@ -540,9 +536,7 @@ if (bVBO) {
 		glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iColor));
 		glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iVertices));
 		}
-	G3EnableClientStates (1, 1, gameStates.render.bPerPixelLighting == 1, GL_TEXTURE1 + bLightmaps);
-	if (gameStates.render.bPerPixelLighting == 1)
-		glNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iNormals));
+	G3EnableClientStates (1, 1, 0, GL_TEXTURE1 + bLightmaps);
 	glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iOvlTexCoord));
 	glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iColor));
 	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (gameData.segs.faces.iVertices));
@@ -573,8 +567,6 @@ else
 		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 		}
 	G3EnableClientStates (1, 1, bNormals, GL_TEXTURE1 + bLightmaps);
-	if (gameStates.render.bPerPixelLighting == 1)
-		glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals);
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
 	glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
@@ -625,7 +617,7 @@ if (gameStates.ogl.bShadersOk) {
 	gameStates.render.history.nShader = -1;
 	}
 if (nType != 3) {
-	if (gameStates.render.bPerPixelLighting)
+	if (gameStates.render.bPerPixelLighting == 2)
 		OglDisableLighting ();
 	OglResetTransform (1);
 	if (gameData.segs.faces.vboDataHandle)
@@ -711,7 +703,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			if (!bDepthOnly) {
 				if (!bHeadlight)
 					VisitSegment (nSegment, bAutomap);
-				if (gameStates.render.bPerPixelLighting)
+				if (gameStates.render.bPerPixelLighting == 2)
 					gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 				}
 			}
@@ -863,7 +855,7 @@ if (!(bHeadlight || VisitSegment (nSegment, bAutomap)))
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-if (gameStates.render.bPerPixelLighting)
+if (gameStates.render.bPerPixelLighting == 2)
 	gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 #ifdef _DEBUG
@@ -911,14 +903,12 @@ return nFaces;
 
 void RenderHeadlights (int nType, int bVertexArrays)
 {
-#if 1
 if ((gameStates.render.bPerPixelLighting == 2) && gameStates.render.bHeadlights) {
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	g3FaceDrawer = G3DrawHeadlightsPPLM;
 	RenderSegments (nType, bVertexArrays, 0, 1);
 	g3FaceDrawer = G3DrawFaceArraysPPLM;
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1447,7 +1437,7 @@ PROF_START
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
 	int			h, i, nColor, nLights = 0,
-					bVertexLight = !gameStates.render.bPerPixelLighting,
+					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
@@ -1497,7 +1487,7 @@ for (i = nStart; i != nEnd; i++) {
 				if (nVertex == nDbgVertex)
 					nDbgVertex = nDbgVertex;
 #endif
-				if (gameStates.render.bPerPixelLighting) 
+				if (gameStates.render.bPerPixelLighting == 2) 
 					*pc = gameData.render.color.ambient [nVertex].color;
 				else {
 					c.color = gameData.render.color.ambient [nVertex].color;
@@ -1558,7 +1548,7 @@ PROF_START
 	float			fAlpha;
 	int			h, i, j, nColor, nLights = 0,
 					nIncr = nStart ? -1 : 1,
-					bVertexLight = !gameStates.render.bPerPixelLighting,
+					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
@@ -1625,7 +1615,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 					if (nVertex == nDbgVertex)
 						nDbgVertex = nDbgVertex;
 #endif
-					if (gameStates.render.bPerPixelLighting) 
+					if (gameStates.render.bPerPixelLighting == 2) 
 						*pc = gameData.render.color.ambient [nVertex].color;
 					else {
 						tFaceColor *pvc = gameData.render.color.vertices + nVertex;
@@ -1693,7 +1683,7 @@ PROF_START
 	float			fAlpha;
 	int			h, i, j, k, nIndex, nColor, nLights = 0,
 					nIncr = nStart ? -1 : 1;
-	bool			bNeedLight = !(gameStates.render.bFullBright || gameStates.render.bPerPixelLighting);
+	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
@@ -1766,7 +1756,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 					if (nVertex == nDbgVertex)
 						nDbgVertex = nDbgVertex;
 #endif
-					if (gameStates.render.bPerPixelLighting)
+					if (gameStates.render.bPerPixelLighting == 2)
 						*pc = gameData.render.color.ambient [nVertex].color;
 					else {
 						tFaceColor *pvc = gameData.render.color.vertices + nVertex;

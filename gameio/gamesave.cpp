@@ -1641,6 +1641,8 @@ if (!gameStates.app.bNostalgia) {
 			CreateLightmaps (nLevel);
 			if (HaveLightmaps ())
 				meshBuilder.RebuildLightmapTexCoord ();	//rebuild to create proper lightmap texture coordinates
+			else
+				gameOpts->render.bUseLightmaps = 0;
 			}
 		}
 	}

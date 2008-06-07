@@ -584,7 +584,7 @@ char *pszLightingVS [] = {
 	
 // ----------------------------------------------------------------------------------------------
 
-char *pszPPLMXLightingFS [] = {
+char *pszPPXLMLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
@@ -746,7 +746,7 @@ char *pszPPLMXLightingFS [] = {
 
 // ----------------------------------------------------------------------------------------------
 
-char *pszPPLM1LightingFS [] = {
+char *pszPP1LMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
@@ -929,7 +929,7 @@ char *pszPPLMLightingVS [] = {
 	
 //-------------------------------------------------------------------------
 
-char *pszLMLightingFS [] = {
+char *pszPP0LMLightingFS [] = {
 #if ONLY_LIGHTMAPS
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
@@ -978,6 +978,49 @@ char *pszLMLightingFS [] = {
 	"}"
 	};
 
+
+//-------------------------------------------------------------------------
+
+char *pszLMLightingFS [] = {
+	"uniform sampler2D lMapTex;\r\n" \
+	"uniform vec4 matColor;\r\n" \
+	"void main() {\r\n" \
+	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
+	"gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * gl_Color.a);\r\n" \
+	"}"
+	,
+	"uniform sampler2D lMapTex, baseTex;\r\n" \
+	"void main() {\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
+	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
+	"	}"
+	,
+	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
+	"void main() {\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
+	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
+	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
+	"	}"
+	,
+	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
+	"void main() {\r\n" \
+	"float bMask = texture2D (maskTex, gl_TexCoord [3].xy).r;\r\n" \
+	"if (bMask < 0.5)\r\n" \
+	"  discard;\r\n" \
+	"else {\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
+	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
+	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
+	"	}\r\n" \
+	"}"
+	};
+
+//-------------------------------------------------------------------------
 
 char *pszLMLightingVS [] = {
 	"void main() {\r\n" \
@@ -1065,13 +1108,13 @@ for (h = 0; h <= 3; h++) {
 			continue;
 		if (HaveLightmaps ()) {
 			if (i) {
-				fsP = (i == 1) ? pszPPLM1LightingFS : pszPPLMXLightingFS;
+				fsP = (i == 1) ? pszPP1LMLightingFS : pszPPXLMLightingFS;
 				vsP = pszPPLMLightingVS;
 				//nLights = MAX_LIGHTS_PER_PIXEL;
 				}
 			else {
-				fsP = pszLMLightingFS;
-				vsP = pszLMLightingVS;
+				fsP = pszPP0LMLightingFS;
+				vsP = pszPPLMLightingVS;
 				}
 			}
 		else {
@@ -1115,6 +1158,46 @@ return gameData.render.ogl.nPerPixelLights [nType] = nLights;
 void ResetPerPixelLightingShaders (void)
 {
 memset (perPixelLightingShaderProgs, 0, sizeof (perPixelLightingShaderProgs));
+}
+
+// ----------------------------------------------------------------------------------------------
+
+GLhandleARB lightmapShaderProgs [4] = {0,0,0,0};
+GLhandleARB lmLvs [4] = {0,0,0,0}; 
+GLhandleARB lmLfs [4] = {0,0,0,0}; 
+
+int InitLightmapShader (int nType)
+{
+	int	h, j, bOk;
+
+if (!(gameStates.ogl.bShadersOk && HaveLightmaps ())) {
+	gameStates.render.bPerPixelLighting = 0;
+	return 0;
+	}
+if (lightmapShaderProgs [nType])
+	return 1;
+for (h = 0; h <= 3; h++) {
+	if (lightmapShaderProgs [h])
+		continue;
+	PrintLog ("building lightmap shader programs\n");
+	bOk = CreateShaderProg (lightmapShaderProgs + h) &&
+			CreateShaderFunc (lightmapShaderProgs + h, lmLfs + h, lmLvs + h, pszLMLightingFS [h], pszLMLightingVS [h], 1) &&
+			LinkShaderProg (lightmapShaderProgs + h);
+	if (!bOk) {
+		gameStates.render.bPerPixelLighting = 0;
+		for (j = 0; j < 4; j++)
+			DeleteShaderProg (lightmapShaderProgs + j);
+		return -1;
+		}
+	}
+return 1;
+}
+
+// ----------------------------------------------------------------------------------------------
+
+void ResetLightmapShaders (void)
+{
+memset (lightmapShaderProgs, 0, sizeof (lightmapShaderProgs));
 }
 
 //------------------------------------------------------------------------------
@@ -1190,8 +1273,7 @@ for (nLights = 0;
 		sliP->nActive--;
 		}
 	hLight = GL_LIGHT0 + nLights++;
-	//if (gameStates.render.bPerPixelLighting == 1)
-		glEnable (hLight);
+	//glEnable (hLight);
 	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
 	fBrightness = psl->info.fBrightness;
 #ifdef _DEBUG
@@ -1213,7 +1295,7 @@ for (nLights = 0;
 		diffuse.alpha = 1.0f;
 		}
 	else {
-		glLightf (hLight, GL_CONSTANT_ATTENUATION, (gameStates.render.bPerPixelLighting == 1) ? max (psl->info.fRad, 1.0f) : 1.0f);
+		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, GEO_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, GEO_QUAD_ATT / fBrightness);
 		ambient.red = psl->info.color.red * PPL_AMBIENT_LIGHT;
@@ -1240,14 +1322,6 @@ gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shad
 if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;
 #endif
-#if 0
-if (gameStates.render.bPerPixelLighting == 1) {
-	for (int i = nLights; i < 8; i++)
-		glDisable (GL_LIGHT0 + i);
-	PROF_END(ptPerPixelLighting)
-	return nLights;
-	}
-#endif
 if (InitPerPixelLightingShader (nType, nLights) >= 0) {
 	PROF_END(ptPerPixelLighting)
 	return nLights;
@@ -1270,10 +1344,6 @@ if (bDepthOnly)
 	return 0;
 if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
 	return 0;
-#if 0
-if (gameStates.render.bPerPixelLighting == 1)
-	return nLights;
-#endif
 #if ONLY_LIGHTMAPS == 2
 nType = 0;
 #endif
@@ -1322,6 +1392,49 @@ glUniform1f (glGetUniformLocation (activeShaderProg, "fLightScale"),
 #else
 				 (nLights && gameStates.ogl.iLight) ? 0.0f : 1.0f);
 #endif
+PROF_END(ptShaderStates)
+return gameStates.render.history.nShader = nShader;
+}
+
+//------------------------------------------------------------------------------
+
+int G3SetupLightmapShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadlight)
+{
+PROF_START
+	static grsBitmap	*nullBmP = NULL;
+
+	int	nShader;
+
+if (bDepthOnly)
+	return 0;
+
+nShader = 60 + nType;
+#ifdef _DEBUG
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
+int i = faceP->nLightmap / LIGHTMAP_BUFSIZE;
+if (OglCreateLightmap (i))
+	{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapData.buffers + i, 1, 1);}
+if (nShader != gameStates.render.history.nShader) {
+	gameData.render.nShaderChanges++;
+#if CONST_LIGHT_COUNT
+	glUseProgramObject (activeShaderProg = lightmapShaderProgs [nType]);
+#else
+	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [nLights][nType]);
+#endif
+	glUniform1i (glGetUniformLocation (activeShaderProg, "lMapTex"), 0);
+	if (nType) {
+		glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), 1);
+		if (nType > 1) {
+			glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 2);
+			if (nType > 2)
+				glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 3);
+			}
+		}
+	}
+if (!nType) 
+	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &faceP->color);
 PROF_END(ptShaderStates)
 return gameStates.render.history.nShader = nShader;
 }

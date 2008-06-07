@@ -42,9 +42,8 @@ typedef struct tLightmapData {
 
 //------------------------------------------------------------------------------
 
-void InitLightmapShaders (void);
 void RestoreLights (int bVariable);
-void CreateLightmaps (int nLevel);
+int CreateLightmaps (int nLevel);
 void DestroyLightmaps (void);
 int OglCreateLightmap (int nLightmap);
 int OglCreateLightmaps (void);

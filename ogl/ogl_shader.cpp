@@ -326,10 +326,6 @@ if (gameStates.ogl.bShadersOk)
 	gameStates.ogl.bShadersOk = (nTMUs > 1);
 if (gameStates.render.color.bLightmapsOk)
 	gameStates.render.color.bLightmapsOk = (nTMUs > 2);
-#if LIGHTMAPS
-PrintLog ("   initializing lightmap shader programs\n");
-InitLightmapShaders ();
-#endif
 PrintLog ("   initializing texture merging shader programs\n");
 InitTexMergeShaders ();
 gameData.render.ogl.nHeadlights = 0;

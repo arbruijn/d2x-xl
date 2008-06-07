@@ -155,7 +155,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 if (!bColored && gameOpts->render.automap.bGrayOut) 
 	nShader = G3SetupGrayScaleShader (nType, colorP);
-else if ((gameStates.render.nType != 4) && faceP && gameStates.render.bPerPixelLighting)
+else if ((gameStates.render.nType != 4) && faceP && (gameStates.render.bPerPixelLighting == 2))
 	nShader = G3SetupPerPixelShader (faceP, bDepthOnly, nType, false);
 else if (gameStates.render.bHeadlights && !bDepthOnly)
 	nShader = G3SetupHeadlightShader (nType, HaveLightmaps (), colorP);
@@ -633,6 +633,98 @@ else {
 		glDepthFunc (GL_LEQUAL);
 		glDepthMask (1);
 		}
+	}
+
+if (bMonitor)
+	G3ResetMonitor (bmTop, 1);
+PROF_END(ptRenderFaces)
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int G3DrawFaceArraysLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+{
+PROF_START
+	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
+
+#ifdef _DEBUG
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	if (bDepthOnly)
+		nDbgSeg = nDbgSeg;
+	else
+		nDbgSeg = nDbgSeg;
+#endif
+
+if (!faceP->bTextured)
+	bmBot = NULL;
+else if (bmBot)
+	bmBot = BmOverride (bmBot, -1);
+	bTransparent = G3FaceIsTransparent (faceP, bmBot);
+
+if (bDepthOnly) {
+	if (bTransparent || faceP->bOverlay)
+		return 0;
+	bColored = 0;
+	}
+else {
+	bColored = G3FaceIsColored (faceP);
+	bMonitor = (faceP->nCamera >= 0);
+#ifdef _DEBUG
+	if (bmTop)
+		bmTop = bmTop;
+#endif
+	if (bmTop) {
+		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
+			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bmTop = BM_CURFRAME (bmTop);
+			}
+		else
+			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		}
+	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
+	if (bTransparent && (gameStates.render.nType < 4) && !(bMonitor || bmTop)) {
+		faceP->nRenderType = gameStates.render.history.nType;
+		faceP->bColored = bColored;
+		RIAddFace (faceP);
+		return 0;
+		}
+	}
+
+gameStates.ogl.iLight = 0;
+G3SetRenderStatesLM (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
+if (bDepthOnly) {
+	RenderFacePP (faceP);
+	PROF_END(ptRenderFaces)
+	return 1;
+	}
+#ifdef _DEBUG
+RenderWireFrame (faceP, bTextured);
+if (!gameOpts->render.debug.bTextures)
+	return 0;
+#endif
+G3SetBlendMode (faceP);
+if (bMonitor)
+	G3SetupMonitor (faceP, bmTop, bTextured, 1);
+gameData.render.nTotalFaces++;
+if (!bColored) {
+	G3SetupGrayScaleShader (gameStates.render.history.nType, &faceP->color);
+	RenderFacePP (faceP);
+	}
+else if (gameStates.render.bFullBright) {
+	if (bColorKey)
+		G3SetupTexMergeShader (1, 0);
+	else if (gameStates.render.history.nShader != -1) {
+		glUseProgramObject (0);
+		gameStates.render.history.nShader = -1;
+		gameData.render.nShaderChanges++;
+		}
+	glColor3f (1,1,1);
+	RenderFacePP (faceP);
+	}
+else {
+	G3SetupLightmapShader (faceP, 0, gameStates.render.history.nType, false);	
+	RenderFacePP (faceP);
 	}
 
 if (bMonitor)
