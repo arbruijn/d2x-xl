@@ -903,7 +903,7 @@ return nFaces;
 
 void RenderHeadlights (int nType, int bVertexArrays)
 {
-if ((gameStates.render.bPerPixelLighting == 2) && gameStates.render.bHeadlights) {
+if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	g3FaceDrawer = G3DrawHeadlightsPPLM;
 	RenderSegments (nType, bVertexArrays, 0, 1);

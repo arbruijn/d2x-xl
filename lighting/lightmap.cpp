@@ -49,7 +49,7 @@ there I just had it exit instead.
 #define LMAP_REND2TEX	0
 #define TEXTURE_CHECK	1
 
-#define LIGHTMAP_DATA_VERSION 9
+#define LIGHTMAP_DATA_VERSION 10
 
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
@@ -690,6 +690,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	else 
 #endif
 		{
+		gameData.render.fAttScale = 1.0f;
 		gameData.render.lights.dynamic.shader.index [0][0].nFirst = MAX_SHADER_LIGHTS;
 		gameData.render.lights.dynamic.shader.index [0][0].nLast = 0;
 		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
@@ -698,6 +699,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 			}
 		else
 			ComputeLightmaps (-1, 0);
+		gameData.render.fAttScale = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
 		}
 	gameStates.render.bLightmaps = 0;
 	gameStates.render.nState = 0;
