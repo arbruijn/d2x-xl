@@ -2156,7 +2156,7 @@ if (bRewriteIt)
 gameStates.render.nLightingMethod = gameOpts->render.nLightingMethod;
 if (gameStates.render.nLightingMethod == 2)
 	gameStates.render.bPerPixelLighting = 2;
-else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps && InitLightmapShader (0))
+else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps)
 	gameStates.render.bPerPixelLighting = 1;
 else
 	gameStates.render.bPerPixelLighting = 0;
