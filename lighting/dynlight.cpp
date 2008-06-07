@@ -1253,7 +1253,7 @@ return sliP->nActive;
 
 //------------------------------------------------------------------------------
 
-short SetNearestPixelLights (int nSegment, vmsVector *vNormal, vmsVector *vPixelPos, float fLightRad, int nThread)
+short SetNearestPixelLights (short nSegment, short nSide, vmsVector *vNormal, vmsVector *vPixelPos, float fLightRad, int nThread)
 {
 #ifdef _DEBUG
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
@@ -1285,13 +1285,15 @@ if (gameOpts->render.nLightingMethod) {
 		VmVecSub (&vLightDir, vPixelPos, &psl->info.vPos);
 		xLightDist = VmVecMag (&vLightDir);
 #if 1
-		vLightDir.p.x = FixDiv (vLightDir.p.x, xLightDist);
-		vLightDir.p.y = FixDiv (vLightDir.p.y, xLightDist);
-		vLightDir.p.z = FixDiv (vLightDir.p.z, xLightDist);
-		if (VmVecDot (vNormal, &vLightDir) >= 0)
-			continue;
-#endif
 		nLightSeg = psl->info.nSegment;
+		if ((nLightSeg != nSegment) || (psl->info.nSide != nSide)) {
+			vLightDir.p.x = FixDiv (vLightDir.p.x, xLightDist);
+			vLightDir.p.y = FixDiv (vLightDir.p.y, xLightDist);
+			vLightDir.p.z = FixDiv (vLightDir.p.z, xLightDist);
+			if (VmVecDot (vNormal, &vLightDir) >= 0)
+				continue;
+			}
+#endif
 		if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
 			continue;
 		psl->xDistance = (fix) ((VmVecDist (vPixelPos, &psl->info.vPos) /*- fl2f (psl->info.fRad)*/) / psl->info.fRange);
@@ -1481,8 +1483,10 @@ gameStates.render.nState = 0;
 TransformDynLights (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++)
 	gameData.render.lights.dynamic.nVariableVertLights [i] = VariableVertexLights (i);
-if (gameStates.render.bPerPixelLighting && HaveLightmaps ())
+if (gameStates.render.bPerPixelLighting && HaveLightmaps ()) {
+	memset (gameData.render.color.ambient, 0, gameData.segs.nVertices * sizeof (*gameData.render.color.ambient));
 	return;
+	}
 if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient;
 		tSegment2		*seg2P;

@@ -349,8 +349,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 		continue;
 #ifdef _DEBUG
-	if (((char *) psl - (char *) gameData.render.lights.dynamic.shader.lights) % sizeof (*psl))
-		continue;
 	if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (psl->info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif

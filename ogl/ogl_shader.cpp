@@ -338,6 +338,7 @@ InitGlareShader ();
 PrintLog ("   initializing gray scale shader programs\n");
 InitGrayScaleShader ();
 ResetPerPixelLightingShaders ();
+ResetLightmapShaders ();
 LinkShaderProg (NULL);
 }
 

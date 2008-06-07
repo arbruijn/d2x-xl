@@ -1170,7 +1170,7 @@ int InitLightmapShader (int nType)
 {
 	int	h, j, bOk;
 
-if (!(gameStates.ogl.bShadersOk && HaveLightmaps ())) {
+if (!gameStates.ogl.bShadersOk) {
 	gameStates.render.bPerPixelLighting = 0;
 	return 0;
 	}
@@ -1407,7 +1407,8 @@ PROF_START
 
 if (bDepthOnly)
 	return 0;
-
+if (!InitLightmapShader (nType))
+	return 0;
 nShader = 60 + nType;
 #ifdef _DEBUG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
