@@ -943,8 +943,6 @@ switch (objP->renderType) {
 			else {
 				if (gameStates.render.nType != 1)
 					return 0;
-#if 1//def RELEASE
-#endif
 				if (gameData.objs.bIsMissile [objP->id]) {	//make missiles smaller during launch
 					if ((objP->cType.laserInfo.parentType == OBJ_PLAYER) && 
 						 (gameData.models.g3Models [1][108].bValid > 0)) {	//hires player ship

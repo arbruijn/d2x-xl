@@ -121,7 +121,7 @@ if (!G3PushMatrix ())
 if (gameStates.ogl.bUseTransform) {
 	vmsVector	h;
 
-	if (nInstanceDepth) {
+	if (nInstanceDepth > 1) {
 		glScalef (-1.0f, -1.0f, -1.0f);
 		VmsMove (vPos);
 		glScalef (-1.0f, -1.0f, -1.0f);
