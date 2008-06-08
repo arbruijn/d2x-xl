@@ -1290,7 +1290,7 @@ if (gameOpts->render.nLightingMethod) {
 			vLightDir.p.x = FixDiv (vLightDir.p.x, xLightDist);
 			vLightDir.p.y = FixDiv (vLightDir.p.y, xLightDist);
 			vLightDir.p.z = FixDiv (vLightDir.p.z, xLightDist);
-			if (VmVecDot (vNormal, &vLightDir) >= 0)
+			if (VmVecDot (vNormal, &vLightDir) >= 16384)
 				continue;
 			}
 #endif
@@ -1346,6 +1346,9 @@ if (SEGMENT2S [nSegment].special == SEGMENT_IS_SKYBOX) {
 	psc->index = 1;
 	}
 else if (gameStates.render.bPerPixelLighting == 2) {
+	psc->color.red = 
+	psc->color.green =
+	psc->color.blue = 0;
 	if (SetNearestAvgSgmLights (nSegment)) {
 			tVertColorData	vcd;
 
