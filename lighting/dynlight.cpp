@@ -663,7 +663,6 @@ for (nTexture = 0; nTexture < 910; nTexture++)
 	nLight = IsLight (nTexture);
 #endif
 gameStates.render.bHaveDynLights = 1;
-gameData.render.fAttScale = (gameStates.render.bPerPixelLighting == 2) ? 2.0f : 2.0f;
 #if 0
 if (gameStates.app.bD1Mission)
 	gameData.render.fAttScale *= 2;
