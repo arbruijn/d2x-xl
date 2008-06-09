@@ -36,10 +36,10 @@
 #	define ONLY_HEADLIGHT 0
 #endif
 
-#define GEO_LIN_ATT	(0.05f * gameData.render.fAttScale)
-#define GEO_QUAD_ATT	(0.005f * gameData.render.fAttScale)
-#define OBJ_LIN_ATT	(0.05f * gameData.render.fAttScale)
-#define OBJ_QUAD_ATT	(0.005f * gameData.render.fAttScale)
+#define GEO_LIN_ATT	(0.1f /** gameData.render.fAttScale*/)
+#define GEO_QUAD_ATT	(0.01f /** gameData.render.fAttScale*/)
+#define OBJ_LIN_ATT	(0.1f /** gameData.render.fAttScale*/)
+#define OBJ_QUAD_ATT	(0.01f /** gameData.render.fAttScale*/)
 
 //------------------------------------------------------------------------------
 

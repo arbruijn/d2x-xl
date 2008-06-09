@@ -49,7 +49,7 @@ there I just had it exit instead.
 #define LMAP_REND2TEX	0
 #define TEXTURE_CHECK	1
 
-#define LIGHTMAP_DATA_VERSION 11
+#define LIGHTMAP_DATA_VERSION 12
 
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
@@ -684,14 +684,13 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	int nSaturation = gameOpts->render.color.nSaturation;
 	gameOpts->render.color.nSaturation = 1;
 	gameStates.render.bLightmaps = 1;
-	gameData.render.fAttScale = 1.0f;
 #if 0
 	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 8))
 		StartLightmapThreads (LightmapThread);
 	else 
 #endif
 		{
-		gameData.render.fAttScale = 1.0f;
+		gameData.render.fAttScale = 2.0f;
 		gameData.render.lights.dynamic.shader.index [0][0].nFirst = MAX_SHADER_LIGHTS;
 		gameData.render.lights.dynamic.shader.index [0][0].nLast = 0;
 		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
@@ -702,7 +701,6 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 			ComputeLightmaps (-1, 0);
 		gameData.render.fAttScale = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
 		}
-	gameData.render.fAttScale = 2.0f;
 	gameStates.render.bLightmaps = 0;
 	gameStates.render.nState = 0;
 	gameOpts->render.color.nSaturation = nSaturation;
