@@ -43,8 +43,8 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #define ONLY_LIGHTMAPS 0
 #define CONST_LIGHT_COUNT 1
 
-#define PPL_AMBIENT_LIGHT	0.0f
-#define PPL_DIFFUSE_LIGHT	1.0f
+#define PPL_AMBIENT_LIGHT	0.3f
+#define PPL_DIFFUSE_LIGHT	0.7f
 
 #define GEO_LIN_ATT	0.05f
 #define GEO_QUAD_ATT	0.005f

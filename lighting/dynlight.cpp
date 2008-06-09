@@ -663,7 +663,7 @@ for (nTexture = 0; nTexture < 910; nTexture++)
 	nLight = IsLight (nTexture);
 #endif
 gameStates.render.bHaveDynLights = 1;
-gameData.render.fAttScale = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
+gameData.render.fAttScale = (gameStates.render.bPerPixelLighting == 2) ? 2.0f : 2.0f;
 #if 0
 if (gameStates.app.bD1Mission)
 	gameData.render.fAttScale *= 2;
@@ -1284,13 +1284,13 @@ if (gameOpts->render.nLightingMethod) {
 #endif
 		VmVecSub (&vLightDir, vPixelPos, &psl->info.vPos);
 		xLightDist = VmVecMag (&vLightDir);
-#if 1
 		nLightSeg = psl->info.nSegment;
+#if 0
 		if ((nLightSeg != nSegment) || (psl->info.nSide != nSide)) {
 			vLightDir.p.x = FixDiv (vLightDir.p.x, xLightDist);
 			vLightDir.p.y = FixDiv (vLightDir.p.y, xLightDist);
 			vLightDir.p.z = FixDiv (vLightDir.p.z, xLightDist);
-			if (VmVecDot (vNormal, &vLightDir) >= 16384)
+			if (VmVecDot (vNormal, &vLightDir) >= 32768)
 				continue;
 			}
 #endif

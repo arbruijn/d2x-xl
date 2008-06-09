@@ -290,10 +290,8 @@ return i * i;
 static inline int IsLightVert (int nVertex, tShaderLight *psl)
 {
 if ((nVertex >= 0) && psl->info.faceP) {
-	ushort	*pv = gameStates.render.bTriangleMesh ? psl->info.faceP->triIndex : psl->info.faceP->index;
-	int		i;
-	
-	for (i = psl->info.faceP->nVerts; i; i--, pv++)
+	ushort *pv = gameStates.render.bTriangleMesh ? psl->info.faceP->triIndex : psl->info.faceP->index;
+	for (int i = psl->info.faceP->nVerts; i; i--, pv++)
 		if (*pv == (ushort) nVertex)
 			return 1;
 	}
@@ -384,7 +382,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		NdotL = 1.0f;
 	else
 		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-	if	(/*(NdotL >= -0.125f) &&*/ ((fLightDist <= 0.0f)) || IsLightVert (nVertex, psl)) {
+	if	(((NdotL >= -0.125f) && (fLightDist <= 0.0f)) || IsLightVert (nVertex, psl)) {
 		bInRad = 1;
 		NdotL = 1;
 		fLightDist = 0;
@@ -400,9 +398,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if 0
 		NdotL = 1 - ((1 - NdotL) * 0.9f);
 #endif
-		if (NdotL < 0)
-			NdotL = 0;
-		if (/*(NdotL >= -0.125f) &&*/ (psl->info.fRad > 0))
+		if ((NdotL >= -0.125f) && (psl->info.fRad > 0))
 			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
 		fAttenuation /= psl->info.fBrightness;
 		}
