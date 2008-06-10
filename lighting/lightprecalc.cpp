@@ -369,6 +369,7 @@ viewer.nSegment = nStartSeg;
 COMPUTE_SEGMENT_CENTER_I (&viewer.position.vPos, nStartSeg);
 segP = SEGMENTS + nStartSeg;
 for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
+#if 1
 	if (gameStates.render.bPerPixelLighting) {
 		if (0 <= (nChildSeg = segP->children [nSide])) {
 			while (!SetSegVis (nStartSeg, nChildSeg))
@@ -382,6 +383,7 @@ for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 				}
 			}
 		}
+#endif
 	VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
 	VmVecScale (&vNormal, -F1_0 / 2);
 	VmExtractAnglesVector (&vAngles, &vNormal);
