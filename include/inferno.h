@@ -1241,6 +1241,7 @@ typedef struct tSphereData {
 typedef struct tDynLightInfo {
 	grsFace		*faceP;
 	vmsVector	vPos;
+	fVector		vDirf;
 	tRgbaColorf	color;
 	float			fBrightness;
 	float			fBoost;
@@ -1296,7 +1297,6 @@ struct tActiveShaderLight;
 
 typedef struct tShaderLight {
 	fVector		vPosf [2];
-	fVector		vDirf;
 	fix			xDistance;
 	short			nVerts [4];
 	int			nTarget;	//lit segment/face

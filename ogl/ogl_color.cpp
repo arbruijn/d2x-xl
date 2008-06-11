@@ -314,7 +314,7 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 								bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState, 
 								nSaturation = gameOpts->render.color.nSaturation;
 	int						nBrightness, nMaxBrightness = 0;
-	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
+	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE, nMaxDot;
 	fVector3					spotDir, lightDir, lightPos, vertPos, vReflect;
 	fVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};
 	tShaderLight			*psl;
@@ -370,6 +370,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	bInRad = 0;
 	fLightDist = VmVecMag (&lightDir) * gameStates.ogl.fLightRange;
 	VmVecNormalize (&lightDir, &lightDir);
+	if ((vcd.vertNorm.p.x == 0) && (vcd.vertNorm.p.y == 0) && (vcd.vertNorm.p.z == 0))
+		NdotL = 1.0f;
+	else
+		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
+	nMaxDot = -0.1f;
 	if (gameStates.render.nState || (nType < 2)) {
 #if CHECK_LIGHT_VERT == 2
 		if (IsLightVert (nVertex, psl))
@@ -377,12 +382,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		else
 #endif
 			fLightDist -= psl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
+		if ((NdotL <= 0.1f) && (VmVecDot (&lightDir, &psl->info.vDirf.v3) >= 0))
+			nMaxDot = 0;
 		}
-	if ((vcd.vertNorm.p.x == 0) && (vcd.vertNorm.p.y == 0) && (vcd.vertNorm.p.z == 0))
-		NdotL = 1.0f;
-	else
-		NdotL = VmVecDot (&vcd.vertNorm, &lightDir);
-	if	(((NdotL >= -0.125f) && (fLightDist <= 0.0f)) || IsLightVert (nVertex, psl)) {
+	if	(((NdotL >= nMaxDot) && (fLightDist <= 0.0f)) || IsLightVert (nVertex, psl)) {
 		bInRad = 1;
 		NdotL = 1;
 		fLightDist = 0;
@@ -398,14 +401,14 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if 0
 		NdotL = 1 - ((1 - NdotL) * 0.9f);
 #endif
-		if ((NdotL >= -0.125f) && (psl->info.fRad > 0))
+		if ((NdotL >=nMaxDot) && (psl->info.fRad > 0))
 			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
 		fAttenuation /= psl->info.fBrightness;
 		}
 	if (psl->info.bSpot) {
 		if (NdotL <= 0)
 			continue;
-		VmVecNormalize (&spotDir, &psl->vDirf.v3);
+		VmVecNormalize (&spotDir, &psl->info.vDirf.v3);
 		lightDir.p.x = -lightDir.p.x;
 		lightDir.p.y = -lightDir.p.y;
 		lightDir.p.z = -lightDir.p.z;
@@ -592,12 +595,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (NdotL <= 0)
 			continue;
 #if VECMAT_CALLS
-		VmVecNormalize (&spotDir, &psl->vDirf);
+		VmVecNormalize (&spotDir, &psl->info.vDirf);
 #else
-		fMag = VmVecMag (&psl->vDirf);
-		spotDir.p.x = psl->vDirf.p.x / fMag;
-		spotDir.p.y = psl->vDirf.p.y / fMag;
-		spotDir.p.z = psl->vDirf.p.z / fMag;
+		fMag = VmVecMag (&psl->info.vDirf);
+		spotDir.p.x = psl->info.vDirf.p.x / fMag;
+		spotDir.p.y = psl->info.vDirf.p.y / fMag;
+		spotDir.p.z = psl->info.vDirf.p.z / fMag;
 #endif
 		lightDir.p.x = -lightDir.p.x;
 		lightDir.p.y = -lightDir.p.y;

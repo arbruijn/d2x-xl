@@ -108,14 +108,14 @@ for (i = 0; i < gameData.render.lights.dynamic.headlights.nLights; i++) {
 	psl->info.bSpot = 1;
 	psl->info.fSpotAngle = pl->info.fSpotAngle;
 	psl->info.fSpotExponent = pl->info.fSpotExponent;
-	VmVecFixToFloat (&psl->vDirf, &pl->vDir);
+	VmVecFixToFloat (&psl->info.vDirf, &pl->vDir);
 	if (bHWHeadlight) {
 		gameData.render.lights.dynamic.headlights.pos [i] = psl->vPosf [0];
-		gameData.render.lights.dynamic.headlights.dir [i] = psl->vDirf.v3;
+		gameData.render.lights.dynamic.headlights.dir [i] = psl->info.vDirf.v3;
 		gameData.render.lights.dynamic.headlights.brightness [i] = 100.0f;
 		}
 	else if (pl->bTransform && !gameStates.ogl.bUseTransform)
-		G3RotatePoint (&psl->vDirf, &psl->vDirf, 0);
+		G3RotatePoint (&psl->info.vDirf, &psl->info.vDirf, 0);
 	}
 }
 

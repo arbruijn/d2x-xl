@@ -635,7 +635,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 #else
 					glLighti (hLight, GL_SPOT_EXPONENT, 12);
 					glLighti (hLight, GL_SPOT_CUTOFF, 25);
-					glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &psl->vDirf);
+					glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &psl->info.vDirf);
 #endif
 					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / fBrightness);
 					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);

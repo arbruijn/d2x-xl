@@ -480,6 +480,8 @@ else if (nSegment >= 0) {
 			tSide			*sideP = SEGMENTS [nSegment].sides + nSide;
 			vmsVector	vOffs;
 			VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
+			VmVecFixToFloat (&pl->info.vDirf, &vOffs);
+			VmVecScale (&pl->info.vDirf, &pl->info.vDirf, 0.5f);
 			VmVecScaleFrac (&vOffs, 1, 4);
 			VmVecInc (&pl->info.vPos, &vOffs);
 	#	if 0
