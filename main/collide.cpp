@@ -801,21 +801,15 @@ return 1;		//blew up!
 //	Return true if ok to do Omega damage.
 int OkToDoOmegaDamage (tObject *weaponP)
 {
-if (IsMultiGame) {
-	int	nParentSig = weaponP->cType.laserInfo.nParentSig;
-	int	nParentObj = weaponP->cType.laserInfo.nParentObj;
-	fix	dist;
-
-	if (OBJECTS [nParentObj].nSignature != nParentSig) {
-#if TRACE
-		con_printf (CONDBG, "Parent of omega blob not consistent with tObject information. \n");
-#endif
-		return 1;
-		}
-	dist = VmVecDistQuick (&OBJECTS [nParentObj].position.vPos, &weaponP->position.vPos);
-	if (dist > MAX_OMEGA_DIST)
-		return 0;
-	}
+if (!IsMultiGame)
+	return 1;
+int nParentSig = weaponP->cType.laserInfo.nParentSig;
+int nParentObj = weaponP->cType.laserInfo.nParentObj;
+if (OBJECTS [nParentObj].nSignature != nParentSig)
+	return 1;
+fix dist = VmVecDistQuick (&OBJECTS [nParentObj].position.vPos, &weaponP->position.vPos);
+if (dist > MAX_OMEGA_DIST)
+	return 0;
 return 1;
 }
 

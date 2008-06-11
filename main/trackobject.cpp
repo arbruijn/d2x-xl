@@ -156,7 +156,7 @@ else {
 			if (!EGI_FLAG (bKillMissiles, 0, 1, 0) || !bOmega || !(gameData.objs.bIsMissile [curObjP->id] || WeaponIsMine (curObjP->id)))
 				continue;
 			}
-		else if (curObjP->nType != OBJ_PLAYER)
+		else if ((curObjP->nType != OBJ_PLAYER) && (curObjP->nType != OBJ_REACTOR))
 			continue;
 		VmVecSub (&vecToCurObj, &curObjP->position.vPos, vTrackerPos);
 		dist = VmVecNormalize (&vecToCurObj);
