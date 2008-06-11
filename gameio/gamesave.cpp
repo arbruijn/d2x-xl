@@ -162,9 +162,8 @@ if (objP->nType == OBJ_ROBOT) {
 	}
 else {		//Robots taken care of above
 	if (objP->renderType == RT_POLYOBJ) {
-		int i;
 		char *name = szSavePOFNames [objP->rType.polyObjInfo.nModel];
-		for (i = 0; i < gameData.models.nPolyModels; i++)
+		for (int i = 0; i < gameData.models.nPolyModels; i++)
 			if (!stricmp (Pof_names [i], name)) {		//found it!
 				objP->rType.polyObjInfo.nModel = i;
 				break;
@@ -241,7 +240,7 @@ if (objP->nType == OBJ_PLAYER) {
 			objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
 	//Make sure orient matrix is orthogonal
 	gameOpts->render.nMathFormat = 0;
-	CheckAndFixMatrix(&objP->position.mOrient);
+	CheckAndFixMatrix (&objP->position.mOrient);
 	gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 	objP->id = nGameSavePlayers++;
 	}
@@ -1958,12 +1957,11 @@ int saveLevel_sub(char * filename, int compiledVersion)
 	compressObjects();		//after this, gameData.objs.nLastObject == num OBJECTS
 
 	//make sure tPlayer is in a tSegment
-	if (UpdateObjectSeg(&OBJECTS [gameData.multiplayer.players [0].nObject]) == 0) {
+	if (!UpdateObjectSeg(OBJECTS + gameData.multiplayer.players [0].nObject)) {
 		if (gameData.objs.console->nSegment > gameData.segs.nLastSegment)
 			gameData.objs.console->nSegment = 0;
-		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,&(gameData.segs.segments [gameData.objs.console->nSegment]);
+		COMPUTE_SEGMENT_CENTER (&gameData.objs.console->position.vPos, gameData.segs.segments + gameData.objs.console->nSegment);
 	}
- 
 	FixObjectSegs();
 
 	//Write the header

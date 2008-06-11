@@ -2267,17 +2267,23 @@ return 1;
 //go through all OBJECTS and make sure they have the correct tSegment numbers
 void FixObjectSegs (void)
 {
-	int		i;
 	tObject	*objP = OBJECTS;
 
-for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nType != OBJ_NONE) && !UpdateObjectSeg (objP)) {
-#if TRACE			
-		con_printf (1, "Cannot find tSegment for tObject %d in FixObjectSegs ()\n");
-#endif
-		Int3 ();
+for (int i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+	if ((objP->nType == OBJ_NONE) || (objP->nType == OBJ_CAMBOT) || (objP->nType == OBJ_EFFECT))
+		continue;
+	if (UpdateObjectSeg (objP))
+		continue;
+	fix xScale = MinSegRad (objP->nSegment) - objP->size;
+	if (xScale < 0)
 		COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, objP->nSegment);
+	else {
+		vmsVector	vCenter, vOffset;
+		COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
+		VmVecNormalize (&vOffset, VmVecSub (&vOffset, &objP->position.vPos, &vCenter));
+		VmVecAdd (&objP->position.vPos, &vCenter, VmVecScale (&vOffset, xScale));
 		}
+	}
 }
 
 //------------------------------------------------------------------------------
