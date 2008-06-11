@@ -529,7 +529,7 @@ OglCullFace (0);
 //------------------------------------------------------------------------------
 
 int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScale, float zScale,
-					   float red, float green, float blue, float alpha, grsBitmap *bmP, int nTiles)
+					   float red, float green, float blue, float alpha, grsBitmap *bmP, int nTiles, int bAdditive)
 {
 	//static float fTexCoord [4][2] = {{0,0},{1,0},{1,1},{0,1}};
 
@@ -551,8 +551,8 @@ else
 	bTextured = InitSphereSurface (sdP, red, green, blue, alpha, bmP, &fScale);
 glDepthFunc (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
-if (alpha < 1.0f)
-	glBlendFunc (GL_ONE, GL_ONE_MINUS_DST_COLOR);
+if (bAdditive)
+	glBlendFunc (GL_ONE, GL_ONE); //_MINUS_SRC_COLOR);
 else
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #else
@@ -650,7 +650,7 @@ if (gameData.render.shield.nFaces > 0)
 		//gameStates.ogl.bUseTransform = 1;
 		glBlendFunc (GL_ONE, GL_ONE);
 		G3StartInstanceMatrix (PolyObjPos (objP, &vPos), &posP->mOrient);
-		RenderSphere (&gameData.render.shield, &p, r, r, r, red, green, blue, alpha, bmpShield, 1);
+		RenderSphere (&gameData.render.shield, &p, r, r, r, red, green, blue, alpha, bmpShield, 1, 1);
 		G3DoneInstance ();
 		gameStates.ogl.bUseTransform = 0;
 		fScale = gameData.render.shield.pPulse->fScale;
@@ -684,7 +684,7 @@ if (gameData.render.monsterball.nFaces > 0)
 		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 		RenderSphere (&gameData.render.monsterball, &p,  
 						  r, r, r, red, green, blue, gameData.hoard.monsterball.bm.bmTexBuf ? 1.0f : alpha, 
-						  &gameData.hoard.monsterball.bm, 4);
+						  &gameData.hoard.monsterball.bm, 4, 0);
 		G3DoneInstance ();
 		OglResetTransform (1);
 		gameStates.ogl.bUseTransform = 0;

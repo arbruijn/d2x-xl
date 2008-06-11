@@ -242,6 +242,7 @@ else {
 	pc->obj.position.p.vPos.z /= 4;
 #endif
 	pc->obj.nSegment = srcSeg;
+	pc->bMirror = (tgtSeg == srcSeg) && (tgtSide == srcSide);
 	}
 //pc->obj.nSide = srcSide;
 pc->segNum = tgtSeg;
@@ -432,6 +433,8 @@ else
 		duImage = duFace;
 		dvImage = dvFace;
 		}
+	if (pc->bMirror)
+		xFlip = !xFlip;
 	if (uvlP) {
 		uvlP [0].v = 
 		uvlP [3].v = fl2f (yFlip ? dvImage : dv / 2);

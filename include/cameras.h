@@ -22,6 +22,7 @@ typedef struct tCamera {
 	char			bHaveUVL;
 	char			bShadowMap;
 	char			bTeleport;
+	char			bMirror;
 	int			nWaitFrames;
 	tUVL			uvlList [4];
 	tTexCoord2f	texCoord [6];
