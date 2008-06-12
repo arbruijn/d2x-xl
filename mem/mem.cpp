@@ -300,7 +300,8 @@ if (!size) {
 void *newBuffer = MemAlloc (size);
 if (!newBuffer)
 	return buffer;
-memcpy (newBuffer, buffer, *(((unsigned int *) buffer) - 1));
+unsigned int oldSize = *(((unsigned int *) buffer) - 1);
+memcpy (newBuffer, buffer, (size < oldSize) ? size : oldSize);
 MemFree (buffer);
 return newBuffer;
 }
