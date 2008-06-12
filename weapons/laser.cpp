@@ -850,7 +850,7 @@ VmVector2Matrix (&objP->position.mOrient, &vNewDir, NULL, NULL);
 
 static inline fix HomingMslStraightTime (int id)
 {
-	int i = ((id == EARTHSHAKER_MEGA_ID) || (id == ROBOT_SHAKER_MEGA_ID)) ? 1 : nMslSlowDown [extraGameInfo [IsMultiGame].nMslStartSpeed];
+	int i = ((id == EARTHSHAKER_MEGA_ID) || (id == ROBOT_SHAKER_MEGA_ID)) ? 1 : nMslSlowDown [(int) extraGameInfo [IsMultiGame].nMslStartSpeed];
 
 return i * HOMINGMSL_STRAIGHT_TIME;
 }

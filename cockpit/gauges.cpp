@@ -2971,7 +2971,7 @@ if (gameStates.render.bShowFrameRate) {
 		static time_t t, t0 = -1;
 
 		char	szItem [50];
-		int	x, y; // position measured from lower right corner
+		int	x = 11, y; // position measured from lower right corner
 
 	frameTimeTotal += gameData.time.xRealFrame - frameTimeList [frameTimeCounter];
 	frameTimeList [frameTimeCounter] = gameData.time.xRealFrame;
@@ -2986,23 +2986,18 @@ if (gameStates.render.bShowFrameRate) {
 			xRate = frameTimeTotal ? FixDiv (f1_0 * 8, frameTimeTotal) : 0;
 			}
 		sprintf (szItem, "FPS: %s", ftoa (szRate, xRate));
-		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 2) {
 		sprintf (szItem, "Faces: %d ", gameData.render.nTotalFaces);
-		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 3) {
 		sprintf (szItem, "Transp: %d ", renderItems.nItems);
-		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 4) {
 		sprintf (szItem, "Objects: %d/%d ", gameData.render.nTotalObjects, gameData.render.nTotalSprites);
-		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 5) {
 		sprintf (szItem, "States: %d/%d ", gameData.render.nStateChanges, gameData.render.nShaderChanges);
-		x = 11;
 		}
 	else if (gameStates.render.bShowFrameRate == 6) {
 		sprintf (szItem, "Lights/Face: %1.2f (%d)", 

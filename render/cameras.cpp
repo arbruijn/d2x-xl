@@ -345,7 +345,7 @@ gameData.cameras.nCameras = 0;
 
 void GetCameraUVL (tCamera *pc, grsFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP)
 {
-	int i2, i3, nType;
+	int i2, i3, nType = 0;
 
 if (gameStates.render.bTriangleMesh) {
 	if ((nType = faceP->nType == SIDE_IS_TRI_13)) {

@@ -291,7 +291,7 @@ grsFace *faceP;
 grsTriangle *grsTriP;
 tTriangle *triP;
 int i, nFace = -1;
-short nId;
+short nId = 0;
 
 for (i = gameData.segs.nTris, grsTriP = TRIANGLES; i; i--, grsTriP++) {
 	if (!(triP = AddTriangle (NULL, grsTriP->index, grsTriP))) {
@@ -446,7 +446,7 @@ return 1;
 
 int CTriMeshBuilder::SplitTriangle (tTriangle *triP, short nPass)
 {
-	int	h, i;
+	int	h = 0, i;
 	float	l, lMax = 0;
 
 for (i = 0; i < 3; i++) {
@@ -747,7 +747,8 @@ if (bOk)
 		 sizeof (*gameData.segs.faces.color)) * mdh.nTris * 3 +
 		 sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces * 2 + 
 		 sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts;
-bOk = ((ioBuffer = (char *) D2_ALLOC (nSize)) != NULL);
+if (bOk)
+	bOk = ((ioBuffer = (char *) D2_ALLOC (nSize)) != NULL);
 if (bOk)
 	bOk = CFRead (ioBuffer, nSize, 1, &cf) == 1;
 if (bOk) {
