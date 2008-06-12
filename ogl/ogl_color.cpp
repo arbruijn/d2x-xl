@@ -382,8 +382,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		else
 #endif
 			fLightDist -= psl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
-		if ((NdotL <= 0.1f) && (VmVecDot (&lightDir, &psl->info.vDirf.v3) >= 0))
+		if (fLightDist < 0)
+			fLightDist = 0;
+#if 1 //don't directly light faces turning their back side towards the light source
+		if ((NdotL <= 0) && (VmVecDot (&lightDir, &psl->info.vDirf.v3) <= 0))
 			nMaxDot = 0;
+#endif
 		}
 	if	(((NdotL >= nMaxDot) && (fLightDist <= 0.0f)) || IsLightVert (nVertex, psl)) {
 		bInRad = 1;
@@ -401,7 +405,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if 0
 		NdotL = 1 - ((1 - NdotL) * 0.9f);
 #endif
-		if ((NdotL >=nMaxDot) && (psl->info.fRad > 0))
+		if ((NdotL >= nMaxDot) && (psl->info.fRad > 0))
 			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
 		fAttenuation /= psl->info.fBrightness;
 		}
