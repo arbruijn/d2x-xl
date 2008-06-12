@@ -586,7 +586,6 @@ do {
 		vmsVector vStartVel;
 		VmVecNormalize (&vStartVel, gameData.objs.vStartVel + nObject);
 		fix xDot = VmVecDot (&objP->position.mOrient.fVec, &vStartVel);
-		HUDMessage (0, "%1.2f", f2fl (xDot));
 		VmVecAdd (&vFrame, &objP->mType.physInfo.velocity, gameData.objs.vStartVel + nObject);
 		VmVecScale (&vFrame, fl2f (fScale * fScale));
 		VmVecScaleInc (&vFrame, gameData.objs.vStartVel + nObject, -(abs (xDot)));

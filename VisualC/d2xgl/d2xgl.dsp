@@ -259,6 +259,10 @@ SOURCE=..\..\misc\hash.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\mem\mem.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\misc\strio.cpp
 # End Source File
 # Begin Source File
