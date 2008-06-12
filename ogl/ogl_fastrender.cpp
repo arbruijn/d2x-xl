@@ -146,7 +146,7 @@ int G3SetupShader (grsFace *faceP, int bDepthOnly, int bColorKey, int bMultiText
 
 	int	nType, nShader = gameStates.render.history.nShader;
 
-if (!gameStates.ogl.bShadersOk)
+if (!gameStates.ogl.bShadersOk || (gameStates.render.nType == 4))
 	return -1;
 #ifdef _DEBUG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))

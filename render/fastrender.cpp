@@ -331,7 +331,7 @@ return true;
 bool RenderSkyBoxFace (tSegment *segP, grsFace *faceP, int bDepthOnly)
 {
 LoadFaceBitmaps (segP, faceP);
-G3DrawFaceArrays (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, !bDepthOnly && faceP->bTextured, bDepthOnly);
+G3DrawFaceArrays (faceP, faceP->bmBot, faceP->bmTop, 1, 1, 0);
 return true;
 }
 
