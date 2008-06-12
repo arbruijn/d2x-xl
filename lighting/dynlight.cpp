@@ -475,21 +475,16 @@ else if (nSegment >= 0) {
 		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || WallIsVolatile (SEGMENTS [nSegment].sides [nSide].nWall);
 		gameData.render.lights.dynamic.nVariable += pl->info.bVariable;
 		COMPUTE_SIDE_CENTER_I (&pl->info.vPos, nSegment, nSide);
-	#if 1
-		if (gameStates.render.bPerPixelLighting == 2) {
-			tSide			*sideP = SEGMENTS [nSegment].sides + nSide;
-			vmsVector	vOffs;
-			VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
-			VmVecFixToFloat (&pl->info.vDirf, &vOffs);
-			VmVecScale (&pl->info.vDirf, &pl->info.vDirf, 0.5f);
+		tSide			*sideP = SEGMENTS [nSegment].sides + nSide;
+		vmsVector	vOffs;
+		VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
+		VmVecFixToFloat (&pl->info.vDirf, &vOffs);
+		VmVecScale (&pl->info.vDirf, &pl->info.vDirf, 0.5f);
+		if (gameStates.render.bPerPixelLighting) {
 			VmVecScaleFrac (&vOffs, 1, 4);
 			VmVecInc (&pl->info.vPos, &vOffs);
-	#	if 0
-			fBrightness /= 2;
-	#	endif
 			}
 		}
-#endif
 	}
 else {
 	pl->info.nType = 3;

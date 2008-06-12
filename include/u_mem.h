@@ -25,8 +25,6 @@ extern int bShowMemInfo;
 
 #if DBG_MALLOC
 
-#define D2X_MEM_HANDLER
-
 void _CDECL_ MemDisplayBlocks (void);
 void * MemAlloc (unsigned int size, char * var, char * file, int line, int fill_zero);
 void * MemRealloc (void * buffer, unsigned int size, char * var, char * file, int line);
@@ -48,12 +46,21 @@ void MemValidateHeap ();
 
 #else
 
-#define D2_ALLOC(size)			malloc (size)
-#define D2_CALLOC(n, size)		calloc (n, size)
-#define D2_REALLOC(ptr,size)	realloc (ptr,size)
-#define D2_FREE(ptr)				{free (ptr); (ptr) = NULL;}
-#define D2_STRDUP(str)			strdup (str)
+void *MemAlloc (unsigned int size);
+void *MemRealloc (void * buffer, unsigned int size);
+void MemFree (void * buffer);
+char *MemStrDup (char * str);
 
-#define MALLOC(_var, _type, _count)   ((_var) = (_type *) malloc ((_count) * sizeof (_type)))
+#define D2_ALLOC(size)			MemAlloc (size)
+#define D2_CALLOC(n, size)		MemAlloc (n * size)
+#define D2_REALLOC(ptr,size)	MemRealloc (ptr,size)
+#define D2_FREE(ptr)				{MemFree (ptr); (ptr) = NULL;}
+#define D2_STRDUP(str)			MemStrDup (str)
+
+#define MALLOC(_var, _type, _count)   ((_var) = (_type *) D2_ALLOC ((_count) * sizeof (_type)))
 
 #endif
+
+extern unsigned int nCurAllocd, nMaxAllocd;
+
+//eof

@@ -312,6 +312,7 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 {
 	int						i, j, nLights, nType, bInRad, 
 								bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState, 
+								bTransform = gameStates.render.nState && !gameStates.ogl.bUseTransform,
 								nSaturation = gameOpts->render.color.nSaturation;
 	int						nBrightness, nMaxBrightness = 0;
 	float						fLightDist, fAttenuation, spotEffect, NdotL, RdotE, nMaxDot;
@@ -365,7 +366,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (psl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
 	lightColor = *((fVector3 *) &psl->info.color);
-	lightPos = psl->vPosf [gameStates.render.nState && !gameStates.ogl.bUseTransform].v3;
+	lightPos = psl->vPosf [bTransform].v3;
 	VmVecSub (&lightDir, &lightPos, vcd.pVertPos);
 	bInRad = 0;
 	fLightDist = VmVecMag (&lightDir) * gameStates.ogl.fLightRange;
@@ -385,7 +386,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (fLightDist < 0)
 			fLightDist = 0;
 #if 1 //don't directly light faces turning their back side towards the light source
-		if ((NdotL <= 0) && (VmVecDot (&lightDir, &psl->info.vDirf.v3) <= 0))
+		if ((NdotL < 0) && (VmVecDot (&lightDir, &psl->info.vDirf.v3) <= 0))
 			nMaxDot = 0;
 #endif
 		}

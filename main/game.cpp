@@ -1472,6 +1472,8 @@ meshBuilder.DestroyVBOs ();
 //-----------------------------------------------------------------------------
 //called at the end of the program
 
+extern unsigned int nMaxAllocd;
+
 void _CDECL_ D2X_SDL_Close(void);
 
 void _CDECL_ CloseGame (void)
@@ -1555,6 +1557,7 @@ PrintLog ("unloading custom background data\n");
 NMFreeAltBg (1);
 SaveBanList ();
 FreeBanList ();
+PrintLog ("peak memory consumption: %ld bytes\n", nMaxAllocd);
 SDL_Quit ();
 #if 0
 if (fErr) {

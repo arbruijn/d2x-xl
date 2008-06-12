@@ -3421,10 +3421,6 @@ if (!FindArg ("-notitles"))
 	//ShowOrderForm ();
 OglDestroyDrawBuffer ();
 FreeGameData ();
-#ifdef _DEBUG
-if (FindArg ("-showmeminfo"))
-	bShowMemInfo = 1;		// Make memory statistics show
-#endif
 return 0;
 }
 

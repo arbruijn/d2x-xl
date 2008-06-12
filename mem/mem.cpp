@@ -36,19 +36,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "u_mem.h"
 
-#ifdef malloc
-#	undef malloc
-#endif
-
-int bShowMemInfo = 0;
-
-#ifdef D2X_MEM_HANDLER
-
-#define LONG_MEM_ID 1
-#define MEMSTATS 0
+unsigned int nCurAllocd = 0;
+unsigned int nMaxAllocd = 0;
 
 #if DBG_MALLOC
 #	define FULL_MEM_CHECKING 1
+#	define LONG_MEM_ID 1
+#	define MEMSTATS 0
 #else
 #	define FULL_MEM_CHECKING 0
 #endif
@@ -77,8 +71,6 @@ static int nMemId = 0;
 int bOutOfMemory = 0;
 
 //------------------------------------------------------------------------------
-
-#if DBG_MALLOC
 
 typedef struct tMemBlock {
 	void	*p;
@@ -132,8 +124,6 @@ if ((i >= 0) && (i < --nMemBlocks))
 	memBlocks [i] = memBlocks [nMemBlocks];
 return i;
 }
-
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -200,44 +190,7 @@ if (nMemBlocks) {
 #endif
 }
 
-#else
-
-//------------------------------------------------------------------------------
-
-static int bMemInitialized = 0;
-static unsigned int nSmallestAddress = 0xFFFFFFF;
-static unsigned int nLargestAddress = 0x0;
-static unsigned int nBytesMalloced = 0;
-
-void _CDECL_ MemDisplayBlocks ();
-
-#define CHECKSIZE 16
-#define CHECKBYTE 0xFC
-
-int bShowMemInfo = 0;
-
-void MemInit ()
-{
-bMemInitialized = 1;
-nSmallestAddress = 0xFFFFFFF;
-nLargestAddress = 0x0;
-atexit (MemDisplayBlocks);
-}
-
-//------------------------------------------------------------------------------
-
-void MemValidateHeap ()
-{
-}
-
-//------------------------------------------------------------------------------
-
-void MemPrintAll ()
-{
-}
-
-#endif
-
+#endif //FULL_MEM_CHECKING
 
 //------------------------------------------------------------------------------
 
@@ -247,7 +200,8 @@ void MemFree (void *buffer)
 {
 if (!buffer)
 	return;
-free (buffer);
+nCurAllocd -= *(((unsigned int *) buffer) - 1);
+free (((unsigned int *) buffer) - 1);
 }
 
 #else
@@ -275,31 +229,28 @@ free (buffer);
 
 //------------------------------------------------------------------------------
 
-#ifdef malloc
-#	undef malloc
-#endif
+#if !DBG_MALLOC
 
-#ifndef _DEBUG
-
-void *MemAlloc (unsigned int size, char * var, char * pszFile, int nLine, int bZeroFill)
+void *MemAlloc (unsigned int size)
 {
-	int *ptr;
-
-if (!(ptr = (int *) malloc (size))) {
-#if 1//TRACE
-	if (size)
-		PrintLog ("allocating %d bytes in %s:%d failed.\n", size, pszFile, nLine);
-#endif
-	}
-else if (bZeroFill)
-	memset (ptr, 0, size);
+if (!size)
+	return NULL;
+size += sizeof (unsigned int);
+unsigned int *p = (unsigned int *) malloc (size);
+if (!p)
+	return NULL;
+*p = size;
+nCurAllocd += size;
+if (nMaxAllocd < nCurAllocd)
+	nMaxAllocd = nCurAllocd;
+return (void *) (p + 1);
 }
 
 #else	//!RELEASE
 
 void *MemAlloc (unsigned int size, char * var, char * pszFile, int nLine, int bZeroFill)
 {
-	int *ptr;
+	unsigned int *ptr;
 
 if (!bMemInitialized)
 	MemInit ();
@@ -336,6 +287,26 @@ return (void *) ptr;
 
 //------------------------------------------------------------------------------
 
+#if !DBG_MALLOC
+
+void *MemRealloc (void * buffer, unsigned int size)
+{
+if (!buffer)
+	return NULL;
+if (!size) {
+	MemFree (buffer);
+	return NULL;
+	}
+void *newBuffer = MemAlloc (size);
+if (!newBuffer)
+	return buffer;
+memcpy (newBuffer, buffer, *(((unsigned int *) buffer) - 1));
+MemFree (buffer);
+return newBuffer;
+}
+
+#else
+
 void *MemRealloc (void * buffer, unsigned int size, char * var, char * pszFile, int nLine)
 {
 	void *newbuffer = NULL;
@@ -367,7 +338,22 @@ else {
 return newbuffer;
 }
 
+#endif
+
 //------------------------------------------------------------------------------
+
+#if !DBG_MALLOC
+
+char *MemStrDup (char *str)
+{
+unsigned int l = (unsigned int) strlen (str) + 1;
+char *newstr = (char *) MemAlloc (l);
+if (newstr)
+	memcpy (newstr, str, l);
+return newstr;
+}
+
+#else
 
 char *MemStrDup (char *str, char *var, char *pszFile, int nLine)
 {
