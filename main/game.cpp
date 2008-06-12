@@ -1472,8 +1472,6 @@ meshBuilder.DestroyVBOs ();
 //-----------------------------------------------------------------------------
 //called at the end of the program
 
-extern unsigned int nMaxAllocd;
-
 void _CDECL_ D2X_SDL_Close(void);
 
 void _CDECL_ CloseGame (void)
