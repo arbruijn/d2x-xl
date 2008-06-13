@@ -64,8 +64,8 @@ tOpenFont openFont [MAX_OPEN_FONTS];
 
 #define BITS_TO_BYTES(x)    (( (x)+7)>>3)
 
-int GrInternalStringClipped (int x, int y, char *s);
-int GrInternalStringClippedM (int x, int y, char *s);
+int GrInternalStringClipped (int x, int y, const char *s);
+int GrInternalStringClippedM (int x, int y, const char *s);
 
 //------------------------------------------------------------------------------
 
@@ -209,10 +209,10 @@ return text_ptr;
 
 //------------------------------------------------------------------------------
 
-int GrInternalString0 (int x, int y, char *s)
+int GrInternalString0 (int x, int y, const char *s)
 {
 	unsigned char * fp;
-	char *text_ptr, *next_row, *text_ptr1;
+	const char *text_ptr, *next_row, *text_ptr1;
 	int r, BitMask, i, bits, width, spacing, letter, underline;
 	int	skip_lines = 0;
 	unsigned int VideoOffset, VideoOffset1;
@@ -309,10 +309,10 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int GrInternalString0m (int x, int y, char *s)
+int GrInternalString0m (int x, int y, const char *s)
 {
 	unsigned char * fp;
-	char * text_ptr, * next_row, * text_ptr1;
+	const char * text_ptr, * next_row, * text_ptr1;
 	int r, BitMask, i, bits, width, spacing, letter, underline;
 	int	skip_lines = 0;
 	char c;
@@ -629,9 +629,9 @@ void OglInitFont (grsFont * font)
 
 //------------------------------------------------------------------------------
 
-int OglInternalString (int x, int y, char *s)
+int OglInternalString (int x, int y, const char *s)
 {
-	char * text_ptr, * next_row, * text_ptr1;
+	const char * text_ptr, * next_row, * text_ptr1;
 	int width, spacing, letter;
 	int xx, yy;
 	int orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
@@ -856,7 +856,7 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-int GrInternalColorString (int x, int y, char *s)
+int GrInternalColorString (int x, int y, const char *s)
 {
 	return OglInternalString (x, y, s);
 }
@@ -897,7 +897,7 @@ InitStringPool ();
 
 //------------------------------------------------------------------------------
 
-grsString *CreatePoolString (char *s, int *idP)
+grsString *CreatePoolString (const char *s, int *idP)
 {
 	grsString	*ps;
 	int			l, w, h, aw;
@@ -937,7 +937,7 @@ return ps;
 
 //------------------------------------------------------------------------------
 
-grsString *GetPoolString (char *s, int *idP)
+grsString *GetPoolString (const char *s, int *idP)
 {
 	grsString	*ps;
 
@@ -1146,17 +1146,17 @@ void GrCloseFont (grsFont * font)
 {
 	if (font)
 	{
-		int fontnum;
-		char * font_data;
+		int nFont;
+		char * fontDataP;
 
 		//find font in list
-	for (fontnum=0;fontnum<MAX_OPEN_FONTS && openFont[fontnum].ptr!=font;fontnum++)
+	for (nFont=0;nFont<MAX_OPEN_FONTS && openFont[nFont].ptr!=font;nFont++)
 		;
-	Assert (fontnum<MAX_OPEN_FONTS);	//did we find slot?
-	font_data = openFont[fontnum].pData;
-	D2_FREE (font_data);
-	openFont[fontnum].ptr = NULL;
-	openFont[fontnum].pData = NULL;
+	Assert (nFont<MAX_OPEN_FONTS);	//did we find slot?
+	fontDataP = openFont[nFont].pData;
+	D2_FREE (fontDataP);
+	openFont[nFont].ptr = NULL;
+	openFont[nFont].pData = NULL;
 	if (font->ftChars) {
 		D2_FREE (font->ftChars);
 		font->ftChars = NULL;
@@ -1175,13 +1175,13 @@ void GrCloseFont (grsFont * font)
 
 void GrRemapMonoFonts ()
 {
-	int fontnum;
+	int nFont;
 
-	for (fontnum=0;fontnum<MAX_OPEN_FONTS;fontnum++) {
+	for (nFont=0;nFont<MAX_OPEN_FONTS;nFont++) {
 		grsFont *font;
-		font = openFont[fontnum].ptr;
+		font = openFont[nFont].ptr;
 		if (font && !(font->ftFlags & FT_COLOR))
-			GrRemapFont (font, openFont[fontnum].filename, openFont[fontnum].pData);
+			GrRemapFont (font, openFont[nFont].filename, openFont[nFont].pData);
 	}
 }
 
@@ -1189,13 +1189,13 @@ void GrRemapMonoFonts ()
 //remap (by re-reading) all the color fonts
 void GrRemapColorFonts ()
 {
-	int fontnum;
+	int nFont;
 
-for (fontnum=0;fontnum<MAX_OPEN_FONTS;fontnum++) {
+for (nFont=0;nFont<MAX_OPEN_FONTS;nFont++) {
 	grsFont *font;
-	font = openFont[fontnum].ptr;
+	font = openFont[nFont].ptr;
 	if (font && (font->ftFlags & FT_COLOR))
-		GrRemapFont (font, openFont[fontnum].filename, openFont[fontnum].pData);
+		GrRemapFont (font, openFont[nFont].filename, openFont[nFont].pData);
 	}
 }
 
@@ -1227,153 +1227,136 @@ void grs_font_read (grsFont *gf, CFILE *fp)
 
 grsFont * GrInitFont (const char *fontname)
 {
-	static int firstTime=1;
+	static int bFirstTime = 1;
 	grsFont *font;
-	char *font_data;
-	int i, fontnum;
-	unsigned char * ptr;
+	char *fontDataP;
+	int i, nFont;
+	unsigned char *ptr;
 	int nchars;
 	CFILE fontfile;
 	char file_id[4];
 	int datasize;	//size up to (but not including) palette
 	int freq[256];
 
-	if (firstTime) {
-		int i;
-		for (i=0;i<MAX_OPEN_FONTS;i++) {
-			openFont[i].ptr = NULL;
-			openFont[i].pData = NULL;
-    }
-		firstTime=0;
+if (bFirstTime) {
+	int i;
+	for (i = 0; i < MAX_OPEN_FONTS; i++) {
+		openFont [i].ptr = NULL;
+		openFont [i].pData = NULL;
+		}
+	bFirstTime = 0;
 	}
 
 	//find D2_FREE font slot
-	for (fontnum=0;fontnum<MAX_OPEN_FONTS && openFont[fontnum].ptr!=NULL;fontnum++);
-	Assert (fontnum<MAX_OPEN_FONTS);	//did we find one?
-
-	strncpy (openFont[fontnum].filename, fontname, SHORT_FILENAME_LEN);
-
-	if (!CFOpen (&fontfile, fontname, gameFolders.szDataDir, "rb", 0)) {
+for (nFont = 0; (nFont < MAX_OPEN_FONTS) && openFont [nFont].ptr; nFont++)
+	;
+Assert (nFont<MAX_OPEN_FONTS);	//did we find one?
+strncpy (openFont[nFont].filename, fontname, SHORT_FILENAME_LEN);
+if (!CFOpen (&fontfile, fontname, gameFolders.szDataDir, "rb", 0)) {
 #if TRACE
-		con_printf (CON_VERBOSE, "Can't open font file %s\n", fontname);
+	con_printf (CON_VERBOSE, "Can't open font file %s\n", fontname);
 #endif	
-		return NULL;
+	return NULL;
 	}
 
-	CFRead (file_id, 4, 1, &fontfile);
-	if (!strncmp (file_id, "NFSP", 4)) {
+CFRead (file_id, 4, 1, &fontfile);
+if (!strncmp (file_id, "NFSP", 4)) {
 #if TRACE	
-		con_printf (CON_NORMAL, "File %s is not a font file\n", fontname);
+	con_printf (CON_NORMAL, "File %s is not a font file\n", fontname);
 #endif	
-		return NULL;
-	}
+	return NULL;
+}
 
-	datasize = CFReadInt (&fontfile);
-	datasize -= GRS_FONT_SIZE; // subtract the size of the header.
+datasize = CFReadInt (&fontfile);
+datasize -= GRS_FONT_SIZE; // subtract the size of the header.
 
-	MALLOC (font, grsFont, sizeof (grsFont));
-	grs_font_read (font, &fontfile);
+MALLOC (font, grsFont, sizeof (grsFont));
+grs_font_read (font, &fontfile);
 
-	MALLOC (font_data, char, datasize);
-	CFRead (font_data, 1, datasize, &fontfile);
+MALLOC (fontDataP, char, datasize);
+CFRead (fontDataP, 1, datasize, &fontfile);
 
-	openFont[fontnum].ptr = font;
-	openFont[fontnum].pData = font_data;
+openFont[nFont].ptr = font;
+openFont[nFont].pData = fontDataP;
 
-	// make these offsets relative to font_data
-	font->ftData = (ubyte *) ((size_t)font->ftData - GRS_FONT_SIZE);
-	font->ftWidths = (short *) ((size_t)font->ftWidths - GRS_FONT_SIZE);
-	font->ftKernData = (ubyte *) ((size_t)font->ftKernData - GRS_FONT_SIZE);
+// make these offsets relative to fontDataP
+font->ftData = (ubyte *) ((size_t)font->ftData - GRS_FONT_SIZE);
+font->ftWidths = (short *) ((size_t)font->ftWidths - GRS_FONT_SIZE);
+font->ftKernData = (ubyte *) ((size_t)font->ftKernData - GRS_FONT_SIZE);
 
-	nchars = font->ftMaxChar - font->ftMinChar + 1;
+nchars = font->ftMaxChar - font->ftMinChar + 1;
 
-	if (font->ftFlags & FT_PROPORTIONAL) {
-
-		font->ftWidths = (short *) &font_data[ (size_t)font->ftWidths];
-		font->ftData = (ubyte *) (font_data + (size_t)font->ftData);
-		font->ftChars = (unsigned char **)D2_ALLOC (nchars * sizeof (unsigned char *));
-
-		ptr = font->ftData;
-
-		for (i=0; i< nchars; i++) {
-			font->ftWidths[i] = INTEL_SHORT (font->ftWidths[i]);
-			font->ftChars[i] = ptr;
-			if (font->ftFlags & FT_COLOR)
-				ptr += font->ftWidths[i] * font->ftHeight;
-			else
-				ptr += BITS_TO_BYTES (font->ftWidths[i]) * font->ftHeight;
+if (font->ftFlags & FT_PROPORTIONAL) {
+	font->ftWidths = (short *) &fontDataP[ (size_t)font->ftWidths];
+	font->ftData = (ubyte *) (fontDataP + (size_t)font->ftData);
+	font->ftChars = (unsigned char **)D2_ALLOC (nchars * sizeof (unsigned char *));
+	ptr = font->ftData;
+	for (i = 0; i < nchars; i++) {
+		font->ftWidths[i] = INTEL_SHORT (font->ftWidths[i]);
+		font->ftChars[i] = ptr;
+		if (font->ftFlags & FT_COLOR)
+			ptr += font->ftWidths[i] * font->ftHeight;
+		else
+			ptr += BITS_TO_BYTES (font->ftWidths[i]) * font->ftHeight;
 		}
-
-	} else  {
-
-		font->ftData   = (ubyte *) font_data;
-		font->ftChars  = NULL;
-		font->ftWidths = NULL;
-
-		ptr = font->ftData + (nchars * font->ftWidth * font->ftHeight);
 	}
-
-	if (font->ftFlags & FT_KERNED)
-		font->ftKernData = (ubyte *) (font_data + (size_t)font->ftKernData);
-
-	memset (&font->ftParentBitmap, 0, sizeof (font->ftParentBitmap));
-	memset (freq, 0, sizeof (freq));
-	if (font->ftFlags & FT_COLOR) {		//remap palette
-		ubyte palette[256*3];
-		CFRead (palette, 3, 256, &fontfile);		//read the palette
-
+else  {
+	font->ftData   = (ubyte *) fontDataP;
+	font->ftChars  = NULL;
+	font->ftWidths = NULL;
+	ptr = font->ftData + (nchars * font->ftWidth * font->ftHeight);
+	}
+if (font->ftFlags & FT_KERNED)
+	font->ftKernData = (ubyte *) (fontDataP + (size_t)font->ftKernData);
+memset (&font->ftParentBitmap, 0, sizeof (font->ftParentBitmap));
+memset (freq, 0, sizeof (freq));
+if (font->ftFlags & FT_COLOR) {		//remap palette
+	ubyte palette[256*3];
+	CFRead (palette, 3, 256, &fontfile);		//read the palette
 #ifdef SWAP_0_255			// swap the first and last palette entries (black and white)
-		{
-			int i;
-			ubyte c;
+	{
+		int i;
+		ubyte c;
 
-			for (i = 0; i < 3; i++) {
-				c = palette[i];
-				palette[i] = palette[765+i];
-				palette[765+i] = c;
-			}
+	for (i = 0; i < 3; i++) {
+		c = palette[i];
+		palette[i] = palette[765+i];
+		palette[765+i] = c;
+		}
 
 //  we also need to swap the data entries as well.  black is white and white is black
 
-			for (i = 0; i < ptr-font->ftData; i++) {
-				if (font->ftData[i] == 0)
-					font->ftData[i] = 255;
-				else if (font->ftData[i] == 255)
-					font->ftData[i] = 0;
-			}
-
+	for (i = 0; i < ptr-font->ftData; i++) {
+		if (font->ftData[i] == 0)
+			font->ftData[i] = 255;
+		else if (font->ftData[i] == 255)
+			font->ftData[i] = 0;
 		}
-#endif
-		GrCountColors (font->ftData, (int) (ptr - font->ftData), freq);
-		GrSetPalette (&font->ftParentBitmap, palette, TRANSPARENCY_COLOR, -1, freq);
-		}
-	else
-		GrSetPalette (&font->ftParentBitmap, defaultPalette, TRANSPARENCY_COLOR, -1, freq);
-
-	CFClose (&fontfile);
-
-	//set curcanv vars
-
-	FONT = font;
-	FG_COLOR.index = 0;
-	BG_COLOR.index = 0;
-
-	{
-		int x, y, aw;
-		char tests[]="abcdefghij1234.A";
-		GrGetStringSize (tests, &x, &y, &aw);
-//		newfont->ft_aw = x/ (double)strlen (tests);
 	}
+#endif
+	GrCountColors (font->ftData, (int) (ptr - font->ftData), freq);
+	GrSetPalette (&font->ftParentBitmap, palette, TRANSPARENCY_COLOR, -1, freq);
+	}
+else
+	GrSetPalette (&font->ftParentBitmap, defaultPalette, TRANSPARENCY_COLOR, -1, freq);
+CFClose (&fontfile);
 
-	OglInitFont (font);
-	return font;
+FONT = font;
+FG_COLOR.index = 0;
+BG_COLOR.index = 0;
 
+int x, y, aw;
+char tests[]="abcdefghij1234.A";
+GrGetStringSize (tests, &x, &y, &aw);
+
+OglInitFont (font);
+return font;
 }
 
 //------------------------------------------------------------------------------
 
 //remap a font by re-reading its data & palette
-void GrRemapFont (grsFont *font, char * fontname, char *font_data)
+void GrRemapFont (grsFont *font, char * fontname, char *fontDataP)
 {
 	int i;
 	int nchars;
@@ -1393,15 +1376,15 @@ void GrRemapFont (grsFont *font, char * fontname, char *font_data)
 	datasize -= GRS_FONT_SIZE; // subtract the size of the header.
 	D2_FREE (font->ftChars);
 	grs_font_read (font, &fontfile); // have to reread in case mission tHogFile overrides font.
-	CFRead (font_data, 1, datasize, &fontfile);  //read raw data
-	// make these offsets relative to font_data
+	CFRead (fontDataP, 1, datasize, &fontfile);  //read raw data
+	// make these offsets relative to fontDataP
 	font->ftData = (ubyte *) ((size_t)font->ftData - GRS_FONT_SIZE);
 	font->ftWidths = (short *) ((size_t)font->ftWidths - GRS_FONT_SIZE);
 	font->ftKernData = (ubyte *) ((size_t)font->ftKernData - GRS_FONT_SIZE);
 	nchars = font->ftMaxChar - font->ftMinChar + 1;
 	if (font->ftFlags & FT_PROPORTIONAL) {
-		font->ftWidths = (short *) (font_data + (size_t)font->ftWidths);
-		font->ftData = (ubyte *) (font_data + (size_t) font->ftData);
+		font->ftWidths = (short *) (fontDataP + (size_t)font->ftWidths);
+		font->ftData = (ubyte *) (fontDataP + (size_t) font->ftData);
 		font->ftChars = (unsigned char **)D2_ALLOC (nchars * sizeof (unsigned char *));
 		ptr = font->ftData;
 		for (i=0; i< nchars; i++) {
@@ -1414,13 +1397,13 @@ void GrRemapFont (grsFont *font, char * fontname, char *font_data)
 			}
 		}
 	else  {
-		font->ftData   = (ubyte *) font_data;
+		font->ftData   = (ubyte *) fontDataP;
 		font->ftChars  = NULL;
 		font->ftWidths = NULL;
 		ptr = font->ftData + (nchars * font->ftWidth * font->ftHeight);
 		}
 	if (font->ftFlags & FT_KERNED)
-		font->ftKernData = (ubyte *) (font_data + (size_t)font->ftKernData);
+		font->ftKernData = (ubyte *) (fontDataP + (size_t)font->ftKernData);
 	if (font->ftFlags & FT_COLOR) {		//remap palette
 		ubyte palette[256*3];
 		int freq[256];
@@ -1512,10 +1495,10 @@ void GrSetCurFont (grsFont * newFont)
 
 //------------------------------------------------------------------------------
 
-int GrInternalStringClipped (int x, int y, char *s)
+int GrInternalStringClipped (int x, int y, const char *s)
 {
 	unsigned char * fp;
-	char * text_ptr, * next_row, * text_ptr1;
+	const char * text_ptr, * next_row, * text_ptr1;
 	int r, BitMask, i, bits, width, spacing, letter, underline;
 	int x1 = x, last_x;
 
@@ -1614,10 +1597,10 @@ int GrInternalStringClipped (int x, int y, char *s)
 
 //------------------------------------------------------------------------------
 
-int GrInternalStringClippedM (int x, int y, char *s)
+int GrInternalStringClippedM (int x, int y, const char *s)
 {
 	unsigned char * fp;
-	char * text_ptr, * next_row, * text_ptr1;
+	const char * text_ptr, * next_row, * text_ptr1;
 	int r, BitMask, i, bits, width, spacing, letter, underline;
 	int x1 = x, last_x;
 

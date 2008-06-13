@@ -292,7 +292,7 @@ GrPaletteStepUp (0, 0, 0);
 void ShowInGameWarning (const char *s)
 {
 if (grdCurScreen) {
-	char	*hs, *ps = strstr (s, "Error");
+	const char	*hs, *ps = strstr (s, "Error");
 
 	if (ps > s) {	//skip trailing non alphanum chars
 		for (hs = ps - 1; (hs > s) && !isalnum (*hs); hs++)
@@ -1066,7 +1066,7 @@ GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameS
 
 //------------------------------------------------------------------------------
 
-#define ADD_HELP_OPT(_text)	m [opt].nType = NM_TYPE_TEXT; m [opt++].text = (_text);
+#define ADD_HELP_OPT(_text)	m [opt].nType = NM_TYPE_TEXT; m [opt++].text = (char *) (_text);
 
 void ShowHelp ()
 {
