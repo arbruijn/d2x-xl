@@ -29,17 +29,18 @@ static char rcsid[] = "$Id: gamefont.c,v 1.4 2003/10/10 09:36:35 btb Exp $";
 
 // if 1, use high-res versions of fonts
 
-char * Gamefont_filenames[] = { "font1-1.fnt",      // Font 0
-                                "font1-1h.fnt",     // Font 0 High-res
-                                "font2-1.fnt",      // Font 1
-                                "font2-1h.fnt",     // Font 1 High-res
-                                "font2-2.fnt",      // Font 2
-                                "font2-2h.fnt",     // Font 2 High-res
-                                "font2-3.fnt",      // Font 3
-                                "font2-3h.fnt",     // Font 3 High-res
-                                "font3-1.fnt",      // Font 4
-                                "font3-1h.fnt",     // Font 4 High-res
-                              };
+const char * Gamefont_filenames[] = { 
+		"font1-1.fnt",      // Font 0
+        "font1-1h.fnt",     // Font 0 High-res
+        "font2-1.fnt",      // Font 1
+        "font2-1h.fnt",     // Font 1 High-res
+        "font2-2.fnt",      // Font 2
+        "font2-2h.fnt",     // Font 2 High-res
+        "font2-3.fnt",      // Font 3
+        "font2-3h.fnt",     // Font 3 High-res
+        "font3-1.fnt",      // Font 4
+        "font3-1h.fnt",     // Font 4 High-res
+        };
 
 grsFont *Gamefonts[MAX_FONTS];
 

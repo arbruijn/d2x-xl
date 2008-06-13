@@ -297,7 +297,6 @@ int BossFitsInSeg (tObject *bossObjP, int nSegment);
 
 void StartRobotDeathSequence (tObject *objP);
 int DoAnyRobotDyingFrame (tObject *objP);
-void _CDECL_ BuddyMessage (char * format, ... );
 
 #define SPECIAL_REACTOR_ROBOT   65
 extern void SpecialReactorStuff (void);

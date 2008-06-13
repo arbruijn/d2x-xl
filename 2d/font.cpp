@@ -953,7 +953,7 @@ return CreatePoolString (s, idP);
 
 //------------------------------------------------------------------------------
 
-int GrString (int x, int y, char *s, int *idP)
+int GrString (int x, int y, const char *s, int *idP)
 {
 	int			w, h, aw, clipped = 0;
 #if STRINGPOOL
@@ -1018,7 +1018,7 @@ return GrInternalStringClipped (x, y, s);
 
 //------------------------------------------------------------------------------
 
-int GrUString (int x, int y, char *s)
+int GrUString (int x, int y, const char *s)
 {
 if (TYPE == BM_OGL)
 	return OglInternalString (x, y, s);
@@ -1033,7 +1033,7 @@ return GrInternalString0 (x, y, s);
 
 //------------------------------------------------------------------------------
 
-void GrGetStringSize (char *s, int *string_width, int *string_height, int *average_width)
+void GrGetStringSize (const char *s, int *string_width, int *string_height, int *average_width)
 {
 	int i = 0, longest_width = 0, nTab = 0;
 	int width, spacing;
@@ -1084,7 +1084,7 @@ void GrGetStringSize (char *s, int *string_width, int *string_height, int *avera
 
 //------------------------------------------------------------------------------
 
-void GrGetStringSizeTabbed (char *s, int *string_width, int *string_height, int *average_width, 
+void GrGetStringSizeTabbed (const char *s, int *string_width, int *string_height, int *average_width, 
 									 int *nTabs, int nMaxWidth)
 {
 	char	*pi, *pj;
@@ -1118,7 +1118,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ GrUPrintf (int x, int y, char * format, ...)
+int _CDECL_ GrUPrintf (int x, int y, const char * format, ...)
 {
 	char buffer[1000];
 	va_list args;

@@ -115,14 +115,14 @@ int yesNoTextIndex [2] = { TNUM_N, TNUM_Y };
 
 int mouseAxisTextIndex [3] = {TNUM_L_R, TNUM_F_B, TNUM_Z1};
 int mouseButtonTextIndex [3] = {TNUM_LEFT, TNUM_RIGHT, TNUM_MID};
-char * extraMouseButtonTextIndex [13] = { "MW UP", "MW DN", "M6", "M7", "M8", "M9", "M10","M11","M12","M13","M14","M15","M16" };//text for buttons above 3. -MPM
+const char * extraMouseButtonTextIndex [13] = { "MW UP", "MW DN", "M6", "M7", "M8", "M9", "M10","M11","M12","M13","M14","M15","M16" };//text for buttons above 3. -MPM
 
 // macros for drawing lo/hi res KConfig screens (see scores.c as well)
 
 #define LHX(x)      (gameStates.menus.bHires?2* (x):x)
 #define LHY(y)      (gameStates.menus.bHires? (24* (y))/10:y)
 
-char *btype_text [] = { "BT_KEY", "BT_MOUSE_BUTTON", "BT_MOUSE_AXIS", "BT_JOY_BUTTON", "BT_JOY_AXIS", "BT_INVERT" };
+const char *btype_text [] = { "BT_KEY", "BT_MOUSE_BUTTON", "BT_MOUSE_AXIS", "BT_JOY_BUTTON", "BT_JOY_AXIS", "BT_INVERT" };
 
 #define INFO_Y 28
 

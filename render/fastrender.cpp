@@ -473,7 +473,7 @@ return tiRender.nFaces;
 
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
-	int	bVBO = 0,
+	int	//bVBO = 0,
 			bLightmaps = (nType < 4) && HaveLightmaps (),
 			bNormals = !bDepthOnly; 
 

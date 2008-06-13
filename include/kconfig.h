@@ -191,7 +191,7 @@ typedef struct kcItem {
 	short w2;
 	short u,d,l,r;
         //short text_num1;
-   char 	*text;
+   const char 	*text;
 	int   textId;
 	ubyte nType;
 	ubyte value;		// what key,button,etc

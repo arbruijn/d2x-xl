@@ -341,7 +341,7 @@ void ChangeGuidebotName ()
 
 //	-----------------------------------------------------------------------------
 
-void _CDECL_ BuddyMessage (char * format, ... )
+void _CDECL_ BuddyMessage (const char * format, ... )
 {
 if (gameData.escort.bMsgsSuppressed)
 	return;
