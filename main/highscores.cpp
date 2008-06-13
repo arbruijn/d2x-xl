@@ -55,7 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 char szConditionLetters [] = {' ','P','E','D','E','E','V','W'};
 
-void ScoreTableReactor (char *message);
+void ScoreTableReactor (const char *message);
 void ScoreTablePhallic ();
 void ScoreTableDrawCoop ();
 
@@ -265,7 +265,7 @@ else {
 
 //-----------------------------------------------------------------------------
 
-void ScoreTableReactor (char *message)
+void ScoreTableReactor (const char *message)
  {
   static char oldmessage [50]={0};
   int sw, sh, aw;

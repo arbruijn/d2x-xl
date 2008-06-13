@@ -686,16 +686,21 @@ return h;
 #define KC_LHX(_x) (LHX (_x)+xOffs)
 #define KC_LHY(_y) (LHY (_y)+yOffs)
 
-void KCDrawTitle (char *pszTitle)
+void KCDrawTitle (const char *pszTitle)
 {
-char *p = strchr (pszTitle, '\n');
+	char szTitle [200];
+	const char *p = strchr (pszTitle, '\n');
 
+if (p) {
+	int l = (int) (p - pszTitle);
+	if (l >= (int) sizeof (szTitle))
+		l = (int) sizeof (szTitle) - 1;
+	memcpy (szTitle, pszTitle, l);
+	szTitle [l] = '\0';
+	p = szTitle;
+	}
 grdCurCanv->cvFont = MEDIUM3_FONT;
-if (p) 
-	*p = 32;
-GrString (0x8000, KC_LHY (8), pszTitle, NULL);
-if (p)
-	*p = '\n';
+GrString (0x8000, KC_LHY (8), p, NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -972,7 +977,7 @@ return code;
 
 //------------------------------------------------------------------------------
 
-int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, char *pszMsg)
+int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const char *pszMsg)
 {
 	int k = 255;
 
@@ -1208,7 +1213,7 @@ nLinked |= tableFlags;
 
 //------------------------------------------------------------------------------
 
-void KConfigSub (kcItem * items, int nItems, char * pszTitle)
+void KConfigSub (kcItem * items, int nItems, const char * pszTitle)
 {
 	gsrCanvas * save_canvas;
 	grsFont * save_font;

@@ -1225,7 +1225,7 @@ void grs_font_read (grsFont *gf, CFILE *fp)
 
 //------------------------------------------------------------------------------
 
-grsFont * GrInitFont (char * fontname)
+grsFont * GrInitFont (const char *fontname)
 {
 	static int firstTime=1;
 	grsFont *font;
