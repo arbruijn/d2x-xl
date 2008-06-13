@@ -102,10 +102,11 @@ if (*criticalErrorCounterPtr) {
 
 // ----------------------------------------------------------------------------
 
-FILE *CFGetFileHandle (char *filename, char *folder, char *mode) 
+FILE *CFGetFileHandle (const char *filename, const char *folder, const char *mode) 
 {
 	FILE	*fp;
-	char	fn [FILENAME_LEN], *pfn;
+	char	fn [FILENAME_LEN];
+	const char *pfn;
 
 CFCriticalError (0);
 if (!*filename) {
@@ -132,7 +133,7 @@ return fp;
 
 // ----------------------------------------------------------------------------
 //returns 1 if file loaded with no errors
-int CFInitHogFile (char *pszFile, char *folder, tHogFile *hogFiles, int *nFiles) 
+int CFInitHogFile (const char *pszFile, const char *folder, tHogFile *hogFiles, int *nFiles) 
 {
 	char	id [4];
 	FILE	*fp;
@@ -191,7 +192,7 @@ for (;;) {
 
 // ----------------------------------------------------------------------------
 
-int CFUseHogFile (tHogFileList *hogP, char *name, char *folder)
+int CFUseHogFile (tHogFileList *hogP, const char *name, const char *folder)
 {
 if (hogP->bInitialized)
 	return 1;
@@ -209,7 +210,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int CFUseAltHogFile (char * name) 
+int CFUseAltHogFile (const char * name) 
 {
 gameHogFiles.AltHogFiles.bInitialized = 0;
 return CFUseHogFile (&gameHogFiles.AltHogFiles, name, "");
@@ -217,21 +218,21 @@ return CFUseHogFile (&gameHogFiles.AltHogFiles, name, "");
 
 // ----------------------------------------------------------------------------
 
-int CFUseD2XHogFile (char * name) 
+int CFUseD2XHogFile (const char * name) 
 {
 return CFUseHogFile (&gameHogFiles.D2XHogFiles, name, gameFolders.szMissionDir);
 }
 
 // ----------------------------------------------------------------------------
 
-int CFUseXLHogFile (char * name) 
+int CFUseXLHogFile (const char * name) 
 {
 return CFUseHogFile (&gameHogFiles.XLHogFiles, name, gameFolders.szDataDir);
 }
 
 // ----------------------------------------------------------------------------
 
-int CFUseExtraHogFile (char * name) 
+int CFUseExtraHogFile (const char * name) 
 {
 return gameStates.app.bHaveExtraData = 
 	!gameStates.app.bNostalgia &&
@@ -240,7 +241,7 @@ return gameStates.app.bHaveExtraData =
 
 // ----------------------------------------------------------------------------
 
-int CFUseD1HogFile (char * name) 
+int CFUseD1HogFile (const char * name) 
 {
 return CFUseHogFile (&gameHogFiles.D1HogFiles, name, gameFolders.szDataDir);
 }
@@ -269,7 +270,7 @@ return 0;	//not loaded!
 
 // ----------------------------------------------------------------------------
 
-int CFSize (char *hogname, char *folder, int bUseD1Hog)
+int CFSize (const char *hogname, const char *folder, int bUseD1Hog)
 {
 	CFILE cf;
 //	char fn [FILENAME_LEN];
@@ -299,7 +300,7 @@ return size;
  * return handle for file called "name", embedded in one of the hogfiles
  */
 
-FILE *CFFindHogFile (tHogFileList *hog, char *folder, char *name, int *length)
+FILE *CFFindHogFile (tHogFileList *hog, const char *folder, const char *name, int *length)
 {
 	FILE		*fp;
 	int		i;
@@ -331,7 +332,7 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-FILE* CFFindLibFile (char *name, int *length, int bUseD1Hog)
+FILE* CFFindLibFile (const char *name, int *length, int bUseD1Hog)
 {
 	FILE* fp;
   
@@ -380,7 +381,7 @@ return ferror (cfP->file);
 
 // ----------------------------------------------------------------------------
 
-int CFExist (char *filename, char *folder, int bUseD1Hog) 
+int CFExist (const char *filename, const char *folder, int bUseD1Hog) 
 {
 	int	length, bNoHOG = 0;
 	FILE	*fp;
@@ -409,7 +410,7 @@ return 0;		// Couldn't find it.
 
 // ----------------------------------------------------------------------------
 // Deletes a file.
-int CFDelete (char *filename, char*folder)
+int CFDelete (const char *filename, const char* folder)
 {
 	char	fn [FILENAME_LEN];
 
@@ -423,7 +424,7 @@ sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", filename);
 
 // ----------------------------------------------------------------------------
 // Rename a file.
-int CFRename (char *oldname, char *newname, char *folder)
+int CFRename (const char *oldname, const char *newname, const char *folder)
 {
 	char	fno [FILENAME_LEN], fnn [FILENAME_LEN];
 
@@ -438,7 +439,7 @@ sprintf (fnn, "%s%s%s", folder, *folder ? "/" : "", newname);
 
 // ----------------------------------------------------------------------------
 // Make a directory.
-int CFMkDir (char *pathname)
+int CFMkDir (const char *pathname)
 {
 #if defined (_WIN32_WCE) || defined (_WIN32)
 return !CreateDirectory (pathname, NULL);
@@ -449,7 +450,7 @@ return mkdir(pathname, 0755);
 
 // ----------------------------------------------------------------------------
 
-int CFOpen (CFILE *cfP, char *filename, char *folder, char *mode, int bUseD1Hog) 
+int CFOpen (CFILE *cfP, const char *filename, const char *folder, const char *mode, int bUseD1Hog) 
 {
 	int	length = -1;
 	FILE	*fp = NULL;
@@ -484,7 +485,7 @@ cfP->file = fp;
 cfP->raw_position = 0;
 cfP->size = (length < 0) ? ffilelength (fp) : length;
 cfP->lib_offset = (length < 0) ? 0 : ftell (fp);
-cfP->filename = filename;
+cfP->filename = (char *) filename;
 return 1;
 }
 
@@ -501,7 +502,7 @@ return cfP ? cfP->size : 0;
 // returns:   number of full elements actually written
 //
 //
-int CFWrite (void *buf, int nElemSize, int nElemCount, CFILE *cfP)
+int CFWrite (const void *buf, int nElemSize, int nElemCount, CFILE *cfP)
 {
 	int nWritten;
 
@@ -558,7 +559,7 @@ return c;
 // returns:   success ==> non-negative value
 //            error   ==> EOF
 //
-int CFPutS (char *str, CFILE *cfP)
+int CFPutS (const char *str, CFILE *cfP)
 {
 	int ret;
 
@@ -610,7 +611,7 @@ return  t;
 
 // ----------------------------------------------------------------------------
 
-size_t CFRead (void * buf, size_t elsize, size_t nelem, CFILE *cfP) 
+size_t CFRead (void *buf, size_t elsize, size_t nelem, CFILE *cfP) 
 {
 unsigned int i, size = (int) (elsize * nelem);
 
@@ -884,7 +885,7 @@ CFWriteVector (&m->fVec, file);
 
 // ----------------------------------------------------------------------------
 
-int CFWriteString (char *buf, CFILE *file)
+int CFWriteString (const char *buf, CFILE *file)
 {
 if (buf && *buf && CFWrite (buf, (int) strlen (buf), 1, file))
 	return (int) CFWriteByte (0, file);   // write out NULL termination
@@ -893,7 +894,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int CFExtract (char *filename, char *folder, int bUseD1Hog, char *szDestName)
+int CFExtract (const char *filename, const char *folder, int bUseD1Hog, char *szDestName)
 {
 	CFILE		cf;
 	FILE		*fp;
@@ -933,7 +934,7 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-char *CFReadData (char *filename, char *folder, int bUseD1Hog)
+char *CFReadData (const char *filename, const char *folder, int bUseD1Hog)
 {
 	CFILE		cf;
 	char		*pData = NULL;

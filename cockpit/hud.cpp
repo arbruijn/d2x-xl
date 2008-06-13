@@ -142,7 +142,7 @@ if (pMsgs->xTimer < 0)	{
 }
 
 if (pMsgs->nMessages > 0) {
-	if (pMsgs->nColor == -1)
+	if (pMsgs->nColor == (unsigned int) -1)
 		pMsgs->nColor = GREEN_RGBA;
 
 	if ((gameStates.render.vr.nRenderMode == VR_NONE) && ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || 
@@ -173,7 +173,7 @@ if (pMsgs->nMessages > 0) {
 					strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
 				}
 			else {
-				if (pMsgs->nColor == -1)
+				if (pMsgs->nColor == (unsigned int) -1)
 					pMsgs->nColor = GREEN_RGBA;
 				GrSetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
 				pMsgs->nMsgIds [nMsg] = GrPrintF (pMsgs->nMsgIds + nMsg, (grdCurCanv->cvBitmap.bmProps.w-w) / 2, ycrd, pszMsg);
@@ -248,7 +248,7 @@ if (gameOpts->render.cockpit.bSplitHUDMsgs)
 //------------------------------------------------------------------------------
 // Call to flash a message on the HUD.  Returns true if message drawn.
 // (pszMsg might not be drawn if previous pszMsg was same)
-int HUDInitMessageVA (ubyte nType, char * format, va_list args)
+int HUDInitMessageVA (ubyte nType, const char * format, va_list args)
 {
 	tHUDMessage *pMsgs = gameData.hud.msgs + (gameOpts->render.cockpit.bSplitHUDMsgs ? nType : 0);
 	int			temp;
@@ -265,7 +265,7 @@ pszMsg = pMsgs->szMsgs [pMsgs->nLast];
 vsprintf (pszMsg, format, args);
 /* Produce a colorised version and send it to the console */
 con_message [0] = CC_COLOR;
-if (pMsgs->nColor != -1) {
+if (pMsgs->nColor != (unsigned int) -1) {
 	con_message [1] = (char) RGBA_RED (pMsgs->nColor) / 2 + 128;
 	con_message [2] = (char) RGBA_GREEN (pMsgs->nColor) / 2 + 128;
 	con_message [3] = (char) RGBA_BLUE (pMsgs->nColor) / 2 + 128;
@@ -325,7 +325,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ HUDInitMessage (char *format, ...)
+int _CDECL_ HUDInitMessage (const char *format, ...)
 {
 	int ret = 0;
 
@@ -369,7 +369,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 #endif
 	   }
    GrSetCurFont (GAME_FONT);
-   if (pMsgs->nColor == -1)
+   if (pMsgs->nColor == (unsigned int) -1)
       pMsgs->nColor = RGBA_PAL2 (0, 28, 0);
 	GrSetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
    GrString (0x8000, grdCurCanv->cv_h- (grdCurCanv->cvFont->ftHeight+3), TXT_PRESS_ANY_KEY, NULL);
@@ -385,7 +385,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 // 		InitHUDMessage ("Afterburner disengaged.");
 // }
 
-void _CDECL_ HUDMessage (int nClass, char *format, ...)
+void _CDECL_ HUDMessage (int nClass, const char *format, ...)
 {
 if (gameOpts->render.cockpit.bHUDMsgs &&
 	 (!bNoMsgRedundancy || (nClass & MSGC_NOREDUNDANCY)) &&
@@ -400,7 +400,7 @@ if (gameOpts->render.cockpit.bHUDMsgs &&
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ HUDPlayerMessage (char *format, ...)
+void _CDECL_ HUDPlayerMessage (const char *format, ...)
 {
 	va_list vp;
 

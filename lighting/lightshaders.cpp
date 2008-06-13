@@ -176,7 +176,7 @@ else {
 // per pixel lighting, no lightmaps
 // 2 - 8 light sources
 
-char *pszPPXLightingFS [] = {
+const char *pszPPXLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
@@ -341,7 +341,7 @@ char *pszPPXLightingFS [] = {
 // ----------------------------------------------------------------------------------------------
 // one light source
 
-char *pszPP1LightingFS [] = {
+const char *pszPP1LightingFS [] = {
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
@@ -476,7 +476,7 @@ char *pszPP1LightingFS [] = {
 
 // ----------------------------------------------------------------------------------------------
 
-char *pszPPLightingVS [] = {
+const char *pszPPLightingVS [] = {
 	"#define LIGHTS 8\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
@@ -522,7 +522,7 @@ char *pszPPLightingVS [] = {
 	
 //-------------------------------------------------------------------------
 
-char *pszLightingFS [] = {
+const char *pszLightingFS [] = {
 	"void main() {\r\n" \
 	"gl_FragColor = gl_Color;\r\n" \
 	"	}"
@@ -554,7 +554,7 @@ char *pszLightingFS [] = {
 	};
 
 
-char *pszLightingVS [] = {
+const char *pszLightingVS [] = {
 	"void main() {\r\n" \
 	"	gl_Position = ftransform();\r\n" \
    "	gl_FrontColor = gl_Color;\r\n" \
@@ -584,7 +584,7 @@ char *pszLightingVS [] = {
 	
 // ----------------------------------------------------------------------------------------------
 
-char *pszPPXLMLightingFS [] = {
+const char *pszPPXLMLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
@@ -746,7 +746,7 @@ char *pszPPXLMLightingFS [] = {
 
 // ----------------------------------------------------------------------------------------------
 
-char *pszPP1LMLightingFS [] = {
+const char *pszPP1LMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
@@ -883,7 +883,7 @@ char *pszPP1LMLightingFS [] = {
 
 // ----------------------------------------------------------------------------------------------
 
-char *pszPPLMLightingVS [] = {
+const char *pszPPLMLightingVS [] = {
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
@@ -929,7 +929,7 @@ char *pszPPLMLightingVS [] = {
 	
 //-------------------------------------------------------------------------
 
-char *pszPP0LMLightingFS [] = {
+const char *pszPP0LMLightingFS [] = {
 #if ONLY_LIGHTMAPS
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
@@ -981,7 +981,7 @@ char *pszPP0LMLightingFS [] = {
 
 //-------------------------------------------------------------------------
 
-char *pszLMLightingFS [] = {
+const char *pszLMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"void main() {\r\n" \
@@ -1022,7 +1022,7 @@ char *pszLMLightingFS [] = {
 
 //-------------------------------------------------------------------------
 
-char *pszLMLightingVS [] = {
+const char *pszLMLightingVS [] = {
 	"void main() {\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"	gl_Position = ftransform();\r\n" \
@@ -1056,7 +1056,7 @@ char *pszLMLightingVS [] = {
 	
 //-------------------------------------------------------------------------
 
-char *BuildLightingShader (char *pszTemplate, int nLights)
+char *BuildLightingShader (const char *pszTemplate, int nLights)
 {
 	int	l = (int) strlen (pszTemplate) + 1;
 	char	*pszFS, szLights [2];

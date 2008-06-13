@@ -41,7 +41,7 @@ char * pszArgList [MAX_ARGS], *ps;
 
 //------------------------------------------------------------------------------
 
-int FindArg (char * s)
+int FindArg (const char * s)
 {
 	int i;
   

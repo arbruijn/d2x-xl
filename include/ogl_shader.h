@@ -11,7 +11,7 @@ extern GLhandleARB	genShaderProg;
 char *LoadShader (char* fileName);
 int CreateShaderProg (GLhandleARB *progP);
 int CreateShaderFunc (GLhandleARB *progP, GLhandleARB *fsP, GLhandleARB *vsP, 
-							 char *fsName, char *vsName, int bFromFile);
+		const char *fsName, const char *vsName, int bFromFile);
 int LinkShaderProg (GLhandleARB *progP);
 void DeleteShaderProg (GLhandleARB *progP);
 void InitShaders (void);

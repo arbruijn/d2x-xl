@@ -47,7 +47,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RI_POLY_OFFSET 0
 #define RI_POLY_CENTER 1
 
-static int nPolys = 0, nDbgPoly = -1, nDbgItem = -1;
+#ifdef _DEBUG
+static int nDbgPoly = -1, nDbgItem = -1;
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -721,11 +723,6 @@ if (item->bmP && strstr (item->bmP->szName, "door45#5"))
 	item = item;
 #endif
 #if 1
-#ifdef _DEBUG
-	nPolys++;
-	if ((nDbgPoly >= 0) && (nPolys != nDbgPoly))
-		return;
-#endif
 faceP = item->faceP;
 triP = item->triP;
 bLightmaps = renderItems.bLightmaps && (faceP != NULL);
@@ -1156,7 +1153,6 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	}
 PROF_START
 RIResetShader ();
-nPolys = 0;
 bStencil = StencilOff ();
 renderItems.bTextured = -1;
 renderItems.bClientState = -1;

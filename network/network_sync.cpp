@@ -199,7 +199,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			if ((gameData.multigame.nObjOwner [i] == -1) || (gameData.multigame.nObjOwner [i] == nPlayer))
 				continue;
 			}
-		if ((DATALIMIT - bufI - 1) < (sizeof (tObject) + 5))
+		if ((DATALIMIT - bufI - 1) < (int) sizeof (tObject) + 5)
 			break; // Not enough room for another tObject
 		nObjFrames++;
 		networkData.nSyncObjs++;

@@ -139,7 +139,7 @@ return bShowOnlyCurSide = !bShowOnlyCurSide;
 
 //------------------------------------------------------------------------------
 
-inline int LoadExtraBitmap (grsBitmap **bmPP, char *pszName, int *bHaveP)
+inline int LoadExtraBitmap (grsBitmap **bmPP, const char *pszName, int *bHaveP)
 {
 if (!*bHaveP) {
 	grsBitmap *bmP = CreateAndReadTGA (pszName);

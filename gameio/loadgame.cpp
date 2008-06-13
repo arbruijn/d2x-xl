@@ -1908,7 +1908,7 @@ void ShowLevelIntro (int nLevel)
 {
 //if shareware, show a briefing?
 if (!IsMultiGame) {
-	int i, bPlayed = 0;
+	unsigned int i, bPlayed = 0;
 
 	PlayLevelIntroMovie (nLevel);
 	if (!gameStates.app.bD1Mission && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)) {

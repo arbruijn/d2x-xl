@@ -401,7 +401,6 @@ void gr_update_buffer (void * sbuf1, void * sbuf2, void * dbuf, int size);
 // When this function is called, the guns are set to gr_palette, and
 // the palette stays the same until GrClose is called
 
-ubyte *GrUsePaletteTable(char * filename, char *level_name);
 void GrCopyPalette(ubyte *gr_palette, ubyte *pal, int size);
 
 //=========================================================================
@@ -525,12 +524,12 @@ void GrSetFontColorRGBi (unsigned int fg, int bSetFG, unsigned int bg, int bSetB
 void GrSetCurFont (grsFont * fontP);
 int GrString (int x, int y, char *s, int *idP);
 int GrUString (int x, int y, char *s);
-int _CDECL_ GrPrintF (int *idP, int x, int y, char * format, ...);
-int _CDECL_ GrUPrintf (int x, int y, char * format, ...);
-void GrGetStringSize(char *s, int *string_width, int *string_height, int *average_width);
-void GrGetStringSizeTabbed (char *s, int *string_width, int *string_height, int *average_width, int *nTabs, int nMaxWidth);
-grsBitmap *CreateStringBitmap (char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce);
-int GetCenteredX (char *s);
+int _CDECL_ GrPrintF (int *idP, int x, int y, const char * format, ...);
+int _CDECL_ GrUPrintf (int x, int y, const char * format, ...);
+void GrGetStringSize(const char *s, int *string_width, int *string_height, int *average_width);
+void GrGetStringSizeTabbed (const char *s, int *string_width, int *string_height, int *average_width, int *nTabs, int nMaxWidth);
+grsBitmap *CreateStringBitmap (const char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce);
+int GetCenteredX (const char *s);
 
 //  From roller.c
 void RotateBitmap(grsBitmap *bp, grsPoint *vertbuf, int lightValue);

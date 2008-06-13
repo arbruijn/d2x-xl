@@ -706,7 +706,7 @@ extern tObject demoRightExtra, demoLeftExtra;
 
 char DemoWBUType []={0, WBUMSL, WBUMSL, WBU_REAR, WBU_ESCORT, WBU_MARKER, WBUMSL};
 char DemoRearCheck []={0, 0, 0, 1, 0, 0, 0};
-char *DemoExtraMessage []={"PLAYER", "GUIDED", "MISSILE", "REAR", "GUIDE-BOT", "MARKER", "SHIP"};
+const char *DemoExtraMessage []={"PLAYER", "GUIDED", "MISSILE", "REAR", "GUIDE-BOT", "MARKER", "SHIP"};
 
 void ShowExtraViews ()
 {
@@ -876,7 +876,7 @@ if (objP &&
 	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]) && 
 	 (gameOpts->render.cockpit.bGuidedInMainView)) {
 	int w, h, aw;
-	char *msg = "Guided Missile View";
+	const char *msg = "Guided Missile View";
 	tObject *viewerSave = gameData.objs.viewer;
 
    if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {

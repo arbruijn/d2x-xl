@@ -46,16 +46,16 @@ FILE *fErr = NULL;
 int err_initialized=0;
 //end edit -MM
 
-static void (*ErrorPrintFunc)(char *);
+static void (*ErrorPrintFunc)(const char *);
 
 char szExitMsg[MAX_MSG_LEN]="";
 char szWarnMsg[MAX_MSG_LEN];
 
-extern void ShowInGameWarning(char *s);
+extern void ShowInGameWarning(const char *s);
 
 //------------------------------------------------------------------------------
 //takes string in register, calls //printf with string on stack
-void warn_printf(char *s)
+void warn_printf(const char *s)
 {
 #if TRACE
 	con_printf(CON_URGENT, "%s\n",s);
@@ -63,21 +63,21 @@ void warn_printf(char *s)
 }
 
 #ifdef _WIN32
-void (*pWarnFunc)(char *s) = NULL;
+void (*pWarnFunc)(const char *s) = NULL;
 #else
-void (*pWarnFunc)(char *s) = warn_printf;
+void (*pWarnFunc)(const char *s) = warn_printf;
 #endif
 
 //------------------------------------------------------------------------------
 //provides a function to call with warning messages
-void SetWarnFunc(void (*f)(char *s))
+void SetWarnFunc(void (*f)(const char *s))
 {
 pWarnFunc = f;
 }
 
 //------------------------------------------------------------------------------
 //uninstall warning function - install default //printf
-void ClearWarnFunc (void (*f)(char *s))
+void ClearWarnFunc (void (*f)(const char *s))
 {
 #ifdef _WIN32
 pWarnFunc = NULL;
@@ -88,7 +88,7 @@ pWarnFunc = warn_printf;
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ set_exit_message(char *fmt,...)
+void _CDECL_ set_exit_message(const char *fmt,...)
 {
 	va_list arglist;
 	int len;
@@ -102,7 +102,7 @@ if (len==-1 || len>MAX_MSG_LEN)
 
 //------------------------------------------------------------------------------
 
-void _Assert(int expr,char *expr_text,char *filename,int linenum)
+void _Assert(int expr, const char *expr_text, const char *filename, int linenum)
 {
 if (!(expr)) {
 #if defined (_DEBUG) && defined (_WIN32)
@@ -139,7 +139,7 @@ if (*szExitMsg) {
 #	define MB_ICONERROR 0
 #endif
 
-void D2MsgBox (char *pszMsg, unsigned int nType)
+void D2MsgBox (const char *pszMsg, unsigned int nType)
 {
 gameData.app.bGamePaused = 1;
 if (grdCurScreen && pWarnFunc)
@@ -157,7 +157,7 @@ gameData.app.bGamePaused = 0;
 
 //------------------------------------------------------------------------------
 //terminates with error code 1, printing message
-void _CDECL_ Error (char *fmt,...)
+void _CDECL_ Error (const char *fmt,...)
 {
 	va_list arglist;
 
@@ -183,7 +183,7 @@ exit (1);
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ PrintLog (char *fmt, ...)
+void _CDECL_ PrintLog (const char *fmt, ...)
 {
  if (fErr) {
 		va_list arglist;
@@ -199,7 +199,7 @@ void _CDECL_ PrintLog (char *fmt, ...)
 
 //------------------------------------------------------------------------------
 //print out warning message to user
-void _CDECL_ Warning (char *fmt, ...)
+void _CDECL_ Warning (const char *fmt, ...)
 {
 	va_list arglist;
 
@@ -215,7 +215,7 @@ gameStates.app.bShowError = 0;
 
 //------------------------------------------------------------------------------
 //initialize error handling system, and set default message. returns 0=ok
-int _CDECL_ error_init(void (*func)(char *), char *fmt, ...)
+int _CDECL_ error_init(void (*func)(const char *), const char *fmt, ...)
 {
 	va_list arglist;
 	int len;

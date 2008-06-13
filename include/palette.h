@@ -28,17 +28,18 @@ typedef struct tRGB {
 
 typedef ubyte	tPalette [256*3];
 
-extern void GrSetPaletteGamma ( int gamma);
-extern int GrGetPaletteGamma ();
-extern void GrPaletteStepClear ();
-extern int GrPaletteFadeOut (ubyte *pal, int nsteps, int allow_keys);
-extern int GrPaletteFadeIn (ubyte *pal,int nsteps, int allow_keys);
-extern int GrPaletteStepLoad ( ubyte * pal);
-extern void gr_make_cthru_table (ubyte * table, ubyte r, ubyte g, ubyte b);
-extern void gr_make_blend_table (ubyte *blend_table, ubyte r, ubyte g, ubyte b);
-extern int GrFindClosestColorCurrent ( int r, int g, int b);
-extern void GrPaletteRead (ubyte * palette);
-extern void init_computed_colors (void);
+void GrSetPaletteGamma ( int gamma);
+int GrGetPaletteGamma ();
+void GrPaletteStepClear ();
+int GrPaletteFadeOut (ubyte *pal, int nsteps, int allow_keys);
+int GrPaletteFadeIn (ubyte *pal,int nsteps, int allow_keys);
+int GrPaletteStepLoad ( ubyte * pal);
+void gr_make_cthru_table (ubyte * table, ubyte r, ubyte g, ubyte b);
+void gr_make_blend_table (ubyte *blend_table, ubyte r, ubyte g, ubyte b);
+int GrFindClosestColorCurrent ( int r, int g, int b);
+void GrPaletteRead (ubyte * palette);
+void init_computed_colors (void);
+ubyte *GrUsePaletteTable (const char * filename, const char *levelname);
 
 void FullPaletteSave (void);
 void PaletteRestore (void);

@@ -102,7 +102,7 @@ int con_init(void)
 
 //------------------------------------------------------------------------------
 
-void con_background(char *filename)
+void con_background (const char *filename)
 {
 	int pcx_error;
 	grsBitmap bmp;
@@ -150,7 +150,7 @@ void con_resize(void)
 
 static char buffer[65536];
 
-void _CDECL_ con_printf(int priority, char *fmt, ...)
+void _CDECL_ con_printf (int priority, const char *fmt, ...)
 {
 	va_list arglist;
   
@@ -250,7 +250,7 @@ void cvar_registervariable (cvar_t *cvar)
  * cvar_set - Set a CVar's value
  * ======
  */
-void cvar_set (char *cvar_name, char *value)
+void cvar_set (const char *cvar_name, char *value)
 {
 	cvar_t *ptr;
 
@@ -266,7 +266,7 @@ void cvar_set (char *cvar_name, char *value)
  * cvar() - Get a CVar's value
  * ======
  */
-double cvar (char *cvar_name)
+double cvar (const char *cvar_name)
 {
 	cvar_t *ptr;
 

@@ -3521,13 +3521,13 @@ do {
 			}
 		sprintf (szMaxLightsPerObject + 1, TXT_MAX_LIGHTS_PER_OBJECT, nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerObject]);
 		*szMaxLightsPerObject = *(TXT_MAX_LIGHTS_PER_OBJECT - 1);
-		ADD_SLIDER (opt, szMaxLightsPerObject + 1, gameOpts->ogl.nMaxLightsPerObject, 0, sizeofa (nMaxLightsPerFaceTable) - 1, KEY_O, HTX_MAX_LIGHTS_PER_OBJECT);
+		ADD_SLIDER (opt, szMaxLightsPerObject + 1, gameOpts->ogl.nMaxLightsPerObject, 0, (int) sizeofa (nMaxLightsPerFaceTable) - 1, KEY_O, HTX_MAX_LIGHTS_PER_OBJECT);
 		lightOpts.nMaxLightsPerObject = opt++;
 
 		if (gameOpts->render.nLightingMethod == 2) {
 			sprintf (szMaxLightsPerFace + 1, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace]);
 			*szMaxLightsPerFace = *(TXT_MAX_LIGHTS_PER_FACE - 1);
-			ADD_SLIDER (opt, szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace, 0,  sizeofa (nMaxLightsPerFaceTable) - 1, KEY_A, HTX_MAX_LIGHTS_PER_FACE);
+			ADD_SLIDER (opt, szMaxLightsPerFace + 1, gameOpts->ogl.nMaxLightsPerFace, 0,  (int) sizeofa (nMaxLightsPerFaceTable) - 1, KEY_A, HTX_MAX_LIGHTS_PER_FACE);
 			lightOpts.nMaxLightsPerFace = opt++;
 			sprintf (szMaxLightsPerPass + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 			*szMaxLightsPerPass = *(TXT_MAX_LIGHTS_PER_PASS - 1);
@@ -4313,25 +4313,25 @@ void LoadoutOptions (void)
 memset (m, 0, sizeof (m));
 ADD_TEXT (opt, TXT_GUN_LOADOUT, 0);
 opt++;
-for (i = 0, optGuns = opt; i < sizeofa (pszGuns); i++, opt++)
+for (i = 0, optGuns = opt; i < (int) sizeofa (pszGuns); i++, opt++)
 	ADD_CHECK (opt, pszGuns [i], (extraGameInfo [0].loadout.nGuns & (1 << i)) != 0, 0, HTX_GUN_LOADOUT);
 ADD_TEXT (opt, "", 0);
 opt++;
 ADD_TEXT (opt, TXT_DEVICE_LOADOUT, 0);
 opt++;
-for (i = 0, optDevices = opt; i < sizeofa (pszDevices); i++, opt++)
+for (i = 0, optDevices = opt; i < (int) sizeofa (pszDevices); i++, opt++)
 	ADD_CHECK (opt, pszDevices [i], (extraGameInfo [0].loadout.nDevices & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
 Assert (opt <= sizeofa (m));
 do {
 	i = ExecMenu1 (NULL, TXT_LOADOUT_MENUTITLE, opt, m, LoadoutCallback, 0);
 	} while (i != -1);
 extraGameInfo [0].loadout.nGuns = 0;
-for (i = 0; i < sizeofa (pszGuns); i++) {
+for (i = 0; i < (int) sizeofa (pszGuns); i++) {
 	if (m [optGuns + i].value)
 		extraGameInfo [0].loadout.nGuns |= (1 << i);
 	}
 extraGameInfo [0].loadout.nDevices = 0;
-for (i = 0; i < sizeofa (pszDevices); i++) {
+for (i = 0; i < (int) sizeofa (pszDevices); i++) {
 	if (m [optDevices + i].value)
 		extraGameInfo [0].loadout.nDevices |= nDeviceFlags [i];
 	}
@@ -5060,7 +5060,7 @@ do {
 		sprintf (szChannels + 1, TXT_SOUND_CHANNEL_COUNT, gameStates.sound.digi.nMaxChannels);
 		*szChannels = *(TXT_SOUND_CHANNEL_COUNT - 1);
 		ADD_SLIDER (opt, szChannels + 1, gameStates.sound.nSoundChannels, 0, 
-						sizeofa (detailData.nSoundChannels) - 1, KEY_C, HTX_SOUND_CHANNEL_COUNT);  
+						(int) sizeofa (detailData.nSoundChannels) - 1, KEY_C, HTX_SOUND_CHANNEL_COUNT);  
 		soundOpts.nChannels = opt++;
 		}
 	if (!gameStates.app.bNostalgia) {

@@ -232,7 +232,7 @@ for (i = 0; i < nItems; i++) {
 
 void RegisterParams (void)
 {
-	int	i, j;
+	unsigned int	i, j;
 
 	static int bRegistered = 0;
 
@@ -1505,7 +1505,7 @@ return 1;
 
 void ReadBinD2XParams (CFILE *pcf)
 {
-	int	i, j, gameOptsSize = 0;
+	unsigned int	i, j, gameOptsSize = 0;
 
 if (gameStates.input.nPlrFileVersion >= 97)
 	gameOptsSize = CFReadInt (pcf);
@@ -1984,8 +1984,8 @@ int ReadPlayerFile (int bOnlyWindowSizes)
 	ubyte		nDisplayMode;
 	short		nControlTypes, gameWindowW, gameWindowH;
 	int		funcRes = EZERO;
-	int		id, i;
-	int		bRewriteIt = 0, nMaxControls;
+	int		id, bRewriteIt = 0, nMaxControls;
+	unsigned int i;
 
 Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
 

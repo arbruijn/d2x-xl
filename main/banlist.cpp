@@ -47,7 +47,7 @@ int LoadBanList (void)
 {
 	CFILE	cf;
 	tBanListEntry	szPlayer;
-	int i;
+	unsigned int i;
 
 if (!CFOpen (&cf, "banlist.txt", gameFolders.szDataDir, "rt", 0))
 	return 0;

@@ -157,13 +157,13 @@ GLhandleARB shadowVS = 0;
 
 #if DBG_SHADERS
 
-char *pszShadowFS = "shadows.frag";
-char *pszShadowVS = "shadows.vert";
+const char *pszShadowFS = "shadows.frag";
+const char *pszShadowVS = "shadows.vert";
 
 #else
 
-char *pszShadowFS = "shadows.frag";
-char *pszShadowVS = "shadows.vert";
+const char *pszShadowFS = "shadows.frag";
+const char *pszShadowVS = "shadows.vert";
 
 #endif
 

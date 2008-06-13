@@ -62,7 +62,7 @@ if (objP->nType == OBJ_PLAYER) {
 		int		nPlayer = objP->id;
 		int		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
 
-	for (i = 0; i < sizeofa (nBombIds); i++)
+	for (i = 0; i < (int) sizeofa (nBombIds); i++)
 		if (nWeapon == nBombIds [i])
 			return i + 1;
 	}
@@ -79,7 +79,7 @@ if (objP->nType == OBJ_PLAYER) {
 		int		nPlayer = objP->id;
 		int		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
 
-	for (i = 0; i < sizeofa (nMissileIds); i++)
+	for (i = 0; i < (int) sizeofa (nMissileIds); i++)
 		if (nWeapon == nMissileIds [i]) {
 			*nMissiles = gameData.multiplayer.weaponStates [nPlayer].nMissiles;
 			return i + 1;

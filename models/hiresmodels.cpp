@@ -332,14 +332,14 @@ static void LoadModelsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 GrPaletteStepLoad (NULL);
 if (loadOp == 0) {
 	loadIdx = LoadHiresModel (gameData.models.nHiresModels, loadIdx, 0);
-	if (loadIdx >= sizeofa (replacementModels)) {
+	if (loadIdx >= (int) sizeofa (replacementModels)) {
 		loadOp = 1;
 		loadIdx = 0;
 		}
 	}
 else if (loadOp == 1) {
 	loadIdx = LoadLoresModel (loadIdx);
-	if (loadIdx >= sizeofa (replacementModels)) {
+	if (loadIdx >= (int) sizeofa (replacementModels)) {
 		*key = -2;
 		GrPaletteStepLoad (NULL);
 		return;

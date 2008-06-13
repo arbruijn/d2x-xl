@@ -1301,7 +1301,7 @@ static int ComputeVertexLight (short nVertex, int nState, tFaceColor *colorP)
 
 	static float		quadCoord [4][2] = {{0, 0}, {0, VLBUF_WIDTH}, {VLBUF_WIDTH, VLBUF_WIDTH}, {VLBUF_WIDTH, 0}};
 	static float		texCoord [4][2] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
-	static char			*szTexNames [VERTLIGHT_BUFFERS] = {"vertPosTex", "vertNormTex", "lightPosTex", "lightColorTex"};
+	static const char	*szTexNames [VERTLIGHT_BUFFERS] = {"vertPosTex", "vertNormTex", "lightPosTex", "lightColorTex"};
 #if 0
 	static fVector3	matSpecular = {{1.0f, 1.0f, 1.0f}};
 #endif
@@ -2024,7 +2024,7 @@ gameStates.render.nState = 0;
 
 //------------------------------------------------------------------------------
 
-char *vertLightFS = 
+const char *vertLightFS = 
 	"uniform sampler2D vertPosTex, vertNormTex, lightPosTex, lightColorTex;\r\n" \
 	"uniform float lightRange;\r\n" \
 	"void main (void) {\r\n" \
@@ -2059,7 +2059,7 @@ char *vertLightFS =
 	"  gl_FragColor = vec4 (vertColor / attenuation, 1.0);\r\n" \
 	"	}";
 
-char *vertLightVS = 
+const char *vertLightVS = 
 	"void main(void){" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;"\
 	"/*gl_TexCoord [1] = gl_MultiTexCoord1;"\

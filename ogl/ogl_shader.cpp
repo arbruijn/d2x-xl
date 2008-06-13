@@ -221,7 +221,8 @@ if (progP && *progP) {
 
 //------------------------------------------------------------------------------
 
-int CreateShaderFunc (GLhandleARB *progP, GLhandleARB *fsP, GLhandleARB *vsP, char *fsName, char *vsName, int bFromFile)
+int CreateShaderFunc (GLhandleARB *progP, GLhandleARB *fsP, GLhandleARB *vsP, 
+		const char *fsName, const char *vsName, int bFromFile)
 {
 	GLhandleARB	fs, vs;
 	GLint bFragCompiled, bVertCompiled; 

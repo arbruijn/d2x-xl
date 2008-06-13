@@ -955,7 +955,7 @@ for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 	if (!(gameData.pig.tex.brightness [sideP->nBaseTex] || 
 			gameData.pig.tex.brightness [sideP->nOvlTex]))
 		continue;
-	if (flP->timer == 0x80000000)		//disabled
+	if (flP->timer == (fix) 0x80000000)		//disabled
 		continue;
 	if ((flP->timer -= gameData.time.xFrame) < 0) {
 		while (flP->timer < 0)

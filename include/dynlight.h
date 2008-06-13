@@ -48,7 +48,7 @@ void ResetPerPixelLightingShaders (void);
 int InitLightmapShader (int nType);
 void ResetLightmapShaders (void);
 void InitHeadlightShaders (int nLights);
-char *BuildLightingShader (char *pszTemplate, int nLights);
+char *BuildLightingShader (const char *pszTemplate, int nLights);
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 int IsLight (int tMapNum);
 void ResetUsedLight (tShaderLight *psl, int nThread);

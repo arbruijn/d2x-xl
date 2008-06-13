@@ -93,7 +93,7 @@ memset (m, 0, sizeof (m));
 for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++) {
 	m [i].nType = NM_TYPE_MENU;
 	if (primaryOrder [i] == 255)
-		m [i].text = "\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x88\x88\x88\x88\x88";
+		m [i].text = (char *) "\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x88\x88\x88\x88\x88";
 	else
 		m [i].text = (char *) PRIMARY_WEAPON_NAMES (primaryOrder [i]);
 	m [i].value = primaryOrder [i];
@@ -119,7 +119,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
 {
 	m[i].nType = NM_TYPE_MENU;
 	if (secondaryOrder [i] == 255)
-		m[i].text = "\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x88\x88\x88\x88\x88";
+		m[i].text = (char *) "\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x88\x88\x88\x88\x88";
 	else
 		m[i].text = (char *) SECONDARY_WEAPON_NAMES (secondaryOrder [i]);
 	m[i].value = secondaryOrder [i];

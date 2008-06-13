@@ -171,8 +171,8 @@ void ShowCredits(char *credits_filename)
 	char			buffer [NUM_LINES_HIRES][80];
 	grsBitmap	bmBackdrop;
 	int			nPcxError;
-	int			nLine = 0;
-	int			nXlLine = 0;
+	unsigned int	nLine = 0;
+	unsigned int	nXlLine = 0;
 	fix			xTimeout, xDelay = f2i (2800 * 1000);
 	int			nFirstLineOffs, nExtraInc = 0;
 	int			bBinary = 0;

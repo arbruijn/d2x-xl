@@ -847,10 +847,10 @@ if (movies.libs [i]) {
 
 void _CDECL_ CloseMovies (void)
 {
-	int i;
+	unsigned int i;
 
 PrintLog ("unloading movies\n");
-for (i=0;i<N_MOVIE_LIBS;i++)
+for (i = 0; i < N_MOVIE_LIBS; i++)
 	close_movie (i);
 }
 
@@ -860,7 +860,7 @@ static int bMoviesInited = 0;
 //find and initialize the movie libraries
 void InitMovies ()
 {
-	int i, j;
+	unsigned int i, j;
 	int isRobots;
 
 	j = (gameStates.app.bHaveExtraMovies = !gameStates.app.bNostalgia) ? 
@@ -923,7 +923,7 @@ return 0;
 //returns file handle
 int OpenMovieFile (CFILE *cfp, char *filename, int bRequired)
 {
-	int i;
+	unsigned int i;
 
 for (i = 0; i < N_MOVIE_LIBS; i++)
 	if (SearchMovieLib (cfp, movies.libs [i], filename, bRequired))
@@ -943,7 +943,7 @@ return 0;       //everything is cool
 
 int GetNumMovieLibs (void)
 {
-	int	i;
+	unsigned int	i;
 
 for (i = 0; i < N_MOVIE_LIBS; i++)
 	if (!movies.libs [i])
@@ -955,14 +955,14 @@ return N_MOVIE_LIBS;
 
 int GetNumMovies (int nLib)
 {
-return ((nLib < N_MOVIE_LIBS) && movies.libs [nLib]) ? movies.libs [nLib]->n_movies : 0;
+return ((nLib < (int) N_MOVIE_LIBS) && movies.libs [nLib]) ? movies.libs [nLib]->n_movies : 0;
 }
 
 //-----------------------------------------------------------------------
 
 char *GetMovieName (int nLib, int nMovie)
 {
-return (nLib < N_MOVIE_LIBS) && (nMovie < movies.libs [nLib]->n_movies) ? movies.libs [nLib]->movies [nMovie].name : NULL;
+return (nLib < (int) N_MOVIE_LIBS) && (nMovie < movies.libs [nLib]->n_movies) ? movies.libs [nLib]->movies [nMovie].name : NULL;
 }
 
 //-----------------------------------------------------------------------

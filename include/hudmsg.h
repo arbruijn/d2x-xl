@@ -47,16 +47,16 @@ extern int MSG_Noredundancy;
 //end kill -MM
 
 #ifdef __GNUC__
-void HUDMessage(int msgClass, char *format, ...)
+void HUDMessage(int msgClass, const char *format, ...)
 	__attribute__ ((format (printf, 2, 3)));
-int _CDECL_ HUDInitMessage(char *format, ... )
+int _CDECL_ HUDInitMessage(const char *format, ... )
 	__attribute__ ((format (printf, 1, 2)));
-void _CDECL_ HUDPlayerMessage(char *format, ... )
+void _CDECL_ HUDPlayerMessage(const char *format, ... )
 	 __attribute__ ((format (printf, 1, 2)));
 #else
-void _CDECL_ HUDMessage(int msgClass, char *format, ...);
-int _CDECL_ HUDInitMessage(char *format, ... );
-void _CDECL_ HUDPlayerMessage(char *format, ... );
+void _CDECL_ HUDMessage(int msgClass, const char *format, ...);
+int _CDECL_ HUDInitMessage(const char *format, ... );
+void _CDECL_ HUDPlayerMessage(const char *format, ... );
 #endif
 
 

@@ -22,7 +22,7 @@
 
 int  con_init(void);
 void con_resize(void);
-void _CDECL_ con_printf(int level, char *fmt, ...);
+void _CDECL_ con_printf (int level, const char *fmt, ...);
 
 void con_show(void);
 void con_draw(void);
@@ -44,10 +44,10 @@ extern cvar_t *cvar_vars;
 void cvar_registervariable (cvar_t *cvar);
 
 /* Equivalent to typing <var_name> <value> at the console */
-void cvar_set(char *cvar_name, char *value);
+void cvar_set (const char *cvar_name, char *value);
 
 /* Get a CVar's value */
-double cvar(char *cvar_name);
+double cvar (const char *cvar_name);
 
 /* Console CVars */
 /* How discriminating we are about which messages are displayed */

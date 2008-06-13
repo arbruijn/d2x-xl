@@ -35,15 +35,15 @@ int ReadTGAImage (CFILE *fp, tTgaHeader *ph, grsBitmap *pb, int alpha,
 						double brightness, int bGrayScale, int bRedBlueFlip);
 int LoadTGA (CFILE *fp, grsBitmap *pb, int alpha, double brightness, 
 				 int bGrayScale, int bRedBlueFlip);
-int ReadTGA (char *pszFile, char *pszFolder, grsBitmap *pb, int alpha, 
+int ReadTGA (const char *pszFile, const char *pszFolder, grsBitmap *pb, int alpha, 
 				 double brightness, int bGrayScale, int bRedBlueFlip);
-grsBitmap *CreateAndReadTGA (char *szFile);
-int SaveTGA (char *pszFile, char *pszFolder, tTgaHeader *ph, grsBitmap *bmP);
+grsBitmap *CreateAndReadTGA (const char *szFile);
+int SaveTGA (const char *pszFile, const char *pszFolder, tTgaHeader *ph, grsBitmap *bmP);
 double TGABrightness (grsBitmap *bmP);
 void TGAChangeBrightness (grsBitmap *bmP, double dScale, int bInverse, int nOffset, int bSkipAlpha);
 int TGAInterpolate (grsBitmap *bmP, int nScale);
 int TGAMakeSquare (grsBitmap *bmP);
-int ReadModelTGA (char *pszFile, grsBitmap *bmP, short nType, int bCustom);
+int ReadModelTGA (const char *pszFile, grsBitmap *bmP, short nType, int bCustom);
 int ReadModelTextures (tModelTextures *pt, int nType, int bCustom);
 void ReleaseModelTextures (tModelTextures *pt);
 void FreeModelTextures (tModelTextures *pt);

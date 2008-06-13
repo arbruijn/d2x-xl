@@ -586,7 +586,7 @@ if (i < 0)
 	return "";
 if (i < 3)
 	return baseGameTexts [mouseButtonTextIndex [i]];
-if (i - 3 < sizeofa (extraMouseButtonTextIndex))
+if (i - 3 < (int) sizeofa (extraMouseButtonTextIndex))
 	return extraMouseButtonTextIndex [i - 3];
 return "";
 }
@@ -597,7 +597,7 @@ inline char *MouseAxisText (int i)
 {
 if (i < 0)
 	return "";
-if (i < sizeofa (mouseAxisTextIndex))
+if (i < (int) sizeofa (mouseAxisTextIndex))
 	return baseGameTexts [mouseAxisTextIndex [i]];
 return "";
 }
@@ -857,7 +857,7 @@ ubyte KCKeyCtrlFunc (void)
 for (i = 0; i < 256; i++)	{
 	if (gameStates.input.keys.pressed [i] && strlen (pszKeyText [i]))	{
 		f = 0;
-		for (n = 0; n < sizeof (system_keys); n++)
+		for (n = 0; n < (int) sizeof (system_keys); n++)
 			if (system_keys [n] == i)
 				f = 1;
 		if (!f)

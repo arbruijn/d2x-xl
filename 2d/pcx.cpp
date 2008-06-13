@@ -87,7 +87,7 @@ int PCXHeader_read_n(PCXHeader *ph, int n, CFILE *cfp)
 
 //------------------------------------------------------------------------------
 
-int PCXGetDimensions( char *filename, int *width, int *height)
+int PCXGetDimensions (const char *filename, int *width, int *height)
 {
 	CFILE cfPCX;
 	PCXHeader header;
@@ -109,7 +109,7 @@ if (!CFOpen(&cfPCX, filename, gameFolders.szDataDir, "rb", 0))
 
 //------------------------------------------------------------------------------
 
-int PCXReadBitmap (char * filename, grsBitmap * bmP, int bitmapType, int bD1Mission)
+int PCXReadBitmap (const char * filename, grsBitmap * bmP, int bitmapType, int bD1Mission)
 {
 	PCXHeader header;
 	CFILE cfPCX;
@@ -223,7 +223,7 @@ return PCX_ERROR_NONE;
 
 //------------------------------------------------------------------------------
 
-int pcx_write_bitmap( char * filename, grsBitmap * bmP)
+int pcx_write_bitmap (const char * filename, grsBitmap * bmP)
 {
 	int retval;
 	int i;
@@ -288,7 +288,7 @@ int pcx_write_bitmap( char * filename, grsBitmap * bmP)
 
 //------------------------------------------------------------------------------
 // returns number of bytes written into outBuff, 0 if failed
-int pcx_encode_line(ubyte *inBuff, int inLen, CFILE *cfp)
+int pcx_encode_line (ubyte *inBuff, int inLen, CFILE *cfp)
 {
 	ubyte current, last;
 	int srcIndex, i;
@@ -330,7 +330,7 @@ int pcx_encode_line(ubyte *inBuff, int inLen, CFILE *cfp)
 //------------------------------------------------------------------------------
 // subroutine for writing an encoded byte pair
 // returns count of bytes written, 0 if error
-int pcx_encode_byte(ubyte byt, ubyte cnt, CFILE *fid)
+int pcx_encode_byte (ubyte byt, ubyte cnt, CFILE *fid)
 {
 	if (cnt) {
 		if ( (cnt==1) && (0xc0 != (0xc0 & byt)) )	{
@@ -350,7 +350,7 @@ int pcx_encode_byte(ubyte byt, ubyte cnt, CFILE *fid)
 
 //------------------------------------------------------------------------------
 //text for error messges
-char pcx_error_messages[] = {
+const char pcx_error_messages[] = {
 	"No error.\0"
 	"Error opening file.\0"
 	"Couldn't read PCX header.\0"
@@ -363,7 +363,7 @@ char pcx_error_messages[] = {
 
 //------------------------------------------------------------------------------
 //function to return pointer to error message
-char *pcx_errormsg(int error_number)
+char *pcx_errormsg (int error_number)
 {
 	char *p = pcx_error_messages;
 
@@ -378,7 +378,7 @@ return p;
 //------------------------------------------------------------------------------
 // fullscreen loading, 10/14/99 Jan Bobrowski
 
-int PcxReadFullScrImage (char * filename, int bD1Mission)
+int PcxReadFullScrImage (const char * filename, int bD1Mission)
 {
 		int			pcxError;
 		grsBitmap	bm;

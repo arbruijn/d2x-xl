@@ -85,11 +85,11 @@ typedef struct tGameFolders {
 int GetAppFolder (char *szRootDir, char *szFolder, char *szName, char *szFilter);
 
 //Specify the name of the tHogFile.  Returns 1 if tHogFile found & had files
-int CFileInit (char *hogname, char *folder);
+int CFileInit (const char *hogname, const char *folder);
 
-int CFSize (char *hogname, char *folder, int bUseD1Hog);
+int CFSize (const char *hogname, const char *folder, int bUseD1Hog);
 
-int CFOpen (CFILE *fp, char *filename, char *folder, char *mode, int bUseD1Hog);
+int CFOpen (CFILE *fp, const char *filename, const char *folder, const char *mode, int bUseD1Hog);
 int CFLength (CFILE *fp, int bUseD1Hog);							// Returns actual size of file...
 size_t CFRead (void *buf, size_t elsize, size_t nelem, CFILE *fp);
 int CFClose (CFILE *fp);
@@ -101,31 +101,31 @@ char *CFGetS (char *buf, size_t n, CFILE *fp);
 int CFEoF (CFILE *fp);
 int CFError (CFILE *fp);
 
-int CFExist (char *filename, char *folder, int bUseD1Hog);	// Returns true if file exists on disk (1) or in hog (2).
+int CFExist (const char *filename, const char *folder, int bUseD1Hog);	// Returns true if file exists on disk (1) or in hog (2).
 
 // Deletes a file.
-int CFDelete (char *filename, char* folder);
+int CFDelete (const char *filename, const char *folder);
 
 // Rename a file.
-int CFRename (char *oldname, char *newname, char *folder);
+int CFRename (const char *oldname, const char *newname, const char *folder);
 
 // Make a directory
-int CFMkDir (char *pathname);
+int CFMkDir (const char *pathname);
 
 // CFWrite () writes to the file
-int CFWrite (void *buf, int elsize, int nelem, CFILE *fp);
+int CFWrite (const void *buf, int elsize, int nelem, CFILE *fp);
 
 // CFPutC () writes a character to a file
 int CFPutC (int c, CFILE *fp);
 
 // CFPutS () writes a string to a file
-int CFPutS (char *str, CFILE *fp);
+int CFPutS (const char *str, CFILE *fp);
 
 // Allows files to be gotten from an alternate hog file.
 // Passing NULL disables this.
 // Returns 1 if tHogFile found (& contains file), else 0.  
 // If NULL passed, returns 1
-int CFUseAltHogFile (char *name);
+int CFUseAltHogFile (const char *name);
 
 // Allows files to be gotten from the Descent 1 hog file.
 // Passing NULL disables this.
@@ -140,11 +140,11 @@ void CFUseAltHogDir (char *path);
 //tell fp about your critical error counter 
 void CFSetCriticalErrorCounterPtr (int *ptr);
 
-FILE *CFFindHogFile (tHogFileList *hog, char *folder, char *name, int *length);
+FILE *CFFindHogFile (tHogFileList *hog, const char *folder, const char *name, int *length);
 
-int CFExtract (char *filename, char *folder, int bUseD1Hog, char *szDest);
+int CFExtract (const char *filename, const char *folder, int bUseD1Hog, const char *szDest);
 
-char *GameDataFilename (char *pszFilename, char *pszExt, int nLevel, int nType);
+char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
 
 // prototypes for reading basic types from fp
 int CFReadInt (CFILE *file);
@@ -157,7 +157,7 @@ void CFReadAngVec (vmsAngVec *v, CFILE *file);
 void CFReadMatrix (vmsMatrix *v, CFILE *file);
 float CFReadFloat (CFILE *file);
 double CFReadDouble (CFILE *file);
-char *CFReadData (char *filename, char *folder, int bUseD1Hog);
+char *CFReadData (const char *filename, const char *folder, int bUseD1Hog);
 
 // Reads variable length, null-termined string.   Will only read up
 // to n characters.
@@ -172,9 +172,9 @@ int CFWriteFixAng (fixang a, CFILE *file);
 void CFWriteAngVec (vmsAngVec *v, CFILE *file);
 void CFWriteVector (vmsVector *v, CFILE *file);
 void CFWriteMatrix (vmsMatrix *m,CFILE *file);
-void CFSplitPath (char *szFullPath, char *szFolder, char *szFile, char *szExt);
+void CFSplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt);
 void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
-time_t CFDate (char *hogname, char *folder, int bUseD1Hog);
+time_t CFDate (const char *hogname, const char *folder, int bUseD1Hog);
 
 // writes variable length, null-termined string.
 int CFWriteString (char *buf, CFILE *file);

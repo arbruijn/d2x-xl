@@ -319,7 +319,7 @@ return 1;
 
 void AddTrackersFromCmdLine (void)
 {
-	int			i, j, t;
+	unsigned int	i, j, t;
 	char			szKwd [20];
 	tUdpAddress	tracker;
 

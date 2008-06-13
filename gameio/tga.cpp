@@ -346,7 +346,7 @@ return WriteTGAHeader (cfp, ph, bmP) && WriteTGAImage (cfp, ph, bmP);
 
 //---------------------------------------------------------------
 
-int ReadTGA (char *pszFile, char *pszFolder, grsBitmap *bmP, int alpha, 
+int ReadTGA (const char *pszFile, const char *pszFolder, grsBitmap *bmP, int alpha, 
 				 double brightness, int bGrayScale, int bReverse)
 {
 	CFILE	cf = {NULL, 0, 0, 0};
@@ -386,7 +386,7 @@ return r;
 
 //	-----------------------------------------------------------------------------
 
-grsBitmap *CreateAndReadTGA (char *szFile)
+grsBitmap *CreateAndReadTGA (const char *szFile)
 {
 	grsBitmap	*bmP = NULL;
 
@@ -404,7 +404,7 @@ return NULL;
 
 //	-----------------------------------------------------------------------------
 
-int SaveTGA (char *pszFile, char *pszFolder, tTgaHeader *ph, grsBitmap *bmP)
+int SaveTGA (const char *pszFile, const char *pszFolder, tTgaHeader *ph, grsBitmap *bmP)
 {
 	CFILE			cf = {NULL, 0, 0, 0};
 	char			fn [FILENAME_LEN], fs [5];
@@ -772,7 +772,7 @@ return q;
 
 //------------------------------------------------------------------------------
 
-int ReadModelTGA (char *pszFile, grsBitmap *bmP, short nType, int bCustom)
+int ReadModelTGA (const char *pszFile, grsBitmap *bmP, short nType, int bCustom)
 {
 	char			fn [FILENAME_LEN], fnBase [FILENAME_LEN], fnShrunk [FILENAME_LEN];
 	int			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);

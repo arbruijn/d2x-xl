@@ -83,7 +83,7 @@ extern rgb playerColors[];
 // window user is one of the WBU_ constants.  If rearViewFlag is
 // set, show a rear view.  If label is non-NULL, print the label at
 // the top of the window.
-void DoCockpitWindowView(int win, tObject *viewer, int rearViewFlag, int user, char *label);
+void DoCockpitWindowView(int win, tObject *viewer, int rearViewFlag, int user, const char *label);
 void FreeInventoryIcons (void);
 void FreeObjTallyIcons (void);
 void HUDShowIcons (void);

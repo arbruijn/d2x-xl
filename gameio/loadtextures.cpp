@@ -93,10 +93,12 @@ static short d2OpaqueDoors [] = {
 #define RLE_REMAP_MAX_INCREASE 132 /* is enough for d1 pc registered */
 
 static int bLowMemory = 0;
+#ifdef _DEBUG
 static int bMustWriteHamFile = 0;
 static int nBitmapFilesNew = 0;
 
 static hashtable bitmapNames [2];
+#endif
 
 #ifdef _DEBUG
 #	define PIGGY_BUFFER_SIZE ((unsigned int) (512*1024*1024))

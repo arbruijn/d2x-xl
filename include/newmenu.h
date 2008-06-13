@@ -72,7 +72,7 @@ typedef struct bkg {
 // change the text of an item.  Just pass NULL if you don't want this.
 // Title draws big, Subtitle draw medium sized.  You can pass NULL for
 // either/both of these if you don't want them.
-int ExecMenu(char * title, char * subtitle, int nitems, tMenuItem *item, 
+int ExecMenu(const char * title, const char * subtitle, int nitems, tMenuItem *item, 
 					void (*subfunction)(int nitems, tMenuItem *items, int *last_key, int citem),
 					char *filename);
 
@@ -129,16 +129,16 @@ int ExecMenuListBox1(char *title, int nitems, char *items[], int allow_abortFlag
 
 int ExecMenuFileList(char *title, char *filespace, char *filename);
 
-int ExecMenuTiny (char * title, char * subtitle, int nItems, tMenuItem * item, 
+int ExecMenuTiny (const char * title, const char * subtitle, int nItems, tMenuItem * item, 
 						 void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int citem));
 
-int ExecMenutiny2 (char * title, char * subtitle, int nitems, tMenuItem * item, 
+int ExecMenutiny2 (const char * title, const char * subtitle, int nitems, tMenuItem * item, 
 							void (*subfunction) (int nitems,tMenuItem * items, int * last_key, int citem));
 
 void NMProgressBar (char *szCaption, int nCurProgress, int nMaxProgress, 
 						  void (*doProgress) (int nItems, tMenuItem *items, int *last_key, int cItem));
 
-int ExecMenutiny2 (char * title, char * subtitle, int nitems, tMenuItem * item, 
+int ExecMenutiny2 (const char * title, const char * subtitle, int nitems, tMenuItem * item, 
 						 void (*subfunction) (int nitems, tMenuItem * items, int * last_key, int citem));
 
 //added on 10/14/98 by Victor Rachels to attempt a fixedwidth font messagebox

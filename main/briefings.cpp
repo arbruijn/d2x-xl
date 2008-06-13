@@ -119,7 +119,7 @@ grsRgba briefBgColors [2][MAX_BRIEFING_COLORS] = {
 grsRgba eraseColorRgb = {0, 0, 0, 255};
 
 typedef struct tD1ExtraBotSound {
-	char	*pszName;
+	const char	*pszName;
 	short nLevel;
 	short	nBot;
 } tD1ExtraBotSound;
@@ -143,7 +143,7 @@ tD1ExtraBotSound extraBotSounds [] = {
 
 //-----------------------------------------------------------------------------
 
-int StartBriefingSound (int c, short nSound, fix nVolume, char *pszWAV)
+int StartBriefingSound (int c, short nSound, fix nVolume, const char *pszWAV)
 {
 if (c < 0) {
 	int b = gameStates.sound.bD1Sound;

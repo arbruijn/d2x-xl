@@ -109,7 +109,7 @@ memcpy(last_palette_for_color_fonts,grPalette,sizeof(last_palette_for_color_font
 //if nUsedForLevel is set, load pig, etc.
 //if bNoScreenChange is set, the current screen does not get remapped,
 //and the hardware palette does not get changed
-ubyte *LoadPalette (char *pszPaletteName, char *pszLevelName, int nUsedForLevel, 
+ubyte *LoadPalette (const char *pszPaletteName, const char *pszLevelName, int nUsedForLevel, 
 						  int bNoScreenChange, int bForce)
 {
 	char	szPigName[FILENAME_LEN];
@@ -128,7 +128,7 @@ if (nUsedForLevel && stricmp (szLastPalettePig, pszPaletteName) != 0) {
 	if (gameStates.app.bD1Mission)
 		strcpy (szPigName, "groupa.pig");
 	else {
-		_splitpath (pszPaletteName, NULL, NULL, szPigName, NULL);
+		_splitpath ((char *) pszPaletteName, NULL, NULL, szPigName, NULL);
 		strcat (szPigName, ".pig");
 		PiggyInitPigFile (szPigName);
 		}

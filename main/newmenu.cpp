@@ -139,7 +139,7 @@ typedef struct nm_control {
 
 void GameRenderFrame ();
 
-int ExecMenu4 (char * title, char * subtitle, int nItems, tMenuItem * item, 
+int ExecMenu4 (const char * title, const char * subtitle, int nItems, tMenuItem * item, 
 					  void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem), 
 					  int *cItemP, char * filename, int width, int height, int bTinyMode);
 void ShowNetGameInfo (int choice);
@@ -1091,14 +1091,14 @@ void NMTrimWhitespace (char * text)
 
 //------------------------------------------------------------------------------
 
-int ExecMenu (char * title, char * subtitle, int nItems, tMenuItem * item, 
+int ExecMenu (const char * title, const char * subtitle, int nItems, tMenuItem * item, 
 					void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem),
 					char *filename)
 {
 return ExecMenu3 (title, subtitle, nItems, item, subfunction, NULL, filename, -1, -1);
 }
 
-int ExecMenuTiny (char * title, char * subtitle, int nItems, tMenuItem * item, 
+int ExecMenuTiny (const char * title, const char * subtitle, int nItems, tMenuItem * item, 
 						 void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem))
 {
 return ExecMenu4 (title, subtitle, nItems, item, subfunction, NULL, NULL, LHX (310), -1, 1);
@@ -1106,7 +1106,7 @@ return ExecMenu4 (title, subtitle, nItems, item, subfunction, NULL, NULL, LHX (3
 
 //------------------------------------------------------------------------------
 
-int ExecMenutiny2 (char * title, char * subtitle, int nItems, tMenuItem * item, 
+int ExecMenutiny2 (const char * title, const char * subtitle, int nItems, tMenuItem * item, 
 						  void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem))
 {
 return ExecMenu4 (title, subtitle, nItems, item, subfunction, 0, NULL, -1, -1, 1);
@@ -1114,7 +1114,7 @@ return ExecMenu4 (title, subtitle, nItems, item, subfunction, 0, NULL, -1, -1, 1
 
 //------------------------------------------------------------------------------
 
-int ExecMenu1 (char * title, char * subtitle, int nItems, tMenuItem * item, 
+int ExecMenu1 (const char * title, const char * subtitle, int nItems, tMenuItem * item, 
 					 void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem), 
 					 int *cItemP)
 {
@@ -1123,7 +1123,7 @@ return ExecMenu3 (title, subtitle, nItems, item, subfunction, cItemP, NULL, -1, 
 
 //------------------------------------------------------------------------------
 
-int ExecMenu2 (char * title, char * subtitle, int nItems, tMenuItem * item, 
+int ExecMenu2 (const char * title, const char * subtitle, int nItems, tMenuItem * item, 
 					 void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem), 
 					 int *cItemP, char * filename)
 {
@@ -1132,7 +1132,7 @@ return ExecMenu3 (title, subtitle, nItems, item, subfunction, cItemP, filename, 
 
 //------------------------------------------------------------------------------
 
-int ExecMenu3 (char * title, char * subtitle, int nItems, tMenuItem * item, 
+int ExecMenu3 (const char * title, const char * subtitle, int nItems, tMenuItem * item, 
 					 void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem), 
 					 int *cItemP, char * filename, int width, int height)
  {
@@ -1141,7 +1141,7 @@ int ExecMenu3 (char * title, char * subtitle, int nItems, tMenuItem * item,
 
 //------------------------------------------------------------------------------
 
-int ExecMenuFixedFont (char * title, char * subtitle, int nItems, tMenuItem * item, 
+int ExecMenuFixedFont (const char * title, const char * subtitle, int nItems, tMenuItem * item, 
 							  void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem), 
 							  int *cItemP, char * filename, int width, int height){
 SetScreenMode (SCREEN_MENU);//hafta set the screen mode before calling or fonts might get changed/freed up if screen res changes
@@ -2900,7 +2900,7 @@ ReadFileNames:
 				szPattern [--nPatternLen] = '\0';
 				
 		default:
-			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < sizeof (szPattern) - 1)) {
+			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int) sizeof (szPattern) - 1)) {
 				int nStart, ascii = KeyToASCII (key);
 				if ((key == KEY_BACKSP) || (ascii < 255)) {
 					int cc, bFound = 0;
@@ -3332,7 +3332,7 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 				szPattern [--nPatternLen] = '\0';
 				
 		default:
-			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < sizeof (szPattern) - 1)) {
+			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int) sizeof (szPattern) - 1)) {
 				int nStart,
 					 ascii = KeyToASCII (key);
 				if ((key == KEY_BACKSP) || (ascii < 255)) {

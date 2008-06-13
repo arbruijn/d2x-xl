@@ -464,7 +464,8 @@ int get_fontTotal_width (grsFont * font){
 
 //------------------------------------------------------------------------------
 
-void OglFontChooseSize (grsFont * font, int gap, int *rw, int *rh){
+void OglFontChooseSize (grsFont * font, int gap, int *rw, int *rh)
+{
 	int	nchars = font->ftMaxChar-font->ftMinChar+1;
 	int r, x, y, nc=0, smallest=999999, smallr=-1, tries;
 	int smallprop=10000;
@@ -1129,7 +1130,7 @@ int _CDECL_ GrUPrintf (int x, int y, char * format, ...)
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ GrPrintF (int *idP, int x, int y, char * format, ...)
+int _CDECL_ GrPrintF (int *idP, int x, int y, const char * format, ...)
 {
 	static char buffer[1000];
 	va_list args;

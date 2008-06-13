@@ -588,13 +588,13 @@ GrFreeCanvas (temp_canv);
 
 //------------------------------------------------------------------------------
 //name for each group.  maybe move somewhere else
-char *pszSystemNames [] = {
-			"Zeta Aquilae",
-			"Quartzon System",
-			"Brimspark System",
-			"Limefrost Spiral",
-			"Baloris Prime",
-			"Omega System"};
+const char *pszSystemNames [] = {
+	"Zeta Aquilae",
+	"Quartzon System",
+	"Brimspark System",
+	"Limefrost Spiral",
+	"Baloris Prime",
+	"Omega System"};
 
 void CreateNameCanv (void)
 {
@@ -629,7 +629,7 @@ levelNameCanv = PrintToCanvas (amLevelName, SMALL_FONT, automapColors.nMedGreen,
 int SetSegmentDepths (int start_seg, ushort *pDepthBuf);
 
 #ifndef _DEBUG
-char	*pszMapBackgroundFilename [2] = {"\x01MAP.PCX", "\x01MAPB.PCX"};
+const char	*pszMapBackgroundFilename [2] = {"\x01MAP.PCX", "\x01MAPB.PCX"};
 
 #	define MAP_BACKGROUND_FILENAME pszMapBackgroundFilename [amData.bHires]
 #else

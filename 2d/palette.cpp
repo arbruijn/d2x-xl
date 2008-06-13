@@ -74,9 +74,7 @@ gameData.render.nComputedColors = 0;
 
 //------------------------------------------------------------------------------
 
-extern void ChangeFilenameExtension(char *dest, char *src, char *new_ext);
-
-ubyte *GrUsePaletteTable (char *pszFile, char *pszLevel)
+ubyte *GrUsePaletteTable (const char *pszFile, const char *pszLevel)
 {
 	CFILE		cf;
 	int		i = 0, fsize;

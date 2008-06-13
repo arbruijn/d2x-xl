@@ -196,7 +196,7 @@ DigiStartSound (nSound, maxVolume, 0xffff/2, 0, -1, -1, -1, F1_0, NULL, NULL, 0)
 
 //------------------------------------------------------------------------------
 
-int DigiPlaySampleSpeed (short nSound, fix maxVolume, int nSpeed, int nLoops, char *pszWAV, int nSoundClass)
+int DigiPlaySampleSpeed (short nSound, fix maxVolume, int nSpeed, int nLoops, const char *pszWAV, int nSoundClass)
 {
 if (!pszWAV) {
 #ifdef NEWDEMO
@@ -216,7 +216,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, vmsVector *vPos, char *pszSound)
+void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, vmsVector *vPos, const char *pszSound)
 {
 
 	no_dups = 1;
@@ -374,7 +374,7 @@ if (soP->channel > -1)
 
 int DigiLinkSoundToObject3 (
 	short nOrgSound, short nObject, int bForever, fix maxVolume, fix maxDistance, 
-	int nLoopStart, int nLoopEnd, char *pszSound, int nDecay, int nSoundClass)
+	int nLoopStart, int nLoopEnd, const char *pszSound, int nDecay, int nSoundClass)
 {
 	tObject			*objP;
 	tSoundObject 	*soP;
@@ -469,7 +469,7 @@ return DigiLinkSoundToObject2 (nSound, nObject, bForever, maxVolume, 256 * F1_0,
 
 int DigiLinkSoundToPos2 (
 	short nOrgSound, short nSegment, short nSide, vmsVector * pos, int bForever, 
-	fix maxVolume, fix maxDistance, char *pszSound)
+	fix maxVolume, fix maxDistance, const char *pszSound)
 {
 
 	int i, volume, pan;
@@ -961,7 +961,7 @@ SoundQProcess ();
 
 //------------------------------------------------------------------------------
 
-int DigiGetSoundByName (char *pszSound)
+int DigiGetSoundByName (const char *pszSound)
 {
 	char	szSound [FILENAME_LEN];
 	int	nSound;
@@ -973,7 +973,7 @@ return (nSound == 255) ? -1 : DigiUnXlatSound (nSound);
 
 //------------------------------------------------------------------------------
 
-int DigiSetObjectSound (int nObject, int nSound, char *pszSound)
+int DigiSetObjectSound (int nObject, int nSound, const char *pszSound)
 {
 return (nObject < 0) ? -1 : DigiLinkSoundToObject3 (nSound, nObject, 1, F1_0, i2f (256), -1, -1, pszSound, 0, SOUNDCLASS_GENERIC);
 }

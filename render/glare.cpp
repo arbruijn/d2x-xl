@@ -785,7 +785,7 @@ if (gameStates.ogl.bDepthBlending) {
 
 //------------------------------------------------------------------------------
 
-char *glareFS [2] = {
+const char *glareFS [2] = {
 	"uniform sampler2D glareTex;\r\n" \
 	"uniform sampler2D depthTex;\r\n" \
 	"uniform float depthScale;\r\n" \
@@ -807,7 +807,7 @@ char *glareFS [2] = {
 	"}\r\n"
 	};
 
-char *glareVS = 
+const char *glareVS = 
 	"void main(void){\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \

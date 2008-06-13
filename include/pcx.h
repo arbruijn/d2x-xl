@@ -1,4 +1,3 @@
-/* $Id: pcx.h,v 1.3 2002/08/26 06:41:53 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -11,26 +10,6 @@ CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
-/*
- *
- * Routines to read/write pcx images.
- *
- * Old Log:
- * Revision 1.4  1995/01/21  17:07:34  john
- * Added out of memory error.
- *
- * Revision 1.3  1994/11/29  02:53:10  john
- * Added error messages; made call be more similiar to iff.
- *
- * Revision 1.2  1994/11/28  20:03:48  john
- * Added PCX functions.
- *
- * Revision 1.1  1994/11/28  19:57:45  john
- * Initial revision
- *
- *
- */
-
 
 #ifndef _PCX_H
 #define _PCX_H
@@ -48,16 +27,16 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // then bmp->bm_data is allocated and the w,h are filled.
 // If palette==NULL the palette isn't read in.  Returns error code.
 
-extern int PCXGetDimensions( char *filename, int *width, int *height);
+extern int PCXGetDimensions (const char *filename, int *width, int *height);
 
-extern int PCXReadBitmap( char * filename, grsBitmap * bmp, int bitmapType, int bD1Mission );
+extern int PCXReadBitmap (const char * filename, grsBitmap * bmp, int bitmapType, int bD1Mission );
 
 // Writes the bitmap bmp to filename, using palette. Returns error code.
 
-extern int pcx_write_bitmap( char * filename, grsBitmap * bmp);
+extern int pcx_write_bitmap (const char * filename, grsBitmap * bmp);
 
 extern char *pcx_errormsg(int error_number);
 
-int PcxReadFullScrImage(char * filename, int bD1Mission);
+int PcxReadFullScrImage (const char * filename, int bD1Mission);
 
 #endif

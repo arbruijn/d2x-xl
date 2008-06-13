@@ -972,7 +972,7 @@ void (*cur_tmap_scanline_shaded)(void);
 
 //runtime selection of optimized tmappers.  12/07/99  Matthew Mueller
 //the reason I did it this way rather than having a *tmap_funcs that then points to a c_tmap or fp_tmap struct thats already filled in, is to avoid a second pointer dereference.
-void select_tmap(char *nType)
+void select_tmap(const char *nType)
 {
 if (!nType){
 	select_tmap("c");

@@ -2759,7 +2759,7 @@ int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
 int cockpitWindowScale [4] = {6, 5, 4, 3};
 
-void DoCockpitWindowView (int win, tObject *viewer, int bRearView, int user, char *label)
+void DoCockpitWindowView (int win, tObject *viewer, int bRearView, int user, const char *label)
 {
 	gsrCanvas window_canv;
 	static gsrCanvas overlap_canv;

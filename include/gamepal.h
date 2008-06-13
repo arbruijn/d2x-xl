@@ -33,7 +33,7 @@ extern char szCurrentLevelPalette[SHORT_FILENAME_LEN];
 // if used_forLevel is set, load pig, etc.
 // if no_change_screen is set, the current screen does not get
 // remapped, and the hardware palette does not get changed
-ubyte *LoadPalette (char *pszPaletteName, char *pszLevelName, int nUsedForLevel, 
+ubyte *LoadPalette (char *pszPaletteName, const char *pszLevelName, int nUsedForLevel, 
 						  int bNoScreenChange, int bForce);
 
 // remap color font & menu background into the current palette

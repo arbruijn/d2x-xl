@@ -216,7 +216,7 @@ else if (vertColor) {
 			tMapColor.color.green =
 			tMapColor.color.blue = 1.0;
 		}
-	else if (i >= sizeof (vertColors) / sizeof (tFaceColor))
+	else if (i >= (int) (sizeof (vertColors) / sizeof (tFaceColor)))
 		return;
 	else if (vertColors [i].index) {
 			tFaceColor *pvc = vertColors + i;
@@ -245,7 +245,7 @@ else {
 			tMapColor.color.green =
 			tMapColor.color.blue = 1.0;
 		}
-	else if (i >= sizeof (vertColors) / sizeof (tFaceColor))
+	else if (i >= (int) (sizeof (vertColors) / sizeof (tFaceColor)))
 		return;
 	else if (vertColors [i].index) {
 			tFaceColor *pvc = vertColors + i;

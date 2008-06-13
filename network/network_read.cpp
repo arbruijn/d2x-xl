@@ -179,7 +179,7 @@ if (sp != &netGame) {
 	char *p = (char *) sp;
 	ushort h;
 	int i, s;
-	for (i = 0, h = -1; i < sizeof (tNetgameInfo) - 1; i++, p++) {
+	for (i = 0, h = -1; i < (int) sizeof (tNetgameInfo) - 1; i++, p++) {
 		s = *((ushort *) p);
 		if (s == networkData.nSegmentCheckSum) {
 			h = i;
