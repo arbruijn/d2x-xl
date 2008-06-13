@@ -70,9 +70,9 @@ extern char Pof_names[MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 void InitPolygonModels();
 
 #ifndef DRIVE
-int LoadPolygonModel(char *filename,int n_textures,int first_texture,tRobotInfo *r);
+int LoadPolygonModel(const char *filename,int n_textures,int first_texture,tRobotInfo *r);
 #else
-int LoadPolygonModel(char *filename,int n_textures,grsBitmap ***textures);
+int LoadPolygonModel(const char *filename,int n_textures,grsBitmap ***textures);
 #endif
 
 // draw a polygon model
@@ -80,7 +80,7 @@ int DrawPolygonModel (tObject *objP, vmsVector *pos,vmsMatrix *orient,vmsAngVec 
 							 fix *glowValues, tBitmapIndex nAltTextures[], tRgbaColorf *obj_color);
 
 // fills in arrays gunPoints & gun_dirs, returns the number of guns read
-int read_model_guns(char *filename,vmsVector *gunPoints, vmsVector *gun_dirs, int *gunSubModels);
+int ReadModelGuns (const char *filename,vmsVector *gunPoints, vmsVector *gun_dirs, int *gunSubModels);
 
 // draws the given model in the current canvas.  The distance is set to
 // more-or-less fill the canvas.  Note that this routine actually renders

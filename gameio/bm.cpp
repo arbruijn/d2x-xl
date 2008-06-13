@@ -1138,7 +1138,7 @@ if (!gameStates.app.bDemoData)
 //------------------------------------------------------------------------------
 
 //nType==1 means 1.1, nType==2 means 1.2 (with weapons)
-int BMReadExtraRobots (char *fname, char *folder, int nType)
+int BMReadExtraRobots (const char *fname, char *folder, int nType)
 {
 	CFILE cf;
 	int t,i,j;
@@ -1245,7 +1245,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadRobotReplacements (char *szLevelName, int bAddBots, int bAltModels)
+int LoadRobotReplacements (const char *szLevelName, int bAddBots, int bAltModels)
 {
 	CFILE			cf;
 	tPolyModel	*pm;
@@ -1422,7 +1422,7 @@ return 1;
  */
 
 // formerly exitmodel_bm_load_sub
-tBitmapIndex ReadExtraBitmapIFF (char * filename)
+tBitmapIndex ReadExtraBitmapIFF (const char * filename)
 {
 	tBitmapIndex bitmap_num;
 	grsBitmap * newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
@@ -1481,11 +1481,11 @@ return gameData.pig.tex.bitmaps [0] + i;
 
 void OglCachePolyModelTextures (int nModel);
 
-int LoadExitModels ()
+int LoadExitModels (void)
 {
 	CFILE cfExitHAM;
 	int start_num, i;
-	static char* szExitBm [] = {
+	static const char* szExitBm [] = {
 		"steel1.bbm", 
 		"rbot061.bbm", 
 		"rbot062.bbm", 
@@ -1498,7 +1498,7 @@ int LoadExitModels ()
 	BMFreeExtraObjBitmaps ();
 
 	start_num = gameData.pig.tex.nObjBitmaps;
-	for (i = 0;szExitBm [i];i++) 
+	for (i = 0; szExitBm [i]; i++) 
 		if (!BMLoadExtraBitmap (szExitBm [i]))
 		{
 #if TRACE
@@ -1618,7 +1618,7 @@ gameData.bots.nJoints = gameData.bots.nDefaultJoints;
 
 //------------------------------------------------------------------------------
 
-void LoadTextureBrightness (char *pszLevel, int *brightnessP)
+void LoadTextureBrightness (const char *pszLevel, int *brightnessP)
 {
 	CFILE		cf;
 	char		szFile [FILENAME_LEN];

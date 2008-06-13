@@ -214,7 +214,7 @@ void rpad_string (char * string, int max_chars)
 
 //------------------------------------------------------------------------------
 
-int StateGetSaveFile (char * fname, char * dsc, int bMulti)
+int StateGetSaveFile (const char * fname, char * dsc, int bMulti)
 {
 	CFILE cf;
 	int i, menuRes, choice, sgVersion;
@@ -272,7 +272,7 @@ return choice + 1;
 
 int bRestoringMenu = 0;
 
-int StateGetRestoreFile (char * fname, int bMulti)
+int StateGetRestoreFile (const char * fname, int bMulti)
 {
 	CFILE			cf;
 	int			i, j, choice = -1, sgVersion, nSaves;
@@ -403,7 +403,7 @@ int StateGetRestoreFile (char * fname, int bMulti)
 
 //	-----------------------------------------------------------------------------------
 //	Imagine if C had a function to copy a file...
-int copy_file (char *old_file, char *new_file)
+int copy_file (const char *old_file, const char *new_file)
 {
 	sbyte	buf [CF_BUF_SIZE];
 	CFILE	cfIn, cfOut;
@@ -439,7 +439,7 @@ int copy_file (char *old_file, char *new_file)
 //	-----------------------------------------------------------------------------------
 //	blind_save means don't prompt user for any info.
 
-int StateSaveAll (int bBetweenLevels, int bSecretSave, char *pszFilenameOverride)
+int StateSaveAll (int bBetweenLevels, int bSecretSave, const char *pszFilenameOverride)
 {
 	int	rval, filenum = -1;
 	char	filename [128], szDesc [DESC_LENGTH+1];
@@ -1302,7 +1302,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 
 //------------------------------------------------------------------------------
 
-int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
+int StateSaveAllSub (const char *filename, char *szDesc, int bBetweenLevels)
 {
 	int			i;
 	CFILE			cf;
@@ -1408,7 +1408,7 @@ OBJECTS [nPlayerObj].position.mOrient = gameData.segs.secret.returnOrient;
 
 //	-----------------------------------------------------------------------------------
 
-int StateRestoreAll (int bInGame, int bSecretRestore, char *pszFilenameOverride)
+int StateRestoreAll (int bInGame, int bSecretRestore, const char *pszFilenameOverride)
 {
 	char filename [128];
 	int	i, nFile = -1;
@@ -1519,7 +1519,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void StateRestoreMultiGame (char *pszOrgCallSign, int bMulti, int bSecretRestore)
+void StateRestoreMultiGame (const char *pszOrgCallSign, int bMulti, int bSecretRestore)
 {
 if (bMulti)
 	strcpy (pszOrgCallSign, LOCALPLAYER.callsign);
@@ -1538,7 +1538,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int StateSetServerPlayer (tPlayer *restoredPlayers, int nPlayers, char *pszServerCallSign,
+int StateSetServerPlayer (tPlayer *restoredPlayers, int nPlayers, const char *pszServerCallSign,
 								  int *pnOtherObjNum, int *pnServerObjNum)
 {
 	int	i,
@@ -2697,7 +2697,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int StateRestoreAllSub (char *filename, int bMulti, int bSecretRestore)
+int StateRestoreAllSub (const char *filename, int bMulti, int bSecretRestore)
 {
 	CFILE		cf;
 	char		szDesc [DESC_LENGTH + 1];

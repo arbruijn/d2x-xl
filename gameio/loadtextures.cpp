@@ -74,7 +74,7 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 #	define PIGGY_MEM_QUOTA	8
 #endif
 
-char *szAddonTextures [MAX_ADDON_BITMAP_FILES] = {
+const char *szAddonTextures [MAX_ADDON_BITMAP_FILES] = {
 	"slowmotion#0",
 	"bullettime#0",
 	"repair-spark#0",
@@ -872,7 +872,7 @@ if (CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
 
 //------------------------------------------------------------------------------
 
-void LoadTextureColors (char *pszLevelName, tFaceColor *colorP)
+void LoadTextureColors (const char *pszLevelName, tFaceColor *colorP)
 {
 	char			szFilename [SHORT_FILENAME_LEN];
 	CFILE			cf;

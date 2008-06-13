@@ -419,7 +419,7 @@ int ComputeAvgPixel (grsBitmap *newBmp);
 
 //reads in a new pigfile (for new palette)
 //returns the size of all the bitmap data
-void PiggyNewPigFile (char *pigname)
+void PiggyNewPigFile (const char *pigname)
 {
 	int i;
 	char temp_name [16];
@@ -1177,7 +1177,7 @@ typedef struct tBitmapInfoHeader {
 	unsigned int biClrImportant;
 } tBitmapInfoHeader;
 
-grsBitmap *PiggyLoadBitmap (char *pszFile)
+grsBitmap *PiggyLoadBitmap (const char *pszFile)
 {
 	CFILE					cf;
 	grsBitmap			*bmp;

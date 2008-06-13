@@ -138,7 +138,7 @@ while (paramList) {
 
 //------------------------------------------------------------------------------
 
-char *MakeTag (char *pszTag, char *pszIdent, int i, int j)
+char *MakeTag (char *pszTag, const char *pszIdent, int i, int j)
 {
 	char	*pi, *ph;
 	int	h = 0, l;
@@ -158,7 +158,7 @@ return pszTag;
 
 //------------------------------------------------------------------------------
 
-int RegisterParam (void *valP, char *pszIdent, int i, int j, ubyte nSize)
+int RegisterParam (void *valP, const char *pszIdent, int i, int j, ubyte nSize)
 {
 	char		szTag [200];
 	int		l;

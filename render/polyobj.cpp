@@ -433,7 +433,7 @@ return pm;
 //------------------------------------------------------------------------------
 //reads the gun information for a model
 //fills in arrays gunPoints & gun_dirs, returns the number of guns read
-int read_model_guns (char *filename, vmsVector *gunPoints, vmsVector *gun_dirs, int *gunSubModels)
+int ReadModelGuns (const char *filename, vmsVector *gunPoints, vmsVector *gun_dirs, int *gunSubModels)
 {
 	CFILE cf;
 	short version;
@@ -801,9 +801,9 @@ char Pof_names [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
 //returns the number of this model
 #ifndef DRIVE
-int LoadPolygonModel (char *filename, int nTextures, int nFirstTexture, tRobotInfo *r)
+int LoadPolygonModel (const char *filename, int nTextures, int nFirstTexture, tRobotInfo *r)
 #else
-int LoadPolygonModel (char *filename, int nTextures, grsBitmap ***textures)
+int LoadPolygonModel (const char *filename, int nTextures, grsBitmap ***textures)
 #endif
 {
 	#ifdef DRIVE

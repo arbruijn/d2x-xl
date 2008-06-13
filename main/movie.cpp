@@ -501,7 +501,7 @@ return p;
 
 //-----------------------------------------------------------------------
 
-int InitSubTitles (char *filename)
+int InitSubTitles (const char *filename)
 {
 	CFILE cf;
 	int 	size, readCount;
@@ -558,7 +558,7 @@ return 1;
 
 //-----------------------------------------------------------------------
 
-void CloseSubTitles ()
+void CloseSubTitles (void)
 {
 if (subTitles.rawDataP)
 	D2_FREE (subTitles.rawDataP);
@@ -621,7 +621,7 @@ for (t=0;t<nActiveSubTitles;t++)
 
 //-----------------------------------------------------------------------
 
-tMovieLib *InitNewMovieLib (char *filename, CFILE *fp)
+tMovieLib *InitNewMovieLib (const char *filename, CFILE *fp)
 {
 	int		nFiles, offset;
 	int		i, n, len, bLittleEndian = gameStates.app.bLittleEndian;
@@ -658,7 +658,7 @@ return table;
 
 //-----------------------------------------------------------------------
 
-tMovieLib *InitOldMovieLib (char *filename, CFILE *fp)
+tMovieLib *InitOldMovieLib (const char *filename, CFILE *fp)
 {
 	int nFiles, size;
 	int i, len;
@@ -698,7 +698,7 @@ return table;
 //-----------------------------------------------------------------------
 
 //find the specified movie library, and read in list of movies in it
-tMovieLib *InitMovieLib (char *filename)
+tMovieLib *InitMovieLib (const char *filename)
 {
 	//note: this based on CFInitHogFile ()
 
@@ -772,7 +772,7 @@ int RequestCD (void)
 
 //-----------------------------------------------------------------------
 
-void init_movie (char *filename, int libnum, int isRobots, int required)
+void InitMovie (const char *filename, int libnum, int isRobots, int required)
 {
 	int bHighRes, nTries;
 	char *res = strchr (filename, '.') - 1; // 'h' == high resolution, 'l' == low
@@ -867,7 +867,7 @@ void InitMovies ()
 		 N_BUILTIN_MOVIE_LIBS : FIRST_EXTRA_MOVIE_LIB;
 	for (i = 0; i < N_BUILTIN_MOVIE_LIBS; i++) {
 		isRobots = !strnicmp (pszMovieLibs[i], "robot", 5);
-		init_movie (pszMovieLibs[i], i, isRobots, 1);
+		InitMovie (pszMovieLibs[i], i, isRobots, 1);
 		if (movies.libs [i])
 			PrintLog ("   found movie lib '%s'\n", pszMovieLibs[i]);
 		else if ((i >= FIRST_EXTRA_MOVIE_LIB) && 
@@ -885,7 +885,7 @@ void InitMovies ()
 void InitExtraRobotMovie (char *filename)
 {
 	close_movie (EXTRA_ROBOT_LIB);
-	init_movie (filename, EXTRA_ROBOT_LIB, 1, 0);
+	InitMovie (filename, EXTRA_ROBOT_LIB, 1, 0);
 }
 
 //-----------------------------------------------------------------------
@@ -1007,7 +1007,7 @@ return NULL;
 
 //-----------------------------------------------------------------------
 
-tMovieLib *FindMovieLib (char *pszTargetMovie)
+tMovieLib *FindMovieLib (const char *pszTargetMovie)
 {
 
 	static int nMovieLibs = -1;

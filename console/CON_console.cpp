@@ -437,7 +437,7 @@ ConsoleInformation *CON_Init(grsFont *Font, grsScreen *DisplayScreen, int lines,
 	newinfo->CursorPos = 0;
 	newinfo->CommandScrollBack = 0;
 	newinfo->OutputScreen = DisplayScreen;
-	newinfo->Prompt = CON_DEFAULT_PROMPT;
+	newinfo->Prompt = (char *) CON_DEFAULT_PROMPT;
 	newinfo->HideKey = CON_DEFAULT_HIDEKEY;
 
 	CON_SetExecuteFunction(newinfo, Default_CmdFunction);

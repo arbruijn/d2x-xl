@@ -100,8 +100,8 @@ void DoEndLevelScoreGlitz(int network);
 extern int MaxNumNetPlayers;
 extern int NumNetPlayerPositions;
 
-void BashToShield(int, char *);
-void BashToEnergy(int, char *);
+void BashToShield(int, const char *);
+void BashToEnergy(int, const char *);
 
 fix RobotDefaultShields (tObject *objP);
 

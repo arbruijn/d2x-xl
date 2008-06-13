@@ -1245,7 +1245,7 @@ int StartNewLevelSecret (int nLevel, int bPageInTextures)
 gameStates.app.xThisLevelTime=0;
 
 m [0].nType = NM_TYPE_TEXT;
-m [0].text = " ";
+m [0].text = (char *) " ";
 
 gameStates.render.cockpit.nLastDrawn [0] = -1;
 gameStates.render.cockpit.nLastDrawn [1] = -1;
@@ -1434,7 +1434,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void PlayLevelMovie (char *pszExt, int nLevel)
+void PlayLevelMovie (const char *pszExt, int nLevel)
 {
 	char szFilename [FILENAME_LEN];
 
@@ -1842,7 +1842,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void BashToShield (int i, char *s)
+void BashToShield (int i, const char *s)
 {
 	tObject *objP = OBJECTS + i;
 	int id = objP->id;
@@ -1860,7 +1860,7 @@ objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo
 
 //------------------------------------------------------------------------------
 
-void BashToEnergy (int i,char *s)
+void BashToEnergy (int i, const char *s)
 {
 	tObject *objP = OBJECTS + i;
 	int id = objP->id;
@@ -1885,7 +1885,7 @@ void FilterObjectsFromLevel (void)
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if ((OBJECTS [i].nType == OBJ_POWERUP) &&
 		 ((OBJECTS [i].id == POW_REDFLAG) || (OBJECTS [i].id == POW_BLUEFLAG)))
-		BashToShield (i,"Flag!!!!");
+		BashToShield (i, "Flag!!!!");
   }
 }
 

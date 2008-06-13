@@ -61,7 +61,7 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-void LoadTextData (char *pszLevelName, char *pszExt, tTextData *msgP)
+void LoadTextData (const char *pszLevelName, const char *pszExt, tTextData *msgP)
 {
 	char			szFilename [SHORT_FILENAME_LEN];
 	CFILE			cf;

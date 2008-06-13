@@ -258,7 +258,7 @@ return NULL;		//error!
 
 //------------------------------------------------------------------------------
 //reads a line, returns ptr to value of passed parm.  returns NULL if none
-char *GetParmValue (char *parm,CFILE *f)
+char *GetParmValue (const char *parm,CFILE *f)
 {
 	static char buf [80];
 
@@ -293,7 +293,7 @@ return (*s1 == '[') ? -1 : 1;
 extern char CDROM_dir [];
 
 //returns 1 if file read ok, else 0
-int ReadMissionFile (char *filename, int count, int location)
+int ReadMissionFile (const char *filename, int count, int location)
 {
 	char	filename2 [100];
 	CFILE cf;
@@ -493,7 +493,7 @@ void AddMissionsToList
 	int 	c = *count;
 	char lvlName [255];
 	char searchName [255];
-	char *lvlExt = ".hog";
+	const char *lvlExt = ".hog";
 	int	bFindDirs;
 
 	static const char *altLvlExt [2] = {".rdl", ".rl2"};
@@ -552,7 +552,7 @@ void AddMissionsToList
 
 //------------------------------------------------------------------------------
 /* move <szMissionName> to <place> on mission list, increment <place> */
-void PromoteMission (char * szMissionName, int * nTopPlace, int nMissionCount)
+void PromoteMission (const char * szMissionName, int * nTopPlace, int nMissionCount)
 {
 	int i;
 	char name [FILENAME_LEN], * t;

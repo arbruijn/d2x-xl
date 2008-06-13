@@ -172,22 +172,22 @@ void _CDECL_ PiggyClose(void);
 void PiggyDumpAll (void);
 tBitmapIndex PiggyRegisterBitmap( grsBitmap * bmp, const char * name, int in_file );
 int PiggyRegisterSound( tDigiSound * snd, char * name, int in_file );
-tBitmapIndex PiggyFindBitmap (char * name, int bD1Data );
-int PiggyFindSound (char * name);
-int LoadSoundReplacements (char *pszFileName);
+tBitmapIndex PiggyFindBitmap (const char * name, int bD1Data );
+int PiggyFindSound (const char * name);
+int LoadSoundReplacements (const char *pszFileName);
 void FreeSoundReplacements (void);
-void LoadTextureColors (char *pszLevelName, tFaceColor *colorP);
+void LoadTextureColors (const char *pszLevelName, tFaceColor *colorP);
 int LoadModelData (void);
 int SaveModelData (void);
 
-void piggy_read_bitmap_data(grsBitmap * bmp);
-void piggy_readSound_data(tDigiSound *snd);
+void piggy_read_bitmap_data (grsBitmap * bmp);
+void piggy_readSound_data (tDigiSound *snd);
 
 void PiggyLoadLevelData ();
 
 #ifdef PIGGY_USE_PAGING
 int PiggyBitmapPageIn (int bmi, int bD1);
-int PageInBitmap (grsBitmap *bmP, char *bmName, int nIndex, int bD1);
+int PageInBitmap (grsBitmap *bmP, const char *bmName, int nIndex, int bD1);
 void PiggyBitmapPageOutAll(int bAll);
 #endif
 
@@ -195,10 +195,10 @@ void PiggyReadSounds();
 
 //reads in a new pigfile (for new palette)
 //returns the size of all the bitmap data
-void piggy_new_pigfile(char *pigname);
+void piggy_new_pigfile (const char *pigname);
 
 //loads custom bitmaps for current level
-void LoadBitmapReplacements(char *level_name);
+void LoadBitmapReplacements (const char *level_name);
 //if descent.pig exists, loads descent 1 texture bitmaps
 void LoadD1BitmapReplacements();
 
@@ -220,12 +220,12 @@ int BitmapIndexReadN (tBitmapIndex *bi, int n, CFILE *cfP);
 /*
  * Find and load the named bitmap from descent.pig
  */
-tBitmapIndex ReadExtraBitmapD1Pig(char *name);
+tBitmapIndex ReadExtraBitmapD1Pig (const char *name);
 
 void PIGBitmapHeaderRead (tPIGBitmapHeader *dbh, CFILE *cfP);
 void PIGBitmapHeaderD1Read (tPIGBitmapHeader *dbh, CFILE *cfP);
 
-grsBitmap *PiggyLoadBitmap (char *pszFile);
+grsBitmap *PiggyLoadBitmap (const char *pszFile);
 void PiggyFreeBitmap (grsBitmap *bmP, int i, int bD1);
 int CreateSuperTranspMasks (grsBitmap *bmP);
 
