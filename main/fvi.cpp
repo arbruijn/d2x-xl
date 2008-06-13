@@ -959,7 +959,7 @@ else {
 	// check hit sphere collisions
 bOtherPoly = UseHitbox (otherObjP);
 #if 1
-if (bThisPoly = UseHitbox (thisObjP))
+if ((bThisPoly = UseHitbox (thisObjP)))
 	PolyObjPos (thisObjP, &vPos);
 else
 #endif

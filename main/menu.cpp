@@ -3453,7 +3453,7 @@ return i ? i - 1 : 0;
 void LightOptionsMenu (void)
 {
 	tMenuItem m [30];
-	int	i, choice = 0, nLightRange = extraGameInfo [0].nLightRange;
+	int	i, choice = 0;
 	int	opt;
 	int	optColoredLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat, optBrightObjects, nPowerupLight = -1;
 #if 0

@@ -1210,9 +1210,9 @@ const char error_messages[] = {
 
 
 //function to return pointer to error message
-char *iff_errormsg(int error_number)
+const char *iff_errormsg(int error_number)
 {
-	char *p = error_messages;
+	const char *p = error_messages;
 
 	while (error_number--) {
 

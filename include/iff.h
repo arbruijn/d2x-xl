@@ -51,7 +51,7 @@ int iff_write_bitmap(const char *ofilename, grsBitmap *bm, ubyte *palette);
 	//returns error codes - see IFF.H.
 
 //function to return pointer to error message
-char *iff_errormsg(int error_number);
+const char *iff_errormsg(int error_number);
 
 
 //Error codes for read & write routines

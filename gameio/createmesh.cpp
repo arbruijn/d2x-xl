@@ -336,7 +336,6 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 #endif
 
 	int			h, i, nIndex = triP->nIndex;
-	short			nId = triP->nId;
 	ushort		nFace = triP->nFace, *indexP = triP->index, index [4];
 	tTexCoord2f	texCoord [4], ovlTexCoord [4];
 	tRgbaColorf	color [4];
@@ -565,7 +564,7 @@ int CTriMeshBuilder::InsertTriangles (void)
 	grsTriangle	*grsTriP = TRIANGLES;
 	grsFace		*m_faceP = NULL;
 	vmsVector	vNormal;
-	int			h, i, nTriVertIndex = 0, nFace = -1;
+	int			h, i, nFace = -1;
 	GLuint		nIndex = 0;
 
 PrintLog ("   inserting new triangles\n");
@@ -793,7 +792,6 @@ bool CTriMeshBuilder::Save (int nLevel)
 	CFILE					cf;
 	bool					bOk;
 	char					szFilename [FILENAME_LEN];
-	char					*bufP = NULL;
 
 	tMeshDataHeader mdh = {MESH_DATA_VERSION, 
 								  gameData.segs.nSegments, 
@@ -892,9 +890,9 @@ m_faceP->nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWal
 m_faceP->bAnimation = IsAnimatedTexture (m_faceP->nBaseTex) || IsAnimatedTexture (m_faceP->nOvlTex);
 m_faceP->bHasColor = 0;
 ComputeSideRads (nSegment, nSide, &rMin, &rMax);
-float rMinf = f2fl (rMin);
-float rMaxf = f2fl (rMax);
-m_faceP->fRad = rMaxf; //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+//float rMinf = f2fl (rMin);
+//float rMaxf = f2fl (rMax);
+m_faceP->fRad = f2fl (rMax); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
 }
 
 //------------------------------------------------------------------------------
@@ -936,14 +934,14 @@ m_faceP->bAdditive = gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_LA
 void CQuadMeshBuilder::SetupLMapTexCoord (tTexCoord2f *texCoordP)
 {
 #define	LMAP_SIZE	0.0f //(1.0f / 16.0f)
-
+#if 0
 	static tTexCoord2f lMapTexCoord [4] = {
 		{{LMAP_SIZE, LMAP_SIZE}}, 
 		{{1.0f - LMAP_SIZE, LMAP_SIZE}}, 
 		{{1.0f - LMAP_SIZE, 1.0f - LMAP_SIZE}}, 
 		{{LMAP_SIZE, 1.0f - LMAP_SIZE}}
 	};
-
+#endif
 int i = m_faceP->nLightmap % LIGHTMAP_BUFSIZE;
 float x = (float) (i % LIGHTMAP_ROWSIZE);
 float y = (float) (i / LIGHTMAP_ROWSIZE);

@@ -543,7 +543,7 @@ if (!networkData.refuse.bWaitForAnswer) {
 #if 0
 	if (IsTeamGame) {
 		if (gameOpts->multi.bNoRankings)
-			HUDInitMessage (%s joining", their->player.callsign);
+			HUDInitMessage (""%s joining", their->player.callsign);
 		else
 			HUDInitMessage ("%s %s wants to join", 
 								 pszRankStrings [their->player.rank], their->player.callsign);

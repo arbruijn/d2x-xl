@@ -1212,9 +1212,11 @@ PROF_START
 	int						nLightRange, nLights;
 	float						fBrightness;
 	tRgbaColorf				ambient, diffuse;
+#if 0
 	tRgbaColorf				black = {0,0,0,0};
+#endif
 	tRgbaColorf				specular = {0.5f,0.5f,0.5f,0.5f};
-	fVector					vPos = {{0,0,0,1}};
+	//fVector					vPos = {{0,0,0,1}};
 	GLenum					hLight;
 	tActiveShaderLight	*activeLightsP;
 	tShaderLight			*psl;
@@ -1356,7 +1358,7 @@ nShader = 20 + 4 * nLights + nType;
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if (bLightmaps = HaveLightmaps ()) {
+if ((bLightmaps = HaveLightmaps ())) {
 	int i = faceP->nLightmap / LIGHTMAP_BUFSIZE;
 #if 1//def _DEBUG
 	if (OglCreateLightmap (i))

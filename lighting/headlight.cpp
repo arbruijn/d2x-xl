@@ -856,7 +856,7 @@ if (nShader != gameStates.render.history.nShader) {
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
 #if 1
-	if (bTransform = !nOglTransformCalls)
+	if ((bTransform = !nOglTransformCalls))
 		OglSetupTransform (1);
 	for (int i = 0; i < nLights; i++) {
 		glEnable (GL_LIGHT0 + i);

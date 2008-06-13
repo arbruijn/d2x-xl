@@ -347,7 +347,6 @@ void ComputeLightmaps (int nFace, int nThread)
 	double		pixelOffset = 0; //0.5
 #endif
 	int			nType, nBlackLightmaps = 0, nWhiteLightmaps = 0; 
-	GLfloat		maxColor = 0; 
 	vmsVector	offsetU, offsetV, pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH], *pPixelPos; 
 	vmsVector	vNormal;
 	double		fOffset [MAX_LIGHTMAP_WIDTH];

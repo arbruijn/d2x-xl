@@ -990,9 +990,8 @@ if (nVertex == nDbgVertex)
 int SetNearestFaceLights (grsFace *faceP, int bTextured)
 {
 PROF_START
-	static		grsFace *prevFaceP = NULL;
-	static		int nFrameCount = -1;
 #if 0
+	static		int nFrameCount = -1;
 if ((faceP == prevFaceP) && (nFrameCount == gameData.app.nFrameCount))
 	return gameData.render.lights.dynamic.shader.index [0][0].nActive;
 
@@ -1444,10 +1443,9 @@ return psc;
 
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread)
 {
-	tFaceColor				*pf = gameData.render.color.ambient + nVertex;
-	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
-	fVector					vVertex;
-	int						bColorize = !gameOpts->render.nLightingMethod;
+	tFaceColor	*pf = gameData.render.color.ambient + nVertex;
+	fVector		vVertex;
+	int			bColorize = !gameOpts->render.nLightingMethod;
 
 for (; nVertex < nMax; nVertex++, pf++) {
 #ifdef _DEBUG
