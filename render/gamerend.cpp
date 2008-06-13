@@ -1279,7 +1279,7 @@ bkg bg = {0, 0, 0, 0, NULL, NULL, NULL, NULL, 1, 1};
 #define BOX_BORDER (gameStates.menus.bHires?60:30)
 
 //show a message in a nice little box
-void ShowBoxedMessage (char *msg)
+void ShowBoxedMessage (const char *pszMsg)
 {
 	int w, h, aw;
 	int x, y;
@@ -1292,7 +1292,7 @@ if (bg.bmp) {
 	}
 GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 GrSetCurFont (MEDIUM1_FONT);
-GrGetStringSize (msg, &w, &h, &aw);
+GrGetStringSize (pszMsg, &w, &h, &aw);
 x = (grdCurScreen->scWidth-w)/2;
 y = (grdCurScreen->scHeight-h)/2;
 // Save the background of the display
@@ -1307,7 +1307,7 @@ if (!gameOpts->menus.nStyle) {
 NMDrawBackground (&bg, x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1, 0);
 GrSetFontColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 GrSetCurFont (MEDIUM1_FONT);
-GrPrintF (NULL, 0x8000, y, msg);
+GrPrintF (NULL, 0x8000, y, pszMsg);
 GrUpdate (0);
 NMRemoveBackground (&bg);
 }

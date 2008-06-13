@@ -147,37 +147,37 @@ int CFExtract (const char *filename, const char *folder, int bUseD1Hog, const ch
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
 
 // prototypes for reading basic types from fp
-int CFReadInt (CFILE *file);
-short CFReadShort (CFILE *file);
-sbyte CFReadByte (CFILE *file);
-fix CFReadFix (CFILE *file);
-fixang CFReadFixAng (CFILE *file);
-void CFReadVector (vmsVector *v, CFILE *file);
-void CFReadAngVec (vmsAngVec *v, CFILE *file);
-void CFReadMatrix (vmsMatrix *v, CFILE *file);
-float CFReadFloat (CFILE *file);
-double CFReadDouble (CFILE *file);
+int CFReadInt (CFILE *cfP);
+short CFReadShort (CFILE *cfP);
+sbyte CFReadByte (CFILE *cfP);
+fix CFReadFix (CFILE *cfP);
+fixang CFReadFixAng (CFILE *cfP);
+void CFReadVector (vmsVector *v, CFILE *cfP);
+void CFReadAngVec (vmsAngVec *v, CFILE *cfP);
+void CFReadMatrix (vmsMatrix *v, CFILE *cfP);
+float CFReadFloat (CFILE *cfP);
+double CFReadDouble (CFILE *cfP);
 char *CFReadData (const char *filename, const char *folder, int bUseD1Hog);
 
 // Reads variable length, null-termined string.   Will only read up
 // to n characters.
-void CFReadString (char *buf, int n, CFILE *file);
+void CFReadString (char *buf, int n, CFILE *cfP);
 
 // functions for writing cfiles
-int CFWriteFix (fix x, CFILE *file);
-int CFWriteInt (int i, CFILE *file);
-int CFWriteShort (short s, CFILE *file);
-int CFWriteByte (sbyte u, CFILE *file);
-int CFWriteFixAng (fixang a, CFILE *file);
-void CFWriteAngVec (vmsAngVec *v, CFILE *file);
-void CFWriteVector (vmsVector *v, CFILE *file);
-void CFWriteMatrix (vmsMatrix *m,CFILE *file);
+int CFWriteFix (fix x, CFILE *cfP);
+int CFWriteInt (int i, CFILE *cfP);
+int CFWriteShort (short s, CFILE *cfP);
+int CFWriteByte (sbyte u, CFILE *cfP);
+int CFWriteFixAng (fixang a, CFILE *cfP);
+void CFWriteAngVec (vmsAngVec *v, CFILE *cfP);
+void CFWriteVector (vmsVector *v, CFILE *cfP);
+void CFWriteMatrix (vmsMatrix *m, CFILE *cfP);
 void CFSplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt);
-void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
+void ChangeFilenameExtension (char *dest, char *src, const char *newExt);
 time_t CFDate (const char *hogname, const char *folder, int bUseD1Hog);
 
 // writes variable length, null-termined string.
-int CFWriteString (char *buf, CFILE *file);
+int CFWriteString (char *buf, CFILE *cfP);
 
 #ifdef _WIN32
 char *UnicodeToAsc (char *str, const wchar_t *w_str);

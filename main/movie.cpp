@@ -282,7 +282,7 @@ GrPaletteStepLoad (NULL);
 
 #define BOX_BORDER (gameStates.menus.bHires ? 40 : 20)
 
-void ShowPauseMessage (char *msg)
+void ShowPauseMessage (const char *msg)
 {
 	int w, h, aw;
 	int x, y;

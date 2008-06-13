@@ -499,7 +499,6 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)
 	if (soP->flags == 0)
 		break;
 if (i == MAX_SOUND_OBJECTS) {
-	//mprintf ((1, "Too many sound OBJECTS!\n"));
 	return -1;
 	}
 soP->nSignature = gameStates.sound.digi.nNextSignature++;
@@ -850,7 +849,6 @@ int VerifySoundChannelFree (int channel)
 for (i = 0; i < MAX_SOUND_OBJECTS; i++) {
 	if (soundObjects [i].flags & SOF_USED)	{
 		if (soundObjects [i].channel == channel)	{
-			//mprintf ((0, "ERROR STARTING SOUND CHANNEL ON USED SLOT!!\n"));
 			Int3 ();	// Get John!
 			}
 		}
@@ -952,10 +950,6 @@ if (i != soundQueue.nHead)	{
 	soundQueue.nSounds++;
 	soundQueue.nTail = i;
 	}
-else {
-	//mprintf ((0, "Sound Q full!\n"));
-}
-// Try to start it!
 SoundQProcess ();
 }
 

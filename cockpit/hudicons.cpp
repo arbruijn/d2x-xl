@@ -56,7 +56,7 @@ int bHaveObjTallyBms = -1;
 
 //	-----------------------------------------------------------------------------
 
-char *pszObjTallyIcons [] = {"louguard.tga", "shldorb.tga"};
+const char *pszObjTallyIcons [] = {"louguard.tga", "shldorb.tga"};
 
 int LoadObjTallyIcons (void)
 {

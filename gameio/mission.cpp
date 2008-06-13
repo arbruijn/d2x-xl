@@ -225,7 +225,7 @@ return r;
 
 //------------------------------------------------------------------------------
 //compare a string for a token. returns true if match
-int MsnIsTok (char *buf,char *tok)
+int MsnIsTok (char *buf, const char *tok)
 {
 return !strnicmp (buf, tok, strlen (tok));
 }
@@ -494,13 +494,14 @@ void AddMissionsToList
 	char lvlName [255];
 	char searchName [255];
 	char *lvlExt = ".hog";
-	char *altLvlExt [2] = {".rdl", ".rl2"};
 	int	bFindDirs;
 
+	static const char *altLvlExt [2] = {".rdl", ".rl2"};
+
 #ifdef _WIN32
-	static char *pszExt [2][2] = {{"*.mn2", "*.msn"},{"*", "*"}};
+	static const char *pszExt [2][2] = {{"*.mn2", "*.msn"},{"*", "*"}};
 #else
-	static char *pszExt [2][2] = {{"*.mn2", "*.msn"},{"*", "*"}};
+	static const char *pszExt [2][2] = {{"*.mn2", "*.msn"},{"*", "*"}};
 #endif
 
 	if (c + bSubFolder >= MAX_MISSIONS) 

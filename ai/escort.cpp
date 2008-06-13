@@ -1109,7 +1109,7 @@ sprintf (szGoal, TXT_GOAL_NEXT, pszGoal);
 sprintf (szMsgs, TXT_GOAL_MESSAGES, tstr);
 memset (m, 0, sizeof (m));
 for (nItems = 1; nItems < 10; nItems++) {
-	m [nItems].text = GT (343 + nItems);
+	m [nItems].text = (char *) GT (343 + nItems);
 	m [nItems].nType = *m [nItems].text ? NM_TYPE_MENU : NM_TYPE_TEXT;
 	m [nItems].key = -1;
 	}

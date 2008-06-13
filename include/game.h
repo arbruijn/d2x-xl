@@ -180,7 +180,7 @@ void PaletteRestore(void);
 void DoShowHelp();
 
 // show a message in a nice little box
-void ShowBoxedMessage(char *msg);
+void ShowBoxedMessage(const char *pszMsg);
 
 // erases message drawn with ShowBoxedMessage()
 void ClearBoxedMessage();

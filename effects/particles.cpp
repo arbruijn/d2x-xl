@@ -87,7 +87,7 @@ static grsBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL, NU
 static grsBitmap *bmpBumpMaps [2] = {NULL, NULL};
 #endif
 
-static char *szParticleImg [2][PARTICLE_TYPES] = {
+static const char *szParticleImg [2][PARTICLE_TYPES] = {
 	{"smoke.tga", "corona.tga", "bullcase.tga"},
 	{"smoke.tga", "corona.tga", "bullcase.tga"}
 	};

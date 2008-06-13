@@ -205,17 +205,14 @@ TryNextChannel:
 	{
 		if ((SoundSlots[SampleHandles[next_handle]].volume > gameStates.sound.digi.nVolume) && (ntries < gameStates.sound.digi.nMaxChannels))
 		{
-			//mprintf((0, "Not stopping loud sound %d.\n", next_handle));
 			next_handle++;
 			if (next_handle >= gameStates.sound.digi.nMaxChannels)
 				next_handle = 0;
 			ntries++;
 			goto TryNextChannel;
 		}
-		//mprintf((0, "[SS:%d]", next_handle));
 		SampleHandles[next_handle] = -1;
 	}
-	// end edit by adb
 
 	slot = get_free_slot();
 	if (slot < 0)
@@ -524,8 +521,5 @@ void DigiDebug()
 		if (DigiIsChannelPlaying(i))
 			n_voices++;
 	}
-
-	mprintf_at((0, 2, 0, "DIGI: Active Sound Channels: %d/%d (HMI says %d/32)      ", n_voices, gameStates.sound.digi.nMaxChannels, -1));
-	//mprintf_at((0, 3, 0, "DIGI: Number locked sounds:  %d                          ", digiTotal_locks ));
 }
 #endif

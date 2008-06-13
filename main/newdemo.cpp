@@ -180,7 +180,7 @@ CFILE ndOutFile = {NULL, 0, 0, 0};
 
 //	-----------------------------------------------------------------------------
 
-int NDErrorMsg (char *pszMsg1, char *pszMsg2, char *pszMsg3)
+int NDErrorMsg (const char *pszMsg1, const char *pszMsg2, const char *pszMsg3)
 {
 	tMenuItem	m [3];
 	int			opt = 0;
@@ -3217,7 +3217,7 @@ if (!gameData.demo.bNoSpace) {
 	}
 else if (gameData.demo.bNoSpace == 1) {
 	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = TXT_DEMO_SAVE_BAD;
+	m [0].text = (char *) TXT_DEMO_SAVE_BAD;
 	m [1].nType = NM_TYPE_INPUT;
 	m [1].text_len = 8; 
 	m [1].text = filename;
@@ -3225,7 +3225,7 @@ else if (gameData.demo.bNoSpace == 1) {
 	} 
 else if (gameData.demo.bNoSpace == 2) {
 	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = TXT_DEMO_SAVE_NOSPACE;
+	m [0].text = (char *) TXT_DEMO_SAVE_NOSPACE;
 	m [1].nType = NM_TYPE_INPUT;
 	m [1].text_len = 8; 
 	m [1].text = filename;

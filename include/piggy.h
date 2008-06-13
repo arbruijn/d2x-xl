@@ -272,8 +272,8 @@ extern int soundOffset [2][MAX_SOUND_FILES];
 
 #	include <SDL_mixer.h>
 
-char *AddonSoundName (int nSound);
-Mix_Chunk *LoadAddonSound (char *pszSoundFile, ubyte *bBuiltIn);
+const char *AddonSoundName (int nSound);
+Mix_Chunk *LoadAddonSound (const char *pszSoundFile, ubyte *bBuiltIn);
 void FreeAddonSounds (void);
 #else
 #	define AddonSoundName(_nSound)	NULL

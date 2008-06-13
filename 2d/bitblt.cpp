@@ -540,8 +540,6 @@ void gr_bm_ubitblt0x_rle(int w, int h, int dx, int dy, int sx, int sy, grsBitmap
 	register int y1;
 	unsigned char * sbits;
 
-	//con_printf(0, "SVGA RLE!\n");
-
 	data_offset = 1;
 	if (src->bmProps.flags & BM_FLAG_RLE_BIG)
 		data_offset = 2;
@@ -567,8 +565,6 @@ void gr_bm_ubitblt0xm_rle(int w, int h, int dx, int dy, int sx, int sy, grsBitma
 	int i, data_offset;
 	register int y1;
 	unsigned char * sbits;
-
-	//con_printf(0, "SVGA RLE!\n");
 
 	data_offset = 1;
 	if (src->bmProps.flags & BM_FLAG_RLE_BIG)

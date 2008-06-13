@@ -580,7 +580,7 @@ return pos [h].i;
 
 //------------------------------------------------------------------------------
 
-inline char *MouseButtonText (int i)
+inline const char *MouseButtonText (int i)
 {
 if (i < 0)
 	return "";
@@ -593,7 +593,7 @@ return "";
 
 //------------------------------------------------------------------------------
 
-inline char *MouseAxisText (int i)
+inline const char *MouseAxisText (int i)
 {
 if (i < 0)
 	return "";
@@ -604,7 +604,7 @@ return "";
 
 //------------------------------------------------------------------------------
 
-inline char *YesNoText (int i)
+inline const char *YesNoText (int i)
 {
 return baseGameTexts [yesNoTextIndex [i != 0]];
 }
@@ -686,14 +686,14 @@ return h;
 #define KC_LHX(_x) (LHX (_x)+xOffs)
 #define KC_LHY(_y) (LHY (_y)+yOffs)
 
-void KCDrawTitle (char *title)
+void KCDrawTitle (char *pszTitle)
 {
-char *p = strchr (title, '\n');
+char *p = strchr (pszTitle, '\n');
 
 grdCurCanv->cvFont = MEDIUM3_FONT;
 if (p) 
 	*p = 32;
-GrString (0x8000, KC_LHY (8), title, NULL);
+GrString (0x8000, KC_LHY (8), pszTitle, NULL);
 if (p)
 	*p = '\n';
 }
@@ -1208,7 +1208,7 @@ nLinked |= tableFlags;
 
 //------------------------------------------------------------------------------
 
-void KConfigSub (kcItem * items, int nItems, char * title)
+void KConfigSub (kcItem * items, int nItems, char * pszTitle)
 {
 	gsrCanvas * save_canvas;
 	grsFont * save_font;
@@ -1267,7 +1267,7 @@ for (;;) {
 			if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
 				GameRenderFrame ();
 			NMDrawBackground (&bg, xOffs, yOffs, xOffs + 639, yOffs + 479, 1);
-			KCDrawTitle (title);
+			KCDrawTitle (pszTitle);
 			close_x = close_y = gameStates.menus.bHires ? 15 : 7;
 			close_x += xOffs;
 			close_y += yOffs;
@@ -1617,7 +1617,7 @@ if (bRedraw && gameOpts->menus.nStyle)
 
 #include "screens.h"
 
-void KConfig (int n, char * title)
+void KConfig (int n, const char *pszTitle)
 {
 	grsBitmap	*bmSave;
 	int			i, j, b = gameOpts->legacy.bInput;
@@ -1643,18 +1643,18 @@ void KConfig (int n, char * title)
 						 0, 0, 0, 0, &grdCurCanv->cvBitmap, bmSave);
 		}
 	if (n == 0)
-		KConfigSub (kcKeyboard, NUM_KEY_CONTROLS, title);
+		KConfigSub (kcKeyboard, NUM_KEY_CONTROLS, pszTitle);
 	else if (n == 1)
-		KConfigSub (kcJoystick, NUM_JOY_CONTROLS, title);
+		KConfigSub (kcJoystick, NUM_JOY_CONTROLS, pszTitle);
 	else if (n == 2)
-		KConfigSub (kcMouse, NUM_MOUSE_CONTROLS, title); 
+		KConfigSub (kcMouse, NUM_MOUSE_CONTROLS, pszTitle); 
 #if 0
 	else if (n == 3)
-		KConfigSub (kcSuperJoy, NUM_JOY_CONTROLS, title); 
+		KConfigSub (kcSuperJoy, NUM_JOY_CONTROLS, pszTitle); 
 #endif
 #ifdef D2X_KEYS
 	else if (n == 4)
-		KConfigSub (kcHotkeys, NUM_HOTKEY_CONTROLS, title); 
+		KConfigSub (kcHotkeys, NUM_HOTKEY_CONTROLS, pszTitle); 
 	//end this section addition - VR
 #endif
  	else {

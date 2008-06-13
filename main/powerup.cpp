@@ -348,7 +348,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int PickupKey (tObject *objP, int nKey, char *pszKey, int nPlayer)
+int PickupKey (tObject *objP, int nKey, const char *pszKey, int nPlayer)
 {
 if (ISLOCALPLAYER (nPlayer)) {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
@@ -389,7 +389,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int PickupEquipment (tObject *objP, int nEquipment, char *pszHave, char *pszGot, int nPlayer)
+int PickupEquipment (tObject *objP, int nEquipment, const char *pszHave, const char *pszGot, int nPlayer)
 {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 	int		id, bUsed = 0;

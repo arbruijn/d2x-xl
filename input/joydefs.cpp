@@ -72,7 +72,7 @@ char szJoyAxis [UNIQUE_JOY_AXES] = {'X', 'Y', 'R', 'T', 'Z'};
 
 char joyHotkeys [UNIQUE_JOY_AXES] = {KEY_X, KEY_Y, KEY_R, KEY_T, KEY_Z};
 
-static char *szDZoneSizes [5];
+static const char *szDZoneSizes [5];
 
 int joydefs_calibrateFlag = 0;
 
@@ -91,7 +91,7 @@ void JoyDefsCalibrate()
 
 //------------------------------------------------------------------------------
 
-int AddDeadzoneControl (tMenuItem *m, char *szText, char *szFmt, char *szHelp, char **szSizes, ubyte nValue, char nKey, int *pnOpt)
+int AddDeadzoneControl (tMenuItem *m, char *szText, const char *szFmt, const char *szHelp, const char **szSizes, ubyte nValue, char nKey, int *pnOpt)
 {
 	int nOpt = *pnOpt;
 
@@ -106,7 +106,7 @@ return (*pnOpt)++;
 
 //------------------------------------------------------------------------------
 
-int AddAxisControls (tMenuItem *m, char *szText, char *szFmtSyncd, char *szFmt, char *szLabel, char *szHelp, 
+int AddAxisControls (tMenuItem *m, char *szText, const char *szFmtSyncd, const char *szFmt, const char *szLabel, const char *szHelp, 
 							int nControls, int *pnValues, int nValues, int *pnIntervals, 
 							char nKeySyncd, char *pnKeys, int bSyncControls, int *pnOpt)
 {

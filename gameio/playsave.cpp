@@ -186,7 +186,7 @@ return 1;
 //------------------------------------------------------------------------------
 // returns number of config items with identical ids before the current one
 
-int FindConfigParam (kcItem *cfgP, int nItems, int iItem, char *pszText)
+int FindConfigParam (kcItem *cfgP, int nItems, int iItem, const char *pszText)
 {
 	int	h, i;
 
@@ -203,7 +203,7 @@ return h ? h : -1;
 
 //------------------------------------------------------------------------------
 
-void RegisterConfigParams (kcItem *cfgP, int nItems, char *pszId)
+void RegisterConfigParams (kcItem *cfgP, int nItems, const char *pszId)
 {
 	char	szTag [200], *p;
 	int	i, j = 0;
@@ -663,7 +663,7 @@ return CFClose (&cf);
 
 //------------------------------------------------------------------------------
 
-tParam *FindParam (char *pszTag)
+tParam *FindParam (const char *pszTag)
 {
 	tParam	*pp;
 
@@ -679,7 +679,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int SetParam (char *pszIdent, char *pszValue)
+int SetParam (const char *pszIdent, const char *pszValue)
 {
 	tParam	*pp;
 	int		nVal;
@@ -749,8 +749,8 @@ return CFClose (&cf);
 //------------------------------------------------------------------------------
 
 typedef struct tParamValue {
-	char	*pszIdent;
-	char	*pszValue;
+	const char	*pszIdent;
+	const char	*pszValue;
 	} tParamValue;
 
 tParamValue defaultParams [] = {
@@ -1437,13 +1437,13 @@ InitWeaponOrdering ();		//setup default weapon priorities
 RetrySelection:
 
 memset (m, 0, sizeof (m));
-for (i=0; i<mct; i++ )	{
-	m[i].nType = NM_TYPE_MENU; 
-	m[i].text = CONTROL_TEXT(i); 
-	m[i].key = -1;
+for (i = 0; i < mct; i++ )	{
+	m [i].nType = NM_TYPE_MENU; 
+	m [i].text = (char *) CONTROL_TEXT(i); 
+	m [i].key = -1;
 	}
 nitems = i;
-m[0].text = TXT_CONTROL_KEYBOARD;
+m [0].text = (char *) TXT_CONTROL_KEYBOARD;
 choice = gameConfig.nControlType;				// Assume keyboard
 #ifndef APPLE_DEMO
 i = ExecMenu1( NULL, TXT_CHOOSE_INPUT, i, m, NULL, &choice );

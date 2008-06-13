@@ -139,7 +139,7 @@ int CFInitHogFile (const char *pszFile, const char *folder, tHogFile *hogFiles, 
 	FILE	*fp;
 	int	i, len;
 	char	fn [FILENAME_LEN];
-	char  *psz;
+	const char  *psz;
 
 CFCriticalError (0);
 if (*folder) {
@@ -454,7 +454,7 @@ int CFOpen (CFILE *cfP, const char *filename, const char *folder, const char *mo
 {
 	int	length = -1;
 	FILE	*fp = NULL;
-	char	*pszHogExt, *pszFileExt;
+	const char	*pszHogExt, *pszFileExt;
 
 cfP->file = NULL;
 if (!(filename && *filename))
@@ -989,21 +989,21 @@ if (szExt) {
 
 //------------------------------------------------------------------------------
 
-void ChangeFilenameExtension (char *dest, char *src, char *new_ext)
+void ChangeFilenameExtension (char *dest, char *src, const char *newExt)
 {
 	int i;
 
 strcpy (dest, src);
-if (new_ext[0] == '.')
-	new_ext++;
+if (newExt[0] == '.')
+	newExt++;
 for (i = 1; i < (int) strlen (dest); i++)
 	if ((dest[i] == '.') || (dest[i] == ' ') || (dest[i] == 0))
 		break;
 if (i < 123) {
 	dest [i] = '.';
-	dest [i+1] = new_ext[0];
-	dest [i+2] = new_ext[1];
-	dest [i+3] = new_ext[2];
+	dest [i+1] = newExt [0];
+	dest [i+2] = newExt [1];
+	dest [i+3] = newExt [2];
 	dest [i+4] = 0;
 	}
 }

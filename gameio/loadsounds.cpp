@@ -401,7 +401,7 @@ CFClose (&cf);
 
 typedef struct tAddonSound {
 	Mix_Chunk		*chunkP;
-	char				szSoundFile [FILENAME_LEN];
+	const char		szSoundFile [FILENAME_LEN];
 } tAddonSound;
 
 tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {
@@ -420,14 +420,14 @@ tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {
 
 //------------------------------------------------------------------------------
 
-char *AddonSoundName (int nSound)
+const char *AddonSoundName (int nSound)
 {
 return ((nSound < 0) || (nSound >= MAX_ADDON_SOUND_FILES)) ? (char *) "" : addonSounds [nSound].szSoundFile;
 }
 
 //------------------------------------------------------------------------------
 
-Mix_Chunk *LoadAddonSound (char *pszSoundFile, ubyte *bBuiltIn)
+Mix_Chunk *LoadAddonSound (const char *pszSoundFile, ubyte *bBuiltIn)
 {
 	Mix_Chunk	*chunkP;
 	char			szWAV [FILENAME_LEN];

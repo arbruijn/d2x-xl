@@ -480,7 +480,7 @@ memset (m, 0, sizeof (m));
 m [0].nType = NM_TYPE_TEXT; 
 m [0].text = text;
 m [1].nType = NM_TYPE_TEXT; 
-m [1].text = TXT_NET_LEAVE;
+m [1].text = (char *) TXT_NET_LEAVE;
 networkData.nJoinState = 0;
 i = NetworkSendRequest ();
 if (i < 0) {
@@ -761,7 +761,7 @@ void NetworkWaitForRequests (void)
 networkData.nStatus = NETSTAT_WAITING;
 memset (m, 0, sizeof (m));
 m [0].nType= NM_TYPE_TEXT; 
-m [0].text = TXT_NET_LEAVE;
+m [0].text = (char *) TXT_NET_LEAVE;
 NetworkFlush ();
 LOCALPLAYER.connected = 1;
 

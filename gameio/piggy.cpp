@@ -164,7 +164,7 @@ dbh->offset = CFReadInt (cfP);
 
 //------------------------------------------------------------------------------
 
-tBitmapIndex PiggyRegisterBitmap (grsBitmap *bmP, char *name, int in_file)
+tBitmapIndex PiggyRegisterBitmap (grsBitmap *bmP, const char *name, int in_file)
 {
 	tBitmapIndex temp;
 	Assert (gameData.pig.tex.nBitmaps [gameStates.app.bD1Data] < MAX_BITMAP_FILES);
@@ -777,7 +777,7 @@ return (bHamOk && bSoundOk);               //read ok
 
 //------------------------------------------------------------------------------
 
-char * crit_errors [13] = { 
+const char * szCriticalErrors [13] = { 
 	"Write Protected", "Unknown Unit", "Drive Not Ready", "Unknown Command", "CRC Error",
 	"Bad struct length", "Seek Error", "Unknown media nType", "Sector not found", "Printer out of paper", 
 	"Write Fault",	"Read fault", "General Failure"
@@ -791,7 +791,7 @@ void PiggyCriticalError (void)
 	save_canv = grdCurCanv;
 	save_font = grdCurCanv->cvFont;
 	GrPaletteStepLoad (NULL);
-	i = ExecMessageBox ("Disk Error", NULL, 2, "Retry", "Exit", "%s\non drive %c:", crit_errors [descent_critical_errcode&0xf], (descent_critical_deverror&0xf)+'A');
+	i = ExecMessageBox ("Disk Error", NULL, 2, "Retry", "Exit", "%s\non drive %c:", szCriticalErrors [descent_critical_errcode&0xf], (descent_critical_deverror&0xf)+'A');
 	if (i == 1)
 		exit (1);
 	GrSetCurrentCanvas (save_canv);

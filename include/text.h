@@ -21,10 +21,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define N_BASE_TEXTS					649
 
 extern char *baseGameTexts [N_BASE_TEXTS];
-extern char *d2GameTexts [];
-extern char *defaultGameTexts [][2];
+extern const char *d2GameTexts [];
+extern const char *defaultGameTexts [][2];
 extern char **pszGameTexts;
-extern char *defaultHelpTexts [][2];
+extern const char *defaultHelpTexts [][2];
 extern char **pszHelpTexts;
 
 //Symbolic constants for all the strings
@@ -36,7 +36,7 @@ char *HELPTEXT (int _i);
 
 #else
 
-static inline char *GAMETEXT (int _i) 
+static inline const char *GAMETEXT (int _i) 
 {
 if (pszGameTexts)
 	return pszGameTexts [_i];
@@ -46,7 +46,7 @@ else
 	return defaultGameTexts [_i - N_BASE_TEXTS][gameStates.app.bEnglish];
 }
 
-static inline char *HELPTEXT (int _i) 
+static inline const char *HELPTEXT (int _i) 
 {
 if (pszHelpTexts)
 	return pszHelpTexts [_i];

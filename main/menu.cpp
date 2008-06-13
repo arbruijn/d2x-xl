@@ -278,15 +278,15 @@ static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150
 
 static int nMaxLightsPerFaceTable [] = {3,4,5,6,7,8,12,16,20,24,32};
 
-static char *pszTexQual [4];
-static char *pszMeshQual [5];
-static char *pszLMapQual [5];
-static char *pszRendQual [5];
-static char *pszSmokeAmount [5];
-static char *pszSmokeSize [4];
-static char *pszSmokeLife [3];
-static char *pszSmokeQual [3];
-static char *pszSmokeAlpha [5];
+static const char *pszTexQual [4];
+static const char *pszMeshQual [5];
+static const char *pszLMapQual [5];
+static const char *pszRendQual [5];
+static const char *pszSmokeAmount [5];
+static const char *pszSmokeSize [4];
+static const char *pszSmokeLife [3];
+static const char *pszSmokeQual [3];
+static const char *pszSmokeAlpha [5];
 
 #if DBG_SHADOWS
 extern int	bZPass, bFrontCap, bRearCap, bFrontFaces, bBackFaces, bShadowVolume, bShadowTest, 
@@ -1206,7 +1206,7 @@ else if (gameStates.app.nCompSpeed == 4) {
 
 //      -----------------------------------------------------------------------------
 
-static char *pszCompSpeeds [5];
+static const char *pszCompSpeeds [5];
 
 void PerformanceSettingsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -1469,7 +1469,7 @@ int SelectAndLoadMission (int bMulti, int *bAnarchyOnly)
 	int	i, nMissions, nDefaultMission, nNewMission = -1;
 	char	*szMsnNames [MAX_MISSIONS];
 
-	static char* menuTitles [4];
+	static const char *menuTitles [4];
 
 	menuTitles [0] = TXT_NEW_GAME;
 	menuTitles [1] = TXT_NEW_D1GAME;
@@ -1516,7 +1516,7 @@ void LegacyNewGameMenu (void)
 	char			*m [MAX_MISSIONS];
 	int			i, choice = 0, nFolder = -1, nDefaultMission = 0;
 	static int	nMission = -1;
-	static char	*menuTitles [4];
+	static const char	*menuTitles [4];
 
 menuTitles [0] = TXT_NEW_GAME;
 menuTitles [1] = TXT_NEW_D1GAME;
@@ -1580,7 +1580,7 @@ try_again:
 		return;
 	nNewLevel = atoi (m [1].text);
 	if ((nNewLevel <= 0) || (nNewLevel > nHighestPlayerLevel)) {
-		m [0].text = TXT_ENTER_TO_CONT;
+		m [0].text = (char *) TXT_ENTER_TO_CONT;
 		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		goto try_again;
 	}
@@ -1761,7 +1761,7 @@ nLastKey++;		//kill warning
 static int	nCWSopt, nCWZopt, optTextGauges, optWeaponIcons, bShowWeaponIcons, 
 				optIconAlpha, optTgtInd, optDmgInd, optHitInd, optMslLockInd;
 
-static char *szCWS [4];
+static const char *szCWS [4];
 
 //------------------------------------------------------------------------------
 
@@ -2032,7 +2032,7 @@ if (gameOpts->app.bExpertMode) {
 	v = m->value;
 	if (gameOpts->render.cockpit.nWindowSize != v) {
 		gameOpts->render.cockpit.nWindowSize = v;
-		m->text = szCWS [v];
+		m->text = (char *) szCWS [v];
 		m->rebuild = 1;
 		}
 
@@ -2161,7 +2161,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-static inline char *ContrastText (void)
+static inline const char *ContrastText (void)
 {
 return (gameStates.ogl.nContrast == 8) ? TXT_STANDARD : 
 		 (gameStates.ogl.nContrast < 8) ? TXT_LOW : 
@@ -2186,8 +2186,8 @@ return j;
 
 //------------------------------------------------------------------------------
 
-char *pszCoronaInt [4];
-char *pszCoronaQual [3];
+static const char *pszCoronaInt [4];
+static const char *pszCoronaQual [3];
 
 void CoronaOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -2329,7 +2329,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-char *pszExplShrapnels [5];
+static const char *pszExplShrapnels [5];
 
 void EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -2459,7 +2459,7 @@ SetDebrisCollisions ();
 
 //------------------------------------------------------------------------------
 
-static char *pszRadarRange [3];
+static const char *pszRadarRange [3];
 
 void AutomapOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -2672,8 +2672,8 @@ do {
 
 #if SHADOWS
 
-static char *pszReach [4];
-static char *pszClip [4];
+static const char *pszReach [4];
+static const char *pszClip [4];
 
 void ShadowOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -3645,8 +3645,8 @@ gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpt
 
 //------------------------------------------------------------------------------
 
-static	char *pszLightningQuality [2];
-static	char *pszLightningStyle [3];
+static const char *pszLightningQuality [2];
+static const char *pszLightningStyle [3];
 
 void LightningOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -3813,7 +3813,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-static char *pszShipColors [8];
+static const char *pszShipColors [8];
 
 void ShipRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -4217,8 +4217,8 @@ do {
 
 //------------------------------------------------------------------------------
 
-static char *pszGuns [] = {"Laser", "Vulcan", "Spreadfire", "Plasma", "Fusion", "Super Laser", "Gauss", "Helix", "Phoenix", "Omega"};
-static char *pszDevices [] = {"Full Map", "Ammo Rack", "Converter", "Quad Lasers", "Afterburner", "Headlight", "Slow Motion", "Bullet Time"};
+static const char *pszGuns [] = {"Laser", "Vulcan", "Spreadfire", "Plasma", "Fusion", "Super Laser", "Gauss", "Helix", "Phoenix", "Omega"};
+static const char *pszDevices [] = {"Full Map", "Ammo Rack", "Converter", "Quad Lasers", "Afterburner", "Headlight", "Slow Motion", "Bullet Time"};
 static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, 
 										PLAYER_FLAGS_AFTERBURNER, PLAYER_FLAGS_HEADLIGHT, PLAYER_FLAGS_SLOWMOTION, PLAYER_FLAGS_BULLETTIME};
 
@@ -4339,8 +4339,8 @@ for (i = 0; i < (int) sizeofa (pszDevices); i++) {
 
 //------------------------------------------------------------------------------
 
-static char *pszMslTurnSpeeds [3];
-static char *pszMslStartSpeeds [4];
+static const char *pszMslTurnSpeeds [3];
+static const char *pszMslStartSpeeds [4];
 
 void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -4570,7 +4570,7 @@ static int nOptDebrisLife;
 
 //------------------------------------------------------------------------------
 
-static char *OmegaRampStr (void)
+static const char *OmegaRampStr (void)
 {
 	static char szRamp [20];
 
@@ -5002,7 +5002,7 @@ if (m [soundOpts.nRedbook].value != gameStates.sound.bRedbookEnabled) {
 			m [soundOpts.nRedbook].rebuild = 1;
 			}
 		}
-	m [soundOpts.nMusicVol].text = gameStates.sound.bRedbookEnabled ? TXT_CD_VOLUME : TXT_MIDI_VOLUME;
+	m [soundOpts.nMusicVol].text = (char *) (gameStates.sound.bRedbookEnabled ? TXT_CD_VOLUME : TXT_MIDI_VOLUME);
 	m [soundOpts.nMusicVol].rebuild = 1;
 	}
 

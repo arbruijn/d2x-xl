@@ -72,7 +72,7 @@ extern void MultiSendStolenItems();
 #define	THIEF_DEPTH	20
 
 //	-----------------------------------------------------------------------------
-void _CDECL_ ThiefMessage(char * format, ... )
+void _CDECL_ ThiefMessage (const char * format, ... )
 {
 	char	szMsg [128];
 	va_list	args;
@@ -267,13 +267,13 @@ void DoThiefFrame(tObject *objP)
 }
 
 //	----------------------------------------------------------------------------
-//	Return true if this item (whose presence is indicated by gameData.multiplayer.players[player_num].flags) gets stolen.
-int MaybeStealFlagItem(int player_num, int flagval)
+//	Return true if this item (whose presence is indicated by gameData.multiplayer.players[nPlayer].flags) gets stolen.
+int MaybeStealFlagItem(int nPlayer, int flagval)
 {
-	if (gameData.multiplayer.players[player_num].flags & flagval) {
+	if (gameData.multiplayer.players[nPlayer].flags & flagval) {
 		if (d_rand() < THIEF_PROBABILITY) {
 			int	powerup_index=-1;
-			gameData.multiplayer.players[player_num].flags &= (~flagval);
+			gameData.multiplayer.players[nPlayer].flags &= (~flagval);
 			switch (flagval) {
 				case PLAYER_FLAGS_INVULNERABLE:
 					powerup_index = POW_INVUL;
@@ -322,54 +322,50 @@ int MaybeStealFlagItem(int player_num, int flagval)
 }
 
 //	----------------------------------------------------------------------------
-int MaybeStealSecondaryWeapon(int player_num, int weapon_num)
+int MaybeStealSecondaryWeapon(int nPlayer, int nWeapon)
 {
-	if ((gameData.multiplayer.players[player_num].secondaryWeaponFlags & HAS_FLAG(weapon_num)) && gameData.multiplayer.players[player_num].secondaryAmmo[weapon_num])
-		if (d_rand() < THIEF_PROBABILITY) {
-			if (weapon_num == PROXMINE_INDEX)
-				if (d_rand() > 8192)		//	Come in groups of 4, only add 1/4 of time.
-					return 0;
-			gameData.multiplayer.players[player_num].secondaryAmmo[weapon_num]--;
-
-			//	Smart mines and proxbombs don't get dropped because they only come in 4 packs.
-			if ((weapon_num != PROXMINE_INDEX) && (weapon_num != SMARTMINE_INDEX)) {
-				gameData.thief.stolenItems[gameData.thief.nStolenItem] = secondaryWeaponToPowerup[weapon_num];
+if ((gameData.multiplayer.players[nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players[nPlayer].secondaryAmmo[nWeapon])
+	if (d_rand() < THIEF_PROBABILITY) {
+		if (nWeapon == PROXMINE_INDEX)
+			if (d_rand() > 8192)		//	Come in groups of 4, only add 1/4 of time.
+				return 0;
+		gameData.multiplayer.players[nPlayer].secondaryAmmo[nWeapon]--;
+		//	Smart mines and proxbombs don't get dropped because they only come in 4 packs.
+		if ((nWeapon != PROXMINE_INDEX) && (nWeapon != SMARTMINE_INDEX)) {
+			gameData.thief.stolenItems[gameData.thief.nStolenItem] = secondaryWeaponToPowerup[nWeapon];
 			}
-
-			ThiefMessage(TXT_WPN_STOLEN, baseGameTexts [114+weapon_num]);		//	Danger! Danger! Use of literal!  Danger!
-			if (LOCALPLAYER.secondaryAmmo[weapon_num] == 0)
-				AutoSelectWeapon(1, 0);
-
-			// -- compress_stolen_items();
-			DigiPlaySampleOnce(SOUND_WEAPON_STOLEN, F1_0);
-			return 1;
+		ThiefMessage (TXT_WPN_STOLEN, baseGameTexts [114+nWeapon]);		//	Danger! Danger! Use of literal!  Danger!
+		if (LOCALPLAYER.secondaryAmmo[nWeapon] == 0)
+			AutoSelectWeapon(1, 0);
+		// -- compress_stolen_items();
+		DigiPlaySampleOnce (SOUND_WEAPON_STOLEN, F1_0);
+		return 1;
 		}
-
-	return 0;
+return 0;
 }
 
 //	----------------------------------------------------------------------------
-int MaybeStealPrimaryWeapon(int player_num, int weapon_num)
+int MaybeStealPrimaryWeapon(int nPlayer, int nWeapon)
 {
-	if ((gameData.multiplayer.players[player_num].primaryWeaponFlags & HAS_FLAG(weapon_num)) && gameData.multiplayer.players[player_num].primaryAmmo[weapon_num]) {
+	if ((gameData.multiplayer.players[nPlayer].primaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players[nPlayer].primaryAmmo[nWeapon]) {
 		if (d_rand() < THIEF_PROBABILITY) {
-			if (weapon_num == 0) {
-				if (gameData.multiplayer.players[player_num].laserLevel > 0) {
-					if (gameData.multiplayer.players[player_num].laserLevel > 3) {
+			if (nWeapon == 0) {
+				if (gameData.multiplayer.players[nPlayer].laserLevel > 0) {
+					if (gameData.multiplayer.players[nPlayer].laserLevel > 3) {
 						gameData.thief.stolenItems[gameData.thief.nStolenItem] = POW_SUPERLASER;
 					} else {
-						gameData.thief.stolenItems[gameData.thief.nStolenItem] = primaryWeaponToPowerup[weapon_num];
+						gameData.thief.stolenItems[gameData.thief.nStolenItem] = primaryWeaponToPowerup[nWeapon];
 					}
-					ThiefMessage(TXT_LVL_DECREASED, baseGameTexts [104+weapon_num]);		//	Danger! Danger! Use of literal!  Danger!
-					gameData.multiplayer.players[player_num].laserLevel--;
+					ThiefMessage(TXT_LVL_DECREASED, baseGameTexts [104+nWeapon]);		//	Danger! Danger! Use of literal!  Danger!
+					gameData.multiplayer.players[nPlayer].laserLevel--;
 					DigiPlaySampleOnce(SOUND_WEAPON_STOLEN, F1_0);
 					return 1;
 				}
-			} else if (gameData.multiplayer.players[player_num].primaryWeaponFlags & (1 << weapon_num)) {
-				gameData.multiplayer.players[player_num].primaryWeaponFlags &= ~(1 << weapon_num);
-				gameData.thief.stolenItems[gameData.thief.nStolenItem] = primaryWeaponToPowerup[weapon_num];
+			} else if (gameData.multiplayer.players[nPlayer].primaryWeaponFlags & (1 << nWeapon)) {
+				gameData.multiplayer.players[nPlayer].primaryWeaponFlags &= ~(1 << nWeapon);
+				gameData.thief.stolenItems[gameData.thief.nStolenItem] = primaryWeaponToPowerup[nWeapon];
 
-				ThiefMessage(TXT_WPN_STOLEN, baseGameTexts [104+weapon_num]);		//	Danger! Danger! Use of literal!  Danger!
+				ThiefMessage(TXT_WPN_STOLEN, baseGameTexts [104+nWeapon]);		//	Danger! Danger! Use of literal!  Danger!
 				AutoSelectWeapon(0, 0);
 				DigiPlaySampleOnce(SOUND_WEAPON_STOLEN, F1_0);
 				return 1;
@@ -387,7 +383,7 @@ int MaybeStealPrimaryWeapon(int player_num, int weapon_num)
 //	If a item successfully stolen, returns true, else returns false.
 //	If a wapon successfully stolen, do everything, removing it from tPlayer,
 //	updating gameData.thief.stolenItems information, deselecting, etc.
-int AttemptToStealItem3(tObject *objP, int player_num)
+int AttemptToStealItem3(tObject *objP, int nPlayer)
 {
 	int	i;
 
@@ -396,45 +392,45 @@ int AttemptToStealItem3(tObject *objP, int player_num)
 
 	//	First, try to steal equipped items.
 
-	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_INVULNERABLE))
+	if (MaybeStealFlagItem(nPlayer, PLAYER_FLAGS_INVULNERABLE))
 		return 1;
 
 	//	If primary weapon = laser, first try to rip away those nasty quad lasers!
 	if (gameData.weapons.nPrimary == 0)
-		if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_QUAD_LASERS))
+		if (MaybeStealFlagItem(nPlayer, PLAYER_FLAGS_QUAD_LASERS))
 			return 1;
 
 	//	Makes it more likely to steal primary than secondary.
 	for (i=0; i<2; i++)
-		if (MaybeStealPrimaryWeapon(player_num, gameData.weapons.nPrimary))
+		if (MaybeStealPrimaryWeapon(nPlayer, gameData.weapons.nPrimary))
 			return 1;
 
-	if (MaybeStealSecondaryWeapon(player_num, gameData.weapons.nSecondary))
+	if (MaybeStealSecondaryWeapon(nPlayer, gameData.weapons.nSecondary))
 		return 1;
 
 	//	See what the tPlayer has and try to snag something.
 	//	Try best things first.
-	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_INVULNERABLE))
+	if (MaybeStealFlagItem(nPlayer, PLAYER_FLAGS_INVULNERABLE))
 		return 1;
-	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_CLOAKED))
+	if (MaybeStealFlagItem(nPlayer, PLAYER_FLAGS_CLOAKED))
 		return 1;
-	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_QUAD_LASERS))
+	if (MaybeStealFlagItem(nPlayer, PLAYER_FLAGS_QUAD_LASERS))
 		return 1;
-	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_AFTERBURNER))
+	if (MaybeStealFlagItem(nPlayer, PLAYER_FLAGS_AFTERBURNER))
 		return 1;
-	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_CONVERTER))
+	if (MaybeStealFlagItem(nPlayer, PLAYER_FLAGS_CONVERTER))
 		return 1;
-// --	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_AMMO_RACK))	//	Can't steal because what if have too many items, say 15 homing missiles?
+// --	if (MaybeStealFlagItem(nPlayer, PLAYER_FLAGS_AMMO_RACK))	//	Can't steal because what if have too many items, say 15 homing missiles?
 // --		return 1;
-	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_HEADLIGHT))
+	if (MaybeStealFlagItem(nPlayer, PLAYER_FLAGS_HEADLIGHT))
 		return 1;
-	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_FULLMAP))
+	if (MaybeStealFlagItem(nPlayer, PLAYER_FLAGS_FULLMAP))
 		return 1;
 
 	for (i=MAX_SECONDARY_WEAPONS-1; i>=0; i--) {
-		if (MaybeStealPrimaryWeapon(player_num, i))
+		if (MaybeStealPrimaryWeapon(nPlayer, i))
 			return 1;
-		if (MaybeStealSecondaryWeapon(player_num, i))
+		if (MaybeStealSecondaryWeapon(nPlayer, i))
 			return 1;
 	}
 
@@ -442,11 +438,11 @@ int AttemptToStealItem3(tObject *objP, int player_num)
 }
 
 //	----------------------------------------------------------------------------
-int AttemptToStealItem2(tObject *objP, int player_num)
+int AttemptToStealItem2(tObject *objP, int nPlayer)
 {
 	int	rval;
 
-	rval = AttemptToStealItem3(objP, player_num);
+	rval = AttemptToStealItem3(objP, nPlayer);
 
 	if (rval) {
 		gameData.thief.nStolenItem = (gameData.thief.nStolenItem+1) % MAX_STOLEN_ITEMS;
@@ -462,7 +458,7 @@ int AttemptToStealItem2(tObject *objP, int player_num)
 //	If a item successfully stolen, returns true, else returns false.
 //	If a wapon successfully stolen, do everything, removing it from tPlayer,
 //	updating gameData.thief.stolenItems information, deselecting, etc.
-int AttemptToStealItem(tObject *objP, int player_num)
+int AttemptToStealItem(tObject *objP, int nPlayer)
 {
 	int	i;
 	int	rval = 0;
@@ -470,11 +466,11 @@ int AttemptToStealItem(tObject *objP, int player_num)
 	if (objP->cType.aiInfo.xDyingStartTime)
 		return 0;
 
-	rval += AttemptToStealItem2(objP, player_num);
+	rval += AttemptToStealItem2(objP, nPlayer);
 
 	for (i=0; i<3; i++) {
 		if (!rval || (d_rand() < 11000)) {	//	about 1/3 of time, steal another item
-			rval += AttemptToStealItem2(objP, player_num);
+			rval += AttemptToStealItem2(objP, nPlayer);
 		} else
 			break;
 	}

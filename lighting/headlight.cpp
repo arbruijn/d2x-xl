@@ -37,7 +37,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 
 // ---------------------------------------------------------
 
-void ToggleHeadlight ()
+void ToggleHeadlight (void)
 {
 if (PlayerHasHeadlight (-1)) {
 	LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;		
@@ -198,7 +198,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 
 #else
 
-char *headlightFS [2][8] = {
+const char *headlightFS [2][8] = {
 	{
 	//----------------------------------------
 	//single player version - one player
@@ -602,7 +602,7 @@ char *headlightFS [2][8] = {
 	}
 	};
 
-char *headlightVS [2][8] = {
+const char *headlightVS [2][8] = {
 	{
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
@@ -796,7 +796,7 @@ if ((gameStates.ogl.bHeadlight = (gameStates.ogl.bShadersOk && gameOpts->render.
 				DeleteShaderProg (&headlightShaderProgs [i][j]);
 #if 1//ndef _DEBUG
 			if (nLights == 1)
-				pszFS = headlightFS [i][h = j];
+				pszFS = (char *) headlightFS [i][h = j];
 			else
 #endif
 				pszFS = BuildLightingShader (headlightFS [i][h = j + 4], nLights);

@@ -359,7 +359,7 @@ if (!pszFolder)
 if (ReadS3TC (bmP, pszFolder, pszFile))
 	return 1;
 #endif
-if (!CFOpen (&cf, pszFile, pszFolder, "rb", 0) && !(psz = strstr (pszFile, ".tga"))) {
+if (!CFOpen (&cf, pszFile, pszFolder, "rb", 0) && !(psz = (char *) strstr (pszFile, ".tga"))) {
 	strcpy (fn, pszFile);
 	if ((psz = strchr (fn, '.')))
 		*psz = '\0';

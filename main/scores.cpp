@@ -259,8 +259,11 @@ void MaybeAddPlayerScore (int abortFlag)
 		memset (m, 0, sizeof (m));
 		if (position==0)	{
 			strcpy (text1,  "");
-			m[0].nType = NM_TYPE_TEXT; m[0].text = TXT_COOL_SAYING;
-			m[1].nType = NM_TYPE_INPUT; m[1].text = text1; m[1].text_len = COOL_MESSAGE_LEN-5;
+			m [0].nType = NM_TYPE_TEXT; 
+			m [0].text = (char *) TXT_COOL_SAYING;
+			m [1].nType = NM_TYPE_INPUT; 
+			m [1].text = text1; 
+			m [1].text_len = COOL_MESSAGE_LEN - 5;
 			ExecMenu (TXT_HIGH_SCORE, TXT_YOU_PLACED_1ST, 2, m, NULL, NULL);
 			strncpy (Scores.cool_saying, text1, COOL_MESSAGE_LEN);
 			if (strlen (Scores.cool_saying)<1)

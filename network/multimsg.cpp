@@ -248,7 +248,7 @@ MultiSendData (gameData.multigame.msg.buf, 3, 0);
 int KickPlayer (int bBan)
 {
 	int i, name_index = 5 - bBan;
-	char *pszKick = GT (589 + bBan);
+	const char *pszKick = GT (589 + bBan);
 
 if (strlen (gameData.multigame.msg.szMsg) > 5)
 	while (gameData.multigame.msg.szMsg [name_index] == ' ')

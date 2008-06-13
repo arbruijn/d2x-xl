@@ -73,7 +73,7 @@ if (pszHelpTexts && pszHelpTexts [0]) {
 
 char **pszGameTexts = NULL;
 
-char *d2GameTexts [] = {
+const char *d2GameTexts [] = {
 	"New game",
 	"High scores",
 	"Quit",
@@ -726,7 +726,7 @@ char *d2GameTexts [] = {
 	"S~Ingle Player Game"
 	};
 
-char *defaultGameTexts [][2] = {
+const char *defaultGameTexts [][2] = {
 	// menu messages
 	{"Ein~Zelspieler-Spiel", "S~Ingle Player Game"},
 	{"~Filme abspielen", "PLAY MOVIES..."},
@@ -1835,7 +1835,7 @@ char *defaultGameTexts [][2] = {
 
 char **pszHelpTexts = NULL;
 
-char *defaultHelpTexts [][2] = {
+const char *defaultHelpTexts [][2] = {
 	//main menu
 	{"Neues Spiel starten.", "Start a new game."},
 	{"Neues Einzelspieler-Spiel mit einer Mission aus dem\nMissions-Unterordner 'single' starten.", 
@@ -2525,7 +2525,7 @@ if (!(*pszTexts = (char *) D2_ALLOC (h))) {
 	return NULL;
 	}
 for (i = 0; i < j; i++) {
-	pSrc = (i < N_BASE_TEXTS) ? baseGameTexts [i] : defaultGameTexts [i - N_BASE_TEXTS][gameStates.app.bEnglish];
+	pSrc = (char *) ((i < N_BASE_TEXTS) ? baseGameTexts [i] : defaultGameTexts [i - N_BASE_TEXTS][gameStates.app.bEnglish]);
 #if DUMP_TEXTS == 1
 	{
 		char *pi, *pj, s [200];

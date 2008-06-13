@@ -407,7 +407,7 @@ bCycling = 0;
 //if message flag set, print message saying selected
 void SelectWeapon (int nWeaponNum, int bSecondary, int bPrintMessage, int bWaitForRearm)
 {
-	char	*szWeaponName;
+	const char	*szWeaponName;
 
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordPlayerWeapon (bSecondary, nWeaponNum);

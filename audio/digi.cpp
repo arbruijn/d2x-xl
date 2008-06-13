@@ -811,7 +811,6 @@ if (!gameStates.app.bUseSound)
 	return;
 DigiSetFxVolume (dvolume);
 DigiSetMidiVolume (mvolume);
-//      //mprintf ((1, "Volume: 0x%x and 0x%x\n", gameStates.sound.digi.nVolume, midiVolume));
 }
 
 //------------------------------------------------------------------------------
@@ -1001,8 +1000,6 @@ for (i = 0; i < gameStates.sound.digi.nMaxChannels; i++) {
 	if (DigiIsChannelPlaying (i))
 		n_voices++;
 	}
-//mprintf_at ((0, 2, 0, "DIGI: Active Sound Channels: %d/%d (HMI says %d/32)      ", n_voices, gameStates.sound.digi.nMaxChannels, -1));
-////mprintf_at ((0, 3, 0, "DIGI: Number locked sounds:  %d                          ", digiTotal_locks));
 }
 #endif
 

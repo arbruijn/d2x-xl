@@ -231,7 +231,7 @@ extern int kconfig_is_axes_used(int axis);
 extern void KCInitExternalControls(int intno, int address);
 
 extern ubyte nExtGameStatus;
-void KConfig(int n, char *title);
+void KConfig(int n, const char *pszTitle);
 void SetControlType (void);
 
 extern ubyte system_keys [];

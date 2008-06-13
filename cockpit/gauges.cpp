@@ -472,7 +472,7 @@ gr_uscanline (HUD_SCALE_X (left), HUD_SCALE_X (right), HUD_SCALE_Y (y));
 
 //	-----------------------------------------------------------------------------
 
-int _CDECL_ HUDPrintF (int *idP, int x, int y, char *pszFmt, ...)
+int _CDECL_ HUDPrintF (int *idP, int x, int y, const char *pszFmt, ...)
 {
 	static char szBuf [1000];
 	va_list args;
@@ -1039,7 +1039,7 @@ void HUDShowWeapons (void)
 {
 	int	w, h, aw;
 	int	y;
-	char	*pszWeapon;
+	const char	*pszWeapon;
 	char	szWeapon [32];
 
 	static int nIdWeapons [2] = {0, 0};
@@ -1809,7 +1809,7 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, char *pszName, int text_x, 
+void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, const char *pszName, int text_x, 
 								int text_y, int orient)
 {
 	grsBitmap	*bmP;
@@ -1840,7 +1840,7 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, ch
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 		return;
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-	if ((p = strchr (pszName, '\n'))) {
+	if ((p = (char *) strchr (pszName, '\n'))) {
 		memcpy (szName, pszName, l = p - pszName);
 		szName [l + 1] = '\0';
 		nIdWeapon [0] = HUDPrintF (&nIdWeapon [0], text_x, text_y, szName);

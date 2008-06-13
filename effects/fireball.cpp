@@ -43,6 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "powerup.h"
 #include "bm.h"
 #include "ai.h"
+#include "escort.h"
 #include "weapon.h"
 #include "fireball.h"
 #include "collide.h"

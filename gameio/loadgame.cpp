@@ -1203,7 +1203,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------------------------------
 
-void DoSecretMessage (char *msg)
+void DoSecretMessage (const char *msg)
 {
 	int fMode = gameStates.app.nFunctionMode;
 

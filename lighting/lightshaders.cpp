@@ -1093,7 +1093,7 @@ int InitPerPixelLightingShader (int nType, int nLights)
 {
 	int	h, i, j, bOk;
 	char	*pszFS, *pszVS;
-	char	**fsP, **vsP;
+	const char	**fsP, **vsP;
 
 if (!(gameStates.ogl.bShadersOk && gameStates.render.bUsePerPixelLighting))
 	gameStates.ogl.bPerPixelLightingOk =

@@ -218,7 +218,7 @@ int ComputeAvgPixel(grsBitmap *newBm)
 tBitmapIndex bm_load_sub( char * filename )
 {
 	tBitmapIndex bitmap_num;
-	grsBitmap * new;
+	grsBitmap * newBmP;
 	ubyte newpal[256*3];
 	int iff_error;		//reference parm to avoid warning message
 	char fname[20];
@@ -232,9 +232,9 @@ tBitmapIndex bm_load_sub( char * filename )
 		return bitmap_num;
 	}
 
-	MALLOC( new, grsBitmap, 1 );
-	iff_error = iff_read_bitmap(filename,new,BM_LINEAR,newpal);
-	new->bmHandle=0;
+	MALLOC( newBmP, grsBitmap, 1 );
+	iff_error = iff_read_bitmap(filename,newBmP,BM_LINEAR,newpal);
+	newBmP->bmHandle=0;
 	if (iff_error != IFF_NO_ERROR)		{
 #if TRACE
 		con_printf (1, "File %bObjectRendered - IFF error: %bObjectRendered",filename,iff_errormsg(iff_error));
@@ -243,14 +243,14 @@ tBitmapIndex bm_load_sub( char * filename )
 	}
 
 	if ( iff_has_transparency )
-		GrRemapBitmapGood( new, newpal, iff_transparent_color, SuperX );
+		GrRemapBitmapGood( newBmP, newpal, iff_transparent_color, SuperX );
 	else
-		GrRemapBitmapGood( new, newpal, -1, SuperX );
+		GrRemapBitmapGood( newBmP, newpal, -1, SuperX );
 
-	new->bmAvgColor = ComputeAvgPixel(new);
+	newBmP->bmAvgColor = ComputeAvgPixel(newBmP);
 
-	bitmap_num = PiggyRegisterBitmap( new, fname, 0 );
-	D2_FREE( new );
+	bitmap_num = PiggyRegisterBitmap( newBmP, fname, 0 );
+	D2_FREE( newBmP );
 	return bitmap_num;
 }
 
@@ -322,8 +322,8 @@ void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 
 int ds_load( char * filename )	{
 	int i;
-	CFILE * cfp;
-	tDigiSound new;
+	CFILE * cfP;
+	tDigiSound newBmP;
 	char fname[20];
 	char rawname[100];
 
@@ -335,20 +335,20 @@ int ds_load( char * filename )	{
 		return i;
 	}
 
-	cfp = CFOpen( rawname, gameFolders.szDataDir, "rb", 0 );
+	cfP = CFOpen( rawname, gameFolders.szDataDir, "rb", 0 );
 
-	if (cfp!=NULL) {
-		new.length	= CFLength( cfp );
-		MALLOC( new.data, ubyte, new.length );
-		CFRead( new.data, 1, new.length, cfp );
-		CFClose(cfp);
+	if (cfP) {
+		newBmP.length	= CFLength(cfP);
+		MALLOC( newBmP.data, ubyte, newBmP.length );
+		CFRead( newBmP.data, 1, newBmP.length, cfP );
+		CFClose(cfP);
 	} else {
 #if TRACE
 		con_printf (1, "Warning: Couldn't find '%bObjectRendered'\n", filename );
 #endif
 		return 255;
 	}
-	i = PiggyRegisterSound( &new, fname, 0 );
+	i = PiggyRegisterSound( &newBmP, fname, 0 );
 	return i;
 }
 
@@ -536,7 +536,7 @@ int bm_init_use_tbl()
 		if ( (temp_ptr=strstr( szInput, "superx=" )) )	{
 			SuperX = atoi( &temp_ptr[7] );
 			Assert(SuperX == 254);
-				//the superx color isn't kept around, so the new piggy regeneration
+				//the superx color isn't kept around, so the newBmP piggy regeneration
 				//code doesn't know what it is, so it assumes that it'bObjectRendered 254, so
 				//this code requires that it be 254
 									
