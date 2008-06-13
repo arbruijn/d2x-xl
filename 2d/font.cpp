@@ -87,7 +87,7 @@ ubyte *find_kern_entry (grsFont *font, ubyte first, ubyte second)
 #define INFONT(_c) ((_c >= 0) && (_c <= FMAXCHAR-FMINCHAR))
 
 //takes the character BEFORE being offset into current font
-void get_char_width (ubyte c, ubyte c2, int *width, int *spacing)
+void GetCharWidth (ubyte c, ubyte c2, int *width, int *spacing)
 {
 	int letter;
 
@@ -130,7 +130,7 @@ void get_char_width (ubyte c, ubyte c2, int *width, int *spacing)
 
 //------------------------------------------------------------------------------
 
-int get_line_width (char *s)
+int GetLineWidth (const char *s)
 {
 	int w, w2, s2;
 
@@ -142,7 +142,7 @@ for (w = 0; *s && (*s != '\n'); s++) {
 			s++;
 		continue;//skip color codes.
 		}
-	get_char_width (s[0], s[1], &w2, &s2);
+	GetCharWidth (s[0], s[1], &w2, &s2);
 	w += s2;
 	}
 return w;
@@ -152,7 +152,7 @@ return w;
 
 int GetCenteredX (const char *s)
 {
-return ((grdCurCanv->cvBitmap.bmProps.w - get_line_width (s)) / 2);
+return ((grdCurCanv->cvBitmap.bmProps.w - GetLineWidth (s)) / 2);
 }
 
 //------------------------------------------------------------------------------
@@ -266,7 +266,7 @@ while (next_row != NULL) {
 					underline = 1;
 				text_ptr++;
 				}
-			get_char_width (text_ptr[0], text_ptr[1], &width, &spacing);
+			GetCharWidth (text_ptr[0], text_ptr[1], &width, &spacing);
 			letter = *text_ptr - FMINCHAR;
 			if (!INFONT (letter)) {	//not in font, draw as space
 				VideoOffset += spacing;
@@ -369,7 +369,7 @@ VideoOffset1 = y * ROWSIZE + x;
 						underline = 1;
 					c = * (++text_ptr);
 					}
-				get_char_width (c, text_ptr[1], &width, &spacing);
+				GetCharWidth (c, text_ptr[1], &width, &spacing);
 				letter = c - FMINCHAR;
 				if (!INFONT (letter) || c <= 0x06) {	//not in font, draw as space
 #if 0
@@ -656,7 +656,7 @@ while (next_row != NULL) {
 			break;
 			}
 		letter = c - FMINCHAR;
-		get_char_width (c, text_ptr [1], &width, &spacing);
+		GetCharWidth (c, text_ptr [1], &width, &spacing);
 		if (!INFONT (letter) || (c <= 0x06)) {	//not in font, draw as space
 #if 0
 			CHECK_EMBEDDED_COLORS () 
@@ -716,7 +716,7 @@ grsBitmap *CreateStringBitmap (
 	grsRgba		hc, kc, *pc;
 	ubyte			*pf, *palP = NULL;
 	ubyte			c;
-	char			*text_ptr, *text_ptr1, *next_row;
+	const char	*text_ptr, *text_ptr1, *next_row;
 	int			letter;
 
 if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
@@ -741,11 +741,11 @@ while (next_row != NULL) {
 	text_ptr = text_ptr1;
 #ifdef _DEBUG
 	if (bCentered)
-		x = (w - get_line_width (text_ptr)) / 2;
+		x = (w - GetLineWidth (text_ptr)) / 2;
 	else
 		x = 0;
 #else
-	x = bCentered ? (w - get_line_width (text_ptr)) / 2 : 0;
+	x = bCentered ? (w - GetLineWidth (text_ptr)) / 2 : 0;
 #endif
 	while ((c = *text_ptr)) {
 		if (c == '\n') {
@@ -767,7 +767,7 @@ while (next_row != NULL) {
 			continue;
 			}
 		letter = c - FMINCHAR;
-		get_char_width (c, text_ptr [1], &cw, &spacing);
+		GetCharWidth (c, text_ptr [1], &cw, &spacing);
 		if (!INFONT (letter) || (c <= 0x06)) {	//not in font, draw as space
 #if 0
 			CHECK_EMBEDDED_COLORS () 
@@ -1067,7 +1067,7 @@ void GrGetStringSize (const char *s, int *string_width, int *string_height, int 
 				s += 2;
 				}
 			else {
-				get_char_width (s[0], s[1], &width, &spacing);
+				GetCharWidth (s[0], s[1], &width, &spacing);
 
 				*string_width += spacing;
 
@@ -1546,7 +1546,7 @@ int GrInternalStringClipped (int x, int y, const char *s)
 					text_ptr++;
 				}
 
-				get_char_width (text_ptr[0], text_ptr[1], &width, &spacing);
+				GetCharWidth (text_ptr[0], text_ptr[1], &width, &spacing);
 
 				letter = *text_ptr-FMINCHAR;
 
@@ -1649,7 +1649,7 @@ int GrInternalStringClippedM (int x, int y, const char *s)
 					text_ptr++;
 				}
 
-				get_char_width (text_ptr[0], text_ptr[1], &width, &spacing);
+				GetCharWidth (text_ptr[0], text_ptr[1], &width, &spacing);
 
 				letter = *text_ptr-FMINCHAR;
 

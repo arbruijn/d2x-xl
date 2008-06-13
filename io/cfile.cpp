@@ -1014,7 +1014,7 @@ if (i < 123) {
 #	define fileno	_fileno
 #endif
 
-time_t CFDate (const char *filename, char *folder, int bUseD1Hog)
+time_t CFDate (const char *filename, const char *folder, int bUseD1Hog)
 {
 	CFILE cf;
 	struct stat statbuf;
