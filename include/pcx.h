@@ -27,15 +27,15 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // then bmp->bm_data is allocated and the w,h are filled.
 // If palette==NULL the palette isn't read in.  Returns error code.
 
-extern int PCXGetDimensions (const char *filename, int *width, int *height);
+int PCXGetDimensions (const char *filename, int *width, int *height);
 
-extern int PCXReadBitmap (const char * filename, grsBitmap * bmp, int bitmapType, int bD1Mission );
+int PCXReadBitmap (const char * filename, grsBitmap * bmp, int bitmapType, int bD1Mission );
 
 // Writes the bitmap bmp to filename, using palette. Returns error code.
 
-extern int pcx_write_bitmap (const char * filename, grsBitmap * bmp);
+int pcx_write_bitmap (const char * filename, grsBitmap * bmp);
 
-extern char *pcx_errormsg(int error_number);
+const char *pcx_errormsg(int error_number);
 
 int PcxReadFullScrImage (const char * filename, int bD1Mission);
 

@@ -315,8 +315,6 @@ SongsPlaySong (gameStates.sound.nCurrentSong, repeat);
 
 //------------------------------------------------------------------------------
 
-void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
-
 int nCurrentLevelSong;
 
 void PlayLevelSong (int nLevel, int bFromHog)

@@ -113,7 +113,6 @@ static hashtable bitmapNames [2];
 #define BM_FLAGS_TO_COPY (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT \
                          | BM_FLAG_NO_LIGHTING | BM_FLAG_RLE | BM_FLAG_RLE_BIG)
 
-void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 extern char szLastPalettePig [];
 extern ubyte bBigPig;
 

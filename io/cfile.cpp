@@ -989,7 +989,7 @@ if (szExt) {
 
 //------------------------------------------------------------------------------
 
-void ChangeFilenameExtension (char *dest, char *src, const char *newExt)
+void ChangeFilenameExtension (char *dest, const char *src, const char *newExt)
 {
 	int i;
 

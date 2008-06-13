@@ -115,7 +115,6 @@ ubyte *d1Palette = NULL;
 
 int ReadHamFile ();
 int ReadSoundFile ();
-void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 int RequestCD (void);
 
 CFILE cfPiggy [2] = {{NULL, 0, 0, 0}, {NULL, 0, 0, 0}};

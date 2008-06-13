@@ -70,7 +70,6 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 
 int RequestCD (void);
 int ReadSoundFile ();
-void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 
 extern char CDROM_dir [];
 

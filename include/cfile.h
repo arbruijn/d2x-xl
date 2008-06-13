@@ -173,7 +173,7 @@ void CFWriteAngVec (vmsAngVec *v, CFILE *cfP);
 void CFWriteVector (vmsVector *v, CFILE *cfP);
 void CFWriteMatrix (vmsMatrix *m, CFILE *cfP);
 void CFSplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt);
-void ChangeFilenameExtension (char *dest, char *src, const char *newExt);
+void ChangeFilenameExtension (char *dest, const char *src, const char *newExt);
 time_t CFDate (const char *hogname, const char *folder, int bUseD1Hog);
 
 // writes variable length, null-termined string.

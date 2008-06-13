@@ -94,7 +94,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int MenuGetValues (char *pszMsg, int *valueP, int nValues)
+int MenuGetValues (const char *pszMsg, int *valueP, int nValues)
 {
 	tMenuItem	m;
 	char			text [20] = "", *psz;

@@ -1245,8 +1245,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
-
 int LoadRobotReplacements (char *szLevelName, int bAddBots, int bAltModels)
 {
 	CFILE			cf;
