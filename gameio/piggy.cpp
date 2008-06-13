@@ -199,7 +199,7 @@ tBitmapIndex PiggyFindBitmap (const char * name, int bD1Data)
 
 bmp.index = 0;
 
-if ((t=strchr (name,'#'))!=NULL)
+if ((t=strchr (name,'#')))
 	*t=0;
 for (i = 0; i < gameData.pig.tex.nAliases; i++)
 	if (!stricmp (name,gameData.pig.tex.aliases [i].alias_name)) {
@@ -207,8 +207,8 @@ for (i = 0; i < gameData.pig.tex.nAliases; i++)
 			static char temp [SHORT_FILENAME_LEN];
 			_splitpath (gameData.pig.tex.aliases [i].file_name, NULL, NULL, temp, NULL);
 			name = temp;
-			strcat (name,"#");
-			strcat (name,t+1);
+			strcat (temp,"#");
+			strcat (temp,t+1);
 			}
 		else
 			name = gameData.pig.tex.aliases [i].file_name; 
@@ -1087,7 +1087,7 @@ TexMergeFlush ();       //for re-merging with new textures
  * Find and load the named bitmap from descent.pig
  * similar to ReadExtraBitmapIFF
  */
-tBitmapIndex ReadExtraBitmapD1Pig (char *name)
+tBitmapIndex ReadExtraBitmapD1Pig (const char *name)
 {
 	CFILE					cfPiggy;
 	tPIGBitmapHeader	bmh;

@@ -466,11 +466,11 @@ StopTime ();
 gameData.app.bGamePaused = 1;
 if (bSecretSave == 1) {
 	pszFilenameOverride = filename;
-	sprintf (pszFilenameOverride, SECRETB_FILENAME);
+	sprintf (filename, SECRETB_FILENAME);
 	} 
 else if (bSecretSave == 2) {
 	pszFilenameOverride = filename;
-	sprintf (pszFilenameOverride, SECRETC_FILENAME);
+	sprintf (filename, SECRETC_FILENAME);
 	} 
 else {
 	if (pszFilenameOverride) {

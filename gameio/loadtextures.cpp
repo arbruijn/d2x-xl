@@ -436,7 +436,7 @@ for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
 
 //------------------------------------------------------------------------------
 
-void GetFlagData (char *bmName, int nIndex)
+void GetFlagData (const char *bmName, int nIndex)
 {
 	int			i;
 	tFlagData	*pf;
