@@ -40,7 +40,7 @@ return -1;
 }
 
 
-int FileFindFirst (char *pszFilter, FILEFINDSTRUCT *ffsP, int nFlags)
+int FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffsP, int nFlags)
 {
 	char szFilter [FILENAME_LEN];
 	int	i, j;

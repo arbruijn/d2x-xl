@@ -248,7 +248,7 @@ return CFUseHogFile (&gameHogFiles.D1HogFiles, name, gameFolders.szDataDir);
 
 // ----------------------------------------------------------------------------
 //Specify the name of the tHogFile.  Returns 1 if tHogFile found & had files
-int CFileInit (char *pszHogName, char *pszFolder)
+int CFileInit (const char *pszHogName, const char *pszFolder)
 {
 if (!*pszHogName) {
 	memset (&gameHogFiles, 0, sizeof (gameHogFiles));
@@ -894,7 +894,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int CFExtract (const char *filename, const char *folder, int bUseD1Hog, char *szDestName)
+int CFExtract (const char *filename, const char *folder, int bUseD1Hog, const char *szDestName)
 {
 	CFILE		cf;
 	FILE		*fp;
@@ -955,7 +955,7 @@ return pData;
 
 // ----------------------------------------------------------------------------
 
-void CFSplitPath (char *szFullPath, char *szFolder, char *szFile, char *szExt)
+void CFSplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt)
 {
 	int	h = 0, i, j, l = (int) strlen (szFullPath) - 1;
 
@@ -1014,7 +1014,7 @@ if (i < 123) {
 #	define fileno	_fileno
 #endif
 
-time_t CFDate (char *filename, char *folder, int bUseD1Hog)
+time_t CFDate (const char *filename, char *folder, int bUseD1Hog)
 {
 	CFILE cf;
 	struct stat statbuf;
@@ -1029,7 +1029,7 @@ return statbuf.st_mtime;
 
 //------------------------------------------------------------------------------
 
-char *GameDataFilename (char *pszFilename, char *pszExt, int nLevel, int nType)
+char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType)
 {
 	char	szFilename [FILENAME_LEN];
 

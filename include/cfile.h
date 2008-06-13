@@ -131,7 +131,7 @@ int CFUseAltHogFile (const char *name);
 // Passing NULL disables this.
 // Returns 1 if tHogFile found (& contains file), else 0.
 // If NULL passed, returns 1
-int CFUseD1HogFile (char *name);
+int CFUseD1HogFile (const char *name);
 
 // All fp functions will check this directory if no file exists
 // in the current directory.
@@ -177,7 +177,7 @@ void ChangeFilenameExtension (char *dest, const char *src, const char *newExt);
 time_t CFDate (const char *hogname, const char *folder, int bUseD1Hog);
 
 // writes variable length, null-termined string.
-int CFWriteString (char *buf, CFILE *cfP);
+int CFWriteString (const char *buf, CFILE *cfP);
 
 #ifdef _WIN32
 char *UnicodeToAsc (char *str, const wchar_t *w_str);

@@ -2555,7 +2555,7 @@ for (i = 0; i < 10; i++) {
 
 int MakeNewPlayerFile (int allow_abort);
 
-int ExecMenuFileSelector (char *pszTitle, char *filespec, char *filename, int bAllowAbort)
+int ExecMenuFileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort)
 {
 	int i;
 	FFS ffs;
@@ -3095,7 +3095,7 @@ return exitValue;
 
 #define LB_ITEMS_ON_SCREEN 8
 
-int ExecMenuListBox (char *pszTitle, int nItems, char *itemP [], int bAllowAbort, 
+int ExecMenuListBox (const char *pszTitle, int nItems, char *itemP [], int bAllowAbort, 
 							int (*listbox_callback) (int *nItemP, int *nItems, char *itemP [], int *keypress))
 {
 return ExecMenuListBox1 (pszTitle, nItems, itemP, bAllowAbort, 0, listbox_callback);
@@ -3103,7 +3103,7 @@ return ExecMenuListBox1 (pszTitle, nItems, itemP, bAllowAbort, 0, listbox_callba
 
 //------------------------------------------------------------------------------
 
-int ExecMenuListBox1 (char *pszTitle, int nItems, char *itemP [], int bAllowAbort, int nDefaultItem, 
+int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAllowAbort, int nDefaultItem, 
 							 int (*listbox_callback) (int *nItemP, int *nItems, char *itemP [], int *keypress))
 {
 	int i;
@@ -3566,7 +3566,7 @@ void NMWrapText (char *dbuf, char *sbuf, int line_length)
 
 //------------------------------------------------------------------------------
 
-void NMProgressBar (char *szCaption, int nCurProgress, int nMaxProgress, 
+void NMProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress, 
 						  void (*doProgress) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem))
 {
 	tMenuItem	m [3];

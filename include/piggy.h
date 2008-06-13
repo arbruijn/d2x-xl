@@ -170,7 +170,7 @@ int PiggyInitMemory (void);
 void PiggyInitPigFile (char *filename);
 void _CDECL_ PiggyClose(void);
 void PiggyDumpAll (void);
-tBitmapIndex PiggyRegisterBitmap( grsBitmap * bmp, char * name, int in_file );
+tBitmapIndex PiggyRegisterBitmap( grsBitmap * bmp, const char * name, int in_file );
 int PiggyRegisterSound( tDigiSound * snd, char * name, int in_file );
 tBitmapIndex PiggyFindBitmap (char * name, int bD1Data );
 int PiggyFindSound (char * name);

@@ -150,7 +150,7 @@ return w;
 
 //------------------------------------------------------------------------------
 
-int GetCenteredX (char *s)
+int GetCenteredX (const char *s)
 {
 return ((grdCurCanv->cvBitmap.bmProps.w - get_line_width (s)) / 2);
 }
@@ -708,7 +708,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 grsBitmap *CreateStringBitmap (
-	char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
+	const char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
 {
 	int			orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;

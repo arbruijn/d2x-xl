@@ -11,7 +11,7 @@ typedef struct FILEFINDSTRUCT {
 	char name[256];
 } FILEFINDSTRUCT;
 
-int FileFindFirst(char *search_str, FILEFINDSTRUCT *ffstruct, int bFindDirs);
+int FileFindFirst(const char *search_str, FILEFINDSTRUCT *ffstruct, int bFindDirs);
 int FileFindNext(FILEFINDSTRUCT *ffstruct, int bFindDirs);
 int FileFindClose(void);
 
@@ -38,7 +38,7 @@ typedef struct FILEFINDSTRUCT {
 #define	FF_DIRECTORY	1
 
 int FileFindNext (FILEFINDSTRUCT *ffsP, int nFlags);
-int FileFindFirst (char *pszFilter, FILEFINDSTRUCT *ffsP, int nFlags);
+int FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffsP, int nFlags);
 void FileFindClose(FILEFINDSTRUCT *ffsP);
 
 #endif //_WIN32

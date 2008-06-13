@@ -63,7 +63,7 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-int FileFindFirst (char *search_str, FILEFINDSTRUCT *ffstruct, int bFindDirs)
+int FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffstruct, int bFindDirs)
 {
 	WIN32_FIND_DATA find;
 #ifdef _WIN32_WCE
@@ -71,7 +71,7 @@ int FileFindFirst (char *search_str, FILEFINDSTRUCT *ffstruct, int bFindDirs)
 	char		str [FILENAME_LEN];
 #endif
 	find.dwFileAttributes = bFindDirs ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
-	_FindFileHandle = FindFirstFile (AscToUnicode (w_str, search_str), &find);
+	_FindFileHandle = FindFirstFile (AscToUnicode (w_str, pszFilter), &find);
 	if (_FindFileHandle == INVALID_HANDLE_VALUE) 
 		return 1;
 	else if (bFindDirs != ((find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0))
