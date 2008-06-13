@@ -50,7 +50,7 @@ static int nIndent = 0;
 static int bLogOOF = 0;
 extern  FILE *fErr;
 
-void _CDECL_ OOF_PrintLog (char *fmt, ...)
+void _CDECL_ OOF_PrintLog (const char *fmt, ...)
 {
 if (bLogOOF) {
 	va_list arglist;
@@ -66,7 +66,7 @@ if (bLogOOF) {
 
 //------------------------------------------------------------------------------
 
-sbyte OOF_ReadByte (CFILE *fp, char *pszIdent)
+sbyte OOF_ReadByte (CFILE *fp, const char *pszIdent)
 {
 sbyte b = CFReadByte (fp);
 OOF_PrintLog ("      %s = %d\n", pszIdent, b);
@@ -75,7 +75,7 @@ return b;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadInt (CFILE *fp, char *pszIdent)
+int OOF_ReadInt (CFILE *fp, const char *pszIdent)
 {
 int i = CFReadInt (fp);
 OOF_PrintLog ("      %s = %d\n", pszIdent, i);
@@ -84,7 +84,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-float OOF_ReadFloat (CFILE *fp, char *pszIdent)
+float OOF_ReadFloat (CFILE *fp, const char *pszIdent)
 {
 float f = CFReadFloat (fp);
 OOF_PrintLog ("      %s = %1.4f\n", pszIdent, f);
@@ -93,7 +93,7 @@ return f;
 
 //------------------------------------------------------------------------------
 
-void OOF_ReadVector (CFILE *fp, tOOF_vector *pv, char *pszIdent)
+void OOF_ReadVector (CFILE *fp, tOOF_vector *pv, const char *pszIdent)
 {
 pv->x = CFReadFloat (fp);
 pv->y = CFReadFloat (fp);
@@ -103,7 +103,7 @@ OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, pv->x, pv->y, pv->z);
 
 //------------------------------------------------------------------------------
 
-char *OOF_ReadString (CFILE *fp, char *pszIdent, char *pszPrefix)
+char *OOF_ReadString (CFILE *fp, const char *pszIdent, char *pszPrefix)
 {
 	char	*psz;
 	int	l, lPrefix = pszPrefix ? (int) strlen (pszPrefix) : 0;

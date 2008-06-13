@@ -481,7 +481,7 @@ return ret;
 
 //------------------------------------------------------------------------------
 
-void PrintTriggerMessage (int nPlayer, int trig, int shot, char *message)
+void PrintTriggerMessage (int nPlayer, int trig, int shot, const char *message)
  {
 	char		*pl;		//points to 's' or nothing for plural word
 	tTrigger	*triggers;

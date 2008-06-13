@@ -2655,7 +2655,7 @@ void BuildObjectModels (void)
 {
 	int      h, i, j;
 	tObject	o, *objP = OBJECTS;
-	char		*pszHires;
+	const char		*pszHires;
 
 if (!gameOpts->render.nPath)
 	return;

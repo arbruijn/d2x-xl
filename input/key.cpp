@@ -55,7 +55,7 @@ typedef struct tKeyboard	{
 static tKeyboard keyData;
 
 typedef struct tKeyProps {
-	char *pszKeyText;
+	const char *pszKeyText;
 	unsigned char asciiValue;
 	unsigned char shiftedAsciiValue;
 	SDLKey sym;
@@ -91,7 +91,7 @@ tKeyProps keyProperties [256] = {
 { "[",      '[',    '{',    SDLK_LEFTBRACKET   },
 { "]",      ']',    '}',    SDLK_RIGHTBRACKET  },
 //edited 06/08/99 Matt Mueller - set to correct text
-{ "ƒ",      255,    255,    SDLK_RETURN        },
+{ "ï¿½",      255,    255,    SDLK_RETURN        },
 //end edit -MM
 { "LCTRL",  255,    255,    SDLK_LCTRL         },
 { "A",      'a',    'A',    SDLK_a             },
@@ -229,7 +229,7 @@ tKeyProps keyProperties [256] = {
 { "",       255,    255,    (SDLKey) -1                 },
 { "",       255,    255,    (SDLKey) -1                 },
 //edited 06/08/99 Matt Mueller - set to correct pszKeyText
-{ "PADƒ",   255,    255,    SDLK_KP_ENTER      },
+{ "PADï¿½",   255,    255,    SDLK_KP_ENTER      },
 //end edit -MM
 //edited 06/08/99 Matt Mueller - set to correct sym
 { "RCTRL",  255,    255,    SDLK_RCTRL         },

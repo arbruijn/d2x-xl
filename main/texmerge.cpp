@@ -417,7 +417,7 @@ GLhandleARB tmShaderProgs [6] = {0,0,0,0,0,0};
 GLhandleARB tmf [6] = {0,0,0,0,0,0}; 
 GLhandleARB tmv [6] = {0,0,0,0,0,0}; 
 
-char *texMergeFS [6] = {
+const char *texMergeFS [6] = {
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"uniform float grAlpha;\r\n" \
 	"void main(void){" \
@@ -484,7 +484,7 @@ char *texMergeFS [6] = {
 	"}"
 	};
 
-char *texMergeVS [3] = {
+const char *texMergeVS [3] = {
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
@@ -505,7 +505,7 @@ char *texMergeVS [3] = {
 	"gl_FrontColor=gl_Color;}"
 	};
 
-char *texMergeFSData = 
+const char *texMergeFSData = 
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
 	"uniform float grAlpha;";
 

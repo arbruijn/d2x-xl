@@ -57,7 +57,7 @@ GLhandleARB gsShaderProg [2][3] = {{0,0,0},{0,0,0}};
 GLhandleARB gsf [2][3] = {{0,0,0},{0,0,0}};
 GLhandleARB gsv [2][3] = {{0,0,0},{0,0,0}};
 
-char *grayScaleFS [2][3] = {{
+const char *grayScaleFS [2][3] = {{
 	"uniform sampler2D baseTex;\r\n" \
 	"uniform vec4 faceColor;\r\n" \
 	"void main(void){" \
@@ -100,7 +100,7 @@ char *grayScaleFS [2][3] = {{
 	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
 	}};
 
-char *grayScaleVS [2][3] = {{
+const char *grayScaleVS [2][3] = {{
 	"void main(void){" \
 	"gl_Position=ftransform();"\
 	"gl_FrontColor=gl_Color;}"

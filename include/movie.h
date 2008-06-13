@@ -46,7 +46,7 @@ void PlayIntroMovie (void);
 // find and initialize the movie libraries
 void InitMovies();
 
-int InitSubTitles(char *filename);
+int InitSubTitles (const char *filename);
 void CloseSubTitles();
 
 int GetNumMovieLibs (void);

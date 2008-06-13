@@ -67,7 +67,7 @@ void InvalidateEscortGoal (void);
 char GetKeyValue (char);
 void MultiSendGotFlag (char);
 
-char *pszPowerup [MAX_POWERUP_TYPES] = {
+const char *pszPowerup [MAX_POWERUP_TYPES] = {
 	"extra life",
 	"energy",
 	"shield",
@@ -367,7 +367,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int PickupFlag (tObject *objP, int nThisTeam, int nOtherTeam, char *pszFlag, int nPlayer)
+int PickupFlag (tObject *objP, int nThisTeam, int nOtherTeam, const char *pszFlag, int nPlayer)
 {
 if (ISLOCALPLAYER (nPlayer)) {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;

@@ -280,7 +280,7 @@ void AlignPolyModelData (tPolyModel *pm)
 
 //------------------------------------------------------------------------------
 //reads a binary file containing a 3d model
-tPolyModel *ReadModelFile (tPolyModel *pm, char *filename, tRobotInfo *r)
+tPolyModel *ReadModelFile (tPolyModel *pm, const char *filename, tRobotInfo *r)
 {
 	CFILE cf;
 	short version;
@@ -820,7 +820,7 @@ int LoadPolygonModel (const char *filename, int nTextures, grsBitmap ***textures
 #endif
 	Assert (strlen (filename) <= 12);
 	strcpy (Pof_names [gameData.models.nPolyModels], filename);
-	ReadModelFile (gameData.models.polyModels+gameData.models.nPolyModels, filename, r);
+	ReadModelFile (gameData.models.polyModels + gameData.models.nPolyModels, filename, r);
 	PolyObjFindMinMax (gameData.models.polyModels + gameData.models.nPolyModels);
 	G3InitPolyModel (gameData.models.polyModels + gameData.models.nPolyModels, gameData.models.nPolyModels);
 	if (nHighestTexture + 1 != nTextures)

@@ -160,7 +160,7 @@ void CheckInventory (void);
 			IsMultiGame && PowerupClass (_nPowerup) && \
 			(PowerupsInMine (_nPowerup) >= gameData.multiplayer.maxPowerupsAllowed [_nPowerup])
 
-extern char *pszPowerup [MAX_POWERUP_TYPES];
+extern const char *pszPowerup [MAX_POWERUP_TYPES];
 
 //------------------------------------------------------------------------------
 

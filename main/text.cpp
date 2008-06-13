@@ -2671,7 +2671,7 @@ void LoadGameTexts (void)
 	CFILE	iFile;
 	int	len, h, i, j, bBinary = 0;
 	char	*psz;
-	char	*filename = "descent.tex";
+	const char	*filename = "descent.tex";
 
 #if DUMP_TEXTS == 2
 for (i = 0; *GT (i); i++)
@@ -2776,13 +2776,13 @@ if (i == 644) {
 		baseGameTexts[172] = baseGameTexts[171];
 		baseGameTexts[171] = baseGameTexts[170];
 		baseGameTexts[170] = baseGameTexts[169];
-		baseGameTexts[169] = "Windows Joystick";
+		baseGameTexts[169] = (char *) "Windows Joystick";
 		}
-	baseGameTexts[644] = "Z1";
-	baseGameTexts[645] = "UN";
-	baseGameTexts[646] = "P1";
-	baseGameTexts[647] = "R1";
-	baseGameTexts[648] = "Y1";
+	baseGameTexts[644] = (char *) "Z1";
+	baseGameTexts[645] = (char *) "UN";
+	baseGameTexts[646] = (char *) "P1";
+	baseGameTexts[647] = (char *) "R1";
+	baseGameTexts[648] = (char *) "Y1";
 	}
 #if DUMP_TEXTS 
 fclose (fTxt);

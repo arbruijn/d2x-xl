@@ -63,6 +63,7 @@ static char rcsid [] = "$Id: movie.c, v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "libmve.h"
 #include "text.h"
 #include "screens.h"
+#include "cfile.h"
 
 extern char CDROM_dir [];
 
@@ -142,10 +143,9 @@ int RunMovie (char *filename, int highresFlag, int allow_abort, int dx, int dy);
 int OpenMovieFile (CFILE *cfp, char *filename, int bRequired);
 int ResetMovieFile (CFILE *cfp);
 
-void ChangeFilenameExt (char *dest, char *src, char *ext);
 void DecodeTextLine (char *p);
 void DrawSubTitles (int nFrame);
-tMovieLib *FindMovieLib (char *pszTargetMovie);
+tMovieLib *FindMovieLib (const char *pszTargetMovie);
 
 // ----------------------------------------------------------------------
 
@@ -513,7 +513,7 @@ if (!gameOpts->movies.bSubTitles)
 	return 0;
 if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", 0)) { // first try text version
 	char filename2 [FILENAME_LEN];	//no text version, try binary version
-	ChangeFilenameExt (filename2, filename, ".txb");
+	ChangeFilenameExtension (filename2, filename, ".txb");
 	if (!CFOpen (&cf, filename2, gameFolders.szDataDir, "rb", 0))
 		return 0;
 	bHaveBinary = 1;

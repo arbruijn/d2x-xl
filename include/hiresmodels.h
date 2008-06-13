@@ -2,8 +2,8 @@
 #define _HIRESMODELS_H
 
 typedef struct tReplacementModel {
-	char	*pszHires;
-	char	*pszLores;
+	const char	*pszHires;
+	const char	*pszLores;
 	short	nModel;
 	short	nType;
 	int	bFlipV;

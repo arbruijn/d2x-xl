@@ -118,7 +118,7 @@ memset (pm, 0, sizeof (*pm));
 
 //------------------------------------------------------------------------------
 
-static float FloatTok (char *delims)
+static float FloatTok (const char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
@@ -128,7 +128,7 @@ return pszToken ? (float) atof (pszToken) : 0;
 
 //------------------------------------------------------------------------------
 
-static int IntTok (char *delims)
+static int IntTok (const char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
@@ -138,7 +138,7 @@ return pszToken ? atoi (pszToken) : 0;
 
 //------------------------------------------------------------------------------
 
-static char CharTok (char *delims)
+static char CharTok (const char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
@@ -148,7 +148,7 @@ return pszToken ? *pszToken : '\0';
 
 //------------------------------------------------------------------------------
 
-static char *StrTok (char *delims)
+static char *StrTok (const char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))

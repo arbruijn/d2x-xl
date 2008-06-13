@@ -287,7 +287,7 @@ void MaybeAddPlayerScore (int abortFlag)
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ scores_rprintf (int x, int y, char * format, ...)
+void _CDECL_ scores_rprintf (int x, int y, const char * format, ...)
 {
 	va_list args;
 	char buffer[128];

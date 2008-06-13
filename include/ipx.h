@@ -49,37 +49,37 @@ extern int IpxInit(int socket_number);
 
 void _CDECL_ IpxClose(void);
 
-extern int IpxChangeDefaultSocket( ushort socket_number );
+int IpxChangeDefaultSocket( ushort socket_number );
 
 // Returns a pointer to 6-byte address
-extern ubyte * IpxGetMyLocalAddress();
+ubyte * IpxGetMyLocalAddress();
 // Returns a pointer to 4-byte server
-extern ubyte * IpxGetMyServerAddress();
+ubyte * IpxGetMyServerAddress();
 
 // Determines the local address equivalent of an internetwork address.
 void IpxGetLocalTarget( ubyte * server, ubyte * node, ubyte * local_target );
 
 // If any packets waiting to be read in, this fills data in with the packet data and returns
 // the number of bytes read.  Else returns 0 if no packets waiting.
-extern int IpxGetPacketData( ubyte * data );
+int IpxGetPacketData( ubyte * data );
 
 // Sends a broadcast packet to everyone on this socket.
-extern void IPXSendBroadcastData( ubyte * data, int datasize );
+void IPXSendBroadcastData( ubyte * data, int datasize );
 
 // Sends a packet to a certain address
-extern void IPXSendPacketData( ubyte * data, int datasize, ubyte *network, ubyte *address, ubyte *immediate_address );
-extern void IPXSendInternetPacketData( ubyte * data, int datasize, ubyte * server, ubyte *address );
+void IPXSendPacketData( ubyte * data, int datasize, ubyte *network, ubyte *address, ubyte *immediate_address );
+void IPXSendInternetPacketData( ubyte * data, int datasize, ubyte * server, ubyte *address );
 
 // Sends a packet to everyone in the game
-extern int IpxSendGamePacket(ubyte *data, int datasize);
+int IpxSendGamePacket(ubyte *data, int datasize);
 
 // Initialize and handle the protocol-specific field of the netgame struct.
-extern void IpxInitNetGameAuxData(ubyte data[]);
-extern int IpxHandleNetGameAuxData(const ubyte data[]);
+void IpxInitNetGameAuxData(ubyte data[]);
+int IpxHandleNetGameAuxData(const ubyte data[]);
 // Handle disconnecting from the game
-extern void ipx_handle_leave_game();
+void ipx_handle_leave_game();
 
-extern void IpxReadUserFile(char * filename);
-extern void IpxReadNetworkFile(char * filename);
+void IpxReadUserFile (const char * filename);
+void IpxReadNetworkFile (const char * filename);
 
 #endif
