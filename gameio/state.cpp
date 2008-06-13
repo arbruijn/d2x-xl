@@ -439,7 +439,7 @@ int copy_file (const char *old_file, const char *new_file)
 //	-----------------------------------------------------------------------------------
 //	blind_save means don't prompt user for any info.
 
-int StateSaveAll (int bBetweenLevels, int bSecretSave, char *pszFilenameOverride)
+int StateSaveAll (int bBetweenLevels, int bSecretSave, const char *pszFilenameOverride)
 {
 	int	rval, filenum = -1;
 	char	filename [128], szDesc [DESC_LENGTH+1];
@@ -1302,7 +1302,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 
 //------------------------------------------------------------------------------
 
-int StateSaveAllSub (const char *filename, char *szDesc, int bBetweenLevels)
+int StateSaveAllSub (const char *filename, const char *szDesc, int bBetweenLevels)
 {
 	int			i;
 	CFILE			cf;

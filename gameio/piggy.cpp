@@ -191,7 +191,7 @@ return temp;
 
 //------------------------------------------------------------------------------
 
-tBitmapIndex PiggyFindBitmap (char * name, int bD1Data)   
+tBitmapIndex PiggyFindBitmap (const char * name, int bD1Data)   
 {
 	tBitmapIndex bmp;
 	int i;

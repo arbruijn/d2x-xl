@@ -1,4 +1,3 @@
-/* $Id: hash.c,v 1.3 2003/02/18 20:35:35 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -16,13 +15,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef RCS
-static char rcsid[] = "$Id: hash.c,v 1.3 2003/02/18 20:35:35 btb Exp $";
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "u_mem.h"
 #include "strutil.h"
@@ -45,7 +41,7 @@ size = ht->size;
 ht->and_mask = ht->size - 1;
 if (ht->size==0)
 	Error( "Hashtable has size of 0" );
-if (!(ht->key = (char **) D2_ALLOC (size * sizeof (char *))))
+if (!(ht->key = (const char **) D2_ALLOC (size * sizeof (char *))))
 	Error( "Not enough memory to create a hash table of size %d", size );
 for (i = 0; i < size; i++ )
 	ht->key [i] = NULL;
@@ -70,23 +66,23 @@ ht->size = 0;
 }
 
 
-int hashtable_getkey( char *key )
+int hashtable_getkey( const char *key )
 {
 	int k = 0, i=0;
+	char c;
 
-while (*key) {
-	k ^= ((int)(*key++)) << i;
+while ((c = *key++)) {
+	k ^= ((int)(tolower (c))) << i;
 	i++;
 	}
 return k;
 }
 
 
-int hashtable_search( hashtable *ht, char *key )
+int hashtable_search( hashtable *ht, const char *key )
 {
 	int i,j,k;
 
-strlwr( key );
 k = hashtable_getkey( key );
 i = 0;
 while(i < ht->size )	{
@@ -100,11 +96,10 @@ return -1;
 }
 
 
-void hashtable_insert( hashtable *ht, char *key, int value )
+void hashtable_insert( hashtable *ht, const char *key, int value )
 {
 	int i,j,k;
 
-strlwr( key );
 k = hashtable_getkey(key);
 i = 0;
 while(i < ht->size) {

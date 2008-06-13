@@ -21,13 +21,13 @@ typedef struct hashtable {
 	int				and_mask;
 	int				size;
 	int				nitems;
-	char				**key;
+	const char			**key;
 	int				*value;
 } hashtable;
 
 int hashtable_init( hashtable *ht, int size );
 void hashtable_free( hashtable *ht );
-int hashtable_search( hashtable *ht, char *key );
-void hashtable_insert( hashtable *ht, char *key, int value );
+int hashtable_search( hashtable *ht, const char *key );
+void hashtable_insert( hashtable *ht, const char *key, int value );
 
 #endif

@@ -248,7 +248,7 @@ return (void *) (p + 1);
 
 #else	//!RELEASE
 
-void *MemAlloc (unsigned int size, char * var, char * pszFile, int nLine, int bZeroFill)
+void *MemAlloc (unsigned int size, const char * var, const char * pszFile, int nLine, int bZeroFill)
 {
 	unsigned int *ptr;
 
@@ -308,7 +308,7 @@ return newBuffer;
 
 #else
 
-void *MemRealloc (void * buffer, unsigned int size, char * var, char * pszFile, int nLine)
+void *MemRealloc (void * buffer, unsigned int size, const char * var, const char * pszFile, int nLine)
 {
 	void *newbuffer = NULL;
 
@@ -345,7 +345,7 @@ return newbuffer;
 
 #if !DBG_MALLOC
 
-char *MemStrDup (char *str)
+char *MemStrDup (const char *str)
 {
 unsigned int l = (unsigned int) strlen (str) + 1;
 char *newstr = (char *) MemAlloc (l);
@@ -356,7 +356,7 @@ return newstr;
 
 #else
 
-char *MemStrDup (char *str, char *var, char *pszFile, int nLine)
+char *MemStrDup (const char *str, const char *var, const char *pszFile, int nLine)
 {
 	char *newstr;
 	int l = (int) strlen (str) + 1;

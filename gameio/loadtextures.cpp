@@ -464,7 +464,7 @@ return (nTexture > 0) && (strchr (gameData.pig.tex.bitmapFiles [gameStates.app.b
 
 //------------------------------------------------------------------------------
 
-int PageInBitmap (grsBitmap *bmP, char *bmName, int nIndex, int bD1)
+int PageInBitmap (grsBitmap *bmP, const char *bmName, int nIndex, int bD1)
 {
 	grsBitmap		*altBmP = NULL;
 	int				temp, nSize, nOffset, nFrames, nShrinkFactor, 
@@ -740,7 +740,7 @@ int PiggyBitmapExistsSlow (char * name)
 
 //------------------------------------------------------------------------------
 
-void LoadBitmapReplacements (char *pszLevelName)
+void LoadBitmapReplacements (const char *pszLevelName)
 {
 	char			szFilename [SHORT_FILENAME_LEN];
 	CFILE			cf;

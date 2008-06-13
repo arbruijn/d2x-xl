@@ -120,7 +120,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int PiggyFindSound (char * name)     
+int PiggyFindSound (const char * name)     
 {
 	int i;
 
@@ -148,7 +148,7 @@ for (i = 0; i < 2; i++)
 
 //------------------------------------------------------------------------------
 
-int LoadSoundReplacements (char *pszFilename)
+int LoadSoundReplacements (const char *pszFilename)
 {
 	CFILE					cf;
 	char					szId [4];
