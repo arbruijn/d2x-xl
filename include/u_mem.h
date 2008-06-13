@@ -26,10 +26,10 @@ extern int bShowMemInfo;
 #if DBG_MALLOC
 
 void _CDECL_ MemDisplayBlocks (void);
-void * MemAlloc (unsigned int size, char * var, char * file, int line, int fill_zero);
-void * MemRealloc (void * buffer, unsigned int size, char * var, char * file, int line);
+void * MemAlloc (unsigned int size, const char * var, const char * file, int line, int fill_zero);
+void * MemRealloc (void * buffer, unsigned int size, const char * var, const char * file, int line);
 void MemFree (void * buffer);
-char * MemStrDup (char * str, char * var, char * file, int line);
+char * MemStrDup (const char * str, const char * var, const char * file, int line);
 void MemInit ();
 
 /* DPH: Changed malloc, etc. to d_malloc. Overloading system calls is very evil and error prone */
@@ -49,7 +49,7 @@ void MemValidateHeap ();
 void *MemAlloc (unsigned int size);
 void *MemRealloc (void * buffer, unsigned int size);
 void MemFree (void * buffer);
-char *MemStrDup (char * str);
+char *MemStrDup (const char * str);
 
 #define D2_ALLOC(size)			MemAlloc (size)
 #define D2_CALLOC(n, size)		MemAlloc (n * size)

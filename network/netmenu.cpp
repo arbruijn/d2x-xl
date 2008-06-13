@@ -1090,7 +1090,7 @@ ubyte nOptionToForce [] = {
 	60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 175, 200, 250
 	};
 
-static char *szWeaponTexts [] = {
+static const char *szWeaponTexts [] = {
 	"Laser 1", 
 	"Laser 2", 
 	"Laser 3", 
@@ -1651,7 +1651,7 @@ doMenu:
 		}
 	}
 	m [opt].nType = NM_TYPE_TEXT; 
-	m [opt].text = ""; 
+	m [opt].text = (char *) ""; 
 	opt++;
 	m [opt].nType = NM_TYPE_MENU; 
 	m [opt].text = (char *) TXT_ACCEPT; 
@@ -1901,7 +1901,7 @@ return pszDest;
 
 //------------------------------------------------------------------------------
 
-char *szModeLetters []  = 
+const char *szModeLetters []  = 
 	{"ANRCHY", 
 	 "TEAM", 
 	 "ROBO", 
@@ -1918,7 +1918,7 @@ void NetworkJoinPoll (int nitems, tMenuItem * menus, int * key, int cItem)
 	static fix t1 = 0;
 	int	t = SDL_GetTicks ();
 	int	i, h = 2 + gameStates.multi.bUseTracker, osocket, nJoinStatus, bPlaySound = 0;
-	char	*psz;
+	const char	*psz;
 	char	szOption [200];
 	char	szTrackers [100];
 

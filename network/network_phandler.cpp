@@ -107,7 +107,7 @@ typedef int (* pPacketHandler) (ubyte *dataP, int nLength);
 
 typedef struct tPacketHandlerInfo {
 	pPacketHandler	packetHandler;
-	char				*pszInfo;
+	const char				*pszInfo;
 	int				nLength;
 	short				nStatusFilter;
 	} tPacketHandlerInfo;
@@ -145,7 +145,7 @@ if (gameStates.multi.nGameType == UDP_GAME)
 
 //------------------------------------------------------------------------------
 
-int NetworkBadPacketSize (int nLength, int nExpectedLength, char *pszId)
+int NetworkBadPacketSize (int nLength, int nExpectedLength, const char *pszId)
 {
 if (!nExpectedLength || (nLength == nExpectedLength))
 	return 0;
@@ -161,7 +161,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int NetworkBadSecurity (int nSecurity, char *pszId)
+int NetworkBadSecurity (int nSecurity, const char *pszId)
 {
 #if SECURITY_CHECK
 if (nSecurity == netGame.nSecurity)
@@ -455,7 +455,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void InitPacketHandler (ubyte pId, pPacketHandler packetHandler, char *pszInfo, int nLength, short nStatusFilter)
+void InitPacketHandler (ubyte pId, pPacketHandler packetHandler, const char *pszInfo, int nLength, short nStatusFilter)
 {
 	tPacketHandlerInfo	*piP = packetHandlers + pId;
 

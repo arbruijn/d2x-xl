@@ -343,7 +343,7 @@ tKeyProps keyProperties [256] = {
 { "LCMD",   255,    255,    SDLK_LMETA         }
 };
 
-char *pszKeyText [256];
+const char *pszKeyText [256];
 
 //------------------------------------------------------------------------------
 

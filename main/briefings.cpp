@@ -802,7 +802,7 @@ extern int InitMovieBriefing ();
 
 //-----------------------------------------------------------------------------
 
-char *NextPage (char *message)
+char *NextPage (const char *message)
 {
 	char	*pNextPage = strstr (message, "$P");
 	char	*pNextBrief = strstr (message, "$S");
@@ -815,7 +815,7 @@ return NULL;
 
 //-----------------------------------------------------------------------------
 
-int PageHasRobot (char *message)
+int PageHasRobot (const char *message)
 {
 	char	*pEnd = NextPage (message);
 	char	*pBot = strstr (message, "$R");
@@ -1469,7 +1469,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-void DoBriefingScreens (char *filename, int nLevel)
+void DoBriefingScreens (const char *filename, int nLevel)
 {
 	int	bAbortBriefing = 0;
 	int	nCurBriefingScreen = 0;
@@ -1487,7 +1487,7 @@ if (gameOpts->gameplay.bSkipBriefingScreens) {
 strcpy (fnBriefing, *gameData.missions.szBriefingFilename ? gameData.missions.szBriefingFilename : filename);
 con_printf (CONDBG, "Trying briefing screen <%s>\n", fnBriefing);
 PrintLog ("Looking for briefing screen '%s'\n", fnBriefing);
-if (!fnBriefing) {
+if (!*fnBriefing) {
 	gameStates.render.bBriefing = 0;
 	return;
 	}

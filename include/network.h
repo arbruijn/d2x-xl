@@ -399,7 +399,7 @@ typedef struct tPingStats {
 extern tPingStats pingStats [MAX_PLAYERS];
 extern fix xPingReturnTime;
 extern int bShowPingStats, tLastPingStat;
-extern char *pszRankStrings[];
+extern const char *pszRankStrings[];
 
 void ResetPingStats (void);
 void InitExtraGameInfo (void);

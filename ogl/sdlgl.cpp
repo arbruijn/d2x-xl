@@ -84,7 +84,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OglSetAttribute (char *szSwitch, char *szAttr, SDL_GLattr attr, int value)
+int OglSetAttribute (const char *szSwitch, const char *szAttr, SDL_GLattr attr, int value)
 {
 	int	i;
 	
@@ -182,7 +182,7 @@ OglInitAttributes ();
 if (!IrrInit (w, h, (bool) gameStates.ogl.bFullScreen))
 	return 0;
 #else
-SDL_putenv ("SDL_VIDEO_CENTERED=1");
+SDL_putenv ((char *) "SDL_VIDEO_CENTERED=1");
 /***/PrintLog ("setting SDL video mode (%dx%dx%d, %s)\n",
 				 w, h, gameStates.ogl.nColorBits, gameStates.ogl.bFullScreen ? "fullscreen" : "windowed");
 if (!OglVideoModeOK (w, h) ||

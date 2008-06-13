@@ -76,7 +76,7 @@ extern unsigned int KeyUpCount(int scancode);
 //void key_clearTimes();
 //void key_clearCounts();
 
-extern char * pszKeyText[256];
+extern const char * pszKeyText[256];
 
 #define KEY_SHIFTED     0x100
 #define KEY_ALTED       0x200

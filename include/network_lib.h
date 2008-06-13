@@ -226,7 +226,7 @@ extern tNakedData	nakedData;
 
 extern tNetgameInfo tempNetInfo;
 
-extern char *pszRankStrings [];
+extern const char *pszRankStrings [];
 
 extern struct ipx_recv_data ipx_udpSrc;
 

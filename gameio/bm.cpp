@@ -1454,7 +1454,7 @@ tBitmapIndex ReadExtraBitmapIFF (const char * filename)
 //------------------------------------------------------------------------------
 extern int GrAvgColor (grsBitmap *bm);
 // formerly load_exit_model_bitmap
-grsBitmap *BMLoadExtraBitmap (char *name)
+grsBitmap *BMLoadExtraBitmap (const char *name)
 {
 	int i;
 	tBitmapIndex	*bip = gameData.pig.tex.objBmIndex + gameData.pig.tex.nObjBitmaps;

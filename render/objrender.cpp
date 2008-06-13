@@ -805,7 +805,6 @@ PROF_START
 	fix			nGlow [2];
 	int			oofIdx;
 #endif
-	time_t		t = clock ();
 
 #if 0//def _DEBUG
 if (objP == dbgObjP) {

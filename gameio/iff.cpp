@@ -673,7 +673,7 @@ int convert_rgb15(grsBitmap *bm,iff_bitmap_header *bmheader)
 }
 
 //read in a entire file into a fake file structure
-int open_fake_file(char *ifilename,FFILE *ffile)
+int open_fake_file (const char *ifilename, FFILE *ffile)
 {
 	CFILE ifile;
 	int ret;
@@ -783,7 +783,7 @@ int iff_parse_bitmap(FFILE *ifile, grsBitmap *bm, int bitmapType, grsBitmap *pre
 }
 
 //returns error codes - see IFF.H.  see GR.H for bitmapType
-int iff_read_bitmap(char *ifilename,grsBitmap *bm,int bitmapType)
+int iff_read_bitmap(const char *ifilename, grsBitmap *bm,int bitmapType)
 {
 	int ret;			//return code
 	FFILE ifile;
@@ -801,7 +801,7 @@ int iff_read_bitmap(char *ifilename,grsBitmap *bm,int bitmapType)
 
 //like iff_read_bitmap(), but reads into a bitmap that already exists,
 //without allocating memory for the bitmap.
-int iff_read_into_bitmap(char *ifilename, grsBitmap *bm)
+int iff_read_into_bitmap (const char *ifilename, grsBitmap *bm)
 {
 	int ret;			//return code
 	FFILE ifile;
@@ -1078,7 +1078,7 @@ int write_pbm(FILE *ofile,iff_bitmap_header *bitmap_header,int compression_on)		
 
 //writes an IFF file from a grsBitmap structure. writes palette if not null
 //returns error codes - see IFF.H.
-int iff_write_bitmap(char *ofilename,grsBitmap *bm, ubyte *palette)
+int iff_write_bitmap(const char *ofilename,grsBitmap *bm, ubyte *palette)
 {
 	FILE *ofile;
 	iff_bitmap_header bmheader;
@@ -1130,7 +1130,7 @@ int iff_write_bitmap(char *ofilename,grsBitmap *bm, ubyte *palette)
 
 //read in many brushes.  fills in array of pointers, and n_bitmaps.
 //returns iff error codes
-int iff_read_animbrush(char *ifilename,grsBitmap **bm_list,int max_bitmaps,int *n_bitmaps)
+int iff_read_animbrush(const char *ifilename,grsBitmap **bm_list,int max_bitmaps,int *n_bitmaps)
 {
 	int ret;			//return code
 	FFILE ifile;
@@ -1193,7 +1193,7 @@ done:
 }
 
 //text for error messges
-char error_messages[] = {
+const char error_messages[] = {
 	"No error.\0"
 	"Not enough mem for loading or processing bitmap.\0"
 	"IFF file has unknown FORM nType.\0"

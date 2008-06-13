@@ -160,7 +160,7 @@ tPingStats pingStats [MAX_PLAYERS];
 
 tNetgameInfo tempNetInfo;
 
-char *pszRankStrings []={
+const char *pszRankStrings []={
 	" (unpatched) ", "Cadet ", "Ensign ", "Lieutenant ", "Lt.Commander ", 
    "Commander ", "Captain ", "Vice Admiral ", "Admiral ", "Demigod "
 	};

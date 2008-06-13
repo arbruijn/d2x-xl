@@ -644,7 +644,9 @@ void OglEnableLighting (int bSpecular)
 {
 if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 		static GLfloat fBlack [] = {0.0f, 0.0f, 0.0f, 1.0f};
+#	if 0		
 		static GLfloat fWhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
+#	endif
 #if 1		
 		static GLfloat fAmbient [] = {0.1f, 0.1f, 0.1f, 1.0f};
 		static GLfloat fDiffuse [] = {0.9f, 0.9f, 0.9f, 1.0f};

@@ -282,7 +282,7 @@ return 0;
 //------------------------------------------------------------------------------
 // open a file on the game host
 
-static int UploadOpenFile (int i, char *pszExt)
+static int UploadOpenFile (int i, const char *pszExt)
 {
 	char	szFile [FILENAME_LEN];
 	int	l = (int) strlen (gameFolders.szMissionDirs [0]);
@@ -524,7 +524,7 @@ return 1;
 void DownloadPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 if (*key == KEY_ESC) {
-	m [PERCENT_ITEM].text = "download aborted";
+	m [PERCENT_ITEM].text = (char *) "download aborted";
 	m [1].redraw = 1;
 	*key = -2;
 	return;
@@ -562,7 +562,7 @@ if (dlResult == 1) {
 	*key = 0;
 	return;
 	}
-m [PERCENT_ITEM].text = "download failed";
+m [PERCENT_ITEM].text = (char *) "download failed";
 m [PERCENT_ITEM].redraw = 1;
 *key = -2;
 }

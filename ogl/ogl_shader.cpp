@@ -161,7 +161,7 @@ if ((nLogLen > 0) && (infoLog = (char *) D2_ALLOC (nLogLen))) {
 
 //------------------------------------------------------------------------------
 
-char *progVS [] = {
+const char *progVS [] = {
 	"void TexMergeVS ();" \
 	"void main (void) {TexMergeVS ();}"
 ,
@@ -173,7 +173,7 @@ char *progVS [] = {
 	"void main (void) {TexMergeVS (); LightingVS ();}"
 	};
 
-char *progFS [] = {
+const char *progFS [] = {
 	"void TexMergeFS ();" \
 	"void main (void) {TexMergeFS ();}"
 ,

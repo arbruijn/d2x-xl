@@ -557,7 +557,7 @@ int NetworkWaitForAllInfo (int choice)
 
 memset (m, 0, sizeof (m));
 m [0].nType = NM_TYPE_TEXT; 
-m [0].text = "Press Escape to cancel";
+m [0].text = (char *) "Press Escape to cancel";
 networkData.bWaitAllChoice = choice;
 networkData.nStartWaitAllTime=TimerGetApproxSeconds ();
 networkData.nSecurityCheck = activeNetGames [choice].nSecurity;

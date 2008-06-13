@@ -103,7 +103,7 @@ OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, pv->x, pv->y, pv->z);
 
 //------------------------------------------------------------------------------
 
-char *OOF_ReadString (CFILE *fp, const char *pszIdent, char *pszPrefix)
+char *OOF_ReadString (CFILE *fp, const char *pszIdent, const char *pszPrefix)
 {
 	char	*psz;
 	int	l, lPrefix = pszPrefix ? (int) strlen (pszPrefix) : 0;

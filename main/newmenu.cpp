@@ -857,7 +857,7 @@ itemP->x = h;
 
 //------------------------------------------------------------------------------
 
-void NMRStringWXY (bkg * bgP, int w1, int x, int y, char *s)
+void NMRStringWXY (bkg * bgP, int w1, int x, int y, const char *s)
 {
 	int	w, h, aw;
 
