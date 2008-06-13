@@ -419,7 +419,7 @@ int ComputeAvgPixel (grsBitmap *newBmp);
 
 //reads in a new pigfile (for new palette)
 //returns the size of all the bitmap data
-void PiggyNewPigFile (const char *pigname)
+void PiggyNewPigFile (char *pigname)
 {
 	int i;
 	char temp_name [16];
@@ -432,8 +432,8 @@ void PiggyNewPigFile (const char *pigname)
 	strlwr (pigname);
 
 	//rename pigfile for shareware
-	if (stricmp (DEFAULT_PIGFILE, DEFAULT_PIGFILE_SHAREWARE) == 0 && !CFExist (pigname, gameFolders.szDataDir,0))
-		pigname = DEFAULT_PIGFILE_SHAREWARE;
+	if (!stricmp (DEFAULT_PIGFILE, DEFAULT_PIGFILE_SHAREWARE) && !CFExist (pigname, gameFolders.szDataDir,0))
+		pigname = (char *) DEFAULT_PIGFILE_SHAREWARE;
 
 	if (strnicmp (szCurrentPigFile [0], pigname, sizeof (szCurrentPigFile)) == 0) // no need to reload: no bitmaps were altered
 		return;

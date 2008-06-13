@@ -670,7 +670,7 @@ return gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ?
 
 //------------------------------------------------------------------------------
 
-char *MakeLevelFilename (int nLevel, char *pszFilename, char *pszFileExt)
+char *MakeLevelFilename (int nLevel, char *pszFilename, const char *pszFileExt)
 {
 ChangeFilenameExtension (pszFilename, strlwr (LevelName (nLevel)), pszFileExt);
 return pszFilename;

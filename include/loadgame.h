@@ -107,6 +107,6 @@ fix RobotDefaultShields (tObject *objP);
 
 char *LevelName (int nLevel);
 char *LevelSongName (int nLevel);
-char *MakeLevelFilename (int nLevel, char *pszFilename, char *pszFileExt);
+char *MakeLevelFilename (int nLevel, char *pszFilename, const char *pszFileExt);
 
 #endif /* _LOADGAME_H */

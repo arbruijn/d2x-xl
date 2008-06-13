@@ -263,7 +263,7 @@ extern int Pigfile_initialized;
 extern int bUseHiresTextures, bD1Data;
 extern size_t bitmapCacheUsed;
 extern size_t bitmapCacheSize;
-extern char *szAddonTextures [MAX_ADDON_BITMAP_FILES];
+extern const char *szAddonTextures [MAX_ADDON_BITMAP_FILES];
 
 extern hashtable soundNames [2];
 extern int soundOffset [2][MAX_SOUND_FILES];

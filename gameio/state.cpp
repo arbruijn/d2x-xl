@@ -214,7 +214,7 @@ void rpad_string (char * string, int max_chars)
 
 //------------------------------------------------------------------------------
 
-int StateGetSaveFile (const char * fname, char * dsc, int bMulti)
+int StateGetSaveFile (char * fname, char * dsc, int bMulti)
 {
 	CFILE cf;
 	int i, menuRes, choice, sgVersion;
@@ -272,7 +272,7 @@ return choice + 1;
 
 int bRestoringMenu = 0;
 
-int StateGetRestoreFile (const char * fname, int bMulti)
+int StateGetRestoreFile (char * fname, int bMulti)
 {
 	CFILE			cf;
 	int			i, j, choice = -1, sgVersion, nSaves;
@@ -286,7 +286,7 @@ int StateGetRestoreFile (const char * fname, int bMulti)
 	memset (m, 0, sizeof (m));
 	for (i = 0; i < NM_IMG_SPACE; i++) {
 		m [i].nType = NM_TYPE_TEXT; 
-		m [i].text = "";
+		m [i].text = (char *) "";
 		m [i].noscroll = 1;
 		}
 	if (gameStates.app.bGameRunning) {
@@ -439,7 +439,7 @@ int copy_file (const char *old_file, const char *new_file)
 //	-----------------------------------------------------------------------------------
 //	blind_save means don't prompt user for any info.
 
-int StateSaveAll (int bBetweenLevels, int bSecretSave, const char *pszFilenameOverride)
+int StateSaveAll (int bBetweenLevels, int bSecretSave, char *pszFilenameOverride)
 {
 	int	rval, filenum = -1;
 	char	filename [128], szDesc [DESC_LENGTH+1];
@@ -1519,7 +1519,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void StateRestoreMultiGame (const char *pszOrgCallSign, int bMulti, int bSecretRestore)
+void StateRestoreMultiGame (char *pszOrgCallSign, int bMulti, int bSecretRestore)
 {
 if (bMulti)
 	strcpy (pszOrgCallSign, LOCALPLAYER.callsign);

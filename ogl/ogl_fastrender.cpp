@@ -142,8 +142,6 @@ faceBuffer.nFaces++;
 
 int G3SetupShader (grsFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP)
 {
-	static grsBitmap	*nullBmP = NULL;
-
 	int	nType, nShader = gameStates.render.history.nShader;
 
 if (!gameStates.ogl.bShadersOk || (gameStates.render.nType == 4))
