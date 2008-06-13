@@ -802,10 +802,10 @@ extern int InitMovieBriefing ();
 
 //-----------------------------------------------------------------------------
 
-char *NextPage (const char *message)
+const char *NextPage (const char *message)
 {
-	char	*pNextPage = strstr (message, "$P");
-	char	*pNextBrief = strstr (message, "$S");
+	const char	*pNextPage = strstr (message, "$P");
+	const char	*pNextBrief = strstr (message, "$S");
 
 if (pNextPage && pNextBrief)
 	return ((pNextPage < pNextBrief) ? pNextPage : pNextBrief);
@@ -817,8 +817,8 @@ return NULL;
 
 int PageHasRobot (const char *message)
 {
-	char	*pEnd = NextPage (message);
-	char	*pBot = strstr (message, "$R");
+	const char	*pEnd = NextPage (message);
+	const char	*pBot = strstr (message, "$R");
 
 return pBot && (!pEnd || (pBot < pEnd));
 }
@@ -827,7 +827,8 @@ return pBot && (!pEnd || (pBot < pEnd));
 
 char *SkipPage (char *message, briefing_screen *pBriefBuf, int *px, int *py, int *pnScreen)
 {
-	char	ch, *pEnd = NextPage (message);
+	char	ch;
+	const char *pEnd = NextPage (message);
 	int	nScreen = *pnScreen, x = *px, y = *py;
 
 while (*message && (!pEnd || (message < pEnd))) {

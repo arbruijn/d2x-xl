@@ -191,37 +191,38 @@ return temp;
 
 //------------------------------------------------------------------------------
 
-tBitmapIndex PiggyFindBitmap (const char * name, int bD1Data)   
+tBitmapIndex PiggyFindBitmap (const char * pszName, int bD1Data)   
 {
-	tBitmapIndex bmp;
-	int i;
-	char *t;
+	tBitmapIndex	bi;
+	int				i;
+	const char		*t;
+	char				name [FILENAME_LEN];
 
-bmp.index = 0;
-
-if ((t=strchr (name,'#')))
-	*t=0;
+bi.index = 0;
+if ((t = strchr (pszName, '#'))) {
+	strncpy (name, pszName, t - pszName);
+	name [t - pszName] = '\0';
+	pszName = name;
+	}
 for (i = 0; i < gameData.pig.tex.nAliases; i++)
-	if (!stricmp (name,gameData.pig.tex.aliases [i].alias_name)) {
+	if (!stricmp (pszName, gameData.pig.tex.aliases [i].alias_name)) {
 		if (t) {                //extra stuff for ABMs
-			static char temp [SHORT_FILENAME_LEN];
+			static char temp [FILENAME_LEN];
 			_splitpath (gameData.pig.tex.aliases [i].file_name, NULL, NULL, temp, NULL);
-			name = temp;
-			strcat (temp,"#");
-			strcat (temp,t+1);
+			pszName = temp;
+			strcat (temp, "#");
+			strcat (temp, t + 1);
 			}
 		else
-			name = gameData.pig.tex.aliases [i].file_name; 
+			pszName = gameData.pig.tex.aliases [i].file_name; 
 		break;
 		}
-if (t)
-	*t = '#';
-i = hashtable_search (bitmapNames + bD1Data, name);
+i = hashtable_search (bitmapNames + bD1Data, pszName);
 Assert (i != 0);
 if (i < 0)
-	return bmp;
-bmp.index = i;
-return bmp;
+	return bi;
+bi.index = i;
+return bi;
 }
 
 //------------------------------------------------------------------------------

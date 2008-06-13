@@ -772,31 +772,35 @@ int RequestCD (void)
 
 //-----------------------------------------------------------------------
 
-void InitMovie (const char *filename, int libnum, int isRobots, int required)
+void InitMovie (const char *pszFilename, int nLibrary, int bIsRobots, int bRequired)
 {
 	int bHighRes, nTries;
+	char filename [FILENAME_LEN];
+
+strcpy (filename, pszFilename);
+	
 	char *res = strchr (filename, '.') - 1; // 'h' == high resolution, 'l' == low
 
 #if 0//ndef RELEASE
 	if (FindArg ("-nomovies")) {
-		movies.libs [libnum] = NULL;
+		movies.libs [nLibrary] = NULL;
 		return;
 	}
 #endif
 
 	//for robots, load highres versions if highres menus set
-	bHighRes = isRobots ? gameStates.menus.bHiresAvailable : gameOpts->movies.bHires;
+	bHighRes = bIsRobots ? gameStates.menus.bHiresAvailable : gameOpts->movies.bHires;
 	if (bHighRes)
 		*res = 'h';
-	for (nTries = 0; (movies.libs [libnum] = InitMovieLib (filename)) == NULL; nTries++) {
+	for (nTries = 0; (movies.libs [nLibrary] = InitMovieLib (filename)) == NULL; nTries++) {
 		char name2 [100];
 
 		strcpy (name2, CDROM_dir);
 		strcat (name2, filename);
-		movies.libs [libnum] = InitMovieLib (name2);
+		movies.libs [nLibrary] = InitMovieLib (name2);
 
-		if (movies.libs [libnum]) {
-			movies.libs [libnum]->flags |= MLF_ON_CD;
+		if (movies.libs [nLibrary]) {
+			movies.libs [nLibrary]->flags |= MLF_ON_CD;
 			break; // we found our movie on the CD
 			}
 		else {
@@ -811,14 +815,14 @@ void InitMovie (const char *filename, int libnum, int isRobots, int required)
 					}
 				else {
 #ifdef _DEBUG
-					if (required)
+					if (bRequired)
 						Warning (TXT_MOVIE_FILE, filename);
 #endif
 					break;
 					}
 				}
 			else { // nTries == 1
-				if (required) {
+				if (bRequired) {
 					*res = '*';
 #ifdef _DEBUG
 					//Warning (TXT_MOVIE_ANY, filename);
@@ -829,7 +833,7 @@ void InitMovie (const char *filename, int libnum, int isRobots, int required)
 		}
 	}
 
-	if (isRobots && movies.libs [libnum] != NULL)
+	if (bIsRobots && movies.libs [nLibrary] != NULL)
 		gameStates.movies.nRobots = bHighRes ? 2 : 1;
 }
 
@@ -861,13 +865,13 @@ static int bMoviesInited = 0;
 void InitMovies ()
 {
 	unsigned int i, j;
-	int isRobots;
+	int bIsRobots;
 
 	j = (gameStates.app.bHaveExtraMovies = !gameStates.app.bNostalgia) ? 
 		 N_BUILTIN_MOVIE_LIBS : FIRST_EXTRA_MOVIE_LIB;
 	for (i = 0; i < N_BUILTIN_MOVIE_LIBS; i++) {
-		isRobots = !strnicmp (pszMovieLibs[i], "robot", 5);
-		InitMovie (pszMovieLibs[i], i, isRobots, 1);
+		bIsRobots = !strnicmp (pszMovieLibs[i], "robot", 5);
+		InitMovie (pszMovieLibs[i], i, bIsRobots, 1);
 		if (movies.libs [i])
 			PrintLog ("   found movie lib '%s'\n", pszMovieLibs[i]);
 		else if ((i >= FIRST_EXTRA_MOVIE_LIB) && 

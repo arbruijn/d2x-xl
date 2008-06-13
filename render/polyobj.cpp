@@ -411,14 +411,6 @@ while (new_pof_read_int (id, model_buf) == 1) {
 	}
 //	for (i=0;i<pm->nModels;i++)
 //		pm->subModels.ptrs [i] += (int) pm->modelData;
-if (FindArg ("-bspgen")) {
-	char *p = strchr (filename, '.');
-	*p = 0;
-	//if (animFlag > 1)
-	//printf (" -a");
-	//printf (" %s.3ds\n", filename);
-	*p = '.';
-	}
 D2_FREE (model_buf);
 #ifdef WORDS_NEED_ALIGNMENT
 G3AlignPolyModelData (pm);

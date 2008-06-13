@@ -140,7 +140,8 @@ while (paramList) {
 
 char *MakeTag (char *pszTag, const char *pszIdent, int i, int j)
 {
-	char	*pi, *ph;
+	char	*pi;
+	const char *ph;
 	int	h = 0, l;
 
 for (pi = pszTag; *pszIdent; h++) {

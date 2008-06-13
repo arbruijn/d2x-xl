@@ -348,7 +348,7 @@ return (driver->OpenSocket (&ipxSocketData, nSocket)) ? -3 : 0;
 
 								/*---------------------------*/
 
-void IpxReadUserFile (char * filename)
+void IpxReadUserFile (const char * filename)
 {
 	FILE * fp;
 	user_address tmp;
@@ -397,7 +397,7 @@ fclose (fp);
 
 								/*---------------------------*/
 
-void IpxReadNetworkFile (char * filename)
+void IpxReadNetworkFile (const char * filename)
 {
 	FILE * fp;
 	user_address tmp;
