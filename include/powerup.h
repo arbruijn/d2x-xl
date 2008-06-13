@@ -128,7 +128,7 @@ void diminish_towards_max(void);
 
 void DoMegaWowPowerup(int quantity);
 
-void _CDECL_ PowerupBasic(int redadd, int greenadd, int blueadd, int score, char *format, ...);
+void _CDECL_ PowerupBasic(int redadd, int greenadd, int blueadd, int score, const char *format, ...);
 
 #if 0
 #define PowerupTypeInfoReadN(pti, n, fp) CFRead(pti, sizeof(powerupType_info), n, fp)

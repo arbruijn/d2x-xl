@@ -41,22 +41,22 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static char rcsid[] = "$Id: config.c,v 1.10 2003/10/04 20:03:11 btb Exp $";
 #endif
 
-static char *pszDigiVolume = "DigiVolume";
-static char *pszMidiVolume = "MidiVolume";
-static char *pszRedbookEnabled = "RedbookEnabled";
-static char *pszRedbookVolume = "RedbookVolume";
-static char *pszDetailLevel = "DetailLevel";
-static char *pszGammaLevel = "GammaLevel";
-static char *pszStereoRev = "StereoReverse";
-static char *pszJoystickMin = "JoystickMin";
-static char *pszJoystickMax = "JoystickMax";
-static char *pszJoystickCen = "JoystickCen";
-static char *pszLastPlayer = "LastPlayer";
-static char *pszLastMission = "LastMission";
-static char *pszVrType = "VRType";
-static char *pszVrResolution = "VR_resolution";
-static char *pszVrTracking = "VR_tracking";
-static char *pszHiresMovies = "Hires Movies";
+static const char *pszDigiVolume = "DigiVolume";
+static const char *pszMidiVolume = "MidiVolume";
+static const char *pszRedbookEnabled = "RedbookEnabled";
+static const char *pszRedbookVolume = "RedbookVolume";
+static const char *pszDetailLevel = "DetailLevel";
+static const char *pszGammaLevel = "GammaLevel";
+static const char *pszStereoRev = "StereoReverse";
+static const char *pszJoystickMin = "JoystickMin";
+static const char *pszJoystickMax = "JoystickMax";
+static const char *pszJoystickCen = "JoystickCen";
+static const char *pszLastPlayer = "LastPlayer";
+static const char *pszLastMission = "LastMission";
+static const char *pszVrType = "VRType";
+static const char *pszVrResolution = "VR_resolution";
+static const char *pszVrTracking = "VR_tracking";
+static const char *pszHiresMovies = "Hires Movies";
 
 int digi_driver_board_16;
 int digi_driver_dma_16;

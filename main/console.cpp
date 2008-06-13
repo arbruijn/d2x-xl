@@ -48,7 +48,7 @@ cvar_t *cvar_vars = NULL;
 
 /* Console specific cvars */
 /* How discriminating we are about which messages are displayed */
-cvar_t con_threshold = {"con_threshold", "0",};
+cvar_t con_threshold = {"con_threshold", (char *) "0",};
 
 /* Private console stuff */
 #define CON_NUM_LINES 400

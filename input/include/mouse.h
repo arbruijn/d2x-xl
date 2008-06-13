@@ -82,4 +82,3 @@ typedef struct tMouseInfo {
 extern tMouseInfo mouseData;
 
 #endif
-	

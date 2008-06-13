@@ -119,11 +119,6 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 
 #include "../texmap/scanline.h" //for select_tmap -MM
 
-extern void SetFunctionMode (int);
-extern void ShowInGameWarning (char *s);
-extern int cfile_use_d2x_hogfile(char * name);
-extern int cfile_use_XL_hogfile(char * name);
-
 extern int SDL_HandleSpecialKeys;
 
 #ifdef EDITOR
@@ -782,8 +777,8 @@ void EvalAutoNetGameArgs (void)
 	int	t, bHaveIp = 0;
 	char	*p;
 
-	static char *pszTypes [] = {"anarchy", "coop", "ctf", "ctf+", "hoard", "entropy", NULL};
-	static char	*pszConnect [] = {"ipx", "udp", "", "multicast", NULL};
+	static const char *pszTypes [] = {"anarchy", "coop", "ctf", "ctf+", "hoard", "entropy", NULL};
+	static const char	*pszConnect [] = {"ipx", "udp", "", "multicast", NULL};
 
 memset (&gameData.multiplayer.autoNG, 0, sizeof (gameData.multiplayer.autoNG));
 if ((t = FindArg ("-ng_player")) && (p = pszArgList [t+1])) {

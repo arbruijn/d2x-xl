@@ -31,7 +31,7 @@ int  con_events(int key);
 
 /* CVar stuff */
 typedef struct cvar_s {
-	char *name;
+	const char *name;
 	char *string;
 	dboolean archive;
 	double value;

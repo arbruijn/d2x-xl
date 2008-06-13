@@ -252,7 +252,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ PowerupBasic (int redAdd, int greenAdd, int blueAdd, int score, char *format, ...)
+void _CDECL_ PowerupBasic (int redAdd, int greenAdd, int blueAdd, int score, const char *format, ...)
 {
 	char		text[120];
 	va_list	args;

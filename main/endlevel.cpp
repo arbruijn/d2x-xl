@@ -1150,7 +1150,7 @@ return moved;
 
 #define STATION_DIST	i2f (1024)
 
-int ConvertExt (char *dest, char *ext)
+int ConvertExt (char *dest, const char *ext)
 {
 	char *t = strchr (dest, '.');
 

@@ -43,7 +43,7 @@ tGameFolders gameFolders;
 
 // ----------------------------------------------------------------------------
 
-int GetAppFolder (char *szRootDir, char *szFolder, char *szName, char *szFilter)
+int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, const char *szFilter)
 {
 	FFS	ffs;
 	char	szDir [FILENAME_LEN];

@@ -124,7 +124,7 @@ typedef struct box {
 
 #define cr_gr_printf(x,y,s)	GrPrintF (NULL, (x) == 0x8000 ? (x) : (x), (y), s)
 
-static char *xlCredits [] = {
+static const char *xlCredits [] = {
 	"",
 	"",
 	"",

@@ -833,7 +833,7 @@ typedef void tCheatFunc (int bVerbose);
 typedef tCheatFunc *pCheatFunc;
 
 typedef struct tCheat {
-	char			*pszCheat;
+	const char		*pszCheat;
 	pCheatFunc	cheatFunc;
 	char			bPunish;		//0: never punish, 1: always punish, -1: cheat function decides whether to punish
 	char			bEncrypted;

@@ -41,7 +41,7 @@ static int bErrMsg = 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_Error (char *pszMsg)
+int ASE_Error (const char *pszMsg)
 {
 if (!bErrMsg) {
 	if (pszMsg)

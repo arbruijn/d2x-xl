@@ -197,7 +197,7 @@ extern void ApplyModifiedPalette(void);
 
 int GrToggleFullScreenGame(void);
 
-void ShowInGameWarning (char *s);
+void ShowInGameWarning (const char *s);
 
 int PlayerHasHeadlight (int nPlayer);
 int HeadlightIsOn (int nPlayer);

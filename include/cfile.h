@@ -82,7 +82,7 @@ typedef struct tGameFolders {
 	int bAltHogDirInited;
 } tGameFolders;
 
-int GetAppFolder (char *szRootDir, char *szFolder, char *szName, char *szFilter);
+int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, const char *szFilter);
 
 //Specify the name of the tHogFile.  Returns 1 if tHogFile found & had files
 int CFileInit (const char *hogname, const char *folder);

@@ -289,7 +289,7 @@ GrPaletteStepUp (0, 0, 0);
 
 //------------------------------------------------------------------------------
 
-void ShowInGameWarning (char *s)
+void ShowInGameWarning (const char *s)
 {
 if (grdCurScreen) {
 	char	*hs, *ps = strstr (s, "Error");
