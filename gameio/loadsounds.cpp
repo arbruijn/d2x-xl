@@ -400,7 +400,7 @@ CFClose (&cf);
 
 typedef struct tAddonSound {
 	Mix_Chunk		*chunkP;
-	const char		szSoundFile [FILENAME_LEN];
+	/*const*/ char		szSoundFile [FILENAME_LEN];
 } tAddonSound;
 
 tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {

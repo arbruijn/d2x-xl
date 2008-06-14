@@ -103,7 +103,6 @@ void MultiSaveGame (ubyte slot, uint id, char *desc);
 void MultiRestoreGame (ubyte slot, uint id);
 void MultiSetRobotAI (void);
 void MultiSendPowerupUpdate ();
-void BashToShield (int i, char *s);
 void InitHoardData ();
 void MultiApplyGoalTextures ();
 void MultiBadRestore ();
