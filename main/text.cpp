@@ -2794,7 +2794,7 @@ InitGameTexts ();
 
 #ifdef _DEBUG
 
-char *GAMETEXT (int _i) 
+const char *GAMETEXT (int _i) 
 {
 if (pszGameTexts)
 	return pszGameTexts [_i];
@@ -2804,7 +2804,7 @@ else
 	return defaultGameTexts [_i - N_BASE_TEXTS][gameStates.app.bEnglish];
 }
 
-char *HELPTEXT (int _i) 
+const char *HELPTEXT (int _i) 
 {
 if (pszHelpTexts)
 	return pszHelpTexts [_i];

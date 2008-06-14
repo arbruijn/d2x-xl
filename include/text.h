@@ -31,8 +31,8 @@ extern char **pszHelpTexts;
 
 #ifdef _DEBUG
 
-char *GAMETEXT (int _i);
-char *HELPTEXT (int _i);
+const char *GAMETEXT (int _i);
+const char *HELPTEXT (int _i);
 
 #else
 

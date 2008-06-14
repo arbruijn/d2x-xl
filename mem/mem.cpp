@@ -292,7 +292,7 @@ return (void *) ptr;
 void *MemRealloc (void * buffer, unsigned int size)
 {
 if (!buffer)
-	return NULL;
+	return MemAlloc (size);
 if (!size) {
 	MemFree (buffer);
 	return NULL;
