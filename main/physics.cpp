@@ -879,7 +879,7 @@ retryMove:
 						if (objP->nType == OBJ_PLAYER)
 							xWallPart *= 2;		//tPlayer bounce twice as much
 						}
-					if (objP->mType.physInfo.flags & PF_BOUNCES_TWICE) {
+					if ((objP->mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
 						Assert (objP->mType.physInfo.flags & PF_BOUNCE);
 						if (objP->mType.physInfo.flags & PF_BOUNCED_ONCE)
 							objP->mType.physInfo.flags &= ~(PF_BOUNCE | PF_BOUNCED_ONCE | PF_BOUNCES_TWICE);

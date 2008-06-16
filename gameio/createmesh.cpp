@@ -908,7 +908,7 @@ m_faceP->bIsLight = IsLight (m_faceP->nBaseTex) || (m_faceP->nOvlTex && IsLight 
 m_faceP->nOvlOrient = (ubyte) m_sideP->nOvlOrient;
 m_faceP->bTextured = 1;
 m_faceP->bTransparent = 0;
-char *pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [m_faceP->nBaseTex].index].name;
+char *pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [m_faceP->nOvlTex ? m_faceP->nOvlTex : m_faceP->nBaseTex].index].name;
 m_faceP->bSparks = (strstr (pszName, "misc17") != NULL);
 if (m_nWallType < 2)
 	m_faceP->bAdditive = 0;
