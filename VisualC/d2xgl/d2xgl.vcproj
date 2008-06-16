@@ -2930,7 +2930,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\glare.h"
+						RelativePath="..\..\include\glare.h"
 						>
 					</File>
 					<File
@@ -4573,11 +4573,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

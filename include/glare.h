@@ -3,7 +3,7 @@
 
 void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float dx, float dy, fMatrix *r);
 int FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *dimP);
-void RenderCorona (short nSegment, short nSide, float fIntensity);
+void RenderCorona (short nSegment, short nSide, float fIntensity, float fSize);
 float CoronaVisibility (int nQuery);
 void LoadGlareShader (void);
 void UnloadGlareShader (void);

@@ -649,7 +649,7 @@ if (gameStates.render.bQueryCoronas != 2) {
 
 // -----------------------------------------------------------------------------------
 
-void RenderCorona (short nSegment, short nSide, float fIntensity)
+void RenderCorona (short nSegment, short nSide, float fIntensity, float fSize)
 {
 	fVector		sprite [4], vNormal, vCenter = {{0,0,0}}, vEye = {{0,0,0}};
 	int			nTexture, bAdditive;
@@ -671,6 +671,16 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
 if (gameOpts->render.nPath && gameStates.ogl.bOcclusionQuery && (CoronaStyle ())) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
+#if 1
+	if (gameStates.ogl.bUseDepthBlending && !gameStates.render.automap.bDisplay) {
+		fSize *= 2;
+		if (fSize < 1)
+			fSize = 1;
+		else if (fSize > 20)
+			fSize = 20;
+		glUniform1f (glGetUniformLocation (hGlareShader [0], "dMax"), (GLfloat) fSize);
+		}
+#endif
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
 						  !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [nSegment]);
 	glDepthFunc (GL_LESS);
@@ -747,9 +757,11 @@ return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
 
 void LoadGlareShader (void)
 {
+gameStates.ogl.bUseDepthBlending = 0;
 if (gameStates.ogl.bDepthBlending) {
 	OglReadBuffer (GL_BACK, 1);
 	if (CopyDepthTexture ()) {
+		gameStates.ogl.bUseDepthBlending = 1;
 		GLhandleARB	h = hGlareShader [gameStates.render.automap.bDisplay];
 		glUseProgramObject (h);
 		glUniform1i (glGetUniformLocation (h, "glareTex"), 0);
@@ -759,7 +771,7 @@ if (gameStates.ogl.bDepthBlending) {
 			glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
 		else {
 			glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) gameData.render.ogl.depthScale.p.z);
-			glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) 20.0f);
+			glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) 1.0f);
 			}
 		glDisable (GL_DEPTH_TEST);
 		}
@@ -793,7 +805,8 @@ const char *glareFS [2] = {
 	"uniform float dMax;\r\n" \
 	"void main (void) {\r\n" \
 	"float dz = clamp ((gl_FragCoord.z - texture2D (depthTex, screenScale * gl_FragCoord.xy).r) * depthScale, 0.0, dMax);\r\n" \
-	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * ((dMax - dz) / dMax);\r\n" \
+	"dz = ((dMax - dz) / dMax);\r\n" \
+	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * dz * dz;\r\n" \
 	"}\r\n"
 ,
 	"uniform sampler2D glareTex;\r\n" \

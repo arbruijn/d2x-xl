@@ -470,7 +470,7 @@ else if (nSegment >= 0) {
 			nDbgSeg = nDbgSeg;
 #endif
 		pl->info.nType = 0;
-		pl->info.fRad = faceP ? faceP->fRad : 0;
+		pl->info.fRad = faceP ? faceP->fRads [1] : 0;
 		//RegisterLight (NULL, nSegment, nSide);
 		pl->info.bVariable = IsDestructibleLight (nTexture) || IsFlickeringLight (nSegment, nSide) || WallIsVolatile (SEGMENTS [nSegment].sides [nSide].nWall);
 		gameData.render.lights.dynamic.nVariable += pl->info.bVariable;

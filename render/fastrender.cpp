@@ -322,7 +322,7 @@ if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return false;
 if (!faceP->nCorona)
 	return false;
-RenderCorona (faceP->nSegment, faceP->nSide, CoronaVisibility (faceP->nCorona));
+RenderCorona (faceP->nSegment, faceP->nSide, CoronaVisibility (faceP->nCorona), faceP->fRads [0]);
 return true;
 }
 
@@ -752,7 +752,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #endif
 			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
 			if (!glGetError ())
-				RenderCorona (nSegment, faceP->nSide, 1);
+				RenderCorona (nSegment, faceP->nSide, 1, faceP->fRads [0]);
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
 			}
 		else {
@@ -761,7 +761,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 				nDbgSeg = nDbgSeg;
 #endif
 			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
-			RenderCorona (nSegment, faceP->nSide, 1);
+			RenderCorona (nSegment, faceP->nSide, 1, faceP->fRads [0]);
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
 			}	
 		}

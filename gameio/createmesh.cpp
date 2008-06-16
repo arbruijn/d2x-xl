@@ -892,7 +892,8 @@ m_faceP->bHasColor = 0;
 ComputeSideRads (nSegment, nSide, &rMin, &rMax);
 //float rMinf = f2fl (rMin);
 //float rMaxf = f2fl (rMax);
-m_faceP->fRad = f2fl (rMax); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+m_faceP->fRads [0] = f2fl (rMin); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+m_faceP->fRads [1] = f2fl (rMax); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
 }
 
 //------------------------------------------------------------------------------

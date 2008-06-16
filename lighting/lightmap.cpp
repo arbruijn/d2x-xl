@@ -260,7 +260,7 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 	faceP = pl->info.faceP;
 	bIsLight = 0; 
 	t = IsLight (faceP->nBaseTex) ? faceP->nBaseTex : faceP->nOvlTex;
-	sideRad = (double) faceP->fRad / 10.0;
+	sideRad = (double) faceP->fRads [1] / 10.0;
 	nIndex = faceP->nSegment * 6 + faceP->nSide;
 	//Process found light.
 	lmiP->range += sideRad;
@@ -446,7 +446,7 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 				if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 					nDbgSeg = nDbgSeg;
 #endif
-				if (0 < SetNearestPixelLights (faceP->nSegment, faceP->nSide, &vNormal, pPixelPos, faceP->fRad / 10.0f, nThread)) {
+				if (0 < SetNearestPixelLights (faceP->nSegment, faceP->nSide, &vNormal, pPixelPos, faceP->fRads [1] / 10.0f, nThread)) {
 					VmVecFixToFloat (&vcd.vertPos, pPixelPos);
 					color.c.r = color.c.g = color.c.b = 0;
 					G3AccumVertColor (-1, &color, &vcd, nThread);

@@ -299,24 +299,30 @@ void ComputeSideRads (short nSegment, short tSide, fix *prMin, fix *prMax)
 	tSegment		*segP = gameData.segs.segments + nSegment;
 	sbyte			*s2v = sideToVerts [tSide];
 	short			*sv = segP->verts;
-	vmsVector	v, vCenter, *vp;
+	vmsVector	v, vCenter, *v0, *v1;
 	fix 			d, rMin = 0x7fffffff, rMax = 0;
 	int			i;
 
 COMPUTE_SIDE_CENTER (&vCenter, segP, tSide);
-for (i = 0; i < 4; i++) {
-	vp = gameData.segs.vertices + sv [*s2v++];
-	VmVecSub (&v, &vCenter, vp);
-	d = VmVecMag (&v);
-	if (rMin > d)
-		rMin = d;
-	if (rMax < d)
-		rMax = d;
-	}
-if (prMin)
+if (prMin) {
+	for (i = 0; i < 4; i++) {
+		v0 = gameData.segs.vertices + sv [s2v [i]];
+		v1 = gameData.segs.vertices + sv [s2v [(i + 1) % 4]];
+		VmVecAvg (&v, v0, v1);
+		d = VmVecDist (&v, &vCenter);
+		if (rMin > d)
+			rMin = d;
+		}
 	*prMin = rMin;
-if (prMax)
+	}
+if (prMax) {
+	for (i = 0; i < 4; i++) {
+		d = VmVecDist (&vCenter, gameData.segs.vertices + sv [*s2v++]);
+		if (rMax < d)
+			rMax = d;
+		}
 	*prMax = rMax;
+	}
 }
 
 // ------------------------------------------------------------------------------------------
