@@ -52,4 +52,6 @@ void SetThrustFromVelocity(tObject *obj);
 
 void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate);
 
+void UnstickObject (tObject *objP);
+
 #endif /* _PHYSICS_H */

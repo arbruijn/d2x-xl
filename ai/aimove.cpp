@@ -478,6 +478,10 @@ fix MoveTowardsPoint (tObject *objP, vmsVector *vGoal, fix xMinDist)
 	fix			xDistToGoal;
 	vmsVector	vGoalDir;
 
+#ifdef _DEBUG
+if ((nDbgSeg >= 0) && (objP->nSegment == nDbgSeg))
+	nDbgSeg = nDbgSeg;
+#endif
 VmVecSub (&vGoalDir, vGoal, &objP->position.vPos);
 xDistToGoal = VmVecNormalize (&vGoalDir);
 if (xDistToGoal - objP->size <= xMinDist) {
@@ -505,6 +509,7 @@ else {
 		MoveObjectToLegalSpot (objP, xMinDist > 0);
 		}
 	}
+UnstickObject (objP);
 return xDistToGoal;
 }
 

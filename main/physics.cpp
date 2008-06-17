@@ -199,7 +199,7 @@ tObject *debugObjP=NULL;
 
 
 #ifdef _DEBUG
-int	Total_retries=0, Total_sims=0;
+int	nTotalRetries=0, nTotalSims=0;
 int	bDontMoveAIObjects=0;
 #endif
 
@@ -319,7 +319,7 @@ if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
 
 //	-----------------------------------------------------------------------------------------------------------
 
-#if UNSTICK_OBJS
+#if 1 //UNSTICK_OBJS
 
 int BounceObject (tObject *objP, tFVIData	hi, float fOffs, fix *pxSideDists)
 {
@@ -565,6 +565,11 @@ if (objP->mType.physInfo.drag) {
 	}
 
 //moveIt:
+
+#ifdef _DEBUG
+if ((nDbgSeg >= 0) && (objP->nSegment == nDbgSeg))
+	nDbgSeg = nDbgSeg;
+#endif
 
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
 	if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_WATER)
@@ -977,8 +982,8 @@ if (objP->controlType == CT_AI) {
 	if (nTries > 0) {
 		gameData.ai.localInfo [nObject].nRetryCount = nTries - 1;
 #ifdef _DEBUG
-		Total_retries += nTries - 1;
-		Total_sims++;
+		nTotalRetries += nTries - 1;
+		nTotalSims++;
 #endif
 		}
 	}
@@ -1009,30 +1014,29 @@ if (objP->controlType == CT_AI) {
 	if (objP->mType.physInfo.flags & PF_LEVELLING)
 		DoPhysicsAlignObject (objP);
 	//hack to keep tPlayer from going through closed doors
-	if ((objP->nType == OBJ_PLAYER) && (objP->nSegment != nOrigSegment) && 
+	if (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) && (objP->nSegment != nOrigSegment) && 
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
-		int nSide;
-		nSide = FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments + nOrigSegment);
+		int nSide = FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments + nOrigSegment);
 		if (nSide != -1) {
 			if (!(WALL_IS_DOORWAY (gameData.segs.segments + nOrigSegment, nSide, NULL) & WID_FLY_FLAG)) {
 				tSide *sideP;
 				int	nVertex, nFaces;
 				fix	dist;
-				int	vertex_list [6];
+				int	vertexList [6];
 
 				//bump tObject back
 				sideP = gameData.segs.segments [nOrigSegment].sides + nSide;
 				if (nOrigSegment == -1)
 					Error ("nOrigSegment == -1 in physics");
-				nFaces = CreateAbsVertexLists (vertex_list, nOrigSegment, nSide);
+				nFaces = CreateAbsVertexLists (vertexList, nOrigSegment, nSide);
 				//let'sideP pretend this tWall is not triangulated
-				nVertex = vertex_list [0];
-				if (nVertex > vertex_list [1])
-					nVertex = vertex_list [1];
-				if (nVertex > vertex_list [2])
-					nVertex = vertex_list [2];
-				if (nVertex > vertex_list [3])
-					nVertex = vertex_list [3];
+				nVertex = vertexList [0];
+				if (nVertex > vertexList [1])
+					nVertex = vertexList [1];
+				if (nVertex > vertexList [2])
+					nVertex = vertexList [2];
+				if (nVertex > vertexList [3])
+					nVertex = vertexList [3];
 				dist = VmDistToPlane (&vStartPos, sideP->normals, gameData.segs.vertices + nVertex);
 				VmVecScaleAdd (&objP->position.vPos, &vStartPos, sideP->normals, objP->size-dist);
 				UpdateObjectSeg (objP);
@@ -1045,7 +1049,7 @@ if (GetSegMasks (&objP->position.vPos, objP->nSegment, 0).centerMask) {
 	if (FindObjectSeg (objP) == -1) {
 		int n;
 
-		if ((objP->nType == OBJ_PLAYER) && (n = FindSegByPos (&objP->vLastPos, objP->nSegment, 1, 0)) != -1) {
+		if (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) && (n = FindSegByPos (&objP->vLastPos, objP->nSegment, 1, 0)) != -1) {
 			objP->position.vPos = objP->vLastPos;
 			RelinkObject (nObject, n);
 			}
