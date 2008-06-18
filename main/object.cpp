@@ -2222,20 +2222,23 @@ for (i = gameData.objs.nLastObject + 1, objP = OBJECTS; i; i--, objP++)
 //compressed.  resets D2_FREE list, marks unused OBJECTS as unused
 void ResetObjects (int nObjects)
 {
-	int i;
+	int 		i;
+	tObject	*objP;
 
 gameData.objs.nObjects = nObjects;
-Assert (gameData.objs.nObjects > 0);
-for (i = gameData.objs.nObjects; i < MAX_OBJECTS; i++) {
+for (i = 0, objP = OBJECTS; i < nObjects; i++, objP++)
+	if (objP->nType != OBJ_DEBRIS)
+		objP->rType.polyObjInfo.nSubObjFlags = 0;
+for (; i < MAX_OBJECTS; i++, objP++) {
 	gameData.objs.freeList [i] = i;
-	OBJECTS [i].nType = OBJ_NONE;
-	OBJECTS [i].nSegment =
-	OBJECTS [i].cType.explInfo.nNextAttach =
-	OBJECTS [i].cType.explInfo.nPrevAttach =
-	OBJECTS [i].cType.explInfo.nAttachParent =
-	OBJECTS [i].attachedObj = -1;
-	OBJECTS [i].flags = 0;
-	//KillObjectSmoke (i);
+	objP->nType = OBJ_NONE;
+	objP->nSegment =
+	objP->cType.explInfo.nNextAttach =
+	objP->cType.explInfo.nPrevAttach =
+	objP->cType.explInfo.nAttachParent =
+	objP->attachedObj = -1;
+	objP->rType.polyObjInfo.nSubObjFlags = 0;
+	objP->flags = 0;
 	}
 gameData.objs.nLastObject = gameData.objs.nObjects - 1;
 nDebrisObjectCount = 0;
