@@ -1334,8 +1334,12 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPosP)
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-if (!vPosP && (psc->index == gameStates.render.nFrameFlipFlop + 1))
+if (!vPosP && (psc->index == (char) (gameData.app.nFrameCount & 0xff)))
 	return psc;
+#ifdef _DEBUG
+if (nSegment == nDbgSeg)
+	nSegment = nSegment;
+#endif
 if (SEGMENT2S [nSegment].special == SEGMENT_IS_SKYBOX) {
 	psc->color.red = psc->color.green = psc->color.blue = 1.0f;
 	psc->index = 1;
@@ -1435,7 +1439,7 @@ else {
 		}
 #endif
 	}
-psc->index = gameStates.render.nFrameFlipFlop + 1;
+psc->index = (char) (gameData.app.nFrameCount & 0xff);
 return psc;
 }
 

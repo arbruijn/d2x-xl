@@ -114,8 +114,11 @@ int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDep
 #ifdef _DEBUG
 if (nDepth < renderItems.zMin)
 	return renderItems.nFreeItems;
-if (nDepth > renderItems.zMax)
-	return renderItems.nFreeItems;
+if (nDepth > renderItems.zMax) {
+	if (nType != riParticle)
+		return renderItems.nFreeItems;
+	nDepth = renderItems.zMax;
+	}
 #else
 if ((nDepth < renderItems.zMin) || (nDepth > renderItems.zMax))
 	return renderItems.nFreeItems;
