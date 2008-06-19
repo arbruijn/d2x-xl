@@ -247,7 +247,7 @@ int _CDECL_ EffectsThread (void *pThreadId)
 {
 do {
 	while (!tiEffects.bExec)
-		G3_SLEEP (100);
+		G3_SLEEP (1);
 	DoSmokeFrame ();
 	DoEnergySparkFrame ();
 	DoLightningFrame ();
