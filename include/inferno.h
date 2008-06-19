@@ -3539,7 +3539,7 @@ gameData.app.semaphores &= ~sem;
 #else
 
 
-static inline void SemEnter (uint seme)
+static inline void SemEnter (uint sem)
 {
 while (gameData.app.semaphores & sem)
 	G3_SLEEP (1);
