@@ -50,6 +50,7 @@ void ResetLightmapShaders (void);
 void InitHeadlightShaders (int nLights);
 char *BuildLightingShader (const char *pszTemplate, int nLights);
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
+void ResetSegmentLights (void);
 int IsLight (int tMapNum);
 void ResetUsedLight (tShaderLight *psl, int nThread);
 void ResetUsedLights (int bVariable, int nThread);

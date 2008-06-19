@@ -1334,7 +1334,7 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPosP)
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-if (!vPosP && (psc->index == (char) (gameData.app.nFrameCount & 0xff)))
+if (!vPosP && (psc->index == (char) gameStates.render.nFrameFlipFlop))
 	return psc;
 #ifdef _DEBUG
 if (nSegment == nDbgSeg)
@@ -1441,6 +1441,16 @@ else {
 	}
 psc->index = (char) (gameData.app.nFrameCount & 0xff);
 return psc;
+}
+
+//------------------------------------------------------------------------------
+
+void ResetSegmentLights (void)
+{
+	tFaceColor	*psc = gameData.render.color.segments;
+
+for (short i = gameData.segs.nSegments; i; i--, psc++)
+	psc->index = -1;
 }
 
 //------------------------------------------------------------------------------

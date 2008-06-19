@@ -2427,9 +2427,10 @@ gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMu
 PROF_END(ptAux)
 if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
-#if 0
-	if (!gameStates.ogl.bVertexLighting && gameStates.app.bMultiThreaded && 
-		 (CountRenderFaces () > 15) && !RunRenderThreads (rtComputeFaceLight)) 
+	ResetSegmentLights ();
+#if 1
+	if (!gameStates.app.bMultiThreaded || gameStates.render.bPerPixelLighting || 
+		 (CountRenderFaces () < 16) || !RunRenderThreads (rtComputeFaceLight)) 
 #endif
 		{
 		if (gameStates.render.bTriangleMesh || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))

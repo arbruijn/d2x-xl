@@ -62,7 +62,7 @@ if (!gameData.app.bUseMultiThreading [nTask])
 	return 0;
 tiRender.nTask = (tRenderTask) nTask;
 tiRender.ti [0].bExec =
-tiRender.ti [0].bExec = 0;
+tiRender.ti [1].bExec = 1;
 #ifdef _DEBUG
 t0 = clock ();
 while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t0 < 1000)) {
@@ -122,6 +122,20 @@ do {
 			ComputeStaticVertexLights (gameData.segs.nVertices / 2, gameData.segs.nVertices, nId);
 		else
 			ComputeStaticVertexLights (0, gameData.segs.nVertices / 2, nId);
+		}
+	else if (tiRender.nTask == rtComputeFaceLight) {
+		if (gameData.render.mine.nRenderSegs < 0) {
+			if (nId)
+				ComputeFaceLight (gameData.segs.nFaces / 2, gameData.segs.nFaces, nId);
+			else
+				ComputeFaceLight (0, gameData.segs.nFaces / 2, nId);
+			}
+		else {
+			if (nId)
+				ComputeFaceLight (gameData.render.mine.nRenderSegs - 1, tiRender.nMiddle - 1, nId);
+			else
+				ComputeFaceLight (0, tiRender.nMiddle, nId);
+			}
 		}
 	else if (tiRender.nTask == rtPolyModel) {
 		short	iVerts, nVerts, iFaceVerts, nFaceVerts;
