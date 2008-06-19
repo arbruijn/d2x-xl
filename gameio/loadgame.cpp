@@ -718,6 +718,7 @@ gameStates.render.automap.bFull = 0;
 gameData.render.ogl.nHeadlights = -1;
 gameData.render.nColoredFaces = 0;
 gameData.app.nFrameCount = 0;
+gameData.app.semaphores = 0;
 renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 renderItems.nMaxOffs = 0;
 #if PROFILING
@@ -857,6 +858,8 @@ memcpy (gameData.render.color.textures,
 		  sizeof (gameData.render.color.textures));
 LoadTextureColors (pszLevelName, NULL);
 InitTexColors ();
+if (gameStates.app.bD1Mission)
+	LoadD1BitmapReplacements ();
 
 for (;;) {
 	if (!(nLoadRes = LoadLevelSub (pszLevelName, nLevel)))

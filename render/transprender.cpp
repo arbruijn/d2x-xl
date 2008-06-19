@@ -1155,6 +1155,7 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	return;
 	}
 PROF_START
+SEM_ENTER (SEM_LIGHTNINGS | SEM_SPARKS)
 RIResetShader ();
 bStencil = StencilOff ();
 renderItems.bTextured = -1;
@@ -1248,6 +1249,7 @@ StencilOn (bStencil);
 renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 renderItems.nMaxOffs = 0;
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
+SEM_LEAVE (SEM_LIGHTNINGS | SEM_SPARKS)
 PROF_END(ptTranspPolys)
 return;
 }

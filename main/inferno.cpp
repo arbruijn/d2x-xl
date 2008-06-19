@@ -3080,6 +3080,7 @@ if (gameStates.app.bMultiThreaded) {
 		}
 	StartRenderThreads ();
 	}
+StartEffectsThread ();
 StartSoundThread ();
 gameData.render.vertColor.matAmbient.c.r = 
 gameData.render.vertColor.matAmbient.c.g = 

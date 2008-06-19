@@ -481,7 +481,7 @@ void PiggyNewPigFile (char *pigname)
 			else
 				strcpy (temp_name, temp_name_read);
 			//Make sure name matches
-			if (strcmp (temp_name,gameData.pig.tex.bitmapFiles [0][i].name)) {
+			if (strcmp (temp_name, gameData.pig.tex.bitmapFiles [0][i].name)) {
 				//Int3 ();       //this pig is out of date.  Delete it
 				must_rewrite_pig=1;
 			}

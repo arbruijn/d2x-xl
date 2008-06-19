@@ -611,7 +611,7 @@ if (objP->lifeleft <= 0) {	// We died of old age
 if (objP->renderType == RT_EXPLBLAST) 
 	return;
 if (objP->renderType == RT_SHRAPNELS) {
-	UpdateShrapnels (objP);
+	//- moved to DoSmokeFrame() - UpdateShrapnels (objP);
 	return;
 	}
 //See if we should create a secondary explosion

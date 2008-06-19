@@ -1486,6 +1486,7 @@ bGameClosed = 1;
 if (gameStates.app.bMultiThreaded) {
 	EndRenderThreads ();
 	}
+EndEffectsThread ();
 EndSoundThread ();
 GrClose ();
 PrintLog ("unloading addon sounds\n");
@@ -1988,10 +1989,16 @@ if (nDebugSlowdown) {
 //PrintLog ("DoSeismicStuff\n");
 	DoSeismicStuff ();
 //PrintLog ("DoSmokeFrame \n");
-	DoSmokeFrame ();
-	DoEnergySparkFrame ();
-//PrintLog ("DoFlashFrame \n");
-	DoLightningFrame ();
+	if (tiEffects.pThread) {
+		while (tiEffects.bExec)
+			G3_SLEEP (1);
+		tiEffects.bExec = 1;
+		}
+	else {
+		DoSmokeFrame ();
+		DoEnergySparkFrame ();
+		DoLightningFrame ();
+		}
 //PrintLog ("DoAmbientSounds\n");
 	DoAmbientSounds ();
 #ifdef _DEBUG

@@ -170,11 +170,14 @@ if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) {
 
 void DoEnergySparkFrame (void)
 {
+SEM_ENTER (SEM_SPARKS)
+
 	short	nSegment;
 
 if (gameOpts->render.effects.bEnergySparks)
 	for (nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
 		UpdateSegmentSparks (nSegment);
+SEM_LEAVE (SEM_SPARKS)
 }
 
 
@@ -182,12 +185,14 @@ if (gameOpts->render.effects.bEnergySparks)
 
 void RenderEnergySparks (void)
 {
+SEM_ENTER (SEM_SPARKS)
 	short	nSegment;
 
 if (gameOpts->render.effects.bEnergySparks) {
 	for (nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
 		RenderSegmentSparks (nSegment);
 	}
+SEM_LEAVE (SEM_SPARKS)
 }
 
 //-----------------------------------------------------------------------------

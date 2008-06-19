@@ -402,10 +402,13 @@ if (SHOW_LIGHTNINGS) {
 		return -1;
 	if (gameData.lightnings.iFree < 0)
 		return -1;
+	SEM_ENTER (SEM_LIGHTNINGS)
 	srand (gameStates.app.nSDLTicks);
 	if (!(pl = AllocLightning (nLightnings, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude, 
-										nAngle, nOffset, nNodes, nChildren, nDepth, nSteps, nSmoothe, bClamp, bPlasma, nStyle, colorP, NULL, -1)))
+										nAngle, nOffset, nNodes, nChildren, nDepth, nSteps, nSmoothe, bClamp, bPlasma, nStyle, colorP, NULL, -1))) {
+		SEM_LEAVE (SEM_LIGHTNINGS)
 		return -1;
+		}	
 	n = gameData.lightnings.iFree;
 	plb = gameData.lightnings.buffer + n;
 	gameData.lightnings.iFree = plb->nNext;
@@ -421,6 +424,7 @@ if (SHOW_LIGHTNINGS) {
 	plb->nKey [1] = 0;
 	plb->bDestroy = 0;
 	CHECK (pl, nLightnings);
+	SEM_LEAVE (SEM_LIGHTNINGS)
 	}
 return gameData.lightnings.iUsed;
 }
@@ -984,6 +988,7 @@ int UpdateLightning (tLightning *pl, int nLightnings, int nDepth)
 {
 if (!(pl && nLightnings))
 	return 0;
+SEM_LEAVE (SEM_LIGHTNINGS)
 CHECK (pl, nLightnings);
 if (gameStates.app.bMultiThreaded && (nLightnings > 1)) {
 	tiRender.pl = pl;
@@ -1026,6 +1031,8 @@ plb->bSound = -1;
 void UpdateLightnings (void)
 {
 if (SHOW_LIGHTNINGS) {
+	SEM_ENTER (SEM_LIGHTNINGS)
+
 		tLightningBundle	*plb;
 		int					i, n;
 
@@ -1059,6 +1066,7 @@ if (SHOW_LIGHTNINGS) {
 				}
 			}
 		}
+	SEM_LEAVE (SEM_LIGHTNINGS)
 	}
 }
 
@@ -1069,6 +1077,7 @@ void MoveLightnings (int i, tLightning *pl, vmsVector *vNewPos, short nSegment, 
 if (nSegment < 0)
 	return;
 if (SHOW_LIGHTNINGS) {
+
 		tLightningNode	*pln;
 		vmsVector		vDelta, vOffs;
 		int				h, j, nLightnings; 
@@ -1084,6 +1093,7 @@ if (SHOW_LIGHTNINGS) {
 	else
 		return;
 	nLightnings = i;
+	SEM_ENTER (SEM_LIGHTNINGS)
 	CHECK (pl, nLightnings);
 	for (; i > 0; i--, pl++) {
 		pl->nSegment = nSegment;
@@ -1134,6 +1144,7 @@ if (SHOW_LIGHTNINGS) {
 			}
 		}
 	CHECK (pl - nLightnings, nLightnings);
+	SEM_LEAVE (SEM_LIGHTNINGS)
 	}
 }
 
@@ -1875,6 +1886,7 @@ else {
 void RenderLightnings (void)
 {
 if (SHOW_LIGHTNINGS) {
+   SEM_ENTER (SEM_LIGHTNINGS)
 		tLightningBundle	*plb;
 		int			i, n, bStencil = StencilOff ();
 
@@ -1885,6 +1897,7 @@ if (SHOW_LIGHTNINGS) {
 			RenderLightning (plb->pl, plb->nLightnings, 0, gameOpts->render.bDepthSort > 0);
 		}
 	StencilOn (bStencil);
+   SEM_LEAVE (SEM_LIGHTNINGS)
 	}
 }
 

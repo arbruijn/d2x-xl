@@ -31,6 +31,7 @@ typedef enum {
 	rtUpdateParticles,
 	rtRenderParticles,
 	rtPolyModel,
+	rtSmoke,
 	rtTaskCount
 } tRenderTask;
 
@@ -57,6 +58,7 @@ typedef struct tRenderItemThreadInfo {
 	} tRenderItemThreadInfo;
 
 extern tRenderItemThreadInfo tiRenderItems;
+extern tThreadInfo tiEffects;
 
 int RunRenderThreads (int nTask);
 void StartRenderThreads (void);
@@ -64,6 +66,8 @@ void EndRenderThreads (void);
 void StartRenderItemThread (void);
 void EndRenderItemThread (void);
 void WaitForRenderThreads (void);
+void StartEffectsThread (void);
+void EndEffectsThread (void);
 
 //------------------------------------------------------------------------------
 

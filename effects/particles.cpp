@@ -2154,7 +2154,10 @@ return 1;
 
 int RenderSmoke (void)
 {
-return (gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)) ? RenderParticles () : RenderClouds ();
+SEM_ENTER (SEM_SMOKE)
+int h = (gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)) ? RenderParticles () : RenderClouds ();
+SEM_LEAVE (SEM_SMOKE)
+return h;
 }
 
 //------------------------------------------------------------------------------
@@ -2180,8 +2183,8 @@ if (IsUsedSmoke (i)) {
 
 void SetSmokeDensity (int i, int nMaxParts, int nDensity)
 {
-nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.smoke.nDens [0]);
 if (IsUsedSmoke (i)) {
+	nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.smoke.nDens [0]);
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds)
 		for (i = 0; i < pSmoke->nClouds; i++)

@@ -2549,7 +2549,8 @@ typedef struct tApplicationData {
 	int					nGameMode;
 	int					bGamePaused;
 	uint					nStateGameId;
-int						nLifetimeChecksum;
+	uint					semaphores;
+	int					nLifetimeChecksum;
 } tApplicationData;
 
 //------------------------------------------------------------------------------
@@ -3497,6 +3498,30 @@ int TIRUnload (void);
 #endif
 
 #define HW_GEO_LIGHTING 0 //gameOpts->ogl.bGeoLighting
+
+#define SEM_SMOKE			1
+#define SEM_LIGHTNINGS	2
+#define SEM_SPARKS		4
+
+#include "error.h"
+
+static inline void SemEnter (uint sem, const char *pszFile, int nLine)
+{
+while (gameData.app.semaphores & sem) \
+	G3_SLEEP (1);
+PrintLog ("SemEnter (%d) @ %s:%d\n", sem, pszFile, nLine);
+gameData.app.semaphores |= sem;
+}
+
+static inline void SemLeave (uint sem, const char *pszFile, int nLine)
+{
+PrintLog ("SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
+gameData.app.semaphores &= ~sem;
+}
+
+#define SEM_ENTER(_sem)	SemEnter (_sem, __FILE__, __LINE__);
+
+#define SEM_LEAVE(_sem)	SemLeave (_sem, __FILE__, __LINE__);
 
 //	-----------------------------------------------------------------------------------------------------------
 
