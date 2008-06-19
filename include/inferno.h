@@ -3539,14 +3539,14 @@ gameData.app.semaphores &= ~sem;
 #else
 
 
-static inline void SemEnter (uint sem, const char *pszFile, int nLine)
+static inline void SemEnter (uint seme)
 {
 while (gameData.app.semaphores & sem)
 	G3_SLEEP (1);
 gameData.app.semaphores |= sem;
 }
 
-static inline void SemLeave (uint sem, const char *pszFile, int nLine)
+static inline void SemLeave (uint sem)
 {
 gameData.app.semaphores &= ~sem;
 }
