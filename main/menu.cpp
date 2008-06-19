@@ -4814,12 +4814,15 @@ void MultiThreadingOptionsMenu (void)
 	tMenuItem	m [10];
 	int			i, choice = 0;
 
+	static int	menuToTask [rtTaskCount] = {0, 0, 1, 1, 2, 3};	//map menu entries to tasks
+	static int	taskToMenu [4] = {0, 2, 3, 4};	//map tasks to menu entries
+
 memset (m, 0, sizeof (m));
-for (i = rtStaticVertLight; i < rtTaskCount; i++)
-	ADD_CHECK (i, GT (1060 + i), bUseMultiThreading [i], 0, HT (359 + i));
+for (i = 0; i < 4; i++)
+	ADD_CHECK (i, GT (1060 + i), gameData.app.bUseMultiThreading [taskToMenu [i]], 0, HT (359 + i));
 i = ExecMenu1 (NULL, TXT_MT_MENU_TITLE, 10, m, NULL, &choice);
 for (i = rtStaticVertLight; i < rtTaskCount; i++)
-	bUseMultiThreading [i] = (m [i].value != 0);
+	gameData.app.bUseMultiThreading [i] = (m [menuToTask [i]].value != 0);
 }
 
 //------------------------------------------------------------------------------

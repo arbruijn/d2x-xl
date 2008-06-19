@@ -20,21 +20,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 #include "particles.h"
 
-typedef enum {
-	rtStaticVertLight,
-	rtComputeFaceLight,
-	rtSortFaces,
-	rtInitSegZRef,
-	rtSortSegZRef,
-	rtAnimateLightnings,
-	rtRenderLightnings,
-	rtUpdateParticles,
-	rtRenderParticles,
-	rtPolyModel,
-	rtSmoke,
-	rtTaskCount
-} tRenderTask;
-
 typedef struct tRenderThreadInfo {
 	tRenderTask	nTask;
 	int			nMiddle;
@@ -50,7 +35,6 @@ typedef struct tRenderThreadInfo {
 	} tRenderThreadInfo;
 
 extern tRenderThreadInfo tiRender;
-extern int bUseMultiThreading [];
 
 typedef struct tRenderItemThreadInfo {
 	tRenderItemData	itemData [2];

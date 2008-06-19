@@ -990,14 +990,7 @@ if (!(pl && nLightnings))
 	return 0;
 SEM_LEAVE (SEM_LIGHTNINGS)
 CHECK (pl, nLightnings);
-if (gameStates.app.bMultiThreaded && (nLightnings > 1)) {
-	tiRender.pl = pl;
-	tiRender.nLightnings = nLightnings;
-	if (!RunRenderThreads (rtAnimateLightnings))
-		AnimateLightning (pl, 0, nLightnings, nDepth);
-	}
-else
-	AnimateLightning (pl, 0, nLightnings, nDepth);
+AnimateLightning (pl, 0, nLightnings, nDepth);
 CHECK (pl, nLightnings);
 return SetLightningLife (pl, nLightnings);
 }

@@ -257,6 +257,8 @@ for (i = 0; i < 2; i++) {
 		RP (networkData.nNetLifeKills, 0, 0);
 		RP (networkData.nNetLifeKilled, 0, 0);
 		RP (gameData.app.nLifetimeChecksum, 0, 0);
+		for (j = 0; j < rtTaskCount; j++)
+			RP (gameData.app.bUseMultiThreading [j], j, 0);
 		RP (gameData.escort.szName, 0, 0);
 		for (j = 0; j < 4; j++)
 			RP (gameData.multigame.msg.szMacro [j], j, 0);
@@ -765,6 +767,12 @@ tParamValue defaultParams [] = {
 	{"networkData.nNetLifeKills", "0"},
 	{"networkData.nNetLifeKilled", "0"},
 	{"gameData.app.nLifetimeChecksum", "0"},
+	{"gameData.app.bUseMultiThreading[0]", "1"},
+	{"gameData.app.bUseMultiThreading[1]", "1"},
+	{"gameData.app.bUseMultiThreading[2]", "1"},
+	{"gameData.app.bUseMultiThreading[3]", "1"},
+	{"gameData.app.bUseMultiThreading[4]", "1"},
+	{"gameData.app.bUseMultiThreading[5]", "1"},
 	{"gameData.escort.szName", "GUIDE-BOT"},
 	{"gameData.multigame.msg.szMacro[0]", "Why can't we all just get along?"},
 	{"gameData.multigame.msg.szMacro[1]", "Hey, I got a present for ya"},

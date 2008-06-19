@@ -2544,6 +2544,16 @@ typedef struct tTimeData {
 
 //------------------------------------------------------------------------------
 
+typedef enum {
+	rtStaticVertLight,
+	rtComputeFaceLight,
+	rtInitSegZRef,
+	rtSortSegZRef,
+	rtEffects,
+	rtPolyModel,
+	rtTaskCount
+} tRenderTask;
+
 typedef struct tApplicationData {
 	int					nFrameCount;
 	int					nGameMode;
@@ -2551,6 +2561,7 @@ typedef struct tApplicationData {
 	uint					nStateGameId;
 	uint					semaphores;
 	int					nLifetimeChecksum;
+	int					bUseMultiThreading [rtTaskCount];
 } tApplicationData;
 
 //------------------------------------------------------------------------------
