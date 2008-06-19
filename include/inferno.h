@@ -3516,9 +3516,11 @@ int TIRUnload (void);
 
 #include "error.h"
 
+#ifdef _DEBUG
+
 static inline void SemEnter (uint sem, const char *pszFile, int nLine)
 {
-while (gameData.app.semaphores & sem) \
+while (gameData.app.semaphores & sem)
 	G3_SLEEP (1);
 PrintLog ("SemEnter (%d) @ %s:%d\n", sem, pszFile, nLine);
 gameData.app.semaphores |= sem;
@@ -3533,6 +3535,27 @@ gameData.app.semaphores &= ~sem;
 #define SEM_ENTER(_sem)	SemEnter (_sem, __FILE__, __LINE__);
 
 #define SEM_LEAVE(_sem)	SemLeave (_sem, __FILE__, __LINE__);
+
+#else
+
+
+static inline void SemEnter (uint sem, const char *pszFile, int nLine)
+{
+while (gameData.app.semaphores & sem)
+	G3_SLEEP (1);
+gameData.app.semaphores |= sem;
+}
+
+static inline void SemLeave (uint sem, const char *pszFile, int nLine)
+{
+gameData.app.semaphores &= ~sem;
+}
+
+#define SEM_ENTER(_sem)	SemEnter (_sem);
+
+#define SEM_LEAVE(_sem)	SemLeave (_sem);
+
+#endif
 
 //	-----------------------------------------------------------------------------------------------------------
 

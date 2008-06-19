@@ -60,16 +60,10 @@ if (!gameStates.app.bMultiThreaded)
 	return 0;
 if (!gameData.app.bUseMultiThreading [nTask])
 	return 0;
-#if 0
-while (tiRender.ti [0].bExec || tiRender.ti [0].bExec)
-	G3_SLEEP (0);	//already running, so wait
-#endif
 tiRender.nTask = (tRenderTask) nTask;
 tiRender.ti [0].bExec =
 tiRender.ti [0].bExec = 0;
-#if 0
-PrintLog ("running render threads (task: %d)\n", nTask);
-#endif
+#ifdef _DEBUG
 t0 = clock ();
 while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t0 < 1000)) {
 	G3_SLEEP (0);
@@ -83,15 +77,15 @@ while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t0 < 1000
 			PrintLog ("threads locked up (task: %d)\n", nTask);
 			tiRender.ti [0].bExec =
 			tiRender.ti [1].bExec = 0;
-			if (++nLockups > 000)
+			if (++nLockups > 100)
 				gameStates.app.bMultiThreaded = 0;
 #endif
 			}
 		}
 	}
-#if 0//def _DEBUG
-if (tiRender.ti [0].bExec || tiRender.ti [0].bExec)
-	gameStates.app.bMultiThreaded = 0;
+#else
+while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
+	G3_SLEEP (0);
 #endif
 return 0;
 }
