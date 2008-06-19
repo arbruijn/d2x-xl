@@ -193,7 +193,7 @@ return ammoCount;	//return amount used
 
 //------------------------------------------------------------------------------
 
-int PickupVulcanAmmo (int nPlayer)
+int PickupVulcanAmmo (tObject *objP, int nPlayer)
 {
 	int		bUsed = 0;
 

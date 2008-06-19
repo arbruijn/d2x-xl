@@ -299,7 +299,7 @@ int PickupSuperLaser (tObject *objP, int nId, int nPlayer);
 int PickupQuadLaser (tObject *objP, int nId, int nPlayer);
 int PickupGun (tObject *objP, int nId, int nPlayer);
 int PickupGatlingGun (tObject *objP, int nId, int nPlayer);
-int PickupVulcanAmmo (int nPlayer);
+int PickupVulcanAmmo (tObject *objP, int nPlayer);
 
 int AttemptToStealItem (tObject *objp, int player_num);
 
