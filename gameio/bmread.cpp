@@ -2106,10 +2106,10 @@ void bm_read_powerup(int unusedFlag)
 	}
 
 	// Initialize powerup array
-	Powerup_info[n].light = F1_0/3;		//	Default lighting value.
-	Powerup_info[n].nClipIndex = -1;
-	Powerup_info[n].hitSound = -1;
-	Powerup_info[n].size = DEFAULT_POWERUP_SIZE;
+	powerupInfo[n].light = F1_0/3;		//	Default lighting value.
+	powerupInfo[n].nClipIndex = -1;
+	powerupInfo[n].hitSound = -1;
+	powerupInfo[n].size = DEFAULT_POWERUP_SIZE;
 	Powerup_names[n][0] = 0;
 
 	// Process arguments
@@ -2122,17 +2122,17 @@ void bm_read_powerup(int unusedFlag)
 			equal_ptr++;
 			// if we have john=cool, arg is 'john' and equal_ptr is 'cool'
 			if (!stricmp( arg, "vclip_num" ))	{
-				Powerup_info[n].nClipIndex = atoi(equal_ptr);
+				powerupInfo[n].nClipIndex = atoi(equal_ptr);
 			} else if (!stricmp( arg, "light" ))	{
-				Powerup_info[n].light = fl2f(atof(equal_ptr);
+				powerupInfo[n].light = fl2f(atof(equal_ptr);
 			} else if (!stricmp( arg, "hitSound" ))	{
-				Powerup_info[n].hitSound = atoi(equal_ptr);
+				powerupInfo[n].hitSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "name" )) {
 				Assert(strlen(equal_ptr) < POWERUP_NAME_LENGTH);	//	Oops, name too long.
 				strcpy(Powerup_names[n], &equal_ptr[1]);
 				Powerup_names[n][strlen(Powerup_names[n])-1] = 0;
 			} else if (!stricmp( arg, "size" ))	{
-				Powerup_info[n].size = fl2f(atof(equal_ptr);
+				powerupInfo[n].size = fl2f(atof(equal_ptr);
 			} else {
 				Int3();
 #if TRACE
@@ -2269,9 +2269,9 @@ fprintf(tfile,"NRobot_joints = %d, Robot_joints array = %d\n",t,sizeof(tJointPos
 fprintf(tfile,"N_weaponTypes = %d, Weapon_info array = %d\n",N_weaponTypes,sizeof(tWeaponInfo)*N_weaponTypes);
 
 	fwrite( &N_powerupTypes, sizeof(int), 1, fp );
-	fwrite( Powerup_info, sizeof(powerupType_info), N_powerupTypes, fp );
+	fwrite( powerupInfo, sizeof(tPowerupTypeInfo), N_powerupTypes, fp );
 
-fprintf(tfile,"N_powerupTypes = %d, Powerup_info array = %d\n",N_powerupTypes,sizeof(powerupInfo)*N_powerupTypes);
+fprintf(tfile,"N_powerupTypes = %d, powerupInfo array = %d\n",N_powerupTypes,sizeof(powerupInfo)*N_powerupTypes);
 
 	t = N_D2_POLYGON_MODELS;
 	fwrite( &t, sizeof(int), 1, fp );

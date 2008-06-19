@@ -67,8 +67,8 @@ typedef struct tWeaponInfo {
 	fix blob_size;              // Size of blob if blob nType
 	fix xFlashSize;             // How big to draw the flash
 	fix impact_size;            // How big of an impact
-	fix strength[NDL];          // How much damage it can inflict
-	fix speed[NDL];             // How fast it can move, difficulty level based.
+	fix strength [NDL];          // How much damage it can inflict
+	fix speed [NDL];             // How fast it can move, difficulty level based.
 	fix mass;                   // How much mass it has
 	fix drag;                   // How much drag it has
 	fix thrust;                 // How much thrust it has
@@ -115,8 +115,8 @@ typedef struct tD1WeaponInfo {
 	fix	blob_size;					// Size of blob if blob nType
 	fix	xFlashSize;					// How big to draw the flash
 	fix	impact_size;				// How big of an impact
-	fix	strength[NDL];				// How much damage it can inflict
-	fix	speed[NDL];					// How fast it can move, difficulty level based.
+	fix	strength [NDL];				// How much damage it can inflict
+	fix	speed [NDL];					// How fast it can move, difficulty level based.
 	fix	mass;							// How much mass it has
 	fix	drag;							// How much drag it has
 	fix	thrust;						//	How much thrust it has
@@ -139,8 +139,8 @@ typedef struct D2D1_weapon_info {
 	sbyte	homingFlag;				//	Set if this weapon can home in on a target.
 	fix	energy_usage;				//	How much fuel is consumed to fire this weapon.
 	fix	fire_wait;					//	Time until this weapon can be fired again.
-	fix	strength[NDL];				// How much damage it can inflict
-	fix	speed[NDL];					// How fast it can move, difficulty level based.
+	fix	strength [NDL];				// How much damage it can inflict
+	fix	speed [NDL];					// How fast it can move, difficulty level based.
 	fix	mass;							// How much mass it has
 	fix	drag;							// How much drag it has
 	fix	thrust;						//	How much thrust it has
@@ -239,40 +239,40 @@ typedef struct D2D1_weapon_info {
 
 #define NUM_SMART_CHILDREN  6   // Number of smart children created by default.
 
-extern D2D1_weapon_info weaponInfoD2D1[D1_MAX_WEAPON_TYPES];
-extern void DoSelectWeapon(int weapon_num, int secondaryFlag);
+extern D2D1_weapon_info weaponInfoD2D1 [D1_MAX_WEAPON_TYPES];
+extern void DoSelectWeapon(int nWeapon, int secondaryFlag);
 extern void ShowWeaponStatus(void);
 
-extern ubyte primaryWeaponToWeaponInfo[MAX_PRIMARY_WEAPONS];
-extern ubyte secondaryWeaponToWeaponInfo[MAX_SECONDARY_WEAPONS];
+extern ubyte primaryWeaponToWeaponInfo [MAX_PRIMARY_WEAPONS];
+extern ubyte secondaryWeaponToWeaponInfo [MAX_SECONDARY_WEAPONS];
 
 //for each Secondary weapon, which gun it fires out of
-extern ubyte secondaryWeaponToGunNum[MAX_SECONDARY_WEAPONS];
+extern ubyte secondaryWeaponToGunNum [MAX_SECONDARY_WEAPONS];
 
 //for each primary weapon, what kind of powerup gives weapon
-extern ubyte primaryWeaponToPowerup[MAX_SECONDARY_WEAPONS];
+extern ubyte primaryWeaponToPowerup [MAX_SECONDARY_WEAPONS];
 
 //for each Secondary weapon, what kind of powerup gives weapon
-extern ubyte secondaryWeaponToPowerup[MAX_SECONDARY_WEAPONS];
+extern ubyte secondaryWeaponToPowerup [MAX_SECONDARY_WEAPONS];
 
 //flags whether the last time we use this weapon, it was the 'super' version
-extern ubyte bLastWeaponWasSuper [2][MAX_PRIMARY_WEAPONS];
+extern ubyte bLastWeaponWasSuper [2] [MAX_PRIMARY_WEAPONS];
 
 extern void AutoSelectWeapon(int weaponType, int auto_select);        //parm is primary or secondary
-extern void SelectWeapon(int weapon_num, int secondaryFlag, int print_message,int wait_for_rearm);
+extern void SelectWeapon (int nWeapon, int secondaryFlag, int bPrintMessage, int bWaitForRearm);
 
-extern char 	*pszShortPrimaryWeaponNames[];
-extern char 	*pszShortSecondaryWeaponNames[];
-extern char 	*pszPrimaryWeaponNames[];
-extern char 	*pszSecondaryWeaponNames[];
-extern int  	nMaxPrimaryAmmo[MAX_PRIMARY_WEAPONS];
-extern ubyte   nMaxSecondaryAmmo[MAX_SECONDARY_WEAPONS];
-extern sbyte   bIsEnergyWeapon[MAX_WEAPON_TYPES];
+extern char 	*pszShortPrimaryWeaponNames [];
+extern char 	*pszShortSecondaryWeaponNames [];
+extern char 	*pszPrimaryWeaponNames [];
+extern char 	*pszSecondaryWeaponNames [];
+extern int  	nMaxPrimaryAmmo [MAX_PRIMARY_WEAPONS];
+extern ubyte   nMaxSecondaryAmmo [MAX_SECONDARY_WEAPONS];
+extern sbyte   bIsEnergyWeapon [MAX_WEAPON_TYPES];
 
 #define HAS_WEAPON_FLAG 1
 #define HAS_ENERGY_FLAG 2
 #define HAS_AMMO_FLAG       4
-#define  HAS_ALL (HAS_WEAPON_FLAG|HAS_ENERGY_FLAG|HAS_AMMO_FLAG)
+#define  HAS_ALL (HAS_WEAPON_FLAG | HAS_ENERGY_FLAG | HAS_AMMO_FLAG)
 
 //-----------------------------------------------------------------------------
 // Return:
@@ -281,38 +281,45 @@ extern sbyte   bIsEnergyWeapon[MAX_WEAPON_TYPES];
 //      HAS_ENERGY_FLAG
 //      HAS_AMMO_FLAG
 //      HAS_SUPER_FLAG
-extern int PlayerHasWeapon(int weapon_num, int secondaryFlag, int nPlayer, int bAll);
+int PlayerHasWeapon (int nWeapon, int secondaryFlag, int nPlayer, int bAll);
 
 //called when one of these weapons is picked up
 //when you pick up a secondary, you always get the weapon & ammo for it
-int PickupSecondary (tObject *objP, int weapon_index, int count, int nPlayer);
+int PickupSecondary (tObject *objP, int nWeaponIndex, int nAmount, int nPlayer);
 
 //called when a primary weapon is picked up
 //returns true if actually picked up
-int PickupPrimary (int weapon_index, int nPlayer);
+int PickupPrimary (int nWeaponIndex, int nPlayer);
 
 //called when ammo (for the vulcan cannon) is picked up
-int PickupAmmo(int classFlag,int weapon_index,int ammoCount, int nPlayer);
+int PickupAmmo (int classFlag, int nWeaponIndex, int ammoCount, int nPlayer);
 
-extern int AttemptToStealItem(tObject *objp, int player_num);
+int PickupLaser (tObject *objP, int nId, int nPlayer);
+int PickupSuperLaser (tObject *objP, int nId, int nPlayer);
+int PickupQuadLaser (tObject *objP, int nId, int nPlayer);
+int PickupGun (tObject *objP, int nId, int nPlayer);
+int PickupGatlingGun (tObject *objP, int nId, int nPlayer);
+int PickupVulcanAmmo (int nPlayer);
+
+int AttemptToStealItem (tObject *objp, int player_num);
 
 //this function is for when the tPlayer intentionally drops a powerup
-extern int SpitPowerup(tObject *spitter, ubyte id, int seed);
+extern int SpitPowerup (tObject *spitter, ubyte id, int seed);
 
 #define SMEGA_ID    40
 
-extern void RockTheMineFrame(void);
-extern void ShakerRockStuff(void);
-extern void InitShakerDetonates(void);
-extern void tactile_set_button_jolt (void);
+void RockTheMineFrame (void);
+void ShakerRockStuff (void);
+void InitShakerDetonates (void);
+void tactile_set_button_jolt (void);
 
 /*
  * reads n tWeaponInfo structs from a CFILE
  */
-extern int WeaponInfoReadN(tWeaponInfo *wi, int n, CFILE *fp, int fileVersion);
+int WeaponInfoReadN(tWeaponInfo *wi, int n, CFILE *fp, int fileVersion);
 
-extern ubyte nWeaponOrder [2][11];
-extern ubyte nDefaultWeaponOrder [2][11];
+extern ubyte nWeaponOrder [2] [11];
+extern ubyte nDefaultWeaponOrder [2] [11];
 
 #define primaryOrder		(nWeaponOrder [0])
 #define secondaryOrder	(nWeaponOrder [1])

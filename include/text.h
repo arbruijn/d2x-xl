@@ -1865,13 +1865,13 @@ void LoadGameTexts(void);
 #define TXT_MT_MENU_TITLE			GT(1072)
 #define TXT_MAX_LIGHTS_PER_PASS	GT(1073)
 #define TXT_MAX_LIGHTS_PER_OBJECT	GT(1074)
-#define TXT_ROTATE_MARKERS				GT(1075)
-#define TXT_USE_LIGHTMAPS				GT(1076)
+#define TXT_ROTATE_MARKERS			GT(1075)
+#define TXT_USE_LIGHTMAPS			GT(1076)
+#define TXT_BLUE_FLAG				GT(1077)
+#define TXT_RED_FLAG					GT(1078)
 
 #if 0
 
-#define TXT_				GT(1077)
-#define TXT_				GT(1078)
 #define TXT_				GT(1079)
 #define TXT_				GT(1080)
 #define TXT_				GT(1081)

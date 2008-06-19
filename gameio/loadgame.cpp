@@ -369,6 +369,8 @@ LOCALPLAYER.hostages.nLevel = 0;
 LOCALPLAYER.hostages.nTotal = 0;
 LOCALPLAYER.laserLevel = 0;
 LOCALPLAYER.flags = 0;
+LOCALPLAYER.nCloaks =
+LOCALPLAYER.nInvuls = 0;
 InitPlayerStatsNewShip ();
 gameStates.app.bFirstSecretVisit = 1;
 }

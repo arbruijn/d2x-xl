@@ -101,15 +101,15 @@ extern char Powerup_names[MAX_POWERUP_TYPES][POWERUP_NAME_LENGTH];
 
 extern int Headlight_active_default;    // is headlight on when picked up?
 
-typedef struct powerupType_info {
+typedef struct tPowerupTypeInfo {
 	int nClipIndex;
 	int hitSound;
 	fix size;       // 3d size of longest dimension
 	fix light;      // amount of light cast by this powerup, set in bitmaps.tbl
-} __pack__ powerupType_info;
+} __pack__ tPowerupTypeInfo;
 
 extern int N_powerupTypes;
-extern powerupType_info Powerup_info[MAX_POWERUP_TYPES];
+extern tPowerupTypeInfo powerupInfo[MAX_POWERUP_TYPES];
 
 void InitPowerupTables (void);
 
@@ -131,12 +131,12 @@ void DoMegaWowPowerup(int quantity);
 void _CDECL_ PowerupBasic(int redadd, int greenadd, int blueadd, int score, const char *format, ...);
 
 #if 0
-#define PowerupTypeInfoReadN(pti, n, fp) CFRead(pti, sizeof(powerupType_info), n, fp)
+#define PowerupTypeInfoReadN(pti, n, fp) CFRead(pti, sizeof(tPowerupTypeInfo), n, fp)
 #else
 /*
- * reads n powerupType_info structs from a CFILE
+ * reads n tPowerupTypeInfo structs from a CFILE
  */
-extern int PowerupTypeInfoReadN(powerupType_info *pti, int n, CFILE *fp);
+extern int PowerupTypeInfoReadN(tPowerupTypeInfo *pti, int n, CFILE *fp);
 #endif
 int ApplyCloak (int bForce, int nPlayer);
 int ApplyInvul (int bForce, int nPlayer);
@@ -151,6 +151,9 @@ short PowerupsOnShips (int nPowerup);
 void SpawnLeftoverPowerups (short nObject);
 void CheckInventory (void);
 
+int PickupEnergyBoost (tObject *objP, int nPlayer);
+int PickupEquipment (tObject *objP, int nEquipment, const char *pszHave, const char *pszGot, int nPlayer);
+
 #define	PowerupsInMine(_nPowerup) \
 			((gameStates.multi.nGameType == UDP_GAME) ? \
 			 (gameData.multiplayer.powerupsInMine [_nPowerup] + PowerupsOnShips (_nPowerup)) : \
@@ -161,6 +164,15 @@ void CheckInventory (void);
 			(PowerupsInMine (_nPowerup) >= gameData.multiplayer.maxPowerupsAllowed [_nPowerup])
 
 extern const char *pszPowerup [MAX_POWERUP_TYPES];
+extern ubyte powerupType [MAX_POWERUP_TYPES];
+extern void * pickupHandler [MAX_POWERUP_TYPES];
+
+#define POWERUP_IS_UNDEFINED	-1
+#define POWERUP_IS_GUN			0
+#define POWERUP_IS_MISSILE		1
+#define POWERUP_IS_EQUIPMENT	2
+#define POWERUP_IS_KEY			3
+#define POWERUP_IS_FLAG			4
 
 //------------------------------------------------------------------------------
 

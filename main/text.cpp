@@ -1825,6 +1825,8 @@ const char *defaultGameTexts [][2] = {
 	{"max. Lichter/~Objekt: %d", "max. lights/~Object: %d"},
 	{"Bojen ~Drehen sich", "mar~Kers rotate"},
 	{"Lightmaps ~Verwenden", "use li~Ghtmaps"},
+	{"Blaue Flagge!", "BLUE FLAG!"},
+	{"Rote Flagge!", "RED FLAG!"},
 #if 0
 	{"", ""},
 #endif

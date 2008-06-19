@@ -894,7 +894,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 	CFRead (gameData.weapons.info, sizeof (tWeaponInfo), MAX_WEAPON_TYPES, fp);
 
 	CFRead (&gameData.objs.pwrUp.nTypes, sizeof (int), 1, fp);
-	CFRead (gameData.objs.pwrUp.info, sizeof (powerupType_info), MAX_POWERUP_TYPES, fp);
+	CFRead (gameData.objs.pwrUp.info, sizeof (tPowerupTypeInfo), MAX_POWERUP_TYPES, fp);
 
 	CFRead (&gameData.models.nPolyModels, sizeof (int), 1, fp);
 	CFRead (gameData.models.polyModels, sizeof (tPolyModel), gameData.models.nPolyModels, fp);

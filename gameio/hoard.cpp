@@ -61,7 +61,7 @@ int InitMonsterball (int nBitmap)
 {
 	grsBitmap			*bmP, *altBmP;
 	tVideoClip			*vcP;
-	powerupType_info	*ptP;
+	tPowerupTypeInfo	*ptP;
 	int					i;
 
 memcpy (&gameData.hoard.monsterball, &gameData.hoard.orb, sizeof (tHoardItem));
@@ -110,7 +110,7 @@ void InitHoardData (void)
 	int					i, fPos, nBitmap;
 	tVideoClip			*vcP;
 	tEffectClip			*ecP;
-	powerupType_info	*ptP;
+	tPowerupTypeInfo	*ptP;
 	ubyte					*bmDataP;
 
 #ifdef RELEASE

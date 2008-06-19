@@ -1769,7 +1769,7 @@ typedef struct tTriggerData {
 //------------------------------------------------------------------------------
 
 typedef struct tPowerupData {
-	powerupType_info info [MAX_POWERUP_TYPES];
+	tPowerupTypeInfo info [MAX_POWERUP_TYPES];
 	int					nTypes;
 } tPowerupData;
 
