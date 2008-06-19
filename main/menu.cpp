@@ -4819,7 +4819,7 @@ void MultiThreadingOptionsMenu (void)
 
 memset (m, 0, sizeof (m));
 for (i = 0; i < 4; i++)
-	ADD_CHECK (i, GT (1060 + i), gameData.app.bUseMultiThreading [taskToMenu [i]], 0, HT (359 + i));
+	ADD_CHECK (i, GT (1060 + i), gameData.app.bUseMultiThreading [taskToMenu [i]], -1, HT (359 + i));
 i = ExecMenu1 (NULL, TXT_MT_MENU_TITLE, 4, m, NULL, &choice);
 for (i = rtStaticVertLight; i < rtTaskCount; i++)
 	gameData.app.bUseMultiThreading [i] = (m [menuToTask [i]].value != 0);

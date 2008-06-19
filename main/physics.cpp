@@ -865,7 +865,7 @@ retryMove:
 		if (!(objP->flags & OF_SHOULD_BE_DEAD) && (objP->nType != OBJ_DEBRIS)) {
 			int bForceFieldBounce;		//bounce off a forcefield
 
-			Assert (gameStates.app.cheats.bBouncingWeapons || ((objP->mType.physInfo.flags & (PF_STICK | PF_BOUNCE)) != (PF_STICK | PF_BOUNCE)));	//can't be bounce and stick
+			///Assert (gameStates.app.cheats.bBouncingWeapons || ((objP->mType.physInfo.flags & (PF_STICK | PF_BOUNCE)) != (PF_STICK | PF_BOUNCE)));	//can't be bounce and stick
 			bForceFieldBounce = (gameData.pig.tex.pTMapInfo [gameData.segs.segments [nWallHitSeg].sides [nWallHitSide].nBaseTex].flags & TMI_FORCE_FIELD);
 			if (!bForceFieldBounce && (objP->mType.physInfo.flags & PF_STICK)) {		//stop moving
 				AddStuckObject (objP, nWallHitSeg, nWallHitSide);
@@ -885,7 +885,7 @@ retryMove:
 							xWallPart *= 2;		//tPlayer bounce twice as much
 						}
 					if ((objP->mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
-						Assert (objP->mType.physInfo.flags & PF_BOUNCE);
+						//Assert (objP->mType.physInfo.flags & PF_BOUNCE);
 						if (objP->mType.physInfo.flags & PF_BOUNCED_ONCE)
 							objP->mType.physInfo.flags &= ~(PF_BOUNCE | PF_BOUNCED_ONCE | PF_BOUNCES_TWICE);
 						else
