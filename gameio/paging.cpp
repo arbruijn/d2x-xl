@@ -308,7 +308,7 @@ void PagingTouchObjects (int nType)
 	int	i;
 	tObject	*objP;
 
-for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [0]; i++, objP++)
 	if ((nType < 0) || (objP->nType == nType))
 		PagingTouchObject (objP);
 }
@@ -438,7 +438,7 @@ PagingTouchAddonTextures ();
 
 //PSX STUFF
 PagingTouchWalls ();
-for (s = 0; s <= gameData.objs.nLastObject; s++) {
+for (s = 0; s <= gameData.objs.nLastObject [0]; s++) {
 	PagingTouchObject (OBJECTS + s);
 	}
 

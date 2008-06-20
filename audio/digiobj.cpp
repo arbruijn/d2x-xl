@@ -383,7 +383,7 @@ int DigiLinkSoundToObject3 (
 
 if (maxVolume < 0) 
 	return -1;
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject))
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return -1;
 if (!(pszSound && *pszSound)) {
 	nSound = DigiXlatSound (nOrgSound);

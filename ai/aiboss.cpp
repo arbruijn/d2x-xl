@@ -267,7 +267,7 @@ if (nBoss < 0)
 	return -1;
 if (gameData.time.xGame - gameData.boss [nBoss].nLastGateTime < gameData.boss [nBoss].nGateInterval)
 	return -1;
-for (i = 0; i <= gameData.objs.nLastObject; i++)
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 	if ((OBJECTS [i].nType == OBJ_ROBOT) &&
 		 (OBJECTS [i].matCenCreator == BOSS_GATE_MATCEN_NUM))
 		count++;
@@ -428,7 +428,7 @@ int IsValidTeleportDest (vmsVector *vPos, int nMinDist)
 	vmsVector	vOffs;
 	fix			xDist;
 
-for (i = gameData.objs.nLastObject; i; i--, objP++) {
+for (i = gameData.objs.nLastObject [0]; i; i--, objP++) {
 	if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) {
 		xDist = VmVecMag (VmVecSub (&vOffs, vPos, &objP->position.vPos));
 		if (xDist > ((nMinDist + objP->size) * 3 / 2))

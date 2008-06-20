@@ -430,7 +430,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 			}
 		}
 	objP = OBJECTS;
-	for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+	for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		size = objP->size;
 		switch (objP->nType)	{
 			case OBJ_HOSTAGE:

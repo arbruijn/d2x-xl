@@ -1550,7 +1550,7 @@ if (((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].children !
 	if (IsMultiGame)
 		d_srand (8321L);
 
-	for (nObject = 0, curObjP = OBJECTS; nObject <= gameData.objs.nLastObject; nObject++, curObjP++) {
+	for (nObject = 0, curObjP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObject++, curObjP++) {
 		if ((((curObjP->nType == OBJ_ROBOT) && (!curObjP->cType.aiInfo.CLOAKED)) || (curObjP->nType == OBJ_PLAYER)) && (nObject != nParentObj)) {
 			fix	dist;
 			if (curObjP->nType == OBJ_PLAYER) {

@@ -105,10 +105,10 @@ gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 gameData.escort.nSpecialGoal = -1;
 gameData.escort.nGoalIndex = -1;
 gameData.escort.bMsgsSuppressed = 0;
-for (i = 0; i <= gameData.objs.nLastObject; i++)
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 	if (ROBOTINFO (OBJECTS [i].id).companion)
 		break;
-if (i <= gameData.objs.nLastObject)
+if (i <= gameData.objs.nLastObject [0])
 	gameData.escort.nObjNum = i;
 gameData.escort.xSorryTime = -F1_0;
 gameData.escort.bSearchingMarker = -1;
@@ -187,12 +187,12 @@ if ((gameData.escort.nObjNum < 0) || (OBJECTS [gameData.escort.nObjNum].nType !=
 if (gameData.escort.bMayTalk)
 	return 1;
 if ((OBJECTS [gameData.escort.nObjNum].nType == OBJ_ROBOT) && 
-	 (gameData.escort.nObjNum <= gameData.objs.nLastObject) && 
+	 (gameData.escort.nObjNum <= gameData.objs.nLastObject [0]) && 
 	!ROBOTINFO (OBJECTS [gameData.escort.nObjNum].id).companion) {
-	for (i = 0; i <= gameData.objs.nLastObject; i++)
+	for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 		if (ROBOTINFO (OBJECTS [i].id).companion)
 			break;
-	if (i > gameData.objs.nLastObject)
+	if (i > gameData.objs.nLastObject [0])
 		return 0;
 	else
 		gameData.escort.nObjNum = i;
@@ -243,7 +243,7 @@ if ((gameData.escort.nSpecialGoal == -1) && (gameData.escort.nGoalIndex == index
 	goto dega_ok;
 	}
 
-if ((gameData.escort.nGoalIndex <= ESCORT_GOAL_RED_KEY) && (index >= 0) && (index <= gameData.objs.nLastObject)) {
+if ((gameData.escort.nGoalIndex <= ESCORT_GOAL_RED_KEY) && (index >= 0) && (index <= gameData.objs.nLastObject [0])) {
 	objP = OBJECTS + index;
 	if (objP->nType == OBJ_POWERUP)  {
 		ubyte id = objP->id;
@@ -291,11 +291,11 @@ if (gameData.escort.nSpecialGoal != -1) {
 				}
 			}
 		} 
-	else if ((index >= 0) && (index <= gameData.objs.nLastObject)) {
+	else if ((index >= 0) && (index <= gameData.objs.nLastObject [0])) {
 		objP = OBJECTS + index;
 		if ((objP->nType == OBJ_POWERUP) && (gameData.escort.nSpecialGoal == ESCORT_GOAL_POWERUP))
 			bDetected = 1;	//	Any nType of powerup picked up will do.
-		else if ((gameData.escort.nGoalIndex >= 0) && (gameData.escort.nGoalIndex <= gameData.objs.nLastObject) &&
+		else if ((gameData.escort.nGoalIndex >= 0) && (gameData.escort.nGoalIndex <= gameData.objs.nLastObject [0]) &&
 					(objP->nType == OBJECTS [gameData.escort.nGoalIndex].nType) && 
 					(objP->id == OBJECTS [gameData.escort.nGoalIndex].id)) {
 		//	Note: This will help a little bit in making the buddy believe a goal is satisfied.  Won't work for a general goal like "find any powerup"
@@ -382,7 +382,7 @@ int MarkerExistsInMine (int id)
 {
 	int	i;
 
-for (i=0; i<=gameData.objs.nLastObject; i++)
+for (i=0; i<=gameData.objs.nLastObject [0]; i++)
 	if (OBJECTS [i].nType == OBJ_MARKER)
 		if (OBJECTS [i].id == id)
 			return 1;
@@ -401,12 +401,12 @@ void EscortSetSpecialGoal (int special_key)
 		if (!gameData.escort.bMayTalk) {
 			int	i;
 
-			for (i=0; i<=gameData.objs.nLastObject; i++)
+			for (i=0; i<=gameData.objs.nLastObject [0]; i++)
 				if ((OBJECTS [i].nType == OBJ_ROBOT) && ROBOTINFO (OBJECTS [i].id).companion) {
 					HUDInitMessage (TXT_GB_RELEASE, gameData.escort.szName);
 					break;
 				}
-			if (i == gameData.objs.nLastObject+1)
+			if (i == gameData.objs.nLastObject [0]+1)
 				HUDInitMessage (TXT_GB_NONE);
 
 			return;
@@ -956,14 +956,14 @@ if (Buddy_last_missileTime > gameData.time.xGame)
 
 if (Buddy_last_missileTime + F1_0*2 < gameData.time.xGame) {
 	//	See if a robot potentially in view cone
-	for (i=0; i<=gameData.objs.nLastObject; i++)
+	for (i=0; i<=gameData.objs.nLastObject [0]; i++)
 		if ((OBJECTS [i].nType == OBJ_ROBOT) && !ROBOTINFO (OBJECTS [i].id).companion)
 			if (MaybeBuddyFireMega (i)) {
 				Buddy_last_missileTime = gameData.time.xGame;
 				return;
 			}
 	//	See if a robot near enough that buddy should fire smart missile
-	for (i=0; i<=gameData.objs.nLastObject; i++)
+	for (i=0; i<=gameData.objs.nLastObject [0]; i++)
 		if ((OBJECTS [i].nType == OBJ_ROBOT) && !ROBOTINFO (OBJECTS [i].id).companion)
 			if (MaybeBuddyFireSmart (i)) {
 				Buddy_last_missileTime = gameData.time.xGame;
@@ -1133,13 +1133,13 @@ void DoEscortMenu (void)
 		return;
 	}
 
-	for (i=0; i<=gameData.objs.nLastObject; i++) {
+	for (i=0; i<=gameData.objs.nLastObject [0]; i++) {
 		if (OBJECTS [i].nType == OBJ_ROBOT)
 			if (ROBOTINFO (OBJECTS [i].id).companion)
 				break;
 	}
 
-	if (i > gameData.objs.nLastObject) {
+	if (i > gameData.objs.nLastObject [0]) {
 
 #if 1//def _DEBUG - always allow buddy bot creation
 		//	If no buddy bot, create one!

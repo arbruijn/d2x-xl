@@ -198,7 +198,7 @@ int CountRobotsInLevel (void)
 	int robotCount = 0;
 	int i;
 
-for (i = 0; i <= gameData.objs.nLastObject; i++) {
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 	if (OBJECTS [i].nType == OBJ_ROBOT)
 		robotCount++;
 	}
@@ -212,7 +212,7 @@ int CountHostagesInLevel (void)
 	int count = 0;
 	int i;
 
-for (i = 0; i <= gameData.objs.nLastObject; i++) {
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 	if (OBJECTS [i].nType == OBJ_HOSTAGE)
 		count++;
 	}
@@ -235,7 +235,7 @@ memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsT
 //VerifyConsoleObject ();
 nPlayers = 0;
 j = 0;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	t = objP->nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
 		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP)))
@@ -637,7 +637,7 @@ for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLas
 		}
 
 if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
-	for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) 
+	for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) 
 		if (objP->nType == OBJ_EXPLOSION) {
 			objP->renderType = RT_POWERUP;
 			objP->rType.vClipInfo.nClipIndex = objP->id;
@@ -656,7 +656,7 @@ void SetVertigoRobotFlags (void)
 	int		i;
 
 gameData.objs.nVertigoBotFlags = 0;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
 	if ((objP->nType == OBJ_ROBOT) && (objP->id >= 66) && !IS_BOSS (objP))
 		gameData.objs.nVertigoBotFlags |= (1 << (objP->id - 64));
 }
@@ -1036,7 +1036,7 @@ gameData.missions.nNextLevel = 0;
 InitMultiPlayerObject ();				//make sure tPlayer's tObject set up
 InitPlayerStatsGame ();		//clear all stats
 gameData.multiplayer.nPlayers = 1;
-gameData.objs.nLastObject = 0;
+gameData.objs.nLastObject [0] = 0;
 networkData.bNewGame = 0;
 if (nStartLevel < 0)
 	result = StartNewLevelSecret (nStartLevel, 0);
@@ -1888,7 +1888,7 @@ void FilterObjectsFromLevel (void)
 {
   int i;
 
-for (i = 0; i <= gameData.objs.nLastObject; i++) {
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 	if ((OBJECTS [i].nType == OBJ_POWERUP) &&
 		 ((OBJECTS [i].id == POW_REDFLAG) || (OBJECTS [i].id == POW_BLUEFLAG)))
 		BashToShield (i, "Flag!!!!");
@@ -2172,7 +2172,7 @@ void CopyDefaultsToRobotsAll ()
 {
 	int	i;
 
-for (i = 0; i <= gameData.objs.nLastObject; i++)
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 	if (OBJECTS [i].nType == OBJ_ROBOT)
 		CopyDefaultsToRobot (&OBJECTS [i]);
 

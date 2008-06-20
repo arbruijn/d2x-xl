@@ -2483,11 +2483,11 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 	else {
 		//if this is a demo, the nObject in the tPlayer struct is wrong, 
 		//so we search the tObject list for the nObject
-		for (nObject = 0;nObject <= gameData.objs.nLastObject; nObject++)
+		for (nObject = 0;nObject <= gameData.objs.nLastObject [0]; nObject++)
 			if (OBJECTS [nObject].nType==OBJ_PLAYER && 
 				 OBJECTS [nObject].id == p)
 				break;
-		if (nObject > gameData.objs.nLastObject)		//not in list, thus not visible
+		if (nObject > gameData.objs.nLastObject [0])		//not in list, thus not visible
 			bShowName = !bHasFlag;				//..so don't show name
 		}
 

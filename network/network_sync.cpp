@@ -188,7 +188,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 		nObjFrames = 1;		// first frame contains "reset object data" info
 		}
 
-	for (i = networkData.nSentObjs, objP = OBJECTS + i; i <= gameData.objs.nLastObject; i++, objP++) {
+	for (i = networkData.nSentObjs, objP = OBJECTS + i; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		if (NetworkFilterObject (objP))
 			continue;
 		if (networkData.bSendObjectMode) { 
@@ -228,7 +228,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 					networkData.playerRejoining.player.network.ipx.node);
 			 }
 		}
-	if (i > gameData.objs.nLastObject) {
+	if (i > gameData.objs.nLastObject [0]) {
 		if (networkData.bSendObjectMode) {
 			networkData.nSentObjs = i;
 			// Send count so other tSide can make sure he got them all

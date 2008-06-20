@@ -393,7 +393,7 @@ int CreateLightning (int nLightnings, vmsVector *vPos, vmsVector *vEnd, vmsVecto
 							char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps, 
 							short nSmoothe, char bClamp, char bPlasma, char bSound, char nStyle, tRgbaColorf *colorP)
 {
-if (SHOW_LIGHTNINGS) {
+if (SHOW_LIGHTNINGS && colorP) {
 		tLightningBundle	*plb;
 		tLightning			*pl;
 		int					n;
@@ -1093,25 +1093,36 @@ if (SHOW_LIGHTNINGS) {
 
 	tObject	*objP = OBJECTS;
 	ubyte		h;
-	for (i = 0; i < gameData.objs.nLastObject; i++, objP++) {
+	for (i = 0; i < gameData.objs.nLastObject [1]; i++, objP++) {
 		h = gameData.objs.bWantEffect [i];
 		if (h & EXPL_LIGHTNINGS) {
-			h = EXPL_LIGHTNINGS;
-			CreateBlowupLightnings (objP);
+			if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR))
+				CreateBlowupLightnings (objP);
+			else if (objP->nType != 255)
+				PrintLog ("invalid effect requested\n");
 			}
 		else if (h & MISSILE_LIGHTNINGS) {
-			h = MISSILE_LIGHTNINGS;
-			CreateMissileLightnings (objP);
+			if ((objP->nType == OBJ_WEAPON) || gameData.objs.bIsMissile [objP->id])
+				CreateMissileLightnings (objP);
+			else if (objP->nType != 255)
+				PrintLog ("invalid effect requested\n");
 			}
 		else if (h & ROBOT_LIGHTNINGS) {
-			h = ROBOT_LIGHTNINGS;
-			CreateRobotLightnings (objP, LightningColor (objP));
+			if (objP->nType == OBJ_ROBOT)
+				CreateRobotLightnings (objP, LightningColor (objP));
+			else if (objP->nType != 255)
+				PrintLog ("invalid effect requested\n");
 			}
 		else if (h & PLAYER_LIGHTNINGS) {
-			h = PLAYER_LIGHTNINGS;
-			CreatePlayerLightnings (objP, LightningColor (objP));
+			if (objP->nType == OBJ_PLAYER)
+				CreatePlayerLightnings (objP, LightningColor (objP));
+			else if (objP->nType != 255)
+				PrintLog ("invalid effect requested\n");
 			}
-		gameData.objs.bWantEffect [i] &= ~h;
+		else if (h & DESTROY_LIGHTNINGS) {
+			DestroyObjectLightnings (objP);
+			}
+		gameData.objs.bWantEffect [i] &= ~(PLAYER_LIGHTNINGS | ROBOT_LIGHTNINGS | MISSILE_LIGHTNINGS | EXPL_LIGHTNINGS);
 		}
 	}
 }
@@ -1222,7 +1233,7 @@ void DestroyAllObjectLightnings (int nType, int nId)
 	tObject	*objP;
 	int		i;
 
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
 	if ((objP->nType == nType) && ((nId < 0) || (objP->id == nId)))
 		DestroyObjectLightnings (objP);
 }
@@ -1952,7 +1963,7 @@ vmsVector *FindLightningTargetPos (tObject *emitterP, short nTarget)
 
 if (!nTarget)
 	return 0;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
 	if ((objP != emitterP) && (objP->nType == OBJ_EFFECT) && (objP->id == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nTarget))
 		return &objP->position.vPos;
 return NULL;
@@ -1972,7 +1983,7 @@ if (!SHOW_LIGHTNINGS)
 	return;
 if (!gameOpts->render.lightnings.bStatic)
 	return;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	if ((objP->nType != OBJ_EFFECT) || (objP->id != LIGHTNING_ID))
 		continue;
 	if (gameData.lightnings.objects [i] >= 0)

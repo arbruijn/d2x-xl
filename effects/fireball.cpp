@@ -170,7 +170,7 @@ explObjP->cType.explInfo.nDeleteTime = -1;
 if (xMaxDamage <= 0)
 	return explObjP;
 // -- now legal for xBadAss explosions on a tWall. Assert (objP != NULL);
-for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject; i++, obj0P++) {
+for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 	t = obj0P->nType;
 	id = obj0P->id;
 	//	Weapons used to be affected by xBadAss explosions, but this introduces serious problems.
@@ -422,7 +422,7 @@ nObject = CreateObject (
 	OBJ_DEBRIS, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &parentObjP->position.mOrient, 
 	gameData.models.polyModels [parentObjP->rType.polyObjInfo.nModel].subModels.rads [nSubObj], 
 	CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ, 1);
-if ((nObject < 0) && (gameData.objs.nLastObject >= MAX_OBJECTS - 1)) {
+if ((nObject < 0) && (gameData.objs.nLastObject [0] >= MAX_OBJECTS - 1)) {
 #if TRACE
 	con_printf (1, "Can't create tObject in ObjectCreateDebris.\n");
 #endif
@@ -497,7 +497,7 @@ void ExplodePolyModel (tObject *objP)
 {
 Assert (objP->renderType == RT_POLYOBJ);
 CreateExplBlast (objP);
-RequestEffects (objP, EXPL_LIGHTNINGS | OBJ_SHRAPNEL);
+RequestEffects (objP, EXPL_LIGHTNINGS | SHRAPNEL_SMOKE);
 if (gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel] != -1)
 	objP->rType.polyObjInfo.nModel = gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel];
 if (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels > 1) {
@@ -621,7 +621,7 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 	fix			xBadAss;
 
 	if ((objP->cType.explInfo.nDeleteObj < 0) || 
-		 (objP->cType.explInfo.nDeleteObj > gameData.objs.nLastObject)) {
+		 (objP->cType.explInfo.nDeleteObj > gameData.objs.nLastObject [0])) {
 #if TRACE
 		con_printf (CONDBG, "Illegal value for nDeleteObj in fireball.c\n");
 #endif

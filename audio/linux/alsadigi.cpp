@@ -577,7 +577,7 @@ int DigiLinkSoundToObject2(int orgSoundnum, short nObject, int forever, fix maxV
 		Int3();
 		return -1;
 		}
-	if ((nObject<0)||(nObject>gameData.objs.nLastObject))
+	if ((nObject<0)||(nObject>gameData.objs.nLastObject [0]))
 		return -1;
 
 	if (!forever)	{

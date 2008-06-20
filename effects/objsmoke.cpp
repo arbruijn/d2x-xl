@@ -662,7 +662,6 @@ if (!(sdP->shrapnels = (tShrapnel *) D2_ALLOC (h * sizeof (tShrapnel))))
 	return 0;
 sdP->nShrapnels = h;
 srand (gameStates.app.nSDLTicks);
-SEM_ENTER (SEM_SMOKE)
 for (i = 0, shrapnelP = sdP->shrapnels; i < h; i++, shrapnelP++) {
 	if (i & 1) {
 		vDir.p.x = -FixMul (vDir.p.x, F1_0 / 2 + d_rand ()) | 1;
@@ -684,7 +683,6 @@ for (i = 0, shrapnelP = sdP->shrapnels; i < h; i++, shrapnelP++) {
 	shrapnelP->nSmoke = CreateSmoke (&shrapnelP->vPos, NULL, NULL, objP->nSegment, 1, -SHRAPNEL_MAX_PARTS,
 											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE , SHRAPNEL_PART_SPEED, 1, 0x7fffffff, &color, 1, -1);
 	}
-SEM_LEAVE (SEM_SMOKE)
 objP->lifeleft *= 2;
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
@@ -755,14 +753,14 @@ if ((shrapnelP->xTTL > 0) && LoadExplBlast ()) {
 
 void DrawShrapnels (tObject *objP)
 {
-SEM_ENTER (SEM_SMOKE)
+SEM_ENTER (SEM_SHRAPNEL)
 	tShrapnelData	*sdP = gameData.objs.shrapnels + OBJ_IDX (objP);
 	tShrapnel		*shrapnelP = sdP->shrapnels;
 	int				i;
 
 for (i = sdP->nShrapnels; i; i--, shrapnelP++)
 	DrawShrapnel (shrapnelP);
-SEM_LEAVE (SEM_SMOKE)
+SEM_LEAVE (SEM_SHRAPNEL)
 }
 
 // -----------------------------------------------------------------------------
@@ -871,9 +869,14 @@ if (!SHOW_SMOKE)
 	return;
 if (!gameOpts->render.smoke.bRobots)
 	return;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [1]; i++, objP++) {
 	if (objP->nType == OBJ_NONE)
 		KillObjectSmoke (i);
+	else if (gameData.objs.bWantEffect [i] & DESTROY_SMOKE) {
+		gameData.objs.bWantEffect [i] &= ~ DESTROY_SMOKE;
+		KillObjectSmoke (i);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -885,7 +888,7 @@ void StaticSmokeFrame (void)
 
 if (!SHOW_SMOKE)
 	return;
-for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
+for (i = gameData.objs.nLastObject [0] + 1; i; i--, objP++)
 	if ((objP->nType == OBJ_EFFECT) && (objP->id == SMOKE_ID))
 		DoStaticSmoke (objP);
 }
@@ -899,11 +902,11 @@ void ShrapnelFrame (void)
 
 if (!SHOW_SMOKE)
 	return;
-for (i = 0; i < gameData.objs.nLastObject; i++, objP++) {
+for (i = 0; i < gameData.objs.nLastObject [0]; i++, objP++) {
 	if (objP->renderType == RT_SHRAPNELS)
 		UpdateShrapnels (objP);
-	if (gameData.objs.bWantEffect [i] & OBJ_SHRAPNEL) {
-		gameData.objs.bWantEffect [i] &= ~OBJ_SHRAPNEL;
+	if (gameData.objs.bWantEffect [i] & SHRAPNEL_SMOKE) {
+		gameData.objs.bWantEffect [i] &= ~SHRAPNEL_SMOKE;
 		CreateShrapnels (objP);
 		}
 	}
@@ -931,7 +934,9 @@ SEM_LEAVE (SEM_SMOKE)
 SEM_ENTER (SEM_SHRAPNEL)
 ShrapnelFrame ();
 SEM_LEAVE (SEM_SHRAPNEL)
+SEM_ENTER (SEM_SMOKE)
 UpdateSmoke ();
+SEM_LEAVE (SEM_SMOKE)
 }
 
 //------------------------------------------------------------------------------

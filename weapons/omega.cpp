@@ -65,7 +65,7 @@ void DeleteOldOmegaBlobs (tObject *parentObjP)
 	int	count = 0;
 	int	nParentObj = parentObjP->cType.laserInfo.nParentObj;
 
-for (i = 0; i <= gameData.objs.nLastObject; i++)
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 	if (OBJECTS [i].nType == OBJ_WEAPON)
 		if (OBJECTS [i].id == OMEGA_ID)
 			if (OBJECTS [i].cType.laserInfo.nParentObj == nParentObj) {

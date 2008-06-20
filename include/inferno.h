@@ -1899,7 +1899,7 @@ typedef struct tObjectData {
 	tObject				*deadPlayerCamera;
 	tObject				*endLevelCamera;
 	int					nObjects;
-	int					nLastObject;
+	int					nLastObject [2];
 	int					nObjectLimit;
 	int					nMaxUsedObjects;
 	int					nNextSignature;
@@ -1924,7 +1924,9 @@ typedef struct tObjectData {
 #define ROBOT_LIGHTNINGS	2
 #define MISSILE_LIGHTNINGS	4
 #define EXPL_LIGHTNINGS		8
-#define OBJ_SHRAPNEL			16
+#define DESTROY_LIGHTNINGS	16
+#define SHRAPNEL_SMOKE		32
+#define DESTROY_SMOKE		64
 
 //------------------------------------------------------------------------------
 
@@ -3355,7 +3357,7 @@ static inline short ObjIdx (tObject *objP)
 {
 	size_t	i = (char *) objP - (char *) gameData.objs.objects;
 
-if ((i < 0) || (i > gameData.objs.nLastObject * sizeof (tObject)) || (i % sizeof (tObject)))
+if ((i < 0) || (i > gameData.objs.nLastObject [0] * sizeof (tObject)) || (i % sizeof (tObject)))
 	return -1;
 return (short) (i / sizeof (tObject));
 }
@@ -3369,7 +3371,7 @@ return (short) (i / sizeof (tObject));
 #define SEG2_IDX(_seg2P)		((short) ((_seg2P) - gameData.segs.segment2s))
 #define WALL_IDX(_wallP)		((short) ((_wallP) - gameData.walls.walls))
 #define OBJ_IDX(_objP)			ObjIdx (_objP)
-#define TRIG_IDX(_triggerP)		((short) ((_triggerP) - gameData.trigs.triggers))
+#define TRIG_IDX(_triggerP)	((short) ((_triggerP) - gameData.trigs.triggers))
 #define FACE_IDX(_faceP)		((int) ((_faceP) - gameData.segs.faces.faces))
 
 #ifdef PIGGY_USE_PAGING
@@ -3551,11 +3553,14 @@ gameData.app.semaphores |= sem;
 
 static inline void SemLeave (uint sem, const char *pszFile, int nLine)
 {
-PrintLog ("SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
+if (gameData.app.semaphores & sem)
+	PrintLog ("SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
+else
+	PrintLog ("asymmetric SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
 gameData.app.semaphores &= ~sem;
 }
 
-#define SEM_WAIT(_sem)	SemEnter (_sem);
+#define SEM_WAIT(_sem)	SemWait (_sem);
 
 #define SEM_ENTER(_sem)	SemEnter (_sem, __FILE__, __LINE__);
 

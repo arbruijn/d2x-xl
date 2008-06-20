@@ -584,7 +584,7 @@ void ValidateAllPaths (void)
 	tObject	*objP = OBJECTS;
 	tAIStatic	*aiP;
 
-for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	if (OBJECTS [i].nType == OBJ_ROBOT) {
 		aiP = &objP->cType.aiInfo;
 		if (objP->controlType == CT_AI) {
@@ -1280,7 +1280,7 @@ ValidateAllPaths ();
 #endif
 	//	Create a list of OBJECTS which have paths of length 1 or more.p.
 objP = OBJECTS;
-for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++, objP++) {
+for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++, objP++) {
 	if ((objP->nType == OBJ_ROBOT) && 
 		 ((objP->controlType == CT_AI) || (objP->controlType == CT_MORPH))) {
 		aiP = &objP->cType.aiInfo;
@@ -1308,7 +1308,7 @@ gameData.ai.freePointSegs = gameData.ai.pointSegs + nFreePathIdx;
 ////printf ("After garbage collection, D2_FREE index = %i\n", gameData.ai.freePointSegs - gameData.ai.pointSegs);
 #ifdef _DEBUG
 force_dump_aiObjects_all ("***** Finish AIPathGarbageCollect *****");
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	aiP = &objP->cType.aiInfo;
 	if ((objP->nType == OBJ_ROBOT) && (objP->controlType == CT_AI))
 		if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.freePointSegs - gameData.ai.pointSegs) && 
@@ -1365,7 +1365,7 @@ void AIResetAllPaths (void)
 	int		i;
 	tObject	*objP = OBJECTS;
 
-for (i = gameData.objs.nLastObject; i; i--, objP++)
+for (i = gameData.objs.nLastObject [0]; i; i--, objP++)
 	if (objP->controlType == CT_AI) {
 		objP->cType.aiInfo.nHideIndex = -1;
 		objP->cType.aiInfo.nPathLength = 0;

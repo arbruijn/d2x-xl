@@ -725,7 +725,7 @@ if (!matCenP->bFlag) {
 	nMyStation = FUELCEN_IDX (matCenP);
 
 	//	Make sure this robotmaker hasn't put out its max without having any of them killed.
-	for (i = 0, nCount = 0; i <= gameData.objs.nLastObject; i++)
+	for (i = 0, nCount = 0; i <= gameData.objs.nLastObject [0]; i++)
 		if ((OBJECTS [i].nType == OBJ_ROBOT) &&
 			 ((OBJECTS [i].matCenCreator ^ 0x80) == nMyStation))
 			nCount++;

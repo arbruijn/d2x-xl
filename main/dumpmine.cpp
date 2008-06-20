@@ -248,7 +248,7 @@ void write_key_text(FILE *my_file)
 	blueCount2 = 0;
 	goldCount2 = 0;
 
-	for (i=0; i<=gameData.objs.nLastObject; i++) {
+	for (i=0; i<=gameData.objs.nLastObject [0]; i++) {
 		if (OBJECTS[i].nType == OBJ_POWERUP)
 			if (OBJECTS[i].id == POW_KEY_BLUE) {
 				fprintf(my_file, "The BLUE key is tObject %i in tSegment %i\n", i, OBJECTS[i].nSegment);
@@ -507,7 +507,7 @@ void write_player_text(FILE *my_file)
 
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "gameData.multiplayer.players:\n");
-	for (i=0; i<=gameData.objs.nLastObject; i++) {
+	for (i=0; i<=gameData.objs.nLastObject [0]; i++) {
 		if (OBJECTS[i].nType == OBJ_PLAYER) {
 			num_players++;
 			fprintf(my_file, "Player %2i is tObject #%3i in tSegment #%3i.\n", OBJECTS[i].id, i, OBJECTS[i].nSegment);
@@ -585,7 +585,7 @@ void write_game_text_file(char *filename)
 	sayTotals(my_file, gameData.segs.szLevelFilename);
 
 	fprintf(my_file, "\nNumber of segments:   %4i\n", gameData.segs.nLastSegment+1);
-	fprintf(my_file, "Number of OBJECTS:    %4i\n", gameData.objs.nLastObject+1);
+	fprintf(my_file, "Number of OBJECTS:    %4i\n", gameData.objs.nLastObject [0]+1);
 	fprintf(my_file, "Number of walls:      %4i\n", gameData.walls.nWalls);
 	fprintf(my_file, "Number of open doors: %4i\n", gameData.walls.nOpenDoors);
 	fprintf(my_file, "Number of triggers:   %4i\n", gameData.trigs.nTriggers);
@@ -689,7 +689,7 @@ void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int leve
 
 
 	//	Process robots.
-	for (nObject=0; nObject<=gameData.objs.nLastObject; nObject++) {
+	for (nObject=0; nObject<=gameData.objs.nLastObject [0]; nObject++) {
 		tObject *objP = &OBJECTS[nObject];
 
 		if (objP->renderType == RT_POLYOBJ) {
@@ -873,14 +873,14 @@ sayTotals(FILE *my_file, char *level_name)
 	for (i=0; i<MAX_OBJECTS; i++)
 		usedObjects[i] = 0;
 
-	while (objects_processed < gameData.objs.nLastObject+1) {
+	while (objects_processed < gameData.objs.nLastObject [0]+1) {
 		int	j, objtype, objid, objcount, cur_obj_val, min_obj_val, min_objnum;
 
 		//	Find new min nObject.
 		min_obj_val = 0x7fff0000;
 		min_objnum = -1;
 
-		for (j=0; j<=gameData.objs.nLastObject; j++) {
+		for (j=0; j<=gameData.objs.nLastObject [0]; j++) {
 			if (!usedObjects[j] && OBJECTS[j].nType!=OBJ_NONE) {
 				cur_obj_val = OBJECTS[j].nType * 1000 + OBJECTS[j].id;
 				if (cur_obj_val < min_obj_val) {
@@ -897,7 +897,7 @@ sayTotals(FILE *my_file, char *level_name)
 		objtype = OBJECTS[min_objnum].nType;
 		objid = OBJECTS[min_objnum].id;
 
-		for (i=0; i<=gameData.objs.nLastObject; i++) {
+		for (i=0; i<=gameData.objs.nLastObject [0]; i++) {
 			if (!usedObjects[i]) {
 
 				if (((OBJECTS[i].nType == objtype) && (OBJECTS[i].id == objid)) ||

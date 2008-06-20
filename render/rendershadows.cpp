@@ -248,7 +248,7 @@ void RenderObjectShadows (void)
 	int			i, j, bSee;
 	tObject		fakePlayerPos = *gameData.objs.viewer;
 
-for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
 	if (objP == gameData.objs.console)
 		RenderObject (objP, 0, 0);
 	else if ((objP->nType == OBJ_PLAYER) || 
@@ -355,7 +355,7 @@ psl = gameData.render.lights.dynamic.shader.lights;
 for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 	psl->bShadow =
 	psl->bExclusive = 0;
-for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
+for (h = 0; h <= gameData.objs.nLastObject [0] + 1; h++, objP++) {
 	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;
 	pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->nSegment * MAX_NEAREST_LIGHTS;

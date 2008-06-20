@@ -224,7 +224,7 @@ void ConvertAllPowerupsToWeapons (void)
 	int	i;
 	tObject	*objP;
 
-for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [0]; i++, objP++)
 	if (objP->renderType == RT_POWERUP) {
 		ConvertPowerupToWeapon (objP);
 		PagingTouchObject (objP);

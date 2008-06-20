@@ -1296,7 +1296,7 @@ return -1;		//no tSegment found
 //--repair--
 //--repair-- //	------------------------------------------------------------------------------
 //--repair-- //	Create data specific to mine which doesn't get written to disk.
-//--repair-- //	gameData.segs.nLastSegment and gameData.objs.nLastObject must be valid.
+//--repair-- //	gameData.segs.nLastSegment and gameData.objs.nLastObject [0] must be valid.
 //--repair-- //	07/21:	set repair center bit
 //--repair-- void create_local_segment_data (void)
 //--repair-- {

@@ -1196,7 +1196,7 @@ int ObjTriggerIsValid (int nTrigger)
 {
 	int	h, i, j;
 
-for (i = 0; i < gameData.objs.nLastObject; i++) {
+for (i = 0; i < gameData.objs.nLastObject [0]; i++) {
 	j = gameData.trigs.firstObjTrigger [i];
 	if (j < 0)
 		continue;

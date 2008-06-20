@@ -226,7 +226,7 @@ if ((trackerP->nType == OBJ_WEAPON) && (trackerP->id == OMEGA_ID)) {
 	minTrackableDot = OMEGA_MIN_TRACKABLE_DOT;
 	}
 
-for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
+for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 	int			bIsProximity = 0;
 	fix			dot, dist;
 	vmsVector	vecToCurObj;

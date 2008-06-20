@@ -242,7 +242,7 @@ memset (gameData.bots.info [0][gameData.bots.nCamBotId].turnTime, 0, sizeof (gam
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].xMaxSpeed, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].xMaxSpeed));
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].circleDistance, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].circleDistance));
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].nRapidFireCount, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].nRapidFireCount));
-for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
 	if (objP->nType == OBJ_CAMBOT) {
 		objP->id	= gameData.bots.nCamBotId;
 		objP->size = G3PolyModelSize (gameData.models.polyModels + gameData.bots.nCamBotModel, gameData.bots.nCamBotModel);

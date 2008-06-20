@@ -773,7 +773,7 @@ else {
 	}
 gameStates.gameplay.bHaveSmartMines = 0;
 
-for (i = nStart; i <= gameData.objs.nLastObject; i += nStep) {
+for (i = nStart; i <= gameData.objs.nLastObject [0]; i += nStep) {
 	objPi = OBJECTS + i;
 	if ((objPi->nType != OBJ_WEAPON) || (objPi->id != SMARTMINE_ID))
 		continue;
@@ -782,7 +782,7 @@ for (i = nStart; i <= gameData.objs.nLastObject; i += nStep) {
 	if (objPi->lifeleft + F1_0*2 >= gameData.weapons.info [SMARTMINE_ID].lifetime)
 		continue;
 	vBombPos = &objPi->position.vPos;
-	for (j = 0, objPj = OBJECTS; j <= gameData.objs.nLastObject; j++, objPj++) {
+	for (j = 0, objPj = OBJECTS; j <= gameData.objs.nLastObject [0]; j++, objPj++) {
 		if (j == nParentObj) 
 			continue;
 		if ((objPj->nType != OBJ_PLAYER) && (objPj->nType != OBJ_ROBOT))

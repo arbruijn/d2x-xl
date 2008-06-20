@@ -1526,20 +1526,22 @@ else
 
 void SetCloudPos (tCloud *pCloud, vmsVector *pos, vmsMatrix *orient, short nSegment)
 {
-if ((nSegment < 0) && gameOpts->render.smoke.bCollisions) 
-	nSegment = FindSegByPos (pos, pCloud->nSegment, 1, 0);
-pCloud->pos = *pos;
-if (orient)
-	pCloud->orient = *orient;
-if (nSegment >= 0)
-	pCloud->nSegment = nSegment;
+if (pCloud) {
+	if ((nSegment < 0) && gameOpts->render.smoke.bCollisions) 
+		nSegment = FindSegByPos (pos, pCloud->nSegment, 1, 0);
+	pCloud->pos = *pos;
+	if (orient)
+		pCloud->orient = *orient;
+	if (nSegment >= 0)
+		pCloud->nSegment = nSegment;
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void SetCloudDir (tCloud *pCloud, vmsVector *pDir)
 {
-if ((pCloud->bHaveDir = (pDir != NULL)))
+if (pCloud && (pCloud->bHaveDir = (pDir != NULL)))
 	pCloud->dir = *pDir;
 }
 
@@ -1547,30 +1549,35 @@ if ((pCloud->bHaveDir = (pDir != NULL)))
 
 void SetCloudLife (tCloud *pCloud, int nLife)
 {
-pCloud->nLife = nLife;
-pCloud->fPartsPerTick = nLife ? (float) pCloud->nMaxParts / (float) abs (nLife) : 0.0f;
-pCloud->nTicks = 0;
+if (pCloud) {
+	pCloud->nLife = nLife;
+	pCloud->fPartsPerTick = nLife ? (float) pCloud->nMaxParts / (float) abs (nLife) : 0.0f;
+	pCloud->nTicks = 0;
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void SetCloudBrightness (tCloud *pCloud, int nBrightness)
 {
-pCloud->nDefBrightness = nBrightness;
+if (pCloud)
+	pCloud->nDefBrightness = nBrightness;
 }
 
 //------------------------------------------------------------------------------
 
 void SetCloudSpeed (tCloud *pCloud, int nSpeed)
 {
-pCloud->nSpeed = nSpeed;
+if (pCloud)
+	pCloud->nSpeed = nSpeed;
 }
 
 //------------------------------------------------------------------------------
 
 void SetCloudType (tCloud *pCloud, int nType)
 {
-pCloud->nType = nType;
+if (pCloud)
+	pCloud->nType = nType;
 }
 
 //------------------------------------------------------------------------------
@@ -1580,6 +1587,8 @@ int SetCloudDensity (tCloud *pCloud, int nMaxParts, int nDensity)
 	tParticle	*p;
 	int			h;
 
+if (!pCloud)
+	return 0;
 if (pCloud->nMaxParts == nMaxParts)
 	return 1;
 if (nMaxParts > pCloud->nPartLimit) {
@@ -1621,7 +1630,8 @@ return 1;
 
 void SetCloudPartScale (tCloud *pCloud, float nPartScale)
 {
-pCloud->nPartScale = nPartScale;
+if (pCloud)
+	pCloud->nPartScale = nPartScale;
 }
 
 //------------------------------------------------------------------------------

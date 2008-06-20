@@ -318,7 +318,7 @@ int ObjnumLocalToRemote (int nLocalObj, sbyte *nOwner)
 {
 	int nRemoteObj;
 
-if ((nLocalObj < 0) || (nLocalObj > gameData.objs.nLastObject)) {
+if ((nLocalObj < 0) || (nLocalObj > gameData.objs.nLastObject [0])) {
 	*nOwner = -1;
 	return -1;
 	}
@@ -830,8 +830,8 @@ gameData.score.nKillsChanged = 1;
 bMultiSuicide = 0;
 
 // Both tObject numbers are localized already!
-if ((nKilled < 0) || (nKilled > gameData.objs.nLastObject) || 
-	 (nKiller < 0) || (nKiller > gameData.objs.nLastObject)) {
+if ((nKilled < 0) || (nKilled > gameData.objs.nLastObject [0]) || 
+	 (nKiller < 0) || (nKiller > gameData.objs.nLastObject [0])) {
 	Int3 (); // See Rob, illegal value passed to computeKill;
 	return;
 	}
@@ -1575,7 +1575,7 @@ to_target.p.z = (fix)INTEL_INT ((int) to_target.p.z);
 #endif
 nGun = buf [count++];                       
 nObject = GET_INTEL_SHORT (buf + count);      
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject))
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return;
 if (0 <= (i = FindReactor (OBJECTS + nObject)))
 	CreateNewLaserEasy (&to_target, gameData.reactor.states [i].vGunPos + (int) nGun, nObject, CONTROLCEN_WEAPON_NUM, 1);
@@ -1644,7 +1644,7 @@ void MultiDoPlaySound (char *buf)
 if (!gameData.multiplayer.players [nPlayer].connected)
 	return;
 Assert (gameData.multiplayer.players [nPlayer].nObject  >= 0);
-Assert (gameData.multiplayer.players [nPlayer].nObject <= gameData.objs.nLastObject);
+Assert (gameData.multiplayer.players [nPlayer].nObject <= gameData.objs.nLastObject [0]);
 DigiLinkSoundToObject (nSound, (short) gameData.multiplayer.players [nPlayer].nObject, 0, volume, SOUNDCLASS_PLAYER);
 }
 
@@ -1839,7 +1839,7 @@ void MultiResetPlayerObject (tObject *objP)
 	int i;
 
 //Init physics for a non-console tPlayer
-if (objP > OBJECTS + gameData.objs.nLastObject)
+if (objP > OBJECTS + gameData.objs.nLastObject [0])
 	return;
 if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_GHOST))
 	return;
@@ -2757,7 +2757,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 ng = 1;
 invCount = 0;
 cloakCount = 0;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	if ((objP->nType == OBJ_HOSTAGE) && !(gameData.app.nGameMode & GM_MULTI_COOP)) {
 		nObject = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, objP->nSegment, 
 									   &objP->position.vPos, &vmdIdentityMatrix, 
@@ -3018,7 +3018,7 @@ void MultiSetRobotAI (void)
 
 	//      int i;
 	//
-	//      for (i = 0; i <= gameData.objs.nLastObject; i++)
+	//      for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 	// {
 	//              if (OBJECTS [i].nType == OBJ_ROBOT) {
 	//                      OBJECTS [i].aiInfo.REMOTE_OWNER = -1;
@@ -3041,7 +3041,7 @@ int MultiDeleteExtraObjects ()
 // This function also prints the total number of available multiplayer
 // positions in this level, even though this should always be 8 or more!
 
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	nType = objP->nType;
 	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_CAMBOT))
 		nnp++;
@@ -3369,7 +3369,7 @@ else if (++fun >= 50)
 		return;
 		}
 	if ((gmObj < OBJECTS) || 
-		 (gmObj - OBJECTS > gameData.objs.nLastObject)) {
+		 (gmObj - OBJECTS > gameData.objs.nLastObject [0])) {
 		Int3 ();  // Get Jason immediately!
 		return;
 		}

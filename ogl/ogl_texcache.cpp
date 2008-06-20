@@ -175,7 +175,7 @@ static void TexCachePoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 if (nCacheSeg < gameData.segs.nSegments)
 	CacheSideTextures (nCacheSeg++);
-else if (nCacheObj <= gameData.objs.nLastObject) 
+else if (nCacheObj <= gameData.objs.nLastObject [0]) 
 	CacheSideTextures (nCacheObj++);
 else {
 	*key = -2;
@@ -195,7 +195,7 @@ int OglCacheTextures (void)
 	int i;
 
 memset (m, 0, sizeof (m));
-ADD_GAUGE (0, "                    ", 0, gameData.segs.nSegments + gameData.objs.nLastObject + 4); 
+ADD_GAUGE (0, "                    ", 0, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
 m [2].centered = 1;
 nCacheSeg = 0;
 nCacheObj = -3;
@@ -287,7 +287,7 @@ for (i = 0; i < EXTRA_OBJ_IDS; i++)
 for (i = 0; i < MAX_POWERUP_TYPES; i++)
 	if (i != 9)
 		OglCacheVClipTexturesN (gameData.objs.pwrUp.info [i].nClipIndex, 3);
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
 	if (objP->renderType == RT_POLYOBJ)
 		OglCachePolyModelTextures (objP->rType.polyObjInfo.nModel);
 // cache the hostage clip frame textures

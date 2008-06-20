@@ -1060,7 +1060,7 @@ if (gameStates.app.cheats.bRobotsKillRobots) {
 		int j, nMinObj = -1;
 		fix curDist, minDist = MAX_WAKEUP_DIST;
 
-		for (j = 0; j <= gameData.objs.nLastObject; j++)
+		for (j = 0; j <= gameData.objs.nLastObject [0]; j++)
 			if ((OBJECTS [j].nType == OBJ_ROBOT) && (j != siP->nObject)) {
 				curDist = VmVecDistQuick (&objP->position.vPos, &OBJECTS [j].position.vPos);
 				if ((curDist < MAX_WAKEUP_DIST / 2) && (curDist < minDist) &&

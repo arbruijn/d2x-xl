@@ -817,7 +817,7 @@ return 1;
 
 int CreateWeaponEffects (tObject *objP, int bExplBlast)
 {
-if (gameData.objs.bIsMissile [objP->id]) {
+if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id]) {
 	if (bExplBlast)
 		CreateExplBlast (objP);
 	if ((objP->id == EARTHSHAKER_ID) || (objP->id == EARTHSHAKER_ID))
@@ -1209,7 +1209,7 @@ void ApplyDamageToReactor (tObject *reactorP, fix xDamage, short nAttacker)
 
 	//	Only allow a tPlayer to xDamage the control center.
 
-if ((nAttacker < 0) || (nAttacker > gameData.objs.nLastObject))
+if ((nAttacker < 0) || (nAttacker > gameData.objs.nLastObject [0]))
 	return;
 whotype = OBJECTS [nAttacker].nType;
 if (whotype != OBJ_PLAYER) {

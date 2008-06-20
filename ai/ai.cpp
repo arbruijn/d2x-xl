@@ -171,7 +171,7 @@ void SetPlayerAwarenessAll (void)
 	int i;
 
 ProcessAwarenessEvents ();
-for (i = 0; i <= gameData.objs.nLastObject; i++)
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 	if (OBJECTS [i].controlType == CT_AI) {
 		if (newAwareness [OBJECTS [i].nSegment] > gameData.ai.localInfo [i].playerAwarenessType) {
 			gameData.ai.localInfo [i].playerAwarenessType = newAwareness [OBJECTS [i].nSegment];
@@ -196,7 +196,7 @@ if (gameData.ai.nLastMissileCamera != -1) {
 	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
 	if (((gameData.app.nFrameCount & 0x0f) == 0) || (OBJECTS [gameData.ai.nLastMissileCamera].nType != OBJ_WEAPON)) {
 		gameData.ai.nLastMissileCamera = -1;
-		for (i = 0; i <= gameData.objs.nLastObject; i++)
+		for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 			if (OBJECTS [i].nType == OBJ_ROBOT)
 				OBJECTS [i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
@@ -207,7 +207,7 @@ for (h = BOSS_COUNT, j = 0; j < h; j++)
 			DoBossDyingFrame (OBJECTS + gameData.boss [j].nDying);
 		else {
 			tObject *objP = OBJECTS;
-			for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
+			for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
 				if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag)
 					DoBossDyingFrame (objP);
 		}

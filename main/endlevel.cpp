@@ -274,7 +274,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playbac
 if (gameStates.app.bPlayerIsDead || (gameData.objs.console->flags & OF_SHOULD_BE_DEAD))
 	return;				//don't start if dead!
 //	Dematerialize Buddy!
-for (i = 0; i <= gameData.objs.nLastObject; i++)
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 	if (OBJECTS [i].nType == OBJ_ROBOT)
 		if (ROBOTINFO (OBJECTS [i].id).companion) {
 			ObjectCreateExplosion (OBJECTS [i].nSegment, &OBJECTS [i].position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);

@@ -1592,7 +1592,7 @@ tObject *find_escort ()
 	int 		i;
 	tObject	*objP = OBJECTS;
 
-for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
 	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion)
 		return objP;
 return NULL;
@@ -1897,6 +1897,7 @@ int GameLoop (int bRenderFrame, int bReadControls)
 {
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
+gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
 GetSlowTicks ();
 #ifdef _DEBUG
 //	Used to slow down frame rate for testing things.
@@ -2380,9 +2381,9 @@ void show_freeObjects (void)
 		int	count=0;
 
 #if TRACE
-		//con_printf (CONDBG, "gameData.objs.nLastObject = %3i, MAX_OBJECTS = %3i, now used = ", gameData.objs.nLastObject, MAX_OBJECTS);
+		//con_printf (CONDBG, "gameData.objs.nLastObject [0] = %3i, MAX_OBJECTS = %3i, now used = ", gameData.objs.nLastObject [0], MAX_OBJECTS);
 #endif
-		for (i=0; i<=gameData.objs.nLastObject; i++)
+		for (i=0; i<=gameData.objs.nLastObject [0]; i++)
 			if (OBJECTS[i].nType != OBJ_NONE)
 				count++;
 #if TRACE

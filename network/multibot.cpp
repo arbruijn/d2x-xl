@@ -88,7 +88,7 @@ int MultiCanRemoveRobot (int nObject, int agitation)
 if (gameStates.app.bPlayerExploded)
 	return 0;
 #ifdef _DEBUG
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject)) {
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 ();
 	return 0;
 	}
@@ -163,7 +163,7 @@ if (gameData.app.nGameMode & GM_MULTI_ROBOTS) {
 	if (playernum == gameData.multiplayer.nLocalPlayer)
 		for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 			MultiDeleteControlledRobot (gameData.multigame.robots.controlled [i]);
-	for (i = 1; i <= gameData.objs.nLastObject; i++)
+	for (i = 1; i <= gameData.objs.nLastObject [0]; i++)
 		if ((OBJECTS [i].nType == OBJ_ROBOT) && 
 			 (OBJECTS [i].cType.aiInfo.REMOTE_OWNER == playernum)) {
 			Assert ((OBJECTS [i].controlType == CT_AI) || 
@@ -252,7 +252,7 @@ void MultiDeleteControlledRobot (int nObject)
 {
 	int i;
 
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject))
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return;
 for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 	if (gameData.multigame.robots.controlled [i] == nObject) {
@@ -274,7 +274,7 @@ void MultiSendClaimRobot (int nObject)
 {
 	short s;
 
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject)) {
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
@@ -298,7 +298,7 @@ void MultiSendReleaseRobot (int nObject)
 {
 	short s;
 
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject)) {
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
@@ -385,7 +385,7 @@ void MultiSendRobotPosition (int nObject, int force)
 
 if (! (gameData.app.nGameMode & GM_MULTI))
 	return;
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject)) {
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
@@ -575,7 +575,7 @@ void MultiDoClaimRobot (char *buf)
 
 nRemoteBot = GET_INTEL_SHORT (buf + 2);
 nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [4]);
-if ((nRobot > gameData.objs.nLastObject) || (nRobot < 0))
+if ((nRobot > gameData.objs.nLastObject [0]) || (nRobot < 0))
 //		Int3 (); // See rob
 	return;
 if (OBJECTS [nRobot].nType != OBJ_ROBOT)
@@ -599,7 +599,7 @@ void MultiDoReleaseRobot (char *buf)
 
 nRemoteBot = GET_INTEL_SHORT (buf + 2);
 nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [4]);
-if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject))
+if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
 if (OBJECTS [nRobot].nType != OBJ_ROBOT)
 	return;
@@ -625,7 +625,7 @@ void MultiDoRobotPosition (char *buf)
 nRemoteBot = GET_INTEL_SHORT (buf + bufP);
 nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [bufP+2]); 
 bufP += 3;
-if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject))
+if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
 if ((OBJECTS [nRobot].nType != OBJ_ROBOT) || 
 	 (OBJECTS [nRobot].flags & OF_EXPLODING)) 
@@ -673,7 +673,7 @@ memcpy (&vFire, buf+bufP, sizeof (vmsVector));
 vFire.p.x = (fix)INTEL_INT ((int)vFire.p.x);
 vFire.p.y = (fix)INTEL_INT ((int)vFire.p.y);
 vFire.p.z = (fix)INTEL_INT ((int)vFire.p.z);
-if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject) || 
+if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]) || 
 		 (OBJECTS [nRobot].nType != OBJ_ROBOT) || 
 		 (OBJECTS [nRobot].flags & OF_EXPLODING))
 	return;
@@ -700,7 +700,7 @@ int MultiExplodeRobotSub (int nRobot, int nKiller,char bIsThief)
 {
 	tObject *robotP;
 
-if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject)) { // Objnum in range?
+if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0])) { // Objnum in range?
 	Int3 (); // See rob
 	return 0;
 	}
@@ -766,7 +766,7 @@ nRemoteBot = GET_INTEL_SHORT (buf + bufP);
 nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [bufP+2]); 
 bufP += 3;
 thief = buf [bufP];
-if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject))
+if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
 rval = MultiExplodeRobotSub (nRobot, nKiller,thief);
 if (rval && (nKiller == LOCALPLAYER.nObject))
@@ -839,7 +839,7 @@ nRemoteObj = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 nSegment = GET_INTEL_SHORT (buf + bufP);                
 bufP += 2;
-if ((nBossObj < 0) || (nBossObj > gameData.objs.nLastObject)) {
+if ((nBossObj < 0) || (nBossObj > gameData.objs.nLastObject [0])) {
 	Int3 ();  // See Rob
 	return;
 	}
@@ -965,7 +965,7 @@ void MultiDropRobotPowerups (int nObject)
 	int			nEggObj = -1;
 	tRobotInfo	*robotP; 
 
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject)) {
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 ();  // See rob
 	return;
 	}

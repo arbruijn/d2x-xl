@@ -1786,7 +1786,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.player.offset		=	-1;
 	gameFileInfo.player.size		=	sizeof(tPlayer);
 	gameFileInfo.objects.offset		=	-1;
-	gameFileInfo.objects.count		=	gameData.objs.nLastObject+1;
+	gameFileInfo.objects.count		=	gameData.objs.nLastObject [0]+1;
 	gameFileInfo.objects.size		=	sizeof(tObject);
 	gameFileInfo.walls.offset			=	-1;
 	gameFileInfo.walls.count		=	gameData.walls.nWalls;
@@ -1954,7 +1954,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 
 	ClearTransientObjects(1);		//1 means clear proximity bombs
 
-	compressObjects();		//after this, gameData.objs.nLastObject == num OBJECTS
+	compressObjects();		//after this, gameData.objs.nLastObject [0] == num OBJECTS
 
 	//make sure tPlayer is in a tSegment
 	if (!UpdateObjectSeg(OBJECTS + gameData.multiplayer.players [0].nObject)) {

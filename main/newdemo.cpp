@@ -265,7 +265,7 @@ int NDFindObject (int nSignature)
 	int i;
 	tObject * objP = OBJECTS;
 
-for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 if ((objP->nType != OBJ_NONE) && (objP->nSignature == nSignature))
 	return i;
 	}
@@ -2831,7 +2831,7 @@ void NDInterpolateFrame (fix d_play, fix d_recorded)
 factor = FixDiv (d_play, d_recorded);
 if (factor > F1_0)
 	factor = F1_0;
-nCurObjs = gameData.objs.nLastObject;
+nCurObjs = gameData.objs.nLastObject [0];
 #if 1
 memcpy (curObjs, OBJECTS, sizeof (tObject) * (nCurObjs + 1));
 #else
@@ -2844,7 +2844,7 @@ if (NDReadFrameInfo () == -1) {
 	return;
 	}
 for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
-	for (j = OBJECTS + gameData.objs.nLastObject, objP = OBJECTS; objP < j; objP++) {
+	for (j = OBJECTS + gameData.objs.nLastObject [0], objP = OBJECTS; objP < j; objP++) {
 		if (curObjP->nSignature == objP->nSignature) {
 			renderType = curObjP->renderType;
 			//fix delta_p, delta_h, delta_b;
@@ -2892,7 +2892,7 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 
 // get back to original position in the demo file.  Reread the current
 // frame information again to reset all of the tObject stuff not covered
-// with gameData.objs.nLastObject and the tObject array (previously rendered
+// with gameData.objs.nLastObject [0] and the tObject array (previously rendered
 // OBJECTS, etc....)
 NDBackFrames (1);
 NDBackFrames (1);
@@ -2905,7 +2905,7 @@ memcpy (OBJECTS, curObjs, sizeof (tObject) * (nCurObjs + 1));
 for (i = 0; i <= nCurObjs; i++)
 	memcpy (&(OBJECTS [i]), &(curObjs [i]), sizeof (tObject));
 #endif
-gameData.objs.nLastObject = nCurObjs;
+gameData.objs.nLastObject [0] = nCurObjs;
 }
 
 //	-----------------------------------------------------------------------------
@@ -3011,7 +3011,7 @@ else {
 				tObject *curObjs, *objP;
 				int i, j, nObjects, nLevel, nSig;
 
-				nObjects = gameData.objs.nLastObject;
+				nObjects = gameData.objs.nLastObject [0];
 				curObjs = (tObject *) D2_ALLOC (sizeof (tObject) * (nObjects + 1));
 				if (!
 					curObjs) {
@@ -3039,7 +3039,7 @@ else {
 				for (i = 0; i <= nObjects; i++) {
 					nSig = curObjs [i].nSignature;
 					objP = OBJECTS;
-					for (j = 0; j <= gameData.objs.nLastObject; j++, objP++) {
+					for (j = 0; j <= gameData.objs.nLastObject [0]; j++, objP++) {
 						if (nSig == objP->nSignature) {
 							objP->position.mOrient = curObjs [i].position.mOrient;
 							objP->position.vPos = curObjs [i].position.vPos;

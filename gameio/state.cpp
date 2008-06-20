@@ -567,7 +567,7 @@ CFWrite (&gameStates.app.nDifficultyLevel, sizeof (int), 1, &cf);
 CFWrite (&gameStates.app.cheats.bEnabled, sizeof (int), 1, &cf);
 if (!bBetweenLevels)	{
 //Finish all morph OBJECTS
-	for (i = 0; i <= gameData.objs.nLastObject; i++) {
+	for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 		if (OBJECTS [i].nType == OBJ_NONE) 
 			continue;
 		if (OBJECTS [i].nType == OBJ_CAMERA)
@@ -591,7 +591,7 @@ if (!bBetweenLevels)	{
 			}
 		}
 //Save tObject info
-	i = gameData.objs.nLastObject + 1;
+	i = gameData.objs.nLastObject [0] + 1;
 	CFWrite (&i, sizeof (int), 1, &cf);
 	CFWrite (OBJECTS, sizeof (tObject), i, &cf);
 //Save tWall info
@@ -616,13 +616,13 @@ if (!bBetweenLevels)	{
 	CFWrite (&gameData.trigs.nObjTriggers, sizeof (int), 1, &cf);
 	CFWrite (gameData.trigs.objTriggers, sizeof (tTrigger), gameData.trigs.nObjTriggers, &cf);
 	CFWrite (gameData.trigs.objTriggerRefs, sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers, &cf);
-	for (nObject = 0, nObjsWithTrigger = 0; nObject <= gameData.objs.nLastObject; nObject++) {
+	for (nObject = 0, nObjsWithTrigger = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 		nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 		if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers))
 			nObjsWithTrigger++;
 		}
 	CFWrite (&nObjsWithTrigger, sizeof (nObjsWithTrigger), 1, &cf);
-	for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
+	for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 		nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 		if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers)) {
 			CFWrite (&nObject, sizeof (nObject), 1, &cf);
@@ -1147,7 +1147,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 	CFWriteInt (gameData.multiplayer.weaponStates [i].bTripleFusion, cfp);
 if (!bBetweenLevels)	{
 //Finish all morph OBJECTS
-	for (i = 0; i <= gameData.objs.nLastObject; i++) {
+	for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 		if (OBJECTS [i].nType == OBJ_NONE) 
 			continue;
 		if (OBJECTS [i].nType == OBJ_CAMERA)
@@ -1172,7 +1172,7 @@ if (!bBetweenLevels)	{
 		}
 	DBG (fPos = CFTell (cfp));
 //Save tObject info
-	i = gameData.objs.nLastObject + 1;
+	i = gameData.objs.nLastObject [0] + 1;
 	CFWriteInt (i, cfp);
 	for (j = 0; j < i; j++)
 		StateSaveObject (OBJECTS + j, cfp);
@@ -1214,13 +1214,13 @@ if (!bBetweenLevels)	{
 			StateSaveTrigger (gameData.trigs.objTriggers + i, cfp);
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 			StateSaveObjTriggerRef (gameData.trigs.objTriggerRefs + i, cfp);
-		for (nObject = 0, nObjsWithTrigger = 0; nObject <= gameData.objs.nLastObject; nObject++) {
+		for (nObject = 0, nObjsWithTrigger = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 			nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers))
 				nObjsWithTrigger++;
 			}
 		CFWriteShort (nObjsWithTrigger, cfp);
-		for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
+		for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 			nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers)) {
 				CFWriteShort (nObject, cfp);
@@ -1656,7 +1656,7 @@ void StateFixObjects (void)
 
 ConvertObjects ();
 gameData.objs.nNextSignature = 0;
-for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	objP->rType.polyObjInfo.nAltTextures = -1;
 	nSegment = objP->nSegment;
 	// hack for a bug I haven't yet been able to fix 
@@ -2230,7 +2230,7 @@ if (!bBetweenLevels)	{
 	//Read objects, and pop 'em into their respective segments.
 	DBG (fPos = CFTell (cfp));
 	h = CFReadInt (cfp);
-	gameData.objs.nLastObject = h - 1;
+	gameData.objs.nLastObject [0] = h - 1;
 	extraGameInfo [0].nBossCount = 0;
 	for (i = 0; i < h; i++)
 		StateRestoreObject (OBJECTS + i, cfp, sgVersion);
@@ -2514,7 +2514,7 @@ if (!bBetweenLevels)	{
 	ResetObjects (1);
 	//Read objects, and pop 'em into their respective segments.
 	CFRead (&i, sizeof (int), 1, cfp);
-	gameData.objs.nLastObject = i - 1;
+	gameData.objs.nLastObject [0] = i - 1;
 	CFRead (OBJECTS, sizeof (tObject), i, cfp);
 	StateFixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	StateFixObjects ();

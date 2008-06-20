@@ -583,7 +583,7 @@ for (j = 0, playerP = gameData.multiplayer.players; j < MAX_PLAYERS; j++, player
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 #endif
 //	bHaveReactor = 1;	// multiplayer maps do not need a control center ...
-for (i = 0, nPlayers = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, nPlayers = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	t = objP->nType;
 	if (t == OBJ_GHOST) {
 		for (j = 0; j < MAX_PLAYERS; j++) {
@@ -768,7 +768,7 @@ else if (i < 0)
 		} // For a standard onbject
 	} // For each tObject in packet
 gameData.objs.nObjects = objectCount;
-//gameData.objs.nLastObject = gameData.objs.nObjects - 1;
+//gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
 }
 
 //------------------------------------------------------------------------------

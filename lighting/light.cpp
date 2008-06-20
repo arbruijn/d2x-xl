@@ -130,7 +130,7 @@ if (!gameStates.render.bClusterLights)
 	tObject	*objP = OBJECTS;
 	int		i;
 
-for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
+for (i = gameData.objs.nLastObject [0] + 1; i; i--, objP++)
 	if ((objP->nType == OBJ_LIGHT) && (objP->id == CLUSTER_LIGHT_ID)) {
 		objP->lifeleft = 0;
 		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
@@ -147,7 +147,7 @@ if (!gameStates.render.bClusterLights)
 	tObject	*objP = OBJECTS;
 	int		h, i;
 
-for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	if ((objP->nType == OBJ_LIGHT) && (objP->id == CLUSTER_LIGHT_ID))	{
 		if (!(h = objP->cType.lightInfo.nObjects)) {
 			RemoveDynLight (-1, -1, i);
@@ -789,7 +789,7 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.nLightingMethod) {
 //	Only objects which are in rendered segments cast dynamic light.  We might want to extend this
 //	one or two segments if we notice light changing as OBJECTS go offscreen.  I couldn't see any
 //	serious visual degradation.  In fact, I could see no humorous degradation, either. --MK
-for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject; nObject++, objP++) {
+for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObject++, objP++) {
 	if (objP->nType == OBJ_NONE)
 		continue;
 	if (SkipPowerup (objP))
@@ -804,7 +804,7 @@ for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject; nObject+
 		}
 	}
 //	Now, process all lights from last frame which haven't been processed this frame.
-for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
+for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 	//	In multiplayer games, process even unprocessed OBJECTS every 4th frame, else don't know about tPlayer sneaking up.
 	if ((gameData.render.lights.objects [nObject]) || 
 		 (IsMultiGame && (((nObject ^ gameData.app.nFrameCount) & 3) == 0))) {
@@ -877,7 +877,7 @@ fix ComputeObjectLight (tObject *objP, vmsVector *vRotated)
 	int nObject = OBJ_IDX (objP);
 	if (nObject < 0)
 		return F1_0;
-	if (nObject >= gameData.objs.nLastObject)
+	if (nObject >= gameData.objs.nLastObject [0])
 		return 0;
 	//First, get static light for this tSegment
 if (gameOpts->render.nLightingMethod && !((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
