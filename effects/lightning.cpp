@@ -1042,9 +1042,8 @@ else if ((objP->nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
 		static tRgbaColorf color = {0.3f, 0.5f, 0.1f, 0.2f};
 		return &color;
 		}
-	else
-		return NULL;
 	}
+return NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -1091,7 +1090,7 @@ if (SHOW_LIGHTNINGS) {
 			}
 		}
 	if (gameOpts->render.lightnings.bExplosions) {
-		tObject	*objP;
+		tObject	*objP = OBJECTS;
 		ubyte		h;
 		for (i = 0; i < gameData.objs.nLastObject; i++, objP++) {
 			h = gameData.objs.bWantEffect [i];
