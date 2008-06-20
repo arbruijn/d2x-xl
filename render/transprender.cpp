@@ -937,10 +937,12 @@ PROF_END(ptRenderFaces)
 
 void RIRenderObject (tRIObject *item)
 {
+SEM_LEAVE (SEM_LIGHTNINGS | SEM_SPARKS)	//might lockup otherwise when creating damage lightnings on cloaked objects
 DrawPolygonObject (item->objP, 0, 1);
 glDisable (GL_TEXTURE_2D);
 renderItems.bTextured = 0;
 renderItems.bClientState = 0;
+SEM_ENTER (SEM_LIGHTNINGS | SEM_SPARKS)
 }
 
 //------------------------------------------------------------------------------

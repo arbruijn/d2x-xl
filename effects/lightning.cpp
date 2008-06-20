@@ -1065,6 +1065,16 @@ if (SHOW_LIGHTNINGS) {
 				}
 			}
 		}
+	if (gameOpts->render.lightnings.bExplosions) {
+		tObject *objP;
+		for (i = 0; i < gameData.objs.nLastObject; i++, objP++) {
+			if (gameData.objs.bWantEffect [i] & OBJ_LIGHTNING) {
+				gameData.objs.bWantEffect [i] &= ~OBJ_LIGHTNING;
+				if (!CreateMissileLightnings (objP))
+					CreateBlowupLightnings (objP);
+				}
+			}
+		}
 	SEM_LEAVE (SEM_LIGHTNINGS)
 	}
 }
@@ -2149,6 +2159,24 @@ void CreateMegaLightnings (tObject *objP)
 static tRgbaColorf color = {0.8f, 0.1f, 0.1f, 0.2f};
 
 CreateExplosionLightnings (objP, &color, 30, 15 * F1_0, 750);
+}
+
+//------------------------------------------------------------------------------
+
+int CreateMissileLightnings (tObject *objP)
+{
+if (gameData.objs.bIsMissile [objP->id]) {
+	if ((objP->id == EARTHSHAKER_ID) || (objP->id == EARTHSHAKER_ID))
+		CreateShakerLightnings (objP);
+	else if ((objP->id == EARTHSHAKER_MEGA_ID) || (objP->id == ROBOT_SHAKER_MEGA_ID))
+		CreateShakerMegaLightnings (objP);
+	else if ((objP->id == MEGAMSL_ID) || (objP->id == ROBOT_MEGAMSL_ID))
+		CreateMegaLightnings (objP);
+	else
+		return 0;
+	return 1;
+	}
+return 0;
 }
 
 //------------------------------------------------------------------------------

@@ -21,6 +21,7 @@ void DestroyObjectLightnings (tObject *objP);
 void SetLightningLights (void);
 void ResetLightningLights (int bForce);
 void DoLightningFrame (void);
+int CreateMissileLightnings (tObject *objP);
 void CreateShakerLightnings (tObject *objP);
 void CreateShakerMegaLightnings (tObject *objP);
 void CreateMegaLightnings (tObject *objP);

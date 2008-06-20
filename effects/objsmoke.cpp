@@ -899,9 +899,14 @@ void ShrapnelFrame (void)
 
 if (!SHOW_SMOKE)
 	return;
-for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
+for (i = 0; i < gameData.objs.nLastObject; i++, objP++) {
 	if (objP->renderType == RT_SHRAPNELS)
 		UpdateShrapnels (objP);
+	if (gameData.objs.bWantEffect [i] & OBJ_SHRAPNEL) {
+		gameData.objs.bWantEffect [i] &= ~OBJ_SHRAPNEL;
+		CreateShrapnels (objP);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -922,10 +927,11 @@ if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG 
 	DoPlayerSmoke (gameData.objs.viewer, gameData.multiplayer.nLocalPlayer);
 ObjectSmokeFrame ();
 StaticSmokeFrame ();
-ShrapnelFrame ();
-//if (SHOW_SMOKE)
-UpdateSmoke ();
 SEM_LEAVE (SEM_SMOKE)
+SEM_ENTER (SEM_SHRAPNEL)
+ShrapnelFrame ();
+SEM_LEAVE (SEM_SHRAPNEL)
+UpdateSmoke ();
 }
 
 //------------------------------------------------------------------------------

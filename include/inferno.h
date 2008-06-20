@@ -1916,8 +1916,12 @@ typedef struct tObjectData {
 	ubyte					bIsWeapon [MAX_WEAPONS];
 	ubyte					bIsSlowWeapon [MAX_WEAPONS];
 	short					idToOOF [MAX_WEAPONS];
+	ubyte					bWantEffect [MAX_OBJECTS_D2X];
 	int					nFrameCount;
 } tObjectData;
+
+#define OBJ_LIGHTNING	1
+#define OBJ_SHRAPNEL		2
 
 //------------------------------------------------------------------------------
 
@@ -3459,6 +3463,13 @@ return vPosP;
 
 //	-----------------------------------------------------------------------------
 
+static inline void RequestEffects (tObject *objP, ubyte nEffects)
+{
+gameData.objs.bWantEffect [OBJ_IDX (objP)] |= nEffects;
+}
+
+//	-----------------------------------------------------------------------------
+
 #ifdef RELEASE
 #	define FAST_SHADOWS	1
 #else
@@ -3468,7 +3479,8 @@ return vPosP;
 void D2SetCaption (void);
 void PrintVersionInfo (void);
 
-//	-----------------------------------------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+
 
 typedef struct fVector3D {
 	float	x, y, z;
@@ -3514,15 +3526,22 @@ int TIRUnload (void);
 #define SEM_SMOKE			1
 #define SEM_LIGHTNINGS	2
 #define SEM_SPARKS		4
+#define SEM_SHRAPNEL		8
 
 #include "error.h"
 
-#ifdef _DEBUG
+#if 1//def _DEBUG
 
-static inline void SemEnter (uint sem, const char *pszFile, int nLine)
+static inline void SemWait (uint sem)
 {
 while (gameData.app.semaphores /*& sem*/)
 	G3_SLEEP (0);
+}
+
+
+static inline void SemEnter (uint sem, const char *pszFile, int nLine)
+{
+SemWait (sem);
 PrintLog ("SemEnter (%d) @ %s:%d\n", sem, pszFile, nLine);
 gameData.app.semaphores |= sem;
 }
@@ -3532,6 +3551,8 @@ static inline void SemLeave (uint sem, const char *pszFile, int nLine)
 PrintLog ("SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
 gameData.app.semaphores &= ~sem;
 }
+
+#define SEM_WAIT(_sem)	SemEnter (_sem);
 
 #define SEM_ENTER(_sem)	SemEnter (_sem, __FILE__, __LINE__);
 
@@ -3551,6 +3572,8 @@ static inline void SemLeave (uint sem)
 {
 gameData.app.semaphores &= ~sem;
 }
+
+#define SEM_WAIT(_sem)	SemEnter (_sem);
 
 #define SEM_ENTER(_sem)	SemEnter (_sem);
 
