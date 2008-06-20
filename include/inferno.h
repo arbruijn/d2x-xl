@@ -2549,6 +2549,7 @@ typedef enum {
 	rtComputeFaceLight,
 	rtInitSegZRef,
 	rtSortSegZRef,
+	rtTransparency,
 	rtEffects,
 	rtPolyModel,
 	rtTaskCount
@@ -3520,8 +3521,8 @@ int TIRUnload (void);
 
 static inline void SemEnter (uint sem, const char *pszFile, int nLine)
 {
-while (gameData.app.semaphores & sem)
-	G3_SLEEP (1);
+while (gameData.app.semaphores /*& sem*/)
+	G3_SLEEP (0);
 PrintLog ("SemEnter (%d) @ %s:%d\n", sem, pszFile, nLine);
 gameData.app.semaphores |= sem;
 }

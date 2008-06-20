@@ -264,7 +264,8 @@ if (bTextured) {
 		}
 	if (bStateChange) {
 		gameData.render.nStateChanges++;
-		G3SetupShader (faceP, bDepthOnly, bColorKey, bmTop != NULL, bmBot != NULL, bColored, bmBot ? NULL : &faceP->color);
+		if (!gameStates.render.bFullBright)
+			G3SetupShader (faceP, bDepthOnly, bColorKey, bmTop != NULL, bmBot != NULL, bColored, bmBot ? NULL : &faceP->color);
 		}
 	}
 else {
@@ -571,7 +572,10 @@ else {
 	}
 
 gameStates.ogl.iLight = 0;
-G3SetRenderStatesLM (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
+if (gameStates.render.bFullBright)
+	G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
+else
+	G3SetRenderStatesLM (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 if (bDepthOnly) {
 	RenderFacePP (faceP);
 	PROF_END(ptRenderFaces)
@@ -591,8 +595,8 @@ if (!bColored) {
 	RenderFacePP (faceP);
 	}
 else if (gameStates.render.bFullBright) {
-	if (bColorKey)
-		G3SetupTexMergeShader (1, 0);
+	if (gameStates.render.history.nType > 1)
+		G3SetupTexMergeShader (bColorKey, bColored);
 	else if (gameStates.render.history.nShader != -1) {
 		glUseProgramObject (0);
 		gameStates.render.history.nShader = -1;

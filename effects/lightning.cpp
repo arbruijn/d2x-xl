@@ -988,7 +988,6 @@ int UpdateLightning (tLightning *pl, int nLightnings, int nDepth)
 {
 if (!(pl && nLightnings))
 	return 0;
-SEM_LEAVE (SEM_LIGHTNINGS)
 CHECK (pl, nLightnings);
 AnimateLightning (pl, 0, nLightnings, nDepth);
 CHECK (pl, nLightnings);
@@ -1014,6 +1013,13 @@ if (plb->bSound < 0)
 	return;
 DestroyLightningSound (plb);
 plb->bSound = -1;
+}
+
+//------------------------------------------------------------------------------
+
+void MoveObjectLightnings (tObject *objP)
+{
+MoveLightnings (gameData.lightnings.objects [OBJ_IDX (objP)], NULL, &OBJPOS (objP)->vPos, objP->nSegment, 0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1086,7 +1092,6 @@ if (SHOW_LIGHTNINGS) {
 	else
 		return;
 	nLightnings = i;
-	SEM_ENTER (SEM_LIGHTNINGS)
 	CHECK (pl, nLightnings);
 	for (; i > 0; i--, pl++) {
 		pl->nSegment = nSegment;
@@ -1137,23 +1142,18 @@ if (SHOW_LIGHTNINGS) {
 			}
 		}
 	CHECK (pl - nLightnings, nLightnings);
-	SEM_LEAVE (SEM_LIGHTNINGS)
 	}
 }
 
 //------------------------------------------------------------------------------
-
+#if 0
 void MoveObjectLightnings (tObject *objP)
 {
-#if 0
-if (!SPECTATOR (objP) &&
-	 ((objP->vLastPos.p.x != objP->position.vPos.p.x) ||
-	  (objP->vLastPos.p.y != objP->position.vPos.p.y) ||
-	 (objP->vLastPos.p.z != objP->position.vPos.p.z)))
-#endif
-	MoveLightnings (gameData.lightnings.objects [OBJ_IDX (objP)], NULL, &OBJPOS (objP)->vPos, objP->nSegment, 0, 0);
+SEM_ENTER (SEM_LIGHTNINGS)
+MoveObjectLightningsInternal (objP);
+SEM_LEAVE (SEM_LIGHTNINGS)
 }
-
+#endif
 //------------------------------------------------------------------------------
 
 void DestroyObjectLightnings (tObject *objP)

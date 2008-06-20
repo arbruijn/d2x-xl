@@ -1334,7 +1334,7 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPosP)
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-if (!vPosP && (psc->index == (char) gameStates.render.nFrameFlipFlop))
+if (!vPosP && (psc->index == (char) gameStates.render.nFrameFlipFlop) && (psc->color.red + psc->color.green + psc->color.blue != 0))
 	return psc;
 #ifdef _DEBUG
 if (nSegment == nDbgSeg)

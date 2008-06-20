@@ -44,7 +44,7 @@ void WaitForRenderThreads (void)
 {
 if (gameStates.app.bMultiThreaded)
 	while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
-		G3_SLEEP (0);	//already running, so wait
+		G3_SLEEP (1);	//already running, so wait
 }
 
 //------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ int _CDECL_ RenderThread (void *pThreadId)
 
 do {
 	while (!tiRender.ti [nId].bExec) {
-		G3_SLEEP (0);
+		G3_SLEEP (1);
 		if (tiRender.ti [nId].bDone)
 			return 0;
 		}
@@ -167,6 +167,7 @@ return 0;
 
 int _CDECL_ RenderItemThread (void *pThreadId)
 {
+#if 1
 	int	i;
 
 do {
@@ -184,20 +185,24 @@ do {
 		}
 	} while (!(tiRenderItems.ti [0].bDone && tiRenderItems.ti [1].bDone));
 return 0;
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void StartRenderItemThread (void)
 {
+#if 1
 memset (&tiRenderItems, 0, sizeof (tiRenderItems));
 tiRenderItems.ti [0].pThread = SDL_CreateThread (RenderItemThread, NULL);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void EndRenderItemThread (void)
 {
+#if 1
 	int	i;
 
 for (i = 0; i < 2; i++)
@@ -209,6 +214,7 @@ SDL_KillThread (tiRenderItems.ti [0].pThread);
 #	else
 SDL_WaitThread (tiRenderItems.ti [0].pThread, NULL);
 #	endif
+#endif
 #endif
 }
 

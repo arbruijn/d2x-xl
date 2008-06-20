@@ -115,7 +115,7 @@ int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDep
 if (nDepth < renderItems.zMin)
 	return renderItems.nFreeItems;
 if (nDepth > renderItems.zMax) {
-	if (nType != riParticle)
+	//if (nType != riParticle)
 		return renderItems.nFreeItems;
 	nDepth = renderItems.zMax;
 	}
@@ -169,7 +169,7 @@ return 0;
 
 int AddRenderItemMT (tRenderItemType nType, void *itemData, int itemSize, int nDepth, int nIndex, int nThread)
 {
-if (!gameStates.app.bMultiThreaded || (nThread < 0))
+if (!gameStates.app.bMultiThreaded || (nThread < 0) || !gameData.app.bUseMultiThreading [rtTransparency])
 	return AddRenderItem (nType, itemData, itemSize, nDepth, nIndex);
 while (tiRenderItems.ti [nThread].bExec)
 	G3_SLEEP (0);
@@ -481,7 +481,10 @@ int RIAddParticle (tParticle *particle, float fBrightness, int nThread)
 item.particle = particle;
 item.fBrightness = fBrightness;
 G3TransformPoint (&particle->transPos, &particle->pos, gameStates.render.bPerPixelLighting == 2);
-return AddRenderItemMT (riParticle, &item, sizeof (item), particle->transPos.p.z, particle->transPos.p.z, nThread);
+if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtTransparency])
+	return AddRenderItemMT (riParticle, &item, sizeof (item), particle->transPos.p.z, particle->transPos.p.z, nThread);
+else
+	return AddRenderItem (riParticle, &item, sizeof (item), particle->transPos.p.z, particle->transPos.p.z);
 }
 
 //------------------------------------------------------------------------------
