@@ -1089,29 +1089,27 @@ if (SHOW_LIGHTNINGS) {
 				}
 			}
 		}
-	if (gameOpts->render.lightnings.bExplosions) {
-		tObject	*objP = OBJECTS;
-		ubyte		h;
-		for (i = 0; i < gameData.objs.nLastObject; i++, objP++) {
-			h = gameData.objs.bWantEffect [i];
-			if (h & EXPL_LIGHTNINGS) {
-				h = EXPL_LIGHTNINGS;
-				CreateBlowupLightnings (objP);
-				}
-			else if (h & MISSILE_LIGHTNINGS) {
-				h = MISSILE_LIGHTNINGS;
-				CreateMissileLightnings (objP);
-				}
-			else if (h & ROBOT_LIGHTNINGS) {
-				h = ROBOT_LIGHTNINGS;
-				CreateRobotLightnings (objP, LightningColor (objP));
-				}
-			else if (h & PLAYER_LIGHTNINGS) {
-				h = PLAYER_LIGHTNINGS;
-				CreatePlayerLightnings (objP, LightningColor (objP));
-				}
-			gameData.objs.bWantEffect [i] &= ~h;
+	tObject	*objP = OBJECTS;
+	ubyte		h;
+	for (i = 0; i < gameData.objs.nLastObject; i++, objP++) {
+		h = gameData.objs.bWantEffect [i];
+		if (h & EXPL_LIGHTNINGS) {
+			h = EXPL_LIGHTNINGS;
+			CreateBlowupLightnings (objP);
 			}
+		else if (h & MISSILE_LIGHTNINGS) {
+			h = MISSILE_LIGHTNINGS;
+			CreateMissileLightnings (objP);
+			}
+		else if (h & ROBOT_LIGHTNINGS) {
+			h = ROBOT_LIGHTNINGS;
+			CreateRobotLightnings (objP, LightningColor (objP));
+			}
+		else if (h & PLAYER_LIGHTNINGS) {
+			h = PLAYER_LIGHTNINGS;
+			CreatePlayerLightnings (objP, LightningColor (objP));
+			}
+		gameData.objs.bWantEffect [i] &= ~h;
 		}
 	SEM_LEAVE (SEM_LIGHTNINGS)
 	}
