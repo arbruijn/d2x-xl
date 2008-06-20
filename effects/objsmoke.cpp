@@ -870,12 +870,12 @@ if (!SHOW_SMOKE)
 if (!gameOpts->render.smoke.bRobots)
 	return;
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [1]; i++, objP++) {
-	if (objP->nType == OBJ_NONE)
-		KillObjectSmoke (i);
-	else if (gameData.objs.bWantEffect [i] & DESTROY_SMOKE) {
+	if (gameData.objs.bWantEffect [i] & DESTROY_SMOKE) {
 		gameData.objs.bWantEffect [i] &= ~ DESTROY_SMOKE;
 		KillObjectSmoke (i);
 		}
+	else if (objP->nType == OBJ_NONE)
+		KillObjectSmoke (i);
 	}
 }
 
