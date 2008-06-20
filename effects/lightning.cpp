@@ -1089,6 +1089,8 @@ if (SHOW_LIGHTNINGS) {
 				}
 			}
 		}
+	SEM_LEAVE (SEM_LIGHTNINGS)
+
 	tObject	*objP = OBJECTS;
 	ubyte		h;
 	for (i = 0; i < gameData.objs.nLastObject; i++, objP++) {
@@ -1111,7 +1113,6 @@ if (SHOW_LIGHTNINGS) {
 			}
 		gameData.objs.bWantEffect [i] &= ~h;
 		}
-	SEM_LEAVE (SEM_LIGHTNINGS)
 	}
 }
 
