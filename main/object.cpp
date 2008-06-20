@@ -1944,22 +1944,17 @@ void HandleObjectEffects (tObject *objP)
 {
 if (objP->nType == OBJ_ROBOT) {
 	if (ROBOTINFO (objP->id).energyDrain) {
-			static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
-
-		CreateRobotLightnings (objP, &color);
+		RequestEffects (objP, ROBOT_LIGHTNINGS);
 		}
 	}
 else if ((objP->nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
 	int s = gameData.segs.segment2s [objP->nSegment].special;
 	if (s == SEGMENT_IS_FUELCEN) {
-			static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
-
-		CreatePlayerLightnings (objP, &color);
+		RequestEffects (objP, PLAYER_LIGHTNINGS);
 		}
 	else if (s == SEGMENT_IS_REPAIRCEN) {
 			tRgbaColorf color = {0.3f, 0.5f, 0.1f, 0.2f};
-
-		CreatePlayerLightnings (objP, &color);
+		RequestEffects (objP, PLAYER_LIGHTNINGS);
 		}
 	else
 		DestroyObjectLightnings (objP);

@@ -1024,6 +1024,31 @@ MoveLightnings (gameData.lightnings.objects [OBJ_IDX (objP)], NULL, &OBJPOS (obj
 
 //------------------------------------------------------------------------------
 
+tRgbaColorf *LightningColor (tObject *objP)
+{
+if (objP->nType == OBJ_ROBOT) {
+	if (ROBOTINFO (objP->id).energyDrain) {
+		static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
+		return &color;
+		}
+	}
+else if ((objP->nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
+	int s = gameData.segs.segment2s [objP->nSegment].special;
+	if (s == SEGMENT_IS_FUELCEN) {
+		static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
+		return &color;
+		}
+	else if (s == SEGMENT_IS_REPAIRCEN) {
+		static tRgbaColorf color = {0.3f, 0.5f, 0.1f, 0.2f};
+		return &color;
+		}
+	else
+		return NULL;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
 
@@ -1066,13 +1091,27 @@ if (SHOW_LIGHTNINGS) {
 			}
 		}
 	if (gameOpts->render.lightnings.bExplosions) {
-		tObject *objP;
+		tObject	*objP;
+		ubyte		h;
 		for (i = 0; i < gameData.objs.nLastObject; i++, objP++) {
-			if (gameData.objs.bWantEffect [i] & OBJ_LIGHTNING) {
-				gameData.objs.bWantEffect [i] &= ~OBJ_LIGHTNING;
-				if (!CreateMissileLightnings (objP))
-					CreateBlowupLightnings (objP);
+			h = gameData.objs.bWantEffect [i];
+			if (h & EXPL_LIGHTNINGS) {
+				h = EXPL_LIGHTNINGS;
+				CreateBlowupLightnings (objP);
 				}
+			else if (h & MISSILE_LIGHTNINGS) {
+				h = MISSILE_LIGHTNINGS;
+				CreateMissileLightnings (objP);
+				}
+			else if (h & ROBOT_LIGHTNINGS) {
+				h = ROBOT_LIGHTNINGS;
+				CreateRobotLightnings (objP, LightningColor (objP));
+				}
+			else if (h & PLAYER_LIGHTNINGS) {
+				h = PLAYER_LIGHTNINGS;
+				CreatePlayerLightnings (objP, LightningColor (objP));
+				}
+			gameData.objs.bWantEffect [i] &= ~h;
 			}
 		}
 	SEM_LEAVE (SEM_LIGHTNINGS)
@@ -1168,12 +1207,14 @@ SEM_LEAVE (SEM_LIGHTNINGS)
 
 void DestroyObjectLightnings (tObject *objP)
 {
+SEM_ENTER (SEM_LIGHTNINGS)
 	int i = OBJ_IDX (objP);
 
 if (gameData.lightnings.objects [i] >= 0) {
 	DestroyLightnings (gameData.lightnings.objects [i], NULL, 0);
 	gameData.lightnings.objects [i] = -1;
 	}
+SEM_LEAVE (SEM_LIGHTNINGS)
 }
 
 //------------------------------------------------------------------------------

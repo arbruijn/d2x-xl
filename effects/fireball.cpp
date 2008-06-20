@@ -497,7 +497,7 @@ void ExplodePolyModel (tObject *objP)
 {
 Assert (objP->renderType == RT_POLYOBJ);
 CreateExplBlast (objP);
-RequestEffects (objP, OBJ_LIGHTNING | OBJ_SHRAPNEL);
+RequestEffects (objP, EXPL_LIGHTNINGS | OBJ_SHRAPNEL);
 if (gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel] != -1)
 	objP->rType.polyObjInfo.nModel = gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel];
 if (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels > 1) {

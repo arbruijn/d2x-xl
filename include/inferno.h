@@ -1920,8 +1920,11 @@ typedef struct tObjectData {
 	int					nFrameCount;
 } tObjectData;
 
-#define OBJ_LIGHTNING	1
-#define OBJ_SHRAPNEL		2
+#define PLAYER_LIGHTNINGS	1
+#define ROBOT_LIGHTNINGS	2
+#define MISSILE_LIGHTNINGS	4
+#define EXPL_LIGHTNINGS		8
+#define OBJ_SHRAPNEL			16
 
 //------------------------------------------------------------------------------
 
