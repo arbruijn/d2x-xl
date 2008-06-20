@@ -1095,7 +1095,7 @@ if (SHOW_LIGHTNINGS) {
 	ubyte		h;
 	for (i = 0; i < gameData.objs.nLastObject [1]; i++, objP++) {
 		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNINGS) {
-			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTINGS;
+			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNINGS;
 			DestroyObjectLightnings (objP);
 			}
 		}
