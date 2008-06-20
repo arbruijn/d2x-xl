@@ -757,7 +757,8 @@ if (nObject == nDbgObj)
 #endif
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
-#if 0
+gameData.objs.bWantEffect [nObject] = 0;
+#if 1
 RequestEffects (OBJECTS + nObject, DESTROY_SMOKE | DESTROY_LIGHTNINGS);
 #else
 SEM_ENTER (SEM_SMOKE)
@@ -766,7 +767,6 @@ SEM_LEAVE (SEM_SMOKE)
 SEM_ENTER (SEM_LIGHTNINGS)
 DestroyObjectLightnings (OBJECTS + nObject);
 SEM_LEAVE (SEM_LIGHTNINGS)
-gameData.objs.bWantEffect [nObject] = 0;
 #endif
 RemoveDynLight (-1, -1, nObject);
 gameData.objs.freeList [--gameData.objs.nObjects] = nObject;

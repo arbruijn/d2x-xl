@@ -1094,6 +1094,12 @@ if (SHOW_LIGHTNINGS) {
 	tObject	*objP = OBJECTS;
 	ubyte		h;
 	for (i = 0; i < gameData.objs.nLastObject [1]; i++, objP++) {
+		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNINGS) {
+			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTINGS;
+			DestroyObjectLightnings (objP);
+			}
+		}
+	for (i = 0; i < gameData.objs.nLastObject [0]; i++, objP++) {
 		h = gameData.objs.bWantEffect [i];
 		if (h & EXPL_LIGHTNINGS) {
 			if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR))
@@ -1118,9 +1124,6 @@ if (SHOW_LIGHTNINGS) {
 				CreatePlayerLightnings (objP, LightningColor (objP));
 			else if (objP->nType != 255)
 				PrintLog ("invalid effect requested\n");
-			}
-		else if (h & DESTROY_LIGHTNINGS) {
-			DestroyObjectLightnings (objP);
 			}
 		gameData.objs.bWantEffect [i] &= ~(PLAYER_LIGHTNINGS | ROBOT_LIGHTNINGS | MISSILE_LIGHTNINGS | EXPL_LIGHTNINGS);
 		}
