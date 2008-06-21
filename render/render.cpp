@@ -1274,22 +1274,26 @@ else {
 if (bSparks) {
 	SEM_ENTER (SEM_SPARKS)
 	RenderEnergySparks ();
+	SEM_LEAVE (SEM_SPARKS)
+	}
+if (bSmoke) {
+	SEM_ENTER (SEM_SMOKE)
+	RenderSmoke ();
+	SEM_LEAVE (SEM_SMOKE)
 	}
 if (bLightnings) {
 	SEM_ENTER (SEM_LIGHTNINGS)
 	RenderLightnings ();
 	}
-if (bSmoke) {
-	SEM_ENTER (SEM_SMOKE)
-	RenderSmoke ();
-	}
 RenderItems ();
-if (bSmoke)
-	SEM_LEAVE (SEM_SMOKE)
 if (bLightnings)
 	SEM_LEAVE (SEM_LIGHTNINGS)
+#if 0
+if (bSmoke)
+	SEM_LEAVE (SEM_SMOKE)
 if (bSparks)
 	SEM_LEAVE (SEM_SPARKS)
+#endif
 }
 
 //------------------------------------------------------------------------------
