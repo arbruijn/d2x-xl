@@ -136,6 +136,25 @@ gameData.smoke.iUsed = -1;
 
 //------------------------------------------------------------------------------
 
+static void RebuildSmokeList (void)
+{
+gameData.smoke.iUsed =
+gameData.smoke.iFree = -1;
+tSmoke *pSmoke = gameData.smoke.buffer;
+for (int i = 0; i < MAX_SMOKE; i++, pSmoke++) {
+	if (pSmoke->pClouds) {
+		pSmoke->nNext = gameData.smoke.iUsed;
+		gameData.smoke.iUsed = i;
+		}
+	if (pSmoke->pClouds) {
+		pSmoke->nNext = gameData.smoke.iFree;
+		gameData.smoke.iFree = i;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void ResetDepthBuf (void)
 {
 memset (gameData.smoke.depthBuf.pDepthBuffer, 0, PART_DEPTHBUFFER_SIZE * sizeof (struct tPartList **));
@@ -1681,6 +1700,18 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
+int CheckSmoke (void)
+{
+	int	i, j;
+
+for (i = gameData.smoke.iUsed; i >= 0; i = j)
+	if ((j = gameData.smoke.buffer [i].nNext) == gameData.smoke.iUsed)
+		return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int DestroySmoke (int iSmoke)
 {
 	int		i;
@@ -1688,8 +1719,6 @@ int DestroySmoke (int iSmoke)
 
 if (iSmoke < 0)
 	iSmoke = -iSmoke - 1;
-else if (!IsUsedSmoke (iSmoke))
-	return -1;
 pSmoke = gameData.smoke.buffer + iSmoke;
 if (gameData.smoke.objects && (pSmoke->nObject >= 0))
 	SetSmokeObject (pSmoke->nObject, -1);
@@ -1697,14 +1726,16 @@ if (pSmoke->pClouds) {
 	for (i = pSmoke->nClouds; i; )
 		DestroyCloud (pSmoke->pClouds + --i);
 	D2_FREE (pSmoke->pClouds);
-	i = pSmoke->nNext;
-	if (gameData.smoke.iUsed == iSmoke)
-		gameData.smoke.iUsed = i;
-	pSmoke->nNext = gameData.smoke.iFree;
-	if ((pSmoke = PrevSmoke (iSmoke)))
-		pSmoke->nNext = i;
-	gameData.smoke.iFree = iSmoke;
 	}
+if (!IsUsedSmoke (iSmoke))
+	return -1;
+i = pSmoke->nNext;
+if (gameData.smoke.iUsed == iSmoke)
+	gameData.smoke.iUsed = i;
+pSmoke->nNext = gameData.smoke.iFree;
+if ((pSmoke = PrevSmoke (iSmoke)))
+	pSmoke->nNext = i;
+gameData.smoke.iFree = iSmoke;
 return iSmoke;
 }
 
@@ -1712,11 +1743,18 @@ return iSmoke;
 
 int DestroyAllSmoke (void)
 {
-	int	i, j;
+	int	i, j, bDone = 0;
 
-for (i = gameData.smoke.iUsed; i >= 0; i = j) {
-	j = gameData.smoke.buffer [i].nNext;
-	DestroySmoke (-i - 1);
+while (!bDone) {
+	bDone = 1;
+	for (i = gameData.smoke.iUsed; i >= 0; i = j) {
+		if ((j = gameData.smoke.buffer [i].nNext) == gameData.smoke.iUsed) {
+			RebuildSmokeList ();
+			bDone = 0;
+			break;
+			}
+		DestroySmoke (-i - 1);
+		}
 	}
 FreeParticleImages ();
 FreePartList ();
@@ -1812,7 +1850,10 @@ else
 
 	for (i = gameData.smoke.iUsed; i >= 0; i = n) {
 		pSmoke = gameData.smoke.buffer + i;
-		n = pSmoke->nNext;
+		if ((n = pSmoke->nNext) == gameData.smoke.iUsed) {
+			RebuildSmokeList ();
+			break;
+			}
 #if 0
 		if ((pSmoke->nObject != 0x7fffffff) && (pSmoke->nSignature != OBJECTS [pSmoke->nObject].nSignature)) {
 			SetSmokeLife (i, 0);

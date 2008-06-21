@@ -3535,14 +3535,14 @@ int TIRUnload (void);
 
 #include "error.h"
 
-#if 1//def _DEBUG
-
 static inline void SemWait (uint sem)
 {
 while (gameData.app.semaphores [sem])
 	G3_SLEEP (0);
 }
 
+
+#ifdef _DEBUG
 
 static inline void SemEnter (uint sem, const char *pszFile, int nLine)
 {
@@ -3572,14 +3572,14 @@ else
 
 static inline void SemEnter (uint sem)
 {
-while (gameData.app.semaphores & sem)
-	G3_SLEEP (1);
-gameData.app.semaphores |= sem;
+SemWait (sem);
+gameData.app.semaphores [sem]++;
 }
 
 static inline void SemLeave (uint sem)
 {
-gameData.app.semaphores &= ~sem;
+if (gameData.app.semaphores [sem])
+	gameData.app.semaphores [sem]--;
 }
 
 #define SEM_WAIT(_sem)	SemEnter (_sem);

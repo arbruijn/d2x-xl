@@ -1057,6 +1057,8 @@ if (SHOW_LIGHTNINGS) {
 	SEM_ENTER (SEM_LIGHTNINGS)
 
 		tLightningBundle	*plb;
+		tObject				*objP;
+		ubyte					h;
 		int					i, n;
 
 #if LIMIT_LIGHTNING_FPS
@@ -1072,6 +1074,12 @@ if (SHOW_LIGHTNINGS) {
 		return 0;
 #	endif
 #endif
+	for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [1]; i++, objP++) {
+		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNINGS) {
+			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNINGS;
+			DestroyObjectLightnings (objP);
+			}
+		}
 	for (i = gameData.lightnings.iUsed; i >= 0; i = n) {
 		plb = gameData.lightnings.buffer + i;
 		n = plb->nNext;
@@ -1080,25 +1088,18 @@ if (SHOW_LIGHTNINGS) {
 		plb->tUpdate = gameStates.app.nSDLTicks; 
 		if (plb->bDestroy)
 			DestroyLightnings (i, NULL, 1);
-		else {
+		else if (!(plb->nKey [0] || plb->nKey [1])) {
 			if (!(plb->nLightnings = UpdateLightning (plb->pl, plb->nLightnings, 0)))
 				DestroyLightnings (i, NULL, 1);
-			else if (!(plb->nKey [0] || plb->nKey [1]) && (plb->nObject >= 0)) {
+			else if (plb->nObject >= 0) {
 				UpdateLightningSound (plb);
 				MoveObjectLightnings (OBJECTS + plb->nObject);
 				}
 			}
 		}
 
-	tObject	*objP;
-	ubyte		h;
-	for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [1]; i++, objP++) {
-		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNINGS) {
-			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNINGS;
-			DestroyObjectLightnings (objP);
-			}
-		}
 	SEM_LEAVE (SEM_LIGHTNINGS)
+
 	for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [0]; i++, objP++) {
 		h = gameData.objs.bWantEffect [i];
 		if (h & EXPL_LIGHTNINGS) {
@@ -2411,8 +2412,10 @@ if (i >= 0) {
 		plb->nKey [0] = key.i [0];
 		plb->nKey [1] = key.i [1];
 		}
-	plb->nLightnings = UpdateLightning (plb->pl, plb->nLightnings, 0);
-	RenderLightning (plb->pl, plb->nLightnings, 0, -1);
+	if ((plb->nLightnings = UpdateLightning (plb->pl, plb->nLightnings, 0)))
+		RenderLightning (plb->pl, plb->nLightnings, 0, -1);
+	else
+		DestroyLightnings (i, NULL, 1);
 	}
 }
 

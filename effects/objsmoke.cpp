@@ -432,6 +432,9 @@ else {
 	nLife = gameOpts->render.smoke.nLife [3] + 1;
 #if 1
 	nParts = (int) (MSL_MAX_PARTS * f2fl (nSpeed) / (40.0f * (4 - nLife)));
+	if ((objP->id == EARTHSHAKER_MEGA_ID) || (objP->id == ROBOT_SHAKER_MEGA_ID))
+		nParts /= 2;
+				
 #else
 	nParts = (objP->id == EARTHSHAKER_ID) ? 1500 : 
 				(objP->id == MEGAMSL_ID) ? 1400 : 
