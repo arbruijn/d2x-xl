@@ -397,7 +397,7 @@ else {
 if (!gameStates.render.automap.bRadar && gameOpts->render.automap.bTextured) {
 	gameData.render.mine.viewerEye = amData.viewPos;
 	RenderMine (gameData.objs.console->nSegment, 0, 0);
-	RenderItems ();
+	RenderEffects (0);
 	}
 else
 	DrawAllEdges ();

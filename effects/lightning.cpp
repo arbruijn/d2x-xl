@@ -108,7 +108,7 @@ int UpdateLightning (tLightning *pl, int nLightnings, int nDepth);
 
 void TRAP (tLightningNode *pln)
 {
-if ( pln->pChild == (tLightning *) (size_t) 0xfeeefeee)
+if (pln->pChild == (tLightning *) (size_t) 0xfeeefeee)
 	pln = pln;
 }
 
@@ -1090,16 +1090,16 @@ if (SHOW_LIGHTNINGS) {
 			}
 		}
 
-	tObject	*objP = OBJECTS;
+	tObject	*objP;
 	ubyte		h;
-	for (i = 0; i < gameData.objs.nLastObject [1]; i++, objP++) {
+	for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [1]; i++, objP++) {
 		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNINGS) {
 			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNINGS;
 			DestroyObjectLightnings (objP);
 			}
 		}
 	SEM_LEAVE (SEM_LIGHTNINGS)
-	for (i = 0; i < gameData.objs.nLastObject [0]; i++, objP++) {
+	for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [0]; i++, objP++) {
 		h = gameData.objs.bWantEffect [i];
 		if (h & EXPL_LIGHTNINGS) {
 			if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR))
@@ -1772,7 +1772,7 @@ void RenderLightning (tLightning *pl, int nLightnings, short nDepth, int bDepthS
 #if !RENDER_LIGHTINGS_BUFFERED
 	int			h, j;
 #endif
-	int			bPlasma =  gameOpts->render.lightnings.bPlasma && pl->bPlasma;
+	int			bPlasma = gameOpts->render.lightnings.bPlasma && pl->bPlasma;
 	tRgbaColorf	color;
 #if RENDER_LIGHTING_SEGMENTS
 	fVector		vPosf [3] = {{{0,0,0}},{{0,0,0}}};
@@ -1944,11 +1944,6 @@ else {
 void RenderLightnings (void)
 {
 if (SHOW_LIGHTNINGS) {
-	static int nSem = 0;
-	if (nSem)
-		return;
-	nSem++;
-   SEM_ENTER (SEM_LIGHTNINGS)
 		tLightningBundle	*plb;
 		int					i, n, bStencil = StencilOff ();
 
@@ -1959,8 +1954,6 @@ if (SHOW_LIGHTNINGS) {
 			RenderLightning (plb->pl, plb->nLightnings, 0, gameOpts->render.bDepthSort > 0);
 		}
 	StencilOn (bStencil);
-   SEM_LEAVE (SEM_LIGHTNINGS)
-	nSem--;
 	}
 }
 

@@ -185,17 +185,10 @@ SEM_LEAVE (SEM_SPARKS)
 
 void RenderEnergySparks (void)
 {
-static int nSem = 0;
-if (nSem)
-	return;
-nSem++;
-SEM_ENTER (SEM_SPARKS)
 if (gameOpts->render.effects.bEnergySparks) {
 	for (short nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
 		RenderSegmentSparks (nSegment);
 	}
-SEM_LEAVE (SEM_SPARKS)
-nSem--;
 }
 
 //-----------------------------------------------------------------------------

@@ -1257,6 +1257,43 @@ if (pnStartSeg)
 
 //------------------------------------------------------------------------------
 
+void RenderEffects (int nWindow)
+{
+	int bLightnings, bSmoke, bSparks;
+
+if (gameStates.render.automap.bDisplay) {
+	bLightnings = gameOpts->render.automap.bLightnings;
+	bSmoke = gameOpts->render.automap.bSmoke;
+	bSparks = gameOpts->render.automap.bSparks;
+	}
+else {
+	bSparks = 1;
+	bLightnings = !nWindow || gameOpts->render.lightnings.bAuxViews;
+	bSmoke = !nWindow || gameOpts->render.smoke.bAuxViews;
+	}
+if (bSparks) {
+	SEM_ENTER (SEM_SPARKS)
+	RenderEnergySparks ();
+	}
+if (bLightnings) {
+	SEM_ENTER (SEM_LIGHTNINGS)
+	RenderLightnings ();
+	}
+if (bSmoke) {
+	SEM_ENTER (SEM_SMOKE)
+	RenderSmoke ();
+	}
+RenderItems ();
+if (bSmoke)
+	SEM_LEAVE (SEM_SMOKE)
+if (bLightnings)
+	SEM_LEAVE (SEM_LIGHTNINGS)
+if (bSparks)
+	SEM_LEAVE (SEM_SPARKS)
+}
+
+//------------------------------------------------------------------------------
+
 void RenderFrame (fix nEyeOffset, int nWindow)
 {
 	short nStartSeg;
@@ -1331,9 +1368,7 @@ if (SHOW_SHADOWS &&
 			RenderShadowTexture ();
 			}
 #endif
-		RenderEnergySparks ();
-		RenderLightnings ();
-		RenderSmoke ();
+		nWindow = 0;
 		}
 	}
 else 
@@ -1349,16 +1384,11 @@ else
 			RenderMine (nStartSeg, nEyeOffset, nWindow);
 			}
 		}
-	RenderEnergySparks ();
-	if (!nWindow || gameOpts->render.lightnings.bAuxViews)
-		RenderLightnings ();
-	if (!nWindow || gameOpts->render.smoke.bAuxViews)
-		RenderSmoke ();
 	}
 StencilOff ();
 if ((gameOpts->render.bDepthSort > 0) || gameOpts->render.nPath)
 	RenderSkyBox (nWindow);
-RenderItems ();
+RenderEffects (nWindow);
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
 	RenderRadar ();
 	}
@@ -2473,14 +2503,6 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		glDisable (GL_TEXTURE_2D);
 		}
 	glDepthFunc (GL_LESS);
-	if (gameStates.render.automap.bDisplay) {
-		if (gameOpts->render.automap.bLightnings)
-			RenderLightnings ();
-		if (gameOpts->render.automap.bSmoke)
-			RenderSmoke ();
-		if (gameOpts->render.automap.bSparks)
-			RenderEnergySparks ();
-		}
 	}
 }
 

@@ -2164,9 +2164,7 @@ return 1;
 
 int RenderSmoke (void)
 {
-SEM_ENTER (SEM_SMOKE)
 int h = (gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)) ? RenderParticles () : RenderClouds ();
-SEM_LEAVE (SEM_SMOKE)
 return h;
 }
 

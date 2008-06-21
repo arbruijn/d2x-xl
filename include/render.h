@@ -82,6 +82,7 @@ int RenderShadowMap (tDynLight *pLight);
 void UpdateRenderedData (int window_num, tObject *viewer, int rearViewFlag, int user);
 void RenderObjList (int nListPos, int nWindow);
 void RenderMineSegment (int nn);
+void RenderEffects (int nWindow);
 
 void InitSegZRef (int i, int j, int nThread);
 void QSortSegZRef (short left, short right);
