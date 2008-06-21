@@ -1965,7 +1965,11 @@ else if ((objP->nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
 		RequestEffects (objP, PLAYER_LIGHTNINGS);
 		}
 	else
+#if 1
+		RequestEffects (objP, DESTROY_LIGHTNINGS);
+#else
 		DestroyObjectLightnings (objP);
+#endif
 	}
 }
 

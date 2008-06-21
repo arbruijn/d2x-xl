@@ -2569,7 +2569,7 @@ typedef struct tApplicationData {
 	int					nGameMode;
 	int					bGamePaused;
 	uint					nStateGameId;
-	uint					semaphores;
+	uint					semaphores [4];
 	int					nLifetimeChecksum;
 	int					bUseMultiThreading [rtTaskCount];
 } tApplicationData;
@@ -3528,10 +3528,10 @@ int TIRUnload (void);
 
 #define HW_GEO_LIGHTING 0 //gameOpts->ogl.bGeoLighting
 
-#define SEM_SMOKE			1
-#define SEM_LIGHTNINGS	2
-#define SEM_SPARKS		4
-#define SEM_SHRAPNEL		8
+#define SEM_SMOKE			0
+#define SEM_LIGHTNINGS	1
+#define SEM_SPARKS		2
+#define SEM_SHRAPNEL		3
 
 #include "error.h"
 
@@ -3539,7 +3539,7 @@ int TIRUnload (void);
 
 static inline void SemWait (uint sem)
 {
-while (gameData.app.semaphores /*& sem*/)
+while (gameData.app.semaphores [sem])
 	G3_SLEEP (0);
 }
 
@@ -3548,16 +3548,17 @@ static inline void SemEnter (uint sem, const char *pszFile, int nLine)
 {
 SemWait (sem);
 PrintLog ("SemEnter (%d) @ %s:%d\n", sem, pszFile, nLine);
-gameData.app.semaphores |= sem;
+gameData.app.semaphores [sem]++;
 }
 
 static inline void SemLeave (uint sem, const char *pszFile, int nLine)
 {
-if (gameData.app.semaphores & sem)
+if (gameData.app.semaphores [sem]) {
+	gameData.app.semaphores [sem]--;
 	PrintLog ("SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
+	}
 else
 	PrintLog ("asymmetric SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
-gameData.app.semaphores &= ~sem;
 }
 
 #define SEM_WAIT(_sem)	SemWait (_sem);

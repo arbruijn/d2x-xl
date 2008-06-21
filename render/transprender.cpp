@@ -937,12 +937,14 @@ PROF_END(ptRenderFaces)
 
 void RIRenderObject (tRIObject *item)
 {
-SEM_LEAVE (SEM_LIGHTNINGS | SEM_SPARKS)	//might lockup otherwise when creating damage lightnings on cloaked objects
+SEM_LEAVE (SEM_LIGHTNINGS)	//might lockup otherwise when creating damage lightnings on cloaked objects
+SEM_LEAVE (SEM_SPARKS)
 DrawPolygonObject (item->objP, 0, 1);
 glDisable (GL_TEXTURE_2D);
 renderItems.bTextured = 0;
 renderItems.bClientState = 0;
-SEM_ENTER (SEM_LIGHTNINGS | SEM_SPARKS)
+SEM_ENTER (SEM_LIGHTNINGS)
+SEM_ENTER (SEM_SPARKS)
 }
 
 //------------------------------------------------------------------------------
@@ -1160,7 +1162,8 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	return;
 	}
 PROF_START
-SEM_ENTER (SEM_LIGHTNINGS | SEM_SPARKS)
+SEM_ENTER (SEM_LIGHTNINGS)
+SEM_ENTER (SEM_SPARKS)
 RIResetShader ();
 bStencil = StencilOff ();
 renderItems.bTextured = -1;
@@ -1254,7 +1257,8 @@ StencilOn (bStencil);
 renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 renderItems.nMaxOffs = 0;
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
-SEM_LEAVE (SEM_LIGHTNINGS | SEM_SPARKS)
+SEM_LEAVE (SEM_LIGHTNINGS)	
+SEM_LEAVE (SEM_SMOKE)
 PROF_END(ptTranspPolys)
 return;
 }

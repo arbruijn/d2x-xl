@@ -1089,7 +1089,6 @@ if (SHOW_LIGHTNINGS) {
 				}
 			}
 		}
-	SEM_LEAVE (SEM_LIGHTNINGS)
 
 	tObject	*objP = OBJECTS;
 	ubyte		h;
@@ -1099,6 +1098,7 @@ if (SHOW_LIGHTNINGS) {
 			DestroyObjectLightnings (objP);
 			}
 		}
+	SEM_LEAVE (SEM_LIGHTNINGS)
 	for (i = 0; i < gameData.objs.nLastObject [0]; i++, objP++) {
 		h = gameData.objs.bWantEffect [i];
 		if (h & EXPL_LIGHTNINGS) {
@@ -1219,14 +1219,12 @@ SEM_LEAVE (SEM_LIGHTNINGS)
 
 void DestroyObjectLightnings (tObject *objP)
 {
-SEM_ENTER (SEM_LIGHTNINGS)
 	int i = OBJ_IDX (objP);
 
 if (gameData.lightnings.objects [i] >= 0) {
 	DestroyLightnings (gameData.lightnings.objects [i], NULL, 0);
 	gameData.lightnings.objects [i] = -1;
 	}
-SEM_LEAVE (SEM_LIGHTNINGS)
 }
 
 //------------------------------------------------------------------------------
@@ -1238,7 +1236,11 @@ void DestroyAllObjectLightnings (int nType, int nId)
 
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
 	if ((objP->nType == nType) && ((nId < 0) || (objP->id == nId)))
+#if 1
+		RequestEffects (objP, DESTROY_LIGHTNINGS);
+#else
 		DestroyObjectLightnings (objP);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1942,9 +1944,13 @@ else {
 void RenderLightnings (void)
 {
 if (SHOW_LIGHTNINGS) {
+	static int nSem = 0;
+	if (nSem)
+		return;
+	nSem++;
    SEM_ENTER (SEM_LIGHTNINGS)
 		tLightningBundle	*plb;
-		int			i, n, bStencil = StencilOff ();
+		int					i, n, bStencil = StencilOff ();
 
 	for (i = gameData.lightnings.iUsed; i >= 0; i = n) {
 		plb = gameData.lightnings.buffer + i;
@@ -1954,6 +1960,7 @@ if (SHOW_LIGHTNINGS) {
 		}
 	StencilOn (bStencil);
    SEM_LEAVE (SEM_LIGHTNINGS)
+	nSem--;
 	}
 }
 
