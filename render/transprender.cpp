@@ -1258,7 +1258,7 @@ renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 renderItems.nMaxOffs = 0;
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 SEM_LEAVE (SEM_LIGHTNINGS)	
-SEM_LEAVE (SEM_SMOKE)
+SEM_LEAVE (SEM_SPARKS)
 PROF_END(ptTranspPolys)
 return;
 }
