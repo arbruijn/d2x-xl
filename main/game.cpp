@@ -1995,9 +1995,9 @@ if (nDebugSlowdown) {
 		tiEffects.bExec = 1;
 		}
 	else {
-		DoSmokeFrame ();
-		DoEnergySparkFrame ();
 		DoLightningFrame ();
+		DoEnergySparkFrame ();
+		DoSmokeFrame ();
 		}
 //PrintLog ("DoAmbientSounds\n");
 	DoAmbientSounds ();
