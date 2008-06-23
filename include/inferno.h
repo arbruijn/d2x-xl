@@ -3545,6 +3545,7 @@ while (gameData.app.semaphores [sem]) {
 		PrintLog ("multi threading got stuck (semaphore: %d)\n", sem);
 		gameData.app.bUseMultiThreading [rtEffects] = 0;
 		gameData.app.semaphores [sem] = 0;
+		break;
 		}
 	}
 }

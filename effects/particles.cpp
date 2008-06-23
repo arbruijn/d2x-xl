@@ -1664,10 +1664,15 @@ int IsUsedSmoke (int iSmoke)
 {
 	int nPrev = -1;
 
-for (int i = gameData.smoke.iUsed; i >= 0; i = gameData.smoke.buffer [i].nNext)
-	if (iSmoke == i) {
+for (int i = gameData.smoke.iUsed; i >= 0; ) {
+	if (iSmoke == i)
 		return nPrev + 1;
 	nPrev = i;
+	i = gameData.smoke.buffer [i].nNext;
+	if (i == gameData.smoke.iUsed) {
+		RebuildSmokeList ();
+		return -1;
+		}
 	}
 return -1;
 }
