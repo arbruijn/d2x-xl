@@ -573,7 +573,7 @@ VmExtractAnglesVector (&an, &n);
 if (!nStep)
 	VmAngles2Matrix (&posP->mOrient, &an);
 if (bSetPos)
-	COMPUTE_SEGMENT_CENTER_I (&posP->vPos, + nSegment); 
+	COMPUTE_SEGMENT_CENTER_I (&posP->vPos, nSegment); 
 // rotate the ships vel vector accordingly
 //StopPlayerMovement ();
 }

@@ -535,12 +535,17 @@ int DestroyAllLightnings (int bForce)
 if (!bForce && (gameData.lightnings.bDestroy >= 0))
 	gameData.lightnings.bDestroy = 1;
 else {
+	uint bSem = gameData.app.semaphores [SEM_LIGHTNINGS];
+	if (!bSem)
+		SEM_ENTER (SEM_LIGHTNINGS)
 	for (i = gameData.lightnings.iUsed; i >= 0; i = j) {
 		j = gameData.lightnings.buffer [i].nNext;
 		DestroyLightnings (i, NULL, 1);
 		}
 	ResetLightningLights (1);
 	InitLightnings ();
+	if (!bSem)
+		SEM_LEAVE (SEM_LIGHTNINGS)
 	}
 return 1;
 }
@@ -1054,7 +1059,6 @@ return NULL;
 void UpdateLightnings (void)
 {
 if (SHOW_LIGHTNINGS) {
-	SEM_ENTER (SEM_LIGHTNINGS)
 
 		tLightningBundle	*plb;
 		tObject				*objP;
@@ -1074,6 +1078,7 @@ if (SHOW_LIGHTNINGS) {
 		return 0;
 #	endif
 #endif
+	SEM_ENTER (SEM_LIGHTNINGS)
 	for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [1]; i++, objP++) {
 		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNINGS) {
 			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNINGS;

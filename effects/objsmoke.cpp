@@ -228,7 +228,7 @@ if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multiplayer.nLocalPlay
 	else {
 		if (bForward) {
 			if ((h = gameData.smoke.objects [j]) >= 0) {
-				KillObjectSmoke (i);
+				KillObjectSmoke (j);
 				DestroySmoke (h);
 				}
 			bForward = 0;
@@ -756,14 +756,12 @@ if ((shrapnelP->xTTL > 0) && LoadExplBlast ()) {
 
 void DrawShrapnels (tObject *objP)
 {
-SEM_ENTER (SEM_SHRAPNEL)
 	tShrapnelData	*sdP = gameData.objs.shrapnels + OBJ_IDX (objP);
 	tShrapnel		*shrapnelP = sdP->shrapnels;
 	int				i;
 
 for (i = sdP->nShrapnels; i; i--, shrapnelP++)
 	DrawShrapnel (shrapnelP);
-SEM_LEAVE (SEM_SHRAPNEL)
 }
 
 // -----------------------------------------------------------------------------
@@ -870,8 +868,6 @@ void ObjectSmokeFrame (void)
 
 if (!SHOW_SMOKE)
 	return;
-if (!gameOpts->render.smoke.bRobots)
-	return;
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [1]; i++, objP++) {
 	if (gameData.objs.bWantEffect [i] & DESTROY_SMOKE) {
 		gameData.objs.bWantEffect [i] &= ~DESTROY_SMOKE;
@@ -934,10 +930,7 @@ if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG 
 ObjectSmokeFrame ();
 StaticSmokeFrame ();
 SEM_LEAVE (SEM_SMOKE)
-SEM_ENTER (SEM_SHRAPNEL)
 ShrapnelFrame ();
-SEM_LEAVE (SEM_SHRAPNEL)
-SEM_ENTER (SEM_SMOKE)
 UpdateSmoke ();
 SEM_LEAVE (SEM_SMOKE)
 }

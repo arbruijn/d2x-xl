@@ -210,6 +210,7 @@ return gameData.matCens.nSparkSegs;
 
 void AllocEnergySparks (void)
 {
+SEM_ENTER (SEM_SPARKS)
 	short	nSegment;
 
 if (gameOpts->render.effects.bEnergySparks && BuildSparkSegList ()) {
@@ -225,17 +226,20 @@ if (gameOpts->render.effects.bEnergySparks && BuildSparkSegList ()) {
 	else
 		gameOpts->render.effects.bEnergySparks = 0;
 	}
+SEM_LEAVE (SEM_SPARKS)
 }
 
 //-----------------------------------------------------------------------------
 
 void FreeEnergySparks (void)
 {
+SEM_ENTER (SEM_SPARKS)
 	short	nSegment;
 
 if (gameOpts->render.effects.bEnergySparks)
 	for (nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
 		FreeSegmentSparks (nSegment);
+SEM_LEAVE (SEM_SPARKS)
 }
 
 //-----------------------------------------------------------------------------

@@ -849,16 +849,13 @@ int CollideWeaponAndWall (tObject *weaponP, fix hitspeed, short hitseg, short hi
 	tWeaponInfo *wInfoP = gameData.weapons.info + weaponP->id;
 	tObject		*wObjP = OBJECTS + weaponP->cType.laserInfo.nParentObj;
 
-	int	bBlewUp, bEscort, wallType, nPlayer;
-	int	bBounce = (weaponP->mType.physInfo.flags & PF_BOUNCE) != 0;
+	int	bBounce, bBlewUp, bEscort, wallType, nPlayer;
 	fix	nStrength = WI_strength (weaponP->id, gameStates.app.nDifficultyLevel);
 
 if (weaponP->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weaponP))
 		return 1;
 
-if (!bBounce)
-	CreateWeaponEffects (weaponP, 1);
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->id == GUIDEDMSL_ID) {
 	fix dot = VmVecDot (&weaponP->position.mOrient.fVec, sideP->normals);
@@ -871,8 +868,18 @@ if (weaponP->id == GUIDEDMSL_ID) {
 #endif
 		weaponP->mType.physInfo.flags &= ~PF_BOUNCE;
 		}
+	else {
+		vmsVector	vReflect;
+		vmsAngVec	va;
+
+		VmExtractAnglesVector (&va, VmVecReflect (&vReflect, &weaponP->position.mOrient.fVec, sideP->normals));
+		VmAngles2Matrix (&weaponP->position.mOrient, &va);
+		}
 	}
 
+bBounce = (weaponP->mType.physInfo.flags & PF_BOUNCE) != 0;
+if (!bBounce)
+	CreateWeaponEffects (weaponP, 1);
 //if an energy weaponP hits a forcefield, let it bounce
 if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_FORCE_FIELD) &&
 	 ((weaponP->nType != OBJ_WEAPON) || wInfoP->energy_usage)) {

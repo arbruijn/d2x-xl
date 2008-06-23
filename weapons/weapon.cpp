@@ -938,7 +938,7 @@ if (TactileStick) {
 /*
  * reads n tWeaponInfo structs from a CFILE
  */
-extern int WeaponInfoReadN(tWeaponInfo *pwi, int n, CFILE *fp, int fileVersion)
+int WeaponInfoReadN (tWeaponInfo *pwi, int n, CFILE *fp, int fileVersion)
 {
 	int i, j;
 
@@ -980,7 +980,7 @@ for (i = 0; i < n; i++, pwi++) {
 			case SMARTMINE_ID:
 				pwi->children = SMARTMINE_BLOB_ID;
 				break;
-#if 0 /* not present in shareware */
+#if 1 /* not present in shareware */
 			case ROBOT_SMARTMINE_ID:
 				pwi->children = ROBOT_SMARTMINE_BLOB_ID;
 				break;

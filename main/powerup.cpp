@@ -540,7 +540,7 @@ return PickupEquipment (objP, PLAYER_FLAGS_BULLETTIME, TXT_THE_BULLETTIME, TXT_G
 
 //------------------------------------------------------------------------------
 
-int PickupKey (tObject *objP, int nKey, int nAmount, const char *pszKey, int nPlayer)
+int PickupKey (tObject *objP, int nKey, const char *pszKey, int nPlayer)
 {
 if (ISLOCALPLAYER (nPlayer)) {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
@@ -675,9 +675,9 @@ typedef int (__fastcall * pPickupEquipment) (tObject *, int);
 typedef int (__fastcall * pPickupKey) (tObject *, int, const char *, int);
 typedef int (__fastcall * pPickupFlag) (tObject *, int, int, const char *, int);
 #else
-typedef int (* pPickupGun) (int, int);
-typedef int (* pPickupMissile) (tObject *, int, int, const char *, int);
-typedef int (* pPickupEquipment) (int);
+typedef int (* pPickupGun) (tObject *, int, int);
+typedef int (* pPickupMissile) (tObject *, int, int, int);
+typedef int (* pPickupEquipment) (tObject *, int);
 typedef int (* pPickupKey) (tObject *, int, const char *, int);
 typedef int (* pPickupFlag) (tObject *, int, int, const char *, int);
 #endif

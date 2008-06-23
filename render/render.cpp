@@ -1274,12 +1274,12 @@ else {
 if (bSparks) {
 	SEM_ENTER (SEM_SPARKS)
 	RenderEnergySparks ();
-	SEM_LEAVE (SEM_SPARKS)
+	//SEM_LEAVE (SEM_SPARKS)
 	}
 if (bSmoke) {
 	SEM_ENTER (SEM_SMOKE)
 	RenderSmoke ();
-	SEM_LEAVE (SEM_SMOKE)
+	//SEM_LEAVE (SEM_SMOKE)
 	}
 if (bLightnings) {
 	SEM_ENTER (SEM_LIGHTNINGS)
@@ -1288,7 +1288,7 @@ if (bLightnings) {
 RenderItems ();
 if (bLightnings)
 	SEM_LEAVE (SEM_LIGHTNINGS)
-#if 0
+#if 1
 if (bSmoke)
 	SEM_LEAVE (SEM_SMOKE)
 if (bSparks)

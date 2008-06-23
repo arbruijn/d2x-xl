@@ -846,8 +846,13 @@ else if ((gameData.objs.viewer == gameData.objs.console) && !gameStates.render.a
 				  ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0, 0)) || 
 				  (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK))))) {
 #endif	 
-		if (gameOpts->render.smoke.bPlayers)
+#if 0
+		if (gameOpts->render.smoke.bPlayers) {
+			SEM_ENTER (SEM_SMOKE)
 			DoPlayerSmoke (objP, -1);
+			SEM_LEAVE (SEM_SMOKE)
+			}
+#endif
 		PROF_END(ptRenderObjects)
 		return 0;	
 		}
