@@ -3570,11 +3570,11 @@ else
 	PrintLog ("asymmetric SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
 }
 
-#define SEM_WAIT(_sem)	SemWait (_sem);
+#define SEM_WAIT(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemWait (_sem);
 
-#define SEM_ENTER(_sem)	SemEnter (_sem, __FILE__, __LINE__);
+#define SEM_ENTER(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemEnter (_sem, __FILE__, __LINE__);
 
-#define SEM_LEAVE(_sem)	SemLeave (_sem, __FILE__, __LINE__);
+#define SEM_LEAVE(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemLeave (_sem, __FILE__, __LINE__);
 
 #else
 
@@ -3591,11 +3591,11 @@ if (gameData.app.semaphores [sem])
 	gameData.app.semaphores [sem]--;
 }
 
-#define SEM_WAIT(_sem)	SemEnter (_sem);
+#define SEM_WAIT(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemWait (_sem);
 
-#define SEM_ENTER(_sem)	SemEnter (_sem);
+#define SEM_ENTER(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemEnter (_sem);
 
-#define SEM_LEAVE(_sem)	SemLeave (_sem);
+#define SEM_LEAVE(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemLeave (_sem);
 
 #endif
 
