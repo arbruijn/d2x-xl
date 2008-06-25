@@ -204,6 +204,8 @@ int HeadlightIsOn (int nPlayer);
 int MarkPathToExit ();
 void CheckRearView ();
 
+void DoEffectsFrame (void);
+
 void GameDisableCheats ();
 void TurnCheatsOff ();
 

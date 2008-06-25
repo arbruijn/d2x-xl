@@ -910,7 +910,7 @@ switch (objP->renderType) {
 				savePos = objP->position;
 				objP->position = gameStates.app.playerPos;
 				}
-			DoObjectSmoke (objP);
+			//DoObjectSmoke (objP);
 			DrawPolygonObject (objP, bDepthSort, 0);
 			gameOpts->ogl.bLightObjects = bDynObjLight;
 			if (!gameStates.render.bQueryCoronas) {
@@ -928,7 +928,7 @@ switch (objP->renderType) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_ROBOTS)
 				return 0;
 			gameData.models.nScale = 0;
-			DoObjectSmoke (objP);
+			//DoObjectSmoke (objP);
 			DrawPolygonObject (objP, bDepthSort, 0);
 			if (!gameStates.render.bQueryCoronas) {
 				RenderThrusterFlames (objP);
@@ -955,7 +955,7 @@ switch (objP->renderType) {
 						if (dt < 1)
 							gameData.models.nScale = (fix) (F1_0 + F1_0 * dt * dt) / 2;
 						}
-					DoObjectSmoke (objP);
+					//DoObjectSmoke (objP);
 					DrawPolygonObject (objP, bDepthSort, 0);
 #if RENDER_HITBOX
 #	if 0
@@ -980,7 +980,7 @@ switch (objP->renderType) {
 					if ((objP->id != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
 						RenderLightTrail (objP);
 					if (objP->nType == OBJ_WEAPON) {
-						DoObjectSmoke (objP);
+						//DoObjectSmoke (objP);
 						DrawPolygonObject (objP, bDepthSort, 0);
 						}
 					}
@@ -989,7 +989,7 @@ switch (objP->renderType) {
 		else if (objP->nType == OBJ_REACTOR) {
 			if (gameStates.render.nType != 1)
 				return 0;
-			DoObjectSmoke (objP);
+			//DoObjectSmoke (objP);
 			DrawPolygonObject (objP, bDepthSort, 0);
 			if (!gameStates.render.bQueryCoronas)
 				RenderTargetIndicator (objP, NULL);
@@ -1032,7 +1032,7 @@ switch (objP->renderType) {
 			if (IsSpawnMarkerObject (objP))
 				RenderMslLockIndicator (objP);
 			else
-				DoObjectSmoke (objP);
+				;//DoObjectSmoke (objP);
 			}
 		break;
 

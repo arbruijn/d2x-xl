@@ -1885,6 +1885,23 @@ if (LOCALPLAYER.energy <= 0) {
 }
 
 //-----------------------------------------------------------------------------
+
+void DoEffectsFrame (void)
+{
+//PrintLog ("DoSmokeFrame \n");
+if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects] && tiEffects.pThread) {
+	while (tiEffects.bExec)
+		G3_SLEEP (1);
+	tiEffects.bExec = 1;
+	}
+else {
+	DoLightningFrame ();
+	DoEnergySparkFrame ();
+	DoSmokeFrame ();
+	}
+}
+
+//-----------------------------------------------------------------------------
 // -- extern void lightning_frame (void);
 
 void GameRenderFrame ();
@@ -1988,17 +2005,7 @@ if (nDebugSlowdown) {
 	ProcessSmartMinesFrame ();
 //PrintLog ("DoSeismicStuff\n");
 	DoSeismicStuff ();
-//PrintLog ("DoSmokeFrame \n");
-	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects] && tiEffects.pThread) {
-		while (tiEffects.bExec)
-			G3_SLEEP (1);
-		tiEffects.bExec = 1;
-		}
-	else {
-		DoLightningFrame ();
-		DoEnergySparkFrame ();
-		DoSmokeFrame ();
-		}
+	DoEffectsFrame ();
 //PrintLog ("DoAmbientSounds\n");
 	DoAmbientSounds ();
 #ifdef _DEBUG

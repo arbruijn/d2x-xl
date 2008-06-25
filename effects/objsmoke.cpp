@@ -823,7 +823,8 @@ else if (t == OBJ_WEAPON) {
 		DoMissileSmoke (objP);
 	else if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (objP->id == PROXMINE_ID))
 		DoBombSmoke (objP);
-	else if (gameData.objs.bIsWeapon [objP->id] && EGI_FLAG (bLightTrails, 0, 0, 0))
+	else if (gameOpts->render.smoke.bPlasmaTrails && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0) &&
+				gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsSlowWeapon [objP->id])
 		DoParticleTrail (objP);
 	else
 		return 0;
@@ -875,6 +876,8 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [1]; i++, objP++) {
 		}
 	else if (objP->nType == OBJ_NONE)
 		KillObjectSmoke (i);
+	else
+		DoObjectSmoke (objP);
 	}
 }
 
@@ -921,14 +924,16 @@ if (gameStates.render.nShadowPass > 1)
 #endif
 SEM_ENTER (SEM_SMOKE)
 PlayerBulletFrame ();
-#ifdef _DEBUG
+#if 0
+#	ifdef _DEBUG
 if (!gameStates.render.bExternalView)
-#else
+#	else
 if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
-#endif
+#	endif
 	DoPlayerSmoke (gameData.objs.viewer, gameData.multiplayer.nLocalPlayer);
+#endif
 ObjectSmokeFrame ();
-StaticSmokeFrame ();
+//StaticSmokeFrame ();
 SEM_LEAVE (SEM_SMOKE)
 ShrapnelFrame ();
 UpdateSmoke ();
