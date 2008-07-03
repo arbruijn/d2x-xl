@@ -2148,8 +2148,8 @@ if (choice == -1) {
 	return 0; // they cancelled               
 	}               
 choice -= (2 + gameStates.multi.bUseTracker);
-if (choice >= networkData.nActiveGames) {
-	ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INVALID_CHOICE);
+if ((choice < 0) || (choice >= networkData.nActiveGames)) {
+	//ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INVALID_CHOICE);
 	goto doMenu;
 	}
 
