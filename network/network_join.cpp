@@ -463,6 +463,7 @@ networkData.playerRejoining.player.connected = nPlayer;
 networkData.bSyncExtraGameInfo = 0;
 networkData.nSyncState = 1;
 networkData.nSentObjs = -1;
+networkData.nSyncExtras = 0;
 networkData.toSyncFrame = 0;
 networkData.joinSeq = *their;
 NetworkDoSyncFrame ();
