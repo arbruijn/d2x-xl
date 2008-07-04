@@ -474,6 +474,8 @@ for (i = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
 	gameData.objs.freeList [i] = i;
 	objP->nType = OBJ_NONE;
 	objP->nSegment =
+	objP->prev =
+	objP->next = 
 	objP->cType.explInfo.nNextAttach =
 	objP->cType.explInfo.nPrevAttach =
 	objP->cType.explInfo.nAttachParent =
@@ -677,7 +679,7 @@ if (OBJECTS [0].prev == 0)
 
 void UnlinkObject (int nObject)
 {
-	tObject  *objP = OBJECTS+nObject;
+	tObject  *objP = OBJECTS + nObject;
 
 Assert (nObject != -1);
 if (objP->prev == -1)

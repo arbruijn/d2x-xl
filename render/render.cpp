@@ -1261,6 +1261,12 @@ void RenderEffects (int nWindow)
 {
 	int bLightnings, bSmoke, bSparks;
 
+#if 1
+if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects] && tiEffects.pThread) {
+	while (tiEffects.bExec)
+		G3_SLEEP (1);
+	}
+#endif
 if (gameStates.render.automap.bDisplay) {
 	bLightnings = gameOpts->render.automap.bLightnings;
 	bSmoke = gameOpts->render.automap.bSmoke;

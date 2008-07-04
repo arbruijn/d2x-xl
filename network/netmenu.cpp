@@ -1761,9 +1761,9 @@ if (gameData.multiplayer.nPlayers < 2) {
 #endif
 
 #ifndef _DEBUG
-if ((netGame.gameMode == NETGAME_TEAM_ANARCHY ||
-	  netGame.gameMode == NETGAME_CAPTURE_FLAG || 
-	  netGame.gameMode == NETGAME_TEAM_HOARD) && 
+if (((netGame.gameMode == NETGAME_TEAM_ANARCHY) ||
+	  (netGame.gameMode == NETGAME_CAPTURE_FLAG) || 
+	  (netGame.gameMode == NETGAME_TEAM_HOARD)) && 
 	 (gameData.multiplayer.nPlayers < 2)) {
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NEED_2PLAYERS);
 	gameData.multiplayer.nPlayers = nSavePlayers;

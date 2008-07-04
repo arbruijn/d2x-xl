@@ -1125,9 +1125,9 @@ if (flags & FQ_CHECK_OBJS) {
 					nFudgedRad = (radP1 * 3) / 4;
 				}
 			//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
-			if ((nThisType == OBJ_PLAYER ) &&
-				((nOtherType == OBJ_PLAYER) ||
-				(IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
+			if ((nThisType == OBJ_PLAYER) &&
+				 ((nOtherType == OBJ_PLAYER) ||
+				 (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
 				nFudgedRad = radP1 / 2;
 			if (flags & FQ_ANY_OBJECT)
 				d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);

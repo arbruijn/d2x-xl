@@ -506,7 +506,7 @@ if ((sbyte)new_pd.level_num != gameData.missions.nCurrentLevel) {
 #endif
 	return;
 	}
-theirObjP = &OBJECTS [theirObjNum];
+theirObjP = OBJECTS + theirObjNum;
 //------------- Keep track of missed packets -----------------
 gameData.multiplayer.players [nTheirPlayer].nPacketsGot++;
 networkData.nTotalPacketsGot++;
@@ -636,6 +636,22 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+inline bool ObjectIsLinked (tObject *objP, short nSegment)
+{
+if (nSegment != -1) {
+	short nObject = OBJ_IDX (objP);
+	for (short i = gameData.segs.objects [objP->nSegment], j = -1; i >= 0; j = i, i = OBJECTS [i].next) {
+		if (i == nObject) {
+			objP->prev = j;
+			return true;
+			}
+		}
+	}
+return false;
+}
+
+//------------------------------------------------------------------------------
+
 void NetworkReadObjectPacket (ubyte *dataP)
 {
 	static int		nPlayer = 0;
@@ -697,10 +713,8 @@ else if (i < 0)
 			}
 		networkData.missingObjFrames.nFrame = 0;
 		}
-	else if ((nObject == -2) || (nObject == -4)) {
-		// Special debug checksum marker for entire send
+	else if ((nObject == -2) || (nObject == -4)) {	// Special debug checksum marker for entire send
 		if (nMode == 1) {
-			//NetworkPackObjects ();
 			networkData.nSyncFrame = 0;
 			nMode = 0;
 			if (networkData.bHaveSync)
@@ -741,9 +755,12 @@ else if (i < 0)
 			}
 		if (nObject != -1) {
 			objP = OBJECTS + nObject;
-			if (objP->nSegment != -1)
+#ifdef _DEBUG
+			if (objP->nSegment >= 0)
+				objP = objP;
+#endif
+			if (ObjectIsLinked (objP, objP->nSegment))
 				UnlinkObject (nObject);
-			Assert (objP->nSegment == -1);
 			Assert (nObject < MAX_OBJECTS);
 			NW_GET_BYTES (dataP, bufI, objP, sizeof (tObject));
 			if (objP->nType != OBJ_NONE) {
@@ -754,7 +771,8 @@ else if (i < 0)
 				objP->attachedObj = -1;
 				if (nSegment < 0)
 					nSegment = FindSegByPos (&objP->position.vPos, -1, 1, 0);
-				LinkObject (OBJ_IDX (objP), nSegment);
+				if (!ObjectIsLinked (objP, nSegment))
+					LinkObject (OBJ_IDX (objP), nSegment);
 				if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_GHOST))
 					RemapLocalPlayerObject (nObject, nRemoteObj);
 				if (nObjOwner == nPlayer) 
