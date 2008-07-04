@@ -1701,7 +1701,7 @@ if (bAutoRun)
 	return 1;
 
 memset (m, 0, sizeof (m));
-for (i = 0; i< MAX_PLAYERS+4; i++) {
+for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	sprintf (text [i], "%d.  %-20s", i+1, "");
 	m [i].nType = NM_TYPE_CHECK; 
 	m [i].text = text [i]; 
@@ -2591,9 +2591,9 @@ extern char bPauseableMenu;
 
 void DoShowNetgameHelp()
  {
-	tMenuItem m[30];
-   char mtext[30][60];
-	int i, num=0, eff;
+	tMenuItem m [30];
+   char mtext [30][60];
+	int i, num = 0, eff;
 #ifdef _DEBUG
 	int pl;
 #endif
@@ -2601,24 +2601,24 @@ void DoShowNetgameHelp()
 
 memset (m, 0, sizeof (m));
 for (i = 0; i < 30; i++) {
-	m [i].text = (char *) mtext + i;
+	m [i].text = (char *) mtext [i];
 	m [i].nType = NM_TYPE_TEXT;
 	}
 
-sprintf (mtext[num], TXT_INFO_GAME, netGame.szGameName); num++;
-sprintf (mtext[num], TXT_INFO_MISSION, netGame.szMissionTitle); num++;
-sprintf (mtext[num], TXT_INFO_LEVEL, netGame.nLevel); num++;
-sprintf (mtext[num], TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT (netGame.difficulty)); num++;
-sprintf (mtext[num], TXT_INFO_MODE, GT (537 + netGame.gameMode)); num++;
-sprintf (mtext[num], TXT_INFO_SERVER, gameData.multiplayer.players [NetworkWhoIsMaster()].callsign); num++;
-sprintf (mtext[num], TXT_INFO_PLRNUM, NetworkHowManyConnected(), netGame.nMaxPlayers); num++;
-sprintf (mtext[num], TXT_INFO_PPS, netGame.nPacketsPerSec); num++;
-sprintf (mtext[num], TXT_INFO_SHORTPKT, netGame.bShortPackets ? "Yes" : "No"); num++;
+sprintf (mtext [num++], TXT_INFO_GAME, netGame.szGameName);
+sprintf (mtext [num++], TXT_INFO_MISSION, netGame.szMissionTitle);
+sprintf (mtext [num++], TXT_INFO_LEVEL, netGame.nLevel);
+sprintf (mtext [num++], TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT (netGame.difficulty));
+sprintf (mtext [num++], TXT_INFO_MODE, GT (537 + netGame.gameMode));
+sprintf (mtext [num++], TXT_INFO_SERVER, gameData.multiplayer.players [NetworkWhoIsMaster()].callsign);
+sprintf (mtext [num++], TXT_INFO_PLRNUM, NetworkHowManyConnected(), netGame.nMaxPlayers);
+sprintf (mtext [num++], TXT_INFO_PPS, netGame.nPacketsPerSec);
+sprintf (mtext [num++], TXT_INFO_SHORTPKT, netGame.bShortPackets ? "Yes" : "No");
 #ifdef _DEBUG
-pl=(int)(((double)networkData.nTotalMissedPackets/(double)networkData.nTotalPacketsGot)*100.0);
-if (pl<0)
+pl=(int) (((double) networkData.nTotalMissedPackets / (double) networkData.nTotalPacketsGot) * 100.0);
+if (pl < 0)
 pl=0;
-sprintf (mtext[num], TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, pl); num++;
+sprintf (mtext [num++], TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, pl);
 #endif
 if (netGame.KillGoal)
 	sprintf (mtext [num++], TXT_INFO_KILLGOAL, netGame.KillGoal*5); 
@@ -2630,7 +2630,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (!gameOpts->multi.bNoRankings) {
 			if (i == gameData.multiplayer.nLocalPlayer)
 				sprintf (mtext [num++], "%s%s (%d/%d)", 
-							pszRankStrings[netPlayers.players [i].rank], 
+							pszRankStrings [netPlayers.players [i].rank], 
 							gameData.multiplayer.players [i].callsign, 
 							networkData.nNetLifeKills, 
 							networkData.nNetLifeKilled); 
@@ -2645,7 +2645,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 			sprintf (mtext[num++], "%s", gameData.multiplayer.players [i].callsign); 
 		}
 	sprintf (mtext [num++], " "); 
-	eff = (int)((double)((double)networkData.nNetLifeKills/((double)networkData.nNetLifeKilled+(double)networkData.nNetLifeKills))*100.0);
+	eff = (int)((double)((double) networkData.nNetLifeKills / ((double) networkData.nNetLifeKilled + (double) networkData.nNetLifeKills))*100.0);
 	if (eff < 0)
 		eff = 0;
 	if (gameData.app.nGameMode & GM_HOARD) {
@@ -2659,11 +2659,11 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (eff < 60)
 		sprintf (mtext [num++], TXT_EFF_INFLUENCE, GT(546 + eff / 10)); 
 	else
-	sprintf (mtext[num], TXT_EFF_SERVEWELL); num++;
+	sprintf (mtext [num++], TXT_EFF_SERVEWELL);
 	}  
 FullPaletteSave();
 bPauseableMenu = 1;
-ExecMenutiny2 (NULL, "netGame Information", num, m, NULL);
+ExecMenutiny2 (NULL, "Netgame Information", num, m, NULL);
 PaletteRestore();
 }
 
