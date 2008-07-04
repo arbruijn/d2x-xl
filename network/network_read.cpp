@@ -754,6 +754,7 @@ else if (i < 0)
 				Int3 (); // SEE ROB
 			}
 		if (nObject != -1) {
+			Assert (nObject < MAX_OBJECTS);
 			objP = OBJECTS + nObject;
 #ifdef _DEBUG
 			if (objP->nSegment >= 0)
@@ -761,7 +762,6 @@ else if (i < 0)
 #endif
 			if (ObjectIsLinked (objP, objP->nSegment))
 				UnlinkObject (nObject);
-			Assert (nObject < MAX_OBJECTS);
 			NW_GET_BYTES (dataP, bufI, objP, sizeof (tObject));
 			if (objP->nType != OBJ_NONE) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
