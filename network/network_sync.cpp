@@ -285,7 +285,7 @@ return;
 
 void NetworkSyncExtras (void)
 {
-Assert (networkData.nPlayerJoiningExtras >- 1);
+Assert (networkData.nPlayerJoiningExtras > -1);
 if (!NetworkIAmMaster ()) {
 #if 1			
   con_printf (CONDBG, "Hey! I'm not the master and I was gonna send info!\n");
@@ -353,9 +353,10 @@ else if (networkData.nSyncState == 3) {
 		networkData.nSyncState = 0;
 	}
 else {
-	if (networkData.nSyncExtras && (networkData.bVerifyPlayerJoined == -1))
+	if (networkData.nSyncExtras && (networkData.bVerifyPlayerJoined != -1)) {
 		NetworkSyncExtras ();
 		networkData.bSyncExtraGameInfo = (networkData.nSyncExtras == 0);
+		}
 	}
 }
 
@@ -413,7 +414,7 @@ static inline fix SyncPollTimeout (void)
 #ifdef _DEBUG
 return 5000;
 #else
-return 2000;
+return 5000;
 #endif
 }
 

@@ -285,6 +285,8 @@ void NetworkWelcomePlayer (tSequencePacket *their)
 	int nPlayer;
 	int i;
 
+if (networkData.nSyncState)
+	return;
 networkData.refuse.bWaitForAnswer = 0;
 if (FindArg ("-NoMatrixCheat")) {
 	if ((their->player.versionMinor & 0x0F) < 3) {

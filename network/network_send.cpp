@@ -166,7 +166,7 @@ if (networkData.bPlayerAdded) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if ((i != nPlayer) && 
 			 (i != gameData.multiplayer.nLocalPlayer) && 
-			 (gameData.multiplayer.players [i].connected))
+			 gameData.multiplayer.players [i].connected)
 			if (gameStates.multi.nGameType >= IPX_GAME) {
 				SendSequencePacket (
 					networkData.playerRejoining, 
