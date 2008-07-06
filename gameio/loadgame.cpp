@@ -123,6 +123,8 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "monsterball.h"
 #include "sparkeffect.h"
 #include "transprender.h"
+#include "slowmotion.h"
+#include "soundthreads.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -977,6 +979,7 @@ if (!bRestore) {
 	gameStates.gameplay.slowmo [1].fSpeed = 1;
 	gameStates.gameplay.slowmo [0].nState =
 	gameStates.gameplay.slowmo [1].nState = 0;
+	SpeedupSound ();
 	gameData.render.lights.bInitDynColoring = 1;
 	gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
 	SetMaxOmegaCharge ();

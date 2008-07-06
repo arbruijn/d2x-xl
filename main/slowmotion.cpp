@@ -8,8 +8,6 @@
 #include "text.h"
 #include "soundthreads.h"
 
-#define USE_SOUND_THREADS	1
-
 static int nSlowMotionChannel = -1;
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -182,6 +180,38 @@ return 1;
 
 //	-----------------------------------------------------------------------------------------------------------
 
+void SpeedupSound (void)
+{
+#if USE_SOUND_THREADS
+tiSound.fSlowDown = 1.0f;
+RunSoundThread (stReconfigureAudio);
+#else
+DigiExit ();
+DigiInit (1);
+gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart + 
+							 2 * (SDL_GetTicks () - gameData.songs.tSlowDown) / gameOpts->gameplay.nSlowMotionSpeedup;
+PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+#endif
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+void SlowdownSound (void)
+{
+#if USE_SOUND_THREADS
+tiSound.fSlowDown = f;
+RunSoundThread (stReconfigureAudio);
+#else
+DigiExit ();
+DigiInit ((float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
+gameData.songs.tSlowDown = SDL_GetTicks ();
+gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart;
+PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+#endif
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
 #define SLOWDOWN_SECS	2
 #define SLOWDOWN_FPS		40
 
@@ -201,34 +231,14 @@ for (i = 0; i < 2; i++) {
 		if (gameStates.gameplay.slowmo [i].fSpeed >= f) {
 			gameStates.gameplay.slowmo [i].fSpeed = f;
 			gameStates.gameplay.slowmo [i].nState = 0;
-			if (!i) {
-#if USE_SOUND_THREADS
-				tiSound.fSlowDown = f;
-				RunSoundThread (stReconfigureAudio);
-#else
-				DigiExit ();
-				DigiInit (f);
-				gameData.songs.tSlowDown = SDL_GetTicks ();
-				gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart;
-				PlayLevelSong (gameData.missions.nCurrentLevel, 1);
-#endif
-				}
+			if (!i) 
+				SlowdownSound ();
 			}
 		else if (gameStates.gameplay.slowmo [i].fSpeed <= 1) {
 			gameStates.gameplay.slowmo [i].fSpeed = 1;
 			gameStates.gameplay.slowmo [i].nState = 0;
-			if (!i) {
-#if USE_SOUND_THREADS
-				tiSound.fSlowDown = 1.0f;
-				RunSoundThread (stReconfigureAudio);
-#else
-				DigiExit ();
-				DigiInit (1);
-				gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart + 
-											 2 * (SDL_GetTicks () - gameData.songs.tSlowDown) / gameOpts->gameplay.nSlowMotionSpeedup;
-				PlayLevelSong (gameData.missions.nCurrentLevel, 1);
-#endif
-				}
+			if (!i)
+				SpeedupSound ();
 			}
 		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
 		}
