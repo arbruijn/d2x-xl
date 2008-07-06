@@ -285,8 +285,6 @@ void NetworkWelcomePlayer (tSequencePacket *their)
 	int nPlayer;
 	int i;
 
-if (networkData.nSyncState)
-	return;
 networkData.refuse.bWaitForAnswer = 0;
 if (FindArg ("-NoMatrixCheat")) {
 	if ((their->player.versionMinor & 0x0F) < 3) {
@@ -320,11 +318,11 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 			their->player.network.ipx.node, 
 			DUMP_ENDLEVEL);
 	return; 
-}
+	}
 if (memcmp (&networkData.playerRejoining, their, sizeof (networkData.playerRejoining))) {
-	if (networkData.nSyncState == 1)
+	if (networkData.nSyncState)
 		return;
-	if (!networkData.nSyncState && networkData.nSyncExtras && (networkData.bVerifyPlayerJoined == -1))
+	if (!networkData.nSyncState && networkData.nSyncExtras && (networkData.bVerifyPlayerJoined != -1))
 		return;
 	}
 #if 0

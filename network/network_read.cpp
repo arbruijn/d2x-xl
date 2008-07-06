@@ -714,23 +714,15 @@ else if (i < 0)
 		networkData.missingObjFrames.nFrame = 0;
 		}
 	else if ((nObject == -2) || (nObject == -4)) {	// Special debug checksum marker for entire send
-		if (nMode == 1) {
-			networkData.nSyncFrame = 0;
-			nMode = 0;
-			if (networkData.bHaveSync)
-				networkData.nStatus = NETSTAT_PLAYING;
-			networkData.nJoinState = 4;
-			}
-#if 0		
-		con_printf (CONDBG, "Objnum -2 found in frame local %d remote %d.\n", networkData.nPrevFrame, networkData.nSyncFrame);
-		con_printf (CONDBG, "Got %d OBJECTS, zF %d.\n", objectCount, nRemoteObj);
-#endif
-#if 1
-		if (NetworkVerifyObjects (nRemoteObj, objectCount)) {
+		if (!nMode && NetworkVerifyObjects (nRemoteObj, objectCount)) {
 			NetworkAbortSync ();
 			return;
 			}
-#endif
+		networkData.nSyncFrame = 0;
+		nMode = 0;
+		if (networkData.bHaveSync)
+			networkData.nStatus = NETSTAT_PLAYING;
+		networkData.nJoinState = 4;
 		}
 	else if (networkData.nJoinState & 1) {
 #if 1			
