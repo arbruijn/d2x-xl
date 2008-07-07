@@ -648,6 +648,7 @@ static int UDPOpenSocket (ipx_socket_t *sk, int port)
 #endif
 	u_short	nLocalPort, nServerPort;
 
+
 udpBasePort [1] = UDP_BASEPORT + networkData.nSocket;	//server port as set by the server
 nLocalPort = gameStates.multi.bServer ? udpBasePort [1] : mpParams.udpClientPort;
 gameStates.multi.bHaveLocalAddress = 0;
@@ -694,6 +695,7 @@ if (gameStates.multi.bServer || mpParams.udpClientPort) {
 		}
 	memcpy (ipx_MyAddress + 8, &nLocalPort, 2);
 	}
+PrintLog ("Opened UDP connection (socket %d, port %d)\n", sk->fd, nLocalPort);
 nOpenSockets++;
 sk->socket = nLocalPort;
 return 0;
