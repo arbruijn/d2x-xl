@@ -1982,8 +1982,6 @@ int UpdateObject (tObject * objP)
 {
 	short	nPrevSegment = (short) objP->nSegment;
 
-if ((objP->nType == OBJ_POWERUP) && (objP->id == POW_KEY_RED))
-	objP = objP;
 if (objP->nType == OBJ_ROBOT) {
 	fix xMaxShields = RobotDefaultShields (objP);
 	if (objP->shields > xMaxShields)

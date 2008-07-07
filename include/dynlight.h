@@ -43,9 +43,11 @@ short SetNearestSegmentLights (int nSegment, int nFace, int bVariable, int nType
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (int nLevel);
 tShaderLight *GetActiveShaderLight (tActiveShaderLight *activeLightsP, int nThread);
-int InitPerPixelLightingShader (int nType, int nLights);
+int CreatePerPixelLightingShader (int nType, int nLights);
+void InitPerPixelLightingShaders (void);
 void ResetPerPixelLightingShaders (void);
-int InitLightmapShader (int nType);
+int CreateLightmapShader (int nType);
+void InitLightmapShaders (void);
 void ResetLightmapShaders (void);
 void InitHeadlightShaders (int nLights);
 char *BuildLightingShader (const char *pszTemplate, int nLights);

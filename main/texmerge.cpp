@@ -526,7 +526,7 @@ else {
 			DeleteShaderProg (tmShaderProgs + i);
 		b = CreateShaderProg (tmShaderProgs + i) &&
 			 CreateShaderFunc (tmShaderProgs + i, tmf + i, tmv + i, texMergeFS [i], texMergeVS [i % 3], 1) &&
--			 LinkShaderProg (tmShaderProgs + i);
+			 LinkShaderProg (tmShaderProgs + i);
 		if (i == 2)
 			gameStates.render.textures.bHaveMaskShader = b;
 		else

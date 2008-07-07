@@ -238,7 +238,7 @@ OglInitPBuffer ();
 #elif RENDER2TEXTURE == 2
 OglInitFBuffer ();
 #endif
-InitShaders ();
+//InitShaders ();
 }
 
 //------------------------------------------------------------------------------

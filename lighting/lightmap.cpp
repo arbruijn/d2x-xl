@@ -667,7 +667,7 @@ int CreateLightmaps (int nLevel)
 {
 if (!gameStates.render.bUsePerPixelLighting)
 	return 0;
-if ((gameStates.render.bUsePerPixelLighting == 1) && !InitLightmapShader (0))
+if ((gameStates.render.bUsePerPixelLighting == 1) && !CreateLightmapShader (0))
 	return gameStates.render.bUsePerPixelLighting = 0;
 #ifdef RELEASE
 if (gameOpts->render.nLightmapQuality > 2)

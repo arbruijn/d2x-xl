@@ -1104,7 +1104,7 @@ GLhandleARB ppLvs [9][4] =
 GLhandleARB ppLfs [9][4] = 
 	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; 
 
-int InitPerPixelLightingShader (int nType, int nLights)
+int CreatePerPixelLightingShader (int nType, int nLights)
 {
 	int	h, i, j, bOk;
 	char	*pszFS, *pszVS;
@@ -1115,10 +1115,18 @@ if (!(gameStates.ogl.bShadersOk && gameStates.render.bUsePerPixelLighting))
 	gameStates.render.bPerPixelLighting = 0;
 if (!gameStates.render.bPerPixelLighting)
 	return -1;
+#if CONST_LIGHT_COUNT
+nLights = gameStates.render.nMaxLightsPerPass;
+#endif
 if (perPixelLightingShaderProgs [nLights][nType])
 	return nLights;
 for (h = 0; h <= 3; h++) {
-	for (i = 0; i <= gameStates.render.nMaxLightsPerPass; i++) {
+#if CONST_LIGHT_COUNT
+	i = gameStates.render.nMaxLightsPerPass;
+#else
+	for (i = 0; i <= gameStates.render.nMaxLightsPerPass; i++) 
+#endif
+		{
 		if (perPixelLightingShaderProgs [i][h])
 			continue;
 		if (HaveLightmaps ()) {
@@ -1177,11 +1185,25 @@ memset (perPixelLightingShaderProgs, 0, sizeof (perPixelLightingShaderProgs));
 
 // ----------------------------------------------------------------------------------------------
 
+void InitPerPixelLightingShaders (void)
+{
+#if CONST_LIGHT_COUNT
+for (int nType = 0; nType < 4; nType++)
+	CreatePerPixelLightingShader (nType, gameStates.render.nMaxLightsPerPass);
+#else
+for (int nType = 0; nType < 4; nType++)
+	for (int nLights = 0; nLights <= gameStates.render.nMaxLightsPerPass; nLights++)
+		CreatePerPixelLightingShader (nType, nLights);
+#endif
+}
+
+// ----------------------------------------------------------------------------------------------
+
 GLhandleARB lightmapShaderProgs [4] = {0,0,0,0};
 GLhandleARB lmLvs [4] = {0,0,0,0}; 
 GLhandleARB lmLfs [4] = {0,0,0,0}; 
 
-int InitLightmapShader (int nType)
+int CreateLightmapShader (int nType)
 {
 	int	h, j, bOk;
 
@@ -1206,6 +1228,14 @@ for (h = 0; h <= 3; h++) {
 		}
 	}
 return 1;
+}
+
+// ----------------------------------------------------------------------------------------------
+
+void InitLightmapShaders (void)
+{
+for (int nType = 0; nType < 4; nType++)
+	CreateLightmapShader (nType);
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -1343,7 +1373,7 @@ gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shad
 if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;
 #endif
-if (InitPerPixelLightingShader (nType, nLights) >= 0) {
+if (CreatePerPixelLightingShader (nType, nLights) >= 0) {
 	PROF_END(ptPerPixelLighting)
 	return nLights;
 	}
@@ -1428,7 +1458,7 @@ PROF_START
 
 if (bDepthOnly)
 	return 0;
-if (!InitLightmapShader (nType))
+if (!CreateLightmapShader (nType))
 	return 0;
 nShader = 60 + nType;
 #ifdef _DEBUG
