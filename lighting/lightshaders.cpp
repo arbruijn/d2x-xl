@@ -1170,6 +1170,7 @@ for (h = 0; h <= 3; h++) {
 				nLights = 0;
 				return -1;
 				}
+
 			}
 		}
 	}
@@ -1305,7 +1306,7 @@ for (nLights = 0;
 	  activeLightsP++, nLightRange--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 	if (faceP - FACES == nDbgFace)
@@ -1325,7 +1326,7 @@ for (nLights = 0;
 	//glEnable (hLight);
 	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
 	fBrightness = psl->info.fBrightness;
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	if ((psl->info.nObject >= 0) && (OBJECTS [psl->info.nObject].nType == nDbgObjType) &&
 		 ((nDbgObjId < 0) || (OBJECTS [psl->info.nObject].id == nDbgObjId)))
 		nDbgObjType = nDbgObjType;
@@ -1373,7 +1374,10 @@ gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shad
 if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;
 #endif
-if (CreatePerPixelLightingShader (nType, nLights) >= 0) {
+#if 0
+if (CreatePerPixelLightingShader (nType, nLights) >= 0) 
+#endif
+	{
 	PROF_END(ptPerPixelLighting)
 	return nLights;
 	}

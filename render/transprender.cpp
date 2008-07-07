@@ -821,7 +821,10 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 			gameStates.ogl.iLight = 0;
 			gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 			for (;;) {
-				G3SetupPerPixelShader (faceP, 0, (int) faceP->nRenderType, false);
+				if (gameStates.render.bPerPixelLighting == 1)
+					G3SetupLightmapShader (faceP, 0, (int) faceP->nRenderType, false);
+				else
+					G3SetupPerPixelShader (faceP, 0, (int) faceP->nRenderType, false);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
 				if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
 					 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
@@ -1251,12 +1254,11 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (1);
 StencilOn (bStencil);
-#endif
 renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 renderItems.nMaxOffs = 0;
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 PROF_END(ptTranspPolys)
-return;
+#endif
 }
 
 //------------------------------------------------------------------------------
