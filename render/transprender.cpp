@@ -818,23 +818,24 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 			if (faceP)
 				SetNearestFaceLights (faceP, renderItems.bTextured);
 #	endif
-			gameStates.ogl.iLight = 0;
-			gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
-			for (;;) {
-				if (gameStates.render.bPerPixelLighting == 1)
-					G3SetupLightmapShader (faceP, 0, (int) faceP->nRenderType, false);
-				else
-					G3SetupPerPixelShader (faceP, 0, (int) faceP->nRenderType, false);
+			if (gameStates.render.bPerPixelLighting == 1) {
+				G3SetupLightmapShader (faceP, 0, (int) faceP->nRenderType, false);
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
-				if ((gameStates.render.bPerPixelLighting == 1) ||
-					 (gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
-					 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
-					break;
-				if (!bAdditive) {
-					bAdditive = true;
-					if (i)
-						glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-					glDepthFunc (GL_LEQUAL);
+				}
+			else {
+				gameStates.ogl.iLight = 0;
+				gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
+				for (;;) {
+					glDrawArrays (item->nPrimitive, 0, item->nVertices);
+					if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
+						 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
+						break;
+					if (!bAdditive) {
+						bAdditive = true;
+						if (i)
+							glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+						glDepthFunc (GL_LEQUAL);
+						}
 					}
 				}
 #endif
