@@ -126,6 +126,8 @@ void RenderSkyBox (int nWindow);
 
 //------------------------------------------------------------------------------
 
+extern int bLog;
+
 gsrCanvas * reticleCanvas = NULL;
 
 void _CDECL_ FreeReticleCanvas (void)
@@ -1279,18 +1281,22 @@ else {
 	}
 if (bSparks) {
 	SEM_ENTER (SEM_SPARKS)
+	//PrintLog ("RenderEnergySparks\n");
 	RenderEnergySparks ();
 	//SEM_LEAVE (SEM_SPARKS)
 	}
 if (bSmoke) {
 	SEM_ENTER (SEM_SMOKE)
+	//PrintLog ("RenderSmoke\n");
 	RenderSmoke ();
 	//SEM_LEAVE (SEM_SMOKE)
 	}
 if (bLightnings) {
 	SEM_ENTER (SEM_LIGHTNINGS)
+	//PrintLog ("RenderLightnings\n");
 	RenderLightnings ();
 	}
+//PrintLog ("RenderItems\n");
 RenderItems ();
 if (bLightnings)
 	SEM_LEAVE (SEM_LIGHTNINGS)
@@ -1324,11 +1330,14 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0)) {
 	}
 #endif
   
+//PrintLog ("StartLightingFrame\n");
 StartLightingFrame (gameData.objs.viewer);		//this is for ugly light-smoothing hack
 gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 if (!nWindow)
 	gameData.render.dAspect = (double) grdCurCanv->cvBitmap.bmProps.w / (double) grdCurCanv->cvBitmap.bmProps.h;
+//PrintLog ("G3StartFrame\n");
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
+//PrintLog ("SetRenderView\n");
 SetRenderView (nEyeOffset, &nStartSeg, 1);
 gameStates.render.nStartSeg = nStartSeg;
 if (nClearWindow == 1) {
@@ -1398,13 +1407,16 @@ else
 StencilOff ();
 if ((gameOpts->render.bDepthSort > 0) || gameOpts->render.nPath)
 	RenderSkyBox (nWindow);
+//PrintLog ("RenderEffects\n");
 RenderEffects (nWindow);
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
+	//PrintLog ("RenderRadar\n");
 	RenderRadar ();
 	}
 if (viewInfo.bUsePlayerHeadAngles) 
 	Draw3DReticle (nEyeOffset);
 gameStates.render.nShadowPass = 0;
+//PrintLog ("G3EndFrame\n");
 G3EndFrame ();
 if (!ShowGameMessage (gameData.messages, -1, -1))
 	ShowGameMessage (gameData.messages + 1, -1, -1);
@@ -2414,6 +2426,8 @@ return 1;
 //------------------------------------------------------------------------------
 //renders onto current canvas
 
+extern int bLog;
+
 void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
 PROF_START
@@ -2467,34 +2481,41 @@ gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMu
 PROF_END(ptAux)
 if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
+	//PrintLog  ("ResetSegmentLights\n");
 	ResetSegmentLights ();
 #if 1
 	if (!gameStates.app.bMultiThreaded || gameStates.render.bPerPixelLighting || 
 		 (CountRenderFaces () < 16) || !RunRenderThreads (rtComputeFaceLight)) 
 #endif
 		{
+		//PrintLog  ("ComputeFaceLight\n");
 		if (gameStates.render.bTriangleMesh || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
 			ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
 		else
 			ComputeFaceLight (0, gameData.segs.nFaces, 0);
 		}
 	PROF_START
+	//PrintLog  ("UpdateSlidingFaces\n");
 	UpdateSlidingFaces ();
 	PROF_END(ptAux);
 	if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
 		meshBuilder.BuildVBOs ();
 
+	//PrintLog  ("InitRenderItemBuffer\n");
 	InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
 	gameStates.render.bHeadlights = gameData.render.lights.dynamic.headlights.nLights && 
 											  !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
 	}
+//PrintLog  ("RenderSegmentList (0,1)\n");
 RenderSegmentList (0, 1);	// render opaque geometry
 if ((gameOpts->render.bDepthSort < 1) && !gameOpts->render.nPath)
 	RenderSkyBox (nWindow);
+//PrintLog  ("RenderSegmentList (1,1)\n");
 RenderSegmentList (1, 1);		// render objects
 if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces) {
 		glDepthFunc (GL_LEQUAL);
+		//PrintLog  ("RenderSegmentList (2,1)\n");
 		RenderSegmentList (2, 1);	// render transparent geometry
 		glDepthFunc (GL_LESS);
 		}
@@ -2506,6 +2527,7 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		glDepthFunc (GL_LEQUAL);
 		if (!nWindow) {
 			glDepthMask (0);
+			//PrintLog  ("RenderSegmentList (3,1)\n");
 			RenderSegmentList (3, 1);
 			glDepthMask (1);
 			}

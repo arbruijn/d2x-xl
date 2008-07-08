@@ -538,10 +538,9 @@ else {
 	nConnSide = FindConnectedSide (segP, connSegP);
 	Assert(nConnSide != -1);
 	nConnWall = WallNumP (connSegP, nConnSide);
+	if (IS_WALL (nConnWall))
+		gameData.walls.walls [nConnWall].state = WALL_DOOR_OPENING;
 	}
-
-if (IS_WALL (nConnWall))
-	gameData.walls.walls [nConnWall].state = WALL_DOOR_OPENING;
 
 //KillStuckObjects(WallNumP (connSegP, nConnSide));
 d->nFrontWall [0] = nWall;
