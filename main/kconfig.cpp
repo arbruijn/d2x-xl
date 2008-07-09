@@ -996,7 +996,7 @@ int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const ch
 		return KCAssignControl (item, BT_NONE, 255);
 		}
 	if (curDrawBuffer == GL_FRONT)
-		timer_delay (f0_1 / 10);
+		G3_SLEEP (10);
 	KCDrawQuestion (item);
 	}
 return KCAssignControl (item, nType, ctrlfunc ());

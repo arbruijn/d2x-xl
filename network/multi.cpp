@@ -1128,7 +1128,7 @@ if (!gameOpts->menus.nStyle) {
 	gameData.multigame.menu.bInvoked++; // Track level of menu nesting
 	GameLoop (0, 0);
 	gameData.multigame.menu.bInvoked--;
-	timer_delay (f0_1);   // delay 100 milliseconds
+	G3_SLEEP (100);   // delay 100 milliseconds
 	}
 if (gameStates.app.bEndLevelSequence || 
 	 (gameData.reactor.bDestroyed && !bWasFuelCenAlive) || 

@@ -3525,7 +3525,7 @@ if (!gameData.demo.bFirstTimePlayback) {
 	xDelay = (xRecordedTime - gameData.time.xFrame);
 	if (xDelay >= f0_0) {
 		StopTime ();
-		timer_delay (xDelay);
+		TimerDelay (xDelay);
 		StartTime (0);
 		}
 	else {
@@ -3536,7 +3536,7 @@ if (!gameData.demo.bFirstTimePlayback) {
 				}
 		//xDelay = gameData.demo.xRecordedTotal - gameData.demo.xJasonPlaybackTotal;
 		//if (xDelay > f0_0)
-		//	timer_delay (xDelay);
+		//	TimerDelay (xDelay);
 		}
 	}
 gameData.demo.bFirstTimePlayback = 0;

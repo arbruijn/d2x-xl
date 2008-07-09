@@ -539,7 +539,7 @@ int KeyInKey()
 			exit (0);
 	}
 //added 9/3/98 by Matt Mueller to D2_FREE cpu time instead of hogging during menus and such
-	else timer_delay(1);
+	else TimerDelay(1);
 //end addition - Matt Mueller
 	gameOpts->legacy.bInput = b;
 	return key;

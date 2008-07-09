@@ -593,13 +593,15 @@ if (gameData.app.bGamePaused) {
 #if defined (TIMER_TEST) && defined (_DEBUG)
 _last_frametime = last_frametime;
 #endif
-do {
+for (;;) {
 	timerValue = TimerGetFixedSeconds ();
    gameData.time.xFrame = timerValue - gameData.time.xLast;
-	timer_delay (1);
+	if (gameData.time.xFrame >= minFrameTime)
+		break;
 	if (MAXFPS < 2)
 		break;
-	} while (gameData.time.xFrame < minFrameTime);
+	G3_SLEEP (0);
+	}
 #if defined (TIMER_TEST) && defined (_DEBUG)
 TimerValue = timerValue;
 #endif
@@ -1891,7 +1893,7 @@ void DoEffectsFrame (void)
 //PrintLog ("DoEffectsFrame \n");
 if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects] && tiEffects.pThread) {
 	while (tiEffects.bExec)
-		G3_SLEEP (1);
+		G3_SLEEP (0);
 	tiEffects.bExec = 1;
 	}
 else {

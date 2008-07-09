@@ -1266,7 +1266,7 @@ void RenderEffects (int nWindow)
 #if 1
 if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects] && tiEffects.pThread) {
 	while (tiEffects.bExec)
-		G3_SLEEP (1);
+		G3_SLEEP (0);
 	}
 #endif
 if (gameStates.render.automap.bDisplay) {

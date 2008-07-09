@@ -44,7 +44,7 @@ void WaitForRenderThreads (void)
 {
 if (gameStates.app.bMultiThreaded)
 	while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
-		G3_SLEEP (1);	//already running, so wait
+		G3_SLEEP (0);	//already running, so wait
 }
 
 //------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ int _CDECL_ RenderThread (void *pThreadId)
 
 do {
 	while (!tiRender.ti [nId].bExec) {
-		G3_SLEEP (1);
+		G3_SLEEP (0);
 		if (tiRender.ti [nId].bDone)
 			return 0;
 		}
@@ -261,7 +261,7 @@ int _CDECL_ EffectsThread (void *pThreadId)
 {
 do {
 	while (!tiEffects.bExec)
-		G3_SLEEP (1);
+		G3_SLEEP (0);
 	DoSmokeFrame ();
 	DoEnergySparkFrame ();
 	DoLightningFrame ();
