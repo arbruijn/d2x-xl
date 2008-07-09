@@ -2353,7 +2353,7 @@ void EffectOptionsMenu ()
 	int	i, j, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields,
-			optRobotShields, optShieldHits, optTracers, optExplBlast, optSparks;
+			optRobotShields, optShieldHits, optTracers, optGatlingTrails, optExplBlast, optSparks;
 #if 0
 	int	optShockwaves;
 #endif
@@ -2403,6 +2403,8 @@ do {
 	optShieldHits = opt++;
 	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
 	optTracers = opt++;
+	ADD_CHECK (opt, TXT_GATLING_TRAILS, extraGameInfo [0].bGatlingTrails, KEY_G, HTX_GATLING_TRAILS);
+	optGatlingTrails = opt++;
 #if 0
 	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_S, HTX_RENDER_SHKWAVES);
 	optShockwaves = opt++;
@@ -2424,6 +2426,7 @@ do {
 	gameOpts->render.effects.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.effects.bExplBlasts = m [optExplBlast].value;
 	extraGameInfo [0].bTracers = m [optTracers].value;
+	extraGameInfo [0].bGatlingTrails = m [optGatlingTrails].value;
 	extraGameInfo [0].bShockwaves = 0; //m [optShockwaves].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
 	for (j = 0; j < 3; j++)

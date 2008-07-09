@@ -660,6 +660,7 @@ int DrawPolygonObject (tObject *objP, int bDepthSort, int bForce)
 	fix	xEngineGlow [2];		//element 0 is for engine glow, 1 for headlight
 	int	bBlendPolys = 0;
 	int	bBrightPolys = 0;
+	int	bGatling = 0;
 	int	bCloaked = ObjectIsCloaked (objP);
 	int	bEnergyWeapon;
 	int	i, id, bOk = 0;
@@ -669,8 +670,12 @@ if (objP->nType == 255)
 id = (int) objP->id;
 if ((id < 0) || (id == 255))
 	bEnergyWeapon = id = 0;
-else 
+else {
+#if 0
+	bGatling = ((objP->nType == OBJ_WEAPON) && ((id == VULCAN_ID) || (id == GAUSS_ID)));
+#endif
 	bEnergyWeapon = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [id] && !gameData.objs.bIsMissile [id];
+	}
 #if SHADOWS
 if (!bForce && FAST_SHADOWS && 
 	 !gameOpts->render.shadows.bSoft && 
@@ -737,7 +742,7 @@ else {
 				 (objP->cType.aiInfo.behavior == AIB_SNIPE))
 				xLight = 2 * xLight + F1_0;
 			bBlendPolys = bEnergyWeapon && (gameData.weapons.info [id].nInnerModel > -1);
-			bBrightPolys = bBlendPolys && WI_energy_usage (id);
+			bBrightPolys = bGatling || (bBlendPolys && WI_energy_usage (id));
 			if (bEnergyWeapon) {
 				gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - 2.0f;
 				if (!gameOpts->legacy.bRender)
@@ -768,10 +773,10 @@ else {
 			objP->rType.polyObjInfo.animAngles, 
 			objP->rType.polyObjInfo.nModel, 
 			objP->rType.polyObjInfo.nSubObjFlags, 
-			bBrightPolys ? F1_0 : xLight, 
+			(bGatling || bBrightPolys) ? F1_0 : xLight, 
 			xEngineGlow, 
 			bmiAltTex, 
-			bEnergyWeapon ? gameData.weapons.color + id : NULL);
+			(bGatling || bEnergyWeapon) ? gameData.weapons.color + id : NULL);
 		if (!gameStates.render.bBuildModels) {
 			if (!gameOpts->legacy.bRender) {
 				gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
@@ -823,9 +828,9 @@ if (objP->nType == 255) {
 	}
 if (bEmissive && gameStates.render.bQueryCoronas)
 	return 0;
-if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]) && 
-	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]) &&
-	 (gameStates.render.nShadowPass != 2)) {
+if ((gameStates.render.nShadowPass != 2) &&
+	 (objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) && 
+	 (objP->nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
 	PROF_END(ptRenderObjects)
 	return 0;
 	}
@@ -892,7 +897,7 @@ switch (objP->renderType) {
 	case RT_NONE:
 		if (gameStates.render.nType != 1)
 			return 0;
-		RenderTracers (objP);
+		//RenderTracers (objP);
 		break;		//doesn't render, like the tPlayer
 
 	case RT_POLYOBJ:
@@ -981,7 +986,10 @@ switch (objP->renderType) {
 						RenderLightTrail (objP);
 					if (objP->nType == OBJ_WEAPON) {
 						//DoObjectSmoke (objP);
+						if ((objP->id == VULCAN_ID) || (objP->id == GAUSS_ID))
+							gameData.models.nScale = F1_0 / 4;
 						DrawPolygonObject (objP, bDepthSort, 0);
+						gameData.models.nScale = 0;
 						}
 					}
 				}

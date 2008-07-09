@@ -116,8 +116,9 @@ void ReadFlyingControls (tObject *objP)
 	if ((objP->nType != OBJ_PLAYER) || (objP->id != gameData.multiplayer.nLocalPlayer)) 
 		return;	//references to tPlayerShip require that this obj be the tPlayer
 
-	gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
-	if (gmObjP && (gmObjP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer])) {
+   tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
+	gmObjP = gmiP->objP;
+	if (gmObjP && (gmObjP->nSignature == gmiP->nSignature)) {
 		vmsAngVec rotangs;
 		vmsMatrix rotmat,tempm;
 		fix speed;
@@ -128,12 +129,12 @@ void ReadFlyingControls (tObject *objP)
 		rotangs.p = Controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
 		rotangs.b = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
 		rotangs.h = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
-		VmAngles2Matrix(&rotmat,&rotangs);
-		VmMatMul(&tempm,&gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->position.mOrient,&rotmat);
-		gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->position.mOrient = tempm;
-		speed = WI_speed (gmObjP->id,gameStates.app.nDifficultyLevel);
-		VmVecCopyScale(&gmObjP->mType.physInfo.velocity, &gmObjP->position.mOrient.fVec,speed);
-		if (gameData.app.nGameMode & GM_MULTI)
+		VmAngles2Matrix (&rotmat,&rotangs);
+		VmMatMul (&tempm, &gmObjP->position.mOrient, &rotmat);
+		gmObjP->position.mOrient = tempm;
+		speed = WI_speed (gmObjP->id, gameStates.app.nDifficultyLevel);
+		VmVecCopyScale (&gmObjP->mType.physInfo.velocity, &gmObjP->position.mOrient.fVec, speed);
+		if (IsMultiGame)
 			MultiSendGuidedInfo (gmObjP, 0);
 		}
 	else {

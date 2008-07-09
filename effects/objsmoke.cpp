@@ -178,7 +178,7 @@ if (gameOpts->render.nPath && gameOpts->render.ship.bBullets) {
 				if (i < 0) {
 					gameData.multiplayer.bulletEmitters [nPlayer] =
 						CreateSmoke (&vEmitter, &vDir, &posP->mOrient, objP->nSegment, 1, BULLET_MAX_PARTS, 15.0f, 1,
-										 1, BULLET_PART_LIFE, BULLET_PART_SPEED, 4, 0x7fffffff, NULL, 0, -1);
+										 1, BULLET_PART_LIFE, BULLET_PART_SPEED, 5, 0x7fffffff, NULL, 0, -1);
 					}
 				else {
 					SetSmokePos (i, &vEmitter, &posP->mOrient, objP->nSegment);
@@ -572,15 +572,15 @@ else
 
 void DoParticleTrail (tObject *objP)
 {
-	int			nParts, i, id;
+	int			nParts, i, id = objP->id, bGatling = (id == VULCAN_ID) || (id == GAUSS_ID);
 	float			nScale;
 	vmsVector	pos;
 	tRgbaColorf	c;
 
-if (!SHOW_OBJ_FX && EGI_FLAG (bLightTrails, 1, 1, 0))
+if (!SHOW_OBJ_FX && (bGatling ? EGI_FLAG (bGatlingTrails, 1, 1, 0) : EGI_FLAG (bLightTrails, 1, 1, 0)))
 	return;
 i = OBJ_IDX (objP);
-if (!gameOpts->render.smoke.bPlasmaTrails) {
+if (!(bGatling || gameOpts->render.smoke.bPlasmaTrails)) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;
@@ -590,13 +590,20 @@ nParts = 2 * LASER_MAX_PARTS / 3;
 #else
 nParts = gameData.weapons.info [objP->id].speed [0] / F1_0; 
 #endif
-c.red = (float) gameData.weapons.color [objP->id].red;
-c.green = (float) gameData.weapons.color [objP->id].green;
-c.blue = (float) gameData.weapons.color [objP->id].blue;
-c.alpha = 0.5;
+if (bGatling) {
+	c.red = c.green = c.blue = 0.66f;
+	c.alpha = 0.9f;
+	}
+else {
+	c.red = (float) gameData.weapons.color [objP->id].red;
+	c.green = (float) gameData.weapons.color [objP->id].green;
+	c.blue = (float) gameData.weapons.color [objP->id].blue;
+	c.alpha = 0.5f;
+	}
 if (gameData.smoke.objects [i] < 0) {
-	id = objP->id;
-	if (((id >= LASER_ID) && (id < LASER_ID + 4)) || 
+	if (bGatling)
+		nScale = 4;
+	else if (((id >= LASER_ID) && (id < LASER_ID + 4)) || 
 		 (id == SUPERLASER_ID) || (id == SUPERLASER_ID + 1) ||
 		 (id == ROBOT_BLUE_LASER_ID) || (id == ROBOT_GREEN_LASER_ID) || (id == ROBOT_RED_LASER_ID) || (id == ROBOT_WHITE_LASER_ID))
 		nScale = 3;
@@ -615,9 +622,9 @@ if (gameData.smoke.objects [i] < 0) {
 	else
 		nScale = 1;
 	c.alpha = 0.1f + nScale / 10;
-	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, NULL, objP->nSegment, 1, nParts, -PARTICLE_SIZE (1, nScale),
+	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, NULL, objP->nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale),
 											  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
-											  1, (gameOpts->render.smoke.nLife [3] + 1) * LASER_PART_LIFE, LASER_PART_SPEED, 3, i, &c, 0, -1));
+											  1, (gameOpts->render.smoke.nLife [3] + 1 + bGatling) * LASER_PART_LIFE, LASER_PART_SPEED, 3 + bGatling, i, &c, 0, -1));
 	}
 VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size / 2);
 SetSmokePos (gameData.smoke.objects [i], &pos, NULL, objP->nSegment);
@@ -821,6 +828,8 @@ else if (t == OBJ_REACTOR)
 else if (t == OBJ_WEAPON) {
 	if (gameData.objs.bIsMissile [objP->id])
 		DoMissileSmoke (objP);
+	else if ((objP->id == VULCAN_ID) || (objP->id == GAUSS_ID))
+		DoParticleTrail (objP);
 	else if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (objP->id == PROXMINE_ID))
 		DoBombSmoke (objP);
 	else if (gameOpts->render.smoke.bPlasmaTrails && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0) &&

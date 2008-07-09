@@ -1113,7 +1113,7 @@ if (objP->nType == OBJ_WEAPON) {
 	if (objP->id == GUIDEDMSL_ID) {
 		nParent = OBJECTS [objP->cType.laserInfo.nParentObj].id;
 		if (nParent != gameData.multiplayer.nLocalPlayer)
-			gameData.objs.guidedMissile [nParent] = NULL;
+			gameData.objs.guidedMissile [nParent].objP = NULL;
 		else if (gameData.demo.nState == ND_STATE_RECORDING)
 			NDRecordGuidedEnd ();
 		}
@@ -1874,10 +1874,10 @@ return 0;
 
 void CheckGuidedMissileThroughExit (tObject *objP, short nPrevSegment)
 {
-if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]) && 
-	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer])) {
+if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) && 
+	 (objP->nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
 	if (nPrevSegment != objP->nSegment) {
-		short	nConnSide = FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments+nPrevSegment);
+		short	nConnSide = FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments + nPrevSegment);
 		if (nConnSide != -1) {
 			short nWall, nTrigger;
 			nWall = WallNumI (nPrevSegment, nConnSide);
@@ -1885,7 +1885,7 @@ if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]) &&
 				nTrigger = gameData.walls.walls [nWall].nTrigger;
 				if ((nTrigger < gameData.trigs.nTriggers) &&
 					 (gameData.trigs.triggers [nTrigger].nType == TT_EXIT))
-					gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->lifeleft = 0;
+					gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP->lifeleft = 0;
 				}
 			}
 		}
@@ -2759,7 +2759,7 @@ gameData.objs.bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
 memset (gameData.objs.bIsWeapon, 0, sizeof (gameData.objs.bIsWeapon));
 gameData.objs.bIsWeapon [VULCAN_ID] =
 gameData.objs.bIsWeapon [GAUSS_ID] =
-gameData.objs.bIsWeapon [ROBOT_VULCAN_ID] = 0;
+gameData.objs.bIsWeapon [ROBOT_VULCAN_ID] = 1;
 gameData.objs.bIsWeapon [LASER_ID] =
 gameData.objs.bIsWeapon [LASER_ID + 1] =
 gameData.objs.bIsWeapon [LASER_ID + 2] =
@@ -2798,6 +2798,9 @@ gameData.objs.bIsWeapon [ROBOT_GREEN_LASER_ID] =
 gameData.objs.bIsWeapon [ROBOT_WHITE_LASER_ID] = 1;
 
 memset (gameData.objs.bIsSlowWeapon, 0, sizeof (gameData.objs.bIsSlowWeapon));
+gameData.objs.bIsSlowWeapon [VULCAN_ID] =
+gameData.objs.bIsSlowWeapon [GAUSS_ID] =
+gameData.objs.bIsSlowWeapon [ROBOT_VULCAN_ID] = 1;
 gameData.objs.bIsSlowWeapon [REACTOR_BLOB_ID] =
 gameData.objs.bIsSlowWeapon [ROBOT_SMALL_FIREBALL_ID] =
 gameData.objs.bIsSlowWeapon [SMARTMINE_BLOB_ID] =

@@ -236,6 +236,7 @@ typedef struct tExtraGameInfo {
 	char		bTowFlags;
 	char		bUseHitAngles;
 	char		bLightTrails;
+	char		bGatlingTrails;
 	char		bTracers;
 	char		bShockwaves;
 	char		bCompetition;

@@ -1821,6 +1821,7 @@ const char *defaultGameTexts [][2] = {
 	{"Lightmaps ~Verwenden", "use li~Ghtmaps"},
 	{"Blaue Flagge!", "BLUE FLAG!"},
 	{"Rote Flagge!", "RED FLAG!"},
+	{"Rauchspuren fuer Maschinen~Kanonen", "~Gatling smoke trails"},
 #if 0
 	{"", ""},
 #endif
@@ -2466,6 +2467,7 @@ const char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, drehen Bojen sich langsam um ihre Laengs-\nachse und zeigen in der Bojensicht eine 360-Grad-Ansicht\nihrer Umgebung.", "If checked, markers will spin slowly, giving you a 360 degree view\nof their environment in the marker view."},
 	{"Wenn angekreuzt, wird die Beleuchtung durch statische Lichter\nmit Lightmaps realisiert, was sehr natuerlich wirkt.", 
 	 "If checked, light cast by static lights is simulated with lightmaps,\nwhich looks very natural."},
+	{"Wenn angekreuzt, erzeugen Schuesse aus Maschinenkanonen\nfeine Rauchspuren.", "If checked, shots from Gatling guns create fine smoke trails."},
 #if 0
 	{"", ""},
 #endif

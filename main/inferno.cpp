@@ -2332,7 +2332,7 @@ gameData.escort.nGoalIndex = -1;
 gameData.escort.bMsgsSuppressed = 0;
 gameData.objs.nNextSignature = 1;
 gameData.objs.nMaxUsedObjects = MAX_OBJECTS - 20;
-memset (gameData.objs.guidedMissileSig, 0xff, sizeof (gameData.objs.guidedMissileSig));
+memset (gameData.objs.guidedMissile, 0, sizeof (gameData.objs.guidedMissile));
 gameData.render.morph.xRate = MORPH_RATE;
 gameData.render.ogl.nSrcBlend = GL_SRC_ALPHA;
 gameData.render.ogl.nDestBlend = GL_ONE_MINUS_SRC_ALPHA;

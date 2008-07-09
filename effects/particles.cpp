@@ -196,7 +196,7 @@ D2_FREE (gameData.smoke.depthBuf.pDepthBuffer);
 
 static inline int ParticleImageType (int nType)
 {
-return (nType == 4) ? 2 : (nType == 3) ? 1 : 0;
+return (nType == 5) ? 2 : ((nType == 3) || (nType == 4)) ? 1 : 0;
 }
 
 //	-----------------------------------------------------------------------------
@@ -825,7 +825,7 @@ if (gameOpts->render.bDepthSort > 0) {
 			return 0;
 		nFrames = nParticleFrames [0][nType];
 		deltaUV = 1.0f / (float) nFrames;
-		if (nType)
+		if (nType == 3)
 			glBlendFunc (GL_ONE, GL_ONE);
 		else
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -845,7 +845,7 @@ else if (gameOpts->render.smoke.bSort) {
 			return 0;
 		nFrames = nParticleFrames [bPointSprites][nType];
 		deltaUV = 1.0f / (float) nFrames;
-		if (nType)
+		if (nType == 3)
 			glBlendFunc (GL_ONE, GL_ONE);
 		else
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1344,7 +1344,7 @@ else
 				vDeltaf.p.y /= (float) h;
 				vDeltaf.p.z /= (float) h;
 				}
-			else if (c.nType == 3)
+			else if ((c.nType == 3) || (c.nType == 4))
 				goto funcExit;
 			else {
 				VmVecFixToFloat (&vPosf, &c.pos);

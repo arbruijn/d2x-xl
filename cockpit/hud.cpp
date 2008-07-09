@@ -196,11 +196,12 @@ if (pMsgs->nMessages > 0) {
 		else
 			yStart = SMALL_FONT->ftHeight / 2;
 		if (gameOpts->render.cockpit.bGuidedInMainView) {
-			tObject *gmP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
-			if (gmP && 
-				 (gmP->nType == OBJ_WEAPON) && 
-				 (gmP->id == GUIDEDMSL_ID) &&
-			    (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]))
+			tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
+			tObject *gmObjP = gmiP->objP;
+			if (gmObjP && 
+				 (gmObjP->nType == OBJ_WEAPON) && 
+				 (gmObjP->id == GUIDEDMSL_ID) &&
+			    (gmObjP->nSignature == gmiP->nSignature))
 				yStart += SMALL_FONT->ftHeight + 3;
 			}
 

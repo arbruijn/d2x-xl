@@ -302,6 +302,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bFixedRespawns, 0, 0);
 		RP (extraGameInfo [i].bFluidPhysics, 0, 0);
 		RP (extraGameInfo [i].bFriendlyFire, 0, 0);
+		RP (extraGameInfo [i].bGatlingTrails, 0, 0);
 		RP (extraGameInfo [i].bImmortalPowerups, 0, 0);
 		RP (extraGameInfo [i].bLightTrails, 0, 0);
 		RP (extraGameInfo [i].bMultiBosses, 0, 0);
@@ -814,6 +815,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bFixedRespawns", "0"},
 	{"extraGameInfo[0].bFluidPhysics", "1"},
 	{"extraGameInfo[0].bFriendlyFire", "1"},
+	{"extraGameInfo[0].bGatlingTrails", "1"},
 	{"extraGameInfo[0].bImmortalPowerups", "0"},
 	{"extraGameInfo[0].bLightTrails", "1"},
 	{"extraGameInfo[0].bMultiBosses", "1"},

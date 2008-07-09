@@ -270,6 +270,14 @@ if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
 								gameData.weapons.info [objP->id].po_len_to_width_ratio);
 	}
+else if (EGI_FLAG (bTracers, 0, 1, 0) && (objP->id == VULCAN_ID) || (objP->id == GAUSS_ID)) {
+	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
+	objP->rType.polyObjInfo.nTexOverride = -1;
+	objP->rType.polyObjInfo.nAltTextures = 0;
+	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
+								gameData.weapons.info [SUPERLASER_ID].po_len_to_width_ratio);
+	objP->renderType = RT_POLYOBJ;
+	}
 objP->mType.physInfo.mass = WI_mass (nWeaponType);
 objP->mType.physInfo.drag = WI_drag (nWeaponType);
 VmVecZero (&objP->mType.physInfo.thrust);
@@ -400,9 +408,9 @@ if (parentP->nType == OBJ_PLAYER) {
 		objP->cType.laserInfo.multiplier = 3 * F1_0 / 4;
 	else if (nWeaponType == GUIDEDMSL_ID) {
 		if (nParent == LOCALPLAYER.nObject) {
-			gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer] = objP;
-			gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer] = objP->nSignature;
-			if (gameData.demo.nState==ND_STATE_RECORDING)
+			gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP = objP;
+			gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature = objP->nSignature;
+			if (gameData.demo.nState == ND_STATE_RECORDING)
 				NDRecordGuidedStart ();
 			}
 		}
@@ -756,7 +764,7 @@ if (nObject == -1) {
 	return -1;
 	}
 if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
-	gameData.objs.guidedMissile [objP->id] = OBJECTS + nObject;
+	gameData.objs.guidedMissile [objP->id].objP = OBJECTS + nObject;
 gameData.multigame.bIsGuided = 0;
 laserP = OBJECTS + nObject;
 if (gameData.objs.bIsMissile [nLaserType] && (nLaserType != GUIDEDMSL_ID)) {
@@ -896,7 +904,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 	 (objP->nType == OBJ_WEAPON) && 
     (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (objP->id)) && 
 	 !((objP->id == GUIDEDMSL_ID) && 
-	   (objP == (gmObjP = gameData.objs.guidedMissile [OBJECTS [objP->cType.laserInfo.nParentObj].id])) && 
+	   (objP == (gmObjP = gameData.objs.guidedMissile [OBJECTS [objP->cType.laserInfo.nParentObj].id].objP)) && 
 	   (objP->nSignature == gmObjP->nSignature))) {
 	vmsVector	vVecToObject, vTemp;
 	fix			dot = F1_0;
@@ -1610,18 +1618,18 @@ if (((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].children !
 void ReleaseGuidedMissile (int nPlayer)
 {
 if (nPlayer == gameData.multiplayer.nLocalPlayer) {		
-	if (!gameData.objs.guidedMissile [nPlayer])
+	if (!gameData.objs.guidedMissile [nPlayer].objP)
 		return;
-	gameData.objs.missileViewer = gameData.objs.guidedMissile [nPlayer];
+	gameData.objs.missileViewer = gameData.objs.guidedMissile [nPlayer].objP;
 	if (IsMultiGame)
-	 	MultiSendGuidedInfo (gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer], 1);
+	 	MultiSendGuidedInfo (gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP, 1);
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 	 	NDRecordGuidedEnd ();
 	 }
-gameData.objs.guidedMissile [nPlayer] = NULL;
+gameData.objs.guidedMissile [nPlayer].objP = NULL;
 }
 
-int nProximityDropped=0,nSmartminesDropped=0;
+int nProximityDropped = 0, nSmartminesDropped = 0;
 
 //	-------------------------------------------------------------------------------------------
 //parameter determines whether or not to do autoselect if have run out of ammo
@@ -1633,11 +1641,11 @@ void DoMissileFiring (int bAutoSelect)
 	short		nObject;
 	ubyte		nWeaponId;
 	int		nGun;
-	tObject	*gmP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
+	tObject	*gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
 	tPlayer	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 
 Assert (gameData.weapons.nSecondary < MAX_SECONDARY_WEAPONS);
-if (gmP && (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer])) {
+if (gmObjP && (gmObjP->nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
 	ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
 	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 	gameData.missiles.xNextFireTime = gameData.time.xGame + WI_fire_wait (i);

@@ -3355,9 +3355,9 @@ void MultiDoGuided (char *buf)
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tShortPos sp;
 #endif
-	tObject *gmObj = gameData.objs.guidedMissile [nPlayer];
+	tObject *gmObjP = gameData.objs.guidedMissile [nPlayer].objP;
 
-if (gmObj == NULL) {
+if (gmObjP == NULL) {
 	if (++fun >= 50)
 		fun = 0;
 	return;
@@ -3368,20 +3368,20 @@ else if (++fun >= 50)
 		ReleaseGuidedMissile (nPlayer);
 		return;
 		}
-	if ((gmObj < OBJECTS) || 
-		 (gmObj - OBJECTS > gameData.objs.nLastObject [0])) {
+	if ((gmObjP < OBJECTS) || 
+		 (gmObjP - OBJECTS > gameData.objs.nLastObject [0])) {
 		Int3 ();  // Get Jason immediately!
 		return;
 		}
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-ExtractShortPos (gmObj, (tShortPos *) (buf + count), 0);
+ExtractShortPos (gmObjP, (tShortPos *) (buf + count), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + count), 9);
 memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + count + 9), 14);
-ExtractShortPos (gmObj, &sp, 1);
+ExtractShortPos (gmObjP, &sp, 1);
 #endif
 count += sizeof (tShortPos);
-UpdateObjectSeg (gmObj);
+UpdateObjectSeg (gmObjP);
 }
 
 //-----------------------------------------------------------------------------

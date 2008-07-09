@@ -427,6 +427,17 @@ switch (flags & 3) {
 
 //------------------------------------------------------------------------------
 
+static inline bool GuidedMissileActive (void)
+{
+tObject *gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+return gmObjP && 
+		 (gmObjP->nType == OBJ_WEAPON) && 
+		 (gmObjP->id == GUIDEDMSL_ID) && 
+		 (gmObjP->nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature);
+}
+
+//------------------------------------------------------------------------------
+
 extern int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
 #if 0
@@ -478,28 +489,23 @@ void game_render_frame_stereo ()
 		tObject *viewerSave = gameData.objs.viewer;
 		int w, h, aw;
 
-		gameData.objs.viewer = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
+		gameData.objs.viewer = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+		UpdateRenderedData (0, gameData.objs.viewer, 0, 0);
+		RenderFrame (0, 0);
+		WakeupRenderedObjects (gameData.objs.viewer, 0);
+		gameData.objs.viewer = viewerSave;
 
-  		{
-			UpdateRenderedData (0, gameData.objs.viewer, 0, 0);
-			RenderFrame (0, 0);
-			WakeupRenderedObjects (gameData.objs.viewer, 0);
-			gameData.objs.viewer = viewerSave;
+		GrSetCurFont (GAME_FONT);    //GAME_FONT);
+		GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
+		GrGetStringSize (msg, &w, &h, &aw);
 
-			GrSetCurFont (GAME_FONT);    //GAME_FONT);
-			GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
-			GrGetStringSize (msg, &w, &h, &aw);
+		GrPrintF (NULL, (grdCurCanv->cvBitmap.bmProps.w-w)/2, 3, msg);
 
-			GrPrintF (NULL, (grdCurCanv->cvBitmap.bmProps.w-w)/2, 3, msg);
-
-			glDisable (GL_DEPTH_TEST);
-			DrawGuidedCrosshair ();
-			glEnable (GL_DEPTH_TEST);
-		}
-
-			HUDRenderMessageFrame ();
-
-		bNoDrawHUD=1;
+		glDisable (GL_DEPTH_TEST);
+		DrawGuidedCrosshair ();
+		glEnable (GL_DEPTH_TEST);
+		HUDRenderMessageFrame ();
+		bNoDrawHUD = 1;
 	}
 	else if (gameStates.render.bRearView)
 		RenderFrame (actual_eye_width, 0);	// switch eye positions for rear view
@@ -544,11 +550,7 @@ void game_render_frame_stereo ()
 	// Draw the right eye's view
 	GrSetCurrentCanvas (&RenderCanvas [1]);
 
-	if (gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer] && 
-		 gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->nType==OBJ_WEAPON && 
-		 gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->id==GUIDEDMSL_ID && 
-		 gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer] && 
-		 gameOpts->render.cockpit.bGuidedInMainView)
+	if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ())
 		GrBitmap (0, 0, &RenderCanvas [0].cvBitmap);
 	else {
 		if (gameStates.render.bRearView)
@@ -558,16 +560,16 @@ void game_render_frame_stereo ()
 
 		if (gameStates.render.vr.nLowRes)
 			GameExpandBitmap (&RenderCanvas [1].cvBitmap, gameStates.render.vr.nLowRes);
-	}
+		}
 
 
 	{	//copy small window from left eye
-		gsrCanvas temp;
-		int w;
-		for (w=0;w<2;w++) {
-			if (SW_drawn [w]) {
-				GrInitSubCanvas (&temp, &RenderCanvas [0], SW_x [w], SW_y [w], SW_w [w], SW_h [w]);
-				GrBitmap (SW_x [w]+actual_eye_offset*2, SW_y [w], &temp.cvBitmap);
+	gsrCanvas temp;
+	int w;
+	for (w=0;w<2;w++) {
+		if (SW_drawn [w]) {
+			GrInitSubCanvas (&temp, &RenderCanvas [0], SW_x [w], SW_y [w], SW_w [w], SW_h [w]);
+			GrBitmap (SW_x [w]+actual_eye_offset*2, SW_y [w], &temp.cvBitmap);
 			}
 		}
 	}
@@ -751,7 +753,7 @@ else {
 	if (objP) {		//used to be active
 		if (!gameOpts->render.cockpit.bGuidedInMainView)
 			DoCockpitWindowView (1, NULL, 0, WBU_STATIC, NULL);
-		gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer] = NULL;
+		gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer],objP = NULL;
 		}
 	if (gameData.objs.missileViewer && !gameStates.render.bExternalView) {		//do missile view
 		static int mv_sig=-1;
@@ -856,7 +858,6 @@ void DrawGuidedCrosshair (void);
 
 void GameRenderFrameMono (void)
 {
-	tObject		*objP;
 	gsrCanvas	Screen_3d_window;
 	int			bNoDrawHUD = 0;
 
@@ -869,12 +870,7 @@ GrInitSubCanvas (
 GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
 
 SetLightningLights ();
-objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
-if (objP && 
-	 (objP->nType == OBJ_WEAPON) && 
-	 (objP->id == GUIDEDMSL_ID) && 
-	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]) && 
-	 (gameOpts->render.cockpit.bGuidedInMainView)) {
+if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	int w, h, aw;
 	const char *msg = "Guided Missile View";
 	tObject *viewerSave = gameData.objs.viewer;
@@ -885,7 +881,7 @@ if (objP &&
 		gameStates.render.cockpit.nMode = CM_STATUS_BAR;
 		return;
 		}
-  	gameData.objs.viewer = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
+  	gameData.objs.viewer = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
 	UpdateRenderedData (0, gameData.objs.viewer, 0, 0);
 	if (RenderCameras ())
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);

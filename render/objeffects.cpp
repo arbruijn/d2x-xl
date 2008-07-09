@@ -1644,7 +1644,7 @@ static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,
 void RenderLightTrail (tObject *objP)
 {
 	tRgbaColorf		color, *colorP;
-	int				bAdditive = 1; //gameOpts->render.coronas.bAdditiveObjs;
+	int				bGatling = 0, bAdditive = 1; //gameOpts->render.coronas.bAdditiveObjs;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -1655,6 +1655,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
+bGatling = (objP->id == VULCAN_ID) || (objP->id == GAUSS_ID);
 if (objP->renderType == RT_POLYOBJ)
 	colorP = gameData.weapons.color + objP->id;
 else {
@@ -1772,7 +1773,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
 	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2, 1, 0, 1);
 else
-	RenderWeaponCorona (objP, colorP, 0.75f, 0, 2, 0, 0, 0);
+	RenderWeaponCorona (objP, colorP, 0.75f, 0, bGatling ? 1.0f : 2.0f, 0, 0, 0);
 }
 
 // -----------------------------------------------------------------------------
