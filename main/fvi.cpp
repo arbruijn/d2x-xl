@@ -1359,7 +1359,7 @@ return nHitType;
 #include "textures.h"
 #include "texmerge.h"
 
-#define Cross(v0, v1) (FixMul((v0)->i, (v1)->j) - FixMul((v0)->j, (v1)->i))
+#define Cross2D(v0, v1) (FixMul((v0).i, (v1).j) - FixMul((v0).j, (v1).i))
 
 //	-----------------------------------------------------------------------------
 
@@ -1469,12 +1469,12 @@ void FindHitPointUV (fix *u, fix *v, fix *l, vmsVector *pnt, tSegment *segP, int
 	int			nSegment = SEG_IDX (segP);
 	int			nFaces;
 	int			biggest, ii, jj;
-	tSide			*sideP = &segP->sides [nSide];
+	tSide			*sideP = segP->sides + nSide;
 	int			vertList [6], vertNumList [6];
  	vec2d			p1, vec0, vec1, checkP;
 	tUVL			uvls [3];
 	fix			k0, k1;
-	int			h, i;
+	int			h;
 
 //do lasers pass through illusory walls?
 //when do I return 0 & 1 for non-transparent walls?
@@ -1523,17 +1523,25 @@ vec1.i = vPoints->v [ii] - p1.i;
 vec1.j = vPoints->v [jj] - p1.j;
 
 //vec from 1 -> checkPoint
-vPoints = (vmsVector *)pnt;
-checkP.i = vPoints->v [ii];
-checkP.j = vPoints->v [jj];
+//vPoints = (vmsVector *)pnt;
+checkP.i = pnt->v [ii];
+checkP.j = pnt->v [jj];
 
-k1 = -FixDiv (Cross (&checkP, &vec0) + Cross (&vec0, &p1), Cross (&vec0, &vec1));
-if (abs(vec0.i) > abs(vec0.j))
+#if 1
+ii = Cross2D (checkP, vec0);
+ii += Cross2D (vec0, p1);
+jj = Cross2D (vec0, vec1);
+k1 = -FixDiv (ii, jj);
+#else
+k1 = -FixDiv (Cross2D (checkP, vec0) + Cross2D (vec0, p1), Cross2D (vec0, vec1));
+#endif
+if (abs (vec0.i) > abs (vec0.j))
 	k0 = FixDiv (FixMul (-k1, vec1.i) + checkP.i - p1.i, vec0.i);
 else
 	k0 = FixDiv (FixMul (-k1, vec1.j) + checkP.j - p1.j, vec0.j);
-for (i = 0; i < 3; i++)
-	uvls [i] = sideP->uvls [vertNumList [h+i]];
+uvls [0] = sideP->uvls [vertNumList [h]];
+uvls [1] = sideP->uvls [vertNumList [h + 1]];
+uvls [2] = sideP->uvls [vertNumList [h + 2]];
 *u = uvls [1].u + FixMul (k0, uvls [0].u - uvls [1].u) + FixMul (k1, uvls [2].u - uvls [1].u);
 *v = uvls [1].v + FixMul (k0, uvls [0].v - uvls [1].v) + FixMul (k1, uvls [2].v - uvls [1].v);
 if (l)

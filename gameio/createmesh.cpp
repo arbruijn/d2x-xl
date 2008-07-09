@@ -782,6 +782,7 @@ if (bOk) {
 	SetupVertexNormals ();
 	}
 CFClose (&cf);
+CreateFaceVertLists ();
 return bOk;
 }
 
