@@ -1527,9 +1527,8 @@ vec1.j = vPoints->v [jj] - p1.j;
 checkP.i = pnt->v [ii];
 checkP.j = pnt->v [jj];
 
-#if 1
-ii = Cross2D (checkP, vec0);
-ii += Cross2D (vec0, p1);
+#if 1 // the MSVC 9 optimizer doesn't like the code in the else branch ...
+ii = Cross2D (checkP, vec0) + Cross2D (vec0, p1);
 jj = Cross2D (vec0, vec1);
 k1 = -FixDiv (ii, jj);
 #else
