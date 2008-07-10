@@ -393,9 +393,8 @@ void UnlinkObject(int nObject);
 
 // initialize a new tObject.  adds to the list for the given tSegment
 // returns the tObject number
-int CreateObject(ubyte nType, ubyte id, short owner, short nSegment, vmsVector *pos,
-               vmsMatrix *orient, fix size,
-               ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
+int CreateObject(ubyte nType, char id, short owner, short nSegment, vmsVector *pos,
+               vmsMatrix *orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
 
 // make a copy of an tObject. returs num of new tObject
 int CreateObjectCopy(int nObject, vmsVector *new_pos, int newsegnum);

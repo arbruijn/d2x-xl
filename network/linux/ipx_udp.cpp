@@ -233,7 +233,7 @@ static int have_empty_address () {
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if 0
 
 static void msg (const char *fmt,...)
 {
@@ -366,7 +366,7 @@ PrintLog ("]");
  */
 static unsigned char qhbuf [6];
 
-#ifdef _DEBUG
+#if 0
 
 static void dumpaddr (struct sockaddr_in *sinP)
 {
@@ -489,33 +489,19 @@ destListSize = 0;
  * Broadcast addresses are filled into "broads", netmasks to "broadmasks".
  */
  
-static int _ioRes;
+#ifdef __macosx__
 
-#if 1//def __macosx__
-#	define	_IOCTL(_s,_f,_c)	((_ioRes = ioctl (_s, _f, _c)) >= 0)
-#else
-#	define	_IOCTL(_s,_f,_c)	((_ioRes = ioctl (_s, _f, _c)) != 0)
-#endif
-
-/* Stolen from my GGN */
 static int addiflist (void)
 {
-	unsigned 				cnt = MAX_BRDINTERFACES, i, j;
-	struct ifconf 			ifconf;
-	int 						sock;
-#ifdef _DEBUG
-	int						ioRes;
-#endif
+	unsigned 				j;
 	struct sockaddr_in	*sinp, *sinmp;
 
 D2_FREE (broads);
-#ifdef __macosx__
 /* This code is for Mac OS X, whose BSD layer does bizarre things with variable-length
 * structures when calling ioctl using SIOCGIFCOUNT. Or any other architecture that
 * has this call, for that matter, since it's much simpler than the other code below.
 */
 	struct ifaddrs *ifap, *ifa;
-	struct sockaddr *broadaddr, *dstaddr;
 
 if (getifaddrs (&ifap) != 0)
 	FAIL ("Getting list of interface addresses: %m");
@@ -539,32 +525,62 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	j++;
 	sinp = (struct sockaddr_in *) ifa->ifa_broadaddr;
 	sinmp = (struct sockaddr_in *) ifa->ifa_dstaddr;
-#else // non-getifaddrs () code for Linux variants
-	sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (sock < 0)
-		FAIL ("Creating IP socket failed:\n%m");
-#	ifdef SIOCGIFCOUNT
-	if (!_IOCTL (sock, SIOCGIFCOUNT, &cnt))
-		{ /* //msg ("Getting iterface count error: %m"); */ }
-	else
-		cnt = cnt * 2 + 2;
-#	endif
-	ifconf.ifc_len = cnt * sizeof (struct ifreq);
-	chk (ifconf.ifc_req = (ifreq *) D2_ALLOC (ifconf.ifc_len));
+
+	// Code common to both getifaddrs () and ioctl () approach
+	broads [j] = *sinp;
+	broads [j].sin_port = UDP_BASEPORT; //FIXME: No possibility to override from cmdline
+	broadmasks [j] = *sinmp;
+	j++;
+	}
+freeifaddrs (ifap);
+broadnum = j;
+masksnum = j;
+return 0;
+}
+
+#else // !__maxosx__ -----------------------------------------------------------
+
+static int _ioRes;
+
+#define	_IOCTL(_s,_f,_c)	((_ioRes = ioctl (_s, _f, _c)) != 0)
+
+static int addiflist (void)
+{
+	unsigned					i, cnt = MAX_BRDINTERFACES;
+	struct ifconf 			ifconf;
+	int 						sock;
 #ifdef _DEBUG
-	memset (ifconf.ifc_req, 0, ifconf.ifc_len);
-	ioRes = ioctl (sock, SIOCGIFCONF, &ifconf);
-	if (ioRes < 0) {
-#else
-	 if (!_IOCTL (sock, SIOCGIFCONF, &ifconf)) {
+	int						ioRes;
 #endif
-		close (sock);
-		FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
-		}
-	if (ifconf.ifc_len % sizeof (struct ifreq)) {
-		close (sock);
-		FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
-		}
+	unsigned 				j;
+	struct sockaddr_in	*sinp, *sinmp;
+
+D2_FREE (broads);
+sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+if (sock < 0)
+	FAIL ("Creating IP socket failed:\n%m");
+#	ifdef SIOCGIFCOUNT
+if (!_IOCTL (sock, SIOCGIFCOUNT, &cnt))
+	{ /* //msg ("Getting iterface count error: %m"); */ }
+else
+	cnt = cnt * 2 + 2;
+#	endif
+ifconf.ifc_len = cnt * sizeof (struct ifreq);
+chk (ifconf.ifc_req = (ifreq *) D2_ALLOC (ifconf.ifc_len));
+#	ifdef _DEBUG
+memset (ifconf.ifc_req, 0, ifconf.ifc_len);
+ioRes = ioctl (sock, SIOCGIFCONF, &ifconf);
+if (ioRes < 0) {
+#	else
+ if (!_IOCTL (sock, SIOCGIFCONF, &ifconf)) {
+#	endif
+	close (sock);
+	FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
+	}
+if (ifconf.ifc_len % sizeof (struct ifreq)) {
+	close (sock);
+	FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
+	}
 cnt = ifconf.ifc_len / sizeof (struct ifreq);
 chk (broads = (sockaddr_in *) D2_ALLOC (cnt * sizeof (*broads)));
 broadsize = cnt;
@@ -588,20 +604,18 @@ for (i = j = 0; i < cnt; i++) {
 	sinmp = (struct sockaddr_in *)&ifconf.ifc_req [i].ifr_addr;
 	if (sinp->sin_family!=AF_INET || sinmp->sin_family!=AF_INET) 
 		continue;
-#endif // __macosx__
 	// Code common to both getifaddrs () and ioctl () approach
 	broads [j] = *sinp;
 	broads [j].sin_port = UDP_BASEPORT; //FIXME: No possibility to override from cmdline
 	broadmasks [j] = *sinmp;
 	j++;
 	}
-#ifdef __macosx__
-freeifaddrs (ifap);
-#endif
 broadnum = j;
 masksnum = j;
 return 0;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 /* Previous function addiflist () can (and probably will) report multiple
@@ -629,19 +643,20 @@ int d=0,s,i;
 static void portshift (const char *cs)
 {
 long port;
-unsigned short ports=0;
+unsigned short ports = atol (cs);
 
-	port=atol (cs);
-	if (port<-PORTSHIFT_TOLERANCE || port>+PORTSHIFT_TOLERANCE)
-		//msg ("Invalid portshift in \"%s\", tolerance is +/-%d",cs,PORTSHIFT_TOLERANCE)
-		;
-	else ports=htons (port);
-	memcpy (qhbuf+4,&ports,2);
+if (port<-PORTSHIFT_TOLERANCE || port>+PORTSHIFT_TOLERANCE)
+	//msg ("Invalid portshift in \"%s\", tolerance is +/-%d",cs,PORTSHIFT_TOLERANCE)
+	;
+else 
+	ports = htons (port);
+memcpy (qhbuf + 4, &ports, 2);
 }
 
 //------------------------------------------------------------------------------
 
 #ifdef __macosx__
+
 static void setupHints (struct addrinfo *hints) {
     hints->ai_family = PF_INET;
     hints->ai_protocol = IPPROTO_UDP;
@@ -655,6 +670,8 @@ static void setupHints (struct addrinfo *hints) {
 
 //------------------------------------------------------------------------------
 
+#	if 0
+
 static void printinaddr (struct sockaddr_in *addr) {
 
     char theAddress [200];
@@ -663,6 +680,9 @@ static void printinaddr (struct sockaddr_in *addr) {
     //myResult = inet_net_ntop (family, addr, 32, theAddress, 200);
     printf ("%s", theAddress);
 }
+
+#	endif
+
 #endif
 
 //------------------------------------------------------------------------------

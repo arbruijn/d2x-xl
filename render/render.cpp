@@ -1007,6 +1007,8 @@ return 1;
 //------------------------------------------------------------------------------
 //see if the order matters for these two children.
 //returns 0 if order doesn't matter, 1 if c0 before c1, -1 if c1 before c0
+#if SORT_RENDER_SEGS
+
 static int CompareChildren (tSegment *segP, short c0, short c1)
 {
 	tSideNormData	s [2];
@@ -1035,8 +1037,6 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
-
-#if SORT_RENDER_SEGS
 
 int QuickSortSegChildren (tSegment *segP, short left, short right, short *childList)
 {

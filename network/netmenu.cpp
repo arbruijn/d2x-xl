@@ -552,7 +552,7 @@ do {
 doMenu:
 
 	gameStates.app.nExtGameStatus = GAMESTAT_MORE_NETGAME_OPTIONS; 
-	Assert (sizeofa (m) >= opt);
+	Assert (sizeofa (m) >= (size_t) opt);
 	i = ExecMenu1 (NULL, TXT_MORE_MPOPTIONS, opt, m, NetworkMoreOptionsPoll, &choice);
 	} while (i == -2);
 
@@ -912,7 +912,7 @@ SetRadioOpt (TXT_ENT_VIRSTAB_TOUCH, 2, KEY_L);
 SetRadioOpt (TXT_ENT_VIRSTAB_NEVER, 2, KEY_N);
 m [optVirStab + extraGameInfo [0].entropy.nVirusStability].value = 1;
 
-Assert (sizeofa (m) >= opt);
+Assert (sizeofa (m) >= (size_t) opt);
 ExecMenu1 (NULL, TXT_ENT_TOGGLES, opt, m, NetworkDummyCallback, 0);
 
 extraGameInfo [0].entropy.bRevertRooms = m [optRevRooms].value;
@@ -942,7 +942,7 @@ SetTextOpt ("");
 ADD_CHECK (opt, TXT_ENT_TEX_BRIGHTEN, extraGameInfo [0].entropy.bBrightenRooms, KEY_B, HTX_ONLINE_MANUAL);
 optBrRooms = opt++;
 
-Assert (sizeofa (m) >= opt);
+Assert (sizeofa (m) >= (size_t) opt);
 ExecMenu1 (NULL, TXT_ENT_TEXTURES, opt, m, NetworkDummyCallback, 0);
 
 extraGameInfo [0].entropy.bBrightenRooms = m [optBrRooms].value;
@@ -995,7 +995,7 @@ optTextureMenu = opt;
 m [opt].nType = NM_TYPE_MENU;  
 m [opt].text = (char *) TXT_ENT_TEXMENU; 
 m [opt++].key = KEY_T;
-Assert (sizeofa (m) >= opt);
+Assert (sizeofa (m) >= (size_t) opt);
 
 for (;;) {
 	i = ExecMenu1 (NULL, "Entropy Options", opt, m, NetworkDummyCallback, 0);
@@ -1119,7 +1119,7 @@ static const char *szWeaponTexts [] = {
 
 static inline int ForceToOption (double dForce)
 {
-	int	i, h = sizeofa (nOptionToForce);
+	int	i, h = (int) sizeofa (nOptionToForce);
 
 for (i = 0; i < h - 1; i++)
 	if ((dForce >= nOptionToForce [i]) && (dForce < nOptionToForce [i + 1]))
@@ -1137,8 +1137,8 @@ void NetworkMonsterballOptions (void)
 	char					szBonus [60], szSize [60], szPyroForce [60];
 	tMonsterballForce	*pf = extraGameInfo [0].monsterball.forces;
 
-h = sizeofa (optionToWeaponId);
-j = sizeofa (nOptionToForce);
+h = (int) sizeofa (optionToWeaponId);
+j = (int) sizeofa (nOptionToForce);
 memset (m, 0, sizeof (m));
 for (i = opt = 0; i < h; i++, opt++, pf++) {
 	ADD_SLIDER (opt, szWeaponTexts [i], ForceToOption (pf->nForce), 
@@ -1169,7 +1169,7 @@ ADD_TEXT (opt, "", 0);
 opt++;
 ADD_MENU (opt, "Set default values", 0, NULL);
 optDefaultForces = opt++;
-Assert (sizeofa (m) >= opt);
+Assert (sizeofa (m) >= (size_t) opt);
 
 for (;;) {
 	i = ExecMenu1 (NULL, "Monsterball Impact Forces", opt, m, MonsterballMenuCallback, 0);
@@ -1419,7 +1419,7 @@ if (m [optMissionName].rebuild) {
 	}
 
 gameStates.app.nExtGameStatus = GAMESTAT_NETGAME_OPTIONS; 
-Assert (sizeofa (m) >= opt);
+Assert (sizeofa (m) >= (size_t) opt);
 key = ExecMenu1 (NULL, (gameStates.multi.nGameType == UDP_GAME) ? szIpAddr : NULL, 
 						opt, m, NetworkGameParamPoll, &choice);
 								//TXT_NETGAME_SETUP
@@ -1717,7 +1717,7 @@ sprintf (title, "%s %d %s", TXT_TEAM_SELECT, gameData.multiplayer.nMaxPlayers, T
 GetPlayersAgain:
 
 gameStates.app.nExtGameStatus = GAMESTAT_NETGAME_PLAYER_SELECT;
-Assert (sizeofa (m) >= MAX_PLAYERS + 4);
+Assert (sizeofa (m) >= (size_t) MAX_PLAYERS + 4);
 j = ExecMenu1 (NULL, title, MAX_PLAYERS + 4, m, NetworkStartPoll, &choice);
 nSavePlayers = gameData.multiplayer.nPlayers;
 if (j < 0) {
@@ -2268,7 +2268,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	m [opt].text = "ISDN or T1 over Internet"; 
 	opt++;
 
-	Assert (sizeofa (m) >= opt);
+	Assert (sizeofa (m) >= (size_t) opt);
 	choice = ExecMenu1 (NULL, "Choose connection nType", opt, m, NULL, 0);
 
 	if (choice<0)
@@ -2372,10 +2372,6 @@ int NetworkGetIpAddr (void)
 	int opt = 0, optServer = -1, optPort = -1;
 	int commands;
 
-#ifdef _DEBUG
-	static char szLocalIpAddr [16] = {'0', '.', '0', '.', '0', '.', '0', '\0'};
-#else
-#endif
 	static char szClientPort [7] = {'\0'};
 	static int nClientPortSign = 0;
 
@@ -2392,7 +2388,6 @@ if (!gameStates.multi.bUseTracker) {
 						 (nClientPortSign < 0) ? "-" : (nClientPortSign > 0) ? "+" : "", mpParams.udpClientPort);
 			IpxClose ();
 			}
-	//	strcpy (szLocalIpAddr, szServerIpAddr);
 		}
 	}
 memset (m, 0, sizeof (m));
@@ -2403,15 +2398,6 @@ if (!gameStates.multi.bUseTracker) {
 	opt++;
 	ADD_INPUT (opt, mpParams.szServerIpAddr, sizeof (mpParams.szServerIpAddr) - 1, HTX_GETIP_SERVER);
 	optServer = opt++;
-	/*
-	m [opt].nType = NM_TYPE_TEXT;  
-	m [opt].text = "\nServer IP address:";
-	opt++;
-	m [opt].nType = NM_TYPE_INPUT; 
-	m [opt].text = szLocalIpAddr; 
-	m [opt].text_len = sizeof (szLocalIpAddr)-1;         
-	opt++;
-	*/
 	ADD_TEXT (opt, TXT_CLIENT_PORT, 0);
 	opt++;
 	}
@@ -2424,7 +2410,7 @@ ADD_TEXT (opt, TXT_PORT_HELP1, 0);
 ADD_TEXT (opt, TXT_PORT_HELP2, 0);
 opt++;
 commands = opt;
-Assert (sizeofa (m) >= opt);
+Assert (sizeofa (m) >= (size_t) opt);
 for (;;) {
 	i = ExecMenu1 (NULL, gameStates.multi.bUseTracker ? TXT_CLIENT_PORT + 1 : TXT_IP_HEADER, 
 						opt, m, &IpAddrMenuCallBack, &choice);

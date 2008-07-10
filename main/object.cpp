@@ -922,7 +922,7 @@ return nOrgNumToFree - nToFree;
 //searches for the correct tSegment
 //returns the tObject number
 
-int CreateObject (ubyte nType, ubyte id, short owner, short nSegment, vmsVector *pos, 
+int CreateObject (ubyte nType, char id, short owner, short nSegment, vmsVector *pos, 
 					   vmsMatrix *orient, fix size, ubyte cType, ubyte mType, ubyte rType,
 						int bIgnoreLimits)
 {

@@ -46,8 +46,9 @@ there I just had it exit instead.
 
 //------------------------------------------------------------------------------
 
-#define LMAP_REND2TEX	0
-#define TEXTURE_CHECK	1
+#define LMAP_REND2TEX		0
+#define TEXTURE_CHECK		1
+#define LIGHTMAP_THREADS	0
 
 #define LIGHTMAP_DATA_VERSION 12
 
@@ -517,6 +518,8 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+#if LIGHTMAP_THREADS
+
 static void StartLightmapThreads (pThreadFunc pFunc)
 {
 	int	i;
@@ -539,6 +542,8 @@ for (i = 0; i < 2; i++) {
 	SDL_DestroySemaphore (ti [i].done);
 	}
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -683,7 +688,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	int nSaturation = gameOpts->render.color.nSaturation;
 	gameOpts->render.color.nSaturation = 1;
 	gameStates.render.bLightmaps = 1;
-#if 0
+#if LIGHTMAP_THREADS
 	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 8))
 		StartLightmapThreads (LightmapThread);
 	else 

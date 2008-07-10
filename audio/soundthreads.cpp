@@ -65,9 +65,6 @@ G3_SLEEP (100);
 int RunSoundThread (tSoundTask nTask)
 {
 	time_t	t1 = 0;
-#ifdef _DEBUG
-	static	int nLockups = 0;
-#endif
 
 #if 1
 t1 = clock ();

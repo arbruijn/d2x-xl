@@ -201,9 +201,10 @@ while (nSegment == -1) {
 		nPlayer = (d_rand () * gameData.multiplayer.nPlayers) >> 15;
 		count = 0;
 		while ((count < gameData.multiplayer.nPlayers) && 
-				 ((gameData.multiplayer.players [nPlayer].connected == 0) || (nPlayer == gameData.multiplayer.nLocalPlayer) || ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && 
-				 (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer))))) {
-			nPlayer =(++nPlayer) % gameData.multiplayer.nPlayers;
+				 (!gameData.multiplayer.players [nPlayer].connected || 
+				  (nPlayer == gameData.multiplayer.nLocalPlayer) || 
+				  ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer))))) {
+			nPlayer = (nPlayer + 1) % gameData.multiplayer.nPlayers;
 			count++;
 			}
 		if (count == gameData.multiplayer.nPlayers) 

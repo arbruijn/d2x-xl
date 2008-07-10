@@ -293,8 +293,6 @@ return PickupEnergyBoost (objP, nPlayer);
 
 int PickupGun (tObject *objP, int nId, int nPlayer)
 {
-	tPlayer *playerP = gameData.multiplayer.players + nPlayer;
-
 if (PickupPrimary (nId, nPlayer)) {
 	if ((nId == OMEGA_INDEX) && (nPlayer == gameData.multiplayer.nLocalPlayer))
 		gameData.omega.xCharge [IsMultiGame] = objP->cType.powerupInfo.count;

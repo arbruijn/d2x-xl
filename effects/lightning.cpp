@@ -2164,12 +2164,6 @@ if (SHOW_LIGHTNINGS) {
 			pll->color.red /= n;
 			pll->color.green /= n;
 			pll->color.blue /= n;
-#ifdef _DEBUG
-			short nSegment = FindSegByPos (&pll->vPos, pll->nSegment, 0, 0);
-			vmsVector c;
-			COMPUTE_SEGMENT_CENTER_I (&c, 332);
-			int d = VmVecDist (&c, &pll->vPos);
-#endif
 			if (gameStates.render.bPerPixelLighting == 2)
 				pll->nBrightness = fl2f (sqrt ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha));
 			else

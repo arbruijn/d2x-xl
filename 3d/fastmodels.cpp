@@ -423,8 +423,7 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	vmsAngVec		va = pAnimAngles ? pAnimAngles [psm->nAngles] : avZero;
 	vmsVector		vo;
 	int				h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/),
-						bGetThruster = !nPass && ObjectHasThruster (objP),
-						bPowerup = bHires && (objP->nType == OBJ_POWERUP);
+						bGetThruster = !nPass && ObjectHasThruster (objP);
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
 if (objP->nType == OBJ_PLAYER)
@@ -521,7 +520,9 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				i--;
 				} while (i && (pmf->nId == nId));
 			}
+#ifdef _WIN32
 		if (glDrawRangeElements)
+#endif
 			if (bUseVBO)
 				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
 											0, nVerts - 1, nVerts, GL_UNSIGNED_SHORT, 
@@ -530,6 +531,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
 											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT, 
 											pm->pIndex [0] + nIndex);
+#if _WIN32
 		else
 			if (bUseVBO)
 				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
@@ -537,6 +539,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			else
 				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
 									 nVerts, GL_UNSIGNED_SHORT, pm->pIndex + nIndex);
+#endif
 		}
 	}
 if (bAnimate)
@@ -557,7 +560,7 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + sliP->nFirst;
 	tShaderLight			*psl;
-	int						nPass, iLightSource = 0, iLight, nLights, nLightRange;
+	int						nPass, iLight, nLights, nLightRange;
 	int						bBright = objP && (objP->nType == OBJ_MARKER);
 	int						bEmissive = objP && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive || bBright);
