@@ -139,5 +139,46 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+#include "byteswap.h"
+
+static inline void ShortSwap (short *s)
+{
+*s = SWAPSHORT (*s);
+}
+
+//------------------------------------------------------------------------------
+
+static inline void FixSwap (fix *f)
+{
+*f = (fix)SWAPINT ((int)*f);
+}
+
+//------------------------------------------------------------------------------
+
+static inline void VmsVectorSwap (vmsVector *v)
+{
+FixSwap (FIXPTR (&v->p.x));
+FixSwap (FIXPTR (&v->p.y));
+FixSwap (FIXPTR (&v->p.z));
+}
+
+//------------------------------------------------------------------------------
+
+static inline void FixAngSwap (fixang *f)
+{
+*f = (fixang) SWAPSHORT ((short)*f);
+}
+
+//------------------------------------------------------------------------------
+
+static inline void VmsAngVecSwap (vmsAngVec *v)
+{
+FixAngSwap (&v->p);
+FixAngSwap (&v->b);
+FixAngSwap (&v->h);
+}
+
+//------------------------------------------------------------------------------
+
 #endif //_INTERP_H
 

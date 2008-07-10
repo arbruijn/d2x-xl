@@ -118,22 +118,9 @@ typedef union iSwap {
 static inline int SWAPINT (int i) 
 {
 char	h;
-#if 0
-iSwap	s;
-
-s.i = i;
-h = s.b [0];
-s.b [0] = s.b [3];
-s.b [3] = h;
-h = s.b [1];
-s.b [1] = s.b [2];
-s.b [2] = h;
-return s.i;
-#else
 SWAP (h, ISWAP (i)->b [0], ISWAP (i)->b [3]);
 SWAP (h, ISWAP (i)->b [1], ISWAP (i)->b [2]);
 return i;
-#endif
 }
 
 static inline int SwapInt (int i, int bEndian) 
@@ -155,17 +142,8 @@ typedef union sSwap {
 static inline short SWAPSHORT (short i) 
 {
 char	h;
-#if 0
-sSwap	s;
-s.i = i;
-h = s.b [0];
-s.b [0] = s.b [1];
-s.b [1] = h;
-return s.i;
-#else
 SWAP (h, SSWAP (i)->b [0], SSWAP (i)->b [1]);
 return i;
-#endif
 }
 
 static inline int SwapShort (short i, int bEndian) 

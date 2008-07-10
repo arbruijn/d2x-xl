@@ -619,7 +619,7 @@ else
 }
 
 
-void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *missingObjFrame)
+void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *missingObjFrames)
 {
 	int	i;
 	

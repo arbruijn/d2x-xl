@@ -79,11 +79,7 @@ g3sPoint	*modelPointList = NULL;
 #define MAX_INTERP_COLORS 100
 
 //this is a table of mappings from RGB15 to palette colors
-typedef struct tInterpColorEntry {
-	short pal_entry, rgb15;
-} tInterpColorEntry;
-
-tInterpColorEntry interpColorTable [MAX_INTERP_COLORS];
+struct {short pal_entry, rgb15;} interpColorTable [MAX_INTERP_COLORS];
 
 //static int bIntrinsicFacing = 0;
 //static int bFlatPolys = 1;
@@ -164,47 +160,6 @@ while (n--) {
 	pfv++;
 	}
 PROF_END(ptTransform)
-}
-
-//------------------------------------------------------------------------------
-
-#if 1 //defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-
-inline void ShortSwap (short *s)
-{
-*s = SWAPSHORT (*s);
-}
-
-//------------------------------------------------------------------------------
-
-inline void FixSwap (fix *f)
-{
-*f = (fix)SWAPINT ((int)*f);
-}
-
-//------------------------------------------------------------------------------
-
-inline void VmsVectorSwap (vmsVector *v)
-{
-FixSwap (FIXPTR (&v->p.x));
-FixSwap (FIXPTR (&v->p.y));
-FixSwap (FIXPTR (&v->p.z));
-}
-
-//------------------------------------------------------------------------------
-
-inline void FixAngSwap (fixang *f)
-{
-*f = (fixang) SWAPSHORT ((short)*f);
-}
-
-//------------------------------------------------------------------------------
-
-inline void VmsAngVecSwap (vmsAngVec *v)
-{
-FixAngSwap (&v->p);
-FixAngSwap (&v->b);
-FixAngSwap (&v->h);
 }
 
 //------------------------------------------------------------------------------
@@ -303,8 +258,6 @@ for (;;) {
 		}
 	}
 }
-
-#endif
 
 //------------------------------------------------------------------------------
 
