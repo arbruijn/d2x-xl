@@ -64,8 +64,8 @@ ushort BECalcSegmentCheckSum()
 sum1 = sum2 = 0;
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
-		BEDoCheckSumCalc (&(sideP->nType), 1, &sum1, &sum2);
-		BEDoCheckSumCalc (&(sideP->nFrame), 1, &sum1, &sum2);
+		BEDoCheckSumCalc ((ubyte *) &(sideP->nType), 1, &sum1, &sum2);
+		BEDoCheckSumCalc ((ubyte *) &(sideP->nFrame), 1, &sum1, &sum2);
 		s = INTEL_SHORT (WallNumI (i, j));
 		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
 		s = INTEL_SHORT (sideP->nBaseTex);
@@ -124,32 +124,32 @@ ushort NetMiscCalcCheckSum(void * vptr, int len)
 #include "powerup.h"
 #include "error.h"
 
-sbyte out_buffer[MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending tObject data
+ubyte out_buffer[MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending tObject data
 
 void BEReceiveNetPlayerInfo(ubyte *data, tNetPlayerInfo *info)
 {
 	int loc = 0;
 
-	memcpy(info->callsign, data + loc, CALLSIGN_LEN+1);       
-	loc += CALLSIGN_LEN+1;
-  memcpy(&(info->network.ipx.server), data + loc, 4);       
-  loc += 4;
-  memcpy(&(info->network.ipx.node), data + loc, 6);         
-  loc += 6;
-	info->versionMajor = data[loc];                            
-	loc++;
-	info->versionMinor = data[loc];                            
-	loc++;
-	memcpy(&(info->computerType), data + loc, 1);            
-	loc++;      // memcpy to avoid compile time warning about enum
-	info->connected = data[loc];                                
-	loc++;
-	memcpy(&(info->socket), data + loc, 2);                   
-	loc += 2;
-	memcpy (&(info->rank),data + loc,1);                      
-	loc++;
-	// MWA don't think we need to swap this because we need it in high
-	// order  info->socket = INTEL_SHORT(info->socket);
+memcpy(info->callsign, data + loc, CALLSIGN_LEN+1);       
+loc += CALLSIGN_LEN+1;
+memcpy(&(info->network.ipx.server), data + loc, 4);       
+loc += 4;
+memcpy(&(info->network.ipx.node), data + loc, 6);         
+loc += 6;
+info->versionMajor = data[loc];                            
+loc++;
+info->versionMinor = data[loc];                            
+loc++;
+memcpy(&(info->computerType), data + loc, 1);            
+loc++;      // memcpy to avoid compile time warning about enum
+info->connected = data[loc];                                
+loc++;
+memcpy(&(info->socket), data + loc, 2);                   
+loc += 2;
+memcpy (&(info->rank),data + loc,1);                      
+loc++;
+// MWA don't think we need to swap this because we need it in high
+// order  info->socket = INTEL_SHORT(info->socket);
 }
 
 void BESendNetPlayersPacket(ubyte *server, ubyte *node)
@@ -158,51 +158,51 @@ void BESendNetPlayersPacket(ubyte *server, ubyte *node)
 	int loc = 0;
 	short tmps;
 
-	memset(out_buffer, 0, sizeof(out_buffer));
-	out_buffer[0] = netPlayers.nType;                            loc++;
-	tmpi = INTEL_INT (netPlayers.nSecurity);
-	memcpy(out_buffer + loc, &tmpi, 4);                       loc += 4;
-	for (i = 0; i < MAX_PLAYERS+4; i++) {
-		memcpy(out_buffer + loc, netPlayers.players[i].callsign, CALLSIGN_LEN+1); 
-		loc += CALLSIGN_LEN+1;
-		memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.server, 4);    
-		loc += 4;
-		memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.node, 6);      
-		loc += 6;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].versionMajor), 1);      
-		loc++;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].versionMinor), 1);      
-		loc++;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].computerType), 1);      
-		loc++;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].connected), 1);          
-		loc++;
-		tmps = INTEL_SHORT(netPlayers.players[i].socket);
-		memcpy(out_buffer + loc, &tmps, 2);                                       
-		loc += 2;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].rank), 1);               
-		loc++;
+memset(out_buffer, 0, sizeof(out_buffer));
+out_buffer[0] = netPlayers.nType;                            
+loc++;
+tmpi = INTEL_INT (netPlayers.nSecurity);
+memcpy(out_buffer + loc, &tmpi, 4);                       
+loc += 4;
+for (i = 0; i < MAX_PLAYERS+4; i++) {
+	memcpy(out_buffer + loc, netPlayers.players[i].callsign, CALLSIGN_LEN+1); 
+	loc += CALLSIGN_LEN+1;
+	memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.server, 4);    
+	loc += 4;
+	memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.node, 6);      
+	loc += 6;
+	memcpy(out_buffer + loc, &(netPlayers.players[i].versionMajor), 1);      
+	loc++;
+	memcpy(out_buffer + loc, &(netPlayers.players[i].versionMinor), 1);      
+	loc++;
+	memcpy(out_buffer + loc, &(netPlayers.players[i].computerType), 1);      
+	loc++;
+	memcpy(out_buffer + loc, &(netPlayers.players[i].connected), 1);          
+	loc++;
+	tmps = INTEL_SHORT(netPlayers.players[i].socket);
+	memcpy(out_buffer + loc, &tmps, 2);                                       
+	loc += 2;
+	memcpy(out_buffer + loc, &(netPlayers.players[i].rank), 1);               
+	loc++;
 	}
-
-	if ((server == NULL) && (node == NULL))
-		IPXSendBroadcastData(out_buffer, loc);
-	else
-		IPXSendInternetPacketData(out_buffer, loc, server, node);
-
+if ((server == NULL) && (node == NULL))
+	IPXSendBroadcastData(out_buffer, loc);
+else
+	IPXSendInternetPacketData(out_buffer, loc, server, node);
 }
 
 void BEReceiveNetPlayersPacket(ubyte *data, tAllNetPlayersInfo *pinfo)
 {
 	int i, loc = 0;
 
-	pinfo->nType = data[loc];                            
-	loc++;
-	memcpy(&(pinfo->nSecurity), data + loc, 4);        
-	loc += 4;
-	pinfo->nSecurity = INTEL_INT (pinfo->nSecurity);
-	for (i = 0; i < MAX_PLAYERS+4; i++) {
-		BEReceiveNetPlayerInfo(data + loc, &(pinfo->players[i]));
-		loc += 26;          // sizeof(tNetPlayerInfo) on the PC
+pinfo->nType = data[loc];                            
+loc++;
+memcpy(&(pinfo->nSecurity), data + loc, 4);        
+loc += 4;
+pinfo->nSecurity = INTEL_INT (pinfo->nSecurity);
+for (i = 0; i < MAX_PLAYERS+4; i++) {
+	BEReceiveNetPlayerInfo(data + loc, &(pinfo->players[i]));
+	loc += 26;          // sizeof(tNetPlayerInfo) on the PC
 	}
 }
 
@@ -211,39 +211,39 @@ void BESendSequencePacket(tSequencePacket seq, ubyte *server, ubyte *node, ubyte
 	short tmps;
 	int loc, tmpi;
 
-	loc = 0;
-	memset(out_buffer, 0, sizeof(out_buffer));
-	out_buffer[0] = seq.nType;                                       
-	loc++;
-	tmpi = INTEL_INT (seq.nSecurity);
-	memcpy(out_buffer + loc, &tmpi, 4);                           
-	loc += 4;       
-	loc += 3;
-	memcpy(out_buffer + loc, seq.player.callsign, CALLSIGN_LEN+1);
-	loc += CALLSIGN_LEN+1;
-	memcpy(out_buffer + loc, seq.player.network.ipx.server, 4);   
-	loc += 4;
-	memcpy(out_buffer + loc, seq.player.network.ipx.node, 6);     
-	loc += 6;
-	out_buffer[loc] = seq.player.versionMajor;                     
-	loc++;
-	out_buffer[loc] = seq.player.versionMinor;                     
-	loc++;
-	out_buffer[loc] = seq.player.computerType;                     
-	loc++;
-	out_buffer[loc] = seq.player.connected;                         
-	loc++;
-	tmps = INTEL_SHORT(seq.player.socket);
-	memcpy(out_buffer + loc, &tmps, 2);                           
-	loc += 2;
-	out_buffer[loc]=seq.player.rank;                                
-	loc++;      // for pad byte
-	if (netAddress != NULL)
-		IPXSendPacketData(out_buffer, loc, server, node, netAddress);
-	else if (!server && !node)
-		IPXSendBroadcastData(out_buffer, loc);
-	else
-		IPXSendInternetPacketData(out_buffer, loc, server, node);
+loc = 0;
+memset(out_buffer, 0, sizeof(out_buffer));
+out_buffer[0] = seq.nType;                                       
+loc++;
+tmpi = INTEL_INT (seq.nSecurity);
+memcpy(out_buffer + loc, &tmpi, 4);                           
+loc += 4;       
+loc += 3;
+memcpy(out_buffer + loc, seq.player.callsign, CALLSIGN_LEN+1);
+loc += CALLSIGN_LEN+1;
+memcpy(out_buffer + loc, seq.player.network.ipx.server, 4);   
+loc += 4;
+memcpy(out_buffer + loc, seq.player.network.ipx.node, 6);     
+loc += 6;
+out_buffer[loc] = seq.player.versionMajor;                     
+loc++;
+out_buffer[loc] = seq.player.versionMinor;                     
+loc++;
+out_buffer[loc] = seq.player.computerType;                     
+loc++;
+out_buffer[loc] = seq.player.connected;                         
+loc++;
+tmps = INTEL_SHORT(seq.player.socket);
+memcpy(out_buffer + loc, &tmps, 2);                           
+loc += 2;
+out_buffer[loc]=seq.player.rank;                                
+loc++;      // for pad byte
+if (netAddress != NULL)
+	IPXSendPacketData(out_buffer, loc, server, node, netAddress);
+else if (!server && !node)
+	IPXSendBroadcastData(out_buffer, loc);
+else
+	IPXSendInternetPacketData(out_buffer, loc, server, node);
 }
 
 void BEReceiveSequencePacket(ubyte *data, tSequencePacket *seq)
