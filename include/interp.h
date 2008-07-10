@@ -72,8 +72,6 @@ void G3FreeAllPolyModelItems (void);
 // routine to convert little to big endian in polygon model data
 void swap_polygon_model_data(ubyte *data);
 //routines to convert little to big endian in vectors
-void VmsVectorSwap(vmsVector *v);
-void VmsAngVecSwap(vmsAngVec *v);
 #endif
 
 #ifdef WORDS_NEED_ALIGNMENT
