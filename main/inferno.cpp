@@ -238,8 +238,7 @@ wszCaption [i] = (wchar_t) 0;
 IRRDEVICE->setWindowCaption (wszCaption);
 #else
 	char	szCaption [200];
-
-strcpy (szCaption, DESCENT_VERSION);
+	strcpy (szCaption, DESCENT_VERSION);
 if (*LOCALPLAYER.callsign) {
 	strcat (szCaption, " [");
 	strcat (szCaption, LOCALPLAYER.callsign);

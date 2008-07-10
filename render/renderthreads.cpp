@@ -30,7 +30,7 @@ COPYRIGHT 0993-0999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fastrender.h"
 #include "renderthreads.h"
 #include "interp.h"
-#include "SDL_syswm.h"
+#include "SDL/SDL_syswm.h"
 
 #define KILL_RENDER_THREADS 0
 

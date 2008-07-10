@@ -20,6 +20,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include "vers_id.h"
 #include "ukali.h"
 //added 05/17/99 Matt Mueller - needed to redefine FD_* so that no asm is used
 #include "checker.h"
