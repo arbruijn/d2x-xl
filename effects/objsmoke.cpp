@@ -269,7 +269,8 @@ else {
 		nParts *= 25;
 		nParts += 75;
 		}
-	nParts = (gameStates.entropy.nTimeLastMoved < 0) ? SHIP_MAX_PARTS * 2 : SHIP_MAX_PARTS;
+	nParts = (objP->mType.physInfo.thrust.p.x | objP->mType.physInfo.thrust.p.y | objP->mType.physInfo.thrust.p.z) ? 
+				SHIP_MAX_PARTS / 2 : SHIP_MAX_PARTS;
 	if (SHOW_SMOKE && nParts && gameOpts->render.smoke.bPlayers) {
 		if (gameOpts->render.smoke.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [0]);

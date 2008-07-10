@@ -1663,18 +1663,15 @@ if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == objP->i
 		 FuelCenCheckForGoal (segP);
    else if (gameData.app.nGameMode & GM_HOARD)
 		 FuelCenCheckForHoardGoal (segP);
-   else if (gameData.app.nGameMode & GM_ENTROPY) {
-		if (Controls [0].forwardThrustTime || 
-			 Controls [0].verticalThrustTime || 
-			 Controls [0].sidewaysThrustTime ||
-			 (xsegP->owner < 0) ||
-			 (xsegP->owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1)) {
+	else if (Controls [0].forwardThrustTime || Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime) {
+		gameStates.entropy.nTimeLastMoved = -1;
+		if ((gameData.app.nGameMode & GM_ENTROPY) &&
+			 ((xsegP->owner < 0) || (xsegP->owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1))) {
 			StopConquerWarning ();
-			gameStates.entropy.nTimeLastMoved = -1;
 			}
-		else if (gameStates.entropy.nTimeLastMoved < 0)
-			gameStates.entropy.nTimeLastMoved = 0;
 		}
+	else if (gameStates.entropy.nTimeLastMoved < 0)
+		gameStates.entropy.nTimeLastMoved = 0;
 	shields = HostileRoomDamageShields (segP, playerP->shields + 1);
 	if (shields > 0) {
 		playerP->shields -= shields;

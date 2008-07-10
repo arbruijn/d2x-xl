@@ -6,6 +6,7 @@
 #include "error.h"
 #include "input.h"
 #include "text.h"
+#include "slowmotion.h"
 #include "soundthreads.h"
 
 static int nSlowMotionChannel = -1;
@@ -199,7 +200,7 @@ PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 void SlowdownSound (void)
 {
 #if USE_SOUND_THREADS
-tiSound.fSlowDown = f;
+tiSound.fSlowDown = (float) gameOpts->gameplay.nSlowMotionSpeedup / 2;
 RunSoundThread (stReconfigureAudio);
 #else
 DigiExit ();
