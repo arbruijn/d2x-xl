@@ -917,7 +917,7 @@ do {
 		}
 	ADD_TEXT (nOptions, TXT_LO_HI, 0);
 	nOptions++;
-	Assert (nOptions <= sizeof (m) / sizeof (m [0]));
+	Assert (sizeofa (m) >= nOptions);
 	i = ExecMenu1 (NULL, TXT_DETAIL_CUSTOM, nOptions, m, CustomDetailsCallback, &choice);
 } while (i > -1);
 InitCustomDetails ();
@@ -3261,7 +3261,7 @@ do {
 		optRotate = 
 		optAuxViews = -1;
 
-	Assert (nOptions <= sizeof (m) / sizeof (m [0]));
+	Assert (sizeofa (m) >= nOptions);
 	do {
 		i = ExecMenu1 (NULL, TXT_SMOKE_MENUTITLE, nOptions, m, &SmokeOptionsCallback, &choice);
 		} while (i >= 0);

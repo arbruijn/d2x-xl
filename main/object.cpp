@@ -939,11 +939,11 @@ if (nType == OBJ_WEAPON) {
 		nType = nType;
 	if (id == FLARE_ID)
 		nType = nType;
-	if (gameData.objs.bIsMissile [id])
+	if (gameData.objs.bIsMissile [(int) id])
 		nType = nType;
 	}
 else if (nType == OBJ_ROBOT) {
-	if (ROBOTINFO (id).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
+	if (ROBOTINFO ((int) id).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
 		return -1;
 	}
 else if (nType == OBJ_HOSTAGE)
@@ -964,7 +964,7 @@ if (nType == OBJ_POWERUP) {
 #ifdef _DEBUG
 	nType = nType;
 #endif
-	if (!bIgnoreLimits && TooManyPowerups (id)) {
+	if (!bIgnoreLimits && TooManyPowerups ((int) id)) {
 #if 0//def _DEBUG
 		HUDInitMessage ("%c%c%c%cDiscarding excess %s!", 1, 127 + 128, 64 + 128, 128, pszPowerup [id]);
 		TooManyPowerups (id);

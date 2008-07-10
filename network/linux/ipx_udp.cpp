@@ -346,7 +346,7 @@ static void QuerySafeMode (tDestListEntry *pdl);
 /* Dump raw form of IP address/port by fancy output to user
  */
  
-#ifdef _DEBUG
+#if 0//def _DEBUG
 
 static void dumpraddr (unsigned char *a)
 {

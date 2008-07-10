@@ -753,7 +753,7 @@ else {
 	if (objP) {		//used to be active
 		if (!gameOpts->render.cockpit.bGuidedInMainView)
 			DoCockpitWindowView (1, NULL, 0, WBU_STATIC, NULL);
-		gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer],objP = NULL;
+		gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP = NULL;
 		}
 	if (gameData.objs.missileViewer && !gameStates.render.bExternalView) {		//do missile view
 		static int mv_sig=-1;
