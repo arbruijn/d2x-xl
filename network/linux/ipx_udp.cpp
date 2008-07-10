@@ -515,7 +515,7 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	j++;
 	}
 broadsize = j;
-chk (broads = D2_ALLOC (j * sizeof (*broads)));
+chk (broads = (sockaddr_in *) D2_ALLOC (j * sizeof (*broads)));
 // Second loop to copy the addresses
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
@@ -625,14 +625,16 @@ return 0;
 
 static void unifyiflist (void)
 {
-int d=0,s,i;
+	int d = 0, s, i;
 
-	for (s=0;s<broadnum;s++) {
-		for (i=0;i<s;i++)
-			if (addreq (broads + s, broads + i)) break;
-		if (i>=s) broads [d++] = broads [s];
-		}
-	broadnum=d;
+for (s = 0; s < broadnum; s++) {
+	for (i = 0; i < s; i++)
+		if (addreq (broads + s, broads + i)) 
+			break;
+	if (i >= s) 
+		broads [d++] = broads [s];
+	}
+broadnum = d;
 }
 
 //------------------------------------------------------------------------------

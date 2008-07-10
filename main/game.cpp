@@ -131,7 +131,11 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "sparkeffect.h"
 #include "systemkeys.h"
 #include "createmesh.h"
+#ifdef __macosx__
+#include "SDL/SDL_syswm.h"
+#else
 #include "SDL_syswm.h"
+#endif
 #include "renderthreads.h"
 #include "dynlight.h"
 

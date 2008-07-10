@@ -113,7 +113,11 @@ return bufP;
 
 #ifdef GL_VERSION_20
 
+#ifdef __macosx__
+void PrintShaderInfoLog (unsigned int handle, int bProgram)
+#else
 void PrintShaderInfoLog (GLhandleARB handle, int bProgram)
+#endif
 {
    GLint nLogLen = 0;
    GLint charsWritten = 0;
