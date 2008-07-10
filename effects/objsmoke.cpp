@@ -592,7 +592,7 @@ nParts = 2 * LASER_MAX_PARTS / 3;
 nParts = gameData.weapons.info [objP->id].speed [0] / F1_0; 
 #endif
 if (bGatling) {
-	c.red = c.green = c.blue = 0.666f;
+	c.red = c.green = c.blue = //0.5f;
 	c.alpha = 1.0f / 3.0f;
 	}
 else {
@@ -603,7 +603,7 @@ else {
 	}
 if (gameData.smoke.objects [i] < 0) {
 	if (bGatling)
-		nScale = 3;
+		nScale = 3.5;
 	else {
 		if (((id >= LASER_ID) && (id < LASER_ID + 4)) || 
 			 (id == SUPERLASER_ID) || (id == SUPERLASER_ID + 1) ||
@@ -627,7 +627,7 @@ if (gameData.smoke.objects [i] < 0) {
 		}
 	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, NULL, objP->nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale),
 											  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
-											  1, (gameOpts->render.smoke.nLife [3] + 1 + bGatling) * LASER_PART_LIFE, LASER_PART_SPEED, 3 + bGatling, i, &c, 0, -1));
+											  1, ((gameOpts->render.smoke.nLife [3] + 1) * LASER_PART_LIFE) << bGatling, LASER_PART_SPEED, 3 + bGatling, i, &c, 0, -1));
 	}
 VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size / 2);
 SetSmokePos (gameData.smoke.objects [i], &pos, NULL, objP->nSegment);
