@@ -109,6 +109,7 @@ typedef struct tParticleVertex {
 
 static tParticleVertex particleBuffer [VERT_BUF_SIZE];
 static float bufferBrightness = -1;
+static char bBufferEmissive = 0;
 static int iBuffer = 0;
 
 #define SMOKE_START_ALPHA		(gameOpts->render.smoke.bDisperse ? 96 : 128)
@@ -413,6 +414,7 @@ else
 if (!nRad)
 	nRad = F1_0;
 pParticle->nType = nType;
+pParticle->bEmissive = (nSmokeType == 3);
 pParticle->nClass = nClass;
 pParticle->nSegment = nSegment;
 pParticle->nBounce = 0;
@@ -425,7 +427,7 @@ if (nType == 2) {
 	pParticle->nFade = -1;
 	}
 else {
-	pParticle->bBright = (rand () % 50) == 0;
+	pParticle->bBright = nSmokeType ? 0 : (rand () % 50) == 0;
 	if ((pParticle->bColored = (pColor != NULL))) {
 		if (nType == 1)
 			pParticle->color = *pColor;
@@ -442,9 +444,9 @@ else {
 		pParticle->color.blue = 0.0f;//(float) (64 + randN (64)) / 255.0f;
 		pParticle->nFade = 2;
 		}
-	if (nType == 1)
+	if (pParticle->bEmissive)
 		pParticle->color.alpha = (float) (SMOKE_START_ALPHA + 64) / 255.0f;
-	else
+	else if (nType != 1)
 		pParticle->color.alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
 #if 1
 	if (gameOpts->render.smoke.bDisperse && !pParticle->bBright) {
@@ -535,9 +537,10 @@ else {
 	pParticle->nOrient = rand () % 4;
 	}
 #if 1
-pParticle->color.alpha /= nSmokeType + 2;
-if (nType == 1)
+if (pParticle->bEmissive)
 	pParticle->color.alpha *= ParticleBrightness (pColor);
+else if (nType != 1)
+	pParticle->color.alpha /= nSmokeType + 2;
 #endif
 return 1;
 }
@@ -798,7 +801,7 @@ int RenderParticle (tParticle *pParticle, float brightness)
 	tParticleVertex	*pb;
 	fVector				vOffset, vCenter;
 	float					decay = (float) pParticle->nLife / (float) pParticle->nTTL;
-	int					i, nFrame, nType = pParticle->nType,
+	int					i, nFrame, nType = pParticle->nType, bEmissive = pParticle->bEmissive,
 							bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0);
 
 	static int			nFrames = 1;
@@ -815,17 +818,18 @@ if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
 if (gameOpts->render.bDepthSort > 0) {
 	hp = pParticle->transPos;
-	if ((gameData.smoke.nLastType != nType) || (brightness != bufferBrightness)) {
+	if ((gameData.smoke.nLastType != nType) || (brightness != bufferBrightness) || (bBufferEmissive != bEmissive)) {
 		if (gameStates.render.bVertexArrays)
 			FlushParticleBuffer (brightness);
 		gameData.smoke.nLastType = nType;
+		bBufferEmissive = bEmissive;
 		glActiveTexture (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
 		if (OglBindBmTex (bmP, 0, 1))
 			return 0;
 		nFrames = nParticleFrames [0][nType];
 		deltaUV = 1.0f / (float) nFrames;
-		if (nType == 3)
+		if (pParticle->bEmissive)
 			glBlendFunc (GL_ONE, GL_ONE);
 		else
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -845,7 +849,7 @@ else if (gameOpts->render.smoke.bSort) {
 			return 0;
 		nFrames = nParticleFrames [bPointSprites][nType];
 		deltaUV = 1.0f / (float) nFrames;
-		if (nType == 3)
+		if (pParticle->bEmissive)
 			glBlendFunc (GL_ONE, GL_ONE);
 		else
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -920,7 +924,7 @@ vCenter.p.x = f2fl (hp.p.x);
 vCenter.p.y = f2fl (hp.p.y);
 vCenter.p.z = f2fl (hp.p.z);
 i = pParticle->nOrient; 
-if (nType == 1) { //scale light trail particle color to reduce saturation
+if (bEmissive) { //scale light trail particle color to reduce saturation
 	pc.red /= 50.0f;
 	pc.green /= 50.0f;
 	pc.blue /= 50.0f;

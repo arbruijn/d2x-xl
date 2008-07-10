@@ -592,8 +592,8 @@ nParts = 2 * LASER_MAX_PARTS / 3;
 nParts = gameData.weapons.info [objP->id].speed [0] / F1_0; 
 #endif
 if (bGatling) {
-	c.red = c.green = c.blue = 0.66f;
-	c.alpha = 0.9f;
+	c.red = c.green = c.blue = 0.666f;
+	c.alpha = 1.0f / 3.0f;
 	}
 else {
 	c.red = (float) gameData.weapons.color [objP->id].red;
@@ -603,26 +603,28 @@ else {
 	}
 if (gameData.smoke.objects [i] < 0) {
 	if (bGatling)
-		nScale = 4;
-	else if (((id >= LASER_ID) && (id < LASER_ID + 4)) || 
-		 (id == SUPERLASER_ID) || (id == SUPERLASER_ID + 1) ||
-		 (id == ROBOT_BLUE_LASER_ID) || (id == ROBOT_GREEN_LASER_ID) || (id == ROBOT_RED_LASER_ID) || (id == ROBOT_WHITE_LASER_ID))
 		nScale = 3;
-	else if ((id == PHOENIX_ID) || (id == ROBOT_SLOW_PHOENIX_ID) || (id == ROBOT_FAST_PHOENIX_ID))
-		nScale = 1;
-	else if ((id == PLASMA_ID) || (id == ROBOT_PLASMA_ID))
-		nScale = 1.5;
-	else if (id == FUSION_ID)
-		nScale = 2;
-	else if ((id == SPREADFIRE_ID) || (id == HELIX_ID) || (id == ROBOT_HELIX_ID))
-		nScale = 2;
-	else if (id == FLARE_ID)
-		nScale = 2;
-	else if ((id == ROBOT_BLUE_ENERGY_ID) || (id == ROBOT_WHITE_ENERGY_ID) || (id == ROBOT_PHASE_ENERGY_ID))
-		nScale = 2;
-	else
-		nScale = 1;
-	c.alpha = 0.1f + nScale / 10;
+	else {
+		if (((id >= LASER_ID) && (id < LASER_ID + 4)) || 
+			 (id == SUPERLASER_ID) || (id == SUPERLASER_ID + 1) ||
+			 (id == ROBOT_BLUE_LASER_ID) || (id == ROBOT_GREEN_LASER_ID) || (id == ROBOT_RED_LASER_ID) || (id == ROBOT_WHITE_LASER_ID))
+			nScale = 3;
+		else if ((id == PHOENIX_ID) || (id == ROBOT_SLOW_PHOENIX_ID) || (id == ROBOT_FAST_PHOENIX_ID))
+			nScale = 1;
+		else if ((id == PLASMA_ID) || (id == ROBOT_PLASMA_ID))
+			nScale = 1.5;
+		else if (id == FUSION_ID)
+			nScale = 2;
+		else if ((id == SPREADFIRE_ID) || (id == HELIX_ID) || (id == ROBOT_HELIX_ID))
+			nScale = 2;
+		else if (id == FLARE_ID)
+			nScale = 2;
+		else if ((id == ROBOT_BLUE_ENERGY_ID) || (id == ROBOT_WHITE_ENERGY_ID) || (id == ROBOT_PHASE_ENERGY_ID))
+			nScale = 2;
+		else
+			nScale = 1;
+		c.alpha = 0.1f + nScale / 10;
+		}
 	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, NULL, objP->nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale),
 											  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
 											  1, (gameOpts->render.smoke.nLife [3] + 1 + bGatling) * LASER_PART_LIFE, LASER_PART_SPEED, 3 + bGatling, i, &c, 0, -1));

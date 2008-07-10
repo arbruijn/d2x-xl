@@ -37,6 +37,7 @@ typedef struct tParticle {
 	char			bBlowUp;
 	char			bBright;
 	char			bColored;
+	char			bEmissive;
 	char			nFade;
 	char			nClass;
 	char			nFrame;
