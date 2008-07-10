@@ -111,6 +111,12 @@ return bufP;
 
 //------------------------------------------------------------------------------
 
+#ifdef __macosx__
+#	define	_HANDLE	(unsigned int) handle
+#else
+#	define	_HANDLE	handle
+#endif
+
 void PrintShaderInfoLog (GLhandleARB handle, int bProgram)
 {
    GLint nLogLen = 0;
@@ -119,46 +125,36 @@ void PrintShaderInfoLog (GLhandleARB handle, int bProgram)
 
 #ifdef GL_VERSION_20
 if (bProgram) {
-#ifdef __macosx__
-	glGetProgramiv ((unsigned int) handle, GL_INFO_LOG_LENGTH, &nLogLen);
-#else
-	glGetProgramiv (handle, GL_INFO_LOG_LENGTH, &nLogLen);
-#endif
+	glGetProgramiv (_HANDLE, GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = (char *) D2_ALLOC (nLogLen))) {
 		infoLog = (char *) D2_ALLOC (nLogLen);
-		glGetProgramInfoLog (handle, nLogLen, &charsWritten, infoLog);
+		glGetProgramInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			PrintLog ("\n%s\n\n", infoLog);
 		D2_FREE (infoLog);
 		}
 	}
 else {
-#ifdef __macosx__
-	glGetShaderiv ((unsigned int) handle, GL_INFO_LOG_LENGTH, &nLogLen);
-#else
-	glGetShaderiv (handle, GL_INFO_LOG_LENGTH, &nLogLen);
-#endif
+	glGetShaderiv (_HANDLE, GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = (char *) D2_ALLOC (nLogLen))) {
-		glGetShaderInfoLog (handle, nLogLen, &charsWritten, infoLog);
+		glGetShaderInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			PrintLog ("\n%s\n\n", infoLog);
 		D2_FREE (infoLog);
 		}
 	}
 #else
-#ifdef __macosx__
-glGetObjectParameteriv ((unsigned int) handle, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
-#else
-glGetObjectParameteriv (handle, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
-#endif
+glGetObjectParameteriv (_HANDLE, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
 if ((nLogLen > 0) && (infoLog = (char *) D2_ALLOC (nLogLen))) {
-	glGetInfoLog (handle, nLogLen, &charsWritten, infoLog);
+	glGetInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 	if (*infoLog)
 		PrintLog ("\n%s\n\n", infoLog);
 	D2_FREE (infoLog);
 	}
 #endif
 }
+
+#undef _HANDLE
 
 //------------------------------------------------------------------------------
 
