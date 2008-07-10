@@ -40,7 +40,7 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag);
 void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *netAddress);
 void BEReceiveExtraGameInfo(ubyte *data, tExtraGameInfo *extraGameInfo);
 void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress);
-void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *extraGameInfo);
+void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *missingObjFrame);
 void BESwapObject (tObject *obj);
 
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
@@ -94,8 +94,8 @@ void BESwapObject (tObject *obj);
 
 #define SendBroadcastMissingObjFramesPacket() \
 	BESendMissingObjFrames(NULL, NULL, NULL)
-#define ReceiveMissingObjFramesPacket(data, _extraGameInfo) \
-	BEReceiveMissingObjFrames(data, _extraGameInfo);
+#define ReceiveMissingObjFramesPacket(data, missingObjFrames) \
+	BEReceiveMissingObjFrames((ubyte *) data, missingObjFrames);
 #define SendInternetMissingObjFramesPacket(server, node) \
 	BESendMissingObjFrames(server, node, NULL)
 

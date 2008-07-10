@@ -619,12 +619,12 @@ else
 }
 
 
-void BEReceiveMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress)
+void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *missingObjFrame)
 {
 	int	i;
 	
-memcpy (&networkData.missingObjFrames, out_buffer, sizeof (networkData.missingObjFrames));
-networkData.missingObjFrames.nFrame = INTEL_SHORT (networkData.missingObjFrames.nFrame);
+memcpy (missingObjFrames, out_buffer, sizeof (networkData.missingObjFrames));
+missingObjFrames->nFrame = INTEL_SHORT (networkData.missingObjFrames.nFrame);
 }
 
 
