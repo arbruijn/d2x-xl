@@ -109,4 +109,6 @@ char *LevelName (int nLevel);
 char *LevelSongName (int nLevel);
 char *MakeLevelFilename (int nLevel, char *pszFilename, const char *pszFileExt);
 
+int GetRandomPlayerPosition (void);
+
 #endif /* _LOADGAME_H */

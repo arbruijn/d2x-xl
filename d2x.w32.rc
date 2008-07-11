@@ -8,8 +8,8 @@
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,13,40,0
- PRODUCTVERSION 1,13,40,0
+ FILEVERSION 1,13,41,0
+ PRODUCTVERSION 1,13,41,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
 
@@ -17,13 +17,13 @@ VS_VERSION_INFO VERSIONINFO
 #else
  FILEFLAGS 0x0L
 #endif
- FILEOS 0x40004L
+ FILEOS 0x41004L
  FILETYPE 0x1L
  FILESUBTYPE 0x0L
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040814b0"
+        BLOCK "041814b0"
         BEGIN
             VALUE "Comments", "D2X-XL - Descent 2 OpenGL for MS Windows"
             VALUE "FileDescription", "D2X-XL - Descent 2 OpenGL for MS Windows"
@@ -36,7 +36,7 @@ BEGIN
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x407, 1200
+        VALUE "Translation", 0x417, 1200
     END
 END
 

@@ -714,7 +714,7 @@ else if (i < 0)
 		networkData.missingObjFrames.nFrame = 0;
 		}
 	else if ((nObject == -2) || (nObject == -4)) {	// Special debug checksum marker for entire send
-		if (!nMode && NetworkVerifyObjects (nRemoteObj, objectCount)) {
+ 		if (!nMode && NetworkVerifyObjects (nRemoteObj, objectCount)) {
 			NetworkAbortSync ();
 			return;
 			}

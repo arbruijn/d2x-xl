@@ -909,9 +909,9 @@ void RenderHeadlights (int nType, int bVertexArrays)
 {
 if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-	g3FaceDrawer = G3DrawHeadlightsPPLM;
+	g3FaceDrawer = HaveLightmaps () ? G3DrawHeadlightsPPLM : G3DrawHeadlights;
 	RenderSegments (nType, bVertexArrays, 0, 1);
-	g3FaceDrawer = G3DrawFaceArraysPPLM;
+	SetFaceDrawer (-1);
 	}
 }
 

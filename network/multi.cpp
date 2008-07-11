@@ -727,9 +727,7 @@ void MultiMakePlayerGhost (int nPlayer)
 {
 	tObject *objP;
 
-if ((nPlayer == gameData.multiplayer.nLocalPlayer) || 
-		(nPlayer >= MAX_NUM_NET_PLAYERS) || 
-		(nPlayer < 0))	{
+if ((nPlayer == gameData.multiplayer.nLocalPlayer) || (nPlayer >= MAX_NUM_NET_PLAYERS) || (nPlayer < 0)) {
 	Int3 (); // Non-terminal, see Rob
 	return;
 	}
@@ -756,6 +754,7 @@ objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 objP->nType = OBJ_PLAYER;
 objP->movementType = MT_PHYSICS;
 MultiResetPlayerObject (objP);
+GetPlayerSpawn (GetRandomPlayerPosition (), objP);
 }
 
 //-----------------------------------------------------------------------------

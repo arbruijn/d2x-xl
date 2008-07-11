@@ -53,4 +53,18 @@ return bPPLM ?
 
 //------------------------------------------------------------------------------
 
+static inline void SetFaceDrawer (int nType)
+{
+if (nType < 0)
+	nType = gameStates.render.bPerPixelLighting;
+if (nType == 2)
+	g3FaceDrawer = G3DrawFaceArraysPPLM;
+else if (nType == 1)
+	g3FaceDrawer = G3DrawFaceArraysLM;
+else
+	g3FaceDrawer = G3DrawFaceArrays;
+}
+
+//------------------------------------------------------------------------------
+
 #endif

@@ -1,4 +1,3 @@
-/* $Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -14,10 +13,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
-#endif
-
-#ifdef RCS
-static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #endif
 
 #define PATCH12
@@ -120,17 +115,17 @@ if (gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers)
 else {
 	// Slots are full but game is open, see if anyone is
 	// disconnected and replace the oldest tPlayer with this new one
-	int oldest_player = -1;
+	int oldestPlayer = -1;
 	fix oldestTime = (fix) SDL_GetTicks ();
 
 	Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if ((!gameData.multiplayer.players [i].connected) && (networkData.nLastPacketTime [i] < oldestTime)) {
 			oldestTime = networkData.nLastPacketTime [i];
-			oldest_player = i;
+			oldestPlayer = i;
 			}
 		}
-	return (oldest_player);
+	return (oldestPlayer);
 	}
 }
 
@@ -256,10 +251,10 @@ gameData.multiplayer.players [nPlayer].nPacketsGot = 0;
 gameData.multiplayer.players [nPlayer].connected = 1;
 gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
 gameData.multiplayer.players [nPlayer].netKilledTotal = 0;
-memset (gameData.multigame.kills.matrix [nPlayer], 0, MAX_PLAYERS*sizeof (short)); 
+memset (gameData.multigame.kills.matrix [nPlayer], 0, MAX_PLAYERS * sizeof (short)); 
 gameData.multiplayer.players [nPlayer].score = 0;
 gameData.multiplayer.players [nPlayer].flags = 0;
-gameData.multiplayer.players [nPlayer].nKillGoalCount=0;
+gameData.multiplayer.players [nPlayer].nKillGoalCount = 0;
 if (nPlayer == gameData.multiplayer.nPlayers) {
 	gameData.multiplayer.nPlayers++;
 	netGame.nNumPlayers = gameData.multiplayer.nPlayers;
@@ -407,17 +402,17 @@ if (nPlayer == -1) {
 	else {
 		// Slots are full but game is open, see if anyone is
 		// disconnected and replace the oldest tPlayer with this new one
-		int oldest_player = -1;
+		int oldestPlayer = -1;
 		fix oldestTime = TimerGetApproxSeconds ();
 		Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((!gameData.multiplayer.players [i].connected) && 
 				 (networkData.nLastPacketTime [i] < oldestTime)) {
 				oldestTime = networkData.nLastPacketTime [i];
-				oldest_player = i;
+				oldestPlayer = i;
 				}
 			}
-		if (oldest_player == -1) {
+		if (oldestPlayer == -1) {
 			// Everyone is still connected 
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				NetworkDumpPlayer (
@@ -428,7 +423,7 @@ if (nPlayer == -1) {
 			}
 		else {       
 			// Found a slot!
-			nPlayer = oldest_player;
+			nPlayer = oldestPlayer;
 			networkData.bPlayerAdded = 1;
 			}
 		}

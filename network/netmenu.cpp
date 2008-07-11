@@ -2202,7 +2202,7 @@ if (!NetworkWaitForAllInfo (choice)) {
 	}       
 
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
-if (!CanJoinNetgame (activeNetGames + choice, activeNetPlayers + choice)) {
+  if (!CanJoinNetgame (activeNetGames + choice, activeNetPlayers + choice)) {
 	if (AGI.nNumPlayers == AGI.nMaxPlayers)
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_GAME_FULL);
 	else
