@@ -34,7 +34,7 @@
 
 extern unsigned char ipx_MyAddress[10];
 
-#define UDP_BASEPORT 283
+#define UDP_BASEPORT 28342
 
 #define PORTSHIFT_TOLERANCE 0x100
 #define MAX_PACKETSIZE 8192
