@@ -181,7 +181,7 @@ extern unsigned char ipx_MyAddress [10];
 
 unsigned char ipx_LocalAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
 unsigned char ipx_ServerAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
-int udpBasePort [2] = {UDP_BASEPORT, UDP_BASEPORT};
+int udpBasePorts [2] = {UDP_BASEPORT, UDP_BASEPORT};
 
 /* Packet format: first is the nSignature { 0xD1,'X' } which can be also
  * { 'D','1','X','u','d','p'} for old-fashioned packets.
@@ -795,7 +795,7 @@ if (s)
 		}
 memset (ipx_MyAddress, 0, 4);
 memcpy (ipx_MyAddress + 4, qhbuf, 6);
-udpBasePort [gameStates.multi.bServer] += (short) ntohs (*(unsigned short *) (qhbuf + 4));
+udpBasePorts [gameStates.multi.bServer] += (short) ntohs (*(unsigned short *) (qhbuf + 4));
 if (!s || (s && !*s)) 
 	addiflist ();
 else {
@@ -832,7 +832,7 @@ return 0;
 
 /* We should probably avoid such insanity here as during PgUP/PgDOWN
  * (virtual port number change) we wastefully destroy/create the same
- * socket here (binded always to "udpBasePort"). FIXME.
+ * socket here (binded always to "udpBasePorts"). FIXME.
  * "nOpenSockets" can be only 0 or 1 anyway.
  */
 
@@ -842,8 +842,8 @@ static int UDPOpenSocket (ipx_socket_t *sk, int port)
 	u_short nLocalPort, nServerPort;
 //	u_long sockBlockMode = 1;	//non blocking
 
-udpBasePort [1] = UDP_BASEPORT + networkData.nSocket;
-nLocalPort = gameStates.multi.bServer ? udpBasePort [1] : mpParams.udpClientPort;	//override with UDP nLocalPort settings
+udpBasePorts [1] = UDP_BASEPORT + networkData.nSocket;
+nLocalPort = gameStates.multi.bServer ? udpBasePorts [1] : mpParams.udpClientPort;	//override with UDP nLocalPort settings
 if (!nOpenSockets)
 	if (UDPGetMyAddress () < 0) 
 		FAIL ("Error getting my address");
@@ -853,7 +853,7 @@ if (!nOpenSockets)
 if (!gameStates.multi.bServer) {
 	if (!ChkDestListSize ())
 		FAIL ("Error allocating client table");
-	nServerPort = udpBasePort [0] + networkData.nSocket;
+	nServerPort = udpBasePorts [0] + networkData.nSocket;
 	sin.sin_family = AF_INET;
 	*((u_short *) (ipx_ServerAddress + 8)) = htons (nServerPort);
 	memcpy (&sin.sin_addr.s_addr, ipx_ServerAddress + 4, 4);

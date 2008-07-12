@@ -186,7 +186,7 @@ static const int val_one=1;
 //------------------------------------------------------------------------------
 // OUR port. Can be changed by "@X[+=]..." argument (X is the shift value)
 
-int udpBasePort [2] = {UDP_BASEPORT, UDP_BASEPORT};
+int udpBasePorts [2] = {UDP_BASEPORT, UDP_BASEPORT};
 
 static int have_empty_address() 
 {
@@ -599,7 +599,7 @@ if (s)
 		}
 memset(ipx_MyAddress, 0, 4);
 memcpy(ipx_MyAddress + 4, qhbuf, 6);
-udpBasePort [gameStates.multi.bServer] += (short)ntohs(*(unsigned short *)(qhbuf+4));
+//udpBasePorts [gameStates.multi.bServer] += (short)ntohs(*(unsigned short *)(qhbuf+4));
 if (!(s && *s)) 
 	addiflist();
 else {
@@ -636,7 +636,7 @@ return 0;
 //------------------------------------------------------------------------------
 // We should probably avoid such insanity here as during PgUP/PgDOWN
 // (virtual port number change) we wastefully destroy/create the same
-// socket here (bound always to "udpBasePort"). FIXME.
+// socket here (bound always to "udpBasePorts"). FIXME.
 // "nOpenSockets" can be only 0 or 1 anyway.
  
 static int UDPOpenSocket (ipx_socket_t *sk, int port) 
@@ -649,8 +649,8 @@ static int UDPOpenSocket (ipx_socket_t *sk, int port)
 	u_short	nLocalPort, nServerPort;
 
 
-udpBasePort [1] = UDP_BASEPORT + networkData.nSocket;	//server port as set by the server
-nLocalPort = gameStates.multi.bServer ? udpBasePort [1] : mpParams.udpClientPort;
+udpBasePorts [1] = UDP_BASEPORT + networkData.nSocket;	//server port as set by the server
+nLocalPort = gameStates.multi.bServer ? udpBasePorts [1] : mpParams.udpClientPort;
 gameStates.multi.bHaveLocalAddress = 0;
 if (!nOpenSockets)
 	if (UDPGetMyAddress() < 0) {
@@ -662,7 +662,7 @@ msg("OpenSocket on D1X socket nLocalPort %d", nLocalPort);
 if (!gameStates.multi.bServer) {		//set up server address and add it to destination list
 	if (!ChkDestListSize ())
 		FAIL ("Error allocating client table");
-	nServerPort = udpBasePort [0] + networkData.nSocket;
+	nServerPort = udpBasePorts [0] + networkData.nSocket;
 	*((u_short *) (ipx_ServerAddress + 8)) = htons (nServerPort);
 	sin.sin_family = AF_INET;
 	memcpy (&sin.sin_addr.s_addr, ipx_ServerAddress + 4, 4);

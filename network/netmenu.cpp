@@ -532,7 +532,7 @@ do {
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	sprintf (socket_string, "%d", (gameStates.multi.nGameType == UDP_GAME) ? 
-				udpBasePort [1] + networkData.nSocket : networkData.nSocket);
+				udpBasePorts [1] + networkData.nSocket : networkData.nSocket);
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		ADD_TEXT (opt, TXT_SOCKET2, KEY_N);
 		opt++;
@@ -580,7 +580,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	if ((newSocket < -0xFFFF) || (newSocket > 0xFFFF))
 		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, 
 							 TXT_INV_SOCKET, 
-							 (gameStates.multi.nGameType == UDP_GAME) ? udpBasePort [1] : networkData.nSocket);
+							 (gameStates.multi.nGameType == UDP_GAME) ? udpBasePorts [1] : networkData.nSocket);
 	else if (newSocket != networkData.nSocket) {
 		networkData.nSocket = (gameStates.multi.nGameType == UDP_GAME) ? newSocket - UDP_BASEPORT : newSocket;
 		IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
@@ -1296,7 +1296,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 					ipx_MyAddress [5], 
 					ipx_MyAddress [6], 
 					ipx_MyAddress [7], 
-					udpBasePort [1]);
+					udpBasePorts [1]);
 		}
 	}
 ADD_TEXT (opt, TXT_DESCRIPTION, 0); 
@@ -1436,7 +1436,7 @@ else if (choice == optMoreOpts) {
 		ipx_MyAddress [5], 
 		ipx_MyAddress [6], 
 		ipx_MyAddress [7], 
-		udpBasePort [1]);
+		udpBasePorts [1]);
 		}
 	goto doMenu;
 	}
@@ -2346,7 +2346,7 @@ for (j = 0; j < i; j++) {
 	if (!pFields [j])
 		return 0;
 	if (j == 4)
-		return stoport (pFields [j], udpBasePort, NULL); 
+		return stoport (pFields [j], udpBasePorts, NULL); 
 	else {
 		h = atol (pFields [j]);
 		if ((h < 0) || (h > 255))
