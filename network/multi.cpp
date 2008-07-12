@@ -222,7 +222,8 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	2,  // MULTI_CAPTURE_BONUS
 	2,  // MULTI_GOT_FLAG
 	12, // MULTI_DROP_FLAG
-	142, // MULTI_ROBOT_CONTROLS
+	1
+, // MULTI_ROBOT_CONTROLS
 	2,  // MULTI_FINISH_GAME
 	3,  // MULTI_RANK
 	1,  // MULTI_MODEM_PING
@@ -4352,7 +4353,8 @@ memcpy (& (gameData.multigame.msg.buf [count]), &gameData.multigame.robots.sendP
 count +=  (MAX_ROBOTS_CONTROLLED*4);
 memcpy (& (gameData.multigame.msg.buf [count]), &gameData.multigame.robots.fired, MAX_ROBOTS_CONTROLLED*4);
 count +=  (MAX_ROBOTS_CONTROLLED*4);
-NetworkSendNakedPacket (gameData.multigame.msg.buf, 142, nPlayer);
+NetworkSendNakedPacket (gameData.multigame.msg.buf, 1
+, nPlayer);
 }
 
 //-----------------------------------------------------------------------------

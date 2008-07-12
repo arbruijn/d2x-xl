@@ -20,7 +20,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Revision 1.2  1995/02/20  18:23:39  john
  * Added new module for C versions of inner loops.
  *
- * Revision 1.1  1995/02/20  17:42:27  john
+ * Revision 1.1  1995/02/20  17:
+:27  john
  * Initial revision
  *
  *

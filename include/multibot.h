@@ -57,7 +57,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Revision 1.12  1995/01/12  16:41:53  rob
  * Added new prototypes.
  *
- * Revision 1.11  1995/01/12  15:42:55  rob
+ * Revision 1.11  1995/01/12  15:
+:55  rob
  * Fixing score awards for coop.
  *
  * Revision 1.10  1995/01/02  21:00:40  rob
@@ -84,7 +85,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Revision 1.3  1994/12/21  11:12:02  rob
  * Added new function and new vars.
  *
- * Revision 1.2  1994/12/19  16:41:42  rob
+ * Revision 1.2  1994/12/19  16:41:
+  rob
  * first revision.
  *
  * Revision 1.1  1994/12/16  15:48:20  rob

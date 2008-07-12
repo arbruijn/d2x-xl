@@ -65,7 +65,8 @@ extern "C" {
 
 #ifndef WGL_ARB_multisample
 #define WGL_SAMPLE_BUFFERS_ARB         0x2041
-#define WGL_SAMPLES_ARB                0x2042
+#define WGL_SAMPLES_ARB                0x20
+
 #endif
 
 #ifndef WGL_ARB_extensions_string
@@ -254,7 +255,8 @@ extern "C" {
 
 #ifndef WGL_EXT_multisample
 #define WGL_SAMPLE_BUFFERS_EXT         0x2041
-#define WGL_SAMPLES_EXT                0x2042
+#define WGL_SAMPLES_EXT                0x20
+
 #endif
 
 #ifndef WGL_I3D_digital_video_control

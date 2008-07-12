@@ -106,7 +106,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added Master volumes for digi and midi. Also took out panning,
  * because it doesn't work with MasterVolume stuff.
  *
- * Revision 1.16  1994/09/29  00:42:29  matt
+ * Revision 1.16  1994/09/29  00:
+:29  matt
  * Made hitting a locked door play a sound
  *
  * Revision 1.15  1994/09/20  19:14:34  john
@@ -199,6 +200,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SOUND_FORCEFIELD_BOUNCE_PLAYER          40
 #define SOUND_FORCEFIELD_BOUNCE_WEAPON          41
 #define SOUND_FORCEFIELD_HUM                    42
+
 #define SOUND_FORCEFIELD_OFF                    43
 
 #define SOUND_MARKER_HIT                        50

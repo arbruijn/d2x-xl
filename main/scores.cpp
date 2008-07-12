@@ -351,7 +351,8 @@ void scores_draw_item (int  i, stats_info * stats)
 			s = stats->seconds%3600;
 			m = s / 60;
 			s = s % 60;
-			scores_rprintf (311-42+XX, y+YY, "%d:%02d:%02d", h, m, s);
+			scores_rprintf (311-
++XX, y+YY, "%d:%02d:%02d", h, m, s);
 		}
 }
 
@@ -397,7 +398,8 @@ ReshowScores:
 			GrString (xOffs + LHX (170+33+XX), yOffs + LHY (46+7+YY), TXT_LEVELS, NULL);
 		//	GrString (202, 46, "Kills");
 		//	GrString (234, 46, "Rescues");
-			GrString (xOffs + LHX (288-42+XX), yOffs + LHY (46+7+YY), TXT_TIME, NULL);
+			GrString (xOffs + LHX (288-
++XX), yOffs + LHY (46+7+YY), TXT_TIME, NULL);
 			if (citem < 0)
 				GrString (0x8000, yOffs + LHY (175), TXT_PRESS_CTRL_R, NULL);
 			GrSetFontColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);

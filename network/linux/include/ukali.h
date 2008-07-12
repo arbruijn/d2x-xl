@@ -8,7 +8,8 @@
 #ifndef __UKALI_H__
 #define __UKALI_H__
 
-// 4213 is the port that KaliNix is listening on
+// 
+13 is the port that KaliNix is listening on
 //
 //		char code; // 1 == open, 2 == close, 3 == data, 5 == GetMyAddr
 //      acks       // 6 == open, 7 == close				4 == GetMyAddr

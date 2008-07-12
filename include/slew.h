@@ -30,7 +30,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Revision 1.4  1994/02/17  11:32:41  matt
  * Changes in tObject system
  *
- * Revision 1.3  1994/01/05  10:53:42  john
+ * Revision 1.3  1994/01/05  10:53:
+  john
  * New tObject code by John.
  *
  * Revision 1.2  1993/12/05  22:48:57  matt

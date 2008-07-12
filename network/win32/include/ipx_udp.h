@@ -8,7 +8,8 @@
 #ifndef _IPX_UDP_H
 #define _IPX_UDP_H
 
-#define UDP_BASEPORT 28342
+#define UDP_BASEPORT 283
+
 
 extern struct ipx_driver ipx_udp;
 extern unsigned char ipx_MyAddress[10];

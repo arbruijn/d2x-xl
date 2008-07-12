@@ -275,6 +275,7 @@ MultiSortKillList ();
 
 void NetworkWelcomePlayer (tSequencePacket *their)
 {
+	static int tLastJoined = 0;
 	// Add a tPlayer to a game already in progress
 	ubyte newAddress [6], anyAddress [6];
 	int nPlayer;
@@ -321,7 +322,6 @@ if (memcmp (&networkData.playerRejoining, their, sizeof (networkData.playerRejoi
 		return;
 	}
 else { //prevent flooding with connection attempts from the same player
-	static int tLastJoined = 0;
 	int t;
 
 	if ((t = SDL_GetTicks ()) - tLastJoined < 3000)
@@ -467,6 +467,7 @@ networkData.nSentObjs = -1;
 networkData.nSyncExtras = 0;
 networkData.toSyncFrame = 0;
 networkData.joinSeq = *their;
+tLastJoined = SDL_GetTicks ();
 NetworkDoSyncFrame ();
 }
 

@@ -132,7 +132,8 @@ int knix_GetMyAddress(void) {
 	if (g_sockfd < 0) {
 		kalinix_addr.sin_family = AF_INET;
 		kalinix_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-		kalinix_addr.sin_port = htons(4213);
+		kalinix_addr.sin_port = htons(
+13);
 
 		g_sockfd = knix_newSock();
 	}

@@ -413,7 +413,8 @@ int hmp_play(hmp_file *hmp, int bLoop)
 	}
 
 	reset_tracks(hmp);
-	setup_tempo(hmp, 0x0f4240);
+	setup_tempo(hmp, 0x0f
+40);
 
 	hmp->stop = 0;
 	while (hmp->evbuf) {

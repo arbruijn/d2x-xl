@@ -152,7 +152,8 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_PRIMARY_AMMO       39  // with old/new ammo count
 #define ND_EVENT_SECONDARY_AMMO     40  // with old/new ammo count
 #define ND_EVENT_DOOR_OPENING       41  // with tSegment/nSide
-#define ND_EVENT_LASER_LEVEL        42  // no data
+#define ND_EVENT_LASER_LEVEL        42
+  // no data
 #define ND_EVENT_PLAYER_AFTERBURNER 43  // followed by byte old ab, current ab
 #define ND_EVENT_CLOAKING_WALL      44  // info changing while tWall cloaking
 #define ND_EVENT_CHANGE_COCKPIT     45  // change the cockpit

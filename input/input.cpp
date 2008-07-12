@@ -607,7 +607,8 @@ if (bGetSlideBank == 2) {
 		if ((v = HaveKey (kcKeyboard, 38 + i)) < 255) 
 			*nCruiseSpeed += key_signs [i] * FixDiv (speedFactor * KeyDownTime (v) * 5, gameStates.input.kcPollTime);
 	for (i = 0; i < 2; i++)
-		if (((v = HaveKey (kcKeyboard, 42 + i)) < 255) && KeyDownCount (v))
+		if (((v = HaveKey (kcKeyboard, 
+ + i)) < 255) && KeyDownCount (v))
 			*nCruiseSpeed = 0;
 	}
 

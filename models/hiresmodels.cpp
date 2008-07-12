@@ -156,7 +156,8 @@ tReplacementModel replacementModels [] = {
 	{"smartmsl", NULL, 134, 0, 1, -1}, 
 	{NULL, NULL, 162, 0, 1, -1}, 
 	{"mega", NULL, 135, 0, 1, -1}, 
-	{NULL, NULL, 142, 0, 1, -1}, 
+	{NULL, NULL, 1
+, 0, 1, -1}, 
 	{"flashmsl", NULL, 151, 0, 1, -1}, 
 	{NULL, NULL, 158, 0, 1, -1}, 
 	{NULL, NULL, 165, 0, 1, -1}, 

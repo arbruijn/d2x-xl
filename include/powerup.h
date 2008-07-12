@@ -66,6 +66,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define POW_GUIDEDMSL_1    		40
 #define POW_GUIDEDMSL_4    		41      // 4-pack MUST follow single missile
 #define POW_SMARTMINE          	42
+
 #define POW_MERCURYMSL_1   		43
 #define POW_MERCURYMSL_4   		44      // 4-pack MUST follow single missile
 #define POW_EARTHSHAKER 			45

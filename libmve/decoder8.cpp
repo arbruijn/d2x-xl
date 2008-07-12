@@ -490,7 +490,8 @@ static void dispatchDecoder(unsigned char **pFrame, unsigned char codeType, unsi
 
 		   For example:
 
-		   22 00 cc 66 33 19   66 11 18 24 42 81
+		   22 00 cc 66 33 19   66 11 18 24 
+ 81
 
 		   yeilds:
 
@@ -501,7 +502,8 @@ static void dispatchDecoder(unsigned char **pFrame, unsigned char codeType, unsi
 		   -----------------------
 		   66 66 66 11 11 66 66 66     ; 18: 00011000
 		   66 66 11 66 66 11 66 66     ; 24: 00100100
-		   66 11 66 66 66 66 11 66     ; 42: 01000010
+		   66 11 66 66 66 66 11 66     ; 
+: 01000010
 		   11 66 66 66 66 66 66 11     ; 81: 10000001
 		*/
 		if ( (*pData)[0] <= (*pData)[1])

@@ -306,8 +306,10 @@ else {
 		case 359:
 		case 360:	//robot generators
 		case 361:
-		case 420:	//force field
-		case 426:	//teleport
+		case 
+0:	//force field
+		case 
+6:	//teleport
 		case 432:	//force field
 		case 433:	//goals
 		case 434:
