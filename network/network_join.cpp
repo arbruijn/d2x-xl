@@ -205,7 +205,7 @@ networkData.sync.nExtrasPlayer = -1;	// This is so we know who to send 'latecome
 
 void NetworkResetObjSync (short nObject)
 {
-if (networkData.sync.nState == 1) && ((nObject < 0) || NetworkObjnumIsPast (nObject)))
+if ((networkData.sync.nState == 1) && ((nObject < 0) || NetworkObjnumIsPast (nObject)))
 	networkData.sync.objs.nCurrent = -1;
 }
 
