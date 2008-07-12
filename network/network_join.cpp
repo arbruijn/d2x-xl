@@ -116,7 +116,7 @@ else {
 	// Slots are full but game is open, see if anyone is
 	// disconnected and replace the oldest tPlayer with this new one
 	int oldestPlayer = -1;
-	fix oldestTime = (fix) SDL_GetTicks ();
+	fix oldestTime = gameStates.app.nSDLTicks;
 
 	Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -194,19 +194,16 @@ return 0;
 
 void NetworkResetSyncStates (void)
 {
-networkData.sync.nState = 0;
-networkData.sync.nExtras = 0;
-networkData.sync.objs.nCurrent = -1;				// What tObject are we sending next?
-networkData.sync.nPlayer = -1;
-networkData.sync.nExtrasPlayer = -1;	// This is so we know who to send 'latecomer' packets to.
+networkData.nJoining = 0;
 }
 
 //------------------------------------------------------------------------------
 
 void NetworkResetObjSync (short nObject)
 {
-if ((networkData.sync.nState == 1) && ((nObject < 0) || NetworkObjnumIsPast (nObject)))
-	networkData.sync.objs.nCurrent = -1;
+for (short i = 0; i < networkData.nJoining; i++)
+	if ((networkData.sync [i].nState == 1) && ((nObject < 0) || NetworkObjnumIsPast (nObject)))
+		networkData.sync [i].objs.nCurrent = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -226,7 +223,9 @@ gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
 gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
 KillPlayerBullets (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 netPlayers.players [nPlayer].connected = 0;
-if (networkData.sync.nPlayer == nPlayer)
+for (short i = 0; i < networkData.nJoining; i++)
+	if (networkData.sync [i].nPlayer == nPlayer)
+		DeleteSyncData (i);
 	NetworkResetSyncStates ();
 // CreatePlayerAppearanceEffect (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject]);
 MultiMakePlayerGhost (nPlayer);
@@ -371,7 +370,25 @@ return oldestPlayer;
 
 //------------------------------------------------------------------------------
 
-static bool ConnectionAccepted (tSequencePacket *player)
+static short FindJoiningPlayer (tSequencePacket *player)
+{
+for (short i = 0; i < networkData.nJoining; i++)
+	if (!memcmp (&networkData.sync [i].player [1], player, sizeof (*player)))
+		return i;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+void DeleteSyncData (short nConnection)
+{
+if (nConnection < --networkData.nJoining)
+	memcpy (networkData.sync + nConnection, networkData.sync + networkData.nJoining, sizeof (tNetworkSyncData));
+}
+
+//------------------------------------------------------------------------------
+
+static tNetworkSyncData *AcceptJoinRequest (tSequencePacket *player)
 {
 // Don't accept new players if we're ending this level.  Its safe to
 // ignore since they'll request again later
@@ -384,23 +401,9 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 			player->player.network.ipx.server, 
 			player->player.network.ipx.node, 
 			DUMP_ENDLEVEL);
-	return false; 
+	return NULL; 
 	}
-if (memcmp (&networkData.sync.player [1], player, sizeof (*player))) {
-	if (networkData.sync.nState)
-		return false;
-#if 0		
-	if (!networkData.sync.nState && networkData.sync.nExtras && (networkData.sync.nPlayer != -1))
-		return false;
-#endif
-	}
-else { //prevent flooding with connection attempts from the same player
-	int t;
 
-	if ((t = SDL_GetTicks ()) - networkData.sync.tLastJoined < 3000)
-		return false;
-	networkData.sync.tLastJoined = t;
-	}
 if (player->player.connected != gameData.missions.nCurrentLevel) {
 #if 1      
 	con_printf (CONDBG, "Dumping tPlayer due to old level number.\n");
@@ -410,19 +413,34 @@ if (player->player.connected != gameData.missions.nCurrentLevel) {
 			player->player.network.ipx.server, 
 			player->player.network.ipx.node, 
 			DUMP_LEVEL);
-	return false;
+	return NULL;
 	}
-return true;
+
+tNetworkSyncData *syncP;
+short nConnection = FindJoiningPlayer (player);
+
+if (nConnection < 0) {
+	if (networkData.nJoining == MAX_JOIN_REQUESTS)
+		return NULL;
+	syncP = networkData.sync + networkData.nJoining++;
+	}
+else { //prevent flooding with connection attempts from the same player
+	syncP = networkData.sync + nConnection;
+	if (gameStates.app.nSDLTicks - syncP->tLastJoined < 3000)
+		return false;
+	syncP->tLastJoined = gameStates.app.nSDLTicks;
+	}
+return syncP;
 }
 
 //------------------------------------------------------------------------------
+// Add a tPlayer to a game already in progress
 
 void NetworkWelcomePlayer (tSequencePacket *player)
 {
-	static int tLastJoined = 0;
-	// Add a tPlayer to a game already in progress
-	int	nPlayer;
-	ubyte newAddress [6];
+	int					nPlayer;
+	ubyte					newAddress [6];
+	tNetworkSyncData	*syncP;
 
 networkData.refuse.bWaitForAnswer = 0;
 if (FindArg ("-NoMatrixCheat")) {
@@ -445,9 +463,9 @@ if (HoardEquipped ()) {
 		return;
 		}
 	}
-if (!ConnectionAccepted (player))
+if (!(syncP = AcceptJoinRequest (player)))
 	return;
-memset (&networkData.sync.player [1], 0, sizeof (tSequencePacket));
+memset (&syncP->player [1], 0, sizeof (tSequencePacket));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if ((*(uint *) player->player.network.ipx.server) != 0)
@@ -480,34 +498,34 @@ if (IsTeamGame)
 gameData.multiplayer.players [nPlayer].nKillGoalCount = 0;
 gameData.multiplayer.players [nPlayer].connected = 0;
 // Send updated OBJECTS data to the new/returning tPlayer
-networkData.sync.player [1] = *player;
-networkData.sync.player [1].player.connected = nPlayer;
-networkData.bSyncExtraGameInfo = 0;
-networkData.sync.nState = 1;
-networkData.sync.objs.nCurrent = -1;
-networkData.sync.nExtras = 0;
-networkData.sync.timeout = 0;
-networkData.sync.player [0] = *player;
-tLastJoined = SDL_GetTicks ();
+syncP->player [0] = *player;
+syncP->player [1] = *player;
+syncP->player [1].player.connected = nPlayer;
+syncP->bExtraGameInfo = 0;
+syncP->nState = 1;
+syncP->objs.nCurrent = -1;
+syncP->nExtras = 0;
+syncP->timeout = 0;
+syncP->tLastJoined = gameStates.app.nSDLTicks;
 NetworkDoSyncFrame ();
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkAddPlayer (tSequencePacket *seqP)
+void NetworkAddPlayer (tSequencePacket *player)
 {
-	tNetPlayerInfo	*playerP;
+	tNetPlayerInfo	*npiP;
 
-if (NetworkFindPlayer (&seqP->player) > -1)
+if (NetworkFindPlayer (&player->player) > -1)
 	return;
-playerP = netPlayers.players + gameData.multiplayer.nPlayers;
-memcpy (&playerP->network, &seqP->player.network, sizeof (tNetworkInfo));
-ClipRank ((char *) &seqP->player.rank);
-memcpy (playerP->callsign, seqP->player.callsign, CALLSIGN_LEN+1);
-playerP->versionMajor = seqP->player.versionMajor;
-playerP->versionMinor = seqP->player.versionMinor;
-playerP->rank = seqP->player.rank;
-playerP->connected = 1;
+npiP = netPlayers.players + gameData.multiplayer.nPlayers;
+memcpy (&npiP->network, &player->player.network, sizeof (tNetworkInfo));
+ClipRank ((char *) &player->player.rank);
+memcpy (npiP->callsign, player->player.callsign, CALLSIGN_LEN+1);
+npiP->versionMajor = player->player.versionMajor;
+npiP->versionMinor = player->player.versionMinor;
+npiP->rank = player->player.rank;
+npiP->connected = 1;
 NetworkCheckForOldVersion ((char) gameData.multiplayer.nPlayers);
 gameData.multiplayer.players [gameData.multiplayer.nPlayers].nKillGoalCount = 0;
 gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = 1;
@@ -522,9 +540,9 @@ NetworkSendGameInfo (NULL);
 
 // One of the players decided not to join the game
 
-void NetworkRemovePlayer (tSequencePacket *seqP)
+void NetworkRemovePlayer (tSequencePacket *player)
 {
-	int i, j, pn = NetworkFindPlayer (&seqP->player);
+	int i, j, pn = NetworkFindPlayer (&player->player);
 
 if (pn < 0)
 	return;
@@ -536,7 +554,7 @@ for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	memcpy (netPlayers.players [j].callsign, netPlayers.players [i].callsign, CALLSIGN_LEN+1);
 	netPlayers.players [j].versionMajor = netPlayers.players [i].versionMajor;
 	netPlayers.players [j].versionMinor = netPlayers.players [i].versionMinor;
-   netPlayers.players [j].rank=netPlayers.players [i].rank;
+   netPlayers.players [j].rank = netPlayers.players [i].rank;
 	ClipRank ((char *) &netPlayers.players [j].rank);
    NetworkCheckForOldVersion ((char) i);
 	}

@@ -101,17 +101,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void NetworkStopResync (tSequencePacket *their)
 {
-if (!CmpNetPlayers (networkData.sync.player [1].player.callsign, their->player.callsign, 
-						  &networkData.sync.player [1].player.network, &their->player.network)) {
+	tNetworkSyncData	*syncP = networkData.sync;
+
+for (short i = 0; i < networkData.nJoining; i++, syncP++)
+	if (!CmpNetPlayers (syncP->player [1].player.callsign, their->player.callsign, 
+							  &syncP->player [1].player.network, &their->player.network)) {
 #if 1      
-con_printf (CONDBG, "Aborting resync for tPlayer %s.\n", their->player.callsign);
+		con_printf (CONDBG, "Aborting resync for tPlayer %s.\n", their->player.callsign);
 #endif
-networkData.sync.nState = 0;
-networkData.sync.nExtras = 0;
-networkData.nJoinState = 0;
-networkData.sync.nExtrasPlayer = -1;
-networkData.sync.objs.nCurrent = -1;
-	}
+		syncP->nState = 0;
+		syncP->nExtras = 0;
+		networkData.nJoinState = 0;
+		syncP->nExtrasPlayer = -1;
+		syncP->objs.nCurrent = -1;
+		}
 }
 
 //------------------------------------------------------------------------------
@@ -136,11 +139,11 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static inline int NetworkObjFrameFilter (void)
+static inline int NetworkObjFrameFilter (tNetworkSyncData *syncP)
 {
-if (!networkData.sync.objs.nFrame++)
+if (!syncP->objs.nFrame++)
 	return 1;
-if (networkData.sync.objs.nFrame < networkData.sync.objs.missingFrames.nFrame)
+if (syncP->objs.nFrame < syncP->objs.missingFrames.nFrame)
 	return 0;
 return 1;
 }
@@ -149,14 +152,14 @@ return 1;
 
 ubyte objBuf [MAX_PACKETSIZE];
 
-void NetworkSyncObjects (void)
+void NetworkSyncObjects (tNetworkSyncData *syncP)
 {
 	tObject	*objP;
 	sbyte		owner;
 	short		nRemoteObj;
 	int		bufI, i, h;
 	int		nObjFrames = 0;
-	int		nPlayer = networkData.sync.player [1].player.connected;
+	int		nPlayer = syncP->player [1].player.connected;
 
 // Send clear OBJECTS array tTrigger and send tPlayer num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
@@ -167,22 +170,22 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 	objBuf [0] = PID_OBJECT_DATA;
 	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
-	if (networkData.sync.objs.nCurrent == -1) {	// first packet tells the receiver to reset it's object data
-		networkData.sync.objs.nSent = 0;
-		networkData.sync.objs.nMode = 0;
-		networkData.sync.objs.nFrame = 0;
-		NW_SET_SHORT (objBuf, bufI, networkData.sync.objs.missingFrames.nFrame ? -3 : -1);		// object number -1          
+	if (syncP->objs.nCurrent == -1) {	// first packet tells the receiver to reset it's object data
+		syncP->objs.nSent = 0;
+		syncP->objs.nMode = 0;
+		syncP->objs.nFrame = 0;
+		NW_SET_SHORT (objBuf, bufI, syncP->objs.missingFrames.nFrame ? -3 : -1);		// object number -1          
 		NW_SET_BYTE (objBuf, bufI, nPlayer);                            
 		bufI += 2;									// Placeholder for nRemoteObj, not used here
-		networkData.sync.objs.nCurrent = 0;
-		networkData.sync.objs.nFrame = 0;
+		syncP->objs.nCurrent = 0;
+		syncP->objs.nFrame = 0;
 		nObjFrames = 1;		// first frame contains "reset object data" info
 		}
 
-	for (i = networkData.sync.objs.nCurrent, objP = OBJECTS + i; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+	for (i = syncP->objs.nCurrent, objP = OBJECTS + i; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		if (NetworkFilterObject (objP))
 			continue;
-		if (networkData.sync.objs.nMode) { 
+		if (syncP->objs.nMode) { 
 			 if ((gameData.multigame.nObjOwner [i] != -1) && (gameData.multigame.nObjOwner [i] != nPlayer))
 				continue;
 			}
@@ -193,7 +196,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 		if ((DATALIMIT - bufI - 1) < (int) sizeof (tObject) + 5)
 			break; // Not enough room for another tObject
 		nObjFrames++;
-		networkData.sync.objs.nSent++;
+		syncP->objs.nSent++;
 		nRemoteObj = ObjnumLocalToRemote ((short) i, &owner);
 		Assert (owner == gameData.multigame.nObjOwner [i]);
 		NW_SET_SHORT (objBuf, bufI, i);      
@@ -204,44 +207,44 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			SwapObject ((tObject *) (objBuf + bufI - sizeof (tObject)));
 		}
 	if (nObjFrames) {	// Send any objects we've buffered
-		networkData.sync.objs.nCurrent = i;	
-		if (NetworkObjFrameFilter ()) {
+		syncP->objs.nCurrent = i;	
+		if (NetworkObjFrameFilter (syncP)) {
 			objBuf [1] = nObjFrames;  
 			if (gameStates.multi.nGameType == UDP_GAME)
-				*((short *) (objBuf + 2)) = INTEL_SHORT (networkData.sync.objs.nFrame);
+				*((short *) (objBuf + 2)) = INTEL_SHORT (syncP->objs.nFrame);
 			else
-				objBuf [2] = (ubyte) networkData.sync.objs.nFrame;
+				objBuf [2] = (ubyte) syncP->objs.nFrame;
 			Assert (bufI <= DATALIMIT);
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				IPXSendInternetPacketData (
 					objBuf, bufI, 
-					networkData.sync.player [1].player.network.ipx.server, 
-					networkData.sync.player [1].player.network.ipx.node);
+					syncP->player [1].player.network.ipx.server, 
+					syncP->player [1].player.network.ipx.node);
 			 }
 		}
 	if (i > gameData.objs.nLastObject [0]) {
-		if (networkData.sync.objs.nMode) {
-			networkData.sync.objs.nCurrent = i;
+		if (syncP->objs.nMode) {
+			syncP->objs.nCurrent = i;
 			// Send count so other tSide can make sure he got them all
 			objBuf [0] = PID_OBJECT_DATA;
 			objBuf [1] = 1;
-			networkData.sync.objs.nFrame++;
+			syncP->objs.nFrame++;
 			if (gameStates.multi.nGameType == UDP_GAME) {
 				bufI = 2;
-				NW_SET_SHORT (objBuf, bufI, networkData.sync.objs.nFrame); 
+				NW_SET_SHORT (objBuf, bufI, syncP->objs.nFrame); 
 				}
 			else {
-				objBuf [2] = (ubyte) networkData.sync.objs.nFrame;
+				objBuf [2] = (ubyte) syncP->objs.nFrame;
 				bufI = 3;
 				}
-			nRemoteObj = networkData.sync.objs.missingFrames.nFrame ? -4 : -2;
+			nRemoteObj = syncP->objs.missingFrames.nFrame ? -4 : -2;
 			NW_SET_SHORT (objBuf, bufI, nRemoteObj);
-			NW_SET_SHORT (objBuf, bufI, networkData.sync.objs.nSent);
-			networkData.sync.nState = networkData.sync.objs.missingFrames.nFrame ? 1 : 2;
+			NW_SET_SHORT (objBuf, bufI, syncP->objs.nSent);
+			syncP->nState = syncP->objs.missingFrames.nFrame ? 1 : 2;
 			}
 		else {
-			networkData.sync.objs.nCurrent = 0;
-			networkData.sync.objs.nMode = 1; // go to next mode
+			syncP->objs.nCurrent = 0;
+			syncP->objs.nMode = 1; // go to next mode
 			}
 		break;
 		}
@@ -250,105 +253,112 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 
 //------------------------------------------------------------------------------
 
-void NetworkSyncPlayer (void)
+void NetworkSyncPlayer (tNetworkSyncData *syncP)
 {
-	int nPlayer = networkData.sync.player [1].player.connected;
+	int nPlayer = syncP->player [1].player.connected;
 
-//OLD IPXSendPacketData (objBuf, 8, &networkData.sync.player [1].player.node);
+//OLD IPXSendPacketData (objBuf, 8, &syncP->player [1].player.node);
 if (gameStates.multi.nGameType >= IPX_GAME)
 	IPXSendInternetPacketData (objBuf, 8, 
-										networkData.sync.player [1].player.network.ipx.server, 
-										networkData.sync.player [1].player.network.ipx.node);
+										syncP->player [1].player.network.ipx.server, 
+										syncP->player [1].player.network.ipx.node);
 // Send sync packet which tells the tPlayer who he is and to start!
 NetworkSendRejoinSync (nPlayer);
 
 // Turn off send tObject mode
-networkData.sync.objs.nCurrent = -1;
-networkData.sync.nState = 3;
-networkData.sync.objs.nSent = 0;
-networkData.sync.nExtras = 1; // start to send extras
-networkData.sync.nExtrasPlayer = nPlayer;
-return;
+syncP->objs.nCurrent = -1;
+syncP->nState = 3;
+syncP->objs.nSent = 0;
+syncP->nExtras = 1; // start to send extras
+syncP->nExtrasPlayer = nPlayer;
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkSyncExtras (void)
+void NetworkSyncExtras (tNetworkSyncData *syncP)
 {
-Assert (networkData.sync.nExtrasPlayer > -1);
+Assert (syncP->nExtrasPlayer > -1);
 if (!NetworkIAmMaster ()) {
 #if 1			
   con_printf (CONDBG, "Hey! I'm not the master and I was gonna send info!\n");
 #endif
 	}
-if (networkData.sync.nExtras == 1)
-	NetworkSendFlyThruTriggers (networkData.sync.nExtrasPlayer);
-else if (networkData.sync.nExtras == 2)
-	NetworkSendDoorUpdates (networkData.sync.nExtrasPlayer);
-else if (networkData.sync.nExtras == 3)
+if (syncP->nExtras == 1)
+	NetworkSendFlyThruTriggers (syncP->nExtrasPlayer);
+else if (syncP->nExtras == 2)
+	NetworkSendDoorUpdates (syncP->nExtrasPlayer);
+else if (syncP->nExtras == 3)
 	NetworkSendMarkers ();
-else if (networkData.sync.nExtras == 4) {
+else if (syncP->nExtras == 4) {
 	if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 		MultiSendStolenItems ();
 	}
-else if (networkData.sync.nExtras == 5) {
+else if (syncP->nExtras == 5) {
 	if (netGame.xPlayTimeAllowed || netGame.KillGoal)
 		MultiSendKillGoalCounts ();
 	}
-else if (networkData.sync.nExtras == 6)
-	NetworkSendSmashedLights (networkData.sync.nExtrasPlayer);
-else if (networkData.sync.nExtras == 7)
+else if (syncP->nExtras == 6)
+	NetworkSendSmashedLights (syncP->nExtrasPlayer);
+else if (syncP->nExtras == 7)
 	NetworkSendPlayerFlags ();    
-else if (networkData.sync.nExtras == 8)
+else if (syncP->nExtras == 8)
 	MultiSendPowerupUpdate ();  
 else {
-	networkData.sync.nExtras = 0;
-	networkData.sync.nState = 0;
-	networkData.sync.nExtrasPlayer = -1;
-	memset (&networkData.sync.player [1], 0, sizeof (networkData.sync.player [1]));
+	syncP->nExtras = 0;
+	syncP->nState = 0;
+	syncP->nExtrasPlayer = -1;
+	memset (&syncP->player [1], 0, sizeof (syncP->player [1]));
 	return;
 	}
-networkData.sync.nExtras++;
+syncP->nExtras++;
+}
+
+//------------------------------------------------------------------------------
+
+void NetworkSyncConnection (tNetworkSyncData *syncP)
+{
+	time_t	t = (time_t) SDL_GetTicks ();
+
+if (t < syncP->timeout)
+	return;
+syncP->timeout = t + (/*(gameStates.multi.nGameType == UDP_GAME) ? 200 :*/ 1000 / PacketsPerSec ());
+if (syncP->bExtraGameInfo) {
+	NetworkSendExtraGameInfo (&syncP->player [0]);
+	syncP->bExtraGameInfo = 0;
+	}
+else if (syncP->nState == 1) {
+	syncP->objs.missingFrames.nFrame = 0;
+	NetworkSyncObjects (syncP);
+	syncP->bExtraGameInfo = 1;
+	}
+else if (syncP->nState == 2) {
+	NetworkSyncPlayer (syncP);
+	syncP->bExtraGameInfo = 1;
+	}
+else if (syncP->nState == 3) {
+	if (syncP->objs.missingFrames.nFrame) {
+		NetworkSyncObjects (syncP);
+		if (!syncP->nState)
+			syncP->objs.missingFrames.nFrame = 0;
+		}
+	else
+		syncP->nState = 4;
+	}
+else if (syncP->nState == 4) {
+	if (syncP->nExtras) {
+		NetworkSyncExtras (syncP);
+		if ((syncP->bExtraGameInfo = (syncP->nExtras == 0)))
+			DeleteSyncData (syncP - networkData.sync);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void NetworkDoSyncFrame (void)
 {
-	time_t	t = (time_t) SDL_GetTicks ();
-
-if (t < networkData.sync.timeout)
-	return;
-networkData.sync.timeout = t + (/*(gameStates.multi.nGameType == UDP_GAME) ? 200 :*/ 1000 / PacketsPerSec ());
-if (networkData.bSyncExtraGameInfo) {
-	NetworkSendExtraGameInfo (&networkData.sync.player [0]);
-	networkData.bSyncExtraGameInfo = 0;
-	}
-else if (networkData.sync.nState == 1) {
-	networkData.sync.objs.missingFrames.nFrame = 0;
-	NetworkSyncObjects ();
-	networkData.bSyncExtraGameInfo = 1;
-	}
-else if (networkData.sync.nState == 2) {
-	NetworkSyncPlayer ();
-	networkData.bSyncExtraGameInfo = 1;
-	}
-else if (networkData.sync.nState == 3) {
-	if (networkData.sync.objs.missingFrames.nFrame) {
-		NetworkSyncObjects ();
-		if (!networkData.sync.nState)
-			networkData.sync.objs.missingFrames.nFrame = 0;
-		}
-	else
-		networkData.sync.nState = 4;
-	}
-else if (networkData.sync.nState == 4) {
-	if (networkData.sync.nExtras) {
-		NetworkSyncExtras ();
-		if ((networkData.bSyncExtraGameInfo = (networkData.sync.nExtras == 0)))
-			networkData.sync.nState = 0;
-		}
-	}
+for (short i = 0; i < networkData.nJoining; i++)
+	NetworkSyncConnection (networkData.sync + i);
 }
 
 //------------------------------------------------------------------------------

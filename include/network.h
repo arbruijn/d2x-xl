@@ -506,6 +506,7 @@ void InitEntropySettings (int i);
 void NetworkSendExtraGameInfo (tSequencePacket *their);
 void NetworkResetSyncStates (void);
 void NetworkResetObjSync (short nObject);
+void DeleteSyncData (short nConnection);
 char *iptos (char *pszIP, char *addr);
 
 #define DUMP_CLOSED     0 // no new players allowed after game started

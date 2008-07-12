@@ -24,6 +24,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define GET_MISSING_FRAMES 1
 #define REFUSE_INTERVAL		(F1_0 * 8)
 
+#define MAX_JOIN_REQUESTS	(MAX_PLAYERS - 1)
+
 
 #if 1
 #	define	NW_SET_INT(_b, _loc, _i)		*((int *) ((_b) + (_loc))) = INTEL_INT ((int) (_i)); (_loc) += 4
@@ -162,6 +164,7 @@ typedef struct tNetworkSyncData {
 	short					nExtrasPlayer; 
 	short					nState;
 	short					nExtras;
+	bool					bExtraGameInfo;
 	tSyncObjectsData	objs;
 } tNetworkSyncData;
 
@@ -210,13 +213,11 @@ typedef struct tNetworkData {
 	int					bHaveSync;
 	short					nPrevFrame;
 	int					bTraceFrames;
-	int					bSyncMissingFrames;
-	int					bSyncExtraGameInfo;
-	short					nSyncPlayer;
 	tRefuseData			refuse;
 	time_t				toSyncPoll;
 	time_t				toWaitAllPoll;
-	tNetworkSyncData	sync;
+	tNetworkSyncData	sync [MAX_JOIN_REQUESTS];
+	short					nJoining;
 } tNetworkData;
 
 extern tNetworkData networkData;

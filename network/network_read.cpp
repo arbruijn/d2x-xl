@@ -617,7 +617,6 @@ void NetworkAbortSync (void)
 {
 ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_NET_SYNC_FAILED);
 networkData.nStatus = NETSTAT_MENU;                          
-networkData.bSyncMissingFrames = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -731,7 +730,7 @@ else if (i < 0)
 		objectCount++;
 		nObject = nRemoteObj;
 		if (!InsertObject (nObject)) {
-			if (networkData.bSyncMissingFrames) {
+			if (networkData.nJoinState == 3) {
 				FreeObject (nObject);
 				if (!InsertObject (nObject))
 					nObject = -1;

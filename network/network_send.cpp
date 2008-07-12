@@ -552,7 +552,6 @@ int NetworkSendRequest (void)
 	// game, non-zero if there is some problem.
 	int i;
 
-networkData.nSyncPlayer = -1;
 if (netGame.nNumPlayers < 1)
 	return 1;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
@@ -567,7 +566,6 @@ networkData.bHaveSync = 0;
 networkData.sync.objs.missingFrames.nFrame = 0;
 networkData.bTraceFrames = 1;
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	networkData.nSyncPlayer = i;
 	SendInternetSequencePacket (
 		networkData.thisPlayer, 
 		netPlayers.players [i].network.ipx.server, 
