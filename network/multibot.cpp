@@ -709,9 +709,8 @@ if (OBJECTS [nRobot].nType != OBJ_ROBOT) // Object is robotP?
 	if (OBJECTS [nRobot].flags & OF_EXPLODING) // Object not already exploding
 		return 0;
 // Data seems valid, explode the sucker
-if (networkData.sync.nState == 1 && NetworkObjnumIsPast (nRobot))
-	networkData.sync.objs.nCurrent = -1;
-robotP = &OBJECTS [nRobot];
+NetworkResetObjSync (nRobot);
+robotP = OBJECTS + nRobot;
 // Drop non-random KEY powerups locally only!
 if ((robotP->containsCount > 0) && 
 	 (robotP->containsType == OBJ_POWERUP) && 

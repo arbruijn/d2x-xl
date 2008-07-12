@@ -203,6 +203,14 @@ networkData.sync.nExtrasPlayer = -1;	// This is so we know who to send 'latecome
 
 //------------------------------------------------------------------------------
 
+void NetworkResetObjSync (short nObject)
+{
+if (networkData.sync.nState == 1) && ((nObject < 0) || NetworkObjnumIsPast (nObject)))
+	networkData.sync.objs.nCurrent = -1;
+}
+
+//------------------------------------------------------------------------------
+
 void NetworkDisconnectPlayer (int nPlayer)
 {
 	// A tPlayer has disconnected from the net game, take whatever steps are
