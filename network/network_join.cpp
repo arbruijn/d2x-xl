@@ -320,6 +320,14 @@ if (memcmp (&networkData.playerRejoining, their, sizeof (networkData.playerRejoi
 	if (!networkData.nSyncState && networkData.nSyncExtras && (networkData.bVerifyPlayerJoined != -1))
 		return;
 	}
+else { //prevent flooding with connection attempts from the same player
+	static int tLastJoined = 0;
+	int t;
+
+	if ((t = SDL_GetTicks ()) - tLastJoined < 3000)
+		return;
+	tLastJoined = t;
+	}
 #if 0
 if (networkData.nSyncState || networkData.nSyncExtras) {
 	// Ignore silently, we're already responding to someone and we can't

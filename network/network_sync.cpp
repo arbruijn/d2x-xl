@@ -409,7 +409,7 @@ static inline fix SyncPollTimeout (void)
 #ifdef _DEBUG
 return 5000;
 #else
-return 5000;
+return 3000;
 #endif
 }
 
