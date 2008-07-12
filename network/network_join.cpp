@@ -181,7 +181,7 @@ if (!people) {
 for (i = 0; i < nNumPlayers; i++)
 	if (!CmpNetPlayers (LOCALPLAYER.callsign, 
 							  people->players [i].callsign, 
-							  &networkData.mySeq.player.network, 
+							  &networkData.thisPlayer.player.network, 
 							  &people->players [i].network))
 		return 1;
 #if 1      
@@ -284,35 +284,87 @@ MultiSortKillList ();
 
 //------------------------------------------------------------------------------
 
-void NetworkWelcomePlayer (tSequencePacket *their)
+static int FindNetworkPlayer (tSequencePacket *player, ubyte *newAddress)
 {
-	static int tLastJoined = 0;
-	// Add a tPlayer to a game already in progress
-	ubyte newAddress [6], anyAddress [6];
-	int nPlayer;
-	int i;
+	int	i;
+	ubyte anyAddress [6];
 
-networkData.refuse.bWaitForAnswer = 0;
-if (FindArg ("-NoMatrixCheat")) {
-	if ((their->player.versionMinor & 0x0F) < 3) {
+if (gameStates.multi.nGameType == UDP_GAME) {
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		if (!memcmp (gameData.multiplayer.players [i].netAddress, newAddress, extraGameInfo [1].bCheckUDPPort ? 6 : 4) &&
+			 !stricmp (gameData.multiplayer.players [i].callsign, player->player.callsign)) {
+			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
+			return i;
+			}
+		}
+	memset (&anyAddress, 0xFF, sizeof (newAddress));
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		if (!memcmp (gameData.multiplayer.players [i].netAddress, anyAddress, 6) &&
+			 !stricmp (gameData.multiplayer.players [i].callsign, player->player.callsign)) {
+			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
+			memcpy (netPlayers.players [i].network.ipx.node, newAddress, 6);
+			return i;
+			}
+		}
+	}
+else {
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) 
+		if (gameStates.multi.nGameType == IPX_GAME) {
+			if (!memcmp (gameData.multiplayer.players [i].netAddress, newAddress, 6) &&
+				 !stricmp (gameData.multiplayer.players [i].callsign, player->player.callsign)) {
+				return i;
+				}
+			}
+	}
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+static int FindPlayerSlot (tSequencePacket *player)
+{
+if (netGame.gameFlags & NETGAME_FLAG_CLOSED)	{
+	// Slots are open but game is closed
+	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			their->player.network.ipx.server, 
-			their->player.network.ipx.node, 
-			DUMP_DORK);
-		return;
+			player->player.network.ipx.server, 
+			player->player.network.ipx.node, 
+			DUMP_CLOSED);
+	return -1;
+	}
+if (gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) {
+	// Add tPlayer in an open slot, game not full yet
+	networkData.bPlayerAdded = 1;
+	return gameData.multiplayer.nPlayers;
+	}
+// Slots are full but game is open, see if anyone is
+// disconnected and replace the oldest tPlayer with this new one
+int oldestPlayer = -1;
+fix oldestTime = TimerGetApproxSeconds ();
+Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	if (!gameData.multiplayer.players [i].connected && (networkData.nLastPacketTime [i] < oldestTime)) {
+		oldestTime = networkData.nLastPacketTime [i];
+		oldestPlayer = i;
 		}
 	}
-if (HoardEquipped ()) {
-// If hoard game, and this guy isn't D2 Christmas (v1.2), dump him
-	if ((gameData.app.nGameMode & GM_HOARD) && ((their->player.versionMinor & 0x0F)<2)) {
-		if (gameStates.multi.nGameType >= IPX_GAME)
-			NetworkDumpPlayer (
-				their->player.network.ipx.server, 
-				their->player.network.ipx.node, 
-				DUMP_DORK);
-		return;
-		}
+if (oldestPlayer == -1) {
+	// Everyone is still connected 
+	if (gameStates.multi.nGameType >= IPX_GAME)
+		NetworkDumpPlayer (
+			player->player.network.ipx.server, 
+			player->player.network.ipx.node, 
+			DUMP_FULL);
+	return -1;
 	}
+networkData.bPlayerAdded = 1;
+return oldestPlayer;
+}
+
+//------------------------------------------------------------------------------
+
+static bool ConnectionAccepted (tSequencePacket *player)
+{
 // Don't accept new players if we're ending this level.  Its safe to
 // ignore since they'll request again later
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
@@ -321,136 +373,90 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			their->player.network.ipx.server, 
-			their->player.network.ipx.node, 
+			player->player.network.ipx.server, 
+			player->player.network.ipx.node, 
 			DUMP_ENDLEVEL);
-	return; 
+	return false; 
 	}
-if (memcmp (&networkData.playerRejoining, their, sizeof (networkData.playerRejoining))) {
+if (memcmp (&networkData.sync.player [1], player, sizeof (*player))) {
 	if (networkData.sync.nState)
-		return;
+		return false;
 #if 0		
 	if (!networkData.sync.nState && networkData.sync.nExtras && (networkData.sync.nPlayer != -1))
-		return;
+		return false;
 #endif
 	}
 else { //prevent flooding with connection attempts from the same player
 	int t;
 
-	if ((t = SDL_GetTicks ()) - tLastJoined < 3000)
-		return;
-	tLastJoined = t;
+	if ((t = SDL_GetTicks ()) - networkData.sync.tLastJoined < 3000)
+		return false;
+	networkData.sync.tLastJoined = t;
 	}
-if (their->player.connected != gameData.missions.nCurrentLevel) {
+if (player->player.connected != gameData.missions.nCurrentLevel) {
 #if 1      
 	con_printf (CONDBG, "Dumping tPlayer due to old level number.\n");
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			their->player.network.ipx.server, 
-			their->player.network.ipx.node, 
+			player->player.network.ipx.server, 
+			player->player.network.ipx.node, 
 			DUMP_LEVEL);
-	return;
+	return false;
 	}
-nPlayer = -1;
-memset (&networkData.playerRejoining, 0, sizeof (tSequencePacket));
-networkData.bPlayerAdded = 0;
-if (gameStates.multi.nGameType >= IPX_GAME) {
-	if ((*(uint *) their->player.network.ipx.server) != 0)
-		IpxGetLocalTarget (
-			their->player.network.ipx.server, 
-			their->player.network.ipx.node, 
-			newAddress);
-	else
-		memcpy (newAddress, their->player.network.ipx.node, 6);
-	}
-for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (gameStates.multi.nGameType == IPX_GAME) {
-		if (!memcmp (gameData.multiplayer.players [i].netAddress, newAddress, 6) &&
-			 !stricmp (gameData.multiplayer.players [i].callsign, their->player.callsign)) {
-			nPlayer = i;
-			break;
-			}
-		}
-	else if (gameStates.multi.nGameType == UDP_GAME) {
-		if (!memcmp (gameData.multiplayer.players [i].netAddress, newAddress, extraGameInfo [1].bCheckUDPPort ? 6 : 4) &&
-			 !stricmp (gameData.multiplayer.players [i].callsign, their->player.callsign)) {
-			nPlayer = i;
-			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
-			break;
-			}
-		}
-	}
-if ((nPlayer == -1) && (gameStates.multi.nGameType == UDP_GAME)) {
-	memset (&anyAddress, 0xFF, sizeof (newAddress));
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if (!memcmp (gameData.multiplayer.players [i].netAddress, anyAddress, 6) &&
-			 !stricmp (gameData.multiplayer.players [i].callsign, their->player.callsign)) {
-			nPlayer = i;
-			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
-			memcpy (netPlayers.players [i].network.ipx.node, newAddress, 6);
-			break;
-			}
-		}
-	}
-if (nPlayer == -1) {
-	// Player is new to this game
-	if (!(netGame.gameFlags & NETGAME_FLAG_CLOSED) && 
-		  (gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers)) {
-		// Add tPlayer in an open slot, game not full yet
-		nPlayer = gameData.multiplayer.nPlayers;
-		if (IsTeamGame)
-			ChoseTeam (nPlayer);
-		networkData.bPlayerAdded = 1;
-		}
-	else if (netGame.gameFlags & NETGAME_FLAG_CLOSED)	{
-		// Slots are open but game is closed
-		if (gameStates.multi.nGameType >= IPX_GAME)
-			NetworkDumpPlayer (
-				their->player.network.ipx.server, 
-				their->player.network.ipx.node, 
-				DUMP_CLOSED);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+void NetworkWelcomePlayer (tSequencePacket *player)
+{
+	static int tLastJoined = 0;
+	// Add a tPlayer to a game already in progress
+	int	nPlayer;
+	ubyte newAddress [6];
+
+networkData.refuse.bWaitForAnswer = 0;
+if (FindArg ("-NoMatrixCheat")) {
+	if ((player->player.versionMinor & 0x0F) < 3) {
+		NetworkDumpPlayer (
+			player->player.network.ipx.server, 
+			player->player.network.ipx.node, 
+			DUMP_DORK);
 		return;
 		}
-	else {
-		// Slots are full but game is open, see if anyone is
-		// disconnected and replace the oldest tPlayer with this new one
-		int oldestPlayer = -1;
-		fix oldestTime = TimerGetApproxSeconds ();
-		Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
-		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if ((!gameData.multiplayer.players [i].connected) && 
-				 (networkData.nLastPacketTime [i] < oldestTime)) {
-				oldestTime = networkData.nLastPacketTime [i];
-				oldestPlayer = i;
-				}
-			}
-		if (oldestPlayer == -1) {
-			// Everyone is still connected 
-			if (gameStates.multi.nGameType >= IPX_GAME)
-				NetworkDumpPlayer (
-					their->player.network.ipx.server, 
-					their->player.network.ipx.node, 
-					DUMP_FULL);
-			return;
-			}
-		else {       
-			// Found a slot!
-			nPlayer = oldestPlayer;
-			networkData.bPlayerAdded = 1;
-			}
+	}
+if (HoardEquipped ()) {
+// If hoard game, and this guy isn't D2 Christmas (v1.2), dump him
+	if ((gameData.app.nGameMode & GM_HOARD) && ((player->player.versionMinor & 0x0F) < 2)) {
+		if (gameStates.multi.nGameType >= IPX_GAME)
+			NetworkDumpPlayer (
+				player->player.network.ipx.server, 
+				player->player.network.ipx.node, 
+				DUMP_DORK);
+		return;
 		}
+	}
+if (!ConnectionAccepted (player))
+	return;
+memset (&networkData.sync.player [1], 0, sizeof (tSequencePacket));
+networkData.bPlayerAdded = 0;
+if (gameStates.multi.nGameType >= IPX_GAME) {
+	if ((*(uint *) player->player.network.ipx.server) != 0)
+		IpxGetLocalTarget (
+			player->player.network.ipx.server, 
+			player->player.network.ipx.node, 
+			newAddress);
+	else
+		memcpy (newAddress, player->player.network.ipx.node, 6);
+	}
+if (0 > (nPlayer = FindNetworkPlayer (player, newAddress))) {
+	// Player is new to this game
+	if (0 > (nPlayer = FindPlayerSlot (player)))
+		return;
 	}
 else {
 	// Player is reconnecting
-#if 0	
-	if (gameData.multiplayer.players [nPlayer].connected)	{
-#if 1      
-		con_printf (CONDBG, "Extra REQUEST from tPlayer ignored.\n");
-#endif
-		return;
-		}
-#endif
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
 	networkData.bPlayerAdded = 0;
@@ -461,17 +467,19 @@ else {
 		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [nPlayer].rank], 
 							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	}
+if (IsTeamGame)
+	ChoseTeam (nPlayer);
 gameData.multiplayer.players [nPlayer].nKillGoalCount = 0;
 gameData.multiplayer.players [nPlayer].connected = 0;
 // Send updated OBJECTS data to the new/returning tPlayer
-networkData.playerRejoining = *their;
-networkData.playerRejoining.player.connected = nPlayer;
+networkData.sync.player [1] = *player;
+networkData.sync.player [1].player.connected = nPlayer;
 networkData.bSyncExtraGameInfo = 0;
 networkData.sync.nState = 1;
 networkData.sync.objs.nCurrent = -1;
 networkData.sync.nExtras = 0;
-networkData.toSyncFrame = 0;
-networkData.joinSeq = *their;
+networkData.sync.timeout = 0;
+networkData.sync.player [0] = *player;
 tLastJoined = SDL_GetTicks ();
 NetworkDoSyncFrame ();
 }

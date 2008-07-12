@@ -155,10 +155,13 @@ typedef struct tSyncObjectsData {
 } tSyncObjectsData;
 
 typedef struct tNetworkSyncData {
-	int					nState;
+	time_t				timeout;
+	time_t				tLastJoined;
+	tSequencePacket	player [2];
+	short					nPlayer;
+	short					nExtrasPlayer; 
+	short					nState;
 	short					nExtras;
-	int					nPlayer;
-	int					nExtrasPlayer; 
 	tSyncObjectsData	objs;
 } tNetworkSyncData;
 
@@ -183,7 +186,6 @@ typedef struct tNetworkData {
 	int					bPlayerAdded;   
 	int					bD2XData;
 	int					nSecurityCheck;
-	tSequencePacket	playerRejoining;
 	fix					nLastPacketTime [MAX_PLAYERS];
 	int					bPacketUrgent;
 	int					nGameType;
@@ -195,8 +197,7 @@ typedef struct tNetworkData {
 	tFrameInfo			urgentSyncPack;
 	ubyte					bSyncPackInited;       
 	ushort				nSegmentCheckSum;
-	tSequencePacket	mySeq;
-	tSequencePacket	joinSeq;
+	tSequencePacket	thisPlayer;
 	char					bWantPlayersInfo;
 	char					bWaitingForPlayerInfo;
 	fix					nStartWaitAllTime;
@@ -213,7 +214,6 @@ typedef struct tNetworkData {
 	int					bSyncExtraGameInfo;
 	short					nSyncPlayer;
 	tRefuseData			refuse;
-	time_t				toSyncFrame;
 	time_t				toSyncPoll;
 	time_t				toWaitAllPoll;
 	tNetworkSyncData	sync;

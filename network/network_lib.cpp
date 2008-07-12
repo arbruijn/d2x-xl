@@ -183,7 +183,7 @@ return 0;
 
 #define LOCAL_NODE \
 	((gameStates.multi.bHaveLocalAddress && (gameStates.multi.nGameType == UDP_GAME)) ? \
-	 ipx_LocalAddress + 4 : networkData.mySeq.player.network.ipx.node)
+	 ipx_LocalAddress + 4 : networkData.thisPlayer.player.network.ipx.node)
 
 
 int CmpLocalPlayer (tNetworkInfo *pNetwork, char *pszNetCallSign, char *pszLocalCallSign)
@@ -201,7 +201,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	return memcmp (pNetwork->ipx.node, LOCAL_NODE, extraGameInfo [1].bCheckUDPPort ? 6 : 4) ? 1 : 0;
 	}
 #ifdef MACINTOSH
-if (pNetwork->appletalk.node != networkData.mySeq.player.network.appletalk.node)
+if (pNetwork->appletalk.node != networkData.thisPlayer.player.network.appletalk.node)
 	return 1;
 #endif
 return 0;
@@ -274,7 +274,7 @@ int NetworkObjnumIsPast (int nObject)
 {
 	// determine whether or not a given tObject number has already been sent
 	// to a re-joining player.
-	int nPlayer = networkData.playerRejoining.player.connected;
+	int nPlayer = networkData.sync.player [1].player.connected;
 	int nObjMode = !((gameData.multigame.nObjOwner [nObject] == -1) || (gameData.multigame.nObjOwner [nObject] == nPlayer));
 
 if (!networkData.sync.nState)

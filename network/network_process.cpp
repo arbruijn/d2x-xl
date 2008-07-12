@@ -407,9 +407,9 @@ void NetworkProcessMissingObjFrames (char *dataP)
 	tMissingObjFrames	missingObjFrames;
 
 ReceiveMissingObjFramesPacket ((ubyte *) dataP, &missingObjFrames);
-if (!networkData.playerRejoining.player.connected)
-	networkData.playerRejoining.player.connected = missingObjFrames.nPlayer;
-if (missingObjFrames.nPlayer == networkData.playerRejoining.player.connected) {
+if (!networkData.sync.player [1].player.connected)
+	networkData.sync.player [1].player.connected = missingObjFrames.nPlayer;
+if (missingObjFrames.nPlayer == networkData.sync.player [1].player.connected) {
 	networkData.sync.objs.missingFrames = missingObjFrames;
 	networkData.sync.objs.nCurrent = -1;				
 	networkData.sync.nState = 3;

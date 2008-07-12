@@ -151,17 +151,17 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			networkData.playerRejoining.player.network.ipx.server, 
-			networkData.playerRejoining.player.network.ipx.node, 
+			networkData.sync.player [1].player.network.ipx.server, 
+			networkData.sync.player [1].player.network.ipx.node, 
 			DUMP_ENDLEVEL);
 	networkData.sync.nState = 0; 
 	networkData.sync.nExtras = 0;
 	return;
 	}
 if (networkData.bPlayerAdded) {
-	networkData.playerRejoining.nType = PID_ADDPLAYER;
-	networkData.playerRejoining.player.connected = nPlayer;
-	NetworkNewPlayer (&networkData.playerRejoining);
+	networkData.sync.player [1].nType = PID_ADDPLAYER;
+	networkData.sync.player [1].player.connected = nPlayer;
+	NetworkNewPlayer (&networkData.sync.player [1]);
 
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if ((i != nPlayer) && 
@@ -169,7 +169,7 @@ if (networkData.bPlayerAdded) {
 			 gameData.multiplayer.players [i].connected)
 			if (gameStates.multi.nGameType >= IPX_GAME) {
 				SendSequencePacket (
-					networkData.playerRejoining, 
+					networkData.sync.player [1], 
 					netPlayers.players [i].network.ipx.server, 
 					netPlayers.players [i].network.ipx.node, 
 					gameData.multiplayer.players [i].netAddress);
@@ -191,11 +191,11 @@ netGame.xLevelTime = LOCALPLAYER.timeLevel;
 netGame.monitor_vector = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (
-		networkData.playerRejoining.player.network.ipx.server, 
-		networkData.playerRejoining.player.network.ipx.node);
+		networkData.sync.player [1].player.network.ipx.server, 
+		networkData.sync.player [1].player.network.ipx.node);
 	SendNetPlayersPacket (
-		networkData.playerRejoining.player.network.ipx.server, 
-		networkData.playerRejoining.player.network.ipx.node);
+		networkData.sync.player [1].player.network.ipx.server, 
+		networkData.sync.player [1].player.network.ipx.node);
 	}
 return;
 }
@@ -219,11 +219,11 @@ netGame.xLevelTime = LOCALPLAYER.timeLevel;
 netGame.monitor_vector = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (
-		networkData.playerRejoining.player.network.ipx.server, 
-		networkData.playerRejoining.player.network.ipx.node);
+		networkData.sync.player [1].player.network.ipx.server, 
+		networkData.sync.player [1].player.network.ipx.node);
 	SendNetPlayersPacket (
-		networkData.playerRejoining.player.network.ipx.server, 
-		networkData.playerRejoining.player.network.ipx.node);
+		networkData.sync.player [1].player.network.ipx.server, 
+		networkData.sync.player [1].player.network.ipx.node);
 	}
 }
 
@@ -559,8 +559,8 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	if (netPlayers.players [i].connected)
 	   break;
 Assert (i < MAX_NUM_NET_PLAYERS);
-networkData.mySeq.nType = PID_REQUEST;
-networkData.mySeq.player.connected = gameData.missions.nCurrentLevel;
+networkData.thisPlayer.nType = PID_REQUEST;
+networkData.thisPlayer.player.connected = gameData.missions.nCurrentLevel;
 networkData.nJoinState = 0;
 networkData.sync.objs.nFrame = 0;
 networkData.bHaveSync = 0;
@@ -569,7 +569,7 @@ networkData.bTraceFrames = 1;
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	networkData.nSyncPlayer = i;
 	SendInternetSequencePacket (
-		networkData.mySeq, 
+		networkData.thisPlayer, 
 		netPlayers.players [i].network.ipx.server, 
 		netPlayers.players [i].network.ipx.node);
 	}

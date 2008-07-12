@@ -159,21 +159,21 @@ networkData.nTotalMissedPackets = 0;
 networkData.nTotalPacketsGot = 0;
 memset (&netGame, 0, sizeof (tNetgameInfo));
 memset (&netPlayers, 0, sizeof (tAllNetPlayersInfo));
-networkData.mySeq.nType = PID_REQUEST;
-memcpy (networkData.mySeq.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
-networkData.mySeq.player.versionMajor=D2X_MAJOR;
-networkData.mySeq.player.versionMinor=D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 0);
-networkData.mySeq.player.rank=GetMyNetRanking ();
+networkData.thisPlayer.nType = PID_REQUEST;
+memcpy (networkData.thisPlayer.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
+networkData.thisPlayer.player.versionMajor=D2X_MAJOR;
+networkData.thisPlayer.player.versionMinor=D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 0);
+networkData.thisPlayer.player.rank=GetMyNetRanking ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	memcpy (networkData.mySeq.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
+	memcpy (networkData.thisPlayer.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
 	if (gameStates.multi.nGameType == UDP_GAME)
-		* ((ushort *) (networkData.mySeq.player.network.ipx.node + 4)) = 
-			htons (* ((ushort *) (networkData.mySeq.player.network.ipx.node + 4)));
+		* ((ushort *) (networkData.thisPlayer.player.network.ipx.node + 4)) = 
+			htons (* ((ushort *) (networkData.thisPlayer.player.network.ipx.node + 4)));
 //		if (gameStates.multi.nGameType == UDP_GAME)
-//			memcpy (networkData.mySeq.player.network.ipx.node, ipx_LocalAddress + 4, 4);
-	memcpy (networkData.mySeq.player.network.ipx.server, IpxGetMyServerAddress (), 4);
+//			memcpy (networkData.thisPlayer.player.network.ipx.node, ipx_LocalAddress + 4, 4);
+	memcpy (networkData.thisPlayer.player.network.ipx.server, IpxGetMyServerAddress (), 4);
 }
-networkData.mySeq.player.computerType = DOS;
+networkData.thisPlayer.player.computerType = DOS;
 for (gameData.multiplayer.nLocalPlayer = 0; 
 	  gameData.multiplayer.nLocalPlayer < MAX_NUM_NET_PLAYERS; 
 	  gameData.multiplayer.nLocalPlayer++)

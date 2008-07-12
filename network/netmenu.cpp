@@ -1696,7 +1696,7 @@ int NetworkSelectPlayers (int bAutoRun)
 	char title [50];
 	int nSavePlayers;              //how may people would like to join
 
-NetworkAddPlayer (&networkData.mySeq);
+NetworkAddPlayer (&networkData.thisPlayer);
 if (bAutoRun)
 	return 1;
 

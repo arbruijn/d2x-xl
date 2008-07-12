@@ -101,8 +101,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void NetworkStopResync (tSequencePacket *their)
 {
-if (!CmpNetPlayers (networkData.playerRejoining.player.callsign, their->player.callsign, 
-						  &networkData.playerRejoining.player.network, &their->player.network)) {
+if (!CmpNetPlayers (networkData.sync.player [1].player.callsign, their->player.callsign, 
+						  &networkData.sync.player [1].player.network, &their->player.network)) {
 #if 1      
 con_printf (CONDBG, "Aborting resync for tPlayer %s.\n", their->player.callsign);
 #endif
@@ -156,7 +156,7 @@ void NetworkSyncObjects (void)
 	short		nRemoteObj;
 	int		bufI, i, h;
 	int		nObjFrames = 0;
-	int		nPlayer = networkData.playerRejoining.player.connected;
+	int		nPlayer = networkData.sync.player [1].player.connected;
 
 // Send clear OBJECTS array tTrigger and send tPlayer num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
@@ -215,8 +215,8 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				IPXSendInternetPacketData (
 					objBuf, bufI, 
-					networkData.playerRejoining.player.network.ipx.server, 
-					networkData.playerRejoining.player.network.ipx.node);
+					networkData.sync.player [1].player.network.ipx.server, 
+					networkData.sync.player [1].player.network.ipx.node);
 			 }
 		}
 	if (i > gameData.objs.nLastObject [0]) {
@@ -252,13 +252,13 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 
 void NetworkSyncPlayer (void)
 {
-	int nPlayer = networkData.playerRejoining.player.connected;
+	int nPlayer = networkData.sync.player [1].player.connected;
 
-//OLD IPXSendPacketData (objBuf, 8, &networkData.playerRejoining.player.node);
+//OLD IPXSendPacketData (objBuf, 8, &networkData.sync.player [1].player.node);
 if (gameStates.multi.nGameType >= IPX_GAME)
 	IPXSendInternetPacketData (objBuf, 8, 
-										networkData.playerRejoining.player.network.ipx.server, 
-										networkData.playerRejoining.player.network.ipx.node);
+										networkData.sync.player [1].player.network.ipx.server, 
+										networkData.sync.player [1].player.network.ipx.node);
 // Send sync packet which tells the tPlayer who he is and to start!
 NetworkSendRejoinSync (nPlayer);
 
@@ -305,7 +305,7 @@ else {
 	networkData.sync.nExtras = 0;
 	networkData.sync.nState = 0;
 	networkData.sync.nExtrasPlayer = -1;
-	memset (&networkData.playerRejoining, 0, sizeof (networkData.playerRejoining));
+	memset (&networkData.sync.player [1], 0, sizeof (networkData.sync.player [1]));
 	return;
 	}
 networkData.sync.nExtras++;
@@ -317,11 +317,11 @@ void NetworkDoSyncFrame (void)
 {
 	time_t	t = (time_t) SDL_GetTicks ();
 
-if (t < networkData.toSyncFrame)
+if (t < networkData.sync.timeout)
 	return;
-networkData.toSyncFrame = t + (/*(gameStates.multi.nGameType == UDP_GAME) ? 200 :*/ 1000 / PacketsPerSec ());
+networkData.sync.timeout = t + (/*(gameStates.multi.nGameType == UDP_GAME) ? 200 :*/ 1000 / PacketsPerSec ());
 if (networkData.bSyncExtraGameInfo) {
-	NetworkSendExtraGameInfo (&networkData.joinSeq);
+	NetworkSendExtraGameInfo (&networkData.sync.player [0]);
 	networkData.bSyncExtraGameInfo = 0;
 	}
 else if (networkData.sync.nState == 1) {
