@@ -10,7 +10,7 @@
 
 #include "ipx_drv.h"
 
-#define UDP_BASEPORT 283
+#define UDP_BASEPORT 28342
 
 
 extern struct ipx_driver ipx_udp;
