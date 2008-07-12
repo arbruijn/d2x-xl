@@ -142,11 +142,11 @@ void BESwapObject (tObject *obj);
 	memcpy((ubyte *)(_extraGameInfo), data, sizeof(tExtraGameInfo))
 
 #define SendMissingObjFramesPacket(server, node, netAddress) \
-	IPXSendPacketData((ubyte *) &networkData.missingObjFrames, sizeof(tMissingObjFrames), server, node, netAddress)
+	IPXSendPacketData((ubyte *) &networkData.sync.objs.missingFrames, sizeof(tMissingObjFrames), server, node, netAddress)
 #define SendInternetMissingObjFramesPacket(server, node) \
-	IPXSendInternetPacketData((ubyte *) &networkData.missingObjFrames, sizeof(tMissingObjFrames), server, node)
+	IPXSendInternetPacketData((ubyte *) &networkData.sync.objs.missingFrames, sizeof(tMissingObjFrames), server, node)
 #define SendBroadcastMissingObjFramesPacket() \
-	IPXSendBroadcastData((ubyte *) &networkData.missingObjFrames, sizeof(tMissingObjFrames))
+	IPXSendBroadcastData((ubyte *) &networkData.sync.objs.missingFrames, sizeof(tMissingObjFrames))
 #define ReceiveMissingObjFramesPacket(data, _missingObjFrames) \
 	memcpy((ubyte *)(_missingObjFrames), data, sizeof(tMissingObjFrames))
 

@@ -293,7 +293,7 @@ fclose (SendLogFile);
 	fclose (ReceiveLogFile);
 #endif
 if ((NetworkIAmMaster ())) {
-	while (networkData.nSyncExtras && (networkData.nPlayerJoiningExtras != -1))
+	while (networkData.sync.nExtras && (networkData.sync.nExtrasPlayer != -1))
 		NetworkSyncExtras ();
 
 	netGame.nNumPlayers = 0;
@@ -358,7 +358,7 @@ int NetworkListen (void)
 CleanUploadDests ();
 if (NetworkIAmMaster ())
 	AddServerToTracker ();
-if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.bShortPackets && !networkData.nSyncState)
+if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.bShortPackets && !networkData.sync.nState)
 	nMaxLoops = gameData.multiplayer.nPlayers * PacketsPerSec ();
 
 if (gameStates.multi.nGameType >= IPX_GAME)
@@ -546,8 +546,10 @@ if (!bListen) {
 	return;
 	}
 NetworkListen ();
-if ((networkData.bVerifyPlayerJoined != -1) && !(gameData.app.nFrameCount & 63))
-	ResendSyncDueToPacketLossForAllender (); // This will resend to network_player_rejoining
+#if 0
+if ((networkData.sync.nPlayer != -1) && !(gameData.app.nFrameCount & 63))
+	ResendSyncDueToPacketLoss (); // This will resend to network_player_rejoining
+#endif
 NetworkDoSyncFrame ();
 if (NetworkIAmMaster ())
 	AddServerToTracker ();

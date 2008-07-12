@@ -340,8 +340,8 @@ if (nTheirPlayer < 0) {
 	Int3 (); // This packet is bogus!!
 	return;
 	}
-if ((networkData.bVerifyPlayerJoined != -1) && (nTheirPlayer == networkData.bVerifyPlayerJoined))
-	networkData.bVerifyPlayerJoined = -1;
+if ((networkData.sync.nPlayer != -1) && (nTheirPlayer == networkData.sync.nPlayer))
+	networkData.sync.nPlayer = -1;
 if (!gameData.multigame.bQuitGame && (nTheirPlayer >= gameData.multiplayer.nPlayers)) {
 	if (networkData.nStatus!=NETSTAT_WAITING) {
 		Int3 (); // We missed an important packet!
@@ -485,9 +485,9 @@ if (!gameData.multigame.bQuitGame && (nTheirPlayer >= gameData.multiplayer.nPlay
 		}
 	return;
 	}
-if (networkData.bVerifyPlayerJoined!=-1 && nTheirPlayer == networkData.bVerifyPlayerJoined) {
+if ((networkData.sync.nPlayer != -1) && (nTheirPlayer == networkData.sync.nPlayer)) {
 	// Hurray! Someone really really got in the game (I think).
-   networkData.bVerifyPlayerJoined=-1;
+   networkData.sync.nPlayer = -1;
 	}
 
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
@@ -624,11 +624,11 @@ networkData.bSyncMissingFrames = 0;
 
 static int NetworkCheckMissingFrames (void)
 {
-if (networkData.nPrevFrame == networkData.nSyncFrame - 1)
+if (networkData.nPrevFrame == networkData.sync.objs.nFrame - 1)
 	return 1;
-if (!networkData.nPrevFrame || (networkData.nPrevFrame >= networkData.nSyncFrame))
+if (!networkData.nPrevFrame || (networkData.nPrevFrame >= networkData.sync.objs.nFrame))
 	return 0;
-networkData.missingObjFrames.nFrame = networkData.nPrevFrame + 1;
+networkData.sync.objs.missingFrames.nFrame = networkData.nPrevFrame + 1;
 networkData.nJoinState = 2;
 NetworkSendMissingObjFrames ();
 return -1;
@@ -667,13 +667,13 @@ void NetworkReadObjectPacket (ubyte *dataP)
 	int		nObjects = dataP [1];
 	int		bufI;
 
-networkData.nPrevFrame = networkData.nSyncFrame;
+networkData.nPrevFrame = networkData.sync.objs.nFrame;
 if (gameStates.multi.nGameType == UDP_GAME) {
 	bufI = 2;
-	NW_GET_SHORT (dataP, bufI, networkData.nSyncFrame);
+	NW_GET_SHORT (dataP, bufI, networkData.sync.objs.nFrame);
 	}
 else {
-	networkData.nSyncFrame = dataP [2];
+	networkData.sync.objs.nFrame = dataP [2];
 	bufI = 3;
 	}
 i = NetworkCheckMissingFrames ();
@@ -684,7 +684,7 @@ if (!i) {
 else if (i < 0)
 	return;
 #ifdef _DEBUG
-//PrintLog ("Receiving object packet %d (prev: %d)\n", networkData.nPrevFrame, networkData.nSyncFrame);
+//PrintLog ("Receiving object packet %d (prev: %d)\n", networkData.nPrevFrame, networkData.sync.objs.nFrame);
 #endif
  for (i = 0; i < nObjects; i++) {
 	NW_GET_SHORT (dataP, bufI, nObject);                   
@@ -696,7 +696,7 @@ else if (i < 0)
 		ChangePlayerNumTo (nPlayer);
 		nMode = 1;
 		objectCount = 0;
-		networkData.nPrevFrame = networkData.nSyncFrame - 1;
+		networkData.nPrevFrame = networkData.sync.objs.nFrame - 1;
 		if (nObject == -3) {
 			if (networkData.nJoinState != 2)
 				return;
@@ -711,14 +711,14 @@ else if (i < 0)
 			InitObjects ();
 			networkData.nJoinState = 1;
 			}
-		networkData.missingObjFrames.nFrame = 0;
+		networkData.sync.objs.missingFrames.nFrame = 0;
 		}
 	else if ((nObject == -2) || (nObject == -4)) {	// Special debug checksum marker for entire send
  		if (!nMode && NetworkVerifyObjects (nRemoteObj, objectCount)) {
 			NetworkAbortSync ();
 			return;
 			}
-		networkData.nSyncFrame = 0;
+		networkData.sync.objs.nFrame = 0;
 		nMode = 0;
 		if (networkData.bHaveSync)
 			networkData.nStatus = NETSTAT_PLAYING;

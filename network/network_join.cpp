@@ -192,6 +192,17 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+void NetworkResetSyncStates (void)
+{
+networkData.sync.nState = 0;
+networkData.sync.nExtras = 0;
+networkData.sync.objs.nCurrent = -1;				// What tObject are we sending next?
+networkData.sync.nPlayer = -1;
+networkData.sync.nExtrasPlayer = -1;	// This is so we know who to send 'latecomer' packets to.
+}
+
+//------------------------------------------------------------------------------
+
 void NetworkDisconnectPlayer (int nPlayer)
 {
 	// A tPlayer has disconnected from the net game, take whatever steps are
@@ -207,9 +218,9 @@ gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
 gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
 KillPlayerBullets (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 netPlayers.players [nPlayer].connected = 0;
-if (networkData.bVerifyPlayerJoined == nPlayer)
-	networkData.bVerifyPlayerJoined = -1;
-//      CreatePlayerAppearanceEffect (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject]);
+if (networkData.sync.nPlayer == nPlayer)
+	NetworkResetSyncStates ();
+// CreatePlayerAppearanceEffect (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject]);
 MultiMakePlayerGhost (nPlayer);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiDisconnect (nPlayer);
@@ -316,10 +327,12 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	return; 
 	}
 if (memcmp (&networkData.playerRejoining, their, sizeof (networkData.playerRejoining))) {
-	if (networkData.nSyncState)
+	if (networkData.sync.nState)
 		return;
-	if (!networkData.nSyncState && networkData.nSyncExtras && (networkData.bVerifyPlayerJoined != -1))
+#if 0		
+	if (!networkData.sync.nState && networkData.sync.nExtras && (networkData.sync.nPlayer != -1))
 		return;
+#endif
 	}
 else { //prevent flooding with connection attempts from the same player
 	int t;
@@ -328,14 +341,6 @@ else { //prevent flooding with connection attempts from the same player
 		return;
 	tLastJoined = t;
 	}
-#if 0
-if (networkData.nSyncState || networkData.nSyncExtras) {
-	// Ignore silently, we're already responding to someone and we can't
-	// do more than one person at a time.  If we don't dump them they will
-	// re-request in a few seconds.
-	return;
-}
-#endif
 if (their->player.connected != gameData.missions.nCurrentLevel) {
 #if 1      
 	con_printf (CONDBG, "Dumping tPlayer due to old level number.\n");
@@ -462,9 +467,9 @@ gameData.multiplayer.players [nPlayer].connected = 0;
 networkData.playerRejoining = *their;
 networkData.playerRejoining.player.connected = nPlayer;
 networkData.bSyncExtraGameInfo = 0;
-networkData.nSyncState = 1;
-networkData.nSentObjs = -1;
-networkData.nSyncExtras = 0;
+networkData.sync.nState = 1;
+networkData.sync.objs.nCurrent = -1;
+networkData.sync.nExtras = 0;
 networkData.toSyncFrame = 0;
 networkData.joinSeq = *their;
 tLastJoined = SDL_GetTicks ();

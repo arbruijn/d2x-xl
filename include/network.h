@@ -504,6 +504,7 @@ void DeleteTimedOutNetGames (void);
 void InitMonsterballSettings (tMonsterballInfo *monsterballP);
 void InitEntropySettings (int i);
 void NetworkSendExtraGameInfo (tSequencePacket *their);
+void NetworkResetSyncStates (void);
 char *iptos (char *pszIP, char *addr);
 
 #define DUMP_CLOSED     0 // no new players allowed after game started

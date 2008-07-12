@@ -267,7 +267,7 @@ int QuitJoiningHandler (ubyte *dataP, int nLength)
 if (networkData.nStatus == NETSTAT_STARTING)
 	NetworkRemovePlayer (THEIR);
 else if (networkData.nStatus == NETSTAT_PLAYING) {
-	if (networkData.nSyncState)
+	if (networkData.sync.nState)
 		NetworkStopResync (THEIR);
 	}
 return 1;

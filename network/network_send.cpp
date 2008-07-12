@@ -154,8 +154,8 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 			networkData.playerRejoining.player.network.ipx.server, 
 			networkData.playerRejoining.player.network.ipx.node, 
 			DUMP_ENDLEVEL);
-	networkData.nSyncState = 0; 
-	networkData.nSyncExtras = 0;
+	networkData.sync.nState = 0; 
+	networkData.sync.nExtras = 0;
 	return;
 	}
 if (networkData.bPlayerAdded) {
@@ -202,7 +202,7 @@ return;
 
 //------------------------------------------------------------------------------
 
-void ResendSyncDueToPacketLossForAllender ()
+void ResendSyncDueToPacketLoss (void)
 {
    int i, j;
 
@@ -562,9 +562,9 @@ Assert (i < MAX_NUM_NET_PLAYERS);
 networkData.mySeq.nType = PID_REQUEST;
 networkData.mySeq.player.connected = gameData.missions.nCurrentLevel;
 networkData.nJoinState = 0;
-networkData.nSyncFrame = 0;
+networkData.sync.objs.nFrame = 0;
 networkData.bHaveSync = 0;
-networkData.missingObjFrames.nFrame = 0;
+networkData.sync.objs.missingFrames.nFrame = 0;
 networkData.bTraceFrames = 1;
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	networkData.nSyncPlayer = i;
@@ -790,8 +790,8 @@ IPXSendInternetPacketData ((ubyte *)buf, count,
 void NetworkSendMissingObjFrames (void)
 {
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	networkData.missingObjFrames.pid = PID_MISSING_OBJ_FRAMES;
-	networkData.missingObjFrames.nPlayer = gameData.multiplayer.nLocalPlayer;
+	networkData.sync.objs.missingFrames.pid = PID_MISSING_OBJ_FRAMES;
+	networkData.sync.objs.missingFrames.nPlayer = gameData.multiplayer.nLocalPlayer;
 	SendInternetMissingObjFramesPacket (ipx_ServerAddress, ipx_ServerAddress + 4);
 	} 
 }

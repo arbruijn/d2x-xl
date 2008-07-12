@@ -103,7 +103,7 @@ void NetworkSendFlyThruTriggers (int nPlayer);
 void NetworkSendSmashedLights (int nPlayer); 
 void NetworkSendMarkers (void);
 void NetworkSendRejoinSync (int nPlayer);
-void ResendSyncDueToPacketLossForAllender (void);
+void ResendSyncDueToPacketLoss (void);
 void NetworkSendFlyThruTriggers (int nPlayer); 
 int NetworkSendGameListRequest (void);
 void NetworkSendAllInfoRequest (char nType, int nSecurity);
@@ -146,6 +146,22 @@ typedef struct tRefuseData {
 	fix	xTimeLimit;
 	} tRefuseData;
 
+typedef struct tSyncObjectsData {
+	int					nMode;
+	int					nCurrent;
+	int					nSent;
+	ushort				nFrame;
+	tMissingObjFrames	missingFrames;
+} tSyncObjectsData;
+
+typedef struct tNetworkSyncData {
+	int					nState;
+	short					nExtras;
+	int					nPlayer;
+	int					nExtrasPlayer; 
+	tSyncObjectsData	objs;
+} tNetworkSyncData;
+
 typedef struct tNetworkData {
 	int					nActiveGames;
 	int					nLastActiveGames;
@@ -162,14 +178,9 @@ typedef struct tNetworkData {
 	int					bAllowSocketChanges;
 	int					nSecurityFlag;
 	int					nSecurityNum;
-	int					bVerifyPlayerJoined;
-	int					nPlayerJoiningExtras; 
 	int					nJoinState;
 	int					bNewGame;       
-	int					bSendObjects; 
-	int					nSentObjs;   
 	int					bPlayerAdded;   
-	int					bSendObjectMode; 
 	int					bD2XData;
 	int					nSecurityCheck;
 	tSequencePacket	playerRejoining;
@@ -195,21 +206,17 @@ typedef struct tNetworkData {
 	fix					xPingReturnTime;
 	int					bShowPingStats;
 	int					tLastPingStat;
-	int					nSyncState;
-	int					nSyncObjs;
 	int					bHaveSync;
-	ushort				nSyncFrame;
 	short					nPrevFrame;
 	int					bTraceFrames;
 	int					bSyncMissingFrames;
 	int					bSyncExtraGameInfo;
-	short					nSyncExtras;
 	short					nSyncPlayer;
-	tMissingObjFrames	missingObjFrames;
 	tRefuseData			refuse;
 	time_t				toSyncFrame;
 	time_t				toSyncPoll;
 	time_t				toWaitAllPoll;
+	tNetworkSyncData	sync;
 } tNetworkData;
 
 extern tNetworkData networkData;

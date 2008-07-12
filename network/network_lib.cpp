@@ -277,13 +277,13 @@ int NetworkObjnumIsPast (int nObject)
 	int nPlayer = networkData.playerRejoining.player.connected;
 	int nObjMode = !((gameData.multigame.nObjOwner [nObject] == -1) || (gameData.multigame.nObjOwner [nObject] == nPlayer));
 
-if (!networkData.nSyncState)
+if (!networkData.sync.nState)
 	return 0; // We're not sending OBJECTS to a new tPlayer
-if (nObjMode > networkData.bSendObjectMode)
+if (nObjMode > networkData.sync.objs.nMode)
 	return 0;
-else if (nObjMode < networkData.bSendObjectMode)
+else if (nObjMode < networkData.sync.objs.nMode)
 	return 1;
-else if (nObject < networkData.nSentObjs)
+else if (nObject < networkData.sync.objs.nCurrent)
 	return 1;
 else
 	return 0;

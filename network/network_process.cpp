@@ -410,12 +410,12 @@ ReceiveMissingObjFramesPacket ((ubyte *) dataP, &missingObjFrames);
 if (!networkData.playerRejoining.player.connected)
 	networkData.playerRejoining.player.connected = missingObjFrames.nPlayer;
 if (missingObjFrames.nPlayer == networkData.playerRejoining.player.connected) {
-	networkData.missingObjFrames = missingObjFrames;
-	networkData.nSentObjs = -1;				
-	networkData.nSyncState = 3;
+	networkData.sync.objs.missingFrames = missingObjFrames;
+	networkData.sync.objs.nCurrent = -1;				
+	networkData.sync.nState = 3;
 	}
 else
-	networkData.missingObjFrames.nFrame = 0;
+	networkData.sync.objs.missingFrames.nFrame = 0;
 }
 
 //------------------------------------------------------------------------------

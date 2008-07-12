@@ -607,8 +607,8 @@ void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress)
 {
 	int	i;
 	
-memcpy (out_buffer, &networkData.missingObjFrames, sizeof (networkData.missingObjFrames));
-((tMissingObjFrames *) &out_buffer [0])->nFrame = INTEL_SHORT (networkData.missingObjFrames.nFrame);
+memcpy (out_buffer, &networkData.sync.objs.missingFrames, sizeof (networkData.sync.objs.missingFrames));
+((tMissingObjFrames *) &out_buffer [0])->nFrame = INTEL_SHORT (networkData.sync.objs.missingFrames.nFrame);
 i = 2 * sizeof (ubyte) + sizeof (ushort);
 if (netAddress != NULL)
 	IPXSendPacketData(out_buffer, i, server, node, netAddress);
@@ -623,8 +623,8 @@ void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *missingObjFrames)
 {
 	int	i;
 	
-memcpy (missingObjFrames, out_buffer, sizeof (networkData.missingObjFrames));
-missingObjFrames->nFrame = INTEL_SHORT (networkData.missingObjFrames.nFrame);
+memcpy (missingObjFrames, out_buffer, sizeof (networkData.sync.objs.missingFrames));
+missingObjFrames->nFrame = INTEL_SHORT (networkData.sync.objs.missingFrames.nFrame);
 }
 
 

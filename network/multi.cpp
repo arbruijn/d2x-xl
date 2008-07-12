@@ -1256,8 +1256,8 @@ Assert (nPlayer >= 0);
 Assert (nPlayer < gameData.multiplayer.nPlayers);
 #endif
 // If we are in the process of sending OBJECTS to a new tPlayer, reset that process
-if (networkData.bSendObjects)
-	networkData.nSentObjs = -1;
+if (networkData.sync.nState == 1)
+	networkData.sync.objs.nCurrent = -1;
 // Stuff the gameData.multiplayer.players structure to prepare for the explosion
 playerP = gameData.multiplayer.players + nPlayer;
 count = 2;
@@ -1410,8 +1410,8 @@ if (nLocalObj < 0)
 if ((OBJECTS [nLocalObj].nType != OBJ_POWERUP) && 
 	 (OBJECTS [nLocalObj].nType != OBJ_HOSTAGE))
 	return;
-if (networkData.bSendObjects && NetworkObjnumIsPast (nLocalObj))
-	networkData.nSentObjs = -1;
+if (networkData.sync.nState == 1 && NetworkObjnumIsPast (nLocalObj))
+	networkData.sync.objs.nCurrent = -1;
 if (OBJECTS [nLocalObj].nType == OBJ_POWERUP)
 	if (gameData.app.nGameMode & GM_NETWORK) {
 		id = OBJECTS [nLocalObj].id;
@@ -1620,8 +1620,8 @@ gameData.multigame.create.nLoc = 0;
 nMyObj = CallObjectCreateEgg (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, 1, OBJ_POWERUP, powerupType);
 if (nMyObj < 0)
 	return;
-if (networkData.bSendObjects && NetworkObjnumIsPast (nMyObj))
-	networkData.nSentObjs = -1;
+if (networkData.sync.nState == 1 && NetworkObjnumIsPast (nMyObj))
+	networkData.sync.objs.nCurrent = -1;
 OBJECTS [nMyObj].position.vPos = vNewPos;
 VmVecZero (&OBJECTS [nMyObj].mType.physInfo.velocity);
 RelinkObject (nMyObj, nSegment);
@@ -2011,8 +2011,8 @@ void MultiSendPlayerExplode (char nType)
 
 Assert ((nType == MULTI_PLAYER_DROP) || (nType == MULTI_PLAYER_EXPLODE));
 MultiSendPosition (LOCALPLAYER.nObject);
-if (networkData.bSendObjects)
-	networkData.nSentObjs = -1;
+if (networkData.sync.nState == 1)
+	networkData.sync.objs.nCurrent = -1;
 gameData.multigame.msg.buf [bufI++] = nType;
 gameData.multigame.msg.buf [bufI++] = gameData.multiplayer.nLocalPlayer;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryWeaponFlags);
@@ -2390,8 +2390,8 @@ nRemoteObj = ObjnumLocalToRemote ((short)nObject, &obj_owner);
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nRemoteObj); // Map to network objnums
 gameData.multigame.msg.buf [3] = obj_owner;
 MultiSendData (gameData.multigame.msg.buf, 4, 0);
-if (networkData.bSendObjects && NetworkObjnumIsPast (nObject))
-	networkData.nSentObjs = -1;
+if (networkData.sync.nState == 1 && NetworkObjnumIsPast (nObject))
+	networkData.sync.objs.nCurrent = -1;
 }
 
 //-----------------------------------------------------------------------------
@@ -2553,8 +2553,8 @@ memcpy (gameData.multigame.msg.buf + count, &swapped_vec, 12);
 count += 12;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 2);
-if (networkData.bSendObjects && NetworkObjnumIsPast (nObject))
-	networkData.nSentObjs = -1;
+if (networkData.sync.nState == 1 && NetworkObjnumIsPast (nObject))
+	networkData.sync.objs.nCurrent = -1;
 MapObjnumLocalToLocal (nObject);
 }
 
