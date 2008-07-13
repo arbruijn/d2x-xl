@@ -407,15 +407,12 @@ void NetworkProcessMissingObjFrames (char *dataP)
 	tMissingObjFrames	missingObjFrames;
 
 ReceiveMissingObjFramesPacket ((ubyte *) dataP, &missingObjFrames);
-if (!networkData.sync.player [1].player.connected)
-	networkData.sync.player [1].player.connected = missingObjFrames.nPlayer;
-if (missingObjFrames.nPlayer == networkData.sync.player [1].player.connected) {
-	networkData.sync.objs.missingFrames = missingObjFrames;
-	networkData.sync.objs.nCurrent = -1;				
-	networkData.sync.nState = 3;
+tNetworkSyncData *syncP = FindJoiningPlayer (missingObjFrames.nPlayer);
+if (syncP) {
+	syncP->objs.missingFrames = missingObjFrames;
+	syncP->objs.nCurrent = -1;				
+	syncP->nState = 3;
 	}
-else
-	networkData.sync.objs.missingFrames.nFrame = 0;
 }
 
 //------------------------------------------------------------------------------

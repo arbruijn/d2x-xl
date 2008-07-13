@@ -380,6 +380,16 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+tNetworkSyncData *FindJoiningPlayer (short nPlayer)
+{
+for (short i = 0; i < networkData.nJoining; i++)
+	if (networkData.sync [i].player [1].player.connected == nPlayer)
+		return networkData.sync + i;
+return NULL;
+}
+
+//------------------------------------------------------------------------------
+
 void DeleteSyncData (short nConnection)
 {
 if (nConnection < --networkData.nJoining)

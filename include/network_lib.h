@@ -43,97 +43,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void InitPacketHandlers (void);
-void LogExtraGameInfo (void);
-int NetworkCreateMonitorVector (void);
-
-int CmpNetPlayers (char *callsign1, char *callsign2, tNetworkInfo *network1, tNetworkInfo *network2);
-int CmpLocalPlayer (tNetworkInfo *pNetwork, char *pszNetCallSign, char *pszLocalCallSign);
-int NetworkWaitForPlayerInfo (void);
-void NetworkCountPowerupsInMine (void);
-int FindActiveNetGame (char *pszGameName, int nSecurity);
-void DeleteActiveNetGame (int i);
-int NetworkWhoIsMaster (void);
-void NetworkConsistencyError (void);
-void NetworkPing (ubyte flag, int nPlayer);
-void NetworkHandlePingReturn (ubyte nPlayer);
-void DoRefuseStuff (tSequencePacket *their);
-int GotTeamSpawnPos (void);
-int TeamSpawnPos (int i);
-int NetworkHowManyConnected (void);
-void NetworkAbortSync (void);
-int NetworkVerifyObjects (int nRemoteObjNum, int nLocalObjs);
-int NetworkVerifyPlayers (void);
-void NetworkRequestPlayerNames (int);
-
-void NetworkNewPlayer (tSequencePacket *their);
-int CanJoinNetgame (tNetgameInfo *game, tAllNetPlayersInfo *people);
-void NetworkWelcomePlayer (tSequencePacket *their);
-void NetworkNewPlayer (tSequencePacket *their);
-void NetworkAddPlayer (tSequencePacket *seqP);
-void NetworkTimeoutPlayer (int nPlayer);
-void NetworkDisconnectPlayer (int nPlayer);
-void NetworkRemovePlayer (tSequencePacket *seqP);
-void DoRefuseStuff (tSequencePacket *their);
-void NetworkDumpPlayer (ubyte * server, ubyte *node, int nReason);
-
-void NetworkReadSyncPacket (tNetgameInfo * sp, int rsinit);
-void NetworkReadObjectPacket (ubyte *dataP);
-void NetworkReadEndLevelPacket (ubyte *dataP);
-void NetworkReadEndLevelShortPacket (ubyte *dataP);
-void NetworkReadPDataPacket (tFrameInfo *pd);
-void NetworkReadPDataShortPacket (tFrameInfoShort *pd);
-void NetworkReadObjectPacket (ubyte *dataP);
-
-void NetworkProcessMonitorVector (int vector);
-void NetworkProcessGameInfo (ubyte *dataP);
-void NetworkProcessLiteInfo (ubyte *dataP);
-void NetworkProcessExtraGameInfo (ubyte *dataP);
-void NetworkProcessDump (tSequencePacket *their);
-void NetworkProcessRequest (tSequencePacket *their);
-void NetworkProcessPData (char *dataP);
-void NetworkProcessNakedPData (char *dataP, int len);
-void NetworkProcessNamesReturn (char *dataP);
-void NetworkProcessMissingObjFrames (char *dataP);
-void NetworkWaitForRequests (void);
-
-int NetworkProcessPacket (ubyte *dataP, int nLength);
-
-void NetworkSendDoorUpdates (int nPlayer);
-void NetworkSendPlayerFlags (void);
-void NetworkSendFlyThruTriggers (int nPlayer); 
-void NetworkSendSmashedLights (int nPlayer); 
-void NetworkSendMarkers (void);
-void NetworkSendRejoinSync (int nPlayer);
-void ResendSyncDueToPacketLoss (void);
-void NetworkSendFlyThruTriggers (int nPlayer); 
-int NetworkSendGameListRequest (void);
-void NetworkSendAllInfoRequest (char nType, int nSecurity);
-void NetworkSendEndLevelSub (int nPlayer);
-void NetworkSendEndLevelPacket (void);
-void NetworkSendEndLevelShortSub (int from_player_num, int to_player);
-void NetworkSendGameInfo (tSequencePacket *their);
-void NetworkSendExtraGameInfo (tSequencePacket *their);
-void NetworkSendLiteInfo (tSequencePacket *their);
-void NetworkSendNetgameUpdate (void);
-int NetworkSendRequest (void);
-void NetworkSendSync (void);
-void NetworkSendData (ubyte * ptr, int len, int urgent);
-void NetworkSendNakedPacket (char *buf, short len, int who);
-void NetworkSendPlayerNames (tSequencePacket *their);
-void NetworkSendMissingObjFrames (void);
-
-int NetworkWaitForSync (void);
-void NetworkDoSyncFrame (void);
-void NetworkStopResync (tSequencePacket *their);
-void NetworkUpdateNetGame (void);
-void NetworkDoBigWait (int choice);
-void NetworkSyncExtras (void);
-
-void InitAddressFilter (void);
-
-//------------------------------------------------------------------------------
-
 typedef struct tMissingObjFrames {
 	ubyte					pid;
 	ubyte					nPlayer;
@@ -243,6 +152,98 @@ extern tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 extern tExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
 extern tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
 extern tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
+
+//------------------------------------------------------------------------------
+
+void InitPacketHandlers (void);
+void LogExtraGameInfo (void);
+int NetworkCreateMonitorVector (void);
+
+int CmpNetPlayers (char *callsign1, char *callsign2, tNetworkInfo *network1, tNetworkInfo *network2);
+int CmpLocalPlayer (tNetworkInfo *pNetwork, char *pszNetCallSign, char *pszLocalCallSign);
+int NetworkWaitForPlayerInfo (void);
+void NetworkCountPowerupsInMine (void);
+int FindActiveNetGame (char *pszGameName, int nSecurity);
+void DeleteActiveNetGame (int i);
+int NetworkWhoIsMaster (void);
+void NetworkConsistencyError (void);
+void NetworkPing (ubyte flag, int nPlayer);
+void NetworkHandlePingReturn (ubyte nPlayer);
+void DoRefuseStuff (tSequencePacket *their);
+int GotTeamSpawnPos (void);
+int TeamSpawnPos (int i);
+int NetworkHowManyConnected (void);
+void NetworkAbortSync (void);
+int NetworkVerifyObjects (int nRemoteObjNum, int nLocalObjs);
+int NetworkVerifyPlayers (void);
+void NetworkRequestPlayerNames (int);
+
+void NetworkNewPlayer (tSequencePacket *their);
+int CanJoinNetgame (tNetgameInfo *game, tAllNetPlayersInfo *people);
+void NetworkWelcomePlayer (tSequencePacket *their);
+void NetworkNewPlayer (tSequencePacket *their);
+void NetworkAddPlayer (tSequencePacket *seqP);
+void NetworkTimeoutPlayer (int nPlayer);
+void NetworkDisconnectPlayer (int nPlayer);
+void NetworkRemovePlayer (tSequencePacket *seqP);
+void DoRefuseStuff (tSequencePacket *their);
+void NetworkDumpPlayer (ubyte * server, ubyte *node, int nReason);
+
+void NetworkReadSyncPacket (tNetgameInfo * sp, int rsinit);
+void NetworkReadObjectPacket (ubyte *dataP);
+void NetworkReadEndLevelPacket (ubyte *dataP);
+void NetworkReadEndLevelShortPacket (ubyte *dataP);
+void NetworkReadPDataPacket (tFrameInfo *pd);
+void NetworkReadPDataShortPacket (tFrameInfoShort *pd);
+void NetworkReadObjectPacket (ubyte *dataP);
+
+void NetworkProcessMonitorVector (int vector);
+void NetworkProcessGameInfo (ubyte *dataP);
+void NetworkProcessLiteInfo (ubyte *dataP);
+void NetworkProcessExtraGameInfo (ubyte *dataP);
+void NetworkProcessDump (tSequencePacket *their);
+void NetworkProcessRequest (tSequencePacket *their);
+void NetworkProcessPData (char *dataP);
+void NetworkProcessNakedPData (char *dataP, int len);
+void NetworkProcessNamesReturn (char *dataP);
+void NetworkProcessMissingObjFrames (char *dataP);
+void NetworkWaitForRequests (void);
+
+int NetworkProcessPacket (ubyte *dataP, int nLength);
+
+void NetworkSendDoorUpdates (int nPlayer);
+void NetworkSendPlayerFlags (void);
+void NetworkSendFlyThruTriggers (int nPlayer); 
+void NetworkSendSmashedLights (int nPlayer); 
+void NetworkSendMarkers (void);
+void NetworkSendRejoinSync (int nPlayer, tNetworkSyncData *syncP);
+void ResendSyncDueToPacketLoss (void);
+void NetworkSendFlyThruTriggers (int nPlayer); 
+int NetworkSendGameListRequest (void);
+void NetworkSendAllInfoRequest (char nType, int nSecurity);
+void NetworkSendEndLevelSub (int nPlayer);
+void NetworkSendEndLevelPacket (void);
+void NetworkSendEndLevelShortSub (int from_player_num, int to_player);
+void NetworkSendGameInfo (tSequencePacket *their);
+void NetworkSendExtraGameInfo (tSequencePacket *their);
+void NetworkSendLiteInfo (tSequencePacket *their);
+void NetworkSendNetgameUpdate (void);
+int NetworkSendRequest (void);
+void NetworkSendSync (void);
+void NetworkSendData (ubyte * ptr, int len, int urgent);
+void NetworkSendNakedPacket (char *buf, short len, int who);
+void NetworkSendPlayerNames (tSequencePacket *their);
+void NetworkSendMissingObjFrames (void);
+
+int NetworkWaitForSync (void);
+void NetworkDoSyncFrame (void);
+void NetworkStopResync (tSequencePacket *their);
+void NetworkUpdateNetGame (void);
+void NetworkDoBigWait (int choice);
+void NetworkSyncExtras (void);
+tNetworkSyncData *FindJoiningPlayer (short nPlayer);
+
+void InitAddressFilter (void);
 
 //------------------------------------------------------------------------------
 

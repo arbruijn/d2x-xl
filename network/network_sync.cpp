@@ -263,7 +263,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 										syncP->player [1].player.network.ipx.server, 
 										syncP->player [1].player.network.ipx.node);
 // Send sync packet which tells the tPlayer who he is and to start!
-NetworkSendRejoinSync (nPlayer);
+NetworkSendRejoinSync (nPlayer, syncP);
 
 // Turn off send tObject mode
 syncP->objs.nCurrent = -1;
