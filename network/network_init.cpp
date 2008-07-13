@@ -124,9 +124,7 @@ networkData.nSecurityNum = 0;
 NetworkResetSyncStates ();
 networkData.nJoinState = 0;					// Did WE rejoin this game?
 networkData.bNewGame = 0;					// Is this the first level of a new game?
-networkData.sync.nState = 0;				// Are we in the process of sending OBJECTS to a tPlayer?
 networkData.bPlayerAdded = 0;				// Is this a new tPlayer or a returning tPlayer?
-networkData.sync.objs.nMode = 0;			// What nType of OBJECTS are we sending, static or dynamic?
 networkData.bPacketUrgent = 0;
 networkData.nGameType = 0;
 networkData.nTotalMissedPackets = 0;

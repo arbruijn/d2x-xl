@@ -240,7 +240,7 @@ void NetworkDoSyncFrame (void);
 void NetworkStopResync (tSequencePacket *their);
 void NetworkUpdateNetGame (void);
 void NetworkDoBigWait (int choice);
-void NetworkSyncExtras (void);
+void NetworkSyncExtras (tNetworkSyncData *syncP);
 tNetworkSyncData *FindJoiningPlayer (short nPlayer);
 int NetworkObjnumIsPast(int nObject, tNetworkSyncData *syncP);
 

@@ -293,14 +293,22 @@ fclose (SendLogFile);
 	fclose (ReceiveLogFile);
 #endif
 if ((NetworkIAmMaster ())) {
-	while (networkData.sync.nExtras && (networkData.sync.nExtrasPlayer != -1))
-		NetworkSyncExtras ();
+	bool bSyncExtras = true;
+
+	while (bSyncExtras) {
+		bSyncExtras = false;
+		for (short i = 0; i < networkData.nJoining; i++)
+			if (networkData.sync [i].nExtras && (networkData.sync [i].nExtrasPlayer != -1)) {
+				NetworkSyncExtras (networkData.sync + i);
+				bSyncExtras  = true;
+				}
+		}
 
 	netGame.nNumPlayers = 0;
-	nsave=gameData.multiplayer.nPlayers;
-	gameData.multiplayer.nPlayers=0;
+	nsave = gameData.multiplayer.nPlayers;
+	gameData.multiplayer.nPlayers = 0;
 	NetworkSendGameInfo (NULL);
-	gameData.multiplayer.nPlayers=nsave;
+	gameData.multiplayer.nPlayers = nsave;
 	}
 LOCALPLAYER.connected = 0;
 NetworkSendEndLevelPacket ();
@@ -358,7 +366,7 @@ int NetworkListen (void)
 CleanUploadDests ();
 if (NetworkIAmMaster ())
 	AddServerToTracker ();
-if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.bShortPackets && !networkData.sync.nState)
+if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.bShortPackets && !networkData.nJoining)
 	nMaxLoops = gameData.multiplayer.nPlayers * PacketsPerSec ();
 
 if (gameStates.multi.nGameType >= IPX_GAME)
