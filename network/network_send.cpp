@@ -369,13 +369,13 @@ void NetworkSendGameInfo (tSequencePacket *their)
 {
 	// Send game info to someone who requested it
 
-	char oldType, old_status;
+	char oldType, oldStatus;
    fix timevar;
    int i;
 
 NetworkUpdateNetGame (); // Update the values in the netgame struct
 oldType = netGame.nType;
-old_status = netGame.gameStatus;
+oldStatus = netGame.gameStatus;
 netGame.nType = PID_GAME_INFO;
 netPlayers.nType = PID_PLAYERSINFO;
 netPlayers.nSecurity = netGame.nSecurity;
@@ -404,7 +404,7 @@ else if (gameStates.multi.nGameType >= IPX_GAME) {
 		their->player.network.ipx.node);
 	}
 netGame.nType = oldType;
-netGame.gameStatus = old_status;
+netGame.gameStatus = oldStatus;
 //	if ((gameData.app.nGameMode & GM_ENTROPY) || extraGameInfo [0].bEnhancedCTF)
 //make half-way sure the client gets this data ...
 NetworkSendExtraGameInfo (their);
@@ -466,11 +466,11 @@ SetMonsterballForces ();
 void NetworkSendLiteInfo (tSequencePacket *their)
 {
 	// Send game info to someone who requested it
-	char oldType, old_status, oldstatus;
+	char oldType, oldStatus, oldstatus;
 
 NetworkUpdateNetGame (); // Update the values in the netgame struct
 oldType = netGame.nType;
-old_status = netGame.gameStatus;
+oldStatus = netGame.gameStatus;
 netGame.nType = PID_LITE_INFO;
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	netGame.gameStatus = NETSTAT_ENDLEVEL;
@@ -513,7 +513,7 @@ if (HoardEquipped ()) {
 		}
 	}
 netGame.nType = oldType;
-netGame.gameStatus = old_status;
+netGame.gameStatus = oldStatus;
 NetworkSendExtraGameInfo (their);
 }       
 
@@ -522,12 +522,12 @@ NetworkSendExtraGameInfo (their);
 /* Send game info to all players in this game */
 void NetworkSendNetgameUpdate (void)
 {
-	char	oldType, old_status, szIP [30];
+	char	oldType, oldStatus, szIP [30];
 	int	i;
 
 NetworkUpdateNetGame (); // Update the values in the netgame struct
 oldType = netGame.nType;
-old_status = netGame.gameStatus;
+oldStatus = netGame.gameStatus;
 netGame.nType = PID_GAME_UPDATE;
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	netGame.gameStatus = NETSTAT_ENDLEVEL;
@@ -545,7 +545,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		}
 	}
 netGame.nType = oldType;
-netGame.gameStatus = old_status;
+netGame.gameStatus = oldStatus;
 }       
 			  
 //------------------------------------------------------------------------------

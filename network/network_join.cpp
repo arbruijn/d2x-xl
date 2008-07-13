@@ -437,7 +437,7 @@ if (nConnection < 0) {
 else { //prevent flooding with connection attempts from the same player
 	syncP = networkData.sync + nConnection;
 	if (gameStates.app.nSDLTicks - syncP->tLastJoined < 3000)
-		return false;
+		return NULL;
 	syncP->tLastJoined = gameStates.app.nSDLTicks;
 	}
 return syncP;
@@ -488,8 +488,10 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	}
 if (0 > (nPlayer = FindNetworkPlayer (player, newAddress))) {
 	// Player is new to this game
-	if (0 > (nPlayer = FindPlayerSlot (player)))
+	if (0 > (nPlayer = FindPlayerSlot (player))) {
+		DeleteSyncData (syncP - networkData.sync);
 		return;
+		}
 	}
 else {
 	// Player is reconnecting

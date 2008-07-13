@@ -343,8 +343,9 @@ else if (syncP->nState == 3) {
 else if (syncP->nState == 4) {
 	if (syncP->nExtras) {
 		NetworkSyncExtras (syncP);
-		if ((syncP->bExtraGameInfo = (syncP->nExtras == 0)))
+		if ((syncP->bExtraGameInfo = (syncP->nExtras == 0))) {
 			DeleteSyncData (syncP - networkData.sync);
+			}
 		}
 	}
 }
@@ -445,9 +446,8 @@ if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit
 	return;
 	}
 #if 1 //ndef _DEBUG
-if (nPackets || (networkData.nJoinState >= 4)) {
-	if (networkData.nJoinState)
-		ResetSyncTimeout ();
+if (nPackets || (networkData.nStatus == NETSTAT_PLAYING)) {
+	ResetSyncTimeout ();
 	return;
 	}
 #endif
@@ -598,9 +598,8 @@ if (networkData.nStatus == NETSTAT_PLAYING) {
 	Int3 (); //MY GOD! Get Jason...this is the source of many problems
 	return 0;
 	}
-xTimeout = TimerGetApproxSeconds () * F1_0 * 5;
-while (networkData.bWaitingForPlayerInfo && (retries < 50) && 
-	    (TimerGetApproxSeconds () < xTimeout)) {
+xTimeout = SDL_GetTicks () + 5000;
+while (networkData.bWaitingForPlayerInfo && (retries < 50) && (SDL_GetTicks () < xTimeout)) {
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		size = IpxGetPacketData (packet);
 		id = packet [0];
@@ -627,7 +626,7 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) &&
 			}
 		else {
 			networkData.nSecurityNum = tempPlayerP->nSecurity;
-			networkData.nSecurityFlag=NETSECURITY_WAIT_FOR_GAMEINFO;
+			networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_GAMEINFO;
 			memcpy (&tmpPlayersBase, (ubyte *)tempPlayerP, sizeof (tAllNetPlayersInfo));
 			tmpPlayersInfo = &tmpPlayersBase;
 			networkData.bWaitingForPlayerInfo = 0;
