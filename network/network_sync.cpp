@@ -101,20 +101,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void NetworkStopResync (tSequencePacket *their)
 {
-	tNetworkSyncData	*syncP = networkData.sync;
-
-for (short i = 0; i < networkData.nJoining; i++, syncP++)
-	if (!CmpNetPlayers (syncP->player [1].player.callsign, their->player.callsign, 
-							  &syncP->player [1].player.network, &their->player.network)) {
+for (short i = 0; i < networkData.nJoining; )
+	if (!CmpNetPlayers (networkData.sync [i].player [1].player.callsign, their->player.callsign, 
+							  &networkData.sync [i].player [1].player.network, &their->player.network)) {
 #if 1      
 		con_printf (CONDBG, "Aborting resync for tPlayer %s.\n", their->player.callsign);
 #endif
-		syncP->nState = 0;
-		syncP->nExtras = 0;
-		networkData.nJoinState = 0;
-		syncP->nExtrasPlayer = -1;
-		syncP->objs.nCurrent = -1;
+		DeleteSyncData (i);
 		}
+	else
+		i++;
 }
 
 //------------------------------------------------------------------------------

@@ -354,7 +354,6 @@ void NetworkSendEndLevelPacket();
 
 int network_delete_extraObjects();
 int network_find_max_net_players();
-int NetworkObjnumIsPast(int nObject);
 char * NetworkGetPlayerName(int nObject);
 void NetworkSendEndLevelSub(int player_num);
 void NetworkDisconnectPlayer(int playernum);

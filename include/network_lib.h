@@ -242,6 +242,7 @@ void NetworkUpdateNetGame (void);
 void NetworkDoBigWait (int choice);
 void NetworkSyncExtras (void);
 tNetworkSyncData *FindJoiningPlayer (short nPlayer);
+int NetworkObjnumIsPast(int nObject, tNetworkSyncData *syncP);
 
 void InitAddressFilter (void);
 

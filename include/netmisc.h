@@ -144,9 +144,9 @@ void BESwapObject (tObject *obj);
 #define SendMissingObjFramesPacket(server, node, netAddress) \
 	IPXSendPacketData((ubyte *) &networkData.sync.objs.missingFrames, sizeof(tMissingObjFrames), server, node, netAddress)
 #define SendInternetMissingObjFramesPacket(server, node) \
-	IPXSendInternetPacketData((ubyte *) &networkData.sync.objs.missingFrames, sizeof(tMissingObjFrames), server, node)
+	IPXSendInternetPacketData((ubyte *) &networkData.sync [0].objs.missingFrames, sizeof(tMissingObjFrames), server, node)
 #define SendBroadcastMissingObjFramesPacket() \
-	IPXSendBroadcastData((ubyte *) &networkData.sync.objs.missingFrames, sizeof(tMissingObjFrames))
+	IPXSendBroadcastData((ubyte *) &networkData.sync [0].objs.missingFrames, sizeof(tMissingObjFrames))
 #define ReceiveMissingObjFramesPacket(data, _missingObjFrames) \
 	memcpy((ubyte *)(_missingObjFrames), data, sizeof(tMissingObjFrames))
 

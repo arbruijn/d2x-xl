@@ -202,7 +202,7 @@ networkData.nJoining = 0;
 void NetworkResetObjSync (short nObject)
 {
 for (short i = 0; i < networkData.nJoining; i++)
-	if ((networkData.sync [i].nState == 1) && ((nObject < 0) || NetworkObjnumIsPast (nObject)))
+	if ((networkData.sync [i].nState == 1) && ((nObject < 0) || NetworkObjnumIsPast (nObject, networkData.sync + i)))
 		networkData.sync [i].objs.nCurrent = -1;
 }
 

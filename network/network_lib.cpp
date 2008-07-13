@@ -270,20 +270,20 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int NetworkObjnumIsPast (int nObject)
+int NetworkObjnumIsPast (int nObject, tNetworkSyncData *syncP)
 {
 	// determine whether or not a given tObject number has already been sent
 	// to a re-joining player.
-	int nPlayer = networkData.sync.player [1].player.connected;
+	int nPlayer = syncP->player [1].player.connected;
 	int nObjMode = !((gameData.multigame.nObjOwner [nObject] == -1) || (gameData.multigame.nObjOwner [nObject] == nPlayer));
 
-if (!networkData.sync.nState)
+if (!syncP->nState)
 	return 0; // We're not sending OBJECTS to a new tPlayer
-if (nObjMode > networkData.sync.objs.nMode)
+if (nObjMode > syncP->objs.nMode)
 	return 0;
-else if (nObjMode < networkData.sync.objs.nMode)
+else if (nObjMode < syncP->objs.nMode)
 	return 1;
-else if (nObject < networkData.sync.objs.nCurrent)
+else if (nObject < syncP->objs.nCurrent)
 	return 1;
 else
 	return 0;
