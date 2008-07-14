@@ -578,7 +578,7 @@ void DoParticleTrail (tObject *objP)
 	vmsVector	pos;
 	tRgbaColorf	c;
 
-if (!SHOW_OBJ_FX && (bGatling ? EGI_FLAG (bGatlingTrails, 1, 1, 0) : EGI_FLAG (bLightTrails, 1, 1, 0)))
+if (!(SHOW_OBJ_FX && (bGatling ? EGI_FLAG (bGatlingTrails, 1, 1, 0) : EGI_FLAG (bLightTrails, 1, 1, 0))))
 	return;
 i = OBJ_IDX (objP);
 if (!(bGatling || gameOpts->render.smoke.bPlasmaTrails)) {

@@ -317,7 +317,7 @@ void NetworkSyncConnection (tNetworkSyncData *syncP)
 
 if (t < syncP->timeout)
 	return;
-syncP->timeout = t + (/*(gameStates.multi.nGameType == UDP_GAME) ? 200 :*/ 1000 / PacketsPerSec ());
+syncP->timeout = t + (/*(gameStates.multi.nGameType == UDP_GAME) ? 200 :*/ 2000 / PacketsPerSec ());
 if (syncP->bExtraGameInfo) {
 	NetworkSendExtraGameInfo (&syncP->player [0]);
 	syncP->bExtraGameInfo = 0;
@@ -580,7 +580,7 @@ int NetworkWaitForPlayerInfo (void)
 	int						size = 0, retries = 0;
 	ubyte						packet [MAX_PACKETSIZE];
 	tAllNetPlayersInfo	*tempPlayerP;
-	fix						xTimeout;
+	unsigned int			xTimeout;
 	ubyte id = 0;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)

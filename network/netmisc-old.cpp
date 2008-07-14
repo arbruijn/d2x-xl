@@ -623,8 +623,8 @@ void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *missingObjFrames)
 {
 	int	i;
 	
-memcpy (missingObjFrames, out_buffer, sizeof (networkData.sync.objs.missingFrames));
-missingObjFrames->nFrame = INTEL_SHORT (networkData.sync.objs.missingFrames.nFrame);
+memcpy (missingObjFrames, out_buffer, sizeof (tMissingObjFrames));
+missingObjFrames->nFrame = INTEL_SHORT (missingObjFrames->nFrame);
 }
 
 
