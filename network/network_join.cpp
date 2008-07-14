@@ -436,7 +436,7 @@ if (nConnection < 0) {
 	}
 else { //prevent flooding with connection attempts from the same player
 	syncP = networkData.sync + nConnection;
-	if (gameStates.app.nSDLTicks - syncP->tLastJoined < 3000)
+	if (gameStates.app.nSDLTicks - syncP->tLastJoined < 2100)
 		return NULL;
 	syncP->tLastJoined = gameStates.app.nSDLTicks;
 	}
