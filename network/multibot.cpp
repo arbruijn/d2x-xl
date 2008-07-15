@@ -26,6 +26,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "timer.h"
 #include "text.h"
+#include "gauges.h"
+#include "dropobject.h"
 #include "fireball.h"
 #include "physics.h" 
 #include "byteswap.h"
