@@ -20,35 +20,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 
 #include "inferno.h"
-#include "vecmat.h"
 #include "multibot.h"
-#include "game.h"
-#include "modem.h"
 #include "network.h"
 #include "network_lib.h"
-#include "multi.h"
-#include "laser.h"
 #include "error.h"
-#include "mono.h"
 #include "timer.h"
 #include "text.h"
-#include "ai.h"
 #include "fireball.h"
-#include "aistruct.h"
-#include "robot.h"
-#include "fuelcen.h"
-#include "powerup.h"
-#include "scores.h"
-#include "gauges.h"
-#include "fuelcen.h"
-#include "morph.h"
-#include "digi.h"
-#include "sounds.h"
-#include "effects.h"
 #include "physics.h" 
 #include "byteswap.h"
 #include "gameseg.h"
-#include "dropobject.h"
 
 int MultiAddControlledRobot (int nObject, int agitation);
 void MultiSendReleaseRobot (int nObject);
@@ -64,11 +45,8 @@ void MultiSendRobotPositionSub (int nObject);
 #define ROBOT_TIMEOUT			(F1_0*2)
 
 #define MIN_TO_ADD				60
-#define MAX_TO_DELETE			61
 
 #define MAX_ROBOT_POWERUPS		4
-
-#define MIN_ROBOT_COM_GAP		(F1_0/12)
 
 #define MULTI_ROBOT_PRIORITY(nObject, nPlayer) (((nObject % 4) + nPlayer) % gameData.multiplayer.nPlayers)
 

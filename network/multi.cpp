@@ -24,64 +24,31 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "u_mem.h"
 #include "strutil.h"
-#include "game.h"
-#include "modem.h"
 #include "network.h"
 #include "network_lib.h"
-#include "ogl_lib.h"
-#include "object.h"
 #include "objsmoke.h"
-#include "laser.h"
-#include "fuelcen.h"
-#include "scores.h"
 #include "gauges.h"
 #include "collide.h"
 #include "error.h"
 #include "fireball.h"
 #include "objeffects.h"
-#include "newmenu.h"
-#include "mono.h"
 #include "gamesave.h"
-#include "wall.h"
-#include "reactor.h"
-#include "powerup.h"
-#include "polyobj.h"
-#include "bm.h"
 #include "endlevel.h"
-#include "key.h"
 #include "playsave.h"
 #include "timer.h"
-#include "digi.h"
-#include "sounds.h"
-#include "kconfig.h"
 #include "newdemo.h"
 #include "text.h"
 #include "highscores.h"
 #include "multibot.h"
-#include "loadgame.h"
 #include "gameseg.h"
 #include "physics.h"
-#include "config.h"
 #include "state.h"
-#include "ai.h"
-#include "switch.h"
-#include "textures.h"
 #include "byteswap.h"
-#include "sounds.h"
-#include "args.h"
-#include "cfile.h"
-#include "effects.h"
-#include "automap.h"
-#include "hudmsg.h"
-#include "gamepal.h"
-#include "banlist.h"
 #include "render.h"
 #include "multimsg.h"
-#include "dropobject.h"
 #include "entropy.h"
 #include "monsterball.h"
 #include "dropobject.h"
-#include "multi.h"
 
 typedef void tMultiHandler (char *);
 typedef tMultiHandler *pMultiHandler;
@@ -97,7 +64,6 @@ void MultiAddLifetimeKills ();
 void MultiSendPlayByPlay (int num, int spnum, int dpnum);
 void MultiSendHeartBeat ();
 void MultiCapObjects ();
-void MultiAdjustRemoteCap (int nPlayer);
 void MultiSaveGame (ubyte slot, uint id, char *desc);
 void MultiRestoreGame (ubyte slot, uint id);
 void MultiSetRobotAI (void);
@@ -809,7 +775,6 @@ while (changed) {
 
 //-----------------------------------------------------------------------------
 
-extern tObject *objP_find_first_ofType (int);
 char bMultiSuicide = 0;
 
 void MultiComputeKill (int nKiller, int nKilled)
@@ -3400,8 +3365,6 @@ for (i = 0; i < MAX_STOLEN_ITEMS; i++)
 }
 
 //-----------------------------------------------------------------------------
-
-extern void network_send_important_packet (char *, int);
 
 void MultiSendWallStatus (int wallnum, ubyte nType, ubyte flags, ubyte state)
 {
