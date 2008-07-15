@@ -1,4 +1,3 @@
-/* $Id: ai.c,v 1.7 2003/10/04 02:58:23 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -755,7 +754,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(RELEASE)
 typedef int (__fastcall * pAIHandler) (tObject *objP, tAIStateInfo *);
 #else
 typedef int (* pAIHandler) (tObject *objP, tAIStateInfo *);

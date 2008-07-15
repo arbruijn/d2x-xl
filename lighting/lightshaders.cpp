@@ -13,9 +13,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef HAVE_CONFIG_H
 #	include <conf.h>
 #endif
-#ifdef RCS
-static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
-#endif
+
 #include <math.h>
 #include <stdio.h>
 #include <string.h>	// for memset ()

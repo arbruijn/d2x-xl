@@ -16,10 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef RCS
-char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

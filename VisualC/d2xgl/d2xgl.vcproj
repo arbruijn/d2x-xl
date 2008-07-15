@@ -69,7 +69,7 @@
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
-				CallingConvention="1"
+				CallingConvention="0"
 				CompileAs="0"
 			/>
 			<Tool
@@ -2382,11 +2382,11 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\..\main\ai.h"
+						RelativePath="..\..\include\ai.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\aistruct.h"
+						RelativePath="..\..\include\aistruct.h"
 						>
 					</File>
 				</Filter>
@@ -2786,15 +2786,15 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\arch\win32\ipx_drv.h"
+						RelativePath="..\..\network\include\win32\ipx_drv.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\arch\win32\include\ipx_mcast4.h"
+						RelativePath="..\..\network\include\win32\ipx_mcast4.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\arch\win32\include\ipx_udp.h"
+						RelativePath="..\..\network\include\win32\ipx_udp.h"
 						>
 					</File>
 					<File
@@ -2914,10 +2914,6 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\..\main\automap.h"
-						>
-					</File>
-					<File
 						RelativePath="..\..\include\cameras.h"
 						>
 					</File>
@@ -2926,7 +2922,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\gamepal.h"
+						RelativePath="..\..\include\gamepal.h"
 						>
 					</File>
 					<File
@@ -2942,15 +2938,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\include\objsmoke.h"
-						>
-					</File>
-					<File
 						RelativePath="..\..\include\polyobj.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\radar.h"
+						RelativePath="..\..\include\radar.h"
 						>
 					</File>
 					<File
@@ -2962,7 +2954,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\rendershadows.h"
+						RelativePath="..\..\include\rendershadows.h"
 						>
 					</File>
 					<File
@@ -3014,7 +3006,7 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\..\main\fireball.h"
+						RelativePath="..\..\include\fireball.h"
 						>
 					</File>
 					<File
@@ -3022,7 +3014,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\objsmoke.h"
+						RelativePath="..\..\include\objsmoke.h"
 						>
 					</File>
 					<File
@@ -3030,7 +3022,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\perlin.h"
+						RelativePath="..\..\include\perlin.h"
 						>
 					</File>
 				</Filter>
@@ -3474,15 +3466,15 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\..\main\ase.h"
+						RelativePath="..\..\include\ase.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\hiresmodels.h"
+						RelativePath="..\..\include\hiresmodels.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\oof.h"
+						RelativePath="..\..\include\oof.h"
 						>
 					</File>
 				</Filter>
@@ -3538,11 +3530,11 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\..\main\entropy.h"
+						RelativePath="..\..\include\entropy.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\monsterball.h"
+						RelativePath="..\..\include\monsterball.h"
 						>
 					</File>
 				</Filter>
@@ -3670,11 +3662,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\songs.h"
+						RelativePath="..\..\include\songs.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\sounds.h"
+						RelativePath="..\..\include\sounds.h"
 						>
 					</File>
 					<File
@@ -4394,15 +4386,15 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\hud_defs.h"
+						RelativePath="..\..\include\hud_defs.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\hudicons.h"
+						RelativePath="..\..\include\hudicons.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\hudmsg.h"
+						RelativePath="..\..\include\hudmsg.h"
 						>
 					</File>
 				</Filter>
@@ -4573,11 +4565,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
@@ -4588,10 +4580,6 @@
 		<Filter
 			Name="Header Files"
 			>
-			<File
-				RelativePath="..\..\include\ase.h"
-				>
-			</File>
 			<File
 				RelativePath="..\..\include\automap.h"
 				>
@@ -4618,10 +4606,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\fvi_a.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\gamepal.h"
 				>
 			</File>
 			<File

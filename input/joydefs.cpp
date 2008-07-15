@@ -1,4 +1,3 @@
-/* $Id: joydefs.c,v 1.7 2003/10/08 19:18:46 btb Exp $ */
 /*
  *
  * SDL joystick support

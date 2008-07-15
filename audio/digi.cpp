@@ -1,4 +1,3 @@
-/* $Id: digi.c,v 1.21 2004/11/29 08:01:47 btb Exp $ */
 /*
  *
  * SDL digital audio support

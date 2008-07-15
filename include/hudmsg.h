@@ -1,5 +1,3 @@
-/* $Id: hudmsg.h,v 1.2 2003/10/10 09:36:35 btb Exp $ */
-
 /*
  *
  * d1x style hud - not implemented yet

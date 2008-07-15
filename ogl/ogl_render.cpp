@@ -1,4 +1,3 @@
-/* $Id: ogl.c, v 1.14 204/05/11 23:15:55 btb Exp $ */
 /*
  *
  * Graphics support functions for OpenGL.

@@ -1,4 +1,3 @@
-/* $Id: key.c,v 1.3 2003/02/27 22:07:21 btb Exp $ */
 /*
  *
  * SDL tKeyboard input support

@@ -1,4 +1,3 @@
-/* $Id: console.c,v 1.18 2003/11/26 12:39:00 btb Exp $ */
 /*
  *
  * Code for controlling the console

@@ -1,4 +1,3 @@
-/* $Id: error.c,v 1.6 2003/04/08 00:59:17 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -14,10 +13,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
-#endif
-
-#ifdef RCS
-static char rcsid[] = "$Id: error.c,v 1.6 2003/04/08 00:59:17 btb Exp $";
 #endif
 
 #include <stdio.h>

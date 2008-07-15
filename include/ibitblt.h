@@ -1,4 +1,3 @@
-/* $Id: ibitblt.h,v 1.2 2002/09/04 22:27:54 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -11,22 +10,6 @@ CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
-
-/*
- *
- * Prototypes for the ibitblt functions.
- *
- * Old Log:
- * Revision 1.1  1995/08/18  15:50:57  allender
- * Initial revision
- *
- * Revision 1.2  1994/05/31  11:10:56  john
- * *** empty log message ***
- *
- * Revision 1.1  1994/05/30  16:08:46  john
- * Initial revision
- *
- */
 
 #ifndef _IBITBLT_H
 #define _IBITBLT_H

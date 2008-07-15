@@ -2,10 +2,6 @@
 #	include <conf.h>
 #endif
 
-#ifdef RCS
-static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
-#endif
-
 #define PATCH12
 
 #include <stdio.h>
@@ -23,6 +19,7 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "timer.h"
 #include "mono.h"
 #include "ipx.h"
+#include "ipx_udp.h"
 #include "newmenu.h"
 #include "key.h"
 #include "gauges.h"

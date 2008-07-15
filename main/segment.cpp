@@ -7,10 +7,6 @@
 #include "u_mem.h"
 #include "error.h"
 
-#ifdef RCS
-static char rcsid[] = "$Id: tSegment.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
-#endif
-
 #if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 
 //------------------------------------------------------------------------------

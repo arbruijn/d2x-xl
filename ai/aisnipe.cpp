@@ -1,4 +1,3 @@
-/* $Id: ai.c,v 1.7 2003/10/04 02:58:23 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -176,7 +175,7 @@ else {
 
 //	-------------------------------------------------------------------------------------------------
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(RELEASE)
 typedef void __fastcall tAISnipeHandler (tObject *, tAILocal *);
 #else
 typedef void tAISnipeHandler (tObject *, tAILocal *);

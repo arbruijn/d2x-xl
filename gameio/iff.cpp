@@ -16,10 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef RCS
-static char rcsid[] = "$Id: iff.c,v 1.7 2003/10/04 03:14:47 btb Exp $";
-#endif
-
 #define COMPRESS		1	//do the RLE or not? (for debugging mostly)
 #define WRITE_TINY	0	//should we write a TINY chunk?
 

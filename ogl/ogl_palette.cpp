@@ -1,4 +1,3 @@
-/* $Id: gr.c,v 1.16 2003/11/27 04:59:49 btb Exp $ */
 /*
  *
  * OGL video functions. - Added 9/15/99 Matthew Mueller

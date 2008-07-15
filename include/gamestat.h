@@ -1,10 +1,3 @@
-/* $Id: gamestat.h,v 1.2 2003/10/10 09:36:35 btb Exp $ */
-/*
- *
- * Game Status Definitions
- *
- */
-
 #ifndef _GAMESTAT_H
 #define _GAMESTAT_H
 

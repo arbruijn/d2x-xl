@@ -1,4 +1,3 @@
-/* $Id: d_io.c,v 1.7 2003/11/27 00:21:04 btb Exp $ */
 /*
  * some misc. file/disk routines
  * Arne de Bruijn, 1998

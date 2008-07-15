@@ -1,4 +1,3 @@
-/* $Id: gameseg.c, v 1.5 2004/04/14 08:54:35 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -38,10 +37,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "gameseg.h"
 //#define _DEBUG
-#ifdef RCS
-static char rcsid [] = "$Id: gameseg.c, v 1.5 2004/04/14 08:54:35 btb Exp $";
-#endif
-
 // How far a point can be from a plane, and still be "in" the plane
 
 // -------------------------------------------------------------------------------

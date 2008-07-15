@@ -18,10 +18,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //#define PSX_BUILD_TOOLS
 
-#ifdef RCS
-static char rcsid [] = "$Id: paging.c,v 1.3 2003/10/04 03:14:47 btb Exp $";
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

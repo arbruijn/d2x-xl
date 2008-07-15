@@ -1,11 +1,3 @@
-/* $Id: interp.h,v 1.6 2003/02/13 22:07:58 btb Exp $ */
-/*
- *
- * took out functions declarations from include/3d.h
- * which are implemented in 3d/interp.c
- *
- */
-
 #ifndef _HITBOX_H
 #define _HITBOX_H
 

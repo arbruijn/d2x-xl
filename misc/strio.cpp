@@ -1,4 +1,3 @@
-/* $Id: strio.c,v 1.4 2003/06/16 06:57:34 btb Exp $ */
 /*
  * strio.c: string/file manipulation functions by Victor Rachels
  */

@@ -1,4 +1,3 @@
-/* $Id: bitmap.h,v 1.4 2002/09/05 07:55:20 btb Exp $ */
 #ifndef _BITMAP_H
 #define _BITMAP_H
 

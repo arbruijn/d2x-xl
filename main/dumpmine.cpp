@@ -17,10 +17,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef RCS
-static char rcsid[] = "$Id: dumpmine.c,v 1.4 2003/10/10 09:36:34 btb Exp $";
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>

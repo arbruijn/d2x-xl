@@ -1,4 +1,3 @@
-/* $Id: rbaudio.c,v 1.9 2004/04/14 08:32:49 btb Exp $ */
 /*
  *
  * SDL CD Audio functions

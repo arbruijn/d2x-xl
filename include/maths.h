@@ -29,13 +29,13 @@ typedef struct tQuadInt // integer 64 bit, previously called "quad"
 tQuadInt;
 
 //Convert an int to a fix
-#define i2f(i) (((fix) (i)) << 16)
+#define i2f(i) (((fix) (i)) * 65536)
 
 //Get the int part of a fix
-#define f2i(f) ((f)>>16)
+#define f2i(f) ((f) / 65536)
 
 //Get the int part of a fix, with rounding
-#define f2ir(f) (((f)+f0_5)>>16)
+#define f2ir(f) (((f)+f0_5) / 65536)
 
 //Convert fix to double and double to fix
 #define f2fl(f) (((float)  (f)) / (float) 65536)

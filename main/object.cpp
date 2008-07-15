@@ -1,4 +1,3 @@
-/* $Id: tObject.c, v 1.9 2003/10/04 03:14:47 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -48,9 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fireball.h"
 #include "laser.h"
 #include "error.h"
-#include "pa_enabl.h"
 #include "ai.h"
-#include "hostage.h"
 #include "morph.h"
 #include "reactor.h"
 #include "powerup.h"
@@ -61,9 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sounds.h"
 #include "collide.h"
 
-#include "light.h"
 #include "dynlight.h"
-#include "headlight.h"
 #include "interp.h"
 #include "newdemo.h"
 #include "player.h"
@@ -72,8 +67,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newmenu.h"
 #include "gauges.h"
 #include "multi.h"
-#include "menu.h"
-#include "args.h"
 #include "text.h"
 #include "piggy.h"
 #include "switch.h"
@@ -83,7 +76,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudmsg.h"
 #include "oof.h"
 #include "sphere.h"
-#include "globvars.h"
 #ifdef TACTILE
 #include "tactile.h"
 #endif
@@ -108,19 +100,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define LIMIT_PHYSICS_FPS	0
 
 extern vmsVector playerThrust;
-extern int bSpeedBost;
 
 void DetachAllObjects (tObject *parent);
 void DetachOneObject (tObject *sub);
 int FreeObjectSlots (int num_used);
-
-/*
- *  Global variables
- */
-
-//Data for OBJECTS
-
-// -- Object stuff
 
 //info on the various types of OBJECTS
 #ifdef _DEBUG
@@ -128,7 +111,9 @@ tObject	Object_minus_one;
 tObject	*dbgObjP = NULL;
 #endif
 
-#define fabsf(_f)	(float) fabs (_f)
+#ifndef fabsf
+#	define fabsf(_f)	(float) fabs (_f)
+#endif
 
 //------------------------------------------------------------------------------
 // grsBitmap *robot_bms [MAX_ROBOT_BITMAPS];	//all bitmaps for all robots
@@ -150,25 +135,28 @@ int bPrintObjectInfo = 0;
 tWindowRenderedData windowRenderedData [MAX_RENDERED_WINDOWS];
 
 #ifdef _DEBUG
-char	szObjectTypeNames [MAX_OBJECT_TYPES][9] = {
-	"WALL    ", 
-	"FIREBALL", 
-	"ROBOT   ", 
-	"HOSTAGE ", 
-	"PLAYER  ", 
-	"WEAPON  ", 
-	"CAMERA  ", 
-	"POWERUP ", 
-	"DEBRIS  ", 
-	"CNTRLCEN", 
-	"FLARE   ", 
-	"CLUTTER ", 
-	"GHOST   ", 
-	"LIGHT   ", 
-	"COOP    ", 
-	"MARKER  ", 
-	"CAMBOT  ",
-	"M-BALL  "
+char	szObjectTypeNames [MAX_OBJECT_TYPES][10] = {
+	"WALL     ", 
+	"FIREBALL ", 
+	"ROBOT    ", 
+	"HOSTAGE  ", 
+	"PLAYER   ", 
+	"WEAPON   ", 
+	"CAMERA   ", 
+	"POWERUP  ", 
+	"DEBRIS   ", 
+	"CNTRLCEN ", 
+	"FLARE    ", 
+	"CLUTTER  ", 
+	"GHOST    ", 
+	"LIGHT    ", 
+	"COOP     ", 
+	"MARKER   ", 
+	"CAMBOT   ",
+	"M-BALL   ",
+	"SMOKE    ",
+	"EXPLOSION",
+	"EFFECT   "
 };
 #endif
 
@@ -783,7 +771,7 @@ if (dbgObjP && (OBJ_IDX (dbgObjP) == nObject))
 
 //-----------------------------------------------------------------------------
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(RELEASE)
 typedef int __fastcall tFreeFilter (tObject *objP);
 #else
 typedef int tFreeFilter (tObject *objP);
@@ -1094,7 +1082,7 @@ return newObjNum;
 
 //------------------------------------------------------------------------------
 
-extern void NDRecordGuidedEnd ();
+void NDRecordGuidedEnd (void);
 
 //remove tObject from the world
 void ReleaseObject (short nObject)
@@ -1139,7 +1127,6 @@ SpawnLeftoverPowerups (nObject);
 
 //------------------------------------------------------------------------------
 
-#define	DEATH_SEQUENCE_LENGTH			 (F1_0*5)
 #define	DEATH_SEQUENCE_EXPLODE_TIME	 (F1_0*2)
 
 tObject	*viewerSaveP;
@@ -1227,9 +1214,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 
 //------------------------------------------------------------------------------
 
-extern void DropPlayerEggs (tObject *objP);
-//extern int GetExplosionVClip (tObject *objP, int stage);
-extern void MultiCapObjects ();
+void MultiCapObjects (void);
 extern int nProximityDropped, nSmartminesDropped;
 
 void DeadPlayerFrame (void)
@@ -1539,7 +1524,6 @@ void RotateCamera (tObject *objP)
 
 #define	DEG90		 (F1_0 / 4)	
 #define	DEG45		 (F1_0 / 8)			
-#define	DEG675	 (DEG45 + (F1_0 / 16))
 #define	DEG1		 (F1_0 / (4 * 90))
 
 	tCamera	*pc = gameData.cameras.cameras + gameData.objs.cameraRef [OBJ_IDX (objP)];

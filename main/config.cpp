@@ -1,4 +1,3 @@
-/* $Id: config.c,v 1.10 2003/10/04 20:03:11 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -36,10 +35,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mono.h"
 #include "error.h"
 #include "pa_enabl.h"
-
-#ifdef RCS
-static char rcsid[] = "$Id: config.c,v 1.10 2003/10/04 20:03:11 btb Exp $";
-#endif
 
 static const char *pszDigiVolume = "DigiVolume";
 static const char *pszMidiVolume = "MidiVolume";

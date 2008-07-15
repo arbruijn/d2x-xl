@@ -1,4 +1,3 @@
-/* $Id: sdlgl.c,v 1.9 2003/11/27 04:59:49 btb Exp $ */
 /*
  *
  * Graphics functions for SDL-GL.

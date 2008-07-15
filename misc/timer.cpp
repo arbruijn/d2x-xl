@@ -1,4 +1,3 @@
-/* $Id: timer.c,v 1.6 2003/02/21 04:08:48 btb Exp $ */
 /*
  *
  * SDL library timer functions

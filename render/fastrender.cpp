@@ -337,7 +337,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(RELEASE)
 typedef bool (__fastcall * pRenderHandler) (tSegment *segP, grsFace *faceP, int bDepthOnly);
 #else
 typedef bool (* pRenderHandler) (tSegment *segP, grsFace *faceP, int bDepthOnly);

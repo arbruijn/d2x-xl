@@ -94,7 +94,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(RELEASE)
 typedef int ( __fastcall * pPacketHandler) (ubyte *dataP, int nLength);
 #else
 typedef int (* pPacketHandler) (ubyte *dataP, int nLength);
