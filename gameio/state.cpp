@@ -1335,7 +1335,7 @@ if ((cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH))) {
 	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 	
 #if 1
-	if (curDrawBuffer == GL_BACK) {
+	if (gameStates.ogl.nDrawBuffer == GL_BACK) {
 		gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 		GameRenderFrame ();
 		}

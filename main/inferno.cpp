@@ -993,8 +993,8 @@ void EvalGameplayArgs (void)
 {
 	int	t;
 
-if (FindArg ("-noscreens"))
-	gameOpts->gameplay.bSkipBriefingScreens = 1;
+if ((t = FindArg ("-noscreens")))
+	gameOpts->gameplay.bSkipBriefingScreens = NumArg (t, 1);
 if ((t = FindArg ("-secretsave")))
 	gameOptions [0].gameplay.bSecretSave = NumArg (t, 1);
 if ((t = FindArg ("-nobotai")))
@@ -2010,6 +2010,7 @@ gameStates.ogl.bIntensity4 = 1;
 gameStates.ogl.bLuminance4Alpha4 = 1;
 gameStates.ogl.bReadPixels = 1;
 gameStates.ogl.bGetTexLevelParam = 1;
+gameStates.ogl.nDrawBuffer = -1;
 #ifdef GL_ARB_multitexture
 gameStates.ogl.bArbMultiTexture = 0;
 #endif

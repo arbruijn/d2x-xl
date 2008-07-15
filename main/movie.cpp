@@ -411,7 +411,7 @@ int RotateRobot ()
 	int err;
 
 gameOpts->movies.bFullScreen = 1;
-if (curDrawBuffer == GL_BACK)
+if (gameStates.ogl.nDrawBuffer == GL_BACK)
 	GrPaletteStepLoad (NULL);
 err = MVE_rmStepMovie ();
 GrPaletteStepLoad (NULL);

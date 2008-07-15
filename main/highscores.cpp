@@ -428,7 +428,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 if (bNetwork)
 	NetworkEndLevel (&key);
 while (!done) {
-	if (!bRedraw || (curDrawBuffer == GL_BACK)) {
+	if (!bRedraw || (gameStates.ogl.nDrawBuffer == GL_BACK)) {
 		LoadStars (&bg, bRedraw);
 		ScoreTableRedraw ();
 		bRedraw = 1;

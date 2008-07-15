@@ -794,7 +794,7 @@ if ((TimerGetFixedSeconds () % (F1_0/2)) > (F1_0/4))
 else
 	GrSetFontColorRGB (&eraseColorRgb, NULL);
 GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
-if (curDrawBuffer == GL_FRONT)
+if (gameStates.ogl.nDrawBuffer == GL_FRONT)
 	GrUpdate (0);
 }
 
@@ -899,6 +899,7 @@ szBitmapName [0] = 0;
 nCurrentColor = 0;
 bRobotPlaying = 0;
 
+OglDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
 InitMovieBriefing ();
 
 bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
@@ -930,10 +931,10 @@ redrawPage:
 
 while (!done) {
 	pj = message;
-	if (curDrawBuffer == GL_FRONT)
+	GrUpdate (0);
+	if (gameStates.ogl.nDrawBuffer == GL_FRONT)
 		pi = message;
 	else {
-		GrUpdate (0);
 		//StopBriefingSound (&nPrintingChannel);
 		message = pi;
 		briefingTextX = x;
@@ -1114,7 +1115,7 @@ while (!done) {
 					t0 = t;
 					//GrUpdate (0);
 					keypress = BriefingInKey ();
-					if (curDrawBuffer == GL_BACK)
+					if (gameStates.ogl.nDrawBuffer == GL_BACK)
 						break;
 					} while (!keypress);
 				if (keypress) {
@@ -1240,7 +1241,7 @@ while (!done) {
 						ShowBitmapFrame (0);
 					t0 = t;
 					keypress = BriefingInKey ();
-					if (curDrawBuffer == GL_BACK)
+					if (gameStates.ogl.nDrawBuffer == GL_BACK)
 						break;
  					GrUpdate (0);
 					} while (!keypress);
@@ -1266,7 +1267,7 @@ while (!done) {
 								goto done;
 							}
  						pi = message;
-						if (curDrawBuffer == GL_FRONT) {
+						if (gameStates.ogl.nDrawBuffer == GL_FRONT) {
 							LoadBriefingScreen (nScreen);
 							GrUpdate (0);
 							}
@@ -1285,6 +1286,7 @@ while (!done) {
 
 done:
 
+OglDrawBuffer (gameStates.ogl.nDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT), 1);
 if (bRobotPlaying) {
 	DeInitRobotMovie ();
 	bRobotPlaying = 0;

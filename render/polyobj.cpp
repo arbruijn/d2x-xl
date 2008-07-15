@@ -870,7 +870,7 @@ else
 VmAngles2Matrix (&o, orient_angles);
 DrawPolygonModel (NULL, &p, &o, NULL, nModel, 0, f1_0, NULL, NULL, NULL);
 G3EndFrame ();
-if (curDrawBuffer != GL_BACK)
+if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	GrUpdate (0);
 }
 

@@ -779,12 +779,12 @@ void OglSetScreenMode (void)
 {
 if ((gameStates.video.nLastScreenMode == gameStates.video.nScreenMode) && 
 	 (gameStates.ogl.bLastFullScreen == gameStates.ogl.bFullScreen) &&
-	 (gameStates.app.bGameRunning || (gameStates.video.nScreenMode == SCREEN_GAME) || (curDrawBuffer == GL_FRONT)))
+	 (gameStates.app.bGameRunning || (gameStates.video.nScreenMode == SCREEN_GAME) || (gameStates.ogl.nDrawBuffer == GL_FRONT)))
 	return;
 if (gameStates.video.nScreenMode == SCREEN_GAME)
-	OglDrawBuffer (curDrawBuffer = GL_BACK, 1);
+	OglDrawBuffer (gameStates.ogl.nDrawBuffer = GL_BACK, 1);
 else {
-	OglDrawBuffer (curDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT), 1);
+	OglDrawBuffer (gameStates.ogl.nDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT), 1);
 	if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle)) {
 		glClearColor (0,0,0,0);
 		glClear (GL_COLOR_BUFFER_BIT);
@@ -935,7 +935,7 @@ else {
 	glDrawBuffer (nBuffer);
 	}
 #else
-glDrawBuffer (curDrawBuffer = nBuffer);
+glDrawBuffer (gameStates.ogl.nDrawBuffer = nBuffer);
 #endif
 #if 1
 bSemaphore--;

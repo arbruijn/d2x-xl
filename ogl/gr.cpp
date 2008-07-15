@@ -48,8 +48,6 @@ void ResetHoardData (void);
 
 extern int screenShotIntervals [];
 
-int curDrawBuffer = -1;
-
 //------------------------------------------------------------------------------
 
 tScrSize	scrSizes [] = {
@@ -110,7 +108,7 @@ tDisplayModeInfo displayModeInfo [NUM_DISPLAY_MODES + 1] = {
 void GrUpdate (int bClear)
 {
 if (gameStates.ogl.bInitialized) {
-	if ((curDrawBuffer == GL_FRONT) || (!gameOpts->menus.nStyle && gameStates.menus.nInMenu))
+	if ((gameStates.ogl.nDrawBuffer == GL_FRONT) || (!gameOpts->menus.nStyle && gameStates.menus.nInMenu))
 		glFlush ();
 	else
 		OglSwapBuffers (1, bClear);

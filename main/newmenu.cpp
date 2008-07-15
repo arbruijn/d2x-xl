@@ -733,7 +733,7 @@ if (w1 > 0)
 	w = w1;
 GrGetStringSize (s2, &w, &h, &aw);
 // CHANGED
-if (curDrawBuffer != GL_BACK)
+if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	GrBmBitBlt (bgP->background->bmProps.w-15, h+2, 5, y-1, 5, y-1, bgP->background, &(grdCurCanv->cvBitmap));
 //GrBmBitBlt (w, h, x, y, x, y, bgP->background, &(grdCurCanv->cvBitmap));
 
@@ -785,7 +785,7 @@ void NMStringSlider (tMenuItem *itemP, bkg * bgP, int bIsCurrent, int bTiny)
 	GrGetStringSize (s, &w, &h, &aw);
 	// CHANGED
 
-		if (curDrawBuffer != GL_BACK)
+		if (gameStates.ogl.nDrawBuffer != GL_BACK)
 			GrBmBitBlt (bgP->background->bmProps.w-15, h, 5, y, 5, y, bgP->background, &(grdCurCanv->cvBitmap));
 		//GrBmBitBlt (w, h, x, y, x, y, bgP->background, &(grdCurCanv->cvBitmap));
 
@@ -798,7 +798,7 @@ void NMStringSlider (tMenuItem *itemP, bkg * bgP, int bIsCurrent, int bTiny)
 			GrGetStringSize (s1, &w, &h, &aw);
 
 			// CHANGED
-			if (curDrawBuffer != GL_BACK) {
+			if (gameStates.ogl.nDrawBuffer != GL_BACK) {
 				GrBmBitBlt (w, 1, x+w1-w, y, x+w1-w, y, bgP->background, &(grdCurCanv->cvBitmap));
 				GrBmBitBlt (w, 1, x+w1-w, y+h-1, x+w1-w, y, bgP->background, &(grdCurCanv->cvBitmap));
 				}
@@ -844,7 +844,7 @@ GrGetStringSize (s, &w, &h, &aw);
 x -= 3;
 if (w1 == 0) 
 	w1 = w;
-if (curDrawBuffer != GL_BACK)
+if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	GrBmBitBlt (w1, h, x-w1, y, x-w1, y, bgP->background, &(grdCurCanv->cvBitmap));
 hs = itemP->text;
 itemP->text = s;
@@ -865,7 +865,7 @@ GrGetStringSize (s, &w, &h, &aw);
 x -= 3;
 if (w1 == 0) 
 	w1 = w;
-if (curDrawBuffer != GL_BACK)
+if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	GrBmBitBlt (w1, h, x-w1, y, x-w1, y, bgP->background, &(grdCurCanv->cvBitmap));
 GrString (x-w, y, s, NULL);
 }
@@ -2352,7 +2352,7 @@ launchOption:
 				continue;
 			if (!(gameOpts->menus.nStyle || (itemP [i].text && *itemP [i].text)))
 				continue;
-			if (bStart || (curDrawBuffer == GL_BACK) || itemP [i].redraw || itemP [i].rebuild) {// warning! ugly hack below                  
+			if (bStart || (gameStates.ogl.nDrawBuffer == GL_BACK) || itemP [i].redraw || itemP [i].rebuild) {// warning! ugly hack below                  
 				bRedraw = 1;
 				if (itemP [i].rebuild && itemP [i].centered)
 					itemP [i].x = GetCenteredX (itemP [i].text);
