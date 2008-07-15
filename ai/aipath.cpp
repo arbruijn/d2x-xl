@@ -22,22 +22,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "mono.h"
 #include "u_mem.h"
-#include "3d.h"
 
-#include "object.h"
 #include "error.h"
-#include "ai.h"
-#include "robot.h"
-#include "fvi.h"
 #include "physics.h"
-#include "wall.h"
+#include "gameseg.h"
+
 #ifdef EDITOR
 #include "editor/editor.h"
 #endif
-#include "player.h"
-#include "fireball.h"
-#include "game.h"
-#include "gameseg.h"
 
 #define	PARALLAX	0		//	If !0, then special debugging for Parallax eyes enabled.
 

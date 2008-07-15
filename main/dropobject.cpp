@@ -106,7 +106,6 @@ return 1;
 
 static int	segQueue [MAX_SEGMENTS_D2X];
 
-
 int PickConnectedSegment (tObject *objP, int nMaxDepth, int *nDepthP)
 {
 	int		nCurDepth;
