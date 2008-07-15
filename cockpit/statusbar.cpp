@@ -21,44 +21,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "hudmsg.h"
-
 #include "inferno.h"
-#include "game.h"
 #include "screens.h"
 #include "physics.h"
 #include "error.h"
-
-#include "menu.h"			// For the font.
-#include "mono.h"
 #include "newdemo.h"
-#include "player.h"
 #include "gamefont.h"
-#include "bm.h"
 #include "text.h"
-#include "powerup.h"
-#include "sounds.h"
 #include "network.h"
-#include "controls.h"
-#include "weapon.h"
-#include "globvars.h"
-
-#include "text.h"
-#include "piggy.h"
-#include "grdef.h"
-#include "gr.h"
-#include "gamepal.h"
 #include "input.h"
-#include "object.h"
-#include "ogl_defs.h"
 #include "ogl_bitmap.h"
 #include "ogl_hudstuff.h"
-#include "slowmotion.h"
-#include "playsave.h"
 #include "gauges.h"
 #include "hud_defs.h"
+#include "hudmsg.h"
 #include "statusbar.h"
-#include "key.h"
 
 //	-----------------------------------------------------------------------------
 

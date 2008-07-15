@@ -20,36 +20,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <stdlib.h>
 
-#include "hudmsg.h"
-
-#include "pstypes.h"
+#include "inferno.h"
 #include "u_mem.h"
 #include "strutil.h"
 #include "console.h"
-#include "inferno.h"
-#include "game.h"
-#include "screens.h"
 #include "gauges.h"
-#include "physics.h"
 #include "error.h"
-
-#include "menu.h"           // For the font.
-#include "mono.h"
-#include "collide.h"
 #include "newdemo.h"
-#include "player.h"
 #include "gamefont.h"
-
-#include "wall.h"
 #include "screens.h"
+#include "hudmsg.h"
 #include "text.h"
-#include "laser.h"
 #include "args.h"
-#include "pa_enabl.h"
 
-extern void SetFunctionMode (int);
-
-extern void copy_background_rect (int left,int top,int right,int bot);
+void SetFunctionMode (int);
+void copy_background_rect (int left,int top,int right,int bot);
 char szDisplayedBackgroundMsg [2][HUD_MESSAGE_LENGTH] = {"",""};
 
 int nLastMsgYCrd = -1;
