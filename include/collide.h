@@ -36,7 +36,6 @@ int CollidePlayerAndPowerup (tObject * nPlayer, tObject * powerup, vmsVector *vC
 int CheckEffectBlowup (tSegment *segP, short nSide, vmsVector *vPos, tObject *blowerP, int bForceBlowup);
 void ApplyDamageToReactor (tObject *reactorP, fix xDamage, short nAttacker);
 void BumpOneObject (tObject *objP, vmsVector *vHitDir, fix xDamage);
-void SetMonsterballForces (void);
 void SetDebrisCollisions (void);
 
 extern int Immaterial;

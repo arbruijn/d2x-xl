@@ -66,6 +66,7 @@
 #include "collide.h"
 #include "hudmsg.h"
 #include "vers_id.h"
+#include "monsterball.h"
 
 #define LHX(x)      (gameStates.menus.bHires?2* (x):x)
 #define LHY(y)      (gameStates.menus.bHires? (24* (y))/10:y)
@@ -1123,9 +1124,6 @@ for (i = 0; i < h - 1; i++)
 		break;
 return i;
 }
-
-extern short nMonsterballForces [];
-extern short nMonsterballPyroForce;
 
 void NetworkMonsterballOptions (void)
 {

@@ -24,6 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objeffects.h"
 #include "monsterball.h"
 #include "dropobject.h"
+#include "network.h"
 
 //------------------------------------------------------------------------------
 
@@ -118,6 +119,25 @@ RemoveMonsterball ();
 CreateMonsterball ();
 MultiSendMonsterball (1, 1);
 return 1;
+}
+
+//	-----------------------------------------------------------------------------
+
+short nMonsterballForces [100];
+
+short nMonsterballPyroForce;
+
+void SetMonsterballForces (void)
+{
+	int	i;
+	tMonsterballForce *forceP = extraGameInfo [IsMultiGame].monsterball.forces;
+
+memset (nMonsterballForces, 0, sizeof (nMonsterballForces));
+for (i = 0; i < MAX_MONSTERBALL_FORCES - 1; i++, forceP++)
+	nMonsterballForces [forceP->nWeaponId] = 	forceP->nForce;
+nMonsterballPyroForce = forceP->nForce;
+gameData.objs.pwrUp.info [POW_MONSTERBALL].size = 
+	(gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [IsMultiGame].monsterball.nSizeMod) / 2;
 }
 
 //------------------------------------------------------------------------------

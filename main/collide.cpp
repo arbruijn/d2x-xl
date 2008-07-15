@@ -75,6 +75,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "dropobject.h"
 #include "ai.h"
+#include "monsterball.h"
 
 //#define _DEBUG
 
@@ -214,25 +215,6 @@ if ((otherObjP->nType == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 		default:
 			Int3 ();
 		}
-}
-
-//	-----------------------------------------------------------------------------
-
-short nMonsterballForces [100];
-
-short nMonsterballPyroForce;
-
-void SetMonsterballForces (void)
-{
-	int	i;
-	tMonsterballForce *forceP = extraGameInfo [IsMultiGame].monsterball.forces;
-
-memset (nMonsterballForces, 0, sizeof (nMonsterballForces));
-for (i = 0; i < MAX_MONSTERBALL_FORCES - 1; i++, forceP++)
-	nMonsterballForces [forceP->nWeaponId] = 	forceP->nForce;
-nMonsterballPyroForce = forceP->nForce;
-gameData.objs.pwrUp.info [POW_MONSTERBALL].size = 
-	(gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [IsMultiGame].monsterball.nSizeMod) / 2;
 }
 
 //	-----------------------------------------------------------------------------

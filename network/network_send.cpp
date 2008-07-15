@@ -12,85 +12,26 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
 #ifdef HAVE_CONFIG_H
-#include <conf.h>
+#	include <conf.h>
 #endif
 
-#define PATCH12
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#ifdef _WIN32
-#	include <winsock.h>
-#else
-#	include <sys/socket.h>
-#endif
 #ifndef _WIN32
 #	include <arpa/inet.h>
 #	include <netinet/in.h> /* for htons & co. */
 #endif
 
 #include "inferno.h"
-#include "strutil.h"
-#include "args.h"
 #include "timer.h"
-#include "mono.h"
+#include "byteswap.h"
+#include "strutil.h"
 #include "ipx.h"
-#include "newmenu.h"
-#include "key.h"
-#include "gauges.h"
-#include "object.h"
-#include "objsmoke.h"
 #include "error.h"
-#include "laser.h"
-#include "gamesave.h"
-#include "gamemine.h"
-#include "player.h"
-#include "loadgame.h"
-#include "fireball.h"
 #include "network.h"
 #include "network_lib.h"
-#include "game.h"
-#include "multi.h"
-#include "endlevel.h"
-#include "palette.h"
-#include "reactor.h"
-#include "powerup.h"
-#include "menu.h"
-#include "sounds.h"
-#include "text.h"
-#include "highscores.h"
-#include "newdemo.h"
-#include "multibot.h"
-#include "wall.h"
-#include "bm.h"
-#include "effects.h"
-#include "physics.h"
-#include "switch.h"
-#include "automap.h"
-#include "byteswap.h"
 #include "netmisc.h"
-#include "kconfig.h"
-#include "playsave.h"
-#include "cfile.h"
 #include "autodl.h"
 #include "tracker.h"
-#include "newmenu.h"
-#include "gamefont.h"
-#include "gameseg.h"
-#include "hudmsg.h"
-#include "vers_id.h"
-#include "netmenu.h"
-#include "banlist.h"
-#include "collide.h"
-#include "ipx.h"
-#ifdef _WIN32
-#	include "win32/include/ipx_udp.h"
-#	include "win32/include/ipx_drv.h"
-#else
-#	include "linux/include/ipx_udp.h"
-#	include "linux/include/ipx_drv.h"
-#endif
+#include "monsterball.h"
 
 //------------------------------------------------------------------------------
 
