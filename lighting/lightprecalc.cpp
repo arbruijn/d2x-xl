@@ -25,46 +25,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "text.h"
-#include "segment.h"
-#include "textures.h"
-#include "wall.h"
-#include "object.h"
 #include "gamemine.h"
 #include "error.h"
-#include "gameseg.h"
-#include "switch.h"
-#include "ogl_defs.h"
-#include "oof.h"
 #include "lightmap.h"
 #include "render.h"
 #include "gameseg.h"
-
-#include "game.h"
 #include "menu.h"
-#include "newmenu.h"
-
-#ifdef EDITOR
-#include "editor/editor.h"
-#endif
-
-#include "cfile.h"
-#include "fuelcen.h"
-
-#include "hash.h"
 #include "key.h"
-#include "piggy.h"
-
-#include "byteswap.h"
-#include "gamesave.h"
 #include "u_mem.h"
-#include "vecmat.h"
-#include "gamepal.h"
 #include "paging.h"
-#include "maths.h"
-#include "network.h"
 #include "light.h"
 #include "dynlight.h"
-#include "renderlib.h"
+
+#ifdef EDITOR
+#	include "editor/editor.h"
+#endif
 
 //------------------------------------------------------------------------------
 

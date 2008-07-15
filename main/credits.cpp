@@ -35,14 +35,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "error.h"
-#include "gr.h"
-#include "mono.h"
 #include "key.h"
-#include "palette.h"
-#include "game.h"
 #include "gamepal.h"
 #include "timer.h"
-
 #include "newmenu.h"
 #include "gamefont.h"
 #include "network.h"
@@ -52,12 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mouse.h"
 #include "joy.h"
 #include "screens.h"
-#include "digi.h"
-
-#include "cfile.h"
 #include "compbit.h"
-#include "songs.h"
-#include "menu.h"			// for gameStates.menus.bHires
 
 #define LHX(x)      (gameStates.menus.bHires?2*(x):x)
 #define LHY(y)      (gameStates.menus.bHires?(24*(y))/10:y)
