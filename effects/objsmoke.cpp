@@ -12,14 +12,9 @@
 #include "timer.h"
 #include "u_mem.h"
 #include "interp.h"
-#include "particles.h"
 #include "lightning.h"
-#include "laser.h"
-#include "fireball.h"
 #include "network.h"
-#include "newdemo.h"
 #include "render.h"
-#include "object.h"
 #include "objeffects.h"
 #include "objrender.h"
 #include "objsmoke.h"
@@ -196,8 +191,6 @@ if (gameOpts->render.nPath && gameOpts->render.ship.bBullets) {
 }
 
 //------------------------------------------------------------------------------
-
-extern tSmoke	smoke [];
 
 void DoPlayerSmoke (tObject *objP, int i)
 {

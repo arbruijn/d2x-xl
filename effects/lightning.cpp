@@ -19,65 +19,27 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
+#include <stdlib.h>
 #ifndef _WIN32
 #	include <unistd.h>
 #endif
 
 #include "inferno.h"
 #include "perlin.h"
-#include "game.h"
-#include "gr.h"
-#include "stdlib.h"
-#include "bm.h"
-//#include "error.h"
-#include "mono.h"
-#include "3d.h"
-#include "segment.h"
-#include "texmap.h"
-#include "laser.h"
-#include "key.h"
 #include "gameseg.h"
-#include "textures.h"
 
-#include "object.h"
 #include "objsmoke.h"
-#include "objrender.h"
 #include "transprender.h"
 #include "renderthreads.h"
-#include "lightning.h"
 #include "render.h"
 #include "error.h"
-#include "pa_enabl.h"
-#include "timer.h"
-
-#include "sounds.h"
-#include "collide.h"
-
 #include "light.h"
 #include "dynlight.h"
-#include "interp.h"
-#include "player.h"
-#include "weapon.h"
-#include "network.h"
-#include "newmenu.h"
-#include "multi.h"
-#include "menu.h"
-#include "args.h"
-#include "text.h"
-#include "vecmat.h"
-#include "particles.h"
-#include "hudmsg.h"
-#include "oof.h"
-#include "sphere.h"
-#include "globvars.h"
-#ifdef TACTILE
-#include "tactile.h"
-#endif
-#include "ogl_defs.h"
 #include "ogl_lib.h"
-#include "input.h"
-#include "automap.h"
 #include "u_mem.h"
+#ifdef TACTILE
+#	include "tactile.h"
+#endif
 
 #ifdef EDITOR
 #include "editor/editor.h"
