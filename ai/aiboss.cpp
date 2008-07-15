@@ -175,7 +175,10 @@ if (gameData.boss [i].nTeleportSegs == 1)
 	InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs, &gameData.boss [i].nTeleportSegs, 1, 1);
 gameData.boss [i].bDyingSoundPlaying = 0;
 gameData.boss [i].nDying = 0;
-gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
+if (gameStates.app.bD1Mission)
+	gameData.boss [i].nGateInterval = F1_0 * 5 - gameStates.app.nDifficultyLevel * F1_0 / 2;
+else
+	gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
 if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) {
 	gameData.boss [i].nTeleportInterval = F1_0*10;
 	gameData.boss [i].nCloakInterval = F1_0*15;					//	Time between cloaks

@@ -413,14 +413,14 @@ l = 2 * i;
 if (bD1Sound)
 	l *= 2;
 if (bMP3) 
-	l = l * 32 / 11;	//sample up to approx. 32 kHz
+	l = (l * 32) / 11;	//sample up to approx. 32 kHz
 #else
 if (bMP3) 
 	{
 	l = 2 * i;
 	if (bD1Sound)
 		l *= 2;
-	l = l * 32 / 11;	//sample up to approx. 32 kHz
+	l = (l * 32) / 11;	//sample up to approx. 32 kHz
 	}
 else if (bD1Sound)
 	l = 2 * i;

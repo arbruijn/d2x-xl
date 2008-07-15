@@ -2646,6 +2646,8 @@ typedef struct tBossData {
 #ifdef _DEBUG
 	fix					xPrevShields;
 #endif
+	int					bHitThisFrame;
+	int					bHasBeenHit;
 	int					nObject;
 	short					nDying;
 	sbyte					bDyingSoundPlaying;

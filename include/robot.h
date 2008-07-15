@@ -223,7 +223,7 @@ int CalcGunPoint(vmsVector *gun_point,tObject *obj,int gun_num);
 //  On exit:
 //      Returns number of joints in list.
 //      jp_list_ptr is stuffed with a pointer to a static array of joint positions.  This pointer is valid forever.
-extern int robot_get_animState(tJointPos **jp_list_ptr,int robotType,int gun_num,int state);
+extern int RobotGetAnimState(tJointPos **jp_list_ptr,int robotType,int gun_num,int state);
 
 #if 0
 #define RobotInfoReadN(ri, n, fp) CFRead(ri, sizeof(tRobotInfo), n, fp)

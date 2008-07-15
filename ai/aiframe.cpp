@@ -590,7 +590,7 @@ int AIMOpenDoorHandler2 (tObject *objP, tAIStateInfo *siP)
 Assert (objP->id == ROBOT_BRAIN);     // Make sure this guy is allowed to be in this mode.
 if (!AIMultiplayerAwareness (objP, 62))
 	return 1;
-COMPUTE_SIDE_CENTER (&vCenter, &gameData.segs.segments [objP->nSegment], siP->aiP->GOALSIDE);
+COMPUTE_SIDE_CENTER (&vCenter, gameData.segs.segments + objP->nSegment, siP->aiP->GOALSIDE);
 VmVecSub (&vGoal, &vCenter, &objP->position.vPos);
 VmVecNormalize (&vGoal);
 AITurnTowardsVector (&vGoal, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);

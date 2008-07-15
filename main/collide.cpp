@@ -1418,8 +1418,10 @@ if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 
 	}
 if ((bIsBoss = ROBOTINFO (robotP->id).bossFlag)) {
 	int i = FindBoss (OBJ_IDX (robotP));
-	if (i >= 0)
+	if (i >= 0) {
 		gameData.boss [i].nHitTime = gameData.time.xGame;
+		gameData.boss [i].bHasBeenHit = 1;
+		}
 	}
 
 //	Buddy invulnerable on level 24 so he can give you his important messages.  Bah.

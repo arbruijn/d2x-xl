@@ -362,7 +362,7 @@ return 0;
 void UnstickObject (tObject *objP)
 {
 	tFVIData			hi;
-	tVFIQuery		fq;
+	tFVIQuery		fq;
 	int				fviResult;
 
 if ((objP->nType == OBJ_PLAYER) && 
@@ -463,7 +463,7 @@ void DoPhysicsSim (tObject *objP)
 	short					nObject = OBJ_IDX (objP);
 	short					nWallHitSeg, nWallHitSide;
 	tFVIData				hi;
-	tVFIQuery			fq;
+	tFVIQuery			fq;
 	vmsVector			vSavePos;
 	int					nSaveSeg;
 	fix					xSimTime, xOldSimTime, xTimeScale;

@@ -1042,7 +1042,7 @@ return G3_INFINITY;
 
 #else //slower method
 
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 	tFVIData		fi;
 	vmsVector	v;
 

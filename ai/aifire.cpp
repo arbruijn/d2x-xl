@@ -309,7 +309,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		}
 	else {
 		//	Well, they are not directly connected, so use FindVectorIntersection to see if they are unobstructed.
-		tVFIQuery	fq;
+		tFVIQuery	fq;
 		tFVIData		hit_data;
 		int			fate;
 

@@ -84,7 +84,7 @@ int DoSillyAnimation (tObject *objP)
 {
 	int				nObject = OBJ_IDX (objP);
 	tJointPos 		*jp_list;
-	int				robotType, nGun, robotState, num_joint_positions;
+	int				robotType, nGun, robotState, nJointPositions;
 	tPolyObjInfo	*polyObjInfo = &objP->rType.polyObjInfo;
 	tAIStatic		*aiP = &objP->cType.aiInfo;
 	int				num_guns, at_goal;
@@ -111,14 +111,14 @@ int DoSillyAnimation (tObject *objP)
 
 	at_goal = 1;
 	for (nGun=0; nGun <= num_guns; nGun++) {
-		int	joint;
+		int	nJoint;
 
-		num_joint_positions = robot_get_animState (&jp_list, robotType, nGun, robotState);
+		nJointPositions = RobotGetAnimState (&jp_list, robotType, nGun, robotState);
 
-		for (joint=0; joint<num_joint_positions; joint++) {
+		for (nJoint = 0; nJoint < nJointPositions; nJoint++) {
 			fix			delta_angle, delta_2;
-			int			jointnum = jp_list [joint].jointnum;
-			vmsAngVec	*jp = &jp_list [joint].angles;
+			int			jointnum = jp_list [nJoint].jointnum;
+			vmsAngVec	*jp = &jp_list [nJoint].angles;
 			vmsAngVec	*pObjP = &polyObjInfo->animAngles [jointnum];
 
 			if (jointnum >= gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels) {
@@ -216,15 +216,15 @@ int DoSillyAnimation (tObject *objP)
 void AIFrameAnimation (tObject *objP)
 {
 	int	nObject = OBJ_IDX (objP);
-	int	joint;
+	int	nJoint;
 	int	nJoints = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels;
 
-	for (joint=1; joint<nJoints; joint++) {
+	for (nJoint=1; nJoint<nJoints; nJoint++) {
 		fix			delta_to_goal;
 		fix			scaled_delta_angle;
-		vmsAngVec	*curangp = &objP->rType.polyObjInfo.animAngles [joint];
-		vmsAngVec	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [joint];
-		vmsAngVec	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [joint];
+		vmsAngVec	*curangp = &objP->rType.polyObjInfo.animAngles [nJoint];
+		vmsAngVec	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [nJoint];
+		vmsAngVec	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
 
 		Assert (nObject >= 0);
 		delta_to_goal = goalangp->p - curangp->p;

@@ -552,7 +552,7 @@ return nObject;
 //	Calls CreateNewLaser, but takes care of the tSegment and point computation for you.
 int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short parent, ubyte nWeaponType, int bMakeSound)
 {
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 	tFVIData		hitData;
 	tObject		*parentObjP = OBJECTS + parent;
 	int			fate;
@@ -668,7 +668,7 @@ int LaserPlayerFireSpreadDelay (
 	short			nLaserSeg;
 	int			nFate; 
 	vmsVector	vLaserPos, vLaserDir, *vGunPoints;
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 	tFVIData		hitData;
 	int			nObject;
 	tObject		*laserP;
@@ -1117,7 +1117,7 @@ return rVal;
 // -- int create_lightning_blobs (vmsVector *vDirection, vmsVector *start_pos, int start_segnum, int parent)
 // -- {
 // -- 	int			i;
-// -- 	tVFIQuery	fq;
+// -- 	tFVIQuery	fq;
 // -- 	tFVIData		hitData;
 // -- 	vmsVector	vEndPos;
 // -- 	vmsVector	norm_dir;

@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WBACK                       4
 #define WFRONT                      5
 
+#define MAX_SEGMENTS_D1					800
 #define MAX_SEGMENTS_D2					900
 #define MAX_SEGMENTS_D2X				6000
 #define MAX_SEGMENTS						gameData.segs.nMaxSegments

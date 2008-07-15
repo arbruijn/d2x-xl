@@ -118,11 +118,11 @@ return 1;
 //	-----------------------------------------------------------------------------------------------------------
 //fills in ptr to list of joints, and returns the number of joints in list
 //takes the robot nType (tObject id), gun number, and desired state
-int robot_get_animState(tJointPos **jp_list_ptr,int robotType,int gun_num,int state)
+int RobotGetAnimState (tJointPos **jointPosP, int robotType, int nGun, int state)
 {
-Assert(gun_num <= ROBOTINFO (robotType).nGuns);
-*jp_list_ptr = &gameData.bots.joints [ROBOTINFO (robotType).animStates[gun_num][state].offset];
-return ROBOTINFO (robotType).animStates[gun_num][state].n_joints;
+Assert(nGun <= ROBOTINFO (robotType).nGuns);
+*jointPosP = &gameData.bots.joints [ROBOTINFO (robotType).animStates[nGun][state].offset];
+return ROBOTINFO (robotType).animStates[nGun][state].n_joints;
 }
 
 

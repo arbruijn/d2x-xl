@@ -229,7 +229,7 @@ int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *vOb
 nCacheLookups++;
 if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFrameCount)) {
 	int			bApplyLight = 0;
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 	tFVIData		hit_data;
 	int			nSegment, hitType;
 	nSegment = -1;
@@ -432,7 +432,7 @@ if (xObjIntensity) {
 					}
 				if (objP->id != gameData.multiplayer.nLocalPlayer) {
 					vmsVector	tvec;
-					tVFIQuery	fq;
+					tFVIQuery	fq;
 					tFVIData		hit_data;
 					int			fate;
 					VmVecScaleAdd (&tvec, vObjPos, &objP->position.mOrient.fVec, F1_0*200);

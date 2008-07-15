@@ -448,7 +448,7 @@ ReleaseObject (OBJ_IDX (weaponObjP));
 if (nTargetObj != -1)
 	vTargetPos = OBJECTS [nTargetObj].position.vPos;
 else {	//	If couldn't lock on anything, fire straight ahead.
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 	tFVIData		hit_data;
 	int			fate;
 	vmsVector	vPerturb, perturbed_fvec;

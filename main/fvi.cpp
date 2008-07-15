@@ -1372,7 +1372,7 @@ return nHitType;
 //  ingore_obj			ignore collisions with this tObject
 //  check_objFlag	determines whether collisions with OBJECTS are checked
 //Returns the hitData->nHitType
-int FindVectorIntersection (tVFIQuery *fq, tFVIData *hitData)
+int FindVectorIntersection (tFVIQuery *fq, tFVIData *hitData)
 {
 	int			nHitType, nNewHitType;
 	short			nHitSegment, nHitSegment2;
@@ -1703,7 +1703,7 @@ return SphereIntersectsWall (&objP->position.vPos, objP->nSegment, objP->size);
 
 int CanSeePoint (tObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment)
 {
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 	int			nHitType;
 	tFVIData		hit_data;
 
@@ -1729,7 +1729,7 @@ return nHitType != HIT_WALL;
 //	Calls fvi.
 int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 {
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 	tFVIData		hit_data;
 	int			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
 

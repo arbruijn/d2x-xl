@@ -2403,7 +2403,7 @@ extern int bSavingMovieFrames;
 
 int CanSeeObject (int nObject, int bCheckObjs)
 {
-	tVFIQuery fq;
+	tFVIQuery fq;
 	int nHitType;
 	tFVIData hit_data;
 

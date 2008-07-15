@@ -238,14 +238,8 @@ extern sbyte Super_boss_gate_list [];
 
 // These globals are set by a call to FindVectorIntersection, which is a slow routine,
 // so we don't want to call it again (for this tObject) unless we have to.
-extern vmsVector   Hit_pos;
-extern int          HitType, Hit_seg;
-extern tFVIData     hitData;
-
-extern int              Num_tAwarenessEvents;
-extern tAwarenessEvent  Awareness_events [MAX_AWARENESS_EVENTS];
-
-extern vmsVector       vBelievedPlayerPos;
+//extern vmsVector   Hit_pos;
+//extern int          HitType, Hit_seg;
 
 #ifndef NDEBUG
 // Index into this array with ailp->mode

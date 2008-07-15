@@ -542,7 +542,7 @@ if (!gameStates.render.bOutsideMine) {
 if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndLevelSequence < EL_OUTSIDE))
 	if ((explosion_wait2 -= gameData.time.xFrame) < 0) {
 		vmsVector tpnt;
-		tVFIQuery fq;
+		tFVIQuery fq;
 		tFVIData hit_data;
 		//create little explosion on tWall
 		VmVecCopyScale (&tpnt, &gameData.objs.console->position.mOrient.rVec, (d_rand ()-RAND_MAX/2)*100);

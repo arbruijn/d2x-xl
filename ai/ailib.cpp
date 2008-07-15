@@ -49,7 +49,7 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVector *vVecToPlayer)
 {
 	fix			dot;
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 
 	//	Assume that robot's gun tip is in same tSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
@@ -93,7 +93,7 @@ return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 
 int AICanFireAtPlayer (tObject *objP, vmsVector *vGun, vmsVector *vPlayer)
 {
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 	fix			nSize, h;
 	short			nModel, ignoreObjs [2] = {OBJ_IDX (gameData.objs.console), -1};
 

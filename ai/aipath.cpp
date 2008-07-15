@@ -158,7 +158,7 @@ void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, tObject *objP, int bRa
 	vmsVector	vGoalPos;
 	int			count;
 	int			nTempSeg;
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 	tFVIData		hit_data;
 	int			nHitType;
 
@@ -295,7 +295,7 @@ int CreatePathPoints (tObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	tSegment			*segP;
 	vmsVector		vCenter;
 	int				nThisSeg, nParentSeg;
-	tVFIQuery		fq;
+	tFVIQuery		fq;
 	tFVIData			hit_data;
 	int				hitType;
 	int				bAvoidPlayer;
@@ -476,7 +476,7 @@ int	Last_buddy_polish_path_frame;
 int SmoothPath (tObject *objP, tPointSeg *pointSegP, int numPoints)
 {
 	int			i, nFirstPoint = 0;
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 	tFVIData		hit_data;
 	int			hitType;
 
@@ -862,7 +862,7 @@ else
 // -- too much work -- 	tObject		*kill_objp;
 // -- too much work -- 	tFVIData		hit_data;
 // -- too much work -- 	int			fate;
-// -- too much work -- 	tVFIQuery	fq;
+// -- too much work -- 	tFVIQuery	fq;
 // -- too much work --
 // -- too much work -- 	if (gameData.escort.nKillObject == -1)
 // -- too much work -- 		return 0;
@@ -1117,7 +1117,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			vmsVector	*vOppositeEndPoint;
 			tFVIData		hit_data;
 			int			fate;
-			tVFIQuery	fq;
+			tFVIQuery	fq;
 
 			// See which end we're nearer and look at the opposite end point.
 			if (abs (aiP->nCurPathIndex - aiP->nPathLength) < aiP->nCurPathIndex) {

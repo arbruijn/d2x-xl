@@ -1173,7 +1173,7 @@ void SetCameraPos (vmsVector *vCameraPos, tObject *objP)
 xCameraPlayerDist = VmVecMag (VmVecSub (&vPlayerCameraOffs, vCameraPos, &objP->position.vPos));
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 	//	Camera is too close to tPlayer tObject, so move it away.
-	tVFIQuery	fq;
+	tFVIQuery	fq;
 	tFVIData		hit_data;
 	vmsVector	local_p1;
 
