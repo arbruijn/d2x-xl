@@ -2732,55 +2732,55 @@ int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
 int cockpitWindowScale [4] = {6, 5, 4, 3};
 
-void DoCockpitWindowView (int win, tObject *viewer, int bRearView, int user, const char *label)
+void DoCockpitWindowView (int nWindow, tObject *viewer, int bRearView, int user, const char *pszLabel)
 {
-	gsrCanvas window_canv;
+	gsrCanvas windowCanv;
 	static gsrCanvas overlap_canv;
 
 	tObject *viewerSave = gameData.objs.viewer;
 	gsrCanvas *save_canv = grdCurCanv;
-	static int overlap_dirty [2]={0, 0};
-	int boxnum;
+	static int bOverlapDirty [2]={0, 0};
+	int nBox;
 	static int window_x, window_y;
-	tGaugeBox *box;
+	tGaugeBox *boxP;
 	int bRearViewSave = gameStates.render.bRearView;
 	int w, h, dx, nZoomSave;
 
 if (HIDE_HUD)
 	return;
-box = NULL;
+boxP = NULL;
 if (!viewer) {								//this user is done
 	Assert (user == WBU_WEAPON || user == WBU_STATIC);
-	if (user == WBU_STATIC && weaponBoxUser [win] != WBU_STATIC)
-		staticTime [win] = 0;
-	if (weaponBoxUser [win] == WBU_WEAPON || weaponBoxUser [win] == WBU_STATIC)
+	if ((user == WBU_STATIC) && (weaponBoxUser [nWindow] != WBU_STATIC))
+		staticTime [nWindow] = 0;
+	if (weaponBoxUser [nWindow] == WBU_WEAPON || weaponBoxUser [nWindow] == WBU_STATIC)
 		return;		//already set
-	weaponBoxUser [win] = user;
-	if (overlap_dirty [win]) {
+	weaponBoxUser [nWindow] = user;
+	if (bOverlapDirty [nWindow]) {
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 		FillBackground ();
-		overlap_dirty [win] = 0;
+		bOverlapDirty [nWindow] = 0;
 		}
 	return;
 	}
-UpdateRenderedData (win+1, viewer, bRearView, user);
-weaponBoxUser [win] = user;						//say who's using window
+UpdateRenderedData (nWindow+1, viewer, bRearView, user);
+weaponBoxUser [nWindow] = user;						//say who's using window
 gameData.objs.viewer = viewer;
 gameStates.render.bRearView = bRearView;
 
 if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 	w = (int) (gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);			// hmm.  I could probably do the sub_buffer assigment for all macines, but I aint gonna chance it
 	h = i2f (w) / grdCurScreen->scAspect;
-	dx = (win==0)?- (w+ (w/10)): (w/10);
+	dx = (nWindow==0)?- (w+ (w/10)): (w/10);
 	switch (gameOpts->render.cockpit.nWindowPos) {
 		case 0:
-			window_x = win ? 
+			window_x = nWindow ? 
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w - w - h / 10 :
 				h / 10;
 			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
 			break;
 		case 1:
-			window_x = win ? 
+			window_x = nWindow ? 
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 * 2 - w / 3 :
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 - 2 * w / 3;
 			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
@@ -2790,13 +2790,13 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
 			break;
 		case 3:
-			window_x = win ? 
+			window_x = nWindow ? 
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w - w - h / 10 :
 				h / 10;
 			window_y = h / 10;
 			break;
 		case 4:
-			window_x = win ? 
+			window_x = nWindow ? 
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 * 2 - w / 3 :
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 - 2 * w / 3;
 			window_y = h / 10;
@@ -2813,31 +2813,31 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 
 
 	//copy these vars so stereo code can get at them
-	SW_drawn [win] = 1; 
-	SW_x [win] = window_x; 
-	SW_y [win] = window_y; 
-	SW_w [win] = w; 
-	SW_h [win] = h; 
+	SW_drawn [nWindow] = 1; 
+	SW_x [nWindow] = window_x; 
+	SW_y [nWindow] = window_y; 
+	SW_w [nWindow] = w; 
+	SW_h [nWindow] = h; 
 
-	GrInitSubCanvas (&window_canv, &gameStates.render.vr.buffers.render [0], window_x, window_y, w, h);
+	GrInitSubCanvas (&windowCanv, &gameStates.render.vr.buffers.render [0], window_x, window_y, w, h);
 	}
 else {
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)
-		boxnum = (COCKPIT_PRIMARY_BOX)+win;
+		nBox = (COCKPIT_PRIMARY_BOX) + nWindow;
 	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-		boxnum = (SB_PRIMARY_BOX)+win;
+		nBox = (SB_PRIMARY_BOX) + nWindow;
 	else
 		goto abort;
-	box = gaugeBoxes + boxnum;
-		GrInitSubCanvas (
-			&window_canv, gameStates.render.vr.buffers.render, 
-			HUD_SCALE_X (box->left), 
-			HUD_SCALE_Y (box->top), 
-			HUD_SCALE_X (box->right-box->left+1), 
-			HUD_SCALE_Y (box->bot-box->top+1));
+	boxP = gaugeBoxes + nBox;
+	GrInitSubCanvas (
+		&windowCanv, gameStates.render.vr.buffers.render, 
+		HUD_SCALE_X (boxP->left), 
+		HUD_SCALE_Y (boxP->top), 
+		HUD_SCALE_X (boxP->right - boxP->left+1), 
+		HUD_SCALE_Y (boxP->bot - boxP->top+1));
 	}
 
-GrSetCurrentCanvas (&window_canv);
+GrSetCurrentCanvas (&windowCanv);
 G3PushMatrix ();
 nZoomSave = gameStates.render.nZoomFactor;
 gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the tPlayer's zoom factor
@@ -2846,21 +2846,21 @@ if ((user == WBU_RADAR_TOPDOWN) || (user == WBU_RADAR_HEADSUP)) {
 	if (!IsMultiGame || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
 		DoAutomap (0, 1);
 	else
-		RenderFrame (0, win+1);
+		RenderFrame (0, nWindow+1);
 	}
 else
-	RenderFrame (0, win+1);
+	RenderFrame (0, nWindow+1);
 gameStates.render.nZoomFactor = nZoomSave;
 G3PopMatrix ();
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewer->nType == OBJ_WEAPON) {
 	// -- Used to require to be GUIDED -- if (viewer->id == GUIDEDMSL_ID)
-	WakeupRenderedObjects (viewer, win+1);
+	WakeupRenderedObjects (viewer, nWindow+1);
 	}
-if (label) {
-		GrSetCurFont (GAME_FONT);
+if (pszLabel) {
+	GrSetCurFont (GAME_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-	GrPrintF (NULL, 0x8000, 2, label);
+	GrPrintF (NULL, 0x8000, 2, pszLabel);
 	}
 if (user == WBU_GUIDED) {
 	DrawGuidedCrosshair ();
@@ -2881,29 +2881,29 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 			GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
 		else
 			GrSetCurrentCanvas (GetCurrentGameScreen ());
-		GrBitmap (window_x, window_y, &window_canv.cvBitmap);
-		overlap_dirty [win] = 1;
+		GrBitmap (window_x, window_y, &windowCanv.cvBitmap);
+		bOverlapDirty [nWindow] = 1;
 		}
 	else {
-		small_window_bottom = window_y + window_canv.cvBitmap.bmProps.h - 1;
+		small_window_bottom = window_y + windowCanv.cvBitmap.bmProps.h - 1;
 		extra_part_h = small_window_bottom - big_window_bottom;
 		if (extra_part_h > 0) {
-			GrInitSubCanvas (&overlap_canv, &window_canv, 0, window_canv.cvBitmap.bmProps.h-extra_part_h, window_canv.cvBitmap.bmProps.w, extra_part_h);
+			GrInitSubCanvas (&overlap_canv, &windowCanv, 0, windowCanv.cvBitmap.bmProps.h-extra_part_h, windowCanv.cvBitmap.bmProps.w, extra_part_h);
 			if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)
 				GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
 			else
 				GrSetCurrentCanvas (GetCurrentGameScreen ());
 				GrBitmap (window_x, big_window_bottom+1, &overlap_canv.cvBitmap);
-			overlap_dirty [win] = 1;
+			bOverlapDirty [nWindow] = 1;
 			}
 		}
 	}
 else {
 	GrSetCurrentCanvas (GetCurrentGameScreen ());
-	CopyGaugeBox (box, &gameStates.render.vr.buffers.render [0].cvBitmap);
+	CopyGaugeBox (boxP, &gameStates.render.vr.buffers.render [0].cvBitmap);
 	}
 //force redraw when done
-oldWeapon [win][gameStates.render.vr.nCurrentPage] = oldAmmoCount [win][gameStates.render.vr.nCurrentPage] = -1;
+oldWeapon [nWindow][gameStates.render.vr.nCurrentPage] = oldAmmoCount [nWindow][gameStates.render.vr.nCurrentPage] = -1;
 
 abort:;
 

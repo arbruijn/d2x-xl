@@ -157,6 +157,8 @@ void DoAIFrameAll (void)
 	int	h, i, j;
 
 SetPlayerAwarenessAll ();
+if (USE_D1_AI)
+	return;
 if (gameData.ai.nLastMissileCamera != -1) {
 	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
 	if (((gameData.app.nFrameCount & 0x0f) == 0) || (OBJECTS [gameData.ai.nLastMissileCamera].nType != OBJ_WEAPON)) {

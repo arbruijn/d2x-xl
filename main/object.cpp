@@ -1715,6 +1715,8 @@ switch (objP->controlType) {
 			return 1;
 #endif
 			}
+		else if (USE_D1_AI)
+			DoD1AIFrame (objP);
 		else
 			DoAIFrame (objP);
 		break;
@@ -2434,7 +2436,7 @@ void WakeupRenderedObjects (tObject *viewer, int window_num)
 					tAILocal		*ailp = &gameData.ai.localInfo [nObject];
 					if (ailp->playerAwarenessType == 0) {
 						objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
-						ailp->playerAwarenessType = PA_WEAPON_ROBOT_COLLISION;
+						ailp->playerAwarenessType = WEAPON_ROBOT_COLLISION;
 						ailp->playerAwarenessTime = F1_0*3;
 						ailp->nPrevVisibility = 2;
 					}

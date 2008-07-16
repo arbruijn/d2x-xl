@@ -4404,13 +4404,13 @@ if (gameOpts->app.bExpertMode) {
 
 void GameplayOptionsMenu (void)
 {
-	tMenuItem m [35];
+	tMenuItem m [40];
 	int	i, j, nOptions = 0, choice = 0;
 	int	optFixedSpawn = -1, optSnipeMode = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
 			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
 			optAwareness = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optHeadlightOnWhenPickedUp = -1,
-			optRotateMarkers = -1, optLoadout;
+			optRotateMarkers = -1, optLoadout, optUseD1AI;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szMaxSmokeGrens [50];
 
@@ -4466,6 +4466,8 @@ do {
 		optTripleFusion = nOptions++;
 		ADD_CHECK (nOptions, TXT_ENHANCED_SHAKERS, extraGameInfo [0].bEnhancedShakers, KEY_B, HTX_ENHANCED_SHAKERS);
 		optEnhancedShakers = nOptions++;
+		ADD_CHECK (nOptions, TXT_USE_D1_AI, gameOpts->gameplay.bUseD1AI, KEY_I, HTX_USE_D1_AI);
+		optUseD1AI = nOptions++;
 		if (extraGameInfo [0].bSmokeGrenades) {
 			ADD_TEXT (nOptions, "", 0);
 			nOptions++;
@@ -4531,6 +4533,7 @@ if (gameOpts->app.bExpertMode) {
 	GET_VAL (gameOpts->gameplay.bInventory, optInventory);
 	GET_VAL (gameOpts->gameplay.bIdleAnims, optIdleAnims);
 	GET_VAL (gameOpts->gameplay.nAIAwareness, optAwareness);
+	GET_VAL (gameOpts->gameplay.bUseD1AI, optUseD1AI);
 	GET_VAL (gameOpts->gameplay.bHeadlightOnWhenPickedUp, optHeadlightOnWhenPickedUp);
 	GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadlightPowerDrain);
 	GET_VAL (extraGameInfo [0].headlight.bBuiltIn, optHeadlightBuiltIn);

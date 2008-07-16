@@ -44,7 +44,6 @@ void create_awareness_event(tObject *objP, int type);			// tObject *objP can cre
 void do_ai_frame_all(void);
 void init_ai_system(void);
 void reset_ai_states(tObject *objP);
-int create_path_points(tObject *objP, int start_seg, int end_seg, point_seg *point_segs, short *num_points, int max_depth, int random_flag, int safety_flag, int avoid_seg);
 void create_all_paths(void);
 void create_path_to_station(tObject *objP, int max_length);
 void ai_follow_path(tObject *objP, int player_visibility);

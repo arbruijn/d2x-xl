@@ -408,6 +408,7 @@ typedef struct tGameplayOptions {
 	int bIdleAnims;
 	int nAIAwareness;
 	int nSlowMotionSpeedup;
+	int bUseD1AI;
 } tGameplayOptions;
 
 //------------------------------------------------------------------------------

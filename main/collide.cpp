@@ -75,6 +75,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "dropobject.h"
 #include "ai.h"
+#include "d1_aistruct.h"
 #include "monsterball.h"
 
 //#define _DEBUG
@@ -1155,8 +1156,14 @@ if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {
 			xLastThiefHitTime = gameData.time.xGame;
 		}
 	CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// tObject robotP can attract attention to tPlayer
-	DoAiRobotHitAttack (robotP, playerObjP, vHitPt);
-	DoAiRobotHit (robotP, PA_WEAPON_ROBOT_COLLISION);
+	if (USE_D1_AI) {
+		DoD1AIRobotHitAttack (robotP, playerObjP, vHitPt);
+		DoD1AIRobotHit (robotP, WEAPON_ROBOT_COLLISION);
+		}
+	else {
+		DoAIRobotHitAttack (robotP, playerObjP, vHitPt);
+		DoAIRobotHit (robotP, WEAPON_ROBOT_COLLISION);
+		}
 	} 
 else
 	MultiRobotRequestChange (robotP, playerObjP->id);
@@ -1727,8 +1734,11 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs
 		 !(robotP->flags & OF_EXPLODING)) {
 		tObject *explObjP = NULL;
 		if (weaponP->cType.laserInfo.nParentObj == LOCALPLAYER.nObject) {
-			CreateAwarenessEvent (weaponP, PA_WEAPON_ROBOT_COLLISION);			// object "weaponP" can attract attention to tPlayer
-			DoAiRobotHit (robotP, PA_WEAPON_ROBOT_COLLISION);
+			CreateAwarenessEvent (weaponP, WEAPON_ROBOT_COLLISION);			// object "weaponP" can attract attention to tPlayer
+			if (USE_D1_AI)
+				DoD1AIRobotHit (robotP, WEAPON_ROBOT_COLLISION);
+			else
+				DoAIRobotHit (robotP, WEAPON_ROBOT_COLLISION);
 			}
 	  	else
 			MultiRobotRequestChange (robotP, OBJECTS [weaponP->cType.laserInfo.nParentObj].id);

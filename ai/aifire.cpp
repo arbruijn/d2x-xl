@@ -73,7 +73,7 @@ else {
 // ----------------------------------------------------------------------------------
 //	When some robots collide with the tPlayer, they attack.
 //	If tPlayer is cloaked, then robot probably didn't actually collide, deal with that here.
-void DoAiRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *vCollision)
+void DoAIRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *vCollision)
 {
 	tAILocal		*ailP = gameData.ai.localInfo + OBJ_IDX (robot);
 	tRobotInfo	*botInfoP = &ROBOTINFO (robot->id);
@@ -429,7 +429,7 @@ if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) 
 
 // --------------------------------------------------------------------------------------------------------------------
 //	If a hiding robot gets bumped or hit, he decides to find another hiding place.
-void DoAiRobotHit (tObject *objP, int nType)
+void DoAIRobotHit (tObject *objP, int nType)
 {
 	int	r;
 
@@ -500,7 +500,7 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 						return;
 					if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION - 2))
 						return;
-					DoAiRobotHitAttack (objP, gameData.objs.console, &objP->position.vPos);
+					DoAIRobotHitAttack (objP, gameData.objs.console, &objP->position.vPos);
 					}
 				else {
 #if 1
@@ -589,7 +589,7 @@ else {	//	---------------------------------------------------------------
 						if (!gameStates.app.bPlayerExploded && (gameData.ai.xDistToPlayer < objP->size + gameData.objs.console->size + F1_0*2)) {		// botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.console->size) {
 							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION-2))
 								return;
-							DoAiRobotHitAttack (objP, gameData.objs.console, &objP->position.vPos);
+							DoAIRobotHitAttack (objP, gameData.objs.console, &objP->position.vPos);
 							}
 						else
 							return;

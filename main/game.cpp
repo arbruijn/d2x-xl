@@ -2225,7 +2225,7 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 				ApplyDamageToPlayer (gameData.objs.console, gameData.objs.console, d_rand () * 4);
 				} 
 			else {
-				CreateAwarenessEvent (gameData.objs.console, PA_WEAPON_ROBOT_COLLISION);
+				CreateAwarenessEvent (gameData.objs.console, WEAPON_ROBOT_COLLISION);
 				DigiPlaySample (SOUND_FUSION_WARMUP, F1_0);
 				if (gameData.app.nGameMode & GM_MULTI)
 					MultiSendPlaySound (SOUND_FUSION_WARMUP, F1_0);

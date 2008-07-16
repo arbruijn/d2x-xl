@@ -529,6 +529,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].gameplay.nAIAwareness, i, 0);
 		RP (gameOptions [i].gameplay.nAutoSelectWeapon, i, 0);
 		RP (gameOptions [i].gameplay.nSlowMotionSpeedup, i, 0);
+		RP (gameOptions [i].gameplay.bUseD1AI, i, 0);
 		}
 	// options applicable for both enhanced and pure D2 mode
 	for (j = 0; j < sizeofa (nWeaponOrder [i]); j++)
@@ -1098,6 +1099,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].gameplay.nAIAwareness", "0"},
 	{"gameOptions[0].gameplay.nAutoSelectWeapon", "1"},
 	{"gameOptions[0].gameplay.nSlowMotionSpeedup", "6"},
+	{"gameOptions[0].gameplay.bUseD1AI", "1"},
 	{"nWeaponOrder[0][0]", "6"},
 	{"nWeaponOrder[0][1]", "5"},
 	{"nWeaponOrder[0][2]", "8"},

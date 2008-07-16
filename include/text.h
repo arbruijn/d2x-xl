@@ -1863,10 +1863,10 @@ void LoadGameTexts(void);
 #define TXT_BLUE_FLAG					GT(1071)
 #define TXT_RED_FLAG						GT(1072)
 #define TXT_GATLING_TRAILS				GT(1073)
+#define TXT_USE_D1_AI					GT(1074)
 
 #if 0
 
-#define TXT_					GT(1074)
 #define TXT_					GT(1075)
 #define TXT_					GT(1076)
 #define TXT_					GT(1077)
@@ -2381,10 +2381,10 @@ void LoadGameTexts(void);
 #define HTX_ROTATE_MARKERS				HT(367)			
 #define HTX_USE_LIGHTMAPS				HT(368)			
 #define HTX_GATLING_TRAILS				HT(369)			
+#define HTX_USE_D1_AI					HT(370)			
 
 #if 0
 
-#define HTX_						HT(370)			
 #define HTX_						HT(371)			
 #define HTX_						HT(372)			
 #define HTX_						HT(373)			

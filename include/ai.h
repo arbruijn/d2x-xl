@@ -48,10 +48,12 @@ void AIMoveToNewSegment ( tObject * obj, short newseg, int firstTime );
 void AIRecoverFromWallHit (tObject *obj, int nSegment);
 void AIMoveOne (tObject *objP);
 void DoAIFrame (tObject *objP);
+void DoD1AIFrame (tObject *objP);
 void InitAIObject (short nObject, short initial_mode, short nHideSegment);
 void UpdatePlayerAwareness (tObject *objP, fix new_awareness);
 void CreateAwarenessEvent (tObject *objP, int nType);         // tObject *objP can create awareness of tPlayer, amount based on "nType"
 void DoAIFrameAll (void);
+void DoD1AIFrameAll (void);
 void InitAISystem (void);
 void ResetAIStates (tObject *objP);
 int CreatePathPoints (tObject *objP, int start_seg, int end_seg, tPointSeg *tPointSegs, short *num_points, int max_depth, int randomFlag, int safetyFlag, int avoid_seg);
@@ -61,7 +63,8 @@ void AIFollowPath (tObject *objP, int player_visibility, int previousVisibility,
 fix AITurnTowardsVector (vmsVector *vec_to_player, tObject *obj, fix rate);
 void AITurnTowardsVelVec (tObject *objP, fix rate);
 void InitAIObjects (void);
-void DoAiRobotHit (tObject *robot, int nType);
+void DoAIRobotHit (tObject *robot, int nType);
+void DoD1AIRobotHit (tObject *objP, int type);
 void CreateNSegmentPath (tObject *objP, int nPathLength, short avoid_seg);
 void CreateNSegmentPathToDoor (tObject *objP, int nPathLength, short avoid_seg);
 void InitRobotsForLevel (void);
@@ -84,7 +87,8 @@ void CreatePathToPlayer (tObject *objP, int max_length, int safetyFlag);
 void AttemptToResumePath (tObject *objP);
 
 // When a robot and a tPlayer collide, some robots attack!
-void DoAiRobotHitAttack (tObject *robot, tObject *tPlayer, vmsVector *collision_point);
+void DoAIRobotHitAttack (tObject *robot, tObject *tPlayer, vmsVector *collision_point);
+void DoD1AIRobotHitAttack(tObject *robot, tObject *player, vmsVector *collision_point);
 void AIOpenDoorsInSegment (tObject *robot);
 int AIDoorIsOpenable (tObject *objP, tSegment *segp, short nSide);
 int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVector *vec_to_player);
@@ -243,8 +247,6 @@ extern sbyte Super_boss_gate_list [];
 
 #ifndef NDEBUG
 // Index into this array with ailp->mode
-extern char *mode_text [18];
-
 // Index into this array with aip->behavior
 extern char behavior_text [6] [9];
 
@@ -334,6 +336,8 @@ return 0;
 #define MAX_SNIPE_DIST		AIMaxDist (2, NULL)
 #define MAX_REACTION_DIST	AIMaxDist (3, NULL)
 #define MAX_PURSUIT_DIST(_botInfoP)	AIMaxDist (4, _botInfoP)
+
+#define USE_D1_AI (gameStates.app.bD1Mission && gameOpts->gameplay.bUseD1AI)
 
 // --------------------------------------------------------------------------------------------------------------------
 

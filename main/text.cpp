@@ -1817,6 +1817,7 @@ const char *defaultGameTexts [][2] = {
 	{"Blaue Flagge!", "BLUE FLAG!"},
 	{"Rote Flagge!", "RED FLAG!"},
 	{"Rauchspuren fuer Maschinen~Kanonen", "~Gatling smoke trails"},
+	{"Descent 1 K~I verwenden", "use Descent 1 A~I"},
 #if 0
 	{"", ""},
 #endif
@@ -2463,6 +2464,8 @@ const char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, wird die Beleuchtung durch statische Lichter\nmit Lightmaps realisiert, was sehr natuerlich wirkt.", 
 	 "If checked, light cast by static lights is simulated with lightmaps,\nwhich looks very natural."},
 	{"Wenn angekreuzt, erzeugen Schuesse aus Maschinenkanonen\nfeine Rauchspuren.", "If checked, shots from Gatling guns create fine smoke trails."},
+	{"Wenn angekreuzt, werden Roboter in Descent 1-Missionen\nvon der originalen Descent 1 KI gesteuert.", 
+	 "If checked, robots are controlled by the original Descent 1\nAI in Descent missions."},
 #if 0
 	{"", ""},
 #endif

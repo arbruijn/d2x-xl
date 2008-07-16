@@ -653,7 +653,7 @@ switch (nType) {
 			objP->mType.physInfo.flags |= (PF_LEVELLING);
 			objP->shields = ROBOTINFO (objP->id).strength;
 			objP->cType.aiInfo.behavior = AIB_NORMAL;
-			gameData.ai.localInfo [nObject].playerAwarenessType = PA_WEAPON_ROBOT_COLLISION;
+			gameData.ai.localInfo [nObject].playerAwarenessType = WEAPON_ROBOT_COLLISION;
 			gameData.ai.localInfo [nObject].playerAwarenessTime = F1_0*3;
 			objP->cType.aiInfo.CURRENT_STATE = AIS_LOCK;
 			objP->cType.aiInfo.GOAL_STATE = AIS_LOCK;

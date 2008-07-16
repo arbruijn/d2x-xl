@@ -91,13 +91,12 @@ GrInitBitmap (&canv->cvBitmap, pixtype, 0, 0, w, h, wreal, pixdata, 1);
 
 void GrInitSubCanvas(gsrCanvas *newCanv, gsrCanvas *src, int x, int y, int w, int h)
 {
-	newCanv->cvColor = src->cvColor;
-	newCanv->cvDrawMode = src->cvDrawMode;
-	newCanv->cvFont = src->cvFont;
-	newCanv->cvFontFgColor = src->cvFontFgColor;
-	newCanv->cvFontBgColor = src->cvFontBgColor;
-
-	GrInitSubBitmap (&newCanv->cvBitmap, &src->cvBitmap, x, y, w, h);
+newCanv->cvColor = src->cvColor;
+newCanv->cvDrawMode = src->cvDrawMode;
+newCanv->cvFont = src->cvFont;
+newCanv->cvFontFgColor = src->cvFontFgColor;
+newCanv->cvFontBgColor = src->cvFontBgColor;
+GrInitSubBitmap (&newCanv->cvBitmap, &src->cvBitmap, x, y, w, h);
 }
 
 //	-----------------------------------------------------------------------------
