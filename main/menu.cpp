@@ -4313,7 +4313,7 @@ void GameplayOptionsMenu (void)
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
 			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
 			optAwareness = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optHeadlightOnWhenPickedUp = -1,
-			optRotateMarkers = -1, optLoadout, optUseD1AI;
+			optRotateMarkers = -1, optLoadout, optUseD1AI = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szMaxSmokeGrens [50];
 

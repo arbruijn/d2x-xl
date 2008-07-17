@@ -49,8 +49,8 @@ if (gameStates.app.bMultiThreaded)
 
 int RunRenderThreads (int nTask)
 {
-	time_t	t0 = 0, t2 = 0;
 #ifdef _DEBUG
+	time_t	t0 = 0, t2 = 0;
 	static	int nLockups = 0;
 #endif
 

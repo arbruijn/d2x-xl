@@ -38,6 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gauges.h"
 #include "hud_defs.h"
 #include "statusbar.h"
+#include "slowmotion.h"
 
 #define SHOW_PLAYER_IP		0
 

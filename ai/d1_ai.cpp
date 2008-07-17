@@ -40,7 +40,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "effects.h"
 #include "timer.h"
 #include "sounds.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "multibot.h"
 #include "multi.h"
 #include "network.h"
@@ -82,7 +82,7 @@ int	Attack_scale = 24;
 #define	ANIM_RATE		(F1_0/16)
 #define	DELTA_ANG_SCALE	16
 
-byte D1_Mike_to_matt_xlate[] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
+ubyte D1_Mike_to_matt_xlate[] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
 
 int	john_cheats_index_1;		//	POBOYS		detonate reactor
 int	john_cheats_index_2;		//	PORGYS		high speed weapon firing
@@ -134,14 +134,14 @@ int	D1_AI_evaded=0;
 //	22	quad-laser
 // 23 super boss
 
-// byte	super_boss_gate_list[] = {0, 1, 2, 9, 11, 16, 18, 19, 21, 22, 0, 9, 9, 16, 16, 18, 19, 19, 22, 22};
-byte	super_boss_gate_list[] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20, 22, 0, 8, 11, 19, 20, 8, 20, 8};
+// ubyte	super_boss_gate_list[] = {0, 1, 2, 9, 11, 16, 18, 19, 21, 22, 0, 9, 9, 16, 16, 18, 19, 19, 22, 22};
+ubyte	super_boss_gate_list[] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20, 22, 0, 8, 11, 19, 20, 8, 20, 8};
 #define	D1_MAX_GATE_INDEX	( sizeof(super_boss_gate_list) / sizeof(super_boss_gate_list[0]) )
 
 int	D1_AI_info_enabled=0;
 
 int	Ugly_robot_cheat = 0, Ugly_robot_texture = 0;
-byte	Enable_john_cheat_1 = 0, Enable_john_cheat_2 = 0, Enable_john_cheat_3 = 0, Enable_john_cheat_4 = 0;
+ubyte	Enable_john_cheat_1 = 0, Enable_john_cheat_2 = 0, Enable_john_cheat_3 = 0, Enable_john_cheat_4 = 0;
 
 ubyte	john_cheats_3[2*JOHN_CHEATS_SIZE_3+1] = { KEY_Y ^ 0x67, 
 																KEY_E ^ 0x66, 
@@ -216,7 +216,7 @@ int	D1_AI_animation_test=0;
 //	 Third dimension is goal state.
 //	Result is new goal state.
 //	ERR_ means something impossible has happened.
-byte D1_AI_transition_table[D1_AI_MAX_EVENT][D1_AI_MAX_STATE][D1_AI_MAX_STATE] = {
+ubyte D1_AI_transition_table[D1_AI_MAX_EVENT][D1_AI_MAX_STATE][D1_AI_MAX_STATE] = {
 	{
 	//	Event = AIE_FIRE, a nearby tObject fired
 	//	none			rest			srch			lock			flin			fire			reco				// CURRENT is rows, GOAL is columns
@@ -312,7 +312,7 @@ int	Lunacy = 0;
 int	Diff_save = 1;
 
 fix	primaryFiringWaitCopy[MAX_ROBOT_TYPES];
-byte	nRapidFireCountCopy[MAX_ROBOT_TYPES];
+ubyte	nRapidFireCountCopy[MAX_ROBOT_TYPES];
 
 void do_lunacy_on(void)
 {
@@ -1423,7 +1423,6 @@ void move_object_to_legal_spot(tObject *objP)
 //	If tSegment center is nearer than 2 radii, move it to center.
 void move_towards_segment_center(tObject *objP)
 {
-	int			nSegment = objP->nSegment;
 	fix			dist_to_center;
 	vmsVector	vSegCenter, goal_dir;
 
@@ -1453,7 +1452,7 @@ void move_towards_segment_center(tObject *objP)
 //	-----------------------------------------------------------------------------------------------------------
 //	Return true if door can be flown through by a suitable type robot.
 //	Only brains and avoid robots can open doors.
-int D1_AI_door_is_openable(tObject *objP, tSegment *segP, int sidenum)
+int ai_door_is_openable(tObject *objP, tSegment *segP, int sidenum)
 {
 	int	nWall;
 
@@ -1495,7 +1494,7 @@ int openable_doors_in_segment(tObject *objP)
 	int	nSegment = objP->nSegment;
 
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-		if (gameData.segs.segments[nSegment].sides[i].nWall != -1) {
+		if (IS_WALL (gameData.segs.segments[nSegment].sides[i].nWall)) {
 			int	nWall = gameData.segs.segments[nSegment].sides[i].nWall;
 			if ((WALLS[nWall].nType == WALL_DOOR) && (WALLS[nWall].keys == KEY_NONE) && (WALLS[nWall].state == WALL_DOOR_CLOSED) && !(WALLS[nWall].flags & WALL_DOOR_LOCKED))
 				return i;

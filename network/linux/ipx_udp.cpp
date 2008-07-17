@@ -644,15 +644,14 @@ broadnum = d;
 
 static void portshift (const char *cs)
 {
-long port;
-unsigned short ports = atol (cs);
+unsigned short port = atol (cs);
 
 if (port<-PORTSHIFT_TOLERANCE || port>+PORTSHIFT_TOLERANCE)
 	//msg ("Invalid portshift in \"%s\", tolerance is +/-%d",cs,PORTSHIFT_TOLERANCE)
 	;
 else 
-	ports = htons (port);
-memcpy (qhbuf + 4, &ports, 2);
+	port = htons (port);
+memcpy (qhbuf + 4, &port, 2);
 }
 
 //------------------------------------------------------------------------------

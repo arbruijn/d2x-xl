@@ -106,48 +106,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define  REMOTE_SLOT_NUM flags[9]			// What slot # is this robot in for remote control purposes (multiplayer use only)
 #define  MULTI_ANGER		flags[10]		// How angry is a robot in multiplayer mode
 
-//	This is the stuff that is permanent for an AI object and is therefore saved to disk.
-typedef struct D1_AI_static {
-	ubyte			behavior;					// 
-	byte			flags[MAX_D1_AI_FLAGS];		// various flags, meaning defined by constants
-	short			hide_segment;				//	Segment to go to for hiding.
-	short			hide_index;					//	Index in Path_seg_points
-	short			path_length;				//	Length of hide path.
-	short			cur_path_index;			//	Current index in path.
-
-	short			follow_path_start_seg;	//	Start segment for robot which follows path.
-	short			follow_path_end_seg;		//	End segment for robot which follows path.
-
-	int			danger_laser_signature;
-	short			danger_laser_num;
-
-//	byte			extras[28];					//	32 extra bytes for storing stuff so we don't have to change versions on disk
-} D1_AI_static;
-
-//	This is the stuff which doesn't need to be saved to disk.
-typedef struct ai_local {
-//	These used to be bytes, changed to ints so I could set watchpoints on them.
-	byte			player_awareness_type;	//	type of awareness of player
-	byte			retry_count;				//	number of retries in physics last time this object got moved.
-	byte			consecutive_retries;		//	number of retries in consecutive frames (ie, without a retry_count of 0)
-	byte			mode;							//	current mode within behavior
-	byte			previous_visibility;		//	Visibility of player last time we checked.
-	byte			rapidfire_count;			//	number of shots fired rapidly
-	short			goal_segment;				//	goal segment for current path
-	fix			last_see_time, last_attack_time;	//	For sound effects, time at which player last seen, attacked
-
-	fix			wait_time;					// time in seconds until something happens, mode dependent
-	fix			next_fire;					// time in seconds until can fire again
-	fix			player_awareness_time;	//	time in seconds robot will be aware of player, 0 means not aware of player
-	fix			time_player_seen;			//	absolute time in seconds at which player was last seen, might cause to go into follow_path mode
-	fix			time_player_sound_attacked;			//	absolute time in seconds at which player was last seen with visibility of 2.
-	fix			next_misc_sound_time;			//	absolute time in seconds at which this robot last made an angry or lurking sound.
-	fix			time_since_processed;	//	time since this robot last processed in do_D1_AI_frame
-	vmsAngVec	goal_angles[MAX_SUBMODELS];	//angles for each subobject
-	vmsAngVec	delta_angles[MAX_SUBMODELS];	//angles for each subobject
-	byte			goal_state[MAX_SUBMODELS];	// Goal state for this sub-object
-	byte			achieved_state[MAX_SUBMODELS];	// Last achieved state
-} ai_local;
 
 #define	D1_MAX_POINT_SEGS	2500
 
@@ -155,7 +113,5 @@ typedef struct ai_local {
 //	and the time at which he was uncloaked.  We should store this for each robot, but that's memory expensive.
 //extern	fix			Last_uncloaked_time;
 //extern	vmsVector	Last_uncloaked_position;
-
-extern	void	D1_AI_do_cloak_stuff(void);
 
 #endif

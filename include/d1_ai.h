@@ -28,8 +28,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int Boss_dying;
 
-extern ai_local	Ai_local_info[MAX_OBJECTS_D2];
-
 void move_towards_segment_center(tObject *objP);
 int gate_in_robot(int type, int segnum);
 void do_ai_movement(tObject *objP);

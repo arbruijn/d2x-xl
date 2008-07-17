@@ -372,8 +372,7 @@ r = (cf.file != NULL) && LoadTGA (&cf, bmP, alpha, brightness, bGrayScale, bReve
 if (r && CompressTGA (bmP))
 	SaveS3TC (bmP, pszFolder, pszFile);
 #endif
-if (&cf)
-	CFClose (&cf);
+CFClose (&cf);
 #if 1//def _DEBUG
 strncpy (bmP->szName, pszFile, sizeof (bmP->szName) - 1);
 if ((psz = strrchr (bmP->szName, '.')))
