@@ -5,10 +5,8 @@
 #include "inferno.h"
 #include "text.h"
 #include "error.h"
-#include "cfile.h"
 #include "u_mem.h"
 #include "interp.h"
-#include "oof.h"
 #include "newmenu.h"
 #include "hiresmodels.h"
 

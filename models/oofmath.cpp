@@ -8,25 +8,17 @@
 #endif
 //#include  "oof.h
 #include "inferno.h"
-#include "cfile.h"
 #include "args.h"
 #include "u_mem.h"
-#include "gr.h"
 #include "error.h"
 #include "globvars.h"
-#include "3d.h"
 #include "light.h"
 #include "dynlight.h"
-#include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"
 #include "network.h"
-#include "vecmat.h"
 #include "render.h"
 #include "strutil.h"
-#include "hudmsg.h"
-#include "tga.h"
-#include "oof.h"
 
 //------------------------------------------------------------------------------
 

@@ -25,95 +25,49 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include <unistd.h>
 #endif
 
-#include "pstypes.h"
-#include "console.h"
 #include "inferno.h"
-#include "game.h"
-#include "player.h"
 #include "key.h"
-#include "object.h"
 #include "menu.h"
 #include "physics.h"
 #include "error.h"
 #include "joy.h"
 #include "mono.h"
 #include "iff.h"
-#include "pcx.h"
 #include "timer.h"
 #include "render.h"
 #include "transprender.h"
-#include "laser.h"
 #include "screens.h"
-#include "textures.h"
 #include "slew.h"
 #include "gauges.h"
 #include "texmap.h"
-#include "3d.h"
-#include "effects.h"
 #include "gameseg.h"
-#include "wall.h"
-#include "ai.h"
-#include "digi.h"
-#include "ibitblt.h"
 #include "u_mem.h"
-#include "palette.h"
-#include "morph.h"
 #include "light.h"
-#include "dynlight.h"
-#include "headlight.h"
 #include "newdemo.h"
-#include "weapon.h"
-#include "sounds.h"
-#include "args.h"
-#include "loadgame.h"
 #include "automap.h"
 #include "text.h"
 #include "gamerend.h"
-#include "powerup.h"
-#include "newmenu.h"
-#include "network.h"
 #include "network_lib.h"
 #include "gamefont.h"
 #include "gamepal.h"
-#include "endlevel.h"
 #include "joydefs.h"
 #include "kconfig.h"
 #include "mouse.h"
 #include "briefings.h"
-#include "gr.h"
-#include "playsave.h"
-#include "movie.h"
-#include "scores.h"
 #include "gamecntl.h"
 #include "systemkeys.h"
-
-#if defined (TACTILE)
-#include "tactile.h"
-#endif
-
-#include "pa_enabl.h"
-#include "multi.h"
-#include "desc_id.h"
-#include "reactor.h"
-#include "pcx.h"
 #include "state.h"
-#include "piggy.h"
-#include "multibot.h"
-#include "ai.h"
-#include "rbaudio.h"
-#include "switch.h"
 #include "escort.h"
-#include "collide.h"
-#include "ogl_defs.h"
-#include "object.h"
-#include "sphere.h"
 #include "cheats.h"
 #include "input.h"
-#include "render.h"
 #include "marker.h"
 
+#if defined (TACTILE)
+#	include "tactile.h"
+#endif
+
 #ifdef EDITOR
-#include "editor/editor.h"
+#	include "editor/editor.h"
 #endif
 
 //#define _MARK_ON 1
@@ -122,18 +76,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <wsample.h>		//should come after inferno.h to get mark setting
 #endif
 #endif
-
-#ifdef SDL_INPUT
-#ifdef __macosx__
-# include <SDL/SDL.h>
-#else
-# include <SDL.h>
-#endif
-#endif
-
-void FullPaletteSave(void);
-
-void SetFunctionMode (int);
 
 // Global Variables -----------------------------------------------------------
 
@@ -183,9 +125,6 @@ else if ((gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVc
 //------------------------------------------------------------------------------
 
 char *Pause_msg;
-
-extern void GameRenderFrame();
-extern void show_extraViews();
 
 //------------------------------------------------------------------------------
 
@@ -932,7 +871,6 @@ void HandleGameKey(int key)
 //	--------------------------------------------------------------------------
 
 void toggle_movie_saving(void);
-extern char Language[];
 
 #ifdef _DEBUG
 

@@ -19,17 +19,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <ctype.h>
 #include <time.h>
 #include <math.h>
 
 #include "error.h"
 #include "inferno.h"
-#include "gr.h"
-#include "mono.h"
 #include "key.h"
-#include "palette.h"
-#include "game.h"
 #include "gamefont.h"
 #include "iff.h"
 #include "u_mem.h"
@@ -38,35 +33,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "mouse.h"
 #include "kconfig.h"
 #include "gauges.h"
-#include "joydefs.h"
-#include "songs.h"
 #include "render.h"
-#include "digi.h"
-#include "newmenu.h"
 #include "endlevel.h"
-#include "multi.h"
 #include "timer.h"
 #include "text.h"
-#include "player.h"
-#include "menu.h"
 #include "automap.h"
-#include "args.h"
-#include "light.h"
-#include "ai.h"
-#include "reactor.h"
-#include "network.h"
-#include "hudmsg.h"
-#include "ogl_defs.h"
-#include "object.h"
-#include "inferno.h"
-#include "kconfig.h"
 #include "input.h"
 #include "gamecntl.h"
 #if defined (TACTILE)
- #include "tactile.h"
+#	include "tactile.h"
 #endif
-#include "collide.h"
-#include "weapon.h"
 
 #ifdef USE_LINUX_JOY
 #include "joystick.h"
@@ -90,7 +66,6 @@ tControlInfo Controls [4];
 static int	kcFrameCount = 0;
 static int	nMaxTurnRate;
 
-#define JOYMOUSE_SENSITIVITY	2
 #define FASTPITCH	(gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? extraGameInfo [IsMultiGame].bFastPitch : 2)
 
 //------------------------------------------------------------------------------
@@ -128,17 +103,6 @@ return 1;
 //added on 2/7/99 by Victor Rachels for jostick state setting
 int d2xJoystick_ostate [20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 //end this section adition - VR
-#endif
-
-#ifdef _DEBUG
-# define TT_THRESHOLD 0xFFFF
-# define DEFTIME time_t _t0 = SDL_GetTicks (); time_t _t = _t0; time_t _dt;
-# define TAKETIME (_c,_i) _dt = SDL_GetTicks (); _t = _dt;
-# define TAKETIME0 (_c) _dt = SDL_GetTicks ();
-#else
-# define TAKETIME (_c,_i)
-# define TAKETIME0 (_c)
-# define DEFTIME
 #endif
 
 //------------------------------------------------------------------------------
