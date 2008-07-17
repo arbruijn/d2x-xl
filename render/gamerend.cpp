@@ -1001,7 +1001,7 @@ StartTime (0);
 
 extern grsBitmap bmBackground;
 
-void copy_background_rect (int left, int top, int right, int bot)
+void CopyBackgroundRect (int left, int top, int right, int bot)
 {
 	grsBitmap *bm = &bmBackground;
 	int x, y;
@@ -1057,17 +1057,17 @@ void FillBackground ()
 	dy = y;
 
 	GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-	copy_background_rect (x-dx, y-dy, x-1, y+h+dy-1);
-	copy_background_rect (x+w, y-dy, grdCurCanv->cv_w-1, y+h+dy-1);
-	copy_background_rect (x, y-dy, x+w-1, y-1);
-	copy_background_rect (x, y+h, x+w-1, y+h+dy-1);
+	CopyBackgroundRect (x-dx, y-dy, x-1, y+h+dy-1);
+	CopyBackgroundRect (x+w, y-dy, grdCurCanv->cv_w-1, y+h+dy-1);
+	CopyBackgroundRect (x, y-dy, x+w-1, y-1);
+	CopyBackgroundRect (x, y+h, x+w-1, y+h+dy-1);
 
 	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING) {
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
-		copy_background_rect (x-dx, y-dy, x-1, y+h+dy-1);
-		copy_background_rect (x+w, y-dy, x+w+dx-1, y+h+dy-1);
-		copy_background_rect (x, y-dy, x+w-1, y-1);
-		copy_background_rect (x, y+h, x+w-1, y+h+dy-1);
+		CopyBackgroundRect (x-dx, y-dy, x-1, y+h+dy-1);
+		CopyBackgroundRect (x+w, y-dy, x+w+dx-1, y+h+dy-1);
+		CopyBackgroundRect (x, y-dy, x+w-1, y-1);
+		CopyBackgroundRect (x, y+h, x+w-1, y+h+dy-1);
 	}
 
 }

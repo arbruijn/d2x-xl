@@ -21,15 +21,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "hudmsg.h"
-
 #include "inferno.h"
 #include "error.h"
 #include "text.h"
 #include "gamefont.h"
 #include "input.h"
-#include "object.h"
-#include "ogl_defs.h"
 #include "ogl_bitmap.h"
 #include "ogl_hudstuff.h"
 #include "slowmotion.h"

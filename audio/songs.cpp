@@ -25,26 +25,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "error.h"
-#include "pstypes.h"
 #include "args.h"
-#include "songs.h"
-#include "mono.h"
-#include "cfile.h"
-#include "digi.h"
 #include "rbaudio.h"
 #include "kconfig.h"
 #include "timer.h"
-#include "mission.h"
 #include "u_mem.h"
 
 char CDROM_dir[40] = ".";
 
 
-extern void DigiStopCurrentSong ();
-
 //0 if redbook is no playing, else the track number
 
-extern int CD_blast_mixer ();
+int CD_blast_mixer (void);
 
 #define REDBOOK_VOLUME_SCALE  (255/3)		//255 is MAX
 

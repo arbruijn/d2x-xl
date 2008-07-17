@@ -28,16 +28,6 @@
 #include "inferno.h"
 #include "u_mem.h"
 #include "error.h"
-#include "mono.h"
-#include "fix.h"
-#include "vecmat.h"
-#include "gr.h" // needed for piggy.h
-#include "piggy.h"
-#include "sounds.h"
-#include "wall.h"
-#include "newdemo.h"
-#include "kconfig.h"
-#include "inferno.h"
 #include "text.h"
 
 #define SDL_MIXER_CHANNELS	2
@@ -47,9 +37,7 @@
 //end changes by adb
 #define SOUND_BUFFER_SIZE 512
 
-#define MIN_VOLUME 10
 #define D2_SOUND_FORMAT	AUDIO_U8	//AUDIO_S16LSB
-
 
 /* This table is used to add two sound values together and pin
  * the value to avoid overflow.  (used with permission from ARDI)
@@ -105,12 +93,6 @@ static const Uint8 mix8[] =
   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 };
-
-
-//added/changed on 980905 by adb to make sfx xVolume work, on 990221 by adb changed F1_0 to F1_0 / 2
-#define SOUND_MAX_VOLUME (F1_0 / 2)
-
-//end edit by adb
 
 //------------------------------------------------------------------------------
 

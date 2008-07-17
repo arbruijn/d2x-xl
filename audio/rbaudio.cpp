@@ -24,11 +24,9 @@
 #endif
 
 #include "inferno.h"
-#include "pstypes.h"
 #include "strutil.h"
 #include "error.h"
 #include "args.h"
-#include "cfile.h"
 #include "rbaudio.h"
 #include "text.h"
 

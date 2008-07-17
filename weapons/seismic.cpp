@@ -20,12 +20,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 
 #include "inferno.h"
-#include "weapon.h"
 #include "error.h"
-#include "sounds.h"
 #include "text.h"
-#include "multi.h"
 #include "network.h"
+
 //	-----------------------------------------------------------------------------
 
 #define	ESHAKER_SHAKE_TIME		(F1_0*2)
@@ -90,8 +88,6 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 }
 
 //	-----------------------------------------------------------------------------
-
-extern void MultiSendSeismic (fix,fix);
 
 #define	SEISMIC_DISTURBANCE_DURATION	(F1_0*5)
 

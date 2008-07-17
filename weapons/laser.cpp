@@ -22,41 +22,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 
 #include "inferno.h"
-#include "game.h"
-#include "bm.h"
-#include "object.h"
 #include "objrender.h"
 #include "lightning.h"
 #include "trackobject.h"
-#include "laser.h"
 #include "omega.h"
-#include "args.h"
-#include "segment.h"
-#include "fvi.h"
 #include "segpoint.h"
 #include "error.h"
-#include "mono.h"
 #include "key.h"
 #include "texmap.h"
 #include "textures.h"
 #include "render.h"
-#include "vclip.h"
 #include "fireball.h"
-#include "polyobj.h"
-#include "robot.h"
-#include "weapon.h"
 #include "newdemo.h"
 #include "timer.h"
-#include "player.h"
-#include "sounds.h"
-#include "network.h"
-#include "ai.h"
-#include "modem.h"
-#include "powerup.h"
-#include "multi.h"
 #include "physics.h"
-#include "multi.h"
-#include "hudmsg.h"
 #include "gameseg.h"
 #include "input.h"
 #include "dropobject.h"
@@ -65,13 +44,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "tactile.h"
 #endif
 
-int FindHomingObjectComplete (vmsVector *curpos, tObject *tracker, int track_objType1, int track_objType2);
-
 void BlastNearbyGlass (tObject *objP, fix damage);
-void NDRecordGuidedEnd ();
-void NDRecordGuidedStart ();
-
-extern int bDoingLightingHack;
+void NDRecordGuidedEnd (void);
+void NDRecordGuidedStart (void);
 
 //	-------------------------------------------------------------------------------------------------------------------------------
 //	***** HEY ARTISTS!!*****
@@ -832,9 +807,6 @@ return nMslSlowDown [i] * f2fl (gameData.time.xGame - gameData.objs.xCreationTim
 
 //-------------------------------------------------------------------------------------------
 //	Set object *objP's orientation to (or towards if I'm ambitious) its velocity.
-
-#define HOMER_MAX_FPS	40
-#define HOMER_MIN_DELAY (1000 / HOMER_MAX_FPS)
 
 void HomingMissileTurnTowardsVelocity (tObject *objP, vmsVector *vNormVel)
 {

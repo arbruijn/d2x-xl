@@ -23,18 +23,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "u_mem.h"
 #include "strutil.h"
-#include "console.h"
 #include "gauges.h"
 #include "error.h"
 #include "newdemo.h"
 #include "gamefont.h"
 #include "screens.h"
-#include "hudmsg.h"
 #include "text.h"
 #include "args.h"
 
-void SetFunctionMode (int);
-void copy_background_rect (int left,int top,int right,int bot);
+void CopyBackgroundRect (int left,int top,int right,int bot);
 char szDisplayedBackgroundMsg [2][HUD_MESSAGE_LENGTH] = {"",""};
 
 int nLastMsgYCrd = -1;
@@ -43,10 +40,7 @@ int bMSGPlayerMsgs = 0;
 int bNoMsgRedundancy = 0;
 int nModexHUDMsgs;
 
-#define LHX (x)      (gameStates.render.fonts.bHires?2* (x):x)
-#define LHY (y)      (gameStates.render.fonts.bHires? (24* (y))/10:y)
-
-extern gsrCanvas *PrintToCanvas (char *s,grsFont *font, unsigned int fc, unsigned int bc, int doubleFlag);
+gsrCanvas *PrintToCanvas (char *s,grsFont *font, unsigned int fc, unsigned int bc, int doubleFlag);
 
 // ----------------------------------------------------------------------------
 
@@ -57,7 +51,7 @@ if (((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.co
 	gsrCanvas	*canv_save = grdCurCanv;
 
 GrSetCurrentCanvas (GetCurrentGameScreen ());
-copy_background_rect (0, nLastMsgYCrd, grdCurCanv->cvBitmap.bmProps.w, nLastMsgYCrd+nLastMsgHeight-1);
+CopyBackgroundRect (0, nLastMsgYCrd, grdCurCanv->cvBitmap.bmProps.w, nLastMsgYCrd+nLastMsgHeight-1);
 GrSetCurrentCanvas (canv_save);
 	nLastMsgYCrd = -1;
 	}
@@ -91,9 +85,9 @@ for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 //	print to buffer, double heights, and blit bitmap to screen
 void HUDModexMessage (int x, int y, char *s, grsFont *font, unsigned int color)
 {
-gsrCanvas *temp_canv = PrintToCanvas (s, font, color, 0, 1);
-GrBitmapM (x, y, &temp_canv->cvBitmap, 2);
-GrFreeCanvas (temp_canv);
+gsrCanvas *tempCanv = PrintToCanvas (s, font, color, 0, 1);
+GrBitmapM (x, y, &tempCanv->cvBitmap, 2);
+GrFreeCanvas (tempCanv);
 }
 
 // ----------------------------------------------------------------------------

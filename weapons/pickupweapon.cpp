@@ -20,11 +20,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 
 #include "inferno.h"
-#include "weapon.h"
 #include "error.h"
-#include "sounds.h"
 #include "text.h"
-#include "multi.h"
 #include "network.h"
 #include "newdemo.h"
 #include "gauges.h"

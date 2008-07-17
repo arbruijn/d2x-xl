@@ -18,38 +18,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <fcntl.h> 
 #include <string.h>
-#include <ctype.h>
 #include <math.h>
 
-#include "fix.h"
 #include "inferno.h"
+#include "fix.h"
 #include "mono.h"
 #include "timer.h"
 #include "joy.h"
-#include "digi.h"
-#include "sounds.h"
-#include "args.h"
 #include "key.h"
 #include "newdemo.h"
-#include "game.h"
 #include "error.h"
-#include "wall.h"
-#include "cfile.h"
-#include "piggy.h"
 #include "text.h"
 #include "kconfig.h"
 #include "gameseg.h"
-
-#ifdef __macosx__
-# include <SDL/SDL.h>
-#else
-# include <SDL.h>
-# if USE_SDL_MIXER
-#  include <SDL_mixer.h>
-# endif
-#endif
 
 #define SOF_USED				1 		// Set if this sample is used
 #define SOF_PLAYING			2		// Set if this sample is playing on a channel
@@ -365,7 +347,7 @@ if (soP->channel > -1)
 
 //------------------------------------------------------------------------------
 //sounds longer than this get their 3d aspects updated
-#define SOUND_3D_THRESHHOLD  (gameOpts->sound.digiSampleRate * 3 / 2)	//1.5 seconds
+//#define SOUND_3D_THRESHHOLD  (gameOpts->sound.digiSampleRate * 3 / 2)	//1.5 seconds
 
 int DigiLinkSoundToObject3 (
 	short nOrgSound, short nObject, int bForever, fix maxVolume, fix maxDistance, 

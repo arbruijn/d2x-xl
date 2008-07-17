@@ -5,13 +5,8 @@
 
 #include "inferno.h"
 #include "hmpfile.h"
-#include "cfile.h"
-#include "digi.h"
-#include "cfile.h"
 #include "byteswap.h"
 #include "u_mem.h"
-
-extern void PumpMessages(void);
 
 //------------------------------------------------------------------------------
 

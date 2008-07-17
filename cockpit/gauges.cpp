@@ -36,8 +36,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_hudstuff.h"
 #include "playsave.h"
 #include "gauges.h"
-#include "slowmotion.h"
-#include "hudmsg.h"
 #include "hud_defs.h"
 #include "statusbar.h"
 
@@ -662,8 +660,6 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-#define MAX_SHOWN_LIVES 4
-
 extern int SW_y [2];
 
 void HUDShowHomingWarning (void)
@@ -1233,11 +1229,7 @@ else if (LOCALPLAYER.lives > 1)  {
 
 //	-----------------------------------------------------------------------------
 
-#ifdef PIGGY_USE_PAGING
-extern int Piggy_bitmap_cache_next;
-#endif
-
-void ShowTime ()
+void ShowTime (void)
 {
 	int secs = f2i (LOCALPLAYER.timeLevel) % 60;
 	int mins = f2i (LOCALPLAYER.timeLevel) / 60;

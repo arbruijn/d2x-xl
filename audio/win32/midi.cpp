@@ -2,20 +2,10 @@
 #include <stdio.h>
 
 #include "inferno.h"
-#include "digi.h"
-#include "cfile.h"
 #include "error.h"
 #include "hmpfile.h"
 
-#if USE_SDL_MIXER
-#	ifdef __macosx__
-#		include <SDL/SDL_mixer.h>
-#	else
-#		include <SDL_mixer.h>
-#	endif
-
 Mix_Music *mixMusic = NULL;
-#endif
 
 hmp_file *hmp = NULL;
 

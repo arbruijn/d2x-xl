@@ -21,32 +21,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 
 #include "inferno.h"
-#include "mono.h"
-#include "gr.h"
-#include "wall.h"
-#include "switch.h"
-#include "inferno.h"
-#include "segment.h"
 #include "error.h"
 #include "gameseg.h"
-#include "game.h"
-#include "bm.h"
-#include "vclip.h"
-#include "player.h"
 #include "gauges.h"
 #include "text.h"
 #include "fireball.h"
 #include "textures.h"
-#include "sounds.h"
 #include "newdemo.h"
-#include "multi.h"
-#include "loadgame.h"
-#include "laser.h"		//	For seeing if a flare is stuck in a tWall.
 #include "collide.h"
-#include "effects.h"
-#include "ogl_defs.h"
 #include "render.h"
-#include "hudmsg.h"
 #include "light.h"
 #include "dynlight.h"
 
@@ -82,11 +65,6 @@ char	pszWallNames [7][10] = {
 	"EXTERNAL "
 };
 #endif
-
-// Function prototypes
-void KillStuckObjects(int wallnum);
-
-
 
 //-----------------------------------------------------------------
 
@@ -641,12 +619,12 @@ for (i = 0; i < 4; i++) {
 // start the transition from open -> closed tWall
 void StartWallDecloak (tSegment *segP, short nSide)
 {
-	tWall *wallP;
-	tCloakingWall *d;
-	short nConnSide;
-	tSegment *connSegP;
-	int i;
-	short nConnWall;
+	tWall				*wallP;
+	tCloakingWall	*d;
+	short				nConnSide;
+	tSegment			*connSegP;
+	int				i;
+	short				nConnWall;
 
 if (gameData.demo.nState == ND_STATE_PLAYBACK) 
 	return;
@@ -684,7 +662,7 @@ else {
 wallP->state = WALL_DOOR_DECLOAKING;
 // So that door can't be shot while opening
 connSegP = gameData.segs.segments + segP->children [nSide];
-nConnSide = FindConnectedSide(segP, connSegP);
+nConnSide = FindConnectedSide (segP, connSegP);
 Assert(nConnSide != -1);
 nConnWall = WallNumP (connSegP, nConnSide);
 if (IS_WALL (nConnWall))
