@@ -942,7 +942,7 @@ switch (o.renderType) {
 int	bJustStartedRecording = 0, 
 		bJustStartedPlayback = 0;
 
-void NDRecordStartDemo ()
+void NDRecordStartDemo (void)
 {
 	int i;
 
@@ -1563,7 +1563,7 @@ NDWriteByte (ND_EVENT_NEW_LEVEL);
 NDWriteByte ((sbyte)level_num);
 NDWriteByte ((sbyte)gameData.missions.nCurrentLevel);
 
-if (bJustStartedRecording==1) {
+if (bJustStartedRecording == 1) {
 	NDWriteInt (gameData.walls.nWalls);
 	for (i = 0; i < gameData.walls.nWalls; i++) {
 		NDWriteByte (gameData.walls.walls [i].nType);
@@ -1573,7 +1573,7 @@ if (bJustStartedRecording==1) {
 		nSide = gameData.walls.walls [i].nSide;
 		NDWriteShort (segP->sides [nSide].nBaseTex);
 		NDWriteShort (segP->sides [nSide].nOvlTex | (segP->sides [nSide].nOvlOrient << 14));
-		bJustStartedRecording=0;
+		bJustStartedRecording = 0;
 		}
 	}
 StartTime (0);
@@ -2865,7 +2865,7 @@ gameData.objs.nLastObject [0] = nCurObjs;
 
 //	-----------------------------------------------------------------------------
 
-void NDPlayBackOneFrame ()
+void NDPlayBackOneFrame (void)
 {
 	int nFramesBack, i, level;
 	static fix base_interpolTime = 0;
@@ -3030,7 +3030,7 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void NDStartRecording ()
+void NDStartRecording (void)
 {
 gameData.demo.nSize = GetDiskFree ();
 gameData.demo.nSize -= 100000;
@@ -3130,7 +3130,7 @@ CFClose (&ndOutFile);
 //	-----------------------------------------------------------------------------
 
 char demoname_allowed_chars [] = "azAZ09__--";
-void NDStopRecording ()
+void NDStopRecording (void)
 {
 	tMenuItem m [6];
 	int exit = 0;
