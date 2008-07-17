@@ -20,28 +20,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 
 #include "inferno.h"
-#include "pstypes.h"
-#include "mono.h"
 #include "key.h"
 #include "joy.h"
 #include "timer.h"
 #include "error.h"
-#include "game.h"
-#include "object.h"
-#include "player.h"
 #include "controls.h"
-#include "joydefs.h"
 #include "render.h"
-#include "args.h"
-#include "palette.h"
 #include "mouse.h"
 #include "kconfig.h"
-#include "laser.h"
-#include "network.h"
-#include "multi.h"
-#include "vclip.h"
-#include "fireball.h"
-#include "hudmsg.h"
 #include "input.h"
 
 // ----------------------------------------------------------------------------

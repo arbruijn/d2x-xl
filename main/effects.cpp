@@ -18,22 +18,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <string.h>
 
 #include "inferno.h"
-#include "gr.h"
-#include "game.h"
-#include "vclip.h"
-#include "effects.h"
-#include "bm.h"
-#include "piggy.h"
-#include "mono.h"
 #include "u_mem.h"
 #include "textures.h"
-#include "reactor.h"
-#include "ogl_defs.h"
 #include "error.h"
-#include "hudmsg.h"
 
 // ----------------------------------------------------------------------------
 

@@ -23,16 +23,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <time.h>
 
 #include "inferno.h"
-#include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_render.h"
-#include "pstypes.h"
-#include "console.h"
-#include "gr.h"
-#include "game.h"
 #include "key.h"
 #include "object.h"
-#include "objrender.h"
 #include "objeffects.h"
 #include "objsmoke.h"
 #include "transprender.h"
@@ -44,87 +38,38 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "iff.h"
 #include "pcx.h"
 #include "timer.h"
-#include "cameras.h"
 #include "render.h"
-#include "laser.h"
 #include "screens.h"
 #include "textures.h"
 #include "slew.h"
 #include "gauges.h"
 #include "texmap.h"
-#include "3d.h"
-#include "effects.h"
 #include "menu.h"
 #include "gameseg.h"
-#include "wall.h"
-#include "ai.h"
-#include "fuelcen.h"
-#include "digi.h"
-#include "ibitblt.h"
 #include "u_mem.h"
-#include "palette.h"
-#include "morph.h"
 #include "light.h"
 #include "newdemo.h"
 #include "collide.h"
-#include "weapon.h"
-#include "sounds.h"
-#include "args.h"
-#include "loadgame.h"
 #include "automap.h"
 #include "text.h"
-#include "powerup.h"
 #include "fireball.h"
-#include "newmenu.h"
-#ifdef NETWORK
-#include "network.h"
-#endif
 #include "gamefont.h"
-#include "endlevel.h"
-#include "joydefs.h"
 #include "kconfig.h"
 #include "mouse.h"
-#include "switch.h"
-#include "controls.h"
-#include "songs.h"
 #include "gamepal.h"
-#include "particles.h"
-#include "lightmap.h"
-#include "oof.h"
 #include "sphere.h"
-#include "weapon.h"
-
-#include "multi.h"
-#include "desc_id.h"
-#include "reactor.h"
-#include "pcx.h"
-#include "state.h"
-#include "piggy.h"
 #include "textdata.h"
-#include "multibot.h"
-#include "ai.h"
-#include "robot.h"
-#include "playsave.h"
-#include "fix.h"
-#include "hudmsg.h"
 #include "tracker.h"
-#include "particles.h"
-#include "banlist.h"
 #include "input.h"
 #include "interp.h"
 #include "cheats.h"
 #include "rle.h"
-#include "digi.h"
-#include "sphere.h"
 #include "hiresmodels.h"
-#include "dropobject.h"
 #include "monsterball.h"
 #include "dropobject.h"
 #include "trackobject.h"
-#include "slowmotion.h"
 #include "soundthreads.h"
 #include "sparkeffect.h"
-#include "systemkeys.h"
 #include "createmesh.h"
 #ifdef __macosx__
 #include "SDL/SDL_syswm.h"
@@ -132,7 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "SDL_syswm.h"
 #endif
 #include "renderthreads.h"
-#include "dynlight.h"
+#include "fvi.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -209,20 +154,11 @@ void PowerupGrabCheatAll (void);
 //	Other functions
 void MultiCheckForKillGoalWinner ();
 void MultiCheckForEntropyWinner ();
-void RestoreGameSurfaces ();
-
-// window functions
-
-void GrowWindow (void);
-void ShrinkWindow (void);
 
 // text functions
 
-void FillBackground ();
-
 #ifdef _DEBUG
 void ShowFrameRate (void);
-void ftoa (char *string, fix f);
 #endif
 
 //	==============================================================================================
@@ -539,8 +475,6 @@ return gameData.time.nPaused > 0;
 
 //------------------------------------------------------------------------------
 
-extern ubyte joydefs_calibrating;
-
 void GameFlushInputs ()
 {
 	int dx,dy;
@@ -700,9 +634,6 @@ if (i >= 0)
 
 //------------------------------------------------------------------------------
 
-void do_photos ();
-void level_with_floor ();
-
 void modex_clear_box (int x,int y,int w,int h)
 {
 	gsrCanvas *temp_canv,*save_canv;
@@ -718,8 +649,6 @@ void modex_clear_box (int x,int y,int w,int h)
 }
 
 //------------------------------------------------------------------------------
-
-extern void modex_printf (int x,int y,char *s,grsFont *font,int color);
 
 // mac routine to drop contents of screen to a pict file using copybits
 // save a PICT to a file
@@ -818,18 +747,11 @@ void FlyInit (tObject *objP)
 
 //	------------------------------------------------------------------------------------
 
-void test_animStates ();
-
-#include "fvi.h"
-
 //put up the help message
 void DoShowHelp ()
 {
 ShowHelp ();
 }
-
-
-extern int been_in_editor;
 
 //	------------------------------------------------------------------------------------
 
@@ -1132,8 +1054,6 @@ void ShowHelp ()
 //------------------------------------------------------------------------------
 
 //temp function until Matt cleans up game sequencing
-extern void temp_reset_stuff_onLevel ();
-
 //deal with rear view - switch it on, or off, or whatever
 void CheckRearView ()
 {
@@ -1473,8 +1393,6 @@ meshBuilder.DestroyVBOs ();
 //-----------------------------------------------------------------------------
 //called at the end of the program
 
-void _CDECL_ D2X_SDL_Close(void);
-
 void _CDECL_ CloseGame (void)
 {
 	static	int bGameClosed = 0;
@@ -1574,7 +1492,6 @@ return gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentP
 }
 
 //-----------------------------------------------------------------------------
-extern void kconfig_center_headset ();
 
 #ifdef _DEBUG
 void SpeedtestFrame (void);
@@ -1908,8 +1825,6 @@ else {
 void GameRenderFrame ();
 void OmegaChargeFrame (void);
 void FlickerLights ();
-
-extern time_t t_currentTime, t_savedTime;
 
 //int bLog = 0;
 

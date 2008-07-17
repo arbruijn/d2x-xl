@@ -19,55 +19,31 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <ctype.h>
 #include <time.h>
-#include <math.h>
 
-#include "error.h"
 #include "inferno.h"
-#include "gr.h"
-#include "mono.h"
+#include "error.h"
 #include "key.h"
-#include "palette.h"
-#include "game.h"
 #include "gamefont.h"
 #include "iff.h"
 #include "u_mem.h"
-#include "event.h"
 #include "joy.h"
 #include "mouse.h"
 #include "kconfig.h"
 #include "gauges.h"
-#include "joydefs.h"
-#include "songs.h"
 #include "render.h"
-#include "digi.h"
-#include "newmenu.h"
 #include "endlevel.h"
-#include "multi.h"
 #include "timer.h"
 #include "text.h"
-#include "player.h"
-#include "menu.h"
 #include "automap.h"
 #include "args.h"
-#include "light.h"
-#include "ai.h"
-#include "reactor.h"
-#include "network.h"
-#include "hudmsg.h"
-#include "ogl_defs.h"
-#include "object.h"
-#include "inferno.h"
 #include "input.h"
-#include "playsave.h"
-#if defined (TACTILE)
- #include "tactile.h"
-#endif
 #include "collide.h"
-
+#if defined (TACTILE)
+#	include "tactile.h"
+#endif
 #ifdef USE_LINUX_JOY
-#include "joystick.h"
+#	include "joystick.h"
 #endif
 
 #ifdef D2X_KEYS
@@ -105,8 +81,10 @@ int yesNoTextIndex [2] = { TNUM_N, TNUM_Y };
 //	int JOYAXIS_TEXT [4] = { TNUM_X1, TNUM_Y1, TNUM_X2, TNUM_Y2 };
 #endif
 
-#define JOYAXIS_TEXT (v)		joyaxis_text [ (v) % MAX_AXES_PER_JOYSTICK]
-#define JOYBUTTON_TEXT (v)	joybutton_text [ (v) % MAX_BUTTONS_PER_JOYSTICK]
+#if 0
+#	define JOYAXIS_TEXT(v)		joyaxis_text [ (v) % MAX_AXES_PER_JOYSTICK]
+#	define JOYBUTTON_TEXT(v)	joybutton_text [ (v) % MAX_BUTTONS_PER_JOYSTICK]
+#endif
 
 int mouseAxisTextIndex [3] = {TNUM_L_R, TNUM_F_B, TNUM_Z1};
 int mouseButtonTextIndex [3] = {TNUM_LEFT, TNUM_RIGHT, TNUM_MID};
@@ -437,7 +415,6 @@ typedef struct tKCItemPos {
 void KCDrawItemExt (kcItem *item, int is_current, int bRedraw);
 int KCChangeInvert (kcItem * item);
 void ControlsReadFCS (int raw_axis);
-void KCSetFCSButton (int btn, int button);
 void KCReadExternalControls (void);
 
 //------------------------------------------------------------------------------

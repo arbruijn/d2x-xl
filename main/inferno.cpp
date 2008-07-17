@@ -21,7 +21,6 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h>
 #include <signal.h>
 
 #if defined(__unix__) || defined(__macosx__)
@@ -39,73 +38,39 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #	include "SDL_keyboard.h"
 #endif
 #include "inferno.h"
-#include "pstypes.h"
 #include "u_mem.h"
 #include "strutil.h"
-#include "console.h"
-#include "gr.h"
-#include "fix.h"
-#include "vecmat.h"
-#include "mono.h"
 #include "key.h"
 #include "timer.h"
-#include "3d.h"
-#include "bm.h"
 #include "error.h"
-#include "game.h"
-#include "segment.h"		//for sideToVerts
-#include "u_mem.h"
 #include "segpoint.h"
 #include "screens.h"
 #include "texmap.h"
 #include "texmerge.h"
 #include "menu.h"
-#include "wall.h"
-#include "polyobj.h"
-#include "effects.h"
-#include "digi.h"
 #include "iff.h"
 #include "pcx.h"
-#include "palette.h"
 #include "args.h"
-#include "sounds.h"
 #include "ogl_lib.h"
-#include "briefings.h"
-#include "player.h"
 #include "text.h"
 #include "newdemo.h"
-#include "object.h"
 #include "objrender.h"
 #include "renderthreads.h"
-#include "lightning.h"
 #include "network.h"
-#include "modem.h"
 #include "gamefont.h"
 #include "kconfig.h"
 #include "mouse.h"
 #include "joy.h"
-#include "newmenu.h"
 #include "desc_id.h"
-#include "config.h"
 #include "joydefs.h"
-#include "multi.h"
-#include "songs.h"
-#include "cfile.h"
-#include "loadgame.h"
 #include "gamepal.h"
-#include "mission.h"
 #include "movie.h"
 #include "compbit.h"
 #include "playsave.h"
-#include "d_io.h"
 #include "tracker.h"
-#include "findfile.h"
-#include "ogl_defs.h"
 #include "render.h"
 #include "sphere.h"
 #include "endlevel.h"
-#include "banlist.h"
-#include "collide.h"
 #include "interp.h"
 #include "autodl.h"
 #include "hiresmodels.h"
@@ -144,9 +109,6 @@ tGameOptions	gameOptions [2];
 tGameStates		gameStates;
 tGameData		gameData;
 
-void arch_init (void);
-void arch_init_start (void);
-
 //static const char desc_id_checksum_str[] = DESC_ID_CHKSUM_TAG "0000"; // 4-byte checksum
 char desc_id_exit_num = 0;
 
@@ -157,9 +119,6 @@ int WVIDEO_running=0;		//debugger can set to 1 if running
 #ifdef EDITOR
 int Inferno_is_800x600_available = 0;
 #endif
-
-//--unused-- int Cyberman_installed=0;			// SWIFT device present
-int __far descent_critical_error_handler (unsigned deverr, unsigned errcode, unsigned __far * devhdr);
 
 void check_joystick_calibration (void);
 
@@ -178,10 +137,6 @@ extern void SetMaxPitch (int nMinTurnRate);
 int nDescentCriticalError = 0;
 unsigned descent_critical_deverror = 0;
 unsigned descent_critical_errcode = 0;
-
-extern int Network_allow_socket_changes;
-
-extern void vfx_set_palette_sub (ubyte *);
 
 #define LINE_LEN	100
 
@@ -482,12 +437,9 @@ if (!FindArg ("-nojoystick"))	{
 
 // ----------------------------------------------------------------------------
 //set this to force game to run in low res
-int bDisableHires=0;
-
 void DoSelectPlayer (void)
 {
-	LOCALPLAYER.callsign[0] = '\0';
-
+LOCALPLAYER.callsign[0] = '\0';
 if (!gameData.demo.bAuto) 	{
 	KeyFlush ();
 	//now, before we bring up the register player menu, we need to
@@ -501,23 +453,6 @@ if (!gameData.demo.bAuto) 	{
 }
 
 // ----------------------------------------------------------------------------
-
-#define PROGNAME argv[0]
-
-extern char Language[];
-
-//can we do highres menus?
-int Inferno_verbose = 0;
-
-//added on 11/18/98 by Victor Rachels to add -mission and -startgame
-int start_net_immediately = 0;
-//int start_with_mission = 0;
-//char *start_with_mission_name;
-//end this section addition
-
-// ----------------------------------------------------------------------------
-
-int OpenMovieFile (char *filename, int must_have);
 
 #define MENU_HIRES_MODE SM (640, 480)
 
@@ -3056,9 +2991,6 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 
 // ----------------------------------------------------------------------------
 
-int _CDECL_ VertexColorThread (void *pThreadId);
-int _CDECL_ ClipDistThread (void *pThreadId);
-
 void InitThreads (void)
 {
 if (gameStates.app.bMultiThreaded) {
@@ -3234,7 +3166,7 @@ switch (loadOp) {
 		break;
 	case 6:
 		/*---*/PrintLog ("Initializing movies\n");
-		if (FindArg ("-nohires") || FindArg ("-nohighres") || !GrVideoModeOK (MENU_HIRES_MODE) || bDisableHires)
+		if (FindArg ("-nohires") || FindArg ("-nohighres") || !GrVideoModeOK (MENU_HIRES_MODE))
 			gameOpts->movies.bHires = 
 			gameStates.menus.bHires = 
 			gameStates.menus.bHiresAvailable = 0;
@@ -3519,7 +3451,6 @@ void ShowOrderForm ()
 		return; // D2 registered
 
 	if ((pcx_error=PcxReadFullScrImage (exit_screen, 0))==PCX_ERROR_NONE) {
-		//vfx_set_palette_sub (titlePal);
 		GrPaletteFadeIn (NULL, 32, 0);
 		GrUpdate (0);
 		while (!(KeyInKey () || MouseButtonState (0)))

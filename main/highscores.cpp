@@ -18,36 +18,23 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <stdarg.h>
 
 #include "inferno.h"
 #include "error.h"
-#include "gr.h"
-#include "mono.h"
 #include "key.h"
-#include "palette.h"
-#include "game.h"
-#include "gamefont.h"
 #include "u_mem.h"
 #include "newmenu.h"
-#include "menu.h"
-#include "player.h"
 #include "screens.h"
-#include "gamefont.h"
-#include "reactor.h"
 #include "mouse.h"
 #include "joy.h"
 #include "timer.h"
 #include "text.h"
-#include "songs.h"
-#include "multi.h"
 #include "highscores.h"
 #include "gauges.h"
-#include "pcx.h"
+#include "gamefont.h"
 #include "network.h"
 #include "network_lib.h"
-#include "ogl_defs.h"
 
 #define CENTERING_OFFSET(x) ((300 - (70 + (x)*25))/2)
 #define CENTERSCREEN (gameStates.menus.bHires?320:160)

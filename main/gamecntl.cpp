@@ -19,104 +19,57 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdarg.h>
 #ifndef _WIN32
 #	include <unistd.h>
 #endif
 
-#include "pstypes.h"
-#include "console.h"
 #include "inferno.h"
-#include "game.h"
-#include "player.h"
+#include "console.h"
 #include "key.h"
-#include "object.h"
 #include "menu.h"
 #include "physics.h"
 #include "error.h"
 #include "joy.h"
 #include "mono.h"
 #include "iff.h"
-#include "pcx.h"
 #include "timer.h"
 #include "render.h"
 #include "transprender.h"
-#include "laser.h"
 #include "screens.h"
-#include "textures.h"
 #include "slew.h"
 #include "gauges.h"
 #include "texmap.h"
-#include "3d.h"
-#include "effects.h"
 #include "gameseg.h"
-#include "wall.h"
-#include "ai.h"
-#include "digi.h"
-#include "ibitblt.h"
 #include "u_mem.h"
-#include "palette.h"
-#include "morph.h"
 #include "light.h"
-#include "dynlight.h"
-#include "headlight.h"
 #include "newdemo.h"
-#include "weapon.h"
-#include "sounds.h"
-#include "args.h"
-#include "loadgame.h"
 #include "automap.h"
 #include "text.h"
-#include "gamerend.h"
-#include "powerup.h"
-#include "newmenu.h"
-#include "network.h"
 #include "network_lib.h"
 #include "gamefont.h"
 #include "gamepal.h"
-#include "endlevel.h"
-#include "joydefs.h"
 #include "kconfig.h"
 #include "mouse.h"
-#include "briefings.h"
-#include "gr.h"
 #include "playsave.h"
-#include "movie.h"
-#include "scores.h"
-
-#if defined (TACTILE)
-#include "tactile.h"
-#endif
-
-#include "pa_enabl.h"
-#include "multi.h"
-#include "desc_id.h"
-#include "reactor.h"
-#include "pcx.h"
-#include "state.h"
 #include "piggy.h"
-#include "multibot.h"
 #include "ai.h"
 #include "rbaudio.h"
 #include "switch.h"
-#include "escort.h"
-#include "collide.h"
 #include "ogl_defs.h"
 #include "object.h"
-#include "sphere.h"
-#include "cheats.h"
-#include "input.h"
 #include "render.h"
 #include "marker.h"
 #include "systemkeys.h"
+
+#if defined (TACTILE)
+#	include "tactile.h"
+#endif
 
 char *pszPauseMsg = NULL;
 
 //------------------------------------------------------------------------------
 //#define TEST_TIMER    1		//if this is set, do checking on timer
-
-#define Arcade_mode 0
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -137,23 +90,11 @@ char *pszPauseMsg = NULL;
 #endif
 #endif
 
-void FullPaletteSave(void);
-void SetFunctionMode (int);
-
 //	Function prototypes --------------------------------------------------------
-
-void HandleGameKey(int key);
-int HandleSystemKey(int key);
-void HandleTestKey(int key);
-void HandleVRKey(int key);
 
 void SpeedtestInit(void);
 void SpeedtestFrame(void);
-void AdvanceSound(void);
 void PlayTestSound(void);
-
-#define key_isfunc(k) (((k&0xff)>=KEY_F1 && (k&0xff)<=KEY_F10) || (k&0xff)==KEY_F11 || (k&0xff)==KEY_F12)
-#define key_ismod(k)  ((k&0xff)==KEY_LALT || (k&0xff)==KEY_RALT || (k&0xff)==KEY_LSHIFT || (k&0xff)==KEY_RSHIFT || (k&0xff)==KEY_LCTRL || (k&0xff)==KEY_RCTRL)
 
 // Functions ------------------------------------------------------------------
 
@@ -397,17 +338,6 @@ int SelectNextWindowFunction(int nWindow)
 
 	return 1;	 //bScreenChanged
 }
-
-//------------------------------------------------------------------------------
-
-
-void SongsGotoNextSong();
-void SongsGotoPrevSong();
-
-//	--------------------------------------------------------------------------
-
-void toggle_movie_saving(void);
-extern char Language[];
 
 //	Testing functions ----------------------------------------------------------
 

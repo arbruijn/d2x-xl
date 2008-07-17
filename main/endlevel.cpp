@@ -27,44 +27,27 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <ctype.h> // for isspace
 
 #include "inferno.h"
-#include "fix.h"
-#include "vecmat.h"
-#include "gr.h"
-#include "3d.h"
 #include "error.h"
 #include "palette.h"
 #include "iff.h"
-#include "mono.h"
 #include "texmap.h"
-#include "fvi.h"
 #include "u_mem.h"
-#include "sounds.h"
-
 #include "endlevel.h"
-#include "object.h"
 #include "objrender.h"
 #include "transprender.h"
-#include "game.h"
 #include "screens.h"
 #include "gauges.h"
-#include "wall.h"
 #include "terrain.h"
-#include "polyobj.h"
-#include "bm.h"
-#include "loadgame.h"
 #include "newdemo.h"
-#include "multi.h"
-#include "vclip.h"
 #include "fireball.h"
 #include "network.h"
 #include "text.h"
-#include "digi.h"
-#include "cfile.h"
 #include "compbit.h"
-#include "songs.h"
 #include "movie.h"
 #include "render.h"
 #include "gameseg.h"
+#include "key.h"
+#include "joy.h"
 
 //------------------------------------------------------------------------------
 
@@ -110,10 +93,6 @@ char movieTable [2][30] = {
 	 'e', 'e', 'e'
 	}
 };
-
-#define N_MOVIES (sizeof (movieTable) / (2 * sizeof (*movieTable)))
-
-#define N_MOVIES_SECRET 0
 
 #define FLY_ACCEL i2f (5)
 
@@ -359,8 +338,6 @@ gameStates.gameplay.bMineDestroyed = 0;
 //------------------------------------------------------------------------------
 
 extern flythrough_data flyObjects [];
-
-extern tObject *slewObjP;
 
 vmsAngVec player_angles, player_dest_angles;
 vmsAngVec camera_desired_angles, camera_cur_angles;
@@ -940,7 +917,6 @@ flythrough_data *flydata;
 int ELFindConnectedSide (int seg0, int seg1);
 
 fixang DeltaAng (fixang a, fixang b);
-fixang interp_angle (fixang dest, fixang src, fixang step);
 
 #define DEFAULT_SPEED i2f (16)
 
@@ -1070,15 +1046,6 @@ flydata->firstTime=0;
 }
 
 //------------------------------------------------------------------------------
-
-#define JOY_NULL 15
-#define ROT_SPEED 8		//rate of rotation while key held down
-#define VEL_SPEED (15)	//rate of acceleration while key held down
-
-extern short old_joy_x, old_joy_y;	//position last time around
-
-#include "key.h"
-#include "joy.h"
 
 #ifdef SLEW_ON		//this is a special routine for slewing around external scene
 int DoSlewMovement (tObject *objP, int check_keys, int check_joy)

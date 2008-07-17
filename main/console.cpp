@@ -13,10 +13,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#ifndef _WIN32_WCE
-#include <fcntl.h>
+#ifndef _WIN32
+#	include <fcntl.h>
 #endif
-#include <ctype.h>
 #ifdef __macosx__
 # include <SDL/SDL.h>
 #else
@@ -24,15 +23,11 @@
 #endif
 
 #include "inferno.h"
-#include "pstypes.h"
 #include "u_mem.h"
 #include "error.h"
-#include "console.h"
 #include "cmd.h"
-#include "gr.h"
 #include "gamefont.h"
 #include "pcx.h"
-#include "cfile.h"
 #ifdef CONSOLE
 #include "CON_console.h"
 #endif

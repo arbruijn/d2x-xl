@@ -21,20 +21,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <ctype.h>
 
 #include "inferno.h"
-#include "game.h"
-#include "menu.h"
-#include "movie.h"
-#include "digi.h"
 #include "kconfig.h"
-#include "palette.h"
 #include "joy.h"
-#include "songs.h"
 #include "args.h"
-#include "player.h"
-#include "mission.h"
-#include "mono.h"
 #include "error.h"
-#include "pa_enabl.h"
 
 static const char *pszDigiVolume = "DigiVolume";
 static const char *pszMidiVolume = "MidiVolume";
@@ -81,9 +71,11 @@ gameConfig.bReverseChannels = 0;
 
 // ----------------------------------------------------------------------------
 
+#if 0
+
 #define CL_MC0 0xF8F
 #define CL_MC1 0xF8D
-/*
+
 void CrystalLakeWriteMCP( ushort mc_addr, ubyte mc_data )
 {
 	_disable();
@@ -117,7 +109,8 @@ void CrystalLakeSetWSS()
 	tmp |= 0x80;
 	CrystalLakeWriteMCP( CL_MC1, tmp );
 }
-*/
+
+#endif
 
 // ----------------------------------------------------------------------------
 //gameOpts->movies.bHires might be changed by -nohighres, so save a "real" copy of it

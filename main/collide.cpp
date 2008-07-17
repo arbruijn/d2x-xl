@@ -18,64 +18,28 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 
-#include "rle.h"
 #include "inferno.h"
-#include "game.h"
-#include "gr.h"
+#include "rle.h"
 #include "stdlib.h"
-#include "bm.h"
-//#include "error.h"
-#include "mono.h"
-#include "3d.h"
-#include "segment.h"
 #include "texmap.h"
-#include "laser.h"
 #include "key.h"
 #include "gameseg.h"
 #include "lightning.h"
-#include "object.h"
 #include "physics.h"
 #include "slew.h"	
 #include "render.h"
-#include "wall.h"
-#include "vclip.h"
-#include "polyobj.h"
 #include "fireball.h"
-#include "laser.h"
-#include "error.h"
-#include "ai.h"
 #include "hostage.h"
-#include "fuelcen.h"
-#include "sounds.h"
-#include "robot.h"
-#include "weapon.h"
-#include "player.h"
 #include "gauges.h"
-#include "powerup.h"
-#include "network.h"
-#include "newmenu.h"
 #include "scores.h"
-#include "effects.h"
 #include "textures.h"
-#include "multi.h"
-#include "reactor.h"
-#include "fireball.h"
 #include "newdemo.h"
 #include "endlevel.h"
 #include "multibot.h"
-#include "piggy.h"
 #include "text.h"
 #include "automap.h"
-#include "switch.h"
-#include "palette.h"
-#include "object.h"
 #include "sphere.h"
-#include "text.h"
-#include "dropobject.h"
-#include "ai.h"
-#include "d1_aistruct.h"
 #include "monsterball.h"
 
 //#define _DEBUG
@@ -305,8 +269,6 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 //deal with two OBJECTS bumping into each other.  Apply vForce from collision
 //to each robotP.  The flags tells whether the objects should take damage from
 //the collision.
-
-#define SIGN(_i)	((_i) ? (_i) / labs (_i) : 1)
 
 int BumpTwoObjects (tObject *objP0, tObject *objP1, int bDamage, vmsVector *vHitPt)
 {
@@ -773,8 +735,6 @@ return 1;		//blew up!
 }
 
 //	Copied from laser.c!
-#define	MIN_OMEGA_BLOBS		3				//	No matter how close the obstruction, at this many blobs created.
-#define	MIN_OMEGA_DIST			 (F1_0*3)		//	At least this distance between blobs, unless doing so would violate MIN_OMEGA_BLOBS
 #define	DESIRED_OMEGA_DIST	 (F1_0*5)		//	This is the desired distance between blobs.  For distances > MIN_OMEGA_BLOBS*DESIRED_OMEGA_DIST, but not very large, this will apply.
 #define	MAX_OMEGA_BLOBS		16				//	No matter how far away the obstruction, this is the maximum number of blobs.
 #define	MAX_OMEGA_DIST			 (MAX_OMEGA_BLOBS * DESIRED_OMEGA_DIST)		//	Maximum extent of lightning blobs.
@@ -1357,8 +1317,6 @@ return 1;
 }
 
 //--mk, 121094 -- extern void spinRobot (tObject *robotP, vmsVector *vHitPt);
-
-extern tObject *ExplodeBadassObject (tObject *objP, fix damage, fix distance, fix vForce);
 
 fix	nFinalBossCountdownTime = 0;
 
@@ -2104,8 +2062,6 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-extern int Network_gotPowerup; // HACK!!!
-
 int CollidePlayerAndPowerup (tObject *playerObjP, tObject *powerupP, vmsVector *vHitPt) 
 { 
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead && 
@@ -2331,23 +2287,6 @@ return 1;
 #define	NO_SAME_COLLISION(type1, type2, collisionHandler) \
 				case COLLISION_OF ((type1), (type1)): \
 					break;
-
-/* DPH: These ones are never used so I'm not going to bother */
-#ifndef __GNUC__
-#define IGNORE_COLLISION(type1, type2, collisionHandler) \
-	case COLLISION_OF ((type1), (type2)): \
-		break; \
-	case COLLISION_OF ((type2), (type1)): \
-		break;
-
-#define ERROR_COLLISION(type1, type2, collisionHandler) \
-	case COLLISION_OF ((type1), (type2)): \
-		Error ("Error in collision nType!"); \
-		break; \
-	case COLLISION_OF ((type2), (type1)): \
-		Error ("Error in collision nType!"); \
-		break;
-#endif
 
 //	-----------------------------------------------------------------------------
 

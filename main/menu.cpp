@@ -20,70 +20,40 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "menu.h"
 #include "inferno.h"
-#include "game.h"
 #include "ipx.h"
-#include "gr.h"
 #include "key.h"
 #include "iff.h"
 #include "u_mem.h"
 #include "error.h"
-#include "bm.h"
 #include "screens.h"
-#include "mono.h"
 #include "joy.h"
-#include "vecmat.h"
-#include "effects.h"
 #include "slew.h"
-#include "gamemine.h"
-#include "gamesave.h"
-#include "palette.h"
 #include "args.h"
 #include "newdemo.h"
 #include "timer.h"
-#include "sounds.h"
-#include "loadgame.h"
 #include "text.h"
 #include "gamefont.h"
 #include "newmenu.h"
-#include "piggy.h"
 #include "network.h"
 #include "network_lib.h"
 #include "netmenu.h"
-#include "ipx.h"
-#include "multi.h"
 #include "scores.h"
 #include "joydefs.h"
-#include "modem.h"
 #include "playsave.h"
 #include "kconfig.h"
-#include "briefings.h"
 #include "credits.h"
 #include "texmap.h"
-#include "polyobj.h"
 #include "state.h"
-#include "mission.h"
-#include "songs.h"
-#include "config.h"
 #include "movie.h"
 #include "gamepal.h"
 #include "gauges.h"
-#include "powerup.h"
 #include "strutil.h"
 #include "reorder.h"
-#include "digi.h"
-#include "ai.h"
-#include "ogl_defs.h"
-#include "ogl_lib.h"
-#include "cameras.h"
-#include "texmerge.h"
 #include "render.h"
 #include "light.h"
-#include "dynlight.h"
 #include "lightmap.h"
 #include "autodl.h"
 #include "tracker.h"
-#include "particles.h"
-#include "laser.h"
 #include "omega.h"
 #include "lightning.h"
 #include "vers_id.h"
@@ -92,61 +62,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objrender.h"
 #include "sparkeffect.h"
 #include "renderthreads.h"
-#ifdef _WIN32
-#	include "../network/win32/include/ipx_udp.h"
-#else
-#	include "../network/linux/include/ipx_udp.h"
-#endif
-
 #ifdef EDITOR
-#include "editor/editor.h"
+#	include "editor/editor.h"
 #endif
-
-//------------------------------------------------------------------------------
-
-//char *menu_difficulty_text [] = {"Trainee", "Rookie", "Hotshot", "Ace", "Insane"};
-//char *menu_detail_text [] = {"Lowest", "Low", "Medium", "High", "Highest", "", "Custom..."};
-
-#define MENU_NEW_GAME                   0
-#define MENU_NEW_SP_GAME                1
-#define MENU_GAME                       2 
-#define MENU_LOAD_GAME                  3
-#define MENU_SAVE_GAME                  4
-#define MENU_MULTIPLAYER                5
-#define MENU_CONFIG                     6
-#define MENU_NEW_PLAYER                 7
-#define MENU_DEMO_PLAY                  8
-#define MENU_VIEW_SCORES                9
-#define MENU_ORDER_INFO                 10
-#define MENU_PLAY_MOVIE                 11
-#define MENU_PLAY_SONG                  12
-#define MENU_SHOW_CREDITS               13
-#define MENU_QUIT                       14
-#define MENU_EDITOR                     15
-#define MENU_D2_MISSIONS					 16
-#define MENU_D1_MISSIONS					 17
-#define MENU_LOAD_LEVEL                 18
-#define MENU_START_IPX_NETGAME          20
-#define MENU_JOIN_IPX_NETGAME           21
-#define MENU_REJOIN_NETGAME             22
-#define MENU_DIFFICULTY                 23
-#define MENU_START_SERIAL               24
-#define MENU_HELP                       25
-#define MENU_STOP_MODEM                 26
-//#define MENU_START_TCP_NETGAME          26 // TCP/IP support was planned in Descent II, 
-//#define MENU_JOIN_TCP_NETGAME           27 // but never realized.
-#define MENU_START_APPLETALK_NETGAME    28
-#define MENU_JOIN_APPLETALK_NETGAME     29
-#define MENU_START_UDP_NETGAME          30 // UDP/IP support copied from d1x
-#define MENU_JOIN_UDP_NETGAME           31
-#define MENU_START_KALI_NETGAME         32 // Kali support copied from d1x
-#define MENU_JOIN_KALI_NETGAME          33
-#define MENU_START_MCAST4_NETGAME       34 // UDP/IP over multicast networks
-#define MENU_JOIN_MCAST4_NETGAME        35
-#define MENU_START_UDP_TRACKER_NETGAME  36 // UDP/IP support copied from d1x
-#define MENU_JOIN_UDP_TRACKER_NETGAME   37
-
-#define D2X_MENU_GAP 0
 
 //------------------------------------------------------------------------------
 
@@ -294,16 +212,8 @@ extern int	bZPass, bFrontCap, bRearCap, bFrontFaces, bBackFaces, bShadowVolume, 
 
 //------------------------------------------------------------------------------
 
-//ADD_MENU ("Start netgame...", MENU_START_NETGAME, -1);
-//ADD_MENU ("Send net message...", MENU_SEND_NET_MESSAGE, -1);
-
-//unused - extern int last_joyTime;               //last time the joystick was used
-extern void SetFunctionMode (int);
-extern int UDPGetMyAddress ();
-extern unsigned char ipx_ServerAddress [10];
-
-void SoundMenu ();
-void MiscellaneousMenu ();
+void SoundMenu (void);
+void MiscellaneousMenu (void);
 
 // Function Prototypes added after LINTING
 int ExecMainMenuOption (int nChoice);
@@ -314,7 +224,7 @@ void MultiplayerMenu (void);
 void IpxSetDriver (int ipx_driver);
 
 //returns the number of demo files on the disk
-int NDCountDemos ();
+int NDCountDemos (void);
 
 // ------------------------------------------------------------------------
 
@@ -459,13 +369,8 @@ return nOptions;
 }
 
 //------------------------------------------------------------------------------
-
-extern unsigned char ipx_ServerAddress [10];
-extern unsigned char ipx_LocalAddress [10];
-
-//------------------------------------------------------------------------------
 //returns number of item chosen
-int MainMenu () 
+int MainMenu (void) 
 {
 	tMenuItem m [25];
 	int i, nChoice = 0, nOptions = 0;
@@ -608,7 +513,7 @@ gameStates.app.bHaveExtraGameInfo [1] = gameStates.multi.bServer;
 if (bUDP) {
 	gameStates.multi.nGameType = UDP_GAME;
 	IpxSetDriver (IPX_DRIVER_UDP); 
-	if (nChoice == MENU_START_UDP_TRACKER_NETGAME) {
+	if (nChoice == multiOpts.nStartUdpTracker) {
 		int n = ActiveTrackerCount (1);
 		if (n < -2) {
 			if (n == -4)
@@ -4400,8 +4305,6 @@ if (gameOpts->app.bExpertMode) {
 
 //------------------------------------------------------------------------------
 
-#define D2X_MENU_GAP 0
-
 void GameplayOptionsMenu (void)
 {
 	tMenuItem m [40];
@@ -4662,8 +4565,6 @@ if (gameOpts->app.bExpertMode) {
 }
 
 //------------------------------------------------------------------------------
-
-#define D2X_MENU_GAP 0
 
 void PhysicsOptionsMenu (void)
 {

@@ -25,26 +25,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "u_mem.h"
 #include "error.h"
-#include "mono.h"
-
-#include "inferno.h"
-#include "fvi.h"
-#include "segment.h"
-#include "object.h"
-#include "wall.h"
-#include "laser.h"
 #include "rle.h"
-#include "robot.h"
-#include "piggy.h"
-#include "player.h"
 #include "gameseg.h"
 #include "interp.h"
 #include "hitbox.h"
 #include "network.h"
-#include "sphere.h"
-
-#define faceType_num(nfaces, face_num, tri_edge) ((nfaces==1)?0:(tri_edge*2 + face_num))
-
 #include "fvi_a.h"
 
 int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, vmsVector *vNormal, int nVerts);
@@ -1354,9 +1339,6 @@ Assert(!(nHitType==HIT_OBJECT && gameData.collisions.hitData.nObject==-1));
 //PrintLog ("Exit FVICompute\n");
 return nHitType;
 }
-
-#include "textures.h"
-#include "texmerge.h"
 
 #define Cross2D(v0, v1) (FixMul((v0).i, (v1).j) - FixMul((v0).j, (v1).i))
 

@@ -17,35 +17,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
 
 #include "inferno.h"
-#include "fuelcen.h"
 #include "gameseg.h"
-#include "game.h"		// For gameData.time.xFrame
 #include "error.h"
-#include "mono.h"
 #include "gauges.h"
-#include "vclip.h"
 #include "fireball.h"
-#include "robot.h"
-#include "powerup.h"
-
-#include "wall.h"
-#include "sounds.h"
-#include "morph.h"
-#include "3d.h"
-#include "bm.h"
-#include "polyobj.h"
-#include "ai.h"
-#include "gamemine.h"
 #include "gamesave.h"
-#include "player.h"
 #include "collide.h"
-#include "laser.h"
 #include "network.h"
-#include "multi.h"
 #include "multibot.h"
 #include "escort.h"
 #include "dropobject.h"

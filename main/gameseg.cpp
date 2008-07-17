@@ -21,22 +21,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "u_mem.h"
 #include "inferno.h"
-#include "game.h"
 #include "error.h"
 #include "mono.h"
-#include "vecmat.h"
 #include "gameseg.h"
-#include "wall.h"
-#include "fuelcen.h"
-#include "bm.h"
-#include "fvi.h"
 #include "byteswap.h"
-#include "player.h"
-#include "gamesave.h"
 #include "light.h"
-#include "dynlight.h"
 #include "gameseg.h"
-//#define _DEBUG
+
 // How far a point can be from a plane, and still be "in" the plane
 
 // -------------------------------------------------------------------------------
@@ -1982,8 +1973,6 @@ if (IS_WALL (WallNumP (segP, nSide)))
 else
 	CreateWallsOnSide (segP, nSide);
 }
-
-extern int check_for_degenerate_segment (tSegment *segP);
 
 // -------------------------------------------------------------------------------
 
