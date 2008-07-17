@@ -25,27 +25,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <math.h>
 
-#include "fix.h"
-#include "vecmat.h"
-#include "gr.h"
-#include "3d.h"
-#include "palette.h"
-#include "rle.h"
-
 #include "inferno.h"
+#include "rle.h"
 #include "gamepal.h"
-#include "mission.h"
 #include "newmenu.h"
 #include "texmerge.h"
-#include "piggy.h"
 #include "strutil.h"
-#include "console.h"
-
-extern void g3_remap_interp_colors();
 
 char szCurrentLevelPalette[SHORT_FILENAME_LEN];
-
-extern int Color_0_31_0;
 
 //give a filename a new extension
 void ChangeFilenameExt( char *dest, char *src, char *ext )
@@ -65,8 +52,6 @@ void ChangeFilenameExt( char *dest, char *src, char *ext )
 
 	strcpy(p+1,ext);
 }
-
-extern bkg bg;
 
 void LoadBackgroundBitmap(void);
 

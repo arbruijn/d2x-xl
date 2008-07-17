@@ -8,21 +8,9 @@
 #include <math.h>
 
 #include "inferno.h"
-#include "segment.h"
 #include "error.h"
-#include "bm.h"
 #include "ogl_lib.h"
 #include "render.h"
-#include "game.h"
-#include "object.h"
-#include "textures.h"
-#include "piggy.h"
-#include "switch.h"
-#include "wall.h"
-#include "gamesave.h"
-#include "hudmsg.h"
-#include "network.h"
-#include "cameras.h"
 #include "u_mem.h"
 #include "gameseg.h"
 

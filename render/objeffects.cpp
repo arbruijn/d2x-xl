@@ -24,14 +24,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newdemo.h"
 #include "network.h"
 #include "interp.h"
-#include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "render.h"
-#include "renderlib.h"
 #include "transprender.h"
 #include "glare.h"
 #include "sphere.h"
-#include "flightpath.h"
 #include "marker.h"
 #include "fireball.h"
 #include "objsmoke.h"
@@ -39,7 +36,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objeffects.h"
 #include "hiresmodels.h"
 
-#define fabsf(_f)	(float) fabs (_f)
+#ifndef fabsf
+#	define fabsf(_f)	(float) fabs (_f)
+#endif
 
 #define IS_TRACK_GOAL(_objP)	(((_objP) == gameData.objs.trackGoals [0]) || ((_objP) == gameData.objs.trackGoals [1]))
 
@@ -1180,22 +1179,6 @@ StencilOn (bStencil);
 }
 
 // -----------------------------------------------------------------------------
-
-typedef struct tVertRef {
-	float	dot;
-	int	i;
-} tVertRef;
-
-typedef struct fEdge {
-	int	v0, v1;
-	int	f0, f1;
-	int	bContour;
-	int	nPred, nSucc;	//previous and next connected contour edge
-} fEdge;
-
-// -----------------------------------------------------------------------------
-
-#define EXPAND_CORONA	2
 
 void RenderLaserCorona (tObject *objP, tRgbaColorf *colorP, float alpha, float fScale)
 {

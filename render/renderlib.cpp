@@ -28,8 +28,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "light.h"
 #include "dynlight.h"
 #include "lightmap.h"
-#include "endlevel.h"
-#include "ogl_defs.h"
 #include "ogl_color.h"
 #include "ogl_render.h"
 #include "renderlib.h"
@@ -38,33 +36,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 #define SW_CULLING 1
-#define SOFT_SHADOWS		0
-#define RENDER_DEPTHMASK_FIRST 1
-
-#if DBG_SHADOWS
-extern int bShadowTest;
-extern int bFrontCap;
-extern int bRearCap;
-extern int bShadowVolume;
-extern int bFrontFaces;
-extern int bBackFaces;
-extern int bSWCulling;
-extern int bWallShadows;
-#endif
-#if SHADOWS
-extern int bZPass;
-#endif
-
-//------------------------------------------------------------------------------
-
-int _CDECL_ D2X_RenderThread (void *p);
-int _CDECL_ D2X_OpenGLThread (void *p);
-
-#if DBG_SHADOWS
-extern int bShadowTest;
-#endif
-				
-#define INITIAL_LOCAL_LIGHT (F1_0/4)    // local light value in tSegment of occurence (of light emission)
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -76,8 +47,6 @@ extern int bShadowTest;
 int bSearchMode = 0;			//true if looking for curseg, tSide, face
 short _search_x, _search_y;	//pixel we're looking at
 int found_seg, found_side, found_face, found_poly;
-#else
-#define bSearchMode 0
 #endif
 
 int	bOutLineMode = 0, 

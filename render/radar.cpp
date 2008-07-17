@@ -24,9 +24,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "render.h"
 #include "gauges.h"
 #include "automap.h"
-#include "network.h"
-#include "ogl_defs.h"
-#include "ogl_lib.h"
 #include "ogl_render.h"
 
 // -----------------------------------------------------------------------------------

@@ -22,8 +22,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "error.h"
-#include "gr.h"
-#include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_shader.h"
 #include "gameseg.h"

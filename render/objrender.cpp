@@ -32,16 +32,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hostage.h"
 #include "interp.h"
 #include "render.h"
-#include "renderlib.h"
 #include "transprender.h"
 #include "glare.h"
 #include "sphere.h"
-#include "flightpath.h"
 #include "objsmoke.h"
 #include "fireball.h"
 #include "objrender.h"
 #include "objeffects.h"
-#include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_render.h"
 #include "marker.h"
@@ -54,10 +51,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef _3DFX
 #include "3dfx_des.h"
 #endif
-
-//------------------------------------------------------------------------------
-
-extern vmsAngVec avZero;
 
 //------------------------------------------------------------------------------
 
@@ -460,8 +453,6 @@ _3dfx_rendering_poly_obj = 0;
 
 int	bLinearTMapPolyObjs = 1;
 
-extern fix MaxThrust;
-
 //used for robot engine glow
 //function that takes the same parms as draw_tmap, but renders as flat poly
 //we need this to do the cloaked effect
@@ -794,8 +785,6 @@ return bOk;
 }
 
 // -----------------------------------------------------------------------------
-
-int G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
 int RenderObject (tObject *objP, int nWindowNum, int bForce)
 {

@@ -22,49 +22,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "error.h"
-#include "3d.h"
 #include "u_mem.h"
-#include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"
 #include "render.h"
 #include "transprender.h"
-#include "object.h"
-#include "vclip.h"
-#include "game.h"
-#include "mono.h"
-#include "polyobj.h"
-#include "sounds.h"
-#include "player.h"
-#include "bm.h"
 #include "key.h"
-#include "newmenu.h"
-#include "menu.h"
 #include "screens.h"
-#include "textures.h"
 #include "mouse.h"
 #include "timer.h"
 #include "segpoint.h"
 #include "joy.h"
 #include "iff.h"
 #include "pcx.h"
-#include "palette.h"
-#include "wall.h"
-#include "loadgame.h"
 #include "gamefont.h"
-#include "network.h"
 #include "kconfig.h"
-#include "multi.h"
 #include "endlevel.h"
 #include "text.h"
 #include "gauges.h"
-#include "songs.h"
-#include "powerup.h"
-#include "switch.h"
-#include "reactor.h"
-#include "hudmsg.h"
-#include "inferno.h"
-#include "globvars.h"
 #include "gameseg.h"
 #include "gamecntl.h"
 #include "input.h"
@@ -91,13 +66,6 @@ typedef struct tEdgeInfo {
 	ubyte num_faces;    // 1 bytes  // 19 bytes...
 } tEdgeInfo;
 
-// OLD BUT GOOD -- #define MAX_EDGES_FROM_VERTS (v) ((v*5)/2)
-// THE following was determined by John by loading levels 1-14 and recording
-// numbers on 10/26/94.
-//#define MAX_EDGES_FROM_VERTS (v) (((v)*21)/10)
-#define MAX_EDGES_FROM_VERTS(v)   ((v)*4)
-//#define MAX_EDGES (MAX_EDGES_FROM_VERTS (MAX_VERTICES))
-
 #define MAX_EDGES 65536 // Determined by loading all the levels by John & Mike, Feb 9, 1995
 
 #define K_WALL_NORMAL_COLOR     RGBA_PAL2 (29, 29, 29)
@@ -108,8 +76,6 @@ typedef struct tEdgeInfo {
 #define K_WALL_REVEALED_COLOR   RGBA_PAL2 (0, 0, 25) //what you see when you have the full map powerup
 #define K_HOSTAGE_COLOR         RGBA_PAL2 (0, 31, 0)
 #define K_MONSTERBALL_COLOR     RGBA_PAL2 (31, 23, 0)
-#define K_FONT_COLOR_20         RGBA_PAL2 (20, 20, 20)
-#define K_GREEN_31              RGBA_PAL2 (0, 31, 0)
 
 typedef struct amWallColors {
 	unsigned int	nNormal;
@@ -177,9 +143,6 @@ static int DrawingListBright [MAX_EDGES];
 
 //static gsrCanvas	automap_canvas;
 static grsBitmap bmAutomapBackground;
-
-#define Page Pages [0]
-#define DrawingPage DrawingPages [0]
 
 typedef struct tAutomapData {
 	int			bCheat;
@@ -530,9 +493,6 @@ OglSwapBuffers (0, 0);
 }
 
 #define LEAVE_TIME 0x4000
-
-#define WINDOW_WIDTH		288
-
 
 //------------------------------------------------------------------------------
 

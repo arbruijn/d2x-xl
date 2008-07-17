@@ -20,47 +20,28 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 
 #include "inferno.h"
-#include "polyobj.h"
-
-#include "vecmat.h"
 #include "interp.h"
 #include "error.h"
-#include "mono.h"
 #include "u_mem.h"
 #include "args.h"
-#include "byteswap.h"
-#include "ogl_defs.h"
 #include "gamepal.h"
 #include "network.h"
 #include "strutil.h"
 #include "hiresmodels.h"
-
-#ifndef DRIVE
 #include "texmap.h"
-#include "bm.h"
 #include "textures.h"
-#include "object.h"
 #include "light.h"
 #include "dynlight.h"
-#include "cfile.h"
-#include "piggy.h"
-#endif
-
-#include "pa_enabl.h"
 
 #ifdef _3DFX
 #include "3dfx_des.h"
 #endif
-
-#define DEBUG_LEVEL CON_NORMAL
 
 #define PM_COMPATIBLE_VERSION 6
 #define PM_OBJFILE_VERSION 8
 
 #define BASE_MODEL_SIZE 0x28000
 #define DEFAULT_VIEW_DIST 0x60000
-
-#define SHIFT_SPACE 500 // increase if insufficent
 
 #define ID_OHDR 0x5244484f // 'RDHO'  //Object header
 #define ID_SOBJ 0x4a424f53 // 'JBOS'  //Subobject header
@@ -71,15 +52,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define	MODEL_BUF_SIZE	32768
 
-#define TEMP_CANV	0
-
-#define pof_CFSeek(_buf, _len, Type) _pof_CFSeek ((_len), (Type))
-#define new_pof_read_int(i, f) pof_cfread (& (i), sizeof (i), 1, (f))
+#define POF_CFSeek(_buf, _len, Type) _POF_CFSeek ((_len), (Type))
+#define POF_ReadIntNew(i, f) POF_CFRead (& (i), sizeof (i), 1, (f))
 
 int	Pof_file_end;
 int	Pof_addr;
 
-void _pof_CFSeek (int len, int nType)
+void _POF_CFSeek (int len, int nType)
 {
 	switch (nType) {
 		case SEEK_SET:	Pof_addr = len;	break;
@@ -108,7 +87,7 @@ int pof_read_int (ubyte *bufp)
 //	return i;
 }
 
-size_t pof_cfread (void *dst, size_t elsize, size_t nelem, ubyte *bufp)
+size_t POF_CFRead (void *dst, size_t elsize, size_t nelem, ubyte *bufp)
 {
 	if (nelem*elsize + (size_t) Pof_addr > (size_t) Pof_file_end)
 		return 0;
@@ -299,7 +278,7 @@ if (version < PM_COMPATIBLE_VERSION || version > PM_OBJFILE_VERSION)
 	Error ("Bad version (%d) in model file <%s>", version, filename);
 //if (FindArg ("-bspgen"))
 //printf ("bspgen -c1");
-while (new_pof_read_int (id, model_buf) == 1) {
+while (POF_ReadIntNew (id, model_buf) == 1) {
 	id = INTEL_INT (id);
 	//id  = pof_read_int (model_buf);
 	len = pof_read_int (model_buf);
@@ -364,7 +343,7 @@ while (new_pof_read_int (id, model_buf) == 1) {
 					}
 				}
 			else
-				pof_CFSeek (model_buf, len, SEEK_CUR);
+				POF_CFSeek (model_buf, len, SEEK_CUR);
 			break;
 			}
 
@@ -379,7 +358,7 @@ while (new_pof_read_int (id, model_buf) == 1) {
 							robot_set_angles (r, pm, anim_angs);
 				}
 			else
-				pof_CFSeek (model_buf, len, SEEK_CUR);
+				POF_CFSeek (model_buf, len, SEEK_CUR);
 			break;
 #endif
 
@@ -394,15 +373,15 @@ while (new_pof_read_int (id, model_buf) == 1) {
 		case ID_IDTA:		//Interpreter data
 			pm->modelData = (ubyte *) D2_ALLOC (len);
 			pm->nDataSize = len;
-			pof_cfread (pm->modelData, 1, len, model_buf);
+			POF_CFRead (pm->modelData, 1, len, model_buf);
 			break;
 
 		default:
-			pof_CFSeek (model_buf, len, SEEK_CUR);
+			POF_CFSeek (model_buf, len, SEEK_CUR);
 			break;
 		}
 	if (version >= 8)		// Version 8 needs 4-byte alignment!!!
-		pof_CFSeek (model_buf, next_chunk, SEEK_SET);
+		POF_CFSeek (model_buf, next_chunk, SEEK_SET);
 	}
 //	for (i=0;i<pm->nModels;i++)
 //		pm->subModels.ptrs [i] += (int) pm->modelData;
@@ -453,7 +432,7 @@ int ReadModelGuns (const char *filename, vmsVector *gunPoints, vmsVector *gun_di
 	if (version < PM_COMPATIBLE_VERSION || version > PM_OBJFILE_VERSION)
 		Error ("Bad version (%d) in model file <%s>", version, filename);
 
-	while (new_pof_read_int (id, model_buf) == 1) {
+	while (POF_ReadIntNew (id, model_buf) == 1) {
 		id = INTEL_INT (id);
 		//id  = pof_read_int (model_buf);
 		len = pof_read_int (model_buf);
@@ -480,7 +459,7 @@ int ReadModelGuns (const char *filename, vmsVector *gunPoints, vmsVector *gun_di
 
 		}
 		else
-			pof_CFSeek (model_buf, len, SEEK_CUR);
+			POF_CFSeek (model_buf, len, SEEK_CUR);
 
 	}
 
@@ -620,8 +599,6 @@ return nTextures;
 //------------------------------------------------------------------------------
 
 //draw a polygon model
-extern int nInstanceDepth;
-
 int DrawPolygonModel (
 	tObject			*objP, 
 	vmsVector		*pos, 

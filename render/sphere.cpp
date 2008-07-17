@@ -23,15 +23,6 @@
 #define ADDITIVE_SPHERE_BLENDING 1
 #define MAX_SPHERE_RINGS 256
 
-#define SPHERE_MAXLAT	100    /*max number of horiz and vert. divisions of sphere*/
-#define SPHERE_MAXLONG	100
-
-#define SPHERE_BIGNUM 999.0
-#define TORAD(x)    ((x)*Pi/180.0f)
-
-#define	SQRT2 1.414213562f
-#define  ASPECT 1.0f //(4.0f / 3.0f)
-
 tOOF_triangle baseSphereOcta [8] = {
 	{{{-1,0,1},{1,0,1},{0,1,0}},{0,0,0}},
 	{{{1,0,1},{1,0,-1},{0,1,0}},{0,0,0}},

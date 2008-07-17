@@ -25,47 +25,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <stdlib.h>
 
-#include "pstypes.h"
-#include "console.h"
 #include "inferno.h"
 #include "error.h"
-#include "mono.h"
-#include "gr.h"
-#include "palette.h"
-#include "ibitblt.h"
-#include "bm.h"
-#include "player.h"
-#include "cameras.h"
 #include "render.h"
-#include "menu.h"
-#include "newmenu.h"
 #include "screens.h"
-#include "fix.h"
-#include "robot.h"
-#include "game.h"
 #include "gauges.h"
 #include "gamefont.h"
 #include "newdemo.h"
 #include "text.h"
-#include "multi.h"
 #include "endlevel.h"
-#include "reactor.h"
-#include "powerup.h"
-#include "laser.h"
 #include "playsave.h"
 #include "automap.h"
-#include "mission.h"
-#include "loadgame.h"
-#include "network.h"
-#include "hudmsg.h"
 #include "gamepal.h"
 #include "lightning.h"
-
-#include "ogl_defs.h"
-#include "ogl_lib.h"
-#include "ogl_bitmap.h"
-
-extern int LinearSVGABuffer;
 
 #ifdef _DEBUG
 extern int Debug_pause;				//John's debugging pause system
@@ -154,11 +126,6 @@ if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bDefining))	{
 }
 
 //------------------------------------------------------------------------------
-//these should be in gr.h 
-#define cv_w  cvBitmap.bmProps.w
-#define cv_h  cvBitmap.bmProps.h
-
-//------------------------------------------------------------------------------
 #ifdef _DEBUG
 
 fix ShowView_textTimer = -1;
@@ -171,7 +138,7 @@ if (ShowView_textTimer > 0) {
 	ShowView_textTimer -= gameData.time.xFrame;
 	GrSetCurFont (GAME_FONT);
 
-	viewer_id = "";
+	viewer_id = (char *) "";
 	switch (gameData.objs.viewer->nType) {
 		case OBJ_FIREBALL:
 			viewer_name = "Fireball"; 
@@ -358,10 +325,6 @@ if (gameStates.app.bPlayerIsDead)
 
 //------------------------------------------------------------------------------
 
-extern int gr_bitblt_dest_step_shift;
-extern int gr_wait_for_retrace;
-extern int gr_bitblt_double;
-
 void ExpandRow (ubyte * dest, ubyte * src, int num_src_pixels)
 {
 	int i;
@@ -433,9 +396,12 @@ return gmObjP &&
 
 //------------------------------------------------------------------------------
 
+#if 0
+extern int gr_bitblt_dest_step_shift;
+extern int gr_wait_for_retrace;
+extern int gr_bitblt_double;
 extern int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
-#if 0
 //render a frame for the game in stereo
 void game_render_frame_stereo ()
 {
@@ -920,9 +886,7 @@ if (!bGameCockpitCopyCode)	{
 						 0, 0, 
 						 &gameStates.render.vr.buffers.subRender [0].cvBitmap, 
 						 &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap, 1);
-		gr_wait_for_retrace = 0;
 		GrShowCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
-		gr_wait_for_retrace = 1;
 		}
 	}
 
