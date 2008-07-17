@@ -9,7 +9,6 @@
 #endif
 
 #include "inferno.h"
-#include "multi.h"
 #include "input.h"
 #include "network.h"
 
@@ -85,10 +84,12 @@ return 0;
 
 //-------------------------------------------------------------------------
 
+#if 0
 static inline int WIFireTicks (int nWeapon)
 {
 return 1000 * WI_fire_wait (nWeapon) / F1_0;
 }
+#endif
 
 //-------------------------------------------------------------------------
 

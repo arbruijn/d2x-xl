@@ -19,53 +19,28 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <string.h>
 #ifndef _WIN32_WCE
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#	include <sys/types.h>
 #endif
 #ifndef _WIN32
-#include <unistd.h>
+#	include <unistd.h>
 #endif
 #include <ctype.h>
 
-#ifdef __macosx__
-# include <SDL/SDL.h>
-#else
-# include <SDL.h>
-# if USE_SDL_MIXER
-#  include <SDL_mixer.h>
-# endif
-#endif
-
 #include "inferno.h"
 #include "movie.h"
-#include "console.h"
-#include "args.h"
 #include "key.h"
-#include "digi.h"
-#include "songs.h"
-#include "palette.h"
 #include "strutil.h"
 #include "error.h"
 #include "u_mem.h"
 #include "byteswap.h"
-#include "gr.h"
-#include "ogl_defs.h"
 #include "ogl_bitmap.h"
 #include "gamefont.h"
-#include "cfile.h"
-#include "menu.h"
 #include "libmve.h"
 #include "text.h"
 #include "screens.h"
-#include "cfile.h"
 
 extern char CDROM_dir [];
 
-#define VID_PLAY 0
-#define VID_PAUSE 1
-
-int Vid_State;
 // Subtitle data
 typedef struct {
 	short first_frame, last_frame;
@@ -454,7 +429,6 @@ if (!OpenMovieFile (&movies.robot.cf, filename, 1)) {
 #endif
 	return MOVIE_NOT_PLAYED;
 	}
-Vid_State = VID_PLAY;
 gameOpts->movies.bFullScreen = 1;
 movies.robot.bLittleEndian = libP ? libP->bLittleEndian : 1;
 MVE_memCallbacks (MPlayAlloc, MPlayFree);
@@ -574,7 +548,7 @@ if (nFrame == 0) {
 	nActiveSubTitles = 0;
 	nNextSubTitle = 0;
 	GrSetCurFont (GAME_FONT);
-	nLineSpacing = grdCurCanv->cvFont->ftHeight + (grdCurCanv->cvFont->ftHeight >> 2);
+	nLineSpacing = grdCurCanv->cvFont->ftHeight + (grdCurCanv->cvFont->ftHeight / 4);
 	GrSetFontColor (255, -1);
 	}
 

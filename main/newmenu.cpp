@@ -16,8 +16,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
-#include <stddef.h>
+#	include <windows.h>
+#	include <stddef.h>
 #endif
 #ifdef __macosx__
 # include <OpenGL/gl.h>
@@ -34,21 +34,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdarg.h>
 #include <ctype.h>
 #ifndef _WIN32
-#include <unistd.h>
+#	include <unistd.h>
 #endif
-#include <limits.h>
 
 #include "error.h"
 #include "inferno.h"
-#include "gr.h"
-#include "mono.h"
-#include "songs.h"
 #include "key.h"
-#include "palette.h"
-#include "game.h"
 #include "text.h"
 #include "findfile.h"
-
 #include "menu.h"
 #include "newmenu.h"
 #include "gamefont.h"
@@ -60,29 +53,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "mouse.h"
 #include "joy.h"
-#include "digi.h"
-
-#include "multi.h"
 #include "endlevel.h"
 #include "screens.h"
 #include "config.h"
-#include "player.h"
 #include "newdemo.h"
 #include "kconfig.h"
 #include "strutil.h"
-#include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_bitmap.h"
 #include "render.h"
 #include "input.h"
-#include "loadgame.h"
 #include "netmenu.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
 #endif
-
-#define MAXDISPLAYABLEITEMS 15
 
 #define LHX(x)      (gameStates.menus.bHires? 2 * (x) : x)
 #define LHY(y)      (gameStates.menus.bHires? (24 * (y)) / 10 : y)
@@ -140,10 +125,6 @@ int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuI
 
 //------------------------------------------------------------------------------
 
-void GameRenderFrame ();
-
-void ShowNetGameInfo (int choice);
-
 int bNewMenuFirstTime = 1;
 //--unused-- int Newmenu_fade_in = 1;
 
@@ -176,8 +157,6 @@ for (; nItems; nItems--, itemP++)
 }
 
 //------------------------------------------------------------------------------
-
-void GrRemapMonoFonts ();
 
 void NMRemoveBackground (bkg *bgP) 
 {
@@ -1220,7 +1199,7 @@ if (pszTitle && *pszTitle)	{
 
 int NMGetMenuSize (tMenuItem *itemP, int nItems, int *w, int *h, int *aw, int *nMenus, int *nOthers)
 {
-	int	nStringWidth, nStringHeight, nAverageWidth;
+	int	nStringWidth = 0, nStringHeight = 0, nAverageWidth = 0;
 	int	i, j;
 
 #if 0
@@ -1500,8 +1479,6 @@ if (szHelp && *szHelp) {
 }
 
 //------------------------------------------------------------------------------
-
-extern void OglDoFullScreenInternal (int bForce);
 
 #define REDRAW_ALL	for (i = 0; i < nItems; i++) itemP [i].redraw = 1; bRedrawAll = 1
 
@@ -2551,8 +2528,6 @@ for (i = 0; i < 10; i++) {
 //------------------------------------------------------------------------------
 
 #define MAX_FILES 300
-
-int MakeNewPlayerFile (int allow_abort);
 
 int ExecMenuFileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort)
 {

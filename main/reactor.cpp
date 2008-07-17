@@ -19,26 +19,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdio.h>
 #ifndef _WIN32
-#include <unistd.h>
+#	include <unistd.h>
 #endif
 
 #include "inferno.h"
-
-#include "pstypes.h"
 #include "error.h"
-#include "mono.h"
-
-#include "reactor.h"
-#include "game.h"
-#include "laser.h"
-#include "loadgame.h"
-#include "ai.h"
-#include "multi.h"
-#include "wall.h"
-#include "object.h"
-#include "robot.h"
-#include "vclip.h"
-#include "fireball.h"
 #include "endlevel.h"
 #include "network.h"
 

@@ -20,11 +20,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "error.h"
-#include "robot.h"
-#include "object.h"
-#include "polyobj.h"
-#include "mono.h"
-#include "ai.h"
 #include "interp.h"
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -32,6 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define deg(a) ((int) (a) * 32768 / 180)
 
+#if 0
 //test data for one robot
 tJointPos test_joints [MAX_ROBOT_JOINTS] = {
 
@@ -80,6 +76,7 @@ tJointPos test_joints [MAX_ROBOT_JOINTS] = {
 	{1,{deg(-20),deg(15),0}},   //flinch
 
 };
+#endif
 
 //	-----------------------------------------------------------------------------------------------------------
 //given an tObject and a gun number, return position in 3-space of gun
@@ -156,54 +153,36 @@ void setRobotState(tObject *objP,int state)
 }
 
 //	-----------------------------------------------------------------------------------------------------------
-#include "mono.h"
-
-//--unused-- int curState=0;
-
-//--unused-- test_animStates()
-//--unused-- {
-//--unused-- 	setRobotState(&OBJECTS[1],curState);
-//--unused--
-//--unused--
-//--unused-- 	curState = (curState+1)%N_ANIM_STATES;
-//--unused--
-//--unused-- }
-
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
 void robot_set_angles(tRobotInfo *r,tPolyModel *pm,vmsAngVec angs[N_ANIM_STATES][MAX_SUBMODELS])
 {
 	int m,g,state;
-	int gun_nums[MAX_SUBMODELS];			//which gun each submodel is part of
+	int nGunCounts [MAX_SUBMODELS];			//which gun each submodel is part of
 
-	for (m=0;m<pm->nModels;m++)
-		gun_nums[m] = r->nGuns;		//assume part of body...
+for (m = 0; m < pm->nModels;m++)
+	nGunCounts [m] = r->nGuns;		//assume part of body...
+nGunCounts [0] = -1;		//body never animates, at least for now
 
-	gun_nums[0] = -1;		//body never animates, at least for now
-
-	for (g=0;g<r->nGuns;g++) {
-		m = r->gunSubModels[g];
-
-		while (m != 0) {
-			gun_nums[m] = g;				//...unless we find it in a gun
-			m = pm->subModels.parents[m];
+for (g = 0; g < r->nGuns; g++) {
+	m = r->gunSubModels [g];
+	while (m != 0) {
+		nGunCounts [m] = g;				//...unless we find it in a gun
+		m = pm->subModels.parents [m];
 		}
 	}
 
-	for (g=0;g<r->nGuns+1;g++) {
-
-		for (state=0;state<N_ANIM_STATES;state++) {
-
-			r->animStates[g][state].n_joints = 0;
-			r->animStates[g][state].offset = gameData.bots.nJoints;
-
-			for (m=0;m<pm->nModels;m++) {
-				if (gun_nums[m] == g) {
-					gameData.bots.joints[gameData.bots.nJoints].jointnum = m;
-					gameData.bots.joints[gameData.bots.nJoints].angles = angs[state][m];
-					r->animStates[g][state].n_joints++;
-					gameData.bots.nJoints++;
-					Assert(gameData.bots.nJoints < MAX_ROBOT_JOINTS);
+for (g = 0; g < r->nGuns + 1; g++) {
+	for (state = 0; state <N_ANIM_STATES; state++) {
+		r->animStates [g][state].n_joints = 0;
+		r->animStates [g][state].offset = gameData.bots.nJoints;
+		for (m = 0; m < pm->nModels; m++) {
+			if (nGunCounts[m] == g) {
+				gameData.bots.joints [gameData.bots.nJoints].jointnum = m;
+				gameData.bots.joints [gameData.bots.nJoints].angles = angs[state][m];
+				r->animStates [g][state].n_joints++;
+				gameData.bots.nJoints++;
+				Assert(gameData.bots.nJoints < MAX_ROBOT_JOINTS);
 				}
 			}
 		}
@@ -211,8 +190,6 @@ void robot_set_angles(tRobotInfo *r,tPolyModel *pm,vmsAngVec angs[N_ANIM_STATES]
 }
 
 //	-----------------------------------------------------------------------------------------------------------
-
-#define DEG90	(F1_0 / 4)
 
 void InitCamBots (int bReset)
 {

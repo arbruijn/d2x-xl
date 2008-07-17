@@ -20,25 +20,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 
 #include "inferno.h"
-#include "3d.h"
 #include "error.h"
-#include "gr.h"
 #include "texmap.h"
 #include "iff.h"
 #include "u_mem.h"
-#include "mono.h"
-#include "textures.h"
-#include "object.h"
 #include "endlevel.h"
-#include "fireball.h"
 #include "render.h"
-#include "vecmat.h"
 #include "ogl_render.h"
 
-#define TERRAIN_GRID_MAX_SIZE	64
-#define TERRAIN_GRID_SCALE    i2f (2*20)
-#define TERRAIN_HEIGHT_SCALE  f1_0
-#define f0_4						0x4000
+#define f0_4					0x4000
 
 #define GRID_SIZE				(gameData.render.terrain.nGridW * gameData.render.terrain.nGridH)
 #define GRID_OFFS(_i,_j)	((_i) * gameData.render.terrain.nGridW + (_j))

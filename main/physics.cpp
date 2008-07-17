@@ -20,36 +20,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "joy.h"
-#include "mono.h"
 #include "error.h"
-#include "segment.h"
-#include "object.h"
 #include "physics.h"
 #include "key.h"
-#include "game.h"
 #include "collide.h"
-#include "fvi.h"
-#include "newdemo.h"
 #include "timer.h"
-#include "ai.h"
-#include "wall.h"
-#include "switch.h"
-#include "laser.h"
-#include "bm.h"
-#include "player.h"
 #include "network.h"
-#include "hudmsg.h"
 #include "gameseg.h"
 #include "kconfig.h"
-#include "input.h"
-
 #ifdef TACTILE
-#include "tactile.h"
+#	include "tactile.h"
 #endif
 
 //Global variables for physics system
 //#define _DEBUG
-#define FLUID_PHYSICS	0
 #define UNSTICK_OBJS		0
 
 #define ROLL_RATE 		0x2000
@@ -180,8 +164,6 @@ void SetObjectTurnRoll (tObject *objP)
 //list of segments went through
 short physSegList [MAX_FVI_SEGS], nPhysSegs;
 
-#define MAX_IGNORE_OBJS 100
-
 #ifdef _DEBUG
 #define EXTRADBG 1		//no extra debug when NDEBUG is on
 #endif
@@ -189,9 +171,6 @@ short physSegList [MAX_FVI_SEGS], nPhysSegs;
 #ifdef EXTRADBG
 tObject *debugObjP=NULL;
 #endif
-
-#define XYZ(v) (v)->x, (v)->y, (v)->z
-
 
 #ifdef _DEBUG
 int	nTotalRetries=0, nTotalSims=0;
@@ -446,9 +425,6 @@ else
 
 //	-----------------------------------------------------------------------------------------------------------
 
-extern tObject *monsterballP;
-extern int nWeaponObj;
-
 //Simulate a physics tObject for this frame
 
 void DoPhysicsSim (tObject *objP)
@@ -641,7 +617,7 @@ retryMove:
 
 	if (objP->nType == OBJ_WEAPON)
 		fq.flags |= FQ_TRANSPOINT;
-	if ((bGetPhysSegs = (objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)))
+	if ((bGetPhysSegs = ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))))
 		fq.flags |= FQ_GET_SEGLIST;
 
 	vSaveP0 = *fq.p0;

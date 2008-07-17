@@ -3,7 +3,6 @@
 #endif
 
 #include "inferno.h"
-#include "cfile.h"
 #include "u_mem.h"
 #include "error.h"
 

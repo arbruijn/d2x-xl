@@ -18,14 +18,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 
 #include "inferno.h"
-#include "game.h"
-#include "vecmat.h"
 #include "key.h"
 #include "joy.h"
-#include "object.h"
 #include "error.h"
 #include "physics.h"
-#include "joydefs.h"
 #include "input.h"
 #include "args.h"
 

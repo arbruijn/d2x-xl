@@ -18,14 +18,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 
 #include "inferno.h"
-#include "gr.h"
 #include "error.h"
-#include "game.h"
 #include "textures.h"
-#include "mono.h"
 #include "rle.h"
-#include "piggy.h"
-#include "ogl_defs.h"
 #include "ogl_shader.h"
 #include "ogl_render.h"
 
@@ -295,7 +290,7 @@ return TexScale (y * w + x, s);
 
 #define TOPSCALE(v)	TexScale (v, topScale)
 
-#define TOPIDX	TexIdx (x, y, tw, topScale)
+//#define TOPIDX	TexIdx (x, y, tw, topScale)
 #define BTMIDX	TexIdx (x, y, bw, btmScale)
 
 

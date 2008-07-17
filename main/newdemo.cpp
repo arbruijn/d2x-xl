@@ -23,73 +23,32 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <errno.h>
 #endif
 #include <ctype.h>      /* for isdigit */
-#include <limits.h>
 #if defined (__unix__) || defined (__macosx__)
 #include <sys/stat.h>
 #include <sys/types.h>
 #endif
 
-#include "u_mem.h"
 #include "inferno.h"
-#include "game.h"
-#include "gr.h"
+#include "u_mem.h"
 #include "stdlib.h"
-#include "bm.h"
-//#include "error.h"
-#include "mono.h"
-#include "3d.h"
-#include "segment.h"
 #include "texmap.h"
-#include "laser.h"
 #include "key.h"
 #include "gameseg.h"
-
-#include "object.h"
 #include "objrender.h"
 #include "physics.h"
 #include "slew.h"
 #include "render.h"
-#include "wall.h"
-#include "vclip.h"
-#include "polyobj.h"
-#include "fireball.h"
-#include "laser.h"
 #include "error.h"
-#include "ai.h"
 #include "hostage.h"
-#include "morph.h"
-
-#include "powerup.h"
-#include "fuelcen.h"
-
-#include "sounds.h"
 #include "collide.h"
-
 #include "light.h"
 #include "newdemo.h"
-#include "loadgame.h"
-#include "gamesave.h"
-#include "gamemine.h"
-#include "switch.h"
 #include "gauges.h"
-#include "player.h"
-#include "vecmat.h"
-#include "newmenu.h"
-#include "args.h"
-#include "palette.h"
-#include "multi.h"
-#include "network.h"
 #include "text.h"
-#include "reactor.h"
-#include "aistruct.h"
-#include "mission.h"
-#include "piggy.h"
-#include "controls.h"
 #include "d_io.h"
 #include "timer.h"
 #include "objsmoke.h"
 #include "menu.h"
-
 #include "findfile.h"
 
 #ifdef EDITOR
@@ -172,8 +131,6 @@ static int		bRevertFormat = -1;
 #define DEMO_GAME_TYPE          3       // 1 was shareware, 2 registered
 
 #define DEMO_FILENAME           "tmpdemo.dem"
-
-#define DEMO_MAX_LEVELS         29
 
 CFILE ndInFile = {NULL, 0, 0, 0};
 CFILE ndOutFile = {NULL, 0, 0, 0};
@@ -1796,8 +1753,6 @@ else {
 }
 
 //	-----------------------------------------------------------------------------
-
-#define N_PLAYER_SHIP_TEXTURES 6
 
 void NDRenderExtras (ubyte, tObject *); extern void MultiApplyGoalTextures ();
 

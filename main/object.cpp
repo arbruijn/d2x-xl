@@ -21,65 +21,27 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <math.h>
 
 #include "inferno.h"
-#include "game.h"
-#include "gr.h"
 #include "stdlib.h"
-#include "bm.h"
-//#include "error.h"
-#include "mono.h"
-#include "3d.h"
-#include "segment.h"
 #include "texmap.h"
-#include "laser.h"
 #include "key.h"
 #include "gameseg.h"
 #include "textures.h"
-
 #include "lightning.h"
-#include "object.h"
 #include "objsmoke.h"
 #include "physics.h"
 #include "slew.h"	
 #include "render.h"
-#include "wall.h"
-#include "vclip.h"
-#include "polyobj.h"
 #include "fireball.h"
-#include "laser.h"
 #include "error.h"
-#include "ai.h"
-#include "morph.h"
-#include "reactor.h"
-#include "powerup.h"
-#include "fuelcen.h"
 #include "endlevel.h"
 #include "timer.h"
-
-#include "sounds.h"
 #include "collide.h"
-
 #include "dynlight.h"
 #include "interp.h"
 #include "newdemo.h"
-#include "player.h"
-#include "weapon.h"
-#include "network.h"
-#include "newmenu.h"
 #include "gauges.h"
-#include "multi.h"
 #include "text.h"
-#include "piggy.h"
-#include "switch.h"
-#include "loadgame.h"
-#include "vecmat.h"
-#include "particles.h"
-#include "hudmsg.h"
-#include "oof.h"
 #include "sphere.h"
-#ifdef TACTILE
-#include "tactile.h"
-#endif
-#include "ogl_defs.h"
 #include "input.h"
 #include "automap.h"
 #include "u_mem.h"
@@ -88,9 +50,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dropobject.h"
 #include "marker.h"
 #include "hiresmodels.h"
-
+#ifdef TACTILE
+#	include "tactile.h"
+#endif
 #ifdef EDITOR
-#include "editor/editor.h"
+#	include "editor/editor.h"
 #endif
 
 #ifdef _3DFX
@@ -401,9 +365,9 @@ if (nSegment != -1) {
 
 void CheckAndFixMatrix (vmsMatrix *m);
 
-#define VmAngVecZero(v) (v)->p= (v)->b= (v)->h = 0
+#define VmAngVecZero(_v) (_v)->p = (_v)->b = (_v)->h = 0
 
-void ResetPlayerObject ()
+void ResetPlayerObject (void)
 {
 	int i;
 

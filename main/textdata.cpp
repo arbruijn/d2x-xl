@@ -3,12 +3,10 @@
 #endif
 
 #include <stdio.h>
-#include <string.h>
 
 #include "inferno.h"
 #include "u_mem.h"
 #include "error.h"
-#include "cfile.h"
 #include "key.h"
 #include "ogl_bitmap.h"
 #include "newmenu.h"

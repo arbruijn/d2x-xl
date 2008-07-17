@@ -20,41 +20,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 
 #include "inferno.h"
-#include "fix.h"
-#include "vecmat.h"
-#include "gr.h"
-#include "3d.h"
-#include "mono.h"
 #include "error.h"
-#include "object.h"
 #include "objrender.h"
-#include "game.h"
 #include "key.h"
-
 #include "fireball.h"
-#include "powerup.h"
 #include "gauges.h"
-
-#include "sounds.h"
-#include "player.h"
-
-#include "wall.h"
 #include "text.h"
-#include "weapon.h"
-#include "laser.h"
 #include "scores.h"
-#include "multi.h"
 #include "light.h"
-#include "controls.h"
-#include "hudmsg.h"
 #include "kconfig.h"
 #include "render.h"
-
 #include "newdemo.h"
-#include "escort.h"
-#include "network.h"
 #include "sphere.h"
-#include "weapon.h"
 
 #ifdef EDITOR
 #include "gr.h"	//	for powerup outline drawing
@@ -114,7 +91,9 @@ const char *pszPowerup [MAX_POWERUP_TYPES] = {
 	"mercury missile (4)",
 	"earth shaker",
 	"blue flag",
-	"red flag"
+	"red flag",
+	"slow motion",
+	"bullet time"
 	};
 
 #define	MAX_INV_ITEMS	((5 - gameStates.app.nDifficultyLevel) * ((playerP->flags & PLAYER_FLAGS_AMMO_RACK) ? 2 : 1))
