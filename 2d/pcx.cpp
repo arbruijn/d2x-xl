@@ -135,7 +135,7 @@ if ((header.Manufacturer != 10)||(header.Encoding != 1)||(header.Nplanes != 1)||
 xsize = header.Xmax - header.Xmin + 1;
 ysize = header.Ymax - header.Ymin + 1;
 
-	if (palette && !bmP)
+	if (!bmP)
     {
         CFSeek( &cfPCX, -768, SEEK_END );
         CFRead( palette, 3, 256, &cfPCX );

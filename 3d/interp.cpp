@@ -74,7 +74,9 @@ g3sPoint	*modelPointList = NULL;
 #define MAX_INTERP_COLORS 100
 
 //this is a table of mappings from RGB15 to palette colors
-struct {short pal_entry, rgb15;} interpColorTable [MAX_INTERP_COLORS];
+typedef struct {short pal_entry, rgb15;} tInterpColor; 
+
+tInterpColor interpColorTable [MAX_INTERP_COLORS];
 
 //static int bIntrinsicFacing = 0;
 //static int bFlatPolys = 1;
