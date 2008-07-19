@@ -559,6 +559,10 @@ SOURCE=..\..\ai\aisnipe.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\ai\d1_ai.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\ai\escort.cpp
 # End Source File
 # Begin Source File

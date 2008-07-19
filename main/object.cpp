@@ -602,18 +602,20 @@ void LinkObject (int nObject, int nSegment)
 Assert (nObject != -1);
 objP = OBJECTS + nObject;
 Assert (objP->nSegment == -1);
-Assert (nSegment >= 0 && nSegment <= gameData.segs.nLastSegment);
+Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
 	nSegment = FindSegByPos (&objP->position.vPos, 0, 0, 0);
 	if (nSegment < 0)
 		return;
 	}
 objP->nSegment = nSegment;
+if (gameData.segs.objects [nSegment] == nObject)
+	return;
 objP->next = gameData.segs.objects [nSegment];
 objP->prev = -1;
 gameData.segs.objects [nSegment] = nObject;
 if (objP->next != -1)
-		OBJECTS [objP->next].prev = nObject;
+	OBJECTS [objP->next].prev = nObject;
 
 //list_segObjects (nSegment);
 //CheckDuplicateObjects ();
@@ -640,6 +642,8 @@ else
 	OBJECTS [objP->prev].next = objP->next;
 if (objP->next != -1) 
 	OBJECTS [objP->next].prev = objP->prev;
+objP->next =
+objP->prev = 
 objP->nSegment = -1;
 Assert (OBJECTS [0].next != 0);
 Assert (OBJECTS [0].prev != 0);

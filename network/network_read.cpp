@@ -684,17 +684,18 @@ else if (i < 0)
 		if (nObject != -1) {
 			Assert (nObject < MAX_OBJECTS);
 			objP = OBJECTS + nObject;
-#ifdef _DEBUG
+#if 1//def _DEBUG
 			if (objP->nSegment >= 0)
-				objP = objP;
+				nDbgObj = OBJ_IDX (objP);
 #endif
-			if (ObjectIsLinked (objP, objP->nSegment))
+			while (ObjectIsLinked (objP, objP->nSegment))
 				UnlinkObject (nObject);
 			NW_GET_BYTES (dataP, bufI, objP, sizeof (tObject));
 			if (objP->nType != OBJ_NONE) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
 					SwapObject (objP);
 				nSegment = objP->nSegment;
+				PrintLog ("receiving object %d (type: %d, segment: %d)\n", nObject, objP->nType, nSegment);
 				objP->next = objP->prev = objP->nSegment = -1;
 				objP->attachedObj = -1;
 				if (nSegment < 0)

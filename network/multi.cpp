@@ -720,7 +720,6 @@ objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 objP->nType = OBJ_PLAYER;
 objP->movementType = MT_PHYSICS;
 MultiResetPlayerObject (objP);
-GetPlayerSpawn (GetRandomPlayerPosition (), objP);
 }
 
 //-----------------------------------------------------------------------------
@@ -1169,7 +1168,7 @@ void MultiDoPosition (char *buf)
 	tShortPos sp;
 #endif
 int nPlayer = (gameData.multiplayer.nLocalPlayer+1)%2;
-Assert (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject] != gameData.objs.console);
+Assert (OBJECTS + gameData.multiplayer.players [nPlayer].nObject != gameData.objs.console);
 if (gameData.app.nGameMode & GM_NETWORK) {
 	Int3 (); // Get Jason, what the hell are we doing here?
 	return;

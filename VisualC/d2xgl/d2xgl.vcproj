@@ -2394,11 +2394,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\ai\d1_ai.h"
+						RelativePath="..\..\include\d1_ai.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\ai\d1_aistruct.h"
+						RelativePath="..\..\include\d1_aistruct.h"
 						>
 					</File>
 				</Filter>
@@ -4577,11 +4577,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

@@ -2193,8 +2193,8 @@ extern void ClearStuckObjects (void);
 void StartLevel (int bRandom)
 {
 Assert (!gameStates.app.bPlayerIsDead);
-InitPlayerPosition (bRandom);
 VerifyConsoleObject ();
+InitPlayerPosition (bRandom);
 gameData.objs.console->controlType = CT_FLYING;
 gameData.objs.console->movementType = MT_PHYSICS;
 MultiSendShields ();
