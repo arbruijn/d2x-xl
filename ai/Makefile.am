@@ -4,4 +4,4 @@ INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcd
 
 libai_a_SOURCES = \
 	ai.cpp aianimate.cpp aiboss.cpp aifire.cpp aiframe.cpp aiinit.cpp ailib.cpp \
-	aimove.cpp aipath.cpp aisave.cpp aisnipe.cpp escort.cpp thief.cpp
+	aimove.cpp aipath.cpp aisave.cpp aisnipe.cpp escort.cpp thief.cpp d1_ai.cpp
