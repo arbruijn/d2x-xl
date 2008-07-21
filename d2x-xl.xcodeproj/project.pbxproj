@@ -479,6 +479,9 @@
 		A48165C60E21F31E00F8360E /* shadows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A48165B40E21F31E00F8360E /* shadows.cpp */; };
 		A48165C80E21F37000F8360E /* ntmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A40B22E60E21EA4A0061DFCB /* ntmap.cpp */; };
 		A48165DA0E21F3C900F8360E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A48165D80E21F3C900F8360E /* InfoPlist.strings */; };
+		A4C95FBE0E3478FA005B7481 /* d1_aistruct.h in Headers */ = {isa = PBXBuildFile; fileRef = A4C95FBD0E3478FA005B7481 /* d1_aistruct.h */; };
+		A4C95FC00E347904005B7481 /* d1_ai.h in Headers */ = {isa = PBXBuildFile; fileRef = A4C95FBF0E347904005B7481 /* d1_ai.h */; };
+		A4C95FC20E347922005B7481 /* d1_ai.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4C95FC10E347922005B7481 /* d1_ai.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -975,6 +978,9 @@
 		A48165B30E21F31E00F8360E /* setup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = setup.cpp; sourceTree = "<group>"; };
 		A48165B40E21F31E00F8360E /* shadows.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shadows.cpp; sourceTree = "<group>"; };
 		A48165D90E21F3C900F8360E /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = io/macosx/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A4C95FBD0E3478FA005B7481 /* d1_aistruct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = d1_aistruct.h; sourceTree = "<group>"; };
+		A4C95FBF0E347904005B7481 /* d1_ai.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = d1_ai.h; sourceTree = "<group>"; };
+		A4C95FC10E347922005B7481 /* d1_ai.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = d1_ai.cpp; sourceTree = "<group>"; };
 		B2F67ED704C74A3F00A80002 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		B2F67F1E04C773E400A80002 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
@@ -1128,6 +1134,7 @@
 				A40B20F60E21EA4A0061DFCB /* aipath.cpp */,
 				A40B20F70E21EA4A0061DFCB /* aisave.cpp */,
 				A40B20F80E21EA4A0061DFCB /* aisnipe.cpp */,
+				A4C95FC10E347922005B7481 /* d1_ai.cpp */,
 				A40B20F90E21EA4A0061DFCB /* escort.cpp */,
 				A40B20FB0E21EA4A0061DFCB /* thief.cpp */,
 			);
@@ -1264,6 +1271,8 @@
 				A40B21540E21EA4A0061DFCB /* createmesh.h */,
 				A40B21550E21EA4A0061DFCB /* credits.h */,
 				A40B21560E21EA4A0061DFCB /* d_io.h */,
+				A4C95FBF0E347904005B7481 /* d1_ai.h */,
+				A4C95FBD0E3478FA005B7481 /* d1_aistruct.h */,
 				A40B21570E21EA4A0061DFCB /* desc_id.h */,
 				A40B21580E21EA4A0061DFCB /* desw.h */,
 				A40B21590E21EA4A0061DFCB /* digi.h */,
@@ -2057,6 +2066,8 @@
 				A46201BB0E25E0F200B7EEA7 /* medwall.h in Headers */,
 				A46201BC0E25E0F200B7EEA7 /* seguvs.h in Headers */,
 				A46201BD0E25E0F300B7EEA7 /* texpage.h in Headers */,
+				A4C95FBE0E3478FA005B7481 /* d1_aistruct.h in Headers */,
+				A4C95FC00E347904005B7481 /* d1_ai.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2356,6 +2367,7 @@
 				A46201AA0E25DF5C00B7EEA7 /* midi.cpp in Sources */,
 				A46201AC0E25DF7700B7EEA7 /* hmpfile.cpp in Sources */,
 				A46201AD0E25DF7800B7EEA7 /* hmistub.cpp in Sources */,
+				A4C95FC20E347922005B7481 /* d1_ai.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
