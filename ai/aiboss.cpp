@@ -62,7 +62,7 @@ int spewBots [2][NUM_D2_BOSSES][MAX_SPEW_BOT] = {
 	} 
 };
 
-int	maxSpewBots [NUM_D2_BOSSES] = {2, 1, 2, 3, 3, 3,  3, 3};
+int	maxSpewBots [NUM_D2_BOSSES] = {2, 1, 2, 3, 3, 3, 3, 3};
 
 // ---------------------------------------------------------------------------------------------------------------------
 //	Call every time the tPlayer starts a new ship.

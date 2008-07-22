@@ -1287,11 +1287,6 @@ for (j = 0; j < t; j++) {
 	else {
 		botInfoSave = gameData.bots.info [0][i];
 		RobotInfoReadN (gameData.bots.info [0] + i, 1, &cf);
-		//preserve original boss flag for modified Descent 2 and Vertigo bosses to allow
-		//proper handling of special boss properties like being invulnerable to certain
-		//weapon types or having that special vulnerable spot
-		if (gameData.bots.info [0][i].bossFlag && botInfoSave.bossFlag)
-			gameData.bots.info [0][i].bossFlag = botInfoSave.bossFlag;
 		}
 	}
 t = CFReadInt (&cf);			//read number of joints
