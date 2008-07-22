@@ -602,7 +602,7 @@ if (gameData.smoke.objects [i] < 0) {
 			 (id == SUPERLASER_ID) || (id == SUPERLASER_ID + 1) ||
 			 (id == ROBOT_BLUE_LASER_ID) || (id == ROBOT_GREEN_LASER_ID) || (id == ROBOT_RED_LASER_ID) || (id == ROBOT_WHITE_LASER_ID))
 			nScale = 3;
-		else if ((id == PHOENIX_ID) || (id == ROBOT_SLOW_PHOENIX_ID) || (id == ROBOT_FAST_PHOENIX_ID))
+		else if ((id == PHOENIX_ID) || (id == ROBOT_LIGHT_FIREBALL_ID) || (id == ROBOT_FAST_PHOENIX_ID))
 			nScale = 1;
 		else if ((id == PLASMA_ID) || (id == ROBOT_PLASMA_ID))
 			nScale = 1.5;
