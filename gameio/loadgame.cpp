@@ -750,6 +750,14 @@ gameData.multiplayer.bMoving = -1;
 SongsStopAll ();
 /*---*/PrintLog ("   stopping sounds\n");
 DigiStopAllChannels ();
+/*---*/PrintLog ("   reconfiguring audio\n");
+if (!bRestore) {
+	gameStates.gameplay.slowmo [0].fSpeed =
+	gameStates.gameplay.slowmo [1].fSpeed = 1;
+	gameStates.gameplay.slowmo [0].nState =
+	gameStates.gameplay.slowmo [1].nState = 0;
+	SpeedupSound ();
+	}
 /*---*/PrintLog ("   unloading textures\n");
 PiggyBitmapPageOutAll (0);
 /*---*/PrintLog ("   unloading custom sounds\n");
@@ -971,11 +979,6 @@ if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
 D2SetCaption ();
 if (!bRestore) {
-	gameStates.gameplay.slowmo [0].fSpeed =
-	gameStates.gameplay.slowmo [1].fSpeed = 1;
-	gameStates.gameplay.slowmo [0].nState =
-	gameStates.gameplay.slowmo [1].nState = 0;
-	SpeedupSound ();
 	gameData.render.lights.bInitDynColoring = 1;
 	gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
 	SetMaxOmegaCharge ();
