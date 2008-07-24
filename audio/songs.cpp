@@ -315,7 +315,8 @@ void PlayLevelSong (int nLevel, int bFromHog)
 	int	bD1Song = (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
 	char	szFilename [FILENAME_LEN];
 
-Assert(nLevel != 0);
+if (!nLevel)
+	return;
 if (!gameData.songs.bInitialized)
 	SongsInit ();
 SongsStopAll ();

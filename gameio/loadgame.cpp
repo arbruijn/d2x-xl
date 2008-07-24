@@ -695,7 +695,7 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 	char		*pszLevelName;
 	char		szHogName [FILENAME_LEN];
 	tPlayer	save_player;
-	int		nRooms, bRetry = 0, nLoadRes;
+	int		nRooms, bRetry = 0, nLoadRes, nCurrentLevel = gameData.missions.nCurrentLevel;
 
 /*---*/PrintLog ("Loading level...\n");
 DestroyLightmaps ();
@@ -751,6 +751,7 @@ SongsStopAll ();
 /*---*/PrintLog ("   stopping sounds\n");
 DigiStopAllChannels ();
 /*---*/PrintLog ("   reconfiguring audio\n");
+gameData.missions.nCurrentLevel = nLevel;
 if (!bRestore) {
 	gameStates.gameplay.slowmo [0].fSpeed =
 	gameStates.gameplay.slowmo [1].fSpeed = 1;
@@ -795,12 +796,14 @@ if (gameData.missions.nEnhancedMission) {
 	switch (BMReadExtraRobots (t, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission)) {
 		case -1:
 			gameStates.app.bBetweenLevels = 0;
+			gameData.missions.nCurrentLevel = nCurrentLevel;
 			return 0;
 		case 1:
 			break;
 		default:
 			if (0 > BMReadExtraRobots ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission)) {
 				gameStates.app.bBetweenLevels = 0;
+				gameData.missions.nCurrentLevel = nCurrentLevel;
 				return 0;
 				}
 		}
@@ -832,6 +835,7 @@ Assert (gameStates.app.bAutoRunMission ||
 if (!gameStates.app.bAutoRunMission && 
 	 (!nLevel || (nLevel > gameData.missions.nLastLevel) || (nLevel < gameData.missions.nLastSecretLevel))) {
 	gameStates.app.bBetweenLevels = 0;
+	gameData.missions.nCurrentLevel = nCurrentLevel;
 	Warning ("Invalid level number!");
 	return 0;
 	}
@@ -886,11 +890,11 @@ for (;;) {
 if (nLoadRes) {
 	/*---*/PrintLog ("Couldn't load '%s' (%d)\n", pszLevelName, nLoadRes);
 	gameStates.app.bBetweenLevels = 0;
+	gameData.missions.nCurrentLevel = nCurrentLevel;
 	Warning (TXT_LOAD_ERROR, pszLevelName);
 	return 0;
 	}
 
-gameData.missions.nCurrentLevel = nLevel;
 gamePalette = LoadPalette (szCurrentLevelPalette, pszLevelName, 1, 1, 1);		//don't change screen
 InitGaugeCanvases ();
 ResetPogEffects ();
@@ -916,6 +920,7 @@ gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
 /*---*/PrintLog ("   loading replacement robots\n");
 if (0 > LoadRobotReplacements (pszLevelName, 0, 0)) {
 	gameStates.app.bBetweenLevels = 0;
+	gameData.missions.nCurrentLevel = nCurrentLevel;
 	return 0;
 	}
 LoadHiresModels (1);
@@ -1090,7 +1095,16 @@ if (nMineLevel < 0)
 	nMineLevel *= - (gameData.missions.nLastLevel / gameData.missions.nSecretLevels);
 else if (nMineLevel == 0)
 	nMineLevel = 1;
+nEndGamePoints = 
+nSkillPoints =
+nShieldPoints =
+nEnergyPoints =
+nHostagePoints =
+nAllHostagePoints = 0;
+bIsLastLevel = 0;
 nLevelPoints = LOCALPLAYER.score - LOCALPLAYER.lastScore;
+szAllHostages [0] = 0;
+szEndGame [0] = 0;
 if (!gameStates.app.cheats.bEnabled) {
 	if (gameStates.app.nDifficultyLevel > 1) {
 		nSkillPoints = nLevelPoints * (gameStates.app.nDifficultyLevel) / 4;
@@ -1103,36 +1117,24 @@ if (!gameStates.app.cheats.bEnabled) {
 	nHostagePoints = LOCALPLAYER.hostages.nOnBoard * 500 * (gameStates.app.nDifficultyLevel+1);
 	nShieldPoints -= nShieldPoints % 50;
 	nEnergyPoints -= nEnergyPoints % 50;
+	if ((LOCALPLAYER.hostages.nOnBoard > 0) && (LOCALPLAYER.hostages.nOnBoard == LOCALPLAYER.hostages.nLevel)) {
+		nAllHostagePoints = LOCALPLAYER.hostages.nOnBoard * 1000 * (gameStates.app.nDifficultyLevel+1);
+		sprintf (szAllHostages, "%s%i", TXT_FULL_RESCUE_BONUS, nAllHostagePoints);
+		}
+	if (!IsMultiGame && LOCALPLAYER.lives && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//tPlayer has finished the game!
+		nEndGamePoints = LOCALPLAYER.lives * 10000;
+		sprintf (szEndGame, "%s%i  ", TXT_SHIP_BONUS, nEndGamePoints);
+		bIsLastLevel = 1;
+		}
+	AddBonusPointsToScore (nSkillPoints + nEnergyPoints + nShieldPoints + nHostagePoints + nAllHostagePoints + nEndGamePoints);
 	}
-else {
-	nSkillPoints = 0;
-	nShieldPoints = 0;
-	nEnergyPoints = 0;
-	nHostagePoints = 0;
-	}
-szAllHostages [0] = 0;
-szEndGame [0] = 0;
-if (!gameStates.app.cheats.bEnabled && (LOCALPLAYER.hostages.nOnBoard == LOCALPLAYER.hostages.nLevel)) {
-	nAllHostagePoints = LOCALPLAYER.hostages.nOnBoard * 1000 * (gameStates.app.nDifficultyLevel+1);
-	sprintf (szAllHostages, "%s%i", TXT_FULL_RESCUE_BONUS, nAllHostagePoints);
-	}
-else
-	nAllHostagePoints = 0;
-if (!gameStates.app.cheats.bEnabled && !IsMultiGame && LOCALPLAYER.lives && 
-	 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//tPlayer has finished the game!
-	nEndGamePoints = LOCALPLAYER.lives * 10000;
-	sprintf (szEndGame, "%s%i  ", TXT_SHIP_BONUS, nEndGamePoints);
-	bIsLastLevel = 1;
-	}
-else
-	nEndGamePoints = bIsLastLevel = 0;
-AddBonusPointsToScore (nSkillPoints + nEnergyPoints + nShieldPoints + nHostagePoints + nAllHostagePoints + nEndGamePoints);
 c = 0;
 sprintf (szMenu [c++], "%s%i  ", TXT_SHIELD_BONUS, nShieldPoints);		// Return at start to lower menu...
 sprintf (szMenu [c++], "%s%i  ", TXT_ENERGY_BONUS, nEnergyPoints);
 sprintf (szMenu [c++], "%s%i  ", TXT_HOSTAGE_BONUS, nHostagePoints);
 sprintf (szMenu [c++], "%s%i  ", TXT_SKILL_BONUS, nSkillPoints);
-sprintf (szMenu [c++], "%s  ", szAllHostages);
+if (*szAllHostages)
+	sprintf (szMenu [c++], "%s  ", szAllHostages);
 if (bIsLastLevel)
 	sprintf (szMenu [c++], "%s  ", szEndGame);
 sprintf (szMenu [c++], "%s%i  ", TXT_TOTAL_BONUS, 
@@ -1231,7 +1233,7 @@ Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for this level
 HUDClearMessages ();
 AutomapClearVisited ();
-// --	InitPlayerStatsLevel ();
+InitPlayerStatsLevel (1);
 gameData.objs.viewer = OBJECTS + LOCALPLAYER.nObject;
 GameStartRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
