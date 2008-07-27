@@ -630,7 +630,7 @@ if (!CreateShieldSphere ())
 if (gameData.render.shield.nFaces > 0) 
 #endif
 	{
-	if ((gameOpts->render.bDepthSort > 0) || (gameOpts->render.nPath && !gameOpts->render.bDepthSort))
+	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
 		RIAddSphere (riSphereShield, red, green, blue, alpha, objP);
 	else {
 		tOOF_vector	p = {0, 0, 0};
@@ -665,7 +665,7 @@ if (!gameData.render.monsterball.pSphere) {
 if (gameData.render.monsterball.nFaces > 0) 
 #endif
 	{
-	if ((gameOpts->render.bDepthSort > 0) || (gameOpts->render.nPath && !gameOpts->render.bDepthSort))
+	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
 		RIAddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {
 		static tOOF_vector p = {0,0,0};

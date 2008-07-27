@@ -881,7 +881,7 @@ szBitmapName [0] = 0;
 nCurrentColor = 0;
 bRobotPlaying = 0;
 
-OglDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
+//OglDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
 InitMovieBriefing ();
 
 bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
@@ -1268,7 +1268,7 @@ while (!done) {
 
 done:
 
-OglDrawBuffer (gameStates.ogl.nDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT), 1);
+//OglDrawBuffer (gameStates.ogl.nDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT), 1);
 if (bRobotPlaying) {
 	DeInitRobotMovie ();
 	bRobotPlaying = 0;

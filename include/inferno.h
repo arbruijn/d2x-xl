@@ -35,6 +35,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define USE_SEGRADS		0
 #define CALC_SEGRADS		1
 #define GEOMETRY_VBOS	0
+#if 1
+#	define RENDERPATH		1
+#else
+#	define RENDERPATH		gameOpts->render.nPath
+#endif
 
 #ifdef _DEBUG
 #	define	SHADOWS	1
@@ -2559,6 +2564,7 @@ typedef struct tTimeData {
 //------------------------------------------------------------------------------
 
 typedef enum {
+	rtSound,
 	rtStaticVertLight,
 	rtComputeFaceLight,
 	rtInitSegZRef,
@@ -2960,6 +2966,7 @@ typedef struct tLightning {
 	char					bClamp;
 	char					bPlasma;
 	char					bRandom;
+	char					bLight;
 	char					bInPlane;
 } tLightning;
 

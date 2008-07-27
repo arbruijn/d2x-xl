@@ -2077,7 +2077,7 @@ if (!gameStates.ogl.bVertexLighting)
 	return;
 gameStates.ogl.bVertexLighting = 0;
 #if SHADER_VERTEX_LIGHTING
-if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && gameOpts->render.nPath) {
+if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && RENDERPATH) {
 	PrintLog ("building vertex lighting shader program\n");
 	gameStates.ogl.bVertexLighting = 1;
 	if (hVertLightShader)

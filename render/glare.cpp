@@ -345,7 +345,7 @@ float ComputeCoronaSprite (fVector *sprite, fVector *vCenter, short nSegment, sh
 GetSideVertIndex (sideVerts, nSegment, nSide);
 for (i = 0; i < 4; i++) {
 	fLight += f2fl (sideP->uvls [i].l);
-	if (gameOpts->render.nPath)
+	if (RENDERPATH)
 		G3TransformPoint (sprite + i, gameData.segs.fVertices + sideVerts [i], 0);
 	else
 		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
@@ -668,7 +668,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
-if (gameOpts->render.nPath && gameStates.ogl.bOcclusionQuery && (CoronaStyle ())) {
+if (RENDERPATH && gameStates.ogl.bOcclusionQuery && (CoronaStyle ())) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 #if 1
 	if (gameStates.ogl.bUseDepthBlending && !gameStates.render.automap.bDisplay) {
@@ -835,7 +835,7 @@ gameStates.ogl.bDepthBlending = 0;
 #if SHADER_SOFT_CORONAS
 PrintLog ("building corona blending shader program\n");
 DeleteShaderProg (NULL);
-if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && gameOpts->render.nPath) {
+if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && RENDERPATH) {
 	gameStates.ogl.bDepthBlending = 1;
 	for (i = 0; i < 2; i++) {
 		if (hGlareShader [i])

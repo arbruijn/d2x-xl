@@ -2618,7 +2618,7 @@ void BuildObjectModels (void)
 	tObject	o, *objP = OBJECTS;
 	const char		*pszHires;
 
-if (!gameOpts->render.nPath)
+if (!RENDERPATH)
 	return;
 if (!gameData.objs.nLastObject [0])
 	return;

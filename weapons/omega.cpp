@@ -225,7 +225,7 @@ else {
 #else
 														0,
 #endif
-														1, -1, &color);
+														1, 1, -1, &color);
 	}
 return (handleP->nLightning >= 0);
 }

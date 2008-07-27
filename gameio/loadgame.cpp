@@ -1003,7 +1003,7 @@ PrintLog ("   initializing debris collision handlers\n");
 SetDebrisCollisions ();
 PrintLog ("   building sky box segment list\n");
 BuildSkyBoxSegList ();
-if (gameOpts->render.nPath)
+if (RENDERPATH)
 	gameOpts->render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;
 return 1;
@@ -1747,7 +1747,7 @@ if (!IsMultiGame) {
 	gameStates.render.cockpit.nLastDrawn [0] =
 	gameStates.render.cockpit.nLastDrawn [1] = -1;
 	}
- gameStates.render.cockpit.bBigWindowSwitch=0;
+gameStates.render.cockpit.bBigWindowSwitch = 0;
 if (gameData.demo.nState == ND_STATE_PAUSED)
 	gameData.demo.nState = ND_STATE_RECORDING;
 if (gameData.demo.nState == ND_STATE_RECORDING) {

@@ -63,7 +63,7 @@ viewInfo.windowScale.p.z = f1_0;		//always 1
 init_free_points ();
 OglStartFrame (bFlat, bResetColorBuf);
 gameStates.render.bHeadlightOn = 1;
-if (gameOpts->render.nPath)
+if (RENDERPATH)
 	gameOpts->render.bDepthSort = 1;
 }
 

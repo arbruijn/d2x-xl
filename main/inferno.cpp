@@ -1080,8 +1080,10 @@ if ((t = FindArg ("-cache_meshes")))
 	gameStates.app.bCacheMeshes = NumArg (t, 1);
 if ((t = FindArg ("-cache_lightmaps")))
 	gameStates.app.bCacheLightmaps = NumArg (t, 1);
+#if 0
 if ((t = FindArg ("-renderpath")))
 	gameOptions [0].render.nPath = NumArg (t, 1);
+#endif
 if ((t = FindArg ("-split_polys")))
 	gameStates.render.bSplitPolys = NumArg (t, 1);
 if ((t = FindArg ("-cluster_lights")))

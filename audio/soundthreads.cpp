@@ -56,8 +56,10 @@ tiSound.ti.pThread = SDL_CreateThread (SoundThread, &tiSound.ti.nId);
 
 void EndSoundThread (void)
 {
-tiSound.ti.bDone = 1;
-G3_SLEEP (100);
+if (tiSound.ti.pThread) {
+	tiSound.ti.bDone = 1;
+	G3_SLEEP (100);
+	}	
 }
 
 //------------------------------------------------------------------------------
@@ -66,16 +68,18 @@ int RunSoundThread (tSoundTask nTask)
 {
 	time_t	t1 = 0;
 
+if (gameData.app.bUseMultiThreading [rtSound]) {
 #if 1
-t1 = clock ();
-while (tiSound.ti.bExec && (clock () - t1 < 1000))
-	G3_SLEEP (0);
+	t1 = SDL_GetTicks ();
+	while (tiSound.ti.bExec && (SDL_GetTicks () - t1 < 1000))
+		G3_SLEEP (1);
 #endif
-tiSound.nTask = nTask;
-tiSound.ti.bExec = 1;
+	tiSound.nTask = nTask;
+	tiSound.ti.bExec = 1;
 #if 0
-PrintLog ("running render threads (task: %d)\n", nTask);
+	PrintLog ("running render threads (task: %d)\n", nTask);
 #endif
+	}
 return 1;
 }
 

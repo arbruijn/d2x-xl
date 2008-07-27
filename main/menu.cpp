@@ -62,6 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objrender.h"
 #include "sparkeffect.h"
 #include "renderthreads.h"
+#include "soundthreads.h"
 #ifdef EDITOR
 #	include "editor/editor.h"
 #endif
@@ -3971,7 +3972,7 @@ do {
 		renderOpts.nWallTransp = nOptions++;
 		ADD_CHECK (nOptions, TXT_COLOR_WALLS, gameOpts->render.color.bWalls, KEY_W, HTX_ADVRND_COLORWALLS);
 		optColoredWalls = nOptions++;
-		if (gameOpts->render.nPath)
+		if (RENDERPATH)
 			optDepthSort = -1;
 		else {
 			ADD_CHECK (nOptions, TXT_TRANSP_DEPTH_SORT, gameOpts->render.bDepthSort, KEY_D, HTX_TRANSP_DEPTH_SORT);
@@ -4718,17 +4719,25 @@ if (IsMultiGame)
 void MultiThreadingOptionsMenu (void)
 {
 	tMenuItem	m [10];
-	int			i, choice = 0;
+	int			h, i, bSound = gameData.app.bUseMultiThreading [rtSound], choice = 0;
 
-	static int	menuToTask [rtTaskCount] = {0, 0, 1, 1, 2, 3, 4};	//map menu entries to tasks
-	static int	taskToMenu [5] = {0, 2, 4, 5, 6};	//map tasks to menu entries
+	static int	menuToTask [rtTaskCount] = {0, 1, 1, 2, 2, 3, 4, 5};	//map menu entries to tasks
+	static int	taskToMenu [6] = {0, 1, 3, 5, 6, 7};	//map tasks to menu entries
 
 memset (m, 0, sizeof (m));
-for (i = 0; i < 5; i++)
+h = gameStates.app.bMultiThreaded ? 6 : 1;
+for (i = 0; i < h; i++)
 	ADD_CHECK (i, GT (1060 + i), gameData.app.bUseMultiThreading [taskToMenu [i]], -1, HT (359 + i));
-i = ExecMenu1 (NULL, TXT_MT_MENU_TITLE, 5, m, NULL, &choice);
-for (i = rtStaticVertLight; i < rtTaskCount; i++)
+i = ExecMenu1 (NULL, TXT_MT_MENU_TITLE, 6, m, NULL, &choice);
+h = gameStates.app.bMultiThreaded ? rtTaskCount : rtSound + 1;
+for (i = rtSound; i < h; i++)
 	gameData.app.bUseMultiThreading [i] = (m [menuToTask [i]].value != 0);
+if (bSound != gameData.app.bUseMultiThreading [rtSound]) {
+	if (bSound)
+		EndSoundThread ();
+	else
+		StartSoundThread ();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -4796,10 +4805,8 @@ do {
 			ADD_MENU (nOptions, TXT_PHYSICS_MENUCALL, KEY_Y, HTX_OPTIONS_PHYSICS);
 			optPhysics = nOptions++;
 			}
-		if (gameStates.app.bMultiThreaded) {
-			ADD_MENU (nOptions, TXT_MT_MENU_OPTION, KEY_U, HTX_MULTI_THREADING);
-			optMultiThreading = nOptions++;
-			}
+		ADD_MENU (nOptions, TXT_MT_MENU_OPTION, KEY_U, HTX_MULTI_THREADING);
+		optMultiThreading = nOptions++;
 		}
 
 	i = ExecMenu1 (NULL, TXT_OPTIONS, nOptions, m, options_menuset, &choice);

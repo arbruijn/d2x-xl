@@ -488,7 +488,7 @@ if (j) {
 if (nLights)
 	nLights = 0;
 #endif
-if (!gameOpts->render.nPath)
+if (!RENDERPATH)
 	ResetNearestVertexLights (nVertex, nThread);
 return j;
 }

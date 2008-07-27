@@ -1801,6 +1801,7 @@ const char *defaultGameTexts [][2] = {
 	{"ro~Boter-Omega schiesst blitze", "ro~Bot omega fires lightnings"},
 	{"~Geometrie-Verbesserung: %s", "Mesh impr~Ovement: %s"},
 	{"lightmap-~Qualitaet: %s", "lightmap ~Quality: %s"},
+	{"~Klaenge", "~Sound"},
 	{"~Beleuchtung", "~Lighting"},
 	{"~Renderer", "~Renderer"},
 	{"~Transparenz", "~Transparency"},

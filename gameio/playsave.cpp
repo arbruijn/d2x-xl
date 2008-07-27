@@ -776,6 +776,7 @@ tParamValue defaultParams [] = {
 	{"gameData.app.bUseMultiThreading[4]", "1"},
 	{"gameData.app.bUseMultiThreading[5]", "1"},
 	{"gameData.app.bUseMultiThreading[6]", "1"},
+	{"gameData.app.bUseMultiThreading[7]", "1"},
 	{"gameData.escort.szName", "GUIDE-BOT"},
 	{"gameData.multigame.msg.szMacro[0]", "Why can't we all just get along?"},
 	{"gameData.multigame.msg.szMacro[1]", "Hey, I got a present for ya"},

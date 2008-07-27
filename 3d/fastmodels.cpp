@@ -741,7 +741,7 @@ if (gameStates.render.bQueryCoronas &&
 	  gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id]) || gameStates.render.bCloaked))
 	return 1;
 #if G3_FAST_MODELS
-if (!gameOpts->render.nPath)
+if (!RENDERPATH)
 #endif
 	{
 	gameData.models.g3Models [0][nModel].bValid =

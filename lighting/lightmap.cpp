@@ -591,7 +591,7 @@ int SaveLightmapData (int nLevel)
 	char				szFilename [FILENAME_LEN];
 	grsFace			*faceP;
 
-if (!(gameStates.app.bCacheLightmaps && lightmapData.nLights && lightmapData.nBuffers))
+if (!(RENDERPATH && gameStates.app.bCacheLightmaps && lightmapData.nLights && lightmapData.nBuffers))
 	return 0;
 if (!CFOpen (&cf, LightmapDataFilename (szFilename, nLevel), gameFolders.szTempDir, "wb", 0))
 	return 0;
@@ -634,7 +634,7 @@ int LoadLightmapData (int nLevel)
 	char				szFilename [FILENAME_LEN];
 	grsFace			*faceP;
 
-if (!gameStates.app.bCacheLightmaps)
+if (!(RENDERPATH && gameStates.app.bCacheLightmaps))
 	return 0;
 if (!CFOpen (&cf, LightmapDataFilename (szFilename, nLevel), gameFolders.szTempDir, "rb", 0))
 	return 0;
@@ -670,7 +670,7 @@ return bOk;
 
 int CreateLightmaps (int nLevel)
 {
-if (!gameStates.render.bUsePerPixelLighting)
+if (!(RENDERPATH && gameStates.render.bUsePerPixelLighting))
 	return 0;
 if ((gameStates.render.bUsePerPixelLighting == 1) && !CreateLightmapShader (0))
 	return gameStates.render.bUsePerPixelLighting = 0;

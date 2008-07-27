@@ -183,32 +183,34 @@ return 1;
 
 void SpeedupSound (void)
 {
-#if USE_SOUND_THREADS
-tiSound.fSlowDown = 1.0f;
-RunSoundThread (stReconfigureAudio);
-#else
-DigiExit ();
-DigiInit (1);
-gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart + 
-							 2 * (SDL_GetTicks () - gameData.songs.tSlowDown) / gameOpts->gameplay.nSlowMotionSpeedup;
-PlayLevelSong (gameData.missions.nCurrentLevel, 1);
-#endif
+if (gameData.app.bUseMultiThreading [rtSound]) {
+	tiSound.fSlowDown = 1.0f;
+	RunSoundThread (stReconfigureAudio);
+	}
+else {
+	DigiExit ();
+	DigiInit (1);
+	gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart + 
+								 2 * (SDL_GetTicks () - gameData.songs.tSlowDown) / gameOpts->gameplay.nSlowMotionSpeedup;
+	PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+	}
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
 void SlowdownSound (void)
 {
-#if USE_SOUND_THREADS
-tiSound.fSlowDown = (float) gameOpts->gameplay.nSlowMotionSpeedup / 2;
-RunSoundThread (stReconfigureAudio);
-#else
-DigiExit ();
-DigiInit ((float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
-gameData.songs.tSlowDown = SDL_GetTicks ();
-gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart;
-PlayLevelSong (gameData.missions.nCurrentLevel, 1);
-#endif
+if (gameData.app.bUseMultiThreading [rtSound]) {
+	tiSound.fSlowDown = (float) gameOpts->gameplay.nSlowMotionSpeedup / 2;
+	RunSoundThread (stReconfigureAudio);
+	}
+else {
+	DigiExit ();
+	DigiInit ((float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
+	gameData.songs.tSlowDown = SDL_GetTicks ();
+	gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart;
+	PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+	}
 }
 
 //	-----------------------------------------------------------------------------------------------------------

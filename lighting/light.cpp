@@ -860,7 +860,7 @@ fix ComputeObjectLight (tObject *objP, vmsVector *vRotated)
 	if (nObject >= gameData.objs.nLastObject [0])
 		return 0;
 	//First, get static light for this tSegment
-if (gameOpts->render.nLightingMethod && !((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
+if (gameOpts->render.nLightingMethod && !((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
 	gameData.objs.color = *AvgSgmColor (objP->nSegment, &objP->position.vPos);
 	light = F1_0;
 	}

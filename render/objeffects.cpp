@@ -895,7 +895,7 @@ if (gameOpts->render.bHiresModels && (objP->nType == OBJ_PLAYER) && !ASEModel (o
 	}
 else if (bAfterburnerBlob || (bMissile && !nThrusters)) {
 		tHitbox	*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
-		fix		nObjRad = gameOpts->render.nPath ? (phb->vMax.p.z - phb->vMin.p.z) / 2 : 2 * (phb->vMax.p.z - phb->vMin.p.z) / 3;
+		fix		nObjRad = RENDERPATH ? (phb->vMax.p.z - phb->vMin.p.z) / 2 : 2 * (phb->vMax.p.z - phb->vMin.p.z) / 3;
 
 	if (bAfterburnerBlob)
 		nObjRad *= 2;

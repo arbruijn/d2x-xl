@@ -405,7 +405,7 @@ else
 	if (bCamBufAvail) {
 		duImage = (float) grdCurCanv->cvBitmap.bmProps.w / (float) pc->texBuf.bmProps.w / 2;
 		dvImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) pc->texBuf.bmProps.h / 2;
-		if (!bFitToWall && gameOpts->render.nPath) {
+		if (!bFitToWall && RENDERPATH) {
 			aImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) grdCurCanv->cvBitmap.bmProps.w;
 			if (vertexP)
 				aFace = VmVecDist ((fVector *) vertexP, (fVector *) (vertexP + 1)) / 

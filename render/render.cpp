@@ -437,7 +437,7 @@ else
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
-props.segNum = props.segNum;
+	props.segNum = props.segNum;
 #endif
 if ((gameOpts->render.bDepthSort > 0) && (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - gameStates.render.grAlpha;
@@ -1368,7 +1368,7 @@ else
 		}
 	}
 StencilOff ();
-if ((gameOpts->render.bDepthSort > 0) || gameOpts->render.nPath)
+if ((gameOpts->render.bDepthSort > 0) || RENDERPATH)
 	RenderSkyBox (nWindow);
 //PrintLog ("RenderEffects\n");
 RenderEffects (nWindow);
@@ -1538,7 +1538,7 @@ else {
 	InitSegZRef (0, gameData.render.mine.nRenderSegs, 0);
 	gameData.render.zMax = tiRender.zMax [0];
 	}
-if (!gameOpts->render.nPath) {
+if (!RENDERPATH) {
 	if (RunRenderThreads (rtSortSegZRef)) {
 		h = gameData.render.mine.nRenderSegs;
 		for (i = h / 2, j = h - i, ps = segZRef [1], pi = segZRef [0], pj = pi + h / 2; h; h--) {
@@ -1818,7 +1818,7 @@ void BuildRenderSegListFast (short nStartSeg, int nWindow)
 {
 	int	nSegment;
 
-if (!gameOpts->render.nPath)
+if (!RENDERPATH)
 	BuildRenderSegList (nStartSeg, nWindow);
 else {
 	gameData.render.mine.nRenderSegs = 0;
@@ -1935,7 +1935,7 @@ else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref 
 		nSegment = nSegment;
 #endif
 	SetNearestStaticLights (nSegment, 1, 1, 0);
-	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0) && ((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
+	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0) && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
 	RenderObjList (nListPos, gameStates.render.nWindow);
 	gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
 	//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
@@ -1971,7 +1971,7 @@ if (((gameStates.render.nRenderPass <= 0) &&
 #if USE_SEGRADS
 	TransformSideCenters ();
 #endif
-	if (!gameOpts->render.nPath)
+	if (!RENDERPATH)
 		RotateSideNorms ();
 #if defined(EDITOR) && defined (_DEBUG)
 	if (bShowOnlyCurSide) {
@@ -1993,7 +1993,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) || 
 	 (gameStates.render.nShadowPass == 2)) {
 #endif
-	gameStates.ogl.bUseTransform = gameOpts->render.nPath;
+	gameStates.ogl.bUseTransform = RENDERPATH;
 	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.nSegRenderList & gameData.render.mine.nRenderSegs
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 		BuildRenderObjLists (gameData.render.mine.nRenderSegs);
@@ -2059,7 +2059,7 @@ void RenderSkyBox (int nWindow)
 PROF_START
 if (gameStates.render.bHaveSkyBox && (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bSkybox)) {
 	glDepthMask (1);
-	if (gameOpts->render.nPath)
+	if (RENDERPATH)
 		RenderSkyBoxFaces ();
 	else {
 			int	i, bFullBright = gameStates.render.bFullBright;
@@ -2084,7 +2084,7 @@ PROF_START
 gameStates.render.nType = nType;
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
 	BumpVisitedFlag ();
-	if (gameOpts->render.nPath == 1)
+	if (RENDERPATH == 1)
 		RenderFaceList (nType);
 	else {
 		int nListPos;
@@ -2119,7 +2119,7 @@ if (nWindow)
 else
 	nWindow = nWindow;
 #endif
-if (!HaveLightmaps ())
+if (!(RENDERPATH && HaveLightmaps ()))
 	gameStates.render.bPerPixelLighting = 0;
 else {
 	if (gameStates.render.nLightingMethod == 2)
@@ -2156,36 +2156,38 @@ gameStates.render.bDoLightmaps = gameStates.render.color.bLightmapsOk &&
 											!IsMultiGame;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 PROF_END(ptAux)
-if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
+if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
+	if (RENDERPATH) {
 	//PrintLog  ("ResetSegmentLights\n");
-	ResetSegmentLights ();
+		ResetSegmentLights ();
 #if 1
-	if (!gameStates.app.bMultiThreaded || gameStates.render.bPerPixelLighting || 
-		 (CountRenderFaces () < 16) || !RunRenderThreads (rtComputeFaceLight)) 
+		if (!gameStates.app.bMultiThreaded || gameStates.render.bPerPixelLighting || 
+			 (CountRenderFaces () < 16) || !RunRenderThreads (rtComputeFaceLight)) 
 #endif
-		{
+			{
 		//PrintLog  ("ComputeFaceLight\n");
-		if (gameStates.render.bTriangleMesh || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
-			ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
-		else
-			ComputeFaceLight (0, gameData.segs.nFaces, 0);
-		}
-	PROF_START
-	//PrintLog  ("UpdateSlidingFaces\n");
-	UpdateSlidingFaces ();
-	PROF_END(ptAux);
-	if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
-		meshBuilder.BuildVBOs ();
+			if (gameStates.render.bTriangleMesh || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
+				ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
+			else
+				ComputeFaceLight (0, gameData.segs.nFaces, 0);
+			}
+		PROF_START
+		//PrintLog  ("UpdateSlidingFaces\n");
+		UpdateSlidingFaces ();
+		PROF_END(ptAux);
+		if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
+			meshBuilder.BuildVBOs ();
 
-	//PrintLog  ("InitRenderItemBuffer\n");
-	InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
-	gameStates.render.bHeadlights = gameData.render.lights.dynamic.headlights.nLights && 
-											  !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
+		//PrintLog  ("InitRenderItemBuffer\n");
+		InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
+		gameStates.render.bHeadlights = gameData.render.lights.dynamic.headlights.nLights && 
+												  !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
+		}
 	}
 //PrintLog  ("RenderSegmentList (0,1)\n");
 RenderSegmentList (0, 1);	// render opaque geometry
-if ((gameOpts->render.bDepthSort < 1) && !gameOpts->render.nPath)
+if ((gameOpts->render.bDepthSort < 1) && !RENDERPATH)
 	RenderSkyBox (nWindow);
 //PrintLog  ("RenderSegmentList (1,1)\n");
 RenderSegmentList (1, 1);		// render objects

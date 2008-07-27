@@ -250,7 +250,7 @@ void DrawPlayer (tObject * objP)
 	int			size = objP->size * (gameStates.render.automap.bRadar ? 2 : 1);
 	int			bUseTransform = gameStates.ogl.bUseTransform;
 
-//gameStates.ogl.bUseTransform = gameOpts->render.nPath;
+//gameStates.ogl.bUseTransform = RENDERPATH;
 headPoint.p3_index =
 arrowPoint.p3_index =
 spherePoint.p3_index = -1;
@@ -970,7 +970,7 @@ void DrawAllEdges (void)
 	g3sPoint		*p1, *p2;
 	int			bUseTransform = gameStates.ogl.bUseTransform;
 
-gameStates.ogl.bUseTransform = gameOpts->render.nPath;
+gameStates.ogl.bUseTransform = RENDERPATH;
 for (i = 0; i <= nHighestEdgeIndex; i++)	{
 	//e = &Edges [Edge_used_list [i]];
 	e = Edges + i;

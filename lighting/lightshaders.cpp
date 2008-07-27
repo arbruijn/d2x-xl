@@ -1150,7 +1150,7 @@ for (h = 0; h <= 3; h++) {
 				}
 			}
 		PrintLog ("building lighting shader programs\n");
-		if ((gameStates.ogl.bPerPixelLightingOk = (gameStates.ogl.bShadersOk && gameOpts->render.nPath))) {
+		if ((gameStates.ogl.bPerPixelLightingOk = (gameStates.ogl.bShadersOk && RENDERPATH))) {
 			pszFS = BuildLightingShader (fsP [h], i);
 			pszVS = BuildLightingShader (vsP [h], i);
 			bOk = (pszFS != NULL) && (pszVS != NULL) &&

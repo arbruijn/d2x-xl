@@ -627,7 +627,7 @@ else
 	else if (bLight) {
 		if (bOverlay) {
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				if (gameStates.render.nState || !gameOpts->render.nPath || gameStates.app.bEndLevelSequence)
+				if (gameStates.render.nState || !RENDERPATH || gameStates.app.bEndLevelSequence)
 					SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 				else {
 					pc = gameData.render.color.vertices + (*ppl)->p3_index;
@@ -640,7 +640,7 @@ else
 		else {
 			bResetColor = (bOverlay != 1);
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				if (gameStates.render.nState || !gameOpts->render.nPath)
+				if (gameStates.render.nState || !RENDERPATH)
 					SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 				else {
 					pc = gameData.render.color.vertices + (*ppl)->p3_index;
