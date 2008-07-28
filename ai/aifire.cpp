@@ -125,76 +125,60 @@ return FixDiv (player_pos - robot_pos, elapsedTime) + player_vel;
 //		Player not farther away than MAX_LEAD_DISTANCE
 //		dot (vector_to_player, player_direction) must be in -LEAD_RANGE,LEAD_RANGE
 //		if firing a matter weapon, less leading, based on skill level.
-int LeadPlayer (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayerPos, int nGun, vmsVector *fire_vec)
+int LeadPlayer (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayerPos, int nGuns, vmsVector *vFire)
 {
-	fix			dot, player_speed, xDistToPlayer, max_weapon_speed, projectedTime;
-	vmsVector	player_movement_dir, vVecToPlayer;
+	fix			dot, xPlayerSpeed, xDistToPlayer, xMaxWeaponSpeed, xProjectedTime;
+	vmsVector	vPlayerMovementDir, vVecToPlayer;
 	int			nWeaponType;
-	tWeaponInfo	*wptr;
+	tWeaponInfo	*wiP;
 	tRobotInfo	*botInfoP;
 
-	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
+if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
+	return 0;
+vPlayerMovementDir = gameData.objs.console->mType.physInfo.velocity;
+xPlayerSpeed = VmVecNormalize (&vPlayerMovementDir);
+if (xPlayerSpeed < MIN_LEAD_SPEED)
+	return 0;
+VmVecSub (&vVecToPlayer, vBelievedPlayerPos, vFirePoint);
+xDistToPlayer = VmVecNormalize (&vVecToPlayer);
+if (xDistToPlayer > MAX_LEAD_DISTANCE)
+	return 0;
+dot = VmVecDot (&vVecToPlayer, &vPlayerMovementDir);
+if ((dot < -LEAD_RANGE) || (dot > LEAD_RANGE))
+	return 0;
+//	Looks like it might be worth trying to lead the player.
+botInfoP = &ROBOTINFO (objP->id);
+nWeaponType = botInfoP->nWeaponType;
+if ((nGuns == 0) && (botInfoP->nSecWeaponType != -1))
+	nWeaponType = botInfoP->nSecWeaponType;
+wiP = gameData.weapons.info + nWeaponType;
+xMaxWeaponSpeed = wiP->speed [gameStates.app.nDifficultyLevel];
+if (xMaxWeaponSpeed < F1_0)
+	return 0;
+//	Matter weapons:
+//	At Rookie or Trainee, don't lead at all.
+//	At higher skill levels, don't lead as well.  Accomplish this by screwing up xMaxWeaponSpeed.
+if (wiP->matter) {
+	if (gameStates.app.nDifficultyLevel <= 1)
 		return 0;
-
-	player_movement_dir = gameData.objs.console->mType.physInfo.velocity;
-	player_speed = VmVecNormalize (&player_movement_dir);
-
-	if (player_speed < MIN_LEAD_SPEED)
+	else
+		xMaxWeaponSpeed *= (NDL-gameStates.app.nDifficultyLevel);
+   }
+xProjectedTime = FixDiv (xDistToPlayer, xMaxWeaponSpeed);
+vFire->p.x = ComputeLeadComponent (vBelievedPlayerPos->p.x, vFirePoint->p.x, gameData.objs.console->mType.physInfo.velocity.p.x, xProjectedTime);
+vFire->p.y = ComputeLeadComponent (vBelievedPlayerPos->p.y, vFirePoint->p.y, gameData.objs.console->mType.physInfo.velocity.p.y, xProjectedTime);
+vFire->p.z = ComputeLeadComponent (vBelievedPlayerPos->p.z, vFirePoint->p.z, gameData.objs.console->mType.physInfo.velocity.p.z, xProjectedTime);
+VmVecNormalize (vFire);
+Assert (VmVecDot (vFire, &objP->position.mOrient.fVec) < 3*F1_0/2);
+//	Make sure not firing at especially strange angle.  If so, try to correct.  If still bad, give up after one try.
+if (VmVecDot (vFire, &objP->position.mOrient.fVec) < F1_0/2) {
+	VmVecInc (vFire, &vVecToPlayer);
+	VmVecScale (vFire, F1_0/2);
+	if (VmVecDot (vFire, &objP->position.mOrient.fVec) < F1_0/2) {
 		return 0;
-
-	VmVecSub (&vVecToPlayer, vBelievedPlayerPos, vFirePoint);
-	xDistToPlayer = VmVecNormalize (&vVecToPlayer);
-	if (xDistToPlayer > MAX_LEAD_DISTANCE)
-		return 0;
-
-	dot = VmVecDot (&vVecToPlayer, &player_movement_dir);
-
-	if ((dot < -LEAD_RANGE) || (dot > LEAD_RANGE))
-		return 0;
-
-	//	Looks like it might be worth trying to lead the player.
-	botInfoP = &ROBOTINFO (objP->id);
-	nWeaponType = botInfoP->nWeaponType;
-	if (botInfoP->nSecWeaponType != -1)
-		if (nGun == 0)
-			nWeaponType = botInfoP->nSecWeaponType;
-
-	wptr = gameData.weapons.info + nWeaponType;
-	max_weapon_speed = wptr->speed [gameStates.app.nDifficultyLevel];
-	if (max_weapon_speed < F1_0)
-		return 0;
-
-	//	Matter weapons:
-	//	At Rookie or Trainee, don't lead at all.
-	//	At higher skill levels, don't lead as well.  Accomplish this by screwing up max_weapon_speed.
-	if (wptr->matter)
-	{
-		if (gameStates.app.nDifficultyLevel <= 1)
-			return 0;
-		else
-			max_weapon_speed *= (NDL-gameStates.app.nDifficultyLevel);
-	}
-
-	projectedTime = FixDiv (xDistToPlayer, max_weapon_speed);
-
-	fire_vec->p.x = ComputeLeadComponent (vBelievedPlayerPos->p.x, vFirePoint->p.x, gameData.objs.console->mType.physInfo.velocity.p.x, projectedTime);
-	fire_vec->p.y = ComputeLeadComponent (vBelievedPlayerPos->p.y, vFirePoint->p.y, gameData.objs.console->mType.physInfo.velocity.p.y, projectedTime);
-	fire_vec->p.z = ComputeLeadComponent (vBelievedPlayerPos->p.z, vFirePoint->p.z, gameData.objs.console->mType.physInfo.velocity.p.z, projectedTime);
-
-	VmVecNormalize (fire_vec);
-
-	Assert (VmVecDot (fire_vec, &objP->position.mOrient.fVec) < 3*F1_0/2);
-
-	//	Make sure not firing at especially strange angle.  If so, try to correct.  If still bad, give up after one try.
-	if (VmVecDot (fire_vec, &objP->position.mOrient.fVec) < F1_0/2) {
-		VmVecInc (fire_vec, &vVecToPlayer);
-		VmVecScale (fire_vec, F1_0/2);
-		if (VmVecDot (fire_vec, &objP->position.mOrient.fVec) < F1_0/2) {
-			return 0;
 		}
 	}
-
-	return 1;
+return 1;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -254,7 +238,7 @@ void AIFireLaserAtPlayer (tObject *objP, vmsVector *vFirePoint, int nGun, vmsVec
 	short			nShot, nObject = OBJ_IDX (objP);
 	tAILocal		*ailP = gameData.ai.localInfo + nObject;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->id);
-	vmsVector	fire_vec;
+	vmsVector	vFire;
 	vmsVector	bpp_diff;
 	short			nWeaponType;
 	fix			aim, dot;
@@ -343,7 +327,7 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 //	Note that when leading the tPlayer, aim is perfect.  This is probably acceptable since leading is so hacked in.
 //	Problem is all robots will lead equally badly.
 if (d_rand () < 16384) {
-	if (LeadPlayer (objP, vFirePoint, vBelievedPlayerPos, nGun, &fire_vec))		//	Stuff direction to fire at in vFirePoint.
+	if (LeadPlayer (objP, vFirePoint, vBelievedPlayerPos, nGun, &vFire))		//	Stuff direction to fire at in vFirePoint.
 		goto player_led;
 }
 
@@ -354,8 +338,8 @@ while ((count < 4) && (dot < F1_0/4)) {
 	bpp_diff.p.x = vBelievedPlayerPos->p.x + FixMul ((d_rand ()-16384) * i, aim);
 	bpp_diff.p.y = vBelievedPlayerPos->p.y + FixMul ((d_rand ()-16384) * i, aim);
 	bpp_diff.p.z = vBelievedPlayerPos->p.z + FixMul ((d_rand ()-16384) * i, aim);
-	VmVecNormalizedDir (&fire_vec, &bpp_diff, vFirePoint);
-	dot = VmVecDot (&objP->position.mOrient.fVec, &fire_vec);
+	VmVecNormalizedDir (&vFire, &bpp_diff, vFirePoint);
+	dot = VmVecDot (&objP->position.mOrient.fVec, &vFire);
 	count++;
 	}
 
@@ -366,7 +350,7 @@ if ((botInfoP->nSecWeaponType != -1) && ((nWeaponType < 0) || !nGun))
 	nWeaponType = botInfoP->nSecWeaponType;
 if (nWeaponType < 0)
 	return;
-if (0 > (nShot = CreateNewLaserEasy (&fire_vec, vFirePoint, OBJ_IDX (objP), (ubyte) nWeaponType, 1)))
+if (0 > (nShot = CreateNewLaserEasy (&vFire, vFirePoint, OBJ_IDX (objP), (ubyte) nWeaponType, 1)))
 	return;
 
 AICreateClusterLight (objP, nObject, nShot);
@@ -375,7 +359,7 @@ gameData.objs.shots [nObject].nSignature = OBJECTS [nShot].nSignature;
 
 if (IsMultiGame) {
 	AIMultiSendRobotPos (nObject, -1);
-	MultiSendRobotFire (nObject, objP->cType.aiInfo.CURRENT_GUN, &fire_vec);
+	MultiSendRobotFire (nObject, objP->cType.aiInfo.CURRENT_GUN, &vFire);
 	}
 #if 1
 if (++(objP->cType.aiInfo.CURRENT_GUN) >= botInfoP->nGuns) {

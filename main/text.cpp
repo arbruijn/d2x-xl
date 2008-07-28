@@ -2449,6 +2449,7 @@ const char *defaultHelpTexts [][2] = {
 	 "Depending on the setting, huge faces will be split in\nmore or less many smaller ones. That will improve the lighting,\nbut may also slow down the program."},
 	{"Je hoeher die Qualitaet der Lightmaps, desto besser\nsieht die Beleuchtung mit Lightmaps aus,\ndesto laenger benoetigt aber auch ihre\nBerechnung.", 
 	 "The higher lightmap quality, the better lighting with lightmaps\ndoes look, but the longer it takes to compute them."},
+	{"Multi-Threading fuer die Klangerzeugung einsetzen.", "Use multi threading for sound."},
 	{"Multi-Threading fuer die Beleuchtung einsetzen.", "Use multi threading for computing level lighting."},
 	{"Multi-Threading im Renderer verwenden.", "Use multi threading in the renderer."},
 	{"Multi-Threading fuer die Darstellung von Transparenz verwenden.", "Use multi threading for rendering transparency."},

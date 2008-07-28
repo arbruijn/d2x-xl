@@ -4728,7 +4728,7 @@ memset (m, 0, sizeof (m));
 h = gameStates.app.bMultiThreaded ? 6 : 1;
 for (i = 0; i < h; i++)
 	ADD_CHECK (i, GT (1060 + i), gameData.app.bUseMultiThreading [taskToMenu [i]], -1, HT (359 + i));
-i = ExecMenu1 (NULL, TXT_MT_MENU_TITLE, 6, m, NULL, &choice);
+i = ExecMenu1 (NULL, TXT_MT_MENU_TITLE, h, m, NULL, &choice);
 h = gameStates.app.bMultiThreaded ? rtTaskCount : rtSound + 1;
 for (i = rtSound; i < h; i++)
 	gameData.app.bUseMultiThreading [i] = (m [menuToTask [i]].value != 0);

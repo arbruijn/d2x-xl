@@ -989,7 +989,7 @@ int LocalPlayerFireLaser (void)
 	int		nAmmoUsed, nPrimaryAmmo;
 	int		nWeaponIndex;
 	int		rVal = 0;
-	int 		nfires = 1;
+	int 		nRoundsPerShot = 1;
 	fix		addval;
 	static int nSpreadfireToggle = 0;
 	static int nHelixOrient = 0;
@@ -1049,7 +1049,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 			}
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS)
 			flags |= LASER_QUAD;
-		rVal += LaserFireObject ((short) LOCALPLAYER.nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nfires);
+		rVal += LaserFireObject ((short) LOCALPLAYER.nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
 		playerP->energy -= (xEnergyUsed * rVal) / gameData.weapons.info [nWeaponIndex].fireCount;
 		if (playerP->energy < 0)
 			playerP->energy = 0;
@@ -1215,7 +1215,7 @@ typedef int (* pWeaponHandler) (tObject *, int, int, int);
 
 //-------------------------------------------
 
-int LaserHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+int LaserHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	ubyte	nLaser = (nLevel <= MAX_LASER_LEVEL) ? LASER_ID + nLevel : SUPERLASER_ID + (nLevel - MAX_LASER_LEVEL - 1);
 	short	nLightObj = CreateClusterLight (objP);
@@ -1228,12 +1228,12 @@ if (nFlags & LASER_QUAD) {
 	LaserPlayerFire (objP, nLaser, 2, 0, 0, nLightObj);
 	LaserPlayerFire (objP, nLaser, 3, 0, 0, nLightObj);
 	}
-return nFires;
+return nRoundsPerShot;
 }
 
 //-------------------------------------------
 
-int VulcanHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+int VulcanHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 #	define VULCAN_SPREAD	(d_rand ()/8 - 32767/16)
 
@@ -1243,17 +1243,17 @@ if (bGatlingSound && (gameData.weapons.firing [objP->id].nDuration <= GATLING_DE
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
 LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 1, 0, -1);
-if (nFires > 1) {
+if (nRoundsPerShot > 1) {
 	LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1);
-	if (nFires > 2)
+	if (nRoundsPerShot > 2)
 		LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1);
 	}
-return nFires;
+return nRoundsPerShot;
 }
 
 //-------------------------------------------
 
-int SpreadfireHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+int SpreadfireHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	short	nLightObj = CreateClusterLight (objP);
 
@@ -1266,29 +1266,29 @@ else {
 	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, -F1_0/16, 0, 0, nLightObj);
 	}
 LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0, nLightObj);
-return nFires;
+return nRoundsPerShot;
 }
 
 //-------------------------------------------
 
-int PlasmaHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+int PlasmaHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	short	nLightObj = CreateClusterLight (objP);
 
 LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0, nLightObj);
 LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0, nLightObj);
-if (nFires > 1) {
+if (nRoundsPerShot > 1) {
 	nLightObj = CreateClusterLight (objP);
 
 	LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj);
 	LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj);
 	}
-return nFires;
+return nRoundsPerShot;
 }
 
 //-------------------------------------------
 
-int FusionHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+int FusionHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	vmsVector	vForce;
 	short			nLightObj = CreateClusterLight (objP);
@@ -1311,12 +1311,12 @@ vForce.p.x = (vForce.p.x >> 4) + d_rand () - 16384;
 vForce.p.y = (vForce.p.y >> 4) + d_rand () - 16384;
 vForce.p.z = (vForce.p.z >> 4) + d_rand () - 16384;
 PhysApplyRot (objP, &vForce);
-return nFires;
+return nRoundsPerShot;
 }
 
 //-------------------------------------------
 
-int SuperlaserHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+int SuperlaserHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	ubyte nSuperLevel = 3;		//make some new kind of laser eventually
 	short	nLightObj = CreateClusterLight (objP);
@@ -1329,12 +1329,12 @@ if (nFlags & LASER_QUAD) {
 	LaserPlayerFire (objP, nSuperLevel, 2, 0, 0, nLightObj);
 	LaserPlayerFire (objP, nSuperLevel, 3, 0, 0, nLightObj);
 	}
-return nFires;
+return nRoundsPerShot;
 }
 
 //-------------------------------------------
 
-int GaussHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+int GaussHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 #	define GAUSS_SPREAD		(VULCAN_SPREAD / 5)
 
@@ -1347,17 +1347,17 @@ if (bGatlingSound && (fP->nDuration <= GATLING_DELAY))
 //	Only make sound for 1/4 of vulcan bullets.
 LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 
 							  (objP->id != gameData.multiplayer.nLocalPlayer) || (gameData.laser.xNextFireTime > gameData.time.xGame), 0, -1);
-if (nFires > 1) {
+if (nRoundsPerShot > 1) {
 	LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1);
-	if (nFires > 2)
+	if (nRoundsPerShot > 2)
 		LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1);
 	}
-return nFires;
+return nRoundsPerShot;
 }
 
 //-------------------------------------------
 
-int HelixHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+int HelixHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	typedef struct tSpread {
 		fix	r, u;
@@ -1382,31 +1382,31 @@ LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r,  spread.u, 0, 0, nLightObj)
 LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r, -spread.u, 0, 0, nLightObj);
 LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r * 2,  spread.u * 2, 0, 0, nLightObj);
 LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r * 2, -spread.u * 2, 0, 0, nLightObj);
-return nFires;
+return nRoundsPerShot;
 }
 
 //-------------------------------------------
 
-int PhoenixHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+int PhoenixHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	short	nLightObj = CreateClusterLight (objP);
 
 LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0, nLightObj);
 LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0, nLightObj);
-if (nFires > 1) {
+if (nRoundsPerShot > 1) {
 	nLightObj = CreateClusterLight (objP);
 	LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj);
 	LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj);
 	}
-return nFires;
+return nRoundsPerShot;
 }
 
 //-------------------------------------------
 
-int OmegaHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+int OmegaHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 LaserPlayerFire (objP, OMEGA_ID, 6, 1, 0, -1);
-return nFires;
+return nRoundsPerShot;
 }
 
 //-------------------------------------------
@@ -1434,21 +1434,21 @@ pWeaponHandler weaponHandlers [] = {
 //	More than one shot is fired with a pseudo-delay so that players on show machines can fire (for themselves
 //	or other players) often enough for things like the vulcan cannon.
 
-int LaserFireObject (short nObject, ubyte nWeapon, int nLevel, int nFlags, int nFires)
+int LaserFireObject (short nObject, ubyte nWeapon, int nLevel, int nFlags, int nRoundsPerShot)
 {
 if (nWeapon > OMEGA_INDEX) {
 	gameData.weapons.nPrimary = 0;
-	nFires = 0;
+	nRoundsPerShot = 0;
 	}
 else
-	nFires = weaponHandlers [nWeapon] (OBJECTS + nObject, nLevel, nFlags, nFires);
+	nRoundsPerShot = weaponHandlers [nWeapon] (OBJECTS + nObject, nLevel, nFlags, nRoundsPerShot);
 if (IsMultiGame && (nObject == LOCALPLAYER.nObject)) {
-	gameData.multigame.laser.bFired = nFires;
+	gameData.multigame.laser.bFired = nRoundsPerShot;
 	gameData.multigame.laser.nGun = nWeapon;
 	gameData.multigame.laser.nFlags = nFlags;
 	gameData.multigame.laser.nLevel = nLevel;
 	}
-return nFires;
+return nRoundsPerShot;
 }
 
 //	-------------------------------------------------------------------------------------------

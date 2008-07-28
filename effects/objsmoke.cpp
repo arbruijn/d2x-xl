@@ -586,7 +586,7 @@ nParts = gameData.weapons.info [objP->id].speed [0] / F1_0;
 #endif
 if (bGatling) {
 	c.red = c.green = c.blue = 2.0f / 3.0f;
-	c.alpha = 1.0f / 3.0f;
+	c.alpha = 1.0f / 4.0f;
 	}
 else {
 	c.red = (float) gameData.weapons.color [objP->id].red;
@@ -596,7 +596,7 @@ else {
 	}
 if (gameData.smoke.objects [i] < 0) {
 	if (bGatling)
-		nScale = 4.0f;
+		nScale = 5.0f;
 	else {
 		if (((id >= LASER_ID) && (id < LASER_ID + 4)) || 
 			 (id == SUPERLASER_ID) || (id == SUPERLASER_ID + 1) ||
