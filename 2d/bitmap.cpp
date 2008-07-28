@@ -319,6 +319,8 @@ int GrBitmapHasTransparency (grsBitmap *bmP)
 {
 	int	i, nFrames;
 
+if (bmP->bmType && (bmP->bmBPP == 4))
+	return 1;
 if (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
 nFrames = bmP->bmProps.h / bmP->bmProps.w;

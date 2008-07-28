@@ -476,7 +476,7 @@ if (!bmP->bmTexBuf) {
 	if (nIndex >= 0)
 		GetFlagData (bmName, nIndex);
 #ifdef _DEBUG
-	if (strstr (bmName, "exp06#0")) {
+	if (strstr (bmName, "targ01b")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}
