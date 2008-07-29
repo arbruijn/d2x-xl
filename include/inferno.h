@@ -3057,7 +3057,7 @@ typedef struct tHoardData {
 	tHoardItem	goal;
 	tHoardItem	monsterball;
 	short			nMonsterballSeg;
-	vmsVector	vMonsterBallPos;
+	vmsVector	vMonsterballPos;
 	tObject		*monsterballP;
 	short			nLastHitter;
 } tHoardData;
