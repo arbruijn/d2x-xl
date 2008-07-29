@@ -989,7 +989,7 @@ if (objP->controlType == CT_AI) {
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
 		int nSide = FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments + nOrigSegment);
 		if (nSide != -1) {
-			if (!(WALL_IS_DOORWAY (gameData.segs.segments + nOrigSegment, nSide, NULL) & WID_FLY_FLAG)) {
+			if (!(WALL_IS_DOORWAY (gameData.segs.segments + nOrigSegment, nSide, (objP->nType == OBJ_PLAYER) ? objP : NULL) & WID_FLY_FLAG)) {
 				tSide *sideP;
 				int	nVertex, nFaces;
 				fix	dist;

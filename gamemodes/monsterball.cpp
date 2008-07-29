@@ -41,18 +41,20 @@ if (gameData.hoard.monsterballP) {
 int CreateMonsterball (void)
 {
 	short			nDropSeg, nObject;
-	vmsVector	vSegCenter;
 
 RemoveMonsterball ();
 #ifdef _DEBUG
 nDropSeg = gameData.hoard.nMonsterballSeg;
 #else
-nDropSeg = (gameData.hoard.nMonsterballSeg >= 0) ? 
-			  gameData.hoard.nMonsterballSeg : ChooseDropSegment (NULL, NULL, EXEC_DROP);
+if (gameData.hoard.nMonsterballSeg >= 0)
+	nDropSeg = gameData.hoard.nMonsterballSeg; 
+else {
+	nDropSeg = ChooseDropSegment (NULL, NULL, EXEC_DROP);
+	COMPUTE_SEGMENT_CENTER_I (&gameData.hoard.vMonsterballPos, nDropSeg);
+	}
 #endif
 if (nDropSeg >= 0) {
-	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, nDropSeg);
-	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, &vZero, &vSegCenter, nDropSeg);
+	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, &vZero, &gameData.hoard.vMonsterballPos, nDropSeg);
 	if (nObject >= 0) {
 		gameData.hoard.monsterballP = OBJECTS + nObject;
 		gameData.hoard.monsterballP->nType = OBJ_MONSTERBALL;
@@ -81,8 +83,10 @@ gameData.hoard.nMonsterballSeg = -1;
 gameData.hoard.nLastHitter = -1;
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
 	if ((objP->nType == OBJ_MONSTERBALL) || ((objP->nType == OBJ_POWERUP) && (objP->id == POW_MONSTERBALL))) {
-		if (gameData.hoard.nMonsterballSeg < 0)
+		if (gameData.hoard.nMonsterballSeg < 0) {
 			gameData.hoard.nMonsterballSeg = objP->nSegment;
+			gameData.hoard.vMonsterballPos = OBJPOS (objP)->vPos;
+			}
 		ReleaseObject (i);
 		}
 #ifndef _DEBUG

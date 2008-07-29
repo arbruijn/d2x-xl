@@ -2011,7 +2011,7 @@ DigiLinkSoundToPos (SOUND_PLAYER_GOT_HIT, objP->nSegment, 0, &objP->position.vPo
 ObjectCreateExplosion (objP->nSegment, &objP->position.vPos, i2f (10)/2, VCLIP_PLAYER_HIT);
 if (objP->id != gameData.multiplayer.nLocalPlayer)
 	return 1;
-for (tSide=0; tSide<MAX_SIDES_PER_SEGMENT; tSide++)
+for (tSide = 0; tSide < MAX_SIDES_PER_SEGMENT; tSide++)
 	if (WALL_IS_DOORWAY (segp, tSide, objP) & WID_FLY_FLAG) {
 		vmsVector	exit_point, rand_vec;
 

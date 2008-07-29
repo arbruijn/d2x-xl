@@ -135,7 +135,7 @@ return gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (sideP
 //		WID_ILLUSORY_WALL			3	//	1/1/0		illusory tWall
 //		WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory tWall
 //		WID_NO_WALL					5	//	1/0/1		no tWall, can fly through
-int WallIsDoorWay (tSegment * segP, short nSide)
+int WallIsDoorWay (tSegment * segP, short nSide, tObject *objP)
 {
 	int	flags, nType;
 	int	state;
@@ -191,13 +191,23 @@ if (nType == WALL_DOOR) {
 		return WID_TRANSPARENT_WALL;
 	return WID_WALL;
 	}
+if (nType == WALL_CLOSED) {
+	if (objP && (objP->nType == OBJ_PLAYER)) {
+		if (IsTeamGame && ((wallP->keys >> 1) == GetTeam (objP->id) + 1))
+			return WID_ILLUSORY_WALL;
+		if ((wallP->keys == KEY_BLUE) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_BLUE_KEY))
+			return WID_ILLUSORY_WALL;
+		if ((wallP->keys == KEY_RED) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_RED_KEY))
+			return WID_ILLUSORY_WALL;
+		}
+	}
 // If none of the above flags are set, there is no doorway.
 if ((wallP->cloakValue && (wallP->cloakValue < GR_ACTUAL_FADE_LEVELS)) || CheckTransparency (segP, nSide)) {
 #ifdef _DEBUG
 	CheckTransparency (segP, nSide);
 #endif
 	return WID_TRANSPARENT_WALL;
-	 }
+	}
 return WID_WALL; // There are children behind the door.
 }
 
@@ -214,19 +224,23 @@ if (nChild == -2)
 nSegment = SEG_IDX (segP);
 nWall = WallNumP (segP, nSide);
 bIsWall = IS_WALL (nWall);
+#ifdef _DEBUG
+if (OBJ_IDX (objP) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 if (objP && gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted &&
 	 (objP == gameData.objs.console) && 
 	 (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SPEEDBOOST) &&
 	 (gameData.segs.segment2s [nChild].special != SEGMENT_IS_SPEEDBOOST) &&
 	 (!bIsWall || (gameData.trigs.triggers [gameData.walls.walls [nWall].nTrigger].nType != TT_SPEEDBOOST)))
-	return objP ? WID_RENDER_FLAG : bIsWall ? WallIsDoorWay (segP, nSide) : WID_RENDPAST_FLAG;
+	return objP ? WID_RENDER_FLAG : bIsWall ? WallIsDoorWay (segP, nSide, objP) : WID_RENDPAST_FLAG;
 if ((gameData.segs.segment2s [nChild].special == SEGMENT_IS_BLOCKED) ||
 	 (gameData.segs.segment2s [nChild].special == SEGMENT_IS_SKYBOX))
 	return (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))) ? WID_RENDER_FLAG : 
-			 bIsWall ? WallIsDoorWay (segP, nSide) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
+			 bIsWall ? WallIsDoorWay (segP, nSide, objP) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
 if (!bIsWall) 
 	return (WID_FLY_FLAG|WID_RENDPAST_FLAG);
-return WallIsDoorWay (segP, nSide);
+return WallIsDoorWay (segP, nSide, objP);
 }
 #ifdef EDITOR
 
@@ -1122,13 +1136,13 @@ for (i = 0, w = gameData.walls.walls; i < gameData.walls.nWalls; w++, i++) {
 // Determines what happens when a tWall is shot
 //returns info about tWall.  see wall.h for codes
 //obj is the tObject that hit...either a weapon or the tPlayer himself
-//playernum is the number the tPlayer who hit the tWall or fired the weapon,
+//nPlayer is the number the tPlayer who hit the tWall or fired the weapon,
 //or -1 if a robot fired the weapon
-int WallHitProcess (tSegment *segP, short nSide, fix damage, int playernum, tObject *objP)
+int WallHitProcess (tSegment *segP, short nSide, fix damage, int nPlayer, tObject *objP)
 {
 	tWall	*w;
 	short	nWall;
-	fix	show_message;
+	fix	bShowMessage;
 
 Assert (SEG_IDX (segP) != -1);
 
@@ -1140,7 +1154,7 @@ if (!IS_WALL (nWall))
 w = gameData.walls.walls + nWall;
 
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordWallHitProcess(SEG_IDX (segP), nSide, damage, playernum);
+	NDRecordWallHitProcess(SEG_IDX (segP), nSide, damage, nPlayer);
 
 if (w->nType == WALL_BLASTABLE) {
 	if (objP->cType.laserInfo.parentType == OBJ_PLAYER)
@@ -1148,50 +1162,50 @@ if (w->nType == WALL_BLASTABLE) {
 	return WHP_BLASTABLE;
 	}
 
-if (playernum != gameData.multiplayer.nLocalPlayer)	//return if was robot fire
+if (nPlayer != gameData.multiplayer.nLocalPlayer)	//return if was robot fire
 	return WHP_NOT_SPECIAL;
 
-Assert(playernum > -1);
+Assert(nPlayer > -1);
 
 //	Determine whether tPlayer is moving forward.  If not, don't say negative
 //	messages because he probably didn't intentionally hit the door.
 if (objP->nType == OBJ_PLAYER)
-	show_message = (VmVecDot (&objP->position.mOrient.fVec, &objP->mType.physInfo.velocity) > 0);
+	bShowMessage = (VmVecDot (&objP->position.mOrient.fVec, &objP->mType.physInfo.velocity) > 0);
 else if (objP->nType == OBJ_ROBOT)
-	show_message = 0;
+	bShowMessage = 0;
 else if ((objP->nType == OBJ_WEAPON) && (objP->cType.laserInfo.parentType == OBJ_ROBOT))
-	show_message = 0;
+	bShowMessage = 0;
 else
-	show_message = 1;
+	bShowMessage = 1;
 
 if (w->keys == KEY_BLUE) {
-	if (!(gameData.multiplayer.players [playernum].flags & PLAYER_FLAGS_BLUE_KEY)) {
-		if (playernum==gameData.multiplayer.nLocalPlayer)
-			if (show_message)
+	if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_BLUE_KEY)) {
+		if (nPlayer == gameData.multiplayer.nLocalPlayer)
+			if (bShowMessage)
 				HUDInitMessage("%s %s",TXT_BLUE,TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;
 		}
 	}
 else if (w->keys == KEY_RED) {
-	if (!(gameData.multiplayer.players [playernum].flags & PLAYER_FLAGS_RED_KEY)) {
-		if (playernum==gameData.multiplayer.nLocalPlayer)
-			if (show_message)
+	if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_RED_KEY)) {
+		if (nPlayer == gameData.multiplayer.nLocalPlayer)
+			if (bShowMessage)
 				HUDInitMessage("%s %s",TXT_RED,TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;
 		}
 	}
 else if (w->keys == KEY_GOLD) {
-	if (!(gameData.multiplayer.players [playernum].flags & PLAYER_FLAGS_GOLD_KEY)) {
-		if (playernum==gameData.multiplayer.nLocalPlayer)
-			if (show_message)
+	if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_GOLD_KEY)) {
+		if (nPlayer == gameData.multiplayer.nLocalPlayer)
+			if (bShowMessage)
 				HUDInitMessage("%s %s",TXT_YELLOW,TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;
 		}
 	}
 if (w->nType == WALL_DOOR) {
 	if ((w->flags & WALL_DOOR_LOCKED) && !(AllowToOpenSpecialBossDoor (SEG_IDX (segP), nSide))) {
-		if (playernum == gameData.multiplayer.nLocalPlayer)
-			if (show_message)
+		if (nPlayer == gameData.multiplayer.nLocalPlayer)
+			if (bShowMessage)
 				HUDInitMessage(TXT_CANT_OPEN_DOOR);
 		return WHP_NO_KEY;
 		}

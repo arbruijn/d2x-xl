@@ -23,6 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #include "pstypes.h"
 #include "strutil.h"
@@ -455,10 +456,39 @@ return (nTexture > 0) && (strchr (gameData.pig.tex.bitmapFiles [gameStates.app.b
 
 //------------------------------------------------------------------------------
 
+static int BestShrinkFactor (grsBitmap *bmP, int nShrinkFactor)
+{
+	int	nBaseSize, nTargetSize, nBaseFactor;
+
+#if 0
+if (bmP->bmProps.h >= 2 * bmP->bmProps.w) {
+#endif
+	nBaseSize = bmP->bmProps.w;
+	nTargetSize = 512 / nShrinkFactor;
+	nBaseFactor = (3 * nBaseSize / 2) / nTargetSize;
+#if 0
+	}
+else {
+	nBaseSize = bmP->bmProps.w * bmP->bmProps.h;
+	nTargetSize = (512 * 512) / (nShrinkFactor * nShrinkFactor);
+	nBaseFactor = (int) sqrt ((double) (3 * nBaseSize / 2) / nTargetSize);
+	}
+#endif
+if (!nBaseFactor)
+	return 1;
+if (nBaseFactor > nShrinkFactor)
+	return nShrinkFactor;
+for (nShrinkFactor = 1; nShrinkFactor <= nBaseFactor; nShrinkFactor *= 2)
+	;
+return nShrinkFactor / 2;
+}
+
+//------------------------------------------------------------------------------
+
 int PageInBitmap (grsBitmap *bmP, const char *bmName, int nIndex, int bD1)
 {
 	grsBitmap		*altBmP = NULL;
-	int				temp, nSize, nOffset, nFrames, nShrinkFactor, 
+	int				temp, nSize, nOffset, nFrames, nShrinkFactor, nBestShrinkFactor,
 						bRedone = 0, bTGA, bDefault = 0;
 	time_t			tBase, tShrunk;
 	CFILE				cf = {NULL, 0, 0, 0}, *cfP = &cf;
@@ -649,14 +679,18 @@ reloadTextures:
 #if TEXTURE_COMPRESSION
 			if (CompressTGA (bmP))
 				SaveS3TC (bmP, gameFolders.szTextureDir [bD1], bmName);
-			else 
+			else {
 #endif
-			if ((nShrinkFactor > 1) && (bmP->bmProps.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
-				nSize /= (nShrinkFactor * nShrinkFactor);
+			nBestShrinkFactor = BestShrinkFactor (bmP, nShrinkFactor);
+			if ((nBestShrinkFactor > 1) && ShrinkTGA (bmP, nBestShrinkFactor, nBestShrinkFactor, 1)) {
+				nSize /= (nBestShrinkFactor * nBestShrinkFactor);
 				if (gameStates.app.bCacheTextures)
 					SaveTGA (bmName, gameFolders.szTextureCacheDir [bD1], &h, bmP);
 				}
 			}
+#if TEXTURE_COMPRESSION
+		}
+#endif
 		if (nDescentCriticalError) {
 			PiggyCriticalError ();
 			goto reloadTextures;

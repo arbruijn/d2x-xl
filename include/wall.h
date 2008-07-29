@@ -211,35 +211,35 @@ extern char pszWallNames[7][10];
 
 //#define WALL_IS_DOORWAY(seg,tSide) WallIsDoorWay(seg, tSide)
 
-extern int WALL_IS_DOORWAY (tSegment *seg, short tSide, tObject *objP);
+extern int WALL_IS_DOORWAY (tSegment *segP, short nSide, tObject *objP);
 
 // Initializes all walls (i.e. no special walls.)
-extern void WallInit();
+void WallInit();
 
 // Automatically checks if a there is a doorway (i.e. can fly through)
-extern int WallIsDoorWay ( tSegment *seg, short tSide );
+int WallIsDoorWay (tSegment *segP, short nSide, tObject *objP );
 
 // Deteriorate appearance of tWall. (Changes bitmap (paste-ons))
-extern void WallDamage(tSegment *seg, short tSide, fix damage);
+void WallDamage(tSegment *segP, short nSide, fix damage);
 
 // Destroys a blastable tWall. (So it is an opening afterwards)
-extern void WallDestroy(tSegment *seg, short tSide);
+void WallDestroy(tSegment *segP, short nSide);
 
-void WallIllusionOn(tSegment *seg, short tSide);
+void WallIllusionOn(tSegment *segP, short nSide);
 
-void WallIllusionOff(tSegment *seg, short tSide);
+void WallIllusionOff(tSegment *segP, short nSide);
 
 // Opens a door, including animation and other processing.
-void DoDoorOpen(int door_num);
+void DoDoorOpen(int nDoor);
 
 // Closes a door, including animation and other processing.
-void DoDoorClose(int door_num);
+void DoDoorClose(int nDoor);
 
 // Opens a door
-extern void WallOpenDoor(tSegment *seg, short tSide);
+void WallOpenDoor(tSegment *segP, short nSide);
 
 // Closes a door
-extern void WallCloseDoor(tSegment *seg, short tSide);
+void WallCloseDoor(tSegment *segP, short nSide);
 
 //return codes for WallHitProcess()
 #define WHP_NOT_SPECIAL     0       //wasn't a quote-tWall-unquote
@@ -251,15 +251,15 @@ int AnimFrameCount (tWallClip *anim);
 
 // Determines what happens when a tWall is shot
 //obj is the tObject that hit...either a weapon or the tPlayer himself
-extern int WallHitProcess(tSegment *seg, short tSide, fix damage, int playernum, tObject *obj );
+extern int WallHitProcess(tSegment *segP, short nSide, fix damage, int playernum, tObject *obj );
 
 // Opens/destroys specified door.
-extern void WallToggle(tSegment *seg, short tSide);
+void WallToggle(tSegment *segP, short nSide);
 
 // Tidy up Walls array for load/save purposes.
-extern void ResetWalls();
+void ResetWalls();
 
-extern void UnlockAllWalls (int bOnlyDoors);
+void UnlockAllWalls (int bOnlyDoors);
 
 // Called once per frame..
 void WallFrameProcess();
@@ -268,13 +268,13 @@ extern stuckobj StuckObjects[MAX_STUCK_OBJECTS];
 
 //  An tObject got stuck in a door (like a flare).
 //  Add global entry.
-extern void AddStuckObject(tObject *objp, short nSegment, short nSide);
-extern void RemoveObsoleteStuckObjects(void);
+void AddStuckObject(tObject *objp, short nSegment, short nSide);
+void RemoveObsoleteStuckObjects(void);
 
 //set the tmap_num or tmap_num2 field for a tWall/door
-extern void WallSetTMapNum(tSegment *seg,short tSide,tSegment *csegp, short cside,int anim_num,int nFrame);
+void WallSetTMapNum(tSegment *segP,short nSide,tSegment *csegp, short cside,int anim_num,int nFrame);
 
-extern void InitDoorAnims (void);
+void InitDoorAnims (void);
 int AnimateOpeningDoor (tSegment *segP, short nSide, fix xElapsedTime);
 void BlastBlastableWall (tSegment *segP, short nSide);
 
@@ -282,8 +282,8 @@ void BlastBlastableWall (tSegment *segP, short nSide);
 void KillStuckObjects(int wallnum);
 
 //start tWall open <-> closed transitions
-void StartWallCloak(tSegment *seg, short tSide);
-void StartWallDecloak(tSegment *seg, short tSide);
+void StartWallCloak(tSegment *segP, short nSide);
+void StartWallDecloak(tSegment *segP, short nSide);
 
 bool WallIsTriggerTarget (short nWall);
 bool WallIsVolatile (short nWall);
@@ -306,27 +306,27 @@ extern int WClipReadN(tWallClip *wc, int n, CFILE *fp);
 /*
  * reads a tWallV16 structure from a CFILE
  */
-extern void ReadWallV16(tWallV16 *w, CFILE *fp);
+void ReadWallV16(tWallV16 *w, CFILE *fp);
 
 /*
  * reads a tWallV19 structure from a CFILE
  */
-extern void ReadWallV19(tWallV19 *w, CFILE *fp);
+void ReadWallV19(tWallV19 *w, CFILE *fp);
 
 /*
  * reads a tWall structure from a CFILE
  */
-extern void ReadWall(tWall *w, CFILE *fp);
+void ReadWall(tWall *w, CFILE *fp);
 
 /*
  * reads a v19_door structure from a CFILE
  */
-extern void ReadActiveDoorV19(v19_door *d, CFILE *fp);
+void ReadActiveDoorV19(v19_door *d, CFILE *fp);
 
 /*
  * reads an tActiveDoor structure from a CFILE
  */
-extern void ReadActiveDoor(tActiveDoor *ad, CFILE *fp);
+void ReadActiveDoor(tActiveDoor *ad, CFILE *fp);
 #endif
 
 #endif
