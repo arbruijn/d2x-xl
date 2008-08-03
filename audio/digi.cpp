@@ -256,6 +256,8 @@ if (!gameOpts->sound.bUseOpenAL)
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
 	int h;
+	if (fSlowDown <= 0)
+		fSlowDown = 1.0f;
 	if (gameOpts->sound.bHires == 1)
 		h = Mix_OpenAudio ((int) (SAMPLE_RATE_22K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (gameOpts->sound.bHires == 2)
