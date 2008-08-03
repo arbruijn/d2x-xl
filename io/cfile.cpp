@@ -109,7 +109,7 @@ FILE *CFGetFileHandle (const char *filename, const char *folder, const char *mod
 	const char *pfn;
 
 CFCriticalError (0);
-if (!*filename) {
+if (!*filename || (strlen (filename) + strlen (folder) >= FILENAME_LEN)) {
 	CFCriticalError (1);
 	return NULL;
 	}

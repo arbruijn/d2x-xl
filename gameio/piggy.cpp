@@ -159,13 +159,13 @@ dbh->offset = CFReadInt (cfP);
 
 //------------------------------------------------------------------------------
 
-tBitmapIndex PiggyRegisterBitmap (grsBitmap *bmP, const char *name, int in_file)
+tBitmapIndex PiggyRegisterBitmap (grsBitmap *bmP, const char *name, int bInFile)
 {
 	tBitmapIndex temp;
 	Assert (gameData.pig.tex.nBitmaps [gameStates.app.bD1Data] < MAX_BITMAP_FILES);
 
 temp.index = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
-if (!in_file) {
+if (!bInFile) {
 #ifdef EDITOR
 	if (FindArg ("-macdata"))
 		swap_0_255 (bmP);
@@ -177,7 +177,7 @@ if (!in_file) {
 strncpy (gameData.pig.tex.pBitmapFiles [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, name, 12);
 hashtable_insert (bitmapNames + gameStates.app.bD1Mission, gameData.pig.tex.pBitmapFiles[gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
 gameData.pig.tex.pBitmaps [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = *bmP;
-if (!in_file) {
+if (!bInFile) {
 	bitmapOffsets [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = 0;
 	gameData.pig.tex.bitmapFlags [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = bmP->bmProps.flags;
 	}

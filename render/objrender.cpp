@@ -643,6 +643,8 @@ return 1;
 
 //------------------------------------------------------------------------------
 //draw an tObject which renders as a polygon model
+#define MAX_MODEL_TEXTURES 63
+
 int DrawPolygonObject (tObject *objP, int bDepthSort, int bForce)
 {
 	fix	xLight;
@@ -693,12 +695,12 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 	tPolyModel *pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 #endif
 	tBitmapIndex	bm = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride], 
-						bmiP [12];
+						bmiP [MAX_MODEL_TEXTURES];
 
 #ifdef _DEBUG
 	Assert (pm->nTextures <= 12);
 #endif
-	for (i = 0; i < 12; i++)		//fill whole array, in case simple model needs more
+	for (i = 0; i < MAX_MODEL_TEXTURES; i++)		//fill whole array, in case simple model needs more
 		bmiP [i] = bm;
 	bOk = DrawPolygonModel (objP, &objP->position.vPos, 
 									&objP->position.mOrient, 

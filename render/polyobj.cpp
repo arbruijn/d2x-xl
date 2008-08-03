@@ -629,6 +629,10 @@ if (gameStates.render.nShadowPass == 2) {
 		}
 	return 1;
 	}
+#if 1//def _DEBUG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 nTextures = bHires ? 0 : LoadModelTextures (po, altTextures);
 gameStates.ogl.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints);

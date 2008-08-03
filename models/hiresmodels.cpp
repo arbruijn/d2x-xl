@@ -263,7 +263,7 @@ sprintf (szModel [0], "\001model%d.oof", replacementModels [i].nModel);
 if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "\001%s.oof", replacementModels [i].pszHires);
 else
-	szModel [1][0] = '\0';
+	szModel [1][!bCustom] = '\0';
 if (!(OOF_ReadFile (szModel [1] + !bCustom, po, replacementModels [i].nModel, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom) || 
 	   OOF_ReadFile (szModel [0] + !bCustom, po, replacementModels [i].nModel, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom)))
 	return 0;
@@ -286,7 +286,7 @@ sprintf (szModel [0], "\001model%d.ase", replacementModels [i].nModel);
 if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "\001%s.ase", replacementModels [i].pszHires);
 else
-	szModel [1][0] = '\0';
+	szModel [1][!bCustom] = '\0';
 #if 0//def _DEBUG
 while (!ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom))
 	;
