@@ -301,8 +301,8 @@ void GrBitmapCheckTransparency (grsBitmap * bmP)
 
 	data = bmP->bmTexBuf;
 
-for (y = 0; y < bmP->bmProps.h; y++)	{
-	for (x = 0; x < bmP->bmProps.w; x++)	{
+for (y = 0; y < bmP->bmProps.h; y++) {
+	for (x = 0; x < bmP->bmProps.w; x++) {
 		if  (*data++ == TRANSPARENCY_COLOR)	{
 			GrSetTransparent (bmP, 1);
 			return;

@@ -118,9 +118,9 @@ special = gameData.segs.segment2s [gameData.hoard.monsterballP->nSegment].specia
 if ((special != SEGMENT_IS_GOAL_BLUE) && (special != SEGMENT_IS_GOAL_RED))
 	return 0;
 if ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) == (special == SEGMENT_IS_GOAL_RED))
-	MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
-else
 	MultiSendCaptureBonus (-gameData.multiplayer.nLocalPlayer - 1);
+else
+	MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 CreatePlayerAppearanceEffect (gameData.hoard.monsterballP);
 RemoveMonsterball ();
 CreateMonsterball ();

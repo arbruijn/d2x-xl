@@ -675,6 +675,8 @@ else {
 	bColored = G3FaceIsColored (faceP);
 	bMonitor = (faceP->nCamera >= 0);
 #ifdef _DEBUG
+	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
 	if (bmTop)
 		bmTop = bmTop;
 #endif
@@ -687,7 +689,7 @@ else {
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		}
 	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
-	if (bTransparent && (gameStates.render.nType < 4) && !(bMonitor || bmTop)) {
+	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
 		faceP->nRenderType = gameStates.render.history.nType;
 		faceP->bColored = bColored;
 		RIAddFace (faceP);

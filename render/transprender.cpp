@@ -378,8 +378,10 @@ int RIAddFaceTris (grsFace *faceP)
 	grsTriangle	*triP;
 	fVector		vertices [3];
 	int			h, i, j, bAdditive = FaceIsAdditive (faceP);
-	grsBitmap	*bmP = faceP->bTextured ? BmOverride (faceP->bmBot, -1) : NULL;
+	grsBitmap	*bmP = faceP->bTextured ? faceP->bmTop ? faceP->bmTop : faceP->bmBot : NULL;
 
+if (bmP)
+	bmP = BmOverride (bmP, -1);
 #ifdef _DEBUG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	faceP = faceP;
