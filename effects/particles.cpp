@@ -753,7 +753,7 @@ if (iBuffer) {
 			if (OglBindBmTex (bmP, 0, 1))
 				return;
 #endif
-			if (gameData.render.lights.dynamic.headlights.nLights && !gameStates.render.automap.bDisplay)
+			if (gameData.render.lights.dynamic.headlights.nLights && !(gameStates.render.automap.bDisplay || gameData.smoke.nLastType))
 				G3SetupHeadlightShader (1, 0, &color);
 			else if (gameStates.render.history.nShader >= 0) {
 				glUseProgramObject (0);
