@@ -602,6 +602,7 @@ const char *headlightFS [2][8] = {
 
 const char *headlightVS [2][8] = {
 	{
+	//no lightmaps
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
@@ -674,6 +675,8 @@ const char *headlightVS [2][8] = {
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	},
+	//with lightmaps
+	//single player
 	{
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
@@ -709,6 +712,7 @@ const char *headlightVS [2][8] = {
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
+	//multiplayer
 	"#define LIGHTS 8\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main (void) {\r\n" \

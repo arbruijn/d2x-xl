@@ -755,7 +755,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 			glActiveTexture (GL_TEXTURE1);
 			glClientActiveTexture (GL_TEXTURE1);
 			}
-		//else
+		else
 			glColorPointer (4, GL_FLOAT, 0, item->color);
 		}
 	else if (item->nColors == 1)
@@ -840,10 +840,14 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 #endif
 #if 1
 			if (gameStates.render.bHeadlights) {
+				if (faceP) {
+					if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+						nDbgSeg = nDbgSeg;
+					}
 				G3SetupHeadlightShader (renderItems.bTextured, 1, renderItems.bTextured ? NULL : &faceP->color);
 				if (!bAdditive) {
 					bAdditive = true;
-					if (i)
+					//if (i)
 						glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 					glDepthFunc (GL_LEQUAL);
 					}
