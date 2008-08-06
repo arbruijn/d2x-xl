@@ -378,7 +378,7 @@ int RIAddFaceTris (grsFace *faceP)
 	grsTriangle	*triP;
 	fVector		vertices [3];
 	int			h, i, j, bAdditive = FaceIsAdditive (faceP);
-	grsBitmap	*bmP = faceP->bTextured ? faceP->bmTop ? faceP->bmTop : faceP->bmBot : NULL;
+	grsBitmap	*bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
 
 if (bmP)
 	bmP = BmOverride (bmP, -1);
@@ -415,7 +415,7 @@ if (gameStates.render.bTriangleMesh)
 
 	fVector		vertices [4];
 	int			i, j;
-	grsBitmap	*bmP = faceP->bTextured ? faceP->bmTop ? faceP->bmTop : faceP->bmBot : NULL;
+	grsBitmap	*bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
 
 if (bmP)
 	bmP = BmOverride (bmP, -1);
@@ -557,17 +557,17 @@ return AddRenderItem (riThruster, &item, sizeof (item), fl2f (z), fl2f (z));
 
 //------------------------------------------------------------------------------
 
-void RIEnableClientState (char bClientState, char bTexCoord, char bColor, int nTMU)
+void RIEnableClientState (char bClientState, char bTexCoord, char bColor, char bDecal, int nTMU)
 {
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
-if (bColor != renderItems.bClientColor) {
+if (bDecal || (bColor != renderItems.bClientColor)) {
 	if ((renderItems.bClientColor = bColor))
 		glEnableClientState (GL_COLOR_ARRAY);
 	else
 		glDisableClientState (GL_COLOR_ARRAY);
 	}
-if (bTexCoord != renderItems.bClientTexCoord) {
+if (bDecal || (bTexCoord != renderItems.bClientTexCoord)) {
 	if ((renderItems.bClientTexCoord = bTexCoord))
 		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 	else
@@ -580,17 +580,17 @@ glEnableClientState (GL_VERTEX_ARRAY);
 
 //------------------------------------------------------------------------------
 
-void RIDisableClientState (int nTMU, int bFull)
+void RIDisableClientState (int nTMU, char bDecal, char bFull)
 {
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
 OGL_BINDTEX (0);
 if (bFull) {
-	if (renderItems.bClientTexCoord) {
+	if (bDecal || renderItems.bClientTexCoord) {
 		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 		renderItems.bClientTexCoord = 0;
 		}
-	if (renderItems.bClientColor) {
+	if (bDecal || renderItems.bClientColor) {
 		glDisableClientState (GL_COLOR_ARRAY);
 		renderItems.bClientColor = 0;
 		}
@@ -599,6 +599,16 @@ if (bFull) {
 	}
 else
 	glDisable (GL_TEXTURE_2D);
+}
+
+//------------------------------------------------------------------------------
+
+inline void RIResetBitmaps (void)
+{
+renderItems.bmP [0] =
+renderItems.bmP [1] = NULL;
+renderItems.bDecal = 0;
+renderItems.bTextured = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -621,19 +631,16 @@ if (renderItems.bUseLightmaps != bUseLightmaps) {
 		}
 	else {
 		glDisableClientState (GL_NORMAL_ARRAY);
-		RIDisableClientState (GL_TEXTURE1, 0);
+		RIDisableClientState (GL_TEXTURE1, 0, 0);
 		if (renderItems.bDecal) {
 			renderItems.bDecal = 0;
-			RIDisableClientState (GL_TEXTURE2, 0);
+			RIDisableClientState (GL_TEXTURE2, 1, 0);
 			}
 		renderItems.bClientTexCoord = 
 		renderItems.bClientColor = 1;
 		}
 	renderItems.bUseLightmaps = bUseLightmaps;
-	renderItems.bTextured = 0;
-	renderItems.bDecal = 0;
-	renderItems.bmP [0] = 
-	renderItems.bmP [1] = NULL;
+	RIResetBitmaps ();
 	}
 #endif
 #if 0
@@ -662,19 +669,19 @@ else
 #endif
 if (bClientState) {
 	renderItems.bClientState = 1;
-	RIEnableClientState (bClientState, bTexCoord, bColor, GL_TEXTURE0 + bUseLightmaps);
+	RIEnableClientState (bClientState, bTexCoord, bColor, 0, GL_TEXTURE0 + bUseLightmaps);
 	if (bDecal) {
-		RIEnableClientState (bClientState, bTexCoord, bColor, GL_TEXTURE1 + bUseLightmaps);
+		RIEnableClientState (bClientState, bTexCoord, bColor, 1, GL_TEXTURE1 + bUseLightmaps);
 		renderItems.bDecal = 1;
 		}
 	else if (renderItems.bDecal)
-		RIDisableClientState (GL_TEXTURE1 + bUseLightmaps, 1);
+		RIDisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
 	}
 else {
-	RIDisableClientState (GL_TEXTURE0 + bUseLightmaps, 1);
+	RIDisableClientState (GL_TEXTURE0 + bUseLightmaps, 0, 1);
 	if (renderItems.bDecal) {
 		renderItems.bDecal = 0;
-		RIDisableClientState (GL_TEXTURE1 + bUseLightmaps, 1);
+		RIDisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
 		}
 	glActiveTexture (GL_TEXTURE0);
 	}
@@ -696,16 +703,6 @@ if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
 
 //------------------------------------------------------------------------------
 
-inline void RIResetBitmaps (void)
-{
-renderItems.bmP [0] =
-renderItems.bmP [1] = NULL;
-renderItems.bDecal = 0;
-renderItems.bTextured = 0;
-}
-
-//------------------------------------------------------------------------------
-
 int LoadRenderItemImage (grsBitmap *bmP, char nColors, char nFrame, int nWrap, 
 								 int bClientState, int nTransp, int bShader, int bUseLightmaps, 
 								 int bHaveDecal, int bIsDecal)
@@ -718,6 +715,8 @@ if (bmP) {
 		//glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		renderItems.bTextured = 1;
 		}
+	if (bIsDecal)
+		bmP = BmOverride (bmP, -1);
 	if ((bmP != renderItems.bmP [bIsDecal]) || (nFrame != renderItems.nFrame) || (nWrap != renderItems.nWrap)) {
 		gameData.render.nStateChanges++;
 		if (bmP) {
@@ -787,7 +786,7 @@ if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
 bDecal = faceP && faceP->bmTop;
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP != NULL, bLightmaps, bDecal, 0) &&
-	 (!bDecal || LoadRenderItemImage (faceP->bmTop, item->nColors, 0, item->nWrap, 1, 3, faceP != NULL, bLightmaps, 0, 1))) {
+	 (!bDecal || LoadRenderItemImage (faceP->bmTop, item->nColors, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 1))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
 	if (item->nColors > 1) {
 		if (bLightmaps) {
@@ -813,6 +812,13 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, faceP !
 		if (renderItems.bTextured)
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord + nIndex);
 		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + nIndex);
+		if (bDecal) {
+			glActiveTexture (GL_TEXTURE1 + bLightmaps);
+			glClientActiveTexture (GL_TEXTURE1 + bLightmaps);
+			if (renderItems.bTextured)
+				glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord + nIndex);
+			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + nIndex);
+			}
 		}
 	else if (faceP) {
 		if (!bLightmaps)
