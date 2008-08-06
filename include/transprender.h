@@ -130,8 +130,9 @@ typedef struct tRenderItemBuffer {
 	char				bDisplay;
 	char				bLightmaps;
 	char				bUseLightmaps;
+	char				bDecal;
 	char				bSplitPolys;
-	grsBitmap		*bmP;
+	grsBitmap		*bmP [2];
 } tRenderItemBuffer;
 
 typedef struct tRenderItemData {
