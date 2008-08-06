@@ -430,7 +430,7 @@ else {
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		}
 	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
-	if (bTransparent && (gameStates.render.nType < 4) && !(bMonitor || bmTop)) {
+	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
 		faceP->nRenderType = gameStates.render.history.nType;
 		faceP->bColored = bColored;
 		RIAddFace (faceP);
@@ -565,7 +565,7 @@ else {
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		}
 	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
-	if (bTransparent && (gameStates.render.nType < 4) && !(bMonitor || bmTop)) {
+	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
 		faceP->nRenderType = gameStates.render.history.nType;
 		faceP->bColored = bColored;
 		RIAddFace (faceP);
