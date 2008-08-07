@@ -244,8 +244,7 @@ if (bTextured) {
 			bmMask = NULL;
 			}
 		}
-	if (bColorKey)
-		bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
+	bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
 	if (bmMask != gameStates.render.history.bmMask) {
 		bStateChange = true;
 		gameStates.render.history.bmMask = bmMask;
