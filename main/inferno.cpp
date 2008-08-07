@@ -530,11 +530,10 @@ exit (0);
 
 void GetAppFolders (void)
 {
-	int	i;
+	int	i, j;
 	char	szDataRootDir [FILENAME_LEN], szTemp [FILENAME_LEN];
 	char	*psz;
 #ifdef _WIN32
-	int	j;
 	char	c;
 #endif
   
@@ -618,12 +617,12 @@ GetAppFolder (szDataRootDir, gameFolders.szTextureDir [1], TEXTUREDIR_D1, "*.tga
 static char *szTexSubFolders [] = {"256", "128", "64"};
 
 for (i = 0; i < 2; i++) {
-	for (int j = 0; j < 3; j++) {
+	for (j = 0; j < 3; j++) {
 		sprintf (szTemp, "%s/%s", gameFolders.szTextureDir [i], szTexSubFolders [j]);
 		CFMkDir (szTemp);
 		}
 	}
-for (int j = 0; j < 3; j++) {
+for (j = 0; j < 3; j++) {
 	sprintf (szTemp, "%s/%s", gameFolders.szModelCacheDir, szTexSubFolders [j]);
 	CFMkDir (szTemp);
 	}
