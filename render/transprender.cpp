@@ -560,8 +560,6 @@ return AddRenderItem (riThruster, &item, sizeof (item), fl2f (z), fl2f (z));
 
 void RIEnableClientState (char bClientState, char bTexCoord, char bColor, char bDecal, int nTMU)
 {
-if (nTMU == GL_TEXTURE0)
-	nTMU = nTMU;
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
 if (!bDecal && (bColor != renderItems.bClientColor)) {
@@ -585,21 +583,31 @@ glEnableClientState (GL_VERTEX_ARRAY);
 
 void RIDisableClientState (int nTMU, char bDecal, char bFull)
 {
+#ifdef _DEBUG
 if (nTMU == GL_TEXTURE0)
 	nTMU = nTMU;
+#endif
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
 if (bFull) {
-	if (bDecal || renderItems.bClientTexCoord) {
+	if (bDecal) {
 		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
-		renderItems.bClientTexCoord = 0;
-		}
-	if (bDecal || renderItems.bClientColor) {
 		glDisableClientState (GL_COLOR_ARRAY);
-		renderItems.bClientColor = 0;
+			renderItems.bClientTexCoord = 0;
+			renderItems.bClientColor = 0;
+		}
+	else {
+		renderItems.bClientState = 0;
+		if (renderItems.bClientTexCoord) {
+			glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+			renderItems.bClientTexCoord = 0;
+			}
+		if (bDecal || renderItems.bClientColor) {
+			glDisableClientState (GL_COLOR_ARRAY);
+			renderItems.bClientColor = 0;
+			}
 		}
 	glDisableClientState (GL_VERTEX_ARRAY);
-	renderItems.bClientState = 0;
 	}
 else {
 	OGL_BINDTEX (0);
@@ -680,32 +688,32 @@ else
 #endif
 if (bClientState) {
 	renderItems.bClientState = 1;
-	RIEnableClientState (bClientState, bTexCoord, bColor, 0, GL_TEXTURE0 + bUseLightmaps);
 #if RENDER_TRANSP_DECALS
 	if (bDecal) {
-		RIEnableClientState (bClientState, bTexCoord, 0, 1, GL_TEXTURE1 + bUseLightmaps);
 		if (bDecal == 2)
 			RIEnableClientState (bClientState, bTexCoord, 0, 1, GL_TEXTURE2 + bUseLightmaps);
+		RIEnableClientState (bClientState, bTexCoord, 0, 1, GL_TEXTURE1 + bUseLightmaps);
 		renderItems.bDecal = bDecal;
 		}
 	else if (renderItems.bDecal) {
-		RIDisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
 		if (renderItems.bDecal == 2)
 			RIDisableClientState (GL_TEXTURE2 + bUseLightmaps, 1, 1);
+		RIDisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
 		renderItems.bDecal = 0;
 		}
 #endif
+	RIEnableClientState (bClientState, bTexCoord, bColor, 0, GL_TEXTURE0 + bUseLightmaps);
 	}
 else {
-	RIDisableClientState (GL_TEXTURE0 + bUseLightmaps, 0, 1);
 #if RENDER_TRANSP_DECALS
 	if (renderItems.bDecal) {
-		RIDisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
 		if (renderItems.bDecal == 2)
 			RIDisableClientState (GL_TEXTURE2 + bUseLightmaps, 1, 1);
+		RIDisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
 		renderItems.bDecal = 0;
 		}
 #endif
+	RIDisableClientState (GL_TEXTURE0 + bUseLightmaps, 0, 1);
 	glActiveTexture (GL_TEXTURE0);
 	}
 //renderItems.bmP = NULL;
