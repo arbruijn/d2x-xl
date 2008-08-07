@@ -509,7 +509,7 @@ exit (0);
 #	define	DEMODIR			"Demos"
 #	define	TEXTUREDIR_D2	"Textures"
 #	define	TEXTUREDIR_D1	"Textures/D1"
-#	define	TEMPDIR			"Temp"
+#	define	CACHEDIR			"Cache"
 #else
 #	define	DATADIR			"data"
 #	define	SHADERDIR		"shaders"
@@ -525,13 +525,13 @@ exit (0);
 #	define	DEMODIR			"demos"
 #	define	TEXTUREDIR_D2	"textures"
 #	define	TEXTUREDIR_D1	"textures/d1"
-#	define	TEMPDIR			"temp"
+#	define	CACHEDIR			"cache"
 #endif
 
 void GetAppFolders (void)
 {
 	int	i;
-	char	szDataRootDir [FILENAME_LEN];
+	char	szDataRootDir [FILENAME_LEN], szTemp [FILENAME_LEN];
 	char	*psz;
 #ifdef _WIN32
 	int	j;
@@ -614,6 +614,20 @@ GetAppFolder (szDataRootDir, gameFolders.szSoundDir [1], SOUNDDIR2, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [0], TEXTUREDIR_D2, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [1], TEXTUREDIR_D1, "*.tga");
+
+static char *szTexSubFolders [] = {"256", "128", "64"};
+
+for (i = 0; i < 2; i++) {
+	for (int j = 0; j < 3; j++) {
+		sprintf (szTemp, "%s/%s", gameFolders.szTextureDir [i], szTexSubFolders [j]);
+		CFMkDir (szTemp);
+		}
+	}
+for (int j = 0; j < 3; j++) {
+	sprintf (szTemp, "%s/%s", gameFolders.szModelCacheDir, szTexSubFolders [j]);
+	CFMkDir (szTemp);
+	}
+		
 GetAppFolder (szDataRootDir, gameFolders.szMovieDir, MOVIEDIR, "*.mvl");
 #ifdef __unix__
 if (*gameFolders.szHomeDir) {
@@ -644,8 +658,15 @@ if (*gameFolders.szHomeDir) {
 	CFMkDir (gameFolders.szTextureCacheDir [1]);
 	sprintf (gameFolders.szModelCacheDir, "%s/%s", pszOSXCacheDir, MODELDIR);
 	CFMkDir (gameFolders.szModelCacheDir);
-	sprintf (gameFolders.szTempDir, "%s/%s", pszOSXCacheDir, TEMPDIR);
-	CFMkDir (gameFolders.szTempDir);
+	sprintf (gameFolders.szCacheDir, "%s/%s", pszOSXCacheDir, CACHEDIR);
+	CFMkDir (gameFolders.szCacheDir);
+	sprintf (gameFolders.szCacheDir, "%s/%s/256", pszOSXCacheDir, CACHEDIR);
+	CFMkDir (gameFolders.szCacheDir);
+	sprintf (gameFolders.szCacheDir, "%s/%s/128", pszOSXCacheDir, CACHEDIR);
+	CFMkDir (gameFolders.szCacheDir);
+	sprintf (gameFolders.szCacheDir, "%s/%s/64", pszOSXCacheDir, CACHEDIR);
+	CFMkDir (gameFolders.szCacheDir);
+	sprintf (gameFolders.szCacheDir, "%s/%s", pszOSXCacheDir, CACHEDIR);
 #else
 #	if defined (__unix__)
 	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
@@ -661,8 +682,8 @@ if (*gameFolders.szHomeDir) {
 	CFMkDir (gameFolders.szTextureCacheDir [1]);
 	sprintf (gameFolders.szModelCacheDir, "%s/%s", szDataRootDir, MODELDIR);
 	CFMkDir (gameFolders.szModelCacheDir);
-	sprintf (gameFolders.szTempDir, "%s/%s", szDataRootDir, TEMPDIR);
-	CFMkDir (gameFolders.szTempDir);
+	sprintf (gameFolders.szCacheDir, "%s/%s", szDataRootDir, CACHEDIR);
+	CFMkDir (gameFolders.szCacheDir);
 #endif // __macosx__
 	}
 GetAppFolder (szDataRootDir, gameFolders.szProfDir, PROFDIR, "");

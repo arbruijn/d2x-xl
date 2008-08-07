@@ -406,7 +406,7 @@ return NULL;
 int SaveTGA (const char *pszFile, const char *pszFolder, tTgaHeader *ph, grsBitmap *bmP)
 {
 	CFILE			cf = {NULL, 0, 0, 0};
-	char			fn [FILENAME_LEN], fs [5];
+	char			szFolder [FILENAME_LEN], fn [FILENAME_LEN];
 	int			r;
 	tTgaHeader	h;
 
@@ -415,10 +415,9 @@ if (!ph)
 if (!pszFolder)
 	pszFolder = gameFolders.szDataDir;
 CFSplitPath (pszFile, NULL, fn, NULL);
-sprintf (fs, "-%d", bmP->bmProps.w);
-strcat (fn, fs);
+sprintf (szFolder, "%s/%d/", pszFolder, bmP->bmProps.w);
 strcat (fn, ".tga");
-r = CFOpen (&cf, fn, pszFolder, "wb", 0) && WriteTGA (&cf, ph, bmP);
+r = CFOpen (&cf, fn, szFolder, "wb", 0) && WriteTGA (&cf, ph, bmP);
 if (cf.file)
 	CFClose (&cf);
 return r;
@@ -782,7 +781,7 @@ if (!pszFile)
 CFSplitPath (pszFile + 1, NULL, fn, NULL);
 if (!bCustom && (nShrinkFactor > 1)) {
 	sprintf (fnBase, "%s.tga", fn);
-	sprintf (fnShrunk, "%s-%d.tga", fn, 512 / nShrinkFactor);
+	sprintf (fnShrunk, "%d/%s.tga", 512 / nShrinkFactor, fn);
 	tBase = CFDate (fnBase, gameFolders.szModelDir [nType], 0);
 	tShrunk = CFDate (fnShrunk, gameFolders.szModelCacheDir, 0);
 	if ((tShrunk > tBase) && ReadTGA (fnShrunk, gameFolders.szModelCacheDir, bmP, -1, 1.0, 0, 0)) {

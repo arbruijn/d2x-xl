@@ -442,7 +442,7 @@ else {
 if (!(CFExtract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav") ||
 		CFExtract (pszSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], 0, "d2x-temp.wav")))
 	return NULL;
-sprintf (szWAV, "%s%sd2x-temp.wav", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "");
+sprintf (szWAV, "%s%sd2x-temp.wav", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "");
 if (!(chunkP = Mix_LoadWAV (szWAV)))
 	return NULL;
 if (i >= 0)

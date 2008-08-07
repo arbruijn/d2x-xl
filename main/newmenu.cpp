@@ -255,7 +255,7 @@ else if (!gameOpts->menus.altBg.bHave) {
 		gameOpts->menus.altBg.bHave = 
 			ReadTGA (gameOpts->menus.altBg.szName, 
 #ifdef __linux__
-						gameFolders.szTempDir,
+						gameFolders.szCacheDir,
 #else
 						NULL, 
 #endif

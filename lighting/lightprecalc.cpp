@@ -485,7 +485,7 @@ int LoadLightData (int nLevel)
 
 if (!gameStates.app.bCacheLights)
 	return 0;
-if (!CFOpen (&cf, LightDataFilename (szFilename, nLevel), gameFolders.szTempDir, "rb", 0))
+if (!CFOpen (&cf, LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
 	return 0;
 bOk = (CFRead (&ldh, sizeof (ldh), 1, &cf) == 1);
 if (bOk)
@@ -525,7 +525,7 @@ int SaveLightData (int nLevel)
 
 if (!gameStates.app.bCacheLights)
 	return 0;
-if (!CFOpen (&cf, LightDataFilename (szFilename, nLevel), gameFolders.szTempDir, "wb", 0))
+if (!CFOpen (&cf, LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (CFWrite (&ldh, sizeof (ldh), 1, &cf) == 1) &&
 		(CFWrite (gameData.segs.bSegVis, sizeof (ubyte) * ldh.nSegments * SEGVIS_FLAGS, 1, &cf) == 1) &&

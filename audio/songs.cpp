@@ -334,7 +334,7 @@ if (bFromHog) {
 	if (*szFilename && CFExtract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
 		char	szSong [FILENAME_LEN];
 	
-		sprintf (szSong, "%s%s%s", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "", szFilename);
+		sprintf (szSong, "%s%s%s", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "", szFilename);
 		if (DigiPlayMidiSong (szSong, NULL, NULL, 1, 0))
 			return;
 		}

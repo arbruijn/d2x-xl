@@ -518,8 +518,8 @@ if (!bmP->bmTexBuf) {
 	if (tBase < 0) 
 		*fnShrunk = '\0';
 	else {
-		sprintf (fnShrunk, "%s%s%s-%d.tga", gameFolders.szTextureCacheDir [bD1], 
-					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName, 512 / nShrinkFactor);
+		sprintf (fnShrunk, "%s%s%d/%s.tga", gameFolders.szTextureCacheDir [bD1], 
+					*gameFolders.szTextureDir [bD1] ? "/" : "", 512 / nShrinkFactor, bmName);
 		tShrunk = CFDate (fnShrunk, "", 0);
 		if (tShrunk < tBase)
 			*fnShrunk = '\0';

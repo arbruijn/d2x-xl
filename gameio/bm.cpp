@@ -1646,7 +1646,7 @@ int LoadModelData (void)
 
 if (!gameStates.app.bCacheModelData)
 	return 0;
-if (!CFOpen (&cf, "modeldata.d2x", gameFolders.szTempDir, "rb", 0))
+if (!CFOpen (&cf, "modeldata.d2x", gameFolders.szCacheDir, "rb", 0))
 	return 0;
 bOk = (CFRead (&mdh, sizeof (mdh), 1, &cf) == 1);
 if (bOk)
@@ -1669,7 +1669,7 @@ int SaveModelData (void)
 
 if (!gameStates.app.bCacheModelData)
 	return 0;
-if (!CFOpen (&cf, "modeldata.d2x", gameFolders.szTempDir, "wb", 0))
+if (!CFOpen (&cf, "modeldata.d2x", gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (CFWrite (&mdh, sizeof (mdh), 1, &cf) == 1) &&
 		(CFWrite (gameData.models.spheres, sizeof (gameData.models.spheres), 1, &cf) == 1) &&

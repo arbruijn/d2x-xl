@@ -101,7 +101,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 			gameData.songs.user.bMP3 = 0;
 			DigiInit (1);
 			}
-		sprintf (fnSong, "%s/d2x-temp.mid", *gameFolders.szTempDir ? gameFolders.szTempDir : gameFolders.szHomeDir);
+		sprintf (fnSong, "%s/d2x-temp.mid", *gameFolders.szCacheDir ? gameFolders.szCacheDir : gameFolders.szHomeDir);
 		if (!hmp_to_midi (hmp, fnSong)) {
 			PrintLog ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 			return 0;

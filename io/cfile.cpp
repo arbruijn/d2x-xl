@@ -916,7 +916,7 @@ if (*szDestName) {
 	else
 		strcpy (fn, szDestName);
 	}
-sprintf (szDest, "%s%s%s", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "", fn);
+sprintf (szDest, "%s%s%s", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "", fn);
 if (!(fp = fopen (szDest, "wb"))) {
 	CFClose (&cf);
 	return 0;

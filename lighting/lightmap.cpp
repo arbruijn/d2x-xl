@@ -593,7 +593,7 @@ int SaveLightmapData (int nLevel)
 
 if (!(RENDERPATH && gameStates.app.bCacheLightmaps && lightmapData.nLights && lightmapData.nBuffers))
 	return 0;
-if (!CFOpen (&cf, LightmapDataFilename (szFilename, nLevel), gameFolders.szTempDir, "wb", 0))
+if (!CFOpen (&cf, LightmapDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (CFWrite (&ldh, sizeof (ldh), 1, &cf) == 1);
 if (bOk) {
@@ -636,7 +636,7 @@ int LoadLightmapData (int nLevel)
 
 if (!(RENDERPATH && gameStates.app.bCacheLightmaps))
 	return 0;
-if (!CFOpen (&cf, LightmapDataFilename (szFilename, nLevel), gameFolders.szTempDir, "rb", 0))
+if (!CFOpen (&cf, LightmapDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
 	return 0;
 bOk = (CFRead (&ldh, sizeof (ldh), 1, &cf) == 1);
 if (bOk)

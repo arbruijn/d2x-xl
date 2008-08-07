@@ -722,7 +722,7 @@ bool CTriMeshBuilder::Load (int nLevel)
 
 if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 	return false;
-if (!CFOpen (&cf, DataFilename (szFilename, nLevel), gameFolders.szTempDir, "rb", 0))
+if (!CFOpen (&cf, DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
 	return false;
 bOk = (CFRead (&mdh, sizeof (mdh), 1, &cf) == 1);
 if (bOk)
@@ -799,7 +799,7 @@ bool CTriMeshBuilder::Save (int nLevel)
 
 if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 	return 0;
-if (!CFOpen (&cf, DataFilename (szFilename, nLevel), gameFolders.szTempDir, "wb", 0))
+if (!CFOpen (&cf, DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (CFWrite (&mdh, sizeof (mdh), 1, &cf) == 1) &&
 		(CFWrite (gameData.segs.vertices, sizeof (*gameData.segs.vertices) * mdh.nVertices, 1, &cf) == 1) &&
