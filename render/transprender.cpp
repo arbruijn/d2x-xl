@@ -564,15 +564,13 @@ if (nTMU == GL_TEXTURE0)
 	nTMU = nTMU;
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
-if (!bDecal) // && (bColor != renderItems.bClientColor)) 
-	{
+if (!bDecal && (bColor != renderItems.bClientColor)) {
 	if ((renderItems.bClientColor = bColor))
 		glEnableClientState (GL_COLOR_ARRAY);
 	else
 		glDisableClientState (GL_COLOR_ARRAY);
 	}
-//if (bDecal || (bTexCoord != renderItems.bClientTexCoord)) 
-	{
+if (bDecal || (bTexCoord != renderItems.bClientTexCoord)) {
 	if ((renderItems.bClientTexCoord = bTexCoord))
 		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 	else
