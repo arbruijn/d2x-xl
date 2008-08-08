@@ -47,6 +47,7 @@ void ResetPlayerSmoke (void);
 void InitObjectSmoke (void);
 void ResetObjectSmoke (void);
 void KillPlayerBullets (tObject *objP);
+void KillGatlingSmoke (tObject *objP);
 //static inline int RandN (int n);
 void CreateDamageExplosion (int h, int i);
 void DoPlayerSmoke (tObject *objP, int i);

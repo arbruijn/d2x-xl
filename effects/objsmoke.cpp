@@ -136,6 +136,18 @@ if (i >= 0) {
 
 //------------------------------------------------------------------------------
 
+void KillGatlingSmoke (tObject *objP)
+{
+	int	i = gameData.multiplayer.gatlingSmoke [objP->id];
+
+if (i >= 0) {
+	SetSmokeLife (i, 0);
+	gameData.multiplayer.gatlingSmoke [objP->id] = -1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 #define BULLET_MAX_PARTS	50
 #define BULLET_PART_LIFE	-2000
 #define BULLET_PART_SPEED	50
@@ -192,12 +204,68 @@ if (RENDERPATH && gameOpts->render.ship.bBullets) {
 
 //------------------------------------------------------------------------------
 
+#define GATLING_MAX_PARTS	25
+#define GATLING_PART_LIFE	-1000
+#define GATLING_PART_SPEED	30
+
+void DoGatlingSmoke (tObject *objP)
+{
+	int	nModel = objP->rType.polyObjInfo.nModel;
+	int	bHires = G3HaveModel (nModel) - 1;
+
+if (bHires >= 0) {
+		tG3Model	*pm = gameData.models.g3Models [bHires] + nModel;
+
+	if (pm->bBullets) {
+			int			nPlayer = objP->id;
+			int			nGun = EquippedPlayerGun (objP);
+			int			bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) && 
+											(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= GATLING_DELAY); 
+			int			i = gameData.multiplayer.gatlingSmoke [nPlayer];
+
+		if (bDoEffect) {
+				int			bSpectate = SPECTATOR (objP);
+				tPosition	*posP = bSpectate ? &gameStates.app.playerPos : &objP->position;
+				vmsVector	*vGunPoints, vEmitter, vDir;
+				vmsMatrix	m, *viewP;
+
+			if (!(vGunPoints = GetGunPoints (objP, nGun)))
+				return;
+			if (bSpectate)
+				VmCopyTransposeMatrix (viewP = &m, &posP->mOrient);
+			else
+				viewP = ObjectView (objP);
+			VmVecRotate (&vEmitter, vGunPoints + nGun, viewP);
+			VmVecInc (&vEmitter, &posP->vPos);
+			//vDir = posP->mOrient.fVec;
+			VmVecCopyScale (&vDir, &posP->mOrient.fVec, F1_0 / 8);
+			if (i < 0) {
+				gameData.multiplayer.gatlingSmoke [nPlayer] =
+					CreateSmoke (&vEmitter, &vDir, &posP->mOrient, objP->nSegment, 1, GATLING_MAX_PARTS, F1_0 / 2, 1,
+									 1, GATLING_PART_LIFE, GATLING_PART_SPEED, 1, 0x7ffffffe, NULL, 0, -1);
+				}
+			else {
+				SetSmokePos (i, &vEmitter, &posP->mOrient, objP->nSegment);
+				}
+			}
+		else {
+			if (i >= 0) {
+				SetSmokeLife (i, 0);
+				gameData.multiplayer.gatlingSmoke [nPlayer] = -1;
+				}
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void DoPlayerSmoke (tObject *objP, int i)
 {
 	int				h, j, d, nParts, nType;
 	float				nScale;
 	tCloud			*pCloud;
-	vmsVector		fn, mn;
+	vmsVector		fn, mn, vDir, *vDirP;
 	tThrusterInfo	ti;
 
 	static int	bForward = 1;
@@ -273,20 +341,27 @@ else {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [1]);
 			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [1], nScale);
 			}
-		if (!(objP->mType.physInfo.thrust.p.x ||
-				objP->mType.physInfo.thrust.p.y ||
-				objP->mType.physInfo.thrust.p.z)) {
+		if (objP->mType.physInfo.thrust.p.x ||
+			 objP->mType.physInfo.thrust.p.y ||
+			 objP->mType.physInfo.thrust.p.z)
+			vDirP = NULL;
+		else {
 			nParts /= 2;
 			nScale /= 2;
+			VmVecCopyScale (&vDir, &OBJPOS (objP)->mOrient.fVec, F1_0 / 8);
+			VmVecNegate (vDirP = &vDir);
 			}
 		if (0 > (h = gameData.smoke.objects [j])) {
 			//PrintLog ("creating tPlayer smoke\n");
 			h = SetSmokeObject (j, 
-					CreateSmoke (&objP->position.vPos, NULL, NULL, objP->nSegment, 2, nParts, nScale,
+					CreateSmoke (&objP->position.vPos, vDirP, NULL, objP->nSegment, 2, nParts, nScale,
 									 gameOpts->render.smoke.nSize [1],
-									 2, PLR_PART_LIFE / (nType + 1), PLR_PART_SPEED, nType, j, NULL, 1, -1));
+									 2, PLR_PART_LIFE / (nType + 1) * (vDirP ? 2 : 1), PLR_PART_SPEED, nType, j, NULL, 1, -1));
 			}
 		else {
+			if (vDirP)
+				SetSmokeDir (h, vDirP);
+			SetSmokeLife (h, PLR_PART_LIFE / (nType + 1) * (vDirP ? 2 : 1));
 			SetSmokeType (h, nType);
 			SetSmokePartScale (h, -nScale);
 			SetSmokeDensity (h, nParts, gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1]);
@@ -298,10 +373,12 @@ else {
 		for (j = 0; j < 2; j++)
 			if ((pCloud = GetCloud (h, j)))
 				SetCloudPos (pCloud, ti.vPos + j, NULL, objP->nSegment);
+		DoGatlingSmoke (objP);
 		return;
 		}
 	}
 KillObjectSmoke (i);
+KillGatlingSmoke (objP);
 }
 
 //------------------------------------------------------------------------------

@@ -2407,6 +2407,7 @@ typedef struct tMultiplayerData {
 	tWeaponState			weaponStates [MAX_PLAYERS];
 	char						bWasHit [MAX_PLAYERS];
 	int						bulletEmitters [MAX_PLAYERS];
+	int						gatlingSmoke [MAX_PLAYERS];
 	tPulseData				spherePulse [MAX_PLAYERS];
 	ubyte						powerupsInMine [MAX_POWERUP_TYPES];
 	ubyte						powerupsOnShip [MAX_POWERUP_TYPES];

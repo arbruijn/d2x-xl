@@ -1,3 +1,4 @@
+
 //particle.h
 //simple particle system handler
 
@@ -1139,7 +1140,7 @@ return 1;
 
 char SmokeObjClass (int nObject)
 {
-if ((nObject >= 0) && (nObject != 0x7fffffff)) {
+if ((nObject >= 0) && (nObject < 0x70000000)) {
 	tObject	*objP = OBJECTS + nObject;
 	if (objP->nType == OBJ_PLAYER)
 		return 1;
@@ -1159,7 +1160,7 @@ float CloudBrightness (tCloud *pCloud)
 {
 	tObject	*objP;
 
-if (pCloud->nObject == 0x7fffffff)
+if (pCloud->nObject >= 0x70000000)
 	return 0.5f;
 if (pCloud->nType > 2)
 	return 1.0f;
@@ -1240,7 +1241,7 @@ pCloud->nDensity = nDensity;
 pCloud->nPartsPerPos = nPartsPerPos;
 pCloud->nSegment = nSegment;
 pCloud->nObject = nObject;
-if ((nObject >= 0) && (nObject != 0x7fffffff)) {
+if ((nObject >= 0) && (nObject < 0x70000000)) {
 	pCloud->nObjType = OBJECTS [nObject].nType;
 	pCloud->nObjId = OBJECTS [nObject].id;
 	}
@@ -1803,7 +1804,7 @@ else {
 		//PrintLog ("cannot create gameData.smoke.buffer\n");
 		return 0;
 		}
-	if ((pSmoke->nObject = nObject) != 0x7fffffff) {
+	if ((pSmoke->nObject = nObject) < 0x70000000) {
  		pSmoke->nSignature = OBJECTS [nObject].nSignature;
 		pSmoke->nObjType = OBJECTS [nObject].nType;
 		pSmoke->nObjId = OBJECTS [nObject].id;
@@ -1857,12 +1858,14 @@ else
 
 	for (i = gameData.smoke.iUsed; i >= 0; i = n) {
 		pSmoke = gameData.smoke.buffer + i;
+		if (i == 11)
+			i = i;
 		if ((n = pSmoke->nNext) == gameData.smoke.iUsed) {
 			RebuildSmokeList ();
 			break;
 			}
 #if 0
-		if ((pSmoke->nObject != 0x7fffffff) && (pSmoke->nSignature != OBJECTS [pSmoke->nObject].nSignature)) {
+		if ((pSmoke->nObject < 0x70000000) && (pSmoke->nSignature != OBJECTS [pSmoke->nObject].nSignature)) {
 			SetSmokeLife (i, 0);
 			//continue;
 			}
@@ -1871,7 +1874,7 @@ else
 			 (gameStates.app.nSDLTicks - pSmoke->nBirth > (MAX_SHRAPNEL_LIFE / F1_0) * 1000))
 			SetSmokeLife (i, 0);
 #ifdef _DEBUG
-		if ((pSmoke->nObject != 0x7fffffff) && (OBJECTS [pSmoke->nObject].nType == 255))
+		if ((pSmoke->nObject < 0x70000000) && (OBJECTS [pSmoke->nObject].nType == 255))
 			i = i;
 #endif
 		if ((pCloud = pSmoke->pClouds))
@@ -1887,7 +1890,7 @@ else
 					}
 				else {
 					//PrintLog ("moving %d (%d)\n", i, pSmoke->nObject);
-					if ((pSmoke->nObject < 0) || ((pSmoke->nObject != 0x7fffffff) && (OBJECTS [pSmoke->nObject].nType == 255)))
+					if ((pSmoke->nObject < 0) || ((pSmoke->nObject < 0x70000000) && (OBJECTS [pSmoke->nObject].nType == 255)))
 						SetCloudLife (pCloud, 0);
 					UpdateCloud (pCloud, t, -1);
 					pCloud++, j++;
@@ -1947,7 +1950,7 @@ for (i = gameData.smoke.iUsed, j = 0; i >= 0; i = pSmoke->nNext) {
 	pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds) {
 		j += pSmoke->nClouds;
-		if ((pSmoke->nObject != 0x7fffffff) && (gameData.smoke.objects [pSmoke->nObject] < 0))
+		if ((pSmoke->nObject < 0x70000000) && (gameData.smoke.objects [pSmoke->nObject] < 0))
 			SetSmokeLife (i, 0);
 		}
 	}
@@ -2054,7 +2057,7 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 					}
 				}
 			}
-		if ((pSmoke->nObject != 0x7fffffff) && (gameData.smoke.objects [pSmoke->nObject] < 0))
+		if ((pSmoke->nObject < 0x70000000) && (gameData.smoke.objects [pSmoke->nObject] < 0))
 			SetSmokeLife (i, 0);
 		}
 	}
@@ -2196,7 +2199,7 @@ else
 		if (pSmoke->pClouds) {
 			if (!LoadParticleImage (pSmoke->nType))
 				return 0;
-			if ((pSmoke->nObject >= 0) && (pSmoke->nObject != 0x7fffffff) && (gameData.smoke.objects [pSmoke->nObject] < 0))
+			if ((pSmoke->nObject >= 0) && (pSmoke->nObject < 0x70000000) && (gameData.smoke.objects [pSmoke->nObject] < 0))
 				SetSmokeLife (i, 0);
 			for (j = pSmoke->nClouds, pCloud = pSmoke->pClouds; j; j--, pCloud++) {
 				pCloud->fBrightness = CloudBrightness (pCloud);
