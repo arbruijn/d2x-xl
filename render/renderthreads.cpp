@@ -200,20 +200,12 @@ tiRenderItems.ti [0].pThread = SDL_CreateThread (RenderItemThread, NULL);
 
 void EndRenderItemThread (void)
 {
-#if 1
-	int	i;
-
-for (i = 0; i < 2; i++)
-	tiRenderItems.ti [i].bDone = 0;
+if (!tiRenderItems.ti [0].pThread)
+	return;
+tiRenderItems.ti [0].bDone = 0;
 G3_SLEEP (1);
-#if KILL_RENDER_THREADS
-#	if 0
 SDL_KillThread (tiRenderItems.ti [0].pThread);
-#	else
-SDL_WaitThread (tiRenderItems.ti [0].pThread, NULL);
-#	endif
-#endif
-#endif
+tiRenderItems.ti [0].pThread = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -240,15 +232,12 @@ void EndRenderThreads (void)
 for (i = 0; i < 2; i++)
 	tiRender.ti [i].bDone = 0;
 G3_SLEEP (10);
-#if KILL_RENDER_THREADS
-#	if 0
-SDL_KillThread (tiRender.ti [0].pThread);
-SDL_KillThread (tiRender.ti [1].pThread);
-#	else
-SDL_WaitThread (tiRender.ti [0].pThread, NULL);
-SDL_WaitThread (tiRender.ti [1].pThread, NULL);
-#	endif
-#endif
+for (i = 0; i < 2; i++) {
+	if (tiRender.ti [i].pThread) {
+		SDL_KillThread (tiRender.ti [0].pThread);
+		tiRender.ti [i].pThread = NULL;
+		}
+	}
 EndRenderItemThread ();
 EndEffectsThread ();
 }
@@ -285,13 +274,8 @@ if (!tiEffects.pThread)
 	return;
 tiEffects.bDone = 0;
 G3_SLEEP (100);
-#if KILL_RENDER_THREADS
-#	if 0
 SDL_KillThread (tiEffects.pThread);
-#	else
-SDL_WaitThread (tiEffects.pThread, NULL);
-#	endif
-#endif
+tiEffects.pThread = NULL;
 }
 
 //------------------------------------------------------------------------------

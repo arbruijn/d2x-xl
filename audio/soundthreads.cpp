@@ -71,6 +71,7 @@ if (tiSound.ti.pThread) {
 	WaitForSoundThread ();
 	tiSound.ti.bDone = 1;
 	G3_SLEEP (100);
+	SDL_KillThread (tiSound.ti.pThread);
 	tiSound.ti.pThread = NULL;
 	}	
 }
