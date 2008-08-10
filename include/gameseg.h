@@ -158,6 +158,7 @@ int GetVertsForNormalTri (int v0, int v1, int v2, int *pv0, int *pv1, int *pv2);
 
 void ComputeVertexNormals (void);
 void ResetVertexNormals (void);
+float FaceSize (short nSegment, ubyte nSide);
 
 #endif
 

@@ -35,6 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "endlevel.h"
 #include "timer.h"
+#include "gameseg.h"
 #include "collide.h"
 #include "dynlight.h"
 #include "interp.h"
