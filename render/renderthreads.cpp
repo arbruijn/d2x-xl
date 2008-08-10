@@ -203,8 +203,8 @@ void EndRenderItemThread (void)
 if (!tiRenderItems.ti [0].pThread)
 	return;
 tiRenderItems.ti [0].bDone = 0;
-G3_SLEEP (1);
-SDL_KillThread (tiRenderItems.ti [0].pThread);
+G3_SLEEP (10);
+//SDL_KillThread (tiRenderItems.ti [0].pThread);
 tiRenderItems.ti [0].pThread = NULL;
 }
 
@@ -234,7 +234,7 @@ for (i = 0; i < 2; i++)
 G3_SLEEP (10);
 for (i = 0; i < 2; i++) {
 	if (tiRender.ti [i].pThread) {
-		SDL_KillThread (tiRender.ti [0].pThread);
+		//SDL_KillThread (tiRender.ti [0].pThread);
 		tiRender.ti [i].pThread = NULL;
 		}
 	}
@@ -274,7 +274,7 @@ if (!tiEffects.pThread)
 	return;
 tiEffects.bDone = 0;
 G3_SLEEP (100);
-SDL_KillThread (tiEffects.pThread);
+//SDL_KillThread (tiEffects.pThread);
 tiEffects.pThread = NULL;
 }
 

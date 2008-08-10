@@ -2135,30 +2135,43 @@ for (i = gameData.objs.nLastObject [0] + 1, objP = OBJECTS; i; i--, objP++)
 
 //------------------------------------------------------------------------------
 
+static inline int Fac (int i)
+{
+	int fac;
+
+for (fac = 1; i; i--)
+	fac *= i;
+return fac;
+}
+
+
 void SetupSmokeEffect (tObject *objP)
 {
 	tSmokeInfo	*psi = &objP->rType.smokeInfo;
-	int			j;
+	int			h, i;
 
 objP->renderType = RT_SMOKE;
-j = psi->nLife ? psi->nLife : 5;
+i = psi->nLife ? psi->nLife : 5;
 #if 1
-psi->nLife = (j * (j + 1)) / 2;
+psi->nLife = (i * (i + 1)) / 2;
 #else
 psi->nLife = psi->value ? psi->value : 5;
 #endif
 psi->nBrightness = psi->nBrightness ? psi->nBrightness * 10 : 50;
-j = psi->nSpeed ? psi->nSpeed : 5;
+if (!(i = psi->nSpeed))
+	i = 5;
 #if 1
-psi->nSpeed = (j * (j + 1)) / 2;
+psi->nSpeed = (i * (i + 1)) / 2;
 #else
-psi->nSpeed = j;
+psi->nSpeed = i;
 #endif
-psi->nParts = j * (psi->nParts ? psi->nParts * 100 : STATIC_SMOKE_MAX_PARTS);
-psi->nDrift = psi->nDrift ? j * psi->nDrift * 75 : psi->nSpeed * 50;
-j = psi->nSize [0] ? psi->nSize [0] : 5;
-psi->nSize [0] = j + 1;
-psi->nSize [1] = (j * (j + 1)) / 2;
+if (!(h = psi->nParts))
+	h = 5;
+psi->nParts = 90 + ((20 - i) * (1 << i)) / (11 - h);
+psi->nDrift = psi->nDrift ? i * psi->nDrift * 75 : psi->nSpeed * 50;
+i = psi->nSize [0] ? psi->nSize [0] : 5;
+psi->nSize [0] = i + 1;
+psi->nSize [1] = (i * (i + 1)) / 2;
 }
 
 //------------------------------------------------------------------------------

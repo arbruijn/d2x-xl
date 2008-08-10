@@ -1352,11 +1352,19 @@ else
 			else if ((c.nType == 3) || (c.nType == 4))
 				goto funcExit;
 			else {
+#if 1
+				VmVecFixToFloat (&vPosf, &c.prevPos);
+				VmVecFixToFloat (&vDeltaf, &vDelta);
+				vDeltaf.p.x /= (float) h;
+				vDeltaf.p.y /= (float) h;
+				vDeltaf.p.z /= (float) h;
+#else
 				VmVecFixToFloat (&vPosf, &c.pos);
 				vDeltaf.p.x =
 				vDeltaf.p.y =
 				vDeltaf.p.z = 0.0f;
 				h = 1;
+#endif
 				}
 			c.nParts += h;
 			for (; h; h--, j = (j + 1) % c.nPartLimit) {
@@ -1365,8 +1373,8 @@ else
 				vPos.p.y = (fix) (vPosf.p.y * 65536.0f);
 				vPos.p.z = (fix) (vPosf.p.z * 65536.0f);
 				CreateParticle (c.pParticles + j, &vPos, pDir, &mOrient, c.nSegment, c.nLife, 
-									c.nSpeed, c.nType, c.nClass, c.nPartScale, c.bHaveColor ? &c.color : NULL,
-									nCurTime, c.bBlowUpParts, fBrightness, vEmittingFace);
+									 c.nSpeed, c.nType, c.nClass, c.nPartScale, c.bHaveColor ? &c.color : NULL,
+									 nCurTime, c.bBlowUpParts, fBrightness, vEmittingFace);
 				}
 			}
 		}
@@ -2360,7 +2368,8 @@ else
 
 int MaxParticles (int nParts, int nDens)
 {
-return ((nParts < 0) ? -nParts : nParts * (nDens + 1)); //(int) (nParts * pow (1.2, nDens));
+nParts = ((nParts < 0) ? -nParts : nParts * (nDens + 1)); //(int) (nParts * pow (1.2, nDens));
+return (nParts < 100000) ? nParts : 100000;
 }
 
 //------------------------------------------------------------------------------
