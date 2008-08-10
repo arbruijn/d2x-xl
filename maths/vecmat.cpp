@@ -2074,6 +2074,10 @@ return v;
 }
 
 // ------------------------------------------------------------------------
+// Compute triangle size by multiplying length of perpendicular through
+// longest triangle side and opposite point with length of longest triangle
+// side. Divide by 2 * 20 * 20 (20 is the default side length which is 
+// interpreted as distance unit "1").
 
 float TriangleSize (vmsVector *p0, vmsVector *p1, vmsVector *p2)
 {
@@ -2091,11 +2095,11 @@ if (lMax < l) {
 	i = 2;
 	}
 if (i == 2)
-	return f2fl (lMax) * f2fl (VmLinePointDist (p2, p0, p1)) / 2;
+	return f2fl (lMax) * f2fl (VmLinePointDist (p2, p0, p1)) / 800;
 else if (i == 1)
-	return f2fl (lMax) * f2fl (VmLinePointDist (p1, p2, p0)) / 2;
+	return f2fl (lMax) * f2fl (VmLinePointDist (p1, p2, p0)) / 800;
 else
-	return f2fl (lMax) * f2fl (VmLinePointDist (p0, p1, p2)) / 2;
+	return f2fl (lMax) * f2fl (VmLinePointDist (p0, p1, p2)) / 800;
 }
 
 // ------------------------------------------------------------------------
