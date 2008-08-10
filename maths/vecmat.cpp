@@ -2074,4 +2074,29 @@ return v;
 }
 
 // ------------------------------------------------------------------------
+
+float TriangleSize (vmsVector *p0, vmsVector *p1, vmsVector *p2)
+{
+	fix			lMax, l, i = 0;
+
+lMax = VmVecDist (p0, p1);
+l = VmVecDist (p1, p2);
+if (lMax < l) {
+	lMax = l;
+	i = 1;
+	}
+l = VmVecDist (p2, p0);
+if (lMax < l) {
+	lMax = l;
+	i = 2;
+	}
+if (i == 2)
+	return f2fl (lMax) * f2fl (VmLinePointDist (p2, p0, p1)) / 2;
+else if (i == 1)
+	return f2fl (lMax) * f2fl (VmLinePointDist (p1, p2, p0)) / 2;
+else
+	return f2fl (lMax) * f2fl (VmLinePointDist (p0, p1, p2)) / 2;
+}
+
+// ------------------------------------------------------------------------
 // eof

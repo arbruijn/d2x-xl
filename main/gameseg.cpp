@@ -1994,6 +1994,22 @@ for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
 
 // -------------------------------------------------------------------------------
 
+float FaceSize (short nSegment, ubyte nSide)
+{
+	tSegment		*segP = SEGMENTS + nSegment;
+	sbyte			*s2v = sideToVerts [nSide];
+
+	short			v0 = segP->verts [s2v [0]];
+	short			v1 = segP->verts [s2v [1]];
+	short			v2 = segP->verts [s2v [2]];
+	short			v3 = segP->verts [s2v [3]];
+
+return TriangleSize (gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2) + 
+		 TriangleSize (gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+}
+
+// -------------------------------------------------------------------------------
+
 void ResetVertexNormals (void)
 {
 	int		i;

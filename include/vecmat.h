@@ -401,6 +401,8 @@ float VmMatrixDetValue (fMatrix *det);
 vmsMatrix *VmInvertMatrix (vmsMatrix *pDest, vmsMatrix *pSrc);
 fMatrix *VmInvertMatrix (fMatrix *pDest, fMatrix *pSrc);
 
+float TriangleSize (vmsVector *p0, vmsVector *p1, vmsVector *p2);
+
 //fills in fields of an angle vector
 #define VmAngVecMake(v,_p,_b,_h) (((v)->p=(_p), (v)->b=(_b), (v)->h=(_h)), (v))
 
