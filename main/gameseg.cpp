@@ -504,9 +504,10 @@ int CreateAbsVertexLists (int *vertices, int nSegment, int nSide)
 {
 	short	*vp = gameData.segs.segments [nSegment].verts;
 	tSide	*sideP = gameData.segs.segments [nSegment].sides + nSide;
-	int  *sv = sideToVertsInt [nSide];
-	int nFaces;
+	int	*sv = sideToVertsInt [nSide];
+	int	nFaces;
 
+#if 0
 if (gameData.physics.side.bCache &&
 	 (gameData.physics.side.nSegment == nSegment) && 
 	 (gameData.physics.side.nSide == nSide) &&
@@ -514,6 +515,7 @@ if (gameData.physics.side.bCache &&
 	memcpy (vertices, gameData.physics.side.vertices, sizeof (gameData.physics.side.vertices));
 	return gameData.physics.side.nFaces;
 	}
+#endif
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0));
 switch (sideP->nType) {
 	case SIDE_IS_QUAD:
@@ -554,6 +556,7 @@ switch (sideP->nType) {
 		Error ("Illegal tSide nType (3), nType = %i, tSegment # = %i, tSide # = %i\n", sideP->nType, nSegment, nSide);
 		break;
 	}
+#if 0
 if (gameData.physics.side.bCache) {
 	gameData.physics.side.nSegment = nSegment;
 	gameData.physics.side.nSide = nSide;
@@ -561,6 +564,7 @@ if (gameData.physics.side.bCache) {
 	gameData.physics.side.nType = sideP->nType;
 	memcpy (gameData.physics.side.vertices, vertices, sizeof (gameData.physics.side.vertices));
 	}
+#endif
 return nFaces;
 }
 

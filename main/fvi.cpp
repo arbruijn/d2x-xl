@@ -574,6 +574,10 @@ else
 	vNormal = gameData.segs.segments [nSegment].sides [nSide].normals [iFace];
 nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 //use lowest point number
+#if 1 //def _DEBUG
+if (nFaces <= iFace)
+	nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
+#endif
 #if 1
 if (p1 == p0) {
 #if 0
