@@ -491,7 +491,7 @@ else {
 	}
 if (nType == 3) {
 	if (CoronaStyle () == 2)
-		LoadGlareShader (10);
+		LoadGlareShader (5);
 	return 0;
 	}
 else {

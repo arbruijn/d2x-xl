@@ -1072,7 +1072,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (gameOpts->render.effects.bSoftParticles)
-		LoadGlareShader (20);
+		LoadGlareShader (40);
 	else if (renderItems.bDepthMask)
 		glDepthMask (renderItems.bDepthMask = 0);
 	glBegin (GL_QUADS);

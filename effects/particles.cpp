@@ -2383,7 +2383,7 @@ float ParticleSize (int nSize, float nScale)
 if (gameOpts->render.smoke.bDisperse)
 	return (float) (PARTICLE_RAD * (nSize + 1)) / nScale + 0.5f;
 else
-	return ((float) (PARTICLE_RAD << nSize)) / nScale + 0.5f;
+	return (float) (PARTICLE_RAD * (nSize + 1) * (nSize + 2) / 2) / nScale + 0.5f;
 }
 
 //------------------------------------------------------------------------------
