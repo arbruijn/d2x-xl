@@ -159,7 +159,7 @@ if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) {
 			else {
 				bmfP = BM_FRAMES (bmP) + sparkP->nFrame;
 				BM_PARENT (bmfP) = NULL;
-				G3DrawSprite (&sparkP->vPos, sparkP->xSize, sparkP->xSize, bmfP, NULL, 1.0, 1);
+				G3DrawSprite (&sparkP->vPos, sparkP->xSize, sparkP->xSize, bmfP, NULL, 1.0, 1, 1);
 				}
 			}
 		}

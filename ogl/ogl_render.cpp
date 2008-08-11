@@ -938,7 +938,8 @@ int G3DrawSprite (
 	grsBitmap	*bmP, 
 	tRgbaColorf	*colorP,
 	float			alpha,
-	int			bAdditive)
+	int			bAdditive,
+	float			fSoftRad)
 {
 	vmsVector	pv, v1;
 	GLdouble		h, w, u, v, x, y, z;
@@ -952,7 +953,7 @@ if (gameOpts->render.bDepthSort > 0) { //&& ((colorP && (colorP->alpha < 0)) || 
 		color.alpha = alpha;
 		colorP = &color;
 		}
-	RIAddSprite (bmP, vPos, colorP, xWidth, xHeight, 0, bAdditive);
+	RIAddSprite (bmP, vPos, colorP, xWidth, xHeight, 0, bAdditive, fSoftRad);
 	}
 else {
 	OglActiveTexture (GL_TEXTURE0, 0);

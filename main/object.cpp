@@ -2139,32 +2139,32 @@ for (i = gameData.objs.nLastObject [0] + 1, objP = OBJECTS; i; i--, objP++)
 void SetupSmokeEffect (tObject *objP)
 {
 	tSmokeInfo	*psi = &objP->rType.smokeInfo;
-	int			h, i;
+	int			nLife, nSpeed, nParts, nSize;
 
 objP->renderType = RT_SMOKE;
-i = psi->nLife ? psi->nLife : 5;
+nLife = psi->nLife ? psi->nLife : 5;
 #if 1
-psi->nLife = (i * (i + 1)) / 2;
+psi->nLife = (nLife * (nLife + 1)) / 2;
 #else
 psi->nLife = psi->value ? psi->value : 5;
 #endif
 psi->nBrightness = psi->nBrightness ? psi->nBrightness * 10 : 50;
-if (!(i = psi->nSpeed))
-	i = 5;
+if (!(nSpeed = psi->nSpeed))
+	nSpeed = 5;
 #if 1
-psi->nSpeed = (i * (i + 1)) / 2;
+psi->nSpeed = (nSpeed * (nSpeed + 1)) / 2;
 #else
 psi->nSpeed = i;
 #endif
-if (!(h = psi->nParts))
-	h = 5;
-psi->nParts = 90 + ((h * 10) * (1 << i)) / (11 - h);
+if (!(nParts = psi->nParts))
+	nParts = 5;
+psi->nParts = 90 + (nParts * psi->nLife * 3 * (1 << nSpeed)) / (11 - nParts);
 if (psi->nSide > 0)
 	psi->nParts = (int) (psi->nParts * FaceSize (objP->nSegment, psi->nSide - 1));
-psi->nDrift = psi->nDrift ? i * psi->nDrift * 75 : psi->nSpeed * 50;
-i = psi->nSize [0] ? psi->nSize [0] : 5;
-psi->nSize [0] = i + 1;
-psi->nSize [1] = (i * (i + 1)) / 2;
+psi->nDrift = psi->nDrift ? nSpeed * psi->nDrift * 75 : psi->nSpeed * 50;
+nSize = psi->nSize [0] ? psi->nSize [0] : 5;
+psi->nSize [0] = nSize + 1;
+psi->nSize [1] = (nSize * (nSize + 1)) / 2;
 }
 
 //------------------------------------------------------------------------------

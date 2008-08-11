@@ -440,7 +440,8 @@ return RIAddPoly (faceP, NULL, bmP,
 
 //------------------------------------------------------------------------------
 
-int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame, char bAdditive)
+int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, 
+					  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad)
 {
 	tRISprite	item;
 	vmsVector	vPos;
@@ -452,6 +453,7 @@ item.nWidth = nWidth;
 item.nHeight = nHeight;
 item.nFrame = nFrame;
 item.bAdditive = bAdditive;
+item.fSoftRad = fSoftRad;
 G3TransformPoint (&vPos, position, 0);
 VmVecFixToFloat (&item.position, &vPos);
 AddRenderItem (riSprite, &item, sizeof (item), vPos.p.z, vPos.p.z);
@@ -1053,7 +1055,8 @@ renderItems.bClientState = 0;
 
 void RIRenderSprite (tRISprite *item)
 {
-if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
+if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 
+								 gameOpts->render.effects.bSoftParticles && (item->fSoftRad > 0), 0, 0, 0)) {
 	float		h, w, u, v;
 	fVector	fPos = item->position;
 
@@ -1072,7 +1075,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (gameOpts->render.effects.bSoftParticles)
-		LoadGlareShader (40);
+		LoadGlareShader (item->fSoftRad);
 	else if (renderItems.bDepthMask)
 		glDepthMask (renderItems.bDepthMask = 0);
 	glBegin (GL_QUADS);

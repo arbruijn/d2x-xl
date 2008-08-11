@@ -51,6 +51,7 @@ typedef struct tRISprite {
 	char					nFrame;
 	char					bColor;
 	char					bAdditive;
+	float					fSoftRad;
 } tRISprite;
 
 typedef struct tRIParticle {
@@ -154,7 +155,8 @@ int RIAddPoly (grsFace *faceP, grsTriangle *triP, grsBitmap *bmP,
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 					short nSegment);
 int RIAddObject (tObject *objP);
-int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame, char bAdditive);
+int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, 
+					  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad);
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);
 int RIAddParticle (tParticle *particle, float fBrightness, int nThread);
 int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);

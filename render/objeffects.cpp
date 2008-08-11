@@ -49,7 +49,7 @@ void RenderObjectHalo (vmsVector *vPos, fix xSize, float red, float green, float
 if ((gameOpts->render.coronas.bShots && (bCorona ? LoadCorona () : LoadHalo ()))) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	glDepthMask (0);
-	G3DrawSprite (vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1);
+	G3DrawSprite (vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1, 1);
 	glDepthMask (1);
 	}
 }
@@ -98,7 +98,7 @@ if ((IsEnergyPowerup (objP->id) ? gameOpts->render.coronas.bPowerups : gameOpts-
 	bDepthSort = gameOpts->render.bDepthSort;
 	gameOpts->render.bDepthSort = -1;
 	glDepthMask (0);
-	G3DrawSprite (&objP->position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.coronas.bAdditiveObjs);
+	G3DrawSprite (&objP->position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 1);
 	glDepthMask (1);
 	gameOpts->render.bDepthSort = bDepthSort;
 	}
@@ -1252,7 +1252,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		}
 	if (a2 < a1) {
 		fix xSize = fl2f (fScale);
-		G3DrawSprite (&objP->position.vPos, xSize, xSize, bmP, colorP, alpha, bAdditive);
+		G3DrawSprite (&objP->position.vPos, xSize, xSize, bmP, colorP, alpha, bAdditive, 1);
 		}
 	else {
 		bStencil = StencilOff ();
@@ -1361,14 +1361,14 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	color.blue *= color.blue;
 #endif
 	if (bDepthSort) {
-		RIAddSprite (bmpCorona, &vPos, &color, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 1);
+		RIAddSprite (bmpCorona, &vPos, &color, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 1, 1);
 		return;
 		}
 	bStencil = StencilOff ();
 	glDepthMask (0);
 	glBlendFunc (GL_ONE, GL_ONE);
 	if (bSimple) {
-		G3DrawSprite (&vPos, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, bmpCorona, &color, alpha, 1);
+		G3DrawSprite (&vPos, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, bmpCorona, &color, alpha, 1, 1);
 		}
 	else {
 		fVector	quad [4], verts [8], vCenter, vNormal, v;
