@@ -990,11 +990,11 @@ if (!bRestore) {
 	ConvertObjects ();
 	ComputeStaticDynLighting (nLevel);
 	SetEquipGenStates ();
+	SetupEffects ();
 	gameData.time.nPaused = 0;
 	}
 LoadExtraImages ();
 CreateShieldSphere ();
-SetupEffects ();
 PrintLog ("   initializing energy spark render data\n");
 AllocEnergySparks ();
 PrintLog ("   setting robot generator vertigo robot flags\n");

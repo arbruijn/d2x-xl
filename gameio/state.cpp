@@ -2741,6 +2741,7 @@ FixObjectSegs ();
 FixObjectSizes ();
 //ComputeNearestLights (nLevel);
 ComputeStaticDynLighting (nLevel);
+SetupEffects ();
 InitReactorForLevel (1);
 SetMaxOmegaCharge ();
 SetEquipGenStates ();

@@ -2158,9 +2158,9 @@ psi->nSpeed = i;
 #endif
 if (!(h = psi->nParts))
 	h = 5;
-psi->nParts = 90 + ((20 - i) * (1 << i)) / (11 - h);
+psi->nParts = 90 + ((h * 10) * (1 << i)) / (11 - h);
 if (psi->nSide > 0)
-	psi->nParts *= FaceSize (objP->nSegment, psi->nSide - 1);
+	psi->nParts = (int) (psi->nParts * FaceSize (objP->nSegment, psi->nSide - 1));
 psi->nDrift = psi->nDrift ? i * psi->nDrift * 75 : psi->nSpeed * 50;
 i = psi->nSize [0] ? psi->nSize [0] : 5;
 psi->nSize [0] = i + 1;
