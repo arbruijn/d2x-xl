@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lightmap.h"
 #include "lightning.h"
 #include "sphere.h"
+#include "glare.h"
 #include "transprender.h"
 #include "renderthreads.h"
 
@@ -1056,8 +1057,6 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 
 	float		h, w, u, v;
 	fVector	fPos = item->position;
 
-	if (renderItems.bDepthMask)
-		glDepthMask (renderItems.bDepthMask = 0);
 	w = (float) f2fl (item->nWidth); 
 	h = (float) f2fl (item->nHeight); 
 	u = item->bmP->glTexture->u;
@@ -1072,6 +1071,10 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 
 		glBlendFunc (GL_ONE, GL_ONE);
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	if (gameOpts->render.effects.bSoftParticles)
+		LoadGlareShader (20);
+	else if (renderItems.bDepthMask)
+		glDepthMask (renderItems.bDepthMask = 0);
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	fPos.p.x -= w;
@@ -1089,6 +1092,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 
 	glEnd ();
 	if (item->bAdditive)
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable (GL_DEPTH_TEST);
 	}
 }
 

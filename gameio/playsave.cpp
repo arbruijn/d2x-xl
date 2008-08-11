@@ -411,6 +411,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameOptions [i].render.textures.nQuality, i, 0);
 		RP (gameOptions [i].render.effects.bAutoTransparency, i, 0);
+		RP (gameOptions [i].render.effects.bSoftParticles, i, 0);
 		RP (gameOptions [i].render.effects.bExplBlasts, i, 0);
 		RP (gameOptions [i].render.effects.nShrapnels, i, 0);
 		RP (gameOptions [i].render.coronas.bUse, i, 0);
@@ -995,6 +996,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.nDebrisLife", "0"},
 	{"gameOptions[0].render.textures.nQuality", "2"},
 	{"gameOptions[0].render.effects.bAutoTransparency", "1"},
+	{"gameOptions[0].render.effects.bSoftParticles", "0"},
 	{"gameOptions[0].render.effects.bExplBlasts", "1"},
 	{"gameOptions[0].render.effects.nShrapnels", "1"},
 	{"gameOptions[0].render.coronas.bUse", "1"},

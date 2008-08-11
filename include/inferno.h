@@ -324,6 +324,7 @@ typedef struct tEffectRenderOptions {
 	int bOnlyShieldHits;
 	int bAutoTransparency;
 	int bTransparent;
+	int bSoftParticles;
 } tEffectRenderOptions;
 
 //------------------------------------------------------------------------------
@@ -742,6 +743,7 @@ typedef struct tOglStates {
 	int bOcclusionQuery;
 	int bDepthBlending;
 	int bUseDepthBlending;
+	int bHaveDepthBuffer;
 	int bGetTexLevelParam;
 	int nDrawBuffer;
 	int nStencil;
@@ -756,6 +758,7 @@ typedef struct tOglStates {
 	tRgbColors palAdd;
 	float fAlpha;
 	float fLightRange;
+	GLuint hDepthBuffer; 
 } tOglStates;
 
 //------------------------------------------------------------------------------

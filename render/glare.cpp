@@ -45,8 +45,6 @@ GLhandleARB hGlareShader [2] = {0,0};
 GLhandleARB hGlareVS [2] = {0,0}; 
 GLhandleARB hGlareFS [2] = {0,0}; 
 
-static GLuint hDepthBuffer = 0; 
-
 // -----------------------------------------------------------------------------------
 
 int CoronaStyle (void)
@@ -66,9 +64,9 @@ switch (gameOpts->render.coronas.nStyle) {
 
 void DestroyGlareDepthTexture (void)
 {
-if (hDepthBuffer) {
-	OglDeleteTextures (1, &hDepthBuffer);
-	hDepthBuffer = 0;
+if (gameStates.ogl.hDepthBuffer) {
+	OglDeleteTextures (1, &gameStates.ogl.hDepthBuffer);
+	gameStates.ogl.hDepthBuffer = 0;
 	}
 }
 
@@ -78,19 +76,24 @@ GLuint CopyDepthTexture (void)
 {
 glActiveTexture (GL_TEXTURE1);
 glEnable (GL_TEXTURE_2D);
-if (hDepthBuffer || (hDepthBuffer = OglCreateDepthTexture (GL_TEXTURE1, 0))) {
-	glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
+if (!gameStates.ogl.hDepthBuffer)
+	gameStates.ogl.bHaveDepthBuffer = 0;
+if (gameStates.ogl.hDepthBuffer || (gameStates.ogl.hDepthBuffer = OglCreateDepthTexture (GL_TEXTURE1, 0))) {
+	glBindTexture (GL_TEXTURE_2D, gameStates.ogl.hDepthBuffer);
+	if (!gameStates.ogl.bHaveDepthBuffer) {
 #if 0
-	glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
+		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
 #else
-	glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #endif
-	if (glGetError ()) {
-		DestroyGlareDepthTexture ();
-		return hDepthBuffer = 0;
+		if (glGetError ()) {
+			DestroyGlareDepthTexture ();
+			return gameStates.ogl.hDepthBuffer = 0;
+			}
+		gameStates.ogl.bHaveDepthBuffer = 1;
 		}
 	}
-return hDepthBuffer;
+return gameStates.ogl.hDepthBuffer;
 }
 
 // -----------------------------------------------------------------------------------
@@ -246,10 +249,7 @@ if (IS_WALL (nWall)) {
 	tWall *wallP = gameData.walls.walls + nWall;
 	ubyte nType = wallP->nType;
 
-	if ((nType == WALL_BLASTABLE) || 
-		 (nType == WALL_DOOR) ||
-		 (nType == WALL_OPEN) ||
-		 (nType == WALL_CLOAKED))
+	if ((nType == WALL_BLASTABLE) || (nType == WALL_DOOR) || (nType == WALL_OPEN) || (nType == WALL_CLOAKED))
 		return 0;
 	if (wallP->flags & (WALL_BLASTED | WALL_ILLUSION_OFF))
 		return 0;
@@ -754,7 +754,7 @@ return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
 
 //-------------------------------------------------------------------------
 
-void LoadGlareShader (void)
+void LoadGlareShader (float dMax)
 {
 gameStates.ogl.bUseDepthBlending = 0;
 if (gameStates.ogl.bDepthBlending) {
@@ -762,15 +762,22 @@ if (gameStates.ogl.bDepthBlending) {
 	if (CopyDepthTexture ()) {
 		gameStates.ogl.bUseDepthBlending = 1;
 		GLhandleARB	h = hGlareShader [gameStates.render.automap.bDisplay];
-		glUseProgramObject (h);
-		glUniform1i (glGetUniformLocation (h, "glareTex"), 0);
-		glUniform1i (glGetUniformLocation (h, "depthTex"), 1);
-		glUniform2fv (glGetUniformLocation (h, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
-		if (gameStates.render.automap.bDisplay)
-			glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
+		if (gameStates.render.history.nShader != 999) {
+			glUseProgramObject (h);
+			gameStates.render.history.nShader = 999;
+			glUniform1i (glGetUniformLocation (h, "glareTex"), 0);
+			glUniform1i (glGetUniformLocation (h, "depthTex"), 1);
+			glUniform2fv (glGetUniformLocation (h, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
+			if (gameStates.render.automap.bDisplay)
+				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
+			else {
+				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) gameData.render.ogl.depthScale.p.z);
+				glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) dMax);
+				}
+			}
 		else {
-			glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) gameData.render.ogl.depthScale.p.z);
-			glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) 1.0f);
+			if (!gameStates.render.automap.bDisplay)
+				glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) dMax);
 			}
 		glDisable (GL_DEPTH_TEST);
 		}
@@ -803,9 +810,10 @@ const char *glareFS [2] = {
 	"uniform vec2 screenScale;\r\n" \
 	"uniform float dMax;\r\n" \
 	"void main (void) {\r\n" \
-	"float dz = clamp ((gl_FragCoord.z - texture2D (depthTex, screenScale * gl_FragCoord.xy).r) * depthScale, 0.0, dMax);\r\n" \
+	"float dz = (gl_FragCoord.z - texture2D (depthTex, screenScale * gl_FragCoord.xy).r) * depthScale;\r\n" \
+	"dz = clamp (dz, 0.0, dMax);\r\n" \
 	"dz = ((dMax - dz) / dMax);\r\n" \
-	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * dz * dz;\r\n" \
+	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * sqrt (dz);\r\n" \
 	"}\r\n"
 ,
 	"uniform sampler2D glareTex;\r\n" \

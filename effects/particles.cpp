@@ -36,6 +36,7 @@
 #include "render.h"
 #include "transprender.h"
 #include "objsmoke.h"
+#include "glare.h"
 #include "particles.h"
 #include "renderthreads.h"
 
@@ -756,6 +757,8 @@ if (iBuffer) {
 #endif
 			if (gameData.render.lights.dynamic.headlights.nLights && !(gameStates.render.automap.bDisplay || gameData.smoke.nLastType))
 				G3SetupHeadlightShader (1, 0, &color);
+			else if (gameOpts->render.effects.bSoftParticles)
+				LoadGlareShader (20);
 			else if (gameStates.render.history.nShader >= 0) {
 				glUseProgramObject (0);
 				gameStates.render.history.nShader = -1;
@@ -781,6 +784,7 @@ if (iBuffer) {
 		glEnd ();
 		}
 	iBuffer = 0;
+	glEnable (GL_DEPTH_TEST);
 	if (gameStates.ogl.bShadersOk && !gameData.smoke.nLastType) {
 		glUseProgramObject (0);
 		gameStates.render.history.nShader = -1;

@@ -2257,7 +2257,7 @@ void EffectOptionsMenu ()
 	tMenuItem m [30];
 	int	i, j, choice = 0;
 	int	nOptions;
-	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields,
+	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields, optSoftParticles,
 			optRobotShields, optShieldHits, optTracers, optGatlingTrails, optExplBlast, optSparks;
 #if 0
 	int	optShockwaves;
@@ -2298,6 +2298,8 @@ do {
 		ADD_CHECK (nOptions, TXT_TRANSP_EFFECTS, gameOpts->render.effects.bTransparent, KEY_E, HTX_ADVRND_TRANSPFX);
 		optTranspExpl = nOptions++;
 		}
+	ADD_CHECK (nOptions, TXT_SOFT_PARTICLES, gameOpts->render.effects.bSoftParticles, KEY_S, HTX_SOFT_PARTICLES);
+	optSoftParticles = nOptions++;
 	ADD_CHECK (nOptions, TXT_AUTO_TRANSPARENCY, gameOpts->render.effects.bAutoTransparency, KEY_A, HTX_RENDER_AUTOTRANSP);
 	optAutoTransp = nOptions++;
 	ADD_CHECK (nOptions, TXT_RENDER_SHIELDS, extraGameInfo [0].bPlayerShield, KEY_P, HTX_RENDER_SHIELDS);
@@ -2328,6 +2330,7 @@ do {
 			FreeEnergySparks ();
 		}
 	GET_VAL (gameOpts->render.effects.bTransparent, optTranspExpl);
+	GET_VAL (gameOpts->render.effects.bSoftParticles, optSoftParticles);
 	gameOpts->render.effects.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.effects.bExplBlasts = m [optExplBlast].value;
 	extraGameInfo [0].bTracers = m [optTracers].value;

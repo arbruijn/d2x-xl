@@ -2870,10 +2870,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\render\glare.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\..\render\morph.cpp"
 						>
 					</File>
@@ -2938,10 +2934,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\include\glare.h"
-						>
-					</File>
-					<File
 						RelativePath="..\..\include\morph.h"
 						>
 					</File>
@@ -2994,6 +2986,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\render\glare.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\effects\lightning.cpp"
 						>
 					</File>
@@ -3019,6 +3015,10 @@
 					>
 					<File
 						RelativePath="..\..\include\fireball.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\glare.h"
 						>
 					</File>
 					<File
@@ -4577,11 +4577,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

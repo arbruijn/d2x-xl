@@ -2129,6 +2129,7 @@ else {
 	else
 		gameStates.render.bPerPixelLighting = 0;
 	}
+gameStates.ogl.bHaveDepthBuffer =
 gameData.render.nTotalFaces =
 gameData.render.nTotalObjects =
 gameData.render.nTotalSprites =
