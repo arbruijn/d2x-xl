@@ -1260,8 +1260,6 @@ if ((nType < 0) || ((nType != riParticle) && (gameData.smoke.nLastType >= 0))) {
 
 extern int bLog;
 
-int qqq = 0;
-
 void RenderItems (void)
 {
 #if RENDER_TRANSPARENCY
@@ -1273,9 +1271,6 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	}
 PROF_START
 RIResetShader ();
-qqq++;
-if (qqq == 250)
-	qqq = 0;
 bStencil = StencilOff ();
 renderItems.bTextured = -1;
 renderItems.bClientState = -1;
