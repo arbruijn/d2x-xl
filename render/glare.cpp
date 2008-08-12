@@ -756,6 +756,8 @@ return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
 
 void LoadGlareShader (float dMax)
 {
+	static float dMaxPrev = -1;
+
 gameStates.ogl.bUseDepthBlending = 0;
 if (gameStates.ogl.bDepthBlending) {
 	OglReadBuffer (GL_BACK, 1);
@@ -776,9 +778,10 @@ if (gameStates.ogl.bDepthBlending) {
 				}
 			}
 		else {
-			if (!gameStates.render.automap.bDisplay)
+			if (!gameStates.render.automap.bDisplay && (dMaxPrev != dMax))
 				glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) dMax);
 			}
+		dMaxPrev = dMax;
 		glDisable (GL_DEPTH_TEST);
 		}
 	glActiveTexture (GL_TEXTURE0);
