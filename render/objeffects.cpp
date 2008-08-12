@@ -1361,14 +1361,14 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	color.blue *= color.blue;
 #endif
 	if (bDepthSort) {
-		RIAddSprite (bmpCorona, &vPos, &color, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 1, 1);
+		RIAddSprite (bmpCorona, &vPos, &color, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 1, 3);
 		return;
 		}
 	bStencil = StencilOff ();
 	glDepthMask (0);
 	glBlendFunc (GL_ONE, GL_ONE);
 	if (bSimple) {
-		G3DrawSprite (&vPos, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, bmpCorona, &color, alpha, 1, 1);
+		G3DrawSprite (&vPos, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, bmpCorona, &color, alpha, 1, 3);
 		}
 	else {
 		fVector	quad [4], verts [8], vCenter, vNormal, v;

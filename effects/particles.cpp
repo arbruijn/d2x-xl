@@ -758,7 +758,7 @@ if (iBuffer) {
 #endif
 			if (gameData.render.lights.dynamic.headlights.nLights && !(gameStates.render.automap.bDisplay || gameData.smoke.nLastType))
 				G3SetupHeadlightShader (1, 0, &color);
-			else if (gameOpts->render.effects.bSoftParticles)
+			else if (gameOpts->render.effects.bSoftParticles && !gameData.smoke.nLastType)
 				LoadGlareShader (10);
 			else if (gameStates.render.history.nShader >= 0) {
 				glUseProgramObject (0);

@@ -730,7 +730,10 @@ void RIResetShader (void)
 {
 if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
 	gameData.render.nShaderChanges++;
-	glUseProgramObject (0);
+	if (gameStates.render.history.nShader == 999)
+		UnloadGlareShader ();
+	else
+		glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
 	}
 }
@@ -837,7 +840,8 @@ bmMask = (bDecal && ((bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0) &&
 bDecal = 0;
 bmMask = NULL;
 #endif
-if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3, faceP != NULL, bLightmaps, bmMask ? 2 : bDecal, 0) &&
+if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3, 
+	 (faceP != NULL) || gameOpts->render.effects.bSoftParticles, bLightmaps, bmMask ? 2 : bDecal, 0) &&
 	 (!bDecal || LoadRenderItemImage (bmTop, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
 	 (!bmMask || LoadRenderItemImage (bmMask, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
@@ -875,6 +879,7 @@ if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWr
 		glColor3d (1, 1, 1);
 	OglSetupTransform (faceP != NULL);
 	i = item->bAdditive;
+	glEnable (GL_BLEND);
 	if (i == 1)
 		glBlendFunc (GL_ONE, GL_ONE);
 	else if (i == 2)
@@ -955,8 +960,12 @@ if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWr
 			}
 		}
 	else {
-		if (i && !gameStates.render.automap.bDisplay)
-			RIResetShader ();
+		if (i && !gameStates.render.automap.bDisplay) {
+			if (gameOpts->render.effects.bSoftParticles)
+				LoadGlareShader (3);
+			else
+				RIResetShader ();
+			}
 		else 
 			G3SetupShader (faceP, 0, 0, 0, item->bmP != NULL, 
 								(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
