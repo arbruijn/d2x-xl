@@ -951,10 +951,12 @@ if (pc.alpha < 0.001) {
 	pParticle->nLife = 0;
 	return 0;
 	}
+#if 0
 if (!gameData.render.lights.dynamic.headlights.nLights && (pc.red + pc.green + pc.blue < 0.001)) {
 	pParticle->nLife = 0;
 	return 0;
 	}
+#endif
 if (gameOpts->render.smoke.bDisperse && !nType) {
 #if 0
 	decay = (float) sqrt (decay);
