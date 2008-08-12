@@ -614,19 +614,6 @@ GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [0], TEXTUREDIR_D2, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [1], TEXTUREDIR_D1, "*.tga");
 
-static char *szTexSubFolders [] = {"256", "128", "64"};
-
-for (i = 0; i < 2; i++) {
-	for (j = 0; j < 3; j++) {
-		sprintf (szTemp, "%s/%s", gameFolders.szTextureDir [i], szTexSubFolders [j]);
-		CFMkDir (szTemp);
-		}
-	}
-for (j = 0; j < 3; j++) {
-	sprintf (szTemp, "%s/%s", gameFolders.szModelCacheDir, szTexSubFolders [j]);
-	CFMkDir (szTemp);
-	}
-		
 GetAppFolder (szDataRootDir, gameFolders.szMovieDir, MOVIEDIR, "*.mvl");
 #ifdef __unix__
 if (*gameFolders.szHomeDir) {
@@ -698,6 +685,19 @@ sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_
 #endif
 //if (i = FindArg ("-hogdir"))
 //	CFUseAltHogDir (pszArgList [i + 1]);
+static char *szTexSubFolders [] = {"256", "128", "64"};
+
+for (i = 0; i < 2; i++) {
+	for (j = 0; j < 3; j++) {
+		sprintf (szTemp, "%s/%s", gameFolders.szTextureDir [i], szTexSubFolders [j]);
+		CFMkDir (szTemp);
+		}
+	}
+for (j = 0; j < 3; j++) {
+	sprintf (szTemp, "%s/%s", gameFolders.szModelCacheDir, szTexSubFolders [j]);
+	CFMkDir (szTemp);
+	}
+		
 }
 
 // ----------------------------------------------------------------------------
