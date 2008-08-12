@@ -1274,7 +1274,7 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 PROF_START
 RIResetShader ();
 qqq++;
-if (qqq == 256)
+if (qqq == 250)
 	qqq = 0;
 bStencil = StencilOff ();
 renderItems.bTextured = -1;
