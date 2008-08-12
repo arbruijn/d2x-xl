@@ -1363,6 +1363,10 @@ else if (gameStates.render.bPerPixelLighting == 2) {
 		vcd.fMatShininess = 4;
 		G3AccumVertColor (-1, (fVector3 *) psc, &vcd, 0);
 		}
+#ifdef _DEBUG
+	if (psc->color.red + psc->color.green + psc->color.blue == 0)
+		psc = psc;
+#endif
 	ResetUsedLights (0, 0);
 	gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 	}

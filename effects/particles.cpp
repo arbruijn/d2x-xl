@@ -101,7 +101,8 @@ static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 #endif
 static float alphaScale [5] = {6.0f / 6.0f, 5.0f / 6.0f, 4.0f / 6.0f, 3.0f / 6.0f, 2.0f / 6.0f};
 
-#define VERT_BUF_SIZE	(4096 * 4)
+#define PART_BUF_SIZE	4096
+#define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
 
 typedef struct tParticleVertex {
 	tTexCoord2f	texCoord;
@@ -758,7 +759,7 @@ if (iBuffer) {
 			if (gameData.render.lights.dynamic.headlights.nLights && !(gameStates.render.automap.bDisplay || gameData.smoke.nLastType))
 				G3SetupHeadlightShader (1, 0, &color);
 			else if (gameOpts->render.effects.bSoftParticles)
-				LoadGlareShader (20);
+				LoadGlareShader (10);
 			else if (gameStates.render.history.nShader >= 0) {
 				glUseProgramObject (0);
 				gameStates.render.history.nShader = -1;
@@ -785,7 +786,7 @@ if (iBuffer) {
 		}
 	iBuffer = 0;
 	glEnable (GL_DEPTH_TEST);
-	if (gameStates.ogl.bShadersOk && !gameData.smoke.nLastType) {
+	if ((gameStates.ogl.bShadersOk && !gameData.smoke.nLastType) && (gameStates.render.history.nShader != 999)) {
 		glUseProgramObject (0);
 		gameStates.render.history.nShader = -1;
 		}
@@ -945,6 +946,14 @@ else {
 	pc.alpha *= fFade;
 #endif
 	pc.alpha *= alphaScale [gameOpts->render.smoke.nAlpha [gameOpts->render.smoke.bSyncSizes ? 0 : pParticle->nClass]];
+	}
+if (pc.alpha < 0.001) {
+	pParticle->nLife = 0;
+	return 0;
+	}
+if (!gameData.render.lights.dynamic.headlights.nLights && (pc.red + pc.green + pc.blue < 0.001)) {
+	pParticle->nLife = 0;
+	return 0;
 	}
 if (gameOpts->render.smoke.bDisperse && !nType) {
 #if 0
@@ -1502,7 +1511,7 @@ else
 #endif
 	{
 		float			brightness = CloudBrightness (pCloud);
-		int			nParts = pCloud->nParts, i, j, 
+		int			nParts = pCloud->nParts, h, i, j, 
 						nFirstPart = pCloud->nFirstPart,
 						nPartLimit = pCloud->nPartLimit;
 #if SORT_CLOUD_PARTS
@@ -1512,9 +1521,10 @@ else
 		vmsVector	v;
 
 	if (gameOpts->render.bDepthSort > 0) {
-		for (i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit)
-			RIAddParticle (pCloud->pParticles + j, brightness, nThread);
-		return 1;
+		for (h = 0, i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit)
+			if (RIAddParticle (pCloud->pParticles + j, brightness, nThread))
+				h++;
+		return h;
 		}
 	else {
 		if (!BeginRenderSmoke (pCloud->nType, pCloud->nPartScale))
@@ -2206,7 +2216,7 @@ else
 	{
 	tSmoke *pSmoke = gameData.smoke.buffer;
 	tCloud *pCloud;
-	for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
+	for (h = 0, i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 		pSmoke = gameData.smoke.buffer + i;
 		if (pSmoke->pClouds) {
 			if (!LoadParticleImage (pSmoke->nType))
@@ -2215,7 +2225,7 @@ else
 				SetSmokeLife (i, 0);
 			for (j = pSmoke->nClouds, pCloud = pSmoke->pClouds; j; j--, pCloud++) {
 				pCloud->fBrightness = CloudBrightness (pCloud);
-				RenderCloud (pCloud, -1);
+				h += RenderCloud (pCloud, -1);
 				}
 			}
 		}

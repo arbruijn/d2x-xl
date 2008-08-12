@@ -1154,15 +1154,16 @@ if (item->particle->nType == 2)
 	RIRenderBullet (item->particle);
 else {
 	RISetClientState (0, 0, 0, 0, 0);
-	RIResetShader ();
+	if (!gameOpts->render.effects.bSoftParticles || (gameStates.render.history.nShader != 999))
+		RIResetShader ();
 	if (renderItems.nPrevType != riParticle) {
 		glEnable (GL_TEXTURE_2D);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		gameData.smoke.nLastType = -1;
 		renderItems.bTextured = 1;
-		InitParticleBuffer (renderItems.bLightmaps);
+		//InitParticleBuffer (renderItems.bLightmaps);
 		}
-	if (renderItems.bDepthMask)
+	if (!gameOpts->render.effects.bSoftParticles && renderItems.bDepthMask)
 		glDepthMask (renderItems.bDepthMask = 0);
 	RenderParticle (item->particle, item->fBrightness);
 	RIResetBitmaps ();
@@ -1242,12 +1243,13 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 void RIFlushParticleBuffer (int nType)
 {
-if ((nType != riParticle) && (gameData.smoke.nLastType >= 0)) {
+if ((nType < 0) || ((nType != riParticle) && (gameData.smoke.nLastType >= 0))) {
 	FlushParticleBuffer (-1.0f);
 	CloseParticleBuffer ();
 #if 1
 	RIResetBitmaps ();
-	gameStates.render.history.nShader = -1;
+	if (gameStates.render.history.nShader != 999)
+		gameStates.render.history.nShader = -1;
 #endif
 	gameData.smoke.nLastType = -1;
 	renderItems.bUseLightmaps = 0;
@@ -1257,6 +1259,8 @@ if ((nType != riParticle) && (gameData.smoke.nLastType >= 0)) {
 //------------------------------------------------------------------------------
 
 extern int bLog;
+
+int qqq = 0;
 
 void RenderItems (void)
 {
@@ -1269,6 +1273,9 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	}
 PROF_START
 RIResetShader ();
+qqq++;
+if (qqq == 256)
+	qqq = 0;
 bStencil = StencilOff ();
 renderItems.bTextured = -1;
 renderItems.bClientState = -1;
