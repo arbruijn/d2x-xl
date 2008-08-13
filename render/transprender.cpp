@@ -462,6 +462,22 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+int RIAddSpark (vmsVector *position, char nType, int nSize, char nFrame)
+{
+	tRISpark		item;
+	vmsVector	vPos;
+
+item.nSize = nSize;
+item.nFrame = nFrame;
+item.nType = nType;
+G3TransformPoint (&vPos, position, 0);
+VmVecFixToFloat (&item.position, &vPos);
+AddRenderItem (riSpark, &item, sizeof (item), vPos.p.z, vPos.p.z);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP)
 {
 	tRISphere	item;
@@ -1076,7 +1092,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 	if (item->bColor)
 		glColor4fv ((GLfloat *) &item->color);
 	else
-		glColor3d (1, 1, 1);
+		glColor3f (1, 1, 1);
 	if (item->bAdditive == 2)
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	else if (item->bAdditive == 1)
@@ -1104,8 +1120,95 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 	glEnd ();
 	if (item->bAdditive)
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable (GL_DEPTH_TEST);
+	if (gameOpts->render.effects.bSoftParticles)
+		glEnable (GL_DEPTH_TEST);
 	}
+}
+
+//------------------------------------------------------------------------------
+
+typedef struct tSparkVertex {
+	fVector3		vPos;
+	tTexCoord2f	texCoord;
+} tSparkVertex;
+
+#define SPARK_BUF_SIZE	1000
+
+typedef struct tSparkBuffer {
+	int					nSparks;
+	tSparkVertex	info [SPARK_BUF_SIZE * 4];
+} tSparkBuffer;
+
+tSparkBuffer sparkBuffer;
+
+//------------------------------------------------------------------------------
+
+void RIFlushSparkBuffer (void)
+{
+if (sparkBuffer.nSparks &&
+	 LoadRenderItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, 
+								 gameOpts->render.effects.bSoftParticles, 0, 0, 0)) {
+	if (gameOpts->render.effects.bSoftParticles)
+		LoadGlareShader (1);
+	else if (renderItems.bDepthMask) {
+		glDepthMask (renderItems.bDepthMask = 0);
+		}
+	glActiveTexture (GL_TEXTURE0);
+	glClientActiveTexture (GL_TEXTURE0);
+	glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState (GL_COLOR_ARRAY);	
+	glEnableClientState (GL_VERTEX_ARRAY);
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_ONE, GL_ONE);
+	glColor3f (1, 1, 1);
+	glTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].texCoord);
+	glVertexPointer (3, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].vPos);
+	glDrawArrays (GL_QUADS, 0, sparkBuffer.nSparks);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	if (gameOpts->render.effects.bSoftParticles)
+		glEnable (GL_DEPTH_TEST);
+	sparkBuffer.nSparks = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void RIRenderSpark (tRISpark *item)
+{
+if (sparkBuffer.nSparks >= SPARK_BUF_SIZE)
+	RIFlushSparkBuffer ();
+
+	tSparkVertex	*infoP = sparkBuffer.info + 4 * sparkBuffer.nSparks++;
+	fVector			vPos = item->position;
+	float				nSize = f2fl (item->nSize);
+	float				nCol = (float) (item->nFrame / 8);
+	float				nRow = (float) (item->nFrame % 8);
+
+if (!item->nType)
+	nCol += 4;
+infoP->vPos.p.x = vPos.p.x - nSize;
+infoP->vPos.p.y = vPos.p.y + nSize;
+infoP->vPos.p.z = vPos.p.z;
+infoP->texCoord.v.u = nCol / 8.0f;
+infoP->texCoord.v.v = (nRow + 1) / 8.0f;
+infoP++;
+infoP->vPos.p.x = vPos.p.x + nSize;
+infoP->vPos.p.y = vPos.p.y + nSize;
+infoP->vPos.p.z = vPos.p.z;
+infoP->texCoord.v.u = (nCol + 1) / 8.0f;
+infoP->texCoord.v.v = (nRow + 1) / 8.0f;
+infoP++;
+infoP->vPos.p.x = vPos.p.x + nSize;
+infoP->vPos.p.y = vPos.p.y - nSize;
+infoP->vPos.p.z = vPos.p.z;
+infoP->texCoord.v.u = (nCol + 1) / 8.0f;
+infoP->texCoord.v.v = nRow / 8.0f;
+infoP++;
+infoP->vPos.p.x = vPos.p.x - nSize;
+infoP->vPos.p.y = vPos.p.y - nSize;
+infoP->vPos.p.z = vPos.p.z;
+infoP->texCoord.v.u = nCol / 8.0f;
+infoP->texCoord.v.v = nRow / 8.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -1267,6 +1370,15 @@ if ((nType < 0) || ((nType != riParticle) && (gameData.smoke.nLastType >= 0))) {
 
 //------------------------------------------------------------------------------
 
+static inline void RIFlushBuffers (int nType)
+{
+RIFlushParticleBuffer (nType);
+if ((nType < 0) || (nType != riSpark))
+	RIFlushSparkBuffer ();
+}
+
+//------------------------------------------------------------------------------
+
 extern int bLog;
 
 void RenderItems (void)
@@ -1294,6 +1406,7 @@ renderItems.nWrap = 0;
 renderItems.nFrame = -1;
 renderItems.bmP [0] = 
 renderItems.bmP [1] = NULL;
+sparkBuffer.nSparks = 0;
 OglDisableLighting ();
 G3DisableClientStates (1, 1, 0, GL_TEXTURE2 + renderItems.bLightmaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE1 + renderItems.bLightmaps);
@@ -1321,7 +1434,7 @@ for (pd = renderItems.pDepthBuffer + renderItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZ
 			nItems--;
 			renderItems.nPrevType = nType;
 			nType = pl->nType;
-			RIFlushParticleBuffer (nType);
+			RIFlushBuffers (nType);
 			if ((nType == riTexPoly) || (nType == riFlatPoly)) {
 				RIRenderPoly (&pl->item.poly);
 				}
@@ -1330,6 +1443,9 @@ for (pd = renderItems.pDepthBuffer + renderItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZ
 				}
 			else if (nType == riSprite) {
 				RIRenderSprite (&pl->item.sprite);
+				}
+			else if (nType == riSpark) {
+				RIRenderSpark (&pl->item.spark);
 				}
 			else if (nType == riSphere) {
 				RIRenderSphere (&pl->item.sphere);
@@ -1355,7 +1471,7 @@ for (pd = renderItems.pDepthBuffer + renderItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZ
 		*pd = NULL;
 		}
 	}
-RIFlushParticleBuffer (-1);
+RIFlushBuffers (-1);
 EndRenderSmoke (NULL);
 RIResetShader ();
 G3DisableClientStates (1, 1, 1, GL_TEXTURE0);

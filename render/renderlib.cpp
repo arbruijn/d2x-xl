@@ -146,6 +146,27 @@ if (bmpExplBlast) {
 
 //------------------------------------------------------------------------------
 
+grsBitmap *bmpSparks = NULL;
+int bHaveSparks = 0;
+
+int LoadSparks (void)
+{
+return LoadExtraBitmap (&bmpSparks, "sparks.tga", &bHaveSparks);
+}
+
+//------------------------------------------------------------------------------
+
+void FreeSparks (void)
+{
+if (bmpSparks) {
+	GrFreeBitmap (bmpSparks);
+	bmpSparks = NULL;
+	bHaveSparks = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 grsBitmap *bmpCorona = NULL;
 int bHaveCorona = 0;
 
@@ -275,6 +296,8 @@ PrintLog ("   Loading shield images\n");
 LoadShield ();
 PrintLog ("   Loading explosion blast images\n");
 LoadExplBlast ();
+PrintLog ("   Loading spark images\n");
+LoadSparks ();
 PrintLog ("   Loading deadzone images\n");
 LoadDeadzone ();
 }
@@ -289,6 +312,7 @@ FreeHalo ();
 FreeThruster ();
 FreeShield ();
 FreeExplBlast ();
+FreeSparks ();
 FreeDeadzone ();
 }
 

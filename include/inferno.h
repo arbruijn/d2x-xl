@@ -2822,7 +2822,8 @@ typedef struct tMenuData {
 
 typedef struct tEnergySpark {
 	short				nProb;
-	short				nFrame;
+	char				nFrame;
+	char				bRendered;
 	fix				xSize;
 	time_t			tRender;
 	time_t			tCreate;

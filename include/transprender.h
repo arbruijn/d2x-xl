@@ -10,6 +10,7 @@
 
 typedef enum tRenderItemType {
 	riSprite,
+	riSpark,
 	riSphere,
 	riParticle,
 	riLightning,
@@ -18,7 +19,7 @@ typedef enum tRenderItemType {
 	riObject,
 	riPoly,
 	riTexPoly,
-	riFlatPoly
+	riFlatPoly,
 } tRenderItemType;
 
 typedef struct tRIPoly {
@@ -53,6 +54,13 @@ typedef struct tRISprite {
 	char					bAdditive;
 	float					fSoftRad;
 } tRISprite;
+
+typedef struct tRISpark {
+	fVector				position;
+	int					nSize;
+	char					nFrame;
+	char					nType;
+} tRISpark;
 
 typedef struct tRIParticle {
 	tParticle			*particle;
@@ -102,6 +110,7 @@ typedef struct tRenderItem {
 		tRIPoly					poly;
 		tRIObject				object;
 		tRISprite				sprite;
+		tRISpark					spark;
 		tRIParticle				particle;
 		tRISphere				sphere;
 		tRILightning			lightning;
@@ -157,6 +166,7 @@ int RIAddPoly (grsFace *faceP, grsTriangle *triP, grsBitmap *bmP,
 int RIAddObject (tObject *objP);
 int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, 
 					  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad);
+int RIAddSpark (vmsVector *position, char nType, int nSize, char nFrame);
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);
 int RIAddParticle (tParticle *particle, float fBrightness, int nThread);
 int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);

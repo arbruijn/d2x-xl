@@ -20,6 +20,8 @@
 #include "hudmsg.h"
 #include "gameseg.h"
 #include "piggy.h"
+#include "renderlib.h"
+#include "transprender.h"
 
 #define SPARK_MIN_PROB		16
 #define SPARK_FRAME_TIME	25
@@ -97,6 +99,7 @@ for (i = segP->nMaxSparks; i; i--, sparkP++) {
 			sparkP->xSize = F1_0 + 4 * d_rand ();
 			sparkP->nFrame = 0;
 			sparkP->tRender = -1;
+			sparkP->bRendered = 0;
 			sparkP->nProb = SPARK_MIN_PROB;
 			}
 		}
@@ -114,22 +117,23 @@ void UpdateSegmentSparks (short nSegment)
 
 if (segP->bUpdate) {
 		tEnergySpark	*sparkP = segP->sparks;
-		int				i, nLastRender [2];
+		int				i;
 
-	nLastRender [0] = BM_FRAMECOUNT (BM_ADDON (BM_ADDON_REPAIRSPARK)) - 1;
-	nLastRender [1] = BM_FRAMECOUNT (BM_ADDON (BM_ADDON_FUELSPARK)) - 1;
 	for (i = segP->nMaxSparks; i; i--, sparkP++) {
 		if (!sparkP->tRender)
 			continue;
 		if (gameStates.app.nSDLTicks - sparkP->tRender < SPARK_FRAME_TIME)
 			continue;
-		if (sparkP->nFrame >= nLastRender [bFuel]) {
+		if (sparkP->nFrame >= 31) {
 			sparkP->tRender = 0;
 			sparkP->tCreate = -1;
 			}
 		else {
 			sparkP->tRender = gameStates.app.nSDLTicks; //+= SPARK_FRAME_TIME;
-			sparkP->nFrame++;
+			if (sparkP->bRendered) {
+				sparkP->nFrame++;
+				sparkP->bRendered = 0;
+				}
 			}
 		}
 	CreateSegmentSparks (nMatCen);
@@ -149,17 +153,19 @@ if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) {
 	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel] + nMatCen;
 	tEnergySpark	*sparkP = segP->sparks;
 	int				i;
-	grsBitmap		*bmP = BM_ADDON (BM_ADDON_REPAIRSPARK + bFuel), *bmfP;
 
 	segP->bUpdate = 1;
 	for (i = segP->nMaxSparks; i; i--, sparkP++) {
 		if (sparkP->tRender) {
-			if (sparkP->nFrame >= BM_FRAMECOUNT (bmP))
+			if (sparkP->nFrame > 31)
 				sparkP->tRender = 0;
 			else {
-				bmfP = BM_FRAMES (bmP) + sparkP->nFrame;
-				BM_PARENT (bmfP) = NULL;
-				G3DrawSprite (&sparkP->vPos, sparkP->xSize, sparkP->xSize, bmfP, NULL, 1.0, 1, 1);
+#if 0
+				G3DrawSprite (&sparkP->vPos, sparkP->xSize, sparkP->xSize, bmpSparks, NULL, 1.0, 1, 1);
+#else
+				RIAddSpark (&sparkP->vPos, (char) bFuel, sparkP->xSize, (char) sparkP->nFrame);
+#endif
+				sparkP->bRendered = 1;
 				}
 			}
 		}
@@ -214,13 +220,9 @@ SEM_ENTER (SEM_SPARKS)
 	short	nSegment;
 
 if (gameOpts->render.effects.bEnergySparks && BuildSparkSegList ()) {
-	if (BM_ADDON (BM_ADDON_FUELSPARK) && BM_ADDON (BM_ADDON_REPAIRSPARK)) {
-		PageInAddonBitmap (-(BM_ADDON_FUELSPARK) - 1);
-		PageInAddonBitmap (-(BM_ADDON_REPAIRSPARK) - 1);
+	if (bmpSparks) {
 		for (nSegment = 0; nSegment < gameData.matCens.nSparkSegs; nSegment++)
 			AllocSegmentSparks (nSegment);
-		OglLoadBmTexture (BM_ADDON (BM_ADDON_FUELSPARK), 1, 0, gameOpts->render.bDepthSort <= 0);
-		OglLoadBmTexture (BM_ADDON (BM_ADDON_REPAIRSPARK), 1, 0, gameOpts->render.bDepthSort <= 0);
 		d_srand ((uint) gameStates.app.nSDLTicks);
 		}
 	else

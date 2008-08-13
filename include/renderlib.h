@@ -103,6 +103,7 @@ extern grsBitmap *bmpHalo;
 extern grsBitmap *bmpThruster [2];
 extern grsBitmap *bmpShield;
 extern grsBitmap *bmpExplBlast;
+extern grsBitmap *bmpSparks;
 
 extern tRgbaColorf segmentColors [4];
 
