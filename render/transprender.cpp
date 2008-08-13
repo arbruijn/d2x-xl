@@ -802,7 +802,7 @@ void RIRenderPoly (tRIPoly *item)
 PROF_START
 	grsFace		*faceP;
 	grsTriangle	*triP;
-	grsBitmap	*bmTop, *bmMask;
+	grsBitmap	*bmTop = NULL, *bmMask;
 	int			i, j, nIndex, bLightmaps, bDecal;
 
 #if RI_POLY_OFFSET
