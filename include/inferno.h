@@ -325,6 +325,7 @@ typedef struct tEffectRenderOptions {
 	int bAutoTransparency;
 	int bTransparent;
 	int bSoftParticles;
+	int bMovingSparks;
 } tEffectRenderOptions;
 
 //------------------------------------------------------------------------------
@@ -2828,6 +2829,7 @@ typedef struct tEnergySpark {
 	time_t			tRender;
 	time_t			tCreate;
 	vmsVector		vPos;
+	vmsVector		vDir;
 	} tEnergySpark;
 
 typedef struct tSegmentSparks {

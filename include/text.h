@@ -1866,10 +1866,10 @@ void LoadGameTexts(void);
 #define TXT_GATLING_TRAILS				GT(1074)
 #define TXT_USE_D1_AI					GT(1075)
 #define TXT_SOFT_PARTICLES				GT(1076)
+#define TXT_MOVING_SPARKS				GT(1077)
 
 #if 0
 
-#define TXT_					GT(1077)
 #define TXT_					GT(1078)
 #define TXT_					GT(1079)
 #define TXT_					GT(1080)
@@ -2384,10 +2384,10 @@ void LoadGameTexts(void);
 #define HTX_GATLING_TRAILS				HT(370)			
 #define HTX_USE_D1_AI					HT(371)			
 #define HTX_SOFT_PARTICLES				HT(372)			
+#define HTX_MOVING_SPARKS				HT(373)			
 
 #if 0
 
-#define HTX_						HT(373)			
 #define HTX_						HT(374)			
 #define HTX_						HT(375)			
 #define HTX_						HT(376)			

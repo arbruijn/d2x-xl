@@ -158,6 +158,7 @@ static struct {
 	int	nObjCoronaIntensity;
 	int	nLightTrails;
 	int	nExplShrapnels;
+	int	nSparks;
 } effectOpts;
 
 static struct {
@@ -2248,6 +2249,12 @@ if (gameOpts->render.effects.nShrapnels != v) {
 	sprintf (m->text, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [v]);
 	m->rebuild = -1;
 	}
+m = menus + effectOpts.nSparks;
+v = m->value;
+if (gameOpts->render.effects.bEnergySparks != v) {
+	gameOpts->render.effects.bEnergySparks = v;
+	m->rebuild = -1;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -2258,7 +2265,7 @@ void EffectOptionsMenu ()
 	int	i, j, choice = 0;
 	int	nOptions;
 	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields, optSoftParticles,
-			optRobotShields, optShieldHits, optTracers, optGatlingTrails, optExplBlast, optSparks;
+			optRobotShields, optShieldHits, optTracers, optGatlingTrails, optExplBlast, optMovingSparks;
 #if 0
 	int	optShockwaves;
 #endif
@@ -2291,7 +2298,11 @@ do {
 	nOptions++;
 	m [optThrusterFlame + extraGameInfo [0].bThrusterFlames].value = 1;
 	ADD_CHECK (nOptions, TXT_RENDER_SPARKS, gameOpts->render.effects.bEnergySparks, KEY_P, HTX_RENDER_SPARKS);
-	optSparks = nOptions++;
+	effectOpts.nSparks = nOptions++;
+	if (gameOpts->render.effects.bEnergySparks) {
+		ADD_CHECK (nOptions, TXT_MOVING_SPARKS, gameOpts->render.effects.bMovingSparks, KEY_V, HTX_MOVING_SPARKS);
+		optMovingSparks = nOptions++;
+		}
 	if (gameOpts->render.textures.bUseHires)
 		optTranspExpl = -1;
 	else {
@@ -2322,7 +2333,7 @@ do {
 		if (i < 0)
 			break;
 		} 
-	gameOpts->render.effects.bEnergySparks = m [optSparks].value;
+	gameOpts->render.effects.bEnergySparks = m [effectOpts.nSparks].value;
 	if ((gameOpts->render.effects.bEnergySparks != bEnergySparks) && gameStates.app.bGameRunning) {
 		if (gameOpts->render.effects.bEnergySparks)
 			AllocEnergySparks ();
@@ -2331,6 +2342,7 @@ do {
 		}
 	GET_VAL (gameOpts->render.effects.bTransparent, optTranspExpl);
 	GET_VAL (gameOpts->render.effects.bSoftParticles, optSoftParticles);
+	GET_VAL (gameOpts->render.effects.bMovingSparks, optMovingSparks);
 	gameOpts->render.effects.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.effects.bExplBlasts = m [optExplBlast].value;
 	extraGameInfo [0].bTracers = m [optTracers].value;

@@ -24,7 +24,7 @@
 #include "transprender.h"
 
 #define SPARK_MIN_PROB		16
-#define SPARK_FRAME_TIME	25
+#define SPARK_FRAME_TIME	50
 
 //-----------------------------------------------------------------------------
 
@@ -101,6 +101,15 @@ for (i = segP->nMaxSparks; i; i--, sparkP++) {
 			sparkP->tRender = -1;
 			sparkP->bRendered = 0;
 			sparkP->nProb = SPARK_MIN_PROB;
+			if (gameOpts->render.effects.bMovingSparks) {
+				sparkP->vDir.p.x = (F1_0 / 4) - d_rand ();
+				sparkP->vDir.p.y = (F1_0 / 4) - d_rand ();
+				sparkP->vDir.p.z = (F1_0 / 4) - d_rand ();
+				VmVecNormalize (&sparkP->vDir, NULL);
+				VmVecScale (&sparkP->vDir, (F1_0 / (16 + d_rand () % 16)));
+				}
+			else
+				VmVecZero (&sparkP->vDir);
 			}
 		}
 	}
@@ -126,6 +135,8 @@ if (segP->bUpdate) {
 			continue;
 		if (++sparkP->nFrame < 32) {
 			sparkP->tRender = gameStates.app.nSDLTicks; //+= SPARK_FRAME_TIME;
+			if (gameOpts->render.effects.bMovingSparks)
+				VmVecInc (&sparkP->vPos, &sparkP->vDir);
 			}
 		else {
 			sparkP->tRender = 0;

@@ -1135,7 +1135,7 @@ typedef struct tSparkVertex {
 #define SPARK_BUF_SIZE	1000
 
 typedef struct tSparkBuffer {
-	int					nSparks;
+	int				nSparks;
 	tSparkVertex	info [SPARK_BUF_SIZE * 4];
 } tSparkBuffer;
 
@@ -1159,9 +1159,9 @@ if (sparkBuffer.nSparks &&
 		//OGL_BINDTEX (0);
 		//glDisable (GL_TEXTURE_2D);
 		}
-	//G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	//glEnable (GL_TEXTURE_2D);
-	//OGL_BINDTEX (bmpSparks->glTexture->handle);
+	G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	glEnable (GL_TEXTURE_2D);
+	OGL_BINDTEX (bmpSparks->glTexture->handle);
 	//glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE, GL_ONE);
 	glColor3f (1, 1, 1);
@@ -1172,6 +1172,7 @@ if (sparkBuffer.nSparks &&
 	if (gameOpts->render.effects.bSoftParticles)
 		glEnable (GL_DEPTH_TEST);
 	sparkBuffer.nSparks = 0;
+	renderItems.bClientColor = 0;
 	}
 }
 
@@ -1367,6 +1368,7 @@ if ((nType < 0) || ((nType != riParticle) && (gameData.smoke.nLastType >= 0))) {
 	RIResetBitmaps ();
 #endif
 	gameData.smoke.nLastType = -1;
+	renderItems.bClientColor = 1;
 	renderItems.bUseLightmaps = 0;
 	}
 }
@@ -1439,7 +1441,7 @@ for (pd = renderItems.pDepthBuffer + renderItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZ
 			nType = pl->nType;
 			RIFlushBuffers (nType);
 			if ((nType == riTexPoly) || (nType == riFlatPoly)) {
-				//RIRenderPoly (&pl->item.poly);
+				RIRenderPoly (&pl->item.poly);
 				}
 			else if (nType == riObject) {
 				RIRenderObject (&pl->item.object);

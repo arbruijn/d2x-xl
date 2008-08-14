@@ -1818,6 +1818,7 @@ const char *defaultGameTexts [][2] = {
 	{"Rauchspuren fuer Maschinen~Kanonen", "~Gatling smoke trails"},
 	{"Descent 1 K~I verwenden", "use Descent 1 A~I"},
 	{"~Weiche partikeluebergaenge", "~Smooth particles"},
+	{"treibende ~Funken", "mo~Ving sparks"},
 #if 0
 	{"", ""},
 #endif
@@ -2468,6 +2469,7 @@ const char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, werden Roboter in Descent 1-Missionen\nvon der originalen Descent 1 KI gesteuert.", 
 	 "If checked, robots are controlled by the original Descent 1\nAI in Descent missions."},
 	{"Wenn angekreuzt, sehen Partikeluebergaenge an Waenden weicher\nund natuerlicher aus.", "If checked, particle transitions at walls look smoother\nand more natural."},
+	{"Wenn angekreuzt, treiben Funken langsam herum.", "If checked, energy sparks slowly drift around."},
 #if 0
 	{"", ""},
 #endif
