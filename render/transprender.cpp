@@ -1148,22 +1148,26 @@ void RIFlushSparkBuffer (void)
 if (sparkBuffer.nSparks &&
 	 LoadRenderItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, 
 								 gameOpts->render.effects.bSoftParticles, 0, 0, 0)) {
-	if (gameOpts->render.effects.bSoftParticles)
+	if (gameOpts->render.effects.bSoftParticles) {
 		LoadGlareShader (1);
-	else if (renderItems.bDepthMask) {
-		glDepthMask (renderItems.bDepthMask = 0);
 		}
-	glActiveTexture (GL_TEXTURE0);
-	glClientActiveTexture (GL_TEXTURE0);
-	glEnableClientState (GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState (GL_COLOR_ARRAY);	
-	glEnableClientState (GL_VERTEX_ARRAY);
-	glEnable (GL_BLEND);
+	else {
+		RIResetShader ();
+		if (renderItems.bDepthMask)
+			glDepthMask (renderItems.bDepthMask = 0);
+		//G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
+		//OGL_BINDTEX (0);
+		//glDisable (GL_TEXTURE_2D);
+		}
+	//G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	//glEnable (GL_TEXTURE_2D);
+	//OGL_BINDTEX (bmpSparks->glTexture->handle);
+	//glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE, GL_ONE);
 	glColor3f (1, 1, 1);
 	glTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].texCoord);
 	glVertexPointer (3, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].vPos);
-	glDrawArrays (GL_QUADS, 0, sparkBuffer.nSparks);
+	glDrawArrays (GL_QUADS, 0, 4 * sparkBuffer.nSparks);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (gameOpts->render.effects.bSoftParticles)
 		glEnable (GL_DEPTH_TEST);
@@ -1357,11 +1361,10 @@ void RIFlushParticleBuffer (int nType)
 {
 if ((nType < 0) || ((nType != riParticle) && (gameData.smoke.nLastType >= 0))) {
 	FlushParticleBuffer (-1.0f);
-	CloseParticleBuffer ();
+	if (nType < 0)
+		CloseParticleBuffer ();
 #if 1
 	RIResetBitmaps ();
-	if (gameStates.render.history.nShader != 999)
-		gameStates.render.history.nShader = -1;
 #endif
 	gameData.smoke.nLastType = -1;
 	renderItems.bUseLightmaps = 0;
@@ -1372,9 +1375,9 @@ if ((nType < 0) || ((nType != riParticle) && (gameData.smoke.nLastType >= 0))) {
 
 static inline void RIFlushBuffers (int nType)
 {
-RIFlushParticleBuffer (nType);
-if ((nType < 0) || (nType != riSpark))
+if (nType != riSpark)
 	RIFlushSparkBuffer ();
+RIFlushParticleBuffer (nType);
 }
 
 //------------------------------------------------------------------------------
@@ -1436,7 +1439,7 @@ for (pd = renderItems.pDepthBuffer + renderItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZ
 			nType = pl->nType;
 			RIFlushBuffers (nType);
 			if ((nType == riTexPoly) || (nType == riFlatPoly)) {
-				RIRenderPoly (&pl->item.poly);
+				//RIRenderPoly (&pl->item.poly);
 				}
 			else if (nType == riObject) {
 				RIRenderObject (&pl->item.object);

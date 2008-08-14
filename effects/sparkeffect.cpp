@@ -124,16 +124,12 @@ if (segP->bUpdate) {
 			continue;
 		if (gameStates.app.nSDLTicks - sparkP->tRender < SPARK_FRAME_TIME)
 			continue;
-		if (sparkP->nFrame >= 31) {
-			sparkP->tRender = 0;
-			sparkP->tCreate = -1;
+		if (++sparkP->nFrame < 32) {
+			sparkP->tRender = gameStates.app.nSDLTicks; //+= SPARK_FRAME_TIME;
 			}
 		else {
-			sparkP->tRender = gameStates.app.nSDLTicks; //+= SPARK_FRAME_TIME;
-			if (sparkP->bRendered) {
-				sparkP->nFrame++;
-				sparkP->bRendered = 0;
-				}
+			sparkP->tRender = 0;
+			sparkP->tCreate = -1;
 			}
 		}
 	CreateSegmentSparks (nMatCen);
@@ -159,14 +155,8 @@ if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) {
 		if (sparkP->tRender) {
 			if (sparkP->nFrame > 31)
 				sparkP->tRender = 0;
-			else {
-#if 0
-				G3DrawSprite (&sparkP->vPos, sparkP->xSize, sparkP->xSize, bmpSparks, NULL, 1.0, 1, 1);
-#else
+			else 
 				RIAddSpark (&sparkP->vPos, (char) bFuel, sparkP->xSize, (char) sparkP->nFrame);
-#endif
-				sparkP->bRendered = 1;
-				}
 			}
 		}
 	}
