@@ -816,6 +816,7 @@ const char *glareFS [2] = {
 	"float dz = (gl_FragCoord.z - texture2D (depthTex, screenScale * gl_FragCoord.xy).r) * depthScale;\r\n" \
 	"dz = clamp (dz, 0.0, dMax);\r\n" \
 	"dz = ((dMax - dz) / dMax);\r\n" \
+	"/*if (dz < 1.0) gl_FragColor = vec4 (0.0, 0.5, 1.0, 0.5); else*/\n" \
 	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * sqrt (dz);\r\n" \
 	"}\r\n"
 ,

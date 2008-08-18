@@ -19,5 +19,14 @@ int G3BuildModelFromASE (tObject *objP, int nModel);
 int G3BuildModelFromOOF (tObject *objP, int nModel);
 int G3BuildModelFromPOF (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor);
 
+//------------------------------------------------------------------------------
+
+static inline int IsDefaultModel (int nModel)
+{
+return gameData.models.polyModels [nModel].nDataSize == gameData.models.defPolyModels [nModel].nDataSize;
+}
+
+//------------------------------------------------------------------------------
+
 #endif //_BUILDMODEL_H
 //eof

@@ -1152,7 +1152,7 @@ void RIFlushSparkBuffer (void)
 if (sparkBuffer.nSparks &&
 	 LoadRenderItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
 	if (bSoftSparks) {
-		LoadGlareShader (1);
+		LoadGlareShader (3);
 		}
 	else {
 		RIResetShader ();
