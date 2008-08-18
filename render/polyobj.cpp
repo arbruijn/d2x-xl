@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "textures.h"
 #include "light.h"
 #include "dynlight.h"
+#include "buildmodel.h"
 
 #ifdef _3DFX
 #include "3dfx_des.h"
@@ -517,9 +518,12 @@ tPolyModel *GetPolyModel (tObject *objP, vmsVector *pos, int nModel, int flags)
 {
 	tPolyModel	*po = NULL;
 	int			bHaveAltModel = gameData.models.altPolyModels [nModel].modelData != NULL,
-					bIsDefModel = (gameData.models.polyModels [nModel].nDataSize == 
-										gameData.models.defPolyModels [nModel].nDataSize);
+					bIsDefModel = IsDefaultModel (nModel);
 
+#ifdef _DEBUG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 if ((nModel >= gameData.models.nPolyModels) && !(po = gameData.models.modelToPOL [nModel]))
 	return NULL;
 // only render shadows for custom models and for standard models with a shadow proof alternative model

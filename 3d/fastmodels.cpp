@@ -754,9 +754,13 @@ if (pm->bValid < 1) {
 		bHires = 0;
 		}
 	else {
-		i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 1);
-		if (i < 0)	//successfully built new model
-			return gameStates.render.bBuildModels;
+		if (IsDefaultModel (nModel)) {
+			i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 1);
+			if (i < 0)	//successfully built new model
+				return gameStates.render.bBuildModels;
+			}
+		else
+			i = 0;
 		pm->bValid = -1;
 		}
 	pm = gameData.models.g3Models [0] + nModel;
