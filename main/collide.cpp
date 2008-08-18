@@ -68,40 +68,32 @@ void CollideRobotAndWall (tObject *robotP, fix hitspeed, short hitseg, short hit
 	tAILocal		*ailp = gameData.ai.localInfo + OBJ_IDX (robotP);
 	tRobotInfo	*botInfoP = &ROBOTINFO (robotP->id);
 
-if ((robotP->id == ROBOT_BRAIN) || 
-	 (robotP->cType.aiInfo.behavior == AIB_RUN_FROM) || 
-	 botInfoP->companion || 
-	 (robotP->cType.aiInfo.behavior == AIB_SNIPE)) {
-	int	nWall = WallNumI (hitseg, hitwall);
-	if (nWall != -1) {
-		tWall *wallP = gameData.walls.walls + nWall;
-		if ((wallP->nType == WALL_DOOR) &&
-			 (wallP->keys == KEY_NONE) && 
-			 (wallP->state == WALL_DOOR_CLOSED) && 
-			 !(wallP->flags & WALL_DOOR_LOCKED)) {
-			WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
-		// -- Changed from this, 10/19/95, MK: Don't want buddy getting stranded from tPlayer
-		//-- } else if (botInfoP->companion && (gameData.walls.walls [nWall].nType == WALL_DOOR) && (gameData.walls.walls [nWall].keys != KEY_NONE) && (gameData.walls.walls [nWall].state == WALL_DOOR_CLOSED) && !(gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) {
-			} 
-		else if (botInfoP->companion && (wallP->nType == WALL_DOOR)) {
-			if ((ailp->mode == AIM_GOTO_PLAYER) || (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)) {
-				if (wallP->keys != KEY_NONE) {
-					if (wallP->keys & LOCALPLAYER.flags)
-						WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
-					} 
-				else if (!(wallP->flags & WALL_DOOR_LOCKED))
-					WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
-				}
-			} 
-		else if (botInfoP->thief) {		//	Thief allowed to go through doors to which tPlayer has key.
-			if (wallP->keys != KEY_NONE)
-				if (wallP->keys & LOCALPLAYER.flags)
-					WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
-			}
-		}
-	}
-
+if ((robotP->id != ROBOT_BRAIN) &&
+	 (robotP->cType.aiInfo.behavior != AIB_RUN_FROM) &&
+	 !botInfoP->companion &&
+	 (robotP->cType.aiInfo.behavior != AIB_SNIPE))
 	return;
+	
+int nWall = WallNumI (hitseg, hitwall);
+if (!IS_WALL (nWall))
+	return;
+
+tWall *wallP = gameData.walls.walls + nWall;
+if (wallP->nType != WALL_DOOR)
+	return;
+
+if ((wallP->keys == KEY_NONE) && (wallP->state == WALL_DOOR_CLOSED) && !(wallP->flags & WALL_DOOR_LOCKED))
+	WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
+else if (botInfoP->companion) {
+	if ((ailp->mode != AIM_GOTO_PLAYER) && (gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM))
+		return;
+	if (!(wallP->flags & WALL_DOOR_LOCKED) || ((wallP->keys != KEY_NONE) && (wallP->keys & LOCALPLAYER.flags)))
+		WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
+	} 
+else if (botInfoP->thief) {		//	Thief allowed to go through doors to which tPlayer has key.
+	if ((wallP->keys != KEY_NONE) && (wallP->keys & LOCALPLAYER.flags))
+		WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
+	}
 }
 
 //##void CollideHostageAndWall (tObject *hostage, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)	{

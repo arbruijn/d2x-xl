@@ -857,7 +857,7 @@ bDecal = 0;
 bmMask = NULL;
 #endif
 if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3, 
-	 (faceP != NULL) || gameOpts->render.effects.bSoftParticles, bLightmaps, bmMask ? 2 : bDecal, 0) &&
+	 (faceP != NULL) || ((gameOpts->render.effects.bSoftParticles & 1) != 0), bLightmaps, bmMask ? 2 : bDecal, 0) &&
 	 (!bDecal || LoadRenderItemImage (bmTop, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
 	 (!bmMask || LoadRenderItemImage (bmMask, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
@@ -1080,8 +1080,10 @@ renderItems.bClientState = 0;
 
 void RIRenderSprite (tRISprite *item)
 {
+	int bSoftSprites = (gameOpts->render.effects.bSoftParticles & 1) != 0;
+	
 if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 
-								 gameOpts->render.effects.bSoftParticles && (item->fSoftRad > 0), 0, 0, 0)) {
+								 bSoftSprites && (item->fSoftRad > 0), 0, 0, 0)) {
 	float		h, w, u, v;
 	fVector	fPos = item->position;
 
@@ -1099,7 +1101,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 		glBlendFunc (GL_ONE, GL_ONE);
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (gameOpts->render.effects.bSoftParticles & 1)
+	if (bSoftSprites)
 		LoadGlareShader (item->fSoftRad);
 	else if (renderItems.bDepthMask)
 		glDepthMask (renderItems.bDepthMask = 0);
@@ -1120,7 +1122,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 	glEnd ();
 	if (item->bAdditive)
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (gameOpts->render.effects.bSoftParticles)
+	if (bSoftSprites)
 		glEnable (GL_DEPTH_TEST);
 	}
 }
@@ -1145,10 +1147,11 @@ tSparkBuffer sparkBuffer;
 
 void RIFlushSparkBuffer (void)
 {
+	int bSoftSparks = (gameOpts->render.effects.bSoftParticles & 2) != 0;
+	
 if (sparkBuffer.nSparks &&
-	 LoadRenderItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, 
-								 gameOpts->render.effects.bSoftParticles, 0, 0, 0)) {
-	if (gameOpts->render.effects.bSoftParticles & 2) {
+	 LoadRenderItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
+	if (bSoftSparks) {
 		LoadGlareShader (1);
 		}
 	else {
@@ -1169,7 +1172,7 @@ if (sparkBuffer.nSparks &&
 	glVertexPointer (3, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].vPos);
 	glDrawArrays (GL_QUADS, 0, 4 * sparkBuffer.nSparks);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (gameOpts->render.effects.bSoftParticles)
+	if (bSoftSparks)
 		glEnable (GL_DEPTH_TEST);
 	sparkBuffer.nSparks = 0;
 	renderItems.bClientColor = 0;
@@ -1270,8 +1273,10 @@ void RIRenderParticle (tRIParticle *item)
 if (item->particle->nType == 2)
 	RIRenderBullet (item->particle);
 else {
+	int bSoftSmoke = (gameOpts->render.effects.bSoftParticles & 4) != 0;
+	
 	RISetClientState (0, 0, 0, 0, 0);
-	if (!gameOpts->render.effects.bSoftParticles || (gameStates.render.history.nShader != 999))
+	if (!bSoftSmoke || (gameStates.render.history.nShader != 999))
 		RIResetShader ();
 	if (renderItems.nPrevType != riParticle) {
 		glEnable (GL_TEXTURE_2D);
@@ -1280,7 +1285,7 @@ else {
 		renderItems.bTextured = 1;
 		//InitParticleBuffer (renderItems.bLightmaps);
 		}
-	if (!gameOpts->render.effects.bSoftParticles && renderItems.bDepthMask)
+	if (!bSoftSmoke && renderItems.bDepthMask)
 		glDepthMask (renderItems.bDepthMask = 0);
 	RenderParticle (item->particle, item->fBrightness);
 	RIResetBitmaps ();
