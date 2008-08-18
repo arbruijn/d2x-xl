@@ -2264,7 +2264,7 @@ void EffectOptionsMenu ()
 	tMenuItem m [30];
 	int	i, j, choice = 0;
 	int	nOptions;
-	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields, optSoftParticles,
+	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields, optSoftParticles [3],
 			optRobotShields, optShieldHits, optTracers, optGatlingTrails, optExplBlast, optMovingSparks;
 #if 0
 	int	optShockwaves;
@@ -2309,8 +2309,20 @@ do {
 		ADD_CHECK (nOptions, TXT_TRANSP_EFFECTS, gameOpts->render.effects.bTransparent, KEY_E, HTX_ADVRND_TRANSPFX);
 		optTranspExpl = nOptions++;
 		}
-	ADD_CHECK (nOptions, TXT_SOFT_PARTICLES, gameOpts->render.effects.bSoftParticles, KEY_S, HTX_SOFT_PARTICLES);
-	optSoftParticles = nOptions++;
+	ADD_CHECK (nOptions, TXT_SOFT_SPRITES, (gameOpts->render.effects.bSoftParticles & 1) != 0, KEY_I, HTX_SOFT_SPRITES);
+	optSoftParticles [0] = nOptions++;
+	if (gameOpts->render.effects.bEnergySparks) {
+		ADD_CHECK (nOptions, TXT_SOFT_SPARKS, (gameOpts->render.effects.bSoftParticles & 2) != 0, KEY_A, HTX_SOFT_SPARKS);
+		optSoftParticles [1] = nOptions++;
+		}
+	else
+		optSoftParticles [1] = -1; 
+	if (extraGameInfo [0].bUseSmoke) {
+		ADD_CHECK (nOptions, TXT_SOFT_SMOKE, (gameOpts->render.effects.bSoftParticles & 4) != 0, KEY_O, HTX_SOFT_SMOKE);
+		optSoftParticles [2] = nOptions++;
+		}
+	else
+		optSoftParticles [2] = -1;
 	ADD_CHECK (nOptions, TXT_AUTO_TRANSPARENCY, gameOpts->render.effects.bAutoTransparency, KEY_A, HTX_RENDER_AUTOTRANSP);
 	optAutoTransp = nOptions++;
 	ADD_CHECK (nOptions, TXT_RENDER_SHIELDS, extraGameInfo [0].bPlayerShield, KEY_P, HTX_RENDER_SHIELDS);
@@ -2341,7 +2353,13 @@ do {
 			FreeEnergySparks ();
 		}
 	GET_VAL (gameOpts->render.effects.bTransparent, optTranspExpl);
-	GET_VAL (gameOpts->render.effects.bSoftParticles, optSoftParticles);
+	for (j = 0; j < 3; j++)
+	if (optSoftParticles [j]) {
+		if (m [optSoftParticles [j]].value)
+			gameOpts->render.effects.bSoftParticles |= 1 << j;
+		else
+			gameOpts->render.effects.bSoftParticles &= ~(1 << j);
+		}
 	GET_VAL (gameOpts->render.effects.bMovingSparks, optMovingSparks);
 	gameOpts->render.effects.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.effects.bExplBlasts = m [optExplBlast].value;

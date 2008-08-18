@@ -1817,8 +1817,10 @@ const char *defaultGameTexts [][2] = {
 	{"Rote Flagge!", "RED FLAG!"},
 	{"Rauchspuren fuer Maschinen~Kanonen", "~Gatling smoke trails"},
 	{"Descent 1 K~I verwenden", "use Descent 1 A~I"},
-	{"~Weiche partikeluebergaenge", "~Smooth particles"},
 	{"treibende ~Funken", "mo~Ving sparks"},
+	{"~Sprites weichzeichnen", "soften spr~Ite edges"},
+	{"~Funken weichzeichnen", "soften sp~Ark edges"},
+	{"~Rauch weichzeichnen", "soften sm~Oke edges"},
 #if 0
 	{"", ""},
 #endif
@@ -2468,8 +2470,10 @@ const char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, erzeugen Schuesse aus Maschinenkanonen\nfeine Rauchspuren.", "If checked, shots from Gatling guns create fine smoke trails."},
 	{"Wenn angekreuzt, werden Roboter in Descent 1-Missionen\nvon der originalen Descent 1 KI gesteuert.", 
 	 "If checked, robots are controlled by the original Descent 1\nAI in Descent missions."},
-	{"Wenn angekreuzt, sehen Partikeluebergaenge an Waenden weicher\nund natuerlicher aus.", "If checked, particle transitions at walls look smoother\nand more natural."},
 	{"Wenn angekreuzt, treiben Funken langsam herum.", "If checked, energy sparks slowly drift around."},
+	{"Wenn angekreuzt, sehen Sprite-Uebergaenge (Explosionen, Schuesse)\nan Waenden weicher und natuerlicher aus.", "If checked, sprite transitions (explosions, shots)\nat walls look smoother and more natural."},
+	{"Wenn angekreuzt, sehen Funken-Uebergaenge an Waenden weicher\nund natuerlicher aus.", "If checked, spark transitions at walls look smoother\nand more natural."},
+	{"Wenn angekreuzt, sehen Rauch-Uebergaenge an Waenden weicher\nund natuerlicher aus.", "If checked, smoke transitions at walls look smoother\nand more natural."},
 #if 0
 	{"", ""},
 #endif

@@ -977,8 +977,8 @@ if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWr
 		}
 	else {
 		if (i && !gameStates.render.automap.bDisplay) {
-			if (gameOpts->render.effects.bSoftParticles)
-				LoadGlareShader (3);
+			if (gameOpts->render.effects.bSoftParticles & 1)
+				LoadGlareShader (5);
 			else
 				RIResetShader ();
 			}
@@ -1099,7 +1099,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 		glBlendFunc (GL_ONE, GL_ONE);
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (gameOpts->render.effects.bSoftParticles)
+	if (gameOpts->render.effects.bSoftParticles & 1)
 		LoadGlareShader (item->fSoftRad);
 	else if (renderItems.bDepthMask)
 		glDepthMask (renderItems.bDepthMask = 0);
@@ -1148,7 +1148,7 @@ void RIFlushSparkBuffer (void)
 if (sparkBuffer.nSparks &&
 	 LoadRenderItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, 
 								 gameOpts->render.effects.bSoftParticles, 0, 0, 0)) {
-	if (gameOpts->render.effects.bSoftParticles) {
+	if (gameOpts->render.effects.bSoftParticles & 2) {
 		LoadGlareShader (1);
 		}
 	else {
