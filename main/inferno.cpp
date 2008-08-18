@@ -3396,6 +3396,7 @@ else
 #endif
 /*---*/PrintLog ("Loading player profile\n");
 DoSelectPlayer ();
+StartSoundThread (); //needs to be repeated here due to dependency on data read in DoSelectPlayer()
 GrPaletteFadeOut (NULL, 32, 0);
 // handle direct loading and starting of a mission specified via the command line
 if (gameStates.app.bAutoRunMission) {
