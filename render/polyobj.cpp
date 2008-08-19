@@ -493,7 +493,7 @@ else if (objP->nType == OBJ_WEAPON) {
 	if (!gameData.objs.bIsMissile [objP->id] && (objP->id != SMALLMINE_ID))
 		return 0;
 	}
-else if ((objP->nType == OBJ_POWERUP)) {
+else if (objP->nType == OBJ_POWERUP) {
 	if (!gameOpts->render.shadows.bPowerups)
 		return 0;
 	}
@@ -624,7 +624,7 @@ if (!(po = GetPolyModel (objP, pos, nModel, flags))) {
 	if (!flags && (gameStates.render.nShadowPass != 2) && HaveHiresModel (nModel))
 		bHires = 1;
 	else
-		return 0;
+		return gameStates.render.nShadowPass == 2;
 	}
 if (gameStates.render.nShadowPass == 2) {
 	if (!bHires) {
