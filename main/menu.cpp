@@ -4347,7 +4347,7 @@ void GameplayOptionsMenu (void)
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
 			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
 			optAwareness = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optHeadlightOnWhenPickedUp = -1,
-			optRotateMarkers = -1, optLoadout, optUseD1AI = -1;
+			optRotateMarkers = -1, optLoadout, optUseD1AI = -1, optNoThief = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szMaxSmokeGrens [50];
 
@@ -4387,6 +4387,8 @@ do {
 		optIdleAnims = nOptions++;
 		ADD_CHECK (nOptions, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_GPLAY_AWARENESS);
 		optAwareness = nOptions++;
+		ADD_CHECK (nOptions, TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_I, HTX_SUPPRESS_THIEF);
+		optNoThief = nOptions++;
 		ADD_TEXT (nOptions, "", 0);
 		nOptions++;
 		ADD_CHECK (nOptions, TXT_ALWAYS_RESPAWN, extraGameInfo [0].bImmortalPowerups, KEY_P, HTX_GPLAY_ALWAYSRESP);
@@ -4471,6 +4473,7 @@ if (gameOpts->app.bExpertMode) {
 	GET_VAL (gameOpts->gameplay.bIdleAnims, optIdleAnims);
 	GET_VAL (gameOpts->gameplay.nAIAwareness, optAwareness);
 	GET_VAL (gameOpts->gameplay.bUseD1AI, optUseD1AI);
+	GET_VAL (gameOpts->gameplay.bNoThief, optNoThief);
 	GET_VAL (gameOpts->gameplay.bHeadlightOnWhenPickedUp, optHeadlightOnWhenPickedUp);
 	GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadlightPowerDrain);
 	GET_VAL (extraGameInfo [0].headlight.bBuiltIn, optHeadlightBuiltIn);

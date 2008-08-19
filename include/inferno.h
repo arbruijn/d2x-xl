@@ -416,6 +416,7 @@ typedef struct tGameplayOptions {
 	int nAIAwareness;
 	int nSlowMotionSpeedup;
 	int bUseD1AI;
+	int bNoThief;
 } tGameplayOptions;
 
 //------------------------------------------------------------------------------
@@ -585,7 +586,6 @@ typedef struct tGameplayStates {
 	int bMineDestroyed;
 	int bKillBossCheat;
 	int bNoBotAI;
-	int bNoThief;
 	int bTagFlag;
 	int nReactorCount;
 	int nLastReactor;

@@ -1869,12 +1869,10 @@ void LoadGameTexts(void);
 #define TXT_SOFT_SPRITES				GT(1077)
 #define TXT_SOFT_SPARKS					GT(1078)
 #define TXT_SOFT_SMOKE					GT(1079)
+#define TXT_SUPPRESS_THIEF				GT(1080)
 
 #if 0
 
-#define TXT_					GT(1078)
-#define TXT_					GT(1079)
-#define TXT_					GT(1080)
 #define TXT_					GT(1081)
 #define TXT_					GT(1082)
 #define TXT_					GT(1083)
@@ -2389,12 +2387,10 @@ void LoadGameTexts(void);
 #define HTX_SOFT_SPRITES				HT(373)			
 #define HTX_SOFT_SPARKS					HT(374)			
 #define HTX_SOFT_SMOKE					HT(375)			
+#define HTX_SUPPRESS_THIEF				HT(376)			
 
 #if 0
 
-#define HTX_						HT(374)			
-#define HTX_						HT(375)			
-#define HTX_						HT(376)			
 #define HTX_						HT(377)			
 #define HTX_						HT(378)			
 #define HTX_						HT(379)			

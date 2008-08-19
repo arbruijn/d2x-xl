@@ -527,6 +527,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameOptions [i].gameplay.bIdleAnims, i, 0);
 		RP (gameOptions [i].gameplay.bInventory, i, 0);
+		RP (gameOptions [i].gameplay.bNoThief, i, 0);
 		RP (gameOptions [i].gameplay.bShieldWarning, i, 0);
 		RP (gameOptions [i].gameplay.nAIAwareness, i, 0);
 		RP (gameOptions [i].gameplay.nAutoSelectWeapon, i, 0);
@@ -1099,6 +1100,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].app.nVersionFilter", "3"},
 	{"gameOptions[0].demo.bOldFormat", "0"},
 	{"gameOptions[0].gameplay.bIdleAnims", "1"},
+	{"gameOptions[0].gameplay.bNoThief", "0"},
 	{"gameOptions[0].gameplay.bInventory", "1"},
 	{"gameOptions[0].gameplay.bShieldWarning", "1"},
 	{"gameOptions[0].gameplay.nAIAwareness", "0"},

@@ -1935,7 +1935,7 @@ int UpdateObject (tObject * objP)
 	short	nPrevSegment = (short) objP->nSegment;
 
 if (objP->nType == OBJ_ROBOT) {
-	if (gameStates.gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (objP->id).thief) {
+	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (objP->id).thief) {
 		objP->shields = 0;
 		objP->lifeleft = 0;
 		KillObject (objP);
