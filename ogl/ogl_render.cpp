@@ -976,6 +976,7 @@ else {
 		glEnd ();
 		}
 	else {
+		glDepthMask (0);
 		glEnable (GL_TEXTURE_2D);
 		if (OglBindBmTex (bmP, 1, 1)) 
 			return 1;
@@ -992,10 +993,6 @@ else {
 			glColor4f (colorP->red, colorP->green, colorP->blue, colorP->alpha);
 		else
 			glColor4d (1, 1, 1, (double) alpha);
-		if (!gameStates.render.automap.bDisplay && (gameOpts->render.effects.bSoftParticles & 2))
-			LoadGlareShader (fSoftRad);
-		else
-			glDepthMask (0);
 		glBegin (GL_QUADS);
 		u = bmP->glTexture->u;
 		v = bmP->glTexture->v;
@@ -1008,10 +1005,7 @@ else {
 		glTexCoord2d (0, v);
 		glVertex3d (x - w, y - h, z);
 		glEnd ();
-		if (!gameStates.render.automap.bDisplay && (gameOpts->render.effects.bSoftParticles & 2))
-			UnloadGlareShader ();
-		else
-			glDepthMask (1);
+		glDepthMask (1);
 		if (bAdditive)
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//glDisable (GL_BLEND);

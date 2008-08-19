@@ -97,9 +97,7 @@ if ((IsEnergyPowerup (objP->id) ? gameOpts->render.coronas.bPowerups : gameOpts-
 		}
 	bDepthSort = gameOpts->render.bDepthSort;
 	gameOpts->render.bDepthSort = -1;
-	glDepthMask (0);
 	G3DrawSprite (&objP->position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
-	glDepthMask (1);
 	gameOpts->render.bDepthSort = bDepthSort;
 	}
 }
