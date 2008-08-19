@@ -25,7 +25,7 @@ static inline int IsDefaultModel (int nModel)
 {
 return gameData.models.polyModels [nModel].nDataSize == gameData.models.defPolyModels [nModel].nDataSize;
 }
-
+										
 //------------------------------------------------------------------------------
 
 #endif //_BUILDMODEL_H
