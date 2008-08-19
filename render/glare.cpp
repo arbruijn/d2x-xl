@@ -763,7 +763,7 @@ if (gameStates.ogl.bDepthBlending) {
 	OglReadBuffer (GL_BACK, 1);
 	if (CopyDepthTexture ()) {
 		gameStates.ogl.bUseDepthBlending = 1;
-		GLhandleARB	h = hGlareShader [gameStates.render.automap.bDisplay];
+		GLhandleARB	h = hGlareShader [0]; //gameStates.render.automap.bDisplay];
 		if (gameStates.render.history.nShader != 999) {
 			glUseProgramObject (h);
 			gameStates.render.history.nShader = 999;
@@ -817,7 +817,7 @@ const char *glareFS [2] = {
 	"dz = clamp (dz, 0.0, dMax);\r\n" \
 	"dz = ((dMax - dz) / dMax);\r\n" \
 	"/*if (dz < 1.0) gl_FragColor = vec4 (0.0, 0.5, 1.0, 0.5); else*/\n" \
-	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * sqrt (dz);\r\n" \
+	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
 	"}\r\n"
 ,
 	"uniform sampler2D glareTex;\r\n" \
