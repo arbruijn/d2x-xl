@@ -103,8 +103,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_STUCK_OBJECTS   32
 
-typedef struct stuckobj {
-	short   nObject, wallnum;
+typedef struct tStuckObject {
+	short   nObject, nWall;
 	int     nSignature;
 } stuckobj;
 
@@ -279,7 +279,7 @@ int AnimateOpeningDoor (tSegment *segP, short nSide, fix xElapsedTime);
 void BlastBlastableWall (tSegment *segP, short nSide);
 
 // Remove any flares from a tWall
-void KillStuckObjects(int wallnum);
+void KillStuckObjects(int nWall);
 
 //start tWall open <-> closed transitions
 void StartWallCloak(tSegment *segP, short nSide);
