@@ -4387,7 +4387,7 @@ do {
 		optIdleAnims = nOptions++;
 		ADD_CHECK (nOptions, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_GPLAY_AWARENESS);
 		optAwareness = nOptions++;
-		ADD_CHECK (nOptions, TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_I, HTX_SUPPRESS_THIEF);
+		ADD_CHECK (nOptions, TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 		optNoThief = nOptions++;
 		ADD_TEXT (nOptions, "", 0);
 		nOptions++;

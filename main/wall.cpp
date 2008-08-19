@@ -494,9 +494,6 @@ if (wallP->state == WALL_DOOR_CLOSING) {		//closing, so reuse door
 
 foundDoor:
 
-	Assert(i < gameData.walls.nOpenDoors);				//didn't find door!
-	Assert(doorP != NULL); // Get John!
-
 	doorP->time = (fix) (gameData.walls.pAnims [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - doorP->time;
 	if (doorP->time < 0)
 		doorP->time = 0;
