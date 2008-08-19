@@ -954,6 +954,8 @@ if ((t = FindArg ("-secretsave")))
 	gameOptions [0].gameplay.bSecretSave = NumArg (t, 1);
 if ((t = FindArg ("-nobotai")))
 	gameStates.gameplay.bNoBotAI = NumArg (t, 1);
+if ((t = FindArg ("-nothief")))
+	gameStates.gameplay.bNoThief = NumArg (t, 1);
 }
 
 // ----------------------------------------------------------------------------

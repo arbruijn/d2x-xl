@@ -585,6 +585,7 @@ typedef struct tGameplayStates {
 	int bMineDestroyed;
 	int bKillBossCheat;
 	int bNoBotAI;
+	int bNoThief;
 	int bTagFlag;
 	int nReactorCount;
 	int nLastReactor;

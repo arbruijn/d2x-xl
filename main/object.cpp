@@ -1935,12 +1935,16 @@ int UpdateObject (tObject * objP)
 	short	nPrevSegment = (short) objP->nSegment;
 
 if (objP->nType == OBJ_ROBOT) {
-	fix xMaxShields = RobotDefaultShields (objP);
-	if (objP->shields > xMaxShields)
-		objP->shields = xMaxShields;
-#ifdef _DEBUG
-	//AddOglHeadlight (objP);
-#endif
+	if (gameStates.gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (objP->id).thief) {
+		objP->shields = 0;
+		objP->lifeleft = 0;
+		KillObject (objP);
+		}
+	else {
+		fix xMaxShields = RobotDefaultShields (objP);
+		if (objP->shields > xMaxShields)
+			objP->shields = xMaxShields;
+		}
 	}
 objP->vLastPos = objP->position.vPos;			// Save the current position
 HandleSpecialSegments (objP);
