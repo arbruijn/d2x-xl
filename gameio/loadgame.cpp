@@ -440,7 +440,33 @@ gameData.objs.missileViewer = NULL;
 
 //------------------------------------------------------------------------------
 
-extern	void InitAIForShip (void);
+void InitAIForShip (void);
+
+//------------------------------------------------------------------------------
+
+void AddPlayerLoadout (void)
+{
+if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
+	LOCALPLAYER.primaryWeaponFlags |= extraGameInfo [IsMultiGame].loadout.nGuns;
+	if (gameStates.app.bD1Mission)
+	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
+	if (!gameStates.app.bD1Mission && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX)))
+		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL + 2;
+	else if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (LASER_INDEX))
+		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
+	if (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX)))
+		LOCALPLAYER.primaryAmmo [1] = i2f (5000) / VULCAN_AMMO_SCALE;
+	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevices;
+	if (extraGameInfo [1].bDarkness)
+		LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
+	if (gameStates.app.bD1Mission) {
+	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
+	   LOCALPLAYER.flags &= ~(PLAYER_FLAGS_FULLMAP | PLAYER_FLAGS_AMMO_RACK | PLAYER_FLAGS_CONVERTER | PLAYER_FLAGS_AFTERBURNER | PLAYER_FLAGS_HEADLIGHT);
+	   }
+	}
+}
+
+//------------------------------------------------------------------------------
 
 // Setup tPlayer for a brand-new ship
 void InitPlayerStatsNewShip (void)
@@ -486,24 +512,7 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_HEADLIGHT |
 	 PLAYER_FLAGS_HEADLIGHT_ON |
 	 PLAYER_FLAGS_FLAG);
-if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
-	LOCALPLAYER.primaryWeaponFlags |= extraGameInfo [IsMultiGame].loadout.nGuns;
-	if (gameStates.app.bD1Mission)
-	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
-	if (!gameStates.app.bD1Mission && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX)))
-		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL + 2;
-	else if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (LASER_INDEX))
-		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
-	if (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX)))
-		LOCALPLAYER.primaryAmmo [1] = i2f (5000) / VULCAN_AMMO_SCALE;
-	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevices;
-	if (extraGameInfo [1].bDarkness)
-		LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
-	if (gameStates.app.bD1Mission) {
-	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
-	   LOCALPLAYER.flags &= ~(PLAYER_FLAGS_FULLMAP | PLAYER_FLAGS_AMMO_RACK | PLAYER_FLAGS_CONVERTER | PLAYER_FLAGS_AFTERBURNER | PLAYER_FLAGS_HEADLIGHT);
-	   }
-	}
+AddPlayerLoadout ();
 LOCALPLAYER.cloakTime = 0;
 LOCALPLAYER.invulnerableTime = 0;
 gameStates.app.bPlayerIsDead = 0;		//tPlayer no longer dead
@@ -1797,9 +1806,8 @@ if (networkData.bNewGame == 1) {
 	InitPlayerStatsNewShip ();
 }
 InitPlayerStatsLevel (bSecret);
-if ((gameData.app.nGameMode & GM_MULTI_COOP) && networkData.nJoinState) {
-	int i;
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+if (IsCoopGame && networkData.nJoinState) {
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].flags |= netGame.playerFlags [i];
 	}
 if (IsMultiGame)

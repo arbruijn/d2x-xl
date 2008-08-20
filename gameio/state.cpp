@@ -2743,6 +2743,7 @@ FixObjectSizes ();
 ComputeStaticDynLighting (nLevel);
 SetupEffects ();
 InitReactorForLevel (1);
+AddPlayerLoadout ();
 SetMaxOmegaCharge ();
 SetEquipGenStates ();
 if (!IsMultiGame)
