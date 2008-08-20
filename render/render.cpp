@@ -75,7 +75,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 typedef struct tPortal {
-	short left, right, top, bot;
+	fix	left, right, top, bot;
 	char  bProjected;
 	ubyte bVisible;
 } tPortal;
@@ -1700,7 +1700,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
-			short x, y;
+			fix x, y;
 			tPortal p = {32767, -32767, 32767, -32767};
 			bNotProjected = 0;	//a point wasn't projected
 #if 0
@@ -1728,8 +1728,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					break;
 					}
 #endif
-				x = (short) pnt->p3_screen.x;
-				y = (short) pnt->p3_screen.y;
+				x = pnt->p3_screen.x;
+				y = pnt->p3_screen.y;
 				andCodes3D &= pnt->p3_codes;
 				if (p.left > x) 
 					p.left = x; 
