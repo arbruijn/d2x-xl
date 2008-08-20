@@ -528,7 +528,7 @@ if (!bmP->bmTexBuf) {
 		gameOpts->render.textures.bUseHires = 0;
 	if (*bmName && ((nIndex < 0) || (gameOpts->render.textures.bUseHires && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
 #if 0
-		if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureDir [bD1], bmName)) {
+		if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureCacheDir [bD1], bmName)) {
 			altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;
 			altBmP->bmType = BM_TYPE_ALT;
 			BM_OVERRIDE (bmP) = altBmP;
@@ -676,7 +676,7 @@ reloadTextures:
 				}
 #if TEXTURE_COMPRESSION
 			if (CompressTGA (bmP))
-				SaveS3TC (bmP, gameFolders.szTextureDir [bD1], bmName);
+				SaveS3TC (bmP, gameFolders.szTextureCacheDir [bD1], bmName);
 			else {
 #endif
 			nBestShrinkFactor = BestShrinkFactor (bmP, nShrinkFactor);
