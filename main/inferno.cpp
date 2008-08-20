@@ -689,7 +689,7 @@ static char *szTexSubFolders [] = {"256", "128", "64"};
 
 for (i = 0; i < 2; i++) {
 	for (j = 0; j < 3; j++) {
-		sprintf (szTemp, "%s/%s", gameFolders.szTextureDir [i], szTexSubFolders [j]);
+		sprintf (szTemp, "%s/%s", gameFolders.szTextureCacheDir [i], szTexSubFolders [j]);
 		CFMkDir (szTemp);
 		}
 	}
