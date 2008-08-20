@@ -210,10 +210,12 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 			if (ROBOTINFO (obj0P->id).bossFlag &&
 				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (obj0P->id).bossFlag-BOSS_D2].bInvulKinetic)
 				damage /= 4;
-			if (ApplyDamageToRobot (obj0P, damage, nParent) && objP && (nParent == LOCALPLAYER.nObject))
-				AddPointsToScore (ROBOTINFO (obj0P->id).scoreValue);
+			if (ApplyDamageToRobot (obj0P, damage, nParent)) {
+				if (!gameStates.gameplay.bNoBotAI && objP && (nParent == LOCALPLAYER.nObject))
+					AddPointsToScore (ROBOTINFO (obj0P->id).scoreValue);
+				}
 			}
-		if (objP && (ROBOTINFO (obj0P->id).companion) && !gameData.weapons.info [objP->id].flash) {
+		if (objP && ROBOTINFO (obj0P->id).companion && !gameData.weapons.info [objP->id].flash) {
 			int	i, count;
 			char	szOuch [6*4 + 2];
 
