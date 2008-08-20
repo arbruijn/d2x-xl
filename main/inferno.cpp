@@ -685,7 +685,7 @@ sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_
 #endif
 //if (i = FindArg ("-hogdir"))
 //	CFUseAltHogDir (pszArgList [i + 1]);
-static char *szTexSubFolders [] = {"256", "128", "64"};
+static const char *szTexSubFolders [] = {"256", "128", "64"};
 
 for (i = 0; i < 2; i++) {
 	for (j = 0; j < 3; j++) {
