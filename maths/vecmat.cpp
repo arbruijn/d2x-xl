@@ -524,7 +524,7 @@ return fVector::dist(va, vb);
 
 float TriangleSize (const vmsVector& p0, const vmsVector& p1, const vmsVector& p2) {
 
-	return f2fl(vmsVector::cross(p1-p0, p2-p0).mag());
+	return 0.5f*f2fl(vmsVector::cross(p1-p0, p2-p0).mag());
 #if 0
 
 	fix			lMax, l, i = 0;
