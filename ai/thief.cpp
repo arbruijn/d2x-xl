@@ -202,13 +202,13 @@ void DoThiefFrame(tObject *objP)
 					//	If the tPlayer is close to looking at the thief, thief shall run away.
 					//	No more stupid thief trying to sneak up on you when you're looking right at him!
 					if (gameData.ai.xDistToPlayer > F1_0*60) {
-						fix dot = VmVecDot(&gameData.ai.vVecToPlayer, &gameData.objs.console->position.mOrient.fVec);
+						fix dot = vmsVector::dot(gameData.ai.vVecToPlayer, gameData.objs.console->position.mOrient[FVEC]);
 						if (dot < -F1_0/2) {	//	Looking at least towards thief, so thief will run!
 							CreateNSegmentPath(objP, 10, gameData.objs.console->nSegment);
 							gameData.ai.localInfo[OBJ_IDX (objP)].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 							gameData.ai.localInfo[OBJ_IDX (objP)].mode = AIM_THIEF_RETREAT;
 						}
-					} 
+					}
 					AITurnTowardsVector(&gameData.ai.vVecToPlayer, objP, F1_0/4);
 					MoveTowardsPlayer(objP, &gameData.ai.vVecToPlayer);
 				} else {
@@ -469,7 +469,7 @@ memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
 		gameData.thief.stolenItems[i] = 255;
 #endif
 	Assert (MAX_STOLEN_ITEMS >= 3*2);	//	Oops!  Loop below will overwrite memory!
-   if (!(gameData.app.nGameMode & GM_MULTI))    
+   if (!(gameData.app.nGameMode & GM_MULTI))
 		for (i=0; i<3; i++) {
 			gameData.thief.stolenItems[2*i] = POW_SHIELD_BOOST;
 			gameData.thief.stolenItems[2*i+1] = POW_ENERGY;
@@ -490,7 +490,7 @@ void DropStolenItems(tObject *objP)
 
 	for (i=0; i<MAX_STOLEN_ITEMS; i++) {
 		if (gameData.thief.stolenItems[i] != 255)
-			DropPowerup(OBJ_POWERUP, gameData.thief.stolenItems[i], -1, 1, &objP->mType.physInfo.velocity, &objP->position.vPos, objP->nSegment);
+			DropPowerup(OBJ_POWERUP, gameData.thief.stolenItems[i], -1, 1, objP->mType.physInfo.velocity, objP->position.vPos, objP->nSegment);
 		gameData.thief.stolenItems[i] = 255;
 	}
 

@@ -81,11 +81,11 @@ int FindNormCacheElement (int nSegment, int nSide, int faceFlags)
 {
 	uint i;
 
-if (!normCache.bInitialized) 
+if (!normCache.bInitialized)
 	NormCacheInit ();
 
 #ifdef CACHEDBG
-#if TRACE	
+#if TRACE
 	if (( (++normCache.nCounter % 5000) == 1) && (normCache.nHits+normCache.nMisses > 0))
 		con_printf (0, "NCACHE %d%% missed, H:%d, M:%d\n", (normCache.nMisses*100)/ (normCache.nHits+normCache.nMisses), normCache.nHits, normCache.nMisses);
 #endif
@@ -138,9 +138,9 @@ void GetSideNormal (tSegment *segP, int nSide, int face_num, vmsVector * vm)
 if (0) {
 	vmsVector tmp;
 	UncachedGetSideNormal (segP, nSide, face_num, &tmp);
-	Assert (tmp.x == vm->x);
-	Assert (tmp.y == vm->y);
-	Assert (tmp.z == vm->z);
+	Assert (tmx() == vm->x);
+	Assert (tmy() == vm->y);
+	Assert (tmz() == vm->z);
 	}
 }
 
@@ -156,13 +156,13 @@ void GetSideNormals (tSegment *segP, int nSide, vmsVector * vm1, vmsVector * vm2
 if (0) {
 	vmsVector tmp;
 	UncachedGetSideNormal (segP, nSide, 0, &tmp);
-	Assert (tmp.x == vm1->x);
-	Assert (tmp.y == vm1->y);
-	Assert (tmp.z == vm1->z);
+	Assert (tmx() == vm1->x);
+	Assert (tmy() == vm1->y);
+	Assert (tmz() == vm1->z);
 	UncachedGetSideNormal (segP, nSide, 1, &tmp);
-	Assert (tmp.x == vm2->x);
-	Assert (tmp.y == vm2->y);
-	Assert (tmp.z == vm2->z);
+	Assert (tmx() == vm2->x);
+	Assert (tmy() == vm2->y);
+	Assert (tmz() == vm2->z);
 	}
 }
 
@@ -175,37 +175,37 @@ void UncachedGetSideNormal (tSegment *segP, int nSide, int face_num, vmsVector *
 
 switch (segP->sides [nSide].nType) {
 	case SIDE_IS_QUAD:
-		bFlip = GetVertsForNormal (segP->verts [vs [0]], segP->verts [vs [1]], segP->verts [vs [2]], segP->verts [vs [3]], 
+		bFlip = GetVertsForNormal (segP->verts [vs [0]], segP->verts [vs [1]], segP->verts [vs [2]], segP->verts [vs [3]],
 											&vm0, &vm1, &vm2, &vm3, &bFlip);
-		VmVecNormalChecked (vm, 
-								  gameData.segs.vertices + vm0, 
-								  gameData.segs.vertices + vm1, 
+		VmVecNormalChecked (vm,
+								  gameData.segs.vertices + vm0,
+								  gameData.segs.vertices + vm1,
 								  gameData.segs.vertices + vm2);
 		if (bFlip)
 			VmVecNegate (vm);
 		break;
 	case SIDE_IS_TRI_02:
 		if (face_num == 0)
-			VmVecNormalChecked (vm, 
-									  gameData.segs.vertices + segP->verts [vs [0]], 
-									  gameData.segs.vertices + segP->verts [vs [1]], 
+			VmVecNormalChecked (vm,
+									  gameData.segs.vertices + segP->verts [vs [0]],
+									  gameData.segs.vertices + segP->verts [vs [1]],
 									  gameData.segs.vertices + segP->verts [vs [2]]);
 		else
-			VmVecNormalChecked (vm, 
-									  gameData.segs.vertices + segP->verts [vs [0]], 
-									  gameData.segs.vertices + segP->verts [vs [2]], 
+			VmVecNormalChecked (vm,
+									  gameData.segs.vertices + segP->verts [vs [0]],
+									  gameData.segs.vertices + segP->verts [vs [2]],
 									  gameData.segs.vertices + segP->verts [vs [3]]);
 		break;
 	case SIDE_IS_TRI_13:
 		if (face_num == 0)
-			VmVecNormalChecked (vm, 
-									  gameData.segs.vertices + segP->verts [vs [0]], 
-									  gameData.segs.vertices + segP->verts [vs [1]], 
+			VmVecNormalChecked (vm,
+									  gameData.segs.vertices + segP->verts [vs [0]],
+									  gameData.segs.vertices + segP->verts [vs [1]],
 									  gameData.segs.vertices + segP->verts [vs [3]]);
 		else
-			VmVecNormalChecked (vm, 
-									  gameData.segs.vertices + segP->verts [vs [1]], 
-									  gameData.segs.vertices + segP->verts [vs [2]], 
+			VmVecNormalChecked (vm,
+									  gameData.segs.vertices + segP->verts [vs [1]],
+									  gameData.segs.vertices + segP->verts [vs [2]],
 									  gameData.segs.vertices + segP->verts [vs [3]]);
 		break;
 	}
@@ -227,35 +227,34 @@ if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 switch (segP->sides [nSide].nType)	{
 	case SIDE_IS_QUAD:
-		bFlip = GetVertsForNormal (segP->verts [vs [0]], segP->verts [vs [1]], segP->verts [vs [2]], segP->verts [vs [3]], 
+		bFlip = GetVertsForNormal (segP->verts [vs [0]], segP->verts [vs [1]], segP->verts [vs [2]], segP->verts [vs [3]],
 											&vvm0, &vvm1, &vvm2, &vvm3);
-		VmVecNormalChecked (vm1, 
-								  gameData.segs.vertices + vvm0, 
-								  gameData.segs.vertices + vvm1, 
-								  gameData.segs.vertices + vvm2);
+		*vm1 = vmsVector::normal(gameData.segs.vertices[vvm0],
+								 gameData.segs.vertices[vvm1],
+								 gameData.segs.vertices[vvm2]);
 		if (bFlip)
-			VmVecNegate (vm1);
+			vm1->neg();
 		*vm2 = *vm1;
 		break;
 	case SIDE_IS_TRI_02:
-		VmVecNormalChecked (vm1, 
-								  gameData.segs.vertices + segP->verts [vs [0]], 
-								  gameData.segs.vertices + segP->verts [vs [1]], 
-								  gameData.segs.vertices + segP->verts [vs [2]]);
-		VmVecNormalChecked (vm2, 
-								  gameData.segs.vertices + segP->verts [vs [0]], 
-								  gameData.segs.vertices + segP->verts [vs [2]], 
-								  gameData.segs.vertices + segP->verts [vs [3]]);
+		*vm1 = vmsVector::normal(
+								  gameData.segs.vertices[segP->verts[vs[0]]],
+								  gameData.segs.vertices[segP->verts[vs[1]]],
+								  gameData.segs.vertices[segP->verts[vs[2]]]);
+		*vm2 = vmsVector::normal(
+								  gameData.segs.vertices[segP->verts[vs[0]]],
+								  gameData.segs.vertices[segP->verts[vs[2]]],
+								  gameData.segs.vertices[segP->verts[vs[3]]]);
 		break;
 	case SIDE_IS_TRI_13:
-		VmVecNormalChecked (vm1, 
-								  gameData.segs.vertices + segP->verts [vs [0]], 
-								  gameData.segs.vertices + segP->verts [vs [1]], 
-								  gameData.segs.vertices + segP->verts [vs [3]]);
-		VmVecNormalChecked (vm2, 
-								  gameData.segs.vertices + segP->verts [vs [1]], 
-							 	  gameData.segs.vertices + segP->verts [vs [2]], 
-								  gameData.segs.vertices + segP->verts [vs [3]]);
+		*vm1 = vmsVector::normal(
+								  gameData.segs.vertices[segP->verts[vs[0]]],
+								  gameData.segs.vertices[segP->verts[vs[1]]],
+								  gameData.segs.vertices[segP->verts[vs[3]]]);
+		*vm2 = vmsVector::normal(
+								  gameData.segs.vertices[segP->verts[vs[1]]],
+							 	  gameData.segs.vertices[segP->verts[vs[2]]],
+								  gameData.segs.vertices[segP->verts[vs[3]]]);
 		break;
 	}
 }
@@ -269,12 +268,12 @@ void ComputeSideCenter (vmsVector *vp, tSegment *segP, int tSide)
 	short	*sv = segP->verts;
 
 *vp = gameData.segs.vertices [sv [*s2v++]];
-VmVecInc (vp, gameData.segs.vertices + sv [*s2v++]);
-VmVecInc (vp, gameData.segs.vertices + sv [*s2v++]);
-VmVecInc (vp, gameData.segs.vertices + sv [*s2v]);
-vp->p.x /= 4;
-vp->p.y /= 4;
-vp->p.z /= 4;
+*vp += gameData.segs.vertices[sv [*s2v++]];
+*vp += gameData.segs.vertices[sv [*s2v++]];
+*vp += gameData.segs.vertices[sv [*s2v]];
+(*vp)[X] /= 4;
+(*vp)[Y] /= 4;
+(*vp)[Z] /= 4;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -294,8 +293,8 @@ if (prMin) {
 	for (i = 0; i < 4; i++) {
 		v0 = gameData.segs.vertices + sv [s2v [i]];
 		v1 = gameData.segs.vertices + sv [s2v [(i + 1) % 4]];
-		VmVecAvg (&v, v0, v1);
-		d = VmVecDist (&v, &vCenter);
+		v = vmsVector::avg(*v0, *v1);
+		d = vmsVector::dist(v, vCenter);
 		if (rMin > d)
 			rMin = d;
 		}
@@ -303,7 +302,7 @@ if (prMin) {
 	}
 if (prMax) {
 	for (i = 0; i < 4; i++) {
-		d = VmVecDist (&vCenter, gameData.segs.vertices + sv [*s2v++]);
+		d = vmsVector::dist(vCenter, gameData.segs.vertices[sv[*s2v++]]);
 		if (rMax < d)
 			rMax = d;
 		}
@@ -321,10 +320,10 @@ void ComputeSegmentCenter (vmsVector *vp, tSegment *segP)
 
 *vp = gameData.segs.vertices [*sv++];
 for (i = 7; i; i--)
-	VmVecInc (vp, gameData.segs.vertices + *sv++);
-vp->p.x /= 8;
-vp->p.y /= 8;
-vp->p.z /= 8;
+	*vp += gameData.segs.vertices[*sv++];
+(*vp)[X] /= 8;
+(*vp)[Y] /= 8;
+(*vp)[Z] /= 8;
 }
 
 // -----------------------------------------------------------------------------
@@ -395,7 +394,7 @@ for (i = 0; i < 4; i++)
 //		nFaces		number of lists
 //		vertices			vertices in all (1 or 2) faces
 //	If there is one face, it has 4 vertices.
-//	If there are two faces, they both have three vertices, so face #0 is stored in vertices 0, 1, 2, 
+//	If there are two faces, they both have three vertices, so face #0 is stored in vertices 0, 1, 2,
 //	face #1 is stored in vertices 3, 4, 5.
 // Note: these are not absolute vertex numbers, but are relative to the tSegment
 // Note:  for triagulated sides, the middle vertex of each trianle is the one NOT
@@ -432,10 +431,10 @@ switch (sideP->nType) {
 		break;
 	case SIDE_IS_TRI_13:
 		*nFaces = 2;
-		vertices [0] = 
+		vertices [0] =
 		vertices [5] = sv [3];
 		vertices [1] = sv [0];
-		vertices [2] = 
+		vertices [2] =
 		vertices [3] = sv [1];
 		vertices [4] = sv [2];
 		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS ()
@@ -450,9 +449,9 @@ switch (sideP->nType) {
 
 // -----------------------------------------------------------------------------------
 // Like create all vertex lists, but returns the vertnums (relative to
-// the tSide) for each of the faces that make up the tSide. 
+// the tSide) for each of the faces that make up the tSide.
 //	If there is one face, it has 4 vertices.
-//	If there are two faces, they both have three vertices, so face #0 is stored in vertices 0, 1, 2, 
+//	If there are two faces, they both have three vertices, so face #0 is stored in vertices 0, 1, 2,
 //	face #1 is stored in vertices 3, 4, 5.
 void CreateAllVertNumLists (int *nFaces, int *vertnums, int nSegment, int nSide)
 {
@@ -482,10 +481,10 @@ switch (sideP->nType) {
 
 	case SIDE_IS_TRI_13:
 		*nFaces = 2;
-		vertnums [0] = 
+		vertnums [0] =
 		vertnums [5] = 3;
 		vertnums [1] = 0;
-		vertnums [2] = 
+		vertnums [2] =
 		vertnums [3] = 1;
 		vertnums [4] = 2;
 		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS ()
@@ -509,7 +508,7 @@ int CreateAbsVertexLists (int *vertices, int nSegment, int nSide)
 
 #if 0
 if (gameData.physics.side.bCache &&
-	 (gameData.physics.side.nSegment == nSegment) && 
+	 (gameData.physics.side.nSegment == nSegment) &&
 	 (gameData.physics.side.nSide == nSide) &&
 	 (gameData.physics.side.nType == sideP->nType)) {
 	memcpy (vertices, gameData.physics.side.vertices, sizeof (gameData.physics.side.vertices));
@@ -528,23 +527,23 @@ switch (sideP->nType) {
 
 	case SIDE_IS_TRI_02:
 		gameData.physics.side.nFaces = 2;
-		vertices [0] = 
+		vertices [0] =
 		vertices [5] = vp [sv [0]];
 		vertices [1] = vp [sv [1]];
 		vertices [2] =
 		vertices [3] = vp [sv [2]];
 		vertices [4] = vp [sv [3]];
 		nFaces = 2;
-		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS (), 
+		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS (),
 		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
 		break;
 
 	case SIDE_IS_TRI_13:
 		gameData.physics.side.nFaces = 2;
-		vertices [0] = 
+		vertices [0] =
 		vertices [5] = vp [sv [3]];
 		vertices [1] = vp [sv [0]];
-		vertices [2] = 
+		vertices [2] =
 		vertices [3] = vp [sv [1]];
 		vertices [4] = vp [sv [2]];
 		nFaces = 2;
@@ -570,7 +569,7 @@ return nFaces;
 
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
-//this tSegment.  See tSegMasks structure for info on fields  
+//this tSegment.  See tSegMasks structure for info on fields
 tSegMasks GetSideMasks (vmsVector *checkP, int nSegment, int nSide, fix xRad)
 {
 	int			faceBit, sideBit;
@@ -601,25 +600,25 @@ side2P = seg2P->sides + nSide;
 nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 faceBit = sideBit = 1;
 if (nFaces == 2) {
-	nVertex = min (vertexList [0], vertexList [2]);
+	nVertex = std::min(vertexList [0], vertexList [2]);
 	if (vertexList [4] < vertexList [1])
 		if (gameStates.render.bRendering)
-			xDist = VmDistToPlane (&gameData.segs.points [vertexList [4]].p3_vec, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+			xDist = gameData.segs.points[vertexList[4]].p3_vec.distToPlane(side2P->rotNorms[0], gameData.segs.points[nVertex].p3_vec);
 		else
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], sideP->normals, gameData.segs.vertices + nVertex);
+			xDist = gameData.segs.vertices[vertexList[4]].distToPlane(sideP->normals[0], gameData.segs.vertices[nVertex]);
 	else
 		if (gameStates.render.bRendering)
-			xDist = VmDistToPlane (&gameData.segs.points [vertexList [1]].p3_vec, side2P->rotNorms + 1, &gameData.segs.points [nVertex].p3_vec);
+			xDist = gameData.segs.points[vertexList[1]].p3_vec.distToPlane(side2P->rotNorms[1], gameData.segs.points[nVertex].p3_vec);
 		else
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], sideP->normals + 1, gameData.segs.vertices + nVertex);
+			xDist = gameData.segs.vertices[vertexList[1]].distToPlane(sideP->normals[1], gameData.segs.vertices[nVertex]);
 	bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
 	nSideCount = nCenterCount = 0;
 
 	for (nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
 		if (gameStates.render.bRendering)
-			xDist = VmDistToPlane (checkP, side2P->rotNorms + nFace, &gameData.segs.points [nVertex].p3_vec);
+			xDist = checkP->distToPlane(side2P->rotNorms[nFace], gameData.segs.points[nVertex].p3_vec);
 		else
-			xDist = VmDistToPlane (checkP, sideP->normals + nFace, gameData.segs.vertices + nVertex);
+			xDist = checkP->distToPlane(sideP->normals[nFace], gameData.segs.vertices[nVertex]);
 		if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
 			nCenterCount++;
 		if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (xDist + xRad >= -PLANE_DIST_TOLERANCE)) {
@@ -649,9 +648,9 @@ else {	//only one face on this tSide
 	if (nVertex > vertexList [3])
 		nVertex = vertexList [3];
 	if (gameStates.render.bRendering)
-		xDist = VmDistToPlane (checkP, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+		xDist = checkP->distToPlane(side2P->rotNorms[0], gameData.segs.points[nVertex].p3_vec);
 	else
-		xDist = VmDistToPlane (checkP, sideP->normals, gameData.segs.vertices + nVertex);
+		xDist = checkP->distToPlane(sideP->normals[0], gameData.segs.vertices[nVertex]);
 	if (xDist < -PLANE_DIST_TOLERANCE)
 		masks.centerMask |= 1;
 	if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (xDist + xRad >= -PLANE_DIST_TOLERANCE)) {
@@ -665,8 +664,8 @@ return masks;
 
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
-//this tSegment.  See tSegMasks structure for info on fields  
-tSegMasks GetSegMasks (vmsVector *checkP, int nSegment, fix xRad)
+//this tSegment.  See tSegMasks structure for info on fields
+tSegMasks GetSegMasks (const vmsVector& checkP, int nSegment, fix xRad)
 {
 	short			nSide, nFace, nFaces, faceBit, sideBit;
 	int			nVertex, nSideCount, nCenterCount, bSidePokesOut;
@@ -698,32 +697,32 @@ for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP+
 	//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
 	nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 	//ok...this is important.  If a tSide has 2 faces, we need to know if
-	//those faces form a concave or convex tSide.  If the tSide pokes out, 
-	//then a point is on the back of the tSide if it is behind BOTH faces, 
+	//those faces form a concave or convex tSide.  If the tSide pokes out,
+	//then a point is on the back of the tSide if it is behind BOTH faces,
 	//but if the tSide pokes in, a point is on the back if behind EITHER face.
 
 	if (nFaces == 2) {
-		nVertex = min (vertexList [0], vertexList [2]);
+		nVertex = std::min(vertexList [0], vertexList [2]);
 		if (vertexList [4] < vertexList [1])
 			if (gameStates.render.bRendering)
-				xDist = VmDistToPlane (&gameData.segs.points [vertexList [4]].p3_vec, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+				xDist = gameData.segs.points[vertexList[4]].p3_vec.distToPlane(side2P->rotNorms[0], gameData.segs.points[nVertex].p3_vec);
 			else
-				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], sideP->normals, gameData.segs.vertices + nVertex);
+				xDist = gameData.segs.vertices[vertexList[4]].distToPlane(sideP->normals[0], gameData.segs.vertices[nVertex]);
 		else
 			if (gameStates.render.bRendering)
-				xDist = VmDistToPlane (&gameData.segs.points [vertexList [1]].p3_vec, side2P->rotNorms + 1, &gameData.segs.points [nVertex].p3_vec);
+				xDist = gameData.segs.points[vertexList [1]].p3_vec.distToPlane(side2P->rotNorms[1], gameData.segs.points[nVertex].p3_vec);
 			else
-				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], sideP->normals + 1, gameData.segs.vertices + nVertex);
+				xDist = gameData.segs.vertices[vertexList[1]].distToPlane(sideP->normals[1], gameData.segs.vertices[nVertex]);
 		bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
 		nSideCount = nCenterCount = 0;
 
 		for (nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
 			if (gameStates.render.bRendering)
-				xDist = VmDistToPlane (checkP, side2P->rotNorms + nFace, &gameData.segs.points [nVertex].p3_vec);
+				xDist = checkP.distToPlane(side2P->rotNorms[nFace], gameData.segs.points[nVertex].p3_vec);
 			else
-				xDist = VmDistToPlane (checkP, sideP->normals + nFace, gameData.segs.vertices + nVertex);
+				xDist = checkP.distToPlane(sideP->normals[nFace], gameData.segs.vertices[nVertex]);
 			if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
-				// check if the intersection of a line through the point that is orthogonal to the 
+				// check if the intersection of a line through the point that is orthogonal to the
 				// plane of the current triangle lies in is inside that triangle
 				nCenterCount++;
 			if (xDist - xRad < -PLANE_DIST_TOLERANCE) {
@@ -755,9 +754,9 @@ for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP+
 		if (nVertex > vertexList [3])
 			nVertex = vertexList [3];
 		if (gameStates.render.bRendering)
-			xDist = VmDistToPlane (checkP, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+			xDist = checkP.distToPlane(side2P->rotNorms[0], gameData.segs.points[nVertex].p3_vec);
 		else
-			xDist = VmDistToPlane (checkP, sideP->normals, gameData.segs.vertices + nVertex);
+			xDist = checkP.distToPlane(sideP->normals[0], gameData.segs.vertices[nVertex]);
 		if (xDist < -PLANE_DIST_TOLERANCE)
 			masks.centerMask |= sideBit;
 		if (xDist - xRad < -PLANE_DIST_TOLERANCE) {
@@ -775,7 +774,7 @@ return masks;
 //this was converted from GetSegMasks ()...it fills in an array of 6
 //elements for the distace behind each tSide, or zero if not behind
 //only gets centerMask, and assumes zero rad
-ubyte GetSideDists (vmsVector *checkP, int nSegment, fix *xSideDists, int bBehind)
+ubyte GetSideDists (const vmsVector& checkP, int nSegment, fix *xSideDists, int bBehind)
 {
 	short			nSide, nFaces, faceBit, sideBit;
 	ubyte			mask;
@@ -805,36 +804,36 @@ for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP+
 		fix	xDist;
 		int	nCenterCount;
 		int	nVertex;
-		nVertex = min (vertexList [0], vertexList [2]);
+		nVertex = std::min(vertexList [0], vertexList [2]);
 #ifdef _DEBUG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
 			nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 #endif
 		if (vertexList [4] < vertexList [1])
 			if (gameStates.render.bRendering)
-				xDist = VmDistToPlane (&gameData.segs.points [vertexList [4]].p3_vec, 
-											  side2P->rotNorms, 
-											  &gameData.segs.points [nVertex].p3_vec);
+				xDist = gameData.segs.points[vertexList[4]].p3_vec.distToPlane(
+											  side2P->rotNorms[0],
+											  gameData.segs.points [nVertex].p3_vec);
 			else
-				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], 
-											  sideP->normals, 
-											  gameData.segs.vertices + nVertex);
+				xDist = gameData.segs.vertices[vertexList[4]].distToPlane(
+											  sideP->normals[0],
+											  gameData.segs.vertices[nVertex]);
 		else
 			if (gameStates.render.bRendering)
-				xDist = VmDistToPlane (&gameData.segs.points [vertexList [1]].p3_vec, 
-											  side2P->rotNorms + 1, 
-											  &gameData.segs.points [nVertex].p3_vec);
+				xDist = gameData.segs.points[vertexList [1]].p3_vec.distToPlane(
+											  side2P->rotNorms[1],
+											  gameData.segs.points[nVertex].p3_vec);
 			else
-				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], 
-											  sideP->normals + 1, 
-											  gameData.segs.vertices + nVertex);
+				xDist = gameData.segs.vertices[vertexList[1]].distToPlane(
+											  sideP->normals[1],
+											  gameData.segs.vertices[nVertex]);
 		bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
 		nCenterCount = 0;
 		for (nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
 			if (gameStates.render.bRendering)
-				xDist = VmDistToPlane (checkP, side2P->rotNorms + nFace, &gameData.segs.points [nVertex].p3_vec);
+				xDist = checkP.distToPlane(side2P->rotNorms[nFace], gameData.segs.points[nVertex].p3_vec);
 			else
-				xDist = VmDistToPlane (checkP, sideP->normals + nFace, gameData.segs.vertices + nVertex);
+				xDist = checkP.distToPlane(sideP->normals[nFace], gameData.segs.vertices[nVertex]);
 			if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {	//in front of face
 				nCenterCount++;
 				xSideDists [nSide] += xDist;
@@ -870,9 +869,9 @@ for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP+
 			nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 #endif
 			if (gameStates.render.bRendering)
-				xDist = VmDistToPlane (checkP, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+				xDist = checkP.distToPlane(side2P->rotNorms[0], gameData.segs.points[nVertex].p3_vec);
 			else
-				xDist = VmDistToPlane (checkP, sideP->normals, gameData.segs.vertices + nVertex);
+				xDist = checkP.distToPlane(sideP->normals[0], gameData.segs.vertices[nVertex]);
 		if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {
 			mask |= sideBit;
 			xSideDists [nSide] = xDist;
@@ -887,7 +886,7 @@ return mask;
 //this was converted from GetSegMasks ()...it fills in an array of 6
 //elements for the distace behind each tSide, or zero if not behind
 //only gets centerMask, and assumes zero rad
-ubyte GetSideDistsAll (vmsVector *checkP, int nSegment, fix *xSideDists)
+ubyte GetSideDistsAll (const vmsVector& checkP, int nSegment, fix *xSideDists)
 {
 	int			sn, faceBit, sideBit;
 	ubyte			mask;
@@ -919,33 +918,33 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 	while (0 > (nFaces = CreateAbsVertexLists (vertexList, nSegment, sn)))
 		;
 	//ok...this is important.  If a tSide has 2 faces, we need to know if
-	//those faces form a concave or convex tSide.  If the tSide pokes out, 
-	//then a point is on the back of the tSide if it is behind BOTH faces, 
+	//those faces form a concave or convex tSide.  If the tSide pokes out,
+	//then a point is on the back of the tSide if it is behind BOTH faces,
 	//but if the tSide pokes in, a point is on the back if behind EITHER face.
 
 	if (nFaces == 2) {
 		fix	xDist;
 		int	nCenterCount;
 		int	nVertex;
-		nVertex = min (vertexList [0], vertexList [2]);
+		nVertex = std::min(vertexList [0], vertexList [2]);
 #ifdef _DEBUG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
 			nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
 #endif
 		if (vertexList [4] < vertexList [1])
 			if (gameStates.render.bRendering)
-				xDist = VmDistToPlane (&gameData.segs.points [vertexList [4]].p3_vec, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+				xDist = gameData.segs.points[vertexList[4]].p3_vec.distToPlane(side2P->rotNorms[0], gameData.segs.points[nVertex].p3_vec);
 			else
-				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], sideP->normals, gameData.segs.vertices + nVertex);
+				xDist = gameData.segs.vertices[vertexList[4]].distToPlane(sideP->normals[0], gameData.segs.vertices[nVertex]);
 		else
 			if (gameStates.render.bRendering)
-				xDist = VmDistToPlane (&gameData.segs.points [vertexList [1]].p3_vec, side2P->rotNorms + 1, &gameData.segs.points [nVertex].p3_vec);
+				xDist = gameData.segs.points[vertexList[1]].p3_vec.distToPlane(side2P->rotNorms[1], gameData.segs.points[nVertex].p3_vec);
 			else
-				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], sideP->normals + 1, gameData.segs.vertices + nVertex);
+				xDist = gameData.segs.vertices[vertexList[1]].distToPlane(sideP->normals[1], gameData.segs.vertices[nVertex]);
 		bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
 		nCenterCount = 0;
 		for (fn = 0; fn < 2; fn++, faceBit <<= 1) {
-			xDist = VmDistToPlane (checkP, sideP->normals + fn, gameData.segs.vertices + nVertex);
+			xDist = checkP.distToPlane(sideP->normals[fn], gameData.segs.vertices[nVertex]);
 			if (xDist < -PLANE_DIST_TOLERANCE) {	//in front of face
 				nCenterCount++;
 				}
@@ -977,9 +976,9 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 			nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
 #endif
 		if (gameStates.render.bRendering)
-			xDist = VmDistToPlane (checkP, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+			xDist = checkP.distToPlane(side2P->rotNorms[0], gameData.segs.points[nVertex].p3_vec);
 		else
-			xDist = VmDistToPlane (checkP, sideP->normals, gameData.segs.vertices + nVertex);
+			xDist = checkP.distToPlane(sideP->normals[0], gameData.segs.vertices[nVertex]);
 		if (xDist < -PLANE_DIST_TOLERANCE) {
 			mask |= sideBit;
 			}
@@ -994,20 +993,17 @@ return mask;
 #ifdef _DEBUG
 #ifndef COMPACT_SEGS
 //returns true if errors detected
-int CheckNorms (int nSegment, int nSide, int facenum, int csegnum, int csidenum, int cfacenum)
-{
-	vmsVector *n0, *n1;
+int CheckNorms (int nSegment, int nSide, int facenum, int csegnum, int csidenum, int cfacenum) {
+	const vmsVector& n0 = gameData.segs.segments [nSegment].sides [nSide].normals [facenum];
+	const vmsVector& n1 = gameData.segs.segments [csegnum].sides [csidenum].normals [cfacenum];
 
-	n0 = &gameData.segs.segments [nSegment].sides [nSide].normals [facenum];
-	n1 = &gameData.segs.segments [csegnum].sides [csidenum].normals [cfacenum];
-
-	if (n0->p.x != -n1->p.x  ||  n0->p.y != -n1->p.y  ||  n0->p.z != -n1->p.z) {
+	if (n0[X] != -n1[X]  ||  n0[Y] != -n1[Y]  ||  n0[Z] != -n1[Z]) {
 #if TRACE
 		con_printf (CONDBG, "Seg %x, tSide %d, norm %d doesn't match seg %x, tSide %d, norm %d:\n"
 				"   %8x %8x %8x\n"
-				"   %8x %8x %8x (negated)\n", 
-				nSegment, nSide, facenum, csegnum, csidenum, cfacenum, 
-				n0->p.x, n0->p.y, n0->p.z, -n1->p.x, -n1->p.y, -n1->p.z);
+				"   %8x %8x %8x (negated)\n",
+				nSegment, nSide, facenum, csegnum, csidenum, cfacenum,
+				n0[X], n0[Y], n0[Z], -n1[X], -n1[Y], -n1[Z]);
 #endif
 		return 1;
 	}
@@ -1074,9 +1070,9 @@ int CheckSegmentConnections (void)
 #if TRACE
 							con_printf (CONDBG, "Seg %x, tSide %d: vertex list mismatch with seg %x, tSide %d\n"
 									"  %x %x %x %x\n"
-									"  %x %x %x %x\n", 
-									nSegment, nSide, csegnum, csidenum, 
-									vertexList [0], vertexList [1], vertexList [2], vertexList [3], 
+									"  %x %x %x %x\n",
+									nSegment, nSide, csegnum, csidenum,
+									vertexList [0], vertexList [1], vertexList [2], vertexList [3],
 									con_vertex_list [0], con_vertex_list [1], con_vertex_list [2], con_vertex_list [3]);
 #endif
 							errors = 1;
@@ -1088,22 +1084,22 @@ int CheckSegmentConnections (void)
 					else {
 
 						if (vertexList [1] == con_vertex_list [1]) {
-	
+
 							if (vertexList [4] != con_vertex_list [4] ||
 								 vertexList [0] != con_vertex_list [2] ||
 								 vertexList [2] != con_vertex_list [0] ||
 								 vertexList [3] != con_vertex_list [5] ||
 								 vertexList [5] != con_vertex_list [3]) {
 #if TRACE
-								con_printf (CONDBG, 
+								con_printf (CONDBG,
 									"Seg %x, tSide %d: vertex list mismatch with seg %x, tSide %d\n"
 									"  %x %x %x  %x %x %x\n"
-									"  %x %x %x  %x %x %x\n", 
-									nSegment, nSide, csegnum, csidenum, 
-									vertexList [0], vertexList [1], vertexList [2], vertexList [3], vertexList [4], vertexList [5], 
+									"  %x %x %x  %x %x %x\n",
+									nSegment, nSide, csegnum, csidenum,
+									vertexList [0], vertexList [1], vertexList [2], vertexList [3], vertexList [4], vertexList [5],
 									con_vertex_list [0], con_vertex_list [1], con_vertex_list [2], con_vertex_list [3], con_vertex_list [4], con_vertex_list [5]);
-								con_printf (CONDBG, 
-									"Changing seg:tSide %4i:%i from %i to %i\n", 
+								con_printf (CONDBG,
+									"Changing seg:tSide %4i:%i from %i to %i\n",
 									csegnum, csidenum, gameData.segs.segments [csegnum].sides [csidenum].nType, 5-gameData.segs.segments [csegnum].sides [csidenum].nType);
 #endif
 								gameData.segs.segments [csegnum].sides [csidenum].nType = 5-gameData.segs.segments [csegnum].sides [csidenum].nType;
@@ -1113,7 +1109,7 @@ int CheckSegmentConnections (void)
 							}
 
 						} else {
-	
+
 							if (vertexList [1] != con_vertex_list [4] ||
 								 vertexList [4] != con_vertex_list [1] ||
 								 vertexList [0] != con_vertex_list [5] ||
@@ -1121,15 +1117,15 @@ int CheckSegmentConnections (void)
 								 vertexList [2] != con_vertex_list [3] ||
 								 vertexList [3] != con_vertex_list [2]) {
 #if TRACE
-								con_printf (CONDBG, 
+								con_printf (CONDBG,
 									"Seg %x, tSide %d: vertex list mismatch with seg %x, tSide %d\n"
 									"  %x %x %x  %x %x %x\n"
-									"  %x %x %x  %x %x %x\n", 
-									nSegment, nSide, csegnum, csidenum, 
-									vertexList [0], vertexList [1], vertexList [2], vertexList [3], vertexList [4], vertexList [5], 
+									"  %x %x %x  %x %x %x\n",
+									nSegment, nSide, csegnum, csidenum,
+									vertexList [0], vertexList [1], vertexList [2], vertexList [3], vertexList [4], vertexList [5],
 									con_vertex_list [0], con_vertex_list [1], con_vertex_list [2], con_vertex_list [3], con_vertex_list [4], vertexList [5]);
-								con_printf (CONDBG, 
-									"Changing seg:tSide %4i:%i from %i to %i\n", 
+								con_printf (CONDBG,
+									"Changing seg:tSide %4i:%i from %i to %i\n",
 									csegnum, csidenum, gameData.segs.segments [csegnum].sides [csidenum].nType, 5-gameData.segs.segments [csegnum].sides [csidenum].nType);
 #endif
 								gameData.segs.segments [csegnum].sides [csidenum].nType = 5-gameData.segs.segments [csegnum].sides [csidenum].nType;
@@ -1156,7 +1152,7 @@ int	bDoingLightingHack=0;
 
 //figure out what seg the given point is in, tracing through segments
 //returns tSegment number, or -1 if can't find tSegment
-int TraceSegs (vmsVector *p0, int nOldSeg)
+int TraceSegs (const vmsVector& p0, int nOldSeg)
 {
 	int				centerMask, nMaxSide;
 	tSegment			*segP;
@@ -1186,7 +1182,7 @@ if (!centerMask) {		//we're in the old tSegment
 	}
 segP = gameData.segs.segments + nOldSeg;
 for (;;) {
-	nMaxSide = -1; 
+	nMaxSide = -1;
 	xMaxDist = 0;
 	for (nSide = 0, bit = 1; nSide < 6; nSide ++, bit <<= 1)
 		if ((centerMask & bit) && (segP->children [nSide] > -1) && (xSideDists [nSide] < xMaxDist)) {
@@ -1214,7 +1210,7 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 // 2. Recursively trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPos (vmsVector *p, int nSegment, int bExhaustive, int bSkyBox)
+int FindSegByPos (const vmsVector& p, int nSegment, int bExhaustive, int bSkyBox)
 {
 	int			nNewSeg = -1, i;
 	short		*segP;
@@ -1234,7 +1230,7 @@ if (bDoingLightingHack || !bExhaustive)
 con_printf (1, "Warning: doing exhaustive search to find point tSegment (%i times)\n", nExhaustiveCount);
 #endif
 if (bSkyBox) {
-	for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++) 
+	for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++)
 		if (!GetSegMasks (p, *segP, 0).centerMask)
 			return nNewSeg;
 	}
@@ -1302,7 +1298,7 @@ return -1;		//no tSegment found
 //--repair--
 //--repair-- 		clsd_repair_center (nSegment);
 //--repair-- 		clsd_materialization_center (nSegment);
-//--repair-- 
+//--repair--
 //--repair-- 	}
 //--repair--
 //--repair-- 	//	Set check variables.
@@ -1384,23 +1380,23 @@ fix FindConnectedDistance (vmsVector *p0, short seg0, vmsVector *p1, short seg1,
 
 	//	If > this, will overrun pointSegs buffer
 if (nMaxDepth > MAX_LOC_POINT_SEGS-2) {
-#if TRACE	
+#if TRACE
 	con_printf (1, "Warning: In FindConnectedDistance, nMaxDepth = %i, limited to %i\n", nMaxDepth, MAX_LOC_POINT_SEGS-2);
-#endif	
+#endif
 	nMaxDepth = MAX_LOC_POINT_SEGS - 2;
 	}
 if (seg0 == seg1) {
 	gameData.fcd.nConnSegDist = 0;
-	return VmVecDistQuick (p0, p1);
+	return vmsVector::dist(*p0, *p1);
 	}
 nConnSide = FindConnectedSide (gameData.segs.segments + seg0, gameData.segs.segments + seg1);
 if ((nConnSide != -1) &&
 	 (WALL_IS_DOORWAY (gameData.segs.segments + seg1, nConnSide, NULL) & widFlag)) {
 	gameData.fcd.nConnSegDist = 1;
-	return VmVecDistQuick (p0, p1);
+	return vmsVector::dist(*p0, *p1);
 	}
 //	Periodically flush cache.
-if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > F1_0*2) || 
+if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > F1_0*2) ||
 	 (gameData.time.xGame < gameData.fcd.xLastFlushTime)) {
 	FlushFCDCache ();
 	gameData.fcd.xLastFlushTime = gameData.time.xGame;
@@ -1486,14 +1482,14 @@ COMPUTE_SEGMENT_CENTER_I (&pointSegs [nPoints].point, seg0);
 nPoints++;
 if (nPoints == 1) {
 	gameData.fcd.nConnSegDist = nPoints;
-	return VmVecDistQuick (p0, p1);
-	} 
+	return vmsVector::dist(*p0, *p1);
+	}
 else {
 	fix	ndist;
-	dist = VmVecDistQuick (p1, &pointSegs [1].point);
-	dist += VmVecDistQuick (p0, &pointSegs [nPoints-2].point);
+	dist = vmsVector::dist(*p1, pointSegs [1].point);
+	dist += vmsVector::dist(*p0, pointSegs [nPoints-2].point);
 	for (i = 1; i < nPoints - 2; i++) {
-		ndist = VmVecDistQuick (&pointSegs [i].point, &pointSegs [i+1].point);
+		ndist = vmsVector::dist(pointSegs [i].point, pointSegs [i+1].point);
 		dist += ndist;
 		}
 	}
@@ -1528,26 +1524,26 @@ void CreateShortPos (tShortPos *spp, tObject *objP, int swap_bytes)
 	sbyte   *segP = spp->bytemat;
 	vmsVector *pv;
 
-	*segP++ = convert_to_byte (orient.rVec.p.x);
-	*segP++ = convert_to_byte (orient.uVec.p.x);
-	*segP++ = convert_to_byte (orient.fVec.p.x);
-	*segP++ = convert_to_byte (orient.rVec.p.y);
-	*segP++ = convert_to_byte (orient.uVec.p.y);
-	*segP++ = convert_to_byte (orient.fVec.p.y);
-	*segP++ = convert_to_byte (orient.rVec.p.z);
-	*segP++ = convert_to_byte (orient.uVec.p.z);
-	*segP++ = convert_to_byte (orient.fVec.p.z);
+	*segP++ = convert_to_byte(orient[RVEC][X]);
+	*segP++ = convert_to_byte(orient[UVEC][X]);
+	*segP++ = convert_to_byte(orient[FVEC][X]);
+	*segP++ = convert_to_byte(orient[RVEC][Y]);
+	*segP++ = convert_to_byte(orient[UVEC][Y]);
+	*segP++ = convert_to_byte(orient[FVEC][Y]);
+	*segP++ = convert_to_byte(orient[RVEC][Z]);
+	*segP++ = convert_to_byte(orient[UVEC][Z]);
+	*segP++ = convert_to_byte(orient[FVEC][Z]);
 
 	pv = gameData.segs.vertices + gameData.segs.segments [objP->nSegment].verts [0];
-	spp->xo = (short) ((objP->position.vPos.p.x - pv->p.x) >> RELPOS_PRECISION);
-	spp->yo = (short) ((objP->position.vPos.p.y - pv->p.y) >> RELPOS_PRECISION);
-	spp->zo = (short) ((objP->position.vPos.p.z - pv->p.z) >> RELPOS_PRECISION);
+	spp->xo = (short) ((objP->position.vPos[X] - (*pv)[X]) >> RELPOS_PRECISION);
+	spp->yo = (short) ((objP->position.vPos[Y] - (*pv)[Y]) >> RELPOS_PRECISION);
+	spp->zo = (short) ((objP->position.vPos[Z] - (*pv)[Z]) >> RELPOS_PRECISION);
 
 	spp->nSegment = objP->nSegment;
 
- 	spp->velx = (short) ((objP->mType.physInfo.velocity.p.x) >> VEL_PRECISION);
-	spp->vely = (short) ((objP->mType.physInfo.velocity.p.y) >> VEL_PRECISION);
-	spp->velz = (short) ((objP->mType.physInfo.velocity.p.z) >> VEL_PRECISION);
+ 	spp->velx = (short) ((objP->mType.physInfo.velocity[X]) >> VEL_PRECISION);
+	spp->vely = (short) ((objP->mType.physInfo.velocity[Y]) >> VEL_PRECISION);
+	spp->velz = (short) ((objP->mType.physInfo.velocity[Z]) >> VEL_PRECISION);
 
 // swap the short values for the big-endian machines.
 
@@ -1572,15 +1568,15 @@ void ExtractShortPos (tObject *objP, tShortPos *spp, int swap_bytes)
 
 	segP = spp->bytemat;
 
-	objP->position.mOrient.rVec.p.x = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.uVec.p.x = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.fVec.p.x = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.rVec.p.y = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.uVec.p.y = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.fVec.p.y = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.rVec.p.z = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.uVec.p.z = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.fVec.p.z = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient[RVEC][X] = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient[UVEC][X] = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient[FVEC][X] = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient[RVEC][Y] = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient[UVEC][Y] = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient[FVEC][Y] = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient[RVEC][Z] = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient[UVEC][Z] = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient[FVEC][Z] = *segP++ << MATRIX_PRECISION;
 
 	if (swap_bytes) {
 		spp->xo = INTEL_SHORT (spp->xo);
@@ -1597,13 +1593,13 @@ void ExtractShortPos (tObject *objP, tShortPos *spp, int swap_bytes)
 	Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 
 	pv = gameData.segs.vertices + gameData.segs.segments [nSegment].verts [0];
-	objP->position.vPos.p.x = (spp->xo << RELPOS_PRECISION) + pv->p.x;
-	objP->position.vPos.p.y = (spp->yo << RELPOS_PRECISION) + pv->p.y;
-	objP->position.vPos.p.z = (spp->zo << RELPOS_PRECISION) + pv->p.z;
+	objP->position.vPos[X] = (spp->xo << RELPOS_PRECISION) + (*pv)[X];
+	objP->position.vPos[Y] = (spp->yo << RELPOS_PRECISION) + (*pv)[Y];
+	objP->position.vPos[Z] = (spp->zo << RELPOS_PRECISION) + (*pv)[Z];
 
-	objP->mType.physInfo.velocity.p.x = (spp->velx << VEL_PRECISION);
-	objP->mType.physInfo.velocity.p.y = (spp->vely << VEL_PRECISION);
-	objP->mType.physInfo.velocity.p.z = (spp->velz << VEL_PRECISION);
+	objP->mType.physInfo.velocity[X] = (spp->velx << VEL_PRECISION);
+	objP->mType.physInfo.velocity[Y] = (spp->vely << VEL_PRECISION);
+	objP->mType.physInfo.velocity[Z] = (spp->velz << VEL_PRECISION);
 
 	RelinkObject (OBJ_IDX (objP), nSegment);
 
@@ -1631,16 +1627,16 @@ void extract_vector_from_segment (tSegment *segP, vmsVector *vp, int start, int 
 	int			i;
 	vmsVector	vs, ve;
 
-	VmVecZero (&vs);
-	VmVecZero (&ve);
+	vs.setZero();
+	ve.setZero();
 
 	for (i=0; i<4; i++) {
-		VmVecInc (&vs, &gameData.segs.vertices [segP->verts [sideToVerts [start][i]]]);
-		VmVecInc (&ve, &gameData.segs.vertices [segP->verts [sideToVerts [end][i]]]);
+		vs += gameData.segs.vertices [segP->verts [sideToVerts [start][i]]];
+		ve += gameData.segs.vertices [segP->verts [sideToVerts [end][i]]];
 	}
 
-	VmVecSub (vp, &ve, &vs);
-	VmVecScale (vp, F1_0/4);
+	*vp = ve - vs;
+	*vp *= (F1_0/4);
 
 }
 
@@ -1654,7 +1650,8 @@ void ExtractOrientFromSegment (vmsMatrix *m, tSegment *seg)
 	extract_vector_from_segment (seg, &uVec, WBOTTOM, WTOP);
 
 	//vector to matrix does normalizations and orthogonalizations
-	VmVector2Matrix (m, &fVec, &uVec, NULL);
+	*m = vmsMatrix::CreateFU(fVec, uVec);
+//	*m = vmsMatrix::CreateFU(fVec, &uVec, NULL);
 }
 
 #ifdef EDITOR
@@ -1700,7 +1697,7 @@ void AddSideAsQuad (tSegment *segP, int nSide, vmsVector *normal)
 	sideP->normals [1] = *normal;
 	#endif
 
-	//	If there is a connection here, we only formed the faces for the purpose of determining tSegment boundaries, 
+	//	If there is a connection here, we only formed the faces for the purpose of determining tSegment boundaries,
 	//	so don't generate polys, else they will get rendered.
 //	if (segP->children [nSide] != -1)
 //		sideP->renderFlag = 0;
@@ -1767,9 +1764,11 @@ if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	segP = segP;
 #endif
 if (!IS_CHILD (segP->children [nSide])) {
-	VmVecNormalChecked (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
-	VmVecSub (&vec_13, gameData.segs.vertices + v3, gameData.segs.vertices + v1);
-	dot = VmVecDot (&vNormal, &vec_13);
+	vNormal = vmsVector::normal(gameData.segs.vertices[v0],
+	                            gameData.segs.vertices[v1],
+	                            gameData.segs.vertices[v2]);
+	vec_13 = gameData.segs.vertices[v3] - gameData.segs.vertices[v1];
+	dot = vmsVector::dot(vNormal, vec_13);
 
 	//	Now, signify whether to triangulate from 0:2 or 1:3
 	if (dot >= 0)
@@ -1782,13 +1781,13 @@ if (!IS_CHILD (segP->children [nSide])) {
 	if (sideP->nType == SIDE_IS_TRI_02) {
 		//VmVecNormalChecked (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
 		sideP->normals [0] = vNormal;
-		VmVecNormalChecked (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+		vNormal = vmsVector::normal(gameData.segs.vertices[v0], gameData.segs.vertices[v2], gameData.segs.vertices[v3]);
 		sideP->normals [1] = vNormal;
 		}
 	else {
-		VmVecNormalChecked (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3);
+		vNormal = vmsVector::normal(gameData.segs.vertices[v0], gameData.segs.vertices[v1], gameData.segs.vertices[v3]);
 		sideP->normals [0] = vNormal;
-		VmVecNormalChecked (&vNormal, gameData.segs.vertices + v1, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+		vNormal = vmsVector::normal(gameData.segs.vertices[v1], gameData.segs.vertices[v2], gameData.segs.vertices[v3]);
 		sideP->normals [1] = vNormal;
 		}
 #	endif
@@ -1803,19 +1802,19 @@ else {
 #	ifndef COMPACT_SEGS
 		//	Now, get vertices for normal for each triangle based on triangulation nType.
 		bFlip = GetVertsForNormal (v0, v1, v2, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormalChecked (sideP->normals, 
-						 gameData.segs.vertices + vSorted [0], 
-						 gameData.segs.vertices + vSorted [1], 
-						 gameData.segs.vertices + vSorted [2]);
+		sideP->normals[0] = vmsVector::normal(
+						 gameData.segs.vertices[vSorted[0]],
+						 gameData.segs.vertices[vSorted[1]],
+						 gameData.segs.vertices[vSorted[2]]);
 		if (bFlip)
-			VmVecNegate (sideP->normals);
+			sideP->normals[0].neg();
 		bFlip = GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormalChecked (sideP->normals + 1, 
-						 gameData.segs.vertices + vSorted [0], 
-						 gameData.segs.vertices + vSorted [1], 
-						 gameData.segs.vertices + vSorted [2]);
+		sideP->normals[1] = vmsVector::normal(
+						 gameData.segs.vertices[vSorted[0]],
+						 gameData.segs.vertices[vSorted[1]],
+						 gameData.segs.vertices[vSorted[2]]);
 		if (bFlip)
-			VmVecNegate (sideP->normals + 1);
+			sideP->normals[1].neg();
 		GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
 #	endif
 		}
@@ -1824,19 +1823,19 @@ else {
 #	ifndef COMPACT_SEGS
 		//	Now, get vertices for normal for each triangle based on triangulation nType.
 		bFlip = GetVertsForNormal (v0, v1, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormalChecked (sideP->normals, 
-						 gameData.segs.vertices + vSorted [0], 
-						 gameData.segs.vertices + vSorted [1], 
-						 gameData.segs.vertices + vSorted [2]);
+		sideP->normals[0] = vmsVector::normal(
+						 gameData.segs.vertices[vSorted[0]],
+						 gameData.segs.vertices[vSorted[1]],
+						 gameData.segs.vertices[vSorted[2]]);
 		if (bFlip)
-			VmVecNegate (sideP->normals);
+			sideP->normals[0].neg();
 		bFlip = GetVertsForNormal (v1, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormalChecked (sideP->normals + 1, 
-						 gameData.segs.vertices + vSorted [0], 
-						 gameData.segs.vertices + vSorted [1], 
-						 gameData.segs.vertices + vSorted [2]);
+		sideP->normals[1] = vmsVector::normal(
+						 gameData.segs.vertices[vSorted[0]],
+						 gameData.segs.vertices[vSorted[1]],
+						 gameData.segs.vertices[vSorted[2]]);
 		if (bFlip)
-			VmVecNegate (sideP->normals + 1);
+			sideP->normals[1].neg();
 #	endif
 		}
 	}
@@ -1864,9 +1863,9 @@ if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
 pn->nFaces++;
-pn->vNormal.p.x += f2fl (pvNormal->p.x);
-pn->vNormal.p.y += f2fl (pvNormal->p.y);
-pn->vNormal.p.z += f2fl (pvNormal->p.z);
+
+pn->vNormal += pvNormal->toFloat();
+
 }
 
 // -------------------------------------------------------------------------------
@@ -1887,10 +1886,10 @@ void CreateWallsOnSide (tSegment *segP, int nSide)
 	v2 = segP->verts [s2v [2]];
 	v3 = segP->verts [s2v [3]];
 	bFlip = GetVertsForNormal (v0, v1, v2, v3, &vm0, &vm1, &vm2, &vm3);
-	VmVecNormalChecked (&vn, gameData.segs.vertices + vm0, gameData.segs.vertices + vm1, gameData.segs.vertices + vm2);
-	xDistToPlane = abs (VmDistToPlane (gameData.segs.vertices + vm3, &vn, gameData.segs.vertices + vm0));
+	vn = vmsVector::normal(gameData.segs.vertices[vm0], gameData.segs.vertices[vm1], gameData.segs.vertices[vm2]);
+	xDistToPlane = abs(gameData.segs.vertices[vm3].distToPlane(vn, gameData.segs.vertices[vm0]));
 	if (bFlip)
-		VmVecNegate (&vn);
+		vn.neg();
 #if 1
 	if (bRenderQuads || (xDistToPlane <= PLANE_DIST_TOLERANCE))
 		AddSideAsQuad (segP, nSide, &vn);
@@ -1912,7 +1911,7 @@ void CreateWallsOnSide (tSegment *segP, int nSide)
 #endif
 			Assert (nFaces == 2);
 			s = segP->sides + nSide;
-			nVertex = min (vertexList [0], vertexList [2]);
+			nVertex = std::min(vertexList [0], vertexList [2]);
 #ifdef COMPACT_SEGS
 			{
 			vmsVector normals [2];
@@ -1926,8 +1925,8 @@ void CreateWallsOnSide (tSegment *segP, int nSide)
 			vmsVector normals [2];
 			GetSideNormals (segP, nSide, &normals [0], &normals [1]);
 #	endif
-			dist0 = VmDistToPlane (gameData.segs.vertices + vertexList [1], s->normals + 1, gameData.segs.vertices + nVertex);
-			dist1 = VmDistToPlane (gameData.segs.vertices + vertexList [4], s->normals, gameData.segs.vertices + nVertex);
+			dist0 = gameData.segs.vertices[vertexList[1]].distToPlane(s->normals[1], gameData.segs.vertices[nVertex]);
+			dist1 = gameData.segs.vertices[vertexList[4]].distToPlane(s->normals[0], gameData.segs.vertices[nVertex]);
 			}
 #endif
 			s0 = sign (dist0);
@@ -1950,10 +1949,10 @@ if (segP->sides [nSide].nType == SIDE_IS_QUAD) {
 	}
 else {
 	vn = segP->sides [nSide].normals [0];
-	for (i = 0; i < 3; i++) 
+	for (i = 0; i < 3; i++)
 		AddToVertexNormal (vertexList [i], &vn);
 	vn = segP->sides [nSide].normals [1];
-	for (; i < 6; i++) 
+	for (; i < 6; i++)
 		AddToVertexNormal (vertexList [i], &vn);
 	}
 }
@@ -1987,10 +1986,12 @@ void ComputeVertexNormals (void)
 
 for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
 	if (1 < (h = pp->p3_normal.nFaces)) {
-		pp->p3_normal.vNormal.p.x /= h;
-		pp->p3_normal.vNormal.p.y /= h;
-		pp->p3_normal.vNormal.p.z /= h;
-		VmVecNormalize (&pp->p3_normal.vNormal, &pp->p3_normal.vNormal);
+		pp->p3_normal.vNormal /= h;
+		/*
+		pp->p3_normal.vNormal[Y] /= h;
+		pp->p3_normal.vNormal[Z] /= h;
+		*/
+		fVector::normalize(pp->p3_normal.vNormal);
 		}
 	pp->p3_normal.nFaces = 1;
 	}
@@ -2008,8 +2009,8 @@ float FaceSize (short nSegment, ubyte nSide)
 	short			v2 = segP->verts [s2v [2]];
 	short			v3 = segP->verts [s2v [3]];
 
-return TriangleSize (gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2) + 
-		 TriangleSize (gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+return TriangleSize (gameData.segs.vertices[v0], gameData.segs.vertices[v1], gameData.segs.vertices[v2]) +
+		 TriangleSize (gameData.segs.vertices[v0], gameData.segs.vertices[v2], gameData.segs.vertices[v3]);
 }
 
 // -------------------------------------------------------------------------------
@@ -2020,9 +2021,7 @@ void ResetVertexNormals (void)
 	g3sPoint	*pp;
 
 for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
-	pp->p3_normal.vNormal.p.x =
-	pp->p3_normal.vNormal.p.y =
-	pp->p3_normal.vNormal.p.z = 0;
+	pp->p3_normal.vNormal.setZero();
 	pp->p3_normal.nFaces = 0;
 	}
 }
@@ -2064,7 +2063,7 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 	for (s = gameData.segs.nLastSegment + 1; s < MAX_SEGMENTS; s++)
 		if (gameData.segs.segments [s].nSegment != -1) {
 			if (!said) {
-#if TRACE	
+#if TRACE
 				con_printf (CONDBG, "Segment %i has invalid nSegment.  Bashing to -1.  Silently bashing all others...", s);
 #endif
 				}
@@ -2072,7 +2071,7 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 			gameData.segs.segments [s].nSegment = -1;
 			}
 	if (said) {
-#if TRACE	
+#if TRACE
 		con_printf (CONDBG, "%i fixed.\n", said);
 #endif
 		}
@@ -2091,7 +2090,7 @@ gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 
 
 //	------------------------------------------------------------------------------------------------------
-//	Picks a random point in a tSegment like so:
+//	Picks a Random point in a tSegment like so:
 //		From center, go up to 50% of way towards any of the 8 vertices.
 void PickRandomPointInSeg (vmsVector *new_pos, int nSegment)
 {
@@ -2100,9 +2099,9 @@ void PickRandomPointInSeg (vmsVector *new_pos, int nSegment)
 
 	COMPUTE_SEGMENT_CENTER_I (new_pos, nSegment);
 	vnum = (d_rand () * MAX_VERTICES_PER_SEGMENT) >> 15;
-	VmVecSub (&vec2, &gameData.segs.vertices [gameData.segs.segments [nSegment].verts [vnum]], new_pos);
-	VmVecScale (&vec2, d_rand ());          // d_rand () always in 0..1/2
-	VmVecInc (new_pos, &vec2);
+	vec2 = gameData.segs.vertices[gameData.segs.segments[nSegment].verts[vnum]] - *new_pos;
+	vec2 *= (d_rand ());          // d_rand () always in 0..1/2
+	*new_pos += vec2;
 }
 
 
@@ -2167,6 +2166,7 @@ while (head < tail) {
 return (nParentDepth + 1) * gameStates.render.bViewDist;
 }
 
+
 //	-----------------------------------------------------------------------------
 
 fix FindConnectedDistanceSegments (short seg0, short seg1, int nDepth, int widFlag)
@@ -2191,15 +2191,15 @@ if (nDepth < 0)
 marked_segs [nSegment] = 1;
 for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
 	child = gameData.segs.segments [nSegment].children [i];
-	if (IS_CHILD (child) && 
-	    (WALL_IS_DOORWAY (gameData.segs.segments + nSegment, i, NULL) & WID_RENDPAST_FLAG) && 
+	if (IS_CHILD (child) &&
+	    (WALL_IS_DOORWAY (gameData.segs.segments + nSegment, i, NULL) & WID_RENDPAST_FLAG) &&
 		 !marked_segs [child])
 		AmbientMarkBfs (child, marked_segs, nDepth-1);
 	}
 }
 
 //	-----------------------------------------------------------------------------
-//	Indicate all segments which are within audible range of falling water or lava, 
+//	Indicate all segments which are within audible range of falling water or lava,
 //	and so should hear ambient gurgles.
 void SetAmbientSoundFlagsCommon (int tmi_bit, int s2f_bit)
 {
@@ -2222,7 +2222,7 @@ for (i=0; i<=gameData.segs.nLastSegment; i++) {
 	for (j=0; j<MAX_SIDES_PER_SEGMENT; j++) {
 		tSide	*sideP = &segp->sides [j];
 
-		if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & tmi_bit) || 
+		if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & tmi_bit) ||
 			   (gameData.pig.tex.pTMapInfo [sideP->nOvlTex].flags & tmi_bit)) {
 			if (!IS_CHILD (segp->children [j]) || IS_WALL (sideP->nWall)) {
 				seg2p->s2Flags |= s2f_bit;
@@ -2244,7 +2244,7 @@ for (i=0; i<=gameData.segs.nLastSegment; i++)
 }
 
 //	-----------------------------------------------------------------------------
-//	Indicate all segments which are within audible range of falling water or lava, 
+//	Indicate all segments which are within audible range of falling water or lava,
 //	and so should hear ambient gurgles.
 //	Bashes values in gameData.segs.segment2s array.
 void SetAmbientSoundFlags (void)

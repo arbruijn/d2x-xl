@@ -1,4 +1,4 @@
-/* fix.h points to maths.h */
+/* fix[HA] points to maths[HA] */
 #ifndef _FIX_H
 #define _FIX_H
 

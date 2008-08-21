@@ -149,7 +149,7 @@ memset (pc, 0, sizeof (tCamera));
 pc->bShadowMap = bShadowMap;
 #if 0
 if (gameOpts->render.cameras.bFitToWall || bTeleport) {
-	h = min (grdCurCanv->cvBitmap.bmProps.w, grdCurCanv->cvBitmap.bmProps.h);
+	h = std::min(grdCurCanv->cvBitmap.bmProps.w, grdCurCanv->cvBitmap.bmProps.h);
 	for (i = 1; i < h; i *= 2)
 		;
 	if (i > h)
@@ -204,14 +204,16 @@ else {
 	pc->objP = &pc->obj;
 	if (bTeleport) {
 		vmsVector n = *gameData.segs.segments [srcSeg].sides [srcSide].normals;
-		n.p.x = -n.p.x;
-		n.p.y = -n.p.y;
-		n.p.z = -n.p.z;
-		VmExtractAnglesVector (&a, &n);
+		/*
+		n[X] = -n[X];
+		n[Y] = -n[Y];
+		*/
+		n.neg();
+		a = n.toAnglesVec();
 		}
 	else
-		VmExtractAnglesVector (&a, gameData.segs.segments [srcSeg].sides [srcSide].normals);
-	VmAngles2Matrix (&pc->obj.position.mOrient, &a);
+		a = gameData.segs.segments [srcSeg].sides [srcSide].normals[0].toAnglesVec();
+	pc->obj.position.mOrient = vmsMatrix::Create(a);
 #if 1
 	if (bTeleport)
 		COMPUTE_SEGMENT_CENTER_I (&pc->obj.position.vPos, srcSeg);
@@ -408,8 +410,8 @@ else
 		if (!bFitToWall && RENDERPATH) {
 			aImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) grdCurCanv->cvBitmap.bmProps.w;
 			if (vertexP)
-				aFace = VmVecDist ((fVector *) vertexP, (fVector *) (vertexP + 1)) / 
-						  VmVecDist ((fVector *) (vertexP + 1), (fVector *) (vertexP + i2));
+				aFace = fVector::dist(*(fVector *)vertexP, *(fVector *)(vertexP + 1)) / 
+				        fVector::dist(*(fVector *)(vertexP + 1), *(fVector *)(vertexP + i2));
 			else
 				aFace = dvFace / duFace;
 			dv = (aImage - aFace) / 2.0f;

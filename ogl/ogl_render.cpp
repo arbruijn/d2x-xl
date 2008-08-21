@@ -99,7 +99,7 @@ else
 
 //------------------------------------------------------------------------------
 
-inline int G3BindTex (grsBitmap *bmP, GLint nTexId, GLhandleARB lmProg, char *pszTexId, 
+inline int G3BindTex (grsBitmap *bmP, GLint nTexId, GLhandleARB lmProg, char *pszTexId,
 						    pInitTMU initTMU, int bShaderVar, int bVertexArrays)
 {
 if (bmP || (nTexId >= 0)) {
@@ -124,8 +124,8 @@ int G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cvColor);
 glBegin (GL_LINES);
-OglVertex3x (p0->p3_vec.p.x, p0->p3_vec.p.y, p0->p3_vec.p.z);
-OglVertex3x (p1->p3_vec.p.x, p1->p3_vec.p.y, p1->p3_vec.p.z);
+OglVertex3x (p0->p3_vec[X], p0->p3_vec[Y], p0->p3_vec[Z]);
+OglVertex3x (p1->p3_vec[X], p1->p3_vec[Y], p1->p3_vec[Z]);
 if (grdCurCanv->cvColor.rgb)
 	glDisable (GL_BLEND);
 glEnd ();
@@ -177,7 +177,7 @@ int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cvColor);
 glPushMatrix ();
-glTranslatef (f2fl (pnt->p3_vec.p.x), f2fl (pnt->p3_vec.p.y), f2fl (pnt->p3_vec.p.z));
+glTranslatef (f2fl (pnt->p3_vec[X]), f2fl (pnt->p3_vec[Y]), f2fl (pnt->p3_vec[Z]));
 r = f2fl (rad);
 glScaled (r, r, r);
 if (bBigSphere) {
@@ -211,19 +211,19 @@ glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cvColor);
 glPushMatrix ();
 glTranslatef (
-			(f2fl (xc1) + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW, 
+			(f2fl (xc1) + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW,
 		1.0f - (f2fl (yc1) + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH, 0);
 glScalef (f2fl (r1), f2fl (r1), f2fl (r1));
 if (r1<=i2f (5)){
-	if (!circleh5) 
+	if (!circleh5)
 		circleh5 = CircleListInit (5, GL_LINE_LOOP, GL_COMPILE_AND_EXECUTE);
-	else 
+	else
 		glCallList (circleh5);
 	}
 else{
-	if (!circleh10) 
+	if (!circleh10)
 		circleh10 = CircleListInit (10, GL_LINE_LOOP, GL_COMPILE_AND_EXECUTE);
-	else 
+	else
 		glCallList (circleh10);
 }
 glPopMatrix ();
@@ -266,7 +266,7 @@ glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cvColor);
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0; i < nVertices; i++, pointList++) {
-//	glVertex3f (f2fl (pointList [c]->p3_vec.p.x), f2fl (pointList [c]->p3_vec.p.y), f2fl (pointList [c]->p3_vec.p.z);
+//	glVertex3f (f2fl (pointList [c]->p3_vec[X]), f2fl (pointList [c]->p3_vec[Y]), f2fl (pointList [c]->p3_vec[Z]);
 	OglVertex3f (*pointList);
 	}
 #if 1
@@ -282,7 +282,7 @@ return 0;
 int G3DrawPolyAlpha (int nVertices, g3sPoint **pointList, tRgbaColorf *color, char bDepthMask, short nSegment)
 {
 	int		i;
-	GLint		depthFunc; 
+	GLint		depthFunc;
 
 if (gameStates.render.nShadowBlurPass == 1) {
 	G3DrawWhitePoly (nVertices, pointList);
@@ -298,7 +298,7 @@ if (gameOpts->render.bDepthSort > 0) {
 		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
 	RIAddPoly (NULL, NULL, NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 	}
-else 
+else
 #endif
 	{
 	r_polyc++;
@@ -346,15 +346,15 @@ con_printf (CONDBG, "DrawTexPolyFlat: unhandled\n");//should never get called
 //------------------------------------------------------------------------------
 
 int G3DrawTexPolyFlat (
-	int			nVertices, 
-	g3sPoint		**pointList, 
-	tUVL			*uvlList, 
-	tUVL			*uvlLMap, 
-	grsBitmap	*bmBot, 
-	grsBitmap	*bmTop, 
-	tLightmap	*lightmap, 
+	int			nVertices,
+	g3sPoint		**pointList,
+	tUVL			*uvlList,
+	tUVL			*uvlLMap,
+	grsBitmap	*bmBot,
+	grsBitmap	*bmTop,
+	tLightmap	*lightmap,
 	vmsVector	*pvNormal,
-	int			orient, 
+	int			orient,
 	int			bBlend,
 	short			nSegment)
 {
@@ -387,30 +387,36 @@ return 0;
 
 #define	G3VERTPOS(_dest,_src) \
 			if ((_src)->p3_index < 0) \
-				VmVecFixToFloat (&(_dest), &((_src)->p3_vec)); \
+				(_dest) = ((_src)->p3_vec).toFloat(); \
 			else \
-				_dest = gameData.render.pVerts [(_src)->p3_index]; 
+				_dest = gameData.render.pVerts [(_src)->p3_index];
+
+#define	G3VERTPOS3(_dest,_src) \
+			if ((_src)->p3_index < 0) \
+				(_dest) = ((_src)->p3_vec).toFloat3(); \
+			else \
+				_dest = gameData.render.pVerts [(_src)->p3_index];
 
 //------------------------------------------------------------------------------
 
 int G3DrawTexPolyMulti (
-	int			nVertices, 
-	g3sPoint		**pointList, 
-	tUVL			*uvlList, 
-	tUVL			*uvlLMap, 
-	grsBitmap	*bmBot, 
-	grsBitmap	*bmTop, 
-	tLightmap	*lightmap, 
+	int			nVertices,
+	g3sPoint		**pointList,
+	tUVL			*uvlList,
+	tUVL			*uvlLMap,
+	grsBitmap	*bmBot,
+	grsBitmap	*bmTop,
+	tLightmap	*lightmap,
 	vmsVector	*pvNormal,
-	int			orient, 
+	int			orient,
 	int			bBlend,
 	short			nSegment)
 {
 	int			i, nShader, nFrame;
 	int			bShaderMerge = 0,
 					bSuperTransp = 0;
-	int			bLight = 1, 
-					bDynLight = gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE), 
+	int			bLight = 1,
+					bDynLight = gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE),
 					bDepthSort,
 					bResetColor = 0,
 					bOverlay = 0;
@@ -451,8 +457,8 @@ else {
 	}
 glDepthFunc (GL_LEQUAL);
 bmBot = BmOverride (bmBot, -1);
-bDepthSort = (!bmTop && (gameOpts->render.bDepthSort > 0) && 
-				  ((gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS) || 
+bDepthSort = (!bmTop && (gameOpts->render.bDepthSort > 0) &&
+				  ((gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS) ||
 				   (bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA)));
 if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
 	nFrame = (int) (BM_CURFRAME (bmTop) - BM_FRAMES (bmTop));
@@ -491,7 +497,7 @@ if (bShaderMerge) {
 #endif
 		glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2);
 		}
-	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"), 
+	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"),
 					 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
 	}
 else if (!bDepthSort) {
@@ -514,8 +520,8 @@ if (!bDepthSort) {
 	if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
 		if (pvNormal) {
-			VmVecFixToFloat (&vNormal, pvNormal);
-			G3RotatePoint (&vNormal, &vNormal, 0);
+			vNormal = pvNormal->toFloat();
+			G3RotatePoint(vNormal, vNormal, 0);
 			}
 	else
 			G3CalcNormal (pointList, &vNormal);
@@ -549,7 +555,7 @@ if (bVertexArrays || bDepthSort) {
 		vertIndex [i] = pl->p3_index;
 		//colorIndex [i] = i;
 		if (pl->p3_index < 0)
-			VmVecFixToFloat (vertices + i, &pl->p3_vec);
+			vertices[i] = pl->p3_vec.toFloat();
 		else
 			vertices [i] = gameData.render.pVerts [pl->p3_index];
 		texCoord [0][i].v.u = f2fl (uvlList [i].u);
@@ -557,7 +563,7 @@ if (bVertexArrays || bDepthSort) {
 		SetTexCoord (uvlList + i, orient, 1, texCoord [1] + i, 0);
 		G3VERTPOS (vVertPos, pl);
 		if (bDynLight)
-			G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos.v3, vertIndex [i], vertColors + i, NULL,
+			G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.v3(), vertIndex [i], vertColors + i, NULL,
 								gameStates.render.nState ? f2fl (uvlList [i].l) : 1, 0, 0);
 		else if (bLight)
 			SetTMapColor (uvlList + i, i, bmBot, !bOverlay, vertColors + i);
@@ -598,7 +604,7 @@ if (bVertexArrays) {
 	if (bmTop && !bOverlay)
 		G3DisableClientStates (GL_TEXTURE1);
 	}
-else 
+else
 #endif
 	{
 	glBegin (GL_TRIANGLE_FAN);
@@ -607,7 +613,7 @@ else
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				pl = *ppl;
 				G3VERTPOS (vVertPos, pl);
-				G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos.v3, pl->p3_index, NULL, NULL,
+				G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.v3(), pl->p3_index, NULL, NULL,
 									gameStates.render.nState ? f2fl (uvlList [i].l) : 1, 1, 0);
 				glTexCoord2f (f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				glVertex3fv ((GLfloat *) &vVertPos);
@@ -617,7 +623,7 @@ else
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				pl = *ppl;
 				G3VERTPOS (vVertPos, pl);
-				G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos.v3, pl->p3_index, NULL, NULL,
+				G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.v3(), pl->p3_index, NULL, NULL,
 									/*gameStates.render.nState ? f2fl (uvlList [i].l) :*/ 1, 1, 0);
 				glMultiTexCoord2f (GL_TEXTURE0, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL, bmMask != NULL);
@@ -681,7 +687,8 @@ if (bOverlay > 0) {
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-			G3VertexColor (G3GetNormal (*ppl, &vNormal), VmVecFixToFloat (&vVertPos.v3, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL, NULL, 1, 1, 0);
+			*vVertPos.v3() = ((*ppl)->p3_vec).toFloat3();
+			G3VertexColor (G3GetNormal (*ppl, &vNormal), vVertPos.v3(), (*ppl)->p3_index, NULL, NULL, 1, 1, 0);
 			SetTexCoord (uvlList + i, orient, 0, NULL, bmMask != NULL);
 			OglVertex3f (*ppl);
 			}
@@ -727,15 +734,15 @@ return 0;
 //------------------------------------------------------------------------------
 
 int G3DrawTexPolyLightmap (
-	int			nVertices, 
-	g3sPoint		**pointList, 
-	tUVL			*uvlList, 
-	tUVL			*uvlLMap, 
-	grsBitmap	*bmBot, 
-	grsBitmap	*bmTop, 
-	tLightmap	*lightmap, 
+	int			nVertices,
+	g3sPoint		**pointList,
+	tUVL			*uvlList,
+	tUVL			*uvlLMap,
+	grsBitmap	*bmBot,
+	grsBitmap	*bmTop,
+	tLightmap	*lightmap,
 	vmsVector	*pvNormal,
-	int			orient, 
+	int			orient,
 	int			bBlend,
 	short			nSegment)
 {
@@ -823,15 +830,15 @@ return 0;
 //------------------------------------------------------------------------------
 
 int G3DrawTexPolySimple (
-	int			nVertices, 
-	g3sPoint		**pointList, 
-	tUVL			*uvlList, 
-	grsBitmap	*bmP, 
+	int			nVertices,
+	g3sPoint		**pointList,
+	tUVL			*uvlList,
+	grsBitmap	*bmP,
 	vmsVector	*pvNormal,
 	int			bBlend)
 {
 	int			i;
-	int			bLight = 1, 
+	int			bLight = 1,
 					bDynLight = gameStates.render.bApplyDynLight && !gameStates.app.bEndLevelSequence;
 	g3sPoint		*pl, **ppl;
 #if USE_VERTNORMS
@@ -878,7 +885,7 @@ else
 if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
 	if (pvNormal)
-		VmVecFixToFloat (&vNormal, pvNormal);
+		vNormal = pvNormal->toFloat();
 else
 		G3CalcNormal (pointList, &vNormal);
 #else
@@ -902,7 +909,7 @@ if (bDynLight) {
 	for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 		pl = *ppl;
 		G3VERTPOS (vVertPos, pl);
-		G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos.v3, pl->p3_index, NULL, NULL,
+		G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.v3(), pl->p3_index, NULL, NULL,
 							/*gameStates.render.nState ? f2fl (uvlList [i].l) :*/ 1, 1, 0);
 		glTexCoord2f (f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 		glVertex3fv ((GLfloat *) &vVertPos);
@@ -933,10 +940,10 @@ return 0;
 //------------------------------------------------------------------------------
 
 int G3DrawSprite (
-	vmsVector	*vPos, 
-	fix			xWidth, 
-	fix			xHeight, 
-	grsBitmap	*bmP, 
+	const vmsVector&	vPos,
+	fix			xWidth,
+	fix			xHeight,
+	grsBitmap	*bmP,
 	tRgbaColorf	*colorP,
 	float			alpha,
 	int			bAdditive,
@@ -958,13 +965,13 @@ if ((gameOpts->render.bDepthSort > 0) /*|| (gameOpts->render.effects.bSoftPartic
 	}
 else {
 	OglActiveTexture (GL_TEXTURE0, 0);
-	VmVecSub (&v1, vPos, &viewInfo.pos);
-	VmVecRotate (&pv, &v1, &viewInfo.view [0]);
-	x = (double) f2fl (pv.p.x);
-	y = (double) f2fl (pv.p.y);
-	z = (double) f2fl (pv.p.z);
-	w = (double) f2fl (xWidth); 
-	h = (double) f2fl (xHeight); 
+	v1 = vPos - viewInfo.pos;
+	pv = viewInfo.view[0] * v1;
+	x = (double) f2fl (pv[X]);
+	y = (double) f2fl (pv[Y]);
+	z = (double) f2fl (pv[Z]);
+	w = (double) f2fl (xWidth);
+	h = (double) f2fl (xHeight);
 	if (gameStates.render.nShadowBlurPass == 1) {
 		glDisable (GL_TEXTURE_2D);
 		glColor4d (1,1,1,1);
@@ -978,7 +985,7 @@ else {
 	else {
 		glDepthMask (0);
 		glEnable (GL_TEXTURE_2D);
-		if (OglBindBmTex (bmP, 1, 1)) 
+		if (OglBindBmTex (bmP, 1, 1))
 			return 1;
 		bmP = BmOverride (bmP, -1);
 		OglTexWrap (bmP->glTexture, GL_CLAMP);
@@ -1012,11 +1019,11 @@ else {
 		}
 	}
 return 0;
-} 
+}
 
 //------------------------------------------------------------------------------
 
-int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord2f *texCoordP, 
+int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord2f *texCoordP,
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap)
 {
 	int	bVertexArrays = G3EnableClientStates (bmP && texCoordP, colorP && (nColors == nVertices), 0, GL_TEXTURE0);

@@ -31,7 +31,7 @@ void _CDECL_ set_exit_message(const char *fmt,...);	//specify message to print a
 void _CDECL_ Warning(const char *fmt,...);				//print out warning message to user
 void SetWarnFunc(void (*f)(const char *s));//specifies the function to call with warning messages
 void ClearWarnFunc(void (*f)(const char *s));//say this function no longer valid
-void _Assert(int expr,const char *expr_text, const char *filename,int linenum);	//assert func
+void _Assert(int expr,char *expr_text,char *filename,int linenum);	//assert func
 #ifdef _DEBUG
 void _CDECL_ Error(const char *fmt,...);				//exit with error code=1, print message
 #else
@@ -74,8 +74,8 @@ int TrapBmp (grsBitmap *bmP, char *pszName);
 
 #else
 
-#	define Int3() 
-#	define Assert(expr) 
+#	define Int3()
+#	define Assert(expr)
 
 #endif
 

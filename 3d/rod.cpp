@@ -7,7 +7,7 @@ IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
 SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
 FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
 CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
+AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
@@ -30,9 +30,9 @@ g3sPoint rodPoints [4];
 g3sPoint *rodPointList [] = {rodPoints, rodPoints + 1, rodPoints + 2, rodPoints + 3};
 
 tUVL rodUvlList [4] = {
-	{0x0200, 0x0200, 0}, 
-	{0xfe00, 0x0200, 0}, 
-	{0xfe00, 0xfe00, 0}, 
+	{0x0200, 0x0200, 0},
+	{0xfe00, 0x0200, 0},
+	{0xfe00, 0xfe00, 0},
 	{0x0200, 0xfe00, 0}};
 
 //------------------------------------------------------------------------------
@@ -45,19 +45,20 @@ int CalcRodCorners (g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix x
 
 //compute vector from one point to other, do cross product with vector
 //from eye to get perpendicular
-VmVecSub (&vDelta, &btmPoint->p3_vec, &topPoint->p3_vec);
+vDelta = btmPoint->p3_vec - topPoint->p3_vec;
 //unscale for aspect
 #if RESCALE_ROD
 vDelta.p.x = FixDiv (vDelta.p.x, viewInfo.scale.p.x);
 vDelta.p.y = FixDiv (vDelta.p.y, viewInfo.scale.p.y);
 #endif
 //calc perp vector
-//do lots of normalizing to prevent overflowing.  When this code works, 
+//do lots of normalizing to prevent overflowing.  When this code works,
 //it should be optimized
-VmVecNormalize (&vDelta);
-VmVecNormalize (&vTop, &topPoint->p3_vec);
-VmVecCrossProd (&vRodNorm, &vDelta, &vTop);
-VmVecNormalize (&vRodNorm);
+vmsVector::normalize(vDelta);
+vTop = topPoint->p3_vec;
+vmsVector::normalize(vTop);
+vRodNorm = vmsVector::cross(vDelta, vTop);
+vmsVector::normalize(vRodNorm);
 //scale for aspect
 #if RESCALE_ROD
 vRodNorm.p.x = FixMul (vRodNorm.p.x, viewInfo.scale.p.x);
@@ -65,14 +66,14 @@ vRodNorm.p.y = FixMul (vRodNorm.p.y, viewInfo.scale.p.y);
 #endif
 //now we have the usable edge.  generate four points
 //vTop points
-VmVecCopyScale (&vTemp, &vRodNorm, xTopWidth);
-vTemp.p.z = 0;
-VmVecAdd (&rodPoints [0].p3_vec, &topPoint->p3_vec, &vTemp);
-VmVecSub (&rodPoints [1].p3_vec, &topPoint->p3_vec, &vTemp);
-VmVecCopyScale (&vTemp, &vRodNorm, xBtmWidth);
-vTemp.p.z = 0;
-VmVecSub (&rodPoints [2].p3_vec, &btmPoint->p3_vec, &vTemp);
-VmVecAdd (&rodPoints [3].p3_vec, &btmPoint->p3_vec, &vTemp);
+vTemp = vRodNorm * xTopWidth;
+vTemp[Z] = 0;
+rodPoints [0].p3_vec = topPoint->p3_vec + vTemp;
+rodPoints [1].p3_vec = topPoint->p3_vec - vTemp;
+vTemp = vRodNorm * xBtmWidth;
+vTemp[Z] = 0;
+rodPoints [2].p3_vec = btmPoint->p3_vec - vTemp;
+rodPoints [3].p3_vec = btmPoint->p3_vec + vTemp;
 
 //now code the four points
 for (i = 0, andCodes = 0xff; i < 4; i++)
@@ -106,9 +107,9 @@ if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
 if (!uvlList)
 	uvlList = rodUvlList;
-uvlList [0].l = 
-uvlList [1].l = 
-uvlList [2].l = 
+uvlList [0].l =
+uvlList [1].l =
+uvlList [2].l =
 uvlList [3].l = light;
 return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, -1);
 }

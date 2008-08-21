@@ -41,7 +41,7 @@ void MarkerInputMessage (int key);
 int SpawnMarkerIndex (int nPlayer);
 tObject *SpawnMarkerObject (int nPlayer);
 int IsSpawnMarkerObject (tObject *objP);
-int MoveSpawnMarker (tPosition *posP, short nSegment);
+int MoveSpawnMarker (tTransformation *posP, short nSegment);
 
 // -------------------------------------------------------------
 

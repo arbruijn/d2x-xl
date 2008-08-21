@@ -42,12 +42,12 @@ if (objP->nType == OBJ_ROBOT) {
 		 (tracker->cType.laserInfo.parentType == OBJ_PLAYER))
 		return 0;
 	}
-VmVecSub (&vGoal, &objP->position.vPos, &tracker->position.vPos);
-VmVecNormalize (&vGoal);
-*xDot = VmVecDot (&vGoal, &tracker->position.mOrient.fVec);
+vGoal = objP->position.vPos - tracker->position.vPos;
+vmsVector::normalize(vGoal);
+*xDot = vmsVector::dot(vGoal, tracker->position.mOrient[FVEC]);
 if ((*xDot < xMinTrackableDot) && (*xDot > 9 * F1_0 / 10)) {
-	VmVecNormalize (&vGoal);
-	*xDot = VmVecDot (&vGoal, &tracker->position.mOrient.fVec);
+	vmsVector::normalize(vGoal);
+	*xDot = vmsVector::dot(vGoal, tracker->position.mOrient[FVEC]);
 	}
 
 if ((*xDot >= xMinTrackableDot) || 
@@ -158,10 +158,10 @@ else {
 			}
 		else if ((curObjP->nType != OBJ_PLAYER) && (curObjP->nType != OBJ_REACTOR))
 			continue;
-		VmVecSub (&vecToCurObj, &curObjP->position.vPos, vTrackerPos);
-		dist = VmVecNormalize (&vecToCurObj);
+		vecToCurObj = curObjP->position.vPos - *vTrackerPos;
+		dist = vmsVector::normalize(vecToCurObj);
 		if (dist < maxTrackableDist) {
-			dot = VmVecDot (&vecToCurObj, bSpectate ? &gameStates.app.playerPos.mOrient.fVec : &trackerP->position.mOrient.fVec);
+			dot = vmsVector::dot(vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient[FVEC] : trackerP->position.mOrient[FVEC]);
 
 			//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 			//	to determine if an tObject is initially trackable.  FindHomingObject is called on subsequent
@@ -175,8 +175,8 @@ else {
 					}
 				} 
 			else if (dot > F1_0 - (F1_0 - curMinTrackableDot) * 2) {
-				VmVecNormalize (&vecToCurObj);
-				dot = VmVecDot (&vecToCurObj, &trackerP->position.mOrient.fVec);
+				vmsVector::normalize(vecToCurObj);
+				dot = vmsVector::dot(vecToCurObj, trackerP->position.mOrient[FVEC]);
 				if (dot > curMinTrackableDot) {
 					if (dot > maxDot) {
 						if (ObjectToObjectVisibility (trackerP, OBJECTS + nObject, FQ_TRANSWALL)) {
@@ -260,12 +260,13 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 	if ((ROBOTINFO (curObjP->id).companion) && (trackerP->cType.laserInfo.parentType == OBJ_PLAYER))
 		continue;
 
-	VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
-	dist = VmVecMagQuick (&vecToCurObj);
+	vecToCurObj = curObjP->position.vPos - *curpos;
+	dist = vecToCurObj.mag();
 
 	if (dist < maxTrackableDist) {
-		VmVecNormalize (&vecToCurObj);
-		dot = VmVecDot (&vecToCurObj, &trackerP->position.mOrient.fVec);
+		vmsVector::normalize(vecToCurObj);
+		
+		dot = vmsVector::dot(vecToCurObj, trackerP->position.mOrient[FVEC]);
 		if (bIsProximity)
 			dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
 

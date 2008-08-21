@@ -86,7 +86,7 @@ if (vcP->flags & WCF_ALTFMT) {
 			vcP->flags &= ~WCF_ALTFMT;
 		else if (!gameOpts->ogl.bGlTexMerge)
 			vcP->flags &= ~WCF_ALTFMT;
-		else 
+		else
 			vcP->flags |= WCF_INITIALIZED;
 		vciP->nCurFrame = d_rand () % nFrames;
 		}
@@ -121,7 +121,7 @@ if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
 	alpha = (ta >= 0) ? alpha - ta : alpha + ta;
 	}
 else if (objP->nType == OBJ_WEAPON) {
-	if (WeaponIsMine (objP->id)) 
+	if (WeaponIsMine (objP->id))
 		alpha = 1.0;
 	else
 		alpha = WEAPON_ALPHA;
@@ -174,18 +174,19 @@ fLife = f2fl (BLAST_LIFE * 2 - objP->lifeleft);
 xSize = (fix) (objP->size * fLife * BLAST_SCALE);
 vPos = objP->position.vPos;
 #if MOVE_BLAST
-VmVecNormalize (VmVecSub (&vDir, &gameData.objs.console->position.vPos, &vPos));
-VmVecScale (&vDir, xSize - objP->size);
-VmVecInc (&vPos, &vDir);
+vDir = gameData.objs.console->position.vPos - vPos;
+vmsVector::normalize(vDir);
+vDir *= (xSize - objP->size);
+vPos += vDir;
 #endif
 glDepthMask (0);
 #if BLAST_TYPE == 0
 fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 3);
 color.red =
 color.green =
-color.blue = 
+color.blue =
 color.alpha = fAlpha;
-G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, &color, fAlpha, 2, 10);
+G3DrawSprite(vPos, xSize, xSize, bmpExplBlast, &color, fAlpha, 2, 10);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
 fAlpha = (float) sqrt (f2fl (objP->lifeleft)) / 4;
@@ -196,9 +197,9 @@ CreateSphere (&sd);
 fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 3);
 r = f2fl (xSize);
 sd.pPulse = 0;
-G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+G3StartInstanceMatrix(objP->position.vPos, &objP->position.mOrient);
 for (i = 0; i < 3; i++) {
-	RenderSphere (&sd, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos), 
+	RenderSphere (&sd, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
 					  r, r, r, 1, 1, 1, fAlpha, NULL, 1);
 	r *= i ? 0.5f : 0.8f;
 	}
@@ -250,17 +251,17 @@ if (objP->renderType == RT_POLYOBJ)
 nModel = WeaponToModel (objP->id);
 if (!(nModel && HaveReplacementModel (nModel)))
 	return 0;
-a.p = (rand () % F1_0) - F1_0 / 2;
-a.b = (rand () % F1_0) - F1_0 / 2;
-a.h = (rand () % F1_0) - F1_0 / 2;
-VmAngles2Matrix (&objP->position.mOrient, &a);
+a[PA] = (rand () % F1_0) - F1_0 / 2;
+a[BA] = (rand () % F1_0) - F1_0 / 2;
+a[HA] = (rand () % F1_0) - F1_0 / 2;
+objP->position.mOrient = vmsMatrix::Create(a);
 #if 0
 objP->mType.physInfo.mass = F1_0;
 objP->mType.physInfo.drag = 512;
 #endif
-objP->mType.physInfo.rotVel.p.z = 
-objP->mType.physInfo.rotVel.p.y = 0;
-objP->mType.physInfo.rotVel.p.x = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+objP->mType.physInfo.rotVel[Z] =
+objP->mType.physInfo.rotVel[Y] = 0;
+objP->mType.physInfo.rotVel[X] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 //objP->controlType = CT_WEAPON;
 objP->renderType = RT_POLYOBJ;
 objP->movementType = MT_PHYSICS;
@@ -268,7 +269,7 @@ objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 if (0 > (objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->id].nModel))
 	objP->rType.polyObjInfo.nModel = nModel;
 #if 0
-objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
+objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,
 							gameData.weapons.info [objP->id].po_len_to_width_ratio);
 #endif
 objP->rType.polyObjInfo.nTexOverride = -1;

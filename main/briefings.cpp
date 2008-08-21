@@ -419,7 +419,7 @@ briefingTextY = gameStates.app.bD1Mission ? bsp->text_uly : bsp->text_uly - (8 *
 void ShowBitmapFrame (int bRedraw)
 {
 	gsrCanvas *curCanvSave, *bitmap_canv=0;
-	vmsVector p = ZERO_VECTOR;
+	vmsVector p = vmsVector::ZERO;
 
 	grsBitmap *bmP;
 	int x = rescale_x (138);
@@ -506,11 +506,11 @@ void ShowBitmapFrame (int bRedraw)
 		{
 		GLint	depthFunc;
 		G3StartFrame (1, 0);
-		G3SetViewMatrix (&p, &mIdentity, gameStates.render.xZoom, 1);
-		p.p.z = 2 * w * F1_0;
+		G3SetViewMatrix(p, vmsMatrix::IDENTITY, gameStates.render.xZoom, 1);
+		p[Z] = 2 * w * F1_0;
 		glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 		glDepthFunc (GL_ALWAYS);
-		G3DrawBitmap (&p, w * F1_0, h * F1_0, bmP, NULL, 1.0, 3);
+		G3DrawBitmap(p, w * F1_0, h * F1_0, bmP, NULL, 1.0, 3);
 		glDepthFunc (depthFunc);
 		G3EndFrame ();
 		if (!gameOpts->menus.nStyle)
@@ -563,7 +563,7 @@ void ShowSpinningRobotFrame (int nRobot)
 	gsrCanvas	*curCanvSave;
 
 if (nRobot != -1) {
-	vRobotAngles.h += 150;
+	vRobotAngles[HA] += 150;
 
 	curCanvSave = grdCurCanv;
 	grdCurCanv = robotCanvP;
@@ -595,9 +595,9 @@ grdCurCanv = curCanvSave;
 
 void InitSpinningRobot (void) // (int x, int y, int w, int h)
 {
-	//vRobotAngles.p += 0;
-	//vRobotAngles.b += 0;
-	//vRobotAngles.h += 0;
+	//vRobotAngles[PA] += 0;
+	//vRobotAngles[BA] += 0;
+	//vRobotAngles[HA] += 0;
 
 	int x = rescale_x (138);
 	int y = RescaleY (55);

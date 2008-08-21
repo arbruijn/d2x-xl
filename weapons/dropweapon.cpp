@@ -39,34 +39,33 @@ int SpitPowerup (tObject *spitterP, ubyte id, int seed)
 	short			nObject;
 	tObject		*objP;
 	vmsVector	newVelocity, newPos;
-	tPosition	*posP = OBJPOS (spitterP);
+	tTransformation	*posP = OBJPOS (spitterP);
 
 #if 0
 if ((gameData.app.nGameMode & GM_NETWORK) &&
-	 (gameData.multiplayer.powerupsInMine [(int)id] + PowerupsOnShips (id) >= 
+	 (gameData.multiplayer.powerupsInMine [(int)id] + PowerupsOnShips (id) >=
 	  gameData.multiplayer.maxPowerupsAllowed [id]))
 	return -1;
 #endif
 d_srand(seed);
-VmVecScaleAdd (&newVelocity,
-					&spitterP->mType.physInfo.velocity,
-					&spitterP->position.mOrient.fVec,
-					i2f (SPIT_SPEED));
-newVelocity.p.x += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity.p.y += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity.p.z += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity = spitterP->mType.physInfo.velocity
+            + spitterP->position.mOrient[FVEC]
+            * i2f(SPIT_SPEED);
+newVelocity[X] += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity[Y] += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity[Z] += (d_rand() - 16384) * SPIT_SPEED * 2;
 // Give keys zero velocity so they can be tracked better in multi
 if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
-	VmVecZero(&newVelocity);
+	newVelocity.setZero();
 //there's a piece of code which lets the tPlayer pick up a powerup if
 //the distance between him and the powerup is less than 2 time their
 //combined radii.  So we need to create powerups pretty far out from
 //the player.
-VmVecScaleAdd (&newPos, &posP->vPos, &posP->mOrient.fVec, spitterP->size);
+newPos = posP->vPos + posP->mOrient[FVEC] * spitterP->size;
 if (IsMultiGame && (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS))
 	return (-1);
-nObject = CreateObject (OBJ_POWERUP, id, (short) (GetTeam (gameData.multiplayer.nLocalPlayer) + 1), 
-							  (short) OBJSEG (spitterP), &newPos, &vmdIdentityMatrix, gameData.objs.pwrUp.info[id].size, 
+nObject = tObject::Create(OBJ_POWERUP, id, (short) (GetTeam (gameData.multiplayer.nLocalPlayer) + 1),
+							  (short) OBJSEG (spitterP), newPos, vmsMatrix::IDENTITY, gameData.objs.pwrUp.info[id].size,
 							  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 if (nObject < 0) {
 	Int3();
@@ -118,8 +117,8 @@ return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMul
 
 void DropCurrentWeapon (void)
 {
-	int	nObject = -1, 
-			ammo = 0, 
+	int	nObject = -1,
+			ammo = 0,
 			seed;
 
 seed = d_rand ();

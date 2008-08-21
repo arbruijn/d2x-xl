@@ -69,7 +69,7 @@ int UndoCommand();
 
 // In kview.c
 int ZoomOut();
-int ZoomIn();
+int Zoostd::min();
 int MoveAway();
 int MoveCloser();
 int ToggleChaseMode();
@@ -264,7 +264,7 @@ int SelectNextFoundSeg();
 int SelectPreviousFoundSeg(void);
 int do_reset_orient();
 int GameZoomOut();
-int GameZoomIn();
+int GameZoostd::min();
 
 // John's temp page stuff
 int medtmp_set_page();

@@ -83,9 +83,9 @@ else if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN"))
 	GrSetColorRGBi (RGBA_PAL2 (63, 0, 47));
 else
 	GrSetColorRGBi (RGBA_PAL2 (63, 15, 0));
-G3TransformAndEncodePoint (&basePoint, &MarkerObj (-1, nMarker)->position.vPos);
+G3TransformAndEncodePoint(&basePoint, MarkerObj (-1, nMarker)->position.vPos);
 glPushMatrix ();
-glTranslatef (f2fl (basePoint.p3_vec.p.x), f2fl (basePoint.p3_vec.p.y), f2fl (basePoint.p3_vec.p.z));
+glTranslatef (f2fl (basePoint.p3_vec[X]), f2fl (basePoint.p3_vec[Y]), f2fl (basePoint.p3_vec[Z]));
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cvColor);
 glBegin (GL_LINES);
@@ -119,7 +119,7 @@ spherePoint.p3_index = -1;
 for (i = 0; i < nMaxDrop; i++)
 	if ((objP = MarkerObj (-1, i))) {
 		bSpawn = (objP == SpawnMarkerObject (-1));
-		G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
+		G3TransformAndEncodePoint(&spherePoint, objP->position.vPos);
 		for (j = 0; j < 3; j++) {
 			GrSetColorRGB (PAL2RGBA (colors [bSpawn][j]), 0, 0, 255);
 			G3DrawSphere (&spherePoint, (int) (gameData.marker.fScale * MARKER_SPHERE_SIZE) >> j, 1);
@@ -144,7 +144,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int MoveSpawnMarker (tPosition *posP, short nSegment)
+int MoveSpawnMarker (tTransformation *posP, short nSegment)
 {
 	tObject	*markerP;
 

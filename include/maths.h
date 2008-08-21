@@ -1,4 +1,4 @@
-/* Maths.h library header file */
+/* Maths[HA] library header file */
 
 #ifndef _MATHS_H
 #define _MATHS_H
@@ -7,6 +7,7 @@
 #define ALT_SQRT 2
 
 #include <stdlib.h>
+#include <cmath>
 #include "pstypes.h"
 
 #define D_RAND_MAX 32767
@@ -116,7 +117,7 @@ fixang FixAtan2 (fix cos, fix sin);
 //for passed value a, returns 1/sqrt(a) 
 fix FixISqrt (fix a);
 
-#define fabsf(_f)	(float) fabs (_f)
+//#define fabsf(_f)	(float) fabs (_f)
 
 //-----------------------------------------------------------------------------
 

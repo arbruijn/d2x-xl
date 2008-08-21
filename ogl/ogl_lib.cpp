@@ -157,15 +157,15 @@ vmsVector	vNormal;
 #if 1
 if (pvNormal) {
 	if (gameStates.ogl.bUseTransform)
-		glNormal3f ((GLfloat) f2fl (pvNormal->p.x), 
-						(GLfloat) f2fl (pvNormal->p.y), 
-						(GLfloat) f2fl (pvNormal->p.z));
+		glNormal3f ((GLfloat) f2fl ((*pvNormal)[X]), 
+						(GLfloat) f2fl ((*pvNormal)[Y]), 
+						(GLfloat) f2fl ((*pvNormal)[Z]));
 		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->p3_vec);
 	else {
-		G3RotatePoint (&vNormal, pvNormal, 0);
-		glNormal3f ((GLfloat) f2fl (vNormal.p.x), 
-						(GLfloat) f2fl (vNormal.p.y), 
-						(GLfloat) f2fl (vNormal.p.z));
+		G3RotatePoint(vNormal, *pvNormal, 0);
+		glNormal3f ((GLfloat) f2fl (vNormal[X]), 
+						(GLfloat) f2fl (vNormal[Y]), 
+						(GLfloat) f2fl (vNormal[Z]));
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		}
 //	glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
@@ -179,26 +179,24 @@ else
 	v [1] = pointList [1]->p3_index;
 	v [2] = pointList [2]->p3_index;
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-		VmVecNormal (&vNormal, 
-						 &pointList [0]->p3_vec,
-						 &pointList [1]->p3_vec,
-						 &pointList [2]->p3_vec);
-		glNormal3f ((GLfloat) f2fl (vNormal.p.x), (GLfloat) f2fl (vNormal.p.y), (GLfloat) f2fl (vNormal.p.z));
+		vNormal = vmsVector::normal(pointList[0]->p3_vec,
+		                            pointList[1]->p3_vec,
+		                            pointList[2]->p3_vec);
+		glNormal3f ((GLfloat) f2fl(vNormal[X]), (GLfloat) f2fl(vNormal[Y]), (GLfloat) f2fl (vNormal[Z]));
 		}
 	else {
-		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-		VmVecNormal (&vNormal, 
-							gameData.segs.vertices + v [0], 
-							gameData.segs.vertices + v [1], 
-							gameData.segs.vertices + v [2]);
+		int bFlip = GetVertsForNormal (v[0], v[1], v[2], 32767, v, v + 1, v + 2, v + 3);
+		vNormal = vmsVector::normal(gameData.segs.vertices[v[0]], 
+		                           gameData.segs.vertices[v[1]], 
+		                           gameData.segs.vertices[v[2]]);
 		if (bFlip)
-			VmVecNegate (&vNormal);
+			vNormal.neg();
 		if (!gameStates.ogl.bUseTransform)
-			G3RotatePoint (&vNormal, &vNormal, 0);
+			G3RotatePoint(vNormal, vNormal, 0);
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
-		glNormal3f ((GLfloat) f2fl (vNormal.p.x), 
-						(GLfloat) f2fl (vNormal.p.y), 
-						(GLfloat) f2fl (vNormal.p.z));
+		glNormal3f ((GLfloat) f2fl (vNormal[X]), 
+						(GLfloat) f2fl (vNormal[Y]), 
+						(GLfloat) f2fl (vNormal[Z]));
 		}
 	}
 }
@@ -214,21 +212,19 @@ v [0] = pointList [0]->p3_index;
 v [1] = pointList [1]->p3_index;
 v [2] = pointList [2]->p3_index;
 if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-	VmVecNormal (&vNormal, 
-					 &pointList [0]->p3_vec,
-					 &pointList [1]->p3_vec,
-					 &pointList [2]->p3_vec);
+	vNormal = vmsVector::normal(pointList [0]->p3_vec,
+					 pointList [1]->p3_vec,
+					 pointList [2]->p3_vec);
 	}
 else {
 	int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-	VmVecNormal (&vNormal, 
-					 gameData.segs.vertices + v [0], 
-					 gameData.segs.vertices + v [1], 
-					 gameData.segs.vertices + v [2]);
+	vNormal = vmsVector::normal(gameData.segs.vertices[v[0]], 
+					 gameData.segs.vertices[v[1]], 
+					 gameData.segs.vertices[v[2]]);
 	if (bFlip)
-		VmVecNegate (&vNormal);
+		vNormal.neg();
 	}
-VmVecFixToFloat (pvNormal, &vNormal);
+*pvNormal = vNormal.toFloat();
 }
 
 //------------------------------------------------------------------------------
@@ -236,15 +232,14 @@ VmVecFixToFloat (pvNormal, &vNormal);
 fVector *G3Reflect (fVector *vReflect, fVector *vLight, fVector *vNormal)
 {
 //2 * n * (l dot n) - l
-	float		LdotN = 2 * VmVecDot (vLight, vNormal);
+	float		LdotN = 2 * fVector::dot(*vLight, *vNormal);
 
 #if 0
 VmVecScale (vReflect, vNormal, LdotN);
 VmVecDec (vReflect, vLight);
 #else
-vReflect->p.x = vNormal->p.x * LdotN - vLight->p.x;
-vReflect->p.y = vNormal->p.y * LdotN - vLight->p.y;
-vReflect->p.z = vNormal->p.z * LdotN - vLight->p.z;
+*vReflect = *vNormal * LdotN - *vLight;
+
 #endif
 return vReflect;
 }
@@ -350,9 +345,9 @@ if (gameStates.render.bRearView)
 	glScalef (-1.0f, 1.0f, 1.0f);
 gluPerspective (gameStates.render.glFOV * ((double) viewInfo.zoom / 65536.0), 
 					 (double) grdCurCanv->cvBitmap.bmProps.w / (double) grdCurCanv->cvBitmap.bmProps.h, ZNEAR, ZFAR);
-gameData.render.ogl.depthScale.p.x = (float) (ZFAR / (ZFAR - ZNEAR));
-gameData.render.ogl.depthScale.p.y = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
-gameData.render.ogl.depthScale.p.z = (float) (ZFAR - ZNEAR);
+gameData.render.ogl.depthScale[X] = (float) (ZFAR / (ZFAR - ZNEAR));
+gameData.render.ogl.depthScale[Y] = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
+gameData.render.ogl.depthScale[Z] = (float) (ZFAR - ZNEAR);
 gameData.render.ogl.screenScale.x = 1.0f / (float) grdCurScreen->scWidth;
 gameData.render.ogl.screenScale.y = 1.0f / (float) grdCurScreen->scHeight;
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -639,7 +634,7 @@ if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
 
 //------------------------------------------------------------------------------
 
-void OglEnableLighting (int bSpecular)
+void OglEnableLighting(int bSpecular)
 {
 if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 		static GLfloat fBlack [] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -734,7 +729,7 @@ if (!nOglTransformCalls && (gameStates.ogl.bUseTransform || bForce)) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();
-	//glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
+	//glScalef (f2fl (viewInfo.scale[X]), f2fl (viewInfo.scale[Y]), -f2fl (viewInfo.scale[Z]));
 	glScalef (1, 1, -1);
 	glMultMatrixf (viewInfo.glViewf);
 	glTranslatef (-viewInfo.glPosf [0], -viewInfo.glPosf [1], -viewInfo.glPosf [2]);
@@ -845,7 +840,7 @@ if (gl_renderer) {
 	if ((stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.0\n")==0 || stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.2\n")==0) && stricmp(glVersion,"1.2 Mesa 3.0")==0){
 		gameStates.ogl.bIntensity4 = 0;	//ignores alpha, always black background instead of transparent.
 		gameStates.ogl.bReadPixels = 0;	//either just returns all black, or kills the X server entirely
-		gameStates.ogl.bGetTexLevelParam = 0;	//returns random data..
+		gameStates.ogl.bGetTexLevelParam = 0;	//returns Random data..
 		}
 	if (stricmp(gl_vendor,"Matrox Graphics Inc.")==0){
 		//displays garbage. reported by

@@ -56,7 +56,7 @@ void G3InitPolyModel(tPolyModel *pm, int nModel);
 void g3_uninit_polygon_model(void *model_ptr);
 
 //alternate interpreter for morphing tObject
-int G3DrawMorphingModel(void *model_ptr,grsBitmap **model_bitmaps,vmsAngVec *animAngles, vmsVector *vOffset, 
+int G3DrawMorphingModel(void *model_ptr,grsBitmap **model_bitmaps,vmsAngVec *animAngles, vmsVector *vOffset,
 								 fix light, vmsVector *new_points, int nModel);
 
 //this remaps the 15bpp colors for the models into a new palette.  It should
@@ -90,7 +90,7 @@ typedef struct chunk {
 } chunk;
 #define MAX_CHUNKS 100 // increase if insufficent
 /*
- * finds what chunks the data points to, adds them to the chunk_list, 
+ * finds what chunks the data points to, adds them to the chunk_list,
  * and returns the length of the current chunk
  */
 int get_chunks(ubyte *data, ubyte *new_data, chunk *list, int *no);
@@ -98,7 +98,7 @@ int get_chunks(ubyte *data, ubyte *new_data, chunk *list, int *no);
 
 void G3SwapPolyModelData (ubyte *data);
 
-int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp, grsBitmap **modelBitmaps, 
+int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp, grsBitmap **modelBitmaps,
 						 vmsAngVec *pAnimAngles, vmsVector *pOffs, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor);
 
 void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
@@ -110,17 +110,18 @@ int G3ModelMinMax (int nModel, tHitbox *phb);
 extern g3sPoint *pointList [MAX_POINTS_PER_POLY];
 extern int hitboxFaceVerts [6][4];
 extern vmsVector hitBoxOffsets [8];
-extern vmsAngVec avZero;
-extern vmsVector vZero;
-extern vmsMatrix mIdentity;
+//extern vmsAngVec vmsAngVec::ZERO;
+//extern vmsVector vZero;
+//extern vmsMatrix mIdentity;
 extern short nGlow;
 
 //------------------------------------------------------------------------------
 
-static inline void RotatePointListToVec (vmsVector *dest, vmsVector *src, int n)
-{
-while (n--)
-	G3TransformPoint (dest++, src++, 0);
+static inline void RotatePointListToVec (vmsVector *dest, vmsVector *src, int n) {
+	while(n--) {
+		G3TransformPoint(*dest, *src, 0);
+		dest++; src++;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -152,11 +153,11 @@ static inline void FixSwap (fix *f)
 
 //------------------------------------------------------------------------------
 
-static inline void VmsVectorSwap (vmsVector *v)
+static inline void VmsVectorSwap(vmsVector& v)
 {
-FixSwap (FIXPTR (&v->p.x));
-FixSwap (FIXPTR (&v->p.y));
-FixSwap (FIXPTR (&v->p.z));
+FixSwap (FIXPTR (&v[X]));
+FixSwap (FIXPTR (&v[Y]));
+FixSwap (FIXPTR (&v[Z]));
 }
 
 //------------------------------------------------------------------------------
@@ -168,11 +169,11 @@ static inline void FixAngSwap (fixang *f)
 
 //------------------------------------------------------------------------------
 
-static inline void VmsAngVecSwap (vmsAngVec *v)
+static inline void VmsAngVecSwap (vmsAngVec& v)
 {
-FixAngSwap (&v->p);
-FixAngSwap (&v->b);
-FixAngSwap (&v->h);
+FixAngSwap (&v[PA]);
+FixAngSwap (&v[BA]);
+FixAngSwap (&v[HA]);
 }
 
 //------------------------------------------------------------------------------

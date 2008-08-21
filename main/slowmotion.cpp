@@ -45,7 +45,7 @@ else if ((gameStates.gameplay.slowmo [0].nState < 0) ||
 			(gameStates.gameplay.slowmo [1].nState < 0) || 
 			((gameStates.gameplay.slowmo [1].nState == 0) && (gameStates.gameplay.slowmo [1].fSpeed == 1))) {
 	if (gameOpts->sound.bUseSDLMixer)
-		nSlowMotionChannel = DigiPlayWAV ("speedup.wav", F1_0);
+		nSlowMotionChannel = DigiPlayWAV ("speeduw()av", F1_0);
 	HUDInitMessage (TXT_SPEEDING_UP);
 	}
 else {

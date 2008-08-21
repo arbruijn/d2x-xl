@@ -54,7 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_MARKER      15  // a map marker
 #define OBJ_CAMBOT		16	 // a camera
 #define OBJ_MONSTERBALL	17	 // a monsterball
-#define OBJ_SMOKE			18	 // static smoke
+#define OBJ_SMOKE		18	 // static smoke
 #define OBJ_EXPLOSION	19	 // static explosion clouds
 #define OBJ_EFFECT		20	 // lightnings
 
@@ -86,7 +86,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Movement types
 #define MT_NONE         0   // doesn't move
 #define MT_PHYSICS      1   // moves by physics
-#define MT_STATIC			2	 // completely still and immoveable
+#define MT_STATIC		2	 // completely still and immoveable
 #define MT_SPINNING     3   // this tObject doesn't move, just sits and spins
 
 // Render types
@@ -99,9 +99,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_MORPH        6   // a robot being morphed
 #define RT_WEAPON_VCLIP 7   // a weapon that renders as a tVideoClip
 #define RT_THRUSTER		8	 // like afterburner, but doesn't cast light
-#define RT_EXPLBLAST		9	 // white explosion light blast
-#define RT_SHRAPNELS		10	 // white explosion light blast
-#define RT_SMOKE			11
+#define RT_EXPLBLAST	9	 // white explosion light blast
+#define RT_SHRAPNELS	10	 // white explosion light blast
+#define RT_SMOKE		11
 #define RT_LIGHTNING    12
 
 #define SMOKE_ID			0
@@ -157,20 +157,39 @@ extern char szObjectTypeNames [MAX_OBJECT_TYPES][10];
 
 // A compressed form for sending crucial data about via slow devices,
 // such as modems and buggies.
-typedef struct tShortPos {
+class __pack__ tShortPos {
+public:
 	sbyte   bytemat[9];
 	short   xo,yo,zo;
 	short   nSegment;
 	short   velx, vely, velz;
-} __pack__ tShortPos;
+};
 
 // This is specific to the tShortPos extraction routines in gameseg.c.
 #define RELPOS_PRECISION    10
 #define MATRIX_PRECISION    9
 #define MATRIX_MAX          0x7f    // This is based on MATRIX_PRECISION, 9 => 0x7f
 
+class MovementInfo { };
+class PhysicsMovementInfo : public MovementInfo { };
+class SpinMovementInfo    : public MovementInfo { };
+
+class ControlInfo { };
+class ControlLaserInfo : public ControlInfo { };
+class ControlExplosionInfo : public ControlInfo { };
+class ControlAIStaticInfo : public ControlInfo { };
+class ControlLightInfo : public ControlInfo { };     // why put this here?  Didn't know what else to do with it.
+class ControlPowerupInfo : public ControlInfo { };
+
+class RenderInfo { };
+class RenderPolyObjInfo : public RenderInfo { };      // polygon model
+class RenderVClipInfo : public RenderInfo { };     // tVideoClip
+class RenderSmokeInfo : public RenderInfo { };
+class RenderLightningInfo : public RenderInfo { };
+
 // information for physics sim for an tObject
-typedef struct tPhysicsInfo {
+class tPhysicsInfo {
+public:
 	vmsVector	velocity;   // velocity vector of this tObject
 	vmsVector	thrust;     // constant force applied to this tObject
 	fix         mass;       // the mass of this tObject
@@ -180,11 +199,12 @@ typedef struct tPhysicsInfo {
 	vmsVector	rotThrust;  // rotational acceleration
 	fixang      turnRoll;   // rotation caused by turn banking
 	ushort      flags;      // misc physics flags
-} __pack__ tPhysicsInfo;
+};
 
 // stuctures for different kinds of simulation
 
-typedef struct tLaserInfo  {
+class __pack__ tLaserInfo  {
+public:
 	short   parentType;        // The nType of the parent of this tObject
 	short   nParentObj;        // The tObject's parent's number
 	int     nParentSig;			// The tObject's parent's nSignature...
@@ -192,40 +212,45 @@ typedef struct tLaserInfo  {
 	short   nLastHitObj;       // For persistent weapons (survive tObject collision), tObject it most recently hit.
 	short   nMslLock;				// Object this tObject is tracking.
 	fix     multiplier;        // Power if this is a fusion bolt (or other super weapon to be added).
-} __pack__ tLaserInfo;
+};
 
-typedef struct tExplosionInfo {
+class tExplosionInfo {
+public:
     fix     nSpawnTime;       // when lifeleft is < this, spawn another
     fix     nDeleteTime;      // when to delete tObject
     short   nDeleteObj;			// and what tObject to delete
     short   nAttachParent;    // explosion is attached to this tObject
     short   nPrevAttach;      // previous explosion in attach list
     short   nNextAttach;      // next explosion in attach list
-} __pack__ tExplosionInfo;
+};
 
-typedef struct tObjLightInfo {
+class __pack__ tObjLightInfo {
+public:
     fix				intensity;  // how bright the light is
 	 short			nSegment;
 	 short			nObjects;
 	 tRgbaColorf	color;
-} __pack__ tObjLightInfo;
+};
 
 #define PF_SPAT_BY_PLAYER   1 //this powerup was spat by the tPlayer
 
-typedef struct tPowerupInfo {
+class __pack__ tPowerupInfo {
+public:
 	int     count;          // how many/much we pick up (vulcan cannon only?)
 	fix     creationTime;  // Absolute time of creation.
 	int     flags;          // spat by tPlayer?
-} __pack__ tPowerupInfo;
+};
 
-typedef struct tVClipInfo {
+class __pack__ tVClipInfo {
+public:
 	int     nClipIndex;
 	fix	  xTotalTime;
 	fix     xFrameTime;
 	sbyte   nCurFrame;
-} __pack__ tVClipInfo;
+};
 
-typedef struct tSmokeInfo {
+class __pack__ tSmokeInfo {
+public:
 	int			nLife;
 	int			nSize [2];
 	int			nParts;
@@ -234,9 +259,10 @@ typedef struct tSmokeInfo {
 	int			nBrightness;
 	tRgbaColorb	color;
 	char			nSide;
-} __pack__ tSmokeInfo;
+};
 
-typedef struct tLightningInfo {
+class __pack__ tLightningInfo {
+public:
 	int			nLife;
 	int			nDelay;
 	int			nLength;
@@ -257,41 +283,56 @@ typedef struct tLightningInfo {
 	char			bRandom;
 	char			bInPlane;
 	tRgbaColorb color;
-} __pack__ tLightningInfo;
+};
 
 // structures for different kinds of rendering
 
-typedef struct tPolyObjInfo {
+class __pack__ tPolyObjInfo {
+public:
 	int     		nModel;          // which polygon model
 	vmsAngVec 	animAngles [MAX_SUBMODELS]; // angles for each subobject
 	int     		nSubObjFlags;       // specify which subobjs to draw
 	int     		nTexOverride;      // if this is not -1, map all face to this
 	int     		nAltTextures;       // if not -1, use these textures instead
-} __pack__ tPolyObjInfo;
+};
 
-typedef struct tPosition {
+class tTransformation {
+public:
 	vmsVector	vPos;				// absolute x,y,z coordinate of center of object
 	vmsMatrix	mOrient;			// orientation of object in world
-} tPosition;
+};
 
-typedef struct tObject {
+
+// TODO get rid of the structs (former unions) and the union
+class tObject {
+public:
+
+	// initialize a new tObject.  adds to the list for the given tSegment
+	// returns the tObject number
+	static int Create(ubyte nType, ubyte id, short owner, short nSegment, const vmsVector& pos,
+	               const vmsMatrix& orient, fix size,
+	               ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
+
+	// unlinks an tObject from a tSegment's list of objects
+	void unlink();
+
 	int     		nSignature;    // Every tObject ever has a unique nSignature...
 	ubyte   		nType;         // what nType of tObject this is... robot, weapon, hostage, powerup, fireball
 	ubyte   		id;            // which form of tObject...which powerup, robot, etc.
 #ifdef WORDS_NEED_ALIGNMENT
 	short   		pad;
 #endif
-	short   		next, prev;    // id of next and previous connected tObject in Objects, -1 = no connection
+	short   		next, prev, me;    // id of next and previous connected tObject in Objects, -1 = no connection
 	ubyte   		controlType;   // how this tObject is controlled
 	ubyte   		movementType;  // how this tObject moves
 	ubyte   		renderType;    // how this tObject renders
 	ubyte   		flags;         // misc flags
 	short			nSegment;
 	short   		attachedObj;   // number of attached fireball tObject
-	tPosition	position;
+	tTransformation	position;
 	fix     		size;          // 3d size of tObject - for collision detection
 	fix     		shields;       // Starts at maximum, when <0, tObject dies..
-	vmsVector 	vLastPos;		// where tObject was last frame
+	vmsVector 		vLastPos;		// where tObject was last frame
 	sbyte   		containsType;  // Type of tObject this tObject contains (eg, spider contains powerup)
 	sbyte   		containsId;    // ID of tObject this tObject contains (eg, id = blue nType = key)
 	sbyte   		containsCount; // number of objects of nType:id this tObject contains
@@ -320,35 +361,40 @@ typedef struct tObject {
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;
 #endif
-	} __pack__ tObject;
+};
 
-typedef struct tObjPosition {
-	tPosition	position;
+
+class tObjPosition {
+public:
+	tTransformation	position;
 	short       nSegment;     // tSegment number containing tObject
 	short			nSegType;		// nType of tSegment
-} tObjPosition;
+};
 
-typedef struct {
+class tWindowRenderedData {
+public:
 	int     frame;
 	tObject *viewer;
 	int     rearView;
 	int     user;
 	int     numObjects;
 	short   renderedObjects [MAX_RENDERED_OBJECTS];
-} tWindowRenderedData;
+};
 
-typedef struct tObjDropInfo {
+class tObjDropInfo {
+public:
 	time_t	nDropTime;
 	short		nPowerupType;
 	short		nPrevPowerup;
 	short		nNextPowerup;
 	short		nObject;
-} tObjDropInfo;
+};
 
-typedef struct tObjectRef {
+class tObjectRef {
+public:
 	short		objIndex;
 	short		nextObj;
-} tObjectRef;
+};
 
 #define MAX_RENDERED_WINDOWS    3
 
@@ -374,14 +420,16 @@ void InitObjects();
 
 // returns tSegment number tObject is in.  Searches out from tObject's current
 // seg, so this shouldn't be called if the tObject has "jumped" to a new seg
-int obj_get_new_seg(tObject *obj);
+// -- unused --
+//int obj_get_new_seg(tObject *obj);
 
 // when an tObject has moved into a new tSegment, this function unlinks it
 // from its old tSegment, and links it into the new tSegment
 void RelinkObject(int nObject,int newsegnum);
 
 // move an tObject from one tSegment to another. unlinks & relinks
-void obj_set_new_seg(int nObject,int newsegnum);
+// -- unused --
+//void obj_set_new_seg(int nObject,int newsegnum);
 
 // links an tObject into a tSegment's list of objects.
 // takes tObject number and tSegment number
@@ -392,11 +440,11 @@ void UnlinkObject(int nObject);
 
 // initialize a new tObject.  adds to the list for the given tSegment
 // returns the tObject number
-int CreateObject(ubyte nType, char id, short owner, short nSegment, vmsVector *pos,
-               vmsMatrix *orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
+//int tObject::Create(ubyte nType, char id, short owner, short nSegment, const vmsVector& pos,
+//               const vmsMatrix& orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
 
 // make a copy of an tObject. returs num of new tObject
-int CreateObjectCopy(int nObject, vmsVector *new_pos, int newsegnum);
+int ObjectCreateCopy(int nObject, vmsVector *new_pos, int newsegnum);
 
 // remove tObject from the world
 void ReleaseObject(short nObject);
@@ -441,7 +489,7 @@ extern int UpdateObjectSeg(tObject *obj);
 
 // Finds what tSegment *obj is in, returns tSegment number.  If not in
 // any tSegment, returns -1.  Note: This function is defined in
-// gameseg.h, but object.h depends on gameseg.h, and object.h is where
+// gameseg.h, but object[HA] depends on gameseg.h, and object[HA] is where
 // tObject is defined...get it?
 extern int FindObjectSeg(tObject * obj);
 
@@ -472,7 +520,7 @@ extern void ExtractShortPos(tObject *objp, tShortPos *spp, int swap_bytes);
 void ClearTransientObjects(int clear_all);
 
 // returns the number of a free tObject, updating HighestObject_index.
-// Generally, CreateObject() should be called to get an tObject, since it
+// Generally, tObject::Create() should be called to get an tObject, since it
 // fills in important fields and does the linking.  returns -1 if no
 // free objects
 int AllocObject(void);

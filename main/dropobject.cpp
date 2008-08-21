@@ -23,7 +23,7 @@ int InitObjectCount (tObject *objP)
 {
 	int	nFree, nTotal, i, j, bFree;
 	short	nType = objP->nType;
-	short	id = objP->id; 
+	short	id = objP->id;
 
 nFree = nTotal = 0;
 for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP++) {
@@ -45,16 +45,16 @@ return nFree ? -nFree : nTotal;
 
 tObject *FindInitObject (tObject *objP)
 {
-	int	h, i, j, bUsed, 
-			bUseFree, 
+	int	h, i, j, bUsed,
+			bUseFree,
 			objCount = InitObjectCount (objP);
 	short	nType = objP->nType;
-	short	id = objP->id; 
+	short	id = objP->id;
 
-// due to OBJECTS being deleted from the tObject list when picked up and recreated when dropped, 
+// due to OBJECTS being deleted from the tObject list when picked up and recreated when dropped,
 // cannot determine exact respawn tSegment, so randomly chose one from all segments where powerups
 // of this nType had initially been placed in the level.
-if (!objCount)		//no OBJECTS of this nType had initially been placed in the mine. 
+if (!objCount)		//no OBJECTS of this nType had initially been placed in the mine.
 	return NULL;	//can happen with missile packs
 d_srand (TimerGetFixedSeconds ());
 if ((bUseFree = (objCount < 0)))
@@ -63,7 +63,7 @@ h = d_rand () % objCount + 1;
 for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP++) {
 	if ((objP->nType != nType) || (objP->id != id))
 		continue;
-	// if the current tSegment does not contain a powerup of the nType being looked for, 
+	// if the current tSegment does not contain a powerup of the nType being looked for,
 	// return that tSegment
 	if (bUseFree) {
 		for (bUsed = 0, j = gameData.segs.objects [objP->nSegment]; j != -1; j = OBJECTS [j].next)
@@ -132,14 +132,14 @@ while (nTail != nHead) {
 		}
 	segP = SEGMENTS + segQueue [nTail++];
 
-	//	to make random, switch a pair of entries in rndSide.
+	//	to make Random, switch a pair of entries in rndSide.
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (0 > (nChild = segP->children [nSide]))
 			continue;
-		if (bVisited [nChild]) 
+		if (bVisited [nChild])
 			continue;
 		nWall = WallNumP (segP, nSide);
-		if (IS_WALL (nWall) && !PlayerCanOpenDoor (segP, nSide)) 
+		if (IS_WALL (nWall) && !PlayerCanOpenDoor (segP, nSide))
 			continue;
 		segQueue [nHead++] = segP->children [nSide];
 		bVisited [nChild] = nCurDepth + 1;
@@ -158,7 +158,7 @@ return segQueue [nTail + d_rand () % (nHead - nTail + 1)];
 //	------------------------------------------------------------------------------------------------------
 //	Choose tSegment to drop a powerup in.
 //	For all active net players, try to create a N tSegment path from the player.  If possible, return that
-//	tSegment.  If not possible, try another player.  After a few tries, use a random tSegment.
+//	tSegment.  If not possible, try another player.  After a few tries, use a Random tSegment.
 //	Don't drop if control center in tSegment.
 int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState)
 {
@@ -169,10 +169,10 @@ int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState)
 	short			nPlayerSeg;
 	vmsVector	tempv, *vPlayerPos;
 	fix			nDist;
-	int			bUseInitSgm = 
+	int			bUseInitSgm =
 						objP &&
-						(EGI_FLAG (bFixedRespawns, 0, 0, 0) || 
-						 (EGI_FLAG (bEnhancedCTF, 0, 0, 0) && 
+						(EGI_FLAG (bFixedRespawns, 0, 0, 0) ||
+						 (EGI_FLAG (bEnhancedCTF, 0, 0, 0) &&
 						 (objP->nType == OBJ_POWERUP) && ((objP->id == POW_BLUEFLAG) || (objP->id == POW_REDFLAG))));
 #if TRACE
 con_printf (CONDBG, "ChooseDropSegment:");
@@ -198,14 +198,14 @@ while (nSegment == -1) {
 	else {
 		nPlayer = (d_rand () * gameData.multiplayer.nPlayers) >> 15;
 		count = 0;
-		while ((count < gameData.multiplayer.nPlayers) && 
-				 (!gameData.multiplayer.players [nPlayer].connected || 
-				  (nPlayer == gameData.multiplayer.nLocalPlayer) || 
+		while ((count < gameData.multiplayer.nPlayers) &&
+				 (!gameData.multiplayer.players [nPlayer].connected ||
+				  (nPlayer == gameData.multiplayer.nLocalPlayer) ||
 				  ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer))))) {
 			nPlayer = (nPlayer + 1) % gameData.multiplayer.nPlayers;
 			count++;
 			}
-		if (count == gameData.multiplayer.nPlayers) 
+		if (count == gameData.multiplayer.nPlayers)
 			nPlayer = gameData.multiplayer.nLocalPlayer;
 		}
 	nSegment = PickConnectedSegment (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, nDepth, &nDropDepth);
@@ -356,7 +356,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
 		if (nDropState == CHECK_DROP) {
 			if ((gameData.objs.dropInfo [nObject].nDropTime < 0) ||
-				 (gameStates.app.nSDLTicks - gameData.objs.dropInfo [nObject].nDropTime < 
+				 (gameStates.app.nSDLTicks - gameData.objs.dropInfo [nObject].nDropTime <
 				  extraGameInfo [IsMultiGame].nSpawnDelay))
 				return 0;
 			nDropState = EXEC_DROP;
@@ -366,7 +366,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 				return 0;
 			gameData.objs.dropInfo [h].nObject = nObject;
 			gameData.objs.dropInfo [h].nPowerupType = nPowerupType;
-			gameData.objs.dropInfo [h].nDropTime = 
+			gameData.objs.dropInfo [h].nDropTime =
 				 (extraGameInfo [IsMultiGame].nSpawnDelay < 0) ? -1 : gameStates.app.nSDLTicks;
 			return 0;
 			}
@@ -374,12 +374,12 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 			DelDropInfo (nObject);
 			}
 		}
-	nObject = CallObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject, 
+	nObject = CallObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject,
 											 1, OBJ_POWERUP, nPowerupType);
 	if (nObject < 0)
 		return 0;
 	nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState);
-	VmVecZero (&OBJECTS [nObject].mType.physInfo.velocity);
+	OBJECTS [nObject].mType.physInfo.velocity.setZero();
 	if (bFixedPos)
 		vNewPos = OBJECTS [nObject].position.vPos;
 	else
@@ -457,29 +457,29 @@ if (delObjP->containsId == POW_CLOAK) {
 	return;
 }
 switch (delObjP->containsId) {
-	case POW_VULCAN:		
-		nWeapon = VULCAN_INDEX;	
+	case POW_VULCAN:
+		nWeapon = VULCAN_INDEX;
 		break;
-	case POW_GAUSS:		
-		nWeapon = GAUSS_INDEX;	
+	case POW_GAUSS:
+		nWeapon = GAUSS_INDEX;
 		break;
 	case POW_SPREADFIRE:
 		nWeapon = SPREADFIRE_INDEX;
 		break;
-	case POW_PLASMA:		
-		nWeapon = PLASMA_INDEX;	
+	case POW_PLASMA:
+		nWeapon = PLASMA_INDEX;
 		break;
-	case POW_FUSION:		
-		nWeapon = FUSION_INDEX;	
+	case POW_FUSION:
+		nWeapon = FUSION_INDEX;
 		break;
-	case POW_HELIX:		
-		nWeapon = HELIX_INDEX;	
+	case POW_HELIX:
+		nWeapon = HELIX_INDEX;
 		break;
-	case POW_PHOENIX:	
-		nWeapon = PHOENIX_INDEX;	
+	case POW_PHOENIX:
+		nWeapon = PHOENIX_INDEX;
 		break;
-	case POW_OMEGA:		
-		nWeapon = OMEGA_INDEX;	
+	case POW_OMEGA:
+		nWeapon = OMEGA_INDEX;
 		break;
 	}
 
@@ -489,7 +489,7 @@ if (( (nWeapon == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && 
 else if (( (nWeapon == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 	delObjP->containsCount = 0;
 else if (nWeapon != -1) {
-	if ((PlayerHasWeapon (nWeapon, 0, -1, 1) & HAS_WEAPON_FLAG) || 
+	if ((PlayerHasWeapon (nWeapon, 0, -1, 1) & HAS_WEAPON_FLAG) ||
 			WeaponNearby (delObjP, delObjP->containsId)) {
 		if (d_rand () > 16384) {
 			delObjP->containsType = OBJ_POWERUP;
@@ -521,7 +521,7 @@ else if (delObjP->containsId == POW_QUADLASER)
 			}
 		}
 
-//	If this robot was gated in by the boss and it now contains energy, make it contain nothing, 
+//	If this robot was gated in by the boss and it now contains energy, make it contain nothing,
 //	else the room gets full of energy.
 if ((delObjP->matCenCreator == BOSS_GATE_MATCEN_NUM) && (delObjP->containsId == POW_ENERGY) && (delObjP->containsType == OBJ_POWERUP)) {
 #if TRACE
@@ -537,7 +537,7 @@ if ((gameData.app.nGameMode & GM_MULTI) && (delObjP->containsId == POW_EXTRA_LIF
 
 //------------------------------------------------------------------------------
 
-int DropPowerup (ubyte nType, ubyte id, short owner, int num, vmsVector *init_vel, vmsVector *pos, short nSegment)
+int DropPowerup (ubyte nType, ubyte id, short owner, int num, const vmsVector& init_vel, const vmsVector& pos, short nSegment)
 {
 	short			nObject=-1;
 	tObject		*objP;
@@ -549,8 +549,8 @@ switch (nType) {
 	case OBJ_POWERUP:
 		for (count = 0; count < num; count++) {
 			int	rand_scale;
-			new_velocity = *init_vel;
-			old_mag = VmVecMagQuick (init_vel);
+			new_velocity = init_vel;
+			old_mag = init_vel.mag();
 
 			//	We want powerups to move more in network mode.
 			if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_ROBOTS)) {
@@ -561,14 +561,14 @@ switch (nType) {
 				}
 			else
 				rand_scale = 2;
-			new_velocity.p.x += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
-			new_velocity.p.y += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
-			new_velocity.p.z += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
+			new_velocity[X] += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
+			new_velocity[Y] += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
+			new_velocity[Z] += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
 			// Give keys zero velocity so they can be tracked better in multi
-			if ((gameData.app.nGameMode & GM_MULTI) && 
+			if ((gameData.app.nGameMode & GM_MULTI) &&
 				 (( (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD)) || (id == POW_MONSTERBALL)))
-				VmVecZero (&new_velocity);
-			vNewPos = *pos;
+				new_velocity.setZero();
+			vNewPos = pos;
 
 			if (IsMultiGame) {
 				if (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS) {
@@ -577,7 +577,7 @@ switch (nType) {
 				if ((gameData.app.nGameMode & GM_NETWORK) && networkData.nStatus == NETSTAT_ENDLEVEL)
 					return -1;
 				}
-			nObject = CreateObject (nType, id, owner, nSegment, &vNewPos, &vmdIdentityMatrix, gameData.objs.pwrUp.info [id].size, 
+			nObject = tObject::Create(nType, id, owner, nSegment, vNewPos, vmsMatrix::IDENTITY, gameData.objs.pwrUp.info [id].size,
 										   CT_POWERUP, MT_PHYSICS, RT_POWERUP, 0);
 			if (nObject < 0) {
 				Int3 ();
@@ -614,23 +614,23 @@ switch (nType) {
 	case OBJ_ROBOT:
 		for (count=0; count<num; count++) {
 			int	rand_scale;
-			new_velocity = *init_vel;
-			old_mag = VmVecMagQuick (init_vel);
-			VmVecNormalize (&new_velocity);
+			new_velocity = init_vel;
+			old_mag = init_vel.mag();
+			vmsVector::normalize(new_velocity);
 			//	We want powerups to move more in network mode.
 			rand_scale = 2;
-			new_velocity.p.x += (d_rand ()-16384)*2;
-			new_velocity.p.y += (d_rand ()-16384)*2;
-			new_velocity.p.z += (d_rand ()-16384)*2;
-			VmVecNormalize (&new_velocity);
-			VmVecScale (&new_velocity, (F1_0*32 + old_mag) * rand_scale);
-			vNewPos = *pos;
+			new_velocity[X] += (d_rand ()-16384)*2;
+			new_velocity[Y] += (d_rand ()-16384)*2;
+			new_velocity[Z] += (d_rand ()-16384)*2;
+			vmsVector::normalize(new_velocity);
+			new_velocity *= ((F1_0*32 + old_mag) * rand_scale);
+			vNewPos = pos;
 			//	This is dangerous, could be outside mine.
 //				vNewPos.x += (d_rand ()-16384)*8;
 //				vNewPos.y += (d_rand ()-16384)*7;
 //				vNewPos.z += (d_rand ()-16384)*6;
-			nObject = CreateObject (OBJ_ROBOT, id, -1, nSegment, &vNewPos, &vmdIdentityMatrix, 
-										 gameData.models.polyModels [ROBOTINFO (id).nModel].rad, 
+			nObject = tObject::Create(OBJ_ROBOT, id, -1, nSegment, vNewPos, vmsMatrix::IDENTITY,
+										 gameData.models.polyModels [ROBOTINFO (id).nModel].rad,
 										 CT_AI, MT_PHYSICS, RT_POLYOBJ, 1);
 			if (nObject < 0) {
 #if TRACE
@@ -689,7 +689,7 @@ if (!IsMultiGame & (objP->nType != OBJ_PLAYER)) {
 #endif
 					return -1;
 					}
-				} 
+				}
 			else  if (LOCALPLAYER.shields >= i2f (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
@@ -698,7 +698,7 @@ if (!IsMultiGame & (objP->nType != OBJ_PLAYER)) {
 					return -1;
 					}
 				}
-			} 
+			}
 		else if (objP->containsId == POW_ENERGY) {
 			if (LOCALPLAYER.energy >= i2f (100)) {
 				if (d_rand () > 16384) {
@@ -707,7 +707,7 @@ if (!IsMultiGame & (objP->nType != OBJ_PLAYER)) {
 #endif
 					return -1;
 					}
-				} 
+				}
 			else if (LOCALPLAYER.energy >= i2f (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
@@ -721,18 +721,18 @@ if (!IsMultiGame & (objP->nType != OBJ_PLAYER)) {
 	}
 
 nObject = DropPowerup (
-	objP->containsType, 
-	 (ubyte) objP->containsId, 
+	objP->containsType,
+	 (ubyte) objP->containsId,
 	 (short) (
-		 ((gameData.app.nGameMode & GM_ENTROPY) && 
-		 (objP->containsType == OBJ_POWERUP) && 
-		 (objP->containsId == POW_ENTROPY_VIRUS) && 
-		 (objP->nType == OBJ_PLAYER)) ? 
+		 ((gameData.app.nGameMode & GM_ENTROPY) &&
+		 (objP->containsType == OBJ_POWERUP) &&
+		 (objP->containsId == POW_ENTROPY_VIRUS) &&
+		 (objP->nType == OBJ_PLAYER)) ?
 		GetTeam (objP->id) + 1 : -1
-		), 
-	objP->containsCount, 
-	&objP->mType.physInfo.velocity, 
-	&objP->position.vPos, objP->nSegment);
+		),
+	objP->containsCount,
+	objP->mType.physInfo.velocity,
+	objP->position.vPos, objP->nSegment);
 if (nObject >= 0) {
 	if (objP->nType == OBJ_PLAYER) {
 		if (objP->id == gameData.multiplayer.nLocalPlayer)
@@ -767,7 +767,7 @@ return ObjectCreateEgg (objP);
 
 //------------------------------------------------------------------------------
 //creates afterburner blobs behind the specified tObject
-void DropAfterburnerBlobs (tObject *objP, int count, fix xSizeScale, fix xLifeTime, 
+void DropAfterburnerBlobs (tObject *objP, int count, fix xSizeScale, fix xLifeTime,
 									tObject *pParent, int bThruster)
 {
 	short				i, nSegment, nThrusters;
@@ -776,14 +776,14 @@ void DropAfterburnerBlobs (tObject *objP, int count, fix xSizeScale, fix xLifeTi
 
 nThrusters = CalcThrusterPos (objP, &ti, 1);
 for (i = 0; i < nThrusters; i++) {
-	nSegment = FindSegByPos (ti.vPos + i, objP->nSegment, 1, 0);
+	nSegment = FindSegByPos (ti.vPos[i], objP->nSegment, 1, 0);
 	if (nSegment == -1)
 		continue;
 	if (!(blobObjP = ObjectCreateExplosion (nSegment, ti.vPos + i, xSizeScale, VCLIP_AFTERBURNER_BLOB)))
 		continue;
 	if (xLifeTime != -1) {
 		blobObjP->rType.vClipInfo.xTotalTime = xLifeTime;
-		blobObjP->rType.vClipInfo.xFrameTime = FixMulDiv (gameData.eff.vClips [0][VCLIP_AFTERBURNER_BLOB].xFrameTime, 
+		blobObjP->rType.vClipInfo.xFrameTime = FixMulDiv (gameData.eff.vClips [0][VCLIP_AFTERBURNER_BLOB].xFrameTime,
 																		  xLifeTime, blobObjP->lifeleft);
 		blobObjP->lifeleft = xLifeTime;
 		}
@@ -816,7 +816,7 @@ void MaybeDropSecondaryWeaponEgg (tObject *playerObjP, int nWeapon, int count)
 	int nPowerup = secondaryWeaponToPowerup [nWeapon];
 
 if (gameData.multiplayer.players [playerObjP->id].secondaryWeaponFlags & nWeaponFlag) {
-	int i, maxCount = ((EGI_FLAG (bDropAllMissiles, 0, 0, 0)) ? count : min (count, 3));
+	int i, maxCount = ((EGI_FLAG (bDropAllMissiles, 0, 0, 0)) ? count : std::min(count, 3));
 
 	for (i = 0; i < maxCount; i++)
 		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerup);
@@ -863,7 +863,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 
 	// -- Items_destroyed = 0;
 
-	// Seed the random number generator so in net play the eggs will always
+	// Seed the Random number generator so in net play the eggs will always
 	// drop the same way
 	if (IsMultiGame) {
 		gameData.multigame.create.nLoc = 0;
@@ -876,10 +876,10 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		short			nNewSeg;
 		vmsVector	tvec;
 
-		MakeRandomVector (&vRandom);
+		vRandom = vmsVector::Random();
 		rthresh /= 2;
-		VmVecAdd (&tvec, &playerObjP->position.vPos, &vRandom);
-		nNewSeg = FindSegByPos (&tvec, playerObjP->nSegment, 1, 0);
+		tvec = playerObjP->position.vPos + vRandom;
+		nNewSeg = FindSegByPos (tvec, playerObjP->nSegment, 1, 0);
 		if (nNewSeg != -1)
 			CreateNewLaser (&vRandom, &tvec, nNewSeg, plrObjNum, SMARTMINE_ID, 0);
 	  	}
@@ -891,10 +891,10 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 				short			nNewSeg;
 				vmsVector	tvec;
 
-				MakeRandomVector (&vRandom);
+				vRandom = vmsVector::Random();
 				rthresh /= 2;
-				VmVecAdd (&tvec, &playerObjP->position.vPos, &vRandom);
-				nNewSeg = FindSegByPos (&tvec, playerObjP->nSegment, 1, 0);
+				tvec = playerObjP->position.vPos + vRandom;
+				nNewSeg = FindSegByPos (tvec, playerObjP->nSegment, 1, 0);
 				if (nNewSeg != -1)
 					CreateNewLaser (&vRandom, &tvec, nNewSeg, plrObjNum, PROXMINE_ID, 0);
 			}
@@ -933,13 +933,13 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 	if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG))
 		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, (GetTeam (nPlayerId) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG);
 
-#ifndef _DEBUG		
+#ifndef _DEBUG
 		if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
 #endif
-		if (IsHoardGame || 
+		if (IsHoardGame ||
 		    (IsEntropyGame && extraGameInfo [1].entropy.nVirusStability)) {
 			// Drop hoard orbs
-		
+
 			int maxCount, i;
 #if TRACE
 			con_printf (CONDBG, "HOARD MODE: Dropping %d orbs \n", playerP->secondaryAmmo [PROXMINE_INDEX]);
@@ -953,7 +953,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 
 		//Drop the vulcan, gauss, and ammo
 		nVulcanAmmo = playerP->primaryAmmo [VULCAN_INDEX];
-		if ((playerP->primaryWeaponFlags & HAS_FLAG (VULCAN_INDEX)) && 
+		if ((playerP->primaryWeaponFlags & HAS_FLAG (VULCAN_INDEX)) &&
 			 (playerP->primaryWeaponFlags & HAS_FLAG (GAUSS_INDEX)))
 			nVulcanAmmo /= 2;		//if both vulcan & gauss, each gets half
 		if (nVulcanAmmo < VULCAN_AMMO_AMOUNT)
@@ -973,7 +973,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		MaybeDropPrimaryWeaponEgg (playerObjP, PHOENIX_INDEX);
 		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, OMEGA_INDEX);
 		if (nObject >= 0)
-			OBJECTS [nObject].cType.powerupInfo.count = 
+			OBJECTS [nObject].cType.powerupInfo.count =
 				(playerObjP->id == gameData.multiplayer.nLocalPlayer) ? gameData.omega.xCharge [IsMultiGame] : DEFAULT_MAX_OMEGA_CHARGE;
 		//	Drop the secondary weapons
 		//	Note, proximity weapon only comes in packets of 4.  So drop n/2, but a max of 3 (handled inside maybe_drop..)  Make sense?

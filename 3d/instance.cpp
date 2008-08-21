@@ -7,7 +7,7 @@ IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
 SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
 FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
 CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
+AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
@@ -48,7 +48,7 @@ glMultMatrixf (pm);
 
 //------------------------------------------------------------------------------
 
-void VmsMove (vmsVector *pv)
+void VmsMove(const vmsVector& pv)
 {
 glVectorf p;
 OglMove (OOF_VecVms2Gl (p, pv));
@@ -56,20 +56,20 @@ OglMove (OOF_VecVms2Gl (p, pv));
 
 //------------------------------------------------------------------------------
 
-inline void VmsRot (vmsMatrix *pm)
+inline void VmsRot(const vmsMatrix& pm)
 {
 glMatrixf m;
 
 memset (m, 0, sizeof (m));
-m [0] = f2fl (pm->rVec.p.x);
-m [1] = f2fl (pm->rVec.p.y);
-m [2] = f2fl (pm->rVec.p.z);
-m [4] = f2fl (pm->uVec.p.x);
-m [5] = f2fl (pm->uVec.p.y);
-m [6] = f2fl (pm->uVec.p.z);
-m [8] = f2fl (pm->fVec.p.x);
-m [9] = f2fl (pm->fVec.p.y);
-m [10] = f2fl (pm->fVec.p.z);
+m [0] = f2fl (pm[RVEC][X]);
+m [1] = f2fl (pm[RVEC][Y]);
+m [2] = f2fl (pm[RVEC][Z]);
+m [4] = f2fl (pm[UVEC][X]);
+m [5] = f2fl (pm[UVEC][Y]);
+m [6] = f2fl (pm[UVEC][Z]);
+m [8] = f2fl (pm[FVEC][X]);
+m [9] = f2fl (pm[FVEC][Y]);
+m [10] = f2fl (pm[FVEC][Z]);
 m [15] = 1;
 OglRot (m);
 }
@@ -108,8 +108,8 @@ return 1;
 
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
-//if matrix==NULL, don't modify matrix.  This will be like doing an offset   
-void G3StartInstanceMatrix (vmsVector *vPos, vmsMatrix *mOrient)
+//if matrix==NULL, don't modify matrix.  This will be like doing an offset
+void G3StartInstanceMatrix(const vmsVector& vPos, const vmsMatrix& mOrient)
 {
 	vmsVector	vOffs;
 	vmsMatrix	mTrans, mRot;
@@ -124,51 +124,45 @@ if (gameStates.ogl.bUseTransform) {
 		glScalef (-1.0f, -1.0f, -1.0f);
 		VmsMove (vPos);
 		glScalef (-1.0f, -1.0f, -1.0f);
-		if (mOrient)
-			VmsRot (mOrient);
-		}
+		VmsRot (mOrient);
+	}
 	else {
 		glLoadIdentity ();
 		//glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
 		glScalef (1, 1, -1);
 		OglRot (viewInfo.glViewf);
-		VmVecSub (&h, &viewInfo.pos, vPos);
-		VmsMove (&h);
+		h = viewInfo.pos - vPos;
+		VmsMove (h);
 		if (gameData.models.nScale) {
 			float fScale = f2fl (gameData.models.nScale);
 			glScalef (fScale, fScale, fScale);
-			}
-		if (mOrient)
-			VmsRot (mOrient);
+		}
+		VmsRot (mOrient);
 		}
 	}
 
 //step 1: subtract object position from view position
-VmVecSub (&vOffs, &viewInfo.pos, vPos);
-if (mOrient) {
+vOffs = viewInfo.pos - vPos;
+
 	int i;
 	//step 2: rotate view vector through tObject matrix
-	VmVecRotate (&viewInfo.pos, &vOffs, mOrient);
+	viewInfo.pos = mOrient * vOffs;
 	//step 3: rotate tObject matrix through view_matrix (vm = ob * vm)
-	VmCopyTransposeMatrix (&mTrans, mOrient);
+	mTrans = mOrient.transpose();
 	for (i = 0; i < 2; i++) {
-		VmMatMul (&mRot, &mTrans, viewInfo.view + i);
+		mRot = mTrans * viewInfo.view[i];
 		viewInfo.view [i] = mRot;
-		VmsMatToFloat (viewInfo.viewf + i, viewInfo.view + i);
+		viewInfo.viewf[i] = viewInfo.view[i].toFloat();
 		}
-	}
-VmVecFixToFloat (&viewInfo.posf, &viewInfo.pos);
+
+viewInfo.posf = viewInfo.pos.toFloat();
 }
 
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if angles==NULL, don't modify matrix.  This will be like doing an offset
-void G3StartInstanceAngles (vmsVector *pos, vmsAngVec *angles)
-{
-	vmsMatrix tm;
-
-VmAngles2Matrix (&tm, angles ? angles : &avZero);
-G3StartInstanceMatrix (pos, &tm);
+void G3StartInstanceAngles (const vmsVector& pos, const vmsAngVec& angles) {
+	G3StartInstanceMatrix(pos, vmsMatrix::Create(angles));
 }
 
 //------------------------------------------------------------------------------

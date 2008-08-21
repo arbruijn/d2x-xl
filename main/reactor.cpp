@@ -43,9 +43,9 @@ Assert (objP->nType == OBJ_REACTOR);
 Assert (objP->renderType == RT_POLYOBJ);
 props = &gameData.reactor.props [objP->id];
 //instance gun position & orientation
-VmVecRotate (vGunPoint, props->gunPoints + nGun, viewP);
-VmVecInc (vGunPoint, &objP->position.vPos);
-VmVecRotate (vGunDir, props->gun_dirs + nGun, viewP);
+*vGunPoint = *viewP * props->gunPoints[nGun];
+*vGunPoint += objP->position.vPos;
+*vGunDir = *viewP * props->gun_dirs[nGun];
 }
 
 //	-----------------------------------------------------------------------------
@@ -65,9 +65,9 @@ for (i = 0; i < nGunCount; i++) {
 	fix			dot;
 	vmsVector	vGun;
 
-	VmVecSub (&vGun, vObjPos, vGunPos + i);
-	VmVecNormalize (&vGun);
-	dot = VmVecDot (vGunDir + i, &vGun);
+	vGun = *vObjPos - vGunPos[i];
+	vmsVector::normalize(vGun);
+	dot = vmsVector::dot(vGunDir[i], vGun);
 	if (dot > xBestDot) {
 		xBestDot = dot;
 		nBestGun = i;
@@ -140,8 +140,8 @@ xScale = 1;
 if (gameStates.app.nDifficultyLevel == 0)
 	xScale = 4;
 h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
-gameData.objs.console->mType.physInfo.rotVel.p.x += (FixMul (d_rand () - 16384, h)) / xScale;
-gameData.objs.console->mType.physInfo.rotVel.p.z += (FixMul (d_rand () - 16384, h)) / xScale;
+gameData.objs.console->mType.physInfo.rotVel[X] += (FixMul (d_rand () - 16384, h)) / xScale;
+gameData.objs.console->mType.physInfo.rotVel[Z] += (FixMul (d_rand () - 16384, h)) / xScale;
 //	Hook in the rumble sound effect here.
 oldTime = gameData.reactor.countdown.nTimer;
 if (!TimeStopped ())
@@ -306,8 +306,8 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		if (i == MAX_SIDES_PER_SEGMENT)
 			return;
 
-		VmVecSub (&vecToPlayer, &gameData.objs.console->position.vPos, &objP->position.vPos);
-		xDistToPlayer = VmVecNormalize (&vecToPlayer);
+		vecToPlayer = gameData.objs.console->position.vPos - objP->position.vPos;
+		xDistToPlayer = vmsVector::normalize(vecToPlayer);
 		if (xDistToPlayer < F1_0 * 200) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
 			rStatP->nNextFireTime = 0;
@@ -323,8 +323,8 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 		vmsVector	vecToPlayer;
 		fix			xDistToPlayer;
 
-		VmVecSub (&vecToPlayer, &gameData.objs.console->position.vPos, &objP->position.vPos);
-		xDistToPlayer = VmVecNormalize (&vecToPlayer);
+		vecToPlayer = gameData.objs.console->position.vPos - objP->position.vPos;
+		xDistToPlayer = vmsVector::normalize(vecToPlayer);
 		rStatP->xLastVisCheckTime = gameData.time.xGame;
 		if (xDistToPlayer < F1_0 * 120) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
@@ -345,12 +345,12 @@ if ((rStatP->nNextFireTime < 0) &&
 		fix			xDeltaFireTime;
 
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
-			VmVecSub (&vecToGoal, &gameData.ai.vBelievedPlayerPos, &rStatP->vGunPos [nBestGun]);
-			xDistToPlayer = VmVecNormalize (&vecToGoal);
+			vecToGoal = gameData.ai.vBelievedPlayerPos - rStatP->vGunPos[nBestGun];
+			xDistToPlayer = vmsVector::normalize(vecToGoal);
 			} 
 		else {
-			VmVecSub (&vecToGoal, &gameData.objs.console->position.vPos, &rStatP->vGunPos [nBestGun]);
-			xDistToPlayer = VmVecNormalize (&vecToGoal);
+			vecToGoal = gameData.objs.console->position.vPos - rStatP->vGunPos [nBestGun];
+			xDistToPlayer = vmsVector::normalize(vecToGoal);
 			}
 		if (xDistToPlayer > F1_0 * 300) {
 			rStatP->bHit = 0;
@@ -366,9 +366,9 @@ if ((rStatP->nNextFireTime < 0) &&
 		while ((d_rand () > nRandProb) && (count < 4)) {
 			vmsVector	vRand;
 
-			MakeRandomVector (&vRand);
-			VmVecScaleInc (&vecToGoal, &vRand, F1_0/6);
-			VmVecNormalize (&vecToGoal);
+			vRand = vmsVector::Random();
+			vecToGoal += vRand * (F1_0/6);
+			vmsVector::normalize(vecToGoal);
 			if (IsMultiGame)
 				MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
 			CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);
@@ -528,9 +528,9 @@ for (i = 0; i < n; i++) {
 	r[i].nModel = CFReadInt (fp);
 	r[i].nGuns = CFReadInt (fp);
 	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-		CFReadVector (r [i].gunPoints + j, fp);
+		CFReadVector (r[i].gunPoints[j], fp);
 	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-		CFReadVector (r [i].gun_dirs + j, fp);
+		CFReadVector (r[i].gun_dirs[j], fp);
 	}
 return i;
 }

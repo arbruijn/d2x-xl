@@ -73,7 +73,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //#define _MARK_ON 1
 #ifdef __WATCOMC__
 #if __WATCOMC__ < 1000
-#include <wsample.h>		//should come after inferno.h to get mark setting
+#include <wsample.h>		//should come after inferno[HA] to get mark setting
 #endif
 #endif
 

@@ -2121,7 +2121,7 @@ else if (bRandom == 1) {
 	nSpawnPos = GetRandomPlayerPosition ();
 	}
 else {
-	goto done; // If deathmatch and not random, positions were already determined by sync packet
+	goto done; // If deathmatch and not Random, positions were already determined by sync packet
 	}
 Assert (nSpawnPos >= 0);
 Assert (nSpawnPos < gameData.multiplayer.nPlayerPositions);

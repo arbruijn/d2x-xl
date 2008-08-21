@@ -36,7 +36,7 @@ typedef struct tReactorProps {
 	int nGuns;
 	vmsVector gunPoints[MAX_CONTROLCEN_GUNS];
 	vmsVector gun_dirs[MAX_CONTROLCEN_GUNS];
-} __pack__ tReactorProps;
+} tReactorProps;
 
 #define MAX_REACTORS 7
 

@@ -33,11 +33,12 @@ if (pPath->nSize && ((pPath->tUpdate < 0) || (t >= pPath->tRefresh))) {
 	pPath->tUpdate = t;
 //	h = pPath->nEnd;
 	pPath->nEnd = (pPath->nEnd + 1) % pPath->nSize;
-	pPath->path [pPath->nEnd].vOrgPos = objP->position.vPos;
-	pPath->path [pPath->nEnd].vPos = objP->position.vPos;
-	pPath->path [pPath->nEnd].mOrient = objP->position.mOrient;
-	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->position.mOrient.fVec, 0);
-	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->position.mOrient.uVec, 0);
+	pPath->path[pPath->nEnd].vOrgPos = objP->position.vPos;
+	pPath->path[pPath->nEnd].vPos = objP->position.vPos;
+	pPath->path[pPath->nEnd].mOrient = objP->position.mOrient;
+	// TODO: WTF??
+	pPath->path[pPath->nEnd].vPos += objP->position.mOrient[FVEC] * 0;
+	pPath->path[pPath->nEnd].vPos += objP->position.mOrient[UVEC] * 0;
 //	if (!memcmp (pPath->path + h, pPath->path + pPath->nEnd, sizeof (tMovementPath)))
 //		pPath->nEnd = h;
 //	else 
@@ -62,7 +63,7 @@ do {
 	if (!i)
 		i = pPath->nSize;
 	i--;
-	if (VmVecDist (&pPath->path [i].vPos, p) >= i2f (15))
+	if (vmsVector::dist(pPath->path [i].vPos, *p) >= i2f (15))
 		break;
 	}
 while (i != pPath->nStart);
@@ -76,11 +77,11 @@ void GetViewPoint (void)
 	tPathPoint		*p = GetPathPoint (&externalView);
 
 if (!p)
-	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.fVec, PP_DELTAZ);
+	gameData.render.mine.viewerEye += gameData.objs.viewer->position.mOrient[FVEC] * PP_DELTAZ;
 else {
 	gameData.render.mine.viewerEye = p->vPos;
-	VmVecScaleInc (&gameData.render.mine.viewerEye, &p->mOrient.fVec, PP_DELTAZ * 2 / 3);
-	VmVecScaleInc (&gameData.render.mine.viewerEye, &p->mOrient.uVec, PP_DELTAY * 2 / 3);
+	gameData.render.mine.viewerEye += p->mOrient[FVEC] * (PP_DELTAZ * 2 / 3);
+	gameData.render.mine.viewerEye += p->mOrient[UVEC] * (PP_DELTAY * 2 / 3);
 	}
 }
 

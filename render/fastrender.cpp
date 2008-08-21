@@ -1130,12 +1130,12 @@ return hBuffer;
 void ComputeFragLight (float lightRange)
 {
 	fVector	*vertPos, *vertNorm, *lightPos, lightColor, lightDir;
-	fVector	vReflect, vertColor = {{0, 0, 0, 0}};
+	fVector	vReflect, vertColor = fVector::ZERO;
 	float		nType, radius, brightness, specular;
 	float		attenuation, lightDist, NdotL, RdotE;
 	int		i;
 
-	static fVector matAmbient = {{0.01f, 0.01f, 0.01f, 1.0f}};
+	static fVector matAmbient = fVector::Create(0.01f, 0.01f, 0.01f, 1.0f);
 	//static fVector matDiffuse = {{1.0f, 1.0f, 1.0f, 1.0f}};
 	//static fVector matSpecular = {{1.0f, 1.0f, 1.0f, 1.0f}};
 	static float shininess = 96.0;
@@ -1145,12 +1145,12 @@ for (i = 0; i < vld.nLights; i++) {
 	vertNorm = vld.buffers [1] + i;
 	lightPos = vld.buffers [2] + i;
 	lightColor = vld.buffers [3][i];
-	nType = vertNorm->p.w;
-	radius = lightPos->p.w;
-	brightness = lightColor.p.w;
-	VmVecSub (&lightDir, lightPos, vertPos);
-	lightDist = VmVecMag (&lightDir) / lightRange;
-	VmVecNormalize (&lightDir, &lightDir);
+	nType = (*vertNorm)[W];
+	radius = (*lightPos)[W];
+	brightness = lightColor[W];
+	lightDir = *lightPos - *vertPos;
+	lightDist = lightDir.mag() / lightRange;
+	fVector::normalize(lightDir);
 	if (nType)
 		lightDist -= radius;
 	if (lightDist < 1.0f) {
@@ -1161,29 +1161,30 @@ for (i = 0; i < vld.nLights; i++) {
 		lightDist *= lightDist;
 		if (nType)
 			lightDist *= 2.0f;
-		NdotL = VmVecDot (vertNorm, &lightDir);
+		NdotL = fVector::dot(*vertNorm, lightDir);
 		if (NdotL < 0.0f)
 			NdotL = 0.0f;
 		}	
 	attenuation = lightDist / brightness;
-	vertColor.c.r = (matAmbient.c.r + NdotL) * lightColor.c.r;
-	vertColor.c.g = (matAmbient.c.g + NdotL) * lightColor.c.g;
-	vertColor.c.b = (matAmbient.c.b + NdotL) * lightColor.c.b;
+	vertColor[R] = (matAmbient[R] + NdotL) * lightColor[R];
+	vertColor[G] = (matAmbient[G] + NdotL) * lightColor[G];
+	vertColor[B] = (matAmbient[B] + NdotL) * lightColor[B];
 	if (NdotL > 0.0f) {
-		VmVecReflect (&vReflect, VmVecNegate (&lightDir), vertNorm);
-		VmVecNormalize (&vReflect, &vReflect);
-		VmVecNormalize (lightPos, VmVecNegate (lightPos));
-		RdotE = VmVecDot (&vReflect, lightPos);
+		vReflect = fVector::reflect(lightDir.neg(), *vertNorm);
+		fVector::normalize(vReflect);
+		lightPos->neg();
+		fVector::normalize(*lightPos);
+		RdotE = fVector::dot(vReflect, *lightPos);
 		if (RdotE < 0.0f)
 			RdotE = 0.0f;
 		specular = (float) pow (RdotE, shininess);
-		vertColor.c.r += lightColor.c.r * specular;
-		vertColor.c.g += lightColor.c.g * specular;
-		vertColor.c.b += lightColor.c.b * specular;
+		vertColor[R] += lightColor[R] * specular;
+		vertColor[G] += lightColor[G] * specular;
+		vertColor[B] += lightColor[B] * specular;
 		}	
-	vld.colors [i].c.r = vertColor.c.r / attenuation;
-	vld.colors [i].c.g = vertColor.c.g / attenuation;
-	vld.colors [i].c.b = vertColor.c.b / attenuation;
+	vld.colors [i][R] = vertColor[R] / attenuation;
+	vld.colors [i][G] = vertColor[G] / attenuation;
+	vld.colors [i][B] = vertColor[B] / attenuation;
 	}
 }
 
@@ -1254,19 +1255,19 @@ for (i = 0, pc = vld.colors; i < vld.nVertices; i++) {
 	vertColor.blue += gameData.render.color.ambient [nVertex].color.blue;
 	if (gameOpts->render.color.nSaturation == 2) {
 		for (j = 0, nLights = vld.index [i].nLights; j < nLights; j++, pc++) {
-			if (vertColor.red < pc->c.r)
-				vertColor.red = pc->c.r;
-			if (vertColor.green < pc->c.g)
-				vertColor.green = pc->c.g;
-			if (vertColor.blue < pc->c.b)
-				vertColor.blue = pc->c.b;
+			if (vertColor.red < (*pc)[R])
+				vertColor.red = (*pc)[R];
+			if (vertColor.green < (*pc)[G])
+				vertColor.green = (*pc)[G];
+			if (vertColor.blue < (*pc)[B])
+				vertColor.blue = (*pc)[B];
 			}
 		}
 	else {
 		for (j = 0, nLights = vld.index [i].nLights; j < nLights; j++, pc++) {
-			vertColor.red += pc->c.r;
-			vertColor.green += pc->c.g;
-			vertColor.blue += pc->c.b;
+			vertColor.red += (*pc)[R];
+			vertColor.green += (*pc)[G];
+			vertColor.blue += (*pc)[B];
 			}
 		if (gameOpts->render.color.nSaturation) {	//if a color component is > 1, cap color components using highest component value
 			float	cMax = vertColor.red;
@@ -1380,10 +1381,10 @@ else if (nState == 1) {
 		vld.buffers [1][i] = vNormal;
 		vld.buffers [2][i] = psl->vPosf [0];
 		vld.buffers [3][i] = *((fVector *) &psl->info.color);
-		vld.buffers [0][i].p.w = 1.0f;
-		vld.buffers [1][i].p.w = (psl->info.nType < 2) ? 1.0f : 0.0f;
-		vld.buffers [2][i].p.w = psl->info.fRad;
-		vld.buffers [3][i].p.w = psl->info.fBrightness;
+		vld.buffers [0][i][W] = 1.0f;
+		vld.buffers [1][i][W] = (psl->info.nType < 2) ? 1.0f : 0.0f;
+		vld.buffers [2][i][W] = psl->info.fRad;
+		vld.buffers [3][i][W] = psl->info.fBrightness;
 		nLights++;
 		}
 	if (nLights) {
@@ -1499,9 +1500,9 @@ for (i = nStart; i != nEnd; i++) {
 							if (nVertex == nDbgVertex)
 								nDbgVertex = nDbgVertex;
 #endif
-							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, 
-												&gameData.segs.fVertices [nVertex].v3, nVertex, 
-												NULL, &c, 1, 0, nThread);
+							G3VertexColor(gameData.segs.points[nVertex].p3_normal.vNormal.v3(), 
+							              gameData.segs.fVertices[nVertex].v3(), nVertex, 
+							              NULL, &c, 1, 0, nThread);
 							gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 							ResetNearestVertexLights (nVertex, nThread);
 							}
@@ -1628,8 +1629,8 @@ for (i = nStart; i != nEnd; i += nIncr) {
 								if (nVertex == nDbgVertex)
 									nDbgVertex = nDbgVertex;
 #endif
-								G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, 
-													&gameData.segs.fVertices [nVertex].v3, nVertex, 
+								G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.v3(), 
+													gameData.segs.fVertices [nVertex].v3(), nVertex, 
 													NULL, &c, 1, 0, nThread);
 								gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 								ResetNearestVertexLights (nVertex, nThread);

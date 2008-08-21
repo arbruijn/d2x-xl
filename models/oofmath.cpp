@@ -222,49 +222,49 @@ return pm;
 
 //------------------------------------------------------------------------------
 
-float *OOF_VecVms2Gl (float *pDest, vmsVector *pSrc)
+float *OOF_VecVms2Gl (float *pDest, const vmsVector& src)
 {
-pDest [0] = (float) pSrc->p.x / 65536.0f;
-pDest [1] = (float) pSrc->p.y / 65536.0f;
-pDest [2] = (float) pSrc->p.z / 65536.0f;
-pDest [3] = 1.0f;
+pDest[0] = (float)src[X] / 65536.0f;
+pDest[1] = (float)src[Y] / 65536.0f;
+pDest[2] = (float)src[Z] / 65536.0f;
+pDest[3] = 1.0f;
 return pDest;
 }
 
 //------------------------------------------------------------------------------
 
-float *OOF_MatVms2Gl (float *pDest, vmsMatrix *pSrc)
+float *OOF_MatVms2Gl (float *pDest, const vmsMatrix& src)
 {
 OOF_GlIdent (pDest);
-pDest [0] = f2fl (pSrc->rVec.p.x);
-pDest [4] = f2fl (pSrc->rVec.p.y);
-pDest [8] = f2fl (pSrc->rVec.p.z);
-pDest [1] = f2fl (pSrc->uVec.p.x);
-pDest [5] = f2fl (pSrc->uVec.p.y);
-pDest [9] = f2fl (pSrc->uVec.p.z);
-pDest [2] = f2fl (pSrc->fVec.p.x);
-pDest [6] = f2fl (pSrc->fVec.p.y);
-pDest [10] = f2fl (pSrc->fVec.p.z);
+pDest[0] = f2fl(src[RVEC][X]);
+pDest[4] = f2fl(src[RVEC][Y]);
+pDest[8] = f2fl(src[RVEC][Z]);
+pDest[1] = f2fl(src[UVEC][X]);
+pDest[5] = f2fl(src[UVEC][Y]);
+pDest[9] = f2fl(src[UVEC][Z]);
+pDest[2] = f2fl(src[FVEC][X]);
+pDest[6] = f2fl(src[FVEC][Y]);
+pDest[10] = f2fl(src[FVEC][Z]);
 return pDest;
 }
 
 //------------------------------------------------------------------------------
 
-float *OOF_VecVms2Oof (tOOF_vector *pDest, vmsVector *pSrc)
+float *OOF_VecVms2Oof (tOOF_vector *pDest, const vmsVector& src)
 {
-pDest->x = (float) pSrc->p.x / 65536.0f;
-pDest->y = (float) pSrc->p.y / 65536.0f;
-pDest->z = (float) pSrc->p.z / 65536.0f;
+pDest->x = (float)src[X] / 65536.0f;
+pDest->y = (float)src[Y] / 65536.0f;
+pDest->z = (float)src[Z] / 65536.0f;
 return (float *) pDest;
 }
 
 //------------------------------------------------------------------------------
 
-float *OOF_MatVms2Oof (tOOF_matrix *pDest, vmsMatrix *pSrc)
+float *OOF_MatVms2Oof (tOOF_matrix *pDest, const vmsMatrix& src)
 {
-OOF_VecVms2Oof (&pDest->f, &pSrc->fVec);
-OOF_VecVms2Oof (&pDest->u, &pSrc->uVec);
-OOF_VecVms2Oof (&pDest->r, &pSrc->rVec);
+OOF_VecVms2Oof (&pDest->f, src[FVEC]);
+OOF_VecVms2Oof (&pDest->u, src[UVEC]);
+OOF_VecVms2Oof (&pDest->r, src[RVEC]);
 return (float *) pDest;
 }
 

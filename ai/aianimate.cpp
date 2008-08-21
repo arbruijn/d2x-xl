@@ -46,14 +46,14 @@ if (gameOpts->gameplay.bIdleAnims) {
 
 	for (i = 0; i < 8; i++) {
 		vVertex = gameData.segs.vertices + segP->verts [i];
-		if ((vGoal.p.x == vVertex->p.x) && (vGoal.p.y == vVertex->p.y) && (vGoal.p.z == vVertex->p.z))
+		if ((vGoal[X] == (*vVertex)[X]) && (vGoal[Y] == (*vVertex)[Y]) && (vGoal[Z] == (*vVertex)[Z]))
 			break;
 		}
-	VmVecNormalize (VmVecSub (&vVecToGoal, &vGoal, &objP->position.vPos));
+	vVecToGoal = vGoal - objP->position.vPos; vmsVector::normalize(vVecToGoal);
 	if (i == 8)
 		h = 1;
 	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->id).turnTime [2]) < F1_0 - F1_0 / 5) {
-		if (VmVecDot (&vVecToGoal, &objP->position.mOrient.fVec) > F1_0 - F1_0 / 5)
+		if (vmsVector::dot(vVecToGoal, objP->position.mOrient[FVEC]) > F1_0 - F1_0 / 5)
 			h = rand () % 2 == 0;
 		else
 			h = 0;
@@ -125,12 +125,12 @@ int DoSillyAnimation (tObject *objP)
 				Int3 ();		// Contact Mike: incompatible data, illegal jointnum, problem in pof file?
 				continue;
 			}
-			if (jp->p != pObjP->p) {
+			if ((*jp)[PA] != (*pObjP)[PA]) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles [jointnum].p = jp->p;
+				gameData.ai.localInfo [nObject].goalAngles [jointnum][PA] = (*jp)[PA];
 
-				delta_angle = jp->p - pObjP->p;
+				delta_angle = (*jp)[PA] - (*pObjP)[PA];
 				if (delta_angle >= F1_0/2)
 					delta_2 = -ANIM_RATE;
 				else if (delta_angle >= 0)
@@ -143,15 +143,15 @@ int DoSillyAnimation (tObject *objP)
 				if (flinch_attack_scale != 1)
 					delta_2 *= flinch_attack_scale;
 
-				gameData.ai.localInfo [nObject].deltaAngles [jointnum].p = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
+				gameData.ai.localInfo [nObject].deltaAngles [jointnum][PA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
 			}
 
-			if (jp->b != pObjP->b) {
+			if ((*jp)[BA] != (*pObjP)[BA]) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles [jointnum].b = jp->b;
+				gameData.ai.localInfo [nObject].goalAngles [jointnum][BA] = (*jp)[BA];
 
-				delta_angle = jp->b - pObjP->b;
+				delta_angle = (*jp)[BA] - (*pObjP)[BA];
 				if (delta_angle >= F1_0/2)
 					delta_2 = -ANIM_RATE;
 				else if (delta_angle >= 0)
@@ -164,15 +164,15 @@ int DoSillyAnimation (tObject *objP)
 				if (flinch_attack_scale != 1)
 					delta_2 *= flinch_attack_scale;
 
-				gameData.ai.localInfo [nObject].deltaAngles [jointnum].b = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
+				gameData.ai.localInfo [nObject].deltaAngles [jointnum][BA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
 			}
 
-			if (jp->h != pObjP->h) {
+			if ((*jp)[HA] != (*pObjP)[HA]) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles [jointnum].h = jp->h;
+				gameData.ai.localInfo [nObject].goalAngles [jointnum][HA] = (*jp)[HA];
 
-				delta_angle = jp->h - pObjP->h;
+				delta_angle = (*jp)[HA] - (*pObjP)[HA];
 				if (delta_angle >= F1_0/2)
 					delta_2 = -ANIM_RATE;
 				else if (delta_angle >= 0)
@@ -185,7 +185,7 @@ int DoSillyAnimation (tObject *objP)
 				if (flinch_attack_scale != 1)
 					delta_2 *= flinch_attack_scale;
 
-				gameData.ai.localInfo [nObject].deltaAngles [jointnum].h = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
+				gameData.ai.localInfo [nObject].deltaAngles [jointnum][HA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
 			}
 		}
 
@@ -227,43 +227,43 @@ void AIFrameAnimation (tObject *objP)
 		vmsAngVec	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
 
 		Assert (nObject >= 0);
-		delta_to_goal = goalangp->p - curangp->p;
+		delta_to_goal = (*goalangp)[PA] - (*curangp)[PA];
 		if (delta_to_goal > 32767)
 			delta_to_goal = delta_to_goal - 65536;
 		else if (delta_to_goal < -32767)
 			delta_to_goal = 65536 + delta_to_goal;
 
 		if (delta_to_goal) {
-			scaled_delta_angle = FixMul (deltaangp->p, gameData.time.xFrame) * DELTA_ANG_SCALE;
-			curangp->p += (fixang) scaled_delta_angle;
+			scaled_delta_angle = FixMul ((*deltaangp)[PA], gameData.time.xFrame) * DELTA_ANG_SCALE;
+			(*curangp)[PA] += (fixang) scaled_delta_angle;
 			if (abs (delta_to_goal) < abs (scaled_delta_angle))
-				curangp->p = goalangp->p;
+				(*curangp)[PA] = (*goalangp)[PA];
 		}
 
-		delta_to_goal = goalangp->b - curangp->b;
+		delta_to_goal = (*goalangp)[BA] - (*curangp)[BA];
 		if (delta_to_goal > 32767)
 			delta_to_goal = delta_to_goal - 65536;
 		else if (delta_to_goal < -32767)
 			delta_to_goal = 65536 + delta_to_goal;
 
 		if (delta_to_goal) {
-			scaled_delta_angle = FixMul (deltaangp->b, gameData.time.xFrame) * DELTA_ANG_SCALE;
-			curangp->b += (fixang) scaled_delta_angle;
+			scaled_delta_angle = FixMul ((*deltaangp)[BA], gameData.time.xFrame) * DELTA_ANG_SCALE;
+			(*curangp)[BA] += (fixang) scaled_delta_angle;
 			if (abs (delta_to_goal) < abs (scaled_delta_angle))
-				curangp->b = goalangp->b;
+				(*curangp)[BA] = (*goalangp)[BA];
 		}
 
-		delta_to_goal = goalangp->h - curangp->h;
+		delta_to_goal = (*goalangp)[HA] - (*curangp)[HA];
 		if (delta_to_goal > 32767)
 			delta_to_goal = delta_to_goal - 65536;
 		else if (delta_to_goal < -32767)
 			delta_to_goal = 65536 + delta_to_goal;
 
 		if (delta_to_goal) {
-			scaled_delta_angle = FixMul (deltaangp->h, gameData.time.xFrame) * DELTA_ANG_SCALE;
-			curangp->h += (fixang) scaled_delta_angle;
+			scaled_delta_angle = FixMul ((*deltaangp)[HA], gameData.time.xFrame) * DELTA_ANG_SCALE;
+			(*curangp)[HA] += (fixang) scaled_delta_angle;
 			if (abs (delta_to_goal) < abs (scaled_delta_angle))
-				curangp->h = goalangp->h;
+				(*curangp)[HA] = (*goalangp)[HA];
 		}
 
 	}
@@ -285,14 +285,14 @@ if (!xRollDuration)
 
 xRollVal = FixDiv (gameData.time.xGame - StartTime, xRollDuration);
 
-FixSinCos (FixMul (xRollVal, xRollVal), &temp, &objP->mType.physInfo.rotVel.p.x);
-FixSinCos (xRollVal, &temp, &objP->mType.physInfo.rotVel.p.y);
-FixSinCos (xRollVal-F1_0/8, &temp, &objP->mType.physInfo.rotVel.p.z);
+FixSinCos (FixMul (xRollVal, xRollVal), &temp, &objP->mType.physInfo.rotVel[X]);
+FixSinCos (xRollVal, &temp, &objP->mType.physInfo.rotVel[Y]);
+FixSinCos (xRollVal-F1_0/8, &temp, &objP->mType.physInfo.rotVel[Z]);
 
 temp = gameData.time.xGame - StartTime;
-objP->mType.physInfo.rotVel.p.x = temp / 9;
-objP->mType.physInfo.rotVel.p.y = temp / 5;
-objP->mType.physInfo.rotVel.p.z = temp / 7;
+objP->mType.physInfo.rotVel[X] = temp / 9;
+objP->mType.physInfo.rotVel[Y] = temp / 5;
+objP->mType.physInfo.rotVel[Z] = temp / 7;
 
 if (gameOpts->sound.digiSampleRate) {
 	soundP = gameData.pig.sound.pSounds + DigiXlatSound (deathSound);
@@ -334,7 +334,7 @@ int DoAnyRobotDyingFrame (tObject *objP)
 {
 if (objP->cType.aiInfo.xDyingStartTime) {
 	int bDeathRoll = ROBOTINFO (objP->id).bDeathRoll;
-	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, min (bDeathRoll/2+1,6)*F1_0, &objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP->id).deathrollSound, bDeathRoll*F1_0/8, bDeathRoll*F1_0/2); 
+	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, min (bDeathRoll/2+1,6)*F1_0, &objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP->id).deathrollSound, bDeathRoll*F1_0/8, bDeathRoll*F1_0/2);
 	if (rval) {
 		ExplodeObject (objP, F1_0/4);
 		DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
