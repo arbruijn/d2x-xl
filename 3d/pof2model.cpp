@@ -105,7 +105,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-tG3ModelFace *G3AddModelFace (tG3Model *pm, tG3SubModel *psm, tG3ModelFace *pmf, vmsVector *pn, ubyte *p,
+tG3ModelFace *G3AddModelFace (tG3Model *pm, tG3SubModel *psm, tG3ModelFace *pmf, vmsVector *pn, ubyte *p, 
 										grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
 {
 	short				nVerts = WORDVAL (p+2);
@@ -158,7 +158,7 @@ pmf->nVerts = nVerts;
 if ((pmf->bGlow = (nGlow >= 0)))
 	nGlow = -1;
 uvl = (tUVL *) (p + 30 + (nVerts | 1) * 2);
-n = pn->toFloat3();
+VmVecFixToFloat (&n, pn);
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
 	Assert (pmv - pm->pFaceVerts < pm->nFaceVerts);
@@ -180,7 +180,7 @@ return ++pmf;
 
 //------------------------------------------------------------------------------
 
-int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int nThis, int nParent,
+int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int nThis, int nParent, 
 								int bSubObject, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
 {
 	ubyte				*p = (ubyte *) modelP;
@@ -214,10 +214,8 @@ for (;;) {
 			int i, n = WORDVAL (p+2);
 			fVector3 *pfv = pm->pVerts;
 			vmsVector *pv = VECPTR (p+4);
-			for (i = n; i; i--) {
-				*pfv = pv->toFloat3();
-				pfv++; pv++;
-			}
+			for (i = n; i; i--)
+				VmVecFixToFloat (pfv++, pv++);
 			p += n * sizeof (vmsVector) + 4;
 			break;
 			}
@@ -227,10 +225,8 @@ for (;;) {
 			int s = WORDVAL (p+4);
 			fVector3 *pfv = pm->pVerts + s;
 			vmsVector *pv = VECPTR (p+8);
-			for (i = n; i; i--) {
-				*pfv = pv->toFloat3();
-				pfv++; pv++;
-			}
+			for (i = n; i; i--)
+				VmVecFixToFloat (pfv++, pv++);
 			p += n * sizeof (vmsVector) + 8;
 			break;
 			}

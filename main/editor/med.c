@@ -694,11 +694,11 @@ int SetPlayerFromCursegMinusOne()
 	for (i=max=0;i<4;i++) {
 		corner_v[i] = gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][i]]];
 		G3TransformAndEncodePoint(&corner_p[i],&corner_v[i]);
-		if (labs(corner_p[i].p3_vec[X]) > max) max = labs(corner_p[i].p3_vec[X]);
-		if (labs(corner_p[i].p3_vec[Y]) > max) max = labs(corner_p[i].p3_vec[Y]);
+		if (labs(corner_p[i].p3_x) > max) max = labs(corner_p[i].p3_x);
+		if (labs(corner_p[i].p3_y) > max) max = labs(corner_p[i].p3_y);
 	}
 
-	viewDist = FixMul(viewDist,FixDiv(FixDiv(max,SIDE_VIEW_FRAC),corner_p[0].p3_vec[Z]);
+	viewDist = FixMul(viewDist,FixDiv(FixDiv(max,SIDE_VIEW_FRAC),corner_p[0].p3_z);
 	VmVecCopyScale(&view_vec2,&view_vec,viewDist);
 	VmVecSub(&gameData.objs.console->position.vPos,&side_center,&view_vec2);
 
@@ -838,7 +838,7 @@ int GameZoomOut()
 	return 1;
 }
 
-int GameZoostd::min()
+int GameZoomIn()
 {
 	gameStates.render.xZoom = FixMul(gameStates.render.xZoom,62259);
 	UpdateFlags |= UF_GAME_VIEW_CHANGED;

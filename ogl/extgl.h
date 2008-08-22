@@ -204,10 +204,10 @@ ARB_vertex_bufferObject and hopefully cygwin support. Fixed a typo in a license.
 #endif
 
 #ifdef __gl_h_
-#error extgl[HA] should be included before gl.h
+#error extgl.h should be included before gl.h
 #endif
 #ifdef __GL_H_
-#error extgl[HA] should be included before gl.h
+#error extgl.h should be included before gl.h
 #endif
 
 #ifndef WINGDIAPI

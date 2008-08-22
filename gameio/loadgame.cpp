@@ -446,7 +446,8 @@ void InitAIForShip (void);
 
 void AddPlayerLoadout (void)
 {
-if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
+if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) 
+	{
 	LOCALPLAYER.primaryWeaponFlags |= extraGameInfo [IsMultiGame].loadout.nGuns;
 	if (gameStates.app.bD1Mission)
 	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
@@ -459,7 +460,8 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevices;
 	if (extraGameInfo [1].bDarkness)
 		LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
-	if (gameStates.app.bD1Mission) {
+	if (gameStates.app.bD1Mission) 
+		{
 	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
 	   LOCALPLAYER.flags &= ~(PLAYER_FLAGS_FULLMAP | PLAYER_FLAGS_AMMO_RACK | PLAYER_FLAGS_CONVERTER | PLAYER_FLAGS_AFTERBURNER | PLAYER_FLAGS_HEADLIGHT);
 	   }
@@ -2121,7 +2123,7 @@ else if (bRandom == 1) {
 	nSpawnPos = GetRandomPlayerPosition ();
 	}
 else {
-	goto done; // If deathmatch and not Random, positions were already determined by sync packet
+	goto done; // If deathmatch and not random, positions were already determined by sync packet
 	}
 Assert (nSpawnPos >= 0);
 Assert (nSpawnPos < gameData.multiplayer.nPlayerPositions);

@@ -1917,9 +1917,9 @@ void KCReadExternalControls ()
 
 			Kconfig_abs_movement = (vmsAngVec *) (size_t) ((size_t) kc_external_control + sizeof (ext_control_info));
 
-			if (!Kconfig_abs_movement->isZero())	{
-				tempm = vmsMatrix::Create(*Kconfig_abs_movement);
-				ViewMatrix = OBJECTS [LOCALPLAYER.nObject].position.mOrient * tempm;
+			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
+				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
+				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].position.mOrient,&tempm);
 				OBJECTS [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;	
 			}
 			oem_message = (char *) (size_t) ((size_t)Kconfig_abs_movement + sizeof (vmsAngVec));

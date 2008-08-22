@@ -31,7 +31,7 @@ static int bErrMsg = 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_Error(const char *pszMsg)
+int ASE_Error (const char *pszMsg)
 {
 if (!bErrMsg) {
 	if (pszMsg)
@@ -151,10 +151,9 @@ return pszToken ? pszToken : (char *) "";
 void ASE_ReadVector (CFILE *cfP, fVector3 *pv)
 {
 #if ASE_ROTATE_MODEL
-	float x = FloatTok (" \t");
-	float z = -FloatTok (" \t");
-	float y = FloatTok (" \t");
-	*pv = fVector3::Create(x, y, z);
+pv->p.x = FloatTok (" \t");
+pv->p.z = -FloatTok (" \t");
+pv->p.y = FloatTok (" \t");
 #else	// need to rotate model for Descent
 	int	i;
 
@@ -290,7 +289,7 @@ while ((pszToken = ASE_ReadLine (cfP))) {
 		return 1;
 	if (!strcmp (pszToken, "*TM_POS")) {
 		for (i = 0; i < 3; i++)
-			psm->vOffset[i] = 0; //FloatTok (" \t");
+			psm->vOffset.v [i] = 0; //FloatTok (" \t");
 		}
 	}
 return ASE_Error ("unexpected end of file");

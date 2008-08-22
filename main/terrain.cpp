@@ -139,8 +139,8 @@ vmsVector *get_dy_vec (int h)
 dyp = yCache + h;
 if (!ycFlags [h]) {
 	vmsVector tv;
-	tv = mSurfaceOrient[UVEC] * (h * TERRAIN_HEIGHT_SCALE);
-	G3RotateDeltaVec(*dyp, tv);
+	VmVecCopyScale (&tv, &mSurfaceOrient.uVec, h * TERRAIN_HEIGHT_SCALE);
+	G3RotateDeltaVec (dyp, &tv);
 	ycFlags [h] = 1;
 	}
 return dyp;
@@ -171,22 +171,22 @@ jLow = 0;
 jHigh = gameData.render.terrain.nGridH - 1;
 memset (ycFlags, 0, sizeof (ycFlags));
 gameStates.render.nInterpolationMethod = im;
-tv = mSurfaceOrient[RVEC] * TERRAIN_GRID_SCALE;
-G3RotateDeltaVec(delta_i, tv);
-tv = mSurfaceOrient[FVEC] * TERRAIN_GRID_SCALE;
-G3RotateDeltaVec(delta_j, tv);
-gameData.render.terrain.vStartPoint = *vOrgPoint + mSurfaceOrient[RVEC] *
-					-(gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE;
-gameData.render.terrain.vStartPoint += mSurfaceOrient[FVEC] *  
-		(-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
-tv = gameData.objs.viewer->position.vPos - gameData.render.terrain.vStartPoint;
-iViewer = vmsVector::dot(tv, mSurfaceOrient[RVEC]) / TERRAIN_GRID_SCALE;
+VmVecCopyScale (&tv, &mSurfaceOrient.rVec, TERRAIN_GRID_SCALE);
+G3RotateDeltaVec (&delta_i, &tv);
+VmVecCopyScale (&tv, &mSurfaceOrient.fVec, TERRAIN_GRID_SCALE);
+G3RotateDeltaVec (&delta_j, &tv);
+VmVecScaleAdd (&gameData.render.terrain.vStartPoint, vOrgPoint, &mSurfaceOrient.rVec,
+					-(gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
+VmVecScaleInc (&gameData.render.terrain.vStartPoint, &mSurfaceOrient.fVec, 
+					-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
+VmVecSub (&tv, &gameData.objs.viewer->position.vPos, &gameData.render.terrain.vStartPoint);
+iViewer = VmVecDot (&tv, &mSurfaceOrient.rVec) / TERRAIN_GRID_SCALE;
 if (iViewer > iHigh)
 	iViewer = iHigh;
-jViewer = vmsVector::dot(tv, mSurfaceOrient[FVEC]) / TERRAIN_GRID_SCALE;
+jViewer = VmVecDot (&tv, &mSurfaceOrient.fVec) / TERRAIN_GRID_SCALE;
 if (jViewer > jHigh)
 	jViewer = jHigh;
-G3TransformAndEncodePoint(&pLast, gameData.render.terrain.vStartPoint);
+G3TransformAndEncodePoint (&pLast, &gameData.render.terrain.vStartPoint);
 pLowSave = pLast;
 for (j = jLow; j <= jHigh; j++) {
 	G3AddDeltaVec (gameData.render.terrain.saveRow + j, &pLast, get_dy_vec (HEIGHT (iLow, j)));
@@ -208,7 +208,7 @@ for (i = iLow; i < iViewer; i++) {
 		gameData.render.terrain.saveRow [j] = p2Last;
 		p2Last = p2;
 		}
-	delta_j.neg();			//don't have a delta sub...
+	VmVecNegate (&delta_j);			//don't have a delta sub...
 	G3AddDeltaVec (&pHighSave, &pHighSave, &delta_i);
 	pLast = pHighSave;
 	G3AddDeltaVec (&p2Last, &pLast, get_dy_vec (HEIGHT (i + 1, jHigh)));
@@ -222,13 +222,13 @@ for (i = iLow; i < iViewer; i++) {
 		p2Last = p2;
 		}
 	gameData.render.terrain.saveRow [j + 1] = p2Last;
-	delta_j.neg();		//restore sign of j
+	VmVecNegate (&delta_j);		//restore sign of j
 	}
 //now do i from other end
-delta_i.neg();		//going the other way now...
-gameData.render.terrain.vStartPoint += mSurfaceOrient[RVEC] * 
-						((iHigh-iLow)*TERRAIN_GRID_SCALE);
-G3TransformAndEncodePoint(&pLast, gameData.render.terrain.vStartPoint);
+VmVecNegate (&delta_i);		//going the other way now...
+VmVecScaleInc (&gameData.render.terrain.vStartPoint, &mSurfaceOrient.rVec, 
+						(iHigh-iLow)*TERRAIN_GRID_SCALE);
+G3TransformAndEncodePoint (&pLast, &gameData.render.terrain.vStartPoint);
 pLowSave = pLast;
 for (j = jLow; j <= jHigh; j++) {
 	G3AddDeltaVec (gameData.render.terrain.saveRow + j, &pLast, get_dy_vec (HEIGHT (iHigh, j)));
@@ -251,7 +251,7 @@ for (i = iHigh - 1; i >= iViewer; i--) {
 		gameData.render.terrain.saveRow [j] = p2Last;
 		p2Last = p2;
 		}
-	delta_j.neg();			//don't have a delta sub...
+	VmVecNegate (&delta_j);			//don't have a delta sub...
 	G3AddDeltaVec (&pHighSave, &pHighSave, &delta_i);
 	pLast = pHighSave;
 	G3AddDeltaVec (&p2Last, &pLast, get_dy_vec (HEIGHT (i, jHigh)));
@@ -266,7 +266,7 @@ for (i = iHigh - 1; i >= iViewer; i--) {
 		p2Last = p2;
 		}
 	gameData.render.terrain.saveRow [j + 1] = p2Last;
-	delta_j.neg();		//restore sign of j
+	VmVecNegate (&delta_j);		//restore sign of j
 	}
 }
 
@@ -357,9 +357,10 @@ if (j < 0)
 
 static fix GetTerrainFaceLight (vmsVector *p0, vmsVector *p1, vmsVector *p2)
 {
-	static vmsVector vLightDir = vmsVector::Create(0x2e14, 0xe8f5, 0x5eb8);
-	vmsVector vNormal = vmsVector::normal(*p0, *p1, *p2);
-return -vmsVector::dot(vNormal, vLightDir);
+	static vmsVector vLightDir = {{0x2e14, 0xe8f5, 0x5eb8}};
+	vmsVector vNormal;
+
+return -VmVecDot (VmVecNormal (&vNormal, p0, p1, p2), &vLightDir);
 }
 
 //-----------------------------------------------------------------------------
@@ -405,9 +406,9 @@ void ComputeTerrainPoints (void)
 for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 	for (j = 0; j < gameData.render.terrain.nGridH; j++) {
 		p = gameData.render.terrain.pPoints + GRID_OFFS (i, j);
-		(*p)[X] = TERRAIN_GRID_SCALE * i;
-		(*p)[Z] = TERRAIN_GRID_SCALE * j;
-		(*p)[Y] = (fix) HEIGHT (i, j) * TERRAIN_HEIGHT_SCALE;
+		p->p.x = TERRAIN_GRID_SCALE * i;
+		p->p.z = TERRAIN_GRID_SCALE * j;
+		p->p.y = (fix) HEIGHT (i, j) * TERRAIN_HEIGHT_SCALE;
 		}
 	}
 }

@@ -75,7 +75,7 @@ typedef struct fake_file {
 	int length;
 } FFILE;
 
-//#define std::min(a,b) ((a<b)?a:b)
+#define MIN(a,b) ((a<b)?a:b)
 
 #define MAKE_SIG(a,b,c,d) (((int)(a)<<24)+((int)(b)<<16)+((c)<<8)+(d))
 
@@ -778,7 +778,7 @@ int iff_parse_bitmap(FFILE *ifile, grsBitmap *bm, int bitmapType, grsBitmap *pre
 
 }
 
-//returns error codes - see IFF.H.  see GR[HA] for bitmapType
+//returns error codes - see IFF.H.  see GR.H for bitmapType
 int iff_read_bitmap(const char *ifilename, grsBitmap *bm,int bitmapType)
 {
 	int ret;			//return code

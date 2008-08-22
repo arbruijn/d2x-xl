@@ -64,7 +64,7 @@ CFWrite (&gameData.escort.nSpecialGoal, sizeof (gameData.escort.nSpecialGoal), 1
 CFWrite (&gameData.escort.nGoalIndex, sizeof (gameData.escort.nGoalIndex), 1, fp);
 CFWrite (&gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS, fp);
 
-{
+{ 
 int temp;
 temp = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
 CFWrite (&temp, sizeof (int), 1, fp);
@@ -213,24 +213,24 @@ void AISaveLocalInfo (tAILocal *ailP, CFILE *fp)
 {
 	int	i;
 
-CFWriteInt (ailP->playerAwarenessType, fp);
-CFWriteInt (ailP->nRetryCount, fp);
-CFWriteInt (ailP->nConsecutiveRetries, fp);
-CFWriteInt (ailP->mode, fp);
-CFWriteInt (ailP->nPrevVisibility, fp);
-CFWriteInt (ailP->nRapidFireCount, fp);
-CFWriteInt (ailP->nGoalSegment, fp);
-CFWriteFix (ailP->nextActionTime, fp);
-CFWriteFix (ailP->nextPrimaryFire, fp);
-CFWriteFix (ailP->nextSecondaryFire, fp);
+CFWriteInt (ailP->playerAwarenessType, fp); 
+CFWriteInt (ailP->nRetryCount, fp);           
+CFWriteInt (ailP->nConsecutiveRetries, fp);   
+CFWriteInt (ailP->mode, fp);                  
+CFWriteInt (ailP->nPrevVisibility, fp);   
+CFWriteInt (ailP->nRapidFireCount, fp);       
+CFWriteInt (ailP->nGoalSegment, fp);          
+CFWriteFix (ailP->nextActionTime, fp); 
+CFWriteFix (ailP->nextPrimaryFire, fp);        
+CFWriteFix (ailP->nextSecondaryFire, fp);       
 CFWriteFix (ailP->playerAwarenessTime, fp);
-CFWriteFix (ailP->timePlayerSeen, fp);
+CFWriteFix (ailP->timePlayerSeen, fp);     
 CFWriteFix (ailP->timePlayerSoundAttacked, fp);
-CFWriteFix (ailP->nextMiscSoundTime, fp);
-CFWriteFix (ailP->timeSinceProcessed, fp);
+CFWriteFix (ailP->nextMiscSoundTime, fp);      
+CFWriteFix (ailP->timeSinceProcessed, fp);      
 for (i = 0; i < MAX_SUBMODELS; i++) {
-	CFWriteAngVec (ailP->goalAngles[i], fp);
-	CFWriteAngVec (ailP->deltaAngles[i], fp);
+	CFWriteAngVec (ailP->goalAngles + i, fp);  
+	CFWriteAngVec (ailP->deltaAngles + i, fp);
 	}
 CFWrite (ailP->goalState, sizeof (ailP->goalState [0]), 1, fp);
 CFWrite (ailP->achievedState, sizeof (ailP->achievedState [0]), 1, fp);
@@ -241,7 +241,7 @@ CFWrite (ailP->achievedState, sizeof (ailP->achievedState [0]), 1, fp);
 void AISavePointSeg (tPointSeg *psegP, CFILE *fp)
 {
 CFWriteInt (psegP->nSegment, fp);
-CFWriteVector (psegP->point, fp);
+CFWriteVector (&psegP->point, fp);
 }
 
 //	-------------------------------------------------------------------------------------------------
@@ -250,7 +250,7 @@ void AISaveCloakInfo (tAICloakInfo *ciP, CFILE *fp)
 {
 CFWriteFix (ciP->lastTime, fp);
 CFWriteInt (ciP->nLastSeg, fp);
-CFWriteVector (ciP->vLastPos, fp);
+CFWriteVector (&ciP->vLastPos, fp);
 }
 
 //	-------------------------------------------------------------------------------------------------
@@ -310,24 +310,24 @@ void AIRestoreLocalInfo (tAILocal *ailP, CFILE *fp)
 {
 	int	i;
 
-ailP->playerAwarenessType = CFReadInt (fp);
-ailP->nRetryCount = CFReadInt (fp);
-ailP->nConsecutiveRetries = CFReadInt (fp);
-ailP->mode = CFReadInt (fp);
-ailP->nPrevVisibility = CFReadInt (fp);
-ailP->nRapidFireCount = CFReadInt (fp);
-ailP->nGoalSegment = CFReadInt (fp);
-ailP->nextActionTime = CFReadFix (fp);
-ailP->nextPrimaryFire = CFReadFix (fp);
-ailP->nextSecondaryFire = CFReadFix (fp);
+ailP->playerAwarenessType = CFReadInt (fp); 
+ailP->nRetryCount = CFReadInt (fp);           
+ailP->nConsecutiveRetries = CFReadInt (fp);   
+ailP->mode = CFReadInt (fp);                  
+ailP->nPrevVisibility = CFReadInt (fp);   
+ailP->nRapidFireCount = CFReadInt (fp);       
+ailP->nGoalSegment = CFReadInt (fp);          
+ailP->nextActionTime = CFReadFix (fp); 
+ailP->nextPrimaryFire = CFReadFix (fp);        
+ailP->nextSecondaryFire = CFReadFix (fp);       
 ailP->playerAwarenessTime = CFReadFix (fp);
-ailP->timePlayerSeen = CFReadFix (fp);
+ailP->timePlayerSeen = CFReadFix (fp);     
 ailP->timePlayerSoundAttacked = CFReadFix (fp);
-ailP->nextMiscSoundTime = CFReadFix (fp);
-ailP->timeSinceProcessed = CFReadFix (fp);
+ailP->nextMiscSoundTime = CFReadFix (fp);      
+ailP->timeSinceProcessed = CFReadFix (fp);      
 for (i = 0; i < MAX_SUBMODELS; i++) {
-	CFReadAngVec (ailP->goalAngles[i], fp);
-	CFReadAngVec (ailP->deltaAngles[i], fp);
+	CFReadAngVec (ailP->goalAngles + i, fp);  
+	CFReadAngVec (ailP->deltaAngles + i, fp);
 	}
 CFRead (ailP->goalState, sizeof (ailP->goalState [0]), 1, fp);
 CFRead (ailP->achievedState, sizeof (ailP->achievedState [0]), 1, fp);
@@ -338,7 +338,7 @@ CFRead (ailP->achievedState, sizeof (ailP->achievedState [0]), 1, fp);
 void AIRestorePointSeg (tPointSeg *psegP, CFILE *fp)
 {
 psegP->nSegment = CFReadInt (fp);
-CFReadVector (psegP->point, fp);
+CFReadVector (&psegP->point, fp);
 }
 
 //	-------------------------------------------------------------------------------------------------
@@ -347,7 +347,7 @@ void AIRestoreCloakInfo (tAICloakInfo *ciP, CFILE *fp)
 {
 ciP->lastTime = CFReadFix (fp);
 ciP->nLastSeg = CFReadInt (fp);
-CFReadVector (ciP->vLastPos, fp);
+CFReadVector (&ciP->vLastPos, fp);
 }
 
 //	-------------------------------------------------------------------------------------------------

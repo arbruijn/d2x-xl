@@ -117,14 +117,14 @@ typedef struct tRobotInfo {
 	ubyte   deathrollSound;    // if has deathroll, what sound?
 	ubyte   glow;               // apply this light to robot itself. stored as 4:4 fixed-point
 	ubyte   behavior;           //  Default behavior.
-	ubyte   aim;                //  255 = perfect, less = more likely to miss.  0 != Random, would look stupid.  0=45 degree spread.  Specify in bitmaps.tbl in range 0.0..1.0
+	ubyte   aim;                //  255 = perfect, less = more likely to miss.  0 != random, would look stupid.  0=45 degree spread.  Specify in bitmaps.tbl in range 0.0..1.0
 
 	//animation info
 	jointlist animStates[MAX_GUNS+1][N_ANIM_STATES];
 
 	int     always_0xabcd;      // debugging
 
-} tRobotInfo;
+} __pack__ tRobotInfo;
 
 typedef struct D1Robot_info {
 	int			nModel;							// which polygon model?

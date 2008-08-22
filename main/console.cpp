@@ -144,7 +144,7 @@ void con_resize(void)
 
 static char buffer[65536];
 
-void _CDECL_ con_printf(int priority, const char *fmt, ...)
+void _CDECL_ con_printf (int priority, const char *fmt, ...)
 {
 	va_list arglist;
   

@@ -44,12 +44,12 @@
 //------------------------------------------------------------------------------
 
 int G3DrawBitmap (
-	const vmsVector&	vPos, 
-	fix					width, 
-	fix					height, 
+	vmsVector	*vPos, 
+	fix			width, 
+	fix			height, 
 	grsBitmap	*bmP, 
 	tRgbaColorf	*color,
-	float		alpha, 
+	float			alpha, 
 	int			transp)
 {
 	fVector		fPos;
@@ -60,10 +60,10 @@ OglActiveTexture (GL_TEXTURE0, 0);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 1
-fPos = vPos.toFloat();
-G3TransformPoint(fPos, fPos, 0);
+VmVecFixToFloat (&fPos, vPos);
+G3TransformPoint (&fPos, &fPos, 0);
 #else
-v1 = vPos[0] - viewInfo.vPos;
+VmVecSub (&v1, vPos, &viewInfo.vPos);
 VmVecRotate (&pv, &v1, &viewInfo.view [0]);
 #endif
 w = (GLfloat) f2fl (width); //FixMul (width, viewInfo.scale.x));
@@ -72,14 +72,14 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	glDisable (GL_TEXTURE_2D);
 	glColor4d (1,1,1,1);
 	glBegin (GL_QUADS);
-	fPos[X] -= w;
-	fPos[Y] += h;
+	fPos.p.x -= w;
+	fPos.p.y += h;
 	glVertex3fv ((GLfloat *) &fPos);
-	fPos[X] += 2 * w;
+	fPos.p.x += 2 * w;
 	glVertex3fv ((GLfloat *) &fPos);
-	fPos[Y] -= 2 * h;
+	fPos.p.y -= 2 * h;
 	glVertex3fv ((GLfloat *) &fPos);
-	fPos[X] -= 2 * w;
+	fPos.p.x -= 2 * w;
 	glVertex3fv ((GLfloat *) &fPos);
 	glEnd ();
 	}
@@ -97,17 +97,17 @@ else {
 	v = bmP->glTexture->v;
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
-	fPos[X] -= w;
-	fPos[Y] += h;
+	fPos.p.x -= w;
+	fPos.p.y += h;
 	glVertex3fv ((GLfloat *) &fPos);
 	glTexCoord2f (u, 0);
-	fPos[X] += 2 * w;
+	fPos.p.x += 2 * w;
 	glVertex3fv ((GLfloat *) &fPos);
 	glTexCoord2f (u, v);
-	fPos[Y] -= 2 * h;
+	fPos.p.y -= 2 * h;
 	glVertex3fv ((GLfloat *) &fPos);
 	glTexCoord2f (0, v);
-	fPos[X] -= 2 * w;
+	fPos.p.x -= 2 * w;
 	glVertex3fv ((GLfloat *) &fPos);
 	glEnd ();
 	}

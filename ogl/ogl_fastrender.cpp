@@ -54,8 +54,8 @@ tG3FaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
 typedef struct tFaceBuffer {
 	grsBitmap	*bmBot;
 	grsBitmap	*bmTop;
-	short		nFaces;
-	short		nElements;
+	short			nFaces;
+	short			nElements;
 	int			bTextured;
 	int			index [FACE_BUFFER_INDEX_SIZE];
 } tFaceBuffer;

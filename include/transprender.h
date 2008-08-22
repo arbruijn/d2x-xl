@@ -159,18 +159,18 @@ void ResetRenderItemBuffer (void);
 void InitRenderItemBuffer (int zMin, int zMax);
 int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDepth, int nIndex);
 int RIAddFace (grsFace *faceP);
-int RIAddPoly (grsFace *faceP, grsTriangle *triP, grsBitmap *bmP,
-					fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
+int RIAddPoly (grsFace *faceP, grsTriangle *triP, grsBitmap *bmP, 
+					fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color, 
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 					short nSegment);
 int RIAddObject (tObject *objP);
-int RIAddSprite (grsBitmap *bmP, const vmsVector& position, tRgbaColorf *color,
+int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, 
 					  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad);
-int RIAddSpark (const vmsVector& position, char nType, int nSize, char nFrame);
+int RIAddSpark (vmsVector *position, char nType, int nSize, char nFrame);
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);
 int RIAddParticle (tParticle *particle, float fBrightness, int nThread);
 int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);
-int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color,
+int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color, 
 									char bPlasma, char bStart, char bEnd, short nDepth);
 int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tTexCoord2f *tcThruster, fVector *vFlame, tTexCoord2f *tcFlame);
 void RenderItems (void);

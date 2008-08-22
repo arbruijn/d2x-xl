@@ -34,7 +34,7 @@ int radarRanges [] = {100, 150, 200};
 #define RADAR_SLICES	40
 #define BLIP_SLICES	40
 
-static vmsAngVec	aRadar = vmsAngVec::Create(F1_0 / 4, 0, 0);
+static vmsAngVec	aRadar = {F1_0 / 4, 0, 0};
 static vmsMatrix	mRadar;
 static float		yRadar = 20;
 
@@ -54,15 +54,15 @@ if (bInitSinCos) {
 	bInitSinCos = 0;
 	}
 n = objP->position.vPos;
-G3TransformPoint(n, n, 0);
-if ((m = n.mag()) > RADAR_RANGE * F1_0)
+G3TransformPoint (&n, &n, 0);
+if ((m = VmVecMag (&n)) > RADAR_RANGE * F1_0)
 	return;
 if (m) {
 	//HUDMessage (0, "%1.2f", f2fl (m));
-	v[0][X] = FixDiv (n[X], m) * 15; // /= RADAR_RANGE;
-	v[0][Y] = FixDiv (n[Y], m) * 20; // /= RADAR_RANGE;
-	v[0][Z] = n[X] / RADAR_RANGE;
-	//vmsVector::normalize(&n);
+	v [0].p.x = FixDiv (n.p.x, m) * 15; // /= RADAR_RANGE;
+	v [0].p.y = FixDiv (n.p.y, m) * 20; // /= RADAR_RANGE;
+	v [0].p.z = n.p.x / RADAR_RANGE;
+	//VmVecNormalize (&n);
 	}
 else {
 	glPushMatrix ();
@@ -91,8 +91,8 @@ else {
 	glPopMatrix ();
 	return;
 	}
-*v /= 3;
-h = f2fl (n[Z]) / RADAR_RANGE;
+VmVecScaleFrac (v, 1, 3);
+h = f2fl (n.p.z) / RADAR_RANGE;
 glPushMatrix ();
 glTranslatef (0, yRadar + h * 10.0f / 3.0f, 50);
 glPushMatrix ();
@@ -100,15 +100,15 @@ s = 1.0f - (float) fabs (f2fl (m) / RADAR_RANGE);
 h = 3 * s;
 a += a * h;
 glColor4f (r + r * h, g + g * h, b + b * h, (float) sqrt (a));
-glTranslatef (f2fl (v[0][X]), f2fl(v[0][Y]), f2fl(v[0][Z]));
+glTranslatef (f2fl (v [0].p.x), f2fl (v [0].p.y), f2fl (v [0].p.z));
 OglDrawEllipse (BLIP_SLICES, GL_POLYGON, 0.33f + 0.33f * s, 0, 0.33f + 0.33f * s, 0, sinCosBlip);
 glPopMatrix ();
 #if 1
 v [1] = v [0];
-v [1][Y] = 0;
+v [1].p.y = 0;
 glBegin (GL_LINES);
-OglVertex3x (v[0][X], v[0][Y], v[0][Z]);
-OglVertex3x (v[1][X], v[1][Y], v[1][Z]);
+OglVertex3x (v [0].p.x, v [0].p.y, v [0].p.z);
+OglVertex3x (v [1].p.x, v [1].p.y, v [1].p.z);
 glEnd ();
 #endif
 glPopMatrix ();
@@ -155,7 +155,7 @@ if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 bStencil = StencilOff ();
 InitShipColors ();
 yRadar = (i == 1) ? 20.0f : -20.0f;
-mRadar = vmsMatrix::Create(aRadar);
+VmAngles2Matrix (&mRadar, &aRadar);
 glDisable (GL_CULL_FACE);	
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);

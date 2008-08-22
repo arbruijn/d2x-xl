@@ -10,9 +10,6 @@ CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
-#ifdef _WIN32
-#  define fileno _fileno
-#endif
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
@@ -760,28 +757,29 @@ return (fixang) INTEL_SHORT ((int) f);
 
 // ----------------------------------------------------------------------------
 
-void CFReadVector(vmsVector& v, CFILE *file) {
-v[X] = CFReadFix(file);
-v[Y] = CFReadFix(file);
-v[Z] = CFReadFix(file);
+void CFReadVector (vmsVector *v, CFILE *file)
+{
+v->p.x = CFReadFix (file);
+v->p.y = CFReadFix (file);
+v->p.z = CFReadFix (file);
 }
 
 // ----------------------------------------------------------------------------
 
-void CFReadAngVec(vmsAngVec& v, CFILE *file)
+void CFReadAngVec(vmsAngVec *v, CFILE *file)
 {
-v[PA] = CFReadFixAng (file);
-v[BA] = CFReadFixAng (file);
-v[HA] = CFReadFixAng (file);
+v->p = CFReadFixAng (file);
+v->b = CFReadFixAng (file);
+v->h = CFReadFixAng (file);
 }
 
 // ----------------------------------------------------------------------------
 
-void CFReadMatrix(vmsMatrix& m,CFILE *file)
+void CFReadMatrix(vmsMatrix *m,CFILE *file)
 {
-CFReadVector(m[RVEC],file);
-CFReadVector(m[UVEC],file);
-CFReadVector(m[FVEC],file);
+CFReadVector (&m->rVec,file);
+CFReadVector (&m->uVec,file);
+CFReadVector (&m->fVec,file);
 }
 
 
@@ -859,29 +857,29 @@ return CFWrite (&a, sizeof (a), 1, file);
 
 // ----------------------------------------------------------------------------
 
-void CFWriteVector (const vmsVector& v, CFILE *file)
+void CFWriteVector (vmsVector *v, CFILE *file)
 {
-CFWriteFix(v[X], file);
-CFWriteFix(v[Y], file);
-CFWriteFix(v[Z], file);
+CFWriteFix (v->p.x, file);
+CFWriteFix (v->p.y, file);
+CFWriteFix (v->p.z, file);
 }
 
 // ----------------------------------------------------------------------------
 
-void CFWriteAngVec (const vmsAngVec& v, CFILE *file)
+void CFWriteAngVec (vmsAngVec *v, CFILE *file)
 {
-CFWriteFixAng (v[PA], file);
-CFWriteFixAng (v[BA], file);
-CFWriteFixAng (v[HA], file);
+CFWriteFixAng (v->p, file);
+CFWriteFixAng (v->b, file);
+CFWriteFixAng (v->h, file);
 }
 
 // ----------------------------------------------------------------------------
 
-void CFWriteMatrix (const vmsMatrix& m, CFILE *file)
+void CFWriteMatrix (vmsMatrix *m,CFILE *file)
 {
-CFWriteVector (m[RVEC], file);
-CFWriteVector (m[UVEC], file);
-CFWriteVector (m[FVEC], file);
+CFWriteVector (&m->rVec, file);
+CFWriteVector (&m->uVec, file);
+CFWriteVector (&m->fVec, file);
 }
 
 

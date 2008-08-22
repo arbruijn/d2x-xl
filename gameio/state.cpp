@@ -867,29 +867,29 @@ CFWriteByte ((sbyte) objP->renderType, cfp);
 CFWriteByte ((sbyte) objP->flags, cfp);
 CFWriteShort (objP->nSegment, cfp);
 CFWriteShort (objP->attachedObj, cfp);
-CFWriteVector(OBJPOS (objP)->vPos, cfp);     
-CFWriteMatrix(OBJPOS (objP)->mOrient, cfp);  
+CFWriteVector (&OBJPOS (objP)->vPos, cfp);     
+CFWriteMatrix (&OBJPOS (objP)->mOrient, cfp);  
 CFWriteFix (objP->size, cfp); 
 CFWriteFix (objP->shields, cfp);
-CFWriteVector(objP->vLastPos, cfp);  
+CFWriteVector (&objP->vLastPos, cfp);  
 CFWriteByte (objP->containsType, cfp); 
 CFWriteByte (objP->containsId, cfp);   
 CFWriteByte (objP->containsCount, cfp);
 CFWriteByte (objP->matCenCreator, cfp);
 CFWriteFix (objP->lifeleft, cfp);   
 if (objP->movementType == MT_PHYSICS) {
-	CFWriteVector(objP->mType.physInfo.velocity, cfp);   
-	CFWriteVector(objP->mType.physInfo.thrust, cfp);     
+	CFWriteVector (&objP->mType.physInfo.velocity, cfp);   
+	CFWriteVector (&objP->mType.physInfo.thrust, cfp);     
 	CFWriteFix (objP->mType.physInfo.mass, cfp);       
 	CFWriteFix (objP->mType.physInfo.drag, cfp);       
 	CFWriteFix (objP->mType.physInfo.brakes, cfp);     
-	CFWriteVector(objP->mType.physInfo.rotVel, cfp);     
-	CFWriteVector(objP->mType.physInfo.rotThrust, cfp);  
+	CFWriteVector (&objP->mType.physInfo.rotVel, cfp);     
+	CFWriteVector (&objP->mType.physInfo.rotThrust, cfp);  
 	CFWriteFixAng (objP->mType.physInfo.turnRoll, cfp);   
 	CFWriteShort ((short) objP->mType.physInfo.flags, cfp);      
 	}
 else if (objP->movementType == MT_SPINNING) {
-	CFWriteVector(objP->mType.spinRate, cfp);  
+	CFWriteVector (&objP->mType.spinRate, cfp);  
 	}
 switch (objP->controlType) {
 	case CT_WEAPON:
@@ -943,7 +943,7 @@ switch (objP->renderType) {
 		int i;
 		CFWriteInt (objP->rType.polyObjInfo.nModel, cfp);
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			CFWriteAngVec(objP->rType.polyObjInfo.animAngles[i], cfp);
+			CFWriteAngVec (objP->rType.polyObjInfo.animAngles + i, cfp);
 		CFWriteInt (objP->rType.polyObjInfo.nSubObjFlags, cfp);
 		CFWriteInt (objP->rType.polyObjInfo.nTexOverride, cfp);
 		CFWriteInt (objP->rType.polyObjInfo.nAltTextures, cfp);
@@ -1073,7 +1073,7 @@ CFWriteFix (fuelcenP->xCapacity, cfp);
 CFWriteFix (fuelcenP->xMaxCapacity, cfp);
 CFWriteFix (fuelcenP->xTimer, cfp);
 CFWriteFix (fuelcenP->xDisableTime, cfp);
-CFWriteVector(fuelcenP->vCenter, cfp);
+CFWriteVector (&fuelcenP->vCenter, cfp);
 }
 
 //------------------------------------------------------------------------------
@@ -1093,8 +1093,8 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 void StateSaveSpawnPoint (int i, CFILE *cfp)
 {
-CFWriteVector(gameData.multiplayer.playerInit [i].position.vPos, cfp);     
-CFWriteMatrix(gameData.multiplayer.playerInit [i].position.mOrient, cfp);  
+CFWriteVector (&gameData.multiplayer.playerInit [i].position.vPos, cfp);     
+CFWriteMatrix (&gameData.multiplayer.playerInit [i].position.mOrient, cfp);  
 CFWriteShort (gameData.multiplayer.playerInit [i].nSegment, cfp);
 CFWriteShort (gameData.multiplayer.playerInit [i].nSegType, cfp);
 }
@@ -1892,29 +1892,29 @@ objP->renderType = (ubyte) CFReadByte (cfp);
 objP->flags = (ubyte) CFReadByte (cfp);
 objP->nSegment = CFReadShort (cfp);
 objP->attachedObj = CFReadShort (cfp);
-CFReadVector(objP->position.vPos, cfp);     
-CFReadMatrix(objP->position.mOrient, cfp);  
+CFReadVector (&objP->position.vPos, cfp);     
+CFReadMatrix (&objP->position.mOrient, cfp);  
 objP->size = CFReadFix (cfp); 
 objP->shields = CFReadFix (cfp);
-CFReadVector (objP->vLastPos, cfp);  
+CFReadVector (&objP->vLastPos, cfp);  
 objP->containsType = CFReadByte (cfp); 
 objP->containsId = CFReadByte (cfp);   
 objP->containsCount = CFReadByte (cfp);
 objP->matCenCreator = CFReadByte (cfp);
 objP->lifeleft = CFReadFix (cfp);   
 if (objP->movementType == MT_PHYSICS) {
-	CFReadVector (objP->mType.physInfo.velocity, cfp);   
-	CFReadVector (objP->mType.physInfo.thrust, cfp);     
+	CFReadVector (&objP->mType.physInfo.velocity, cfp);   
+	CFReadVector (&objP->mType.physInfo.thrust, cfp);     
 	objP->mType.physInfo.mass = CFReadFix (cfp);       
 	objP->mType.physInfo.drag = CFReadFix (cfp);       
 	objP->mType.physInfo.brakes = CFReadFix (cfp);     
-	CFReadVector (objP->mType.physInfo.rotVel, cfp);     
-	CFReadVector (objP->mType.physInfo.rotThrust, cfp);  
+	CFReadVector (&objP->mType.physInfo.rotVel, cfp);     
+	CFReadVector (&objP->mType.physInfo.rotThrust, cfp);  
 	objP->mType.physInfo.turnRoll = CFReadFixAng (cfp);   
 	objP->mType.physInfo.flags = (ushort) CFReadShort (cfp);      
 	}
 else if (objP->movementType == MT_SPINNING) {
-	CFReadVector (objP->mType.spinRate, cfp);  
+	CFReadVector (&objP->mType.spinRate, cfp);  
 	}
 switch (objP->controlType) {
 	case CT_WEAPON:
@@ -1971,7 +1971,7 @@ switch (objP->renderType) {
 		int i;
 		objP->rType.polyObjInfo.nModel = CFReadInt (cfp);
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			CFReadAngVec(objP->rType.polyObjInfo.animAngles[i], cfp);
+			CFReadAngVec (objP->rType.polyObjInfo.animAngles + i, cfp);
 		objP->rType.polyObjInfo.nSubObjFlags = CFReadInt (cfp);
 		objP->rType.polyObjInfo.nTexOverride = CFReadInt (cfp);
 		objP->rType.polyObjInfo.nAltTextures = CFReadInt (cfp);
@@ -2102,7 +2102,7 @@ fuelcenP->xCapacity = CFReadFix (cfp);
 fuelcenP->xMaxCapacity = CFReadFix (cfp);
 fuelcenP->xTimer = CFReadFix (cfp);
 fuelcenP->xDisableTime = CFReadFix (cfp);
-CFReadVector (fuelcenP->vCenter, cfp);
+CFReadVector (&fuelcenP->vCenter, cfp);
 }
 
 //------------------------------------------------------------------------------
@@ -2122,8 +2122,8 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 void StateRestoreSpawnPoint (int i, CFILE *cfp)
 {
-CFReadVector(gameData.multiplayer.playerInit [i].position.vPos, cfp);     
-CFReadMatrix(gameData.multiplayer.playerInit [i].position.mOrient, cfp);  
+CFReadVector (&gameData.multiplayer.playerInit [i].position.vPos, cfp);     
+CFReadMatrix (&gameData.multiplayer.playerInit [i].position.mOrient, cfp);  
 gameData.multiplayer.playerInit [i].nSegment = CFReadShort (cfp);
 gameData.multiplayer.playerInit [i].nSegType = CFReadShort (cfp);
 }

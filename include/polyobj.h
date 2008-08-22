@@ -55,7 +55,7 @@ typedef struct tPolyModel {
 	ushort			nFirstTexture;
 	ubyte				nSimplerModel;                      // alternate model with less detail (0 if none, nModel+1 else)
 	//vmsVector min,max;
-} tPolyModel;
+} __pack__ tPolyModel;
 
 // array of pointers to polygon objects
 // switch to simpler model when the tObject has depth

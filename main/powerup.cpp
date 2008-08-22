@@ -948,7 +948,9 @@ if (nCount <= 0)
 	return 0;
 gameData.multiplayer.powerupsInMine [nId] += nCount;
 velSave = spitterP->mType.physInfo.velocity;
-spitterP->mType.physInfo.velocity.setZero();
+spitterP->mType.physInfo.velocity.p.x =
+spitterP->mType.physInfo.velocity.p.y =
+spitterP->mType.physInfo.velocity.p.z = 0;
 for (i = nCount; i; i--) {
 	nObject = SpitPowerup (spitterP, nId, d_rand ());
 	objP = OBJECTS + nObject;

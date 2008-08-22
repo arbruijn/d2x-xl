@@ -45,36 +45,36 @@ return NULL;
 }
 
 //-------------------------------------------------------------
-//takes pmP, fills in min& max
-void MorphFindModelBounds (tPolyModel *pmP, int nSubModel, vmsVector& minv, vmsVector& maxv)
+//takes pmP, fills in min & max
+void MorphFindModelBounds (tPolyModel *pmP, int nSubModel, vmsVector *minv, vmsVector *maxv)
 {
 	ushort nVerts;
 	vmsVector *vp;
 	ushort *data, nType;
-	
-	data = (ushort *) (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
-	nType = *data++;
-	Assert (nType == 7 || nType == 1);
-	nVerts = *data++;
-	if (nType==7)
-		data+=2;		//skip start & pad
-	vp = (vmsVector *) data;
-	minv = maxv = *vp++; 
-	nVerts--;
-	while (nVerts--) {
-		if ((*vp)[X] > maxv[X]) 
-			maxv[X] = (*vp)[X];
-		else if((*vp)[X] < minv[X]) 
-			minv[X] = (*vp)[X];
-		if ((*vp)[Y] > maxv[Y]) 
-			maxv[Y] = (*vp)[Y];
-		else if ((*vp)[Y] < minv[Y]) 
-			minv[Y] = (*vp)[Y];
-		if ((*vp)[Z] > maxv[Z]) 
-			maxv[Z] = (*vp)[Z];
-		else if ((*vp)[Z] < minv[Z]) 
-			minv[Z] = (*vp)[Z];
-		vp++;
+
+data = (ushort *) (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
+nType = *data++;
+Assert (nType == 7 || nType == 1);
+nVerts = *data++;
+if (nType==7)
+	data+=2;		//skip start & pad
+vp = (vmsVector *) data;
+*minv = *maxv = *vp++; 
+nVerts--;
+while (nVerts--) {
+	if (vp->p.x > maxv->p.x) 
+		maxv->p.x = vp->p.x;
+	else if (vp->p.x < minv->p.x) 
+		minv->p.x = vp->p.x;
+	if (vp->p.y > maxv->p.y) 
+		maxv->p.y = vp->p.y;
+	else if (vp->p.y < minv->p.y) 
+		minv->p.y = vp->p.y;
+	if (vp->p.z > maxv->p.z) 
+		maxv->p.z = vp->p.z;
+	else if (vp->p.z < minv->p.z) 
+		minv->p.z = vp->p.z;
+	vp++;
 	}
 }
 
@@ -113,23 +113,23 @@ while (nVerts--) {
 	if (vBoxSize) {
 		fix t;
 		k = 0x7fffffff;
-		if (v[X] && f2i ((*vBoxSize)[X]) < abs (v[X])/2 && (t = FixDiv ((*vBoxSize)[X], abs (v[X]))) < k) 
+		if (v.p.x && f2i (vBoxSize->p.x) < abs (v.p.x)/2 && (t = FixDiv (vBoxSize->p.x, abs (v.p.x))) < k) 
 			k = t;
-		if (v[Y] && f2i ((*vBoxSize)[Y]) < abs (v[Y])/2 && (t = FixDiv ((*vBoxSize)[Y], abs (v[Y]))) < k) 
+		if (v.p.y && f2i (vBoxSize->p.y) < abs (v.p.y)/2 && (t = FixDiv (vBoxSize->p.y, abs (v.p.y))) < k) 
 			k = t;
-		if (v[Z] && f2i ((*vBoxSize)[Z]) < abs (v[Z])/2 && (t = FixDiv ((*vBoxSize)[Z], abs (v[Z]))) < k) 
+		if (v.p.z && f2i (vBoxSize->p.z) < abs (v.p.z)/2 && (t = FixDiv (vBoxSize->p.z, abs (v.p.z))) < k) 
 			k = t;
 		if (k == 0x7fffffff) 
 			k = 0;
 		}
 	else
 		k = 0;
-	mdP->vecs[i] = *vp * k;
-	dist = vmsVector::normalizedDir(mdP->deltas[i], *vp, mdP->vecs[i]);
+	VmVecCopyScale (mdP->vecs + i, vp, k);
+	dist = VmVecNormalizedDir (mdP->deltas + i, vp, mdP->vecs + i);
 	mdP->times [i] = FixDiv (dist, gameData.render.morph.xRate);
 	if (mdP->times [i] != 0)
 		mdP->nMorphingPoints [nSubModel]++;
-		mdP->deltas[i] *= gameData.render.morph.xRate;
+		VmVecScale (&mdP->deltas [i], gameData.render.morph.xRate);
 	vp++; 
 	i++;
 	}
@@ -170,7 +170,7 @@ while (nVerts--) {
 			 mdP->nMorphingPoints [nSubModel]--;
 			}
 		else
-			mdP->vecs[i] += mdP->deltas[i] * gameData.time.xFrame;
+			VmVecScaleInc (&mdP->vecs [i], &mdP->deltas [i], gameData.time.xFrame);
 		}
 	vp++; 
 	i++;
@@ -219,7 +219,7 @@ if (!mdP->nSubmodelsActive) {			//done morphing!
 
 //-------------------------------------------------------------
 
-vmsVector morph_rotvel = vmsVector::Create(0x4000, 0x2000, 0x1000);
+vmsVector morph_rotvel = {{0x4000, 0x2000, 0x1000}};
 
 void MorphInit ()
 {
@@ -262,10 +262,10 @@ objP->movementType = MT_PHYSICS;		//RT_NONE;
 objP->mType.physInfo.rotVel = morph_rotvel;
 pmP = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 G3CheckAndSwap (pmP->modelData);
-MorphFindModelBounds (pmP, 0, pmmin, pmmax);
-vBoxSize[X] = max (-pmmin[X], pmmax[X]) / 2;
-vBoxSize[Y] = max (-pmmin[Y], pmmax[Y]) / 2;
-vBoxSize[Z] = max (-pmmin[Z], pmmax[Z]) / 2;
+MorphFindModelBounds (pmP, 0, &pmmin, &pmmax);
+vBoxSize.p.x = max (-pmmin.p.x, pmmax.p.x) / 2;
+vBoxSize.p.y = max (-pmmin.p.y, pmmax.p.y) / 2;
+vBoxSize.p.z = max (-pmmin.p.z, pmmax.p.z) / 2;
 for (i = 0; i < MAX_VECS; i++)		//clear all points
 	mdP->times [i] = 0;
 for (i = 1; i < MAX_SUBMODELS; i++)		//clear all parts
@@ -289,7 +289,7 @@ sort_list [0] = nSubModel;
 sort_n = 1;
 for (i = 0; i < pmP->nModels; i++) {
 	if (mdP->submodelActive [i] && pmP->subModels.parents [i]==nSubModel) {
-		facing = G3CheckNormalFacing(pmP->subModels.pnts[i], pmP->subModels.norms[i]);
+		facing = G3CheckNormalFacing (pmP->subModels.pnts+i, pmP->subModels.norms+i);
 		if (!facing)
 			sort_list [sort_n++] = i;
 		else {		//put at start
@@ -335,8 +335,8 @@ for (i = 0; i < sort_n; i++) {
 		}
 	else {
 		vmsMatrix orient;
-		orient = vmsMatrix::Create(animAngles[mn]);
-		G3StartInstanceMatrix(pmP->subModels.offsets[mn], orient);
+		VmAngles2Matrix (&orient, animAngles+mn);
+		G3StartInstanceMatrix (pmP->subModels.offsets+mn, &orient);
 		MorphDrawModel (pmP, mn, animAngles, light, mdP, nModel);
 		G3DoneInstance ();
 		}
@@ -357,7 +357,7 @@ Assert (mdP != NULL);
 Assert (objP->rType.polyObjInfo.nModel < gameData.models.nPolyModels);
 pmP = gameData.models.polyModels+objP->rType.polyObjInfo.nModel;
 light = ComputeObjectLight (objP, NULL);
-G3StartInstanceMatrix(objP->position.vPos, objP->position.mOrient);
+G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 G3SetModelPoints (gameData.models.polyModelPoints);
 gameData.render.pVerts = gameData.models.fPolyModelVerts;
 MorphDrawModel (pmP, 0, objP->rType.polyObjInfo.animAngles, light, mdP, objP->rType.polyObjInfo.nModel);

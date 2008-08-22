@@ -47,21 +47,21 @@ RemoveMonsterball ();
 nDropSeg = gameData.hoard.nMonsterballSeg;
 #else
 if (gameData.hoard.nMonsterballSeg >= 0)
-	nDropSeg = gameData.hoard.nMonsterballSeg;
+	nDropSeg = gameData.hoard.nMonsterballSeg; 
 else {
 	nDropSeg = ChooseDropSegment (NULL, NULL, EXEC_DROP);
 	COMPUTE_SEGMENT_CENTER_I (&gameData.hoard.vMonsterballPos, nDropSeg);
 	}
 #endif
 if (nDropSeg >= 0) {
-	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, vmsVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
+	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, &vZero, &gameData.hoard.vMonsterballPos, nDropSeg);
 	if (nObject >= 0) {
 		gameData.hoard.monsterballP = OBJECTS + nObject;
 		gameData.hoard.monsterballP->nType = OBJ_MONSTERBALL;
 		gameData.hoard.monsterballP->mType.physInfo.mass = F1_0 * 10;
-		gameData.hoard.monsterballP->mType.physInfo.thrust.setZero();
-		gameData.hoard.monsterballP->mType.physInfo.rotThrust.setZero();
-		gameData.hoard.monsterballP->mType.physInfo.velocity.setZero();
+		VmVecZero (&gameData.hoard.monsterballP->mType.physInfo.thrust);
+		VmVecZero (&gameData.hoard.monsterballP->mType.physInfo.rotThrust);
+		VmVecZero (&gameData.hoard.monsterballP->mType.physInfo.velocity);
 		gameData.hoard.nLastHitter = -1;
 		CreatePlayerAppearanceEffect (gameData.hoard.monsterballP);
 		return 1;
@@ -143,7 +143,7 @@ memset (nMonsterballForces, 0, sizeof (nMonsterballForces));
 for (i = 0; i < MAX_MONSTERBALL_FORCES - 1; i++, forceP++)
 	nMonsterballForces [forceP->nWeaponId] = 	forceP->nForce;
 nMonsterballPyroForce = forceP->nForce;
-gameData.objs.pwrUp.info [POW_MONSTERBALL].size =
+gameData.objs.pwrUp.info [POW_MONSTERBALL].size = 
 	(gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [IsMultiGame].monsterball.nSizeMod) / 2;
 }
 

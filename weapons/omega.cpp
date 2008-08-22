@@ -90,7 +90,7 @@ return -1;
 
 static void DeleteOmegaLightning (short nHandle)
 {
-if (gameData.omega.lightnings.nHandles) {
+if (gameData.omega.lightnings.nHandles) { 
 	DestroyLightnings (gameData.omega.lightnings.handles [nHandle].nLightning, NULL, 0);
 	if (nHandle < --gameData.omega.lightnings.nHandles)
 		gameData.omega.lightnings.handles [nHandle] = gameData.omega.lightnings.handles [gameData.omega.lightnings.nHandles];
@@ -120,7 +120,7 @@ vmsVector *GetOmegaGunPoint (tObject *objP, vmsVector *vMuzzle)
 {
 	vmsVector	*vGunPoints;
 	int			bSpectate;
-	tTransformation	*posP;
+	tPosition	*posP;
 
 if (!objP)
 	return NULL;
@@ -131,8 +131,8 @@ if ((bSpectate || (objP->id != gameData.multiplayer.nLocalPlayer)) &&
 	TransformGunPoint (objP, vGunPoints, 6, 0, 0, vMuzzle, NULL);
 	}
 else {
-	*vMuzzle = posP->vPos - posP->mOrient[UVEC];
-	*vMuzzle += posP->mOrient[FVEC] * (objP->size / 3);
+	VmVecSub (vMuzzle, &posP->vPos, &posP->mOrient.uVec);
+	VmVecScaleInc (vMuzzle, &posP->mOrient.fVec, objP->size / 3);
 	}
 return vMuzzle;
 }
@@ -177,7 +177,7 @@ for (handleP = gameData.omega.lightnings.handles + i; j; j--) {
 			}
 		targetObjP = (handleP->nTargetObj >= 0) ? OBJECTS + handleP->nTargetObj : NULL;
 		GetOmegaGunPoint (parentObjP, &vMuzzle);
-		MoveLightnings (nLightning, NULL, &vMuzzle,
+		MoveLightnings (nLightning, NULL, &vMuzzle, 
 							 SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->nSegment, 1, 0);
 		if (targetObjP)
 			MoveLightnings (nLightning, NULL, &targetObjP->position.vPos, targetObjP->nSegment, 1, 1);
@@ -218,8 +218,8 @@ else {
 #if OMEGA_PLASMA
 	color.alpha = gameOpts->render.lightnings.bPlasma ? 0.5f : 0.3f;
 #endif
-	handleP->nLightning = CreateLightning (10, &vMuzzle, vTarget, NULL, -OBJSEG (parentObjP) - 1,
-														-5000, 0, vmsVector::dist(vMuzzle, *vTarget), F1_0 * 3, 0, 0, 100, 10, 1, 3, 1, 1,
+	handleP->nLightning = CreateLightning (10, &vMuzzle, vTarget, NULL, -OBJSEG (parentObjP) - 1, 
+														-5000, 0, VmVecDist (&vMuzzle, vTarget), F1_0 * 3, 0, 0, 100, 10, 1, 3, 1, 1, 
 #if OMEGA_PLASMA
 														(parentObjP != gameData.objs.viewer) || gameStates.app.bFreeCam || gameStates.render.bExternalView,
 #else
@@ -248,28 +248,28 @@ if (IsMultiGame)
 	DeleteOldOmegaBlobs (parentObjP);
 //if (parentObjP->id == gameData.multiplayer.nLocalPlayer)
 	CreateOmegaLightnings (vTargetPos, parentObjP, targetObjP);
-vGoal = *vTargetPos - *vMuzzle;
-xGoalDist = vmsVector::normalize(vGoal);
+VmVecSub (&vGoal, vTargetPos, vMuzzle);
+xGoalDist = VmVecNormalize (&vGoal);
 if (xGoalDist < MIN_OMEGA_BLOBS * MIN_OMEGA_DIST) {
 	xOmegaBlobDist = MIN_OMEGA_DIST;
 	nOmegaBlobs = xGoalDist / xOmegaBlobDist;
 	if (nOmegaBlobs == 0)
 		nOmegaBlobs = 1;
-	}
+	} 
 else {
 	xOmegaBlobDist = DESIRED_OMEGA_DIST;
 	nOmegaBlobs = xGoalDist / xOmegaBlobDist;
 	if (nOmegaBlobs > MAX_OMEGA_BLOBS) {
 		nOmegaBlobs = MAX_OMEGA_BLOBS;
 		xOmegaBlobDist = xGoalDist / nOmegaBlobs;
-		}
+		} 
 	else if (nOmegaBlobs < MIN_OMEGA_BLOBS) {
 		nOmegaBlobs = MIN_OMEGA_BLOBS;
 		xOmegaBlobDist = xGoalDist / nOmegaBlobs;
 		}
 	}
 vOmegaDelta = vGoal;
-vOmegaDelta *= xOmegaBlobDist;
+VmVecScale (&vOmegaDelta, xOmegaBlobDist);
 //	Now, create all the blobs
 vBlobPos = *vMuzzle;
 nLastSeg = nFiringSeg;
@@ -278,39 +278,39 @@ nLastSeg = nFiringSeg;
 if (xGoalDist < MIN_OMEGA_DIST * 4) {
 	for (i = 0; i < nOmegaBlobs; i++)
 		xPerturbArray [i] = 0;
-	}
+	} 
 else {
-	vBlobPos += vOmegaDelta * (F1_0/2);	//	Put first blob half way out.
+	VmVecScaleInc (&vBlobPos, &vOmegaDelta, F1_0/2);	//	Put first blob half way out.
 	for (i = 0; i < nOmegaBlobs / 2; i++) {
 		xPerturbArray [i] = F1_0 * i + F1_0 / 4;
 		xPerturbArray [nOmegaBlobs - 1 - i] = F1_0 * i;
 		}
 	}
 
-//	Create Random perturbation vector, but favor _not_ going up in tPlayer's reference.
-vPerturb = vmsVector::Random();
-vPerturb += parentObjP->position.mOrient[UVEC] * (-F1_0/2);
+//	Create random perturbation vector, but favor _not_ going up in tPlayer's reference.
+MakeRandomVector (&vPerturb);
+VmVecScaleInc (&vPerturb, &parentObjP->position.mOrient.uVec, -F1_0/2);
 for (i = 0; i < nOmegaBlobs; i++) {
 	vmsVector	vTempPos;
 	short			nBlobObj, nSegment;
 
 	//	This will put the last blob right at the destination tObject, causing damage.
 	if (i == nOmegaBlobs-1)
-		vBlobPos += vOmegaDelta * (15*F1_0/32);	//	Move last blob another (almost) half section
+		VmVecScaleInc (&vBlobPos, &vOmegaDelta, 15*F1_0/32);	//	Move last blob another (almost) half section
 	//	Every so often, re-perturb blobs
 	if ((i % 4) == 3) {
 		vmsVector	vTemp;
 
-		vTemp = vmsVector::Random();
-		vPerturb += vTemp * (F1_0/4);
+		MakeRandomVector (&vTemp);
+		VmVecScaleInc (&vPerturb, &vTemp, F1_0/4);
 		}
-	vTempPos = vBlobPos + vPerturb * xPerturbArray[i];
-	nSegment = FindSegByPos (vTempPos, nLastSeg, 1, 0);
+	VmVecScaleAdd (&vTempPos, &vBlobPos, &vPerturb, xPerturbArray [i]);
+	nSegment = FindSegByPos (&vTempPos, nLastSeg, 1, 0);
 	if (nSegment != -1) {
 		tObject		*objP;
 
 		nLastSeg = nSegment;
-		nBlobObj = tObject::Create(OBJ_WEAPON, OMEGA_ID, -1, nSegment, vTempPos, vmsMatrix::IDENTITY, 0,
+		nBlobObj = CreateObject (OBJ_WEAPON, OMEGA_ID, -1, nSegment, &vTempPos, NULL, 0, 
 										 CT_WEAPON, MT_PHYSICS, RT_WEAPON_VCLIP, 1);
 		if (nBlobObj == -1)
 			break;
@@ -319,7 +319,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		objP->lifeleft = ONE_FRAME_TIME;
 		objP->mType.physInfo.velocity = vGoal;
 		//	Only make the last one move fast, else multiple blobs might collide with target.
-		objP->mType.physInfo.velocity *= (F1_0*4);
+		VmVecScale (&objP->mType.physInfo.velocity, F1_0*4);
 		objP->size = gameData.weapons.info [objP->id].blob_size;
 		objP->shields = FixMul (OMEGA_DAMAGE_SCALE*gameData.time.xFrame, WI_strength (objP->id,gameStates.app.nDifficultyLevel));
 		objP->cType.laserInfo.parentType			= parentObjP->nType;
@@ -327,13 +327,14 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		objP->cType.laserInfo.nParentObj			= OBJ_IDX (parentObjP);
 		objP->movementType = MT_NONE;	//	Only last one moves, that will get bashed below.
 		}
-	vBlobPos += vOmegaDelta;
+	VmVecInc (&vBlobPos, &vOmegaDelta);
 	}
 
 	//	Make last one move faster, but it's already moving at speed = F1_0*4.
 if (nLastCreatedObj != -1) {
-	OBJECTS [nLastCreatedObj].mType.physInfo.velocity *=
-		gameData.weapons.info [OMEGA_ID].speed [gameStates.app.nDifficultyLevel]/4;
+	VmVecScale (
+		&OBJECTS [nLastCreatedObj].mType.physInfo.velocity, 
+		gameData.weapons.info [OMEGA_ID].speed [gameStates.app.nDifficultyLevel]/4);
 	OBJECTS [nLastCreatedObj].movementType = MT_PHYSICS;
 	}
 }
@@ -362,7 +363,7 @@ if ((gameData.weapons.nPrimary == OMEGA_INDEX) && !gameData.omega.xCharge [IsMul
 	AutoSelectWeapon (0, 1);
 	}
 //	Don't charge while firing.
-if ((gameData.omega.nLastFireFrame == gameData.app.nFrameCount) ||
+if ((gameData.omega.nLastFireFrame == gameData.app.nFrameCount) || 
 	 (gameData.omega.nLastFireFrame == gameData.app.nFrameCount - 1))
 	return;
 
@@ -432,7 +433,7 @@ else
 	nTargetObj = FindHomingObject (vMuzzle, weaponObjP);
 nParentSeg = bSpectate ? gameStates.app.nPlayerSegment : parentObjP->nSegment;
 
-if (0 > (nFiringSeg = FindSegByPos (*vMuzzle, nParentSeg, 1, 0))) {
+if (0 > (nFiringSeg = FindSegByPos (vMuzzle, nParentSeg, 1, 0))) {
 	DestroyOmegaLightnings (OBJ_IDX (parentObjP));
 	return;
 	}
@@ -440,7 +441,7 @@ if (0 > (nFiringSeg = FindSegByPos (*vMuzzle, nParentSeg, 1, 0))) {
 if (parentObjP == gameData.objs.viewer)
 	DigiPlaySample (gameData.weapons.info [weaponObjP->id].flashSound, F1_0);
 else
-	DigiLinkSoundToPos (gameData.weapons.info [weaponObjP->id].flashSound,
+	DigiLinkSoundToPos (gameData.weapons.info [weaponObjP->id].flashSound, 
 							  weaponObjP->nSegment, 0, &weaponObjP->position.vPos, 0, F1_0);
 //	Delete the original tObject.  Its only purpose in life was to determine which tObject to home in on.
 ReleaseObject (OBJ_IDX (weaponObjP));
@@ -452,10 +453,9 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	int			fate;
 	vmsVector	vPerturb, perturbed_fvec;
 
-	vPerturb = vmsVector::Random();
-	perturbed_fvec = bSpectate ? gameStates.app.playerPos.mOrient[FVEC] : parentObjP->position.mOrient[FVEC]
-	               + vPerturb * (F1_0/16);
-	vTargetPos = *vMuzzle + perturbed_fvec * MAX_OMEGA_DIST;
+	MakeRandomVector (&vPerturb);
+	VmVecScaleAdd (&perturbed_fvec, bSpectate ? &gameStates.app.playerPos.mOrient.fVec : &parentObjP->position.mOrient.fVec, &vPerturb, F1_0/16);
+	VmVecScaleAdd (&vTargetPos, vMuzzle, &perturbed_fvec, MAX_OMEGA_DIST);
 	fq.startSeg = nFiringSeg;
 	fq.p0 = vMuzzle;
 	fq.p1	= &vTargetPos;

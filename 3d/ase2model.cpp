@@ -74,7 +74,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 	psm->iFrame = 0;
 	psm->tFrame = 0;
 	psm->nFrames = psa->bBarrel ? 32 : 0;
-	psm->vOffset = psa->vOffset.toFix();
+	VmVecFloatToFix (&psm->vOffset, &psa->vOffset);
 	G3InitSubModelMinMax (psm);
 	for (pfa = psa->pFaces, iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
 		pmf->nIndex = nIndex;
@@ -88,7 +88,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 		pmf->nBitmap = bTextured ? i : -1;
 		pmf->nVerts = 3;
 		pmf->nId = iFace;
-		pmf->vNormal = pfa->vNormal.toFix();
+		VmVecFloatToFix (&pmf->vNormal, &pfa->vNormal);
 		for (i = 0; i < 3; i++, pmv++) {
 			h = pfa->nVerts [i];
 			if ((pmv->bTextured = bTextured))
@@ -103,7 +103,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 			pmv->baseColor.alpha = 1;
 			pmv->renderColor = pmv->baseColor;
 			pmv->normal = psa->pVerts [h].normal;
-			pmv->vertex = psa->pVerts [h].vertex * fScale;
+			VmVecScale (&pmv->vertex, &psa->pVerts [h].vertex, fScale);
 			if (psa->pTexCoord)
 				pmv->texCoord = psa->pTexCoord [pfa->nTexCoord [i]];
 			h += nVerts;

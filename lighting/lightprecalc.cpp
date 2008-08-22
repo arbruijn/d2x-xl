@@ -141,7 +141,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].nSegment : pl->info.nSegment;
 		if (!SEGVIS (m, i))
 			continue;
-		h = (int) (vmsVector::dist(center, pl->info.vPos) - fl2f (pl->info.fRad) / 10.0f);
+		h = (int) (VmVecDist (&center, &pl->info.vPos) - fl2f (pl->info.fRad) / 10.0f);
 		if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 			continue;
 		pDists [n].nDist = h;
@@ -209,14 +209,14 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 			h = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].nSegment : pl->info.nSegment;
 			if (!VERTVIS (h, nVertex))
 				continue;
-			vLightToVert = *vertP - pl->info.vPos;
-			h = vmsVector::normalize(vLightToVert) - (int) (pl->info.fRad * 6553.6f);
+			VmVecSub (&vLightToVert, vertP, &pl->info.vPos);
+			h = VmVecNormalize (&vLightToVert) - (int) (pl->info.fRad * 6553.6f);
 			if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 				continue;
 			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 				sideP = SEGMENTS [pl->info.nSegment].sides + pl->info.nSide;
-				if ((vmsVector::dot(sideP->normals[0], vLightToVert) < -F1_0 / 6) && 
-					 ((sideP->nType == SIDE_IS_QUAD) || (vmsVector::dot(sideP->normals[1], vLightToVert) < -F1_0 / 6)))
+				if ((VmVecDot (sideP->normals, &vLightToVert) < -F1_0 / 6) && 
+					 ((sideP->nType == SIDE_IS_QUAD) || (VmVecDot (sideP->normals + 1, &vLightToVert) < -F1_0 / 6)))
 					continue;
 				}	
 			}
@@ -353,14 +353,14 @@ for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 				}
 			}
 		}
-	vNormal = sideP->normals[0] + sideP->normals[1];
-	vNormal *= (-F1_0 / 2);
-	vAngles = vNormal.toAnglesVec();
-	viewer.position.mOrient = vmsMatrix::Create(vAngles);
-	G3StartFrame(0, 0);
-	RenderStartFrame();
-	G3SetViewMatrix(viewer.position.vPos, viewer.position.mOrient, gameStates.render.xZoom, 1);
 #endif
+	VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
+	VmVecScale (&vNormal, -F1_0 / 2);
+	VmExtractAnglesVector (&vAngles, &vNormal);
+	VmAngles2Matrix (&viewer.position.mOrient, &vAngles);
+	G3StartFrame (0, 0);
+	RenderStartFrame ();
+	G3SetViewMatrix (&viewer.position.vPos, &viewer.position.mOrient, gameStates.render.xZoom, 1);
 	BuildRenderSegList (nStartSeg, 0);	
 	G3EndFrame ();
 	//PrintLog ("   flagging visible segments\n");

@@ -530,18 +530,16 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 
 //------------------------------------------------------------------------------
 
-void TriggerSetOrient (tTransformation *posP, short nSegment, short nSide, int bSetPos, int nStep)
+void TriggerSetOrient (tPosition *posP, short nSegment, short nSide, int bSetPos, int nStep)
 {
 	vmsAngVec	an;
 	vmsVector	n;
 
 if (nStep <= 0) {
 	n = *gameData.segs.segments [nSegment].sides [nSide].normals;
-	n = -n;
-	/*
-	n[Y] = -n[Y];
-	n[Z] = -n[Z];
-	*/
+	n.p.x = -n.p.x;
+	n.p.y = -n.p.y;
+	n.p.z = -n.p.z;
 	gameStates.gameplay.vTgtDir = n;
 	if (nStep < 0)
 		nStep = MAX_ORIENT_STEPS;
@@ -551,10 +549,10 @@ else
 // turn the ship so that it is facing the destination nSide of the destination tSegment
 // invert the normal as it points into the tSegment
 // compute angles from the normal
-an = n.toAnglesVec();
+VmExtractAnglesVector (&an, &n);
 // create new orientation matrix
 if (!nStep)
-	posP->mOrient = vmsMatrix::Create(an);
+	VmAngles2Matrix (&posP->mOrient, &an);
 if (bSetPos)
 	COMPUTE_SEGMENT_CENTER_I (&posP->vPos, nSegment); 
 // rotate the ships vel vector accordingly
@@ -573,38 +571,36 @@ void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPo
 TriggerSetOrient (&objP->position, nSegment, nSide, bSetPos, nStep);
 if (nStep <= 0) {
 	n = *gameData.segs.segments [nSegment].sides [nSide].normals;
-	/*
-	n[X] = -n[X];
-	n[Y] = -n[Y];
-	*/
-	n = -n;
+	n.p.x = -n.p.x;
+	n.p.y = -n.p.y;
+	n.p.z = -n.p.z;
 	gameStates.gameplay.vTgtDir = n;
 	if (nStep < 0)
 		nStep = MAX_ORIENT_STEPS;
 	}
 else
 	n = gameStates.gameplay.vTgtDir;
-an = n.toAnglesVec();
-av = objP->mType.physInfo.velocity.toAnglesVec();
-av[PA] -= an[PA];
-av[BA] -= an[BA];
-av[HA] -= an[HA];
+VmExtractAnglesVector (&an, &n);
+VmExtractAnglesVector (&av, &objP->mType.physInfo.velocity);
+av.p -= an.p;
+av.b -= an.b;
+av.h -= an.h;
 if (nStep) {
 	if (nStep > 1) {
-		av[PA] /= nStep;
-		av[BA] /= nStep;
-		av[HA] /= nStep;
-		ad = objP->position.mOrient.extractAnglesVec();
-		ad[PA] += (an[PA] - ad[PA]) / nStep;
-		ad[BA] += (an[BA] - ad[BA]) / nStep;
-		ad[HA] += (an[HA] - ad[HA]) / nStep;
-		objP->position.mOrient = vmsMatrix::Create(ad);
+		av.p /= nStep;
+		av.b /= nStep;
+		av.h /= nStep;
+		VmExtractAnglesMatrix (&ad, &objP->position.mOrient);
+		ad.p += (an.p - ad.p) / nStep;
+		ad.b += (an.b - ad.b) / nStep;
+		ad.h += (an.h - ad.h) / nStep;
+		VmAngles2Matrix (&objP->position.mOrient, &ad);
 		}
 	else
-		objP->position.mOrient = vmsMatrix::Create(an);
+		VmAngles2Matrix (&objP->position.mOrient, &an);
 	}
-rm = vmsMatrix::Create(av);
-vel = rm * objP->mType.physInfo.velocity;
+VmAngles2Matrix (&rm, &av);
+VmVecRotate (&vel, &objP->mType.physInfo.velocity, &rm);
 objP->mType.physInfo.velocity = vel;
 //StopPlayerMovement ();
 }
@@ -671,15 +667,15 @@ speedBoostSpeed = speed;
 v = 60 + (COMPETITION ? 100 : extraGameInfo [IsMultiGame].nSpeedBoost) * 4 * speed;
 if (sbd.bBoosted) {
 	if (pSrcPt && pDestPt) {
-		n = *pDestPt - *pSrcPt;
-		vmsVector::normalize(n);
+		VmVecSub (&n, pDestPt, pSrcPt);
+		VmVecNormalize (&n);
 		}
 	else if (srcSegnum >= 0) {
 		COMPUTE_SIDE_CENTER (&sbd.vSrc, gameData.segs.segments + srcSegnum, srcSidenum);
 		COMPUTE_SIDE_CENTER (&sbd.vDest, gameData.segs.segments + destSegnum, destSidenum);
 		if (memcmp (&sbd.vSrc, &sbd.vDest, sizeof (vmsVector))) {
-			n = sbd.vDest - sbd.vSrc;
-			vmsVector::normalize(n);
+			VmVecSub (&n, &sbd.vDest, &sbd.vSrc);
+			VmVecNormalize (&n);
 			}
 		else {
 			Controls [0].verticalThrustTime =
@@ -688,74 +684,70 @@ if (sbd.bBoosted) {
 			memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 		// turn the ship so that it is facing the destination nSide of the destination tSegment
 		// invert the normal as it points into the tSegment
-			/*
-			n[X] = -n[X];
-			n[Y] = -n[Y];
-			*/
-			n = -n;
+			n.p.x = -n.p.x;
+			n.p.y = -n.p.y;
+			n.p.z = -n.p.z;
 			}
 		}
 	else {
 		memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 	// turn the ship so that it is facing the destination nSide of the destination tSegment
 	// invert the normal as it points into the tSegment
-		/*
-		n[X] = -n[X];
-		n[Y] = -n[Y];
-		*/
-		n = -n;
+		n.p.x = -n.p.x;
+		n.p.y = -n.p.y;
+		n.p.z = -n.p.z;
 		}
-	sbd.vVel[X] = n[X] * v;
-	sbd.vVel[Y] = n[Y] * v;
-	sbd.vVel[Z] = n[Z] * v;
+	sbd.vVel.p.x = n.p.x * v;
+	sbd.vVel.p.y = n.p.y * v;
+	sbd.vVel.p.z = n.p.z * v;
 #if 0
-	d = (double) (labs (n[X]) + labs (n[Y]) + labs (n[Z])) / ((double) F1_0 * 60.0);
-	h[X] = n[X] ? (fix) ((double) n[X] / d) : 0;
-	h[Y] = n[Y] ? (fix) ((double) n[Y] / d) : 0;
-	h[Z] = n[Z] ? (fix) ((double) n[Z] / d) : 0;
+	d = (double) (labs (n.p.x) + labs (n.p.y) + labs (n.p.z)) / ((double) F1_0 * 60.0);
+	h.p.x = n.p.x ? (fix) ((double) n.p.x / d) : 0;
+	h.p.y = n.p.y ? (fix) ((double) n.p.y / d) : 0;
+	h.p.z = n.p.z ? (fix) ((double) n.p.z / d) : 0;
 #else
 #	if 1
-	h[X] =
-	h[Y] =
-	h[Z] = F1_0 * 60;
+	h.p.x =
+	h.p.y =
+	h.p.z = F1_0 * 60;
 #	else
-	h[X] = (n[X] ? n[X] : F1_0) * 60;
-	h[Y] = (n[Y] ? n[Y] : F1_0) * 60;
-	h[Z] = (n[Z] ? n[Z] : F1_0) * 60;
+	h.p.x = (n.p.x ? n.p.x : F1_0) * 60;
+	h.p.y = (n.p.y ? n.p.y : F1_0) * 60;
+	h.p.z = (n.p.z ? n.p.z : F1_0) * 60;
 #	endif
 #endif
-	sbd.vMinVel = sbd.vVel - h;
+	VmVecSub (&sbd.vMinVel, &sbd.vVel, &h);
 /*
-	if (!sbd.vMinVel[X])
-		sbd.vMinVel[X] = F1_0 * -60;
-	if (!sbd.vMinVel[Y])
-		sbd.vMinVel[Y] = F1_0 * -60;
-	if (!sbd.vMinVel[Z])
-		sbd.vMinVel[Z] = F1_0 * -60;
+	if (!sbd.vMinVel.p.x)
+		sbd.vMinVel.p.x = F1_0 * -60;
+	if (!sbd.vMinVel.p.y)
+		sbd.vMinVel.p.y = F1_0 * -60;
+	if (!sbd.vMinVel.p.z)
+		sbd.vMinVel.p.z = F1_0 * -60;
 */
-	sbd.vMaxVel = sbd.vVel + h;
+	VmVecAdd (&sbd.vMaxVel, &sbd.vVel, &h);
 /*
-	if (!sbd.vMaxVel[X])
-		sbd.vMaxVel[X] = F1_0 * 60;
-	if (!sbd.vMaxVel[Y])
-		sbd.vMaxVel[Y] = F1_0 * 60;
-	if (!sbd.vMaxVel[Z])
-		sbd.vMaxVel[Z] = F1_0 * 60;
+	if (!sbd.vMaxVel.p.x)
+		sbd.vMaxVel.p.x = F1_0 * 60;
+	if (!sbd.vMaxVel.p.y)
+		sbd.vMaxVel.p.y = F1_0 * 60;
+	if (!sbd.vMaxVel.p.z)
+		sbd.vMaxVel.p.z = F1_0 * 60;
 */
-	if (sbd.vMinVel[X] > sbd.vMaxVel[X]) {
-		fix h = sbd.vMinVel[X];
-		sbd.vMinVel[X] = sbd.vMaxVel[X];
-		sbd.vMaxVel[X] = h;
+	if (sbd.vMinVel.p.x > sbd.vMaxVel.p.x) {
+		fix h = sbd.vMinVel.p.x;
+		sbd.vMinVel.p.x = sbd.vMaxVel.p.x;
+		sbd.vMaxVel.p.x = h;
 		}
-	if (sbd.vMinVel[Y] > sbd.vMaxVel[Y]) {
-		fix h = sbd.vMinVel[Y];
-		sbd.vMinVel[Y] = sbd.vMaxVel[Y];
-		sbd.vMaxVel[Y] = h;
+	if (sbd.vMinVel.p.y > sbd.vMaxVel.p.y) {
+		fix h = sbd.vMinVel.p.y;
+		sbd.vMinVel.p.y = sbd.vMaxVel.p.y;
+		sbd.vMaxVel.p.y = h;
 		}
-	if (sbd.vMinVel[Z] > sbd.vMaxVel[Z]) {
-		fix h = sbd.vMinVel[Z];
-		sbd.vMinVel[Z] = sbd.vMaxVel[Z];
-		sbd.vMaxVel[Z] = h;
+	if (sbd.vMinVel.p.z > sbd.vMaxVel.p.z) {
+		fix h = sbd.vMinVel.p.z;
+		sbd.vMinVel.p.z = sbd.vMaxVel.p.z;
+		sbd.vMaxVel.p.z = h;
 		}
 	objP->mType.physInfo.velocity = sbd.vVel;
 	if (bSetOrient) {
@@ -765,9 +757,9 @@ if (sbd.bBoosted) {
 	gameData.objs.speedBoost [nObject] = sbd;
 	}
 else {
-	objP->mType.physInfo.velocity[X] = objP->mType.physInfo.velocity[X] / v * 60;
-	objP->mType.physInfo.velocity[Y] = objP->mType.physInfo.velocity[Y] / v * 60;
-	objP->mType.physInfo.velocity[Z] = objP->mType.physInfo.velocity[Z] / v * 60;
+	objP->mType.physInfo.velocity.p.x = objP->mType.physInfo.velocity.p.x / v * 60;
+	objP->mType.physInfo.velocity.p.y = objP->mType.physInfo.velocity.p.y / v * 60;
+	objP->mType.physInfo.velocity.p.z = objP->mType.physInfo.velocity.p.z / v * 60;
 	}
 }
 

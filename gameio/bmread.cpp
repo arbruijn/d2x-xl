@@ -1462,7 +1462,7 @@ void bm_readRobot()
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].clawSound = clawSound;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].tauntSound = tauntSound;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].behavior = behavior;		//	Default behavior for this robot, if coming out of matcen.
-	Robot_info [gameStates.app.bD1Data][NRobotTypes].aim = std::min(f2i(aim*255), 255);		//	how well this robot nType can aim.  255=perfect
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].aim = min(f2i(aim*255), 255);		//	how well this robot nType can aim.  255=perfect
 
 	if (containsType)
 		Robot_info [gameStates.app.bD1Data][NRobotTypes].containsType = OBJ_ROBOT;

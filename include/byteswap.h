@@ -32,25 +32,25 @@ typedef union dSwap {
 
 #define DSWAP(_d)	((dSwap *) &(_d))
 
-static inline double SWAPDOUBLE (double i)
+static inline double SWAPDOUBLE (double i) 
 {
 char	h;
 #if 0
 dSwap	s;
 
 s.i = i;
-h = s[BA] [0];
-s[BA] [0] = s[BA] [7];
-s[BA] [7] = h;
-h = s[BA] [1];
-s[BA] [1] = s[BA] [6];
-s[BA] [6] = h;
-h = s[BA] [2];
-s[BA] [2] = s[BA] [5];
-s[BA] [5] = h;
-h = s[BA] [3];
-s[BA] [3] = s[BA] [4];
-s[BA] [4] = h;
+h = s.b [0];
+s.b [0] = s.b [7];
+s.b [7] = h;
+h = s.b [1];
+s.b [1] = s.b [6];
+s.b [6] = h;
+h = s.b [2];
+s.b [2] = s.b [5];
+s.b [5] = h;
+h = s.b [3];
+s.b [3] = s.b [4];
+s.b [4] = h;
 return s.d;
 #else
 SWAP (h, DSWAP (i)->b [0], DSWAP (i)->b [7]);
@@ -61,7 +61,7 @@ return i;
 #endif
 }
 
-static inline double SwapDouble (double i, int bEndian)
+static inline double SwapDouble (double i, int bEndian) 
 {
 if (gameStates.app.bLittleEndian == bEndian)
 	return i;
@@ -77,19 +77,19 @@ typedef union fSwap {
 
 #define FSWAP(_f)	((fSwap *) &(_f))
 
-static inline float SWAPFLOAT (float i)
+static inline float SWAPFLOAT (float i) 
 {
 char	h;
 #if 0
 fSwap	s;
 
 s.i = i;
-h = s[BA] [0];
-s[BA] [0] = s[BA] [3];
-s[BA] [3] = h;
-h = s[BA] [1];
-s[BA] [1] = s[BA] [2];
-s[BA] [2] = h;
+h = s.b [0];
+s.b [0] = s.b [3];
+s.b [3] = h;
+h = s.b [1];
+s.b [1] = s.b [2];
+s.b [2] = h;
 return s.i;
 #else
 SWAP (h, FSWAP (i)->b [0], FSWAP (i)->b [3]);
@@ -98,7 +98,7 @@ return i;
 #endif
 }
 
-static inline float SwapFloat (float i, int bEndian)
+static inline float SwapFloat (float i, int bEndian) 
 {
 if (gameStates.app.bLittleEndian == bEndian)
 	return i;
@@ -114,7 +114,7 @@ typedef union iSwap {
 
 #define ISWAP(_i)	((iSwap *) &(_i))
 
-static inline int SWAPINT (int i)
+static inline int SWAPINT (int i) 
 {
 char	h;
 SWAP (h, ISWAP (i)->b [0], ISWAP (i)->b [3]);
@@ -122,7 +122,7 @@ SWAP (h, ISWAP (i)->b [1], ISWAP (i)->b [2]);
 return i;
 }
 
-static inline int SwapInt (int i, int bEndian)
+static inline int SwapInt (int i, int bEndian) 
 {
 if (gameStates.app.bLittleEndian == bEndian)
 	return i;
@@ -138,14 +138,14 @@ typedef union sSwap {
 
 #define SSWAP(_s)	((sSwap *) &(_s))
 
-static inline short SWAPSHORT (short i)
+static inline short SWAPSHORT (short i) 
 {
 char	h;
 SWAP (h, SSWAP (i)->b [0], SSWAP (i)->b [1]);
 return i;
 }
 
-static inline int SwapShort (short i, int bEndian)
+static inline int SwapShort (short i, int bEndian) 
 {
 if (gameStates.app.bLittleEndian == bEndian)
 	return i;
@@ -154,36 +154,36 @@ return SWAPSHORT (i);
 
 // ----------------------------------------------------------------------------
 
-static inline vmsVector& SwapVector(vmsVector& v, int bEndian)
+static inline vmsVector *SwapVector (vmsVector *v, int bEndian) 
 {
 if (gameStates.app.bLittleEndian != bEndian) {
-	v[X] = (fix) SWAPINT ((int) v[X]);
-	v[Y] = (fix) SWAPINT ((int) v[Y]);
-	v[Z] = (fix) SWAPINT ((int) v[Z]);
+	v->p.x = (fix) SWAPINT ((int) v->p.x);
+	v->p.y = (fix) SWAPINT ((int) v->p.y);
+	v->p.z = (fix) SWAPINT ((int) v->p.z);
 	}
 return v;
 }
 
 // ----------------------------------------------------------------------------
 
-static inline vmsAngVec& SwapAngVec (vmsAngVec& v, int bEndian)
+static inline vmsAngVec *SwapAngVec (vmsAngVec *v, int bEndian) 
 {
 if (gameStates.app.bLittleEndian != bEndian) {
-	v[PA] = (fixang) SWAPSHORT ((short) v[PA]);
-	v[BA] = (fixang) SWAPSHORT ((short) v[BA]);
-	v[HA] = (fixang) SWAPSHORT ((short) v[HA]);
+	v->p = (fixang) SWAPSHORT ((short) v->p);
+	v->b = (fixang) SWAPSHORT ((short) v->b);
+	v->h = (fixang) SWAPSHORT ((short) v->h);
 	}
 return v;
 }
 
 // ----------------------------------------------------------------------------
 
-static inline vmsMatrix& SwapMatrix (vmsMatrix& m, int bEndian)
+static inline vmsMatrix *SwapMatrix (vmsMatrix *m, int bEndian) 
 {
 if (gameStates.app.bLittleEndian != bEndian) {
-	SwapVector (m[RVEC], bEndian);
-	SwapVector (m[UVEC], bEndian);
-	SwapVector (m[FVEC], bEndian);
+	SwapVector (&m->rVec, bEndian);
+	SwapVector (&m->uVec, bEndian);
+	SwapVector (&m->fVec, bEndian);
 	}
 return m;
 }

@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dropobject.h"
 
 //#define _DEBUG
-#define EXPLOSION_SCALE (F1_0*5/2)		//explosion is the obj size times this
+#define EXPLOSION_SCALE (F1_0*5/2)		//explosion is the obj size times this 
 
 //--unused-- ubyte	Frame_processed [MAX_OBJECTS];
 
@@ -58,7 +58,7 @@ tObject *CreateExplBlast (tObject *parentObjP)
 
 if (!gameOpts->render.effects.bExplBlasts)
 	return NULL;
-nObject = tObject::Create(OBJ_FIREBALL, 0, -1, parentObjP->nSegment, parentObjP->position.vPos, vmsMatrix::IDENTITY,
+nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
 								2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_EXPLBLAST, 1);
 if (nObject < 0)
 	return NULL;
@@ -95,7 +95,7 @@ tObject *CreateLighting (tObject *parentObjP)
 
 if (!EGI_FLAG (bUseLightnings, 0, 0, 1))
 	return NULL;
-nObject = tObject::Create(OBJ_FIREBALL, 0, -1, parentObjP->nSegment, parentObjP->position.vPos, vmsMatrix::IDENTITY,
+nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
 								2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_LIGHTNING, 1);
 if (nObject < 0)
 	return NULL;
@@ -110,7 +110,7 @@ return objP;
 
 //------------------------------------------------------------------------------
 
-tObject *ObjectCreateExplosionSub (tObject *objP, short nSegment, vmsVector *vPos, fix xSize,
+tObject *ObjectCreateExplosionSub (tObject *objP, short nSegment, vmsVector *vPos, fix xSize, 
 											  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent)
 {
 	short			nObject;
@@ -119,7 +119,7 @@ tObject *ObjectCreateExplosionSub (tObject *objP, short nSegment, vmsVector *vPo
 	vmsVector	pos_hit, vForce;
 	int			i, t, id;
 
-nObject = tObject::Create(OBJ_FIREBALL, nVClip, -1, nSegment, *vPos, vmsMatrix::IDENTITY, xSize,
+nObject = CreateObject (OBJ_FIREBALL, nVClip, -1, nSegment, vPos, &vmdIdentityMatrix, xSize, 
 							   CT_EXPLOSION, MT_NONE, RT_FIREBALL, 1);
 
 if (nObject < 0) {
@@ -150,7 +150,7 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 	if (obj0P->flags & OF_SHOULD_BE_DEAD)
 		continue;
 	if (t == OBJ_WEAPON) {
-		if (!WeaponIsMine (obj0P->id))
+		if (!WeaponIsMine (obj0P->id)) 
 		continue;
 		}
 	else if (t == OBJ_ROBOT) {
@@ -161,7 +161,7 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 		}
 	else if ((t != OBJ_REACTOR) && (t != OBJ_PLAYER))
 		continue;
-	dist = vmsVector::dist(obj0P->position.vPos, explObjP->position.vPos);
+	dist = VmVecDistQuick (&obj0P->position.vPos, &explObjP->position.vPos);
 	// Make damage be from 'xMaxDamage' to 0.0, where 0.0 is 'xMaxDistance' away;
 	if (dist >= xMaxDistance)
 		continue;
@@ -170,11 +170,11 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 	damage = xMaxDamage - FixMulDiv (dist, xMaxDamage, xMaxDistance);
 	force = xMaxForce - FixMulDiv (dist, xMaxForce, xMaxDistance);
 	// Find the force vector on the tObject
-	vmsVector::normalizedDir(vForce, obj0P->position.vPos, explObjP->position.vPos);
-	vForce *= force;
+	VmVecNormalizedDir (&vForce, &obj0P->position.vPos, &explObjP->position.vPos);
+	VmVecScale (&vForce, force);
 	// Find where the point of impact is... (pos_hit)
-	pos_hit = explObjP->position.vPos - obj0P->position.vPos;
-	pos_hit *= (FixDiv (obj0P->size, obj0P->size + dist));
+	VmVecSub (&pos_hit, &explObjP->position.vPos, &obj0P->position.vPos);
+	VmVecScale (&pos_hit, FixDiv (obj0P->size, obj0P->size + dist));
 	if (t == OBJ_WEAPON) {
 		PhysApplyForce (obj0P, &vForce);
 		if (WeaponIsMine (obj0P->id) && (FixMul (dist, force) > i2f (8000))) {	//prox bombs have chance of blowing up
@@ -190,21 +190,21 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 		//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
 		if (objP && (!ROBOTINFO (obj0P->id).bossFlag) && (gameData.weapons.info [objP->id].flash)) {
 			tAIStatic	*aip = &obj0P->cType.aiInfo;
-			int			force_val = f2i (FixDiv (vForce.mag() * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
+			int			force_val = f2i (FixDiv (VmVecMagQuick (&vForce) * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
 
-			if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame >= F1_0)
+			if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame >= F1_0) 
 				aip->SKIP_AI_COUNT--;
 			else {
 				aip->SKIP_AI_COUNT += force_val;
-				obj0P->mType.physInfo.rotThrust[X] = ((d_rand () - 16384) * force_val)/16;
-				obj0P->mType.physInfo.rotThrust[Y] = ((d_rand () - 16384) * force_val)/16;
-				obj0P->mType.physInfo.rotThrust[Z] = ((d_rand () - 16384) * force_val)/16;
+				obj0P->mType.physInfo.rotThrust.p.x = ((d_rand () - 16384) * force_val)/16;
+				obj0P->mType.physInfo.rotThrust.p.y = ((d_rand () - 16384) * force_val)/16;
+				obj0P->mType.physInfo.rotThrust.p.z = ((d_rand () - 16384) * force_val)/16;
 				obj0P->mType.physInfo.flags |= PF_USES_THRUST;
 				}
 			}
-		vNegForce[X] = vForce[X] * xScale;
-		vNegForce[Y] = vForce[Y] * xScale;
-		vNegForce[Z] = vForce[Z] * xScale;
+		vNegForce.p.x = vForce.p.x * xScale;
+		vNegForce.p.y = vForce.p.y * xScale;
+		vNegForce.p.z = vForce.p.z * xScale;
 		PhysApplyRot (obj0P, &vNegForce);
 		if (obj0P->shields >= 0) {
 			if (ROBOTINFO (obj0P->id).bossFlag &&
@@ -242,7 +242,7 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 
 		//	Hack!Warning!Test code!
 		if (objP && gameData.weapons.info [objP->id].flash && obj0P->id==gameData.multiplayer.nLocalPlayer) {
-			int fe = std::min(F1_0*4, force*gameData.weapons.info [objP->id].flash/32);	//	For four seconds or less
+			int fe = min (F1_0*4, force*gameData.weapons.info [objP->id].flash/32);	//	For four seconds or less
 			if (objP->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {
 				fe /= 2;
 				force /= 2;
@@ -261,13 +261,13 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 		if (nParent > -1) {
 			killerP = OBJECTS + nParent;
 			if (killerP != gameData.objs.console)		// if someone else whacks you, cut force by 2x
-				vForce2[X] /= 2;
-				vForce2[Y] /= 2;
-				vForce2[Z] /= 2;
+				vForce2.p.x /= 2;
+				vForce2.p.y /= 2;
+				vForce2.p.z /= 2;
 			}
-		vForce2[X] /= 2;
-		vForce2[Y] /= 2;
-		vForce2[Z] /= 2;
+		vForce2.p.x /= 2;
+		vForce2.p.y /= 2;
+		vForce2.p.z /= 2;
 		PhysApplyForce (obj0P, &vForce);
 		PhysApplyRot (obj0P, &vForce2);
 		if (gameStates.app.nDifficultyLevel == 0)
@@ -281,7 +281,7 @@ return explObjP;
 
 //------------------------------------------------------------------------------
 
-tObject *ObjectCreateBadassExplosion (tObject *objP, short nSegment, vmsVector *position, fix size, ubyte nVClip,
+tObject *ObjectCreateBadassExplosion (tObject *objP, short nSegment, vmsVector *position, fix size, ubyte nVClip, 
 												  fix maxDamage, fix maxDistance, fix maxForce, short parent)
 {
 	tObject	*explObjP = ObjectCreateExplosionSub (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
@@ -304,18 +304,18 @@ if ((objP->id == EARTHSHAKER_ID) || (objP->id == ROBOT_EARTHSHAKER_ID))
 DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0, SOUNDCLASS_EXPLOSION);
 vmsVector v;
 if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
-	v = objP->vLastPos - objP->position.vPos;
-	vmsVector::normalize(v);
+	VmVecSub (&v, &objP->vLastPos, &objP->position.vPos);
+	VmVecNormalize (&v, &v);
 //VmVecScale (&v, F1_0 * 10);
-	v += *vPos;
+	VmVecInc (&v, vPos);
 	}
 else
 	v = *vPos;
 return ObjectCreateBadassExplosion (objP, objP->nSegment, &v, //objP->vLastPos, //vPos
-                                    wi->impact_size,
-                                    wi->robot_hit_vclip,
-                                    wi->strength [gameStates.app.nDifficultyLevel],
-                                    wi->damage_radius, wi->strength [gameStates.app.nDifficultyLevel],
+                                    wi->impact_size, 
+                                    wi->robot_hit_vclip, 
+                                    wi->strength [gameStates.app.nDifficultyLevel], 
+                                    wi->damage_radius, wi->strength [gameStates.app.nDifficultyLevel], 
                                     objP->cType.laserInfo.nParentObj);
 }
 
@@ -324,9 +324,9 @@ return ObjectCreateBadassExplosion (objP, objP->nSegment, &v, //objP->vLastPos, 
 tObject *ExplodeBadassObject (tObject *objP, fix damage, fix distance, fix force)
 {
 
-	tObject 	*explObjP = ObjectCreateBadassExplosion (objP, objP->nSegment, &objP->position.vPos, objP->size,
-																 (ubyte) GetExplosionVClip (objP, 0),
-																 damage, distance, force,
+	tObject 	*explObjP = ObjectCreateBadassExplosion (objP, objP->nSegment, &objP->position.vPos, objP->size, 
+																 (ubyte) GetExplosionVClip (objP, 0), 
+																 damage, distance, force, 
 																 OBJ_IDX (objP));
 if (explObjP)
 	DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (explObjP), 0, F1_0, SOUNDCLASS_EXPLOSION);
@@ -343,11 +343,11 @@ return ExplodeBadassObject (objP, F1_0*50, F1_0*40, F1_0*150);
 
 //------------------------------------------------------------------------------
 
-inline double VectorVolume (const vmsVector& vMin, const vmsVector& vMax)
+inline double VectorVolume (vmsVector *vMin, vmsVector *vMax)
 {
-return fabs (f2fl (vMax[X] - vMin[X])) *
-		 fabs (f2fl (vMax[Y] - vMin[Y])) *
-		 fabs (f2fl (vMax[Z] - vMin[Z]));
+return fabs (f2fl (vMax->p.x - vMin->p.x)) *
+		 fabs (f2fl (vMax->p.y - vMin->p.y)) *
+		 fabs (f2fl (vMax->p.z - vMin->p.z));
 }
 
 //------------------------------------------------------------------------------
@@ -366,11 +366,11 @@ else {
 	if ((i = objP->rType.polyObjInfo.nSubObjFlags)) {
 		for (j = 0; i && (j < pm->nModels); i >>= 1, j++)
 			if (i & 1)
-				size += VectorVolume(pm->subModels.mins[j], pm->subModels.maxs[j]);
+				size += VectorVolume (pm->subModels.mins + j, pm->subModels.maxs + j);
 		}
 	else {
 		for (j = 0; j < pm->nModels; j++)
-			size += VectorVolume (pm->subModels.mins[j], pm->subModels.maxs[j]);
+			size += VectorVolume (pm->subModels.mins + j, pm->subModels.maxs + j);
 		}
 	}
 return sqrt (size);
@@ -389,9 +389,9 @@ tObject *ObjectCreateDebris (tObject *parentObjP, int nSubObj)
 	tPolyModel *po;
 
 Assert ((parentObjP->nType == OBJ_ROBOT) || (parentObjP->nType == OBJ_PLAYER));
-nObject = tObject::Create(
-	OBJ_DEBRIS, 0, -1, parentObjP->nSegment, parentObjP->position.vPos, parentObjP->position.mOrient,
-	gameData.models.polyModels [parentObjP->rType.polyObjInfo.nModel].subModels.rads [nSubObj],
+nObject = CreateObject (
+	OBJ_DEBRIS, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &parentObjP->position.mOrient, 
+	gameData.models.polyModels [parentObjP->rType.polyObjInfo.nModel].subModels.rads [nSubObj], 
 	CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ, 1);
 if ((nObject < 0) && (gameData.objs.nLastObject [0] >= MAX_OBJECTS - 1)) {
 #if TRACE
@@ -410,20 +410,20 @@ debrisP->rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
 debrisP->rType.polyObjInfo.nTexOverride = parentObjP->rType.polyObjInfo.nTexOverride;
 //Set physics data for this tObject
 po = gameData.models.polyModels + debrisP->rType.polyObjInfo.nModel;
-debrisP->mType.physInfo.velocity[X] = RAND_MAX/2 - d_rand ();
-debrisP->mType.physInfo.velocity[Y] = RAND_MAX/2 - d_rand ();
-debrisP->mType.physInfo.velocity[Z] = RAND_MAX/2 - d_rand ();
-debrisP->mType.physInfo.velocity *= (F1_0 * 10);
-vmsVector::normalize(debrisP->mType.physInfo.velocity);
-debrisP->mType.physInfo.velocity *= (i2f (10 + (30 * d_rand () / RAND_MAX)));
-debrisP->mType.physInfo.velocity += parentObjP->mType.physInfo.velocity;
-// -- used to be: Notice, not Random!VmVecMake (&debrisP->mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
+debrisP->mType.physInfo.velocity.p.x = RAND_MAX/2 - d_rand ();
+debrisP->mType.physInfo.velocity.p.y = RAND_MAX/2 - d_rand ();
+debrisP->mType.physInfo.velocity.p.z = RAND_MAX/2 - d_rand ();
+VmVecScale (&debrisP->mType.physInfo.velocity, F1_0 * 10);
+VmVecNormalize (&debrisP->mType.physInfo.velocity);
+VmVecScale (&debrisP->mType.physInfo.velocity, i2f (10 + (30 * d_rand () / RAND_MAX)));
+VmVecInc (&debrisP->mType.physInfo.velocity, &parentObjP->mType.physInfo.velocity);
+// -- used to be: Notice, not random!VmVecMake (&debrisP->mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
 #if 0//def _DEBUG
-debrisP->mType.physInfo.rotVel.setZero();
+VmVecZero (&debrisP->mType.physInfo.rotVel);
 #else
-debrisP->mType.physInfo.rotVel.set(d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
+VmVecMake (&debrisP->mType.physInfo.rotVel, d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
 #endif
-debrisP->mType.physInfo.rotThrust.setZero();
+VmVecZero (&debrisP->mType.physInfo.rotThrust);
 debrisP->lifeleft = nDebrisLife [gameOpts->render.nDebrisLife] * F1_0 + 3*DEBRIS_LIFE/4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
 debrisP->mType.physInfo.mass =
 #if 0
@@ -434,8 +434,8 @@ debrisP->mType.physInfo.mass =
 debrisP->mType.physInfo.drag = gameOpts->render.nDebrisLife ? 256 : 0; //fl2f (0.2);		//parentObjP->mType.physInfo.drag;
 if (gameOpts->render.nDebrisLife) {
 	debrisP->mType.physInfo.flags |= PF_FREE_SPINNING;
-	debrisP->mType.physInfo.rotVel /= 3;
-}
+	VmVecScaleFrac (&debrisP->mType.physInfo.rotVel, 1, 3);
+	}
 return debrisP;
 }
 
@@ -501,13 +501,13 @@ else {		//normal, multi-stage explosion
 //blow up an tObject.  Takes the tObject to destroy, and the point of impact
 void ExplodeObject (tObject *hitObjP, fix delayTime)
 {
-if (hitObjP->flags & OF_EXPLODING)
+if (hitObjP->flags & OF_EXPLODING) 
 	return;
 if (delayTime) {		//wait a little while before creating explosion
 	int nObject;
 	tObject *objP;
 	//create a placeholder tObject to do the delay, with id==-1
-	nObject = tObject::Create(OBJ_FIREBALL, -1, -1, hitObjP->nSegment, hitObjP->position.vPos, vmsMatrix::IDENTITY, 0,
+	nObject = CreateObject (OBJ_FIREBALL, -1, -1, hitObjP->nSegment, &hitObjP->position.vPos, &vmdIdentityMatrix, 0, 
 									CT_EXPLOSION, MT_NONE, RT_NONE, 1);
 	if (nObject < 0) {
 		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
@@ -543,7 +543,7 @@ else {
 		}
 	//don't make debris explosions have physics, because they often
 	//happen when the debris has hit the tWall, so the fireball is trying
-	//to move into the tWall, which shows off FVI problems.
+	//to move into the tWall, which shows off FVI problems.   
 	if ((hitObjP->nType != OBJ_DEBRIS) && (hitObjP->movementType == MT_PHYSICS)) {
 		explObjP->movementType = MT_PHYSICS;
 		explObjP->mType.physInfo = hitObjP->mType.physInfo;
@@ -578,7 +578,7 @@ if (objP->lifeleft <= 0) {	// We died of old age
 	KillObject (objP);
 	objP->lifeleft = 0;
 	}
-if (objP->renderType == RT_EXPLBLAST)
+if (objP->renderType == RT_EXPLBLAST) 
 	return;
 if (objP->renderType == RT_SHRAPNELS) {
 	//- moved to DoSmokeFrame() - UpdateShrapnels (objP);
@@ -591,7 +591,7 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 	vmsVector	*vSpawnPos;
 	fix			xBadAss;
 
-	if ((objP->cType.explInfo.nDeleteObj < 0) ||
+	if ((objP->cType.explInfo.nDeleteObj < 0) || 
 		 (objP->cType.explInfo.nDeleteObj > gameData.objs.nLastObject [0])) {
 #if TRACE
 		con_printf (CONDBG, "Illegal value for nDeleteObj in fireball.c\n");
@@ -603,7 +603,7 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 	xBadAss = (fix) ROBOTINFO (delObjP->id).badass;
 	vSpawnPos = &delObjP->position.vPos;
 	t = delObjP->nType;
-	if (((t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_REACTOR) && (t != OBJ_PLAYER)) ||
+	if (((t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_REACTOR) && (t != OBJ_PLAYER)) || 
 			(delObjP->nSegment == -1)) {
 		Int3 ();	//pretty bad
 		return;
@@ -611,14 +611,14 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 	nVClip = (ubyte) GetExplosionVClip (delObjP, 1);
 	if ((delObjP->nType == OBJ_ROBOT) && xBadAss)
 		explObjP = ObjectCreateBadassExplosion (
-			NULL,
-			delObjP->nSegment,
-			vSpawnPos,
-			FixMul (delObjP->size, EXPLOSION_SCALE),
-			nVClip,
-			F1_0 * xBadAss,
-			i2f (4) * xBadAss,
-			i2f (35) * xBadAss,
+			NULL, 
+			delObjP->nSegment, 
+			vSpawnPos, 
+			FixMul (delObjP->size, EXPLOSION_SCALE), 
+			nVClip, 
+			F1_0 * xBadAss, 
+			i2f (4) * xBadAss, 
+			i2f (35) * xBadAss, 
 			-1);
 	else
 		explObjP = ObjectCreateExplosion (delObjP->nSegment, vSpawnPos, FixMul (delObjP->size, EXPLOSION_SCALE), nVClip);
@@ -734,7 +734,7 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 	if (nSegment != -1) {
 		short nSide = gameData.walls.explWalls [i].nSide;
 		fix oldfrac, newfrac;
-		int oldCount, newCount, e;		//n,
+		int oldCount, newCount, e;		//n, 
 		oldfrac = FixDiv (gameData.walls.explWalls [i].time, EXPL_WALL_TIME);
 		gameData.walls.explWalls [i].time += gameData.time.xFrame;
 		if (gameData.walls.explWalls [i].time > EXPL_WALL_TIME)
@@ -767,19 +767,19 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 			v0 = gameData.segs.vertices + vertnum_list [0];
 			v1 = gameData.segs.vertices + vertnum_list [1];
 			v2 = gameData.segs.vertices + vertnum_list [2];
-			vv0 = *v0 - *v1;
-			vv1 = *v2 - *v1;
-			pos = *v1 + vv0 * d_rand ()*2;
-			pos += vv1 * (d_rand ()*2);
+			VmVecSub (&vv0, v0, v1);
+			VmVecSub (&vv1, v2, v1);
+			VmVecScaleAdd (&pos, v1, &vv0, d_rand ()*2);
+			VmVecScaleInc (&pos, &vv1, d_rand ()*2);
 			size = EXPL_WALL_FIREBALL_SIZE + (2*EXPL_WALL_FIREBALL_SIZE * e / EXPL_WALL_TOTAL_FIREBALLS);
 			//fireballs start away from door, with subsequent ones getting closer
-			pos += gameData.segs.segments[nSegment].sides[nSide].normals[0] * (size* (EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
+			VmVecScaleInc (&pos, gameData.segs.segments [nSegment].sides [nSide].normals, size* (EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
 			if (e & 3)		//3 of 4 are normal
 				ObjectCreateExplosion ((short) gameData.walls.explWalls [i].nSegment, &pos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
 			else
-				ObjectCreateBadassExplosion (NULL, (short) gameData.walls.explWalls [i].nSegment, &pos,
-				size,
-				(ubyte) VCLIP_SMALL_EXPLOSION,
+				ObjectCreateBadassExplosion (NULL, (short) gameData.walls.explWalls [i].nSegment, &pos, 
+				size, 
+				(ubyte) VCLIP_SMALL_EXPLOSION, 
 				i2f (4), 		// damage strength
 				i2f (20), 		//	damage radius
 				i2f (50), 		//	damage force

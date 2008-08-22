@@ -7,7 +7,7 @@ IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
 SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
 FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
 CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
+AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
@@ -51,6 +51,7 @@ void init_ai_objects(void);
 void do_ai_robot_hit(tObject *robot, int type);
 void create_n_segment_path(tObject *objP, int path_length, int avoid_seg);
 void create_n_segment_path_to_door(tObject *objP, int path_length, int avoid_seg);
+void make_random_vector(vmsVector *vec);
 void init_robots_for_level(void);
 int ai_behavior_to_mode(int behavior);
 int Robot_firing_enabled;

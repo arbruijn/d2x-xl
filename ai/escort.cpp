@@ -157,8 +157,8 @@ if ((gameData.escort.nObjNum < 0) || (OBJECTS [gameData.escort.nObjNum].nType !=
 	}
 if (gameData.escort.bMayTalk)
 	return 1;
-if ((OBJECTS [gameData.escort.nObjNum].nType == OBJ_ROBOT) &&
-	 (gameData.escort.nObjNum <= gameData.objs.nLastObject [0]) &&
+if ((OBJECTS [gameData.escort.nObjNum].nType == OBJ_ROBOT) && 
+	 (gameData.escort.nObjNum <= gameData.objs.nLastObject [0]) && 
 	!ROBOTINFO (OBJECTS [gameData.escort.nObjNum].id).companion) {
 	for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 		if (ROBOTINFO (OBJECTS [i].id).companion)
@@ -172,7 +172,7 @@ segP = gameData.segs.segments + OBJECTS [gameData.escort.nObjNum].nSegment;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	short	nWall = WallNumP (segP, (short) i);
 	if (IS_WALL (nWall) &&
-		 (gameData.walls.walls [nWall].nType == WALL_BLASTABLE) &&
+		 (gameData.walls.walls [nWall].nType == WALL_BLASTABLE) && 
 		 !(gameData.walls.walls [nWall].flags & WALL_BLASTED))
 		return 0;
 	//	Check one level deeper.
@@ -183,7 +183,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 		for (j = 0; j<MAX_SIDES_PER_SEGMENT; j++) {
 			short	wall2 = WallNumP (connSegP, (short) j);
 			if (IS_WALL (wall2) &&
-				 (gameData.walls.walls [wall2].nType == WALL_BLASTABLE) &&
+				 (gameData.walls.walls [wall2].nType == WALL_BLASTABLE) && 
 				 !(gameData.walls.walls [wall2].flags & WALL_BLASTED))
 				return 0;
 			}
@@ -261,13 +261,13 @@ if (gameData.escort.nSpecialGoal != -1) {
 					}
 				}
 			}
-		}
+		} 
 	else if ((index >= 0) && (index <= gameData.objs.nLastObject [0])) {
 		objP = OBJECTS + index;
 		if ((objP->nType == OBJ_POWERUP) && (gameData.escort.nSpecialGoal == ESCORT_GOAL_POWERUP))
 			bDetected = 1;	//	Any nType of powerup picked up will do.
 		else if ((gameData.escort.nGoalIndex >= 0) && (gameData.escort.nGoalIndex <= gameData.objs.nLastObject [0]) &&
-					(objP->nType == OBJECTS [gameData.escort.nGoalIndex].nType) &&
+					(objP->nType == OBJECTS [gameData.escort.nGoalIndex].nType) && 
 					(objP->id == OBJECTS [gameData.escort.nGoalIndex].id)) {
 		//	Note: This will help a little bit in making the buddy believe a goal is satisfied.  Won't work for a general goal like "find any powerup"
 		// because of the insistence of both nType and id matching.
@@ -298,8 +298,8 @@ void ChangeGuidebotName ()
 	strcpy (text,gameData.escort.szName);
 
 	memset (&m, 0, sizeof (m));
-	m.nType=NM_TYPE_INPUT;
-	m.text_len = GUIDEBOT_NAME_LEN;
+	m.nType=NM_TYPE_INPUT; 
+	m.text_len = GUIDEBOT_NAME_LEN; 
 	m.text = text;
 	item = ExecMenu (NULL, "Enter Guide-bot name:", 1, &m, NULL, NULL);
 
@@ -318,7 +318,7 @@ if (gameData.escort.bMsgsSuppressed)
 	return;
 if (gameData.app.nGameMode & GM_MULTI)
 	return;
-if ((gameData.escort.xLastMsgTime + F1_0 < gameData.time.xGame) ||
+if ((gameData.escort.xLastMsgTime + F1_0 < gameData.time.xGame) || 
 	 (gameData.escort.xLastMsgTime > gameData.time.xGame)) {
 	if (BuddyMayTalk ()) {
 		char		szMsg [200];
@@ -408,40 +408,40 @@ void EscortSetSpecialGoal (int special_key)
 
 	if (special_key == KEY_0)
 		gameData.escort.bSearchingMarker = -1;
-
+	
 	if ( gameData.escort.bSearchingMarker != -1 )
 		gameData.escort.nSpecialGoal = ESCORT_GOAL_MARKER1 + marker_key - KEY_1;
 	else {
 		switch (special_key) {
 			case KEY_1:
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_ENERGY;
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_ENERGY;		
 				break;
 			case KEY_2:
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_ENERGYCEN;
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_ENERGYCEN;	
 				break;
 			case KEY_3:
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_SHIELD;
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_SHIELD;		
 				break;
 			case KEY_4:
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_POWERUP;
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_POWERUP;	
 				break;
 			case KEY_5:
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_ROBOT;
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_ROBOT;		
 				break;
 			case KEY_6:
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_HOSTAGE;
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_HOSTAGE;	
 				break;
 			case KEY_7:
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_SCRAM;
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_SCRAM;		
 				break;
 			case KEY_8:
 				gameData.escort.nSpecialGoal = ESCORT_GOAL_PLAYER_SPEW;
 				break;
 			case KEY_9:
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_EXIT;
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_EXIT;		
 				break;
 			case KEY_0:
-				gameData.escort.nSpecialGoal = -1;
+				gameData.escort.nSpecialGoal = -1;							
 				break;
 			default:
 				Int3 ();		//	Oops, called with illegal key value.
@@ -530,7 +530,7 @@ if (objtype == FUELCEN_CHECK) {
 		if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_FUELCEN)
 			return nSegment;
 		}
-	}
+	} 
 else {
 	for (nSegIdx = 0; nSegIdx < length; nSegIdx++) {
 		nSegment = bfs_list [nSegIdx];
@@ -546,7 +546,7 @@ if (objtype == FUELCEN_CHECK) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
 		if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_FUELCEN)
 			return -2;
-	}
+	} 
 else {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 		nObject = ExistsInMine2 (nSegment, objtype, objid, special);
@@ -582,44 +582,44 @@ void SayEscortGoal (int goal_num)
 if (gameStates.app.bPlayerIsDead)
 	return;
 switch (goal_num) {
-	case ESCORT_GOAL_BLUE_KEY:
-		BuddyMessage (TXT_FIND_BLUEKEY);
+	case ESCORT_GOAL_BLUE_KEY:	
+		BuddyMessage (TXT_FIND_BLUEKEY);		
 		break;
-	case ESCORT_GOAL_GOLD_KEY:
-		BuddyMessage (TXT_FIND_GOLDKEY);
+	case ESCORT_GOAL_GOLD_KEY:	
+		BuddyMessage (TXT_FIND_GOLDKEY);	
 		break;
-	case ESCORT_GOAL_RED_KEY:
-		BuddyMessage (TXT_FIND_REDKEY);
+	case ESCORT_GOAL_RED_KEY:	
+		BuddyMessage (TXT_FIND_REDKEY);		
 		break;
 	case ESCORT_GOAL_CONTROLCEN:
-		BuddyMessage (TXT_FIND_REACTOR);
+		BuddyMessage (TXT_FIND_REACTOR);		
 		break;
-	case ESCORT_GOAL_EXIT:
-		BuddyMessage (TXT_FIND_EXIT);
+	case ESCORT_GOAL_EXIT:		
+		BuddyMessage (TXT_FIND_EXIT);			
 		break;
-	case ESCORT_GOAL_ENERGY:
-		BuddyMessage (TXT_FIND_ENERGY);
+	case ESCORT_GOAL_ENERGY:	
+		BuddyMessage (TXT_FIND_ENERGY);			
 		break;
 	case ESCORT_GOAL_ENERGYCEN:
 		BuddyMessage (TXT_FIND_ECENTER);
 		break;
-	case ESCORT_GOAL_SHIELD:
-		BuddyMessage (TXT_FIND_SHIELD);
+	case ESCORT_GOAL_SHIELD:	
+		BuddyMessage (TXT_FIND_SHIELD);		
 		break;
-	case ESCORT_GOAL_POWERUP:
-		BuddyMessage (TXT_FIND_POWERUP);
+	case ESCORT_GOAL_POWERUP:	
+		BuddyMessage (TXT_FIND_POWERUP);		
 		break;
-	case ESCORT_GOAL_ROBOT:
-		BuddyMessage (TXT_FIND_ROBOT);
+	case ESCORT_GOAL_ROBOT:		
+		BuddyMessage (TXT_FIND_ROBOT);		
 		break;
-	case ESCORT_GOAL_HOSTAGE:
-		BuddyMessage (TXT_FIND_HOSTAGE);
+	case ESCORT_GOAL_HOSTAGE:	
+		BuddyMessage (TXT_FIND_HOSTAGE);		
 		break;
-	case ESCORT_GOAL_SCRAM:
-		BuddyMessage (TXT_STAYING_AWAY);
+	case ESCORT_GOAL_SCRAM:		
+		BuddyMessage (TXT_STAYING_AWAY);		
 		break;
-	case ESCORT_GOAL_BOSS:
-		BuddyMessage (TXT_FIND_BOSS);
+	case ESCORT_GOAL_BOSS:		
+		BuddyMessage (TXT_FIND_BOSS);	
 		break;
 	case ESCORT_GOAL_PLAYER_SPEW:
 		BuddyMessage (TXT_FIND_YOURSTUFF);
@@ -632,9 +632,9 @@ switch (goal_num) {
 	case ESCORT_GOAL_MARKER6:
 	case ESCORT_GOAL_MARKER7:
 	case ESCORT_GOAL_MARKER8:
-	case ESCORT_GOAL_MARKER9: {
+	case ESCORT_GOAL_MARKER9: { 
 			char marker_text [BUDDY_MARKER_TEXT_LEN];
-
+		
 		strncpy (marker_text, gameData.marker.szMessage [goal_num-ESCORT_GOAL_MARKER1], BUDDY_MARKER_TEXT_LEN-1);
 		marker_text [BUDDY_MARKER_TEXT_LEN-1] = 0;
 		BuddyMessage (TXT_FIND_MARKER, goal_num-ESCORT_GOAL_MARKER1+1, marker_text);
@@ -660,27 +660,27 @@ if (gameData.escort.bSearchingMarker != -1) {
 	gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_MARKER, gameData.escort.nGoalObject-ESCORT_GOAL_MARKER1, -1);
 	if (gameData.escort.nGoalIndex > -1)
 		nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
-	}
+	} 
 else {
 	switch (gameData.escort.nGoalObject) {
 		case ESCORT_GOAL_BLUE_KEY:
 			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, POW_KEY_BLUE, -1);
-			if (gameData.escort.nGoalIndex > -1)
+			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
 			break;
 		case ESCORT_GOAL_GOLD_KEY:
 			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, POW_KEY_GOLD, -1);
-			if (gameData.escort.nGoalIndex > -1)
+			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
 			break;
 		case ESCORT_GOAL_RED_KEY:
 			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, POW_KEY_RED, -1);
-			if (gameData.escort.nGoalIndex > -1)
+			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
 			break;
 		case ESCORT_GOAL_CONTROLCEN:
 			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_REACTOR, -1, -1);
-			if (gameData.escort.nGoalIndex > -1)
+			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
 			break;
 		case ESCORT_GOAL_EXIT:
@@ -690,7 +690,7 @@ else {
 			break;
 		case ESCORT_GOAL_ENERGY:
 			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, POW_ENERGY, -1);
-			if (gameData.escort.nGoalIndex > -1)
+			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
 			break;
 		case ESCORT_GOAL_ENERGYCEN:
@@ -699,27 +699,27 @@ else {
 			break;
 		case ESCORT_GOAL_SHIELD:
 			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, POW_SHIELD_BOOST, -1);
-			if (gameData.escort.nGoalIndex > -1)
+			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
 			break;
 		case ESCORT_GOAL_POWERUP:
 			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, -1, -1);
-			if (gameData.escort.nGoalIndex > -1)
+			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
 			break;
 		case ESCORT_GOAL_ROBOT:
 			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_ROBOT, -1, -1);
-			if (gameData.escort.nGoalIndex > -1)
+			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
 			break;
 		case ESCORT_GOAL_HOSTAGE:
 			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_HOSTAGE, -1, -1);
-			if (gameData.escort.nGoalIndex > -1)
+			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
 			break;
 		case ESCORT_GOAL_PLAYER_SPEW:
 			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, -1, -1, ESCORT_GOAL_PLAYER_SPEW);
-			if (gameData.escort.nGoalIndex > -1)
+			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
 			break;
 		case ESCORT_GOAL_SCRAM:
@@ -732,7 +732,7 @@ else {
 			boss_id = GetBossId ();
 			Assert (boss_id != -1);
 			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_ROBOT, boss_id, -1);
-			if (gameData.escort.nGoalIndex > -1)
+			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = OBJECTS [gameData.escort.nGoalIndex].nSegment;
 			break;
 		}
@@ -795,13 +795,13 @@ int EscortSetGoalObject (void)
 {
 if (gameData.escort.nSpecialGoal != -1)
 	return ESCORT_GOAL_UNSPECIFIED;
-else if (!(gameData.objs.console->flags & PLAYER_FLAGS_BLUE_KEY) &&
+else if (!(gameData.objs.console->flags & PLAYER_FLAGS_BLUE_KEY) && 
 			 (ExistsInMine (gameData.objs.console->nSegment, OBJ_POWERUP, POW_KEY_BLUE, -1) != -1))
 	return ESCORT_GOAL_BLUE_KEY;
-else if (!(gameData.objs.console->flags & PLAYER_FLAGS_GOLD_KEY) &&
+else if (!(gameData.objs.console->flags & PLAYER_FLAGS_GOLD_KEY) && 
 			 (ExistsInMine (gameData.objs.console->nSegment, OBJ_POWERUP, POW_KEY_GOLD, -1) != -1))
 	return ESCORT_GOAL_GOLD_KEY;
-else if (!(gameData.objs.console->flags & PLAYER_FLAGS_RED_KEY) &&
+else if (!(gameData.objs.console->flags & PLAYER_FLAGS_RED_KEY) && 
 			 (ExistsInMine (gameData.objs.console->nSegment, OBJ_POWERUP, POW_KEY_RED, -1) != -1))
 	return ESCORT_GOAL_RED_KEY;
 else if (!gameData.reactor.bDestroyed) {
@@ -863,11 +863,11 @@ int MaybeBuddyFireMega (short nObject)
 	vmsVector	vVecToRobot;
 	int			nWeaponObj;
 
-vVecToRobot = buddyObjP->position.vPos - objP->position.vPos;
-dist = vmsVector::normalize(vVecToRobot);
+VmVecSub (&vVecToRobot, &buddyObjP->position.vPos, &objP->position.vPos);
+dist = VmVecNormalize (&vVecToRobot);
 if (dist > F1_0*100)
 	return 0;
-dot = vmsVector::dot(vVecToRobot, buddyObjP->position.mOrient[FVEC]);
+dot = VmVecDot (&vVecToRobot, &buddyObjP->position.mOrient.fVec);
 if (dot < F1_0/2)
 	return 0;
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
@@ -883,7 +883,7 @@ if (gameData.weapons.info [MEGAMSL_ID].renderType == 0) {
 con_printf (CONDBG, "Buddy firing mega in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_GAHOOGA);
-nWeaponObj = CreateNewLaserEasy (&buddyObjP->position.mOrient[FVEC], &buddyObjP->position.vPos, nObject, MEGAMSL_ID, 1);
+nWeaponObj = CreateNewLaserEasy (&buddyObjP->position.mOrient.fVec, &buddyObjP->position.vPos, nObject, MEGAMSL_ID, 1);
 if (nWeaponObj != -1)
 	BashBuddyWeaponInfo (nWeaponObj);
 return 1;
@@ -898,7 +898,7 @@ int MaybeBuddyFireSmart (short nObject)
 	fix		dist;
 	short		nWeaponObj;
 
-dist = vmsVector::dist(buddyObjP->position.vPos, objP->position.vPos);
+dist = VmVecDistQuick (&buddyObjP->position.vPos, &objP->position.vPos);
 if (dist > F1_0*80)
 	return 0;
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
@@ -907,7 +907,7 @@ if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
 con_printf (CONDBG, "Buddy firing smart missile in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_WHAMMO);
-nWeaponObj = CreateNewLaserEasy (&buddyObjP->position.mOrient[FVEC], &buddyObjP->position.vPos, nObject, SMARTMSL_ID, 1);
+nWeaponObj = CreateNewLaserEasy (&buddyObjP->position.mOrient.fVec, &buddyObjP->position.vPos, nObject, SMARTMSL_ID, 1);
 if (nWeaponObj != -1)
 	BashBuddyWeaponInfo (nWeaponObj);
 return 1;
@@ -1041,7 +1041,7 @@ else if (gameData.escort.nGoalObject == ESCORT_GOAL_UNSPECIFIED) {
 			CreateNSegmentPath (objP, 5, gameData.ai.nBelievedPlayerSeg);
 		ailp->mode = AIM_GOTO_OBJECT;
 		}
-	}
+	} 
 }
 
 //	-------------------------------------------------------------------------------------------------
@@ -1160,7 +1160,7 @@ void DoEscortMenu (void)
 			sprintf (szGoal, "ERROR");
 			break;
 	#endif
-
+		
 		case ESCORT_GOAL_BLUE_KEY:
 			sprintf (szGoal, TXT_GB_BLUEKEY);
 			break;
@@ -1192,7 +1192,7 @@ void DoEscortMenu (void)
 			break;
 
 	}
-
+		
 	if (!gameData.escort.bMsgsSuppressed)
 		sprintf (tstr, TXT_GB_SUPPRESS);
 	else

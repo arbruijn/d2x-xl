@@ -7,13 +7,13 @@ IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
 SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
 FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
 CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
+AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 /*
- *
+ * 
  * Drawing routines
- *
+ * 
  */
 
 #ifdef HAVE_CONFIG_H
@@ -55,12 +55,12 @@ else
 }
 
 //------------------------------------------------------------------------------
-//returns true if a plane is facing the viewer. takes the unrotated surface
+//returns true if a plane is facing the viewer. takes the unrotated surface 
 //normal of the plane, and a point on it.  The normal need not be normalized
-int G3CheckNormalFacing(const vmsVector& pv, const vmsVector& pnorm)
+int G3CheckNormalFacing (vmsVector *pv, vmsVector *pnorm)
 {
-vmsVector v = viewInfo.pos - pv;
-return (vmsVector::dot(v, pnorm) > 0);
+vmsVector v;
+return (VmVecDot (VmVecSub (&v, &viewInfo.pos, pv), pnorm) > 0);
 }
 
 //------------------------------------------------------------------------------
@@ -69,19 +69,19 @@ int DoFacingCheck (vmsVector *norm, g3sPoint **vertlist, vmsVector *p)
 {
 if (norm) {		//have normal
 	Assert (norm->p.x || norm->p.y || norm->p.z);
-	return G3CheckNormalFacing (*p, *norm);
+	return G3CheckNormalFacing (p, norm);
 	}
 else {	//normal not specified, so must compute
 	vmsVector vTemp;
 	//get three points (rotated) and compute normal
-	vTemp = vmsVector::perp(vertlist [0]->p3_vec, vertlist [1]->p3_vec, vertlist [2]->p3_vec);
-	return (vmsVector::dot(vTemp, vertlist [1]->p3_vec) < 0);
+	VmVecPerp (&vTemp, &vertlist [0]->p3_vec, &vertlist [1]->p3_vec, &vertlist [2]->p3_vec);
+	return (VmVecDot (&vTemp, &vertlist [1]->p3_vec) < 0);
 	}
 }
 
 //------------------------------------------------------------------------------
 //like G3DrawPoly (), but checks to see if facing.  If surface normal is
-//NULL, this routine must compute it, which will be slow.  It is better to
+//NULL, this routine must compute it, which will be slow.  It is better to 
 //pre-compute the normal, and pass it to this function.  When the normal
 //is passed, this function works like G3CheckNormalFacing () plus
 //G3DrawPoly ().
@@ -134,7 +134,7 @@ int MustClipFlatFace (int nv, g3sCodes cc)
 
 		 (*flat_drawer_ptr) (nv, (int *)polyVertList);
 	}
-	else
+	else 
 		ret=1;
 
 	//D2_FREE temp points

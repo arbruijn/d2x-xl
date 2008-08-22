@@ -22,7 +22,7 @@
 
 int  con_init(void);
 void con_resize(void);
-void _CDECL_ con_printf(int level, const char *fmt, ...);
+void _CDECL_ con_printf (int level, const char *fmt, ...);
 
 void con_show(void);
 void con_draw(void);

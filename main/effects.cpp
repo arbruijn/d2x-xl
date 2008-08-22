@@ -171,7 +171,7 @@ else {
 	nBmFrames = BM_FRAMECOUNT (bmP);
 	if ((bmfP = BM_FRAMES (bmP))) {
 		nFrameStep = (nBmFrames > nFrames) ? nBmFrames / nFrames : 1;
-		h = std::min(nFrames, nBmFrames);
+		h = min (nFrames, nBmFrames);
 		for (i = 0; i < h; i++) {
 			j = BM_INDEX (frameP, i, bIndirect, bObject);
 			hbmP = gameData.pig.tex.pBitmaps + j;
@@ -264,7 +264,7 @@ xEffectTime += gameData.time.xFrame;
 			}
 		else if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT) && (BM_FRAMECOUNT (bmP) > 1)) {
 			OglLoadBmTexture (bmP, 1, 3, 1);
-			BM_CURFRAME (bmP) = BM_FRAMES (bmP) + std::min(ecP->nCurFrame, BM_FRAMECOUNT (bmP) - 1);
+			BM_CURFRAME (bmP) = BM_FRAMES (bmP) + min (ecP->nCurFrame, BM_FRAMECOUNT (bmP) - 1);
 			OglLoadBmTexture (BM_CURFRAME (bmP), 1, 3, 1);
 			}
 		else {

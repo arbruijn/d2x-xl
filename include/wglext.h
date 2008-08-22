@@ -52,7 +52,7 @@ extern "C" {
 /*************************************************************/
 
 /* Header file version number */
-/* wglext[HA] last updated 2005/01/07 */
+/* wglext.h last updated 2005/01/07 */
 /* Current version at http://oss.sgi.com/projects/ogl-sample/registry/ */
 #define WGL_WGLEXT_VERSION 6
 

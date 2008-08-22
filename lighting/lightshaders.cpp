@@ -65,7 +65,7 @@ const char *grayScaleFS [2][3] = {{
 	"uniform sampler2D baseTex;\r\n" \
 	"void main(void){" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor[BA] * 0.11) / 4.0;\r\n" \
+	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
 	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
 	,
 	"uniform sampler2D baseTex, decalTex;\r\n" \
@@ -73,7 +73,7 @@ const char *grayScaleFS [2][3] = {{
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor[BA] * 0.11) / 4.0;\r\n" \
+	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
 	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
 	},
 	{
@@ -86,7 +86,7 @@ const char *grayScaleFS [2][3] = {{
 	"uniform sampler2D baseTex;\r\n" \
 	"void main(void){" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor[BA] * 0.11) / 4.0;\r\n" \
+	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
 	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
 	,
 	"uniform sampler2D baseTex, decalTex;\r\n" \
@@ -94,7 +94,7 @@ const char *grayScaleFS [2][3] = {{
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [2].xy);\r\n" \
 	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor[BA] * 0.11) / 4.0;\r\n" \
+	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
 	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
 	}};
 
@@ -157,7 +157,7 @@ else {
 		for (int j = 0; j < 3; j++) {
 			if (gsShaderProg [i][j])
 				DeleteShaderProg (&gsShaderProg [i][j]);
-			gameStates.render.textures.bHaveGrayScaleShader =
+			gameStates.render.textures.bHaveGrayScaleShader = 
 				CreateShaderProg (&gsShaderProg [i][j]) &&
 				CreateShaderFunc (&gsShaderProg [i][j], &gsf [i][j], &gsv [i][j], grayScaleFS [i][j], grayScaleVS [i][j], 1) &&
 				LinkShaderProg (&gsShaderProg [i][j]);
@@ -525,7 +525,7 @@ const char *pszPPLightingVS [] = {
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	};
-
+	
 //-------------------------------------------------------------------------
 
 const char *pszLightingFS [] = {
@@ -587,7 +587,7 @@ const char *pszLightingVS [] = {
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	};
-
+	
 // ----------------------------------------------------------------------------------------------
 
 const char *pszPPXLMLightingFS [] = {
@@ -939,7 +939,7 @@ const char *pszPPLMLightingVS [] = {
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	};
-
+	
 //-------------------------------------------------------------------------
 
 const char *pszPP0LMLightingFS [] = {
@@ -1066,7 +1066,7 @@ const char *pszLMLightingVS [] = {
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	};
-
+	
 //-------------------------------------------------------------------------
 
 char *BuildLightingShader (const char *pszTemplate, int nLights)
@@ -1093,14 +1093,14 @@ return pszFS;
 
 //-------------------------------------------------------------------------
 
-GLhandleARB perPixelLightingShaderProgs [9][4] =
+GLhandleARB perPixelLightingShaderProgs [9][4] = 
 	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 
-GLhandleARB ppLvs [9][4] =
-	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+GLhandleARB ppLvs [9][4] = 
+	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; 
 
-GLhandleARB ppLfs [9][4] =
-	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+GLhandleARB ppLfs [9][4] = 
+	{{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; 
 
 int CreatePerPixelLightingShader (int nType, int nLights)
 {
@@ -1122,7 +1122,7 @@ for (h = 0; h <= 3; h++) {
 #if CONST_LIGHT_COUNT
 	i = gameStates.render.nMaxLightsPerPass;
 #else
-	for (i = 0; i <= gameStates.render.nMaxLightsPerPass; i++)
+	for (i = 0; i <= gameStates.render.nMaxLightsPerPass; i++) 
 #endif
 		{
 		if (perPixelLightingShaderProgs [i][h])
@@ -1199,8 +1199,8 @@ for (int nType = 0; nType < 4; nType++)
 // ----------------------------------------------------------------------------------------------
 
 GLhandleARB lightmapShaderProgs [4] = {0,0,0,0};
-GLhandleARB lmLvs [4] = {0,0,0,0};
-GLhandleARB lmLfs [4] = {0,0,0,0};
+GLhandleARB lmLvs [4] = {0,0,0,0}; 
+GLhandleARB lmLfs [4] = {0,0,0,0}; 
 
 int CreateLightmapShader (int nType)
 {
@@ -1260,11 +1260,13 @@ PROF_START
 	tRgbaColorf				black = {0,0,0,0};
 #endif
 	tRgbaColorf				specular = {0.5f,0.5f,0.5f,0.5f};
-	//fVector					vPos = fVector::Create(0,0,0,1);
+	//fVector					vPos = {{0,0,0,1}};
 	GLenum					hLight;
 	tActiveShaderLight	*activeLightsP;
 	tShaderLight			*psl;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
+
+	static fVector3 vNoDir = {{0, 0, 0}};
 
 #ifdef _DEBUG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -1297,9 +1299,9 @@ if (!gameStates.ogl.iLight) {
 	}
 activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + gameStates.ogl.nFirstLight;
 nLightRange = sliP->nLast - gameStates.ogl.nFirstLight + 1;
-for (nLights = 0;
-	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < gameStates.render.nMaxLightsPerPass);
-	  activeLightsP++, nLightRange--) {
+for (nLights = 0; 
+	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < gameStates.render.nMaxLightsPerPass); 
+	  activeLightsP++, nLightRange--) { 
 	if (!(psl = GetActiveShaderLight (activeLightsP, 0)))
 		continue;
 #if 0//def _DEBUG
@@ -1331,7 +1333,7 @@ for (nLights = 0;
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, OBJ_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, OBJ_QUAD_ATT / fBrightness);
-		glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &fVector3::ZERO);
+		glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &vNoDir);
 		ambient.red = psl->info.color.red * PPL_AMBIENT_LIGHT;
 		ambient.green = psl->info.color.green * PPL_AMBIENT_LIGHT;
 		ambient.blue = psl->info.color.blue * PPL_AMBIENT_LIGHT;
@@ -1371,7 +1373,7 @@ if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;
 #endif
 #if 0
-if (CreatePerPixelLightingShader (nType, nLights) >= 0)
+if (CreatePerPixelLightingShader (nType, nLights) >= 0) 
 #endif
 	{
 	PROF_END(ptPerPixelLighting)
@@ -1432,12 +1434,12 @@ if (nShader != gameStates.render.history.nShader) {
 			}
 		}
 	}
-if (!nType)
+if (!nType) 
 	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &faceP->color);
 #if CONST_LIGHT_COUNT
-glUniform1f (glGetUniformLocation (activeShaderProg, "nLights"), (GLfloat) nLights);
+glUniform1f (glGetUniformLocation (activeShaderProg, "nLights"), (GLfloat) nLights); 
 #endif
-glUniform1f (glGetUniformLocation (activeShaderProg, "fLightScale"),
+glUniform1f (glGetUniformLocation (activeShaderProg, "fLightScale"), 
 #if 1
 				 (nLights ? (float) nLights / (float) gameStates.ogl.nLights : 1.0f));
 #else
@@ -1485,7 +1487,7 @@ if (nShader != gameStates.render.history.nShader) {
 			}
 		}
 	}
-if (!nType)
+if (!nType) 
 	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &faceP->color);
 PROF_END(ptShaderStates)
 return gameStates.render.history.nShader = nShader;
@@ -1503,7 +1505,7 @@ if (gameStates.render.textures.bHaveGrayScaleShader) {
 	if (gameStates.render.history.nShader != nShader) {
 		gameData.render.nShaderChanges++;
 		glUseProgramObject (activeShaderProg = gsShaderProg [bLightmaps][nType]);
-		if (!nType)
+		if (!nType) 
 			glUniform4fv (glGetUniformLocation (activeShaderProg, "faceColor"), 1, (GLfloat *) colorP);
 		else {
 			glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightmaps);

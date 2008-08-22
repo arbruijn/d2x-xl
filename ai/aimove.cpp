@@ -52,19 +52,19 @@ if (rate == 0)
 	return 0;
 if ((objP->id == BABY_SPIDER_ID) && (objP->nType == OBJ_ROBOT)) {
 	PhysicsTurnTowardsVector (vGoal, objP, rate);
-	return vmsVector::dot(*vGoal, objP->position.mOrient[FVEC]);
+	return VmVecDot (vGoal, &objP->position.mOrient.fVec);
 	}
 new_fvec = *vGoal;
-dot = vmsVector::dot(*vGoal, objP->position.mOrient[FVEC]);
+dot = VmVecDot (vGoal, &objP->position.mOrient.fVec);
 if (!IsMultiGame)
 	dot = (fix) (dot / gameStates.gameplay.slowmo [0].fSpeed);
 if (dot < (F1_0 - gameData.time.xFrame/2)) {
 	fix mag, new_scale = FixDiv (gameData.time.xFrame * AI_TURN_SCALE, rate);
 	if (!IsMultiGame)
 		new_scale = (fix) (new_scale / gameStates.gameplay.slowmo [0].fSpeed);
-	new_fvec *= new_scale;
-	new_fvec += objP->position.mOrient[FVEC];
-	mag = vmsVector::normalize(new_fvec);
+	VmVecScale (&new_fvec, new_scale);
+	VmVecInc (&new_fvec, &objP->position.mOrient.fVec);
+	mag = VmVecNormalize (&new_fvec);
 	if (mag < F1_0/256) {
 #if TRACE
 		con_printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", f2fl (mag));
@@ -75,11 +75,11 @@ if (dot < (F1_0 - gameData.time.xFrame/2)) {
 if (gameStates.gameplay.seismic.nMagnitude) {
 	vmsVector	rand_vec;
 	fix			scale;
-	rand_vec = vmsVector::Random();
+	MakeRandomVector (&rand_vec);
 	scale = FixDiv (2*gameStates.gameplay.seismic.nMagnitude, ROBOTINFO (objP->id).mass);
-	new_fvec += rand_vec * scale;
+	VmVecScaleInc (&new_fvec, &rand_vec, scale);
 	}
-objP->position.mOrient = vmsMatrix::CreateFR(new_fvec, objP->position.mOrient[RVEC]);
+VmVector2Matrix (&objP->position.mOrient, &new_fvec, NULL, &objP->position.mOrient.rVec);
 return dot;
 }
 
@@ -97,8 +97,8 @@ void MoveTowardsVector (tObject *objP, vmsVector *vGoalVec, int bDotBased)
 	//	bash velocity vector twice as much towards tPlayer as usual.
 
 vel = pptr->velocity;
-vmsVector::normalize(vel);
-dot = vmsVector::dot(vel, objP->position.mOrient[FVEC]);
+VmVecNormalize (&vel);
+dot = VmVecDot (&vel, &objP->position.mOrient.fVec);
 
 if (botInfoP->thief)
 	dot = (F1_0+dot)/2;
@@ -107,26 +107,26 @@ if (bDotBased && (dot < 3*F1_0/4)) {
 	//	This funny code is supposed to slow down the robot and move his velocity towards his direction
 	//	more quickly than the general code
 	t = gameData.time.xFrame * 32;
-	pptr->velocity[X] = pptr->velocity[X]/2 + FixMul ((*vGoalVec)[X], t);
-	pptr->velocity[Y] = pptr->velocity[Y]/2 + FixMul ((*vGoalVec)[Y], t);
-	pptr->velocity[Z] = pptr->velocity[Z]/2 + FixMul ((*vGoalVec)[Z], t);
-	}
+	pptr->velocity.p.x = pptr->velocity.p.x/2 + FixMul (vGoalVec->p.x, t);
+	pptr->velocity.p.y = pptr->velocity.p.y/2 + FixMul (vGoalVec->p.y, t);
+	pptr->velocity.p.z = pptr->velocity.p.z/2 + FixMul (vGoalVec->p.z, t);
+	} 
 else {
 	t = gameData.time.xFrame * 64;
 	d = (gameStates.app.nDifficultyLevel + 5) / 4;
-	pptr->velocity[X] += FixMul ((*vGoalVec)[X], t) * d;
-	pptr->velocity[Y] += FixMul ((*vGoalVec)[Y], t) * d;
-	pptr->velocity[Z] += FixMul ((*vGoalVec)[Z], t) * d;
+	pptr->velocity.p.x += FixMul (vGoalVec->p.x, t) * d;
+	pptr->velocity.p.y += FixMul (vGoalVec->p.y, t) * d;
+	pptr->velocity.p.z += FixMul (vGoalVec->p.z, t) * d;
 	}
-speed = pptr->velocity.mag();
+speed = VmVecMagQuick (&pptr->velocity);
 xMaxSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel];
 //	Green guy attacks twice as fast as he moves away.
 if ((botInfoP->attackType == 1) || botInfoP->thief || botInfoP->kamikaze)
 	xMaxSpeed *= 2;
 if (speed > xMaxSpeed) {
-	pptr->velocity[X] = (pptr->velocity[X] * 3) / 4;
-	pptr->velocity[Y] = (pptr->velocity[Y] * 3) / 4;
-	pptr->velocity[Z] = (pptr->velocity[Z] * 3) / 4;
+	pptr->velocity.p.x = (pptr->velocity.p.x * 3) / 4;
+	pptr->velocity.p.y = (pptr->velocity.p.y * 3) / 4;
+	pptr->velocity.p.z = (pptr->velocity.p.z * 3) / 4;
 	}
 }
 
@@ -174,24 +174,24 @@ void MoveAroundPlayer (tObject *objP, vmsVector *vVecToPlayer, int fastFlag)
 	ft = gameData.time.xFrame * 32;
 	switch (dir) {
 		case 0:
-			vEvade[X] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
-			vEvade[Y] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
-			vEvade[Z] = FixMul (-gameData.ai.vVecToPlayer[X], ft);
+			vEvade.p.x = FixMul (gameData.ai.vVecToPlayer.p.z, ft);
+			vEvade.p.y = FixMul (gameData.ai.vVecToPlayer.p.y, ft);
+			vEvade.p.z = FixMul (-gameData.ai.vVecToPlayer.p.x, ft);
 			break;
 		case 1:
-			vEvade[X] = FixMul (-gameData.ai.vVecToPlayer[Z], ft);
-			vEvade[Y] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
-			vEvade[Z] = FixMul (gameData.ai.vVecToPlayer[X], ft);
+			vEvade.p.x = FixMul (-gameData.ai.vVecToPlayer.p.z, ft);
+			vEvade.p.y = FixMul (gameData.ai.vVecToPlayer.p.y, ft);
+			vEvade.p.z = FixMul (gameData.ai.vVecToPlayer.p.x, ft);
 			break;
 		case 2:
-			vEvade[X] = FixMul (-gameData.ai.vVecToPlayer[Y], ft);
-			vEvade[Y] = FixMul (gameData.ai.vVecToPlayer[X], ft);
-			vEvade[Z] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
+			vEvade.p.x = FixMul (-gameData.ai.vVecToPlayer.p.y, ft);
+			vEvade.p.y = FixMul (gameData.ai.vVecToPlayer.p.x, ft);
+			vEvade.p.z = FixMul (gameData.ai.vVecToPlayer.p.z, ft);
 			break;
 		case 3:
-			vEvade[X] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
-			vEvade[Y] = FixMul (-gameData.ai.vVecToPlayer[X], ft);
-			vEvade[Z] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
+			vEvade.p.x = FixMul (gameData.ai.vVecToPlayer.p.y, ft);
+			vEvade.p.y = FixMul (-gameData.ai.vVecToPlayer.p.x, ft);
+			vEvade.p.z = FixMul (gameData.ai.vVecToPlayer.p.z, ft);
 			break;
 		default:
 			Error ("Function MoveAroundPlayer: Bad case.");
@@ -204,8 +204,8 @@ void MoveAroundPlayer (tObject *objP, vmsVector *vVecToPlayer, int fastFlag)
 		//	Only take evasive action if looking at player.
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
-		dot = vmsVector::dot(gameData.ai.vVecToPlayer, objP->position.mOrient[FVEC]);
-		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) &&
+		dot = VmVecDot (&gameData.ai.vVecToPlayer, &objP->position.mOrient.fVec);
+		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && 
 			 !(gameData.objs.console->flags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
 
@@ -218,17 +218,19 @@ void MoveAroundPlayer (tObject *objP, vmsVector *vVecToPlayer, int fastFlag)
 			else if (damage_scale < 0)
 				damage_scale = 0;			//	Just in cased:\temp\dm_test.
 
-			vEvade *= (i2f (fastFlag) + damage_scale);
+			VmVecScale (&vEvade, i2f (fastFlag) + damage_scale);
 		}
 	}
 
-	pptr->velocity += vEvade;
+	pptr->velocity.p.x += vEvade.p.x;
+	pptr->velocity.p.y += vEvade.p.y;
+	pptr->velocity.p.z += vEvade.p.z;
 
-	speed = pptr->velocity.mag();
+	speed = VmVecMagQuick (&pptr->velocity);
 	if ((OBJ_IDX (objP) != 1) && (speed > botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel])) {
-		pptr->velocity[X] = (pptr->velocity[X]*3)/4;
-		pptr->velocity[Y] = (pptr->velocity[Y]*3)/4;
-		pptr->velocity[Z] = (pptr->velocity[Z]*3)/4;
+		pptr->velocity.p.x = (pptr->velocity.p.x*3)/4;
+		pptr->velocity.p.y = (pptr->velocity.p.y*3)/4;
+		pptr->velocity.p.z = (pptr->velocity.p.z*3)/4;
 	}
 }
 
@@ -241,7 +243,9 @@ void MoveAwayFromPlayer (tObject *objP, vmsVector *vVecToPlayer, int attackType)
 	int				objref;
 	fix				ft = gameData.time.xFrame * 16;
 
-	pptr->velocity -= gameData.ai.vVecToPlayer * ft;
+	pptr->velocity.p.x -= FixMul (gameData.ai.vVecToPlayer.p.x, ft);
+	pptr->velocity.p.y -= FixMul (gameData.ai.vVecToPlayer.p.y, ft);
+	pptr->velocity.p.z -= FixMul (gameData.ai.vVecToPlayer.p.z, ft);
 
 	if (attackType) {
 		//	Get value in 0d:\temp\dm_test3 to choose evasion direction.
@@ -249,16 +253,16 @@ void MoveAwayFromPlayer (tObject *objP, vmsVector *vVecToPlayer, int attackType)
 
 		switch (objref) {
 			case 0:
-				pptr->velocity += objP->position.mOrient[UVEC] * (gameData.time.xFrame << 5);
+				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.uVec, gameData.time.xFrame << 5);
 				break;
 			case 1:
-				pptr->velocity += objP->position.mOrient[UVEC] * (-gameData.time.xFrame << 5);
+				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.uVec, -gameData.time.xFrame << 5);
 				break;
 			case 2:
-				pptr->velocity += objP->position.mOrient[RVEC] * (gameData.time.xFrame << 5);
+				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.rVec, gameData.time.xFrame << 5);
 				break;
 			case 3:
-				pptr->velocity += objP->position.mOrient[RVEC] * ( -gameData.time.xFrame << 5);
+				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.rVec, -gameData.time.xFrame << 5);
 				break;
 			default:
 				Int3 ();	//	Impossible, bogus value on objref, must be in 0d:\temp\dm_test3
@@ -266,12 +270,12 @@ void MoveAwayFromPlayer (tObject *objP, vmsVector *vVecToPlayer, int attackType)
 	}
 
 
-	speed = pptr->velocity.mag();
+	speed = VmVecMagQuick (&pptr->velocity);
 
 	if (speed > botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel]) {
-		pptr->velocity[X] = (pptr->velocity[X]*3)/4;
-		pptr->velocity[Y] = (pptr->velocity[Y]*3)/4;
-		pptr->velocity[Z] = (pptr->velocity[Z]*3)/4;
+		pptr->velocity.p.x = (pptr->velocity.p.x*3)/4;
+		pptr->velocity.p.y = (pptr->velocity.p.y*3)/4;
+		pptr->velocity.p.z = (pptr->velocity.p.z*3)/4;
 	}
 
 }
@@ -280,8 +284,8 @@ void MoveAwayFromPlayer (tObject *objP, vmsVector *vVecToPlayer, int attackType)
 //	Move towards, away_from or around player.
 //	Also deals with evasion.
 //	If the flag bEvadeOnly is set, then only allowed to evade, not allowed to move otherwise (must have mode == AIM_IDLING).
-void AIMoveRelativeToPlayer (tObject *objP, tAILocal *ailP, fix xDistToPlayer,
-									  vmsVector *vVecToPlayer, fix circleDistance, int bEvadeOnly,
+void AIMoveRelativeToPlayer (tObject *objP, tAILocal *ailP, fix xDistToPlayer, 
+									  vmsVector *vVecToPlayer, fix circleDistance, int bEvadeOnly, 
 									  int nPlayerVisibility)
 {
 	tObject		*dObjP;
@@ -300,9 +304,9 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 		vmsVector	vVecToLaser, fVecLaser;
 
 		fieldOfView = ROBOTINFO (objP->id).fieldOfView [gameStates.app.nDifficultyLevel];
-		vVecToLaser = dObjP->position.vPos - objP->position.vPos;
-		xDistToLaser = vmsVector::normalize(vVecToLaser);
-		dot = vmsVector::dot(vVecToLaser, objP->position.mOrient[FVEC]);
+		VmVecSub (&vVecToLaser, &dObjP->position.vPos, &objP->position.vPos);
+		xDistToLaser = VmVecNormalize (&vVecToLaser);
+		dot = VmVecDot (&vVecToLaser, &objP->position.mOrient.fVec);
 
 		if ((dot > fieldOfView) || (botInfoP->companion)) {
 			fix			dotLaserRobot;
@@ -311,14 +315,14 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 			//	The laser is seen by the robot, see if it might hit the robot.
 			//	Get the laser's direction.  If it's a polyobjP, it can be gotten cheaply from the orientation matrix.
 			if (dObjP->renderType == RT_POLYOBJ)
-				fVecLaser = dObjP->position.mOrient[FVEC];
+				fVecLaser = dObjP->position.mOrient.fVec;
 			else {		//	Not a polyobjP, get velocity and normalize.
-				fVecLaser = dObjP->mType.physInfo.velocity;	//dObjP->position.mOrient[FVEC];
-				vmsVector::normalize(fVecLaser);
+				fVecLaser = dObjP->mType.physInfo.velocity;	//dObjP->position.mOrient.fVec;
+				VmVecNormalize (&fVecLaser);
 				}
-			vLaserToRobot = objP->position.vPos - dObjP->position.vPos;
-			vmsVector::normalize(vLaserToRobot);
-			dotLaserRobot = vmsVector::dot(fVecLaser, vLaserToRobot);
+			VmVecSub (&vLaserToRobot, &objP->position.vPos, &dObjP->position.vPos);
+			VmVecNormalize (&vLaserToRobot);
+			dotLaserRobot = VmVecDot (&fVecLaser, &vLaserToRobot);
 
 			if ((dotLaserRobot > F1_0*7/8) && (xDistToLaser < F1_0*80)) {
 				int evadeSpeed = ROBOTINFO (objP->id).evadeSpeed [gameStates.app.nDifficultyLevel];
@@ -339,7 +343,7 @@ objP->cType.aiInfo.nDangerLaser = -1;
 //	Green guy selects move around/towards/away based on firing time, not distance.
 if (botInfoP->attackType == 1) {
 	if (!gameStates.app.bPlayerIsDead &&
-		 ((ailP->nextPrimaryFire <= botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) ||
+		 ((ailP->nextPrimaryFire <= botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) || 
 		  (gameData.ai.xDistToPlayer >= F1_0 * 30)))
 		MoveTowardsPlayer (objP, &gameData.ai.vVecToPlayer);
 		//	1/4 of time, move around tPlayer, 3/4 of time, move away from tPlayer
@@ -363,7 +367,7 @@ else {
 	else
 		if ((-ailP->nextPrimaryFire > F1_0 + (objval << 12)) && gameData.ai.nPlayerVisibility)
 			//	Usually move away, but sometimes move around player.
-			if ((((gameData.time.xGame >> 18) & 0x0f) ^ objval) > 4)
+			if ((((gameData.time.xGame >> 18) & 0x0f) ^ objval) > 4) 
 				MoveAwayFromPlayer (objP, &gameData.ai.vVecToPlayer, 0);
 			else
 				MoveAroundPlayer (objP, &gameData.ai.vVecToPlayer, -1);
@@ -379,10 +383,10 @@ fix MoveObjectToLegalPoint (tObject *objP, vmsVector *vGoal)
 	vmsVector	vGoalDir;
 	fix			xDistToGoal;
 
-vGoalDir = *vGoal - objP->position.vPos;
-xDistToGoal = vmsVector::normalize(vGoalDir);
-vGoalDir *= (objP->size / 2);
-objP->position.vPos += vGoalDir;
+VmVecSub (&vGoalDir, vGoal, &objP->position.vPos);
+xDistToGoal = VmVecNormalize (&vGoalDir);
+VmVecScale (&vGoalDir, objP->size / 2);
+VmVecInc (&objP->position.vPos, &vGoalDir);
 return xDistToGoal;
 }
 
@@ -408,7 +412,7 @@ else {
 			if (ObjectIntersectsWall (objP))
 				objP->position.vPos = vOrigPos;
 			else {
-				int nNewSeg = FindSegByPos (objP->position.vPos, objP->nSegment, 1, 0);
+				int nNewSeg = FindSegByPos (&objP->position.vPos, objP->nSegment, 1, 0);
 				if (nNewSeg != -1) {
 					RelinkObject (OBJ_IDX (objP), nNewSeg);
 					return;
@@ -442,8 +446,8 @@ fix MoveTowardsPoint (tObject *objP, vmsVector *vGoal, fix xMinDist)
 if ((nDbgSeg >= 0) && (objP->nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
-vGoalDir = *vGoal - objP->position.vPos;
-xDistToGoal = vmsVector::normalize(vGoalDir);
+VmVecSub (&vGoalDir, vGoal, &objP->position.vPos);
+xDistToGoal = VmVecNormalize (&vGoalDir);
 if (xDistToGoal - objP->size <= xMinDist) {
 	//	Center is nearer than the distance we want to move, so move to center.
 	if (!xMinDist) {
@@ -452,18 +456,18 @@ if (xDistToGoal - objP->size <= xMinDist) {
 			MoveObjectToLegalSpot (objP, xMinDist > 0);
 		}
 	xDistToGoal = 0;
-	}
+	} 
 else {
 	int	nNewSeg;
-	fix	xRemDist = xDistToGoal - xMinDist,
+	fix	xRemDist = xDistToGoal - xMinDist, 
 			xScale = (objP->size < xRemDist) ? objP->size : xRemDist;
 
 	if (xMinDist)
 		xScale /= 20;
 	//	Move one radius towards center.
-	vGoalDir *= xScale;
-	objP->position.vPos += vGoalDir;
-	nNewSeg = FindSegByPos (objP->position.vPos, objP->nSegment, 1, 0);
+	VmVecScale (&vGoalDir, xScale);
+	VmVecInc (&objP->position.vPos, &vGoalDir);
+	nNewSeg = FindSegByPos (&objP->position.vPos, objP->nSegment, 1, 0);
 	if (nNewSeg == -1) {
 		objP->position.vPos = *vGoal;
 		MoveObjectToLegalSpot (objP, xMinDist > 0);

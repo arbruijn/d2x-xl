@@ -54,7 +54,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-
 short PowerupModel (int nId)
 {
 	short nModel;
@@ -121,7 +120,9 @@ if (!HaveReplacementModel (HOSTAGE_MODEL))
 objP->renderType = RT_POLYOBJ;
 objP->rType.polyObjInfo.nModel = HOSTAGE_MODEL;
 objP->rType.polyObjInfo.nTexOverride = -1;
-objP->mType.physInfo.rotVel.setZero();
+objP->mType.physInfo.rotVel.p.x = 
+objP->mType.physInfo.rotVel.p.y = 
+objP->mType.physInfo.rotVel.p.z = 0;
 memset (objP->rType.polyObjInfo.animAngles, 0, sizeof (objP->rType.polyObjInfo.animAngles));
 return 1;
 }
@@ -158,7 +159,7 @@ if (objP->controlType == CT_WEAPON)
 if ((objP->nType != OBJ_POWERUP) && (objP->nType != OBJ_WEAPON))
 	return 0;
 nModel = PowerupToModel (objP->id);
-if (nModel)
+if (nModel) 
 	nId = objP->id;
 else {
 	nId = PowerupToObject (objP->id);
@@ -172,26 +173,26 @@ if (!bHasModel && ((objP->nType != OBJ_WEAPON) || !gameData.objs.bIsMissile [obj
 		return 0;
 
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	a[PA] = (rand () % F1_0) - F1_0 / 2;
-	a[BA] = (rand () % F1_0) - F1_0 / 2;
-	a[HA] = (rand () % F1_0) - F1_0 / 2;
-	objP->position.mOrient = vmsMatrix::Create(a);
+	a.p = (rand () % F1_0) - F1_0 / 2;
+	a.b = (rand () % F1_0) - F1_0 / 2;
+	a.h = (rand () % F1_0) - F1_0 / 2;
+	VmAngles2Matrix (&objP->position.mOrient, &a);
 	}
 objP->mType.physInfo.mass = F1_0;
 objP->mType.physInfo.drag = 512;
 #if 0
-if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id])
+if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id]) 
 #endif
 	{
-	objP->mType.physInfo.rotVel[X] = 0;
-	objP->mType.physInfo.rotVel[Y] =
-	objP->mType.physInfo.rotVel[Z] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+	objP->mType.physInfo.rotVel.p.x = 0;
+	objP->mType.physInfo.rotVel.p.y = 
+	objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 	}
 #if 0
 else {
-	objP->mType.physInfo.rotVel[X] =
-	objP->mType.physInfo.rotVel[Z] = 0;
-	objP->mType.physInfo.rotVel[Y] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+	objP->mType.physInfo.rotVel.p.x = 
+	objP->mType.physInfo.rotVel.p.z = 0;
+	objP->mType.physInfo.rotVel.p.y = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 	}
 #endif
 objP->controlType = CT_WEAPON;
@@ -230,12 +231,12 @@ void SetRobotLocationInfo (tObject *objP)
 if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 	g3sPoint temp;
 
-	G3TransformAndEncodePoint(&temp, objP->position.vPos);
+	G3TransformAndEncodePoint (&temp, &objP->position.vPos);
 	if (temp.p3_codes & CC_BEHIND)		//robot behind the screen
 		return;
 	//the code below to check for tObject near the center of the screen
 	//completely ignores z, which may not be good
-	if ((abs (temp.p3_vec[X]) < F1_0 * 4) && (abs (temp.p3_vec[Y]) < F1_0 * 4)) {
+	if ((abs (temp.p3_x) < F1_0 * 4) && (abs (temp.p3_y) < F1_0 * 4)) {
 		objP->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
 		objP->cType.aiInfo.nDangerLaserSig = OBJECTS [gameStates.app.bPlayerFiredLaserThisFrame].nSignature;
 		}
@@ -284,7 +285,7 @@ if ((objP->nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->id == nDbgObjId))
 #endif
 fScale = colorP->red + colorP->green + colorP->blue;
 if (fScale == 0) {
-	colorP->red =
+	colorP->red = 
 	colorP->green =
 	colorP->blue = 1;
 	}
@@ -375,12 +376,12 @@ if (colorP && (bmi >= 0))
 xSize = objP->size;
 
 if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
-	RenderPowerupCorona (objP, color.red, color.green, color.blue,
+	RenderPowerupCorona (objP, color.red, color.green, color.blue, 
 								coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 	if (bAdditive) {
 #if 1
-		color.red =
+		color.red = 
 		color.green =
 		color.blue = 0.5f;
 #else
@@ -398,16 +399,16 @@ if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 		color.blue = 1;
 	color.alpha = fAlpha;
 	if (bmP->bmProps.w > bmP->bmProps.h)
-		RIAddSprite (bmP, objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 1.0f);
+		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	else
-		RIAddSprite (bmP, objP->position.vPos, &color, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 1.0f);
+		RIAddSprite (bmP, &objP->position.vPos, &color, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	}
 else {
 	if (bmP->bmProps.w > bmP->bmProps.h)
-		G3DrawBitmap(objP->position.vPos, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), bmP,
+		G3DrawBitmap (&objP->position.vPos, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), bmP, 
 						  NULL, fAlpha, nTransp);
 	else
-		G3DrawBitmap(objP->position.vPos, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, bmP,
+		G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, bmP, 
 						  NULL, fAlpha, nTransp);
 	}
 gameData.render.nTotalSprites++;
@@ -427,11 +428,11 @@ if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 	OglLoadBmTexture (bmP, 1, -1, gameOpts->render.bDepthSort <= 0);
 	bmP = BmOverride (bmP, iFrame);
 	}
-delta = objP->position.mOrient[UVEC] * objP->size;
-top_v = objP->position.vPos + delta;
-bot_v = objP->position.vPos - delta;
-G3TransformAndEncodePoint(&top_p, top_v);
-G3TransformAndEncodePoint(&bot_p, bot_v);
+VmVecCopyScale (&delta, &objP->position.mOrient.uVec, objP->size);
+VmVecAdd (&top_v, &objP->position.vPos, &delta);
+VmVecSub (&bot_v, &objP->position.vPos, &delta);
+G3TransformAndEncodePoint (&top_p, &top_v);
+G3TransformAndEncodePoint (&bot_p, &bot_v);
 if (bLit)
 	light = ComputeObjectLight (objP, &top_p.p3_vec);
 else
@@ -490,7 +491,7 @@ if (!(xCloakStartTime || xCloakEndTime)) {
 	}
 if (xCloakStartTime != 0x7fffffff)
 	ci.xTotalTime = xCloakEndTime - xCloakStartTime;
-else
+else 
 	ci.xTotalTime = gameData.time.xGame;
 if (objP->nType == OBJ_PLAYER) {
 	ci.xFadeinDuration = CLOAK_FADEIN_DURATION_PLAYER;
@@ -508,7 +509,7 @@ ci.xDeltaTime = gameData.time.xGame - ((xCloakStartTime == 0x7fffffff) ? 0 : xCl
 if (ci.xDeltaTime < ci.xFadeinDuration) {	// make object transparent during second half
 	ci.nFadeValue = f2i (FixDiv (ci.xFadeinDuration - ci.xDeltaTime, ci.xFadeinDuration) * CLOAKED_FADE_LEVEL);
 	ci.bFading = 1;
-	}
+	} 
 #else
 // only decrease light during first half of cloak initiation time
 if (ci.xDeltaTime < ci.xFadeinDuration / 2) {
@@ -518,7 +519,7 @@ if (ci.xDeltaTime < ci.xFadeinDuration / 2) {
 else if (ci.xDeltaTime < ci.xFadeinDuration) {	// make object transparent during second half
 	ci.nFadeValue = f2i (FixDiv (ci.xDeltaTime - ci.xFadeinDuration / 2, ci.xFadeinDuration / 2) * CLOAKED_FADE_LEVEL);
 	ci.bFading = 1;
-	}
+	} 
 #endif
 else if ((xCloakStartTime == 0x7fffffff) || (gameData.time.xGame < xCloakEndTime - ci.xFadeoutDuration)) {
 	static int nCloakDelta = 0, nCloakDir = 1;
@@ -534,11 +535,11 @@ else if ((xCloakStartTime == 0x7fffffff) || (gameData.time.xGame < xCloakEndTime
 			nCloakDir = -nCloakDir;
 		}
 	ci.nFadeValue = CLOAKED_FADE_LEVEL - nCloakDelta;
-	}
+	} 
 else if (gameData.time.xGame < xCloakEndTime - ci.xFadeoutDuration / 2) {
 	ci.nFadeValue = f2i (FixDiv (ci.xTotalTime - ci.xFadeoutDuration / 2 - ci.xDeltaTime, ci.xFadeoutDuration / 2) * CLOAKED_FADE_LEVEL);
 	ci.bFading = -1;
-	}
+	} 
 else {
 	ci.xLightScale = (fix) ((float) (ci.xFadeoutDuration / 2 - (ci.xTotalTime - ci.xDeltaTime) / (float) (ci.xFadeoutDuration / 2)));
 	ci.bFading = 1;
@@ -552,7 +553,7 @@ return ci.bFading;
 //do special cloaked render
 int DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime, fix xCloakEndTime)
 {
-	tTransformation	*posP = OBJPOS (objP);
+	tPosition	*posP = OBJPOS (objP);
 	tCloakInfo	ci;
 	int			bOk = 0;
 
@@ -569,9 +570,9 @@ if (ci.bFading < 0) {
 	xSaveGlow = glow [0];
 	glow [0] = FixMul (glow [0], ci.xLightScale);
 	gameData.models.nLightScale = ci.xLightScale;
-	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient,
-									(vmsAngVec *)&objP->rType.polyObjInfo.animAngles,
-									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
+	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient,  
+									(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
 									xNewLight, glow, altTextures, NULL);
 	gameData.models.nLightScale = 0;
 	glow [0] = xSaveGlow;
@@ -581,9 +582,9 @@ else {
 	gameStates.render.grAlpha = (float) ci.nFadeValue;
 	GrSetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
 	G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
-	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient,
-									(vmsAngVec *)&objP->rType.polyObjInfo.animAngles,
-									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
+	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient, 
+									(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
 									light, glow, NULL, NULL);
 	G3SetSpecialRender (NULL, NULL, NULL);
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
@@ -634,8 +635,8 @@ if (gameData.models.g3Models [1][nModel].bValid >= 0)
 	return 0;
 //G3RenderModel (objP, nModel, NULL, NULL, NULL, xLight, NULL, color);
 fLight [0] = xLight / 65536.0f;
-fLight [1] = (float) xEngineGlow [0] / 65536.0f;
-fLight [2] = (float) xEngineGlow [1] / 65536.0f;
+fLight [1] = (float) xEngineGlow [0] / 65536.0f;			
+fLight [2] = (float) xEngineGlow [1] / 65536.0f;			
 OOF_Render (objP, po, fLight, ObjectIsCloaked (objP));
 return 1;
 }
@@ -668,12 +669,12 @@ else {
 	bEnergyWeapon = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [id] && !gameData.objs.bIsMissile [id];
 	}
 #if SHADOWS
-if (!bForce && FAST_SHADOWS &&
-	 !gameOpts->render.shadows.bSoft &&
+if (!bForce && FAST_SHADOWS && 
+	 !gameOpts->render.shadows.bSoft && 
 	 (gameStates.render.nShadowPass == 3))
 	return 1;
 #endif
-if (gameStates.render.bBuildModels)
+if (gameStates.render.bBuildModels) 
 	xLight = F1_0;
 else {
 	xLight = CalcObjectLight (objP, xEngineGlow);
@@ -693,7 +694,7 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 #ifdef _DEBUG
 	tPolyModel *pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 #endif
-	tBitmapIndex	bm = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride],
+	tBitmapIndex	bm = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride], 
 						bmiP [MAX_MODEL_TEXTURES];
 
 #ifdef _DEBUG
@@ -701,20 +702,20 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 #endif
 	for (i = 0; i < MAX_MODEL_TEXTURES; i++)		//fill whole array, in case simple model needs more
 		bmiP [i] = bm;
-	bOk = DrawPolygonModel (objP, &objP->position.vPos,
-									&objP->position.mOrient,
-									(vmsAngVec *) &objP->rType.polyObjInfo.animAngles,
-									objP->rType.polyObjInfo.nModel,
-									objP->rType.polyObjInfo.nSubObjFlags,
-									xLight,
-									xEngineGlow,
-									bmiP,
+	bOk = DrawPolygonModel (objP, &objP->position.vPos, 
+									&objP->position.mOrient, 
+									(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
+									objP->rType.polyObjInfo.nModel, 
+									objP->rType.polyObjInfo.nSubObjFlags, 
+									xLight, 
+									xEngineGlow, 
+									bmiP, 
 									NULL);
 	}
 else {
 	if (bCloaked) {
-		if (objP->nType == OBJ_PLAYER)
-			bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multiplayer.players [id].cloakTime,
+		if (objP->nType == OBJ_PLAYER) 
+			bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multiplayer.players [id].cloakTime, 
 											 gameData.multiplayer.players [id].cloakTime + CLOAK_TIME_MAX);
 		else if (objP->nType == OBJ_ROBOT) {
 			if (!ROBOTINFO (id).bossFlag)
@@ -728,7 +729,7 @@ else {
 
 		//	Snipers get bright when they fire.
 		if (!gameStates.render.bBuildModels) {
-			if ((objP->nType == OBJ_ROBOT) &&
+			if ((objP->nType == OBJ_ROBOT) && 
 				 (gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire < F1_0 / 8) &&
 				 (objP->cType.aiInfo.behavior == AIB_SNIPE))
 				xLight = 2 * xLight + F1_0;
@@ -741,17 +742,17 @@ else {
 				}
 			if (bBlendPolys) {
 #if 0
-				fix xDistToEye = vmsVector::dist(gameData.objs.viewer->position.vPos, objP->position.vPos);
+				fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->position.vPos, &objP->position.vPos);
 				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0 * 2)
 #endif
 					bOk = DrawPolygonModel (
-						objP, &objP->position.vPos, &objP->position.mOrient,
-						(vmsAngVec *) &objP->rType.polyObjInfo.animAngles,
-						gameData.weapons.info [id].nInnerModel,
-						objP->rType.polyObjInfo.nSubObjFlags,
-						bBrightPolys ? F1_0 : xLight,
-						xEngineGlow,
-						bmiAltTex,
+						objP, &objP->position.vPos, &objP->position.mOrient, 
+						(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
+						gameData.weapons.info [id].nInnerModel, 
+						objP->rType.polyObjInfo.nSubObjFlags, 
+						bBrightPolys ? F1_0 : xLight, 
+						xEngineGlow, 
+						bmiAltTex, 
 						NULL);
 				}
 			if (bEnergyWeapon)
@@ -760,13 +761,13 @@ else {
 				gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
 			}
 		bOk = DrawPolygonModel (
-			objP, &objP->position.vPos, &objP->position.mOrient,
-			objP->rType.polyObjInfo.animAngles,
-			objP->rType.polyObjInfo.nModel,
-			objP->rType.polyObjInfo.nSubObjFlags,
-			(bGatling || bBrightPolys) ? F1_0 : xLight,
-			xEngineGlow,
-			bmiAltTex,
+			objP, &objP->position.vPos, &objP->position.mOrient, 
+			objP->rType.polyObjInfo.animAngles, 
+			objP->rType.polyObjInfo.nModel, 
+			objP->rType.polyObjInfo.nSubObjFlags, 
+			(bGatling || bBrightPolys) ? F1_0 : xLight, 
+			xEngineGlow, 
+			bmiAltTex, 
 			(bGatling || bEnergyWeapon) ? gameData.weapons.color + id : NULL);
 		if (!gameStates.render.bBuildModels) {
 			if (!gameOpts->legacy.bRender) {
@@ -793,7 +794,7 @@ PROF_START
 	short			nObject = OBJ_IDX (objP);
 	int			mldSave, bSpectate = 0, bDepthSort = RENDERPATH || (gameOpts->render.bDepthSort > 0);
 	int			bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
-	tTransformation	savePos;
+	tPosition	savePos;
 #if 0
 	float			fLight [3];
 	fix			nGlow [2];
@@ -804,10 +805,10 @@ PROF_START
 if (objP == dbgObjP) {
 	objP = objP;
 #if 1
-	HUDMessage (0, "%1.2f %1.2f %1.2f",
-					f2fl (objP->mType.physInfo.velocity[X]),
-					f2fl (objP->mType.physInfo.velocity[Y]),
-					f2fl (objP->mType.physInfo.velocity[Z]));
+	HUDMessage (0, "%1.2f %1.2f %1.2f", 
+					f2fl (objP->mType.physInfo.velocity.p.x), 
+					f2fl (objP->mType.physInfo.velocity.p.y), 
+					f2fl (objP->mType.physInfo.velocity.p.z));
 #endif
 	}
 #endif
@@ -818,7 +819,7 @@ if (objP->nType == 255) {
 if (bEmissive && gameStates.render.bQueryCoronas)
 	return 0;
 if ((gameStates.render.nShadowPass != 2) &&
-	 (objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) &&
+	 (objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) && 
 	 (objP->nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {
 	PROF_END(ptRenderObjects)
 	return 0;
@@ -830,16 +831,16 @@ if (nObject != LOCALPLAYER.nObject) {
 else if ((gameData.objs.viewer == gameData.objs.console) && !gameStates.render.automap.bDisplay) {
 	if ((bSpectate = (gameStates.app.bFreeCam && !nWindowNum)))
 		;
-		//HUDMessage (0, "%1.2f %1.2f %1.2f", f2fl (objP->position.vPos[X]), f2fl (objP->position.vPos[Y]), f2fl (objP->position.vPos[Z]));
+		//HUDMessage (0, "%1.2f %1.2f %1.2f", f2fl (objP->position.vPos.p.x), f2fl (objP->position.vPos.p.y), f2fl (objP->position.vPos.p.z));
 #ifdef _DEBUG
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
 				 (nWindowNum || (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK)))) { //don't render ship model if neither external view nor main view
-#else
+#else	 
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
 				 (nWindowNum ||
-				  ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0, 0)) ||
+				  ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0, 0)) || 
 				  (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK))))) {
-#endif
+#endif	 
 #if 0
 		if (gameOpts->render.smoke.bPlayers) {
 			SEM_ENTER (SEM_SMOKE)
@@ -848,11 +849,11 @@ else if ((gameData.objs.viewer == gameData.objs.console) && !gameStates.render.a
 			}
 #endif
 		PROF_END(ptRenderObjects)
-		return 0;
+		return 0;	
 		}
 	}
 if ((objP->nType == OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
-#if TRACE
+#if TRACE			
 	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", nObject, objP->nSegment);
 #endif
 	PROF_END(ptRenderObjects)
@@ -942,10 +943,10 @@ switch (objP->renderType) {
 				if (gameStates.render.nType != 1)
 					return 0;
 				if (gameData.objs.bIsMissile [objP->id]) {	//make missiles smaller during launch
-					if ((objP->cType.laserInfo.parentType == OBJ_PLAYER) &&
+					if ((objP->cType.laserInfo.parentType == OBJ_PLAYER) && 
 						 (gameData.models.g3Models [1][108].bValid > 0)) {	//hires player ship
 						float dt = f2fl (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)]);
-
+		
 						if (dt < 1)
 							gameData.models.nScale = (fix) (F1_0 + F1_0 * dt * dt) / 2;
 						}
@@ -1001,10 +1002,10 @@ switch (objP->renderType) {
 				else {
 					objP->mType.physInfo.mass = F1_0;
 					objP->mType.physInfo.drag = 512;
-					if (gameOpts->render.powerups.nSpin !=
-						((objP->mType.physInfo.rotVel[Y] | objP->mType.physInfo.rotVel[Z]) != 0))
-						objP->mType.physInfo.rotVel[Y] =
-						objP->mType.physInfo.rotVel[Z] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+					if (gameOpts->render.powerups.nSpin != 
+						((objP->mType.physInfo.rotVel.p.y | objP->mType.physInfo.rotVel.p.z) != 0))
+						objP->mType.physInfo.rotVel.p.y = 
+						objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 					}
 #ifdef _DEBUG
 				RenderRobotShield (objP);
@@ -1037,55 +1038,55 @@ switch (objP->renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (gameStates.render.nShadowPass != 2)
-			MorphDrawObject (objP);
+			MorphDrawObject (objP); 
 		break;
 
-	case RT_THRUSTER:
+	case RT_THRUSTER: 
 		if (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1))
 			return 0;
 		if (nWindowNum && (objP->mType.physInfo.flags & PF_WIGGLE))
 			break;
-
-	case RT_FIREBALL:
+		
+	case RT_FIREBALL: 
 		if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
-			DrawFireball (objP);
+			DrawFireball (objP); 
 			if (objP->nType == OBJ_WEAPON) {
 				RenderLightTrail (objP);
 				}
 			}
 		break;
 
-	case RT_EXPLBLAST:
+	case RT_EXPLBLAST: 
 		if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
 			return 0;
 		if (gameStates.render.nShadowPass != 2)
-			DrawExplBlast (objP);
+			DrawExplBlast (objP); 
 		break;
 
-	case RT_SHRAPNELS:
+	case RT_SHRAPNELS: 
 		if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
 			return 0;
 		if (gameStates.render.nShadowPass != 2)
-			DrawShrapnels (objP);
+			DrawShrapnels (objP); 
 		break;
 
-	case RT_WEAPON_VCLIP:
+	case RT_WEAPON_VCLIP: 
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
-			if (objP->nType != OBJ_WEAPON)
-				DrawWeaponVClip (objP);
+			if (objP->nType != OBJ_WEAPON) 
+				DrawWeaponVClip (objP); 
 			else {
 				if (WeaponIsMine (objP->id)) {
 					if (!DoObjectSmoke (objP))
-						DrawWeaponVClip (objP);
+						DrawWeaponVClip (objP); 
 					}
 				else if ((objP->id != OMEGA_ID) || !(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega)) {
-					DrawWeaponVClip (objP);
+					DrawWeaponVClip (objP); 
 					if (objP->id != OMEGA_ID) {
 						RenderLightTrail (objP);
 						RenderMslLockIndicator (objP);
@@ -1099,13 +1100,13 @@ switch (objP->renderType) {
 			}
 		break;
 
-	case RT_HOSTAGE:
+	case RT_HOSTAGE: 
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (ConvertHostageToModel (objP))
 			DrawPolygonObject (objP, bDepthSort, 0);
 		else if (gameStates.render.nShadowPass != 2)
-			DrawHostage (objP);
+			DrawHostage (objP); 
 		break;
 
 	case RT_POWERUP:
@@ -1118,24 +1119,24 @@ switch (objP->renderType) {
 			DrawPolygonObject (objP, bDepthSort, 0);
 			}
 		else if (gameStates.render.nShadowPass != 2)
-			DrawPowerup (objP);
+			DrawPowerup (objP); 
 		break;
 
-	case RT_LASER:
+	case RT_LASER: 
 		if (gameStates.render.bQueryCoronas && (gameStates.render.nType != 1))
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
-			RenderLaser (objP);
+			RenderLaser (objP); 
 			if (objP->nType == OBJ_WEAPON)
 				RenderLightTrail (objP);
 			}
 		break;
-
+	
 	case RT_SMOKE:
 	case RT_LIGHTNING:
 		break;
 
-	default:
+	default: 
 		Error ("Unknown renderType <%d>", objP->renderType);
 	}
 //SetNearestStaticLights (objP->nSegment, 0);

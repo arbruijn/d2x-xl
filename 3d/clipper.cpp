@@ -55,7 +55,7 @@ void free_temp_point(g3sPoint *p)
 	p->p3_flags &= ~PF_TEMP_POINT;
 }
 
-//clips an edge against one plane.
+//clips an edge against one plane. 
 g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 {
 	fix psx_ratio;
@@ -66,12 +66,12 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 	//use x or y as appropriate, and negate x/y value as appropriate
 
 	if (planeFlag & (CC_OFF_RIGHT | CC_OFF_LEFT)) {
-		a = on_pnt->p3_vec[X];
-		b = off_pnt->p3_vec[X];
+		a = on_pnt->p3_x;
+		b = off_pnt->p3_x;
 	}
 	else {
-		a = on_pnt->p3_vec[Y];
-		b = off_pnt->p3_vec[Y];
+		a = on_pnt->p3_y;
+		b = off_pnt->p3_y;
 	}
 
 	if (planeFlag & (CC_OFF_LEFT | CC_OFF_BOT)) {
@@ -79,8 +79,8 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 		b = -b;
 	}
 
-	kn = a - on_pnt->p3_vec[Z];						//xs-zs
-	kd = kn - b + off_pnt->p3_vec[Z];				//xs-zs-xe+ze
+	kn = a - on_pnt->p3_z;						//xs-zs
+	kd = kn - b + off_pnt->p3_z;				//xs-zs-xe+ze
 
 	tmp = get_temp_point();
 
@@ -88,19 +88,19 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 
 
 // PSX_HACK!!!!
-//	tmp->p3_vec[X] = on_pnt->p3_vec[X] + FixMulDiv(off_pnt->p3_vec[X]-on_pnt->p3_vec[X],kn,kd);
-//	tmp->p3_vec[Y] = on_pnt->p3_vec[Y] + FixMulDiv(off_pnt->p3_vec[Y]-on_pnt->p3_vec[Y],kn,kd);
+//	tmp->p3_x = on_pnt->p3_x + FixMulDiv(off_pnt->p3_x-on_pnt->p3_x,kn,kd);
+//	tmp->p3_y = on_pnt->p3_y + FixMulDiv(off_pnt->p3_y-on_pnt->p3_y,kn,kd);
 
-	tmp->p3_vec[X] = on_pnt->p3_vec[X] + FixMul( (off_pnt->p3_vec[X]-on_pnt->p3_vec[X]), psx_ratio);
-	tmp->p3_vec[Y] = on_pnt->p3_vec[Y] + FixMul( (off_pnt->p3_vec[Y]-on_pnt->p3_vec[Y]), psx_ratio);
+	tmp->p3_x = on_pnt->p3_x + FixMul( (off_pnt->p3_x-on_pnt->p3_x), psx_ratio);
+	tmp->p3_y = on_pnt->p3_y + FixMul( (off_pnt->p3_y-on_pnt->p3_y), psx_ratio);
 
 	if (planeFlag & (CC_OFF_TOP|CC_OFF_BOT))
-		tmp->p3_vec[Z] = tmp->p3_vec[Y];
+		tmp->p3_z = tmp->p3_y;
 	else
-		tmp->p3_vec[Z] = tmp->p3_vec[X];
+		tmp->p3_z = tmp->p3_x;
 
 	if (planeFlag & (CC_OFF_LEFT|CC_OFF_BOT))
-		tmp->p3_vec[Z] = -tmp->p3_vec[Z];
+		tmp->p3_z = -tmp->p3_z;
 
 	if (on_pnt->p3_flags & PF_UVS) {
 // PSX_HACK!!!!

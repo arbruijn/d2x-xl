@@ -78,13 +78,13 @@ void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, s
 	int				h, i, bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 
 if (!gameStates.render.bBrightObject) {
-	vPos = objP->position.vPos.toFloat();
-	for (i = iVerts, pv = pm->pVerts + iVerts, pn = pm->pVertNorms + iVerts, pc = pm->pColor + iVerts;
-		  i < nVerts;
+	VmVecFixToFloat (&vPos, &objP->position.vPos);
+	for (i = iVerts, pv = pm->pVerts + iVerts, pn = pm->pVertNorms + iVerts, pc = pm->pColor + iVerts; 
+		  i < nVerts; 
 		  i++, pv++, pn++, pc++) {
 		pc->index = 0;
-		vVertex = vPos + *(fVector *) pv;
-		G3VertexColor ((fVector3 *) pn, vVertex.v3(), i, pc, NULL, 1, 0, 0);
+		VmVecAdd (&vVertex, &vPos, (fVector *) pv);
+		G3VertexColor ((fVector3 *) pn, &vVertex.v3, i, pc, NULL, 1, 0, 0);
 		}
 	}
 for (i = iFaceVerts, h = iFaceVerts, pmv = pm->pFaceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {
@@ -112,7 +112,7 @@ void G3LightModel (tObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 	tG3ModelVertex	*pmv;
 	tG3ModelFace	*pmf;
 	tRgbaColorf		baseColor, *colorP;
-	float				fLight, fAlpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
+	float				fLight, fAlpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS; 
 	int				h, i, j, l;
 	int				bEmissive = (objP->nType == OBJ_MARKER) ||
 										((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id]);
@@ -125,7 +125,7 @@ if (OBJ_IDX (objP) == nDbgObj)
 if (xModelLight > F1_0)
 	xModelLight = F1_0;
 #endif
-if (SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting ||
+if (SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting || 
     (gameOpts->ogl.bLightObjects && (gameOpts->ogl.bLightPowerups || (objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))))) {
 	tiRender.objP = objP;
 	tiRender.pm = pm;
@@ -143,12 +143,12 @@ else {
 			colorP = &baseColor;
 		else
 			colorP = NULL;
-		if (pmf->bGlow)
+		if (pmf->bGlow) 
 			l = xGlowValues [nGlow];
 		else if (bEmissive)
 			l = F1_0;
 		else {
-			l = -vmsVector::dot(viewInfo.view [0][FVEC], pmf->vNormal);
+			l = -VmVecDot (&viewInfo.view [0].fVec, &pmf->vNormal);
 			l = 3 * f1_0 / 4 + l / 4;
 			l = FixMul (l, xModelLight);
 			}
@@ -215,12 +215,12 @@ pm->fScale *= fScale;
 
 //------------------------------------------------------------------------------
 
-void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector *vOffsetP,
+void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector *vOffsetP, 
 							  vmsVector *vNormal, int nRad, int bHires)
 {
 	tG3Model				*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3ModelVertex		*pmv = NULL;
-	fVector3				v = fVector3::ZERO, vn, vo, vForward = fVector3::Create(0,0,1);
+	fVector3				v = {{0,0,0}}, vn, vo, vForward = {{0,0,1}};
 	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
 	int					i, j = 0;
 	float					h, nSize;
@@ -231,42 +231,44 @@ if (!pm->bRendered || gameData.models.nScale)
 	mtP->nCount = 0;
 else if (mtP->nCount >= (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) ? 2 : 1))
 	return;
-vn = pmf ? pmf->vNormal.toFloat3() : vNormal->toFloat3();
-if (fVector3::dot(vn, vForward) > -1.0f / 3.0f)
+VmVecFixToFloat (&vn, pmf ? &pmf->vNormal : vNormal);
+if (VmVecDot (&vn, &vForward) > -1.0f / 3.0f)
 	return;
 if (pmf) {
 	for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
-		v += pmv [i].vertex;
-	v /= j;
+		VmVecInc (&v, &pmv [i].vertex);
+	v.p.x /= j;
+	v.p.y /= j;
+	v.p.z /= j;
 	}
 else
-	v.setZero();
-v[Z] -= 1.0f / 16.0f;
+	v.p.x = v.p.y = v.p.z = 0;
+v.p.z -= 1.0f / 16.0f;
 #if 0
 G3TransformPoint (&v, &v, 0);
 #else
 #	if 1
 if (vOffsetP) {
-	vo = vOffsetP->toFloat3();
-	v += vo;
+	VmVecFixToFloat (&vo, vOffsetP);
+	VmVecInc (&v, &vo);
 	}
 #	endif
 #endif
-if (mtP->nCount && (v[X] == mtP->vPos [0][X]) && (v[Y] == mtP->vPos [0][Y]) && (v[Z] == mtP->vPos [0][Z]))
+if (mtP->nCount && (v.p.x == mtP->vPos [0].p.x) && (v.p.y == mtP->vPos [0].p.y) && (v.p.z == mtP->vPos [0].p.z))
 	return;
-mtP->vPos [mtP->nCount][X] = fl2f (v[X]);
-mtP->vPos [mtP->nCount][Y] = fl2f (v[Y]);
-mtP->vPos [mtP->nCount][Z] = fl2f (v[Z]);
+mtP->vPos [mtP->nCount].p.x = fl2f (v.p.x);
+mtP->vPos [mtP->nCount].p.y = fl2f (v.p.y);
+mtP->vPos [mtP->nCount].p.z = fl2f (v.p.z);
 if (vOffsetP)
-	v -= vo;
+	VmVecDec (&v, &vo);
 mtP->vDir [mtP->nCount] = *vNormal;
-mtP->vDir[mtP->nCount] = -mtP->vDir[mtP->nCount];
+VmVecNegate (mtP->vDir + mtP->nCount);
 if (!mtP->nCount) {
 	if (!pmf)
 		mtP->fSize = f2fl (nRad);
 	else {
 		for (i = 0, nSize = 1000000000; i < j; i++)
-			if (nSize > (h = fVector3::dist(v, pmv[i].vertex)))
+			if (nSize > (h = VmVecDist (&v, &pmv [i].vertex)))
 				nSize = h;
 		mtP->fSize = nSize;// * 1.25f;
 		}
@@ -337,8 +339,8 @@ if (psm->bWeapon) {
 			else {
 				static int nMslPos [] = {-1, 1, 0, 3, 2};
 				int nLaunchPos = gameData.multiplayer.weaponStates [nId].nMslLaunchPos;
-				return (nId == gameData.multiplayer.nLocalPlayer) && !AllowedToFireMissile (nId, 0) &&
-						 (nLaunchPos == (nMslPos [(int) psm->nWeaponPos]));
+				return (nId == gameData.multiplayer.nLocalPlayer) && !AllowedToFireMissile (nId, 0) && 
+						 (nLaunchPos == (nMslPos [(int) psm->nWeaponPos])); 
 				}
 			}
 		else
@@ -359,8 +361,8 @@ return 0;
 
 static inline int ObjectHasThruster (tObject *objP)
 {
-return (objP->nType == OBJ_PLAYER) ||
-		 (objP->nType == OBJ_ROBOT) ||
+return (objP->nType == OBJ_PLAYER) || 
+		 (objP->nType == OBJ_ROBOT) || 
 		 ((objP->nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [objP->id]));
 }
 
@@ -396,7 +398,7 @@ if (gameStates.app.nSDLTicks - psm->tFrame > nTimeout) {
 	psm->iFrame = ++psm->iFrame % psm->nFrames;
 	}
 glPushMatrix ();
-y = f2fl (psm->vCenter[Y]);
+y = f2fl (psm->vCenter.p.y);
 glTranslatef (0, y, 0);
 glRotatef (360 * (float) psm->iFrame / (float) psm->nFrames, 0, 0, 1);
 glTranslatef (0, -y, 0);
@@ -405,7 +407,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclusive, grsBitmap **modelBitmaps,
+void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclusive, grsBitmap **modelBitmaps, 
 						   vmsAngVec *pAnimAngles, vmsVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
@@ -413,7 +415,7 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	tG3SubModel		*psm = pm->pSubModels + nSubModel;
 	tG3ModelFace	*pmf;
 	grsBitmap		*bmP = NULL;
-	vmsAngVec		va = pAnimAngles ? pAnimAngles [psm->nAngles] : vmsAngVec::ZERO;
+	vmsAngVec		va = pAnimAngles ? pAnimAngles [psm->nAngles] : avZero;
 	vmsVector		vo;
 	int				h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/),
 						bGetThruster = !nPass && ObjectHasThruster (objP);
@@ -425,11 +427,9 @@ else
 	nTeamColor = 0;
 #if 1
 if (psm->bThruster) {
-	if (!nPass) {
-		vo = psm->vOffset + psm->vCenter;
-		G3GetThrusterPos (objP, nModel, NULL, &vo,
+	if (!nPass)
+		G3GetThrusterPos (objP, nModel, NULL, VmVecAdd (&vo, &psm->vOffset, &psm->vCenter), 
 								&psm->pFaces->vNormal, psm->nRad, bHires);
-	}
 	return;
 	}
 if (G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
@@ -437,11 +437,11 @@ if (G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
 #endif
 vo = psm->vOffset;
 if (gameData.models.nScale)
-	vo *= gameData.models.nScale;
+	VmVecScale (&vo, gameData.models.nScale);
 #if 1
 if (vOffsetP && (nExclusive < 0)) {
-	G3StartInstanceAngles(vo, va);
-	vo += *vOffsetP;
+	G3StartInstanceAngles (&vo, &va);
+	VmVecInc (&vo, vOffsetP);
 	}
 #endif
 bAnimate = G3AnimateSubModel (objP, psm, nModel);
@@ -449,7 +449,7 @@ bAnimate = G3AnimateSubModel (objP, psm, nModel);
 // render any dependent submodels
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
-		G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, pAnimAngles, &vo, bHires,
+		G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, pAnimAngles, &vo, bHires, 
 							 bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 #endif
 // render the faces
@@ -463,7 +463,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		glColor4f (0, 0, 0, GrAlpha ());
 	for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pmf = psm->pFaces; i; ) {
 		if (bTextured && (nBitmap != pmf->nBitmap)) {
-			if (0 > (nBitmap = pmf->nBitmap))
+			if (0 > (nBitmap = pmf->nBitmap)) 
 				glDisable (GL_TEXTURE_2D);
 			else {
 				if (!bHires)
@@ -504,7 +504,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			pmf++;
 			i--;
 			}
-		else {
+		else { 
 			nId = pmf->nId;
 			nVerts = 0;
 			do {
@@ -519,20 +519,20 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		if (glDrawRangeElements)
 #endif
 			if (bUseVBO)
-				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-											0, nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
+				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
+											0, nVerts - 1, nVerts, GL_UNSIGNED_SHORT, 
 											G3_BUFFER_OFFSET (nIndex * sizeof (short)));
 			else
-				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
+				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
+											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT, 
 											pm->pIndex [0] + nIndex);
 #if _WIN32
 		else
 			if (bUseVBO)
-				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
 									 nVerts, GL_UNSIGNED_SHORT, G3_BUFFER_OFFSET (nIndex * sizeof (short)));
 			else
-				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
 									 nVerts, GL_UNSIGNED_SHORT, pm->pIndex + nIndex);
 #endif
 		}
@@ -547,7 +547,7 @@ if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
 
 //------------------------------------------------------------------------------
 
-void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **modelBitmaps,
+void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **modelBitmaps, 
 						vmsAngVec *pAnimAngles, vmsVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
@@ -562,14 +562,14 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? f2fl (gameData.models.nLightScale) : 1.0f;
 	fVector					color;
-	tTransformation			*posP = OBJPOS (objP);
+	tPosition				*posP = OBJPOS (objP);
 
 OglSetupTransform (1);
 if (bLighting) {
 	nLights = sliP->nActive;
 	if (nLights > gameStates.render.nMaxLightsPerObject)
 		nLights = gameStates.render.nMaxLightsPerObject;
-	OglEnableLighting (0);
+	OglEnableLighting (0); 
 	}
 else
 	nLights = 1;
@@ -595,7 +595,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			glDepthMask (0);
 			}
-		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; activeLightsP++, nLightRange--) {
+		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; activeLightsP++, nLightRange--) { 
 #ifdef _DEBUG
 			if (activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0] >= MAX_SHADER_LIGHTS)
 				break;
@@ -607,8 +607,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				fVector3 vPos;
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
-				vPos = objP->position.vPos.toFloat3();
-				glLightfv (hLight, GL_POSITION, (GLfloat *)&vPos);
+				glLightfv (hLight, GL_POSITION, (GLfloat *) VmVecFixToFloat (&vPos, &objP->position.vPos));
 				glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &psc->color);
 				glLightfv (hLight, GL_SPECULAR, (GLfloat *) &psc->color);
 				glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f);
@@ -622,9 +621,9 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);
 				fBrightness = psl->info.fBrightness * fLightScale;
 				color = *((fVector *) &psl->info.color);
-				color[R] *= fLightScale;
-				color[G] *= fLightScale;
-				color[B] *= fLightScale;
+				color.c.r *= fLightScale;
+				color.c.g *= fLightScale;
+				color.c.b *= fLightScale;
 				glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->vPosf));
 				glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &color);
 				glLightfv (hLight, GL_SPECULAR, (GLfloat *) &color);
@@ -652,12 +651,12 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			glDisable (GL_LIGHT0 + iLight);
 		}
 	//if (nSubModel < 0)
-		G3StartInstanceMatrix(posP->vPos, posP->mOrient);
+		G3StartInstanceMatrix (&posP->vPos, &posP->mOrient);
 	pm = gameData.models.g3Models [bHires] + nModel;
 	if (bHires) {
 		for (int i = 0; i < pm->nSubModels; i++)
-			if (pm->pSubModels [i].nParent == -1)
-				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->pSubModels->vOffset : vOffsetP,
+			if (pm->pSubModels [i].nParent == -1) 
+				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->pSubModels->vOffset : vOffsetP, 
 									 bHires, bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 		}
 	else
@@ -683,13 +682,13 @@ OglResetTransform (1);
 
 //------------------------------------------------------------------------------
 
-void G3RenderDamageLightnings (tObject *objP, short nModel, short nSubModel,
+void G3RenderDamageLightnings (tObject *objP, short nModel, short nSubModel, 
 										 vmsAngVec *pAnimAngles, vmsVector *vOffsetP, int bHires)
 {
 	tG3Model			*pm;
 	tG3SubModel		*psm;
 	tG3ModelFace	*pmf;
-	const vmsAngVec	*va;
+	vmsAngVec		*va;
 	vmsVector		vo;
 	int				i, j;
 
@@ -702,7 +701,7 @@ if (pm->bValid < 1) {
 		return;
 	}
 psm = pm->pSubModels + nSubModel;
-va = pAnimAngles ? pAnimAngles + psm->nAngles : &vmsAngVec::ZERO;
+va = pAnimAngles ? pAnimAngles + psm->nAngles : &avZero;
 if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage))
 	return;
 if (!objP || (ObjectDamage (objP) > 0.5f))
@@ -710,17 +709,17 @@ if (!objP || (ObjectDamage (objP) > 0.5f))
 // set the translation
 vo = psm->vOffset;
 if (gameData.models.nScale)
-	vo *= gameData.models.nScale;
+	VmVecScale (&vo, gameData.models.nScale);
 if (vOffsetP) {
-	G3StartInstanceAngles(vo, *va);
-	vo += *vOffsetP;
+	G3StartInstanceAngles (&vo, va);
+	VmVecInc (&vo, vOffsetP);
 	}
 // render any dependent submodels
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
 		G3RenderDamageLightnings (objP, nModel, i, pAnimAngles, &vo, bHires);
 // render the lightnings
-for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pmf = psm->pFaces; i; i--, pmf++)
+for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pmf = psm->pFaces; i; i--, pmf++) 
 	RenderDamageLightnings (objP, NULL, pm->pFaceVerts + pmf->nIndex, pmf->nVerts);
 if (vOffsetP)
 	G3DoneInstance ();
@@ -728,7 +727,7 @@ if (vOffsetP)
 
 //------------------------------------------------------------------------------
 
-int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp, grsBitmap **modelBitmaps,
+int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp, grsBitmap **modelBitmaps, 
 						 vmsAngVec *pAnimAngles, vmsVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
@@ -737,7 +736,7 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 
 if (!objP)
 	return 0;
-if (gameStates.render.bQueryCoronas &&
+if (gameStates.render.bQueryCoronas && 
 	 (((objP->nType == OBJ_WEAPON) && (objP->id < MAX_WEAPONS) &&
 	  gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id]) || gameStates.render.bCloaked))
 	return 1;
@@ -777,8 +776,8 @@ if (pm->bValid < 1) {
 		}
 	}
 PROF_START
-if (!(gameStates.render.bCloaked ?
-	   G3EnableClientStates (0, 0, 0, GL_TEXTURE0) :
+if (!(gameStates.render.bCloaked ? 
+	   G3EnableClientStates (0, 0, 0, GL_TEXTURE0) : 
 		G3EnableClientStates (1, 1, gameOpts->ogl.bObjLighting, GL_TEXTURE0)))
 	return 0;
 if (bUseVBO) {
@@ -816,7 +815,7 @@ if (bUseVBO) {
 	if (pm->vboIndexHandle)
 		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->vboIndexHandle);
 	}
-else
+else 
 	{
 	if (!gameStates.render.bCloaked) {
 		glTexCoordPointer (2, GL_FLOAT, 0, pm->pVBTexCoord);
@@ -848,7 +847,7 @@ if (gameStates.render.bCloaked)
 else
 	G3DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
 if (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR))) {
-	G3StartInstanceMatrix(objP->position.vPos, objP->position.mOrient);
+	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL, bHires);
 	G3DoneInstance ();
 	}

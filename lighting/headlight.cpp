@@ -38,9 +38,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void ToggleHeadlight (void)
 {
 if (PlayerHasHeadlight (-1)) {
-	LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;
+	LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;		
 	if (IsMultiGame)
-		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
+		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);	
 	}
 }
 
@@ -71,10 +71,10 @@ for (i = 0; i < nHeadlights; i++) {
 	vmsVector	vecToObj;
 	tObject		*lightObjP;
 	lightObjP = Headlights [i];
-	vecToObj = objP->position.vPos - lightObjP->position.vPos;
-	dist = vmsVector::normalize(vecToObj);
+	VmVecSub (&vecToObj, &objP->position.vPos, &lightObjP->position.vPos);
+	dist = VmVecNormalize (&vecToObj);
 	if (dist > 0) {
-		dot = vmsVector::dot(lightObjP->position.mOrient[FVEC], vecToObj);
+		dot = VmVecDot (&lightObjP->position.mOrient.fVec, &vecToObj);
 		if (dot < F1_0/2)
 			light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
 		else
@@ -106,14 +106,14 @@ for (i = 0; i < gameData.render.lights.dynamic.headlights.nLights; i++) {
 	psl->info.bSpot = 1;
 	psl->info.fSpotAngle = pl->info.fSpotAngle;
 	psl->info.fSpotExponent = pl->info.fSpotExponent;
-	psl->info.vDirf = pl->vDir.toFloat();
+	VmVecFixToFloat (&psl->info.vDirf, &pl->vDir);
 	if (bHWHeadlight) {
-		gameData.render.lights.dynamic.headlights.pos[i] = psl->vPosf[0];
-		gameData.render.lights.dynamic.headlights.dir[i] = *psl->info.vDirf.v3();
-		gameData.render.lights.dynamic.headlights.brightness[i] = 100.0f;
+		gameData.render.lights.dynamic.headlights.pos [i] = psl->vPosf [0];
+		gameData.render.lights.dynamic.headlights.dir [i] = psl->info.vDirf.v3;
+		gameData.render.lights.dynamic.headlights.brightness [i] = 100.0f;
 		}
 	else if (pl->bTransform && !gameStates.ogl.bUseTransform)
-		G3RotatePoint(psl->info.vDirf, psl->info.vDirf, 0);
+		G3RotatePoint (&psl->info.vDirf, &psl->info.vDirf, 0);
 	}
 }
 
@@ -137,7 +137,7 @@ int AddOglHeadlight (tObject *objP)
 	static float spotExps [] = {12.0f, 5.0f, 0.0f};
 	static float spotAngles [] = {0.9f, 0.5f, 0.5f};
 #endif
-
+	
 if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlights [objP->id] < 0)) {
 		tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
 		tDynLight	*pl;
@@ -184,9 +184,8 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	pl = gameData.render.lights.dynamic.lights + gameData.render.lights.dynamic.nHeadlights [nPlayer];
 	objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 	pl->info.vPos = OBJPOS (objP)->vPos;
-	pl->vDir = OBJPOS (objP)->mOrient[FVEC];
-	//TODO ScaleFrac check
-	pl->info.vPos += pl->vDir * (objP->size / 4);
+	pl->vDir = OBJPOS (objP)->mOrient.fVec;
+	VmVecScaleInc (&pl->info.vPos, &pl->vDir, objP->size / 4);
 	}
 }
 
@@ -217,7 +216,7 @@ const char *headlightFS [2][8] = {
 	"      }\r\n" \
 	"   }\r\n" \
 	"gl_FragColor = vec4 (min (texColor.rgb, texColor.rgb * spotColor), texColor.a);\r\n"  \
-	"}"
+	"}" 
 	,
 	//only base texture
 	"uniform sampler2D baseTex;\r\n" \
@@ -237,7 +236,7 @@ const char *headlightFS [2][8] = {
 	"	    }\r\n" \
 	"	 }\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n"  \
-	"}"
+	"}" 
 	,
 	//base texture and decal
 	"uniform sampler2D baseTex, decalTex;\r\n" \
@@ -259,7 +258,7 @@ const char *headlightFS [2][8] = {
 	"	    }\r\n" \
 	"	 }\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n"  \
-	"}"
+	"}" 
 	,
 	//base texture and decal with color key
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
@@ -287,7 +286,7 @@ const char *headlightFS [2][8] = {
 	"   	 }\r\n" \
 	"	 gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n"  \
 	"   }\r\n" \
-	"}"
+	"}" 
 	,
 	// --------------------------------------------------------------------------------
 	//multiplayer version - 1 - 8 players
@@ -312,7 +311,7 @@ const char *headlightFS [2][8] = {
 	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
 	"spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (matColor.rgb * spotColor, matColor.a);"  \
-	"}"
+	"}" 
 	,
 	//only base texture
 	"#define LIGHTS 8\r\n" \
@@ -338,7 +337,7 @@ const char *headlightFS [2][8] = {
 	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
 	"spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
-	"}"
+	"}" 
 	,
 	//base texture and decal
 	"#define LIGHTS 8\r\n" \
@@ -366,7 +365,7 @@ const char *headlightFS [2][8] = {
 	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
 	"spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
-	"}"
+	"}" 
 	,
 	//base texture and decal with color key
 	"#define LIGHTS 8\r\n" \
@@ -399,7 +398,7 @@ const char *headlightFS [2][8] = {
 	"   spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"	 gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"   }\r\n" \
-	"}"
+	"}" 
 	},
 	{
 	//----------------------------------------
@@ -420,7 +419,7 @@ const char *headlightFS [2][8] = {
 	"      }\r\n" \
 	"   }\r\n" \
 	"gl_FragColor = matColor * spotColor;\r\n" \
-	"}"
+	"}" 
 	,
 	//only base texture
 	"uniform sampler2D baseTex;\r\n" \
@@ -440,7 +439,7 @@ const char *headlightFS [2][8] = {
 	"	    }\r\n" \
 	"	 }\r\n" \
 	"gl_FragColor = texColor * spotColor;\r\n" \
-	"}"
+	"}" 
 	,
 	//base texture and decal
 	"uniform sampler2D baseTex, decalTex;\r\n" \
@@ -462,7 +461,7 @@ const char *headlightFS [2][8] = {
 	"	    }\r\n" \
 	"	 }\r\n" \
 	"gl_FragColor = texColor * spotColor;\r\n" \
-	"}"
+	"}" 
 	,
 	//base texture and decal with color key
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
@@ -489,7 +488,7 @@ const char *headlightFS [2][8] = {
 	"		 }\r\n" \
 	"	 gl_FragColor = texColor * spotColor;\r\n" \
 	"   }\r\n" \
-	"}"
+	"}" 
 	,
 	// --------------------------------------------------------------------------------
 	//multiplayer version - 1 - 8 players
@@ -513,7 +512,7 @@ const char *headlightFS [2][8] = {
 	" 	}\r\n" \
 	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (matColor.rgb * spotColor, matColor.a);"  \
-	"}"
+	"}" 
 	,
 	//only base texture
 	"#define LIGHTS 8\r\n" \
@@ -538,7 +537,7 @@ const char *headlightFS [2][8] = {
 	" 	}\r\n" \
 	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
-	"}"
+	"}" 
 	,
 	//base texture and decal
 	"#define LIGHTS 8\r\n" \
@@ -565,7 +564,7 @@ const char *headlightFS [2][8] = {
 	" 	}\r\n" \
 	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
-	"}"
+	"}" 
 	,
 	//base texture and decal with color key
 	"#define LIGHTS 8\r\n" \
@@ -597,7 +596,7 @@ const char *headlightFS [2][8] = {
 	"   vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
 	"   gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
 	"   }\r\n" \
-	"}"
+	"}" 
 	}
 	};
 
@@ -760,7 +759,7 @@ const char *headlightVS [2][8] = {
 
 GLhandleARB headlightShaderProgs [2][4] = {{0,0,0,0},{0,0,0,0}};
 GLhandleARB lvs [2][4] = {{0,0,0,0},{0,0,0,0}};
-GLhandleARB lfs [2][4] = {{0,0,0,0},{0,0,0,0}};
+GLhandleARB lfs [2][4] = {{0,0,0,0},{0,0,0,0}}; 
 
 //-------------------------------------------------------------------------
 
@@ -853,7 +852,7 @@ if (nShader != gameStates.render.history.nShader) {
 	glUniform1f (glGetUniformLocation (activeShaderProg, "cutOff"), 0.5f);
 	glUniform1f (glGetUniformLocation (activeShaderProg, "spotExp"), 8.0f);
 	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"), 1.0f);
-	glUniform1fv (glGetUniformLocation (activeShaderProg, "brightness"), nLights,
+	glUniform1fv (glGetUniformLocation (activeShaderProg, "brightness"), nLights, 
 					  (GLfloat *) gameData.render.lights.dynamic.headlights.brightness);
 #	endif
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
@@ -869,9 +868,9 @@ if (nShader != gameStates.render.history.nShader) {
 	if (bTransform)
 		OglResetTransform (1);
 #else
-	glUniform3fv (glGetUniformLocation (activeShaderProg, "lightPosWorld"), nLights,
+	glUniform3fv (glGetUniformLocation (activeShaderProg, "lightPosWorld"), nLights, 
 					  (GLfloat *) gameData.render.lights.dynamic.headlights.pos);
-	glUniform3fv (glGetUniformLocation (activeShaderProg, "lightDirWorld"), nLights,
+	glUniform3fv (glGetUniformLocation (activeShaderProg, "lightDirWorld"), nLights, 
 					  (GLfloat *) gameData.render.lights.dynamic.headlights.dir);
 #endif
 #endif

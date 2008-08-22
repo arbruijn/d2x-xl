@@ -270,7 +270,7 @@ return 1;
 //		HAS_WEAPON_FLAG
 //		HAS_ENERGY_FLAG
 //		HAS_AMMO_FLAG
-// See weapon[HA] for bit values
+// See weapon.h for bit values
 int PlayerHasWeapon (int nWeapon, int bSecondary, int nPlayer, int bAll)
 {
 	int		returnValue = 0;
@@ -770,7 +770,7 @@ for (i = nStart; i <= gameData.objs.nLastObject [0]; i += nStep) {
 			continue;
 		if ((objPj->nType != OBJ_PLAYER) && (objPj->nType != OBJ_ROBOT))
 			continue;
-		dist = vmsVector::dist(*vBombPos, objPj->position.vPos);
+		dist = VmVecDistQuick (vBombPos, &objPj->position.vPos);
 		if (dist - objPj->size >= F1_0*20)
 			continue;
 		if (objPi->nSegment == objPj->nSegment)

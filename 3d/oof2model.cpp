@@ -66,9 +66,9 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 	psm->nParent = pso->nParent;
 	if (psm->nParent < 0)
 		pm->iSubModel = (short) (psm - pm->pSubModels);
-	psm->vOffset[X] = fl2f (pso->vOffset.x * fScale);
-	psm->vOffset[Y] = fl2f (pso->vOffset.y * fScale);
-	psm->vOffset[Z] = fl2f (pso->vOffset.z * fScale);
+	psm->vOffset.p.x = fl2f (pso->vOffset.x * fScale);
+	psm->vOffset.p.y = fl2f (pso->vOffset.y * fScale);
+	psm->vOffset.p.z = fl2f (pso->vOffset.z * fScale);
 	psm->nAngles = 0;
 	psm->nBomb = -1;
 	psm->nMissile = -1;
@@ -96,10 +96,10 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 		pfv = pof->pVerts;
 		h = pfv->nIndex;
 		if (nModel > 200) {
-			*((fVector *) &vNormal) = fVector::normal(
-							  *((fVector *) (pso->pvVerts + pfv [0].nIndex)),
-							  *((fVector *) (pso->pvVerts + pfv [1].nIndex)),
-							  *((fVector *) (pso->pvVerts + pfv [2].nIndex)));
+			VmVecNormal ((fVector *) &vNormal, 
+							  (fVector *) (pso->pvVerts + pfv [0].nIndex), 
+							  (fVector *) (pso->pvVerts + pfv [1].nIndex), 
+							  (fVector *) (pso->pvVerts + pfv [2].nIndex));
 			}
 		else
 			memcpy (&vNormal, &pof->vNormal, sizeof (fVector3));
@@ -109,12 +109,12 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 			pmv->texCoord.v.u = pfv->fu;
 			pmv->texCoord.v.v = pfv->fv;
 			pmv->normal = vNormal;
-			*((fVector *) (pm->pVerts + h)) = *((fVector *) (pso->pvVerts + h)) * fScale;
+			VmVecScale ((fVector *) (pm->pVerts + h), (fVector *) (pso->pvVerts + h), fScale);
 			pmv->vertex = pm->pVerts [h];
 			G3SetSubModelMinMax (psm, &pmv->vertex);
 			*pvn = vNormal;
 			if ((pmv->bTextured = pof->bTextured))
-				pmv->baseColor.red =
+				pmv->baseColor.red = 
 				pmv->baseColor.green =
 				pmv->baseColor.blue = 1.0f;
 			else {

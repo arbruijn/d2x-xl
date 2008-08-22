@@ -1,4 +1,4 @@
-//checker[HA] added 05/17/99 Matt Mueller
+//checker.h added 05/17/99 Matt Mueller
 //FD_* on linux use asm, but checker doesn't like it.  Borrowed these non-asm versions outta <selectbits.h>
 #include <setjmp.h>
 

@@ -37,7 +37,7 @@ void DoPhysicsSim(tObject *obj);
 // if checkObjects is set, check with objects, else just with walls
 // returns fate, fills in hit time.  If fate==HIT_NONE, hitTime undefined
 // Stuff hit_info with fvi data as set by FindVectorIntersection.
-// for fviFlags, refer to fvi[HA] for the fvi query flags
+// for fviFlags, refer to fvi.h for the fvi query flags
 int physics_lookahead(tObject *obj, fix t, int fviFlags, fix *hitTime, tFVIData *hit_info);
 
 // Applies an instantaneous force on an tObject, resulting in an instantaneous

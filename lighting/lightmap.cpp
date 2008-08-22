@@ -158,9 +158,9 @@ if (lightmapData.info) {
 
 inline void ComputePixelPos (vmsVector *vPos, vmsVector v1, vmsVector v2, double fOffset)
 {
-(*vPos)[X] = (fix) (fOffset * (v2[X] - v1[X])); 
-(*vPos)[Y] = (fix) (fOffset * (v2[Y] - v1[Y])); 
-(*vPos)[Z] = (fix) (fOffset * (v2[Z] - v1[Z])); 
+vPos->p.x = (fix) (fOffset * (v2.p.x - v1.p.x)); 
+vPos->p.y = (fix) (fOffset * (v2.p.y - v1.p.y)); 
+vPos->p.z = (fix) (fOffset * (v2.p.z - v1.p.z)); 
 }
 
 //------------------------------------------------------------------------------
@@ -205,17 +205,17 @@ xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
 for (i = 0; i < 4; i++) {
 	v = gameData.segs.vertices + sideVerts [i];
-	h = (*v)[X];
+	h = v->p.x;
 	if (xMin > h)
 		xMin = h;
 	if (xMax < h)
 		xMax = h;
-	h = (*v)[Y];
+	h = v->p.y;
 	if (yMin > h)
 		yMin = h;
 	if (yMax < h)
 		yMax = h;
-	h = (*v)[Z];
+	h = v->p.z;
 	if (zMin > h)
 		zMin = h;
 	if (zMax < h)
@@ -270,7 +270,7 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 	lmiP->nIndex = nIndex; 
 	//find light direction, currently based on first 3 points of tSide, not always right.
 	vmsVector *normalP = SEGMENTS [faceP->nSegment].sides [faceP->nSide].normals;
-	lmiP->vDir = vmsVector::avg(normalP[0], normalP[1]);
+	VmVecAvg (&lmiP->vDir, normalP, normalP + 1);
 	lmiP++; 
 	}
 return lightmapData.nLights = (int) (lmiP - lightmapData.info); 
@@ -391,8 +391,8 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 					//Next calculate this pixel's place in the world (tricky stuff)
 					ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], fOffset [x]); //(((double) x) + pixelOffset) / (LM_W - 1)); //took me forever to figure out this should be an inverse thingy
 					ComputePixelPos (&offsetV, gameData.segs.vertices [v1], gameData.segs.vertices [v2], fOffset [y]); //(((double) y) + pixelOffset) / (LM_H - 1)); 
-					*pPixelPos = offsetU + offsetV; 
-					*pPixelPos += gameData.segs.vertices[v0];  //This should be the real world position of the pixel.
+					VmVecAdd (pPixelPos, &offsetU, &offsetV); 
+					VmVecInc (pPixelPos, gameData.segs.vertices + v0);  //This should be the real world position of the pixel.
 					//Find Normal
 					//vNormalP = vFaceNorms;
 					}
@@ -401,8 +401,8 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 					v3 = sideVerts [3]; 
 					ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], fOffset [y]); //(((double) y) + pixelOffset) / (LM_W - 1)); //Notice y/x and offsetU/offsetV are swapped from above
 					ComputePixelPos (&offsetU, gameData.segs.vertices [v3], gameData.segs.vertices [v2], fOffset [x]); //(((double) x) + pixelOffset) / (LM_H - 1)); 
-					*pPixelPos = offsetU + offsetV; 
-					*pPixelPos += gameData.segs.vertices[v0];  //This should be the real world position of the pixel.
+					VmVecAdd (pPixelPos, &offsetU, &offsetV); 
+					VmVecInc (pPixelPos, gameData.segs.vertices + v0);  //This should be the real world position of the pixel.
 					//vNormalP = vFaceNorms + 1;
 					}
 				}
@@ -413,8 +413,8 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 					v0 = sideVerts [0]; 
 					ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], fOffset [x]); //(((double) x) + pixelOffset) / (LM_W - 1)); 
 					ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], fOffset [y]); //(((double) y) + pixelOffset) / (LM_W - 1)); 
-					*pPixelPos = offsetU + offsetV; 
-					*pPixelPos += gameData.segs.vertices[v0];  //This should be the real world position of the pixel.
+					VmVecAdd (pPixelPos, &offsetU, &offsetV); 
+					VmVecInc (pPixelPos, gameData.segs.vertices + v0);  //This should be the real world position of the pixel.
 					//vNormalP = vFaceNorms + 2;
 					}
 				else {
@@ -422,8 +422,8 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 					//Not certain this is correct, may need to subtract something
 					ComputePixelPos (&offsetV, gameData.segs.vertices [v2], gameData.segs.vertices [v1], fOffset [LM_W - 1 - y]); //((double) ((LM_W - 1) - y) + pixelOffset) / (LM_W - 1)); 
 					ComputePixelPos (&offsetU, gameData.segs.vertices [v2], gameData.segs.vertices [v3], fOffset [LM_W - 1 - x]); //((double) ((LM_W - 1) - x) + pixelOffset) / (LM_W - 1)); 
-					*pPixelPos = offsetU + offsetV; 
-					*pPixelPos += gameData.segs.vertices[v2];  //This should be the real world position of the pixel.
+					VmVecAdd (pPixelPos, &offsetU, &offsetV); 
+					VmVecInc (pPixelPos, gameData.segs.vertices + v2);  //This should be the real world position of the pixel.
 					//vNormalP = vFaceNorms + 3;
 					}
 				}
@@ -434,8 +434,8 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 		nDbgSeg = nDbgSeg;
 #endif
 	if (SEGMENT2S [faceP->nSegment].special != SEGMENT_IS_SKYBOX) {
-		vNormal = vmsVector::avg(sideP->normals[0], sideP->normals[1]);
-		vcd.vertNorm = vNormal.toFloat3();
+		VmVecAvg (&vNormal, sideP->normals, sideP->normals + 1);
+		VmVecFixToFloat (&vcd.vertNorm, &vNormal);
 		pPixelPos = pixelPos;
 		texColorP = texColor;
 		bBlack = 
@@ -448,30 +448,30 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 					nDbgSeg = nDbgSeg;
 #endif
 				if (0 < SetNearestPixelLights (faceP->nSegment, faceP->nSide, &vNormal, pPixelPos, faceP->fRads [1] / 10.0f, nThread)) {
-					vcd.vertPos = pPixelPos->toFloat3();
-					color.setZero();
+					VmVecFixToFloat (&vcd.vertPos, pPixelPos);
+					color.c.r = color.c.g = color.c.b = 0;
 					G3AccumVertColor (-1, &color, &vcd, nThread);
-					if ((color[R] > 0.001f) || (color[G] > 0.001f) || (color[B] > 0.001f)) {
+					if ((color.c.r > 0.001f) || (color.c.g > 0.001f) || (color.c.b > 0.001f)) {
 							bBlack = false;
-						if (color[R] >= 0.999f)
-							color[R] = 1;
+						if (color.c.r >= 0.999f)
+							color.c.r = 1;
 						else
 							bWhite = false;
-						if (color[G] >= 0.999f)
-							color[G] = 1;
+						if (color.c.g >= 0.999f)
+							color.c.g = 1;
 						else
 							bWhite = false;
-						if (color[B] >= 0.999f)
-							color[B] = 1;
+						if (color.c.b >= 0.999f)
+							color.c.b = 1;
 						else
 							bWhite = false;
 						}
 					//if (!(bBlack || bWhite)) 
 						{
 						texColorP = &texColor [y * LM_W + x];
-						texColorP->red = (ubyte) (255 * color[R]);
-						texColorP->green = (ubyte) (255 * color[G]);
-						texColorP->blue = (ubyte) (255 * color[B]);
+						texColorP->red = (ubyte) (255 * color.c.r);
+						texColorP->green = (ubyte) (255 * color.c.g);
+						texColorP->blue = (ubyte) (255 * color.c.b);
 						}
 					}
 #ifdef _DEBUG

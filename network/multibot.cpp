@@ -348,7 +348,7 @@ bufP += sizeof (tShortPos);
 CreateShortPos (&sp, OBJECTS+nObject, 1);
 memcpy (gameData.multigame.msg.buf + bufP, (ubyte *) (sp.bytemat), 9);
 bufP += 9;
-memcpy (gameData.multigame.msg.buf + bufP, (ubyte *)& (sx()o), 14);
+memcpy (gameData.multigame.msg.buf + bufP, (ubyte *)& (sp.xo), 14);
 bufP += 14;
 #endif
 MultiSendData ((char *) gameData.multigame.msg.buf, bufP, 1);
@@ -405,9 +405,9 @@ bufP += sizeof (vmsVector); // 12
 // --------------------------
 //      Total = 18
 #else
-swapped_vec[X] = (fix)INTEL_INT ((int)vFire->x());
-swapped_vec[Y] = (fix)INTEL_INT ((int)vFire->y());
-swapped_vec[Z] = (fix)INTEL_INT ((int)vFire->z());
+swapped_vec.p.x = (fix)INTEL_INT ((int)vFire->p.x);
+swapped_vec.p.y = (fix)INTEL_INT ((int)vFire->p.y);
+swapped_vec.p.z = (fix)INTEL_INT ((int)vFire->p.z);
 memcpy (gameData.multigame.msg.buf + bufP, &swapped_vec, sizeof (vmsVector)); 
 bufP += sizeof (vmsVector);
 #endif
@@ -526,9 +526,9 @@ bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 memcpy (gameData.multigame.msg.buf + bufP, &delObjP->position.vPos, sizeof (vmsVector));
 #else
-swapped_vec[X] = (fix)INTEL_INT ((int) delObjP->position.vPos[X]);
-swapped_vec[Y] = (fix)INTEL_INT ((int) delObjP->position.vPos[Y]);
-swapped_vec[Z] = (fix)INTEL_INT ((int) delObjP->position.vPos[Z]);
+swapped_vec.p.x = (fix)INTEL_INT ((int) delObjP->position.vPos.p.x);
+swapped_vec.p.y = (fix)INTEL_INT ((int) delObjP->position.vPos.p.y);
+swapped_vec.p.z = (fix)INTEL_INT ((int) delObjP->position.vPos.p.z);
 memcpy (gameData.multigame.msg.buf + bufP, &swapped_vec, sizeof (vmsVector));     
 #endif
 bufP += 12;
@@ -626,7 +626,7 @@ ExtractShortPos (&OBJECTS [nRobot], (tShortPos *) (buf+bufP), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + bufP), 9);	
 bufP += 9;
-memcpy ((ubyte *)& (sx()o), (ubyte *) (buf + bufP), 14);
+memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + bufP), 14);
 ExtractShortPos (&OBJECTS [nRobot], &sp, 1);
 #endif
 }
@@ -649,9 +649,9 @@ nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [bufP+2]);
 bufP += 3;
 nGun = (sbyte)buf [bufP++];                                      
 memcpy (&vFire, buf+bufP, sizeof (vmsVector));
-vFire[X] = (fix)INTEL_INT ((int)vFire[X]);
-vFire[Y] = (fix)INTEL_INT ((int)vFire[Y]);
-vFire[Z] = (fix)INTEL_INT ((int)vFire[Z]);
+vFire.p.x = (fix)INTEL_INT ((int)vFire.p.x);
+vFire.p.y = (fix)INTEL_INT ((int)vFire.p.y);
+vFire.p.z = (fix)INTEL_INT ((int)vFire.p.z);
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]) || 
 		 (OBJECTS [nRobot].nType != OBJ_ROBOT) || 
 		 (OBJECTS [nRobot].flags & OF_EXPLODING))
@@ -659,7 +659,7 @@ if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]) ||
 // Do the firing
 if (nGun == -1 || nGun==-2)
 	// Drop proximity bombs
-	vGunPoint = OBJECTS [nRobot].position.vPos + vFire;
+	VmVecAdd (&vGunPoint, &OBJECTS [nRobot].position.vPos, &vFire);
 else 
 	CalcGunPoint (&vGunPoint, &OBJECTS [nRobot], nGun);
 robotP = &ROBOTINFO (OBJECTS [nRobot].id);
@@ -690,7 +690,7 @@ if (OBJECTS [nRobot].nType != OBJ_ROBOT) // Object is robotP?
 // Data seems valid, explode the sucker
 NetworkResetObjSync (nRobot);
 robotP = OBJECTS + nRobot;
-// Drop non-Random KEY powerups locally only!
+// Drop non-random KEY powerups locally only!
 if ((robotP->containsCount > 0) && 
 	 (robotP->containsType == OBJ_POWERUP) && 
 	 (gameData.app.nGameMode & GM_MULTI_COOP) && 
@@ -787,9 +787,8 @@ if (! (objP = CreateMorphRobot (gameData.segs.segments + robotcen->nSegment, &cu
 	return; // Cannot create tObject!
 objP->matCenCreator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80;
 //	ExtractOrientFromSegment (&objP->position.mOrient, &gameData.segs.segments [robotcen->nSegment]);
-direction = gameData.objs.console->position.vPos - objP->position.vPos;
-objP->position.mOrient = vmsMatrix::CreateFU(direction, objP->position.mOrient[UVEC]);
-//objP->position.mOrient = vmsMatrix::CreateFU(direction, &objP->position.mOrient[UVEC], NULL);
+VmVecSub (&direction, &gameData.objs.console->position.vPos, &objP->position.vPos);
+VmVector2Matrix (&objP->position.mOrient, &direction, &objP->position.mOrient.uVec, NULL);
 MorphStart (objP);
 MapObjnumLocalToRemote (OBJ_IDX (objP), nObject, nPlayer);
 Assert (objP->cType.aiInfo.REMOTE_OWNER == -1);
@@ -848,13 +847,8 @@ switch (action)  {
 		COMPUTE_SEGMENT_CENTER_I (&bossObjP->position.vPos, nTeleportSeg);
 		RelinkObject (nBossObj, nTeleportSeg);
 		gameData.boss [nBossIdx].nLastTeleportTime = gameData.time.xGame;
-		vBossDir = OBJECTS [gameData.multiplayer.players [nPlayer].nObject].position.vPos - bossObjP->position.vPos;
-/*
-		bossObjP->position.mOrient = vmsMatrix::Create(vBossDir, NULL, NULL);
-*/
-		// TODO: MatrixCreateFCheck
-		bossObjP->position.mOrient = vmsMatrix::CreateF(vBossDir);
-
+		VmVecSub (&vBossDir, &OBJECTS [gameData.multiplayer.players [nPlayer].nObject].position.vPos, &bossObjP->position.vPos);
+		VmVector2Matrix (&bossObjP->position.mOrient, &vBossDir, NULL, NULL);
 		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, &bossObjP->position.vPos, 0 , F1_0);
 		DigiKillSoundLinkedToObject (OBJ_IDX (bossObjP));
 		DigiLinkSoundToObject2 (SOUND_BOSS_SHARE_SEE, OBJ_IDX (bossObjP), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
@@ -917,10 +911,10 @@ delObjP.nSegment = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 memcpy (&delObjP.position.vPos, buf+bufP, sizeof (vmsVector));      
 bufP += 12;
-delObjP.mType.physInfo.velocity.setZero();
-delObjP.position.vPos[X] = (fix)INTEL_INT ((int)delObjP.position.vPos[X]);
-delObjP.position.vPos[Y] = (fix)INTEL_INT ((int)delObjP.position.vPos[Y]);
-delObjP.position.vPos[Z] = (fix)INTEL_INT ((int)delObjP.position.vPos[Z]);
+VmVecZero (&delObjP.mType.physInfo.velocity);
+delObjP.position.vPos.p.x = (fix)INTEL_INT ((int)delObjP.position.vPos.p.x);
+delObjP.position.vPos.p.y = (fix)INTEL_INT ((int)delObjP.position.vPos.p.y);
+delObjP.position.vPos.p.z = (fix)INTEL_INT ((int)delObjP.position.vPos.p.z);
 Assert ((nPlayer >= 0) && (nPlayer < gameData.multiplayer.nPlayers));
 Assert (nPlayer != gameData.multiplayer.nLocalPlayer); // What? How'd we send ourselves this?
 gameData.multigame.create.nLoc = 0;
@@ -976,7 +970,7 @@ if (delObjP->containsCount > 0) {
 	if (delObjP->containsCount > 0)
 		nEggObj = ObjectCreateEgg (delObjP);
 	}
-else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No Random goodies for robots we weren't in control of
+else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No random goodies for robots we weren't in control of
 	return;
 else if (robotP->containsCount) {
 	d_srand (TimerGetApproxSeconds ());

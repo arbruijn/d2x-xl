@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 char *iptos (char *pszIP, char *addr)
 {
-sprintf (pszIP, "%d.%d.%d.%d:%d",
+sprintf (pszIP, "%d.%d.%d.%d:%d", 
 			addr [0], addr [1], addr [2], addr [3],
 			ntohs (*((short *) (addr + 4))));
 return pszIP;
@@ -76,7 +76,7 @@ return NetworkWhoIsMaster () == gameData.multiplayer.nLocalPlayer;
 int NetworkHowManyConnected (void)
  {
   int num = 0, i;
-
+ 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected)
 		num++;
@@ -124,7 +124,7 @@ int CmpLocalPlayer (tNetworkInfo *pNetwork, char *pszNetCallSign, char *pszLocal
 if (stricmp (pszNetCallSign, pszLocalCallSign))
 	return 1;
 #if 0
-// if restoring a multiplayer game that had been played via UDP/IP,
+// if restoring a multiplayer game that had been played via UDP/IP, 
 // tPlayer network addresses may have changed, so we have to rely on the callsigns
 // This will cause problems if several players with identical callsigns participate
 if (gameStates.multi.nGameType == UDP_GAME)
@@ -144,13 +144,13 @@ return 0;
 
 char *NetworkGetPlayerName (int nObject)
 {
-if (nObject < 0)
+if (nObject < 0) 
+	return NULL; 
+if (OBJECTS [nObject].nType != OBJ_PLAYER) 
 	return NULL;
-if (OBJECTS [nObject].nType != OBJ_PLAYER)
+if (OBJECTS [nObject].id >= MAX_PLAYERS) 
 	return NULL;
-if (OBJECTS [nObject].id >= MAX_PLAYERS)
-	return NULL;
-if (OBJECTS [nObject].id >= gameData.multiplayer.nPlayers)
+if (OBJECTS [nObject].id >= gameData.multiplayer.nPlayers) 
 	return NULL;
 return gameData.multiplayer.players [OBJECTS [nObject].id].callsign;
 }
@@ -164,7 +164,7 @@ if (i < --networkData.nActiveGames) {
 	memcpy (activeNetGames + i, activeNetGames + i + 1, sizeof (tNetgameInfo) * h);
 	memcpy (activeNetPlayers + i, activeNetPlayers + i + 1, sizeof (tAllNetPlayersInfo) * h);
 	memcpy (nLastNetGameUpdate + i, nLastNetGameUpdate + i + 1, sizeof (int) * h);
-	}
+	}	   
 networkData.bGamesChanged = 1;
 }
 
@@ -234,7 +234,7 @@ else if (gameMode == NETGAME_TEAM_ANARCHY)
 	gameData.app.nGameMode = GM_TEAM;
 else if (gameMode == NETGAME_ROBOT_ANARCHY)
 	gameData.app.nGameMode = GM_MULTI_ROBOTS;
-else if (gameMode == NETGAME_COOPERATIVE)
+else if (gameMode == NETGAME_COOPERATIVE) 
 	gameData.app.nGameMode = GM_MULTI_COOP | GM_MULTI_ROBOTS;
 else if (gameMode == NETGAME_CAPTURE_FLAG)
 		gameData.app.nGameMode = GM_TEAM | GM_CAPTURE;
@@ -262,7 +262,7 @@ int GotTeamSpawnPos (void)
 	int	i, j;
 
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
-	j = FindSegByPos (*PlayerSpawnPos (i), -1, 1, 0);
+	j = FindSegByPos (PlayerSpawnPos (i), -1, 1, 0);
 	gameData.multiplayer.playerInit [i].nSegType = (j < 0) ? SEGMENT_IS_NOTHING : gameData.segs.segment2s [j].special;
 	switch (gameData.multiplayer.playerInit [i].nSegType) {
 		case SEGMENT_IS_GOAL_BLUE:

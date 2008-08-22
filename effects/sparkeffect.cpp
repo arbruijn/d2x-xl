@@ -76,24 +76,24 @@ void CreateSegmentSparks (short nSegment)
 	fVector			vMaxf, vMax2f;
 	int				i;
 
-vMaxf = gameData.segs.extent [nSegment].vMax.toFloat();
-vMax2f = vMaxf * 2;
+VmVecFixToFloat (&vMaxf, &gameData.segs.extent [nSegment].vMax);
+VmVecScale (&vMax2f, &vMaxf, 2);
 for (i = segP->nMaxSparks; i; i--, sparkP++) {
 	if (sparkP->tRender)
 		continue;
 	if (!sparkP->nProb)
 		sparkP->nProb = SPARK_MIN_PROB;
-	if (gameStates.app.nSDLTicks - sparkP->tCreate < SPARK_FRAME_TIME)
+	if (gameStates.app.nSDLTicks - sparkP->tCreate < SPARK_FRAME_TIME) 
 		continue;
-	sparkP->tCreate = gameStates.app.nSDLTicks;
+	sparkP->tCreate = gameStates.app.nSDLTicks; 
 	if (d_rand () % sparkP->nProb)
 		sparkP->nProb--;
 	else {
-		vOffs[X] = fl2f (vMaxf[X] - f_rand () * vMax2f[X]);
-		vOffs[Y] = fl2f (vMaxf[Y] - f_rand () * vMax2f[Y]);
-		vOffs[Z] = fl2f (vMaxf[Z] - f_rand () * vMax2f[Z]);
-		sparkP->vPos = (*SEGMENT_CENTER_I(nSegment)) + vOffs;
-		if ((vOffs.mag() > MinSegRad (nSegment)) && GetSegMasks (sparkP->vPos, nSegment, 0).centerMask)
+		vOffs.p.x = fl2f (vMaxf.p.x - f_rand () * vMax2f.p.x);
+		vOffs.p.y = fl2f (vMaxf.p.y - f_rand () * vMax2f.p.y);
+		vOffs.p.z = fl2f (vMaxf.p.z - f_rand () * vMax2f.p.z);
+		VmVecAdd (&sparkP->vPos, SEGMENT_CENTER_I (nSegment), &vOffs);
+		if ((VmVecMag (&vOffs) > MinSegRad (nSegment)) && GetSegMasks (&sparkP->vPos, nSegment, 0).centerMask)
 			sparkP->nProb = 1;
 		else {
 			sparkP->xSize = F1_0 + 4 * d_rand ();
@@ -102,14 +102,14 @@ for (i = segP->nMaxSparks; i; i--, sparkP++) {
 			sparkP->bRendered = 0;
 			sparkP->nProb = SPARK_MIN_PROB;
 			if (gameOpts->render.effects.bMovingSparks) {
-				sparkP->vDir[X] = (F1_0 / 4) - d_rand ();
-				sparkP->vDir[Y] = (F1_0 / 4) - d_rand ();
-				sparkP->vDir[Z] = (F1_0 / 4) - d_rand ();
-				vmsVector::normalize(sparkP->vDir);
-				sparkP->vDir *= ((F1_0 / (16 + d_rand () % 16)));
+				sparkP->vDir.p.x = (F1_0 / 4) - d_rand ();
+				sparkP->vDir.p.y = (F1_0 / 4) - d_rand ();
+				sparkP->vDir.p.z = (F1_0 / 4) - d_rand ();
+				VmVecNormalize (&sparkP->vDir, NULL);
+				VmVecScale (&sparkP->vDir, (F1_0 / (16 + d_rand () % 16)));
 				}
 			else
-				sparkP->vDir.setZero();
+				VmVecZero (&sparkP->vDir);
 			}
 		}
 	}
@@ -136,7 +136,7 @@ if (segP->bUpdate) {
 		if (++sparkP->nFrame < 32) {
 			sparkP->tRender = gameStates.app.nSDLTicks; //+= SPARK_FRAME_TIME;
 			if (gameOpts->render.effects.bMovingSparks)
-				sparkP->vPos += sparkP->vDir;
+				VmVecInc (&sparkP->vPos, &sparkP->vDir);
 			}
 		else {
 			sparkP->tRender = 0;
@@ -166,8 +166,8 @@ if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) {
 		if (sparkP->tRender) {
 			if (sparkP->nFrame > 31)
 				sparkP->tRender = 0;
-			else
-				RIAddSpark(sparkP->vPos, (char) bFuel, sparkP->xSize, (char) sparkP->nFrame);
+			else 
+				RIAddSpark (&sparkP->vPos, (char) bFuel, sparkP->xSize, (char) sparkP->nFrame);
 			}
 		}
 	}

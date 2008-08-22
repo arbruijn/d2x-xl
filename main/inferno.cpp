@@ -685,7 +685,7 @@ sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_
 #endif
 //if (i = FindArg ("-hogdir"))
 //	CFUseAltHogDir (pszArgList [i + 1]);
-static const char *szTexSubFolders [] = {"256", "128", "64"};
+static char *szTexSubFolders [] = {"256", "128", "64"};
 
 for (i = 0; i < 2; i++) {
 	for (j = 0; j < 3; j++) {
@@ -3037,18 +3037,18 @@ if (gameStates.app.bMultiThreaded) {
 	StartRenderThreads ();
 	}
 StartSoundThread ();
-gameData.render.vertColor.matAmbient[R] = 
-gameData.render.vertColor.matAmbient[G] = 
-gameData.render.vertColor.matAmbient[B] = AMBIENT_LIGHT;
-gameData.render.vertColor.matAmbient[A] = 1.0f;
-gameData.render.vertColor.matDiffuse[R] = 
-gameData.render.vertColor.matDiffuse[G] = 
-gameData.render.vertColor.matDiffuse[B] = DIFFUSE_LIGHT;
-gameData.render.vertColor.matDiffuse[A] = 1.0f;
-gameData.render.vertColor.matSpecular[R] = 
-gameData.render.vertColor.matSpecular[G] = 
-gameData.render.vertColor.matSpecular[B] = 0.0f;
-gameData.render.vertColor.matSpecular[A] = 1.0f;
+gameData.render.vertColor.matAmbient.c.r = 
+gameData.render.vertColor.matAmbient.c.g = 
+gameData.render.vertColor.matAmbient.c.b = AMBIENT_LIGHT;
+gameData.render.vertColor.matAmbient.c.a = 1.0f;
+gameData.render.vertColor.matDiffuse.c.r = 
+gameData.render.vertColor.matDiffuse.c.g = 
+gameData.render.vertColor.matDiffuse.c.b = DIFFUSE_LIGHT;
+gameData.render.vertColor.matDiffuse.c.a = 1.0f;
+gameData.render.vertColor.matSpecular.c.r = 
+gameData.render.vertColor.matSpecular.c.g = 
+gameData.render.vertColor.matSpecular.c.b = 0.0f;
+gameData.render.vertColor.matSpecular.c.a = 1.0f;
 }
 
 // ------------------------------------------------------------------------------------------

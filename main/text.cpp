@@ -45,20 +45,20 @@ void _CDECL_ free_text(void)
 {
 	char	*p = pszGameTexts [0] - 1;
 
-	PrintLog ("unloading game texts\n");
-	if (pszGameTexts && pszGameTexts [0]) {
-		p = pszGameTexts [0] - 1;
-		D2_FREE (text);
-		D2_FREE (p);
-		D2_FREE (pszGameTexts);
-		pszGameTexts = NULL;
+PrintLog ("unloading game texts\n");
+if (pszGameTexts && pszGameTexts [0]) {
+	p = pszGameTexts [0] - 1;
+	D2_FREE (text);
+	D2_FREE (p);
+	D2_FREE (pszGameTexts);
+	pszGameTexts = NULL;
 	}
-	if (pszHelpTexts && pszHelpTexts [0]) {
-		p = pszHelpTexts [0] - 1;
-		D2_FREE (text);
-		D2_FREE (p);
-		D2_FREE (pszHelpTexts);
-		pszHelpTexts = NULL;
+if (pszHelpTexts && pszHelpTexts [0]) {
+	p = pszHelpTexts [0] - 1;
+	D2_FREE (text);
+	D2_FREE (p);
+	D2_FREE (pszHelpTexts);
+	pszHelpTexts = NULL;
 	}
 }
 

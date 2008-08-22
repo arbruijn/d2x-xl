@@ -40,7 +40,7 @@ void RenderFaceShadow (tFaceProps *propsP)
 for (i = 0; i < nVertices; i++) {
 	p = gameData.segs.points + propsP->vp [i];
 	if (p->p3_index < 0)
-		OOF_VecVms2Oof (v + i, p->p3_vec);
+		OOF_VecVms2Oof (v + i, &p->p3_vec);
 	else
 		memcpy (v + i, gameData.render.pVerts + p->p3_index, sizeof (tOOF_vector));
 	}
@@ -314,7 +314,7 @@ for (i = 0, pc = gameData.render.shadows.shadowMaps; i < 1/*gameData.render.shad
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 	glLoadMatrixf (mTexBiasf);
 	glMultMatrixf (mProjectionf);
-	glMultMatrixf (OOF_MatVms2Gl (mModelViewf, pc->objP->position.mOrient));
+	glMultMatrixf (OOF_MatVms2Gl (mModelViewf, &pc->objP->position.mOrient));
 	}
 glMatrixMode (GL_MODELVIEW);
 #endif
@@ -359,11 +359,11 @@ for (h = 0; h <= gameData.objs.nLastObject [0] + 1; h++, objP++) {
 			continue;
 		if (!CanSeePoint (objP, &objP->position.vPos, &psl->info.vPos, objP->nSegment))
 			continue;
-		vLightDir = objP->position.vPos - psl->info.vPos;
-		vmsVector::normalize(vLightDir);
+		VmVecSub (&vLightDir, &objP->position.vPos, &psl->info.vPos);
+		VmVecNormalize (&vLightDir);
 		if (n) {
 			for (j = 0; j < n; j++)
-				if (abs (vmsVector::dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
+				if (abs (VmVecDot (&vLightDir, gameData.render.shadows.vLightDir + j)) > 2 * F1_0 / 3) // 60 deg
 					break;
 			if (j < n)
 				continue;
@@ -411,10 +411,10 @@ if (!bShadowTest)
 #else	
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif			 
-			G3SetViewMatrix(gameData.render.mine.viewerEye, externalView.pPos ? externalView.pPos->mOrient : 
-								  gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, 1);
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, externalView.pPos ? &externalView.pPos->mOrient : 
+								  &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, 1);
 		else
-			G3SetViewMatrix(gameData.render.mine.viewerEye, gameData.objs.viewer->position.mOrient, 
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, 
 								  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), 1);
 		ApplyShadowMaps (nStartSeg, nEyeOffset, nWindow);
 		}

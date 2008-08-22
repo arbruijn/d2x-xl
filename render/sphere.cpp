@@ -226,8 +226,8 @@ tOOF_triangle *RotateSphere (tSphereData *sdP, tOOF_vector *pRotSphere, tOOF_vec
 					*s = pRotSphere;
 	int			nFaces;
 
-OOF_MatVms2Oof (&m, viewInfo.view[0]);
-OOF_VecVms2Oof (&p, viewInfo.pos);
+OOF_MatVms2Oof (&m, viewInfo.view);
+OOF_VecVms2Oof (&p, &viewInfo.pos);
 for (nFaces = sdP->nFaces * (sdP->nFaceNodes + 1); nFaces; nFaces--, pSphere++, pRotSphere++) {
 	v = *pSphere;
 	v.x *= xScale;
@@ -391,15 +391,15 @@ for (j = 0; j < h; j++) {
 		t3 = i * a;
 		sint3 = (float) sin (t3);
 		cost3 = (float) cos (t3);
-		psc->vPos[X] = cost2 * cost3;
-		psc->vPos[Y] = sint2;
-		psc->vPos[Z] = cost2 * sint3;
+		psc->vPos.p.x = cost2 * cost3;
+		psc->vPos.p.y = sint2;
+		psc->vPos.p.z = cost2 * sint3;
 		psc->uvl.v.u = 1 - (float) i / nRings;
 		psc->uvl.v.v = (float) (2 * j + 2) / nRings;
 		psc++;
-		psc->vPos[X] = cost1 * cost3;
-		psc->vPos[Y] = sint1;
-		psc->vPos[Z] = cost1 * sint3;
+		psc->vPos.p.x = cost1 * cost3;
+		psc->vPos.p.y = sint1;
+		psc->vPos.p.z = cost1 * sint3;
 		psc->uvl.v.u = 1 - (float) i / nRings;
 		psc->uvl.v.v = (float) (2 * j) / nRings;
 		psc++;
@@ -487,8 +487,8 @@ else {
 		for (j = 0; j < h; j++) {
 			for (i = 0; i < nQuads; i++, psc [0]++) {
 				p [i] = psc [0]->vPos;
-				p[i] = p[i] * fRadius;
-				G3TransformPoint(p[i], p[i], 0);
+				VmVecScale (p + i, p + i, fRadius);
+				G3TransformPoint (p + i, p + i, 0);
 				if (bTextured) {
 					tc [i].v.u = psc [0]->uvl.v.u * nTiles;
 					tc [i].v.v = psc [0]->uvl.v.v * nTiles;
@@ -514,7 +514,7 @@ else {
 			}
 		}
 	}
-	OglCullFace (0);
+OglCullFace (0);
 }
 
 //------------------------------------------------------------------------------
@@ -636,17 +636,17 @@ if (gameData.render.shield.nFaces > 0)
 		tOOF_vector	p = {0, 0, 0};
 		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		float	fScale, r = f2fl (nSize) /** 1.05f*/;
-		tTransformation *posP = OBJPOS (objP);
+		tPosition *posP = OBJPOS (objP);
 		vmsVector vPos;
 		//gameStates.ogl.bUseTransform = 1;
 		glBlendFunc (GL_ONE, GL_ONE);
-		G3StartInstanceMatrix(*PolyObjPos (objP, &vPos), posP->mOrient);
+		G3StartInstanceMatrix (PolyObjPos (objP, &vPos), &posP->mOrient);
 		RenderSphere (&gameData.render.shield, &p, r, r, r, red, green, blue, alpha, bmpShield, 1, 1);
 		G3DoneInstance ();
 		gameStates.ogl.bUseTransform = 0;
 		fScale = gameData.render.shield.pPulse->fScale;
-		G3StartInstanceMatrix(vPos, posP->mOrient);
-		vPos.setZero();
+		G3StartInstanceMatrix (&vPos, &posP->mOrient);
+		vPos.p.x = vPos.p.y = vPos.p.z = 0;
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		G3DoneInstance ();
 		}
@@ -672,7 +672,7 @@ if (gameData.render.monsterball.nFaces > 0)
 		float r = f2fl (objP->size);
 		gameStates.ogl.bUseTransform = 1;
 		OglSetupTransform (0);
-		G3StartInstanceMatrix(objP->position.vPos, objP->position.mOrient);
+		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 		RenderSphere (&gameData.render.monsterball, &p,  
 						  r, r, r, red, green, blue, gameData.hoard.monsterball.bm.bmTexBuf ? 1.0f : alpha, 
 						  &gameData.hoard.monsterball.bm, 4, 0);

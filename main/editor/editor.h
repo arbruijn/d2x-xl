@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * $Log: editor.h,v $
  * Revision 1.2  2001/10/25 02:19:32  bradleyb
- * conditionalize including multi[HA] and network.h, fix backslashes, fix compiler errors with EDITOR
+ * conditionalize including multi.h and network.h, fix backslashes, fix compiler errors with EDITOR
  *
  *
  */

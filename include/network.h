@@ -117,7 +117,7 @@ typedef struct tFrameInfo {
 	ubyte       obj_renderType;
 	ubyte       level_num;
 	ubyte       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
-} tFrameInfo;
+} __pack__ tFrameInfo;
 
 // tFrameInfoShort is not aligned -- 01/18/96 -- MWA
 // won't align because of tShortPos.  Shortpos needs
@@ -421,7 +421,7 @@ int InitAutoNetGame (void);
 #define NETSECURITY_WAIT_FOR_GAMEINFO   2
 #define NETSECURITY_WAIT_FOR_SYNC       3
 /* The networkData.nSecurityNum and the "nSecurity" field of the network structs
- * identifies a netgame. It is a Random number chosen by the network master
+ * identifies a netgame. It is a random number chosen by the network master
  * (the one that did "start netgame").
  */
 

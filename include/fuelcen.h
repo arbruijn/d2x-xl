@@ -101,7 +101,7 @@ typedef struct tFuelCenInfo {
 	//tObject  *last_created_obj;
 	//int     last_created_sig;
 	vmsVector vCenter;
-} tFuelCenInfo;
+} __pack__ tFuelCenInfo;
 
 // The max number of robot centers per mine.
 

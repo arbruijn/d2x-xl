@@ -121,6 +121,11 @@ return !strnicmp(&filename [len-11], "level", 5);
 #endif
 
 //------------------------------------------------------------------------------
+//--unused-- vmsAngVec zero_angles={0,0,0};
+
+#define VmAngVecZero(v) do {(v)->p=(v)->b=(v)->h=0;} while (0)
+
+void CheckAndFixMatrix(vmsMatrix *m);
 
 void VerifyObject (tObject * objP)
 {
@@ -231,7 +236,7 @@ if (objP->nType == OBJ_PLAYER) {
 			objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
 	//Make sure orient matrix is orthogonal
 	gameOpts->render.nMathFormat = 0;
-	objP->position.mOrient.checkAndFix();
+	CheckAndFixMatrix (&objP->position.mOrient);
 	gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 	objP->id = nGameSavePlayers++;
 	}
@@ -323,29 +328,29 @@ objP->renderType = CFReadByte (cfP);
 objP->flags = CFReadByte (cfP);
 objP->nSegment = CFReadShort (cfP);
 objP->attachedObj = -1;
-CFReadVector(objP->position.vPos, cfP);
-CFReadMatrix(objP->position.mOrient, cfP);
+CFReadVector (&objP->position.vPos, cfP);
+CFReadMatrix (&objP->position.mOrient, cfP);
 objP->size = CFReadFix (cfP);
 objP->shields = CFReadFix (cfP);
-CFReadVector (objP->vLastPos, cfP);
+CFReadVector (&objP->vLastPos, cfP);
 objP->containsType = CFReadByte (cfP);
 objP->containsId = CFReadByte (cfP);
 objP->containsCount = CFReadByte (cfP);
 switch (objP->movementType) {
 	case MT_PHYSICS:
-		CFReadVector (objP->mType.physInfo.velocity, cfP);
-		CFReadVector (objP->mType.physInfo.thrust, cfP);
+		CFReadVector (&objP->mType.physInfo.velocity, cfP);
+		CFReadVector (&objP->mType.physInfo.thrust, cfP);
 		objP->mType.physInfo.mass = CFReadFix (cfP);
 		objP->mType.physInfo.drag = CFReadFix (cfP);
 		objP->mType.physInfo.brakes = CFReadFix (cfP);
-		CFReadVector (objP->mType.physInfo.rotVel, cfP);
-		CFReadVector (objP->mType.physInfo.rotThrust, cfP);
+		CFReadVector (&objP->mType.physInfo.rotVel, cfP);
+		CFReadVector (&objP->mType.physInfo.rotThrust, cfP);
 		objP->mType.physInfo.turnRoll	= CFReadFixAng (cfP);
 		objP->mType.physInfo.flags	= CFReadShort (cfP);
 		break;
 
 	case MT_SPINNING:
-		CFReadVector (objP->mType.spinRate, cfP);
+		CFReadVector (&objP->mType.spinRate, cfP);
 		break;
 
 	case MT_NONE:
@@ -427,7 +432,7 @@ switch (objP->renderType) {
 		int i,tmo;
 		objP->rType.polyObjInfo.nModel = CFReadInt (cfP);
 		for (i=0;i<MAX_SUBMODELS;i++)
-			CFReadAngVec(objP->rType.polyObjInfo.animAngles [i], cfP);
+			CFReadAngVec(&objP->rType.polyObjInfo.animAngles [i], cfP);
 		objP->rType.polyObjInfo.nSubObjFlags = CFReadInt (cfP);
 		tmo = CFReadInt (cfP);
 #ifndef EDITOR
@@ -1577,27 +1582,27 @@ else
 
 if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.nReturnSegment = 0;
-	gameData.segs.secret.returnOrient[RVEC][Y] =
-	gameData.segs.secret.returnOrient[RVEC][Z] = 
-	gameData.segs.secret.returnOrient[FVEC][X] =
-	gameData.segs.secret.returnOrient[FVEC][Z] =
-	gameData.segs.secret.returnOrient[UVEC][X] =
-	gameData.segs.secret.returnOrient[UVEC][Y] = 0;
-	gameData.segs.secret.returnOrient[RVEC][X] =
-	gameData.segs.secret.returnOrient[FVEC][Y] =
-	gameData.segs.secret.returnOrient[UVEC][Z] = F1_0;
+	gameData.segs.secret.returnOrient.rVec.p.y =
+	gameData.segs.secret.returnOrient.rVec.p.z = 
+	gameData.segs.secret.returnOrient.fVec.p.x =
+	gameData.segs.secret.returnOrient.fVec.p.z =
+	gameData.segs.secret.returnOrient.uVec.p.x =
+	gameData.segs.secret.returnOrient.uVec.p.y = 0;
+	gameData.segs.secret.returnOrient.rVec.p.x =
+	gameData.segs.secret.returnOrient.fVec.p.y =
+	gameData.segs.secret.returnOrient.uVec.p.z = F1_0;
 	}
 else {
 	gameData.segs.secret.nReturnSegment = CFReadInt (&cf);
-	gameData.segs.secret.returnOrient[RVEC][X] = CFReadInt (&cf);
-	gameData.segs.secret.returnOrient[RVEC][Y] = CFReadInt (&cf);
-	gameData.segs.secret.returnOrient[RVEC][Z] = CFReadInt (&cf);
-	gameData.segs.secret.returnOrient[FVEC][X] = CFReadInt (&cf);
-	gameData.segs.secret.returnOrient[FVEC][Y] = CFReadInt (&cf);
-	gameData.segs.secret.returnOrient[FVEC][Z] = CFReadInt (&cf);
-	gameData.segs.secret.returnOrient[UVEC][X] = CFReadInt (&cf);
-	gameData.segs.secret.returnOrient[UVEC][Y] = CFReadInt (&cf);
-	gameData.segs.secret.returnOrient[UVEC][Z] = CFReadInt (&cf);
+	gameData.segs.secret.returnOrient.rVec.p.x = CFReadInt (&cf);
+	gameData.segs.secret.returnOrient.rVec.p.y = CFReadInt (&cf);
+	gameData.segs.secret.returnOrient.rVec.p.z = CFReadInt (&cf);
+	gameData.segs.secret.returnOrient.fVec.p.x = CFReadInt (&cf);
+	gameData.segs.secret.returnOrient.fVec.p.y = CFReadInt (&cf);
+	gameData.segs.secret.returnOrient.fVec.p.z = CFReadInt (&cf);
+	gameData.segs.secret.returnOrient.uVec.p.x = CFReadInt (&cf);
+	gameData.segs.secret.returnOrient.uVec.p.y = CFReadInt (&cf);
+	gameData.segs.secret.returnOrient.uVec.p.z = CFReadInt (&cf);
 	}
 
 //NOTE LINK TO ABOVE!!
@@ -1981,15 +1986,15 @@ int saveLevel_sub(char * filename, int compiledVersion)
 	fwrite(gameData.render.lights.flicker.lights,sizeof(*gameData.render.lights.flicker.lights),gameData.render.lights.flicker.nLights,SaveFile);
 
 	gs_write_int(gameData.segs.secret.nReturnSegment, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[RVEC][X], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[RVEC][Y], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[RVEC][Z], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[FVEC][X], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[FVEC][Y], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[FVEC][Z], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[UVEC][X], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[UVEC][Y], SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient[UVEC][Z], SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.rVec.p.x, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.rVec.p.y, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.rVec.p.z, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.fVec.p.x, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.fVec.p.y, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.fVec.p.z, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.uVec.p.x, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.uVec.p.y, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.uVec.p.z, SaveFile);
 
 	nMineDataOffset = ftell(SaveFile);
 	if (!compiledVersion)

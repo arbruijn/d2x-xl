@@ -132,7 +132,7 @@ struct mfi_v19 {
 	int     unused_howmamy;     // was: doors.count
 	int     unused_sizeof;      // was: doors.size
 	short   level_shake_frequency;  // Shakes every level_shake_frequency seconds
-	short   level_shake_duration;   // for level_shake_duration seconds (on average, Random).  In 16ths second.
+	short   level_shake_duration;   // for level_shake_duration seconds (on average, random).  In 16ths second.
 	int     secret_return_segment;
 	vmsMatrix  secret_return_orient;
 	tGameItemInfo	lightDeltaIndices;
@@ -146,33 +146,33 @@ int bNewFileFormat = 1; // "new file format" is everything newer than d1 sharewa
 int bD1PigPresent = 0; // can descent.pig from descent 1 be loaded?
 
 /* returns nonzero if nD1Texture references a texture which isn't available in d2. */
-int d1_tmap_num_unique (short nD1Texture)
+int d1_tmap_num_unique (short nD1Texture) 
 {
 	short t, i;
 	static short unique_tmap_nums [] = {
-		  0,   2,   4,   5,   6,   7,   9,
-		 10,  11,  12,  17,  18,
-		 20,  21,  25,  28,
-		 38,  39,  41,  44,  49,
-		 50,  55,  57,  88,
-		132, 141, 147,
-		154, 155, 158, 159,
-		160, 161, 167, 168, 169,
-		170, 171, 174, 175, 185,
-		193, 194, 195, 198, 199,
-		200, 202, 210, 211,
-		220, 226, 227, 228, 229, 230,
-		240, 241, 242, 243, 246,
-		250, 251, 252, 253, 257, 258, 259,
-		260, 263, 266, 283, 298,
-		305, 308, 311, 312,
-		315, 317, 319, 320, 321,
-		330, 331, 332, 333, 349,
-		351, 352, 353, 354,
-		355, 357, 358, 359,
-		362, 370,
+		  0,   2,   4,   5,   6,   7,   9, 
+		 10,  11,  12,  17,  18, 
+		 20,  21,  25,  28, 
+		 38,  39,  41,  44,  49, 
+		 50,  55,  57,  88, 
+		132, 141, 147, 
+		154, 155, 158, 159, 
+		160, 161, 167, 168, 169, 
+		170, 171, 174, 175, 185, 
+		193, 194, 195, 198, 199, 
+		200, 202, 210, 211, 
+		220, 226, 227, 228, 229, 230, 
+		240, 241, 242, 243, 246, 
+		250, 251, 252, 253, 257, 258, 259, 
+		260, 263, 266, 283, 298, 
+		305, 308, 311, 312, 
+		315, 317, 319, 320, 321, 
+		330, 331, 332, 333, 349, 
+		351, 352, 353, 354, 
+		355, 357, 358, 359, 
+		362, 370, 
 		-1};
-
+	  
 for (i = 0;; i++) {
 	if (0 > (t = unique_tmap_nums [i]))
 		break;
@@ -196,165 +196,165 @@ typedef struct nD1ToD2Texture {
 	short	repl [2];
 } nD1ToD2Texture;
 
-short ConvertD1Texture (short nD1Texture, int bForce)
+short ConvertD1Texture (short nD1Texture, int bForce) 
 {
 	int h, i;
 
 	static nD1ToD2Texture nD1ToD2Texture [] = {
-		{0, 0, {43, 137}},
-		{1, 1, {0, 0}},
-		{2, 2, {43, 137}},
-		{3, 3, {1, 1}},
-		{4, 4, {43, 137}},
-		{5, 5, {43, 137}},
-		{6, 7, {-1, 270 - 6}},
-		{8, 8, {2, 2}},
-		{9, 9, {62, 138}},
-		{10, 10, {272}},
-		{11, 11, {117, 139}},
-		{12, 12, {12, 140}},
-		{13, 16, {-1, 3 - 13}},
-		{17, 17, {52, 141}},
-		{18, 18, {129, 129}},
-		{19, 19, {7, 7}},
-		{20, 20, {22, 142}},
-		{21, 21, {9, 143}},
-		{22, 22, {8, 8}},
-		{23, 23, {9, 9}},
-		{24, 24, {10, 10}},
-		{25, 25, {12, 144}},
-		{26, 27, {-1, 11 - 26}},
-		{28, 28, {11, 145}},
-		{29, 37, {-1, -16}},
-		{38, 38, {163, 163}},
-		{39, 39, {147, 147}},
-		{40, 40, {22, 22}},
-		{41, 41, {266, 266}},
-		{42, 43, {-1, 23 - 42}},
-		{44, 44, {136, 136}},
-		{45, 48, {-1, 25 - 45}},
-		{49, 49, {43, 146}},
-		{50, 50, {131, 131}},
-		{51, 54, {-1, 29 - 51}},
-		{55, 55, {165, 165}},
-		{56, 56, {33, 33}},
-		{57, 57, {132, 132}},
-		{58, 87, {-1, -24}},
-		{88, 88, {197, 197}},
-		{89, 131, {-1, -25}},
-		{132, 132, {167, 167}},
-		{133, 140, {-1, -26}},
-		{141, 141, {110, 148}},
-		{142, 146, {-1, 115 - 142}},
-		{147, 147, {93, 149}},
-		{148, 153, {-1, 120 - 148}},
-		{154, 154, {27, 150}},
-		{155, 155, {126, 126}},
-		{156, 157, {-1, 200 - 156}},
-		{158, 158, {186, 186}},
-		{159, 159, {190, 190}},
-		{160, 160, {206, 151}},
-		{161, 161, {114, 152}},
-		{162, 166, {-1, 202 - 162}},
-		{167, 167, {206, 153}},
-		{168, 168, {206, 154}},
-		{169, 169, {206, 155}},
-		{170, 170, {227, 156}},
-		{171, 171, {206, 157}},
-		{172, 173, {-1, 207 - 172}},
-		{174, 174, {202, 158}},
-		{175, 175, {206, 159}},
-		{176, 184, {-1, 33}},
-		{185, 185, {217, 160}},
-		{186, 192, {-1, 32}},
-		{193, 193, {206, 161}},
-		{194, 194, {203, 162}},
-		{195, 195, {234, 166}},
-		{196, 197, {-1, 225 - 196}},
-		{198, 198, {225, 167}},
-		{199, 199, {206, 168}},
-		{200, 200, {206, 169}},
-		{201, 201, {227, 227}},
-		{202, 202, {206, 170}},
-		{203, 209, {-1, 25}},
-		{210, 210, {234, 171}},
-		{211, 211, {206, 172}},
-		{212, 219, {-1, 23}},
-		{220, 220, {242, 173}},
-		{221, 222, {-1, 243 - 221}},
-		{223, 223, {313, 174}},
-		{224, 225, {-1, 245 - 224}},
-		{226, 226, {164, 164}},
-		{227, 227, {179, 179}},
-		{228, 228, {196, 196}},
-		{229, 229, {15, 175}},
-		{230, 230, {15, 176}},
-		{231, 239, {-1, 18}},
-		{240, 240, {6, 177}},
-		{241, 241, {130, 130}},
-		{242, 242, {78, 178}},
-		{243, 243, {33, 180}},
-		{244, 245, {-1, 258 - 244}},
-//		{246, 246, {321, 181}},
-		{246, 246, {321, 321}},
-		{247, 249, {-1, 260 - 247}},
-		{250, 250, {340, 340}},
-		{251, 251, {412, 412}},
-		{252, 253, {-1, 410 - 252}},
-		{254, 256, {-1, 263 - 254}},
-		{257, 257, {249, 182}},
-		{258, 258, {251, 183}},
-		{259, 259, {252, 184}},
-		{260, 260, {256, 185}},
-		{261, 262, {-1, 273 - 261}},
-		{263, 263, {281, 187}},
-		{264, 265, {-1, 275 - 264}},
-		{266, 266, {279, 188}},
-		{267, 281, {-1, 10}},
-		{282, 282, {293, 293}},
-		{283, 283, {295, 189}},
-		{284, 284, {295, 295}},
-		{285, 285, {296, 296}},
-		{286, 286, {298, 298}},
-		{287, 297, {-1, 13}},
-		{298, 298, {364, 191}},
-		{299, 304, {-1, 12}},
-		{305, 305, {322, 322}},
-		{306, 307, {-1, 12}},
-		{308, 308, {324, 324}},
-		{309, 314, {-1, 12}},
-		{315, 315, {361, 192}},
-		{316, 326, {-1, 11}},
-		{327, 329, {-1, 352 - 327}},
-		{330, 330, {380, 380}},
-		{331, 331, {379, 379}},
-		{332, 332, {350, 350}},
-		{333, 333, {409, 409}},
-		{334, 340, {-1, 356 - 334}},
-//		{341, 341, {364, 364}},
-		{341, 341, {372, 372}},
-		{342, 342, {363, 363}},
-		{343, 343, {366, 366}},
-		{344, 344, {365, 365}},
-		{345, 345, {382, 382}},
-		{346, 346, {376, 376}},
-		{347, 347, {370, 370}},
-		{348, 348, {367, 367}},
-		{349, 349, {331, 331}},
-		{350, 350, {369, 369}},
-//		{351, 352, {-1, 374 - 351}},
-		{351, 351, {394, 394}},
-		{352, 352, {370, 370}},
-		{353, 353, {371, 371}},
-//		{354, 354, {377, 377}},
-		{354, 354, {394, 394}},
-		{355, 355, {408, 408}},
-		{356, 356, {378, 378}},
-		{357, 361, {-1, 383 - 357}},
-		{362, 362, {388, 194}},
-		{363, 363, {388, 388}},
-		{364, 369, {-1, 388 - 364}},
-		{370, 370, {392, 195}},
+		{0, 0, {43, 137}}, 
+		{1, 1, {0, 0}}, 
+		{2, 2, {43, 137}}, 
+		{3, 3, {1, 1}}, 
+		{4, 4, {43, 137}}, 
+		{5, 5, {43, 137}}, 
+		{6, 7, {-1, 270 - 6}}, 
+		{8, 8, {2, 2}}, 
+		{9, 9, {62, 138}}, 
+		{10, 10, {272}}, 
+		{11, 11, {117, 139}}, 
+		{12, 12, {12, 140}}, 
+		{13, 16, {-1, 3 - 13}}, 
+		{17, 17, {52, 141}}, 
+		{18, 18, {129, 129}}, 
+		{19, 19, {7, 7}}, 
+		{20, 20, {22, 142}}, 
+		{21, 21, {9, 143}}, 
+		{22, 22, {8, 8}}, 
+		{23, 23, {9, 9}}, 
+		{24, 24, {10, 10}}, 
+		{25, 25, {12, 144}}, 
+		{26, 27, {-1, 11 - 26}}, 
+		{28, 28, {11, 145}}, 
+		{29, 37, {-1, -16}}, 
+		{38, 38, {163, 163}}, 
+		{39, 39, {147, 147}}, 
+		{40, 40, {22, 22}}, 
+		{41, 41, {266, 266}}, 
+		{42, 43, {-1, 23 - 42}}, 
+		{44, 44, {136, 136}}, 
+		{45, 48, {-1, 25 - 45}}, 
+		{49, 49, {43, 146}}, 
+		{50, 50, {131, 131}}, 
+		{51, 54, {-1, 29 - 51}}, 
+		{55, 55, {165, 165}}, 
+		{56, 56, {33, 33}}, 
+		{57, 57, {132, 132}}, 
+		{58, 87, {-1, -24}}, 
+		{88, 88, {197, 197}}, 
+		{89, 131, {-1, -25}}, 
+		{132, 132, {167, 167}}, 
+		{133, 140, {-1, -26}}, 
+		{141, 141, {110, 148}}, 
+		{142, 146, {-1, 115 - 142}}, 
+		{147, 147, {93, 149}}, 
+		{148, 153, {-1, 120 - 148}}, 
+		{154, 154, {27, 150}}, 
+		{155, 155, {126, 126}}, 
+		{156, 157, {-1, 200 - 156}}, 
+		{158, 158, {186, 186}}, 
+		{159, 159, {190, 190}}, 
+		{160, 160, {206, 151}}, 
+		{161, 161, {114, 152}}, 
+		{162, 166, {-1, 202 - 162}}, 
+		{167, 167, {206, 153}}, 
+		{168, 168, {206, 154}}, 
+		{169, 169, {206, 155}}, 
+		{170, 170, {227, 156}}, 
+		{171, 171, {206, 157}}, 
+		{172, 173, {-1, 207 - 172}}, 
+		{174, 174, {202, 158}}, 
+		{175, 175, {206, 159}}, 
+		{176, 184, {-1, 33}}, 
+		{185, 185, {217, 160}}, 
+		{186, 192, {-1, 32}}, 
+		{193, 193, {206, 161}}, 
+		{194, 194, {203, 162}}, 
+		{195, 195, {234, 166}}, 
+		{196, 197, {-1, 225 - 196}}, 
+		{198, 198, {225, 167}}, 
+		{199, 199, {206, 168}}, 
+		{200, 200, {206, 169}}, 
+		{201, 201, {227, 227}}, 
+		{202, 202, {206, 170}}, 
+		{203, 209, {-1, 25}}, 
+		{210, 210, {234, 171}}, 
+		{211, 211, {206, 172}}, 
+		{212, 219, {-1, 23}}, 
+		{220, 220, {242, 173}}, 
+		{221, 222, {-1, 243 - 221}}, 
+		{223, 223, {313, 174}}, 
+		{224, 225, {-1, 245 - 224}}, 
+		{226, 226, {164, 164}}, 
+		{227, 227, {179, 179}}, 
+		{228, 228, {196, 196}}, 
+		{229, 229, {15, 175}}, 
+		{230, 230, {15, 176}}, 
+		{231, 239, {-1, 18}}, 
+		{240, 240, {6, 177}}, 
+		{241, 241, {130, 130}}, 
+		{242, 242, {78, 178}}, 
+		{243, 243, {33, 180}}, 
+		{244, 245, {-1, 258 - 244}}, 
+//		{246, 246, {321, 181}}, 
+		{246, 246, {321, 321}}, 
+		{247, 249, {-1, 260 - 247}}, 
+		{250, 250, {340, 340}}, 
+		{251, 251, {412, 412}}, 
+		{252, 253, {-1, 410 - 252}}, 
+		{254, 256, {-1, 263 - 254}}, 
+		{257, 257, {249, 182}}, 
+		{258, 258, {251, 183}}, 
+		{259, 259, {252, 184}}, 
+		{260, 260, {256, 185}}, 
+		{261, 262, {-1, 273 - 261}}, 
+		{263, 263, {281, 187}}, 
+		{264, 265, {-1, 275 - 264}}, 
+		{266, 266, {279, 188}}, 
+		{267, 281, {-1, 10}}, 
+		{282, 282, {293, 293}}, 
+		{283, 283, {295, 189}}, 
+		{284, 284, {295, 295}}, 
+		{285, 285, {296, 296}}, 
+		{286, 286, {298, 298}}, 
+		{287, 297, {-1, 13}}, 
+		{298, 298, {364, 191}}, 
+		{299, 304, {-1, 12}}, 
+		{305, 305, {322, 322}}, 
+		{306, 307, {-1, 12}}, 
+		{308, 308, {324, 324}}, 
+		{309, 314, {-1, 12}}, 
+		{315, 315, {361, 192}}, 
+		{316, 326, {-1, 11}}, 
+		{327, 329, {-1, 352 - 327}}, 
+		{330, 330, {380, 380}}, 
+		{331, 331, {379, 379}}, 
+		{332, 332, {350, 350}}, 
+		{333, 333, {409, 409}}, 
+		{334, 340, {-1, 356 - 334}}, 
+//		{341, 341, {364, 364}}, 
+		{341, 341, {372, 372}}, 
+		{342, 342, {363, 363}}, 
+		{343, 343, {366, 366}}, 
+		{344, 344, {365, 365}}, 
+		{345, 345, {382, 382}}, 
+		{346, 346, {376, 376}}, 
+		{347, 347, {370, 370}}, 
+		{348, 348, {367, 367}}, 
+		{349, 349, {331, 331}}, 
+		{350, 350, {369, 369}}, 
+//		{351, 352, {-1, 374 - 351}}, 
+		{351, 351, {394, 394}}, 
+		{352, 352, {370, 370}}, 
+		{353, 353, {371, 371}}, 
+//		{354, 354, {377, 377}}, 
+		{354, 354, {394, 394}}, 
+		{355, 355, {408, 408}}, 
+		{356, 356, {378, 378}}, 
+		{357, 361, {-1, 383 - 357}}, 
+		{362, 362, {388, 194}}, 
+		{363, 363, {388, 388}}, 
+		{364, 369, {-1, 388 - 364}}, 
+		{370, 370, {392, 195}}, 
 		{371, 374, {-1, 64}}
 		};
 
@@ -362,26 +362,26 @@ short ConvertD1Texture (short nD1Texture, int bForce)
 		return nD1Texture;
 	if ((nD1Texture > 370) && (nD1Texture < 584)) {
 		if (bNewFileFormat) {
-			if (nD1Texture == 550)
+			if (nD1Texture == 550) 
 				return 615;
 			return nD1Texture + 64;
 			}
 		// d1 shareware needs special treatment:
-		if (nD1Texture < 410)
+		if (nD1Texture < 410) 
 			return nD1Texture + 68;
-		if (nD1Texture < 417)
+		if (nD1Texture < 417) 
 			return nD1Texture + 73;
-		if (nD1Texture < 446)
+		if (nD1Texture < 446) 
 			return nD1Texture + 91;
-		if (nD1Texture < 453)
+		if (nD1Texture < 453) 
 			return nD1Texture + 104;
-		if (nD1Texture < 462)
+		if (nD1Texture < 462) 
 			return nD1Texture + 111;
-		if (nD1Texture < 486)
+		if (nD1Texture < 486) 
 			return nD1Texture + 117;
-		if (nD1Texture < 494)
+		if (nD1Texture < 494) 
 			return nD1Texture + 141;
-		if (nD1Texture < 584)
+		if (nD1Texture < 584) 
 			return nD1Texture + 147;
 		}
 
@@ -458,13 +458,13 @@ int load_mine_data (CFILE *loadFile)
  	mine_fileinfo.texture_sizeof    =   FILENAME_LEN;  // num characters in a name
  	mine_fileinfo.walls.offset		  =	-1;
 	mine_fileinfo.walls.count	  =	0;
-	mine_fileinfo.walls.size		  =	sizeof (tWall);
+	mine_fileinfo.walls.size		  =	sizeof (tWall);  
  	mine_fileinfo.triggers.offset	  =	-1;
 	mine_fileinfo.triggers.count  =	0;
-	mine_fileinfo.triggers.size	  =	sizeof (tTrigger);
+	mine_fileinfo.triggers.size	  =	sizeof (tTrigger);  
 	mine_fileinfo.object.offset		=	-1;
 	mine_fileinfo.object.count		=	1;
-	mine_fileinfo.object.size		=	sizeof (tObject);
+	mine_fileinfo.object.size		=	sizeof (tObject);  
 
 	mine_fileinfo.level_shake_frequency		=	0;
 	mine_fileinfo.level_shake_duration		=	0;
@@ -473,11 +473,11 @@ int load_mine_data (CFILE *loadFile)
 //	if (mine_top_fileinfo.fileinfoVersion >= 19) {
 		mine_fileinfo.gameData.render.lights.deltaIndices.offset		=	-1;
 		mine_fileinfo.gameData.render.lights.deltaIndices.count		=	0;
-		mine_fileinfo.gameData.render.lights.deltaIndices.size		=	sizeof (tLightDeltaIndex);
+		mine_fileinfo.gameData.render.lights.deltaIndices.size		=	sizeof (tLightDeltaIndex);  
 
 		mine_fileinfo.deltaLight.offset		=	-1;
 		mine_fileinfo.deltaLight.count		=	0;
-		mine_fileinfo.deltaLight.size		=	sizeof (tLightDelta);
+		mine_fileinfo.deltaLight.size		=	sizeof (tLightDelta);  
 
 //	}
 
@@ -791,7 +791,7 @@ int load_mine_data (CFILE *loadFile)
 			gameData.segs.vertices [NEW_SEGMENT_VERTICES+i].x = 1;
 			gameData.segs.vertices [NEW_SEGMENT_VERTICES+i].y = 1;
 			gameData.segs.vertices [NEW_SEGMENT_VERTICES+i].z = 1;
-
+		
 			if (CFRead ( &gameData.segs.vertices [NEW_SEGMENT_VERTICES+i], mine_fileinfo.newseg_verts_sizeof, 1, loadFile )!=1)
 				Error ( "Error reading gameData.segs.vertices [NEW_SEGMENT_VERTICES+i] in gamemine.c" );
 
@@ -800,7 +800,7 @@ int load_mine_data (CFILE *loadFile)
 	}
 
 	#endif
-
+														
 	//========================= UPDATE VARIABLES ======================
 
 	#ifdef EDITOR
@@ -818,7 +818,7 @@ int load_mine_data (CFILE *loadFile)
 	else
  		Cursegp = NULL;
 
-	if (mine_editor.Markedsegp != -1 )
+	if (mine_editor.Markedsegp != -1 ) 
 		Markedsegp = mine_editor.Markedsegp + gameData.segs.segments;
 	else
 		Markedsegp = NULL;
@@ -919,7 +919,7 @@ if (bitMask & (1 << MAX_SIDES_PER_SEGMENT)) {
 	gameData.segs.segment2s [nSegment].special = CFReadByte (loadFile);
 	gameData.segs.segment2s [nSegment].nMatCen = CFReadByte (loadFile);
 	gameData.segs.segment2s [nSegment].value = (char) CFReadShort (loadFile);
-	}
+	} 
 else {
 	gameData.segs.segment2s [nSegment].special = 0;
 	gameData.segs.segment2s [nSegment].nMatCen = -1;
@@ -978,7 +978,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 		nSegment = nSegment;
 #endif
 	segFaceP->nFaces = 0;
-	if (gameStates.app.bD2XLevel) {
+	if (gameStates.app.bD2XLevel) { 
 		gameData.segs.xSegments [nSegment].owner = CFReadByte (loadFile);
 		gameData.segs.xSegments [nSegment].group = CFReadByte (loadFile);
 		}
@@ -1056,7 +1056,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 			if (bNewFileFormat) {
 				temp_ushort = CFReadShort (loadFile);
 				sideP->nBaseTex = temp_ushort & 0x7fff;
-				}
+				} 
 			else
 				sideP->nBaseTex = CFReadShort (loadFile);
 			if (gameData.segs.nLevelVersion <= 1)
@@ -1088,7 +1088,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 				sideP->uvls [i].l = ((fix)temp_ushort) << 1;
 				gameData.render.color.vertBright [sideVerts [i]] = f2fl (sideP->uvls [i].l);
 				}
-			}
+			} 
 		else {
 			sideP->nBaseTex =
 			sideP->nOvlTex = 0;
@@ -1178,7 +1178,7 @@ void LoadTexColorsCompiled (int i, CFILE *loadFile)
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, MAX_WALL_TEXTURES);
 	for (; i < j; i++)
-		ReadColor (gameData.render.color.textures + i, loadFile, gameData.segs.nLevelVersion <= 15,
+		ReadColor (gameData.render.color.textures + i, loadFile, gameData.segs.nLevelVersion <= 15, 
 					  gameOpts->render.nLightingMethod);
 	}
 }
@@ -1192,7 +1192,7 @@ void LoadSideLightsCompiled (int i, CFILE *loadFile)
 
 gameData.render.shadows.nLights = 0;
 #if LIGHTMAPS
-if (gameStates.app.bD2XLevel) {
+if (gameStates.app.bD2XLevel) { 
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments * 6);
 	pc = gameData.render.color.lights + i;
 	for (; i < j; i++, pc++) {
@@ -1239,7 +1239,7 @@ INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
 for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; nSegment++, segP++) {
 	ComputeSegmentCenter (gameData.segs.segCenters [0] + nSegment, segP);
 #if CALC_SEGRADS
-	GetSideDists (gameData.segs.segCenters [0][nSegment], nSegment, xSideDists, 0);
+	GetSideDists (gameData.segs.segCenters [0] + nSegment, nSegment, xSideDists, 0);
 	xMinDist = 0x7fffffff;
 #endif
 	for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, i++) {
@@ -1251,23 +1251,23 @@ for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; n
 		}
 #if CALC_SEGRADS
 	gameData.segs.segRads [0][nSegment] = xMinDist;
-	vMin[X] = vMin[Y] = vMin[Z] = 0x7FFFFFFF;
-	vMax[X] = vMax[Y] = vMax[Z] = -0x7FFFFFFF;
+	vMin.p.x = vMin.p.y = vMin.p.z = 0x7FFFFFFF;
+	vMax.p.x = vMax.p.y = vMax.p.z = -0x7FFFFFFF;
 	for (k = 0, xMaxDist = 0; k < 8; k++) {
-		v = gameData.segs.segCenters [0][nSegment] - gameData.segs.vertices[segP->verts[k]];
-		if (vMin[X] > v[X])
-			vMin[X] = v[X];
-		if (vMin[Y] > v[Y])
-			vMin[Y] = v[Y];
-		if (vMin[Z] > v[Z])
-			vMin[Z] = v[Z];
-		if (vMax[X] < v[X])
-			vMax[X] = v[X];
-		if (vMax[Y] < v[Y])
-			vMax[Y] = v[Y];
-		if (vMax[Z] < v[Z])
-			vMax[Z] = v[Z];
-		xDist = v.mag();
+		VmVecSub (&v, gameData.segs.segCenters [0] + nSegment, gameData.segs.vertices + segP->verts [k]);
+		if (vMin.p.x > v.p.x)
+			vMin.p.x = v.p.x;
+		if (vMin.p.y > v.p.y)
+			vMin.p.y = v.p.y;
+		if (vMin.p.z > v.p.z)
+			vMin.p.z = v.p.z;
+		if (vMax.p.x < v.p.x)
+			vMax.p.x = v.p.x;
+		if (vMax.p.y < v.p.y)
+			vMax.p.y = v.p.y;
+		if (vMax.p.z < v.p.z)
+			vMax.p.z = v.p.z;
+		xDist = VmVecMag (&v);
 		if (xMaxDist < xDist)
 			xMaxDist = xDist;
 		}
@@ -1324,7 +1324,7 @@ else if (loadOp == 3) {
 else if (loadOp == 4) {
 	LoadSideLightsCompiled (loadIdx, mineDataFile);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= (gameStates.app.bD2XLevel ?
+	if (loadIdx >= (gameStates.app.bD2XLevel ? 
 						 gameData.segs.nSegments * 6 : bShadows ? gameData.segs.nSegments : 1)) {
 		loadIdx = 0;
 		loadOp = 5;
@@ -1392,7 +1392,7 @@ void LoadSegmentsGauge (CFILE *loadFile)
 loadOp = 0;
 loadIdx = 0;
 mineDataFile = loadFile;
-NMProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), LoadSegmentsPoll);
+NMProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), LoadSegmentsPoll); 
 }
 
 //------------------------------------------------------------------------------
@@ -1403,20 +1403,17 @@ int LoadMineSegmentsCompiled (CFILE *loadFile)
 	ubyte			nCompiledVersion;
 	char			*psz;
 
-gameData.segs.vMin = vmsVector::Create(0x7fffffff,0x7fffffff,0x7fffffff);
-/*	[X] =
-gameData.segs.vMin[Y] =
-gameData.segs.vMin[Y] = 0x7fffffff;*/
-gameData.segs.vMax = vmsVector::Create(-0x7fffffff,-0x7fffffff,-0x7fffffff);
-/*[X] =
-gameData.segs.vMax[X] =
-gameData.segs.vMax[Y] =
-gameData.segs.vMax[Y] = -0x7fffffff;*/
+gameData.segs.vMin.p.x =
+gameData.segs.vMin.p.y =
+gameData.segs.vMin.p.y = 0x7fffffff;
+gameData.segs.vMax.p.x =
+gameData.segs.vMax.p.y =
+gameData.segs.vMax.p.y = -0x7fffffff;
 gameStates.render.bColored = 0;
 bD1PigPresent = CFExist (D1_PIGFILE, gameFolders.szDataDir, 0);
 psz = strchr (gameData.segs.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");
-//	For compiled levels, textures map to themselves, prevent nTexOverride always being gray,
+//	For compiled levels, textures map to themselves, prevent nTexOverride always being gray, 
 //	bug which Matt and John refused to acknowledge, so here is Mike, fixing it.
 #ifdef EDITOR
 for (i = 0; i < MAX_TEXTURES; i++)
@@ -1447,23 +1444,25 @@ if (gameData.segs.nSegments >= MAX_SEGMENTS) {
 con_printf (CONDBG, "   %d segments\n", gameData.segs.nSegments);
 #endif
 for (i = 0; i < gameData.segs.nVertices; i++) {
-	CFReadVector (gameData.segs.vertices[i], loadFile);
+	CFReadVector (gameData.segs.vertices + i, loadFile);
 #if !FLOAT_COORD
-	gameData.segs.fVertices[i] = gameData.segs.vertices[i].toFloat();
+	gameData.segs.fVertices [i].p.x = f2fl (gameData.segs.vertices [i].p.x);
+	gameData.segs.fVertices [i].p.y = f2fl (gameData.segs.vertices [i].p.y);
+	gameData.segs.fVertices [i].p.z = f2fl (gameData.segs.vertices [i].p.z);
 #endif
 	}
-if (gameData.segs.vMin[X] > gameData.segs.vertices[i][X])
-	gameData.segs.vMin[X] = gameData.segs.vertices[i][X];
-if (gameData.segs.vMin[Y] > gameData.segs.vertices[i][Y])
-	gameData.segs.vMin[Y] = gameData.segs.vertices[i][Y];
-if (gameData.segs.vMin[Z] > gameData.segs.vertices[i][Z])
-	gameData.segs.vMin[Z] = gameData.segs.vertices[i][Z];
-if (gameData.segs.vMax[X] < gameData.segs.vertices[i][X])
-	gameData.segs.vMax[X] = gameData.segs.vertices[i][X];
-if (gameData.segs.vMax[Y] < gameData.segs.vertices[i][Y])
-	gameData.segs.vMax[Y] = gameData.segs.vertices[i][Y];
-if (gameData.segs.vMax[Z] < gameData.segs.vertices[i][Z])
-	gameData.segs.vMax[Z] = gameData.segs.vertices[i][Z];
+if (gameData.segs.vMin.p.x > gameData.segs.vertices [i].p.x)
+	gameData.segs.vMin.p.x = gameData.segs.vertices [i].p.x;
+if (gameData.segs.vMin.p.y > gameData.segs.vertices [i].p.y)
+	gameData.segs.vMin.p.y = gameData.segs.vertices [i].p.y;
+if (gameData.segs.vMin.p.z > gameData.segs.vertices [i].p.z)
+	gameData.segs.vMin.p.z = gameData.segs.vertices [i].p.z;
+if (gameData.segs.vMax.p.x < gameData.segs.vertices [i].p.x)
+	gameData.segs.vMax.p.x = gameData.segs.vertices [i].p.x;
+if (gameData.segs.vMax.p.y < gameData.segs.vertices [i].p.y)
+	gameData.segs.vMax.p.y = gameData.segs.vertices [i].p.y;
+if (gameData.segs.vMax.p.z < gameData.segs.vertices [i].p.z)
+	gameData.segs.vMax.p.z = gameData.segs.vertices [i].p.z;
 memset (gameData.segs.segments, 0, MAX_SEGMENTS * sizeof (tSegment));
 #if TRACE
 con_printf (CONDBG, "   loading segments ...\n");
@@ -1481,7 +1480,7 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
-gameData.segs.fRad = f2fl (vmsVector::dist(gameData.segs.vMax, gameData.segs.vMin));
+gameData.segs.fRad = f2fl (VmVecDist (&gameData.segs.vMax, &gameData.segs.vMin));
 ResetObjects (1);		//one tObject, the player
 return 0;
 }

@@ -872,7 +872,7 @@ sayTotals(FILE *my_file, char *level_name)
 	while (objects_processed < gameData.objs.nLastObject [0]+1) {
 		int	j, objtype, objid, objcount, cur_obj_val, min_obj_val, min_objnum;
 
-		//	Find new std::minnObject.
+		//	Find new min nObject.
 		min_obj_val = 0x7fff0000;
 		min_objnum = -1;
 

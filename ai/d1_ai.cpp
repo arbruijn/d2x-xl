@@ -7,7 +7,7 @@ IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
 SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
 FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
 CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
+AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
@@ -70,11 +70,11 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void pae_aux (int nSegment, int nType, int level);
 
-ubyte	john_cheats_1[JOHN_CHEATS_SIZE_1] = { 	KEY_P ^ 0x00 ^ 0x34,
-															KEY_O ^ 0x10 ^ 0x34,
-															KEY_B ^ 0x20 ^ 0x34,
-															KEY_O ^ 0x30 ^ 0x34,
-															KEY_Y ^ 0x40 ^ 0x34,
+ubyte	john_cheats_1[JOHN_CHEATS_SIZE_1] = { 	KEY_P ^ 0x00 ^ 0x34, 
+															KEY_O ^ 0x10 ^ 0x34, 
+															KEY_B ^ 0x20 ^ 0x34, 
+															KEY_O ^ 0x30 ^ 0x34, 
+															KEY_Y ^ 0x40 ^ 0x34, 
 															KEY_S ^ 0x50 ^ 0x34 };
 
 #define	PARALLAX	0		//	If !0, then special debugging info for Parallax eyes only enabled.
@@ -147,12 +147,12 @@ int	D1_AI_info_enabled=0;
 int	Ugly_robot_cheat = 0, Ugly_robot_texture = 0;
 ubyte	Enable_john_cheat_1 = 0, Enable_john_cheat_2 = 0, Enable_john_cheat_3 = 0, Enable_john_cheat_4 = 0;
 
-ubyte	john_cheats_3[2*JOHN_CHEATS_SIZE_3+1] = { KEY_Y ^ 0x67,
-																KEY_E ^ 0x66,
-																KEY_C ^ 0x65,
-																KEY_A ^ 0x64,
-																KEY_N ^ 0x63,
-																KEY_U ^ 0x62,
+ubyte	john_cheats_3[2*JOHN_CHEATS_SIZE_3+1] = { KEY_Y ^ 0x67, 
+																KEY_E ^ 0x66, 
+																KEY_C ^ 0x65, 
+																KEY_A ^ 0x64, 
+																KEY_N ^ 0x63, 
+																KEY_U ^ 0x62, 
 																KEY_L ^ 0x61 };
 
 
@@ -268,11 +268,11 @@ ubyte D1_AI_transition_table[D1_AI_MAX_EVENT][D1_AI_MAX_STATE][D1_AI_MAX_STATE] 
 	}
 };
 
-ubyte	john_cheats_2[2*JOHN_CHEATS_SIZE_2] = { 	KEY_P ^ 0x00 ^ 0x43, 0x66,
-																KEY_O ^ 0x10 ^ 0x43, 0x11,
-																KEY_R ^ 0x20 ^ 0x43, 0x8,
-																KEY_G ^ 0x30 ^ 0x43, 0x2,
-																KEY_Y ^ 0x40 ^ 0x43, 0x0,
+ubyte	john_cheats_2[2*JOHN_CHEATS_SIZE_2] = { 	KEY_P ^ 0x00 ^ 0x43, 0x66, 
+																KEY_O ^ 0x10 ^ 0x43, 0x11, 
+																KEY_R ^ 0x20 ^ 0x43, 0x8, 
+																KEY_G ^ 0x30 ^ 0x43, 0x2, 
+																KEY_Y ^ 0x40 ^ 0x43, 0x0, 
 																KEY_S ^ 0x50 ^ 0x43 };
 
 // ---------------------------------------------------------
@@ -290,7 +290,7 @@ if (key == (john_cheats_1[john_cheats_index_1] ^ (john_cheats_index_1 << 4) ^ 0x
 		john_cheats_index_1 = 0;
 		DigiPlaySample (SOUND_CHEATER, F1_0);
 		}
-	}
+	} 
 else
 	john_cheats_index_1 = 0;
 }
@@ -330,7 +330,7 @@ void do_lunacy_on(void)
 		for (i=0; i<MAX_ROBOT_TYPES; i++) {
 			primaryFiringWaitCopy[i] = gameData.bots.info [1][i].primaryFiringWait[NDL-1];
 			nRapidFireCountCopy[i] = gameData.bots.info [1][i].nRapidFireCount[NDL-1];
-
+	
 			gameData.bots.info [1][i].primaryFiringWait[NDL-1] = gameData.bots.info [1][i].primaryFiringWait[1];
 			gameData.bots.info [1][i].nRapidFireCount[NDL-1] = gameData.bots.info [1][i].nRapidFireCount[1];
 		}
@@ -414,14 +414,14 @@ void ai_turn_towards_vector(vmsVector *goal_vector, tObject *objP, fix rate)
 
 	new_fVec = *goal_vector;
 
-	dot = vmsVector::dot(*goal_vector, objP->position.mOrient[FVEC]);
+	dot = VmVecDot(goal_vector, &objP->position.mOrient.fVec);
 
 	if (dot < (F1_0 - gameData.time.xFrame/2)) {
 		fix	mag;
 		fix	new_scale = FixDiv(gameData.time.xFrame * D1_AI_TURN_SCALE, rate);
-		new_fVec *= new_scale;
-		new_fVec += objP->position.mOrient[FVEC];
-		mag = vmsVector::normalize(new_fVec);
+		VmVecScale(&new_fVec, new_scale);
+		VmVecInc(&new_fVec, &objP->position.mOrient.fVec);
+		mag = VmVecNormalize(&new_fVec);
 		if (mag < F1_0/256) {
 			new_fVec = *goal_vector;		//	if degenerate vector, go right to goal
 		}
@@ -444,15 +444,15 @@ void ai_turn_randomly(vmsVector *vec_to_player, tObject *objP, fix rate, int nPr
 
 	curVec = objP->mType.physInfo.rotVel;
 
-	curVec[Y] += F1_0/64;
+	curVec.p.y += F1_0/64;
 
-	curVec[X] += curVec[Y]/6;
-	curVec[Y] += curVec[Z]/4;
-	curVec[Z] += curVec[X]/10;
+	curVec.p.x += curVec.p.y/6;
+	curVec.p.y += curVec.p.z/4;
+	curVec.p.z += curVec.p.x/10;
 
-	if (abs(curVec[X]) > F1_0/8) curVec[X] /= 4;
-	if (abs(curVec[Y]) > F1_0/8) curVec[Y] /= 4;
-	if (abs(curVec[Z]) > F1_0/8) curVec[Z] /= 4;
+	if (abs(curVec.p.x) > F1_0/8) curVec.p.x /= 4;
+	if (abs(curVec.p.y) > F1_0/8) curVec.p.y /= 4;
+	if (abs(curVec.p.z) > F1_0/8) curVec.p.z /= 4;
 
 	objP->mType.physInfo.rotVel = curVec;
 
@@ -483,14 +483,14 @@ void john_cheat_func_4(int key)
 			else
 				john_cheats_index_4 = 0;
 			break;
-
+	
 		case 2:
 			if (key == KEY_E)
 				john_cheats_index_4++;
 			else
 				john_cheats_index_4 = 0;
 			break;
-
+	
 		case 0:
 			if (key == KEY_P)
 				john_cheats_index_4++;
@@ -503,14 +503,14 @@ void john_cheat_func_4(int key)
 			else
 				john_cheats_index_4 = 0;
 			break;
-
+	
 		case 5:
 			if (key == KEY_H)
 				john_cheats_index_4++;
 			else
 				john_cheats_index_4 = 0;
 			break;
-
+	
 		case 6:
 			Ugly_robot_texture = 0;
 		case 7:
@@ -532,7 +532,7 @@ void john_cheat_func_4(int key)
 				}
 			} else
 				john_cheats_index_4 = 0;
-
+		
 			break;
 		default:
 			john_cheats_index_4 = 0;
@@ -552,8 +552,8 @@ int player_is_visible_from_object(tObject *objP, vmsVector *pos, fix fieldOfView
 	tFVIQuery	fq;
 
 	fq.p0						= pos;
-	if (((*pos)[X] != objP->position.vPos[X]) || ((*pos)[Y] != objP->position.vPos[Y]) || ((*pos)[Z] != objP->position.vPos[Z])) {
-		int	nSegment = FindSegByPos (*pos, objP->nSegment, 1, 0);
+	if ((pos->p.x != objP->position.vPos.p.x) || (pos->p.y != objP->position.vPos.p.y) || (pos->p.z != objP->position.vPos.p.z)) {
+		int	nSegment = FindSegByPos (pos, objP->nSegment, 1, 0);
 		if (nSegment == -1) {
 			fq.startSeg = objP->nSegment;
 			*pos = objP->position.vPos;
@@ -574,7 +574,7 @@ int player_is_visible_from_object(tObject *objP, vmsVector *pos, fix fieldOfView
 	Hit_seg = hitData.hit.nSegment;
 
 	if ((hitType == HIT_NONE) || ((hitType == HIT_OBJECT) && (hitData.hit.nObject == LOCALPLAYER.nObject))) {
-		dot = vmsVector::dot(*vec_to_player, objP->position.mOrient[FVEC]);
+		dot = VmVecDot(vec_to_player, &objP->position.mOrient.fVec);
 		if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) {
 			return 2;
 		} else {
@@ -632,12 +632,12 @@ int do_silly_animation(tObject *objP)
 				Int3();		// Contact Mike: incompatible data, illegal nJoint, problem in pof file?
 				continue;
 			}
-			if ((*jp)[PA] != (*pobjp)[PA]) {
+			if (jp->p != pobjp->p) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles[nJoint][PA] = (*jp)[PA];
+				gameData.ai.localInfo [nObject].goalAngles[nJoint].p = jp->p;
 
-				delta_angle = (*jp)[PA] - (*pobjp)[PA];
+				delta_angle = jp->p - pobjp->p;
 				if (delta_angle >= F1_0/2)
 					delta_2 = -ANIM_RATE;
 				else if (delta_angle >= 0)
@@ -650,15 +650,15 @@ int do_silly_animation(tObject *objP)
 				if (flinch_attack_scale != 1)
 					delta_2 *= flinch_attack_scale;
 
-				gameData.ai.localInfo [nObject].deltaAngles[nJoint][PA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
+				gameData.ai.localInfo [nObject].deltaAngles[nJoint].p = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
 			}
 
-			if ((*jp)[BA] != (*pobjp)[BA]) {
+			if (jp->b != pobjp->b) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles[nJoint][BA] = (*jp)[BA];
+				gameData.ai.localInfo [nObject].goalAngles[nJoint].b = jp->b;
 
-				delta_angle = (*jp)[BA] - (*pobjp)[BA];
+				delta_angle = jp->b - pobjp->b;
 				if (delta_angle >= F1_0/2)
 					delta_2 = -ANIM_RATE;
 				else if (delta_angle >= 0)
@@ -671,15 +671,15 @@ int do_silly_animation(tObject *objP)
 				if (flinch_attack_scale != 1)
 					delta_2 *= flinch_attack_scale;
 
-				gameData.ai.localInfo [nObject].deltaAngles[nJoint][BA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
+				gameData.ai.localInfo [nObject].deltaAngles[nJoint].b = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
 			}
 
-			if ((*jp)[HA] != (*pobjp)[HA]) {
+			if (jp->h != pobjp->h) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo[nObject].goalAngles[nJoint][HA] = (*jp)[HA];
+				gameData.ai.localInfo [nObject].goalAngles[nJoint].h = jp->h;
 
-				delta_angle = (*jp)[HA] - (*pobjp)[HA];
+				delta_angle = jp->h - pobjp->h;
 				if (delta_angle >= F1_0/2)
 					delta_2 = -ANIM_RATE;
 				else if (delta_angle >= 0)
@@ -692,7 +692,7 @@ int do_silly_animation(tObject *objP)
 				if (flinch_attack_scale != 1)
 					delta_2 *= flinch_attack_scale;
 
-				gameData.ai.localInfo [nObject].deltaAngles[nJoint][HA] = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
+				gameData.ai.localInfo [nObject].deltaAngles[nJoint].h = delta_2/DELTA_ANG_SCALE;		// complete revolutions per second
 			}
 		}
 
@@ -735,48 +735,43 @@ void ai_frame_animation(tObject *objP)
 		vmsAngVec	*goalangp = &gameData.ai.localInfo [nObject].goalAngles[joint];
 		vmsAngVec	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles[joint];
 
-#ifndef NDEBUG
-if (D1_AI_animation_test) {
-	printf("%i: [%7.3f %7.3f %7.3f]  [%7.3f %7.3f %7.3f]\n", joint, f2fl(curangp->p), f2fl(curangp->b), f2fl(curangp->h), f2fl(goalangp->p), f2fl((*goalangp)[BA]), f2fl(goalangp->h), f2fl(curangp->p), f2fl(curangp->b), f2fl(curangp->h));
-}
-#endif
-		delta_to_goal = (*goalangp)[PA] - (*curangp)[PA];
+		delta_to_goal = goalangp->p - curangp->p;
 		if (delta_to_goal > 32767)
 			delta_to_goal = delta_to_goal - 65536;
 		else if (delta_to_goal < -32767)
 			delta_to_goal = 65536 + delta_to_goal;
 
 		if (delta_to_goal) {
-			scaled_delta_angle = FixMul((*deltaangp)[PA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curangp)[PA] += scaled_delta_angle;
+			scaled_delta_angle = FixMul(deltaangp->p, gameData.time.xFrame) * DELTA_ANG_SCALE;
+			curangp->p += scaled_delta_angle;
 			if (abs(delta_to_goal) < abs(scaled_delta_angle))
-				(*curangp)[PA] = (*goalangp)[PA];
+				curangp->p = goalangp->p;
 		}
 
-		delta_to_goal = (*goalangp)[BA] - (*curangp)[BA];
+		delta_to_goal = goalangp->b - curangp->b;
 		if (delta_to_goal > 32767)
 			delta_to_goal = delta_to_goal - 65536;
 		else if (delta_to_goal < -32767)
 			delta_to_goal = 65536 + delta_to_goal;
 
 		if (delta_to_goal) {
-			scaled_delta_angle = FixMul((*deltaangp)[BA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curangp)[BA] += scaled_delta_angle;
+			scaled_delta_angle = FixMul(deltaangp->b, gameData.time.xFrame) * DELTA_ANG_SCALE;
+			curangp->b += scaled_delta_angle;
 			if (abs(delta_to_goal) < abs(scaled_delta_angle))
-				(*curangp)[BA] = (*goalangp)[BA];
+				curangp->b = goalangp->b;
 		}
 
-		delta_to_goal = (*goalangp)[HA] - (*curangp)[HA];
+		delta_to_goal = goalangp->h - curangp->h;
 		if (delta_to_goal > 32767)
 			delta_to_goal = delta_to_goal - 65536;
 		else if (delta_to_goal < -32767)
 			delta_to_goal = 65536 + delta_to_goal;
 
 		if (delta_to_goal) {
-			scaled_delta_angle = FixMul((*deltaangp)[HA], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			(*curangp)[HA] += scaled_delta_angle;
+			scaled_delta_angle = FixMul(deltaangp->h, gameData.time.xFrame) * DELTA_ANG_SCALE;
+			curangp->h += scaled_delta_angle;
 			if (abs(delta_to_goal) < abs(scaled_delta_angle))
-				(*curangp)[HA] = (*goalangp)[HA];
+				curangp->h = goalangp->h;
 		}
 
 	}
@@ -816,7 +811,7 @@ void DoD1AIRobotHitAttack(tObject *robot, tObject *player, vmsVector *collision_
 	if (botInfoP->attackType == 1) {
 		if (ailP->nextPrimaryFire <= 0) {
 			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-				if (vmsVector::dist(gameData.objs.console->position.vPos, robot->position.vPos) < robot->size + gameData.objs.console->size + F1_0*2)
+				if (VmVecDist(&gameData.objs.console->position.vPos, &robot->position.vPos) < robot->size + gameData.objs.console->size + F1_0*2)
 					CollidePlayerAndNastyRobot ( player, robot, collision_point );
 
 			robot->cType.aiInfo.GOAL_STATE = D1_AIS_RECO;
@@ -830,7 +825,7 @@ void DoD1AIRobotHitAttack(tObject *robot, tObject *player, vmsVector *collision_
 
 void ai_multi_send_robot_position(int nObject, int force)
 {
-if (IsMultiGame)
+if (IsMultiGame) 
 	MultiSendRobotPosition(nObject, force != -1);
 }
 
@@ -893,36 +888,38 @@ void ai_fire_laser_at_player(tObject *objP, vmsVector *fire_point)
 //--		return;
 
 	//	Set position to fire at based on difficulty level.
-	bpp_diff[X] = gameData.ai.vBelievedPlayerPos[X] + (rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
-	bpp_diff[Y] = gameData.ai.vBelievedPlayerPos[Y] + (rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
-	bpp_diff[Z] = gameData.ai.vBelievedPlayerPos[Z] + (rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
+	bpp_diff.p.x = gameData.ai.vBelievedPlayerPos.p.x + (rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
+	bpp_diff.p.y = gameData.ai.vBelievedPlayerPos.p.y + (rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
+	bpp_diff.p.z = gameData.ai.vBelievedPlayerPos.p.z + (rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
 
 	//	Half the time fire at the player, half the time lead the player.
 	if (rand() > 16384) {
 
-		vmsVector::normalizedDir(fire_vec, bpp_diff, *fire_point);
+		VmVecNormalizedDir(&fire_vec, &bpp_diff, fire_point);
 
 	} else {
-		vmsVector	player_direction_vector = bpp_diff - bpp_diff;
+		vmsVector	player_direction_vector;
+
+		VmVecSub(&player_direction_vector, &bpp_diff, &bpp_diff);
 
 		// If player is not moving, fire right at him!
 		//	Note: If the robot fires in the direction of its forward vector, this is bad because the weapon does not
 		//	come out from the center of the robot; it comes out from the side.  So it is common for the weapon to miss
 		//	its target.  Ideally, we want to point the guns at the player.  For now, just fire right at the player.
-		if ((abs(player_direction_vector[X] < 0x10000)) && (abs(player_direction_vector[Y] < 0x10000)) && (abs(player_direction_vector[Z] < 0x10000))) {
+		if ((abs(player_direction_vector.p.x < 0x10000)) && (abs(player_direction_vector.p.y < 0x10000)) && (abs(player_direction_vector.p.z < 0x10000))) {
 
-			vmsVector::normalizedDir(fire_vec, bpp_diff, *fire_point);
+			VmVecNormalizedDir(&fire_vec, &bpp_diff, fire_point);
 
 		// Player is moving.  Determine where the player will be at the end of the next frame if he doesn't change his
 		//	behavior.  Fire at exactly that point.  This isn't exactly what you want because it will probably take the laser
 		//	a different amount of time to get there, since it will probably be a different distance from the player.
 		//	So, that's why we write games, instead of guiding missiles...
 		} else {
-			fire_vec = bpp_diff - *fire_point;
-			fire_vec *= FixMul(WI_speed (objP->id, gameStates.app.nDifficultyLevel), gameData.time.xFrame);
+			VmVecSub(&fire_vec, &bpp_diff, fire_point);
+			VmVecScale(&fire_vec,FixMul(WI_speed (objP->id, gameStates.app.nDifficultyLevel), gameData.time.xFrame));
 
-			fire_vec += player_direction_vector;
-			vmsVector::normalize(fire_vec);
+			VmVecInc(&fire_vec, &player_direction_vector);
+			VmVecNormalize(&fire_vec);
 
 		}
 	}
@@ -957,22 +954,22 @@ void move_towards_vector(tObject *objP, vmsVector *vec_goal)
 	//	bash velocity vector twice as much towards player as usual.
 
 	vel = piP->velocity;
-	vmsVector::normalize(vel);
-	dot = vmsVector::dot(vel, objP->position.mOrient[FVEC]);
+	VmVecNormalize(&vel);
+	dot = VmVecDot(&vel, &objP->position.mOrient.fVec);
 
 	if (dot < 3*F1_0/4) {
 		//	This funny code is supposed to slow down the robot and move his velocity towards his direction
 		//	more quickly than the general code
-		piP->velocity[X] = piP->velocity[X]/2 + FixMul((*vec_goal)[X], gameData.time.xFrame*32);
-		piP->velocity[Y] = piP->velocity[Y]/2 + FixMul((*vec_goal)[Y], gameData.time.xFrame*32);
-		piP->velocity[Z] = piP->velocity[Z]/2 + FixMul((*vec_goal)[Z], gameData.time.xFrame*32);
+		piP->velocity.p.x = piP->velocity.p.x/2 + FixMul(vec_goal->p.x, gameData.time.xFrame*32);
+		piP->velocity.p.y = piP->velocity.p.y/2 + FixMul(vec_goal->p.y, gameData.time.xFrame*32);
+		piP->velocity.p.z = piP->velocity.p.z/2 + FixMul(vec_goal->p.z, gameData.time.xFrame*32);
 	} else {
-		piP->velocity[X] += FixMul((*vec_goal)[X], gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
-		piP->velocity[Y] += FixMul((*vec_goal)[Y], gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
-		piP->velocity[Z] += FixMul((*vec_goal)[Z], gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
+		piP->velocity.p.x += FixMul(vec_goal->p.x, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
+		piP->velocity.p.y += FixMul(vec_goal->p.y, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
+		piP->velocity.p.z += FixMul(vec_goal->p.z, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
 	}
 
-	speed = piP->velocity.mag();
+	speed = VmVecMag(&piP->velocity);
 	xMaxSpeed = botInfoP->xMaxSpeed[gameStates.app.nDifficultyLevel];
 
 	//	Green guy attacks twice as fast as he moves away.
@@ -980,9 +977,9 @@ void move_towards_vector(tObject *objP, vmsVector *vec_goal)
 		xMaxSpeed *= 2;
 
 	if (speed > xMaxSpeed) {
-		piP->velocity[X] = (piP->velocity[X]*3)/4;
-		piP->velocity[Y] = (piP->velocity[Y]*3)/4;
-		piP->velocity[Z] = (piP->velocity[Z]*3)/4;
+		piP->velocity.p.x = (piP->velocity.p.x*3)/4;
+		piP->velocity.p.y = (piP->velocity.p.y*3)/4;
+		piP->velocity.p.z = (piP->velocity.p.z*3)/4;
 	}
 }
 
@@ -1029,16 +1026,24 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 
 	switch (dir) {
 		case 0:
-			evade_vector = *vec_to_player * (gameData.time.xFrame*32);
+			evade_vector.p.x = FixMul(vec_to_player->p.z, gameData.time.xFrame*32);
+			evade_vector.p.y = FixMul(vec_to_player->p.y, gameData.time.xFrame*32);
+			evade_vector.p.z = FixMul(-vec_to_player->p.x, gameData.time.xFrame*32);
 			break;
 		case 1:
-			evade_vector = -(*vec_to_player) * (gameData.time.xFrame*32);
+			evade_vector.p.x = FixMul(-vec_to_player->p.z, gameData.time.xFrame*32);
+			evade_vector.p.y = FixMul(vec_to_player->p.y, gameData.time.xFrame*32);
+			evade_vector.p.z = FixMul(vec_to_player->p.x, gameData.time.xFrame*32);
 			break;
 		case 2:
-			evade_vector =-(*vec_to_player) * (gameData.time.xFrame*32);
+			evade_vector.p.x = FixMul(-vec_to_player->p.y, gameData.time.xFrame*32);
+			evade_vector.p.y = FixMul(vec_to_player->p.x, gameData.time.xFrame*32);
+			evade_vector.p.z = FixMul(vec_to_player->p.z, gameData.time.xFrame*32);
 			break;
 		case 3:
-			evade_vector = (*vec_to_player) * (gameData.time.xFrame*32);
+			evade_vector.p.x = FixMul(vec_to_player->p.y, gameData.time.xFrame*32);
+			evade_vector.p.y = FixMul(-vec_to_player->p.x, gameData.time.xFrame*32);
+			evade_vector.p.z = FixMul(vec_to_player->p.z, gameData.time.xFrame*32);
 			break;
 	}
 
@@ -1049,7 +1054,7 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 		//	Only take evasive action if looking at player.
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
-		dot = vmsVector::dot(*vec_to_player, objP->position.mOrient[FVEC]);
+		dot = VmVecDot(vec_to_player, &objP->position.mOrient.fVec);
 		if ((dot > botInfoP->fieldOfView[gameStates.app.nDifficultyLevel]) && !(gameData.objs.console->flags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
 
@@ -1059,19 +1064,19 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 			else if (damage_scale < 0)
 				damage_scale = 0;			//	Just in case...
 
-			evade_vector *= (i2f(fast_flag) + damage_scale);
+			VmVecScale(&evade_vector, i2f(fast_flag) + damage_scale);
 		}
 	}
 
-	piP->velocity[X] += evade_vector[X];
-	piP->velocity[Y] += evade_vector[Y];
-	piP->velocity[Z] += evade_vector[Z];
+	piP->velocity.p.x += evade_vector.p.x;
+	piP->velocity.p.y += evade_vector.p.y;
+	piP->velocity.p.z += evade_vector.p.z;
 
-	speed = piP->velocity.mag();
+	speed = VmVecMag(&piP->velocity);
 	if (speed > botInfoP->xMaxSpeed[gameStates.app.nDifficultyLevel]) {
-		piP->velocity[X] = (piP->velocity[X]*3)/4;
-		piP->velocity[Y] = (piP->velocity[Y]*3)/4;
-		piP->velocity[Z] = (piP->velocity[Z]*3)/4;
+		piP->velocity.p.x = (piP->velocity.p.x*3)/4;
+		piP->velocity.p.y = (piP->velocity.p.y*3)/4;
+		piP->velocity.p.z = (piP->velocity.p.z*3)/4;
 	}
 
 }
@@ -1084,28 +1089,30 @@ void move_away_from_player(tObject *objP, vmsVector *vec_to_player, int attackTy
 	tRobotInfo		*botInfoP = &gameData.bots.info [1][objP->id];
 	int				objref;
 
-	piP->velocity -= *vec_to_player * (gameData.time.xFrame*16);
+	piP->velocity.p.x -= FixMul(vec_to_player->p.x, gameData.time.xFrame*16);
+	piP->velocity.p.y -= FixMul(vec_to_player->p.y, gameData.time.xFrame*16);
+	piP->velocity.p.z -= FixMul(vec_to_player->p.z, gameData.time.xFrame*16);
 
 	if (attackType) {
 		//	Get value in 0..3 to choose evasion direction.
 		objref = (OBJ_IDX (objP) ^ ((gameData.app.nFrameCount + 3*OBJ_IDX (objP)) >> 5)) & 3;
 
 		switch (objref) {
-			case 0:	piP->velocity += objP->position.mOrient[UVEC] * ( gameData.time.xFrame << 5);	break;
-			case 1:	piP->velocity += objP->position.mOrient[UVEC] * (-gameData.time.xFrame << 5);	break;
-			case 2:	piP->velocity += objP->position.mOrient[RVEC] * ( gameData.time.xFrame << 5);	break;
-			case 3:	piP->velocity += objP->position.mOrient[RVEC] * (-gameData.time.xFrame << 5);	break;
+			case 0:	VmVecScaleInc(&piP->velocity, &objP->position.mOrient.uVec, gameData.time.xFrame << 5);	break;
+			case 1:	VmVecScaleInc(&piP->velocity, &objP->position.mOrient.uVec, -gameData.time.xFrame << 5);	break;
+			case 2:	VmVecScaleInc(&piP->velocity, &objP->position.mOrient.rVec, gameData.time.xFrame << 5);	break;
+			case 3:	VmVecScaleInc(&piP->velocity, &objP->position.mOrient.rVec, -gameData.time.xFrame << 5);	break;
 			default:	Int3();	//	Impossible, bogus value on objref, must be in 0..3
 		}
 	}
 
 
-	speed = piP->velocity.mag();
+	speed = VmVecMag(&piP->velocity);
 
 	if (speed > botInfoP->xMaxSpeed[gameStates.app.nDifficultyLevel]) {
-		piP->velocity[X] = (piP->velocity[X]*3)/4;
-		piP->velocity[Y] = (piP->velocity[Y]*3)/4;
-		piP->velocity[Z] = (piP->velocity[Z]*3)/4;
+		piP->velocity.p.x = (piP->velocity.p.x*3)/4;
+		piP->velocity.p.y = (piP->velocity.p.y*3)/4;
+		piP->velocity.p.z = (piP->velocity.p.z*3)/4;
 	}
 
 //--old--	fix				speed, dot;
@@ -1114,25 +1121,25 @@ void move_away_from_player(tObject *objP, vmsVector *vec_to_player, int attackTy
 //--old--
 //--old--	//	Trying to move away from player.  If forward vector much different than velocity vector,
 //--old--	//	bash velocity vector twice as much away from player as usual.
-//--old--	dot = VmVecDot(&piP->velocity, &objP->position.mOrient[FVEC]);
+//--old--	dot = VmVecDot(&piP->velocity, &objP->position.mOrient.fVec);
 //--old--	if (dot > -3*F1_0/4) {
 //--old--		//	This funny code is supposed to slow down the robot and move his velocity towards his direction
 //--old--		//	more quickly than the general code
-//--old--		piP->velocity[X] = piP->velocity[X]/2 - FixMul(vec_to_player->p.x, gameData.time.xFrame*16);
-//--old--		piP->velocity[Y] = piP->velocity[Y]/2 - FixMul(vec_to_player->p.y, gameData.time.xFrame*16);
-//--old--		piP->velocity[Z] = piP->velocity[Z]/2 - FixMul(vec_to_player->p.z, gameData.time.xFrame*16);
+//--old--		piP->velocity.p.x = piP->velocity.p.x/2 - FixMul(vec_to_player->p.x, gameData.time.xFrame*16);
+//--old--		piP->velocity.p.y = piP->velocity.p.y/2 - FixMul(vec_to_player->p.y, gameData.time.xFrame*16);
+//--old--		piP->velocity.p.z = piP->velocity.p.z/2 - FixMul(vec_to_player->p.z, gameData.time.xFrame*16);
 //--old--	} else {
-//--old--		piP->velocity[X] -= FixMul(vec_to_player->p.x, gameData.time.xFrame*16);
-//--old--		piP->velocity[Y] -= FixMul(vec_to_player->p.y, gameData.time.xFrame*16);
-//--old--		piP->velocity[Z] -= FixMul(vec_to_player->p.z, gameData.time.xFrame*16);
+//--old--		piP->velocity.p.x -= FixMul(vec_to_player->p.x, gameData.time.xFrame*16);
+//--old--		piP->velocity.p.y -= FixMul(vec_to_player->p.y, gameData.time.xFrame*16);
+//--old--		piP->velocity.p.z -= FixMul(vec_to_player->p.z, gameData.time.xFrame*16);
 //--old--	}
 //--old--
 //--old--	speed = VmVecMag(&piP->velocity);
 //--old--
 //--old--	if (speed > botInfoP->xMaxSpeed[gameStates.app.nDifficultyLevel]) {
-//--old--		piP->velocity[X] = (piP->velocity[X]*3)/4;
-//--old--		piP->velocity[Y] = (piP->velocity[Y]*3)/4;
-//--old--		piP->velocity[Z] = (piP->velocity[Z]*3)/4;
+//--old--		piP->velocity.p.x = (piP->velocity.p.x*3)/4;
+//--old--		piP->velocity.p.y = (piP->velocity.p.y*3)/4;
+//--old--		piP->velocity.p.z = (piP->velocity.p.z*3)/4;
 //--old--	}
 }
 
@@ -1157,9 +1164,9 @@ void ai_move_relative_to_player(tObject *objP, tAILocal *ailP, fix dist_to_playe
 
 			fieldOfView = gameData.bots.info [1][objP->id].fieldOfView[gameStates.app.nDifficultyLevel];
 
-			vec_to_laser = dobjp->position.vPos - objP->position.vPos;
-			dist_to_laser = vmsVector::normalize(vec_to_laser);
-			dot = vmsVector::dot(vec_to_laser, objP->position.mOrient[FVEC]);
+			VmVecSub(&vec_to_laser, &dobjp->position.vPos, &objP->position.vPos);
+			dist_to_laser = VmVecNormalize(&vec_to_laser);
+			dot = VmVecDot(&vec_to_laser, &objP->position.mOrient.fVec);
 
 			if (dot > fieldOfView) {
 				fix			laser_robot_dot;
@@ -1168,14 +1175,14 @@ void ai_move_relative_to_player(tObject *objP, tAILocal *ailP, fix dist_to_playe
 				//	The laser is seen by the robot, see if it might hit the robot.
 				//	Get the laser's direction.  If it's a polyobj, it can be gotten cheaply from the orientation matrix.
 				if (dobjp->renderType == RT_POLYOBJ)
-					laser_fVec = dobjp->position.mOrient[FVEC];
+					laser_fVec = dobjp->position.mOrient.fVec;
 				else {		//	Not a polyobj, get velocity and normalize.
-					laser_fVec = dobjp->mType.physInfo.velocity;	//dobjp->position.mOrient[FVEC];
-					vmsVector::normalize(laser_fVec);
+					laser_fVec = dobjp->mType.physInfo.velocity;	//dobjp->position.mOrient.fVec;
+					VmVecNormalize(&laser_fVec);
 				}
-				laser_vec_to_robot = objP->position.vPos - dobjp->position.vPos;
-				vmsVector::normalize(laser_vec_to_robot);
-				laser_robot_dot = vmsVector::dot(laser_fVec, laser_vec_to_robot);
+				VmVecSub(&laser_vec_to_robot, &objP->position.vPos, &dobjp->position.vPos);
+				VmVecNormalize(&laser_vec_to_robot);
+				laser_robot_dot = VmVecDot(&laser_fVec, &laser_vec_to_robot);
 
 				if ((laser_robot_dot > F1_0*7/8) && (dist_to_laser < F1_0*80)) {
 					int	evadeSpeed;
@@ -1221,6 +1228,16 @@ void ai_move_relative_to_player(tObject *objP, tAILocal *ailP, fix dist_to_playe
 
 }
 
+// --------------------------------------------------------------------------------------------------------------------
+//	Compute a somewhat random, normalized vector.
+void make_random_vector(vmsVector *vec)
+{
+	vec->p.x = (rand() - 16384) | 1;	// make sure we don't create null vector
+	vec->p.y = rand() - 16384;
+	vec->p.z = rand() - 16384;
+
+	VmVecNormalize(vec);
+}
 
 //	-------------------------------------------------------------------------------------------------------------------
 int	Break_on_object = -1;
@@ -1229,7 +1246,7 @@ void do_firing_stuff(tObject *objP, int player_visibility, vmsVector *vec_to_pla
 {
 	if (player_visibility >= 1) {
 		//	Now, if in robot's field of view, lock onto player
-		fix	dot = vmsVector::dot(objP->position.mOrient[FVEC], *vec_to_player);
+		fix	dot = VmVecDot(&objP->position.mOrient.fVec, vec_to_player);
 		if ((dot >= 7*F1_0/8) || (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 			tAIStatic	*aiP = &objP->cType.aiInfo;
 			tAILocal		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
@@ -1305,11 +1322,11 @@ void compute_vis_and_vec(tObject *objP, vmsVector *pos, tAILocal *ailP, vmsVecto
 				vmsVector	randvec;
 
 				gameData.ai.cloakInfo [cloak_index].lastTime = gameData.time.xGame;
-				randvec = vmsVector::Random();
-				gameData.ai.cloakInfo [cloak_index].vLastPos += randvec * (8*delta_time);
+				make_random_vector(&randvec);
+				VmVecScaleInc(&gameData.ai.cloakInfo [cloak_index].vLastPos, &randvec, 8*delta_time );
 			}
 
-			dist = vmsVector::normalizedDir(*vec_to_player, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
+			dist = VmVecNormalizedDir(vec_to_player, &gameData.ai.cloakInfo [cloak_index].vLastPos, pos);
 			*player_visibility = player_is_visible_from_object(objP, pos, botInfoP->fieldOfView[gameStates.app.nDifficultyLevel], vec_to_player);
 			// *player_visibility = 2;
 
@@ -1319,9 +1336,9 @@ void compute_vis_and_vec(tObject *objP, vmsVector *pos, tAILocal *ailP, vmsVecto
 			}
 		} else {
 			//	Compute expensive stuff -- vec_to_player and player_visibility
-			vmsVector::normalizedDir(*vec_to_player, gameData.ai.vBelievedPlayerPos, *pos);
-			if (vec_to_player->isZero()) {
-				(*vec_to_player)[X] = F1_0;
+			VmVecNormalizedDir(vec_to_player, &gameData.ai.vBelievedPlayerPos, pos);
+			if ((vec_to_player->p.x == 0) && (vec_to_player->p.y == 0) && (vec_to_player->p.z == 0)) {
+				vec_to_player->p.x = F1_0;
 			}
 			*player_visibility = player_is_visible_from_object(objP, pos, botInfoP->fieldOfView[gameStates.app.nDifficultyLevel], vec_to_player);
 
@@ -1347,7 +1364,7 @@ void compute_vis_and_vec(tObject *objP, vmsVector *pos, tAILocal *ailP, vmsVecto
 					DigiLinkSoundToPos( botInfoP->attackSound, objP->nSegment, 0, pos, 0 , nRobotSoundVolume);
 					ailP->timePlayerSoundAttacked = gameData.time.xGame;
 				}
-			}
+			} 
 
 			if ((*player_visibility == 2) && (ailP->nextMiscSoundTime < gameData.time.xGame)) {
 				ailP->nextMiscSoundTime = gameData.time.xGame + (rand() + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 2;
@@ -1380,12 +1397,12 @@ void move_object_to_legal_spot(tObject *objP)
 			fix			dist_to_center;
 
 			COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->nSegment);
-			goal_dir = vSegCenter - objP->position.vPos;
-			dist_to_center = vmsVector::normalize(goal_dir);
-			goal_dir *= objP->size;
-			objP->position.vPos += goal_dir;
+			VmVecSub(&goal_dir, &vSegCenter, &objP->position.vPos);
+			dist_to_center = VmVecNormalize(&goal_dir);
+			VmVecScale(&goal_dir, objP->size);
+			VmVecInc(&objP->position.vPos, &goal_dir);
 			if (!ObjectIntersectsWall(objP)) {
-				int	nNewSeg = FindSegByPos (objP->position.vPos, objP->nSegment, 1, 0);
+				int	nNewSeg = FindSegByPos (&objP->position.vPos, objP->nSegment, 1, 0);
 
 				if (nNewSeg != -1) {
 					RelinkObject(OBJ_IDX (objP), nNewSeg);
@@ -1409,8 +1426,8 @@ void move_towards_segment_center(tObject *objP)
 	vmsVector	vSegCenter, goal_dir;
 
 	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->nSegment);
-	goal_dir = vSegCenter - objP->position.vPos;
-	dist_to_center = vmsVector::normalize(goal_dir);
+	VmVecSub(&goal_dir, &vSegCenter, &objP->position.vPos);
+	dist_to_center = VmVecNormalize(&goal_dir);
 	if (dist_to_center < objP->size) {
 		//	Center is nearer than the distance we want to move, so move to center.
 		objP->position.vPos = vSegCenter;
@@ -1420,9 +1437,9 @@ void move_towards_segment_center(tObject *objP)
 	} else {
 		int	nNewSeg;
 		//	Move one radii towards center.
-		goal_dir *= objP->size;
-		objP->position.vPos += goal_dir;
-		nNewSeg = FindSegByPos (objP->position.vPos, objP->nSegment, 1, 0);
+		VmVecScale(&goal_dir, objP->size);
+		VmVecInc(&objP->position.vPos, &goal_dir);
+		nNewSeg = FindSegByPos (&objP->position.vPos, objP->nSegment, 1, 0);
 		if (nNewSeg == -1) {
 			objP->position.vPos = vSegCenter;
 			move_object_to_legal_spot(objP);
@@ -1554,7 +1571,7 @@ int create_gated_robot( int nSegment, int object_id)
 		return 0;
 	}
 
-	nObject = tObject::Create (OBJ_ROBOT, object_id, -1, nSegment, vObjPos, vmsMatrix::IDENTITY, objsize, CT_AI, MT_PHYSICS, RT_POLYOBJ, 0);
+	nObject = CreateObject (OBJ_ROBOT, object_id, -1, nSegment, &vObjPos, &vmdIdentityMatrix, objsize, CT_AI, MT_PHYSICS, RT_POLYOBJ, 0);
 
 	if ( nObject < 0 ) {
 		gameData.boss [0].nLastGateTime = gameData.time.xGame - 3*gameData.boss [0].nGateInterval/4;
@@ -1624,7 +1641,7 @@ int boss_fits_in_seg(tObject *boss_objp, int nSegment)
 
 			Assert((posnum-1 >= 0) && (posnum-1 < 8));
 			vertex_pos = gameData.segs.vertices[gameData.segs.segments[nSegment].verts[posnum-1]];
-			boss_objp->position.vPos = vmsVector::avg(vertex_pos, segcenter);
+			VmVecAvg(&boss_objp->position.vPos, &vertex_pos, &segcenter);
 		} else
 			boss_objp->position.vPos = segcenter;
 
@@ -1716,7 +1733,7 @@ void do_super_boss_stuff(tObject *objP, fix dist_to_player, int player_visibilit
 
 	// Only master player can cause gating to occur.
 	if ((IsMultiGame) && !NetworkIAmMaster())
-		return;
+		return; 
 
 	if ((dist_to_player < BOSS_TO_PLAYER_GATE_DISTANCE) || player_visibility || (IsMultiGame)) {
 		if (gameData.time.xGame - gameData.boss [0].nLastGateTime > gameData.boss [0].nGateInterval/2) {
@@ -1750,7 +1767,7 @@ void do_super_boss_stuff(tObject *objP, fix dist_to_player, int player_visibilit
 					MapObjnumLocalToLocal (nObject);
 
 				}
-			}
+			}	
 	}
 }
 
@@ -1776,7 +1793,7 @@ void ai_do_actual_firing_stuff(tObject *objP, tAIStatic *aiP, tAILocal *ailP, tR
 		//	Changed by mk, 01/04/94, onearm would take about 9 seconds until he can fire at you.
 		// if (((!object_animates) || (ailP->achievedState[aiP->CURRENT_GUN] == D1_AIS_FIRE)) && (ailP->nextPrimaryFire <= 0)) {
 		if (!object_animates || (ailP->nextPrimaryFire <= 0)) {
-			dot = vmsVector::dot(objP->position.mOrient[FVEC], *vec_to_player);
+			dot = VmVecDot(&objP->position.mOrient.fVec, vec_to_player);
 			if (dot >= 7*F1_0/8) {
 
 				if (aiP->CURRENT_GUN < gameData.bots.info [1][objP->id].nGuns) {
@@ -1789,8 +1806,8 @@ void ai_do_actual_firing_stuff(tObject *objP, tAIStatic *aiP, tAILocal *ailP, tR
 							return;
 						}
 					} else {
-						if (vGunPoint->isZero()) {
-							;
+						if ((vGunPoint->p.x == 0) && (vGunPoint->p.y == 0) && (vGunPoint->p.z == 0)) {
+							; 
 						} else {
 							if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))
 								return;
@@ -1814,7 +1831,7 @@ void ai_do_actual_firing_stuff(tObject *objP, tAIStatic *aiP, tAILocal *ailP, tR
 		}
 	} else if (WI_homingFlag (objP->id) == 1) {
 		//	Robots which fire homing weapons might fire even if they don't have a bead on the player.
-		if (((!object_animates) || (ailP->achievedState[aiP->CURRENT_GUN] == D1_AIS_FIRE)) && (ailP->nextPrimaryFire <= 0) && (vmsVector::dist(Hit_pos, objP->position.vPos) > F1_0*40)) {
+		if (((!object_animates) || (ailP->achievedState[aiP->CURRENT_GUN] == D1_AIS_FIRE)) && (ailP->nextPrimaryFire <= 0) && (VmVecDist(&Hit_pos, &objP->position.vPos) > F1_0*40)) {
 			if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))
 				return;
 			ai_fire_laser_at_player(objP, vGunPoint);
@@ -1896,7 +1913,7 @@ void DoD1AIFrame (tObject *objP)
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 		gameData.ai.vBelievedPlayerPos = gameData.objs.console->position.vPos;
 
-	dist_to_player = vmsVector::dist(gameData.ai.vBelievedPlayerPos, objP->position.vPos);
+	dist_to_player = VmVecDist(&gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
 	if (dist_to_player < F1_0 * 40)
 		dist_to_player = dist_to_player;
 	//	If this robot can fire, compute visibility from gun position.
@@ -1907,7 +1924,7 @@ void DoD1AIFrame (tObject *objP)
 		}
 	else {
 		vis_vec_pos = objP->position.vPos;
-		vGunPoint.setZero();
+		VmVecZero(&vGunPoint);
 	}
 
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
@@ -1939,7 +1956,7 @@ void DoD1AIFrame (tObject *objP)
 				case D1_AIM_STILL:
 					if (!((aiP->behavior == D1_AIB_STILL) || (aiP->behavior == D1_AIB_STATION)))	//	Behavior is still, so don't follow path.
 						AttemptToResumePath (objP);
-					break;
+					break;	
 				case D1_AIM_FOLLOW_PATH:
 					if (IsMultiGame)
 						ailP->mode = D1_AIM_STILL;
@@ -1948,17 +1965,17 @@ void DoD1AIFrame (tObject *objP)
 					break;
 				case D1_AIM_RUN_FROM_OBJECT:
 					move_towards_segment_center(objP);
-					objP->mType.physInfo.velocity[X] = 0;
-					objP->mType.physInfo.velocity[Y] = 0;
-					objP->mType.physInfo.velocity[Z] = 0;
+					objP->mType.physInfo.velocity.p.x = 0;
+					objP->mType.physInfo.velocity.p.y = 0;
+					objP->mType.physInfo.velocity.p.z = 0;
 					CreateNSegmentPath(objP, 5, -1);
 					ailP->mode = D1_AIM_RUN_FROM_OBJECT;
 					break;
 				case D1_AIM_HIDE:
 					move_towards_segment_center(objP);
-					objP->mType.physInfo.velocity[X] = 0;
-					objP->mType.physInfo.velocity[Y] = 0;
-					objP->mType.physInfo.velocity[Z] = 0;
+					objP->mType.physInfo.velocity.p.x = 0;
+					objP->mType.physInfo.velocity.p.y = 0;
+					objP->mType.physInfo.velocity.p.z = 0;
 					if (gameData.ai.nOverallAgitation > (50 - gameStates.app.nDifficultyLevel*4))
 						CreatePathToPlayer(objP, 4 + gameData.ai.nOverallAgitation/8, 1);
 					else {
@@ -2003,7 +2020,7 @@ void DoD1AIFrame (tObject *objP)
 			ailP->playerAwarenessTime = F1_0*2;
 			// aiP->GOAL_STATE = D1_AIS_REST;
 			}
-		}
+		} 
 	else
 		aiP->GOAL_STATE = D1_AIS_REST;							//new: 12/13/94
 
@@ -2039,7 +2056,7 @@ void DoD1AIFrame (tObject *objP)
 		object_animates = do_silly_animation(objP);
 		if (object_animates)
 			ai_frame_animation(objP);
-		}
+		} 
 	else {
 		//	If Object is supposed to animate, but we don't let it animate due to distance, then
 		//	we must change its state, else it will never update.
@@ -2074,7 +2091,7 @@ void DoD1AIFrame (tObject *objP)
 			//	If player cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
 			if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 				pv = 0;
-				dtp = vmsVector::dist(gameData.objs.console->position.vPos, objP->position.vPos)/4;
+				dtp = VmVecDist(&gameData.objs.console->position.vPos, &objP->position.vPos)/4;
 			}
 
 			do_super_boss_stuff(objP, dtp, pv);
@@ -2229,9 +2246,9 @@ void DoD1AIFrame (tObject *objP)
 					ai_multi_send_robot_position(nObject, 1);
 					D1_AI_evaded = 0;
 				}
-				else
+				else 
 					ai_multi_send_robot_position(nObject, -1);
-
+				
 				do_firing_stuff(objP, player_visibility, &vec_to_player);
 			}
 			break;
@@ -2270,20 +2287,20 @@ void DoD1AIFrame (tObject *objP)
 				if (!ai_multiplayer_awareness(objP, 75))
 					return;
 
-				fire_vec = objP->position.mOrient[FVEC];
-				fire_vec = -fire_vec;
-				fire_pos = objP->position.vPos + fire_vec;
+				fire_vec = objP->position.mOrient.fVec;
+				VmVecNegate(&fire_vec);
+				VmVecAdd(&fire_pos, &objP->position.vPos, &fire_vec);
 
 				CreateNewLaserEasy( &fire_vec, &fire_pos, OBJ_IDX (objP), PROXMINE_ID, 1);
 				ailP->nextPrimaryFire = F1_0*5;		//	Drop a proximity bomb every 5 seconds.
-
+				
 				#ifdef NETWORK
 				if (IsMultiGame)
 				{
 					ai_multi_send_robot_position(OBJ_IDX (objP), -1);
 					MultiSendRobotFire(OBJ_IDX (objP), -1, &fire_vec);
-				}
-				#endif
+				}				  
+				#endif	
 			}
 			break;
 
@@ -2401,7 +2418,7 @@ void DoD1AIFrame (tObject *objP)
 							ai_multi_send_robot_position(nObject, -1);
 							D1_AI_evaded = 0;
 						}
-						else
+						else				
 							ai_multi_send_robot_position(nObject, -1);
 					}
 				} else if ((objP->nSegment != aiP->nHideSegment) && (dist_to_player > F1_0*80) && (!(IsMultiGame))) {
@@ -2424,8 +2441,8 @@ void DoD1AIFrame (tObject *objP)
 			if (!ai_multiplayer_awareness(objP, 62))
 				return;
 			COMPUTE_SIDE_CENTER (&vCenter, gameData.segs.segments + objP->nSegment, aiP->GOALSIDE);
-			goal_vector = vCenter - objP->position.vPos;
-			vmsVector::normalize(goal_vector);
+			VmVecSub(&goal_vector, &vCenter, &objP->position.vPos);
+			VmVecNormalize(&goal_vector);
 			ai_turn_towards_vector(&goal_vector, objP, botInfoP->turnTime[gameStates.app.nDifficultyLevel]);
 			move_towards_vector(objP, &goal_vector);
 			ai_multi_send_robot_position(nObject, -1);
@@ -2494,7 +2511,7 @@ void DoD1AIFrame (tObject *objP)
 			case	D1_AIS_NONE:
 				compute_vis_and_vec(objP, &vis_vec_pos, ailP, &vec_to_player, &player_visibility, botInfoP, &visibility_and_vec_computed);
 
-				dot = vmsVector::dot(objP->position.mOrient[FVEC], vec_to_player);
+				dot = VmVecDot(&objP->position.mOrient.fVec, &vec_to_player);
 				if (dot >= F1_0/2)
 					if (aiP->GOAL_STATE == D1_AIS_REST)
 						aiP->GOAL_STATE = D1_AIS_SRCH;
@@ -2537,7 +2554,7 @@ void DoD1AIFrame (tObject *objP)
 				compute_vis_and_vec(objP, &vis_vec_pos, ailP, &vec_to_player, &player_visibility, botInfoP, &visibility_and_vec_computed);
 
 				if (player_visibility) {
-					if (!ai_multiplayer_awareness(objP, (ROBOT_FIRE_AGITATION-1)))
+					if (!ai_multiplayer_awareness(objP, (ROBOT_FIRE_AGITATION-1))) 
 					{
 						if (IsMultiGame) {
 							ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
@@ -2589,11 +2606,11 @@ void DoD1AIFrame (tObject *objP)
 //--mk, 121094 -- void spin_robot(tObject *robot, vmsVector *collision_point)
 //--mk, 121094 -- {
 //--mk, 121094 -- 	if (collision_point->p.x != 3) {
-//--mk, 121094 -- 		robot->physInfo.rotVel[X] = 0x1235;
-//--mk, 121094 -- 		robot->physInfo.rotVel[Y] = 0x2336;
-//--mk, 121094 -- 		robot->physInfo.rotVel[Z] = 0x3737;
+//--mk, 121094 -- 		robot->physInfo.rotVel.p.x = 0x1235;
+//--mk, 121094 -- 		robot->physInfo.rotVel.p.y = 0x2336;
+//--mk, 121094 -- 		robot->physInfo.rotVel.p.z = 0x3737;
 //--mk, 121094 -- 	}
-//--mk, 121094 --
+//--mk, 121094 -- 
 //--mk, 121094 -- }
 
 //	-----------------------------------------------------------------------------------

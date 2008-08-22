@@ -545,7 +545,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I just externed it.
+void ShowOrderForm (void);      // John didn't want this in inferno.h so I just externed it.
 
 //returns flag, true means quit menu
 int ExecMainMenuOption (int nChoice) 

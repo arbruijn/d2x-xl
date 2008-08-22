@@ -32,48 +32,48 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 tJointPos test_joints [MAX_ROBOT_JOINTS] = {
 
 //gun 0
-	{2,vmsAngVec::Create(deg(-30),0,0)},         //rest (2 joints)
-	{3,vmsAngVec::Create(deg(-40),0,0)},
+	{2,{deg(-30),0,0}},         //rest (2 joints)
+	{3,{deg(-40),0,0}},
 
-	{2,vmsAngVec::Create(deg(0),0,0)},           //alert
-	{3,vmsAngVec::Create(deg(0),0,0)},
+	{2,{deg(0),0,0}},           //alert
+	{3,{deg(0),0,0}},
 
-	{2,vmsAngVec::Create(deg(0),0,0)},           //fire
-	{3,vmsAngVec::Create(deg(0),0,0)},
+	{2,{deg(0),0,0}},           //fire
+	{3,{deg(0),0,0}},
 
-	{2,vmsAngVec::Create(deg(50),0,0)},          //recoil
-	{3,vmsAngVec::Create(deg(-50),0,0)},
+	{2,{deg(50),0,0}},          //recoil
+	{3,{deg(-50),0,0}},
 
-	{2,vmsAngVec::Create(deg(10),0,deg(70))},    //flinch
-	{3,vmsAngVec::Create(deg(0),deg(20),0)},
+	{2,{deg(10),0,deg(70)}},    //flinch
+	{3,{deg(0),deg(20),0}},
 
 //gun 1
-	{4,vmsAngVec::Create(deg(-30),0,0)},         //rest (2 joints)
-	{5,vmsAngVec::Create(deg(-40),0,0)},
+	{4,{deg(-30),0,0}},         //rest (2 joints)
+	{5,{deg(-40),0,0}},
 
-	{4,vmsAngVec::Create(deg(0),0,0)},           //alert
-	{5,vmsAngVec::Create(deg(0),0,0)},
+	{4,{deg(0),0,0}},           //alert
+	{5,{deg(0),0,0}},
 
-	{4,vmsAngVec::Create(deg(0),0,0)},           //fire
-	{5,vmsAngVec::Create(deg(0),0,0)},
+	{4,{deg(0),0,0}},           //fire
+	{5,{deg(0),0,0}},
 
-	{4,vmsAngVec::Create(deg(50),0,0)},          //recoil
-	{5,vmsAngVec::Create(deg(-50),0,0)},
+	{4,{deg(50),0,0}},          //recoil
+	{5,{deg(-50),0,0}},
 
-	{4,vmsAngVec::Create(deg(20),0,deg(-50))},   //flinch
-	{5,vmsAngVec::Create(deg(0),0,deg(20))},
+	{4,{deg(20),0,deg(-50)}},   //flinch
+	{5,{deg(0),0,deg(20)}},
 
 //rest of body (the head)
 
-	{1,vmsAngVec::Create(deg(70),0,0)},          //rest (1 joint, head)
+	{1,{deg(70),0,0}},          //rest (1 joint, head)
 
-	{1,vmsAngVec::Create(deg(0),0,0)},           //alert
+	{1,{deg(0),0,0}},           //alert
 
-	{1,vmsAngVec::Create(deg(0),0,0)},           //fire
+	{1,{deg(0),0,0}},           //fire
 
-	{1,vmsAngVec::Create(deg(0),0,0)},           //recoil
+	{1,{deg(0),0,0}},           //recoil
 
-	{1,vmsAngVec::Create(deg(-20),deg(15),0)},   //flinch
+	{1,{deg(-20),deg(15),0}},   //flinch
 
 };
 #endif
@@ -99,16 +99,16 @@ vGunPos = vGunPoints [nGun];
 nSubModel = botInfoP->gunSubModels [nGun];
 //instance up the tree for this gun
 while (nSubModel != 0) {
-	m = vmsMatrix::Create(objP->rType.polyObjInfo.animAngles [nSubModel]);
-	vmsMatrix::transpose(m);
-	vRot = m * vGunPos;
-	vGunPos = vRot + pm->subModels.offsets[nSubModel];
+	VmAngles2Matrix (&m, &objP->rType.polyObjInfo.animAngles [nSubModel]);
+	VmTransposeMatrix (&m);
+	VmVecRotate (&vRot, &vGunPos, &m);
+	VmVecAdd (&vGunPos, &vRot, &pm->subModels.offsets [nSubModel]);
 	nSubModel = pm->subModels.parents [nSubModel];
 	}
 //now instance for the entire tObject
 //VmVecInc (&vGunPos, gameData.models.offsets + botInfoP->nModel);
-*vGunPoint = *ObjectView(objP) * vGunPos;
-*vGunPoint += objP->position.vPos;
+VmVecRotate (vGunPoint, &vGunPos, ObjectView (objP));
+VmVecInc (vGunPoint, &objP->position.vPos);
 return 1;
 }
 
@@ -274,7 +274,7 @@ int RobotInfoReadN(tRobotInfo *pri, int n, CFILE *fp)
 for (i = 0; i < n; i++, pri++) {
 	pri->nModel = CFReadInt(fp);
 	for (j = 0; j < MAX_GUNS; j++)
-		CFReadVector(pri->gunPoints[j], fp);
+		CFReadVector(&(pri->gunPoints[j]), fp);
 	CFRead(pri->gunSubModels, MAX_GUNS, 1, fp);
 
 	pri->nExp1VClip = CFReadShort(fp);
@@ -363,7 +363,7 @@ int JointPosReadN(tJointPos *jp, int n, CFILE *fp)
 
 	for (i = 0; i < n; i++) {
 		jp[i].jointnum = CFReadShort(fp);
-		CFReadAngVec(jp[i].angles, fp);
+		CFReadAngVec(&jp[i].angles, fp);
 	}
 	return i;
 }

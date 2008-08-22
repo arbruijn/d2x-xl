@@ -78,7 +78,7 @@ char *pszPauseMsg = NULL;
 //#define _MARK_ON 1
 #ifdef __WATCOMC__
 #if __WATCOMC__ < 1000
-#include <wsample.h>		//should come after inferno[HA] to get mark setting
+#include <wsample.h>		//should come after inferno.h to get mark setting
 #endif
 #endif
 
@@ -110,7 +110,7 @@ void TransferEnergyToShield(fix time)
 
 	if (time <= 0)
 		return;
-	e = std::min(std::min(time*CONVERTER_RATE, LOCALPLAYER.energy - INITIAL_ENERGY), 
+	e = min(min(time*CONVERTER_RATE, LOCALPLAYER.energy - INITIAL_ENERGY), 
 		         (MAX_SHIELDS-LOCALPLAYER.shields)*CONVERTER_SCALE);
 	if (e <= 0) {
 		if (LOCALPLAYER.energy <= INITIAL_ENERGY)
@@ -363,18 +363,15 @@ void SpeedtestFrame(void)
 	gameData.speedtest.nSide=gameData.speedtest.nSegment % MAX_SIDES_PER_SEGMENT;
 
 	COMPUTE_SEGMENT_CENTER(&gameData.objs.viewer->position.vPos, &gameData.segs.segments[gameData.speedtest.nSegment]);
-	gameData.objs.viewer->position.vPos[X] += 0x10;	
-	gameData.objs.viewer->position.vPos[Y] -= 0x10;	
-	gameData.objs.viewer->position.vPos[Z] += 0x17;
+	gameData.objs.viewer->position.vPos.p.x += 0x10;	
+	gameData.objs.viewer->position.vPos.p.y -= 0x10;	
+	gameData.objs.viewer->position.vPos.p.z += 0x17;
 
 	RelinkObject(OBJ_IDX (gameData.objs.viewer), gameData.speedtest.nSegment);
 	COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[gameData.speedtest.nSegment], gameData.speedtest.nSide);
-	vmsVector::normalizedDir(view_dir, center_point, gameData.objs.viewer->position.vPos);
-	/*
-	gameData.objs.viewer->position.mOrient = vmsMatrix::Create(view_dir, NULL, NULL);
-	*/
-	// TODO: MatrixCreateFCheck
-	gameData.objs.viewer->position.mOrient = vmsMatrix::CreateF(view_dir);
+	VmVecNormalizedDir(&view_dir, &center_point, &gameData.objs.viewer->position.vPos);
+	VmVector2Matrix(&gameData.objs.viewer->position.mOrient, &view_dir, NULL, NULL);
+
 	if (((gameData.app.nFrameCount - gameData.speedtest.nFrameStart) % 10) == 0) {
 #if TRACE
 		con_printf (CONDBG, ".");

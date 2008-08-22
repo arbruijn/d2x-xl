@@ -49,7 +49,7 @@ void InitAISystem (void)
 	int	i;
 
 #if TRACE
-	con_printf (CONDBG, "Trying to D2_ALLOC %i bytes for gameData.bots.pInfo.\n",
+	con_printf (CONDBG, "Trying to D2_ALLOC %i bytes for gameData.bots.pInfo.\n", 
 					gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
 #endif
 	gameData.bots.pInfo = (tRobotInfo *) D2_ALLOC (gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
@@ -74,19 +74,19 @@ void InitAISystem (void)
 int AIBehaviorToMode (int behavior)
 {
 switch (behavior) {
-	case AIB_STILL:
+	case AIB_STILL:		
 		return AIM_IDLING;
-	case AIB_NORMAL:
+	case AIB_NORMAL:		
 		return AIM_CHASE_OBJECT;
-	case AIB_BEHIND:
+	case AIB_BEHIND:		
 		return AIM_BEHIND;
-	case AIB_RUN_FROM:
+	case AIB_RUN_FROM:	
 		return AIM_RUN_FROM_OBJECT;
-	case AIB_SNIPE:
+	case AIB_SNIPE:		
 		return AIM_IDLING;	//	Changed, 09/13/95, MK, snipers are still until they see you or are hit.
-	case AIB_STATION:
+	case AIB_STATION:		
 		return AIM_IDLING;
-	case AIB_FOLLOW:
+	case AIB_FOLLOW:		
 		return AIM_FOLLOW_PATH;
 	default:	Int3 ();	//	Contact Mike: Error, illegal behavior nType
 	}
@@ -117,7 +117,7 @@ ailP->nPrevVisibility = 0;
 if (behavior != -1) {
 	aiP->behavior = (ubyte) behavior;
 	ailP->mode = AIBehaviorToMode (aiP->behavior);
-	}
+	} 
 else if (!((aiP->behavior >= MIN_BEHAVIOR) && (aiP->behavior <= MAX_BEHAVIOR))) {
 #if TRACE
 	con_printf (CONDBG, " [obj %i -> normal] ", nObject);
@@ -136,7 +136,7 @@ if (botInfoP->attackType) {
 	aiP->behavior = AIB_NORMAL;
 	ailP->mode = AIBehaviorToMode (aiP->behavior);
 	}
-objP->mType.physInfo.velocity.setZero();
+VmVecZero (&objP->mType.physInfo.velocity);
 // -- ailP->waitTime = F1_0*5;
 ailP->playerAwarenessTime = 0;
 ailP->playerAwarenessType = 0;
@@ -266,13 +266,15 @@ void InitAIFrame (void)
 	int abState;
 
 if (gameData.ai.nMaxAwareness < PA_PLAYER_COLLISION)
-	gameData.ai.vLastPlayerPosFiredAt.setZero();
-if (!gameData.ai.vLastPlayerPosFiredAt.isZero())
-	gameData.ai.nDistToLastPlayerPosFiredAt =
-		vmsVector::dist(gameData.ai.vLastPlayerPosFiredAt, gameData.ai.vBelievedPlayerPos);
+	VmVecZero (&gameData.ai.vLastPlayerPosFiredAt);
+if (gameData.ai.vLastPlayerPosFiredAt.p.x ||
+	 gameData.ai.vLastPlayerPosFiredAt.p.y ||
+	 gameData.ai.vLastPlayerPosFiredAt.p.z)
+	gameData.ai.nDistToLastPlayerPosFiredAt = 
+		VmVecDistQuick (&gameData.ai.vLastPlayerPosFiredAt, &gameData.ai.vBelievedPlayerPos);
 else
 	gameData.ai.nDistToLastPlayerPosFiredAt = F1_0 * 10000;
-abState = gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState &&
+abState = gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && 
 			  (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER);
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || HeadlightIsOn (-1) || abState)
 	AIDoCloakStuff ();

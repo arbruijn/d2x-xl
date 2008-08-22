@@ -566,10 +566,10 @@ int OOF_RenderModel (tObject *objP, tOOFObject *po, float *fLight)
 	int				r = 1, i;
 	tOOF_vector		vo = {0.0f,0.0f,0.0f};
 
-G3StartInstanceMatrix(objP->position.vPos, objP->position.mOrient);
+G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 if (!gameStates.ogl.bUseTransform)
-	OOF_MatVms2Oof (&mView, viewInfo.view[0]);
-OOF_VecVms2Oof (&vPos, viewInfo.pos);
+	OOF_MatVms2Oof (&mView, viewInfo.view);
+OOF_VecVms2Oof (&vPos, &viewInfo.pos);
 if (IsMultiGame && netGame.BrightPlayers)
 	*fLight = 1.0f;
 OglActiveTexture (GL_TEXTURE0, 0);

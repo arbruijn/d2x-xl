@@ -52,14 +52,14 @@ typedef unsigned int uint;
 #endif
 
 #ifdef _WIN32
-# include <stdlib.h> // this is where std::minand max are defined
+# include <stdlib.h> // this is where min and max are defined
 #endif
-//#ifndef min
-//7#define std::min(a,b) (((a)>(b))?(b):(a))
-//#endif
-//#ifndef max
-//#/define max(a,b) (((a)<(b))?(b):(a))
-//#endif
+#ifndef min
+#	define min(a,b) (((a)>(b))?(b):(a))
+#endif
+#ifndef max
+#	define max(a,b) (((a)<(b))?(b):(a))
+#endif
 
 #if defined(_WIN32)
 # ifdef __MINGW32__

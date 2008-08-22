@@ -70,12 +70,12 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
 			rx = FixMul(d_rand() - 16384, h);
 			rz = FixMul(d_rand() - 16384, h);
-			gameData.objs.console->mType.physInfo.rotVel[X] += rx;
-			gameData.objs.console->mType.physInfo.rotVel[Z] += rz;
+			gameData.objs.console->mType.physInfo.rotVel.p.x += rx;
+			gameData.objs.console->mType.physInfo.rotVel.p.z += rz;
 			//	Shake the buddy!
 			if (gameData.escort.nObjNum != -1) {
-				OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel[X] += rx*4;
-				OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel[Z] += rz*4;
+				OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.p.x += rx*4;
+				OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.p.z += rz*4;
 				}
 			//	Shake a guided missile!
 			gameStates.gameplay.seismic.nMagnitude += rx;
@@ -148,12 +148,12 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 		h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
 		rx = FixMul(d_rand() - 16384, h);
 		rz = FixMul(d_rand() - 16384, h);
-		gameData.objs.console->mType.physInfo.rotVel[X] += rx;
-		gameData.objs.console->mType.physInfo.rotVel[Z] += rz;
+		gameData.objs.console->mType.physInfo.rotVel.p.x += rx;
+		gameData.objs.console->mType.physInfo.rotVel.p.z += rz;
 		//	Shake the buddy!
 		if (gameData.escort.nObjNum != -1) {
-			OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel[X] += rx*4;
-			OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel[Z] += rz*4;
+			OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.p.x += rx*4;
+			OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel.p.z += rz*4;
 			}
 		//	Shake a guided missile!
 		gameStates.gameplay.seismic.nMagnitude += rx;

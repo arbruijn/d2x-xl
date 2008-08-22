@@ -130,7 +130,7 @@ static void showFrame(unsigned char *buf, unsigned int bufw, unsigned int bufh,
 		{
 			sprite->format->palette->colors[i].r = (*pal++) << 2;
 			sprite->format->palette->colors[i].g = (*pal++) << 2;
-			sprite->format->palette->colors[i][BA] = (*pal++) << 2;
+			sprite->format->palette->colors[i].b = (*pal++) << 2;
 			sprite->format->palette->colors[i].unused = 0;
 		}
 	}
@@ -138,11 +138,11 @@ static void showFrame(unsigned char *buf, unsigned int bufw, unsigned int bufh,
 	srcRect.x = sx;
 	srcRect.y = sy;
 	srcRect.w = w;
-	srcRect[HA] = h;
+	srcRect.h = h;
 	destRect.x = dstx;
 	destRect.y = dsty;
 	destRect.w = w;
-	destRect[HA] = h;
+	destRect.h = h;
 
 	SDL_BlitSurface(sprite, &srcRect, g_screen, &destRect);
 #ifdef LANDSCAPE

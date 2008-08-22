@@ -52,7 +52,7 @@ extern "C" {
 /*************************************************************/
 
 /* Header file version number, required by OpenGL ABI for Linux */
-/* glxext[HA] last updated 2005/04/28 */
+/* glxext.h last updated 2005/04/28 */
 /* Current version at http://oss.sgi.com/projects/ogl-sample/registry/ */
 #define GLX_GLXEXT_VERSION 11
 
