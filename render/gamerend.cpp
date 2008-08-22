@@ -107,7 +107,7 @@ if (gameData.marker.nDefiningMsg) {
 
 //------------------------------------------------------------------------------
 
-void GameDrawMultiMessage ()
+void GameDrawMultiMessage (void)
 {
 	char temp_string [MAX_MULTI_MESSAGE_LEN+25];
 
@@ -130,7 +130,7 @@ if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bDefining))	{
 
 fix ShowView_textTimer = -1;
 
-void DrawWindowLabel ()
+void DrawWindowLabel (void)
 {
 if (ShowView_textTimer > 0) {
 	char *viewer_name, *control_name;
@@ -209,7 +209,7 @@ if (ShowView_textTimer > 0) {
 
 //------------------------------------------------------------------------------
 
-void RenderCountdownGauge ()
+void RenderCountdownGauge (void)
 {
 if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameData.reactor.countdown.nSecsLeft>-1)) { // && (gameData.reactor.countdown.nSecsLeft<127))	{
 	int	y;
@@ -218,7 +218,7 @@ if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameDa
 		//	On last level, we don't want a countdown.
 		if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
 			(gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {
-			if (!(gameData.app.nGameMode & GM_MULTI))
+			if (!(IsMultiGame))
 				return;
 			if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 				return;
@@ -237,7 +237,7 @@ if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameDa
 
 //------------------------------------------------------------------------------
 
-void GameDrawHUDStuff ()
+void GameDrawHUDStuff (void)
 {
 #ifdef _DEBUG
 if (Debug_pause) {
@@ -268,12 +268,8 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	GrSetCurFont (GAME_FONT);    //GAME_FONT);
 	GrSetFontColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
 	GrGetStringSize (message, &w, &h, &aw);
-	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-		if (grdCurCanv->cvBitmap.bmProps.h > 240)
-			h += 40;
-		else
-			h += 15;
-		}
+	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) 
+		h += (grdCurCanv->cvBitmap.bmProps.h > 240) ? 40 : 15;
 	else if (gameStates.render.cockpit.nMode == CM_LETTERBOX)
 		h += 7;
 	if (gameStates.render.cockpit.nMode != CM_REAR_VIEW && !bSavingMovieFrames)
@@ -290,22 +286,22 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 		GrSetCurFont (GAME_FONT);
 		GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 		if (gameStates.input.nCruiseSpeed > 0) {
-			int line_spacing = GAME_FONT->ftHeight + GAME_FONT->ftHeight/4;
+			int nLineSpacing = GAME_FONT->ftHeight + GAME_FONT->ftHeight/4;
 
 			if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
-				if (gameData.app.nGameMode & GM_MULTI)
-					y -= line_spacing * 11;	//64
+				if (IsMultiGame)
+					y -= nLineSpacing * 11;	//64
 				else
-					y -= line_spacing * 6;	//32
+					y -= nLineSpacing * 6;	//32
 				}
 			else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
-				if (gameData.app.nGameMode & GM_MULTI)
-					y -= line_spacing * 8;	//48
+				if (IsMultiGame)
+					y -= nLineSpacing * 8;	//48
 				else
-					y -= line_spacing * 4;	//24
+					y -= nLineSpacing * 4;	//24
 				}
 			else {
-				y = line_spacing * 2;	//12
+				y = nLineSpacing * 2;	//12
 				x = 20+2;
 				}
 			GrPrintF (NULL, x, y, "%s %2d%%", TXT_CRUISE, f2i (gameStates.input.nCruiseSpeed));
@@ -671,14 +667,14 @@ char DemoWBUType []={0, WBUMSL, WBUMSL, WBU_REAR, WBU_ESCORT, WBU_MARKER, WBUMSL
 char DemoRearCheck []={0, 0, 0, 1, 0, 0, 0};
 const char *DemoExtraMessage []={"PLAYER", "GUIDED", "MISSILE", "REAR", "GUIDE-BOT", "MARKER", "SHIP"};
 
-void ShowExtraViews ()
+void ShowExtraViews (void)
 {
 	int		bDidMissileView = 0;
 	int		saveNewDemoState = gameData.demo.nState;
 	tObject	*objP;
 	int		w;
 
-if (gameData.demo.nState==ND_STATE_PLAYBACK) {
+if (gameData.demo.nState == ND_STATE_PLAYBACK) {
    if (nDemoDoLeft) {
       if (nDemoDoLeft == 3)
 			DoCockpitWindowView (0, gameData.objs.console, 1, WBU_REAR, "REAR");
@@ -688,7 +684,7 @@ if (gameData.demo.nState==ND_STATE_PLAYBACK) {
    else
 		DoCockpitWindowView (0, NULL, 0, WBU_WEAPON, NULL);
 	if (nDemoDoRight) {
-      if (nDemoDoRight==3)
+      if (nDemoDoRight == 3)
 			DoCockpitWindowView (1, gameData.objs.console, 1, WBU_REAR, "REAR");
       else
 			DoCockpitWindowView (1, &demoRightExtra, DemoRearCheck [nDemoDoRight], DemoWBUType [nDemoDoRight], DemoExtraMessage [nDemoDoRight]);
@@ -746,11 +742,11 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 
 		case CV_REAR:
 			if (gameStates.render.bRearView) {		//if big window is rear view, show front here
-				gameStates.render.nRenderingType = 3+ (w<<4);
+				gameStates.render.nRenderingType = 3+ (w << 4);			
 				DoCockpitWindowView (w, gameData.objs.console, 0, WBU_REAR, "FRONT");
 				}
 			else {					//show normal rear view
-				gameStates.render.nRenderingType = 3+ (w<<4);
+				gameStates.render.nRenderingType = 3+ (w << 4);			
 				DoCockpitWindowView (w, gameData.objs.console, 1, WBU_REAR, "REAR");
 				}
 			break;

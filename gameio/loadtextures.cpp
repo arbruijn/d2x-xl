@@ -812,8 +812,10 @@ if (CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
 		bm.bmBPP = bTGA ? 4 : 1;
 		if (!(bm.bmProps.w * bm.bmProps.h))
 			continue;
+#if 0
 		if (bmOffset + bm.bmProps.h * bm.bmProps.rowSize > bmDataSize)
 			break;
+#endif
 		bm.bmAvgColor = bmh [i].bmAvgColor;
 		bm.bmType = BM_TYPE_ALT;
 		if (!(bm.bmTexBuf = (ubyte *) GrAllocBitmapData (bm.bmProps.w, bm.bmProps.h, bm.bmBPP)))
@@ -856,10 +858,14 @@ if (CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
 			}
 		else {
 			int nSize = (int) bm.bmProps.w * (int) bm.bmProps.h;
+#if 1
+			CFRead (bm.bmTexBuf, 1, nSize, &cf);
+#else	
 			if (nSize != (int) CFRead (bm.bmTexBuf, 1, nSize, &cf)) {
 				D2_FREE (bm.bmTexBuf);
 				break;
 				}
+#endif
 			bm.bmPalette = gamePalette;
 			j = indices [i];
 			bm.bmHandle = j;

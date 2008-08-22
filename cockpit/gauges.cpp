@@ -1743,7 +1743,7 @@ void DrawNumericalDisplay (int shield, int energy)
 
 //	-----------------------------------------------------------------------------
 
-void DrawKeys ()
+void DrawKeys (void)
 {
 GrSetCurrentCanvas (GetCurrentGameScreen ());
 
@@ -2584,7 +2584,7 @@ if (!gameStates.render.bRearView && (gameStates.render.cockpit.nMode != CM_REAR_
 			HUDShowKeys ();
 		HUDShowCloakInvul ();
 
-		if ((gameData.demo.nState==ND_STATE_RECORDING) && (LOCALPLAYER.flags != oldFlags [gameStates.render.vr.nCurrentPage])) {
+		if ((gameData.demo.nState == ND_STATE_RECORDING) && (LOCALPLAYER.flags != oldFlags [gameStates.render.vr.nCurrentPage])) {
 			NDRecordPlayerFlags (oldFlags [gameStates.render.vr.nCurrentPage], LOCALPLAYER.flags);
 			oldFlags [gameStates.render.vr.nCurrentPage] = LOCALPLAYER.flags;
 			}
@@ -2615,7 +2615,7 @@ if (!gameStates.render.bRearView && (gameStates.render.cockpit.nMode != CM_REAR_
 	return;
 	}
 
-if (gameStates.render.bRearView && gameStates.render.cockpit.nMode!=CM_REAR_VIEW) {
+if (gameStates.render.bRearView && gameStates.render.cockpit.nMode != CM_REAR_VIEW) {
 	HUDRenderMessageFrame ();
 	GrSetCurFont (GAME_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
