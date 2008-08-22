@@ -388,10 +388,11 @@ if (bmP)
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	faceP = faceP;
 #endif
-for (h = faceP->nTris, triP = gameData.segs.faces.tris + faceP->nTriIndex; h; h--, triP++) {
+triP = gameData.segs.faces.tris + faceP->nTriIndex;
+for (h = faceP->nTris; h; h--, triP++) {
 	for (i = 0, j = triP->nIndex; i < 3; i++, j++) {
 #if 1
-		G3TransformPoint (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
+		G3TransformPoint (vertices + i, (fVector *) (gameData.segs.faces.vertices + j), 0);
 #else
 		if (gameStates.render.automap.bDisplay)
 			G3TransformPoint (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
@@ -770,7 +771,7 @@ if (bmP) {
 		}
 	if (bDecal == 1)
 		bmP = BmOverride (bmP, -1);
-	{//if ((bmP != renderItems.bmP [bDecal]) || (nFrame != renderItems.nFrame) || (nWrap != renderItems.nWrap)) {
+	if ((bmP != renderItems.bmP [bDecal]) || (nFrame != renderItems.nFrame) || (nWrap != renderItems.nWrap)) {
 		gameData.render.nStateChanges++;
 		if (bmP) {
 			if (OglBindBmTex (bmP, 1, nTransp)) {
@@ -840,8 +841,17 @@ bLightmaps = renderItems.bLightmaps && (faceP != NULL);
 if (!bLightmaps)
 	bLightmaps = bLightmaps;
 if (faceP) {
-	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide))) {
+#if 0
+		if (triP) {
+			if ((triP->nIndex - faceP->nIndex) / 3 < 22)
+				return;
+			if ((triP->nIndex - faceP->nIndex) / 3 > 23)
+				return;
+			}
+#endif
 		nDbgSeg = nDbgSeg;
+		}	
 	}
 else
 	nDbgSeg = nDbgSeg;
@@ -878,11 +888,15 @@ if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWr
 			glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 		glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 		}
+	OglSetupTransform (faceP != NULL);
 	if (item->nColors > 1) {
 		glActiveTexture (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
 		glEnableClientState (GL_COLOR_ARRAY);
-		glColorPointer (4, GL_FLOAT, 0, item->color);
+		if (faceP || triP)
+			glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color + nIndex);
+		else
+			glColorPointer (4, GL_FLOAT, 0, item->color);
 		if (bLightmaps) {
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord + nIndex);
 			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + nIndex);
@@ -893,7 +907,6 @@ if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWr
 		glColor4fv ((GLfloat *) item->color);
 	else
 		glColor3d (1, 1, 1);
-	OglSetupTransform (faceP != NULL);
 	i = item->bAdditive;
 	glEnable (GL_BLEND);
 	if (i == 1)
@@ -1072,6 +1085,8 @@ DrawPolygonObject (item->objP, 0, 1);
 glDisable (GL_TEXTURE_2D);
 renderItems.bTextured = 0;
 renderItems.bClientState = 0;
+renderItems.bClientTexCoord = 0;
+renderItems.bClientColor = 0;
 //SEM_ENTER (SEM_LIGHTNINGS)
 //SEM_ENTER (SEM_SPARKS)
 }
