@@ -1260,9 +1260,9 @@ if (bLightnings) {
 	RenderLightnings ();
 	}
 //PrintLog ("RenderItems\n");
-RenderItems ();
 if (bLightnings)
 	SEM_LEAVE (SEM_LIGHTNINGS)
+RenderItems ();
 #if 1
 if (bSmoke)
 	SEM_LEAVE (SEM_SMOKE)

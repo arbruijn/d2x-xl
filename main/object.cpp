@@ -1544,7 +1544,7 @@ if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 	time_t t = (gameStates.app.nSDLTicks - t0) % 1000;
 	t0 = gameStates.app.nSDLTicks;
 	if (t) {
-		vmsAngVec a = {0, 0, (fix) ((float) (F1_0 / 512) * t / 25.0f)};
+		vmsAngVec a = {0, 0, (fixang) ((float) (F1_0 / 512) * t / 25.0f)};
 		vmsMatrix mRotate, mOrient;
 		VmAngles2Matrix (&mRotate, &a);
 		VmMatMul (&mOrient, &objP->position.mOrient, &mRotate);

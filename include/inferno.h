@@ -3567,7 +3567,7 @@ static inline void SemWait (uint sem)
 
 while (gameData.app.semaphores [sem]) {
 	G3_SLEEP (0);
-	if (SDL_GetTicks () - t0 > 100) {
+	if (SDL_GetTicks () - t0 > 50) {
 		PrintLog ("multi threading got stuck (semaphore: %d)\n", sem);
 		gameData.app.bUseMultiThreading [rtEffects] = 0;
 		gameData.app.semaphores [sem] = 0;
