@@ -475,6 +475,9 @@ int	Last_buddy_polish_path_frame;
 //				Only drop up to the first three points.
 int SmoothPath (tObject *objP, tPointSeg *pointSegP, int numPoints)
 {
+#if 1
+return numPoints;
+#else
 	int			i, nFirstPoint = 0;
 	tFVIQuery	fq;
 	tFVIData		hit_data;
@@ -510,6 +513,7 @@ if (nFirstPoint) {
 		pointSegP [i - nFirstPoint] = pointSegP [i];
 	}
 return numPoints - nFirstPoint;
+#endif
 }
 
 //	-------------------------------------------------------------------------------------------------------
@@ -641,14 +645,14 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 //			gameData.ai.freePointSegs				global pointer into gameData.ai.pointSegs array
 //	Change, 10/07/95: Used to create path to gameData.objs.console->position.vPos.p.  Now creates path to gameData.ai.vBelievedPlayerPos.p.
 
-void CreatePathToPlayer (tObject *objP, int max_length, int bSafeMode)
+void CreatePathToPlayer (tObject *objP, int nMaxDepth, int bSafeMode)
 {
 	tAIStatic	*aiP = &objP->cType.aiInfo;
 	tAILocal		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
 	int			nStartSeg, nEndSeg;
 
-if (max_length == -1)
-	max_length = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
+if (nMaxDepth == -1)
+	nMaxDepth = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
 
 ailP->timePlayerSeen = gameData.time.xGame;			//	Prevent from resetting path quickly.
 ailP->nGoalSegment = gameData.ai.nBelievedPlayerSeg;
@@ -657,7 +661,7 @@ nStartSeg = objP->nSegment;
 nEndSeg = ailP->nGoalSegment;
 
 if (nEndSeg != -1) {
-	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, max_length, 1, bSafeMode, -1);
+	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, nMaxDepth, 1, bSafeMode, -1);
 	aiP->nPathLength = SmoothPath (objP, gameData.ai.freePointSegs, aiP->nPathLength);
 	aiP->nHideIndex = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
 	aiP->nCurPathIndex = 0;
@@ -677,20 +681,20 @@ MaybeAIPathGarbageCollect ();
 
 //	-------------------------------------------------------------------------------------------------------
 //	Creates a path from the tObject's current tSegment (objP->nSegment) to tSegment goalseg.
-void CreatePathToSegment (tObject *objP, short goalseg, int max_length, int bSafeMode)
+void CreatePathToSegment (tObject *objP, short goalseg, int nMaxDepth, int bSafeMode)
 {
 	tAIStatic	*aiP = &objP->cType.aiInfo;
 	tAILocal		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
 	short			nStartSeg, nEndSeg;
 
-if (max_length == -1)
-	max_length = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
+if (nMaxDepth == -1)
+	nMaxDepth = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
 ailP->timePlayerSeen = gameData.time.xGame;			//	Prevent from resetting path quickly.
 ailP->nGoalSegment = goalseg;
 nStartSeg = objP->nSegment;
 nEndSeg = ailP->nGoalSegment;
 if (nEndSeg != -1) {
-	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, max_length, 1, bSafeMode, -1);
+	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, nMaxDepth, 1, bSafeMode, -1);
 	aiP->nHideIndex = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
@@ -712,14 +716,14 @@ MaybeAIPathGarbageCollect ();
 //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 //			objP->cType.aiInfo.nPathLength, 		length of path
 //			gameData.ai.freePointSegs				global pointer into gameData.ai.pointSegs array
-void CreatePathToStation (tObject *objP, int max_length)
+void CreatePathToStation (tObject *objP, int nMaxDepth)
 {
 	tAIStatic	*aiP = &objP->cType.aiInfo;
 	tAILocal		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
 	int			nStartSeg, nEndSeg;
 
-if (max_length == -1)
-	max_length = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
+if (nMaxDepth == -1)
+	nMaxDepth = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
 
 ailP->timePlayerSeen = gameData.time.xGame;			//	Prevent from resetting path quickly.
 
@@ -728,7 +732,7 @@ nEndSeg = aiP->nHideSegment;
 
 
 if (nEndSeg != -1) {
-	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, max_length, 1, 1, -1);
+	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aiP->nPathLength, nMaxDepth, 1, 1, -1);
 	aiP->nPathLength = SmoothPath (objP, gameData.ai.freePointSegs, aiP->nPathLength);
 	aiP->nHideIndex = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
 	aiP->nCurPathIndex = 0;

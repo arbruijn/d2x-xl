@@ -1268,8 +1268,12 @@ void DoAIFrame (tObject *objP)
 {
 	tAIStateInfo	si;
 
+#ifdef _DEBUG
+if (OBJ_IDX (objP) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 Assert (objP->nSegment != -1);
-	si.nObject = OBJ_IDX (objP);
+si.nObject = OBJ_IDX (objP);
 si.nObjRef = si.nObject ^ gameData.app.nFrameCount;
 si.aiP = &objP->cType.aiInfo;
 si.ailP = gameData.ai.localInfo + si.nObject;

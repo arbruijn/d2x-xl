@@ -1934,6 +1934,10 @@ int UpdateObject (tObject * objP)
 {
 	short	nPrevSegment = (short) objP->nSegment;
 
+#ifdef _DEBUG
+if (OBJ_IDX (objP) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 if (objP->nType == OBJ_ROBOT) {
 	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (objP->id).thief) {
 		objP->shields = 0;
