@@ -133,9 +133,9 @@ static int DrawingListBright [MAX_EDGES];
 
 // Map movement defines
 #define PITCH_DEFAULT 9000
-#define ZOOM_DEFAULT i2f (20*10)
-#define ZOOM_MIN_VALUE i2f (20*5)
-#define ZOOM_MAX_VALUE i2f (20*100)
+#define ZOOM_DEFAULT I2X (20*10)
+#define ZOOM_MIN_VALUE I2X (20*5)
+#define ZOOM_MAX_VALUE I2X (20*100)
 
 #define SLIDE_SPEED 				 (350)
 #define ZOOM_SPEED_FACTOR		500	// (1500)
@@ -180,7 +180,7 @@ gsrCanvas *levelNumCanv, *levelNameCanv;
 #ifndef Pi
 #	define Pi 3.141592653589793240
 #endif
-#define f2glf(x) (f2fl (x))
+#define f2glf(x) (X2F (x))
 
 //------------------------------------------------------------------------------
 
@@ -1068,7 +1068,7 @@ for (i = 0; i < nbright; i++) {
 		GrSetColorRGBi (e->color);
 	else {
 		dist = F1_0 - FixDiv (dist, amData.nMaxDist);
-		color = f2i (dist*31);
+		color = X2I (dist*31);
 		GrSetColorRGBi (RGBA_FADE (e->color, 32.0 / color));
 		}
 	G3DrawLine (p1, p2);

@@ -300,7 +300,7 @@ if (playerP->energy < MAX_ENERGY) {
 		playerP->energy = MAX_ENERGY;
 	if (ISLOCALPLAYER (nPlayer))
 		PowerupBasic (15,15,7, ENERGY_SCORE, "%s %s %d",
-						 TXT_ENERGY, TXT_BOOSTED_TO, f2ir (playerP->energy));
+						 TXT_ENERGY, TXT_BOOSTED_TO, X2IR (playerP->energy));
 	return 1;
 	} 
 else if (ISLOCALPLAYER (nPlayer))
@@ -323,7 +323,7 @@ if (playerP->shields < MAX_SHIELDS) {
 		playerP->shields = MAX_SHIELDS;
 	if (ISLOCALPLAYER (nPlayer)) {
 		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d",
-							TXT_SHIELD, TXT_BOOSTED_TO, f2ir (playerP->shields));
+							TXT_SHIELD, TXT_BOOSTED_TO, X2IR (playerP->shields));
 		MultiSendShields ();
 		}
 	return 1;
@@ -687,7 +687,7 @@ if (objP->cType.powerupInfo.creationTime > gameData.time.xGame)		//gametime wrap
 	objP->cType.powerupInfo.creationTime = 0;				//allow tPlayer to pick up
 if ((objP->cType.powerupInfo.flags & PF_SPAT_BY_PLAYER) && 
 	 (objP->cType.powerupInfo.creationTime > 0) && 
-	 (gameData.time.xGame < objP->cType.powerupInfo.creationTime + i2f (2)))
+	 (gameData.time.xGame < objP->cType.powerupInfo.creationTime + I2X (2)))
 	return 0;		//not enough time elapsed
 gameData.hud.bPlayerMessage = 0;	//	Prevent messages from going to HUD if -PlayerMessages switch is set
 nId = objP->id;

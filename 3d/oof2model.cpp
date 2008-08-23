@@ -66,9 +66,9 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 	psm->nParent = pso->nParent;
 	if (psm->nParent < 0)
 		pm->iSubModel = (short) (psm - pm->pSubModels);
-	psm->vOffset.p.x = fl2f (pso->vOffset.x * fScale);
-	psm->vOffset.p.y = fl2f (pso->vOffset.y * fScale);
-	psm->vOffset.p.z = fl2f (pso->vOffset.z * fScale);
+	psm->vOffset.p.x = F2X (pso->vOffset.x * fScale);
+	psm->vOffset.p.y = F2X (pso->vOffset.y * fScale);
+	psm->vOffset.p.z = F2X (pso->vOffset.z * fScale);
 	psm->nAngles = 0;
 	psm->nBomb = -1;
 	psm->nMissile = -1;

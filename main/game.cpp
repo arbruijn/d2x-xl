@@ -624,8 +624,8 @@ void GameDrawTimeLeft ()
 
 GrSetCurFont (GAME_FONT);    //GAME_FONT
 GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
-timevar=i2f (netGame.xPlayTimeAllowed*5*60);
-i = f2i (timevar-gameStates.app.xThisLevelTime) + 1;
+timevar=I2X (netGame.xPlayTimeAllowed*5*60);
+i = X2I (timevar-gameStates.app.xThisLevelTime) + 1;
 sprintf (temp_string, TXT_TIME_LEFT, i);
 if (i >= 0)
 	nId = GrString (0, 32, temp_string, &nId);
@@ -841,7 +841,7 @@ else if ((gameStates.gameplay.xLastAfterburnerCharge && (Controls [0].afterburne
 	if (gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && 
 		 (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
 		DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) LOCALPLAYER.nObject, 
-										1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END, NULL, 0, SOUNDCLASS_PLAYER);
+										1, F1_0, I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END, NULL, 0, SOUNDCLASS_PLAYER);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);
@@ -850,7 +850,7 @@ else if ((gameStates.gameplay.xLastAfterburnerCharge && (Controls [0].afterburne
 	else {
 		DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 		DigiLinkSoundToObject2 ((short) SOUND_AFTERBURNER_PLAY, (short) LOCALPLAYER.nObject, 
-										0, F1_0, i2f (256), SOUNDCLASS_PLAYER);
+										0, F1_0, I2X (256), SOUNDCLASS_PLAYER);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 		 	MultiSendSoundFunction (0,0);
@@ -918,7 +918,7 @@ if (gameData.time.xFrame < F1_0/DIMINISH_RATE) {
 		dec_amount = 1;
 	}
 else {
-	dec_amount = f2i (gameData.time.xFrame*DIMINISH_RATE);		// one second = DIMINISH_RATE counts
+	dec_amount = X2I (gameData.time.xFrame*DIMINISH_RATE);		// one second = DIMINISH_RATE counts
 	if (dec_amount == 0)
 		dec_amount++;						// make sure we decrement by something
 	}
@@ -1784,7 +1784,7 @@ if (!HeadlightIsOn (-1))
 	return;
 
 LOCALPLAYER.energy -= (gameData.time.xFrame * 3 / 8);
-if (LOCALPLAYER.energy < i2f (10)) {
+if (LOCALPLAYER.energy < I2X (10)) {
 	if (!bTurnedOff) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 		bTurnedOff = 1;
@@ -1875,7 +1875,7 @@ if (IsMultiGame) {
 	AddServerToTracker ();
    MultiDoFrame ();
 	CheckMonsterballScore ();
-	if (netGame.xPlayTimeAllowed && (gameStates.app.xThisLevelTime >= i2f ((netGame.xPlayTimeAllowed * 5 * 60))))
+	if (netGame.xPlayTimeAllowed && (gameStates.app.xThisLevelTime >= I2X ((netGame.xPlayTimeAllowed * 5 * 60))))
        MultiCheckForKillGoalWinner ();
 	else 
 		MultiCheckForEntropyWinner ();
@@ -1920,7 +1920,7 @@ else
 //PrintLog ("DropPowerups\n");
 DropPowerups ();
 gameData.time.xGame += gameData.time.xFrame;
-if (gameData.time.xGame < 0 || gameData.time.xGame > i2f (0x7fff - 600)) {
+if (gameData.time.xGame < 0 || gameData.time.xGame > I2X (0x7fff - 600)) {
 	gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
 	}
 if ((gameData.app.nGameMode & GM_MULTI) && netGame.xPlayTimeAllowed)
@@ -1991,7 +1991,7 @@ if (gameStates.render.bDoAppearanceEffect) {
 	gameStates.render.bDoAppearanceEffect = 0;
 	if (IsMultiGame && netGame.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-		LOCALPLAYER.invulnerableTime = gameData.time.xGame-i2f (27);
+		LOCALPLAYER.invulnerableTime = gameData.time.xGame-I2X (27);
 		bFakingInvul = 1;
 		SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 		}

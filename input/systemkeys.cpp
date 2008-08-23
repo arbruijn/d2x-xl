@@ -648,7 +648,7 @@ void HandleVRKey(int key)
 			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
 				VRResetParams();
 				HUDInitMessage( TXT_VR_RESET );
-				HUDInitMessage( TXT_VR_SEPARATION, f2fl(gameStates.render.vr.xEyeWidth) );
+				HUDInitMessage( TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth) );
 				HUDInitMessage( TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0 );
 			}
 			break;
@@ -689,16 +689,16 @@ void HandleVRKey(int key)
 			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
 				gameStates.render.vr.xEyeWidth -= F1_0/10;
 				if ( gameStates.render.vr.xEyeWidth < 0 ) gameStates.render.vr.xEyeWidth = 0;
-				HUDInitMessage( TXT_VR_SEPARATION, f2fl(gameStates.render.vr.xEyeWidth) );
-				HUDInitMessage( TXT_VR_DEFAULT, f2fl(VR_SEPARATION) );
+				HUDInitMessage( TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth) );
+				HUDInitMessage( TXT_VR_DEFAULT, X2F(VR_SEPARATION) );
 			}
 			break;
 		case KEY_ALTED+KEY_F10:
 			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
 				gameStates.render.vr.xEyeWidth += F1_0/10;
 				if ( gameStates.render.vr.xEyeWidth > F1_0*4 )    gameStates.render.vr.xEyeWidth = F1_0*4;
-				HUDInitMessage( TXT_VR_SEPARATION, f2fl(gameStates.render.vr.xEyeWidth) );
-				HUDInitMessage( TXT_VR_DEFAULT, f2fl(VR_SEPARATION) );
+				HUDInitMessage( TXT_VR_SEPARATION, X2F(gameStates.render.vr.xEyeWidth) );
+				HUDInitMessage( TXT_VR_DEFAULT, X2F(VR_SEPARATION) );
 			}
 			break;
 
@@ -1150,9 +1150,9 @@ void HandleTestKey(int key)
 		}
 
 		case KEYDBGGED+KEY_ALTED+KEY_F5:
-			gameData.time.xGame = i2f(0x7fff - 840);		//will overflow in 14 minutes
+			gameData.time.xGame = I2X(0x7fff - 840);		//will overflow in 14 minutes
 #if TRACE
-			con_printf (CONDBG, "gameData.time.xGame bashed to %d secs\n", f2i(gameData.time.xGame));
+			con_printf (CONDBG, "gameData.time.xGame bashed to %d secs\n", X2I(gameData.time.xGame));
 #endif
 			break;
 

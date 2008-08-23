@@ -178,7 +178,7 @@ gameData.boss [i].nDying = 0;
 if (gameStates.app.bD1Mission)
 	gameData.boss [i].nGateInterval = F1_0 * 5 - gameStates.app.nDifficultyLevel * F1_0 / 2;
 else
-	gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
+	gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * I2X (2) / 3;
 if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) {
 	gameData.boss [i].nTeleportInterval = F1_0*10;
 	gameData.boss [i].nCloakInterval = F1_0*15;					//	Time between cloaks
@@ -281,7 +281,7 @@ objP->shields = botInfoP->strength;
 objP->matCenCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
 default_behavior = ROBOTINFO (objP->id).behavior;
 InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
-ObjectCreateExplosion (nSegment, &vObjPos, i2f (10), VCLIP_MORPHING_ROBOT);
+ObjectCreateExplosion (nSegment, &vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
 MorphStart (objP);
 gameData.boss [nBoss].nLastGateTime = gameData.time.xGame;
@@ -498,7 +498,7 @@ nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #ifdef _DEBUG
 if (objP->shields != gameData.boss [i].xPrevShields) {
 #if TRACE
-	con_printf (CONDBG, "Boss shields = %7.3f, tObject %i\n", f2fl (objP->shields), OBJ_IDX (objP));
+	con_printf (CONDBG, "Boss shields = %7.3f, tObject %i\n", X2F (objP->shields), OBJ_IDX (objP));
 #endif
 	gameData.boss [i].xPrevShields = objP->shields;
 	}

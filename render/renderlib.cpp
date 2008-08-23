@@ -514,8 +514,8 @@ else {
 	}
 //add in dynamic light (from explosions, etc.)
 dynLight = gameData.render.lights.dynamicLight [nVertex];
-fl = f2fl (light);
-dl = f2fl (dynLight);
+fl = X2F (light);
+dl = X2F (dynLight);
 light += dynLight;
 #ifdef _DEBUG
 if (nVertex == nDbgVertex)
@@ -563,7 +563,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 				}
 			}
 		else {
-			float dl = f2fl (light);
+			float dl = X2F (light);
 			dl = (float) pow (dl, 1.0f / 3.0f);
 			pc->color.red = pdc->red * dl;
 			pc->color.green = pdc->green * dl;
@@ -753,8 +753,8 @@ return bHaveMonitorBg || gameOpts->render.cameras.bFitToWall;
 //draw outline for curside
 #ifdef _DEBUG
 
-#define CROSS_WIDTH  i2f(8)
-#define CROSS_HEIGHT i2f(8)
+#define CROSS_WIDTH  I2X(8)
+#define CROSS_HEIGHT I2X(8)
 
 void OutlineSegSide (tSegment *seg, int _side, int edge, int vert)
 {
@@ -770,8 +770,8 @@ if (! cc.ccAnd) {		//all off screen?
 	//draw a little cross at the current vert
 	pnt = gameData.segs.points + seg->verts [sideToVerts [_side][vert]];
 	G3ProjectPoint(pnt);		//make sure projected
-	fix x = i2f (pnt->p3_screen.x);
-	fix y = i2f (pnt->p3_screen.y);
+	fix x = I2X (pnt->p3_screen.x);
+	fix y = I2X (pnt->p3_screen.y);
 	GrLine(x-CROSS_WIDTH, y, x, y-CROSS_HEIGHT);
 	GrLine(x, y-CROSS_HEIGHT, x+CROSS_WIDTH, y);
 	GrLine(x+CROSS_WIDTH, y, x, y+CROSS_HEIGHT);
@@ -785,7 +785,7 @@ if (! cc.ccAnd) {		//all off screen?
 
 void AdjustVertexColor (grsBitmap *bmP, tFaceColor *pc, fix xLight)
 {
-	float l = (bmP && (bmP->bmProps.flags & BM_FLAG_NO_LIGHTING)) ? 1.0f : f2fl (xLight);
+	float l = (bmP && (bmP->bmProps.flags & BM_FLAG_NO_LIGHTING)) ? 1.0f : X2F (xLight);
 	float s = 1.0f;
 
 #if SHADOWS
@@ -818,9 +818,9 @@ if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) {
 	if (gameData.render.zMax < p->p3_vec.p.z)
 		gameData.render.zMax = p->p3_vec.p.z;
 	if (!gameStates.ogl.bUseTransform) {
-		gameData.segs.fVertices [i].p.x = f2fl (p->p3_vec.p.x);
-		gameData.segs.fVertices [i].p.y = f2fl (p->p3_vec.p.y);
-		gameData.segs.fVertices [i].p.z = f2fl (p->p3_vec.p.z);
+		gameData.segs.fVertices [i].p.x = X2F (p->p3_vec.p.x);
+		gameData.segs.fVertices [i].p.y = X2F (p->p3_vec.p.y);
+		gameData.segs.fVertices [i].p.z = X2F (p->p3_vec.p.z);
 		}
 	p->p3_index = i;
 	gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;

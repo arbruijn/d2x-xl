@@ -461,7 +461,7 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 					 (nWeaponType == ROBOT_SMARTMSL_ID) ||
 					 (nWeaponType == ROBOT_MEGAMSL_ID) ||
 					 (nWeaponType == ROBOT_EARTHSHAKER_ID);
-		DigiLinkSoundToObject3 (-1, nObject, 1, (gameOpts->sound.xCustomSoundVolume * F1_0) / 10, i2f (256), -1, -1, 
+		DigiLinkSoundToObject3 (-1, nObject, 1, (gameOpts->sound.xCustomSoundVolume * F1_0) / 10, I2X (256), -1, -1, 
 										AddonSoundName (nMslSounds [bBigMsl]), 1, SOUNDCLASS_MISSILE);
 		}
 	else if (nWeaponType == FLARE_ID)
@@ -778,7 +778,7 @@ void CreateFlare (tObject *objP)
 	fix	xEnergyUsage = WI_energy_usage (FLARE_ID);
 
 if (gameStates.app.nDifficultyLevel < 2)
-	xEnergyUsage = FixMul (xEnergyUsage, i2f (gameStates.app.nDifficultyLevel+2)/4);
+	xEnergyUsage = FixMul (xEnergyUsage, I2X (gameStates.app.nDifficultyLevel+2)/4);
 LOCALPLAYER.energy -= xEnergyUsage;
 if (LOCALPLAYER.energy <= 0) {
 	LOCALPLAYER.energy = 0;
@@ -802,7 +802,7 @@ float MissileSpeedScale (tObject *objP)
 
 if (!i)
 	return 1;
-return nMslSlowDown [i] * f2fl (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)]);
+return nMslSlowDown [i] * X2F (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)]);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1003,7 +1003,7 @@ xEnergyUsed = WI_energy_usage (nWeaponIndex);
 if (gameData.weapons.nPrimary == OMEGA_INDEX)
 	xEnergyUsed = 0;	//	Omega consumes energy when recharging, not when firing.
 if (gameStates.app.nDifficultyLevel < 2)
-	xEnergyUsed = FixMul (xEnergyUsed, i2f (gameStates.app.nDifficultyLevel+2)/4);
+	xEnergyUsed = FixMul (xEnergyUsed, I2X (gameStates.app.nDifficultyLevel+2)/4);
 //	MK, 01/26/96, Helix use 2x energy in multiplayer.  bitmaps.tbl parm should have been reduced for single player.
 if (nWeaponIndex == HELIX_INDEX)
 	if (IsMultiGame)

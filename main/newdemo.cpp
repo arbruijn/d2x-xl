@@ -984,8 +984,8 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 NDWriteByte ((sbyte)LOCALPLAYER.laserLevel);
 //  Support for missions added here
 NDWriteString (gameStates.app.szCurrentMissionFile);
-NDWriteByte ((sbyte) (f2ir (LOCALPLAYER.energy)));
-NDWriteByte ((sbyte) (f2ir (LOCALPLAYER.shields)));
+NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.energy)));
+NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.shields)));
 NDWriteInt (LOCALPLAYER.flags);        // be sure players flags are set
 NDWriteByte ((sbyte)gameData.weapons.nPrimary);
 NDWriteByte ((sbyte)gameData.weapons.nSecondary);
@@ -1696,8 +1696,8 @@ gameData.weapons.nSecondary = NDReadByte ();
 // Next bit of code to fix problem that I introduced between 1.0 and 1.1
 // check the next byte -- it _will_ be a load_newLevel event.  If it is
 // not, then we must shift all bytes up by one.
-LOCALPLAYER.energy = i2f (energy);
-LOCALPLAYER.shields = i2f (shield);
+LOCALPLAYER.energy = I2X (energy);
+LOCALPLAYER.shields = I2X (shield);
 bJustStartedPlayback=1;
 return 0;
 }
@@ -2048,11 +2048,11 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				LOCALPLAYER.energy = i2f (energy);
+				LOCALPLAYER.energy = I2X (energy);
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_energy != 255)
-					LOCALPLAYER.energy = i2f (old_energy);
+					LOCALPLAYER.energy = I2X (old_energy);
 				}
 			}
 			break;
@@ -2086,11 +2086,11 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				LOCALPLAYER.shields = i2f (shield);
+				LOCALPLAYER.shields = I2X (shield);
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_shield != 255)
-					LOCALPLAYER.shields = i2f (old_shield);
+					LOCALPLAYER.shields = I2X (old_shield);
 				}
 			}
 			break;
@@ -2185,7 +2185,7 @@ while (!bDone) {
 
 			distance = NDReadShort ();
 			LOCALPLAYER.homingObjectDist = 
-				i2f ((int) distance << 16);
+				I2X ((int) distance << 16);
 			}
 			break;
 
@@ -2681,8 +2681,8 @@ bshort = NDReadShort ();
 bint = NDReadInt ();
 energy = NDReadByte ();
 shield = NDReadByte ();
-LOCALPLAYER.energy = i2f (energy);
-LOCALPLAYER.shields = i2f (shield);
+LOCALPLAYER.energy = I2X (energy);
+LOCALPLAYER.shields = I2X (shield);
 LOCALPLAYER.flags = NDReadInt ();
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 	LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
@@ -3086,8 +3086,8 @@ else {
 NDWriteShort (ND_EVENT_EOF);
 NDWriteInt (ND_EVENT_EOF);
 byteCount += 10;       // from gameData.demo.nFrameBytesWritten
-NDWriteByte ((sbyte) (f2ir (LOCALPLAYER.energy)));
-NDWriteByte ((sbyte) (f2ir (LOCALPLAYER.shields)));
+NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.energy)));
+NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.shields)));
 NDWriteInt (LOCALPLAYER.flags);        // be sure players flags are set
 NDWriteByte ((sbyte)gameData.weapons.nPrimary);
 NDWriteByte ((sbyte)gameData.weapons.nSecondary);

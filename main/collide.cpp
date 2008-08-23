@@ -320,7 +320,7 @@ if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
 		}
 	}
 #if 0//def _DEBUG
-HUDMessage (0, "colliding (%1.2f, %1.2f)", f2fl (m0), f2fl (m1));
+HUDMessage (0, "colliding (%1.2f, %1.2f)", X2F (m0), X2F (m1));
 #endif
 VmVecSub (&vForce, &v0, &v1);
 m0 = objP0->mType.physInfo.mass;
@@ -335,9 +335,9 @@ mag = VmVecMag (&vForce);
 VmVecScaleFrac (&vForce, 2 * FixMul (m0, m1), m0 + m1);
 mag = VmVecMag (&vForce);
 #if 0//def _DEBUG
-if (fabs (f2fl (mag) > 10000))
+if (fabs (X2F (mag) > 10000))
 	;//goto redo;
-HUDMessage (0, "bump force: %c%1.2f", (SIGN (vForce.p.x) * SIGN (vForce.p.y) * SIGN (vForce.p.z)) ? '-' : '+', f2fl (mag));
+HUDMessage (0, "bump force: %c%1.2f", (SIGN (vForce.p.x) * SIGN (vForce.p.y) * SIGN (vForce.p.z)) ? '-' : '+', X2F (mag));
 #endif
 if (mag < (m0 + m1) / 200) {
 #if 0//def _DEBUG
@@ -394,7 +394,7 @@ PhysApplyForce (objP0, &hit_vec);
 #define DAMAGE_THRESHOLD 	 (F1_0/3)
 #define WALL_LOUDNESS_SCALE (20)
 
-fix force_force = i2f (50);
+fix force_force = I2X (50);
 
 void CollidePlayerAndWall (tObject *playerObjP, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
 {
@@ -499,7 +499,7 @@ if (d > 0 || water) {
 				Tactile_Xvibrate (50, 25);
 #endif
 
-			PALETTE_FLASH_ADD (f2i (damage*4), 0, 0);	//flash red
+			PALETTE_FLASH_ADD (X2I (damage*4), 0, 0);	//flash red
 			}
 		objP->mType.physInfo.rotVel.p.x = (d_rand () - 16384)/2;
 		objP->mType.physInfo.rotVel.p.z = (d_rand () - 16384)/2;
@@ -552,7 +552,7 @@ if (d > 0) {
 		Tactile_Xvibrate (50, 25);
 #endif
 	if ((objP->nType == OBJ_PLAYER) && (objP->id == gameData.multiplayer.nLocalPlayer))
-		PALETTE_FLASH_ADD (f2i (damage*4), 0, 0);	//flash red
+		PALETTE_FLASH_ADD (X2I (damage*4), 0, 0);	//flash red
 	if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) {
 		objP->mType.physInfo.rotVel.p.x = (d_rand () - 16384) / 4;
 		objP->mType.physInfo.rotVel.p.z = (d_rand () - 16384) / 4;
@@ -689,7 +689,7 @@ if (nSwitchType) {
 	vc = ecP->dest_vclip;
 	}
 else {
-	xDestSize = i2f (20);
+	xDestSize = I2X (20);
 	vc = 3;
 	}
 ObjectCreateExplosion (SEG_IDX (segP), pnt, xDestSize, vc);
@@ -769,10 +769,10 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 //these gets added to the weapon's values when the weapon hits a volitle tWall
-#define VOLATILE_WALL_EXPL_STRENGTH i2f (10)
-#define VOLATILE_WALL_IMPACT_SIZE	i2f (3)
-#define VOLATILE_WALL_DAMAGE_FORCE	i2f (5)
-#define VOLATILE_WALL_DAMAGE_RADIUS	i2f (30)
+#define VOLATILE_WALL_EXPL_STRENGTH I2X (10)
+#define VOLATILE_WALL_IMPACT_SIZE	I2X (3)
+#define VOLATILE_WALL_DAMAGE_FORCE	I2X (5)
+#define VOLATILE_WALL_DAMAGE_RADIUS	I2X (30)
 
 // int Show_segAnd_side = 0;
 
@@ -794,7 +794,7 @@ if (weaponP->id == OMEGA_ID)
 if (weaponP->id == GUIDEDMSL_ID) {
 	fix dot = VmVecDot (&weaponP->position.mOrient.fVec, sideP->normals);
 #if TRACE
-	con_printf (CONDBG, "Guided missile dot = %7.3f \n", f2fl (dot));
+	con_printf (CONDBG, "Guided missile dot = %7.3f \n", X2F (dot));
 #endif
 	if (dot < -F1_0/6) {
 #if TRACE
@@ -1041,9 +1041,9 @@ return 1;
 
 int CollideRobotAndRobot (tObject *robotP1, tObject *robotP2, vmsVector *vHitPt) 
 { 
-//		robot1-OBJECTS, f2i (robot1->position.vPos.x), f2i (robot1->position.vPos.y), f2i (robot1->position.vPos.z), 
-//		robot2-OBJECTS, f2i (robot2->position.vPos.x), f2i (robot2->position.vPos.y), f2i (robot2->position.vPos.z), 
-//		f2i (vHitPt->x), f2i (vHitPt->y), f2i (vHitPt->z));
+//		robot1-OBJECTS, X2I (robot1->position.vPos.x), X2I (robot1->position.vPos.y), X2I (robot1->position.vPos.z), 
+//		robot2-OBJECTS, X2I (robot2->position.vPos.x), X2I (robot2->position.vPos.y), X2I (robot2->position.vPos.z), 
+//		X2I (vHitPt->x), X2I (vHitPt->y), X2I (vHitPt->z));
 
 BumpTwoObjects (robotP1, robotP2, 1, vHitPt);
 return 1; 
@@ -1168,8 +1168,8 @@ if (whotype != OBJ_PLAYER) {
 if (IsMultiGame && !IsCoopGame && (LOCALPLAYER.timeLevel < netGame.control_invulTime)) {
 	if (OBJECTS [nAttacker].id == gameData.multiplayer.nLocalPlayer) {
 		int t = netGame.control_invulTime - LOCALPLAYER.timeLevel;
-		int secs = f2i (t) % 60;
-		int mins = f2i (t) / 60;
+		int secs = X2I (t) % 60;
+		int mins = X2I (t) / 60;
 		HUDInitMessage ("%s %d:%02d.", TXT_CNTRLCEN_INVUL, mins, secs);
 		}
 	return;
@@ -1490,7 +1490,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 	VmVecNormalize (&tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
 	dot = VmVecDot (&tvec1, &robotP->position.mOrient.fVec);
 #if TRACE
-	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", f2fl (dot));
+	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", X2F (dot));
 #endif
 	if (dot > gameData.physics.xBossInvulDot) {
 		short	nNewObj;
@@ -1901,7 +1901,7 @@ if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {		//is this the local 
 		}
 	playerP->shields -= damage;
 	MultiSendShields ();
-	PALETTE_FLASH_ADD (f2i (damage)*4, -f2i (damage/2), -f2i (damage/2));	//flash red
+	PALETTE_FLASH_ADD (X2I (damage)*4, -X2I (damage/2), -X2I (damage/2));	//flash red
 	if (playerP->shields < 0)	{
   		playerP->nKillerObj = OBJ_IDX (killerObjP);
 		KillObject (playerObjP);
@@ -1961,7 +1961,7 @@ if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {
 			MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, F1_0);
 		}
 	}
-ObjectCreateExplosion (playerObjP->nSegment, vHitPt, i2f (10)/2, VCLIP_PLAYER_HIT);
+ObjectCreateExplosion (playerObjP->nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
 if (WI_damage_radius (weaponP->id))
 	ExplodeBadassWeapon (weaponP, vHitPt);
 MaybeKillWeapon (weaponP, playerObjP);
@@ -1982,7 +1982,7 @@ return 1;
 int CollidePlayerAndNastyRobot (tObject *playerObjP, tObject *robotP, vmsVector *vHitPt)
 {
 //	if (!(ROBOTINFO (objP->id).energyDrain && gameData.multiplayer.players [playerObjP->id].energy))
-ObjectCreateExplosion (playerObjP->nSegment, vHitPt, i2f (10) / 2, VCLIP_PLAYER_HIT);
+ObjectCreateExplosion (playerObjP->nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
 if (BumpTwoObjects (playerObjP, robotP, 0, vHitPt))	{//no damage from bump
 	DigiLinkSoundToPos (ROBOTINFO (robotP->id).clawSound, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
 	ApplyDamageToPlayer (playerObjP, robotP, F1_0* (gameStates.app.nDifficultyLevel+1));
@@ -2000,7 +2000,7 @@ int CollidePlayerAndMatCen (tObject *objP)
 
 DigiLinkSoundToPos (SOUND_PLAYER_GOT_HIT, objP->nSegment, 0, &objP->position.vPos, 0, F1_0);
 //	DigiPlaySample (SOUND_PLAYER_GOT_HIT, F1_0);
-ObjectCreateExplosion (objP->nSegment, &objP->position.vPos, i2f (10)/2, VCLIP_PLAYER_HIT);
+ObjectCreateExplosion (objP->nSegment, &objP->position.vPos, I2X (10)/2, VCLIP_PLAYER_HIT);
 if (objP->id != gameData.multiplayer.nLocalPlayer)
 	return 1;
 for (tSide = 0; tSide < MAX_SIDES_PER_SEGMENT; tSide++)
@@ -2197,7 +2197,7 @@ if (weaponP->cType.laserInfo.parentType == OBJ_PLAYER) {
 		if (AddHitObject (weaponP, OBJ_IDX (powerup)) < 0)
 			return 1;
 		}
-	ObjectCreateExplosion (powerup->nSegment, vHitPt, i2f (10)/2, VCLIP_PLAYER_HIT);
+	ObjectCreateExplosion (powerup->nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
 	if (WI_damage_radius (weaponP->id))
 		ExplodeBadassWeapon (weaponP, vHitPt);
 	MaybeKillWeapon (weaponP, powerup);

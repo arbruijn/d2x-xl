@@ -62,9 +62,9 @@ void G3ProjectPoint (g3sPoint *p)
 if ((p->p3_flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
 	return;
 fVector3	v;
-v.p.x = f2fl (p->p3_vec.p.x) * viewInfo.scalef.p.x;
-v.p.y = f2fl (p->p3_vec.p.y) * viewInfo.scalef.p.y;
-v.p.z = f2fl (p->p3_vec.p.z) * viewInfo.scalef.p.z;
+v.p.x = X2F (p->p3_vec.p.x) * viewInfo.scalef.p.x;
+v.p.y = X2F (p->p3_vec.p.y) * viewInfo.scalef.p.y;
+v.p.z = X2F (p->p3_vec.p.z) * viewInfo.scalef.p.z;
 p->p3_screen.x = (fix) (fxCanvW2 + v.p.x * fxCanvW2 / v.p.z);
 p->p3_screen.y = (fix) (fxCanvH2 - v.p.y * fxCanvH2 / v.p.z);
 p->p3_flags |= PF_PROJECTED;

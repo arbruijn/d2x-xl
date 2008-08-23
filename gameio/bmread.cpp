@@ -574,14 +574,14 @@ int bm_init_use_tbl()
 			else IFTOK("!EFFECTS_FLAG")	TextureEffects = textureCount;
 			#endif
 
-			else IFTOK("lighting") 			TmapInfo [gameStates.app.bD1Data][textureCount-1].lighting = fl2f(get_float();
-			else IFTOK("damage") 			TmapInfo [gameStates.app.bD1Data][textureCount-1].damage = fl2f(get_float();
+			else IFTOK("lighting") 			TmapInfo [gameStates.app.bD1Data][textureCount-1].lighting = F2X(get_float();
+			else IFTOK("damage") 			TmapInfo [gameStates.app.bD1Data][textureCount-1].damage = F2X(get_float();
 			else IFTOK("volatile") 			TmapInfo [gameStates.app.bD1Data][textureCount-1].flags |= TMI_VOLATILE;
 			else IFTOK("goal_blue")			TmapInfo [gameStates.app.bD1Data][textureCount-1].flags |= TMI_GOAL_BLUE;
 			else IFTOK("goal_red")			TmapInfo [gameStates.app.bD1Data][textureCount-1].flags |= TMI_GOAL_RED;
 			else IFTOK("water")	 			TmapInfo [gameStates.app.bD1Data][textureCount-1].flags |= TMI_WATER;
 			else IFTOK("force_field")		TmapInfo [gameStates.app.bD1Data][textureCount-1].flags |= TMI_FORCE_FIELD;
-			else IFTOK("slide")	 			{TmapInfo [gameStates.app.bD1Data][textureCount-1].slide_u = fl2f(get_float())>>8; TmapInfo [gameStates.app.bD1Data][textureCount-1].slide_v = fl2f(get_float())>>8;}
+			else IFTOK("slide")	 			{TmapInfo [gameStates.app.bD1Data][textureCount-1].slide_u = F2X(get_float())>>8; TmapInfo [gameStates.app.bD1Data][textureCount-1].slide_v = F2X(get_float())>>8;}
 			else IFTOK("destroyed")	 		{int t=textureCount-1; TmapInfo [gameStates.app.bD1Data][t].destroyed = get_texture(strtok( NULL, space );}
 			//else IFTOK("Num_effects")		Num_effects = get_int();
 			else IFTOK("Num_wall_anims")	Num_wall_anims = get_int();
@@ -589,7 +589,7 @@ int bm_init_use_tbl()
 			else IFTOK("dest_bm")			dest_bm = strtok( NULL, space );
 			else IFTOK("dest_vclip")		dest_vclip = get_int();
 			else IFTOK("dest_eclip")		dest_eclip = get_int();
-			else IFTOK("dest_size")			dest_size = fl2f(get_float();
+			else IFTOK("dest_size")			dest_size = F2X(get_float();
 			else IFTOK("crit_clip")			crit_clip = get_int();
 			else IFTOK("critFlag")			critFlag = get_int();
 			else IFTOK("nSound") 		nSound = get_int();
@@ -811,9 +811,9 @@ void bm_read_eclip()
 	if (!abmFlag)	{
 		bitmap = bm_load_sub(arg);
 
-		Effects [gameStates.app.bD1Data][nClip].vc.xTotalTime = fl2f(time);
+		Effects [gameStates.app.bD1Data][nClip].vc.xTotalTime = F2X(time);
 		Effects [gameStates.app.bD1Data][nClip].vc.nFrameCount = frames;
-		Effects [gameStates.app.bD1Data][nClip].vc.xFrameTime = fl2f(time)/frames;
+		Effects [gameStates.app.bD1Data][nClip].vc.xFrameTime = F2X(time)/frames;
 
 		Assert(clipCount < frames);
 		Effects [gameStates.app.bD1Data][nClip].vc.frames[clipCount] = bitmap;
@@ -843,7 +843,7 @@ void bm_read_eclip()
 		ab_load( arg, bm, &Effects [gameStates.app.bD1Data][nClip].vc.nFrameCount );
 
 		////printf("EC%d.", nClip);
-		Effects [gameStates.app.bD1Data][nClip].vc.xTotalTime = fl2f(time);
+		Effects [gameStates.app.bD1Data][nClip].vc.xTotalTime = F2X(time);
 		Effects [gameStates.app.bD1Data][nClip].vc.xFrameTime = Effects [gameStates.app.bD1Data][nClip].vc.xTotalTime/Effects [gameStates.app.bD1Data][nClip].vc.nFrameCount;
 
 		clipCount = 0;
@@ -968,9 +968,9 @@ void bm_read_wclip()
 		bitmap = bm_load_sub(arg);
 		if ( (WallAnims[nClip].nFrameCount>-1) && (clipCount==0) )
 			Error( "Wall Clip %d is already used!", nClip );
-		WallAnims[nClip].xTotalTime = fl2f(time);
+		WallAnims[nClip].xTotalTime = F2X(time);
 		WallAnims[nClip].nFrameCount = frames;
-		//WallAnims[nClip].xFrameTime = fl2f(time)/frames;
+		//WallAnims[nClip].xFrameTime = F2X(time)/frames;
 		Assert(clipCount < frames);
 		WallAnims[nClip].frames[clipCount++] = textureCount;
 		WallAnims[nClip].openSound = wall_openSound;
@@ -991,8 +991,8 @@ void bm_read_wclip()
 		ab_load( arg, bm, &nframes );
 		WallAnims[nClip].nFrameCount = nframes;
 		////printf("WC");
-		WallAnims[nClip].xTotalTime = fl2f(time);
-		//WallAnims[nClip].xFrameTime = fl2f(time)/nframes;
+		WallAnims[nClip].xTotalTime = F2X(time);
+		//WallAnims[nClip].xFrameTime = F2X(time)/nframes;
 		WallAnims[nClip].openSound = wall_openSound;
 		WallAnims[nClip].closeSound = wall_closeSound;
 
@@ -1030,10 +1030,10 @@ void bm_read_vclip()
 		if ( (Vclip [gameStates.app.bD1Data][nClip].nFrameCount>-1) && (clipCount==0)  )
 			Error( "Vclip %d is already used!", nClip );
 		bi = bm_load_sub(arg);
-		Vclip [gameStates.app.bD1Data][nClip].xTotalTime = fl2f(time);
+		Vclip [gameStates.app.bD1Data][nClip].xTotalTime = F2X(time);
 		Vclip [gameStates.app.bD1Data][nClip].nFrameCount = frames;
-		Vclip [gameStates.app.bD1Data][nClip].xFrameTime = fl2f(time)/frames;
-		Vclip [gameStates.app.bD1Data][nClip].lightValue = fl2f(vlighting);
+		Vclip [gameStates.app.bD1Data][nClip].xFrameTime = F2X(time)/frames;
+		Vclip [gameStates.app.bD1Data][nClip].lightValue = F2X(vlighting);
 		Vclip [gameStates.app.bD1Data][nClip].nSound = nSound;
 		set_lightingFlag(&GameBitmaps[bi.index].bmProps.flags);
 		Assert(clipCount < frames);
@@ -1056,9 +1056,9 @@ void bm_read_vclip()
 			Vclip [gameStates.app.bD1Data][nClip].flags |= VF_ROD;
 		}		
 		////printf("VC");
-		Vclip [gameStates.app.bD1Data][nClip].xTotalTime = fl2f(time);
-		Vclip [gameStates.app.bD1Data][nClip].xFrameTime = fl2f(time)/Vclip [gameStates.app.bD1Data][nClip].nFrameCount;
-		Vclip [gameStates.app.bD1Data][nClip].lightValue = fl2f(vlighting);
+		Vclip [gameStates.app.bD1Data][nClip].xTotalTime = F2X(time);
+		Vclip [gameStates.app.bD1Data][nClip].xFrameTime = F2X(time)/Vclip [gameStates.app.bD1Data][nClip].nFrameCount;
+		Vclip [gameStates.app.bD1Data][nClip].lightValue = F2X(vlighting);
 		Vclip [gameStates.app.bD1Data][nClip].nSound = nSound;
 		set_lightingFlag(&GameBitmaps[bm[clipCount].index].bmProps.flags);
 
@@ -1078,7 +1078,7 @@ void get4fix(fix *fixp)
 
 	for (i=0; i<NDL; i++) {
 		curtext = strtok(NULL, space);
-		fixp[i] = fl2f(atof(curtext);
+		fixp[i] = F2X(atof(curtext);
 	}
 }
 
@@ -1104,7 +1104,7 @@ void adjust_field_ofView(fix *fovp)
 	fix		temp;
 
 	for (i=0; i<NDL; i++) {
-		ff = - f2fl(fovp[i]);
+		ff = - X2F(fovp[i]);
 		if (ff > 179) {
 #if TRACE
 			con_printf (1, "Warning: Bogus field of view (%7.3f).  Must be in 0..179.\n", ff);
@@ -1112,7 +1112,7 @@ void adjust_field_ofView(fix *fovp)
 			ff = 179;
 		}
 		ff = ff/360;
-		tt = fl2f(ff);
+		tt = F2X(ff);
 		FixSinCos(tt, &temp, &fovp[i]);
 	}
 }
@@ -1285,23 +1285,23 @@ void bm_readRobot()
 			} else if (!stricmp( arg, "exp2Sound" ))	{
 				nExp2Sound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "lighting" ))	{
-				lighting = fl2f(atof(equal_ptr);
+				lighting = F2X(atof(equal_ptr);
 				if ( (lighting < 0) || (lighting > F1_0 )) {
 #if TRACE
-					con_printf (1, "In bitmaps.tbl, lighting value of %.2f is out of range 0..1.\n", f2fl(lighting));
+					con_printf (1, "In bitmaps.tbl, lighting value of %.2f is out of range 0..1.\n", X2F(lighting));
 #endif
-					Error( "In bitmaps.tbl, lighting value of %.2f is out of range 0..1.\n", f2fl(lighting);
+					Error( "In bitmaps.tbl, lighting value of %.2f is out of range 0..1.\n", X2F(lighting);
 				}
 			} else if (!stricmp( arg, "nWeaponType" )) {
 				nWeaponType = atoi(equal_ptr);
 			} else if (!stricmp( arg, "nSecWeaponType" )) {
 				nSecWeaponType = atoi(equal_ptr);
 			} else if (!stricmp( arg, "strength" )) {
-				strength = i2f(atoi(equal_ptr);
+				strength = I2X(atoi(equal_ptr);
 			} else if (!stricmp( arg, "mass" )) {
-				mass = fl2f(atof(equal_ptr);
+				mass = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "drag" )) {
-				drag = fl2f(atof(equal_ptr);
+				drag = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "containsId" )) {
 				containsId = atoi(equal_ptr);
 			} else if (!stricmp( arg, "containsType" )) {
@@ -1315,7 +1315,7 @@ void bm_readRobot()
 			} else if (!stricmp( arg, "lightcast" )) {
 				lightcast = atoi(equal_ptr);
 			} else if (!stricmp( arg, "glow" )) {
-				glow = fl2f(atof(equal_ptr);
+				glow = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "bDeathRoll" )) {
 				bDeathRoll = atoi(equal_ptr);
 			} else if (!stricmp( arg, "deathrollSound" )) {
@@ -1351,7 +1351,7 @@ void bm_readRobot()
 			} else if (!stricmp( arg, "tauntSound" )) {
 				tauntSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "aim" )) {
-				aim = fl2f(atof(equal_ptr);
+				aim = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "big_radius" )) {
 				if (atoi(equal_ptr))
 					flags |= RIF_BIG_RADIUS;
@@ -1416,7 +1416,7 @@ void bm_readRobot()
 		last_model_num = nModel;
 	}
 
-	if ((glow > i2f(15)) || (glow < 0) || (glow != 0 && glow < 0x1000)) {
+	if ((glow > I2X(15)) || (glow < 0) || (glow != 0 && glow < 0x1000)) {
 #if TRACE
 		con_printf (CONDBG,"Invalid glow value %x for robot %d\n",glow,NRobotTypes);
 #endif
@@ -1462,7 +1462,7 @@ void bm_readRobot()
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].clawSound = clawSound;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].tauntSound = tauntSound;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].behavior = behavior;		//	Default behavior for this robot, if coming out of matcen.
-	Robot_info [gameStates.app.bD1Data][NRobotTypes].aim = min(f2i(aim*255), 255);		//	how well this robot nType can aim.  255=perfect
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].aim = min(X2I(aim*255), 255);		//	how well this robot nType can aim.  255=perfect
 
 	if (containsType)
 		Robot_info [gameStates.app.bD1Data][NRobotTypes].containsType = OBJ_ROBOT;
@@ -1529,15 +1529,15 @@ void bm_read_reactor()
 			} else if (!stricmp( arg, "expSound" ))	{
 				explosionSound_num = atoi(equal_ptr);
 			} else if (!stricmp( arg, "lighting" ))	{
-				lighting = fl2f(atof(equal_ptr);
+				lighting = F2X(atof(equal_ptr);
 				if ( (lighting < 0) || (lighting > F1_0 )) {
 #if TRACE
-					con_printf (1, "In bitmaps.tbl, lighting value of %.2f is out of range 0..1.\n", f2fl(lighting));
+					con_printf (1, "In bitmaps.tbl, lighting value of %.2f is out of range 0..1.\n", X2F(lighting));
 #endif
-					Error( "In bitmaps.tbl, lighting value of %.2f is out of range 0..1.\n", f2fl(lighting);
+					Error( "In bitmaps.tbl, lighting value of %.2f is out of range 0..1.\n", X2F(lighting);
 				}
 			} else if (!stricmp( arg, "strength" )) {
-				strength = fl2f(atof(equal_ptr);
+				strength = F2X(atof(equal_ptr);
 			} else {
 				Int3();
 #if TRACE
@@ -1663,21 +1663,21 @@ void bm_read_player_ship()
 					last_multi_bitmap_num=N_ObjBitmapPtrs;
 			}
 			else if (!stricmp( arg, "mass" ))
-				Player_ship->mass = fl2f(atof(equal_ptr);
+				Player_ship->mass = F2X(atof(equal_ptr);
 			else if (!stricmp( arg, "drag" ))
-				Player_ship->drag = fl2f(atof(equal_ptr);
+				Player_ship->drag = F2X(atof(equal_ptr);
 //			else if (!stricmp( arg, "lowThrust" ))
-//				Player_ship->lowThrust = fl2f(atof(equal_ptr);
+//				Player_ship->lowThrust = F2X(atof(equal_ptr);
 			else if (!stricmp( arg, "maxThrust" ))
-				Player_ship->maxThrust = fl2f(atof(equal_ptr);
+				Player_ship->maxThrust = F2X(atof(equal_ptr);
 			else if (!stricmp( arg, "reverseThrust" ))
-				Player_ship->reverseThrust = fl2f(atof(equal_ptr);
+				Player_ship->reverseThrust = F2X(atof(equal_ptr);
 			else if (!stricmp( arg, "brakes" ))
-				Player_ship->brakes = fl2f(atof(equal_ptr);
+				Player_ship->brakes = F2X(atof(equal_ptr);
 			else if (!stricmp( arg, "wiggle" ))
-				Player_ship->wiggle = fl2f(atof(equal_ptr);
+				Player_ship->wiggle = F2X(atof(equal_ptr);
 			else if (!stricmp( arg, "maxRotThrust" ))
-				Player_ship->maxRotThrust = fl2f(atof(equal_ptr);
+				Player_ship->maxRotThrust = F2X(atof(equal_ptr);
 			else if (!stricmp( arg, "dying_pof" ))
 				model_name_dying = equal_ptr;
 			else if (!stricmp( arg, "nExplVClip" ))
@@ -1946,26 +1946,26 @@ void bm_read_weapon(int unusedFlag)
 				pof_file_inner = equal_ptr;
 			} else if (!stricmp( arg, "strength" )) {
 				for (i=0; i<NDL-1; i++) {
-					Weapon_info[n].strength[i] = fl2f(atof(equal_ptr);
+					Weapon_info[n].strength[i] = F2X(atof(equal_ptr);
 					equal_ptr = strtok(NULL, space);
 				}
-				Weapon_info[n].strength[i] = i2f(atoi(equal_ptr);
+				Weapon_info[n].strength[i] = I2X(atoi(equal_ptr);
 			} else if (!stricmp( arg, "mass" )) {
-				Weapon_info[n].mass = fl2f(atof(equal_ptr);
+				Weapon_info[n].mass = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "drag" )) {
-				Weapon_info[n].drag = fl2f(atof(equal_ptr);
+				Weapon_info[n].drag = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "thrust" )) {
-				Weapon_info[n].thrust = fl2f(atof(equal_ptr);
+				Weapon_info[n].thrust = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "matter" )) {
 				Weapon_info[n].matter = atoi(equal_ptr);
 			} else if (!stricmp( arg, "bounce" )) {
 				Weapon_info[n].bounce = atoi(equal_ptr);
 			} else if (!stricmp( arg, "speed" )) {
 				for (i=0; i<NDL-1; i++) {
-					Weapon_info[n].speed[i] = i2f(atoi(equal_ptr);
+					Weapon_info[n].speed[i] = I2X(atoi(equal_ptr);
 					equal_ptr = strtok(NULL, space);
 				}
-				Weapon_info[n].speed[i] = i2f(atoi(equal_ptr);
+				Weapon_info[n].speed[i] = I2X(atoi(equal_ptr);
 			} else if (!stricmp( arg, "speedvar" ))	{
 				Weapon_info[n].speedvar = (atoi(equal_ptr) * 128) / 100;
 			} else if (!stricmp( arg, "nFlashVClip" ))	{
@@ -1973,9 +1973,9 @@ void bm_read_weapon(int unusedFlag)
 			} else if (!stricmp( arg, "flashSound" ))	{
 				Weapon_info[n].flashSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "xFlashSize" ))	{
-				Weapon_info[n].xFlashSize = fl2f(atof(equal_ptr);
+				Weapon_info[n].xFlashSize = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "blob_size" ))	{
-				Weapon_info[n].blob_size = fl2f(atof(equal_ptr);
+				Weapon_info[n].blob_size = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "robot_hit_vclip" ))	{
 				Weapon_info[n].robot_hit_vclip = atoi(equal_ptr);
 			} else if (!stricmp( arg, "robot_hitSound" ))	{
@@ -1985,29 +1985,29 @@ void bm_read_weapon(int unusedFlag)
 			} else if (!stricmp( arg, "wall_hitSound" ))	{
 				Weapon_info[n].wall_hitSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "impact_size" ))	{
-				Weapon_info[n].impact_size = fl2f(atof(equal_ptr);
+				Weapon_info[n].impact_size = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "lighted" ))	{
 				lighted = atoi(equal_ptr);
 			} else if (!stricmp( arg, "lw_ratio" ))	{
-				Weapon_info[n].po_len_to_width_ratio = fl2f(atof(equal_ptr);
+				Weapon_info[n].po_len_to_width_ratio = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "lightcast" ))	{
-				Weapon_info[n].light = fl2f(atof(equal_ptr);
+				Weapon_info[n].light = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "persistent" ))	{
 				Weapon_info[n].persistent = atoi(equal_ptr);
 			} else if (!stricmp(arg, "energy_usage" )) {
-				Weapon_info[n].energy_usage = fl2f(atof(equal_ptr);
+				Weapon_info[n].energy_usage = F2X(atof(equal_ptr);
 			} else if (!stricmp(arg, "ammo_usage" )) {
 				Weapon_info[n].ammo_usage = atoi(equal_ptr);
 			} else if (!stricmp(arg, "fire_wait" )) {
-				Weapon_info[n].fire_wait = fl2f(atof(equal_ptr);
+				Weapon_info[n].fire_wait = F2X(atof(equal_ptr);
 			} else if (!stricmp(arg, "fireCount" )) {
 				Weapon_info[n].fireCount = atoi(equal_ptr);
 			} else if (!stricmp(arg, "damage_radius" )) {
-				Weapon_info[n].damage_radius = fl2f(atof(equal_ptr);
+				Weapon_info[n].damage_radius = F2X(atof(equal_ptr);
 //--01/19/95, mk--			} else if (!stricmp(arg, "damage_force" )) {
-//--01/19/95, mk--				Weapon_info[n].damage_force = fl2f(atof(equal_ptr);
+//--01/19/95, mk--				Weapon_info[n].damage_force = F2X(atof(equal_ptr);
 			} else if (!stricmp(arg, "lifetime" )) {
-				Weapon_info[n].lifetime = fl2f(atof(equal_ptr);
+				Weapon_info[n].lifetime = F2X(atof(equal_ptr);
 			} else if (!stricmp(arg, "destroyable" )) {
 				Weapon_info[n].destroyable = atoi(equal_ptr);
 			} else if (!stricmp(arg, "picture" )) {
@@ -2019,9 +2019,9 @@ void bm_read_weapon(int unusedFlag)
 			} else if (!stricmp(arg, "flash" )) {
 				Weapon_info[n].flash = atoi(equal_ptr);
 			} else if (!stricmp(arg, "multi_damage_scale" )) {
-				Weapon_info[n].multi_damage_scale = fl2f(atof(equal_ptr);
+				Weapon_info[n].multi_damage_scale = F2X(atof(equal_ptr);
 			} else if (!stricmp(arg, "afterburner_size" )) {
-				Weapon_info[n].afterburner_size = f2i(16*fl2f(atof(equal_ptr));
+				Weapon_info[n].afterburner_size = X2I(16*F2X(atof(equal_ptr));
 			} else if (!stricmp(arg, "children" )) {
 				Weapon_info[n].children = atoi(equal_ptr);
 			} else if (!stricmp(arg, "placable" )) {
@@ -2088,7 +2088,7 @@ void bm_read_weapon(int unusedFlag)
 
 
 // ------------------------------------------------------------------------------
-#define DEFAULT_POWERUP_SIZE i2f(3)
+#define DEFAULT_POWERUP_SIZE I2X(3)
 
 void bm_read_powerup(int unusedFlag)
 {
@@ -2124,7 +2124,7 @@ void bm_read_powerup(int unusedFlag)
 			if (!stricmp( arg, "vclip_num" ))	{
 				powerupInfo[n].nClipIndex = atoi(equal_ptr);
 			} else if (!stricmp( arg, "light" ))	{
-				powerupInfo[n].light = fl2f(atof(equal_ptr);
+				powerupInfo[n].light = F2X(atof(equal_ptr);
 			} else if (!stricmp( arg, "hitSound" ))	{
 				powerupInfo[n].hitSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "name" )) {
@@ -2132,7 +2132,7 @@ void bm_read_powerup(int unusedFlag)
 				strcpy(Powerup_names[n], &equal_ptr[1]);
 				Powerup_names[n][strlen(Powerup_names[n])-1] = 0;
 			} else if (!stricmp( arg, "size" ))	{
-				powerupInfo[n].size = fl2f(atof(equal_ptr);
+				powerupInfo[n].size = F2X(atof(equal_ptr);
 			} else {
 				Int3();
 #if TRACE

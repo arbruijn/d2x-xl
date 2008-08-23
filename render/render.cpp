@@ -511,10 +511,10 @@ void RenderSide (tSegment *segP, short nSide)
 #define	LMAP_SIZE	(1.0 / 16.0)
 
 	static tUVL	uvl_lMaps [4] = {
-		{fl2f (LMAP_SIZE), fl2f (LMAP_SIZE), 0}, 
-		{fl2f (1.0 - LMAP_SIZE), fl2f (LMAP_SIZE), 0}, 
-		{fl2f (1.0 - LMAP_SIZE), fl2f (1.0 - LMAP_SIZE), 0}, 
-		{fl2f (LMAP_SIZE), fl2f (1.0 - LMAP_SIZE), 0}
+		{F2X (LMAP_SIZE), F2X (LMAP_SIZE), 0}, 
+		{F2X (1.0 - LMAP_SIZE), F2X (LMAP_SIZE), 0}, 
+		{F2X (1.0 - LMAP_SIZE), F2X (1.0 - LMAP_SIZE), 0}, 
+		{F2X (LMAP_SIZE), F2X (1.0 - LMAP_SIZE), 0}
 	};
 #endif
 
@@ -558,11 +558,11 @@ if (gameStates.render.bDoLightmaps) {
 	props.uvl_lMaps [0].u =
 	props.uvl_lMaps [0].v =
 	props.uvl_lMaps [1].v =
-	props.uvl_lMaps [3].u = fl2f (h);
+	props.uvl_lMaps [3].u = F2X (h);
 	props.uvl_lMaps [1].u =
 	props.uvl_lMaps [2].u =
 	props.uvl_lMaps [2].v =
-	props.uvl_lMaps [3].v = fl2f (1-h);
+	props.uvl_lMaps [3].v = F2X (1-h);
 	}
 #endif
 props.nBaseTex = sideP->nBaseTex;
@@ -835,10 +835,10 @@ if (t<0)
 if (r>=grdCurCanv->cvBitmap.bmProps.w) r=grdCurCanv->cvBitmap.bmProps.w-1;
 if (b>=grdCurCanv->cvBitmap.bmProps.h) b=grdCurCanv->cvBitmap.bmProps.h-1;
 
-GrLine(i2f(l), i2f(t), i2f(r), i2f(t));
-GrLine(i2f(r), i2f(t), i2f(r), i2f(b));
-GrLine(i2f(r), i2f(b), i2f(l), i2f(b));
-GrLine(i2f(l), i2f(b), i2f(l), i2f(t));
+GrLine(I2X(l), I2X(t), I2X(r), I2X(t));
+GrLine(I2X(r), I2X(t), I2X(r), I2X(b));
+GrLine(I2X(r), I2X(b), I2X(l), I2X(b));
+GrLine(I2X(l), I2X(b), I2X(l), I2X(t));
 }
 #endif
 

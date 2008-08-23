@@ -1490,7 +1490,7 @@ typedef struct tOglData {
 //------------------------------------------------------------------------------
 
 #define TERRAIN_GRID_MAX_SIZE   64
-#define TERRAIN_GRID_SCALE      i2f (2*20)
+#define TERRAIN_GRID_SCALE      I2X (2*20)
 #define TERRAIN_HEIGHT_SCALE    f1_0
 
 typedef struct tTerrainRenderData {
@@ -3357,19 +3357,19 @@ static inline fix MinSegRad (short nSegment)
 	{return gameData.segs.segRads [0][nSegment];}
 
 static inline float MinSegRadf (short nSegment)
-	{return f2fl (gameData.segs.segRads [0][nSegment]);}
+	{return X2F (gameData.segs.segRads [0][nSegment]);}
 
 static inline fix MaxSegRad (short nSegment)
 	{return gameData.segs.segRads [1][nSegment];}
 
 static inline float MaxSegRadf (short nSegment)
-	{return f2fl (gameData.segs.segRads [1][nSegment]);}
+	{return X2F (gameData.segs.segRads [1][nSegment]);}
 
 static inline fix AvgSegRad (short nSegment)
 	{return (MinSegRad (nSegment) + MaxSegRad (nSegment)) / 2;}
 
 static inline float AvgSegRadf (short nSegment)
-	{return f2fl (gameData.segs.segRads [0][nSegment] + gameData.segs.segRads [1][nSegment]) / 2;}
+	{return X2F (gameData.segs.segRads [0][nSegment] + gameData.segs.segRads [1][nSegment]) / 2;}
 
 static inline fix SegmentVolume (short nSegment)
 	{return (fix) (1.25 * Pi * pow (AvgSegRadf (nSegment), 3) + 0.5);}
@@ -3567,7 +3567,7 @@ static inline void SemWait (uint sem)
 
 while (gameData.app.semaphores [sem]) {
 	G3_SLEEP (0);
-	if (gameStates.app.nSDLTicks - t0 > 100) {
+	if (SDL_GetTicks () - t0 > 100) {
 		PrintLog ("multi threading got stuck (semaphore: %d)\n", sem);
 		gameData.app.bUseMultiThreading [rtEffects] = 0;
 		gameData.app.semaphores [sem] = 0;

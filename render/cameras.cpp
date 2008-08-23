@@ -380,8 +380,8 @@ else
 			xFlip = (uvlP [2].u < uvlP [0].u);
 			yFlip = (uvlP [1].v > uvlP [0].v);
 			}
-		dvFace = f2fl (uvlP [1].v - uvlP [0].v);
-		duFace = f2fl (uvlP [2].u - uvlP [0].u);
+		dvFace = X2F (uvlP [1].v - uvlP [0].v);
+		duFace = X2F (uvlP [2].u - uvlP [0].u);
 		}
 	else {
 		rotLeft = (texCoordP [1].v.u < texCoordP [0].v.u);
@@ -425,13 +425,13 @@ else
 		xFlip = !xFlip;
 	if (uvlP) {
 		uvlP [0].v = 
-		uvlP [3].v = fl2f (yFlip ? dvImage : dv / 2);
+		uvlP [3].v = F2X (yFlip ? dvImage : dv / 2);
 		uvlP [1].v = 
-		uvlP [2].v = fl2f (yFlip ? dv / 2 : dvImage);
+		uvlP [2].v = F2X (yFlip ? dv / 2 : dvImage);
 		uvlP [0].u = 
-		uvlP [1].u = fl2f (xFlip ? duImage : du / 2);
+		uvlP [1].u = F2X (xFlip ? duImage : du / 2);
 		uvlP [2].u = 
-		uvlP [3].u = fl2f (xFlip ? du / 2 : duImage);
+		uvlP [3].u = F2X (xFlip ? du / 2 : duImage);
 		for (i = 0; i < 4; i++)
 			uvlP [i].l = F1_0;
 		if (rotRight) {

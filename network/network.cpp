@@ -557,7 +557,7 @@ if ((nPlayer >= gameData.multiplayer.nPlayers) || !pingStats [nPlayer].launchTim
    return;
 	}
 xPingReturnTime = TimerGetFixedSeconds ();
-pingStats [nPlayer].ping = f2i (FixMul (xPingReturnTime - pingStats [nPlayer].launchTime, i2f (1000)));
+pingStats [nPlayer].ping = X2I (FixMul (xPingReturnTime - pingStats [nPlayer].launchTime, I2X (1000)));
 if (!gameStates.render.cockpit.bShowPingStats)
 	HUDInitMessage ("Ping time for %s is %d ms!", gameData.multiplayer.players [nPlayer].callsign, pingStats [nPlayer].ping);
 pingStats [nPlayer].launchTime = 0;

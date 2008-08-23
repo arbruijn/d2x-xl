@@ -36,8 +36,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Every time a robot is created in the morphing code, it decreases capacity of the morpher
 // by this amount... when capacity gets to 0, no more morphers...
 
-#define	ROBOT_GEN_TIME (i2f (5))
-#define	EQUIP_GEN_TIME (i2f (3) * (gameStates.app.nDifficultyLevel + 1))
+#define	ROBOT_GEN_TIME (I2X (5))
+#define	EQUIP_GEN_TIME (I2X (3) * (gameStates.app.nDifficultyLevel + 1))
 
 #define MATCEN_HP_DEFAULT			F1_0*500; // Hitpoints
 #define MATCEN_INTERVAL_DEFAULT	F1_0*5;	//  5 seconds
@@ -185,7 +185,7 @@ switch (oldType) {
 seg2P->value = i;
 gameData.matCens.fuelCenters [i].nType = stationType;
 gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
-gameData.matCens.fuelCenters [i].xCapacity = i2f (gameStates.app.nDifficultyLevel + 3);
+gameData.matCens.fuelCenters [i].xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
 gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.fuelCenters [i].xCapacity;
 gameData.matCens.fuelCenters [i].nSegment = nSegment;
 gameData.matCens.fuelCenters [i].xTimer = -1;
@@ -242,7 +242,7 @@ switch (oldType) {
 seg2P->value = i;
 gameData.matCens.fuelCenters [i].nType = stationType;
 gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
-gameData.matCens.fuelCenters [i].xCapacity = i2f (gameStates.app.nDifficultyLevel + 3);
+gameData.matCens.fuelCenters [i].xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
 gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.fuelCenters [i].xCapacity;
 gameData.matCens.fuelCenters [i].nSegment = nSegment;
 gameData.matCens.fuelCenters [i].xTimer = -1;
@@ -282,7 +282,7 @@ else {
 //	The lower this number is, the more quickly the center can be re-triggered.
 //	If it's too low, it can mean all the robots won't be put out, but for about 5
 //	robots, that's not real likely.
-#define	MATCEN_LIFE (i2f (30-2*gameStates.app.nDifficultyLevel))
+#define	MATCEN_LIFE (I2X (30-2*gameStates.app.nDifficultyLevel))
 
 //------------------------------------------------------------
 //	Trigger (enable) the materialization center in tSegment nSegment
@@ -316,7 +316,7 @@ if (gameStates.app.nDifficultyLevel + 1 < NDL)
 
 matCenP->xTimer = F1_0*1000;	//	Make sure the first robot gets emitted right away.
 matCenP->bEnabled = 1;			//	Say this center is enabled, it can create robots.
-matCenP->xCapacity = i2f (gameStates.app.nDifficultyLevel + 3);
+matCenP->xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
 matCenP->xDisableTime = MATCEN_LIFE;
 
 //	Create a bright tObject in the tSegment.
@@ -326,7 +326,7 @@ VmVecScaleInc (&pos, &delta, F1_0/2);
 nObject = CreateObject (OBJ_LIGHT, SINGLE_LIGHT_ID, -1, nSegment, &pos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
 if (nObject != -1) {
 	OBJECTS [nObject].lifeleft = MATCEN_LIFE;
-	OBJECTS [nObject].cType.lightInfo.intensity = i2f (8);	//	Light cast by a fuelcen.
+	OBJECTS [nObject].cType.lightInfo.intensity = I2X (8);	//	Light cast by a fuelcen.
 	} 
 else {
 #if TRACE
@@ -456,7 +456,7 @@ void CreateMatCenEffect (tFuelCenInfo *matCenP, ubyte nVideoClip)
 
 COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
 // HACK!!!The 10 under here should be something equal to the 1/2 the size of the tSegment.
-objP = ObjectCreateExplosion ((short) matCenP->nSegment, &vPos, i2f (10), nVideoClip);
+objP = ObjectCreateExplosion ((short) matCenP->nSegment, &vPos, I2X (10), nVideoClip);
 if (objP) {
 	ExtractOrientFromSegment (&objP->position.mOrient, gameData.segs.segments + matCenP->nSegment);
 	if (gameData.eff.vClips [0][nVideoClip].nSound > -1)
@@ -579,7 +579,7 @@ if (nMatCen == -1) {
 	}
 matCenP->xTimer += gameData.time.xFrame;
 if (!matCenP->bFlag) {
-	topTime = i2f (extraGameInfo [1].entropy.nVirusGenTime);
+	topTime = I2X (extraGameInfo [1].entropy.nVirusGenTime);
 	if (matCenP->xTimer < topTime)
 		return;
 	nObject = gameData.segs.objects [matCenP->nSegment];
@@ -898,7 +898,7 @@ if (gameData.time.xGame > last_playTime + FUELCEN_SOUND_DELAY) {
 		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0 / 2);
 	last_playTime = gameData.time.xGame;
 	}
-//HUDInitMessage ("Fuelcen %d has %d/%d fuel", segP->value,f2i (gameData.matCens.fuelCenters [segP->value].xCapacity),f2i (gameData.matCens.fuelCenters [segP->value].xMaxCapacity));
+//HUDInitMessage ("Fuelcen %d has %d/%d fuel", segP->value,X2I (gameData.matCens.fuelCenters [segP->value].xCapacity),X2I (gameData.matCens.fuelCenters [segP->value].xMaxCapacity));
 return amount;
 }
 
@@ -1040,7 +1040,7 @@ return amount;
 //--repair-- tObject *RepairObj=NULL;		//which tObject getting repaired
 //--repair-- int disable_repair_center=0;
 //--repair-- fix repair_rate;
-//--repair-- #define FULL_REPAIR_RATE i2f (10)
+//--repair-- #define FULL_REPAIR_RATE I2X (10)
 
 //--unused-- ubyte save_controlType,save_movementType;
 
@@ -1231,7 +1231,7 @@ return amount;
 //--repair-- 		//the two lines below will spit the tPlayer out of the rapair center,
 //--repair-- 		//but what happen is that the ship just bangs into the door
 //--repair-- 		//if (objP->movementType == MT_PHYSICS)
-//--repair-- 		//	VmVecCopyScale (&objP->mType.physInfo.velocity,&objP->position.mOrient.fVec,i2f (200);
+//--repair-- 		//	VmVecCopyScale (&objP->mType.physInfo.velocity,&objP->position.mOrient.fVec,I2X (200);
 //--repair-- 	}
 //--repair--
 //--repair-- }

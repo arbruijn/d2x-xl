@@ -274,7 +274,7 @@ if (gameOpts->render.nLightingMethod) {
 	}
 #if 0
 if (fIntensityP && (nBrightness < F1_0))
-	*fIntensityP *= f2fl (nBrightness);
+	*fIntensityP *= X2F (nBrightness);
 #endif
 if (gameStates.app.bD1Mission) {
 	switch (nTexture) {
@@ -344,7 +344,7 @@ float ComputeCoronaSprite (fVector *sprite, fVector *vCenter, short nSegment, sh
 
 GetSideVertIndex (sideVerts, nSegment, nSide);
 for (i = 0; i < 4; i++) {
-	fLight += f2fl (sideP->uvls [i].l);
+	fLight += X2F (sideP->uvls [i].l);
 	if (RENDERPATH)
 		G3TransformPoint (sprite + i, gameData.segs.fVertices + sideVerts [i], 0);
 	else
@@ -508,7 +508,7 @@ if (gameStates.render.bAmbientColor) {
 	color.alpha = (float) (color.red * 3 + color.green * 5 + color.blue * 2) / 30 * 2;
 	}
 else {
-	color.alpha = f2fl (IsLight (nTexture));
+	color.alpha = X2F (IsLight (nTexture));
 	color.red = color.green = color.blue = color.alpha / 2;
 	color.alpha *= 2.0f / 3.0f;
 	}
@@ -603,7 +603,7 @@ else {
 if (gameStates.render.bAmbientColor)
 	color = gameData.render.color.textures [nTexture].color;
 else
-	color.red = color.green = color.blue = f2fl (IsLight (nTexture)) / 2;
+	color.red = color.green = color.blue = X2F (IsLight (nTexture)) / 2;
 if (!bColored)
 	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
 if (bAdditive)

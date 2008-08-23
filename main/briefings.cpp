@@ -301,7 +301,7 @@ if (GrPaletteFadeIn (NULL, 32, bAllowKeys))
 	return 1;
 
 GrPaletteStepLoad (NULL);
-timer	= TimerGetFixedSeconds () + i2f (3);
+timer	= TimerGetFixedSeconds () + I2X (3);
 while (1) {
 	if (BriefingInKey () && bAllowKeys) break;
 	if (TimerGetFixedSeconds () > timer) break;

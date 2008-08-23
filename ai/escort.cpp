@@ -956,8 +956,8 @@ gameData.escort.nObjNum = nObject;
 if (player_visibility) {
 	xBuddyLastSeenPlayer = gameData.time.xGame;
 	if (PlayerHasHeadlight (-1) && EGI_FLAG (headlight.bDrainPower, 0, 0, 1))	//	DAMN!MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON
-		if (f2i (LOCALPLAYER.energy) < 40)
-			if ((f2i (LOCALPLAYER.energy)/2) & 2)
+		if (X2I (LOCALPLAYER.energy) < 40)
+			if ((X2I (LOCALPLAYER.energy)/2) & 2)
 				if (!gameStates.app.bPlayerIsDead)
 					BuddyMessage (TXT_HEADLIGHT_WARN);
 	}

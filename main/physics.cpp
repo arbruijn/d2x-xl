@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define TURNROLL_SCALE	 (0x4ec4/2)
 
-#define MAX_OBJECT_VEL i2f (100)
+#define MAX_OBJECT_VEL I2X (100)
 
 #define BUMP_HACK	1	//if defined, bump tPlayer when he gets stuck
 
@@ -313,7 +313,7 @@ if (/*(0 <= xSideDist) && */
 #	if 1
 	float r;
 	xSideDist = objP->size - xSideDist;
-	r = ((float) xSideDist / (float) objP->size) * f2fl (objP->size);
+	r = ((float) xSideDist / (float) objP->size) * X2F (objP->size);
 #	endif
 	objP->position.vPos.p.x += (fix) ((float) hi.hit.vNormal.p.x * fOffs);
 	objP->position.vPos.p.y += (fix) ((float) hi.hit.vNormal.p.y * fOffs);
@@ -364,7 +364,7 @@ if (fviResult == HIT_WALL)
 	BounceObject (objP, hi, 0.1f, NULL);
 #	endif
 #else
-	BounceObject (objP, hi, f2fl (objP->size - VmVecDist (&objP->position.vPos, &hi.hit.vPoint)) /*0.25f*/, NULL);
+	BounceObject (objP, hi, X2F (objP->size - VmVecDist (&objP->position.vPos, &hi.hit.vPoint)) /*0.25f*/, NULL);
 #endif
 }
 
@@ -563,7 +563,7 @@ do {
 		VmVecNormalize (&vStartVel, gameData.objs.vStartVel + nObject);
 		fix xDot = VmVecDot (&objP->position.mOrient.fVec, &vStartVel);
 		VmVecAdd (&vFrame, &objP->mType.physInfo.velocity, gameData.objs.vStartVel + nObject);
-		VmVecScale (&vFrame, fl2f (fScale * fScale));
+		VmVecScale (&vFrame, F2X (fScale * fScale));
 		VmVecScaleInc (&vFrame, gameData.objs.vStartVel + nObject, -(abs (xDot)));
 		VmVecScale (&vFrame, FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1)));
 		}
@@ -629,7 +629,7 @@ retryMove:
 	nSaveSeg = objP->nSegment;
 #if 0//def _DEBUG
 	if (objP->nType == OBJ_PLAYER)
-		HUDMessage (0, "FVI: %d (%1.2f)", fviResult, f2fl (VmVecMag (&objP->mType.physInfo.velocity)));
+		HUDMessage (0, "FVI: %d (%1.2f)", fviResult, X2F (VmVecMag (&objP->mType.physInfo.velocity)));
 #endif
 	if (fviResult == HIT_BAD_P0) {
 #ifdef _DEBUG
@@ -812,7 +812,7 @@ retryMove:
 			CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 #if 0//def _DEBUG
 			if (objP->nType == OBJ_PLAYER)
-				HUDMessage (0, "BUMP %1.2f (%d,%d)!", f2fl (xHitSpeed), nWallHitSeg, nWallHitSide);
+				HUDMessage (0, "BUMP %1.2f (%d,%d)!", X2F (xHitSpeed), nWallHitSeg, nWallHitSide);
 #endif
 			}
 		else {
@@ -1069,7 +1069,7 @@ if (!gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted || (objP != gameData.obj
 						FixDiv (f1_0, objP->mType.physInfo.mass));
 #ifdef _DEBUG
 mag = VmVecMag (&objP->mType.physInfo.velocity);
-if (f2fl (mag) > 500)
+if (X2F (mag) > 500)
 	objP = objP;
 #endif
 }
@@ -1164,7 +1164,7 @@ else {
 		if (!(ROBOTINFO (objP->id).thief || ROBOTINFO (objP->id).attackType)) {
 			if (objP->cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < 3*F1_0/4) {
 				fix	tval = FixDiv (F1_0, 8 * gameData.physics.xTime);
-				int	addval = f2i (tval);
+				int	addval = X2I (tval);
 				if ((d_rand () * 2) < (tval & 0xffff))
 					addval++;
 				objP->cType.aiInfo.SKIP_AI_COUNT += addval;

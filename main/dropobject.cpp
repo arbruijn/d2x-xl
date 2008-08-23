@@ -240,7 +240,7 @@ while (nSegment == -1) {
 	if (nSegment > -1) {
 		COMPUTE_SEGMENT_CENTER_I (&tempv, nSegment);
 		nDist = FindConnectedDistance (vPlayerPos, nPlayerSeg, &tempv, nSegment, -1, WID_FLY_FLAG, 0);
-		if ((nDist < 0) || (nDist >= i2f (20) * nDepth))
+		if ((nDist < 0) || (nDist >= I2X (20) * nDepth))
 			break;
 		}
 	nDepth--;
@@ -388,7 +388,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (!bFixedPos)
 		OBJECTS [nObject].position.vPos = vNewPos;
 	RelinkObject (nObject, nSegment);
-	ObjectCreateExplosion (nSegment, &vNewPos, i2f (5), VCLIP_POWERUP_DISAPPEARANCE);
+	ObjectCreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;
 	}
 return 0;
@@ -682,7 +682,7 @@ int ObjectCreateEgg (tObject *objP)
 if (!IsMultiGame & (objP->nType != OBJ_PLAYER)) {
 	if (objP->containsType == OBJ_POWERUP) {
 		if (objP->containsId == POW_SHIELD_BOOST) {
-			if (LOCALPLAYER.shields >= i2f (100)) {
+			if (LOCALPLAYER.shields >= I2X (100)) {
 				if (d_rand () > 16384) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping shield!\n");
@@ -690,7 +690,7 @@ if (!IsMultiGame & (objP->nType != OBJ_PLAYER)) {
 					return -1;
 					}
 				} 
-			else  if (LOCALPLAYER.shields >= i2f (150)) {
+			else  if (LOCALPLAYER.shields >= I2X (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping shield!\n");
@@ -700,7 +700,7 @@ if (!IsMultiGame & (objP->nType != OBJ_PLAYER)) {
 				}
 			} 
 		else if (objP->containsId == POW_ENERGY) {
-			if (LOCALPLAYER.energy >= i2f (100)) {
+			if (LOCALPLAYER.energy >= I2X (100)) {
 				if (d_rand () > 16384) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping energy!\n");
@@ -708,7 +708,7 @@ if (!IsMultiGame & (objP->nType != OBJ_PLAYER)) {
 					return -1;
 					}
 				} 
-			else if (LOCALPLAYER.energy >= i2f (150)) {
+			else if (LOCALPLAYER.energy >= I2X (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping energy!\n");

@@ -177,7 +177,7 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 	VmVecScale (&pos_hit, FixDiv (obj0P->size, obj0P->size + dist));
 	if (t == OBJ_WEAPON) {
 		PhysApplyForce (obj0P, &vForce);
-		if (WeaponIsMine (obj0P->id) && (FixMul (dist, force) > i2f (8000))) {	//prox bombs have chance of blowing up
+		if (WeaponIsMine (obj0P->id) && (FixMul (dist, force) > I2X (8000))) {	//prox bombs have chance of blowing up
 			KillObject (obj0P);
 			ExplodeBadassWeapon (obj0P, &obj0P->position.vPos);
 			}
@@ -190,7 +190,7 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 		//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
 		if (objP && (!ROBOTINFO (obj0P->id).bossFlag) && (gameData.weapons.info [objP->id].flash)) {
 			tAIStatic	*aip = &obj0P->cType.aiInfo;
-			int			force_val = f2i (FixDiv (VmVecMagQuick (&vForce) * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
+			int			force_val = X2I (FixDiv (VmVecMagQuick (&vForce) * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
 
 			if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame >= F1_0) 
 				aip->SKIP_AI_COUNT--;
@@ -219,7 +219,7 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 			int	i, count;
 			char	szOuch [6*4 + 2];
 
-			count = f2i (damage / 8);
+			count = X2I (damage / 8);
 			if (count > 4)
 				count = 4;
 			else if (count <= 0)
@@ -249,9 +249,9 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 				}
 			if (force > F1_0) {
 				gameData.render.xFlashEffect = fe;
-				PALETTE_FLASH_ADD (PK1 + f2i (PK2*force), PK1 + f2i (PK2*force), PK1 + f2i (PK2*force));
+				PALETTE_FLASH_ADD (PK1 + X2I (PK2*force), PK1 + X2I (PK2*force), PK1 + X2I (PK2*force));
 #if TRACE
-				con_printf (CONDBG, "force = %7.3f, adding %i\n", f2fl (force), PK1 + f2i (PK2*force));
+				con_printf (CONDBG, "force = %7.3f, adding %i\n", X2F (force), PK1 + X2I (PK2*force));
 #endif
 				}
 			}
@@ -345,9 +345,9 @@ return ExplodeBadassObject (objP, F1_0*50, F1_0*40, F1_0*150);
 
 inline double VectorVolume (vmsVector *vMin, vmsVector *vMax)
 {
-return fabs (f2fl (vMax->p.x - vMin->p.x)) *
-		 fabs (f2fl (vMax->p.y - vMin->p.y)) *
-		 fabs (f2fl (vMax->p.z - vMin->p.z));
+return fabs (X2F (vMax->p.x - vMin->p.x)) *
+		 fabs (X2F (vMax->p.y - vMin->p.y)) *
+		 fabs (X2F (vMax->p.z - vMin->p.z));
 }
 
 //------------------------------------------------------------------------------
@@ -359,7 +359,7 @@ double ObjectVolume (tObject *objP)
 	double		size;
 
 if (objP->renderType != RT_POLYOBJ)
-	size = 4 * Pi * pow (f2fl (objP->size), 3) / 3;
+	size = 4 * Pi * pow (X2F (objP->size), 3) / 3;
 else {
 	size = 0;
 	pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
@@ -415,7 +415,7 @@ debrisP->mType.physInfo.velocity.p.y = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity.p.z = RAND_MAX/2 - d_rand ();
 VmVecScale (&debrisP->mType.physInfo.velocity, F1_0 * 10);
 VmVecNormalize (&debrisP->mType.physInfo.velocity);
-VmVecScale (&debrisP->mType.physInfo.velocity, i2f (10 + (30 * d_rand () / RAND_MAX)));
+VmVecScale (&debrisP->mType.physInfo.velocity, I2X (10 + (30 * d_rand () / RAND_MAX)));
 VmVecInc (&debrisP->mType.physInfo.velocity, &parentObjP->mType.physInfo.velocity);
 // -- used to be: Notice, not random!VmVecMake (&debrisP->mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
 #if 0//def _DEBUG
@@ -431,7 +431,7 @@ debrisP->mType.physInfo.mass =
 #else
 	FixMulDiv (parentObjP->mType.physInfo.mass, debrisP->size, parentObjP->size);
 #endif
-debrisP->mType.physInfo.drag = gameOpts->render.nDebrisLife ? 256 : 0; //fl2f (0.2);		//parentObjP->mType.physInfo.drag;
+debrisP->mType.physInfo.drag = gameOpts->render.nDebrisLife ? 256 : 0; //F2X (0.2);		//parentObjP->mType.physInfo.drag;
 if (gameOpts->render.nDebrisLife) {
 	debrisP->mType.physInfo.flags |= PF_FREE_SPINNING;
 	VmVecScaleFrac (&debrisP->mType.physInfo.rotVel, 1, 3);
@@ -617,8 +617,8 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 			FixMul (delObjP->size, EXPLOSION_SCALE), 
 			nVClip, 
 			F1_0 * xBadAss, 
-			i2f (4) * xBadAss, 
-			i2f (35) * xBadAss, 
+			I2X (4) * xBadAss, 
+			I2X (35) * xBadAss, 
 			-1);
 	else
 		explObjP = ObjectCreateExplosion (delObjP->nSegment, vSpawnPos, FixMul (delObjP->size, EXPLOSION_SCALE), nVClip);
@@ -751,8 +751,8 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 				gameData.walls.walls [WallNumP (csegp, cside)].flags |= WALL_BLASTED;
 			}
 		newfrac = FixDiv (gameData.walls.explWalls [i].time, EXPL_WALL_TIME);
-		oldCount = f2i (EXPL_WALL_TOTAL_FIREBALLS * FixMul (oldfrac, oldfrac));
-		newCount = f2i (EXPL_WALL_TOTAL_FIREBALLS * FixMul (newfrac, newfrac));
+		oldCount = X2I (EXPL_WALL_TOTAL_FIREBALLS * FixMul (oldfrac, oldfrac));
+		newCount = X2I (EXPL_WALL_TOTAL_FIREBALLS * FixMul (newfrac, newfrac));
 		//n = newCount - oldCount;
 		//now create all the next explosions
 		for (e = oldCount; e < newCount; e++) {
@@ -780,9 +780,9 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 				ObjectCreateBadassExplosion (NULL, (short) gameData.walls.explWalls [i].nSegment, &pos, 
 				size, 
 				(ubyte) VCLIP_SMALL_EXPLOSION, 
-				i2f (4), 		// damage strength
-				i2f (20), 		//	damage radius
-				i2f (50), 		//	damage force
+				I2X (4), 		// damage strength
+				I2X (20), 		//	damage radius
+				I2X (50), 		//	damage force
 				-1		//	parent id
 				);
 			}

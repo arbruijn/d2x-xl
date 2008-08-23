@@ -887,10 +887,10 @@ m_faceP->nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWal
 m_faceP->bAnimation = IsAnimatedTexture (m_faceP->nBaseTex) || IsAnimatedTexture (m_faceP->nOvlTex);
 m_faceP->bHasColor = 0;
 ComputeSideRads (nSegment, nSide, &rMin, &rMax);
-//float rMinf = f2fl (rMin);
-//float rMaxf = f2fl (rMax);
-m_faceP->fRads [0] = f2fl (rMin); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
-m_faceP->fRads [1] = f2fl (rMax); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+//float rMinf = X2F (rMin);
+//float rMaxf = X2F (rMax);
+m_faceP->fRads [0] = X2F (rMin); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
+m_faceP->fRads [1] = X2F (rMax); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
 }
 
 //------------------------------------------------------------------------------
@@ -968,8 +968,8 @@ for (i = 0; i < 4; i++) {
 	j = m_sideVerts [i];
 	*m_vertexP++ = gameData.segs.fVertices [j].v3;
 	*m_normalP++ = vNormalf;
-	m_texCoordP->v.u = f2fl (m_sideP->uvls [i].u);
-	m_texCoordP->v.v = f2fl (m_sideP->uvls [i].v);
+	m_texCoordP->v.u = X2F (m_sideP->uvls [i].u);
+	m_texCoordP->v.v = X2F (m_sideP->uvls [i].v);
 	RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);
 	m_texCoordP++;
 	m_ovlTexCoordP++;
@@ -1002,8 +1002,8 @@ for (i = 0; i < 2; i++, m_triP++) {
 		v = m_sideVerts [k];
 		m_triP->index [j] = v;
 		*m_vertexP++ = gameData.segs.fVertices [v].v3;
-		m_texCoordP->v.u = f2fl (m_sideP->uvls [k].u);
-		m_texCoordP->v.v = f2fl (m_sideP->uvls [k].v);
+		m_texCoordP->v.u = X2F (m_sideP->uvls [k].u);
+		m_texCoordP->v.v = X2F (m_sideP->uvls [k].v);
 		RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);
 		*m_lMapTexCoordP = lMapTexCoord [k];
 		m_texCoordP++;
@@ -1072,8 +1072,8 @@ texCoord.v.u = texCoord.v.v = 0;
 color.red = color.green = color.blue = color.alpha = 0;
 for (i = 0; i < 4; i++) {
 	j = (i + 1) % 4;
-	texCoord.v.u += f2fl (m_sideP->uvls [i].u + m_sideP->uvls [j].u) / 8;
-	texCoord.v.v += f2fl (m_sideP->uvls [i].v + m_sideP->uvls [j].v) / 8;
+	texCoord.v.u += X2F (m_sideP->uvls [i].u + m_sideP->uvls [j].u) / 8;
+	texCoord.v.v += X2F (m_sideP->uvls [i].v + m_sideP->uvls [j].v) / 8;
 	h = m_sideVerts [i];
 	k = m_sideVerts [j];
 	color.red += (gameData.render.color.ambient [h].color.red + gameData.render.color.ambient [k].color.red) / 8;
@@ -1106,8 +1106,8 @@ for (i = 0; i < 4; i++, m_triP++) {
 			m_faceColorP [2] = color;
 			}
 		else {
-			m_texCoordP [j].v.u = f2fl (m_sideP->uvls [k].u);
-			m_texCoordP [j].v.v = f2fl (m_sideP->uvls [k].v);
+			m_texCoordP [j].v.u = X2F (m_sideP->uvls [k].u);
+			m_texCoordP [j].v.v = X2F (m_sideP->uvls [k].v);
 			m_colorP = gameData.render.color.ambient + v;
 			m_faceColorP [j] = m_colorP->color;
 			}

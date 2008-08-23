@@ -114,7 +114,7 @@ void TransferEnergyToShield(fix time)
 		         (MAX_SHIELDS-LOCALPLAYER.shields)*CONVERTER_SCALE);
 	if (e <= 0) {
 		if (LOCALPLAYER.energy <= INITIAL_ENERGY)
-			HUDInitMessage(TXT_TRANSFER_ENERGY, f2i(INITIAL_ENERGY));
+			HUDInitMessage(TXT_TRANSFER_ENERGY, X2I(INITIAL_ENERGY));
 		else
 			HUDInitMessage(TXT_TRANSFER_SHIELDS);
 		return;
@@ -214,8 +214,8 @@ else if (gameData.app.nGameMode & GM_MULTI) {
 PauseGame ();
 SetPopupScreenMode();
 GrPaletteStepLoad (NULL);
-formatTime(totalTime, f2i(LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal*3600);
-formatTime(xLevelTime, f2i(LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel*3600);
+formatTime(totalTime, X2I(LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal*3600);
+formatTime(xLevelTime, X2I(LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel*3600);
   if (gameData.demo.nState!=ND_STATE_PLAYBACK)
 	sprintf(msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
 			  LOCALPLAYER.hostages.nOnBoard, xLevelTime, totalTime);
@@ -384,8 +384,8 @@ void SpeedtestFrame(void)
 
 		sprintf(msg, TXT_SPEEDTEST, 
 			gameData.app.nFrameCount-gameData.speedtest.nFrameStart, 
-			f2fl(TimerGetFixedSeconds() - gameData.speedtest.nStartTime), 
-			(double) (gameData.app.nFrameCount-gameData.speedtest.nFrameStart) / f2fl(TimerGetFixedSeconds() - gameData.speedtest.nStartTime));
+			X2F(TimerGetFixedSeconds() - gameData.speedtest.nStartTime), 
+			(double) (gameData.app.nFrameCount-gameData.speedtest.nFrameStart) / X2F(TimerGetFixedSeconds() - gameData.speedtest.nStartTime));
 #if TRACE
 		con_printf (CONDBG, "%s", msg);
 #endif

@@ -77,7 +77,7 @@ int weaponBoxUser [2] = {WBU_WEAPON, WBU_WEAPON};		//see WBU_ constants in gauge
 int weaponBoxStates [2];
 fix weaponBoxFadeValues [2];
 
-#define FADE_SCALE	 (2*i2f (GR_ACTUAL_FADE_LEVELS)/REARM_TIME)		// fade out and back in REARM_TIME, in fade levels per seconds (int)
+#define FADE_SCALE	 (2*I2X (GR_ACTUAL_FADE_LEVELS)/REARM_TIME)		// fade out and back in REARM_TIME, in fade levels per seconds (int)
 
 //store delta x values from left of box
 tSpan weaponWindowLeft [] = {		//first tSpan 67, 151
@@ -549,8 +549,8 @@ if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMs
 	return;
 
 if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
-	timevar=i2f (netGame.xPlayTimeAllowed*5*60);
-	i=f2i (timevar-gameStates.app.xThisLevelTime);
+	timevar=I2X (netGame.xPlayTimeAllowed*5*60);
+	i=X2I (timevar-gameStates.app.xThisLevelTime);
 	i++;
 	sprintf (szScore, "T - %5d", i);
 	GrGetStringSize (szScore, &w, &h, &aw);
@@ -580,7 +580,7 @@ if (scoreDisplay [0] == 0)
 GrSetCurFont (GAME_FONT);
 scoreTime -= gameData.time.xFrame;
 if (scoreTime > 0) {
-	color = f2i (scoreTime * 20) + 12;
+	color = X2I (scoreTime * 20) + 12;
 	if (color < 10) 
 		color = 12;
 	else if (color > 31) 
@@ -851,7 +851,7 @@ void HUDShowEnergy (void)
 	//GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 if (HIDE_HUD)
 	return;
-h = LOCALPLAYER.energy ? f2ir (LOCALPLAYER.energy) : 0;
+h = LOCALPLAYER.energy ? X2IR (LOCALPLAYER.energy) : 0;
 if (gameOpts->render.cockpit.bTextGauges) {
 	y = grdCurCanv->cv_h - (IsMultiGame ? 5 : 1) * nHUDLineSpacing;
 	GrSetCurFont (GAME_FONT);
@@ -886,7 +886,7 @@ else {
 skipGauge:
 
 if (gameData.demo.nState == ND_STATE_RECORDING) {
-	int energy = f2ir (LOCALPLAYER.energy);
+	int energy = X2IR (LOCALPLAYER.energy);
 
 	if (energy != oldEnergy [gameStates.render.vr.nCurrentPage]) {
 		NDRecordPlayerEnergy (oldEnergy [gameStates.render.vr.nCurrentPage], energy);
@@ -1040,7 +1040,7 @@ switch (gameData.weapons.nPrimary) {
 
 	case VULCAN_INDEX:	
 	case GAUSS_INDEX:		
-		sprintf (szWeapon, "%s: %i", pszWeapon, f2i ((unsigned) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (unsigned) VULCAN_AMMO_SCALE)); 
+		sprintf (szWeapon, "%s: %i", pszWeapon, X2I ((unsigned) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (unsigned) VULCAN_AMMO_SCALE)); 
 		convert_1s (szWeapon);
 		break;
 
@@ -1143,7 +1143,7 @@ void HUDShowShield (void)
 if (HIDE_HUD)
 	return;
 //	GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
-h = (LOCALPLAYER.shields >= 0) ? f2ir (LOCALPLAYER.shields) : 0; 
+h = (LOCALPLAYER.shields >= 0) ? X2IR (LOCALPLAYER.shields) : 0; 
 if ((t = HUDShowFlashGauge (h, &gameStates.render.cockpit.nShieldFlash, (int) tToggle))) {
 	tToggle = t;
 	bShow = !bShow;
@@ -1192,7 +1192,7 @@ else {
 skipGauge:
 
 if (gameData.demo.nState==ND_STATE_RECORDING) {
-	int shields = f2ir (LOCALPLAYER.shields);
+	int shields = X2IR (LOCALPLAYER.shields);
 
 	if (shields != oldShields [gameStates.render.vr.nCurrentPage]) {		// Draw the shield gauge
 		NDRecordPlayerShields (oldShields [gameStates.render.vr.nCurrentPage], shields);
@@ -1232,8 +1232,8 @@ else if (LOCALPLAYER.lives > 1)  {
 
 void ShowTime (void)
 {
-	int secs = f2i (LOCALPLAYER.timeLevel) % 60;
-	int mins = f2i (LOCALPLAYER.timeLevel) / 60;
+	int secs = X2I (LOCALPLAYER.timeLevel) % 60;
+	int mins = X2I (LOCALPLAYER.timeLevel) / 60;
 
 	static int nIdTime = 0;
 
@@ -1651,7 +1651,7 @@ if ((nCloakState == 1) && !nOldCloakState)
 if (nCloakState == nOldCloakState)		//doing "about-to-uncloak" effect
 	if (!nCloakFadeState)
 		nCloakFadeState = 2;
-if (nCloakState && (gameData.time.xGame > LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - i2f (3)))		//doing "about-to-uncloak" effect
+if (nCloakState && (gameData.time.xGame > LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - I2X (3)))		//doing "about-to-uncloak" effect
 	if (!nCloakFadeState)
 		nCloakFadeState = 2;
 if (nCloakFadeState)
@@ -1933,7 +1933,7 @@ bLaserLevelChanged = ((nWeaponType == 0) &&
 
 if ((nWeaponNum != oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage] || bLaserLevelChanged) && weaponBoxStates [nWeaponType] == WS_SET) {
 	weaponBoxStates [nWeaponType] = WS_FADING_OUT;
-	weaponBoxFadeValues [nWeaponType]=i2f (GR_ACTUAL_FADE_LEVELS-1);
+	weaponBoxFadeValues [nWeaponType]=I2X (GR_ACTUAL_FADE_LEVELS-1);
 	}
 
 if ((oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage] == -1) || 1/* (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)*/) {
@@ -1971,7 +1971,7 @@ else if (weaponBoxStates [nWeaponType] == WS_FADING_IN) {
 		xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
 		bDrew=1;
 		weaponBoxFadeValues [nWeaponType] += gameData.time.xFrame * FADE_SCALE;
-		if (weaponBoxFadeValues [nWeaponType] >= i2f (GR_ACTUAL_FADE_LEVELS-1)) {
+		if (weaponBoxFadeValues [nWeaponType] >= I2X (GR_ACTUAL_FADE_LEVELS-1)) {
 			weaponBoxStates [nWeaponType] = WS_SET;
 			oldWeapon [nWeaponType][!gameStates.render.vr.nCurrentPage] = -1;		//force redraw (at full fade-in) of other page
 			}
@@ -1979,7 +1979,7 @@ else if (weaponBoxStates [nWeaponType] == WS_FADING_IN) {
 	}
 
 if (weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
-	int fadeValue = f2i (weaponBoxFadeValues [nWeaponType]);
+	int fadeValue = X2I (weaponBoxFadeValues [nWeaponType]);
 	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
 	gameStates.render.grAlpha = (float) fadeValue;
 	GrRect (gaugeBoxes [boxofs + nWeaponType].left, 
@@ -2037,7 +2037,7 @@ if (weaponBoxUser [0] == WBU_WEAPON) {
 			if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] != oldAmmoCount [0][gameStates.render.vr.nCurrentPage]) {
 				if (gameData.demo.nState == ND_STATE_RECORDING)
 					NDRecordPrimaryAmmo (oldAmmoCount [0][gameStates.render.vr.nCurrentPage], LOCALPLAYER.primaryAmmo [VULCAN_INDEX]);
-				DrawPrimaryAmmoInfo (f2i ((unsigned) VULCAN_AMMO_SCALE * (unsigned) LOCALPLAYER.primaryAmmo [VULCAN_INDEX]));
+				DrawPrimaryAmmoInfo (X2I ((unsigned) VULCAN_AMMO_SCALE * (unsigned) LOCALPLAYER.primaryAmmo [VULCAN_INDEX]));
 				oldAmmoCount [0][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
 				}
 			}
@@ -2100,9 +2100,9 @@ if (tInvul > 0) {
 		}
 	}
 else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-	SBDrawShieldBar (f2ir (LOCALPLAYER.shields));
+	SBDrawShieldBar (X2IR (LOCALPLAYER.shields));
 else
-	DrawShieldBar (f2ir (LOCALPLAYER.shields));
+	DrawShieldBar (X2IR (LOCALPLAYER.shields));
 }
 
 //	-----------------------------------------------------------------------------
@@ -2499,8 +2499,8 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 					}
 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
-					fix dy = -FixMulDiv (OBJECTS [nObject].size, i2f (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
-//					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, viewInfo.scale.y), i2f (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
+					fix dy = -FixMulDiv (OBJECTS [nObject].size, I2X (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
+//					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, viewInfo.scale.y), I2X (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
 					fix dx = FixMul (dy, grdCurScreen->scAspect);
 					fix w = dx/4;
 					fix h = dy/4;
@@ -2629,8 +2629,8 @@ if (gameStates.render.bRearView && gameStates.render.cockpit.nMode!=CM_REAR_VIEW
 void RenderGauges (void)
 {
 	static int old_display_mode = 0;
-	int nEnergy = f2ir (LOCALPLAYER.energy);
-	int nShields = f2ir (LOCALPLAYER.shields);
+	int nEnergy = X2IR (LOCALPLAYER.energy);
+	int nShields = X2IR (LOCALPLAYER.shields);
 	int bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 
 if (HIDE_HUD)
@@ -2763,7 +2763,7 @@ gameStates.render.bRearView = bRearView;
 
 if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 	w = (int) (gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);			// hmm.  I could probably do the sub_buffer assigment for all macines, but I aint gonna chance it
-	h = i2f (w) / grdCurScreen->scAspect;
+	h = I2X (w) / grdCurScreen->scAspect;
 	dx = (nWindow==0)?- (w+ (w/10)): (w/10);
 	switch (gameOpts->render.cockpit.nWindowPos) {
 		case 0:
@@ -2911,7 +2911,7 @@ char *ftoa (char *pszVal, fix f)
 {
 	int decimal, fractional;
 
-decimal = f2i (f);
+decimal = X2I (f);
 fractional = ((f & 0xffff) * 100) / 65536;
 if (fractional < 0)
 	fractional = -fractional;

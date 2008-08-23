@@ -23,11 +23,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_MULTI_PLAYERS (MAX_PLAYERS + MAX_COOP_PLAYERS)
 
 // Initial tPlayer stat values
-#define INITIAL_ENERGY  i2f(100)    // 100% energy to start
-#define INITIAL_SHIELDS i2f(100)    // 100% shields to start
+#define INITIAL_ENERGY  I2X(100)    // 100% energy to start
+#define INITIAL_SHIELDS I2X(100)    // 100% shields to start
 
-#define MAX_ENERGY      i2f(200)    // go up to 200
-#define MAX_SHIELDS     i2f(200)
+#define MAX_ENERGY      I2X(200)    // go up to 200
+#define MAX_SHIELDS     I2X(200)
 
 #define INITIAL_LIVES               3   // start off with 3 lives
 

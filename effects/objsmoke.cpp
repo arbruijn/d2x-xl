@@ -301,7 +301,7 @@ if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multiplayer.nLocalPlay
 #if 0
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0)) {
 	if ((a <= F1_0 / 4) && (a || !gameStates.input.bControlsSkipFrame))	//no thruster flames if moving backward
-		DropAfterburnerBlobs (objP, 2, i2f (1), -1, gameData.objs.console, 1); //F1_0 / 4);
+		DropAfterburnerBlobs (objP, 2, I2X (1), -1, gameData.objs.console, 1); //F1_0 / 4);
 	}
 #endif
 if ((gameData.app.nGameMode & GM_NETWORK) && !gameData.multiplayer.players [i].connected)
@@ -311,9 +311,9 @@ else if (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED))
 else if ((i == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlayerIsDead || (gameData.multiplayer.players [i].shields < 0)))
 	nParts = 0;
 else {
-	h = f2ir (gameData.multiplayer.players [i].shields);
+	h = X2IR (gameData.multiplayer.players [i].shields);
 	nParts = 10 - h / 5;
-	nScale = f2fl (objP->size);
+	nScale = X2F (objP->size);
 	if (h <= 25)
 		nScale /= 1.5;
 	else if (h <= 50)
@@ -398,8 +398,8 @@ if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots)) {
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else {
-	nShields = f2ir (RobotDefaultShields (objP));
-	h = f2ir (objP->shields) * 100 / nShields;
+	nShields = X2IR (RobotDefaultShields (objP));
+	h = X2IR (objP->shields) * 100 / nShields;
 	}
 if (h < 0)
 	return;
@@ -412,7 +412,7 @@ if (nParts > 0) {
 	CreateDamageExplosion (nParts, i);
 	//nParts *= nShields / 10;
 	nParts = BOT_MAX_PARTS;
-	nScale = (float) sqrt (8.0 / f2fl (objP->size));
+	nScale = (float) sqrt (8.0 / X2F (objP->size));
 	nScale *= 1.0f + h / 25.0f;
 	if (!gameOpts->render.smoke.bSyncSizes) {
 		nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [2]);
@@ -454,8 +454,8 @@ if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots)) {
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else {
-	nShields = f2ir (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
-	h = nShields ? f2ir (objP->shields) * 100 / nShields : 0;
+	nShields = X2IR (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
+	h = nShields ? X2IR (objP->shields) * 100 / nShields : 0;
 	}
 if (h < 0)
 	h = 0;
@@ -464,11 +464,11 @@ if (nParts > 0) {
 	nParts = REACTOR_MAX_PARTS;
 	if (gameData.smoke.objects [i] < 0) {
 		//PrintLog ("creating robot %d smoke\n", i);
-		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, NULL, objP->nSegment, 1, nParts, fl2f (-4.0),
+		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, NULL, objP->nSegment, 1, nParts, F2X (-4.0),
 												  -1, 1, BOT_PART_LIFE * 2, BOT_PART_SPEED, 0, i, NULL, 1, -1));
 		}
 	else {
-		SetSmokePartScale (gameData.smoke.objects [i], fl2f (-4.0));
+		SetSmokePartScale (gameData.smoke.objects [i], F2X (-4.0));
 		SetSmokeDensity (gameData.smoke.objects [i], nParts, -1);
 		vDir.p.x = d_rand () - F1_0 / 4;
 		vDir.p.y = d_rand () - F1_0 / 4;
@@ -502,7 +502,7 @@ else {
 	nSpeed = WI_speed (objP->id, gameStates.app.nDifficultyLevel);
 	nLife = gameOpts->render.smoke.nLife [3] + 1;
 #if 1
-	nParts = (int) (MSL_MAX_PARTS * f2fl (nSpeed) / (40.0f * (4 - nLife)));
+	nParts = (int) (MSL_MAX_PARTS * X2F (nSpeed) / (40.0f * (4 - nLife)));
 	if ((objP->id == EARTHSHAKER_MEGA_ID) || (objP->id == ROBOT_SHAKER_MEGA_ID))
 		nParts /= 2;
 				
@@ -725,7 +725,7 @@ if ((parentObjP->nType != OBJ_PLAYER) && (parentObjP->nType != OBJ_ROBOT))
 	tShrapnelData	*sdP;
 	tShrapnel		*shrapnelP;
 	vmsVector		vDir;
-	int				i, h = (int) (f2fl (parentObjP->size) * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
+	int				i, h = (int) (X2F (parentObjP->size) * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
 	short				nObject;
 	tObject			*objP;
 	tRgbaColorf		color = {1,1,1,0.5};
@@ -828,7 +828,7 @@ void DrawShrapnel (tShrapnel *shrapnelP)
 {
 if ((shrapnelP->xTTL > 0) && LoadExplBlast ()) {
 	fix	xSize = F1_0 / 2 + d_rand () % (F1_0 / 4);
-	G3DrawSprite (&shrapnelP->vPos, xSize, xSize, bmpExplBlast, NULL, f2fl (shrapnelP->xTTL) / f2fl (shrapnelP->xLife) / 2, 0, 0);
+	G3DrawSprite (&shrapnelP->vPos, xSize, xSize, bmpExplBlast, NULL, X2F (shrapnelP->xTTL) / X2F (shrapnelP->xLife) / 2, 0, 0);
 	}
 }
 

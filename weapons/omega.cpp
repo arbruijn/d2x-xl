@@ -38,7 +38,7 @@ if (xDeltaCharge < 0)
 	return -1;
 xEnergyUsed = FixMul (OMEGA_ENERGY_RATE, xDeltaCharge);
 if (gameStates.app.nDifficultyLevel < 2)
-	xEnergyUsed = FixMul (xEnergyUsed, i2f (gameStates.app.nDifficultyLevel + 2) / 4);
+	xEnergyUsed = FixMul (xEnergyUsed, I2X (gameStates.app.nDifficultyLevel + 2) / 4);
 return xEnergyUsed;
 }
 

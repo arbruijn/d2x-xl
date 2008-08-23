@@ -641,7 +641,7 @@ int UpdateParticle (tParticle *pParticle, int nCurTime)
 	int			j, nRad;
 	fix			t, dot;
 	vmsVector	pos, drift;
-	fix			drag = fl2f ((float) pParticle->nLife / (float) pParticle->nTTL);
+	fix			drag = F2X ((float) pParticle->nLife / (float) pParticle->nTTL);
 
 
 if ((pParticle->nLife <= 0) /*|| (pParticle->color.alpha < 0.01f)*/)
@@ -926,9 +926,9 @@ if (!nType) {
 	pc.green *= brightness;
 	pc.blue *= brightness;
 	}
-vCenter.p.x = f2fl (hp.p.x);
-vCenter.p.y = f2fl (hp.p.y);
-vCenter.p.z = f2fl (hp.p.z);
+vCenter.p.x = X2F (hp.p.x);
+vCenter.p.y = X2F (hp.p.y);
+vCenter.p.z = X2F (hp.p.z);
 i = pParticle->nOrient; 
 if (bEmissive) { //scale light trail particle color to reduce saturation
 	pc.red /= 50.0f;
@@ -963,12 +963,12 @@ if (gameOpts->render.smoke.bDisperse && !nType) {
 #else
 	decay = (float) pow (decay * decay * decay, 1.0f / 5.0f);
 #endif
-	vOffset.p.x = f2fl (pParticle->nWidth) / decay;
-	vOffset.p.y = f2fl (pParticle->nHeight) / decay;
+	vOffset.p.x = X2F (pParticle->nWidth) / decay;
+	vOffset.p.y = X2F (pParticle->nHeight) / decay;
 	}
 else {
-	vOffset.p.x = f2fl (pParticle->nWidth) * decay;
-	vOffset.p.y = f2fl (pParticle->nHeight) * decay;
+	vOffset.p.x = X2F (pParticle->nWidth) * decay;
+	vOffset.p.y = X2F (pParticle->nHeight) * decay;
 	}
 if (gameStates.render.bVertexArrays) {
 	vOffset.p.z = 0;
@@ -1349,7 +1349,7 @@ else
 	if ((c.nPartsPerPos = (int) (c.fPartsPerTick * c.nTicks)) >= 1) {
 		c.nTicks = 0;
 		if (CloudLives (pCloud, nCurTime)) {
-			fDist = f2fl (VmVecMag (VmVecSub (&vDelta, &c.pos, &c.prevPos)));
+			fDist = X2F (VmVecMag (VmVecSub (&vDelta, &c.pos, &c.prevPos)));
 			h = c.nPartsPerPos;
 			if (h > c.nMaxParts - i)
 				h = c.nMaxParts - i;

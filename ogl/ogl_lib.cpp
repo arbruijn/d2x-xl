@@ -157,18 +157,18 @@ vmsVector	vNormal;
 #if 1
 if (pvNormal) {
 	if (gameStates.ogl.bUseTransform)
-		glNormal3f ((GLfloat) f2fl (pvNormal->p.x), 
-						(GLfloat) f2fl (pvNormal->p.y), 
-						(GLfloat) f2fl (pvNormal->p.z));
+		glNormal3f ((GLfloat) X2F (pvNormal->p.x), 
+						(GLfloat) X2F (pvNormal->p.y), 
+						(GLfloat) X2F (pvNormal->p.z));
 		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->p3_vec);
 	else {
 		G3RotatePoint (&vNormal, pvNormal, 0);
-		glNormal3f ((GLfloat) f2fl (vNormal.p.x), 
-						(GLfloat) f2fl (vNormal.p.y), 
-						(GLfloat) f2fl (vNormal.p.z));
+		glNormal3f ((GLfloat) X2F (vNormal.p.x), 
+						(GLfloat) X2F (vNormal.p.y), 
+						(GLfloat) X2F (vNormal.p.z));
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		}
-//	glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
+//	glNormal3f ((GLfloat) X2F (vNormal.x), (GLfloat) X2F (vNormal.y), (GLfloat) X2F (vNormal.z));
 	}
 else 
 #endif
@@ -183,7 +183,7 @@ else
 						 &pointList [0]->p3_vec,
 						 &pointList [1]->p3_vec,
 						 &pointList [2]->p3_vec);
-		glNormal3f ((GLfloat) f2fl (vNormal.p.x), (GLfloat) f2fl (vNormal.p.y), (GLfloat) f2fl (vNormal.p.z));
+		glNormal3f ((GLfloat) X2F (vNormal.p.x), (GLfloat) X2F (vNormal.p.y), (GLfloat) X2F (vNormal.p.z));
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
@@ -196,9 +196,9 @@ else
 		if (!gameStates.ogl.bUseTransform)
 			G3RotatePoint (&vNormal, &vNormal, 0);
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
-		glNormal3f ((GLfloat) f2fl (vNormal.p.x), 
-						(GLfloat) f2fl (vNormal.p.y), 
-						(GLfloat) f2fl (vNormal.p.z));
+		glNormal3f ((GLfloat) X2F (vNormal.p.x), 
+						(GLfloat) X2F (vNormal.p.y), 
+						(GLfloat) X2F (vNormal.p.z));
 		}
 	}
 }
@@ -734,7 +734,7 @@ if (!nOglTransformCalls && (gameStates.ogl.bUseTransform || bForce)) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();
-	//glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
+	//glScalef (X2F (viewInfo.scale.p.x), X2F (viewInfo.scale.p.y), -X2F (viewInfo.scale.p.z));
 	glScalef (1, 1, -1);
 	glMultMatrixf (viewInfo.glViewf);
 	glTranslatef (-viewInfo.glPosf [0], -viewInfo.glPosf [1], -viewInfo.glPosf [2]);

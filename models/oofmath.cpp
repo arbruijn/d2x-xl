@@ -236,15 +236,15 @@ return pDest;
 float *OOF_MatVms2Gl (float *pDest, vmsMatrix *pSrc)
 {
 OOF_GlIdent (pDest);
-pDest [0] = f2fl (pSrc->rVec.p.x);
-pDest [4] = f2fl (pSrc->rVec.p.y);
-pDest [8] = f2fl (pSrc->rVec.p.z);
-pDest [1] = f2fl (pSrc->uVec.p.x);
-pDest [5] = f2fl (pSrc->uVec.p.y);
-pDest [9] = f2fl (pSrc->uVec.p.z);
-pDest [2] = f2fl (pSrc->fVec.p.x);
-pDest [6] = f2fl (pSrc->fVec.p.y);
-pDest [10] = f2fl (pSrc->fVec.p.z);
+pDest [0] = X2F (pSrc->rVec.p.x);
+pDest [4] = X2F (pSrc->rVec.p.y);
+pDest [8] = X2F (pSrc->rVec.p.z);
+pDest [1] = X2F (pSrc->uVec.p.x);
+pDest [5] = X2F (pSrc->uVec.p.y);
+pDest [9] = X2F (pSrc->uVec.p.z);
+pDest [2] = X2F (pSrc->fVec.p.x);
+pDest [6] = X2F (pSrc->fVec.p.y);
+pDest [10] = X2F (pSrc->fVec.p.z);
 return pDest;
 }
 

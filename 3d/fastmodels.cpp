@@ -152,7 +152,7 @@ else {
 			l = 3 * f1_0 / 4 + l / 4;
 			l = FixMul (l, xModelLight);
 			}
-		fLight = f2fl (l);
+		fLight = X2F (l);
 		for (j = pmf->nVerts, h = pmf->nIndex, pmv = pm->pFaceVerts + pmf->nIndex; j; j--, h++, pmv++) {
 #if G3_DRAW_ARRAYS
 			if (colorP) {
@@ -193,7 +193,7 @@ else {
 void G3ScaleModel (int nModel, int bHires)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
-	float				fScale = gameData.models.nScale ? f2fl (gameData.models.nScale) : 1;
+	float				fScale = gameData.models.nScale ? X2F (gameData.models.nScale) : 1;
 	int				i;
 	fVector3			*pv;
 	tG3ModelVertex	*pmv;
@@ -256,16 +256,16 @@ if (vOffsetP) {
 #endif
 if (mtP->nCount && (v.p.x == mtP->vPos [0].p.x) && (v.p.y == mtP->vPos [0].p.y) && (v.p.z == mtP->vPos [0].p.z))
 	return;
-mtP->vPos [mtP->nCount].p.x = fl2f (v.p.x);
-mtP->vPos [mtP->nCount].p.y = fl2f (v.p.y);
-mtP->vPos [mtP->nCount].p.z = fl2f (v.p.z);
+mtP->vPos [mtP->nCount].p.x = F2X (v.p.x);
+mtP->vPos [mtP->nCount].p.y = F2X (v.p.y);
+mtP->vPos [mtP->nCount].p.z = F2X (v.p.z);
 if (vOffsetP)
 	VmVecDec (&v, &vo);
 mtP->vDir [mtP->nCount] = *vNormal;
 VmVecNegate (mtP->vDir + mtP->nCount);
 if (!mtP->nCount) {
 	if (!pmf)
-		mtP->fSize = f2fl (nRad);
+		mtP->fSize = X2F (nRad);
 	else {
 		for (i = 0, nSize = 1000000000; i < j; i++)
 			if (nSize > (h = VmVecDist (&v, &pmv [i].vertex)))
@@ -398,7 +398,7 @@ if (gameStates.app.nSDLTicks - psm->tFrame > nTimeout) {
 	psm->iFrame = ++psm->iFrame % psm->nFrames;
 	}
 glPushMatrix ();
-y = f2fl (psm->vCenter.p.y);
+y = X2F (psm->vCenter.p.y);
 glTranslatef (0, y, 0);
 glRotatef (360 * (float) psm->iFrame / (float) psm->nFrames, 0, 0, 1);
 glTranslatef (0, -y, 0);
@@ -560,7 +560,7 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	int						bEmissive = objP && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
-	float						fBrightness, fLightScale = gameData.models.nLightScale ? f2fl (gameData.models.nLightScale) : 1.0f;
+	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
 	fVector					color;
 	tPosition				*posP = OBJPOS (objP);
 

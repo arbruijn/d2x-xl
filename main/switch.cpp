@@ -343,7 +343,7 @@ return 1;
 
 int DoShowMessage (tTrigger *trigP, short nObject)
 {
-ShowGameMessage (gameData.messages, f2i (trigP->value), trigP->time);
+ShowGameMessage (gameData.messages, X2I (trigP->value), trigP->time);
 return 1;
 }
 
@@ -351,7 +351,7 @@ return 1;
 
 int DoPlaySound (tTrigger *trigP, short nObject)
 {
-	tTextIndex	*indexP = FindTextData (&gameData.sounds, f2i (trigP->value));
+	tTextIndex	*indexP = FindTextData (&gameData.sounds, X2I (trigP->value));
 
 if (!indexP)
 	return 0;
@@ -1011,14 +1011,14 @@ switch (trigP->nType) {
 		if (gameStates.app.bD1Mission)
 			LOCALPLAYER.shields += gameData.trigs.triggers [nTrigger].value;
 		else
-			LOCALPLAYER.shields += (fix) (LOCALPLAYER.shields * f2fl (gameData.trigs.triggers [nTrigger].value) / 100);
+			LOCALPLAYER.shields += (fix) (LOCALPLAYER.shields * X2F (gameData.trigs.triggers [nTrigger].value) / 100);
 		break;
 
 	case TT_ENERGY_DRAIN:
 		if (gameStates.app.bD1Mission)
 			LOCALPLAYER.energy += gameData.trigs.triggers [nTrigger].value;
 		else
-			LOCALPLAYER.energy += (fix) (LOCALPLAYER.energy * f2fl (gameData.trigs.triggers [nTrigger].value) / 100);
+			LOCALPLAYER.energy += (fix) (LOCALPLAYER.energy * X2F (gameData.trigs.triggers [nTrigger].value) / 100);
 		break;
 
 	case TT_CHANGE_TEXTURE:

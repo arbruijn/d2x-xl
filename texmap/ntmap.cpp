@@ -198,25 +198,25 @@ void compute_y_bounds(g3ds_tmap *t, int *vlt, int *vlb, int *vrt, int *vrb,int *
 	fix	min_x;
 
 	// Scan all vertices, set min_y_ind to vertex with smallest y coordinate.
-	min_y = f2i(t->verts[0].y2d);
+	min_y = X2I(t->verts[0].y2d);
 	max_y = min_y;
 	min_y_ind = 0;
-	min_x = f2i(t->verts[0].x2d);
+	min_x = X2I(t->verts[0].x2d);
 	*bottom_y_ind = 0;
 
 	for (i=1; i<t->nv; i++) {
-		if (f2i(t->verts[i].y2d) < min_y) {
-			min_y = f2i(t->verts[i].y2d);
+		if (X2I(t->verts[i].y2d) < min_y) {
+			min_y = X2I(t->verts[i].y2d);
 			min_y_ind = i;
-			min_x = f2i(t->verts[i].x2d);
-		} else if (f2i(t->verts[i].y2d) == min_y) {
-			if (f2i(t->verts[i].x2d) < min_x) {
+			min_x = X2I(t->verts[i].x2d);
+		} else if (X2I(t->verts[i].y2d) == min_y) {
+			if (X2I(t->verts[i].x2d) < min_x) {
 				min_y_ind = i;
-				min_x = f2i(t->verts[i].x2d);
+				min_x = X2I(t->verts[i].x2d);
 			}
 		}
-		if (f2i(t->verts[i].y2d) > max_y) {
-			max_y = f2i(t->verts[i].y2d);
+		if (X2I(t->verts[i].y2d) > max_y) {
+			max_y = X2I(t->verts[i].y2d);
 			*bottom_y_ind = i;
 		}
 	}
@@ -231,7 +231,7 @@ void compute_y_bounds(g3ds_tmap *t, int *vlt, int *vlb, int *vrt, int *vrb,int *
 //--removed mk, 11/27/94--		max_temp += t->nv;
 //--removed mk, 11/27/94--
 //--removed mk, 11/27/94--	for (i=min_y_ind; i<max_temp; i++) {
-//--removed mk, 11/27/94--		if (f2i(t->verts[i%t->nv].y2d) > f2i(t->verts[(i+1)%t->nv].y2d)) {
+//--removed mk, 11/27/94--		if (X2I(t->verts[i%t->nv].y2d) > X2I(t->verts[(i+1)%t->nv].y2d)) {
 //--removed mk, 11/27/94--			Int3();
 //--removed mk, 11/27/94--			t->verts[(i+1)%t->nv].y2d = t->verts[i%t->nv].y2d;
 //--removed mk, 11/27/94--		}
@@ -242,7 +242,7 @@ void compute_y_bounds(g3ds_tmap *t, int *vlt, int *vlb, int *vrt, int *vrb,int *
 //--removed mk, 11/27/94--		min_temp += t->nv;
 //--removed mk, 11/27/94--
 //--removed mk, 11/27/94--	for (i=*bottom_y_ind; i<min_temp; i++) {
-//--removed mk, 11/27/94--		if (f2i(t->verts[i%t->nv].y2d) < f2i(t->verts[(i+1)%t->nv].y2d)) {
+//--removed mk, 11/27/94--		if (X2I(t->verts[i%t->nv].y2d) < X2I(t->verts[(i+1)%t->nv].y2d)) {
 //--removed mk, 11/27/94--			Int3();
 //--removed mk, 11/27/94--			t->verts[(i+1)%t->nv].y2d = t->verts[i%t->nv].y2d;
 //--removed mk, 11/27/94--		}
@@ -261,7 +261,7 @@ void compute_y_bounds(g3ds_tmap *t, int *vlt, int *vlb, int *vrt, int *vrb,int *
 
 	original_vrt = *vrt;
 
-	while (f2i(t->verts[*vrt].y2d) == f2i(t->verts[*vrb].y2d)) {
+	while (X2I(t->verts[*vrt].y2d) == X2I(t->verts[*vrb].y2d)) {
 		if (succmod(*vrt,t->nv) == original_vrt) {
 			break;
 		}
@@ -279,7 +279,7 @@ void compute_y_bounds(g3ds_tmap *t, int *vlt, int *vlb, int *vrt, int *vrb,int *
 //--	int	dy;
 //--
 //--	// compute delta x with respect to y for any edge
-//--	dy = f2i(t->verts[bottom_vertex].y2d - t->verts[top_vertex].y2d) + 1;
+//--	dy = X2I(t->verts[bottom_vertex].y2d - t->verts[top_vertex].y2d) + 1;
 //--	if (dy)
 //--		return (t->verts[bottom_vertex].x2d - t->verts[top_vertex].x2d) / dy;
 //--	else
@@ -335,11 +335,11 @@ void ntmap_scanline_lighted(grsBitmap *srcb, int y, fix xleft, fix xright, fix u
 {
 	fix	dx,recip_dx;
 
-	fx_xright = f2i(xright);
+	fx_xright = X2I(xright);
 	//edited 06/27/99 Matt Mueller - moved these tests up from within the switch so as not to do a bunch of needless calculations when we are just gonna return anyway.  Slight fps boost?
 	if (fx_xright < nWindowClipLeft)
 		return;
-	fx_xleft = f2i(xleft);
+	fx_xleft = X2I(xleft);
 	if (fx_xleft > nWindowClipRight)
 		return;
 	//end edit -MM
@@ -405,8 +405,8 @@ void ntmap_scanline_lighted(grsBitmap *srcb, int y, fix xleft, fix xright, fix u
 		}
 		case 2:
 #ifdef EDITOR_TMAP
-			fx_xright = f2i(xright);
-			fx_xleft = f2i(xleft);
+			fx_xright = X2I(xright);
+			fx_xleft = X2I(xleft);
 
 			tmap_flat_color = 1;
 			cur_tmap_scanline_flat();
@@ -453,15 +453,15 @@ void ntexture_map_lighted(grsBitmap *srcb, g3ds_tmap *t)
 	compute_y_bounds(t,&vlt,&vlb,&vrt,&vrb,&max_y_vertex);
 
 	// Set top and bottom (of entire texture map) y coordinates.
-	topy = f2i(v3d[vlt].y2d);
-	boty = f2i(v3d[max_y_vertex].y2d);
+	topy = X2I(v3d[vlt].y2d);
+	boty = X2I(v3d[max_y_vertex].y2d);
 	if (topy > nWindowClipBot)
 		return;
 	if (boty > nWindowClipBot)
 		boty = nWindowClipBot;
 
 	// Set amount to change x coordinate for each advance to next scanline.
-	dy = f2i(t->verts[vlb].y2d) - f2i(t->verts[vlt].y2d);
+	dy = X2I(t->verts[vlb].y2d) - X2I(t->verts[vlt].y2d);
 	if (dy < FIX_RECIP_TABLE_SIZE)
 		recip_dyl = fix_recip[dy];
 	else
@@ -472,7 +472,7 @@ void ntexture_map_lighted(grsBitmap *srcb, g3ds_tmap *t)
 	dv_dy_left = compute_dv_dy(t,vlt,vlb, recip_dyl);
 	dz_dy_left = compute_dz_dy(t,vlt,vlb, recip_dyl);
 
-	dy = f2i(t->verts[vrb].y2d) - f2i(t->verts[vrt].y2d);
+	dy = X2I(t->verts[vrb].y2d) - X2I(t->verts[vrt].y2d);
 	if (dy < FIX_RECIP_TABLE_SIZE)
 		recip_dyr = fix_recip[dy];
 	else
@@ -504,8 +504,8 @@ void ntexture_map_lighted(grsBitmap *srcb, g3ds_tmap *t)
 	vright = FixMul(v3d[vrt].v,zright);
 
 	// scan all rows in texture map from top through first break.
-	next_break_left = f2i(v3d[vlb].y2d);
-	next_break_right = f2i(v3d[vrb].y2d);
+	next_break_left = X2I(v3d[vlb].y2d);
+	next_break_right = X2I(v3d[vrb].y2d);
 
 	for (y = topy; y < boty; y++) {
 
@@ -517,13 +517,13 @@ void ntexture_map_lighted(grsBitmap *srcb, g3ds_tmap *t)
 			// Handle problem of double points.  Search until y coord is different.  Cannot get
 			// hung in an infinite loop because we know there is a vertex with a lower y coordinate
 			// because in the for loop, we don't scan all spanlines.
-			while (y == f2i(v3d[vlb].y2d)) {
+			while (y == X2I(v3d[vlb].y2d)) {
 				vlt = vlb;
 				vlb = prevmod(vlb,t->nv);
 			}
-			next_break_left = f2i(v3d[vlb].y2d);
+			next_break_left = X2I(v3d[vlb].y2d);
 
-			dy = f2i(t->verts[vlb].y2d) - f2i(t->verts[vlt].y2d);
+			dy = X2I(t->verts[vlb].y2d) - X2I(t->verts[vlt].y2d);
 			if (dy < FIX_RECIP_TABLE_SIZE)
 				recip_dy = fix_recip[dy];
 			else
@@ -552,14 +552,14 @@ void ntexture_map_lighted(grsBitmap *srcb, g3ds_tmap *t)
 		if (y == next_break_right) {
 			fix	recip_dy;
 
-			while (y == f2i(v3d[vrb].y2d)) {
+			while (y == X2I(v3d[vrb].y2d)) {
 				vrt = vrb;
 				vrb = succmod(vrb,t->nv);
 			}
 
-			next_break_right = f2i(v3d[vrb].y2d);
+			next_break_right = X2I(v3d[vrb].y2d);
 
-			dy = f2i(t->verts[vrb].y2d) - f2i(t->verts[vrt].y2d);
+			dy = X2I(t->verts[vrb].y2d) - X2I(t->verts[vrt].y2d);
 			if (dy < FIX_RECIP_TABLE_SIZE)
 				recip_dy = fix_recip[dy];
 			else
@@ -626,7 +626,7 @@ void ntmap_scanline_lighted_linear(grsBitmap *srcb, int y, fix xleft, fix xright
 	v = vleft;
 	l = lleft;
 
-	dx = f2i(xright) - f2i(xleft);
+	dx = X2I(xright) - X2I(xleft);
 	if ((dx < 0) || (xright < 0) || (xleft > xright))		// the (xleft > xright) term is not redundant with (dx < 0) because dx is computed using integers
 		return;
 
@@ -644,8 +644,8 @@ void ntmap_scanline_lighted_linear(grsBitmap *srcb, int y, fix xleft, fix xright
 		fx_du_dx = du_dx;
 		fx_dv_dx = dv_dx;
 		fx_y = y;
-		fx_xright = f2i(xright);
-		fx_xleft = f2i(xleft);
+		fx_xright = X2I(xright);
+		fx_xleft = X2I(xleft);
 		pixptr = srcb->bmTexBuf;
 
 		switch (bLightingEnabled) {
@@ -694,8 +694,8 @@ void ntmap_scanline_lighted_linear(grsBitmap *srcb, int y, fix xleft, fix xright
 				break;
 			case 2:
 #ifdef EDITOR_TMAP
-				fx_xright = f2i(xright);
-				fx_xleft = f2i(xleft);
+				fx_xright = X2I(xright);
+				fx_xleft = X2I(xleft);
 				tmap_flat_color = 1;
 				cur_tmap_scanline_flat();
 #else
@@ -735,21 +735,21 @@ void ntexture_map_lighted_linear(grsBitmap *srcb, g3ds_tmap *t)
 	compute_y_bounds(t,&vlt,&vlb,&vrt,&vrb,&max_y_vertex);
 
 	// Set top and bottom (of entire texture map) y coordinates.
-	topy = f2i(v3d[vlt].y2d);
-	boty = f2i(v3d[max_y_vertex].y2d);
+	topy = X2I(v3d[vlt].y2d);
+	boty = X2I(v3d[max_y_vertex].y2d);
 
 	if (topy > nWindowClipBot)
 		return;
 	if (boty > nWindowClipBot)
 		boty = nWindowClipBot;
 
-	dy = f2i(t->verts[vlb].y2d) - f2i(t->verts[vlt].y2d);
+	dy = X2I(t->verts[vlb].y2d) - X2I(t->verts[vlt].y2d);
 	if (dy < FIX_RECIP_TABLE_SIZE)
 		recip_dyl = fix_recip[dy];
 	else
 		recip_dyl = F1_0/dy;
 
-	dy = f2i(t->verts[vrb].y2d) - f2i(t->verts[vrt].y2d);
+	dy = X2I(t->verts[vrb].y2d) - X2I(t->verts[vrt].y2d);
 	if (dy < FIX_RECIP_TABLE_SIZE)
 		recip_dyr = fix_recip[dy];
 	else
@@ -783,8 +783,8 @@ void ntexture_map_lighted_linear(grsBitmap *srcb, g3ds_tmap *t)
 	vright = v3d[vrt].v;
 
 	// scan all rows in texture map from top through first break.
-	next_break_left = f2i(v3d[vlb].y2d);
-	next_break_right = f2i(v3d[vrb].y2d);
+	next_break_left = X2I(v3d[vlb].y2d);
+	next_break_right = X2I(v3d[vrb].y2d);
 
 	for (y = topy; y < boty; y++) {
 
@@ -796,13 +796,13 @@ void ntexture_map_lighted_linear(grsBitmap *srcb, g3ds_tmap *t)
 			// Handle problem of double points.  Search until y coord is different.  Cannot get
 			// hung in an infinite loop because we know there is a vertex with a lower y coordinate
 			// because in the for loop, we don't scan all spanlines.
-			while (y == f2i(v3d[vlb].y2d)) {
+			while (y == X2I(v3d[vlb].y2d)) {
 				vlt = vlb;
 				vlb = prevmod(vlb,t->nv);
 			}
-			next_break_left = f2i(v3d[vlb].y2d);
+			next_break_left = X2I(v3d[vlb].y2d);
 
-			dy = f2i(t->verts[vlb].y2d) - f2i(t->verts[vlt].y2d);
+			dy = X2I(t->verts[vlb].y2d) - X2I(t->verts[vlt].y2d);
 			if (dy < FIX_RECIP_TABLE_SIZE)
 				recip_dy = fix_recip[dy];
 			else
@@ -829,18 +829,18 @@ void ntexture_map_lighted_linear(grsBitmap *srcb, g3ds_tmap *t)
 		if (y == next_break_right) {
 			fix	recip_dy;
 
-			while (y == f2i(v3d[vrb].y2d)) {
+			while (y == X2I(v3d[vrb].y2d)) {
 				vrt = vrb;
 				vrb = succmod(vrb,t->nv);
 			}
 
-			dy = f2i(t->verts[vrb].y2d) - f2i(t->verts[vrt].y2d);
+			dy = X2I(t->verts[vrb].y2d) - X2I(t->verts[vrt].y2d);
 			if (dy < FIX_RECIP_TABLE_SIZE)
 				recip_dy = fix_recip[dy];
 			else
 				recip_dy = F1_0/dy;
 
-			next_break_right = f2i(v3d[vrb].y2d);
+			next_break_right = X2I(v3d[vrb].y2d);
 			dx_dy_right = compute_dx_dy(t,vrt,vrb, recip_dy);
 
 			xright = v3d[vrt].x2d;
@@ -927,8 +927,8 @@ void draw_tmap(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 		g3ds_vertex	*tvp = &Tmap1.verts[i];
 		g3sPoint	*vp = vertbuf[i];
 
-		tvp->x2d = i2f (vp->p3_screen.x);
-		tvp->y2d = i2f (vp->p3_screen.y);
+		tvp->x2d = I2X (vp->p3_screen.x);
+		tvp->y2d = I2X (vp->p3_screen.y);
 
 		//	Check for overflow on FixDiv.  Will overflow on vp->z <= something small.  Allow only as low as 256.
 		if (vp->p3_z < 256) {

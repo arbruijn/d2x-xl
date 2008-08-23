@@ -1557,20 +1557,20 @@ if (bmP->bmProps.flags & BM_FLAG_RLE)
 w = bmP->bmProps.w;
 h = ((bmP->bmType == BM_TYPE_ALT) && BM_FRAMES (bmP)) ? w : bmP->bmProps.h; 
 if (nOrient == 0) {
-	bmx = ((unsigned) f2i (u * w)) % w;
-	bmy = ((unsigned) f2i (v * h)) % h;
+	bmx = ((unsigned) X2I (u * w)) % w;
+	bmy = ((unsigned) X2I (v * h)) % h;
 	}
 else if (nOrient == 1) {
-	bmx = ((unsigned) f2i ((F1_0 - v) * w)) % w;
-	bmy = ((unsigned) f2i (u * h)) % h;
+	bmx = ((unsigned) X2I ((F1_0 - v) * w)) % w;
+	bmy = ((unsigned) X2I (u * h)) % h;
 	}
 else if (nOrient == 2) {
-	bmx = ((unsigned) f2i ((F1_0 - u) * w)) % w;
-	bmy = ((unsigned) f2i ((F1_0 - v) * h)) % h;
+	bmx = ((unsigned) X2I ((F1_0 - u) * w)) % w;
+	bmy = ((unsigned) X2I ((F1_0 - v) * h)) % h;
 	}
 else {
-	bmx = ((unsigned) f2i (v * w)) % w;
-	bmy = ((unsigned) f2i ((F1_0 - u) * h)) % h;
+	bmx = ((unsigned) X2I (v * w)) % w;
+	bmy = ((unsigned) X2I ((F1_0 - u) * h)) % h;
 	}
 offs = bmy * w + bmx;
 if (bmP->bmProps.flags & BM_FLAG_TGA) {

@@ -151,9 +151,9 @@ void G3SetSubModelMinMax (tG3SubModel *psm, fVector3 *vertexP)
 	fVector3	v = *vertexP;
 
 #if 0
-v.p.x += f2fl (psm->vOffset.p.x);
-v.p.y += f2fl (psm->vOffset.p.y);
-v.p.z += f2fl (psm->vOffset.p.z);
+v.p.x += X2F (psm->vOffset.p.x);
+v.p.y += X2F (psm->vOffset.p.y);
+v.p.z += X2F (psm->vOffset.p.z);
 #endif
 if (psm->vMin.p.x > v.p.x)
 	psm->vMin.p.x = v.p.x;
@@ -369,12 +369,12 @@ else
 	vOffs = psm->vOffset;
 if (phb)
 	phb->vOffset = vOffs;
-vMin.p.x = fl2f (psm->vMin.p.x);
-vMin.p.y = fl2f (psm->vMin.p.y);
-vMin.p.z = fl2f (psm->vMin.p.z);
-vMax.p.x = fl2f (psm->vMax.p.x);
-vMax.p.y = fl2f (psm->vMax.p.y);
-vMax.p.z = fl2f (psm->vMax.p.z);
+vMin.p.x = F2X (psm->vMin.p.x);
+vMin.p.y = F2X (psm->vMin.p.y);
+vMin.p.z = F2X (psm->vMin.p.z);
+vMax.p.x = F2X (psm->vMax.p.x);
+vMax.p.y = F2X (psm->vMax.p.y);
+vMax.p.z = F2X (psm->vMax.p.z);
 VmVecAvg (&psm->vCenter, &vMin, &vMax);
 if (psm->bBullets) {
 	pm->bBullets = 1;
@@ -509,7 +509,7 @@ if ((vertices = (fVector3 *) D2_ALLOC (pm->nFaceVerts * sizeof (fVector3)))) {
 		sP->nFaces = pm->nFaces;
 		sP->nFaceVerts = pm->nFaceVerts;
 		sP->vOffsets [pm->nType] = gameData.models.offsets [nModel];
-		sP->xRads [pm->nType] = fl2f (fRad);
+		sP->xRads [pm->nType] = F2X (fRad);
 		}
 	}
 else {
@@ -530,7 +530,7 @@ else {
 		}
 	VmVecFloatToFix (gameData.models.offsets + nModel, &vCenter);
 	}
-return fl2f (fRad);
+return F2X (fRad);
 }
 
 //------------------------------------------------------------------------------
@@ -580,12 +580,12 @@ do {
 	// determine min and max size
 	for (i = 0, psm = pm->pSubModels; i < nSubModels; i++, psm++) {
 		if (0 < (j = psm->nHitbox)) {
-			phb [j].vMin.p.x = fl2f (psm->vMin.p.x);
-			phb [j].vMin.p.y = fl2f (psm->vMin.p.y);
-			phb [j].vMin.p.z = fl2f (psm->vMin.p.z);
-			phb [j].vMax.p.x = fl2f (psm->vMax.p.x);
-			phb [j].vMax.p.y = fl2f (psm->vMax.p.y);
-			phb [j].vMax.p.z = fl2f (psm->vMax.p.z);
+			phb [j].vMin.p.x = F2X (psm->vMin.p.x);
+			phb [j].vMin.p.y = F2X (psm->vMin.p.y);
+			phb [j].vMin.p.z = F2X (psm->vMin.p.z);
+			phb [j].vMax.p.x = F2X (psm->vMax.p.x);
+			phb [j].vMax.p.y = F2X (psm->vMax.p.y);
+			phb [j].vMax.p.z = F2X (psm->vMax.p.z);
 			dx = (phb [j].vMax.p.x - phb [j].vMin.p.x) / 2;
 			dy = (phb [j].vMax.p.y - phb [j].vMin.p.y) / 2;
 			dz = (phb [j].vMax.p.z - phb [j].vMin.p.z) / 2;
@@ -761,9 +761,9 @@ else {
 		gameData.models.gunInfo [nModel].nGuns = j;
 		vGunPoints = gameData.models.gunInfo [nModel].vGunPoints;
 		for (i = 0; i < j; i++, pp++, vGunPoints++) {
-			vGunPoints->p.x = fl2f (pp->vPos.x);
-			vGunPoints->p.y = fl2f (pp->vPos.y);
-			vGunPoints->p.z = fl2f (pp->vPos.z);
+			vGunPoints->p.x = F2X (pp->vPos.x);
+			vGunPoints->p.y = F2X (pp->vPos.y);
+			vGunPoints->p.z = F2X (pp->vPos.z);
 			for (nParent = pp->nParent; nParent >= 0; nParent = pso->nParent) {
 				pso = po->pSubObjects + nParent;
 				VmVecInc (vGunPoints, &pm->pSubModels [nParent].vOffset);
@@ -809,12 +809,12 @@ if (!((pm = gameData.models.g3Models [1] + nModel) ||
 	return 0;
 for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
 	if (!psm->bThruster && (psm->nGunPoint < 0)) {
-		phb->vMin.p.x = fl2f (psm->vMin.p.x);
-		phb->vMin.p.y = fl2f (psm->vMin.p.y);
-		phb->vMin.p.z = fl2f (psm->vMin.p.z);
-		phb->vMax.p.x = fl2f (psm->vMax.p.x);
-		phb->vMax.p.y = fl2f (psm->vMax.p.y);
-		phb->vMax.p.z = fl2f (psm->vMax.p.z);
+		phb->vMin.p.x = F2X (psm->vMin.p.x);
+		phb->vMin.p.y = F2X (psm->vMin.p.y);
+		phb->vMin.p.z = F2X (psm->vMin.p.z);
+		phb->vMax.p.x = F2X (psm->vMax.p.x);
+		phb->vMax.p.y = F2X (psm->vMax.p.y);
+		phb->vMax.p.z = F2X (psm->vMax.p.z);
 		phb++;
 		}
 	}

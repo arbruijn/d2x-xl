@@ -61,15 +61,15 @@ inline void VmsRot (vmsMatrix *pm)
 glMatrixf m;
 
 memset (m, 0, sizeof (m));
-m [0] = f2fl (pm->rVec.p.x);
-m [1] = f2fl (pm->rVec.p.y);
-m [2] = f2fl (pm->rVec.p.z);
-m [4] = f2fl (pm->uVec.p.x);
-m [5] = f2fl (pm->uVec.p.y);
-m [6] = f2fl (pm->uVec.p.z);
-m [8] = f2fl (pm->fVec.p.x);
-m [9] = f2fl (pm->fVec.p.y);
-m [10] = f2fl (pm->fVec.p.z);
+m [0] = X2F (pm->rVec.p.x);
+m [1] = X2F (pm->rVec.p.y);
+m [2] = X2F (pm->rVec.p.z);
+m [4] = X2F (pm->uVec.p.x);
+m [5] = X2F (pm->uVec.p.y);
+m [6] = X2F (pm->uVec.p.z);
+m [8] = X2F (pm->fVec.p.x);
+m [9] = X2F (pm->fVec.p.y);
+m [10] = X2F (pm->fVec.p.z);
 m [15] = 1;
 OglRot (m);
 }
@@ -129,13 +129,13 @@ if (gameStates.ogl.bUseTransform) {
 		}
 	else {
 		glLoadIdentity ();
-		//glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
+		//glScalef (X2F (viewInfo.scale.p.x), X2F (viewInfo.scale.p.y), -X2F (viewInfo.scale.p.z));
 		glScalef (1, 1, -1);
 		OglRot (viewInfo.glViewf);
 		VmVecSub (&h, &viewInfo.pos, vPos);
 		VmsMove (&h);
 		if (gameData.models.nScale) {
-			float fScale = f2fl (gameData.models.nScale);
+			float fScale = X2F (gameData.models.nScale);
 			glScalef (fScale, fScale, fScale);
 			}
 		if (mOrient)

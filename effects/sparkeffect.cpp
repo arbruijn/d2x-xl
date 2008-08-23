@@ -89,9 +89,9 @@ for (i = segP->nMaxSparks; i; i--, sparkP++) {
 	if (d_rand () % sparkP->nProb)
 		sparkP->nProb--;
 	else {
-		vOffs.p.x = fl2f (vMaxf.p.x - f_rand () * vMax2f.p.x);
-		vOffs.p.y = fl2f (vMaxf.p.y - f_rand () * vMax2f.p.y);
-		vOffs.p.z = fl2f (vMaxf.p.z - f_rand () * vMax2f.p.z);
+		vOffs.p.x = F2X (vMaxf.p.x - f_rand () * vMax2f.p.x);
+		vOffs.p.y = F2X (vMaxf.p.y - f_rand () * vMax2f.p.y);
+		vOffs.p.z = F2X (vMaxf.p.z - f_rand () * vMax2f.p.z);
 		VmVecAdd (&sparkP->vPos, SEGMENT_CENTER_I (nSegment), &vOffs);
 		if ((VmVecMag (&vOffs) > MinSegRad (nSegment)) && GetSegMasks (&sparkP->vPos, nSegment, 0).centerMask)
 			sparkP->nProb = 1;

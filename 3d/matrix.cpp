@@ -76,7 +76,7 @@ VmVecFixToFloat (&viewInfo.scalef, &viewInfo.scale);
 //viewInfo.scale.p.x = viewInfo.scale.p.y = viewInfo.scale.p.z = F1_0;
 //now scale matrix elements
 if (bOglScale) {
-	//glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
+	//glScalef (X2F (viewInfo.scale.p.x), X2F (viewInfo.scale.p.y), -X2F (viewInfo.scale.p.z));
 	glScalef (1, 1, -1);
 	}	
 else {

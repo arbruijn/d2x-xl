@@ -342,7 +342,7 @@ for (i = 0; i < 2; i++) {
 			if (bHave) {
 				if (bLoaded && gameOpts->render.weaponIcons.bShowAmmo) {
 					if (!i && (l % 5 == 1)) {//Gauss/Vulcan
-						nAmmo = f2i (nAmmo * (unsigned) VULCAN_AMMO_SCALE);
+						nAmmo = X2I (nAmmo * (unsigned) VULCAN_AMMO_SCALE);
 #if 0
 						sprintf (szAmmo, "%d.%d", nAmmo / 1000, (nAmmo % 1000) / 100);
 #else

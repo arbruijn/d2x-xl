@@ -114,9 +114,9 @@ void TransformHitboxf (tObject *objP, fVector *vertList, int iSubObj)
 	int			i;
 
 for (i = 0; i < 8; i++) {
-	hv.p.x = f2fl (hitBoxOffsets [i].p.x ? vMin.p.x : vMax.p.x);
-	hv.p.y = f2fl (hitBoxOffsets [i].p.y ? vMin.p.y : vMax.p.y);
-	hv.p.z = f2fl (hitBoxOffsets [i].p.z ? vMin.p.z : vMax.p.z);
+	hv.p.x = X2F (hitBoxOffsets [i].p.x ? vMin.p.x : vMax.p.x);
+	hv.p.y = X2F (hitBoxOffsets [i].p.y ? vMin.p.y : vMax.p.y);
+	hv.p.z = X2F (hitBoxOffsets [i].p.z ? vMin.p.z : vMax.p.z);
 	G3TransformPoint (vertList + i, &hv, 0);
 	}
 }
@@ -204,7 +204,7 @@ for (; iBox <= nBoxes; iBox++) {
 		G3DoneInstance ();
 	}
 G3DoneInstance ();
-float r = f2fl (VmVecDist (&pmhb->vMin, &pmhb->vMax) / 2);
+float r = X2F (VmVecDist (&pmhb->vMin, &pmhb->vMax) / 2);
 #if 0//def _DEBUG	//display collision point
 if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].tHit < 500) {
 	tObject	o;
@@ -275,7 +275,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 	else if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
 		alpha = 1;
 	else {
-		alpha = f2fl (gameData.multiplayer.players [i].shields) / 100.0f;
+		alpha = X2F (gameData.multiplayer.players [i].shields) / 100.0f;
 		scale *= alpha;
 		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
 			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);
@@ -376,7 +376,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	PolyObjPos (objP, &vPos);
 	VmVecFixToFloat (&fPos, &vPos);
 	G3TransformPoint (&fPos, &fPos, 0);
-	r = f2fl (objP->size);
+	r = X2F (objP->size);
 	r2 = r / 10;
 	r = r2 * 9;
 	w = 2 * r;
@@ -471,7 +471,7 @@ if (gameStates.app.nSDLTicks - t0 [bMarker] > tDelay [bMarker]) {
 PolyObjPos (objP, &vPos);
 VmVecFixToFloat (&fPos, &vPos);
 G3TransformPoint (&fPos, &fPos, 0);
-r = f2fl (objP->size);
+r = X2F (objP->size);
 if (bMarker)
 	r = 17 * r / 12;
 r2 = r / 4;
@@ -631,7 +631,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	PolyObjPos (objP, &vPos);
 	VmVecFixToFloat (&fPos, &vPos);
 	G3TransformPoint (&fPos, &fPos, 0);
-	r = f2fl (objP->size);
+	r = X2F (objP->size);
 	glColor3fv ((GLfloat *) pc);
 	fVerts [0].p.w = fVerts [1].p.w = fVerts [2].p.w = fVerts [3].p.w = 1;
 	glVertexPointer (4, GL_FLOAT, 0, fVerts);
@@ -755,7 +755,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 		bmP = BmCurFrame (bmP, -1);
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
 		VmVecScaleInc (&vPos, &objP->position.mOrient.fVec, -objP->size);
-		r = f2fl (objP->size);
+		r = X2F (objP->size);
 		G3StartInstanceMatrix (&vPos, &pp->mOrient);
 		glBegin (GL_QUADS);
 		glColor3f (1.0f, 1.0f, 1.0f);
@@ -983,7 +983,7 @@ if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 #endif
 if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
 	return;
-fSpeed = f2fl (VmVecMag (&objP->mType.physInfo.velocity));
+fSpeed = X2F (VmVecMag (&objP->mType.physInfo.velocity));
 ti.fLength = fSpeed / 60.0f + 0.5f + (float) (rand () % 100) / 1000.0f;
 if (!pt || (fSpeed >= pt->fSpeed)) {
 	fFade [0] = 0.95f;
@@ -1052,7 +1052,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		float		c = 1/*0.7f + 0.03f * fPulse*/, dotFlame, dotThruster;
 
 	if (gameData.models.nScale)
-		ti.fSize *= f2fl (gameData.models.nScale);
+		ti.fSize *= X2F (gameData.models.nScale);
 	ti.fLength *= 4 * ti.fSize;
 	ti.fSize *= ((objP->nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 #if 1
@@ -1193,9 +1193,9 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 	float			a1, a2;
 	fVector		vCorona [4], vh [5], vPos, vNorm, vDir;
 	tHitbox		*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
-	float			fLength = f2fl (phb->vMax.p.z - phb->vMin.p.z) / 2;
-	float			dx = f2fl (phb->vMax.p.x - phb->vMin.p.x);
-	float			dy = f2fl (phb->vMax.p.y - phb->vMin.p.y);
+	float			fLength = X2F (phb->vMax.p.z - phb->vMin.p.z) / 2;
+	float			dx = X2F (phb->vMax.p.x - phb->vMin.p.x);
+	float			dy = X2F (phb->vMax.p.y - phb->vMin.p.y);
 	float			fRad = (float) (sqrt (dx * dx + dy * dy) / 2);
 	grsBitmap	*bmP;
 	tRgbaColorf	color;
@@ -1249,7 +1249,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		color.blue *= fScale;
 		}
 	if (a2 < a1) {
-		fix xSize = fl2f (fScale);
+		fix xSize = F2X (fScale);
 		G3DrawSprite (&objP->position.vPos, xSize, xSize, bmP, colorP, alpha, bAdditive, 1);
 		}
 	else {
@@ -1446,7 +1446,7 @@ if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id]) {
 		glDisable (GL_TEXTURE_2D);
 		//OglCullFace (1);
 		glDisable (GL_CULL_FACE);	
-		r [3] = f2fl (objP->size);
+		r [3] = X2F (objP->size);
 		if (r [3] >= 3.0f)
 			r [3] /= 1.5f;
 		else if (r [3] < 1)
@@ -1665,9 +1665,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 		
 		if (objP->renderType == RT_POLYOBJ) {
 			tHitbox	*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
-			l = f2fl (phb->vMax.p.z - phb->vMin.p.z);
-			dx = f2fl (phb->vMax.p.x - phb->vMin.p.x);
-			dy = f2fl (phb->vMax.p.y - phb->vMin.p.y);
+			l = X2F (phb->vMax.p.z - phb->vMin.p.z);
+			dx = X2F (phb->vMax.p.x - phb->vMin.p.x);
+			dy = X2F (phb->vMax.p.y - phb->vMin.p.y);
 			r = (float) (sqrt (dx * dx + dy * dy) / sqrt (2.0f));
 			if (objP->id == FUSION_ID) {
 				l *= 1.5f;
@@ -1771,15 +1771,15 @@ else if (objP->nType == OBJ_DEBRIS) {
 #else
 else if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 #endif
-	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - f2fl (objP->lifeleft);
+	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - X2F (objP->lifeleft);
 	if (h < 0)
 		h = 0;
 	if (h < 10) {
 		h = (10 - h) / 20.0f;
 		if (gameStates.app.nSDLTicks - t0 > 50) {
 			t0 = gameStates.app.nSDLTicks;
-			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
-			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
+			debrisGlow.red = 0.5f + X2F (d_rand () % (F1_0 / 4));
+			debrisGlow.green = X2F (d_rand () % (F1_0 / 4));
 			}
 		RenderWeaponCorona (objP, &debrisGlow, h, 5 * objP->size, 1.5f, 1, 1, 0);
 		}
@@ -1788,7 +1788,7 @@ else if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 
 //------------------------------------------------------------------------------
 
-fix flashDist=fl2f (.9);
+fix flashDist=F2X (.9);
 
 //create flash for tPlayer appearance
 void CreatePlayerAppearanceEffect (tObject *playerObjP)

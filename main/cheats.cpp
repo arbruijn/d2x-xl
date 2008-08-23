@@ -65,9 +65,9 @@ LOCALPLAYER.score = 0;
 void MultiDoCheatPenalty ()
 {
 DoCheatPenalty ();
-LOCALPLAYER.shields = i2f (1);
+LOCALPLAYER.shields = I2X (1);
 MultiSendShields ();
-LOCALPLAYER.energy = i2f (1);
+LOCALPLAYER.energy = I2X (1);
 if (gameData.app.nGameMode & GM_MULTI) {
 	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
 	sprintf (gameData.multigame.msg.szMsg, TXT_CRIPPLED, LOCALPLAYER.callsign);
@@ -371,7 +371,7 @@ void BlueOrbCheat (int bVerbose)
 if (BoostVal (&LOCALPLAYER.shields, MAX_SHIELDS)) {
 	MultiSendShields ();
 	PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, 
-						f2ir (LOCALPLAYER.shields));
+						X2IR (LOCALPLAYER.shields));
 	}
 else if (bVerbose)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
@@ -425,7 +425,7 @@ else if (LOCALPLAYER.cloakTime == 0x7fffffff)
 bCloaked = (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_CLOAKED, bCloaked ? TXT_ON : TXT_OFF);
-LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.time.xGame + i2f (1000);
+LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
 }
 
 //------------------------------------------------------------------------------
@@ -452,7 +452,7 @@ void ElectroCheat (int bVerbose)
 {
 if (BoostVal (&LOCALPLAYER.energy, MAX_ENERGY))
 	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, 
-						 f2ir (LOCALPLAYER.energy));
+						 X2IR (LOCALPLAYER.energy));
 else if (bVerbose)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
 }
@@ -544,7 +544,7 @@ else if (LOCALPLAYER.invulnerableTime == 0x7fffffff)
 bInvul = (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
-LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + i2f (1000);
+LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
 SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 }
 
@@ -1017,11 +1017,11 @@ void DoCheatMenu ()
 	mm[2].value=0; 
 	mm[2].text="All keys";
 	mm[3].nType=NM_TYPE_NUMBER; 
-	mm[3].value=f2i (LOCALPLAYER.energy); 
+	mm[3].value=X2I (LOCALPLAYER.energy); 
 	mm[3].text="% Energy"; mm[3].minValue=0; 
 	mm[3].maxValue=200;
 	mm[4].nType=NM_TYPE_NUMBER; 
-	mm[4].value=f2i (LOCALPLAYER.shields); 
+	mm[4].value=X2I (LOCALPLAYER.shields); 
 	mm[4].text="% Shields"; mm[4].minValue=0; 
 	mm[4].maxValue=200;
 	mm[5].nType=NM_TYPE_TEXT; 
@@ -1049,7 +1049,7 @@ void DoCheatMenu ()
 	if (mmn > -1 )  {
 		if ( mm[0].value )  {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-			LOCALPLAYER.invulnerableTime = gameData.time.xGame+i2f (1000);
+			LOCALPLAYER.invulnerableTime = gameData.time.xGame+I2X (1000);
 		} else
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
 		if ( mm[1].value ) {
@@ -1063,8 +1063,8 @@ void DoCheatMenu ()
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_CLOAKED;
 
 		if (mm[2].value) LOCALPLAYER.flags |= PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY;
-		LOCALPLAYER.energy=i2f (mm[3].value);
-		LOCALPLAYER.shields=i2f (mm[4].value);
+		LOCALPLAYER.energy=I2X (mm[3].value);
+		LOCALPLAYER.shields=I2X (mm[4].value);
 		LOCALPLAYER.score = atoi (mm[6].text);
 		//if (mm[7].value) LOCALPLAYER.laserLevel=0;
 		//if (mm[8].value) LOCALPLAYER.laserLevel=1;

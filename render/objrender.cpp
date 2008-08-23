@@ -507,7 +507,7 @@ else
 ci.xDeltaTime = gameData.time.xGame - ((xCloakStartTime == 0x7fffffff) ? 0 : xCloakStartTime);
 #if 0
 if (ci.xDeltaTime < ci.xFadeinDuration) {	// make object transparent during second half
-	ci.nFadeValue = f2i (FixDiv (ci.xFadeinDuration - ci.xDeltaTime, ci.xFadeinDuration) * CLOAKED_FADE_LEVEL);
+	ci.nFadeValue = X2I (FixDiv (ci.xFadeinDuration - ci.xDeltaTime, ci.xFadeinDuration) * CLOAKED_FADE_LEVEL);
 	ci.bFading = 1;
 	} 
 #else
@@ -517,7 +517,7 @@ if (ci.xDeltaTime < ci.xFadeinDuration / 2) {
 	ci.bFading = -1;
 	}
 else if (ci.xDeltaTime < ci.xFadeinDuration) {	// make object transparent during second half
-	ci.nFadeValue = f2i (FixDiv (ci.xDeltaTime - ci.xFadeinDuration / 2, ci.xFadeinDuration / 2) * CLOAKED_FADE_LEVEL);
+	ci.nFadeValue = X2I (FixDiv (ci.xDeltaTime - ci.xFadeinDuration / 2, ci.xFadeinDuration / 2) * CLOAKED_FADE_LEVEL);
 	ci.bFading = 1;
 	} 
 #endif
@@ -537,7 +537,7 @@ else if ((xCloakStartTime == 0x7fffffff) || (gameData.time.xGame < xCloakEndTime
 	ci.nFadeValue = CLOAKED_FADE_LEVEL - nCloakDelta;
 	} 
 else if (gameData.time.xGame < xCloakEndTime - ci.xFadeoutDuration / 2) {
-	ci.nFadeValue = f2i (FixDiv (ci.xTotalTime - ci.xFadeoutDuration / 2 - ci.xDeltaTime, ci.xFadeoutDuration / 2) * CLOAKED_FADE_LEVEL);
+	ci.nFadeValue = X2I (FixDiv (ci.xTotalTime - ci.xFadeoutDuration / 2 - ci.xDeltaTime, ci.xFadeoutDuration / 2) * CLOAKED_FADE_LEVEL);
 	ci.bFading = -1;
 	} 
 else {
@@ -806,9 +806,9 @@ if (objP == dbgObjP) {
 	objP = objP;
 #if 1
 	HUDMessage (0, "%1.2f %1.2f %1.2f", 
-					f2fl (objP->mType.physInfo.velocity.p.x), 
-					f2fl (objP->mType.physInfo.velocity.p.y), 
-					f2fl (objP->mType.physInfo.velocity.p.z));
+					X2F (objP->mType.physInfo.velocity.p.x), 
+					X2F (objP->mType.physInfo.velocity.p.y), 
+					X2F (objP->mType.physInfo.velocity.p.z));
 #endif
 	}
 #endif
@@ -831,7 +831,7 @@ if (nObject != LOCALPLAYER.nObject) {
 else if ((gameData.objs.viewer == gameData.objs.console) && !gameStates.render.automap.bDisplay) {
 	if ((bSpectate = (gameStates.app.bFreeCam && !nWindowNum)))
 		;
-		//HUDMessage (0, "%1.2f %1.2f %1.2f", f2fl (objP->position.vPos.p.x), f2fl (objP->position.vPos.p.y), f2fl (objP->position.vPos.p.z));
+		//HUDMessage (0, "%1.2f %1.2f %1.2f", X2F (objP->position.vPos.p.x), X2F (objP->position.vPos.p.y), X2F (objP->position.vPos.p.z));
 #ifdef _DEBUG
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
 				 (nWindowNum || (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK)))) { //don't render ship model if neither external view nor main view
@@ -945,7 +945,7 @@ switch (objP->renderType) {
 				if (gameData.objs.bIsMissile [objP->id]) {	//make missiles smaller during launch
 					if ((objP->cType.laserInfo.parentType == OBJ_PLAYER) && 
 						 (gameData.models.g3Models [1][108].bValid > 0)) {	//hires player ship
-						float dt = f2fl (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)]);
+						float dt = X2F (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)]);
 		
 						if (dt < 1)
 							gameData.models.nScale = (fix) (F1_0 + F1_0 * dt * dt) / 2;

@@ -1064,7 +1064,7 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 			else if (damage_scale < 0)
 				damage_scale = 0;			//	Just in case...
 
-			VmVecScale(&evade_vector, i2f(fast_flag) + damage_scale);
+			VmVecScale(&evade_vector, I2X(fast_flag) + damage_scale);
 		}
 	}
 
@@ -1601,7 +1601,7 @@ int create_gated_robot( int nSegment, int object_id)
 
 	InitAIObject (OBJ_IDX (objP), default_behavior, -1 );		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
 
-	ObjectCreateExplosion (nSegment, &vObjPos, i2f(10), VCLIP_MORPHING_ROBOT );
+	ObjectCreateExplosion (nSegment, &vObjPos, I2X(10), VCLIP_MORPHING_ROBOT );
 	DigiLinkSoundToPos( gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
 	MorphStart (objP);
 
@@ -2692,7 +2692,7 @@ void dump_ai_objects_all()
 
 		if (objP->controlType == CT_AI) {
 			fprintf(D1_AI_dump_file, "%3i: %3i %8.3f %8s %8s [%3i %4i]\n",
-				nObject, objP->nSegment, f2fl(dist_to_player), mode_text[ailP->mode], behavior_text[aiP->behavior-0x80], aiP->nHideIndex, aiP->nPathLength);
+				nObject, objP->nSegment, X2F(dist_to_player), mode_text[ailP->mode], behavior_text[aiP->behavior-0x80], aiP->nHideIndex, aiP->nPathLength);
 			if (aiP->nPathLength)
 				total += aiP->nPathLength;
 		}

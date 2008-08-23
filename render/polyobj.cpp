@@ -301,7 +301,7 @@ while (POF_ReadIntNew (id, model_buf) == 1) {
 					l = v.p.y;				
 				if (v.p.z > l) 
 					l = v.p.z;				
-				//printf (" -l%.3f", f2fl (l));
+				//printf (" -l%.3f", X2F (l));
 				}
 			break;
 			}

@@ -31,5 +31,5 @@ return secs2f (ms);
 
 void TimerDelay (fix seconds)
 {
-SDL_Delay (f2i (FixMul (seconds, i2f (1000))));
+SDL_Delay (X2I (FixMul (seconds, I2X (1000))));
 }

@@ -308,7 +308,7 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 				y = line_spacing * 2;	//12
 				x = 20+2;
 				}
-			GrPrintF (NULL, x, y, "%s %2d%%", TXT_CRUISE, f2i (gameStates.input.nCruiseSpeed));
+			GrPrintF (NULL, x, y, "%s %2d%%", TXT_CRUISE, X2I (gameStates.input.nCruiseSpeed));
 			}
 		}
 	}
@@ -1208,22 +1208,22 @@ void DrawGuidedCrosshair (void)
 	if (w < 5)
 		w = 5;
 
-	h = i2f (w) / grdCurScreen->scAspect;
+	h = I2X (w) / grdCurScreen->scAspect;
 
 	x = grdCurCanv->cv_w / 2;
 	y = grdCurCanv->cv_h / 2;
 
 //	GrScanLine (x-w/2, x+w/2, y);
 #if 1
-	x = i2f (x);
-	y = i2f (y);
-	w = i2f (w / 2);
-	h = i2f (h / 2);
+	x = I2X (x);
+	y = I2X (y);
+	w = I2X (w / 2);
+	h = I2X (h / 2);
 	gr_uline (x - w, y, x + w, y);
 	gr_uline (x, y - h, x, y + h);
 #else
-	gr_uline (i2f (x-w/2), i2f (y), i2f (x+w/2), i2f (y));
-	gr_uline (i2f (x), i2f (y-h/2), i2f (x), i2f (y+h/2));
+	gr_uline (I2X (x-w/2), I2X (y), I2X (x+w/2), I2X (y));
+	gr_uline (I2X (x), I2X (y-h/2), I2X (x), I2X (y+h/2));
 #endif
 }
 

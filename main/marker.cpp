@@ -85,7 +85,7 @@ else
 	GrSetColorRGBi (RGBA_PAL2 (63, 15, 0));
 G3TransformAndEncodePoint (&basePoint, &MarkerObj (-1, nMarker)->position.vPos);
 glPushMatrix ();
-glTranslatef (f2fl (basePoint.p3_vec.p.x), f2fl (basePoint.p3_vec.p.y), f2fl (basePoint.p3_vec.p.z));
+glTranslatef (X2F (basePoint.p3_vec.p.x), X2F (basePoint.p3_vec.p.y), X2F (basePoint.p3_vec.p.z));
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cvColor);
 glBegin (GL_LINES);

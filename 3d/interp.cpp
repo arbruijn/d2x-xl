@@ -124,7 +124,7 @@ while (n--) {
 	else
 #endif
 		dest->p3_normal.nFaces = 0;
-	fScale = (gameData.models.nScale ? f2fl (gameData.models.nScale) : 1) / 65536.0f;
+	fScale = (gameData.models.nScale ? X2F (gameData.models.nScale) : 1) / 65536.0f;
 	if (gameStates.ogl.bUseTransform) {
 		pfv->p.x = src->p.x * fScale;
 		pfv->p.y = src->p.y * fScale;
@@ -426,7 +426,7 @@ if (!mtP->nCount++) {
 	for (i = 0, nSize = 0x7fffffff; i < nPoints; i++)
 		if (nSize > (h = VmVecDist (&v, &pointList [i]->p3_src)))
 			nSize = h;
-	mtP->fSize = f2fl (nSize);// * 1.25f;
+	mtP->fSize = X2F (nSize);// * 1.25f;
 	}
 }
 
@@ -496,7 +496,7 @@ for (;;) {
 #endif
 			{
 			int i;
-			//fix l = f2i (32 * xModelLight);
+			//fix l = X2I (32 * xModelLight);
 			GrSetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
 			GrFadeColorRGB (1.0);
 			if (colorP) {

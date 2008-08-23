@@ -522,7 +522,7 @@ if (gameOpts->render.nMathFormat == 2) {
 #endif
 	return (fix) (sqrt (h.p.x + h.p.y + h.p.z) * 65536);
 #else
-	return fl2f (sqrt (sqrd ((double) f2fl (v->p.x)) + sqrd ((double) f2fl (v->p.y)) + sqrd ((double) f2fl (v->p.z)))); 
+	return F2X (sqrt (sqrd ((double) X2F (v->p.x)) + sqrd ((double) X2F (v->p.y)) + sqrd ((double) X2F (v->p.z)))); 
 #endif
 	}
 else 
@@ -2095,11 +2095,11 @@ if (lMax < l) {
 	i = 2;
 	}
 if (i == 2)
-	return f2fl (lMax) * f2fl (VmLinePointDist (p2, p0, p1)) / 800;
+	return X2F (lMax) * X2F (VmLinePointDist (p2, p0, p1)) / 800;
 else if (i == 1)
-	return f2fl (lMax) * f2fl (VmLinePointDist (p1, p2, p0)) / 800;
+	return X2F (lMax) * X2F (VmLinePointDist (p1, p2, p0)) / 800;
 else
-	return f2fl (lMax) * f2fl (VmLinePointDist (p0, p1, p2)) / 800;
+	return X2F (lMax) * X2F (VmLinePointDist (p0, p1, p2)) / 800;
 }
 
 // ------------------------------------------------------------------------

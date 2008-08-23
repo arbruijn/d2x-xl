@@ -320,8 +320,8 @@ netGame.versionMinor = D2X_MINOR;
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	netGame.gameStatus = NETSTAT_ENDLEVEL;
 if (netGame.xPlayTimeAllowed) {
-	timevar = i2f (netGame.xPlayTimeAllowed * 5 * 60);
-	i = f2i (timevar - gameStates.app.xThisLevelTime);
+	timevar = I2X (netGame.xPlayTimeAllowed * 5 * 60);
+	i = X2I (timevar - gameStates.app.xThisLevelTime);
 	if (i < 30)
 		netGame.gameStatus = NETSTAT_ENDLEVEL;
 	}       

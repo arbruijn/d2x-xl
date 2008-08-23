@@ -158,7 +158,7 @@ void ShowCredits(char *credits_filename)
 	int			nPcxError;
 	unsigned int	nLine = 0;
 	unsigned int	nXlLine = 0;
-	fix			xTimeout, xDelay = f2i (2800 * 1000);
+	fix			xTimeout, xDelay = X2I (2800 * 1000);
 	int			nFirstLineOffs, nExtraInc = 0;
 	int			bBinary = 0;
 	char			*pszTemp;

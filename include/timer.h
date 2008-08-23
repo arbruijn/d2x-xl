@@ -90,6 +90,6 @@ void TimerDelay(fix seconds);
 #define ApproxMSecToFSec(msec) ((msec) << 6)
 #define approx_fsec_to_msec(fsec) ((fsec) >> 6)
 
-#define secs2f(s)	(i2f ((s) / 1000) | (i2f ((s) % 1000) / 1000))
+#define secs2f(s)	(I2X ((s) / 1000) | (I2X ((s) % 1000) / 1000))
 
 #endif

@@ -143,7 +143,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define IMMORTAL_TIME   0x3fffffff  // Time assigned to immortal objects, about 32768 seconds, or about 9 hours.
 #define ONE_FRAME_TIME  0x3ffffffe  // Objects with this lifeleft will live for exactly one frame
 
-#define MAX_VELOCITY i2f(50)
+#define MAX_VELOCITY I2X(50)
 
 extern char szObjectTypeNames [MAX_OBJECT_TYPES][10];
 

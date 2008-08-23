@@ -58,7 +58,7 @@ G3TransformPoint (&n, &n, 0);
 if ((m = VmVecMag (&n)) > RADAR_RANGE * F1_0)
 	return;
 if (m) {
-	//HUDMessage (0, "%1.2f", f2fl (m));
+	//HUDMessage (0, "%1.2f", X2F (m));
 	v [0].p.x = FixDiv (n.p.x, m) * 15; // /= RADAR_RANGE;
 	v [0].p.y = FixDiv (n.p.y, m) * 20; // /= RADAR_RANGE;
 	v [0].p.z = n.p.x / RADAR_RANGE;
@@ -92,15 +92,15 @@ else {
 	return;
 	}
 VmVecScaleFrac (v, 1, 3);
-h = f2fl (n.p.z) / RADAR_RANGE;
+h = X2F (n.p.z) / RADAR_RANGE;
 glPushMatrix ();
 glTranslatef (0, yRadar + h * 10.0f / 3.0f, 50);
 glPushMatrix ();
-s = 1.0f - (float) fabs (f2fl (m) / RADAR_RANGE);
+s = 1.0f - (float) fabs (X2F (m) / RADAR_RANGE);
 h = 3 * s;
 a += a * h;
 glColor4f (r + r * h, g + g * h, b + b * h, (float) sqrt (a));
-glTranslatef (f2fl (v [0].p.x), f2fl (v [0].p.y), f2fl (v [0].p.z));
+glTranslatef (X2F (v [0].p.x), X2F (v [0].p.y), X2F (v [0].p.z));
 OglDrawEllipse (BLIP_SLICES, GL_POLYGON, 0.33f + 0.33f * s, 0, 0.33f + 0.33f * s, 0, sinCosBlip);
 glPopMatrix ();
 #if 1

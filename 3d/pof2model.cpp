@@ -163,8 +163,8 @@ for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
 	Assert (pmv - pm->pFaceVerts < pm->nFaceVerts);
 	pmv->vertex = pm->pVerts [j];
-	pmv->texCoord.v.u = f2fl (uvl->u);
-	pmv->texCoord.v.v = f2fl (uvl->v);
+	pmv->texCoord.v.u = X2F (uvl->u);
+	pmv->texCoord.v.v = X2F (uvl->v);
 	pmv->renderColor =
 	pmv->baseColor = baseColor;
 	pmv->bTextured = bTextured;

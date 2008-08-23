@@ -202,7 +202,7 @@ void scores_fill_struct (stats_info * stats)
 		else
 			stats->hostage_ratio = 0;
 
-		stats->seconds = f2i (LOCALPLAYER.timeTotal)+ (LOCALPLAYER.hoursTotal*3600);
+		stats->seconds = X2I (LOCALPLAYER.timeTotal)+ (LOCALPLAYER.hoursTotal*3600);
 
 		stats->diffLevel = gameStates.app.nDifficultyLevel;
 		stats->startingLevel = LOCALPLAYER.startingLevel;

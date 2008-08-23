@@ -113,11 +113,11 @@ while (nVerts--) {
 	if (vBoxSize) {
 		fix t;
 		k = 0x7fffffff;
-		if (v.p.x && f2i (vBoxSize->p.x) < abs (v.p.x)/2 && (t = FixDiv (vBoxSize->p.x, abs (v.p.x))) < k) 
+		if (v.p.x && X2I (vBoxSize->p.x) < abs (v.p.x)/2 && (t = FixDiv (vBoxSize->p.x, abs (v.p.x))) < k) 
 			k = t;
-		if (v.p.y && f2i (vBoxSize->p.y) < abs (v.p.y)/2 && (t = FixDiv (vBoxSize->p.y, abs (v.p.y))) < k) 
+		if (v.p.y && X2I (vBoxSize->p.y) < abs (v.p.y)/2 && (t = FixDiv (vBoxSize->p.y, abs (v.p.y))) < k) 
 			k = t;
-		if (v.p.z && f2i (vBoxSize->p.z) < abs (v.p.z)/2 && (t = FixDiv (vBoxSize->p.z, abs (v.p.z))) < k) 
+		if (v.p.z && X2I (vBoxSize->p.z) < abs (v.p.z)/2 && (t = FixDiv (vBoxSize->p.z, abs (v.p.z))) < k) 
 			k = t;
 		if (k == 0x7fffffff) 
 			k = 0;

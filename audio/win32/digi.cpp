@@ -182,8 +182,8 @@ int D1vol2DSvol(fix d1v){
 	 if (d1v<=0)
 		 return -10000;
 	 else
-//		 return log2(f2fl(d1v))*1000;//no log2? hm.
-		 return log(f2fl(d1v))/log(2)*1000.0;
+//		 return log2(X2F(d1v))*1000;//no log2? hm.
+		 return log(X2F(d1v))/log(2)*1000.0;
 }
 
 // Volume 0-F1_0
@@ -259,7 +259,7 @@ TryNextChannel:
 		IDirectSoundBuffer_Unlock(SoundSlots[slot].lpsb, ptr1, len1, ptr2, len2);
 	}
 
-	IDirectSoundBuffer_SetPan(SoundSlots[slot].lpsb, ((int)(f2fl(pan) * 20000.0)) - 10000);
+	IDirectSoundBuffer_SetPan(SoundSlots[slot].lpsb, ((int)(X2F(pan) * 20000.0)) - 10000);
 	IDirectSoundBuffer_SetVolume(SoundSlots[slot].lpsb, D1vol2DSvol(SoundSlots[slot].volume));
 	IDirectSoundBuffer_Play(SoundSlots[slot].lpsb, 0, 0, 0);
 

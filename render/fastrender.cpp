@@ -1045,15 +1045,15 @@ for (faceP = gameData.segs.faces.slidingFaces; faceP; faceP = faceP->nextSliding
 		static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
 		for (h = 0; h < 6; h++) {
 			k = nTriVerts [nOffset][h];
-			texCoordP [h].v.u = f2fl (uvlP [k].u);
-			texCoordP [h].v.v = f2fl (uvlP [k].v);
+			texCoordP [h].v.u = X2F (uvlP [k].u);
+			texCoordP [h].v.v = X2F (uvlP [k].v);
 			RotateTexCoord2f (ovlTexCoordP + h, texCoordP + h, faceP->nOvlOrient);
 			}
 		}
 	else {
 		for (h = 0; h < 4; h++) {
-			texCoordP [h].v.u = f2fl (uvlP [(h + nOffset) % 4].u);
-			texCoordP [h].v.v = f2fl (uvlP [(h + nOffset) % 4].v);
+			texCoordP [h].v.u = X2F (uvlP [(h + nOffset) % 4].u);
+			texCoordP [h].v.v = X2F (uvlP [(h + nOffset) % 4].v);
 			RotateTexCoord2f (ovlTexCoordP + h, texCoordP + h, faceP->nOvlOrient);
 			}
 		}

@@ -635,7 +635,7 @@ if (gameData.render.shield.nFaces > 0)
 	else {
 		tOOF_vector	p = {0, 0, 0};
 		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
-		float	fScale, r = f2fl (nSize) /** 1.05f*/;
+		float	fScale, r = X2F (nSize) /** 1.05f*/;
 		tPosition *posP = OBJPOS (objP);
 		vmsVector vPos;
 		//gameStates.ogl.bUseTransform = 1;
@@ -669,7 +669,7 @@ if (gameData.render.monsterball.nFaces > 0)
 		RIAddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {
 		static tOOF_vector p = {0,0,0};
-		float r = f2fl (objP->size);
+		float r = X2F (objP->size);
 		gameStates.ogl.bUseTransform = 1;
 		OglSetupTransform (0);
 		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);

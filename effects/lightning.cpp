@@ -2132,9 +2132,9 @@ if (SHOW_LIGHTNINGS) {
 			pll->color.green /= n;
 			pll->color.blue /= n;
 			if (gameStates.render.bPerPixelLighting == 2)
-				pll->nBrightness = fl2f (sqrt ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha));
+				pll->nBrightness = F2X (sqrt ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha));
 			else
-				pll->nBrightness = fl2f ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha);
+				pll->nBrightness = F2X ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha);
 			if (bDynLighting)
 				pll->nDynLight = AddDynLight (NULL, &pll->color, pll->nBrightness, pll->nSegment, -1, -1, -1, &pll->vPos);
 			}
@@ -2205,7 +2205,7 @@ void CreateBlowupLightnings (tObject *objP)
 {
 static tRgbaColorf color = {0.1f, 0.1f, 0.8f, 0.2f};
 
-int h = f2i (objP->size) * 2;
+int h = X2I (objP->size) * 2;
 
 CreateExplosionLightnings (objP, &color, h + rand () % h, h * (F1_0 + F1_0 / 2), 500);
 }
@@ -2254,8 +2254,8 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (obj
 		int h, n, i = OBJ_IDX (objP);
 		tLightningBundle	*plb;
 
-	n = f2ir (RobotDefaultShields (objP));
-	h = f2ir (objP->shields) * 100 / n;
+	n = X2IR (RobotDefaultShields (objP));
+	h = X2IR (objP->shields) * 100 / n;
 	if ((h < 0) || (h >= 50))
 		return;
 	n = (5 - h / 10) * 2;
@@ -2359,13 +2359,13 @@ if (i < 0) {
 		VmVecScaleInc (&vPosf, &vNormf, 1.0f / 64.0f);
 		VmVecScaleInc (&vEndf, &vNormf, 1.0f / 64.0f);
 		VmVecNormal (&vDeltaf, &vNormf, &vPosf, &vEndf);
-		h = fl2f (VmVecDist (&vPosf, &vEndf));
-		vPos.p.x = fl2f (vPosf.p.x);
-		vPos.p.y = fl2f (vPosf.p.y);
-		vPos.p.z = fl2f (vPosf.p.z);
-		vEnd.p.x = fl2f (vEndf.p.x);
-		vEnd.p.y = fl2f (vEndf.p.y);
-		vEnd.p.z = fl2f (vEndf.p.z);
+		h = F2X (VmVecDist (&vPosf, &vEndf));
+		vPos.p.x = F2X (vPosf.p.x);
+		vPos.p.y = F2X (vPosf.p.y);
+		vPos.p.z = F2X (vPosf.p.z);
+		vEnd.p.x = F2X (vEndf.p.x);
+		vEnd.p.y = F2X (vEndf.p.y);
+		vEnd.p.z = F2X (vEndf.p.z);
 		}
 	i = CreateLightning (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + d_rand () % 2000, 0, 
 								h, h / 4 + d_rand () % 2, 0, 0, 20, 2, 1, 5, 0, 1, 0, 0, 0, 1, &color);

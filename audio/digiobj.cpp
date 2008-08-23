@@ -122,7 +122,7 @@ else
 	maxDistance = (5 * maxDistance) / 4;	// Make all sounds travel 1.25 times as far.
 distance = VmVecNormalizedDir (&vecToSound, vSoundPos, vListenerPos);
 if (distance < maxDistance) {
-	int nSearchSegs = f2i (maxDistance / 10);
+	int nSearchSegs = X2I (maxDistance / 10);
 	if (nSearchSegs < 1)
 		nSearchSegs = 1;
 	pathDistance = FindConnectedDistance (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
@@ -130,11 +130,11 @@ if (distance < maxDistance) {
 		if (!nDecay) 
 			*volume = maxVolume - FixDiv (pathDistance, maxDistance);
 		else if (nDecay == 1) { 
-			fDecay = (float) exp (-log (2.0f) * 4.0f * f2fl (pathDistance) / f2fl (maxDistance / 2));
+			fDecay = (float) exp (-log (2.0f) * 4.0f * X2F (pathDistance) / X2F (maxDistance / 2));
 			*volume = (int) (maxVolume * fDecay);
 			}
 		else {
-			fDecay = 1.0f - f2fl (pathDistance) / f2fl (maxDistance);
+			fDecay = 1.0f - X2F (pathDistance) / X2F (maxDistance);
 			*volume = (int) (maxVolume * fDecay * fDecay * fDecay);
 			}
 
@@ -946,7 +946,7 @@ return (nSound == 255) ? -1 : DigiUnXlatSound (nSound);
 
 int DigiSetObjectSound (int nObject, int nSound, const char *pszSound)
 {
-return (nObject < 0) ? -1 : DigiLinkSoundToObject3 (nSound, nObject, 1, F1_0, i2f (256), -1, -1, pszSound, 0, SOUNDCLASS_GENERIC);
+return (nObject < 0) ? -1 : DigiLinkSoundToObject3 (nSound, nObject, 1, F1_0, I2X (256), -1, -1, pszSound, 0, SOUNDCLASS_GENERIC);
 }
 
 //------------------------------------------------------------------------------

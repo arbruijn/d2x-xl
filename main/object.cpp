@@ -133,17 +133,17 @@ float ObjectDamage (tObject *objP)
 	fix	xMaxShields;
 
 if (objP->nType == OBJ_PLAYER)
-	fDmg = f2fl (gameData.multiplayer.players [objP->id].shields) / 100;
+	fDmg = X2F (gameData.multiplayer.players [objP->id].shields) / 100;
 else if (objP->nType == OBJ_ROBOT) {
 	xMaxShields = RobotDefaultShields (objP);
-	fDmg = f2fl (objP->shields) / f2fl (xMaxShields);
+	fDmg = X2F (objP->shields) / X2F (xMaxShields);
 #if 0
 	if (gameData.bots.info [0][objP->id].companion)
 		fDmg /= 2;
 #endif
 	}
 else if (objP->nType == OBJ_REACTOR)
-	fDmg = f2fl (objP->shields) / f2fl (ReactorStrength ());
+	fDmg = X2F (objP->shields) / X2F (ReactorStrength ());
 else if ((objP->nType == 255) || (objP->flags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
 	fDmg = 0.0f;
 else
@@ -170,7 +170,7 @@ void InitGateIntervals (void)
 	int	i;
 
 for (i = 0; i < MAX_BOSS_COUNT; i++)
-	gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
+	gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * I2X (2) / 3;
 }
 
 //------------------------------------------------------------------------------
@@ -279,7 +279,7 @@ for (i = gameData.objs.nLastObject [0] + 1; i; i--, objP++)
 //091494: 	// The following code keeps a list of the 10 closest robots to the
 //091494: 	// viewer.  See comments in front of this function for how this works.
 //091494: 	dist = VmVecDist (&objP->position.vPos, &gameData.objs.viewer->position.vPos);
-//091494: 	if (dist < i2f (20*10))	{			
+//091494: 	if (dist < I2X (20*10))	{			
 //091494: 		if (Object_num_close < MAX_CLOSE_ROBOTS)	{
 //091494: 			Object_close_ones [Object_num_close] = obj;
 //091494: 			Object_closeDistance [Object_num_close] = dist;
@@ -969,7 +969,7 @@ objP->renderType = rType;
 objP->containsType = -1;
 if ((gameData.app.nGameMode & GM_ENTROPY) && (nType == OBJ_POWERUP) && (id == POW_HOARD_ORB))
 	objP->lifeleft = (extraGameInfo [1].entropy.nVirusLifespan <= 0) ? 
-							IMMORTAL_TIME : i2f (extraGameInfo [1].entropy.nVirusLifespan);
+							IMMORTAL_TIME : I2X (extraGameInfo [1].entropy.nVirusLifespan);
 else
 	objP->lifeleft = IMMORTAL_TIME;		//assume immortal
 objP->attachedObj = -1;
@@ -1580,7 +1580,7 @@ if (sideMask) {
 			bUnderLavaFall = 1;
 			bChkVolaSeg = 0;
 			if (!nLavaFallHissPlaying [objP->id]) {
-				DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
+				DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, I2X (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
 				nLavaFallHissPlaying [objP->id] = 1;
 				}
 			}
@@ -1591,7 +1591,7 @@ if (bChkVolaSeg) {
 		short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 		bUnderLavaFall = 1;
 		if (!nLavaFallHissPlaying [objP->id]) {
-			DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
+			DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, I2X (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
 			nLavaFallHissPlaying [objP->id] = 1;
 			}
 		}
@@ -1758,7 +1758,7 @@ if (nSpeed < 0)
 	nSpeed = 0;
 
 if (gameData.multiplayer.bMoving < 0)
-	DigiLinkSoundToObject3 (-1, OBJ_IDX (objP), 1, F1_0 / 64 + nSpeed / 256, i2f (256), -1, -1, "missileflight-small.wav", 1, SOUNDCLASS_PLAYER);
+	DigiLinkSoundToObject3 (-1, OBJ_IDX (objP), 1, F1_0 / 64 + nSpeed / 256, I2X (256), -1, -1, "missileflight-small.wav", 1, SOUNDCLASS_PLAYER);
 else
 	DigiChangeSoundLinkedToObject (OBJ_IDX (objP), F1_0 / 64 + nSpeed / 256);
 gameData.multiplayer.bMoving = nSpeed;
@@ -1850,7 +1850,7 @@ void CheckAfterburnerBlobDrop (tObject *objP)
 {
 if (gameStates.render.bDropAfterburnerBlob) {
 	Assert (objP == gameData.objs.console);
-	DropAfterburnerBlobs (objP, 2, i2f (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
+	DropAfterburnerBlobs (objP, 2, I2X (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
 	if (IsMultiGame)
 		MultiSendDropBlobs ((char) gameData.multiplayer.nLocalPlayer);
 	gameStates.render.bDropAfterburnerBlob = 0;
@@ -1883,7 +1883,7 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 		delay = 0;
 		}
 	else {
-		nSize = i2f (gameData.weapons.info [objP->id].afterburner_size) / 16;
+		nSize = I2X (gameData.weapons.info [objP->id].afterburner_size) / 16;
 		lifetime = 3 * delay / 2;
 		if (!IsMultiGame) {
 			delay /= 2;
@@ -2288,7 +2288,7 @@ for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObj
 
 #ifdef _DEBUG
 #	if TRACE			
-		if (OBJECTS [nObject].lifeleft > i2f (2))
+		if (OBJECTS [nObject].lifeleft > I2X (2))
 			con_printf (CONDBG, "Note: Clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", 
 							nObject, OBJECTS [nObject].nType, 
 							OBJECTS [nObject].id, OBJECTS [nObject].lifeleft);
@@ -2298,7 +2298,7 @@ for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObj
 	}
 	#ifdef _DEBUG
 #	if TRACE			
-		else if (OBJECTS [nObject].nType!=OBJ_NONE && OBJECTS [nObject].lifeleft < i2f (2))
+		else if (OBJECTS [nObject].nType!=OBJ_NONE && OBJECTS [nObject].lifeleft < I2X (2))
 		con_printf (CONDBG, "Note: NOT clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", 
 						nObject, OBJECTS [nObject].nType, OBJECTS [nObject].id, 
 						OBJECTS [nObject].lifeleft);

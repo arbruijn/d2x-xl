@@ -495,9 +495,9 @@ tOOF_vector *G3PolyModelVerts2Float (tPOFObject *po)
 	tOOF_vector	*pvf;
 
 for (i = po->nVerts, pv = po->pvVerts, pvf = po->pvVertsf; i; i--, pv++, pvf++) {
-	pvf->x = f2fl (pv->p.x);
-	pvf->y = f2fl (pv->p.y);
-	pvf->z = f2fl (pv->p.z);
+	pvf->x = X2F (pv->p.x);
+	pvf->y = X2F (pv->p.y);
+	pvf->z = X2F (pv->p.z);
 	}
 return po->pvVertsf;
 }
@@ -1020,7 +1020,7 @@ for (;;) {
 		}
 	if (nHitSide < 0)
 		break;
-	fDist = f2fl (VmVecDist (vPos, &vHit));
+	fDist = X2F (VmVecDist (vPos, &vHit));
 	if (nChild < 0) {
 		bHit = 1;
 		break;
@@ -1062,8 +1062,8 @@ fq.ignoreObjList = NULL;
 fq.flags			  = FQ_TRANSWALL;
 if (FindVectorIntersection (&fq, &fi) != HIT_WALL)
 	return G3_INFINITY;
-return //fScale ? f2fl (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale : 
-		 f2fl (VmVecDist (fq.p0, &fi.hit.vPoint)) * fClip [gameOpts->render.shadows.nReach];
+return //fScale ? X2F (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale : 
+		 X2F (VmVecDist (fq.p0, &fi.hit.vPoint)) * fClip [gameOpts->render.shadows.nReach];
 #endif
 }
 
@@ -1425,14 +1425,14 @@ if (po->nState == 1) {
 	if (bShadowData) {
 		vCenter.x = vCenter.y = vCenter.z = 0.0f;
 		for (j = po->nVerts, pv = po->pvVerts, pvf = po->pvVertsf; j; j--, pv++, pvf++) {
-			vCenter.x += f2fl (pv->p.x);
-			vCenter.y += f2fl (pv->p.y);
-			vCenter.z += f2fl (pv->p.z);
+			vCenter.x += X2F (pv->p.x);
+			vCenter.y += X2F (pv->p.y);
+			vCenter.z += X2F (pv->p.z);
 			}
 		OOF_VecScale (&vCenter, 1.0f / (float) po->nVerts);
-		po->vCenter.p.x = fl2f (vCenter.x);
-		po->vCenter.p.y = fl2f (vCenter.y);
-		po->vCenter.p.z = fl2f (vCenter.z);
+		po->vCenter.p.x = F2X (vCenter.x);
+		po->vCenter.p.y = F2X (vCenter.y);
+		po->vCenter.p.z = F2X (vCenter.z);
 
 		G3GetAdjFaces (po);
 		G3GetPolyModelCenters (po);

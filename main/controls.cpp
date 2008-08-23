@@ -153,7 +153,7 @@ void ReadFlyingControls (tObject *objP)
 
 			//charge up to full
 			charge_up = min(gameData.time.xFrame/8,f1_0 - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
-			cur_energy = LOCALPLAYER.energy - i2f (10);
+			cur_energy = LOCALPLAYER.energy - I2X (10);
 			cur_energy = max(cur_energy, 0);	//don't drop below 10
 			//maybe limit charge up by energy
 			charge_up = min (charge_up,cur_energy / 10);

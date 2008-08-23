@@ -1186,7 +1186,7 @@ gameStates.input.kcFrameTime = (float) gameStates.input.kcPollTime / kcFrameCoun
 #if 1
 nMaxTurnRate = (int) gameStates.input.kcFrameTime;
 #else
-nMaxTurnRate = (int) (gameStates.input.kcFrameTime * (1.0f - f2fl (gameData.pig.ship.player->maxRotThrust)));
+nMaxTurnRate = (int) (gameStates.input.kcFrameTime * (1.0f - X2F (gameData.pig.ship.player->maxRotThrust)));
 #endif
 return 0;
 }
@@ -1295,8 +1295,8 @@ if (gameOpts->input.bUseHotKeys)
 if (ControlsReadTrackIR ())
 	ControlsDoTrackIR ();
 #endif
-if (gameStates.input.nCruiseSpeed > i2f (100)) 
-	gameStates.input.nCruiseSpeed = i2f (100);
+if (gameStates.input.nCruiseSpeed > I2X (100)) 
+	gameStates.input.nCruiseSpeed = I2X (100);
 else if (gameStates.input.nCruiseSpeed < 0) 
 	gameStates.input.nCruiseSpeed = 0;
 if (!Controls [0].forwardThrustTime)
@@ -1312,7 +1312,7 @@ if (nBankSensMod > 2) {
 //----------- Clamp values between -gameStates.input.kcPollTime and gameStates.input.kcPollTime
 if (gameStates.input.kcPollTime > F1_0) {
 #if TRACE
-	con_printf (1, "Bogus frame time of %.2f seconds\n", f2fl (gameStates.input.kcPollTime));
+	con_printf (1, "Bogus frame time of %.2f seconds\n", X2F (gameStates.input.kcPollTime));
 #endif
 	gameStates.input.kcPollTime = F1_0;
 	}

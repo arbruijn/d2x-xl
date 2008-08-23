@@ -433,14 +433,14 @@ while (CFGetS (szInput, LINEBUF_SIZE, &infoFile)) {
 		else IFTOK ("$EFFECTS")		{bmFlag = BM_EFFECTS;	nClip = 0;}
 		else IFTOK ("$ALIAS")			bm_read_alias ();
 
-		else IFTOK ("lighting") 			gameData.pig.tex.pTMapInfo [textureCount-1].lighting = fl2f (get_float ();
-		else IFTOK ("damage") 			gameData.pig.tex.pTMapInfo [textureCount-1].damage = fl2f (get_float ();
+		else IFTOK ("lighting") 			gameData.pig.tex.pTMapInfo [textureCount-1].lighting = F2X (get_float ();
+		else IFTOK ("damage") 			gameData.pig.tex.pTMapInfo [textureCount-1].damage = F2X (get_float ();
 		else IFTOK ("volatile") 			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_VOLATILE;
 		else IFTOK ("goal_blue")			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_GOAL_BLUE;
 		else IFTOK ("goal_red")			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_GOAL_RED;
 		else IFTOK ("water")	 			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_WATER;
 		else IFTOK ("force_field")		gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_FORCE_FIELD;
-		else IFTOK ("slide")	 			{gameData.pig.tex.pTMapInfo [textureCount-1].slide_u = fl2f (get_float ())>>8; gameData.pig.tex.pTMapInfo [textureCount-1].slide_v = fl2f (get_float ())>>8;}
+		else IFTOK ("slide")	 			{gameData.pig.tex.pTMapInfo [textureCount-1].slide_u = F2X (get_float ())>>8; gameData.pig.tex.pTMapInfo [textureCount-1].slide_v = F2X (get_float ())>>8;}
 		else IFTOK ("destroyed")	 		{int t=textureCount-1; gameData.pig.tex.pTMapInfo [t].destroyed = get_texture (strtok (NULL, space);}
 		//else IFTOK ("gameData.eff.nEffects")		gameData.eff.nEffects = get_int ();
 		else IFTOK ("gameData.walls.nAnims")	gameData.walls.nAnims = get_int ();
@@ -448,7 +448,7 @@ while (CFGetS (szInput, LINEBUF_SIZE, &infoFile)) {
 		else IFTOK ("dest_bm")			dest_bm = strtok (NULL, space);
 		else IFTOK ("dest_vclip")		dest_vclip = get_int ();
 		else IFTOK ("dest_eclip")		dest_eclip = get_int ();
-		else IFTOK ("dest_size")			dest_size = fl2f (get_float ();
+		else IFTOK ("dest_size")			dest_size = F2X (get_float ();
 		else IFTOK ("crit_clip")			crit_clip = get_int ();
 		else IFTOK ("critFlag")			critFlag = get_int ();
 		else IFTOK ("nSound") 		nSound = get_int ();

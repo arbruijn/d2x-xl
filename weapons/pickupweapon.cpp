@@ -202,7 +202,7 @@ else {
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_AMMO_RACK)
 		nMaxAmmo *= 2;
 	if (ISLOCALPLAYER (nPlayer))
-		HUDInitMessage ("%s %d %s!", TXT_ALREADY_HAVE,f2i ((unsigned) VULCAN_AMMO_SCALE * (unsigned) nMaxAmmo), TXT_VULCAN_ROUNDS);
+		HUDInitMessage ("%s %d %s!", TXT_ALREADY_HAVE,X2I ((unsigned) VULCAN_AMMO_SCALE * (unsigned) nMaxAmmo), TXT_VULCAN_ROUNDS);
 	bUsed = 0;
 	}
 gameData.weapons.nPrimary = pwSave;

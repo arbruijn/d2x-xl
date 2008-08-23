@@ -51,7 +51,7 @@ d_srand(seed);
 VmVecScaleAdd (&newVelocity,
 					&spitterP->mType.physInfo.velocity,
 					&spitterP->position.mOrient.fVec,
-					i2f (SPIT_SPEED));
+					I2X (SPIT_SPEED));
 newVelocity.p.x += (d_rand() - 16384) * SPIT_SPEED * 2;
 newVelocity.p.y += (d_rand() - 16384) * SPIT_SPEED * 2;
 newVelocity.p.z += (d_rand() - 16384) * SPIT_SPEED * 2;

@@ -36,7 +36,7 @@ inline int CurFrame (tObject *objP, int nClip, fix timeToLive)
 {
 tVideoClip	*pvc = gameData.eff.vClips [0] + nClip;
 int nFrames = pvc->nFrameCount;
-//	iFrame = (nFrames - f2i (FixDiv ((nFrames - 1) * timeToLive, pvc->xTotalTime))) - 1;
+//	iFrame = (nFrames - X2I (FixDiv ((nFrames - 1) * timeToLive, pvc->xTotalTime))) - 1;
 int iFrame;
 if (timeToLive > pvc->xTotalTime)
 	timeToLive = timeToLive % pvc->xTotalTime;
@@ -170,7 +170,7 @@ if (objP->lifeleft <= 0)
 	return;
 if (!LoadExplBlast ())
 	return;
-fLife = f2fl (BLAST_LIFE * 2 - objP->lifeleft);
+fLife = X2F (BLAST_LIFE * 2 - objP->lifeleft);
 xSize = (fix) (objP->size * fLife * BLAST_SCALE);
 vPos = objP->position.vPos;
 #if MOVE_BLAST
@@ -180,7 +180,7 @@ VmVecInc (&vPos, &vDir);
 #endif
 glDepthMask (0);
 #if BLAST_TYPE == 0
-fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 3);
+fAlpha = (float) sqrt (X2F (objP->lifeleft) * 3);
 color.red =
 color.green =
 color.blue = 
@@ -188,13 +188,13 @@ color.alpha = fAlpha;
 G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, &color, fAlpha, 2, 10);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
-fAlpha = (float) sqrt (f2fl (objP->lifeleft)) / 4;
+fAlpha = (float) sqrt (X2F (objP->lifeleft)) / 4;
 for (i = 0; i < 4; i++, xSize -= xSize2)
 	G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, &color, fAlpha * blastColors [i].alpha, 0);
 #elif BLAST_TYPE == 2
 CreateSphere (&sd);
-fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 3);
-r = f2fl (xSize);
+fAlpha = (float) sqrt (X2F (objP->lifeleft) * 3);
+r = X2F (xSize);
 sd.pPulse = 0;
 G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 for (i = 0; i < 3; i++) {

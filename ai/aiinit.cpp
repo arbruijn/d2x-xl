@@ -254,7 +254,7 @@ gameData.ai.nOverallAgitation = 0;
 gameStates.gameplay.bFinalBossIsDead=0;
 gameData.escort.nObjNum = 0;
 gameData.escort.bMayTalk = 0;
-gameData.physics.xBossInvulDot = F1_0/4 - i2f (gameStates.app.nDifficultyLevel)/8;
+gameData.physics.xBossInvulDot = F1_0/4 - I2X (gameStates.app.nDifficultyLevel)/8;
 for (i = 0; i < MAX_BOSS_COUNT; i++)
 	gameData.boss [i].nDyingStartTime = 0;
 }

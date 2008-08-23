@@ -67,7 +67,7 @@ if (dot < (F1_0 - gameData.time.xFrame/2)) {
 	mag = VmVecNormalize (&new_fvec);
 	if (mag < F1_0/256) {
 #if TRACE
-		con_printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", f2fl (mag));
+		con_printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", X2F (mag));
 #endif
 		new_fvec = *vGoal;		//	if degenerate vector, go right to goal
 		}
@@ -218,7 +218,7 @@ void MoveAroundPlayer (tObject *objP, vmsVector *vVecToPlayer, int fastFlag)
 			else if (damage_scale < 0)
 				damage_scale = 0;			//	Just in cased:\temp\dm_test.
 
-			VmVecScale (&vEvade, i2f (fastFlag) + damage_scale);
+			VmVecScale (&vEvade, I2X (fastFlag) + damage_scale);
 		}
 	}
 

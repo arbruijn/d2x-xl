@@ -133,7 +133,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "rle.h"
 #include "input.h"
 
-#define SPAWN_MIN_DIST	i2f (15 * 20)
+#define SPAWN_MIN_DIST	I2X (15 * 20)
 
 //------------------------------------------------------------------------------
 
@@ -456,7 +456,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 	else if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (LASER_INDEX))
 		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
 	if (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX)))
-		LOCALPLAYER.primaryAmmo [1] = i2f (5000) / VULCAN_AMMO_SCALE;
+		LOCALPLAYER.primaryAmmo [1] = I2X (5000) / VULCAN_AMMO_SCALE;
 	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevices;
 	if (extraGameInfo [1].bDarkness)
 		LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
@@ -590,13 +590,13 @@ longjmp (gameExitPoint, 0);		// Exit out of game loop
 void UpdatePlayerStats (void)
 {
 LOCALPLAYER.timeLevel += gameData.time.xFrame;	//the never-ending march of time...
-if (LOCALPLAYER.timeLevel > i2f (3600))	{
-	LOCALPLAYER.timeLevel -= i2f (3600);
+if (LOCALPLAYER.timeLevel > I2X (3600))	{
+	LOCALPLAYER.timeLevel -= I2X (3600);
 	LOCALPLAYER.hoursLevel++;
 	}
 LOCALPLAYER.timeTotal += gameData.time.xFrame;	//the never-ending march of time...
-if (LOCALPLAYER.timeTotal > i2f (3600))	{
-	LOCALPLAYER.timeTotal -= i2f (3600);
+if (LOCALPLAYER.timeTotal > I2X (3600))	{
+	LOCALPLAYER.timeTotal -= I2X (3600);
 	LOCALPLAYER.hoursTotal++;
 	}
 }
@@ -1123,8 +1123,8 @@ if (!gameStates.app.cheats.bEnabled) {
 		}
 	else
 		nSkillPoints = 0;
-	nShieldPoints = f2i (LOCALPLAYER.shields) * 5 * nMineLevel;
-	nEnergyPoints = f2i (LOCALPLAYER.energy) * 2 * nMineLevel;
+	nShieldPoints = X2I (LOCALPLAYER.shields) * 5 * nMineLevel;
+	nEnergyPoints = X2I (LOCALPLAYER.energy) * 2 * nMineLevel;
 	nHostagePoints = LOCALPLAYER.hostages.nOnBoard * 500 * (gameStates.app.nDifficultyLevel+1);
 	nShieldPoints -= nShieldPoints % 50;
 	nEnergyPoints -= nEnergyPoints % 50;
@@ -2157,7 +2157,7 @@ if (botInfoP->thief || botInfoP->companion) {
 		//	Now, scale guide-bot hits by skill level
 		switch (gameStates.app.nDifficultyLevel) {
 			case 0:
-				shields = i2f (20000);
+				shields = I2X (20000);
 				break;		//	Trainee, basically unkillable
 			case 1:
 				shields *= 3;			

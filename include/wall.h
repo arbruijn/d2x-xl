@@ -67,11 +67,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define KEY_RED                 4
 #define KEY_GOLD                8
 
-#define WALL_HPS                i2f(100)    // Normal wall's hp
-#define WALL_DOOR_INTERVAL      i2f(5)      // How many seconds a door is open
+#define WALL_HPS                I2X(100)    // Normal wall's hp
+#define WALL_DOOR_INTERVAL      I2X(5)      // How many seconds a door is open
 
-#define DOOR_OPEN_TIME          i2f(2)      // How long takes to open
-#define DOOR_WAIT_TIME          i2f(5)      // How long before auto door closes
+#define DOOR_OPEN_TIME          I2X(2)      // How long takes to open
+#define DOOR_WAIT_TIME          I2X(5)      // How long before auto door closes
 
 #define MAX_CLIP_FRAMES         50
 #define D1_MAX_CLIP_FRAMES      20

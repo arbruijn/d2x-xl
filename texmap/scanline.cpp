@@ -89,13 +89,13 @@ void c_tmap_scanline_lin_nolight(void)
 
 	if (!gameStates.render.bTransparency)	{
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
-			*dest++ = (uint)pixptr[ (f2i(v)&(64*63)) + (f2i(u)&63) ];
+			*dest++ = (uint)pixptr[ (X2I(v)&(64*63)) + (X2I(u)&63) ];
 			u += dudx;
 			v += dvdx;
 		}
 	} else {
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
-			c = (uint)pixptr[ (f2i(v)&(64*63)) + (f2i(u)&63) ];
+			c = (uint)pixptr[ (X2I(v)&(64*63)) + (X2I(u)&63) ];
 			if ( c!=255)
 				*dest = c;
 			dest++;
@@ -140,7 +140,7 @@ void c_tmap_scanline_lin(void)
 			while (j > 0)
 				{
 				//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-				*dest++ = (ubyte) (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (f2i(v)&(64*63)) + (f2i(u)&63) ] ];
+				*dest++ = (ubyte) (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
 				//end edit -MM
 				l += dldx;
 				u += dudx;
@@ -154,25 +154,25 @@ void c_tmap_scanline_lin(void)
 		while (j > 0)
 			{
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong = (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (f2i(v)&(64*63)) + (f2i(u)&63) ] ] << 24;
+			destlong = (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ] << 24;
 			//end edit -MM
 			l += dldx;
 			u += dudx;
 			v += dvdx;
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (f2i(v)&(64*63)) + (f2i(u)&63) ] ] << 16;
+			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ] << 16;
 			//end edit -MM
 			l += dldx;
 			u += dudx;
 			v += dvdx;
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (f2i(v)&(64*63)) + (f2i(u)&63) ] ] << 8;
+			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ] << 8;
 			//end edit -MM
 			l += dldx;
 			u += dudx;
 			v += dvdx;
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (f2i(v)&(64*63)) + (f2i(u)&63) ] ];
+			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
 			//end edit -MM
 			l += dldx;
 			u += dudx;
@@ -186,7 +186,7 @@ void c_tmap_scanline_lin(void)
 		while (x-- > 0)
 			{
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			*dest++ = (ubyte) (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (f2i(v)&(64*63)) + (f2i(u)&63) ] ];
+			*dest++ = (ubyte) (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
 			//end edit -MM
 			l += dldx;
 			u += dudx;
@@ -195,7 +195,7 @@ void c_tmap_scanline_lin(void)
 
 	} else {
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
-			c = (uint)pixptr[ (f2i(v)&(64*63)) + (f2i(u)&63) ];
+			c = (uint)pixptr[ (X2I(v)&(64*63)) + (X2I(u)&63) ];
 			if ( (int) c!=TRANSPARENCY_COLOR)
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 				*dest = grFadeTable[ (l&(0x7f00)) + c ];
@@ -228,7 +228,7 @@ void c_tmap_scanline_lin(void)
 	if (!gameStates.render.bTransparency)	{
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			*dest++ = grFadeTable[ (l&(0x7f00)) + (uint)pixptr[ (f2i(v)&(64*63)) + (f2i(u)&63) ] ];
+			*dest++ = grFadeTable[ (l&(0x7f00)) + (uint)pixptr[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
 			//end edit -MM
 			l += dldx;
 			u += dudx;
@@ -236,7 +236,7 @@ void c_tmap_scanline_lin(void)
 		}
 	} else {
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
-			c = (uint)pixptr[ (f2i(v)&(64*63)) + (f2i(u)&63) ];
+			c = (uint)pixptr[ (X2I(v)&(64*63)) + (X2I(u)&63) ];
 			if ( c!=255)
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 				*dest = grFadeTable[ (l&(0x7f00)) + c ];
@@ -259,12 +259,12 @@ void c_fp_tmap_scanline_per_nolight(void)
 	double		u, v, z, dudx, dvdx, dzdx, rec_z;
 	u_int64_t	destlong;
 
-	u = f2db(fx_u);
-	v = f2db(fx_v) * 64.0;
-	z = f2db(fx_z);
-	dudx = f2db(fx_du_dx);
-	dvdx = f2db(fx_dv_dx) * 64.0;
-	dzdx = f2db(fx_dz_dx);
+	u = X2D(fx_u);
+	v = X2D(fx_v) * 64.0;
+	z = X2D(fx_z);
+	dudx = X2D(fx_du_dx);
+	dvdx = X2D(fx_dv_dx) * 64.0;
+	dzdx = X2D(fx_dz_dx);
 
 	rec_z = 1.0 / z;
 
@@ -540,14 +540,14 @@ void c_fp_tmap_scanline_per(void)
 	double          u, v, z, l, dudx, dvdx, dzdx, dldx, rec_z;
 	u_int64_t       destlong;
 
-	u = f2db(fx_u);
-	v = f2db(fx_v) * 64.0;
-	z = f2db(fx_z);
-	l = f2db(fx_l);
-	dudx = f2db(fx_du_dx);
-	dvdx = f2db(fx_dv_dx) * 64.0;
-	dzdx = f2db(fx_dz_dx);
-	dldx = f2db(fx_dl_dx);
+	u = X2D(fx_u);
+	v = X2D(fx_v) * 64.0;
+	z = X2D(fx_z);
+	l = X2D(fx_l);
+	dudx = X2D(fx_du_dx);
+	dvdx = X2D(fx_dv_dx) * 64.0;
+	dzdx = X2D(fx_dz_dx);
+	dldx = X2D(fx_dl_dx);
 
 	rec_z = 1.0 / z; // gcc 2.95.2 is won't do this optimization itself
 

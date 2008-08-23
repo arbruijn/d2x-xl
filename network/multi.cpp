@@ -955,7 +955,7 @@ if (netGame.KillGoal > 0) {
 	if (pKiller->nKillGoalCount >= nKillGoal) {
 		if (nKillerPlayer == gameData.multiplayer.nLocalPlayer) {
 			HUDInitMessage (TXT_REACH_KILLGOAL);
-			LOCALPLAYER.shields = i2f (200);
+			LOCALPLAYER.shields = I2X (200);
 			}
 		else
 			HUDInitMessage (TXT_REACH_KILLGOAL2, pKiller->callsign);
@@ -980,12 +980,12 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 	return;
 	}
 
-if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed && lasttime!=f2i (gameStates.app.xThisLevelTime)) {
+if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed && lasttime!=X2I (gameStates.app.xThisLevelTime)) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected) {
 			if (i == gameData.multiplayer.nLocalPlayer) {
 				MultiSendHeartBeat ();
-				lasttime = f2i (gameStates.app.xThisLevelTime);
+				lasttime = X2I (gameStates.app.xThisLevelTime);
 				}
 			break;
 			}
@@ -1586,7 +1586,7 @@ OBJECTS [nLocalObj].position.vPos = vNewPos;
 VmVecZero (&OBJECTS [nLocalObj].mType.physInfo.velocity);
 RelinkObject (nLocalObj, nSegment);
 MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
-ObjectCreateExplosion (nSegment, &vNewPos, i2f (5), VCLIP_POWERUP_DISAPPEARANCE);
+ObjectCreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 #if 0
 if (gameData.app.nGameMode & GM_NETWORK)
 	gameData.multiplayer.powerupsInMine [(int) powerupType]++;
@@ -2892,11 +2892,11 @@ if (nTexture >- 1)
 				segP->sides [j].nOvlTex = nTexture2;
 			if ((extraGameInfo [1].entropy.nOverrideTextures == 1) && bFullBright)
 				for (v = 0; v < 4; v++)
-					segP->sides [j].uvls [v].l = i2f (100);		//max out
+					segP->sides [j].uvls [v].l = I2X (100);		//max out
 			}
 		}
 if (bFullBright)
-	gameData.segs.segment2s [SEG_IDX (segP)].xAvgSegLight = i2f (100);	//make static light bright
+	gameData.segs.segment2s [SEG_IDX (segP)].xAvgSegLight = I2X (100);	//make static light bright
 }
 
 //-----------------------------------------------------------------------------
@@ -3789,7 +3789,7 @@ MultiSendData (gameData.multigame.msg.buf, 2, 0);
 
 void MultiDoDropBlob (char *buf)
 {
-DropAfterburnerBlobs (&OBJECTS [gameData.multiplayer.players [(int) buf [1]].nObject], 2, i2f (1), -1, NULL, 0);
+DropAfterburnerBlobs (&OBJECTS [gameData.multiplayer.players [(int) buf [1]].nObject], 2, I2X (1), -1, NULL, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -3903,7 +3903,7 @@ sound = buf [3];
 if (whichfunc == 0)
 	DigiKillSoundLinkedToObject (gameData.multiplayer.players [nPlayer].nObject);
 else if (whichfunc == 3)
-	DigiLinkSoundToObject3 (sound, (short) gameData.multiplayer.players [nPlayer].nObject, 1, F1_0, i2f (256), 
+	DigiLinkSoundToObject3 (sound, (short) gameData.multiplayer.players [nPlayer].nObject, 1, F1_0, I2X (256), 
 									AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END, NULL, 0, SOUNDCLASS_PLAYER);
 }
 
@@ -3992,7 +3992,7 @@ else {
 		if (gameData.multiplayer.players [nPlayer].nKillGoalCount >= nKillGoal) {
 			if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 				HUDInitMessage (TXT_REACH_KILLGOAL);
-				LOCALPLAYER.shields = i2f (200);
+				LOCALPLAYER.shields = I2X (200);
 				}
 			else
 				HUDInitMessage (TXT_REACH_KILLGOAL, gameData.multiplayer.players [nPlayer].callsign);
@@ -4061,7 +4061,7 @@ if (netGame.KillGoal>0) {
 	if (gameData.multiplayer.players [nPlayer].nKillGoalCount >= nKillGoal) {
 		if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 			HUDInitMessage (TXT_REACH_KILLGOAL);
-			LOCALPLAYER.shields = i2f (200);
+			LOCALPLAYER.shields = I2X (200);
 			}
 		else
 			HUDInitMessage (TXT_REACH_KILLGOAL2, gameData.multiplayer.players [nPlayer].callsign);
@@ -4637,7 +4637,7 @@ if (pingStats [0].launchTime)
 	return;
 xPingReturnTime = TimerGetFixedSeconds ();
 HUDInitMessage (TXT_PINGTIME, 
-					 f2i (FixMul (xPingReturnTime - pingStats [0].launchTime, i2f (1000))));
+					 X2I (FixMul (xPingReturnTime - pingStats [0].launchTime, I2X (1000))));
 pingStats [0].launchTime = 0;
 }
 

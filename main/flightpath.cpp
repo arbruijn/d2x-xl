@@ -6,8 +6,8 @@
 
 //------------------------------------------------------------------------------
 
-#define	PP_DELTAZ	-i2f(30)
-#define	PP_DELTAY	i2f(10)
+#define	PP_DELTAZ	-I2X(30)
+#define	PP_DELTAY	I2X(10)
 
 tFlightPath	externalView;
 
@@ -62,7 +62,7 @@ do {
 	if (!i)
 		i = pPath->nSize;
 	i--;
-	if (VmVecDist (&pPath->path [i].vPos, p) >= i2f (15))
+	if (VmVecDist (&pPath->path [i].vPos, p) >= I2X (15))
 		break;
 	}
 while (i != pPath->nStart);

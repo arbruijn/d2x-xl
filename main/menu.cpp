@@ -240,7 +240,7 @@ if (*nLastKey == KEY_ESC)
 	*nLastKey = 0;
 if (gameStates.app.bAutoDemos) {
 	curtime = TimerGetApproxSeconds ();
-	if (((gameStates.input.keys.xLastPressTime + i2f (/*2*/5)) < curtime)
+	if (((gameStates.input.keys.xLastPressTime + I2X (/*2*/5)) < curtime)
 #ifdef _DEBUG
 		&& !gameData.speedtest.bOn
 #endif	

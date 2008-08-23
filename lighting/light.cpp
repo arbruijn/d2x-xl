@@ -559,7 +559,7 @@ switch (nObjType) {
 	
 		// If hoard game and tPlayer, add extra light based on how many orbs you have
 		// Pulse as well.
-		  	hoardlight = i2f (gameData.multiplayer.players [objP->id].secondaryAmmo [PROXMINE_INDEX])/2; //i2f (12);
+		  	hoardlight = I2X (gameData.multiplayer.players [objP->id].secondaryAmmo [PROXMINE_INDEX])/2; //I2X (12);
 			hoardlight++;
 		   FixSinCos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
 			s+=F1_0; 
@@ -835,7 +835,7 @@ return sum >> 3;
 tObject *oldViewer;
 int bResetLightingHack;
 
-#define LIGHT_RATE i2f (4)		//how fast the light ramps up
+#define LIGHT_RATE I2X (4)		//how fast the light ramps up
 
 void StartLightingFrame (tObject *viewer)
 {

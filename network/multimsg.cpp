@@ -351,7 +351,7 @@ else if (gameStates.gameplay.xStartingShields > 100) {
 else
 	sprintf (gameData.multigame.msg.szMsg, TXT_NEW_HANDICAP, LOCALPLAYER.callsign, gameStates.gameplay.xStartingShields);
 HUDInitMessage (TXT_HANDICAP_ALERT, gameStates.gameplay.xStartingShields);
-gameStates.gameplay.xStartingShields = i2f (gameStates.gameplay.xStartingShields);
+gameStates.gameplay.xStartingShields = I2X (gameStates.gameplay.xStartingShields);
 return 0;
 }
 

@@ -104,7 +104,7 @@ if (!gameStates.app.bEndLevelSequence)
 
 //	-----------------------------------------------------------------------------
 
-#define COUNTDOWN_VOICE_TIME fl2f (12.75)
+#define COUNTDOWN_VOICE_TIME F2X (12.75)
 
 void DoCountdownFrame (void)
 {
@@ -149,23 +149,23 @@ if (!TimeStopped ())
 if (IsMultiGame &&  NetworkIAmMaster ())
 	MultiSendCountdown ();
 cdtFrameTime = 0;
-gameData.reactor.countdown.nSecsLeft = f2i (gameData.reactor.countdown.nTimer + F1_0 * 7 / 8);
+gameData.reactor.countdown.nSecsLeft = X2I (gameData.reactor.countdown.nTimer + F1_0 * 7 / 8);
 if ((oldTime > COUNTDOWN_VOICE_TIME) && (gameData.reactor.countdown.nTimer <= COUNTDOWN_VOICE_TIME)) 
 	DigiPlaySample (SOUND_COUNTDOWN_13_SECS, F3_0);
-if (f2i (oldTime + F1_0 * 7 / 8) != gameData.reactor.countdown.nSecsLeft) {
+if (X2I (oldTime + F1_0 * 7 / 8) != gameData.reactor.countdown.nSecsLeft) {
 	if ((gameData.reactor.countdown.nSecsLeft >= 0) && (gameData.reactor.countdown.nSecsLeft < 10))
 		DigiPlaySample ((short) (SOUND_COUNTDOWN_0_SECS + gameData.reactor.countdown.nSecsLeft), F3_0);
 	if (gameData.reactor.countdown.nSecsLeft == gameData.reactor.countdown.nTotalTime - 1)
 		DigiPlaySample (SOUND_COUNTDOWN_29_SECS, F3_0);
 	}					
 if (gameData.reactor.countdown.nTimer > 0) {
-	fix size = (i2f (gameData.reactor.countdown.nTotalTime) - gameData.reactor.countdown.nTimer) / fl2f (0.65);
-	fix oldSize = (i2f (gameData.reactor.countdown.nTotalTime) - oldTime) / fl2f (0.65);
+	fix size = (I2X (gameData.reactor.countdown.nTotalTime) - gameData.reactor.countdown.nTimer) / F2X (0.65);
+	fix oldSize = (I2X (gameData.reactor.countdown.nTotalTime) - oldTime) / F2X (0.65);
 	if ((size != oldSize) && (gameData.reactor.countdown.nSecsLeft < gameData.reactor.countdown.nTotalTime - 5))	// Every 2 seconds!
 		DigiPlaySample (SOUND_CONTROL_CENTER_WARNING_SIREN, F3_0);
 	}
 else {
-	int flashValue = f2i (-gameData.reactor.countdown.nTimer * (64 / 4));	// 4 seconds to total whiteness
+	int flashValue = X2I (-gameData.reactor.countdown.nTimer * (64 / 4));	// 4 seconds to total whiteness
 	if (oldTime > 0)
 		DigiPlaySample (SOUND_MINE_BLEW_UP, F1_0);
 	PALETTE_FLASH_SET (flashValue, flashValue, flashValue);
@@ -190,7 +190,7 @@ else if (gameStates.app.nBaseCtrlCenExplTime != DEFAULT_CONTROL_CENTER_EXPLOSION
 		gameStates.app.nBaseCtrlCenExplTime + gameStates.app.nBaseCtrlCenExplTime * (NDL - gameStates.app.nDifficultyLevel - 1) / 2;
 else
 	gameData.reactor.countdown.nTotalTime = nAlanPavlishReactorTimes [gameStates.app.bD1Mission][gameStates.app.nDifficultyLevel];
-gameData.reactor.countdown.nTimer = (nTimer < 0) ? i2f (gameData.reactor.countdown.nTotalTime) : (nTimer ? nTimer : i2f (1));
+gameData.reactor.countdown.nTimer = (nTimer < 0) ? I2X (gameData.reactor.countdown.nTotalTime) : (nTimer ? nTimer : I2X (1));
 if (bReactorDestroyed)
 	gameData.reactor.bDestroyed = 1;
 }
@@ -396,7 +396,7 @@ if (gameData.reactor.nStrength == -1) {		//use old defaults
 		return F1_0 * 200 + F1_0 * 50 * gameData.missions.nCurrentLevel;
 	return F1_0 * 200 - gameData.missions.nCurrentLevel * F1_0 * 150;
 	}
-return i2f (gameData.reactor.nStrength);
+return I2X (gameData.reactor.nStrength);
 }
 
 //	-----------------------------------------------------------------------------
@@ -510,8 +510,8 @@ con_printf (CONDBG, "Mucking with reactor countdown time.\n");
 #endif
 if (gameData.reactor.bDestroyed) {
 	gameData.reactor.countdown.nTimer += 
-		i2f (gameStates.app.nBaseCtrlCenExplTime + (NDL - 1 - gameStates.app.nDifficultyLevel) * gameStates.app.nBaseCtrlCenExplTime / (NDL-1));
-	gameData.reactor.countdown.nTotalTime = f2i (gameData.reactor.countdown.nTimer) + 2;	//	Will prevent "Self destruct sequence activated" message from replaying.
+		I2X (gameStates.app.nBaseCtrlCenExplTime + (NDL - 1 - gameStates.app.nDifficultyLevel) * gameStates.app.nBaseCtrlCenExplTime / (NDL-1));
+	gameData.reactor.countdown.nTotalTime = X2I (gameData.reactor.countdown.nTimer) + 2;	//	Will prevent "Self destruct sequence activated" message from replaying.
 	}
 }
 

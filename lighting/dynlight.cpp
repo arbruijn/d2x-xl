@@ -348,7 +348,7 @@ int AddDynLight (grsFace *faceP, tRgbaColorf *pc, fix xBrightness, short nSegmen
 {
 	tDynLight	*pl;
 	short			h, i;
-	float			fBrightness = f2fl (xBrightness);
+	float			fBrightness = X2F (xBrightness);
 #if USE_OGL_LIGHTS
 	GLint			nMaxLights;
 #endif
@@ -435,7 +435,7 @@ if (nObject >= 0) {
 			pl->info.bPowerup = 2;
 		}
 	pl->info.vPos = objP->position.vPos;
-	pl->info.fRad = 0; //f2fl (OBJECTS [nObject].size) / 2;
+	pl->info.fRad = 0; //X2F (OBJECTS [nObject].size) / 2;
 	if (fBrightness > 1) {
 		if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
 			pl->info.fBoost = 1;
@@ -962,7 +962,7 @@ if (nVertex == nDbgVertex)
 			}
 #endif
 #if 0
-		psl->xDistance = (fix) (xLightDist / psl->info.fRange) /*- fl2f (psl->info.fRad*/;
+		psl->xDistance = (fix) (xLightDist / psl->info.fRange) /*- F2X (psl->info.fRad*/;
 #else
 		psl->xDistance = (fix) (xLightDist / psl->info.fRange);
 		if (psl->info.nSegment >= 0)
@@ -1213,7 +1213,7 @@ if (gameOpts->render.nLightingMethod) {
 		else
 			psl = psl;
 #endif
-		psl->xDistance = (fix) ((VmVecDist (&c, &psl->info.vPos) /*- fl2f (psl->info.fRad)*/) / (psl->info.fRange * max (psl->info.fRad, 1.0f)));
+		psl->xDistance = (fix) ((VmVecDist (&c, &psl->info.vPos) /*- F2X (psl->info.fRad)*/) / (psl->info.fRange * max (psl->info.fRad, 1.0f)));
 		if (psl->xDistance > xMaxLightRange)
 			continue;
 		if (SetActiveShaderLight (activeLightsP, psl, 1, nThread))
@@ -1255,7 +1255,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameOpts->render.nLightingMethod) {
 	int						nLightSeg;
 	short						i = gameData.render.lights.dynamic.shader.nLights;
-	fix						xLightDist, xMaxLightRange = fl2f (fLightRad) + ((gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
+	fix						xLightDist, xMaxLightRange = F2X (fLightRad) + ((gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
 	tShaderLight			*psl = gameData.render.lights.dynamic.shader.lights;
 	vmsVector				vLightDir;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
@@ -1289,7 +1289,7 @@ if (gameOpts->render.nLightingMethod) {
 #endif
 		if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
 			continue;
-		psl->xDistance = (fix) ((VmVecDist (vPixelPos, &psl->info.vPos) /*- fl2f (psl->info.fRad)*/) / psl->info.fRange);
+		psl->xDistance = (fix) ((VmVecDist (vPixelPos, &psl->info.vPos) /*- F2X (psl->info.fRad)*/) / psl->info.fRange);
 		if (psl->xDistance > xMaxLightRange)
 			continue;
 		SetActiveShaderLight (activeLightsP, psl, 1, nThread);
@@ -1386,7 +1386,7 @@ else {
 		if (vPosP) {
 			vVertex = gameData.segs.vertices [*pv];
 			//G3TransformPoint (&vVertex, &vVertex);
-			d = 2.0f - f2fl (VmVecDist (&vVertex, vPosP)) / f2fl (VmVecDist (&vCenter, &vVertex));
+			d = 2.0f - X2F (VmVecDist (&vVertex, vPosP)) / X2F (VmVecDist (&vCenter, &vVertex));
 			c.color.red += pvc->color.red * d;
 			c.color.green += pvc->color.green * d;
 			c.color.blue += pvc->color.blue * d;

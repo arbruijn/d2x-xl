@@ -68,7 +68,7 @@ typedef struct tExitFlightData {
 #define SHORT_SEQUENCE	1		//if defined, end sequnce when panning starts
 //#define STATION_ENABLED	1		//if defined, load & use space station model
 
-#define FLY_SPEED i2f (50)
+#define FLY_SPEED I2X (50)
 
 void DoEndLevelFlyThrough (int n);
 void DrawStars ();
@@ -94,7 +94,7 @@ char movieTable [2][30] = {
 	}
 };
 
-#define FLY_ACCEL i2f (5)
+#define FLY_ACCEL I2X (5)
 
 //static tUVL satUVL [4] = {{0,0,F1_0},{F1_0,0,F1_0},{F1_0,F1_0,F1_0},{0,F1_0,F1_0}};
 static tUVL satUVL [4] = {{0,0,F1_0},{F1_0,0,F1_0},{F1_0,F1_0,F1_0},{0,F1_0,F1_0}};
@@ -469,7 +469,7 @@ if (!gameStates.render.bOutsideMine) {
 		if (VmVecDot (&tvec, &gameData.endLevel.exit.mOrient.fVec) > 0) {
 			tObject *objP;
 			gameStates.render.bOutsideMine = 1;
-			objP = ObjectCreateExplosion (gameData.endLevel.exit.nSegNum, &gameData.endLevel.exit.vSideExit, i2f (50), VCLIP_BIG_PLAYER_EXPLOSION);
+			objP = ObjectCreateExplosion (gameData.endLevel.exit.nSegNum, &gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (objP) {
 				externalExplosion = *objP;
 				KillObject (objP);
@@ -477,7 +477,7 @@ if (!gameStates.render.bOutsideMine) {
 				ext_expl_halflife = objP->lifeleft;
 				gameStates.render.bExtExplPlaying = 1;
 				}
-			DigiLinkSoundToPos (SOUND_BIG_ENDLEVEL_EXPLOSION, gameData.endLevel.exit.nSegNum, 0, &gameData.endLevel.exit.vSideExit, 0, i2f (3)/4);
+			DigiLinkSoundToPos (SOUND_BIG_ENDLEVEL_EXPLOSION, gameData.endLevel.exit.nSegNum, 0, &gameData.endLevel.exit.vSideExit, 0, I2X (3)/4);
 			}
 		}
 
@@ -493,7 +493,7 @@ if (!gameStates.render.bOutsideMine) {
 		VmVecScaleInc (&tpnt, &gameData.objs.console->position.mOrient.uVec, (d_rand ()- RAND_MAX / 2) * 15);
 		nSegment = FindSegByPos (&tpnt, gameData.objs.console->nSegment, 1, 0);
 		if (nSegment != -1) {
-			expl = ObjectCreateExplosion (nSegment, &tpnt, i2f (20), VCLIP_BIG_PLAYER_EXPLOSION);
+			expl = ObjectCreateExplosion (nSegment, &tpnt, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (d_rand ()<10000 || ++soundCount==7) {		//pseudo-random
 				DigiLinkSoundToPos (SOUND_TUNNEL_EXPLOSION, nSegment, 0, &tpnt, 0, F1_0);
 				soundCount=0;
@@ -528,7 +528,7 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 		fq.flags				= 0;
 		FindVectorIntersection (&fq, &hit_data);
 		if ((hit_data.hit.nType == HIT_WALL) && (hit_data.hit.nSegment != -1))
-			ObjectCreateExplosion ((short) hit_data.hit.nSegment, &hit_data.hit.vPoint, i2f (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
+			ObjectCreateExplosion ((short) hit_data.hit.nSegment, &hit_data.hit.vPoint, I2X (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
 		explosion_wait2 = (0xa00 + d_rand ()/8)/2;
 		}
 
@@ -564,7 +564,7 @@ switch (gameStates.app.bEndLevelSequence) {
 				exitFlightObjects [1].objP = gameData.objs.endLevelCamera;
 				exitFlightObjects [1].speed = (5 * gameData.endLevel.xCurFlightSpeed) / 4;
 				exitFlightObjects [1].offset_frac = 0x4000;
-				VmVecScaleInc (&gameData.objs.endLevelCamera->position.vPos, &gameData.objs.endLevelCamera->position.mOrient.fVec, i2f (7));
+				VmVecScaleInc (&gameData.objs.endLevelCamera->position.vPos, &gameData.objs.endLevelCamera->position.mOrient.fVec, I2X (7));
 				timer=0x20000;
 				}
 			}
@@ -582,7 +582,7 @@ switch (gameStates.app.bEndLevelSequence) {
 		if (gameData.objs.endLevelCamera->nSegment == gameData.endLevel.exit.nSegNum) {
 			vmsAngVec cam_angles, exit_seg_angles;
 			gameStates.app.bEndLevelSequence = EL_OUTSIDE;
-			timer = i2f (2);
+			timer = I2X (2);
 			VmVecNegate (&gameData.objs.endLevelCamera->position.mOrient.fVec);
 			VmVecNegate (&gameData.objs.endLevelCamera->position.mOrient.rVec);
 			VmExtractAnglesMatrix (&cam_angles, &gameData.objs.endLevelCamera->position.mOrient);
@@ -616,7 +616,7 @@ switch (gameStates.app.bEndLevelSequence) {
 		if (timer < 0) {
 			gameStates.app.bEndLevelSequence = EL_STOPPED;
 			VmExtractAnglesMatrix (&vPlayerAngles, &gameData.objs.console->position.mOrient);
-			timer = i2f (3);
+			timer = I2X (3);
 			}
 		break;
 		}
@@ -639,7 +639,7 @@ switch (gameStates.app.bEndLevelSequence) {
 #	else
 			gameStates.app.bEndLevelSequence = EL_PANNING;
 			VmExtractAnglesMatrix (&vCurrentCameraAngles, &gameData.objs.endLevelCamera->position.mOrient);
-			timer = i2f (3);
+			timer = I2X (3);
 			if (gameData.app.nGameMode & GM_MULTI) { // try to skip part of the seq if multiplayer
 				StopEndLevelSequence ();
 				return;
@@ -689,7 +689,7 @@ switch (gameStates.app.bEndLevelSequence) {
 		VmAngles2Matrix (&gameData.objs.endLevelCamera->position.mOrient, &vCurrentCameraAngles);
 #endif
 		d = VmVecDistQuick (&gameData.objs.console->position.vPos, &gameData.objs.endLevelCamera->position.vPos);
-		speed_scale = FixDiv (d, i2f (0x20);
+		speed_scale = FixDiv (d, I2X (0x20);
 		if (d < f1_0) 
 			d = f1_0;
 		GetAnglesToObject (&vPlayerDestAngles, &gameData.endLevel.station.vPos, &gameData.objs.console->position.vPos);
@@ -698,7 +698,7 @@ switch (gameStates.app.bEndLevelSequence) {
 		VmVecScaleInc (&gameData.objs.console->position.vPos, &gameData.objs.console->position.mOrient.fVec, FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed);
 #ifndef SLEW_ON
 		VmVecScaleInc (&gameData.objs.endLevelCamera->position.vPos, &gameData.objs.endLevelCamera->position.mOrient.fVec, FixMul (gameData.time.xFrame, FixMul (speed_scale, gameData.endLevel.xCurFlightSpeed));
-		if (VmVecDist (&gameData.objs.console->position.vPos, &gameData.endLevel.station.vPos) < i2f (10))
+		if (VmVecDist (&gameData.objs.console->position.vPos, &gameData.endLevel.station.vPos) < I2X (10))
 			StopEndLevelSequence ();
 #endif
 		break;
@@ -747,8 +747,8 @@ void DrawExitModel ()
 	vmsVector	vModelPos;
 	int			f = 15, u = 0;	//21;
 
-VmVecScaleAdd (&vModelPos, &gameData.endLevel.exit.vMineExit, &gameData.endLevel.exit.mOrient.fVec, i2f (f));
-VmVecScaleInc (&vModelPos, &gameData.endLevel.exit.mOrient.uVec, i2f (u));
+VmVecScaleAdd (&vModelPos, &gameData.endLevel.exit.vMineExit, &gameData.endLevel.exit.mOrient.fVec, I2X (f));
+VmVecScaleInc (&vModelPos, &gameData.endLevel.exit.mOrient.uVec, I2X (u));
 gameStates.app.bD1Model = gameStates.app.bD1Mission && gameStates.app.bD1Data;
 DrawPolygonModel (NULL, &vModelPos, &gameData.endLevel.exit.mOrient, NULL, 
 						 (gameStates.gameplay.bMineDestroyed) ? gameData.endLevel.exit.nDestroyedModel : gameData.endLevel.exit.nModel, 
@@ -760,9 +760,9 @@ gameStates.app.bD1Model = 0;
 
 int nExitPointBmX, nExitPointBmY;
 
-fix xSatelliteSize = i2f (400);
+fix xSatelliteSize = I2X (400);
 
-#define SATELLITE_DIST		i2f (1024)
+#define SATELLITE_DIST		I2X (1024)
 #define SATELLITE_WIDTH		xSatelliteSize
 #define SATELLITE_HEIGHT	 ((xSatelliteSize*9)/4)		// ((xSatelliteSize*5)/2)
 
@@ -900,7 +900,7 @@ int ELFindConnectedSide (int seg0, int seg1);
 
 fixang DeltaAng (fixang a, fixang b);
 
-#define DEFAULT_SPEED i2f (16)
+#define DEFAULT_SPEED I2X (16)
 
 #define MIN_D 0x100
 
@@ -1091,7 +1091,7 @@ return moved;
 #define LINE_LEN	80
 #define NUM_VARS	8
 
-#define STATION_DIST	i2f (1024)
+#define STATION_DIST	I2X (1024)
 
 int ConvertExt (char *dest, const char *ext)
 {
@@ -1205,7 +1205,7 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 
 		case 3:							//exit heading
 			PrintLog ("         loading exit angle\n");
-			vExitAngles.h = i2f (atoi (p))/360;
+			vExitAngles.h = I2X (atoi (p))/360;
 			break;
 
 		case 4: {						//planet bitmap
@@ -1235,8 +1235,8 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 
 			PrintLog ("         loading satellite and station position\n");
 			sscanf (p, "%d, %d", &head, &pitch);
-			ta.h = i2f (head)/360;
-			ta.p = -i2f (pitch)/360;
+			ta.h = I2X (head)/360;
+			ta.p = -I2X (pitch)/360;
 			ta.b = 0;
 			VmAngles2Matrix (&tm, &ta);
 			if (var == 5)
@@ -1249,7 +1249,7 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 
 		case 6:						//planet size
 			PrintLog ("         loading satellite size\n");
-			xSatelliteSize = i2f (atoi (p));
+			xSatelliteSize = I2X (atoi (p));
 			break;
 	}
 	var++;
@@ -1274,7 +1274,7 @@ PrintLog ("      computing endlevel element orientation\n");
 COMPUTE_SEGMENT_CENTER_I (&gameData.endLevel.exit.vMineExit, gameData.endLevel.exit.nSegNum);
 ExtractOrientFromSegment (&gameData.endLevel.exit.mOrient, &gameData.segs.segments [gameData.endLevel.exit.nSegNum]);
 COMPUTE_SIDE_CENTER_I (&gameData.endLevel.exit.vSideExit, gameData.endLevel.exit.nSegNum, nExitSide);
-VmVecScaleAdd (&gameData.endLevel.exit.vGroundExit, &gameData.endLevel.exit.vMineExit, &gameData.endLevel.exit.mOrient.uVec, -i2f (20));
+VmVecScaleAdd (&gameData.endLevel.exit.vGroundExit, &gameData.endLevel.exit.vMineExit, &gameData.endLevel.exit.mOrient.uVec, -I2X (20));
 //compute orientation of surface
 {
 	vmsVector tv;

@@ -1086,7 +1086,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 				else
 #endif
 				sideP->uvls [i].l = ((fix)temp_ushort) << 1;
-				gameData.render.color.vertBright [sideVerts [i]] = f2fl (sideP->uvls [i].l);
+				gameData.render.color.vertBright [sideVerts [i]] = X2F (sideP->uvls [i].l);
 				}
 			} 
 		else {
@@ -1446,9 +1446,9 @@ con_printf (CONDBG, "   %d segments\n", gameData.segs.nSegments);
 for (i = 0; i < gameData.segs.nVertices; i++) {
 	CFReadVector (gameData.segs.vertices + i, loadFile);
 #if !FLOAT_COORD
-	gameData.segs.fVertices [i].p.x = f2fl (gameData.segs.vertices [i].p.x);
-	gameData.segs.fVertices [i].p.y = f2fl (gameData.segs.vertices [i].p.y);
-	gameData.segs.fVertices [i].p.z = f2fl (gameData.segs.vertices [i].p.z);
+	gameData.segs.fVertices [i].p.x = X2F (gameData.segs.vertices [i].p.x);
+	gameData.segs.fVertices [i].p.y = X2F (gameData.segs.vertices [i].p.y);
+	gameData.segs.fVertices [i].p.z = X2F (gameData.segs.vertices [i].p.z);
 #endif
 	}
 if (gameData.segs.vMin.p.x > gameData.segs.vertices [i].p.x)
@@ -1480,7 +1480,7 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
-gameData.segs.fRad = f2fl (VmVecDist (&gameData.segs.vMax, &gameData.segs.vMin));
+gameData.segs.fRad = X2F (VmVecDist (&gameData.segs.vMax, &gameData.segs.vMin));
 ResetObjects (1);		//one tObject, the player
 return 0;
 }

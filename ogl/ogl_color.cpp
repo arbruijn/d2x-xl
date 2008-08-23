@@ -128,7 +128,7 @@ if (! (bm->bmProps.flags & BM_FLAG_NO_LIGHTING) && color) {
 		int		i;
 
 	for (i = 0; i < nVertices; i++, uvlList++) {
-		h = (bm->bmProps.flags & BM_FLAG_NO_LIGHTING) ? 1.0 : f2fl (uvlList->l);
+		h = (bm->bmProps.flags & BM_FLAG_NO_LIGHTING) ? 1.0 : X2F (uvlList->l);
 		if (l < h)
 			l = h;
 		}
@@ -197,7 +197,7 @@ else {
 /*inline*/ 
 void SetTMapColor (tUVL *uvlList, int i, grsBitmap *bmP, int bResetColor, tFaceColor *vertColor)
 {
-	float l = (bmP->bmProps.flags & BM_FLAG_NO_LIGHTING) ? 1.0f : f2fl (uvlList->l);
+	float l = (bmP->bmProps.flags & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
 	float s = 1.0f;
 
 #if SHADOWS
@@ -791,7 +791,7 @@ if (!gameStates.render.nState && (nVertex == nDbgVertex))
 	nVertex = nVertex;
 #endif
 if (gameStates.render.nFlashScale)
-	fScale *= f2fl (gameStates.render.nFlashScale);
+	fScale *= X2F (gameStates.render.nFlashScale);
 if (!FAST_SHADOWS && (gameStates.render.nShadowPass == 3))
 	; //fScale = 1.0f;
 else if (FAST_SHADOWS || (gameStates.render.nShadowPass != 1))

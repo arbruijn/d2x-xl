@@ -127,7 +127,7 @@ if (scoreTime > 0) {
 		GrRect (lastX [(gameStates.video.nDisplayMode?2:0)+gameStates.render.vr.nCurrentPage], SB_SCORE_ADDED_Y, SB_SCORE_ADDED_RIGHT, SB_SCORE_ADDED_Y+GAME_FONT->ftHeight);
 		last_score_display [gameStates.render.vr.nCurrentPage] = scoreDisplay [gameStates.render.vr.nCurrentPage];
 		}
-	color = f2i (scoreTime * 20) + 10;
+	color = X2I (scoreTime * 20) + 10;
 	if (color < 10) 
 		color = 10;
 	else if (color > 31) 
@@ -368,7 +368,7 @@ void SBDrawInvulnerableShip (void)
 
 GrSetCurrentCanvas (GetCurrentGameScreen ());
 if (tInvul <= 0) 
-	SBDrawShieldBar (f2ir (LOCALPLAYER.shields));
+	SBDrawShieldBar (X2IR (LOCALPLAYER.shields));
 else if ((tInvul > F1_0 * 4) || (gameData.time.xGame & 0x8000)) {
 	PAGE_IN_GAUGE (GAUGE_INVULNERABLE + nInvulnerableFrame);
 	HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], F1_0, 0);
@@ -380,8 +380,8 @@ else if ((tInvul > F1_0 * 4) || (gameData.time.xGame & 0x8000)) {
 //print out some tPlayer statistics
 void SBRenderGauges (void)
 {
-	int nEnergy = f2ir (LOCALPLAYER.energy);
-	int nShields = f2ir (LOCALPLAYER.shields);
+	int nEnergy = X2IR (LOCALPLAYER.energy);
+	int nShields = X2IR (LOCALPLAYER.shields);
 	int bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 
 if (nEnergy != oldEnergy [gameStates.render.vr.nCurrentPage])  {

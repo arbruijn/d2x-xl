@@ -24,9 +24,9 @@ int gr_disk(fix xc1,fix yc1,fix r1)
 {
 	int p,x, y, xc, yc, r;
 
-	r = f2i(r1);
-	xc = f2i(xc1);
-	yc = f2i(yc1);
+	r = X2I(r1);
+	xc = X2I(xc1);
+	yc = X2I(yc1);
 	p=3-(r*2);
 	x=0;
 	y=r;
@@ -65,9 +65,9 @@ int gr_udisk(fix xc1,fix yc1,fix r1)
 {
 	int p,x, y, xc, yc, r;
 
-	r = f2i(r1);
-	xc = f2i(xc1);
-	yc = f2i(yc1);
+	r = X2I(r1);
+	xc = X2I(xc1);
+	yc = X2I(yc1);
 	p=3-(r*2);
 	x=0;
 	y=r;

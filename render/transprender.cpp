@@ -211,9 +211,9 @@ if ((nDepth > 1) || !nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0
 			zMin = z;
 		}
 #if RI_POLY_CENTER
-	return AddRenderItem (item->bmP ? riTexPoly : riFlatPoly, item, sizeof (*item), fl2f (zMax), fl2f ((zMax + zMin) / 2));
+	return AddRenderItem (item->bmP ? riTexPoly : riFlatPoly, item, sizeof (*item), F2X (zMax), F2X ((zMax + zMin) / 2));
 #else
-	return AddRenderItem (item->bmP ? riTexPoly : riFlatPoly, item, sizeof (*item), fl2f (zMax), fl2f (zMin));
+	return AddRenderItem (item->bmP ? riTexPoly : riFlatPoly, item, sizeof (*item), F2X (zMax), F2X (zMin));
 #endif
 	}
 if (split [0].nVertices == 3) {
@@ -363,12 +363,12 @@ else
 #if RI_POLY_CENTER
 	zCenter /= item.nVertices;
 	if (zCenter < zMin)
-		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), fl2f (zMin), fl2f (zMin));
+		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), F2X (zMin), F2X (zMin));
 	if (zCenter < zMax)
-		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), fl2f (zMax), fl2f (zMax));
-	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), fl2f (zCenter), fl2f (zCenter));
+		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), F2X (zMax), F2X (zMax));
+	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), F2X (zCenter), F2X (zCenter));
 #else
-	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), fl2f (zMin), fl2f (zMin));
+	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), F2X (zMin), F2X (zMin));
 #endif
 	}
 }
@@ -548,7 +548,7 @@ memcpy (&item.color, color, sizeof (tRgbaColorf));
 item.bStart = bStart;
 item.bEnd = bEnd;
 item.nDepth = nDepth;
-z = fl2f ((item.vLine [0].p.z + item.vLine [1].p.z) / 2);
+z = F2X ((item.vLine [0].p.z + item.vLine [1].p.z) / 2);
 return AddRenderItem (riLightningSegment, &item, sizeof (item), z, z);
 }
 
@@ -573,7 +573,7 @@ else
 for (i = 0; i < j; i++)
 	if (z < item.vertices [i].p.z)
 		z = item.vertices [i].p.z;
-return AddRenderItem (riThruster, &item, sizeof (item), fl2f (z), fl2f (z));
+return AddRenderItem (riThruster, &item, sizeof (item), F2X (z), F2X (z));
 }
 
 //------------------------------------------------------------------------------
@@ -1102,8 +1102,8 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 	float		h, w, u, v;
 	fVector	fPos = item->position;
 
-	w = (float) f2fl (item->nWidth); 
-	h = (float) f2fl (item->nHeight); 
+	w = (float) X2F (item->nWidth); 
+	h = (float) X2F (item->nHeight); 
 	u = item->bmP->glTexture->u;
 	v = item->bmP->glTexture->v;
 	if (item->bColor)
@@ -1203,7 +1203,7 @@ if (sparkBuffer.nSparks >= SPARK_BUF_SIZE)
 
 	tSparkVertex	*infoP = sparkBuffer.info + 4 * sparkBuffer.nSparks++;
 	fVector			vPos = item->position;
-	float				nSize = f2fl (item->nSize);
+	float				nSize = X2F (item->nSize);
 	float				nCol = (float) (item->nFrame / 8);
 	float				nRow = (float) (item->nFrame % 8);
 

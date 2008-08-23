@@ -1864,9 +1864,9 @@ if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
 pn->nFaces++;
-pn->vNormal.p.x += f2fl (pvNormal->p.x);
-pn->vNormal.p.y += f2fl (pvNormal->p.y);
-pn->vNormal.p.z += f2fl (pvNormal->p.z);
+pn->vNormal.p.x += X2F (pvNormal->p.x);
+pn->vNormal.p.y += X2F (pvNormal->p.y);
+pn->vNormal.p.z += X2F (pvNormal->p.z);
 }
 
 // -------------------------------------------------------------------------------

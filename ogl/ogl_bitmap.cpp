@@ -66,8 +66,8 @@ G3TransformPoint (&fPos, &fPos, 0);
 VmVecSub (&v1, vPos, &viewInfo.vPos);
 VmVecRotate (&pv, &v1, &viewInfo.view [0]);
 #endif
-w = (GLfloat) f2fl (width); //FixMul (width, viewInfo.scale.x));
-h = (GLfloat) f2fl (height); //FixMul (height, viewInfo.scale.y));
+w = (GLfloat) X2F (width); //FixMul (width, viewInfo.scale.x));
+h = (GLfloat) X2F (height); //FixMul (height, viewInfo.scale.y));
 if (gameStates.render.nShadowBlurPass == 1) {
 	glDisable (GL_TEXTURE_2D);
 	glColor4d (1,1,1,1);

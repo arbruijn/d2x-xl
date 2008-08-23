@@ -1140,7 +1140,7 @@ CFWriteInt (gameStates.app.nDifficultyLevel, cfp);
 // Save cheats enabled
 CFWriteInt (gameStates.app.cheats.bEnabled, cfp);
 for (i = 0; i < 2; i++) {
-	CFWriteInt (fl2f (gameStates.gameplay.slowmo [i].fSpeed), cfp);
+	CFWriteInt (F2X (gameStates.gameplay.slowmo [i].fSpeed), cfp);
 	CFWriteInt (gameStates.gameplay.slowmo [i].nState, cfp);
 	}
 for (i = 0; i < MAX_PLAYERS; i++)
@@ -2208,7 +2208,7 @@ for (i = 0; i < 2; i++) {
 		gameStates.gameplay.slowmo [i].nState = 0;
 		}
 	else {
-		gameStates.gameplay.slowmo [i].fSpeed = f2fl (CFReadInt (cfp));
+		gameStates.gameplay.slowmo [i].fSpeed = X2F (CFReadInt (cfp));
 		gameStates.gameplay.slowmo [i].nState = CFReadInt (cfp);
 		}
 	}

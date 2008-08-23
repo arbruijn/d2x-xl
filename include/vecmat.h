@@ -160,16 +160,16 @@ static inline fVector3 *VmVecDec (fVector3 *d, fVector3 *s)
 	{d->p.x -= s->p.x; d->p.y -= s->p.y; d->p.z -= s->p.z; return d;}
 
 static inline fVector *VmVecFixToFloat (fVector *d, vmsVector *s)
-	{d->p.x = f2fl (s->p.x); d->p.y = f2fl (s->p.y); d->p.z = f2fl (s->p.z); d->p.w = 1; return d;}
+	{d->p.x = X2F (s->p.x); d->p.y = X2F (s->p.y); d->p.z = X2F (s->p.z); d->p.w = 1; return d;}
 
 static inline fVector3 *VmVecFixToFloat (fVector3 *d, vmsVector *s)
-	{d->p.x = f2fl (s->p.x); d->p.y = f2fl (s->p.y); d->p.z = f2fl (s->p.z); return d;}
+	{d->p.x = X2F (s->p.x); d->p.y = X2F (s->p.y); d->p.z = X2F (s->p.z); return d;}
 
 static inline vmsVector *VmVecFloatToFix (vmsVector *d, fVector *s)
-	{d->p.x = fl2f (s->p.x); d->p.y = fl2f (s->p.y); d->p.z = fl2f (s->p.z); return d;}
+	{d->p.x = F2X (s->p.x); d->p.y = F2X (s->p.y); d->p.z = F2X (s->p.z); return d;}
 
 static inline vmsVector *VmVecFloatToFix (vmsVector *d, fVector3 *s)
-	{d->p.x = fl2f (s->p.x); d->p.y = fl2f (s->p.y); d->p.z = fl2f (s->p.z); return d;}
+	{d->p.x = F2X (s->p.x); d->p.y = F2X (s->p.y); d->p.z = F2X (s->p.z); return d;}
 
 static inline fix VmVecDist (vmsVector *v0, vmsVector *v1) {vmsVector d; VmVecSub (&d, v0, v1); return VmVecMag (&d); }
 
