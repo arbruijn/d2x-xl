@@ -466,7 +466,7 @@ void WallOpenDoor (tSegment *segP, short nSide)
 {
 	tWall			*wallP;
 	tActiveDoor *doorP;
-	short			nConnSide, nWall, nConnWall;
+	short			nConnSide, nWall, nConnWall = NO_WALL;
 	tSegment		*connSegP;
 
 nWall = WallNumP (segP, nSide);
