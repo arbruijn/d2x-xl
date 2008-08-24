@@ -26,6 +26,7 @@ do {
 		DigiExit ();
 		}
 	else if (tiSound.nTask == stReconfigureAudio) {
+		FreeAddonSounds ();
 		DigiExit ();
 		DigiInit (tiSound.fSlowDown);
 		if (tiSound.fSlowDown == 1.0f) {
