@@ -380,9 +380,19 @@ else {
 
 //------------------------------------------------------------------------------
 
-static inline int G3FaceIsTransparent (grsFace *faceP, grsBitmap *bmBot)
+static inline int G3FaceIsTransparent (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop)
 {
-return faceP->bTransparent || (bmBot && (((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU)) == (BM_FLAG_TRANSPARENT))));
+if (!faceP->bTransparent)
+	return 0;
+if (!bmBot)
+	return 0;
+if ((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU)) != BM_FLAG_TRANSPARENT)
+	return 0;
+if (!bmTop)
+	return 0;
+if (!(bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU)))
+	return 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -411,7 +421,7 @@ if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
-bTransparent = G3FaceIsTransparent (faceP, bmBot);
+bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)
 		return 0;
@@ -541,7 +551,7 @@ if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
-	bTransparent = G3FaceIsTransparent (faceP, bmBot);
+	bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)
@@ -663,7 +673,7 @@ if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
-	bTransparent = G3FaceIsTransparent (faceP, bmBot);
+	bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)
@@ -753,7 +763,7 @@ if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
-if (G3FaceIsTransparent (faceP, bmBot) && !(bMonitor || bmTop))
+if (G3FaceIsTransparent (faceP, bmBot, bmTop) && !(bMonitor || bmTop))
 	return 0;
 bMonitor = (faceP->nCamera >= 0);
 if (bmTop) {
@@ -791,7 +801,7 @@ if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
-if (G3FaceIsTransparent (faceP, bmBot) && !(bMonitor || bmTop))
+if (G3FaceIsTransparent (faceP, bmBot, bmTop) && !(bMonitor || bmTop))
 	return 0;
 bMonitor = (faceP->nCamera >= 0);
 if (bmTop) {

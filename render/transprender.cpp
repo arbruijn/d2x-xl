@@ -427,10 +427,14 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 	faceP = faceP;
 #endif
 for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
+#if 1
+	G3TransformPoint (vertices + i, (fVector *) (gameData.segs.faces.vertices + j), 0);
+#else
 	if (gameStates.render.automap.bDisplay)
 		G3TransformPoint (vertices + i, gameData.segs.fVertices + faceP->index [i], 0);
 	else
 		VmVecFixToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
+#endif
 	}
 return RIAddPoly (faceP, NULL, bmP, 
 						vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
@@ -710,15 +714,23 @@ if (bClientState) {
 	renderItems.bClientState = 1;
 #if RENDER_TRANSP_DECALS
 	if (bDecal) {
-		if (bDecal == 2)
+		if (bDecal == 2) {
 			RIEnableClientState (bClientState, bTexCoord, 0, 1, GL_TEXTURE2 + bUseLightmaps);
-		RIEnableClientState (bClientState, bTexCoord, 0, 1, GL_TEXTURE1 + bUseLightmaps);
+			}
+		RIEnableClientState (bClientState, bTexCoord, bColor, 1, GL_TEXTURE1 + bUseLightmaps);
 		renderItems.bDecal = bDecal;
 		}
-	else if (renderItems.bDecal) {
-		if (renderItems.bDecal == 2)
+	else /*if (renderItems.bDecal)*/ {
+		if (renderItems.bDecal == 2) {
 			RIDisableClientState (GL_TEXTURE2 + bUseLightmaps, 1, 1);
+			OGL_BINDTEX (0);
+			glDisable (GL_TEXTURE_2D);
+			renderItems.bmP [2] = NULL;
+			}	
 		RIDisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
+		OGL_BINDTEX (0);
+		glDisable (GL_TEXTURE_2D);
+		renderItems.bmP [1] = NULL;
 		renderItems.bDecal = 0;
 		}
 #endif
@@ -996,7 +1008,7 @@ if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWr
 				RIResetShader ();
 			}
 		else 
-			G3SetupShader (faceP, 0, 0, 0, item->bmP != NULL, 
+			G3SetupShader (faceP, 0, 0, bDecal, item->bmP != NULL, 
 								(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
 								renderItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
 #if 0

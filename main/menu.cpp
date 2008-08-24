@@ -2149,7 +2149,7 @@ if (effectOpts.nObjCoronaIntensity >= 0) {
 
 //------------------------------------------------------------------------------
 
-void CoronaOptionsMenu ()
+void CoronaOptionsMenu (void)
 {
 	tMenuItem m [30];
 	int	i, choice = 0, optTrailType;
@@ -2253,13 +2253,13 @@ m = menus + effectOpts.nSparks;
 v = m->value;
 if (gameOpts->render.effects.bEnergySparks != v) {
 	gameOpts->render.effects.bEnergySparks = v;
-	m->rebuild = -1;
+	*key = -2;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void EffectOptionsMenu ()
+void EffectOptionsMenu (void)
 {
 	tMenuItem m [30];
 	int	i, j, choice = 0;
@@ -4276,6 +4276,7 @@ for (i = 0; i < (int) sizeofa (pszDevices); i++) {
 	if (m [optDevices + i].value)
 		extraGameInfo [0].loadout.nDevices |= nDeviceFlags [i];
 	}
+AddPlayerLoadout ();
 }
 
 //------------------------------------------------------------------------------

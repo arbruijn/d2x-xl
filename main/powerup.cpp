@@ -640,6 +640,7 @@ if ((nId == POW_CONCUSSION_4) ||
 	 (nId == POW_HOMINGMSL_4) || 
 	 (nId == POW_FLASHMSL_4) || 
 	 (nId == POW_GUIDEDMSL_4) || 
+	 (nId == POW_MERCURYMSL_4) || 
 	 (nId == POW_PROXMINE) || 
 	 (nId == POW_SMARTMINE))
 	return 4;

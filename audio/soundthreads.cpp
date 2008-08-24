@@ -48,7 +48,7 @@ return 0;
 void WaitForSoundThread (void)
 {
 time_t t1 = SDL_GetTicks ();
-while (tiSound.ti.pThread && (tiSound.ti.bExec && (SDL_GetTicks () - t1 < 1000)))
+while (tiSound.ti.pThread && tiSound.ti.bExec && (SDL_GetTicks () - t1 < 1000))
 	G3_SLEEP (1);
 }
 
@@ -80,7 +80,6 @@ if (tiSound.ti.pThread) {
 
 int RunSoundThread (tSoundTask nTask)
 {
-
 if (tiSound.ti.pThread && gameData.app.bUseMultiThreading [rtSound]) {
 	WaitForSoundThread ();
 	tiSound.nTask = nTask;
