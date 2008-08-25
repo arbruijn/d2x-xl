@@ -39,6 +39,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void AIIdleAnimation (tObject *objP)
 {
+#ifdef _DEBUG
+if (OBJ_IDX (objP) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 if (gameOpts->gameplay.bIdleAnims) {
 		int			h, i, j;
 		tSegment		*segP = gameData.segs.segments + objP->nSegment;

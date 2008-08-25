@@ -54,26 +54,20 @@ gameData.ai.nBelievedPlayerSeg = gameData.ai.cloakInfo [0].nLastSeg;
 int AddAwarenessEvent (tObject *objP, int nType)
 {
 	// If tPlayer cloaked and hit a robot, then increase awareness
-	if (nType >= PA_WEAPON_WALL_COLLISION)
-		AIDoCloakStuff ();
+if (nType >= PA_WEAPON_WALL_COLLISION)
+	AIDoCloakStuff ();
 
-	if (gameData.ai.nAwarenessEvents < MAX_AWARENESS_EVENTS) {
-		if ((nType == PA_WEAPON_WALL_COLLISION) || (nType == PA_WEAPON_ROBOT_COLLISION))
-			if (objP->id == VULCAN_ID)
-				if (d_rand () > 3276)
-					return 0;       // For vulcan cannon, only about 1/10 actually cause awareness
-
-		gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nSegment = objP->nSegment;
-		gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].pos = objP->position.vPos;
-		gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nType = nType;
-		gameData.ai.nAwarenessEvents++;
-	} else {
-		//Int3 ();   // Hey -- Overflowed gameData.ai.awarenessEvents, make more or something
-		// This just gets ignored, so you can just
-		// continue.
-	}
-	return 1;
-
+if (gameData.ai.nAwarenessEvents < MAX_AWARENESS_EVENTS) {
+	if ((nType == PA_WEAPON_WALL_COLLISION) || (nType == PA_WEAPON_ROBOT_COLLISION))
+		if (objP->id == VULCAN_ID)
+			if (d_rand () > 3276)
+				return 0;       // For vulcan cannon, only about 1/10 actually cause awareness
+	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nSegment = objP->nSegment;
+	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].pos = objP->position.vPos;
+	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nType = nType;
+	gameData.ai.nAwarenessEvents++;
+	} 
+return 1;
 }
 
 // ----------------------------------------------------------------------------------
@@ -103,7 +97,7 @@ void pae_aux (int nSegment, int nType, int level)
 if (newAwareness [nSegment] < nType)
 	newAwareness [nSegment] = nType;
 // Process children.
-for (j=0; j<MAX_SIDES_PER_SEGMENT; j++)
+for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
 	if (IS_CHILD (gameData.segs.segments [nSegment].children [j])) {
 		if (level <= 3) {
 			if (nType == 4)
@@ -133,17 +127,19 @@ gameData.ai.nAwarenessEvents = 0;
 
 void SetPlayerAwarenessAll (void)
 {
-	int i;
+	int	i;
+	short	nSegment;
 
 ProcessAwarenessEvents ();
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 	if (OBJECTS [i].controlType == CT_AI) {
-		if (newAwareness [OBJECTS [i].nSegment] > gameData.ai.localInfo [i].playerAwarenessType) {
-			gameData.ai.localInfo [i].playerAwarenessType = newAwareness [OBJECTS [i].nSegment];
+		nSegment = OBJECTS [i].nSegment;
+		if (newAwareness [nSegment] > gameData.ai.localInfo [i].playerAwarenessType) {
+			gameData.ai.localInfo [i].playerAwarenessType = newAwareness [nSegment];
 			gameData.ai.localInfo [i].playerAwarenessTime = PLAYER_AWARENESS_INITIAL_TIME;
 			}
 		// Clear the bit that says this robot is only awake because a camera woke it up.
-		if (newAwareness [OBJECTS [i].nSegment] > gameData.ai.localInfo [i].playerAwarenessType)
+		if (newAwareness [nSegment] > gameData.ai.localInfo [i].playerAwarenessType)
 			OBJECTS [i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
 }

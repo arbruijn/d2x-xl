@@ -432,7 +432,9 @@ if (!AIMultiplayerAwareness (objP, angerLevel)) {
 		}
 	return 1;
 	}
-if (!gameData.ai.nPlayerVisibility) {
+if (!gameData.ai.nPlayerVisibility && 
+	 ((siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode != AIM_FOLLOW_PATH) || 
+	 (siP->ailP->nGoalSegment != gameData.ai.nBelievedPlayerSeg))) {
 	siP->ailP->mode = AIM_IDLING;
 	return 1;
 	}
@@ -893,6 +895,10 @@ return 0;
 
 int AIBumpHandler (tObject *objP, tAIStateInfo *siP)
 {
+#ifdef _DEBUG
+if (OBJ_IDX (objP) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 if (siP->ailP->playerAwarenessType >= PA_PLAYER_COLLISION) {
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
 	if (gameData.ai.nPlayerVisibility == 1) // Only increase visibility if unobstructed, else claw guys attack through doors.
@@ -997,16 +1003,31 @@ return 1;
 
 int AIApproachHandler (tObject *objP, tAIStateInfo *siP)
 {
+#ifdef _DEBUG
+if (OBJ_IDX (objP) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 if (siP->bMultiGame || siP->botInfoP->companion || siP->botInfoP->thief)
 	return 0;
 if ((siP->aiP->behavior == AIB_SNIPE) || (siP->aiP->behavior == AIB_RUN_FROM) || (siP->aiP->behavior == AIB_STILL))
 	return 0;
 if (gameData.ai.nOverallAgitation < 71)
 	return 0;
-if ((gameData.ai.xDistToPlayer >= MAX_REACTION_DIST) || (d_rand () >= gameData.time.xFrame/4)) 
+if (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) {
+	if ((gameData.ai.xDistToPlayer >= MAX_REACTION_DIST) || (d_rand () >= gameData.time.xFrame/4)) 
+		return 0;
+	if (d_rand () * (gameData.ai.nOverallAgitation - 40) <= F1_0 * 5)
+		return 0;
+	}
+if ((siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {
+#ifdef _DEBUG
+	if (OBJ_IDX (objP) == nDbgObj)
+		nDbgObj = nDbgObj;
+#endif
+	if (objP->nSegment == siP->ailP->nGoalSegment)
+		siP->ailP->mode = AIM_IDLING;
 	return 0;
-if (d_rand () * (gameData.ai.nOverallAgitation - 40) <= F1_0 * 5)
-	return 0;
+	}
 CreatePathToPlayer (objP, 4 + gameData.ai.nOverallAgitation / 8 + gameStates.app.nDifficultyLevel, 1);
 return 1;
 }
