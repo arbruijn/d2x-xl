@@ -3037,18 +3037,18 @@ if (gameStates.app.bMultiThreaded) {
 	StartRenderThreads ();
 	}
 StartSoundThread ();
-gameData.render.vertColor.matAmbient.c.r = 
-gameData.render.vertColor.matAmbient.c.g = 
-gameData.render.vertColor.matAmbient.c.b = AMBIENT_LIGHT;
-gameData.render.vertColor.matAmbient.c.a = 1.0f;
-gameData.render.vertColor.matDiffuse.c.r = 
-gameData.render.vertColor.matDiffuse.c.g = 
-gameData.render.vertColor.matDiffuse.c.b = DIFFUSE_LIGHT;
-gameData.render.vertColor.matDiffuse.c.a = 1.0f;
-gameData.render.vertColor.matSpecular.c.r = 
-gameData.render.vertColor.matSpecular.c.g = 
-gameData.render.vertColor.matSpecular.c.b = 0.0f;
-gameData.render.vertColor.matSpecular.c.a = 1.0f;
+gameData.render.vertColor.matAmbient[R] = 
+gameData.render.vertColor.matAmbient[G] = 
+gameData.render.vertColor.matAmbient[B] = AMBIENT_LIGHT;
+gameData.render.vertColor.matAmbient[A] = 1.0f;
+gameData.render.vertColor.matDiffuse[R] = 
+gameData.render.vertColor.matDiffuse[G] = 
+gameData.render.vertColor.matDiffuse[B] = DIFFUSE_LIGHT;
+gameData.render.vertColor.matDiffuse[A] = 1.0f;
+gameData.render.vertColor.matSpecular[R] = 
+gameData.render.vertColor.matSpecular[G] = 
+gameData.render.vertColor.matSpecular[B] = 0.0f;
+gameData.render.vertColor.matSpecular[A] = 1.0f;
 }
 
 // ------------------------------------------------------------------------------------------

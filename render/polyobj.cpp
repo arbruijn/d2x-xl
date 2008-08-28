@@ -293,14 +293,12 @@ while (POF_ReadIntNew (id, model_buf) == 1) {
 			pof_read_vecs (&pmmin, 1, model_buf);
 			pof_read_vecs (&pmmax, 1, model_buf);
 			if (FindArg ("-bspgen")) {
-				vmsVector v;
-				fix l;
-				VmVecSub (&v, &pmmax, &pmmin);
-				l = v.p.x;
-				if (v.p.y > l) 
-					l = v.p.y;				
-				if (v.p.z > l) 
-					l = v.p.z;				
+				vmsVector v = pmmax - pmmin;
+				fix l = v[X];
+				if (v[Y] > l)
+					l = v[Y];
+				if (v[Z] > l)
+					l = v[Z];
 				//printf (" -l%.3f", X2F (l));
 				}
 			break;
@@ -390,7 +388,7 @@ D2_FREE (model_buf);
 #ifdef WORDS_NEED_ALIGNMENT
 G3AlignPolyModelData (pm);
 #endif
-#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__) 
+#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 G3SwapPolyModelData (pm->modelData);
 #endif
 	//verify (pm->modelData);
@@ -507,7 +505,7 @@ else if (objP->nType == OBJ_REACTOR) {
 	if (!gameOpts->render.shadows.bReactors)
 		return 0;
 	}
-else 
+else
 	return 0;
 return 1;
 }
@@ -527,7 +525,7 @@ if (nModel == nDbgModel)
 if ((nModel >= gameData.models.nPolyModels) && !(po = gameData.models.modelToPOL [nModel]))
 	return NULL;
 // only render shadows for custom models and for standard models with a shadow proof alternative model
-if (!objP) 
+if (!objP)
 	po = ((gameStates.app.bAltModels && bIsDefModel && bHaveAltModel) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
 else if (!po) {
 	if (!(bIsDefModel && bHaveAltModel)) {
@@ -551,7 +549,7 @@ else if (!po) {
 //check if should use simple model (depending on detail level chosen)
 if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && po->nSimplerModel && !flags && pos) {
 	int	cnt = 1;
-	fix depth = G3CalcPointDepth (pos);		//gets 3d depth
+	fix depth = G3CalcPointDepth(*pos);		//gets 3d depth
 	while (po->nSimplerModel && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * po->rad))
 		po = gameData.models.polyModels + po->nSimplerModel - 1;
 	}
@@ -587,7 +585,7 @@ else {
 gameData.pig.tex.bPageFlushed = 0;
 for (i = 0; i < nTextures; i++)
 	PIGGY_PAGE_IN (gameData.models.textureIndex [i].index, gameStates.app.bD1Model);
-// Hmmm... cache got flushed in the middle of paging all these in, 
+// Hmmm... cache got flushed in the middle of paging all these in,
 // so we need to reread them all in.
 if (gameData.pig.tex.bPageFlushed)	{
 	gameData.pig.tex.bPageFlushed = 0;
@@ -604,15 +602,15 @@ return nTextures;
 
 //draw a polygon model
 int DrawPolygonModel (
-	tObject			*objP, 
-	vmsVector		*pos, 
-	vmsMatrix		*orient, 
-	vmsAngVec		*animAngles, 
-	int				nModel, 
-	int				flags, 
-	fix				light, 
-	fix				*glowValues, 
-	tBitmapIndex	altTextures [], 
+	tObject			*objP,
+	vmsVector		*pos,
+	vmsMatrix		*orient,
+	vmsAngVec		*animAngles,
+	int				nModel,
+	int				flags,
+	fix				light,
+	fix				*glowValues,
+	tBitmapIndex	altTextures [],
 	tRgbaColorf		*colorP)
 {
 	tPolyModel	*po;
@@ -656,7 +654,7 @@ if (!flags)	{	//draw entire tObject
 				gameData.models.nScale = 3 * F1_0 / 2;
 			}
 		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
-		G3StartInstanceMatrix (pos, orient);
+		G3StartInstanceMatrix(*pos, *orient);
 		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
 		G3DoneInstance ();
 		}
@@ -672,16 +670,16 @@ else {
 			//Assert (i < po->nModels);
 			if (i < po->nModels) {
 			//if submodel, rotate around its center point, not pivot point
-				VmVecAvg (&vOffset, po->subModels.mins + i, po->subModels.maxs + i);
-				VmVecNegate (&vOffset);
+				vOffset = vmsVector::avg(po->subModels.mins[i], po->subModels.maxs[i]);
+				vOffset.neg();
 				if (!G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
 					if (bHires)
 						return 0;
 #ifdef _DEBUG
 					G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP);
 #endif
-					G3StartInstanceMatrix (&vOffset, NULL);
-					G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures, 
+					G3StartInstanceMatrix(vOffset);
+					G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures,
 										  animAngles, NULL, light, glowValues, colorP, NULL, nModel);
 					G3DoneInstance ();
 					}
@@ -702,9 +700,9 @@ glLineWidth (20);
 glDisable (GL_TEXTURE_2D);
 glBegin (GL_LINES);
 glColor4d (1.0, 0.5, 0.0, 0.3);
-OglVertex3x (p0.p3_vec.p.x, p0.p3_vec.p.y, p0.p3_vec.p.z);
+OglVertex3x (p0.p3_vec[X], p0.p3_vec[Y], p0.p3_vec[Z]);
 glColor4d (1.0, 0.5, 0.0, 0.1);
-OglVertex3x (p1.p3_vec.p.x, p1.p3_vec.p.y, p1.p3_vec.p.z);
+OglVertex3x (p1.p3_vec[X], p1.p3_vec[Y], p1.p3_vec[Z]);
 glEnd ();
 glLineWidth (1);
 }
@@ -720,17 +718,15 @@ void PolyObjFindMinMax (tPolyModel *pm)
 	vmsVector *vp;
 	ushort *data, nType;
 	int m;
-	vmsVector *big_mn, *big_mx;
 
-	big_mn = &pm->mins;
-	big_mx = &pm->maxs;
+	vmsVector& big_mn = pm->mins;
+	vmsVector& big_mx = pm->maxs;
 
 	for (m = 0; m < pm->nModels; m++) {
-		vmsVector *mn, *mx, *ofs;
 
-		mn = pm->subModels.mins + m;
-		mx = pm->subModels.maxs + m;
-		ofs= pm->subModels.offsets + m;
+		vmsVector& mn = pm->subModels.mins[m];
+		vmsVector& mx = pm->subModels.maxs[m];
+		vmsVector& ofs= pm->subModels.offsets[m];
 		data = (ushort *) (pm->modelData + pm->subModels.ptrs [m]);
 		nType = *data++;
 		Assert (nType == 7 || nType == 1);
@@ -738,23 +734,23 @@ void PolyObjFindMinMax (tPolyModel *pm)
 		if (nType==7)
 			data+=2;		//skip start & pad
 		vp = (vmsVector *) data;
-		*mn = *mx = *vp++; 
+		mn = mx = *vp++;
 		nverts--;
 		if (m == 0)
-			*big_mn = *big_mx = *mn;
+			big_mn = big_mx = mn;
 		while (nverts--) {
-			if (vp->p.x > mx->p.x) mx->p.x = vp->p.x;
-			if (vp->p.y > mx->p.y) mx->p.y = vp->p.y;
-			if (vp->p.z > mx->p.z) mx->p.z = vp->p.z;
-			if (vp->p.x < mn->p.x) mn->p.x = vp->p.x;
-			if (vp->p.y < mn->p.y) mn->p.y = vp->p.y;
-			if (vp->p.z < mn->p.z) mn->p.z = vp->p.z;
-			if (vp->p.x + ofs->p.x > big_mx->p.x) big_mx->p.x = vp->p.x + ofs->p.x;
-			if (vp->p.y + ofs->p.y > big_mx->p.y) big_mx->p.y = vp->p.y + ofs->p.y;
-			if (vp->p.z + ofs->p.z > big_mx->p.z) big_mx->p.z = vp->p.z + ofs->p.z;
-			if (vp->p.x + ofs->p.x < big_mn->p.x) big_mn->p.x = vp->p.x + ofs->p.x;
-			if (vp->p.y + ofs->p.y < big_mn->p.y) big_mn->p.y = vp->p.y + ofs->p.y;
-			if (vp->p.z + ofs->p.z < big_mn->p.z) big_mn->p.z = vp->p.z + ofs->p.z;
+			if ((*vp)[X] > mx[X]) mx[X] = (*vp)[X];
+			if ((*vp)[Y] > mx[Y]) mx[Y] = (*vp)[Y];
+			if ((*vp)[Z] > mx[Z]) mx[Z] = (*vp)[Z];
+			if ((*vp)[X] < mn[X]) mn[X] = (*vp)[X];
+			if ((*vp)[Y] < mn[Y]) mn[Y] = (*vp)[Y];
+			if ((*vp)[Z] < mn[Z]) mn[Z] = (*vp)[Z];
+			if ((*vp)[X] + ofs[X] > big_mx[X]) big_mx[X] = (*vp)[X] + ofs[X];
+			if ((*vp)[Y] + ofs[Y] > big_mx[Y]) big_mx[Y] = (*vp)[Y] + ofs[Y];
+			if ((*vp)[Z] + ofs[Z] > big_mx[Z]) big_mx[Z] = (*vp)[Z] + ofs[Z];
+			if ((*vp)[X] + ofs[X] < big_mn[X]) big_mn[X] = (*vp)[X] + ofs[X];
+			if ((*vp)[Y] + ofs[Y] < big_mn[Y]) big_mn[Y] = (*vp)[Y] + ofs[Y];
+			if ((*vp)[Z] + ofs[Z] < big_mn[Z]) big_mn[Z] = (*vp)[Z] + ofs[Z];
 			vp++;
 		}
 
@@ -836,18 +832,18 @@ atexit (FreePolygonModels);
 
 void DrawModelPicture (int nModel, vmsAngVec *orient_angles)
 {
-	vmsVector	p = ZERO_VECTOR;
-	vmsMatrix	o = IDENTITY_MATRIX;
+	vmsVector	p = vmsVector::ZERO;
+	vmsMatrix	o = vmsMatrix::IDENTITY;
 
 Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
 G3StartFrame (0, 0);
 glDisable (GL_BLEND);
-G3SetViewMatrix (&p, &o, gameStates.render.xZoom, 1);
+G3SetViewMatrix(p, o, gameStates.render.xZoom, 1);
 if (gameData.models.polyModels [nModel].rad != 0)
-	p.p.z = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [nModel].rad, BASE_MODEL_SIZE);
+	p[Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [nModel].rad, BASE_MODEL_SIZE);
 else
-	p.p.z = DEFAULT_VIEW_DIST;
-VmAngles2Matrix (&o, orient_angles);
+	p[Z] = DEFAULT_VIEW_DIST;
+o = vmsMatrix::Create(*orient_angles);
 DrawPolygonModel (NULL, &p, &o, NULL, nModel, 0, f1_0, NULL, NULL, NULL);
 G3EndFrame ();
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
@@ -885,20 +881,20 @@ pm->modelData = NULL;
 for (i = 0; i < MAX_SUBMODELS; i++)
 	pm->subModels.ptrs [i] = CFReadInt (fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (& (pm->subModels.offsets [i]), fp);
+	CFReadVector (pm->subModels.offsets[i], fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (& (pm->subModels.norms [i]), fp);
+	CFReadVector (pm->subModels.norms[i], fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (& (pm->subModels.pnts [i]), fp);
+	CFReadVector (pm->subModels.pnts[i], fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
 	pm->subModels.rads [i] = CFReadFix (fp);
 CFRead (pm->subModels.parents, MAX_SUBMODELS, 1, fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (& (pm->subModels.mins [i]), fp);
+	CFReadVector (pm->subModels.mins[i], fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (& (pm->subModels.maxs [i]), fp);
-CFReadVector (& (pm->mins), fp);
-CFReadVector (& (pm->maxs), fp);
+	CFReadVector (pm->subModels.maxs[i], fp);
+CFReadVector (pm->mins, fp);
+CFReadVector (pm->maxs, fp);
 pm->rad = CFReadFix (fp);
 pm->nTextures = CFReadByte (fp);
 pm->nFirstTexture = CFReadShort (fp);

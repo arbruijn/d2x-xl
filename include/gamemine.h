@@ -63,7 +63,7 @@ struct mfi {
 	int     unused_sizeof;      // was: doors_sizeof
 	short   level_shake_frequency, level_shake_duration;
 	// Shakes every level_shake_frequency seconds
-	// for level_shake_duration seconds (on average, random).  In 16ths second.
+	// for level_shake_duration seconds (on average, Random).  In 16ths second.
 	int     secret_return_segment;
 	vmsMatrix secret_return_orient;
 

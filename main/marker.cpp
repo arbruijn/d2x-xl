@@ -83,9 +83,9 @@ else if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN"))
 	GrSetColorRGBi (RGBA_PAL2 (63, 0, 47));
 else
 	GrSetColorRGBi (RGBA_PAL2 (63, 15, 0));
-G3TransformAndEncodePoint (&basePoint, &MarkerObj (-1, nMarker)->position.vPos);
+G3TransformAndEncodePoint (&basePoint, MarkerObj (-1, nMarker)->position.vPos);
 glPushMatrix ();
-glTranslatef (X2F (basePoint.p3_vec.p.x), X2F (basePoint.p3_vec.p.y), X2F (basePoint.p3_vec.p.z));
+glTranslatef (X2F (basePoint.p3_vec[X]), X2F (basePoint.p3_vec[Y]), X2F (basePoint.p3_vec[Z]));
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cvColor);
 glBegin (GL_LINES);
@@ -119,7 +119,7 @@ spherePoint.p3_index = -1;
 for (i = 0; i < nMaxDrop; i++)
 	if ((objP = MarkerObj (-1, i))) {
 		bSpawn = (objP == SpawnMarkerObject (-1));
-		G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
+		G3TransformAndEncodePoint(&spherePoint, objP->position.vPos);
 		for (j = 0; j < 3; j++) {
 			GrSetColorRGB (PAL2RGBA (colors [bSpawn][j]), 0, 0, 255);
 			G3DrawSphere (&spherePoint, (int) (gameData.marker.fScale * MARKER_SPHERE_SIZE) >> j, 1);
@@ -144,7 +144,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int MoveSpawnMarker (tPosition *posP, short nSegment)
+int MoveSpawnMarker (tTransformation *posP, short nSegment)
 {
 	tObject	*markerP;
 
@@ -168,7 +168,7 @@ if (!(bSpawn && MoveSpawnMarker (&playerP->position, playerP->nSegment))) {
 		ReleaseObject (gameData.marker.objects [nMarker]);
 	if (bSpawn)
 		strcpy (gameData.marker.szMessage [nMarker], "SPAWN");
-	gameData.marker.objects [nMarker] = 
+	gameData.marker.objects [nMarker] =
 		DropMarkerObject (&playerP->position.vPos, (short) playerP->nSegment, &playerP->position.mOrient, nMarker);
 	if (IsMultiGame)
 		MultiSendDropMarker (gameData.multiplayer.nLocalPlayer, playerP->position.vPos, nPlayerMarker, gameData.marker.szMessage [nMarker]);
@@ -303,7 +303,7 @@ if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.mark
 			gameData.marker.objects [i] = -1;
 			gameData.marker.szMessage [i][0] = '\0';
 			}
-		}				
+		}
 	gameData.objs.viewer = gameData.objs.console;
 	}
 }
@@ -316,13 +316,13 @@ if (!IsMultiGame || IsCoopGame) {
 #ifndef _DEBUG
 	if (LOCALPLAYER.energy < F1_0 * 25)
 		HUDMessage (0, TXT_CANNOT_TELEPORT);
-	else 
+	else
 #endif
 	if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
 		gameData.objs.viewer = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
 		if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
-			tObject	*markerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight]; 
-			
+			tObject	*markerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
+
 #ifndef _DEBUG
 			LOCALPLAYER.energy -= F1_0 * 25;
 #endif
@@ -331,7 +331,7 @@ if (!IsMultiGame || IsCoopGame) {
 			gameStates.render.bDoAppearanceEffect = 1;
 			}
 		gameData.objs.viewer = gameData.objs.console;
-		}				
+		}
 	}
 }
 

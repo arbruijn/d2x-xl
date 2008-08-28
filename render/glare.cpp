@@ -42,8 +42,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 float coronaIntensities [] = {0.25f, 0.5f, 0.75f, 1};
 
 GLhandleARB hGlareShader [2] = {0,0};
-GLhandleARB hGlareVS [2] = {0,0}; 
-GLhandleARB hGlareFS [2] = {0,0}; 
+GLhandleARB hGlareVS [2] = {0,0};
+GLhandleARB hGlareFS [2] = {0,0};
 
 // -----------------------------------------------------------------------------------
 
@@ -101,91 +101,92 @@ return gameStates.ogl.hDepthBuffer;
 void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float dx, float dy, fMatrix *r)
 {
 	fVector	v, h, vdx, vdy;
-	float		d = vCenter->p.x * vCenter->p.x + vCenter->p.y * vCenter->p.y + vCenter->p.z * vCenter->p.z;
+	float		d = vCenter->sqrmag();
 	int		i;
 
 if (!vEye) {
 	vEye = &h;
-	VmVecNormalize (vEye, vCenter);
+	//fVector::normalize(vEye, vCenter);
+	*vEye = *vCenter; fVector::normalize(*vEye);
 	}
-v.p.x = v.p.z = 0;
-v.p.y = vCenter->p.y ? d / vCenter->p.y : 1;
-VmVecDec (&v, vCenter);
-VmVecNormalize (&v, &v);
-VmVecCrossProd (&vdx, &v, vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
-VmVecScale (&vdx, &vdx, dx);
-v.p.y = v.p.z = 0;
-v.p.x = vCenter->p.x ? d / vCenter->p.x : 1;
-VmVecDec (&v, vCenter);
-VmVecNormalize (&v, &v);
-VmVecCrossProd (&vdy, &v, vEye);
+v[X] = v[Z] = 0;
+v[Y] = (*vCenter)[Y] ? d / (*vCenter)[Y] : 1;
+v -= *vCenter;
+fVector::normalize(v);
+vdx = fVector::cross(v, *vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
+vdx = vdx * dx;
+v[Y] = v[Z] = 0;
+v[X] = (*vCenter)[X] ? d / (*vCenter)[X] : 1;
+v -= *vCenter;
+fVector::normalize(v);
+vdy = fVector::cross(v, *vEye);
 if (r) {
-	if (vCenter->p.x >= 0) {
-		VmVecScale (&vdy, &vdy, dy);
-		v.p.x = +vdx.p.x + vdy.p.x;
-		v.p.y = +vdx.p.y + vdy.p.y;
-		v.p.z = -vdx.p.z - vdy.p.z;
-		VmVecRotate (vSprite, &v, r);
-		VmVecInc (vSprite, vCenter);
-		v.p.x = v.p.y = v.p.z = 0;
-		v.p.x = -vdx.p.x + vdy.p.x;
-		v.p.y = +vdx.p.y + vdy.p.y;
-		v.p.z = +vdx.p.z - vdy.p.z;
-		VmVecRotate (vSprite + 1, &v, r);
-		VmVecInc (vSprite + 1, vCenter);
-		v.p.x = v.p.y = v.p.z = 0;
-		v.p.x = -vdx.p.x - vdy.p.x;
-		v.p.y = -vdx.p.y - vdy.p.y;
-		v.p.z = +vdx.p.z + vdy.p.z;
-		VmVecRotate (vSprite + 2, &v, r);
-		VmVecInc (vSprite + 2, vCenter);
-		v.p.x = +vdx.p.x - vdy.p.x;
-		v.p.y = -vdx.p.y - vdy.p.y;
-		v.p.z = -vdx.p.z + vdy.p.z;
-		VmVecRotate (vSprite + 3, &v, r);
-		VmVecInc (vSprite + 3, vCenter);
+	if((*vCenter)[X] >= 0) {
+		vdy = vdy * dy;
+		v[X] = +vdx[X] + vdy[X];
+		v[Y] = +vdx[Y] + vdy[Y];
+		v[Z] = -vdx[Z] - vdy[Z];
+		*vSprite = *r * v;
+		vSprite[0] += *vCenter;
+		v[X] = v[Y] = v[Z] = 0;
+		v[X] = -vdx[X] + vdy[X];
+		v[Y] = +vdx[Y] + vdy[Y];
+		v[Z] = +vdx[Z] - vdy[Z];
+		vSprite[1] = *r * v;
+		vSprite[1] += *vCenter;
+		v[X] = v[Y] = v[Z] = 0;
+		v[X] = -vdx[X] - vdy[X];
+		v[Y] = -vdx[Y] - vdy[Y];
+		v[Z] = +vdx[Z] + vdy[Z];
+		vSprite[2] =  *r * v;
+		vSprite[2] += *vCenter;
+		v[X] = +vdx[X] - vdy[X];
+		v[Y] = -vdx[Y] - vdy[Y];
+		v[Z] = -vdx[Z] + vdy[Z];
+		vSprite[3] = *r * v;
+		vSprite[3] += *vCenter;
 		}
 	else {
-		VmVecScale (&vdy, &vdy, dy);
-		v.p.x = -vdx.p.x - vdy.p.x;
-		v.p.y = -vdx.p.y - vdy.p.y;
-		v.p.z = -vdx.p.z - vdy.p.z;
-		VmVecRotate (vSprite, &v, r);
-		VmVecInc (vSprite, vCenter);
-		v.p.x = v.p.y = v.p.z = 0;
-		v.p.x = +vdx.p.x - vdy.p.x;
-		v.p.y = -vdx.p.y - vdy.p.y;
-		v.p.z = +vdx.p.z - vdy.p.z;
-		VmVecRotate (vSprite + 1, &v, r);
-		VmVecInc (vSprite + 1, vCenter);
-		v.p.x = v.p.y = v.p.z = 0;
-		v.p.x = +vdx.p.x + vdy.p.x;
-		v.p.y = +vdx.p.y + vdy.p.y;
-		v.p.z = +vdx.p.z + vdy.p.z;
-		VmVecRotate (vSprite + 2, &v, r);
-		VmVecInc (vSprite + 2, vCenter);
-		v.p.x = -vdx.p.x + vdy.p.x;
-		v.p.y = +vdx.p.y + vdy.p.y;
-		v.p.z = -vdx.p.z + vdy.p.z;
-		VmVecRotate (vSprite + 3, &v, r);
-		VmVecInc (vSprite + 3, vCenter);
+		vdy = vdy * dy;
+		v[X] = -vdx[X] - vdy[X];
+		v[Y] = -vdx[Y] - vdy[Y];
+		v[Z] = -vdx[Z] - vdy[Z];
+		*vSprite = *r * v;
+		vSprite[0] += *vCenter;
+		v[X] = v[Y] = v[Z] = 0;
+		v[X] = +vdx[X] - vdy[X];
+		v[Y] = -vdx[Y] - vdy[Y];
+		v[Z] = +vdx[Z] - vdy[Z];
+		vSprite[1] = *r * v;
+		vSprite[1] += *vCenter;
+		v[X] = v[Y] = v[Z] = 0;
+		v[X] = +vdx[X] + vdy[X];
+		v[Y] = +vdx[Y] + vdy[Y];
+		v[Z] = +vdx[Z] + vdy[Z];
+		vSprite[2] = *r * v;
+		vSprite[2] += *vCenter;
+		v[X] = -vdx[X] + vdy[X];
+		v[Y] = +vdx[Y] + vdy[Y];
+		v[Z] = -vdx[Z] + vdy[Z];
+		vSprite[3] = *r * v;
+		vSprite[3] += *vCenter;
 		}
 	}
 else {
-	vSprite [0].p.x = -vdx.p.x - vdy.p.x;
-	vSprite [0].p.y = -vdx.p.y - vdy.p.y;
-	vSprite [0].p.z = -vdx.p.z - vdy.p.z;
-	vSprite [1].p.x = +vdx.p.x - vdy.p.x;
-	vSprite [1].p.y = +vdx.p.y - vdy.p.y;
-	vSprite [1].p.z = +vdx.p.z - vdy.p.z;
-	vSprite [2].p.x = +vdx.p.x + vdy.p.x;
-	vSprite [2].p.y = +vdx.p.y + vdy.p.y;
-	vSprite [2].p.z = +vdx.p.z + vdy.p.z;
-	vSprite [3].p.x = -vdx.p.x + vdy.p.x;
-	vSprite [3].p.y = -vdx.p.y + vdy.p.y;
-	vSprite [3].p.z = -vdx.p.z + vdy.p.z;
+	vSprite [0][X] = -vdx[X] - vdy[X];
+	vSprite [0][Y] = -vdx[Y] - vdy[Y];
+	vSprite [0][Z] = -vdx[Z] - vdy[Z];
+	vSprite [1][X] = +vdx[X] - vdy[X];
+	vSprite [1][Y] = +vdx[Y] - vdy[Y];
+	vSprite [1][Z] = +vdx[Z] - vdy[Z];
+	vSprite [2][X] = +vdx[X] + vdy[X];
+	vSprite [2][Y] = +vdx[Y] + vdy[Y];
+	vSprite [2][Z] = +vdx[Z] + vdy[Z];
+	vSprite [3][X] = -vdx[X] + vdy[X];
+	vSprite [3][Y] = -vdx[Y] + vdy[Y];
+	vSprite [3][Z] = -vdx[Z] + vdy[Z];
 	for (i = 0; i < 4; i++)
-		VmVecInc (vSprite + i, vCenter);
+		vSprite[i] += *vCenter;
 	}
 }
 
@@ -202,7 +203,7 @@ if (!pSideVerts) {
 	pSideVerts = sideVerts;
 	}
 for (i = j = 0; j < 4; j++) {
-	d = VmVecDist (gameData.segs.vertices + pSideVerts [j], gameData.segs.vertices + pSideVerts [(j + 1) % 4]);
+	d = vmsVector::dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts[(j + 1) % 4]]);
 	if (dMax < d) {
 		dMax = d;
 		i = j;
@@ -213,16 +214,16 @@ if (w)
 if (i > 2)
 	i--;
 j = i + 1;
-d1 = VmLinePointDist (gameData.segs.vertices + pSideVerts [i], 
-							 gameData.segs.vertices + pSideVerts [j], 
-							 gameData.segs.vertices + pSideVerts [(j + 1) % 4]);
-d = VmVecDist (gameData.segs.vertices + pSideVerts [i], gameData.segs.vertices + pSideVerts [(j + 1) % 4]);
-d = VmVecDist (gameData.segs.vertices + pSideVerts [j], gameData.segs.vertices + pSideVerts [(j + 1) % 4]);
-d2 = VmLinePointDist (gameData.segs.vertices + pSideVerts [i], 
-							 gameData.segs.vertices + pSideVerts [j], 
-							 gameData.segs.vertices + pSideVerts [(j + 2) % 4]);
-d = VmVecDist (gameData.segs.vertices + pSideVerts [i], gameData.segs.vertices + pSideVerts [(j + 2) % 4]);
-d = VmVecDist (gameData.segs.vertices + pSideVerts [j], gameData.segs.vertices + pSideVerts [(j + 2) % 4]);
+d1 = VmLinePointDist(gameData.segs.vertices[pSideVerts[i]],
+                     gameData.segs.vertices[pSideVerts[j]],
+                     gameData.segs.vertices[pSideVerts[(j+1)%4]]);
+d = vmsVector::dist(gameData.segs.vertices[pSideVerts[i]], gameData.segs.vertices[pSideVerts [(j + 1) % 4]]);
+d = vmsVector::dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts [(j + 1) % 4]]);
+d2 = VmLinePointDist(gameData.segs.vertices[pSideVerts[i]],
+                     gameData.segs.vertices[pSideVerts[j]],
+                     gameData.segs.vertices[pSideVerts[(j+2)%4]]);
+d = vmsVector::dist(gameData.segs.vertices[pSideVerts[i]], gameData.segs.vertices[pSideVerts [(j + 2) % 4]]);
+d = vmsVector::dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts [(j + 2) % 4]]);
 if (h)
 	*h = d1 > d2 ? d1 : d2;
 return i;
@@ -303,9 +304,9 @@ else {
 		case 359:
 		case 360:	//robot generators
 		case 361:
-		case 
+		case
 0:	//force field
-		case 
+		case
 6:	//teleport
 		case 432:	//force field
 		case 433:	//goals
@@ -346,18 +347,18 @@ GetSideVertIndex (sideVerts, nSegment, nSide);
 for (i = 0; i < 4; i++) {
 	fLight += X2F (sideP->uvls [i].l);
 	if (RENDERPATH)
-		G3TransformPoint (sprite + i, gameData.segs.fVertices + sideVerts [i], 0);
+		G3TransformPoint(sprite[i], gameData.segs.fVertices[sideVerts[i]], 0);
 	else
 		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
 	}
-VmVecFixToFloat (&v, SIDE_CENTER_I (nSegment, nSide));
-G3TransformPoint (vCenter, &v, 0);
+v = SIDE_CENTER_I (nSegment, nSide)->toFloat();
+G3TransformPoint(*vCenter, v, 0);
 #if 0
 if (gameStates.render.bQueryCoronas) {
 	for (i = 0; i < 4; i++) {
-		VmVecSub (&v, sprite + i, vCenter);
+		v = sprite[i] - *vCenter;
 		VmVecScaleAdd (sprite + i, vCenter, &v, 0.5f);
-		}
+	}
 }
 #endif
 return fLight;
@@ -372,7 +373,7 @@ void ComputeSpriteZRange (fVector *sprite, tIntervalf *zRangeP)
 	int			i;
 
 for (i = 0; i < 4; i++) {
-	z = sprite [i].p.z;
+	z = sprite [i][Z];
 	if (zRange.fMin > z)
 		zRange.fMin = z;
 	if (zRange.fMax < z)
@@ -391,14 +392,14 @@ float MoveSpriteIn (fVector *sprite, fVector *vCenter, tIntervalf *zRangeP, floa
 
 ComputeSpriteZRange (sprite, &zRange);
 if (zRange.fMin > 0)
-	VmVecScale (vCenter, vCenter, zRange.fMin / vCenter->p.z);
+	*vCenter = *vCenter * (zRange.fMin / (*vCenter)[Z]);
 else {
 	if (zRange.fMin < -zRange.fRad)
 		return 0;
 	fIntensity *= 1 + zRange.fMin / zRange.fRad * 2;
-	vCenter->p.x /= vCenter->p.z;
-	vCenter->p.y /= vCenter->p.y;
-	vCenter->p.z = 1;
+	(*vCenter)[X] /= (*vCenter)[Z];
+	(*vCenter)[Y] /= (*vCenter)[Y];
+	(*vCenter)[Z] = 1;
 	}
 *zRangeP = zRange;
 return fIntensity;
@@ -411,44 +412,48 @@ void ComputeHardGlare (fVector *sprite, fVector *vCenter, fVector *vNormal)
 	fVector	u, v, p, q, e, s, t;
 	float		h, g;
 
-VmVecAdd (&u, sprite + 2, sprite + 1);
-VmVecDec (&u, sprite);
-VmVecDec (&u, sprite + 3);
-VmVecScale (&u, &u, 0.25f);
-VmVecAdd (&v, sprite, sprite + 1);
-VmVecDec (&v, sprite + 2);
-VmVecDec (&v, sprite + 3);
-VmVecScale (&v, &v, 0.25f);
-VmVecNormalize (vNormal, VmVecCrossProd (vNormal, &v, &u));
-VmVecNormalize (&e, vCenter);
-if (VmVecDot (&e, vNormal) > 0.999f)
+u = sprite[2] + sprite[1];
+u -= sprite[0];
+u -= sprite[3];
+u = u * 0.25f;
+v = sprite[0] + sprite[1];
+v -= sprite[2];
+v -= sprite[3];
+v = v * 0.25f;
+*vNormal = fVector::cross(v, u);
+fVector::normalize(*vNormal);
+e = *vCenter; fVector::normalize(e);
+if (fVector::dot(e, *vNormal) > 0.999f)
 	p = v;
-else
-	VmVecNormalize (&p, VmVecCrossProd (&p, &e, vNormal));
-VmVecCrossProd (&q, &p, &e);
-h = VmVecMag (&u);
-g = VmVecMag (&v);
+else {
+	p = fVector::cross(e, *vNormal);
+	fVector::normalize(p);
+}
+
+q = fVector::cross(p, e);
+h = u.mag();
+g = v.mag();
 if (h > g)
 	h = g;
-g = 2 * (float) (fabs (VmVecDot (&p, &v)) + fabs (VmVecDot (&p, &u))) + h * VmVecDot (&p, vNormal);
-h = 2 * (float) (fabs (VmVecDot (&q, &v)) + fabs (VmVecDot (&q, &u))) + h * VmVecDot (&q, vNormal);
+g = 2 * (float) (fabs (fVector::dot(p, v)) + fabs (fVector::dot(p, u))) + h * fVector::dot(p, *vNormal);
+h = 2 * (float) (fabs (fVector::dot(q, v)) + fabs (fVector::dot(q, u))) + h * fVector::dot(q, *vNormal);
 #if 1
 if (g / h > 8)
 	h = g / 8;
 else if (h / g > 8)
 	g = h / 8;
 #endif
-VmVecScale (&s, &p, g);
-VmVecScale (&t, &q, h);
+s = p * g;
+t = q * h;
 
-VmVecAdd (sprite, vCenter, &s);
-sprite [1] = sprite [0];
-VmVecInc (sprite, &t);
-VmVecDec (sprite + 1, &t);
-VmVecSub (sprite + 3, vCenter, &s);
-sprite [2] = sprite [3];
-VmVecInc (sprite + 3, &t);
-VmVecDec (sprite + 2, &t);
+sprite[0] = *vCenter + s;
+sprite[1] = sprite[0];
+sprite[0] += t;
+sprite[1] -= t;
+sprite[3] = *vCenter - s;
+sprite[2] = sprite[3];
+sprite[3] += t;
+sprite[2] -= t;
 }
 
 // -----------------------------------------------------------------------------------
@@ -467,14 +472,14 @@ for (i = 0; i < 4; i++)
 	glVertex3fv ((GLfloat *) (sprite + i));
 glEnd ();
 glBegin (GL_LINES);
-vCenter->p.x += 5;
+vCenter->x() += 5;
 glVertex3fv ((GLfloat *) &vCenter);
-vCenter->p.x -= 10;
+vCenter->x() -= 10;
 glVertex3fv ((GLfloat *) &vCenter);
-vCenter->p.x += 5;
-vCenter->p.y += 5;
+vCenter->x() += 5;
+vCenter->y() += 5;
 glVertex3fv ((GLfloat *) &vCenter);
-vCenter->p.y -= 10;
+vCenter->y() -= 10;
 glVertex3fv ((GLfloat *) &vCenter);
 glEnd ();
 glLineWidth (1);
@@ -488,7 +493,7 @@ glLineWidth (1);
 
 // -----------------------------------------------------------------------------------
 
-void RenderHardGlare (fVector *sprite, fVector *vCenter, int nTexture, float fLight, 
+void RenderHardGlare (fVector *sprite, fVector *vCenter, int nTexture, float fLight,
 							 float fIntensity, tIntervalf *zRangeP, int bAdditive, int bColored)
 {
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
@@ -499,7 +504,7 @@ void RenderHardGlare (fVector *sprite, fVector *vCenter, int nTexture, float fLi
 fLight /= 4;
 if (fLight < 0.01f)
 	return;
-color.alpha = VmVecMag (vCenter);
+color.alpha = vCenter->mag();
 if (color.alpha < zRangeP->fRad)
 	fIntensity *= color.alpha / zRangeP->fRad;
 
@@ -519,7 +524,7 @@ if (color.alpha < 0.01f)
 	return;
 glEnable (GL_TEXTURE_2D);
 bmP = bAdditive ? bmpGlare : bmpCorona;
-if (OglBindBmTex (bmP, 1, -1)) 
+if (OglBindBmTex (bmP, 1, -1))
 	return;
 OglTexWrap (bmP->glTexture, GL_CLAMP);
 glDisable (GL_CULL_FACE);
@@ -542,47 +547,47 @@ RenderCoronaOutline (sprite, vCenter);
 
 // -----------------------------------------------------------------------------------
 
-float ComputeSoftGlare (fVector *sprite, fVector *vLight, fVector *vEye) 
+float ComputeSoftGlare (fVector *sprite, fVector *vLight, fVector *vEye)
 {
 	fVector 		n, e, s, t, u, v;
 	float 		ul, vl, h, cosine;
 	int 			i;
 
-VmVecAdd (&u, sprite + 2, sprite + 1);
-VmVecDec (&u, sprite);
-VmVecDec (&u, sprite + 3);
-VmVecScale (&u, &u, 0.25f);
-VmVecAdd (&v, sprite, sprite + 1);
-VmVecDec (&v, sprite + 2);
-VmVecDec (&v, sprite + 3);
-VmVecScale (&v, &v, 0.25f);
-VmVecSub (&e, vEye, vLight);
-VmVecNormalize (&e, &e);
-VmVecCrossProd (&n, &v, &u);
-VmVecNormalize (&n, &n);
-ul = VmVecMag (&u);
-vl = VmVecMag (&v);
+u = sprite[2] + sprite[1];
+u -= sprite[0];
+u -= sprite[3];
+u = u * 0.25f;
+v = sprite[0] + sprite[1];
+v -= sprite[2];
+v -= sprite[3];
+v = v * 0.25f;
+e = *vEye - *vLight;
+fVector::normalize(e);
+n = fVector::cross(v, u);
+fVector::normalize(n);
+ul = u.mag();
+vl = v.mag();
 h = (ul > vl) ? vl : ul;
-VmVecScaleAdd (&s, &u, &n, -h * VmVecDot (&e, &u) / ul);
-VmVecScaleAdd (&t, &v, &n, -h * VmVecDot (&e, &v) / vl);
-VmVecScaleAdd (&s, &s, &e, VmVecDot (&e, &s));
-VmVecScaleAdd (&t, &t, &e, VmVecDot (&e, &t));
-VmVecScale (&s, &s, 1.8f);
-VmVecScale (&t, &t, 1.8f);
+s = u + n * (-h * fVector::dot(e, u) / ul);
+t = v + n * (-h * fVector::dot(e, v) / vl);
+s = s + e * fVector::dot(e, s);
+t = t + e * fVector::dot(e, t);
+s = s * 1.8f;
+t = t * 1.8f;
 v = *vLight;
 for (i = 0; i < 3; i++) {
-	sprite [0].v [i] = v.v [i] + s.v [i] + t.v [i];
-	sprite [1].v [i] = v.v [i] + s.v [i] - t.v [i];
-	sprite [2].v [i] = v.v [i] - s.v [i] - t.v [i];
-	sprite [3].v [i] = v.v [i] - s.v [i] + t.v [i];
+	sprite[0][i] = v[i] + s[i] + t[i];
+	sprite[1][i] = v[i] + s[i] - t[i];
+	sprite[2][i] = v[i] - s[i] - t[i];
+	sprite[3][i] = v[i] - s[i] + t[i];
 	}
-cosine = VmVecDot (&e, &n);
+cosine = fVector::dot(e, n);
 return (float) sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nIntensity];
 }
 
 // -----------------------------------------------------------------------------------
 
-void RenderSoftGlare (fVector *sprite, fVector *vCenter, int nTexture, float fIntensity, int bAdditive, int bColored) 
+void RenderSoftGlare (fVector *sprite, fVector *vCenter, int nTexture, float fIntensity, int bAdditive, int bColored)
 {
 	tRgbaColorf color;
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
@@ -597,7 +602,7 @@ else {
 	glEnable (GL_TEXTURE_2D);
 	glDepthFunc (GL_ALWAYS);
 	if (bAdditive)
-		glBlendFunc (GL_ONE, GL_ONE);	
+		glBlendFunc (GL_ONE, GL_ONE);
 	bmP = bAdditive ? bmpGlare : bmpCorona;
 	}
 if (gameStates.render.bAmbientColor)
@@ -650,7 +655,7 @@ if (gameStates.render.bQueryCoronas != 2) {
 
 void RenderCorona (short nSegment, short nSide, float fIntensity, float fSize)
 {
-	fVector		sprite [4], vNormal, vCenter = {{0,0,0}}, vEye = {{0,0,0}};
+	fVector		sprite [4], vNormal, vCenter = fVector::ZERO, vEye = fVector::ZERO;
 	int			nTexture, bAdditive;
 	tIntervalf	zRange;
 	float			fAngle, fLight;
@@ -689,10 +694,10 @@ if (RENDERPATH && gameStates.ogl.bOcclusionQuery && (CoronaStyle ())) {
 #endif
 	}
 else {
-	VmVecNormal (&vNormal, sprite, sprite + 1, sprite + 2);
-	VmVecNormalize (&vEye, &vCenter);
+	vNormal = fVector::normal(sprite[0], sprite[1], sprite[2]);
+	vEye = vCenter; fVector::normalize(vEye);
 	//dim corona depending on viewer angle
-	if ((fAngle = VmVecDot (&vNormal, &vEye)) > 0) {
+	if ((fAngle = fVector::dot(vNormal, vEye)) > 0) {
 		if (fAngle > 0.25f)
 			return;
 		fIntensity *= 1 - fAngle / 0.25f;
@@ -703,7 +708,7 @@ else {
 		return;
 	ComputeHardGlare (sprite, &vCenter, &vNormal);
 	RenderHardGlare (sprite, &vCenter, nTexture, fLight, fIntensity, &zRange, 0,	//bAdditive
-						  !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [nSegment]); 
+						  !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [nSegment]);
 	}
 }
 
@@ -773,7 +778,7 @@ if (gameStates.ogl.bDepthBlending) {
 			if (gameStates.render.automap.bDisplay)
 				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
 			else {
-				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) gameData.render.ogl.depthScale.p.z);
+				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) gameData.render.ogl.depthScale[Z]);
 				glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) dMax);
 				}
 			}
@@ -831,7 +836,7 @@ const char *glareFS [2] = {
 	"}\r\n"
 	};
 
-const char *glareVS = 
+const char *glareVS =
 	"void main(void){\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \

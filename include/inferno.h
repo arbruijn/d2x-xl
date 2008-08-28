@@ -866,8 +866,8 @@ typedef struct tRenderHistory {
 	grsBitmap	*bmBot;
 	grsBitmap	*bmTop;
 	grsBitmap	*bmMask;
-	ubyte			bSuperTransp;
-	ubyte			bShaderMerge;
+	ubyte		bSuperTransp;
+	ubyte		bShaderMerge;
 	int			bOverlay;
 	int			bColored;
 	int			nShader;
@@ -1127,7 +1127,7 @@ typedef struct tApplicationStates {
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;
-	tPosition playerPos;
+	tTransformation playerPos;
 	short nPlayerSegment;
 	tCheatStates cheats;
 } tApplicationStates;
@@ -1666,8 +1666,8 @@ typedef struct tSlideSegs {
 //------------------------------------------------------------------------------
 
 typedef struct tFaceRenderVertex {
-	fVector3				vertex;
-	fVector3				normal;
+	fVector3			vertex;
+	fVector3			normal;
 	tRgbaColorf			color;
 	tTexCoord2f			texCoord;
 	tTexCoord2f			ovlTexCoord;
@@ -1677,8 +1677,8 @@ typedef struct tFaceRenderVertex {
 typedef struct tFaceData {
 	grsFace				*faces;
 	grsTriangle			*tris;
-	fVector3				*vertices;
-	fVector3				*normals;
+	fVector3			*vertices;
+	fVector3			*normals;
 	tTexCoord2f			*texCoord;
 	tTexCoord2f			*ovlTexCoord;
 	tTexCoord2f			*lMapTexCoord;
@@ -1690,7 +1690,7 @@ typedef struct tFaceData {
 #endif
 	GLuint				vboDataHandle;
 	GLuint				vboIndexHandle;
-	ubyte					*vertexP;
+	ubyte				*vertexP;
 	ushort				*indexP;
 	int					nVertices;
 	int					iVertices;
@@ -1703,7 +1703,7 @@ typedef struct tFaceData {
 
 typedef struct tSegList {
 	int					nSegments;
-	short					*segments;
+	short				*segments;
 } tSegList;
 
 typedef struct tSegExtent {
@@ -1715,24 +1715,24 @@ typedef struct tSegmentData {
 	int					nMaxSegments;
 	vmsVector			*vertices;
 	fVector				*fVertices;
-	tSegment				*segments;
+	tSegment			*segments;
 	tSegment2			*segment2s;
-	xsegment				*xSegments;
+	xsegment			*xSegments;
 	tSegFaces			*segFaces;
-	g3sPoint				*points;
-	short					*objects;
-	tSegList				skybox;
+	g3sPoint			*points;
+	short				*objects;
+	tSegList			skybox;
 #if CALC_SEGRADS
 	fix					*segRads [2];
 	tSegExtent			*extent;
 #endif
 	vmsVector			vMin;
 	vmsVector			vMax;
-	float					fRad;
+	float				fRad;
 	vmsVector			*segCenters [2];
 	vmsVector			*sideCenters;
-	ubyte					*bVertVis;
-	ubyte					*bSegVis;
+	ubyte				*bVertVis;
+	ubyte				*bSegVis;
 	int					nVertices;
 	int					nFaceVerts;
 	int					nLastVertex;
@@ -1741,10 +1741,10 @@ typedef struct tSegmentData {
 	int					nFaces;
 	int					nTris;
 	int					nLevelVersion;
-	char					szLevelFilename [FILENAME_LEN];
+	char				szLevelFilename [FILENAME_LEN];
 	tSecretData			secret;
 	tSlideSegs			*slideSegs;
-	short					nSlideSegs;
+	short				nSlideSegs;
 	int					bHaveSlideSegs;
 	tFaceData			faces;
 } tSegmentData;
@@ -1752,7 +1752,7 @@ typedef struct tSegmentData {
 //------------------------------------------------------------------------------
 
 typedef struct tWallData {
-	tWall					walls [MAX_WALLS];
+	tWall				walls [MAX_WALLS];
 	tExplWall			explWalls [MAX_EXPLODING_WALLS];
 	tActiveDoor			activeDoors [MAX_DOORS];
 	tCloakingWall		cloaking [MAX_CLOAKING_WALLS];
@@ -1768,10 +1768,10 @@ typedef struct tWallData {
 //------------------------------------------------------------------------------
 
 typedef struct tTriggerData {
-	tTrigger				triggers [MAX_TRIGGERS];
-	tTrigger				objTriggers [MAX_TRIGGERS];
+	tTrigger			triggers [MAX_TRIGGERS];
+	tTrigger			objTriggers [MAX_TRIGGERS];
 	tObjTriggerRef		objTriggerRefs [MAX_OBJ_TRIGGERS];
-	short					firstObjTrigger [MAX_OBJECTS_D2X];
+	short				firstObjTrigger [MAX_OBJECTS_D2X];
 	int					delay [MAX_TRIGGERS];
 	int					nTriggers;
 	int					nObjTriggers;
@@ -3426,7 +3426,7 @@ glVertex3f ((float) x / 65536.0f, (float) y / 65536.0f, (float) z / 65536.0f);
 static inline void OglVertex3f (g3sPoint *p)
 {
 if (p->p3_index < 0)
-	OglVertex3x (p->p3_vec.p.x, p->p3_vec.p.y, p->p3_vec.p.z);
+	OglVertex3x (p->p3_vec[X], p->p3_vec[Y], p->p3_vec[Z]);
 else
 	glVertex3fv ((GLfloat *) (gameData.render.pVerts + p->p3_index));
 }
@@ -3485,8 +3485,9 @@ static inline vmsVector *PolyObjPos (tObject *objP, vmsVector *vPosP)
 {
 vmsVector vPos = OBJPOS (objP)->vPos;
 if (objP->renderType == RT_POLYOBJ) {
-	VmVecRotate (vPosP, gameData.models.offsets + objP->rType.polyObjInfo.nModel, ObjectView (objP));
-	return VmVecInc (vPosP, &vPos);
+	*vPosP = *ObjectView(objP) * gameData.models.offsets[objP->rType.polyObjInfo.nModel];
+	*vPosP += vPos;
+	return vPosP;
 	}
 *vPosP = vPos;
 return vPosP;

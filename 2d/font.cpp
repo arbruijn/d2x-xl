@@ -28,8 +28,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <ctype.h>
 
 #ifndef _WIN32
-#include <fcntl.h>
-#include <unistd.h>
+#	include <fcntl.h>
+#	include <unistd.h>
 #endif
 
 #include "u_mem.h"
@@ -163,24 +163,24 @@ int grMsgColorLevel = 1;
 
 inline char *CheckEmbeddedColors (char *text_ptr, char c, int orig_color)
 {
-if ((c >= 1) && (c <= 3)) { 
-	if (*++text_ptr) { 
-		if (grMsgColorLevel >= c) { 
-			FG_COLOR.rgb = 1; 
-			FG_COLOR.color.red = text_ptr [0]; 
-			FG_COLOR.color.green = text_ptr [1]; 
-			FG_COLOR.color.blue = text_ptr [2]; 
-			FG_COLOR.color.alpha = 0; 
-			} 
-		text_ptr += 3; 
-		} 
-	} 
-else if ((c >= 4) && (c <= 6)) { 
-	if (grMsgColorLevel >= *text_ptr - 3) { 
-		FG_COLOR.index = orig_color; 
-		FG_COLOR.rgb = 0; 
-		} 
-	text_ptr++; 
+if ((c >= 1) && (c <= 3)) {
+	if (*++text_ptr) {
+		if (grMsgColorLevel >= c) {
+			FG_COLOR.rgb = 1;
+			FG_COLOR.color.red = text_ptr [0];
+			FG_COLOR.color.green = text_ptr [1];
+			FG_COLOR.color.blue = text_ptr [2];
+			FG_COLOR.color.alpha = 0;
+			}
+		text_ptr += 3;
+		}
+	}
+else if ((c >= 4) && (c <= 6)) {
+	if (grMsgColorLevel >= *text_ptr - 3) {
+		FG_COLOR.index = orig_color;
+		FG_COLOR.rgb = 0;
+		}
+	text_ptr++;
 	}
 return text_ptr;
 }
@@ -222,12 +222,12 @@ if (!palette)
 
 if (FG_COLOR.rgb) {
 	FG_COLOR.rgb = 0;
-	FG_COLOR.index = GrFindClosestColor (gamePalette, 
+	FG_COLOR.index = GrFindClosestColor (gamePalette,
 													 FG_COLOR.color.red, FG_COLOR.color.green, FG_COLOR.color.blue);
 	}
 if (BG_COLOR.rgb) {
 	BG_COLOR.rgb = 0;
-	BG_COLOR.index = GrFindClosestColor (gamePalette, 
+	BG_COLOR.index = GrFindClosestColor (gamePalette,
 													 BG_COLOR.color.red, BG_COLOR.color.green, BG_COLOR.color.blue);
 	}
 bits=0;
@@ -320,12 +320,12 @@ int GrInternalString0m (int x, int y, const char *s)
 
 if (FG_COLOR.rgb) {
 	FG_COLOR.rgb = 0;
-	FG_COLOR.index = GrFindClosestColor (FONT->ftParentBitmap.bmPalette, 
+	FG_COLOR.index = GrFindClosestColor (FONT->ftParentBitmap.bmPalette,
 													 FG_COLOR.color.red, FG_COLOR.color.green, FG_COLOR.color.blue);
 	}
 if (BG_COLOR.rgb) {
 	BG_COLOR.rgb = 0;
-	BG_COLOR.index = GrFindClosestColor (FONT->ftParentBitmap.bmPalette, 
+	BG_COLOR.index = GrFindClosestColor (FONT->ftParentBitmap.bmPalette,
 													 BG_COLOR.color.red, BG_COLOR.color.green, BG_COLOR.color.blue);
 	}
 orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
@@ -372,7 +372,7 @@ VideoOffset1 = y * ROWSIZE + x;
 				letter = c - FMINCHAR;
 				if (!INFONT (letter) || c <= 0x06) {	//not in font, draw as space
 #if 0
-					CHECK_EMBEDDED_COLORS () 
+					CHECK_EMBEDDED_COLORS ()
 #else
 					if ((c >= 1) && (c <= 3)) {
 						if (*++text_ptr) {
@@ -501,7 +501,7 @@ void OglFontChooseSize (grsFont * font, int gap, int *rw, int *rh)
 					break;
 				y+=font->ftHeight+gap;
 			}
-		
+
 			tries++;
 		}while (nc!=nchars);
 		if (nc!=nchars)
@@ -551,9 +551,9 @@ void OglInitFont (grsFont * font)
 	font->ftBitmaps = (grsBitmap*) D2_ALLOC (nchars * sizeof (grsBitmap));
 	memset (font->ftBitmaps, 0, nchars * sizeof (grsBitmap));
 #if TRACE
-//	con_printf (CONDBG, "OglInitFont %s, %s, nchars=%i, (%ix%i tex)\n", 
+//	con_printf (CONDBG, "OglInitFont %s, %s, nchars=%i, (%ix%i tex)\n",
 //		 (font->ftFlags & FT_PROPORTIONAL)?"proportional":"fixedwidth", (font->ftFlags & FT_COLOR)?"color":"mono", nchars, tw, th);
-#endif	
+#endif
 	//	s[1]=0;
 	h = font->ftHeight;
 	//	sleep (5);
@@ -658,7 +658,7 @@ while (next_row != NULL) {
 		GetCharWidth (c, text_ptr [1], &width, &spacing);
 		if (!INFONT (letter) || (c <= 0x06)) {	//not in font, draw as space
 #if 0
-			CHECK_EMBEDDED_COLORS () 
+			CHECK_EMBEDDED_COLORS ()
 #else
 			if ((c >= 1) && (c <= 3)) {
 				if (*++text_ptr) {
@@ -769,7 +769,7 @@ while (next_row != NULL) {
 		GetCharWidth (c, text_ptr [1], &cw, &spacing);
 		if (!INFONT (letter) || (c <= 0x06)) {	//not in font, draw as space
 #if 0
-			CHECK_EMBEDDED_COLORS () 
+			CHECK_EMBEDDED_COLORS ()
 #else
 			if ((c >= 1) && (c <= 3)) {
 				if (*++text_ptr) {
@@ -970,30 +970,30 @@ if (x == 0x8000)	{
 	GrGetStringSize (s, &w, &h, &aw);
 	// for x, since this will be centered, only look at
 	// width.
-	if (w > grdCurCanv->cvBitmap.bmProps.w) 
+	if (w > grdCurCanv->cvBitmap.bmProps.w)
 		clipped |= 1;
-	if (y > grdCurCanv->cvBitmap.bmProps.h) 
+	if (y > grdCurCanv->cvBitmap.bmProps.h)
 		clipped |= 3;
 	else if ((y+h) > grdCurCanv->cvBitmap.bmProps.h)
 		clipped |= 1;
-	else if ((y+h) < 0) 
+	else if ((y+h) < 0)
 		clipped |= 2;
 	}
 else {
-	if ((x < 0) || (y < 0)) 
+	if ((x < 0) || (y < 0))
 		clipped |= 1;
 	GrGetStringSize (s, &w, &h, &aw);
-	if (x > grdCurCanv->cvBitmap.bmProps.w) 
+	if (x > grdCurCanv->cvBitmap.bmProps.w)
 		clipped |= 3;
-	else if ((x + w) > grdCurCanv->cvBitmap.bmProps.w) 
+	else if ((x + w) > grdCurCanv->cvBitmap.bmProps.w)
 		clipped |= 1;
-	else if ((x + w) < 0) 
+	else if ((x + w) < 0)
 		clipped |= 2;
-	if (y > grdCurCanv->cvBitmap.bmProps.h) 
+	if (y > grdCurCanv->cvBitmap.bmProps.h)
 		clipped |= 3;
-	else if ((y + h) > grdCurCanv->cvBitmap.bmProps.h) 
+	else if ((y + h) > grdCurCanv->cvBitmap.bmProps.h)
 		clipped |= 1;
-	else if ((y + h) < 0) 
+	else if ((y + h) < 0)
 		clipped |= 2;
 	}
 if (!clipped)
@@ -1083,7 +1083,7 @@ void GrGetStringSize (const char *s, int *string_width, int *string_height, int 
 
 //------------------------------------------------------------------------------
 
-void GrGetStringSizeTabbed (const char *s, int *string_width, int *string_height, int *average_width, 
+void GrGetStringSizeTabbed (const char *s, int *string_width, int *string_height, int *average_width,
 									 int *nTabs, int nMaxWidth)
 {
 	char	*pi, *pj;
@@ -1254,15 +1254,15 @@ strncpy (openFont[nFont].filename, fontname, SHORT_FILENAME_LEN);
 if (!CFOpen (&fontfile, fontname, gameFolders.szDataDir, "rb", 0)) {
 #if TRACE
 	con_printf (CON_VERBOSE, "Can't open font file %s\n", fontname);
-#endif	
+#endif
 	return NULL;
 	}
 
 CFRead (file_id, 4, 1, &fontfile);
 if (!strncmp (file_id, "NFSP", 4)) {
-#if TRACE	
+#if TRACE
 	con_printf (CON_NORMAL, "File %s is not a font file\n", fontname);
-#endif	
+#endif
 	return NULL;
 }
 

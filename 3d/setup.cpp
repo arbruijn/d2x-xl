@@ -7,7 +7,7 @@ IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
 SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
 FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
 CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
+AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
@@ -52,14 +52,14 @@ fxCanvH2 = X2F (xCanvH2);
 //compute aspect ratio for this canvas
 s = FixMulDiv (grdCurScreen->scAspect, nCanvasHeight, nCanvasWidth);
 if (s <= f1_0) {	   //scale x
-	viewInfo.windowScale.p.x = s;
-	viewInfo.windowScale.p.y = f1_0;
+	viewInfo.windowScale[X] = s;
+	viewInfo.windowScale[Y] = f1_0;
 	}
 else {
-	viewInfo.windowScale.p.y = FixDiv (f1_0, s);
-	viewInfo.windowScale.p.x = f1_0;
+	viewInfo.windowScale[Y] = FixDiv (f1_0, s);
+	viewInfo.windowScale[X] = f1_0;
 	}
-viewInfo.windowScale.p.z = f1_0;		//always 1
+viewInfo.windowScale[Z] = f1_0;		//always 1
 init_free_points ();
 OglStartFrame (bFlat, bResetColorBuf);
 gameStates.render.bHeadlightOn = 1;

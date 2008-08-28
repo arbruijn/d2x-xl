@@ -40,7 +40,7 @@ int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, vmsVector *
 
 inline fix RegisterHit (vmsVector *vBestHit, vmsVector *vCurHit, vmsVector *vPos, fix dMax)
 {
-   fix d = VmVecDist (vPos, vCurHit);
+   fix d = vmsVector::dist(*vPos, *vCurHit);
 
 if (dMax < d) {
 	dMax = d;
@@ -57,22 +57,26 @@ int FindPointLineIntersectionf (vmsVector *pv1, vmsVector *pv2, vmsVector *pv3)
 	fVector	p1, p2, p3, d31, d21, h, v [2];
 	float		m, u;
 
-VmVecFixToFloat (&p1, pv1);
-VmVecFixToFloat (&p2, pv2);
-VmVecFixToFloat (&p3, pv3);
-VmVecSub (&d21, &p2, &p1);
-if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z))
+p1 = pv1->toFloat();
+p2 = pv2->toFloat();
+p3 = pv3->toFloat();
+d21 = p2 - p1;
+if (!(m = d21[X] * d21[X] + d21[Y] * d21[Y] + d21[Z] * d21[Z]))
 	return 0;
-VmVecSub (&d31, &p3, &p1);
-u = VmVecDot (&d31, &d21);
+d31 = p3 - p1;
+u = fVector::dot(d31, d21);
 u /= m;
-h.p.x = p1.p.x + u * d21.p.x;
-h.p.y = p1.p.y + u * d21.p.y;
-h.p.z = p1.p.z + u * d21.p.z;
+/*
+h[X] = p1[X] + u * d21[X];
+h[Y] = p1[Y] + u * d21[Y];
+h[Z] = p1[Z] + u * d21[Z];
+*/
+h = p1 + u * d21;
+
 // limit the intersection to [p1,p2]
-VmVecSub (v, &p1, &h);
-VmVecSub (v + 1, &p2, &h);
-m = VmVecDot (v, v + 1);
+v[0] = p1 - h;
+v[1] = p2 - h;
+m = fVector::dot(v[0], v[1]);
 if (m >= 1)
 	return 1;
 return 0;
@@ -84,23 +88,23 @@ return 0;
 //new_pnt is the found point on the plane
 //vPlanePoint & vPlaneNorm describe the plane
 //p0 & p1 are the ends of the line
-int FindPlaneLineIntersection (vmsVector *hitP, vmsVector *vPlanePoint, vmsVector *vPlaneNorm, 
+int FindPlaneLineIntersection (vmsVector *hitP, vmsVector *vPlanePoint, vmsVector *vPlaneNorm,
 										 vmsVector *p0, vmsVector *p1, fix rad)
 {
 	vmsVector	d, w;
 	fix			num, den;
 
-VmVecSub (&w, p0, vPlanePoint);
-VmVecSub (&d, p1, p0);
-num = VmVecDot (vPlaneNorm, &w) - rad;
-den = -VmVecDot (vPlaneNorm, &d);
+w = *p0 - *vPlanePoint;
+d = *p1 - *p0;
+num = vmsVector::dot(*vPlaneNorm, w) - rad;
+den = -vmsVector::dot(*vPlaneNorm, d);
 if (!den) {
 	fVector	nf, df;
 	float denf;
-	VmVecFixToFloat (&nf, vPlaneNorm);
-	VmVecFixToFloat (&df, &d);
-	denf = -VmVecDot (&nf, &df);
-	denf = -VmVecDot (&nf, &df);
+	nf = vPlaneNorm->toFloat();
+	df = d.toFloat();
+	denf = -fVector::dot(nf, df);
+	denf = -fVector::dot(nf, df);
 	return 0;
 	}
 if (den > 0) {
@@ -114,8 +118,8 @@ else {
 //do check for potential overflow
 if (labs (num) / (f1_0 / 2) >= labs (den))
 	return 0;
-VmVecScaleFrac (&d, num, den);
-VmVecAdd (hitP, p0, &d);
+d *= FixDiv(num, den);
+(*hitP) = (*p0) + d;
 return 1;
 }
 
@@ -125,16 +129,16 @@ return 1;
 //new_pnt is the found point on the plane
 //vPlanePoint & vPlaneNorm describe the plane
 //p0 & p1 are the ends of the line
-int FindLineQuadIntersectionSub (vmsVector *hitP, vmsVector *vPlanePoint, vmsVector *vPlaneNorm, 
+int FindLineQuadIntersectionSub (vmsVector *hitP, vmsVector *vPlanePoint, vmsVector *vPlaneNorm,
 										   vmsVector *p0, vmsVector *p1, fix rad)
 {
 	vmsVector	d, w;
 	fix			num, den;
 
-VmVecSub (&w, vPlanePoint, p0);
-VmVecSub (&d, p1, p0);
-num = VmVecDot (vPlaneNorm, &w);
-den = VmVecDot (vPlaneNorm, &d);
+w = *vPlanePoint - *p0;
+d = *p1 - *p0;
+num = vmsVector::dot(*vPlaneNorm, w);
+den = vmsVector::dot(*vPlaneNorm, d);
 if (!den)
 	return 0;
 if (labs (num) > labs (den))
@@ -142,8 +146,8 @@ if (labs (num) > labs (den))
 //do check for potential overflow
 if (labs (num) / (f1_0 / 2) >= labs (den))
 	return 0;
-VmVecScaleFrac (&d, num, den);
-VmVecAdd (hitP, p0, &d);
+d *= FixDiv(num, den);
+(*hitP) = (*p0) + d;
 return 1;
 }
 
@@ -170,9 +174,9 @@ int FindLineQuadIntersection (vmsVector *hitP, vmsVector *planeP, vmsVector *pla
 
 if (!FindLineQuadIntersectionSub (&vHit, planeP, planeNormP, p0, p1, 0))
 	return 0;
-VmVecSub (d, &vHit, p0);
-VmVecSub (d + 1, &vHit, p1);
-if (VmVecDot (d, d + 1) >= 0)
+d[0] = vHit - *p0;
+d[1] = vHit - *p1;
+if (vmsVector::dot(d[0], d[1]) >= 0)
 	return 0;
 if (!CheckSphereToFace (&vHit, 0, planeP, planeNormP, 4))
 	return 0;
@@ -228,7 +232,7 @@ int FindLineHitboxIntersection (vmsVector *hitP, tBox *phb, vmsVector *p0, vmsVe
 	vmsVector	vHit;
 	tQuad			*pf;
 
-// create all faces of hitbox 2 and their normals before testing because they will 
+// create all faces of hitbox 2 and their normals before testing because they will
 // be used multiple times
 for (i = 0, pf = phb->faces; i < 6; i++, pf++)
 	if (FindLineQuadIntersection (&vHit, pf->v, pf->n + 1, p0, p1)) {
@@ -247,12 +251,12 @@ int FindHitboxIntersection (vmsVector *hitP, tBox *phb1, tBox *phb2, vmsVector *
 	vmsVector	vHit;
 	tQuad			*pf1, *pf2;
 
-// create all faces of hitbox 2 and their normals before testing because they will 
+// create all faces of hitbox 2 and their normals before testing because they will
 // be used multiple times
 for (i = 0, pf1 = phb1->faces; i < 6; i++, pf1++) {
 	for (j = 0, pf2 = phb2->faces; j < 6; j++, pf2++) {
 #if 1
-		if (VmVecDot (pf1->n + 1, pf2->n + 1) >= 0)
+		if (vmsVector::dot(pf1->n[1], pf2->n[1]) >= 0)
 			continue;
 #endif
 		if (FindQuadQuadIntersection (&vHit, pf1->v, pf1->n + 1, pf2->v, pf2->n + 1, vPos)) {
@@ -304,19 +308,19 @@ uint CheckPointToFace (vmsVector *checkP, vmsVector *vertList, vmsVector *vNorma
 //VmVecNormal (&vNormal, vertList, vertList + 1, vertList + 2);
 //now do 2d check to see if point is in tSide
 //project polygon onto plane by finding largest component of normal
-t.p.x = labs (vNormal->v [0]); 
-t.p.y = labs (vNormal->v [1]); 
-t.p.z = labs (vNormal->v [2]);
-if (t.p.x > t.p.y) 
-	if (t.p.x > t.p.z) 
-		biggest = 0; 
-	else 
+t[X] = labs ((*vNormal)[0]);
+t[Y] = labs ((*vNormal)[1]);
+t[Z] = labs ((*vNormal)[2]);
+if (t[X] > t[Y])
+	if (t[X] > t[Z])
+		biggest = 0;
+	else
 		biggest = 2;
-else if (t.p.y > t.p.z) 
-	biggest = 1; 
-else 
+else if (t[Y] > t[Z])
+	biggest = 1;
+else
 	biggest = 2;
-if (vNormal->v [biggest] > 0) {
+if ((*vNormal)[biggest] > 0) {
 	i = ijTable [biggest][0];
 	j = ijTable [biggest][1];
 	}
@@ -325,15 +329,15 @@ else {
 	j = ijTable [biggest][0];
 	}
 //now do the 2d problem in the i, j plane
-check_i = checkP->v [i];
-check_j = checkP->v [j];
+check_i = (*checkP)[i];
+check_j = (*checkP)[j];
 for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
 	v0 = vertList + nEdge;
 	v1 = vertList + ((nEdge + 1) % nVerts);
-	vEdge.i = v1->v [i] - v0->v [i];
-	vEdge.j = v1->v [j] - v0->v [j];
-	vCheck.i = check_i - v0->v [i];
-	vCheck.j = check_j - v0->v [j];
+	vEdge.i = (*v1)[i] - (*v0)[i];
+	vEdge.j = (*v1)[j] - (*v0)[j];
+	vCheck.i = check_i - (*v0)[i];
+	vCheck.j = check_j - (*v0)[j];
 	d = FixMul (vCheck.i, vEdge.j) - FixMul (vCheck.j, vEdge.i);
 	if (d < 0)              		//we are outside of triangle
 		nEdgeMask |= (1 << nEdge);
@@ -363,25 +367,25 @@ for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
 v0 = vertList + nEdge;
 v1 = vertList + ((nEdge + 1) % nVerts);
 //check if we are touching an edge or point
-VmVecSub (&vCheck, &checkP, v0);
-xEdgeLen = VmVecNormalizedDir (&vEdge, v1, v0);
+vCheck = checkP - *v0;
+xEdgeLen = vmsVector::normalizedDir(vEdge, *v1, *v0);
 //find point dist from planes of ends of edge
-d = VmVecDot (&vEdge, &vCheck);
-if (d + rad < 0) 
+d = vmsVector::dot(vEdge, vCheck);
+if (d + rad < 0)
 	return IT_NONE;                  //too far behind start point
-if (d - rad > xEdgeLen) 
+if (d - rad > xEdgeLen)
 	return IT_NONE;    //too far part end point
 //find closest point on edge to check point
 iType = IT_POINT;
-if (d < 0) 
+if (d < 0)
 	vClosestPoint = *v0;
-else if (d > xEdgeLen) 
+else if (d > xEdgeLen)
 	vClosestPoint = *v1;
 else {
 	iType = IT_EDGE;
-	VmVecScaleAdd (&vClosestPoint, v0, &vEdge, d);
+	vClosestPoint = *v0 + vEdge * d;
 	}
-dist = VmVecDist (&checkP, &vClosestPoint);
+dist = vmsVector::dist(checkP, vClosestPoint);
 if (dist <= rad)
 	return (iType == IT_POINT) ? IT_NONE : iType;
 return IT_NONE;
@@ -392,7 +396,7 @@ return IT_NONE;
 //point on plane, whether or not line intersects tSide
 //iFace determines which of four possible faces we have
 //note: the seg parm is temporary, until the face itself has a point field
-int CheckLineToFace (vmsVector *intP, vmsVector *p0, vmsVector *p1, 
+int CheckLineToFace (vmsVector *intP, vmsVector *p0, vmsVector *p1,
 							vmsVector *vertList, vmsVector *vNormal, int nVerts, fix rad)
 {
 	vmsVector	hitP, v1;
@@ -402,8 +406,8 @@ int CheckLineToFace (vmsVector *intP, vmsVector *p0, vmsVector *p1,
 if (p1 == p0) {
 	if (!rad)
 		return IT_NONE;
-	VmVecCopyScale (&v1, vNormal, -rad);
-	VmVecInc (&v1, p0);
+	v1 = *vNormal * (-rad);
+	v1 += *p0;
 	bCheckRad = rad;
 	rad = 0;
 	p1 = &v1;
@@ -413,7 +417,7 @@ if (!(pli = FindPlaneLineIntersection (intP, vertList, vNormal, p0, p1, rad)))
 hitP = *intP;
 //if rad != 0, project the point down onto the plane of the polygon
 if (rad)
-	VmVecScaleInc (&hitP, vNormal, -rad);
+	hitP += *vNormal * (-rad);
 if ((pli = CheckSphereToFace (&hitP, rad, vertList, vNormal, nVerts)))
 	return pli;
 #if 1
@@ -425,7 +429,7 @@ if (bCheckRad) {
 	for (i = 1; i <= nVerts; i++) {
 		a = b;
 		b = vertList + (i % nVerts);
-		d = VmLinePointDist (a, b, p0);
+		d = VmLinePointDist(*a, *b, *p0);
 		if (d < bCheckRad)
 			return IT_POINT;
 		}
@@ -436,7 +440,7 @@ return IT_NONE;
 
 //	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
-uint CheckPointToSegFace (vmsVector *checkP, short nSegment, short nSide, short iFace, 
+uint CheckPointToSegFace (vmsVector *checkP, short nSegment, short nSide, short iFace,
 								  int nv, int *vertList)
 {
 	vmsVector vNormal;
@@ -456,19 +460,19 @@ else
 	vNormal = gameData.segs.segments [nSegment].sides [nSide].normals [iFace];
 //now do 2d check to see if point is in tSide
 //project polygon onto plane by finding largest component of normal
-t.p.x = labs (vNormal.v [0]); 
-t.p.y = labs (vNormal.v [1]); 
-t.p.z = labs (vNormal.v [2]);
-if (t.p.x > t.p.y) 
-	if (t.p.x > t.p.z) 
-		biggest = 0; 
-	else 
+t[X] = labs (vNormal[0]);
+t[Y] = labs (vNormal[1]);
+t[Z] = labs (vNormal[2]);
+if (t[X] > t[Y])
+	if (t[X] > t[Z])
+		biggest = 0;
+	else
 		biggest = 2;
-else if (t.p.y > t.p.z) 
-	biggest = 1; 
-else 
+else if (t[Y] > t[Z])
+	biggest = 1;
+else
 	biggest = 2;
-if (vNormal.v [biggest] > 0) {
+if (vNormal[biggest] > 0) {
 	i = ijTable [biggest][0];
 	j = ijTable [biggest][1];
 	}
@@ -477,8 +481,8 @@ else {
 	j = ijTable [biggest][0];
 	}
 //now do the 2d problem in the i, j plane
-check_i = checkP->v [i];
-check_j = checkP->v [j];
+check_i = (*checkP)[i];
+check_j = (*checkP)[j];
 for (nEdge = nEdgeMask = 0; nEdge < nv; nEdge++) {
 	if (gameStates.render.bRendering) {
 		v0 = &gameData.segs.points [vertList [iFace * 3 + nEdge]].p3_vec;
@@ -488,10 +492,10 @@ for (nEdge = nEdgeMask = 0; nEdge < nv; nEdge++) {
 		v0 = gameData.segs.vertices + vertList [iFace * 3 + nEdge];
 		v1 = gameData.segs.vertices + vertList [iFace * 3 + ((nEdge + 1) % nv)];
 		}
-	vEdge.i = v1->v [i] - v0->v [i];
-	vEdge.j = v1->v [j] - v0->v [j];
-	vCheck.i = check_i - v0->v [i];
-	vCheck.j = check_j - v0->v [j];
+	vEdge.i = (*v1)[i] - (*v0)[i];
+	vEdge.j = (*v1)[j] - (*v0)[j];
+	vCheck.i = check_i - (*v0)[i];
+	vCheck.j = check_j - (*v0)[j];
 	d = FixMul (vCheck.i, vEdge.j) - FixMul (vCheck.j, vEdge.i);
 	if (d < 0)              		//we are outside of triangle
 		nEdgeMask |= (1 << nEdge);
@@ -501,7 +505,7 @@ return nEdgeMask;
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int CheckSphereToSegFace (vmsVector *pnt, short nSegment, short nSide, short iFace, int nv, 
+int CheckSphereToSegFace (vmsVector *pnt, short nSegment, short nSide, short iFace, int nv,
 								  fix rad, int *vertList)
 {
 	vmsVector	checkP = *pnt;
@@ -530,25 +534,25 @@ else {
 	v1 = gameData.segs.vertices + vertList [iFace * 3 + ((nEdge + 1) % nv)];
 	}
 //check if we are touching an edge or point
-VmVecSub (&vCheck, &checkP, v0);
-xEdgeLen = VmVecNormalizedDir (&vEdge, v1, v0);
+vCheck = checkP - *v0;
+xEdgeLen = vmsVector::normalizedDir(vEdge, *v1, *v0);
 //find point dist from planes of ends of edge
-d = VmVecDot (&vEdge, &vCheck);
-if (d + rad < 0) 
+d = vmsVector::dot(vEdge, vCheck);
+if (d + rad < 0)
 	return IT_NONE;                  //too far behind start point
-if (d - rad > xEdgeLen) 
+if (d - rad > xEdgeLen)
 	return IT_NONE;    //too far part end point
 //find closest point on edge to check point
 iType = IT_POINT;
-if (d < 0) 
+if (d < 0)
 	vClosestPoint = *v0;
-else if (d > xEdgeLen) 
+else if (d > xEdgeLen)
 	vClosestPoint = *v1;
 else {
 	iType = IT_EDGE;
-	VmVecScaleAdd (&vClosestPoint, v0, &vEdge, d);
+	vClosestPoint = *v0 + vEdge * d;
 	}
-dist = VmVecDist (&checkP, &vClosestPoint);
+dist = vmsVector::dist(checkP, vClosestPoint);
 if (dist <= rad)
 	return (iType == IT_POINT) ? IT_NONE : iType;
 return IT_NONE;
@@ -559,7 +563,7 @@ return IT_NONE;
 //point on plane, whether or not line intersects tSide
 //iFace determines which of four possible faces we have
 //note: the seg parm is temporary, until the face itself has a point field
-int CheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, 
+int CheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1,
 								short nSegment, short nSide, short iFace, int nv, fix rad)
 {
 	vmsVector	checkP, vNormal, v1;
@@ -585,8 +589,8 @@ if (p1 == p0) {
 #else
 	if (!rad)
 		return IT_NONE;
-	VmVecCopyScale (&v1, &vNormal, -rad);
-	VmVecInc (&v1, p0);
+	v1 = vNormal * (-rad);
+	v1 += *p0;
 	bCheckRad = rad;
 	rad = 0;
 	p1 = &v1;
@@ -603,18 +607,18 @@ if (nFaces == 1) {
 		nVertex = vertexList [3];
 	}
 //PrintLog ("         FindPlaneLineIntersection...");
-pli = FindPlaneLineIntersection (newP, 
-											gameStates.render.bRendering ? 
-											&gameData.segs.points [nVertex].p3_vec : 
-											gameData.segs.vertices + nVertex, 
+pli = FindPlaneLineIntersection (newP,
+											gameStates.render.bRendering ?
+											&gameData.segs.points [nVertex].p3_vec :
+											gameData.segs.vertices + nVertex,
 											&vNormal, p0, p1, rad);
 //PrintLog ("done\n");
-if (!pli) 
+if (!pli)
 	return IT_NONE;
 checkP = *newP;
 //if rad != 0, project the point down onto the plane of the polygon
 if (rad)
-	VmVecScaleInc (&checkP, &vNormal, -rad);
+	checkP += vNormal * (-rad);
 if ((pli = CheckSphereToSegFace (&checkP, nSegment, nSide, iFace, nv, rad, vertexList)))
 	return pli;
 if (bCheckRad) {
@@ -625,7 +629,7 @@ if (bCheckRad) {
 	for (i = 1; i <= 4; i++) {
 		a = b;
 		b = gameData.segs.vertices + vertexList [i % 4];
-		d = VmLinePointDist (a, b, p0);
+		d = VmLinePointDist(*a, *b, *p0);
 		if (d < bCheckRad)
 			return IT_POINT;
 		}
@@ -642,22 +646,22 @@ int CheckLineToLine (fix *t1, fix *t2, vmsVector *p1, vmsVector *v1, vmsVector *
 	fix d, cross_mag2;		//mag squared Cross product
 
 //PrintLog ("         VmVecSub\n");
-VmVecSub (&det.rVec, p2, p1);
+det[RVEC] = *p2 - *p1;
 //PrintLog ("         VmVecCrossProd\n");
-VmVecCrossProd (&det.fVec, v1, v2);
-//PrintLog ("         VmVecDot\n");
-cross_mag2 = VmVecDot (&det.fVec, &det.fVec);
+det[FVEC] = vmsVector::cross(*v1, *v2);
+//PrintLog ("         fVector::dot\n");
+cross_mag2 = vmsVector::dot(det[FVEC], det[FVEC]);
 if (!cross_mag2)
 	return 0;			//lines are parallel
-det.uVec = *v2;
-d = VmMatrixDetValue (&det);
+det[UVEC] = *v2;
+d = det.det();
 if (oflow_check (d, cross_mag2))
 	return 0;
 //PrintLog ("         FixDiv (%d)\n", cross_mag2);
 *t1 = FixDiv (d, cross_mag2);
-det.uVec = *v1;
+det[UVEC] = *v1;
 //PrintLog ("         CalcDetValue\n");
-d = VmMatrixDetValue (&det);
+d = det.det();
 if (oflow_check (d, cross_mag2))
 	return 0;
 //PrintLog ("         FixDiv (%d)\n", cross_mag2);
@@ -675,7 +679,7 @@ int bSimpleFVI = 0;
 //this version is for when the start and end positions both poke through
 //the plane of a tSide.  In this case, we must do checks against the edge
 //of faces
-int SpecialCheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, short nSegment, 
+int SpecialCheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, short nSegment,
 									    short nSide, int iFace, int nv, fix rad)
 {
 	vmsVector	move_vec;
@@ -700,7 +704,7 @@ if ((SEG_IDX (segP)) == -1)
 //PrintLog ("      CreateAbsVertexLists ...");
 nFaces = CreateAbsVertexLists (vertList, nSegment, nSide);
 //PrintLog ("done\n");
-VmVecSub (&move_vec, p1, p0);
+move_vec = *p1 - *p0;
 //figure out which edge(side) to check against
 //PrintLog ("      CheckPointToSegFace ...\n");
 if (!(nEdgeMask = CheckPointToSegFace (p0, nSegment, nSide, iFace, nv, vertList))) {
@@ -714,13 +718,13 @@ for (nEdge = 0; !(nEdgeMask & 1); nEdgeMask >>= 1, nEdge++)
 edge_v0 = gameData.segs.vertices + vertList [iFace * 3 + nEdge];
 edge_v1 = gameData.segs.vertices + vertList [iFace * 3 + ((nEdge + 1) % nv)];
 //PrintLog ("      setting edge vector...\n");
-VmVecSub (&edge_vec, edge_v1, edge_v0);
+edge_vec = *edge_v1 - *edge_v0;
 //is the start point already touching the edge?
 //first, find point of closest approach of vec & edge
 //PrintLog ("      getting edge length...\n");
-edge_len = VmVecNormalize (&edge_vec);
+edge_len = vmsVector::normalize(edge_vec);
 //PrintLog ("      getting move length...\n");
-move_len = VmVecNormalize (&move_vec);
+move_len = vmsVector::normalize(move_vec);
 //PrintLog ("      CheckLineToLine...");
 CheckLineToLine (&edge_t, &move_t, edge_v0, &edge_vec, p0, &move_vec);
 //PrintLog ("done\n");
@@ -738,16 +742,16 @@ else
 if (edge_t2 > edge_len)		//clamp at points
 	edge_t2 = edge_len;
 //now, edge_t & move_t determine closest points.  calculate the points.
-VmVecScaleAdd (&closest_point_edge, edge_v0, &edge_vec, edge_t2);
-VmVecScaleAdd (&closest_point_move, p0, &move_vec, move_t2);
+closest_point_edge = *edge_v0 + edge_vec * edge_t2;
+closest_point_move = *p0 + move_vec * move_t2;
 //find dist between closest points
 //PrintLog ("      computing closest dist.p...\n");
-closestDist = VmVecDist (&closest_point_edge, &closest_point_move);
+closestDist = vmsVector::dist(closest_point_edge, closest_point_move);
 //could we hit with this dist?
 //note massive tolerance here
 if (closestDist < (rad * 9) / 10) {		//we hit.  figure out where
 	//now figure out where we hit
-	VmVecScaleAdd (newP, p0, &move_vec, move_t-rad);
+	*newP = *p0 + move_vec * (move_t-rad);
 	return IT_EDGE;
 	}
 return IT_NONE;			//no hit
@@ -760,7 +764,7 @@ return IT_NONE;			//no hit
 //vector defined by p0, p1
 //returns dist if intersects, and fills in intP
 //else returns 0
-int CheckVectorToSphere1 (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVector *vSpherePos, 
+int CheckVectorToSphere1 (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVector *vSpherePos,
 								  fix xSphereRad)
 {
 	vmsVector	d, dn, w, vClosestPoint;
@@ -768,21 +772,21 @@ int CheckVectorToSphere1 (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVect
 
 //this routine could be optimized if it's taking too much time!
 
-VmVecSub (&d, p1, p0);
-VmVecSub (&w, vSpherePos, p0);
-mag_d = VmVecNormalize (&dn, &d);
+d = *p1 - *p0;
+w = *vSpherePos - *p0;
+dn = d; mag_d = vmsVector::normalize(dn);
 if (mag_d == 0) {
-	intDist = VmVecMag (&w);
+	intDist = w.mag();
 	*intP = *p0;
 	return ((xSphereRad < 0) || (intDist < xSphereRad)) ? intDist : 0;
 	}
-wDist = VmVecDot (&dn, &w);
+wDist = vmsVector::dot(dn, w);
 if (wDist < 0)
 	return 0;	//moving away from tObject
 if (wDist > mag_d + xSphereRad)
 	return 0;	//cannot hit
-VmVecScaleAdd (&vClosestPoint, p0, &dn, wDist);
-dist = VmVecDist (&vClosestPoint, vSpherePos);
+vClosestPoint = *p0 + dn * wDist;
+dist = vmsVector::dist(vClosestPoint, *vSpherePos);
 if  (dist < xSphereRad) {
 	fix	dist2, radius2, nShorten;
 
@@ -795,7 +799,7 @@ if  (dist < xSphereRad) {
 		*intP = *p0;		//don't move at all
 		return 1;
 		}
-	VmVecScaleAdd (intP, p0, &dn, intDist);         //calc intersection point
+	*intP = *p0 + dn * intDist;         //calc intersection point
 	return intDist;
 	}
 return 0;
@@ -879,16 +883,17 @@ TransformHitboxes (objP, vPos, hb);
 for (; iModel <= nModels; iModel++) {
 	for (i = 0, pf = hb [iModel].faces; i < 6; i++, pf++) {
 #if 0
-		dot = VmVecDot (pf->n + 1, pn);
+		dot = vmsVector::dot(pf->n + 1, pn);
 		if (dot >= 0)
 			continue;	//shield face facing away from vector
 #endif
 		h = CheckLineToFace (&hitP, p0, p1, pf->v, pf->n + 1, 4, rad);
 		if (h) {
 		h = CheckLineToFace (&hitP, p0, p1, pf->v, pf->n + 1, 4, rad);
-			d = VmVecNormalize (VmVecSub (&v, &hitP, p0));
+			v = hitP - *p0;
+			d = vmsVector::normalize(v);
 #if 0
-			dot = VmVecDot (pf->n + 1, pn);
+			dot = vmsVector::dot(pf->n + 1, pn);
 			if (dot > 0)
 				continue;	//behind shield face
 			if (d > rad)
@@ -924,7 +929,7 @@ return (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POW
 //	-----------------------------------------------------------------------------
 //determine if a vector intersects with an tObject
 //if no intersects, returns 0, else fills in intP and returns dist
-fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad, 
+fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad,
 								 tObject *thisObjP, tObject *otherObjP)
 {
 	fix			size, dist;
@@ -952,43 +957,48 @@ if ((bThisPoly = UseHitbox (thisObjP)))
 else
 #endif
 vPos = thisObjP->position.vPos;
-if (EGI_FLAG (nHitboxes, 0, 0, 0) && 
-	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) && 
+if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
+	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
-	VmPointLineIntersection (&hitP, p0, p1, &vPos, NULL, 0);
-	dist = VmVecDist (&hitP, &vPos);
+	VmPointLineIntersection(hitP, *p0, *p1, vPos, 0);
+	dist = vmsVector::dist(hitP, vPos);
 	if (dist > 2 * (thisObjP->size + otherObjP->size))
 		return 0;
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
 		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1))) {
-			if (!VmVecDist (p0, p1))
+			if (!vmsVector::dist(*p0, *p1))
 				return 0;
 			dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, 0);
 			if ((dist == 0x7fffffff) || (dist > otherObjP->size))
 				return 0;
 			}
-		CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1);
-		VmPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos, 1);
+		CheckHitboxToHitbox(&hitP, otherObjP, thisObjP, p0, p1);
+//		VmPointLineIntersection(hitP, *p0, *p1, hitP, thisObjP->position.vPos, 1);
+		VmPointLineIntersection(hitP, *p0, *p1, hitP, 1);
 		}
 	else {
 		if (bThisPoly) {
-		// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere 
+		// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
-			VmVecNormalize (VmVecSub (&vn, p1, p0));
+			vn = *p1-*p0;
+			vmsVector::normalize(vn);
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, otherObjP->size)))
 				return 0;
-			VmPointLineIntersection (&hitP, p0, p1, &hitP, &otherObjP->position.vPos, 1);
+//			VmPointLineIntersection(hitP, *p0, *p1, hitP, &otherObjP->position.vPos, 1);
+			VmPointLineIntersection(hitP, *p0, *p1, hitP, 1);
 			}
 		else {
-		// *otherObjP (moving) has hitboxes, *thisObjP (stationary) a hit sphere. To detect whether the sphere 
+		// *otherObjP (moving) has hitboxes, *thisObjP (stationary) a hit sphere. To detect whether the sphere
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
 			v0 = thisObjP->position.vPos;
-			VmVecNormalize (VmVecSub (&vn, &otherObjP->position.vPos, &v0));
-			VmVecScaleAdd (&v1, &v0, &vn, thisObjP->size);
+			vn = otherObjP->position.vPos - v0;
+			vmsVector::normalize(vn);
+			v1 = v0 + vn * thisObjP->size;
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, &v0, &v0, &vn, p1, otherObjP, thisObjP->size)))
 				return 0;
-			VmPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos, 1);
+//			VmPointLineIntersection(hitP, *p0, *p1, hitP, &thisObjP->position.vPos, 1);
+			VmPointLineIntersection(hitP, *p0, *p1, hitP, 1);
 			}
 		}
 	}
@@ -1006,7 +1016,7 @@ int ObjectInList (short nObject, short *objListP)
 {
 	short t;
 
-while (((t = *objListP) != -1) && (t != nObject)) 
+while (((t = *objListP) != -1) && (t != nObject))
 	objListP++;
 return (t == nObject);
 
@@ -1018,8 +1028,8 @@ return (t == nObject);
 
 int CheckTransWall (vmsVector *vPoint, tSegment *segP, short nSide, short iFace);
 
-int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, vmsVector *p1, 
-					 fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList, 
+int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, vmsVector *p1,
+					 fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList,
 					 short *nSegments, int nEntrySeg)
 {
 	tSegment		*segP;				//the tSegment we're looking at
@@ -1147,8 +1157,8 @@ segP = gameData.segs.segments + nStartSeg;
 if ((nThisObject > -1) && (gameData.objs.collisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
 	radP1 = 0;		//HACK - ignore when edges hit walls
 //now, check segment walls
-startMask = GetSegMasks (p0, nStartSeg, radP0).faceMask;
-masks = GetSegMasks (p1, nStartSeg, radP1);    //on back of which faces?
+startMask = GetSegMasks (*p0, nStartSeg, radP0).faceMask;
+masks = GetSegMasks (*p1, nStartSeg, radP1);    //on back of which faces?
 if (!(centerMask = masks.centerMask))
 	nHitNoneSegment = nStartSeg;
 if ((endMask = masks.faceMask)) { //on the back of at least one face
@@ -1170,7 +1180,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 				SpecialCheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1) :
 				CheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1);
 #if 0
-			if (!nFaceHitType) 
+			if (!nFaceHitType)
 				continue;
 #endif
 			widResult = WALL_IS_DOORWAY (segP, nSide, (nThisObject < 0) ? NULL : OBJECTS + nThisObject);
@@ -1205,16 +1215,16 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 					if (gameData.collisions.nSegsVisited >= MAX_SEGS_VISITED)
 						goto fviSegsDone;		//we've looked a long time, so give up
 					gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nNewSeg;
-					subHitType = FVICompute (&subHitPoint, &subHitSeg, p0, (short) nNewSeg, 
-													 p1, radP0, radP1, nThisObject, ignoreObjList, flags, 
+					subHitType = FVICompute (&subHitPoint, &subHitSeg, p0, (short) nNewSeg,
+													 p1, radP0, radP1, nThisObject, ignoreObjList, flags,
 													 tempSegList, &nTempSegs, nStartSeg);
 					if (subHitType != HIT_NONE) {
-						d = VmVecDist (&subHitPoint, p0);
+						d = vmsVector::dist(subHitPoint, *p0);
 						if (d < dMin) {
 							dMin = d;
 							vClosestHitPoint = subHitPoint;
 							nHitType = subHitType;
-							if (subHitSeg != -1) 
+							if (subHitSeg != -1)
 								nHitSegment = subHitSeg;
 							//copy segList
 							if (flags & FQ_GET_SEGLIST) {
@@ -1241,7 +1251,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 						}
 					else {
 						gameData.collisions.hitData.vNormal = vSaveWallNorm;     //global could be trashed
-						if (subHitSeg != -1) 
+						if (subHitSeg != -1)
 							nHitNoneSegment = subHitSeg;
 						//copy segList
 						if (flags & FQ_GET_SEGLIST) {
@@ -1264,7 +1274,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 				}
 			else {//a wall
 #if 1
-				if (nFaceHitType) 
+				if (nFaceHitType)
 #endif
 					{
 #ifdef _DEBUG
@@ -1275,7 +1285,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 					else
 #endif
 					//is this the closest hit?
-					d = VmVecDist (&vHitPoint, p0);
+					d = vmsVector::dist(vHitPoint, *p0);
 					if (d < dMin) {
 						dMin = d;
 						vClosestHitPoint = vHitPoint;
@@ -1287,7 +1297,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 						VmVecInc (&gameData.collisions.hitData.vNormal, segP->sides [nSide].normals + iFace);
 						gameData.collisions.hitData.nNormals++;
 #endif
-						if (!GetSegMasks (&vHitPoint, nStartSeg, radP1).centerMask)
+						if (!GetSegMasks (vHitPoint, nStartSeg, radP1).centerMask)
 							nHitSegment = nStartSeg;             //hit in this tSegment
 						else
 							gameData.collisions.hitData.nSegment2 = nStartSeg;
@@ -1367,7 +1377,7 @@ int FindVectorIntersection (tFVIQuery *fq, tFVIData *hitData)
 	tSegMasks	masks;
 
 Assert(fq->ignoreObjList != (short *)(-1));
-VmVecZero (&gameData.collisions.hitData.vNormal);
+gameData.collisions.hitData.vNormal.setZero();
 gameData.collisions.hitData.nNormals = 0;
 Assert((fq->startSeg <= gameData.segs.nLastSegment) && (fq->startSeg >= 0));
 
@@ -1379,7 +1389,7 @@ gameData.collisions.hitData.nObject = -1;
 //Assert(check_point_in_seg(p0, startseg, 0).centerMask==0);	//start point not in seg
 
 // gameData.objs.viewer is not in tSegment as claimed, so say there is no hit.
-masks = GetSegMasks (fq->p0, fq->startSeg, 0);
+masks = GetSegMasks (*fq->p0, fq->startSeg, 0);
 if (masks.centerMask) {
 	hitData->hit.nType = HIT_BAD_P0;
 	hitData->hit.vPoint = *fq->p0;
@@ -1394,18 +1404,18 @@ gameData.collisions.segsVisited [0] = fq->startSeg;
 gameData.collisions.nSegsVisited = 1;
 gameData.collisions.hitData.nNestCount = 0;
 nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
-nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1, 
-							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, 
+nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1,
+							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags,
 							  hitData->segList, &hitData->nSegments, -2);
 //!!nHitSegment = FindSegByPos(&vHitPoint, fq->startSeg, 1, 0);
-if ((nHitSegment2 != -1) && !GetSegMasks (&vHitPoint, nHitSegment2, 0).centerMask)
+if ((nHitSegment2 != -1) && !GetSegMasks (vHitPoint, nHitSegment2, 0).centerMask)
 	nHitSegment = nHitSegment2;
 else {
-	nHitSegment = FindSegByPos (&vHitPoint, fq->startSeg, 1, 0);
+	nHitSegment = FindSegByPos (vHitPoint, fq->startSeg, 1, 0);
 	}
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((nHitType == HIT_WALL) && (nHitSegment == -1))
-	if ((gameData.collisions.hitData.nSegment2 != -1) && !GetSegMasks (&vHitPoint, gameData.collisions.hitData.nSegment2, 0).centerMask)
+	if ((gameData.collisions.hitData.nSegment2 != -1) && !GetSegMasks (vHitPoint, gameData.collisions.hitData.nSegment2, 0).centerMask)
 		nHitSegment = gameData.collisions.hitData.nSegment2;
 
 if (nHitSegment == -1) {
@@ -1416,7 +1426,7 @@ if (nHitSegment == -1) {
 	//because of code that deal with tObject with non-zero radius has
 	//problems, try using zero radius and see if we hit a tWall
 	nNewHitType = FVICompute (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->startSeg, fq->p1, 0, 0,
-								     (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, hitData->segList, 
+								     (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, hitData->segList,
 									  &hitData->nSegments, -2);
 	if (nNewHitSeg2 != -1) {
 		nHitType = nNewHitType;
@@ -1426,7 +1436,7 @@ if (nHitSegment == -1) {
 	}
 
 if ((nHitSegment != -1) && (fq->flags & FQ_GET_SEGLIST))
-	if ((nHitSegment != hitData->segList [hitData->nSegments - 1]) && 
+	if ((nHitSegment != hitData->segList [hitData->nSegments - 1]) &&
 		 (hitData->nSegments < MAX_FVI_SEGS - 1))
 		hitData->segList [hitData->nSegments++] = nHitSegment;
 
@@ -1485,9 +1495,9 @@ CreateAllVertNumLists (&nFaces, vertNumList, nSegment, nSide);
 //1. find what plane to project this tWall onto to make it a 2d case
 memcpy (&vNormals, sideP->normals + iFace, sizeof (vmsVector));
 biggest = 0;
-if (abs (vNormals.v [1]) > abs (vNormals.v [biggest])) 
+if (abs (vNormals[1]) > abs (vNormals[biggest]))
 	biggest = 1;
-if (abs (vNormals.v [2]) > abs (vNormals.v [biggest])) 
+if (abs (vNormals[2]) > abs (vNormals[biggest]))
 	biggest = 2;
 ii = (biggest == 0);
 jj = (biggest == 2) ? 1 : 2;
@@ -1495,22 +1505,22 @@ jj = (biggest == 2) ? 1 : 2;
 //vec from 1 -> 0
 h = iFace * 3;
 vPoints = (vmsVector *) (gameData.segs.vertices + vertList [h+1]);
-p1.i = vPoints->v [ii];
-p1.j = vPoints->v [jj];
+p1.i = (*vPoints)[ii];
+p1.j = (*vPoints)[jj];
 
 vPoints = (vmsVector *) (gameData.segs.vertices + vertList [h]);
-vec0.i = vPoints->v [ii] - p1.i;
-vec0.j = vPoints->v [jj] - p1.j;
+vec0.i = (*vPoints)[ii] - p1.i;
+vec0.j = (*vPoints)[jj] - p1.j;
 
 //vec from 1 -> 2
 vPoints = (vmsVector *) (gameData.segs.vertices + vertList [h+2]);
-vec1.i = vPoints->v [ii] - p1.i;
-vec1.j = vPoints->v [jj] - p1.j;
+vec1.i = (*vPoints)[ii] - p1.i;
+vec1.j = (*vPoints)[jj] - p1.j;
 
 //vec from 1 -> checkPoint
 //vPoints = (vmsVector *)pnt;
-checkP.i = pnt->v [ii];
-checkP.j = pnt->v [jj];
+checkP.i = (*pnt)[ii];
+checkP.j = (*pnt)[jj];
 
 #if 1 // the MSVC 9 optimizer doesn't like the code in the else branch ...
 ii = Cross2D (checkP, vec0) + Cross2D (vec0, p1);
@@ -1555,7 +1565,7 @@ bmP = LoadFaceBitmap (nTexture, nFrame);
 if (bmP->bmProps.flags & BM_FLAG_RLE)
 	bmP = rle_expand_texture (bmP);
 w = bmP->bmProps.w;
-h = ((bmP->bmType == BM_TYPE_ALT) && BM_FRAMES (bmP)) ? w : bmP->bmProps.h; 
+h = ((bmP->bmType == BM_TYPE_ALT) && BM_FRAMES (bmP)) ? w : bmP->bmProps.h;
 if (nOrient == 0) {
 	bmx = ((unsigned) X2I (u * w)) % w;
 	bmy = ((unsigned) X2I (v * h)) % h;
@@ -1585,7 +1595,7 @@ if (bmP->bmProps.flags & BM_FLAG_TGA) {
 #else
 	if ((gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) ?
 	    (p [3] == 1) : ((p[0] == 120) && (p[1] == 88) && (p[2] == 128)))
-#endif	    
+#endif
 		return -1;
 	// check alpha
 	if (!p[3])
@@ -1593,9 +1603,9 @@ if (bmP->bmProps.flags & BM_FLAG_TGA) {
 	}
 else {
 	c = bmP->bmTexBuf [offs];
-	if (c == SUPER_TRANSP_COLOR) 
+	if (c == SUPER_TRANSP_COLOR)
 		return -1;
-	if (c == TRANSPARENCY_COLOR) 
+	if (c == TRANSPARENCY_COLOR)
 		return 1;
 	}
 return 0;
@@ -1644,7 +1654,7 @@ if (nSegment == -1) {
 if ((gameData.collisions.nSegsVisited < 0) || (gameData.collisions.nSegsVisited > MAX_SEGS_VISITED))
 	gameData.collisions.nSegsVisited = 0;
 gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nSegment;
-faceMask = GetSegMasks (vPoint, nSegment, rad).faceMask;
+faceMask = GetSegMasks (*vPoint, nSegment, rad).faceMask;
 segP = gameData.segs.segments + nSegment;
 if (faceMask != 0) {				//on the back of at least one face
 	int nSide, bit, iFace, nChild, i;
@@ -1657,7 +1667,7 @@ if (faceMask != 0) {				//on the back of at least one face
 			if (faceMask & bit) {            //on the back of this iFace
 				//did we go through this tWall/door?
 				nFaces = CreateAbsVertexLists (vertList, SEG_IDX (segP), nSide);
-				nFaceHitType = CheckSphereToSegFace (vPoint, nSegment, nSide, iFace, 
+				nFaceHitType = CheckSphereToSegFace (vPoint, nSegment, nSide, iFace,
 															 (nFaces == 1) ? 4 : 3, rad, vertList);
 				if (nFaceHitType) {            //through this tWall/door
 					//if what we have hit is a door, check the adjoining segP
@@ -1702,7 +1712,7 @@ fq.radP1 = 0;
 fq.thisObjNum = objP ? OBJ_IDX (objP) : -1;
 fq.flags = FQ_TRANSWALL;
 if (SPECTATOR (objP))
-	fq.startSeg = FindSegByPos (&objP->position.vPos, objP->nSegment, 1, 0);
+	fq.startSeg = FindSegByPos (objP->position.vPos, objP->nSegment, 1, 0);
 else
 	fq.startSeg = objP ? objP->nSegment : nSegment;
 fq.ignoreObjList = NULL;
@@ -1721,13 +1731,13 @@ int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 
 do {
 	if (nTries++)
-		fq.startSeg		= bSpectate ? FindSegByPos (&gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) : 
-							  FindSegByPos (&objP1->position.vPos, objP1->nSegment, 1, 0);
+		fq.startSeg		= bSpectate ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) :
+							  FindSegByPos (objP1->position.vPos, objP1->nSegment, 1, 0);
 	else
 		fq.startSeg		= bSpectate ? gameStates.app.nPlayerSegment : objP1->nSegment;
 	fq.p0					= bSpectate ? &gameStates.app.playerPos.vPos : &objP1->position.vPos;
 	fq.p1					= SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->position.vPos;
-	fq.radP0				= 
+	fq.radP0				=
 	fq.radP1				= 0x10;
 	fq.thisObjNum		= OBJ_IDX (objP1);
 	fq.ignoreObjList	= NULL;

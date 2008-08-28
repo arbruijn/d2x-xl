@@ -140,7 +140,7 @@ id1 = objP1->id;
 ct1 = objP1->cType.laserInfo.creationTime;
 // See if o2 is the parent of o1
 if (objP1->nType == OBJ_WEAPON)
-	if ((objP1->cType.laserInfo.nParentObj == o2) && 
+	if ((objP1->cType.laserInfo.nParentObj == o2) &&
 		 (objP1->cType.laserInfo.nParentSig == objP2->nSignature)) {
 		//	o1 is a weapon, o2 is the parent of 1, so if o1 is PROXIMITY_BOMB and o2 is tPlayer, they are related only if o1 < 2.0 seconds old
 		if (LaserCreationTimeout (id1, ct1))
@@ -152,7 +152,7 @@ id2 = objP2->id;
 ct2 = objP2->cType.laserInfo.creationTime;
 // See if o1 is the parent of o2
 if (objP2->nType == OBJ_WEAPON)
-	if ((objP2->cType.laserInfo.nParentObj == o1) && 
+	if ((objP2->cType.laserInfo.nParentObj == o1) &&
 		 (objP2->cType.laserInfo.nParentSig == objP1->nSignature)) {
 		//	o2 is a weapon, o1 is the parent of 2, so if o2 is PROXIMITY_BOMB and o1 is tPlayer, they are related only if o1 < 2.0 seconds old
 		if (LaserCreationTimeout (id2, ct2))
@@ -171,7 +171,7 @@ if (objP1->cType.laserInfo.nParentSig == objP2->cType.laserInfo.nParentSig) {
 	if ((id1 != PROXMINE_ID)  && (id2 != PROXMINE_ID) && (id1 != SMARTMINE_ID) && (id2 != SMARTMINE_ID))
 		return 1;
 	//	If neither is older than 1/2 second, then can't blow up!
-	if ((gameData.time.xGame > (ct1 + F1_0/2) * gameStates.gameplay.slowmo [0].fSpeed) || 
+	if ((gameData.time.xGame > (ct1 + F1_0/2) * gameStates.gameplay.slowmo [0].fSpeed) ||
 		 (gameData.time.xGame > (ct2 + F1_0/2) * gameStates.gameplay.slowmo [0].fSpeed))
 		return 0;
 	return 1;
@@ -233,24 +233,24 @@ switch (gameData.weapons.info [nWeaponType].renderType)	{
 
 Assert (xLaserRadius != -1);
 Assert (rType != -1);
-nObject = CreateObject ((ubyte) OBJ_WEAPON, nWeaponType, nParent, nSegment, vPosition, NULL, xLaserRadius, (ubyte) CT_WEAPON, (ubyte) MT_PHYSICS, (ubyte) rType, 1);
+nObject = tObject::Create((ubyte) OBJ_WEAPON, nWeaponType, nParent, nSegment, *vPosition, vmsMatrix::IDENTITY, xLaserRadius, (ubyte) CT_WEAPON, (ubyte) MT_PHYSICS, (ubyte) rType, 1);
 objP = OBJECTS + nObject;
 if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->id].nModel;
-	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
+	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,
 								gameData.weapons.info [objP->id].po_len_to_width_ratio);
 	}
 else if (EGI_FLAG (bTracers, 0, 1, 0) && (objP->id == VULCAN_ID) || (objP->id == GAUSS_ID)) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
 	objP->rType.polyObjInfo.nTexOverride = -1;
 	objP->rType.polyObjInfo.nAltTextures = 0;
-	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
+	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,
 								gameData.weapons.info [SUPERLASER_ID].po_len_to_width_ratio);
 	objP->renderType = RT_POLYOBJ;
 	}
 objP->mType.physInfo.mass = WI_mass (nWeaponType);
 objP->mType.physInfo.drag = WI_drag (nWeaponType);
-VmVecZero (&objP->mType.physInfo.thrust);
+objP->mType.physInfo.thrust.setZero();
 if (gameData.weapons.info [nWeaponType].bounce == 1)
 	objP->mType.physInfo.flags |= PF_BOUNCE;
 if ((gameData.weapons.info [nWeaponType].bounce == 2) || gameStates.app.cheats.bBouncingWeapons)
@@ -260,9 +260,9 @@ return nObject;
 
 // ---------------------------------------------------------------------------------
 
-// Initializes a laser after Fire is pressed 
+// Initializes a laser after Fire is pressed
 //	Returns tObject number.
-int CreateNewLaser (vmsVector *vDirection, vmsVector *vPosition, short nSegment, 
+int CreateNewLaser (vmsVector *vDirection, vmsVector *vPosition, short nSegment,
 						  short nParent, ubyte nWeaponType, int bMakeSound)
 {
 	int			nObject, nViewer, bBigMsl;
@@ -281,15 +281,15 @@ if (nWeaponType >= gameData.weapons.nTypes [0])
 //	Don't let homing blobs make muzzle flash.
 if (parentP->nType == OBJ_ROBOT)
 	DoMuzzleStuff (nSegment, vPosition);
-else if (gameStates.app.bD2XLevel && 
-			(parentP == gameData.objs.console) && 
+else if (gameStates.app.bD2XLevel &&
+			(parentP == gameData.objs.console) &&
 			(gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return -1;
 #if 1
 if ((nParent == LOCALPLAYER.nObject) &&
-	 (nWeaponType == PROXMINE_ID) && 
+	 (nWeaponType == PROXMINE_ID) &&
 	 (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
-	nObject = CreateObject (OBJ_POWERUP, POW_HOARD_ORB, -1, nSegment, vPosition, &vmdIdentityMatrix, 
+	nObject = tObject::Create(OBJ_POWERUP, POW_HOARD_ORB, -1, nSegment, *vPosition, vmsMatrix::IDENTITY,
 									gameData.objs.pwrUp.info [POW_HOARD_ORB].size, CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 	if (nObject >= 0) {
 		objP = OBJECTS + nObject;
@@ -348,9 +348,10 @@ weaponInfoP = gameData.weapons.info + nWeaponType;
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
 	int bSpectator = SPECTATOR (parentP);
-	VmVector2Matrix (&objP->position.mOrient, vDirection, bSpectator ? &gameStates.app.playerPos.mOrient.uVec : &parentP->position.mOrient.uVec, NULL);
+	objP->position.mOrient = vmsMatrix::CreateFU(*vDirection, bSpectator ? gameStates.app.playerPos.mOrient[UVEC] : parentP->position.mOrient[UVEC]);
+//	objP->position.mOrient = vmsMatrix::CreateFU(*vDirection, bSpectator ? &gameStates.app.playerPos.mOrient[UVEC] : &parentP->position.mOrient[UVEC], NULL);
 	if (((nParent != nViewer) || bSpectator) && (parentP->nType != OBJ_WEAPON)) {
-		// Muzzle flash	
+		// Muzzle flash
 		if (weaponInfoP->nFlashVClip > -1)
 			ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashVClip);
 		}
@@ -360,9 +361,9 @@ if (nWeaponType == OMEGA_ID) {
 else if (nWeaponType == FUSION_ID) {
 	static int nRotDir = 0;
 	nRotDir = !nRotDir;
-	objP->mType.physInfo.rotVel.p.x =
-	objP->mType.physInfo.rotVel.p.y = 0;
-	objP->mType.physInfo.rotVel.p.z = nRotDir ? -F1_0 : F1_0;
+	objP->mType.physInfo.rotVel[X] =
+	objP->mType.physInfo.rotVel[Y] = 0;
+	objP->mType.physInfo.rotVel[Z] = nRotDir ? -F1_0 : F1_0;
 	}
 if (parentP->nType == OBJ_PLAYER) {
 	if (nWeaponType == FUSION_ID) {
@@ -373,7 +374,7 @@ if (parentP->nType == OBJ_PLAYER) {
 		else
 			objP->cType.laserInfo.multiplier = 4 * F1_0;
 		}
-	else if (/* (nWeaponType >= LASER_ID) &&*/ (nWeaponType <= MAX_SUPER_LASER_LEVEL) && 
+	else if (/* (nWeaponType >= LASER_ID) &&*/ (nWeaponType <= MAX_SUPER_LASER_LEVEL) &&
 				(gameData.multiplayer.players [parentP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
 		objP->cType.laserInfo.multiplier = 3 * F1_0 / 4;
 	else if (nWeaponType == GUIDEDMSL_ID) {
@@ -388,10 +389,10 @@ if (parentP->nType == OBJ_PLAYER) {
 
 //	Make children of smart bomb bounce so if they hit a tWall right away, they
 //	won't detonate.  The frame xInterval code will clear this bit after 1/2 second.
-if ((nWeaponType == SMARTMSL_BLOB_ID) || 
-	 (nWeaponType == SMARTMINE_BLOB_ID) || 
-	 (nWeaponType == ROBOT_SMARTMSL_BLOB_ID) || 
-	 (nWeaponType == ROBOT_SMARTMINE_BLOB_ID) || 
+if ((nWeaponType == SMARTMSL_BLOB_ID) ||
+	 (nWeaponType == SMARTMINE_BLOB_ID) ||
+	 (nWeaponType == ROBOT_SMARTMSL_BLOB_ID) ||
+	 (nWeaponType == ROBOT_SMARTMINE_BLOB_ID) ||
 	 (nWeaponType == EARTHSHAKER_MEGA_ID))
 	objP->mType.physInfo.flags |= PF_BOUNCE;
 if (weaponInfoP->renderType == WEAPON_RENDER_POLYMODEL)
@@ -429,11 +430,12 @@ if (parentP->nType == OBJ_WEAPON) {
 // Create orientation matrix so we can look from this pov
 //	Homing missiles also need an orientation matrix so they know if they can make a turn.
 //if ((objP->renderType == RT_POLYOBJ) || (WI_homingFlag (objP->id)))
-	VmVector2Matrix (&objP->position.mOrient, vDirection, &parentP->position.mOrient.uVec, NULL);
+	objP->position.mOrient = vmsMatrix::CreateFU(*vDirection, parentP->position.mOrient[UVEC]);
+//	objP->position.mOrient = vmsMatrix::CreateFU(*vDirection, &parentP->position.mOrient[UVEC], NULL);
 if (((nParent != nViewer) || SPECTATOR (parentP)) && (parentP->nType != OBJ_WEAPON)) {
-	// Muzzle flash	
+	// Muzzle flash
 	if (weaponInfoP->nFlashVClip > -1)
-		ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, weaponInfoP->xFlashSize, 
+		ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, weaponInfoP->xFlashSize,
 										 weaponInfoP->nFlashVClip);
 	}
 volume = F1_0;
@@ -475,9 +477,9 @@ if ((parentP->nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].rende
 	vmsVector	vEndPos;
 	int			nEndSeg;
 
-	VmVecScaleAdd (&vEndPos, &objP->position.vPos, vDirection, gameData.laser.nOffset + (xLaserLength / 2));
-	nEndSeg = FindSegByPos (&vEndPos, objP->nSegment, 1, 0);
-	if (nEndSeg == objP->nSegment) 
+	vEndPos = objP->position.vPos + *vDirection * (gameData.laser.nOffset + (xLaserLength / 2));
+	nEndSeg = FindSegByPos (vEndPos, objP->nSegment, 1, 0);
+	if (nEndSeg == objP->nSegment)
 		objP->position.vPos = vEndPos;
 	else if (nEndSeg != -1) {
 		objP->position.vPos = vEndPos;
@@ -487,14 +489,14 @@ if ((parentP->nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].rende
 
 //	Here's where to fix the problem with OBJECTS which are moving backwards imparting higher velocity to their weaponfire.
 //	Find out if moving backwards.
-if (!WeaponIsMine (nWeaponType)) 
+if (!WeaponIsMine (nWeaponType))
 	xParentSpeed = 0;
 else {
-	xParentSpeed = VmVecMagQuick (&parentP->mType.physInfo.velocity);
-	if (VmVecDot (&parentP->mType.physInfo.velocity, 
-						&parentP->position.mOrient.fVec) < 0)
+	xParentSpeed = parentP->mType.physInfo.velocity.mag();
+	if (vmsVector::dot(parentP->mType.physInfo.velocity,
+						parentP->position.mOrient[FVEC]) < 0)
 		xParentSpeed = -xParentSpeed;
-	} 
+	}
 
 xWeaponSpeed = WI_speed (objP->id, gameStates.app.nDifficultyLevel);
 if (weaponInfoP->speedvar != 128) {
@@ -502,21 +504,21 @@ if (weaponInfoP->speedvar != 128) {
 	xWeaponSpeed = FixMul (xWeaponSpeed, randval);
 	}
 //	Ugly hack (too bad we're on a deadline), for homing missiles dropped by smart bomb, start them out slower.
-if ((objP->id == SMARTMSL_BLOB_ID) || 
-	 (objP->id == SMARTMINE_BLOB_ID) || 
-	 (objP->id == ROBOT_SMARTMSL_BLOB_ID) || 
-	 (objP->id == ROBOT_SMARTMINE_BLOB_ID) || 
+if ((objP->id == SMARTMSL_BLOB_ID) ||
+	 (objP->id == SMARTMINE_BLOB_ID) ||
+	 (objP->id == ROBOT_SMARTMSL_BLOB_ID) ||
+	 (objP->id == ROBOT_SMARTMINE_BLOB_ID) ||
 	 (objP->id == EARTHSHAKER_MEGA_ID))
 	xWeaponSpeed /= 4;
 if (WIThrust (objP->id) != 0)
 	xWeaponSpeed /= 2;
-/*test*/VmVecCopyScale (&objP->mType.physInfo.velocity, vDirection, (xWeaponSpeed + xParentSpeed));
+/*test*/objP->mType.physInfo.velocity = *vDirection * (xWeaponSpeed + xParentSpeed);
 if (parentP)
 	gameData.objs.vStartVel [nObject] = parentP->mType.physInfo.velocity;
-//	Set thrust 
+//	Set thrust
 if (WIThrust (nWeaponType) != 0) {
 	objP->mType.physInfo.thrust = objP->mType.physInfo.velocity;
-	VmVecScale (&objP->mType.physInfo.thrust, FixDiv (WIThrust (objP->id), xWeaponSpeed + xParentSpeed));
+	objP->mType.physInfo.thrust *= FixDiv (WIThrust (objP->id), xWeaponSpeed + xParentSpeed);
 	}
 if ((objP->nType == OBJ_WEAPON) && (objP->id == FLARE_ID))
 	objP->lifeleft += (d_rand () - 16384) << 2;		//	add in -2..2 seconds
@@ -589,73 +591,78 @@ return vGunPoints;
 
 //-------------- Initializes a laser after Fire is pressed -----------------
 
-vmsVector *TransformGunPoint (tObject *objP, vmsVector *vGunPoints, int nGun, 
+vmsVector *TransformGunPoint (tObject *objP, vmsVector *vGunPoints, int nGun,
 										fix xDelay, ubyte nLaserType, vmsVector *vMuzzle, vmsMatrix *mP)
 {
 	int			bSpectate = SPECTATOR (objP);
-	tPosition	*posP = bSpectate ? &gameStates.app.playerPos : &objP->position;
+	tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->position;
 	vmsMatrix	m, *viewP;
 	vmsVector	v [2];
 #if FULL_COCKPIT_OFFS
-	int			bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) && 
+	int			bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) &&
 									  (OBJ_IDX (objP) == LOCALPLAYER.nObject));
 #else
 	int			bLaserOffs = 0;
 #endif
 
-if (nGun < 0)	// use center between gunPoints nGun and nGun + 1
-	VmVecScale (VmVecAdd (v, vGunPoints - nGun, vGunPoints - nGun - 1), F1_0 / 2);
+if (nGun < 0) {	// use center between gunPoints nGun and nGun + 1
+	(*v) = vGunPoints[-nGun] + vGunPoints[-nGun-1];
+//	VmVecScale (VmVecAdd (v, vGunPoints - nGun, vGunPoints - nGun - 1), F1_0 / 2);
+	(*v) *= (F1_0 / 2);
+}
 else {
 	v [0] = vGunPoints [nGun];
 	if (bLaserOffs)
-		VmVecScaleInc (v, &posP->mOrient.uVec, LASER_OFFS);
+		v[0] += posP->mOrient[UVEC] * LASER_OFFS;
 	}
 if (!mP)
 	mP = &m;
-if (bSpectate)
-   VmCopyTransposeMatrix (viewP = mP, &posP->mOrient);
+if (bSpectate) {
+   viewP = mP;
+	*viewP = posP->mOrient.transpose();
+}
 else
    viewP = ObjectView (objP);
-VmVecRotate (v + 1, v, viewP);
+v[1] = *viewP * v[0];
 memcpy (mP, &posP->mOrient, sizeof (vmsMatrix));
 if (nGun < 0)
-	VmVecScaleInc (v + 1, &mP->uVec, -2 * VmVecMag (v));
-VmVecAdd (vMuzzle, &posP->vPos, v + 1);
+	v[1] += (*mP)[UVEC] * (-2 * v->mag());
+(*vMuzzle) = posP->vPos + v[1];
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
-	VmVecScaleInc (vMuzzle, &mP->fVec, -FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
+	*vMuzzle += (*mP)[FVEC]* (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
 return vMuzzle;
 }
 
 //-------------- Initializes a laser after Fire is pressed -----------------
 
 int LaserPlayerFireSpreadDelay (
-	tObject *objP, 
-	ubyte nLaserType, 
-	int nGun, 
-	fix xSpreadR, 
-	fix xSpreadU, 
-	fix xDelay, 
-	int bMakeSound, 
+	tObject *objP,
+	ubyte nLaserType,
+	int nGun,
+	fix xSpreadR,
+	fix xSpreadU,
+	fix xDelay,
+	int bMakeSound,
 	int bHarmless,
 	short	nLightObj)
 {
 	short			nLaserSeg;
-	int			nFate; 
+	int			nFate;
 	vmsVector	vLaserPos, vLaserDir, *vGunPoints;
 	tFVIQuery	fq;
 	tFVIData		hitData;
 	int			nObject;
 	tObject		*laserP;
 #if FULL_COCKPIT_OFFS
-	int bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) && 
+	int bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) &&
 							(OBJ_IDX (objP) == LOCALPLAYER.nObject));
 #else
 	int bLaserOffs = 0;
 #endif
 	vmsMatrix	m;
 	int			bSpectate = SPECTATOR (objP);
-	tPosition	*posP = bSpectate ? &gameStates.app.playerPos : &objP->position;
+	tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->position;
 
 CreateAwarenessEvent (objP, PA_WEAPON_WALL_COLLISION);
 // Find the initial vPosition of the laser
@@ -669,7 +676,7 @@ if (nGun < 0)	// use center between gunPoints nGun and nGun + 1
 else {
 	v = vGunPoints [nGun];
 	if (bLaserOffs)
-		VmVecScaleInc (&v, &posP->mOrient.uVec, LASER_OFFS);
+		VmVecScaleInc (&v, &posP->mOrient[UVEC], LASER_OFFS);
 	}
 if (bSpectate)
    VmCopyTransposeMatrix (viewP = &m, &posP->mOrient);
@@ -678,11 +685,11 @@ else
 VmVecRotate (&vGunPoint, &v, viewP);
 memcpy (&m, &posP->mOrient, sizeof (vmsMatrix));
 if (nGun < 0)
-	VmVecScaleInc (&vGunPoint, &m.uVec, -2 * VmVecMag (&v));
+	VmVecScaleInc (&vGunPoint, &m[UVEC], -2 * VmVecMag (&v));
 VmVecAdd (&vLaserPos, &posP->vPos, &vGunPoint);
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
-	VmVecScaleInc (&vLaserPos, &m.fVec, -FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
+	VmVecScaleInc (&vLaserPos, &m[FVEC], -FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
 #endif
 
 //	DoMuzzleStuff (objP, &Pos);
@@ -702,7 +709,7 @@ if (nLaserSeg == -1) {	//some sort of annoying error
 	return -1;
 	}
 //SORT OF HACK... IF ABOVE WAS CORRECT THIS WOULDNT BE NECESSARY.
-if (VmVecDistQuick (&vLaserPos, &posP->vPos) > 3 * objP->size / 2) {
+if (vmsVector::dist(vLaserPos, posP->vPos) > 3 * objP->size / 2) {
 	return -1;
 	}
 if (nFate == HIT_WALL)  {
@@ -715,17 +722,17 @@ if (nFate == HIT_OBJECT) {
 	if (OBJECTS [hitData.hitObject].nType == OBJ_ROBOT)
 		KillObject (OBJECTS + hitData.hitObject);
 	if (OBJECTS [hitData.hitObject].nType != OBJ_POWERUP)
-		return;	
+		return;
 	}
 #endif
 //	Now, make laser spread out.
-vLaserDir = m.fVec;
+vLaserDir = m[FVEC];
 if (xSpreadR || xSpreadU) {
-	VmVecScaleInc (&vLaserDir, &m.rVec, xSpreadR);
-	VmVecScaleInc (&vLaserDir, &m.uVec, xSpreadU);
+	vLaserDir += m[RVEC] * xSpreadR;
+	vLaserDir += m[UVEC] * xSpreadU;
 	}
 if (bLaserOffs)
-	VmVecScaleInc (&vLaserDir, &m.uVec, LASER_OFFS);
+	vLaserDir += m[UVEC] * LASER_OFFS;
 nObject = CreateNewLaser (&vLaserDir, &vLaserPos, nLaserSeg, OBJ_IDX (objP), nLaserType, bMakeSound);
 //	Omega cannon is a hack, not surprisingly.  Don't want to do the rest of this stuff.
 if (nLaserType == OMEGA_ID)
@@ -815,10 +822,14 @@ void HomingMissileTurnTowardsVelocity (tObject *objP, vmsVector *vNormVel)
 
 frameTime = gameStates.limitFPS.bHomers ? secs2f (gameStates.app.tick40fps.nTime) : gameData.time.xFrame;
 vNewDir = *vNormVel;
-VmVecScale (&vNewDir, (fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
-VmVecInc (&vNewDir, &objP->position.mOrient.fVec);
-VmVecNormalize (&vNewDir);
-VmVector2Matrix (&objP->position.mOrient, &vNewDir, NULL, NULL);
+vNewDir *= ((fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
+vNewDir += objP->position.mOrient[FVEC];
+vmsVector::normalize(vNewDir);
+/*
+objP->position.mOrient = vmsMatrix::Create(vNewDir, NULL, NULL);
+*/
+// TODO: MatrixCreateFCheck
+objP->position.mOrient = vmsMatrix::CreateF(vNewDir);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -836,7 +847,7 @@ void LaserDoWeaponSequence (tObject *objP)
 {
 	tObject	*gmObjP;
 	fix		xWeaponSpeed, xScaleFactor, xDistToPlayer;
-	
+
 Assert (objP->controlType == CT_WEAPON);
 //	Ok, this is a big hack by MK.
 //	If you want an tObject to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME
@@ -854,7 +865,7 @@ if (objP->lifeleft < 0) {		// We died of old age
 	return;
 	}
 //delete weapons that are not moving
-xWeaponSpeed = VmVecMagQuick (&objP->mType.physInfo.velocity);
+xWeaponSpeed = objP->mType.physInfo.velocity.mag();
 if (!((gameData.app.nFrameCount ^ objP->nSignature) & 3) &&
 		(objP->nType == OBJ_WEAPON) && (objP->id != FLARE_ID) &&
 		(gameData.weapons.info [objP->id].speed [gameStates.app.nDifficultyLevel] > 0) &&
@@ -863,15 +874,15 @@ if (!((gameData.app.nFrameCount ^ objP->nSignature) & 3) &&
 	return;
 	}
 if ((objP->nType == OBJ_WEAPON) && (objP->id == FUSION_ID)) {		//always set fusion weapon to max vel
-	VmVecNormalize (&objP->mType.physInfo.velocity);
-	VmVecScale (&objP->mType.physInfo.velocity, WI_speed (objP->id,gameStates.app.nDifficultyLevel));
+	vmsVector::normalize(objP->mType.physInfo.velocity);
+	objP->mType.physInfo.velocity *= (WI_speed (objP->id,gameStates.app.nDifficultyLevel));
 	}
 //	For homing missiles, turn towards target. (unless it's the guided missile)
 if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.tick40fps.bTick) &&
-	 (objP->nType == OBJ_WEAPON) && 
-    (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (objP->id)) && 
-	 !((objP->id == GUIDEDMSL_ID) && 
-	   (objP == (gmObjP = gameData.objs.guidedMissile [OBJECTS [objP->cType.laserInfo.nParentObj].id].objP)) && 
+	 (objP->nType == OBJ_WEAPON) &&
+    (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (objP->id)) &&
+	 !((objP->id == GUIDEDMSL_ID) &&
+	   (objP == (gmObjP = gameData.objs.guidedMissile [OBJECTS [objP->cType.laserInfo.nParentObj].id].objP)) &&
 	   (objP->nSignature == gmObjP->nSignature))) {
 	vmsVector	vVecToObject, vTemp;
 	fix			dot = F1_0;
@@ -882,26 +893,26 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 		int	nMslLock = objP->cType.laserInfo.nMslLock;
 
 		//	If it's time to do tracking, then it's time to grow up, stop bouncing and start exploding!.
-		if ((id == ROBOT_SMARTMINE_BLOB_ID) || 
-			 (id == ROBOT_SMARTMSL_BLOB_ID) || 
-			 (id == SMARTMINE_BLOB_ID) || 
-			 (id == SMARTMSL_BLOB_ID) || 
+		if ((id == ROBOT_SMARTMINE_BLOB_ID) ||
+			 (id == ROBOT_SMARTMSL_BLOB_ID) ||
+			 (id == SMARTMINE_BLOB_ID) ||
+			 (id == SMARTMSL_BLOB_ID) ||
 			 (id == EARTHSHAKER_MEGA_ID))
 			objP->mType.physInfo.flags &= ~PF_BOUNCE;
 
 		//	Make sure the tObject we are tracking is still trackable.
 		nMslLock = TrackMslLock (nMslLock, objP, &dot);
 		if (nMslLock == LOCALPLAYER.nObject) {
-			xDistToPlayer = VmVecDistQuick (&objP->position.vPos, &OBJECTS [nMslLock].position.vPos);
+			xDistToPlayer = vmsVector::dist(objP->position.vPos, OBJECTS [nMslLock].position.vPos);
 			if ((xDistToPlayer < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
 				LOCALPLAYER.homingObjectDist = xDistToPlayer;
-			
+
 			}
 		if (nMslLock != -1) {
-			VmVecSub (&vVecToObject, &OBJECTS [nMslLock].position.vPos, &objP->position.vPos);
-			VmVecNormalize (&vVecToObject);
+			vVecToObject = OBJECTS [nMslLock].position.vPos - objP->position.vPos;
+			vmsVector::normalize(vVecToObject);
 			vTemp = objP->mType.physInfo.velocity;
-			speed = VmVecNormalize (&vTemp);
+			speed = vmsVector::normalize(vTemp);
 			xMaxSpeed = WI_speed (objP->id,gameStates.app.nDifficultyLevel);
 			if (speed + F1_0 < xMaxSpeed) {
 				speed += FixMul (xMaxSpeed, gameData.time.xFrame / 2);
@@ -912,17 +923,17 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 				fix	h = (objP->lifeleft + F1_0 - 1) / F1_0;
 
 				if (h > 7)
-					VmVecScale (&vVecToObject, F1_0 / (h - 6));
+					vVecToObject *= (F1_0 / (h - 6));
 				}
-			// -- dot = VmVecDot (&vTemp, &vVecToObject);
-			VmVecScale (&vVecToObject, F1_0 / HomingMslScale ());
-			VmVecInc (&vTemp, &vVecToObject);
+			// -- dot = vmsVector::dot(vTemp, vVecToObject);
+			vVecToObject *= (F1_0 / HomingMslScale ());
+			vTemp += vVecToObject;
 			//	The boss' smart children track better...
 			if (gameData.weapons.info [objP->id].renderType != WEAPON_RENDER_POLYMODEL)
-				VmVecInc (&vTemp, &vVecToObject);
-			VmVecNormalize (&vTemp);
+				vTemp += vVecToObject;
+			vmsVector::normalize(vTemp);
 			objP->mType.physInfo.velocity = vTemp;
-			VmVecScale (&objP->mType.physInfo.velocity, speed);
+			objP->mType.physInfo.velocity *= speed;
 
 			//	Subtract off life proportional to amount turned.
 			//	For hardest turn, it will lose 2 seconds per second.
@@ -944,7 +955,7 @@ if ((objP->nType == OBJ_WEAPON) &&
 	//	Only slow down if not allowed to move.  Makes sense, huh?  Allows proxbombs to get moved by physics force. --MK, 2/13/96
 	if (WI_speed (objP->id, gameStates.app.nDifficultyLevel)) {
 		xScaleFactor = FixDiv (WI_speed (objP->id,gameStates.app.nDifficultyLevel), xWeaponSpeed);
-		VmVecScale (&objP->mType.physInfo.velocity, xScaleFactor);
+		objP->mType.physInfo.velocity *= xScaleFactor;
 		}
 	}
 }
@@ -965,7 +976,7 @@ gameData.laser.nGlobalFiringCount = 0;
 Controls [0].firePrimaryState = 0;
 Controls [0].firePrimaryDownCount = 0;
 gameData.weapons.firing [0].nStart =
-gameData.weapons.firing [0].nStop = 
+gameData.weapons.firing [0].nStop =
 gameData.weapons.firing [0].nDuration = 0;
 }
 
@@ -1016,7 +1027,7 @@ if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary !=
 	nPrimaryAmmo = playerP->primaryAmmo [gameData.weapons.nPrimary];
 else {
 	if ((gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling &&
-		 gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bGatlingSpeedUp, 1, 0, 0) && 
+		 gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bGatlingSpeedUp, 1, 0, 0) &&
 		 (gameData.weapons.firing [0].nDuration < GATLING_DELAY))
 		return 0;
 	nPrimaryAmmo = playerP->primaryAmmo [VULCAN_INDEX];
@@ -1024,7 +1035,7 @@ else {
 if	 ((playerP->energy < xEnergyUsed) || (nPrimaryAmmo < nAmmoUsed))
 	AutoSelectWeapon (0, 1);		//	Make sure the tPlayer can fire from this weapon.
 
-if ((gameData.laser.xLastFiredTime + 2 * gameData.time.xFrame < gameData.time.xGame) || 
+if ((gameData.laser.xLastFiredTime + 2 * gameData.time.xFrame < gameData.time.xGame) ||
 	 (gameData.time.xGame < gameData.laser.xLastFiredTime))
 	gameData.laser.xNextFireTime = gameData.time.xGame;
 gameData.laser.xLastFiredTime = gameData.time.xGame;
@@ -1074,16 +1085,16 @@ return rVal;
 // -- #define	MAX_LIGHTNING_DISTANCE	 (F1_0*300)
 // -- #define	MAX_LIGHTNING_BLOBS		16
 // -- #define	LIGHTNING_BLOB_DISTANCE	 (MAX_LIGHTNING_DISTANCE/MAX_LIGHTNING_BLOBS)
-// -- 
+// --
 // -- #define	LIGHTNING_BLOB_ID			13
-// -- 
+// --
 // -- #define	LIGHTNING_TIME		 (F1_0/4)
 // -- #define	LIGHTNING_DELAY	 (F1_0/8)
-// -- 
+// --
 // -- int	Lightning_gun_num = 1;
-// -- 
+// --
 // -- fix	Lightning_startTime = -F1_0*10, Lightning_lastTime;
-// -- 
+// --
 // -- //	--------------------------------------------------------------------------------------------------
 // -- //	Return -1 if failed to create at least one blob.  Else return index of last blob created.
 // -- int create_lightning_blobs (vmsVector *vDirection, vmsVector *start_pos, int start_segnum, int parent)
@@ -1102,21 +1113,21 @@ return rVal;
 // -- 	vmsVector	*gun_pos;
 // -- 	vmsMatrix	m;
 // -- 	vmsVector	gun_pos2;
-// -- 
+// --
 // -- 	if (LOCALPLAYER.energy > F1_0)
 // -- 		LOCALPLAYER.energy -= F1_0;
-// -- 
+// --
 // -- 	if (LOCALPLAYER.energy <= F1_0) {
 // -- 		LOCALPLAYER.energy = 0;
 // -- 		AutoSelectWeapon (0);
 // -- 		return -1;
 // -- 	}
-// -- 
+// --
 // -- 	norm_dir = *vDirection;
-// -- 
-// -- 	VmVecNormalize (&norm_dir);
+// --
+// -- 	vmsVector::normalize(&norm_dir);
 // -- 	VmVecScaleAdd (&vEndPos, start_pos, &norm_dir, MAX_LIGHTNING_DISTANCE);
-// -- 
+// --
 // -- 	fq.p0						= start_pos;
 // -- 	fq.startSeg				= start_segnum;
 // -- 	fq.p1						= &vEndPos;
@@ -1124,60 +1135,60 @@ return rVal;
 // -- 	fq.thisObjNum			= parent;
 // -- 	fq.ignoreObjList	= NULL;
 // -- 	fq.flags					= FQ_TRANSWALL | FQ_CHECK_OBJS;
-// -- 
+// --
 // -- 	fate = FindVectorIntersection (&fq, &hitData);
 // -- 	if (hitData.hit.nSegment == -1) {
 // -- 		return -1;
 // -- 	}
-// -- 
+// --
 // -- 	dist_to_hit_point = VmVecMag (VmVecSub (&tvec, &hitData.hit.vPoint, start_pos);
 // -- 	num_blobs = dist_to_hit_point/LIGHTNING_BLOB_DISTANCE;
-// -- 
+// --
 // -- 	if (num_blobs > MAX_LIGHTNING_BLOBS)
 // -- 		num_blobs = MAX_LIGHTNING_BLOBS;
-// -- 
+// --
 // -- 	if (num_blobs < MAX_LIGHTNING_BLOBS/4)
 // -- 		num_blobs = MAX_LIGHTNING_BLOBS/4;
-// -- 
+// --
 // -- 	// Find the initial vPosition of the laser
 // -- 	gun_pos = &gameData.pig.ship.player->gunPoints [Lightning_gun_num];
 // -- 	VmCopyTransposeMatrix (&m,&OBJECTS [parent].position.mOrient);
 // -- 	VmVecRotate (&gun_pos2, gun_pos, &m);
 // -- 	VmVecAdd (&point_pos, &OBJECTS [parent].position.vPos, &gun_pos2);
-// -- 
+// --
 // -- 	delta_pos = norm_dir;
 // -- 	VmVecScale (&delta_pos, dist_to_hit_point/num_blobs);
-// -- 
+// --
 // -- 	for (i=0; i<num_blobs; i++) {
 // -- 		int			tPointSeg;
 // -- 		tObject		*obj;
-// -- 
+// --
 // -- 		VmVecInc (&point_pos, &delta_pos);
 // -- 		tPointSeg = FindSegByPos (&point_pos, start_segnum, 1, 0);
 // -- 		if (tPointSeg == -1)	//	Hey, we thought we were creating points on a line, but we left the mine!
 // -- 			continue;
-// -- 
+// --
 // -- 		nObject = CreateNewLaser (vDirection, &point_pos, tPointSeg, parent, LIGHTNING_BLOB_ID, 0);
-// -- 
+// --
 // -- 		if (nObject < 0) 	{
 // -- 			Int3 ();
 // -- 			return -1;
 // -- 		}
-// -- 
+// --
 // -- 		obj = OBJECTS + nObject;
-// -- 
+// --
 // -- 		DigiPlaySample (gameData.weapons.info [objP->id].flashSound, F1_0);
-// -- 
+// --
 // -- 		// -- VmVecScale (&objP->mType.physInfo.velocity, F1_0/2);
-// -- 
+// --
 // -- 		objP->lifeleft = (LIGHTNING_TIME + LIGHTNING_DELAY)/2;
-// -- 
+// --
 // -- 	}
-// -- 
+// --
 // -- 	return nObject;
-// -- 
+// --
 // -- }
-// -- 
+// --
 // -- //	--------------------------------------------------------------------------------------------------
 // -- //	Lightning Cannon.
 // -- //	While being fired, creates path of blobs forward from tPlayer until it hits something.
@@ -1187,7 +1198,7 @@ return rVal;
 // -- {
 // -- 	if ((gameData.time.xGame - Lightning_startTime < LIGHTNING_TIME) && (gameData.time.xGame - Lightning_startTime > 0)) {
 // -- 		if (gameData.time.xGame - Lightning_lastTime > LIGHTNING_DELAY) {
-// -- 			create_lightning_blobs (&gameData.objs.console->position.mOrient.fVec, &gameData.objs.console->position.vPos, gameData.objs.console->nSegment, OBJ_IDX (gameData.objs.console));
+// -- 			create_lightning_blobs (&gameData.objs.console->position.mOrient[FVEC], &gameData.objs.console->position.vPos, gameData.objs.console->nSegment, OBJ_IDX (gameData.objs.console));
 // -- 			Lightning_lastTime = gameData.time.xGame;
 // -- 		}
 // -- 	}
@@ -1199,7 +1210,7 @@ short CreateClusterLight (tObject *objP)
 {
 if (!gameStates.render.bClusterLights)
 	return -1;
-short nObject = CreateObject (OBJ_LIGHT, CLUSTER_LIGHT_ID, -1, objP->nSegment, &OBJPOS (objP)->vPos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
+short nObject = tObject::Create(OBJ_LIGHT, CLUSTER_LIGHT_ID, -1, objP->nSegment, OBJPOS (objP)->vPos, vmsMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
 if (nObject >= 0)
 	OBJECTS [nObject].lifeleft = IMMORTAL_TIME;
 return nObject;
@@ -1303,13 +1314,13 @@ if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [objP
 #endif
 nFlags = (sbyte) (gameData.fusion.xCharge >> 12);
 gameData.fusion.xCharge = 0;
-vForce.p.x = -(objP->position.mOrient.fVec.p.x << 7);
-vForce.p.y = -(objP->position.mOrient.fVec.p.y << 7);
-vForce.p.z = -(objP->position.mOrient.fVec.p.z << 7);
+vForce[X] = -(objP->position.mOrient[FVEC][X] << 7);
+vForce[Y] = -(objP->position.mOrient[FVEC][Y] << 7);
+vForce[Z] = -(objP->position.mOrient[FVEC][Z] << 7);
 PhysApplyForce (objP, &vForce);
-vForce.p.x = (vForce.p.x >> 4) + d_rand () - 16384;
-vForce.p.y = (vForce.p.y >> 4) + d_rand () - 16384;
-vForce.p.z = (vForce.p.z >> 4) + d_rand () - 16384;
+vForce[X] = (vForce[X] >> 4) + d_rand () - 16384;
+vForce[Y] = (vForce[Y] >> 4) + d_rand () - 16384;
+vForce[Z] = (vForce[Z] >> 4) + d_rand () - 16384;
 PhysApplyRot (objP, &vForce);
 return nRoundsPerShot;
 }
@@ -1338,14 +1349,14 @@ int GaussHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 #	define GAUSS_SPREAD		(VULCAN_SPREAD / 5)
 
-	int			bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] && 
+	int			bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
 										 (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling;
 	tFiringData *fP = gameData.multiplayer.weaponStates [objP->id].firing;
 
 if (bGatlingSound && (fP->nDuration <= GATLING_DELAY))
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
-LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 
+LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD,
 							  (objP->id != gameData.multiplayer.nLocalPlayer) || (gameData.laser.xNextFireTime > gameData.time.xGame), 0, -1);
 if (nRoundsPerShot > 1) {
 	LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1);
@@ -1452,7 +1463,7 @@ return nRoundsPerShot;
 }
 
 //	-------------------------------------------------------------------------------------------
-//	if nGoalObj == -1, then create random vector
+//	if nGoalObj == -1, then create Random vector
 int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objType, int bMakeSound)
 {
 	short			nObject;
@@ -1461,16 +1472,16 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objType, int bMakeSo
 	//vmsVector	vGoalPos;
 
 	if (nGoalObj == -1) {
-		MakeRandomVector (&vGoal);
+		vGoal = vmsVector::Random();
 	} else {
-		VmVecNormalizedDir (&vGoal, &OBJECTS [nGoalObj].position.vPos, &objP->position.vPos);
-		MakeRandomVector (&random_vector);
-		VmVecScaleInc (&vGoal, &random_vector, F1_0/4);
-		VmVecNormalize (&vGoal);
-	}	
+		vmsVector::normalizedDir(vGoal, OBJECTS [nGoalObj].position.vPos, objP->position.vPos);
+		random_vector = vmsVector::Random();
+		vGoal += random_vector * (F1_0/4);
+		vmsVector::normalize(vGoal);
+	}
 
 	//	Create a vector towards the goal, then add some noise to it.
-	nObject = CreateNewLaser (&vGoal, &objP->position.vPos, objP->nSegment, 
+	nObject = CreateNewLaser (&vGoal, &objP->position.vPos, objP->nSegment,
 									  OBJ_IDX (objP), objType, bMakeSound);
 	if (nObject == -1)
 		return -1;
@@ -1513,7 +1524,7 @@ else {
 if (objP->id == EARTHSHAKER_ID)
 	BlastNearbyGlass (objP, gameData.weapons.info [EARTHSHAKER_ID].strength [gameStates.app.nDifficultyLevel]);
 
-if ((objP->nType == OBJ_WEAPON) && 
+if ((objP->nType == OBJ_WEAPON) &&
 		((objP->id == SMARTMSL_ID) || (objP->id == SMARTMINE_ID) || (objP->id == ROBOT_SMARTMINE_ID) || (objP->id == EARTHSHAKER_ID)) &&
 		(gameData.weapons.info [objP->id].children == -1))
 	return;
@@ -1546,7 +1557,7 @@ if (((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].children !
 					if (ROBOTINFO (curObjP->id).companion)
 						continue;
 				}
-			dist = VmVecDistQuick (&objP->position.vPos, &curObjP->position.vPos);
+			dist = vmsVector::dist(objP->position.vPos, curObjP->position.vPos);
 			if (dist < MAX_SMART_DISTANCE) {
 				int	oovis = ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL);
 				if (oovis) { //ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL)) {
@@ -1584,7 +1595,7 @@ if (((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].children !
 //give up control of the guided missile
 void ReleaseGuidedMissile (int nPlayer)
 {
-if (nPlayer == gameData.multiplayer.nLocalPlayer) {		
+if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	if (!gameData.objs.guidedMissile [nPlayer].objP)
 		return;
 	gameData.objs.missileViewer = gameData.objs.guidedMissile [nPlayer].objP;
@@ -1600,8 +1611,8 @@ int nProximityDropped = 0, nSmartminesDropped = 0;
 
 //	-------------------------------------------------------------------------------------------
 //parameter determines whether or not to do autoselect if have run out of ammo
-//this is needed because if you drop a bomb with the B key, you don't 
-//want to autoselect if the bomb isn't actually selected. 
+//this is needed because if you drop a bomb with the B key, you don't
+//want to autoselect if the bomb isn't actually selected.
 void DoMissileFiring (int bAutoSelect)
 {
 	int		h, i, gunFlag = 0;
@@ -1667,13 +1678,13 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	else if ((gameData.weapons.nSecondary == MEGA_INDEX) || (gameData.weapons.nSecondary == EARTHSHAKER_INDEX)) {
 		vmsVector vForce;
 
-	vForce.p.x = - (gameData.objs.console->position.mOrient.fVec.p.x << 7);
-	vForce.p.y = - (gameData.objs.console->position.mOrient.fVec.p.y << 7);
-	vForce.p.z = - (gameData.objs.console->position.mOrient.fVec.p.z << 7);
+	vForce[X] = - (gameData.objs.console->position.mOrient[FVEC][X] << 7);
+	vForce[Y] = - (gameData.objs.console->position.mOrient[FVEC][Y] << 7);
+	vForce[Z] = - (gameData.objs.console->position.mOrient[FVEC][Z] << 7);
 	PhysApplyForce (gameData.objs.console, &vForce);
-	vForce.p.x = (vForce.p.x >> 4) + d_rand () - 16384;
-	vForce.p.y = (vForce.p.y >> 4) + d_rand () - 16384;
-	vForce.p.z = (vForce.p.z >> 4) + d_rand () - 16384;
+	vForce[X] = (vForce[X] >> 4) + d_rand () - 16384;
+	vForce[Y] = (vForce[Y] >> 4) + d_rand () - 16384;
+	vForce[Z] = (vForce[Z] >> 4) + d_rand () - 16384;
 	PhysApplyRot (gameData.objs.console, &vForce);
 	break; //no dual mega/smart missile launch
 	}
@@ -1702,7 +1713,7 @@ gameData.objs.trackGoals [0] =
 gameData.objs.trackGoals [1] = NULL;
 if ((objP = GuidedInMainView ())) {
 	nObject = FindHomingObject (&objP->position.vPos, objP);
-	gameData.objs.trackGoals [0] = 
+	gameData.objs.trackGoals [0] =
 	gameData.objs.trackGoals [1] = (nObject < 0) ? NULL : OBJECTS + nObject;
 	return;
 	}
@@ -1732,8 +1743,8 @@ for (i = 0; i < j; i++, h = !h) {
 	nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary] + h;
 	if ((vGunPoints = GetGunPoints (gameData.objs.console, nGun))) {
 		vGunPos = vGunPoints [nGun];
-		VmVecRotate (&vGunPos, &vGunPos, viewP);
-		VmVecInc (&vGunPos, &gameData.objs.console->position.vPos);
+		vGunPos = *viewP * vGunPos;
+		vGunPos += gameData.objs.console->position.vPos;
 		nObject = FindHomingObject (&vGunPos, gameData.objs.console);
 		gameData.objs.trackGoals [i] = (nObject < 0) ? NULL : OBJECTS + nObject;
 		}

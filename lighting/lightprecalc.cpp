@@ -74,8 +74,8 @@ typedef struct tLightDist {
 
 void QSortLightDist (tLightDist *pDist, int left, int right)
 {
-	int			l = left, 
-					r = right, 
+	int			l = left,
+					r = right,
 					m = pDist [(l + r) / 2].nDist;
 	tLightDist	h;
 
@@ -141,7 +141,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].nSegment : pl->info.nSegment;
 		if (!SEGVIS (m, i))
 			continue;
-		h = (int) (VmVecDist (&center, &pl->info.vPos) - F2X (pl->info.fRad) / 10.0f);
+		h = (int) (vmsVector::dist (center, pl->info.vPos) - F2X (pl->info.fRad) / 10.0f);
 		if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 			continue;
 		pDists [n].nDist = h;
@@ -188,7 +188,7 @@ if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
 nMaxLights = MAX_NEAREST_LIGHTS;
-if (gameStates.app.bMultiThreaded) 
+if (gameStates.app.bMultiThreaded)
 	j = nVertex ? gameData.segs.nVertices : gameData.segs.nVertices / 2;
 else
 	INIT_PROGRESS_LOOP (nVertex, j, gameData.segs.nVertices);
@@ -203,22 +203,22 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 		if (pl->info.nSegment == nDbgSeg)
 			nDbgSeg = nDbgSeg;
 #endif
-		if (IsLightVert (nVertex, pl->info.faceP)) 
+		if (IsLightVert (nVertex, pl->info.faceP))
 			h = 0;
 		else {
 			h = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].nSegment : pl->info.nSegment;
 			if (!VERTVIS (h, nVertex))
 				continue;
-			VmVecSub (&vLightToVert, vertP, &pl->info.vPos);
-			h = VmVecNormalize (&vLightToVert) - (int) (pl->info.fRad * 6553.6f);
+			vLightToVert = *vertP - pl->info.vPos;
+			h = vmsVector::normalize(vLightToVert) - (int) (pl->info.fRad * 6553.6f);
 			if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 				continue;
 			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 				sideP = SEGMENTS [pl->info.nSegment].sides + pl->info.nSide;
-				if ((VmVecDot (sideP->normals, &vLightToVert) < -F1_0 / 6) && 
-					 ((sideP->nType == SIDE_IS_QUAD) || (VmVecDot (sideP->normals + 1, &vLightToVert) < -F1_0 / 6)))
+				if ((vmsVector::dot(sideP->normals[0], vLightToVert) < -F1_0 / 6) &&
+					 ((sideP->nType == SIDE_IS_QUAD) || (vmsVector::dot(sideP->normals[1], vLightToVert) < -F1_0 / 6)))
 					continue;
-				}	
+				}
 			}
 		pDists [n].nDist = h;
 		pDists [n].nIndex = l;
@@ -310,7 +310,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		for (i = 0; i < 4; i++)
 			while (!SetVertVis (nStartSeg, faceP->index [i], 1))
 				;
-		}	
+		}
 	}
 }
 
@@ -353,15 +353,15 @@ for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 				}
 			}
 		}
+	vNormal = sideP->normals[0] + sideP->normals[1];
+	vNormal *= (-F1_0 / 2);
+	vAngles = vNormal.toAnglesVec();
+	viewer.position.mOrient = vmsMatrix::Create(vAngles);
+	G3StartFrame(0, 0);
+	RenderStartFrame();
+	G3SetViewMatrix(viewer.position.vPos, viewer.position.mOrient, gameStates.render.xZoom, 1);
 #endif
-	VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
-	VmVecScale (&vNormal, -F1_0 / 2);
-	VmExtractAnglesVector (&vAngles, &vNormal);
-	VmAngles2Matrix (&viewer.position.mOrient, &vAngles);
-	G3StartFrame (0, 0);
-	RenderStartFrame ();
-	G3SetViewMatrix (&viewer.position.vPos, &viewer.position.mOrient, gameStates.render.xZoom, 1);
-	BuildRenderSegList (nStartSeg, 0);	
+	BuildRenderSegList (nStartSeg, 0);
 	G3EndFrame ();
 	//PrintLog ("   flagging visible segments\n");
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
@@ -454,7 +454,7 @@ if (gameStates.app.bNostalgia)
 	return 0;
 if (gameStates.app.bMultiThreaded)
 	return 0;
-if (!(gameOpts->render.nLightingMethod || 
+if (!(gameOpts->render.nLightingMethod ||
 	  (gameStates.render.bAmbientColor && !gameStates.render.bColored) ||
 	   gameStates.app.bEnableShadows))
 	return 0;
@@ -489,15 +489,15 @@ if (!CFOpen (&cf, LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir
 	return 0;
 bOk = (CFRead (&ldh, sizeof (ldh), 1, &cf) == 1);
 if (bOk)
-	bOk = (ldh.nVersion == LIGHT_DATA_VERSION) && 
-			(ldh.nSegments == gameData.segs.nSegments) && 
-			(ldh.nVertices == gameData.segs.nVertices) && 
-			(ldh.nLights == gameData.render.lights.dynamic.nLights) && 
+	bOk = (ldh.nVersion == LIGHT_DATA_VERSION) &&
+			(ldh.nSegments == gameData.segs.nSegments) &&
+			(ldh.nVertices == gameData.segs.nVertices) &&
+			(ldh.nLights == gameData.render.lights.dynamic.nLights) &&
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE) &&
 			(ldh.nMethod = LightingMethod () &&
 			((ldh.bPerPixelLighting != 0) == (gameStates.render.bPerPixelLighting != 0)));
 if (bOk)
-	bOk = 
+	bOk =
 			(CFRead (gameData.segs.bSegVis, sizeof (ubyte) * ldh.nSegments * SEGVIS_FLAGS, 1, &cf) == 1) &&
 #if 0
 			(CFRead (gameData.segs.bVertVis, sizeof (ubyte) * ldh.nVertices * VERTVIS_FLAGS, 1, &cf) == 1) &&
@@ -513,12 +513,12 @@ return bOk;
 int SaveLightData (int nLevel)
 {
 	CFILE				cf;
-	tLightDataHeader ldh = {LIGHT_DATA_VERSION, 
-								   gameData.segs.nSegments, 
-								   gameData.segs.nVertices, 
-								   gameData.render.lights.dynamic.nLights, 
+	tLightDataHeader ldh = {LIGHT_DATA_VERSION,
+								   gameData.segs.nSegments,
+								   gameData.segs.nVertices,
+								   gameData.render.lights.dynamic.nLights,
 									MAX_LIGHT_RANGE,
-									LightingMethod (), 
+									LightingMethod (),
 									gameStates.render.bPerPixelLighting};
 	int				bOk;
 	char				szFilename [FILENAME_LEN];
@@ -601,7 +601,7 @@ void ComputeNearestLights (int nLevel)
 {
 if (gameStates.app.bNostalgia)
 	return;
-if (!(SHOW_DYN_LIGHT || 
+if (!(SHOW_DYN_LIGHT ||
 	  (gameStates.render.bAmbientColor && !gameStates.render.bColored) ||
 	   (gameStates.app.bEnableShadows && !COMPETITION)))
 	return;
@@ -610,7 +610,7 @@ loadIdx = 0;
 PrintLog ("Looking for precompiled light data\n");
 if (LoadLightData (nLevel))
 	return;
-else 
+else
 #if MULTI_THREADED_PRECALC
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
@@ -627,9 +627,9 @@ else {
 	gameStates.app.bMultiThreaded = 0;
 #endif
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
-		NMProgressBar (TXT_PREP_DESCENT, 
-							LoadMineGaugeSize () + PagingGaugeSize (), 
-							LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll); 
+		NMProgressBar (TXT_PREP_DESCENT,
+							LoadMineGaugeSize () + PagingGaugeSize (),
+							LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll);
 	else {
 		PrintLog ("Computing segment visibility\n");
 		ComputeSegmentVisibility (-1);

@@ -67,7 +67,7 @@ fix	lastWarningBeepTime [2] = {0, 0};		//	Time we last played homing missile war
 
 int bHaveGaugeCanvases = 0;
 int nInvulnerableFrame = 0;
-int nCloakFadeState;		//0=steady, -1 fading out, 1 fading in 
+int nCloakFadeState;		//0=steady, -1 fading out, 1 fading in
 
 #define WS_SET				0		//in correct state
 #define WS_FADING_OUT	1
@@ -81,336 +81,336 @@ fix weaponBoxFadeValues [2];
 
 //store delta x values from left of box
 tSpan weaponWindowLeft [] = {		//first tSpan 67, 151
-		{8, 51}, 
-		{6, 53}, 
-		{5, 54}, 
-		{4-1, 53+2}, 
-		{4-1, 53+3}, 
-		{4-1, 53+3}, 
-		{4-2, 53+3}, 
-		{4-2, 53+3}, 
-		{3-1, 53+3}, 
-		{3-1, 53+3}, 
-		{3-1, 53+3}, 
-		{3-1, 53+3}, 
-		{3-1, 53+3}, 
-		{3-1, 53+3}, 
-		{3-1, 53+3}, 
-		{3-2, 53+3}, 
-		{2-1, 53+3}, 
-		{2-1, 53+3}, 
-		{2-1, 53+3}, 
-		{2-1, 53+3}, 
-		{2-1, 53+3}, 
-		{2-1, 53+3}, 
-		{2-1, 53+3}, 
-		{2-1, 53+3}, 
-		{1-1, 53+3}, 
-		{1-1, 53+2}, 
-		{1-1, 53+2}, 
-		{1-1, 53+2}, 
-		{1-1, 53+2}, 
-		{1-1, 53+2}, 
-		{1-1, 53+2}, 
-		{1-1, 53+2}, 
-		{0, 53+2}, 
-		{0, 53+2}, 
-		{0, 53+2}, 
-		{0, 53+2}, 
-		{0, 52+3}, 
-		{1-1, 52+2}, 
-		{2-2, 51+3}, 
-		{3-2, 51+2}, 
-		{4-2, 50+2}, 
-		{5-2, 50}, 
-		{5-2+2, 50-2}, 
+		{8, 51},
+		{6, 53},
+		{5, 54},
+		{4-1, 53+2},
+		{4-1, 53+3},
+		{4-1, 53+3},
+		{4-2, 53+3},
+		{4-2, 53+3},
+		{3-1, 53+3},
+		{3-1, 53+3},
+		{3-1, 53+3},
+		{3-1, 53+3},
+		{3-1, 53+3},
+		{3-1, 53+3},
+		{3-1, 53+3},
+		{3-2, 53+3},
+		{2-1, 53+3},
+		{2-1, 53+3},
+		{2-1, 53+3},
+		{2-1, 53+3},
+		{2-1, 53+3},
+		{2-1, 53+3},
+		{2-1, 53+3},
+		{2-1, 53+3},
+		{1-1, 53+3},
+		{1-1, 53+2},
+		{1-1, 53+2},
+		{1-1, 53+2},
+		{1-1, 53+2},
+		{1-1, 53+2},
+		{1-1, 53+2},
+		{1-1, 53+2},
+		{0, 53+2},
+		{0, 53+2},
+		{0, 53+2},
+		{0, 53+2},
+		{0, 52+3},
+		{1-1, 52+2},
+		{2-2, 51+3},
+		{3-2, 51+2},
+		{4-2, 50+2},
+		{5-2, 50},
+		{5-2+2, 50-2},
 	};
 
 
 //store delta x values from left of box
 tSpan weaponWindowRight [] = {		//first tSpan 207, 154
-		{208-202, 255-202}, 
-		{206-202, 257-202}, 
-		{205-202, 258-202}, 
-		{204-202, 259-202}, 
-		{203-202, 260-202}, 
-		{203-202, 260-202}, 
-		{203-202, 260-202}, 
-		{203-202, 260-202}, 
-		{203-202, 260-202}, 
-		{203-202, 261-202}, 
-		{203-202, 261-202}, 
-		{203-202, 261-202}, 
-		{203-202, 261-202}, 
-		{203-202, 261-202}, 
-		{203-202, 261-202}, 
-		{203-202, 261-202}, 
-		{203-202, 261-202}, 
-		{203-202, 261-202}, 
-		{203-202, 262-202}, 
-		{203-202, 262-202}, 
-		{203-202, 262-202}, 
-		{203-202, 262-202}, 
-		{203-202, 262-202}, 
-		{203-202, 262-202}, 
-		{203-202, 262-202}, 
-		{203-202, 262-202}, 
-		{204-202, 263-202}, 
-		{204-202, 263-202}, 
-		{204-202, 263-202}, 
-		{204-202, 263-202}, 
-		{204-202, 263-202}, 
-		{204-202, 263-202}, 
-		{204-202, 263-202}, 
-		{204-202, 263-202}, 
-		{204-202, 263-202}, 
-		{204-202, 263-202}, 
-		{204-202, 263-202}, 
-		{204-202, 263-202}, 
-		{205-202, 263-202}, 
-		{206-202, 262-202}, 
-		{207-202, 261-202}, 
-		{208-202, 260-202}, 
-		{211-202, 255-202}, 
+		{208-202, 255-202},
+		{206-202, 257-202},
+		{205-202, 258-202},
+		{204-202, 259-202},
+		{203-202, 260-202},
+		{203-202, 260-202},
+		{203-202, 260-202},
+		{203-202, 260-202},
+		{203-202, 260-202},
+		{203-202, 261-202},
+		{203-202, 261-202},
+		{203-202, 261-202},
+		{203-202, 261-202},
+		{203-202, 261-202},
+		{203-202, 261-202},
+		{203-202, 261-202},
+		{203-202, 261-202},
+		{203-202, 261-202},
+		{203-202, 262-202},
+		{203-202, 262-202},
+		{203-202, 262-202},
+		{203-202, 262-202},
+		{203-202, 262-202},
+		{203-202, 262-202},
+		{203-202, 262-202},
+		{203-202, 262-202},
+		{204-202, 263-202},
+		{204-202, 263-202},
+		{204-202, 263-202},
+		{204-202, 263-202},
+		{204-202, 263-202},
+		{204-202, 263-202},
+		{204-202, 263-202},
+		{204-202, 263-202},
+		{204-202, 263-202},
+		{204-202, 263-202},
+		{204-202, 263-202},
+		{204-202, 263-202},
+		{205-202, 263-202},
+		{206-202, 262-202},
+		{207-202, 261-202},
+		{208-202, 260-202},
+		{211-202, 255-202},
 	};
 
 //store delta x values from left of box
 tSpan weaponWindowLeftHires [] = {		//first tSpan 67, 154
-	{20, 110}, 
-	{18, 113}, 
-	{16, 114}, 
-	{15, 116}, 
-	{14, 117}, 
-	{13, 118}, 
-	{12, 119}, 
-	{11, 119}, 
-	{10, 120}, 
-	{10, 120}, 
-	{9, 121}, 
-	{8, 121}, 
-	{8, 121}, 
-	{8, 122}, 
-	{7, 122}, 
-	{7, 122}, 
-	{7, 122}, 
-	{7, 122}, 
-	{7, 122}, 
-	{6, 122}, 
-	{6, 122}, 
-	{6, 122}, 
-	{6, 122}, 
-	{6, 122}, 
-	{6, 122}, 
-	{6, 122}, 
-	{6, 122}, 
-	{6, 122}, 
-	{6, 122}, 
-	{5, 122}, 
-	{5, 122}, 
-	{5, 122}, 
-	{5, 122}, 
-	{5, 121}, 
-	{5, 121}, 
-	{5, 121}, 
-	{5, 121}, 
-	{5, 121}, 
-	{5, 121}, 
-	{4, 121}, 
-	{4, 121}, 
-	{4, 121}, 
-	{4, 121}, 
-	{4, 121}, 
-	{4, 121}, 
-	{4, 121}, 
-	{4, 121}, 
-	{4, 121}, 
-	{4, 121}, 
-	{3, 121}, 
-	{3, 121}, 
-	{3, 120}, 
-	{3, 120}, 
-	{3, 120}, 
-	{3, 120}, 
-	{3, 120}, 
-	{3, 120}, 
-	{3, 120}, 
-	{3, 120}, 
-	{3, 120}, 
-	{2, 120}, 
-	{2, 120}, 
-	{2, 120}, 
-	{2, 120}, 
-	{2, 120}, 
-	{2, 120}, 
-	{2, 120}, 
-	{2, 120}, 
-	{2, 120}, 
-	{2, 120}, 
-	{2, 120}, 
-	{2, 120}, 
-	{1, 120}, 
-	{1, 120}, 
-	{1, 119}, 
-	{1, 119}, 
-	{1, 119}, 
-	{1, 119}, 
-	{1, 119}, 
-	{1, 119}, 
-	{1, 119}, 
-	{1, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 118}, 
-	{0, 118}, 
-	{0, 118}, 
-	{0, 117}, 
-	{0, 117}, 
-	{0, 117}, 
-	{1, 116}, 
-	{1, 116}, 
-	{2, 115}, 
-	{2, 114}, 
-	{3, 113}, 
-	{4, 112}, 
-	{5, 111}, 
-	{5, 110}, 
-	{7, 109}, 
-	{9, 107}, 
-	{10, 105}, 
-	{12, 102}, 
+	{20, 110},
+	{18, 113},
+	{16, 114},
+	{15, 116},
+	{14, 117},
+	{13, 118},
+	{12, 119},
+	{11, 119},
+	{10, 120},
+	{10, 120},
+	{9, 121},
+	{8, 121},
+	{8, 121},
+	{8, 122},
+	{7, 122},
+	{7, 122},
+	{7, 122},
+	{7, 122},
+	{7, 122},
+	{6, 122},
+	{6, 122},
+	{6, 122},
+	{6, 122},
+	{6, 122},
+	{6, 122},
+	{6, 122},
+	{6, 122},
+	{6, 122},
+	{6, 122},
+	{5, 122},
+	{5, 122},
+	{5, 122},
+	{5, 122},
+	{5, 121},
+	{5, 121},
+	{5, 121},
+	{5, 121},
+	{5, 121},
+	{5, 121},
+	{4, 121},
+	{4, 121},
+	{4, 121},
+	{4, 121},
+	{4, 121},
+	{4, 121},
+	{4, 121},
+	{4, 121},
+	{4, 121},
+	{4, 121},
+	{3, 121},
+	{3, 121},
+	{3, 120},
+	{3, 120},
+	{3, 120},
+	{3, 120},
+	{3, 120},
+	{3, 120},
+	{3, 120},
+	{3, 120},
+	{3, 120},
+	{2, 120},
+	{2, 120},
+	{2, 120},
+	{2, 120},
+	{2, 120},
+	{2, 120},
+	{2, 120},
+	{2, 120},
+	{2, 120},
+	{2, 120},
+	{2, 120},
+	{2, 120},
+	{1, 120},
+	{1, 120},
+	{1, 119},
+	{1, 119},
+	{1, 119},
+	{1, 119},
+	{1, 119},
+	{1, 119},
+	{1, 119},
+	{1, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 118},
+	{0, 118},
+	{0, 118},
+	{0, 117},
+	{0, 117},
+	{0, 117},
+	{1, 116},
+	{1, 116},
+	{2, 115},
+	{2, 114},
+	{3, 113},
+	{4, 112},
+	{5, 111},
+	{5, 110},
+	{7, 109},
+	{9, 107},
+	{10, 105},
+	{12, 102},
 };
 
 
 //store delta x values from left of box
 tSpan weaponWindowRightHires [] = {		//first tSpan 207, 154
-	{12, 105}, 
-	{9, 107}, 
-	{8, 109}, 
-	{6, 110}, 
-	{5, 111}, 
-	{4, 112}, 
-	{3, 113}, 
-	{3, 114}, 
-	{2, 115}, 
-	{2, 115}, 
-	{1, 116}, 
-	{1, 117}, 
-	{1, 117}, 
-	{0, 117}, 
-	{0, 118}, 
-	{0, 118}, 
-	{0, 118}, 
-	{0, 118}, 
-	{0, 118}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 119}, 
-	{0, 120}, 
-	{0, 120}, 
-	{0, 120}, 
-	{0, 120}, 
-	{1, 120}, 
-	{1, 120}, 
-	{1, 120}, 
-	{1, 120}, 
-	{1, 120}, 
-	{1, 120}, 
-	{1, 121}, 
-	{1, 121}, 
-	{1, 121}, 
-	{1, 121}, 
-	{1, 121}, 
-	{1, 121}, 
-	{1, 121}, 
-	{1, 121}, 
-	{1, 121}, 
-	{1, 121}, 
-	{1, 122}, 
-	{1, 122}, 
-	{2, 122}, 
-	{2, 122}, 
-	{2, 122}, 
-	{2, 122}, 
-	{2, 122}, 
-	{2, 122}, 
-	{2, 122}, 
-	{2, 122}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 123}, 
-	{2, 124}, 
-	{2, 124}, 
-	{3, 124}, 
-	{3, 124}, 
-	{3, 124}, 
-	{3, 124}, 
-	{3, 124}, 
-	{3, 124}, 
-	{3, 124}, 
-	{3, 125}, 
-	{3, 125}, 
-	{3, 125}, 
-	{3, 125}, 
-	{3, 125}, 
-	{3, 125}, 
-	{3, 125}, 
-	{3, 125}, 
-	{4, 125}, 
-	{4, 125}, 
-	{4, 125}, 
-	{5, 125}, 
-	{5, 125}, 
-	{5, 125}, 
-	{6, 125}, 
-	{6, 124}, 
-	{7, 123}, 
-	{8, 123}, 
-	{9, 122}, 
-	{10, 121}, 
-	{11, 120}, 
-	{12, 120}, 
-	{13, 118}, 
-	{15, 117}, 
-	{18, 115}, 
-	{20, 114}, 
+	{12, 105},
+	{9, 107},
+	{8, 109},
+	{6, 110},
+	{5, 111},
+	{4, 112},
+	{3, 113},
+	{3, 114},
+	{2, 115},
+	{2, 115},
+	{1, 116},
+	{1, 117},
+	{1, 117},
+	{0, 117},
+	{0, 118},
+	{0, 118},
+	{0, 118},
+	{0, 118},
+	{0, 118},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 119},
+	{0, 120},
+	{0, 120},
+	{0, 120},
+	{0, 120},
+	{1, 120},
+	{1, 120},
+	{1, 120},
+	{1, 120},
+	{1, 120},
+	{1, 120},
+	{1, 121},
+	{1, 121},
+	{1, 121},
+	{1, 121},
+	{1, 121},
+	{1, 121},
+	{1, 121},
+	{1, 121},
+	{1, 121},
+	{1, 121},
+	{1, 122},
+	{1, 122},
+	{2, 122},
+	{2, 122},
+	{2, 122},
+	{2, 122},
+	{2, 122},
+	{2, 122},
+	{2, 122},
+	{2, 122},
+	{2, 123},
+	{2, 123},
+	{2, 123},
+	{2, 123},
+	{2, 123},
+	{2, 123},
+	{2, 123},
+	{2, 123},
+	{2, 123},
+	{2, 123},
+	{2, 123},
+	{2, 123},
+	{2, 123},
+	{2, 124},
+	{2, 124},
+	{3, 124},
+	{3, 124},
+	{3, 124},
+	{3, 124},
+	{3, 124},
+	{3, 124},
+	{3, 124},
+	{3, 125},
+	{3, 125},
+	{3, 125},
+	{3, 125},
+	{3, 125},
+	{3, 125},
+	{3, 125},
+	{3, 125},
+	{4, 125},
+	{4, 125},
+	{4, 125},
+	{5, 125},
+	{5, 125},
+	{5, 125},
+	{6, 125},
+	{6, 124},
+	{7, 123},
+	{8, 123},
+	{9, 122},
+	{10, 121},
+	{11, 120},
+	{12, 120},
+	{13, 118},
+	{15, 117},
+	{18, 115},
+	{20, 114},
 };
 
-										
+
 tGaugeBox gaugeBoxes [] = {
 // primary left/right low res
-	{PRIMARY_W_BOX_LEFT_L, PRIMARY_W_BOX_TOP_L, PRIMARY_W_BOX_RIGHT_L, PRIMARY_W_BOX_BOT_L, weaponWindowLeft}, 
-	{SECONDARY_W_BOX_LEFT_L, SECONDARY_W_BOX_TOP_L, SECONDARY_W_BOX_RIGHT_L, SECONDARY_W_BOX_BOT_L, weaponWindowRight}, 
+	{PRIMARY_W_BOX_LEFT_L, PRIMARY_W_BOX_TOP_L, PRIMARY_W_BOX_RIGHT_L, PRIMARY_W_BOX_BOT_L, weaponWindowLeft},
+	{SECONDARY_W_BOX_LEFT_L, SECONDARY_W_BOX_TOP_L, SECONDARY_W_BOX_RIGHT_L, SECONDARY_W_BOX_BOT_L, weaponWindowRight},
 //sb left/right low res
-	{SB_PRIMARY_W_BOX_LEFT_L, SB_PRIMARY_W_BOX_TOP_L, SB_PRIMARY_W_BOX_RIGHT_L, SB_PRIMARY_W_BOX_BOT_L, NULL}, 
-	{SB_SECONDARY_W_BOX_LEFT_L, SB_SECONDARY_W_BOX_TOP_L, SB_SECONDARY_W_BOX_RIGHT_L, SB_SECONDARY_W_BOX_BOT_L, NULL}, 
+	{SB_PRIMARY_W_BOX_LEFT_L, SB_PRIMARY_W_BOX_TOP_L, SB_PRIMARY_W_BOX_RIGHT_L, SB_PRIMARY_W_BOX_BOT_L, NULL},
+	{SB_SECONDARY_W_BOX_LEFT_L, SB_SECONDARY_W_BOX_TOP_L, SB_SECONDARY_W_BOX_RIGHT_L, SB_SECONDARY_W_BOX_BOT_L, NULL},
 // primary left/right hires
-	{PRIMARY_W_BOX_LEFT_H, PRIMARY_W_BOX_TOP_H, PRIMARY_W_BOX_RIGHT_H, PRIMARY_W_BOX_BOT_H, weaponWindowLeftHires}, 
-	{SECONDARY_W_BOX_LEFT_H, SECONDARY_W_BOX_TOP_H, SECONDARY_W_BOX_RIGHT_H, SECONDARY_W_BOX_BOT_H, weaponWindowRightHires}, 
+	{PRIMARY_W_BOX_LEFT_H, PRIMARY_W_BOX_TOP_H, PRIMARY_W_BOX_RIGHT_H, PRIMARY_W_BOX_BOT_H, weaponWindowLeftHires},
+	{SECONDARY_W_BOX_LEFT_H, SECONDARY_W_BOX_TOP_H, SECONDARY_W_BOX_RIGHT_H, SECONDARY_W_BOX_BOT_H, weaponWindowRightHires},
 // sb left/right hires
-	{SB_PRIMARY_W_BOX_LEFT_H, SB_PRIMARY_W_BOX_TOP_H, SB_PRIMARY_W_BOX_RIGHT_H, SB_PRIMARY_W_BOX_BOT_H, NULL}, 
-	{SB_SECONDARY_W_BOX_LEFT_H, SB_SECONDARY_W_BOX_TOP_H, SB_SECONDARY_W_BOX_RIGHT_H, SB_SECONDARY_W_BOX_BOT_H, NULL}, 
+	{SB_PRIMARY_W_BOX_LEFT_H, SB_PRIMARY_W_BOX_TOP_H, SB_PRIMARY_W_BOX_RIGHT_H, SB_PRIMARY_W_BOX_BOT_H, NULL},
+	{SB_SECONDARY_W_BOX_LEFT_H, SB_SECONDARY_W_BOX_TOP_H, SB_SECONDARY_W_BOX_RIGHT_H, SB_SECONDARY_W_BOX_BOT_H, NULL},
 	};
 
 // these macros refer to arrays above
@@ -466,13 +466,13 @@ if (box->spanlist) {
 	int cnt, y;
 
 for (cnt=0, y=box->top;cnt<n_spans;cnt++, y++) {
-	GrBmUBitBlt (box->spanlist [cnt].r-box->spanlist [cnt].l+1, 1, 
+	GrBmUBitBlt (box->spanlist [cnt].r-box->spanlist [cnt].l+1, 1,
 				box->left+box->spanlist [cnt].l, y, box->left+box->spanlist [cnt].l, y, bmP, &grdCurCanv->cvBitmap);
 	 	}
  	}
 else {
-	GrBmUBitBlt (box->right-box->left+1, box->bot-box->top+1, 
-					box->left, box->top, box->left, box->top, 
+	GrBmUBitBlt (box->right-box->left+1, box->bot-box->top+1,
+					box->left, box->top, box->left, box->top,
 					bmP, &grdCurCanv->cvBitmap);
 	}
 #endif
@@ -493,7 +493,7 @@ else {
 }
 
 //	-----------------------------------------------------------------------------
-//these should be in gr.h 
+//these should be in gr.h
 #define cv_w  cvBitmap.bmProps.w
 #define cv_h  cvBitmap.bmProps.h
 
@@ -504,7 +504,7 @@ void HUDShowScore (void)
 
 if (HIDE_HUD)
 	return;
-if ((gameData.hud.msgs [0].nMessages > 0) && 
+if ((gameData.hud.msgs [0].nMessages > 0) &&
 	 (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
 GrSetCurFont (GAME_FONT);
@@ -517,7 +517,7 @@ if (!SlowMotionActive ())
 	strcpy (szScore + 4, "          ");
 else
 #endif
-	sprintf (szScore + 4, "M%1.1f S%1.1f ", 
+	sprintf (szScore + 4, "M%1.1f S%1.1f ",
 				gameStates.gameplay.slowmo [0].fSpeed,
 				gameStates.gameplay.slowmo [1].fSpeed);
 szScore [14] = (char) 1;
@@ -573,7 +573,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
 
 if (HIDE_HUD)
 	return;
-if (IsMultiGame && !IsCoopGame) 
+if (IsMultiGame && !IsCoopGame)
 	return;
 if (scoreDisplay [0] == 0)
 	return;
@@ -581,9 +581,9 @@ GrSetCurFont (GAME_FONT);
 scoreTime -= gameData.time.xFrame;
 if (scoreTime > 0) {
 	color = X2I (scoreTime * 20) + 12;
-	if (color < 10) 
+	if (color < 10)
 		color = 12;
-	else if (color > 31) 
+	else if (color > 31)
 		color = 30;
 	color = color - (color % 4);	//	Only allowing colors 12, 16, 20, 24, 28 speeds up gr_getcolor, improves caching
 	if (gameStates.app.cheats.bEnabled)
@@ -637,14 +637,14 @@ else {
 		if (gameData.time.xGame & 0x4000) {
 			PAGE_IN_GAUGE (GAUGE_HOMING_WARNING_ON);
 			HUDBitBlt (
-				HOMING_WARNING_X, HOMING_WARNING_Y, 
+				HOMING_WARNING_X, HOMING_WARNING_Y,
 				gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_ON), F1_0, 0);
 				bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 1;
 			}
 		else {
 			PAGE_IN_GAUGE (GAUGE_HOMING_WARNING_OFF);
 			HUDBitBlt (
-				HOMING_WARNING_X, HOMING_WARNING_Y, 
+				HOMING_WARNING_X, HOMING_WARNING_Y,
 				gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF), F1_0, 0);
 			bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 0;
 			}
@@ -652,7 +652,7 @@ else {
 	else {
 		PAGE_IN_GAUGE (GAUGE_HOMING_WARNING_OFF);
 		HUDBitBlt (
-			HOMING_WARNING_X, HOMING_WARNING_Y, 
+			HOMING_WARNING_X, HOMING_WARNING_Y,
 			gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_HOMING_WARNING_OFF), F1_0, 0);
 		bLastHomingWarningShown [gameStates.render.vr.nCurrentPage] = 0;
 		}
@@ -728,7 +728,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 		y = nHUDLineSpacing;
 		x = GAME_FONT->ftWidth;
 		}
-	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || 
+	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ||
 				(gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
 //			y = 5*nHUDLineSpacing;
 		y = nHUDLineSpacing;
@@ -751,13 +751,13 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 			GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
 		else
 			GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-		sprintf (szInfo, 
-			"x %d [%d]", 
-			LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX], 
+		sprintf (szInfo,
+			"x %d [%d]",
+			LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX],
 			LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX]);
 		nIdEntropy [0] = GrPrintF (nIdEntropy, x, y, szInfo);
 		if (gameStates.entropy.bConquering) {
-			int t = (extraGameInfo [1].entropy.nCaptureTimeLimit * 1000) - 
+			int t = (extraGameInfo [1].entropy.nCaptureTimeLimit * 1000) -
 					   (gameStates.app.nSDLTicks - gameStates.entropy.nTimeLastMoved);
 
 			if (t < 0)
@@ -791,7 +791,7 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_F
 		y = nHUDLineSpacing;
 		x = GAME_FONT->ftWidth;
 		}
-	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || 
+	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ||
 				 (gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
 		y = 5*nHUDLineSpacing;
 		x = GAME_FONT->ftWidth;
@@ -970,7 +970,7 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {		//draw background
 		HUDRect (169, 189, 189, 196);
 		GrSetColorRGBi (RGBA_PAL (0, 0, 0));
 		GrScanLine (168, 189, 189);
-		} 
+		}
 	else {
 		GrRect (HUD_SCALE_X (338), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (470));
 		GrSetColorRGBi (RGBA_PAL (0, 0, 0));
@@ -979,7 +979,7 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {		//draw background
 	}
 if (count)
 	GrSetFontColorRGBi (
-		(bomb == PROXMINE_INDEX) ? RGBA_PAL2 (55, 0, 0) : RGBA_PAL2 (59, 59, 21), 1, 
+		(bomb == PROXMINE_INDEX) ? RGBA_PAL2 (55, 0, 0) : RGBA_PAL2 (59, 59, 21), 1,
 		bg_color, bg_color != -1);
 else if (bg_color != -1)
 	GrSetFontColorRGBi (bg_color, 1, bg_color, 1);	//erase by drawing in background color
@@ -1035,12 +1035,12 @@ switch (gameData.weapons.nPrimary) {
 		break;
 
 	case SUPER_LASER_INDEX:
-		Int3 (); 
+		Int3 ();
 		break;	//no such thing as super laser
 
-	case VULCAN_INDEX:	
-	case GAUSS_INDEX:		
-		sprintf (szWeapon, "%s: %i", pszWeapon, X2I ((unsigned) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (unsigned) VULCAN_AMMO_SCALE)); 
+	case VULCAN_INDEX:
+	case GAUSS_INDEX:
+		sprintf (szWeapon, "%s: %i", pszWeapon, X2I ((unsigned) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (unsigned) VULCAN_AMMO_SCALE));
 		convert_1s (szWeapon);
 		break;
 
@@ -1057,7 +1057,7 @@ switch (gameData.weapons.nPrimary) {
 		convert_1s (szWeapon);
 		break;
 
-	default:					
+	default:
 		Int3 ();
 		szWeapon [0] = 0;
 		break;
@@ -1143,7 +1143,7 @@ void HUDShowShield (void)
 if (HIDE_HUD)
 	return;
 //	GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
-h = (LOCALPLAYER.shields >= 0) ? X2IR (LOCALPLAYER.shields) : 0; 
+h = (LOCALPLAYER.shields >= 0) ? X2IR (LOCALPLAYER.shields) : 0;
 if ((t = HUDShowFlashGauge (h, &gameStates.render.cockpit.nShieldFlash, (int) tToggle))) {
 	tToggle = t;
 	bShow = !bShow;
@@ -1168,8 +1168,8 @@ if (gameStates.render.cockpit.nShieldFlash) {
 		if ((nBeep < 0) || (bLastFlash != gameStates.render.cockpit.nShieldFlash)) {
 			if (nBeep >= 0)
 				DigiStopSound ((int) nBeep);
-			nBeep = DigiStartSound (-1, F1_0 * 2 / 3, 0xFFFF / 2, -1, -1, -1, -1, F1_0, 
-											AddonSoundName ((gameStates.render.cockpit.nShieldFlash == 1) ? 
+			nBeep = DigiStartSound (-1, F1_0 * 2 / 3, 0xFFFF / 2, -1, -1, -1, -1, F1_0,
+											AddonSoundName ((gameStates.render.cockpit.nShieldFlash == 1) ?
 											SND_ADDON_LOW_SHIELDS1 : SND_ADDON_LOW_SHIELDS2), NULL, 0);
 			}
 		}
@@ -1216,7 +1216,7 @@ if (IsMultiGame) {
 	GrSetCurFont (GAME_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdLives = GrPrintF (&nIdLives, 10, 3, "%s: %d", TXT_DEATHS, LOCALPLAYER.netKilledTotal);
-	} 
+	}
 else if (LOCALPLAYER.lives > 1)  {
 	grsBitmap *bmP;
 	GrSetCurFont (GAME_FONT);
@@ -1239,8 +1239,8 @@ void ShowTime (void)
 
 GrSetCurFont (GAME_FONT);
 GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-nIdTime = GrPrintF (&nIdTime, grdCurCanv->cv_w - 4 * GAME_FONT->ftWidth, 
-						  grdCurCanv->cv_h - 4 * nHUDLineSpacing, 
+nIdTime = GrPrintF (&nIdTime, grdCurCanv->cv_w - 4 * GAME_FONT->ftWidth,
+						  grdCurCanv->cv_h - 4 * nHUDLineSpacing,
 						  "%d:%02d", mins, secs);
 }
 
@@ -1248,7 +1248,7 @@ nIdTime = GrPrintF (&nIdTime, grdCurCanv->cv_w - 4 * GAME_FONT->ftWidth,
 
 #define EXTRA_SHIP_SCORE	50000		//get new ship every this many points
 
-void AddPointsToScore (int points) 
+void AddPointsToScore (int points)
 {
 	int prev_score;
 
@@ -1279,7 +1279,7 @@ void AddPointsToScore (int points)
 
 //	-----------------------------------------------------------------------------
 
-void AddBonusPointsToScore (int points) 
+void AddBonusPointsToScore (int points)
 {
 	int prev_score;
 
@@ -1346,7 +1346,7 @@ void InitGauges (void)
 	//draw_gauges_on 	= 1;
 
 for (i=0; i<2; i++)	{
-	if ((IsMultiGame && !IsCoopGame) || ((gameData.demo.nState == ND_STATE_PLAYBACK) && (gameData.demo.nGameMode & GM_MULTI) && !(gameData.demo.nGameMode & GM_MULTI_COOP))) 
+	if ((IsMultiGame && !IsCoopGame) || ((gameData.demo.nState == ND_STATE_PLAYBACK) && (gameData.demo.nGameMode & GM_MULTI) && !(gameData.demo.nGameMode & GM_MULTI_COOP)))
 		oldScore [i] = -99;
 	else
 		oldScore [i]		= -1;
@@ -1403,7 +1403,7 @@ HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, F1_0, 0);
 				x1 = h0 - y;
 				x2 = x1 + energy0 + (int) ((double) y * eBarScale);
 				if (y < h1) {
-					if (x2 > w1) 
+					if (x2 > w1)
 						x2 = w1;
 					}
 				else if (y < h2) {
@@ -1411,14 +1411,14 @@ HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, F1_0, 0);
 						x2 = w2;
 					}
 				else {
-					if (x2 > w3) 
+					if (x2 > w3)
 						x2 = w3;
 					}
 				if (x2 > x1)
 					gr_uscanline (
-						HUD_SCALE_X (LEFT_ENERGY_GAUGE_X) + x1, 
-						HUD_SCALE_X (LEFT_ENERGY_GAUGE_X) + x2, 
-						HUD_SCALE_Y (LEFT_ENERGY_GAUGE_Y) + y); 
+						HUD_SCALE_X (LEFT_ENERGY_GAUGE_X) + x1,
+						HUD_SCALE_X (LEFT_ENERGY_GAUGE_X) + x2,
+						HUD_SCALE_Y (LEFT_ENERGY_GAUGE_Y) + y);
 				}
 			}
 		}
@@ -1446,22 +1446,22 @@ HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, F1_0, 0);
 				x2 = h0 + y;
 				x1 = x2 - energy0 - (int) ((double) y * eBarScale);
 				if (y < h1) {
-					if (x1 < 0) 
+					if (x1 < 0)
 						x1 = 0;
 					}
 				else if (y < h2) {
-					if (x1 < w1) 
+					if (x1 < w1)
 						x1 = w1;
 					}
 				else {
-					if (x1 < w2) 
+					if (x1 < w2)
 						x1 = w2;
 					}
-				if (x2 > x1) 
+				if (x2 > x1)
 					gr_uscanline (
-						HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X) + x1, 
-						HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X) + x2, 
-						HUD_SCALE_Y (RIGHT_ENERGY_GAUGE_Y) + y); 
+						HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X) + x1,
+						HUD_SCALE_X (RIGHT_ENERGY_GAUGE_X) + x2,
+						HUD_SCALE_Y (RIGHT_ENERGY_GAUGE_Y) + y);
 				}
 			}
 		}
@@ -1471,111 +1471,111 @@ GrSetCurrentCanvas (GetCurrentGameScreen ());
 //	-----------------------------------------------------------------------------
 
 ubyte afterburner_bar_table [AFTERBURNER_GAUGE_H_L*2] = {
-			3, 11, 
-			3, 11, 
-			3, 11, 
-			3, 11, 
-			3, 11, 
-			3, 11, 
-			2, 11, 
-			2, 10, 
-			2, 10, 
-			2, 10, 
-			2, 10, 
-			2, 10, 
-			2, 10, 
-			1, 10, 
-			1, 10, 
-			1, 10, 
-			1, 9, 
-			1, 9, 
-			1, 9, 
-			1, 9, 
-			0, 9, 
-			0, 9, 
-			0, 8, 
-			0, 8, 
-			0, 8, 
-			0, 8, 
-			1, 8, 
-			2, 8, 
-			3, 8, 
-			4, 8, 
-			5, 8, 
-			6, 7, 
+			3, 11,
+			3, 11,
+			3, 11,
+			3, 11,
+			3, 11,
+			3, 11,
+			2, 11,
+			2, 10,
+			2, 10,
+			2, 10,
+			2, 10,
+			2, 10,
+			2, 10,
+			1, 10,
+			1, 10,
+			1, 10,
+			1, 9,
+			1, 9,
+			1, 9,
+			1, 9,
+			0, 9,
+			0, 9,
+			0, 8,
+			0, 8,
+			0, 8,
+			0, 8,
+			1, 8,
+			2, 8,
+			3, 8,
+			4, 8,
+			5, 8,
+			6, 7,
 };
 
 ubyte afterburner_bar_table_hires [AFTERBURNER_GAUGE_H_H*2] = {
-	5, 20, 
-	5, 20, 
-	5, 19, 
-	5, 19, 
-	5, 19, 
-	5, 19, 
-	4, 19, 
-	4, 19, 
-	4, 19, 
-	4, 19, 
+	5, 20,
+	5, 20,
+	5, 19,
+	5, 19,
+	5, 19,
+	5, 19,
+	4, 19,
+	4, 19,
+	4, 19,
+	4, 19,
 
-	4, 19, 
-	4, 18, 
-	4, 18, 
-	4, 18, 
-	4, 18, 
-	3, 18, 
-	3, 18, 
-	3, 18, 
-	3, 18, 
-	3, 18, 
+	4, 19,
+	4, 18,
+	4, 18,
+	4, 18,
+	4, 18,
+	3, 18,
+	3, 18,
+	3, 18,
+	3, 18,
+	3, 18,
 
-	3, 18, 
-	3, 17, 
-	3, 17, 
-	2, 17, 
-	2, 17, 
-	2, 17, 
-	2, 17, 
-	2, 17, 
-	2, 17, 
-	2, 17, 
+	3, 18,
+	3, 17,
+	3, 17,
+	2, 17,
+	2, 17,
+	2, 17,
+	2, 17,
+	2, 17,
+	2, 17,
+	2, 17,
 
-	2, 17, 
-	2, 16, 
-	2, 16, 
-	1, 16, 
-	1, 16, 
-	1, 16, 
-	1, 16, 
-	1, 16, 
-	1, 16, 
-	1, 16, 
+	2, 17,
+	2, 16,
+	2, 16,
+	1, 16,
+	1, 16,
+	1, 16,
+	1, 16,
+	1, 16,
+	1, 16,
+	1, 16,
 
-	1, 16, 
-	1, 15, 
-	1, 15, 
-	1, 15, 
-	0, 15, 
-	0, 15, 
-	0, 15, 
-	0, 15, 
-	0, 15, 
-	0, 15, 
+	1, 16,
+	1, 15,
+	1, 15,
+	1, 15,
+	0, 15,
+	0, 15,
+	0, 15,
+	0, 15,
+	0, 15,
+	0, 15,
 
-	0, 14, 
-	0, 14, 
-	0, 14, 
-	1, 14, 
-	2, 14, 
-	3, 14, 
-	4, 14, 
-	5, 14, 
-	6, 13, 
-	7, 13, 
+	0, 14,
+	0, 14,
+	0, 14,
+	1, 14,
+	2, 14,
+	3, 14,
+	4, 14,
+	5, 14,
+	6, 13,
+	7, 13,
 
-	8, 13, 
-	9, 13, 
-	10, 13, 
-	11, 13, 
+	8, 13,
+	9, 13,
+	10, 13,
+	11, 13,
 	12, 13
 };
 
@@ -1603,8 +1603,8 @@ yMax = HUD_SCALE_Y (not_afterburner);
 for (y = 0; y < not_afterburner; y++) {
 	for (i = HUD_SCALE_Y (y), j = HUD_SCALE_Y (y + 1); i < j; i++) {
 		gr_uscanline (
-			HUD_SCALE_X (AFTERBURNER_GAUGE_X + pabt [y * 2]), 
-			HUD_SCALE_X (AFTERBURNER_GAUGE_X + pabt [y * 2 + 1] + 1), 
+			HUD_SCALE_X (AFTERBURNER_GAUGE_X + pabt [y * 2]),
+			HUD_SCALE_X (AFTERBURNER_GAUGE_X + pabt [y * 2 + 1] + 1),
 			HUD_SCALE_Y (AFTERBURNER_GAUGE_Y) + i);
 		}
 	}
@@ -1635,7 +1635,7 @@ void DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y)
 if (IsTeamGame) {
 	PAGE_IN_GAUGE (GAUGE_SHIPS + GetTeam (gameData.multiplayer.nLocalPlayer));
 	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_SHIPS + GetTeam (gameData.multiplayer.nLocalPlayer));
-	} 
+	}
 else {
 	PAGE_IN_GAUGE (GAUGE_SHIPS + gameData.multiplayer.nLocalPlayer);
 	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_SHIPS + gameData.multiplayer.nLocalPlayer);
@@ -1676,7 +1676,7 @@ while (nCloakFadeState && (xCloakFadeTimer < 0)) {
 	}
 
 //	To fade out both pages in a paged mode.
-if (refade) 
+if (refade)
 	refade = 0;
 else if (nCloakState && nOldCloakState && !nCloakFadeState && !refade) {
 	nCloakFadeState = -1;
@@ -1685,7 +1685,7 @@ else if (nCloakState && nOldCloakState && !nCloakFadeState && !refade) {
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 	GrSetCurrentCanvas (&gameStates.render.vr.buffers.render [0]);
 	}
-//if (nCloakFadeValue >= GR_ACTUAL_FADE_LEVELS - 1) 
+//if (nCloakFadeValue >= GR_ACTUAL_FADE_LEVELS - 1)
 	{
 	gameStates.render.grAlpha = (float) nCloakFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
 	HUDBitBlt (x, y, bmP, F1_0, 0);
@@ -1698,8 +1698,8 @@ if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 	GrSetCurrentCanvas (GetCurrentGameScreen ());
 #if 0
 GrBmUBitBltM (
-	(int) (bmP->bmProps.w * cmScaleX), (int) (bmP->bmProps.h * cmScaleY), 
-	(int) (x * cmScaleX), (int) (y * cmScaleY), x, y, 
+	(int) (bmP->bmProps.w * cmScaleX), (int) (bmP->bmProps.h * cmScaleY),
+	(int) (x * cmScaleX), (int) (y * cmScaleY), x, y,
 	&gameStates.render.vr.buffers.render [0].cvBitmap, &grdCurCanv->cvBitmap, 1);
 #endif
 }
@@ -1718,7 +1718,7 @@ return x + NUMERICAL_GAUGE_X;
 
 void DrawNumericalDisplay (int shield, int energy)
 {
-	int dx = NUMERICAL_GAUGE_X, 
+	int dx = NUMERICAL_GAUGE_X,
 		 dy = NUMERICAL_GAUGE_Y;
 
 	static int nIdShields = 0, nIdEnergy = 0;
@@ -1750,7 +1750,7 @@ GrSetCurrentCanvas (GetCurrentGameScreen ());
 if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY)	{
 	PAGE_IN_GAUGE (GAUGE_BLUE_KEY);
 	HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY), F1_0, 0);
-	} 
+	}
 else {
 	PAGE_IN_GAUGE (GAUGE_BLUE_KEY_OFF);
 	HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY_OFF), F1_0, 0);
@@ -1758,7 +1758,7 @@ else {
 if (LOCALPLAYER.flags & PLAYER_FLAGS_GOLD_KEY)	{
 	PAGE_IN_GAUGE (GAUGE_GOLD_KEY);
 	HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY), F1_0, 0);
-	} 
+	}
 else {
 	PAGE_IN_GAUGE (GAUGE_GOLD_KEY_OFF);
 	HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY_OFF), F1_0, 0);
@@ -1766,7 +1766,7 @@ else {
 if (LOCALPLAYER.flags & PLAYER_FLAGS_RED_KEY)	{
 	PAGE_IN_GAUGE (GAUGE_RED_KEY);
 	HUDBitBlt (GAUGE_RED_KEY_X,  GAUGE_RED_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_RED_KEY), F1_0, 0);
-	} 
+	}
 else {
 	PAGE_IN_GAUGE (GAUGE_RED_KEY_OFF);
 	HUDBitBlt (GAUGE_RED_KEY_X,  GAUGE_RED_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_RED_KEY_OFF), F1_0, 0);
@@ -1775,7 +1775,7 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, const char *pszName, int text_x, 
+void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, const char *pszName, int text_x,
 								int text_y, int orient)
 {
 	grsBitmap	*bmP;
@@ -1788,7 +1788,7 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, co
 #if 0
 	if (gameStates.render.cockpit.nMode != CM_FULL_SCREEN) {
 		GrSetColorRGBi (RGBA_PAL (0, 0, 0));
-		GrRect ((int) (box->left * cmScaleX), (int) (box->top * cmScaleY), 
+		GrRect ((int) (box->left * cmScaleX), (int) (box->top * cmScaleY),
 				  (int) (box->right * cmScaleX), (int) (box->bot * cmScaleY));
 		}
 #endif
@@ -1841,48 +1841,48 @@ if (nWeaponType == 0) {
 		info_index = SUPERLASER_ID;
 
 	if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-		DrawWeaponInfoSub (info_index, 
-			gaugeBoxes + SB_PRIMARY_BOX, 
-			SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y, 
-			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum), 
+		DrawWeaponInfoSub (info_index,
+			gaugeBoxes + SB_PRIMARY_BOX,
+			SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y,
+			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			SB_PRIMARY_W_TEXT_X, SB_PRIMARY_W_TEXT_Y, 0);
 #if 0
 	else if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
-		DrawWeaponInfoSub (info_index, 
-			gaugeBoxes + SB_PRIMARY_BOX, 
-			SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y, 
-			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum), 
+		DrawWeaponInfoSub (info_index,
+			gaugeBoxes + SB_PRIMARY_BOX,
+			SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y,
+			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			SB_PRIMARY_W_TEXT_X, SB_PRIMARY_W_TEXT_Y, 3);
 #endif
 	else
-		DrawWeaponInfoSub (info_index, 
-			gaugeBoxes + COCKPIT_PRIMARY_BOX, 
-			PRIMARY_W_PIC_X, PRIMARY_W_PIC_Y, 
-			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum), 
+		DrawWeaponInfoSub (info_index,
+			gaugeBoxes + COCKPIT_PRIMARY_BOX,
+			PRIMARY_W_PIC_X, PRIMARY_W_PIC_Y,
+			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			PRIMARY_W_TEXT_X, PRIMARY_W_TEXT_Y, 0);
 		}
 else {
 	info_index = secondaryWeaponToWeaponInfo [nWeaponNum];
 
 	if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-		DrawWeaponInfoSub (info_index, 
-			gaugeBoxes + SB_SECONDARY_BOX, 
-			SB_SECONDARY_W_PIC_X, SB_SECONDARY_W_PIC_Y, 
-			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum), 
+		DrawWeaponInfoSub (info_index,
+			gaugeBoxes + SB_SECONDARY_BOX,
+			SB_SECONDARY_W_PIC_X, SB_SECONDARY_W_PIC_Y,
+			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			SB_SECONDARY_W_TEXT_X, SB_SECONDARY_W_TEXT_Y, 0);
 #if 0
 	else if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
-		DrawWeaponInfoSub (info_index, 
-			gaugeBoxes + COCKPIT_SECONDARY_BOX, 
-			SECONDARY_W_PIC_X, SECONDARY_W_PIC_Y, 
-			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum), 
+		DrawWeaponInfoSub (info_index,
+			gaugeBoxes + COCKPIT_SECONDARY_BOX,
+			SECONDARY_W_PIC_X, SECONDARY_W_PIC_Y,
+			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 1);
 #endif
 	else
-		DrawWeaponInfoSub (info_index, 
-			gaugeBoxes + COCKPIT_SECONDARY_BOX, 
-			SECONDARY_W_PIC_X, SECONDARY_W_PIC_Y, 
-			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum), 
+		DrawWeaponInfoSub (info_index,
+			gaugeBoxes + COCKPIT_SECONDARY_BOX,
+			SECONDARY_W_PIC_X, SECONDARY_W_PIC_Y,
+			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum),
 			SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 0);
 	}
 }
@@ -1927,8 +1927,8 @@ int DrawWeaponBox (int nWeaponType, int nWeaponNum)
 
 GrSetCurrentCanvas (&gameStates.render.vr.buffers.render [0]);
 GrSetCurFont (GAME_FONT);
-bLaserLevelChanged = ((nWeaponType == 0) && 
-								(nWeaponNum == LASER_INDEX) && 
+bLaserLevelChanged = ((nWeaponType == 0) &&
+								(nWeaponNum == LASER_INDEX) &&
 								((LOCALPLAYER.laserLevel != oldLaserLevel [gameStates.render.vr.nCurrentPage])));
 
 if ((nWeaponNum != oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage] || bLaserLevelChanged) && weaponBoxStates [nWeaponType] == WS_SET) {
@@ -1982,9 +1982,9 @@ if (weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
 	int fadeValue = X2I (weaponBoxFadeValues [nWeaponType]);
 	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
 	gameStates.render.grAlpha = (float) fadeValue;
-	GrRect (gaugeBoxes [boxofs + nWeaponType].left, 
-			  gaugeBoxes [boxofs + nWeaponType].top, 
-			  gaugeBoxes [boxofs + nWeaponType].right, 
+	GrRect (gaugeBoxes [boxofs + nWeaponType].left,
+			  gaugeBoxes [boxofs + nWeaponType].top,
+			  gaugeBoxes [boxofs + nWeaponType].right,
 			  gaugeBoxes [boxofs + nWeaponType].bot);
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 	}
@@ -2029,7 +2029,7 @@ void DrawWeaponBoxes ()
 
 if (weaponBoxUser [0] == WBU_WEAPON) {
 	bDrawn = DrawWeaponBox (0, gameData.weapons.nPrimary);
-	if (bDrawn) 
+	if (bDrawn)
 		CopyGaugeBox (gaugeBoxes+boxofs, &gameStates.render.vr.buffers.render [0].cvBitmap);
 
 	if (weaponBoxStates [0] == WS_SET) {
@@ -2086,7 +2086,7 @@ if (tInvul > 0) {
 		if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)	{
 			PAGE_IN_GAUGE (GAUGE_INVULNERABLE + nInvulnerableFrame);
 			HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], F1_0, 0);
-			} 
+			}
 		else {
 			PAGE_IN_GAUGE (GAUGE_INVULNERABLE + nInvulnerableFrame);
 			HUDBitBlt (SHIELD_GAUGE_X, SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (GAUGE_INVULNERABLE + nInvulnerableFrame)], F1_0, 0);
@@ -2108,13 +2108,13 @@ else
 //	-----------------------------------------------------------------------------
 
 rgb playerColors [] = {
-	{15, 15, 23}, 
-	{27, 0, 0}, 
-	{0, 23, 0}, 
-	{30, 11, 31}, 
-	{31, 16, 0}, 
-	{24, 17, 6}, 
-	{14, 21, 12}, 
+	{15, 15, 23},
+	{27, 0, 0},
+	{0, 23, 0},
+	{30, 11, 31},
+	{31, 16, 0},
+	{24, 17, 6},
+	{14, 21, 12},
 	{29, 29, 0}};
 
 typedef struct {
@@ -2149,7 +2149,7 @@ bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1, 1);
 bMissileAmmo = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1, 1);
 nPrimaryBm = bLaserReady && (bLaserAmmo == HAS_ALL);
 nSecondaryBm = bMissileReady && (bMissileAmmo == HAS_ALL);
-if (nPrimaryBm && (gameData.weapons.nPrimary == LASER_INDEX) && 
+if (nPrimaryBm && (gameData.weapons.nPrimary == LASER_INDEX) &&
 	 (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS))
 	nPrimaryBm++;
 
@@ -2170,7 +2170,7 @@ if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats,
 #endif
 	return;
 cmScaleX *= HUD_ASPECT;
-if ((gameStates.ogl.nReticle == 2) || (gameStates.ogl.nReticle && grdCurCanv->cvBitmap.bmProps.w > 320))             
+if ((gameStates.ogl.nReticle == 2) || (gameStates.ogl.nReticle && grdCurCanv->cvBitmap.bmProps.w > 320))
    OglDrawReticle (nCrossBm, nPrimaryBm, nSecondaryBm);
 else {
 	bHiresReticle = (gameStates.render.fonts.bHires != 0);
@@ -2180,20 +2180,20 @@ else {
 	nGaugeIndex = (bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm;
 	PAGE_IN_GAUGE (nGaugeIndex);
 	HUDBitBlt (
-		- (x + HUD_SCALE_X (cross_offsets [ofs].x)), 
-		- (y + HUD_SCALE_Y (cross_offsets [ofs].y)), 
+		- (x + HUD_SCALE_X (cross_offsets [ofs].x)),
+		- (y + HUD_SCALE_Y (cross_offsets [ofs].y)),
 		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), F1_0, 0);
 	nGaugeIndex = (bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm;
 	PAGE_IN_GAUGE (nGaugeIndex);
 	HUDBitBlt (
-		- (x + HUD_SCALE_X (primary_offsets [ofs].x)), 
-		- (y + HUD_SCALE_Y (primary_offsets [ofs].y)), 
+		- (x + HUD_SCALE_X (primary_offsets [ofs].x)),
+		- (y + HUD_SCALE_Y (primary_offsets [ofs].y)),
 		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), F1_0, 0);
 	nGaugeIndex = (bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm;
 	PAGE_IN_GAUGE (nGaugeIndex);
 	HUDBitBlt (
-		- (x + HUD_SCALE_X (secondary_offsets [ofs].x)), 
-		- (y + HUD_SCALE_Y (secondary_offsets [ofs].y)), 
+		- (x + HUD_SCALE_X (secondary_offsets [ofs].x)),
+		- (y + HUD_SCALE_Y (secondary_offsets [ofs].y)),
 		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), F1_0, 0);
   }
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
@@ -2228,10 +2228,10 @@ if (gameData.multigame.kills.xShowListTimer > 0) {
 GrSetCurFont (GAME_FONT);
 n_players = (gameData.multigame.kills.bShowList == 3) ? 2 : MultiGetKillList (player_list);
 n_left = (n_players <= 4) ? n_players : (n_players+1)/2;
-//If font size changes, this code might not work right anymore 
+//If font size changes, this code might not work right anymore
 //Assert (GAME_FONT->ftHeight==5 && GAME_FONT->ftWidth==7);
 fth = GAME_FONT->ftHeight;
-x0 = HUD_LHX (1); 
+x0 = HUD_LHX (1);
 x1 = (IsCoopGame) ? HUD_LHX (43) : HUD_LHX (43);
 save_y = y = grdCurCanv->cv_h - n_left* (fth+1);
 if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
@@ -2262,10 +2262,10 @@ for (i = 0; i < n_players; i++) {
 			}
 		if (i==n_left)
 			y = save_y;
-		if (netGame.KillGoal || netGame.xPlayTimeAllowed) 
+		if (netGame.KillGoal || netGame.xPlayTimeAllowed)
 			x1-=HUD_LHX (18);
 		}
-	else if (netGame.KillGoal || netGame.xPlayTimeAllowed) 
+	else if (netGame.KillGoal || netGame.xPlayTimeAllowed)
 		 x1 = HUD_LHX (43) - HUD_LHX (18);
 	nPlayer = (gameData.multigame.kills.bShowList == 3) ? i : player_list [i];
 	if ((gameData.multigame.kills.bShowList == 1) || (gameData.multigame.kills.bShowList == 2)) {
@@ -2281,17 +2281,17 @@ for (i = 0; i < n_players; i++) {
 			GrSetFontColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b), 1, 0, 0);
 			}
 		}
-	else 
+	else
 		GrSetFontColorRGBi (RGBA_PAL2 (playerColors [nPlayer].r, playerColors [nPlayer].g, playerColors [nPlayer].b), 1, 0, 0);
 	if (gameData.multigame.kills.bShowList == 3) {
 		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
 #if 0//def _DEBUG
-			sprintf (name, "%c%-8s %d.%d.%d.%d:%d", 
-						teamInd [0], netGame.team_name [i], 
-						netPlayers.players [i].network.ipx.node [0], 
-						netPlayers.players [i].network.ipx.node [1], 
-						netPlayers.players [i].network.ipx.node [2], 
-						netPlayers.players [i].network.ipx.node [3], 
+			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
+						teamInd [0], netGame.team_name [i],
+						netPlayers.players [i].network.ipx.node [0],
+						netPlayers.players [i].network.ipx.node [1],
+						netPlayers.players [i].network.ipx.node [2],
+						netPlayers.players [i].network.ipx.node [3],
 						netPlayers.players [i].network.ipx.node [5] +
 						 (unsigned) netPlayers.players [i].network.ipx.node [4] * 256);
 #else
@@ -2301,12 +2301,12 @@ for (i = 0; i < n_players; i++) {
 			}
 		else {
 #if SHOW_PLAYER_IP
-			sprintf (name, "%-8s %d.%d.%d.%d:%d", 
-						netGame.team_name [i], 
-						netPlayers.players [i].network.ipx.node [0], 
-						netPlayers.players [i].network.ipx.node [1], 
-						netPlayers.players [i].network.ipx.node [2], 
-						netPlayers.players [i].network.ipx.node [3], 
+			sprintf (name, "%-8s %d.%d.%d.%d:%d",
+						netGame.team_name [i],
+						netPlayers.players [i].network.ipx.node [0],
+						netPlayers.players [i].network.ipx.node [1],
+						netPlayers.players [i].network.ipx.node [2],
+						netPlayers.players [i].network.ipx.node [3],
 						netPlayers.players [i].network.ipx.node [5] +
 						 (unsigned) netPlayers.players [i].network.ipx.node [4] * 256);
 #else
@@ -2317,12 +2317,12 @@ for (i = 0; i < n_players; i++) {
 		}
 	else
 #if 0//def _DEBUG
-		sprintf (name, "%-8s %d.%d.%d.%d:%d", 
-					gameData.multiplayer.players [nPlayer].callsign, 
-					netPlayers.players [nPlayer].network.ipx.node [0], 
-					netPlayers.players [nPlayer].network.ipx.node [1], 
-					netPlayers.players [nPlayer].network.ipx.node [2], 
-					netPlayers.players [nPlayer].network.ipx.node [3], 
+		sprintf (name, "%-8s %d.%d.%d.%d:%d",
+					gameData.multiplayer.players [nPlayer].callsign,
+					netPlayers.players [nPlayer].network.ipx.node [0],
+					netPlayers.players [nPlayer].network.ipx.node [1],
+					netPlayers.players [nPlayer].network.ipx.node [2],
+					netPlayers.players [nPlayer].network.ipx.node [3],
 					netPlayers.players [nPlayer].network.ipx.node [5] +
 					 (unsigned) netPlayers.players [nPlayer].network.ipx.node [4] * 256);
 #else
@@ -2343,15 +2343,15 @@ for (i = 0; i < n_players; i++) {
 		if (gameData.multiplayer.players [nPlayer].netKilledTotal + gameData.multiplayer.players [nPlayer].netKillsTotal <= 0)
 			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, TXT_NOT_AVAIL);
 		else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%d%%", 
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%d%%",
 				 (int) ((double) gameData.multiplayer.players [nPlayer].netKillsTotal /
 						 ((double) gameData.multiplayer.players [nPlayer].netKilledTotal +
-						  (double) gameData.multiplayer.players [nPlayer].netKillsTotal) * 100.0));	
+						  (double) gameData.multiplayer.players [nPlayer].netKillsTotal) * 100.0));
 		}
 	else if (gameData.multigame.kills.bShowList == 3) {
 		if (gameData.app.nGameMode & GM_ENTROPY)
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d [%d/%d]", 
-						 gameData.multigame.kills.nTeam [i], gameData.entropy.nTeamRooms [i + 1], 
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d [%d/%d]",
+						 gameData.multigame.kills.nTeam [i], gameData.entropy.nTeamRooms [i + 1],
 						 gameData.entropy.nTotalRooms);
 		else
 			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d", gameData.multigame.kills.nTeam [i]);
@@ -2359,8 +2359,8 @@ for (i = 0; i < n_players; i++) {
 	else if (IsCoopGame)
 		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%-6d", gameData.multiplayer.players [nPlayer].score);
    else if (netGame.xPlayTimeAllowed || netGame.KillGoal)
-      nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d (%d)", 
-					 gameData.multiplayer.players [nPlayer].netKillsTotal, 
+      nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d (%d)",
+					 gameData.multiplayer.players [nPlayer].netKillsTotal,
 					 gameData.multiplayer.players [nPlayer].nKillGoalCount);
    else
 		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d", gameData.multiplayer.players [nPlayer].netKillsTotal);
@@ -2369,12 +2369,12 @@ for (i = 0; i < n_players; i++) {
 			PingPlayer (nPlayer);
 		if (pingStats [nPlayer].sent) {
 #if 0//def _DEBUG
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %d %d", 
-						  pingStats [nPlayer].ping, 
-						  pingStats [nPlayer].sent, 
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %d %d",
+						  pingStats [nPlayer].ping,
+						  pingStats [nPlayer].sent,
 						  pingStats [nPlayer].received);
 #else
-			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %i%%", pingStats [nPlayer].ping, 
+			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y, "%lu %i%%", pingStats [nPlayer].ping,
 						 100 - ((pingStats [nPlayer].received * 100) / pingStats [nPlayer].sent));
 #endif
 			}
@@ -2404,7 +2404,7 @@ int CanSeeObject (int nObject, int bCheckObjs)
 
 fq.p0 = &gameData.objs.viewer->position.vPos;
 fq.p1 = &OBJECTS [nObject].position.vPos;
-fq.radP0 = 
+fq.radP0 =
 fq.radP1 = 0;
 fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
 fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
@@ -2424,7 +2424,7 @@ void ShowHUDNames ()
 	rgb *colorP;
 	static int nCurColor = 1, tColorChange = 0;
 	static rgb typingColors [2] = {
-		{63, 0, 0}, 
+		{63, 0, 0},
 		{63, 63, 0}
 	};
 	char s [CALLSIGN_LEN+10];
@@ -2433,7 +2433,7 @@ void ShowHUDNames ()
 	int nColor;
 	static int nIdNames [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
 
-bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || 
+bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) ||
 						 (netGame.bShowAllNames && gameData.multigame.bShowReticleName));
 bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGame));
 bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
@@ -2444,13 +2444,13 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 	bShowName = (gameStates.multi.bPlayerIsTyping [p] || (bShowAllNames && !(gameData.multiplayer.players [p].flags & PLAYER_FLAGS_CLOAKED)) || (bShowTeamNames && GetTeam (p)==nTeam));
 	bHasFlag = (gameData.multiplayer.players [p].connected && gameData.multiplayer.players [p].flags & PLAYER_FLAGS_FLAG);
 
-	if (gameData.demo.nState != ND_STATE_PLAYBACK) 
+	if (gameData.demo.nState != ND_STATE_PLAYBACK)
 		nObject = gameData.multiplayer.players [p].nObject;
 	else {
-		//if this is a demo, the nObject in the tPlayer struct is wrong, 
+		//if this is a demo, the nObject in the tPlayer struct is wrong,
 		//so we search the tObject list for the nObject
 		for (nObject = 0;nObject <= gameData.objs.nLastObject [0]; nObject++)
-			if (OBJECTS [nObject].nType==OBJ_PLAYER && 
+			if (OBJECTS [nObject].nType==OBJ_PLAYER &&
 				 OBJECTS [nObject].id == p)
 				break;
 		if (nObject > gameData.objs.nLastObject [0])		//not in list, thus not visible
@@ -2462,8 +2462,8 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 		vmsVector	vPos;
 
 		vPos = OBJECTS [nObject].position.vPos;
-		vPos.p.y += 2 * F1_0;
-		G3TransformAndEncodePoint (&vPlayerPos, &vPos);
+		vPos[Y] += 2 * F1_0;
+		G3TransformAndEncodePoint(&vPlayerPos, vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
 			G3ProjectPoint (&vPlayerPos);
 			if (!(vPlayerPos.p3_flags & PF_OVERFLOW)) {
@@ -2499,7 +2499,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 					}
 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
-					fix dy = -FixMulDiv (OBJECTS [nObject].size, I2X (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
+					fix dy = -FixMulDiv (OBJECTS [nObject].size, I2X (grdCurCanv->cv_h)/2, vPlayerPos.p3_vec[Z]);
 //					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, viewInfo.scale.y), I2X (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
 					fix dx = FixMul (dy, grdCurScreen->scAspect);
 					fix w = dx/4;
@@ -2551,8 +2551,8 @@ SetCMScales ();
 nHUDLineSpacing = GAME_FONT->ftHeight + GAME_FONT->ftHeight/4;
 
 	//	Show score so long as not in rearview
-if (!(gameStates.render.bRearView || bSavingMovieFrames || 
-	 (gameStates.render.cockpit.nMode == CM_REAR_VIEW) || 
+if (!(gameStates.render.bRearView || bSavingMovieFrames ||
+	 (gameStates.render.cockpit.nMode == CM_REAR_VIEW) ||
 	 (gameStates.render.cockpit.nMode == CM_STATUS_BAR))) {
 	HUDShowScore ();
 	if (scoreTime)
@@ -2644,7 +2644,7 @@ if (old_display_mode != gameStates.video.nDisplayMode) {
 	InitGaugeCanvases ();
 	old_display_mode = gameStates.video.nDisplayMode;
 	}
-if (nShields < 0) 
+if (nShields < 0)
 	nShields = 0;
 GrSetCurrentCanvas (GetCurrentGameScreen ());
 GrSetCurFont (GAME_FONT);
@@ -2717,7 +2717,7 @@ void FillBackground (void);
 int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
 //	---------------------------------------------------------------------------------------------------------
-//draws a 3d view into one of the cockpit windows.  win is 0 for left, 
+//draws a 3d view into one of the cockpit windows.  win is 0 for left,
 //1 for right.  viewer is tObject.  NULL tObject means give up window
 //user is one of the WBU_ constants.  If bRearView is set, show a
 //rear view.  If label is non-NULL, print the label at the top of the
@@ -2767,13 +2767,13 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 	dx = (nWindow==0)?- (w+ (w/10)): (w/10);
 	switch (gameOpts->render.cockpit.nWindowPos) {
 		case 0:
-			window_x = nWindow ? 
+			window_x = nWindow ?
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w - w - h / 10 :
 				h / 10;
 			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
 			break;
 		case 1:
-			window_x = nWindow ? 
+			window_x = nWindow ?
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 * 2 - w / 3 :
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 - 2 * w / 3;
 			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
@@ -2783,13 +2783,13 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
 			break;
 		case 3:
-			window_x = nWindow ? 
+			window_x = nWindow ?
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w - w - h / 10 :
 				h / 10;
 			window_y = h / 10;
 			break;
 		case 4:
-			window_x = nWindow ? 
+			window_x = nWindow ?
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 * 2 - w / 3 :
 				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 - 2 * w / 3;
 			window_y = h / 10;
@@ -2799,18 +2799,18 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 			window_y = h / 10;
 			break;
 		}
-	if ((gameOpts->render.cockpit.nWindowPos < 3) && 
+	if ((gameOpts->render.cockpit.nWindowPos < 3) &&
 			extraGameInfo [0].nWeaponIcons &&
 			(extraGameInfo [0].nWeaponIcons - gameOpts->render.weaponIcons.bEquipment < 3))
 			window_y -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) grdCurCanv->cv_h / 480.0);
 
 
 	//copy these vars so stereo code can get at them
-	SW_drawn [nWindow] = 1; 
-	SW_x [nWindow] = window_x; 
-	SW_y [nWindow] = window_y; 
-	SW_w [nWindow] = w; 
-	SW_h [nWindow] = h; 
+	SW_drawn [nWindow] = 1;
+	SW_x [nWindow] = window_x;
+	SW_y [nWindow] = window_y;
+	SW_w [nWindow] = w;
+	SW_h [nWindow] = h;
 
 	GrInitSubCanvas (&windowCanv, &gameStates.render.vr.buffers.render [0], window_x, window_y, w, h);
 	}
@@ -2823,10 +2823,10 @@ else {
 		goto abort;
 	boxP = gaugeBoxes + nBox;
 	GrInitSubCanvas (
-		&windowCanv, gameStates.render.vr.buffers.render, 
-		HUD_SCALE_X (boxP->left), 
-		HUD_SCALE_Y (boxP->top), 
-		HUD_SCALE_X (boxP->right - boxP->left+1), 
+		&windowCanv, gameStates.render.vr.buffers.render,
+		HUD_SCALE_X (boxP->left),
+		HUD_SCALE_Y (boxP->top),
+		HUD_SCALE_X (boxP->right - boxP->left+1),
 		HUD_SCALE_Y (boxP->bot - boxP->top+1));
 	}
 
@@ -2915,7 +2915,7 @@ decimal = X2I (f);
 fractional = ((f & 0xffff) * 100) / 65536;
 if (fractional < 0)
 	fractional = -fractional;
-if (fractional > 99) 
+if (fractional > 99)
 	fractional = 99;
 sprintf (pszVal, "%d.%02d", decimal, fractional);
 return pszVal;
@@ -2966,7 +2966,7 @@ if (gameStates.render.bShowFrameRate) {
 		sprintf (szItem, "States: %d/%d ", gameData.render.nStateChanges, gameData.render.nShaderChanges);
 		}
 	else if (gameStates.render.bShowFrameRate == 6) {
-		sprintf (szItem, "Lights/Face: %1.2f (%d)", 
+		sprintf (szItem, "Lights/Face: %1.2f (%d)",
 					(float) gameData.render.nTotalLights / (float) gameData.render.nTotalFaces,
 					gameData.render.nMaxLights);
 		x = 19;
@@ -2979,9 +2979,9 @@ if (gameStates.render.bShowFrameRate) {
 		y = 6;
 	GrSetCurFont (GAME_FONT);
 	GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
-	nIdFrameRate = GrPrintF (&nIdFrameRate, 
-									 grdCurCanv->cv_w - (x * GAME_FONT->ftWidth), 
-									 grdCurCanv->cv_h - y * (GAME_FONT->ftHeight + GAME_FONT->ftHeight / 4), 
+	nIdFrameRate = GrPrintF (&nIdFrameRate,
+									 grdCurCanv->cv_w - (x * GAME_FONT->ftWidth),
+									 grdCurCanv->cv_h - y * (GAME_FONT->ftHeight + GAME_FONT->ftHeight / 4),
 									 szItem);
 	}
 }
@@ -3002,7 +3002,7 @@ switch (gameStates.render.cockpit.nMode) {
 			return;
 		nNewMode = (gameStates.render.cockpit.nNextMode < 0) ? CM_FULL_SCREEN : CM_FULL_COCKPIT;
 		break;
-	
+
 	case CM_FULL_SCREEN:
 		if (gameStates.render.bRearView)
 			return;

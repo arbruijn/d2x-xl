@@ -16,7 +16,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "fix.h"
 #include "vecmat.h" //the vector/matrix library
-#include "globvars.h" 
+#include "globvars.h"
 #include "gr.h"
 
 extern int g3d_interp_outline;      //if on, polygon models outlined in white
@@ -65,26 +65,21 @@ typedef struct tScreenPos {
 typedef struct g3sPoint {
 	vmsVector	p3_src;			//untransformed point
 	vmsVector	p3_vec;			//x,y,z of rotated point
-	tUVL			p3_uvl;			//u,v,l coords
+	tUVL		p3_uvl;			//u,v,l coords
 	tScreenPos	p3_screen;		//screen x&y
-	ubyte			p3_codes;		//clipping codes
-	ubyte			p3_flags;		//projected?
-	short			p3_key;
+	ubyte		p3_codes;		//clipping codes
+	ubyte		p3_flags;		//projected?
+	short		p3_key;
 	int			p3_index;		//keep structure longword aligned
 	g3sNormal	p3_normal;
 } g3sPoint;
-
-//macros to reference x,y,z elements of a 3d point
-#define p3_x p3_vec.p.x
-#define p3_y p3_vec.p.y
-#define p3_z p3_vec.p.z
 
 //An tObject, such as a robot
 typedef struct g3sObject {
 	vmsVector o3_pos;       //location of this tObject
 	vmsAngVec o3_orient;    //orientation of this tObject
-	int o3_nverts;           //number of points in the tObject
-	int o3_nfaces;           //number of faces in the tObject
+	int o3_nverts;          //number of points in the tObject
+	int o3_nfaces;          //number of faces in the tObject
 
 	//this will be filled in later
 
@@ -114,10 +109,10 @@ void _CDECL_ g3_close(void);
 void G3StartFrame(int bFlat, int bResetColorBuf);
 
 //set view from x,y,z & p,b,h, zoom.  Must call one of g3_setView_*()
-void G3SetViewAngles(vmsVector *view_pos,vmsAngVec *view_orient,fix zoom);
+void G3SetViewAngles(const vmsVector& view_pos, const vmsAngVec& view_orient,fix zoom);
 
 //set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_setView_*()
-void G3SetViewMatrix(vmsVector *view_pos,vmsMatrix *view_matrix,fix zoom, int bOglScale);
+void G3SetViewMatrix(const vmsVector& view_pos, const vmsMatrix& view_matrix,fix zoom, int bOglScale);
 
 //end the frame
 void G3EndFrame(void);
@@ -131,15 +126,18 @@ int g3_compute_sky_polygon(fix *points_2d,vmsVector *vecs);
 //Instancing
 
 //instance at specified point with specified orientation
-void G3StartInstanceMatrix(vmsVector *pos,vmsMatrix *orient);
+//void G3StartInstanceMatrix(const vmsVector& pos);
+void G3StartInstanceMatrix(const vmsVector& pos,
+                           const vmsMatrix& orient=vmsMatrix::IDENTITY);
 
 //instance at specified point with specified orientation
-void G3StartInstanceAngles(vmsVector *pos,vmsAngVec *angles);
+void G3StartInstanceAngles(const vmsVector& pos,
+                           const vmsAngVec& angles = vmsAngVec::ZERO);
 
 //pops the old context
 void G3DoneInstance();
-int G3PushMatrix (void);
-int G3PopMatrix (void);
+int G3PushMatrix(void);
+int G3PopMatrix(void);
 
 //Misc utility functions:
 
@@ -151,11 +149,12 @@ void g3_get_FOV(fixang *fov_x,fixang *fov_y);
 fix g3_get_zoom(char axis,fixang fov,short window_width,short window_height);
 
 //returns the normalized, unscaled view vectors
-void g3_getView_vectors(vmsVector *forward,vmsVector *up,vmsVector *right);
+// \unused
+void g3_getView_vectors(vmsVector& forward, vmsVector& up, vmsVector& right);
 
 //returns true if a plane is facing the viewer. takes the unrotated surface
 //normal of the plane, and a point on it.  The normal need not be normalized
-int G3CheckNormalFacing(vmsVector *v,vmsVector *norm);
+int G3CheckNormalFacing(const vmsVector& v, const vmsVector& norm);
 
 //Point definition and rotation functions:
 
@@ -168,78 +167,86 @@ int G3CheckNormalFacing(vmsVector *v,vmsVector *norm);
 g3sCodes g3_check_codes(int nv,g3sPoint **pointlist);
 
 //projects a point
-void G3ProjectPoint(g3sPoint *point);
+void G3ProjectPoint(g3sPoint* point);
 
 //code a point.  fills in the p3_codes field of the point, and returns the codes
 #if 1
-static inline ubyte G3EncodePoint(g3sPoint *p)
-{
-ubyte cc = 0;
-fix z = p->p3_z;
-fix x = FixMulDiv (p->p3_x, viewInfo.scale.p.x, viewInfo.zoom);
+static inline ubyte G3EncodePoint(g3sPoint* p) {
+	ubyte cc = 0;
+	fix z = p->p3_vec[Z];
+	fix x = FixMulDiv (p->p3_vec[X], viewInfo.scale[X], viewInfo.zoom);
 
-if (x > z)
-	cc |= CC_OFF_RIGHT;
-if (x < -z)
-	cc |= CC_OFF_LEFT;
-if (p->p3_y > z)
-	cc |= CC_OFF_TOP;
-if (p->p3_y < -z)
-	cc |= CC_OFF_BOT;
-if (z < 0)
-	cc |= CC_BEHIND;
-return p->p3_codes = cc;
+	if (x > z)
+		cc |= CC_OFF_RIGHT;
+	if (x < -z)
+		cc |= CC_OFF_LEFT;
+	if (p->p3_vec[Y] > z)
+		cc |= CC_OFF_TOP;
+	if (p->p3_vec[Y] < -z)
+		cc |= CC_OFF_BOT;
+	if (z < 0)
+		cc |= CC_BEHIND;
+	return p->p3_codes = cc;
 }
 #else
 ubyte G3EncodePoint(g3sPoint *point);
 #endif
 
-static inline vmsVector *G3TranslatePoint (vmsVector *pDest, vmsVector *pSrc)
-	{return VmVecSub (pDest, pSrc, &viewInfo.pos);}
-
-static inline vmsVector *G3RotatePoint (vmsVector *pDest, vmsVector *pSrc, int bUnscaled)
-	{return VmVecRotate (pDest, pSrc, viewInfo.view + bUnscaled);}
-
-static inline vmsVector *G3TransformPoint (vmsVector *pDest, vmsVector *pSrc, int bUnscaled)
-{
-vmsVector	vTrans;
-return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.pos), viewInfo.view + bUnscaled);
+static inline vmsVector& G3TranslatePoint(vmsVector& dest, const vmsVector& src) {
+	dest = src - viewInfo.pos;
+	return dest;
 }
 
-static inline fVector *G3TranslatePoint (fVector *pDest, fVector *pSrc)
-	{return VmVecSub (pDest, pSrc, &viewInfo.posf);}
-
-static inline fVector *G3RotatePoint (fVector *pDest, fVector *pSrc, int bUnscaled)
-	{return VmVecRotate (pDest, pSrc, viewInfo.viewf + bUnscaled);}
-
-static inline fVector3 *G3RotatePoint (fVector3 *pDest, fVector3 *pSrc, int bUnscaled)
-	{return VmVecRotate (pDest, pSrc, viewInfo.viewf + bUnscaled);}
-
-static inline fVector *G3TransformPoint (fVector *pDest, fVector *pSrc, int bUnscaled)
-{
-fVector vTrans;
-return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.posf), viewInfo.viewf + bUnscaled);
+static inline vmsVector& G3RotatePoint(vmsVector& dest, const vmsVector& src, int bUnscaled) {
+	dest = viewInfo.view[bUnscaled] * src;
+	return dest;
 }
 
-static inline ubyte G3TransformAndEncodePoint (g3sPoint *pDest, vmsVector *pSrc)
-{
-pDest->p3_src = *pSrc;
-G3TransformPoint (&pDest->p3_vec, pSrc, 0);
-pDest->p3_flags = 0;
-return G3EncodePoint (pDest);
+static inline vmsVector& G3TransformPoint(vmsVector& dest, const vmsVector& src, int bUnscaled) {
+	vmsVector vTrans = src - viewInfo.pos;
+	dest = viewInfo.view[bUnscaled] * vTrans;
+	return dest;
+}
+
+static inline fVector& G3TranslatePoint(fVector& dest, const fVector& src) {
+	dest = src - viewInfo.posf;
+	return dest;
+}
+
+static inline fVector& G3RotatePoint(fVector& dest, const fVector& src, int bUnscaled) {
+	dest = viewInfo.viewf[bUnscaled] * src;
+	return dest;
+}
+
+static inline fVector3& G3RotatePoint(fVector3& dest, const fVector3& src, int bUnscaled) {
+	dest = viewInfo.viewf[bUnscaled] * src;
+	return dest;
+}
+
+static inline fVector& G3TransformPoint(fVector& dest, const fVector& src, int bUnscaled) {
+	fVector vTrans = src - viewInfo.posf;
+	dest = viewInfo.viewf[bUnscaled] * vTrans;
+	return dest;
+}
+
+static inline ubyte G3TransformAndEncodePoint(g3sPoint* dest, const vmsVector& src) {
+	dest->p3_src = src;
+	G3TransformPoint(dest->p3_vec, src, 0);
+	dest->p3_flags = 0;
+	return G3EncodePoint(dest);
 }
 
 //calculate the depth of a point - returns the z coord of the rotated point
-fix G3CalcPointDepth(vmsVector *pnt);
+fix G3CalcPointDepth(const vmsVector& pnt);
 
 //from a 2d point, compute the vector through that point
-void G3Point2Vec(vmsVector *v,short sx,short sy);
+void G3Point2Vec(vmsVector& v, short sx, short sy);
 
 //delta rotation functions
-vmsVector *G3RotateDeltaX(vmsVector *dest,fix dx);
-vmsVector *G3RotateDeltaY(vmsVector *dest,fix dy);
-vmsVector *G3RotateDeltaZ(vmsVector *dest,fix dz);
-vmsVector *G3RotateDeltaVec(vmsVector *dest,vmsVector *src);
+const vmsVector& G3RotateDeltaX(vmsVector& dest, fix dx);
+const vmsVector& G3RotateDeltaY(vmsVector& dest, fix dy);
+const vmsVector& G3RotateDeltaZ(vmsVector& dest, fix dz);
+const vmsVector& G3RotateDeltaVec(vmsVector& dest, const vmsVector& src);
 ubyte G3AddDeltaVec(g3sPoint *dest,g3sPoint *src,vmsVector *deltav);
 
 //Drawing functions:
@@ -282,9 +289,9 @@ int G3DrawRodTexPoly(grsBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoin
 
 //draws a bitmap with the specified 3d width & height
 //returns 1 if off screen, 0 if drew
-int G3DrawBitmap (vmsVector *vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int nTransp);
+int G3DrawBitmap(const vmsVector& vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int nTransp);
 
-int G3DrawSprite (vmsVector *vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int bAdditive, float fSoftRad);
+int G3DrawSprite(const vmsVector& vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int bAdditive, float fSoftRad);
 
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults

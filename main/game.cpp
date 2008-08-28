@@ -200,11 +200,11 @@ LoadBackgroundBitmap ();
 nClearWindow = 2;		//	do portal only window clear.
 InitDetailLevels (gameStates.app.nDetailLevel);
 gameStates.render.color.bRenderLightmaps =
-	gameStates.render.color.bLightmapsOk && 
-	gameStates.render.bAmbientColor && 
+	gameStates.render.color.bLightmapsOk &&
+	gameStates.render.bAmbientColor &&
 	gameOpts->render.color.bUseLightmaps;
-gameStates.ogl.bGlTexMerge = 
-	gameOpts->ogl.bGlTexMerge && 
+gameStates.ogl.bGlTexMerge =
+	gameOpts->ogl.bGlTexMerge &&
 	gameStates.render.textures.bGlsTexMergeOk;
 fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
 }
@@ -213,7 +213,7 @@ fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLig
 
 void ResetPaletteAdd ()
 {
-gameStates.ogl.palAdd.red = 
+gameStates.ogl.palAdd.red =
 gameStates.ogl.palAdd.green =
 gameStates.ogl.palAdd.blue	= 0;
 gameData.render.xFlashEffect = 0;
@@ -320,7 +320,7 @@ switch (gameStates.render.cockpit.nMode) {
 		break;
 
 	case CM_LETTERBOX: {
-		int x = 0; 
+		int x = 0;
 		int w = gameStates.render.vr.buffers.render[0].cvBitmap.bmProps.w;		//VR_render_width;
 		int h = (int) ((gameStates.render.vr.buffers.render[0].cvBitmap.bmProps.h * 7) / 10 / ((double) grdCurScreen->scHeight / (double) grdCurScreen->scWidth / 0.75));
 		int y = (gameStates.render.vr.buffers.render[0].cvBitmap.bmProps.h - h) / 2;
@@ -539,9 +539,9 @@ for (;;) {
 TimerValue = timerValue;
 #endif
 #ifdef _DEBUG
-if ((gameData.time.xFrame <= 0) || 
-	 (gameData.time.xFrame > F1_0) || 
-	 (gameStates.app.nFunctionMode == FMODE_EDITOR) || 
+if ((gameData.time.xFrame <= 0) ||
+	 (gameData.time.xFrame > F1_0) ||
+	 (gameStates.app.nFunctionMode == FMODE_EDITOR) ||
 	 (gameData.demo.nState == ND_STATE_PLAYBACK)) {
 #if TRACE
 //con_printf (1,"Bad gameData.time.xFrame - value = %x\n",gameData.time.xFrame);
@@ -561,7 +561,7 @@ gameData.time.xLast = timerValue;
 if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
 	gameData.time.xFrame = last_frametime;		//d:\temp\dm_test.then use time from last frame
 #ifdef _DEBUG
-if (xFixedFrameTime) 
+if (xFixedFrameTime)
 	gameData.time.xFrame = xFixedFrameTime;
 #endif
 #ifdef _DEBUG
@@ -607,8 +607,12 @@ void MovePlayerToSegment (tSegment *segP,int tSide)
 
 COMPUTE_SEGMENT_CENTER (&gameData.objs.console->position.vPos,segP);
 COMPUTE_SIDE_CENTER (&vp,segP,tSide);
-VmVecDec (&vp,&gameData.objs.console->position.vPos);
-VmVector2Matrix (&gameData.objs.console->position.mOrient, &vp, NULL, NULL);
+vp -= gameData.objs.console->position.vPos;
+/*
+gameData.objs.console->position.mOrient = vmsMatrix::Create(vp, NULL, NULL);
+*/
+// TODO: MatrixCreateFCheck
+gameData.objs.console->position.mOrient = vmsMatrix::CreateF(vp);
 RelinkObject (OBJ_IDX (gameData.objs.console), SEG_IDX (segP));
 }
 
@@ -736,10 +740,10 @@ void FlyInit (tObject *objP)
 	objP->controlType = CT_FLYING;
 	objP->movementType = MT_PHYSICS;
 
-	VmVecZero (&objP->mType.physInfo.velocity);
-	VmVecZero (&objP->mType.physInfo.thrust);
-	VmVecZero (&objP->mType.physInfo.rotVel);
-	VmVecZero (&objP->mType.physInfo.rotThrust);
+	objP->mType.physInfo.velocity.setZero();
+	objP->mType.physInfo.thrust.setZero();
+	objP->mType.physInfo.rotVel.setZero();
+	objP->mType.physInfo.rotThrust.setZero();
 }
 
 //void morph_test (), morph_step ();
@@ -950,38 +954,38 @@ if (gameData.render.xFlashEffect) {
 
 	}
 
-if (gameStates.ogl.palAdd.red > 0) { 
-	gameStates.ogl.palAdd.red -= dec_amount; 
-	if (gameStates.ogl.palAdd.red < 0) 
-		gameStates.ogl.palAdd.red = 0; 
+if (gameStates.ogl.palAdd.red > 0) {
+	gameStates.ogl.palAdd.red -= dec_amount;
+	if (gameStates.ogl.palAdd.red < 0)
+		gameStates.ogl.palAdd.red = 0;
 	}
-else if (gameStates.ogl.palAdd.red < 0) { 
-	gameStates.ogl.palAdd.red += dec_amount; 
-	if (gameStates.ogl.palAdd.red > 0) 
-		gameStates.ogl.palAdd.red = 0; 
+else if (gameStates.ogl.palAdd.red < 0) {
+	gameStates.ogl.palAdd.red += dec_amount;
+	if (gameStates.ogl.palAdd.red > 0)
+		gameStates.ogl.palAdd.red = 0;
 	}
-if (gameStates.ogl.palAdd.green > 0) { 
-	gameStates.ogl.palAdd.green -= dec_amount; 
-	if (gameStates.ogl.palAdd.green < 0) 
-		gameStates.ogl.palAdd.green = 0; 
+if (gameStates.ogl.palAdd.green > 0) {
+	gameStates.ogl.palAdd.green -= dec_amount;
+	if (gameStates.ogl.palAdd.green < 0)
+		gameStates.ogl.palAdd.green = 0;
 	}
-else if (gameStates.ogl.palAdd.green < 0) { 
-	gameStates.ogl.palAdd.green += dec_amount; 
-	if (gameStates.ogl.palAdd.green > 0) 
-		gameStates.ogl.palAdd.green = 0; 
+else if (gameStates.ogl.palAdd.green < 0) {
+	gameStates.ogl.palAdd.green += dec_amount;
+	if (gameStates.ogl.palAdd.green > 0)
+		gameStates.ogl.palAdd.green = 0;
 	}
-if (gameStates.ogl.palAdd.blue > 0) { 
-	gameStates.ogl.palAdd.blue -= dec_amount; 
-	if (gameStates.ogl.palAdd.blue < 0) 
-		gameStates.ogl.palAdd.blue = 0; 
+if (gameStates.ogl.palAdd.blue > 0) {
+	gameStates.ogl.palAdd.blue -= dec_amount;
+	if (gameStates.ogl.palAdd.blue < 0)
+		gameStates.ogl.palAdd.blue = 0;
 	}
-else if (gameStates.ogl.palAdd.blue < 0) { 
-	gameStates.ogl.palAdd.blue += dec_amount; 
-	if (gameStates.ogl.palAdd.blue > 0) 
-		gameStates.ogl.palAdd.blue = 0; 
+else if (gameStates.ogl.palAdd.blue < 0) {
+	gameStates.ogl.palAdd.blue += dec_amount;
+	if (gameStates.ogl.palAdd.blue > 0)
+		gameStates.ogl.palAdd.blue = 0;
 	}
 
-if ((gameData.demo.nState==ND_STATE_RECORDING) && 
+if ((gameData.demo.nState==ND_STATE_RECORDING) &&
 		(gameStates.ogl.palAdd.red || gameStates.ogl.palAdd.green || gameStates.ogl.palAdd.blue))
 	NDRecordPaletteEffect (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
 GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
@@ -1292,14 +1296,14 @@ for (;;) {
 	if (gameStates.app.bConfigMenu) {
 		int double_save = bScanlineDouble;
 		if (!IsMultiGame) {
-			PaletteSave (); 
+			PaletteSave ();
 			ResetPaletteAdd ();
-			GrPaletteStepLoad (NULL); 
+			GrPaletteStepLoad (NULL);
 			}
 		ConfigMenu ();
 		if (bScanlineDouble != double_save)
 			InitCockpit ();
-		if (!IsMultiGame) 
+		if (!IsMultiGame)
 			PaletteRestore ();
 		}
 	if (gameStates.render.automap.bDisplay) {
@@ -1309,16 +1313,16 @@ for (;;) {
 		gameStates.app.bEnterGame = 1;
 		//	FlushInput ();
 		//	StopPlayerMovement ();
-		gameStates.video.nScreenMode = -1; 
+		gameStates.video.nScreenMode = -1;
 		SetScreenMode (SCREEN_GAME);
-		gameData.render.window.w = save_w; 
+		gameData.render.window.w = save_w;
 		gameData.render.window.h = save_h;
 		InitCockpit ();
 		gameStates.render.cockpit.nLastDrawn [0] =
 		gameStates.render.cockpit.nLastDrawn [1] = -1;
 		}
-	if ((gameStates.app.nFunctionMode != FMODE_GAME) && 
-		 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat && 
+	if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
+		 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat &&
 		 (gameData.demo.nState != ND_STATE_NORMAL)) {
 		int choice, fmode;
 		fmode = gameStates.app.nFunctionMode;
@@ -1335,10 +1339,10 @@ for (;;) {
 			gameData.demo.bAuto = 0;
 			NDStopPlayback ();
 			SetFunctionMode (FMODE_MENU);
-			} 
+			}
 		}
-	if ((gameStates.app.nFunctionMode != FMODE_GAME) &&  
-		 (gameData.demo.nState != ND_STATE_PLAYBACK) &&  
+	if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
+		 (gameData.demo.nState != ND_STATE_PLAYBACK) &&
 		 (gameStates.app.nFunctionMode != FMODE_EDITOR) &&
 		 !gameStates.multi.bIWasKicked) {
 		if (QuitSaveLoadMenu ())
@@ -1556,7 +1560,7 @@ void flush_movie_buffer ()
 #if TRACE
 			//con_printf (CONDBG,"%3d/%3d\10\10\10\10\10\10\10",f,nMovieFrames);
 #endif
-		}		
+		}
 	}
 
 	nMovieFrames=0;
@@ -1578,8 +1582,8 @@ void toggle_movie_saving ()
 		tMenuItem m[1];
 
 		memset (m, 0, sizeof (m));
-		m[0].nType=NM_TYPE_INPUT; 
-		m[0].text_len = 50; 
+		m[0].nType=NM_TYPE_INPUT;
+		m[0].text_len = 50;
 		m[0].text = movie_path;
 		exit = ExecMenu (NULL, "Directory for movie frames?" , 1, & (m[0]), NULL, NULL);
 
@@ -1698,16 +1702,16 @@ if (gameData.fusion.xAutoFireTime) {
 	else {
 		fix			xBump;
 		vmsVector	vRand;
-	
+
 		static time_t t0 = 0;
 		time_t t = gameStates.app.nSDLTicks;
 		if (t - t0 < 30)
 			return 0;
 		t0 = t;
 		gameData.laser.nGlobalFiringCount = 0;
-		gameData.objs.console->mType.physInfo.rotVel.p.x += (d_rand () - 16384)/8;
-		gameData.objs.console->mType.physInfo.rotVel.p.z += (d_rand () - 16384)/8;
-		MakeRandomVector (&vRand);
+		gameData.objs.console->mType.physInfo.rotVel[X] += (d_rand () - 16384)/8;
+		gameData.objs.console->mType.physInfo.rotVel[Z] += (d_rand () - 16384)/8;
+		vRand = vmsVector::Random();
 		xBump = F1_0*4;
 		if (gameData.fusion.xCharge > F1_0*2)
 			xBump = gameData.fusion.xCharge*4;
@@ -1743,7 +1747,7 @@ SaveScreenShot (0, 0);
 int PlayerHasHeadlight (int nPlayer)
 {
 return EGI_FLAG (headlight.bAvailable, 0, 0, 0) &&
-		 (EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) || 
+		 (EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) ||
 		  ((gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT) != 0));
 }
 
@@ -1877,7 +1881,7 @@ if (IsMultiGame) {
 	CheckMonsterballScore ();
 	if (netGame.xPlayTimeAllowed && (gameStates.app.xThisLevelTime >= I2X ((netGame.xPlayTimeAllowed * 5 * 60))))
        MultiCheckForKillGoalWinner ();
-	else 
+	else
 		MultiCheckForEntropyWinner ();
   }
 if (bRenderFrame) {
@@ -1913,7 +1917,7 @@ DoAmbientSounds ();
 if (gameData.speedtest.bOn)
 	SpeedtestFrame ();
 #endif
-if (bReadControls) 
+if (bReadControls)
 	ReadControls ();
 else
 	memset (&Controls, 0, sizeof (Controls));
@@ -2023,7 +2027,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	bIsSlideSeg = 0;
 	for (nSide = 0; nSide < 6; nSide++) {
 		nTexture = gameData.segs.segments [nSegment].sides [nSide].nBaseTex;
-		if (gameData.pig.tex.pTMapInfo [nTexture].slide_u  || 
+		if (gameData.pig.tex.pTMapInfo [nTexture].slide_u  ||
 			 gameData.pig.tex.pTMapInfo [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
 				bIsSlideSeg = 1;
@@ -2109,10 +2113,10 @@ void FireLaser ()
 if (gameData.weapons.firing [0].nDuration)
 	gameData.laser.nGlobalFiringCount += WI_fireCount (i);
 if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringCount) {
-	if ((LOCALPLAYER.energy < F1_0 * 2) && 
+	if ((LOCALPLAYER.energy < F1_0 * 2) &&
 		 (gameData.fusion.xAutoFireTime == 0)) {
 		gameData.laser.nGlobalFiringCount = 0;
-		} 
+		}
 	else {
 		flFrameTime += gameData.time.xFrame;
 		if (gameData.fusion.xCharge == 0)
@@ -2123,7 +2127,7 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 		if (LOCALPLAYER.energy <= 0) {
 			LOCALPLAYER.energy = 0;
 			gameData.fusion.xAutoFireTime = gameData.time.xGame - 1;	//	Fire now!
-			} 
+			}
 		else
 			gameData.fusion.xAutoFireTime = gameData.time.xGame + flFrameTime/2 + 1;
 		if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
@@ -2138,7 +2142,7 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 			if (gameData.fusion.xCharge > F1_0*2) {
 				DigiPlaySample (11, F1_0);
 				ApplyDamageToPlayer (gameData.objs.console, gameData.objs.console, d_rand () * 4);
-				} 
+				}
 			else {
 				CreateAwarenessEvent (gameData.objs.console, WEAPON_ROBOT_COLLISION);
 				DigiPlaySample (SOUND_FUSION_WARMUP, F1_0);
@@ -2160,16 +2164,16 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 void PowerupGrabCheat (tObject *playerP, int nObject)
 {
 	tObject		*powerupP = OBJECTS + nObject;
-	tPosition	*posP = OBJPOS (playerP);
+	tTransformation	*posP = OBJPOS (playerP);
 	vmsVector	vCollision;
 
 Assert (powerupP->nType == OBJ_POWERUP);
 if (powerupP->flags & OF_SHOULD_BE_DEAD)
 	return;
-if (VmVecDistQuick (&powerupP->position.vPos, &posP->vPos) >= 
+if (vmsVector::dist(powerupP->position.vPos, posP->vPos) >=
 	 2 * (playerP->size + powerupP->size) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
 	return;
-VmVecAvg (&vCollision, &powerupP->position.vPos, &posP->vPos);
+vCollision = vmsVector::avg(powerupP->position.vPos, posP->vPos);
 CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
 }
 
@@ -2233,7 +2237,7 @@ for (i = 1; i < player_path_length; i++) {
 	//con_printf (CONDBG, "%3i ", nSegment);
 #endif
 	seg_center = gameData.ai.pointSegs[player_hide_index+i].point;
-	nObject = CreateObject (OBJ_POWERUP, POW_ENERGY, -1, nSegment, &seg_center, &vmdIdentityMatrix,
+	nObject = tObject::Create(OBJ_POWERUP, POW_ENERGY, -1, nSegment, seg_center, vmsMatrix::IDENTITY,
 								   gameData.objs.pwrUp.info [POW_ENERGY].size, CT_POWERUP, MT_NONE, RT_POWERUP, 1);
 	if (nObject == -1) {
 		Int3 ();		//	Unable to drop energy powerup for path

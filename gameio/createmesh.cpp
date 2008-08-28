@@ -184,7 +184,7 @@ else {
 edgeP->tris [0] = nTri;
 edgeP->verts [0] = nVert1;
 edgeP->verts [1] = nVert2;
-edgeP->fLength = VmVecDist (gameData.segs.fVertices + nVert1, gameData.segs.fVertices + nVert2);
+edgeP->fLength = fVector::dist(gameData.segs.fVertices[nVert1], gameData.segs.fVertices[nVert2]);
 return edgeP - m_edges;
 }
 
@@ -194,7 +194,7 @@ tTriangle *CTriMeshBuilder::CreateTriangle (tTriangle *triP, ushort index [], in
 {
 	int	h, i;
 
-if (triP) 
+if (triP)
 	triP->nIndex = nIndex;
 else {
 	if ((m_nTriangles == m_nMaxTriangles - 1) && !AllocData ())
@@ -294,7 +294,7 @@ for (i = gameData.segs.nTris, grsTriP = TRIANGLES; i; i--, grsTriP++) {
 		FreeData ();
 		return 0;
 		}
-	if (nFace == grsTriP->nFace) 
+	if (nFace == grsTriP->nFace)
 		nId++;
 	else {
 		nFace = grsTriP->nFace;
@@ -407,7 +407,7 @@ for (i = 0; i < 3; i++) {
 	if ((h != nVert1) && (h != nVert2))
 		break;
 	}
-return VmVecDist (gameData.segs.fVertices + h, gameData.segs.fVertices + gameData.segs.nVertices);
+return fVector::dist(gameData.segs.fVertices[h], gameData.segs.fVertices[gameData.segs.nVertices]);
 }
 
 //------------------------------------------------------------------------------
@@ -419,10 +419,10 @@ int CTriMeshBuilder::SplitEdge (tEdge *edgeP, short nPass)
 
 memcpy (tris, edgeP->tris, sizeof (tris));
 memcpy (verts, edgeP->verts, sizeof (verts));
-VmVecAvg (gameData.segs.fVertices + gameData.segs.nVertices, 
-			 gameData.segs.fVertices + verts [0], 
-			 gameData.segs.fVertices + verts [1]);
-VmVecFloatToFix (gameData.segs.vertices + gameData.segs.nVertices, gameData.segs.fVertices + gameData.segs.nVertices);
+gameData.segs.fVertices[gameData.segs.nVertices] = fVector::avg(
+			 gameData.segs.fVertices[verts[0]],
+			 gameData.segs.fVertices[verts[1]]);
+gameData.segs.vertices[gameData.segs.nVertices] = gameData.segs.fVertices[gameData.segs.nVertices].toFix();
 #if 0
 if (tris [1] >= 0) {
 	if (NewEdgeLen (tris [0], verts [0], verts [1]) + NewEdgeLen (tris [1], verts [0], verts [1]) < MAX_EDGE_LEN)
@@ -481,7 +481,7 @@ do {
 			return 0;
 		if (!nSplitRes)
 			return 0;
-		if (nSplitRes < 0) 
+		if (nSplitRes < 0)
 			m_triangles [i].nPass = -2;
 		else {
 			bSplit = 1;
@@ -516,7 +516,7 @@ do {
 			}
 		l++;
 		r--;
-		}	
+		}
 	} while (l <= r);
 if (l < right)
 	QSortTriangles (l, right);
@@ -533,9 +533,13 @@ void CTriMeshBuilder::SetupVertexNormals (void)
 	int				h, i, nVertex;
 
 for (i = gameData.segs.nVertices, pointP = gameData.segs.points; i; i--, pointP++) {
-	pointP->p3_normal.vNormal.v3.p.x = 
-	pointP->p3_normal.vNormal.v3.p.y = 
-	pointP->p3_normal.vNormal.v3.p.z = 0;
+/*
+	(*pointP->p3_normal.vNormal.v3())[X] =
+	(*pointP->p3_normal.vNormal.v3())[Y] =
+	(*pointP->p3_normal.vNormal.v3())[Z] = 0;
+*/
+	pointP->p3_normal.vNormal.v3()->setZero();
+
 	pointP->p3_normal.nFaces = 0;
 	}
 for (h = 0, triP = gameData.segs.faces.tris; h < gameData.segs.nTris; h++, triP++) {
@@ -545,7 +549,7 @@ for (h = 0, triP = gameData.segs.faces.tris; h < gameData.segs.nTris; h++, triP+
 		if (nVertex == nDbgVertex)
 			nVertex = nVertex;
 #endif
-		VmVecInc (&gameData.segs.points [nVertex].p3_normal.vNormal.v3, gameData.segs.faces.normals + 3 * h);
+		*gameData.segs.points [nVertex].p3_normal.vNormal.v3() += gameData.segs.faces.normals[3 * h];
 		gameData.segs.points [nVertex].p3_normal.nFaces++;
 		}
 	}
@@ -568,7 +572,7 @@ QSortTriangles (0, m_nTriangles - 1);
 ResetVertexNormals ();
 for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	grsTriP->nFace = triP->nFace;
-	if (grsTriP->nFace == nFace) 
+	if (grsTriP->nFace == nFace)
 		m_faceP->nTris++;
 	else {
 		if (m_faceP)
@@ -590,16 +594,16 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	grsTriP->nIndex = nIndex;
 	memcpy (grsTriP->index, triP->index, sizeof (triP->index));
 	for (i = 0; i < 3; i++)
-		gameData.segs.faces.vertices [nIndex + i] = gameData.segs.fVertices [triP->index [i]].v3;
-	VmVecNormal (gameData.segs.faces.normals + nIndex,
-					 gameData.segs.faces.vertices + nIndex, 
-					 gameData.segs.faces.vertices + nIndex + 1, 
-					 gameData.segs.faces.vertices + nIndex + 2);
+		gameData.segs.faces.vertices [nIndex + i] = *gameData.segs.fVertices [triP->index [i]].v3();
+	gameData.segs.faces.normals[nIndex] = fVector3::normal(
+					 gameData.segs.faces.vertices[nIndex],
+					 gameData.segs.faces.vertices[nIndex + 1],
+					 gameData.segs.faces.vertices[nIndex + 2]);
 #ifdef _DEBUG
-	if (VmVecMag (gameData.segs.faces.normals + nIndex) == 0)
+	if (gameData.segs.faces.normals[nIndex].mag() == 0)
 		m_faceP = m_faceP;
 #endif
-	VmVecFloatToFix (&vNormal, gameData.segs.faces.normals + nIndex);
+	vNormal = gameData.segs.faces.normals[nIndex].toFix();
 	for (i = 1; i < 3; i++)
 		gameData.segs.faces.normals [nIndex + i] = gameData.segs.faces.normals [nIndex];
 	memcpy (gameData.segs.faces.texCoord + nIndex, triP->texCoord, sizeof (triP->texCoord));
@@ -615,7 +619,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 gameData.segs.nTris = m_nTriangles;
 SetupVertexNormals ();
 FreeData ();
-PrintLog ("   created %d new triangles and %d new vertices\n", 
+PrintLog ("   created %d new triangles and %d new vertices\n",
 			 m_nTriangles - m_nTris, gameData.segs.nVertices - m_nVertices);
 CreateFaceVertLists ();
 return 1;
@@ -705,7 +709,7 @@ for (i = gameData.segs.nFaces, faceP = FACES; i; i--, faceP++)
 
 char *CTriMeshBuilder::DataFilename (char *pszFilename, int nLevel)
 {
-return GameDataFilename (pszFilename, "mesh", nLevel, 
+return GameDataFilename (pszFilename, "mesh", nLevel,
 								 (gameStates.render.bTriangleMesh < 0) ? -1 : gameOpts->render.nMeshQuality);
 }
 
@@ -726,21 +730,21 @@ if (!CFOpen (&cf, DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb
 	return false;
 bOk = (CFRead (&mdh, sizeof (mdh), 1, &cf) == 1);
 if (bOk)
-	bOk = (mdh.nVersion == MESH_DATA_VERSION) && 
-			(mdh.nSegments == gameData.segs.nSegments) && 
-			(mdh.nFaces == gameData.segs.nFaces); 
+	bOk = (mdh.nVersion == MESH_DATA_VERSION) &&
+			(mdh.nSegments == gameData.segs.nSegments) &&
+			(mdh.nFaces == gameData.segs.nFaces);
 if (bOk)
-	nSize = 
-		(sizeof (*gameData.segs.vertices) + 
-		 sizeof (*gameData.segs.fVertices)) * mdh.nVertices + 
-		sizeof (*gameData.segs.faces.faces) * mdh.nFaces + 
-		sizeof (*gameData.segs.faces.tris) * mdh.nTris + 
-		(sizeof (*gameData.segs.faces.vertices) + 
+	nSize =
+		(sizeof (*gameData.segs.vertices) +
+		 sizeof (*gameData.segs.fVertices)) * mdh.nVertices +
+		sizeof (*gameData.segs.faces.faces) * mdh.nFaces +
+		sizeof (*gameData.segs.faces.tris) * mdh.nTris +
+		(sizeof (*gameData.segs.faces.vertices) +
 		 sizeof (*gameData.segs.faces.normals) +
-		 sizeof (*gameData.segs.faces.texCoord) + 
+		 sizeof (*gameData.segs.faces.texCoord) +
 		 sizeof (*gameData.segs.faces.ovlTexCoord) +
 		 sizeof (*gameData.segs.faces.color)) * mdh.nTris * 3 +
-		 sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces * 2 + 
+		 sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces * 2 +
 		 sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts;
 if (bOk)
 	bOk = ((ioBuffer = (char *) D2_ALLOC (nSize)) != NULL);
@@ -790,11 +794,11 @@ bool CTriMeshBuilder::Save (int nLevel)
 	bool					bOk;
 	char					szFilename [FILENAME_LEN];
 
-	tMeshDataHeader mdh = {MESH_DATA_VERSION, 
-								  gameData.segs.nSegments, 
-								  gameData.segs.nVertices, 
-								  gameData.segs.nFaceVerts, 
-								  gameData.segs.nFaces, 
+	tMeshDataHeader mdh = {MESH_DATA_VERSION,
+								  gameData.segs.nSegments,
+								  gameData.segs.nVertices,
+								  gameData.segs.nFaceVerts,
+								  gameData.segs.nFaces,
 								  gameData.segs.nTris};
 
 if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
@@ -844,8 +848,8 @@ return 1;
 
 int CQuadMeshBuilder::IsBigFace (short *m_sideVerts)
 {
-for (int i = 0; i < 4; i++) 
-	if (VmVecDist (gameData.segs.fVertices + m_sideVerts [i], gameData.segs.fVertices + m_sideVerts [(i + 1) % 4]) > MAX_EDGE_LEN)
+for (int i = 0; i < 4; i++)
+	if (fVector::dist(gameData.segs.fVertices[m_sideVerts[i]], gameData.segs.fVertices[m_sideVerts[(i + 1) % 4]]) > MAX_EDGE_LEN)
 		return 1;
 return 0;
 }
@@ -856,11 +860,11 @@ fVector3 *CQuadMeshBuilder::SetTriNormals (grsTriangle *triP, fVector3 *m_normal
 {
 	fVector	vNormalf;
 
-VmVecNormal (&vNormalf, gameData.segs.fVertices + triP->index [0], 
-				 gameData.segs.fVertices + triP->index [1], gameData.segs.fVertices + triP->index [2]);
-*m_normalP++ = vNormalf.v3;
-*m_normalP++ = vNormalf.v3;
-*m_normalP++ = vNormalf.v3;
+vNormalf = fVector::normal(gameData.segs.fVertices[triP->index[0]],
+				 gameData.segs.fVertices[triP->index[1]], gameData.segs.fVertices[triP->index[2]]);
+*m_normalP++ = *vNormalf.v3();
+*m_normalP++ = *vNormalf.v3();
+*m_normalP++ = *vNormalf.v3();
 return m_normalP;
 }
 
@@ -934,9 +938,9 @@ void CQuadMeshBuilder::SetupLMapTexCoord (tTexCoord2f *texCoordP)
 #define	LMAP_SIZE	0.0f //(1.0f / 16.0f)
 #if 0
 	static tTexCoord2f lMapTexCoord [4] = {
-		{{LMAP_SIZE, LMAP_SIZE}}, 
-		{{1.0f - LMAP_SIZE, LMAP_SIZE}}, 
-		{{1.0f - LMAP_SIZE, 1.0f - LMAP_SIZE}}, 
+		{{LMAP_SIZE, LMAP_SIZE}},
+		{{1.0f - LMAP_SIZE, LMAP_SIZE}},
+		{{1.0f - LMAP_SIZE, 1.0f - LMAP_SIZE}},
 		{{LMAP_SIZE, 1.0f - LMAP_SIZE}}
 	};
 #endif
@@ -945,7 +949,7 @@ float x = (float) (i % LIGHTMAP_ROWSIZE);
 float y = (float) (i / LIGHTMAP_ROWSIZE);
 texCoordP [0].v.u = x / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
 texCoordP [0].v.v = y / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
-texCoordP [1].v.u = 
+texCoordP [1].v.u =
 texCoordP [2].v.u = (x + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
 texCoordP [1].v.v = y / (float) LIGHTMAP_ROWSIZE + 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
 texCoordP [2].v.v = (y + 1) / (float) LIGHTMAP_ROWSIZE - 1.0f / (float) (LIGHTMAP_ROWSIZE * LIGHTMAP_WIDTH * 2);
@@ -961,12 +965,12 @@ void CQuadMeshBuilder::SetupFace (void)
 	vmsVector	vNormal;
 	fVector3		vNormalf;
 
-VmVecAdd (&vNormal, m_sideP->normals, m_sideP->normals + 1);
-VmVecScale (&vNormal, F1_0 / 2);
-VmVecFixToFloat (&vNormalf, &vNormal);
+vNormal = m_sideP->normals[0] + m_sideP->normals[1];
+vNormal *= F1_0 / 2;
+vNormalf = vNormal.toFloat3();
 for (i = 0; i < 4; i++) {
 	j = m_sideVerts [i];
-	*m_vertexP++ = gameData.segs.fVertices [j].v3;
+	*m_vertexP++ = *gameData.segs.fVertices [j].v3();
 	*m_normalP++ = vNormalf;
 	m_texCoordP->v.u = X2F (m_sideP->uvls [i].u);
 	m_texCoordP->v.v = X2F (m_sideP->uvls [i].v);
@@ -1001,7 +1005,7 @@ for (i = 0; i < 2; i++, m_triP++) {
 		k = triVertP [j];
 		v = m_sideVerts [k];
 		m_triP->index [j] = v;
-		*m_vertexP++ = gameData.segs.fVertices [v].v3;
+		*m_vertexP++ = *gameData.segs.fVertices [v].v3();
 		m_texCoordP->v.u = X2F (m_sideP->uvls [k].u);
 		m_texCoordP->v.v = X2F (m_sideP->uvls [k].v);
 		RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);
@@ -1081,13 +1085,15 @@ for (i = 0; i < 4; i++) {
 	color.blue += (gameData.render.color.ambient [h].color.blue + gameData.render.color.ambient [k].color.blue) / 8;
 	color.alpha += (gameData.render.color.ambient [h].color.alpha + gameData.render.color.ambient [k].color.alpha) / 8;
 	}
-VmLineLineIntersection (VmVecAvg (vSide, gameData.segs.fVertices + m_sideVerts [0], gameData.segs.fVertices + m_sideVerts [1]),
-								VmVecAvg (vSide + 2, gameData.segs.fVertices + m_sideVerts [2], gameData.segs.fVertices + m_sideVerts [3]),
-								VmVecAvg (vSide + 1, gameData.segs.fVertices + m_sideVerts [1], gameData.segs.fVertices + m_sideVerts [2]),
-								VmVecAvg (vSide + 3, gameData.segs.fVertices + m_sideVerts [3], gameData.segs.fVertices + m_sideVerts [0]),
-								gameData.segs.fVertices + gameData.segs.nVertices,
-								gameData.segs.fVertices + gameData.segs.nVertices);
-VmVecFloatToFix (gameData.segs.vertices + gameData.segs.nVertices, gameData.segs.fVertices + gameData.segs.nVertices);
+vSide[0] = fVector::avg(gameData.segs.fVertices[m_sideVerts[0]], gameData.segs.fVertices[m_sideVerts[1]]);
+vSide[2] = fVector::avg(gameData.segs.fVertices[m_sideVerts[2]], gameData.segs.fVertices[m_sideVerts[3]]);
+vSide[1] = fVector::avg(gameData.segs.fVertices[m_sideVerts[1]], gameData.segs.fVertices[m_sideVerts[2]]);
+vSide[3] = fVector::avg(gameData.segs.fVertices[m_sideVerts[3]], gameData.segs.fVertices[m_sideVerts[0]]);
+
+VmLineLineIntersection(vSide[0], vSide[2], vSide[1], vSide[3],
+								gameData.segs.fVertices[gameData.segs.nVertices],
+								gameData.segs.fVertices[gameData.segs.nVertices]);
+gameData.segs.vertices[gameData.segs.nVertices] = gameData.segs.fVertices[gameData.segs.nVertices].toFix();
 m_sideVerts [4] = gameData.segs.nVertices++;
 m_faceP->nVerts++;
 for (i = 0; i < 4; i++, m_triP++) {
@@ -1100,7 +1106,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 		k = triVertP [j];
 		v = m_sideVerts [k];
 		m_triP->index [j] = v;
-		*m_vertexP++ = gameData.segs.fVertices [v].v3;
+		*m_vertexP++ = *gameData.segs.fVertices[v].v3();
 		if (j == 2) {
 			m_texCoordP [2] = texCoord;
 			m_faceColorP [2] = color;
@@ -1230,7 +1236,7 @@ gameData.segs.faces.slidingFaces = NULL;
 
 	short			nSegment, i;
 	ubyte			nSide;
-	
+
 #ifdef RELEASE
 if (gameOpts->render.nMeshQuality > 2)
 	gameOpts->render.nMeshQuality = 2;
@@ -1278,7 +1284,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 				InitColoredFace (nSegment);
 			if (gameStates.render.bTriangleMesh) {
 				// split in four triangles, using the quad's center of gravity as additional vertex
-				if (!gameStates.render.bPerPixelLighting && (m_sideP->nType == SIDE_IS_QUAD) && 
+				if (!gameStates.render.bPerPixelLighting && (m_sideP->nType == SIDE_IS_QUAD) &&
 					 !m_faceP->bSlide && (m_faceP->nCamera < 0) && IsBigFace (m_sideVerts))
 					SplitIn4Tris ();
 				else // split in two triangles, regarding any non-planarity
@@ -1294,12 +1300,12 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 				m_segFaceP->pFaces = m_faceP;
 			m_faceP++;
 			gameData.segs.nFaces++;
-			}	
+			}
 		else {
 			m_colorP += FACE_VERTS;
 			}
 		}
-	if (!(gameStates.render.bTriangleMesh || gameStates.render.bPerPixelLighting) && 
+	if (!(gameStates.render.bTriangleMesh || gameStates.render.bPerPixelLighting) &&
 		 gameStates.ogl.bGlTexMerge && m_nOvlTexCount) { //allow for splitting multi-textured faces into two single textured ones
 		gameData.segs.nFaces += m_nOvlTexCount;
 		m_faceP += m_nOvlTexCount;

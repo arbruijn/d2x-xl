@@ -115,7 +115,7 @@ switch (stationType)	{
 	}
 
 Assert ((seg2P != NULL));
-if (seg2P == NULL) 
+if (seg2P == NULL)
 	return;
 
 switch (oldType) {
@@ -150,8 +150,8 @@ else if (oldType == SEGMENT_IS_ROBOTMAKER) {
 	gameData.matCens.origStationTypes [i] = SEGMENT_IS_NOTHING;
 	i = seg2P->nMatCen;
 	if (i < --gameData.matCens.nBotCenters)
-		memcpy (gameData.matCens.botGens + i, 
-				  gameData.matCens.botGens + i + 1, 
+		memcpy (gameData.matCens.botGens + i,
+				  gameData.matCens.botGens + i + 1,
 				  (gameData.matCens.nBotCenters - i) * sizeof (tFuelCenInfo));
 	}
 }
@@ -207,7 +207,7 @@ void SetEquipGenStates (void)
 	int	i;
 
 for (i = 0; i < gameData.matCens.nEquipCenters; i++)
-	gameData.matCens.fuelCenters [gameData.matCens.equipGens [i].nFuelCen].bEnabled = 
+	gameData.matCens.fuelCenters [gameData.matCens.equipGens [i].nFuelCen].bEnabled =
 		FindTriggerTarget (gameData.matCens.fuelCenters [i].nSegment, -1) == 0;
 }
 
@@ -321,13 +321,13 @@ matCenP->xDisableTime = MATCEN_LIFE;
 
 //	Create a bright tObject in the tSegment.
 pos = matCenP->vCenter;
-VmVecSub (&delta, gameData.segs.vertices + gameData.segs.segments [nSegment].verts [0], &matCenP->vCenter);
-VmVecScaleInc (&pos, &delta, F1_0/2);
-nObject = CreateObject (OBJ_LIGHT, SINGLE_LIGHT_ID, -1, nSegment, &pos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
+delta = gameData.segs.vertices[gameData.segs.segments [nSegment].verts [0]] - matCenP->vCenter;
+pos += delta * (F1_0/2);
+nObject = tObject::Create (OBJ_LIGHT, SINGLE_LIGHT_ID, -1, nSegment, pos, vmsMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
 if (nObject != -1) {
 	OBJECTS [nObject].lifeleft = MATCEN_LIFE;
 	OBJECTS [nObject].cType.lightInfo.intensity = I2X (8);	//	Light cast by a fuelcen.
-	} 
+	}
 else {
 #if TRACE
 	con_printf (1, "Can't create invisible flare for matcen.\n");
@@ -414,8 +414,8 @@ tObject *CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte object_id)
 
 LOCALPLAYER.numRobotsLevel++;
 LOCALPLAYER.numRobotsTotal++;
-nObject = CreateObject ((ubyte) OBJ_ROBOT, object_id, -1, SEG_IDX (segP), vObjPosP,
-								&vmdIdentityMatrix, gameData.models.polyModels [ROBOTINFO (object_id).nModel].rad,
+nObject = tObject::Create((ubyte) OBJ_ROBOT, object_id, -1, SEG_IDX (segP), *vObjPosP,
+								vmsMatrix::IDENTITY, gameData.models.polyModels [ROBOTINFO (object_id).nModel].rad,
 				 				(ubyte) CT_AI, (ubyte) MT_PHYSICS, (ubyte) RT_POLYOBJ, 1);
 if (nObject < 0) {
 #if TRACE
@@ -499,7 +499,7 @@ void EquipGenHandler (tFuelCenInfo * matCenP)
 {
 	int			nObject, nMatCen, nType;
 	tObject		*objP;
-	vmsVector	vPos; 
+	vmsVector	vPos;
 	fix			topTime;
 
 if (!matCenP->bEnabled)
@@ -537,8 +537,8 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 		return;
 	COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
 	// If this is the first materialization, set to valid robot.
-	nObject = CreateObject (OBJ_POWERUP, nType, -1, (short) matCenP->nSegment, &vPos, &vmdIdentityMatrix, 
-									gameData.objs.pwrUp.info [nType].size, 
+	nObject = tObject::Create(OBJ_POWERUP, nType, -1, (short) matCenP->nSegment, vPos, vmsMatrix::IDENTITY,
+									gameData.objs.pwrUp.info [nType].size,
 									CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 	if (nObject < 0)
 		return;
@@ -565,7 +565,7 @@ void VirusGenHandler (tFuelCenInfo * matCenP)
 {
 	int			nObject, nMatCen;
 	tObject		*objP;
-	vmsVector	vPos; 
+	vmsVector	vPos;
 	fix			topTime;
 
 if (gameStates.entropy.bExitSequence || (gameData.segs.xSegments [matCenP->nSegment].owner <= 0))
@@ -600,8 +600,8 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	matCenP->xTimer = 0;
 	COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
 	// If this is the first materialization, set to valid robot.
-	nObject = CreateObject (OBJ_POWERUP, POW_ENTROPY_VIRUS, -1, (short) matCenP->nSegment, &vPos, &vmdIdentityMatrix, 
-									gameData.objs.pwrUp.info [POW_ENTROPY_VIRUS].size, 
+	nObject = tObject::Create(OBJ_POWERUP, POW_ENTROPY_VIRUS, -1, (short) matCenP->nSegment, vPos, vmsMatrix::IDENTITY,
+									gameData.objs.pwrUp.info [POW_ENTROPY_VIRUS].size,
 									CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 	if (nObject >= 0) {
 		objP = OBJECTS + nObject;
@@ -632,7 +632,7 @@ return miP->objFlags [2] = gameData.objs.nVertigoBotFlags;
 void BotGenHandler (tFuelCenInfo * matCenP)
 {
 	fix			xDistToPlayer;
-	vmsVector	vPos, vDir; 
+	vmsVector	vPos, vDir;
 	int			nMatCen, nSegment, nObject;
 	tObject		*objP;
 	fix			topTime;
@@ -646,7 +646,7 @@ if (matCenP->xDisableTime > 0) {
 	matCenP->xDisableTime -= gameData.time.xFrame;
 	if (matCenP->xDisableTime <= 0) {
 #if TRACE
-		con_printf (CONDBG, "Robot center #%i gets disabled due to time running out.\n", 
+		con_printf (CONDBG, "Robot center #%i gets disabled due to time running out.\n",
 						FUELCEN_IDX (matCenP));
 #endif
 		matCenP->bEnabled = 0;
@@ -671,8 +671,8 @@ if (!(gameData.matCens.botGens [nMatCen].objFlags [0] ||
 	return;
 
 // Wait until we have a D2_FREE slot for this puppy...
-if ((LOCALPLAYER.numRobotsLevel - 
-	  LOCALPLAYER.numKillsLevel) >= 
+if ((LOCALPLAYER.numRobotsLevel -
+	  LOCALPLAYER.numKillsLevel) >=
 	 (nGameSaveOrgRobots + Num_extryRobots)) {
 #ifdef _DEBUG
 	if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
@@ -689,7 +689,7 @@ if (!matCenP->bFlag) {
 	if (IsMultiGame)
 		topTime = ROBOT_GEN_TIME;
 	else {
-		xDistToPlayer = VmVecDistQuick (&gameData.objs.console->position.vPos, &matCenP->vCenter);
+		xDistToPlayer = vmsVector::dist(gameData.objs.console->position.vPos, matCenP->vCenter);
 		topTime = xDistToPlayer / 64 + d_rand () * 2 + F1_0*2;
 		if (topTime > ROBOT_GEN_TIME)
 			topTime = ROBOT_GEN_TIME + d_rand ();
@@ -761,8 +761,9 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 		MultiSendCreateRobot (FUELCEN_IDX (matCenP), OBJ_IDX (objP), nType);
 	objP->matCenCreator = (FUELCEN_IDX (matCenP)) | 0x80;
 	// Make object face player...
-	VmVecSub (&vDir, &gameData.objs.console->position.vPos, &objP->position.vPos);
-	VmVector2Matrix (&objP->position.mOrient, &vDir, &objP->position.mOrient.uVec, NULL);
+	vDir = gameData.objs.console->position.vPos - objP->position.vPos;
+	objP->position.mOrient = vmsMatrix::CreateFU(vDir, objP->position.mOrient[UVEC]);
+	//objP->position.mOrient = vmsMatrix::CreateFU(vDir, &objP->position.mOrient[UVEC], NULL);
 	MorphStart (objP);
 	}
 else {
@@ -795,7 +796,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++, fuelCenP++) {
 	else if (t == SEGMENT_IS_CONTROLCEN) {
 		//controlcen_proc (gameData.matCens.fuelCenters + i);
 		}
-	else if ((fuelCenP->xMaxCapacity > 0) && 
+	else if ((fuelCenP->xMaxCapacity > 0) &&
 				(gameData.matCens.playerSegP != gameData.segs.segments + fuelCenP->nSegment)) {
 		if (fuelCenP->xCapacity < fuelCenP->xMaxCapacity) {
  			fuelCenP->xCapacity += xAmountToReplenish;
@@ -866,7 +867,7 @@ fix FuelCenGiveFuel (tSegment *segP, fix MaxAmountCanTake)
 
 Assert (segP != NULL);
 gameData.matCens.playerSegP = segP;
-if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) || 
+if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) ||
 	 ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
 	return 0;
 if (!segP || (seg2P->special != SEGMENT_IS_FUELCEN))
@@ -920,7 +921,7 @@ Assert (segP != NULL);
 if (!segP)
 	return 0;
 gameData.matCens.playerSegP = segP;
-if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) || 
+if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) ||
 	 ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
 	return 0;
 if (seg2P->special != SEGMENT_IS_REPAIRCEN)
@@ -1061,18 +1062,18 @@ return amount;
 //--repair--
 //--repair-- 	// Find time for this movement
 //--repair-- 	deltaTime = F1_0;		// one second...
-//--repair-- 	
+//--repair--
 //--repair-- 	// Find start and goal position
 //--repair-- 	start_pos = objP->position.vPos;
-//--repair-- 
+//--repair--
 //--repair-- 	// Find delta position to get to goal position
 //--repair-- 	COMPUTE_SEGMENT_CENTER (&goal_pos,&gameData.segs.segments [repair_seg]);
 //--repair-- 	VmVecSub (&delta_pos,&goal_pos,&start_pos);
-//--repair-- 
+//--repair--
 //--repair-- 	// Find start angles
-//--repair-- 	//angles_from_vector (&start_angles,&objP->position.mOrient.fVec);
+//--repair-- 	//angles_from_vector (&start_angles,&objP->position.mOrient[FVEC]);
 //--repair-- 	VmExtractAnglesMatrix (&start_angles,&objP->position.mOrient);
-//--repair-- 
+//--repair--
 //--repair-- 	// Find delta angles to get to goal orientation
 //--repair-- 	med_compute_center_point_on_side (&nextcenter,&gameData.segs.segments [repair_seg],next_side);
 //--repair-- 	VmVecSub (&headfvec,&nextcenter,&goal_pos);
@@ -1084,9 +1085,9 @@ return amount;
 //--repair--
 //--repair-- 	VmVector2Matrix (&goal_orient,&headfvec,headuvec,NULL);
 //--repair-- 	VmExtractAnglesMatrix (&goalAngles,&goal_orient);
-//--repair-- 	deltaAngles.p = my_delta_ang (start_angles.p,goalAngles.p);
-//--repair-- 	deltaAngles.b = my_delta_ang (start_angles.b,goalAngles.b);
-//--repair-- 	deltaAngles.h = my_delta_ang (start_angles.h,goalAngles.h);
+//--repair-- 	deltaAngles[PA] = my_delta_ang (start_angles.p,goalAngles.p);
+//--repair-- 	deltaAngles[BA] = my_delta_ang (start_angles.b,goalAngles.b);
+//--repair-- 	deltaAngles[HA] = my_delta_ang (start_angles.h,goalAngles.h);
 //--repair-- 	currentTime = 0;
 //--repair-- 	Repairing = 0;
 //--repair-- }
@@ -1112,9 +1113,9 @@ return amount;
 //--repair-- //	----------------------------------------------------------------------------------------------------------
 //--repair-- int refuel_do_repair_effect (tObject * objP, int firstTime, int repair_seg)	{
 //--repair--
-//--repair-- 	objP->mType.physInfo.velocity.x = 0;			
-//--repair-- 	objP->mType.physInfo.velocity.y = 0;			
-//--repair-- 	objP->mType.physInfo.velocity.z = 0;			
+//--repair-- 	objP->mType.physInfo.velocity.x = 0;
+//--repair-- 	objP->mType.physInfo.velocity.y = 0;
+//--repair-- 	objP->mType.physInfo.velocity.z = 0;
 //--repair--
 //--repair-- 	if (firstTime)	{
 //--repair-- 		int entry_side;
@@ -1171,7 +1172,7 @@ return amount;
 //--repair-- 			case 4:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_1,F1_0); break;
 //--repair-- 			case 5:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_2,F1_0); break;
 //--repair-- 			}
-//--repair-- 	
+//--repair--
 //--repair-- 			repair_ship_damage ();
 //--repair--
 //--repair-- 		}
@@ -1182,7 +1183,7 @@ return amount;
 //--repair-- 			side_index++;
 //--repair-- 			if (side_index >= 6) return 1;
 //--repair-- 			next_side = sidelist [side_index];
-//--repair-- 
+//--repair--
 //--repair-- 			refuel_calc_deltas (objP, next_side, repair_seg);
 //--repair-- 		}
 //--repair--
@@ -1196,14 +1197,14 @@ return amount;
 //--repair-- 		objP->position.vPos = delta_pos;
 //--repair-- 		VmVecScale (&objP->position.vPos, factor);
 //--repair-- 		VmVecInc (&objP->position.vPos, &start_pos);
-//--repair-- 		
+//--repair--
 //--repair-- 		// Find tObject's current orientation
 //--repair-- 		p	= FixMul (deltaAngles.p,factor);
 //--repair-- 		b	= FixMul (deltaAngles.b,factor);
 //--repair-- 		h	= FixMul (deltaAngles.h,factor);
-//--repair-- 		av.p = (fixang)p + start_angles.p;
-//--repair-- 		av.b = (fixang)b + start_angles.b;
-//--repair-- 		av.h = (fixang)h + start_angles.h;
+//--repair-- 		av[PA] = (fixang)p + start_angles.p;
+//--repair-- 		av[BA] = (fixang)b + start_angles.b;
+//--repair-- 		av[HA] = (fixang)h + start_angles.h;
 //--repair-- 		VmAngles2Matrix (&objP->position.mOrient,&av);
 //--repair--
 //--repair-- 	}
@@ -1248,7 +1249,7 @@ return amount;
 //--repair-- 			//have just entered repair center
 //--repair--
 //--repair-- 			RepairObj = obj;
-//--repair-- 			repair_save_uvec = objP->position.mOrient.uVec;
+//--repair-- 			repair_save_uvec = objP->position.mOrient[UVEC];
 //--repair--
 //--repair-- 			repair_rate = FixMulDiv (FULL_REPAIR_RATE, (MAX_SHIELDS - LOCALPLAYER.shields),MAX_SHIELDS);
 //--repair--
@@ -1417,7 +1418,7 @@ if (GetTeam (gameData.multiplayer.nLocalPlayer) != nTeamId)
 	return 0;
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 	return 0;
-if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF && 
+if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF &&
 	 !FlagAtHome ((nFlagId == POW_BLUEFLAG) ? POW_REDFLAG : POW_BLUEFLAG))
 	return 0;
 MultiSendCaptureBonus ((char) gameData.multiplayer.nLocalPlayer);
@@ -1442,14 +1443,14 @@ CheckFlagDrop (seg2P, TEAM_RED, POW_BLUEFLAG, SEGMENT_IS_GOAL_RED);
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 	return;
 if (seg2P->special == SEGMENT_IS_GOAL_BLUE)	{
-	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) && FlagAtHome (POW_BLUEFLAG)) {	
+	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) && FlagAtHome (POW_BLUEFLAG)) {
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_REDFLAG, FORCE_DROP);
 		}
 	}
 else if (seg2P->special == SEGMENT_IS_GOAL_RED) {
-	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) && FlagAtHome (POW_REDFLAG)) {	
+	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) && FlagAtHome (POW_REDFLAG)) {
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_BLUEFLAG, FORCE_DROP);

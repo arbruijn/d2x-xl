@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <ctype.h>
 #ifndef _WIN32
-#include <unistd.h>
+#	include <unistd.h>
 #endif
 #include <time.h>
 
@@ -221,7 +221,7 @@ return count;
 void GameStartInitNetworkPlayers (void)
 {
 	int		i, j, t, bCoop = IsCoopGame,
-				segNum, segType, 
+				segNum, segType,
 				playerObjs [MAX_PLAYERS], startSegs [MAX_PLAYERS],
 				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS : MAX_PLAYERS;
 	tObject	*objP;
@@ -254,13 +254,13 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 // in enhanced CTF
 for (i = 0; i < nPlayers; i++) {
 // find a tPlayer tObject that resides in a tSegment of proper nType for the current
-// tPlayer start info 
+// tPlayer start info
 	for (j = 0; j < nPlayers; j++) {
 		segNum = startSegs [j];
 		if (segNum < 0)
 			continue;
 		segType = bCoop ? gameData.segs.segment2s [segNum].special : SEGMENT_IS_NOTHING;
-#if 0		
+#if 0
 		switch (segType) {
 			case SEGMENT_IS_GOAL_RED:
 			case SEGMENT_IS_TEAM_RED:
@@ -277,7 +277,7 @@ for (i = 0; i < nPlayers; i++) {
 			default:
 				break;
 			}
-#endif		
+#endif
 		objP = OBJECTS + playerObjs [j];
 		objP->nType = OBJ_PLAYER;
 		gameData.multiplayer.playerInit [i].position = objP->position;
@@ -294,7 +294,7 @@ gameData.multiplayer.nPlayerPositions = nPlayers;
 
 #ifdef _DEBUG
 if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
-#if TRACE	
+#if TRACE
 	//con_printf (CON_VERBOSE, "--NOT ENOUGH MULTIPLAYER POSITIONS IN THIS MINE!--\n");
 #endif
 	//Int3 (); // Not enough positions!!
@@ -311,7 +311,7 @@ if (IS_D2_OEM && IsMultiGame && (gameData.missions.nCurrentMission == gameData.m
 if (IS_MAC_SHARE && IsMultiGame && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && (gameData.missions.nCurrentLevel == 4)) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].versionMinor & 0xF0)) {
-			ExecMessageBox ("Warning!", NULL, 1 , TXT_OK, 
+			ExecMessageBox ("Warning!", NULL, 1 , TXT_OK,
 								 "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
 			}
@@ -408,7 +408,7 @@ LOCALPLAYER.hostages.nTotal += LOCALPLAYER.hostages.nLevel;
 LOCALPLAYER.hostages.nOnBoard = 0;
 if (!bSecret) {
 	InitAmmoAndEnergy ();
-	LOCALPLAYER.flags &=  
+	LOCALPLAYER.flags &=
 		~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_FULLMAP | KEY_BLUE | KEY_RED | KEY_GOLD);
 	LOCALPLAYER.cloakTime = 0;
 	LOCALPLAYER.invulnerableTime = 0;
@@ -423,9 +423,9 @@ else if (gameStates.app.bD1Mission)
 	InitAmmoAndEnergy ();
 gameStates.app.bPlayerIsDead = 0; // Added by RH
 LOCALPLAYER.homingObjectDist = -F1_0; // Added by RH
-gameData.laser.xLastFiredTime = 
-gameData.laser.xNextFireTime = 
-gameData.missiles.xLastFiredTime = 
+gameData.laser.xLastFiredTime =
+gameData.laser.xNextFireTime =
+gameData.missiles.xLastFiredTime =
 gameData.missiles.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
 Controls [0].afterburnerState = 0;
 gameStates.gameplay.bLastAfterburnerState = 0;
@@ -446,7 +446,7 @@ void InitAIForShip (void);
 
 void AddPlayerLoadout (void)
 {
-if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) 
+if (gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 	{
 	LOCALPLAYER.primaryWeaponFlags |= extraGameInfo [IsMultiGame].loadout.nGuns;
 	if (gameStates.app.bD1Mission)
@@ -460,7 +460,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevices;
 	if (extraGameInfo [1].bDarkness)
 		LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
-	if (gameStates.app.bD1Mission) 
+	if (gameStates.app.bD1Mission)
 		{
 	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
 	   LOCALPLAYER.flags &= ~(PLAYER_FLAGS_FULLMAP | PLAYER_FLAGS_AMMO_RACK | PLAYER_FLAGS_CONVERTER | PLAYER_FLAGS_AFTERBURNER | PLAYER_FLAGS_HEADLIGHT);
@@ -503,7 +503,7 @@ LOCALPLAYER.secondaryWeaponFlags = HAS_CONCUSSION_FLAG;
 gameData.weapons.nOverridden = 0;
 gameData.weapons.nPrimary = 0;
 gameData.weapons.nSecondary = 0;
-LOCALPLAYER.flags &= ~ 
+LOCALPLAYER.flags &= ~
 	(PLAYER_FLAGS_QUAD_LASERS |
 	 PLAYER_FLAGS_AFTERBURNER |
 	 PLAYER_FLAGS_CLOAKED |
@@ -645,7 +645,7 @@ for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLas
 		}
 
 if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
-	for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) 
+	for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
 		if (objP->nType == OBJ_EXPLOSION) {
 			objP->renderType = RT_POWERUP;
 			objP->rType.vClipInfo.nClipIndex = objP->id;
@@ -673,8 +673,8 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
 
 char *LevelName (int nLevel)
 {
-return gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ? 
-		 gameData.missions.szSecretLevelNames [-nLevel-1] : 
+return gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ?
+		 gameData.missions.szSecretLevelNames [-nLevel-1] :
 		 gameData.missions.szLevelNames [nLevel-1];
 }
 
@@ -691,8 +691,8 @@ return pszFilename;
 char *LevelSongName (int nLevel)
 {
 return gameStates.app.bAutoRunMission ? 0 :
-			(nLevel < 0) ? 
-			gameData.missions.szSongNames [-nLevel-1] : 
+			(nLevel < 0) ?
+			gameData.missions.szSongNames [-nLevel-1] :
 			gameData.missions.szSongNames [nLevel-1];
 }
 
@@ -717,7 +717,7 @@ gameData.physics.side.nSegment = -1;
 gameData.physics.side.nSide = -1;
 memset (&gameData.marker, 0, sizeof (gameData.marker));
 gameData.marker.nLast = -1;
-gameData.songs.tPos = 
+gameData.songs.tPos =
 gameData.songs.tSlowDown = 0;
 gameStates.gameplay.bKillBossCheat = 0;
 gameStates.render.nFlashScale = F1_0;
@@ -838,12 +838,12 @@ memset (gameData.models.thrusters, 0, sizeof (gameData.models.thrusters));
 gameData.render.lights.flicker.nLights = 0;
 save_player = LOCALPLAYER;
 #if 0
-Assert (gameStates.app.bAutoRunMission || 
-		  ((nLevel <= gameData.missions.nLastLevel) && 
-		   (nLevel >= gameData.missions.nLastSecretLevel) && 
+Assert (gameStates.app.bAutoRunMission ||
+		  ((nLevel <= gameData.missions.nLastLevel) &&
+		   (nLevel >= gameData.missions.nLastSecretLevel) &&
 			(nLevel != 0)));
 #endif
-if (!gameStates.app.bAutoRunMission && 
+if (!gameStates.app.bAutoRunMission &&
 	 (!nLevel || (nLevel > gameData.missions.nLastLevel) || (nLevel < gameData.missions.nLastSecretLevel))) {
 	gameStates.app.bBetweenLevels = 0;
 	gameData.missions.nCurrentLevel = nCurrentLevel;
@@ -871,12 +871,12 @@ memset (gameData.objs.xCreationTime, 0, sizeof (*gameData.objs.xCreationTime) * 
 /*---*/PrintLog ("   loading texture brightness info\n");
 SetDataVersion (-1);
 
-memcpy (gameData.pig.tex.brightness, 
+memcpy (gameData.pig.tex.brightness,
 		  gameData.pig.tex.defaultBrightness + gameStates.app.bD1Mission,
 		  sizeof (gameData.pig.tex.brightness));
 LoadTextureBrightness (pszLevelName, NULL);
-memcpy (gameData.render.color.textures, 
-		  gameData.render.color.defaultTextures [gameStates.app.bD1Mission], 
+memcpy (gameData.render.color.textures,
+		  gameData.render.color.defaultTextures [gameStates.app.bD1Mission],
 		  sizeof (gameData.render.color.textures));
 LoadTextureColors (pszLevelName, NULL);
 InitTexColors ();
@@ -891,8 +891,8 @@ for (;;) {
 		break;
 	if (strstr (gameHogFiles.AltHogFiles.szName, ".hog"))
 		break;
-	sprintf (szHogName, "%s%s%s%s", 
-				gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "", 
+	sprintf (szHogName, "%s%s%s%s",
+				gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "",
 				gameFolders.szMsnSubDir, pszLevelName);
 	if (!CFUseAltHogFile (szHogName))
 		break;
@@ -952,7 +952,7 @@ if (gameData.app.nGameMode & GM_ENTROPY) {
 		gameData.app.nGameMode |= GM_TEAM;
 		}
 	}
-else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) || 
+else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) ||
 			((gameData.app.nGameMode & GM_MONSTERBALL) == GM_MONSTERBALL)) {
 /*---*/PrintLog ("   gathering CTF+ flag goals\n");
 	if (GatherFlagGoals () != 3) {
@@ -1106,7 +1106,7 @@ if (nMineLevel < 0)
 	nMineLevel *= - (gameData.missions.nLastLevel / gameData.missions.nSecretLevels);
 else if (nMineLevel == 0)
 	nMineLevel = 1;
-nEndGamePoints = 
+nEndGamePoints =
 nSkillPoints =
 nShieldPoints =
 nEnergyPoints =
@@ -1148,7 +1148,7 @@ if (*szAllHostages)
 	sprintf (szMenu [c++], "%s  ", szAllHostages);
 if (bIsLastLevel)
 	sprintf (szMenu [c++], "%s  ", szEndGame);
-sprintf (szMenu [c++], "%s%i  ", TXT_TOTAL_BONUS, 
+sprintf (szMenu [c++], "%s%i  ", TXT_TOTAL_BONUS,
 			nShieldPoints + nEnergyPoints + nHostagePoints + nSkillPoints + nAllHostagePoints + nEndGamePoints);
 sprintf (szMenu [c++], "%s%i  ", TXT_TOTAL_SCORE, LOCALPLAYER.score);
 memset (m, 0, sizeof (m));
@@ -1159,10 +1159,10 @@ for (i = 0; i < c; i++) {
 sprintf (szTitle,
 			"%s%s %d %s\n%s %s",
 			gameOpts->menus.nStyle ? "" : bIsLastLevel ? "\n\n\n":"\n",
-			 (gameData.missions.nCurrentLevel < 0) ? TXT_SECRET_LEVEL : TXT_LEVEL, 
-			 (gameData.missions.nCurrentLevel < 0) ? -gameData.missions.nCurrentLevel : gameData.missions.nCurrentLevel, 
-			TXT_COMPLETE, 
-			gameData.missions.szCurrentLevel, 
+			 (gameData.missions.nCurrentLevel < 0) ? TXT_SECRET_LEVEL : TXT_LEVEL,
+			 (gameData.missions.nCurrentLevel < 0) ? -gameData.missions.nCurrentLevel : gameData.missions.nCurrentLevel,
+			TXT_COMPLETE,
+			gameData.missions.szCurrentLevel,
 			TXT_DESTROYED);
 Assert (c <= N_GLITZITEMS);
 GrPaletteFadeOut (NULL, 32, 0);
@@ -1277,7 +1277,7 @@ if (gameData.demo.nState == ND_STATE_PAUSED)
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDSetNewLevel (nLevel);
 	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
-	} 
+	}
 else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	GrPaletteFadeOut (NULL, 32, 0);
 	SetScreenMode (SCREEN_MENU);		//go into menu mode
@@ -1423,7 +1423,7 @@ for (i = 0; i < -gameData.missions.nLastSecretLevel; i++)
 	if (gameData.missions.secretLevelTable [i] == gameData.missions.nCurrentLevel) {
 		gameData.missions.nNextLevel = -i - 1;
 		break;
-		} 
+		}
 	else if (gameData.missions.secretLevelTable [i] > gameData.missions.nCurrentLevel) {	//	Allows multiple exits in same group.
 		gameData.missions.nNextLevel = -i;
 		break;
@@ -1532,7 +1532,7 @@ else
 	// NOTE LINK TO ABOVE
 	DoEndLevelScoreGlitz (0);
 
-if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
+if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
 	 !(gameData.app.nGameMode & (GM_MULTI | GM_MULTI_COOP))) {
 	GrSetCurrentCanvas (NULL);
 	GrClearCanvas (BLACK_RGBA);
@@ -1560,10 +1560,10 @@ void AdvanceLevel (int bSecret, int bFromSecret)
 gameStates.app.bBetweenLevels = 1;
 Assert (!bSecret);
 if ((!bFromSecret/* && gameStates.app.bD1Mission*/) &&
-	 ((gameData.missions.nCurrentLevel != gameData.missions.nLastLevel) || 
+	 ((gameData.missions.nCurrentLevel != gameData.missions.nLastLevel) ||
 	  extraGameInfo [IsMultiGame].bRotateLevels)) {
 	if (IsMultiGame)
-		MultiEndLevelScore ();	
+		MultiEndLevelScore ();
 	else {
 		PlayLevelExtroMovie (gameData.missions.nCurrentLevel);
 		DoEndLevelScoreGlitz (0);		//give bonuses
@@ -1582,7 +1582,7 @@ if (IsMultiGame) {
 		longjmp (gameExitPoint, 0);		// Exit out of game loop
 		}
 	}
-if ((gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) && 
+if ((gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) &&
 	!extraGameInfo [IsMultiGame].bRotateLevels) //tPlayer has finished the game!
 	DoEndGame ();
 else {
@@ -1685,7 +1685,7 @@ GrPaletteStepLoad (NULL);
 DigiStopDigiSounds ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
-	LOCALPLAYER.score = 
+	LOCALPLAYER.score =
 	(LOCALPLAYER.score * (100 - nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty])) / 100;
 if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] && (gameData.app.nGameMode & GM_MULTI))
 	MultiSendMsgQuit ();
@@ -1970,7 +1970,7 @@ if (!IsMultiGame) {
 			if (gameStates.app.bHaveExtraMovies && (nLevel == 1)) {
 				if (PlayMovie ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)
 					 PlayMovie ("briefb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
-				}		
+				}
 			DoBriefingScreens (gameData.missions.szBriefingFilename, nLevel);
 			}
 		else {
@@ -2063,12 +2063,12 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	spawnMap [i].xDist = 0x7fffffff;
 	for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
 		if (j != gameData.multiplayer.nLocalPlayer) {
-			objP = OBJECTS + gameData.multiplayer.players [j].nObject; 
+			objP = OBJECTS + gameData.multiplayer.players [j].nObject;
 			if ((objP->nType == OBJ_PLAYER))	{
-				xDist = FindConnectedDistance (&objP->position.vPos, 
-														 objP->nSegment, 
-														 &gameData.multiplayer.playerInit [i].position.vPos, 
-														 gameData.multiplayer.playerInit [i].nSegment, 
+				xDist = FindConnectedDistance (&objP->position.vPos,
+														 objP->nSegment,
+														 &gameData.multiplayer.playerInit [i].position.vPos,
+														 gameData.multiplayer.playerInit [i].nSegment,
 														 10, WID_FLY_FLAG, 0);	//	Used to be 5, search up to 10 segments
 				if (xDist < 0)
 					continue;
@@ -2123,7 +2123,7 @@ else if (bRandom == 1) {
 	nSpawnPos = GetRandomPlayerPosition ();
 	}
 else {
-	goto done; // If deathmatch and not random, positions were already determined by sync packet
+	goto done; // If deathmatch and not Random, positions were already determined by sync packet
 	}
 Assert (nSpawnPos >= 0);
 Assert (nSpawnPos < gameData.multiplayer.nPlayerPositions);
@@ -2160,16 +2160,16 @@ if (botInfoP->thief || botInfoP->companion) {
 				shields = I2X (20000);
 				break;		//	Trainee, basically unkillable
 			case 1:
-				shields *= 3;			
+				shields *= 3;
 				break;		//	Rookie, pretty dang hard
 			case 2:
-				shields *= 2;			
+				shields *= 2;
 				break;		//	Hotshot, a bit tough
 			default:
 				break;
 			}
 		}
-	} 
+	}
 else if (botInfoP->bossFlag) {	//	MK, 01/16/95, make boss shields lower on lower diff levels.
 	shields = shields / (NDL + 3) * (gameStates.app.nDifficultyLevel + 4);
 //	Additional wimpification of bosses at Trainee
@@ -2222,7 +2222,7 @@ if (IsMultiGame) {
 		MultiSendScore ();
 	MultiSendPosition (LOCALPLAYER.nObject);
 	MultiSendReappear ();
-	}	
+	}
 if (gameData.app.nGameMode & GM_NETWORK)
 	NetworkDoFrame (1, 1);
 AIResetAllPaths ();

@@ -1083,16 +1083,16 @@ else if (gameOpts->input.trackIR.nMode == 1) {
 else {
 	viewInfo.bUsePlayerHeadAngles = 1;
 	if (gameOpts->input.trackIR.bMove [0]) {
-		viewInfo.playerHeadAngles.h = (fixang) -tirInfo.fvRot.z / 4 * (gameOpts->input.trackIR.sensitivity [0] + 1);
-		viewInfo.playerHeadAngles.p = (fixang) tirInfo.fvRot.y / 4 * (gameOpts->input.trackIR.sensitivity [1] + 1);
+		viewInfo.playerHeadAngles[HA] = (fixang) -tirInfo.fvRot.z / 4 * (gameOpts->input.trackIR.sensitivity [0] + 1);
+		viewInfo.playerHeadAngles[PA] = (fixang) tirInfo.fvRot.y / 4 * (gameOpts->input.trackIR.sensitivity [1] + 1);
 		}
 	else
-		viewInfo.playerHeadAngles.h = 
-		viewInfo.playerHeadAngles.p = 0;
+		viewInfo.playerHeadAngles[HA] = 
+		viewInfo.playerHeadAngles[PA] = 0;
 	if (gameOpts->input.trackIR.bMove [1])
-		viewInfo.playerHeadAngles.b = (fixang) tirInfo.fvRot.x / 4 * (gameOpts->input.trackIR.sensitivity [2] + 1);
+		viewInfo.playerHeadAngles[BA] = (fixang) tirInfo.fvRot.x / 4 * (gameOpts->input.trackIR.sensitivity [2] + 1);
 	else
-		viewInfo.playerHeadAngles.b = 0;
+		viewInfo.playerHeadAngles[BA] = 0;
 	}
 fDeadzone = 256.0f * gameOpts->input.trackIR.nDeadzone;
 fScale = 16384.0f / (16384.0f - fDeadzone);

@@ -137,7 +137,7 @@ for (i = 0; i < nSides; i++, sinCosP++) {
 
 //------------------------------------------------------------------------------
 
-int CircleListInit (int nSides, int nType, int mode) 
+int CircleListInit (int nSides, int nType, int mode)
 {
 	int h = glGenLists (1);
 
@@ -157,20 +157,20 @@ vmsVector	vNormal;
 #if 1
 if (pvNormal) {
 	if (gameStates.ogl.bUseTransform)
-		glNormal3f ((GLfloat) X2F (pvNormal->p.x), 
-						(GLfloat) X2F (pvNormal->p.y), 
-						(GLfloat) X2F (pvNormal->p.z));
+		glNormal3f ((GLfloat) X2F ((*pvNormal)[X]),
+						(GLfloat) X2F ((*pvNormal)[Y]),
+						(GLfloat) X2F ((*pvNormal)[Z]));
 		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->p3_vec);
 	else {
-		G3RotatePoint (&vNormal, pvNormal, 0);
-		glNormal3f ((GLfloat) X2F (vNormal.p.x), 
-						(GLfloat) X2F (vNormal.p.y), 
-						(GLfloat) X2F (vNormal.p.z));
+		G3RotatePoint (vNormal, *pvNormal, 0);
+		glNormal3f ((GLfloat) X2F (vNormal[X]),
+						(GLfloat) X2F (vNormal[Y]),
+						(GLfloat) X2F (vNormal[Z]));
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		}
 //	glNormal3f ((GLfloat) X2F (vNormal.x), (GLfloat) X2F (vNormal.y), (GLfloat) X2F (vNormal.z));
 	}
-else 
+else
 #endif
 	{
 	int	v [4];
@@ -179,26 +179,24 @@ else
 	v [1] = pointList [1]->p3_index;
 	v [2] = pointList [2]->p3_index;
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-		VmVecNormal (&vNormal, 
-						 &pointList [0]->p3_vec,
-						 &pointList [1]->p3_vec,
-						 &pointList [2]->p3_vec);
-		glNormal3f ((GLfloat) X2F (vNormal.p.x), (GLfloat) X2F (vNormal.p.y), (GLfloat) X2F (vNormal.p.z));
+		vNormal = vmsVector::normal(pointList [0]->p3_vec,
+						 pointList [1]->p3_vec,
+						 pointList [2]->p3_vec);
+		glNormal3f ((GLfloat) X2F (vNormal[X]), (GLfloat) X2F (vNormal[Y]), (GLfloat) X2F (vNormal[Z]));
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-		VmVecNormal (&vNormal, 
-							gameData.segs.vertices + v [0], 
-							gameData.segs.vertices + v [1], 
-							gameData.segs.vertices + v [2]);
+		vNormal = vmsVector::normal(gameData.segs.vertices[v [0]],
+							gameData.segs.vertices[v [1]],
+							gameData.segs.vertices[v [2]]);
 		if (bFlip)
-			VmVecNegate (&vNormal);
+			vNormal = -vNormal;
 		if (!gameStates.ogl.bUseTransform)
-			G3RotatePoint (&vNormal, &vNormal, 0);
+			G3RotatePoint (vNormal, vNormal, 0);
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
-		glNormal3f ((GLfloat) X2F (vNormal.p.x), 
-						(GLfloat) X2F (vNormal.p.y), 
-						(GLfloat) X2F (vNormal.p.z));
+		glNormal3f ((GLfloat) X2F (vNormal[X]),
+						(GLfloat) X2F (vNormal[Y]),
+						(GLfloat) X2F (vNormal[Z]));
 		}
 	}
 }
@@ -214,21 +212,19 @@ v [0] = pointList [0]->p3_index;
 v [1] = pointList [1]->p3_index;
 v [2] = pointList [2]->p3_index;
 if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-	VmVecNormal (&vNormal, 
-					 &pointList [0]->p3_vec,
-					 &pointList [1]->p3_vec,
-					 &pointList [2]->p3_vec);
+	vNormal = vmsVector::normal(pointList [0]->p3_vec,
+					 pointList [1]->p3_vec,
+					 pointList [2]->p3_vec);
 	}
 else {
 	int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-	VmVecNormal (&vNormal, 
-					 gameData.segs.vertices + v [0], 
-					 gameData.segs.vertices + v [1], 
-					 gameData.segs.vertices + v [2]);
+	vNormal = vmsVector::normal(gameData.segs.vertices[v[0]],
+					 gameData.segs.vertices[v[1]],
+					 gameData.segs.vertices[v[2]]);
 	if (bFlip)
-		VmVecNegate (&vNormal);
+		vNormal.neg();
 	}
-VmVecFixToFloat (pvNormal, &vNormal);
+*pvNormal = vNormal.toFloat();
 }
 
 //------------------------------------------------------------------------------
@@ -236,15 +232,14 @@ VmVecFixToFloat (pvNormal, &vNormal);
 fVector *G3Reflect (fVector *vReflect, fVector *vLight, fVector *vNormal)
 {
 //2 * n * (l dot n) - l
-	float		LdotN = 2 * VmVecDot (vLight, vNormal);
+	float		LdotN = 2 * fVector::dot(*vLight, *vNormal);
 
 #if 0
 VmVecScale (vReflect, vNormal, LdotN);
 VmVecDec (vReflect, vLight);
 #else
-vReflect->p.x = vNormal->p.x * LdotN - vLight->p.x;
-vReflect->p.y = vNormal->p.y * LdotN - vLight->p.y;
-vReflect->p.z = vNormal->p.z * LdotN - vLight->p.z;
+*vReflect = *vNormal * LdotN - *vLight;
+
 #endif
 return vReflect;
 }
@@ -348,11 +343,11 @@ glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 if (gameStates.render.bRearView)
 	glScalef (-1.0f, 1.0f, 1.0f);
-gluPerspective (gameStates.render.glFOV * ((double) viewInfo.zoom / 65536.0), 
+gluPerspective (gameStates.render.glFOV * ((double) viewInfo.zoom / 65536.0),
 					 (double) grdCurCanv->cvBitmap.bmProps.w / (double) grdCurCanv->cvBitmap.bmProps.h, ZNEAR, ZFAR);
-gameData.render.ogl.depthScale.p.x = (float) (ZFAR / (ZFAR - ZNEAR));
-gameData.render.ogl.depthScale.p.y = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
-gameData.render.ogl.depthScale.p.z = (float) (ZFAR - ZNEAR);
+gameData.render.ogl.depthScale[X] = (float) (ZFAR / (ZFAR - ZNEAR));
+gameData.render.ogl.depthScale[Y] = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
+gameData.render.ogl.depthScale[Z] = (float) (ZFAR - ZNEAR);
 gameData.render.ogl.screenScale.x = 1.0f / (float) grdCurScreen->scWidth;
 gameData.render.ogl.screenScale.y = 1.0f / (float) grdCurScreen->scHeight;
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -371,9 +366,9 @@ if ((x != gameStates.ogl.nLastX) || (y != gameStates.ogl.nLastY) || (w != gameSt
 #if !USE_IRRLICHT
 	glViewport ((GLint) x, (GLint) (grdCurScreen->scCanvas.cvBitmap.bmProps.h >> gameStates.render.cameras.bActive) - y - h, (GLsizei) w, (GLsizei) h);
 #endif
-	gameStates.ogl.nLastX = x; 
-	gameStates.ogl.nLastY = y; 
-	gameStates.ogl.nLastW = w; 
+	gameStates.ogl.nLastX = x;
+	gameStates.ogl.nLastY = y;
+	gameStates.ogl.nLastW = w;
 	gameStates.ogl.nLastH = h;
 	}
 }
@@ -413,7 +408,7 @@ if (gameStates.render.nShadowPass) {
 			glEnable (GL_DEPTH_TEST);
 			glDisable (GL_STENCIL_TEST);
 			glDepthFunc (GL_LESS);
-			glEnable (GL_CULL_FACE);	
+			glEnable (GL_CULL_FACE);
 			OglCullFace (0);
 			if (!FAST_SHADOWS)
 				glColorMask (0,0,0,0);
@@ -434,14 +429,14 @@ if (gameStates.render.nShadowPass) {
 				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				glDisable (GL_STENCIL_TEST);
 				}
-			else 
+			else
 #	endif
 				{
 				glColorMask (0,0,0,0);
 				glDepthMask (0);
 				glEnable (GL_STENCIL_TEST);
 				if (!glIsEnabled (GL_STENCIL_TEST))
-					extraGameInfo [0].bShadows = 
+					extraGameInfo [0].bShadows =
 					extraGameInfo [1].bShadows = 0;
 				glClearStencil (0);
 				glClear (GL_STENCIL_BUFFER_BIT);
@@ -497,9 +492,9 @@ if (gameStates.render.nShadowPass) {
 				glDisable (GL_STENCIL_TEST);
          else if (FAST_SHADOWS) {
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
-				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);	
+				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);
 				}
-			else 
+			else
 				{
 				glStencilFunc (GL_EQUAL, 0, ~0);
 #if 0
@@ -516,7 +511,7 @@ if (gameStates.render.nShadowPass) {
 	else if (gameStates.render.nShadowPass == 4) {	//render unlit/final scene
 		glEnable (GL_DEPTH_TEST);
 		glDepthFunc (GL_LESS);
-		glEnable (GL_CULL_FACE);	
+		glEnable (GL_CULL_FACE);
 		OglCullFace (0);
 		}
 #if GL_INFINITY
@@ -524,18 +519,18 @@ if (gameStates.render.nShadowPass) {
 	glLoadIdentity ();
 #endif
 	}
-else 
+else
 #endif //SHADOWS
 	{
-	r_polyc =  
-	r_tpolyc = 
+	r_polyc =
+	r_tpolyc =
 	r_tvertexc =
-	r_bitmapc = 
-	r_ubitmapc = 
-	r_ubitbltc = 
+	r_bitmapc =
+	r_ubitmapc =
+	r_ubitbltc =
 	r_upixelc = 0;
 
-	//if (gameStates.render.nShadowBlurPass < 2) 
+	//if (gameStates.render.nShadowBlurPass < 2)
 		{
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();
@@ -543,9 +538,9 @@ else
 		}
 	if (gameStates.ogl.bEnableScissor) {
 		glScissor (
-			grdCurCanv->cvBitmap.bmProps.x, 
-			grdCurScreen->scCanvas.cvBitmap.bmProps.h - grdCurCanv->cvBitmap.bmProps.y - nCanvasHeight, 
-			nCanvasWidth, 
+			grdCurCanv->cvBitmap.bmProps.x,
+			grdCurScreen->scCanvas.cvBitmap.bmProps.h - grdCurCanv->cvBitmap.bmProps.y - nCanvasHeight,
+			nCanvasWidth,
 			nCanvasHeight);
 		glEnable (GL_SCISSOR_TEST);
 		}
@@ -580,7 +575,7 @@ else
 		glDisable (GL_CULL_FACE);
 		}
 	else {
-		glEnable (GL_CULL_FACE);	
+		glEnable (GL_CULL_FACE);
 		glFrontFace (GL_CW);	//Weird, huh? Well, D2 renders everything reverse ...
 		glCullFace (gameStates.render.bRearView ? GL_FRONT : GL_BACK);
 		glEnable (GL_DEPTH_TEST);
@@ -639,14 +634,14 @@ if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
 
 //------------------------------------------------------------------------------
 
-void OglEnableLighting (int bSpecular)
+void OglEnableLighting(int bSpecular)
 {
 if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 		static GLfloat fBlack [] = {0.0f, 0.0f, 0.0f, 1.0f};
-#	if 0		
+#	if 0
 		static GLfloat fWhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
 #	endif
-#if 1		
+#if 1
 		static GLfloat fAmbient [] = {0.1f, 0.1f, 0.1f, 1.0f};
 		static GLfloat fDiffuse [] = {0.9f, 0.9f, 0.9f, 1.0f};
 #endif
@@ -734,7 +729,7 @@ if (!nOglTransformCalls && (gameStates.ogl.bUseTransform || bForce)) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();
-	//glScalef (X2F (viewInfo.scale.p.x), X2F (viewInfo.scale.p.y), -X2F (viewInfo.scale.p.z));
+	//glScalef (X2F (viewInfo.scale[X]), X2F (viewInfo.scale[Y]), -X2F (viewInfo.scale[Z]));
 	glScalef (1, 1, -1);
 	glMultMatrixf (viewInfo.glViewf);
 	glTranslatef (-viewInfo.glPosf [0], -viewInfo.glPosf [1], -viewInfo.glPosf [2]);
@@ -766,7 +761,7 @@ if (HaveLightmaps ())
 CloseDynLighting ();
 InitDynLighting ();
 OglCreateDrawBuffer ();
-CreateCameras ();	
+CreateCameras ();
 InitSpheres ();
 BuildObjectModels ();
 OglDrawBuffer (GL_BACK, 1);
@@ -776,7 +771,7 @@ OglDrawBuffer (GL_BACK, 1);
 
 void OglSetScreenMode (void)
 {
-if ((gameStates.video.nLastScreenMode == gameStates.video.nScreenMode) && 
+if ((gameStates.video.nLastScreenMode == gameStates.video.nScreenMode) &&
 	 (gameStates.ogl.bLastFullScreen == gameStates.ogl.bFullScreen) &&
 	 (gameStates.app.bGameRunning || (gameStates.video.nScreenMode == SCREEN_GAME) || (gameStates.ogl.nDrawBuffer == GL_FRONT)))
 	return;
@@ -815,7 +810,7 @@ glVersion = (char *) glGetString (GL_VERSION);
 gl_extensions = (char *) glGetString (GL_EXTENSIONS);
 #if 0 //TRACE
 con_printf(
-	CON_VERBOSE, 
+	CON_VERBOSE,
 	"\ngl vendor:%s\nrenderer:%s\nversion:%s\nextensions:%s\n",
 	gl_vendor,gl_renderer,glVersion,gl_extensions);
 #endif
@@ -845,7 +840,7 @@ if (gl_renderer) {
 	if ((stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.0\n")==0 || stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.2\n")==0) && stricmp(glVersion,"1.2 Mesa 3.0")==0){
 		gameStates.ogl.bIntensity4 = 0;	//ignores alpha, always black background instead of transparent.
 		gameStates.ogl.bReadPixels = 0;	//either just returns all black, or kills the X server entirely
-		gameStates.ogl.bGetTexLevelParam = 0;	//returns random data..
+		gameStates.ogl.bGetTexLevelParam = 0;	//returns Random data..
 		}
 	if (stricmp(gl_vendor,"Matrox Graphics Inc.")==0){
 		//displays garbage. reported by
@@ -856,10 +851,10 @@ if (gl_renderer) {
 	}
 //allow overriding of stuff.
 #if 0 //TRACE
-con_printf(CON_VERBOSE, 
+con_printf(CON_VERBOSE,
 	"gl_arb_multitexture:%i, gl_sgis_multitexture:%i\n",
 	gameOpts->ogl.bArbMultiTexture,gameOpts->ogl.bSgisMultiTexture);
-con_printf(CON_VERBOSE, 
+con_printf(CON_VERBOSE,
 	"gl_intensity4:%i, gl_luminance4_alpha4:%i, gl_readpixels:%i, gl_gettexlevelparam:%i\n",
 	gameStates.ogl.bIntensity4, gameStates.ogl.bLuminance4Alpha4, gameStates.ogl.bReadPixels, gameStates.ogl.bGetTexLevelParam);
 #endif
@@ -1004,7 +999,7 @@ OglGenTextures (1, &hBuffer);
 if (glGetError ())
 	return hBuffer = 0;
 glBindTexture (GL_TEXTURE_2D, hBuffer);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, 
+glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight,
 				  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
 if (glGetError ()) {
 	OglDeleteTextures (1, &hBuffer);
@@ -1040,7 +1035,7 @@ OglGenTextures (1, &hBuffer);
 if (glGetError ())
 	return hDepthBuffer = 0;
 glBindTexture (GL_TEXTURE_2D, hBuffer);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, 
+glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight,
 				  0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
@@ -1062,7 +1057,7 @@ return hBuffer;
 void OglGenTextures (GLsizei n, GLuint *hTextures)
 {
 glGenTextures (n, hTextures);
-if ((*hTextures == gameData.render.ogl.drawBuffer.hRenderBuffer) && 
+if ((*hTextures == gameData.render.ogl.drawBuffer.hRenderBuffer) &&
 	 (hTextures != &gameData.render.ogl.drawBuffer.hRenderBuffer))
 	OglDestroyDrawBuffer ();
 }

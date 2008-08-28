@@ -380,12 +380,14 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+
 #if VR_NONE
 #   undef VR_NONE			//undef if != 0
 #endif
 #ifndef VR_NONE
 #   define VR_NONE 0		//make sure VR_NONE is defined and 0 here
 #endif
+
 
 void SetDisplayMode (int nMode, int bOverride)
 {

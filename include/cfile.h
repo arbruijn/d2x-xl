@@ -103,7 +103,7 @@ int CFError (CFILE *fp);
 int CFExist (const char *filename, const char *folder, int bUseD1Hog);	// Returns true if file exists on disk (1) or in hog (2).
 
 // Deletes a file.
-int CFDelete (const char *filename, const char *folder);
+int CFDelete (const char *filename, const char* folder);
 
 // Rename a file.
 int CFRename (const char *oldname, const char *newname, const char *folder);
@@ -122,7 +122,7 @@ int CFPutS (const char *str, CFILE *fp);
 
 // Allows files to be gotten from an alternate hog file.
 // Passing NULL disables this.
-// Returns 1 if tHogFile found (& contains file), else 0.  
+// Returns 1 if tHogFile found (& contains file), else 0.
 // If NULL passed, returns 1
 int CFUseAltHogFile (const char *name);
 
@@ -134,9 +134,9 @@ int CFUseD1HogFile (const char *name);
 
 // All fp functions will check this directory if no file exists
 // in the current directory.
-void CFUseAltHogDir (char *path);
+void CFUseAltHogDir (const char *path);
 
-//tell fp about your critical error counter 
+//tell fp about your critical error counter
 void CFSetCriticalErrorCounterPtr (int *ptr);
 
 FILE *CFFindHogFile (tHogFileList *hog, const char *folder, const char *name, int *length);
@@ -146,16 +146,16 @@ int CFExtract (const char *filename, const char *folder, int bUseD1Hog, const ch
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
 
 // prototypes for reading basic types from fp
-int CFReadInt (CFILE *cfP);
-short CFReadShort (CFILE *cfP);
-sbyte CFReadByte (CFILE *cfP);
-fix CFReadFix (CFILE *cfP);
-fixang CFReadFixAng (CFILE *cfP);
-void CFReadVector (vmsVector *v, CFILE *cfP);
-void CFReadAngVec (vmsAngVec *v, CFILE *cfP);
-void CFReadMatrix (vmsMatrix *v, CFILE *cfP);
-float CFReadFloat (CFILE *cfP);
-double CFReadDouble (CFILE *cfP);
+int CFReadInt (CFILE *file);
+short CFReadShort (CFILE *file);
+sbyte CFReadByte (CFILE *file);
+fix CFReadFix (CFILE *file);
+fixang CFReadFixAng (CFILE *file);
+void CFReadVector (vmsVector& v, CFILE *file);
+void CFReadAngVec (vmsAngVec& v, CFILE *file);
+void CFReadMatrix (vmsMatrix& v, CFILE *file);
+float CFReadFloat (CFILE *file);
+double CFReadDouble (CFILE *file);
 char *CFReadData (const char *filename, const char *folder, int bUseD1Hog);
 
 // Reads variable length, null-termined string.   Will only read up
@@ -163,16 +163,16 @@ char *CFReadData (const char *filename, const char *folder, int bUseD1Hog);
 void CFReadString (char *buf, int n, CFILE *cfP);
 
 // functions for writing cfiles
-int CFWriteFix (fix x, CFILE *cfP);
-int CFWriteInt (int i, CFILE *cfP);
-int CFWriteShort (short s, CFILE *cfP);
-int CFWriteByte (sbyte u, CFILE *cfP);
-int CFWriteFixAng (fixang a, CFILE *cfP);
-void CFWriteAngVec (vmsAngVec *v, CFILE *cfP);
-void CFWriteVector (vmsVector *v, CFILE *cfP);
-void CFWriteMatrix (vmsMatrix *m, CFILE *cfP);
+int CFWriteFix (fix x, CFILE *file);
+int CFWriteInt (int i, CFILE *file);
+int CFWriteShort (short s, CFILE *file);
+int CFWriteByte (sbyte u, CFILE *file);
+int CFWriteFixAng (fixang a, CFILE *file);
+void CFWriteAngVec (const vmsAngVec& v, CFILE *file);
+void CFWriteVector (const vmsVector& v, CFILE *file);
+void CFWriteMatrix (const vmsMatrix& m,CFILE *file);
 void CFSplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt);
-void ChangeFilenameExtension (char *dest, const char *src, const char *newExt);
+void ChangeFilenameExtension (char *dest, const char *src, const char *new_ext);
 time_t CFDate (const char *hogname, const char *folder, int bUseD1Hog);
 
 // writes variable length, null-termined string.

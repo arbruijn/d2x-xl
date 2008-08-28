@@ -1,4 +1,4 @@
-/* altsound.h created on 11/13/99 by Victor Rachels to use alternate sounds */
+/* altsound[HA] created on 11/13/99 by Victor Rachels to use alternate sounds */
 #ifndef _ALTSOUND_H
 #define _ALTSOUND_H
  

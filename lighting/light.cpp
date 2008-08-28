@@ -58,13 +58,13 @@ tTexBright texBrightD1 [NUM_LIGHTS_D1] = {
 	{279, 0x014cccL}, {280, 0x011999L}, {281, 0x014666L}, {282, 0x011999L},
 	{283, 0x0107aeL}, {284, 0x0107aeL}, {285, 0x011999L}, {286, 0x014666L},
 	{287, 0x014666L}, {288, 0x014666L}, {289, 0x014666L}, {292, 0x010cccL},
-	{293, 0x010000L}, {294, 0x013333L}, {328, 0x011333L}, {330, 0x010000L}, 
-	{333, 0x010000L}, {341, 0x010000L}, {343, 0x010000L}, {345, 0x010000L}, 
-	{347, 0x010000L}, {349, 0x010000L}, {351, 0x010000L}, {352, 0x010000L}, 
-	{354, 0x010000L}, {355, 0x010000L}, {356, 0x020000L}, {357, 0x020000L}, 
-	{358, 0x020000L}, {359, 0x020000L}, {360, 0x020000L}, {361, 0x020000L}, 
-	{362, 0x020000L}, {363, 0x020000L}, {364, 0x020000L}, {365, 0x020000L}, 
-	{366, 0x020000L}, {367, 0x020000L}, {368, 0x020000L}, {369, 0x020000L}, 
+	{293, 0x010000L}, {294, 0x013333L}, {328, 0x011333L}, {330, 0x010000L},
+	{333, 0x010000L}, {341, 0x010000L}, {343, 0x010000L}, {345, 0x010000L},
+	{347, 0x010000L}, {349, 0x010000L}, {351, 0x010000L}, {352, 0x010000L},
+	{354, 0x010000L}, {355, 0x010000L}, {356, 0x020000L}, {357, 0x020000L},
+	{358, 0x020000L}, {359, 0x020000L}, {360, 0x020000L}, {361, 0x020000L},
+	{362, 0x020000L}, {363, 0x020000L}, {364, 0x020000L}, {365, 0x020000L},
+	{366, 0x020000L}, {367, 0x020000L}, {368, 0x020000L}, {369, 0x020000L},
 	{370, 0x020000L}
 };
 tTexBright texBrightD2 [NUM_LIGHTS_D2] = {
@@ -135,9 +135,9 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 			}
 		else {
 			if (h > 1) {
-				objP->position.vPos.p.x /= h;
-				objP->position.vPos.p.y /= h;
-				objP->position.vPos.p.z /= h;
+				objP->position.vPos[X] /= h;
+				objP->position.vPos[Y] /= h;
+				objP->position.vPos[Z] /= h;
 #if 1
 				objP->cType.lightInfo.color.red /= h;
 				objP->cType.lightInfo.color.green /= h;
@@ -146,7 +146,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 #endif
 				}
 			if (1 || (objP->cType.lightInfo.nSegment < 0)) {
-				short nSegment = FindSegByPos (&objP->position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
+				short nSegment = FindSegByPos (objP->position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
 				objP->cType.lightInfo.nSegment = (nSegment < 0) ? abs (objP->cType.lightInfo.nSegment) : nSegment;
 				}
 			if (objP->nSegment != objP->cType.lightInfo.nSegment)
@@ -185,7 +185,7 @@ if (!lightObjP->cType.lightInfo.nObjects++) {
 	lightObjP->cType.lightInfo.nSegment = objP->nSegment;
 	}
 else {
-	VmVecInc (&lightObjP->position.vPos, &objP->position.vPos);
+	lightObjP->position.vPos += objP->position.vPos;
 	if (lightObjP->cType.lightInfo.nSegment != objP->nSegment)
 		lightObjP->cType.lightInfo.nSegment = -lightObjP->nSegment;
 	}
@@ -256,7 +256,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 	if (hitType == HIT_NONE)
 		bApplyLight = 1;
 	else if (hitType == HIT_WALL) {
-		fix distDist = VmVecDistQuick (&hit_data.hit.vPoint, vObjPos);
+		fix distDist = vmsVector::dist(hit_data.hit.vPoint, *vObjPos);
 		if (distDist < F1_0/4) {
 			bApplyLight = 1;
 			// -- Int3 ();	//	Curious, did fvi detect intersection with tWall containing vertex?
@@ -264,7 +264,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 		}
 	lightingCache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)] = bApplyLight + (gameData.app.nFrameCount << 1);
 	return bApplyLight;
-	} 
+	}
 nCacheHits++;
 return cache_vis;
 }
@@ -320,7 +320,7 @@ if (!EGI_FLAG (bPowerupLights, 0, 0, 0))
 	return true;
 if (gameStates.render.bPerPixelLighting == 2) {
 	int id = objP->id;
-	if ((id != POW_EXTRA_LIFE) && (id != POW_ENERGY) && (id != POW_SHIELD_BOOST) && 
+	if ((id != POW_EXTRA_LIFE) && (id != POW_ENERGY) && (id != POW_SHIELD_BOOST) &&
 		 (id != POW_HOARD_ORB) && (id != POW_MONSTERBALL) && (id != POW_INVUL)) {
 		return true;
 		}
@@ -331,11 +331,11 @@ return false;
 // ----------------------------------------------------------------------------------------------
 
 void ApplyLight (
-	fix			xObjIntensity, 
-	int			nObjSeg, 
-	vmsVector	*vObjPos, 
-	int			nRenderVertices, 
-	short			*renderVertexP, 
+	fix			xObjIntensity,
+	int			nObjSeg,
+	vmsVector	*vObjPos,
+	int			nRenderVertices,
+	short			*renderVertexP,
 	int			nObject,
 	tRgbaColorf	*color)
 {
@@ -351,7 +351,7 @@ void ApplyLight (
 if (objP && SHOW_DYN_LIGHT) {
 	if (objP->nType == OBJ_PLAYER) {
 		if (EGI_FLAG (headlight.bAvailable, 0, 0, 0)) {
-			if (!HeadlightIsOn (objP->id)) 
+			if (!HeadlightIsOn (objP->id))
 				RemoveOglHeadlight (objP);
 			else if (gameData.render.lights.dynamic.nHeadlights [objP->id] < 0)
 				gameData.render.lights.dynamic.nHeadlights [objP->id] = AddOglHeadlight (objP);
@@ -372,7 +372,7 @@ if (objP && SHOW_DYN_LIGHT) {
 	else if (objP->nType == OBJ_ROBOT)
 		xObjIntensity /= 4;
 	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
-		xObjIntensity /= 2; 
+		xObjIntensity /= 2;
 		}
 #ifdef _DEBUG
 	if (nObject == nDbgObj)
@@ -393,7 +393,7 @@ if (xObjIntensity) {
 		if (objP->nType == OBJ_PLAYER)
 			xObjIntensity = 0;
 		}
-	if (objP && (objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0)) 
+	if (objP && (objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0))
 		return;
 	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
 	bForceColor = objP && ((objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION));
@@ -408,7 +408,7 @@ if (xObjIntensity) {
 #endif
 			{
 				vVertPos = gameData.segs.vertices + nVertex;
-				dist = VmVecDistQuick (vObjPos, vVertPos) / 4;
+				dist = vmsVector::dist(*vObjPos, *vVertPos) / 4;
 				dist = FixMul (dist, dist);
 				if (dist < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
@@ -435,7 +435,7 @@ if (xObjIntensity) {
 					tFVIQuery	fq;
 					tFVIData		hit_data;
 					int			fate;
-					VmVecScaleAdd (&tvec, vObjPos, &objP->position.mOrient.fVec, F1_0*200);
+					tvec = *vObjPos + objP->position.mOrient[FVEC] * F1_0*200;
 					fq.startSeg			= objP->nSegment;
 					fq.p0					= vObjPos;
 					fq.p1					= &tvec;
@@ -446,8 +446,8 @@ if (xObjIntensity) {
 					fq.flags				= FQ_TRANSWALL;
 					fate = FindVectorIntersection (&fq, &hit_data);
 					if (fate != HIT_NONE) {
-						VmVecSub (&tvec, &hit_data.hit.vPoint, vObjPos);
-						maxHeadlightDist = VmVecMagQuick (&tvec) + F1_0*4;
+						tvec = hit_data.hit.vPoint - *vObjPos;
+						maxHeadlightDist = tvec.mag() + F1_0*4;
 					}
 				}
 			}
@@ -463,27 +463,27 @@ if (xObjIntensity) {
 #endif
 			{
 				vVertPos = gameData.segs.vertices + nVertex;
-				dist = VmVecDistQuick (vObjPos, vVertPos);
+				dist = vmsVector::dist(*vObjPos, *vVertPos);
 				bApplyLight = 0;
 				if ((dist >> headlightShift) < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
 #if 0
 					bApplyLight = 1;
-					if (bApplyLight) 
+					if (bApplyLight)
 #endif
 					{
 						if (bUseColor)
 							SetDynColor (color, NULL, nVertex, NULL, bForceColor);
-						if (!headlightShift) 
+						if (!headlightShift)
 							gameData.render.lights.dynamicLight [nVertex] += FixDiv (xObjIntensity, dist);
 						else {
 							fix			dot, maxDot;
 							int			spotSize = gameData.render.vertColor.bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
 							vmsVector	vecToPoint;
-							VmVecSub (&vecToPoint, vVertPos, vObjPos);
-							VmVecNormalize (&vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = VmVecDot (&vecToPoint, &objP->position.mOrient.fVec);
+							vecToPoint = *vVertPos - *vObjPos;
+							vmsVector::normalize(vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
+							dot = vmsVector::dot(vecToPoint, objP->position.mOrient[FVEC]);
 							if (gameData.render.vertColor.bDarkness)
 								maxDot = F1_0 / spotSize;
 							else
@@ -516,8 +516,8 @@ for (i = 0; i < MUZZLE_QUEUE_MAX; i++) {
 	if (gameData.muzzle.info [i].createTime) {
 		time_since_flash = (short) (currentTime - gameData.muzzle.info [i].createTime);
 		if (time_since_flash < FLASH_LEN_FIXED_SECONDS)
-			ApplyLight ((FLASH_LEN_FIXED_SECONDS - time_since_flash) * FLASH_SCALE, 
-							gameData.muzzle.info [i].nSegment, &gameData.muzzle.info [i].pos, 
+			ApplyLight ((FLASH_LEN_FIXED_SECONDS - time_since_flash) * FLASH_SCALE,
+							gameData.muzzle.info [i].nSegment, &gameData.muzzle.info [i].pos,
 							nRenderVertices, renderVertexP, -1, NULL);
 		else
 			gameData.muzzle.info [i].createTime = 0;		// turn off this muzzle flash
@@ -556,22 +556,22 @@ switch (nObjType) {
 			return HEADLIGHT_SCALE;
 			}
 		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->id].secondaryAmmo [PROXMINE_INDEX]) {
-	
+
 		// If hoard game and tPlayer, add extra light based on how many orbs you have
 		// Pulse as well.
 		  	hoardlight = I2X (gameData.multiplayer.players [objP->id].secondaryAmmo [PROXMINE_INDEX])/2; //I2X (12);
 			hoardlight++;
 		   FixSinCos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
-			s+=F1_0; 
+			s+=F1_0;
 			s>>=1;
 			hoardlight = FixMul (s,hoardlight);
 		   return (hoardlight);
 		  }
 		else if (objP->id == gameData.multiplayer.nLocalPlayer) {
-			return max (VmVecMagQuick (&playerThrust)/4, F1_0*2) + F1_0/2;
+			return max (playerThrust.mag()/4, F1_0*2) + F1_0/2;
 			}
 		else {
-			return max (VmVecMagQuick (&objP->mType.physInfo.thrust)/4, F1_0*2) + F1_0/2;
+			return max (objP->mType.physInfo.thrust.mag()/4, F1_0*2) + F1_0/2;
 			}
 		break;
 
@@ -579,7 +579,7 @@ switch (nObjType) {
 	case OBJ_EXPLOSION:
 		if (objP->id == 0xff)
 			return 0;
-		if ((objP->renderType == RT_THRUSTER) || (objP->renderType == RT_EXPLBLAST) || (objP->renderType == RT_SHRAPNELS)) 
+		if ((objP->renderType == RT_THRUSTER) || (objP->renderType == RT_EXPLBLAST) || (objP->renderType == RT_SHRAPNELS))
 			return 0;
 		else {
 			tVideoClip *vcP = gameData.eff.vClips [0] + objP->id;
@@ -628,7 +628,7 @@ switch (nObjType) {
 				colorP->blue /= maxColor;
 				}
 			if (objP->lifeleft < F1_0*4)
-				return FixMul (FixDiv (objP->lifeleft, 
+				return FixMul (FixDiv (objP->lifeleft,
 								   gameData.eff.vClips [0][objP->id].xTotalTime), xLight);
 			else
 				return xLight;
@@ -786,7 +786,7 @@ for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObj
 //	Now, process all lights from last frame which haven't been processed this frame.
 for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 	//	In multiplayer games, process even unprocessed OBJECTS every 4th frame, else don't know about tPlayer sneaking up.
-	if ((gameData.render.lights.objects [nObject]) || 
+	if ((gameData.render.lights.objects [nObject]) ||
 		 (IsMultiGame && (((nObject ^ gameData.app.nFrameCount) & 3) == 0))) {
 		if (gameData.render.lights.newObjects [nObject])
 			//	Not lit last frame, so we don't need to light it.  (Already lit if casting light this frame.)
@@ -800,14 +800,14 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 			if (bGotColor)
 				bKeepDynColoring = 1;
 			if (xObjIntensity) {
-				ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, nObject, 
+				ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, nObject,
 								bGotColor ? &color : NULL);
 				gameData.render.lights.objects [nObject] = 1;
-				} 
+				}
 			else
 				gameData.render.lights.objects [nObject] = 0;
 			}
-		} 
+		}
 	}
 SetClusterLights ();
 if (!bKeepDynColoring)
@@ -899,11 +899,11 @@ void ComputeEngineGlow (tObject *objP, fix *xEngineGlowValue)
 xEngineGlowValue [0] = f1_0/5;
 if (objP->movementType == MT_PHYSICS) {
 	if ((objP->nType == OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->id == gameData.multiplayer.nLocalPlayer)) {
-		fix thrust_mag = VmVecMagQuick (&objP->mType.physInfo.thrust);
+		fix thrust_mag = objP->mType.physInfo.thrust.mag();
 		xEngineGlowValue [0] += (FixDiv (thrust_mag,gameData.pig.ship.player->maxThrust)*4)/5;
 	}
 	else {
-		fix speed = VmVecMagQuick (&objP->mType.physInfo.velocity);
+		fix speed = objP->mType.physInfo.velocity.mag();
 		xEngineGlowValue [0] += (FixDiv (speed, MAX_VELOCITY) * 3) / 5;
 		}
 	}
@@ -932,7 +932,7 @@ for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 	nSegment = flP->nSegment;
 	nSide = flP->nSide;
 	sideP = gameData.segs.segments [nSegment].sides + nSide;
-	if (!(gameData.pig.tex.brightness [sideP->nBaseTex] || 
+	if (!(gameData.pig.tex.brightness [sideP->nBaseTex] ||
 			gameData.pig.tex.brightness [sideP->nOvlTex]))
 		continue;
 	if (flP->timer == (fix) 0x80000000)		//disabled
@@ -943,7 +943,7 @@ for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 		flP->mask = ((flP->mask & 0x80000000) ? 1 : 0) + (flP->mask << 1);
 		if (flP->mask & 1)
 			AddLight (nSegment, nSide);
-		else if (EGI_FLAG (bFlickerLights, 1, 0, 1)) 
+		else if (EGI_FLAG (bFlickerLights, 1, 0, 1))
 			SubtractLight (nSegment, nSide);
 		}
 	}
@@ -1020,7 +1020,7 @@ int AddVariableLight (int nSegment, int nSide, fix delay, unsigned int mask)
 
 //------------------------------------------------------------------------------
 
-int IsLight (int tMapNum) 
+int IsLight (int tMapNum)
 {
 return gameData.pig.tex.brightness [tMapNum];
 }
@@ -1040,7 +1040,7 @@ void ApplyLightToSegment (tSegment *segP, vmsVector *vSegCenter, fix xBrightness
 	vmsVector	rSegmentCenter;
 	fix			xDistToRSeg;
 	int 			i;
-	short			nSide, 
+	short			nSide,
 					nSegment = SEG_IDX (segP);
 
 for (i = 0; i <nChangedSegs; i++)
@@ -1048,10 +1048,10 @@ for (i = 0; i <nChangedSegs; i++)
 		break;
 if (i == nChangedSegs) {
 	COMPUTE_SEGMENT_CENTER (&rSegmentCenter, segP);
-	xDistToRSeg = VmVecDistQuick (&rSegmentCenter, vSegCenter);
+	xDistToRSeg = vmsVector::dist(rSegmentCenter, *vSegCenter);
 
 	if (xDistToRSeg <= LIGHT_DISTANCE_THRESHOLD) {
-		fix	xLightAtPoint = (xDistToRSeg > F1_0) ? 
+		fix	xLightAtPoint = (xDistToRSeg > F1_0) ?
 									 FixDiv (MAGIC_LIGHT_CONSTANT, xDistToRSeg) :
 									 MAGIC_LIGHT_CONSTANT;
 
@@ -1107,8 +1107,8 @@ oldViewer = NULL;
 
 int FindDLIndexD2X (short nSegment, short nSide)
 {
-int	m, 
-		l = 0, 
+int	m,
+		l = 0,
 		r = gameData.render.lights.nStatic;
 tLightDeltaIndex	*p;
 do {
@@ -1131,8 +1131,8 @@ return 0;
 
 int FindDLIndexD2 (short nSegment, short nSide)
 {
-int	m, 
-		l = 0, 
+int	m,
+		l = 0,
 		r = gameData.render.lights.nStatic;
 
 tLightDeltaIndex	*p;
@@ -1156,8 +1156,8 @@ return 0;
 
 int FindDLIndex (short nSegment, short nSide)
 {
-return gameStates.render.bD2XLights ? 
-		 FindDLIndexD2X (nSegment, nSide) : 
+return gameStates.render.bD2XLights ?
+		 FindDLIndexD2X (nSegment, nSide) :
 		 FindDLIndexD2 (nSegment, nSide);
 }
 
@@ -1222,7 +1222,7 @@ ChangeSegmentLight (nSegment, nSide, dir);
 // returns 1 if lights actually subtracted, else 0
 int SubtractLight (short nSegment, short nSide)
 {
-if (gameData.render.lights.subtracted [nSegment] & (1 << nSide)) 
+if (gameData.render.lights.subtracted [nSegment] & (1 << nSide))
 	return 0;
 gameData.render.lights.subtracted [nSegment] |= (1 << nSide);
 ChangeLight (nSegment, nSide, -1);
@@ -1264,7 +1264,7 @@ for (i=0; i <= gameData.segs.nLastSegment; i++) {
 //	to change the status of static light in the mine.
 void ClearLightSubtracted (void)
 {
-memset (gameData.render.lights.subtracted, 0, 
+memset (gameData.render.lights.subtracted, 0,
 		  gameData.segs.nLastSegment * sizeof (gameData.render.lights.subtracted [0]));
 }
 

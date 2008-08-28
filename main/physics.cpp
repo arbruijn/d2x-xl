@@ -67,16 +67,6 @@ return 0;
 #endif
 
 //	-----------------------------------------------------------------------------------------------------------
-//make sure matrix is orthogonal
-void CheckAndFixMatrix (vmsMatrix *m)
-{
-	vmsMatrix tempm;
-
-VmVector2Matrix (&tempm, &m->fVec, &m->uVec, NULL);
-*m = tempm;
-}
-
-//	-----------------------------------------------------------------------------------------------------------
 
 void DoPhysicsAlignObject (tObject * objP)
 {
@@ -91,16 +81,16 @@ best_side = 0;
 // bank tPlayer according to tSegment orientation
 //find tSide of tSegment that tPlayer is most aligned with
 for (i = 0; i < 6; i++) {
-	d = VmVecDot (gameData.segs.segments [objP->nSegment].sides [i].normals, &objP->position.mOrient.uVec);
+	d = vmsVector::dot(gameData.segs.segments [objP->nSegment].sides [i].normals[0], objP->position.mOrient[UVEC]);
 	if (d > largest_d) {largest_d = d; best_side=i;}
 	}
 if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new tPlayer leveling code: use normal of tSide closest to our up vec
 	if (GetNumFaces (&gameData.segs.segments [objP->nSegment].sides [best_side])==2) {
 		tSide *s = &gameData.segs.segments [objP->nSegment].sides [best_side];
-		desiredUpVec.p.x = (s->normals [0].p.x + s->normals [1].p.x) / 2;
-		desiredUpVec.p.y = (s->normals [0].p.y + s->normals [1].p.y) / 2;
-		desiredUpVec.p.z = (s->normals [0].p.z + s->normals [1].p.z) / 2;
-		VmVecNormalize (&desiredUpVec);
+		desiredUpVec[X] = (s->normals[0][X] + s->normals[1][X]) / 2;
+		desiredUpVec[Y] = (s->normals[0][Y] + s->normals[1][Y]) / 2;
+		desiredUpVec[Z] = (s->normals[0][Z] + s->normals[1][Z]) / 2;
+		vmsVector::normalize(desiredUpVec);
 		}
 	else
 		desiredUpVec = gameData.segs.segments [objP->nSegment].sides [best_side].normals [0];
@@ -108,33 +98,35 @@ if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new tPlayer leveling code: use 
 else if (gameOpts->gameplay.nAutoLeveling == 2)	// old way: used floor's normal as upvec
 	desiredUpVec = gameData.segs.segments [objP->nSegment].sides [3].normals [0];
 else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
-	desiredUpVec = PlayerSpawnOrient (gameData.multiplayer.nLocalPlayer)->uVec;
+	desiredUpVec = (*PlayerSpawnOrient(gameData.multiplayer.nLocalPlayer))[UVEC];
 else
 	return;
-if (labs (VmVecDot (&desiredUpVec, &objP->position.mOrient.fVec)) < f1_0/2) {
+if (labs (vmsVector::dot(desiredUpVec, objP->position.mOrient[FVEC])) < f1_0/2) {
 	fixang save_delta_ang;
 	vmsAngVec turnAngles;
 
-	VmVector2Matrix (&temp_matrix, &objP->position.mOrient.fVec, &desiredUpVec, NULL);
-	save_delta_ang = 
-	delta_ang = VmVecDeltaAng (&objP->position.mOrient.uVec, &temp_matrix.uVec, &objP->position.mOrient.fVec);
+	temp_matrix = vmsMatrix::CreateFU(objP->position.mOrient[FVEC], desiredUpVec);
+//	temp_matrix = vmsMatrix::CreateFU(objP->position.mOrient[FVEC], &desiredUpVec, NULL);
+	save_delta_ang =
+	delta_ang = vmsVector::deltaAngle(objP->position.mOrient[UVEC], temp_matrix[UVEC], &objP->position.mOrient[FVEC]);
 	delta_ang += objP->mType.physInfo.turnRoll;
 	if (abs (delta_ang) > DAMP_ANG) {
 		vmsMatrix mRotate, new_pm;
 
 		roll_ang = (fixang) FixMul (gameData.physics.xTime, ROLL_RATE);
-		if (abs (delta_ang) < roll_ang) 
+		if (abs (delta_ang) < roll_ang)
 			roll_ang = delta_ang;
-		else if (delta_ang < 0) 
+		else if (delta_ang < 0)
 			roll_ang = -roll_ang;
-		turnAngles.p = turnAngles.h = 0;  
-		turnAngles.b = roll_ang;
-		VmAngles2Matrix (&mRotate, &turnAngles);
-		VmMatMul (&new_pm, &objP->position.mOrient, &mRotate);
+		turnAngles[PA] = turnAngles[HA] = 0;
+		turnAngles[BA] = roll_ang;
+		mRotate = vmsMatrix::Create(turnAngles);
+		// TODO MM
+		new_pm = objP->position.mOrient * mRotate;
 		objP->position.mOrient = new_pm;
 		}
 #if 0
-	else 
+	else
 		gameOpts->gameplay.nAutoLeveling = 0;
 #endif
 	}
@@ -144,9 +136,9 @@ if (labs (VmVecDot (&desiredUpVec, &objP->position.mOrient.fVec)) < f1_0/2) {
 
 void SetObjectTurnRoll (tObject *objP)
 {
-//if (!gameStates.app.bD1Mission) 
+//if (!gameStates.app.bD1Mission)
 {
-	fixang desired_bank = (fixang) -FixMul (objP->mType.physInfo.rotVel.p.y, TURNROLL_SCALE);
+	fixang desired_bank = (fixang) -FixMul (objP->mType.physInfo.rotVel[Y], TURNROLL_SCALE);
 	if (objP->mType.physInfo.turnRoll != desired_bank) {
 		fixang delta_ang, max_roll;
 		max_roll = (fixang) FixMul (ROLL_RATE, gameData.physics.xTime);
@@ -196,8 +188,8 @@ if (gameData.physics.xTime <= 0)
 	return;
 #endif
 pi = &objP->mType.physInfo;
-if (!(pi->rotVel.p.x || pi->rotVel.p.y || pi->rotVel.p.z || 
-		pi->rotThrust.p.x || pi->rotThrust.p.y || pi->rotThrust.p.z))
+if (!(pi->rotVel[X] || pi->rotVel[Y] || pi->rotVel[Z] ||
+		pi->rotThrust[X] || pi->rotThrust[Y] || pi->rotThrust[Z]))
 	return;
 if (objP->mType.physInfo.drag) {
 	vmsVector	accel;
@@ -207,18 +199,18 @@ if (objP->mType.physInfo.drag) {
 	fix			xDrag = (objP->mType.physInfo.drag * 5) / 2;
 	fix			xScale = f1_0 - xDrag;
 
-	if (objP == gameData.objs.console) 
+	if (objP == gameData.objs.console)
 		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
 	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-		VmVecCopyScale (&accel, &objP->mType.physInfo.rotThrust, FixDiv (f1_0, objP->mType.physInfo.mass));
+		accel = objP->mType.physInfo.rotThrust * FixDiv (f1_0, objP->mType.physInfo.mass);
 		while (nTries--) {
-			VmVecInc (&objP->mType.physInfo.rotVel, &accel);
-			VmVecScale (&objP->mType.physInfo.rotVel, xScale);
+			objP->mType.physInfo.rotVel += accel;
+			objP->mType.physInfo.rotVel *= xScale;
 			}
 		//do linear scale on remaining bit of time
-		VmVecScaleInc (&objP->mType.physInfo.rotVel, &accel, k);
+		objP->mType.physInfo.rotVel += accel * k;
 		if (xDrag)
-			VmVecScale (&objP->mType.physInfo.rotVel, f1_0 - FixMul (k, xDrag));
+			objP->mType.physInfo.rotVel *= (f1_0 - FixMul (k, xDrag));
 		}
 	else if (xDrag && !(objP->mType.physInfo.flags & PF_FREE_SPINNING)) {
 		fix xTotalDrag = f1_0;
@@ -226,7 +218,7 @@ if (objP->mType.physInfo.drag) {
 			xTotalDrag = FixMul (xTotalDrag, xScale);
 		//do linear scale on remaining bit of time
 		xTotalDrag = FixMul (xTotalDrag, f1_0 - FixMul (k, xDrag));
-		VmVecScale (&objP->mType.physInfo.rotVel, xTotalDrag);
+		objP->mType.physInfo.rotVel *= xTotalDrag;
 		}
 	}
 //now rotate tObject
@@ -234,25 +226,26 @@ if (objP->mType.physInfo.drag) {
 if (objP->mType.physInfo.turnRoll) {
 	vmsMatrix mOrient;
 
-	turnAngles.p = turnAngles.h = 0;
-	turnAngles.b = -objP->mType.physInfo.turnRoll;
-	VmAngles2Matrix (&mRotate, &turnAngles);
-	VmMatMul (&mOrient, &objP->position.mOrient, &mRotate);
+	turnAngles[PA] = turnAngles[HA] = 0;
+	turnAngles[BA] = -objP->mType.physInfo.turnRoll;
+	mRotate = vmsMatrix::Create(turnAngles);
+	mOrient = objP->position.mOrient * mRotate;
 	objP->position.mOrient = mOrient;
-	}
-turnAngles.p = (fixang) FixMul (objP->mType.physInfo.rotVel.p.x, gameData.physics.xTime);
-turnAngles.h = (fixang) FixMul (objP->mType.physInfo.rotVel.p.y, gameData.physics.xTime);
-turnAngles.b = (fixang) FixMul (objP->mType.physInfo.rotVel.p.z, gameData.physics.xTime);
+}
+turnAngles[PA] = (fixang) FixMul (objP->mType.physInfo.rotVel[X], gameData.physics.xTime);
+turnAngles[HA] = (fixang) FixMul (objP->mType.physInfo.rotVel[Y], gameData.physics.xTime);
+turnAngles[BA] = (fixang) FixMul (objP->mType.physInfo.rotVel[Z], gameData.physics.xTime);
 if (!IsMultiGame) {
 	int i = (objP != gameData.objs.console) ? 0 : 1;
 	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
-		turnAngles.p = (fixang) (turnAngles.p / gameStates.gameplay.slowmo [i].fSpeed);
-		turnAngles.h = (fixang) (turnAngles.h / gameStates.gameplay.slowmo [i].fSpeed);
-		turnAngles.b = (fixang) (turnAngles.b / gameStates.gameplay.slowmo [i].fSpeed);
+		turnAngles[PA] = (fixang) (turnAngles[PA] / gameStates.gameplay.slowmo [i].fSpeed);
+		turnAngles[HA] = (fixang) (turnAngles[HA] / gameStates.gameplay.slowmo [i].fSpeed);
+		turnAngles[BA] = (fixang) (turnAngles[BA] / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
-VmAngles2Matrix (&mRotate, &turnAngles);
-VmMatMul (&mNewOrient, &objP->position.mOrient, &mRotate);
+mRotate = vmsMatrix::Create(turnAngles);
+// TODO MM
+mNewOrient = objP->position.mOrient * mRotate;
 objP->position.mOrient = mNewOrient;
 if (objP->mType.physInfo.flags & PF_TURNROLL)
 	SetObjectTurnRoll (objP);
@@ -260,14 +253,14 @@ if (objP->mType.physInfo.flags & PF_TURNROLL)
 if (objP->mType.physInfo.turnRoll) {
 	vmsMatrix m;
 
-	turnAngles.p = 
-	turnAngles.h = 0;
-	turnAngles.b = objP->mType.physInfo.turnRoll;
-	VmAngles2Matrix (&mRotate, &turnAngles);
-	VmMatMul (&m, &objP->position.mOrient, &mRotate);
+	turnAngles[PA] = turnAngles[HA] = 0;
+	turnAngles[BA] = objP->mType.physInfo.turnRoll;
+	mRotate = vmsMatrix::Create(turnAngles);
+	// TODO MM
+	m = objP->position.mOrient * mRotate;
 	objP->position.mOrient = m;
 	}
-CheckAndFixMatrix (&objP->position.mOrient);
+objP->position.mOrient.checkAndFix();
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -282,10 +275,10 @@ HUDMessage (0, "BUMP HACK");
 COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 //HUDMessage (0, "BUMP! %d %d", d1, d2);
 //don't bump tPlayer towards center of reactor tSegment
-VmVecNormalizedDir (&vBump, &vCenter, &objP->position.vPos);
+vmsVector::normalizedDir(vBump, vCenter, objP->position.vPos);
 if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
-	VmVecNegate (&vBump);
-VmVecScaleInc (&objP->position.vPos, &vBump, objP->size / 5);
+	vBump.neg();
+objP->position.vPos += vBump * (objP->size / 5);
 //if moving away from seg, might move out of seg, so update
 if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
 	UpdateObjectSeg (objP);
@@ -301,7 +294,7 @@ int BounceObject (tObject *objP, tFVIData	hi, float fOffs, fix *pxSideDists)
 	short	nSegment;
 
 if (!pxSideDists) {
-	GetSideDistsAll (&objP->position.vPos, hi.hit.nSideSegment, xSideDists);
+	GetSideDistsAll (objP->position.vPos, hi.hit.nSideSegment, xSideDists);
 	pxSideDists = xSideDists;
 	}
 xSideDist = pxSideDists [hi.hit.nSide];
@@ -315,14 +308,14 @@ if (/*(0 <= xSideDist) && */
 	xSideDist = objP->size - xSideDist;
 	r = ((float) xSideDist / (float) objP->size) * X2F (objP->size);
 #	endif
-	objP->position.vPos.p.x += (fix) ((float) hi.hit.vNormal.p.x * fOffs);
-	objP->position.vPos.p.y += (fix) ((float) hi.hit.vNormal.p.y * fOffs);
-	objP->position.vPos.p.z += (fix) ((float) hi.hit.vNormal.p.z * fOffs);
+	objP->position.vPos[X] += (fix) ((float) hi.hit.vNormal[X] * fOffs);
+	objP->position.vPos[Y] += (fix) ((float) hi.hit.vNormal[Y] * fOffs);
+	objP->position.vPos[Z] += (fix) ((float) hi.hit.vNormal[Z] * fOffs);
 #endif
-	nSegment = FindSegByPos (&objP->position.vPos, objP->nSegment, 1, 0);
+	nSegment = FindSegByPos (objP->position.vPos, objP->nSegment, 1, 0);
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments)) {
 		objP->position.vPos = objP->vLastPos;
-		nSegment = FindSegByPos (&objP->position.vPos, objP->nSegment, 1, 0);
+		nSegment = FindSegByPos (objP->position.vPos, objP->nSegment, 1, 0);
 		}
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments) || (nSegment == objP->nSegment))
 		return 0;
@@ -344,8 +337,8 @@ void UnstickObject (tObject *objP)
 	tFVIQuery		fq;
 	int				fviResult;
 
-if ((objP->nType == OBJ_PLAYER) && 
-	 (objP->id == gameData.multiplayer.nLocalPlayer) && 
+if ((objP->nType == OBJ_PLAYER) &&
+	 (objP->id == gameData.multiplayer.nLocalPlayer) &&
 	 (gameStates.app.cheats.bPhysics == 0xBADA55))
 	return;
 fq.p0 = fq.p1 = &objP->position.vPos;
@@ -460,7 +453,7 @@ if (bDontMoveAIObjects)
 	if (objP->controlType == CT_AI)
 		return;
 #endif
-CATCH_OBJ (objP, objP->mType.physInfo.velocity.p.y == 0);
+CATCH_OBJ (objP, objP->mType.physInfo.velocity[Y] == 0);
 DoPhysicsSimRot (objP);
 pi = &objP->mType.physInfo;
 nPhysSegs = 0;
@@ -468,13 +461,13 @@ nIgnoreObjs = 0;
 xSimTime = gameData.physics.xTime;
 bSimpleFVI = (objP->nType != OBJ_PLAYER);
 vStartPos = objP->position.vPos;
-if (!(pi->velocity.p.x || pi->velocity.p.y || pi->velocity.p.z)) {
+if (pi->velocity.isZero()) {
 #	if UNSTICK_OBJS
 	UnstickObject (objP);
 #	endif
 	if (objP == gameData.objs.console)
 		gameData.objs.speedBoost [nObject].bBoosted = sbd.bBoosted = 0;
-	if (!(pi->thrust.p.x || pi->thrust.p.y || pi->thrust.p.z))
+	if (pi->thrust.isZero())
 		return;
 	}
 
@@ -484,7 +477,7 @@ Assert (objP->mType.physInfo.brakes == 0);		//brakes not used anymore?
 Assert (!(objP->mType.physInfo.flags & PF_USES_THRUST) || objP->mType.physInfo.drag);
 //do thrust & xDrag
 if (objP->mType.physInfo.drag) {
-	vmsVector accel, *vel = &objP->mType.physInfo.velocity;
+	vmsVector accel, &vel = objP->mType.physInfo.velocity;
 	int		nTries = xSimTime / FT;
 	fix		xDrag = objP->mType.physInfo.drag;
 	fix		r = xSimTime % FT;
@@ -492,36 +485,36 @@ if (objP->mType.physInfo.drag) {
 	fix		d = f1_0 - xDrag;
 	fix		a;
 
-	if (objP == gameData.objs.console) 
+	if (objP == gameData.objs.console)
 		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
 	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-		VmVecCopyScale (&accel, &objP->mType.physInfo.thrust, FixDiv (f1_0, objP->mType.physInfo.mass));
-		a = (accel.p.x || accel.p.y || accel.p.z);
+		accel = objP->mType.physInfo.thrust * FixDiv(f1_0, objP->mType.physInfo.mass);
+		a = !accel.isZero();
 		if (bDoSpeedBoost && !(a || gameStates.input.bControlsSkipFrame))
-			*vel = sbd.vVel;
+			vel = sbd.vVel;
 		else {
 			while (nTries--) {
 				if (a)
-					VmVecInc (vel, &accel);
-				VmVecScale (vel, d);
+					vel += accel;
+				vel *= d;
 			}
 			//do linear scale on remaining bit of time
-			VmVecScaleInc (vel, &accel, k);
+			vel += accel * k;
 			if (xDrag)
-				VmVecScale (vel, f1_0 - FixMul (k, xDrag));
+				vel *= (f1_0 - FixMul (k, xDrag));
 			if (bDoSpeedBoost) {
-				if (vel->p.x < sbd.vMinVel.p.x)
-					vel->p.x = sbd.vMinVel.p.x;
-				else if (vel->p.x > sbd.vMaxVel.p.x)
-					vel->p.x = sbd.vMaxVel.p.x;
-				if (vel->p.y < sbd.vMinVel.p.y)
-					vel->p.y = sbd.vMinVel.p.y;
-				else if (vel->p.y > sbd.vMaxVel.p.y)
-					vel->p.y = sbd.vMaxVel.p.y;
-				if (vel->p.z < sbd.vMinVel.p.z)
-					vel->p.z = sbd.vMinVel.p.z;
-				else if (vel->p.z > sbd.vMaxVel.p.z)
-					vel->p.z = sbd.vMaxVel.p.z;
+				if (vel[X] < sbd.vMinVel[X])
+					vel[X] = sbd.vMinVel[X];
+				else if (vel[X] > sbd.vMaxVel[X])
+					vel[X] = sbd.vMaxVel[X];
+				if (vel[Y] < sbd.vMinVel[Y])
+					vel[Y] = sbd.vMinVel[Y];
+				else if (vel[Y] > sbd.vMaxVel[Y])
+					vel[Y] = sbd.vMaxVel[Y];
+				if (vel[Z] < sbd.vMinVel[Z])
+					vel[Z] = sbd.vMinVel[Z];
+				else if (vel[Z] > sbd.vMaxVel[Z])
+					vel[Z] = sbd.vMaxVel[Z];
 				}
 			}
 		}
@@ -531,7 +524,7 @@ if (objP->mType.physInfo.drag) {
 			xTotalDrag = FixMul (xTotalDrag, d);
 		//do linear scale on remaining bit of time
 		xTotalDrag = FixMul (xTotalDrag, f1_0-FixMul (k, xDrag));
-		VmVecScale (&objP->mType.physInfo.velocity, xTotalDrag);
+		objP->mType.physInfo.velocity *= xTotalDrag;
 		}
 	}
 
@@ -555,28 +548,27 @@ else
 nTries = 0;
 do {
 	//Move the tObject
-	float fScale = !gameStates.app.bNostalgia && (IS_MISSILE (objP) && (objP->id != EARTHSHAKER_MEGA_ID) && (objP->id != ROBOT_SHAKER_MEGA_ID)) ? 
+	float fScale = !gameStates.app.bNostalgia && (IS_MISSILE (objP) && (objP->id != EARTHSHAKER_MEGA_ID) && (objP->id != ROBOT_SHAKER_MEGA_ID)) ?
 						MissileSpeedScale (objP) : 1;
 	bRetry = 0;
 	if (fScale < 1) {
-		vmsVector vStartVel;
-		VmVecNormalize (&vStartVel, gameData.objs.vStartVel + nObject);
-		fix xDot = VmVecDot (&objP->position.mOrient.fVec, &vStartVel);
-		VmVecAdd (&vFrame, &objP->mType.physInfo.velocity, gameData.objs.vStartVel + nObject);
-		VmVecScale (&vFrame, F2X (fScale * fScale));
-		VmVecScaleInc (&vFrame, gameData.objs.vStartVel + nObject, -(abs (xDot)));
-		VmVecScale (&vFrame, FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1)));
+		vmsVector vStartVel = gameData.objs.vStartVel[nObject];
+		vmsVector::normalize (vStartVel);
+		fix xDot = vmsVector::dot (objP->position.mOrient[FVEC], vStartVel);
+		vFrame = objP->mType.physInfo.velocity + gameData.objs.vStartVel[nObject];
+		vFrame *= F2X (fScale * fScale);
+		vFrame += gameData.objs.vStartVel[nObject] * (-(abs (xDot)));
+		vFrame *= FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1));
 		}
 	else
-		VmVecCopyScale (&vFrame, &objP->mType.physInfo.velocity, 
-							 FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1)));
+		vFrame = objP->mType.physInfo.velocity * FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1));
 	if (!IsMultiGame) {
 		int i = (objP != gameData.objs.console) ? 0 : 1;
 		if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
-			VmVecScale (&vFrame, (fix) (F1_0 / gameStates.gameplay.slowmo [i].fSpeed));
+			vFrame *= (fix) (F1_0 / gameStates.gameplay.slowmo [i].fSpeed);
 			}
 		}
-	if (!(vFrame.p.x || vFrame.p.y || vFrame.p.z))
+	if (vFrame.isZero())
 		break;
 
 retryMove:
@@ -592,16 +584,16 @@ retryMove:
 			}
 		}
 #endif
-	VmVecAdd (&vNewPos, &objP->position.vPos, &vFrame);
+	vNewPos = objP->position.vPos + vFrame;
 #if 0
 	iSeg = FindSegByPos (&vNewPos, objP->nSegment, 1, 0);
 	if (iSeg < 0) {
 #if 0//def _DEBUG
 		static int nBadSegs = 0;
-	
+
 		HUDMessage (0, "bad dest seg %d", nBadSegs++);
 #endif
-		nBadSeg++; 
+		nBadSeg++;
 		bRetry = 1;
 		continue;
 		}
@@ -641,7 +633,7 @@ retryMove:
 #else
 		memset (&hi, 0, sizeof (hi));
 		fviResult = FindVectorIntersection (&fq, &hi);
-		fq.startSeg = FindSegByPos (&vNewPos, objP->nSegment, 1, 0);
+		fq.startSeg = FindSegByPos (vNewPos, objP->nSegment, 1, 0);
 		if ((fq.startSeg < 0) || (fq.startSeg == objP->nSegment)) {
 			objP->position.vPos = vSavePos;
 			break;
@@ -672,13 +664,13 @@ retryMove:
 			if (gameData.segs.segment2s [hi.hit.nSegment].special == SEGMENT_IS_SKYBOX) {
 				short nConnSeg = SEGMENTS [hi.hit.nSegment].children [hi.hit.nSide];
 				if ((nConnSeg < 0) && (objP->lifeleft > F1_0)) {	//leaving the mine
-					objP->lifeleft = 0;	
+					objP->lifeleft = 0;
 					objP->flags |= OF_SHOULD_BE_DEAD;
 					}
 				fviResult = HIT_NONE;
 				}
-			else if (CheckTransWall (&hi.hit.vPoint, SEGMENTS + hi.hit.nSideSegment, hi.hit.nSide, hi.hit.nFace)) {	
-				short nNewSeg = FindSegByPos (&vNewPos, gameData.segs.skybox.segments [0], 1, 1);
+			else if (CheckTransWall (&hi.hit.vPoint, SEGMENTS + hi.hit.nSideSegment, hi.hit.nSide, hi.hit.nFace)) {
+				short nNewSeg = FindSegByPos (vNewPos, gameData.segs.skybox.segments [0], 1, 1);
 				if ((nNewSeg >= 0) && (gameData.segs.segment2s [nNewSeg].special == SEGMENT_IS_SKYBOX)) {
 					hi.hit.nSegment = nNewSeg;
 					fviResult = HIT_NONE;
@@ -736,11 +728,11 @@ retryMove:
 	if (iSeg != objP->nSegment)
 		RelinkObject (nObject, iSeg);
 	//if start point not in tSegment, move tObject to center of tSegment
-	if (GetSegMasks (&objP->position.vPos, objP->nSegment, 0).centerMask) {	//object stuck
+	if (GetSegMasks (objP->position.vPos, objP->nSegment, 0).centerMask) {	//object stuck
 		int n = FindObjectSeg (objP);
 		if (n == -1) {
 			if (bGetPhysSegs)
-				n = FindSegByPos (&objP->vLastPos, objP->nSegment, 1, 0);
+				n = FindSegByPos (objP->vLastPos, objP->nSegment, 1, 0);
 			if (n == -1) {
 				objP->position.vPos = objP->vLastPos;
 				RelinkObject (nObject, objP->nSegment);
@@ -748,12 +740,12 @@ retryMove:
 			else {
 				vmsVector vCenter;
 				COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
-				VmVecDec (&vCenter, &objP->position.vPos);
-				if (VmVecMag (&vCenter) > F1_0) {
-					VmVecNormalize (&vCenter);
-					VmVecScaleFrac (&vCenter, 1, 10);
+				vCenter -= objP->position.vPos;
+				if (vCenter.mag() > F1_0) {
+					vmsVector::normalize(vCenter);
+					vCenter /= 10;
 					}
-				VmVecDec (&objP->position.vPos, &vCenter);
+				objP->position.vPos -= vCenter;
 				}
 			if (objP->nType == OBJ_WEAPON) {
 				KillObject (objP);
@@ -770,8 +762,8 @@ retryMove:
 		fix attemptedDist, actualDist;
 
 		xOldSimTime = xSimTime;
-		actualDist = VmVecNormalizedDir (&vMoveNormal, &objP->position.vPos, &vSavePos);
-		if ((fviResult == HIT_WALL) && (VmVecDot (&vMoveNormal, &vFrame) < 0)) {		//moved backwards
+		actualDist = vmsVector::normalizedDir(vMoveNormal, objP->position.vPos, vSavePos);
+		if ((fviResult == HIT_WALL) && (vmsVector::dot(vMoveNormal, vFrame) < 0)) {		//moved backwards
 			//don't change position or xSimTime
 			objP->position.vPos = vSavePos;
 			//iSeg = objP->nSegment;		//don't change tSegment
@@ -780,13 +772,13 @@ retryMove:
 			if (bDoSpeedBoost) {
 				objP->position.vPos = vStartPos;
 				SetSpeedBoostVelocity (nObject, -1, -1, -1, -1, -1, &vStartPos, &sbd.vDest, 0);
-				VmVecCopyScale (&vFrame, &sbd.vVel, xSimTime);
+				vFrame = sbd.vVel * xSimTime;
 				goto retryMove;
 				}
 			xMovedTime = 0;
 			}
 		else {
-			attemptedDist = VmVecMag (&vFrame);
+			attemptedDist = vFrame.mag();
 			xSimTime = FixMulDiv (xSimTime, attemptedDist - actualDist, attemptedDist);
 			xMovedTime = xOldSimTime - xSimTime;
 			if ((xSimTime < 0) || (xSimTime > xOldSimTime)) {
@@ -806,8 +798,8 @@ retryMove:
 			HUDMessage (0, "WALL CONTACT");
 		fviResult = FindVectorIntersection (&fq, &hi);
 #endif
-		VmVecSub (&vMoved, &objP->position.vPos, &vSavePos);
-		xWallPart = VmVecDot (&vMoved, &hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
+		vMoved = objP->position.vPos - vSavePos;
+		xWallPart = vmsVector::dot(vMoved, hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
 		if (xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)) {
 			CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 #if 0//def _DEBUG
@@ -840,14 +832,17 @@ retryMove:
 			bForceFieldBounce = (gameData.pig.tex.pTMapInfo [gameData.segs.segments [nWallHitSeg].sides [nWallHitSide].nBaseTex].flags & TMI_FORCE_FIELD);
 			if (!bForceFieldBounce && (objP->mType.physInfo.flags & PF_STICK)) {		//stop moving
 				AddStuckObject (objP, nWallHitSeg, nWallHitSide);
-				VmVecZero (&objP->mType.physInfo.velocity);
+				objP->mType.physInfo.velocity.setZero();
 				bObjStopped = 1;
 				bRetry = 0;
 				}
 			else {				// Slide tObject along tWall
 				int bCheckVel = 0;
 				//We're constrained by a wall, so subtract wall part from velocity vector
-				xWallPart = VmVecDot (&hi.hit.vNormal, &objP->mType.physInfo.velocity);
+
+				// TODO: fix this with new dot product method, without bouncing off walls
+				// THIS IS DELICATE!!
+				xWallPart = vmsVector::dot(hi.hit.vNormal, objP->mType.physInfo.velocity);
 				if (bForceFieldBounce || (objP->mType.physInfo.flags & PF_BOUNCE)) {		//bounce off tWall
 					xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 					if (bForceFieldBounce) {
@@ -864,14 +859,15 @@ retryMove:
 						}
 					bBounced = 1;		//this tObject bBounced
 					}
-				VmVecScaleInc (&objP->mType.physInfo.velocity, &hi.hit.vNormal, -xWallPart);
+				objP->mType.physInfo.velocity += hi.hit.vNormal * (-xWallPart);
 				if (bCheckVel) {
-					fix vel = VmVecMag (&objP->mType.physInfo.velocity);
+					fix vel = objP->mType.physInfo.velocity.mag();
 					if (vel > MAX_OBJECT_VEL)
-						VmVecScale (&objP->mType.physInfo.velocity, FixDiv (MAX_OBJECT_VEL, vel));
+						objP->mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
 					}
 				if (bBounced && (objP->nType == OBJ_WEAPON))
-					VmVector2Matrix (&objP->position.mOrient, &objP->mType.physInfo.velocity, &objP->position.mOrient.uVec, NULL);
+					objP->position.mOrient = vmsMatrix::CreateFU(objP->mType.physInfo.velocity, objP->position.mOrient[UVEC]);
+					//objP->position.mOrient = vmsMatrix::CreateFU(objP->mType.physInfo.velocity, &objP->position.mOrient[UVEC], NULL);
 				bRetry = 1;
 				}
 			}
@@ -897,13 +893,13 @@ retryMove:
 		//	Calculate the hit point between the two objects.
 		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
 #if 0
-		if (EGI_FLAG (nHitboxes, 0, 0, 0)) 
+		if (EGI_FLAG (nHitboxes, 0, 0, 0))
 			vHitPos = hi.hit.vPoint;
-		else 
+		else
 #endif
 			{
-			VmVecSub (&vHitPos, ppos1, ppos0);
-			VmVecScaleAdd (&vHitPos, ppos0, &vHitPos, FixDiv (size0, size0 + size1));
+			vHitPos = *ppos1 - *ppos0;
+			vHitPos = *ppos0 + vHitPos * FixDiv(size0, size0 + size1);
 			}
 		vOldVel = objP->mType.physInfo.velocity;
 		//if (!(SPECTATOR (objP) || SPECTATOR (OBJECTS + hi.hit.nObject)))
@@ -912,10 +908,10 @@ retryMove:
 			objP->mType.physInfo.velocity = vOldVel;
 		// Let object continue its movement
 		if (!(objP->flags & OF_SHOULD_BE_DEAD)) {
-			if ((objP->mType.physInfo.flags & PF_PERSISTENT) || 
-				 (vOldVel.p.x == objP->mType.physInfo.velocity.p.x && 
-				  vOldVel.p.y == objP->mType.physInfo.velocity.p.y && 
-				  vOldVel.p.z == objP->mType.physInfo.velocity.p.z)) {
+			if ((objP->mType.physInfo.flags & PF_PERSISTENT) ||
+				 (vOldVel[X] == objP->mType.physInfo.velocity[X] &&
+				  vOldVel[Y] == objP->mType.physInfo.velocity[Y]) &&
+				  vOldVel[Z] == objP->mType.physInfo.velocity[Z]) {
 				if (OBJECTS [hi.hit.nObject].nType == OBJ_POWERUP)
 					nTries--;
 				gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
@@ -936,7 +932,7 @@ retryMove:
 #ifdef _DEBUG
 	else if (fviResult == HIT_BAD_P0) {
 		Int3 ();		// Unexpected collision nType: start point not in specified tSegment.
-#if TRACE			
+#if TRACE
 		con_printf (CONDBG, "Warning: Bad p0 in physics!!!\n");
 #endif
 		}
@@ -959,24 +955,24 @@ if (objP->controlType == CT_AI) {
 		}
 	}
 	// If the ship has thrust, but the velocity is zero or the current position equals the start position
-	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to 
+	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to
 	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
 	if (((fviResult == HIT_WALL) || (fviResult == HIT_BAD_P0)) &&
 		 !(sbd.bBoosted || bObjStopped || bBounced))	{	//Set velocity from actual movement
 		vmsVector vMoved;
 		fix s = FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100);
 
-		VmVecSub (&vMoved, &objP->position.vPos, &vStartPos);
-		s = VmVecMag (&vMoved);
-		VmVecScale (&vMoved, FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100));
+		vMoved = objP->position.vPos - vStartPos;
+		s = vMoved.mag();
+		vMoved *= (FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100));
 #if 1
 		if (!bDoSpeedBoost)
 			objP->mType.physInfo.velocity = vMoved;
 #endif
 #ifdef BUMP_HACK
-		if ((objP == gameData.objs.console) && 
-			 !(vMoved.p.x || vMoved.p.y || vMoved.p.z) &&
-			 (objP->mType.physInfo.thrust.p.x || objP->mType.physInfo.thrust.p.y || objP->mType.physInfo.thrust.p.z)) {
+		if ((objP == gameData.objs.console) &&
+			 vMoved.isZero() &&
+			 !objP->mType.physInfo.thrust.isZero()) {
 			DoBumpHack (objP);
 			}
 #endif
@@ -985,7 +981,7 @@ if (objP->controlType == CT_AI) {
 	if (objP->mType.physInfo.flags & PF_LEVELLING)
 		DoPhysicsAlignObject (objP);
 	//hack to keep tPlayer from going through closed doors
-	if (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) && (objP->nSegment != nOrigSegment) && 
+	if (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) && (objP->nSegment != nOrigSegment) &&
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
 		int nSide = FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments + nOrigSegment);
 		if (nSide != -1) {
@@ -1008,31 +1004,31 @@ if (objP->controlType == CT_AI) {
 					nVertex = vertexList [2];
 				if (nVertex > vertexList [3])
 					nVertex = vertexList [3];
-				dist = VmDistToPlane (&vStartPos, sideP->normals, gameData.segs.vertices + nVertex);
-				VmVecScaleAdd (&objP->position.vPos, &vStartPos, sideP->normals, objP->size-dist);
+				dist = vStartPos.distToPlane(sideP->normals[0], gameData.segs.vertices[nVertex]);
+				objP->position.vPos = vStartPos + sideP->normals[0] * (objP->size-dist);
 				UpdateObjectSeg (objP);
 				}
 			}
 		}
 
 //if end point not in tSegment, move tObject to last pos, or tSegment center
-if (GetSegMasks (&objP->position.vPos, objP->nSegment, 0).centerMask) {
+if (GetSegMasks (objP->position.vPos, objP->nSegment, 0).centerMask) {
 	if (FindObjectSeg (objP) == -1) {
 		int n;
 
-		if (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) && (n = FindSegByPos (&objP->vLastPos, objP->nSegment, 1, 0)) != -1) {
+		if (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) && (n = FindSegByPos (objP->vLastPos, objP->nSegment, 1, 0)) != -1) {
 			objP->position.vPos = objP->vLastPos;
 			RelinkObject (nObject, n);
 			}
 		else {
 			COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, objP->nSegment);
-			objP->position.vPos.p.x += nObject;
+			objP->position.vPos[X] += nObject;
 			}
 		if (objP->nType == OBJ_WEAPON)
 			KillObject (objP);
 		}
 	}
-CATCH_OBJ (objP, objP->mType.physInfo.velocity.p.y == 0);
+CATCH_OBJ (objP, objP->mType.physInfo.velocity[Y] == 0);
 #if UNSTICK_OBJS
 UnstickObject (objP);
 #endif
@@ -1047,7 +1043,7 @@ void PhysApplyForce (tObject *objP, vmsVector *vForce)
 #ifdef _DEBUG
 	fix mag;
 #endif
-	//	Put in by MK on 2/13/96 for force getting applied to Omega blobs, which have 0 mass, 
+	//	Put in by MK on 2/13/96 for force getting applied to Omega blobs, which have 0 mass,
 	//	in collision with crazy reactor robot thing on d2levf-s.
 if (objP->mType.physInfo.mass == 0)
 	return;
@@ -1064,9 +1060,7 @@ if ((gameStates.render.automap.bDisplay && (objP == gameData.objs.console)) || S
 mag = VmVecMag (&objP->mType.physInfo.velocity);
 #endif
 if (!gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted || (objP != gameData.objs.console))
-	VmVecScaleInc (&objP->mType.physInfo.velocity, 
-						vForce, 
-						FixDiv (f1_0, objP->mType.physInfo.mass));
+	objP->mType.physInfo.velocity += *vForce * FixDiv (f1_0, objP->mType.physInfo.mass);
 #ifdef _DEBUG
 mag = VmVecMag (&objP->mType.physInfo.velocity);
 if (X2F (mag) > 500)
@@ -1083,7 +1077,7 @@ void PhysicsSetRotVelAndSaturate (fix *dest, fix delta)
 if ((delta ^ *dest) < 0) {
 	if (abs (delta) < F1_0/8) {
 		*dest = delta/4;
-		} 
+		}
 	else
 		*dest = delta;
 		}
@@ -1099,7 +1093,7 @@ void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate)
 {
 	vmsAngVec	dest_angles, cur_angles;
 	fix			delta_p, delta_h;
-	vmsVector	*pvRotVel = &objP->mType.physInfo.rotVel;
+	vmsVector&	pvRotVel = objP->mType.physInfo.rotVel;
 
 // Make this tObject turn towards the vGoal.  Changes orientation, doesn't change direction of movement.
 // If no one moves, will be facing vGoal in 1 second.
@@ -1107,24 +1101,24 @@ void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate)
 //	Detect null vector.
 if (gameStates.render.automap.bDisplay && (objP == gameData.objs.console))
 	return;
-if ((vGoal->p.x == 0) && (vGoal->p.y == 0) && (vGoal->p.z == 0))
+if (vGoal->isZero())
 	return;
 //	Make morph OBJECTS turn more slowly.
 if (objP->controlType == CT_MORPH)
 	rate *= 2;
 
-VmExtractAnglesVector (&dest_angles, vGoal);
-VmExtractAnglesVector (&cur_angles, &objP->position.mOrient.fVec);
-delta_p = (dest_angles.p - cur_angles.p);
-delta_h = (dest_angles.h - cur_angles.h);
-if (delta_p > F1_0/2) 
-	delta_p = dest_angles.p - cur_angles.p - F1_0;
-if (delta_p < -F1_0/2) 
-	delta_p = dest_angles.p - cur_angles.p + F1_0;
-if (delta_h > F1_0/2) 
-	delta_h = dest_angles.h - cur_angles.h - F1_0;
-if (delta_h < -F1_0/2) 
-	delta_h = dest_angles.h - cur_angles.h + F1_0;
+dest_angles = vGoal->toAnglesVec();
+cur_angles = objP->position.mOrient[FVEC].toAnglesVec();
+delta_p = (dest_angles[PA] - cur_angles[PA]);
+delta_h = (dest_angles[HA] - cur_angles[HA]);
+if (delta_p > F1_0/2)
+	delta_p = dest_angles[PA] - cur_angles[PA] - F1_0;
+if (delta_p < -F1_0/2)
+	delta_p = dest_angles[PA] - cur_angles[PA] + F1_0;
+if (delta_h > F1_0/2)
+	delta_h = dest_angles[HA] - cur_angles[HA] - F1_0;
+if (delta_h < -F1_0/2)
+	delta_h = dest_angles[HA] - cur_angles[HA] + F1_0;
 delta_p = FixDiv (delta_p, rate);
 delta_h = FixDiv (delta_h, rate);
 if (abs (delta_p) < F1_0/16) delta_p *= 4;
@@ -1136,9 +1130,9 @@ if (!IsMultiGame) {
 		delta_h = (fix) (delta_h / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
-PhysicsSetRotVelAndSaturate (&pvRotVel->p.x, delta_p);
-PhysicsSetRotVelAndSaturate (&pvRotVel->p.y, delta_h);
-pvRotVel->p.z = 0;
+PhysicsSetRotVelAndSaturate(&pvRotVel[X], delta_p);
+PhysicsSetRotVelAndSaturate(&pvRotVel[Y], delta_h);
+pvRotVel[Z] = 0;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1150,7 +1144,7 @@ void PhysApplyRot (tObject *objP, vmsVector *vForce)
 
 if (objP->movementType != MT_PHYSICS)
 	return;
-xMag = VmVecMag (vForce)/8;
+xMag = vForce->mag()/8;
 if (xMag < F1_0/256)
 	xRate = 4 * F1_0;
 else if (xMag < objP->mType.physInfo.mass >> 14)
@@ -1170,7 +1164,7 @@ else {
 				objP->cType.aiInfo.SKIP_AI_COUNT += addval;
 				}
 			}
-		} 
+		}
 	else {
 		if (xRate < F1_0/2)
 			xRate = F1_0/2;
@@ -1191,7 +1185,7 @@ void SetThrustFromVelocity (tObject *objP)
 
 	k = FixMulDiv (objP->mType.physInfo.mass, objP->mType.physInfo.drag, (f1_0-objP->mType.physInfo.drag));
 
-	VmVecCopyScale (&objP->mType.physInfo.thrust, &objP->mType.physInfo.velocity, k);
+	objP->mType.physInfo.thrust = objP->mType.physInfo.velocity * k;
 
 }
 

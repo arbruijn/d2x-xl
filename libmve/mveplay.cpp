@@ -8,23 +8,23 @@
 
 #include <string.h>
 #ifndef _WIN32
-#include <errno.h>
-#include <time.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#	include <errno.h>
+#	include <time.h>
+#	include <sys/time.h>
+#	include <sys/types.h>
+#	include <sys/stat.h>
+#	include <fcntl.h>
+#	include <unistd.h>
 #else
-# include <windows.h>
+#	include <windows.h>
 #endif
 
 #if defined (AUDIO)
-#ifdef __macosx__
-# include <SDL/SDL.h>
-#else
-# include <SDL.h>
-#endif
+#	ifdef __macosx__
+#		include <SDL/SDL.h>
+#	else
+#		include <SDL.h>
+#	endif
 #endif
 
 #include "mvelib.h"
@@ -405,7 +405,7 @@ if (mve_audio_canplay) {
 				mve_audio_buffers[mve_audio_buftail] = (short *)mve_alloc (nsamp);
 				memcpy (mve_audio_buffers[mve_audio_buftail], data, nsamp);
 				}
-			} 
+			}
 		else {
 			mve_audio_buflens[mve_audio_buftail] = nsamp;
 			mve_audio_buffers[mve_audio_buftail] = (short *)mve_alloc (nsamp);

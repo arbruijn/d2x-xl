@@ -63,8 +63,8 @@ int FindConnectedSide (tSegment *base_seg, tSegment *con_seg);
 // Fill in array with four absolute point numbers for a given tSide
 void GetSideVertIndex (short *vertIndex, int nSegment, int nSide);
 void GetSideVerts (vmsVector *vertices, int nSegment, int nSide);
-ubyte GetSideDists (vmsVector *checkp, int nSegment, fix *xSideDists, int bBehind);
-ubyte GetSideDistsAll (vmsVector *checkp, int nSegment, fix *xSideDists);
+ubyte GetSideDists (const vmsVector& checkp, int nSegment, fix *xSideDists, int bBehind);
+ubyte GetSideDistsAll (const vmsVector& checkp, int nSegment, fix *xSideDists);
 
 //      Create all vertex lists (1 or 2) for faces on a tSide.
 //      Sets:
@@ -96,7 +96,7 @@ extern int GetNumFaces(tSide *sidep);
 //this tSegment.  See tSegMasks structure for info on fields
 tSegMasks GetSideMasks (vmsVector *checkP, int nSegment, int nSide, fix xRad);
 
-tSegMasks GetSegMasks(vmsVector *checkp,int nSegment,fix rad);
+tSegMasks GetSegMasks(const vmsVector& checkp,int nSegment,fix rad);
 
 //this macro returns true if the nSegment for an tObject is correct
 #define check_obj_seg(obj) (GetSegMasks(&(obj)->pos,(obj)->nSegment,0).centermask == 0)
@@ -106,7 +106,7 @@ tSegMasks GetSegMasks(vmsVector *checkp,int nSegment,fix rad);
 // 2. Recursively trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPos(vmsVector *vPos, int nSegment, int bExhaustive, int bSkyBox);
+int FindSegByPos(const vmsVector& vPos, int nSegment, int bExhaustive, int bSkyBox);
 
 //--repair-- // Create data specific to segments which does not need to get written to disk.
 //--repair-- extern void create_local_segment_data(void);
@@ -158,6 +158,8 @@ int GetVertsForNormalTri (int v0, int v1, int v2, int *pv0, int *pv1, int *pv2);
 
 void ComputeVertexNormals (void);
 void ResetVertexNormals (void);
+float FaceSize (short nSegment, ubyte nSide);
+
 float FaceSize (short nSegment, ubyte nSide);
 
 #endif

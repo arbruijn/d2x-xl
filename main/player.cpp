@@ -29,7 +29,7 @@ ps->brakes = CFReadFix (fp);
 ps->wiggle = CFReadFix (fp);
 ps->maxRotThrust = CFReadFix (fp);
 for (i = 0; i < N_PLAYER_GUNS; i++)
-	CFReadVector (ps->gunPoints + i, fp);
+	CFReadVector (ps->gunPoints[i], fp);
 }
 
 //-------------------------------------------------------------------------

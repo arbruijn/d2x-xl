@@ -2,7 +2,7 @@
 /*
  *
  * parts from:
- * ipx.h header file for IPX for the DOS emulator
+ * ipx[HA] header file for IPX for the DOS emulator
  * 		Tim Bird, tbird@novell.com
  *
  */

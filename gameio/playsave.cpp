@@ -20,10 +20,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <ctype.h>
 #ifndef _WIN32
-#include <unistd.h>
+#	include <unistd.h>
 #endif
 #ifndef _WIN32_WCE
-#include <errno.h>
+#	include <errno.h>
 #endif
 #include <limits.h>
 
@@ -102,7 +102,7 @@ hli highestLevels [MAX_MISSIONS];
 //version 18 -> 19: added automap-highres flag
 //version 19 -> 20: added KConfig data for windows joysticks
 //version 20 -> 21: save seperate config types for DOS & Windows
-//version 21 -> 22: save lifetime netstats 
+//version 21 -> 22: save lifetime netstats
 //version 22 -> 23: ??
 //version 23 -> 24: add name of joystick for windows version.
 //version 24 -> 25: add d2x keys array
@@ -249,7 +249,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameData.render.window.h, 0, 0);
 
 		RP (iDlTimeout, 0, 0);
-	
+
 		RP (gameStates.render.cockpit.nMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
@@ -350,7 +350,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].entropy.nBashVirusCapacity, 0, 0);
 		RP (extraGameInfo [i].entropy.nVirusGenTime, 0, 0);
 		RP (extraGameInfo [i].entropy.nVirusLifespan, 0, 0);
-		RP (extraGameInfo [i].entropy.nVirusStability, 0, 0); 
+		RP (extraGameInfo [i].entropy.nVirusStability, 0, 0);
 		RP (extraGameInfo [i].entropy.nEnergyFillRate, 0, 0);
 		RP (extraGameInfo [i].entropy.nShieldFillRate, 0, 0);
 		RP (extraGameInfo [i].entropy.nShieldDamageRate, 0, 0);
@@ -362,7 +362,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (extraGameInfo [i].loadout.nGuns, 0, 0);
 		RP (extraGameInfo [i].loadout.nDevices, 0, 0);
-		
+
 		RP (extraGameInfo [i].headlight.bAvailable, i, 0);
 		RP (extraGameInfo [i].headlight.bDrainPower, 0, 0);
 		RP (extraGameInfo [i].headlight.bBuiltIn, 0, 0);
@@ -604,7 +604,7 @@ int WriteParam (CFILE *pcf, tParam *pp)
 
 if (strstr (pp->szTag, "Slowmo/Speed"))
 	pp = pp;
-#if 1 
+#if 1
 switch (pp->nSize) {
 	case 1:
 		sprintf (szVal, "=%d\n", *((sbyte *) (pp->valP)));
@@ -1451,16 +1451,16 @@ int NewPlayerConfig (void)
 	int i,j,choice;
 	tMenuItem m[8];
    int mct=CONTROL_MAX_TYPES;
- 
+
 mct--;
-InitWeaponOrdering ();		//setup default weapon priorities 
+InitWeaponOrdering ();		//setup default weapon priorities
 
 RetrySelection:
 
 memset (m, 0, sizeof (m));
 for (i = 0; i < mct; i++ )	{
-	m [i].nType = NM_TYPE_MENU; 
-	m [i].text = (char *) CONTROL_TEXT(i); 
+	m [i].nType = NM_TYPE_MENU;
+	m [i].text = (char *) CONTROL_TEXT(i);
 	m [i].key = -1;
 	}
 nitems = i;
@@ -1484,7 +1484,7 @@ KCSetControls (0);
 gameConfig.nControlType = choice;
 if (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS) {
 	i = ExecMessageBox (TXT_IMPORTANT_NOTE, NULL, 2, "Choose another", TXT_OK, TXT_FCS);
-	if (i == 0) 
+	if (i == 0)
 		goto RetrySelection;
 	}
 if ((gameConfig.nControlType > 0) && (gameConfig.nControlType < 5))
@@ -1510,7 +1510,7 @@ strcpy(gameData.multigame.msg.szMacro[0], TXT_GET_ALONG);
 strcpy(gameData.multigame.msg.szMacro[1], TXT_GOT_PRESENT);
 strcpy(gameData.multigame.msg.szMacro[2], TXT_HANKERING);
 strcpy(gameData.multigame.msg.szMacro[3], TXT_URANUS);
-networkData.nNetLifeKills = 0; 
+networkData.nNetLifeKills = 0;
 networkData.nNetLifeKilled = 0;
 gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 InitGameParams ();
@@ -1680,7 +1680,7 @@ for (i = 0; i < 2; i++) {
 		extraGameInfo [0].entropy.nBashVirusCapacity = CFReadByte (pcf);
 		extraGameInfo [0].entropy.nVirusGenTime = CFReadByte (pcf);
 		extraGameInfo [0].entropy.nVirusLifespan = CFReadByte (pcf);
-		extraGameInfo [0].entropy.nVirusStability = CFReadByte (pcf); 
+		extraGameInfo [0].entropy.nVirusStability = CFReadByte (pcf);
 		extraGameInfo [0].entropy.nEnergyFillRate = CFReadShort (pcf);
 		extraGameInfo [0].entropy.nShieldFillRate = CFReadShort (pcf);
 		extraGameInfo [0].entropy.nShieldDamageRate = CFReadShort (pcf);
@@ -1723,7 +1723,7 @@ for (i = 0; i < 2; i++) {
 			gameOptions [i].input.joystick.sensitivity [j] = CFReadByte (pcf);
 		gameOptions [i].input.joystick.bSyncAxes = (int) CFReadByte (pcf);
 		}
-	if (!i && (gameStates.input.nPlrFileVersion >= 83)) 
+	if (!i && (gameStates.input.nPlrFileVersion >= 83))
 		extraGameInfo [1].bDualMissileLaunch = (int) CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 84) {
 		if (!i)
@@ -1770,7 +1770,7 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 97)
 		gameOptions [i].render.cockpit.bFlashGauges = (int) CFReadByte (pcf);
 	if (!i && (gameStates.input.nPlrFileVersion >= 98))
-		for (j = 0; j < 2; j++) 
+		for (j = 0; j < 2; j++)
 			if (!(extraGameInfo [j].bFastPitch = (int) CFReadByte (pcf)))
 				extraGameInfo [j].bFastPitch = 2;
 	if (!i && (gameStates.input.nPlrFileVersion >= 99))
@@ -2035,7 +2035,7 @@ else
 	nMaxControls = 64;	//MAX_CONTROLS
 
 if ((gameStates.input.nPlrFileVersion < COMPATIBLE_PLAYER_FILE_VERSION) ||
-	 ((gameStates.input.nPlrFileVersion > D2W95_PLAYER_FILE_VERSION) && 
+	 ((gameStates.input.nPlrFileVersion > D2W95_PLAYER_FILE_VERSION) &&
 	  (gameStates.input.nPlrFileVersion < D2XW32_PLAYER_FILE_VERSION))) {
 	ExecMessageBox(TXT_ERROR, NULL, 1, TXT_OK, TXT_ERROR_PLR_VERSION);
 	CFClose (&cf);
@@ -2071,7 +2071,7 @@ if (CFRead (highestLevels, sizeof (hli), nHighestLevels, &cf) != (size_t) nHighe
 //read taunt macros
 for (i = 0; i < 4; i++)
 	if (CFRead (gameData.multigame.msg.szMacro [i], MAX_MESSAGE_LEN, 1, &cf) != 1) {
-		funcRes = errno; 
+		funcRes = errno;
 		break;
 	}
 //read KConfig data
@@ -2099,7 +2099,7 @@ if (gameStates.input.nPlrFileVersion >= 22) {
 	networkData.nNetLifeKilled = CFReadInt (&cf);
 	}
 else {
-	networkData.nNetLifeKills = 0; 
+	networkData.nNetLifeKills = 0;
 	networkData.nNetLifeKilled = 0;
 	}
 
@@ -2112,7 +2112,7 @@ if (gameStates.input.nPlrFileVersion >= 18)
 else
 	strcpy (gameData.escort.szName, "GUIDE-BOT");
 gameData.escort.szName [sizeof (gameData.escort.szName) - 1] = '\0';
-if (gameStates.input.nPlrFileVersion >= D2W95_PLAYER_FILE_VERSION) 
+if (gameStates.input.nPlrFileVersion >= D2W95_PLAYER_FILE_VERSION)
 	CFReadString (buf, 127, &cf);
 if (gameStates.input.nPlrFileVersion >= 25)
 	CFRead (controlSettings.d2xCustom, MAX_HOTKEY_CONTROLS, 1, &cf);
@@ -2132,7 +2132,7 @@ else {
 //post processing of parameters
 if (gameStates.input.nPlrFileVersion >= 23) {
 	if (gameData.app.nLifetimeChecksum != GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled)) {
-		networkData.nNetLifeKills = 
+		networkData.nNetLifeKills =
 		networkData.nNetLifeKilled = 0;
 		gameData.app.nLifetimeChecksum = 0;
  		ExecMessageBox (NULL, NULL, 1, TXT_PROFILE_DAMAGED, TXT_WARNING);
@@ -2168,7 +2168,7 @@ SetMaxOmegaCharge ();
 
 done:
 
-if (CFClose (&cf)) 
+if (CFClose (&cf))
 	if (funcRes == EZERO)
 		funcRes = errno;
 if (bRewriteIt)
@@ -2191,8 +2191,8 @@ return funcRes;
 
 //------------------------------------------------------------------------------
 
-//finds entry for this level in table.  if not found, returns ptr to 
-//empty entry.  If no empty entries, takes over last one 
+//finds entry for this level in table.  if not found, returns ptr to
+//empty entry.  If no empty entries, takes over last one
 int FindHLIEntry()
 {
 	int i;
@@ -2238,7 +2238,7 @@ ReadPlayerFile (0);
 if (strlen (gameData.missions.list [gameData.missions.nCurrentMission].filename) == 0)	{
 	for (i = 0; i < nHighestLevels; i++)
 		if (!stricmp (highestLevels [i].shortname, "DESTSAT")) 	//	Destination Saturn.
-		 	nHighestSaturnLevel = highestLevels [i].nLevel; 
+		 	nHighestSaturnLevel = highestLevels [i].nLevel;
 }
 #endif
 i = highestLevels [FindHLIEntry()].nLevel;
@@ -2339,7 +2339,7 @@ for (i = 0; i < 2; i++) {
 		CFWriteByte ((sbyte) extraGameInfo [0].entropy.nBashVirusCapacity, &cf);
 		CFWriteByte ((sbyte) extraGameInfo [0].entropy.nVirusGenTime, &cf);
 		CFWriteByte ((sbyte) extraGameInfo [0].entropy.nVirusLifespan, &cf);
-		CFWriteByte ((sbyte) extraGameInfo [0].entropy.nVirusStability, &cf); 
+		CFWriteByte ((sbyte) extraGameInfo [0].entropy.nVirusStability, &cf);
 		CFWriteShort((short) extraGameInfo [0].entropy.nEnergyFillRate, &cf);
 		CFWriteShort((short) extraGameInfo [0].entropy.nShieldFillRate, &cf);
 		CFWriteShort((short) extraGameInfo [0].entropy.nShieldDamageRate, &cf);
@@ -2609,7 +2609,7 @@ CFWriteInt(gameStates.render.cockpit.n3DView [1], &cf);
 CFWriteInt(networkData.nNetLifeKills, &cf);
 CFWriteInt(networkData.nNetLifeKilled, &cf);
 i = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
-#if TRACE			
+#if TRACE
 con_printf (CONDBG,"Writing: Lifetime checksum is %d\n",i);
 #endif
 CFWriteInt(i,&cf);
@@ -2658,7 +2658,7 @@ num ^= (a | b);
 num *= num >> 2;
 return num;
 }
-  
+
 //------------------------------------------------------------------------------
 
 //
@@ -2680,8 +2680,8 @@ strncpy (text, LOCALPLAYER.callsign,CALLSIGN_LEN);
 try_again:
 
 memset (&m, 0, sizeof (m));
-m.nType = NM_TYPE_INPUT; 
-m.text_len = 8; 
+m.nType = NM_TYPE_INPUT;
+m.text_len = 8;
 m.text = text;
 
 nmAllowedChars = playername_allowed_chars;
@@ -2758,7 +2758,7 @@ if (bAutoPlr) {
 callMenu:
 
 bStartup = 0;
-sprintf (filespec, "%s%s*.plr", gameFolders.szProfDir, *gameFolders.szProfDir ? "/" : ""); 
+sprintf (filespec, "%s%s*.plr", gameFolders.szProfDir, *gameFolders.szProfDir ? "/" : "");
 if (!ExecMenuFileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort))	{
 	if (bAllowAbort) {
 		return 0;

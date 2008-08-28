@@ -4,11 +4,11 @@
 #define _D_IO_H
 
 #ifndef _WIN32_WCE
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
+#	ifdef _WIN32
+#		include <io.h>
+#	else
+#		include <unistd.h>
+#	endif
 #endif
 
 extern long ffilelength(FILE *fh);

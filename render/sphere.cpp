@@ -208,8 +208,8 @@ for (i = 0; i < 2; i++) {
 		return -1;
 		}
 	}
-j = (sdP->nFaceNodes == 3) ? 
-	 BuildSphereTri ((tOOF_triangle **) buf, &nFaces, sdP->nTessDepth) : 
+j = (sdP->nFaceNodes == 3) ?
+	 BuildSphereTri ((tOOF_triangle **) buf, &nFaces, sdP->nTessDepth) :
 	 BuildSphereQuad ((tOOF_quad **) buf, &nFaces, sdP->nTessDepth);
 D2_FREE (buf [!j]);
 sdP->pSphere = buf [j];
@@ -221,13 +221,13 @@ return nFaces;
 tOOF_triangle *RotateSphere (tSphereData *sdP, tOOF_vector *pRotSphere, tOOF_vector *pPos, float xScale, float yScale, float zScale)
 {
 	tOOF_matrix	m;
-	tOOF_vector	h, v, p, 
+	tOOF_vector	h, v, p,
 					*pSphere = sdP->pSphere,
 					*s = pRotSphere;
 	int			nFaces;
 
-OOF_MatVms2Oof (&m, viewInfo.view);
-OOF_VecVms2Oof (&p, &viewInfo.pos);
+OOF_MatVms2Oof (&m, viewInfo.view[0]);
+OOF_VecVms2Oof (&p, viewInfo.pos);
 for (nFaces = sdP->nFaces * (sdP->nFaceNodes + 1); nFaces; nFaces--, pSphere++, pRotSphere++) {
 	v = *pSphere;
 	v.x *= xScale;
@@ -332,7 +332,7 @@ if (alpha < 1.0f) {
 	if (sdP->pPulse && sdP->pPulse->fScale) {
 		red *= fScale;
 		green *= fScale;
-		blue *= fScale; 
+		blue *= fScale;
 		}
 	}
 glColor4f (red, green, blue, alpha);
@@ -391,15 +391,15 @@ for (j = 0; j < h; j++) {
 		t3 = i * a;
 		sint3 = (float) sin (t3);
 		cost3 = (float) cos (t3);
-		psc->vPos.p.x = cost2 * cost3;
-		psc->vPos.p.y = sint2;
-		psc->vPos.p.z = cost2 * sint3;
+		psc->vPos[X] = cost2 * cost3;
+		psc->vPos[Y] = sint2;
+		psc->vPos[Z] = cost2 * sint3;
 		psc->uvl.v.u = 1 - (float) i / nRings;
 		psc->uvl.v.v = (float) (2 * j + 2) / nRings;
 		psc++;
-		psc->vPos.p.x = cost1 * cost3;
-		psc->vPos.p.y = sint1;
-		psc->vPos.p.z = cost1 * sint3;
+		psc->vPos[X] = cost1 * cost3;
+		psc->vPos[Y] = sint1;
+		psc->vPos[Z] = cost1 * sint3;
 		psc->uvl.v.u = 1 - (float) i / nRings;
 		psc->uvl.v.v = (float) (2 * j) / nRings;
 		psc++;
@@ -487,8 +487,8 @@ else {
 		for (j = 0; j < h; j++) {
 			for (i = 0; i < nQuads; i++, psc [0]++) {
 				p [i] = psc [0]->vPos;
-				VmVecScale (p + i, p + i, fRadius);
-				G3TransformPoint (p + i, p + i, 0);
+				p[i] = p[i] * fRadius;
+				G3TransformPoint(p[i], p[i], 0);
 				if (bTextured) {
 					tc [i].v.u = psc [0]->uvl.v.u * nTiles;
 					tc [i].v.v = psc [0]->uvl.v.v * nTiles;
@@ -514,7 +514,7 @@ else {
 			}
 		}
 	}
-OglCullFace (0);
+	OglCullFace (0);
 }
 
 //------------------------------------------------------------------------------
@@ -529,7 +529,7 @@ int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScal
 #if !SIMPLE_SPHERE
 	int			i, j, nFaces = sdP->nFaces;
 	tOOF_vector *ps,
-					*pSphere = sdP->pSphere, 
+					*pSphere = sdP->pSphere,
 					*pRotSphere = (tOOF_vector *) D2_ALLOC (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector));
 
 if (!pRotSphere)
@@ -538,7 +538,7 @@ if (!pRotSphere)
 glEnable (GL_BLEND);
 if (sdP->nFaceNodes == 3)
 	bmP = NULL;
-else 
+else
 	bTextured = InitSphereSurface (sdP, red, green, blue, alpha, bmP, &fScale);
 glDepthFunc (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
@@ -561,7 +561,7 @@ pSphere = (tOOF_vector *) SortSphere (RotateSphere (pSphere, pRotSphere, pPos, n
 if (sdP->nFaceNodes == 3) {
 	glBegin (GL_LINES);
 	for (j = nFaces, ps = pSphere; j; j--, ps++)
-		for (i = 0; i < 3; i++, ps++) 
+		for (i = 0; i < 3; i++, ps++)
 			glVertex3fv ((GLfloat *) ps);
 	glEnd ();
 	if (bmP)
@@ -627,7 +627,7 @@ void DrawShieldSphere (tObject *objP, float red, float green, float blue, float 
 if (!CreateShieldSphere ())
 	return;
 #if !SIMPLE_SPHERE
-if (gameData.render.shield.nFaces > 0) 
+if (gameData.render.shield.nFaces > 0)
 #endif
 	{
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
@@ -636,17 +636,17 @@ if (gameData.render.shield.nFaces > 0)
 		tOOF_vector	p = {0, 0, 0};
 		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		float	fScale, r = X2F (nSize) /** 1.05f*/;
-		tPosition *posP = OBJPOS (objP);
+		tTransformation *posP = OBJPOS (objP);
 		vmsVector vPos;
 		//gameStates.ogl.bUseTransform = 1;
 		glBlendFunc (GL_ONE, GL_ONE);
-		G3StartInstanceMatrix (PolyObjPos (objP, &vPos), &posP->mOrient);
+		G3StartInstanceMatrix (*PolyObjPos (objP, &vPos), posP->mOrient);
 		RenderSphere (&gameData.render.shield, &p, r, r, r, red, green, blue, alpha, bmpShield, 1, 1);
 		G3DoneInstance ();
 		gameStates.ogl.bUseTransform = 0;
 		fScale = gameData.render.shield.pPulse->fScale;
-		G3StartInstanceMatrix (&vPos, &posP->mOrient);
-		vPos.p.x = vPos.p.y = vPos.p.z = 0;
+		G3StartInstanceMatrix (vPos, posP->mOrient);
+		vPos.setZero();
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		G3DoneInstance ();
 		}
@@ -662,7 +662,7 @@ if (!gameData.render.monsterball.pSphere) {
 	gameData.render.monsterball.nTessDepth = 3;
 	gameData.render.monsterball.nFaces = CreateSphere (&gameData.render.monsterball);
 	}
-if (gameData.render.monsterball.nFaces > 0) 
+if (gameData.render.monsterball.nFaces > 0)
 #endif
 	{
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
@@ -672,9 +672,9 @@ if (gameData.render.monsterball.nFaces > 0)
 		float r = X2F (objP->size);
 		gameStates.ogl.bUseTransform = 1;
 		OglSetupTransform (0);
-		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
-		RenderSphere (&gameData.render.monsterball, &p,  
-						  r, r, r, red, green, blue, gameData.hoard.monsterball.bm.bmTexBuf ? 1.0f : alpha, 
+		G3StartInstanceMatrix(objP->position.vPos, objP->position.mOrient);
+		RenderSphere (&gameData.render.monsterball, &p,
+						  r, r, r, red, green, blue, gameData.hoard.monsterball.bm.bmTexBuf ? 1.0f : alpha,
 						  &gameData.hoard.monsterball.bm, 4, 0);
 		G3DoneInstance ();
 		OglResetTransform (1);

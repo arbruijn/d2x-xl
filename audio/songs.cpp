@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <ctype.h>
 #ifndef _WIN32
-#include <unistd.h>
+#	include <unistd.h>
 #endif
 
 #include "inferno.h"
@@ -55,7 +55,7 @@ void SongsInit ()
 	char	*p, inputline [81];
 	CFILE	cf;
 
-if (gameData.songs.bInitialized) 
+if (gameData.songs.bInitialized)
 	return;
 CFUseD1HogFile ("descent.hog");
 for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
@@ -129,7 +129,7 @@ if (gameStates.sound.bRedbookPlaying) {		//fade out volume
 }
 RBAStop ();              	// Stop CD, if playing
 RBASetVolume(oldVolume);	//restore volume
-gameStates.sound.bRedbookPlaying = 0;	
+gameStates.sound.bRedbookPlaying = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -290,9 +290,9 @@ else if (nSong == SONG_BRIEFING) {
 	}
 if (!gameStates.sound.bRedbookPlaying) {		//not playing redbook, so play midi
 	DigiPlayMidiSong (
-		gameData.songs.info [nSong].filename, 
-		gameData.songs.info [nSong].melodicBankFile, 
-		gameData.songs.info [nSong].drumBankFile, 
+		gameData.songs.info [nSong].filename,
+		gameData.songs.info [nSong].melodicBankFile,
+		gameData.songs.info [nSong].drumBankFile,
 		repeat, gameData.songs.nSongs [1] && (nSong >= gameData.songs.nSongs [0]));
 	}
 }
@@ -333,7 +333,7 @@ if (bFromHog) {
 	strcpy (szFilename, LevelSongName (nLevel));
 	if (*szFilename && CFExtract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
 		char	szSong [FILENAME_LEN];
-	
+
 		sprintf (szSong, "%s%s%s", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "", szFilename);
 		if (DigiPlayMidiSong (szSong, NULL, NULL, 1, 0))
 			return;
@@ -349,10 +349,10 @@ if (!gameStates.sound.bRedbookPlaying) {			//not playing redbook, so play midi
 	nSong = gameData.songs.nLevelSongs [bD1Song] ? gameData.songs.nFirstLevelSong [bD1Song] + (nSong % gameData.songs.nLevelSongs [bD1Song]) : 0;
 	gameStates.sound.nCurrentSong = nSong;
 		DigiPlayMidiSong (
-			gameData.songs.info [nSong].filename, 
-			gameData.songs.info [nSong].melodicBankFile, 
-			gameData.songs.info [nSong].drumBankFile, 
-			1, 
+			gameData.songs.info [nSong].filename,
+			gameData.songs.info [nSong].melodicBankFile,
+			gameData.songs.info [nSong].drumBankFile,
+			1,
 			bD1Song);
 	}
 }

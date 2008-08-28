@@ -195,24 +195,24 @@ void my_extract_shortpos (tObject *objP, tShortPos *spp)
 	vmsVector	*pv;
 
 sp = spp->bytemat;
-objP->position.mOrient.rVec.p.x = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.uVec.p.x = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.fVec.p.x = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.rVec.p.y = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.uVec.p.y = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.fVec.p.y = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.rVec.p.z = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.uVec.p.z = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.fVec.p.z = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient[RVEC][X] = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient[UVEC][X] = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient[FVEC][X] = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient[RVEC][Y] = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient[UVEC][Y] = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient[FVEC][Y] = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient[RVEC][Z] = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient[UVEC][Z] = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient[FVEC][Z] = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->nSegment = nSegment;
-pv = gameData.segs.vertices + gameData.segs.segments [nSegment].verts [0];
-objP->position.vPos.p.x = (spp->xo << RELPOS_PRECISION) + pv->p.x;
-objP->position.vPos.p.y = (spp->yo << RELPOS_PRECISION) + pv->p.y;
-objP->position.vPos.p.z = (spp->zo << RELPOS_PRECISION) + pv->p.z;
-objP->mType.physInfo.velocity.p.x = (spp->velx << VEL_PRECISION);
-objP->mType.physInfo.velocity.p.y = (spp->vely << VEL_PRECISION);
-objP->mType.physInfo.velocity.p.z = (spp->velz << VEL_PRECISION);
+const vmsVector& v = gameData.segs.vertices[gameData.segs.segments[nSegment].verts[0]];
+objP->position.vPos[X] = (spp->xo << RELPOS_PRECISION) + v[X];
+objP->position.vPos[Y] = (spp->yo << RELPOS_PRECISION) + v[Y];
+objP->position.vPos[Z] = (spp->zo << RELPOS_PRECISION) + v[Z];
+objP->mType.physInfo.velocity[X] = (spp->velx << VEL_PRECISION);
+objP->mType.physInfo.velocity[Y] = (spp->vely << VEL_PRECISION);
+objP->mType.physInfo.velocity[Z] = (spp->velz << VEL_PRECISION);
 }
 
 //	-----------------------------------------------------------------------------
@@ -333,32 +333,32 @@ CFWriteFixAng (f, &ndOutFile);
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDWriteVector (vmsVector *v)
+static inline void NDWriteVector(const vmsVector& v)
 {
-gameData.demo.nFrameBytesWritten += sizeof (*v);
-gameData.demo.nWritten += sizeof (*v);
+gameData.demo.nFrameBytesWritten += sizeof (v);
+gameData.demo.nWritten += sizeof (v);
 CHK();
 CFWriteVector (v, &ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDWriteAngVec (vmsAngVec *v)
+static inline void NDWriteAngVec (const vmsAngVec& v)
 {
-gameData.demo.nFrameBytesWritten += sizeof (*v);
-gameData.demo.nWritten += sizeof (*v);
+gameData.demo.nFrameBytesWritten += sizeof (v);
+gameData.demo.nWritten += sizeof (v);
 CHK();
 CFWriteAngVec (v, &ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDWriteMatrix (vmsMatrix *m)
+static inline void NDWriteMatrix (const vmsMatrix& m)
 {
-gameData.demo.nFrameBytesWritten += sizeof (*m);
-gameData.demo.nWritten += sizeof (*m);
+gameData.demo.nFrameBytesWritten += sizeof (m);
+gameData.demo.nWritten += sizeof (m);
 CHK();
-CFWriteMatrix (m, &ndOutFile);
+CFWriteMatrix(m, &ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
@@ -377,21 +377,21 @@ if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == R
 	if (bOldFormat)
 		NDWrite (sp.bytemat, sizeof (sp.bytemat [0]), sizeof (sp.bytemat) / sizeof (sp.bytemat [0]));
 	else
-		NDWriteMatrix (&objP->position.mOrient);
+		NDWriteMatrix(objP->position.mOrient);
 	}
 if (bOldFormat) {
-	NDWriteShort (sp.xo);
-	NDWriteShort (sp.yo);
-	NDWriteShort (sp.zo);
-	NDWriteShort (sp.nSegment);
-	NDWriteShort (sp.velx);
-	NDWriteShort (sp.vely);
-	NDWriteShort (sp.velz);
+	NDWriteShort(sp.xo);
+	NDWriteShort(sp.yo);
+	NDWriteShort(sp.zo);
+	NDWriteShort(sp.nSegment);
+	NDWriteShort(sp.velx);
+	NDWriteShort(sp.vely);
+	NDWriteShort(sp.velz);
 	}
 else {
-	NDWriteVector (&objP->position.vPos);
+	NDWriteVector(objP->position.vPos);
 	NDWriteShort (objP->nSegment);
-	NDWriteVector (&objP->mType.physInfo.velocity);
+	NDWriteVector(objP->mType.physInfo.velocity);
 	}
 }
 
@@ -480,16 +480,16 @@ return CFReadFixAng (&ndInFile);
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDReadVector (vmsVector *v)
+static inline void NDReadVector(vmsVector& v)
 {
-CFReadVector (v, &ndInFile);
+CFReadVector(v, &ndInFile);
 if (bRevertFormat > 0)
-	NDWriteVector (v);
+	NDWriteVector(v);
 }
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDReadAngVec (vmsAngVec *v)
+static inline void NDReadAngVec (vmsAngVec& v)
 {
 CFReadAngVec (v, &ndInFile);
 if (bRevertFormat > 0)
@@ -498,9 +498,9 @@ if (bRevertFormat > 0)
 
 //	-----------------------------------------------------------------------------
 
-static inline void NDReadMatrix (vmsMatrix *m)
+static inline void NDReadMatrix(vmsMatrix& m)
 {
-CFReadMatrix (m, &ndInFile);
+CFReadMatrix(m, &ndInFile);
 if (bRevertFormat > 0)
 	NDWriteMatrix (m);
 }
@@ -521,7 +521,7 @@ if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == R
 	if (gameData.demo.bUseShortPos)
 		NDRead (sp.bytemat, sizeof (sp.bytemat [0]), sizeof (sp.bytemat) / sizeof (sp.bytemat [0]));
 	else
-		CFReadMatrix (&objP->position.mOrient, &ndInFile);
+		CFReadMatrix(objP->position.mOrient, &ndInFile);
 	}
 if (gameData.demo.bUseShortPos) {
 	sp.xo = NDReadShort ();
@@ -534,9 +534,9 @@ if (gameData.demo.bUseShortPos) {
 	my_extract_shortpos (objP, &sp);
 	}
 else {
-	NDReadVector (&objP->position.vPos);
+	NDReadVector(objP->position.vPos);
 	objP->nSegment = NDReadShort ();
-	NDReadVector (&objP->mType.physInfo.velocity);
+	NDReadVector(objP->mType.physInfo.velocity);
 	}
 if ((objP->id == VCLIP_MORPHING_ROBOT) && 
 	 (renderType == RT_FIREBALL) && 
@@ -648,7 +648,7 @@ switch (objP->nType) {
 		break;
 	}
 
-NDReadVector (&objP->vLastPos);
+NDReadVector(objP->vLastPos);
 if ((objP->nType == OBJ_WEAPON) && (objP->renderType == RT_WEAPON_VCLIP))
 	objP->lifeleft = NDReadFix ();
 else {
@@ -666,12 +666,12 @@ if (objP->nType == OBJ_ROBOT) {
 
 switch (objP->movementType) {
 	case MT_PHYSICS:
-		NDReadVector (&objP->mType.physInfo.velocity);
-		NDReadVector (&objP->mType.physInfo.thrust);
+		NDReadVector(objP->mType.physInfo.velocity);
+		NDReadVector(objP->mType.physInfo.thrust);
 		break;
 
 	case MT_SPINNING:
-		NDReadVector (&objP->mType.spinRate);
+		NDReadVector(objP->mType.spinRate);
 		break;
 
 	case MT_NONE:
@@ -737,7 +737,7 @@ switch (objP->renderType) {
 			}
 		if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_DEBRIS))
 		for (i = 0; i < gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels; i++)
-			NDReadAngVec (objP->rType.polyObjInfo.animAngles + i);
+			NDReadAngVec (objP->rType.polyObjInfo.animAngles[i]);
 		tmo = NDReadInt ();
 #ifndef EDITOR
 		objP->rType.polyObjInfo.nTexOverride = tmo;
@@ -827,7 +827,7 @@ if ((o.nType != OBJ_HOSTAGE) && (o.nType != OBJ_ROBOT) && (o.nType != OBJ_PLAYER
 	}
 else if (o.nType == OBJ_POWERUP)
 	NDWriteByte (o.movementType);
-NDWriteVector (&o.vLastPos);
+NDWriteVector(o.vLastPos);
 if ((o.nType == OBJ_WEAPON) && (o.renderType == RT_WEAPON_VCLIP))
 	NDWriteFix (o.lifeleft);
 else {
@@ -849,12 +849,12 @@ if (o.nType == OBJ_ROBOT) {
 	}
 switch (o.movementType) {
 	case MT_PHYSICS:
-		NDWriteVector (&o.mType.physInfo.velocity);
-		NDWriteVector (&o.mType.physInfo.thrust);
+		NDWriteVector(o.mType.physInfo.velocity);
+		NDWriteVector(o.mType.physInfo.thrust);
 		break;
 
 	case MT_SPINNING:
-		NDWriteVector (&o.mType.spinRate);
+		NDWriteVector(o.mType.spinRate);
 		break;
 
 	case MT_NONE:
@@ -914,7 +914,7 @@ switch (o.renderType) {
 				NDWriteAngVec (o.polyObjInfo.animAngles + i);
 #endif
 		for (i = 0; i < gameData.models.polyModels [o.rType.polyObjInfo.nModel].nModels; i++)
-			NDWriteAngVec (o.rType.polyObjInfo.animAngles + i);
+			NDWriteAngVec (o.rType.polyObjInfo.animAngles[i]);
 		NDWriteInt (o.rType.polyObjInfo.nTexOverride);
 		break;
 		}
@@ -1304,7 +1304,7 @@ StopTime ();
 NDWriteByte (ND_EVENT_EFFECT_BLOWUP);
 NDWriteShort (tSegment);
 NDWriteByte ((sbyte)nSide);
-NDWriteVector (pnt);
+NDWriteVector(*pnt);
 StartTime (0);
 }
 
@@ -2174,7 +2174,7 @@ while (!bDone) {
 			dummy.cType.laserInfo.parentType = OBJ_PLAYER;
 			nSegment = NDReadShort ();
 			nSide = NDReadByte ();
-			NDReadVector (&pnt);
+			NDReadVector(pnt);
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
 				CheckEffectBlowup (gameData.segs.segments + nSegment, nSide, &pnt, &dummy, 0);
 			}
@@ -2812,33 +2812,34 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 					(renderType != RT_THRUSTER) && 
 					(renderType != RT_POWERUP)) {
 
-				fvec1 = curObjP->position.mOrient.fVec;
-				VmVecScale (&fvec1, F1_0-factor);
-				fvec2 = objP->position.mOrient.fVec;
-				VmVecScale (&fvec2, factor);
-				VmVecInc (&fvec1, &fvec2);
-				mag1 = VmVecNormalize (&fvec1);
+				fvec1 = curObjP->position.mOrient[FVEC];
+				fvec1 *= (F1_0-factor);
+				fvec2 = objP->position.mOrient[FVEC];
+				fvec2 *= factor;
+				fvec1 += fvec2;
+				mag1 = vmsVector::normalize(fvec1);
 				if (mag1 > F1_0/256) {
-					rvec1 = curObjP->position.mOrient.rVec;
-					VmVecScale (&rvec1, F1_0-factor);
-					rvec2 = objP->position.mOrient.rVec;
-					VmVecScale (&rvec2, factor);
-					VmVecInc (&rvec1, &rvec2);
-					VmVecNormalize (&rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
-					VmVector2Matrix (&curObjP->position.mOrient, &fvec1, NULL, &rvec1);
+					rvec1 = curObjP->position.mOrient[RVEC];
+					rvec1 *= (F1_0-factor);
+					rvec2 = objP->position.mOrient[RVEC];
+					rvec2 *= factor;
+					rvec1 += rvec2;
+					vmsVector::normalize(rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
+					curObjP->position.mOrient = vmsMatrix::CreateFR(fvec1, rvec1);
+					//curObjP->position.mOrient = vmsMatrix::CreateFR(fvec1, NULL, &rvec1);
 					}
 				}
 			// Interpolate the tObject position.  This is just straight linear
 			// interpolation.
-			delta_x = objP->position.vPos.p.x - curObjP->position.vPos.p.x;
-			delta_y = objP->position.vPos.p.y - curObjP->position.vPos.p.y;
-			delta_z = objP->position.vPos.p.z - curObjP->position.vPos.p.z;
+			delta_x = objP->position.vPos[X] - curObjP->position.vPos[X];
+			delta_y = objP->position.vPos[Y] - curObjP->position.vPos[Y];
+			delta_z = objP->position.vPos[Z] - curObjP->position.vPos[Z];
 			delta_x = FixMul (delta_x, factor);
 			delta_y = FixMul (delta_y, factor);
 			delta_z = FixMul (delta_z, factor);
-			curObjP->position.vPos.p.x += delta_x;
-			curObjP->position.vPos.p.y += delta_y;
-			curObjP->position.vPos.p.z += delta_z;
+			curObjP->position.vPos[X] += delta_x;
+			curObjP->position.vPos[Y] += delta_y;
+			curObjP->position.vPos[Z] += delta_z;
 				// -- old fashioned way --// stuff the new angles back into the tObject structure
 				// -- old fashioned way --				VmAngles2Matrix (&(curObjs [i].position.mOrient), &cur_angles);
 			}

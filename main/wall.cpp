@@ -181,12 +181,12 @@ if (nType == WALL_CLOAKED)
 	return WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_CLOAKED_FLAG;
 
 if (nType == WALL_TRANSPARENT)
-	return (wallP->hps < 0) ? 
-			 WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_TRANSPARENT_FLAG | WID_FLY_FLAG : 
+	return (wallP->hps < 0) ?
+			 WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_TRANSPARENT_FLAG | WID_FLY_FLAG :
 			 WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_TRANSPARENT_FLAG;
 
 state = wallP->state;
-if (nType == WALL_DOOR) { 
+if (nType == WALL_DOOR) {
 	if ((state == WALL_DOOR_OPENING) || (state == WALL_DOOR_CLOSING))
 		return WID_TRANSPARENT_WALL;
 	if ((wallP->cloakValue && (wallP->cloakValue < GR_ACTUAL_FADE_LEVELS)) || CheckTransparency (segP, nSide))
@@ -221,7 +221,7 @@ int WALL_IS_DOORWAY (tSegment *segP, short nSide, tObject *objP)
 
 if (nChild == -1)
 	return WID_RENDER_FLAG;
-if (nChild == -2) 
+if (nChild == -2)
 	return WID_EXTERNAL_FLAG;
 nSegment = SEG_IDX (segP);
 nWall = WallNumP (segP, nSide);
@@ -231,16 +231,16 @@ if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 if (objP && gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted &&
-	 (objP == gameData.objs.console) && 
+	 (objP == gameData.objs.console) &&
 	 (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SPEEDBOOST) &&
 	 (gameData.segs.segment2s [nChild].special != SEGMENT_IS_SPEEDBOOST) &&
 	 (!bIsWall || (gameData.trigs.triggers [gameData.walls.walls [nWall].nTrigger].nType != TT_SPEEDBOOST)))
 	return objP ? WID_RENDER_FLAG : bIsWall ? WallIsDoorWay (segP, nSide, objP) : WID_RENDPAST_FLAG;
 if ((gameData.segs.segment2s [nChild].special == SEGMENT_IS_BLOCKED) ||
 	 (gameData.segs.segment2s [nChild].special == SEGMENT_IS_SKYBOX))
-	return (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))) ? WID_RENDER_FLAG : 
+	return (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))) ? WID_RENDER_FLAG :
 			 bIsWall ? WallIsDoorWay (segP, nSide, objP) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
-if (!bIsWall) 
+if (!bIsWall)
 	return (WID_FLY_FLAG|WID_RENDPAST_FLAG);
 return WallIsDoorWay (segP, nSide, objP);
 }
@@ -255,7 +255,7 @@ void WallInit ()
 
 gameData.walls.nWalls = 0;
 for (i = 0; i < MAX_WALLS; i++, wallP++) {
-	wallP->nSegment = 
+	wallP->nSegment =
 	wallP->nSide = -1;
 	wallP->nType = WALL_NORMAL;
 	wallP->flags = 0;
@@ -302,7 +302,7 @@ void WallSetTMapNum (tSegment *segP, short nSide, tSegment *connSegP, short cSid
 	grsBitmap	*bmP;
 	int			nFrames;
 
-//if (gameData.demo.nState == ND_STATE_PLAYBACK) 
+//if (gameData.demo.nState == ND_STATE_PLAYBACK)
 //	return;
 if (cSide < 0)
 	connSegP = NULL;
@@ -314,9 +314,9 @@ if (anim->flags & WCF_ALTFMT) {
 		anim->flags &= ~WCF_ALTFMT;
 	else {
 		bmP->bmWallAnim = 1;
-		if (!gameOpts->ogl.bGlTexMerge) 
+		if (!gameOpts->ogl.bGlTexMerge)
 			anim->flags &= ~WCF_ALTFMT;
-		else if (!BM_FRAMES (bmP)) 
+		else if (!BM_FRAMES (bmP))
 			anim->flags &= ~WCF_ALTFMT;
 		else {
 			anim->flags |= WCF_INITIALIZED;
@@ -568,7 +568,7 @@ void StartWallCloak (tSegment *segP, short nSide)
 	int				i;
 	short				nConnWall;
 
-if (gameData.demo.nState == ND_STATE_PLAYBACK) 
+if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
 Assert(IS_WALL (WallNumP (segP, nSide))); 	//Opening door on illegal tWall
 wallP = gameData.walls.walls + WallNumP (segP, nSide);
@@ -638,7 +638,7 @@ void StartWallDecloak (tSegment *segP, short nSide)
 	int				i;
 	short				nConnWall;
 
-if (gameData.demo.nState == ND_STATE_PLAYBACK) 
+if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
 Assert (IS_WALL (WallNumP (segP, nSide))); 	//Opening door on illegal tWall
 	wallP = gameData.walls.walls + WallNumP (segP, nSide);
@@ -700,8 +700,8 @@ for (i = 0; i < 4; i++) {
 void DeleteActiveDoor (int nDoor)
 {
 if (--gameData.walls.nOpenDoors > nDoor)
-	memcpy (gameData.walls.activeDoors + nDoor, 
-			  gameData.walls.activeDoors + nDoor + 1, 
+	memcpy (gameData.walls.activeDoors + nDoor,
+			  gameData.walls.activeDoors + nDoor + 1,
 			  (gameData.walls.nOpenDoors - nDoor) * sizeof (gameData.walls.activeDoors [0]));
 }
 
@@ -726,7 +726,7 @@ for (p = 0; p < d->nPartCount; p++) {
 	gameData.walls.walls [WallNumP (segP, nSide)].state = WALL_DOOR_CLOSED;
 	if (IS_WALL (nConnWall)) {
 		gameData.walls.walls [nConnWall].state = WALL_DOOR_CLOSED;
-		WallSetTMapNum (connSegP, nConnSide, NULL, -1, 
+		WallSetTMapNum (connSegP, nConnSide, NULL, -1,
 							 gameData.walls.walls [WallNumP (connSegP, nConnSide)].nClip, 0);
 		}
 	WallSetTMapNum (segP, nSide, NULL, -1, w->nClip, 0);
@@ -1002,7 +1002,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 		}
 	if ((gameData.demo.nState != ND_STATE_PLAYBACK) && !(i || doorP->time)) {
 		if (gameData.walls.pAnims [wallP->nClip].closeSound  > -1)
-			DigiLinkSoundToPos ((short) gameData.walls.pAnims [gameData.walls.walls [WallNumP (segP, nSide)].nClip].closeSound, 
+			DigiLinkSoundToPos ((short) gameData.walls.pAnims [gameData.walls.walls [WallNumP (segP, nSide)].nClip].closeSound,
 									  SEG_IDX (segP), nSide, SIDE_CENTER_I (wallP->nSegment, nSide), 0, F1_0);
 		}
 	doorP->time += gameData.time.xFrame;
@@ -1096,8 +1096,8 @@ if (connSegP) {
 int AllowToOpenSpecialBossDoor (int nSegment, short nSide)
 {
 if (IsMultiGame)
-	return (gameData.missions.nCurrentLevel == BOSS_LOCKED_DOOR_LEVEL) && 
-			 (nSegment == BOSS_LOCKED_DOOR_SEG) && 
+	return (gameData.missions.nCurrentLevel == BOSS_LOCKED_DOOR_LEVEL) &&
+			 (nSegment == BOSS_LOCKED_DOOR_SEG) &&
 			 (nSide == BOSS_LOCKED_DOOR_SIDE);
 return 0;
 }
@@ -1114,7 +1114,7 @@ for (i = gameData.walls.nWalls, wallP = gameData.walls.walls; i; wallP++, i--) {
 		wallP->flags &= ~WALL_DOOR_LOCKED;
 		wallP->keys = 0;
 		}
-	else if (!bOnlyDoors 
+	else if (!bOnlyDoors
 #ifndef _DEBUG
 				&& (wallP->nType == WALL_CLOSED)
 #endif
@@ -1149,7 +1149,7 @@ for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; wallP++, i+
 
 //-----------------------------------------------------------------
 // Determines what happens when a tWall is shot
-//returns info about tWall.  see wall.h for codes
+//returns info about tWall.  see wall[HA] for codes
 //obj is the tObject that hit...either a weapon or the tPlayer himself
 //nPlayer is the number the tPlayer who hit the tWall or fired the weapon,
 //or -1 if a robot fired the weapon
@@ -1185,7 +1185,7 @@ Assert(nPlayer > -1);
 //	Determine whether tPlayer is moving forward.  If not, don't say negative
 //	messages because he probably didn't intentionally hit the door.
 if (objP->nType == OBJ_PLAYER)
-	bShowMessage = (VmVecDot (&objP->position.mOrient.fVec, &objP->mType.physInfo.velocity) > 0);
+	bShowMessage = (vmsVector::dot(objP->position.mOrient[FVEC], objP->mType.physInfo.velocity) > 0);
 else if (objP->nType == OBJ_ROBOT)
 	bShowMessage = 0;
 else if ((objP->nType == OBJ_WEAPON) && (objP->cType.laserInfo.parentType == OBJ_ROBOT))
@@ -1257,7 +1257,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 wallP = gameData.walls.walls + nWall;
 if (wallP->nType == WALL_BLASTABLE)
 	WallDestroy (segP, nSide);
-if ((wallP->nType == WALL_DOOR) && 
+if ((wallP->nType == WALL_DOOR) &&
 	 (wallP->state == WALL_DOOR_CLOSED))
 	WallOpenDoor (segP, nSide);
 }
@@ -1292,7 +1292,7 @@ void DoCloakingWallFrame (int nCloakingWall)
 	tCloakingWall	*cloakWallP;
 	tWall				*frontWallP,*backWallP;
 
-if (gameData.demo.nState == ND_STATE_PLAYBACK) 
+if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
 cloakWallP = gameData.walls.cloaking + nCloakingWall;
 frontWallP = gameData.walls.walls + cloakWallP->nFrontWall;
@@ -1343,7 +1343,7 @@ else {		//fading out
 		}
 	if (gameData.demo.nState == ND_STATE_RECORDING) {
 		tUVL *uvlP = gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls;
-		NDRecordCloakingWall (cloakWallP->nFrontWall, cloakWallP->nBackWall, frontWallP->nType, frontWallP->state, frontWallP->cloakValue, 
+		NDRecordCloakingWall (cloakWallP->nFrontWall, cloakWallP->nBackWall, frontWallP->nType, frontWallP->state, frontWallP->cloakValue,
 									 uvlP [0].l, uvlP [1].l, uvlP [2].l, uvlP [3].l);
 		}
 	}
@@ -1356,7 +1356,7 @@ void DoDecloakingWallFrame (int nCloakingWall)
 	tCloakingWall	*cloakWallP;
 	tWall				*frontWallP,*backWallP;
 
-if (gameData.demo.nState == ND_STATE_PLAYBACK) 
+if (gameData.demo.nState == ND_STATE_PLAYBACK)
 return;
 
 cloakWallP = gameData.walls.cloaking + nCloakingWall;
@@ -1405,7 +1405,7 @@ else {		//cloaking in
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	tUVL *uvlP = gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls;
-	NDRecordCloakingWall (cloakWallP->nFrontWall, cloakWallP->nBackWall, frontWallP->nType, frontWallP->state, frontWallP->cloakValue, 
+	NDRecordCloakingWall (cloakWallP->nFrontWall, cloakWallP->nBackWall, frontWallP->nType, frontWallP->state, frontWallP->cloakValue,
 								 uvlP [0].l, uvlP [1].l, uvlP [2].l, uvlP [3].l);
 	}
 }
@@ -1434,7 +1434,7 @@ for (i = 0; i < gameData.walls.nOpenDoors; i++, doorP++) {
 //			Assert(doorP->nPartCount == 1);
 		if (IS_WALL (doorP->nBackWall [0]))
 			gameData.walls.walls [doorP->nBackWall [0]].state = WALL_DOOR_CLOSING;
-		if ((doorP->time > DOOR_WAIT_TIME) && 
+		if ((doorP->time > DOOR_WAIT_TIME) &&
 			 !DoorIsBlocked (gameData.segs.segments + wallP->nSegment, (short) wallP->nSide)) {
 			wallP->state = WALL_DOOR_CLOSING;
 			doorP->time = 0;
@@ -1499,8 +1499,8 @@ void AddStuckObject(tObject *objP, short nSegment, short nSide)
 		}
 #if TRACE
 		if (i == MAX_STUCK_OBJECTS)
-			con_printf (1, 
-				"Warning: Unable to add tObject %i which got stuck in tWall %i to stuckObjects\n", 
+			con_printf (1,
+				"Warning: Unable to add tObject %i which got stuck in tWall %i to stuckObjects\n",
 				OBJ_IDX (objP), nWall);
 #endif
 	}
@@ -1522,7 +1522,7 @@ if (!nStuckObjects)
 nObject = gameData.app.nFrameCount % MAX_STUCK_OBJECTS;
 nWall = stuckObjects [nObject].nWall;
 if (IS_WALL (nWall)) {
-	if ((gameData.walls.walls [nWall].state != WALL_DOOR_CLOSED) || 
+	if ((gameData.walls.walls [nWall].state != WALL_DOOR_CLOSED) ||
 		 (OBJECTS [stuckObjects [nObject].nObject].nSignature != stuckObjects [nObject].nSignature)) {
 		nStuckObjects--;
 		OBJECTS [stuckObjects [nObject].nObject].lifeleft = F1_0/8;
@@ -1548,14 +1548,14 @@ for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++)
 			OBJECTS [stuckObjP->nObject].lifeleft = F1_0/8;
 		else {
 #if TRACE
-			con_printf (1, 
-				"Warning: Stuck tObject of nType %i, expected to be of nType %i, see tWall.c\n", 
+			con_printf (1,
+				"Warning: Stuck tObject of nType %i, expected to be of nType %i, see tWall.c\n",
 				OBJECTS [stuckObjects [i].nObject].nType, OBJ_WEAPON);
 #endif
 			// Int3();	//	What?  This looks bad.  Object is not a weapon and it is stuck in a tWall!
 			stuckObjP->nWall = -1;
 		}
-	} 
+	}
 else if (IS_WALL (stuckObjects [i].nWall)) {
 	nStuckObjects++;
 	}
@@ -1621,7 +1621,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 			if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
 			 	 ((ec == -1) && (gameData.pig.tex.pTMapInfo [tm].destroyed != -1))) {
 				COMPUTE_SIDE_CENTER(&pnt, segp, nSide);
-				dist = VmVecDistQuick(&pnt, &objP->position.vPos);
+				dist = vmsVector::dist(pnt, objP->position.vPos);
 				if (dist < damage/2) {
 					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->position.vPos, objP->nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
 					if ((dist > 0) && (dist < damage/2))

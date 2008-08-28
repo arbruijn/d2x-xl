@@ -85,8 +85,6 @@ void MultiDoConquerWarning (char *buf);
 
 // LOCALIZE ME!!
 
-#define VmAngVecZero(v) (v)->p = (v)->b = (v)->h = 0
-
 void DropPlayerEggs (tObject *player); // from collide.c
 
 //
@@ -206,7 +204,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	3,  // MULTI_MESSAGE_START
 	3,  // MULTI_MESSAGE_QUIT
 	3,	 // MULTI_OBJECT_TRIGGER
-	6,	 // MULTI_PLAYER_SHIELDS, 
+	6,	 // MULTI_PLAYER_SHIELDS,
 	2,	 // MULTI_INVUL
 	2,	 // MULTI_DEINVUL
 	29, // MULTI_WEAPONS
@@ -222,15 +220,15 @@ void extract_netplayer_stats (tNetPlayerStats *ps, tPlayer * pd);
 void use_netplayer_stats (tPlayer * ps, tNetPlayerStats *pd);
 
 tPlayerShip defaultPlayerShip = {
-	108, 58, 262144, 2162, 511180, 0, 0, F1_0 / 2, 9175, 
-	{{{146013, -59748, 35756}}, 
-	 {{-147477, -59892, 34430}}, 
-	 {{222008, -118473, 148201}}, 
-	 {{-223479, -118213, 148302}}, 
-	 {{153026, -185, -91405}}, 
-	 {{-156840, -185, -91405}}, 
-	 {{1608, -87663, 184978}}, 
-	 {{-1608, -87663, -190825}}}};
+	108, 58, 262144, 2162, 511180, 0, 0, F1_0 / 2, 9175,
+	{vmsVector::Create(146013, -59748, 35756),
+	 vmsVector::Create(-147477, -59892, 34430),
+ 	 vmsVector::Create(222008, -118473, 148201),
+	 vmsVector::Create(-223479, -118213, 148302),
+	 vmsVector::Create(153026, -185, -91405),
+	 vmsVector::Create(-156840, -185, -91405),
+	 vmsVector::Create(1608, -87663, 184978),
+	 vmsVector::Create(-1608, -87663, -190825)}};
 
 //-----------------------------------------------------------------------------
 // check protection
@@ -488,13 +486,13 @@ for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 			fP->nStart = gameStates.app.nSDLTicks - fP->nDuration;
 			if (fP->bSpeedUp && (fP->nDuration < GATLING_DELAY)) {
 				fP->bSound = 1;
-				}	
+				}
 			else {
 				fP->nStart -= GATLING_DELAY + 1;
 				if (fP->nStart < 0)
 					fP->nStart = 0;
 				fP->bSound = 0;
-				}	
+				}
 			fP->nStop = 0;
 			}
 		}
@@ -583,7 +581,7 @@ void ChoseTeam (int nPlayer)
 {
 	int	h, i, t, teamScore [2];
 
-teamScore [0]  = 
+teamScore [0]  =
 teamScore [1] = 0;
 for (h = i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((t = GetTeam (i)))
@@ -601,15 +599,15 @@ MultiSendSetTeam (nPlayer);
 
 void AutoBalanceTeams ()
 {
-if (gameStates.app.bHaveExtraGameInfo && 
-	 extraGameInfo [1].bAutoBalanceTeams && 
+if (gameStates.app.bHaveExtraGameInfo &&
+	 extraGameInfo [1].bAutoBalanceTeams &&
 	 (gameData.app.nGameMode & GM_TEAM) &&
 	 NetworkIAmMaster ()) {
 		int	h, i, t, teamCount [2], teamScore [2];
 
-	teamCount [0] = 
-	teamCount [1] = 
-	teamScore [0] = 
+	teamCount [0] =
+	teamCount [1] =
+	teamScore [0] =
 	teamScore [1] = 0;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		t = GetTeam (i);
@@ -622,7 +620,7 @@ if (gameStates.app.bHaveExtraGameInfo &&
 		return;
 	// don't change teams if smaller team is better
 	if ((h > 1) && (teamScore [1] > teamScore [0]))
-		return; 
+		return;
 	if ((h < -1) && (teamScore [0] > teamScore [1]))
 		return;
 	// set id of the team to be reduced
@@ -793,7 +791,7 @@ gameData.score.nKillsChanged = 1;
 bMultiSuicide = 0;
 
 // Both tObject numbers are localized already!
-if ((nKilled < 0) || (nKilled > gameData.objs.nLastObject [0]) || 
+if ((nKilled < 0) || (nKilled > gameData.objs.nLastObject [0]) ||
 	 (nKiller < 0) || (nKiller > gameData.objs.nLastObject [0])) {
 	Int3 (); // See Rob, illegal value passed to computeKill;
 	return;
@@ -917,7 +915,7 @@ else {
 		}
 	else {
 		static int nKillMsgs = 0;
-	PrintLog ("received kill message %d from %d.%d.%d.%d:%u\n", 
+	PrintLog ("received kill message %d from %d.%d.%d.%d:%u\n",
 				++nKillMsgs,
 					ipx_udpSrc.src_node [0],
 					ipx_udpSrc.src_node [1],
@@ -1067,7 +1065,7 @@ return (gameData.app.nGameMode & GM_NETWORK) ? NetworkEndLevel (secret) : 0;
 }
 
 //
-// Part 2 : functions that act on network/serial messages and change 
+// Part 2 : functions that act on network/serial messages and change
 //          the state of the game in some way.
 //
 
@@ -1093,9 +1091,9 @@ if (!gameOpts->menus.nStyle) {
 	gameData.multigame.menu.bInvoked--;
 	G3_SLEEP (100);   // delay 100 milliseconds
 	}
-if (gameStates.app.bEndLevelSequence || 
-	 (gameData.reactor.bDestroyed && !bWasFuelCenAlive) || 
-	 (gameStates.app.bPlayerIsDead != bPlayerWasDead) || 
+if (gameStates.app.bEndLevelSequence ||
+	 (gameData.reactor.bDestroyed && !bWasFuelCenAlive) ||
+	 (gameStates.app.bPlayerIsDead != bPlayerWasDead) ||
 	 (LOCALPLAYER.shields < xOldShields)) {
 	gameData.multigame.menu.bLeave = 1;
 	return -1;
@@ -1129,7 +1127,7 @@ Assert (nPlayer < gameData.multiplayer.nPlayers);
 if (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].nType == OBJ_GHOST)
 	MultiMakeGhostPlayer (nPlayer);
 if (weapon == FLARE_ADJUST)
-	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, 
+	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject,
 						  FLARE_ID, 6, 1, 0, -1);
 else if (weapon >= MISSILE_ADJUST) {
 	int h = weapon - MISSILE_ADJUST;
@@ -1140,7 +1138,7 @@ else if (weapon >= MISSILE_ADJUST) {
 		gameData.multigame.bIsGuided = 1;
 	if (playerP->secondaryAmmo [h] > 0)
 		playerP->secondaryAmmo [h]--;
-	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, 
+	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject,
 						  weapon_id, weapon_gun, 1, 0, -1);
 	}
 else {
@@ -1177,7 +1175,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 ExtractShortPos (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], (tShortPos *) (buf+1), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + 1), 9);
-memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + 10), 14);
+memcpy ((ubyte *)& (sx()o), (ubyte *) (buf + 10), 14);
 ExtractShortPos (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], &sp, 1);
 #endif
 if (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].movementType == MT_PHYSICS)
@@ -1223,26 +1221,26 @@ NetworkResetObjSync (-1);
 // Stuff the gameData.multiplayer.players structure to prepare for the explosion
 playerP = gameData.multiplayer.players + nPlayer;
 count = 2;
-playerP->primaryWeaponFlags = GET_INTEL_SHORT (buf + count); 
+playerP->primaryWeaponFlags = GET_INTEL_SHORT (buf + count);
 count += 2;
-playerP->secondaryWeaponFlags = GET_INTEL_SHORT (buf + count); 
+playerP->secondaryWeaponFlags = GET_INTEL_SHORT (buf + count);
 count += 2;
-playerP->laserLevel = buf [count++];  
-playerP->secondaryAmmo [HOMING_INDEX] = buf [count++];                
+playerP->laserLevel = buf [count++];
+playerP->secondaryAmmo [HOMING_INDEX] = buf [count++];
 playerP->secondaryAmmo [CONCUSSION_INDEX] = buf [count++];
-playerP->secondaryAmmo [SMART_INDEX] = buf [count++];         
-playerP->secondaryAmmo [MEGA_INDEX] = buf [count++];          
-playerP->secondaryAmmo [PROXMINE_INDEX] = buf [count++]; 
-playerP->secondaryAmmo [FLASHMSL_INDEX] = buf [count++]; 
-playerP->secondaryAmmo [GUIDED_INDEX] = buf [count++]; 
-playerP->secondaryAmmo [SMARTMINE_INDEX] = buf [count++]; 
-playerP->secondaryAmmo [MERCURY_INDEX] = buf [count++]; 
-playerP->secondaryAmmo [EARTHSHAKER_INDEX] = buf [count++]; 
-playerP->primaryAmmo [VULCAN_INDEX] = GET_INTEL_SHORT (buf + count); 
+playerP->secondaryAmmo [SMART_INDEX] = buf [count++];
+playerP->secondaryAmmo [MEGA_INDEX] = buf [count++];
+playerP->secondaryAmmo [PROXMINE_INDEX] = buf [count++];
+playerP->secondaryAmmo [FLASHMSL_INDEX] = buf [count++];
+playerP->secondaryAmmo [GUIDED_INDEX] = buf [count++];
+playerP->secondaryAmmo [SMARTMINE_INDEX] = buf [count++];
+playerP->secondaryAmmo [MERCURY_INDEX] = buf [count++];
+playerP->secondaryAmmo [EARTHSHAKER_INDEX] = buf [count++];
+playerP->primaryAmmo [VULCAN_INDEX] = GET_INTEL_SHORT (buf + count);
 count += 2;
-playerP->primaryAmmo [GAUSS_INDEX] = GET_INTEL_SHORT (buf + count); 
+playerP->primaryAmmo [GAUSS_INDEX] = GET_INTEL_SHORT (buf + count);
 count += 2;
-playerP->flags = GET_INTEL_INT (buf + count);               
+playerP->flags = GET_INTEL_INT (buf + count);
 count += 4;
 #if 0
 MultiAdjustRemoteCap (nPlayer);
@@ -1369,7 +1367,7 @@ if (nObject < 1)
 nLocalObj = ObjnumRemoteToLocal (nObject, obj_owner); // translate to local nObject
 if (nLocalObj < 0)
 	return;
-if ((OBJECTS [nLocalObj].nType != OBJ_POWERUP) && 
+if ((OBJECTS [nLocalObj].nType != OBJ_POWERUP) &&
 	 (OBJECTS [nLocalObj].nType != OBJ_HOSTAGE))
 	return;
 NetworkResetObjSync (nLocalObj);
@@ -1419,7 +1417,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	if (gameData.multigame.menu.bInvoked || gameStates.menus.nInMenu)
 		return;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected) 
+		if (gameData.multiplayer.players [i].connected)
 			n++;
 	if (n == 1)
 		MultiOnlyPlayerMsg (0);
@@ -1527,15 +1525,15 @@ void MultiDoCtrlcenFire (char *buf)
 	short nObject;
 	int i, count = 1;
 
-memcpy (&to_target, buf + count, 12);          
+memcpy (&to_target, buf + count, 12);
 count += 12;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)  // swap the vector to_target
-to_target.p.x = (fix)INTEL_INT ((int) to_target.p.x);
-to_target.p.y = (fix)INTEL_INT ((int) to_target.p.y);
-to_target.p.z = (fix)INTEL_INT ((int) to_target.p.z);
+to_target[X] = (fix)INTEL_INT ((int) to_target[X]);
+to_target[Y] = (fix)INTEL_INT ((int) to_target[Y]);
+to_target[Z] = (fix)INTEL_INT ((int) to_target[Z]);
 #endif
-nGun = buf [count++];                       
-nObject = GET_INTEL_SHORT (buf + count);      
+nGun = buf [count++];
+nObject = GET_INTEL_SHORT (buf + count);
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return;
 if (0 <= (i = FindReactor (OBJECTS + nObject)))
@@ -1560,19 +1558,19 @@ nPlayer = (int) buf [count++];
 powerupType = buf [count++];
 #if 0
 if ((gameData.app.nGameMode & GM_NETWORK) &&
-	 (gameData.multiplayer.powerupsInMine [(int)powerupType] + PowerupsOnShips (powerupType) >= 
+	 (gameData.multiplayer.powerupsInMine [(int)powerupType] + PowerupsOnShips (powerupType) >=
 	  gameData.multiplayer.maxPowerupsAllowed [powerupType]))
 	return;
 #endif
-nSegment = GET_INTEL_SHORT (buf + count); 
+nSegment = GET_INTEL_SHORT (buf + count);
 count += 2;
-nObject = GET_INTEL_SHORT (buf + count); 
+nObject = GET_INTEL_SHORT (buf + count);
 count += 2;
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
 	Int3 ();
 	return;
 	}
-memcpy (&vNewPos, buf + count, sizeof (vmsVector)); 
+memcpy (&vNewPos, buf + count, sizeof (vmsVector));
 count += sizeof (vmsVector);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 INTEL_VECTOR (&vNewPos);
@@ -1583,7 +1581,7 @@ if (nLocalObj < 0)
 	return;
 NetworkResetObjSync (nLocalObj);
 OBJECTS [nLocalObj].position.vPos = vNewPos;
-VmVecZero (&OBJECTS [nLocalObj].mType.physInfo.velocity);
+OBJECTS [nLocalObj].mType.physInfo.velocity.setZero();
 RelinkObject (nLocalObj, nSegment);
 MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
 ObjectCreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
@@ -1660,7 +1658,7 @@ if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == 
 	Int3 (); // Got tTrigger from illegal nPlayer
 	return;
 	}
-gameData.multiplayer.players [nPlayer].shields  = 
+gameData.multiplayer.players [nPlayer].shields  =
 OBJECTS [gameData.multiplayer.players [nPlayer].nObject].shields = shields;
 }
 
@@ -1679,7 +1677,7 @@ if ((tTrigger < 0) || (tTrigger  >= gameData.trigs.nObjTriggers)) {
 	Int3 (); // Illegal tTrigger number in multiplayer
 	return;
 	}
-CheckTriggerSub (gameData.multiplayer.players [nPlayer].nObject, gameData.trigs.objTriggers, 
+CheckTriggerSub (gameData.multiplayer.players [nPlayer].nObject, gameData.trigs.objTriggers,
 					  gameData.trigs.nObjTriggers, tTrigger, nPlayer, 0, 1);
 }
 
@@ -1693,18 +1691,18 @@ void MultiDoDropMarker (char *buf)
 
 if (nPlayer == gameData.multiplayer.nLocalPlayer)  // my marker? don't set it down cuz it might screw up the orientation
 	return;
-position.p.x = GET_INTEL_INT (buf + 3);
-position.p.y = GET_INTEL_INT (buf + 7);
-position.p.z = GET_INTEL_INT (buf + 11);
+position[X] = GET_INTEL_INT (buf + 3);
+position[Y] = GET_INTEL_INT (buf + 7);
+position[Z] = GET_INTEL_INT (buf + 11);
 memcpy (gameData.marker.szMessage + 2 * nPlayer + msgNum, buf + 15, 40);
 gameData.marker.point [(nPlayer*2)+msgNum] = position;
 if (gameData.marker.objects [(nPlayer*2)+msgNum] !=-1 && OBJECTS [gameData.marker.objects [(nPlayer*2)+msgNum]].nType!=OBJ_NONE && gameData.marker.objects [(nPlayer*2)+msgNum] !=0)
 	ReleaseObject (gameData.marker.objects [(nPlayer*2)+msgNum]);
-gameData.marker.objects [(nPlayer*2)+msgNum] = 
+gameData.marker.objects [(nPlayer*2)+msgNum] =
 	DropMarkerObject (
-		&position, 
-		OBJECTS [LOCALPLAYER.nObject].nSegment, 
-		&OBJECTS [LOCALPLAYER.nObject].position.mOrient, 
+		&position,
+		OBJECTS [LOCALPLAYER.nObject].nSegment,
+		&OBJECTS [LOCALPLAYER.nObject].position.mOrient,
 		(ubyte) ((nPlayer*2)+msgNum));
 strcpy (gameData.marker.nOwner [(nPlayer*2)+msgNum], gameData.multiplayer.players [nPlayer].callsign);
 }
@@ -1718,10 +1716,10 @@ void MultiDoHostageDoorStatus (char *buf)
 	fix	hps;
 	short	wallnum;
 
-wallnum = GET_INTEL_SHORT (buf + 1); 
+wallnum = GET_INTEL_SHORT (buf + 1);
 if ((!IS_WALL (wallnum)) || (wallnum > gameData.walls.nWalls))
 	return;
-hps = GET_INTEL_INT (buf + 3); 
+hps = GET_INTEL_INT (buf + 3);
 if (hps < 0)
 	return;
 wallP = gameData.walls.walls + wallnum;
@@ -1739,7 +1737,7 @@ void MultiDoSaveGame (char *buf)
 
 ubyte slot = (ubyte) buf [1];
 uint id = GET_INTEL_INT (buf + 2);
-memcpy (desc, buf + 6, 20); 
+memcpy (desc, buf + 6, 20);
 MultiSaveGame (slot, id, desc);
 }
 
@@ -1747,7 +1745,7 @@ MultiSaveGame (slot, id, desc);
 
 void MultiDoRestoreGame (char *buf)
 {
-ubyte slot = (ubyte) buf [1];  
+ubyte slot = (ubyte) buf [1];
 uint id = GET_INTEL_INT (buf + 2);
 MultiRestoreGame (slot, id);
 }
@@ -1803,10 +1801,10 @@ if (objP > OBJECTS + gameData.objs.nLastObject [0])
 	return;
 if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_GHOST))
 	return;
-VmVecZero (&objP->mType.physInfo.velocity);
-VmVecZero (&objP->mType.physInfo.thrust);
-VmVecZero (&objP->mType.physInfo.rotVel);
-VmVecZero (&objP->mType.physInfo.rotThrust);
+objP->mType.physInfo.velocity.setZero();
+objP->mType.physInfo.thrust.setZero();
+objP->mType.physInfo.rotVel.setZero();
+objP->mType.physInfo.rotThrust.setZero();
 objP->mType.physInfo.brakes = objP->mType.physInfo.turnRoll = 0;
 objP->mType.physInfo.mass = gameData.pig.ship.player->mass;
 objP->mType.physInfo.drag = gameData.pig.ship.player->drag;
@@ -1817,7 +1815,7 @@ objP->renderType = RT_POLYOBJ;
 objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;               //what model is this?
 objP->rType.polyObjInfo.nSubObjFlags = 0;         //zero the flags
 for (i = 0; i < MAX_SUBMODELS; i++)
-	VmAngVecZero (objP->rType.polyObjInfo.animAngles + i);
+	objP->rType.polyObjInfo.animAngles[i].setZero();
 //reset textures for this, if not tPlayer 0
 MultiResetObjectTexture (objP);
 // Clear misc
@@ -1859,7 +1857,7 @@ extern FILE *RecieveLogFile;
 #endif
 
 //-----------------------------------------------------------------------------
-// Takes a bunch of messages, check them for validity, 
+// Takes a bunch of messages, check them for validity,
 // and pass them to MultiProcessData.
 
 void MultiProcessBigData (char *buf, int len)
@@ -1936,9 +1934,9 @@ if (tPlayer < gameData.multiplayer.nPlayers) {
 	gameData.multigame.msg.buf [0] = (char)MULTI_MARKER;
 	gameData.multigame.msg.buf [1] = (char)tPlayer;
 	gameData.multigame.msg.buf [2] = messagenum;
-	PUT_INTEL_INT (gameData.multigame.msg.buf+3, position.p.x);
-	PUT_INTEL_INT (gameData.multigame.msg.buf+7, position.p.y);
-	PUT_INTEL_INT (gameData.multigame.msg.buf+11, position.p.z);
+	PUT_INTEL_INT (gameData.multigame.msg.buf+3, position[X]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf+7, position[Y]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf+11, position[Z]);
 	memcpy (gameData.multigame.msg.buf + 15, text, 40);
 	MultiSendData (gameData.multigame.msg.buf, 55, 1);
 	}
@@ -2004,7 +2002,7 @@ for (i = 0; i < gameData.multigame.create.nLoc; i++) {
 		bufI += 2;
 		continue;
 		}
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameData.multigame.create.nObjNums [i]); 
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameData.multigame.create.nObjNums [i]);
 	bufI += 2;
 	// We created these objs so our local number = the network number
 	MapObjnumLocalToLocal ((short)gameData.multigame.create.nObjNums [i]);
@@ -2061,12 +2059,12 @@ for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
 		}
 	nType = secondaryWeaponToPowerup [nIndex];
 	if ((LOCALPLAYER.secondaryAmmo [nIndex] +
-		  gameData.multiplayer.powerupsInMine [(int)nType]) > 
+		  gameData.multiplayer.powerupsInMine [(int)nType]) >
 		  gameData.multiplayer.maxPowerupsAllowed [(int)nType]) {
 		if (gameData.multiplayer.maxPowerupsAllowed [(int)nType] - gameData.multiplayer.powerupsInMine [(int)nType] < 0)
 			LOCALPLAYER.secondaryAmmo [nIndex] = 0;
 		else
-			LOCALPLAYER.secondaryAmmo [nIndex] = 
+			LOCALPLAYER.secondaryAmmo [nIndex] =
 				(gameData.multiplayer.maxPowerupsAllowed [(int)nType] - gameData.multiplayer.powerupsInMine [(int)nType]);
 		}
 	}
@@ -2234,7 +2232,7 @@ count += sizeof (tShortPos);
 CreateShortPos (&sp, OBJECTS+nObject, 1);
 memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *) (sp.bytemat), 9);
 count += 9;
-memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *)& (sp.xo), 14);
+memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *)& (sx()o), 14);
 count += 14;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 0);
@@ -2250,8 +2248,8 @@ void MultiSendKill (int nObject)
 Assert (OBJECTS [nObject].id == gameData.multiplayer.nLocalPlayer);
 nKillerObj = LOCALPLAYER.nKillerObj;
 MultiComputeKill (nKillerObj, nObject);
-gameData.multigame.msg.buf [0] = (char) MULTI_KILL;     
-gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;           
+gameData.multigame.msg.buf [0] = (char) MULTI_KILL;
+gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
 if (nKillerObj > -1) {
 	// do it with variable player since INTEL_SHORT won't work on return val from function.
 	short s = (short) ObjnumLocalToRemote (nKillerObj, (sbyte *) &gameData.multigame.msg.buf [4]);
@@ -2293,7 +2291,7 @@ void MultiSendSyncKills (void)
 	char	*bufP = gameData.multigame.msg.buf + 2;
 
 gameData.multigame.msg.buf [0] = (char) MULTI_SYNC_KILLS;
-gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;           
+gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
 PUT_INTEL_INT (bufP, LOCALPLAYER.score);
 bufP += 4;
 PUT_INTEL_SHORT (bufP, LOCALPLAYER.nKillGoalCount);
@@ -2445,8 +2443,8 @@ NetworkSendNakedPacket (gameData.multigame.msg.buf, 5, nPlayer);
 void MultiSendCreateExplosion (int nPlayer)
 {
 // Send all data needed to create a remote explosion
-gameData.multigame.msg.buf [0] = MULTI_CREATE_EXPLOSION;       
-gameData.multigame.msg.buf [1] = (sbyte)nPlayer;                  
+gameData.multigame.msg.buf [0] = MULTI_CREATE_EXPLOSION;
+gameData.multigame.msg.buf [1] = (sbyte)nPlayer;
 MultiSendData (gameData.multigame.msg.buf, 2, 0);
 }
 
@@ -2459,19 +2457,19 @@ void MultiSendCtrlcenFire (vmsVector *to_goal, int nBestGun, int nObject)
 #endif
 	int count = 0;
 
-gameData.multigame.msg.buf [count++] = MULTI_CONTROLCEN_FIRE;                
+gameData.multigame.msg.buf [count++] = MULTI_CONTROLCEN_FIRE;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf + count, to_goal, 12);                    
+memcpy (gameData.multigame.msg.buf + count, to_goal, 12);
 count += 12;
 #else
-swapped_vec.p.x = (fix)INTEL_INT ((int)to_goal->p.x);
-swapped_vec.p.y = (fix)INTEL_INT ((int)to_goal->p.y);
-swapped_vec.p.z = (fix)INTEL_INT ((int)to_goal->p.z);
-memcpy (gameData.multigame.msg.buf + count, &swapped_vec, 12);			
+swapped_vec[X] = (fix)INTEL_INT ((int)to_goal->x());
+swapped_vec[Y] = (fix)INTEL_INT ((int)to_goal->y());
+swapped_vec[Z] = (fix)INTEL_INT ((int)to_goal->z());
+memcpy (gameData.multigame.msg.buf + count, &swapped_vec, 12);
 count += 12;
 #endif
-gameData.multigame.msg.buf [count++] = (char)nBestGun;                   
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);     
+gameData.multigame.msg.buf [count++] = (char)nBestGun;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
 count += 2;
 MultiSendData (gameData.multigame.msg.buf, count, 0);
 }
@@ -2493,21 +2491,21 @@ void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, vmsVect
 if (gameData.app.nGameMode & GM_NETWORK)
 	gameData.multiplayer.powerupsInMine [powerupType]++;
 #endif
-gameData.multigame.msg.buf [count++] = MULTI_CREATE_POWERUP;         
-gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;                                      
-gameData.multigame.msg.buf [count++] = powerupType;                                 
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nSegment);     
+gameData.multigame.msg.buf [count++] = MULTI_CREATE_POWERUP;
+gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;
+gameData.multigame.msg.buf [count++] = powerupType;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nSegment);
 count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);     
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
 count += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf + count, pos, sizeof (vmsVector));  
+memcpy (gameData.multigame.msg.buf + count, pos, sizeof (vmsVector));
 count += sizeof (vmsVector);
 #else
-swapped_vec.p.x = (fix)INTEL_INT ((int)pos->p.x);
-swapped_vec.p.y = (fix)INTEL_INT ((int)pos->p.y);
-swapped_vec.p.z = (fix)INTEL_INT ((int)pos->p.z);
-memcpy (gameData.multigame.msg.buf + count, &swapped_vec, 12);			
+swapped_vec[X] = (fix)INTEL_INT ((int)pos->x());
+swapped_vec[Y] = (fix)INTEL_INT ((int)pos->y());
+swapped_vec[Z] = (fix)INTEL_INT ((int)pos->z());
+memcpy (gameData.multigame.msg.buf + count, &swapped_vec, 12);
 count += 12;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 2);
@@ -2519,10 +2517,10 @@ MapObjnumLocalToLocal (nObject);
 
 void MultiSendPlaySound (int nSound, fix volume)
 {
-gameData.multigame.msg.buf [0] = MULTI_PLAY_SOUND;                     
-gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;                                  
-gameData.multigame.msg.buf [2] = (char)nSound;                      
-gameData.multigame.msg.buf [3] = (char) (volume >> 12); 
+gameData.multigame.msg.buf [0] = MULTI_PLAY_SOUND;
+gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
+gameData.multigame.msg.buf [2] = (char)nSound;
+gameData.multigame.msg.buf [3] = (char) (volume >> 12);
 MultiSendData (gameData.multigame.msg.buf, 4, 0);
 }
 
@@ -2534,9 +2532,9 @@ void MultiSendAudioTaunt (int taunt_num)
 
 #if 0
 	int audio_taunts [4] = {
-		SOUND_CONTROL_CENTER_WARNING_SIREN, 
-		SOUND_HOSTAGE_RESCUED, 
-		SOUND_REFUEL_STATION_GIVING_FUEL, 
+		SOUND_CONTROL_CENTER_WARNING_SIREN,
+		SOUND_HOSTAGE_RESCUED,
+		SOUND_REFUEL_STATION_GIVING_FUEL,
 		SOUND_BAD_SELECTION
 		};
 
@@ -2557,9 +2555,9 @@ void MultiSendScore (void)
 
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	MultiSortKillList ();
-	gameData.multigame.msg.buf [count++] = MULTI_SCORE;                  
-	gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;                           
-	PUT_INTEL_INT (gameData.multigame.msg.buf + count, LOCALPLAYER.score);  
+	gameData.multigame.msg.buf [count++] = MULTI_SCORE;
+	gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;
+	PUT_INTEL_INT (gameData.multigame.msg.buf + count, LOCALPLAYER.score);
 	count += 4;
 	MultiSendData (gameData.multigame.msg.buf, count, 0);
 	}
@@ -2571,11 +2569,11 @@ void MultiSendSaveGame (ubyte slot, uint id, char * desc)
 {
 	int count = 0;
 
-gameData.multigame.msg.buf [count++] = MULTI_SAVE_GAME;              
-gameData.multigame.msg.buf [count++] = slot;                        
-PUT_INTEL_INT (gameData.multigame.msg.buf + count, id);           
+gameData.multigame.msg.buf [count++] = MULTI_SAVE_GAME;
+gameData.multigame.msg.buf [count++] = slot;
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, id);
 count += 4;             // Save id
-memcpy (&gameData.multigame.msg.buf [count], desc, 20); 
+memcpy (&gameData.multigame.msg.buf [count], desc, 20);
 count += 20;
 MultiSendData (gameData.multigame.msg.buf, count, 2);
 }
@@ -2586,9 +2584,9 @@ void MultiSendRestoreGame (ubyte slot, uint id)
 {
 	int count = 0;
 
-gameData.multigame.msg.buf [count++] = MULTI_RESTORE_GAME;   
-gameData.multigame.msg.buf [count++] = slot;                                                 
-PUT_INTEL_INT (gameData.multigame.msg.buf + count, id);         
+gameData.multigame.msg.buf [count++] = MULTI_RESTORE_GAME;
+gameData.multigame.msg.buf [count++] = slot;
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, id);
 count += 4;             // Save id
 MultiSendData (gameData.multigame.msg.buf, count, 2);
 }
@@ -2599,9 +2597,9 @@ void MultiSendNetPlayerStatsRequest (ubyte player_num)
 {
 	int count = 0;
 
-gameData.multigame.msg.buf [count] = MULTI_REQ_PLAYER;     
+gameData.multigame.msg.buf [count] = MULTI_REQ_PLAYER;
 count += 1;
-gameData.multigame.msg.buf [count] = player_num;                   
+gameData.multigame.msg.buf [count] = player_num;
 count += 1;
 MultiSendData (gameData.multigame.msg.buf, count, 0);
 }
@@ -2614,17 +2612,17 @@ void MultiSendTrigger (int nTrigger, int nObject)
 
 	int count = 1;
 
-gameData.multigame.msg.buf [count] = gameData.multiplayer.nLocalPlayer;                                   
+gameData.multigame.msg.buf [count] = gameData.multiplayer.nLocalPlayer;
 count += 1;
-gameData.multigame.msg.buf [count] = (ubyte)nTrigger;            
+gameData.multigame.msg.buf [count] = (ubyte)nTrigger;
 count += 1;
 if (gameStates.multi.nGameType == UDP_GAME) {
-	gameData.multigame.msg.buf [0] = MULTI_TRIGGER_EXT;                                
+	gameData.multigame.msg.buf [0] = MULTI_TRIGGER_EXT;
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
 	count += 2;
 	}
 else
-	gameData.multigame.msg.buf [0] = MULTI_TRIGGER;                                
+	gameData.multigame.msg.buf [0] = MULTI_TRIGGER;
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 //MultiSendData (gameData.multigame.msg.buf, count, 1); // twice?
 }
@@ -2637,11 +2635,11 @@ void MultiSendObjTrigger (int nTrigger)
 
 	int count = 0;
 
-gameData.multigame.msg.buf [count] = MULTI_OBJ_TRIGGER;                                
+gameData.multigame.msg.buf [count] = MULTI_OBJ_TRIGGER;
 count += 1;
-gameData.multigame.msg.buf [count] = gameData.multiplayer.nLocalPlayer;                                   
+gameData.multigame.msg.buf [count] = gameData.multiplayer.nLocalPlayer;
 count += 1;
-gameData.multigame.msg.buf [count] = (ubyte)nTrigger;            
+gameData.multigame.msg.buf [count] = (ubyte)nTrigger;
 count += 1;
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 //MultiSendData (gameData.multigame.msg.buf, count, 1); // twice?
@@ -2656,11 +2654,11 @@ void MultiSendHostageDoorStatus (int wallnum)
 	int count = 0;
 
 Assert (gameData.walls.walls [wallnum].nType == WALL_BLASTABLE);
-gameData.multigame.msg.buf [count] = MULTI_HOSTAGE_DOOR;           
+gameData.multigame.msg.buf [count] = MULTI_HOSTAGE_DOOR;
 count += 1;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);           
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);
 count += 2;
-PUT_INTEL_INT (gameData.multigame.msg.buf + count, gameData.walls.walls [wallnum].hps);  
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, gameData.walls.walls [wallnum].hps);
 count += 4;
 MultiSendData (gameData.multigame.msg.buf, count, 0);
 }
@@ -2674,7 +2672,7 @@ void MultiPrepLevel (void)
 
 	// gameData.multiplayer.nLocalPlayer MUST be set before calling this procedure.
 
-	// This function must be called before checksuming the Object array, 
+	// This function must be called before checksuming the Object array,
 	// since the resulting checksum with depend on the value of gameData.multiplayer.nLocalPlayer
 	// at the time this is called.
 
@@ -2716,9 +2714,9 @@ invCount = 0;
 cloakCount = 0;
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	if ((objP->nType == OBJ_HOSTAGE) && !(gameData.app.nGameMode & GM_MULTI_COOP)) {
-		nObject = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, objP->nSegment, 
-									   &objP->position.vPos, &vmdIdentityMatrix, 
-									   gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size, 
+		nObject = tObject::Create(OBJ_POWERUP, POW_SHIELD_BOOST, -1, objP->nSegment,
+									   objP->position.vPos, vmsMatrix::IDENTITY,
+									   gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size,
 									   CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 		ReleaseObject ((short) i);
 		if (nObject != -1) {
@@ -2728,7 +2726,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 			objP->rType.vClipInfo.nCurFrame = 0;
 			objP->mType.physInfo.drag = 512;     //1024;
 			objP->mType.physInfo.mass = F1_0;
-			VmVecZero (&objP->mType.physInfo.velocity);
+			objP->mType.physInfo.velocity.setZero();
 			}
 		continue;
 		}
@@ -2757,7 +2755,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 				objP->id = POW_SHIELD_BOOST;
 				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
 				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-				} 
+				}
 			else
 				invCount++;
 			}
@@ -2766,7 +2764,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 				objP->id = POW_SHIELD_BOOST;
 				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
 				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-				} 
+				}
 			else
 				cloakCount++;
 			}
@@ -2825,7 +2823,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 			BashToShield (i, "Converter");
 		if (objP->id == POW_AMMORACK && ng && !netGame.DoAmmoRack)
 			BashToShield (i, "Ammo rack");
-		if (objP->id == POW_HEADLIGHT && ng && 
+		if (objP->id == POW_HEADLIGHT && ng &&
 			 (!netGame.DoHeadlight || (EGI_FLAG (bDarkness, 0, 0, 0) && !EGI_FLAG (headlight.bAvailable, 0, 1, 0))))
 			BashToShield (i, "Headlight");
 		if (objP->id == POW_LASER && ng && !netGame.DoLaserUpgrade)
@@ -2887,7 +2885,7 @@ if (nTexture >- 1)
 	for (j = 0; j < 6; j++) {
 		if (bForce || (segP->sides [j].nBaseTex == nOldTexture)) {
 			segP->sides [j].nBaseTex = nTexture;
-			if ((extraGameInfo [1].entropy.nOverrideTextures == 1) && 
+			if ((extraGameInfo [1].entropy.nOverrideTextures == 1) &&
 				 (segP->sides [j].nOvlTex > 0) && (nTexture2 > 0))
 				segP->sides [j].nOvlTex = nTexture2;
 			if ((extraGameInfo [1].entropy.nOverrideTextures == 1) && bFullBright)
@@ -2919,38 +2917,38 @@ void ChangeSegmentTexture (int nSegment, int oldOwner)
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2))
 	return;
 switch (seg2P->special) {
-	case SEGMENT_IS_GOAL_BLUE:	
+	case SEGMENT_IS_GOAL_BLUE:
 		Goal_blue_segnum = nSegment;
 		OverrideTextures (segP, (short) ((gameData.app.nGameMode & GM_HOARD) ? TMI_GOAL_HOARD : TMI_GOAL_BLUE), -1, -1, bFullBright, 1);
 		break;
-	
+
 	case SEGMENT_IS_GOAL_RED:
 		Goal_red_segnum = nSegment;
 		// Make both textures the same if Hoard mode
 		OverrideTextures (segP, (short) ((gameData.app.nGameMode & GM_HOARD) ? TMI_GOAL_HOARD : TMI_GOAL_RED), -1, -1, bFullBright, 1);
 		break;
-	
+
 	case SEGMENT_IS_ROBOTMAKER:
 		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [(int) xSegP->owner], 
+			OverrideTextures (segP, texOverrides [(int) xSegP->owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 316, bFullBright, oldOwner < 0);
 		break;
 
 	case SEGMENT_IS_REPAIRCEN:
 		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [(int) xSegP->owner], 
+			OverrideTextures (segP, texOverrides [(int) xSegP->owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 315, bFullBright, oldOwner < 0);
 		break;
 
 	case SEGMENT_IS_FUELCEN:
 		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [(int) xSegP->owner], 
+			OverrideTextures (segP, texOverrides [(int) xSegP->owner],
 								   (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 314, bFullBright, oldOwner < 0);
 		break;
 
 	default:
 		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [(int) xSegP->owner], 
+			OverrideTextures (segP, texOverrides [(int) xSegP->owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), -1, bFullBright, oldOwner < 0);
 	}
 }
@@ -3004,8 +3002,8 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		nnp++;
 	else if ((nType == OBJ_ROBOT) && (gameData.app.nGameMode & GM_MULTI_ROBOTS))
 		;
-	else if ((nType != OBJ_NONE) && (nType != OBJ_PLAYER) && (nType != OBJ_POWERUP) && 
-				(nType != OBJ_MONSTERBALL) && (nType != OBJ_EXPLOSION) && (nType != OBJ_REACTOR) && 
+	else if ((nType != OBJ_NONE) && (nType != OBJ_PLAYER) && (nType != OBJ_POWERUP) &&
+				(nType != OBJ_MONSTERBALL) && (nType != OBJ_EXPLOSION) && (nType != OBJ_REACTOR) &&
 				(nType != OBJ_HOSTAGE) && ((nType != OBJ_WEAPON) || (objP->id != SMALLMINE_ID))) {
 		// Before deleting tObject, if it's a robot, drop it's special powerup, if any
 		if (nType == OBJ_ROBOT)
@@ -3022,8 +3020,8 @@ return nnp;
 void ChangePlayerNumTo (int nLocalPlayer)
 {
 if ((gameData.multiplayer.nLocalPlayer > -1) && (gameData.multiplayer.nLocalPlayer != nLocalPlayer))
-	memcpy (gameData.multiplayer.players [nLocalPlayer].callsign, 
-			  LOCALPLAYER.callsign, 
+	memcpy (gameData.multiplayer.players [nLocalPlayer].callsign,
+			  LOCALPLAYER.callsign,
 			  CALLSIGN_LEN+1);
 gameData.multiplayer.nLocalPlayer = nLocalPlayer;
 }
@@ -3065,7 +3063,7 @@ game_id = TimerGetFixedSeconds ();
 game_id ^= gameData.multiplayer.nPlayers<<4;
 for (i = 0; i<gameData.multiplayer.nPlayers; i++)
 	game_id ^= *(uint *) gameData.multiplayer.players [i].callsign;
-if (game_id == 0) 
+if (game_id == 0)
 	game_id = 1; // 0 is invalid
 MultiSendSaveGame (slot, game_id, desc);
 MultiDoFrame ();
@@ -3238,11 +3236,11 @@ if (objP->id == POW_OMEGA && ammoCount == F1_0)
 Assert (ammoCount < F1_0); //make sure fits in short
 gameData.multigame.msg.buf [count++] = (char)MULTI_DROP_WEAPON;
 gameData.multigame.msg.buf [count++] = (char)objP->id;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.multiplayer.nLocalPlayer); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.multiplayer.nLocalPlayer);
 count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
 count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, ammoCount); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, ammoCount);
 count += 2;
 PUT_INTEL_INT (gameData.multigame.msg.buf + count, seed);
 MapObjnumLocalToLocal (nObject);
@@ -3296,7 +3294,7 @@ count += sizeof (tShortPos);
 CreateShortPos (&sp, miss, 1);
 memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *) (sp.bytemat), 9);
 count += 9;
-memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *)& (sp.xo), 14);
+memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *)& (sx()o), 14);
 count += 14;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 0);
@@ -3325,7 +3323,7 @@ else if (++fun >= 50)
 		ReleaseGuidedMissile (nPlayer);
 		return;
 		}
-	if ((gmObjP < OBJECTS) || 
+	if ((gmObjP < OBJECTS) ||
 		 (gmObjP - OBJECTS > gameData.objs.nLastObject [0])) {
 		Int3 ();  // Get Jason immediately!
 		return;
@@ -3334,7 +3332,7 @@ else if (++fun >= 50)
 ExtractShortPos (gmObjP, (tShortPos *) (buf + count), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + count), 9);
-memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + count + 9), 14);
+memcpy ((ubyte *)& (sx()o), (ubyte *) (buf + count + 9), 14);
 ExtractShortPos (gmObjP, &sp, 1);
 #endif
 count += sizeof (tShortPos);
@@ -3370,7 +3368,7 @@ void MultiSendWallStatus (int wallnum, ubyte nType, ubyte flags, ubyte state)
 	int count = 0;
 
 gameData.multigame.msg.buf [count++] = MULTI_WALL_STATUS;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);   
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);
 count += 2;
 gameData.multigame.msg.buf [count++] = nType;
 gameData.multigame.msg.buf [count++] = flags;
@@ -3387,8 +3385,8 @@ void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ubyte f
 	short count = 0;
 
 Assert (gameData.app.nGameMode & GM_NETWORK);
-gameData.multigame.msg.buf [count++] = MULTI_WALL_STATUS;        
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);  
+gameData.multigame.msg.buf [count++] = MULTI_WALL_STATUS;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);
 count += 2;
 gameData.multigame.msg.buf [count++] = nType;
 gameData.multigame.msg.buf [count++] = flags;
@@ -3413,9 +3411,9 @@ Assert (wallnum >= 0);
 gameData.walls.walls [wallnum].nType = nType;
 gameData.walls.walls [wallnum].flags = flag;
 gameData.walls.walls [wallnum].state = state;
-if (gameData.walls.walls [wallnum].nType == WALL_OPEN) 
+if (gameData.walls.walls [wallnum].nType == WALL_OPEN)
 	DigiKillSoundLinkedToSegment (
-		 (short) gameData.walls.walls [wallnum].nSegment, (short) 
+		 (short) gameData.walls.walls [wallnum].nSegment, (short)
 		 gameData.walls.walls [wallnum].nSide, SOUND_FORCEFIELD_HUM);
 }
 
@@ -3524,7 +3522,7 @@ gameData.reactor.bDestroyed = 1;
 gameData.reactor.countdown.nTimer = -1;
 #endif
 #else
-if (gameData.reactor.bDestroyed) 
+if (gameData.reactor.bDestroyed)
 	StopEndLevelSequence ();
 else {
 	gameData.reactor.bDestroyed = 1;
@@ -3561,8 +3559,8 @@ NetDestroyReactor (objP);
 void MultiSendSeismic (fix start, fix end)
 {
 gameData.multigame.msg.buf [0] = MULTI_SEISMIC;
-PUT_INTEL_INT (gameData.multigame.msg.buf + 1, start); 
-PUT_INTEL_INT (gameData.multigame.msg.buf + 1 + sizeof (fix), end); 
+PUT_INTEL_INT (gameData.multigame.msg.buf + 1, start);
+PUT_INTEL_INT (gameData.multigame.msg.buf + 1 + sizeof (fix), end);
 MultiSendData (gameData.multigame.msg.buf, 1 + 2 * sizeof (fix), 1);
 }
 
@@ -3581,7 +3579,7 @@ void MultiSendLight (int nSegment, ubyte val)
 {
 int count = 1, i;
 gameData.multigame.msg.buf [0] = MULTI_LIGHT;
-PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment); 
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment);
 count += sizeof (int);
 gameData.multigame.msg.buf [count++] = val;
 for (i = 0; i < 6; i++,  count += 2)
@@ -3597,11 +3595,11 @@ void MultiSendLightSpecific (int nPlayer, int nSegment, ubyte val)
 
 Assert (gameData.app.nGameMode & GM_NETWORK);
 gameData.multigame.msg.buf [0] = MULTI_LIGHT;
-PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment); 
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment);
 count += sizeof (int);
 gameData.multigame.msg.buf [count++] = val;
 for (i = 0; i < 6; i++, count += 2)
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.segs.segments [nSegment].sides [i].nOvlTex); 
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.segs.segments [nSegment].sides [i].nOvlTex);
 NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer);
 }
 
@@ -3650,7 +3648,7 @@ void MultiDoWeapons (char *buf)
 	int	i, bufP = 1;
 	int	nPlayer = (int) buf [bufP++];
 
-gameData.multiplayer.players [nPlayer].shields  = 
+gameData.multiplayer.players [nPlayer].shields  =
 OBJECTS [gameData.multiplayer.players [nPlayer].nObject].shields = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 gameData.multiplayer.players [(int) nPlayer].primaryWeaponFlags = GET_INTEL_SHORT (buf + bufP);
@@ -3670,7 +3668,7 @@ void MultiSendWeapons (int bForce)
 
 	static int nTimeout = 0;
 
-if (gameStates.multi.nGameType == IPX_GAME) 
+if (gameStates.multi.nGameType == IPX_GAME)
 	return;
 if (bForce || (t - nTimeout > 1000)) {
 		int i, bufP = 0;
@@ -3707,29 +3705,29 @@ if (bCreate) {
 	return;
 	}
 bufP += 2;
-v.p.x = GET_INTEL_INT (buf + bufP);
+v[X] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.p.y = GET_INTEL_INT (buf + bufP);
+v[Y] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.p.z = GET_INTEL_INT (buf + bufP);
+v[Z] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 if (!gameData.hoard.monsterballP) {
-	gameData.hoard.nMonsterballSeg = FindSegByPos (&v, nSegment, 1, 0);
+	gameData.hoard.nMonsterballSeg = FindSegByPos (v, nSegment, 1, 0);
 	CreateMonsterball ();
 	gameData.hoard.monsterballP->position.vPos = v;
 	}
-v.p.x = GET_INTEL_INT (buf + bufP);
+v[X] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.p.y = GET_INTEL_INT (buf + bufP);
+v[Y] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.p.z = GET_INTEL_INT (buf + bufP);
+v[Z] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 PhysApplyForce (gameData.hoard.monsterballP, &v);
-v.p.x = GET_INTEL_INT (buf + bufP);
+v[X] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.p.y = GET_INTEL_INT (buf + bufP);
+v[Y] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.p.z = GET_INTEL_INT (buf + bufP);
+v[Z] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 PhysApplyRot (gameData.hoard.monsterballP, &v);
 }
@@ -3754,23 +3752,23 @@ if (bForce || (t - nTimeout > 1000)) {
 	gameData.multigame.msg.buf [bufP++] = (char) bCreate;
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->nSegment);
 	bufP += 2;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos.p.x);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos[X]);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos.p.y);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos[Y]);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos.p.z);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos[Z]);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.p.x);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity[X]);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.p.y);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity[Y]);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.p.z);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity[Z]);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.p.x);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel[X]);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.p.y);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel[Y]);
 	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.p.z);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel[Z]);
 	bufP += 4;
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 	}
@@ -3872,13 +3870,13 @@ void MultiSendSoundFunction (char whichfunc, char sound)
 {
 	int count = 0;
 
-gameData.multigame.msg.buf [0] = MULTI_SOUND_FUNCTION;   
+gameData.multigame.msg.buf [0] = MULTI_SOUND_FUNCTION;
 count++;
-gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;             
+gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
 count++;
-gameData.multigame.msg.buf [2] = whichfunc;              
+gameData.multigame.msg.buf [2] = whichfunc;
 count++;
-gameData.multigame.msg.buf [3] = sound; 
+gameData.multigame.msg.buf [3] = sound;
 count++;       // this would probably work on the PC as well.  Jason?
 MultiSendData (gameData.multigame.msg.buf, 4, 0);
 }
@@ -3980,7 +3978,7 @@ if (penalty) {
 			HUDInitMessage (TXT_REACH_KILLGOAL, szTeam);
 			HUDInitMessage (TXT_CTRLCEN_DEAD);
 			NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
-			}	
+			}
 		}
 #endif
 	}
@@ -4227,11 +4225,11 @@ void MultiSendDropFlag (int nObject, int seed)
 objP = &OBJECTS [nObject];
 gameData.multigame.msg.buf [count++] = (char)MULTI_DROP_FLAG;
 gameData.multigame.msg.buf [count++] = (char)objP->id;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.multiplayer.nLocalPlayer); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.multiplayer.nLocalPlayer);
 count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
 count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, objP->cType.powerupInfo.count); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, objP->cType.powerupInfo.count);
 count += 2;
 PUT_INTEL_INT (gameData.multigame.msg.buf + count, seed);
 MapObjnumLocalToLocal (nObject);
@@ -4239,7 +4237,7 @@ MapObjnumLocalToLocal (nObject);
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
 	if (gameData.app.nGameMode & GM_NETWORK)
 		gameData.multiplayer.powerupsInMine [objP->id]++;
-#endif	
+#endif
 MultiSendData (gameData.multigame.msg.buf, 12, 2);
 }
 
@@ -4268,7 +4266,7 @@ else if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 #if 0
 	if (gameData.app.nGameMode & GM_NETWORK)
 		gameData.multiplayer.powerupsInMine [powerupId]++;
-#endif	
+#endif
 	gameData.multiplayer.players [nPlayer].flags &= ~ (PLAYER_FLAGS_FLAG);
 	}
 }
@@ -4278,7 +4276,7 @@ else if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 void MultiBadRestore ()
 {
 SetFunctionMode (FMODE_MENU);
-ExecMessageBox (NULL, NULL, 1, TXT_OK, 
+ExecMessageBox (NULL, NULL, 1, TXT_OK,
 	            "A multi-save game was restored\nthat you are missing or does not\nmatch that of the others.\nYou must rejoin if you wish to\ncontinue.");
 SetFunctionMode (FMODE_GAME);
 gameData.multigame.bQuitGame = 1;
@@ -4358,135 +4356,135 @@ return 0;
 int MultiPowerupIsAllowed (int id)
 {
 switch (id) {
-	case POW_INVUL: 
+	case POW_INVUL:
 		if (!netGame.DoInvulnerability)
 			return (0);
 		break;
-	case POW_CLOAK: 
+	case POW_CLOAK:
 		if (!netGame.DoCloak)
 			return (0);
 		break;
-	case POW_AFTERBURNER: 
+	case POW_AFTERBURNER:
 		if (!netGame.DoAfterburner)
 			return (0);
 		break;
-	case POW_FUSION: 
+	case POW_FUSION:
 		if (!netGame.DoFusions)
 			return (0);
 		break;
-	case POW_PHOENIX: 
+	case POW_PHOENIX:
 		if (!netGame.DoPhoenix)
 			return (0);
 		break;
-	case POW_HELIX: 
+	case POW_HELIX:
 		if (!netGame.DoHelix)
 			return (0);
 		break;
-	case POW_MEGAMSL: 
+	case POW_MEGAMSL:
 		if (!netGame.DoMegas)
 			return (0);
 		break;
-	case POW_SMARTMSL: 
+	case POW_SMARTMSL:
 		if (!netGame.DoSmarts)
 			return (0);
 		break;
-	case POW_GAUSS: 
+	case POW_GAUSS:
 		if (!netGame.DoGauss)
 			return (0);
 		break;
-	case POW_VULCAN: 
+	case POW_VULCAN:
 		if (!netGame.DoVulcan)
 			return (0);
 		break;
-	case POW_PLASMA: 
+	case POW_PLASMA:
 		if (!netGame.DoPlasma)
 			return (0);
 		break;
-	case POW_OMEGA: 
+	case POW_OMEGA:
 		if (!netGame.DoOmega)
 			return (0);
 		break;
-	case POW_SUPERLASER: 
+	case POW_SUPERLASER:
 		if (!netGame.DoSuperLaser)
 			return (0);
 		break;
-	case POW_PROXMINE: 
+	case POW_PROXMINE:
 		if (!netGame.DoProximity)
 			return (0);
 		break;
-	case POW_VULCAN_AMMO: 
+	case POW_VULCAN_AMMO:
 		if (!(netGame.DoVulcan || netGame.DoGauss))
 			return (0);
 		break;
-	case POW_SPREADFIRE: 
+	case POW_SPREADFIRE:
 		if (!netGame.DoSpread)
 			return (0);
 		break;
-	case POW_SMARTMINE: 
+	case POW_SMARTMINE:
 		if (!netGame.DoSmartMine)
 			return (0);
 		break;
-	case POW_FLASHMSL_1: 
+	case POW_FLASHMSL_1:
 		if (!netGame.DoFlash)
 			return (0);
 		break;
-	case POW_FLASHMSL_4: 
+	case POW_FLASHMSL_4:
 		if (!netGame.DoFlash)
 			return (0);
 		break;
-	case POW_GUIDEDMSL_1: 
+	case POW_GUIDEDMSL_1:
 		if (!netGame.DoGuided)
 			return (0);
 		break;
-	case POW_GUIDEDMSL_4: 
+	case POW_GUIDEDMSL_4:
 		if (!netGame.DoGuided)
 			return (0);
 		break;
-	case POW_EARTHSHAKER: 
+	case POW_EARTHSHAKER:
 		if (!netGame.DoEarthShaker)
 			return (0);
 		break;
-	case POW_MERCURYMSL_1: 
+	case POW_MERCURYMSL_1:
 		if (!netGame.DoMercury)
 			return (0);
 		break;
-	case POW_MERCURYMSL_4: 
+	case POW_MERCURYMSL_4:
 		if (!netGame.DoMercury)
 			return (0);
 		break;
-	case POW_CONVERTER: 
+	case POW_CONVERTER:
 		if (!netGame.DoConverter)
 			return (0);
 		break;
-	case POW_AMMORACK: 
+	case POW_AMMORACK:
 		if (!netGame.DoAmmoRack)
 			return (0);
 		break;
-	case POW_HEADLIGHT: 
+	case POW_HEADLIGHT:
 		if (!netGame.DoHeadlight)
 			return (0);
 		break;
-	case POW_LASER: 
+	case POW_LASER:
 		if (!netGame.DoLaserUpgrade)
 			return (0);
 		break;
-	case POW_HOMINGMSL_1: 
+	case POW_HOMINGMSL_1:
 		if (!netGame.DoHoming)
 			return (0);
 		break;
-	case POW_HOMINGMSL_4: 
+	case POW_HOMINGMSL_4:
 		if (!netGame.DoHoming)
 			return (0);
 		break;
-	case POW_QUADLASER: 
+	case POW_QUADLASER:
 		if (!netGame.DoQuadLasers)
 			return (0);
 		break;
-	case POW_BLUEFLAG: 
+	case POW_BLUEFLAG:
 		if (!(gameData.app.nGameMode & GM_CAPTURE))
 			return (0);
 		break;
-	case POW_REDFLAG: 
+	case POW_REDFLAG:
 		if (!(gameData.app.nGameMode & GM_CAPTURE))
 			return (0);
 		break;
@@ -4609,7 +4607,7 @@ void MultiDoRanking (char *buf)
 	netPlayers.players [nPlayer].rank = rank;
 
 	if (!gameOpts->multi.bNoRankings)
-		HUDInitMessage (TXT_RANKCHANGE2, gameData.multiplayer.players [nPlayer].callsign, 
+		HUDInitMessage (TXT_RANKCHANGE2, gameData.multiplayer.players [nPlayer].callsign,
 								rankstr, pszRankStrings [(int)rank]);
 }
 
@@ -4832,83 +4830,83 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 //-----------------------------------------------------------------------------
 
 tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
-	{MultiDoPosition, 1}, 
-	{MultiDoReappear, 1}, 
-	{MultiDoFire, 1}, 
-	{MultiDoKill, 0}, 
-	{MultiDoRemObj, 1}, 
-	{MultiDoPlayerExplode, 1}, 
-	{MultiDoMsg, 1}, 
-	{MultiDoQuit, 1}, 
-	{MultiDoPlaySound, 1}, 
-	{NULL, 1}, 
-	{MultiDoDestroyReactor, 1}, 
-	{MultiDoClaimRobot, 1}, 
-	{NULL, 1}, 
-	{MultiDoCloak, 1}, 
-	{MultiDoEscape, 1}, 
-	{MultiDoDoorOpen, 1}, 
-	{MultiDoCreateExplosion, 1}, 
-	{MultiDoCtrlcenFire, 1}, 
-	{MultiDoPlayerExplode, 1}, 
-	{MultiDoCreatePowerup, 1}, 
-	{NULL, 1}, 
-	{MultiDoDeCloak, 1}, 
-	{NULL, 1}, 
-	{MultiDoRobotPosition, 1}, 
-	{MultiDoRobotExplode, 1}, 
-	{MultiDoReleaseRobot, 1}, 
-	{MultiDoRobotFire, 1}, 
-	{MultiDoScore, 1}, 
-	{MultiDoCreateRobot, 1}, 
-	{MultiDoTrigger, 1}, 
-	{MultiDoBossActions, 1}, 
-	{MultiDoCreateRobotPowerups, 1}, 
-	{MultiDoHostageDoorStatus, 1}, 
+	{MultiDoPosition, 1},
+	{MultiDoReappear, 1},
+	{MultiDoFire, 1},
+	{MultiDoKill, 0},
+	{MultiDoRemObj, 1},
+	{MultiDoPlayerExplode, 1},
+	{MultiDoMsg, 1},
+	{MultiDoQuit, 1},
+	{MultiDoPlaySound, 1},
+	{NULL, 1},
+	{MultiDoDestroyReactor, 1},
+	{MultiDoClaimRobot, 1},
+	{NULL, 1},
+	{MultiDoCloak, 1},
+	{MultiDoEscape, 1},
+	{MultiDoDoorOpen, 1},
+	{MultiDoCreateExplosion, 1},
+	{MultiDoCtrlcenFire, 1},
+	{MultiDoPlayerExplode, 1},
+	{MultiDoCreatePowerup, 1},
+	{NULL, 1},
+	{MultiDoDeCloak, 1},
+	{NULL, 1},
+	{MultiDoRobotPosition, 1},
+	{MultiDoRobotExplode, 1},
+	{MultiDoReleaseRobot, 1},
+	{MultiDoRobotFire, 1},
+	{MultiDoScore, 1},
+	{MultiDoCreateRobot, 1},
+	{MultiDoTrigger, 1},
+	{MultiDoBossActions, 1},
+	{MultiDoCreateRobotPowerups, 1},
+	{MultiDoHostageDoorStatus, 1},
 
-	{MultiDoSaveGame, 1}, 
-	{MultiDoRestoreGame, 1}, 
+	{MultiDoSaveGame, 1},
+	{MultiDoRestoreGame, 1},
 
-	{MultiDoReqPlayer, 1}, 
-	{MultiDoSendPlayer, 1}, 
-	{MultiDoDropMarker, 1}, 
-	{MultiDoDropWeapon, 1}, 
-	{MultiDoGuided, 1}, 
-	{MultiDoStolenItems, 1}, 
-	{MultiDoWallStatus, 1}, 
-	{MultiDoHeartBeat, 1}, 
-	{MultiDoKillGoalCounts, 1}, 
-	{MultiDoSeismic, 1}, 
-	{MultiDoLight, 1}, 
-	{MultiDoStartTrigger, 1}, 
-	{MultiDoFlags, 1}, 
-	{MultiDoDropBlob, 1}, 
-	{MultiDoPowerupUpdate, 1}, 
-	{MultiDoActiveDoor, 1}, 
-	{MultiDoSoundFunction, 1}, 
-	{MultiDoCaptureBonus, 1}, 
-	{MultiDoGotFlag, 1}, 
-	{MultiDoDropFlag, 1}, 
-	{MultiDoRobotControls, 1}, 
-	{MultiDoFinishGame, 1}, 
-	{MultiDoRanking, 1}, 
-	{MultiSendModemPingReturn, 1}, 
-	{MultiDoModemPingReturn, 1}, 
-	{MultiDoOrbBonus, 1}, 
-	{MultiDoGotOrb, 1}, 
-	{NULL, 1}, 
-	{MultiDoPlayByPlay, 1}, 
-	{MultiDoReturnFlagHome, 1}, 
-	{MultiDoConquerRoom, 1}, 
-	{MultiDoConquerWarning, 1}, 
-	{MultiDoStopConquerWarning, 1}, 
-	{MultiDoTeleport, 1}, 
-	{MultiDoSetTeam, 1}, 
-	{MultiDoStartTyping, 1}, 
-	{MultiDoQuitTyping, 1}, 
-	{MultiDoObjTrigger, 1}, 
-	{MultiDoShields, 1}, 
-	{MultiDoInvul, 1}, 
+	{MultiDoReqPlayer, 1},
+	{MultiDoSendPlayer, 1},
+	{MultiDoDropMarker, 1},
+	{MultiDoDropWeapon, 1},
+	{MultiDoGuided, 1},
+	{MultiDoStolenItems, 1},
+	{MultiDoWallStatus, 1},
+	{MultiDoHeartBeat, 1},
+	{MultiDoKillGoalCounts, 1},
+	{MultiDoSeismic, 1},
+	{MultiDoLight, 1},
+	{MultiDoStartTrigger, 1},
+	{MultiDoFlags, 1},
+	{MultiDoDropBlob, 1},
+	{MultiDoPowerupUpdate, 1},
+	{MultiDoActiveDoor, 1},
+	{MultiDoSoundFunction, 1},
+	{MultiDoCaptureBonus, 1},
+	{MultiDoGotFlag, 1},
+	{MultiDoDropFlag, 1},
+	{MultiDoRobotControls, 1},
+	{MultiDoFinishGame, 1},
+	{MultiDoRanking, 1},
+	{MultiSendModemPingReturn, 1},
+	{MultiDoModemPingReturn, 1},
+	{MultiDoOrbBonus, 1},
+	{MultiDoGotOrb, 1},
+	{NULL, 1},
+	{MultiDoPlayByPlay, 1},
+	{MultiDoReturnFlagHome, 1},
+	{MultiDoConquerRoom, 1},
+	{MultiDoConquerWarning, 1},
+	{MultiDoStopConquerWarning, 1},
+	{MultiDoTeleport, 1},
+	{MultiDoSetTeam, 1},
+	{MultiDoStartTyping, 1},
+	{MultiDoQuitTyping, 1},
+	{MultiDoObjTrigger, 1},
+	{MultiDoShields, 1},
+	{MultiDoInvul, 1},
 	{MultiDoDeInvul, 1},
 	{MultiDoWeapons, 1},
 	{MultiDoMonsterball, 1},
@@ -4923,7 +4921,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 
 void MultiProcessData (char *buf, int len)
 {
-	// Take an entire message (that has already been checked for validity, 
+	// Take an entire message (that has already been checked for validity,
 	// if necessary) and act on it.
 
 	ubyte nType = buf [0];
@@ -4948,311 +4946,311 @@ if (nType <= MULTI_MAX_TYPE) {
 #else //_DEBUG
 switch (nType) {
 	case MULTI_POSITION:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoPosition (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoPosition (buf);
 		break;
 	case MULTI_REAPPEAR:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoReappear (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoReappear (buf);
 		break;
 	case MULTI_FIRE:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoFire (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoFire (buf);
 		break;
 	case MULTI_KILL:
-			MultiDoKill (buf); 
+			MultiDoKill (buf);
 		break;
 	case MULTI_REMOVE_OBJECT:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoRemObj (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoRemObj (buf);
 		break;
 	case MULTI_PLAYER_DROP:
 	case MULTI_PLAYER_EXPLODE:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoPlayerExplode (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoPlayerExplode (buf);
 		break;
 	case MULTI_MESSAGE:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoMsg (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoMsg (buf);
 		break;
 	case MULTI_QUIT:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoQuit (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoQuit (buf);
 		break;
 	case MULTI_BEGIN_SYNC:
 		break;
 	case MULTI_CONTROLCEN:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoDestroyReactor (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoDestroyReactor (buf);
 		break;
 	case MULTI_POWERUP_UPDATE:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoPowerupUpdate (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoPowerupUpdate (buf);
 		break;
 	case MULTI_SOUND_FUNCTION:
-		MultiDoSoundFunction (buf); 
+		MultiDoSoundFunction (buf);
 		break;
 	case MULTI_MARKER:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoDropMarker (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoDropMarker (buf);
 		break;
 	case MULTI_DROP_WEAPON:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoDropWeapon (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoDropWeapon (buf);
 		break;
 	case MULTI_DROP_FLAG:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoDropFlag (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoDropFlag (buf);
 		break;
 	case MULTI_GUIDED:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoGuided (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoGuided (buf);
 		break;
 	case MULTI_STOLEN_ITEMS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoStolenItems (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoStolenItems (buf);
 		break;
 	case MULTI_WALL_STATUS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoWallStatus (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoWallStatus (buf);
 		break;
 	case MULTI_HEARTBEAT:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoHeartBeat (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoHeartBeat (buf);
 		break;
 	case MULTI_SEISMIC:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoSeismic (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoSeismic (buf);
 		break;
 	case MULTI_LIGHT:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoLight (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoLight (buf);
 		break;
 	case MULTI_KILLGOALS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoKillGoalCounts (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoKillGoalCounts (buf);
 		break;
 	case MULTI_ENDLEVEL_START:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoEscape (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoEscape (buf);
 		break;
 	case MULTI_END_SYNC:
 		break;
 	case MULTI_INVUL:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoInvul (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoInvul (buf);
 		break;
 	case MULTI_DEINVUL:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoDeInvul (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoDeInvul (buf);
 		break;
 	case MULTI_CLOAK:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoCloak (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoCloak (buf);
 		break;
 	case MULTI_DECLOAK:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoDeCloak (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoDeCloak (buf);
 		break;
 	case MULTI_DOOR_OPEN:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoDoorOpen (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoDoorOpen (buf);
 		break;
 	case MULTI_CREATE_EXPLOSION:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoCreateExplosion (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoCreateExplosion (buf);
 		break;
 	case MULTI_CONTROLCEN_FIRE:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoCtrlcenFire (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoCtrlcenFire (buf);
 		break;
 	case MULTI_CREATE_POWERUP:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoCreatePowerup (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoCreatePowerup (buf);
 		break;
 	case MULTI_PLAY_SOUND:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoPlaySound (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoPlaySound (buf);
 		break;
 	case MULTI_CAPTURE_BONUS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoCaptureBonus (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoCaptureBonus (buf);
 		break;
 	case MULTI_ORB_BONUS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoOrbBonus (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoOrbBonus (buf);
 		break;
 	case MULTI_GOT_FLAG:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoGotFlag (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoGotFlag (buf);
 		break;
 	case MULTI_GOT_ORB:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoGotOrb (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoGotOrb (buf);
 		break;
 	case MULTI_PLAY_BY_PLAY:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoPlayByPlay (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoPlayByPlay (buf);
 		break;
 	case MULTI_RANK:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoRanking (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoRanking (buf);
 		break;
 	case MULTI_MODEM_PING:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiSendModemPingReturn (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiSendModemPingReturn (buf);
 		break;
 	case MULTI_MODEM_PING_RETURN:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoModemPingReturn (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoModemPingReturn (buf);
 		break;
 	case MULTI_FINISH_GAME:
-		MultiDoFinishGame (buf); 
+		MultiDoFinishGame (buf);
 		break;  // do this one regardless of endsequence
 	case MULTI_ROBOT_CONTROLS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoRobotControls (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoRobotControls (buf);
 		break;
 	case MULTI_ROBOT_CLAIM:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoClaimRobot (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoClaimRobot (buf);
 		break;
 	case MULTI_ROBOT_POSITION:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoRobotPosition (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoRobotPosition (buf);
 		break;
 	case MULTI_ROBOT_EXPLODE:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoRobotExplode (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoRobotExplode (buf);
 		break;
 	case MULTI_ROBOT_RELEASE:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoReleaseRobot (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoReleaseRobot (buf);
 		break;
 	case MULTI_ROBOT_FIRE:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoRobotFire (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoRobotFire (buf);
 		break;
 	case MULTI_SCORE:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoScore (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoScore (buf);
 		break;
 	case MULTI_CREATE_ROBOT:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoCreateRobot (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoCreateRobot (buf);
 		break;
 	case MULTI_TRIGGER:
 	case MULTI_TRIGGER_EXT:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoTrigger (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoTrigger (buf);
 		break;
 	case MULTI_OBJ_TRIGGER:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoObjTrigger (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoObjTrigger (buf);
 		break;
 	case MULTI_START_TRIGGER:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoStartTrigger (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoStartTrigger (buf);
 		break;
 	case MULTI_FLAGS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoFlags (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoFlags (buf);
 		break;
 	case MULTI_WEAPONS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoWeapons (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoWeapons (buf);
 		break;
 	case MULTI_MONSTERBALL:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoMonsterball (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoMonsterball (buf);
 		break;
 	case MULTI_DROP_BLOB:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoDropBlob (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoDropBlob (buf);
 		break;
 	case MULTI_ACTIVE_DOOR:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoActiveDoor (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoActiveDoor (buf);
 		break;
 	case MULTI_BOSS_ACTIONS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoBossActions (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoBossActions (buf);
 		break;
 	case MULTI_CREATE_ROBOT_POWERUPS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoCreateRobotPowerups (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoCreateRobotPowerups (buf);
 		break;
 	case MULTI_HOSTAGE_DOOR:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoHostageDoorStatus (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoHostageDoorStatus (buf);
 		break;
 	case MULTI_SAVE_GAME:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoSaveGame (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoSaveGame (buf);
 		break;
 	case MULTI_RESTORE_GAME:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoRestoreGame (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoRestoreGame (buf);
 		break;
 	case MULTI_REQ_PLAYER:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoReqPlayer (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoReqPlayer (buf);
 		break;
 	case MULTI_SEND_PLAYER:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoSendPlayer (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoSendPlayer (buf);
 		break;
 	case MULTI_RETURN_FLAG:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoReturnFlagHome (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoReturnFlagHome (buf);
 		break;
 	case MULTI_CONQUER_ROOM:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoConquerRoom (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoConquerRoom (buf);
 		break;
 	case MULTI_CONQUER_WARNING:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoConquerWarning (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoConquerWarning (buf);
 		break;
 	case MULTI_STOP_CONQUER_WARNING:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoStopConquerWarning (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoStopConquerWarning (buf);
 		break;
 	case MULTI_TELEPORT:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoTeleport (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoTeleport (buf);
 		break;
 	case MULTI_SET_TEAM:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoSetTeam (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoSetTeam (buf);
 		break;
 	case MULTI_START_TYPING:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoStartTyping (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoStartTyping (buf);
 		break;
 	case MULTI_QUIT_TYPING:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoQuitTyping (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoQuitTyping (buf);
 		break;
 	case MULTI_PLAYER_SHIELDS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoShields (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoShields (buf);
 		break;
 	case MULTI_CHEATING:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoCheating (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoCheating (buf);
 		break;
 	case MULTI_SYNC_KILLS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoSyncKills (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoSyncKills (buf);
 		break;
 	case MULTI_COUNTDOWN:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoCountdown (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoCountdown (buf);
 		break;
 	case MULTI_PLAYER_WEAPONS:
-		if (!gameStates.app.bEndLevelSequence) 
-			MultiDoPlayerWeapons (buf); 
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoPlayerWeapons (buf);
 		break;
 	default:
 		Int3 ();

@@ -1,4 +1,4 @@
-/* Maths.h library header file */
+/* Maths[HA] library header file */
 
 #ifndef _MATHS_H
 #define _MATHS_H
@@ -7,6 +7,7 @@
 #define ALT_SQRT 2
 
 #include <stdlib.h>
+#include <cmath>
 #include "pstypes.h"
 
 #define D_RAND_MAX 32767
@@ -38,8 +39,8 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 //Convert fix to double and double to fix
 #define X2F(_f) (((float) (_f)) / (float) 65536)
 #define X2D(_f) (((double) (_f)) / (double) 65536)
-#define F2FX(_f) ((_f) * 65536)
-#define F2X(_f) ((fix) F2FX(_f))
+//#define F2FX(_f) ((_f) * 65536)
+#define F2X(_f) ((fix) ((_f) * 65536))
 
 //Some handy constants
 #define f0_0	0
@@ -107,15 +108,15 @@ fixang FixACos (fix v);
 
 //given cos & sin of an angle, return that angle.
 //parms need not be normalized, that is, the ratio of the parms cos/sin must
-//equal the ratio of the actual cos & sin for the result angle, but the parms 
-//need not be the actual cos & sin.  
+//equal the ratio of the actual cos & sin for the result angle, but the parms
+//need not be the actual cos & sin.
 //NOTE: this is different from the standard C atan2, since it is left-handed.
 fixang FixAtan2 (fix cos, fix sin);
 
-//for passed value a, returns 1/sqrt(a) 
+//for passed value a, returns 1/sqrt(a)
 fix FixISqrt (fix a);
 
-#define fabsf(_f)	(float) fabs (_f)
+//#define fabsf(_f)	(float) fabs (_f)
 
 //-----------------------------------------------------------------------------
 

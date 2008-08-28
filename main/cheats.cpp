@@ -220,8 +220,8 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 				short nSegment = gameData.walls.walls [j].nSegment;
 				COMPUTE_SEGMENT_CENTER_I (&gameData.objs.console->position.vPos, nSegment);
 				RelinkObject (OBJ_IDX (gameData.objs.console), nSegment);
-				gameData.objs.console->position.mOrient.fVec = gameData.segs.segments [nSegment].sides [gameData.walls.walls [j].nSide].normals [0];
-				VmVecNegate (&gameData.objs.console->position.mOrient.fVec);
+				gameData.objs.console->position.mOrient[FVEC] = gameData.segs.segments [nSegment].sides [gameData.walls.walls [j].nSide].normals [0];
+				gameData.objs.console->position.mOrient[FVEC].neg();
 				return;
 				}
 			}
