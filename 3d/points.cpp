@@ -80,7 +80,7 @@ void G3Point2Vec (vmsVector *v,short sx,short sy)
 tempv[X] =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale[Z], viewInfo.scale[X]);
 tempv[Y] = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale[Z], viewInfo.scale[Y]);
 tempv[Z] = f1_0;
-vmsVector::normalize(tempv);
+vmsVector::Normalize(tempv);
 tempm = viewInfo.view [1].transpose();
 *v = tempm * tempv;
 }

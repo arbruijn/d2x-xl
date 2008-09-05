@@ -56,7 +56,7 @@ else
 
 //------------------------------------------------------------------------------
 //returns true if a plane is facing the viewer. takes the unrotated surface
-//normal of the plane, and a point on it.  The normal need not be normalized
+//Normal of the plane, and a point on it.  The Normal need not be normalized
 int G3CheckNormalFacing(const vmsVector& pv, const vmsVector& pnorm)
 {
 vmsVector v = viewInfo.pos - pv;
@@ -67,22 +67,22 @@ return (vmsVector::dot(v, pnorm) > 0);
 
 int DoFacingCheck (vmsVector *norm, g3sPoint **vertlist, vmsVector *p)
 {
-if (norm) {		//have normal
+if (norm) {		//have Normal
 	Assert (norm->p.x || norm->p.y || norm->p.z);
 	return G3CheckNormalFacing (*p, *norm);
 	}
-else {	//normal not specified, so must compute
+else {	//Normal not specified, so must compute
 	vmsVector vTemp;
-	//get three points (rotated) and compute normal
-	vTemp = vmsVector::perp(vertlist [0]->p3_vec, vertlist [1]->p3_vec, vertlist [2]->p3_vec);
+	//get three points (rotated) and compute Normal
+	vTemp = vmsVector::Perp(vertlist [0]->p3_vec, vertlist [1]->p3_vec, vertlist [2]->p3_vec);
 	return (vmsVector::dot(vTemp, vertlist [1]->p3_vec) < 0);
 	}
 }
 
 //------------------------------------------------------------------------------
-//like G3DrawPoly (), but checks to see if facing.  If surface normal is
+//like G3DrawPoly (), but checks to see if facing.  If surface Normal is
 //NULL, this routine must compute it, which will be slow.  It is better to
-//pre-compute the normal, and pass it to this function.  When the normal
+//pre-compute the Normal, and pass it to this function.  When the Normal
 //is passed, this function works like G3CheckNormalFacing () plus
 //G3DrawPoly ().
 //returns -1 if not facing, 1 if off screen, 0 if drew

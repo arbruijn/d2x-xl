@@ -152,10 +152,10 @@ vOffs = viewInfo.pos - vPos;
 	for (i = 0; i < 2; i++) {
 		mRot = mTrans * viewInfo.view[i];
 		viewInfo.view [i] = mRot;
-		viewInfo.viewf[i] = viewInfo.view[i].toFloat();
+		viewInfo.viewf[i] = viewInfo.view[i].ToFloat();
 		}
 
-viewInfo.posf = viewInfo.pos.toFloat();
+viewInfo.posf = viewInfo.pos.ToFloat();
 }
 
 //------------------------------------------------------------------------------

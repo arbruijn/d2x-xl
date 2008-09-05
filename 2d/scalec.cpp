@@ -162,7 +162,7 @@ void rls_stretch_scanline_setup( int XDelta, int YDelta )
       }
      /* If there're an odd number of pixels per run, we have 1 pixel that can't
      be allocated to either the initial or last partial run, so we'll add 0.5
-     to error term so this pixel will be handled by the normal full-run loop */
+     to error term so this pixel will be handled by the Normal full-run loop */
       if ((scale_whole_step & 0x01) != 0)
       {
          scale_error_term += YDelta;

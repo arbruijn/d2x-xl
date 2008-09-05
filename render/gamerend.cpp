@@ -749,7 +749,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 				gameStates.render.nRenderingType = 3+ (w<<4);
 				DoCockpitWindowView (w, gameData.objs.console, 0, WBU_REAR, "FRONT");
 				}
-			else {					//show normal rear view
+			else {					//show Normal rear view
 				gameStates.render.nRenderingType = 3+ (w<<4);
 				DoCockpitWindowView (w, gameData.objs.console, 1, WBU_REAR, "REAR");
 				}

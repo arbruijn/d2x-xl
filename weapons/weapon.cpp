@@ -522,7 +522,7 @@ else {
 	}
 
 if ((nCurrent == nWeapon) || (nCurrent == nWeapon + SUPER_WEAPON)) {
-	//already have this selected, so toggle to other of normal/super version
+	//already have this selected, so toggle to other of Normal/super version
 	if (!bSecondary && (nCurrent == SUPER_LASER_INDEX))
 		return;
 	nWeapon %= SUPER_WEAPON;
@@ -843,7 +843,7 @@ if (AllowedToFireMissile (-1, 1)) {
 	gameData.missiles.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].fireSecondaryState || Controls [0].fireSecondaryDownCount);
 	}
 if (gameData.missiles.nGlobalFiringCount) {
-	DoMissileFiring (1);			//always enable autoselect for normal missile firing
+	DoMissileFiring (1);			//always enable autoselect for Normal missile firing
 	gameData.missiles.nGlobalFiringCount--;
 	}
 if (Controls [0].cyclePrimaryCount) {

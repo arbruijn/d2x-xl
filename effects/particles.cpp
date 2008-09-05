@@ -469,7 +469,7 @@ if (pDir) {
 	a[HA] = randN (F1_0 / 4) - F1_0 / 8;
 	m = vmsMatrix::Create(a);
 	vDrift = m * (*pDir);
-	vmsVector::normalize(vDrift);
+	vmsVector::Normalize(vDrift);
 	d = (float) vmsVector::deltaAngle(vDrift, *pDir, NULL);
 	if (d) {
 		d = (float) exp ((F1_0 / 8) / d);
@@ -605,16 +605,16 @@ for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
 		else {
 			nVert = min(vlP [0], vlP [2]);
 			if (vlP [4] < vlP [1])
-				nDist = gameData.segs.vertices[vlP[4]].distToPlane(sideP->normals[0], gameData.segs.vertices[nVert]);
+				nDist = gameData.segs.vertices[vlP[4]].DistToPlane(sideP->normals[0], gameData.segs.vertices[nVert]);
 			else
-				nDist = gameData.segs.vertices[vlP[1]].distToPlane(sideP->normals[1], gameData.segs.vertices[nVert]);
+				nDist = gameData.segs.vertices[vlP[1]].DistToPlane(sideP->normals[1], gameData.segs.vertices[nVert]);
 			bSidePokesOut [nSide] = (nDist > PLANE_DIST_TOLERANCE);
 			}
 		}
 	else
 		nVert = (nFaces [nSide] == 1) ? vlP [0] : min(vlP [0], vlP [2]);
 	for (nFace = nInFront = 0; nFace < nFaces [nSide]; nFace++) {
-		nDist = pos.distToPlane(sideP->normals[nFace], gameData.segs.vertices[nVert]);
+		nDist = pos.DistToPlane(sideP->normals[nFace], gameData.segs.vertices[nVert]);
 		if (nDist > -PLANE_DIST_TOLERANCE)
 			nInFront++;
 		else
@@ -665,8 +665,8 @@ else {
 		pParticle->pos = pos + drift * t;
 		if (pParticle->bHaveDir) {
 			vmsVector vi = drift, vj = pParticle->dir;
-			vmsVector::normalize(vi);
-			vmsVector::normalize(vj);
+			vmsVector::Normalize(vi);
+			vmsVector::Normalize(vj);
 //				if (vmsVector::dot(drift, pParticle->dir) < 0)
 			if (vmsVector::dot(vi, vj) < 0)
 				drag = -drag;
@@ -1359,8 +1359,8 @@ else
 			if (h <= 0)
 				goto funcExit;
 			if (c.bHavePrevPos && (fDist > 0)) {
-				vPosf = c.prevPos.toFloat();
-				vDeltaf = vDelta.toFloat();
+				vPosf = c.prevPos.ToFloat();
+				vDeltaf = vDelta.ToFloat();
 				vDeltaf[X] /= (float) h;
 				vDeltaf[Y] /= (float) h;
 				vDeltaf[Z] /= (float) h;
@@ -1369,8 +1369,8 @@ else
 				goto funcExit;
 			else {
 #if 1
-				vPosf = c.prevPos.toFloat();
-				vDeltaf = vDelta.toFloat();
+				vPosf = c.prevPos.ToFloat();
+				vDeltaf = vDelta.ToFloat();
 				vDeltaf[X] /= (float) h;
 				vDeltaf[Y] /= (float) h;
 				vDeltaf[Z] /= (float) h;
@@ -1385,7 +1385,7 @@ else
 			c.nParts += h;
 			for (; h; h--, j = (j + 1) % c.nPartLimit) {
 				vPosf += vDeltaf;
-				vPos = vPosf.toFix();
+				vPos = vPosf.ToFix();
 /*
 				vPos[Y] = (fix) (vPosf[Y] * 65536.0f);
 				vPos[Z] = (fix) (vPosf[Z] * 65536.0f);

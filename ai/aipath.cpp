@@ -177,21 +177,21 @@ for (i = 1, --j; i < j; i++) {
 
 	if (i == 1) {
 		a = ptSegs [i].point - ptSegs [i-1].point;
-		vmsVector::normalize(a);
+		vmsVector::Normalize(a);
 		}
 	else
 		a = b;
 	b = ptSegs [i+1].point - ptSegs [i].point;
 	c = ptSegs [i+1].point - ptSegs [i-1].point;
 	//	I don't think we can use quick version here and this is _very_ rarely called. --MK, 07/03/95
-	vmsVector::normalize(b);
+	vmsVector::Normalize(b);
 	if (abs (vmsVector::dot(a, b)) > 3*F1_0/4) {
 		if (abs (a[Z]) < F1_0/2) {
 			if (bRandom) {
 				e[X] = (d_rand ()- 16384) / 2;
 				e[Y] = (d_rand ()- 16384) / 2;
 				e[Z] = abs (e[X]) + abs (e[Y]) + 1;
-				vmsVector::normalize(e);
+				vmsVector::Normalize(e);
 				}
 			else {
 				e[X] =
@@ -204,7 +204,7 @@ for (i = 1, --j; i < j; i++) {
 				e[Y] = (d_rand ()-16384)/2;
 				e[Z] = (d_rand ()-16384)/2;
 				e[X] = abs (e[Y]) + abs (e[Z]) + 1;
-				vmsVector::normalize(e);
+				vmsVector::Normalize(e);
 				}
 			else {
 				e[X] = F1_0;
@@ -216,7 +216,7 @@ for (i = 1, --j; i < j; i++) {
 	else {
 		d = vmsVector::cross(a, b);
 		e = vmsVector::cross(c, d);
-		vmsVector::normalize(e);
+		vmsVector::Normalize(e);
 		}
 #ifdef _DEBUG
 	if (VmVecMag (&e) < F1_0/2)
@@ -1210,11 +1210,11 @@ xMaxSpeed = robptr->xMaxSpeed [gameStates.app.nDifficultyLevel];
 if ((gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_RUN_FROM_OBJECT) || (objP->cType.aiInfo.behavior == AIB_SNIPE))
 	xMaxSpeed = xMaxSpeed*3/2;
 vNormToGoal = *vGoalPoint - vCurPos;
-vmsVector::normalize(vNormToGoal);
+vmsVector::Normalize(vNormToGoal);
 vNormCurVel = vCurVel;
-vmsVector::normalize(vNormCurVel);
+vmsVector::Normalize(vNormCurVel);
 vNormFwd = objP->position.mOrient[FVEC];
-vmsVector::normalize(vNormFwd);
+vmsVector::Normalize(vNormFwd);
 dot = vmsVector::dot(vNormToGoal, vNormFwd);
 //	If very close to facing opposite desired vector, perturb vector
 if (dot < -15*F1_0/16) {
@@ -1225,7 +1225,7 @@ else {
 	vNormCurVel[Y] += vNormToGoal[Y]/2;
 	vNormCurVel[Z] += vNormToGoal[Z]/2;
 	}
-vmsVector::normalize(vNormCurVel);
+vmsVector::Normalize(vNormCurVel);
 //	Set speed based on this robot nType's maximum allowed speed and how hard it is turning.
 //	How hard it is turning is based on the dot product of (vector to goal) and (current velocity vector)
 //	Note that since 3*F1_0/4 is added to dot product, it is possible for the robot to back up.
@@ -1550,13 +1550,13 @@ void player_path_set_orient_and_vel (tObject *objP, vmsVector *vGoalPoint)
 	xMaxSpeed = ROBOTINFO (objP->id).xMaxSpeed [gameStates.app.nDifficultyLevel];
 
 	VmVecSub (&vNormToGoal, vGoalPoint, &vCurPos);
-	vmsVector::normalize(vNormToGoal);
+	vmsVector::Normalize(vNormToGoal);
 
 	vNormCurVel = vCurVel;
-	vmsVector::normalize(vNormCurVel);
+	vmsVector::Normalize(vNormCurVel);
 
 	vNormFwd = objP->position.mOrient[FVEC];
-	vmsVector::normalize(vNormFwd);
+	vmsVector::Normalize(vNormFwd);
 
 	dot = vmsVector::dot(vNormToGoal, &vNormFwd);
 	if (gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
@@ -1572,7 +1572,7 @@ void player_path_set_orient_and_vel (tObject *objP, vmsVector *vGoalPoint)
 		vNormCurVel[Z] += vNormToGoal[Z]/2;
 	}
 
-	vmsVector::normalize(vNormCurVel);
+	vmsVector::Normalize(vNormCurVel);
 
 	//	Set speed based on this robot nType's maximum allowed speed and how hard it is turning.
 	//	How hard it is turning is based on the dot product of (vector to goal) and (current velocity vector)

@@ -66,7 +66,7 @@ for (i = 0; i < nGunCount; i++) {
 	vmsVector	vGun;
 
 	vGun = *vObjPos - vGunPos[i];
-	vmsVector::normalize(vGun);
+	vmsVector::Normalize(vGun);
 	dot = vmsVector::dot(vGunDir[i], vGun);
 	if (dot > xBestDot) {
 		xBestDot = dot;
@@ -307,7 +307,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 			return;
 
 		vecToPlayer = gameData.objs.console->position.vPos - objP->position.vPos;
-		xDistToPlayer = vmsVector::normalize(vecToPlayer);
+		xDistToPlayer = vmsVector::Normalize(vecToPlayer);
 		if (xDistToPlayer < F1_0 * 200) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
 			rStatP->nNextFireTime = 0;
@@ -324,7 +324,7 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 		fix			xDistToPlayer;
 
 		vecToPlayer = gameData.objs.console->position.vPos - objP->position.vPos;
-		xDistToPlayer = vmsVector::normalize(vecToPlayer);
+		xDistToPlayer = vmsVector::Normalize(vecToPlayer);
 		rStatP->xLastVisCheckTime = gameData.time.xGame;
 		if (xDistToPlayer < F1_0 * 120) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
@@ -346,11 +346,11 @@ if ((rStatP->nNextFireTime < 0) &&
 
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 			vecToGoal = gameData.ai.vBelievedPlayerPos - rStatP->vGunPos[nBestGun];
-			xDistToPlayer = vmsVector::normalize(vecToGoal);
+			xDistToPlayer = vmsVector::Normalize(vecToGoal);
 			} 
 		else {
 			vecToGoal = gameData.objs.console->position.vPos - rStatP->vGunPos [nBestGun];
-			xDistToPlayer = vmsVector::normalize(vecToGoal);
+			xDistToPlayer = vmsVector::Normalize(vecToGoal);
 			}
 		if (xDistToPlayer > F1_0 * 300) {
 			rStatP->bHit = 0;
@@ -368,7 +368,7 @@ if ((rStatP->nNextFireTime < 0) &&
 
 			vRand = vmsVector::Random();
 			vecToGoal += vRand * (F1_0/6);
-			vmsVector::normalize(vecToGoal);
+			vmsVector::Normalize(vecToGoal);
 			if (IsMultiGame)
 				MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
 			CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);

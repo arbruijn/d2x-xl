@@ -1024,7 +1024,11 @@ time_t CFDate (const char *filename, const char *folder, int bUseD1Hog)
 //	sprintf (fn, "%s/%s", folder, hogname);
 if (!CFOpen (&cf, filename, folder, "rb", bUseD1Hog))
 	return -1;
+#ifdef _WIN32
+fstat (_fileno (cf.file), &statbuf);
+#else
 fstat (fileno (cf.file), &statbuf);
+#endif
 CFClose (&cf);
 return statbuf.st_mtime;
 }

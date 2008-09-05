@@ -76,7 +76,7 @@ void CreateSegmentSparks (short nSegment)
 	fVector			vMaxf, vMax2f;
 	int				i;
 
-vMaxf = gameData.segs.extent [nSegment].vMax.toFloat();
+vMaxf = gameData.segs.extent [nSegment].vMax.ToFloat();
 vMax2f = vMaxf * 2;
 for (i = segP->nMaxSparks; i; i--, sparkP++) {
 	if (sparkP->tRender)
@@ -105,7 +105,7 @@ for (i = segP->nMaxSparks; i; i--, sparkP++) {
 				sparkP->vDir[X] = (F1_0 / 4) - d_rand ();
 				sparkP->vDir[Y] = (F1_0 / 4) - d_rand ();
 				sparkP->vDir[Z] = (F1_0 / 4) - d_rand ();
-				vmsVector::normalize(sparkP->vDir);
+				vmsVector::Normalize(sparkP->vDir);
 				sparkP->vDir *= ((F1_0 / (16 + d_rand () % 16)));
 				}
 			else

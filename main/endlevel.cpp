@@ -1000,7 +1000,7 @@ if (exitFlightDataP->firstTime || (objP->nSegment != old_player_seg)) {		//moved
 		dest_point += objP->position.mOrient[RVEC] * dist;
 		}
 	exitFlightDataP->step = dest_point - objP->position.vPos;
-	step_size = vmsVector::normalize (exitFlightDataP->step);
+	step_size = vmsVector::Normalize (exitFlightDataP->step);
 	exitFlightDataP->step *= exitFlightDataP->speed;
 	COMPUTE_SEGMENT_CENTER (&curcenter, segP);
 	COMPUTE_SEGMENT_CENTER_I (&nextcenter, segP->children [nExitSide]);
@@ -1125,7 +1125,7 @@ if (gameStates.app.bAutoRunMission)
 	strcpy (filename, szAutoMission);
 else if (nLevel<0)		//secret level
 	strcpy (filename, gameData.missions.szSecretLevelNames [-nLevel-1]);
-else					//normal level
+else					//Normal level
 	strcpy (filename, gameData.missions.szLevelNames [nLevel-1]);
 if (!ConvertExt (filename, "end"))
 	Error ("Error converting filename\n'<%s>'\nfor endlevel data\n", filename);

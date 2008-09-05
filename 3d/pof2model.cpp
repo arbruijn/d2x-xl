@@ -169,7 +169,7 @@ for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	pmv->baseColor = baseColor;
 	pmv->bTextured = bTextured;
 	pmv->nIndex = j;
-	pmv->normal = *pvn = n;
+	pmv->Normal = *pvn = n;
 	G3SetSubModelMinMax (psm, &pmv->vertex);
 	}
 pm->iFaceVert += nVerts;

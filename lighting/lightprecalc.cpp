@@ -210,7 +210,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 			if (!VERTVIS (h, nVertex))
 				continue;
 			vLightToVert = *vertP - pl->info.vPos;
-			h = vmsVector::normalize(vLightToVert) - (int) (pl->info.fRad * 6553.6f);
+			h = vmsVector::Normalize(vLightToVert) - (int) (pl->info.fRad * 6553.6f);
 			if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 				continue;
 			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
@@ -316,7 +316,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 
 //------------------------------------------------------------------------------
 // Check segment to segment visibility by calling the renderer's visibility culling routine
-// Do this for each side of the current segment, using the side normal(s) as forward vector
+// Do this for each side of the current segment, using the side Normal(s) as forward vector
 // of the viewer
 
 void ComputeSingleSegmentVisibility (short nStartSeg)

@@ -123,7 +123,7 @@ do {
 	vr[Y] = F1_0 / 4 - d_rand ();
 	vr[Z] = F1_0 / 4 - d_rand ();
 } while (!(vr[X] && vr[Y] && vr[Z]));
-vmsVector::normalize(vr);
+vmsVector::Normalize(vr);
 *vRand = vr;
 return vRand;
 }
@@ -141,7 +141,7 @@ vmsVector *DirectedRandomVector (vmsVector *vRand, vmsVector *vDir, int nMinDot,
 	vmsVector	vr, vd = *vDir, vSign;
 	int			nDot, nSign, i = 0;
 
-vmsVector::normalize(vd);
+vmsVector::Normalize(vd);
 vSign[X] = vd[X] ? vd[X] / abs(vd[X]) : 0;
 vSign[Y] = vd[Y] ? vd[Y] / abs(vd[Y]) : 0;
 vSign[Z] = vd[Z] ? vd[Z] / abs(vd[Z]) : 0;
@@ -182,7 +182,7 @@ if (pl->bRandom) {
 	else {
 		int nMinDot = F1_0 - pl->nAngle * F1_0 / 90;
 		vRefDir = pl->vRefEnd - pl->vPos;
-		vmsVector::normalize(vRefDir);
+		vmsVector::Normalize(vRefDir);
 		do {
 			VmRandomVector (&vDir);
 		}
@@ -192,7 +192,7 @@ if (pl->bRandom) {
 }
 else {
 	vDir = pl->vEnd - pl->vPos;
-	vmsVector::normalize(vDir);
+	vmsVector::Normalize(vDir);
 	}
 pl->vDir = vDir;
 if (pl->nOffset) {
@@ -210,9 +210,9 @@ else {
 		VmRandomVector(&vDelta[0]);
 	}
 	while (abs (vmsVector::dot(vDir, vDelta[0])) > 9 * F1_0 / 10);
-	vDelta[1] = vmsVector::normal(vPos, pl->vEnd, *vDelta);
+	vDelta[1] = vmsVector::Normal(vPos, pl->vEnd, *vDelta);
 	v = vPos + vDelta[1];
-	vDelta[0] = vmsVector::normal(vPos, pl->vEnd, v);
+	vDelta[0] = vmsVector::Normal(vPos, pl->vEnd, v);
 	}
 vDir *= FixDiv(pl->nLength, (pl->nNodes - 1) * F1_0);
 pl->nNodes = abs (pl->nNodes);
@@ -559,7 +559,7 @@ vmsVector *CreateLightningPathPoint (vmsVector *vOffs, vmsVector *vAttract, int 
 
 if (nDist < F1_0 / 16)
 	return VmRandomVector (vOffs);
-vmsVector::normalize(va);
+vmsVector::Normalize(va);
 if (!(va[X] && va[Y] && va[Z]))
 	i = 0;
 do {
@@ -1362,7 +1362,7 @@ void ComputePlasmaSegment (fVector *vPosf, int bScale, short nSegment, char bSta
 
 memcpy (vNormal, vNormal + 1, 2 * sizeof (fVector));
 if (bStart) {
-	vNormal[1] = fVector::normal(vPosf[0], vPosf[1], vEye);
+	vNormal[1] = fVector::Normal(vPosf[0], vPosf[1], vEye);
 	vn [0] = vNormal [1];
 	}
 else {
@@ -1377,7 +1377,7 @@ if (bEnd) {
 	vPosf[1] += vd;
 	}
 else {
-	vNormal[2] = fVector::normal(vPosf[1], vPosf[2], vEye);
+	vNormal[2] = fVector::Normal(vPosf[1], vPosf[2], vEye);
 	if (fVector::dot(vNormal[1], vNormal[2]) < 0)
 		vNormal[2].neg();
 	vn[1] = vNormal[1] + vNormal[2];
@@ -1395,7 +1395,7 @@ if (bStart) {
 	vPlasma[0] = vPosf[0] + vn[0];
 	vPlasma[1] = vPosf[0] - vn[0];
 	vd = vPosf[0] - vPosf[1];
-	fVector::normalize(vd);
+	fVector::Normalize(vd);
 	if (bScale)
 		vd = vd * 0.5f;
 	vPlasma[0] += vd;
@@ -1420,13 +1420,13 @@ void ComputePlasmaBuffer (tLightning *pl, int nDepth, int nThread)
 
 for (bScale = 0; bScale < 2; bScale++) {
 	pln = pl->pNodes;
-	vPosf[2] = (pln++)->vPos.toFloat();
+	vPosf[2] = (pln++)->vPos.ToFloat();
 	if (!gameStates.ogl.bUseTransform)
 		G3TransformPoint(vPosf[2], vPosf[2], 0);
 	for (i = pl->nNodes - 2, j = 0; j <= i; j++) {
 		TRAP (pln);
 		memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
-		vPosf[2] = (++pln)->vPos.toFloat();
+		vPosf[2] = (++pln)->vPos.ToFloat();
 		if (!gameStates.ogl.bUseTransform)
 			G3TransformPoint (vPosf[2], vPosf[2], 0);
 		TRAP (pln);
@@ -1491,7 +1491,7 @@ glLineWidth ((GLfloat) (nDepth ? 2 : 4));
 glDisable (GL_SMOOTH);
 for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++, vPosf++) {
 	TRAP (pln);
-	// Check toFloat
+	// Check ToFloat
 	*vPosf = pln->vPos.toFloat3();
 	}
 if (!gameStates.ogl.bUseTransform)
@@ -1612,7 +1612,7 @@ void RenderLightningPlasma (fVector *vPosf, tRgbaColorf *color, int bScale, int 
 
 memcpy (vNormal, vNormal + 1, 2 * sizeof (fVector));
 if (bStart) {
-	vNormal[1] = fVector::normal(vPosf[0], vPosf[1], vEye);
+	vNormal[1] = fVector::Normal(vPosf[0], vPosf[1], vEye);
 	vn [0] = vNormal [1];
 	}
 else {
@@ -1623,7 +1623,7 @@ else {
 if (bEnd)
 	vn [1] = vNormal [1];
 else {
-	vNormal[2] = fVector::normal(vPosf[1], vPosf[2], vEye);
+	vNormal[2] = fVector::Normal(vPosf[1], vPosf[2], vEye);
 	vn[1] = vNormal[1] + vNormal[2];
 	vn[1] = vn[1] * 0.5f;
 	}
@@ -1639,7 +1639,7 @@ if (bStart) {
 	vPlasma[0] = vPosf[0] + vn[0];
 	vPlasma[1] = vPosf[0] - vn[0];
 	vd = vPosf[0] - vPosf[1];
-	fVector::normalize(vd);
+	fVector::Normalize(vd);
 	if (bScale)
 		vd = vd * 0.5f;
 	vPlasma[0] += vd;
@@ -1653,7 +1653,7 @@ vPlasma[3] = vPosf[1] + vn[1];
 vPlasma[2] = vPosf[1] - vn[1];
 if (bEnd) {
 	vd = vPosf[1] - vPosf[0];
-	fVector::normalize(vd);
+	fVector::Normalize(vd);
 	if (bScale)
 		vd = vd * 0.5f;
 	vPlasma[2] += vd;
@@ -2362,20 +2362,20 @@ if (i < 0) {
 	if (pointList) {
 		vPos = pointList [0]->p3_src;
 		vEnd = pointList [1 + d_rand () % (nVertices - 1)]->p3_vec;
-		vNorm = vmsVector::normal(vPos, pointList [1]->p3_vec, vEnd);
+		vNorm = vmsVector::Normal(vPos, pointList [1]->p3_vec, vEnd);
 		vPos += vNorm * (F1_0 / 64);
 		vEnd += vNorm * (F1_0 / 64);
-		vDelta = vmsVector::normal(vNorm, vPos, vEnd);
+		vDelta = vmsVector::Normal(vNorm, vPos, vEnd);
 		h = vmsVector::dist(vPos, vEnd);
 		}
 	else {
 		memcpy (&vPosf, &pVerts->vertex, sizeof (fVector3));
 		memcpy (&vEndf, &pVerts [1 + d_rand () % (nVertices - 1)].vertex, sizeof (fVector3));
 		memcpy (&v, &pVerts [1].vertex, sizeof (fVector3));
-		vNormf = fVector::normal(vPosf, v, vEndf);
+		vNormf = fVector::Normal(vPosf, v, vEndf);
 		vPosf += vNormf * (1.0f / 64.0f);
 		vEndf += vNormf * (1.0f / 64.0f);
-		vDeltaf = fVector::normal(vNormf, vPosf, vEndf);
+		vDeltaf = fVector::Normal(vNormf, vPosf, vEndf);
 		h = F2X (fVector::dist(vPosf, vEndf));
 		vPos[X] = F2X (vPosf[X]);
 		vPos[Y] = F2X (vPosf[Y]);

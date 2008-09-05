@@ -234,7 +234,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 	int			nSegment, hitType;
 	nSegment = -1;
 	#ifdef _DEBUG
-	nSegment = FindSegByPos (vObjPos, nObjSeg, 1, 0);
+	nSegment = FindSegByPos (*vObjPos, nObjSeg, 1, 0);
 	if (nSegment == -1) {
 		Int3 ();		//	Obj_pos is not in nObjSeg!
 		return 0;		//	Done processing this tObject.
@@ -482,14 +482,14 @@ if (xObjIntensity) {
 							int			spotSize = gameData.render.vertColor.bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
 							vmsVector	vecToPoint;
 							vecToPoint = *vVertPos - *vObjPos;
-							vmsVector::normalize(vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
+							vmsVector::Normalize(vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
 							dot = vmsVector::dot(vecToPoint, objP->position.mOrient[FVEC]);
 							if (gameData.render.vertColor.bDarkness)
 								maxDot = F1_0 / spotSize;
 							else
 								maxDot = F1_0 / 2;
 							if (dot < maxDot)
-								gameData.render.lights.dynamicLight [nVertex] += FixDiv (xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
+								gameData.render.lights.dynamicLight [nVertex] += FixDiv (xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
 							else if (!IsMultiGame || (dist < maxHeadlightDist))
 								gameData.render.lights.dynamicLight [nVertex] += FixMul (FixMul (dot, dot), xOrigIntensity) / 8;//(8 * spotSize);
 							}

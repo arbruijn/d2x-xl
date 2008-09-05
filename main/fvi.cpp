@@ -57,9 +57,9 @@ int FindPointLineIntersectionf (vmsVector *pv1, vmsVector *pv2, vmsVector *pv3)
 	fVector	p1, p2, p3, d31, d21, h, v [2];
 	float		m, u;
 
-p1 = pv1->toFloat();
-p2 = pv2->toFloat();
-p3 = pv3->toFloat();
+p1 = pv1->ToFloat();
+p2 = pv2->ToFloat();
+p3 = pv3->ToFloat();
 d21 = p2 - p1;
 if (!(m = d21[X] * d21[X] + d21[Y] * d21[Y] + d21[Z] * d21[Z]))
 	return 0;
@@ -101,8 +101,8 @@ den = -vmsVector::dot(*vPlaneNorm, d);
 if (!den) {
 	fVector	nf, df;
 	float denf;
-	nf = vPlaneNorm->toFloat();
-	df = d.toFloat();
+	nf = vPlaneNorm->ToFloat();
+	df = d.ToFloat();
 	denf = -fVector::dot(nf, df);
 	denf = -fVector::dot(nf, df);
 	return 0;
@@ -277,7 +277,7 @@ typedef struct vec2d {
 	fix i, j;
 } vec2d;
 
-//given largest component of normal, return i & j
+//given largest component of Normal, return i & j
 //if largest component is negative, swap i & j
 int ijTable [3][2] = {
 	{2, 1},          //pos x biggest
@@ -307,7 +307,7 @@ uint CheckPointToFace (vmsVector *checkP, vmsVector *vertList, vmsVector *vNorma
 
 //VmVecNormal (&vNormal, vertList, vertList + 1, vertList + 2);
 //now do 2d check to see if point is in tSide
-//project polygon onto plane by finding largest component of normal
+//project polygon onto plane by finding largest component of Normal
 t[X] = labs ((*vNormal)[0]);
 t[Y] = labs ((*vNormal)[1]);
 t[Z] = labs ((*vNormal)[2]);
@@ -459,7 +459,7 @@ if (gameStates.render.bRendering)
 else
 	vNormal = gameData.segs.segments [nSegment].sides [nSide].normals [iFace];
 //now do 2d check to see if point is in tSide
-//project polygon onto plane by finding largest component of normal
+//project polygon onto plane by finding largest component of Normal
 t[X] = labs (vNormal[0]);
 t[Y] = labs (vNormal[1]);
 t[Z] = labs (vNormal[2]);
@@ -722,9 +722,9 @@ edge_vec = *edge_v1 - *edge_v0;
 //is the start point already touching the edge?
 //first, find point of closest approach of vec & edge
 //PrintLog ("      getting edge length...\n");
-edge_len = vmsVector::normalize(edge_vec);
+edge_len = vmsVector::Normalize(edge_vec);
 //PrintLog ("      getting move length...\n");
-move_len = vmsVector::normalize(move_vec);
+move_len = vmsVector::Normalize(move_vec);
 //PrintLog ("      CheckLineToLine...");
 CheckLineToLine (&edge_t, &move_t, edge_v0, &edge_vec, p0, &move_vec);
 //PrintLog ("done\n");
@@ -774,7 +774,7 @@ int CheckVectorToSphere1 (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVect
 
 d = *p1 - *p0;
 w = *vSpherePos - *p0;
-dn = d; mag_d = vmsVector::normalize(dn);
+dn = d; mag_d = vmsVector::Normalize(dn);
 if (mag_d == 0) {
 	intDist = w.mag();
 	*intP = *p0;
@@ -891,7 +891,7 @@ for (; iModel <= nModels; iModel++) {
 		if (h) {
 		h = CheckLineToFace (&hitP, p0, p1, pf->v, pf->n + 1, 4, rad);
 			v = hitP - *p0;
-			d = vmsVector::normalize(v);
+			d = vmsVector::Normalize(v);
 #if 0
 			dot = vmsVector::dot(pf->n + 1, pn);
 			if (dot > 0)
@@ -982,7 +982,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
 			vn = *p1-*p0;
-			vmsVector::normalize(vn);
+			vmsVector::Normalize(vn);
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, otherObjP->size)))
 				return 0;
 //			VmPointLineIntersection(hitP, *p0, *p1, hitP, &otherObjP->position.vPos, 1);
@@ -993,7 +993,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
 			v0 = thisObjP->position.vPos;
 			vn = otherObjP->position.vPos - v0;
-			vmsVector::normalize(vn);
+			vmsVector::Normalize(vn);
 			v1 = v0 + vn * thisObjP->size;
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, &v0, &v0, &vn, p1, otherObjP, thisObjP->size)))
 				return 0;

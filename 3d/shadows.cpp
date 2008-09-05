@@ -231,7 +231,7 @@ if (bTriangularize) {
 	vmsVector	*pv = po->pvVerts;
 	short			*pfv = pf->pVerts;
 
-	pf->vNorm = vmsVector::normal(pv[pfv [0]], pv[pfv [1]], pv[pfv [2]]);
+	pf->vNorm = vmsVector::Normal(pv[pfv [0]], pv[pfv [1]], pv[pfv [2]]);
 	}
 else
 	OOF_VecVms2Oof(&pf->vNormf, pf->vNorm);
@@ -418,7 +418,7 @@ if (bShadowData) {
 #if 0
 		if (memcmp (&pf->vCenter, po->pvVerts + *pv, sizeof (vmsVector))) //make sure we have a vertex from the face
 			pf->vCenter = po->pvVerts [*pv];
-		VmVecNormal (&n, po->pvVerts + pv [0], po->pvVerts + pv [1], po->pvVerts + pv [2]); //check the precomputed normal
+		VmVecNormal (&n, po->pvVerts + pv [0], po->pvVerts + pv [1], po->pvVerts + pv [2]); //check the precomputed Normal
 		if (memcmp (&pf->vNorm, &n, sizeof (vmsVector)))
 			pf->vNorm = n;
 #endif
@@ -463,7 +463,7 @@ else {
 	g3sNormal	*pvn;
 
 	pfv = WORDPTR (p+30);
-	nf = pn->toFloat();
+	nf = pn->ToFloat();
 	for (i = 0; i < nVerts; i++) {
 		pvn = po->pVertNorms + pfv [i];
 		pvn->vNormal += nf;
@@ -960,7 +960,7 @@ float NearestShadowedWallDist (short nObject, short nSegment, vmsVector *vPos, f
 if (0 > (nSegment = FindSegByPos (*vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
 v = *vPos - vLightPos;
-vmsVector::normalize(v);
+vmsVector::Normalize(v);
 v *= ((fix) F1_0 * (fix) G3_INFINITY);
 if (!nVisited++)
 	memset (bVisited, 0, gameData.segs.nSegments * sizeof (unsigned int));
@@ -1052,7 +1052,7 @@ if (0 > (nSegment = FindSegByPos (vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
 fq.p0				  = vPos;
 VmVecSub (&v, fq.p0, &vLightPos);
-vmsVector::normalize(v);
+vmsVector::Normalize(v);
 VmVecScale (&v, (fix) F1_0 * (fix) G3_INFINITY);
 fq.startSeg		  = nSegment;
 fq.p1				  = &v;
@@ -1475,7 +1475,7 @@ if (FAST_SHADOWS) {
 		if (!CanSeePoint (objP, &objP->position.vPos, &gameData.render.shadows.pLight->info.vPos, objP->nSegment))
 			continue;
 		vLightDir = objP->position.vPos - gameData.render.shadows.pLight->info.vPos;
-		vmsVector::normalize(vLightDir);
+		vmsVector::Normalize(vLightDir);
 		if (gameData.render.shadows.nLight) {
 			for (j = 0; j < gameData.render.shadows.nLight; j++)
 				if (abs (vmsVector::dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg

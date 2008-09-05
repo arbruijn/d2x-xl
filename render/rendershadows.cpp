@@ -360,7 +360,7 @@ for (h = 0; h <= gameData.objs.nLastObject [0] + 1; h++, objP++) {
 		if (!CanSeePoint (objP, &objP->position.vPos, &psl->info.vPos, objP->nSegment))
 			continue;
 		vLightDir = objP->position.vPos - psl->info.vPos;
-		vmsVector::normalize(vLightDir);
+		vmsVector::Normalize(vLightDir);
 		if (n) {
 			for (j = 0; j < n; j++)
 				if (abs (vmsVector::dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg

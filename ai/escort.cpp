@@ -864,7 +864,7 @@ int MaybeBuddyFireMega (short nObject)
 	int			nWeaponObj;
 
 vVecToRobot = buddyObjP->position.vPos - objP->position.vPos;
-dist = vmsVector::normalize(vVecToRobot);
+dist = vmsVector::Normalize(vVecToRobot);
 if (dist > F1_0*100)
 	return 0;
 dot = vmsVector::dot(vVecToRobot, buddyObjP->position.mOrient[FVEC]);

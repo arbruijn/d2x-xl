@@ -305,7 +305,7 @@ DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0, SOUNDCLA
 vmsVector v;
 if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
 	v = objP->vLastPos - objP->position.vPos;
-	vmsVector::normalize(v);
+	vmsVector::Normalize(v);
 //VmVecScale (&v, F1_0 * 10);
 	v += *vPos;
 	}
@@ -414,7 +414,7 @@ debrisP->mType.physInfo.velocity[X] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity[Y] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity[Z] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity *= (F1_0 * 10);
-vmsVector::normalize (debrisP->mType.physInfo.velocity);
+vmsVector::Normalize (debrisP->mType.physInfo.velocity);
 debrisP->mType.physInfo.velocity *= (I2X (10 + (30 * d_rand () / RAND_MAX)));
 debrisP->mType.physInfo.velocity += parentObjP->mType.physInfo.velocity;
 // -- used to be: Notice, not random!VmVecMake (&debrisP->mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
@@ -489,7 +489,7 @@ if (gameData.models.nDeadModels [delObjP->rType.polyObjInfo.nModel] != -1) {
 	delObjP->rType.polyObjInfo.nModel = gameData.models.nDeadModels [delObjP->rType.polyObjInfo.nModel];
 	delObjP->flags |= OF_DESTROYED;
 	}
-else {		//normal, multi-stage explosion
+else {		//Normal, multi-stage explosion
 	if (delObjP->nType == OBJ_PLAYER)
 		delObjP->renderType = RT_NONE;
 	else
@@ -774,7 +774,7 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 			size = EXPL_WALL_FIREBALL_SIZE + (2*EXPL_WALL_FIREBALL_SIZE * e / EXPL_WALL_TOTAL_FIREBALLS);
 			//fireballs start away from door, with subsequent ones getting closer
 			pos += gameData.segs.segments [nSegment].sides [nSide].normals[0] * (size* (EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
-			if (e & 3)		//3 of 4 are normal
+			if (e & 3)		//3 of 4 are Normal
 				ObjectCreateExplosion ((short) gameData.walls.explWalls [i].nSegment, &pos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
 			else
 				ObjectCreateBadassExplosion (NULL, (short) gameData.walls.explWalls [i].nSegment, &pos,

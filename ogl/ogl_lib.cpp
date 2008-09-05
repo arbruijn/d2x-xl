@@ -179,14 +179,14 @@ else
 	v [1] = pointList [1]->p3_index;
 	v [2] = pointList [2]->p3_index;
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-		vNormal = vmsVector::normal(pointList [0]->p3_vec,
+		vNormal = vmsVector::Normal(pointList [0]->p3_vec,
 						 pointList [1]->p3_vec,
 						 pointList [2]->p3_vec);
 		glNormal3f ((GLfloat) X2F (vNormal[X]), (GLfloat) X2F (vNormal[Y]), (GLfloat) X2F (vNormal[Z]));
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-		vNormal = vmsVector::normal(gameData.segs.vertices[v [0]],
+		vNormal = vmsVector::Normal(gameData.segs.vertices[v [0]],
 							gameData.segs.vertices[v [1]],
 							gameData.segs.vertices[v [2]]);
 		if (bFlip)
@@ -212,19 +212,19 @@ v [0] = pointList [0]->p3_index;
 v [1] = pointList [1]->p3_index;
 v [2] = pointList [2]->p3_index;
 if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-	vNormal = vmsVector::normal(pointList [0]->p3_vec,
+	vNormal = vmsVector::Normal(pointList [0]->p3_vec,
 					 pointList [1]->p3_vec,
 					 pointList [2]->p3_vec);
 	}
 else {
 	int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-	vNormal = vmsVector::normal(gameData.segs.vertices[v[0]],
+	vNormal = vmsVector::Normal(gameData.segs.vertices[v[0]],
 					 gameData.segs.vertices[v[1]],
 					 gameData.segs.vertices[v[2]]);
 	if (bFlip)
 		vNormal.neg();
 	}
-*pvNormal = vNormal.toFloat();
+*pvNormal = vNormal.ToFloat();
 }
 
 //------------------------------------------------------------------------------

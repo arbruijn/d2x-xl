@@ -339,7 +339,7 @@ if (nObject != -1) {
 
 		//	Now, give a big initial velocity to get moving away from boss.
 		newObjP->mType.physInfo.velocity = *pos - objP->position.vPos;
-		vmsVector::normalize(newObjP->mType.physInfo.velocity);
+		vmsVector::Normalize(newObjP->mType.physInfo.velocity);
 		newObjP->mType.physInfo.velocity *= (F1_0*128);
 		}
 	}

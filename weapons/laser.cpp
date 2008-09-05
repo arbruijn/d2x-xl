@@ -824,7 +824,7 @@ frameTime = gameStates.limitFPS.bHomers ? secs2f (gameStates.app.tick40fps.nTime
 vNewDir = *vNormVel;
 vNewDir *= ((fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
 vNewDir += objP->position.mOrient[FVEC];
-vmsVector::normalize(vNewDir);
+vmsVector::Normalize(vNewDir);
 /*
 objP->position.mOrient = vmsMatrix::Create(vNewDir, NULL, NULL);
 */
@@ -874,7 +874,7 @@ if (!((gameData.app.nFrameCount ^ objP->nSignature) & 3) &&
 	return;
 	}
 if ((objP->nType == OBJ_WEAPON) && (objP->id == FUSION_ID)) {		//always set fusion weapon to max vel
-	vmsVector::normalize(objP->mType.physInfo.velocity);
+	vmsVector::Normalize(objP->mType.physInfo.velocity);
 	objP->mType.physInfo.velocity *= (WI_speed (objP->id,gameStates.app.nDifficultyLevel));
 	}
 //	For homing missiles, turn towards target. (unless it's the guided missile)
@@ -910,9 +910,9 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 			}
 		if (nMslLock != -1) {
 			vVecToObject = OBJECTS [nMslLock].position.vPos - objP->position.vPos;
-			vmsVector::normalize(vVecToObject);
+			vmsVector::Normalize(vVecToObject);
 			vTemp = objP->mType.physInfo.velocity;
-			speed = vmsVector::normalize(vTemp);
+			speed = vmsVector::Normalize(vTemp);
 			xMaxSpeed = WI_speed (objP->id,gameStates.app.nDifficultyLevel);
 			if (speed + F1_0 < xMaxSpeed) {
 				speed += FixMul (xMaxSpeed, gameData.time.xFrame / 2);
@@ -931,7 +931,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 			//	The boss' smart children track better...
 			if (gameData.weapons.info [objP->id].renderType != WEAPON_RENDER_POLYMODEL)
 				vTemp += vVecToObject;
-			vmsVector::normalize(vTemp);
+			vmsVector::Normalize(vTemp);
 			objP->mType.physInfo.velocity = vTemp;
 			objP->mType.physInfo.velocity *= speed;
 
@@ -1125,7 +1125,7 @@ return rVal;
 // --
 // -- 	norm_dir = *vDirection;
 // --
-// -- 	vmsVector::normalize(&norm_dir);
+// -- 	vmsVector::Normalize(&norm_dir);
 // -- 	VmVecScaleAdd (&vEndPos, start_pos, &norm_dir, MAX_LIGHTNING_DISTANCE);
 // --
 // -- 	fq.p0						= start_pos;
@@ -1235,7 +1235,7 @@ gameData.laser.nOffset = (F1_0 * 2 * (d_rand () % 8)) / 8;
 LaserPlayerFire (objP, nLaser, 0, 1, 0, nLightObj);
 LaserPlayerFire (objP, nLaser, 1, 0, 0, nLightObj);
 if (nFlags & LASER_QUAD) {
-	//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt bHarmless
+	//	hideous system to make quad laser 1.5x powerful as Normal laser, make every other quad laser bolt bHarmless
 	LaserPlayerFire (objP, nLaser, 2, 0, 0, nLightObj);
 	LaserPlayerFire (objP, nLaser, 3, 0, 0, nLightObj);
 	}
@@ -1336,7 +1336,7 @@ LaserPlayerFire (objP, nSuperLevel, 0, 1, 0, nLightObj);
 LaserPlayerFire (objP, nSuperLevel, 1, 0, 0, nLightObj);
 
 if (nFlags & LASER_QUAD) {
-	//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt bHarmless
+	//	hideous system to make quad laser 1.5x powerful as Normal laser, make every other quad laser bolt bHarmless
 	LaserPlayerFire (objP, nSuperLevel, 2, 0, 0, nLightObj);
 	LaserPlayerFire (objP, nSuperLevel, 3, 0, 0, nLightObj);
 	}
@@ -1477,7 +1477,7 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objType, int bMakeSo
 		vmsVector::normalizedDir(vGoal, OBJECTS [nGoalObj].position.vPos, objP->position.vPos);
 		random_vector = vmsVector::Random();
 		vGoal += random_vector * (F1_0/4);
-		vmsVector::normalize(vGoal);
+		vmsVector::Normalize(vGoal);
 	}
 
 	//	Create a vector towards the goal, then add some noise to it.

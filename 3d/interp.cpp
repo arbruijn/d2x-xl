@@ -113,7 +113,7 @@ while (n--) {
 			norms->vNormal[Y] /= norms->nFaces;
 			norms->vNormal[Z] /= norms->nFaces;
 			norms->nFaces = 1;
-			fVector::normalize(norms->vNormal);
+			fVector::Normalize(norms->vNormal);
 			}
 		dest->p3_normal = *norms++;
 		}
@@ -523,7 +523,7 @@ for (;;) {
 			fix l;
 			vmsVector *pvn = VECPTR (p+16);
 
-			//calculate light from surface normal
+			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
 				l = -vmsVector::dot(viewInfo.view[0][FVEC], *VECPTR(p+16));
 				l = f1_0 / 4 + (l * 3) / 4;
@@ -680,7 +680,7 @@ for (;;) {
 			tUVL morph_uvls [3];
 			int i, nTris;
 			fix light;
-			//calculate light from surface normal
+			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
 				light = -vmsVector::dot(viewInfo.view [0][FVEC], *VECPTR (p+16));
 				light = f1_0/4 + (light*3)/4;

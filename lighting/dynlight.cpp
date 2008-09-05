@@ -476,7 +476,7 @@ else if (nSegment >= 0) {
 		tSide			*sideP = SEGMENTS [nSegment].sides + nSide;
 		vmsVector	vOffs;
 		vOffs = sideP->normals[0] + sideP->normals[1];
-		pl->info.vDirf = vOffs.toFloat();
+		pl->info.vDirf = vOffs.ToFloat();
 		pl->info.vDirf *= 0.5f;
 		if (gameStates.render.bPerPixelLighting) {
 			vOffs *= FixDiv(1, 4);
@@ -744,7 +744,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	if (psl->info.bSpot)
 		psl = psl;
 #endif
-	*psl->vPosf = psl->info.vPos.toFloat();
+	*psl->vPosf = psl->info.vPos.ToFloat();
 	if (gameStates.ogl.bUseTransform)
 		psl->vPosf [1] = psl->vPosf [0];
 	else {
@@ -1471,7 +1471,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	if (nVertex == nDbgVertex)
 		nVertex = nVertex;
 #endif
-	vVertex = gameData.segs.vertices[nVertex].toFloat();
+	vVertex = gameData.segs.vertices[nVertex].ToFloat();
 	ResetActiveLights (nThread, 0);
 	ResetUsedLights (0, nThread);
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 1, bColorize, nThread);

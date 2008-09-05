@@ -96,7 +96,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 		pfv = pof->pVerts;
 		h = pfv->nIndex;
 		if (nModel > 200) {
-			*((fVector *) &vNormal) = fVector::normal(
+			*((fVector *) &vNormal) = fVector::Normal(
 							  *((fVector *) (pso->pvVerts + pfv [0].nIndex)),
 							  *((fVector *) (pso->pvVerts + pfv [1].nIndex)),
 							  *((fVector *) (pso->pvVerts + pfv [2].nIndex)));
@@ -108,7 +108,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 			pmv->nIndex = h;
 			pmv->texCoord.v.u = pfv->fu;
 			pmv->texCoord.v.v = pfv->fv;
-			pmv->normal = vNormal;
+			pmv->Normal = vNormal;
 			*((fVector *) (pm->pVerts + h)) = *((fVector *) (pso->pvVerts + h)) * fScale;
 			pmv->vertex = pm->pVerts [h];
 			G3SetSubModelMinMax (psm, &pmv->vertex);

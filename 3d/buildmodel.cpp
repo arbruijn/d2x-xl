@@ -281,7 +281,7 @@ pc = pm->pVBColor;
 pmv = bSort ? pSortedVerts : pm->pFaceVerts;
 for (i = 0, j = pm->nFaceVerts; i < j; i++, pmv++) {
 	pv [i] = pmv->vertex;
-	pn [i] = pmv->normal;
+	pn [i] = pmv->Normal;
 	pc [i] = pmv->baseColor;
 	pt [i] = pmv->texCoord;
 	}
@@ -499,7 +499,7 @@ if ((vertices = (fVector3 *) D2_ALLOC (pm->nFaceVerts * sizeof (fVector3)))) {
 
 	D2_FREE (vertices);
 
-	gameData.models.offsets[nModel] = vCenter.toFix();
+	gameData.models.offsets[nModel] = vCenter.ToFix();
 	if (pm->nType >= 0) {
 		sP->nSubModels = pm->nSubModels;
 		sP->nFaces = pm->nFaces;
@@ -524,7 +524,7 @@ else {
 				}
 			}
 		}
-	gameData.models.offsets[nModel] = vCenter.toFix();
+	gameData.models.offsets[nModel] = vCenter.ToFix();
 	}
 return F2X (fRad);
 }
@@ -618,7 +618,7 @@ do {
 
 psm = pm->pSubModels;
 vOffset = psm->vMin - vOffset;
-gameData.models.offsets[nModel] = vOffset.toFix();
+gameData.models.offsets[nModel] = vOffset.ToFix();
 #ifdef _DEBUG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;

@@ -1229,7 +1229,7 @@ if (wallP->nType == WALL_DOOR) {
 		return WHP_DOOR;
 		}
 	}
-return WHP_NOT_SPECIAL;		//default is treat like normal tWall
+return WHP_NOT_SPECIAL;		//default is treat like Normal tWall
 }
 
 //-----------------------------------------------------------------

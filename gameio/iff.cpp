@@ -1197,7 +1197,7 @@ const char error_messages[] = {
 	"Cannot open file.\0"
 	"Tried to save invalid nType, like BM_RGB15.\0"
 	"Bad data in file.\0"
-	"ANIM file cannot be loaded with normal bitmap loader.\0"
+	"ANIM file cannot be loaded with Normal bitmap loader.\0"
 	"Normal bitmap file cannot be loaded with anim loader.\0"
 	"Array not big enough on anim brush read.\0"
 	"Unknown mask nType in bitmap header.\0"

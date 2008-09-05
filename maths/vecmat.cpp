@@ -84,8 +84,8 @@ const vmsMatrix vmsMatrix::CreateF(const vmsVector& fVec) {
 	vmsVector& zvec = m[FVEC];
 
 	zvec = fVec;
-	vmsVector::normalize(zvec);
-	assert(zvec.mag() != 0);
+	vmsVector::Normalize(zvec);
+	assert(zvec.Mag() != 0);
 
 	//just forward vec
 	if ((zvec[X] == 0) && (zvec[Z] == 0)) {		//forward vec is straight up or down
@@ -97,8 +97,8 @@ const vmsMatrix vmsMatrix::CreateF(const vmsVector& fVec) {
 		xvec[X] = zvec[Z];
 		xvec[Y] = 0;
 		xvec[Z] = -zvec[X];
-		vmsVector::normalize(xvec);
-		yvec = vmsVector::cross(zvec, xvec);
+		vmsVector::Normalize(xvec);
+		yvec = vmsVector::Cross(zvec, xvec);
 	}
 	return m;
 }
@@ -113,11 +113,11 @@ const vmsMatrix vmsMatrix::CreateFU(const vmsVector& fVec, const vmsVector& uVec
 	vmsVector& zvec = m[FVEC];
 
 	zvec = fVec;
-	vmsVector::normalize(zvec);
-	assert(zvec.mag() != 0);
+	vmsVector::Normalize(zvec);
+	assert(zvec.Mag() != 0);
 
 	yvec = uVec;
-	if (vmsVector::normalize(yvec) == 0) {
+	if (vmsVector::Normalize(yvec) == 0) {
 		if ((zvec[X] == 0) && (zvec[Z] == 0)) {		//forward vec is straight up or down
 			m[RVEC][X] = F1_0;
 			m[UVEC][Z] = (zvec[Y] < 0) ? F1_0 : -F1_0;
@@ -127,14 +127,14 @@ const vmsMatrix vmsMatrix::CreateFU(const vmsVector& fVec, const vmsVector& uVec
 			xvec[X] = zvec[Z];
 			xvec[Y] = 0;
 			xvec[Z] = -zvec[X];
-			vmsVector::normalize(xvec);
-			yvec = vmsVector::cross(zvec, xvec);
+			vmsVector::Normalize(xvec);
+			yvec = vmsVector::Cross(zvec, xvec);
 		}
 	}
 
-	xvec = vmsVector::cross(yvec, zvec);
-	//normalize new perpendicular vector
-	if (vmsVector::normalize(xvec) == 0) {
+	xvec = vmsVector::Cross(yvec, zvec);
+	//Normalize new perpendicular vector
+	if (vmsVector::Normalize(xvec) == 0) {
 		if ((zvec[X] == 0) && (zvec[Z] == 0)) {		//forward vec is straight up or down
 			m[RVEC][X] = F1_0;
 			m[UVEC][Z] = (zvec[Y] < 0) ? F1_0 : -F1_0;
@@ -144,13 +144,13 @@ const vmsMatrix vmsMatrix::CreateFU(const vmsVector& fVec, const vmsVector& uVec
 			xvec[X] = zvec[Z];
 			xvec[Y] = 0;
 			xvec[Z] = -zvec[X];
-			vmsVector::normalize(xvec);
-			yvec = vmsVector::cross(zvec, xvec);
+			vmsVector::Normalize(xvec);
+			yvec = vmsVector::Cross(zvec, xvec);
 		}
 	}
 
 	//now recompute up vector, in case it wasn't entirely perpendiclar
-	yvec = vmsVector::cross(zvec, xvec);
+	yvec = vmsVector::Cross(zvec, xvec);
 
 	return m;
 }
@@ -165,12 +165,12 @@ const vmsMatrix vmsMatrix::CreateFR(const vmsVector& fVec, const vmsVector& rVec
 	vmsVector& zvec = m[FVEC];
 
 	zvec = fVec;
-	vmsVector::normalize(zvec);
-	assert(zvec.mag() != 0);
+	vmsVector::Normalize(zvec);
+	assert(zvec.Mag() != 0);
 
 	//use right vec
 	xvec = rVec;
-	if (vmsVector::normalize(xvec) == 0) {
+	if (vmsVector::Normalize(xvec) == 0) {
 		if ((zvec[X] == 0) && (zvec[Z] == 0)) {		//forward vec is straight up or down
 			m[RVEC][X] = F1_0;
 			m[UVEC][Z] = (zvec[Y] < 0) ? F1_0 : -F1_0;
@@ -180,14 +180,14 @@ const vmsMatrix vmsMatrix::CreateFR(const vmsVector& fVec, const vmsVector& rVec
 			xvec[X] = zvec[Z];
 			xvec[Y] = 0;
 			xvec[Z] = -zvec[X];
-			vmsVector::normalize(xvec);
-			yvec = vmsVector::cross(zvec, xvec);
+			vmsVector::Normalize(xvec);
+			yvec = vmsVector::Cross(zvec, xvec);
 		}
 	}
 
-	yvec = vmsVector::cross(zvec, xvec);
-	//normalize new perpendicular vector
-	if (vmsVector::normalize(yvec) == 0) {
+	yvec = vmsVector::Cross(zvec, xvec);
+	//Normalize new perpendicular vector
+	if (vmsVector::Normalize(yvec) == 0) {
 		if ((zvec[X] == 0) && (zvec[Z] == 0)) {		//forward vec is straight up or down
 			m[RVEC][X] = F1_0;
 			m[UVEC][Z] = (zvec[Y] < 0) ? F1_0 : -F1_0;
@@ -197,13 +197,13 @@ const vmsMatrix vmsMatrix::CreateFR(const vmsVector& fVec, const vmsVector& rVec
 			xvec[X] = zvec[Z];
 			xvec[Y] = 0;
 			xvec[Z] = -zvec[X];
-			vmsVector::normalize(xvec);
-			yvec = vmsVector::cross(zvec, xvec);
+			vmsVector::Normalize(xvec);
+			yvec = vmsVector::Cross(zvec, xvec);
 		}
 	}
 
 	//now recompute right vector, in case it wasn't entirely perpendiclar
-	xvec = vmsVector::cross(yvec, zvec);
+	xvec = vmsVector::Cross(yvec, zvec);
 
 	return m;
 }
@@ -218,10 +218,10 @@ inline int VmBehindPlane(const vmsVector& n, const vmsVector& p1, const vmsVecto
 
 	t = p1 - p2;
 #ifdef _DEBUG
-	d = vmsVector::dot(p1, t);
-	return vmsVector::dot(i, t) < d;
+	d = vmsVector::Dot(p1, t);
+	return vmsVector::Dot(i, t) < d;
 #else
-	return vmsVector::dot(i, t) - vmsVector::dot(p1, t) < 0;
+	return vmsVector::Dot(i, t) - vmsVector::Dot(p1, t) < 0;
 #endif
 }
 
@@ -311,13 +311,13 @@ const int VmPointLineIntersection(fVector& hitP, const fVector& p1, const fVecto
 	int		bClamped = 0;
 
 	d21 = p2 - p1;
-	m = fabs (d21.sqrmag());
+	m = fabs (d21.SqrMag());
 	if(!m) {
 		hitP = p1;
 		return 0;
 	}
 	d31 = p3 - p1;
-	u = (double)fVector::dot(d31, d21);
+	u = (double)fVector::Dot(d31, d21);
 	u /= m;
 	if (u < 0)
 		bClamped = 2;
@@ -327,7 +327,7 @@ const int VmPointLineIntersection(fVector& hitP, const fVector& p1, const fVecto
 		bClamped = 0;
 	// limit the intersection to [p1,p2]
 	if (bClamp && bClamped) {
-		bClamped = (fVector::dist(vPos, p1) < fVector::dist(vPos, p2)) ? 2 : 1;
+		bClamped = (fVector::Dist(vPos, p1) < fVector::Dist(vPos, p2)) ? 2 : 1;
 		hitP = (bClamped == 1) ? p1 : p2;
 	}
 	else
@@ -344,13 +344,13 @@ const int VmPointLineIntersection(fVector& hitP, const fVector& p1, const fVecto
 	int		bClamped = 0;
 
 	d21 = p2 - p1;
-	m = fabs (d21.sqrmag());
+	m = fabs (d21.SqrMag());
 	if(!m) {
 		hitP = p1;
 		return 0;
 	}
 	d31 = p3 - p1;
-	u = (double)fVector::dot(d31, d21);
+	u = (double)fVector::Dot(d31, d21);
 	u /= m;
 	if (u < 0)
 		bClamped = 2;
@@ -375,14 +375,14 @@ const int VmPointLineIntersection(fVector3& hitP, const fVector3& p1, const fVec
 	int		bClamped = 0;
 
 	d21 = p2 - p1;
-	m = fabs (d21.sqrmag());
+	m = fabs (d21.SqrMag());
 	if (!m) {
 	//	if (hitP)
 		hitP = p1;
 		return 0;
 		}
 	d31 = p3 - p1;
-	u = (double)fVector3::dot(d31, d21);
+	u = (double)fVector3::Dot(d31, d21);
 	u /= m;
 	if (u < 0)
 		bClamped = 2;
@@ -394,7 +394,7 @@ const int VmPointLineIntersection(fVector3& hitP, const fVector3& p1, const fVec
 	//if (hitP) {
 	if (bClamp && bClamped) {
 		if (vPos)
-			bClamped = (fVector3::dist(*vPos, p1) < fVector3::dist(*vPos, p2)) ? 2 : 1;
+			bClamped = (fVector3::Dist(*vPos, p1) < fVector3::Dist(*vPos, p2)) ? 2 : 1;
 		hitP = (bClamped == 1) ? p1 : p2;
 	}
 	else {
@@ -415,7 +415,7 @@ const fix VmLinePointDist(const vmsVector& a, const vmsVector& b, const vmsVecto
 	vmsVector	h;
 
 	VmPointLineIntersection (h, a, b, p, 0);
-	return vmsVector::dist(h, p);
+	return vmsVector::Dist(h, p);
 }
 
 // ------------------------------------------------------------------------
@@ -425,7 +425,7 @@ const float VmLinePointDist(const fVector& a, const fVector& b, const fVector& p
 	fVector	h;
 
 	VmPointLineIntersection(h, a, b, p, bClamp);
-	return fVector::dist(h, p);
+	return fVector::Dist(h, p);
 }
 
 // ------------------------------------------------------------------------
@@ -435,7 +435,7 @@ const float VmLinePointDist(const fVector3& a, const fVector3& b, const fVector3
 	fVector3	h;
 
 	VmPointLineIntersection (h, a, b, p, NULL, bClamp);
-	return fVector3::dist(h, p);
+	return fVector3::Dist(h, p);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -447,25 +447,25 @@ const float VmLineLineIntersection(const fVector3& v1, const fVector3& v2, const
 
 v13 = v1 - v3;
 v43 = v4 - v3;
-if (v43.mag() < 0.00001f) {
+if (v43.Mag() < 0.00001f) {
 	va = vb = v4;
 	return 0;
 	}
 v21 = v2 - v1;
-if (v43.mag() < 0.00001f)  {
+if (v43.Mag() < 0.00001f)  {
 	va = vb = v2;
 	return 0;
 	}
-d1343 = fVector3::dot(v13, v43);
-d4321 = fVector3::dot(v43, v21);
-d1321 = fVector3::dot(v13, v21);
-d4343 = fVector3::dot(v43, v43);
-d2121 = fVector3::dot(v21, v21);
+d1343 = fVector3::Dot(v13, v43);
+d4321 = fVector3::Dot(v43, v21);
+d1321 = fVector3::Dot(v13, v21);
+d4343 = fVector3::Dot(v43, v43);
+d2121 = fVector3::Dot(v21, v21);
 den = d2121 * d4343 - d4321 * d4321;
 if (fabs (den) < 0.00001f) {
-	va = fVector3::avg(v1, v2);
-	vb = fVector3::avg(v3, v4);
-	va = fVector3::avg(va, vb);
+	va = fVector3::Avg(v1, v2);
+	vb = fVector3::Avg(v3, v4);
+	va = fVector3::Avg(va, vb);
 	vb = va;
 	return 0;
 	}
@@ -476,7 +476,7 @@ mub = (d1343 + d4321 * mua) / d4343;
 va = v1 + mua * v21;
 vb = v3 + mub * v43;
 
-return fVector3::dist(va, vb);
+return fVector3::Dist(va, vb);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -488,25 +488,25 @@ const float VmLineLineIntersection(const fVector& v1, const fVector& v2, const f
 
 v13 = v1 - v3;
 v43 = v4 - v3;
-if (v43.mag() < 0.00001f) {
+if (v43.Mag() < 0.00001f) {
 	va = vb = v4;
 	return 0;
 	}
 v21 = v2 - v1;
-if (v43.mag() < 0.00001f)  {
+if (v43.Mag() < 0.00001f)  {
 	va = vb = v2;
 	return 0;
 	}
-d1343 = fVector::dot(v13, v43);
-d4321 = fVector::dot(v43, v21);
-d1321 = fVector::dot(v13, v21);
-d4343 = fVector::dot(v43, v43);
-d2121 = fVector::dot(v21, v21);
+d1343 = fVector::Dot(v13, v43);
+d4321 = fVector::Dot(v43, v21);
+d1321 = fVector::Dot(v13, v21);
+d4343 = fVector::Dot(v43, v43);
+d2121 = fVector::Dot(v21, v21);
 den = d2121 * d4343 - d4321 * d4321;
 if (fabs (den) < 0.00001f) {
-	va = fVector::avg(v1, v2);
-	vb = fVector::avg(v3, v4);
-	va = fVector::avg(va, vb);
+	va = fVector::Avg(v1, v2);
+	vb = fVector::Avg(v3, v4);
+	va = fVector::Avg(va, vb);
 	vb = va;
 	return 0;
 	}
@@ -524,7 +524,7 @@ vb->z() = v3->z() + mub * v43[Z];
 va = v1 + mua * v21;
 vb = v3 + mub * v43;
 
-return fVector::dist(va, vb);
+return fVector::Dist(va, vb);
 }
 
 // ------------------------------------------------------------------------
@@ -535,18 +535,18 @@ return fVector::dist(va, vb);
 
 float TriangleSize (const vmsVector& p0, const vmsVector& p1, const vmsVector& p2) {
 
-	return 0.5f*X2F(vmsVector::cross(p1-p0, p2-p0).mag());
+	return 0.5f*X2F(vmsVector::Cross(p1-p0, p2-p0).Mag());
 #if 0
 
 	fix			lMax, l, i = 0;
 
-lMax = vmsVector::dist(p0, p1);
-l = vmsVector::dist(p1, p2);
+lMax = vmsVector::Dist(p0, p1);
+l = vmsVector::Dist(p1, p2);
 if (lMax < l) {
 	lMax = l;
 	i = 1;
 	}
-l = vmsVector::dist(p2, p0);
+l = vmsVector::Dist(p2, p0);
 if (lMax < l) {
 	lMax = l;
 	i = 2;

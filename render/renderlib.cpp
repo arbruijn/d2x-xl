@@ -322,7 +322,7 @@ void DrawOutline (int nVertices, g3sPoint **pointList)
 {
 	int i;
 	GLint depthFunc;
-	g3sPoint center, normal;
+	g3sPoint center, Normal;
 	vmsVector n;
 	fVector *nf;
 
@@ -347,19 +347,19 @@ for (i = 0; i < nVertices; i++) {
 	n[Y] = (fix) (nf->y() * 65536.0f);
 	n[Z] = (fix) (nf->z() * 65536.0f);
 */
-	n = nf->toFix();
+	n = nf->ToFix();
 	G3RotatePoint(n, n, 0);
-	normal.p3_vec = pointList[i]->p3_vec + n * (F1_0 * 10);
-	G3DrawLine (pointList [i], &normal);
+	Normal.p3_vec = pointList[i]->p3_vec + n * (F1_0 * 10);
+	G3DrawLine (pointList [i], &Normal);
 	}
 #if 0
-VmVecNormal (&normal.p3_vec,
+VmVecNormal (&Normal.p3_vec,
 				 &pointList [0]->p3_vec,
 				 &pointList [1]->p3_vec,
 				 &pointList [2]->p3_vec);
-VmVecInc (&normal.p3_vec, &center.p3_vec);
-VmVecScale (&normal.p3_vec, F1_0 * 10);
-G3DrawLine (&center, &normal);
+VmVecInc (&Normal.p3_vec, &center.p3_vec);
+VmVecScale (&Normal.p3_vec, F1_0 * 10);
+G3DrawLine (&center, &Normal);
 #endif
 glDepthFunc (depthFunc);
 }

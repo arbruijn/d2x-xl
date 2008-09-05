@@ -178,10 +178,10 @@ const char *pszPPXLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
@@ -203,7 +203,7 @@ const char *pszPPXLightingFS [] = {
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
@@ -216,11 +216,11 @@ const char *pszPPXLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
@@ -242,7 +242,7 @@ const char *pszPPXLightingFS [] = {
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
@@ -255,13 +255,13 @@ const char *pszPPXLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy) ;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
@@ -283,7 +283,7 @@ const char *pszPPXLightingFS [] = {
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
@@ -296,7 +296,7 @@ const char *pszPPXLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;\r\n" \
 	"if (bMask < 0.5)\r\n" \
@@ -306,7 +306,7 @@ const char *pszPPXLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
@@ -328,7 +328,7 @@ const char *pszPPXLightingFS [] = {
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
@@ -346,10 +346,10 @@ const char *pszPPXLightingFS [] = {
 const char *pszPP1LightingFS [] = {
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 color = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
@@ -367,7 +367,7 @@ const char *pszPP1LightingFS [] = {
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
-	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
@@ -377,11 +377,11 @@ const char *pszPP1LightingFS [] = {
 	,
 	"uniform sampler2D baseTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 color = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
@@ -399,7 +399,7 @@ const char *pszPP1LightingFS [] = {
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
-	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
@@ -409,13 +409,13 @@ const char *pszPP1LightingFS [] = {
 	,
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 color = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy) ;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
@@ -433,7 +433,7 @@ const char *pszPP1LightingFS [] = {
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
-	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
@@ -443,7 +443,7 @@ const char *pszPP1LightingFS [] = {
 	,
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;\r\n" \
 	"if (bMask < 0.5)\r\n" \
@@ -453,7 +453,7 @@ const char *pszPP1LightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
@@ -471,7 +471,7 @@ const char *pszPP1LightingFS [] = {
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
-	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
@@ -484,18 +484,18 @@ const char *pszPP1LightingFS [] = {
 
 const char *pszPPLightingVS [] = {
 	"#define LIGHTS 8\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"	Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"	Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
@@ -503,9 +503,9 @@ const char *pszPPLightingVS [] = {
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"	Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
@@ -514,9 +514,9 @@ const char *pszPPLightingVS [] = {
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"	Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
@@ -595,10 +595,10 @@ const char *pszPPXLMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
@@ -619,7 +619,7 @@ const char *pszPPXLMLightingFS [] = {
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
@@ -632,11 +632,11 @@ const char *pszPPXLMLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
@@ -657,7 +657,7 @@ const char *pszPPXLMLightingFS [] = {
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
@@ -670,13 +670,13 @@ const char *pszPPXLMLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy) ;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"     vec4 color;\r\n" \
@@ -697,7 +697,7 @@ const char *pszPPXLMLightingFS [] = {
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
@@ -710,7 +710,7 @@ const char *pszPPXLMLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [3].xy).r;\r\n" \
 	"if (bMask < 0.5)\r\n" \
@@ -720,7 +720,7 @@ const char *pszPPXLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
@@ -741,7 +741,7 @@ const char *pszPPXLMLightingFS [] = {
 	"			}\r\n" \
 	"		/*specular highlight >>>>>\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}\r\n" \
@@ -759,10 +759,10 @@ const char *pszPP1LMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
@@ -780,7 +780,7 @@ const char *pszPP1LMLightingFS [] = {
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
-	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
@@ -791,11 +791,11 @@ const char *pszPP1LMLightingFS [] = {
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
@@ -813,7 +813,7 @@ const char *pszPP1LMLightingFS [] = {
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
-	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
@@ -823,13 +823,13 @@ const char *pszPP1LMLightingFS [] = {
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy) ;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
@@ -847,7 +847,7 @@ const char *pszPP1LMLightingFS [] = {
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
-	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
@@ -857,7 +857,7 @@ const char *pszPP1LMLightingFS [] = {
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
 	"uniform float fLightScale, nLights;\r\n" \
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [3].xy).r;\r\n" \
 	"if (bMask < 0.5)\r\n" \
@@ -867,7 +867,7 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	vec3 n = normalize (normal);\r\n" \
+	"	vec3 n = Normalize (Normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
@@ -885,7 +885,7 @@ const char *pszPP1LMLightingFS [] = {
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
-	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"		vec3 halfV = Normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
 	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
@@ -897,18 +897,18 @@ const char *pszPP1LMLightingFS [] = {
 // ----------------------------------------------------------------------------------------------
 
 const char *pszPPLMLightingVS [] = {
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"	Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"	gl_Position = ftransform();\r\n" \
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	,
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"	Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
@@ -916,9 +916,9 @@ const char *pszPPLMLightingVS [] = {
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	,
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"	Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
@@ -927,9 +927,9 @@ const char *pszPPLMLightingVS [] = {
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	,
-	"varying vec3 normal, vertPos;\r\n" \
+	"varying vec3 Normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"	Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	gl_Position = ftransform();\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \

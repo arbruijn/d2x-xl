@@ -374,7 +374,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	bStencil = StencilOff ();
 	pc = ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
-	fPos = vPos.toFloat();
+	fPos = vPos.ToFloat();
 	G3TransformPoint (fPos, fPos, 0);
 	r = X2F (objP->size);
 	r2 = r / 10;
@@ -469,7 +469,7 @@ if (gameStates.app.nSDLTicks - t0 [bMarker] > tDelay [bMarker]) {
 	nMslLockIndPos [bMarker] = (nMslLockIndPos [bMarker] + 1) % INDICATOR_POSITIONS;
 	}
 PolyObjPos (objP, &vPos);
-fPos = vPos.toFloat();
+fPos = vPos.ToFloat();
 G3TransformPoint (fPos, fPos, 0);
 r = X2F (objP->size);
 if (bMarker)
@@ -629,7 +629,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ?
 		  (tRgbColorf *) &trackGoalColor [0] : ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
-	fPos = vPos.toFloat();
+	fPos = vPos.ToFloat();
 	G3TransformPoint (fPos, fPos, 0);
 	r = X2F (objP->size);
 	glColor3fv ((GLfloat *) pc);
@@ -1065,27 +1065,27 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	ti.fSize *= ((objP->nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 #if 1
 	if (!ti.mtP)
-		fVecf = ti.pp ? ti.pp->mOrient[FVEC].toFloat() : objP->position.mOrient[FVEC].toFloat();
+		fVecf = ti.pp ? ti.pp->mOrient[FVEC].ToFloat() : objP->position.mOrient[FVEC].ToFloat();
 #endif
 	for (h = 0; h < nThrusters; h++) {
 		if (ti.mtP)
-			fVecf = ti.vDir[h].toFloat();
-		vPosf = ti.vPos [h].toFloat();
+			fVecf = ti.vDir[h].ToFloat();
+		vPosf = ti.vPos [h].ToFloat();
 		vFlame[2] = vPosf + fVecf * (-ti.fLength);
 		G3TransformPoint(vFlame[2], vFlame[2], 0);
 		G3TransformPoint(vPosf, vPosf, 0);
-		vNormf = fVector::normal(vFlame[2], vPosf, vEye);
+		vNormf = fVector::Normal(vFlame[2], vPosf, vEye);
 		vFlame[0] = vPosf + vNormf *   ti.fSize;
 		vFlame[1] = vPosf + vNormf * (-ti.fSize);
-		vNormf = fVector::normal(vFlame[0], vFlame[1], vFlame[2]);
+		vNormf = fVector::Normal(vFlame[0], vFlame[1], vFlame[2]);
 		vThruster[0] = vFlame [0];
 		vThruster[2] = vFlame [1];
 		vThruster[1] = vPosf + vNormf *   ti.fSize;
 		vThruster[3] = vPosf + vNormf * (-ti.fSize);
-		fVector::normalize(vPosf);
-		v = vFlame[2]; fVector::normalize(v);
+		fVector::Normalize(vPosf);
+		v = vFlame[2]; fVector::Normalize(v);
 		dotFlame = fVector::dot(vPosf, v);
-		v = *vThruster; fVector::normalize(v);
+		v = *vThruster; fVector::Normalize(v);
 		dotThruster = fVector::dot(vPosf, v);
 		if (gameOpts->render.bDepthSort > 0)
 			RIAddThruster (bmpThruster [nStyle], vThruster, tcThruster, (dotFlame < dotThruster) ? vFlame : NULL, tcFlame);
@@ -1213,27 +1213,27 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 
 	bmP = bAdditive ? bmpGlare : bmpCorona;
 	colorP->alpha = alpha;
-	vDir = objP->position.mOrient[FVEC].toFloat();
-	vPos = objP->position.vPos.toFloat();
+	vDir = objP->position.mOrient[FVEC].ToFloat();
+	vPos = objP->position.vPos.ToFloat();
 	vCorona[0] = vPos + vDir * (fScale * fLength);
 	vh [4] = vCorona [0];
 	vCorona[3] = vPos + vDir * (-fScale * fLength);
 	G3TransformPoint (vPos, vPos, 0);
 	G3TransformPoint (vCorona[0], vCorona[0], 0);
 	G3TransformPoint (vCorona[3], vCorona[3], 0);
-	vNorm = fVector::normal(vPos, vCorona[0], vEye);
+	vNorm = fVector::Normal(vPos, vCorona[0], vEye);
 	fScale *= fRad;
 	vCorona[0] += vNorm * fScale;
 	vCorona[1] = vCorona[0] + vNorm * (-2 * fScale);
 	vCorona[3] += vNorm * fScale;
 	vCorona[2] = vCorona[3] + vNorm * (-2 * fScale);
-	vNorm = fVector::normal(vCorona[0], vCorona[1], vCorona[2]);
+	vNorm = fVector::Normal(vCorona[0], vCorona[1], vCorona[2]);
 	vh[0] = vCorona[0] + vCorona[1] * 0.5f;
 	vh[2] = vCorona[3] + vCorona[2] * 0.5f;
 	vh[1] = vPos + vNorm * fScale;
 	vh[3] = vPos + vNorm * (-fScale);
 	for (i = 0; i < 4; i++)
-		fVector::normalize(vh[i]);
+		fVector::Normalize(vh[i]);
 	a1 = (float) fabs (fVector::dot(vh[2], vh[0]));
 	a2 = (float) fabs (fVector::dot(vh[3], vh[1]));
 #if 0
@@ -1348,7 +1348,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	if (xOffset) {
 		if (bViewerOffset) {
 			vmsVector o = gameData.render.mine.viewerEye - vPos;
-			vmsVector::normalize(o);
+			vmsVector::Normalize(o);
 			vPos += o * xOffset;
 			}
 		else
@@ -1397,8 +1397,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 				vCenter += quad[j];
 				}
 			vCenter = vCenter * 0.25f;
-			vNormal = fVector::normal(quad[0], quad[1], quad[2]);
-			v = vCenter; fVector::normalize(v);
+			vNormal = fVector::Normal(quad[0], quad[1], quad[2]);
+			v = vCenter; fVector::Normalize(v);
 			dot = fVector::dot(vNormal, v);
 			if (dot >= 0)
 				continue;
@@ -1538,14 +1538,14 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 		int				bStencil;
 //		static short	patterns [] = {0x0603, 0x0203, 0x0103, 0x0202};
 
-	vPosf[0] = objP->position.vPos.toFloat();
-	vPosf[1] = objP->vLastPos.toFloat();
+	vPosf[0] = objP->position.vPos.ToFloat();
+	vPosf[1] = objP->vLastPos.ToFloat();
 	G3TransformPoint(vPosf[0], vPosf[0], 0);
 	G3TransformPoint(vPosf[1], vPosf[1], 0);
 	vDirf = vPosf[0] - vPosf[1];
 	if (vDirf.isZero()) {
 		//return;
-		vPosf[1] = OBJECTS [objP->cType.laserInfo.nParentObj].position.vPos.toFloat();
+		vPosf[1] = OBJECTS [objP->cType.laserInfo.nParentObj].position.vPos.ToFloat();
 		G3TransformPoint(vPosf[1], vPosf[1], 0);
 		vDirf = vPosf[0] - vPosf[1];
 		if(vDirf.isZero())
@@ -1689,15 +1689,15 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 			l = 4 * r;
 			}
 
-		vOffsf = objP->position.mOrient[FVEC].toFloat();
-		vTrailVerts[0] = objP->position.vPos.toFloat();
+		vOffsf = objP->position.mOrient[FVEC].ToFloat();
+		vTrailVerts[0] = objP->position.vPos.ToFloat();
 		vTrailVerts[0] += vOffsf * l;// * -0.75f);
 		vTrailVerts[2] = vTrailVerts[0] + vOffsf * (-100);
 		G3TransformPoint(vTrailVerts[0], vTrailVerts[0], 0);
 		G3TransformPoint(vTrailVerts[2], vTrailVerts[2], 0);
 		vOffsf = vTrailVerts[2] - vTrailVerts[0];
 		vOffsf = vOffsf * (r * 0.04f);
-		vNormf = fVector::normal(vTrailVerts[0], vTrailVerts[2], vEye);
+		vNormf = fVector::Normal(vTrailVerts[0], vTrailVerts[2], vEye);
 		vNormf = vNormf * (r * 4);
 		vTrailVerts[1] = vTrailVerts[0] + vNormf;
 		vTrailVerts[1] += vOffsf;

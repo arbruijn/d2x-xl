@@ -53,7 +53,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 		if ((vGoal[X] == (*vVertex)[X]) && (vGoal[Y] == (*vVertex)[Y]) && (vGoal[Z] == (*vVertex)[Z]))
 			break;
 		}
-	vVecToGoal = vGoal - objP->position.vPos; vmsVector::normalize(vVecToGoal);
+	vVecToGoal = vGoal - objP->position.vPos; vmsVector::Normalize(vVecToGoal);
 	if (i == 8)
 		h = 1;
 	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->id).turnTime [2]) < F1_0 - F1_0 / 5) {

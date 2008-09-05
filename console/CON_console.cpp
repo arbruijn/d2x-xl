@@ -294,7 +294,7 @@ void CON_UpdateConsole(ConsoleInformation *console) {
 			GrBitmap(0, 0, console->BackgroundImage);
 		}
 	/* Draw the text from the back buffers, calculate in the scrollback from the user
-	 * this is a normal SDL software-mode blit, so we need to temporarily set the ColorKey
+	 * this is a Normal SDL software-mode blit, so we need to temporarily set the ColorKey
 	 * for the font, and then clear it when we're done.
 	 */
 #if 0

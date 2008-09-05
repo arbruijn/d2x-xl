@@ -540,7 +540,7 @@ void InitStuckObjects (void);
 
 extern int gameData.segs.bHaveSlideSegs;
 
-//reset stuff so game is semi-normal when playing from editor
+//reset stuff so game is semi-Normal when playing from editor
 void editor_reset_stuff_onLevel ()
 {
 	GameStartInitNetworkPlayers ();
@@ -1254,7 +1254,7 @@ ResetPaletteAdd ();
 }
 
 //	-----------------------------------------------------------------------------------------------------
-// called when the tPlayer is starting a new level for normal game mode and restore state
+// called when the tPlayer is starting a new level for Normal game mode and restore state
 //	Need to deal with whether this is the first time coming to this level or not.  If not the
 //	first time, instead of initializing various things, need to do a game restore for all the
 //	robots, powerups, walls, doors, etc.
@@ -1551,7 +1551,7 @@ longjmp (gameExitPoint, 0);		// Exit out of game loop
 //------------------------------------------------------------------------------
 //from which level each do you get to each secret level
 //called to go to the next level (if there is one)
-//if bSecret is true, advance to secret level, else next normal one
+//if bSecret is true, advance to secret level, else next Normal one
 //	Return true if game over.
 void AdvanceLevel (int bSecret, int bFromSecret)
 {
@@ -1586,7 +1586,7 @@ if ((gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) &&
 	!extraGameInfo [IsMultiGame].bRotateLevels) //tPlayer has finished the game!
 	DoEndGame ();
 else {
-	gameData.missions.nNextLevel = gameData.missions.nCurrentLevel + 1;		//assume go to next normal level
+	gameData.missions.nNextLevel = gameData.missions.nCurrentLevel + 1;		//assume go to next Normal level
 	if (gameData.missions.nNextLevel > gameData.missions.nLastLevel) {
 		if (extraGameInfo [IsMultiGame].bRotateLevels)
 			gameData.missions.nNextLevel = 1;
@@ -1744,7 +1744,7 @@ DigiSyncSounds ();
 
 //------------------------------------------------------------------------------
 
-//called when the tPlayer is starting a new level for normal game mode and restore state
+//called when the tPlayer is starting a new level for Normal game mode and restore state
 //	bSecret set if came from a secret level
 int StartNewLevelSub (int nLevel, int bPageInTextures, int bSecret, int bRestore)
 {
@@ -1999,7 +1999,7 @@ for (i = 0; i < gameData.missions.nSecretLevels; i++) {
 }
 
 //------------------------------------------------------------------------------
-//called when the tPlayer is starting a new level for normal game model
+//called when the tPlayer is starting a new level for Normal game model
 //	bSecret if came from a secret level
 int StartNewLevel (int nLevel, int bSecret)
 {

@@ -331,7 +331,7 @@ if (nThread == 1)
 colorSum = *pColorSum;
 vertPos = *vcd.pVertPos - *((fVector3 *) &viewInfo.glPosf);
 vertPos.neg();
-fVector3::normalize(vertPos);
+fVector3::Normalize(vertPos);
 nLights = sliP->nActive;
 if (nLights > gameData.render.lights.dynamic.nLights)
 	nLights = gameData.render.lights.dynamic.nLights;
@@ -370,7 +370,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	lightDir = lightPos - *vcd.pVertPos;
 	bInRad = 0;
 	fLightDist = lightDir.mag() * gameStates.ogl.fLightRange;
-	fVector3::normalize(lightDir);
+	fVector3::Normalize(lightDir);
 	if (vcd.vertNorm.isZero())
 		NdotL = 1.0f;
 	else
@@ -413,7 +413,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (psl->info.bSpot) {
 		if (NdotL <= 0)
 			continue;
-		spotDir = *psl->info.vDirf.v3(); fVector3::normalize(spotDir);
+		spotDir = *psl->info.vDirf.v3(); fVector3::Normalize(spotDir);
 		lightDir = -lightDir;
 		/*
 		lightDir[Y] = -lightDir[Y];
@@ -441,11 +441,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	vertColor[G] *= lightColor[G];
 	vertColor[B] *= lightColor[B];
 	if ((NdotL > 0.0) && (vcd.fMatShininess > 0) /* && vcd.bMatSpecular */) {
-		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
+		//RdotV = max (dot (reflect (-Normalize (lightDir), Normal), Normalize (-vertPos)), 0.0);
 		if (!psl->info.bSpot)	//need direction from light to vertex now
 			lightDir.neg();
 		vReflect = fVector3::reflect(lightDir, vcd.vertNorm);
-		fVector3::normalize(vReflect);
+		fVector3::Normalize(vReflect);
 #ifdef _DEBUG
 		if (nVertex == nDbgVertex)
 			nDbgVertex = nDbgVertex;
@@ -519,7 +519,7 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 
 colorSum = *pColorSum;
 VmVecSub (&vertPos, vcd.pVertPos, (fVector3 *) &viewInfo.glPosf);
-vmsVector::normalize(vertPos, VmVecNegate (&vertPos));
+vmsVector::Normalize(vertPos, VmVecNegate (&vertPos));
 nLights = sliP->nActive;
 if (nLights > gameData.render.lights.dynamic.nLights)
 	nLights = gameData.render.lights.dynamic.nLights;
@@ -550,7 +550,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	bInRad = 0;
 	NdotL = 1;
 #if VECMAT_CALLS
-	vmsVector::normalize(lightDir, &lightDir);
+	vmsVector::Normalize(lightDir, &lightDir);
 #else
 	if ((fMag = VmVecMag (&lightDir))) {
 		lightDir[X] /= fMag;
@@ -607,7 +607,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (NdotL <= 0)
 			continue;
 #if VECMAT_CALLS
-		fVector::normalize(&spotDir, &psl->vDirf);
+		fVector::Normalize(&spotDir, &psl->vDirf);
 #else
 		fMag = VmVecMag (&psl->info.vDirf);
 		spotDir.p.x = psl->info.vDirf.p.x / fMag;
@@ -653,7 +653,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	vertColor[Z] *= lightColor[Z];
 	if ((NdotL > 0) && (vcd.fMatShininess > 0)/* && vcd.bMatSpecular */) {
 		//spec = pow (reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
-		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
+		//RdotV = max (dot (reflect (-Normalize (lightDir), Normal), Normalize (-vertPos)), 0.0);
 		if (!psl->info.bSpot) {	//need direction from light to vertex now
 			lightDir[X] = -lightDir[X];
 			lightDir[Y] = -lightDir[Y];
@@ -661,7 +661,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			}
 		G3_REFLECT (vReflect, lightDir, vcd.vertNorm);
 #if VECMAT_CALLS
-		fVector::normalize(&vReflect, &vReflect);
+		fVector::Normalize(&vReflect, &vReflect);
 #else
 		if ((fMag = VmVecMag (&vReflect))) {
 			vReflect[X] /= fMag;
@@ -838,11 +838,11 @@ if (gameStates.ogl.bUseTransform)
 #if 1
 	vcd.vertNorm = *pvVertNorm;
 #else
-	fVector::normalize(&vcd.vertNorm, pvVertNorm);
+	fVector::Normalize(&vcd.vertNorm, pvVertNorm);
 #endif
 else {
 	if (!gameStates.render.nState) {
-		vcd.vertNorm = *pvVertNorm; fVector3::normalize(vcd.vertNorm);
+		vcd.vertNorm = *pvVertNorm; fVector3::Normalize(vcd.vertNorm);
 	}
 	else
 		G3RotatePoint(vcd.vertNorm, *pvVertNorm, 0);

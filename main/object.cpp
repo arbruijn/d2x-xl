@@ -1146,7 +1146,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 
 	while ((hit_data.hit.nType != HIT_NONE) && (count++ < 6)) {
 		vmsVector	closer_p1;
-		vmsVector::normalize(vPlayerCameraOffs);
+		vmsVector::Normalize(vPlayerCameraOffs);
 		vPlayerCameraOffs *= xCameraToPlayerDistGoal;
 
 		fq.p0 = &objP->position.vPos;
@@ -2252,7 +2252,7 @@ for (int i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		vmsVector	vCenter, vOffset;
 		COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 		vOffset = objP->position.vPos - vCenter;
-		vmsVector::normalize(vOffset);
+		vmsVector::Normalize(vOffset);
 		objP->position.vPos = vCenter + vOffset * xScale;
 		}
 	}

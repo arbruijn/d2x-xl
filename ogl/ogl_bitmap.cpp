@@ -60,7 +60,7 @@ OglActiveTexture (GL_TEXTURE0, 0);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 1
-fPos = vPos.toFloat();
+fPos = vPos.ToFloat();
 G3TransformPoint(fPos, fPos, 0);
 #else
 v1 = vPos[0] - viewInfo.vPos;

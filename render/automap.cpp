@@ -981,7 +981,7 @@ for (i = 0; i <= nHighestEdgeIndex; i++)	{
 		continue;
 	if (e->flags & EF_FRONTIER) {		// A line that is between what we have seen and what we haven't
 		if ((!(e->flags & EF_SECRET)) && (e->color == automapColors.walls.nNormal))
-			continue;		// If a line isn't secret and is normal color, then don't draw it
+			continue;		// If a line isn't secret and is Normal color, then don't draw it
 		}
 
 	cc = RotateVertexList (2,e->verts);
@@ -1142,7 +1142,7 @@ if (found == -1) {
 	e->verts [1] = vb;
 	e->color = color;
 	e->num_faces = 1;
-	e->flags = EF_USED | EF_DEFINING;			// Assume a normal line
+	e->flags = EF_USED | EF_DEFINING;			// Assume a Normal line
 	e->sides [0] = tSide;
 	e->nSegment [0] = nSegment;
 	//Edge_used_list [nNumEdges] = EDGE_IDX (e);

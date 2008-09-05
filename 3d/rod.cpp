@@ -51,14 +51,14 @@ vDelta = btmPoint->p3_vec - topPoint->p3_vec;
 vDelta.p.x = FixDiv (vDelta.p.x, viewInfo.scale.p.x);
 vDelta.p.y = FixDiv (vDelta.p.y, viewInfo.scale.p.y);
 #endif
-//calc perp vector
+//calc Perp vector
 //do lots of normalizing to prevent overflowing.  When this code works,
 //it should be optimized
-vmsVector::normalize(vDelta);
+vmsVector::Normalize(vDelta);
 vTop = topPoint->p3_vec;
-vmsVector::normalize(vTop);
+vmsVector::Normalize(vTop);
 vRodNorm = vmsVector::cross(vDelta, vTop);
-vmsVector::normalize(vRodNorm);
+vmsVector::Normalize(vRodNorm);
 //scale for aspect
 #if RESCALE_ROD
 vRodNorm.p.x = FixMul (vRodNorm.p.x, viewInfo.scale.p.x);

@@ -387,7 +387,7 @@ return 0;
 
 #define	G3VERTPOS(_dest,_src) \
 			if ((_src)->p3_index < 0) \
-				(_dest) = ((_src)->p3_vec).toFloat(); \
+				(_dest) = ((_src)->p3_vec).ToFloat(); \
 			else \
 				_dest = gameData.render.pVerts [(_src)->p3_index];
 
@@ -520,7 +520,7 @@ if (!bDepthSort) {
 	if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
 		if (pvNormal) {
-			vNormal = pvNormal->toFloat();
+			vNormal = pvNormal->ToFloat();
 			G3RotatePoint(vNormal, vNormal, 0);
 			}
 	else
@@ -555,7 +555,7 @@ if (bVertexArrays || bDepthSort) {
 		vertIndex [i] = pl->p3_index;
 		//colorIndex [i] = i;
 		if (pl->p3_index < 0)
-			vertices[i] = pl->p3_vec.toFloat();
+			vertices[i] = pl->p3_vec.ToFloat();
 		else
 			vertices [i] = gameData.render.pVerts [pl->p3_index];
 		texCoord [0][i].v.u = X2F (uvlList [i].u);
@@ -885,7 +885,7 @@ else
 if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
 	if (pvNormal)
-		vNormal = pvNormal->toFloat();
+		vNormal = pvNormal->ToFloat();
 else
 		G3CalcNormal (pointList, &vNormal);
 #else

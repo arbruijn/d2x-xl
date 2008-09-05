@@ -286,8 +286,8 @@ j = OBJ_IDX (objP);
 if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
 	fn = objP->position.mOrient[FVEC];
 	mn = objP->position.vPos - objP->vLastPos;
-	vmsVector::normalize(fn);
-	vmsVector::normalize(mn);
+	vmsVector::Normalize(fn);
+	vmsVector::Normalize(mn);
 	d = vmsVector::dot(fn, mn);
 	if (d >= -F1_0 / 2)
 		bForward = 1;
@@ -476,7 +476,7 @@ if (nParts > 0) {
 		vDir[X] = d_rand () - F1_0 / 4;
 		vDir[Y] = d_rand () - F1_0 / 4;
 		vDir[Z] = d_rand () - F1_0 / 4;
-		vmsVector::normalize(vDir);
+		vmsVector::Normalize(vDir);
 		vPos = objP->position.vPos + vDir * (-objP->size / 2);
 		SetSmokePos (gameData.smoke.objects [i], &vPos, NULL, objP->nSegment);
 		}
@@ -753,7 +753,7 @@ for (i = 0, shrapnelP = sdP->shrapnels; i < h; i++, shrapnelP++) {
 		vDir[X] = -FixMul (vDir[X], F1_0 / 2 + d_rand ()) | 1;
 		vDir[Y] = -FixMul (vDir[Y], F1_0 / 2 + d_rand ());
 		vDir[Z] = -FixMul (vDir[Z], F1_0 / 2 + d_rand ());
-		vmsVector::normalize(vDir);
+		vmsVector::Normalize(vDir);
 		}
 	else
 		vDir = vmsVector::Random();
@@ -815,7 +815,7 @@ for (; nTicks >= 25; nTicks -= 25) {
 		vOffs[X] = FixMul (vOffs[X], 2 * d_rand ());
 		vOffs[Y] = FixMul (vOffs[Y], 2 * d_rand ());
 		vOffs[Z] = FixMul (vOffs[Z], 2 * d_rand ());
-		vmsVector::normalize(vOffs);
+		vmsVector::Normalize(vOffs);
 		shrapnelP->vOffs = vOffs;
 		}
 	vOffs *= xSpeed;

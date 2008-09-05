@@ -64,7 +64,7 @@ if (dot < (F1_0 - gameData.time.xFrame/2)) {
 		new_scale = (fix) (new_scale / gameStates.gameplay.slowmo [0].fSpeed);
 	new_fvec *= new_scale;
 	new_fvec += objP->position.mOrient[FVEC];
-	mag = vmsVector::normalize(new_fvec);
+	mag = vmsVector::Normalize(new_fvec);
 	if (mag < F1_0/256) {
 #if TRACE
 		con_printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", X2F (mag));
@@ -97,7 +97,7 @@ void MoveTowardsVector (tObject *objP, vmsVector *vGoalVec, int bDotBased)
 	//	bash velocity vector twice as much towards tPlayer as usual.
 
 vel = pptr->velocity;
-vmsVector::normalize(vel);
+vmsVector::Normalize(vel);
 dot = vmsVector::dot(vel, objP->position.mOrient[FVEC]);
 
 if (botInfoP->thief)
@@ -139,7 +139,7 @@ MoveTowardsVector (objP, vVecToPlayer, 1);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	I am ashamed of this: fastFlag == -1 means normal slide about.  fastFlag = 0 means no evasion.
+//	I am ashamed of this: fastFlag == -1 means Normal slide about.  fastFlag = 0 means no evasion.
 void MoveAroundPlayer (tObject *objP, vmsVector *vVecToPlayer, int fastFlag)
 {
 	tPhysicsInfo	*pptr = &objP->mType.physInfo;
@@ -197,7 +197,7 @@ void MoveAroundPlayer (tObject *objP, vmsVector *vVecToPlayer, int fastFlag)
 			Error ("Function MoveAroundPlayer: Bad case.");
 	}
 
-	//	Note: -1 means normal circling about the player.  > 0 means fast evasion.
+	//	Note: -1 means Normal circling about the player.  > 0 means fast evasion.
 	if (fastFlag > 0) {
 		fix	dot;
 
@@ -303,7 +303,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 
 		fieldOfView = ROBOTINFO (objP->id).fieldOfView [gameStates.app.nDifficultyLevel];
 		vVecToLaser = dObjP->position.vPos - objP->position.vPos;
-		xDistToLaser = vmsVector::normalize(vVecToLaser);
+		xDistToLaser = vmsVector::Normalize(vVecToLaser);
 		dot = vmsVector::dot(vVecToLaser, objP->position.mOrient[FVEC]);
 
 		if ((dot > fieldOfView) || (botInfoP->companion)) {
@@ -314,12 +314,12 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 			//	Get the laser's direction.  If it's a polyobjP, it can be gotten cheaply from the orientation matrix.
 			if (dObjP->renderType == RT_POLYOBJ)
 				fVecLaser = dObjP->position.mOrient[FVEC];
-			else {		//	Not a polyobjP, get velocity and normalize.
+			else {		//	Not a polyobjP, get velocity and Normalize.
 				fVecLaser = dObjP->mType.physInfo.velocity;	//dObjP->position.mOrient[FVEC];
-				vmsVector::normalize(fVecLaser);
+				vmsVector::Normalize(fVecLaser);
 				}
 			vLaserToRobot = objP->position.vPos - dObjP->position.vPos;
-			vmsVector::normalize(vLaserToRobot);
+			vmsVector::Normalize(vLaserToRobot);
 			dotLaserRobot = vmsVector::dot(fVecLaser, vLaserToRobot);
 
 			if ((dotLaserRobot > F1_0*7/8) && (xDistToLaser < F1_0*80)) {
@@ -382,7 +382,7 @@ fix MoveObjectToLegalPoint (tObject *objP, vmsVector *vGoal)
 	fix			xDistToGoal;
 
 vGoalDir = *vGoal - objP->position.vPos;
-xDistToGoal = vmsVector::normalize(vGoalDir);
+xDistToGoal = vmsVector::Normalize(vGoalDir);
 vGoalDir *= (objP->size / 2);
 objP->position.vPos += vGoalDir;
 return xDistToGoal;
@@ -445,7 +445,7 @@ if ((nDbgSeg >= 0) && (objP->nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
 vGoalDir = *vGoal - objP->position.vPos;
-xDistToGoal = vmsVector::normalize(vGoalDir);
+xDistToGoal = vmsVector::Normalize(vGoalDir);
 if (xDistToGoal - objP->size <= xMinDist) {
 	//	Center is nearer than the distance we want to move, so move to center.
 	if (!xMinDist) {

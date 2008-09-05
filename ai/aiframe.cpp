@@ -428,9 +428,9 @@ if (!AIMultiplayerAwareness (objP, angerLevel)) {
 		}
 	return 1;
 	}
-if (!gameData.ai.nPlayerVisibility &&
-	 ((siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode != AIM_FOLLOW_PATH) ||
-	 (siP->ailP->nGoalSegment != gameData.ai.nBelievedPlayerSeg))) {
+if (!gameData.ai.nPlayerVisibility /*&& 
+	 ((siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode != AIM_FOLLOW_PATH) || 
+	 (siP->ailP->nGoalSegment != gameData.ai.nBelievedPlayerSeg))*/) {
 	siP->ailP->mode = AIM_IDLING;
 	return 1;
 	}
@@ -500,7 +500,7 @@ if (gameData.ai.nPlayerVisibility == 2) {
 	vRand = vmsVector::Random();
 	goal_point += vRand * (F1_0 * 8);
 	vec_to_goal = goal_point - objP->position.vPos;
-	vmsVector::normalize(vec_to_goal);
+	vmsVector::Normalize(vec_to_goal);
 	MoveTowardsVector (objP, &vec_to_goal, 0);
 	AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 	AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
@@ -548,7 +548,7 @@ if ((gameData.ai.xDistToPlayer < MAX_WAKEUP_DIST) || (siP->ailP->playerAwareness
 				AIMultiSendRobotPos (siP->nObject, -1);
 			}
 		else {
-			// Robots in hover mode are allowed to evade at half normal speed.
+			// Robots in hover mode are allowed to evade at half Normal speed.
 			if (!AIMultiplayerAwareness (objP, 81)) {
 				if (AIMaybeDoActualFiringStuff (objP, siP->aiP))
 					AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
@@ -590,7 +590,7 @@ if (!AIMultiplayerAwareness (objP, 62))
 	return 1;
 COMPUTE_SIDE_CENTER (&vCenter, gameData.segs.segments + objP->nSegment, siP->aiP->GOALSIDE);
 vGoal = vCenter - objP->position.vPos;
-vmsVector::normalize(vGoal);
+vmsVector::Normalize(vGoal);
 AITurnTowardsVector (&vGoal, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 MoveTowardsVector (objP, &vGoal, 0);
 AIMultiSendRobotPos (siP->nObject, -1);
@@ -1020,8 +1020,10 @@ if ((siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData
 	if (OBJ_IDX (objP) == nDbgObj)
 		nDbgObj = nDbgObj;
 #endif
+#if 0
 	if (objP->nSegment == siP->ailP->nGoalSegment)
 		siP->ailP->mode = AIM_IDLING;
+#endif
 	return 0;
 	}
 CreatePathToPlayer (objP, 4 + gameData.ai.nOverallAgitation / 8 + gameStates.app.nDifficultyLevel, 1);

@@ -421,7 +421,7 @@ void ai_turn_towards_vector(vmsVector *goal_vector, tObject *objP, fix rate)
 		fix	new_scale = FixDiv(gameData.time.xFrame * D1_AI_TURN_SCALE, rate);
 		new_fVec *= new_scale;
 		new_fVec += objP->position.mOrient[FVEC];
-		mag = vmsVector::normalize(new_fVec);
+		mag = vmsVector::Normalize(new_fVec);
 		if (mag < F1_0/256) {
 			new_fVec = *goal_vector;		//	if degenerate vector, go right to goal
 		}
@@ -917,7 +917,7 @@ void ai_fire_laser_at_player(tObject *objP, vmsVector *fire_point)
 			fire_vec *= FixMul(WI_speed (objP->id, gameStates.app.nDifficultyLevel), gameData.time.xFrame);
 
 			fire_vec += player_direction_vector;
-			vmsVector::normalize(fire_vec);
+			vmsVector::Normalize(fire_vec);
 
 		}
 	}
@@ -952,7 +952,7 @@ void move_towards_vector(tObject *objP, vmsVector *vec_goal)
 	//	bash velocity vector twice as much towards player as usual.
 
 	vel = piP->velocity;
-	vmsVector::normalize(vel);
+	vmsVector::Normalize(vel);
 	dot = vmsVector::dot(vel, objP->position.mOrient[FVEC]);
 
 	if (dot < 3*F1_0/4) {
@@ -989,7 +989,7 @@ void move_towards_player(tObject *objP, vmsVector *vec_to_player)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	I am ashamed of this: fast_flag == -1 means normal slide about.  fast_flag = 0 means no evasion.
+//	I am ashamed of this: fast_flag == -1 means Normal slide about.  fast_flag = 0 means no evasion.
 void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 {
 	tPhysicsInfo	*piP = &objP->mType.physInfo;
@@ -1045,7 +1045,7 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 				break;
 		}
 
-	//	Note: -1 means normal circling about the player.  > 0 means fast evasion.
+	//	Note: -1 means Normal circling about the player.  > 0 means fast evasion.
 	if (fast_flag > 0) {
 		fix	dot;
 
@@ -1161,7 +1161,7 @@ void ai_move_relative_to_player(tObject *objP, tAILocal *ailP, fix dist_to_playe
 			fieldOfView = gameData.bots.info [1][objP->id].fieldOfView[gameStates.app.nDifficultyLevel];
 
 			vec_to_laser = dobjp->position.vPos - objP->position.vPos;
-			dist_to_laser = vmsVector::normalize(vec_to_laser);
+			dist_to_laser = vmsVector::Normalize(vec_to_laser);
 			dot = vmsVector::dot(vec_to_laser, objP->position.mOrient[FVEC]);
 
 			if (dot > fieldOfView) {
@@ -1172,12 +1172,12 @@ void ai_move_relative_to_player(tObject *objP, tAILocal *ailP, fix dist_to_playe
 				//	Get the laser's direction.  If it's a polyobj, it can be gotten cheaply from the orientation matrix.
 				if (dobjp->renderType == RT_POLYOBJ)
 					laser_fVec = dobjp->position.mOrient[FVEC];
-				else {		//	Not a polyobj, get velocity and normalize.
+				else {		//	Not a polyobj, get velocity and Normalize.
 					laser_fVec = dobjp->mType.physInfo.velocity;	//dobjp->position.mOrient[FVEC];
-					vmsVector::normalize(laser_fVec);
+					vmsVector::Normalize(laser_fVec);
 				}
 				laser_vec_to_robot = objP->position.vPos - dobjp->position.vPos;
-				vmsVector::normalize(laser_vec_to_robot);
+				vmsVector::Normalize(laser_vec_to_robot);
 				laser_robot_dot = vmsVector::dot(laser_fVec, laser_vec_to_robot);
 
 				if ((laser_robot_dot > F1_0*7/8) && (dist_to_laser < F1_0*80)) {
@@ -1384,7 +1384,7 @@ void move_object_to_legal_spot(tObject *objP)
 
 			COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->nSegment);
 			goal_dir = vSegCenter - objP->position.vPos;
-			dist_to_center = vmsVector::normalize(goal_dir);
+			dist_to_center = vmsVector::Normalize(goal_dir);
 			goal_dir *= objP->size;
 			objP->position.vPos += goal_dir;
 			if (!ObjectIntersectsWall(objP)) {
@@ -1413,7 +1413,7 @@ void move_towards_segment_center(tObject *objP)
 
 	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->nSegment);
 	goal_dir = vSegCenter - objP->position.vPos;
-	dist_to_center = vmsVector::normalize(goal_dir);
+	dist_to_center = vmsVector::Normalize(goal_dir);
 	if (dist_to_center < objP->size) {
 		//	Center is nearer than the distance we want to move, so move to center.
 		objP->position.vPos = vSegCenter;
@@ -2393,7 +2393,7 @@ void DoD1AIFrame (tObject *objP)
 						else
 							ai_multi_send_robot_position(nObject, -1);
 					} else {
-						//	Robots in hover mode are allowed to evade at half normal speed.
+						//	Robots in hover mode are allowed to evade at half Normal speed.
 						if (!ai_multiplayer_awareness(objP, 81)) {
 							if (maybe_ai_do_actual_firing_stuff(objP, aiP))
 								ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
@@ -2428,7 +2428,7 @@ void DoD1AIFrame (tObject *objP)
 				return;
 			COMPUTE_SIDE_CENTER (&vCenter, gameData.segs.segments + objP->nSegment, aiP->GOALSIDE);
 			goal_vector = vCenter - objP->position.vPos;
-			vmsVector::normalize(goal_vector);
+			vmsVector::Normalize(goal_vector);
 			ai_turn_towards_vector(&goal_vector, objP, botInfoP->turnTime[gameStates.app.nDifficultyLevel]);
 			move_towards_vector(objP, &goal_vector);
 			ai_multi_send_robot_position(nObject, -1);

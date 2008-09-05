@@ -2604,7 +2604,7 @@ while (!bDone) {
 					MultiApplyGoalTextures ();
 				bJustStartedPlayback = 0;
 				}
-			ResetPaletteAdd ();                // get palette back to normal
+			ResetPaletteAdd ();                // get palette back to Normal
 			StartTime (0);
 			}
 			break;
@@ -2817,14 +2817,14 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 				fvec2 = objP->position.mOrient[FVEC];
 				fvec2 *= factor;
 				fvec1 += fvec2;
-				mag1 = vmsVector::normalize(fvec1);
+				mag1 = vmsVector::Normalize(fvec1);
 				if (mag1 > F1_0/256) {
 					rvec1 = curObjP->position.mOrient[RVEC];
 					rvec1 *= (F1_0-factor);
 					rvec2 = objP->position.mOrient[RVEC];
 					rvec2 *= factor;
 					rvec1 += rvec2;
-					vmsVector::normalize(rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
+					vmsVector::Normalize(rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
 					curObjP->position.mOrient = vmsMatrix::CreateFR(fvec1, rvec1);
 					//curObjP->position.mOrient = vmsMatrix::CreateFR(fvec1, NULL, &rvec1);
 					}

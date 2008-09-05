@@ -31,8 +31,8 @@ void G3SetViewAngles (vmsVector *vPos, vmsAngVec *mOrient, fix xZoom)
 viewInfo.zoom = xZoom;
 viewInfo.pos = *vPos;
 viewInfo.view[0] = vmsMatrix::Create(*mOrient);
-viewInfo.posf = viewInfo.pos.toFloat();
-viewInfo.viewf[0] = viewInfo.view[0].toFloat();
+viewInfo.posf = viewInfo.pos.ToFloat();
+viewInfo.viewf[0] = viewInfo.view[0].ToFloat();
 ScaleMatrix (1);
 }
 
@@ -44,11 +44,11 @@ viewInfo.zoom = xZoom;
 viewInfo.glZoom = (float) xZoom / 65536.0f;
 
 	viewInfo.pos = vPos;
-	viewInfo.posf = viewInfo.pos.toFloat();
+	viewInfo.posf = viewInfo.pos.ToFloat();
 	OOF_VecVms2Gl (viewInfo.glPosf, viewInfo.pos);
 
 	viewInfo.view [0] = mOrient;
-	viewInfo.viewf[0] = viewInfo.view[0].toFloat();
+	viewInfo.viewf[0] = viewInfo.view[0].ToFloat();
 	OOF_MatVms2Gl (OOF_GlIdent (viewInfo.glViewf), viewInfo.view[0]);
 
 ScaleMatrix (bOglScale);
@@ -71,7 +71,7 @@ else {			//xZoom out by scaling x&y
 	viewInfo.scale[X] = FixMul (viewInfo.scale[X], s);
 	viewInfo.scale[Y] = FixMul (viewInfo.scale[Y], s);
 	}
-viewInfo.scalef = viewInfo.scale.toFloat();
+viewInfo.scalef = viewInfo.scale.ToFloat();
 //viewInfo.scale[X] = viewInfo.scale[Y] = viewInfo.scale[Z] = F1_0;
 //now scale matrix elements
 if (bOglScale) {
@@ -85,7 +85,7 @@ else {
 	viewInfo.view [0][FVEC] *= (-viewInfo.scale[Z]);
 	glScalef (1, 1, 1);
 	}
-viewInfo.viewf[0] = viewInfo.view[0].toFloat();
+viewInfo.viewf[0] = viewInfo.view[0].ToFloat();
 }
 
 //------------------------------------------------------------------------------

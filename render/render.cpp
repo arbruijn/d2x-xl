@@ -497,7 +497,7 @@ fix	Min_n0_n1_dot	= (F1_0*15/16);
 
 // -----------------------------------------------------------------------------------
 //	Render a side.
-//	Check for normal facing.  If so, render faces on tSide dictated by sideP->nType.
+//	Check for Normal facing.  If so, render faces on tSide dictated by sideP->nType.
 
 #undef LMAP_LIGHTADJUST
 #define LMAP_LIGHTADJUST 0

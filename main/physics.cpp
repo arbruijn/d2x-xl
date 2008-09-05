@@ -84,18 +84,18 @@ for (i = 0; i < 6; i++) {
 	d = vmsVector::dot(gameData.segs.segments [objP->nSegment].sides [i].normals[0], objP->position.mOrient[UVEC]);
 	if (d > largest_d) {largest_d = d; best_side=i;}
 	}
-if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new tPlayer leveling code: use normal of tSide closest to our up vec
+if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new tPlayer leveling code: use Normal of tSide closest to our up vec
 	if (GetNumFaces (&gameData.segs.segments [objP->nSegment].sides [best_side])==2) {
 		tSide *s = &gameData.segs.segments [objP->nSegment].sides [best_side];
 		desiredUpVec[X] = (s->normals[0][X] + s->normals[1][X]) / 2;
 		desiredUpVec[Y] = (s->normals[0][Y] + s->normals[1][Y]) / 2;
 		desiredUpVec[Z] = (s->normals[0][Z] + s->normals[1][Z]) / 2;
-		vmsVector::normalize(desiredUpVec);
+		vmsVector::Normalize(desiredUpVec);
 		}
 	else
 		desiredUpVec = gameData.segs.segments [objP->nSegment].sides [best_side].normals [0];
 	}
-else if (gameOpts->gameplay.nAutoLeveling == 2)	// old way: used floor's normal as upvec
+else if (gameOpts->gameplay.nAutoLeveling == 2)	// old way: used floor's Normal as upvec
 	desiredUpVec = gameData.segs.segments [objP->nSegment].sides [3].normals [0];
 else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
 	desiredUpVec = (*PlayerSpawnOrient(gameData.multiplayer.nLocalPlayer))[UVEC];
@@ -553,7 +553,7 @@ do {
 	bRetry = 0;
 	if (fScale < 1) {
 		vmsVector vStartVel = gameData.objs.vStartVel[nObject];
-		vmsVector::normalize (vStartVel);
+		vmsVector::Normalize (vStartVel);
 		fix xDot = vmsVector::dot (objP->position.mOrient[FVEC], vStartVel);
 		vFrame = objP->mType.physInfo.velocity + gameData.objs.vStartVel[nObject];
 		vFrame *= F2X (fScale * fScale);
@@ -742,7 +742,7 @@ retryMove:
 				COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 				vCenter -= objP->position.vPos;
 				if (vCenter.mag() > F1_0) {
-					vmsVector::normalize(vCenter);
+					vmsVector::Normalize(vCenter);
 					vCenter /= 10;
 					}
 				objP->position.vPos -= vCenter;
@@ -1004,7 +1004,7 @@ if (objP->controlType == CT_AI) {
 					nVertex = vertexList [2];
 				if (nVertex > vertexList [3])
 					nVertex = vertexList [3];
-				dist = vStartPos.distToPlane(sideP->normals[0], gameData.segs.vertices[nVertex]);
+				dist = vStartPos.DistToPlane(sideP->normals[0], gameData.segs.vertices[nVertex]);
 				objP->position.vPos = vStartPos + sideP->normals[0] * (objP->size-dist);
 				UpdateObjectSeg (objP);
 				}
@@ -1057,12 +1057,12 @@ if ((gameStates.render.automap.bDisplay && (objP == gameData.objs.console)) || S
 #endif
 //Add in acceleration due to force
 #ifdef _DEBUG
-mag = VmVecMag (&objP->mType.physInfo.velocity);
+mag = objP->mType.physInfo.velocity.mag ();
 #endif
 if (!gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted || (objP != gameData.objs.console))
 	objP->mType.physInfo.velocity += *vForce * FixDiv (f1_0, objP->mType.physInfo.mass);
 #ifdef _DEBUG
-mag = VmVecMag (&objP->mType.physInfo.velocity);
+mag = objP->mType.physInfo.velocity.mag ();
 if (X2F (mag) > 500)
 	objP = objP;
 #endif

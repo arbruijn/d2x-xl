@@ -52,7 +52,7 @@
  * Examples:
  * ---------
  * ./d1x -udp
- *  - Run D1X to participate in normal local network (Linux only, of course)
+ *  - Run D1X to participate in Normal local network (Linux only, of course)
  *
  * ./d1x -udp @1=localhost:2 & ./d1x -udp @2=localhost:1
  *  - Run two clients simultaneously fighting each other (only each other)

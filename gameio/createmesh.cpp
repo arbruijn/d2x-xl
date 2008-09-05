@@ -422,7 +422,7 @@ memcpy (verts, edgeP->verts, sizeof (verts));
 gameData.segs.fVertices[gameData.segs.nVertices] = fVector::avg(
 			 gameData.segs.fVertices[verts[0]],
 			 gameData.segs.fVertices[verts[1]]);
-gameData.segs.vertices[gameData.segs.nVertices] = gameData.segs.fVertices[gameData.segs.nVertices].toFix();
+gameData.segs.vertices[gameData.segs.nVertices] = gameData.segs.fVertices[gameData.segs.nVertices].ToFix();
 #if 0
 if (tris [1] >= 0) {
 	if (NewEdgeLen (tris [0], verts [0], verts [1]) + NewEdgeLen (tris [1], verts [0], verts [1]) < MAX_EDGE_LEN)
@@ -595,7 +595,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	memcpy (grsTriP->index, triP->index, sizeof (triP->index));
 	for (i = 0; i < 3; i++)
 		gameData.segs.faces.vertices [nIndex + i] = *gameData.segs.fVertices [triP->index [i]].v3();
-	gameData.segs.faces.normals[nIndex] = fVector3::normal(
+	gameData.segs.faces.normals[nIndex] = fVector3::Normal(
 					 gameData.segs.faces.vertices[nIndex],
 					 gameData.segs.faces.vertices[nIndex + 1],
 					 gameData.segs.faces.vertices[nIndex + 2]);
@@ -603,7 +603,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	if (gameData.segs.faces.normals[nIndex].mag() == 0)
 		m_faceP = m_faceP;
 #endif
-	vNormal = gameData.segs.faces.normals[nIndex].toFix();
+	vNormal = gameData.segs.faces.normals[nIndex].ToFix();
 	for (i = 1; i < 3; i++)
 		gameData.segs.faces.normals [nIndex + i] = gameData.segs.faces.normals [nIndex];
 	memcpy (gameData.segs.faces.texCoord + nIndex, triP->texCoord, sizeof (triP->texCoord));
@@ -860,7 +860,7 @@ fVector3 *CQuadMeshBuilder::SetTriNormals (grsTriangle *triP, fVector3 *m_normal
 {
 	fVector	vNormalf;
 
-vNormalf = fVector::normal(gameData.segs.fVertices[triP->index[0]],
+vNormalf = fVector::Normal(gameData.segs.fVertices[triP->index[0]],
 				 gameData.segs.fVertices[triP->index[1]], gameData.segs.fVertices[triP->index[2]]);
 *m_normalP++ = *vNormalf.v3();
 *m_normalP++ = *vNormalf.v3();
@@ -1093,7 +1093,7 @@ vSide[3] = fVector::avg(gameData.segs.fVertices[m_sideVerts[3]], gameData.segs.f
 VmLineLineIntersection(vSide[0], vSide[2], vSide[1], vSide[3],
 								gameData.segs.fVertices[gameData.segs.nVertices],
 								gameData.segs.fVertices[gameData.segs.nVertices]);
-gameData.segs.vertices[gameData.segs.nVertices] = gameData.segs.fVertices[gameData.segs.nVertices].toFix();
+gameData.segs.vertices[gameData.segs.nVertices] = gameData.segs.fVertices[gameData.segs.nVertices].ToFix();
 m_sideVerts [4] = gameData.segs.nVertices++;
 m_faceP->nVerts++;
 for (i = 0; i < 4; i++, m_triP++) {

@@ -120,7 +120,7 @@ if (behavior != -1) {
 	}
 else if (!((aiP->behavior >= MIN_BEHAVIOR) && (aiP->behavior <= MAX_BEHAVIOR))) {
 #if TRACE
-	con_printf (CONDBG, " [obj %i -> normal] ", nObject);
+	con_printf (CONDBG, " [obj %i -> Normal] ", nObject);
 #endif
 	aiP->behavior = AIB_NORMAL;
 	}

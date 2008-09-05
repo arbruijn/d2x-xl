@@ -43,10 +43,10 @@ if (objP->nType == OBJ_ROBOT) {
 		return 0;
 	}
 vGoal = objP->position.vPos - tracker->position.vPos;
-vmsVector::normalize(vGoal);
+vmsVector::Normalize(vGoal);
 *xDot = vmsVector::dot(vGoal, tracker->position.mOrient[FVEC]);
 if ((*xDot < xMinTrackableDot) && (*xDot > 9 * F1_0 / 10)) {
-	vmsVector::normalize(vGoal);
+	vmsVector::Normalize(vGoal);
 	*xDot = vmsVector::dot(vGoal, tracker->position.mOrient[FVEC]);
 	}
 
@@ -159,7 +159,7 @@ else {
 		else if ((curObjP->nType != OBJ_PLAYER) && (curObjP->nType != OBJ_REACTOR))
 			continue;
 		vecToCurObj = curObjP->position.vPos - *vTrackerPos;
-		dist = vmsVector::normalize(vecToCurObj);
+		dist = vmsVector::Normalize(vecToCurObj);
 		if (dist < maxTrackableDist) {
 			dot = vmsVector::dot(vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient[FVEC] : trackerP->position.mOrient[FVEC]);
 
@@ -175,7 +175,7 @@ else {
 					}
 				} 
 			else if (dot > F1_0 - (F1_0 - curMinTrackableDot) * 2) {
-				vmsVector::normalize(vecToCurObj);
+				vmsVector::Normalize(vecToCurObj);
 				dot = vmsVector::dot(vecToCurObj, trackerP->position.mOrient[FVEC]);
 				if (dot > curMinTrackableDot) {
 					if (dot > maxDot) {
@@ -264,7 +264,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 	dist = vecToCurObj.mag();
 
 	if (dist < maxTrackableDist) {
-		vmsVector::normalize(vecToCurObj);
+		vmsVector::Normalize(vecToCurObj);
 		
 		dot = vmsVector::dot(vecToCurObj, trackerP->position.mOrient[FVEC]);
 		if (bIsProximity)

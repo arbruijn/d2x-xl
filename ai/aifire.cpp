@@ -136,11 +136,11 @@ int LeadPlayer (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayer
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	return 0;
 vPlayerMovementDir = gameData.objs.console->mType.physInfo.velocity;
-xPlayerSpeed = vmsVector::normalize(vPlayerMovementDir);
+xPlayerSpeed = vmsVector::Normalize(vPlayerMovementDir);
 if (xPlayerSpeed < MIN_LEAD_SPEED)
 	return 0;
 vVecToPlayer = *vBelievedPlayerPos - *vFirePoint;
-xDistToPlayer = vmsVector::normalize(vVecToPlayer);
+xDistToPlayer = vmsVector::Normalize(vVecToPlayer);
 if (xDistToPlayer > MAX_LEAD_DISTANCE)
 	return 0;
 dot = vmsVector::dot(vVecToPlayer, vPlayerMovementDir);
@@ -168,7 +168,7 @@ xProjectedTime = FixDiv (xDistToPlayer, xMaxWeaponSpeed);
 (*vFire)[X] = ComputeLeadComponent ((*vBelievedPlayerPos)[X], (*vFirePoint)[X], gameData.objs.console->mType.physInfo.velocity[X], xProjectedTime);
 (*vFire)[Y] = ComputeLeadComponent ((*vBelievedPlayerPos)[Y], (*vFirePoint)[Y], gameData.objs.console->mType.physInfo.velocity[Y], xProjectedTime);
 (*vFire)[Z] = ComputeLeadComponent ((*vBelievedPlayerPos)[Z], (*vFirePoint)[Z], gameData.objs.console->mType.physInfo.velocity[Z], xProjectedTime);
-vmsVector::normalize(*vFire);
+vmsVector::Normalize(*vFire);
 Assert (vmsVector::dot(*vFire, objP->position.mOrient[FVEC]) < 3*F1_0/2);
 //	Make sure not firing at especially strange angle.  If so, try to correct.  If still bad, give up after one try.
 if (vmsVector::dot(*vFire, objP->position.mOrient[FVEC]) < F1_0/2) {

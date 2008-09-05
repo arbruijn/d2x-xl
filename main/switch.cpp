@@ -549,8 +549,8 @@ if (nStep <= 0) {
 else
 	n = gameStates.gameplay.vTgtDir;
 // turn the ship so that it is facing the destination nSide of the destination tSegment
-// invert the normal as it points into the tSegment
-// compute angles from the normal
+// invert the Normal as it points into the tSegment
+// compute angles from the Normal
 an = n.toAnglesVec();
 // create new orientation matrix
 if (!nStep)
@@ -672,14 +672,14 @@ v = 60 + (COMPETITION ? 100 : extraGameInfo [IsMultiGame].nSpeedBoost) * 4 * spe
 if (sbd.bBoosted) {
 	if (pSrcPt && pDestPt) {
 		n = *pDestPt - *pSrcPt;
-		vmsVector::normalize(n);
+		vmsVector::Normalize(n);
 		}
 	else if (srcSegnum >= 0) {
 		COMPUTE_SIDE_CENTER (&sbd.vSrc, gameData.segs.segments + srcSegnum, srcSidenum);
 		COMPUTE_SIDE_CENTER (&sbd.vDest, gameData.segs.segments + destSegnum, destSidenum);
 		if (memcmp (&sbd.vSrc, &sbd.vDest, sizeof (vmsVector))) {
 			n = sbd.vDest - sbd.vSrc;
-			vmsVector::normalize(n);
+			vmsVector::Normalize(n);
 			}
 		else {
 			Controls [0].verticalThrustTime =
@@ -687,7 +687,7 @@ if (sbd.bBoosted) {
 			Controls [0].sidewaysThrustTime = 0;
 			memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 		// turn the ship so that it is facing the destination nSide of the destination tSegment
-		// invert the normal as it points into the tSegment
+		// invert the Normal as it points into the tSegment
 			/*
 			n[X] = -n[X];
 			n[Y] = -n[Y];
@@ -698,7 +698,7 @@ if (sbd.bBoosted) {
 	else {
 		memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 	// turn the ship so that it is facing the destination nSide of the destination tSegment
-	// invert the normal as it points into the tSegment
+	// invert the Normal as it points into the tSegment
 		/*
 		n[X] = -n[X];
 		n[Y] = -n[Y];

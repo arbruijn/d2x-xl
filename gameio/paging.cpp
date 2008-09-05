@@ -450,7 +450,7 @@ for (s = 0; s <= gameData.objs.nLastObject [0]; s++) {
 
 		if (gameData.missions.nCurrentLevel<0)                //secret level
 			strcpy (fname, gameData.missions.szSecretLevelNames [-gameData.missions.nCurrentLevel-1]);
-		else                                    //normal level
+		else                                    //Normal level
 			strcpy (fname, gameData.missions.szLevelNames [gameData.missions.nCurrentLevel-1]);
 		p = strchr (fname, '.');
 		if (p) *p = 0;

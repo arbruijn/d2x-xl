@@ -249,7 +249,7 @@ if (IsMultiGame)
 //if (parentObjP->id == gameData.multiplayer.nLocalPlayer)
 	CreateOmegaLightnings (vTargetPos, parentObjP, targetObjP);
 vGoal = *vTargetPos - *vMuzzle;
-xGoalDist = vmsVector::normalize(vGoal);
+xGoalDist = vmsVector::Normalize(vGoal);
 if (xGoalDist < MIN_OMEGA_BLOBS * MIN_OMEGA_DIST) {
 	xOmegaBlobDist = MIN_OMEGA_DIST;
 	nOmegaBlobs = xGoalDist / xOmegaBlobDist;

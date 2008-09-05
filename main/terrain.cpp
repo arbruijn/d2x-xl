@@ -357,7 +357,7 @@ if (j < 0)
 static fix GetTerrainFaceLight (vmsVector *p0, vmsVector *p1, vmsVector *p2)
 {
 	static vmsVector vLightDir = vmsVector::Create(0x2e14, 0xe8f5, 0x5eb8);
-	vmsVector vNormal = vmsVector::normal (*p0, *p1, *p2);
+	vmsVector vNormal = vmsVector::Normal (*p0, *p1, *p2);
 
 return -vmsVector::dot (vNormal, vLightDir);
 }

@@ -877,7 +877,7 @@ gameStates.gameplay.xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge
 // -- 	}
 // -- }
 
-//	Amount to diminish guns towards normal, per second.
+//	Amount to diminish guns towards Normal, per second.
 #define	DIMINISH_RATE	16		//	gots to be a power of 2, else change the code in DiminishPaletteTowardsNormal
 
  //adds to rgb values for palette flash
@@ -909,7 +909,7 @@ void PALETTE_FLASH_ADD (int dr, int dg, int db)
 }
 
 //	------------------------------------------------------------------------------------
-//	Diminish palette effects towards normal.
+//	Diminish palette effects towards Normal.
 
 void DiminishPaletteTowardsNormal (void)
 {

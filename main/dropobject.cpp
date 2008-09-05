@@ -616,13 +616,13 @@ switch (nType) {
 			int	rand_scale;
 			new_velocity = init_vel;
 			old_mag = init_vel.mag();
-			vmsVector::normalize(new_velocity);
+			vmsVector::Normalize(new_velocity);
 			//	We want powerups to move more in network mode.
 			rand_scale = 2;
 			new_velocity[X] += (d_rand ()-16384)*2;
 			new_velocity[Y] += (d_rand ()-16384)*2;
 			new_velocity[Z] += (d_rand ()-16384)*2;
-			vmsVector::normalize(new_velocity);
+			vmsVector::Normalize(new_velocity);
 			new_velocity *= ((F1_0*32 + old_mag) * rand_scale);
 			vNewPos = pos;
 			//	This is dangerous, could be outside mine.

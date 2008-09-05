@@ -175,7 +175,7 @@ xSize = (fix) (objP->size * fLife * BLAST_SCALE);
 vPos = objP->position.vPos;
 #if MOVE_BLAST
 vDir = gameData.objs.console->position.vPos - vPos;
-vmsVector::normalize (vDir);
+vmsVector::Normalize (vDir);
 vDir *= (xSize - objP->size);
 vPos += vDir;
 #endif

@@ -436,7 +436,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	if (gameStates.render.automap.bDisplay)
 		G3TransformPoint(vertices[i], gameData.segs.fVertices[faceP->index[i]], 0);
 	else
-		vertices[i] = gameData.segs.points [faceP->index [i]].p3_vec.toFloat();
+		vertices[i] = gameData.segs.points [faceP->index [i]].p3_vec.ToFloat();
 #endif
 	}
 return RIAddPoly (faceP, NULL, bmP,
@@ -463,7 +463,7 @@ item.nFrame = nFrame;
 item.bAdditive = bAdditive;
 item.fSoftRad = fSoftRad;
 G3TransformPoint (vPos, position, 0);
-item.position = vPos.toFloat();
+item.position = vPos.ToFloat();
 AddRenderItem (riSprite, &item, sizeof (item), vPos[Z], vPos[Z]);
 return 0;
 }
@@ -479,7 +479,7 @@ item.nSize = nSize;
 item.nFrame = nFrame;
 item.nType = nType;
 G3TransformPoint (vPos, position, 0);
-item.position = vPos.toFloat();
+item.position = vPos.ToFloat();
 AddRenderItem (riSpark, &item, sizeof (item), vPos[Z], vPos[Z]);
 return 0;
 }

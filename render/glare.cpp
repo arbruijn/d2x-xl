@@ -106,19 +106,19 @@ void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float 
 
 if (!vEye) {
 	vEye = &h;
-	//fVector::normalize(vEye, vCenter);
-	*vEye = *vCenter; fVector::normalize(*vEye);
+	//fVector::Normalize(vEye, vCenter);
+	*vEye = *vCenter; fVector::Normalize(*vEye);
 	}
 v[X] = v[Z] = 0;
 v[Y] = (*vCenter)[Y] ? d / (*vCenter)[Y] : 1;
 v -= *vCenter;
-fVector::normalize(v);
+fVector::Normalize(v);
 vdx = fVector::cross(v, *vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
 vdx = vdx * dx;
 v[Y] = v[Z] = 0;
 v[X] = (*vCenter)[X] ? d / (*vCenter)[X] : 1;
 v -= *vCenter;
-fVector::normalize(v);
+fVector::Normalize(v);
 vdy = fVector::cross(v, *vEye);
 if (r) {
 	if((*vCenter)[X] >= 0) {
@@ -351,7 +351,7 @@ for (i = 0; i < 4; i++) {
 	else
 		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
 	}
-v = SIDE_CENTER_I (nSegment, nSide)->toFloat();
+v = SIDE_CENTER_I (nSegment, nSide)->ToFloat();
 G3TransformPoint(*vCenter, v, 0);
 #if 0
 if (gameStates.render.bQueryCoronas) {
@@ -421,13 +421,13 @@ v -= sprite[2];
 v -= sprite[3];
 v = v * 0.25f;
 *vNormal = fVector::cross(v, u);
-fVector::normalize(*vNormal);
-e = *vCenter; fVector::normalize(e);
+fVector::Normalize(*vNormal);
+e = *vCenter; fVector::Normalize(e);
 if (fVector::dot(e, *vNormal) > 0.999f)
 	p = v;
 else {
 	p = fVector::cross(e, *vNormal);
-	fVector::normalize(p);
+	fVector::Normalize(p);
 }
 
 q = fVector::cross(p, e);
@@ -562,9 +562,9 @@ v -= sprite[2];
 v -= sprite[3];
 v = v * 0.25f;
 e = *vEye - *vLight;
-fVector::normalize(e);
+fVector::Normalize(e);
 n = fVector::cross(v, u);
-fVector::normalize(n);
+fVector::Normalize(n);
 ul = u.mag();
 vl = v.mag();
 h = (ul > vl) ? vl : ul;
@@ -694,8 +694,8 @@ if (RENDERPATH && gameStates.ogl.bOcclusionQuery && (CoronaStyle ())) {
 #endif
 	}
 else {
-	vNormal = fVector::normal(sprite[0], sprite[1], sprite[2]);
-	vEye = vCenter; fVector::normalize(vEye);
+	vNormal = fVector::Normal(sprite[0], sprite[1], sprite[2]);
+	vEye = vCenter; fVector::Normalize(vEye);
 	//dim corona depending on viewer angle
 	if ((fAngle = fVector::dot(vNormal, vEye)) > 0) {
 		if (fAngle > 0.25f)
@@ -832,7 +832,7 @@ const char *glareFS [2] = {
 	"void main (void) {\r\n" \
 	"float depthZ = depthScale.y / (depthScale.x - texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
 	"float fragZ = depthScale.y / (depthScale.x - gl_FragCoord.z);\r\n" \
-	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color / sqrt (max (1.0, (depthZ - fragZ) / 2));\r\n" \
+	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color / sqrt (max (1.0, (depthZ - fragZ) / 2.0));\r\n" \
 	"}\r\n"
 	};
 

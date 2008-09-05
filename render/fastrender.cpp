@@ -1150,7 +1150,7 @@ for (i = 0; i < vld.nLights; i++) {
 	brightness = lightColor[W];
 	lightDir = *lightPos - *vertPos;
 	lightDist = lightDir.mag() / lightRange;
-	fVector::normalize(lightDir);
+	fVector::Normalize(lightDir);
 	if (nType)
 		lightDist -= radius;
 	if (lightDist < 1.0f) {
@@ -1171,9 +1171,9 @@ for (i = 0; i < vld.nLights; i++) {
 	vertColor[B] = (matAmbient[B] + NdotL) * lightColor[B];
 	if (NdotL > 0.0f) {
 		vReflect = fVector::reflect(lightDir.neg(), *vertNorm);
-		fVector::normalize(vReflect);
+		fVector::Normalize(vReflect);
 		lightPos->neg();
-		fVector::normalize(*lightPos);
+		fVector::Normalize(*lightPos);
 		RdotE = fVector::dot(vReflect, *lightPos);
 		if (RdotE < 0.0f)
 			RdotE = 0.0f;
@@ -2039,7 +2039,7 @@ const char *vertLightFS =
 	"  float shininess = 64.0;\r\n" \
 	"  vec3 vertColor = vec3 (0.0, 0.0, 0.0);\r\n" \
 	"	lightDist = length (lightDir) / lightRange - type * radius;\r\n" \
-	"	lightDir = normalize (lightDir);\r\n" \
+	"	lightDir = Normalize (lightDir);\r\n" \
 	"	if (lightDist < 1.0) {\r\n" \
 	"		lightDist = 1.4142;\r\n" \
 	"		NdotL = 1.0;\r\n" \
@@ -2051,7 +2051,7 @@ const char *vertLightFS =
 	"	attenuation = lightDist / brightness;\r\n" \
 	"	vertColor = (matAmbient + vec3 (NdotL, NdotL, NdotL)) * lightColor;\r\n" \
 	"	if (NdotL > 0.0) {\r\n" \
-	"		RdotE = max (dot (normalize (reflect (-lightDir, vertNorm)), normalize (-lightPos)), 0.0);\r\n" \
+	"		RdotE = max (dot (Normalize (reflect (-lightDir, vertNorm)), Normalize (-lightPos)), 0.0);\r\n" \
 	"		vertColor += lightColor * pow (RdotE, shininess);\r\n" \
 	"		}\r\n" \
 	"  gl_FragColor = vec4 (vertColor / attenuation, 1.0);\r\n" \

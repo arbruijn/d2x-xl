@@ -292,9 +292,9 @@ v0 = objP0->mType.physInfo.velocity;
 v1 = objP1->mType.physInfo.velocity;
 mag = vmsVector::dot (v0, v1);
 vn0 = v0;
-m0 = vmsVector::normalize (vn0);
+m0 = vmsVector::Normalize (vn0);
 vn1 = v1;
-m1 = vmsVector::normalize (vn1);
+m1 = vmsVector::Normalize (vn1);
 if (m0 && m1) {
 	if (m0 > m1) {
 		double d = (double)m1 / (double)m0;
@@ -362,19 +362,19 @@ HUDMessage (0, "%d %d", mag, (objP0->mType.physInfo.mass + objP1->mType.physInfo
 if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 	// exert force in the direction of the hit point to the object's center
 	vh = *vHitPt - objP1->position.vPos;
-	if (vmsVector::normalize (vh) > F1_0 / 16) {
+	if (vmsVector::Normalize (vh) > F1_0 / 16) {
 		vr = vh;
 		vh = -vh;
 		vh *= mag;
 		BumpThisObject (objP1, objP0, &vh, bDamage);
 		// compute reflection vector. The vector from the other object's center to the hit point
-		// serves as normal.
+		// serves as Normal.
 		v1 = v0;
-		vmsVector::normalize (v1);
+		vmsVector::Normalize (v1);
 		dot = vmsVector::dot (v1, vr);
 		vr *= (2 * dot);
 		//VmVecNegate (VmVecDec (&vr, &v0));
-		vmsVector::normalize (vr);
+		vmsVector::Normalize (vr);
 		vr *= mag;
 		vr = -vr;
 		BumpThisObject (objP0, objP1, &vr, bDamage);
@@ -599,7 +599,7 @@ switch (objP->nType) {
 				vHit = gameData.segs.segments [hitseg].sides [hitside].normals [0];
 				vRand = vmsVector::Random();
 				vHit += vRand * (F1_0/8);
-				vmsVector::normalize (vHit);
+				vmsVector::Normalize (vHit);
 				BumpOneObject (objP, &vHit, F1_0*8);
 				}
 			}
@@ -902,12 +902,12 @@ if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_VOLATILE) ||
 else if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_WATER) ||
 			(sideP->nOvlTex && (gameData.pig.tex.pTMapInfo [sideP->nOvlTex].flags & TMI_WATER))) {
 	//we've hit water
-	//	MK: 09/13/95: Badass in water is 1/2 normal intensity.
+	//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
 	if (wInfoP->matter) {
 		DigiLinkSoundToPos (SOUNDMSL_HIT_WATER, hitseg, 0, vHitPt, 0, F1_0);
 		if (wInfoP->damage_radius) {
 			DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (weaponP), 0, F1_0, SOUNDCLASS_EXPLOSION);
-			//	MK: 09/13/95: Badass in water is 1/2 normal intensity.
+			//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
 			ObjectCreateBadassExplosion (weaponP, hitseg, vHitPt,
 				wInfoP->impact_size/2,
 				wInfoP->robot_hit_vclip,
@@ -1066,13 +1066,13 @@ int CollideRobotAndReactor (tObject *objP1, tObject *obj2, vmsVector *vHitPt)
 if (objP1->nType == OBJ_ROBOT) {
 	vmsVector	hitvec;
 	hitvec = obj2->position.vPos - objP1->position.vPos;
-	vmsVector::normalize (hitvec);
+	vmsVector::Normalize (hitvec);
 	BumpOneObject (objP1, &hitvec, 0);
 	}
 else {
 	vmsVector	hitvec;
 	hitvec = objP1->position.vPos - obj2->position.vPos;
-	vmsVector::normalize (hitvec);
+	vmsVector::Normalize (hitvec);
 	BumpOneObject (obj2, &hitvec, 0);
 	}
 return 1;
@@ -1497,7 +1497,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 
 	//	Boss only vulnerable in back.  See if hit there.
 	tvec1 = *vHitPt - robotP->position.vPos;
-	vmsVector::normalize (tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
+	vmsVector::Normalize (tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
 	dot = vmsVector::dot (tvec1, robotP->position.mOrient[FVEC]);
 #if TRACE
 	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", X2F (dot));
@@ -1560,9 +1560,9 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 				newObjP->mType.physInfo.thrust.setZero();
 
 				vec_to_point = *vHitPt - robotP->position.vPos;
-				vmsVector::normalize (vec_to_point);
+				vmsVector::Normalize (vec_to_point);
 				weap_vec = weaponP->mType.physInfo.velocity;
-				speed = vmsVector::normalize (weap_vec);
+				speed = vmsVector::Normalize (weap_vec);
 				vec_to_point += weap_vec * (-F1_0*2);
 				vec_to_point *= (speed/4);
 				newObjP->mType.physInfo.velocity = vec_to_point;
@@ -1685,7 +1685,7 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs
 							weaponP->cType.laserInfo.nParentObj);
 
 			}
-		else		//normal badass explosion
+		else		//Normal badass explosion
 			ExplodeBadassWeapon (weaponP, vHitPt);
 		}
 	if (((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) ||
@@ -2019,13 +2019,13 @@ for (tSide = 0; tSide < MAX_SIDES_PER_SEGMENT; tSide++)
 
 		COMPUTE_SIDE_CENTER (&exit_point, segp, tSide);
 		exit_dir = exit_point - objP->position.vPos;
-		vmsVector::normalize (exit_dir);
+		vmsVector::Normalize (exit_dir);
 		rand_vec = vmsVector::Random();
 		rand_vec[X] /= 4;
 		rand_vec[Y] /= 4;
 		rand_vec[Z] /= 4;
 		exit_dir += rand_vec;
-		vmsVector::normalize (exit_dir);
+		vmsVector::Normalize (exit_dir);
 		}
 BumpOneObject (objP, &exit_dir, 64*F1_0);
 ApplyDamageToPlayer (objP, objP, 4*F1_0);	//	Changed, MK, 2/19/96, make killer the tPlayer, so if you die in matcen, will say you killed yourself
@@ -2051,7 +2051,7 @@ for (tSide=0; tSide<MAX_SIDES_PER_SEGMENT; tSide++)
 
 		COMPUTE_SIDE_CENTER (&exit_point, segp, tSide);
 		exit_dir = exit_point - objP->position.vPos;
-		vmsVector::normalize (exit_dir);
+		vmsVector::Normalize (exit_dir);
 	}
 BumpOneObject (objP, &exit_dir, 8*F1_0);
 ApplyDamageToRobot (objP, F1_0, -1);

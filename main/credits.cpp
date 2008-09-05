@@ -148,7 +148,7 @@ static const char *xlCredits [] = {
 	};
 
 #define NUM_XL_LINES	sizeofa(xlCredits)
-//if filename passed is NULL, show normal credits
+//if filename passed is NULL, show Normal credits
 void ShowCredits(char *credits_filename)
 {
 	int			i, j, l, bDone;

@@ -78,7 +78,7 @@ void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, s
 	int				h, i, bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 
 if (!gameStates.render.bBrightObject) {
-	vPos = objP->position.vPos.toFloat();
+	vPos = objP->position.vPos.ToFloat();
 	for (i = iVerts, pv = pm->pVerts + iVerts, pn = pm->pVertNorms + iVerts, pc = pm->pColor + iVerts;
 		  i < nVerts;
 		  i++, pv++, pn++, pc++) {
