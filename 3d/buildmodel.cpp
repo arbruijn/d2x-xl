@@ -281,7 +281,7 @@ pc = pm->pVBColor;
 pmv = bSort ? pSortedVerts : pm->pFaceVerts;
 for (i = 0, j = pm->nFaceVerts; i < j; i++, pmv++) {
 	pv [i] = pmv->vertex;
-	pn [i] = pmv->Normal;
+	pn [i] = pmv->normal;
 	pc [i] = pmv->baseColor;
 	pt [i] = pmv->texCoord;
 	}

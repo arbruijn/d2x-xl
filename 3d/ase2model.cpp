@@ -102,13 +102,13 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 				}
 			pmv->baseColor.alpha = 1;
 			pmv->renderColor = pmv->baseColor;
-			pmv->Normal = psa->pVerts [h].Normal;
+			pmv->normal = psa->pVerts [h].normal;
 			pmv->vertex = psa->pVerts [h].vertex * fScale;
 			if (psa->pTexCoord)
 				pmv->texCoord = psa->pTexCoord [pfa->nTexCoord [i]];
 			h += nVerts;
 			pm->pVerts [h] = pmv->vertex;
-			pm->pVertNorms [h] = pmv->Normal;
+			pm->pVertNorms [h] = pmv->normal;
 			pmv->nIndex = h;
 			G3SetSubModelMinMax (psm, &pmv->vertex);
 			nIndex++;

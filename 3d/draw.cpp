@@ -68,7 +68,6 @@ return (vmsVector::Dot(v, pnorm) > 0);
 int DoFacingCheck (vmsVector *norm, g3sPoint **vertlist, vmsVector *p)
 {
 if (norm) {		//have Normal
-	Assert (norm [X] || norm [Y] || norm [Z]);
 	return G3CheckNormalFacing (*p, *norm);
 	}
 else {	//Normal not specified, so must compute
