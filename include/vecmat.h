@@ -76,6 +76,7 @@ class fVector3 {
 		bool IsZero() const;
 		void SetZero();
 		void Set(const float f0, const float f1, const float f2);
+		void Set(const float *vec);
 
 		fVector3& Neg();
 		const float Mag() const;
@@ -165,6 +166,10 @@ inline void fVector3::SetZero() { memset(v, 0, 3*sizeof(float)); }
 
 inline void fVector3::Set(const float f0, const float f1, const float f2) {
 	v[X] = f0; v[Y] = f1; v[Z] = f2;
+}
+
+inline void fVector3::Set(const float *vec) {
+	v[X] = vec[0]; v[Y] = vec[1]; v[Z] = vec[2];
 }
 
 inline fVector3& fVector3::Neg() { v[0] = -v[0], v[1] = -v[1], v[2] = -v[2]; return *this; }
@@ -260,6 +265,7 @@ class fVector {
 
 		void SetZero();
 		void Set(const float f0, const float f1, const float f2, const float f3=1.0f);
+		void Set(const float *vec);
 		const float SqrMag() const;
 		const float Mag() const;
 		fVector& Neg();
@@ -350,6 +356,10 @@ inline void fVector::SetZero() { memset(v, 0, 4*sizeof(float)); }
 
 inline void fVector::Set(const float f0, const float f1, const float f2, const float f3) {
 	v[X] = f0; v[Y] = f1; v[Z] = f2; v[W] = f3;
+}
+
+inline void fVector::Set(const float *vec) {
+	v[X] = vec[0]; v[Y] = vec[1]; v[Z] = vec[2]; v[W] = 1.0f;
 }
 
 inline const float fVector::SqrMag() const {
@@ -485,6 +495,7 @@ class vmsVector {
 		bool operator==(const vmsVector& rhs) const;
 
 		const vmsVector& Set(fix x, fix y, fix z);
+		void Set(const fix *vec);
 
 		bool IsZero() const;
 		void SetZero();
@@ -702,6 +713,10 @@ inline bool vmsVector::operator==(const vmsVector& rhs) const {
 }
 
 inline const vmsVector& vmsVector::Set(fix x, fix y, fix z) { v[0] = x; v[1] = y; v[2] = z; return *this; }
+
+inline void vmsVector::Set(const fix *vec) {
+	v[X] = vec[0]; v[Y] = vec[1]; v[Z] = vec[2];
+}
 
 inline bool vmsVector::IsZero() const { return !(v[X] || v[Y] || v[Z]); }
 

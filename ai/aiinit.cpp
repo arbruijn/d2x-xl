@@ -136,7 +136,7 @@ if (botInfoP->attackType) {
 	aiP->behavior = AIB_NORMAL;
 	ailP->mode = AIBehaviorToMode (aiP->behavior);
 	}
-objP->mType.physInfo.velocity.setZero();
+objP->mType.physInfo.velocity.SetZero();
 // -- ailP->waitTime = F1_0*5;
 ailP->playerAwarenessTime = 0;
 ailP->playerAwarenessType = 0;
@@ -266,10 +266,10 @@ void InitAIFrame (void)
 	int abState;
 
 if (gameData.ai.nMaxAwareness < PA_PLAYER_COLLISION)
-	gameData.ai.vLastPlayerPosFiredAt.setZero();
-if (!gameData.ai.vLastPlayerPosFiredAt.isZero())
+	gameData.ai.vLastPlayerPosFiredAt.SetZero();
+if (!gameData.ai.vLastPlayerPosFiredAt.IsZero())
 	gameData.ai.nDistToLastPlayerPosFiredAt =
-		vmsVector::dist(gameData.ai.vLastPlayerPosFiredAt, gameData.ai.vBelievedPlayerPos);
+		vmsVector::Dist(gameData.ai.vLastPlayerPosFiredAt, gameData.ai.vBelievedPlayerPos);
 else
 	gameData.ai.nDistToLastPlayerPosFiredAt = F1_0 * 10000;
 abState = gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState &&

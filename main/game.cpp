@@ -740,10 +740,10 @@ void FlyInit (tObject *objP)
 	objP->controlType = CT_FLYING;
 	objP->movementType = MT_PHYSICS;
 
-	objP->mType.physInfo.velocity.setZero();
-	objP->mType.physInfo.thrust.setZero();
-	objP->mType.physInfo.rotVel.setZero();
-	objP->mType.physInfo.rotThrust.setZero();
+	objP->mType.physInfo.velocity.SetZero();
+	objP->mType.physInfo.thrust.SetZero();
+	objP->mType.physInfo.rotVel.SetZero();
+	objP->mType.physInfo.rotThrust.SetZero();
 }
 
 //void morph_test (), morph_step ();
@@ -2170,10 +2170,10 @@ void PowerupGrabCheat (tObject *playerP, int nObject)
 Assert (powerupP->nType == OBJ_POWERUP);
 if (powerupP->flags & OF_SHOULD_BE_DEAD)
 	return;
-if (vmsVector::dist(powerupP->position.vPos, posP->vPos) >=
+if (vmsVector::Dist(powerupP->position.vPos, posP->vPos) >=
 	 2 * (playerP->size + powerupP->size) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
 	return;
-vCollision = vmsVector::avg(powerupP->position.vPos, posP->vPos);
+vCollision = vmsVector::Avg(powerupP->position.vPos, posP->vPos);
 CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
 }
 

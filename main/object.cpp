@@ -370,10 +370,10 @@ void ResetPlayerObject (void)
 	int i;
 
 //Init physics
-gameData.objs.console->mType.physInfo.velocity.setZero();
-gameData.objs.console->mType.physInfo.thrust.setZero();
-gameData.objs.console->mType.physInfo.rotVel.setZero();
-gameData.objs.console->mType.physInfo.rotThrust.setZero();
+gameData.objs.console->mType.physInfo.velocity.SetZero();
+gameData.objs.console->mType.physInfo.thrust.SetZero();
+gameData.objs.console->mType.physInfo.rotVel.SetZero();
+gameData.objs.console->mType.physInfo.rotThrust.SetZero();
 gameData.objs.console->mType.physInfo.brakes = gameData.objs.console->mType.physInfo.turnRoll = 0;
 gameData.objs.console->mType.physInfo.mass = gameData.pig.ship.player->mass;
 gameData.objs.console->mType.physInfo.drag = gameData.pig.ship.player->drag;
@@ -384,7 +384,7 @@ gameData.objs.console->rType.polyObjInfo.nModel = gameData.pig.ship.player->nMod
 gameData.objs.console->rType.polyObjInfo.nSubObjFlags = 0;		//zero the flags
 gameData.objs.console->rType.polyObjInfo.nTexOverride = -1;		//no tmap override!
 for (i = 0; i < MAX_SUBMODELS; i++)
-	gameData.objs.console->rType.polyObjInfo.animAngles[i].setZero();
+	gameData.objs.console->rType.polyObjInfo.animAngles[i].SetZero();
 // Clear misc
 gameData.objs.console->flags = 0;
 }
@@ -971,7 +971,7 @@ if (objP->controlType == CT_POWERUP)
 
 // Init physics info for this tObject
 if (objP->movementType == MT_PHYSICS)
-	gameData.objs.vStartVel[nObject].setZero();
+	gameData.objs.vStartVel[nObject].SetZero();
 if (objP->renderType == RT_POLYOBJ)
 	objP->rType.polyObjInfo.nTexOverride = -1;
 objP->shields = 20 * F1_0;
@@ -1131,14 +1131,14 @@ void SetCameraPos (vmsVector *vCameraPos, tObject *objP)
 	fix			xCameraPlayerDist;
 	fix			xFarScale;
 
-xCameraPlayerDist = vPlayerCameraOffs.mag();
+xCameraPlayerDist = vPlayerCameraOffs.Mag();
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 	//	Camera is too close to tPlayer tObject, so move it away.
 	tFVIQuery	fq;
 	tFVIData		hit_data;
 	vmsVector	local_p1;
 
-	if (vPlayerCameraOffs.isZero())
+	if (vPlayerCameraOffs.IsZero())
 		vPlayerCameraOffs[X] += F1_0/16;
 
 	hit_data.hit.nType = HIT_WALL;
@@ -1328,8 +1328,8 @@ gameStates.app.bPlayerIsDead = 1;
 	Buffeting (70);
 #endif
 //LOCALPLAYER.flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
-player->mType.physInfo.rotThrust.setZero();
-player->mType.physInfo.thrust.setZero();
+player->mType.physInfo.rotThrust.SetZero();
+player->mType.physInfo.thrust.SetZero();
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
 nObject = tObject::Create(OBJ_CAMERA, 0, -1, player->nSegment, player->position.vPos,
 								player->position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
@@ -1417,7 +1417,7 @@ OBJECTS[nObject].unlink();
 LinkObject (nObject, nNewSegnum);
 #ifdef _DEBUG
 #if TRACE
-if (GetSegMasks (&OBJECTS [nObject].position.vPos,
+if (GetSegMasks (OBJECTS [nObject].position.vPos,
 					  OBJECTS [nObject].nSegment, 0).centerMask)
 	con_printf (1, "RelinkObject violates seg masks.\n");
 #endif
@@ -1439,7 +1439,7 @@ rotmat = vmsMatrix::Create(rotangs);
 // TODO MM
 new_pm = objP->position.mOrient * rotmat;
 objP->position.mOrient = new_pm;
-objP->position.mOrient.checkAndFix();
+objP->position.mOrient.CheckAndFix();
 }
 
 extern void MultiSendDropBlobs (char);
@@ -1464,10 +1464,10 @@ Controls [0].bankTime = 0;
 Controls [0].verticalThrustTime = 0;
 Controls [0].sidewaysThrustTime = 0;
 Controls [0].forwardThrustTime = 0;
-objP->mType.physInfo.rotThrust.setZero();
-objP->mType.physInfo.thrust.setZero();
-objP->mType.physInfo.velocity.setZero();
-objP->mType.physInfo.rotVel.setZero();
+objP->mType.physInfo.rotThrust.SetZero();
+objP->mType.physInfo.thrust.SetZero();
+objP->mType.physInfo.velocity.SetZero();
+objP->mType.physInfo.rotVel.SetZero();
 }
 
 //--------------------------------------------------------------------
@@ -1672,9 +1672,9 @@ switch (objP->controlType) {
 	case CT_AI:
 		//NOTE LINK TO CT_MORPH ABOVE!!!
 		if (gameStates.gameplay.bNoBotAI || (gameStates.app.bGameSuspended & SUSP_ROBOTS)) {
-			objP->mType.physInfo.velocity.setZero();
-			objP->mType.physInfo.thrust.setZero();
-			objP->mType.physInfo.rotThrust.setZero();
+			objP->mType.physInfo.velocity.SetZero();
+			objP->mType.physInfo.thrust.SetZero();
+			objP->mType.physInfo.rotThrust.SetZero();
 			DoAnyRobotDyingFrame (objP);
 #if 1//ndef _DEBUG
 			return 1;
@@ -1740,7 +1740,7 @@ return 0;
 
 void UpdateShipSound (tObject *objP)
 {
-	int	nSpeed = objP->mType.physInfo.velocity.mag();
+	int	nSpeed = objP->mType.physInfo.velocity.Mag();
 	int	nObject = OBJ_IDX (objP);
 
 if (!gameOpts->sound.bShip)
@@ -1866,7 +1866,7 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 			return;
 		}
 #endif
-	if ((vel = objP->mType.physInfo.velocity.mag()) > F1_0 * 200)
+	if ((vel = objP->mType.physInfo.velocity.Mag()) > F1_0 * 200)
 		delay = F1_0 / 16;
 	else if (vel > F1_0 * 40)
 		delay = FixDiv (F1_0 * 13, vel);
@@ -2411,7 +2411,7 @@ void WakeupRenderedObjects (tObject *viewer, int window_num)
 			objP = &OBJECTS [nObject];
 
 			if (objP->nType == OBJ_ROBOT) {
-				if (vmsVector::dist(viewer->position.vPos, objP->position.vPos) < F1_0*100) {
+				if (vmsVector::Dist(viewer->position.vPos, objP->position.vPos) < F1_0*100) {
 					tAILocal		*ailp = &gameData.ai.localInfo [nObject];
 					if (ailp->playerAwarenessType == 0) {
 						objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
@@ -2613,7 +2613,7 @@ vmsMatrix *ObjectView (tObject *objP)
 	tObjectViewData	*viewP = gameData.objs.viewData + OBJ_IDX (objP);
 
 if (viewP->nFrame != gameData.objs.nFrameCount) {
-	viewP->mView = OBJPOS (objP)->mOrient.transpose();
+	viewP->mView = OBJPOS (objP)->mOrient.Transpose();
 	viewP->nFrame = gameStates.render.nFrameCount;
 	}
 return &viewP->mView;

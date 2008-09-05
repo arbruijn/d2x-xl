@@ -192,7 +192,7 @@ for (; iBox <= nBoxes; iBox++) {
 	glLineWidth (2);
 	for (i = 0; i < 6; i++) {
 		glBegin (GL_LINES);
-		v.setZero();
+		v.SetZero();
 		for (j = 0; j < 4; j++) {
 			glVertex3fv ((GLfloat *) (vertList + hitboxFaceVerts [i][j]));
 			v += vertList[hitboxFaceVerts[i][j]];
@@ -942,7 +942,7 @@ else if ((objP->nType == OBJ_PLAYER) ||
 		tTransformation *posP = OBJPOS (objP);
 		if (SPECTATOR (objP)) {
 			viewP = &m;
-			m = posP->mOrient.transpose();
+			m = posP->mOrient.Transpose();
 		}
 		else
 			viewP = ObjectView (objP);
@@ -991,7 +991,7 @@ if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 #endif
 if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
 	return;
-fSpeed = X2F (objP->mType.physInfo.velocity.mag());
+fSpeed = X2F (objP->mType.physInfo.velocity.Mag());
 ti.fLength = fSpeed / 60.0f + 0.5f + (float) (rand () % 100) / 1000.0f;
 if (!pt || (fSpeed >= pt->fSpeed)) {
 	fFade [0] = 0.95f;
@@ -1084,9 +1084,9 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		vThruster[3] = vPosf + vNormf * (-ti.fSize);
 		fVector::Normalize(vPosf);
 		v = vFlame[2]; fVector::Normalize(v);
-		dotFlame = fVector::dot(vPosf, v);
+		dotFlame = fVector::Dot(vPosf, v);
 		v = *vThruster; fVector::Normalize(v);
-		dotThruster = fVector::dot(vPosf, v);
+		dotThruster = fVector::Dot(vPosf, v);
 		if (gameOpts->render.bDepthSort > 0)
 			RIAddThruster (bmpThruster [nStyle], vThruster, tcThruster, (dotFlame < dotThruster) ? vFlame : NULL, tcFlame);
 		else {
@@ -1234,8 +1234,8 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 	vh[3] = vPos + vNorm * (-fScale);
 	for (i = 0; i < 4; i++)
 		fVector::Normalize(vh[i]);
-	a1 = (float) fabs (fVector::dot(vh[2], vh[0]));
-	a2 = (float) fabs (fVector::dot(vh[3], vh[1]));
+	a1 = (float) fabs (fVector::Dot(vh[2], vh[0]));
+	a2 = (float) fabs (fVector::Dot(vh[3], vh[1]));
 #if 0
 	HUDMessage (0, "%1.2f %1.2f", a1, a2);
 	glLineWidth (2);
@@ -1391,7 +1391,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		G3StartInstanceMatrix(vPos, objP->position.mOrient);
 		TransformHitboxf (objP, verts, 0);
 		for (i = 0; i < 6; i++) {
-			vCenter.setZero();
+			vCenter.SetZero();
 			for (j = 0; j < 4; j++) {
 				quad [j] = verts [hitboxFaceVerts [i][j]];
 				vCenter += quad[j];
@@ -1399,7 +1399,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 			vCenter = vCenter * 0.25f;
 			vNormal = fVector::Normal(quad[0], quad[1], quad[2]);
 			v = vCenter; fVector::Normalize(v);
-			dot = fVector::dot(vNormal, v);
+			dot = fVector::Dot(vNormal, v);
 			if (dot >= 0)
 				continue;
 			glColor4f (colorP->red, colorP->green, colorP->blue, alpha * (float) sqrt (-dot));
@@ -1543,12 +1543,12 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	G3TransformPoint(vPosf[0], vPosf[0], 0);
 	G3TransformPoint(vPosf[1], vPosf[1], 0);
 	vDirf = vPosf[0] - vPosf[1];
-	if (vDirf.isZero()) {
+	if (vDirf.IsZero()) {
 		//return;
 		vPosf[1] = OBJECTS [objP->cType.laserInfo.nParentObj].position.vPos.ToFloat();
 		G3TransformPoint(vPosf[1], vPosf[1], 0);
 		vDirf = vPosf[0] - vPosf[1];
-		if(vDirf.isZero())
+		if(vDirf.IsZero())
 			return;
 		}
 	bStencil = StencilOff ();

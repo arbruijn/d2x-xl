@@ -104,15 +104,15 @@ int OptimizePath (tPointSeg *pointSegP, int nSegs)
 for (i = 1; i < nSegs - 1; i += 2) {
 	if (i == 1) {
 		temp1 = pointSegP [i].point - pointSegP [i-1].point;
-		mag1 = temp1.mag();
+		mag1 = temp1.Mag();
 		}
 	else {
 		temp1 = temp2;
 		mag1 = mag2;
 		}
 	temp2 = pointSegP [i+1].point - pointSegP [i].point;
-	mag2 = temp1.mag();
-	dot = vmsVector::dot(temp1, temp2);
+	mag2 = temp1.Mag();
+	dot = vmsVector::Dot(temp1, temp2);
 	if (dot * 9/8 > FixMul (mag1, mag2))
 		pointSegP [i].nSegment = -1;
 	}
@@ -185,7 +185,7 @@ for (i = 1, --j; i < j; i++) {
 	c = ptSegs [i+1].point - ptSegs [i-1].point;
 	//	I don't think we can use quick version here and this is _very_ rarely called. --MK, 07/03/95
 	vmsVector::Normalize(b);
-	if (abs (vmsVector::dot(a, b)) > 3*F1_0/4) {
+	if (abs (vmsVector::Dot(a, b)) > 3*F1_0/4) {
 		if (abs (a[Z]) < F1_0/2) {
 			if (bRandom) {
 				e[X] = (d_rand ()- 16384) / 2;
@@ -214,15 +214,15 @@ for (i = 1, --j; i < j; i++) {
 			}
 		}
 	else {
-		d = vmsVector::cross(a, b);
-		e = vmsVector::cross(c, d);
+		d = vmsVector::Cross(a, b);
+		e = vmsVector::Cross(c, d);
 		vmsVector::Normalize(e);
 		}
 #ifdef _DEBUG
-	if (VmVecMag (&e) < F1_0/2)
+	if (e.Mag () < F1_0/2)
 		Int3 ();
 #endif
-	xSegSize = vmsVector::dist(gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]], gameData.segs.vertices [gameData.segs.segments [nSegment].verts [6]]);
+	xSegSize = vmsVector::Dist(gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]], gameData.segs.vertices [gameData.segs.segments [nSegment].verts [6]]);
 	if (xSegSize > F1_0*40)
 		xSegSize = F1_0*40;
 	vGoalPos = ptSegs [i].point + e * (xSegSize/4);
@@ -955,11 +955,11 @@ if (aiP->nPathLength < 2) {
 
 vGoalPoint = gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 nGoalSeg = gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex].nSegment;
-xDistToGoal = vmsVector::dist(vGoalPoint, objP->position.vPos);
+xDistToGoal = vmsVector::Dist(vGoalPoint, objP->position.vPos);
 if (gameStates.app.bPlayerIsDead)
-	xDistToPlayer = vmsVector::dist(objP->position.vPos, gameData.objs.viewer->position.vPos);
+	xDistToPlayer = vmsVector::Dist(objP->position.vPos, gameData.objs.viewer->position.vPos);
 else
-	xDistToPlayer = vmsVector::dist(objP->position.vPos, gameData.objs.console->position.vPos);
+	xDistToPlayer = vmsVector::Dist(objP->position.vPos, gameData.objs.console->position.vPos);
 	//	Efficiency hack: If far away from tPlayer, move in big quantized jumps.
 if (!(playerVisibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !(gameData.app.nGameMode & GM_MULTI)) {
 	if (xDistToGoal < F1_0*2) {
@@ -1041,7 +1041,7 @@ vGoalPoint = gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 forced_break = 0;		//	Gets set for short paths.
 original_dir = aiP->PATH_DIR;
 original_index = aiP->nCurPathIndex;
-thresholdDistance = FixMul (objP->mType.physInfo.velocity.mag(), gameData.time.xFrame)*2 + F1_0*2;
+thresholdDistance = FixMul (objP->mType.physInfo.velocity.Mag(), gameData.time.xFrame)*2 + F1_0*2;
 new_vGoalPoint = gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 while ((xDistToGoal < thresholdDistance) && !forced_break) {
 	//	Advance to next point on path.
@@ -1068,8 +1068,8 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 					}
 				else {
 					ailP->mode = AIM_WANDER;	//	Special buddy mode.p.
-					objP->mType.physInfo.velocity.setZero();
-					objP->mType.physInfo.rotVel.setZero();
+					objP->mType.physInfo.velocity.SetZero();
+					objP->mType.physInfo.rotVel.SetZero();
 					//!!Assert ((aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength);
 					return;
 					}
@@ -1159,7 +1159,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 	else {
 		new_vGoalPoint = gameData.ai.pointSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 		vGoalPoint = new_vGoalPoint;
-		xDistToGoal = vmsVector::dist(vGoalPoint, objP->position.vPos);
+		xDistToGoal = vmsVector::Dist(vGoalPoint, objP->position.vPos);
 		//--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 		}
 	//	If went all the way around to original point, in same direction, then get out of here!
@@ -1215,7 +1215,7 @@ vNormCurVel = vCurVel;
 vmsVector::Normalize(vNormCurVel);
 vNormFwd = objP->position.mOrient[FVEC];
 vmsVector::Normalize(vNormFwd);
-dot = vmsVector::dot(vNormToGoal, vNormFwd);
+dot = vmsVector::Dot(vNormToGoal, vNormFwd);
 //	If very close to facing opposite desired vector, perturb vector
 if (dot < -15*F1_0/16) {
 	vNormCurVel = vNormToGoal;
@@ -1558,7 +1558,7 @@ void player_path_set_orient_and_vel (tObject *objP, vmsVector *vGoalPoint)
 	vNormFwd = objP->position.mOrient[FVEC];
 	vmsVector::Normalize(vNormFwd);
 
-	dot = vmsVector::dot(vNormToGoal, &vNormFwd);
+	dot = vmsVector::Dot(vNormToGoal, &vNormFwd);
 	if (gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
 		dot = -dot;
 	}
@@ -1611,7 +1611,7 @@ void player_follow_path (tObject *objP)
 	vGoalPoint = gameData.ai.pointSegs [Player_hide_index + Player_cur_path_index].point;
 	nGoalSeg = gameData.ai.pointSegs [Player_hide_index + Player_cur_path_index].nSegment;
 	Assert ((nGoalSeg >= 0) && (nGoalSeg <= gameData.segs.nLastSegment);
-	xDistToGoal = vmsVector::dist(vGoalPoint, &objP->position.vPos);
+	xDistToGoal = vmsVector::Dist(vGoalPoint, &objP->position.vPos);
 
 	if (Player_cur_path_index < 0)
 		Player_cur_path_index = 0;
@@ -1657,7 +1657,7 @@ void player_follow_path (tObject *objP)
 		}
 
 		vGoalPoint = gameData.ai.pointSegs [Player_hide_index + Player_cur_path_index].point;
-		xDistToGoal = vmsVector::dist(vGoalPoint, &objP->position.vPos);
+		xDistToGoal = vmsVector::Dist(vGoalPoint, &objP->position.vPos);
 
 	}	//	end while
 

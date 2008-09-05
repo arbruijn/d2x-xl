@@ -57,7 +57,7 @@ vDelta.p.y = FixDiv (vDelta.p.y, viewInfo.scale.p.y);
 vmsVector::Normalize(vDelta);
 vTop = topPoint->p3_vec;
 vmsVector::Normalize(vTop);
-vRodNorm = vmsVector::cross(vDelta, vTop);
+vRodNorm = vmsVector::Cross(vDelta, vTop);
 vmsVector::Normalize(vRodNorm);
 //scale for aspect
 #if RESCALE_ROD

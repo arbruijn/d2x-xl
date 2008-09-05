@@ -62,8 +62,8 @@ tSide *sideP = segP->sides + nSide;
 vmsVector v;
 v = gameData.render.mine.viewerEye - *SIDE_CENTER_I(nSegment, nSide); //gameData.segs.vertices + segP->verts [sideToVerts [nSide][0]]);
 return (sideP->nType == SIDE_IS_QUAD) ?
-		 vmsVector::dot(sideP->normals[0], v) >= 0 :
-		 (vmsVector::dot(sideP->normals[0], v) >= 0) || (vmsVector::dot(sideP->normals[1], v) >= 0);
+		 vmsVector::Dot(sideP->normals[0], v) >= 0 :
+		 (vmsVector::Dot(sideP->normals[0], v) >= 0) || (vmsVector::Dot(sideP->normals[1], v) >= 0);
 #else
 return 1;
 #endif
@@ -337,7 +337,7 @@ if (gameStates.render.bQueryOcclusion) {
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);
 GrSetColorRGB (255, 255, 255, 255);
-center.p3_vec.setZero();
+center.p3_vec.SetZero();
 for (i = 0; i < nVertices; i++) {
 	G3DrawLine (pointList [i], pointList [(i + 1) % nVertices]);
 	center.p3_vec += pointList [i]->p3_vec;
@@ -941,7 +941,7 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 	for (h = i, i = j; h < i; h++) {
 		nSegment = gameData.render.mine.nSegRenderList [h];
 		if ((gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) &&
-			 (!nMaxDist || (vmsVector::dist(*SEGMENT_CENTER_I (nStartSeg), *SEGMENT_CENTER_I (nSegment)) <= nMaxDist)))
+			 (!nMaxDist || (vmsVector::Dist(*SEGMENT_CENTER_I (nStartSeg), *SEGMENT_CENTER_I (nSegment)) <= nMaxDist)))
 			return 1;
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {

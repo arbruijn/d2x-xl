@@ -219,7 +219,7 @@ else {
 	color.alpha = gameOpts->render.lightnings.bPlasma ? 0.5f : 0.3f;
 #endif
 	handleP->nLightning = CreateLightning (10, &vMuzzle, vTarget, NULL, -OBJSEG (parentObjP) - 1,
-														-5000, 0, vmsVector::dist(vMuzzle, *vTarget), F1_0 * 3, 0, 0, 100, 10, 1, 3, 1, 1,
+														-5000, 0, vmsVector::Dist(vMuzzle, *vTarget), F1_0 * 3, 0, 0, 100, 10, 1, 3, 1, 1,
 #if OMEGA_PLASMA
 														(parentObjP != gameData.objs.viewer) || gameStates.app.bFreeCam || gameStates.render.bExternalView,
 #else

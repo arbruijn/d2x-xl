@@ -104,7 +104,7 @@ void ReadFlyingControls (tObject *objP)
 
 		//this is a horrible hack.  guided missile stuff should not be
 		//handled in the middle of a routine that is dealing with the tPlayer
-		objP->mType.physInfo.rotThrust.setZero();
+		objP->mType.physInfo.rotThrust.SetZero();
 		rotangs[PA] = Controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
 		rotangs[BA] = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
 		rotangs[HA] = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
@@ -189,10 +189,10 @@ void ReadFlyingControls (tObject *objP)
 		//	Note, you must check for ft < F1_0/2, else you can get an overflow  on the << 15.
 		if ((ft < F1_0/2) && ((ft << 15) <= gameData.pig.ship.player->maxThrust))
 			ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
-		if (objP->mType.physInfo.thrust.mag() > 250)
+		if (objP->mType.physInfo.thrust.Mag() > 250)
 			objP = objP;
 		objP->mType.physInfo.thrust *= FixDiv (gameData.pig.ship.player->maxThrust, ft);
-		if (objP->mType.physInfo.thrust.mag() > 250)
+		if (objP->mType.physInfo.thrust.Mag() > 250)
 			objP = objP;
 		if ((ft < F1_0/2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
 			ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;

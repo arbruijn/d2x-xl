@@ -1185,7 +1185,7 @@ Assert(nPlayer > -1);
 //	Determine whether tPlayer is moving forward.  If not, don't say negative
 //	messages because he probably didn't intentionally hit the door.
 if (objP->nType == OBJ_PLAYER)
-	bShowMessage = (vmsVector::dot(objP->position.mOrient[FVEC], objP->mType.physInfo.velocity) > 0);
+	bShowMessage = (vmsVector::Dot(objP->position.mOrient[FVEC], objP->mType.physInfo.velocity) > 0);
 else if (objP->nType == OBJ_ROBOT)
 	bShowMessage = 0;
 else if ((objP->nType == OBJ_WEAPON) && (objP->cType.laserInfo.parentType == OBJ_ROBOT))
@@ -1621,7 +1621,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 			if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
 			 	 ((ec == -1) && (gameData.pig.tex.pTMapInfo [tm].destroyed != -1))) {
 				COMPUTE_SIDE_CENTER(&pnt, segp, nSide);
-				dist = vmsVector::dist(pnt, objP->position.vPos);
+				dist = vmsVector::Dist(pnt, objP->position.vPos);
 				if (dist < damage/2) {
 					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->position.vPos, objP->nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
 					if ((dist > 0) && (dist < damage/2))

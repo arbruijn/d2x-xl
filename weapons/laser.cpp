@@ -250,7 +250,7 @@ else if (EGI_FLAG (bTracers, 0, 1, 0) && (objP->id == VULCAN_ID) || (objP->id ==
 	}
 objP->mType.physInfo.mass = WI_mass (nWeaponType);
 objP->mType.physInfo.drag = WI_drag (nWeaponType);
-objP->mType.physInfo.thrust.setZero();
+objP->mType.physInfo.thrust.SetZero();
 if (gameData.weapons.info [nWeaponType].bounce == 1)
 	objP->mType.physInfo.flags |= PF_BOUNCE;
 if ((gameData.weapons.info [nWeaponType].bounce == 2) || gameStates.app.cheats.bBouncingWeapons)
@@ -492,8 +492,8 @@ if ((parentP->nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].rende
 if (!WeaponIsMine (nWeaponType))
 	xParentSpeed = 0;
 else {
-	xParentSpeed = parentP->mType.physInfo.velocity.mag();
-	if (vmsVector::dot(parentP->mType.physInfo.velocity,
+	xParentSpeed = parentP->mType.physInfo.velocity.Mag();
+	if (vmsVector::Dot(parentP->mType.physInfo.velocity,
 						parentP->position.mOrient[FVEC]) < 0)
 		xParentSpeed = -xParentSpeed;
 	}
@@ -619,14 +619,14 @@ if (!mP)
 	mP = &m;
 if (bSpectate) {
    viewP = mP;
-	*viewP = posP->mOrient.transpose();
+	*viewP = posP->mOrient.Transpose();
 }
 else
    viewP = ObjectView (objP);
 v[1] = *viewP * v[0];
 memcpy (mP, &posP->mOrient, sizeof (vmsMatrix));
 if (nGun < 0)
-	v[1] += (*mP)[UVEC] * (-2 * v->mag());
+	v[1] += (*mP)[UVEC] * (-2 * v->Mag());
 (*vMuzzle) = posP->vPos + v[1];
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
@@ -709,7 +709,7 @@ if (nLaserSeg == -1) {	//some sort of annoying error
 	return -1;
 	}
 //SORT OF HACK... IF ABOVE WAS CORRECT THIS WOULDNT BE NECESSARY.
-if (vmsVector::dist(vLaserPos, posP->vPos) > 3 * objP->size / 2) {
+if (vmsVector::Dist(vLaserPos, posP->vPos) > 3 * objP->size / 2) {
 	return -1;
 	}
 if (nFate == HIT_WALL)  {
@@ -865,7 +865,7 @@ if (objP->lifeleft < 0) {		// We died of old age
 	return;
 	}
 //delete weapons that are not moving
-xWeaponSpeed = objP->mType.physInfo.velocity.mag();
+xWeaponSpeed = objP->mType.physInfo.velocity.Mag();
 if (!((gameData.app.nFrameCount ^ objP->nSignature) & 3) &&
 		(objP->nType == OBJ_WEAPON) && (objP->id != FLARE_ID) &&
 		(gameData.weapons.info [objP->id].speed [gameStates.app.nDifficultyLevel] > 0) &&
@@ -903,7 +903,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 		//	Make sure the tObject we are tracking is still trackable.
 		nMslLock = TrackMslLock (nMslLock, objP, &dot);
 		if (nMslLock == LOCALPLAYER.nObject) {
-			xDistToPlayer = vmsVector::dist(objP->position.vPos, OBJECTS [nMslLock].position.vPos);
+			xDistToPlayer = vmsVector::Dist(objP->position.vPos, OBJECTS [nMslLock].position.vPos);
 			if ((xDistToPlayer < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
 				LOCALPLAYER.homingObjectDist = xDistToPlayer;
 
@@ -925,7 +925,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 				if (h > 7)
 					vVecToObject *= (F1_0 / (h - 6));
 				}
-			// -- dot = vmsVector::dot(vTemp, vVecToObject);
+			// -- dot = vmsVector::Dot(vTemp, vVecToObject);
 			vVecToObject *= (F1_0 / HomingMslScale ());
 			vTemp += vVecToObject;
 			//	The boss' smart children track better...
@@ -1474,7 +1474,7 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objType, int bMakeSo
 	if (nGoalObj == -1) {
 		vGoal = vmsVector::Random();
 	} else {
-		vmsVector::normalizedDir(vGoal, OBJECTS [nGoalObj].position.vPos, objP->position.vPos);
+		vmsVector::NormalizedDir(vGoal, OBJECTS [nGoalObj].position.vPos, objP->position.vPos);
 		random_vector = vmsVector::Random();
 		vGoal += random_vector * (F1_0/4);
 		vmsVector::Normalize(vGoal);
@@ -1557,7 +1557,7 @@ if (((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].children !
 					if (ROBOTINFO (curObjP->id).companion)
 						continue;
 				}
-			dist = vmsVector::dist(objP->position.vPos, curObjP->position.vPos);
+			dist = vmsVector::Dist(objP->position.vPos, curObjP->position.vPos);
 			if (dist < MAX_SMART_DISTANCE) {
 				int	oovis = ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL);
 				if (oovis) { //ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL)) {

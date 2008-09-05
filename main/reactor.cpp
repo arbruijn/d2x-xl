@@ -67,7 +67,7 @@ for (i = 0; i < nGunCount; i++) {
 
 	vGun = *vObjPos - vGunPos[i];
 	vmsVector::Normalize(vGun);
-	dot = vmsVector::dot(vGunDir[i], vGun);
+	dot = vmsVector::Dot(vGunDir[i], vGun);
 	if (dot > xBestDot) {
 		xBestDot = dot;
 		nBestGun = i;

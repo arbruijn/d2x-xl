@@ -446,7 +446,7 @@ while ((pszToken = ASE_ReadLine (cfP))) {
 		if ((i < 0) || (i >= psm->nVerts))
 			return ASE_Error ("invalid vertex number");
 		pv = psm->pVerts + i;
-		ASE_ReadVector (cfP, &pv->Normal);
+		ASE_ReadVector (cfP, &pv->normal);
 		}
 	}
 return ASE_Error ("unexpected end of file");

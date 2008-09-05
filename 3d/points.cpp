@@ -81,7 +81,7 @@ tempv[X] =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale[Z], vi
 tempv[Y] = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale[Z], viewInfo.scale[Y]);
 tempv[Z] = f1_0;
 vmsVector::Normalize(tempv);
-tempm = viewInfo.view [1].transpose();
+tempm = viewInfo.view [1].Transpose();
 *v = tempm * tempv;
 }
 
@@ -139,9 +139,9 @@ return G3EncodePoint (dest);
 fix G3CalcPointDepth(const vmsVector& pnt)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt->p.x - viewInfo.pos[X], viewInfo.view [0].fVec[X]);
-	q += mul64 (pnt->p.y - viewInfo.pos[Y], viewInfo.view [0].fVec[Y]);
-	q += mul64 (pnt->p.z - viewInfo.pos[Z], viewInfo.view [0].fVec[Z]);
+	QLONG q = mul64 (pnt[X] - viewInfo.pos[X], viewInfo.view [0][FVEC][X]);
+	q += mul64 (pnt[Y] - viewInfo.pos[Y], viewInfo.view [0][FVEC][Y]);
+	q += mul64 (pnt[Z] - viewInfo.pos[Z], viewInfo.view [0][FVEC][Z]);
 	return (fix) (q >> 16);
 #else
 	tQuadInt q;

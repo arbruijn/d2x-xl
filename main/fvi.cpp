@@ -40,7 +40,7 @@ int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, vmsVector *
 
 inline fix RegisterHit (vmsVector *vBestHit, vmsVector *vCurHit, vmsVector *vPos, fix dMax)
 {
-   fix d = vmsVector::dist(*vPos, *vCurHit);
+   fix d = vmsVector::Dist(*vPos, *vCurHit);
 
 if (dMax < d) {
 	dMax = d;
@@ -64,7 +64,7 @@ d21 = p2 - p1;
 if (!(m = d21[X] * d21[X] + d21[Y] * d21[Y] + d21[Z] * d21[Z]))
 	return 0;
 d31 = p3 - p1;
-u = fVector::dot(d31, d21);
+u = fVector::Dot(d31, d21);
 u /= m;
 /*
 h[X] = p1[X] + u * d21[X];
@@ -76,7 +76,7 @@ h = p1 + u * d21;
 // limit the intersection to [p1,p2]
 v[0] = p1 - h;
 v[1] = p2 - h;
-m = fVector::dot(v[0], v[1]);
+m = fVector::Dot(v[0], v[1]);
 if (m >= 1)
 	return 1;
 return 0;
@@ -96,15 +96,15 @@ int FindPlaneLineIntersection (vmsVector *hitP, vmsVector *vPlanePoint, vmsVecto
 
 w = *p0 - *vPlanePoint;
 d = *p1 - *p0;
-num = vmsVector::dot(*vPlaneNorm, w) - rad;
-den = -vmsVector::dot(*vPlaneNorm, d);
+num = vmsVector::Dot(*vPlaneNorm, w) - rad;
+den = -vmsVector::Dot(*vPlaneNorm, d);
 if (!den) {
 	fVector	nf, df;
 	float denf;
 	nf = vPlaneNorm->ToFloat();
 	df = d.ToFloat();
-	denf = -fVector::dot(nf, df);
-	denf = -fVector::dot(nf, df);
+	denf = -fVector::Dot(nf, df);
+	denf = -fVector::Dot(nf, df);
 	return 0;
 	}
 if (den > 0) {
@@ -137,8 +137,8 @@ int FindLineQuadIntersectionSub (vmsVector *hitP, vmsVector *vPlanePoint, vmsVec
 
 w = *vPlanePoint - *p0;
 d = *p1 - *p0;
-num = vmsVector::dot(*vPlaneNorm, w);
-den = vmsVector::dot(*vPlaneNorm, d);
+num = vmsVector::Dot(*vPlaneNorm, w);
+den = vmsVector::Dot(*vPlaneNorm, d);
 if (!den)
 	return 0;
 if (labs (num) > labs (den))
@@ -176,7 +176,7 @@ if (!FindLineQuadIntersectionSub (&vHit, planeP, planeNormP, p0, p1, 0))
 	return 0;
 d[0] = vHit - *p0;
 d[1] = vHit - *p1;
-if (vmsVector::dot(d[0], d[1]) >= 0)
+if (vmsVector::Dot(d[0], d[1]) >= 0)
 	return 0;
 if (!CheckSphereToFace (&vHit, 0, planeP, planeNormP, 4))
 	return 0;
@@ -256,7 +256,7 @@ int FindHitboxIntersection (vmsVector *hitP, tBox *phb1, tBox *phb2, vmsVector *
 for (i = 0, pf1 = phb1->faces; i < 6; i++, pf1++) {
 	for (j = 0, pf2 = phb2->faces; j < 6; j++, pf2++) {
 #if 1
-		if (vmsVector::dot(pf1->n[1], pf2->n[1]) >= 0)
+		if (vmsVector::Dot(pf1->n[1], pf2->n[1]) >= 0)
 			continue;
 #endif
 		if (FindQuadQuadIntersection (&vHit, pf1->v, pf1->n + 1, pf2->v, pf2->n + 1, vPos)) {
@@ -368,9 +368,9 @@ v0 = vertList + nEdge;
 v1 = vertList + ((nEdge + 1) % nVerts);
 //check if we are touching an edge or point
 vCheck = checkP - *v0;
-xEdgeLen = vmsVector::normalizedDir(vEdge, *v1, *v0);
+xEdgeLen = vmsVector::NormalizedDir(vEdge, *v1, *v0);
 //find point dist from planes of ends of edge
-d = vmsVector::dot(vEdge, vCheck);
+d = vmsVector::Dot(vEdge, vCheck);
 if (d + rad < 0)
 	return IT_NONE;                  //too far behind start point
 if (d - rad > xEdgeLen)
@@ -385,7 +385,7 @@ else {
 	iType = IT_EDGE;
 	vClosestPoint = *v0 + vEdge * d;
 	}
-dist = vmsVector::dist(checkP, vClosestPoint);
+dist = vmsVector::Dist(checkP, vClosestPoint);
 if (dist <= rad)
 	return (iType == IT_POINT) ? IT_NONE : iType;
 return IT_NONE;
@@ -535,9 +535,9 @@ else {
 	}
 //check if we are touching an edge or point
 vCheck = checkP - *v0;
-xEdgeLen = vmsVector::normalizedDir(vEdge, *v1, *v0);
+xEdgeLen = vmsVector::NormalizedDir(vEdge, *v1, *v0);
 //find point dist from planes of ends of edge
-d = vmsVector::dot(vEdge, vCheck);
+d = vmsVector::Dot(vEdge, vCheck);
 if (d + rad < 0)
 	return IT_NONE;                  //too far behind start point
 if (d - rad > xEdgeLen)
@@ -552,7 +552,7 @@ else {
 	iType = IT_EDGE;
 	vClosestPoint = *v0 + vEdge * d;
 	}
-dist = vmsVector::dist(checkP, vClosestPoint);
+dist = vmsVector::Dist(checkP, vClosestPoint);
 if (dist <= rad)
 	return (iType == IT_POINT) ? IT_NONE : iType;
 return IT_NONE;
@@ -648,20 +648,20 @@ int CheckLineToLine (fix *t1, fix *t2, vmsVector *p1, vmsVector *v1, vmsVector *
 //PrintLog ("         VmVecSub\n");
 det[RVEC] = *p2 - *p1;
 //PrintLog ("         VmVecCrossProd\n");
-det[FVEC] = vmsVector::cross(*v1, *v2);
-//PrintLog ("         fVector::dot\n");
-cross_mag2 = vmsVector::dot(det[FVEC], det[FVEC]);
+det[FVEC] = vmsVector::Cross(*v1, *v2);
+//PrintLog ("         fVector::Dot\n");
+cross_mag2 = vmsVector::Dot(det[FVEC], det[FVEC]);
 if (!cross_mag2)
 	return 0;			//lines are parallel
 det[UVEC] = *v2;
-d = det.det();
+d = det.Det();
 if (oflow_check (d, cross_mag2))
 	return 0;
 //PrintLog ("         FixDiv (%d)\n", cross_mag2);
 *t1 = FixDiv (d, cross_mag2);
 det[UVEC] = *v1;
 //PrintLog ("         CalcDetValue\n");
-d = det.det();
+d = det.Det();
 if (oflow_check (d, cross_mag2))
 	return 0;
 //PrintLog ("         FixDiv (%d)\n", cross_mag2);
@@ -746,7 +746,7 @@ closest_point_edge = *edge_v0 + edge_vec * edge_t2;
 closest_point_move = *p0 + move_vec * move_t2;
 //find dist between closest points
 //PrintLog ("      computing closest dist.p...\n");
-closestDist = vmsVector::dist(closest_point_edge, closest_point_move);
+closestDist = vmsVector::Dist(closest_point_edge, closest_point_move);
 //could we hit with this dist?
 //note massive tolerance here
 if (closestDist < (rad * 9) / 10) {		//we hit.  figure out where
@@ -776,17 +776,17 @@ d = *p1 - *p0;
 w = *vSpherePos - *p0;
 dn = d; mag_d = vmsVector::Normalize(dn);
 if (mag_d == 0) {
-	intDist = w.mag();
+	intDist = w.Mag();
 	*intP = *p0;
 	return ((xSphereRad < 0) || (intDist < xSphereRad)) ? intDist : 0;
 	}
-wDist = vmsVector::dot(dn, w);
+wDist = vmsVector::Dot(dn, w);
 if (wDist < 0)
 	return 0;	//moving away from tObject
 if (wDist > mag_d + xSphereRad)
 	return 0;	//cannot hit
 vClosestPoint = *p0 + dn * wDist;
-dist = vmsVector::dist(vClosestPoint, *vSpherePos);
+dist = vmsVector::Dist(vClosestPoint, *vSpherePos);
 if  (dist < xSphereRad) {
 	fix	dist2, radius2, nShorten;
 
@@ -883,7 +883,7 @@ TransformHitboxes (objP, vPos, hb);
 for (; iModel <= nModels; iModel++) {
 	for (i = 0, pf = hb [iModel].faces; i < 6; i++, pf++) {
 #if 0
-		dot = vmsVector::dot(pf->n + 1, pn);
+		dot = vmsVector::Dot(pf->n + 1, pn);
 		if (dot >= 0)
 			continue;	//shield face facing away from vector
 #endif
@@ -893,7 +893,7 @@ for (; iModel <= nModels; iModel++) {
 			v = hitP - *p0;
 			d = vmsVector::Normalize(v);
 #if 0
-			dot = vmsVector::dot(pf->n + 1, pn);
+			dot = vmsVector::Dot(pf->n + 1, pn);
 			if (dot > 0)
 				continue;	//behind shield face
 			if (d > rad)
@@ -961,13 +961,13 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
 	VmPointLineIntersection(hitP, *p0, *p1, vPos, 0);
-	dist = vmsVector::dist(hitP, vPos);
+	dist = vmsVector::Dist(hitP, vPos);
 	if (dist > 2 * (thisObjP->size + otherObjP->size))
 		return 0;
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
 		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1))) {
-			if (!vmsVector::dist(*p0, *p1))
+			if (!vmsVector::Dist(*p0, *p1))
 				return 0;
 			dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, 0);
 			if ((dist == 0x7fffffff) || (dist > otherObjP->size))
@@ -1219,7 +1219,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 													 p1, radP0, radP1, nThisObject, ignoreObjList, flags,
 													 tempSegList, &nTempSegs, nStartSeg);
 					if (subHitType != HIT_NONE) {
-						d = vmsVector::dist(subHitPoint, *p0);
+						d = vmsVector::Dist(subHitPoint, *p0);
 						if (d < dMin) {
 							dMin = d;
 							vClosestHitPoint = subHitPoint;
@@ -1285,7 +1285,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 					else
 #endif
 					//is this the closest hit?
-					d = vmsVector::dist(vHitPoint, *p0);
+					d = vmsVector::Dist(vHitPoint, *p0);
 					if (d < dMin) {
 						dMin = d;
 						vClosestHitPoint = vHitPoint;
@@ -1377,7 +1377,7 @@ int FindVectorIntersection (tFVIQuery *fq, tFVIData *hitData)
 	tSegMasks	masks;
 
 Assert(fq->ignoreObjList != (short *)(-1));
-gameData.collisions.hitData.vNormal.setZero();
+gameData.collisions.hitData.vNormal.SetZero();
 gameData.collisions.hitData.nNormals = 0;
 Assert((fq->startSeg <= gameData.segs.nLastSegment) && (fq->startSeg >= 0));
 

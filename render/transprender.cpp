@@ -218,7 +218,7 @@ if ((nDepth > 1) || !nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0
 	}
 if (split [0].nVertices == 3) {
 	i1 = (i0 + 1) % 3;
-	vSplit = fVector::avg(split[0].vertices[i0], split[0].vertices[i1]);
+	vSplit = fVector::Avg(split[0].vertices[i0], split[0].vertices[i1]);
 	split [0].vertices [i0] =
 	split [1].vertices [i1] = vSplit;
 	split [0].sideLength [i0] =
@@ -240,10 +240,10 @@ else {
 	i1 = (i0 + 1) % 4;
 	i2 = (i0 + 2) % 4;
 	i3 = (i1 + 2) % 4;
-	vSplit = fVector::avg(split[0].vertices[i0], split[0].vertices[i1]);
+	vSplit = fVector::Avg(split[0].vertices[i0], split[0].vertices[i1]);
 	split [0].vertices [i1] =
 	split [1].vertices [i0] = vSplit;
-	vSplit = fVector::avg(split[0].vertices[i2], split[0].vertices[i3]);
+	vSplit = fVector::Avg(split[0].vertices[i2], split[0].vertices[i3]);
 	split [0].vertices [i2] =
 	split [1].vertices [i3] = vSplit;
 	if (split [0].bmP) {
@@ -340,7 +340,7 @@ memcpy (item.vertices, vertices, nVertices * sizeof (fVector));
 #if RI_SPLIT_POLYS
 if (bDepthMask && renderItems.bSplitPolys) {
 	for (i = 0; i < nVertices; i++)
-		item.sideLength [i] = (short) (fVector::dist(vertices[i], vertices[(i + 1) % nVertices]) + 0.5f);
+		item.sideLength [i] = (short) (fVector::Dist(vertices[i], vertices[(i + 1) % nVertices]) + 0.5f);
 	return RISplitPoly (&item, 0);
 	}
 else

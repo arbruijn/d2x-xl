@@ -52,10 +52,10 @@ if (rate == 0)
 	return 0;
 if ((objP->id == BABY_SPIDER_ID) && (objP->nType == OBJ_ROBOT)) {
 	PhysicsTurnTowardsVector (vGoal, objP, rate);
-	return vmsVector::dot(*vGoal, objP->position.mOrient[FVEC]);
+	return vmsVector::Dot(*vGoal, objP->position.mOrient[FVEC]);
 	}
 new_fvec = *vGoal;
-dot = vmsVector::dot(*vGoal, objP->position.mOrient[FVEC]);
+dot = vmsVector::Dot(*vGoal, objP->position.mOrient[FVEC]);
 if (!IsMultiGame)
 	dot = (fix) (dot / gameStates.gameplay.slowmo [0].fSpeed);
 if (dot < (F1_0 - gameData.time.xFrame/2)) {
@@ -98,7 +98,7 @@ void MoveTowardsVector (tObject *objP, vmsVector *vGoalVec, int bDotBased)
 
 vel = pptr->velocity;
 vmsVector::Normalize(vel);
-dot = vmsVector::dot(vel, objP->position.mOrient[FVEC]);
+dot = vmsVector::Dot(vel, objP->position.mOrient[FVEC]);
 
 if (botInfoP->thief)
 	dot = (F1_0+dot)/2;
@@ -118,7 +118,7 @@ else {
 	pptr->velocity[Y] += FixMul ((*vGoalVec)[Y], t) * d;
 	pptr->velocity[Z] += FixMul ((*vGoalVec)[Z], t) * d;
 	}
-speed = pptr->velocity.mag();
+speed = pptr->velocity.Mag();
 xMaxSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel];
 //	Green guy attacks twice as fast as he moves away.
 if ((botInfoP->attackType == 1) || botInfoP->thief || botInfoP->kamikaze)
@@ -204,7 +204,7 @@ void MoveAroundPlayer (tObject *objP, vmsVector *vVecToPlayer, int fastFlag)
 		//	Only take evasive action if looking at player.
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
-		dot = vmsVector::dot(gameData.ai.vVecToPlayer, objP->position.mOrient[FVEC]);
+		dot = vmsVector::Dot(gameData.ai.vVecToPlayer, objP->position.mOrient[FVEC]);
 		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) &&
 			 !(gameData.objs.console->flags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
@@ -226,7 +226,7 @@ void MoveAroundPlayer (tObject *objP, vmsVector *vVecToPlayer, int fastFlag)
 	pptr->velocity[Y] += vEvade[Y];
 	pptr->velocity[Z] += vEvade[Z];
 
-	speed = pptr->velocity.mag();
+	speed = pptr->velocity.Mag();
 	if ((OBJ_IDX (objP) != 1) && (speed > botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel])) {
 		pptr->velocity[X] = (pptr->velocity[X]*3)/4;
 		pptr->velocity[Y] = (pptr->velocity[Y]*3)/4;
@@ -268,7 +268,7 @@ void MoveAwayFromPlayer (tObject *objP, vmsVector *vVecToPlayer, int attackType)
 	}
 
 
-	speed = pptr->velocity.mag();
+	speed = pptr->velocity.Mag();
 
 	if (speed > botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel]) {
 		pptr->velocity[X] = (pptr->velocity[X]*3)/4;
@@ -304,7 +304,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 		fieldOfView = ROBOTINFO (objP->id).fieldOfView [gameStates.app.nDifficultyLevel];
 		vVecToLaser = dObjP->position.vPos - objP->position.vPos;
 		xDistToLaser = vmsVector::Normalize(vVecToLaser);
-		dot = vmsVector::dot(vVecToLaser, objP->position.mOrient[FVEC]);
+		dot = vmsVector::Dot(vVecToLaser, objP->position.mOrient[FVEC]);
 
 		if ((dot > fieldOfView) || (botInfoP->companion)) {
 			fix			dotLaserRobot;
@@ -320,7 +320,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 				}
 			vLaserToRobot = objP->position.vPos - dObjP->position.vPos;
 			vmsVector::Normalize(vLaserToRobot);
-			dotLaserRobot = vmsVector::dot(fVecLaser, vLaserToRobot);
+			dotLaserRobot = vmsVector::Dot(fVecLaser, vLaserToRobot);
 
 			if ((dotLaserRobot > F1_0*7/8) && (xDistToLaser < F1_0*80)) {
 				int evadeSpeed = ROBOTINFO (objP->id).evadeSpeed [gameStates.app.nDifficultyLevel];

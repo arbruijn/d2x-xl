@@ -470,7 +470,7 @@ if (pDir) {
 	m = vmsMatrix::Create(a);
 	vDrift = m * (*pDir);
 	vmsVector::Normalize(vDrift);
-	d = (float) vmsVector::deltaAngle(vDrift, *pDir, NULL);
+	d = (float) vmsVector::DeltaAngle(vDrift, *pDir, NULL);
 	if (d) {
 		d = (float) exp ((F1_0 / 8) / d);
 		nSpeed = (fix) ((float) nSpeed / d);
@@ -488,7 +488,7 @@ else {
 	vDrift[Y] = nSpeed - randN (2 * nSpeed);
 	vDrift[Z] = nSpeed - randN (2 * nSpeed);
 	vOffs = vDrift;
-	pParticle->dir.setZero();
+	pParticle->dir.SetZero();
 	pParticle->bHaveDir = 1;
 	}
 if (pOrient) {
@@ -667,16 +667,16 @@ else {
 			vmsVector vi = drift, vj = pParticle->dir;
 			vmsVector::Normalize(vi);
 			vmsVector::Normalize(vj);
-//				if (vmsVector::dot(drift, pParticle->dir) < 0)
-			if (vmsVector::dot(vi, vj) < 0)
+//				if (vmsVector::Dot(drift, pParticle->dir) < 0)
+			if (vmsVector::Dot(vi, vj) < 0)
 				drag = -drag;
 //				VmVecScaleInc (&drift, &pParticle->dir, drag);
 			pParticle->pos += pParticle->dir * drag;
 			}
-		if (gameOpts->render.smoke.bCollisions && CollideParticleAndWall (pParticle)) {	//reflect the particle
+		if (gameOpts->render.smoke.bCollisions && CollideParticleAndWall (pParticle)) {	//Reflect the particle
 			if (j)
 				return 0;
-			else if (!(dot = vmsVector::dot(drift, *wallNorm)))
+			else if (!(dot = vmsVector::Dot(drift, *wallNorm)))
 				return 0;
 			else {
 				drift = pParticle->drift + *wallNorm * (-2 * dot);
@@ -1352,7 +1352,7 @@ else
 		c.nTicks = 0;
 		if (CloudLives (pCloud, nCurTime)) {
 			vDelta = c.pos - c.prevPos;
-			fDist = X2F (vDelta.mag());
+			fDist = X2F (vDelta.Mag());
 			h = c.nPartsPerPos;
 			if (h > c.nMaxParts - i)
 				h = c.nMaxParts - i;
@@ -1458,7 +1458,7 @@ for (pp = pParticles + nFirstPart, pi = pPartIdx; nParts; nParts--, pParticles++
 		pi++;
 		}
 #else
-	pi->z = vmsVector::dist(pp->pos, viewInfo.pos);
+	pi->z = vmsVector::Dist(pp->pos, viewInfo.pos);
 	pi->i = nFirstPart;
 	pi++;
 #endif
@@ -1545,8 +1545,8 @@ else
 #endif //SORT_CLOUD_PARTS
 		v = pCloud->prevPos - viewInfo.pos;
 		if (pCloud->bHavePrevPos &&
-			(vmsVector::dist(pCloud->pos, viewInfo.pos) >= v.mag()) &&
-			(vmsVector::dot(v, gameData.objs.viewer->position.mOrient[FVEC]) >= 0)) {	//emitter moving away and facing towards emitter
+			(vmsVector::Dist(pCloud->pos, viewInfo.pos) >= v.Mag()) &&
+			(vmsVector::Dot(v, gameData.objs.viewer->position.mOrient[FVEC]) >= 0)) {	//emitter moving away and facing towards emitter
 			for (i = nParts, j = (nFirstPart + nParts) % nPartLimit; i; i--) {
 				if (!j)
 					j = nPartLimit;
@@ -2024,7 +2024,7 @@ for (i = gameData.smoke.iUsed, nClouds = 0; i >= 0; i = pSmoke->nNext) {
 																				pCloud->pParticles [(pCloud->nFirstPart + pCloud->nParts - 1) % pCloud->nPartLimit].pos,
 																				viewInfo.pos);
 #	else	// use distance of the current emitter position to the viewer
-				pCloudList [nClouds++].xDist = vmsVector::dist(pCloud->pos, viewInfo.pos);
+				pCloudList [nClouds++].xDist = vmsVector::Dist(pCloud->pos, viewInfo.pos);
 #	endif
 #endif
 				}

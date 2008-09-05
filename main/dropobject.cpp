@@ -379,7 +379,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (nObject < 0)
 		return 0;
 	nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState);
-	OBJECTS [nObject].mType.physInfo.velocity.setZero();
+	OBJECTS [nObject].mType.physInfo.velocity.SetZero();
 	if (bFixedPos)
 		vNewPos = OBJECTS [nObject].position.vPos;
 	else
@@ -550,7 +550,7 @@ switch (nType) {
 		for (count = 0; count < num; count++) {
 			int	rand_scale;
 			new_velocity = init_vel;
-			old_mag = init_vel.mag();
+			old_mag = init_vel.Mag();
 
 			//	We want powerups to move more in network mode.
 			if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_ROBOTS)) {
@@ -567,7 +567,7 @@ switch (nType) {
 			// Give keys zero velocity so they can be tracked better in multi
 			if ((gameData.app.nGameMode & GM_MULTI) &&
 				 (( (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD)) || (id == POW_MONSTERBALL)))
-				new_velocity.setZero();
+				new_velocity.SetZero();
 			vNewPos = pos;
 
 			if (IsMultiGame) {
@@ -615,7 +615,7 @@ switch (nType) {
 		for (count=0; count<num; count++) {
 			int	rand_scale;
 			new_velocity = init_vel;
-			old_mag = init_vel.mag();
+			old_mag = init_vel.Mag();
 			vmsVector::Normalize(new_velocity);
 			//	We want powerups to move more in network mode.
 			rand_scale = 2;

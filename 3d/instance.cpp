@@ -148,7 +148,7 @@ vOffs = viewInfo.pos - vPos;
 	//step 2: rotate view vector through tObject matrix
 	viewInfo.pos = mOrient * vOffs;
 	//step 3: rotate tObject matrix through view_matrix (vm = ob * vm)
-	mTrans = mOrient.transpose();
+	mTrans = mOrient.Transpose();
 	for (i = 0; i < 2; i++) {
 		mRot = mTrans * viewInfo.view[i];
 		viewInfo.view [i] = mRot;

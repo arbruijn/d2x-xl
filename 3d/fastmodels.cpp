@@ -84,7 +84,7 @@ if (!gameStates.render.bBrightObject) {
 		  i++, pv++, pn++, pc++) {
 		pc->index = 0;
 		vVertex = vPos + *(fVector *) pv;
-		G3VertexColor ((fVector3 *) pn, vVertex.v3(), i, pc, NULL, 1, 0, 0);
+		G3VertexColor ((fVector3 *) pn, vVertex.V3(), i, pc, NULL, 1, 0, 0);
 		}
 	}
 for (i = iFaceVerts, h = iFaceVerts, pmv = pm->pFaceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {
@@ -148,7 +148,7 @@ else {
 		else if (bEmissive)
 			l = F1_0;
 		else {
-			l = -vmsVector::dot(viewInfo.view [0][FVEC], pmf->vNormal);
+			l = -vmsVector::Dot(viewInfo.view [0][FVEC], pmf->vNormal);
 			l = 3 * f1_0 / 4 + l / 4;
 			l = FixMul (l, xModelLight);
 			}
@@ -231,8 +231,8 @@ if (!pm->bRendered || gameData.models.nScale)
 	mtP->nCount = 0;
 else if (mtP->nCount >= (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) ? 2 : 1))
 	return;
-vn = (pmf ? pmf->vNormal.toFloat3() : vNormal->toFloat3());
-if (fVector3::dot(vn, vForward) > -1.0f / 3.0f)
+vn = (pmf ? pmf->vNormal.ToFloat3() : vNormal->ToFloat3());
+if (fVector3::Dot(vn, vForward) > -1.0f / 3.0f)
 	return;
 if (pmf) {
 	for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
@@ -242,14 +242,14 @@ if (pmf) {
 	v[Z] /= j;
 	}
 else
-	v.setZero();
+	v.SetZero();
 v[Z] -= 1.0f / 16.0f;
 #if 0
 G3TransformPoint (&v, &v, 0);
 #else
 #	if 1
 if (vOffsetP) {
-	vo = vOffsetP->toFloat3();
+	vo = vOffsetP->ToFloat3();
 	v += vo;
 	}
 #	endif
@@ -268,7 +268,7 @@ if (!mtP->nCount) {
 		mtP->fSize = X2F (nRad);
 	else {
 		for (i = 0, nSize = 1000000000; i < j; i++)
-			if (nSize > (h = fVector3::dist(v, pmv [i].vertex)))
+			if (nSize > (h = fVector3::Dist(v, pmv [i].vertex)))
 				nSize = h;
 		mtP->fSize = nSize;// * 1.25f;
 		}
@@ -609,7 +609,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				fVector3 vPos;
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
-				vPos = objP->position.vPos.toFloat3();
+				vPos = objP->position.vPos.ToFloat3();
 				glLightfv (hLight, GL_POSITION, (GLfloat *)&vPos);
 				glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &psc->color);
 				glLightfv (hLight, GL_SPECULAR, (GLfloat *) &psc->color);

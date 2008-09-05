@@ -393,7 +393,7 @@ return 0;
 
 #define	G3VERTPOS3(_dest,_src) \
 			if ((_src)->p3_index < 0) \
-				(_dest) = ((_src)->p3_vec).toFloat3(); \
+				(_dest) = ((_src)->p3_vec).ToFloat3(); \
 			else \
 				_dest = gameData.render.pVerts [(_src)->p3_index];
 
@@ -563,7 +563,7 @@ if (bVertexArrays || bDepthSort) {
 		SetTexCoord (uvlList + i, orient, 1, texCoord [1] + i, 0);
 		G3VERTPOS (vVertPos, pl);
 		if (bDynLight)
-			G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.v3(), vertIndex [i], vertColors + i, NULL,
+			G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.V3(), vertIndex [i], vertColors + i, NULL,
 								gameStates.render.nState ? X2F (uvlList [i].l) : 1, 0, 0);
 		else if (bLight)
 			SetTMapColor (uvlList + i, i, bmBot, !bOverlay, vertColors + i);
@@ -613,7 +613,7 @@ else
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				pl = *ppl;
 				G3VERTPOS (vVertPos, pl);
-				G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.v3(), pl->p3_index, NULL, NULL,
+				G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.V3(), pl->p3_index, NULL, NULL,
 									gameStates.render.nState ? X2F (uvlList [i].l) : 1, 1, 0);
 				glTexCoord2f (X2F (uvlList [i].u), X2F (uvlList [i].v));
 				glVertex3fv ((GLfloat *) &vVertPos);
@@ -623,7 +623,7 @@ else
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				pl = *ppl;
 				G3VERTPOS (vVertPos, pl);
-				G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.v3(), pl->p3_index, NULL, NULL,
+				G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.V3(), pl->p3_index, NULL, NULL,
 									/*gameStates.render.nState ? X2F (uvlList [i].l) :*/ 1, 1, 0);
 				glMultiTexCoord2f (GL_TEXTURE0, X2F (uvlList [i].u), X2F (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL, bmMask != NULL);
@@ -687,8 +687,8 @@ if (bOverlay > 0) {
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-			*vVertPos.v3() = ((*ppl)->p3_vec).toFloat3();
-			G3VertexColor (G3GetNormal (*ppl, &vNormal), vVertPos.v3(), (*ppl)->p3_index, NULL, NULL, 1, 1, 0);
+			*vVertPos.V3() = ((*ppl)->p3_vec).ToFloat3();
+			G3VertexColor (G3GetNormal (*ppl, &vNormal), vVertPos.V3(), (*ppl)->p3_index, NULL, NULL, 1, 1, 0);
 			SetTexCoord (uvlList + i, orient, 0, NULL, bmMask != NULL);
 			OglVertex3f (*ppl);
 			}
@@ -909,7 +909,7 @@ if (bDynLight) {
 	for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 		pl = *ppl;
 		G3VERTPOS (vVertPos, pl);
-		G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.v3(), pl->p3_index, NULL, NULL,
+		G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.V3(), pl->p3_index, NULL, NULL,
 							/*gameStates.render.nState ? X2F (uvlList [i].l) :*/ 1, 1, 0);
 		glTexCoord2f (X2F (uvlList [i].u), X2F (uvlList [i].v));
 		glVertex3fv ((GLfloat *) &vVertPos);

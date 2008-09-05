@@ -363,7 +363,7 @@ for (h = 0; h <= gameData.objs.nLastObject [0] + 1; h++, objP++) {
 		vmsVector::Normalize(vLightDir);
 		if (n) {
 			for (j = 0; j < n; j++)
-				if (abs (vmsVector::dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
+				if (abs (vmsVector::Dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
 					break;
 			if (j < n)
 				continue;

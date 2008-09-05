@@ -770,7 +770,7 @@ for (i = nStart; i <= gameData.objs.nLastObject [0]; i += nStep) {
 			continue;
 		if ((objPj->nType != OBJ_PLAYER) && (objPj->nType != OBJ_ROBOT))
 			continue;
-		dist = vmsVector::dist(*vBombPos, objPj->position.vPos);
+		dist = vmsVector::Dist(*vBombPos, objPj->position.vPos);
 		if (dist - objPj->size >= F1_0*20)
 			continue;
 		if (objPi->nSegment == objPj->nSegment)

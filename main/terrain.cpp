@@ -179,10 +179,10 @@ gameData.render.terrain.vStartPoint = *vOrgPoint + mSurfaceOrient[RVEC] *
 gameData.render.terrain.vStartPoint += mSurfaceOrient[FVEC] *
 					(-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
 tv = gameData.objs.viewer->position.vPos - gameData.render.terrain.vStartPoint;
-iViewer = vmsVector::dot (tv, mSurfaceOrient[RVEC]) / TERRAIN_GRID_SCALE;
+iViewer = vmsVector::Dot (tv, mSurfaceOrient[RVEC]) / TERRAIN_GRID_SCALE;
 if (iViewer > iHigh)
 	iViewer = iHigh;
-jViewer = vmsVector::dot (tv, mSurfaceOrient[FVEC]) / TERRAIN_GRID_SCALE;
+jViewer = vmsVector::Dot (tv, mSurfaceOrient[FVEC]) / TERRAIN_GRID_SCALE;
 if (jViewer > jHigh)
 	jViewer = jHigh;
 G3TransformAndEncodePoint (&pLast, gameData.render.terrain.vStartPoint);
@@ -359,7 +359,7 @@ static fix GetTerrainFaceLight (vmsVector *p0, vmsVector *p1, vmsVector *p2)
 	static vmsVector vLightDir = vmsVector::Create(0x2e14, 0xe8f5, 0x5eb8);
 	vmsVector vNormal = vmsVector::Normal (*p0, *p1, *p2);
 
-return -vmsVector::dot (vNormal, vLightDir);
+return -vmsVector::Dot (vNormal, vLightDir);
 }
 
 //-----------------------------------------------------------------------------

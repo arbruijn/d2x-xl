@@ -1267,7 +1267,7 @@ for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; n
 			vMax[Y] = v[Y];
 		if (vMax[Z] < v[Z])
 			vMax[Z] = v[Z];
-		xDist = v.mag();
+		xDist = v.Mag();
 		if (xMaxDist < xDist)
 			xMaxDist = xDist;
 		}
@@ -1483,7 +1483,7 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
-gameData.segs.fRad = X2F (vmsVector::dist(gameData.segs.vMax, gameData.segs.vMin));
+gameData.segs.fRad = X2F (vmsVector::Dist(gameData.segs.vMax, gameData.segs.vMin));
 ResetObjects (1);		//one tObject, the player
 return 0;
 }

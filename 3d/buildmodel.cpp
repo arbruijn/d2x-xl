@@ -371,12 +371,12 @@ vMin[Z] = F2X (psm->vMin[Z]);
 vMax[X] = F2X (psm->vMax[X]);
 vMax[Y] = F2X (psm->vMax[Y]);
 vMax[Z] = F2X (psm->vMax[Z]);
-psm->vCenter = vmsVector::avg(vMin, vMax);
+psm->vCenter = vmsVector::Avg(vMin, vMax);
 if (psm->bBullets) {
 	pm->bBullets = 1;
 	pm->vBullets = psm->vCenter;
 	}
-psm->nRad = vmsVector::dist(vMin, vMax) / 2;
+psm->nRad = vmsVector::Dist(vMin, vMax) / 2;
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
 		G3SubModelSize (objP, nModel, i, &vOffs, bHires);
@@ -465,7 +465,7 @@ if ((vertices = (fVector3 *) D2_ALLOC (pm->nFaceVerts * sizeof (fVector3)))) {
 
 	for (i = 0, h = pm->nSubModels, psm = pm->pSubModels, pv = vertices; i < h; i++, psm++) {
 		if (psm->nHitbox > 0) {
-			vOffset = gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset.toFloat3();
+			vOffset = gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset.ToFloat3();
 			for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
 				for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++, pv++)
 					*pv = pmv->vertex + vOffset;
@@ -477,7 +477,7 @@ if ((vertices = (fVector3 *) D2_ALLOC (pm->nFaceVerts * sizeof (fVector3)))) {
 	h = G3FilterModelVerts (vertices, h);
 	for (i = 0, pvi = vertices; i < h - 1; i++, pvi++)
 		for (j = i + 1, pvj = vertices + j; j < h; j++, pvj++)
-			if (fRad < (r = fVector3::dist(*pvi, *pvj))) {
+			if (fRad < (r = fVector3::Dist(*pvi, *pvj))) {
 				fRad = r;
 				vMin = *pvi;
 				vMax = *pvj;
@@ -485,16 +485,16 @@ if ((vertices = (fVector3 *) D2_ALLOC (pm->nFaceVerts * sizeof (fVector3)))) {
 	fRad /= 2;
 	// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
 	// around the center with the radius computed above
-	vCenter = gameData.models.offsets[nModel].toFloat3();
+	vCenter = gameData.models.offsets[nModel].ToFloat3();
 	for (i = h, pv = vertices; i; i--, pv++) {
 		v = *pv - vCenter;
-		r = v.mag();
+		r = v.Mag();
 		if (fRad < r)
 			vCenter += v * ((r - fRad) / r);
 		}
 
 	for (i = h, pv = vertices; i; i--, pv++)
-		if (fRad < (r = fVector3::dist(*pv, vCenter)))
+		if (fRad < (r = fVector3::Dist(*pv, vCenter)))
 			fRad = r;
 
 	D2_FREE (vertices);
@@ -511,14 +511,14 @@ if ((vertices = (fVector3 *) D2_ALLOC (pm->nFaceVerts * sizeof (fVector3)))) {
 else {
 	// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
 	// around the center with the radius computed above
-	vCenter = gameData.models.offsets[nModel].toFloat3();
+	vCenter = gameData.models.offsets[nModel].ToFloat3();
 	for (i = 0, h = pm->nSubModels, psm = pm->pSubModels; i < h; i++, psm++) {
 		if (psm->nHitbox > 0) {
-			vOffset = gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset.toFloat3();
+			vOffset = gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset.ToFloat3();
 			for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
 				for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++) {
 					v = pmv->vertex + vOffset;
-					if (fRad < (r = fVector3::dist(v, vCenter)))
+					if (fRad < (r = fVector3::Dist(v, vCenter)))
 						fRad = r;
 					}
 				}
@@ -657,7 +657,7 @@ for (i = 0; i < nGuns; i++) {
 		continue;
 	vi = vGunPoints [i];
 	vi[Z] = 0;
-	xDist = vmsVector::dist(vi, v0);
+	xDist = vmsVector::Dist(vi, v0);
 	if (xMinDist > xDist) {
 		xMinDist = xDist;
 		h = i;

@@ -85,7 +85,7 @@ return gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.hFBO &
 
 static inline fVector3* G3GetNormal (g3sPoint *pPoint, fVector *pvNormal)
 {
-return pPoint->p3_normal.nFaces ? pPoint->p3_normal.vNormal.v3() : pvNormal->v3();
+return pPoint->p3_normal.nFaces ? pPoint->p3_normal.vNormal.V3() : pvNormal->V3();
 }
 
 //------------------------------------------------------------------------------

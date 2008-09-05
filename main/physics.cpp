@@ -81,7 +81,7 @@ best_side = 0;
 // bank tPlayer according to tSegment orientation
 //find tSide of tSegment that tPlayer is most aligned with
 for (i = 0; i < 6; i++) {
-	d = vmsVector::dot(gameData.segs.segments [objP->nSegment].sides [i].normals[0], objP->position.mOrient[UVEC]);
+	d = vmsVector::Dot(gameData.segs.segments [objP->nSegment].sides [i].normals[0], objP->position.mOrient[UVEC]);
 	if (d > largest_d) {largest_d = d; best_side=i;}
 	}
 if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new tPlayer leveling code: use Normal of tSide closest to our up vec
@@ -101,14 +101,14 @@ else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
 	desiredUpVec = (*PlayerSpawnOrient(gameData.multiplayer.nLocalPlayer))[UVEC];
 else
 	return;
-if (labs (vmsVector::dot(desiredUpVec, objP->position.mOrient[FVEC])) < f1_0/2) {
+if (labs (vmsVector::Dot(desiredUpVec, objP->position.mOrient[FVEC])) < f1_0/2) {
 	fixang save_delta_ang;
 	vmsAngVec turnAngles;
 
 	temp_matrix = vmsMatrix::CreateFU(objP->position.mOrient[FVEC], desiredUpVec);
 //	temp_matrix = vmsMatrix::CreateFU(objP->position.mOrient[FVEC], &desiredUpVec, NULL);
 	save_delta_ang =
-	delta_ang = vmsVector::deltaAngle(objP->position.mOrient[UVEC], temp_matrix[UVEC], &objP->position.mOrient[FVEC]);
+	delta_ang = vmsVector::DeltaAngle(objP->position.mOrient[UVEC], temp_matrix[UVEC], &objP->position.mOrient[FVEC]);
 	delta_ang += objP->mType.physInfo.turnRoll;
 	if (abs (delta_ang) > DAMP_ANG) {
 		vmsMatrix mRotate, new_pm;
@@ -260,7 +260,7 @@ if (objP->mType.physInfo.turnRoll) {
 	m = objP->position.mOrient * mRotate;
 	objP->position.mOrient = m;
 	}
-objP->position.mOrient.checkAndFix();
+objP->position.mOrient.CheckAndFix();
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -275,9 +275,9 @@ HUDMessage (0, "BUMP HACK");
 COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 //HUDMessage (0, "BUMP! %d %d", d1, d2);
 //don't bump tPlayer towards center of reactor tSegment
-vmsVector::normalizedDir(vBump, vCenter, objP->position.vPos);
+vmsVector::NormalizedDir(vBump, vCenter, objP->position.vPos);
 if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
-	vBump.neg();
+	vBump.Neg();
 objP->position.vPos += vBump * (objP->size / 5);
 //if moving away from seg, might move out of seg, so update
 if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
@@ -461,13 +461,13 @@ nIgnoreObjs = 0;
 xSimTime = gameData.physics.xTime;
 bSimpleFVI = (objP->nType != OBJ_PLAYER);
 vStartPos = objP->position.vPos;
-if (pi->velocity.isZero()) {
+if (pi->velocity.IsZero()) {
 #	if UNSTICK_OBJS
 	UnstickObject (objP);
 #	endif
 	if (objP == gameData.objs.console)
 		gameData.objs.speedBoost [nObject].bBoosted = sbd.bBoosted = 0;
-	if (pi->thrust.isZero())
+	if (pi->thrust.IsZero())
 		return;
 	}
 
@@ -489,7 +489,7 @@ if (objP->mType.physInfo.drag) {
 		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
 	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
 		accel = objP->mType.physInfo.thrust * FixDiv(f1_0, objP->mType.physInfo.mass);
-		a = !accel.isZero();
+		a = !accel.IsZero();
 		if (bDoSpeedBoost && !(a || gameStates.input.bControlsSkipFrame))
 			vel = sbd.vVel;
 		else {
@@ -554,7 +554,7 @@ do {
 	if (fScale < 1) {
 		vmsVector vStartVel = gameData.objs.vStartVel[nObject];
 		vmsVector::Normalize (vStartVel);
-		fix xDot = vmsVector::dot (objP->position.mOrient[FVEC], vStartVel);
+		fix xDot = vmsVector::Dot (objP->position.mOrient[FVEC], vStartVel);
 		vFrame = objP->mType.physInfo.velocity + gameData.objs.vStartVel[nObject];
 		vFrame *= F2X (fScale * fScale);
 		vFrame += gameData.objs.vStartVel[nObject] * (-(abs (xDot)));
@@ -568,7 +568,7 @@ do {
 			vFrame *= (fix) (F1_0 / gameStates.gameplay.slowmo [i].fSpeed);
 			}
 		}
-	if (vFrame.isZero())
+	if (vFrame.IsZero())
 		break;
 
 retryMove:
@@ -741,7 +741,7 @@ retryMove:
 				vmsVector vCenter;
 				COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 				vCenter -= objP->position.vPos;
-				if (vCenter.mag() > F1_0) {
+				if (vCenter.Mag() > F1_0) {
 					vmsVector::Normalize(vCenter);
 					vCenter /= 10;
 					}
@@ -762,8 +762,8 @@ retryMove:
 		fix attemptedDist, actualDist;
 
 		xOldSimTime = xSimTime;
-		actualDist = vmsVector::normalizedDir(vMoveNormal, objP->position.vPos, vSavePos);
-		if ((fviResult == HIT_WALL) && (vmsVector::dot(vMoveNormal, vFrame) < 0)) {		//moved backwards
+		actualDist = vmsVector::NormalizedDir(vMoveNormal, objP->position.vPos, vSavePos);
+		if ((fviResult == HIT_WALL) && (vmsVector::Dot(vMoveNormal, vFrame) < 0)) {		//moved backwards
 			//don't change position or xSimTime
 			objP->position.vPos = vSavePos;
 			//iSeg = objP->nSegment;		//don't change tSegment
@@ -778,7 +778,7 @@ retryMove:
 			xMovedTime = 0;
 			}
 		else {
-			attemptedDist = vFrame.mag();
+			attemptedDist = vFrame.Mag();
 			xSimTime = FixMulDiv (xSimTime, attemptedDist - actualDist, attemptedDist);
 			xMovedTime = xOldSimTime - xSimTime;
 			if ((xSimTime < 0) || (xSimTime > xOldSimTime)) {
@@ -799,7 +799,7 @@ retryMove:
 		fviResult = FindVectorIntersection (&fq, &hi);
 #endif
 		vMoved = objP->position.vPos - vSavePos;
-		xWallPart = vmsVector::dot(vMoved, hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
+		xWallPart = vmsVector::Dot(vMoved, hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
 		if (xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)) {
 			CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 #if 0//def _DEBUG
@@ -832,7 +832,7 @@ retryMove:
 			bForceFieldBounce = (gameData.pig.tex.pTMapInfo [gameData.segs.segments [nWallHitSeg].sides [nWallHitSide].nBaseTex].flags & TMI_FORCE_FIELD);
 			if (!bForceFieldBounce && (objP->mType.physInfo.flags & PF_STICK)) {		//stop moving
 				AddStuckObject (objP, nWallHitSeg, nWallHitSide);
-				objP->mType.physInfo.velocity.setZero();
+				objP->mType.physInfo.velocity.SetZero();
 				bObjStopped = 1;
 				bRetry = 0;
 				}
@@ -842,7 +842,7 @@ retryMove:
 
 				// TODO: fix this with new dot product method, without bouncing off walls
 				// THIS IS DELICATE!!
-				xWallPart = vmsVector::dot(hi.hit.vNormal, objP->mType.physInfo.velocity);
+				xWallPart = vmsVector::Dot(hi.hit.vNormal, objP->mType.physInfo.velocity);
 				if (bForceFieldBounce || (objP->mType.physInfo.flags & PF_BOUNCE)) {		//bounce off tWall
 					xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 					if (bForceFieldBounce) {
@@ -861,7 +861,7 @@ retryMove:
 					}
 				objP->mType.physInfo.velocity += hi.hit.vNormal * (-xWallPart);
 				if (bCheckVel) {
-					fix vel = objP->mType.physInfo.velocity.mag();
+					fix vel = objP->mType.physInfo.velocity.Mag();
 					if (vel > MAX_OBJECT_VEL)
 						objP->mType.physInfo.velocity *= (FixDiv (MAX_OBJECT_VEL, vel));
 					}
@@ -963,7 +963,7 @@ if (objP->controlType == CT_AI) {
 		fix s = FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100);
 
 		vMoved = objP->position.vPos - vStartPos;
-		s = vMoved.mag();
+		s = vMoved.Mag();
 		vMoved *= (FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100));
 #if 1
 		if (!bDoSpeedBoost)
@@ -971,8 +971,8 @@ if (objP->controlType == CT_AI) {
 #endif
 #ifdef BUMP_HACK
 		if ((objP == gameData.objs.console) &&
-			 vMoved.isZero() &&
-			 !objP->mType.physInfo.thrust.isZero()) {
+			 vMoved.IsZero() &&
+			 !objP->mType.physInfo.thrust.IsZero()) {
 			DoBumpHack (objP);
 			}
 #endif
@@ -1057,12 +1057,12 @@ if ((gameStates.render.automap.bDisplay && (objP == gameData.objs.console)) || S
 #endif
 //Add in acceleration due to force
 #ifdef _DEBUG
-mag = objP->mType.physInfo.velocity.mag ();
+mag = objP->mType.physInfo.velocity.Mag ();
 #endif
 if (!gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted || (objP != gameData.objs.console))
 	objP->mType.physInfo.velocity += *vForce * FixDiv (f1_0, objP->mType.physInfo.mass);
 #ifdef _DEBUG
-mag = objP->mType.physInfo.velocity.mag ();
+mag = objP->mType.physInfo.velocity.Mag ();
 if (X2F (mag) > 500)
 	objP = objP;
 #endif
@@ -1101,14 +1101,14 @@ void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate)
 //	Detect null vector.
 if (gameStates.render.automap.bDisplay && (objP == gameData.objs.console))
 	return;
-if (vGoal->isZero())
+if (vGoal->IsZero())
 	return;
 //	Make morph OBJECTS turn more slowly.
 if (objP->controlType == CT_MORPH)
 	rate *= 2;
 
-dest_angles = vGoal->toAnglesVec();
-cur_angles = objP->position.mOrient[FVEC].toAnglesVec();
+dest_angles = vGoal->ToAnglesVec();
+cur_angles = objP->position.mOrient[FVEC].ToAnglesVec();
 delta_p = (dest_angles[PA] - cur_angles[PA]);
 delta_h = (dest_angles[HA] - cur_angles[HA]);
 if (delta_p > F1_0/2)
@@ -1144,7 +1144,7 @@ void PhysApplyRot (tObject *objP, vmsVector *vForce)
 
 if (objP->movementType != MT_PHYSICS)
 	return;
-xMag = vForce->mag()/8;
+xMag = vForce->Mag()/8;
 if (xMag < F1_0/256)
 	xRate = 4 * F1_0;
 else if (xMag < objP->mType.physInfo.mass >> 14)

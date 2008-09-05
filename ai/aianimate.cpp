@@ -57,7 +57,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 	if (i == 8)
 		h = 1;
 	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->id).turnTime [2]) < F1_0 - F1_0 / 5) {
-		if (vmsVector::dot(vVecToGoal, objP->position.mOrient[FVEC]) > F1_0 - F1_0 / 5)
+		if (vmsVector::Dot(vVecToGoal, objP->position.mOrient[FVEC]) > F1_0 - F1_0 / 5)
 			h = rand () % 2 == 0;
 		else
 			h = 0;

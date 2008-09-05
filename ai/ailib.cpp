@@ -85,7 +85,7 @@ gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 if (gameData.ai.nHitType != HIT_NONE)
 	return 0;
-dot = vmsVector::dot(*vVecToPlayer, objP->position.mOrient[FVEC]);
+dot = vmsVector::Dot(*vVecToPlayer, objP->position.mOrient[FVEC]);
 return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 }
 
@@ -98,7 +98,7 @@ int AICanFireAtPlayer (tObject *objP, vmsVector *vGun, vmsVector *vPlayer)
 	short			nModel, ignoreObjs [2] = {OBJ_IDX (gameData.objs.console), -1};
 
 //	Assume that robot's gun tip is in same tSegment as robot's center.
-if (vGun->isZero())
+if (vGun->IsZero())
 	return 0;
 if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
 	return 1;
@@ -115,8 +115,8 @@ else {
 		objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
 	fq.startSeg = nSegment;
 	}
-h = vmsVector::dist(*vGun, objP->position.vPos);
-h = vmsVector::dist(*vGun, *vPlayer);
+h = vmsVector::Dist(*vGun, objP->position.vPos);
+h = vmsVector::Dist(*vGun, *vPlayer);
 nModel = objP->rType.polyObjInfo.nModel;
 nSize = objP->size;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested
@@ -180,7 +180,7 @@ else {
 			vRand = vmsVector::Random();
 			gameData.ai.cloakInfo [cloak_index].vLastPos += vRand * (8*deltaTime);
 			}
-		dist = vmsVector::normalizedDir(gameData.ai.vVecToPlayer, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
+		dist = vmsVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
 		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
 		LimitPlayerVisibility (xMaxVisibleDist, ailP);
 #ifdef _DEBUG
@@ -194,8 +194,8 @@ else {
 		}
 	else {
 		//	Compute expensive stuff -- gameData.ai.vVecToPlayer and gameData.ai.nPlayerVisibility
-		vmsVector::normalizedDir(gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, *pos);
-		if (gameData.ai.vVecToPlayer.isZero()) {
+		vmsVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, *pos);
+		if (gameData.ai.vVecToPlayer.IsZero()) {
 			gameData.ai.vVecToPlayer[X] = F1_0;
 			}
 		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
@@ -447,7 +447,7 @@ tObject *objP;
 while (nObject != -1) {
 	objP = OBJECTS + nObject;
 	if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR)) {
-		if (vmsVector::dist(*pos, objP->position.vPos) < size + objP->size)
+		if (vmsVector::Dist(*pos, objP->position.vPos) < size + objP->size)
 			return 1;
 		}
 	nObject = objP->next;

@@ -60,7 +60,7 @@ else
 int G3CheckNormalFacing(const vmsVector& pv, const vmsVector& pnorm)
 {
 vmsVector v = viewInfo.pos - pv;
-return (vmsVector::dot(v, pnorm) > 0);
+return (vmsVector::Dot(v, pnorm) > 0);
 }
 
 //------------------------------------------------------------------------------
@@ -68,14 +68,14 @@ return (vmsVector::dot(v, pnorm) > 0);
 int DoFacingCheck (vmsVector *norm, g3sPoint **vertlist, vmsVector *p)
 {
 if (norm) {		//have Normal
-	Assert (norm->p.x || norm->p.y || norm->p.z);
+	Assert (norm [X] || norm [Y] || norm [Z]);
 	return G3CheckNormalFacing (*p, *norm);
 	}
 else {	//Normal not specified, so must compute
 	vmsVector vTemp;
 	//get three points (rotated) and compute Normal
 	vTemp = vmsVector::Perp(vertlist [0]->p3_vec, vertlist [1]->p3_vec, vertlist [2]->p3_vec);
-	return (vmsVector::dot(vTemp, vertlist [1]->p3_vec) < 0);
+	return (vmsVector::Dot(vTemp, vertlist [1]->p3_vec) < 0);
 	}
 }
 

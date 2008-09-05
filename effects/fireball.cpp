@@ -161,7 +161,7 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 		}
 	else if ((t != OBJ_REACTOR) && (t != OBJ_PLAYER))
 		continue;
-	dist = vmsVector::dist(obj0P->position.vPos, explObjP->position.vPos);
+	dist = vmsVector::Dist(obj0P->position.vPos, explObjP->position.vPos);
 	// Make damage be from 'xMaxDamage' to 0.0, where 0.0 is 'xMaxDistance' away;
 	if (dist >= xMaxDistance)
 		continue;
@@ -170,7 +170,7 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 	damage = xMaxDamage - FixMulDiv (dist, xMaxDamage, xMaxDistance);
 	force = xMaxForce - FixMulDiv (dist, xMaxForce, xMaxDistance);
 	// Find the force vector on the tObject
-	vmsVector::normalizedDir(vForce, obj0P->position.vPos, explObjP->position.vPos);
+	vmsVector::NormalizedDir(vForce, obj0P->position.vPos, explObjP->position.vPos);
 	vForce *= force;
 	// Find where the point of impact is... (pos_hit)
 	pos_hit = explObjP->position.vPos - obj0P->position.vPos;
@@ -190,7 +190,7 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 		//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
 		if (objP && (!ROBOTINFO (obj0P->id).bossFlag) && (gameData.weapons.info [objP->id].flash)) {
 			tAIStatic	*aip = &obj0P->cType.aiInfo;
-			int			force_val = X2I (FixDiv (vForce.mag() * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
+			int			force_val = X2I (FixDiv (vForce.Mag() * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
 
 			if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame >= F1_0)
 				aip->SKIP_AI_COUNT--;
@@ -423,7 +423,7 @@ VmVecZero (&debrisP->mType.physInfo.rotVel);
 #else
 debrisP->mType.physInfo.rotVel = vmsVector::Create(d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
 #endif
-debrisP->mType.physInfo.rotThrust.setZero();
+debrisP->mType.physInfo.rotThrust.SetZero();
 debrisP->lifeleft = nDebrisLife [gameOpts->render.nDebrisLife] * F1_0 + 3*DEBRIS_LIFE/4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
 debrisP->mType.physInfo.mass =
 #if 0

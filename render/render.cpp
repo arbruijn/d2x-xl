@@ -983,13 +983,13 @@ if (sideOpposite [c0] == c1)
 //find normals of adjoining sides
 FindAdjacentSideNorms (segP, c0, c1, s);
 temp = gameData.render.mine.viewerEye - *s[0].p;
-d0 = vmsVector::dot(s[0].n[0], temp);
+d0 = vmsVector::Dot(s[0].n[0], temp);
 if (s [0].t != 1)	// triangularized face -> 2 different normals
-	d0 |= vmsVector::dot(s[0].n[1], temp);	// we only need the sign, so a bitwise or does the trick
+	d0 |= vmsVector::Dot(s[0].n[1], temp);	// we only need the sign, so a bitwise or does the trick
 temp = gameData.render.mine.viewerEye - *s[1].p;
-d1 = vmsVector::dot(s[1].n[0], temp);
+d1 = vmsVector::Dot(s[1].n[0], temp);
 if (s [1].t != 1)
-	d1 |= vmsVector::dot(s[1].n[1], temp);
+	d1 |= vmsVector::Dot(s[1].n[1], temp);
 if ((d0 & d1) < 0)	// only < 0 if both negative due to bitwise and
 	return 0;
 if (d0 < 0)
@@ -1148,8 +1148,8 @@ else {
 		vmsMatrix mView;
 
 		mView = gameData.objs.viewer->position.mOrient;
-		mView[FVEC].neg();
-		mView[RVEC].neg();
+		mView[FVEC].Neg();
+		mView[RVEC].Neg();
 #else
 		vmsMatrix mHead, mView;
 
@@ -1408,7 +1408,7 @@ void AddObjectToSegList (short nObject, short nSegment)
 pi->nNextItem = gameData.render.mine.renderObjs.ref [nSegment];
 gameData.render.mine.renderObjs.ref [nSegment] = gameData.render.mine.renderObjs.nUsed++;
 pi->nObject = nObject;
-pi->xDist = vmsVector::dist(OBJECTS [nObject].position.vPos, gameData.render.mine.viewerEye);
+pi->xDist = vmsVector::Dist(OBJECTS [nObject].position.vPos, gameData.render.mine.viewerEye);
 }
 
 //------------------------------------------------------------------------------
@@ -1569,9 +1569,9 @@ vmsVector vCenter;
 G3TransformPoint(vCenter, *SEGMENT_CENTER_I(gameData.objs.viewer->nSegment), 0);
 vmsVector v;
 G3TransformPoint(v, gameData.segs.vMin, 0);
-fix d1 = vmsVector::dist(v, vCenter);
+fix d1 = vmsVector::Dist(v, vCenter);
 G3TransformPoint(v, gameData.segs.vMax, 0);
-fix d2 = vmsVector::dist(v, vCenter);
+fix d2 = vmsVector::Dist(v, vCenter);
 
 if (d1 < d2)
 	d1 = d2;

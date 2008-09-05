@@ -54,7 +54,7 @@ newVelocity[Y] += (d_rand() - 16384) * SPIT_SPEED * 2;
 newVelocity[Z] += (d_rand() - 16384) * SPIT_SPEED * 2;
 // Give keys zero velocity so they can be tracked better in multi
 if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
-	newVelocity.setZero();
+	newVelocity.SetZero();
 //there's a piece of code which lets the tPlayer pick up a powerup if
 //the distance between him and the powerup is less than 2 time their
 //combined radii.  So we need to create powerups pretty far out from

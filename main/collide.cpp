@@ -205,7 +205,7 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 							VmVecMag (&force2) / 65536.0);
 #endif
 			if (bDamage && ((otherObjP->nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->id).companion)) {
-				xForceMag = force2.mag();
+				xForceMag = force2.Mag();
 				ApplyForceDamage (objP, xForceMag, otherObjP);
 				}
 			}
@@ -250,7 +250,7 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 		else
 			return;
 		if (bDamage) {
-			xForceMag = vForce->mag();
+			xForceMag = vForce->Mag();
 			ApplyForceDamage (objP, xForceMag, otherObjP);
 			}
 		}
@@ -278,7 +278,7 @@ if (t) {
 	Assert (t->movementType == MT_PHYSICS);
 	vForce = t->mType.physInfo.velocity * (-t->mType.physInfo.mass);
 #if 1//def _DEBUG
-	if (!vForce.isZero())
+	if (!vForce.IsZero())
 #endif
 	PhysApplyForce (t, &vForce);
 	return 1;
@@ -290,7 +290,7 @@ p0 = objP0->position.vPos;
 p1 = objP1->position.vPos;
 v0 = objP0->mType.physInfo.velocity;
 v1 = objP1->mType.physInfo.velocity;
-mag = vmsVector::dot (v0, v1);
+mag = vmsVector::Dot (v0, v1);
 vn0 = v0;
 m0 = vmsVector::Normalize (vn0);
 vn1 = v1;
@@ -313,12 +313,12 @@ if (m0 && m1) {
 	}
 vh = p0 - p1;
 if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
-	m0 = vh.mag();
+	m0 = vh.Mag();
 	if (m0 > ((objP0->size + objP1->size) * 3) / 4) {
 		p0 += vn0;
 		p1 += vn1;
 		vh = p0 - p1;
-		m1 = vh.mag();
+		m1 = vh.Mag();
 		if (m1 > m0) {
 #if 0//def _DEBUG
 			HUDMessage (0, "moving away (%d, %d)", m0, m1);
@@ -339,11 +339,11 @@ if (!((m0 + m1) && FixMul (m0, m1))) {
 #endif
 	return 0;
 	}
-mag = vForce.mag();
+mag = vForce.Mag();
 double d = (double)(2 * FixMul (m0, m1)) / (double)(m0 + m1);
 vForce *= (fix)(d * 65536.0);
 //VmVecScaleFrac (&vForce, 2 * FixMul (m0, m1), m0 + m1);
-mag = vForce.mag();
+mag = vForce.Mag();
 #if 0//def _DEBUG
 if (fabs (X2F (mag) > 10000))
 	;//goto redo;
@@ -371,7 +371,7 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 		// serves as Normal.
 		v1 = v0;
 		vmsVector::Normalize (v1);
-		dot = vmsVector::dot (v1, vr);
+		dot = vmsVector::Dot (v1, vr);
 		vr *= (2 * dot);
 		//VmVecNegate (VmVecDec (&vr, &v0));
 		vmsVector::Normalize (vr);
@@ -751,7 +751,7 @@ int nParentSig = weaponP->cType.laserInfo.nParentSig;
 int nParentObj = weaponP->cType.laserInfo.nParentObj;
 if (OBJECTS [nParentObj].nSignature != nParentSig)
 	return 1;
-fix dist = vmsVector::dist (OBJECTS [nParentObj].position.vPos, weaponP->position.vPos);
+fix dist = vmsVector::Dist (OBJECTS [nParentObj].position.vPos, weaponP->position.vPos);
 if (dist > MAX_OMEGA_DIST)
 	return 0;
 return 1;
@@ -802,7 +802,7 @@ if (weaponP->id == OMEGA_ID)
 
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->id == GUIDEDMSL_ID) {
-	fix dot = vmsVector::dot (weaponP->position.mOrient[FVEC], sideP->normals[0]);
+	fix dot = vmsVector::Dot (weaponP->position.mOrient[FVEC], sideP->normals[0]);
 #if TRACE
 	con_printf (CONDBG, "Guided missile dot = %7.3f \n", X2F (dot));
 #endif
@@ -815,8 +815,8 @@ if (weaponP->id == GUIDEDMSL_ID) {
 	else {
 		vmsVector	vReflect;
 		vmsAngVec	va;
-		vReflect = vmsVector::reflect(weaponP->position.mOrient[FVEC], sideP->normals[0]);
-		va = vReflect.toAnglesVec();
+		vReflect = vmsVector::Reflect(weaponP->position.mOrient[FVEC], sideP->normals[0]);
+		va = vReflect.ToAnglesVec();
 		weaponP->position.mOrient = vmsMatrix::Create(va);
 		}
 	}
@@ -1006,7 +1006,7 @@ int CollideDebrisAndWall (tObject *debris, fix hitspeed, short hitseg, short hit
 if (gameOpts->render.nDebrisLife) {
 	vmsVector	vDir = debris->mType.physInfo.velocity,
 					vNormal = gameData.segs.segments [hitseg].sides [hitwall].normals [0];
-	debris->mType.physInfo.velocity = vmsVector::reflect(vDir, vNormal);
+	debris->mType.physInfo.velocity = vmsVector::Reflect(vDir, vNormal);
 	DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, hitseg, 0, vHitPt, 0, F1_0 / 3);
 	}
 else
@@ -1498,7 +1498,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 	//	Boss only vulnerable in back.  See if hit there.
 	tvec1 = *vHitPt - robotP->position.vPos;
 	vmsVector::Normalize (tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
-	dot = vmsVector::dot (tvec1, robotP->position.mOrient[FVEC]);
+	dot = vmsVector::Dot (tvec1, robotP->position.mOrient[FVEC]);
 #if TRACE
 	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", X2F (dot));
 #endif
@@ -1557,7 +1557,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 
 				newObjP->mType.physInfo.mass = WI_mass (weaponP->nType);
 				newObjP->mType.physInfo.drag = WI_drag (weaponP->nType);
-				newObjP->mType.physInfo.thrust.setZero();
+				newObjP->mType.physInfo.thrust.SetZero();
 
 				vec_to_point = *vHitPt - robotP->position.vPos;
 				vmsVector::Normalize (vec_to_point);
@@ -1944,7 +1944,7 @@ if (weaponP->id == OMEGA_ID)
 //	Don't Collide own smart mines unless direct hit.
 if ((weaponP->id == SMARTMINE_ID) &&
 	 (OBJ_IDX (playerObjP) == weaponP->cType.laserInfo.nParentObj) &&
-	 (vmsVector::dist (*vHitPt, playerObjP->position.vPos) > playerObjP->size))
+	 (vmsVector::Dist (*vHitPt, playerObjP->position.vPos) > playerObjP->size))
 	return 1;
 gameData.multiplayer.bWasHit [playerObjP->id] = -1;
 CreateWeaponEffects (weaponP, 1);
@@ -2131,7 +2131,7 @@ int MaybeDetonateWeapon (tObject *weapon1, tObject *weapon2, vmsVector *vHitPt)
 if (!gameData.weapons.info [weapon1->id].damage_radius)
 	return 0;
 
-dist = vmsVector::dist (weapon1->position.vPos, weapon2->position.vPos);
+dist = vmsVector::Dist (weapon1->position.vPos, weapon2->position.vPos);
 if (dist >= F1_0*5)
 	weapon1->lifeleft = min (dist/64, F1_0);
 else {

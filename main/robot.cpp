@@ -100,7 +100,7 @@ nSubModel = botInfoP->gunSubModels [nGun];
 //instance up the tree for this gun
 while (nSubModel != 0) {
 	m = vmsMatrix::Create(objP->rType.polyObjInfo.animAngles [nSubModel]);
-	vmsMatrix::transpose(m);
+	vmsMatrix::Transpose(m);
 	vRot = m * vGunPos;
 	vGunPos = vRot + pm->subModels.offsets[nSubModel];
 	nSubModel = pm->subModels.parents [nSubModel];

@@ -141,7 +141,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].nSegment : pl->info.nSegment;
 		if (!SEGVIS (m, i))
 			continue;
-		h = (int) (vmsVector::dist (center, pl->info.vPos) - F2X (pl->info.fRad) / 10.0f);
+		h = (int) (vmsVector::Dist (center, pl->info.vPos) - F2X (pl->info.fRad) / 10.0f);
 		if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 			continue;
 		pDists [n].nDist = h;
@@ -215,8 +215,8 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 				continue;
 			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 				sideP = SEGMENTS [pl->info.nSegment].sides + pl->info.nSide;
-				if ((vmsVector::dot(sideP->normals[0], vLightToVert) < -F1_0 / 6) &&
-					 ((sideP->nType == SIDE_IS_QUAD) || (vmsVector::dot(sideP->normals[1], vLightToVert) < -F1_0 / 6)))
+				if ((vmsVector::Dot(sideP->normals[0], vLightToVert) < -F1_0 / 6) &&
+					 ((sideP->nType == SIDE_IS_QUAD) || (vmsVector::Dot(sideP->normals[1], vLightToVert) < -F1_0 / 6)))
 					continue;
 				}
 			}
@@ -355,7 +355,7 @@ for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 		}
 	vNormal = sideP->normals[0] + sideP->normals[1];
 	vNormal *= (-F1_0 / 2);
-	vAngles = vNormal.toAnglesVec();
+	vAngles = vNormal.ToAnglesVec();
 	viewer.position.mOrient = vmsMatrix::Create(vAngles);
 	G3StartFrame(0, 0);
 	RenderStartFrame();

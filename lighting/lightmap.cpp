@@ -270,7 +270,7 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 	lmiP->nIndex = nIndex; 
 	//find light direction, currently based on first 3 points of tSide, not always right.
 	vmsVector *normalP = SEGMENTS [faceP->nSegment].sides [faceP->nSide].normals;
-	lmiP->vDir = vmsVector::avg(normalP[0], normalP[1]);
+	lmiP->vDir = vmsVector::Avg(normalP[0], normalP[1]);
 	lmiP++; 
 	}
 return lightmapData.nLights = (int) (lmiP - lightmapData.info); 
@@ -434,8 +434,8 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 		nDbgSeg = nDbgSeg;
 #endif
 	if (SEGMENT2S [faceP->nSegment].special != SEGMENT_IS_SKYBOX) {
-		vNormal = vmsVector::avg(sideP->normals[0], sideP->normals[1]);
-		vcd.vertNorm = vNormal.toFloat3();
+		vNormal = vmsVector::Avg(sideP->normals[0], sideP->normals[1]);
+		vcd.vertNorm = vNormal.ToFloat3();
 		pPixelPos = pixelPos;
 		texColorP = texColor;
 		bBlack = 
@@ -448,8 +448,8 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 					nDbgSeg = nDbgSeg;
 #endif
 				if (0 < SetNearestPixelLights (faceP->nSegment, faceP->nSide, &vNormal, pPixelPos, faceP->fRads [1] / 10.0f, nThread)) {
-					vcd.vertPos = pPixelPos->toFloat3();
-					color.setZero();
+					vcd.vertPos = pPixelPos->ToFloat3();
+					color.SetZero();
 					G3AccumVertColor (-1, &color, &vcd, nThread);
 					if ((color[R] > 0.001f) || (color[G] > 0.001f) || (color[B] > 0.001f)) {
 							bBlack = false;

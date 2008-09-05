@@ -176,14 +176,14 @@ if (RENDERPATH && gameOpts->render.ship.bBullets) {
 
 				if (bSpectate) {
 					viewP = &m;
-					m = posP->mOrient.transpose();
+					m = posP->mOrient.Transpose();
 				}
 				else
 					viewP = ObjectView (objP);
 				vEmitter = *viewP * pm->vBullets;
 				vEmitter += posP->vPos;
 				vDir = posP->mOrient[UVEC];
-				vDir.neg();
+				vDir.Neg();
 				if (i < 0) {
 					gameData.multiplayer.bulletEmitters [nPlayer] =
 						CreateSmoke (&vEmitter, &vDir, &posP->mOrient, objP->nSegment, 1, BULLET_MAX_PARTS, 15.0f, 1,
@@ -235,7 +235,7 @@ if (bHires >= 0) {
 				return;
 			if (bSpectate) {
 				viewP = &m;
-				*viewP = posP->mOrient.transpose();
+				*viewP = posP->mOrient.Transpose();
 			}
 
 			else
@@ -288,7 +288,7 @@ if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multiplayer.nLocalPlay
 	mn = objP->position.vPos - objP->vLastPos;
 	vmsVector::Normalize(fn);
 	vmsVector::Normalize(mn);
-	d = vmsVector::dot(fn, mn);
+	d = vmsVector::Dot(fn, mn);
 	if (d >= -F1_0 / 2)
 		bForward = 1;
 	else {
@@ -346,7 +346,7 @@ else {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [1]);
 			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [1], nScale);
 			}
-		if (objP->mType.physInfo.thrust.isZero())
+		if (objP->mType.physInfo.thrust.IsZero())
 			vDirP = NULL;
 		else {
 			nParts /= 2;
@@ -431,7 +431,7 @@ if (nParts > 0) {
 	else {
 		SetSmokePartScale (gameData.smoke.objects [i], nScale);
 		SetSmokeDensity (gameData.smoke.objects [i], nParts, gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [2]);
-		SetSmokeSpeed (gameData.smoke.objects [i], !objP->mType.physInfo.velocity.isZero() ?
+		SetSmokeSpeed (gameData.smoke.objects [i], !objP->mType.physInfo.velocity.IsZero() ?
 							BOT_PART_SPEED : BOT_PART_SPEED * 2 / 3);
 		}
 	pos = objP->position.vPos + objP->position.mOrient[FVEC] * (-objP->size / 2);

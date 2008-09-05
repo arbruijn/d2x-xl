@@ -63,7 +63,7 @@ do {
 	if (!i)
 		i = pPath->nSize;
 	i--;
-	if (vmsVector::dist(pPath->path [i].vPos, *p) >= I2X (15))
+	if (vmsVector::Dist(pPath->path [i].vPos, *p) >= I2X (15))
 		break;
 	}
 while (i != pPath->nStart);

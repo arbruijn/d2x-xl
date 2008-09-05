@@ -867,7 +867,7 @@ vVecToRobot = buddyObjP->position.vPos - objP->position.vPos;
 dist = vmsVector::Normalize(vVecToRobot);
 if (dist > F1_0*100)
 	return 0;
-dot = vmsVector::dot(vVecToRobot, buddyObjP->position.mOrient[FVEC]);
+dot = vmsVector::Dot(vVecToRobot, buddyObjP->position.mOrient[FVEC]);
 if (dot < F1_0/2)
 	return 0;
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
@@ -898,7 +898,7 @@ int MaybeBuddyFireSmart (short nObject)
 	fix		dist;
 	short		nWeaponObj;
 
-dist = vmsVector::dist(buddyObjP->position.vPos, objP->position.vPos);
+dist = vmsVector::Dist(buddyObjP->position.vPos, objP->position.vPos);
 if (dist > F1_0*80)
 	return 0;
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))

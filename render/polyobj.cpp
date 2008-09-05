@@ -670,8 +670,8 @@ else {
 			//Assert (i < po->nModels);
 			if (i < po->nModels) {
 			//if submodel, rotate around its center point, not pivot point
-				vOffset = vmsVector::avg(po->subModels.mins[i], po->subModels.maxs[i]);
-				vOffset.neg();
+				vOffset = vmsVector::Avg(po->subModels.mins[i], po->subModels.maxs[i]);
+				vOffset.Neg();
 				if (!G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
 					if (bHires)
 						return 0;

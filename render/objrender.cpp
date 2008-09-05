@@ -121,7 +121,7 @@ if (!HaveReplacementModel (HOSTAGE_MODEL))
 objP->renderType = RT_POLYOBJ;
 objP->rType.polyObjInfo.nModel = HOSTAGE_MODEL;
 objP->rType.polyObjInfo.nTexOverride = -1;
-objP->mType.physInfo.rotVel.setZero();
+objP->mType.physInfo.rotVel.SetZero();
 memset (objP->rType.polyObjInfo.animAngles, 0, sizeof (objP->rType.polyObjInfo.animAngles));
 return 1;
 }
@@ -741,7 +741,7 @@ else {
 				}
 			if (bBlendPolys) {
 #if 0
-				fix xDistToEye = vmsVector::dist(gameData.objs.viewer->position.vPos, objP->position.vPos);
+				fix xDistToEye = vmsVector::Dist(gameData.objs.viewer->position.vPos, objP->position.vPos);
 				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0 * 2)
 #endif
 					bOk = DrawPolygonModel (

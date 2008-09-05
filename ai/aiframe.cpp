@@ -253,7 +253,7 @@ return 0;
 int AIMRunFromObjectHandler1 (tObject *objP, tAIStateInfo *siP)
 {
 MoveTowardsSegmentCenter (objP);
-objP->mType.physInfo.velocity.setZero();
+objP->mType.physInfo.velocity.SetZero();
 CreateNSegmentPath (objP, 5, -1);
 siP->ailP->mode = AIM_RUN_FROM_OBJECT;
 return 0;
@@ -263,7 +263,7 @@ return 0;
 int AIMBehindHandler1 (tObject *objP, tAIStateInfo *siP)
 {
 MoveTowardsSegmentCenter (objP);
-objP->mType.physInfo.velocity.setZero();
+objP->mType.physInfo.velocity.SetZero();
 return 0;
 }
 
@@ -480,14 +480,14 @@ if (gameData.ai.nPlayerVisibility == 2) {
 	vmsVector  goal_point, vGoal, vec_to_goal, vRand;
 	fix         dot;
 
-	dot = vmsVector::dot(OBJPOS (gameData.objs.console)->mOrient[FVEC], gameData.ai.vVecToPlayer);
+	dot = vmsVector::Dot(OBJPOS (gameData.objs.console)->mOrient[FVEC], gameData.ai.vVecToPlayer);
 	if (dot > 0) {          // Remember, we're interested in the rear vector dot being < 0.
 		vGoal = OBJPOS (gameData.objs.console)->mOrient[FVEC];
 		vGoal = -vGoal;
 		}
 	else {
 		fix dot;
-		dot = vmsVector::dot(OBJPOS (gameData.objs.console)->mOrient[RVEC], gameData.ai.vVecToPlayer);
+		dot = vmsVector::Dot(OBJPOS (gameData.objs.console)->mOrient[RVEC], gameData.ai.vVecToPlayer);
 		vGoal = OBJPOS (gameData.objs.console)->mOrient[RVEC];
 		if (dot > 0) {
 			vGoal = -vGoal;
@@ -622,7 +622,7 @@ int AISNoneHandler1 (tObject *objP, tAIStateInfo *siP)
 	fix	dot;
 
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
-dot = vmsVector::dot(objP->position.mOrient[FVEC], gameData.ai.vVecToPlayer);
+dot = vmsVector::Dot(objP->position.mOrient[FVEC], gameData.ai.vVecToPlayer);
 if ((dot >= F1_0/2) && (siP->aiP->GOAL_STATE == AIS_REST))
 	siP->aiP->GOAL_STATE = AIS_SEARCH;
 return 0;
@@ -846,7 +846,7 @@ if (siP->botInfoP->companion) {
 		else
 			;
 
-		if (bDoStuff && (vmsVector::dot(objP->position.mOrient[FVEC], gameData.ai.vVecToPlayer) < F1_0 / 2)) {
+		if (bDoStuff && (vmsVector::Dot(objP->position.mOrient[FVEC], gameData.ai.vVecToPlayer) < F1_0 / 2)) {
 			CreateNewLaserEasy (&objP->position.mOrient[FVEC], &objP->position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = F1_0/2;
 			if (!gameData.escort.bMayTalk) // If buddy not talking, make him fire flares less often.
@@ -950,7 +950,7 @@ if (siP->botInfoP->bossFlag) {
 	// If tPlayer cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		pv = 0;
-		dtp = vmsVector::dist(OBJPOS (gameData.objs.console)->vPos, objP->position.vPos) / 4;
+		dtp = vmsVector::Dist(OBJPOS (gameData.objs.console)->vPos, objP->position.vPos) / 4;
 		}
 	DoBossStuff (objP, pv);
 	}
@@ -1047,7 +1047,7 @@ if (gameStates.app.cheats.bRobotsKillRobots) {
 
 		for (j = 0; j <= gameData.objs.nLastObject [0]; j++)
 			if ((OBJECTS [j].nType == OBJ_ROBOT) && (j != siP->nObject)) {
-				curDist = vmsVector::dist(objP->position.vPos, OBJECTS [j].position.vPos);
+				curDist = vmsVector::Dist(objP->position.vPos, OBJECTS [j].position.vPos);
 				if ((curDist < MAX_WAKEUP_DIST / 2) && (curDist < minDist) &&
 					 ObjectToObjectVisibility (objP, OBJECTS + j, FQ_TRANSWALL)) {
 					nMinObj = j;
@@ -1057,7 +1057,7 @@ if (gameStates.app.cheats.bRobotsKillRobots) {
 		if (nMinObj >= 0) {
 			gameData.ai.vBelievedPlayerPos = OBJECTS [nMinObj].position.vPos;
 			gameData.ai.nBelievedPlayerSeg = OBJECTS [nMinObj].nSegment;
-			vmsVector::normalizedDir(gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, objP->position.vPos);
+			vmsVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, objP->position.vPos);
 			return 0;
 			}
 		}
@@ -1089,7 +1089,7 @@ if ((siP->nPrevVisibility || !(siP->nObjRef & 3)) && ReadyToFire (siP->botInfoP,
 	}
 else {
 	siP->vVisPos = objP->position.vPos;
-	gameData.ai.vGunPoint.setZero();
+	gameData.ai.vGunPoint.SetZero();
 	}
 return 0;
 }
@@ -1345,7 +1345,7 @@ si.nPrevVisibility = si.ailP->nPrevVisibility;    //  Must get this before we to
 // If only awake because of a camera, make that the believed tPlayer position.
 if (AIPlayerPosHandler (objP, &si))
 	goto funcExit;
-gameData.ai.xDistToPlayer = vmsVector::dist(gameData.ai.vBelievedPlayerPos, objP->position.vPos);
+gameData.ai.xDistToPlayer = vmsVector::Dist(gameData.ai.vBelievedPlayerPos, objP->position.vPos);
 // If this robot can fire, compute visibility from gun position.
 // Don't want to compute visibility twice, as it is expensive.  (So is call to CalcGunPoint).
 if (AIFireHandler (objP, &si))

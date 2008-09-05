@@ -120,7 +120,7 @@ if (nDecay)
 	maxDistance *= 2;
 else
 	maxDistance = (5 * maxDistance) / 4;	// Make all sounds travel 1.25 times as far.
-distance = vmsVector::normalizedDir (vecToSound, *vSoundPos, *vListenerPos);
+distance = vmsVector::NormalizedDir (vecToSound, *vSoundPos, *vListenerPos);
 if (distance < maxDistance) {
 	int nSearchSegs = X2I (maxDistance / 10);
 	if (nSearchSegs < 1)
@@ -141,7 +141,7 @@ if (distance < maxDistance) {
 		if (*volume <= 0)
 			*volume = 0;
 		else {
-			angleFromEar = vmsVector::deltaAngleNorm((*mListener)[RVEC], vecToSound, &(*mListener)[UVEC]);
+			angleFromEar = vmsVector::DeltaAngleNorm((*mListener)[RVEC], vecToSound, &(*mListener)[UVEC]);
 			FixSinCos (angleFromEar, &sinang, &cosang);
 			if (gameConfig.bReverseChannels || gameOpts->sound.bHires)
 				cosang = -cosang;

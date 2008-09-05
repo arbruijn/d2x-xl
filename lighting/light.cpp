@@ -256,7 +256,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 	if (hitType == HIT_NONE)
 		bApplyLight = 1;
 	else if (hitType == HIT_WALL) {
-		fix distDist = vmsVector::dist(hit_data.hit.vPoint, *vObjPos);
+		fix distDist = vmsVector::Dist(hit_data.hit.vPoint, *vObjPos);
 		if (distDist < F1_0/4) {
 			bApplyLight = 1;
 			// -- Int3 ();	//	Curious, did fvi detect intersection with tWall containing vertex?
@@ -408,7 +408,7 @@ if (xObjIntensity) {
 #endif
 			{
 				vVertPos = gameData.segs.vertices + nVertex;
-				dist = vmsVector::dist(*vObjPos, *vVertPos) / 4;
+				dist = vmsVector::Dist(*vObjPos, *vVertPos) / 4;
 				dist = FixMul (dist, dist);
 				if (dist < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
@@ -447,7 +447,7 @@ if (xObjIntensity) {
 					fate = FindVectorIntersection (&fq, &hit_data);
 					if (fate != HIT_NONE) {
 						tvec = hit_data.hit.vPoint - *vObjPos;
-						maxHeadlightDist = tvec.mag() + F1_0*4;
+						maxHeadlightDist = tvec.Mag() + F1_0*4;
 					}
 				}
 			}
@@ -463,7 +463,7 @@ if (xObjIntensity) {
 #endif
 			{
 				vVertPos = gameData.segs.vertices + nVertex;
-				dist = vmsVector::dist(*vObjPos, *vVertPos);
+				dist = vmsVector::Dist(*vObjPos, *vVertPos);
 				bApplyLight = 0;
 				if ((dist >> headlightShift) < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
@@ -483,7 +483,7 @@ if (xObjIntensity) {
 							vmsVector	vecToPoint;
 							vecToPoint = *vVertPos - *vObjPos;
 							vmsVector::Normalize(vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = vmsVector::dot(vecToPoint, objP->position.mOrient[FVEC]);
+							dot = vmsVector::Dot(vecToPoint, objP->position.mOrient[FVEC]);
 							if (gameData.render.vertColor.bDarkness)
 								maxDot = F1_0 / spotSize;
 							else
@@ -568,10 +568,10 @@ switch (nObjType) {
 		   return (hoardlight);
 		  }
 		else if (objP->id == gameData.multiplayer.nLocalPlayer) {
-			return max (playerThrust.mag()/4, F1_0*2) + F1_0/2;
+			return max (playerThrust.Mag()/4, F1_0*2) + F1_0/2;
 			}
 		else {
-			return max (objP->mType.physInfo.thrust.mag()/4, F1_0*2) + F1_0/2;
+			return max (objP->mType.physInfo.thrust.Mag()/4, F1_0*2) + F1_0/2;
 			}
 		break;
 
@@ -899,11 +899,11 @@ void ComputeEngineGlow (tObject *objP, fix *xEngineGlowValue)
 xEngineGlowValue [0] = f1_0/5;
 if (objP->movementType == MT_PHYSICS) {
 	if ((objP->nType == OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->id == gameData.multiplayer.nLocalPlayer)) {
-		fix thrust_mag = objP->mType.physInfo.thrust.mag();
+		fix thrust_mag = objP->mType.physInfo.thrust.Mag();
 		xEngineGlowValue [0] += (FixDiv (thrust_mag,gameData.pig.ship.player->maxThrust)*4)/5;
 	}
 	else {
-		fix speed = objP->mType.physInfo.velocity.mag();
+		fix speed = objP->mType.physInfo.velocity.Mag();
 		xEngineGlowValue [0] += (FixDiv (speed, MAX_VELOCITY) * 3) / 5;
 		}
 	}
@@ -1048,7 +1048,7 @@ for (i = 0; i <nChangedSegs; i++)
 		break;
 if (i == nChangedSegs) {
 	COMPUTE_SEGMENT_CENTER (&rSegmentCenter, segP);
-	xDistToRSeg = vmsVector::dist(rSegmentCenter, *vSegCenter);
+	xDistToRSeg = vmsVector::Dist(rSegmentCenter, *vSegCenter);
 
 	if (xDistToRSeg <= LIGHT_DISTANCE_THRESHOLD) {
 		fix	xLightAtPoint = (xDistToRSeg > F1_0) ?

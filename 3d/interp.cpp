@@ -398,7 +398,7 @@ if (bmP) {
 		return;
 	}
 #if 1
-if (vmsVector::dot(*vNormal, vForward) > -F1_0 / 3)
+if (vmsVector::Dot(*vNormal, vForward) > -F1_0 / 3)
 #else
 if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -F1_0))
 #endif
@@ -420,7 +420,7 @@ mtP->vDir [mtP->nCount] = *vNormal;
 mtP->vDir [mtP->nCount] = -mtP->vDir [mtP->nCount];
 if (!mtP->nCount++) {
 	for (i = 0, nSize = 0x7fffffff; i < nPoints; i++)
-		if (nSize > (h = vmsVector::dist(v, pointList [i]->p3_src)))
+		if (nSize > (h = vmsVector::Dist(v, pointList [i]->p3_src)))
 			nSize = h;
 	mtP->fSize = X2F (nSize);// * 1.25f;
 	}
@@ -525,7 +525,7 @@ for (;;) {
 
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				l = -vmsVector::dot(viewInfo.view[0][FVEC], *VECPTR(p+16));
+				l = -vmsVector::Dot(viewInfo.view[0][FVEC], *VECPTR(p+16));
 				l = f1_0 / 4 + (l * 3) / 4;
 				l = FixMul (l, xModelLight);
 				}
@@ -682,7 +682,7 @@ for (;;) {
 			fix light;
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
-				light = -vmsVector::dot(viewInfo.view [0][FVEC], *VECPTR (p+16));
+				light = -vmsVector::Dot(viewInfo.view [0][FVEC], *VECPTR (p+16));
 				light = f1_0/4 + (light*3)/4;
 				light = FixMul (light, xModelLight);
 				}

@@ -951,11 +951,11 @@ if (nVertex == nDbgVertex)
 				continue;
 			}
 		vLightDir = vVertex - psl->info.vPos;
-		xLightDist = vLightDir.mag();
+		xLightDist = vLightDir.Mag();
 #if 1
 		if (vNormalP) {
 			vLightDir /= xLightDist;
-			if(vmsVector::dot(*vNormalP, vLightDir) > F1_0 / 2)
+			if(vmsVector::Dot(*vNormalP, vLightDir) > F1_0 / 2)
 				continue;
 		}
 #endif
@@ -1211,7 +1211,7 @@ if (gameOpts->render.nLightingMethod) {
 		else
 			psl = psl;
 #endif
-		psl->xDistance = (fix) ((vmsVector::dist(c, psl->info.vPos) /*- F2X (psl->info.fRad)*/) / (psl->info.fRange * max (psl->info.fRad, 1.0f)));
+		psl->xDistance = (fix) ((vmsVector::Dist(c, psl->info.vPos) /*- F2X (psl->info.fRad)*/) / (psl->info.fRange * max (psl->info.fRad, 1.0f)));
 		if (psl->xDistance > xMaxLightRange)
 			continue;
 		if (SetActiveShaderLight (activeLightsP, psl, 1, nThread))
@@ -1274,7 +1274,7 @@ if (gameOpts->render.nLightingMethod) {
 			psl = psl;
 #endif
 		vLightDir = *vPixelPos - psl->info.vPos;
-		xLightDist = vLightDir.mag();
+		xLightDist = vLightDir.Mag();
 		nLightSeg = psl->info.nSegment;
 #if 0
 		if ((nLightSeg != nSegment) || (psl->info.nSide != nSide)) {
@@ -1287,7 +1287,7 @@ if (gameOpts->render.nLightingMethod) {
 #endif
 		if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment))
 			continue;
-		psl->xDistance = (fix) ((vmsVector::dist(*vPixelPos, psl->info.vPos) /*- F2X (psl->info.fRad)*/) / psl->info.fRange);
+		psl->xDistance = (fix) ((vmsVector::Dist(*vPixelPos, psl->info.vPos) /*- F2X (psl->info.fRad)*/) / psl->info.fRange);
 		if (psl->xDistance > xMaxLightRange)
 			continue;
 		SetActiveShaderLight (activeLightsP, psl, 1, nThread);
@@ -1351,12 +1351,12 @@ else if (gameStates.render.bPerPixelLighting) {
 		vcd.vertNorm[X] =
 		vcd.vertNorm[Y] =
 		vcd.vertNorm[Z] = 0;
-		vcd.vertNorm.setZero();
+		vcd.vertNorm.SetZero();
 		if (vPosP)
-			vcd.vertPos = vPosP->toFloat3();
+			vcd.vertPos = vPosP->ToFloat3();
 		else {
 			COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
-			vcd.vertPos = vCenter.toFloat3();
+			vcd.vertPos = vCenter.ToFloat3();
 			}
 		vcd.pVertPos = &vcd.vertPos;
 		vcd.fMatShininess = 4;
@@ -1385,7 +1385,7 @@ else {
 		if (vPosP) {
 			vVertex = gameData.segs.vertices [*pv];
 			//G3TransformPoint (&vVertex, &vVertex);
-			d = 2.0f - X2F (vmsVector::dist(vVertex, *vPosP)) / X2F (vmsVector::dist(vCenter, vVertex));
+			d = 2.0f - X2F (vmsVector::Dist(vVertex, *vPosP)) / X2F (vmsVector::Dist(vCenter, vVertex));
 			c.color.red += pvc->color.red * d;
 			c.color.green += pvc->color.green * d;
 			c.color.blue += pvc->color.blue * d;
@@ -1476,7 +1476,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	ResetUsedLights (0, nThread);
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 1, bColorize, nThread);
 	gameData.render.color.vertices [nVertex].index = 0;
-	G3VertexColor(gameData.segs.points [nVertex].p3_normal.vNormal.v3(), vVertex.v3(), nVertex, pf, NULL, 1, 0, nThread);
+	G3VertexColor(gameData.segs.points [nVertex].p3_normal.vNormal.V3(), vVertex.V3(), nVertex, pf, NULL, 1, 0, nThread);
 	}
 }
 

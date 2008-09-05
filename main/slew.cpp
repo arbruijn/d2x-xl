@@ -56,7 +56,7 @@ int slew_stop()
 {
 	if (!slewObjP || slewObjP->controlType!=CT_SLEW) return 0;
 
-	slewObjP->mType.physInfo.velocity.setZero();
+	slewObjP->mType.physInfo.velocity.SetZero();
 	return 1;
 }
 
@@ -148,7 +148,7 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 	// TODO MM
 	new_pm = objP->position.mOrient * rotmat;
 	objP->position.mOrient = new_pm;
-	vmsMatrix::transpose(new_pm);		//make those columns rows
+	vmsMatrix::Transpose(new_pm);		//make those columns rows
 
 	moved |= objP->mType.physInfo.velocity[X] | objP->mType.physInfo.velocity[Y] | objP->mType.physInfo.velocity[Z];
 

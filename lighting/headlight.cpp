@@ -74,7 +74,7 @@ for (i = 0; i < nHeadlights; i++) {
 	vecToObj = objP->position.vPos - lightObjP->position.vPos;
 	dist = vmsVector::Normalize(vecToObj);
 	if (dist > 0) {
-		dot = vmsVector::dot(lightObjP->position.mOrient[FVEC], vecToObj);
+		dot = vmsVector::Dot(lightObjP->position.mOrient[FVEC], vecToObj);
 		if (dot < F1_0/2)
 			light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
 		else
@@ -109,7 +109,7 @@ for (i = 0; i < gameData.render.lights.dynamic.headlights.nLights; i++) {
 	psl->info.vDirf = pl->vDir.ToFloat();
 	if (bHWHeadlight) {
 		gameData.render.lights.dynamic.headlights.pos[i] = psl->vPosf[0];
-		gameData.render.lights.dynamic.headlights.dir[i] = *psl->info.vDirf.v3();
+		gameData.render.lights.dynamic.headlights.dir[i] = *psl->info.vDirf.V3();
 		gameData.render.lights.dynamic.headlights.brightness[i] = 100.0f;
 		}
 	else if (pl->bTransform && !gameStates.ogl.bUseTransform)

@@ -369,7 +369,7 @@ if (bShadowData) {
 			}
 		else if (nVerts == 4) {
 			v = pv[pfv [3]] - pv[pfv [1]];
-			if (vmsVector::dot(*pn, v) < 0) {
+			if (vmsVector::Dot(*pn, v) < 0) {
 				G3AddPolyModelTri (po, pf, pfv [0], pfv [1], pfv [3]);
 				po->iFaceVert += 3;
 				pf->bGlow = (nGlow >= 0);
@@ -974,9 +974,9 @@ if (bPrintLine) {
 		}
 	glColor4d (1,0.8,0,1);
 	glBegin (GL_LINES);
-	VmVecFixToFloat (&vf, vPos);
+	vf = vPos->ToFloat ();
 	glVertex3fv ((GLfloat*) &vf);
-	VmVecFixToFloat (&vf, &v);
+	vf = vPos->ToFloat ();
 	glVertex3fv ((GLfloat*) &vf);
 	glEnd ();
 	if (!bShadowTest) {
@@ -1011,7 +1011,7 @@ for (;;) {
 				continue;
 			if (0 <= LineHitsFace (&vHit, vPos, &v, nSegment, nSide)) {
 				vh = vHit - *vPos;
-				if (vmsVector::dot(vh, v) > 0) {
+				if (vmsVector::Dot(vh, v) > 0) {
 					nHitSide = nSide;
 					break;
 					}
@@ -1020,7 +1020,7 @@ for (;;) {
 		}
 	if (nHitSide < 0)
 		break;
-	fDist = X2F (vmsVector::dist(*vPos, vHit));
+	fDist = X2F (vmsVector::Dist(*vPos, vHit));
 	if (nChild < 0) {
 		bHit = 1;
 		break;
@@ -1478,7 +1478,7 @@ if (FAST_SHADOWS) {
 		vmsVector::Normalize(vLightDir);
 		if (gameData.render.shadows.nLight) {
 			for (j = 0; j < gameData.render.shadows.nLight; j++)
-				if (abs (vmsVector::dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
+				if (abs (vmsVector::Dot(vLightDir, gameData.render.shadows.vLightDir[j])) > 2 * F1_0 / 3) // 60 deg
 					break;
 			if (j < gameData.render.shadows.nLight)
 				continue;

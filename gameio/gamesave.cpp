@@ -231,7 +231,7 @@ if (objP->nType == OBJ_PLAYER) {
 			objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
 	//Make sure orient matrix is orthogonal
 	gameOpts->render.nMathFormat = 0;
-	objP->position.mOrient.checkAndFix();
+	objP->position.mOrient.CheckAndFix();
 	gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 	objP->id = nGameSavePlayers++;
 	}

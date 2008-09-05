@@ -148,7 +148,7 @@ vSign[Z] = vd[Z] ? vd[Z] / abs(vd[Z]) : 0;
 nSign = VECSIGN (vd);
 do {
 	VmRandomVector (&vr);
-	nDot = vmsVector::dot(vr, vd);
+	nDot = vmsVector::Dot(vr, vd);
 	if (++i == 100)
 		i = 0;
 	} while ((nDot > nMaxDot) || (nDot < nMinDot));
@@ -186,7 +186,7 @@ if (pl->bRandom) {
 		do {
 			VmRandomVector (&vDir);
 		}
-		while (vmsVector::dot(vRefDir, vDir) < nMinDot);
+		while (vmsVector::Dot(vRefDir, vDir) < nMinDot);
 	}
 	pl->vEnd = pl->vPos + vDir * pl->nLength;
 }
@@ -203,13 +203,13 @@ if (pl->nOffset) {
 vPos = pl->vPos;
 if (pl->bInPlane) {
 	vDelta[0] = pl->vDelta;
-	vDelta[i].setZero();
+	vDelta[i].SetZero();
 	}
 else {
 	do {
 		VmRandomVector(&vDelta[0]);
 	}
-	while (abs (vmsVector::dot(vDir, vDelta[0])) > 9 * F1_0 / 10);
+	while (abs (vmsVector::Dot(vDir, vDelta[0])) > 9 * F1_0 / 10);
 	vDelta[1] = vmsVector::Normal(vPos, pl->vEnd, *vDelta);
 	v = vPos + vDelta[1];
 	vDelta[0] = vmsVector::Normal(vPos, pl->vEnd, v);
@@ -226,7 +226,7 @@ if ((pp = pl->pParent)) {
 for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++) {
 	pln->vBase =
 	pln->vPos = vPos;
-	pln->vOffs.setZero();
+	pln->vOffs.SetZero();
 	memcpy (pln->vDelta, vDelta, sizeof (vDelta));
 	vPos += vDir;
 	if (bInit)
@@ -539,7 +539,7 @@ int ComputeAttractor (vmsVector *vAttract, vmsVector *vDest, vmsVector *vPos, in
 	int nDist;
 
 *vAttract = *vDest - *vPos;
-nDist = vAttract->mag() / i;
+nDist = vAttract->Mag() / i;
 if (!nMinDist)
 	*vAttract *= (F1_0 / i * 2);	// scale attractor with inverse of remaining distance
 else {
@@ -566,12 +566,12 @@ do {
 	VmRandomVector (vOffs);
 	// TODO: Use new vector dot prod method
 	// right now it hangs/crashes
-	nDot = vmsVector::dot(va, *vOffs);
+	nDot = vmsVector::Dot(va, *vOffs);
 	if (++i > 100)
 		i = 0;
 	} while (abs (nDot) < F1_0 / 32);
 if (nDot < 0)
-	vOffs->neg();
+	vOffs->Neg();
 return vOffs;
 }
 
@@ -580,17 +580,17 @@ return vOffs;
 vmsVector *SmootheLightningOffset (vmsVector *vOffs, vmsVector *vPrevOffs, int nDist, int nSmoothe)
 {
 if (nSmoothe) {
-		int nMag = vOffs->mag();
+		int nMag = vOffs->Mag();
 
 	if (nSmoothe > 0)
 		*vOffs *= FixDiv(nSmoothe * nDist, nMag);	//scale offset vector with distance to attractor (the closer, the smaller)
 	else
 		*vOffs *= FixDiv(nDist, nSmoothe * nMag);	//scale offset vector with distance to attractor (the closer, the smaller)
-	nMag = vPrevOffs->mag();
+	nMag = vPrevOffs->Mag();
 	*vOffs += *vPrevOffs;
-	nMag = vOffs->mag();
+	nMag = vOffs->Mag();
 	*vOffs *= FixDiv(nDist, nMag);
-	nMag = vOffs->mag();
+	nMag = vOffs->Mag();
 	}
 return vOffs;
 }
@@ -599,11 +599,11 @@ return vOffs;
 
 vmsVector *AttractLightningPathPoint (vmsVector *vOffs, vmsVector *vAttract, vmsVector *vPos, int nDist, int i, int bJoinPaths)
 {
-	int nMag = vOffs->mag();
+	int nMag = vOffs->Mag();
 // attract offset vector by scaling it with distance from attracting node
 *vOffs *= FixDiv(i * nDist / 2, nMag);	//scale offset vector with distance to attractor (the closer, the smaller)
 *vOffs += *vAttract;	//add offset and attractor vectors (attractor is the bigger the closer)
-nMag = vOffs->mag();
+nMag = vOffs->Mag();
 *vOffs *= FixDiv(bJoinPaths ? nDist / 2 : nDist, nMag);	//rescale to desired path length
 *vPos += *vOffs;
 return vPos;
@@ -740,7 +740,7 @@ nAmplitude = pl->nAmplitude;
 vBase [0] = pl->vPos;
 vBase [1] = pl->pNodes [pl->nNodes - 1].vPos;
 for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i > 0; i--, pln++) {
-	nDist = vmsVector::dist(pln->vNewPos, pln->vPos);
+	nDist = vmsVector::Dist(pln->vNewPos, pln->vPos);
 	if (nMaxDist < nDist) {
 		nMaxDist = nDist;
 		h = i;
@@ -786,7 +786,7 @@ bInPlane = pl->bInPlane && ((nDepth == 1) || (nStyle == 2));
 nAmplitude = pl->nAmplitude;
 plh = pl->pNodes;
 plh->vNewPos = plh->vPos;
-plh->vOffs.setZero();
+plh->vOffs.SetZero();
 if ((nDepth > 1) || pl->bRandom) {
 	if (nStyle == 2) {
 		if (nDepth > 1)
@@ -819,7 +819,7 @@ if ((nDepth > 1) || pl->bRandom) {
 else {
 	plh = pl->pNodes + pl->nNodes - 1;
 	plh->vNewPos = plh->vPos;
-	plh->vOffs.setZero();
+	plh->vOffs.SetZero();
 	if (nStyle == 2) {
 		nAmplitude = 5 * nAmplitude / 3;
 		for (h = pl->nNodes, i = 0, plh = pl->pNodes; i < h; i++, plh++) {
@@ -1153,7 +1153,7 @@ if (SHOW_LIGHTNINGS) {
 				}
 			if (bStretch) {
 				pl->vDir = pl->vEnd - pl->vPos;
-				pl->nLength = pl->vDir.mag();
+				pl->nLength = pl->vDir.Mag();
 				}
 			if (0 < (h = pl->nNodes)) {
 				for (j = h, pln = pl->pNodes; j > 0; j--, pln++) {
@@ -1378,8 +1378,8 @@ if (bEnd) {
 	}
 else {
 	vNormal[2] = fVector::Normal(vPosf[1], vPosf[2], vEye);
-	if (fVector::dot(vNormal[1], vNormal[2]) < 0)
-		vNormal[2].neg();
+	if (fVector::Dot(vNormal[1], vNormal[2]) < 0)
+		vNormal[2].Neg();
 	vn[1] = vNormal[1] + vNormal[2];
 	vn[1] = vn[1] * 0.5f;
 	}
@@ -1492,7 +1492,7 @@ glDisable (GL_SMOOTH);
 for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++, vPosf++) {
 	TRAP (pln);
 	// Check ToFloat
-	*vPosf = pln->vPos.toFloat3();
+	*vPosf = pln->vPos.ToFloat3();
 	}
 if (!gameStates.ogl.bUseTransform)
 	OglSetupTransform (1);
@@ -1674,7 +1674,7 @@ else {
 		float		fDot;
 		VmVecNormal (vn, vPlasma, vPlasma + 1, vPlasma + 2);
 		VmVecNormal (vn + 1, vPlasma, vPlasma + 2, vPlasma + 3);
-		fDot = fVector::dot (vn, vn + 1);
+		fDot = fVector::Dot (vn, vn + 1);
 		if (fDot >= 0) {
 			glBegin (GL_TRIANGLES);
 			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j]));
@@ -1984,7 +1984,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	if (pli->bRandom && !pli->nAngle)
 		vEnd = NULL;
 	else if ((vEnd = FindLightningTargetPos (objP, pli->nTarget)))
-		pli->nLength = vmsVector::dist(objP->position.vPos, *vEnd) / F1_0;
+		pli->nLength = vmsVector::Dist(objP->position.vPos, *vEnd) / F1_0;
 	else {
 		v = objP->position.vPos + objP->position.mOrient[FVEC] * F1_0 * pli->nLength;
 		vEnd = &v;
@@ -2366,7 +2366,7 @@ if (i < 0) {
 		vPos += vNorm * (F1_0 / 64);
 		vEnd += vNorm * (F1_0 / 64);
 		vDelta = vmsVector::Normal(vNorm, vPos, vEnd);
-		h = vmsVector::dist(vPos, vEnd);
+		h = vmsVector::Dist(vPos, vEnd);
 		}
 	else {
 		memcpy (&vPosf, &pVerts->vertex, sizeof (fVector3));
@@ -2376,7 +2376,7 @@ if (i < 0) {
 		vPosf += vNormf * (1.0f / 64.0f);
 		vEndf += vNormf * (1.0f / 64.0f);
 		vDeltaf = fVector::Normal(vNormf, vPosf, vEndf);
-		h = F2X (fVector::dist(vPosf, vEndf));
+		h = F2X (fVector::Dist(vPosf, vEndf));
 		vPos[X] = F2X (vPosf[X]);
 		vPos[Y] = F2X (vPosf[Y]);
 		vPos[Z] = F2X (vPosf[Z]);

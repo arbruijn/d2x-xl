@@ -378,7 +378,7 @@ for (nPos = 0; nPos < 9; nPos++) {
 		bossObjP->position.vPos = vSegCenter;
 	else {
 		vVertPos = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [nPos-1]];
-		bossObjP->position.vPos = vmsVector::avg(vVertPos, vSegCenter);
+		bossObjP->position.vPos = vmsVector::Avg(vVertPos, vSegCenter);
 		}
 	RelinkObject (nObject, nSegment);
 	if (!ObjectIntersectsWall (bossObjP))
@@ -399,7 +399,7 @@ int IsValidTeleportDest (vmsVector *vPos, int nMinDist)
 for (i = gameData.objs.nLastObject [0]; i; i--, objP++) {
 	if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) {
 		vOffs = *vPos - objP->position.vPos;
-		xDist = vOffs.mag();
+		xDist = vOffs.Mag();
 		if (xDist > ((nMinDist + objP->size) * 3 / 2))
 			return 1;
 		}

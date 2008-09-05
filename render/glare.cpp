@@ -101,7 +101,7 @@ return gameStates.ogl.hDepthBuffer;
 void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float dx, float dy, fMatrix *r)
 {
 	fVector	v, h, vdx, vdy;
-	float		d = vCenter->sqrmag();
+	float		d = vCenter->SqrMag();
 	int		i;
 
 if (!vEye) {
@@ -113,13 +113,13 @@ v[X] = v[Z] = 0;
 v[Y] = (*vCenter)[Y] ? d / (*vCenter)[Y] : 1;
 v -= *vCenter;
 fVector::Normalize(v);
-vdx = fVector::cross(v, *vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
+vdx = fVector::Cross(v, *vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
 vdx = vdx * dx;
 v[Y] = v[Z] = 0;
 v[X] = (*vCenter)[X] ? d / (*vCenter)[X] : 1;
 v -= *vCenter;
 fVector::Normalize(v);
-vdy = fVector::cross(v, *vEye);
+vdy = fVector::Cross(v, *vEye);
 if (r) {
 	if((*vCenter)[X] >= 0) {
 		vdy = vdy * dy;
@@ -203,7 +203,7 @@ if (!pSideVerts) {
 	pSideVerts = sideVerts;
 	}
 for (i = j = 0; j < 4; j++) {
-	d = vmsVector::dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts[(j + 1) % 4]]);
+	d = vmsVector::Dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts[(j + 1) % 4]]);
 	if (dMax < d) {
 		dMax = d;
 		i = j;
@@ -217,13 +217,13 @@ j = i + 1;
 d1 = VmLinePointDist(gameData.segs.vertices[pSideVerts[i]],
                      gameData.segs.vertices[pSideVerts[j]],
                      gameData.segs.vertices[pSideVerts[(j+1)%4]]);
-d = vmsVector::dist(gameData.segs.vertices[pSideVerts[i]], gameData.segs.vertices[pSideVerts [(j + 1) % 4]]);
-d = vmsVector::dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts [(j + 1) % 4]]);
+d = vmsVector::Dist(gameData.segs.vertices[pSideVerts[i]], gameData.segs.vertices[pSideVerts [(j + 1) % 4]]);
+d = vmsVector::Dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts [(j + 1) % 4]]);
 d2 = VmLinePointDist(gameData.segs.vertices[pSideVerts[i]],
                      gameData.segs.vertices[pSideVerts[j]],
                      gameData.segs.vertices[pSideVerts[(j+2)%4]]);
-d = vmsVector::dist(gameData.segs.vertices[pSideVerts[i]], gameData.segs.vertices[pSideVerts [(j + 2) % 4]]);
-d = vmsVector::dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts [(j + 2) % 4]]);
+d = vmsVector::Dist(gameData.segs.vertices[pSideVerts[i]], gameData.segs.vertices[pSideVerts [(j + 2) % 4]]);
+d = vmsVector::Dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts [(j + 2) % 4]]);
 if (h)
 	*h = d1 > d2 ? d1 : d2;
 return i;
@@ -420,23 +420,23 @@ v = sprite[0] + sprite[1];
 v -= sprite[2];
 v -= sprite[3];
 v = v * 0.25f;
-*vNormal = fVector::cross(v, u);
+*vNormal = fVector::Cross(v, u);
 fVector::Normalize(*vNormal);
 e = *vCenter; fVector::Normalize(e);
-if (fVector::dot(e, *vNormal) > 0.999f)
+if (fVector::Dot(e, *vNormal) > 0.999f)
 	p = v;
 else {
-	p = fVector::cross(e, *vNormal);
+	p = fVector::Cross(e, *vNormal);
 	fVector::Normalize(p);
 }
 
-q = fVector::cross(p, e);
-h = u.mag();
-g = v.mag();
+q = fVector::Cross(p, e);
+h = u.Mag();
+g = v.Mag();
 if (h > g)
 	h = g;
-g = 2 * (float) (fabs (fVector::dot(p, v)) + fabs (fVector::dot(p, u))) + h * fVector::dot(p, *vNormal);
-h = 2 * (float) (fabs (fVector::dot(q, v)) + fabs (fVector::dot(q, u))) + h * fVector::dot(q, *vNormal);
+g = 2 * (float) (fabs (fVector::Dot(p, v)) + fabs (fVector::Dot(p, u))) + h * fVector::Dot(p, *vNormal);
+h = 2 * (float) (fabs (fVector::Dot(q, v)) + fabs (fVector::Dot(q, u))) + h * fVector::Dot(q, *vNormal);
 #if 1
 if (g / h > 8)
 	h = g / 8;
@@ -504,7 +504,7 @@ void RenderHardGlare (fVector *sprite, fVector *vCenter, int nTexture, float fLi
 fLight /= 4;
 if (fLight < 0.01f)
 	return;
-color.alpha = vCenter->mag();
+color.alpha = vCenter->Mag();
 if (color.alpha < zRangeP->fRad)
 	fIntensity *= color.alpha / zRangeP->fRad;
 
@@ -563,15 +563,15 @@ v -= sprite[3];
 v = v * 0.25f;
 e = *vEye - *vLight;
 fVector::Normalize(e);
-n = fVector::cross(v, u);
+n = fVector::Cross(v, u);
 fVector::Normalize(n);
-ul = u.mag();
-vl = v.mag();
+ul = u.Mag();
+vl = v.Mag();
 h = (ul > vl) ? vl : ul;
-s = u + n * (-h * fVector::dot(e, u) / ul);
-t = v + n * (-h * fVector::dot(e, v) / vl);
-s = s + e * fVector::dot(e, s);
-t = t + e * fVector::dot(e, t);
+s = u + n * (-h * fVector::Dot(e, u) / ul);
+t = v + n * (-h * fVector::Dot(e, v) / vl);
+s = s + e * fVector::Dot(e, s);
+t = t + e * fVector::Dot(e, t);
 s = s * 1.8f;
 t = t * 1.8f;
 v = *vLight;
@@ -581,7 +581,7 @@ for (i = 0; i < 3; i++) {
 	sprite[2][i] = v[i] - s[i] - t[i];
 	sprite[3][i] = v[i] - s[i] + t[i];
 	}
-cosine = fVector::dot(e, n);
+cosine = fVector::Dot(e, n);
 return (float) sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nIntensity];
 }
 
@@ -697,7 +697,7 @@ else {
 	vNormal = fVector::Normal(sprite[0], sprite[1], sprite[2]);
 	vEye = vCenter; fVector::Normalize(vEye);
 	//dim corona depending on viewer angle
-	if ((fAngle = fVector::dot(vNormal, vEye)) > 0) {
+	if ((fAngle = fVector::Dot(vNormal, vEye)) > 0) {
 		if (fAngle > 0.25f)
 			return;
 		fIntensity *= 1 - fAngle / 0.25f;

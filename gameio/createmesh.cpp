@@ -184,7 +184,7 @@ else {
 edgeP->tris [0] = nTri;
 edgeP->verts [0] = nVert1;
 edgeP->verts [1] = nVert2;
-edgeP->fLength = fVector::dist(gameData.segs.fVertices[nVert1], gameData.segs.fVertices[nVert2]);
+edgeP->fLength = fVector::Dist(gameData.segs.fVertices[nVert1], gameData.segs.fVertices[nVert2]);
 return edgeP - m_edges;
 }
 
@@ -407,7 +407,7 @@ for (i = 0; i < 3; i++) {
 	if ((h != nVert1) && (h != nVert2))
 		break;
 	}
-return fVector::dist(gameData.segs.fVertices[h], gameData.segs.fVertices[gameData.segs.nVertices]);
+return fVector::Dist(gameData.segs.fVertices[h], gameData.segs.fVertices[gameData.segs.nVertices]);
 }
 
 //------------------------------------------------------------------------------
@@ -419,7 +419,7 @@ int CTriMeshBuilder::SplitEdge (tEdge *edgeP, short nPass)
 
 memcpy (tris, edgeP->tris, sizeof (tris));
 memcpy (verts, edgeP->verts, sizeof (verts));
-gameData.segs.fVertices[gameData.segs.nVertices] = fVector::avg(
+gameData.segs.fVertices[gameData.segs.nVertices] = fVector::Avg(
 			 gameData.segs.fVertices[verts[0]],
 			 gameData.segs.fVertices[verts[1]]);
 gameData.segs.vertices[gameData.segs.nVertices] = gameData.segs.fVertices[gameData.segs.nVertices].ToFix();
@@ -534,11 +534,11 @@ void CTriMeshBuilder::SetupVertexNormals (void)
 
 for (i = gameData.segs.nVertices, pointP = gameData.segs.points; i; i--, pointP++) {
 /*
-	(*pointP->p3_normal.vNormal.v3())[X] =
-	(*pointP->p3_normal.vNormal.v3())[Y] =
-	(*pointP->p3_normal.vNormal.v3())[Z] = 0;
+	(*pointP->p3_normal.vNormal.V3())[X] =
+	(*pointP->p3_normal.vNormal.V3())[Y] =
+	(*pointP->p3_normal.vNormal.V3())[Z] = 0;
 */
-	pointP->p3_normal.vNormal.v3()->setZero();
+	pointP->p3_normal.vNormal.V3()->SetZero();
 
 	pointP->p3_normal.nFaces = 0;
 	}
@@ -549,7 +549,7 @@ for (h = 0, triP = gameData.segs.faces.tris; h < gameData.segs.nTris; h++, triP+
 		if (nVertex == nDbgVertex)
 			nVertex = nVertex;
 #endif
-		*gameData.segs.points [nVertex].p3_normal.vNormal.v3() += gameData.segs.faces.normals[3 * h];
+		*gameData.segs.points [nVertex].p3_normal.vNormal.V3() += gameData.segs.faces.normals[3 * h];
 		gameData.segs.points [nVertex].p3_normal.nFaces++;
 		}
 	}
@@ -594,13 +594,13 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	grsTriP->nIndex = nIndex;
 	memcpy (grsTriP->index, triP->index, sizeof (triP->index));
 	for (i = 0; i < 3; i++)
-		gameData.segs.faces.vertices [nIndex + i] = *gameData.segs.fVertices [triP->index [i]].v3();
+		gameData.segs.faces.vertices [nIndex + i] = *gameData.segs.fVertices [triP->index [i]].V3();
 	gameData.segs.faces.normals[nIndex] = fVector3::Normal(
 					 gameData.segs.faces.vertices[nIndex],
 					 gameData.segs.faces.vertices[nIndex + 1],
 					 gameData.segs.faces.vertices[nIndex + 2]);
 #ifdef _DEBUG
-	if (gameData.segs.faces.normals[nIndex].mag() == 0)
+	if (gameData.segs.faces.normals[nIndex].Mag() == 0)
 		m_faceP = m_faceP;
 #endif
 	vNormal = gameData.segs.faces.normals[nIndex].ToFix();
@@ -849,7 +849,7 @@ return 1;
 int CQuadMeshBuilder::IsBigFace (short *m_sideVerts)
 {
 for (int i = 0; i < 4; i++)
-	if (fVector::dist(gameData.segs.fVertices[m_sideVerts[i]], gameData.segs.fVertices[m_sideVerts[(i + 1) % 4]]) > MAX_EDGE_LEN)
+	if (fVector::Dist(gameData.segs.fVertices[m_sideVerts[i]], gameData.segs.fVertices[m_sideVerts[(i + 1) % 4]]) > MAX_EDGE_LEN)
 		return 1;
 return 0;
 }
@@ -862,9 +862,9 @@ fVector3 *CQuadMeshBuilder::SetTriNormals (grsTriangle *triP, fVector3 *m_normal
 
 vNormalf = fVector::Normal(gameData.segs.fVertices[triP->index[0]],
 				 gameData.segs.fVertices[triP->index[1]], gameData.segs.fVertices[triP->index[2]]);
-*m_normalP++ = *vNormalf.v3();
-*m_normalP++ = *vNormalf.v3();
-*m_normalP++ = *vNormalf.v3();
+*m_normalP++ = *vNormalf.V3();
+*m_normalP++ = *vNormalf.V3();
+*m_normalP++ = *vNormalf.V3();
 return m_normalP;
 }
 
@@ -967,10 +967,10 @@ void CQuadMeshBuilder::SetupFace (void)
 
 vNormal = m_sideP->normals[0] + m_sideP->normals[1];
 vNormal *= F1_0 / 2;
-vNormalf = vNormal.toFloat3();
+vNormalf = vNormal.ToFloat3();
 for (i = 0; i < 4; i++) {
 	j = m_sideVerts [i];
-	*m_vertexP++ = *gameData.segs.fVertices [j].v3();
+	*m_vertexP++ = *gameData.segs.fVertices [j].V3();
 	*m_normalP++ = vNormalf;
 	m_texCoordP->v.u = X2F (m_sideP->uvls [i].u);
 	m_texCoordP->v.v = X2F (m_sideP->uvls [i].v);
@@ -1005,7 +1005,7 @@ for (i = 0; i < 2; i++, m_triP++) {
 		k = triVertP [j];
 		v = m_sideVerts [k];
 		m_triP->index [j] = v;
-		*m_vertexP++ = *gameData.segs.fVertices [v].v3();
+		*m_vertexP++ = *gameData.segs.fVertices [v].V3();
 		m_texCoordP->v.u = X2F (m_sideP->uvls [k].u);
 		m_texCoordP->v.v = X2F (m_sideP->uvls [k].v);
 		RotateTexCoord2f (m_ovlTexCoordP, m_texCoordP, (ubyte) m_sideP->nOvlOrient);
@@ -1085,10 +1085,10 @@ for (i = 0; i < 4; i++) {
 	color.blue += (gameData.render.color.ambient [h].color.blue + gameData.render.color.ambient [k].color.blue) / 8;
 	color.alpha += (gameData.render.color.ambient [h].color.alpha + gameData.render.color.ambient [k].color.alpha) / 8;
 	}
-vSide[0] = fVector::avg(gameData.segs.fVertices[m_sideVerts[0]], gameData.segs.fVertices[m_sideVerts[1]]);
-vSide[2] = fVector::avg(gameData.segs.fVertices[m_sideVerts[2]], gameData.segs.fVertices[m_sideVerts[3]]);
-vSide[1] = fVector::avg(gameData.segs.fVertices[m_sideVerts[1]], gameData.segs.fVertices[m_sideVerts[2]]);
-vSide[3] = fVector::avg(gameData.segs.fVertices[m_sideVerts[3]], gameData.segs.fVertices[m_sideVerts[0]]);
+vSide[0] = fVector::Avg(gameData.segs.fVertices[m_sideVerts[0]], gameData.segs.fVertices[m_sideVerts[1]]);
+vSide[2] = fVector::Avg(gameData.segs.fVertices[m_sideVerts[2]], gameData.segs.fVertices[m_sideVerts[3]]);
+vSide[1] = fVector::Avg(gameData.segs.fVertices[m_sideVerts[1]], gameData.segs.fVertices[m_sideVerts[2]]);
+vSide[3] = fVector::Avg(gameData.segs.fVertices[m_sideVerts[3]], gameData.segs.fVertices[m_sideVerts[0]]);
 
 VmLineLineIntersection(vSide[0], vSide[2], vSide[1], vSide[3],
 								gameData.segs.fVertices[gameData.segs.nVertices],
@@ -1106,7 +1106,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 		k = triVertP [j];
 		v = m_sideVerts [k];
 		m_triP->index [j] = v;
-		*m_vertexP++ = *gameData.segs.fVertices[v].v3();
+		*m_vertexP++ = *gameData.segs.fVertices[v].V3();
 		if (j == 2) {
 			m_texCoordP [2] = texCoord;
 			m_faceColorP [2] = color;

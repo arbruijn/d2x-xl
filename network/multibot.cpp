@@ -917,7 +917,7 @@ delObjP.nSegment = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 memcpy (&delObjP.position.vPos, buf+bufP, sizeof (vmsVector));      
 bufP += 12;
-delObjP.mType.physInfo.velocity.setZero();
+delObjP.mType.physInfo.velocity.SetZero();
 delObjP.position.vPos[X] = (fix)INTEL_INT ((int)delObjP.position.vPos[X]);
 delObjP.position.vPos[Y] = (fix)INTEL_INT ((int)delObjP.position.vPos[Y]);
 delObjP.position.vPos[Z] = (fix)INTEL_INT ((int)delObjP.position.vPos[Z]);

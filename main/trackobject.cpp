@@ -44,10 +44,10 @@ if (objP->nType == OBJ_ROBOT) {
 	}
 vGoal = objP->position.vPos - tracker->position.vPos;
 vmsVector::Normalize(vGoal);
-*xDot = vmsVector::dot(vGoal, tracker->position.mOrient[FVEC]);
+*xDot = vmsVector::Dot(vGoal, tracker->position.mOrient[FVEC]);
 if ((*xDot < xMinTrackableDot) && (*xDot > 9 * F1_0 / 10)) {
 	vmsVector::Normalize(vGoal);
-	*xDot = vmsVector::dot(vGoal, tracker->position.mOrient[FVEC]);
+	*xDot = vmsVector::Dot(vGoal, tracker->position.mOrient[FVEC]);
 	}
 
 if ((*xDot >= xMinTrackableDot) || 
@@ -161,7 +161,7 @@ else {
 		vecToCurObj = curObjP->position.vPos - *vTrackerPos;
 		dist = vmsVector::Normalize(vecToCurObj);
 		if (dist < maxTrackableDist) {
-			dot = vmsVector::dot(vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient[FVEC] : trackerP->position.mOrient[FVEC]);
+			dot = vmsVector::Dot(vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient[FVEC] : trackerP->position.mOrient[FVEC]);
 
 			//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 			//	to determine if an tObject is initially trackable.  FindHomingObject is called on subsequent
@@ -176,7 +176,7 @@ else {
 				} 
 			else if (dot > F1_0 - (F1_0 - curMinTrackableDot) * 2) {
 				vmsVector::Normalize(vecToCurObj);
-				dot = vmsVector::dot(vecToCurObj, trackerP->position.mOrient[FVEC]);
+				dot = vmsVector::Dot(vecToCurObj, trackerP->position.mOrient[FVEC]);
 				if (dot > curMinTrackableDot) {
 					if (dot > maxDot) {
 						if (ObjectToObjectVisibility (trackerP, OBJECTS + nObject, FQ_TRANSWALL)) {
@@ -261,12 +261,12 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 		continue;
 
 	vecToCurObj = curObjP->position.vPos - *curpos;
-	dist = vecToCurObj.mag();
+	dist = vecToCurObj.Mag();
 
 	if (dist < maxTrackableDist) {
 		vmsVector::Normalize(vecToCurObj);
 		
-		dot = vmsVector::dot(vecToCurObj, trackerP->position.mOrient[FVEC]);
+		dot = vmsVector::Dot(vecToCurObj, trackerP->position.mOrient[FVEC]);
 		if (bIsProximity)
 			dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
 

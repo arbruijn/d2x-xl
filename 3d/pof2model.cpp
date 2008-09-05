@@ -158,7 +158,7 @@ pmf->nVerts = nVerts;
 if ((pmf->bGlow = (nGlow >= 0)))
 	nGlow = -1;
 uvl = (tUVL *) (p + 30 + (nVerts | 1) * 2);
-n = pn->toFloat3();
+n = pn->ToFloat3();
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
 	Assert (pmv - pm->pFaceVerts < pm->nFaceVerts);
@@ -169,7 +169,7 @@ for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	pmv->baseColor = baseColor;
 	pmv->bTextured = bTextured;
 	pmv->nIndex = j;
-	pmv->Normal = *pvn = n;
+	pmv->normal = *pvn = n;
 	G3SetSubModelMinMax (psm, &pmv->vertex);
 	}
 pm->iFaceVert += nVerts;
@@ -215,7 +215,7 @@ for (;;) {
 			fVector3 *pfv = pm->pVerts;
 			vmsVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
-				*pfv = pv->toFloat3();
+				*pfv = pv->ToFloat3();
 				pfv++; pv++;
 			}
 			p += n * sizeof (vmsVector) + 4;
@@ -228,7 +228,7 @@ for (;;) {
 			fVector3 *pfv = pm->pVerts + s;
 			vmsVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
-				*pfv = pv->toFloat3();
+				*pfv = pv->ToFloat3();
 				pfv++; pv++;
 			}
 			p += n * sizeof (vmsVector) + 8;

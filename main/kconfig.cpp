@@ -1917,7 +1917,7 @@ void KCReadExternalControls ()
 
 			Kconfig_abs_movement = (vmsAngVec *) (size_t) ((size_t) kc_external_control + sizeof (ext_control_info));
 
-			if (!Kconfig_abs_movement->isZero())	{
+			if (!Kconfig_abs_movement->IsZero())	{
 				tempm = vmsMatrix::Create(*Kconfig_abs_movement);
 				ViewMatrix = OBJECTS [LOCALPLAYER.nObject].position.mOrient * tempm;
 				OBJECTS [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;	

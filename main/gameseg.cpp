@@ -233,7 +233,7 @@ switch (segP->sides [nSide].nType)	{
 								 gameData.segs.vertices[vvm1],
 								 gameData.segs.vertices[vvm2]);
 		if (bFlip)
-			vm1->neg();
+			vm1->Neg();
 		*vm2 = *vm1;
 		break;
 	case SIDE_IS_TRI_02:
@@ -293,8 +293,8 @@ if (prMin) {
 	for (i = 0; i < 4; i++) {
 		v0 = gameData.segs.vertices + sv [s2v [i]];
 		v1 = gameData.segs.vertices + sv [s2v [(i + 1) % 4]];
-		v = vmsVector::avg(*v0, *v1);
-		d = vmsVector::dist(v, vCenter);
+		v = vmsVector::Avg(*v0, *v1);
+		d = vmsVector::Dist(v, vCenter);
 		if (rMin > d)
 			rMin = d;
 		}
@@ -302,7 +302,7 @@ if (prMin) {
 	}
 if (prMax) {
 	for (i = 0; i < 4; i++) {
-		d = vmsVector::dist(vCenter, gameData.segs.vertices[sv[*s2v++]]);
+		d = vmsVector::Dist(vCenter, gameData.segs.vertices[sv[*s2v++]]);
 		if (rMax < d)
 			rMax = d;
 		}
@@ -1387,13 +1387,13 @@ if (nMaxDepth > MAX_LOC_POINT_SEGS-2) {
 	}
 if (seg0 == seg1) {
 	gameData.fcd.nConnSegDist = 0;
-	return vmsVector::dist(*p0, *p1);
+	return vmsVector::Dist(*p0, *p1);
 	}
 nConnSide = FindConnectedSide (gameData.segs.segments + seg0, gameData.segs.segments + seg1);
 if ((nConnSide != -1) &&
 	 (WALL_IS_DOORWAY (gameData.segs.segments + seg1, nConnSide, NULL) & widFlag)) {
 	gameData.fcd.nConnSegDist = 1;
-	return vmsVector::dist(*p0, *p1);
+	return vmsVector::Dist(*p0, *p1);
 	}
 //	Periodically flush cache.
 if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > F1_0*2) ||
@@ -1482,14 +1482,14 @@ COMPUTE_SEGMENT_CENTER_I (&pointSegs [nPoints].point, seg0);
 nPoints++;
 if (nPoints == 1) {
 	gameData.fcd.nConnSegDist = nPoints;
-	return vmsVector::dist(*p0, *p1);
+	return vmsVector::Dist(*p0, *p1);
 	}
 else {
 	fix	ndist;
-	dist = vmsVector::dist(*p1, pointSegs [1].point);
-	dist += vmsVector::dist(*p0, pointSegs [nPoints-2].point);
+	dist = vmsVector::Dist(*p1, pointSegs [1].point);
+	dist += vmsVector::Dist(*p0, pointSegs [nPoints-2].point);
 	for (i = 1; i < nPoints - 2; i++) {
-		ndist = vmsVector::dist(pointSegs [i].point, pointSegs [i+1].point);
+		ndist = vmsVector::Dist(pointSegs [i].point, pointSegs [i+1].point);
 		dist += ndist;
 		}
 	}
@@ -1627,8 +1627,8 @@ void extract_vector_from_segment (tSegment *segP, vmsVector *vp, int start, int 
 	int			i;
 	vmsVector	vs, ve;
 
-	vs.setZero();
-	ve.setZero();
+	vs.SetZero();
+	ve.SetZero();
 
 	for (i=0; i<4; i++) {
 		vs += gameData.segs.vertices [segP->verts [sideToVerts [start][i]]];
@@ -1768,7 +1768,7 @@ if (!IS_CHILD (segP->children [nSide])) {
 	                            gameData.segs.vertices[v1],
 	                            gameData.segs.vertices[v2]);
 	vec_13 = gameData.segs.vertices[v3] - gameData.segs.vertices[v1];
-	dot = vmsVector::dot(vNormal, vec_13);
+	dot = vmsVector::Dot(vNormal, vec_13);
 
 	//	Now, signify whether to triangulate from 0:2 or 1:3
 	if (dot >= 0)
@@ -1807,14 +1807,14 @@ else {
 						 gameData.segs.vertices[vSorted[1]],
 						 gameData.segs.vertices[vSorted[2]]);
 		if (bFlip)
-			sideP->normals[0].neg();
+			sideP->normals[0].Neg();
 		bFlip = GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
 		sideP->normals[1] = vmsVector::Normal(
 						 gameData.segs.vertices[vSorted[0]],
 						 gameData.segs.vertices[vSorted[1]],
 						 gameData.segs.vertices[vSorted[2]]);
 		if (bFlip)
-			sideP->normals[1].neg();
+			sideP->normals[1].Neg();
 		GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
 #	endif
 		}
@@ -1828,14 +1828,14 @@ else {
 						 gameData.segs.vertices[vSorted[1]],
 						 gameData.segs.vertices[vSorted[2]]);
 		if (bFlip)
-			sideP->normals[0].neg();
+			sideP->normals[0].Neg();
 		bFlip = GetVertsForNormal (v1, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
 		sideP->normals[1] = vmsVector::Normal(
 						 gameData.segs.vertices[vSorted[0]],
 						 gameData.segs.vertices[vSorted[1]],
 						 gameData.segs.vertices[vSorted[2]]);
 		if (bFlip)
-			sideP->normals[1].neg();
+			sideP->normals[1].Neg();
 #	endif
 		}
 	}
@@ -1889,7 +1889,7 @@ void CreateWallsOnSide (tSegment *segP, int nSide)
 	vn = vmsVector::Normal(gameData.segs.vertices[vm0], gameData.segs.vertices[vm1], gameData.segs.vertices[vm2]);
 	xDistToPlane = abs(gameData.segs.vertices[vm3].DistToPlane(vn, gameData.segs.vertices[vm0]));
 	if (bFlip)
-		vn.neg();
+		vn.Neg();
 #if 1
 	if (bRenderQuads || (xDistToPlane <= PLANE_DIST_TOLERANCE))
 		AddSideAsQuad (segP, nSide, &vn);
@@ -2021,7 +2021,7 @@ void ResetVertexNormals (void)
 	g3sPoint	*pp;
 
 for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
-	pp->p3_normal.vNormal.setZero();
+	pp->p3_normal.vNormal.SetZero();
 	pp->p3_normal.nFaces = 0;
 	}
 }

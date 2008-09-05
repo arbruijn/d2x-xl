@@ -55,7 +55,7 @@ if (bInitSinCos) {
 	}
 n = objP->position.vPos;
 G3TransformPoint (n, n, 0);
-if ((m = n.mag()) > RADAR_RANGE * F1_0)
+if ((m = n.Mag()) > RADAR_RANGE * F1_0)
 	return;
 if (m) {
 	//HUDMessage (0, "%1.2f", X2F (m));

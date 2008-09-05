@@ -549,9 +549,9 @@ if (nStep <= 0) {
 else
 	n = gameStates.gameplay.vTgtDir;
 // turn the ship so that it is facing the destination nSide of the destination tSegment
-// invert the Normal as it points into the tSegment
+// Invert the Normal as it points into the tSegment
 // compute angles from the Normal
-an = n.toAnglesVec();
+an = n.ToAnglesVec();
 // create new orientation matrix
 if (!nStep)
 	posP->mOrient = vmsMatrix::Create(an);
@@ -584,8 +584,8 @@ if (nStep <= 0) {
 	}
 else
 	n = gameStates.gameplay.vTgtDir;
-an = n.toAnglesVec();
-av = objP->mType.physInfo.velocity.toAnglesVec();
+an = n.ToAnglesVec();
+av = objP->mType.physInfo.velocity.ToAnglesVec();
 av[PA] -= an[PA];
 av[BA] -= an[BA];
 av[HA] -= an[HA];
@@ -594,7 +594,7 @@ if (nStep) {
 		av[PA] /= nStep;
 		av[BA] /= nStep;
 		av[HA] /= nStep;
-		ad = objP->position.mOrient.extractAnglesVec();
+		ad = objP->position.mOrient.ExtractAnglesVec();
 		ad[PA] += (an[PA] - ad[PA]) / nStep;
 		ad[BA] += (an[BA] - ad[BA]) / nStep;
 		ad[HA] += (an[HA] - ad[HA]) / nStep;
@@ -687,7 +687,7 @@ if (sbd.bBoosted) {
 			Controls [0].sidewaysThrustTime = 0;
 			memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 		// turn the ship so that it is facing the destination nSide of the destination tSegment
-		// invert the Normal as it points into the tSegment
+		// Invert the Normal as it points into the tSegment
 			/*
 			n[X] = -n[X];
 			n[Y] = -n[Y];
@@ -698,7 +698,7 @@ if (sbd.bBoosted) {
 	else {
 		memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 	// turn the ship so that it is facing the destination nSide of the destination tSegment
-	// invert the Normal as it points into the tSegment
+	// Invert the Normal as it points into the tSegment
 		/*
 		n[X] = -n[X];
 		n[Y] = -n[Y];

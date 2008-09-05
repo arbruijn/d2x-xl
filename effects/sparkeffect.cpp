@@ -93,7 +93,7 @@ for (i = segP->nMaxSparks; i; i--, sparkP++) {
 		vOffs[Y] = F2X (vMaxf[Y] - f_rand () * vMax2f[Y]);
 		vOffs[Z] = F2X (vMaxf[Z] - f_rand () * vMax2f[Z]);
 		sparkP->vPos = *SEGMENT_CENTER_I(nSegment) + vOffs;
-		if ((vOffs.mag() > MinSegRad (nSegment)) && GetSegMasks (sparkP->vPos, nSegment, 0).centerMask)
+		if ((vOffs.Mag() > MinSegRad (nSegment)) && GetSegMasks (sparkP->vPos, nSegment, 0).centerMask)
 			sparkP->nProb = 1;
 		else {
 			sparkP->xSize = F1_0 + 4 * d_rand ();
@@ -109,7 +109,7 @@ for (i = segP->nMaxSparks; i; i--, sparkP++) {
 				sparkP->vDir *= ((F1_0 / (16 + d_rand () % 16)));
 				}
 			else
-				sparkP->vDir.setZero();
+				sparkP->vDir.SetZero();
 			}
 		}
 	}

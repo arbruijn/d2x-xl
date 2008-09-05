@@ -208,11 +208,11 @@ else {
 		n[X] = -n[X];
 		n[Y] = -n[Y];
 		*/
-		n.neg();
-		a = n.toAnglesVec();
+		n.Neg();
+		a = n.ToAnglesVec();
 		}
 	else
-		a = gameData.segs.segments [srcSeg].sides [srcSide].normals[0].toAnglesVec();
+		a = gameData.segs.segments [srcSeg].sides [srcSide].normals[0].ToAnglesVec();
 	pc->obj.position.mOrient = vmsMatrix::Create(a);
 #if 1
 	if (bTeleport)
@@ -410,8 +410,8 @@ else
 		if (!bFitToWall && RENDERPATH) {
 			aImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) grdCurCanv->cvBitmap.bmProps.w;
 			if (vertexP)
-				aFace = fVector::dist(*(fVector *)vertexP, *(fVector *)(vertexP + 1)) / 
-				        fVector::dist(*(fVector *)(vertexP + 1), *(fVector *)(vertexP + i2));
+				aFace = fVector::Dist(*(fVector *)vertexP, *(fVector *)(vertexP + 1)) / 
+				        fVector::Dist(*(fVector *)(vertexP + 1), *(fVector *)(vertexP + i2));
 			else
 				aFace = dvFace / duFace;
 			dv = (aImage - aFace) / 2.0f;

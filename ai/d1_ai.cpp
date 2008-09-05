@@ -414,7 +414,7 @@ void ai_turn_towards_vector(vmsVector *goal_vector, tObject *objP, fix rate)
 
 	new_fVec = *goal_vector;
 
-	dot = vmsVector::dot(*goal_vector, objP->position.mOrient[FVEC]);
+	dot = vmsVector::Dot(*goal_vector, objP->position.mOrient[FVEC]);
 
 	if (dot < (F1_0 - gameData.time.xFrame/2)) {
 		fix	mag;
@@ -574,7 +574,7 @@ int player_is_visible_from_object(tObject *objP, vmsVector *pos, fix fieldOfView
 	Hit_seg = hitData.hit.nSegment;
 
 	if ((hitType == HIT_NONE) || ((hitType == HIT_OBJECT) && (hitData.hit.nObject == LOCALPLAYER.nObject))) {
-		dot = vmsVector::dot(*vec_to_player, objP->position.mOrient[FVEC]);
+		dot = vmsVector::Dot(*vec_to_player, objP->position.mOrient[FVEC]);
 		if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) {
 			return 2;
 		} else {
@@ -811,7 +811,7 @@ void DoD1AIRobotHitAttack(tObject *robot, tObject *player, vmsVector *collision_
 	if (botInfoP->attackType == 1) {
 		if (ailP->nextPrimaryFire <= 0) {
 			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-				if (vmsVector::dist(gameData.objs.console->position.vPos, robot->position.vPos) < robot->size + gameData.objs.console->size + F1_0*2)
+				if (vmsVector::Dist(gameData.objs.console->position.vPos, robot->position.vPos) < robot->size + gameData.objs.console->size + F1_0*2)
 					CollidePlayerAndNastyRobot ( player, robot, collision_point );
 
 			robot->cType.aiInfo.GOAL_STATE = D1_AIS_RECO;
@@ -895,7 +895,7 @@ void ai_fire_laser_at_player(tObject *objP, vmsVector *fire_point)
 	//	Half the time fire at the player, half the time lead the player.
 	if (rand() > 16384) {
 
-		vmsVector::normalizedDir(fire_vec, bpp_diff, *fire_point);
+		vmsVector::NormalizedDir(fire_vec, bpp_diff, *fire_point);
 
 	} else {
 		vmsVector	player_direction_vector = bpp_diff - bpp_diff;
@@ -906,7 +906,7 @@ void ai_fire_laser_at_player(tObject *objP, vmsVector *fire_point)
 		//	its target.  Ideally, we want to point the guns at the player.  For now, just fire right at the player.
 		if ((abs(player_direction_vector[X] < 0x10000)) && (abs(player_direction_vector[Y] < 0x10000)) && (abs(player_direction_vector[Z] < 0x10000))) {
 
-			vmsVector::normalizedDir(fire_vec, bpp_diff, *fire_point);
+			vmsVector::NormalizedDir(fire_vec, bpp_diff, *fire_point);
 
 		// Player is moving.  Determine where the player will be at the end of the next frame if he doesn't change his
 		//	behavior.  Fire at exactly that point.  This isn't exactly what you want because it will probably take the laser
@@ -953,7 +953,7 @@ void move_towards_vector(tObject *objP, vmsVector *vec_goal)
 
 	vel = piP->velocity;
 	vmsVector::Normalize(vel);
-	dot = vmsVector::dot(vel, objP->position.mOrient[FVEC]);
+	dot = vmsVector::Dot(vel, objP->position.mOrient[FVEC]);
 
 	if (dot < 3*F1_0/4) {
 		//	This funny code is supposed to slow down the robot and move his velocity towards his direction
@@ -967,7 +967,7 @@ void move_towards_vector(tObject *objP, vmsVector *vec_goal)
 		piP->velocity[Z] += FixMul((*vec_goal)[Z], gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
 	}
 
-	speed = piP->velocity.mag();
+	speed = piP->velocity.Mag();
 	xMaxSpeed = botInfoP->xMaxSpeed[gameStates.app.nDifficultyLevel];
 
 	//	Green guy attacks twice as fast as he moves away.
@@ -1052,7 +1052,7 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 		//	Only take evasive action if looking at player.
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
-		dot = vmsVector::dot(*vec_to_player, objP->position.mOrient[FVEC]);
+		dot = vmsVector::Dot(*vec_to_player, objP->position.mOrient[FVEC]);
 		if ((dot > botInfoP->fieldOfView[gameStates.app.nDifficultyLevel]) && !(gameData.objs.console->flags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
 
@@ -1070,7 +1070,7 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 	piP->velocity[Y] += evade_vector[Y];
 	piP->velocity[Z] += evade_vector[Z];
 
-	speed = piP->velocity.mag();
+	speed = piP->velocity.Mag();
 	if (speed > botInfoP->xMaxSpeed[gameStates.app.nDifficultyLevel]) {
 		piP->velocity[X] = (piP->velocity[X]*3)/4;
 		piP->velocity[Y] = (piP->velocity[Y]*3)/4;
@@ -1103,7 +1103,7 @@ void move_away_from_player(tObject *objP, vmsVector *vec_to_player, int attackTy
 	}
 
 
-	speed = piP->velocity.mag();
+	speed = piP->velocity.Mag();
 
 	if (speed > botInfoP->xMaxSpeed[gameStates.app.nDifficultyLevel]) {
 		piP->velocity[X] = (piP->velocity[X]*3)/4;
@@ -1162,7 +1162,7 @@ void ai_move_relative_to_player(tObject *objP, tAILocal *ailP, fix dist_to_playe
 
 			vec_to_laser = dobjp->position.vPos - objP->position.vPos;
 			dist_to_laser = vmsVector::Normalize(vec_to_laser);
-			dot = vmsVector::dot(vec_to_laser, objP->position.mOrient[FVEC]);
+			dot = vmsVector::Dot(vec_to_laser, objP->position.mOrient[FVEC]);
 
 			if (dot > fieldOfView) {
 				fix			laser_robot_dot;
@@ -1178,7 +1178,7 @@ void ai_move_relative_to_player(tObject *objP, tAILocal *ailP, fix dist_to_playe
 				}
 				laser_vec_to_robot = objP->position.vPos - dobjp->position.vPos;
 				vmsVector::Normalize(laser_vec_to_robot);
-				laser_robot_dot = vmsVector::dot(laser_fVec, laser_vec_to_robot);
+				laser_robot_dot = vmsVector::Dot(laser_fVec, laser_vec_to_robot);
 
 				if ((laser_robot_dot > F1_0*7/8) && (dist_to_laser < F1_0*80)) {
 					int	evadeSpeed;
@@ -1232,7 +1232,7 @@ void do_firing_stuff(tObject *objP, int player_visibility, vmsVector *vec_to_pla
 {
 	if (player_visibility >= 1) {
 		//	Now, if in robot's field of view, lock onto player
-		fix	dot = vmsVector::dot(objP->position.mOrient[FVEC], *vec_to_player);
+		fix	dot = vmsVector::Dot(objP->position.mOrient[FVEC], *vec_to_player);
 		if ((dot >= 7*F1_0/8) || (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 			tAIStatic	*aiP = &objP->cType.aiInfo;
 			tAILocal		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
@@ -1312,7 +1312,7 @@ void compute_vis_and_vec(tObject *objP, vmsVector *pos, tAILocal *ailP, vmsVecto
 				gameData.ai.cloakInfo [cloak_index].vLastPos += randvec * (8*delta_time);
 			}
 
-			dist = vmsVector::normalizedDir(*vec_to_player, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
+			dist = vmsVector::NormalizedDir(*vec_to_player, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
 			*player_visibility = player_is_visible_from_object(objP, pos, botInfoP->fieldOfView[gameStates.app.nDifficultyLevel], vec_to_player);
 			// *player_visibility = 2;
 
@@ -1322,8 +1322,8 @@ void compute_vis_and_vec(tObject *objP, vmsVector *pos, tAILocal *ailP, vmsVecto
 			}
 		} else {
 			//	Compute expensive stuff -- vec_to_player and player_visibility
-			vmsVector::normalizedDir(*vec_to_player, gameData.ai.vBelievedPlayerPos, *pos);
-			if (vec_to_player->isZero()) {
+			vmsVector::NormalizedDir(*vec_to_player, gameData.ai.vBelievedPlayerPos, *pos);
+			if (vec_to_player->IsZero()) {
 				(*vec_to_player)[X] = F1_0;
 			}
 			*player_visibility = player_is_visible_from_object(objP, pos, botInfoP->fieldOfView[gameStates.app.nDifficultyLevel], vec_to_player);
@@ -1627,7 +1627,7 @@ int boss_fits_in_seg(tObject *boss_objp, int nSegment)
 
 			Assert((posnum-1 >= 0) && (posnum-1 < 8));
 			vertex_pos = gameData.segs.vertices[gameData.segs.segments[nSegment].verts[posnum-1]];
-			boss_objp->position.vPos = vmsVector::avg(vertex_pos, segcenter);
+			boss_objp->position.vPos = vmsVector::Avg(vertex_pos, segcenter);
 		} else
 			boss_objp->position.vPos = segcenter;
 
@@ -1779,7 +1779,7 @@ void ai_do_actual_firing_stuff(tObject *objP, tAIStatic *aiP, tAILocal *ailP, tR
 		//	Changed by mk, 01/04/94, onearm would take about 9 seconds until he can fire at you.
 		// if (((!object_animates) || (ailP->achievedState[aiP->CURRENT_GUN] == D1_AIS_FIRE)) && (ailP->nextPrimaryFire <= 0)) {
 		if (!object_animates || (ailP->nextPrimaryFire <= 0)) {
-			dot = vmsVector::dot(objP->position.mOrient[FVEC], *vec_to_player);
+			dot = vmsVector::Dot(objP->position.mOrient[FVEC], *vec_to_player);
 			if (dot >= 7*F1_0/8) {
 
 				if (aiP->CURRENT_GUN < gameData.bots.info [1][objP->id].nGuns) {
@@ -1792,7 +1792,7 @@ void ai_do_actual_firing_stuff(tObject *objP, tAIStatic *aiP, tAILocal *ailP, tR
 							return;
 						}
 					} else {
-						if (vGunPoint->isZero()) {
+						if (vGunPoint->IsZero()) {
 							;
 						} else {
 							if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))
@@ -1817,7 +1817,7 @@ void ai_do_actual_firing_stuff(tObject *objP, tAIStatic *aiP, tAILocal *ailP, tR
 		}
 	} else if (WI_homingFlag (objP->id) == 1) {
 		//	Robots which fire homing weapons might fire even if they don't have a bead on the player.
-		if (((!object_animates) || (ailP->achievedState[aiP->CURRENT_GUN] == D1_AIS_FIRE)) && (ailP->nextPrimaryFire <= 0) && (vmsVector::dist(Hit_pos, objP->position.vPos) > F1_0*40)) {
+		if (((!object_animates) || (ailP->achievedState[aiP->CURRENT_GUN] == D1_AIS_FIRE)) && (ailP->nextPrimaryFire <= 0) && (vmsVector::Dist(Hit_pos, objP->position.vPos) > F1_0*40)) {
 			if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))
 				return;
 			ai_fire_laser_at_player(objP, vGunPoint);
@@ -1899,7 +1899,7 @@ void DoD1AIFrame (tObject *objP)
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 		gameData.ai.vBelievedPlayerPos = gameData.objs.console->position.vPos;
 
-	dist_to_player = vmsVector::dist(gameData.ai.vBelievedPlayerPos, objP->position.vPos);
+	dist_to_player = vmsVector::Dist(gameData.ai.vBelievedPlayerPos, objP->position.vPos);
 	if (dist_to_player < F1_0 * 40)
 		dist_to_player = dist_to_player;
 	//	If this robot can fire, compute visibility from gun position.
@@ -1910,7 +1910,7 @@ void DoD1AIFrame (tObject *objP)
 		}
 	else {
 		vis_vec_pos = objP->position.vPos;
-		vGunPoint.setZero();
+		vGunPoint.SetZero();
 	}
 
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
@@ -2077,7 +2077,7 @@ void DoD1AIFrame (tObject *objP)
 			//	If player cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
 			if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 				pv = 0;
-				dtp = vmsVector::dist(gameData.objs.console->position.vPos, objP->position.vPos)/4;
+				dtp = vmsVector::Dist(gameData.objs.console->position.vPos, objP->position.vPos)/4;
 			}
 
 			do_super_boss_stuff(objP, dtp, pv);
@@ -2497,7 +2497,7 @@ void DoD1AIFrame (tObject *objP)
 			case	D1_AIS_NONE:
 				compute_vis_and_vec(objP, &vis_vec_pos, ailP, &vec_to_player, &player_visibility, botInfoP, &visibility_and_vec_computed);
 
-				dot = vmsVector::dot(objP->position.mOrient[FVEC], vec_to_player);
+				dot = vmsVector::Dot(objP->position.mOrient[FVEC], vec_to_player);
 				if (dot >= F1_0/2)
 					if (aiP->GOAL_STATE == D1_AIS_REST)
 						aiP->GOAL_STATE = D1_AIS_SRCH;

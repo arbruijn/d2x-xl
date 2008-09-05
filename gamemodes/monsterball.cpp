@@ -59,9 +59,9 @@ if (nDropSeg >= 0) {
 		gameData.hoard.monsterballP = OBJECTS + nObject;
 		gameData.hoard.monsterballP->nType = OBJ_MONSTERBALL;
 		gameData.hoard.monsterballP->mType.physInfo.mass = F1_0 * 10;
-		gameData.hoard.monsterballP->mType.physInfo.thrust.setZero();
-		gameData.hoard.monsterballP->mType.physInfo.rotThrust.setZero();
-		gameData.hoard.monsterballP->mType.physInfo.velocity.setZero();
+		gameData.hoard.monsterballP->mType.physInfo.thrust.SetZero();
+		gameData.hoard.monsterballP->mType.physInfo.rotThrust.SetZero();
+		gameData.hoard.monsterballP->mType.physInfo.velocity.SetZero();
 		gameData.hoard.nLastHitter = -1;
 		CreatePlayerAppearanceEffect (gameData.hoard.monsterballP);
 		return 1;

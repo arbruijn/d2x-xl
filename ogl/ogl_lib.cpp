@@ -222,7 +222,7 @@ else {
 					 gameData.segs.vertices[v[1]],
 					 gameData.segs.vertices[v[2]]);
 	if (bFlip)
-		vNormal.neg();
+		vNormal.Neg();
 	}
 *pvNormal = vNormal.ToFloat();
 }
@@ -232,7 +232,7 @@ else {
 fVector *G3Reflect (fVector *vReflect, fVector *vLight, fVector *vNormal)
 {
 //2 * n * (l dot n) - l
-	float		LdotN = 2 * fVector::dot(*vLight, *vNormal);
+	float		LdotN = 2 * fVector::Dot(*vLight, *vNormal);
 
 #if 0
 VmVecScale (vReflect, vNormal, LdotN);

@@ -646,7 +646,7 @@ if (gameData.render.shield.nFaces > 0)
 		gameStates.ogl.bUseTransform = 0;
 		fScale = gameData.render.shield.pPulse->fScale;
 		G3StartInstanceMatrix (vPos, posP->mOrient);
-		vPos.setZero();
+		vPos.SetZero();
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		G3DoneInstance ();
 		}

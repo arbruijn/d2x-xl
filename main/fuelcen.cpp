@@ -689,7 +689,7 @@ if (!matCenP->bFlag) {
 	if (IsMultiGame)
 		topTime = ROBOT_GEN_TIME;
 	else {
-		xDistToPlayer = vmsVector::dist(gameData.objs.console->position.vPos, matCenP->vCenter);
+		xDistToPlayer = vmsVector::Dist(gameData.objs.console->position.vPos, matCenP->vCenter);
 		topTime = xDistToPlayer / 64 + d_rand () * 2 + F1_0*2;
 		if (topTime > ROBOT_GEN_TIME)
 			topTime = ROBOT_GEN_TIME + d_rand ();

@@ -1149,7 +1149,7 @@ for (i = 0; i < vld.nLights; i++) {
 	radius = (*lightPos)[W];
 	brightness = lightColor[W];
 	lightDir = *lightPos - *vertPos;
-	lightDist = lightDir.mag() / lightRange;
+	lightDist = lightDir.Mag() / lightRange;
 	fVector::Normalize(lightDir);
 	if (nType)
 		lightDist -= radius;
@@ -1161,7 +1161,7 @@ for (i = 0; i < vld.nLights; i++) {
 		lightDist *= lightDist;
 		if (nType)
 			lightDist *= 2.0f;
-		NdotL = fVector::dot(*vertNorm, lightDir);
+		NdotL = fVector::Dot(*vertNorm, lightDir);
 		if (NdotL < 0.0f)
 			NdotL = 0.0f;
 		}	
@@ -1170,11 +1170,11 @@ for (i = 0; i < vld.nLights; i++) {
 	vertColor[G] = (matAmbient[G] + NdotL) * lightColor[G];
 	vertColor[B] = (matAmbient[B] + NdotL) * lightColor[B];
 	if (NdotL > 0.0f) {
-		vReflect = fVector::reflect(lightDir.neg(), *vertNorm);
+		vReflect = fVector::Reflect(lightDir.Neg(), *vertNorm);
 		fVector::Normalize(vReflect);
-		lightPos->neg();
+		lightPos->Neg();
 		fVector::Normalize(*lightPos);
-		RdotE = fVector::dot(vReflect, *lightPos);
+		RdotE = fVector::Dot(vReflect, *lightPos);
 		if (RdotE < 0.0f)
 			RdotE = 0.0f;
 		specular = (float) pow (RdotE, shininess);
@@ -1500,8 +1500,8 @@ for (i = nStart; i != nEnd; i++) {
 							if (nVertex == nDbgVertex)
 								nDbgVertex = nDbgVertex;
 #endif
-							G3VertexColor(gameData.segs.points[nVertex].p3_normal.vNormal.v3(), 
-							              gameData.segs.fVertices[nVertex].v3(), nVertex, 
+							G3VertexColor(gameData.segs.points[nVertex].p3_normal.vNormal.V3(), 
+							              gameData.segs.fVertices[nVertex].V3(), nVertex, 
 							              NULL, &c, 1, 0, nThread);
 							gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 							ResetNearestVertexLights (nVertex, nThread);
@@ -1629,8 +1629,8 @@ for (i = nStart; i != nEnd; i += nIncr) {
 								if (nVertex == nDbgVertex)
 									nDbgVertex = nDbgVertex;
 #endif
-								G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.v3(), 
-													gameData.segs.fVertices [nVertex].v3(), nVertex, 
+								G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.V3(), 
+													gameData.segs.fVertices [nVertex].V3(), nVertex, 
 													NULL, &c, 1, 0, nThread);
 								gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 								ResetNearestVertexLights (nVertex, nThread);
@@ -2051,7 +2051,7 @@ const char *vertLightFS =
 	"	attenuation = lightDist / brightness;\r\n" \
 	"	vertColor = (matAmbient + vec3 (NdotL, NdotL, NdotL)) * lightColor;\r\n" \
 	"	if (NdotL > 0.0) {\r\n" \
-	"		RdotE = max (dot (Normalize (reflect (-lightDir, vertNorm)), Normalize (-lightPos)), 0.0);\r\n" \
+	"		RdotE = max (dot (Normalize (Reflect (-lightDir, vertNorm)), Normalize (-lightPos)), 0.0);\r\n" \
 	"		vertColor += lightColor * pow (RdotE, shininess);\r\n" \
 	"		}\r\n" \
 	"  gl_FragColor = vec4 (vertColor / attenuation, 1.0);\r\n" \

@@ -419,7 +419,7 @@ PlayerFinishedLevel (0);
 inline void GetAnglesToObject (vmsAngVec *av, vmsVector *targ_pos, vmsVector *cur_pos)
 {
 	vmsVector tv = *targ_pos - *cur_pos;
-	*av = tv.toAnglesVec();
+	*av = tv.ToAnglesVec();
 }
 
 //------------------------------------------------------------------------------
@@ -464,7 +464,7 @@ if (!gameStates.render.bOutsideMine) {
 		vmsVector tvec;
 
 		tvec = gameData.objs.console->position.vPos - gameData.endLevel.exit.vSideExit;
-		if (vmsVector::dot (tvec, gameData.endLevel.exit.mOrient[FVEC]) > 0) {
+		if (vmsVector::Dot (tvec, gameData.endLevel.exit.mOrient[FVEC]) > 0) {
 			tObject *objP;
 			gameStates.render.bOutsideMine = 1;
 			objP = ObjectCreateExplosion (gameData.endLevel.exit.nSegNum, &gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
@@ -583,8 +583,8 @@ switch (gameStates.app.bEndLevelSequence) {
 			timer = I2X (2);
 			gameData.objs.endLevelCamera->position.mOrient[FVEC] = -gameData.objs.endLevelCamera->position.mOrient[FVEC];
 			gameData.objs.endLevelCamera->position.mOrient[RVEC] = -gameData.objs.endLevelCamera->position.mOrient[RVEC];
-			cam_angles = gameData.objs.endLevelCamera->position.mOrient.extractAnglesVec();
-			exit_seg_angles = gameData.endLevel.exit.mOrient.extractAnglesVec();
+			cam_angles = gameData.objs.endLevelCamera->position.mOrient.ExtractAnglesVec();
+			exit_seg_angles = gameData.endLevel.exit.mOrient.ExtractAnglesVec();
 			bank_rate = (-exit_seg_angles[BA] - cam_angles[BA])/2;
 			gameData.objs.console->controlType = gameData.objs.endLevelCamera->controlType = CT_NONE;
 #ifdef SLEW_ON
@@ -606,14 +606,14 @@ switch (gameStates.app.bEndLevelSequence) {
 		gameData.objs.endLevelCamera->position.vPos +=
 							gameData.objs.endLevelCamera->position.mOrient[UVEC] *
 							(FixMul (gameData.time.xFrame, -gameData.endLevel.xCurFlightSpeed/10));
-		cam_angles = gameData.objs.endLevelCamera->position.mOrient.extractAnglesVec();
+		cam_angles = gameData.objs.endLevelCamera->position.mOrient.ExtractAnglesVec();
 		cam_angles[BA] += (fixang) FixMul (bank_rate, gameData.time.xFrame);
 		gameData.objs.endLevelCamera->position.mOrient = vmsMatrix::Create (cam_angles);
 #endif
 		timer -= gameData.time.xFrame;
 		if (timer < 0) {
 			gameStates.app.bEndLevelSequence = EL_STOPPED;
-			vPlayerAngles = gameData.objs.console->position.mOrient.extractAnglesVec();
+			vPlayerAngles = gameData.objs.console->position.mOrient.ExtractAnglesVec();
 			timer = I2X (3);
 			}
 		break;
@@ -718,14 +718,14 @@ int FindExitSide (tObject *objP)
 	tSegment		*segP = gameData.segs.segments + objP->nSegment;
 
 //find exit tSide
-vmsVector::normalizedDir (prefvec, objP->position.vPos, objP->vLastPos);
+vmsVector::NormalizedDir (prefvec, objP->position.vPos, objP->vLastPos);
 COMPUTE_SEGMENT_CENTER (&segcenter, segP);
 best_side = -1;
 for (i = MAX_SIDES_PER_SEGMENT; --i >= 0;) {
 	if (segP->children [i] != -1) {
 		COMPUTE_SIDE_CENTER (&sidevec, segP, i);
-		vmsVector::normalizedDir (sidevec, sidevec, segcenter);
-		d = vmsVector::dot (sidevec, prefvec);
+		vmsVector::NormalizedDir (sidevec, sidevec, segcenter);
+		d = vmsVector::Dot (sidevec, prefvec);
 		if (labs (d) < MIN_D)
 			d = 0;
 		if (d > best_val) {
@@ -971,7 +971,7 @@ if (exitFlightDataP->firstTime || (objP->nSegment != old_player_seg)) {		//moved
 		int i;
 
 		for (i = 0; i < 6; i++) {
-			d = vmsVector::dot (segP->sides [i].normals [0], exitFlightDataP->objP->position.mOrient[UVEC]);
+			d = vmsVector::Dot (segP->sides [i].normals [0], exitFlightDataP->objP->position.mOrient[UVEC]);
 			if (d > largest_d) {largest_d = d; up_side=i;}
 			}
 		}
@@ -993,7 +993,7 @@ if (exitFlightDataP->firstTime || (objP->nSegment != old_player_seg)) {		//moved
 				}
 		COMPUTE_SIDE_CENTER (&s0p, segP, s0);
 		COMPUTE_SIDE_CENTER (&s1p, segP, s1);
-		dist = FixMul (vmsVector::dist (s0p, s1p), exitFlightDataP->offset_frac);
+		dist = FixMul (vmsVector::Dist (s0p, s1p), exitFlightDataP->offset_frac);
 		if (dist-exitFlightDataP->offsetDist > MAX_SLIDE_PER_SEGMENT)
 			dist = exitFlightDataP->offsetDist + MAX_SLIDE_PER_SEGMENT;
 		exitFlightDataP->offsetDist = dist;
@@ -1006,9 +1006,9 @@ if (exitFlightDataP->firstTime || (objP->nSegment != old_player_seg)) {		//moved
 	COMPUTE_SEGMENT_CENTER_I (&nextcenter, segP->children [nExitSide]);
 	exitFlightDataP->headvec = nextcenter - curcenter;
 	dest_orient = vmsMatrix::CreateFU (exitFlightDataP->headvec, segP->sides [up_side].normals [0]);
-	dest_angles = dest_orient.extractAnglesVec();
+	dest_angles = dest_orient.ExtractAnglesVec();
 	if (exitFlightDataP->firstTime)
-		exitFlightDataP->angles = objP->position.mOrient.extractAnglesVec();
+		exitFlightDataP->angles = objP->position.mOrient.ExtractAnglesVec();
 	segTime = FixDiv (step_size, exitFlightDataP->speed);	//how long through seg
 	if (segTime) {
 		exitFlightDataP->angstep[X] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles[PA], dest_angles[PA]), segTime)));
@@ -1017,7 +1017,7 @@ if (exitFlightDataP->firstTime || (objP->nSegment != old_player_seg)) {		//moved
 		}
 	else {
 		exitFlightDataP->angles = dest_angles;
-		exitFlightDataP->angstep.setZero();
+		exitFlightDataP->angstep.SetZero();
 		}
 	}
 exitFlightDataP->firstTime=0;
@@ -1277,9 +1277,9 @@ gameData.endLevel.exit.vGroundExit = gameData.endLevel.exit.vMineExit + gameData
 	vmsMatrix exit_orient, tm;
 
 	exit_orient = vmsMatrix::Create (vExitAngles);
-	vmsMatrix::transpose (exit_orient);
+	vmsMatrix::Transpose (exit_orient);
 	mSurfaceOrient = gameData.endLevel.exit.mOrient * exit_orient;
-	tm = mSurfaceOrient.transpose();
+	tm = mSurfaceOrient.Transpose();
 	tv = tm * gameData.endLevel.station.vPos;
 	gameData.endLevel.station.vPos = gameData.endLevel.exit.vMineExit + tv * STATION_DIST;
 	tv = tm * gameData.endLevel.satellite.vPos;

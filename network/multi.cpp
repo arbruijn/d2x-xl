@@ -1581,7 +1581,7 @@ if (nLocalObj < 0)
 	return;
 NetworkResetObjSync (nLocalObj);
 OBJECTS [nLocalObj].position.vPos = vNewPos;
-OBJECTS [nLocalObj].mType.physInfo.velocity.setZero();
+OBJECTS [nLocalObj].mType.physInfo.velocity.SetZero();
 RelinkObject (nLocalObj, nSegment);
 MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
 ObjectCreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
@@ -1801,10 +1801,10 @@ if (objP > OBJECTS + gameData.objs.nLastObject [0])
 	return;
 if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_GHOST))
 	return;
-objP->mType.physInfo.velocity.setZero();
-objP->mType.physInfo.thrust.setZero();
-objP->mType.physInfo.rotVel.setZero();
-objP->mType.physInfo.rotThrust.setZero();
+objP->mType.physInfo.velocity.SetZero();
+objP->mType.physInfo.thrust.SetZero();
+objP->mType.physInfo.rotVel.SetZero();
+objP->mType.physInfo.rotThrust.SetZero();
 objP->mType.physInfo.brakes = objP->mType.physInfo.turnRoll = 0;
 objP->mType.physInfo.mass = gameData.pig.ship.player->mass;
 objP->mType.physInfo.drag = gameData.pig.ship.player->drag;
@@ -1815,7 +1815,7 @@ objP->renderType = RT_POLYOBJ;
 objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;               //what model is this?
 objP->rType.polyObjInfo.nSubObjFlags = 0;         //zero the flags
 for (i = 0; i < MAX_SUBMODELS; i++)
-	objP->rType.polyObjInfo.animAngles[i].setZero();
+	objP->rType.polyObjInfo.animAngles[i].SetZero();
 //reset textures for this, if not tPlayer 0
 MultiResetObjectTexture (objP);
 // Clear misc
@@ -2726,7 +2726,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 			objP->rType.vClipInfo.nCurFrame = 0;
 			objP->mType.physInfo.drag = 512;     //1024;
 			objP->mType.physInfo.mass = F1_0;
-			objP->mType.physInfo.velocity.setZero();
+			objP->mType.physInfo.velocity.SetZero();
 			}
 		continue;
 		}
