@@ -406,16 +406,34 @@ return 0;
 }
 
 
+static int AIMQuitFollowPath (tAILocal *ailP)
+{
+if (gameData.ai.nPlayerVisibility)
+	return 0;
+if (ailP->mode == AIM_FOLLOW_PATH) {
+	if (ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)
+		return 1;
+	if ((gameOpts->gameplay.nAIAggressivity - 1) * F1_0 < gameData.time.xGame - ailP->timePlayerSeen)
+		return 1;
+	return 0;
+	}
+if (ailP->playerAwarenessType < PA_RETURN_FIRE)  
+	return 1;
+return 0;
+}
+
+
 int AIMFollowPathHandler2 (tObject *objP, tAIStateInfo *siP)
 {
 	tAIStatic *aiP = siP->aiP;
+	tAILocal *ailP = siP->ailP;
 	int angerLevel = 65;
 
 if (aiP->behavior == AIB_STATION)
 	if (gameData.ai.pointSegs [aiP->nHideIndex + aiP->nPathLength - 1].nSegment == aiP->nHideSegment) {
 		angerLevel = 64;
 	}
-ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
+ComputeVisAndVec (objP, &siP->vVisPos, ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
 if (gameData.app.nGameMode & (GM_MODEM | GM_SERIAL))
 	if (!gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer > F1_0 * 70)) {
 		siP->ailP->mode = AIM_IDLING;
@@ -423,15 +441,13 @@ if (gameData.app.nGameMode & (GM_MODEM | GM_SERIAL))
 		}
 if (!AIMultiplayerAwareness (objP, angerLevel)) {
 	if (AIMaybeDoActualFiringStuff (objP, aiP)) {
-		ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, F1_0 * 10000);
-		AIDoActualFiringStuff (objP, aiP, siP->ailP, siP->botInfoP, aiP->CURRENT_GUN);
+		ComputeVisAndVec (objP, &siP->vVisPos, ailP, siP->botInfoP, &siP->bVisAndVecComputed, F1_0 * 10000);
+		AIDoActualFiringStuff (objP, aiP, ailP, siP->botInfoP, aiP->CURRENT_GUN);
 		}
 	return 1;
 	}
-if (!gameData.ai.nPlayerVisibility /**/&& 
-	 ((siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode != AIM_FOLLOW_PATH) || 
-	 (siP->ailP->nGoalSegment != gameData.ai.nBelievedPlayerSeg))/**/) {
-	siP->ailP->mode = AIM_IDLING;
+if (AIMQuitFollowPath (ailP)) {
+	ailP->mode = AIM_IDLING;
 	return 1;
 	}
 AIFollowPath (objP, gameData.ai.nPlayerVisibility, siP->nPrevVisibility, &gameData.ai.vVecToPlayer);
@@ -448,11 +464,11 @@ if ((gameData.ai.nPlayerVisibility == 2) &&
 		(aiP->behavior != AIB_FOLLOW) && 
 		(aiP->behavior != AIB_RUN_FROM)) {
 	if (siP->botInfoP->attackType == 0)
-		siP->ailP->mode = AIM_CHASE_OBJECT;
+		ailP->mode = AIM_CHASE_OBJECT;
 	// This should not just be distance based, but also time-since-tPlayer-seen based.
 	}
 else if ((gameData.ai.xDistToPlayer > MAX_PURSUIT_DIST (siP->botInfoP))
-			&& (gameData.time.xGame - siP->ailP->timePlayerSeen > ((F1_0 / 2) * (gameStates.app.nDifficultyLevel + siP->botInfoP->pursuit)))
+			&& (gameData.time.xGame - ailP->timePlayerSeen > (F1_0 / 2) * (gameStates.app.nDifficultyLevel + siP->botInfoP->pursuit))
 			&& (gameData.ai.nPlayerVisibility == 0)
 			&& (aiP->behavior == AIB_NORMAL)
 			&& (siP->ailP->mode == AIM_FOLLOW_PATH)) {
@@ -481,16 +497,13 @@ if (gameData.ai.nPlayerVisibility == 2) {
 	// If gameData.ai.vVecToPlayer dot player_rear_vector > 0, behind is goal.
 	// Else choose goal with larger dot from left, right.
 	vmsVector  goal_point, vGoal, vec_to_goal, vRand;
-	fix         dot;
-
-	dot = vmsVector::Dot(OBJPOS (gameData.objs.console)->mOrient[FVEC], gameData.ai.vVecToPlayer);
+	fix dot = vmsVector::Dot(OBJPOS (gameData.objs.console)->mOrient[FVEC], gameData.ai.vVecToPlayer);
 	if (dot > 0) {          // Remember, we're interested in the rear vector dot being < 0.
 		vGoal = OBJPOS (gameData.objs.console)->mOrient[FVEC];
 		vGoal = -vGoal;
 		}
 	else {
-		fix dot;
-		dot = vmsVector::Dot(OBJPOS (gameData.objs.console)->mOrient[RVEC], gameData.ai.vVecToPlayer);
+		fix dot = vmsVector::Dot(OBJPOS (gameData.objs.console)->mOrient[RVEC], gameData.ai.vVecToPlayer);
 		vGoal = OBJPOS (gameData.objs.console)->mOrient[RVEC];
 		if (dot > 0) {
 			vGoal = -vGoal;
@@ -803,8 +816,7 @@ if (siP->aiP->behavior == AIB_SNIPE) {
 	if (!(siP->nObjRef & 3) || siP->nPrevVisibility) {
 		ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
 		// If this sniper is in still mode, if he was hit or can see tPlayer, switch to snipe mode.
-		if (siP->ailP->mode == AIM_IDLING)
-			if (gameData.ai.nPlayerVisibility || (siP->ailP->playerAwarenessType == PA_RETURN_FIRE))
+		if ((siP->ailP->mode == AIM_IDLING) && (gameData.ai.nPlayerVisibility || (siP->ailP->playerAwarenessType == PA_RETURN_FIRE))
 				siP->ailP->mode = AIM_SNIPE_ATTACK;
 		if (!siP->botInfoP->thief && (siP->ailP->mode != AIM_IDLING))
 			DoSnipeFrame (objP);
@@ -1020,14 +1032,14 @@ if (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) {
 	if (d_rand () * (gameData.ai.nOverallAgitation - 40) <= F1_0 * 5)
 		return 0;
 	}
-if ((siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {
+if (gameOpts->gameplay.nAIAggressivity && (siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {
 #ifdef _DEBUG
 	if (OBJ_IDX (objP) == nDbgObj)
 		nDbgObj = nDbgObj;
 #endif
 #if 1
 	if (objP->nSegment == siP->ailP->nGoalSegment)
-		;//siP->ailP->mode = AIM_IDLING;
+		siP->ailP->mode = AIM_IDLING;
 #endif
 	return 0;
 	}

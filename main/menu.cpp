@@ -4283,6 +4283,7 @@ AddPlayerLoadout ();
 
 static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
+static const char *pszAIAggressivities [4];
 
 void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -4348,10 +4349,14 @@ void GameplayOptionsMenu (void)
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
 			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
 			optAwareness = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optHeadlightOnWhenPickedUp = -1,
-			optRotateMarkers = -1, optLoadout, optUseD1AI = -1, optNoThief = -1;
+			optRotateMarkers = -1, optLoadout, optUseD1AI = -1, optNoThief = -1, optAggressivity = -1;
 	char	szRespawnDelay [60];
-	char	szDifficulty [50], szMaxSmokeGrens [50];
+	char	szDifficulty [50], szMaxSmokeGrens [50], szAggressivity [50];
 
+pszAIAggressivities [0] = TXT_STANDARD;
+pszAIAggressivities [1] = TXT_FAIR;
+pszAIAggressivities [2] = TXT_HIGH;
+pszAIAggressivities [3] = TXT_VERY_HIGH;
 do {
 	memset (&m, 0, sizeof (m));
 	nOptions = 0;
@@ -4386,10 +4391,14 @@ do {
 		optMultiBosses = nOptions++;
 		ADD_CHECK (nOptions, TXT_IDLE_ANIMS, gameOpts->gameplay.bIdleAnims, KEY_D, HTX_GPLAY_IDLEANIMS);
 		optIdleAnims = nOptions++;
-		ADD_CHECK (nOptions, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_GPLAY_AWARENESS);
-		optAwareness = nOptions++;
 		ADD_CHECK (nOptions, TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 		optNoThief = nOptions++;
+		ADD_CHECK (nOptions, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_GPLAY_AWARENESS);
+		optAwareness = nOptions++;
+		sprintf (szAggressivity + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [gameOpts->gameplay.nAIAggressivity]);
+		*szAggressivity = *(TXT_AGGRESSIVITY - 1);
+		ADD_SLIDER (nOptions, szAggressivity + 1, gameOpts->gameplay.nAIAggressivity, 0, 3, KEY_G, HTX_AI_AGGRESSIVITY);
+		optAggressivity = nOptions++;
 		ADD_TEXT (nOptions, "", 0);
 		nOptions++;
 		ADD_CHECK (nOptions, TXT_ALWAYS_RESPAWN, extraGameInfo [0].bImmortalPowerups, KEY_P, HTX_GPLAY_ALWAYSRESP);
@@ -4491,6 +4500,7 @@ else {
 	gameOpts->gameplay.bInventory = 0;
 	gameOpts->gameplay.bIdleAnims = 0;
 	gameOpts->gameplay.nAIAwareness = 0;
+	gameOpts->gameplay.nAIAggressivity = 0;
 	gameOpts->gameplay.bHeadlightOnWhenPickedUp = 0;
 #endif
 	}

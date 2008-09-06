@@ -235,6 +235,7 @@ void MoveAroundPlayer (tObject *objP, vmsVector *vVecToPlayer, int fastFlag)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+
 void MoveAwayFromPlayer (tObject *objP, vmsVector *vVecToPlayer, int attackType)
 {
 	fix				speed;
