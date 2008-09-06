@@ -816,7 +816,7 @@ if (siP->aiP->behavior == AIB_SNIPE) {
 	if (!(siP->nObjRef & 3) || siP->nPrevVisibility) {
 		ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
 		// If this sniper is in still mode, if he was hit or can see tPlayer, switch to snipe mode.
-		if ((siP->ailP->mode == AIM_IDLING) && (gameData.ai.nPlayerVisibility || (siP->ailP->playerAwarenessType == PA_RETURN_FIRE))
+		if ((siP->ailP->mode == AIM_IDLING) && (gameData.ai.nPlayerVisibility || (siP->ailP->playerAwarenessType == PA_RETURN_FIRE)))
 				siP->ailP->mode = AIM_SNIPE_ATTACK;
 		if (!siP->botInfoP->thief && (siP->ailP->mode != AIM_IDLING))
 			DoSnipeFrame (objP);
