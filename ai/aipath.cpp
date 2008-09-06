@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define	PATH_VALIDATION	1
 #endif
 
-void AIPathSetOrientAndVel (tObject *objP, vmsVector* vGoalPoint, int playerVisibility, vmsVector *vec_to_player);
+void AIPathSetOrientAndVel (tObject *objP, vmsVector* vGoalPoint, int nPlayerVisibility, vmsVector *vec_to_player);
 void MaybeAIPathGarbageCollect (void);
 void AIPathGarbageCollect (void);
 #if PATH_VALIDATION
@@ -277,7 +277,7 @@ if (j > 1)
 //	If bSafeMode is set, then additional points are added to "make sure" that points are reachable.p.  I would
 //	like to say that it ensures that the tObject can move between the points, but that would require knowing what
 //	the tObject is (which isn't passed, right?) and making fvi calls (slow, right?).  So, consider it the more_or_less_safeFlag.
-//	If nEndSeg == -2, then end seg will never be found and this routine will drop out due to depth (probably called by CreateNSegmentPath).
+//	If nEndSeg == -2, then end seg will never be found and this routine will drop out due to depth (xProbably called by CreateNSegmentPath).
 int CreatePathPoints (tObject *objP, int nStartSeg, int nEndSeg, tPointSeg *pointSegP, short *numPoints,
 							  int nMaxDepth, int bRandom, int bSafeMode, int nAvoidSeg)
 {
@@ -378,7 +378,7 @@ while (nCurSeg != nEndSeg) {
 		}	//	for (nSide.p...
 
 	if (qHead >= qTail) {
-		//	Couldn't get to goal, return a path as far as we got, which probably acceptable to the unparticular caller.
+		//	Couldn't get to goal, return a path as far as we got, which xProbably acceptable to the unparticular caller.
 		nEndSeg = segmentQ [qTail-1].end;
 		break;
 		}
@@ -448,7 +448,7 @@ ValidatePath (3, origPointSegs, lNumPoints);
 
 // -- MK, 10/30/95 -- This code causes apparent discontinuities in the path, moving a point
 //	into a new tSegment.  It is not necessarily bad, but it makes it hard to track down actual
-//	discontinuity problems.
+//	discontinuity xProblems.
 if (objP->nType == OBJ_ROBOT)
 	if (ROBOTINFO (objP->id).companion)
 		MoveTowardsOutside (origPointSegs, &lNumPoints, objP, 0);
@@ -778,7 +778,7 @@ if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_
 	}
 aiP->PATH_DIR = 1;		//	Initialize to moving forward.
 ailP->mode = AIM_FOLLOW_PATH;
-//	If this robot is visible (playerVisibility is not available) and it's running away, move towards outside with
+//	If this robot is visible (nPlayerVisibility is not available) and it's running away, move towards outside with
 //	randomness to prevent a stream of bots from going away down the center of a corridor.
 if (gameData.ai.localInfo [OBJ_IDX (objP)].nPrevVisibility) {
 	if (aiP->nPathLength) {
@@ -891,13 +891,13 @@ else
 
 //	----------------------------------------------------------------------------------------------------------
 //	Optimization: If current velocity will take robot near goal, don't change velocity
-void AIFollowPath (tObject *objP, int playerVisibility, int nPrevVisibility, vmsVector *vec_to_player)
+void AIFollowPath (tObject *objP, int nPlayerVisibility, int nPrevVisibility, vmsVector *vec_to_player)
 {
 	tAIStatic		*aiP = &objP->cType.aiInfo;
 
 	vmsVector	vGoalPoint, new_vGoalPoint;
 	fix			xDistToGoal;
-	tRobotInfo	*robptr = &ROBOTINFO (objP->id);
+	tRobotInfo	*botInfoP = &ROBOTINFO (objP->id);
 	int			forced_break, original_dir, original_index;
 	fix			xDistToPlayer;
 	short			nGoalSeg;
@@ -937,7 +937,7 @@ if (aiP->nPathLength < 2) {
 				//--Int3_if ((aiP->nPathLength != 0);
 			}
 		if (aiP->behavior == AIB_SNIPE) {
-			if (robptr->thief)
+			if (botInfoP->thief)
 				ailP->mode = AIM_THIEF_ATTACK;	//	It gets bashed in CreateNSegmentPath
 			else
 				ailP->mode = AIM_SNIPE_FIRE;	//	It gets bashed in CreateNSegmentPath
@@ -946,7 +946,7 @@ if (aiP->nPathLength < 2) {
 			ailP->mode = AIM_RUN_FROM_OBJECT;	//	It gets bashed in CreateNSegmentPath
 			}
 		}
-	else if (robptr->companion == 0) {
+	else if (botInfoP->companion == 0) {
 		ailP->mode = AIM_IDLING;
 		aiP->nPathLength = 0;
 		return;
@@ -961,63 +961,50 @@ if (gameStates.app.bPlayerIsDead)
 else
 	xDistToPlayer = vmsVector::Dist(objP->position.vPos, gameData.objs.console->position.vPos);
 	//	Efficiency hack: If far away from tPlayer, move in big quantized jumps.
-if (!(playerVisibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !(gameData.app.nGameMode & GM_MULTI)) {
+if (!(nPlayerVisibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !IsMultiGame) {
 	if (xDistToGoal < F1_0*2) {
 		MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
 		return;
 		}
 	else {
-		tRobotInfo	*robptr = &ROBOTINFO (objP->id);
-		fix	cur_speed = robptr->xMaxSpeed [gameStates.app.nDifficultyLevel]/2;
-		fix	distance_travellable = FixMul (gameData.time.xFrame, cur_speed);
+		tRobotInfo	*botInfoP = &ROBOTINFO (objP->id);
+		fix	xCurSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel]/2;
+		fix	xCoverableDist = FixMul (gameData.time.xFrame, xCurSpeed);
 		// int	nConnSide = FindConnectedSide (objP->nSegment, nGoalSeg);
 		//	Only move to goal if allowed to fly through the tSide.p.
 		//	Buddy-bot can create paths he can't fly, waiting for player.
 		// -- bah, this isn't good enough, buddy will fail to get through any door!if (WALL_IS_DOORWAY (&gameData.segs.segments]objP->nSegment], nConnSide) & WID_FLY_FLAG) {
-		if (!ROBOTINFO (objP->id).companion && !ROBOTINFO (objP->id).thief) {
-			if (distance_travellable >= xDistToGoal) {
+		if (!(botInfoP->companion || botInfoP->thief)) {
+			if ((xCoverableDist >= xDistToGoal) || ((d_rand () >> 1) < FixDiv (xCoverableDist, xDistToGoal)))
 				MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
-				}
-			else {
-				fix	prob = FixDiv (distance_travellable, xDistToGoal);
-				int	rand_num = d_rand ();
-				if ((rand_num >> 1) < prob) {
-					MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
-					}
-				}
 			return;
 			}
 		}
 	}
 //	If running from tPlayer, only run until can't be seen.
 if (ailP->mode == AIM_RUN_FROM_OBJECT) {
-	if ((playerVisibility == 0) && (ailP->playerAwarenessType == 0)) {
-		fix vel_scale = F1_0 - gameData.time.xFrame/2;
-		if (vel_scale < F1_0/2)
-			vel_scale = F1_0/2;
-		objP->mType.physInfo.velocity *= vel_scale;
+	if ((nPlayerVisibility == 0) && (ailP->playerAwarenessType == 0)) {
+		fix xVelScale = F1_0 - gameData.time.xFrame/2;
+		if (xVelScale < F1_0/2)
+			xVelScale = F1_0/2;
+		objP->mType.physInfo.velocity *= xVelScale;
 		return;
 		}
 	else if (!(gameData.app.nFrameCount ^ ((OBJ_IDX (objP)) & 0x07))) {		//	Done 1/8 frames.
 		//	If tPlayer on path (beyond point robot is now at), then create a new path.
-		tPointSeg	*curpsp = &gameData.ai.pointSegs [aiP->nHideIndex];
-		short			player_segnum = gameData.objs.console->nSegment;
+		tPointSeg	*curPSP = &gameData.ai.pointSegs [aiP->nHideIndex];
+		short			nPlayerSeg = gameData.objs.console->nSegment;
 		int			i;
-		//	This is probably being done every frame, which is wasteful.
-		for (i=aiP->nCurPathIndex; i<aiP->nPathLength; i++) {
-			if (curpsp [i].nSegment == player_segnum) {
-				if (player_segnum != objP->nSegment) {
-					CreateNSegmentPath (objP, AVOID_SEG_LENGTH, player_segnum);
-					}
-				else {
-					CreateNSegmentPath (objP, AVOID_SEG_LENGTH, -1);
-					}
+		//	This is xProbably being done every frame, which is wasteful.
+		for (i = aiP->nCurPathIndex; i < aiP->nPathLength; i++) {
+			if (curPSP [i].nSegment == nPlayerSeg) {
+				CreateNSegmentPath (objP, AVOID_SEG_LENGTH, (nPlayerSeg == objP->nSegment) ? -1 : nPlayerSeg);
 				Assert (aiP->nPathLength != 0);
 				ailP->mode = AIM_RUN_FROM_OBJECT;	//	It gets bashed in CreateNSegmentPath
 				break;
 				}
 			}
-		if (playerVisibility) {
+		if (nPlayerVisibility) {
 			ailP->playerAwarenessType = 1;
 			ailP->playerAwarenessTime = F1_0;
 			}
@@ -1056,9 +1043,9 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 
 		//	Buddy bot.  If he's in mode to get away from tPlayer and at end of line,
 		//	if tPlayer visible, then make a new path, else just return.
-		if (robptr->companion) {
+		if (botInfoP->companion) {
 			if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
-				if (playerVisibility) {
+				if (nPlayerVisibility) {
 					CreateNSegmentPath (objP, 16 + d_rand () * 16, -1);
 					aiP->nPathLength = SmoothPath (objP, &gameData.ai.pointSegs [aiP->nHideIndex], aiP->nPathLength);
 					Assert (aiP->nPathLength != 0);
@@ -1172,7 +1159,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 	}	//	end while
 //	Set velocity (objP->mType.physInfo.velocity) and orientation (objP->position.mOrient) for this tObject.
 //--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
-AIPathSetOrientAndVel (objP, &vGoalPoint, playerVisibility, vec_to_player);
+AIPathSetOrientAndVel (objP, &vGoalPoint, nPlayerVisibility, vec_to_player);
 //--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 }
 
@@ -1193,7 +1180,7 @@ return 0;
 
 //	----------------------------------------------------------------------------------------------------------
 //	Set orientation matrix and velocity for objP based on its desire to get to a point.
-void AIPathSetOrientAndVel (tObject *objP, vmsVector *vGoalPoint, int playerVisibility, vmsVector *vec_to_player)
+void AIPathSetOrientAndVel (tObject *objP, vmsVector *vGoalPoint, int nPlayerVisibility, vmsVector *vec_to_player)
 {
 	vmsVector	vCurVel = objP->mType.physInfo.velocity;
 	vmsVector	vNormCurVel;
@@ -1202,11 +1189,11 @@ void AIPathSetOrientAndVel (tObject *objP, vmsVector *vGoalPoint, int playerVisi
 	vmsVector	vNormFwd;
 	fix			xSpeedScale;
 	fix			dot;
-	tRobotInfo	*robptr = &ROBOTINFO (objP->id);
+	tRobotInfo	*botInfoP = &ROBOTINFO (objP->id);
 	fix			xMaxSpeed;
 
 //	If evading tPlayer, use highest difficulty level speed, plus something based on diff level
-xMaxSpeed = robptr->xMaxSpeed [gameStates.app.nDifficultyLevel];
+xMaxSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel];
 if ((gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_RUN_FROM_OBJECT) || (objP->cType.aiInfo.behavior == AIB_SNIPE))
 	xMaxSpeed = xMaxSpeed*3/2;
 vNormToGoal = *vGoalPoint - vCurPos;
@@ -1239,17 +1226,17 @@ if ((objP->cType.aiInfo.behavior == AIB_SNIPE) && (dot < F1_0/2))
 xSpeedScale = FixMul (xMaxSpeed, dot);
 vNormCurVel *= xSpeedScale;
 objP->mType.physInfo.velocity = vNormCurVel;
-if ((gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_RUN_FROM_OBJECT) || (robptr->companion == 1) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
+if ((gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_RUN_FROM_OBJECT) || (botInfoP->companion == 1) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
 	if (gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
-		if ((playerVisibility) && (vec_to_player != NULL))
+		if ((nPlayerVisibility) && (vec_to_player != NULL))
 			vNormToGoal = *vec_to_player;
 		else
 			vNormToGoal = -vNormToGoal;
 		}
-	AITurnTowardsVector (&vNormToGoal, objP, robptr->turnTime [NDL-1]/2);
+	AITurnTowardsVector (&vNormToGoal, objP, botInfoP->turnTime [NDL-1]/2);
 	}
 else
-	AITurnTowardsVector (&vNormToGoal, objP, robptr->turnTime [gameStates.app.nDifficultyLevel]);
+	AITurnTowardsVector (&vNormToGoal, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 }
 
 int	nLastFrameGarbageCollected = 0;

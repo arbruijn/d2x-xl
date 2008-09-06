@@ -428,9 +428,9 @@ if (!AIMultiplayerAwareness (objP, angerLevel)) {
 		}
 	return 1;
 	}
-if (!gameData.ai.nPlayerVisibility /*&& 
+if (!gameData.ai.nPlayerVisibility /**/&& 
 	 ((siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode != AIM_FOLLOW_PATH) || 
-	 (siP->ailP->nGoalSegment != gameData.ai.nBelievedPlayerSeg))*/) {
+	 (siP->ailP->nGoalSegment != gameData.ai.nBelievedPlayerSeg))/**/) {
 	siP->ailP->mode = AIM_IDLING;
 	return 1;
 	}
@@ -441,9 +441,12 @@ else if (aiP->CURRENT_STATE == AIS_FLINCH)
 	aiP->GOAL_STATE = AIS_LOCK;
 if (aiP->behavior != AIB_RUN_FROM)
 	DoFiringStuff (objP, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
-if ((gameData.ai.nPlayerVisibility == 2) &&
-		(aiP->behavior != AIB_STILL) && (aiP->behavior != AIB_SNIPE) && (aiP->behavior != AIB_FOLLOW) && (aiP->behavior != AIB_RUN_FROM) && (objP->id != ROBOT_BRAIN) &&
-		!(siP->botInfoP->companion || siP->botInfoP->thief)) {
+if ((gameData.ai.nPlayerVisibility == 2) && 
+		(objP->id != ROBOT_BRAIN) && !(siP->botInfoP->companion || siP->botInfoP->thief) &&
+		(aiP->behavior != AIB_STILL) && 
+		(aiP->behavior != AIB_SNIPE) && 
+		(aiP->behavior != AIB_FOLLOW) && 
+		(aiP->behavior != AIB_RUN_FROM)) {
 	if (siP->botInfoP->attackType == 0)
 		siP->ailP->mode = AIM_CHASE_OBJECT;
 	// This should not just be distance based, but also time-since-tPlayer-seen based.
@@ -895,22 +898,24 @@ int AIBumpHandler (tObject *objP, tAIStateInfo *siP)
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
-if (siP->ailP->playerAwarenessType >= PA_PLAYER_COLLISION) {
-	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
-	if (gameData.ai.nPlayerVisibility == 1) // Only increase visibility if unobstructed, else claw guys attack through doors.
-		gameData.ai.nPlayerVisibility = 2;
-	}
-else if (!(siP->nObjRef & 3) && !siP->nPrevVisibility && (gameData.ai.xDistToPlayer < MAX_WAKEUP_DIST)) {
-	fix rval = d_rand ();
-	fix sval = (gameData.ai.xDistToPlayer * (gameStates.app.nDifficultyLevel + 1)) / 64;
-	if ((FixMul (rval, sval) < gameData.time.xFrame) || HeadlightIsOn (-1)) {
-		siP->ailP->playerAwarenessType = PA_PLAYER_COLLISION;
-		siP->ailP->playerAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][1];
-		ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
-		if (gameData.ai.nPlayerVisibility == 1)
-			gameData.ai.nPlayerVisibility = 2;
+if (gameData.ai.nPlayerVisibility != 1) // Only increase visibility if unobstructed, else claw guys attack through doors.
+	return 0;
+if (siP->ailP->playerAwarenessType >= PA_PLAYER_COLLISION)
+	;
+else if ((siP->nObjRef & 3) || siP->nPrevVisibility || (gameData.ai.xDistToPlayer >= MAX_WAKEUP_DIST))
+	return 0;
+else {
+	if (!HeadlightIsOn (-1)) {
+		fix rval = d_rand ();
+		fix sval = (gameData.ai.xDistToPlayer * (gameStates.app.nDifficultyLevel + 1)) / 64;
+		if	((FixMul (rval, sval) >= gameData.time.xFrame))
+			return 0;
 		}
+	siP->ailP->playerAwarenessType = PA_PLAYER_COLLISION;
+	siP->ailP->playerAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][1];
 	}
+ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
+gameData.ai.nPlayerVisibility = 2;
 return 0;
 }
 
@@ -1020,9 +1025,9 @@ if ((siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData
 	if (OBJ_IDX (objP) == nDbgObj)
 		nDbgObj = nDbgObj;
 #endif
-#if 0
+#if 1
 	if (objP->nSegment == siP->ailP->nGoalSegment)
-		siP->ailP->mode = AIM_IDLING;
+		;//siP->ailP->mode = AIM_IDLING;
 #endif
 	return 0;
 	}

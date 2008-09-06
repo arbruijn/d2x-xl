@@ -305,71 +305,72 @@ return bClamped;
 // ------------------------------------------------------------------------
 
 // Version with vPos
-const int VmPointLineIntersection(fVector& hitP, const fVector& p1, const fVector& p2, const fVector& p3, const fVector& vPos, int bClamp) {
+const int VmPointLineIntersection (fVector& hitP, const fVector& p1, const fVector& p2, const fVector& p3, const fVector& vPos, int bClamp) 
+{
 	fVector	d31, d21;
 	double	m, u;
 	int		bClamped = 0;
 
-	d21 = p2 - p1;
-	m = fabs (d21.SqrMag());
-	if(!m) {
-		hitP = p1;
-		return 0;
+d21 = p2 - p1;
+m = fabs (d21.SqrMag());
+if(!m) {
+	hitP = p1;
+	return 0;
 	}
-	d31 = p3 - p1;
-	u = (double)fVector::Dot(d31, d21);
-	u /= m;
-	if (u < 0)
-		bClamped = 2;
-	else if (u > 1)
-		bClamped = 1;
-	else
-		bClamped = 0;
-	// limit the intersection to [p1,p2]
-	if (bClamp && bClamped) {
-		bClamped = (fVector::Dist(vPos, p1) < fVector::Dist(vPos, p2)) ? 2 : 1;
-		hitP = (bClamped == 1) ? p1 : p2;
+d31 = p3 - p1;
+u = (double)fVector::Dot(d31, d21);
+u /= m;
+if (u < 0)
+	bClamped = 2;
+else if (u > 1)
+	bClamped = 1;
+else
+	bClamped = 0;
+// limit the intersection to [p1,p2]
+if (bClamp && bClamped) {
+	bClamped = (fVector::Dist(vPos, p1) < fVector::Dist(vPos, p2)) ? 2 : 1;
+	hitP = (bClamped == 1) ? p1 : p2;
 	}
-	else
-		hitP = p1 + u * d21;
-
-	return bClamped;
+else
+	hitP = p1 + u * d21;
+return bClamped;
 }
 
 
 // Version without vPos
-const int VmPointLineIntersection(fVector& hitP, const fVector& p1, const fVector& p2, const fVector& p3, int bClamp) {
+const int VmPointLineIntersection(fVector& hitP, const fVector& p1, const fVector& p2, const fVector& p3, int bClamp) 
+{
 	fVector	d31, d21;
 	double	m, u;
 	int		bClamped = 0;
 
-	d21 = p2 - p1;
-	m = fabs (d21.SqrMag());
-	if(!m) {
-		hitP = p1;
-		return 0;
+d21 = p2 - p1;
+m = fabs (d21.SqrMag());
+if(!m) {
+	hitP = p1;
+	return 0;
 	}
-	d31 = p3 - p1;
-	u = (double)fVector::Dot(d31, d21);
-	u /= m;
-	if (u < 0)
-		bClamped = 2;
-	else if (u > 1)
-		bClamped = 1;
-	else
-		bClamped = 0;
-	// limit the intersection to [p1,p2]
-	if (bClamp && bClamped)
-		hitP = (bClamped == 1) ? p1 : p2;
-	else
-		hitP = p1 + u * d21;
-
-	return bClamped;
+d31 = p3 - p1;
+u = (double)fVector::Dot(d31, d21);
+u /= m;
+if (u < 0)
+	bClamped = 2;
+else if (u > 1)
+	bClamped = 1;
+else
+	bClamped = 0;
+// limit the intersection to [p1,p2]
+if (bClamp && bClamped)
+	hitP = (bClamped == 1) ? p1 : p2;
+else
+	hitP = p1 + u * d21;
+return bClamped;
 }
 
 // ------------------------------------------------------------------------
 
-const int VmPointLineIntersection(fVector3& hitP, const fVector3& p1, const fVector3& p2, const fVector3& p3, fVector3 *vPos, int bClamp) {
+const int VmPointLineIntersection(fVector3& hitP, const fVector3& p1, const fVector3& p2, const fVector3& p3, fVector3 *vPos, int bClamp) 
+{
 	fVector3	d31, d21;
 	double	m, u;
 	int		bClamped = 0;

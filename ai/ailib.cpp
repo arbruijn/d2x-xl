@@ -252,10 +252,11 @@ else {
 	if (ailP->playerAwarenessType >= PA_NEARBY_ROBOT_FIRED)
 		if (gameData.ai.nPlayerVisibility == 1)
 			gameData.ai.nPlayerVisibility = 2;
-
-	if (gameData.ai.nPlayerVisibility) {
+	if (gameData.ai.nPlayerVisibility)
 		ailP->timePlayerSeen = gameData.time.xGame;
-		}
+	}
+if (OBJ_IDX (objP) == nDbgObj) {
+	HUDMessage (0, "vis: %d", gameData.ai.nPlayerVisibility);
 	}
 }
 

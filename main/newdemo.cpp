@@ -192,7 +192,6 @@ void my_extract_shortpos (tObject *objP, tShortPos *spp)
 {
 	int nSegment;
 	sbyte *sp;
-	vmsVector	*pv;
 
 sp = spp->bytemat;
 objP->position.mOrient[RVEC][X] = *sp++ << MATRIX_PRECISION;
