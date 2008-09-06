@@ -113,6 +113,7 @@ static struct {
 	int	nSmokeGrens;
 	int	nMaxSmokeGrens;
 	int	nHeadlightAvailable;
+	int nAIAggressivity;
 } gplayOpts;
 
 static struct {
@@ -4283,7 +4284,7 @@ AddPlayerLoadout ();
 
 static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
-static const char *pszAIAggressivities [4];
+static const char *pszAggressivities [4];
 
 void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -4308,6 +4309,13 @@ if (extraGameInfo [0].headlight.bAvailable != v) {
 	extraGameInfo [0].headlight.bAvailable = v;
 	*key = -2;
 	return;
+	}
+
+m = menus + gplayOpts.nAIAggressivity;
+v = m->value;
+if (gameOpts->gameplay.nAIAggressivity != v) {
+	gameOpts->gameplay.nAIAggressivity = v;
+	m->rebuild = 1;
 	}
 
 if (gameOpts->app.bExpertMode) {
@@ -4349,14 +4357,14 @@ void GameplayOptionsMenu (void)
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
 			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
 			optAwareness = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optHeadlightOnWhenPickedUp = -1,
-			optRotateMarkers = -1, optLoadout, optUseD1AI = -1, optNoThief = -1, optAggressivity = -1;
+			optRotateMarkers = -1, optLoadout, optUseD1AI = -1, optNoThief = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szMaxSmokeGrens [50], szAggressivity [50];
 
-pszAIAggressivities [0] = TXT_STANDARD;
-pszAIAggressivities [1] = TXT_FAIR;
-pszAIAggressivities [2] = TXT_HIGH;
-pszAIAggressivities [3] = TXT_VERY_HIGH;
+pszAggressivities [0] = TXT_STANDARD;
+pszAggressivities [1] = TXT_MEDIUM;
+pszAggressivities [2] = TXT_HIGH;
+pszAggressivities [3] = TXT_VERY_HIGH;
 do {
 	memset (&m, 0, sizeof (m));
 	nOptions = 0;
@@ -4396,9 +4404,9 @@ do {
 		ADD_CHECK (nOptions, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_GPLAY_AWARENESS);
 		optAwareness = nOptions++;
 		sprintf (szAggressivity + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [gameOpts->gameplay.nAIAggressivity]);
-		*szAggressivity = *(TXT_AGGRESSIVITY - 1);
+		*szAggressivity = *(TXT_AI_AGGRESSIVITY - 1);
 		ADD_SLIDER (nOptions, szAggressivity + 1, gameOpts->gameplay.nAIAggressivity, 0, 3, KEY_G, HTX_AI_AGGRESSIVITY);
-		optAggressivity = nOptions++;
+		gplayOpts.nAIAggressivity = nOptions++;
 		ADD_TEXT (nOptions, "", 0);
 		nOptions++;
 		ADD_CHECK (nOptions, TXT_ALWAYS_RESPAWN, extraGameInfo [0].bImmortalPowerups, KEY_P, HTX_GPLAY_ALWAYSRESP);
