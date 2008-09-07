@@ -4315,6 +4315,7 @@ m = menus + gplayOpts.nAIAggressivity;
 v = m->value;
 if (gameOpts->gameplay.nAIAggressivity != v) {
 	gameOpts->gameplay.nAIAggressivity = v;
+	sprintf (m->text, TXT_AI_AGGRESSIVITY, pszAggressivities [gameOpts->gameplay.nAIAggressivity]);
 	m->rebuild = 1;
 	}
 
@@ -4401,11 +4402,11 @@ do {
 		optIdleAnims = nOptions++;
 		ADD_CHECK (nOptions, TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 		optNoThief = nOptions++;
-		ADD_CHECK (nOptions, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_GPLAY_AWARENESS);
+		ADD_CHECK (nOptions, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_A, HTX_GPLAY_AWARENESS);
 		optAwareness = nOptions++;
 		sprintf (szAggressivity + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [gameOpts->gameplay.nAIAggressivity]);
 		*szAggressivity = *(TXT_AI_AGGRESSIVITY - 1);
-		ADD_SLIDER (nOptions, szAggressivity + 1, gameOpts->gameplay.nAIAggressivity, 0, 3, KEY_G, HTX_AI_AGGRESSIVITY);
+		ADD_SLIDER (nOptions, szAggressivity + 1, gameOpts->gameplay.nAIAggressivity, 0, 3, KEY_V, HTX_AI_AGGRESSIVITY);
 		gplayOpts.nAIAggressivity = nOptions++;
 		ADD_TEXT (nOptions, "", 0);
 		nOptions++;
