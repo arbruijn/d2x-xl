@@ -315,7 +315,7 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 ShowFrameRate ();
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = gameData.demo.nGameMode;
-if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
+if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
 	DrawHUD ();
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = GM_NORMAL;

@@ -5117,34 +5117,34 @@ if (!gameStates.app.bNostalgia) {
 		*key = -2;
 		return;
 		}
-	}
-m = menus + miscOpts.nExpertMode;
-v = m->value;
-if (gameOpts->app.bExpertMode != v) {
-	gameOpts->app.bExpertMode = v;
-	*key = -2;
-	return;
-	}
-m = menus + miscOpts.nAutoDl;
-v = m->value;
-if (extraGameInfo [0].bAutoDownload != v) {
-	extraGameInfo [0].bAutoDownload = v;
-	*key = -2;
-	return;
-	}
-if (gameOpts->app.bExpertMode) {
-	if (extraGameInfo [0].bAutoDownload) {
-		m = menus + miscOpts.nDlTimeout;
-		v = m->value;
-		if (GetDlTimeout () != v) {
-			v = SetDlTimeout (v);
-			sprintf (m->text, TXT_AUTODL_TO, GetDlTimeoutSecs ());
-			m->rebuild = 1;
+	m = menus + miscOpts.nExpertMode;
+	v = m->value;
+	if (gameOpts->app.bExpertMode != v) {
+		gameOpts->app.bExpertMode = v;
+		*key = -2;
+		return;
+		}
+	m = menus + miscOpts.nAutoDl;
+	v = m->value;
+	if (extraGameInfo [0].bAutoDownload != v) {
+		extraGameInfo [0].bAutoDownload = v;
+		*key = -2;
+		return;
+		}
+	if (gameOpts->app.bExpertMode) {
+		if (extraGameInfo [0].bAutoDownload) {
+			m = menus + miscOpts.nDlTimeout;
+			v = m->value;
+			if (GetDlTimeout () != v) {
+				v = SetDlTimeout (v);
+				sprintf (m->text, TXT_AUTODL_TO, GetDlTimeoutSecs ());
+				m->rebuild = 1;
+				}
 			}
 		}
+	else
+		SetDlTimeout (15);
 	}
-else
-	SetDlTimeout (15);
 }
 
 //------------------------------------------------------------------------------
@@ -5181,6 +5181,11 @@ do {
 		optHeadlight = nOptions++;
 		}
 	else
+		miscOpts.nAutoDl = 
+		miscOpts.nScreenshots = 
+		miscOpts.nDlTimeout = 
+		optSmartSearch =
+		optLevelVer =
 		optHeadlight = 
 		optAutoLevel = -1;
 	ADD_CHECK (nOptions, TXT_ESCORT_KEYS, gameOpts->gameplay.bEscortHotKeys, KEY_K, HTX_MISC_ESCORTKEYS);
