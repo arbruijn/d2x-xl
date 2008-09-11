@@ -52,6 +52,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "pcx.h"
 #include "args.h"
 #include "ogl_lib.h"
+#include "ogl_shader.h"
 #include "text.h"
 #include "newdemo.h"
 #include "objrender.h"
@@ -3345,6 +3346,7 @@ if (FindArg ("-norun"))
 /*---*/PrintLog ("Loading hires models\n");
 LoadHiresModels (0);
 LoadModelData ();
+InitShaders ();
 return 0;
 }
 

@@ -207,8 +207,8 @@ const char *headlightFS [2][8] = {
 	"void main (void) {\r\n" \
 	"vec4 texColor = matColor;\r\n" \
 	"vec3 spotColor = gl_Color.rgb;\r\n" \
-	"vec3 lvNorm = Normalize (lightVec);\r\n" \
-	"if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"vec3 lvNorm = normalize (lightVec);\r\n" \
+	"if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.5) {\r\n" \
 	"	    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
@@ -226,8 +226,8 @@ const char *headlightFS [2][8] = {
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"vec3 spotColor = gl_Color.rgb;\r\n" \
-	"vec3 lvNorm = Normalize (lightVec);\r\n" \
-	"if ((length (Normal) == 0.0) || (dot (Normalize (Normal), lvNorm) < 0.0)) {\r\n" \
+	"vec3 lvNorm = normalize (lightVec);\r\n" \
+	"if ((length (Normal) == 0.0) || (dot (normalize (Normal), lvNorm) < 0.0)) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.5) {\r\n" \
 	"	    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
@@ -248,8 +248,8 @@ const char *headlightFS [2][8] = {
 	"vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"vec3 spotColor = gl_Color.rgb;\r\n" \
-	"vec3 lvNorm = Normalize (lightVec);\r\n" \
-	"if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"vec3 lvNorm = normalize (lightVec);\r\n" \
+	"if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.5) {\r\n" \
 	"      float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
@@ -274,9 +274,9 @@ const char *headlightFS [2][8] = {
 	"   vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"   texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	 vec3 spotColor = gl_Color.rgb;\r\n" \
-	"	 vec3 lvNorm = Normalize (lightVec);\r\n" \
+	"	 vec3 lvNorm = normalize (lightVec);\r\n" \
 	"   float spotBrightness;\r\n" \
-	"   if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"   if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"      float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
 	" 		    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
@@ -301,7 +301,7 @@ const char *headlightFS [2][8] = {
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
-	"   if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"   if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"      float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
 	"   	   float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
@@ -327,7 +327,7 @@ const char *headlightFS [2][8] = {
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
-	"   if ((normLen == 0.0) || (dot (Normalize (Normal), lvNorm) < 0.0)) {\r\n" \
+	"   if ((normLen == 0.0) || (dot (normalize (Normal), lvNorm) < 0.0)) {\r\n" \
 	"      float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
 	"   	   float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
@@ -355,7 +355,7 @@ const char *headlightFS [2][8] = {
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
-	"   if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"   if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"      float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
 	"   	   float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
@@ -387,7 +387,7 @@ const char *headlightFS [2][8] = {
 	"	    vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	    float lightDist = length (lightVec);\r\n" \
 	"	    vec3 lvNorm = lightVec / lightDist;\r\n" \
-	"	    if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"	    if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"	       float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"         if (spotEffect >= 0.5) {\r\n" \
 	"            float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
@@ -409,8 +409,8 @@ const char *headlightFS [2][8] = {
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 spotColor = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
-	"vec3 lvNorm = Normalize (lightVec);\r\n" \
-	"if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"vec3 lvNorm = normalize (lightVec);\r\n" \
+	"if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.5) {\r\n" \
 	"	    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
@@ -429,8 +429,8 @@ const char *headlightFS [2][8] = {
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"vec4 spotColor = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
-	"vec3 lvNorm = Normalize (lightVec);\r\n" \
-	"if ((length (Normal) == 0) || (dot (Normalize (Normal), lvNorm) < 0.0)) {\r\n" \
+	"vec3 lvNorm = normalize (lightVec);\r\n" \
+	"if ((length (Normal) == 0) || (dot (normalize (Normal), lvNorm) < 0.0)) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.5) {\r\n" \
 	"      float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
@@ -451,8 +451,8 @@ const char *headlightFS [2][8] = {
 	"vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"vec4 spotColor = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
-	"vec3 lvNorm = Normalize (lightVec);\r\n" \
-	"if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"vec3 lvNorm = normalize (lightVec);\r\n" \
+	"if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.5) {\r\n" \
 	"      float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
@@ -477,8 +477,8 @@ const char *headlightFS [2][8] = {
 	"   vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"   texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	 vec4 spotColor = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
-	"	 vec3 lvNorm = Normalize (lightVec);\r\n" \
-	"   if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"	 vec3 lvNorm = normalize (lightVec);\r\n" \
+	"   if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"      float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
 	" 		    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
@@ -503,7 +503,7 @@ const char *headlightFS [2][8] = {
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
-	"   if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"   if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"      float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
 	"   	   float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
@@ -528,7 +528,7 @@ const char *headlightFS [2][8] = {
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
-	"   if ((normLen == 0.0) || (dot (Normalize (Normal), lvNorm) < 0.0)) {\r\n" \
+	"   if ((normLen == 0.0) || (dot (normalize (Normal), lvNorm) < 0.0)) {\r\n" \
 	"      float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
 	"   	   float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
@@ -555,7 +555,7 @@ const char *headlightFS [2][8] = {
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
-	"   if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"   if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"      float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.5) {\r\n" \
 	"   	   float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
@@ -586,7 +586,7 @@ const char *headlightFS [2][8] = {
 	"	    vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	    float lightDist = length (lightVec);\r\n" \
 	"	    vec3 lvNorm = lightVec / lightDist;\r\n" \
-	"	    if (dot (Normalize (Normal), lvNorm) < 0.0) {\r\n" \
+	"	    if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
 	"	       float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"         if (spotEffect >= 0.5) {\r\n" \
 	"            float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
@@ -607,14 +607,14 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
@@ -622,7 +622,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_Position = ftransform();\r\n" \
@@ -631,7 +631,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_TexCoord [2] = gl_MultiTexCoord2;\r\n"\
@@ -642,7 +642,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
@@ -650,7 +650,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
@@ -659,7 +659,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_Position = ftransform();\r\n" \
@@ -669,7 +669,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_TexCoord [2] = gl_MultiTexCoord2;\r\n"\
@@ -682,14 +682,14 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
@@ -697,7 +697,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_TexCoord [2] = gl_MultiTexCoord2;\r\n"\
 	"gl_Position = ftransform();\r\n" \
@@ -706,7 +706,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_TexCoord [2] = gl_MultiTexCoord2;\r\n"\
 	"gl_TexCoord [3] = gl_MultiTexCoord3;\r\n"\
@@ -718,7 +718,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
@@ -726,7 +726,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
@@ -735,7 +735,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_TexCoord [2] = gl_MultiTexCoord2;\r\n"\
 	"gl_Position = ftransform();\r\n" \
@@ -745,7 +745,7 @@ const char *headlightVS [2][8] = {
 	"varying vec3 Normal, vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"Normal = Normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_TexCoord [2] = gl_MultiTexCoord2;\r\n"\
 	"gl_TexCoord [3] = gl_MultiTexCoord3;\r\n"\
