@@ -146,8 +146,6 @@ void RenderRadar (void)
 	GLint			depthFunc;
 	tRgbColorf	*pc;
 
-if (gameStates.app.bNostalgia)
-	return;
 if (HIDE_HUD)
 	return;
 if (gameStates.render.automap.bDisplay)

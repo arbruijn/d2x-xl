@@ -197,6 +197,8 @@ InitExplodingWalls ();
 InitSmoke ();
 /*---*/PrintLog ("  loading background bitmap...\n");
 LoadBackgroundBitmap ();
+InitAutomapData ();
+InitDefaultPlayerShip ();
 nClearWindow = 2;		//	do portal only window clear.
 InitDetailLevels (gameStates.app.nDetailLevel);
 gameStates.render.color.bRenderLightmaps =

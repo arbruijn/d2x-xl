@@ -10,9 +10,6 @@ CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
-#ifdef _WIN32
-#  define fileno _fileno
-#endif
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
@@ -283,7 +280,11 @@ int CFSize (const char *hogname, const char *folder, int bUseD1Hog)
 //	sprintf (fn, "%s/%s", folder, hogname);
 if (!CFOpen (&cf, hogname, gameFolders.szDataDir, "rb", bUseD1Hog))
 	return -1;
+#ifdef _WIN32
+fstat (_fileno (cf.file), &statbuf);
+#else
 fstat (fileno (cf.file), &statbuf);
+#endif
 CFClose (&cf);
 return statbuf.st_size;
 #else
@@ -1011,10 +1012,6 @@ if (i < 123) {
 }
 
 // ----------------------------------------------------------------------------
-
-#ifdef _WIN32
-#	define fileno	_fileno
-#endif
 
 time_t CFDate (const char *filename, const char *folder, int bUseD1Hog)
 {

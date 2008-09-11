@@ -29,4 +29,6 @@ extern ubyte bAutomapVisited [MAX_SEGMENTS_D2X];
 #define AM_SHOW_ROBOTS			EGI_FLAG (bRobotsOnRadar, 0, 1, 0)
 #define AM_SHOW_POWERUPS(_i)	((EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) >= (_i)) && (!IsMultiGame || IsCoopGame))
 
+void InitAutomapData (void);
+
 #endif //_AUTOMAP_H

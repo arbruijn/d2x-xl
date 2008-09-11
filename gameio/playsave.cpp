@@ -530,11 +530,11 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].gameplay.bNoThief, i, 0);
 		RP (gameOptions [i].gameplay.bShieldWarning, i, 0);
 		RP (gameOptions [i].gameplay.nAIAwareness, i, 0);
-		RP (gameOptions [i].gameplay.nAIAggressivity, i, 0);
 		RP (gameOptions [i].gameplay.nAutoSelectWeapon, i, 0);
 		RP (gameOptions [i].gameplay.nSlowMotionSpeedup, i, 0);
 		RP (gameOptions [i].gameplay.bUseD1AI, i, 0);
 		}
+	// options applicable for both enhanced and pure D2 mode
 	for (j = 0; j < sizeofa (nWeaponOrder [i]); j++)
 		RP (nWeaponOrder [i][j], i, j);
 	RP (gameStates.render.cockpit.n3DView [i], i, 0);
@@ -1104,7 +1104,6 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].gameplay.bInventory", "1"},
 	{"gameOptions[0].gameplay.bShieldWarning", "1"},
 	{"gameOptions[0].gameplay.nAIAwareness", "0"},
-	{"gameOptions[0].gameplay.nAIAggressivity", "0"},
 	{"gameOptions[0].gameplay.nAutoSelectWeapon", "1"},
 	{"gameOptions[0].gameplay.nSlowMotionSpeedup", "6"},
 	{"gameOptions[0].gameplay.bUseD1AI", "1"},

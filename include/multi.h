@@ -467,4 +467,6 @@ void MultiSendTriggerSpecific (char nPlayer, ubyte trig);
 void MultiResetObjectTexture (tObject *objP);
 void MultiSendSeismic (fix start, fix end);
 
+void InitDefaultPlayerShip (void);
+
 #endif /* _MULTI_H */

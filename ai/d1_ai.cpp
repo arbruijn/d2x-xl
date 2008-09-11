@@ -999,13 +999,12 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 	int				dir;
 	int				dir_change;
 	fix				ft;
-	vmsVector		vEvade;
+	vmsVector		evade_vector;
 	int				count=0;
 
 	if (fast_flag == 0)
 		return;
 
-	vEvade.SetZero ();
 	dir_change = 48;
 	ft = gameData.time.xFrame;
 	if (ft < F1_0/32) {
@@ -1025,24 +1024,24 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 
 	switch (dir) {
 			case 0:
-				vEvade[X] = FixMul((*vec_to_player)[Z], gameData.time.xFrame*32);
-				vEvade[Y] = FixMul((*vec_to_player)[Y], gameData.time.xFrame*32);
-				vEvade[Z] = FixMul(-(*vec_to_player)[X], gameData.time.xFrame*32);
+				evade_vector[X] = FixMul((*vec_to_player)[Z], gameData.time.xFrame*32);
+				evade_vector[Y] = FixMul((*vec_to_player)[Y], gameData.time.xFrame*32);
+				evade_vector[Z] = FixMul(-(*vec_to_player)[X], gameData.time.xFrame*32);
 				break;
 			case 1:
-				vEvade[X] = FixMul(-(*vec_to_player)[Z], gameData.time.xFrame*32);
-				vEvade[Y] = FixMul((*vec_to_player)[Y], gameData.time.xFrame*32);
-				vEvade[Z] = FixMul((*vec_to_player)[X], gameData.time.xFrame*32);
+				evade_vector[X] = FixMul(-(*vec_to_player)[Z], gameData.time.xFrame*32);
+				evade_vector[Y] = FixMul((*vec_to_player)[Y], gameData.time.xFrame*32);
+				evade_vector[Z] = FixMul((*vec_to_player)[X], gameData.time.xFrame*32);
 				break;
 			case 2:
-				vEvade[X] = FixMul(-(*vec_to_player)[Y], gameData.time.xFrame*32);
-				vEvade[Y] = FixMul((*vec_to_player)[X], gameData.time.xFrame*32);
-				vEvade[Z] = FixMul((*vec_to_player)[Z], gameData.time.xFrame*32);
+				evade_vector[X] = FixMul(-(*vec_to_player)[Y], gameData.time.xFrame*32);
+				evade_vector[Y] = FixMul((*vec_to_player)[X], gameData.time.xFrame*32);
+				evade_vector[Z] = FixMul((*vec_to_player)[Z], gameData.time.xFrame*32);
 				break;
 			case 3:
-				vEvade[X] = FixMul((*vec_to_player)[Y], gameData.time.xFrame*32);
-				vEvade[Y] = FixMul(-(*vec_to_player)[X], gameData.time.xFrame*32);
-				vEvade[Z] = FixMul((*vec_to_player)[Z], gameData.time.xFrame*32);
+				evade_vector[X] = FixMul((*vec_to_player)[Y], gameData.time.xFrame*32);
+				evade_vector[Y] = FixMul(-(*vec_to_player)[X], gameData.time.xFrame*32);
+				evade_vector[Z] = FixMul((*vec_to_player)[Z], gameData.time.xFrame*32);
 				break;
 		}
 
@@ -1063,13 +1062,13 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 			else if (damage_scale < 0)
 				damage_scale = 0;			//	Just in case...
 
-			vEvade *= (I2X(fast_flag) + damage_scale);
+			evade_vector *= (I2X(fast_flag) + damage_scale);
 		}
 	}
 
-	piP->velocity[X] += vEvade[X];
-	piP->velocity[Y] += vEvade[Y];
-	piP->velocity[Z] += vEvade[Z];
+	piP->velocity[X] += evade_vector[X];
+	piP->velocity[Y] += evade_vector[Y];
+	piP->velocity[Z] += evade_vector[Z];
 
 	speed = piP->velocity.Mag();
 	if (speed > botInfoP->xMaxSpeed[gameStates.app.nDifficultyLevel]) {

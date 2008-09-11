@@ -592,22 +592,22 @@ else
 			y = itemP->y;
 	char	*t, *ps = itemP->text, s [256], ch = 0, ch2;
 
-	if (!nDepth)
-		itemP->textSave = itemP->text;
-	if ((t = strchr (ps, '\n'))) {
-		strncpy (s, ps, sizeof (s));
-		itemP->text = s;
-		GrGetStringSize (s, &w, &h, &aw);
-		do {
-			if ((t = strchr (itemP->text, '\n')))
-				*t = '\0';
-			NMHotKeyString (itemP, 0, bTiny, 0, nDepth + 1);
-			if (!t)
-				break;
-			itemP->text = t + 1;
-			itemP->y += h / 2;
-			itemP->x = itemP->xSave;
-			nTabIndex = -1;
+if (!nDepth)
+	itemP->textSave = itemP->text;
+if ((t = strchr (ps, '\n'))) {
+	strncpy (s, ps, sizeof (s));
+	itemP->text = s;
+	GrGetStringSize (s, &w, &h, &aw);
+	do {
+		if ((t = strchr (itemP->text, '\n')))
+			*t = '\0';
+		NMHotKeyString (itemP, 0, bTiny, 0, nDepth + 1);
+		if (!t)
+			break;
+		itemP->text = t + 1;
+		itemP->y += h / 2;
+		itemP->x = itemP->xSave;
+		nTabIndex = -1;
 		} while (*(itemP->text));
 	}
 else if ((t = strchr (ps, '\t'))) {
@@ -715,26 +715,29 @@ if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	GrBmBitBlt (bgP->background->bmProps.w-15, h+2, 5, y-1, 5, y-1, bgP->background, &(grdCurCanv->cvBitmap));
 //GrBmBitBlt (w, h, x, y, x, y, bgP->background, &(grdCurCanv->cvBitmap));
 
-#if 1
-NMHotKeyString (itemP, bIsCurrent, bTiny, 1, 0);
-#else
-for (i=0;i<l;i++) {
-	if (s2 [i]=='\t' && gameStates.multi.bSurfingNet) {
-		x=XTabs [t];
-		t++;
-		continue;
+if (0 && gameStates.multi.bSurfingNet) {
+	for (i=0;i<l;i++) {
+		if (s2 [i]=='\t' && gameStates.multi.bSurfingNet) {
+			x=XTabs [t];
+			t++;
+			continue;
+			}
+		measure [0]=s2 [i];
+		GrGetStringSize (measure, &tx, &h, &aw);
+		GrString (x, y, measure, NULL);
+		x += tx;
 		}
-	measure [0]=s2 [i];
-	GrGetStringSize (measure, &tx, &h, &aw);
-	GrString (x, y, measure, NULL);
-	x += tx;
 	}
+else {
+	NMHotKeyString (itemP, bIsCurrent, bTiny, 1, 0);
+	return;
+	}         
+
 if (!gameStates.multi.bSurfingNet && p && (w1 > 0)) {
 	GrGetStringSize (s1, &w, &h, &aw);
 	GrString (x+w1-w, y, s1, NULL);
 	*p = '\t';
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1536,10 +1539,9 @@ if (gameStates.app.bGameRunning && IsMultiGame)
 	gameData.multigame.nTypingTimeout = 0;
 
 SetPopupScreenMode ();
-if (!gameOpts->menus.nStyle) {
+if (!gameOpts->menus.nStyle && (gameStates.menus.bNoBackground || gameStates.app.bGameRunning)) {
 	OglDrawBuffer (GL_FRONT, 1);
-	if (gameStates.menus.bNoBackground || gameStates.app.bGameRunning)
-		NMLoadBackground (NULL, NULL, 0);
+	NMLoadBackground (NULL, NULL, 0);
 	GrUpdate (0);
 	}
 NMSaveScreen (&save_canvas, &game_canvas, &saveFont);

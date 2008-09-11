@@ -50,7 +50,6 @@ return (ailP->nextPrimaryFire <= 0) || ((botInfoP->nSecWeaponType != -1) && (ail
 }
 
 // ----------------------------------------------------------------------------------
-
 void SetNextFireTime (tObject *objP, tAILocal *ailP, tRobotInfo *botInfoP, int nGun)
 {
 	//	For guys in snipe mode, they have a 50% shot of getting this shot in D2_FREE.

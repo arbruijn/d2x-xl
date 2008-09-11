@@ -113,7 +113,6 @@ static struct {
 	int	nSmokeGrens;
 	int	nMaxSmokeGrens;
 	int	nHeadlightAvailable;
-	int nAIAggressivity;
 } gplayOpts;
 
 static struct {
@@ -4284,7 +4283,6 @@ AddPlayerLoadout ();
 
 static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
-static const char *pszAggressivities [4];
 
 void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -4309,14 +4307,6 @@ if (extraGameInfo [0].headlight.bAvailable != v) {
 	extraGameInfo [0].headlight.bAvailable = v;
 	*key = -2;
 	return;
-	}
-
-m = menus + gplayOpts.nAIAggressivity;
-v = m->value;
-if (gameOpts->gameplay.nAIAggressivity != v) {
-	gameOpts->gameplay.nAIAggressivity = v;
-	sprintf (m->text, TXT_AI_AGGRESSIVITY, pszAggressivities [gameOpts->gameplay.nAIAggressivity]);
-	m->rebuild = 1;
 	}
 
 if (gameOpts->app.bExpertMode) {
@@ -4360,12 +4350,8 @@ void GameplayOptionsMenu (void)
 			optAwareness = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optHeadlightOnWhenPickedUp = -1,
 			optRotateMarkers = -1, optLoadout, optUseD1AI = -1, optNoThief = -1;
 	char	szRespawnDelay [60];
-	char	szDifficulty [50], szMaxSmokeGrens [50], szAggressivity [50];
+	char	szDifficulty [50], szMaxSmokeGrens [50];
 
-pszAggressivities [0] = TXT_STANDARD;
-pszAggressivities [1] = TXT_MEDIUM;
-pszAggressivities [2] = TXT_HIGH;
-pszAggressivities [3] = TXT_VERY_HIGH;
 do {
 	memset (&m, 0, sizeof (m));
 	nOptions = 0;
@@ -4400,14 +4386,10 @@ do {
 		optMultiBosses = nOptions++;
 		ADD_CHECK (nOptions, TXT_IDLE_ANIMS, gameOpts->gameplay.bIdleAnims, KEY_D, HTX_GPLAY_IDLEANIMS);
 		optIdleAnims = nOptions++;
+		ADD_CHECK (nOptions, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_GPLAY_AWARENESS);
+		optAwareness = nOptions++;
 		ADD_CHECK (nOptions, TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 		optNoThief = nOptions++;
-		ADD_CHECK (nOptions, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_A, HTX_GPLAY_AWARENESS);
-		optAwareness = nOptions++;
-		sprintf (szAggressivity + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [gameOpts->gameplay.nAIAggressivity]);
-		*szAggressivity = *(TXT_AI_AGGRESSIVITY - 1);
-		ADD_SLIDER (nOptions, szAggressivity + 1, gameOpts->gameplay.nAIAggressivity, 0, 3, KEY_V, HTX_AI_AGGRESSIVITY);
-		gplayOpts.nAIAggressivity = nOptions++;
 		ADD_TEXT (nOptions, "", 0);
 		nOptions++;
 		ADD_CHECK (nOptions, TXT_ALWAYS_RESPAWN, extraGameInfo [0].bImmortalPowerups, KEY_P, HTX_GPLAY_ALWAYSRESP);
@@ -4509,7 +4491,6 @@ else {
 	gameOpts->gameplay.bInventory = 0;
 	gameOpts->gameplay.bIdleAnims = 0;
 	gameOpts->gameplay.nAIAwareness = 0;
-	gameOpts->gameplay.nAIAggressivity = 0;
 	gameOpts->gameplay.bHeadlightOnWhenPickedUp = 0;
 #endif
 	}
@@ -5117,34 +5098,34 @@ if (!gameStates.app.bNostalgia) {
 		*key = -2;
 		return;
 		}
-	m = menus + miscOpts.nExpertMode;
-	v = m->value;
-	if (gameOpts->app.bExpertMode != v) {
-		gameOpts->app.bExpertMode = v;
-		*key = -2;
-		return;
-		}
-	m = menus + miscOpts.nAutoDl;
-	v = m->value;
-	if (extraGameInfo [0].bAutoDownload != v) {
-		extraGameInfo [0].bAutoDownload = v;
-		*key = -2;
-		return;
-		}
-	if (gameOpts->app.bExpertMode) {
-		if (extraGameInfo [0].bAutoDownload) {
-			m = menus + miscOpts.nDlTimeout;
-			v = m->value;
-			if (GetDlTimeout () != v) {
-				v = SetDlTimeout (v);
-				sprintf (m->text, TXT_AUTODL_TO, GetDlTimeoutSecs ());
-				m->rebuild = 1;
-				}
+	}
+m = menus + miscOpts.nExpertMode;
+v = m->value;
+if (gameOpts->app.bExpertMode != v) {
+	gameOpts->app.bExpertMode = v;
+	*key = -2;
+	return;
+	}
+m = menus + miscOpts.nAutoDl;
+v = m->value;
+if (extraGameInfo [0].bAutoDownload != v) {
+	extraGameInfo [0].bAutoDownload = v;
+	*key = -2;
+	return;
+	}
+if (gameOpts->app.bExpertMode) {
+	if (extraGameInfo [0].bAutoDownload) {
+		m = menus + miscOpts.nDlTimeout;
+		v = m->value;
+		if (GetDlTimeout () != v) {
+			v = SetDlTimeout (v);
+			sprintf (m->text, TXT_AUTODL_TO, GetDlTimeoutSecs ());
+			m->rebuild = 1;
 			}
 		}
-	else
-		SetDlTimeout (15);
 	}
+else
+	SetDlTimeout (15);
 }
 
 //------------------------------------------------------------------------------
@@ -5181,11 +5162,6 @@ do {
 		optHeadlight = nOptions++;
 		}
 	else
-		miscOpts.nAutoDl = 
-		miscOpts.nScreenshots = 
-		miscOpts.nDlTimeout = 
-		optSmartSearch =
-		optLevelVer =
 		optHeadlight = 
 		optAutoLevel = -1;
 	ADD_CHECK (nOptions, TXT_ESCORT_KEYS, gameOpts->gameplay.bEscortHotKeys, KEY_K, HTX_MISC_ESCORTKEYS);

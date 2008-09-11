@@ -1822,7 +1822,6 @@ const char *defaultGameTexts [][2] = {
 	{"~Funken weichzeichnen", "soften sp~Ark edges"},
 	{"~Rauch weichzeichnen", "soften sm~Oke edges"},
 	{"~Dieb unterdruecken", "suppress ~Thief bots"},
-	{"KI-Aggressi~Vitaet: %s", "AI aggressi~Vity: %s"},
 #if 0
 	{"", ""},
 #endif
@@ -2477,7 +2476,6 @@ const char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, sehen Funken-Uebergaenge an Waenden weicher\nund natuerlicher aus.", "If checked, spark transitions at walls look smoother\nand more natural."},
 	{"Wenn angekreuzt, sehen Rauch-Uebergaenge an Waenden weicher\nund natuerlicher aus.", "If checked, smoke transitions at walls look smoother\nand more natural."},
 	{"Wenn angekreuzt, werden alle Diebe aus dem aktuellen Level\nentfernt.", "If checked, all thief bots are removed when playing a level."},
-	{"Je nach Einstellung verfolgen Roboter den Spieler zunehmend aggressiver.", "Depending on the chosen setting, robots pursue the player more\naggressively."},
 #if 0
 	{"", ""},
 #endif

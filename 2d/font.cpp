@@ -640,7 +640,7 @@ int OglInternalString (int x, int y, const char *s)
 next_row = s;
 yy = y;
 if (grdCurScreen->scCanvas.cvBitmap.bmProps.nType != BM_OGL)
-	Error ("Invalid bitmap type in font.cpp::OglInternalString\n");
+	Error ("carp.\n");
 while (next_row != NULL) {
 	text_ptr1 = next_row;
 	next_row = NULL;

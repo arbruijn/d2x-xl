@@ -157,12 +157,26 @@ typedef struct tAutomapData {
 
 // Rendering variables
 //static tAutomapData	amData = {0, 1, 0, F1_0 * 20 * 100, 0x9000, vmsVector::ZERO, vmsVector::ZERO, {vmsVector::ZERO,vmsVector::ZERO,vmsVector::ZERO}};
-static tAutomapData	amData = {0, 1, 0, F1_0 * 20 * 100, 0x9000, vmsVector::ZERO, vmsVector::ZERO, vmsMatrix::IDENTITY};
+static tAutomapData	amData; // = {0, 1, 0, F1_0 * 20 * 100, 0x9000, vmsVector::ZERO, vmsVector::ZERO, vmsMatrix::IDENTITY};
 
 //	Function Prototypes
 void AdjustSegmentLimit (int nSegmentLimit, ushort *pVisited);
 void DrawAllEdges (void);
 void AutomapBuildEdgeList (void);
+
+//------------------------------------------------------------------------------
+
+void InitAutomapData (void)
+{
+amData.bCheat = 0;
+amData.bHires = 1;
+amData.nViewDist = 0;
+amData.nMaxDist = F1_0 * 2000;
+amData.nZoom = 0x9000;
+amData.viewPos.SetZero ();
+amData.viewTarget.SetZero ();
+amData.viewMatrix.IDENTITY;
+}
 
 //------------------------------------------------------------------------------
 

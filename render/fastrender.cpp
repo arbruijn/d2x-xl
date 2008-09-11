@@ -1076,7 +1076,7 @@ typedef struct tVertLightData {
 	tVertLightIndex	index [VLBUF_SIZE];
 } tVertLightData;
 
-static tVertLightData vld = {0, 0};
+static tVertLightData vld;
 
 //------------------------------------------------------------------------------
 

@@ -219,7 +219,9 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 void extract_netplayer_stats (tNetPlayerStats *ps, tPlayer * pd);
 void use_netplayer_stats (tPlayer * ps, tNetPlayerStats *pd);
 
-tPlayerShip defaultPlayerShip = {
+tPlayerShip defaultPlayerShip;
+#if 0
+ = {
 	108, 58, 262144, 2162, 511180, 0, 0, F1_0 / 2, 9175,
 	{vmsVector::Create(146013, -59748, 35756),
 	 vmsVector::Create(-147477, -59892, 34430),
@@ -229,6 +231,30 @@ tPlayerShip defaultPlayerShip = {
 	 vmsVector::Create(-156840, -185, -91405),
 	 vmsVector::Create(1608, -87663, 184978),
 	 vmsVector::Create(-1608, -87663, -190825)}};
+#endif
+
+//-----------------------------------------------------------------------------
+
+void InitDefaultPlayerShip (void)
+{
+defaultPlayerShip.nModel = 108;
+defaultPlayerShip.nExplVClip = 58;
+defaultPlayerShip.mass = 262144;
+defaultPlayerShip.drag = 2162;
+defaultPlayerShip.maxThrust = 511180;
+defaultPlayerShip.reverseThrust = 0;
+defaultPlayerShip.brakes = 0;
+defaultPlayerShip.wiggle = F1_0 / 2;
+defaultPlayerShip.maxRotThrust = 9175;
+defaultPlayerShip.gunPoints [0].Create (146013, -59748, 35756);
+defaultPlayerShip.gunPoints [0].Create (-147477, -59892, 34430);
+defaultPlayerShip.gunPoints [0].Create (222008, -118473, 148201);
+defaultPlayerShip.gunPoints [0].Create (-223479, -118213, 148302);
+defaultPlayerShip.gunPoints [0].Create (153026, -185, -91405);
+defaultPlayerShip.gunPoints [0].Create (-156840, -185, -91405);
+defaultPlayerShip.gunPoints [0].Create (1608, -87663, 184978);
+defaultPlayerShip.gunPoints [0].Create (-1608, -87663, -190825);
+}
 
 //-----------------------------------------------------------------------------
 // check protection
