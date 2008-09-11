@@ -382,17 +382,15 @@ else {
 
 static inline int G3FaceIsTransparent (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop)
 {
-if (!faceP->bTransparent)
-	return 0;
 if (!bmBot)
 	return 0;
-if ((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU)) != BM_FLAG_TRANSPARENT)
+if (!(bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU)))
 	return 0;
 if (!bmTop)
+	return 1;
+if (!(bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT))
 	return 0;
-if (!(bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU)))
-	return 0;
-return 1;
+return faceP->bTransparent;
 }
 
 //------------------------------------------------------------------------------
