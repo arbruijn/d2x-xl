@@ -173,7 +173,7 @@ void SetupLightning (tLightning *pl, int bInit)
 	tLightning		*pp;
 	tLightningNode	*pln;
 	vmsVector		vPos, vDir, vRefDir, vDelta [2], v;
-	int				i = 0, l;
+	int				i, l;
 
 pl->vPos = pl->vBase;
 if (pl->bRandom) {
