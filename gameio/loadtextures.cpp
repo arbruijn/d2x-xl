@@ -504,28 +504,30 @@ if (!bmP->bmTexBuf) {
 	if (nIndex >= 0)
 		GetFlagData (bmName, nIndex);
 #ifdef _DEBUG
-	if (strstr (bmName, "targ01b")) {
+	if (strstr (bmName, "door13")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}
 	else
 #endif
-	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
-				*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
-	tBase = CFDate (fn, "", 0);
-	if (tBase < 0) 
-		*fnShrunk = '\0';
+	if (gameStates.app.bNostalgia)
+		gameOpts->render.textures.bUseHires = 0;
 	else {
-		sprintf (fnShrunk, "%s%s%d/%s.tga", gameFolders.szTextureCacheDir [bD1], 
-					*gameFolders.szTextureCacheDir [bD1] ? "/" : "", 512 / nShrinkFactor, bmName);
-		tShrunk = CFDate (fnShrunk, "", 0);
-		if (tShrunk < tBase)
+		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
+					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
+		tBase = CFDate (fn, "", 0);
+		if (tBase < 0) 
 			*fnShrunk = '\0';
+		else {
+			sprintf (fnShrunk, "%s%s%d/%s.tga", gameFolders.szTextureCacheDir [bD1], 
+						*gameFolders.szTextureCacheDir [bD1] ? "/" : "", 512 / nShrinkFactor, bmName);
+			tShrunk = CFDate (fnShrunk, "", 0);
+			if (tShrunk < tBase)
+				*fnShrunk = '\0';
+			}
 		}
 	bTGA = 0;
 	bmP->bmBPP = 1;
-	if (gameStates.app.bNostalgia)
-		gameOpts->render.textures.bUseHires = 0;
 	if (*bmName && ((nIndex < 0) || (gameOpts->render.textures.bUseHires && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
 #if 0
 		if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureCacheDir [bD1], bmName)) {

@@ -381,7 +381,7 @@ void OglStartFrame (int bFlat, int bResetColorBuf)
 {
 	GLint nError = glGetError ();
 
-if (!gameStates.render.cameras.bActive)
+if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
 	OglDrawBuffer (GL_BACK, 1);
 #if SHADOWS
 if (gameStates.render.nShadowPass) {
@@ -598,7 +598,7 @@ void OglEndFrame (void)
 //	glViewport (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-if (!gameStates.render.cameras.bActive)
+if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
 	OglDrawBuffer (GL_BACK, 1);
 if (gameStates.ogl.bShadersOk)
 	glUseProgramObject (0);

@@ -164,6 +164,8 @@ tBitmapIndex PiggyRegisterBitmap (grsBitmap *bmP, const char *name, int bInFile)
 	tBitmapIndex temp;
 	Assert (gameData.pig.tex.nBitmaps [gameStates.app.bD1Data] < MAX_BITMAP_FILES);
 
+if (strstr (name, "door13"))
+	name = name;
 temp.index = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
 if (!bInFile) {
 #ifdef EDITOR
@@ -175,7 +177,9 @@ if (!bInFile) {
 	nBitmapFilesNew++;
 	}
 strncpy (gameData.pig.tex.pBitmapFiles [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, name, 12);
-hashtable_insert (bitmapNames + gameStates.app.bD1Mission, gameData.pig.tex.pBitmapFiles[gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
+hashtable_insert (bitmapNames + gameStates.app.bD1Mission, 
+						gameData.pig.tex.pBitmapFiles[gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, 
+						gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
 gameData.pig.tex.pBitmaps [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = *bmP;
 if (!bInFile) {
 	bitmapOffsets [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = 0;
@@ -192,22 +196,19 @@ tBitmapIndex PiggyFindBitmap (const char * pszName, int bD1Data)
 	tBitmapIndex	bi;
 	int				i;
 	const char		*t;
-	char				name [FILENAME_LEN];
+	char				name [FILENAME_LEN], alias [FILENAME_LEN];
 
 bi.index = 0;
-if ((t = strchr (pszName, '#'))) {
-	strncpy (name, pszName, t - pszName);
+strcpy (name, pszName);
+if ((t = strchr (pszName, '#')))
 	name [t - pszName] = '\0';
-	pszName = name;
-	}
 for (i = 0; i < gameData.pig.tex.nAliases; i++)
-	if (!stricmp (pszName, gameData.pig.tex.aliases [i].alias_name)) {
-		if (t) {                //extra stuff for ABMs
-			static char temp [FILENAME_LEN];
-			_splitpath (gameData.pig.tex.aliases [i].file_name, NULL, NULL, temp, NULL);
-			pszName = temp;
-			strcat (temp, "#");
-			strcat (temp, t + 1);
+	if (!stricmp (name, gameData.pig.tex.aliases [i].alias_name)) {
+		if (t) {	//this is a frame of an animated texture, so add the frame number
+			_splitpath (gameData.pig.tex.aliases [i].file_name, NULL, NULL, alias, NULL);
+			strcat (alias, "#");
+			strcat (alias, t + 1);
+			pszName = alias;
 			}
 		else
 			pszName = gameData.pig.tex.aliases [i].file_name; 
@@ -215,8 +216,6 @@ for (i = 0; i < gameData.pig.tex.nAliases; i++)
 		}
 i = hashtable_search (bitmapNames + bD1Data, pszName);
 Assert (i != 0);
-if (i < 0)
-	return bi;
 bi.index = i;
 return bi;
 }
@@ -345,8 +344,8 @@ return bMemInited = 1;
 //returns the size of all the bitmap data
 void PiggyInitPigFile (char *filename)
 {
-	char					temp_name [16];
-	char					temp_name_read [16];
+	char					szName [16];
+	char					szNameRead [16];
 	char					szPigName [FILENAME_LEN];
 	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, i;
 	grsBitmap			bmTemp;
@@ -387,12 +386,12 @@ nDataSize = CFLength (cfPiggy + gameStates.app.bD1Data, 0) - nDataStart;
 gameData.pig.tex.nBitmaps [0] = 1;
 for (i = 0; i < nBitmapNum; i++) {
 	PIGBitmapHeaderRead (&bmh, cfPiggy + gameStates.app.bD1Data);
-	memcpy (temp_name_read, bmh.name, 8);
-	temp_name_read [8] = 0;
+	memcpy (szNameRead, bmh.name, 8);
+	szNameRead [8] = 0;
 	if (bmh.dflags & DBM_FLAG_ABM)        
-		sprintf (temp_name, "%s#%d", temp_name_read, bmh.dflags & DBM_NUM_FRAMES);
+		sprintf (szName, "%s#%d", szNameRead, bmh.dflags & DBM_NUM_FRAMES);
 	else
-		strcpy (temp_name, temp_name_read);
+		strcpy (szName, szNameRead);
 	memset (&bmTemp, 0, sizeof (grsBitmap));
 	bmTemp.bmProps.w = bmTemp.bmProps.rowSize = bmh.width + ((short) (bmh.wh_extra & 0x0f) << 8);
 	bmTemp.bmProps.h = bmh.height + ((short) (bmh.wh_extra & 0xf0) << 4);
@@ -401,7 +400,7 @@ for (i = 0; i < nBitmapNum; i++) {
 	gameData.pig.tex.bitmapFlags [0][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 	bitmapOffsets [0][i+1] = bmh.offset + nDataStart;
 	Assert ((i+1) == gameData.pig.tex.nBitmaps [0]);
-	PiggyRegisterBitmap (&bmTemp, temp_name, 1);
+	PiggyRegisterBitmap (&bmTemp, szName, 1);
 	}
 bPigFileInitialized = 1;
 }
@@ -419,8 +418,8 @@ int ComputeAvgPixel (grsBitmap *newBmp);
 void PiggyNewPigFile (char *pigname)
 {
 	int i;
-	char temp_name [16];
-	char temp_name_read [16];
+	char szName [16];
+	char szNameRead [16];
 	grsBitmap bmTemp;
 	tPIGBitmapHeader bmh;
 	int nHeaderSize, nBitmapNum, nDataSize, nDataStart;
@@ -470,18 +469,18 @@ void PiggyNewPigFile (char *pigname)
 		nDataSize = CFLength (cfPiggy, 0) - nDataStart;
 		for (i = 1; i <= nBitmapNum; i++) {
 			PIGBitmapHeaderRead (&bmh, cfPiggy);
-			memcpy (temp_name_read, bmh.name, 8);
-			temp_name_read [8] = 0;
+			memcpy (szNameRead, bmh.name, 8);
+			szNameRead [8] = 0;
 			if (bmh.dflags & DBM_FLAG_ABM)        
-				sprintf (temp_name, "%s#%d", temp_name_read, bmh.dflags & DBM_NUM_FRAMES);
+				sprintf (szName, "%s#%d", szNameRead, bmh.dflags & DBM_NUM_FRAMES);
 			else
-				strcpy (temp_name, temp_name_read);
+				strcpy (szName, szNameRead);
 			//Make sure name matches
-			if (strcmp (temp_name, gameData.pig.tex.bitmapFiles [0][i].name)) {
+			if (strcmp (szName, gameData.pig.tex.bitmapFiles [0][i].name)) {
 				//Int3 ();       //this pig is out of date.  Delete it
 				must_rewrite_pig=1;
 			}
-			strcpy (gameData.pig.tex.bitmapFiles [0][i].name,temp_name);
+			strcpy (gameData.pig.tex.bitmapFiles [0][i].name,szName);
 			memset (&bmTemp, 0, sizeof (grsBitmap));
 			bmTemp.bmProps.w = bmTemp.bmProps.rowSize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
 			bmTemp.bmProps.h = bmh.height + ((short) (bmh.wh_extra & 0xf0)<<4);
@@ -1022,8 +1021,7 @@ grsBitmap bmTemp;
 void LoadD1BitmapReplacements (void)
 {
 	tPIGBitmapHeader	bmh;
-	char					temp_name [16];
-	char					temp_name_read [16];
+	char					szNameRead [16];
 	int					i, nBmHdrOffs, nBmDataOffs, nSoundNum, nBitmapNum;
 
 if (cfPiggy [1].file)
@@ -1053,23 +1051,28 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 	PiggyRegisterBitmap (&bogusBitmap, "bogus", 1);
 	for (i = 0; i < nBitmapNum; i++) {
 		PIGBitmapHeaderD1Read (&bmh, cfPiggy + 1);
-		memcpy (temp_name_read, bmh.name, 8);
-		temp_name_read [8] = 0;
-		if (bmh.dflags & DBM_FLAG_ABM)        
-			sprintf (temp_name, "%s#%d", temp_name_read, bmh.dflags & DBM_NUM_FRAMES);
-		else
-			strcpy (temp_name, temp_name_read);
+		memcpy (szNameRead, bmh.name, 8);
+		szNameRead [8] = 0;
 		memset (&bmTemp, 0, sizeof (grsBitmap));
+		if (bmh.dflags & DBM_FLAG_ABM)        
+			sprintf (bmTemp.szName, "%s#%d", szNameRead, bmh.dflags & DBM_NUM_FRAMES);
+		else
+			strcpy (bmTemp.szName, szNameRead);
+#ifdef _DEBUG
+		if (strstr (bmTemp.szName, "door13"))
+			i = i;
+#endif
 		bmTemp.bmProps.w = bmTemp.bmProps.rowSize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
 		bmTemp.bmProps.h = bmh.height + ((short) (bmh.wh_extra&0xf0)<<4);
-		bmTemp.bmProps.flags |= BM_FLAG_PAGED_OUT;
+		bmTemp.bmProps.flags = bmh.flags | BM_FLAG_PAGED_OUT;
 		bmTemp.bmAvgColor = bmh.bmAvgColor;
-		bmTemp.bmTexBuf = (ubyte *) D2_ALLOC (bmTemp.bmProps.w * bmTemp.bmProps.h);
+		bmTemp.bmTexBuf = NULL; //(ubyte *) D2_ALLOC (bmTemp.bmProps.w * bmTemp.bmProps.h);
+		bmTemp.bmBPP = 1;
 		bitmapCacheUsed += bmTemp.bmProps.h * bmTemp.bmProps.w;
 		gameData.pig.tex.bitmapFlags [1][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 		bitmapOffsets [1][i+1] = bmh.offset + nBmDataOffs;
 		Assert ((i+1) == gameData.pig.tex.nBitmaps [1]);
-		PiggyRegisterBitmap (&bmTemp, temp_name, 1);
+		PiggyRegisterBitmap (&bmTemp, bmTemp.szName, 1);
 		}
 	gameStates.app.bHaveD1Textures = 1;
 	}

@@ -415,7 +415,7 @@ void GrSetColorRGB (ubyte red, ubyte green, ubyte blue, ubyte alpha);
 void GrSetColorRGB15bpp (ushort c, ubyte alpha);
 void GrFadeColorRGB (double dFade);
 
-#define GrSetColorRGBi(_c)	GrSetColorRGB (RGBA_RED (_c), RGBA_GREEN (_c), RGBA_BLUE (_c), RGBA_ALPHA (_c))
+#define GrSetColorRGBi(_c)	GrSetColorRGB (RGBA_RED (_c), RGBA_GREEN (_c), RGBA_BLUE (_c), 255) //RGBA_ALPHA (_c))
 
 //	-----------------------------------------------------------------------------
 

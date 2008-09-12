@@ -61,7 +61,7 @@ glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 1
 fPos = vPos.ToFloat();
-G3TransformPoint(fPos, fPos, 0);
+G3TransformPoint (fPos, fPos, 0);
 #else
 v1 = vPos[0] - viewInfo.vPos;
 VmVecRotate (&pv, &v1, &viewInfo.view [0]);

@@ -592,14 +592,14 @@ for (;;) {
 		p += 36;
 		}
 	else if (nTag == OP_SUBCALL) {
-		vmsAngVec	*va;
+		vmsAngVec	va;
 		vmsVector	vo;
 
-		va = pAnimAngles ? pAnimAngles + WORDVAL (p+2) : NULL;
+		va = pAnimAngles ? pAnimAngles [WORDVAL (p+2)] : vmsAngVec::ZERO;
 		vo = *VECPTR (p+4);
 		if (gameData.models.nScale)
 			vo *= gameData.models.nScale;
-		G3StartInstanceAngles(vo, *va);
+		G3StartInstanceAngles (vo, va);
 		if (vOffset)
 			vo += *vOffset;
 		if (!G3DrawPolyModel (objP, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, colorP, po, nModel)) {

@@ -161,7 +161,8 @@ viewInfo.posf = viewInfo.pos.ToFloat();
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if angles==NULL, don't modify matrix.  This will be like doing an offset
-void G3StartInstanceAngles (const vmsVector& pos, const vmsAngVec& angles) {
+void G3StartInstanceAngles (const vmsVector& pos, const vmsAngVec& angles) 
+{
 	G3StartInstanceMatrix(pos, vmsMatrix::Create(angles));
 }
 
