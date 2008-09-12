@@ -96,21 +96,13 @@
 #define PACKAGE_NAME "d2x-xl"
 
 /* Define to the full name and version of this package. */
-<<<<<<< .mine
 #define PACKAGE_STRING "d2x-xl 1.13.83"
-=======
-#define PACKAGE_STRING "d2x-xl 1.13.75"
->>>>>>> .r2050
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "d2x-xl"
 
 /* Define to the version of this package. */
-<<<<<<< .mine
 #define PACKAGE_VERSION "1.13.83"
-=======
-#define PACKAGE_VERSION "1.13.75"
->>>>>>> .r2050
 
 /* Define for a "release" build */
 #define RELEASE 
