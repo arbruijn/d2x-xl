@@ -8,7 +8,7 @@
 #define D2XMAJOR 1
 
 /* d2x micro version */
-#define D2XMICRO 75
+#define D2XMICRO 83
 
 /* Define if you want to build the editor */
 /* #undef EDITOR */
@@ -96,13 +96,21 @@
 #define PACKAGE_NAME "d2x-xl"
 
 /* Define to the full name and version of this package. */
+<<<<<<< .mine
+#define PACKAGE_STRING "d2x-xl 1.13.83"
+=======
 #define PACKAGE_STRING "d2x-xl 1.13.75"
+>>>>>>> .r2050
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "d2x-xl"
 
 /* Define to the version of this package. */
+<<<<<<< .mine
+#define PACKAGE_VERSION "1.13.83"
+=======
 #define PACKAGE_VERSION "1.13.75"
+>>>>>>> .r2050
 
 /* Define for a "release" build */
 #define RELEASE 
@@ -123,7 +131,7 @@
 #define USE_SDL_MIXER 1
 
 /* Version number of package */
-#define VERSION "1.13.75"
+#define VERSION "1.13.83"
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
@@ -138,7 +146,7 @@
 
         /* General defines */
 #ifndef PACKAGE_STRING
-#define PACKAGE_STRING "d2x-xl 1.13.75"
+#define PACKAGE_STRING "d2x-xl 1.13.83"
 #endif
 #define VERSION_NAME PACKAGE_STRING
 #define NMONO 1
