@@ -26,6 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "endlevel.h"
 #include "network.h"
+#include "cheats.h"
 
 //@@vmsVector controlcen_gun_points[MAX_CONTROLCEN_GUNS];
 //@@vmsVector controlcen_gun_dirs[MAX_CONTROLCEN_GUNS];
@@ -216,6 +217,8 @@ if (bFinalCountdown ||
 	 (gameStates.app.bD2XLevel && bReactor && (trigP = FindObjTrigger (OBJ_IDX (objP), TT_COUNTDOWN, -1)))) {
 //	If a secret level, delete secret.sgc to indicate that we can't return to our secret level.
 	if (bFinalCountdown) {
+		if (extraGameInfo [0].nBossCount)
+			KillAllBossRobots (0);
 		for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
 			WallToggle (gameData.segs.segments + gameData.reactor.triggers.nSegment [i], gameData.reactor.triggers.nSide [i]);
 		if (gameData.missions.nCurrentLevel < 0)
@@ -492,12 +495,13 @@ if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 else if (BOSS_COUNT > 0) {
 	for (j = 0; j < gameStates.gameplay.nReactorCount; j++) {
 		BashToShield (gameData.reactor.states [j].nObject, "reactor");
+		extraGameInfo [0].nBossCount--;
 		if (j < --gameStates.gameplay.nReactorCount)
 			gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount];
 		}
 	gameData.reactor.bPresent = 0;
 	gameData.reactor.bDisabled = 1;
-	extraGameInfo [0].nBossCount = 1;
+	//extraGameInfo [0].nBossCount = 1;
 	}
 }
 

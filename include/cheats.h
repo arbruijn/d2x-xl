@@ -13,6 +13,7 @@ void SuperWowieCheat (int bVerbose);
 void WowieCheat (int bVerbose);
 void GasolineCheat (int bVerbose);
 void DoWowieCheat (int bVerbose, int bInitialize);
+void KillAllBossRobots (int bVerbose);
 
 #ifdef _DEBUG
 void DoCheatMenu ();
