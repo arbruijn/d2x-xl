@@ -279,7 +279,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	if (gameStates.render.cockpit.nMode != CM_REAR_VIEW && !bSavingMovieFrames)
 		GrPrintF (NULL, (grdCurCanv->cvBitmap.bmProps.w-w)/2, grdCurCanv->cvBitmap.bmProps.h - h - 2, message);
 	}
-if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
+if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	RenderCountdownGauge ();
 	if ((gameData.multiplayer.nLocalPlayer > -1) &&
 		 (gameData.objs.viewer->nType == OBJ_PLAYER) &&
@@ -315,7 +315,7 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 ShowFrameRate ();
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = gameData.demo.nGameMode;
-if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
+if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
 	DrawHUD ();
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = GM_NORMAL;

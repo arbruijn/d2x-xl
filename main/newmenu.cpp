@@ -1539,10 +1539,12 @@ if (gameStates.app.bGameRunning && IsMultiGame)
 	gameData.multigame.nTypingTimeout = 0;
 
 SetPopupScreenMode ();
-if (!gameOpts->menus.nStyle && (gameStates.menus.bNoBackground || gameStates.app.bGameRunning)) {
+if (!gameOpts->menus.nStyle) {
 	OglDrawBuffer (GL_FRONT, 1);
-	NMLoadBackground (NULL, NULL, 0);
-	GrUpdate (0);
+	if (gameStates.menus.bNoBackground || gameStates.app.bGameRunning) {
+		NMLoadBackground (NULL, NULL, 0);
+		GrUpdate (0);
+		}
 	}
 NMSaveScreen (&save_canvas, &game_canvas, &saveFont);
 bKeyRepeat = gameStates.input.keys.bRepeat;

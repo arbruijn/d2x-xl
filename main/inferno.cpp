@@ -1535,6 +1535,7 @@ if (i) {
 	gameOptions [1].gameplay.bInventory = 0;
 	gameOptions [1].gameplay.bIdleAnims = 0;
 	gameOptions [1].gameplay.nAIAwareness = 0;
+	gameOptions [1].gameplay.nAIAggressivity = 0;
 	}
 else {
 	gameOptions [0].gameplay.nAutoSelectWeapon = 2;
@@ -1549,6 +1550,7 @@ else {
 	gameOptions [0].gameplay.bInventory = 0;
 	gameOptions [0].gameplay.bIdleAnims = 0;
 	gameOptions [0].gameplay.nAIAwareness = 0;
+	gameOptions [0].gameplay.nAIAggressivity = 0;
 	}
 }
 

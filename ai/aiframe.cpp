@@ -428,9 +428,11 @@ if (!AIMultiplayerAwareness (objP, angerLevel)) {
 		}
 	return 1;
 	}
-if (!gameData.ai.nPlayerVisibility /**/&& 
-	 ((siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode != AIM_FOLLOW_PATH) || 
-	 (siP->ailP->nGoalSegment != gameData.ai.nBelievedPlayerSeg))/**/) {
+if (!gameData.ai.nPlayerVisibility &&
+	 (((gameOpts->gameplay.nAIAggressivity - 1) * F1_0 < gameData.time.xGame - siP->ailP->timePlayerSeen) ||
+	  (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || 
+	  (siP->ailP->mode != AIM_FOLLOW_PATH) || 
+	  (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg))) {
 	siP->ailP->mode = AIM_IDLING;
 	return 1;
 	}
@@ -1020,14 +1022,14 @@ if (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) {
 	if (d_rand () * (gameData.ai.nOverallAgitation - 40) <= F1_0 * 5)
 		return 0;
 	}
-if ((siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {
+if ((siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg) && gameOpts->gameplay.nAIAggressivity) {
 #ifdef _DEBUG
 	if (OBJ_IDX (objP) == nDbgObj)
 		nDbgObj = nDbgObj;
 #endif
 #if 1
 	if (objP->nSegment == siP->ailP->nGoalSegment)
-		;//siP->ailP->mode = AIM_IDLING;
+		siP->ailP->mode = AIM_IDLING;
 #endif
 	return 0;
 	}

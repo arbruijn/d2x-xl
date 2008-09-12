@@ -414,6 +414,7 @@ typedef struct tGameplayOptions {
 	int bInventory;
 	int bIdleAnims;
 	int nAIAwareness;
+	int nAIAggressivity;
 	int nSlowMotionSpeedup;
 	int bUseD1AI;
 	int bNoThief;

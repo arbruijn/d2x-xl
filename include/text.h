@@ -1870,11 +1870,11 @@ void LoadGameTexts(void);
 #define TXT_SOFT_SPARKS					GT(1078)
 #define TXT_SOFT_SMOKE					GT(1079)
 #define TXT_SUPPRESS_THIEF				GT(1080)
+#define TXT_MODERATE						GT(1081)
+#define TXT_AI_AGGRESSIVITY			GT(1082)
 
 #if 0
 
-#define TXT_					GT(1081)
-#define TXT_					GT(1082)
 #define TXT_					GT(1083)
 #define TXT_					GT(1084)
 #define TXT_					GT(1085)
@@ -2264,7 +2264,7 @@ void LoadGameTexts(void);
 #define HTX_GPLAY_MAXGRENADES			HT(251)			
 #define HTX_GPLAY_MSL_TURNSPEED		HT(252)			
 #define HTX_ADVRND_STATICSMOKE		HT(253)			
-#define HTX_GPLAY_AWARENESS			HT(254)			
+#define HTX_AI_AWARENESS				HT(254)			
 #define HTX_MULTI2_CHECKPORT			HT(255)			
 #define HTX_COOP_PENALTY				HT(256)			
 #define HTX_KILL_MISSILES	      	HT(257)			
@@ -2388,10 +2388,10 @@ void LoadGameTexts(void);
 #define HTX_SOFT_SPARKS					HT(374)			
 #define HTX_SOFT_SMOKE					HT(375)			
 #define HTX_SUPPRESS_THIEF				HT(376)			
+#define HTX_AI_AGGRESSIVITY			HT(377)			
 
 #if 0
 
-#define HTX_						HT(377)			
 #define HTX_						HT(378)			
 #define HTX_						HT(379)			
 #define HTX_						HT(380)			

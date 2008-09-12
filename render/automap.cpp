@@ -480,7 +480,7 @@ if (gameStates.render.automap.bRadar) {
 	gameStates.ogl.bEnableScissor = 0;
 	return;
 	}
-if (gameOpts->render.cockpit.bHUD) {
+if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 	int offs = amData.bHires ? 10 : 5;
 
 #if 1

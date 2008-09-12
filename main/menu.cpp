@@ -112,6 +112,7 @@ static struct {
 	int	nSpawnDelay;
 	int	nSmokeGrens;
 	int	nMaxSmokeGrens;
+	int	nAIAggressivity;
 	int	nHeadlightAvailable;
 } gplayOpts;
 
@@ -4283,6 +4284,7 @@ AddPlayerLoadout ();
 
 static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
+static const char *pszAggressivities [5];
 
 void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -4326,6 +4328,14 @@ if (gameOpts->app.bExpertMode) {
 		return;
 		}
 
+	m = menus + gplayOpts.nAIAggressivity;
+	v = m->value;
+	if (gameOpts->gameplay.nAIAggressivity != v) {
+		gameOpts->gameplay.nAIAggressivity = v;
+		sprintf (m->text, TXT_AI_AGGRESSIVITY, pszAggressivities [v]);
+		m->rebuild = 1;
+		}
+
 	if (gplayOpts.nMaxSmokeGrens >= 0) {
 		m = menus + gplayOpts.nMaxSmokeGrens;
 		v = m->value + 1;
@@ -4350,7 +4360,13 @@ void GameplayOptionsMenu (void)
 			optAwareness = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optHeadlightOnWhenPickedUp = -1,
 			optRotateMarkers = -1, optLoadout, optUseD1AI = -1, optNoThief = -1;
 	char	szRespawnDelay [60];
-	char	szDifficulty [50], szMaxSmokeGrens [50];
+	char	szDifficulty [50], szMaxSmokeGrens [50], szAggressivity [50];
+
+pszAggressivities [0] = TXT_STANDARD;
+pszAggressivities [1] = TXT_MODERATE;
+pszAggressivities [2] = TXT_MEDIUM;
+pszAggressivities [3] = TXT_HIGH;
+pszAggressivities [4] = TXT_VERY_HIGH;
 
 do {
 	memset (&m, 0, sizeof (m));
@@ -4386,10 +4402,14 @@ do {
 		optMultiBosses = nOptions++;
 		ADD_CHECK (nOptions, TXT_IDLE_ANIMS, gameOpts->gameplay.bIdleAnims, KEY_D, HTX_GPLAY_IDLEANIMS);
 		optIdleAnims = nOptions++;
-		ADD_CHECK (nOptions, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_GPLAY_AWARENESS);
-		optAwareness = nOptions++;
 		ADD_CHECK (nOptions, TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 		optNoThief = nOptions++;
+		ADD_CHECK (nOptions, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_AI_AWARENESS);
+		optAwareness = nOptions++;
+		sprintf (szAggressivity + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [gameOpts->gameplay.nAIAggressivity]);
+		*szAggressivity = *(TXT_AI_AGGRESSIVITY - 1);
+		ADD_SLIDER (nOptions, szAggressivity + 1, gameOpts->gameplay.nAIAggressivity, 0, 4, KEY_V, HTX_AI_AGGRESSIVITY);
+		gplayOpts.nAIAggressivity = nOptions++;
 		ADD_TEXT (nOptions, "", 0);
 		nOptions++;
 		ADD_CHECK (nOptions, TXT_ALWAYS_RESPAWN, extraGameInfo [0].bImmortalPowerups, KEY_P, HTX_GPLAY_ALWAYSRESP);
@@ -5098,39 +5118,39 @@ if (!gameStates.app.bNostalgia) {
 		*key = -2;
 		return;
 		}
-	}
-m = menus + miscOpts.nExpertMode;
-v = m->value;
-if (gameOpts->app.bExpertMode != v) {
-	gameOpts->app.bExpertMode = v;
-	*key = -2;
-	return;
-	}
-m = menus + miscOpts.nAutoDl;
-v = m->value;
-if (extraGameInfo [0].bAutoDownload != v) {
-	extraGameInfo [0].bAutoDownload = v;
-	*key = -2;
-	return;
-	}
-if (gameOpts->app.bExpertMode) {
-	if (extraGameInfo [0].bAutoDownload) {
-		m = menus + miscOpts.nDlTimeout;
+	m = menus + miscOpts.nExpertMode;
+	v = m->value;
+	if (gameOpts->app.bExpertMode != v) {
+		gameOpts->app.bExpertMode = v;
+		*key = -2;
+		return;
+		}
+	if (gameOpts->app.bExpertMode) {
+		m = menus + miscOpts.nAutoDl;
 		v = m->value;
-		if (GetDlTimeout () != v) {
-			v = SetDlTimeout (v);
-			sprintf (m->text, TXT_AUTODL_TO, GetDlTimeoutSecs ());
-			m->rebuild = 1;
+		if (extraGameInfo [0].bAutoDownload != v) {
+			extraGameInfo [0].bAutoDownload = v;
+			*key = -2;
+			return;
+			}
+		if (extraGameInfo [0].bAutoDownload) {
+			m = menus + miscOpts.nDlTimeout;
+			v = m->value;
+			if (GetDlTimeout () != v) {
+				v = SetDlTimeout (v);
+				sprintf (m->text, TXT_AUTODL_TO, GetDlTimeoutSecs ());
+				m->rebuild = 1;
+				}
 			}
 		}
+	else
+		SetDlTimeout (15);
 	}
-else
-	SetDlTimeout (15);
 }
 
 //------------------------------------------------------------------------------
 
-void MiscellaneousMenu ()
+void MiscellaneousMenu (void)
 {
 	tMenuItem m [20];
 	int	i, nOptions, choice,
@@ -5148,6 +5168,7 @@ void MiscellaneousMenu ()
 do {
 	i = nOptions = 0;
 	memset (m, 0, sizeof (m));
+	memset (&miscOpts, 0xff, sizeof (miscOpts));
 	optReticle = optMissileView = optGuided = optSmartSearch = optLevelVer = optDemoFmt = -1;
 	if (gameStates.app.bNostalgia) {
 		ADD_CHECK (0, TXT_AUTO_LEVEL, gameOpts->gameplay.nAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
