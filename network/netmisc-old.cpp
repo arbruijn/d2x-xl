@@ -77,11 +77,11 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
 			}
 		for (k = 0, normP = sideP->normals; k < 2; k++, normP++) {
-			t = INTEL_INT (((int) normP->x()));
+			t = INTEL_INT ((int) (*normP) [X]);
 			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
-			t = INTEL_INT (((int) normP->y()));
+			t = INTEL_INT ((int) (*normP) [Y]);
 			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
-			t = INTEL_INT (((int) normP->z()));
+			t = INTEL_INT ((int) (*normP) [Z]);
 			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
 			}
 		}
@@ -617,8 +617,6 @@ else
 
 void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *missingObjFrames)
 {
-	int	i;
-
 memcpy (missingObjFrames, out_buffer, sizeof (tMissingObjFrames));
 missingObjFrames->nFrame = INTEL_SHORT (missingObjFrames->nFrame);
 }
@@ -733,9 +731,9 @@ switch (objP->renderType) {
 		int i;
 		objP->rType.polyObjInfo.nModel = INTEL_INT (objP->rType.polyObjInfo.nModel);
 		for (i=0;i<MAX_SUBMODELS;i++) {
-			objP->rType.polyObjInfo.animAngles[i][PA] = INTEL_INT (objP->rType.polyObjInfo.animAngles[i].p);
-			objP->rType.polyObjInfo.animAngles[i][BA] = INTEL_INT (objP->rType.polyObjInfo.animAngles[i].b);
-			objP->rType.polyObjInfo.animAngles[i][HA] = INTEL_INT (objP->rType.polyObjInfo.animAngles[i].h);
+			objP->rType.polyObjInfo.animAngles[i][PA] = INTEL_INT (objP->rType.polyObjInfo.animAngles [i][PA]);
+			objP->rType.polyObjInfo.animAngles[i][BA] = INTEL_INT (objP->rType.polyObjInfo.animAngles [i][BA]);
+			objP->rType.polyObjInfo.animAngles[i][HA] = INTEL_INT (objP->rType.polyObjInfo.animAngles [i][HA]);
 		}
 		objP->rType.polyObjInfo.nSubObjFlags = INTEL_INT (objP->rType.polyObjInfo.nSubObjFlags);
 		objP->rType.polyObjInfo.nTexOverride = INTEL_INT (objP->rType.polyObjInfo.nTexOverride);

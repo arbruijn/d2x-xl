@@ -1056,6 +1056,8 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 	tObject		*otherObjP,
 					*thisObjP = (nThisObject < 0) ? NULL : OBJECTS + nThisObject;
 #endif
+
+vClosestHitPoint.SetZero ();
 //PrintLog ("Entry FVICompute\n");
 if (flags & FQ_GET_SEGLIST)
 	*segList = nStartSeg;

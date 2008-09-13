@@ -2304,6 +2304,8 @@ do {
 		ADD_CHECK (nOptions, TXT_MOVING_SPARKS, gameOpts->render.effects.bMovingSparks, KEY_V, HTX_MOVING_SPARKS);
 		optMovingSparks = nOptions++;
 		}
+	else
+		optMovingSparks = -1;
 	if (gameOpts->render.textures.bUseHires)
 		optTranspExpl = -1;
 	else {
@@ -2466,6 +2468,7 @@ do {
 		optSkybox = nOptions++;
 		}
 	else
+		optGrayout =
 		optSmoke =
 		optLightnings =
 		optCoronas =
@@ -4408,7 +4411,7 @@ do {
 		optAwareness = nOptions++;
 		sprintf (szAggressivity + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [gameOpts->gameplay.nAIAggressivity]);
 		*szAggressivity = *(TXT_AI_AGGRESSIVITY - 1);
-		ADD_SLIDER (nOptions, szAggressivity + 1, gameOpts->gameplay.nAIAggressivity, 0, 4, KEY_V, HTX_AI_AGGRESSIVITY);
+		ADD_SLIDER (nOptions, szAggressivity + 1, gameOpts->gameplay.nAIAggressivity, 0, 4, KEY_G, HTX_AI_AGGRESSIVITY);
 		gplayOpts.nAIAggressivity = nOptions++;
 		ADD_TEXT (nOptions, "", 0);
 		nOptions++;

@@ -154,9 +154,10 @@ return SWAPSHORT (i);
 
 // ----------------------------------------------------------------------------
 
-static inline vmsVector& SwapVector(vmsVector& v, int bEndian)
+static inline vmsVector& SwapVector (vmsVector& v, int bEndian)
 {
-if (gameStates.app.bLittleEndian != bEndian) {
+if (gameStates.app.bLittleEndian != bEndian) 
+	{
 	v[X] = (fix) SWAPINT ((int) v[X]);
 	v[Y] = (fix) SWAPINT ((int) v[Y]);
 	v[Z] = (fix) SWAPINT ((int) v[Z]);
@@ -168,7 +169,8 @@ return v;
 
 static inline vmsAngVec& SwapAngVec (vmsAngVec& v, int bEndian)
 {
-if (gameStates.app.bLittleEndian != bEndian) {
+if (gameStates.app.bLittleEndian != bEndian) 
+	{
 	v[PA] = (fixang) SWAPSHORT ((short) v[PA]);
 	v[BA] = (fixang) SWAPSHORT ((short) v[BA]);
 	v[HA] = (fixang) SWAPSHORT ((short) v[HA]);

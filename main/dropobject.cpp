@@ -168,7 +168,7 @@ int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState)
 	int			special, count;
 	short			nPlayerSeg;
 	vmsVector	tempv, *vPlayerPos;
-	fix			nDist;
+	fix			nDist = 0;
 	int			bUseInitSgm =
 						objP &&
 						(EGI_FLAG (bFixedRespawns, 0, 0, 0) ||

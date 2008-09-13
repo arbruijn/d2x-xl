@@ -408,7 +408,7 @@ return I2X (gameData.reactor.nStrength);
 //	If this level contains a boss and mode == multiplayer, do control center stuff.
 void InitReactorForLevel (int bRestore)
 {
-	int		i, j, nGuns, bNew;
+	int		i, j = 0, nGuns, bNew;
 	tObject	*objP;
 	short		nBossObj = -1;
 	tReactorStates	*rStatP = gameData.reactor.states;

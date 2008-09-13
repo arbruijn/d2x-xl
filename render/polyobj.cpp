@@ -137,7 +137,7 @@ memcpy (vecs, &bufp [Pof_addr], n*sizeof (*vecs));
 Pof_addr += n*sizeof (*vecs);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 while (n > 0)
-	VmsVectorSwap (&vecs [--n]);
+	VmsVectorSwap (vecs [--n]);
 #endif
 }
 
@@ -147,7 +147,7 @@ memcpy (angs, &bufp [Pof_addr], n*sizeof (*angs));
 Pof_addr += n*sizeof (*angs);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 while (n > 0)
-	VmsAngVecSwap (&angs [--n]);
+	VmsAngVecSwap (angs [--n]);
 #endif
 }
 

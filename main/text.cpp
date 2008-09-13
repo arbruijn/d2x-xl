@@ -1823,7 +1823,7 @@ const char *defaultGameTexts [][2] = {
 	{"~Rauch weichzeichnen", "soften sm~Oke edges"},
 	{"~Dieb unterdruecken", "suppress ~Thief bots"},
 	{"moderat", "moderate"},
-	{"AI-Aggressi~Vitaet: %s", "AI Aggressi~Vity: %s"},
+	{"AI-A~Ggressivitaet: %s", "AI A~Ggressivity: %s"},
 #if 0
 	{"", ""},
 #endif

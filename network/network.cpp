@@ -350,8 +350,6 @@ return nPackets;
 void SquishShortFrameInfo (tFrameInfoShort old_info, ubyte *data)
 {
 	int 	bufI = 0;
-	int 	tmpi;
-	short tmps;
 	
 NW_SET_BYTE (data, bufI, old_info.nType);                                            
 bufI += 3;
@@ -451,10 +449,10 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)                        // do the swap stuff
 				if (gameStates.multi.nGameType >= IPX_GAME) {
 					networkData.syncPack.obj_segnum = INTEL_SHORT (networkData.syncPack.obj_segnum);
-					INTEL_VECTOR (&networkData.syncPack.obj_pos);
-					INTEL_MATRIX (&networkData.syncPack.obj_orient);
-					INTEL_VECTOR (&networkData.syncPack.phys_velocity);
-					INTEL_VECTOR (&networkData.syncPack.phys_rotvel);
+					INTEL_VECTOR (networkData.syncPack.obj_pos);
+					INTEL_MATRIX (networkData.syncPack.obj_orient);
+					INTEL_VECTOR (networkData.syncPack.phys_velocity);
+					INTEL_VECTOR (networkData.syncPack.phys_rotvel);
 					networkData.syncPack.data_size = INTEL_SHORT (networkData.syncPack.data_size);
 					}
 #endif

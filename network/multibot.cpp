@@ -348,7 +348,7 @@ bufP += sizeof (tShortPos);
 CreateShortPos (&sp, OBJECTS+nObject, 1);
 memcpy (gameData.multigame.msg.buf + bufP, (ubyte *) (sp.bytemat), 9);
 bufP += 9;
-memcpy (gameData.multigame.msg.buf + bufP, (ubyte *)& (sx()o), 14);
+memcpy (gameData.multigame.msg.buf + bufP, (ubyte *) &sp.xo, 14);
 bufP += 14;
 #endif
 MultiSendData ((char *) gameData.multigame.msg.buf, bufP, 1);
@@ -390,7 +390,7 @@ void MultiSendRobotFire (int nObject, int nGun, vmsVector *vFire)
 	int bufP = 0;
 	short s;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	vmsVector swapped_vec;
+	vmsVector vSwapped;
 #endif
 
 gameData.multigame.msg.buf [bufP++] = MULTI_ROBOT_FIRE;					
@@ -405,10 +405,10 @@ bufP += sizeof (vmsVector); // 12
 // --------------------------
 //      Total = 18
 #else
-swapped_vec[X] = (fix)INTEL_INT ((int)vFire->x());
-swapped_vec[Y] = (fix)INTEL_INT ((int)vFire->y());
-swapped_vec[Z] = (fix)INTEL_INT ((int)vFire->z());
-memcpy (gameData.multigame.msg.buf + bufP, &swapped_vec, sizeof (vmsVector)); 
+vSwapped [X] = (fix) INTEL_INT ((int) (*vFire) [X]);
+vSwapped [Y] = (fix) INTEL_INT ((int) (*vFire) [Y]);
+vSwapped [Z] = (fix) INTEL_INT ((int) (*vFire) [Z]);
+memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (vmsVector)); 
 bufP += sizeof (vmsVector);
 #endif
 if (OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
@@ -513,7 +513,7 @@ void MultiSendCreateRobotPowerups (tObject *delObjP)
 	int	i, j = 0;
 	char	h, nContained;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	vmsVector swapped_vec;
+	vmsVector vSwapped;
 #endif
 
 gameData.multigame.msg.buf [bufP++] = MULTI_CREATE_ROBOT_POWERUPS;			
@@ -526,10 +526,10 @@ bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 memcpy (gameData.multigame.msg.buf + bufP, &delObjP->position.vPos, sizeof (vmsVector));
 #else
-swapped_vec[X] = (fix)INTEL_INT ((int) delObjP->position.vPos[X]);
-swapped_vec[Y] = (fix)INTEL_INT ((int) delObjP->position.vPos[Y]);
-swapped_vec[Z] = (fix)INTEL_INT ((int) delObjP->position.vPos[Z]);
-memcpy (gameData.multigame.msg.buf + bufP, &swapped_vec, sizeof (vmsVector));     
+vSwapped[X] = (fix)INTEL_INT ((int) delObjP->position.vPos[X]);
+vSwapped[Y] = (fix)INTEL_INT ((int) delObjP->position.vPos[Y]);
+vSwapped[Z] = (fix)INTEL_INT ((int) delObjP->position.vPos[Z]);
+memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (vmsVector));     
 #endif
 bufP += 12;
 gameData.multigame.create.nLoc = 0;
@@ -626,7 +626,7 @@ ExtractShortPos (&OBJECTS [nRobot], (tShortPos *) (buf+bufP), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + bufP), 9);	
 bufP += 9;
-memcpy ((ubyte *)& (sx()o), (ubyte *) (buf + bufP), 14);
+memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + bufP), 14);
 ExtractShortPos (&OBJECTS [nRobot], &sp, 1);
 #endif
 }

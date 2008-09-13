@@ -1201,7 +1201,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 ExtractShortPos (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], (tShortPos *) (buf+1), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + 1), 9);
-memcpy ((ubyte *)& (sx()o), (ubyte *) (buf + 10), 14);
+memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + 10), 14);
 ExtractShortPos (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], &sp, 1);
 #endif
 if (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].movementType == MT_PHYSICS)
@@ -1599,7 +1599,7 @@ if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
 memcpy (&vNewPos, buf + count, sizeof (vmsVector));
 count += sizeof (vmsVector);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-INTEL_VECTOR (&vNewPos);
+INTEL_VECTOR (vNewPos);
 #endif
 gameData.multigame.create.nLoc = 0;
 nLocalObj = CallObjectCreateEgg (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, 1, OBJ_POWERUP, powerupType);
@@ -2258,7 +2258,7 @@ count += sizeof (tShortPos);
 CreateShortPos (&sp, OBJECTS+nObject, 1);
 memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *) (sp.bytemat), 9);
 count += 9;
-memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *)& (sx()o), 14);
+memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *)& (sp.xo), 14);
 count += 14;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 0);
@@ -2476,22 +2476,22 @@ MultiSendData (gameData.multigame.msg.buf, 2, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendCtrlcenFire (vmsVector *to_goal, int nBestGun, int nObject)
+void MultiSendCtrlcenFire (vmsVector *vGoal, int nBestGun, int nObject)
 {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	vmsVector swapped_vec;
+	vmsVector vSwapped;
 #endif
 	int count = 0;
 
 gameData.multigame.msg.buf [count++] = MULTI_CONTROLCEN_FIRE;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf + count, to_goal, 12);
+memcpy (gameData.multigame.msg.buf + count, vGoal, 12);
 count += 12;
 #else
-swapped_vec[X] = (fix)INTEL_INT ((int)to_goal->x());
-swapped_vec[Y] = (fix)INTEL_INT ((int)to_goal->y());
-swapped_vec[Z] = (fix)INTEL_INT ((int)to_goal->z());
-memcpy (gameData.multigame.msg.buf + count, &swapped_vec, 12);
+vSwapped [X] = (fix) INTEL_INT ((int) (*vGoal) [X]);
+vSwapped [Y] = (fix) INTEL_INT ((int) (*vGoal) [Y]);
+vSwapped [Z] = (fix) INTEL_INT ((int) (*vGoal) [Z]);
+memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
 #endif
 gameData.multigame.msg.buf [count++] = (char)nBestGun;
@@ -2509,7 +2509,7 @@ void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, vmsVect
 	// powerups.
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	vmsVector swapped_vec;
+	vmsVector vSwapped;
 #endif
 	int count = 0;
 
@@ -2528,10 +2528,10 @@ count += 2;
 memcpy (gameData.multigame.msg.buf + count, pos, sizeof (vmsVector));
 count += sizeof (vmsVector);
 #else
-swapped_vec[X] = (fix)INTEL_INT ((int)pos->x());
-swapped_vec[Y] = (fix)INTEL_INT ((int)pos->y());
-swapped_vec[Z] = (fix)INTEL_INT ((int)pos->z());
-memcpy (gameData.multigame.msg.buf + count, &swapped_vec, 12);
+vSwapped[X] = (fix)INTEL_INT ((int) (*pos) [X]);
+vSwapped[Y] = (fix)INTEL_INT ((int) (*pos) [Y]);
+vSwapped[Z] = (fix)INTEL_INT ((int) (*pos) [Z]);
+memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 2);
@@ -3320,7 +3320,7 @@ count += sizeof (tShortPos);
 CreateShortPos (&sp, miss, 1);
 memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *) (sp.bytemat), 9);
 count += 9;
-memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *)& (sx()o), 14);
+memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *) &sp.xo, 14);
 count += 14;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 0);
@@ -3358,7 +3358,7 @@ else if (++fun >= 50)
 ExtractShortPos (gmObjP, (tShortPos *) (buf + count), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + count), 9);
-memcpy ((ubyte *)& (sx()o), (ubyte *) (buf + count + 9), 14);
+memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + count + 9), 14);
 ExtractShortPos (gmObjP, &sp, 1);
 #endif
 count += sizeof (tShortPos);
