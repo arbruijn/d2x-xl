@@ -323,10 +323,10 @@ return 0;
 
 #define ENDING_LEVEL_NUM 	REGISTERED_ENDING_LEVEL_NUM
 
-#define MAX_BRIEFING_SCREENS 60
+#define MAX_tBriefingScreenS 60
 
 #if 0
-tBriefingScreen briefingScreens [MAX_BRIEFING_SCREENS]=
+tBriefingScreen briefingScreens [MAX_tBriefingScreenS]=
  {{"brief03.pcx", 0, 3, 8, 8, 257, 177}}; // default=0!!!
 #else
 tBriefingScreen briefingScreens [] = {
@@ -860,7 +860,6 @@ typedef struct tBriefingInfo {
 	char					*pj;
 	int					ch;
 	int					prevCh;
-	int					bDone;
 	int					bPageDone;
 	int					bRedraw;
 	int					bKeyCheck;
@@ -885,7 +884,38 @@ typedef struct tBriefingInfo {
 	char					szBriefScreen [15];
 	char					szBriefScreenB [15];
 	time_t				t0;
+	int					nFuncRes;
 } tBriefingInfo;
+
+//-----------------------------------------------------------------------------
+
+int WaitForKeyPress (tBriefingInfo& bi)
+{
+	time_t t;
+	int keypress = 0;
+
+bi.bChattering = 0;
+StopBriefingSound (&bi.nPrintingChannel);
+if (!bi.t0)
+	bi.t0 = SDL_GetTicks ();
+do {		//	Wait for a key
+	while ((t = SDL_GetTicks ()) - bi.t0 < 10)
+		;
+	FlashCursor (bi.bFlashingCursor);
+	if (bRobotPlaying)
+		RotateBriefingRobot ();
+	else if (bi.nRobot != -1)
+		ShowSpinningRobotFrame (bi.nRobot);
+	else if (*szBitmapName)
+		ShowBitmapFrame (0);
+	bi.t0 = t;
+	keypress = BriefingInKey ();
+	if (gameStates.ogl.nDrawBuffer == GL_BACK)
+		break;
+	GrUpdate (0);
+	} while (!keypress);
+return keypress;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -1044,37 +1074,14 @@ return 1;
 
 int _S (tBriefingInfo& bi)
 {
-	int keypress = 0;
-	time_t t;
+int keypress = WaitForKeyPress (bi);
 
-bi.bChattering = 0;
-StopBriefingSound (&bi.nPrintingChannel);
-
-if (!bi.t0)
-	bi.t0 = SDL_GetTicks ();
-do {		//	Wait for a key
-	while ((t = SDL_GetTicks ()) - bi.t0 < 10)
-		;
-	FlashCursor (bi.bFlashingCursor);
-	if (bRobotPlaying)
-		RotateBriefingRobot ();
-	else if (bi.nRobot != -1)
-		ShowSpinningRobotFrame (bi.nRobot);
-	else if (*szBitmapName)
-		ShowBitmapFrame (0);
-	bi.t0 = t;
-	keypress = BriefingInKey ();
-	if (gameStates.ogl.nDrawBuffer == GL_BACK)
-		break;
-	GrUpdate (0);
-	} while (!keypress);
 if (!keypress)
 	return -1;
-if (keypress == KEY_ESC) {
-	bi.bFlashingCursor = 0;
-	return 0;
-	}
-return 1;
+if (keypress == KEY_ESC)
+	bi.nFuncRes = 1;
+bi.bFlashingCursor = 0;
+return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -1199,17 +1206,19 @@ return 1;
 
 int HandleInput (tBriefingInfo& bi)
 {
-if (!bi.bRedraw) {
-	bi.bKeyCheck = bi.nDelayCount ? BriefingInKey () : 0;
-	if (bi.bKeyCheck == KEY_ESC)
+if (!bi.bRedraw && bi.nDelayCount) {
+	int keypress = BriefingInKey ();
+	if (!keypress)
+		return 1;
+	if (keypress == KEY_ESC)
 		return 0;
-	if ((bi.bKeyCheck == KEY_SPACEBAR) || (bi.bKeyCheck == KEY_ENTER)) {
+	if ((keypress == KEY_SPACEBAR) || (keypress == KEY_ENTER)) {
 		StopBriefingSound (&bi.nBotChannel);
 		bi.nDelayCount = 0;
 		bi.bRedraw = 1;
 		}
-	if ((bi.bKeyCheck == KEY_ALTED + KEY_ENTER) ||
-		 (bi.bKeyCheck == KEY_ALTED + KEY_PADENTER))
+	if ((keypress == KEY_ALTED + KEY_ENTER) ||
+		 (keypress == KEY_ALTED + KEY_PADENTER))
 		GrToggleFullScreen ();
 	}
 return 1;
@@ -1221,33 +1230,10 @@ int HandleNewPage (tBriefingInfo& bi)
 {
 if (!bi.bNewPage && (briefingTextY <= bi.bsP->text_uly + bi.bsP->text_height))
 	return 1;
-	
-	int keypress = 0;
-	time_t t;
-
 bi.bNewPage = 0;
-StopBriefingSound (&bi.nPrintingChannel);
-bi.bChattering = 0;
-if (!bi.t0)
-	bi.t0 = SDL_GetTicks ();
-for (;;) {		//	Wait for a key
-	while ((t = SDL_GetTicks ()) - bi.t0 < 10)
-		;
-	FlashCursor (bi.bFlashingCursor);
-	if (bRobotPlaying)
-		RotateBriefingRobot ();
-	else if (bi.nRobot != -1)
-		ShowSpinningRobotFrame (bi.nRobot);
-	else if (*szBitmapName)
-		ShowBitmapFrame (0);
-	bi.t0 = t;
-	if ((keypress = BriefingInKey ()))
-		break;
-	if (gameStates.ogl.nDrawBuffer == GL_BACK)
-		return -1;
-	GrUpdate (0);
-	}
-
+int keypress = WaitForKeyPress (bi);
+if (!keypress)
+	return -1;
 if (bRobotPlaying)
 	DeInitRobotMovie ();
 bRobotPlaying = 0;
@@ -1312,34 +1298,447 @@ static tBriefingHandlerInfo briefingHandlers2 [] = {
 
 //-----------------------------------------------------------------------------
 // Return true if message got aborted by user (pressed ESC), else return false.
+
+#if 0
+
+int ShowBriefingMessage (int nScreen, char *message, int nLevel)
+{
+	static int nTabStop=0;
+
+	tBriefingScreen	*bsp, briefBuf;
+	int			prevCh=-1;
+	int			ch, done=0, i;
+	int			delayCount = KEY_DELAY_DEFAULT;
+	int			key_check;
+	int			nRobot=-1;
+	int			rval=0;
+	int			bFlashingCursor=0;
+	int			bNewPage=0, bGotZ=0;
+	int			nHumChannel = -1, nPrintingChannel = -1, nBotChannel = -1;
+	int			LineAdjustment=1;
+	int			bHaveScreen = 0;
+	char			*pi, *pj;
+	int			x, y, bRedraw, bPageDone;
+	char			spinRobotName []="rba.mve", kludge;  // matt don't change this!
+	char			szBriefScreen [15], szBriefScreenB [15];
+	char			bDumbAdjust = 0;
+	char			chattering = 0;
+	short 		nBot = 0;
+	//char			*pEnd = strstr (message, "$S");
+	int			bOnlyRobots, bExtraSounds;
+	time_t		t, t0 = 0;
+
+szBitmapName [0] = 0;
+nCurrentColor = 0;
+bRobotPlaying = 0;
+
+//OglDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
+InitMovieBriefing ();
+
+bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
+				  (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
+bOnlyRobots = gameStates.app.bHaveExtraMovies && bExtraSounds && (nLevel == 1) && (nScreen < 4);
+if (!gameData.songs.bPlaying)
+	nHumChannel = StartBriefingHum (nHumChannel, nLevel, nScreen, bExtraSounds);
+
+GrSetCurFont (GAME_FONT);
+
+briefBuf = briefingScreens [nScreen];
+bsp = &briefBuf;
+if (gameStates.app.bD1Mission)
+	bGotZ = 1;
+InitCharPos (bsp, gameStates.app.bD1Mission);
+
+x = briefingTextX;
+y = briefingTextY;
+*szBriefScreen = *szBriefScreenB = '\0';
+if (bOnlyRobots) {
+	while (message && !PageHasRobot (message))
+		message = SkipPage (message, &briefBuf, &x, &y, &nScreen);
+	if (!message)
+		goto done;
+	}
+pi = pj = message;
+
+redrawPage:
+
+while (!done) {
+	pj = message;
+	GrUpdate (0);
+	if (gameStates.ogl.nDrawBuffer == GL_FRONT)
+		pi = message;
+	else {
+		//StopBriefingSound (&nPrintingChannel);
+		message = pi;
+		briefingTextX = x;
+		briefingTextY = y;
+		//if (bHaveScreen)
+		LoadBriefingScreen (nScreen);
+		briefBuf = briefingScreens [nScreen];
+		bsp = &briefBuf;
+		InitCharPos (bsp, 1);
+		}
+
+	bRedraw = 1;
+	bPageDone = 0;
+	bNewPage = 0;
+	while (bRedraw) {
+		ch = *message++;
+		if (ch == '$') {
+			ch = *message++;
+			if (ch == 'D') {
+				nScreen = DefineBriefingBox (&message, &briefBuf);
+		    	//LoadNewBriefingScreen (briefingScreens [nScreen].bs_name);
+
+				bsp = &briefBuf;
+				x = briefingTextX;
+				y = briefingTextY;
+				LineAdjustment = 0;
+				prevCh = 10;                                   // read to eoln
+				}
+			else if (ch == 'U') {
+				nScreen = GetMessageNum (&message);
+				briefBuf = briefingScreens [nScreen];
+				bsp = &briefBuf;
+				InitCharPos (bsp, 1);
+				x = briefingTextX;
+				y = briefingTextY;
+				prevCh = 10;                                   // read to eoln
+				}
+			else if (ch == 'C') {
+				nCurrentColor = GetMessageNum (&message) - 1;
+				Assert ((nCurrentColor >= 0) && (nCurrentColor < MAX_BRIEFING_COLORS));
+				prevCh = 10;
+				}
+			else if (ch == 'F') {     // toggle flashing cursor
+				bFlashingCursor = !bFlashingCursor;
+				prevCh = 10;
+				while (*message != 10)
+					message++;
+				}
+			else if (ch == 'T') {
+				nTabStop = GetMessageNum (&message) *(1 + gameStates.menus.bHires);
+				prevCh = 10;							//	read to eoln
+				}
+			else if (ch == 'R') {
+				if (message > pj) {
+					if (robotCanvP != NULL) {
+						D2_FREE (robotCanvP);
+						robotCanvP = NULL;
+						}
+					if (bRobotPlaying) {
+						DeInitRobotMovie ();
+						bRobotPlaying = 0;
+						}
+					InitSpinningRobot ();
+					if (!gameData.songs.bPlaying) {
+						nBotChannel = StartExtraBotSound (nBotChannel, (short) nLevel, nBot++);
+						if (nBotChannel >= 0)
+							StopBriefingSound (&nHumChannel);
+						}
+					}
+				if (gameStates.app.bD1Mission) {
+					nRobot = GetMessageNum (&message);
+					}
+				else {
+					kludge = *message++;
+					spinRobotName [2] = kludge; // ugly but proud
+					if (message > pj) {
+						gsrCanvas *curCanvSave = grdCurCanv;
+						grdCurCanv = robotCanvP;
+						bRobotPlaying = InitRobotMovie (spinRobotName);
+						grdCurCanv = curCanvSave;
+						if (bRobotPlaying) {
+							RotateBriefingRobot ();
+							DoBriefingColorStuff ();
+						}
+					}
+				}
+				prevCh = 10;                           // read to eoln
+				}
+			else if (ch == 'N') {
+				if (message > pj) {
+				//--grsBitmap *bmP;
+					if (robotCanvP != NULL)
+						D2_FREE (robotCanvP);
+					StopBriefingSound (&nBotChannel);
+					GetMessageName (&message, szBitmapName);
+					strcat (szBitmapName, "#0");
+					nAnimatingBitmapType = 0;
+					}
+				prevCh = 10;
+				}
+			else if (ch == 'O') {
+				if (message > pj) {
+					if (robotCanvP != NULL)
+						D2_FREE (robotCanvP);
+					GetMessageName (&message, szBitmapName);
+					strcat (szBitmapName, "#0");
+					nAnimatingBitmapType = 1;
+					}
+				prevCh = 10;
+				}
+			else if (ch == 'A') {
+				LineAdjustment = 1 - LineAdjustment;
+				}
+			else if (ch == 'Z') {
+				bGotZ = 1;
+				bDumbAdjust = 1;
+				i = 0;
+				while ((szBriefScreen [i] = *message) != '\n') {
+					i++;
+					message++;
+					}
+				szBriefScreen [i] = 0;
+				while (*message != 10)    //  Get and drop eoln
+					message++;
+				for (i = 0; szBriefScreen [i] != '.'; i++)
+					szBriefScreenB [i] = szBriefScreen [i];
+				memcpy (szBriefScreenB + i, "b.pcx", sizeof ("b.pcx"));
+				i += sizeof ("b.pcx");
+				if ((gameStates.menus.bHires && CFExist (szBriefScreenB, gameFolders.szDataDir, 0)) || 
+					 !CFExist (szBriefScreen, gameFolders.szDataDir, 0))
+					LoadNewBriefingScreen (szBriefScreenB, message <= pj);
+				else
+					LoadNewBriefingScreen (szBriefScreen, message <= pj);
+				bHaveScreen = 1;
+				}
+			else if (ch == 'B') {
+				char        bitmap_name [32];
+				grsBitmap  guy_bitmap;
+				int         iff_error;
+
+				if (message > pj) {
+					if (robotCanvP != NULL) {
+						D2_FREE (robotCanvP);
+						robotCanvP=NULL;
+						}
+					}
+				GetMessageName (&message, bitmap_name);
+				strcat (bitmap_name, ".bbm");
+				memset (&guy_bitmap, 0, sizeof (guy_bitmap));
+				iff_error = iff_read_bitmap (bitmap_name, &guy_bitmap, BM_LINEAR);
+				Assert (iff_error == IFF_NO_ERROR);
+
+				ShowBriefingBitmap (&guy_bitmap);
+				D2_FREE (guy_bitmap.bmTexBuf);
+				prevCh = 10;
+				}
+			else if (ch == 'S') {
+				int keypress = 0;
+
+				chattering = 0;
+				StopBriefingSound (&nPrintingChannel);
+
+				if (!t0)
+					t0 = SDL_GetTicks ();
+				do {		//	Wait for a key
+					while ((t = SDL_GetTicks ()) - t0 < 10)
+						;
+					FlashCursor (bFlashingCursor);
+					if (bRobotPlaying)
+						RotateBriefingRobot ();
+					else if (nRobot != -1)
+						ShowSpinningRobotFrame (nRobot);
+					else if (*szBitmapName)
+						ShowBitmapFrame (0);
+					t0 = t;
+					keypress = BriefingInKey ();
+					if (gameStates.ogl.nDrawBuffer == GL_BACK)
+						break;
+					GrUpdate (0);
+					} while (!keypress);
+				if (keypress) {
+#ifdef _DEBUG
+					if (keypress == KEY_BACKSP)
+						Int3 ();
+					else
+#endif
+						{
+						if (keypress == KEY_ESC)
+							rval = 1;
+						bFlashingCursor = 0;
+						goto done;
+						}
+					}
+				else
+					goto redrawPage;
+				}
+			else if (ch == 'P') {		//	New page.
+				if (!bGotZ) {
+					Int3 (); // Hey ryan!!!!You gotta load a screen before you start
+					        // printing to it!You know, $Z !!!
+					//if (message > pj)
+		  			LoadNewBriefingScreen (gameStates.menus.bHires ? (char *) "end01b.pcx" : (char *) "end01.pcx", message <= pj);
+					bHaveScreen = 1;
+					}
+				bNewPage = 1;
+				while (*message != 10)
+					message++;	//	drop carriage return after special escape sequence
+				message++;
+				prevCh = 10;
+				//GrUpdate (0);
+				}
+			}
+		else if (ch == '\t') {		//	Tab
+			if (briefingTextX - bsp->text_ulx < nTabStop)
+				briefingTextX = bsp->text_ulx + nTabStop;
+			}
+		else if ((ch == ';') && (prevCh == 10)) {
+			while (*message != 10)
+				message++;
+			prevCh = 10;
+			}
+		else if (ch == '\\') {
+			prevCh = ch;
+			}
+		else if (ch == 10) {
+			if (prevCh != '\\') {
+				prevCh = ch;
+				if (bDumbAdjust == 0)
+					briefingTextY += (8*(gameStates.menus.bHires+1));
+				else
+					bDumbAdjust--;
+				briefingTextX = bsp->text_ulx;
+				if (briefingTextY > bsp->text_uly + bsp->text_height) {
+					LoadBriefingScreen (nScreen);
+					briefingTextX = bsp->text_ulx;
+					briefingTextY = bsp->text_uly;
+					}
+				}
+			else {
+				if (*message == 13)		//Can this happen? Above says ch==10
+					message++;
+				prevCh = ch;
+				}
+			}
+		else {
+			if (!bGotZ) {
+				Int3 (); // Hey ryan!!!!You gotta load a screen before you start
+				        // printing to it!You know, $Z !!!
+				//if (message > pj)
+					LoadNewBriefingScreen (gameStates.menus.bHires ? (char *) "end01b.pcx" : (char *) "end01.pcx", message <= pj);
+				}
+			prevCh = ch;
+			bRedraw = !delayCount || (message <= pj);
+			if (!bRedraw) {
+		 		nPrintingChannel = StartBriefingSound (nPrintingChannel, SOUND_BRIEFING_PRINTING, F1_0, NULL);
+				chattering = 1;
+				}
+			briefingTextX += PrintCharDelayed ((char) ch, delayCount, nRobot, bFlashingCursor, bRedraw);
+			}
+
+		//	Check for Esc -> abort.
+		if (!bRedraw) {
+			key_check = delayCount ? BriefingInKey () : 0;
+			if (key_check == KEY_ESC) {
+				rval = 1;
+				done = 1;
+				goto done;
+				}
+			if ((key_check == KEY_SPACEBAR) || (key_check == KEY_ENTER)) {
+				StopBriefingSound (&nBotChannel);
+				delayCount = 0;
+				bRedraw = 1;
+				}
+			if ((key_check == KEY_ALTED+KEY_ENTER) ||
+				 (key_check == KEY_ALTED+KEY_PADENTER))
+				GrToggleFullScreen ();
+			}
+		if (briefingTextX > bsp->text_ulx + bsp->text_width) {
+			briefingTextX = bsp->text_ulx;
+			briefingTextY += bsp->text_uly;
+			}
+
+		if (bNewPage || (briefingTextY > bsp->text_uly + bsp->text_height)) {
+			int		keypress = 0;
+
+			bNewPage = 0;
+			StopBriefingSound (&nPrintingChannel);
+			chattering = 0;
+			{
+				if (!t0)
+					t0 = SDL_GetTicks ();
+				do {		//	Wait for a key
+					while ((t = SDL_GetTicks ()) - t0 < 10)
+						;
+					FlashCursor (bFlashingCursor);
+					if (bRobotPlaying)
+						RotateBriefingRobot ();
+					else if (nRobot != -1)
+						ShowSpinningRobotFrame (nRobot);
+					if (*szBitmapName)
+						ShowBitmapFrame (0);
+					t0 = t;
+					keypress = BriefingInKey ();
+					if (gameStates.ogl.nDrawBuffer == GL_BACK)
+						break;
+ 					GrUpdate (0);
+					} while (!keypress);
+				if (keypress) {
+					if (bRobotPlaying)
+						DeInitRobotMovie ();
+					bRobotPlaying = 0;
+					nRobot = -1;
+#ifdef _DEBUG
+					if (keypress == KEY_BACKSP)
+						Int3 ();
+#endif
+					if (keypress == KEY_ESC) {
+						rval = 1;
+						goto done;
+						}
+					else {
+						if (bOnlyRobots) {
+							*szBriefScreen = *szBriefScreenB = '\0';
+							while (message && !PageHasRobot (message))
+								message = SkipPage (message, &briefBuf, &x, &y, &nScreen);
+							if (!message)
+								goto done;
+							}
+ 						pi = message;
+						if (gameStates.ogl.nDrawBuffer == GL_FRONT) {
+							LoadBriefingScreen (nScreen);
+							GrUpdate (0);
+							}
+						briefingTextX = bsp->text_ulx;
+						briefingTextY = bsp->text_uly;
+						delayCount = KEY_DELAY_DEFAULT;
+						goto redrawPage;
+						}
+					}
+				else
+					goto redrawPage;
+				}
+		}
+	}
+}
+
+done:
+
+//OglDrawBuffer (gameStates.ogl.nDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT), 1);
+if (bRobotPlaying) {
+	DeInitRobotMovie ();
+	bRobotPlaying = 0;
+	}
+if (robotCanvP)
+	D2_FREE (robotCanvP);
+if (!gameData.songs.bPlaying)
+	StopBriefingSound (&nHumChannel);
+StopBriefingSound (&nPrintingChannel);
+StopBriefingSound (&nBotChannel);
+return rval;
+}
+
+#else
+
 int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 {
 	tBriefingInfo			bi = {message, nScreen, nLevel, {"", 0, 0, 0, 0, 0, 0}, NULL, NULL, NULL, 
-										-1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, 1, 
-										KEY_DELAY_DEFAULT, -1, 0, 0, 0, "rba.mve", "", "", 0};
+										-1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, 1, 
+										KEY_DELAY_DEFAULT, -1, 0, 0, 0, "rba.mve", "", "", 0, 0};
 	tBriefingHandlerInfo	*bhP;
-	int						h, i, funcRes = 0;
-#if 0
-	int			prevCh = -1;
-	int			ch, bDone = 0, i;
-	int			nDelayCount = KEY_DELAY_DEFAULT;
-	int			bKeyCheck;
-	int			nRobot = -1;
-	int			funcRes = 0;
-	int			bFlashingCursor = 0;
-	int			bNewPage = 0, bGotZ = 0;
-	int			nHumChannel = -1, nPrintingChannel = -1, nBotChannel = -1;
-	int			nLineAdjustment = 1;
-	int			bHaveScreen = 0;
-	int			x, y, bi.bRedraw;
-	char			bi.szSpinningRobot [] = "rba.mve", kludge;  // matt don't change this!
-	char			szBriefScreen [15], szBriefScreenB [15];
-	char			bDumbAdjust = 0;
-	char			bi.bChattering = 0;
-	short 		nBotSig = 0;
-	//char			*pEnd = strstr (bi.message, "$S");
-	int			bOnlyRobots, bExtraSounds;
-#endif
+	int						h, i;
 
 szBitmapName [0] = 0;
 nCurrentColor = 0;
@@ -1375,7 +1774,7 @@ bi.pi = bi.pj = bi.message;
 
 redrawPage:
 
-while (!bi.bDone) {
+for (;;) {
 	bi.pj = bi.message;
 	GrUpdate (0);
 	if (gameStates.ogl.nDrawBuffer == GL_FRONT)
@@ -1401,7 +1800,7 @@ while (!bi.bDone) {
 					h = bhP->handlerP (bi);
 					if (h < 0)
 						goto redrawPage;
-					if (h = 0)
+					if (!h)
 						goto done;
 					break;
 					}
@@ -1414,7 +1813,7 @@ while (!bi.bDone) {
 					}
 			}
 		if (!HandleInput (bi)) {
-			funcRes = 1;
+			bi.nFuncRes = 1;
 			goto done;
 			}
 
@@ -1427,7 +1826,7 @@ while (!bi.bDone) {
 		if (h < 0)
 			goto redrawPage;
 		if (!h) {
-			funcRes = 1;
+			bi.nFuncRes = 1;
 			goto done;
 			}
 		}
@@ -1445,8 +1844,10 @@ if (!gameData.songs.bPlaying)
 	StopBriefingSound (&bi.nHumChannel);
 StopBriefingSound (&bi.nPrintingChannel);
 StopBriefingSound (&bi.nBotChannel);
-return funcRes;
+return bi.nFuncRes;
 }
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Return a pointer to the start of text for screen #nScreen.
@@ -1683,7 +2084,7 @@ if (gameStates.app.bD1Mission) {
 			}
 		}
 	if (!bAbortBriefing) {
-		for (nCurBriefingScreen = 0; nCurBriefingScreen < MAX_BRIEFING_SCREENS; nCurBriefingScreen++)
+		for (nCurBriefingScreen = 0; nCurBriefingScreen < MAX_tBriefingScreenS; nCurBriefingScreen++)
 			if (briefingScreens [nCurBriefingScreen].nLevel == nLevel)
 				if (ShowBriefingScreen (nCurBriefingScreen, 0, (short) nLevel))
 					break;
@@ -1705,7 +2106,7 @@ int DefineBriefingBox (char **buf, tBriefingScreen *pBriefBuf)
 	int i = 0, n = GetNewMessageNum (buf);
 	char name [20];
 
-Assert (n < MAX_BRIEFING_SCREENS);
+Assert (n < MAX_tBriefingScreenS);
 while (**buf != ' ') {
 	name [i++] = **buf;
 		(*buf)++;
