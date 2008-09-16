@@ -384,13 +384,15 @@ static inline int G3FaceIsTransparent (grsFace *faceP, grsBitmap *bmBot, grsBitm
 {
 if (!bmBot)
 	return 0;
+if (faceP->bTransparent)
+	return 1;
 if (!(bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU)))
 	return 0;
 if (!bmTop)
 	return 1;
-if (!(bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT))
-	return 0;
-return faceP->bTransparent;
+if (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)
+	return 1;
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -671,7 +673,7 @@ if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
-	bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
+bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)
