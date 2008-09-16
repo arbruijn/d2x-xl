@@ -428,11 +428,16 @@ if (!AIMultiplayerAwareness (objP, angerLevel)) {
 		}
 	return 1;
 	}
-if (!gameData.ai.nPlayerVisibility &&
-	 (((gameOpts->gameplay.nAIAggressivity - 1) * F1_0 < gameData.time.xGame - siP->ailP->timePlayerSeen) ||
-	  (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || 
-	  (siP->ailP->mode != AIM_FOLLOW_PATH) || 
-	  (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg))) {
+if (gameOpts->gameplay.nAIAggressivity && (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {	// destination reached
+	siP->ailP->mode = AIM_IDLING;
+	return 1;
+	}
+if (!gameData.ai.nPlayerVisibility &&	// lost player out of sight
+	 (!gameOpts->gameplay.nAIAggressivity ||	// standard mode: stop immediately
+	  (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg) ||	// destination reached
+	  ((gameOpts->gameplay.nAIAggressivity - 1) * F1_0 < gameData.time.xGame - siP->ailP->timePlayerSeen) ||	// too much time passed since player was lost out of sight
+	  (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) ||		// not trying to return fire (any more)
+	  (siP->ailP->mode != AIM_FOLLOW_PATH))) {	// not in chase mode
 	siP->ailP->mode = AIM_IDLING;
 	return 1;
 	}
@@ -1022,16 +1027,15 @@ if (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) {
 	if (d_rand () * (gameData.ai.nOverallAgitation - 40) <= F1_0 * 5)
 		return 0;
 	}
-if ((siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg) && gameOpts->gameplay.nAIAggressivity) {
+if (gameOpts->gameplay.nAIAggressivity && (siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {
 #ifdef _DEBUG
 	if (OBJ_IDX (objP) == nDbgObj)
 		nDbgObj = nDbgObj;
 #endif
-#if 1
-	if (objP->nSegment == siP->ailP->nGoalSegment)
+	if (objP->nSegment == siP->ailP->nGoalSegment) {
 		siP->ailP->mode = AIM_IDLING;
-#endif
-	return 0;
+		return 0;
+		}
 	}
 CreatePathToPlayer (objP, 4 + gameData.ai.nOverallAgitation / 8 + gameStates.app.nDifficultyLevel, 1);
 return 1;

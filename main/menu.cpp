@@ -2468,7 +2468,7 @@ do {
 		optSkybox = nOptions++;
 		}
 	else
-		optGrayout =
+		optGrayOut =
 		optSmoke =
 		optLightnings =
 		optCoronas =
