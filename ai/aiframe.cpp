@@ -430,7 +430,7 @@ if (!AIMultiplayerAwareness (objP, angerLevel)) {
 	}
 if (gameOpts->gameplay.nAIAggressivity && (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {	// destination reached
 	siP->ailP->mode = AIM_IDLING;
-	return 1;
+	return 0;
 	}
 if (!gameData.ai.nPlayerVisibility &&	// lost player out of sight
 	 (!gameOpts->gameplay.nAIAggressivity ||	// standard mode: stop immediately
@@ -439,7 +439,7 @@ if (!gameData.ai.nPlayerVisibility &&	// lost player out of sight
 	  (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) ||		// not trying to return fire (any more)
 	  (siP->ailP->mode != AIM_FOLLOW_PATH))) {	// not in chase mode
 	siP->ailP->mode = AIM_IDLING;
-	return 1;
+	return 0;
 	}
 AIFollowPath (objP, gameData.ai.nPlayerVisibility, siP->nPrevVisibility, &gameData.ai.vVecToPlayer);
 if (aiP->GOAL_STATE != AIS_FLINCH)
@@ -1021,12 +1021,17 @@ if ((siP->aiP->behavior == AIB_SNIPE) || (siP->aiP->behavior == AIB_RUN_FROM) ||
 	return 0;
 if (gameData.ai.nOverallAgitation < 71)
 	return 0;
-if (!gameOpts->gameplay.nAIAggressivity || (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode == AIM_FOLLOW_PATH)) {
+//if (!gameOpts->gameplay.nAIAggressivity || (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode == AIM_FOLLOW_PATH)) 
+	{
 	if ((gameData.ai.xDistToPlayer >= MAX_REACTION_DIST) || (d_rand () >= gameData.time.xFrame/4))
 		return 0;
 	if (d_rand () * (gameData.ai.nOverallAgitation - 40) <= F1_0 * 5)
 		return 0;
 	}
+#ifdef _DEBUG
+if (OBJ_IDX (objP) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 if (gameOpts->gameplay.nAIAggressivity && (siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {
 #ifdef _DEBUG
 	if (OBJ_IDX (objP) == nDbgObj)
@@ -1347,7 +1352,7 @@ if (((si.aiP->GOAL_STATE == AIS_FLINCH) || (si.ailP->playerAwarenessType == PA_R
 	si.aiP->GOAL_STATE = AIS_FIRE;
 	}
 if ((si.aiP->behavior < MIN_BEHAVIOR) || (si.aiP->behavior > MAX_BEHAVIOR))
-		si.aiP->behavior = AIB_NORMAL;
+	si.aiP->behavior = AIB_NORMAL;
 //Assert (objP->id < gameData.bots.nTypes [gameStates.app.bD1Data]);
 if (AINextFireHandler (objP, &si))
 	goto funcExit;
