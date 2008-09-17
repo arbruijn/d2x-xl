@@ -126,6 +126,127 @@ tD1ExtraBotSound extraBotSounds [] = {
 
 //-----------------------------------------------------------------------------
 
+#define BRIEFING_SECRET_NUM 31          //  This must correspond to the first secret level which must come at the end of the list.
+#define BRIEFING_OFFSET_NUM 4           // This must correspond to the first level screen (ie, past the bald guy briefing screens)
+
+#define	SHAREWARE_ENDING_LEVEL_NUM  0x7f
+#define	REGISTERED_ENDING_LEVEL_NUM 0x7e
+
+#define ENDING_LEVEL_NUM 	REGISTERED_ENDING_LEVEL_NUM
+
+tBriefingScreen briefingScreens [] = {
+	{ "brief01.pcx",   0,  1,  13, 140, 290,  59 }, 
+	{ "brief02.pcx",   0,  2,  27,  34, 257, 177 }, 
+	{ "brief03.pcx",   0,  3,  20,  22, 257, 177 }, 
+	{ "brief02.pcx",   0,  4,  27,  34, 257, 177 }, 
+
+	{ "moon01.pcx",    1,  5,  10,  10, 300, 170 }, // level 1
+	{ "moon01.pcx",    2,  6,  10,  10, 300, 170 }, // level 2
+	{ "moon01.pcx",    3,  7,  10,  10, 300, 170 }, // level 3
+
+	{ "venus01.pcx",   4,  8,  15, 15, 300,  200 }, // level 4
+	{ "venus01.pcx",   5,  9,  15, 15, 300,  200 }, // level 5
+
+	{ "brief03.pcx",   6, 10,  20,  22, 257, 177 }, 
+	{ "merc01.pcx",    6, 11,  10, 15, 300, 200 },  // level 6
+	{ "merc01.pcx",    7, 12,  10, 15, 300, 200 },  // level 7
+
+	{ "brief03.pcx",   8, 13,  20,  22, 257, 177 }, 
+	{ "mars01.pcx",    8, 14,  10, 100, 300,  200 }, // level 8
+	{ "mars01.pcx",    9, 15,  10, 100, 300,  200 }, // level 9
+	{ "brief03.pcx",  10, 16,  20,  22, 257, 177 }, 
+	{ "mars01.pcx",   10, 17,  10, 100, 300,  200 }, // level 10
+
+	{ "jup01.pcx",    11, 18,  10, 40, 300,  200 }, // level 11
+	{ "jup01.pcx",    12, 19,  10, 40, 300,  200 }, // level 12
+	{ "brief03.pcx",  13, 20,  20,  22, 257, 177 }, 
+	{ "jup01.pcx",    13, 21,  10, 40, 300,  200 }, // level 13
+	{ "jup01.pcx",    14, 22,  10, 40, 300,  200 }, // level 14
+
+	{ "saturn01.pcx", 15, 23,  10, 40, 300,  200 }, // level 15
+	{ "brief03.pcx",  16, 24,  20,  22, 257, 177 }, 
+	{ "saturn01.pcx", 16, 25,  10, 40, 300,  200 }, // level 16
+	{ "brief03.pcx",  17, 26,  20,  22, 257, 177 }, 
+	{ "saturn01.pcx", 17, 27,  10, 40, 300,  200 }, // level 17
+
+	{ "uranus01.pcx", 18, 28,  100, 100, 300,  200 }, // level 18
+	{ "uranus01.pcx", 19, 29,  100, 100, 300,  200 }, // level 19
+	{ "uranus01.pcx", 20, 30,  100, 100, 300,  200 }, // level 20
+	{ "uranus01.pcx", 21, 31,  100, 100, 300,  200 }, // level 21
+
+	{ "neptun01.pcx", 22, 32,  10, 20, 300,  200 }, // level 22
+	{ "neptun01.pcx", 23, 33,  10, 20, 300,  200 }, // level 23
+	{ "neptun01.pcx", 24, 34,  10, 20, 300,  200 }, // level 24
+
+	{ "pluto01.pcx",  25, 35,  10, 20, 300,  200 }, // level 25
+	{ "pluto01.pcx",  26, 36,  10, 20, 300,  200 }, // level 26
+	{ "pluto01.pcx",  27, 37,  10, 20, 300,  200 }, // level 27
+
+	{ "aster01.pcx",  -1, 38,  10, 90, 300,  200 }, // secret level -1
+	{ "aster01.pcx",  -2, 39,  10, 90, 300,  200 }, // secret level -2
+	{ "aster01.pcx",  -3, 40,  10, 90, 300,  200 }, // secret level -3
+
+	{ "end01.pcx",   SHAREWARE_ENDING_LEVEL_NUM,  1,  23, 40, 320, 200 },   // shareware end
+	{ "end02.pcx",   REGISTERED_ENDING_LEVEL_NUM,  1,  5, 5, 300, 200 },    // registered end
+	{ "end01.pcx",   REGISTERED_ENDING_LEVEL_NUM,  2,  23, 40, 320, 200 },  // registered end
+	{ "end03.pcx",   REGISTERED_ENDING_LEVEL_NUM,  3,  5, 5, 300, 200 }    // registered end
+
+};
+
+#define MAX_BRIEFING_SCREENS (sizeofa (briefingScreens))
+
+int	briefingTextX, briefingTextY;
+
+gsrCanvas	*robotCanvP = NULL;
+vmsAngVec	vRobotAngles;
+
+char    szBitmapName [32] = "";
+#define EXIT_DOOR_MAX   14
+#define OTHER_THING_MAX 10      //  Adam: This is the nFrameber of frames in your new animating thing.
+#define DOOR_DIV_INIT   6
+sbyte   nDoorDir = 1, nDoorDivCount = 0, nAnimatingBitmapType = 0;
+
+//-----------------------------------------------------------------------------
+
+typedef struct tBriefingInfo {
+	char					*message;
+	int					nScreen;
+	int					nLevel;
+	tBriefingScreen	briefBuf;
+	tBriefingScreen	*bsP;
+	char					*pi;
+	char					*pj;
+	int					ch;
+	int					prevCh;
+	int					bPageDone;
+	int					bRedraw;
+	int					bKeyCheck;
+	int					bFlashingCursor;
+	int					bNewPage;
+	int					bHaveScreen;
+	int					bDumbAdjust;
+	int					bChattering;
+	int					bGotZ;
+	int					bOnlyRobots;
+	int					bExtraSounds;
+	int					nHumChannel;
+	int					nPrintingChannel;
+	int					nBotChannel;
+	int					nLineAdjustment;
+	int					nDelayCount;
+	int					nRobot;
+	int					nBotSig;
+	int					x;
+	int					y;
+	char					szSpinningRobot [8];
+	char					szBriefScreen [15];
+	char					szBriefScreenB [15];
+	time_t				t0;
+	int					nFuncRes;
+} tBriefingInfo;
+
+//-----------------------------------------------------------------------------
+
 int StartBriefingSound (int c, short nSound, fix nVolume, const char *pszWAV)
 {
 if (c < 0) {
@@ -312,94 +433,6 @@ if (GrPaletteFadeOut (NULL, 32, bAllowKeys))
 D2_FREE (title_bm.bmTexBuf);
 return 0;
 }
-
-//-----------------------------------------------------------------------------
-
-#define BRIEFING_SECRET_NUM 31          //  This must correspond to the first secret level which must come at the end of the list.
-#define BRIEFING_OFFSET_NUM 4           // This must correspond to the first level screen (ie, past the bald guy briefing screens)
-
-#define	SHAREWARE_ENDING_LEVEL_NUM  0x7f
-#define	REGISTERED_ENDING_LEVEL_NUM 0x7e
-
-#define ENDING_LEVEL_NUM 	REGISTERED_ENDING_LEVEL_NUM
-
-#define MAX_tBriefingScreenS 60
-
-#if 0
-tBriefingScreen briefingScreens [MAX_tBriefingScreenS]=
- {{"brief03.pcx", 0, 3, 8, 8, 257, 177}}; // default=0!!!
-#else
-tBriefingScreen briefingScreens [] = {
-	{ "brief01.pcx",   0,  1,  13, 140, 290,  59 }, 
-	{ "brief02.pcx",   0,  2,  27,  34, 257, 177 }, 
-	{ "brief03.pcx",   0,  3,  20,  22, 257, 177 }, 
-	{ "brief02.pcx",   0,  4,  27,  34, 257, 177 }, 
-
-	{ "moon01.pcx",    1,  5,  10,  10, 300, 170 }, // level 1
-	{ "moon01.pcx",    2,  6,  10,  10, 300, 170 }, // level 2
-	{ "moon01.pcx",    3,  7,  10,  10, 300, 170 }, // level 3
-
-	{ "venus01.pcx",   4,  8,  15, 15, 300,  200 }, // level 4
-	{ "venus01.pcx",   5,  9,  15, 15, 300,  200 }, // level 5
-
-	{ "brief03.pcx",   6, 10,  20,  22, 257, 177 }, 
-	{ "merc01.pcx",    6, 11,  10, 15, 300, 200 },  // level 6
-	{ "merc01.pcx",    7, 12,  10, 15, 300, 200 },  // level 7
-
-	{ "brief03.pcx",   8, 13,  20,  22, 257, 177 }, 
-	{ "mars01.pcx",    8, 14,  10, 100, 300,  200 }, // level 8
-	{ "mars01.pcx",    9, 15,  10, 100, 300,  200 }, // level 9
-	{ "brief03.pcx",  10, 16,  20,  22, 257, 177 }, 
-	{ "mars01.pcx",   10, 17,  10, 100, 300,  200 }, // level 10
-
-	{ "jup01.pcx",    11, 18,  10, 40, 300,  200 }, // level 11
-	{ "jup01.pcx",    12, 19,  10, 40, 300,  200 }, // level 12
-	{ "brief03.pcx",  13, 20,  20,  22, 257, 177 }, 
-	{ "jup01.pcx",    13, 21,  10, 40, 300,  200 }, // level 13
-	{ "jup01.pcx",    14, 22,  10, 40, 300,  200 }, // level 14
-
-	{ "saturn01.pcx", 15, 23,  10, 40, 300,  200 }, // level 15
-	{ "brief03.pcx",  16, 24,  20,  22, 257, 177 }, 
-	{ "saturn01.pcx", 16, 25,  10, 40, 300,  200 }, // level 16
-	{ "brief03.pcx",  17, 26,  20,  22, 257, 177 }, 
-	{ "saturn01.pcx", 17, 27,  10, 40, 300,  200 }, // level 17
-
-	{ "uranus01.pcx", 18, 28,  100, 100, 300,  200 }, // level 18
-	{ "uranus01.pcx", 19, 29,  100, 100, 300,  200 }, // level 19
-	{ "uranus01.pcx", 20, 30,  100, 100, 300,  200 }, // level 20
-	{ "uranus01.pcx", 21, 31,  100, 100, 300,  200 }, // level 21
-
-	{ "neptun01.pcx", 22, 32,  10, 20, 300,  200 }, // level 22
-	{ "neptun01.pcx", 23, 33,  10, 20, 300,  200 }, // level 23
-	{ "neptun01.pcx", 24, 34,  10, 20, 300,  200 }, // level 24
-
-	{ "pluto01.pcx",  25, 35,  10, 20, 300,  200 }, // level 25
-	{ "pluto01.pcx",  26, 36,  10, 20, 300,  200 }, // level 26
-	{ "pluto01.pcx",  27, 37,  10, 20, 300,  200 }, // level 27
-
-	{ "aster01.pcx",  -1, 38,  10, 90, 300,  200 }, // secret level -1
-	{ "aster01.pcx",  -2, 39,  10, 90, 300,  200 }, // secret level -2
-	{ "aster01.pcx",  -3, 40,  10, 90, 300,  200 }, // secret level -3
-
-	{ "end01.pcx",   SHAREWARE_ENDING_LEVEL_NUM,  1,  23, 40, 320, 200 },   // shareware end
-	{ "end02.pcx",   REGISTERED_ENDING_LEVEL_NUM,  1,  5, 5, 300, 200 },    // registered end
-	{ "end01.pcx",   REGISTERED_ENDING_LEVEL_NUM,  2,  23, 40, 320, 200 },  // registered end
-	{ "end03.pcx",   REGISTERED_ENDING_LEVEL_NUM,  3,  5, 5, 300, 200 },    // registered end
-
-};
-
-#endif
-
-int	briefingTextX, briefingTextY;
-
-gsrCanvas	*robotCanvP = NULL;
-vmsAngVec	vRobotAngles;
-
-char    szBitmapName [32] = "";
-#define EXIT_DOOR_MAX   14
-#define OTHER_THING_MAX 10      //  Adam: This is the nFrameber of frames in your new animating thing.
-#define DOOR_DIV_INIT   6
-sbyte   nDoorDir = 1, nDoorDivCount = 0, nAnimatingBitmapType = 0;
 
 //-----------------------------------------------------------------------------
 
@@ -687,7 +720,7 @@ int LoadBriefingScreen (int nScreen)
 	char *szBriefScreen;
 
 if (gameStates.app.bD1Mission)
-	szBriefScreen = briefingScreens [nScreen].bs_name;
+	szBriefScreen = briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name;
 else
 	szBriefScreen = curBriefScreenName;
 if (*szBriefScreen) {
@@ -715,8 +748,13 @@ if (GrPaletteFadeOut (NULL, 32, 0))
 	return 0;
 if ((pcxResult = LoadBriefImg (szBriefScreen, NULL, 1)) != PCX_ERROR_NONE) {
 #ifdef _DEBUG
-	Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", 
-			szBriefScreen, pcx_errormsg (pcxResult), pcxResult);
+	static char szErrScreen [15] = "";
+
+	if (strncmp (szErrScreen, szBriefScreen, sizeof (szErrScreen))) {
+		Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", 
+				 szBriefScreen, pcx_errormsg (pcxResult), pcxResult);
+		strncpy (szErrScreen, szBriefScreen, sizeof (szErrScreen));
+		}
 #endif
 	}
 if (GrPaletteFadeIn (NULL, 32, 0))
@@ -729,19 +767,19 @@ return 1;
 
 int GetMessageNum (char **message)
 {
-	int	nFrame=0;
+	int	n = 0;
 	char	*psz = *message;
 
 while (*psz && (*psz == ' '))
 	psz++;
 while ((*psz >= '0') && (*psz <= '9')) {
-	nFrame = 10 * nFrame + (*psz - '0');
+	n = 10 * n + (*psz - '0');
 	psz++;
 	}
 while (*psz && (*psz++ != 10))		//	Get and drop eoln
 	;
 *message = psz;
-return nFrame;
+return n;
 }
 
 //-----------------------------------------------------------------------------
@@ -804,88 +842,6 @@ int PageHasRobot (const char *message)
 
 return pBot && (!pEnd || (pBot < pEnd));
 }
-
-//-----------------------------------------------------------------------------
-
-char *SkipPage (char *message, tBriefingScreen *pBriefBuf, int *px, int *py, int *pnScreen)
-{
-	char	ch;
-	const char *pEnd = NextPage (message);
-	int	nScreen = *pnScreen, x = *px, y = *py;
-
-while (*message && (!pEnd || (message < pEnd))) {
-	ch = *message++;
-	if (ch == '$') {
-		ch = *message++;
-		if (ch == 'D') {
-			nScreen = DefineBriefingBox (&message, pBriefBuf);
-			x = briefingTextX;
-			y = briefingTextY;
-			}
-		else if (ch == 'U') {
-			nScreen = GetMessageNum (&message);
-			*pBriefBuf = briefingScreens [nScreen];
-			InitCharPos (pBriefBuf, 1);
-			x = briefingTextX;
-			y = briefingTextY;
-			}
-		}
-	}
-*pnScreen = nScreen;
-*px = x;
-*py = y;
-if (!message)
-	return NULL;
-ch = *message;
-if (ch == '$') {
-	ch = *++message;
-	if (ch == 'S')
-		return NULL;
-	do {
-		message++;
-		} while (::isdigit (*message) || ::isspace (*message));
-	}
-return message;
-}
-
-//-----------------------------------------------------------------------------
-
-typedef struct tBriefingInfo {
-	char					*message;
-	int					nScreen;
-	int					nLevel;
-	tBriefingScreen	briefBuf;
-	tBriefingScreen	*bsP;
-	char					*pi;
-	char					*pj;
-	int					ch;
-	int					prevCh;
-	int					bPageDone;
-	int					bRedraw;
-	int					bKeyCheck;
-	int					bFlashingCursor;
-	int					bNewPage;
-	int					bHaveScreen;
-	int					bDumbAdjust;
-	int					bChattering;
-	int					bGotZ;
-	int					bOnlyRobots;
-	int					bExtraSounds;
-	int					nHumChannel;
-	int					nPrintingChannel;
-	int					nBotChannel;
-	int					nLineAdjustment;
-	int					nDelayCount;
-	int					nRobot;
-	int					nBotSig;
-	int					x;
-	int					y;
-	char					szSpinningRobot [8];
-	char					szBriefScreen [15];
-	char					szBriefScreenB [15];
-	time_t				t0;
-	int					nFuncRes;
-} tBriefingInfo;
 
 //-----------------------------------------------------------------------------
 
@@ -1098,7 +1054,7 @@ return 1;
 int _U (tBriefingInfo& bi)
 {
 bi.nScreen = GetMessageNum (&bi.message);
-bi.briefBuf = briefingScreens [bi.nScreen];
+bi.briefBuf = briefingScreens [bi.nScreen % MAX_BRIEFING_SCREENS];
 bi.bsP = &bi.briefBuf;
 InitCharPos (bi.bsP, 1);
 bi.x = briefingTextX;
@@ -1204,6 +1160,45 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
+char *SkipPage (tBriefingInfo &bi) //char *message, tBriefingScreen *pBriefBuf, int *px, int *py, int *pnScreen)
+{
+	char	ch;
+	const char *pEnd = NextPage (bi.message);
+
+while (*bi.message && (!pEnd || (bi.message < pEnd))) {
+	ch = *bi.message++;
+	if (ch == '$') {
+		ch = *bi.message++;
+		if (ch == 'D') {
+			bi.nScreen = DefineBriefingBox (&bi.message, &bi.briefBuf);
+			bi.x = briefingTextX;
+			bi.y = briefingTextY;
+			}
+		else if (ch == 'U') {
+			bi.nScreen = GetMessageNum (&bi.message);
+			bi.briefBuf = briefingScreens [bi.nScreen % MAX_BRIEFING_SCREENS];
+			InitCharPos (&bi.briefBuf, 1);
+			bi.x = briefingTextX;
+			bi.y = briefingTextY;
+			}
+		}
+	}
+if (!bi.message)
+	return NULL;
+ch = *bi.message;
+if (ch != '$')
+	return bi.message;
+ch = *(++bi.message);
+if (ch == 'S')
+	return NULL;
+do {
+	bi.message++;
+	} while (::isdigit (*bi.message) || ::isspace (*bi.message));
+return bi.message;
+}
+
+//-----------------------------------------------------------------------------
+
 int HandleInput (tBriefingInfo& bi)
 {
 if (!bi.bRedraw && bi.nDelayCount) {
@@ -1243,7 +1238,7 @@ if (keypress == KEY_ESC)
 if (bi.bOnlyRobots) {
 	*bi.szBriefScreen = *bi.szBriefScreenB = '\0';
 	while (bi.message && !PageHasRobot (bi.message))
-		bi.message = SkipPage (bi.message, &bi.briefBuf, &bi.x, &bi.y, &bi.nScreen);
+		SkipPage (bi); //.message, &bi.briefBuf, &bi.x, &bi.y, &bi.nScreen);
 	if (!bi.message)
 		return 0;
 	}
@@ -1322,7 +1317,7 @@ if (!gameData.songs.bPlaying)
 
 GrSetCurFont (GAME_FONT);
 
-bi.briefBuf = briefingScreens [bi.nScreen];
+bi.briefBuf = briefingScreens [bi.nScreen % MAX_BRIEFING_SCREENS];
 bi.bsP = &bi.briefBuf;
 if (gameStates.app.bD1Mission)
 	bi.bGotZ = 1;
@@ -1333,7 +1328,7 @@ bi.y = briefingTextY;
 *bi.szBriefScreen = *bi.szBriefScreenB = '\0';
 if (bi.bOnlyRobots) {
 	while (bi.message && !PageHasRobot (bi.message))
-		bi.message = SkipPage (bi.message, &bi.briefBuf, &bi.x, &bi.y, &bi.nScreen);
+		SkipPage (bi); //.message, &bi.briefBuf, &bi.x, &bi.y, &bi.nScreen);
 	if (!bi.message)
 		goto done;
 	}
@@ -1351,7 +1346,7 @@ for (;;) {
 		briefingTextX = bi.x;
 		briefingTextY = bi.y;
 		LoadBriefingScreen (bi.nScreen);
-		bi.briefBuf = briefingScreens [bi.nScreen];
+		bi.briefBuf = briefingScreens [bi.nScreen % MAX_BRIEFING_SCREENS];
 		bi.bsP = &bi.briefBuf;
 		InitCharPos (bi.bsP, 1);
 		}
@@ -1419,7 +1414,7 @@ return bi.nFuncRes;
 char * GetBriefingMessage (int nScreen)
 {
 	char *tptr = szBriefingText;
-	int	nCurScreen=0;
+	int	nCurScreen = 0;
 	int	ch, i;
 
 Assert (nScreen >= 0);
@@ -1495,7 +1490,7 @@ int ShowBriefingText (int nScreen, short nLevel)
 	char	*pszMsg;
 	int i;
 
-pszMsg = GetBriefingMessage (gameStates.app.bD1Mission ? briefingScreens [nScreen].nMessage : nScreen);
+pszMsg = GetBriefingMessage (gameStates.app.bD1Mission ? briefingScreens [nScreen % MAX_BRIEFING_SCREENS].nMessage : nScreen);
 if (!pszMsg)
 	return (0);
 DoBriefingColorStuff ();
@@ -1552,7 +1547,7 @@ int ShowBriefingScreen (int nScreen, int bAllowKeys, short nLevel)
 {
 brief_palette_254_bash = 0;
 if (gameOpts->gameplay.bSkipBriefingScreens) {
-	con_printf (CONDBG, "Skipping briefing screen [%s]\n", &briefingScreens [nScreen].bs_name);
+	con_printf (CONDBG, "Skipping briefing screen [%s]\n", &briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name);
 	return 0;
 	}
 if (gameStates.app.bD1Mission) {
@@ -1561,11 +1556,12 @@ if (gameStates.app.bD1Mission) {
 	grsBitmap bmBriefing;
 
 	GrInitBitmapData (&bmBriefing);
-	if ((pcxResult = LoadBriefImg (briefingScreens [nScreen].bs_name, &bmBriefing, 0)) != PCX_ERROR_NONE) {
+	if ((pcxResult = LoadBriefImg (briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name, &bmBriefing, 0)) != PCX_ERROR_NONE) {
 #else
-	if ((pcxResult = PcxReadFullScrImage (briefingScreens [nScreen].bs_name, 1)) != PCX_ERROR_NONE) {
+	if ((pcxResult = PcxReadFullScrImage (briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name, 1)) != PCX_ERROR_NONE) {
 #endif
-		con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", briefingScreens [nScreen].bs_name, pcx_errormsg (pcxResult), pcxResult);
+		con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", 
+						briefingScreens [nScreen % MAX_BRIEFING_SCREENS].bs_name, pcx_errormsg (pcxResult), pcxResult);
 		Int3 ();
 		return 0;
 		}
@@ -1641,7 +1637,9 @@ if (gameStates.app.bD1Mission) {
 	gamePalette = LoadPalette (NULL, NULL, 1, 1, 1);
 	LoadD1BitmapReplacements ();
 	if (nLevel == 1) {
-		while (!bAbortBriefing && (briefingScreens [nCurBriefingScreen].nLevel == ((gameStates.app.bD1Mission && bEnding) ? nLevel : 0))) {
+		while (!bAbortBriefing && 
+				 (nCurBriefingScreen < MAX_BRIEFING_SCREENS) && 
+				 (briefingScreens [nCurBriefingScreen].nLevel == ((gameStates.app.bD1Mission && bEnding) ? nLevel : 0))) {
 			bAbortBriefing = ShowBriefingScreen (nCurBriefingScreen, 0, (short) nLevel);
 			nCurBriefingScreen++;
 			if (gameStates.app.bD1Mission && bEnding)
@@ -1649,7 +1647,7 @@ if (gameStates.app.bD1Mission) {
 			}
 		}
 	if (!bAbortBriefing) {
-		for (nCurBriefingScreen = 0; nCurBriefingScreen < MAX_tBriefingScreenS; nCurBriefingScreen++)
+		for (nCurBriefingScreen = 0; nCurBriefingScreen < MAX_BRIEFING_SCREENS; nCurBriefingScreen++)
 			if (briefingScreens [nCurBriefingScreen].nLevel == nLevel)
 				if (ShowBriefingScreen (nCurBriefingScreen, 0, (short) nLevel))
 					break;
@@ -1668,16 +1666,15 @@ return;
 
 int DefineBriefingBox (char **buf, tBriefingScreen *pBriefBuf)
 {
-	int i = 0, n = GetNewMessageNum (buf);
+	int i = 0, nScreen = GetNewMessageNum (buf);
 	char name [20];
 
-Assert (n < MAX_tBriefingScreenS);
 while (**buf != ' ') {
 	name [i++] = **buf;
 		(*buf)++;
 	}
-name [i]='\0';   // slap a delimiter on this guy
-*pBriefBuf = briefingScreens [n];
+name [i] = '\0';   // slap a delimiter on this guy
+*pBriefBuf = briefingScreens [nScreen % MAX_BRIEFING_SCREENS];
 strcpy (pBriefBuf->bs_name, name);
 pBriefBuf->nLevel = GetNewMessageNum (buf);
 pBriefBuf->nMessage = GetNewMessageNum (buf);
@@ -1686,14 +1683,14 @@ pBriefBuf->text_uly = GetNewMessageNum (buf);
 pBriefBuf->text_width = GetNewMessageNum (buf);
 pBriefBuf->text_height = GetMessageNum (buf);  // NOTICE!!!
 InitCharPos (pBriefBuf, 1);
-return (n);
+return nScreen;
 }
 
 //-----------------------------------------------------------------------------
 
 int GetNewMessageNum (char **message)
 {
-	int	nFrame=0;
+	int	nFrame = 0;
 
 while (**message == ' ')
 	 (*message)++;
