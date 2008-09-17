@@ -1021,7 +1021,7 @@ if ((siP->aiP->behavior == AIB_SNIPE) || (siP->aiP->behavior == AIB_RUN_FROM) ||
 	return 0;
 if (gameData.ai.nOverallAgitation < 71)
 	return 0;
-if (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) {
+if (!gameOpts->gameplay.nAIAggressivity || (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode == AIM_FOLLOW_PATH)) {
 	if ((gameData.ai.xDistToPlayer >= MAX_REACTION_DIST) || (d_rand () >= gameData.time.xFrame/4))
 		return 0;
 	if (d_rand () * (gameData.ai.nOverallAgitation - 40) <= F1_0 * 5)

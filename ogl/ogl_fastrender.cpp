@@ -551,7 +551,7 @@ if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
-	bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
+bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)

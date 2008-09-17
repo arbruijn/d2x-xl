@@ -648,7 +648,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 void CreatePathToPlayer (tObject *objP, int nMaxDepth, int bSafeMode)
 {
 	tAIStatic	*aiP = &objP->cType.aiInfo;
-	tAILocal		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
+	tAILocal		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
 	int			nStartSeg, nEndSeg;
 
 if (nMaxDepth == -1)
