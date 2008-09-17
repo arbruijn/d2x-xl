@@ -2579,7 +2579,8 @@ typedef enum {
 	rtTransparency,
 	rtEffects,
 	rtPolyModel,
-	rtTaskCount
+	rtTaskCount,
+	rtLightmap
 } tRenderTask;
 
 typedef struct tApplicationData {

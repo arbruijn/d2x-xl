@@ -29,6 +29,7 @@ COPYRIGHT 0993-0999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fastrender.h"
 #include "renderthreads.h"
 #include "interp.h"
+#include "lightmap.h"
 
 #define KILL_RENDER_THREADS 0
 
@@ -152,6 +153,8 @@ do {
 			}
 		G3DynLightModel (tiRender.objP, tiRender.pm, iVerts, nVerts, iFaceVerts, nFaceVerts);
 		}
+	else if (tiRender.nTask == rtPolyModel)
+		ComputeOneLightmap (nId);
 	tiRender.ti [nId].bExec = 0;
 	} while (!tiRender.ti [nId].bDone);
 #ifdef _WIN32
@@ -214,6 +217,7 @@ void StartRenderThreads (void)
 {
 	int	i;
 
+gameData.app.bUseMultiThreading [rtLightmap] = 1;
 memset (&tiRender, 0, sizeof (tiRender));
 for (i = 0; i < 2; i++) {
 	tiRender.ti [i].nId = i;
