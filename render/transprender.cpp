@@ -299,10 +299,11 @@ int RIAddPoly (grsFace *faceP, grsTriangle *triP, grsBitmap *bmP,
 {
 	tRIPoly	item;
 	int		i;
-	float		z, zMin, zMax, s = GrAlpha ();
+	float		z, zMinf, zMaxf, s = GrAlpha ();
 #if RI_POLY_CENTER
-	float		zCenter;
+	fix		zCenter;
 #endif
+
 item.faceP = faceP;
 item.triP = triP;
 item.bmP = bmP;
@@ -348,28 +349,28 @@ else
 	{
 #if RI_POLY_CENTER
 	zCenter = 0;
-	zMin = 1e30f;
-	zMax = -1e30f;
+	zMinf = 1e30f;
+	zMaxf = -1e30f;
 #endif
 	for (i = 0; i < item.nVertices; i++) {
 		z = item.vertices [i][Z];
 #if RI_POLY_CENTER
-		zCenter += z;
+		zCenter += F2X (z);
 #endif
-		if (zMin > z)
-			zMin = z;
-		if (zMax < z)
-			zMax = z;
+		if (zMinf > z)
+			zMinf = z;
+		if (zMaxf < z)
+			zMaxf = z;
 		}
-	if ((zMax < renderItems.zMin) || (zMin > renderItems.zMax))
+	if ((F2X (zMaxf) < renderItems.zMin) || (F2X (zMinf) > renderItems.zMax))
 		return -1;
 #if RI_POLY_CENTER
 	zCenter /= item.nVertices;
-	if (zCenter < zMin)
-		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), F2X (zMin), F2X (zMin));
-	if (zCenter < zMax)
-		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), F2X (zMax), F2X (zMax));
-	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), F2X (zCenter), F2X (zCenter));
+	if (zCenter < renderItems.zMin)
+		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), renderItems.zMin, renderItems.zMin);
+	if (zCenter < renderItems.zMax)
+		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), renderItems.zMax, renderItems.zMax);
+	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), zCenter, zCenter);
 #else
 	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), F2X (zMin), F2X (zMin));
 #endif
