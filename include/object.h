@@ -314,7 +314,7 @@ public:
 	               ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
 
 	// unlinks an tObject from a tSegment's list of objects
-	void unlink();
+	void Unlink();
 
 	int     		nSignature;    // Every tObject ever has a unique nSignature...
 	ubyte   		nType;         // what nType of tObject this is... robot, weapon, hostage, powerup, fireball

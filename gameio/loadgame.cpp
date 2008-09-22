@@ -1806,7 +1806,7 @@ AutomapClearVisited ();
 if (networkData.bNewGame == 1) {
 	networkData.bNewGame = 0;
 	InitPlayerStatsNewShip ();
-}
+	}
 InitPlayerStatsLevel (bSecret);
 if (IsCoopGame && networkData.nJoinState) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)

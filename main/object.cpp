@@ -629,7 +629,7 @@ if (OBJECTS [0].prev == 0)
 
 //------------------------------------------------------------------------------
 
-void tObject::unlink() {
+void tObject::Unlink() {
 if (prev == -1)
 	gameData.segs.objects [nSegment] = next;
 else
@@ -1075,7 +1075,7 @@ if (objP->attachedObj != -1)		//detach all OBJECTS from this
 	DetachAllObjects (objP);
 if (objP->nType == OBJ_DEBRIS)
 	nDebrisObjectCount--;
-OBJECTS[nObject].unlink();
+OBJECTS[nObject].Unlink();
 Assert (OBJECTS [0].next != 0);
 if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR))
 	ExecObjTriggers (nObject, 0);
@@ -1413,7 +1413,7 @@ void RelinkObject (int nObject, int nNewSegnum)
 {
 Assert ((nObject >= 0) && (nObject <= gameData.objs.nLastObject [0]));
 Assert ((nNewSegnum <= gameData.segs.nLastSegment) && (nNewSegnum >= 0));
-OBJECTS[nObject].unlink();
+OBJECTS [nObject].Unlink();
 LinkObject (nObject, nNewSegnum);
 #ifdef _DEBUG
 #if TRACE
@@ -2053,7 +2053,7 @@ void compressObjects (void)
 
 			segnum_copy = OBJECTS [gameData.objs.nLastObject [0]].nSegment;
 
-			OBJECTS[gameData.objs.nLastObject [0]].unlink();
+			OBJECTS[gameData.objs.nLastObject [0]].Unlink();
 
 			OBJECTS [start_i] = OBJECTS [gameData.objs.nLastObject [0]];
 
@@ -2580,7 +2580,6 @@ void GetPlayerSpawn (int nSpawnPos, tObject *objP)
 if (markerP) {
 	objP->position = markerP->position;
  	RelinkObject (OBJ_IDX (objP), markerP->nSegment);
-
 	}
 else {
 	objP->position = gameData.multiplayer.playerInit [nSpawnPos].position;

@@ -689,7 +689,7 @@ else if (i < 0)
 				nDbgObj = OBJ_IDX (objP);
 #endif
 			while (ObjectIsLinked (objP, objP->nSegment))
-				OBJECTS[nObject].unlink();
+				OBJECTS[nObject].Unlink();
 			NW_GET_BYTES (dataP, bufI, objP, sizeof (tObject));
 			if (objP->nType != OBJ_NONE) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
