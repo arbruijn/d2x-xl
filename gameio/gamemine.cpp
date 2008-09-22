@@ -863,16 +863,15 @@ int load_mine_data (CFILE *loadFile)
 
 //------------------------------------------------------------------------------
 
-void ReadSegChildren (int nSegment, ubyte bitMask, CFILE *loadFile)
+void ReadSegChildren (int nSegment, ubyte nSideMask, CFILE *loadFile)
 {
-	int bit;
+	int nSide;
 
-	for (bit=0; bit<MAX_SIDES_PER_SEGMENT; bit++) {
-		if (bitMask & (1 << bit)) {
-			gameData.segs.segments [nSegment].children [bit] = CFReadShort (loadFile);
-		} else
-			gameData.segs.segments [nSegment].children [bit] = -1;
-	}
+for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
+	if (nSideMask & (1 << nSide)) 
+		gameData.segs.segments [nSegment].children [nSide] = CFReadShort (loadFile);
+	else
+		gameData.segs.segments [nSegment].children [nSide] = -1;
 }
 
 //------------------------------------------------------------------------------

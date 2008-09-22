@@ -1202,6 +1202,7 @@ const char error_messages[] = {
 	"Array not big enough on anim brush read.\0"
 	"Unknown mask nType in bitmap header.\0"
 	"Error reading file.\0"
+	"No exit found.\0"
 };
 
 
