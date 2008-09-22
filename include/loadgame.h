@@ -54,6 +54,7 @@ int StartNewLevelSub(int nLevel, int bPageInTextures, int bSecret, int bRestore)
 
 void InitMultiPlayerObject (void);            //make sure tPlayer's tObject set up
 void InitPlayerStatsGame (void);      //clear all stats
+GameStartInitNetworkPlayers (void);
 
 // starts a resumed game loaded from disk
 void ResumeSavedGame(int startLevel);

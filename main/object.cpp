@@ -51,6 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dropobject.h"
 #include "marker.h"
 #include "hiresmodels.h"
+#include "loadgame.h"
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
@@ -2582,8 +2583,8 @@ if (markerP) {
  	RelinkObject (OBJ_IDX (objP), markerP->nSegment);
 	}
 else {
-	if ((gameData.multiplayer.playerInit [nSpawnPos].position < 0) || 
-		 (gameData.multiplayer.playerInit [nSpawnPos].position >= gameData.segs.nSegments))
+	if ((gameData.multiplayer.playerInit [nSpawnPos].nSegment < 0) || 
+		 (gameData.multiplayer.playerInit [nSpawnPos].nSegment >= gameData.segs.nSegments))
 	GameStartInitNetworkPlayers ();
 	objP->position = gameData.multiplayer.playerInit [nSpawnPos].position;
  	RelinkObject (OBJ_IDX (objP), gameData.multiplayer.playerInit [nSpawnPos].nSegment);
