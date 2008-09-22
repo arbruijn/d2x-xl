@@ -2582,6 +2582,9 @@ if (markerP) {
  	RelinkObject (OBJ_IDX (objP), markerP->nSegment);
 	}
 else {
+	if ((gameData.multiplayer.playerInit [nSpawnPos].position < 0) || 
+		 (gameData.multiplayer.playerInit [nSpawnPos].position >= gameData.segs.nSegments))
+	GameStartInitNetworkPlayers ();
 	objP->position = gameData.multiplayer.playerInit [nSpawnPos].position;
  	RelinkObject (OBJ_IDX (objP), gameData.multiplayer.playerInit [nSpawnPos].nSegment);
 	}
