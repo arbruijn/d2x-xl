@@ -368,7 +368,7 @@ else
 	zCenter /= item.nVertices;
 	if (zCenter < renderItems.zMin)
 		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), renderItems.zMin, renderItems.zMin);
-	if (zCenter < renderItems.zMax)
+	if (zCenter > renderItems.zMax)
 		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), renderItems.zMax, renderItems.zMax);
 	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), zCenter, zCenter);
 #else
