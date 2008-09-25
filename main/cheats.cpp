@@ -606,7 +606,8 @@ void LevelWarpCheat (int bVerbose)
 int nNewLevel;
 
 MenuGetValues (TXT_WARP_TO_LEVEL, &nNewLevel, 1);
-if ((nNewLevel > 0) && (nNewLevel <= gameData.missions.nLastLevel)) {
+if (((nNewLevel > 0) && (nNewLevel <= gameData.missions.nLastLevel)) ||
+	 ((nNewLevel < 0) && (nNewLevel >= gameData.missions.nLastSecretLevel))) {
 	DoCheatPenalty ();
 	StartNewLevel (nNewLevel, 0);
 	}

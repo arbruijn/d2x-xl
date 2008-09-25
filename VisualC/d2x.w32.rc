@@ -1,97 +1,44 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
-#define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
-#include "afxres.h"
-
-/////////////////////////////////////////////////////////////////////////////
-#undef APSTUDIO_READONLY_SYMBOLS
-
-/////////////////////////////////////////////////////////////////////////////
-// German (Germany) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
-#ifdef _WIN32
-LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
-#pragma code_page(1252)
-#endif //_WIN32
-
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,13,88,0
- PRODUCTVERSION 1,13,88,0
+ FILEVERSION 1,13,90,0
+ PRODUCTVERSION 1,13,90,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
+
  FILEFLAGS 0x1L
 #else
  FILEFLAGS 0x0L
 #endif
- FILEOS 0x40004L
+ FILEOS 0x44004L
  FILETYPE 0x1L
  FILESUBTYPE 0x0L
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040704b0"
+        BLOCK "045014b0"
         BEGIN
-            VALUE "Comments", "Descent 2 OpenGL for MS Windows\0"
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Descent 2 OpenGL for MS Windows\0"
-            VALUE "FileVersion", "1, 13, 88, 0\0"
-            VALUE "InternalName", "D2X-XL\0"
-            VALUE "LegalCopyright", "\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "d2x-xl.exe\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "D2X-XL\0"
-            VALUE "ProductVersion", "1, 13, 88, 0\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "Comments", "D2X-XL - Descent 2 OpenGL for MS Windows"
+            VALUE "FileDescription", "D2X-XL - Descent 2 OpenGL for MS Windows"
+            VALUE "FileVersion", "1,13,90,0"
+            VALUE "InternalName", "D2X-XL"
+            VALUE "OriginalFilename", "d2x-xl.exe"
+            VALUE "ProductName", "D2X-XL"
+            VALUE "ProductVersion", "1,13,90,0"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x407, 1200
+        VALUE "Translation", 0x450, 1200
     END
 END
-
-#endif    // !_MAC
-
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -100,21 +47,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_D2XW32              ICON    DISCARDABLE     "d2x-w32.ico"
-IDI_DESCENT2            ICON    DISCARDABLE     "descent.ico"
-IDI_D2X_XL              ICON    DISCARDABLE     "d2x-xl.ico"
-#endif    // German (Germany) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
+IDI_ICON1               ICON                    "d2x-xl.ico"
+IDI_D2XW32              ICON                    "d2x-w32.ico"
+IDI_DESCENT2            ICON                    "descent.ico"
 
 /////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
-
