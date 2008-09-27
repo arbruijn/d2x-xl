@@ -536,9 +536,9 @@ return fVector::Dist(va, vb);
 
 float TriangleSize (const vmsVector& p0, const vmsVector& p1, const vmsVector& p2) {
 
-	return 0.5f*X2F(vmsVector::Cross(p1-p0, p2-p0).Mag());
 #if 0
-
+	return 0.5f*X2F(vmsVector::Cross(p1-p0, p2-p0).Mag());
+#else
 	fix			lMax, l, i = 0;
 
 lMax = vmsVector::Dist(p0, p1);
@@ -553,11 +553,11 @@ if (lMax < l) {
 	i = 2;
 	}
 if (i == 2)
-	return f2fl (lMax) * f2fl (VmLinePointDist (p2, p0, p1)) / 800;
+	return X2F (lMax) * X2F (VmLinePointDist (p2, p0, p1)) / 800;
 else if (i == 1)
-	return f2fl (lMax) * f2fl (VmLinePointDist (p1, p2, p0)) / 800;
+	return X2F (lMax) * X2F (VmLinePointDist (p1, p2, p0)) / 800;
 else
-	return f2fl (lMax) * f2fl (VmLinePointDist (p0, p1, p2)) / 800;
+	return X2F (lMax) * X2F (VmLinePointDist (p0, p1, p2)) / 800;
 #endif
 }
 

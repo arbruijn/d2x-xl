@@ -247,7 +247,6 @@ if (Debug_pause) {
 	}
 DrawWindowLabel ();
 #endif
-
 GameDrawMultiMessage ();
 GameDrawMarkerMessage ();
 if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_STATE_RECORDING)) {

@@ -1,18 +1,26 @@
-// Microsoft Visual C++ generated resource script.
+//Microsoft Developer Studio generated resource script.
+//
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
 //
 #include "resource.h"
 
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,13,90,0
- PRODUCTVERSION 1,13,90,0
+ FILEVERSION 1,13,92,0
+ PRODUCTVERSION 1,13,92,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
-
  FILEFLAGS 0x1L
 #else
  FILEFLAGS 0x0L
@@ -25,20 +33,28 @@ BEGIN
     BEGIN
         BLOCK "045014b0"
         BEGIN
-            VALUE "Comments", "D2X-XL - Descent 2 OpenGL for MS Windows"
-            VALUE "FileDescription", "D2X-XL - Descent 2 OpenGL for MS Windows"
-            VALUE "FileVersion", "1,13,90,0"
-            VALUE "InternalName", "D2X-XL"
-            VALUE "OriginalFilename", "d2x-xl.exe"
-            VALUE "ProductName", "D2X-XL"
-            VALUE "ProductVersion", "1,13,90,0"
+            VALUE "Comments", "D2X-XL - Descent 2 OpenGL for MS Windows\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "D2X-XL - Descent 2 OpenGL for MS Windows\0"
+            VALUE "FileVersion", "1, 13, 92, 0\0"
+            VALUE "InternalName", "D2X-XL\0"
+            VALUE "LegalCopyright", "\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "d2x-xl.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "D2X-XL\0"
+            VALUE "ProductVersion", "1, 13, 92, 0\0"
+            VALUE "SpecialBuild", "\0"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x450, 1200
+        VALUE "Translation", 0x450, 5296
     END
 END
+
+#endif    // !_MAC
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -47,8 +63,27 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON                    "d2x-xl.ico"
-IDI_D2XW32              ICON                    "d2x-w32.ico"
-IDI_DESCENT2            ICON                    "descent.ico"
+IDI_D2XW32              ICON    DISCARDABLE     "d2x-w32.ico"
+IDI_ICON1               ICON    DISCARDABLE     "d2x-xl.ico"
+IDI_DESCENT2            ICON    DISCARDABLE     "descent.ico"
 
+#ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""resource.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+

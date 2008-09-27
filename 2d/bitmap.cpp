@@ -46,9 +46,7 @@ return (w * h) ? D2_ALLOC ((bpp > 1) ? w * h * bpp : MAX_BMP_SIZE (w, h)) : NULL
 
 grsBitmap *GrCreateBitmapSub (int w, int h, unsigned char *data, int bpp)
 {
-    grsBitmap *bmP;
-
-bmP = (grsBitmap *) D2_ALLOC (sizeof (grsBitmap));
+grsBitmap *bmP = (grsBitmap *) D2_ALLOC (sizeof (grsBitmap));
 if (bmP)
 	GrInitBitmap (bmP, 0, 0, 0, w, h, w, data, bpp);
 return bmP;

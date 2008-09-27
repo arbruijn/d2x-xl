@@ -109,7 +109,7 @@ int	SpeedtestCount=0;				//	number of times to do the debug test.
 #endif
 
 #if defined (TIMER_TEST) && defined (_DEBUG)
-fix TimerValue,actual_lastTimerValue,_last_frametime;
+fix TimerValue,actual_lastTimerValue,_xLastFrameTime;
 int gameData.time.xStops,gameData.time.xStarts;
 int gameData.time.xStopped,gameData.time.xStarted;
 #endif
@@ -516,8 +516,8 @@ int Movie_fixed_frametime;
 void CalcFrameTime ()
 {
 	fix 	timerValue,
-			last_frametime = gameData.time.xFrame,
-			minFrameTime = (MAXFPS ? f1_0 / MAXFPS : 1);
+			xLastFrameTime = gameData.time.xFrame,
+			xMinFrameTime = (MAXFPS ? f1_0 / MAXFPS : 1);
 
 if (gameData.app.bGamePaused) {
 	gameData.time.xLast = TimerGetFixedSeconds ();
@@ -526,59 +526,19 @@ if (gameData.app.bGamePaused) {
 	return;
 	}
 #if defined (TIMER_TEST) && defined (_DEBUG)
-_last_frametime = last_frametime;
+_xLastFrameTime = xLastFrameTime;
 #endif
-for (;;) {
-	timerValue = TimerGetFixedSeconds ();
-   gameData.time.xFrame = timerValue - gameData.time.xLast;
-	if (gameData.time.xFrame >= minFrameTime)
-		break;
-	if (MAXFPS < 2)
-		break;
-	G3_SLEEP (0);
-	}
-#if defined (TIMER_TEST) && defined (_DEBUG)
-TimerValue = timerValue;
-#endif
-#ifdef _DEBUG
-if ((gameData.time.xFrame <= 0) ||
-	 (gameData.time.xFrame > F1_0) ||
-	 (gameStates.app.nFunctionMode == FMODE_EDITOR) ||
-	 (gameData.demo.nState == ND_STATE_PLAYBACK)) {
-#if TRACE
-//con_printf (1,"Bad gameData.time.xFrame - value = %x\n",gameData.time.xFrame);
-#endif
-if (gameData.time.xFrame == 0)
-	Int3 ();	//	Call Mike or Matt or John!  Your interrupts are probably trashed!
-	}
-#endif
-#if defined (TIMER_TEST) && defined (_DEBUG)
-actual_lastTimerValue = gameData.time.xLast;
-#endif
+timerValue = TimerGetFixedSeconds ();
+gameData.time.xFrame = timerValue - gameData.time.xLast;
+if ((gameData.time.xFrame < xMinFrameTime) && (MAXFPS > 1))
+	G3_SLEEP ((int) ((double) (xMinFrameTime - gameData.time.xFrame) / 65.536 + 0.5));
 if (gameStates.app.cheats.bTurboMode)
 	gameData.time.xFrame *= 2;
 // Limit frametime to be between 5 and 150 fps.
 gameData.time.xRealFrame = gameData.time.xFrame;
 gameData.time.xLast = timerValue;
 if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
-	gameData.time.xFrame = last_frametime;		//d:\temp\dm_test.then use time from last frame
-#ifdef _DEBUG
-if (xFixedFrameTime)
-	gameData.time.xFrame = xFixedFrameTime;
-#endif
-#ifdef _DEBUG
-// Pause here!!!
-if (Debug_pause) {
-	int c = 0;
-	while (!c)
-		c = KeyPeekKey ();
-	if (c == KEY_P)       {
-		Debug_pause = 0;
-		c = KeyInKey ();
-		}
-	gameData.time.xLast = TimerGetFixedSeconds ();
-	}
-#endif
+	gameData.time.xFrame = xLastFrameTime;		//d:\temp\dm_test.then use time from last frame
 #if Arcade_mode
 gameData.time.xFrame /= 2;
 #endif

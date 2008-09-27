@@ -161,49 +161,49 @@ return ((grdCurCanv->cvBitmap.bmProps.w - GetLineWidth (s)) / 2);
 //perhaps some sort of recursive orig_color nType thing would be better, but that would be way too much trouble for little gain
 int grMsgColorLevel = 1;
 
-inline char *CheckEmbeddedColors (char *text_ptr, char c, int orig_color)
+inline char *CheckEmbeddedColors (char *textP, char c, int orig_color)
 {
 if ((c >= 1) && (c <= 3)) {
-	if (*++text_ptr) {
+	if (*++textP) {
 		if (grMsgColorLevel >= c) {
 			FG_COLOR.rgb = 1;
-			FG_COLOR.color.red = text_ptr [0];
-			FG_COLOR.color.green = text_ptr [1];
-			FG_COLOR.color.blue = text_ptr [2];
+			FG_COLOR.color.red = textP [0];
+			FG_COLOR.color.green = textP [1];
+			FG_COLOR.color.blue = textP [2];
 			FG_COLOR.color.alpha = 0;
 			}
-		text_ptr += 3;
+		textP += 3;
 		}
 	}
 else if ((c >= 4) && (c <= 6)) {
-	if (grMsgColorLevel >= *text_ptr - 3) {
+	if (grMsgColorLevel >= *textP - 3) {
 		FG_COLOR.index = orig_color;
 		FG_COLOR.rgb = 0;
 		}
-	text_ptr++;
+	textP++;
 	}
-return text_ptr;
+return textP;
 }
 
 #define CHECK_EMBEDDED_COLORS () \
 	if ((c >= 1) && (c <= 3)) { \
-		if (*++text_ptr) { \
+		if (*++textP) { \
 			if (grMsgColorLevel >= c) { \
 				FG_COLOR.rgb = 1; \
-				FG_COLOR.color.red = text_ptr [0] - 128; \
-				FG_COLOR.color.green = text_ptr [1] - 128; \
-				FG_COLOR.color.blue = text_ptr [2] - 128; \
+				FG_COLOR.color.red = textP [0] - 128; \
+				FG_COLOR.color.green = textP [1] - 128; \
+				FG_COLOR.color.blue = textP [2] - 128; \
 				FG_COLOR.color.alpha = 0; \
 				} \
-			text_ptr += 3; \
+			textP += 3; \
 			} \
 		} \
 	else if ((c >= 4) && (c <= 6)) { \
-		if (grMsgColorLevel >= *text_ptr - 3) { \
+		if (grMsgColorLevel >= *textP - 3) { \
 			FG_COLOR.index = orig_color; \
 			FG_COLOR.rgb = 0; \
 			} \
-		text_ptr++; \
+		textP++; \
 		}
 
 //------------------------------------------------------------------------------
@@ -211,7 +211,7 @@ return text_ptr;
 int GrInternalString0 (int x, int y, const char *s)
 {
 	unsigned char * fp;
-	const char *text_ptr, *next_row, *text_ptr1;
+	const char *textP, *nextRowP, *text_ptr1;
 	int r, BitMask, i, bits, width, spacing, letter, underline;
 	int	skip_lines = 0;
 	unsigned int VideoOffset, VideoOffset1;
@@ -232,44 +232,44 @@ if (BG_COLOR.rgb) {
 	}
 bits=0;
 VideoOffset1 = y * ROWSIZE + x;
-next_row = s;
-while (next_row != NULL) {
-	text_ptr1 = next_row;
-	next_row = NULL;
+nextRowP = s;
+while (nextRowP != NULL) {
+	text_ptr1 = nextRowP;
+	nextRowP = NULL;
 	if (x == 0x8000) {			//centered
 		int xx = GetCenteredX (text_ptr1);
 		VideoOffset1 = y * ROWSIZE + xx;
 		}
 	for (r = 0; r < FHEIGHT; r++) {
-		text_ptr = text_ptr1;
+		textP = text_ptr1;
 		VideoOffset = VideoOffset1;
-		while (*text_ptr) {
-			if (*text_ptr == '\n') {
-				next_row = &text_ptr[1];
+		while (*textP) {
+			if (*textP == '\n') {
+				nextRowP = &textP[1];
 				break;
 				}
-			if (*text_ptr == CC_COLOR) {
-				FG_COLOR.index = *(text_ptr+1);
+			if (*textP == CC_COLOR) {
+				FG_COLOR.index = *(textP+1);
 				FG_COLOR.rgb = 0;
-				text_ptr += 2;
+				textP += 2;
 				continue;
 				}
-			if (*text_ptr == CC_LSPACING) {
-				skip_lines = * (text_ptr+1) - '0';
-				text_ptr += 2;
+			if (*textP == CC_LSPACING) {
+				skip_lines = * (textP+1) - '0';
+				textP += 2;
 				continue;
 				}
 			underline = 0;
-			if (*text_ptr == CC_UNDERLINE) {
+			if (*textP == CC_UNDERLINE) {
 				if ((r == FBASELINE + 2) || (r == FBASELINE + 3))
 					underline = 1;
-				text_ptr++;
+				textP++;
 				}
-			GetCharWidth (text_ptr[0], text_ptr[1], &width, &spacing);
-			letter = *text_ptr - FMINCHAR;
+			GetCharWidth (textP[0], textP[1], &width, &spacing);
+			letter = *textP - FMINCHAR;
 			if (!INFONT (letter)) {	//not in font, draw as space
 				VideoOffset += spacing;
-				text_ptr++;
+				textP++;
 				continue;
 				}
 			if (FFLAGS & FT_PROPORTIONAL)
@@ -295,7 +295,7 @@ while (next_row != NULL) {
 						}
 					}
 			VideoOffset += spacing-width;		//for kerning
-			text_ptr++;
+			textP++;
 			}
 		VideoOffset1 += ROWSIZE; y++;
 		}
@@ -311,7 +311,7 @@ return 0;
 int GrInternalString0m (int x, int y, const char *s)
 {
 	unsigned char * fp;
-	const char * text_ptr, * next_row, * text_ptr1;
+	const char * textP, * nextRowP, * text_ptr1;
 	int r, BitMask, i, bits, width, spacing, letter, underline;
 	int	skip_lines = 0;
 	char c;
@@ -332,12 +332,12 @@ orig_color = FG_COLOR.index;//to allow easy reseting to default string color wit
 bits=0;
 VideoOffset1 = y * ROWSIZE + x;
 
-	next_row = s;
+	nextRowP = s;
 	FG_COLOR.rgb = 0;
-	while (next_row != NULL)
+	while (nextRowP != NULL)
 	{
-		text_ptr1 = next_row;
-		next_row = NULL;
+		text_ptr1 = nextRowP;
+		nextRowP = NULL;
 
 		if (x==0x8000) {			//centered
 			int xx = GetCenteredX (text_ptr1);
@@ -345,58 +345,58 @@ VideoOffset1 = y * ROWSIZE + x;
 		}
 
 		for (r=0; r<FHEIGHT; r++) {
-			text_ptr = text_ptr1;
+			textP = text_ptr1;
 			VideoOffset = VideoOffset1;
-			while ((c = *text_ptr)) {
+			while ((c = *textP)) {
 				if (c == '\n') {
-					next_row = &text_ptr[1];
+					nextRowP = &textP[1];
 					break;
 					}
 				if (c == CC_COLOR) {
-					FG_COLOR.index = * (++text_ptr);
-					text_ptr++;
+					FG_COLOR.index = * (++textP);
+					textP++;
 					continue;
 					}
 				if (c == CC_LSPACING) {
-					skip_lines = * (++text_ptr) - '0';
-					text_ptr++;
+					skip_lines = * (++textP) - '0';
+					textP++;
 					continue;
 					}
 				underline = 0;
 				if (c == CC_UNDERLINE) {
 					if ((r==FBASELINE+2) || (r==FBASELINE+3))
 						underline = 1;
-					c = * (++text_ptr);
+					c = * (++textP);
 					}
-				GetCharWidth (c, text_ptr[1], &width, &spacing);
+				GetCharWidth (c, textP[1], &width, &spacing);
 				letter = c - FMINCHAR;
 				if (!INFONT (letter) || c <= 0x06) {	//not in font, draw as space
 #if 0
 					CHECK_EMBEDDED_COLORS ()
 #else
 					if ((c >= 1) && (c <= 3)) {
-						if (*++text_ptr) {
+						if (*++textP) {
 							if (grMsgColorLevel >= c) {
 								FG_COLOR.rgb = 1;
-								FG_COLOR.color.red = text_ptr [0] - 128;
-								FG_COLOR.color.green = text_ptr [1] - 128;
-								FG_COLOR.color.blue = text_ptr [2] - 128;
+								FG_COLOR.color.red = textP [0] - 128;
+								FG_COLOR.color.green = textP [1] - 128;
+								FG_COLOR.color.blue = textP [2] - 128;
 								FG_COLOR.color.alpha = 0;
 								}
-							text_ptr += 3;
+							textP += 3;
 							}
 						}
 					else if ((c >= 4) && (c <= 6)) {
-						if (grMsgColorLevel >= *text_ptr - 3) {
+						if (grMsgColorLevel >= *textP - 3) {
 							FG_COLOR.index = orig_color;
 							FG_COLOR.rgb = 0;
 							}
-						text_ptr++;
+						textP++;
 						}
 #endif
 					else {
 						VideoOffset += spacing;
-						text_ptr++;
+						textP++;
 						}
 					continue;
 					}
@@ -423,7 +423,7 @@ VideoOffset1 = y * ROWSIZE + x;
 						BitMask >>= 1;
 					}
 				}
-				text_ptr++;
+				textP++;
 				VideoOffset += spacing-width;
 			}
 			VideoOffset1 += ROWSIZE;
@@ -630,59 +630,59 @@ void OglInitFont (grsFont * font)
 
 int OglInternalString (int x, int y, const char *s)
 {
-	const char * text_ptr, * next_row, * text_ptr1;
+	const char * textP, * nextRowP, * text_ptr1;
 	int width, spacing, letter;
 	int xx, yy;
 	int orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 	ubyte c;
 	grsBitmap *bmf;
 
-next_row = s;
+nextRowP = s;
 yy = y;
 if (grdCurScreen->scCanvas.cvBitmap.bmProps.nType != BM_OGL)
 	Error ("carp.\n");
-while (next_row != NULL) {
-	text_ptr1 = next_row;
-	next_row = NULL;
-	text_ptr = text_ptr1;
+while (nextRowP != NULL) {
+	text_ptr1 = nextRowP;
+	nextRowP = NULL;
+	textP = text_ptr1;
 	xx = x;
 	if (xx == 0x8000)			//centered
-		xx = GetCenteredX (text_ptr);
-	while ((c = *text_ptr)) {
+		xx = GetCenteredX (textP);
+	while ((c = *textP)) {
 		if (c == '\n') {
-			next_row = text_ptr + 1;
+			nextRowP = textP + 1;
 			yy += FHEIGHT + 2;
 			break;
 			}
 		letter = c - FMINCHAR;
-		GetCharWidth (c, text_ptr [1], &width, &spacing);
+		GetCharWidth (c, textP [1], &width, &spacing);
 		if (!INFONT (letter) || (c <= 0x06)) {	//not in font, draw as space
 #if 0
 			CHECK_EMBEDDED_COLORS ()
 #else
 			if ((c >= 1) && (c <= 3)) {
-				if (*++text_ptr) {
+				if (*++textP) {
 					if (grMsgColorLevel >= c) {
 						FG_COLOR.rgb = 1;
-						FG_COLOR.color.red = 2 * (text_ptr [0] - 128);
-						FG_COLOR.color.green = 2 * (text_ptr [1] - 128);
-						FG_COLOR.color.blue = 2 * (text_ptr [2] - 128);
+						FG_COLOR.color.red = 2 * (textP [0] - 128);
+						FG_COLOR.color.green = 2 * (textP [1] - 128);
+						FG_COLOR.color.blue = 2 * (textP [2] - 128);
 						FG_COLOR.color.alpha = 255;
 						}
-					text_ptr += 3;
+					textP += 3;
 					}
 				}
 			else if ((c >= 4) && (c <= 6)) {
-				if (grMsgColorLevel >= *text_ptr - 3) {
+				if (grMsgColorLevel >= *textP - 3) {
 					FG_COLOR.index = orig_color;
 					FG_COLOR.rgb = 0;
 					}
-				text_ptr++;
+				textP++;
 				}
 #endif
 			else {
 				xx += spacing;
-				text_ptr++;
+				textP++;
 				}
 			continue;
 			}
@@ -698,7 +698,7 @@ while (next_row != NULL) {
 	//					GrUBitmapM (xx, yy, &FONT->ftBitmaps[letter]);//ignores color..
 			}
 		xx += spacing;
-		text_ptr++;
+		textP++;
 		}
 	}
 return 0;
@@ -715,13 +715,21 @@ grsBitmap *CreateStringBitmap (
 	grsRgba		hc, kc, *pc;
 	ubyte			*pf, *palP = NULL;
 	ubyte			c;
-	const char	*text_ptr, *text_ptr1, *next_row;
+	const char	*textP, *text_ptr1, *nextRowP;
 	int			letter;
 
 if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
 	return NULL;
 GrGetStringSizeTabbed (s, &w, &h, &aw, nTabs, nMaxWidth);
-if (!(w && h && (bmP = GrCreateBitmap (w, h, 4)))) {
+if (!(w && h))
+	return NULL;
+for (i = 1; i < w; i <<= 2)
+	;
+w = i;
+for (i = 1; i < h; i <<= 2)
+	;
+h = i;
+if (!(bmP = GrCreateBitmap (w, h, 4))) {
 	return NULL;
 	}
 if (!bmP->bmTexBuf) {
@@ -730,70 +738,76 @@ if (!bmP->bmTexBuf) {
 	}
 memset (bmP->bmTexBuf, 0, w * h * bmP->bmBPP);
 bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
-next_row = s;
+nextRowP = s;
 y = 0;
 nTab = 0;
 nChars = 0;
-while (next_row != NULL) {
-	text_ptr1 = next_row;
-	next_row = NULL;
-	text_ptr = text_ptr1;
+while (nextRowP) {
+	text_ptr1 = nextRowP;
+	nextRowP = NULL;
+	textP = text_ptr1;
 #ifdef _DEBUG
 	if (bCentered)
-		x = (w - GetLineWidth (text_ptr)) / 2;
+		x = (w - GetLineWidth (textP)) / 2;
 	else
 		x = 0;
 #else
-	x = bCentered ? (w - GetLineWidth (text_ptr)) / 2 : 0;
+	x = bCentered ? (w - GetLineWidth (textP)) / 2 : 0;
 #endif
-	while ((c = *text_ptr)) {
+	while ((c = *textP)) {
 		if (c == '\n') {
-			next_row = text_ptr + 1;
+			nextRowP = textP + 1;
 			y += FHEIGHT + 2;
 			nTab = 0;
 			break;
 			}
 		if (c == '\t') {
-			text_ptr++;
+			textP++;
 			if (nTabs && (nTab < 6)) {
 				int	w, h, aw;
 
-				GrGetStringSize (text_ptr, &w, &h, &aw);
+				GrGetStringSize (textP, &w, &h, &aw);
 				x = LHX (nTabs [nTab++]);
 				if (!gameStates.multi.bSurfingNet)
 					x += nMaxWidth - w;
+				for (i = 1; i < w; i <<= 2)
+					;
+				w = i;
+				for (i = 1; i < h; i <<= 2)
+					;
+				h = i;
 				}
 			continue;
 			}
 		letter = c - FMINCHAR;
-		GetCharWidth (c, text_ptr [1], &cw, &spacing);
+		GetCharWidth (c, textP [1], &cw, &spacing);
 		if (!INFONT (letter) || (c <= 0x06)) {	//not in font, draw as space
 #if 0
 			CHECK_EMBEDDED_COLORS ()
 #else
 			if ((c >= 1) && (c <= 3)) {
-				if (*++text_ptr) {
+				if (*++textP) {
 					if (grMsgColorLevel >= c) {
 						FG_COLOR.rgb = 1;
-						FG_COLOR.color.red = (text_ptr [0] - 128) * 2;
-						FG_COLOR.color.green = (text_ptr [1] - 128) * 2;
-						FG_COLOR.color.blue = (text_ptr [2] - 128) * 2;
+						FG_COLOR.color.red = (textP [0] - 128) * 2;
+						FG_COLOR.color.green = (textP [1] - 128) * 2;
+						FG_COLOR.color.blue = (textP [2] - 128) * 2;
 						FG_COLOR.color.alpha = 255;
 						}
-					text_ptr += 3;
+					textP += 3;
 					}
 				}
 			else if ((c >= 4) && (c <= 6)) {
-				if (grMsgColorLevel >= *text_ptr - 3) {
+				if (grMsgColorLevel >= *textP - 3) {
 					FG_COLOR.index = orig_color;
 					FG_COLOR.rgb = 0;
 					}
-				text_ptr++;
+				textP++;
 				}
 #endif
 			else {
 				x += spacing;
-				text_ptr++;
+				textP++;
 				}
 			continue;
 			}
@@ -845,11 +859,11 @@ while (next_row != NULL) {
 				}
 			}
 		x += spacing;
-		text_ptr++;
+		textP++;
 		}
 	}
 bmP->bmPalette = palP;
-OglLoadBmTexture (bmP, 0, 2, 1);
+//OglLoadBmTexture (bmP, 0, 2, 1);
 return bmP;
 }
 
@@ -912,24 +926,26 @@ else {
 	ps = stringPool + nPoolStrings;
 	}
 GrGetStringSize (s, &w, &h, &aw);
-if (!(ps->bmP = CreateStringBitmap (s, 0, 0, 0, 0, w, 1)))
+if (!(ps->bmP = CreateStringBitmap (s, 0, 0, 0, 0, w, 1))) {
+	*idP = 0;
 	return NULL;
-l = (int) strlen (s) + 1;
-if (ps->pszText && (ps->nLength < l)) {
-	D2_FREE (ps->pszText);
-	ps->nLength = ((l + 9) / 10) * 10;
 	}
+l = (int) strlen (s) + 1;
+if (ps->pszText && (ps->nLength < l))
+	D2_FREE (ps->pszText);
 if (!ps->pszText) {
-	ps->nLength = ((l + 9) / 10) * 10;
+	ps->nLength = 3 * l / 2;
 	if (!(ps->pszText = (char *) D2_ALLOC (ps->nLength))) {
 		GrFreeBitmap (ps->bmP);
+		ps->bmP = NULL;
+		*idP = 0;
 		return NULL;
 		}
 	}
 memcpy (ps->pszText, s, l);
 ps->nWidth = w;
 if (!*idP)
-	nPoolStrings++;
+	*idP = ++nPoolStrings;
 ps->pId = idP;
 return ps;
 }
@@ -942,7 +958,9 @@ grsString *GetPoolString (const char *s, int *idP)
 
 if (!idP)
 	return NULL;
-if (*idP && (*idP <= nPoolStrings)) {
+if (*idP > nPoolStrings)
+	*idP = 0;
+else if (*idP) {
 	ps = stringPool + *idP - 1;
 	if (ps->bmP && ps->pszText && !strcmp (ps->pszText, s))
 		return ps;
@@ -951,7 +969,7 @@ return CreatePoolString (s, idP);
 }
 
 //------------------------------------------------------------------------------
-
+int OglUBitMapMC2 (int x, int y, int dw, int dh, grsBitmap *bmP, grsColor *c, int scale, int orient);
 int GrString (int x, int y, const char *s, int *idP)
 {
 	int			w, h, aw, clipped = 0;
@@ -1497,18 +1515,18 @@ void GrSetCurFont (grsFont * newFont)
 int GrInternalStringClipped (int x, int y, const char *s)
 {
 	unsigned char * fp;
-	const char * text_ptr, * next_row, * text_ptr1;
+	const char * textP, * nextRowP, * text_ptr1;
 	int r, BitMask, i, bits, width, spacing, letter, underline;
 	int x1 = x, last_x;
 
   bits=0;
 
-	next_row = s;
+	nextRowP = s;
 	FG_COLOR.rgb = 0;
-	while (next_row != NULL)
+	while (nextRowP != NULL)
 	{
-		text_ptr1 = next_row;
-		next_row = NULL;
+		text_ptr1 = nextRowP;
+		nextRowP = NULL;
 
 		x = x1;
 		if (x==0x8000)			//centered
@@ -1517,41 +1535,41 @@ int GrInternalStringClipped (int x, int y, const char *s)
 		last_x = x;
 
 		for (r=0; r<FHEIGHT; r++)	{
-			text_ptr = text_ptr1;
+			textP = text_ptr1;
 			x = last_x;
 
-			while (*text_ptr)	{
-				if (*text_ptr == '\n')	{
-					next_row = &text_ptr[1];
+			while (*textP)	{
+				if (*textP == '\n')	{
+					nextRowP = &textP[1];
 					break;
 				}
 
-				if (*text_ptr == CC_COLOR) {
-					FG_COLOR.index = * (text_ptr+1);
-					text_ptr += 2;
+				if (*textP == CC_COLOR) {
+					FG_COLOR.index = * (textP+1);
+					textP += 2;
 					continue;
 				}
 
-				if (*text_ptr == CC_LSPACING) {
+				if (*textP == CC_LSPACING) {
 					Int3 ();	//	Warning: skip lines not supported for clipped strings.
-					text_ptr += 2;
+					textP += 2;
 					continue;
 				}
 
 				underline = 0;
-				if (*text_ptr == CC_UNDERLINE)	{
+				if (*textP == CC_UNDERLINE)	{
 					if ((r==FBASELINE+2) || (r==FBASELINE+3))
 						underline = 1;
-					text_ptr++;
+					textP++;
 				}
 
-				GetCharWidth (text_ptr[0], text_ptr[1], &width, &spacing);
+				GetCharWidth (textP[0], textP[1], &width, &spacing);
 
-				letter = *text_ptr-FMINCHAR;
+				letter = *textP-FMINCHAR;
 
 				if (!INFONT (letter)) {	//not in font, draw as space
 					x += spacing;
-					text_ptr++;
+					textP++;
 					continue;
 				}
 
@@ -1586,7 +1604,7 @@ int GrInternalStringClipped (int x, int y, const char *s)
 
 				x += spacing-width;		//for kerning
 
-				text_ptr++;
+				textP++;
 			}
 			y++;
 		}
@@ -1599,18 +1617,18 @@ int GrInternalStringClipped (int x, int y, const char *s)
 int GrInternalStringClippedM (int x, int y, const char *s)
 {
 	unsigned char * fp;
-	const char * text_ptr, * next_row, * text_ptr1;
+	const char * textP, * nextRowP, * text_ptr1;
 	int r, BitMask, i, bits, width, spacing, letter, underline;
 	int x1 = x, last_x;
 
   bits=0;
 
-	next_row = s;
+	nextRowP = s;
 	FG_COLOR.rgb = 0;
-	while (next_row != NULL)
+	while (nextRowP != NULL)
 	{
-		text_ptr1 = next_row;
-		next_row = NULL;
+		text_ptr1 = nextRowP;
+		nextRowP = NULL;
 
 		x = x1;
 		if (x==0x8000)			//centered
@@ -1621,40 +1639,40 @@ int GrInternalStringClippedM (int x, int y, const char *s)
 		for (r=0; r<FHEIGHT; r++)	{
 			x = last_x;
 
-			text_ptr = text_ptr1;
+			textP = text_ptr1;
 
-			while (*text_ptr)	{
-				if (*text_ptr == '\n')	{
-					next_row = &text_ptr[1];
+			while (*textP)	{
+				if (*textP == '\n')	{
+					nextRowP = &textP[1];
 					break;
 				}
 
-				if (*text_ptr == CC_COLOR) {
-					FG_COLOR.index = * (text_ptr+1);
-					text_ptr += 2;
+				if (*textP == CC_COLOR) {
+					FG_COLOR.index = * (textP+1);
+					textP += 2;
 					continue;
 				}
 
-				if (*text_ptr == CC_LSPACING) {
+				if (*textP == CC_LSPACING) {
 					Int3 ();	//	Warning: skip lines not supported for clipped strings.
-					text_ptr += 2;
+					textP += 2;
 					continue;
 				}
 
 				underline = 0;
-				if (*text_ptr == CC_UNDERLINE)	{
+				if (*textP == CC_UNDERLINE)	{
 					if ((r==FBASELINE+2) || (r==FBASELINE+3))
 						underline = 1;
-					text_ptr++;
+					textP++;
 				}
 
-				GetCharWidth (text_ptr[0], text_ptr[1], &width, &spacing);
+				GetCharWidth (textP[0], textP[1], &width, &spacing);
 
-				letter = *text_ptr-FMINCHAR;
+				letter = *textP-FMINCHAR;
 
 				if (!INFONT (letter)) {	//not in font, draw as space
 					x += spacing;
-					text_ptr++;
+					textP++;
 					continue;
 				}
 
@@ -1690,7 +1708,7 @@ int GrInternalStringClippedM (int x, int y, const char *s)
 
 				x += spacing-width;		//for kerning
 
-				text_ptr++;
+				textP++;
 			}
 			y++;
 		}

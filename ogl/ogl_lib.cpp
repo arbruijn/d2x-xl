@@ -602,10 +602,15 @@ if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
 	OglDrawBuffer (GL_BACK, 1);
 if (gameStates.ogl.bShadersOk)
 	glUseProgramObject (0);
+glEnable (GL_TEXTURE_2D);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
+OGL_BINDTEX (0);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
+OGL_BINDTEX (0);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
+OGL_BINDTEX (0);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
+OGL_BINDTEX (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 OglViewport (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #ifndef NMONO

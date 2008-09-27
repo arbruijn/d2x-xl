@@ -91,6 +91,7 @@ if (gameStates.ogl.hDepthBuffer || (gameStates.ogl.hDepthBuffer = OglCreateDepth
 			return gameStates.ogl.hDepthBuffer = 0;
 			}
 		gameStates.ogl.bHaveDepthBuffer = 1;
+		gameData.render.nStateChanges++;
 		}
 	}
 return gameStates.ogl.hDepthBuffer;
@@ -778,13 +779,15 @@ if (gameStates.ogl.bDepthBlending) {
 			if (gameStates.render.automap.bDisplay)
 				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
 			else {
-				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) gameData.render.ogl.depthScale[Z]);
+				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) gameData.render.ogl.depthScale [Z]);
 				glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) dMax);
 				}
+			gameData.render.nShaderChanges++;
 			}
 		else {
-			if (!gameStates.render.automap.bDisplay && (dMaxPrev != dMax))
+			if (!gameStates.render.automap.bDisplay && (dMaxPrev != dMax)) {
 				glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) dMax);
+				}
 			}
 		dMaxPrev = dMax;
 		glDisable (GL_DEPTH_TEST);
@@ -799,7 +802,9 @@ void UnloadGlareShader (void)
 {
 if (gameStates.ogl.bDepthBlending) {
 	glUseProgramObject (0);
+	gameStates.render.history.nShader = -1;
 	//DestroyGlareDepthTexture ();
+	glEnable (GL_TEXTURE_2D);
 	glActiveTexture (GL_TEXTURE1);
 	glBindTexture (GL_TEXTURE_2D, 0);
 	glActiveTexture (GL_TEXTURE2);
