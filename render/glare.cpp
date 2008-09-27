@@ -803,7 +803,7 @@ void UnloadGlareShader (void)
 if (gameStates.ogl.bDepthBlending) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
-	//DestroyGlareDepthTexture ();
+	DestroyGlareDepthTexture ();
 	glEnable (GL_TEXTURE_2D);
 	glActiveTexture (GL_TEXTURE1);
 	glBindTexture (GL_TEXTURE_2D, 0);
