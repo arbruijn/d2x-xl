@@ -47,6 +47,7 @@
 #include "ogl_render.h"
 #include "render.h"
 #include "sphere.h"
+#include "glare.h"
 
 //------------------------------------------------------------------------------
 
@@ -602,6 +603,7 @@ if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
 	OglDrawBuffer (GL_BACK, 1);
 if (gameStates.ogl.bShadersOk)
 	glUseProgramObject (0);
+DestroyGlareDepthTexture ();
 glEnable (GL_TEXTURE_2D);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
 OGL_BINDTEX (0);
