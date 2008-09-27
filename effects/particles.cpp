@@ -949,7 +949,7 @@ else {
 #endif
 	pc.alpha *= alphaScale [gameOpts->render.smoke.nAlpha [gameOpts->render.smoke.bSyncSizes ? 0 : pParticle->nClass]];
 	}
-if (pc.alpha < 0.001) {
+if (pc.alpha < 1.0 / 255.0) {
 	pParticle->nLife = 0;
 	return 0;
 	}
