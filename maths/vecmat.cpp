@@ -534,10 +534,10 @@ return fVector::Dist(va, vb);
 // side. Divide by 2 * 20 * 20 (20 is the default side length which is
 // interpreted as distance unit "1").
 
-float TriangleSize (const vmsVector& p0, const vmsVector& p1, const vmsVector& p2) {
-
-#if 0
-	return 0.5f*X2F(vmsVector::Cross(p1-p0, p2-p0).Mag());
+float TriangleSize (const vmsVector& p0, const vmsVector& p1, const vmsVector& p2) 
+{
+#if 1
+	return X2F (vmsVector::Cross (p1 - p0, p2 - p0).Mag ()) / 800.0f;
 #else
 	fix			lMax, l, i = 0;
 
