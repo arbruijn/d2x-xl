@@ -48,7 +48,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "makesig.h"
 
-#define STRINGPOOL 1
 #define MAX_OPEN_FONTS	50
 #define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)
 
@@ -973,14 +972,15 @@ int OglUBitMapMC2 (int x, int y, int dw, int dh, grsBitmap *bmP, grsColor *c, in
 int GrString (int x, int y, const char *s, int *idP)
 {
 	int			w, h, aw, clipped = 0;
-#if STRINGPOOL
-	grsString	*ps;
 
-if ((TYPE == BM_OGL) && (ps = GetPoolString (s, idP))) {
-	OglUBitMapMC (x, y, 0, 0, ps->bmP, &FG_COLOR, F1_0, 0);
-	return (int) (ps - stringPool) + 1;
+if (gameOpts->render.coronas.nStyle < 2) {
+		grsString	*ps;
+
+	if ((TYPE == BM_OGL) && (ps = GetPoolString (s, idP))) {
+		OglUBitMapMC (x, y, 0, 0, ps->bmP, &FG_COLOR, F1_0, 0);
+		return (int) (ps - stringPool) + 1;
+		}
 	}
-#endif
 Assert (FONT != NULL);
 if (x == 0x8000)	{
 	if (y < 0)

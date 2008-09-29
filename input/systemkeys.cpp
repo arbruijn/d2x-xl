@@ -805,6 +805,10 @@ void HandleGameKey(int key)
 			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
 			break;
 
+		case KEY_ALTED + KEY_T:
+			gameStates.render.bShowTime = !gameStates.render.bShowTime;
+			break;
+
 		case KEY_CTRLED + KEY_ALTED + KEY_R:
 			gr_renderstats = !gr_renderstats;
 			break;

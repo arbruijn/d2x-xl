@@ -549,8 +549,8 @@ if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMs
 	return;
 
 if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
-	timevar=I2X (netGame.xPlayTimeAllowed*5*60);
-	i=X2I (timevar-gameStates.app.xThisLevelTime);
+	timevar = I2X (netGame.xPlayTimeAllowed*5*60);
+	i = X2I (timevar-gameStates.app.xThisLevelTime);
 	i++;
 	sprintf (szScore, "T - %5d", i);
 	GrGetStringSize (szScore, &w, &h, &aw);
@@ -1232,16 +1232,18 @@ else if (LOCALPLAYER.lives > 1)  {
 
 void ShowTime (void)
 {
-	int secs = X2I (LOCALPLAYER.timeLevel) % 60;
-	int mins = X2I (LOCALPLAYER.timeLevel) / 60;
+if (gameStates.render.bShowTime) {
+		int secs = X2I (LOCALPLAYER.timeLevel) % 60;
+		int mins = X2I (LOCALPLAYER.timeLevel) / 60;
 
-	static int nIdTime = 0;
+		static int nIdTime = 0;
 
-GrSetCurFont (GAME_FONT);
-GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-nIdTime = GrPrintF (&nIdTime, grdCurCanv->cv_w - 4 * GAME_FONT->ftWidth,
-						  grdCurCanv->cv_h - 4 * nHUDLineSpacing,
-						  "%d:%02d", mins, secs);
+	GrSetCurFont (GAME_FONT);
+	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	nIdTime = GrPrintF (&nIdTime, grdCurCanv->cv_w - 4 * GAME_FONT->ftWidth,
+							  grdCurCanv->cv_h - 4 * nHUDLineSpacing,
+							  "%d:%02d", mins, secs);
+	}
 }
 
 //	-----------------------------------------------------------------------------

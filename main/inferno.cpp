@@ -1995,6 +1995,7 @@ gameStates.render.bDisableFades = 0;
 gameStates.render.bDropAfterburnerBlob = 0;
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 gameStates.render.bShowFrameRate = 0;
+gameStates.render.bShowTime = 0;
 gameStates.render.cameras.bActive = 0;
 gameStates.render.color.bLightmapsOk = 1;
 gameStates.render.nZoomFactor = F1_0;

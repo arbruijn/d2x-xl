@@ -603,7 +603,11 @@ if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
 	OglDrawBuffer (GL_BACK, 1);
 if (gameStates.ogl.bShadersOk)
 	glUseProgramObject (0);
+#if 0
+// There's a weird effect of string pooling causing the renderer to stutter every time a 
+// new string texture is uploaded to the OpenGL driver when depth textures are used.
 DestroyGlareDepthTexture ();
+#endif
 glEnable (GL_TEXTURE_2D);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
 OGL_BINDTEX (0);
