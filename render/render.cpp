@@ -1408,7 +1408,7 @@ void AddObjectToSegList (short nObject, short nSegment)
 pi->nNextItem = gameData.render.mine.renderObjs.ref [nSegment];
 gameData.render.mine.renderObjs.ref [nSegment] = gameData.render.mine.renderObjs.nUsed++;
 pi->nObject = nObject;
-pi->xDist = vmsVector::Dist(OBJECTS [nObject].position.vPos, gameData.render.mine.viewerEye);
+pi->xDist = vmsVector::Dist (OBJECTS [nObject].position.vPos, gameData.render.mine.viewerEye);
 }
 
 //------------------------------------------------------------------------------
@@ -1607,7 +1607,11 @@ BumpProcessedFlag ();
 BumpVisibleFlag ();
 #else
 memset (gameData.render.mine.bProcessed, 0, sizeof (gameData.render.mine.bProcessed));
-memset (gameData.render.mine.nSegRenderList, 0xff, sizeof (gameData.render.mine.nSegRenderList));
+memset (gameData.render.mine.bVisible, 0, sizeof (gameData.render.mine.bVisible));
+for (i = 0; i < sizeofa (gameData.render.mine.nSegRenderList); i++)
+	gameData.render.mine.nSegRenderList [i] = -32767;
+gameData.render.mine.nProcessed = 1;
+gameData.render.mine.nVisible = 1;
 #endif
 
 if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && !gameStates.render.automap.bRadar) {
