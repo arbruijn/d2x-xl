@@ -541,13 +541,13 @@ float TriangleSize (const vmsVector& p0, const vmsVector& p1, const vmsVector& p
 #else
 	fix			lMax, l, i = 0;
 
-lMax = vmsVector::Dist(p0, p1);
-l = vmsVector::Dist(p1, p2);
+lMax = vmsVector::Dist (p0, p1);
+l = vmsVector::Dist (p1, p2);
 if (lMax < l) {
 	lMax = l;
 	i = 1;
 	}
-l = vmsVector::Dist(p2, p0);
+l = vmsVector::Dist (p2, p0);
 if (lMax < l) {
 	lMax = l;
 	i = 2;

@@ -811,7 +811,7 @@ void DoD1AIRobotHitAttack(tObject *robot, tObject *player, vmsVector *collision_
 	if (botInfoP->attackType == 1) {
 		if (ailP->nextPrimaryFire <= 0) {
 			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-				if (vmsVector::Dist(gameData.objs.console->position.vPos, robot->position.vPos) < robot->size + gameData.objs.console->size + F1_0*2)
+				if (vmsVector::Dist(OBJPOS (gameData.objs.console)->vPos, robot->position.vPos) < robot->size + gameData.objs.console->size + F1_0*2)
 					CollidePlayerAndNastyRobot ( player, robot, collision_point );
 
 			robot->cType.aiInfo.GOAL_STATE = D1_AIS_RECO;
@@ -1897,7 +1897,7 @@ void DoD1AIFrame (tObject *objP)
 			aiP->CLOAKED = 0;
 
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-		gameData.ai.vBelievedPlayerPos = gameData.objs.console->position.vPos;
+		gameData.ai.vBelievedPlayerPos = OBJPOS (gameData.objs.console)->vPos;
 
 	dist_to_player = vmsVector::Dist(gameData.ai.vBelievedPlayerPos, objP->position.vPos);
 	if (dist_to_player < F1_0 * 40)
@@ -2077,7 +2077,7 @@ void DoD1AIFrame (tObject *objP)
 			//	If player cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
 			if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 				pv = 0;
-				dtp = vmsVector::Dist(gameData.objs.console->position.vPos, objP->position.vPos)/4;
+				dtp = vmsVector::Dist(OBJPOS (gameData.objs.console)->vPos, objP->position.vPos)/4;
 			}
 
 			do_super_boss_stuff(objP, dtp, pv);
@@ -2605,7 +2605,7 @@ void ai_do_cloak_stuff(void)
 	int	i;
 
 	for (i=0; i<D1_MAX_AI_CLOAK_INFO; i++) {
-		gameData.ai.cloakInfo [i].vLastPos = gameData.objs.console->position.vPos;
+		gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.console)->vPos;
 		gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
 	}
 
@@ -2674,7 +2674,7 @@ void dump_ai_objects_all()
 		tAILocal		*ailP = &gameData.ai.localInfo [nObject];
 		fix			dist_to_player;
 
-		dist_to_player = vm_vec_dist(&objP->position.vPos, &gameData.objs.console->position.vPos);
+		dist_to_player = vm_vec_dist(&objP->position.vPos, &OBJPOS (gameData.objs.console)->vPos);
 
 		if (objP->controlType == CT_AI) {
 			fprintf(D1_AI_dump_file, "%3i: %3i %8.3f %8s %8s [%3i %4i]\n",

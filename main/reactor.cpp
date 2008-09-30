@@ -299,7 +299,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		// center can spot cloaked dudes.
 
 		if (IsMultiGame)
-			gameData.ai.vBelievedPlayerPos = OBJECTS [LOCALPLAYER.nObject].position.vPos;
+			gameData.ai.vBelievedPlayerPos = OBJPOS (OBJECTS + LOCALPLAYER.nObject)->vPos;
 
 		//	Hack for special control centers which are isolated and not reachable because the
 		//	real control center is inside the boss.
@@ -309,7 +309,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		if (i == MAX_SIDES_PER_SEGMENT)
 			return;
 
-		vecToPlayer = gameData.objs.console->position.vPos - objP->position.vPos;
+		vecToPlayer = OBJPOS (gameData.objs.console)->vPos - objP->position.vPos;
 		xDistToPlayer = vmsVector::Normalize(vecToPlayer);
 		if (xDistToPlayer < F1_0 * 200) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);

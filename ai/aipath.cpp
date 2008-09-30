@@ -959,7 +959,7 @@ xDistToGoal = vmsVector::Dist(vGoalPoint, objP->position.vPos);
 if (gameStates.app.bPlayerIsDead)
 	xDistToPlayer = vmsVector::Dist(objP->position.vPos, gameData.objs.viewer->position.vPos);
 else
-	xDistToPlayer = vmsVector::Dist(objP->position.vPos, gameData.objs.console->position.vPos);
+	xDistToPlayer = vmsVector::Dist(objP->position.vPos, OBJPOS (gameData.objs.console)->vPos);
 	//	Efficiency hack: If far away from tPlayer, move in big quantized jumps.
 if (!(nPlayerVisibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !IsMultiGame) {
 	if (xDistToGoal < F1_0*2) {

@@ -116,7 +116,7 @@ int PickConnectedSegment (tObject *objP, int nMaxDepth, int *nDepthP)
 
 if (!objP)
 	return -1;
-nStartSeg = objP->nSegment;
+nStartSeg = OBJSEG (objP);
 nHead =
 nTail = 0;
 segQueue [nHead++] = nStartSeg;
@@ -435,7 +435,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 //	Return true if some powerup is nearby (within 3 segments).
 int WeaponNearby (tObject *objP, int weapon_id)
 {
-	return ObjectNearbyAux (objP->nSegment, OBJ_POWERUP, weapon_id, 3);
+return ObjectNearbyAux (objP->nSegment, OBJ_POWERUP, weapon_id, 3);
 }
 
 //	------------------------------------------------------------------------------------------------------

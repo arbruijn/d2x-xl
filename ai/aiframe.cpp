@@ -1051,7 +1051,7 @@ return 1;
 int AIPlayerPosHandler (tObject *objP, tAIStateInfo *siP)
 {
 if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileCamera != -1)) {
-	gameData.ai.vBelievedPlayerPos = OBJECTS [gameData.ai.nLastMissileCamera].position.vPos;
+	gameData.ai.vBelievedPlayerPos = OBJPOS (OBJECTS + gameData.ai.nLastMissileCamera)->vPos;
 	return 0;
 	}
 if (gameStates.app.cheats.bRobotsKillRobots) {
@@ -1071,8 +1071,8 @@ if (gameStates.app.cheats.bRobotsKillRobots) {
 					}
 				}
 		if (nMinObj >= 0) {
-			gameData.ai.vBelievedPlayerPos = OBJECTS [nMinObj].position.vPos;
-			gameData.ai.nBelievedPlayerSeg = OBJECTS [nMinObj].nSegment;
+			gameData.ai.vBelievedPlayerPos = OBJPOS (OBJECTS + nMinObj)->vPos;
+			gameData.ai.nBelievedPlayerSeg = OBJSEG (OBJECTS + nMinObj);
 			vmsVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, objP->position.vPos);
 			return 0;
 			}

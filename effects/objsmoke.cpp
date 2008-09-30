@@ -335,8 +335,7 @@ else {
 		nParts *= 25;
 		nParts += 75;
 		}
-	nParts = (objP->mType.physInfo.thrust[X] | objP->mType.physInfo.thrust[Y] | objP->mType.physInfo.thrust[Z]) ?
-				SHIP_MAX_PARTS / 2 : SHIP_MAX_PARTS;
+	nParts = objP->mType.physInfo.thrust.IsZero() ? SHIP_MAX_PARTS : SHIP_MAX_PARTS / 2;
 	if (SHOW_SMOKE && nParts && gameOpts->render.smoke.bPlayers) {
 		if (gameOpts->render.smoke.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [0]);
@@ -346,12 +345,12 @@ else {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [1]);
 			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [1], nScale);
 			}
-		if (objP->mType.physInfo.thrust.IsZero())
+		if (!objP->mType.physInfo.thrust.IsZero ())
 			vDirP = NULL;
-		else {
+		else {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
 			nScale /= 2;
-			vDir = OBJPOS (objP)->mOrient[FVEC] * (F1_0 / 8);
+			vDir = OBJPOS (objP)->mOrient [FVEC] * (F1_0 / 8);
 			vDir = -vDir;
 			vDirP = &vDir;
 			}
@@ -370,8 +369,7 @@ else {
 			SetSmokePartScale (h, -nScale);
 			SetSmokeDensity (h, nParts, gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1]);
 			SetSmokeSpeed (gameData.smoke.objects [i],
-								(objP->mType.physInfo.velocity[X] || objP->mType.physInfo.velocity[Y] || objP->mType.physInfo.velocity[Z]) ?
-								PLR_PART_SPEED : PLR_PART_SPEED * 2);
+								objP->mType.physInfo.thrust.IsZero () ? PLR_PART_SPEED * 2 : PLR_PART_SPEED);
 			}
 		CalcThrusterPos (objP, &ti, 0);
 		for (j = 0; j < 2; j++)
