@@ -1055,8 +1055,6 @@ void ReleaseObject (short nObject)
 Assert (nObject != -1);
 Assert (nObject != 0);
 Assert (objP->nType != OBJ_NONE);
-if (objP->nType == OBJ_PLAYER)
-	objP = objP;
 Assert (objP != gameData.objs.console);
 if (objP->nType == OBJ_WEAPON) {
 	RespawnDestroyedWeapon (nObject);

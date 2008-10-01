@@ -817,13 +817,13 @@ g3sPoint *RotateVertex (int i)
 {
 g3sPoint *p = gameData.segs.points + i;
 if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) {
-	G3TransformAndEncodePoint (p, gameData.segs.vertices[i]);
-	if (gameData.render.zMax < p->p3_vec[Z])
-		gameData.render.zMax = p->p3_vec[Z];
+	G3TransformAndEncodePoint (p, gameData.segs.vertices [i]);
+	if (gameData.render.zMax < p->p3_vec [Z])
+		gameData.render.zMax = p->p3_vec [Z];
 	if (!gameStates.ogl.bUseTransform) {
-		gameData.segs.fVertices [i][X] = X2F (p->p3_vec[X]);
-		gameData.segs.fVertices [i][Y] = X2F (p->p3_vec[Y]);
-		gameData.segs.fVertices [i][Z] = X2F (p->p3_vec[Z]);
+		gameData.segs.fVertices [i][X] = X2F (p->p3_vec [X]);
+		gameData.segs.fVertices [i][Y] = X2F (p->p3_vec [Y]);
+		gameData.segs.fVertices [i][Z] = X2F (p->p3_vec [Z]);
 		}
 	p->p3_index = i;
 	gameData.render.mine.nRotatedLast [i] = gameStates.render.nFrameCount;
@@ -836,15 +836,16 @@ return p;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-g3sCodes RotateVertexList (int nVertices, short *vertexIndexP) {
+g3sCodes RotateVertexList (int nVertices, short *vertexIndexP) 
+{
 	int			i;
 	g3sPoint		*p;
 	g3sCodes		cc = {0, 0xff};
 
-	for (i = 0; i < nVertices; i++) {
-		p = RotateVertex(vertexIndexP[i]);
-		cc.ccAnd &= p->p3_codes;
-		cc.ccOr |= p->p3_codes;
+for (i = 0; i < nVertices; i++) {
+	p = RotateVertex (vertexIndexP [i]);
+	cc.ccAnd &= p->p3_codes;
+	cc.ccOr |= p->p3_codes;
 	}
 	return cc;
 }
@@ -858,7 +859,7 @@ void ProjectVertexList (int nVertices, short *vertexIndexP)
 for (i = 0; i < nVertices; i++) {
 	j = vertexIndexP [i];
 	if (!(gameData.segs.points [j].p3_flags & PF_PROJECTED))
-		G3ProjectPoint(&gameData.segs.points[j]);
+		G3ProjectPoint (&gameData.segs.points [j]);
 	}
 }
 

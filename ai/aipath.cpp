@@ -315,8 +315,8 @@ bAvoidPlayer = gameData.objs.console->nSegment == nAvoidSeg;
 if (nMaxDepth == -1)
 	nMaxDepth = MAX_PATH_LENGTH;
 lNumPoints = 0;
-memset (bVisited, 0, sizeof (bVisited [0])* (gameData.segs.nLastSegment+1));
-memset (depth, 0, sizeof (depth [0])* (gameData.segs.nLastSegment+1));
+memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nLastSegment+1));
+memset (depth, 0, sizeof (depth [0]) * (gameData.segs.nLastSegment+1));
 //	If there is a tSegment we're not allowed to visit, mark it.
 if (nAvoidSeg != -1) {
 	Assert (nAvoidSeg <= gameData.segs.nLastSegment);
@@ -1248,7 +1248,7 @@ void AIPathGarbageCollect (void)
 	int			nFreePathIdx = 0;
 	int			nPathObjects = 0;
 	int			nObject;
-	int			objind, i, nOldIndex;
+	int			nObjIdx, i, nOldIndex;
 	tObject		*objP;
 	tAIStatic	*aiP;
 	obj_path		objectList [MAX_OBJECTS_D2X];
@@ -1276,8 +1276,8 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++, objP++) {
 qsort (objectList, nPathObjects, sizeof (objectList [0]),
 		 (int (_CDECL_ *) (void const *, void const *))QSCmpPathIndex);
 
-for (objind=0; objind < nPathObjects; objind++) {
-	nObject = objectList [objind].nObject;
+for (nObjIdx=0; nObjIdx < nPathObjects; nObjIdx++) {
+	nObject = objectList [nObjIdx].nObject;
 	objP = OBJECTS + nObject;
 	aiP = &objP->cType.aiInfo;
 	nOldIndex = aiP->nHideIndex;

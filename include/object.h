@@ -309,9 +309,9 @@ public:
 
 	// initialize a new tObject.  adds to the list for the given tSegment
 	// returns the tObject number
-	static int Create(ubyte nType, ubyte id, short owner, short nSegment, const vmsVector& pos,
-	               const vmsMatrix& orient, fix size,
-	               ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
+	static int Create (ubyte nType, ubyte id, short owner, short nSegment, const vmsVector& pos,
+							 const vmsMatrix& orient, fix size,
+							 ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
 
 	// unlinks an tObject from a tSegment's list of objects
 	void Unlink();

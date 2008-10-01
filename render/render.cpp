@@ -1726,7 +1726,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					break;
 					}
 				if (!(pnt->p3_flags & PF_PROJECTED))
-					G3ProjectPoint(pnt);
+					G3ProjectPoint (pnt);
 #else
 				if (!(pnt->p3_flags & PF_PROJECTED)) {
 					bNotProjected = 1;
@@ -1745,7 +1745,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 				if (p.bot < y)
 					p.bot = y;
 				}
-			if (bNotProjected || !(andCodes3D | (0xff & CodePortal (&p, curPortal)))) {	//maybe add this tSegment
+			if (bNotProjected || !(andCodes3D | (0xff & CodePortal (&p, curPortal)))) {	//maybe add this segment
 				int rp = gameData.render.mine.nRenderPos [nChildSeg];
 				tPortal *newPortal = renderPortals + lCnt;
 
@@ -1757,8 +1757,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					newPortal->top = max (curPortal->top, p.top);
 					newPortal->bot = min (curPortal->bot, p.bot);
 					}
-				//see if this segment already visited, and if so, does current tPortal
-				//expand the old tPortal?
+				//see if this segment has already been visited, and if so, does the current portal expand the old portal?
 				if (rp == -1) {
 					gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
 					gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;

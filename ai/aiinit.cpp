@@ -167,8 +167,7 @@ void InitAIObjects (void)
 	short		h, i, j;
 	tObject	*objP;
 
-	gameData.ai.freePointSegs = gameData.ai.pointSegs;
-
+gameData.ai.freePointSegs = gameData.ai.pointSegs;
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	gameData.boss [i].nObject = -1;
 #ifdef _DEBUG

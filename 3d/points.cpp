@@ -62,11 +62,11 @@ void G3ProjectPoint (g3sPoint *p)
 if ((p->p3_flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
 	return;
 fVector3	v;
-v[X] = X2F (p->p3_vec[X]) * viewInfo.scalef[X];
-v[Y] = X2F (p->p3_vec[Y]) * viewInfo.scalef[Y];
-v[Z] = X2F (p->p3_vec[Z]) * viewInfo.scalef[Z];
-p->p3_screen.x = (fix) (fxCanvW2 + v[X] * fxCanvW2 / v[Z]);
-p->p3_screen.y = (fix) (fxCanvH2 - v[Y] * fxCanvH2 / v[Z]);
+v [X] = X2F (p->p3_vec [X]) * viewInfo.scalef [X];
+v [Y] = X2F (p->p3_vec [Y]) * viewInfo.scalef [Y];
+v [Z] = X2F (p->p3_vec [Z]) * viewInfo.scalef [Z];
+p->p3_screen.x = (fix) (fxCanvW2 + v [X] * fxCanvW2 / v [Z]);
+p->p3_screen.y = (fix) (fxCanvH2 - v [Y] * fxCanvH2 / v [Z]);
 p->p3_flags |= PF_PROJECTED;
 }
 
@@ -77,9 +77,9 @@ void G3Point2Vec (vmsVector *v,short sx,short sy)
 	vmsVector tempv;
 	vmsMatrix tempm;
 
-tempv[X] =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale[Z], viewInfo.scale[X]);
-tempv[Y] = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale[Z], viewInfo.scale[Y]);
-tempv[Z] = f1_0;
+tempv [X] =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale [Z], viewInfo.scale [X]);
+tempv [Y] = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale [Z], viewInfo.scale [Y]);
+tempv [Z] = f1_0;
 vmsVector::Normalize(tempv);
 tempm = viewInfo.view [1].Transpose();
 *v = tempm * tempv;
@@ -89,9 +89,9 @@ tempm = viewInfo.view [1].Transpose();
 //delta rotation functions
 vmsVector *G3RotateDeltaX (vmsVector *dest,fix dx)
 {
-	(*dest)[X] = FixMul (viewInfo.view [0][RVEC][X], dx);
-	(*dest)[Y] = FixMul (viewInfo.view [0][UVEC][X], dx);
-	(*dest)[Z] = FixMul (viewInfo.view [0][FVEC][X], dx);
+	(*dest) [X] = FixMul (viewInfo.view [0] [RVEC] [X], dx);
+	(*dest) [Y] = FixMul (viewInfo.view [0] [UVEC] [X], dx);
+	(*dest) [Z] = FixMul (viewInfo.view [0] [FVEC] [X], dx);
 
 	return dest;
 }
@@ -100,9 +100,9 @@ vmsVector *G3RotateDeltaX (vmsVector *dest,fix dx)
 
 vmsVector *G3RotateDeltaY (vmsVector *dest,fix dy)
 {
-	(*dest)[X] = FixMul (viewInfo.view [0][RVEC][Y],dy);
-	(*dest)[Y] = FixMul (viewInfo.view [0][UVEC][Y],dy);
-	(*dest)[Z] = FixMul (viewInfo.view [0][FVEC][Y],dy);
+	(*dest) [X] = FixMul (viewInfo.view [0] [RVEC] [Y],dy);
+	(*dest) [Y] = FixMul (viewInfo.view [0] [UVEC] [Y],dy);
+	(*dest) [Z] = FixMul (viewInfo.view [0] [FVEC] [Y],dy);
 
 	return dest;
 }
@@ -111,9 +111,9 @@ vmsVector *G3RotateDeltaY (vmsVector *dest,fix dy)
 
 vmsVector *G3RotateDeltaZ (vmsVector *dest,fix dz)
 {
-	(*dest)[X] = FixMul (viewInfo.view [0][RVEC][Z],dz);
-	(*dest)[Y] = FixMul (viewInfo.view [0][UVEC][Z],dz);
-	(*dest)[Z] = FixMul (viewInfo.view [0][FVEC][Z],dz);
+	(*dest) [X] = FixMul (viewInfo.view [0] [RVEC] [Z],dz);
+	(*dest) [Y] = FixMul (viewInfo.view [0] [UVEC] [Z],dz);
+	(*dest) [Z] = FixMul (viewInfo.view [0] [FVEC] [Z],dz);
 
 	return dest;
 }
@@ -121,7 +121,7 @@ vmsVector *G3RotateDeltaZ (vmsVector *dest,fix dz)
 // -----------------------------------------------------------------------------------
 
 const vmsVector& G3RotateDeltaVec (vmsVector& dest, const vmsVector& src) {
-	dest = viewInfo.view[0] * src;
+	dest = viewInfo.view [0] * src;
 	return dest;
 }
 
@@ -139,17 +139,17 @@ return G3EncodePoint (dest);
 fix G3CalcPointDepth(const vmsVector& pnt)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt[X] - viewInfo.pos[X], viewInfo.view [0][FVEC][X]);
-	q += mul64 (pnt[Y] - viewInfo.pos[Y], viewInfo.view [0][FVEC][Y]);
-	q += mul64 (pnt[Z] - viewInfo.pos[Z], viewInfo.view [0][FVEC][Z]);
+	QLONG q = mul64 (pnt [X] - viewInfo.pos [X], viewInfo.view [0] [FVEC] [X]);
+	q += mul64 (pnt [Y] - viewInfo.pos [Y], viewInfo.view [0] [FVEC] [Y]);
+	q += mul64 (pnt [Z] - viewInfo.pos [Z], viewInfo.view [0] [FVEC] [Z]);
 	return (fix) (q >> 16);
 #else
 	tQuadInt q;
 
 	q.low=q.high=0;
-	FixMulAccum (&q, (pnt[X] - viewInfo.pos[X]),viewInfo.view [0][FVEC][X]);
-	FixMulAccum (&q, (pnt[Y] - viewInfo.pos[Y]),viewInfo.view [0][FVEC][Y]);
-	FixMulAccum (&q, (pnt[Z] - viewInfo.pos[Z]),viewInfo.view [0][FVEC][Z]);
+	FixMulAccum (&q, (pnt [X] - viewInfo.pos [X]),viewInfo.view [0] [FVEC] [X]);
+	FixMulAccum (&q, (pnt [Y] - viewInfo.pos [Y]),viewInfo.view [0] [FVEC] [Y]);
+	FixMulAccum (&q, (pnt [Z] - viewInfo.pos [Z]),viewInfo.view [0] [FVEC] [Z]);
 	return FixQuadAdjust (&q);
 #endif
 }

@@ -867,24 +867,24 @@ CFWriteByte ((sbyte) objP->renderType, cfP);
 CFWriteByte ((sbyte) objP->flags, cfP);
 CFWriteShort (objP->nSegment, cfP);
 CFWriteShort (objP->attachedObj, cfP);
-CFWriteVector(OBJPOS (objP)->vPos, cfP);     
-CFWriteMatrix(OBJPOS (objP)->mOrient, cfP);  
+CFWriteVector (OBJPOS (objP)->vPos, cfP);     
+CFWriteMatrix (OBJPOS (objP)->mOrient, cfP);  
 CFWriteFix (objP->size, cfP); 
 CFWriteFix (objP->shields, cfP);
-CFWriteVector(objP->vLastPos, cfP);  
+CFWriteVector (objP->vLastPos, cfP);  
 CFWriteByte (objP->containsType, cfP); 
 CFWriteByte (objP->containsId, cfP);   
 CFWriteByte (objP->containsCount, cfP);
 CFWriteByte (objP->matCenCreator, cfP);
 CFWriteFix (objP->lifeleft, cfP);   
 if (objP->movementType == MT_PHYSICS) {
-	CFWriteVector(objP->mType.physInfo.velocity, cfP);   
-	CFWriteVector(objP->mType.physInfo.thrust, cfP);     
+	CFWriteVector (objP->mType.physInfo.velocity, cfP);   
+	CFWriteVector (objP->mType.physInfo.thrust, cfP);     
 	CFWriteFix (objP->mType.physInfo.mass, cfP);       
 	CFWriteFix (objP->mType.physInfo.drag, cfP);       
 	CFWriteFix (objP->mType.physInfo.brakes, cfP);     
-	CFWriteVector(objP->mType.physInfo.rotVel, cfP);     
-	CFWriteVector(objP->mType.physInfo.rotThrust, cfP);  
+	CFWriteVector (objP->mType.physInfo.rotVel, cfP);     
+	CFWriteVector (objP->mType.physInfo.rotThrust, cfP);  
 	CFWriteFixAng (objP->mType.physInfo.turnRoll, cfP);   
 	CFWriteShort ((short) objP->mType.physInfo.flags, cfP);      
 	}
@@ -943,7 +943,7 @@ switch (objP->renderType) {
 		int i;
 		CFWriteInt (objP->rType.polyObjInfo.nModel, cfP);
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			CFWriteAngVec(objP->rType.polyObjInfo.animAngles[i], cfP);
+			CFWriteAngVec (objP->rType.polyObjInfo.animAngles[i], cfP);
 		CFWriteInt (objP->rType.polyObjInfo.nSubObjFlags, cfP);
 		CFWriteInt (objP->rType.polyObjInfo.nTexOverride, cfP);
 		CFWriteInt (objP->rType.polyObjInfo.nAltTextures, cfP);
@@ -1093,8 +1093,11 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 void StateSaveSpawnPoint (int i, CFILE *cfP)
 {
-CFWriteVector(gameData.multiplayer.playerInit [i].position.vPos, cfP);     
-CFWriteMatrix(gameData.multiplayer.playerInit [i].position.mOrient, cfP);  
+#ifdef _DEBUG
+i = CFTell (cfP);
+#endif
+CFWriteVector (gameData.multiplayer.playerInit [i].position.vPos, cfP);     
+CFWriteMatrix (gameData.multiplayer.playerInit [i].position.mOrient, cfP);  
 CFWriteShort (gameData.multiplayer.playerInit [i].nSegment, cfP);
 CFWriteShort (gameData.multiplayer.playerInit [i].nSegType, cfP);
 }
@@ -1892,8 +1895,8 @@ objP->renderType = (ubyte) CFReadByte (cfP);
 objP->flags = (ubyte) CFReadByte (cfP);
 objP->nSegment = CFReadShort (cfP);
 objP->attachedObj = CFReadShort (cfP);
-CFReadVector(objP->position.vPos, cfP);     
-CFReadMatrix(objP->position.mOrient, cfP);  
+CFReadVector (objP->position.vPos, cfP);     
+CFReadMatrix (objP->position.mOrient, cfP);  
 objP->size = CFReadFix (cfP); 
 objP->shields = CFReadFix (cfP);
 CFReadVector (objP->vLastPos, cfP);  
@@ -1971,7 +1974,7 @@ switch (objP->renderType) {
 		int i;
 		objP->rType.polyObjInfo.nModel = CFReadInt (cfP);
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			CFReadAngVec(objP->rType.polyObjInfo.animAngles[i], cfP);
+			CFReadAngVec (objP->rType.polyObjInfo.animAngles [i], cfP);
 		objP->rType.polyObjInfo.nSubObjFlags = CFReadInt (cfP);
 		objP->rType.polyObjInfo.nTexOverride = CFReadInt (cfP);
 		objP->rType.polyObjInfo.nAltTextures = CFReadInt (cfP);
@@ -2120,12 +2123,19 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 //------------------------------------------------------------------------------
 
-void StateRestoreSpawnPoint (int i, CFILE *cfP)
+int StateRestoreSpawnPoint (int i, CFILE *cfP)
 {
-CFReadVector(gameData.multiplayer.playerInit [i].position.vPos, cfP);     
-CFReadMatrix(gameData.multiplayer.playerInit [i].position.mOrient, cfP);  
+DBG (i = CFTell (cfP));
+CFReadVector (gameData.multiplayer.playerInit [i].position.vPos, cfP);     
+CFReadMatrix (gameData.multiplayer.playerInit [i].position.mOrient, cfP);  
 gameData.multiplayer.playerInit [i].nSegment = CFReadShort (cfP);
 gameData.multiplayer.playerInit [i].nSegType = CFReadShort (cfP);
+return (gameData.multiplayer.playerInit [i].nSegment >= 0) &&
+		 (gameData.multiplayer.playerInit [i].nSegment < gameData.segs.nSegments) &&
+		 (gameData.multiplayer.playerInit [i].nSegment ==
+		  FindSegByPos (gameData.multiplayer.playerInit [i].position.vPos, 
+							 gameData.multiplayer.playerInit [i].nSegment, 1, 0));
+
 }
 
 //------------------------------------------------------------------------------
@@ -2431,9 +2441,16 @@ else
 if (sgVersion > 27)
 	gameData.missions.nEnteredFromLevel = CFReadShort (cfP);
 *nLevel = nCurrentLevel;
-if (sgVersion >= 37)
-	for (i = 0; i < MAX_PLAYERS; i++)
-		StateRestoreSpawnPoint (i, cfP);
+if (sgVersion >= 37) {
+	tObjPosition playerInitSave [MAX_PLAYERS];
+
+	memcpy (playerInitSave, gameData.multiplayer.playerInit, sizeof (playerInitSave));
+	for (h = 1, i = 0; i < MAX_PLAYERS; i++)
+		if (!StateRestoreSpawnPoint (i, cfP))
+			h = 0;
+	if (!h)
+		memcpy (gameData.multiplayer.playerInit, playerInitSave, sizeof (playerInitSave));
+	}
 return 1;
 }
 

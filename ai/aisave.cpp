@@ -32,6 +32,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <time.h>
 #endif
 
+#undef DBG
+#ifdef _DEBUG
+#	define DBG(_expr)	_expr
+#else
+#	define DBG(_expr)
+#endif
+
 //	-------------------------------------------------------------------------------------------------
 
 int AISaveBinState (CFILE *fp)
@@ -64,11 +71,8 @@ CFWrite (&gameData.escort.nSpecialGoal, sizeof (gameData.escort.nSpecialGoal), 1
 CFWrite (&gameData.escort.nGoalIndex, sizeof (gameData.escort.nGoalIndex), 1, fp);
 CFWrite (&gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS, fp);
 
-{
-int temp;
-temp = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
-CFWrite (&temp, sizeof (int), 1, fp);
-}
+i = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
+CFWrite (&i, sizeof (int), 1, fp);
 
 for (i = 0; i < MAX_BOSS_COUNT; i++)
 	CFWrite (&gameData.boss [i].nTeleportSegs, sizeof (gameData.boss [i].nTeleportSegs), 1, fp);
@@ -288,6 +292,9 @@ CFWriteInt (gameData.escort.nGoalObject, fp);
 CFWriteInt (gameData.escort.nSpecialGoal, fp);
 CFWriteInt (gameData.escort.nGoalIndex, fp);
 CFWrite (gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS, fp);
+#ifdef _DEBUG
+i = CFTell (fp);
+#endif
 CFWriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs), fp);
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	CFWriteShort (gameData.boss [i].nTeleportSegs, fp);
@@ -326,8 +333,8 @@ ailP->timePlayerSoundAttacked = CFReadFix (fp);
 ailP->nextMiscSoundTime = CFReadFix (fp);
 ailP->timeSinceProcessed = CFReadFix (fp);
 for (i = 0; i < MAX_SUBMODELS; i++) {
-	CFReadAngVec (ailP->goalAngles[i], fp);
-	CFReadAngVec (ailP->deltaAngles[i], fp);
+	CFReadAngVec (ailP->goalAngles [i], fp);
+	CFReadAngVec (ailP->deltaAngles [i], fp);
 	}
 CFRead (ailP->goalState, sizeof (ailP->goalState [0]), 1, fp);
 CFRead (ailP->achievedState, sizeof (ailP->achievedState [0]), 1, fp);
@@ -354,20 +361,24 @@ CFReadVector (ciP->vLastPos, fp);
 
 int AIRestoreUniState (CFILE *fp, int version)
 {
-	int	h, i, j, nMaxBossCount;
+	int	h, i, j, nMaxBossCount, nMaxPointSegs;
 
 memset (gameData.ai.localInfo, 0, sizeof (*gameData.ai.localInfo) * MAX_OBJECTS);
-memset (gameData.ai.pointSegs, 0, sizeof (gameData.ai.pointSegs));
 gameData.ai.bInitialized = CFReadInt (fp);
 gameData.ai.nOverallAgitation = CFReadInt (fp);
 h = (version > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2;
+DBG (i = CFTell (fp));
 for (i = 0; i < h; i++)
 	AIRestoreLocalInfo (gameData.ai.localInfo + i, fp);
-h = (version > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
-for (i = 0; i < h; i++)
+nMaxPointSegs = (version > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
+memset (gameData.ai.pointSegs, 0, sizeof (*gameData.ai.pointSegs) * nMaxPointSegs);
+DBG (i = CFTell (fp));
+for (i = 0; i < nMaxPointSegs; i++)
 	AIRestorePointSeg (gameData.ai.pointSegs + i, fp);
+DBG (i = CFTell (fp));
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	AIRestoreCloakInfo (gameData.ai.cloakInfo + i, fp);
+DBG (i = CFTell (fp));
 if (version < 29) {
 	gameData.boss [0].nCloakStartTime = CFReadFix (fp);
 	gameData.boss [0].nCloakEndTime = CFReadFix (fp);
@@ -431,8 +442,14 @@ else {
 	memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
 	}
 
-if (version >= 15)
-	gameData.ai.freePointSegs = gameData.ai.pointSegs + CFReadInt (fp);
+if (version >= 15) {
+	DBG (i = CFTell (fp));
+	i = CFReadInt (fp);
+	if ((i >= 0) && (i < nMaxPointSegs))
+		gameData.ai.freePointSegs = gameData.ai.pointSegs + i;
+	else
+		AIResetAllPaths ();
+	}
 else
 	AIResetAllPaths ();
 
