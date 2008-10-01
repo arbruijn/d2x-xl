@@ -74,11 +74,13 @@ if (gameStates.ogl.hDepthBuffer) {
 
 GLuint CopyDepthTexture (void)
 {
+	GLenum nError = 0;
+
 glActiveTexture (GL_TEXTURE1);
 glEnable (GL_TEXTURE_2D);
 if (!gameStates.ogl.hDepthBuffer)
 	gameStates.ogl.bHaveDepthBuffer = 0;
-if (gameStates.ogl.hDepthBuffer || (gameStates.ogl.hDepthBuffer = OglCreateDepthTexture (GL_TEXTURE1, 0))) {
+if (gameStates.ogl.hDepthBuffer || (gameStates.ogl.hDepthBuffer = OglCreateDepthTexture (-1, 0))) {
 	glBindTexture (GL_TEXTURE_2D, gameStates.ogl.hDepthBuffer);
 	if (!gameStates.ogl.bHaveDepthBuffer) {
 #if 0
@@ -86,9 +88,12 @@ if (gameStates.ogl.hDepthBuffer || (gameStates.ogl.hDepthBuffer = OglCreateDepth
 #else
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #endif
-		if (glGetError ()) {
-			DestroyGlareDepthTexture ();
-			return gameStates.ogl.hDepthBuffer = 0;
+		if (nError = glGetError ()) {
+			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+			if (nError = glGetError ()) {
+				DestroyGlareDepthTexture ();
+				return gameStates.ogl.hDepthBuffer = 0;
+				}
 			}
 		gameStates.ogl.bHaveDepthBuffer = 1;
 		gameData.render.nStateChanges++;
@@ -779,7 +784,7 @@ if (gameStates.ogl.bDepthBlending) {
 			if (gameStates.render.automap.bDisplay)
 				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
 			else {
-				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) gameData.render.ogl.depthScale [Z]);
+				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) (gameData.render.ogl.depthScale [Z]));
 				glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) dMax);
 				}
 			gameData.render.nShaderChanges++;

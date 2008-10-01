@@ -2408,7 +2408,9 @@ gameStates.app.bLunacy = CFReadInt (cfP);
 if (gameStates.app.bLunacy)
 	DoLunacyOn ();
 
-CFRead (gameData.marker.objects, sizeof (gameData.marker.objects), 1, cfP);
+DBG (fPos = CFTell (cfP));
+for (i = 0; i < NUM_MARKERS; i++)
+	gameData.marker.objects [i] = CFReadShort (cfP);
 CFRead (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, cfP);
 CFRead (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, cfP);
 

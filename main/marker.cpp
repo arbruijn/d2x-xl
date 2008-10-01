@@ -164,8 +164,9 @@ void DropMarker (char nPlayerMarker, int bSpawn)
 
 if (!(bSpawn && MoveSpawnMarker (&playerP->position, playerP->nSegment))) {
 	gameData.marker.point [nMarker] = playerP->position.vPos;
-	if (gameData.marker.objects [nMarker] != -1)
-		ReleaseObject (gameData.marker.objects [nMarker]);
+	short nObject = gameData.marker.objects [nMarker];
+	if ((nObject >= 0) && (nObject <= gameData.objs.nLastObject [0]) && (OBJECTS [nObject].nType == OBJ_MARKER))
+		ReleaseObject (nObject);
 	if (bSpawn)
 		strcpy (gameData.marker.szMessage [nMarker], "SPAWN");
 	gameData.marker.objects [nMarker] =
