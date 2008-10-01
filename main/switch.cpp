@@ -1337,18 +1337,22 @@ for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 
 //	-----------------------------------------------------------------------------
 
-void OpenExits (void)
+int OpenExits (void)
 {
 	tTrigger *trigP = gameData.trigs.triggers;
 	tWall		*wallP;
+	int		nExits = 0;
 
 for (int i = 0; i < gameData.trigs.nTriggers; i++, trigP++) {
 	if (trigP->nType == TT_EXIT) {
 		wallP = FindTriggerWall (i);
-		if (wallP)
+		if (wallP) {
 			WallToggle (SEGMENTS + wallP->nSegment, wallP->nSide);
+			nExits++;
+			}
 		}
 	}
+return nExits;
 }
 
 //------------------------------------------------------------------------------

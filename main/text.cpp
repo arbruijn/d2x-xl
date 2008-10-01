@@ -1824,7 +1824,8 @@ const char *defaultGameTexts [][2] = {
 	{"~Dieb unterdruecken", "suppress ~Thief bots"},
 	{"moderat", "moderate"},
 	{"AI-A~Ggressivitaet: %s", "AI A~Ggressivity: %s"},
-	{"Savegame inkompatibel:\nMaximal erlaubte Segmente unterschiedlich.", "Savegame incompatible:\nMaximum segment count differs."},
+	{"Savegame inkompatibel:\nMax. Segmentzahl unterschiedlich (savegame: %d).\nDer Wert kann in d2x.ini gesetzt werden.", 
+	 "Savegame incompatible:\nMaximum segment count differs (savegame: %d).\nYou can change the value in d2x.ini."},
 #if 0
 	{"", ""},
 #endif

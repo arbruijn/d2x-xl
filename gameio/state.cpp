@@ -1111,7 +1111,7 @@ void StateSaveUniGameData (CFILE *cfP, int bBetweenLevels)
 	int		i, j;
 	short		nObjsWithTrigger, nObject, nFirstTrigger;
 
-CFWriteInt (gameData.segs.nMaxSegments);
+CFWriteInt (gameData.segs.nMaxSegments, cfP);
 // Save the Between levels flag...
 CFWriteInt (bBetweenLevels, cfP);
 // Save the mission info...
@@ -2156,7 +2156,7 @@ int StateRestoreUniGameData (CFILE *cfP, int sgVersion, int bMulti, int bSecretR
 if (sgVersion >= 39) {
 	h = CFReadInt (cfP);
 	if (h != gameData.segs.nMaxSegments) {
-		Warning (TXT_MAX_SEGS_WARNING);
+		Warning (TXT_MAX_SEGS_WARNING, h);
 		return 0;
 		}
 	}
@@ -2772,8 +2772,6 @@ InitReactorForLevel (1);
 AddPlayerLoadout ();
 SetMaxOmegaCharge ();
 SetEquipGenStates ();
-if (!(IsMultiGame || extraGameInfo [0].nBossCount))
-	OpenExits ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 else {
@@ -2787,6 +2785,8 @@ else {
 gameData.objs.viewer = 
 gameData.objs.console = OBJECTS + LOCALPLAYER.nObject;
 StartTime (1);
+if (!extraGameInfo [0].nBossCount && (!IsMultiGame || IsCoopGame) && OpenExits ())
+	InitCountdown (NULL, 1, -1);
 return 1;
 }
 
