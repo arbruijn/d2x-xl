@@ -1872,10 +1872,10 @@ void LoadGameTexts(void);
 #define TXT_SUPPRESS_THIEF				GT(1080)
 #define TXT_MODERATE						GT(1081)
 #define TXT_AI_AGGRESSIVITY			GT(1082)
+#define TXT_MAX_SEGS_WARNING			GT(1083)
 
 #if 0
 
-#define TXT_					GT(1083)
 #define TXT_					GT(1084)
 #define TXT_					GT(1085)
 #define TXT_					GT(1086)

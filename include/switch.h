@@ -166,6 +166,7 @@ void TriggerSetObjPos (short nObject, short nSegment);
 void UpdatePlayerOrient (void);
 int FindTriggerTarget (short nSegment, short nSide);
 tTrigger *FindObjTrigger (short nObject, short nType, short nTrigger);
+void OpenExits (void);
 
 extern vmsVector	speedBoostSrc, speedBoostDest;
 

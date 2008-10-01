@@ -26,6 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "endlevel.h"
 #include "network.h"
+#include "switch.h"
 #include "cheats.h"
 
 //@@vmsVector controlcen_gun_points[MAX_CONTROLCEN_GUNS];

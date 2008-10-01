@@ -1824,6 +1824,7 @@ const char *defaultGameTexts [][2] = {
 	{"~Dieb unterdruecken", "suppress ~Thief bots"},
 	{"moderat", "moderate"},
 	{"AI-A~Ggressivitaet: %s", "AI A~Ggressivity: %s"},
+	{"Savegame inkompatibel:\nMaximal erlaubte Segmente unterschiedlich.", "Savegame incompatible:\nMaximum segment count differs."},
 #if 0
 	{"", ""},
 #endif

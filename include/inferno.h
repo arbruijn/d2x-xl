@@ -1668,8 +1668,8 @@ typedef struct tSlideSegs {
 //------------------------------------------------------------------------------
 
 typedef struct tFaceRenderVertex {
-	fVector3			vertex;
-	fVector3			normal;
+	fVector3				vertex;
+	fVector3				normal;
 	tRgbaColorf			color;
 	tTexCoord2f			texCoord;
 	tTexCoord2f			ovlTexCoord;
@@ -1679,8 +1679,8 @@ typedef struct tFaceRenderVertex {
 typedef struct tFaceData {
 	grsFace				*faces;
 	grsTriangle			*tris;
-	fVector3			*vertices;
-	fVector3			*normals;
+	fVector3				*vertices;
+	fVector3				*normals;
 	tTexCoord2f			*texCoord;
 	tTexCoord2f			*ovlTexCoord;
 	tTexCoord2f			*lMapTexCoord;
@@ -1692,7 +1692,7 @@ typedef struct tFaceData {
 #endif
 	GLuint				vboDataHandle;
 	GLuint				vboIndexHandle;
-	ubyte				*vertexP;
+	ubyte					*vertexP;
 	ushort				*indexP;
 	int					nVertices;
 	int					iVertices;
@@ -1705,7 +1705,7 @@ typedef struct tFaceData {
 
 typedef struct tSegList {
 	int					nSegments;
-	short				*segments;
+	short					*segments;
 } tSegList;
 
 typedef struct tSegExtent {
@@ -1717,24 +1717,24 @@ typedef struct tSegmentData {
 	int					nMaxSegments;
 	vmsVector			*vertices;
 	fVector				*fVertices;
-	tSegment			*segments;
+	tSegment				*segments;
 	tSegment2			*segment2s;
-	xsegment			*xSegments;
+	xsegment				*xSegments;
 	tSegFaces			*segFaces;
-	g3sPoint			*points;
-	short				*objects;
-	tSegList			skybox;
+	g3sPoint				*points;
+	short					*objects;
+	tSegList				skybox;
 #if CALC_SEGRADS
 	fix					*segRads [2];
 	tSegExtent			*extent;
 #endif
 	vmsVector			vMin;
 	vmsVector			vMax;
-	float				fRad;
+	float					fRad;
 	vmsVector			*segCenters [2];
 	vmsVector			*sideCenters;
-	ubyte				*bVertVis;
-	ubyte				*bSegVis;
+	ubyte					*bVertVis;
+	ubyte					*bSegVis;
 	int					nVertices;
 	int					nFaceVerts;
 	int					nLastVertex;

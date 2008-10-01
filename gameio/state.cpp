@@ -106,7 +106,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define DBG(_expr)
 #endif
 
-#define STATE_VERSION				38
+#define STATE_VERSION				39
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) id at tof.
 // 1 - Added Difficulty level save
@@ -1111,6 +1111,7 @@ void StateSaveUniGameData (CFILE *cfP, int bBetweenLevels)
 	int		i, j;
 	short		nObjsWithTrigger, nObject, nFirstTrigger;
 
+CFWriteInt (gameData.segs.nMaxSegments);
 // Save the Between levels flag...
 CFWriteInt (bBetweenLevels, cfP);
 // Save the mission info...
@@ -2152,6 +2153,13 @@ int StateRestoreUniGameData (CFILE *cfP, int sgVersion, int bMulti, int bSecretR
 	int		h, i, j;
 	short		nTexture;
 
+if (sgVersion >= 39) {
+	h = CFReadInt (cfP);
+	if (h != gameData.segs.nMaxSegments) {
+		Warning (TXT_MAX_SEGS_WARNING);
+		return 0;
+		}
+	}
 bBetweenLevels = CFReadInt (cfP);
 Assert (bBetweenLevels == 0);	//between levels save ripped out
 // Read the mission info...
@@ -2764,6 +2772,8 @@ InitReactorForLevel (1);
 AddPlayerLoadout ();
 SetMaxOmegaCharge ();
 SetEquipGenStates ();
+if (!(IsMultiGame || extraGameInfo [0].nBossCount))
+	OpenExits ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 else {
