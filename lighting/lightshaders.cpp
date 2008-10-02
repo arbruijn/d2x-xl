@@ -1378,6 +1378,7 @@ if (CreatePerPixelLightingShader (nType, nLights) >= 0)
 	return nLights;
 	}
 OglDisableLighting ();
+OglClearError (0);
 PROF_END(ptPerPixelLighting)
 return -1;
 }
@@ -1443,6 +1444,7 @@ glUniform1f (glGetUniformLocation (activeShaderProg, "fLightScale"),
 #else
 				 (nLights && gameStates.ogl.iLight) ? 0.0f : 1.0f);
 #endif
+OglClearError (0);
 PROF_END(ptShaderStates)
 return gameStates.render.history.nShader = nShader;
 }
@@ -1487,6 +1489,7 @@ if (nShader != gameStates.render.history.nShader) {
 	}
 if (!nType)
 	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &faceP->color);
+OglClearError (0);
 PROF_END(ptShaderStates)
 return gameStates.render.history.nShader = nShader;
 }
@@ -1511,6 +1514,7 @@ if (gameStates.render.textures.bHaveGrayScaleShader) {
 				glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1 + bLightmaps);
 			}
 		gameStates.render.history.nShader = nShader;
+		OglClearError (0);
 		}
 	}
 return gameStates.render.history.nShader;

@@ -2100,11 +2100,13 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.
 			for (nListPos = gameData.render.mine.nRenderSegs; nListPos; )
 				RenderSegment (--nListPos);
 		}
+	OglClearError (0);
 	}
 RenderMineObjects (nType);
 ResetUsedLights (1, 0);
 if (gameStates.app.bMultiThreaded)
 	ResetUsedLights (1, 1);
+OglClearError (0);
 PROF_END(ptRenderPass)
 return 1;
 }

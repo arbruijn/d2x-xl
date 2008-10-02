@@ -862,8 +862,6 @@ mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
 gameData.objs.color.index = 0;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
-if (objP->nType == OBJ_EXPLOSION)
-	objP = objP;
 #if 0//def _DEBUG
 if (objP->nType == OBJ_EXPLOSION) {
 	static time_t	t0 = 0;
@@ -923,6 +921,10 @@ switch (objP->renderType) {
 				return 0;
 			gameData.models.nScale = 0;
 			//DoObjectSmoke (objP);
+#ifdef _DEBUG
+			if (OBJ_IDX (objP) == nDbgObj)
+				nDbgObj = nDbgObj;
+#endif
 			DrawPolygonObject (objP, bDepthSort, 0);
 			if (!gameStates.render.bQueryCoronas) {
 				RenderThrusterFlames (objP);
@@ -1151,6 +1153,7 @@ if (objP->renderType != RT_NONE)
 #endif
 gameStates.render.detail.nMaxLinearDepth = mldSave;
 gameData.render.nTotalObjects++;
+OglClearError (0);
 PROF_END(ptRenderObjects)
 return 1;
 }

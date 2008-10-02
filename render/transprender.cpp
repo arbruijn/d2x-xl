@@ -617,6 +617,7 @@ if (nTMU == GL_TEXTURE0)
 #endif
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
+OglClearError (0);
 if (bFull) {
 	if (bDecal) {
 		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
@@ -665,6 +666,7 @@ PROF_START
 if (renderItems.bUseLightmaps != bUseLightmaps) {
 	glActiveTexture (GL_TEXTURE0);
 	glClientActiveTexture (GL_TEXTURE0);
+	OglClearError (0);
 	if (bUseLightmaps) {
 		glEnable (GL_TEXTURE_2D);
 		glEnableClientState (GL_NORMAL_ARRAY);
@@ -778,10 +780,10 @@ int LoadRenderItemImage (grsBitmap *bmP, char nColors, char nFrame, int nWrap,
 								 int bHaveDecal, int bDecal)
 {
 if (bmP) {
+	glEnable (GL_TEXTURE_2D);
 	if (bDecal || RISetClientState (bClientState, 1, nColors > 1, bUseLightmaps, bHaveDecal) || (renderItems.bTextured < 1)) {
 		glActiveTexture (GL_TEXTURE0 + bUseLightmaps + bDecal);
 		glClientActiveTexture (GL_TEXTURE0 + bUseLightmaps + bDecal);
-		glEnable (GL_TEXTURE_2D);
 		//glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		renderItems.bTextured = 1;
 		}
@@ -836,7 +838,7 @@ PROF_START
 	grsFace		*faceP;
 	grsTriangle	*triP;
 	grsBitmap	*bmTop = NULL, *bmMask;
-	int			i, j, nIndex, bLightmaps, bDecal;
+	int			i, j, nIndex, bLightmaps, bDecal, bSoftBlend = 0;
 
 #if RI_POLY_OFFSET
 if (!item->bmP) {
@@ -870,7 +872,7 @@ if (faceP) {
 		}
 	}
 else
-	nDbgSeg = nDbgSeg;
+	bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
 //renderItems.bUseLightmaps = 0;
 #endif
 if (renderItems.bDepthMask != item->bDepthMask)
@@ -883,7 +885,7 @@ bDecal = 0;
 bmMask = NULL;
 #endif
 if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
-	 (faceP != NULL) || ((gameOpts->render.effects.bSoftParticles & 1) != 0), bLightmaps, bmMask ? 2 : bDecal, 0) &&
+	 (faceP != NULL) || bSoftBlend, bLightmaps, bmMask ? 2 : bDecal, 0) &&
 	 (!bDecal || LoadRenderItemImage (bmTop, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
 	 (!bmMask || LoadRenderItemImage (bmMask, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
@@ -1006,7 +1008,7 @@ if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWr
 		}
 	else {
 		if (i && !gameStates.render.automap.bDisplay) {
-			if (gameOpts->render.effects.bSoftParticles & 1)
+			if (bSoftBlend)
 				LoadGlareShader (5);
 			else
 				RIResetShader ();
@@ -1088,6 +1090,8 @@ if (!item->bmP) {
 #endif
 if (item->bAdditive)
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+if (bSoftBlend)
+	glEnable (GL_DEPTH_TEST);
 PROF_END(ptRenderFaces)
 }
 
@@ -1111,10 +1115,10 @@ renderItems.bClientColor = 0;
 
 void RIRenderSprite (tRISprite *item)
 {
-	int bSoftSprites = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
+	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
 if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
-								 bSoftSprites, 0, 0, 0)) {
+								 bSoftBlend, 0, 0, 0)) {
 	float		h, w, u, v;
 	fVector	fPos = item->position;
 
@@ -1132,7 +1136,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 		glBlendFunc (GL_ONE, GL_ONE);
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (bSoftSprites)
+	if (bSoftBlend)
 		LoadGlareShader (item->fSoftRad);
 	else if (renderItems.bDepthMask)
 		glDepthMask (renderItems.bDepthMask = 0);
@@ -1153,7 +1157,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 	glEnd ();
 	if (item->bAdditive)
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (bSoftSprites)
+	if (bSoftBlend)
 		glEnable (GL_DEPTH_TEST);
 	}
 }

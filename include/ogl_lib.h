@@ -74,6 +74,22 @@ void OglDrawBuffer (int nBuffer, int bFBO);
 void OglReadBuffer (int nBuffer, int bFBO);
 void OglFlushDrawBuffer (void);
 
+#ifdef _DEBUG
+
+static inline void OglClearError (int bTrapError)
+{
+	GLenum nError = glGetError ();
+
+if (bTrapError && nError)
+	nError = nError;
+}
+
+#else
+
+OglClearError(_bTrapError)	glGetError
+
+#endif
+
 //------------------------------------------------------------------------------
 
 static inline int OglHaveDrawBuffer (void)

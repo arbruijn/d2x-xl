@@ -82,7 +82,7 @@ glCallList (mouseIndList);
 else {
 	glNewList (mouseIndList, GL_COMPILE_AND_EXECUTE);
 #endif
-	glEnable (GL_SMOOTH);
+	glEnable (GL_LINE_SMOOTH);
 	glColor4f (1.0f, 0.8f, 0.0f, 0.9f);
 	glPushMatrix ();
 	glTranslatef ((float) (mouseData.x) / (float) SWIDTH, 1.0f - (float) (mouseData.y) / (float) SHEIGHT, 0);
@@ -124,7 +124,7 @@ else {
 		OglDrawEllipse (30, GL_LINE_LOOP, r, 0, r * (float) grdCurScreen->scHeight / (float) grdCurScreen->scWidth, 0, sinCos30);
 		}
 	glPopMatrix ();
-	glDisable (GL_SMOOTH);
+	glDisable (GL_LINE_SMOOTH);
 	glLineWidth (1);
 #if 0
 	glEndList ();
@@ -164,7 +164,7 @@ glScaled (scale/320.0f, scale/200.0f, scale);//the positions are based upon the 
 glDisable (GL_TEXTURE_2D);
 
 glLineWidth (5);
-glEnable (GL_SMOOTH);
+glEnable (GL_LINE_SMOOTH);
 if (cross_lh [cross])
 	glCallList (cross_lh [cross]);
 else {
@@ -248,7 +248,7 @@ else {
 		}
 	glEndList ();
 	}
-glDisable (GL_SMOOTH);
+glDisable (GL_LINE_SMOOTH);
 glLineWidth (1);
 glPopMatrix ();
 }

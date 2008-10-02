@@ -76,7 +76,7 @@ else {
 	glColor4f (r, g, b, a);
  	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, 10, 0, 10.0f / 3.0f, 0, sinCosRadar);
 	glColor4f (0.5f, 0.5f, 0.5f, 0.8f);
-	glEnable (GL_LINE_SMOOTH);
+	//glEnable (GL_LINE_SMOOTH);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 10, 0, 10.0f / 3.0f, 0, sinCosRadar);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 20.0f / 3.0f, 0, 20.0f / 9.0f, 0, sinCosRadar);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 10.0f / 3.0f, 0, 10.0f / 9.0f, 0, sinCosRadar);
@@ -86,7 +86,7 @@ else {
 	glVertex2f (10, 0);
 	glVertex2f (-10, 0);
 	glEnd ();
-	glDisable (GL_LINE_SMOOTH);
+	//glDisable (GL_LINE_SMOOTH);
 	glLineWidth (2);
 	glPopMatrix ();
 	return;
@@ -157,7 +157,7 @@ if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 bStencil = StencilOff ();
 InitShipColors ();
 yRadar = (i == 1) ? 20.0f : -20.0f;
-mRadar = vmsMatrix::Create(aRadar);
+mRadar = vmsMatrix::Create (aRadar);
 glDisable (GL_CULL_FACE);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);
@@ -165,9 +165,10 @@ glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glActiveTexture (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
-glLineWidth (3);
+glLineWidth (1);
 pc = radarColor + gameOpts->render.automap.nColor;
 RenderRadarBlip (gameData.objs.console, pc->red, pc->green, pc->blue, 2.0f / 3.0f); //0.5, 0.75, 0.5, 2.0f / 3.0f);
+glLineWidth (3);
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	if ((objP->nType == OBJ_PLAYER) && (objP != gameData.objs.console)) {
 		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->id)) {

@@ -850,11 +850,12 @@ if (gameStates.render.bCloaked)
 else
 	G3DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
 if (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR))) {
-	G3StartInstanceMatrix(objP->position.vPos, objP->position.mOrient);
+	G3StartInstanceMatrix (objP->position.vPos, objP->position.mOrient);
 	G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL, bHires);
 	G3DoneInstance ();
 	}
 pm->bRendered = 1;
+OglClearError (0);
 PROF_END(ptRenderObjectsFast)
 return 1;
 }

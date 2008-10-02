@@ -280,6 +280,7 @@ void G3DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 if (nTMU >= 0) {
 	glActiveTexture (nTMU);
 	glClientActiveTexture (nTMU);
+	OglClearError (0);
 	}
 if (bNormals)
 	glDisableClientState (GL_NORMAL_ARRAY);
@@ -297,6 +298,7 @@ int G3EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 if (nTMU >= 0) {
 	glActiveTexture (nTMU);
 	glClientActiveTexture (nTMU);
+	OglClearError (0);
 	}
 if (bNormals) {
 	if (!G3EnableClientState (GL_NORMAL_ARRAY, -1)) {

@@ -817,6 +817,7 @@ if ((gameStates.ogl.bHeadlight = (gameStates.ogl.bShadersOk && RENDERPATH))) {
 			}
 		}
 	}
+OglClearError (0);
 gameData.render.ogl.nHeadlights = nLights;
 }
 
@@ -826,9 +827,6 @@ extern int nOglTransformCalls;
 
 int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP)
 {
-#ifdef _DEBUG
-	int			oglRes;
-#endif
 	int			nLights, nShader, bTransform;
 	tRgbaColorf	color;
 
@@ -886,9 +884,7 @@ if (nShader != gameStates.render.history.nShader) {
 		color.alpha = 1;
 		}
 	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &color);
-#ifdef _DEBUG
-	oglRes = glGetError ();
-#endif
+	OglClearError (0);
 	}
 return gameStates.render.history.nShader = nShader;
 }

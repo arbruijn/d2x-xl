@@ -1328,13 +1328,13 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE);
 glColor4fv ((GLfloat *) &color);
 glLineWidth ((GLfloat) (nDepth ? 2 : 4));
 glDisable (GL_TEXTURE_2D);
-glEnable (GL_SMOOTH);
+glEnable (GL_LINE_SMOOTH);
 glBegin (GL_LINES);
 glVertex3fv ((GLfloat *) vLine);
 glVertex3fv ((GLfloat *) (vLine + 1));
 glEnd ();
 glLineWidth (1);
-glDisable (GL_SMOOTH);
+glDisable (GL_LINE_SMOOTH);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
@@ -1488,7 +1488,7 @@ glBlendFunc (GL_ONE, GL_ONE);
 glDisable (GL_TEXTURE_2D);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? 2 : 4));
-glDisable (GL_SMOOTH);
+glDisable (GL_LINE_SMOOTH);
 for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++, vPosf++) {
 	TRAP (pln);
 	// Check ToFloat
@@ -1499,7 +1499,7 @@ if (!gameStates.ogl.bUseTransform)
 if (G3EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	glVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
 	glDrawArrays (GL_LINE_STRIP, 0, pl->nNodes);
-	G3DisableClientStates (0, 0, 0, GL_TEXTURE0);
+	G3DisableClientStates (0, 0, 0, -1);
 	}
 else {
 	glBegin (GL_LINE_STRIP);
@@ -1509,8 +1509,8 @@ else {
 	}
 if (!gameStates.ogl.bUseTransform)
 	OglResetTransform (1);
-glLineWidth (1);
-glDisable (GL_SMOOTH);
+glLineWidth ((GLfloat) 1);
+glDisable (GL_LINE_SMOOTH);
 
 #if defined (_DEBUG) && RENDER_TARGET_LIGHTNING
 glColor3f (1,1,1);
@@ -1524,6 +1524,7 @@ for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++) {
 	}
 glEnd ();
 #endif
+OglClearError (0);
 }
 
 //------------------------------------------------------------------------------
@@ -1595,6 +1596,7 @@ if (gameOpts->render.lightnings.nQuality)
 			for (pln = pl->pNodes; i > 0; i--, pln++)
 				if (pln->pChild)
 					RenderLightningsBuffered (pln->pChild, 0, 1, nDepth + 1, nThread);
+OglClearError (0);
 }
 
 //------------------------------------------------------------------------------
@@ -1883,7 +1885,7 @@ else {
 		glColor4fv ((GLfloat *) &color);
 		glLineWidth ((GLfloat) (nDepth ? 2 : 4));
 		glDisable (GL_TEXTURE_2D);
-		glEnable (GL_SMOOTH);
+		glEnable (GL_LINE_SMOOTH);
 		glBegin (GL_LINE_STRIP);
 		for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++) {
 			VmVecFixToFloat (vPosf, &pln->vPos);
@@ -1921,7 +1923,7 @@ else {
 			}
 		}
 	glLineWidth (1);
-	glDisable (GL_SMOOTH);
+	glDisable (GL_LINE_SMOOTH);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 }
@@ -2365,14 +2367,14 @@ if (i < 0) {
 		vNorm = vmsVector::Normal(vPos, pointList [1]->p3_vec, vEnd);
 		vPos += vNorm * (F1_0 / 64);
 		vEnd += vNorm * (F1_0 / 64);
-		vDelta = vmsVector::Normal(vNorm, vPos, vEnd);
-		h = vmsVector::Dist(vPos, vEnd);
+		vDelta = vmsVector::Normal (vNorm, vPos, vEnd);
+		h = vmsVector::Dist (vPos, vEnd);
 		}
 	else {
 		memcpy (&vPosf, &pVerts->vertex, sizeof (fVector3));
 		memcpy (&vEndf, &pVerts [1 + d_rand () % (nVertices - 1)].vertex, sizeof (fVector3));
 		memcpy (&v, &pVerts [1].vertex, sizeof (fVector3));
-		vNormf = fVector::Normal(vPosf, v, vEndf);
+		vNormf = fVector::Normal (vPosf, v, vEndf);
 		vPosf += vNormf * (1.0f / 64.0f);
 		vEndf += vNormf * (1.0f / 64.0f);
 		vDeltaf = fVector::Normal(vNormf, vPosf, vEndf);

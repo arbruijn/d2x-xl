@@ -576,6 +576,7 @@ if (bNormals)
 	G3EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 glEnable (GL_BLEND);
 glBlendFunc (GL_ONE, GL_ZERO);
+OglClearError (0);
 return 1;
 }
 
@@ -625,6 +626,7 @@ else 	if (CoronaStyle () == 2)
 else if (gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (CoronaStyle () == 1))
 	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+OglClearError (0);
 }
 
 //------------------------------------------------------------------------------

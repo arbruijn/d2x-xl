@@ -166,6 +166,7 @@ else if (gameStates.render.history.nShader >= 0) {
 	glUseProgramObject (0);
 	nShader = -1;
 	}
+OglClearError (0);
 gameStates.render.history.nType = nType;
 return gameStates.render.history.nShader = nShader;
 }

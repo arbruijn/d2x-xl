@@ -74,8 +74,12 @@ if (gameStates.ogl.hDepthBuffer) {
 
 GLuint CopyDepthTexture (void)
 {
-	GLenum nError = 0;
+	GLenum nError = glGetError ();
 
+#ifdef _DEBUG
+if (nError)
+	nError = nError;
+#endif
 glActiveTexture (GL_TEXTURE1);
 glEnable (GL_TEXTURE_2D);
 if (!gameStates.ogl.hDepthBuffer)
@@ -769,6 +773,7 @@ void LoadGlareShader (float dMax)
 {
 	static float dMaxPrev = -1;
 
+OglClearError (0);
 gameStates.ogl.bUseDepthBlending = 0;
 if (gameStates.ogl.bDepthBlending) {
 	OglReadBuffer (GL_BACK, 1);
@@ -877,6 +882,7 @@ if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && RENDERPATH)
 			return;
 			}
 		}
+	OglClearError (0);
 	}
 #endif
 }
