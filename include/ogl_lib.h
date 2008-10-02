@@ -86,7 +86,7 @@ if (bTrapError && nError)
 
 #else
 
-#define OglClearError(_bTrapError)	glGetError
+#define OglClearError(_bTrapError)	glGetError()
 
 #endif
 
