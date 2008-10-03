@@ -315,6 +315,12 @@ if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return false;
 if (!faceP->nCorona)
 	return false;
+#ifdef _DEBUG
+if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+else
+	return false;
+#endif
 RenderCorona (faceP->nSegment, faceP->nSide, CoronaVisibility (faceP->nCorona), faceP->fRads [0]);
 return true;
 }
@@ -741,6 +747,8 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
+			else
+				continue;
 #endif
 			CoronaVisibility (faceP->nCorona);
 			}
@@ -748,6 +756,8 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
+			else
+				continue;
 #endif
 			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
 			if (!glGetError ())
@@ -758,10 +768,15 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
+			else
+				continue;
 #endif
 			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
+			OglClearError (1);
 			RenderCorona (nSegment, faceP->nSide, 1, faceP->fRads [0]);
+			OglClearError (1);
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
+			OglClearError (1);
 			}	
 		}
 	}
@@ -777,15 +792,17 @@ glDepthMask (0);
 glColorMask (1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
 	gameStates.render.bQueryCoronas = 1;
+	// first just render all coronas (happens before any geometry gets rendered)
 	RenderCoronaFaceList (gameData.render.faceIndex, 0);
 	if (gameStates.app.bMultiThreaded)
 		RenderCoronaFaceList (gameData.render.faceIndex + 1, 0);
 	glFlush ();
+	// then query how many samples (pixels) were rendered for each corona
 	RenderCoronaFaceList (gameData.render.faceIndex, 1);
 	if (gameStates.app.bMultiThreaded)
 		RenderCoronaFaceList (gameData.render.faceIndex + 1, 1);
 	}
-else {
+else { //now find out how many fragments are rendered for each corona if geometry interferes
 	gameStates.render.bQueryCoronas = 2;
 	RenderCoronaFaceList (gameData.render.faceIndex, 2);
 	if (gameStates.app.bMultiThreaded)

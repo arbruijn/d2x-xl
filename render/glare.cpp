@@ -357,12 +357,12 @@ GetSideVertIndex (sideVerts, nSegment, nSide);
 for (i = 0; i < 4; i++) {
 	fLight += X2F (sideP->uvls [i].l);
 	if (RENDERPATH)
-		G3TransformPoint(sprite[i], gameData.segs.fVertices[sideVerts[i]], 0);
+		G3TransformPoint (sprite [i], gameData.segs.fVertices [sideVerts [i]], 0);
 	else
 		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
 	}
 v = SIDE_CENTER_I (nSegment, nSide)->ToFloat();
-G3TransformPoint(*vCenter, v, 0);
+G3TransformPoint (*vCenter, v, 0);
 #if 0
 if (gameStates.render.bQueryCoronas) {
 	for (i = 0; i < 4; i++) {
@@ -625,13 +625,6 @@ if (bAdditive)
 	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
 else
 	glColor4f (color.red, color.green, color.blue, fIntensity);
-if (gameStates.render.bQueryCoronas != 2) {
-	glDisable (GL_DEPTH_TEST);
-#if 0
-	if (gameStates.render.bQueryCoronas == 1)
-		glDepthFunc (GL_ALWAYS);
-#endif
-	}
 if (G3EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0)) {
 	if (gameStates.render.bQueryCoronas == 0) {
 		OglBindBmTex (bmP, 1, -1);
@@ -683,10 +676,10 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
-if (RENDERPATH && gameStates.ogl.bOcclusionQuery && (CoronaStyle ())) {
+if (RENDERPATH && gameStates.ogl.bOcclusionQuery && CoronaStyle ()) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 #if 1
-	if (gameStates.ogl.bUseDepthBlending && !gameStates.render.automap.bDisplay) {
+	if (gameStates.ogl.bUseDepthBlending && !gameStates.render.automap.bDisplay && (CoronaStyle () == 2)) {
 		fSize *= 2;
 		if (fSize < 1)
 			fSize = 1;
@@ -704,10 +697,10 @@ if (RENDERPATH && gameStates.ogl.bOcclusionQuery && (CoronaStyle ())) {
 #endif
 	}
 else {
-	vNormal = fVector::Normal(sprite[0], sprite[1], sprite[2]);
-	vEye = vCenter; fVector::Normalize(vEye);
+	vNormal = fVector::Normal (sprite[0], sprite[1], sprite[2]);
+	vEye = vCenter; fVector::Normalize (vEye);
 	//dim corona depending on viewer angle
-	if ((fAngle = fVector::Dot(vNormal, vEye)) > 0) {
+	if ((fAngle = fVector::Dot (vNormal, vEye)) > 0) {
 		if (fAngle > 0.25f)
 			return;
 		fIntensity *= 1 - fAngle / 0.25f;
@@ -736,7 +729,7 @@ float CoronaVisibility (int nQuery)
 if (!(gameStates.ogl.bOcclusionQuery && nQuery) || (CoronaStyle () != 1))
 	return 1;
 if (!(gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [nQuery - 1]))
-	return 1;
+	return 0;
 do {
 	glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
 	if (glGetError ()) {
@@ -744,17 +737,18 @@ do {
 		glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
 		if (nError = glGetError ())
 #endif
-			return 1;
+			return 0;
 		}
 	} while (!bAvailable);
 glGetQueryObjectuiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
 if (glGetError ())
-	return 1;
+	return 0;
 if (gameStates.render.bQueryCoronas == 1) {
 #ifdef _DEBUG
 	if (!nSamples) {
 		GLint nBits;
 		glGetQueryiv (GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &nBits);
+		glGetQueryObjectuiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
 		}
 #endif
 	return (float) (gameData.render.lights.coronaSamples [nQuery - 1] = nSamples);
