@@ -50,7 +50,7 @@ FixFastSinCos ((fix) (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpee
 if (wiggleTime < F1_0)// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
 	xWiggle = FixMul (xWiggle * 20, wiggleTime); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 if (SPECTATOR (objP))
-	OBJPOS (objP)->vPos += OBJPOS (objP)->mOrient [UVEC] * FixMul (xWiggle, gameData.pig.ship.player->wiggle) * wiggleTime;
+	OBJPOS (objP)->vPos += (OBJPOS (objP)->mOrient [UVEC] * FixMul (xWiggle, gameData.pig.ship.player->wiggle)) * (F1_0 / 20);
 else if ((objP->nType == OBJ_PLAYER) || !pParent)
 	objP->mType.physInfo.velocity += objP->position.mOrient [UVEC] * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
 else {

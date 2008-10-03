@@ -138,7 +138,7 @@ void SetObjectTurnRoll (tObject *objP)
 {
 //if (!gameStates.app.bD1Mission)
 {
-	fixang desired_bank = (fixang) -FixMul (objP->mType.physInfo.rotVel[Y], TURNROLL_SCALE);
+	fixang desired_bank = (fixang) -FixMul (objP->mType.physInfo.rotVel [Y], TURNROLL_SCALE);
 	if (objP->mType.physInfo.turnRoll != desired_bank) {
 		fixang delta_ang, max_roll;
 		max_roll = (fixang) FixMul (ROLL_RATE, gameData.physics.xTime);
@@ -188,7 +188,7 @@ if (gameData.physics.xTime <= 0)
 	return;
 #endif
 pi = &objP->mType.physInfo;
-if (!(pi->rotVel[X] || pi->rotVel[Y] || pi->rotVel[Z] ||
+if (!(pi->rotVel [X] || pi->rotVel [Y] || pi->rotVel [Z] ||
 		pi->rotThrust[X] || pi->rotThrust[Y] || pi->rotThrust[Z]))
 	return;
 if (objP->mType.physInfo.drag) {
@@ -232,9 +232,9 @@ if (objP->mType.physInfo.turnRoll) {
 	mOrient = objP->position.mOrient * mRotate;
 	objP->position.mOrient = mOrient;
 }
-turnAngles[PA] = (fixang) FixMul (objP->mType.physInfo.rotVel[X], gameData.physics.xTime);
-turnAngles[HA] = (fixang) FixMul (objP->mType.physInfo.rotVel[Y], gameData.physics.xTime);
-turnAngles[BA] = (fixang) FixMul (objP->mType.physInfo.rotVel[Z], gameData.physics.xTime);
+turnAngles[PA] = (fixang) FixMul (objP->mType.physInfo.rotVel [X], gameData.physics.xTime);
+turnAngles[HA] = (fixang) FixMul (objP->mType.physInfo.rotVel [Y], gameData.physics.xTime);
+turnAngles[BA] = (fixang) FixMul (objP->mType.physInfo.rotVel [Z], gameData.physics.xTime);
 if (!IsMultiGame) {
 	int i = (objP != gameData.objs.console) ? 0 : 1;
 	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
@@ -488,7 +488,7 @@ if (objP->mType.physInfo.drag) {
 	if (objP == gameData.objs.console)
 		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
 	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-		accel = objP->mType.physInfo.thrust * FixDiv(f1_0, objP->mType.physInfo.mass);
+		accel = objP->mType.physInfo.thrust * FixDiv (f1_0, objP->mType.physInfo.mass);
 		a = !accel.IsZero();
 		if (bDoSpeedBoost && !(a || gameStates.input.bControlsSkipFrame))
 			vel = sbd.vVel;
@@ -503,18 +503,18 @@ if (objP->mType.physInfo.drag) {
 			if (xDrag)
 				vel *= (f1_0 - FixMul (k, xDrag));
 			if (bDoSpeedBoost) {
-				if (vel[X] < sbd.vMinVel[X])
-					vel[X] = sbd.vMinVel[X];
-				else if (vel[X] > sbd.vMaxVel[X])
-					vel[X] = sbd.vMaxVel[X];
-				if (vel[Y] < sbd.vMinVel[Y])
-					vel[Y] = sbd.vMinVel[Y];
-				else if (vel[Y] > sbd.vMaxVel[Y])
-					vel[Y] = sbd.vMaxVel[Y];
-				if (vel[Z] < sbd.vMinVel[Z])
-					vel[Z] = sbd.vMinVel[Z];
-				else if (vel[Z] > sbd.vMaxVel[Z])
-					vel[Z] = sbd.vMaxVel[Z];
+				if (vel[X] < sbd.vMinVel [X])
+					vel[X] = sbd.vMinVel [X];
+				else if (vel[X] > sbd.vMaxVel [X])
+					vel[X] = sbd.vMaxVel [X];
+				if (vel[Y] < sbd.vMinVel [Y])
+					vel[Y] = sbd.vMinVel [Y];
+				else if (vel[Y] > sbd.vMaxVel [Y])
+					vel[Y] = sbd.vMaxVel [Y];
+				if (vel[Z] < sbd.vMinVel [Z])
+					vel[Z] = sbd.vMinVel [Z];
+				else if (vel[Z] > sbd.vMaxVel [Z])
+					vel[Z] = sbd.vMaxVel [Z];
 				}
 			}
 		}
@@ -552,12 +552,12 @@ do {
 						MissileSpeedScale (objP) : 1;
 	bRetry = 0;
 	if (fScale < 1) {
-		vmsVector vStartVel = gameData.objs.vStartVel[nObject];
+		vmsVector vStartVel = gameData.objs.vStartVel [nObject];
 		vmsVector::Normalize (vStartVel);
 		fix xDot = vmsVector::Dot (objP->position.mOrient[FVEC], vStartVel);
-		vFrame = objP->mType.physInfo.velocity + gameData.objs.vStartVel[nObject];
+		vFrame = objP->mType.physInfo.velocity + gameData.objs.vStartVel [nObject];
 		vFrame *= F2X (fScale * fScale);
-		vFrame += gameData.objs.vStartVel[nObject] * (-(abs (xDot)));
+		vFrame += gameData.objs.vStartVel [nObject] * (-(abs (xDot)));
 		vFrame *= FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1));
 		}
 	else
@@ -909,9 +909,9 @@ retryMove:
 		// Let object continue its movement
 		if (!(objP->flags & OF_SHOULD_BE_DEAD)) {
 			if ((objP->mType.physInfo.flags & PF_PERSISTENT) ||
-				 (vOldVel[X] == objP->mType.physInfo.velocity[X] &&
-				  vOldVel[Y] == objP->mType.physInfo.velocity[Y]) &&
-				  vOldVel[Z] == objP->mType.physInfo.velocity[Z]) {
+				 (vOldVel [X] == objP->mType.physInfo.velocity[X] &&
+				  vOldVel [Y] == objP->mType.physInfo.velocity[Y]) &&
+				  vOldVel [Z] == objP->mType.physInfo.velocity[Z]) {
 				if (OBJECTS [hi.hit.nObject].nType == OBJ_POWERUP)
 					nTries--;
 				gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
@@ -1130,9 +1130,9 @@ if (!IsMultiGame) {
 		delta_h = (fix) (delta_h / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
-PhysicsSetRotVelAndSaturate(&pvRotVel[X], delta_p);
-PhysicsSetRotVelAndSaturate(&pvRotVel[Y], delta_h);
-pvRotVel[Z] = 0;
+PhysicsSetRotVelAndSaturate(&pvRotVel [X], delta_p);
+PhysicsSetRotVelAndSaturate(&pvRotVel [Y], delta_h);
+pvRotVel [Z] = 0;
 }
 
 //	-----------------------------------------------------------------------------
