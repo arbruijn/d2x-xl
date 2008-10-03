@@ -252,6 +252,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
+		RP (gameStates.sound.digi.nMaxChannels, 0, 16);
 		RP (gameStates.render.cockpit.nMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
@@ -771,6 +772,7 @@ tParamValue defaultParams [] = {
 	{"gameStates.render.cockpit.nMode", "3"},
 	{"gameStates.render.bShowFrameRate", "0"},
 	{"gameStates.render.bShowTime", "1"},
+	{"gameStates.sound.digi.nMaxChannels, "16"},
 	{"gameStates.video.nDefaultDisplayMode", "3"},
 	{"gameStates.video.nDefaultDisplayMode", "3"},
 	{"gameOptions[0].render.cockpit.bGuidedInMainView", "1"},
