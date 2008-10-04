@@ -862,7 +862,7 @@ if (objP->lifeleft > 0) {
 		if (shrapnelP->xTTL <= 0)
 			continue;
 		MoveShrapnel (shrapnelP);
-		if (0 < (shrapnelP->xTTL -= (fix) (secs2f (gameStates.app.tick40fps.nTime) / gameStates.gameplay.slowmo [0].fSpeed))) {
+		if (0 < (shrapnelP->xTTL -= (fix) (SECS2X (gameStates.app.tick40fps.nTime) / gameStates.gameplay.slowmo [0].fSpeed))) {
 			shrapnelP++;
 			i++;
 			}

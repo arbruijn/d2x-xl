@@ -18,18 +18,3 @@
 #include "maths.h"
 #include "timer.h"
 
-fix TimerGetApproxSeconds	(void)
-{
-return ApproxMSecToFSec (SDL_GetTicks ());
-}
-
-fix TimerGetFixedSeconds (void)
-{
-unsigned int ms = SDL_GetTicks ();
-return secs2f (ms);
-}
-
-void TimerDelay (fix seconds)
-{
-SDL_Delay (X2I (FixMul (seconds, I2X (1000))));
-}

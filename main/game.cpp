@@ -513,11 +513,8 @@ int Movie_fixed_frametime;
 #endif
 
 
-void CalcFrameTime ()
+void CalcFrameTime (void)
 {
-	fix 	timerValue,
-			xLastFrameTime = gameData.time.xFrame,
-			xMinFrameTime = (MAXFPS ? f1_0 / MAXFPS : 1);
 
 if (gameData.app.bGamePaused) {
 	gameData.time.xLast = TimerGetFixedSeconds ();
@@ -525,18 +522,35 @@ if (gameData.app.bGamePaused) {
 	gameData.time.xRealFrame = 0;
 	return;
 	}
-#if defined (TIMER_TEST) && defined (_DEBUG)
-_xLastFrameTime = xLastFrameTime;
+
+fix 	timerValue,
+		xLastFrameTime = gameData.time.xFrame;
+int	tFrameTime, tMinFrameTime;
+
+if (MAXFPS) {
+	tMinFrameTime = 1000 / MAXFPS;
+#if 0
+	static float tSlack = 0;
+	tSlack += 1000.0f / MAXFPS - tMinFrameTime;
+	if (tSlack >= 1) {
+		tMinFrameTime += (int) tSlack;
+		tSlack -= (int) tSlack;
+		}
 #endif
-timerValue = TimerGetFixedSeconds ();
+	}
+GetSlowTicks ();
+if (MAXFPS > 1) {
+	tFrameTime = gameStates.app.nSDLTicks - gameData.time.tLast;
+	if (tFrameTime < tMinFrameTime)
+		G3_SLEEP (tMinFrameTime - tFrameTime);
+	}
+timerValue = SECS2X (gameStates.app.nSDLTicks);
 gameData.time.xFrame = timerValue - gameData.time.xLast;
-if ((gameData.time.xFrame < xMinFrameTime) && (MAXFPS > 1))
-	G3_SLEEP ((int) ((double) (xMinFrameTime - gameData.time.xFrame) / 65.536 + 0.5));
+gameData.time.xRealFrame = gameData.time.xFrame;
 if (gameStates.app.cheats.bTurboMode)
 	gameData.time.xFrame *= 2;
-// Limit frametime to be between 5 and 150 fps.
-gameData.time.xRealFrame = gameData.time.xFrame;
 gameData.time.xLast = timerValue;
+gameData.time.tLast = SDL_GetTicks ();
 if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
 	gameData.time.xFrame = xLastFrameTime;		//d:\temp\dm_test.then use time from last frame
 #if Arcade_mode
@@ -1799,7 +1813,6 @@ int GameLoop (int bRenderFrame, int bReadControls)
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
-GetSlowTicks ();
 if (!MultiProtectGame ()) {
 	SetFunctionMode (FMODE_MENU);
 	return 1;

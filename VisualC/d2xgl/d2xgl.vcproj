@@ -752,10 +752,6 @@
 							/>
 						</FileConfiguration>
 					</File>
-					<File
-						RelativePath="..\..\misc\timer.cpp"
-						>
-					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -4577,11 +4573,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

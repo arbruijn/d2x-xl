@@ -2561,6 +2561,7 @@ typedef struct tTimeData {
 	fix					xRealFrame;
 	fix					xGame;	//	 in game, in seconds
 	fix					xLast;
+	int					tLast;
 	fix					xSlack;
 	fix					xStarted;
 	fix					xStopped;

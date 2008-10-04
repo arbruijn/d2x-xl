@@ -90,6 +90,21 @@ void TimerDelay(fix seconds);
 #define ApproxMSecToFSec(msec) ((msec) << 6)
 #define approx_fsec_to_msec(fsec) ((fsec) >> 6)
 
-#define secs2f(s)	(I2X ((s) / 1000) | (I2X ((s) % 1000) / 1000))
+#define SECS2X(s)	(I2X ((s) / 1000) | (I2X ((s) % 1000) / 1000))
+
+static inline fix TimerGetApproxSeconds (void)
+{
+return ApproxMSecToFSec (SDL_GetTicks ());
+}
+
+static inline fix TimerGetFixedSeconds (void)
+{
+return SECS2X (SDL_GetTicks ());
+}
+
+static inline void TimerDelay (fix seconds)
+{
+SDL_Delay (X2I (FixMul (seconds, I2X (1000))));
+}
 
 #endif
