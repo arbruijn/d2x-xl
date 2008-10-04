@@ -525,26 +525,38 @@ if (gameData.app.bGamePaused) {
 
 fix 	timerValue,
 		xLastFrameTime = gameData.time.xFrame;
-int	tFrameTime, tMinFrameTime;
+GetSlowTicks ();
+#if 1
+	fix xMinFrameTime = (MAXFPS ? f1_0 / MAXFPS : 1);
+do {
+	timerValue = TimerGetFixedSeconds ();
+   gameData.time.xFrame = timerValue - gameData.time.xLast;
+	if (MAXFPS < 2)
+		break;
+	G3_SLEEP (1);
+	} while (gameData.time.xFrame < xMinFrameTime);
+#else
+int	tFrameTime, txMinFrameTime;
 
 if (MAXFPS) {
-	tMinFrameTime = 1000 / MAXFPS;
+	txMinFrameTime = 1000 / MAXFPS;
 #if 0
 	static float tSlack = 0;
-	tSlack += 1000.0f / MAXFPS - tMinFrameTime;
+	tSlack += 1000.0f / MAXFPS - txMinFrameTime;
 	if (tSlack >= 1) {
-		tMinFrameTime += (int) tSlack;
+		txMinFrameTime += (int) tSlack;
 		tSlack -= (int) tSlack;
 		}
 #endif
 	}
-GetSlowTicks ();
+
 if (MAXFPS > 1) {
 	tFrameTime = gameStates.app.nSDLTicks - gameData.time.tLast;
-	if (tFrameTime < tMinFrameTime)
-		G3_SLEEP (tMinFrameTime - tFrameTime);
+	if (tFrameTime < txMinFrameTime)
+		G3_SLEEP (txMinFrameTime - tFrameTime);
 	}
 timerValue = SECS2X (gameStates.app.nSDLTicks);
+#endif
 gameData.time.xFrame = timerValue - gameData.time.xLast;
 gameData.time.xRealFrame = gameData.time.xFrame;
 if (gameStates.app.cheats.bTurboMode)
