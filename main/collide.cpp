@@ -1711,16 +1711,12 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs
 		if (bDamage && (botInfoP->nExp1Sound > -1))
 			DigiLinkSoundToPos (botInfoP->nExp1Sound, robotP->nSegment, 0, vHitPt, 0, F1_0);
 		if (!(weaponP->flags & OF_HARMLESS)) {
-			fix damage = weaponP->shields;
-			if (bDamage)
-				damage = FixMul (damage, weaponP->cType.laserInfo.multiplier);
-			else
-				damage = 0;
+			fix damage = bDamage ? FixMul (weaponP->shields, weaponP->cType.laserInfo.multiplier) : 0;
 			//	Cut Gauss damage on bosses because it just breaks the game.  Bosses are so easy to
 			//	hit, and missing a robotP is what prevents the Gauss from being game-breaking.
 			if (weaponP->id == GAUSS_ID) {
 				if (botInfoP->bossFlag)
-					damage *= (2 * NDL - gameStates.app.nDifficultyLevel) / (2 * NDL);
+					damage = (damage * (2 * NDL - gameStates.app.nDifficultyLevel)) / (2 * NDL);
 				}
 			else if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weaponP->id == FUSION_ID))
 				damage *= extraGameInfo [IsMultiGame].nFusionRamp / 2;
