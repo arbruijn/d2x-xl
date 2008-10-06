@@ -132,9 +132,76 @@ if (speed > xMaxSpeed) {
 
 // --------------------------------------------------------------------------------------------------------------------
 
+void MoveAwayFromOtherRobots (tObject *objP, vmsVector& vVecToPlayer)
+{
+	vmsVector		vPos, vAvoidPos, vNewPos;
+	fix				xDist, xAvoidRad;
+	short				nStartSeg, nDestSeg, nObject, nSide, nAvoidObjs;
+	tObject			*avoidObjP;
+	tSegment			*segP;
+	tFVIQuery		fq;
+	tFVIData			hitData;
+	int				hitType;
+
+vAvoidPos.SetZero ();
+xAvoidRad = 0;
+nAvoidObjs = 0;
+nStartSeg = objP->nSegment;
+vPos = objP->position.vPos;
+if ((objP->nType == OBJ_ROBOT) && !ROBOTINFO (objP->id).companion) {
+	// move out from all other robots in same segment that are too close
+	for (nObject = gameData.segs.objects [nStartSeg]; nObject != -1; nObject = avoidObjP->next) {
+		avoidObjP = OBJECTS + nObject;
+		if ((avoidObjP->nType != OBJ_ROBOT) || (avoidObjP->nSignature >= objP->nSignature))
+			continue;	// comparing the sigs ensures that only one of two bots tested against each other will move, keeping them from bouncing around
+		xDist = vmsVector::Dist (vPos, avoidObjP->position.vPos);
+		if (xDist >= (objP->size + avoidObjP->size))
+			continue;
+		xAvoidRad += (objP->size + avoidObjP->size);
+		vAvoidPos += avoidObjP->position.vPos;
+		nAvoidObjs++;
+		}
+	if (nAvoidObjs) {
+		xAvoidRad /= nAvoidObjs;
+		vAvoidPos /= nAvoidObjs * F1_0;
+		segP = SEGMENTS + nStartSeg;
+		for (nAvoidObjs = 5; nAvoidObjs; nAvoidObjs--) {
+			vNewPos = vmsVector::Random ();
+			vNewPos *= objP->size;
+			vNewPos += vAvoidPos;
+			if (0 > (nDestSeg = FindSegByPos (vNewPos, nStartSeg, 0, 0)))
+				continue;
+			if (nStartSeg != nDestSeg) {
+				if (0 > (nSide = FindConnectedSide (segP, SEGMENTS + nDestSeg)))
+					continue;
+				if (!((WALL_IS_DOORWAY (segP, nSide, NULL) & WID_FLY_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
+					continue;
+				fq.p0					= &objP->position.vPos;
+				fq.startSeg			= nStartSeg;
+				fq.p1					= &vNewPos;
+				fq.radP0				=
+				fq.radP1				= objP->size;
+				fq.thisObjNum		= OBJ_IDX (objP);
+				fq.ignoreObjList	= NULL;
+				fq.flags				= 0;
+				hitType = FindVectorIntersection (&fq, &hitData);
+				if (hitType != HIT_NONE)
+					continue;
+				}
+			vVecToPlayer = vNewPos - vAvoidPos;
+			vmsVector::Normalize (vVecToPlayer); //vmsVector::Avg (vVecToPlayer, vNewPos);
+			break;
+			}
+		}
+	}
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
 void MoveTowardsPlayer (tObject *objP, vmsVector *vVecToPlayer)
 //	gameData.ai.vVecToPlayer must be normalized, or close to it.
 {
+MoveAwayFromOtherRobots (objP, *vVecToPlayer);
 MoveTowardsVector (objP, vVecToPlayer, 1);
 }
 

@@ -1032,7 +1032,9 @@ if (gameData.ai.nOverallAgitation < 71)
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
-if (gameOpts->gameplay.nAIAggressivity && (siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {
+if (gameOpts->gameplay.nAIAggressivity && 
+	 (siP->ailP->mode == AIM_FOLLOW_PATH) && 
+	 (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {
 #ifdef _DEBUG
 	if (OBJ_IDX (objP) == nDbgObj)
 		nDbgObj = nDbgObj;
@@ -1361,7 +1363,7 @@ si.nPrevVisibility = si.ailP->nPrevVisibility;    //  Must get this before we to
 // If only awake because of a camera, make that the believed tPlayer position.
 if (AIPlayerPosHandler (objP, &si))
 	goto funcExit;
-gameData.ai.xDistToPlayer = vmsVector::Dist(gameData.ai.vBelievedPlayerPos, objP->position.vPos);
+gameData.ai.xDistToPlayer = vmsVector::Dist (gameData.ai.vBelievedPlayerPos, objP->position.vPos);
 // If this robot can fire, compute visibility from gun position.
 // Don't want to compute visibility twice, as it is expensive.  (So is call to CalcGunPoint).
 if (AIFireHandler (objP, &si))

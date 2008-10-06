@@ -60,7 +60,7 @@ void CreateRandomXlate (sbyte *xt)
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 	xt [i] = i;
 for (i = 0; i<MAX_SIDES_PER_SEGMENT; i++) {
-	j = (d_rand () * MAX_SIDES_PER_SEGMENT) / (D_RAND_MAX+1);
+	j = (d_rand () * MAX_SIDES_PER_SEGMENT) / (D_RAND_MAX + 1);
 	Assert ((j >= 0) && (j < MAX_SIDES_PER_SEGMENT));
 	h = xt [j];
 	xt [j] = xt [i];
@@ -110,7 +110,7 @@ for (i = 1; i < nSegs - 1; i += 2) {
 		temp1 = temp2;
 		mag1 = mag2;
 		}
-	temp2 = pointSegP [i+1].point - pointSegP [i].point;
+	temp2 = pointSegP [i + 1].point - pointSegP [i].point;
 	mag2 = temp1.Mag();
 	dot = vmsVector::Dot(temp1, temp2);
 	if (dot * 9/8 > FixMul (mag1, mag2))
@@ -145,7 +145,7 @@ int	Ai_path_debug=0;
 #endif
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Move points halfway to outside of tSegment.
+//	Move points halfway to outside of segment.
 static tPointSeg newPtSegs [MAX_SEGMENTS_D2X];
 
 void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, tObject *objP, int bRandom)
@@ -159,19 +159,16 @@ void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, tObject *objP, int bRa
 	int			count;
 	int			nTempSeg;
 	tFVIQuery	fq;
-	tFVIData		hit_data;
+	tFVIData		hitData;
 	int			nHitType;
 
 j = *nPoints;
 if (j > MAX_SEGMENTS)
 	j = MAX_SEGMENTS;
 for (i = 1, --j; i < j; i++) {
-	// -- ptSegs [i].nSegment = FindSegByPos (&ptSegs [i].point, ptSegs [i].nSegment, 0);
-	nTempSeg = FindSegByPos(ptSegs [i].point, ptSegs [i].nSegment, 1, 0);
-	Assert (nTempSeg != -1);
-	if (nTempSeg < 0) {
+	nTempSeg = FindSegByPos (ptSegs [i].point, ptSegs [i].nSegment, 1, 0);
+	if (nTempSeg < 0)
 		break;
-		}
 	ptSegs [i].nSegment = nTempSeg;
 	nSegment = ptSegs [i].nSegment;
 
@@ -181,9 +178,8 @@ for (i = 1, --j; i < j; i++) {
 		}
 	else
 		a = b;
-	b = ptSegs [i+1].point - ptSegs [i].point;
-	c = ptSegs [i+1].point - ptSegs [i-1].point;
-	//	I don't think we can use quick version here and this is _very_ rarely called. --MK, 07/03/95
+	b = ptSegs [i + 1].point - ptSegs [i].point;
+	c = ptSegs [i + 1].point - ptSegs [i-1].point;
 	vmsVector::Normalize(b);
 	if (abs (vmsVector::Dot(a, b)) > 3*F1_0/4) {
 		if (abs (a[Z]) < F1_0/2) {
@@ -222,7 +218,8 @@ for (i = 1, --j; i < j; i++) {
 	if (e.Mag () < F1_0/2)
 		Int3 ();
 #endif
-	xSegSize = vmsVector::Dist(gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]], gameData.segs.vertices [gameData.segs.segments [nSegment].verts [6]]);
+	xSegSize = vmsVector::Dist (gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]], 
+										 gameData.segs.vertices [gameData.segs.segments [nSegment].verts [6]]);
 	if (xSegSize > F1_0*40)
 		xSegSize = F1_0*40;
 	vGoalPos = ptSegs [i].point + e * (xSegSize/4);
@@ -236,17 +233,16 @@ for (i = 1, --j; i < j; i++) {
 		fq.thisObjNum		= OBJ_IDX (objP);
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;
-		nHitType = FindVectorIntersection (&fq, &hit_data);
+		nHitType = FindVectorIntersection (&fq, &hitData);
 		if (nHitType == HIT_NONE)
 			count = 0;
 		else {
 			if ((count == 3) && (nHitType == HIT_BAD_P0))
 				return;
-			vGoalPos[X] = ((*fq.p0)[X] + hit_data.hit.vPoint[X])/2;
-			vGoalPos[Y] = ((*fq.p0)[Y] + hit_data.hit.vPoint[Y])/2;
-			vGoalPos[Z] = ((*fq.p0)[Z] + hit_data.hit.vPoint[Z])/2;
-			count--;
-			if (count == 0)	//	Couldn't move towards outside, that's ok, sometimes things can't be moved.
+			vGoalPos[X] = ((*fq.p0)[X] + hitData.hit.vPoint[X])/2;
+			vGoalPos[Y] = ((*fq.p0)[Y] + hitData.hit.vPoint[Y])/2;
+			vGoalPos[Z] = ((*fq.p0)[Z] + hitData.hit.vPoint[Z])/2;
+			if (!--count)	//	Couldn't move towards outside, that's ok, sometimes things can't be moved.
 				vGoalPos = ptSegs [i].point;
 			}
 		}
@@ -265,7 +261,6 @@ if (j > 1)
 	memcpy (ptSegs + 1, newPtSegs + 1, (j - 1) * sizeof (tPointSeg));
 }
 
-
 //	-----------------------------------------------------------------------------------------------------------
 //	Create a path from objP->position.vPos to the center of nEndSeg.
 //	Return a list of (segment_num, point_locations) at pointSegP
@@ -279,7 +274,7 @@ if (j > 1)
 //	the tObject is (which isn't passed, right?) and making fvi calls (slow, right?).  So, consider it the more_or_less_safeFlag.
 //	If nEndSeg == -2, then end seg will never be found and this routine will drop out due to depth (xProbably called by CreateNSegmentPath).
 int CreatePathPoints (tObject *objP, int nStartSeg, int nEndSeg, tPointSeg *pointSegP, short *numPoints,
-							  int nMaxDepth, int bRandom, int bSafeMode, int nAvoidSeg)
+							 int nMaxDepth, int bRandom, int bSafeMode, int nAvoidSeg)
 {
 	short				nCurSeg;
 	short				nSide, hSide;
@@ -294,9 +289,9 @@ int CreatePathPoints (tObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	int				lNumPoints;
 	tSegment			*segP;
 	vmsVector		vCenter;
-	int				nThisSeg, nParentSeg;
+	int				nParentSeg, nDestSeg;
 	tFVIQuery		fq;
-	tFVIData			hit_data;
+	tFVIData			hitData;
 	int				hitType;
 	int				bAvoidPlayer;
 
@@ -304,19 +299,17 @@ int CreatePathPoints (tObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 ValidateAllPaths ();
 #endif
 
-if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.behavior == AIB_RUN_FROM)) {
-	if (nAvoidSeg != -32767) {
-		bRandom = 1;
-		nAvoidSeg = gameData.objs.console->nSegment;
-		}
-	// Int3 ();
+HUDMessage (0, "CreatePath (%d)", OBJ_IDX (objP));
+if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.behavior == AIB_RUN_FROM) && (nAvoidSeg != -32767)) {
+	bRandom = 1;
+	nAvoidSeg = gameData.objs.console->nSegment;
 	}
 bAvoidPlayer = gameData.objs.console->nSegment == nAvoidSeg;
 if (nMaxDepth == -1)
 	nMaxDepth = MAX_PATH_LENGTH;
 lNumPoints = 0;
-memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nLastSegment+1));
-memset (depth, 0, sizeof (depth [0]) * (gameData.segs.nLastSegment+1));
+memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nLastSegment + 1));
+memset (depth, 0, sizeof (depth [0]) * (gameData.segs.nLastSegment + 1));
 //	If there is a tSegment we're not allowed to visit, mark it.
 if (nAvoidSeg != -1) {
 	Assert (nAvoidSeg <= gameData.segs.nLastSegment);
@@ -325,13 +318,21 @@ if (nAvoidSeg != -1) {
 		depth [nAvoidSeg] = 0;
 		}
 	}
+
+nCurSeg = nStartSeg;
+bVisited [nCurSeg] = 1;
+nCurDepth = 0;
+
+#ifdef _DEBUG
+if (OBJ_IDX (objP) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 if (bRandom)
 	CreateRandomXlate (randomXlate);
 nCurSeg = nStartSeg;
 bVisited [nCurSeg] = 1;
-nCurDepth = 0;
 while (nCurSeg != nEndSeg) {
-	segP = gameData.segs.segments + nCurSeg;
+	segP = SEGMENTS + nCurSeg;
 	if (bRandom && (d_rand () < 8192))	//create a different xlate at random time intervals
 		CreateRandomXlate (randomXlate);
 
@@ -342,11 +343,10 @@ while (nCurSeg != nEndSeg) {
 		if (!((WALL_IS_DOORWAY (segP, hSide, NULL) & WID_FLY_FLAG) ||
 			  (AIDoorIsOpenable (objP, segP, hSide))))
 			continue;
-		nThisSeg = segP->children [hSide];
-		Assert (nThisSeg > -1 && nThisSeg <= gameData.segs.nLastSegment);
-		if (bVisited [nThisSeg])
+		nDestSeg = segP->children [hSide];
+		if (bVisited [nDestSeg])
 			continue;
-		if (bAvoidPlayer && ((nCurSeg == nAvoidSeg) || (nThisSeg == nAvoidSeg))) {
+		if (bAvoidPlayer && ((nCurSeg == nAvoidSeg) || (nDestSeg == nAvoidSeg))) {
 			COMPUTE_SIDE_CENTER (&vCenter, segP, hSide);
 			fq.p0					= &objP->position.vPos;
 			fq.startSeg			= objP->nSegment;
@@ -356,29 +356,27 @@ while (nCurSeg != nEndSeg) {
 			fq.thisObjNum		= OBJ_IDX (objP);
 			fq.ignoreObjList	= NULL;
 			fq.flags				= 0;
-			hitType = FindVectorIntersection (&fq, &hit_data);
+			hitType = FindVectorIntersection (&fq, &hitData);
 			if (hitType != HIT_NONE)
 				continue;
 			}
-		Assert (nThisSeg > -1 && nThisSeg <= gameData.segs.nLastSegment);
-		Assert (nCurSeg > -1 && nCurSeg <= gameData.segs.nLastSegment);
-		if (nThisSeg < 0)
+		if (nDestSeg < 0)
 			continue;
 		if (nCurSeg < 0)
 			continue;
 		segmentQ [qTail].start = nCurSeg;
-		segmentQ [qTail].end = nThisSeg;
+		segmentQ [qTail].end = nDestSeg;
 		segmentQ [qTail].nConnSide = (ubyte) hSide;
-		bVisited [nThisSeg] = 1;
-		depth [qTail++] = nCurDepth+1;
+		bVisited [nDestSeg] = 1;
+		depth [qTail++] = nCurDepth + 1;
 		if (depth [qTail-1] == nMaxDepth) {
 			nEndSeg = segmentQ [qTail-1].end;
-			goto cpp_done1;
+			goto pathTooLong;
 			}	// end if (depth [...
 		}	//	for (nSide.p...
 
 	if (qHead >= qTail) {
-		//	Couldn't get to goal, return a path as far as we got, which xProbably acceptable to the unparticular caller.
+		//	Couldn't get to goal, return a path as far as we got, which is probably acceptable to the unparticular caller.
 		nEndSeg = segmentQ [qTail-1].end;
 		break;
 		}
@@ -386,14 +384,14 @@ while (nCurSeg != nEndSeg) {
 	nCurDepth = depth [qHead];
 	qHead++;
 
-cpp_done1: ;
+pathTooLong: ;
 	}	//	while (nCurSeg ...
 //	Set qTail to the tSegment which ends at the goal.
 while (segmentQ [--qTail].end != nEndSeg)
 	if (qTail < 0) {
 		*numPoints = lNumPoints;
 		return -1;
-	}
+		}
 for (i = qTail; i >= 0; ) {
 	nParentSeg = segmentQ [i].start;
 	lNumPoints++;
@@ -419,10 +417,10 @@ if (bSafeMode)
 j = lNumPoints++;
 h = bSafeMode + 1;
 for (i = qTail; i >= 0; j -= h) {
-	nThisSeg = segmentQ [i].end;
+	nDestSeg = segmentQ [i].end;
 	nParentSeg = segmentQ [i].start;
-	pointSegP [j].nSegment = nThisSeg;
-	COMPUTE_SEGMENT_CENTER_I (&pointSegP [j].point, nThisSeg);
+	pointSegP [j].nSegment = nDestSeg;
+	COMPUTE_SEGMENT_CENTER_I (&pointSegP [j].point, nDestSeg);
 	pointSegP [j].nConnSide = segmentQ [i].nConnSide;
 	if (nParentSeg == nStartSeg)
 		break;
@@ -449,9 +447,8 @@ ValidatePath (3, origPointSegs, lNumPoints);
 // -- MK, 10/30/95 -- This code causes apparent discontinuities in the path, moving a point
 //	into a new tSegment.  It is not necessarily bad, but it makes it hard to track down actual
 //	discontinuity xProblems.
-if (objP->nType == OBJ_ROBOT)
-	if (ROBOTINFO (objP->id).companion)
-		MoveTowardsOutside (origPointSegs, &lNumPoints, objP, 0);
+if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion)
+	MoveTowardsOutside (origPointSegs, &lNumPoints, objP, 0);
 
 #if PATH_VALIDATION
 ValidatePath (4, origPointSegs, lNumPoints);
@@ -480,7 +477,7 @@ return numPoints;
 #else
 	int			i, nFirstPoint = 0;
 	tFVIQuery	fq;
-	tFVIData		hit_data;
+	tFVIData		hitData;
 	int			hitType;
 
 
@@ -502,7 +499,7 @@ fq.ignoreObjList	= NULL;
 fq.flags				= 0;
 for (i = 0; i < 2; i++) {
 	fq.p1 = &pointSegP [i].point;
-	hitType = FindVectorIntersection (&fq, &hit_data);
+	hitType = FindVectorIntersection (&fq, &hitData);
 	if (hitType != HIT_NONE)
 		break;
 	nFirstPoint = i + 1;
@@ -864,7 +861,7 @@ else
 // -- too much work -- int attackKillObject (tObject *objP)
 // -- too much work -- {
 // -- too much work -- 	tObject		*kill_objp;
-// -- too much work -- 	tFVIData		hit_data;
+// -- too much work -- 	tFVIData		hitData;
 // -- too much work -- 	int			fate;
 // -- too much work -- 	tFVIQuery	fq;
 // -- too much work --
@@ -881,7 +878,7 @@ else
 // -- too much work -- 	fq.ignoreObjList	= NULL;
 // -- too much work -- 	fq.flags					= 0;
 // -- too much work --
-// -- too much work -- 	fate = FindVectorIntersection (&fq, &hit_data);
+// -- too much work -- 	fate = FindVectorIntersection (&fq, &hitData);
 // -- too much work --
 // -- too much work -- 	if (fate == HIT_NONE)
 // -- too much work -- 		return 1;
@@ -1106,7 +1103,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			//	If not, turn around.
 			int			nOppositeEndIndex;
 			vmsVector	*vOppositeEndPoint;
-			tFVIData		hit_data;
+			tFVIData		hitData;
 			int			fate;
 			tFVIQuery	fq;
 
@@ -1129,7 +1126,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			fq.thisObjNum		= OBJ_IDX (objP);
 			fq.ignoreObjList	= NULL;
 			fq.flags				= 0; 				//what about trans walls???
-			fate = FindVectorIntersection (&fq, &hit_data);
+			fate = FindVectorIntersection (&fq, &hitData);
 			if (fate != HIT_WALL) {
 				//	We can be circular! Do it!
 				//	Path direction is unchanged.
@@ -1308,7 +1305,7 @@ ValidateAllPaths ();
 void MaybeAIPathGarbageCollect (void)
 {
 if (gameData.ai.freePointSegs - gameData.ai.pointSegs > MAX_POINT_SEGS - MAX_PATH_LENGTH) {
-	if (nLastFrameGarbageCollected+1 >= gameData.app.nFrameCount) {
+	if (nLastFrameGarbageCollected + 1 >= gameData.app.nFrameCount) {
 		//	This is kind of bad.  Garbage collected last frame or this frame.p.
 		//	Just destroy all paths.  Too bad for the robots.  They are memory wasteful.
 		AIResetAllPaths ();
@@ -1443,7 +1440,7 @@ void test_create_all_paths (void)
 
 	for (nStartSeg=0; nStartSeg<=gameData.segs.nLastSegment-1; nStartSeg++) {
 		if (gameData.segs.segments [nStartSeg].nSegment != -1) {
-			for (nEndSeg=nStartSeg+1; nEndSeg<=gameData.segs.nLastSegment; nEndSeg++) {
+			for (nEndSeg=nStartSeg + 1; nEndSeg<=gameData.segs.nLastSegment; nEndSeg++) {
 				if (gameData.segs.segments [nEndSeg].nSegment != -1) {
 					CreatePathPoints (&OBJECTS [0], nStartSeg, nEndSeg, gameData.ai.freePointSegs, &resultant_length, -1, 0, 0, -1);
 					show_path (nStartSeg, nEndSeg, gameData.ai.freePointSegs, resultant_length);
