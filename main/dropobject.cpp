@@ -858,7 +858,7 @@ if ((nMissiles = gameData.multiplayer.players [playerObjP->id].secondaryAmmo [nM
 void DropPlayerEggs (tObject *playerObjP)
 {
 if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
-	int			rthresh;
+	int			rthresh, nFlag;
 	int			nPlayerId = playerObjP->id;
 	short			nObject, plrObjNum = OBJ_IDX (playerObjP);
 	int			nVulcanAmmo=0;
@@ -907,13 +907,15 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		//	If the tPlayer dies and he has powerful lasers, create the powerups here.
 
 		if (playerP->laserLevel > MAX_LASER_LEVEL) {
-			if (!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX)))) {
+			if (!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && 
+				   (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX)))) {
 				CallObjectCreateEgg (playerObjP, playerP->laserLevel - MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
 				CallObjectCreateEgg (playerObjP, MAX_LASER_LEVEL, OBJ_POWERUP, POW_LASER);
 				}
 			}
 		else if (playerP->laserLevel >= 1) {
-			if (!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (POW_LASER) | HAS_FLAG (SUPER_LASER_INDEX)))))
+			if (!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && 
+				   (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (POW_LASER) | HAS_FLAG (SUPER_LASER_INDEX)))))
 				CallObjectCreateEgg (playerObjP, playerP->laserLevel, OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
 			}
 
@@ -961,10 +963,15 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 
 		//Drop the vulcan, gauss, and ammo
 		nVulcanAmmo = playerP->primaryAmmo [VULCAN_INDEX];
-		if ((playerP->primaryWeaponFlags & HAS_FLAG (VULCAN_INDEX)) &&
-			 (playerP->primaryWeaponFlags & HAS_FLAG (GAUSS_INDEX)))
+		nFlag = HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX);
+		if (extraGameInfo [IsMultiGame].loadout.nGuns & nFlag) {
+			nVulcanAmmo -= GAUSS_WEAPON_AMMO_AMOUNT;
+			if (nVulcanAmmo < 0)
+				nVulcanAmmo = 0;
+			}
+		if (((playerP->primaryWeaponFlags & nFlag) == nFlag) && ((extraGameInfo [IsMultiGame].loadout.nGuns & nFlag) != nFlag))
 			nVulcanAmmo /= 2;		//if both vulcan & gauss, each gets half
-		if (nVulcanAmmo < VULCAN_AMMO_AMOUNT)
+		if ((nVulcanAmmo < VULCAN_AMMO_AMOUNT) && !(extraGameInfo [IsMultiGame].loadout.nGuns & nFlag))
 			nVulcanAmmo = VULCAN_AMMO_AMOUNT;	//make sure gun has at least as much as a powerup
 		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, VULCAN_INDEX);
 		if (nObject >= 0)
