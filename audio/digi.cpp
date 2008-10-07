@@ -356,10 +356,9 @@ if (gameOpts->sound.bUseSDLMixer) {
 void DigiExit (void)
 {
 if (gameStates.sound.digi.bAvailable) {
-	gameStates.sound.digi.bAvailable = 0;
-	DigiFadeoutMusic ();
 	DigiStopAll ();
 	SongsStopAll ();
+	gameStates.sound.digi.bAvailable = 0;
 	DigiClose ();
 	}
 }

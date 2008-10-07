@@ -4992,6 +4992,8 @@ else {
 	if (gameConfig.nMidiVolume != m [soundOpts.nMusicVol].value) {
 		int bSongPlaying = (gameConfig.nMidiVolume > 0);
 
+		if (gameConfig.nMidiVolume * m [soundOpts.nMusicVol].value == 0) //=> midi gets either turned on or off
+			*nLastKey = -2;
  		gameConfig.nMidiVolume = m [soundOpts.nMusicVol].value;
 		DigiSetMidiVolume (128 * gameConfig.nMidiVolume / 8);
 		if (gameConfig.nMidiVolume < 1)
@@ -5071,12 +5073,12 @@ do {
 	soundOpts.nRedbook = nOptions++;
 	ADD_CHECK (nOptions, TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
 	optReverse = nOptions++;
-	if (gameConfig.nDigiVolume) {
+	if (gameStates.sound.bRedbookEnabled || !gameConfig.nMidiVolume)
+		optFadeMusic = -1;
+	else {
 		ADD_CHECK (nOptions, TXT_FADE_MUSIC, gameOpts->sound.bFadeMusic, KEY_F, HTX_FADE_MUSIC);
 		optFadeMusic = nOptions++;
 		}
-	else
-		optFadeMusic = -1;
 	Assert (sizeofa (m) >= (size_t) nOptions);
 	i = ExecMenu1 (NULL, TXT_SOUND_OPTS, nOptions, m, SoundMenuCallback, &choice);
 	gameStates.sound.bRedbookEnabled = m [soundOpts.nRedbook].value;
