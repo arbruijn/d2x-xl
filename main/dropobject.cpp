@@ -840,10 +840,10 @@ void DropMissile1or4 (tObject *playerObjP, int nMissileIndex)
 
 if ((nMissiles = gameData.multiplayer.players [playerObjP->id].secondaryAmmo [nMissileIndex])) {
 	nPowerupId = secondaryWeaponToPowerup [nMissileIndex];
+	if (!IsMultiGame && (nMissileIndex == CONCUSSION_INDEX))
+		nMissiles -= 4;	//player gets 4 concs anyway when respawning, so avoid them building up
 	if (!(IsMultiGame || EGI_FLAG (bDropAllMissiles, 0, 0, 0)) && (nMissiles > 10))
 		nMissiles = 10;
-	if (nMissileIndex == CONCUSSION_INDEX)
-		nMissiles -= 4;	//player gets 4 concs anyway when respawning, so avoid them building up
 	if (nMissiles > 0) {
 		CallObjectCreateEgg (playerObjP, nMissiles / 4, OBJ_POWERUP, nPowerupId + 1);
 		CallObjectCreateEgg (playerObjP, nMissiles % 4, OBJ_POWERUP, nPowerupId);
