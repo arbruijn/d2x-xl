@@ -5071,8 +5071,12 @@ do {
 	soundOpts.nRedbook = nOptions++;
 	ADD_CHECK (nOptions, TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
 	optReverse = nOptions++;
-	ADD_CHECK (nOptions, TXT_FADE_MUSIC, gameOpts->sound.bFadeMusic, KEY_F, HTX_FADE_MUSIC);
-	optFadeMusic = nOptions++;
+	if (gameConfig.nDigiVolume) {
+		ADD_CHECK (nOptions, TXT_FADE_MUSIC, gameOpts->sound.bFadeMusic, KEY_F, HTX_FADE_MUSIC);
+		optFadeMusic = nOptions++;
+		}
+	else
+		optFadeMusic = -1;
 	Assert (sizeofa (m) >= (size_t) nOptions);
 	i = ExecMenu1 (NULL, TXT_SOUND_OPTS, nOptions, m, SoundMenuCallback, &choice);
 	gameStates.sound.bRedbookEnabled = m [soundOpts.nRedbook].value;
