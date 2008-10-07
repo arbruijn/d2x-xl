@@ -842,8 +842,12 @@ if ((nMissiles = gameData.multiplayer.players [playerObjP->id].secondaryAmmo [nM
 	nPowerupId = secondaryWeaponToPowerup [nMissileIndex];
 	if (!(IsMultiGame || EGI_FLAG (bDropAllMissiles, 0, 0, 0)) && (nMissiles > 10))
 		nMissiles = 10;
-	CallObjectCreateEgg (playerObjP, nMissiles/4, OBJ_POWERUP, nPowerupId+1);
-	CallObjectCreateEgg (playerObjP, nMissiles%4, OBJ_POWERUP, nPowerupId);
+	if (nMissileIndex == CONCUSSION_INDEX)
+		nMissiles -= 4;	//player gets 4 concs anyway when respawning, so avoid them building up
+	if (nMissiles > 0) {
+		CallObjectCreateEgg (playerObjP, nMissiles / 4, OBJ_POWERUP, nPowerupId + 1);
+		CallObjectCreateEgg (playerObjP, nMissiles % 4, OBJ_POWERUP, nPowerupId);
+		}
 	}
 }
 
@@ -902,12 +906,16 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 
 		//	If the tPlayer dies and he has powerful lasers, create the powerups here.
 
-		if ((playerP->laserLevel > MAX_LASER_LEVEL) &&
-			!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX))))
-			CallObjectCreateEgg (playerObjP, playerP->laserLevel - MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
-		else if ((playerP->laserLevel >= 1) &&
-					!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (POW_LASER))))
-			CallObjectCreateEgg (playerObjP, playerP->laserLevel, OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
+		if (playerP->laserLevel > MAX_LASER_LEVEL) {
+			if (!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX)))) {
+				CallObjectCreateEgg (playerObjP, playerP->laserLevel - MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
+				CallObjectCreateEgg (playerObjP, MAX_LASER_LEVEL, OBJ_POWERUP, POW_LASER);
+				}
+			}
+		else if (playerP->laserLevel >= 1) {
+			if (!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (POW_LASER) | HAS_FLAG (SUPER_LASER_INDEX)))))
+				CallObjectCreateEgg (playerObjP, playerP->laserLevel, OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
+			}
 
 		//	Drop quad laser if appropos
 		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_QUAD_LASERS, POW_QUADLASER);
