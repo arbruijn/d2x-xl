@@ -299,7 +299,6 @@ int CreatePathPoints (tObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 ValidateAllPaths ();
 #endif
 
-HUDMessage (0, "CreatePath (%d)", OBJ_IDX (objP));
 if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.behavior == AIB_RUN_FROM) && (nAvoidSeg != -32767)) {
 	bRandom = 1;
 	nAvoidSeg = gameData.objs.console->nSegment;

@@ -483,6 +483,7 @@ typedef struct tSoundOptions {
 	int bHires;
 	int bUseSDLMixer;
 	int bUseOpenAL;
+	int bFadeMusic;
 	int digiSampleRate;
 	int bShip;
 	int bMissiles;

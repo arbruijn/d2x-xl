@@ -523,6 +523,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].app.nVersionFilter, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
 
+		RP (gameOptions [i].sound.bFadeMusic, i, 1);
 		RP (gameOptions [i].sound.bGatling, i, 0);
 		RP (gameOptions [i].sound.bMissiles, i, 0);
 		RP (gameOptions [i].sound.bShip, i, 0);
@@ -1099,6 +1100,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.nMaxFPS", "250"},
 	{"gameOptions[0].render.nQuality", "3"},
 	{"gameOptions[0].render.cockpit.bFlashGauges", "1"},
+	{"gameOptions[0].sound.bFadeMusic", "1"},
 	{"gameOptions[0].sound.bGatling", "0"},
 	{"gameOptions[0].sound.bMissiles", "0"},
 	{"gameOptions[0].sound.bShip", "0"},

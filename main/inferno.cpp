@@ -1625,6 +1625,7 @@ else {
 gameOptions [i].sound.bHires = 0;
 gameOptions [i].sound.bShip = 0;
 gameOptions [i].sound.bMissiles = 0;
+gameOptions [i].sound.bFadeMusic = 1;
 }
 
 //------------------------------------------------------------------------------

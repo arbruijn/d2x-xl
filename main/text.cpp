@@ -1826,6 +1826,7 @@ const char *defaultGameTexts [][2] = {
 	{"AI-A~Ggressivitaet: %s", "AI A~Ggressivity: %s"},
 	{"Savegame inkompatibel:\nMax. Segmentzahl unterschiedlich (savegame: %d).\nDer Wert kann in d2x.ini gesetzt werden.", 
 	 "Savegame incompatible:\nMaximum segment count differs (savegame: %d).\nYou can change the value in d2x.ini."},
+	{"Musik aus~Blenden", "~Fade out music"},
 #if 0
 	{"", ""},
 #endif
@@ -2481,6 +2482,7 @@ const char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, sehen Rauch-Uebergaenge an Waenden weicher\nund natuerlicher aus.", "If checked, smoke transitions at walls look smoother\nand more natural."},
 	{"Wenn angekreuzt, werden alle Diebe aus dem aktuellen Level\nentfernt.", "If checked, all thief bots are removed when playing a level."},
 	{"Je nach Einstellung verfolgen Roboter die Spieler zunehmend\naggressiv.", "Depending on the setting, robots pursue players increasingly\naggressive."},
+	{"Wenn angekreuzt, wird Musik sanft ausgeblendet;\nandernfalls kann sie abrupt aufhoeren.", "If checked music will be soflty faded out;\notherwise it may end abruptly."},
 #if 0
 	{"", ""},
 #endif

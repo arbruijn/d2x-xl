@@ -4993,7 +4993,7 @@ else {
 		int bSongPlaying = (gameConfig.nMidiVolume > 0);
 
  		gameConfig.nMidiVolume = m [soundOpts.nMusicVol].value;
-		DigiSetMidiVolume ((gameConfig.nMidiVolume*128)/8);
+		DigiSetMidiVolume (128 * gameConfig.nMidiVolume / 8);
 		if (gameConfig.nMidiVolume < 1)
 			DigiPlayMidiSong (NULL, NULL, NULL, 1, 0);
 		else if (!bSongPlaying) {
@@ -5016,7 +5016,7 @@ void SoundMenu ()
    tMenuItem	m [20];
 	char			szChannels [50], szVolume [50];
 	int			i, nOptions, choice = 0, 
-					optReverse, optShipSound = -1, optMissileSound = -1, optSpeedUpSound = -1, 
+					optReverse, optShipSound = -1, optMissileSound = -1, optSpeedUpSound = -1, optFadeMusic = -1, 
 					bSongPlaying = (gameConfig.nMidiVolume > 0);
 
 gameStates.sound.nSoundChannels = SoundChannelIndex ();
@@ -5071,6 +5071,8 @@ do {
 	soundOpts.nRedbook = nOptions++;
 	ADD_CHECK (nOptions, TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
 	optReverse = nOptions++;
+	ADD_CHECK (nOptions, TXT_FADE_MUSIC, gameOpts->sound.bFadeMusic, KEY_F, HTX_FADE_MUSIC);
+	optFadeMusic = nOptions++;
 	Assert (sizeofa (m) >= (size_t) nOptions);
 	i = ExecMenu1 (NULL, TXT_SOUND_OPTS, nOptions, m, SoundMenuCallback, &choice);
 	gameStates.sound.bRedbookEnabled = m [soundOpts.nRedbook].value;
@@ -5083,6 +5085,7 @@ if (gameConfig.nMidiVolume < 1)   {
 else if (!bSongPlaying)
 	SongsPlaySong (gameStates.sound.nCurrentSong, 1);
 if (!gameStates.app.bNostalgia) {
+	GET_VAL (gameOpts->sound.bFadeMusic, optFadeMusic);
 	GET_VAL (gameOpts->sound.bShip, optShipSound);
 	GET_VAL (gameOpts->sound.bMissiles, optMissileSound);
 	GET_VAL (gameOpts->sound.bGatling, soundOpts.nGatling);
