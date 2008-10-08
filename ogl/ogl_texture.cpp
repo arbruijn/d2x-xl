@@ -148,16 +148,18 @@ OglDeleteLists (secondary_lh, sizeof (secondary_lh) / sizeof (GLuint));
 OglDeleteLists (g3InitTMU [0], sizeof (g3InitTMU) / sizeof (GLuint));
 OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
+#if 1
 for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
-	if (!t->bFrameBuf && (t->handle > 0)) {
+	if (!t->bFrameBuf (t->handle != (GLuint) -1)) {
 		OglDeleteTextures (1, (GLuint *) &t->handle);
-		t->handle = -1;
+		t->handle = (GLuint) -1;
 		bUnlink = 1;
 		}
 	t->w =
 	t->h = 0;
 	t->wrapstate = -1;
 	}
+#endif
 #if 1
 if (bUnlink) {
 	for (i = 0; i < 2; i++) {

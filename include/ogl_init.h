@@ -87,27 +87,6 @@ int OglInitLoadLibrary (void);
 /* I assume this ought to be >= MAX_BITMAP_FILES in piggy.h? */
 #define OGL_TEXTURE_LIST_SIZE 5000
 
-typedef struct tOglTexture {
-	GLuint	 	handle;
-	GLint			internalformat;
-	GLenum		format;
-	int 			w,h,tw,th,lw;
-	int 			bytesu;
-	int 			bytes;
-	GLfloat		u,v;
-	GLfloat 		prio;
-	int 			wrapstate;
-	fix 			lastrend;
-	unsigned		long numrend;
-	ubyte			bMipMaps;
-	ubyte			bFrameBuf;
-#if RENDER2TEXTURE == 1
-	tPixelBuffer	pbuffer;
-#elif RENDER2TEXTURE == 2
-	tFrameBuffer	fbuffer;
-#endif
-} tOglTexture;
-
 typedef struct tFaceColor {
 	tRgbaColorf	color;
 	char			index;
