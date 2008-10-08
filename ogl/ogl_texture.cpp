@@ -72,6 +72,7 @@ t->wrapstate = -1;
 t->w =
 t->h = 0;
 t->bFrameBuf = 0;
+t->bmP = NULL;
 OglInitTextureStats (t);
 }
 
@@ -79,11 +80,10 @@ OglInitTextureStats (t);
 
 void OglInitTextureListInternal (void)
 {
-	int			i;
 	tOglTexture	*t = oglTextureList;
-	oglTexListCur = 0;
-
-for (i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
+	
+oglTexListCur = 0;
+for (int i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
 	OglInitTexture (t, 0);
 }
 
@@ -148,19 +148,24 @@ OglDeleteLists (secondary_lh, sizeof (secondary_lh) / sizeof (GLuint));
 OglDeleteLists (g3InitTMU [0], sizeof (g3InitTMU) / sizeof (GLuint));
 OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
-#if 1
+
 for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
-	if (!t->bFrameBuf && (t->handle != (GLuint) -1)) {
+	if (!t->bFrameBuf && t->handle && (t->handle != (GLuint) -1)) {
 		OglDeleteTextures (1, (GLuint *) &t->handle);
 		t->handle = (GLuint) -1;
 		bUnlink = 1;
 		}
+#ifdef _DEBUG
+	else if (t->handle > 0x7ffffff)
+		t = t;
+#endif
 	t->w =
 	t->h = 0;
 	t->wrapstate = -1;
 	}
 #endif
-#if 1
+
+// Make sure all textures (bitmaps) from the game texture lists that had an OpenGL handle get the handle reset
 if (bUnlink) {
 	for (i = 0; i < 2; i++) {
 		bmP = gameData.pig.tex.bitmaps [i];
@@ -170,8 +175,19 @@ if (bUnlink) {
 	for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
 		UnlinkBitmap (gameData.pig.tex.addonBitmaps + i, 1);
 	}
+// Make sure all textures (bitmaps) not in the game texture lists that had an OpenGL handle get the handle reset
+// (Can be fonts and other textures, e.g. those used for the menus)
+for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++)
+	if (!t->bFrameBuf && (t->handle == (GLuint) -1)) {
+		if (t->bmP) {
+			if (t->bmP->glTexture == t)
+				t->bmP->glTexture = NULL;
+			else
+				t->bmP = NULL;	// this would mean the texture list is messed up
+			}
+		t->handle = 0;
+		}
 oglTexListCur = 0;
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -196,16 +212,19 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-tOglTexture *OglGetFreeTexture (void)
+tOglTexture *OglGetFreeTexture (grsBitmap *bmP)
 {
 tOglTexture *t = OglGetFreeTextureInternal ();
-if (!t) {
+if (t)
+	t->bmP = bmP;
+else {
 #ifdef _DEBUG
 	Warning ("OGL: texture list full!\n");
 #endif
 	// try to recover: flush all textures, reload fonts and this level's textures
 	RebuildRenderContext (gameStates.app.bGameRunning);
-	t = OglGetFreeTextureInternal ();
+	if ((t = OglGetFreeTextureInternal ()))
+		t->bmP = bmP;
 	}
 return t;
 }
@@ -1034,6 +1053,12 @@ if (!texP->bFrameBuf)
 		return 1;
 		}
 	//set priority
+#ifdef _DEBUG
+	if (bmP == gameData.pig.tex.bitmaps [0])
+		bmP = bmP;
+	if (texP->handle == 1)
+		texP = texP;
+#endif
 	glPrioritizeTextures (1, (GLuint *) &texP->handle, &texP->prio);
 	// Give our data to OpenGL.
 	OGL_BINDTEX (texP->handle);
@@ -1102,7 +1127,7 @@ while ((bmP->bmType == BM_TYPE_STD) && (bmParent = BM_PARENT (bmP)) && (bmParent
 	bmP = bmParent;
 buf = bmP->bmTexBuf;
 if (!(t = bmP->glTexture)) {
-	t = bmP->glTexture = OglGetFreeTexture ();
+	t = bmP->glTexture = OglGetFreeTexture (bmP);
 	if (!t)
 		return 1;
 	OglInitTexture (t, bMask);
@@ -1250,9 +1275,9 @@ void OglFreeTexture (tOglTexture *t)
 {
 if (t) {
 	GLuint h = (GLuint) t->handle;
-	if ((GLint) h > 0) {
+	if (h && (h != -1)) {
 		r_texcount--;
-		OglDeleteTextures (1, &h);
+		OglDeleteTextures (1, &((GLuint) h));
 		OglInitTexture (t, 0);
 		}
 	}

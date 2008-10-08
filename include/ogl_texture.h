@@ -18,29 +18,30 @@
 //------------------------------------------------------------------------------
 
 typedef struct tOglTexture {
-	GLuint	 	handle;
-	GLint			internalformat;
-	GLenum		format;
-	int 			w,h,tw,th,lw;
-	int 			bytesu;
-	int 			bytes;
-	GLfloat		u,v;
-	GLfloat 		prio;
-	int 			wrapstate;
-	fix 			lastrend;
-	unsigned		long numrend;
-	ubyte			bMipMaps;
-	ubyte			bFrameBuf;
+	GLuint	 		handle;
+	GLint				internalformat;
+	GLenum			format;
+	int 				w, h, tw, th, lw;
+	int 				bytesu;
+	int 				bytes;
+	GLfloat			u,v;
+	GLfloat 			prio;
+	int 				wrapstate;
+	fix 				lastrend;
+	unsigned	long	numrend;
+	ubyte				bMipMaps;
+	ubyte				bFrameBuf;
 #if RENDER2TEXTURE == 1
 	tPixelBuffer	pbuffer;
 #elif RENDER2TEXTURE == 2
 	tFrameBuffer	fbuffer;
+	grsBitmap		*bmP;
 #endif
 } tOglTexture;
 
 //------------------------------------------------------------------------------
 
-tOglTexture *OglGetFreeTexture (void);
+tOglTexture *OglGetFreeTexture (grsBitmap *bmP);
 void OglInitTexture (tOglTexture *t, int bMask);
 void OglResetTextureStatsInternal (void);
 void OglInitTextureListInternal (void);

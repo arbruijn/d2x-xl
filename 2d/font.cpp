@@ -532,95 +532,89 @@ void OglFontChooseSize (grsFont * font, int gap, int *rw, int *rh)
 
 //------------------------------------------------------------------------------
 
-void OglInitFont (grsFont * font)
+void OglInitFont (grsFont * font, const char *fontname)
 {
 	int	nchars = font->ftMaxChar-font->ftMinChar+1;
 	int i, w, h, tw, th, x, y, curx=0, cury=0;
 	ubyte *fp, *data, *palette;
 	//	char data[32*32*4];
-	int gap=0;//having a gap just wastes ram, since we don't filter text textures at all.
+	int gap = 0;//having a gap just wastes ram, since we don't filter text textures at all.
 	//	char s[2];
-	OglFontChooseSize (font, gap, &tw, &th);
-	data = (ubyte *) D2_ALLOC (tw*th);
-	palette = font->ftParentBitmap.bmPalette;
-	GrInitBitmap (&font->ftParentBitmap, BM_LINEAR, 0, 0, tw, th, tw, data, 1);
-	font->ftParentBitmap.bmPalette = palette;
-	if (!(font->ftFlags & FT_COLOR))
-		font->ftParentBitmap.glTexture = OglGetFreeTexture ();
-	font->ftBitmaps = (grsBitmap*) D2_ALLOC (nchars * sizeof (grsBitmap));
-	memset (font->ftBitmaps, 0, nchars * sizeof (grsBitmap));
-#if TRACE
-//	con_printf (CONDBG, "OglInitFont %s, %s, nchars=%i, (%ix%i tex)\n",
-//		 (font->ftFlags & FT_PROPORTIONAL)?"proportional":"fixedwidth", (font->ftFlags & FT_COLOR)?"color":"mono", nchars, tw, th);
-#endif
-	//	s[1]=0;
-	h = font->ftHeight;
-	//	sleep (5);
 
-	for (i = 0; i < nchars; i++) {
-		//		s[0]=font->ftMinChar+i;
-		//		GrGetStringSize (s, &w, &h, &aw);
-		if (font->ftFlags & FT_PROPORTIONAL)
-			w = font->ftWidths [i];
-		else
-			w = font->ftWidth;
-		if (w < 1 || w > 256)
-			continue;
-		if (curx + w + gap > tw) {
-			cury += h + gap;
-			curx = 0;
-			}
-		if (cury + h > th)
-			Error (TXT_FONT_SIZE, i, nchars);
-		if (font->ftFlags & FT_COLOR) {
-			if (font->ftFlags & FT_PROPORTIONAL)
-				fp = font->ftChars[i];
-			else
-				fp = font->ftData + i * w*h;
-			for (y = 0; y < h; y++)
-				for (x = 0; x < w; x++){
-					font->ftParentBitmap.bmTexBuf [curx + x + (cury + y) * tw] = fp [x + y * w];
-				}
+OglFontChooseSize (font, gap, &tw, &th);
+data = (ubyte *) D2_ALLOC (tw*th);
+palette = font->ftParentBitmap.bmPalette;
+GrInitBitmap (&font->ftParentBitmap, BM_LINEAR, 0, 0, tw, th, tw, data, 1);
+font->ftParentBitmap.bmPalette = palette;
+if (!(font->ftFlags & FT_COLOR))
+	font->ftParentBitmap.glTexture = OglGetFreeTexture (&font->ftParentBitmap);
+font->ftBitmaps = (grsBitmap*) D2_ALLOC (nchars * sizeof (grsBitmap));
+memset (font->ftBitmaps, 0, nchars * sizeof (grsBitmap));
+strncpy (font->ftParentBitmap.szName, fontname, sizeof (font->ftParentBitmap.szName));
+h = font->ftHeight;
 
-			//			GrInitBitmap (&font->ftBitmaps[i], BM_LINEAR, 0, 0, w, h, w, font->);
-			}
-		else {
-			int BitMask, bits = 0, white = GrFindClosestColor (palette, 63, 63, 63);
-			//			if (w*h>sizeof (data))
-			//				Error ("OglInitFont: toobig\n");
-			if (font->ftFlags & FT_PROPORTIONAL)
-				fp = font->ftChars [i];
-			else
-				fp = font->ftData + i * BITS_TO_BYTES (w) * h;
-			for (y = 0; y < h; y++) {
-				BitMask = 0;
-				for (x = 0; x < w; x++) {
-					if (BitMask == 0) {
-						bits = *fp++;
-						BitMask = 0x80;
-						}
-					font->ftParentBitmap.bmTexBuf [curx + x + (cury + y) * tw] = (bits & BitMask) ? white : 255;
-					BitMask >>= 1;
-					}
-				}
-			}
-		GrInitSubBitmap (&font->ftBitmaps[i], &font->ftParentBitmap, curx, cury, w, h);
-		curx += w + gap;
+for (i = 0; i < nchars; i++) {
+	if (font->ftFlags & FT_PROPORTIONAL)
+		w = font->ftWidths [i];
+	else
+		w = font->ftWidth;
+	if (w < 1 || w > 256)
+		continue;
+	if (curx + w + gap > tw) {
+		cury += h + gap;
+		curx = 0;
 		}
-	if (!(font->ftFlags & FT_COLOR)) {
-		//use GL_INTENSITY instead of GL_RGB
-		if (gameStates.ogl.bIntensity4) {
-			font->ftParentBitmap.glTexture->internalformat = 1;
-			font->ftParentBitmap.glTexture->format = GL_LUMINANCE;
+	if (cury + h > th)
+		Error (TXT_FONT_SIZE, i, nchars);
+	if (font->ftFlags & FT_COLOR) {
+		if (font->ftFlags & FT_PROPORTIONAL)
+			fp = font->ftChars[i];
+		else
+			fp = font->ftData + i * w*h;
+		for (y = 0; y < h; y++)
+			for (x = 0; x < w; x++){
+				font->ftParentBitmap.bmTexBuf [curx + x + (cury + y) * tw] = fp [x + y * w];
 			}
-		else if (gameStates.ogl.bLuminance4Alpha4){
-			font->ftParentBitmap.glTexture->internalformat = 1;
-			font->ftParentBitmap.glTexture->format = GL_LUMINANCE_ALPHA;
+
+		//			GrInitBitmap (&font->ftBitmaps[i], BM_LINEAR, 0, 0, w, h, w, font->);
+		}
+	else {
+		int BitMask, bits = 0, white = GrFindClosestColor (palette, 63, 63, 63);
+		//			if (w*h>sizeof (data))
+		//				Error ("OglInitFont: toobig\n");
+		if (font->ftFlags & FT_PROPORTIONAL)
+			fp = font->ftChars [i];
+		else
+			fp = font->ftData + i * BITS_TO_BYTES (w) * h;
+		for (y = 0; y < h; y++) {
+			BitMask = 0;
+			for (x = 0; x < w; x++) {
+				if (BitMask == 0) {
+					bits = *fp++;
+					BitMask = 0x80;
+					}
+				font->ftParentBitmap.bmTexBuf [curx + x + (cury + y) * tw] = (bits & BitMask) ? white : 255;
+				BitMask >>= 1;
+				}
 			}
-		else {
-			font->ftParentBitmap.glTexture->internalformat = gameStates.ogl.bpp / 8;
-			font->ftParentBitmap.glTexture->format = gameStates.ogl.nRGBAFormat;
-			}
+		}
+	GrInitSubBitmap (&font->ftBitmaps[i], &font->ftParentBitmap, curx, cury, w, h);
+	curx += w + gap;
+	}
+if (!(font->ftFlags & FT_COLOR)) {
+	//use GL_INTENSITY instead of GL_RGB
+	if (gameStates.ogl.bIntensity4) {
+		font->ftParentBitmap.glTexture->internalformat = 1;
+		font->ftParentBitmap.glTexture->format = GL_LUMINANCE;
+		}
+	else if (gameStates.ogl.bLuminance4Alpha4){
+		font->ftParentBitmap.glTexture->internalformat = 1;
+		font->ftParentBitmap.glTexture->format = GL_LUMINANCE_ALPHA;
+		}
+	else {
+		font->ftParentBitmap.glTexture->internalformat = gameStates.ogl.bpp / 8;
+		font->ftParentBitmap.glTexture->format = gameStates.ogl.nRGBAFormat;
+		}
 	OglLoadBmTextureM (&font->ftParentBitmap, 0, 2, 0, NULL);
 	}
 }
@@ -1242,7 +1236,7 @@ void grs_font_read (grsFont *gf, CFILE *fp)
 
 //------------------------------------------------------------------------------
 
-grsFont * GrInitFont (const char *fontname)
+grsFont *GrInitFont (const char *fontname)
 {
 	static int bFirstTime = 1;
 	grsFont *font;
@@ -1362,11 +1356,13 @@ FONT = font;
 FG_COLOR.index = 0;
 BG_COLOR.index = 0;
 
+#ifdef _DEBUG
 int x, y, aw;
 char tests[]="abcdefghij1234.A";
 GrGetStringSize (tests, &x, &y, &aw);
+#endif
 
-OglInitFont (font);
+OglInitFont (font, fontname);
 return font;
 }
 
@@ -1453,7 +1449,7 @@ if (font->ftBitmaps) {
 	D2_FREE (font->ftBitmaps);
 	}
 GrFreeBitmapData (&font->ftParentBitmap);
-OglInitFont (font);
+OglInitFont (font, fontname);
 }
 
 //------------------------------------------------------------------------------
