@@ -1053,12 +1053,6 @@ if (!texP->bFrameBuf)
 		return 1;
 		}
 	//set priority
-#ifdef _DEBUG
-	if (bmP == gameData.pig.tex.bitmaps [0])
-		bmP = bmP;
-	if (texP->handle == 1)
-		texP = texP;
-#endif
 	glPrioritizeTextures (1, (GLuint *) &texP->handle, &texP->prio);
 	// Give our data to OpenGL.
 	OGL_BINDTEX (texP->handle);
