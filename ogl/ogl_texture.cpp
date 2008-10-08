@@ -163,7 +163,6 @@ for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
 	t->h = 0;
 	t->wrapstate = -1;
 	}
-#endif
 
 // Make sure all textures (bitmaps) from the game texture lists that had an OpenGL handle get the handle reset
 if (bUnlink) {
