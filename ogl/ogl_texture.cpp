@@ -91,7 +91,7 @@ for (i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
 
 inline void UnlinkTexture (grsBitmap *bmP)
 {
-if (bmP->glTexture && (bmP->glTexture->handle == (unsigned int) -1)) {
+if (bmP->glTexture && (bmP->glTexture->handle == (GLuint) -1)) {
 	bmP->glTexture->handle = 0;
 	bmP->glTexture = NULL;
 	}
@@ -150,7 +150,7 @@ OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
 #if 1
 for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
-	if (!t->bFrameBuf (t->handle != (GLuint) -1)) {
+	if (!t->bFrameBuf && (t->handle != (GLuint) -1)) {
 		OglDeleteTextures (1, (GLuint *) &t->handle);
 		t->handle = (GLuint) -1;
 		bUnlink = 1;
