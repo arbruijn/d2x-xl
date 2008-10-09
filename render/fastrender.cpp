@@ -1451,7 +1451,7 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, nColor, nLights = 0,
+	int			h, i, nStep, nColor, nLights = 0,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
@@ -1466,7 +1466,7 @@ gameStates.render.nState = 0;
 if (gameStates.ogl.bVertexLighting)
 	gameStates.ogl.bVertexLighting = ComputeVertexLight (-1, 0, NULL);
 #endif
-for (i = nStart; i != nEnd; i++) {
+for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 	faceP = gameData.segs.faces.faces + i;
 	nSegment = faceP->nSegment;
 	nSide = faceP->nSide;
@@ -1562,7 +1562,7 @@ PROF_START
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
 	int			h, i, j, nColor, nLights = 0,
-					nIncr = nStart ? -1 : 1,
+					nnStep = nStart ? -1 : 1,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
@@ -1577,7 +1577,7 @@ gameStates.render.nState = 0;
 if (gameStates.ogl.bVertexLighting)
 	gameStates.ogl.bVertexLighting = ComputeVertexLight (-1, 0, NULL);
 #endif
-for (i = nStart; i != nEnd; i += nIncr) {
+for (i = nStart; i != nEnd; i += nnStep) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
@@ -1697,7 +1697,7 @@ PROF_START
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
 	int			h, i, j, k, nIndex, nColor, nLights = 0,
-					nIncr = nStart ? -1 : 1;
+					nnStep = nStart ? -1 : 1;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
@@ -1712,7 +1712,7 @@ gameStates.render.nState = 0;
 if (gameStates.ogl.bVertexLighting)
 	gameStates.ogl.bVertexLighting = ComputeVertexLight (-1, 0, NULL);
 #endif
-for (i = nStart; i != nEnd; i += nIncr) {
+for (i = nStart; i != nEnd; i += nnStep) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
@@ -1834,7 +1834,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 	float			fAlpha;
 	tUVL			*uvlP;
 	int			h, i, j, uvi, nColor, 
-					nIncr = nStart ? -1 : 1;
+					nnStep = nStart ? -1 : 1;
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
@@ -1843,7 +1843,7 @@ ResetFaceList (nThread);
 #endif
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
-for (i = nStart; i != nEnd; i += nIncr) {
+for (i = nStart; i != nEnd; i += nnStep) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
