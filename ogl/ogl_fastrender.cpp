@@ -117,6 +117,7 @@ if ((faceBuffer.nFaces && bForce) || (faceBuffer.nFaces >= FACE_BUFFER_SIZE)) {
 		glDrawElements (GL_QUADS, faceBuffer.nElements, GL_UNSIGNED_INT, faceBuffer.index);
 	faceBuffer.nFaces = 
 	faceBuffer.nElements = 0;
+	//gameStates.render.history.nShader = -1;
 	}
 #endif
 }
@@ -131,8 +132,8 @@ int i = faceP->nIndex,
 if ((faceBuffer.bmBot != bmBot) || (faceBuffer.bmTop != bmTop) || (faceBuffer.nElements + j > FACE_BUFFER_INDEX_SIZE)) {
 	if (faceBuffer.nFaces)
 		G3FlushFaceBuffer (1);
-	faceBuffer.bmBot = faceP->bmBot;
-	faceBuffer.bmTop = faceP->bmTop;
+	faceBuffer.bmBot = bmBot;
+	faceBuffer.bmTop = bmTop;
 	}
 faceBuffer.bTextured = bTextured;
 for (; j; j--)
@@ -160,7 +161,7 @@ else if ((gameStates.render.nType != 4) && faceP && (gameStates.render.bPerPixel
 else if (gameStates.render.bHeadlights && !bDepthOnly)
 	nShader = G3SetupHeadlightShader (nType, HaveLightmaps (), colorP);
 else if (bColorKey || bMultiTexture) 
-	nShader = G3SetupTexMergeShader (bColorKey, bColored);
+	nShader = G3SetupTexMergeShader (bColorKey, bColored, nType);
 else if (gameStates.render.history.nShader >= 0) {
 	gameData.render.nShaderChanges++;
 	glUseProgramObject (0);
@@ -433,11 +434,23 @@ else {
 	bMonitor = (faceP->nCamera >= 0);
 	if (bmTop) {
 		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
-			bmTop = BM_CURFRAME (bmTop);
+			if (!(bmTop->bmProps.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
+				bmBot = BM_CURFRAME (bmTop);
+				bmTop = NULL;
+				}
+			else {
+				bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+				bmTop = BM_CURFRAME (bmTop);
+				}
 			}
-		else
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		else {
+			if (!(bmTop->bmProps.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
+				bmBot = bmTop;
+				bmTop = NULL;
+				}
+			else
+				bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			}
 		}
 	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
@@ -449,7 +462,9 @@ else {
 	}
 
 #if G3_BUFFER_FACES
-if (!bDepthOnly) {
+if (bDepthOnly) 
+	G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
+else {
 	nBlendMode = faceP->bAdditive ? 2 : faceP->bTransparent ? 1 : 0;
 	if (nBlendMode != gameStates.render.history.nBlendMode) {
 		gameStates.render.history.nBlendMode = nBlendMode;
@@ -461,10 +476,14 @@ if (!bDepthOnly) {
 		G3FlushFaceBuffer (1);
 	else
 		G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
+	if (faceBuffer.nFaces <= 1)
+		G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 	}
+#else
+G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 #endif
 gameStates.ogl.iLight = 0;
-G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
+//G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 if (bDepthOnly) {
 	if (gameStates.render.bTriangleMesh)
 		glDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
@@ -568,11 +587,23 @@ else {
 #endif
 	if (bmTop) {
 		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
-			bmTop = BM_CURFRAME (bmTop);
+			if (!(bmTop->bmProps.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
+				bmBot = BM_CURFRAME (bmTop);
+				bmTop = NULL;
+				}
+			else {
+				bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+				bmTop = BM_CURFRAME (bmTop);
+				}
 			}
-		else
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		else {
+			if (!(bmTop->bmProps.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
+				bmBot = bmTop;
+				bmTop = NULL;
+				}
+			else
+				bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			}
 		}
 	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
@@ -608,7 +639,7 @@ if (!bColored) {
 	}
 else if (gameStates.render.bFullBright) {
 	if (gameStates.render.history.nType > 1)
-		G3SetupTexMergeShader (bColorKey, bColored);
+		G3SetupTexMergeShader (bColorKey, bColored, gameStates.render.history.nType);
 	else if (gameStates.render.history.nShader != -1) {
 		glUseProgramObject (0);
 		gameStates.render.history.nShader = -1;
@@ -692,11 +723,23 @@ else {
 #endif
 	if (bmTop) {
 		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
-			bmTop = BM_CURFRAME (bmTop);
+			if (!(bmTop->bmProps.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
+				bmBot = BM_CURFRAME (bmTop);
+				bmTop = NULL;
+				}
+			else {
+				bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+				bmTop = BM_CURFRAME (bmTop);
+				}
 			}
-		else
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		else {
+			if (!(bmTop->bmProps.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
+				bmBot = bmTop;
+				bmTop = NULL;
+				}
+			else
+				bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			}
 		}
 	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
@@ -732,7 +775,7 @@ if (!bColored) {
 	}
 else if (gameStates.render.bFullBright) {
 	if (gameStates.render.history.nType > 1)
-		G3SetupTexMergeShader (bColorKey, bColored);
+		G3SetupTexMergeShader (bColorKey, bColored, gameStates.render.history.nType);
 	else if (gameStates.render.history.nShader != -1) {
 		glUseProgramObject (0);
 		gameStates.render.history.nShader = -1;

@@ -837,18 +837,18 @@ void RIRenderPoly (tRIPoly *item)
 PROF_START
 	grsFace		*faceP;
 	grsTriangle	*triP;
-	grsBitmap	*bmTop = NULL, *bmMask;
+	grsBitmap	*bmBot = item->bmP, *bmTop = NULL, *bmMask;
 	int			i, j, nIndex, bLightmaps, bDecal, bSoftBlend = 0;
 
 #if RI_POLY_OFFSET
-if (!item->bmP) {
+if (!bmBot) {
 	glEnable (GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset (1,1);
 	glPolygonMode (GL_FRONT, GL_FILL);
 	}
 #endif
 #if DBG
-if (item->bmP && strstr (item->bmP->szName, "glare.tga"))
+if (bmBot && strstr (bmBot->szName, "glare.tga"))
 	item = item;
 #endif
 #if 1
@@ -877,14 +877,22 @@ else
 #endif
 if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
+bmTop = faceP ? BmOverride (faceP->bmTop, -1) : NULL;
+if (bmTop && !(bmTop->bmProps.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
+	bmBot = bmTop;
+	bmTop = bmMask = NULL;
+	bDecal = 0;
+	}
 #if RENDER_TRANSP_DECALS
-bDecal = faceP && (bmTop = BmOverride (faceP->bmTop, -1));
-bmMask = (bDecal && ((bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0) && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
+else {
+	bDecal = bmTop != NULL;
+	bmMask = (bDecal && ((bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0) && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
+	}
 #else
 bDecal = 0;
 bmMask = NULL;
 #endif
-if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
+if (LoadRenderItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
 	 (faceP != NULL) || bSoftBlend, bLightmaps, bmMask ? 2 : bDecal, 0) &&
 	 (!bDecal || LoadRenderItemImage (bmTop, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
 	 (!bmMask || LoadRenderItemImage (bmMask, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
@@ -1014,7 +1022,7 @@ if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWr
 				RIResetShader ();
 			}
 		else
-			G3SetupShader (faceP, 0, 0, bDecal, item->bmP != NULL,
+			G3SetupShader (faceP, 0, 0, bDecal, bmBot != NULL,
 								(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
 								renderItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
 #if 0
@@ -1031,7 +1039,7 @@ if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWr
 	}
 else
 #endif
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1, HaveLightmaps () && (faceP != NULL), 0, 0)) {
+if (LoadRenderItemImage (bmBot, item->nColors, 0, item->nWrap, 0, 3, 1, HaveLightmaps () && (faceP != NULL), 0, 0)) {
 	if (item->bAdditive == 1) {
 		RIResetShader ();
 		glBlendFunc (GL_ONE, GL_ONE);
@@ -1042,14 +1050,14 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1, Have
 		}
 	else {
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		G3SetupShader (faceP, 0, 0, 0, item->bmP != NULL,
+		G3SetupShader (faceP, 0, 0, 0, bmBot != NULL,
 							(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
-							item->bmP ? NULL : item->color);
+							bmBot ? NULL : item->color);
 		}
 	j = item->nVertices;
 	glBegin (item->nPrimitive);
 	if (item->nColors > 1) {
-		if (item->bmP) {
+		if (bmBot) {
 			for (i = 0; i < j; i++) {
 				glColor4fv ((GLfloat *) (item->color + i));
 				glTexCoord2fv ((GLfloat *) (item->texCoord + i));
@@ -1068,7 +1076,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1, Have
 			glColor4fv ((GLfloat *) item->color);
 		else
 			glColor3d (1, 1, 1);
-		if (item->bmP) {
+		if (bmBot) {
 			for (i = 0; i < j; i++) {
 				glTexCoord2fv ((GLfloat *) (item->texCoord + i));
 				glVertex3fv ((GLfloat *) (item->vertices + i));
@@ -1083,7 +1091,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1, Have
 	glEnd ();
 	}
 #if RI_POLY_OFFSET
-if (!item->bmP) {
+if (!bmBot) {
 	glPolygonOffset (0,0);
 	glDisable (GL_POLYGON_OFFSET_FILL);
 	}
@@ -1436,6 +1444,7 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	return;
 	}
 PROF_START
+gameStates.render.nType = 5;
 RIResetShader ();
 bStencil = StencilOff ();
 renderItems.bTextured = -1;

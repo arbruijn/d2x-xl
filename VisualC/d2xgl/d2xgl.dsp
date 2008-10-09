@@ -269,10 +269,6 @@ SOURCE=..\..\misc\strio.cpp
 
 SOURCE=..\..\misc\strutil.cpp
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\misc\timer.cpp
-# End Source File
 # End Group
 # Begin Group "main"
 

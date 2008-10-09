@@ -9,7 +9,7 @@
 
 #include "ogl_defs.h"
 
-#define G3_BUFFER_FACES		1
+#define G3_BUFFER_FACES	1
 
 //------------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ void G3FlushFaceBuffer (int bForce);
 int G3SetupPerPixelShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadlight);
 int G3SetupLightmapShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadlight);
 int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP);
-int G3SetupTexMergeShader (int bColorKey, int bColored);
+int G3SetupTexMergeShader (int bColorKey, int bColored, int nType);
 int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP);
 int G3SetupShader (grsFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
 void InitGrayScaleShader (void);
