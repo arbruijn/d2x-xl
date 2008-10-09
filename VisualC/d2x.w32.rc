@@ -1,5 +1,7 @@
 //Microsoft Developer Studio generated resource script.
 //
+#include "resource.h"
+
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -17,8 +19,8 @@
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,13,106,0
- PRODUCTVERSION 1,13,106,0
+ FILEVERSION 1,13,108,0
+ PRODUCTVERSION 1,13,108,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -31,25 +33,25 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "045014b0"
+        BLOCK "080004b0"
         BEGIN
             VALUE "Comments", "D2X-XL - Descent 2 OpenGL for MS Windows\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "D2X-XL - Descent 2 OpenGL for MS Windows\0"
-            VALUE "FileVersion", "1, 13, 106, 0\0"
+            VALUE "FileVersion", "1, 13, 108, 0\0"
             VALUE "InternalName", "D2X-XL\0"
             VALUE "LegalCopyright", "\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "d2x-xl.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "D2X-XL\0"
-            VALUE "ProductVersion", "1, 13, 106, 0\0"
+            VALUE "ProductVersion", "1, 13, 108, 0\0"
             VALUE "SpecialBuild", "\0"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x450, 52106
+        VALUE "Translation", 0x800, 1200
     END
 END
 
@@ -73,17 +75,18 @@ IDI_DESCENT2            ICON    DISCARDABLE     "descent.ico"
 // TEXTINCLUDE
 //
 
-2 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "#include ""resource.h""\r\n"
-    "\0"
-END
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
 
-3 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "\r\n"
-    "\0"
-END
 
-#endif    // APSTUDIO_INVOKED
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
 
