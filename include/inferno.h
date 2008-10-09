@@ -24,10 +24,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "irrstuff.h"
 
-#if DBG
+#ifdef _DEBUG
 #	define DBG 1
 #else
-#	define DBG 1
+#	define DBG 0
 #endif
 
 #define SHOW_EXIT_PATH  1

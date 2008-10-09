@@ -739,8 +739,6 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 
 if (!objP)
 	return 0;
-if (nModel != 62)
-	return 0;
 #if 1//def _DEBUG
 if (nModel == nDbgModel)
 	nDbgModel = nModel;

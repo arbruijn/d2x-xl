@@ -78,7 +78,7 @@ const char *menuBgNames [4][2] = {
 
 #else
 
-const char *menuBgNames [2][4] = {
+const char *menuBgNames [4][2] = {
 	{"\x01menu.pcx", "\x01menub.pcx"},
 	{"\x01menuo.pcx", "\x01menuob.pcx"},
 	{"\x01menud.pcx", "\x01menud.pcx"},

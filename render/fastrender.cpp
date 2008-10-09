@@ -318,8 +318,6 @@ if (!faceP->nCorona)
 #if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
-else
-	return false;
 #endif
 RenderCorona (faceP->nSegment, faceP->nSide, CoronaVisibility (faceP->nCorona), faceP->fRads [0]);
 return true;
