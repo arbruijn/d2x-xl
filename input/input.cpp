@@ -335,7 +335,7 @@ inline int HaveKeyCount (kcItem *k, int i)
 
 if (v == 255)
 	return 0;
-#ifdef _DEBUG
+#if DBG
 v = KeyDownCount (v);
 if (!v)
 	return 0;
@@ -355,7 +355,7 @@ if (v == 255)
 	return 0;
 if (KeyFlags (v))
 	return 0;
-#ifdef _DEBUG
+#if DBG
 if (v = KeyDownCount (v))
 	return v;
 return 0;
@@ -624,7 +624,7 @@ return h;
 
 inline int DeltaAxis (int v)
 {
-#ifdef _DEBUG
+#if DBG
 int a = gameOpts->input.joystick.bLinearSens ? joyAxis [v] * 16 / joy_sens_mod [v % 4] : joyAxis [v];
 if (a)
 	HUDMessage (0, "%d", a);
@@ -1349,13 +1349,13 @@ if (gameStates.render.nZoomFactor > F1_0) {
 	Controls [0].headingTime = (Controls [0].headingTime * 100) / r;
 	Controls [0].pitchTime = (Controls [0].pitchTime * 100) / r;
 	Controls [0].bankTime = (Controls [0].bankTime * 100) / r;
-#ifdef _DEBUG
+#if DBG
 	r = (int) ((double) gameStates.render.nZoomFactor * 100.0 / (double) F1_0);
 	HUDMessage (0, "x %d.%02d", r / 100, r % 100);
 #endif
 	}
 //	KCCLAMP (Controls [0].afterburnerTime, gameStates.input.kcPollTime);
-#ifdef _DEBUG
+#if DBG
 if (gameStates.input.keys.pressed [KEY_DELETE])
 	memset (&Controls, 0, sizeof (tControlInfo));
 #endif

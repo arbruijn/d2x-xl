@@ -28,7 +28,7 @@ extern char **pszHelpTexts;
 
 //Symbolic constants for all the strings
 
-#ifdef _DEBUG
+#if DBG
 
 const char *GAMETEXT (int _i);
 const char *HELPTEXT (int _i);

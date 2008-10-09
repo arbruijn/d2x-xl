@@ -51,7 +51,7 @@ if (gameData.multigame.msg.nReceiver != -1) {
 void MultiDefineMacro (int key)
 {
 int nMsg = 0;
-#ifndef _DEBUG
+#if !DBG
 if (!(gameOpts->multi.bUseMacros && (gameData.app.nGameMode & GM_MULTI)))
 	return;
 #endif

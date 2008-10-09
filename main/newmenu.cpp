@@ -648,7 +648,7 @@ else {
 	//itemP->x = x + w;
 	if (i) {
 		GrString (x, y, s, NULL);
-#ifdef _DEBUG
+#if DBG
 		//GrUpdate (0);
 #endif
 		}
@@ -659,7 +659,7 @@ else {
 		s [i] = '\0';
 		NMSetItemColor (itemP, 1, bTiny);
 		GrString (x, y, s + i - 1, NULL);
-#ifdef _DEBUG
+#if DBG
 		//GrUpdate (0);
 #endif
 		NMSetItemColor (itemP, 0, bTiny);
@@ -1967,7 +1967,7 @@ launchOption:
 		
 			break;
 
-		#ifdef _DEBUG
+		#if DBG
 		case KEY_BACKSP:
 			if ((choice > -1) && (itemP [choice].nType != NM_TYPE_INPUT) && (itemP [choice].nType != NM_TYPE_INPUT_MENU))
 				Int3 (); 

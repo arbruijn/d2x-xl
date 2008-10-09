@@ -161,7 +161,7 @@ if (RBAEnabled ()) {
 int PlayRedbookTrack (int nTrack, int bKeepPlaying)
 {
 gameStates.sound.bRedbookPlaying = 0;
-#ifdef _DEBUG
+#if DBG
 nTrack = 1;
 #endif
 

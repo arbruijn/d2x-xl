@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SORT_FACES 3
 
-#ifdef _DEBUG
+#if DBG
 #	define SHADER_VERTEX_LIGHTING 0
 #else
 #	define SHADER_VERTEX_LIGHTING 0
@@ -94,7 +94,7 @@ void AddFaceListItem (grsFace *faceP, int nThread)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return;
-#ifdef _DEBUG
+#if DBG
 if (faceP - gameData.segs.faces.faces >= gameData.segs.nFaces)
 	return;
 #endif
@@ -148,7 +148,7 @@ if (faceP->nCamera >= 0) {
 		return;
 	faceP->nCamera = -1;
 	}
-#ifdef _DEBUG
+#if DBG
 if (FACE_IDX (faceP) == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
@@ -173,7 +173,7 @@ if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
 else {
 	if (faceP->nOvlTex != 0) {
 		faceP->bmBot = TexMergeGetCachedBitmap (faceP->nBaseTex, faceP->nOvlTex, faceP->nOvlOrient);
-#ifdef _DEBUG
+#if DBG
 		if (!faceP->bmBot)
 			faceP->bmBot = TexMergeGetCachedBitmap (faceP->nBaseTex, faceP->nOvlTex, faceP->nOvlOrient);
 #endif
@@ -207,7 +207,7 @@ else if (faceP->bmTop && strstr (faceP->bmTop->szName, "door"))
 	faceP->bAnimation = faceP->bSolid = 1;
 if (faceP->bSolid)
 	return;
-#ifdef _DEBUG
+#if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -315,7 +315,7 @@ if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return false;
 if (!faceP->nCorona)
 	return false;
-#ifdef _DEBUG
+#if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 else
@@ -336,7 +336,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-#if defined(_WIN32) && defined(RELEASE)
+#if defined(_WIN32) && !DBG
 typedef bool (__fastcall * pRenderHandler) (tSegment *segP, grsFace *faceP, int bDepthOnly);
 #else
 typedef bool (* pRenderHandler) (tSegment *segP, grsFace *faceP, int bDepthOnly);
@@ -349,7 +349,7 @@ static inline bool RenderMineFace (tSegment *segP, grsFace *faceP, int nType, in
 {
 if (!faceP->bVisible)
 	return false;
-#ifdef _DEBUG
+#if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -701,7 +701,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		faceP = fliP->faceP;
 		if (nSegment != faceP->nSegment) {
 			nSegment = faceP->nSegment;
-#ifdef _DEBUG
+#if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
@@ -744,7 +744,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 				continue;
 			}
 		if (nPass == 1) {
-#ifdef _DEBUG
+#if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 			else
@@ -753,7 +753,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			CoronaVisibility (faceP->nCorona);
 			}
 		else if (nPass == 2) {
-#ifdef _DEBUG
+#if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 			else
@@ -765,7 +765,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
 			}
 		else {
-#ifdef _DEBUG
+#if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 			else
@@ -835,7 +835,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		 (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_OUTDOOR))
 		continue;
 	segFaceP = SEGFACES + nSegment;
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
@@ -861,20 +861,20 @@ if (nSegment < 0)
 	short			nFaces = 0;
 	int			i;
 
-#ifdef _DEBUG
+#if DBG
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 if (!(bHeadlight || VisitSegment (nSegment, bAutomap)))
 	return 0;
-#ifdef _DEBUG
+#if DBG
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 if (gameStates.render.bPerPixelLighting == 2)
 	gameData.render.lights.dynamic.shader.index [0][0].nActive = -1;
 for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
-#ifdef _DEBUG
+#if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nSegment = nSegment;
 #endif
@@ -1007,7 +1007,7 @@ int SetupFace (short nSegment, short nSide, tSegment *segP, grsFace *faceP, tFac
 	ubyte	bTextured, bWall;
 	int	nColor = 0;
 
-#ifdef _DEBUG
+#if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 if (FACE_IDX (faceP) == nDbgFace)
@@ -1052,7 +1052,7 @@ void UpdateSlidingFaces (void)
 	tUVL			*uvlP;
 
 for (faceP = gameData.segs.faces.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
-#ifdef _DEBUG
+#if DBG
 	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		faceP = faceP;
 #endif
@@ -1246,7 +1246,7 @@ for (i = 0; i < 4; i++) {
 	}
 glEnd ();
 #endif
-#ifdef _DEBUG
+#if DBG
 memset (vld.colors, 0, sizeof (vld.colors));
 #endif
 #if 0
@@ -1264,7 +1264,7 @@ glReadPixels (0, 0, VLBUF_WIDTH, VLBUF_WIDTH, GL_RGBA, GL_FLOAT, vld.colors);
 
 for (i = 0, pc = vld.colors; i < vld.nVertices; i++) {
 	nVertex = vld.index [i].nVertex;
-#ifdef _DEBUG
+#if DBG
 	if (nVertex == nDbgVertex)
 		nDbgVertex = nDbgVertex;
 #endif
@@ -1388,7 +1388,7 @@ else if (nState == 1) {
 		RenderVertLightBuffers ();
 	else if (vld.nLights + h > VLBUF_SIZE)
 		RenderVertLightBuffers ();
-#ifdef _DEBUG
+#if DBG
 	if (nVertex == nDbgVertex)
 		nDbgVertex = nDbgVertex;
 #endif
@@ -1500,7 +1500,7 @@ for (i = nStart; i != nEnd; i++) {
 				}
 			else {
 				nVertex = faceP->index [h];
-#ifdef _DEBUG
+#if DBG
 				if (nVertex == nDbgVertex)
 					nDbgVertex = nDbgVertex;
 #endif
@@ -1515,7 +1515,7 @@ for (i = nStart; i != nEnd; i++) {
 							pvc->index = gameStates.render.nFrameFlipFlop + 1;
 							}
 						else {
-#ifdef _DEBUG
+#if DBG
 							if (nVertex == nDbgVertex)
 								nDbgVertex = nDbgVertex;
 #endif
@@ -1525,7 +1525,7 @@ for (i = nStart; i != nEnd; i++) {
 							gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 							ResetNearestVertexLights (nVertex, nThread);
 							}
-#ifdef _DEBUG
+#if DBG
 						if (nVertex == nDbgVertex)
 							nVertex = nVertex;
 #endif
@@ -1588,7 +1588,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
 		continue;
 		}
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
@@ -1596,7 +1596,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		nLights = SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 		nSide = faceP->nSide;
-#ifdef _DEBUG
+#if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nSegment = nSegment;
 			if (gameData.render.lights.dynamic.shader.index [0][nThread].nActive)
@@ -1628,7 +1628,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 					*pc = c.color;
 				if (!bLightmaps) {
 					nVertex = faceP->index [h];
-#ifdef _DEBUG
+#if DBG
 					if (nVertex == nDbgVertex)
 						nDbgVertex = nDbgVertex;
 #endif
@@ -1644,7 +1644,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 								pvc->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
-#ifdef _DEBUG
+#if DBG
 								if (nVertex == nDbgVertex)
 									nDbgVertex = nDbgVertex;
 #endif
@@ -1654,7 +1654,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 								gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 								ResetNearestVertexLights (nVertex, nThread);
 								}
-#ifdef _DEBUG
+#if DBG
 							if (nVertex == nDbgVertex)
 								nVertex = nVertex;
 #endif
@@ -1723,7 +1723,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i] - 1;
 		continue;
 		}
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
@@ -1731,7 +1731,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		nLights = SetNearestSegmentLights (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 		nSide = faceP->nSide;
-#ifdef _DEBUG
+#if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nSegment = nSegment;
 			if (gameData.render.lights.dynamic.shader.index [0][nThread].nActive)
@@ -1769,7 +1769,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 					if (nColor)
 						*pc = c.color;
 					nVertex = triP->index [h];
-#ifdef _DEBUG
+#if DBG
 					if (nVertex == nDbgVertex)
 						nDbgVertex = nDbgVertex;
 #endif
@@ -1791,7 +1791,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 								gameData.render.lights.dynamic.shader.index [0][nThread] = gameData.render.lights.dynamic.shader.index [1][nThread];
 								ResetNearestVertexLights (nVertex, nThread);
 								}
-#ifdef _DEBUG
+#if DBG
 							if (nVertex == nDbgVertex)
 								nVertex = nVertex;
 #endif
@@ -1858,7 +1858,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		nSide = faceP->nSide;
 		if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
 			continue;
-#ifdef _DEBUG
+#if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nSegment = nSegment;
 #endif
@@ -1882,7 +1882,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			else {
 				c = faceColor [nColor];
 				nVertex = faceP->index [h];
-#ifdef _DEBUG
+#if DBG
 				if (nVertex == nDbgVertex)
 					nDbgVertex = nDbgVertex;
 #endif
@@ -1990,7 +1990,7 @@ void RenderMineObjects (int nType)
 	int	nListPos, nSegLights = 0;
 	short	nSegment;
 
-#ifdef _DEBUG
+#if DBG
 if (!gameOpts->render.debug.bObjects)
 	return;
 #endif
@@ -2004,18 +2004,18 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 			continue;
 		nSegment = -nSegment - 1;
 		}
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
 	if (0 > gameData.render.mine.renderObjs.ref [nSegment]) 
 		continue;
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
 	if (nType == 1) {	// render opaque objects
-#ifdef _DEBUG
+#if DBG
 		if (nSegment == nDbgSeg)
 			nSegment = nSegment;
 #endif

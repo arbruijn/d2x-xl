@@ -507,7 +507,7 @@ void DigiPauseMidi() {}
 void DigiResumeMidi() {}
 #endif
 
-#ifdef _DEBUG
+#if DBG
 void DigiDebug()
 {
 	int i;

@@ -59,7 +59,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "editor\editor.h"
 #endif
 
-#ifndef NDEBUG
+#if DBG
 #include "string.h"
 #include <time.h>
 #endif
@@ -174,7 +174,7 @@ tFVIData		hitData;
 #define	D1_AIE_MAX	4
 
 //--unused-- int	Processed_this_frame, LastFrameCount;
-#ifndef NDEBUG
+#if DBG
 //	Index into this array with ailP->mode
 char	mode_text[8][9] = {
 	"STILL   ",
@@ -391,7 +391,7 @@ void set_rotvel_and_saturate(fix *dest, fix delta)
 	}
 }
 
-//--debug-- #ifndef NDEBUG
+//--debug-- #if DBG
 //--debug-- int	Total_turns=0;
 //--debug-- int	Prevented_turns=0;
 //--debug-- #endif
@@ -799,7 +799,7 @@ void DoD1AIRobotHitAttack(tObject *robot, tObject *player, vmsVector *collision_
 	tAILocal		*ailP = &gameData.ai.localInfo [robot-OBJECTS];
 	tRobotInfo *botInfoP = &gameData.bots.info [1][robot->id];
 
-//#ifndef NDEBUG
+//#if DBG
 	if (!gameStates.app.cheats.bRobotsFiring)
 		return;
 //#endif
@@ -844,7 +844,7 @@ void ai_fire_laser_at_player(tObject *objP, vmsVector *fire_point)
 	if (!gameStates.app.cheats.bRobotsFiring)
 		return;
 
-#ifndef NDEBUG
+#if DBG
 	//	We should never be coming here for the green guy, as he has no laser!
 	if (botInfoP->attackType == 1)
 		Int3();	// Contact Mike: This is impossible.
@@ -1279,7 +1279,7 @@ void DoD1AIRobotHit (tObject *objP, int type)
 	}
 
 }
-#ifndef NDEBUG
+#if DBG
 int	Do_ai_flag=1;
 #endif
 
@@ -1663,7 +1663,7 @@ int ai_multiplayer_awareness(tObject *objP, int awareness_level)
 	return rval;
 
 }
-#ifndef NDEBUG
+#if DBG
 fix	Prev_boss_shields = -1;
 #endif
 
@@ -1971,7 +1971,7 @@ void DoD1AIFrame (tObject *objP)
 				case D1_AIM_OPEN_DOOR:
 					CreateNSegmentPathToDoor(objP, 5, -1);
 					break;
-				#ifndef NDEBUG
+				#if DBG
 				case D1_AIM_FOLLOW_PATH_2:
 					Int3();	//	Should never happen!
 					break;
@@ -2092,7 +2092,7 @@ void DoD1AIFrame (tObject *objP)
 	//	Time-slice, don't process all the time, purely an efficiency hack.
 	//	Guys whose behavior is station and are not at their hide tSegment get processed anyway.
 	if (ailP->playerAwarenessType < D1_PA_WEAPON_ROBOT_COLLISION-1) { // If robot got hit, he gets to attack player always!
-		#ifndef NDEBUG
+		#if DBG
 		if (Break_on_object != nObject) {	//	don't time slice if we're interested in this tObject.
 		#endif
 			if ((dist_to_player > F1_0*250) && (ailP->timeSinceProcessed <= F1_0*2))
@@ -2103,7 +2103,7 @@ void DoD1AIFrame (tObject *objP)
 				else if ((dist_to_player > F1_0*100) && (ailP->timeSinceProcessed <= F1_0/2))
 					return;
 			}
-		#ifndef NDEBUG
+		#if DBG
 		}
 		#endif
 	}
@@ -2639,7 +2639,7 @@ int add_awareness_event(tObject *objP, int type)
 
 }
 
-#ifndef NDEBUG
+#if DBG
 int	D1_AI_dump_enable = 0;
 
 FILE *D1_AI_dump_file = NULL;

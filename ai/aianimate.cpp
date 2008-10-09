@@ -30,7 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "editor/kdefs.h"
 #endif
 //#define _DEBUG
-#ifdef _DEBUG
+#if DBG
 #include "string.h"
 #include <time.h>
 #endif
@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void AIIdleAnimation (tObject *objP)
 {
-#ifdef _DEBUG
+#if DBG
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif

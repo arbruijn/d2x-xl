@@ -117,7 +117,7 @@ void ReadFlyingControls (tObject *objP)
 			MultiSendGuidedInfo (gmObjP, 0);
 		}
 	else {
-#ifdef _DEBUG
+#if DBG
 		if (Controls [0].headingTime)
 			Controls [0].headingTime = Controls [0].headingTime;
 #endif

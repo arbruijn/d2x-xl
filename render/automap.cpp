@@ -601,7 +601,7 @@ levelNameCanv = PrintToCanvas (amLevelName, SMALL_FONT, automapColors.nMedGreen,
 
 int SetSegmentDepths (int start_seg, ushort *pDepthBuf);
 
-#ifndef _DEBUG
+#if !DBG
 const char	*pszMapBackgroundFilename [2] = {"\x01MAP.PCX", "\x01MAPB.PCX"};
 
 #	define MAP_BACKGROUND_FILENAME pszMapBackgroundFilename [amData.bHires]
@@ -755,7 +755,7 @@ while ((c = KeyInKey ())) {
 	if (!gameOpts->menus.nStyle)
 		MultiDoFrame();
 		switch (c) {
-#ifdef _DEBUG
+#if DBG
 		case KEY_BACKSP: Int3 (); 
 			break;
 #endif
@@ -782,7 +782,7 @@ while ((c = KeyInKey ())) {
 				bDone = 1;
 			break;
 
-#ifdef _DEBUG
+#if DBG
 		case KEYDBGGED+KEY_F: {
 			int i;
 			for (i = 0; i <= gameData.segs.nLastSegment; i++)
@@ -850,7 +850,7 @@ while ((c = KeyInKey ())) {
 			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
 			break;
 
-#ifdef _DEBUG
+#if DBG
 		case KEY_COMMA:
 			if (gameData.marker.fScale > 0.5)
 				gameData.marker.fScale -= 0.5;

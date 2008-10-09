@@ -61,7 +61,7 @@ if (gameStates.ogl.bHaveVBOs) {
 	if ((i = glGetError ())) {
 		glGenBuffersARB (1, &pm->vboDataHandle);
 		if ((i = glGetError ())) {
-#	ifdef _DEBUG
+#	if DBG
 			HUDMessage (0, "glGenBuffersARB failed (%d)", i);
 #	endif
 			gameStates.ogl.bHaveVBOs = 0;
@@ -70,7 +70,7 @@ if (gameStates.ogl.bHaveVBOs) {
 		}
 	glBindBufferARB (GL_ARRAY_BUFFER_ARB, pm->vboDataHandle);
 	if ((i = glGetError ())) {
-#	ifdef _DEBUG
+#	if DBG
 		HUDMessage (0, "glBindBufferARB failed (%d)", i);
 #	endif
 		gameStates.ogl.bHaveVBOs = 0;
@@ -448,7 +448,7 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 	float				fRad = 0, r;
 	short				h, i, j, k;
 
-#ifdef _DEBUG
+#if DBG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
@@ -541,7 +541,7 @@ fix G3ModelSize (tObject *objP, tG3Model *pm, int nModel, int bHires)
 	fVector3		vOffset;
 	double		dx, dy, dz, r;
 
-#ifdef _DEBUG
+#if DBG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
@@ -619,7 +619,7 @@ do {
 psm = pm->pSubModels;
 vOffset = psm->vMin - vOffset;
 gameData.models.offsets[nModel] = vOffset.ToFix();
-#ifdef _DEBUG
+#if DBG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
@@ -780,7 +780,7 @@ if (pm->bValid > 0)
 if (pm->bValid < 0)
 	return 0;
 pm->bRendered = 0;
-#ifdef _DEBUG
+#if DBG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif

@@ -100,7 +100,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 
 #undef DBG
-#ifdef _DEBUG
+#if DBG
 #	define DBG(_expr)	_expr
 #else
 #	define DBG(_expr)
@@ -1093,7 +1093,7 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 void StateSaveSpawnPoint (int i, CFILE *cfP)
 {
-#ifdef _DEBUG
+#if DBG
 i = CFTell (cfP);
 #endif
 CFWriteVector (gameData.multiplayer.playerInit [i].position.vPos, cfP);     
@@ -1880,7 +1880,7 @@ void StateRestoreObject (tObject *objP, CFILE *cfP, int sgVersion)
 {
 objP->nSignature = CFReadInt (cfP);      
 objP->nType = (ubyte) CFReadByte (cfP); 
-#ifdef _DEBUG
+#if DBG
 if (objP->nType == OBJ_REACTOR)
 	objP->nType = objP->nType;
 else 

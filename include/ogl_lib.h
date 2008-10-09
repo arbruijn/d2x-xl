@@ -74,7 +74,7 @@ void OglDrawBuffer (int nBuffer, int bFBO);
 void OglReadBuffer (int nBuffer, int bFBO);
 void OglFlushDrawBuffer (void);
 
-#ifdef _DEBUG
+#if DBG
 
 static inline void OglClearError (int bTrapError)
 {
@@ -116,7 +116,7 @@ else
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 void OglGenTextures (GLsizei n, GLuint *hTextures);
 void OglDeleteTextures (GLsizei n, GLuint *hTextures);
 #else

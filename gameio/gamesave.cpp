@@ -88,7 +88,7 @@ void ReadObject(tObject *objP, CFILE *f, int version);
 void writeObject(tObject *objP, FILE *f);
 void DoLoadSaveLevels(int save);
 #endif
-#ifdef _DEBUG
+#if DBG
 void dump_mine_info(void);
 #endif
 
@@ -1334,7 +1334,7 @@ if (gameTopFileInfo.fileinfoVersion < 17) {
 				}
 	}
 
-#ifdef _DEBUG
+#if DBG
 for (nSide = 0; nSide < 6; nSide++) {
 	nWall = WallNumI (gameData.segs.nLastSegment, nSide);
 	if (IS_WALL (nWall) &&
@@ -1454,7 +1454,7 @@ CheckAndFixWalls ();
 CheckAndFixTriggers ();
 gameData.matCens.nBotCenters = gameFileInfo.botGen.count;
 FixObjectSegs ();
-#ifdef _DEBUG
+#if DBG
 dump_mine_info ();
 #endif
 if ((gameTopFileInfo.fileinfoVersion < GAME_VERSION) && 
@@ -1479,7 +1479,7 @@ extern void	SetAmbientSoundFlags(void);
 //6 -> 7  added flickering lights
 //7 -> 8  made version 8 to be not compatible with D2 1.0 & 1.1
 
-#ifdef _DEBUG
+#if DBG
 char *Level_being_loaded=NULL;
 #endif
 
@@ -1505,7 +1505,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	memset (gameData.multiplayer.maxPowerupsAllowed, 0, sizeof (gameData.multiplayer.maxPowerupsAllowed));
 	memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
 	}
-#ifdef _DEBUG
+#if DBG
 Level_being_loaded = pszFilename;
 #endif
 
@@ -2036,7 +2036,7 @@ int SaveLevel(char * filename)
 
 #endif	//EDITOR
 
-#ifdef _DEBUG
+#if DBG
 void dump_mine_info(void)
 {
 	int	nSegment, nSide;

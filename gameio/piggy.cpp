@@ -63,7 +63,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
 
-#ifdef _DEBUG
+#if DBG
 #	define PIGGY_MEM_QUOTA	8 //4
 #else
 #	define PIGGY_MEM_QUOTA	8
@@ -93,7 +93,7 @@ static ubyte *bitmapBits [2] = {NULL, NULL};
 ubyte d1ColorMap [256];
 ubyte *d1Palette = NULL;
 
-#ifdef _DEBUG
+#if DBG
 #	define PIGGY_BUFFER_SIZE ((unsigned int) (512*1024*1024))
 #else
 #	define PIGGY_BUFFER_SIZE ((unsigned int) 0x7fffffff)
@@ -304,7 +304,7 @@ Assert (bitmapCacheSize > 0);
 	MEMORYSTATUS	memStat;
 	GlobalMemoryStatus (&memStat);
 	bitmapCacheSize = (int) (memStat.dwAvailPhys / 10) * PIGGY_MEM_QUOTA;
-#	ifdef _DEBUG
+#	if DBG
 	gameStates.render.nMaxTextureQuality = 3;
 #	else
 	if (bitmapCacheSize > 1024 * 1024 * 1024)
@@ -1031,7 +1031,7 @@ else if (!CFOpen (cfPiggy + 1, D1_PIGFILE, gameFolders.szDataDir, "rb", 0)) {
 	return;
 	}
 //first, free up data allocated for old bitmaps
-#ifdef _DEBUG
+#if DBG
 Assert (LoadD1Palette () != NULL);
 #else
 LoadD1Palette ();
@@ -1058,7 +1058,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 			sprintf (bmTemp.szName, "%s#%d", szNameRead, bmh.dflags & DBM_NUM_FRAMES);
 		else
 			strcpy (bmTemp.szName, szNameRead);
-#ifdef _DEBUG
+#if DBG
 		if (strstr (bmTemp.szName, "door13"))
 			i = i;
 #endif
@@ -1101,7 +1101,7 @@ if (!CFOpen (&cfPiggy, D1_PIGFILE, gameFolders.szDataDir, "rb", 0)) {
 	return bmi;
 	}
 if (!gameStates.app.bHaveD1Data) {
-#ifdef _DEBUG
+#if DBG
 Assert (LoadD1Palette () != NULL);
 #else
 LoadD1Palette ();

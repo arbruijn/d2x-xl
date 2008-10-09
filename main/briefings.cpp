@@ -400,7 +400,7 @@ int ShowBriefingImage (char * filename, int bAllowKeys, int from_hog_only)
 	grsBitmap title_bm;
 	char new_filename [FILENAME_LEN+1] = "";
 
-#ifndef _DEBUG
+#if !DBG
 if (from_hog_only)
 	strcpy (new_filename, "\x01");	//only read from hog file
 #endif
@@ -726,7 +726,7 @@ else
 if (*szBriefScreen) {
 	glClear (GL_COLOR_BUFFER_BIT);
 	if ((pcxResult = PcxReadFullScrImage (szBriefScreen, gameStates.app.bD1Mission)) != PCX_ERROR_NONE) {
-#ifdef _DEBUG
+#if DBG
 		Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", szBriefScreen, pcx_errormsg (pcxResult), pcxResult);
 #endif
 		}
@@ -747,7 +747,7 @@ strcpy (curBriefScreenName, szBriefScreen);
 if (GrPaletteFadeOut (NULL, 32, 0))
 	return 0;
 if ((pcxResult = LoadBriefImg (szBriefScreen, NULL, 1)) != PCX_ERROR_NONE) {
-#ifdef _DEBUG
+#if DBG
 	static char szErrScreen [15] = "";
 
 	if (strncmp (szErrScreen, szBriefScreen, sizeof (szErrScreen))) {
@@ -1255,7 +1255,7 @@ return -1;
 
 //-----------------------------------------------------------------------------
 
-#if defined(_WIN32) && defined(RELEASE)
+#if defined(_WIN32) && !DBG
 typedef int (__fastcall * pBriefingHandler) (tBriefingInfo& bi);
 #else
 typedef int (* pBriefingHandler) (tBriefingInfo& bi);

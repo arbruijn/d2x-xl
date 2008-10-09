@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "editor/kdefs.h"
 #endif
 //#define _DEBUG
-#ifdef _DEBUG
+#if DBG
 #include "string.h"
 #include <time.h>
 #endif
@@ -129,7 +129,7 @@ fq.thisObjNum		= OBJ_IDX (objP);
 fq.ignoreObjList	= ignoreObjs;
 fq.flags				= FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS;		//what about trans walls???
 gameData.ai.nHitType = FindVectorIntersection (&fq, &gameData.ai.hitData);
-#ifdef _DEBUG
+#if DBG
 if (gameData.ai.nHitType == 0)
 	FindVectorIntersection (&fq, &gameData.ai.hitData);
 #endif
@@ -183,7 +183,7 @@ else {
 		dist = vmsVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
 		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
 		LimitPlayerVisibility (xMaxVisibleDist, ailP);
-#ifdef _DEBUG
+#if DBG
 		if (gameData.ai.nPlayerVisibility == 2)
 			gameData.ai.nPlayerVisibility = gameData.ai.nPlayerVisibility;
 #endif
@@ -200,7 +200,7 @@ else {
 			}
 		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
 		LimitPlayerVisibility (xMaxVisibleDist, ailP);
-#ifdef _DEBUG
+#if DBG
 		if (gameData.ai.nPlayerVisibility == 2)
 			gameData.ai.nPlayerVisibility = gameData.ai.nPlayerVisibility;
 #endif
@@ -488,7 +488,7 @@ if (IsMultiGame)
 
 // ----------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 int Ai_dump_enable = 0;
 
 FILE *Ai_dump_file = NULL;

@@ -928,7 +928,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 grsFace *FindDupFace (short nSegment, short nSide)
 {
 	tSegFaces	*segFaceP = SEGFACES + nSegment;
@@ -972,7 +972,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 	segP->group = 0;
 #endif
 
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
@@ -1032,12 +1032,12 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 			}
 		}
 
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
 	for (nSide = 0, sideP = segP->sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++ )	{
-#ifdef _DEBUG
+#if DBG
 		int bReadSideData;
 		nWall = WallNumI (nSegment, nSide);
 		if (segP->children [nSide] == -1)

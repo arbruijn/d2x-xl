@@ -67,6 +67,25 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "editor/editor.h"
 #endif
 
+#if DBG
+
+const char *menuBgNames [4][2] = {
+	{"menu.pcx", "menub.pcx"},
+	{"menuo.pcx", "menuob.pcx"},
+	{"menud.pcx", "menud.pcx"},
+	{"menub.pcx", "menub.pcx"}
+	};
+
+#else
+
+const char *menuBgNames [2][4] = {
+	{"\x01menu.pcx", "\x01menub.pcx"},
+	{"\x01menuo.pcx", "\x01menuob.pcx"},
+	{"\x01menud.pcx", "\x01menud.pcx"},
+	{"\x01menub.pcx", "\x01menub.pcx"}
+	};
+#endif
+
 //------------------------------------------------------------------------------
 
 static struct {
@@ -134,7 +153,7 @@ static struct {
 	int	nUse;
 	int	nReach;
 	int	nMaxLights;
-#ifdef _DEBUG
+#if DBG
 	int	nZPass;
 	int	nVolume;
 	int	nTest;
@@ -242,7 +261,7 @@ if (*nLastKey == KEY_ESC)
 if (gameStates.app.bAutoDemos) {
 	curtime = TimerGetApproxSeconds ();
 	if (((gameStates.input.keys.xLastPressTime + I2X (/*2*/5)) < curtime)
-#ifdef _DEBUG
+#if DBG
 		&& !gameData.speedtest.bOn
 #endif	
 		) {
@@ -563,7 +582,7 @@ else if (nChoice == mainOpts.nLoad) {
 	if (!StateRestoreAll (0, 0, NULL))
 		SetFunctionMode (FMODE_MENU);
 	}
-#ifdef _DEBUG
+#if DBG
 else if (nChoice == mainOpts.nLoadDirect) {
 	tMenuItem	m [1];
 	char			szLevel [10] = "";
@@ -3926,7 +3945,7 @@ void RenderOptionsMenu (void)
 	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightOpts, optMovieOpts,
 			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts,
 			optUseGamma, optColoredWalls, optDepthSort, optCoronaOpts, optShipRenderOpts;
-#ifdef _DEBUG
+#if DBG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #endif
 
@@ -4070,7 +4089,7 @@ do {
 		optShipRenderOpts =
 		optAdvOpts = -1;
 
-#ifdef _DEBUG
+#if DBG
 	ADD_TEXT (nOptions, "", 0);
 	nOptions++;
 	ADD_CHECK (nOptions, "Draw wire frame", gameOpts->render.debug.bWireFrame, 0, NULL);
@@ -4150,7 +4169,7 @@ do {
 		gameOpts->ogl.bSetGammaRamp = 0;
 		}
 #endif
-#ifdef _DEBUG
+#if DBG
 	gameOpts->render.debug.bWireFrame = m [optWireFrame].value;
 	gameOpts->render.debug.bTextures = m [optTextures].value;
 	gameOpts->render.debug.bObjects = m [optObjects].value;
@@ -5481,11 +5500,11 @@ ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
 
  char *MENU_PCX_NAME (void)
 {
-if (CFExist ((char *) MENU_PCX_FULL, gameFolders.szDataDir, 0))
+if (CFExist (MENU_PCX_FULL, gameFolders.szDataDir, 0))
 	return (char *) MENU_PCX_FULL;
-if (CFExist ((char *) MENU_PCX_OEM, gameFolders.szDataDir, 0))
+if (CFExist (MENU_PCX_OEM, gameFolders.szDataDir, 0))
 	return (char *) MENU_PCX_OEM;
-if (CFExist ((char *) MENU_PCX_SHAREWARE, gameFolders.szDataDir, 0))
+if (CFExist (MENU_PCX_SHAREWARE, gameFolders.szDataDir, 0))
 	return (char *) MENU_PCX_SHAREWARE;
 return (char *) MENU_PCX_MAC_SHARE;
 }

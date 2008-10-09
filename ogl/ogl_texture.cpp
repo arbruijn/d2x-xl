@@ -63,7 +63,7 @@ for (i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
 
 //------------------------------------------------------------------------------
 
-void OglInitTexture (tOglTexture *t, int bMask)
+void OglInitTexture (tOglTexture *t, int bMask, grsBitmap *bmP)
 {
 t->handle = 0;
 t->internalformat = bMask ? 1 : gameStates.ogl.bpp / 8;
@@ -72,7 +72,7 @@ t->wrapstate = -1;
 t->w =
 t->h = 0;
 t->bFrameBuf = 0;
-t->bmP = NULL;
+t->bmP = bmP;
 OglInitTextureStats (t);
 }
 
@@ -84,7 +84,7 @@ void OglInitTextureListInternal (void)
 	
 oglTexListCur = 0;
 for (int i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
-	OglInitTexture (t, 0);
+	OglInitTexture (t, 0, NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
 		t->handle = (GLuint) -1;
 		bUnlink = 1;
 		}
-#ifdef _DEBUG
+#if DBG
 	else if (t->handle > 0x7ffffff)
 		t = t;
 #endif
@@ -217,7 +217,7 @@ tOglTexture *t = OglGetFreeTextureInternal ();
 if (t)
 	t->bmP = bmP;
 else {
-#ifdef _DEBUG
+#if DBG
 	Warning ("OGL: texture list full!\n");
 #endif
 	// try to recover: flush all textures, reload fonts and this level's textures
@@ -281,7 +281,7 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 OGL_BINDTEX (texP->pbuffer.texId);
 #	endif
 #	ifdef _WIN32
-#		ifdef _DEBUG
+#		if DBG
 if (!texP->pbuffer.bBound) {
 	texP->pbuffer.bBound = wglBindTexImageARB (texP->pbuffer.hBuf, WGL_FRONT_LEFT_ARB);
 	if (!texP->pbuffer.bBound) {
@@ -340,7 +340,7 @@ else
 			OglLoadBmTexture (bmMask, 0, -1, 1);
 		}
 	}
-#ifdef _DEBUG
+#if DBG
 bmP->glTexture->lastrend = gameData.time.xGame;
 bmP->glTexture->numrend++;
 #endif
@@ -514,7 +514,7 @@ int OglFillTexBuf (
 	ushort	r, g, b, a;
 	int		bTransp;
 
-#ifdef _DEBUG
+#if DBG
 if (strstr (bmP->szName, "phoenix"))
 	bmP = bmP;
 #endif
@@ -528,7 +528,7 @@ if (tWidth * tHeight * 4 > (int) sizeof (gameData.render.ogl.texBuf))//shouldn't
 bTransp = (nTransp || bSuperTransp) && GrBitmapHasTransparency (bmP);
 if (!bTransp)
 	nFormat = GL_RGB;
-#ifdef _DEBUG
+#if DBG
 if (!nTransp)
 	nTransp = 0;
 #endif
@@ -963,7 +963,7 @@ int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, tOglTexture *texP, int nTr
 
 if (!bmP)
 	return 1;
-#ifdef _DEBUG
+#if DBG
 if (strstr (bmP->szName, "phoenix"))
 	bmP = bmP;
 #endif
@@ -1046,7 +1046,7 @@ if (!texP->bFrameBuf)
 	// Generate OpenGL texture IDs.
 	OglGenTextures (1, (GLuint *) &texP->handle);
 	if (!texP->handle) {
-#ifdef _DEBUG
+#if DBG
 		int nError = glGetError ();
 #endif
 		return 1;
@@ -1123,7 +1123,7 @@ if (!(t = bmP->glTexture)) {
 	t = bmP->glTexture = OglGetFreeTexture (bmP);
 	if (!t)
 		return 1;
-	OglInitTexture (t, bMask);
+	OglInitTexture (t, bMask, bmP);
 	t->lw = bmP->bmProps.w;
 	if (bmP->bmProps.flags & BM_FLAG_TGA)
 		t->lw *= bmP->bmBPP;
@@ -1177,7 +1177,7 @@ if (bmP->bmProps.flags & BM_FLAG_RLE) {
 	buf = decodebuf;
 	}
 #endif
-#ifdef _DEBUG
+#if DBG
 if (bmP->bmProps.flags & BM_FLAG_TGA)
 	bmP->bmProps.flags = bmP->bmProps.flags;
 else 
@@ -1234,7 +1234,7 @@ int OglLoadBmTexture (grsBitmap *bmP, int bDoMipMap, int nTransp, int bLoad)
 	int	i, h, w, nFrames;
 
 bmP = BmOverride (bmP, -1);
-#ifdef _DEBUG
+#if DBG
 if (strstr (bmP->szName, "phoenix"))
 	bmP = bmP;
 #endif
@@ -1271,7 +1271,7 @@ if (t) {
 	if (h && (h != -1)) {
 		r_texcount--;
 		OglDeleteTextures (1, &((GLuint) h));
-		OglInitTexture (t, 0);
+		OglInitTexture (t, 0, NULL);
 		}
 	}
 }
@@ -1303,7 +1303,7 @@ else if ((t = bmP->glTexture)) {
 		if (t->pbuffer.bBound) {
 			if (wglReleaseTexImageARB (t->pbuffer.hBuf, WGL_FRONT_LEFT_ARB))
 				t->pbuffer.bBound = 0;
-#		ifdef _DEBUG
+#		if DBG
 			else {
 				char *psz = (char *) gluErrorString (glGetError ());
 				}

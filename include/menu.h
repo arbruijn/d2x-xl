@@ -22,18 +22,6 @@ void GameplayOptionsMenu ();
 int QuitSaveLoadMenu (void);
 int SelectAndLoadMission (int bMulti, int *bAnarchyOnly);
 
-#ifndef _DEBUG  // read only from hog file
-#	define MENU_PCX_MAC_SHARE ("\x01menub.pcx")
-#	define MENU_PCX_SHAREWARE ("\x01menud.pcx")
-#	define MENU_PCX_OEM (gameStates.menus.bHires?"\x01menuob.pcx":"\x01menuo.pcx")
-#	define MENU_PCX_FULL (gameStates.menus.bHires?"\x01menub.pcx":"\x01menu.pcx")
-#else
-#	define MENU_PCX_MAC_SHARE ("menub.pcx")
-#	define MENU_PCX_SHAREWARE ("menud.pcx")
-#	define MENU_PCX_OEM (gameStates.menus.bHires?"menuob.pcx":"menuo.pcx")
-#	define MENU_PCX_FULL (gameStates.menus.bHires?"menub.pcx":"menu.pcx")
-#endif
-
 // name of background bitmap
 #if 0
 #define MENU_PCX_NAME \
@@ -44,11 +32,17 @@ int SelectAndLoadMission (int bMulti, int *bAnarchyOnly);
 char *MENU_PCX_NAME (void);
 #endif
 
+#define MENU_PCX_FULL		menuBgNames [0][gameStates.menus.bHires]
+#define MENU_PCX_OEM			menuBgNames [1][gameStates.menus.bHires]
+#define MENU_PCX_SHAREWARE	menuBgNames [2][gameStates.menus.bHires]
+#define MENU_PCX_MAC_SHARE	menuBgNames [3][gameStates.menus.bHires]
+
 void InitDetailLevels(int detailLevel);
 
 int SwitchDisplayMode (int dir);
 
 extern char *menu_difficulty_text[];
+extern const char *menuBgNames [4][2];
 extern int Max_debrisObjects;
 extern int MissileView_enabled;
 extern int EscortView_enabled;

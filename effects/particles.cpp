@@ -554,7 +554,7 @@ return 1;
 
 int DestroyParticle (tParticle *pParticle)
 {
-#ifdef _DEBUG
+#if DBG
 memset (pParticle, 0, sizeof (tParticle));
 #endif
 return 1;
@@ -1901,7 +1901,7 @@ else
 		if ((pSmoke->nObject == 0x7fffffff) && (pSmoke->nType < 3) &&
 			 (gameStates.app.nSDLTicks - pSmoke->nBirth > (MAX_SHRAPNEL_LIFE / F1_0) * 1000))
 			SetSmokeLife (i, 0);
-#ifdef _DEBUG
+#if DBG
 		if ((pSmoke->nObject < 0x70000000) && (OBJECTS [pSmoke->nObject].nType == 255))
 			i = i;
 #endif
@@ -2256,7 +2256,7 @@ if (0 <= IsUsedSmoke (i)) {
 	if (pSmoke->pClouds)
 		for (i = 0; i < pSmoke->nClouds; i++)
 			SetCloudPos (pSmoke->pClouds, pos, orient, nSegment);
-#ifdef _DEBUG
+#if DBG
 	else if (pSmoke->nObject >= 0) {
 		HUDMessage (0, "no smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
 		//PrintLog ("no gameData.smoke.buffer in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);

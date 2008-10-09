@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "string.h"
 //#define _DEBUG
-#ifdef _DEBUG
+#if DBG
 #include <time.h>
 #endif
 

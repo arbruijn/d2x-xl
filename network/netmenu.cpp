@@ -1710,7 +1710,7 @@ if (gameData.multiplayer.nPlayers > netGame.nMaxPlayers) {
 	gameData.multiplayer.nPlayers = nSavePlayers;
 	goto GetPlayersAgain;
 	}
-#ifndef _DEBUG
+#if !DBG
 if (gameData.multiplayer.nPlayers < 2) {
 	ExecMessageBox (TXT_WARNING, NULL, 1, TXT_OK, TXT_TEAM_ATLEAST_TWO);
 #	if 0
@@ -1720,7 +1720,7 @@ if (gameData.multiplayer.nPlayers < 2) {
 	}
 #endif
 
-#ifndef _DEBUG
+#if !DBG
 if (((netGame.gameMode == NETGAME_TEAM_ANARCHY) ||
 	  (netGame.gameMode == NETGAME_CAPTURE_FLAG) || 
 	  (netGame.gameMode == NETGAME_TEAM_HOARD)) && 
@@ -1927,7 +1927,7 @@ if ((gameStates.multi.nGameType >= IPX_GAME) && networkData.bAllowSocketChanges)
 		}
 	}
 	// send a request for game info every 3 seconds
-#ifdef _DEBUG
+#if DBG
 if (!networkData.nActiveGames)
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -2200,7 +2200,7 @@ int ConnectionSecLevel [] = {12, 3, 5, 7};
 int AppletalkConnectionPacketLevel [] = {0, 1, 0};
 int AppletalkConnectionSecLevel [] = {10, 3, 8};
 
-#ifndef _DEBUG
+#if !DBG
 int NetworkChooseConnect ()
 {
 return 1;
@@ -2413,7 +2413,7 @@ void ShowNetGameInfo (int choice)
    char			mTexts [30][200];
 	int			i, j, nInMenu, opt = 0;
 
-#ifndef _DEBUG
+#if !DBG
 if (choice >= networkData.nActiveGames)
 	return;
 #endif
@@ -2432,7 +2432,7 @@ opt++;
 sprintf (mTexts [opt], TXT_NGI_SKILL, szHighlight, MENU_DIFFICULTY_TEXT (AGI.difficulty)); 
 opt++;
 opt++;
-#ifndef _DEBUG
+#if !DBG
 if (!*AXI.szGameName) {
 	sprintf (mTexts [opt], "Gamehost is not using D2X-XL or running in pure mode");
 	opt++;
@@ -2540,7 +2540,7 @@ void DoShowNetgameHelp()
 	tMenuItem m [30];
    char mtext [30][60];
 	int i, num = 0, eff;
-#ifdef _DEBUG
+#if DBG
 	int pl;
 #endif
 	//char *eff_strings[]={"trashing", "really hurting", "seriously affecting", "hurting", "affecting", "tarnishing"};
@@ -2560,7 +2560,7 @@ sprintf (mtext [num++], TXT_INFO_SERVER, gameData.multiplayer.players [NetworkWh
 sprintf (mtext [num++], TXT_INFO_PLRNUM, NetworkHowManyConnected(), netGame.nMaxPlayers);
 sprintf (mtext [num++], TXT_INFO_PPS, netGame.nPacketsPerSec);
 sprintf (mtext [num++], TXT_INFO_SHORTPKT, netGame.bShortPackets ? "Yes" : "No");
-#ifdef _DEBUG
+#if DBG
 pl=(int) (((double) networkData.nTotalMissedPackets / (double) networkData.nTotalPacketsGot) * 100.0);
 if (pl < 0)
 pl=0;

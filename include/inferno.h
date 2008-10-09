@@ -24,6 +24,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "irrstuff.h"
 
+#if DBG
+#	define DBG 1
+#else
+#	define DBG 1
+#endif
+
 #define SHOW_EXIT_PATH  1
 
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model
@@ -41,20 +47,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define RENDERPATH		gameOpts->render.nPath
 #endif
 
-#ifdef _DEBUG
+#if DBG
 #	define	SHADOWS	1
 #else
 #	define	SHADOWS	1
 #endif
 
-#ifdef _DEBUG
+#if DBG
 #	define	PROFILING 1
 #else
 #	define	PROFILING 0
 #endif
 
 #if SHADOWS
-#	ifdef _DEBUG
+#	if DBG
 #		define DBG_SHADOWS 1
 #	else
 #		define DBG_SHADOWS 0
@@ -812,7 +818,7 @@ typedef struct tVRBuffers {
 } tVRBuffers;
 
 typedef struct tVRStates {
-	u_int32_t	nScreenMode;
+	u_int32_t	nScreenSize;
 	ubyte			nScreenFlags;	//see values in screens.h
 	ubyte			nCurrentPage;
 	fix			xEyeWidth;
@@ -1199,7 +1205,7 @@ typedef struct tShadowLightInfo {
 	fVector		vPosf;
 	short			nMap;
 	ubyte			nFrame;	//set per frame when scene as seen from a light source has been rendered
-#ifdef _DEBUG
+#if DBG
 	vmsMatrix	orient;
 #endif
 } tShadowLightInfo;
@@ -1812,7 +1818,7 @@ typedef struct tSpeedBoostData {
 typedef struct tQuad {
 	vmsVector			v [4];	//corner vertices
 	vmsVector			n [2];	//normal, transformed normal
-#ifdef _DEBUG
+#if DBG
 	time_t				t;
 #endif
 } tQuad;
@@ -2068,7 +2074,7 @@ typedef struct tG3ModelFace {
 } tG3ModelFace;
 
 typedef struct tG3SubModel {
-#ifdef _DEBUG
+#if DBG
 	char						szName [256];
 #endif
 	vmsVector				vOffset;
@@ -2307,7 +2313,7 @@ typedef struct tWeaponData {
 typedef struct tModelHitboxes {
 	ubyte					nHitboxes;
 	tHitbox				hitboxes [MAX_HITBOXES + 1];
-#ifdef _DEBUG
+#if DBG
 	vmsVector			vHit;
 	time_t				tHit;
 #endif
@@ -2661,7 +2667,7 @@ typedef struct tBossData {
 	fix					nTeleportInterval;
 	fix					nLastGateTime;
 	fix					nGateInterval;
-#ifdef _DEBUG
+#if DBG
 	fix					xPrevShields;
 #endif
 	int					bHitThisFrame;
@@ -3140,7 +3146,7 @@ typedef struct tThreadData {
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 typedef struct tSpeedtestData {
 	int		bOn;
 	int		nMarks;
@@ -3308,7 +3314,7 @@ typedef struct tGameData {
 	tFCDData				fcd;
 	tVertColorData		vertColor;
 	tThreadData			threads;
-#ifdef _DEBUG
+#if DBG
 	tSpeedtestData		speedtest;
 #endif
 	tPhysicsData		physics;
@@ -3583,7 +3589,7 @@ while (gameData.app.semaphores [sem]) {
 }
 
 
-#ifdef _DEBUG
+#if DBG
 
 static inline void SemEnter (uint sem, const char *pszFile, int nLine)
 {

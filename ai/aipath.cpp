@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	Length in segments of avoidance path
 #define	AVOID_SEG_LENGTH	7
 //#define _DEBUG
-#ifndef _DEBUG
+#if !DBG
 #	define	PATH_VALIDATION	0
 #else
 #	define	PATH_VALIDATION	1
@@ -214,7 +214,7 @@ for (i = 1, --j; i < j; i++) {
 		e = vmsVector::Cross(c, d);
 		vmsVector::Normalize(e);
 		}
-#ifdef _DEBUG
+#if DBG
 	if (e.Mag () < F1_0/2)
 		Int3 ();
 #endif
@@ -322,7 +322,7 @@ nCurSeg = nStartSeg;
 bVisited [nCurSeg] = 1;
 nCurDepth = 0;
 
-#ifdef _DEBUG
+#if DBG
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
@@ -805,7 +805,7 @@ void MoveObjectToGoal (tObject *objP, vmsVector *vGoalPoint, short nGoalSeg)
 if (aiP->nPathLength < 2)
 	return;
 Assert (objP->nSegment != -1);
-#ifdef _DEBUG
+#if DBG
 if (objP->nSegment != nGoalSeg)
 	if (FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments + nGoalSeg) == -1) {
 		fix dist = FindConnectedDistance (&objP->position.vPos, objP->nSegment, vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG, 0);
@@ -1249,7 +1249,7 @@ void AIPathGarbageCollect (void)
 	tAIStatic	*aiP;
 	obj_path		objectList [MAX_OBJECTS_D2X];
 
-#ifdef _DEBUG
+#if DBG
 force_dump_aiObjects_all ("***** Start AIPathGarbageCollect *****");
 #endif
 nLastFrameGarbageCollected = gameData.app.nFrameCount;
@@ -1284,7 +1284,7 @@ for (nObjIdx=0; nObjIdx < nPathObjects; nObjIdx++) {
 gameData.ai.freePointSegs = gameData.ai.pointSegs + nFreePathIdx;
 
 ////printf ("After garbage collection, D2_FREE index = %i\n", gameData.ai.freePointSegs - gameData.ai.pointSegs);
-#ifdef _DEBUG
+#if DBG
 force_dump_aiObjects_all ("***** Finish AIPathGarbageCollect *****");
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	aiP = &objP->cType.aiInfo;

@@ -42,7 +42,7 @@ typedef struct tOglTexture {
 //------------------------------------------------------------------------------
 
 tOglTexture *OglGetFreeTexture (grsBitmap *bmP);
-void OglInitTexture (tOglTexture *t, int bMask);
+void OglInitTexture (tOglTexture *t, int bMask, grsBitmap *bmP);
 void OglResetTextureStatsInternal (void);
 void OglInitTextureListInternal (void);
 void OglSmashTextureListInternal (void);

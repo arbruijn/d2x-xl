@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "editor/kdefs.h"
 #endif
 //#define _DEBUG
-#ifdef _DEBUG
+#if DBG
 #include "string.h"
 #include <time.h>
 #endif
@@ -190,7 +190,7 @@ if (!gameStates.render.bClusterLights)
 
 short nPrevShot = gameData.objs.shots [nObject].nObject;
 
-#ifdef _DEBUG
+#if DBG
 if (nObject == nDbgObj)
 	nObject = nDbgObj;
 #endif
@@ -439,7 +439,7 @@ else if (r < 4096 + 8192) {
 	}
 }
 
-#ifdef _DEBUG
+#if DBG
 int	bDoAIFlag=1;
 int	Cvv_test=0;
 int	Cvv_lastTime [MAX_OBJECTS_D2X];

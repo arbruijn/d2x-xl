@@ -90,7 +90,7 @@ void BumpVisitedFlag (void);
 void BumpProcessedFlag (void);
 void BumpVisibleFlag (void);
 
-#ifdef _DEBUG
+#if DBG
 void OutlineSegSide (tSegment *seg, int _side, int edge, int vert);
 void DrawWindowBox (unsigned int color, short left, short top, short right, short bot);
 #endif
@@ -107,7 +107,7 @@ extern grsBitmap *bmpSparks;
 
 extern tRgbaColorf segmentColors [4];
 
-#ifdef _DEBUG
+#if DBG
 extern short nDbgSeg;
 extern short nDbgSide;
 extern int nDbgVertex;

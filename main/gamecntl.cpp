@@ -244,7 +244,7 @@ while (gameData.app.bGamePaused) {
 			}
 		gameStates.menus.nInMenu--;
 		}
-#ifdef _DEBUG
+#if DBG
 		HandleTestKey(key);
 #endif
 		bScreenChanged = HandleSystemKey(key);
@@ -341,7 +341,7 @@ int SelectNextWindowFunction(int nWindow)
 
 //	Testing functions ----------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 void SpeedtestInit(void)
 {
 	gameData.speedtest.nStartTime = TimerGetFixedSeconds();

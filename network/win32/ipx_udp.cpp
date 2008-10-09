@@ -794,7 +794,7 @@ static int UDPSendPacket
 	(ipx_socket_t *mysock, IPXPacket_t *ipxHeader, u_char *data, int dataLen) 
 {
  	struct sockaddr_in destAddr, *dest;
-#ifdef _DEBUG
+#if DBG
 	int h;
 #endif
 	int				iDest, nUdpRes, extraDataLen = 0, bBroadcast = 0;
@@ -893,7 +893,7 @@ for (; iDest < destAddrNum; iDest++) {
 	*/
 #endif
 	nUdpRes = sendto (mysock->fd, (const char *) bufP, dataLen + extraDataLen, 0, (struct sockaddr *) dest, sizeof (*dest));
-#ifdef _DEBUG
+#if DBG
 	if (!gameStates.multi.bTrackerCall && (nUdpRes < extraDataLen + 8))
 		h = WSAGetLastError ();
 #endif
@@ -1025,12 +1025,12 @@ static int UDPReceivePacket
 #if UDP_SAFEMODE
 	int						packetId = -1, bSafeMode = 0;
 #endif
-#ifdef _DEBUG
+#if DBG
 	//char						szIP [30];
 #endif
 
 if (0 > (dataLen = recvfrom (s->fd, (char *) outBuf, outBufSize, 0, (struct sockaddr *) &fromAddr, &fromAddrSize))) {
-#ifdef _DEBUG
+#if DBG
 	int error = WSAGetLastError ();
 #endif
 	return -1;
@@ -1080,7 +1080,7 @@ if (!(bTracker
 				return -1;
 				}
 			}
-#	ifdef _DEBUG
+#	if DBG
 		con_printf (0, "%s: %d bytes, packet id: %d, safe modes: %d,%d", 
 						iptos (szIP, (char *) &fromAddr), dataLen, packetId, pdl->bSafeMode, pdl->bOurSafeMode);
 #	endif
@@ -1095,7 +1095,7 @@ if (!(bTracker
 #endif
 	memcpy (outBuf, outBuf + 8, dataLen);
 	} //bTracker
-#ifdef _DEBUG
+#if DBG
 else
 	bTracker = bTracker;
 #endif

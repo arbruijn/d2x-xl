@@ -157,7 +157,7 @@ void BESendNetPlayersPacket (ubyte *server, ubyte *node)
 	int nmBufI = 0;
 
 nmBufP = nmDataBuf;
-#ifdef _DEBUG
+#if DBG
 memset (nmBufP, 0, IPX_DATALIMIT);	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (netPlayers.nType);                            
@@ -201,7 +201,7 @@ void BESendSequencePacket (tSequencePacket seq, ubyte *server, ubyte *node, ubyt
 	int nmBufI = 0;
 
 nmBufP = nmDataBuf;
-#ifdef _DEBUG
+#if DBG
 memset (nmBufP, 0, IPX_DATALIMIT);	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (seq.nType);                                       
@@ -246,7 +246,7 @@ void BESendNetGamePacket (ubyte *server, ubyte *node, ubyte *netAddress, int bLi
 	int	nmBufI = 0;
 
 nmBufP = nmDataBuf;
-#ifdef _DEBUG
+#if DBG
 memset (nmBufP, 0, IPX_DATALIMIT);	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (netGame.nType);                 

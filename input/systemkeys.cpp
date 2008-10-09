@@ -149,7 +149,7 @@ void HandleEndlevelKey(int key)
 		gameStates.render.cockpit.nLastDrawn[1] = -1;
 		return;
 	}
-#ifdef _DEBUG
+#if DBG
 	if (key == KEY_BACKSP)
 		Int3();
 #endif
@@ -291,7 +291,7 @@ switch (key) {
 		break;
 		}
 
-	#ifdef _DEBUG
+	#if DBG
 	case KEY_BACKSP:
 		Int3();
 		break;
@@ -536,7 +536,7 @@ switch (key) {
 		break;
 
 	case KEY_ALTED + KEY_F12:
-#ifndef _DEBUG	
+#if !DBG	
 		if (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))
 #endif		
 			gameStates.render.bExternalView = !gameStates.render.bExternalView;
@@ -876,7 +876,7 @@ void HandleGameKey(int key)
 
 void toggle_movie_saving(void);
 
-#ifdef _DEBUG
+#if DBG
 
 void HandleTestKey(int key)
 {
@@ -1008,7 +1008,7 @@ void HandleTestKey(int key)
 		// case KEY_UP:		ft_preference=FP_UP; break;
 		// case KEY_DOWN:		ft_preference=FP_DOWN; break;
 
-#ifdef _DEBUG
+#if DBG
 		case KEYDBGGED+KEY_LAPOSTRO: 
 			ShowView_textTimer = 0x30000; 
 			ObjectGotoNextViewer(); 
@@ -1022,7 +1022,7 @@ void HandleTestKey(int key)
 			gameData.objs.viewer=gameData.objs.console; 
 			break;
 
-	#ifdef _DEBUG
+	#if DBG
 		case KEYDBGGED+KEY_O: 
 			ToggleOutlineMode(); 
 			break;
@@ -1112,13 +1112,6 @@ void HandleTestKey(int key)
 			Debug_pause = 1; 
 			break;
 
-#ifdef _DEBUG
-		case KEYDBGGED+KEY_D:
-			if ((bGameDoubleBuffer = !bGameDoubleBuffer))
-				InitCockpit();
-			break;
-#endif
-
 		#ifdef EDITOR
 		case KEYDBGGED+KEY_Q:
 			StopTime();
@@ -1165,7 +1158,7 @@ void HandleTestKey(int key)
 			break;
 	}
 }
-#endif		//#ifdef _DEBUG
+#endif		//#if DBG
 
 //	Cheat functions ------------------------------------------------------------
 
@@ -1227,7 +1220,7 @@ if ( IsMultiGame && (gameData.multigame.msg.bSending || gameData.multigame.msg.b
 	MultiMsgInputSub (key);
 	continue;		//get next key
 	}
-#ifdef _DEBUG
+#if DBG
 if ((key&KEYDBGGED) && IsMultiGame) {
 	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
 	sprintf( gameData.multigame.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
@@ -1243,7 +1236,7 @@ if (gameStates.app.bPlayerIsDead)
 		HandleEndlevelKey(key);
 	else if (gameData.demo.nState == ND_STATE_PLAYBACK ) {
 		HandleDemoKey(key);
-#ifdef _DEBUG
+#if DBG
 		HandleTestKey(key);
 #endif
 		}
@@ -1252,7 +1245,7 @@ if (gameStates.app.bPlayerIsDead)
 		HandleSystemKey(key);
 		HandleVRKey(key);
 		HandleGameKey(key);
-#ifdef _DEBUG
+#if DBG
 		HandleTestKey(key);
 #endif
 		}

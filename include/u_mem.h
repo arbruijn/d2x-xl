@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern int bShowMemInfo;
 
-#ifdef _DEBUG
+#if DBG
 #	define DBG_MALLOC	0
 #else
 #	define DBG_MALLOC 0

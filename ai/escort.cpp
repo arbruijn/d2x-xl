@@ -1154,7 +1154,7 @@ void DoEscortMenu (void)
 	}
 
 	switch (next_goal) {
-	#ifdef _DEBUG
+	#if DBG
 		case ESCORT_GOAL_UNSPECIFIED:
 			Int3 ();
 			sprintf (szGoal, "ERROR");

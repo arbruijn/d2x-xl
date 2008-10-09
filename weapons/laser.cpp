@@ -1218,7 +1218,7 @@ return nObject;
 
 //	--------------------------------------------------------------------------------------------------
 
-#if defined(_WIN32) && defined(RELEASE)
+#if defined(_WIN32) && !DBG
 typedef int ( __fastcall * pWeaponHandler) (tObject *, int, int, int);
 #else
 typedef int (* pWeaponHandler) (tObject *, int, int, int);

@@ -241,12 +241,12 @@ return GrFindClosestColor (gameData.render.pal.pCurPal, r, g, b);
 ubyte *FindPalette (ubyte *palette)
 {
 	tPaletteList	*plP;
-#ifdef _DEBUG
+#if DBG
 	int				i;
 #endif
 
 for (plP = gameData.render.pal.palettes; plP; plP = plP->pNextPal)
-#ifdef _DEBUG
+#if DBG
 	{
 	for (i = 0; i < 768; i++)
 		if (palette [i] != plP->palette [i])

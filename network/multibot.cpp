@@ -66,7 +66,7 @@ int MultiCanRemoveRobot (int nObject, int agitation)
 	// Claim robot if necessary.
 if (gameStates.app.bPlayerExploded)
 	return 0;
-#ifdef _DEBUG
+#if DBG
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 ();
 	return 0;

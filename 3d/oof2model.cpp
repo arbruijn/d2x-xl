@@ -142,7 +142,7 @@ if (!po) {
 	if (!po)
 		return 0;
 	}
-#ifdef _DEBUG
+#if DBG
 HUDMessage (0, "optimizing model");
 #endif
 PrintLog ("         optimizing OOF model %d\n", nModel);

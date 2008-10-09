@@ -156,7 +156,7 @@ bmP->bmPalette = bmParent->bmPalette;
 bmP->bmAvgColor = bmParent->bmAvgColor;
 bmP->bmAvgRGB = bmParent->bmAvgRGB;
 BM_PARENT (bmP) = bmParent;
-#ifdef _DEBUG
+#if DBG
 memcpy (bmP->szName, bmParent->szName, sizeof (bmP->szName));
 #endif
 bmP->bmTexBuf = bmParent->bmTexBuf + (unsigned int) ((y * bmParent->bmProps.rowSize) + x);

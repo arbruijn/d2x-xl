@@ -1083,7 +1083,7 @@ if (strstr (pszFS, "#define LIGHTS ") == pszFS) {
 	sprintf (szLights, "%d", nLights);
 	pszFS [15] = *szLights;
 	}
-#ifdef _DEBUG
+#if DBG
 PrintLog (" \n\nShader program:\n");
 PrintLog (pszFS);
 PrintLog (" \n");
@@ -1246,7 +1246,7 @@ memset (lightmapShaderProgs, 0, sizeof (lightmapShaderProgs));
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 int CheckUsedLights2 (void);
 #endif
 
@@ -1266,14 +1266,14 @@ PROF_START
 	tShaderLight			*psl;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][0];
 
-#ifdef _DEBUG
+#if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 if (faceP - FACES == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
 if (!gameStates.ogl.iLight) {
-#ifdef _DEBUG
+#if DBG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 	if (faceP - FACES == nDbgFace)
@@ -1290,7 +1290,7 @@ if (!gameStates.ogl.iLight) {
 	gameData.render.nTotalLights += gameStates.ogl.nLights;
 	if (gameData.render.nMaxLights < gameStates.ogl.nLights)
 		gameData.render.nMaxLights = gameStates.ogl.nLights;
-#ifdef _DEBUG
+#if DBG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		HUDMessage (0, "%d lights", gameStates.ogl.nLights);
 #endif
@@ -1366,7 +1366,7 @@ if (nLightRange <= 0) {
 	gameStates.ogl.iLight = gameStates.ogl.nLights;
 	}
 gameStates.ogl.nFirstLight = activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0];
-#ifdef _DEBUG
+#if DBG
 if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;
 #endif
@@ -1404,7 +1404,7 @@ nShader = 20 + 4 * gameStates.render.nMaxLightsPerPass + nType;
 #else
 nShader = 20 + 4 * nLights + nType;
 #endif
-#ifdef _DEBUG
+#if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -1463,7 +1463,7 @@ if (bDepthOnly)
 if (!CreateLightmapShader (nType))
 	return 0;
 nShader = 60 + nType;
-#ifdef _DEBUG
+#if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif

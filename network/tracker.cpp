@@ -51,7 +51,7 @@ static tUdpAddress	kbTracker = {207,210,100,66,0,0};
 tServerListTable *serverListTable = NULL;
 tServerList trackerList;
 
-#ifdef _DEBUG
+#if DBG
 #	define	S_TIMEOUT	1000
 #	define	R_TIMEOUT	1000
 #else
@@ -180,14 +180,14 @@ return 0;
 int IsTracker (unsigned int addr, ushort port)
 {
 	int	i;
-#ifdef _DEBUG
+#if DBG
 	unsigned int a;
 	ushort p;
 #endif
 
 port = ntohs (port);
 for (i = 0; i < trackerList.nServers; i++) {
-#ifdef _DEBUG
+#if DBG
 	a = UDP_ADDR (trackerList.servers + i);
 	p = UDP_PORT (trackerList.servers + i);
 #endif

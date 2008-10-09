@@ -728,7 +728,7 @@ for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 //	DigiSoundDebug ();
 #endif
 }
@@ -818,7 +818,7 @@ DigiStopDigiSounds ();
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 int VerifySoundChannelFree (int channel)
 {
 	int i;

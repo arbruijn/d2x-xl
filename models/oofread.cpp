@@ -792,7 +792,7 @@ int OOF_FindEdge (tOOF_subObject *pso, int i0, int i1)
 	tOOF_edge	h;
 	tOOF_vector	v0, v1, hv0, hv1;
 
-#ifdef _DEBUG
+#if DBG
 i0 = OOF_FindVertex (pso, i0);
 i1 = OOF_FindVertex (pso, i1);
 #endif
@@ -1161,7 +1161,7 @@ int OOF_ReadTextures (CFILE *fp, tOOFObject *po, short nType, int bCustom)
 	tOOFObject	o = *po;
 	int			i;
 	char			szId [30];
-#ifdef _DEBUG
+#if DBG
 	int			bOk = 1;
 #endif
 
@@ -1199,7 +1199,7 @@ o.textures.pszNames [i] = D2_ALLOC (20);
 sprintf (o.textures.pszNames [i], "%d.tga", i + 1);
 #endif
 	if (!ReadModelTGA (o.textures.pszNames [i], o.textures.pBitmaps + i, nType, bCustom)) {
-#ifdef _DEBUG
+#if DBG
 		bOk = 0;
 #else
 		nIndent -= 2;
@@ -1207,7 +1207,7 @@ sprintf (o.textures.pszNames [i], "%d.tga", i + 1);
 #endif
 		}
 	}
-#ifdef _DEBUG
+#if DBG
 if (!bOk) {
 	nIndent -= 2;
 	return OOF_FreeTextures (&o);

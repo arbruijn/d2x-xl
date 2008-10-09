@@ -50,7 +50,7 @@ if (gameStates.app.bMultiThreaded)
 
 int RunRenderThreads (int nTask)
 {
-#ifdef _DEBUG
+#if DBG
 	time_t	t0 = 0, t2 = 0;
 	static	int nLockups = 0;
 #endif
@@ -62,7 +62,7 @@ if (!gameData.app.bUseMultiThreading [nTask])
 tiRender.nTask = (tRenderTask) nTask;
 tiRender.ti [0].bExec =
 tiRender.ti [1].bExec = 1;
-#ifdef _DEBUG
+#if DBG
 t0 = clock ();
 while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t0 < 1000)) {
 	G3_SLEEP (0);

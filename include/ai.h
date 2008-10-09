@@ -102,7 +102,7 @@ void DoThiefFrame (tObject *objP);
 
 int BossSpewRobot (tObject *objP, vmsVector *vPos, short objType, int bObjTrigger);
 
-#ifndef NDEBUG
+#if DBG
 void force_dump_aiObjects_all (char *msg);
 #else
 #define force_dump_aiObjects_all (msg)
@@ -245,7 +245,7 @@ extern sbyte Super_boss_gate_list [];
 //extern vmsVector   Hit_pos;
 //extern int          HitType, Hit_seg;
 
-#ifndef NDEBUG
+#if DBG
 // Index into this array with ailp->mode
 // Index into this array with aip->behavior
 extern char behavior_text [6] [9];
@@ -257,7 +257,7 @@ extern int bDoAIFlag, nBreakOnObject;
 
 extern void mprintf_animation_info (tObject *objP);
 
-#endif //ifndef NDEBUG
+#endif //if DBG
 
 void AIFrameAnimation (tObject *objP);
 void AIIdleAnimation (tObject *objP);

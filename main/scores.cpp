@@ -74,7 +74,7 @@ char scores_filename[128];
 
 char *GetScoresFilename ()
 {
-#ifdef _DEBUG
+#if DBG
 	// Only use the MINER variable for internal developement
 	char *p;
 	p=getenv ("MINER");

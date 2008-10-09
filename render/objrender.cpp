@@ -278,7 +278,7 @@ static float ObjectBlobColor (tObject *objP, grsBitmap *bmP, tRgbaColorf *colorP
 colorP->red = (float) bmP->bmAvgRGB.red / 255.0f;
 colorP->green = (float) bmP->bmAvgRGB.green / 255.0f;
 colorP->blue = (float) bmP->bmAvgRGB.blue / 255.0f;
-#ifdef _DEBUG
+#if DBG
 if ((objP->nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->id == nDbgObjId)))
 	nDbgObjType = nDbgObjType;
 #endif
@@ -307,7 +307,7 @@ void DrawObjectBlob (tObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *
 	fix			xSize;
 	float			fScale;
 
-#ifdef _DEBUG
+#if DBG
 if ((objP->nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->id == nDbgObjId)))
 	nDbgObjType = nDbgObjType;
 #endif
@@ -342,7 +342,7 @@ else {
 if (bmi < 0) {
 	PageInAddonBitmap (bmi);
 	bmP = gameData.pig.tex.addonBitmaps - bmi - 1;
-#ifdef _DEBUG
+#if DBG
 	if ((objP->rType.vClipInfo.nCurFrame < 0) || (objP->rType.vClipInfo.nCurFrame >= BM_FRAMECOUNT (bmP))) {
 		objP->rType.vClipInfo.nCurFrame = 0;
 		return;
@@ -690,13 +690,13 @@ else {
 		gameStates.render.nInterpolationMethod = 1;
 	}
 if (objP->rType.polyObjInfo.nTexOverride != -1) {
-#ifdef _DEBUG
+#if DBG
 	tPolyModel *pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 #endif
 	tBitmapIndex	bm = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride],
 						bmiP [MAX_MODEL_TEXTURES];
 
-#ifdef _DEBUG
+#if DBG
 	Assert (pm->nTextures <= 12);
 #endif
 	for (i = 0; i < MAX_MODEL_TEXTURES; i++)		//fill whole array, in case simple model needs more
@@ -831,7 +831,7 @@ else if ((gameData.objs.viewer == gameData.objs.console) && !gameStates.render.a
 	if ((bSpectate = (gameStates.app.bFreeCam && !nWindowNum)))
 		;
 		//HUDMessage (0, "%1.2f %1.2f %1.2f", X2F (objP->position.vPos.p.x), X2F (objP->position.vPos.p.y), X2F (objP->position.vPos.p.z));
-#ifdef _DEBUG
+#if DBG
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
 				 (nWindowNum || (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK)))) { //don't render ship model if neither external view nor main view
 #else
@@ -921,7 +921,7 @@ switch (objP->renderType) {
 				return 0;
 			gameData.models.nScale = 0;
 			//DoObjectSmoke (objP);
-#ifdef _DEBUG
+#if DBG
 			if (OBJ_IDX (objP) == nDbgObj)
 				nDbgObj = nDbgObj;
 #endif
@@ -1008,7 +1008,7 @@ switch (objP->renderType) {
 						objP->mType.physInfo.rotVel[Y] =
 						objP->mType.physInfo.rotVel[Z] = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 					}
-#ifdef _DEBUG
+#if DBG
 				RenderRobotShield (objP);
 #endif
 				gameData.models.nScale = 0;
@@ -1019,7 +1019,7 @@ switch (objP->renderType) {
 		else if (objP->nType == OBJ_HOSTAGE) {
 			if (gameStates.app.bNostalgia || !(gameOpts->render.powerups.b3D && DrawPolygonObject (objP, bDepthSort, 0)))
 				ConvertModelToHostage (objP);
-#ifdef _DEBUG
+#if DBG
 			RenderRobotShield (objP);
 #endif
 			}

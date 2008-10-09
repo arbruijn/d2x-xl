@@ -29,7 +29,7 @@
 #define MSGC_PLAYERMESSAGES	(~(MSGC_PICKUP_TOOMUCH | MSGC_PICKUP_ALREADY | MSGC_PICKUP_OK))
 
 #define HUD_MESSAGE_LENGTH	150
-#ifndef _DEBUG
+#if !DBG
 #	define HUD_MAX_MSGS 4 // 80 //max to display in scrollback mode (and as such, the max to store, period)
 #else
 #	define HUD_MAX_MSGS 4

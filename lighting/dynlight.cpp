@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 
 int CheckUsedLights (void)
 {
@@ -274,7 +274,7 @@ void RegisterLight (tFaceColor *pc, short nSegment, short nSide)
 #if 0
 if (!pc || pc->index) {
 	tLightInfo	*pli = gameData.render.shadows.lightInfo + gameData.render.shadows.nLights++;
-#ifdef _DEBUG
+#if DBG
 	vmsAngVec	a;
 #endif
 	pli->nIndex = (int) nSegment * 6 + nSide;
@@ -282,7 +282,7 @@ if (!pc || pc->index) {
 	OOF_VecVms2Gl (pli->glPos, &pli->pos);
 	pli->nSegNum = nSegment;
 	pli->nSideNum = (ubyte) nSide;
-#ifdef _DEBUG
+#if DBG
 	VmExtractAnglesVector (&a, gameData.segs.segments [nSegment].sides [nSide].normals);
 	VmAngles2Matrix (&pli->position.mOrient, &a);
 #endif
@@ -359,7 +359,7 @@ if (xBrightness > F1_0)
 #endif
 if (fBrightness <= 0)
 	return -1;
-#ifdef _DEBUG
+#if DBG
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	nSegment = nSegment;
 if ((nDbgObj >= 0) && (nObject == nDbgObj))
@@ -463,7 +463,7 @@ else if (nSegment >= 0) {
 			COMPUTE_SEGMENT_CENTER_I (&pl->info.vPos, nSegment);
 		}
 	else {
-#ifdef _DEBUG
+#if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
@@ -520,7 +520,7 @@ void DeleteDynLight (short nLight)
 {
 if ((nLight >= 0) && (nLight < gameData.render.lights.dynamic.nLights)) {
 	tDynLight *pl = gameData.render.lights.dynamic.lights + nLight;
-#ifdef _DEBUG
+#if DBG
 	if ((nDbgSeg >= 0) && (nDbgSeg == pl->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->info.nSide)))
 		nDbgSeg = nDbgSeg;
 #endif
@@ -689,12 +689,12 @@ for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces; nFace; nFa
 	nSegment = faceP->nSegment;
 	if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX)
 		continue;
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
 	nSide = faceP->nSide;
-#ifdef _DEBUG
+#if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
@@ -735,12 +735,12 @@ gameData.render.lights.dynamic.shader.nLights = 0;
 memset (&gameData.render.lights.dynamic.headlights, 0, sizeof (gameData.render.lights.dynamic.headlights));
 UpdateOglHeadlight ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
-#ifdef _DEBUG
+#if DBG
 	if ((nDbgSeg >= 0) && (nDbgSeg == pl->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pl->info.nSide)))
 		nDbgSeg = nDbgSeg;
 #endif
 	psl->info = pl->info;
-#ifdef _DEBUG
+#if DBG
 	if (psl->info.bSpot)
 		psl = psl;
 #endif
@@ -810,7 +810,7 @@ if (left < r)
 
 static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight *psl, short nType, int nThread)
 {
-#ifdef _DEBUG
+#if DBG
 if (((char *) psl - (char *) gameData.render.lights.dynamic.shader.lights) % sizeof (*psl))
 	return 0;
 #endif
@@ -891,7 +891,7 @@ ubyte VariableVertexLights (int nVertex)
 	short	i, j;
 	ubyte	h;
 
-#ifdef _DEBUG
+#if DBG
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
@@ -917,7 +917,7 @@ if (bStatic || gameData.render.lights.dynamic.nVariableVertLights [nVertex]) {
 	vmsVector				vVertex = gameData.segs.vertices [nVertex], vLightDir;
 	fix						xLightDist, xMaxLightRange = (gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE;
 
-#ifdef _DEBUG
+#if DBG
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
@@ -925,18 +925,18 @@ if (nVertex == nDbgVertex)
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
-#ifdef _DEBUG
+#if DBG
 		if (j >= gameData.render.lights.dynamic.nLights)
 			break;
 #endif
 		psl = gameData.render.lights.dynamic.shader.lights + j;
-#ifdef _DEBUG
+#if DBG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			nDbgSeg = nDbgSeg;
 #endif
 		if (psl->bUsed [nThread])
 			continue;
-#ifdef _DEBUG
+#if DBG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			nDbgSeg = nDbgSeg;
 #endif
@@ -971,7 +971,7 @@ if (nVertex == nDbgVertex)
 		if (SetActiveShaderLight (activeLightsP, psl, 2, nThread)) {
 			psl->info.nType = nType;
 			psl->info.bState = 1;
-#ifdef _DEBUG
+#if DBG
 			psl->nTarget = nFace + 1;
 			psl->nFrame = gameData.app.nFrameCount;
 #endif
@@ -998,13 +998,13 @@ nFrameCount = gameData.app.nFrameCount;
 	vmsVector	vNormal;
 	tSide			*sideP = SEGMENTS [faceP->nSegment].sides + faceP->nSide;
 
-#ifdef _DEBUG
+#if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 if (faceP - FACES == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
-#if 1//def RELEASE
+#if 1//!DBG
 if (gameData.render.lights.dynamic.shader.index [0][0].nActive < 0)
 	SetNearestSegmentLights (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in SetNearestVertexLights ())
 else {
@@ -1089,7 +1089,7 @@ void ResetNearestVertexLights (int nVertex, int nThread)
 	short				i, j;
 	tShaderLight	*psl;
 
-#ifdef _DEBUG
+#if DBG
 	if (nVertex == nDbgVertex)
 		nDbgVertex = nDbgVertex;
 #endif
@@ -1153,7 +1153,7 @@ short SetNearestSegmentLights (int nSegment, int nFace, int bVariable, int nType
 PROF_START
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 
-#ifdef _DEBUG
+#if DBG
 	static int nPrevSeg = -1;
 
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
@@ -1173,7 +1173,7 @@ if (gameOpts->render.nLightingMethod) {
 	ResetUsedLights (1, nThread);
 	ResetActiveLights (nThread, 0);
 	while (i--) {
-#ifdef _DEBUG
+#if DBG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			psl = psl;
 #endif
@@ -1190,7 +1190,7 @@ if (gameOpts->render.nLightingMethod) {
 			}
 		if (gameData.threads.vertColor.data.bNoShadow && psl->bShadow)
 			continue;
-#ifdef _DEBUG
+#if DBG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			psl = psl;
 		if ((psl->info.nSegment >= 0) && (psl->info.nSide < 0))
@@ -1199,7 +1199,7 @@ if (gameOpts->render.nLightingMethod) {
 		if (nType < 3) {
 			if (psl->info.bPowerup > gameData.render.nPowerupFilter)
 				continue;
-#ifdef _DEBUG
+#if DBG
 			if (psl->info.nObject >= 0)
 				nDbgObj = nDbgObj;
 #endif
@@ -1207,7 +1207,7 @@ if (gameOpts->render.nLightingMethod) {
 			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment))
 				continue;
 			}
-#ifdef _DEBUG
+#if DBG
 		else
 			psl = psl;
 #endif
@@ -1215,7 +1215,7 @@ if (gameOpts->render.nLightingMethod) {
 		if (psl->xDistance > xMaxLightRange)
 			continue;
 		if (SetActiveShaderLight (activeLightsP, psl, 1, nThread))
-#ifdef _DEBUG
+#if DBG
 			{
 			if ((nSegment == nDbgSeg) && (nDbgObj >= 0) && (psl->info.nObject == nDbgObj))
 				psl = psl;
@@ -1230,12 +1230,12 @@ if (gameOpts->render.nLightingMethod) {
 #endif
 		}
 	gameData.render.lights.dynamic.shader.index [1][nThread] = *sliP;
-#ifdef _DEBUG
+#if DBG
 	if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 		nDbgSeg = nDbgSeg;
 #endif
 	}
-#ifdef _DEBUG
+#if DBG
 nPrevSeg = nSegment;
 #endif
 PROF_END(ptSegmentLighting)
@@ -1246,7 +1246,7 @@ return sliP->nActive;
 
 short SetNearestPixelLights (short nSegment, short nSide, vmsVector *vNormal, vmsVector *vPixelPos, float fLightRad, int nThread)
 {
-#ifdef _DEBUG
+#if DBG
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -1261,7 +1261,7 @@ if (gameOpts->render.nLightingMethod) {
 	ResetActiveLights (nThread, 0);
 	ResetUsedLights (0, nThread);
 	for (; i; i--, psl++) {
-#ifdef _DEBUG
+#if DBG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			psl = psl;
 #endif
@@ -1269,7 +1269,7 @@ if (gameOpts->render.nLightingMethod) {
 			break;
 		if (psl->info.bVariable)
 			continue;
-#ifdef _DEBUG
+#if DBG
 		if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg))
 			psl = psl;
 #endif
@@ -1303,7 +1303,7 @@ int SetNearestAvgSgmLights (short nSegment)
 	int			i;
 	tSegment		*segP = SEGMENTS + nSegment;
 
-#ifdef _DEBUG
+#if DBG
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
@@ -1326,13 +1326,13 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPosP)
 	vmsVector	vCenter, vVertex;
 	float			d, ds;
 
-#ifdef _DEBUG
+#if DBG
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 if (!vPosP && (psc->index == (char) (gameData.app.nFrameCount & 0xff)) && (psc->color.red + psc->color.green + psc->color.blue != 0))
 	return psc;
-#ifdef _DEBUG
+#if DBG
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
@@ -1362,7 +1362,7 @@ else if (gameStates.render.bPerPixelLighting) {
 		vcd.fMatShininess = 4;
 		G3AccumVertColor (-1, (fVector3 *) psc, &vcd, 0);
 		}
-#ifdef _DEBUG
+#if DBG
 	if (psc->color.red + psc->color.green + psc->color.blue == 0)
 		psc = psc;
 #endif
@@ -1397,7 +1397,7 @@ else {
 			c.color.blue += pvc->color.blue;
 			}
 		}
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
@@ -1467,7 +1467,7 @@ void ComputeStaticVertexLights (int nVertex, int nMax, int nThread)
 	int			bColorize = !gameOpts->render.nLightingMethod;
 
 for (; nVertex < nMax; nVertex++, pf++) {
-#ifdef _DEBUG
+#if DBG
 	if (nVertex == nDbgVertex)
 		nVertex = nVertex;
 #endif
@@ -1482,7 +1482,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 extern int nDbgVertex;
 #endif
 

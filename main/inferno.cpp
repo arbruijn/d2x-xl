@@ -165,7 +165,7 @@ else if (nSignal == SIGTERM)
 	PrintLog ("Termination request\n");
 else
 	PrintLog ("Unknown signal\n");
-#ifndef _DEBUG
+#if !DBG
 //exit (1);
 #endif
 }
@@ -227,7 +227,7 @@ if (gameStates.menus.bHires) {
 	if (gameOpts->menus.altBg.bHave > 0)
 		y = 8; //102
 	else {
-		y = (88 * (gameStates.render.vr.nScreenMode % 65536)) / 480;
+		y = (88 * (gameStates.render.vr.nScreenSize % 65536)) / 480;
 		if (y < 88)
 			y = 88;
 		}
@@ -307,7 +307,7 @@ void PrintCmdLineHelp ()
 	con_printf ((int) con_threshold.value, "  -bigpig         %s\n", "FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -bspgen         %s\n", "FIXME: Undocumented");
 //	con_printf ((int) con_threshold.value, "  -cdproxy        %s\n", "FIXME: Undocumented");
-#ifdef _DEBUG
+#if DBG
 	con_printf ((int) con_threshold.value, "  -checktime      %s\n", "FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -showmeminfo    %s\n", "FIXME: Undocumented");
 #endif
@@ -315,7 +315,7 @@ void PrintCmdLineHelp ()
 #ifdef SDL_INPUT
 	con_printf ((int) con_threshold.value, "  -grabmouse      %s\n", "Keeps the mouse from wandering out of the window");
 #endif
-#ifdef _DEBUG
+#if DBG
 	con_printf ((int) con_threshold.value, "  -invulnerability %s\n", "Make yourself invulnerable");
 #endif
 	con_printf ((int) con_threshold.value, "  -ipxnetwork <num> %s\n", "Use IPX network number <num>");
@@ -330,7 +330,7 @@ void PrintCmdLineHelp ()
 #ifdef __DJGPP__
 	con_printf ((int) con_threshold.value, "  -nocyberman     %s\n", "FIXME: Undocumented");
 #endif
-#ifdef _DEBUG
+#if DBG
 	con_printf ((int) con_threshold.value, "  -nofade         %s\n", "Disable fades");
 #endif
 	con_printf ((int) con_threshold.value, "  -nomatrixcheat  %s\n", "FIXME: Undocumented");
@@ -340,7 +340,7 @@ void PrintCmdLineHelp ()
 	con_printf ((int) con_threshold.value, "  -nomixer        %s\n", "Don't crank music volume");
 	con_printf ((int) con_threshold.value, "  -sound22k       %s\n", "Use 22 KHz sound sample rate");
 	con_printf ((int) con_threshold.value, "  -sound11k       %s\n", "Use 11 KHz sound sample rate");
-#ifdef _DEBUG
+#if DBG
 	con_printf ((int) con_threshold.value, "  -nomovies       %s\n", "Don't play movies");
 	con_printf ((int) con_threshold.value, "  -noscreens      %s\n", "Skip briefing screens");
 #endif
@@ -969,7 +969,7 @@ if ((t = FindArg ("-mouselook")))
 	extraGameInfo [0].bMouseLook = NumArg (t, 1);
 if ((t = FindArg ("-limitturnrate")))
 	gameOptions [0].input.bLimitTurnRate = NumArg (t, 1);
-#ifdef _DEBUG
+#if DBG
 if ((t = FindArg ("-minturnrate")))
 	gameOptions [0].input.nMinTurnRate = NumArg (t, 20);
 #endif
@@ -1085,7 +1085,7 @@ if ((t = FindArg ("-mathformat")))
 if ((t = FindArg ("-enable_sse")))
 	gameStates.render.bEnableSSE = NumArg (t, 1);
 #endif
-#ifdef _DEBUG
+#if DBG
 if ((t = FindArg ("-gl_transform")))
 	gameStates.ogl.bUseTransform = NumArg (t, 1);
 #endif
@@ -1414,7 +1414,7 @@ else {
 	gameOptions [0].render.bBrightObjects = 0;
 	gameOptions [0].render.effects.bExplBlasts = 1;
 	gameOptions [0].render.effects.nShrapnels = 1;
-#ifdef _DEBUG
+#if DBG
 	gameOptions [0].render.shadows.nLights = 1;
 #else
 	gameOptions [0].render.shadows.nLights = 3;
@@ -1781,7 +1781,7 @@ if (i) {
 	gameOptions [1].ogl.bGlTexMerge = 0;
 	}
 else {
-#ifdef _DEBUG
+#if DBG
 	gameOptions [0].render.nLightingMethod = 0;
 #else
 	gameOptions [0].render.nLightingMethod = 0;
@@ -1875,7 +1875,7 @@ void InitInputStates (void)
 gameStates.input.nMouseType = -1;
 gameStates.input.nJoyType = -1;
 gameStates.input.bCybermouseActive = 0;
-#ifndef _DEBUG
+#if !DBG
 gameStates.input.bGrabMouse = 1;
 #else
 gameStates.input.bGrabMouse = 0;
@@ -1927,8 +1927,8 @@ gameStates.multi.bCheckPorts = 0;
 void InitGfxStates (void)
 {
 gameStates.gfx.bInstalled = 0;
-gameStates.gfx.nStartScrSize = 2;
 gameStates.gfx.nStartScrMode = 2;
+gameStates.gfx.nStartScrSize = 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -2124,7 +2124,7 @@ gameStates.app.bEnableShadows = 1;
 gameStates.app.bHaveExtraGameInfo [0] = 1;
 gameStates.app.bHaveExtraGameInfo [1] = 0;
 gameStates.app.nSDLTicks = -1;
-#ifdef _DEBUG
+#if DBG
 gameStates.app.bEnglish = 1;
 #else
 gameStates.app.bEnglish = 1;
@@ -2794,7 +2794,7 @@ if (FindArg ("-?") || FindArg ("-help") || FindArg ("?") || FindArg ("-h")) {
 int ShowTitleScreens (void)
 {
 	int nPlayed = MOVIE_NOT_PLAYED;	//default is not nPlayed
-#ifdef _DEBUG
+#if DBG
 if (FindArg ("-notitles"))
 	SongsPlaySong (SONG_TITLE, 1);
 else
@@ -2845,9 +2845,9 @@ else {
 		strcpy (filename, "descentb.pcx"); // MAC SHAREWARE
 	GrSetMode (
 		gameStates.menus.bHires ? 
-			(gameStates.gfx.nStartScrSize < 0) ? 
+			(gameStates.gfx.nStartScrMode < 0) ? 
 				SM (640, 480) 
-				: SM (scrSizes [gameStates.gfx.nStartScrSize].x, scrSizes [gameStates.gfx.nStartScrSize].y) 
+				: SM (scrSizes [gameStates.gfx.nStartScrMode].x, scrSizes [gameStates.gfx.nStartScrMode].y) 
 			: SM (320, 200));
 	SetScreenMode (SCREEN_MENU);
 	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
@@ -3124,7 +3124,7 @@ return gameStates.input.bHaveTrackIR = 0;
 
 int InitGraphics (void)
 {
-	u_int32_t	nScreenMode;
+	u_int32_t	nScreenSize;
 	int			t;
 
 /*---*/PrintLog ("Initializing graphics\n");
@@ -3133,7 +3133,7 @@ if ((t = GrInit ())) {		//doesn't do much
 	Error (TXT_CANT_INIT_GFX, t);
 	return 0;
 	}
-nScreenMode = SM (scrSizes [gameStates.gfx.nStartScrSize].x, scrSizes [gameStates.gfx.nStartScrSize].y);
+nScreenSize = SM (scrSizes [gameStates.gfx.nStartScrMode].x, scrSizes [gameStates.gfx.nStartScrMode].y);
 #ifdef _3DFX
 _3dfx_Init ();
 #endif
@@ -3374,7 +3374,7 @@ WritePlayerFile ();
 /*---*/PrintLog ("Releasing tracker list\n");
 DestroyTrackerList ();
 FreeParams ();
-#ifdef _DEBUG
+#if DBG
 if (!FindArg ("-notitles"))
 #endif
 	//ShowOrderForm ();

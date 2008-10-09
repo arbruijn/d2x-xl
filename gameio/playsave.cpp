@@ -698,7 +698,7 @@ int SetParam (const char *pszIdent, const char *pszValue)
 	int		nVal;
 
 if (!(pp = FindParam (pszIdent))) {
-#ifdef _DEBUG
+#if DBG
 	FindParam (pszIdent);
 #endif
 	return 0;

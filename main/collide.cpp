@@ -283,7 +283,7 @@ if (t) {
 	PhysApplyForce (t, &vForce);
 	return 1;
 	}
-#ifdef _DEBUG
+#if DBG
 //redo:
 #endif
 p0 = objP0->position.vPos;
@@ -835,7 +835,7 @@ if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_FORCE_FIELD) &&
 	return 1;	//bail here. physics code will bounce this tObject
 	}
 
-#ifdef _DEBUG
+#if DBG
 if (gameStates.input.keys.pressed [KEY_LAPOSTRO])
 	if (weaponP->cType.laserInfo.nParentObj == LOCALPLAYER.nObject) {
 		//	MK: Real pain when you need to know a segP:tSide and you've got quad lasers.
@@ -2467,7 +2467,7 @@ switch (objP->nType)	{
 	case OBJ_GHOST:
 		break;	//do nothing
 	case OBJ_MONSTERBALL:
-#ifdef _DEBUG
+#if DBG
 		objP = objP;
 #endif
 		break;	//CollidePowerupAndWall (objP, hitspeed, hitseg, hitwall, vHitPt);

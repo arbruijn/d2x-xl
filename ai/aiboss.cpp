@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "editor/kdefs.h"
 #endif
 //#define _DEBUG
-#ifdef _DEBUG
+#if DBG
 #include "string.h"
 #include <time.h>
 #endif
@@ -496,7 +496,7 @@ if (i < 0)
 nBossId = ROBOTINFO (objP->id).bossFlag;
 //	Assert ((nBossId >= BOSS_D2) && (nBossId < BOSS_D2 + NUM_D2_BOSSES));
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
-#ifdef _DEBUG
+#if DBG
 if (objP->shields != gameData.boss [i].xPrevShields) {
 #if TRACE
 	con_printf (CONDBG, "Boss shields = %7.3f, tObject %i\n", X2F (objP->shields), OBJ_IDX (objP));

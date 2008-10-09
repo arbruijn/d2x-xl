@@ -113,12 +113,12 @@ void InitHoardData (void)
 	tPowerupTypeInfo	*ptP;
 	ubyte					*bmDataP;
 
-#ifdef RELEASE
+#if !DBG
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)))
 	return;
 #endif
 if (gameStates.app.bDemoData) {
-#ifndef _DEBUG
+#if !DBG
 	Warning ("Hoard data not available with demo data.");
 #endif
 	return;

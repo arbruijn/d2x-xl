@@ -89,7 +89,7 @@ int InitLightData (int bVariable);
 int OglCreateLightmap (int nLightmap)
 {
 	tLightmapBuffer	*lmP = lightmapData.buffers + nLightmap;
-#ifdef _DEBUG
+#if DBG
 	int					nError;
 #endif
 
@@ -112,7 +112,7 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_BUFWIDTH, LIGHTMAP_BUFWIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, lmP->bmP);
-#ifdef _DEBUG
+#if DBG
 if ((nError = glGetError ()))
 	return 0;
 #endif
@@ -411,7 +411,7 @@ bBlack = bWhite = true;
 pixelPosP = pixelPos + xMin * LM_H;
 for (x = xMin; x < xMax; x++) {
 	for (y = 0; y < LM_H; y++, pixelPosP++) { 
-#ifdef _DEBUG
+#if DBG
 		if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
@@ -477,7 +477,7 @@ if (nFace <= 0) {
 	}
 //Next Go through each surface and create a lightmap for it.
 for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
-#ifdef _DEBUG
+#if DBG
 	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
@@ -492,7 +492,7 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 	memset (texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
 	if (!RunRenderThreads (rtLightmap))
 		ComputeOneLightmap (-1);
-#ifdef _DEBUG
+#if DBG
 	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
@@ -685,7 +685,7 @@ if (!(RENDERPATH && gameStates.render.bUsePerPixelLighting))
 	return 0;
 if ((gameStates.render.bUsePerPixelLighting == 1) && !CreateLightmapShader (0))
 	return gameStates.render.bUsePerPixelLighting = 0;
-#ifdef RELEASE
+#if !DBG
 if (gameOpts->render.nLightmapQuality > 2)
 	gameOpts->render.nLightmapQuality = 2;
 #endif

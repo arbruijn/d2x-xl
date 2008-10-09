@@ -262,7 +262,7 @@ for (i = 0, pf1 = phb1->faces; i < 6; i++, pf1++) {
 		if (FindQuadQuadIntersection (&vHit, pf1->v, pf1->n + 1, pf2->v, pf2->n + 1, vPos)) {
 			dMax = RegisterHit (hitP, &vHit, vPos, dMax);
 			nHits++;
-#ifdef _DEBUG
+#if DBG
 			pf1->t = pf2->t = gameStates.app.nSDLTicks;
 #endif
 			}
@@ -829,7 +829,7 @@ else {
 	nModels1 = pmhb1->nHitboxes;
 	nModels2 = pmhb2->nHitboxes;
 	}
-#ifdef _DEBUG
+#if DBG
 memset (hb1, 0, sizeof (hb1));
 memset (hb2, 0, sizeof (hb2));
 #endif
@@ -851,7 +851,7 @@ if (!nHits) {
 			}
 		}
 	}
-#ifdef _DEBUG
+#if DBG
 if (nHits) {
 	pmhb1->vHit = pmhb2->vHit = *intP;
 	pmhb1->tHit = pmhb2->tHit = gameStates.app.nSDLTicks;
@@ -1070,7 +1070,7 @@ if (flags & FQ_CHECK_OBJS) {
 	//PrintLog ("   checking objects...");
 	nObjSegList [0] = nStartSeg;
 	nObjSegs = 1;
-#	ifdef _DEBUG
+#	if DBG
 	if ((thisObjP->nType == OBJ_WEAPON) && (thisObjP->nSegment == gameData.objs.console->nSegment))
 		flags = flags;
 #	endif
@@ -1134,7 +1134,7 @@ if (flags & FQ_CHECK_OBJS) {
 			else
 				d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 			if (d && (d < dMin)) {
-#ifdef _DEBUG
+#if DBG
 				CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 #endif
 				gameData.collisions.hitData.nObject = nObject;
@@ -1142,7 +1142,7 @@ if (flags & FQ_CHECK_OBJS) {
 				dMin = d;
 				vClosestHitPoint = vHitPoint;
 				nHitType = HIT_OBJECT;
-#ifdef _DEBUG
+#if DBG
 				CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 #endif
 				if (flags & FQ_ANY_OBJECT)
@@ -1279,7 +1279,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 				if (nFaceHitType)
 #endif
 					{
-#ifdef _DEBUG
+#if DBG
 					int vertList [6];
 					int nFaces = CreateAbsVertexLists (vertList, SEG_IDX (segP), nSide);
 					if (iFace >= nFaces)

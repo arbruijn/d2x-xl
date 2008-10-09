@@ -65,7 +65,7 @@ int UpdateLightning (tLightning *pl, int nLightnings, int nDepth);
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 
 void TRAP (tLightningNode *pln)
 {
@@ -774,7 +774,7 @@ if (bSeed) {
 	nSeed [0] *= d_rand ();
 	nSeed [1] *= d_rand ();
 	}
-#ifdef _DEBUG
+#if DBG
 else
 	bSeed = 0;
 #endif
@@ -2028,7 +2028,7 @@ if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments))
 else {
 		tLightningLight	*pll = gameData.lightnings.lights + nSegment;
 
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
@@ -2068,7 +2068,7 @@ for (nLights = 1; i > 0; i--, pl++) {
 		if (!(nStep = (double) (j - 1) / (double) nStride))
 			nStep = (double) ((int) (j + 0.5));
 		nSegment = pl->nSegment;
-#ifdef _DEBUG
+#if DBG
 		if (nSegment == nDbgSeg)
 			nDbgSeg = nDbgSeg;
 #endif
@@ -2138,7 +2138,7 @@ if (SHOW_LIGHTNINGS) {
 			if ((i < 0) || (i >= MAX_SEGMENTS))
 				continue;
 			pll = gameData.lightnings.lights + i;
-#ifdef _DEBUG
+#if DBG
 			if (pll->nSegment == nDbgSeg)
 				nDbgSeg = nDbgSeg;
 #endif

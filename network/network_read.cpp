@@ -149,7 +149,7 @@ if (netGame.nSegmentCheckSum != networkData.nSegmentCheckSum) {
 		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NETLEVEL_MISMATCH);
 		gameStates.menus.nInMenu = nInMenu;
 		}
-#if 1//def RELEASE
+#if 1//!DBG
 		return;
 #endif
 	}
@@ -619,7 +619,7 @@ if (!i) {
 	}
 else if (i < 0)
 	return;
-#ifdef _DEBUG
+#if DBG
 //PrintLog ("Receiving object packet %d (prev: %d)\n", networkData.nPrevFrame, networkData.sync [0].objs.nFrame);
 #endif
  for (i = 0; i < nObjects; i++) {
@@ -636,7 +636,7 @@ else if (i < 0)
 		if (nObject == -3) {
 			if (networkData.nJoinState != 2)
 				return;
-#ifdef _DEBUG
+#if DBG
 			PrintLog ("Receiving missing object packets\n");
 #endif
 			networkData.nJoinState = 3;

@@ -39,11 +39,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamepal.h"
 #include "lightning.h"
 
-#ifdef _DEBUG
+#if DBG
 extern int Debug_pause;				//John's debugging pause system
 #endif
 
-#ifdef _DEBUG
+#if DBG
 extern int bSavingMovieFrames;
 #else
 #define bSavingMovieFrames 0
@@ -126,7 +126,7 @@ if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bDefining))	{
 }
 
 //------------------------------------------------------------------------------
-#ifdef _DEBUG
+#if DBG
 
 fix ShowView_textTimer = -1;
 
@@ -239,7 +239,7 @@ if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameDa
 
 void GameDrawHUDStuff ()
 {
-#ifdef _DEBUG
+#if DBG
 if (Debug_pause) {
 	GrSetCurFont (MEDIUM1_FONT);
 	GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
@@ -1101,7 +1101,7 @@ StartTime (0);
 //------------------------------------------------------------------------------
 
 static
-#ifndef _DEBUG
+#if !DBG
 inline
 #endif
 void DrawCockpit (int h, int y)

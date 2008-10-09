@@ -739,7 +739,7 @@ while (nextRowP) {
 	text_ptr1 = nextRowP;
 	nextRowP = NULL;
 	textP = text_ptr1;
-#ifdef _DEBUG
+#if DBG
 	if (bCentered)
 		x = (w - GetLineWidth (textP)) / 2;
 	else
@@ -1356,7 +1356,7 @@ FONT = font;
 FG_COLOR.index = 0;
 BG_COLOR.index = 0;
 
-#ifdef _DEBUG
+#if DBG
 int x, y, aw;
 char tests[]="abcdefghij1234.A";
 GrGetStringSize (tests, &x, &y, &aw);

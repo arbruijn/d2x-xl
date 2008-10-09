@@ -351,7 +351,7 @@ else {
 	i3 = 3;
 	}
 
-#ifndef _DEBUG
+#if !DBG
 if (pc->bHaveUVL) {
 	if (uvlP)
 		memcpy (uvlP, pc->uvlList, sizeof (pc->uvlList));

@@ -200,6 +200,19 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 
 //------------------------------------------------------------------------------
 
+int FindDisplayMode (int nScrSize)
+{
+	tDisplayModeInfo *dmiP = displayModeInfo;
+	int w = nScrSize >> 16, h = nScrSize & 0xffff;
+
+for (int j = sizeofa (displayModeInfo), i = 0; i < j; i++, dmiP++)
+	if ((dmiP->w == w) && (dmiP->h == h))
+		return i;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
 int GrInit (void)
 {
 	int mode = SM (640, 480);
@@ -247,9 +260,9 @@ grdCurScreen->scCanvas.cvBitmap.bmTexBuf = NULL;
 for (t = 0; scrSizes [t].x && scrSizes [t].y; t++)
 	if (FindArg (ScrSizeArg (scrSizes [t].x, scrSizes [t].y))) {
 		gameStates.gfx.bOverride = 1;
-		gameStates.gfx.nStartScrSize = t;
-		gameStates.gfx.nStartScrMode =
+		gameStates.gfx.nStartScrSize =
 		mode = SM (scrSizes [t].x, scrSizes [t].y);
+		gameStates.gfx.nStartScrMode = FindDisplayMode (mode);
 		break;
 		}
 if ((retcode = GrSetMode (mode)))
@@ -313,7 +326,7 @@ if (i && (i < nArgCount)) {
 	gameStates.gfx.bOverride = 1; 
 	gameData.render.window.w = x;
 	gameData.render.window.h = y;
-	return gameStates.gfx.nStartScrMode = GetDisplayMode (SM (x, y)); 
+	return gameStates.gfx.nStartScrSize = GetDisplayMode (SM (x, y)); 
 	}
 return -1;
 }
@@ -380,7 +393,6 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-
 #if VR_NONE
 #   undef VR_NONE			//undef if != 0
 #endif
@@ -391,12 +403,13 @@ return -1;
 
 void SetDisplayMode (int nMode, int bOverride)
 {
-	tDisplayModeInfo *tDisplayModeInfo;
+	tDisplayModeInfo *dmiP;
 
 if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE))	//special VR nMode
-	return;								//...don't change
-if (bOverride && gameStates.gfx.bOverride)
-	nMode = gameStates.gfx.nStartScrSize;
+	return;	//...don't change
+if (bOverride && gameStates.gfx.bOverride) {
+	gameStates.gfx.nStartScrMode = nMode;
+	}
 else
 	gameStates.gfx.bOverride = 0;
 if (!gameStates.menus.bHiresAvailable && (nMode != 1))
@@ -404,9 +417,9 @@ if (!gameStates.menus.bHiresAvailable && (nMode != 1))
 if (!GrVideoModeOK (displayModeInfo [nMode].VGA_mode))		//can't do nMode
 	nMode = 0;
 gameStates.video.nDisplayMode = nMode;
-tDisplayModeInfo = displayModeInfo + nMode;
+dmiP = displayModeInfo + nMode;
 if (gameStates.video.nDisplayMode != -1) {
-	GameInitRenderBuffers (tDisplayModeInfo->VGA_mode, tDisplayModeInfo->w, tDisplayModeInfo->h, tDisplayModeInfo->render_method, tDisplayModeInfo->flags);
+	GameInitRenderBuffers (dmiP->VGA_mode, dmiP->w, dmiP->h, dmiP->render_method, dmiP->flags);
 	gameStates.video.nDefaultDisplayMode = gameStates.video.nDisplayMode;
 	}
 gameStates.video.nScreenMode = -1;		//force screen reset
@@ -432,10 +445,10 @@ int SetMenuScreenMode (u_int32_t sm)
 gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we can
 nMenuMode = 
 	gameStates.gfx.bOverride ?
-		gameStates.gfx.nStartScrMode
+		gameStates.gfx.nStartScrSize
 		: gameStates.menus.bHires ?
-			 (gameStates.render.vr.nScreenMode >= SM (640,480)) ?
-				gameStates.render.vr.nScreenMode
+			 (gameStates.render.vr.nScreenSize >= SM (640,480)) ?
+				gameStates.render.vr.nScreenSize
 				: SM (640,480)
 			: SM (320,200);
 gameStates.video.nLastScreenMode = -1;
@@ -462,8 +475,8 @@ return 1;
 
 int SetGameScreenMode (u_int32_t sm)
 {
-if (nCurrentVGAMode != gameStates.render.vr.nScreenMode) {
-	if (GrSetMode (gameStates.render.vr.nScreenMode))	{
+if (nCurrentVGAMode != gameStates.render.vr.nScreenSize) {
+	if (GrSetMode (gameStates.render.vr.nScreenSize))	{
 		Error ("Cannot set desired screen mode for game!");
 		//we probably should do something else here, like select a standard mode
 		}
@@ -547,8 +560,8 @@ if ((sm == SCREEN_MENU) && (gameStates.video.nScreenMode == SCREEN_EDITOR)) {
 	return 1;
 	}
 #endif
-if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.render.vr.nScreenMode) && 
-		(grdCurScreen->scMode == gameStates.render.vr.nScreenMode)) {
+if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.render.vr.nScreenSize) && 
+		(grdCurScreen->scMode == gameStates.render.vr.nScreenSize)) {
 	GrSetCurrentCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	OglSetScreenMode ();
 	return 1;

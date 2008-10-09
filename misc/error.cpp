@@ -156,7 +156,7 @@ void _CDECL_ Error (const char *fmt,...)
 {
 	va_list arglist;
 
-#ifndef _DEBUG
+#if !DBG
 strcpy (szExitMsg, TXT_TITLE_ERROR); // don't put the new line in for dialog output
 #else
 sprintf (szExitMsg, "\n%s", TXT_TITLE_ERROR);
@@ -171,7 +171,7 @@ gameStates.app.bShowError = 0;
 Int3();
 if (!err_initialized) 
 	print_exit_message();
-#ifndef _DEBUG
+#if !DBG
 exit (1);
 #endif
 }
@@ -245,7 +245,7 @@ int nDbgOvlTex = -1;
 
 #endif
 
-#ifdef _DEBUG
+#if DBG
 
 int TrapSeg (short nSegment)
 {

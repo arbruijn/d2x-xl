@@ -1776,7 +1776,7 @@ void DrawDebrisCorona (tObject *objP)
 
 if (objP->nType == OBJ_MARKER)
 	RenderWeaponCorona (objP, &markerGlow, 0.75f, 0, 4, 1, 1, 0);
-#ifdef _DEBUG
+#if DBG
 else if (objP->nType == OBJ_DEBRIS) {
 #else
 else if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {

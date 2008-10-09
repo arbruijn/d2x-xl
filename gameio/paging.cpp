@@ -240,7 +240,7 @@ void PagingTouchSide (tSegment * segP, short nSide)
 {
 	int tmap1, tmap2;
 
-#ifdef _DEBUG
+#if DBG
 if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -316,7 +316,7 @@ void PagingTouchSegment (tSegment * segP)
 	short			nSide, nObject;
 	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 
-#ifdef _DEBUG
+#if DBG
 if (SEG_IDX (segP) == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif

@@ -68,7 +68,7 @@ void DrawShrapnels (tObject *objP);
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 
 void KillObjectSmoke (int i);
 

@@ -32,7 +32,7 @@ void _CDECL_ Warning(const char *fmt,...);				//print out warning message to use
 void SetWarnFunc(void (*f)(const char *s));//specifies the function to call with warning messages
 void ClearWarnFunc(void (*f)(const char *s));//say this function no longer valid
 void _Assert(int expr, const char *expr_text, const char *filename, int linenum);
-#ifdef _DEBUG
+#if DBG
 void _CDECL_ Error(const char *fmt,...);				//exit with error code=1, print message
 #else
 void _CDECL_ Error(const char *fmt,...) __noreturn __format;				//exit with error code=1, print message
@@ -48,7 +48,7 @@ extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex;
 
 #endif
 
-#ifdef _DEBUG
+#if DBG
 
 int TrapSeg (short nSegment);
 int TrapSegSide (short nSegment, short nSide);
@@ -67,7 +67,7 @@ int TrapBmp (grsBitmap *bmP, char *pszName);
 #endif
 
 
-#ifdef _DEBUG		//macros for debugging
+#if DBG		//macros for debugging
 
 #	define Int3() ((void)0)
 #	define Assert(expr) ((expr)?(void)0:(void)_Assert(0,#expr,__FILE__,__LINE__))
@@ -82,7 +82,7 @@ int TrapBmp (grsBitmap *bmP, char *pszName);
 extern FILE *fErr;
 
 #ifdef _WIN32
-#	ifdef _DEBUG
+#	if DBG
 #		define	CBP(_cond)	if (_cond) _asm int 3;
 #	else
 #		define	CBP(_cond)

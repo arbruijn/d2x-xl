@@ -6,7 +6,7 @@
 #include "pstypes.h"
 
 #ifndef TRACE
-#ifdef _DEBUG
+#if DBG
 #	define TRACE	1
 #else
 #	define TRACE	0

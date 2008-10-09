@@ -405,7 +405,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 		}
 	nWall = WallNumP (segP, nSide);
 	if (!IS_WALL (nWall)) {
-#ifdef _DEBUG
+#if DBG
 		PrintLog ("WARNING: Wall trigger %d targets non-existant tWall @ %d,%d\n", 
 				  trigP - gameData.trigs.triggers, SEG_IDX (segP), nSide);
 #endif

@@ -36,7 +36,7 @@ extern unsigned char ipx_LocalAddress [10];
 static int nDlTimeouts [] = {1, 2, 3, 5, 10, 15, 20, 30, 45, 60};
 static int nDlTimeout = -1;
 
-#ifdef _DEBUG
+#if DBG
 int iDlTimeout = 5;
 #else
 int iDlTimeout = 4;

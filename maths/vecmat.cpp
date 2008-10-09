@@ -26,7 +26,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 
 #define EXACT_VEC_MAG	1
-#ifdef _DEBUG
+#if DBG
 #	define ENABLE_SSE		0
 #elif defined (_MSC_VER)
 #	define ENABLE_SSE		1
@@ -212,12 +212,12 @@ const vmsMatrix vmsMatrix::CreateFR(const vmsVector& fVec, const vmsVector& rVec
 
 inline int VmBehindPlane(const vmsVector& n, const vmsVector& p1, const vmsVector& p2, const vmsVector& i) {
 	vmsVector	t;
-#ifdef _DEBUG
+#if DBG
 	fix			d;
 #endif
 
 	t = p1 - p2;
-#ifdef _DEBUG
+#if DBG
 	d = vmsVector::Dot(p1, t);
 	return vmsVector::Dot(i, t) < d;
 #else

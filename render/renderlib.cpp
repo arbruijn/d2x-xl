@@ -326,7 +326,7 @@ void DrawOutline (int nVertices, g3sPoint **pointList)
 	vmsVector n;
 	fVector *nf;
 
-#if 1 //def RELEASE
+#if 1 //!DBG
 if (gameStates.render.bQueryOcclusion) {
 	tRgbaColorf outlineColor = {1, 1, 0, -1};
 	G3DrawPolyAlpha (nVertices, pointList, &outlineColor, 1, -1);
@@ -454,7 +454,7 @@ if (m > l) {
 
 int SetVertexColor (int nVertex, tFaceColor *pc)
 {
-#ifdef _DEBUG
+#if DBG
 if (nVertex == nDbgVertex)
 	nVertex = nVertex;
 #endif
@@ -520,7 +520,7 @@ dynLight = gameData.render.lights.dynamicLight [nVertex];
 fl = X2F (light);
 dl = X2F (dynLight);
 light += dynLight;
-#ifdef _DEBUG
+#if DBG
 if (nVertex == nDbgVertex)
 	nVertex = nVertex;
 #endif
@@ -658,7 +658,7 @@ float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int b
 
 if (!IS_WALL (nWall))
 	return 1;
-#ifdef _DEBUG
+#if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -714,7 +714,7 @@ int SetupMonitorFace (short nSegment, short nSide, short nCamera, grsFace *faceP
 {
 	tCamera		*pc = gameData.cameras.cameras + nCamera;
 	int			bHaveMonitorBg, bIsTeleCam = pc->bTeleport;
-#ifdef RELEASE
+#if !DBG
 	int			i;
 #endif
 #if RENDER2TEXTURE
@@ -732,7 +732,7 @@ if (bHaveMonitorBg) {
 	GetCameraUVL (pc, faceP, NULL, gameData.segs.faces.texCoord + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex);
 	pc->texBuf.glTexture->wrapstate = -1;
 	if (bIsTeleCam) {
-#ifdef _DEBUG
+#if DBG
 		faceP->bmBot = &pc->texBuf;
 		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 #else
@@ -754,7 +754,7 @@ return bHaveMonitorBg || gameOpts->render.cameras.bFitToWall;
 
 //------------------------------------------------------------------------------
 //draw outline for curside
-#ifdef _DEBUG
+#if DBG
 
 #define CROSS_WIDTH  I2X(8)
 #define CROSS_HEIGHT I2X(8)

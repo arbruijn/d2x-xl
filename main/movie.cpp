@@ -424,7 +424,7 @@ con_printf (DEBUG_LEVEL, "movies.robot.cf=%s\n", filename);
 #endif
 MVE_sndInit (-1);        //tell movies to play no sound for robots
 if (!OpenMovieFile (&movies.robot.cf, filename, 1)) {
-#ifdef _DEBUG
+#if DBG
 	Warning (TXT_MOVIE_ROBOT, filename);
 #endif
 	return MOVIE_NOT_PLAYED;
@@ -750,7 +750,7 @@ strcpy (filename, pszFilename);
 	
 	char *res = strchr (filename, '.') - 1; // 'h' == high resolution, 'l' == low
 
-#if 0//ndef RELEASE
+#if 0//DBG
 	if (FindArg ("-nomovies")) {
 		movies.libs [nLibrary] = NULL;
 		return;
@@ -783,7 +783,7 @@ strcpy (filename, pszFilename);
 					bHighRes = 1;
 					}
 				else {
-#ifdef _DEBUG
+#if DBG
 					if (bRequired)
 						Warning (TXT_MOVIE_FILE, filename);
 #endif
@@ -793,7 +793,7 @@ strcpy (filename, pszFilename);
 			else { // nTries == 1
 				if (bRequired) {
 					*res = '*';
-#ifdef _DEBUG
+#if DBG
 					//Warning (TXT_MOVIE_ANY, filename);
 #endif
 				}

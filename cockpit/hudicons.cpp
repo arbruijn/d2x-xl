@@ -267,7 +267,7 @@ for (i = 0; i < 2; i++) {
 		if (gameStates.render.cockpit.nMode != CM_STATUS_BAR)
 			h = 0;
 		else {
-#ifdef _DEBUG
+#if DBG
 			h = gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0);
 			h = gameData.pig.tex.cockpitBmIndex [h].index;
 			h = gameData.pig.tex.bitmaps [0][h].bmProps.h;

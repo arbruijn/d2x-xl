@@ -70,7 +70,7 @@ if ((tracker->nType == OBJ_PLAYER) || (tracker->cType.laserInfo.parentType == OB
 			 FindHomingObjectComplete (curpos, tracker, OBJ_ROBOT, -1) :
 			 FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, OBJ_ROBOT);
 		} 
-#ifdef _DEBUG
+#if DBG
 if ((tracker->cType.laserInfo.parentType != OBJ_ROBOT) && (tracker->cType.laserInfo.parentType != OBJ_PLAYER))
 	tracker = tracker;
 #endif

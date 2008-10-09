@@ -53,7 +53,7 @@ char szCheatBuf[] = "AAAAAAAAAAAAAAA";
 
 void DoCheatPenalty ()
 {
-#ifndef _DEBUG
+#if !DBG
 DigiPlaySampleClass (SOUND_CHEATER, NULL, F1_0, SOUNDCLASS_PLAYER);
 gameStates.app.cheats.bEnabled = 1;
 LOCALPLAYER.score = 0;
@@ -253,7 +253,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 
 void KillAllSnipers (int bVerbose)
 {
@@ -849,7 +849,7 @@ inline int Cheat (tCheat *pCheat)
 if (strcmp (pCheat->bEncrypted ? pszCheat : szCheatBuf + CHEATEND - strlen (pCheat->pszCheat), 
 				pCheat->pszCheat))
 	return 0;	// not this cheatcode
-#ifndef _DEBUG
+#if !DBG
 if (pCheat->bPunish && IsMultiGame &&
 	 !(gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnableCheats)) {	//trying forbidden cheatcode in multiplayer
 	MultiDoCheatPenalty ();
@@ -998,7 +998,7 @@ for (pCheat = cheats; pCheat->pszCheat && !Cheat (pCheat); pCheat++)
 
 //------------------------------------------------------------------------------
 // Internal Cheat Menu
-#ifdef _DEBUG
+#if DBG
 void DoCheatMenu ()
 {
 	int mmn;

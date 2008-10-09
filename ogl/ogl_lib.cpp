@@ -1067,7 +1067,7 @@ return hBuffer;
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 
 void OglGenTextures (GLsizei n, GLuint *hTextures)
 {

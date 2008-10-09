@@ -399,14 +399,14 @@ for (bShadowTest = 0; bShadowTest < 2; bShadowTest++)
 	//RenderObjectShadows ();
 	RenderMine (nStartSeg, nEyeOffset, nWindow);
 	}
-#ifdef _DEBUG
+#if DBG
 if (!bShadowTest) 
 #endif
 	{
 	gameStates.render.nShadowPass = 3;
 	OglStartFrame (0, 0);
 	if	(gameStates.render.bShadowMaps) {
-#ifdef _DEBUG
+#if DBG
 		if (gameStates.render.bExternalView)
 #else	
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))

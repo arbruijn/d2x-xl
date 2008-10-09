@@ -53,7 +53,7 @@ void G3GetASEModelItems (int nModel, tASEModel *pa, tG3Model *pm, float fScale)
 for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 	psa = &pml->sm;
 	psm = pm->pSubModels + psa->nId;
-#ifdef _DEBUG
+#if DBG
 	strcpy (psm->szName, psa->szName);
 #endif
 	psm->nParent = psa->nParent;
@@ -131,7 +131,7 @@ if (!pa) {
 	if (!pa)
 		return 0;
 	}
-#ifdef _DEBUG
+#if DBG
 HUDMessage (0, "optimizing model");
 #endif
 PrintLog ("         optimizing ASE model %d\n", nModel);

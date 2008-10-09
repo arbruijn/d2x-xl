@@ -166,7 +166,7 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 //	Call this when a smega detonates to start the process of rocking the mine.
 void ShakerRockStuff (void)
 {
-#ifndef _DEBUG
+#if !DBG
 	int	i;
 
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)

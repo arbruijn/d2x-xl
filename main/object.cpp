@@ -72,7 +72,7 @@ void DetachOneObject (tObject *sub);
 int FreeObjectSlots (int num_used);
 
 //info on the various types of OBJECTS
-#ifdef _DEBUG
+#if DBG
 tObject	Object_minus_one;
 tObject	*dbgObjP = NULL;
 #endif
@@ -100,7 +100,7 @@ int bPrintObjectInfo = 0;
 
 tWindowRenderedData windowRenderedData [MAX_RENDERED_WINDOWS];
 
-#ifdef _DEBUG
+#if DBG
 char	szObjectTypeNames [MAX_OBJECT_TYPES][10] = {
 	"WALL     ",
 	"FIREBALL ",
@@ -176,7 +176,7 @@ for (i = 0; i < MAX_BOSS_COUNT; i++)
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 //set viewer tObject to next tObject in array
 void ObjectGotoNextViewer ()
 {
@@ -463,7 +463,7 @@ for (i = MAX_OBJECTS; i--; )
 }
 
 //------------------------------------------------------------------------------
-#ifdef _DEBUG
+#if DBG
 int IsObjectInSeg (int nSegment, int objn)
 {
 	short nObject, count = 0;
@@ -517,7 +517,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	count = 0;
 	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = OBJECTS [nObject].next) {
 		count++;
-		#ifdef _DEBUG
+		#if DBG
 		if (count > MAX_OBJECTS)	{
 #if TRACE
 			con_printf (1, "Object list in tSegment %d is circular.\n", nSegment);
@@ -526,7 +526,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 		}
 		#endif
 		if (OBJECTS [nObject].nSegment != nSegment)	{
-			#ifdef _DEBUG
+			#if DBG
 #if TRACE
 			con_printf (CONDBG, "Removing tObject %d from tSegment %d.\n", nObject, nSegment);
 #endif
@@ -560,7 +560,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 	if (OBJECTS [i].nType != OBJ_NONE)	{
 		count = SearchAllSegsForObject (i);
 		if (count > 1)	{
-#ifdef _DEBUG
+#if DBG
 #	if TRACE
 			con_printf (1, "Object %d is in %d segments!\n", i, count);
 #	endif
@@ -679,7 +679,7 @@ if (gameData.objs.nObjects >= MAX_OBJECTS - 2)
 if (gameData.objs.nObjects >= MAX_OBJECTS)
 	return -1;
 nObject = gameData.objs.freeList [gameData.objs.nObjects++];
-#ifdef _DEBUG
+#if DBG
 if (nObject == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
@@ -703,7 +703,7 @@ return nObject;
 //the tObject has been unlinked
 void FreeObject (int nObject)
 {
-#ifdef _DEBUG
+#if DBG
 if (nObject == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
@@ -725,7 +725,7 @@ gameData.objs.freeList [--gameData.objs.nObjects] = nObject;
 Assert (gameData.objs.nObjects >= 0);
 if (nObject == gameData.objs.nLastObject [0])
 	while (OBJECTS [--gameData.objs.nLastObject [0]].nType == OBJ_NONE);
-#ifdef _DEBUG
+#if DBG
 if (dbgObjP && (OBJ_IDX (dbgObjP) == nObject))
 	dbgObjP = NULL;
 #endif
@@ -733,7 +733,7 @@ if (dbgObjP && (OBJ_IDX (dbgObjP) == nObject))
 
 //-----------------------------------------------------------------------------
 
-#if defined(_WIN32) && defined(RELEASE)
+#if defined(_WIN32) && !DBG
 typedef int __fastcall tFreeFilter (tObject *objP);
 #else
 typedef int tFreeFilter (tObject *objP);
@@ -878,11 +878,11 @@ int tObject::Create(ubyte nType, ubyte id, short owner, short nSegment, const vm
 {
 	short		nObject;
 	tObject	*objP;
-#ifdef _DEBUG
+#if DBG
 	short		i;
 #endif
 
-#ifdef _DEBUG
+#if DBG
 if (nType == OBJ_WEAPON) {
 	nType = nType;
 	if ((owner >= 0) && (OBJECTS [owner].nType == OBJ_ROBOT))
@@ -911,7 +911,7 @@ else if (nType == OBJ_PLAYER)
 else
 #endif
 if (nType == OBJ_POWERUP) {
-#ifdef _DEBUG
+#if DBG
 	nType = nType;
 #endif
 	if (!bIgnoreLimits && TooManyPowerups ((int) id)) {
@@ -931,7 +931,7 @@ if ((nType == OBJ_DEBRIS) && (nDebrisObjectCount >= gameStates.render.detail.nMa
 	return -1;
 if (GetSegMasks (pos, nSegment, 0).centerMask)
 	if ((nSegment = FindSegByPos (pos, nSegment, 1, 0)) == -1) {
-#ifdef _DEBUG
+#if DBG
 #	if TRACE
 		con_printf (CONDBG, "Bad segment in tObject::Create(nType=%d)\n", nType);
 #	endif
@@ -976,11 +976,11 @@ if (objP->movementType == MT_PHYSICS)
 if (objP->renderType == RT_POLYOBJ)
 	objP->rType.polyObjInfo.nTexOverride = -1;
 objP->shields = 20 * F1_0;
-#ifdef _DEBUG
+#if DBG
 i = nSegment;
 #endif
 if (0 > (nSegment = FindSegByPos (pos, nSegment, 1, 0))) {	//find correct tSegment
-#ifdef _DEBUG
+#if DBG
 	FindSegByPos (pos, i, 1, 0);
 #endif
 	return -1;
@@ -1003,7 +1003,7 @@ else if (objP->controlType == CT_EXPLOSION)
 	objP->cType.explInfo.nNextAttach =
 	objP->cType.explInfo.nPrevAttach =
 	objP->cType.explInfo.nAttachParent = -1;
-#ifdef _DEBUG
+#if DBG
 #if TRACE
 if (bPrintObjectInfo)
 	con_printf (CONDBG, "Created tObject %d of nType %d\n", nObject, objP->nType);
@@ -1371,7 +1371,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 		continue;
 	if (!(objP->flags & OF_SHOULD_BE_DEAD)) {
 #if 1
-#	ifdef _DEBUG
+#	if DBG
 		if (objP->shields < 0)
 			objP = objP;
 #	endif
@@ -1414,7 +1414,7 @@ Assert ((nObject >= 0) && (nObject <= gameData.objs.nLastObject [0]));
 Assert ((nNewSegnum <= gameData.segs.nLastSegment) && (nNewSegnum >= 0));
 OBJECTS [nObject].Unlink();
 LinkObject (nObject, nNewSegnum);
-#ifdef _DEBUG
+#if DBG
 #if TRACE
 if (GetSegMasks (OBJECTS [nObject].position.vPos,
 					  OBJECTS [nObject].nSegment, 0).centerMask)
@@ -1698,7 +1698,7 @@ switch (objP->controlType) {
 		break;
 
 	case CT_SLEW:
-#ifdef _DEBUG
+#if DBG
 		if (gameStates.input.keys.pressed [KEY_PAD5])
 			slew_stop ();
 		if (gameStates.input.keys.pressed [KEY_NUMLOCK]) {
@@ -1771,7 +1771,7 @@ switch (objP->movementType) {
 		break;								//this doesn't move
 
 	case MT_PHYSICS:
-#ifdef _DEBUG
+#if DBG
 		if (objP->nType != OBJ_PLAYER)
 			objP = objP;
 #endif
@@ -1799,14 +1799,14 @@ if ((objP->movementType != MT_PHYSICS) || (nPrevSegment == objP->nSegment))
 	return 0;
 nOldLevel = gameData.missions.nCurrentLevel;
 for (i = 0; i < nPhysSegs - 1; i++) {
-#ifdef _DEBUG
+#if DBG
 	if (physSegList [i] > gameData.segs.nLastSegment)
 		PrintLog ("invalid segment in physSegList\n");
 #endif
 	nConnSide = FindConnectedSide (gameData.segs.segments + physSegList [i+1], gameData.segs.segments + physSegList [i]);
 	if (nConnSide != -1)
 		CheckTrigger (gameData.segs.segments + physSegList [i], nConnSide, OBJ_IDX (objP), 0);
-#ifdef _DEBUG
+#if DBG
 	else	// segments are not directly connected, so do binary subdivision until you find connected segments.
 		PrintLog ("UNCONNECTED SEGMENTS %d, %d\n", physSegList [i+1], physSegList [i]);
 #endif
@@ -1929,7 +1929,7 @@ int UpdateObject (tObject * objP)
 {
 	short	nPrevSegment = (short) objP->nSegment;
 
-#ifdef _DEBUG
+#if DBG
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
@@ -2286,7 +2286,7 @@ for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObj
 			objP->nType == OBJ_DEBRIS ||
 			((objP->nType != OBJ_NONE) && (objP->flags & OF_EXPLODING))) {
 
-#ifdef _DEBUG
+#if DBG
 #	if TRACE
 		if (OBJECTS [nObject].lifeleft > I2X (2))
 			con_printf (CONDBG, "Note: Clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n",
@@ -2296,7 +2296,7 @@ for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObj
 #endif
 		ReleaseObject (nObject);
 	}
-	#ifdef _DEBUG
+	#if DBG
 #	if TRACE
 		else if (OBJECTS [nObject].nType!=OBJ_NONE && OBJECTS [nObject].lifeleft < I2X (2))
 		con_printf (CONDBG, "Note: NOT clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n",
@@ -2644,7 +2644,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	if ((objP->nSegment >= 0) && (objP->nType != 255) && (objP->renderType == RT_POLYOBJ) &&
 		 !G3HaveModel (objP->rType.polyObjInfo.nModel)) {
 		PrintLog ("      building model %d\n", objP->rType.polyObjInfo.nModel);
-#ifdef _DEBUG
+#if DBG
 		if (objP->rType.polyObjInfo.nModel == nDbgModel)
 			nDbgModel = nDbgModel;
 #endif
@@ -2678,7 +2678,7 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 	o.id = (ubyte) rmP->nId;
 	o.rType.polyObjInfo.nModel = rmP->nModel;
 	if (!G3HaveModel (o.rType.polyObjInfo.nModel)) {
-#ifdef _DEBUG
+#if DBG
 		if (o.rType.polyObjInfo.nModel == nDbgModel)
 			nDbgModel = nDbgModel;
 #endif

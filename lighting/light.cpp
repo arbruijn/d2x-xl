@@ -168,7 +168,7 @@ short nLightObj = gameData.objs.lightObjs [nObject].nObject;
 
 if (0 > nLightObj)
 	return 0;
-#ifdef _DEBUG
+#if DBG
 if (nDbgObj == nLightObj)
 	nDbgObj = nDbgObj;
 #endif
@@ -233,7 +233,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 	tFVIData		hit_data;
 	int			nSegment, hitType;
 	nSegment = -1;
-	#ifdef _DEBUG
+	#if DBG
 	nSegment = FindSegByPos (*vObjPos, nObjSeg, 1, 0);
 	if (nSegment == -1) {
 		Int3 ();		//	Obj_pos is not in nObjSeg!
@@ -374,7 +374,7 @@ if (objP && SHOW_DYN_LIGHT) {
 	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
 		xObjIntensity /= 2;
 		}
-#ifdef _DEBUG
+#if DBG
 	if (nObject == nDbgObj)
 		nDbgObj = nDbgObj;
 #endif
@@ -454,7 +454,7 @@ if (xObjIntensity) {
 		// -- for (iVertex=gameData.app.nFrameCount&1; iVertex<nRenderVertices; iVertex+=2) {
 		for (iVertex = 0; iVertex < nRenderVertices; iVertex++) {
 			nVertex = renderVertexP [iVertex];
-#ifdef _DEBUG
+#if DBG
 			if (nVertex == nDbgVertex)
 				nVertex = nVertex;
 #endif
@@ -849,7 +849,7 @@ oldViewer = viewer;
 //object's center point is rotated.
 fix ComputeObjectLight (tObject *objP, vmsVector *vRotated)
 {
-#ifdef _DEBUG
+#if DBG
    if (!objP)
       return 0;
 #endif
@@ -1189,7 +1189,7 @@ for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.
 		iSeg = dliP->d2.nSegment;
 		iSide = dliP->d2.nSide;
 		}
-#ifndef _DEBUG
+#if !DBG
 	if ((iSeg > nSegment) || ((iSeg == nSegment) && (iSide > nSide)))
 		return;
 #endif

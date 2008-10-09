@@ -276,7 +276,7 @@ i = FindReactor (objP);
 if (i < 0)
 	return;
 rStatP = gameData.reactor.states + i;
-#ifdef _DEBUG
+#if DBG
 if (!gameStates.app.cheats.bRobotsFiring || (gameStates.app.bGameSuspended & SUSP_ROBOTS))
 	return;
 #else
@@ -482,7 +482,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		}
 	}
 
-#ifdef _DEBUG
+#if DBG
 if ((BOSS_COUNT <= 0) && !gameStates.gameplay.nReactorCount) {
 #if TRACE
 	con_printf (1, "Warning: No control center.\n");

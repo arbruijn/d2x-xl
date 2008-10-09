@@ -22,7 +22,7 @@
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 
 void KillObjectSmoke (int i)
 {
@@ -1008,7 +1008,7 @@ if (gameStates.render.nShadowPass > 1)
 SEM_ENTER (SEM_SMOKE)
 PlayerBulletFrame ();
 #if 0
-#	ifdef _DEBUG
+#	if DBG
 if (!gameStates.render.bExternalView)
 #	else
 if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))

@@ -106,7 +106,7 @@ else {
 #endif
 if (callsign1 && callsign2 && stricmp (callsign1, callsign2))
 	return 1;
-#ifdef _DEBUG
+#if DBG
 HUDMessage (0, "'%s' not recognized", callsign1);
 #endif
 return 0;

@@ -615,7 +615,7 @@ for (;;) {
 		p += 4;
 		}
 	else {
-#ifdef _DEBUG
+#if DBG
 		PrintLog ("invalid polygon model\n");
 #endif
 		return 0;
@@ -625,7 +625,7 @@ nDepth--;
 return 1;
 }
 
-#ifdef _DEBUG
+#if DBG
 int nestCount;
 #endif
 
@@ -764,7 +764,7 @@ return 1;
 
 void InitSubModel (ubyte *p)
 {
-#ifdef _DEBUG
+#if DBG
 Assert (++nestCount < 1000);
 #endif
 for (;;) {
@@ -831,7 +831,7 @@ for (;;) {
 //init code for bitmap models
 void G3InitPolyModel (tPolyModel *pm, int nModel)
 {
-#ifdef _DEBUG
+#if DBG
 	nestCount = 0;
 #endif
 

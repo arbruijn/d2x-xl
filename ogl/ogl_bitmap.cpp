@@ -265,7 +265,7 @@ glActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
 if (!(texP = src->glTexture)) {
 	texP = &tex;
-	OglInitTexture (texP, 0);
+	OglInitTexture (texP, 0, NULL);
 	texP->w = sw;
 	texP->h = sh;
 	texP->prio = 0.0;

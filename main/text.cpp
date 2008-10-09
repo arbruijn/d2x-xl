@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "args.h"
 #include "compbit.h"
 
-#ifdef _DEBUG
+#if DBG
 #	define DUMP_TEXTS 0
 #else
 #	define DUMP_TEXTS 0
@@ -2799,7 +2799,7 @@ InitGameTexts ();
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 
 const char *GAMETEXT (int _i) 
 {

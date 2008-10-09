@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#if defined(_WIN32) && defined(RELEASE)
+#if defined(_WIN32) && !DBG
 typedef int ( __fastcall * pPacketHandler) (ubyte *dataP, int nLength);
 #else
 typedef int (* pPacketHandler) (ubyte *dataP, int nLength);
@@ -84,7 +84,7 @@ if (!nExpectedLength || (nLength == nExpectedLength))
 	return 0;
 con_printf (CONDBG, "WARNING! Received invalid size for %s\n", pszId);
 PrintLog ("Networking: Bad size for %s\n", pszId);
-#ifdef _DEBUG
+#if DBG
 HUDMessage (0, "invalid %s", pszId);
 #endif
 if (nLength == nExpectedLength - 4)

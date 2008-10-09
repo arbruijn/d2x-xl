@@ -68,7 +68,7 @@ gameData.matCens.nEquipCenters = 0;
 gameData.matCens.nRepairCenters = 0;
 }
 
-#ifdef _DEBUG		//this is sometimes called by people from the debugger
+#if DBG		//this is sometimes called by people from the debugger
 void reset_allRobot_centers ()
 {
 	int i;
@@ -443,7 +443,7 @@ return objP;
 
 int Num_extryRobots = 15;
 
-#ifdef _DEBUG
+#if DBG
 int	FrameCount_last_msg = 0;
 #endif
 
@@ -674,7 +674,7 @@ if (!(gameData.matCens.botGens [nMatCen].objFlags [0] ||
 if ((LOCALPLAYER.numRobotsLevel -
 	  LOCALPLAYER.numKillsLevel) >=
 	 (nGameSaveOrgRobots + Num_extryRobots)) {
-#ifdef _DEBUG
+#if DBG
 	if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
 #if TRACE
 		con_printf (CONDBG, "Cannot morph until you kill one!\n");
@@ -1294,7 +1294,7 @@ for (i = 0; i < gameData.matCens.nBotCenters; i++) {
 void InitAllMatCens (void)
 {
 	int	i;
-#ifdef _DEBUG
+#if DBG
 	int	j, nFuelCen;
 #endif
 
@@ -1305,7 +1305,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 		 gameData.matCens.fuelCenters [i].xDisableTime = 0;
 		 }
 
-#ifdef _DEBUG
+#if DBG
 
 for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {

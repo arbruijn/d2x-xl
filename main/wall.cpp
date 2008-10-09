@@ -142,13 +142,13 @@ int WallIsDoorWay (tSegment * segP, short nSide, tObject *objP)
 	int	flags, nType;
 	int	state;
 	tWall *wallP = gameData.walls.walls + WallNumP (segP, nSide);
-#ifdef _DEBUG
+#if DBG
 	short nSegment = SEG_IDX (segP);
 
 Assert(nSegment>=0 && nSegment<=gameData.segs.nLastSegment);
 Assert(nSide>=0 && nSide<6);
 #endif
-#ifdef _DEBUG
+#if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -205,7 +205,7 @@ if (nType == WALL_CLOSED) {
 	}
 // If none of the above flags are set, there is no doorway.
 if ((wallP->cloakValue && (wallP->cloakValue < GR_ACTUAL_FADE_LEVELS)) || CheckTransparency (segP, nSide)) {
-#ifdef _DEBUG
+#if DBG
 	CheckTransparency (segP, nSide);
 #endif
 	return WID_TRANSPARENT_WALL;
@@ -226,7 +226,7 @@ if (nChild == -2)
 nSegment = SEG_IDX (segP);
 nWall = WallNumP (segP, nSide);
 bIsWall = IS_WALL (nWall);
-#ifdef _DEBUG
+#if DBG
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
@@ -985,7 +985,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 	segP = gameData.segs.segments + wallP->nSegment;
 	nSide = wallP->nSide;
 	if (!IS_WALL (WallNumP (segP, nSide))) {
-#ifdef _DEBUG
+#if DBG
 		PrintLog ("Trying to close non existant door\n");
 #endif
 		continue;
@@ -1115,7 +1115,7 @@ for (i = gameData.walls.nWalls, wallP = gameData.walls.walls; i; wallP++, i--) {
 		wallP->keys = 0;
 		}
 	else if (!bOnlyDoors
-#ifndef _DEBUG
+#if !DBG
 				&& (wallP->nType == WALL_CLOSED)
 #endif
 			 )
@@ -1240,7 +1240,7 @@ void WallToggle (tSegment *segP, short nSide)
 	int	nWall;
 
 if (SEG_IDX (segP) > gameData.segs.nLastSegment) {
-#ifdef _DEBUG
+#if DBG
 	Warning("Can't toggle nSide %d of tSegment %d - nonexistent tSegment!\n", nSide, SEG_IDX (segP));
 #endif
 	return;
@@ -1461,7 +1461,7 @@ for (i = 0; i < gameData.walls.nCloaking; i++, cloakWallP++) {
 		DoCloakingWallFrame (i);
 	else if (s == WALL_DOOR_DECLOAKING)
 		DoDecloakingWallFrame (i);
-#ifdef _DEBUG
+#if DBG
 	else
 		Int3();	//unexpected tWall state
 #endif

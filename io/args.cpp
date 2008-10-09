@@ -123,13 +123,13 @@ for (i = 0; i < nArgCount; i++)
 
 // look for the ini file
 // for unix, allow both ~/.d2x-xl and <config dir>/d2x.ini
-#ifdef _DEBUG
+#if DBG
 GetIniFileName (fnIni, 1);
 #else
 GetIniFileName (fnIni, 0);
 #endif
 CFOpen (&cf, fnIni, "", "rt", 0);
-#ifdef _DEBUG
+#if DBG
 if (!cf.file) {
 	GetIniFileName (fnIni, 0);
 	CFOpen (&cf, fnIni, "", "rt", 0);

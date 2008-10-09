@@ -68,7 +68,7 @@ int player_is_visible_from_object(tObject *objP, vmsVector *pos, fix field_of_vi
 void ai_reset_all_paths(void);	//	Reset all paths.  Call at the start of a level.
 int ai_multiplayer_awareness(tObject *objP, int awareness_level);
 
-#ifndef NDEBUG
+#if DBG
 void force_dump_ai_objects_all(char *msg);
 #else
 #define force_dump_ai_objects_all(msg)

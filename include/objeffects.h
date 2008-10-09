@@ -11,7 +11,7 @@ typedef struct tThrusterInfo {
 } tThrusterInfo;
 
 void TransformHitboxf (tObject *objP, fVector *vertList, int iSubObj);
-#ifdef _DEBUG
+#if DBG
 void RenderHitbox (tObject *objP, float red, float green, float blue, float alpha);
 #endif
 int CalcThrusterPos (tObject *objP, tThrusterInfo *tiP, int bAfterburnerBlob);

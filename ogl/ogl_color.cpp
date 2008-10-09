@@ -29,7 +29,7 @@
 #define CHECK_LIGHT_VERT 1
 #define BRIGHT_SHOTS 0
 
-#ifdef _DEBUG
+#if DBG
 #	define ONLY_HEADLIGHT 0
 #else
 #	define ONLY_HEADLIGHT 0
@@ -322,7 +322,7 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread] + sliP->nFirst;
 	tVertColorData			vcd = *vcdP;
 
-#ifdef _DEBUG
+#if DBG
 if (nThread == 0)
 	nThread = nThread;
 if (nThread == 1)
@@ -336,7 +336,7 @@ nLights = sliP->nActive;
 if (nLights > gameData.render.lights.dynamic.nLights)
 	nLights = gameData.render.lights.dynamic.nLights;
 i = sliP->nLast - sliP->nFirst + 1;
-#ifdef _DEBUG
+#if DBG
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
@@ -347,7 +347,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (!(psl = GetActiveShaderLight (activeLightsP, nThread)))
 #endif
 		continue;
-#ifdef _DEBUG
+#if DBG
 	if ((nDbgSeg >= 0) && (psl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (psl->info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
@@ -446,7 +446,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			lightDir.Neg();
 		vReflect = fVector3::Reflect(lightDir, vcd.vertNorm);
 		fVector3::Normalize(vReflect);
-#ifdef _DEBUG
+#if DBG
 		if (nVertex == nDbgVertex)
 			nDbgVertex = nDbgVertex;
 #endif
@@ -492,7 +492,7 @@ if (j) {
 		}
 	*pColorSum = colorSum;
 	}
-#ifdef _DEBUG
+#if DBG
 if (nLights)
 	nLights = 0;
 #endif
@@ -794,7 +794,7 @@ PROF_START
 	tVertColorData	vcd;
 
 InitVertColorData (vcd);
-#ifdef _DEBUG
+#if DBG
 if (!gameStates.render.nState && (nVertex == nDbgVertex))
 	nVertex = nVertex;
 #endif
@@ -821,7 +821,7 @@ if (!(gameStates.render.nState || vcd.bExclusive || vcd.bMatEmissive) && (nVerte
 			}
 		if (bSetColor)
 			OglColor4sf (pc->color.red * fScale, pc->color.green * fScale, pc->color.blue * fScale, 1.0);
-#ifdef _DEBUG
+#if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex))
 			nVertex = nVertex;
 #endif
@@ -830,7 +830,7 @@ PROF_END(ptVertexColor)
 		}
 	}
 #endif
-#ifdef _DEBUG
+#if DBG
 if (!gameStates.render.nState && (nVertex == nDbgVertex))
 	nVertex = nVertex;
 #endif
@@ -877,7 +877,7 @@ else
 	if (gameData.render.lights.dynamic.shader.index [0][nThread].nActive) {
 		if (pBaseColor)
 			memcpy (&colorSum, &pBaseColor->color, sizeof (colorSum));
-#ifdef _DEBUG
+#if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex))
 			nVertex = nVertex;
 #endif
@@ -888,7 +888,7 @@ else
 		colorSum[R] += pfc->color.red;
 		colorSum[G] += pfc->color.green;
 		colorSum[B] += pfc->color.blue;
-#ifdef _DEBUG
+#if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum[R] + colorSum[G] + colorSum[B] < 0.1f))
 			nVertex = nVertex;
 #endif
@@ -921,7 +921,7 @@ if (pVertColor) {
 	pVertColor->color.alpha = 1;
 	}
 #endif
-#ifdef _DEBUG
+#if DBG
 if (!gameStates.render.nState && (nVertex == nDbgVertex))
 	nVertex = nVertex;
 #endif

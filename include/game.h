@@ -77,7 +77,7 @@ extern int ft_preference;
 
 extern int gauge_message_on;
 
-#ifndef NDEBUG      // if debugging, these are variables
+#if DBG      // if debugging, these are variables
 
 extern int Slew_on;                 // in slew or sim mode?
 extern int bGameDoubleBuffer;      // double buffering?

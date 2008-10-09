@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 fix EffectFrameTime (tEffectClip *ecP)
 {
-#ifdef _DEBUG
+#if DBG
 return ecP->vc.xFrameTime;
 #else
 if ((ecP->changingWallTexture < 0) && (ecP->changingObjectTexture < 0))
@@ -164,7 +164,7 @@ if (gameOpts->ogl.bGlTexMerge) {
 else {
 	grsBitmap *bmfP, *hbmP;
 
-#ifdef _DEBUG
+#if DBG
 	if (!BM_FRAMES (bmP))
 		OglLoadBmTexture (bmP, 1, 3, 1);
 #endif
@@ -243,7 +243,7 @@ xEffectTime += gameData.time.xFrame;
 			ecP->time_left += ft;
 			if (++(ecP->nCurFrame) >= nFrames) {
 				if (ecP->flags & EF_ONE_SHOT) {
-#ifdef _DEBUG
+#if DBG
 					Assert (ecP->nSegment != -1);
 					Assert ((ecP->nSide >= 0) && (ecP->nSide < 6));
 					Assert (ecP->nDestBm != 0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
@@ -304,7 +304,7 @@ xEffectTime += gameData.time.xFrame;
 			ecP->nCurFrame++;
 			if (ecP->nCurFrame >= nFrames) {
 				if (ecP->flags & EF_ONE_SHOT) {
-	#ifdef _DEBUG
+	#if DBG
 					Assert(ecP->nSegment != -1);
 					Assert((ecP->nSide >= 0) && (ecP->nSide < 6));
 					Assert(ecP->nDestBm !=0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);

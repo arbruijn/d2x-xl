@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "string.h"
 //#define _DEBUG
-#ifdef _DEBUG
+#if DBG
 #include <time.h>
 #endif
 
@@ -141,7 +141,7 @@ else {
 
 //	-------------------------------------------------------------------------------------------------
 
-#if defined(_WIN32) && defined(RELEASE)
+#if defined(_WIN32) && !DBG
 typedef void __fastcall tAISnipeHandler (tObject *, tAILocal *);
 #else
 typedef void tAISnipeHandler (tObject *, tAILocal *);

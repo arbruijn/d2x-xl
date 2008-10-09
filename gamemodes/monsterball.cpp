@@ -43,7 +43,7 @@ int CreateMonsterball (void)
 	short			nDropSeg, nObject;
 
 RemoveMonsterball ();
-#ifdef _DEBUG
+#if DBG
 nDropSeg = gameData.hoard.nMonsterballSeg;
 #else
 if (gameData.hoard.nMonsterballSeg >= 0)
@@ -67,7 +67,7 @@ if (nDropSeg >= 0) {
 		return 1;
 		}
 	}
-#ifndef _DEBUG
+#if !DBG
 Warning (TXT_NO_MONSTERBALL);
 #endif
 gameData.app.nGameMode &= ~GM_MONSTERBALL;
@@ -92,7 +92,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
 			}
 		ReleaseObject (i);
 		}
-#ifndef _DEBUG
+#if !DBG
 if (!(NetworkIAmMaster () && IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))
 	return 0;
 #endif

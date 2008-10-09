@@ -122,7 +122,7 @@ int ToggleSlowMotion (void)
 
 Controls [0].bulletTimeCount =
 Controls [0].slowMotionCount = 0;
-#if 1//def RELEASE
+#if 1//!DBG
 if (SlowMotionActive ()) {
 	if (!gameStates.app.cheats.bSpeed)
 #if 0

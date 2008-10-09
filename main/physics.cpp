@@ -49,7 +49,7 @@ int bFloorLeveling = 0;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 
 #define CATCH_OBJ(_objP,_cond)	{if (((_objP) == dbgObjP) && (_cond)) CatchDbgObj (_cond);}
 
@@ -156,7 +156,7 @@ void SetObjectTurnRoll (tObject *objP)
 //list of segments went through
 short physSegList [MAX_FVI_SEGS], nPhysSegs;
 
-#ifdef _DEBUG
+#if DBG
 #define EXTRADBG 1		//no extra debug when NDEBUG is on
 #endif
 
@@ -164,7 +164,7 @@ short physSegList [MAX_FVI_SEGS], nPhysSegs;
 tObject *debugObjP=NULL;
 #endif
 
-#ifdef _DEBUG
+#if DBG
 int	nTotalRetries=0, nTotalSims=0;
 int	bDontMoveAIObjects=0;
 #endif
@@ -268,7 +268,7 @@ objP->position.mOrient.CheckAndFix();
 void DoBumpHack (tObject *objP)
 {
 	vmsVector vCenter, vBump;
-#ifdef _DEBUG
+#if DBG
 HUDMessage (0, "BUMP HACK");
 #endif
 //bump tPlayer a little towards vCenter of tSegment to unstick
@@ -320,7 +320,7 @@ if (/*(0 <= xSideDist) && */
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments) || (nSegment == objP->nSegment))
 		return 0;
 	RelinkObject (OBJ_IDX (objP), nSegment);
-#ifdef _DEBUG
+#if DBG
 	if (objP->nType == OBJ_PLAYER)
 		HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - pxSideDists [hi.hit.nSide], r);
 #endif
@@ -448,7 +448,7 @@ void DoPhysicsSim (tObject *objP)
 
 Assert (objP->nType != OBJ_NONE);
 Assert (objP->movementType == MT_PHYSICS);
-#ifdef _DEBUG
+#if DBG
 if (bDontMoveAIObjects)
 	if (objP->controlType == CT_AI)
 		return;
@@ -530,7 +530,7 @@ if (objP->mType.physInfo.drag) {
 
 //moveIt:
 
-#ifdef _DEBUG
+#if DBG
 if ((nDbgSeg >= 0) && (objP->nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -624,7 +624,7 @@ retryMove:
 		HUDMessage (0, "FVI: %d (%1.2f)", fviResult, X2F (VmVecMag (&objP->mType.physInfo.velocity)));
 #endif
 	if (fviResult == HIT_BAD_P0) {
-#ifdef _DEBUG
+#if DBG
 		static int nBadP0 = 0;
 		HUDMessage (0, "BAD P0 %d", nBadP0++);
 #endif
@@ -693,7 +693,7 @@ retryMove:
 	if (bGetPhysSegs) {
 		if (nPhysSegs && (physSegList [nPhysSegs-1] == hi.segList [0]))
 			nPhysSegs--;
-#ifdef RELEASE
+#if !DBG
 		i = MAX_FVI_SEGS - nPhysSegs - 1;
 		if (i > 0) {
 			if (i > hi.nSegments)
@@ -880,7 +880,7 @@ retryMove:
 		// ignores this tObject.
 		//if (bSpeedBoost && (objP == gameData.objs.console))
 		//	break;
-#ifdef _DEBUG
+#if DBG
 		tFVIData				_hi;
 		memset (&_hi, 0, sizeof (_hi));
 		FindVectorIntersection (&fq, &_hi);
@@ -917,7 +917,7 @@ retryMove:
 				gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
 				bRetry = 1;
 				}
-#ifdef _DEBUG
+#if DBG
 			else
 				bRetry = bRetry;
 #endif
@@ -929,7 +929,7 @@ retryMove:
 			Tactile_Xvibrate_clear ();
 #endif
 		}
-#ifdef _DEBUG
+#if DBG
 	else if (fviResult == HIT_BAD_P0) {
 		Int3 ();		// Unexpected collision nType: start point not in specified tSegment.
 #if TRACE
@@ -948,7 +948,7 @@ if (objP->controlType == CT_AI) {
 	Assert (nObject >= 0);
 	if (nTries > 0) {
 		gameData.ai.localInfo [nObject].nRetryCount = nTries - 1;
-#ifdef _DEBUG
+#if DBG
 		nTotalRetries += nTries - 1;
 		nTotalSims++;
 #endif
@@ -1040,7 +1040,7 @@ UnstickObject (objP);
 
 void PhysApplyForce (tObject *objP, vmsVector *vForce)
 {
-#ifdef _DEBUG
+#if DBG
 	fix mag;
 #endif
 	//	Put in by MK on 2/13/96 for force getting applied to Omega blobs, which have 0 mass,
@@ -1056,12 +1056,12 @@ if ((gameStates.render.automap.bDisplay && (objP == gameData.objs.console)) || S
 	Tactile_apply_force (vForce, &objP->position.mOrient);
 #endif
 //Add in acceleration due to force
-#ifdef _DEBUG
+#if DBG
 mag = objP->mType.physInfo.velocity.Mag ();
 #endif
 if (!gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted || (objP != gameData.objs.console))
 	objP->mType.physInfo.velocity += *vForce * FixDiv (f1_0, objP->mType.physInfo.mass);
-#ifdef _DEBUG
+#if DBG
 mag = objP->mType.physInfo.velocity.Mag ();
 if (X2F (mag) > 500)
 	objP = objP;

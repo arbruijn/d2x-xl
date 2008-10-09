@@ -153,7 +153,7 @@ if (nVert2 < nVert1) {
 	nVert1 = nVert2;
 	nVert2 = h;
 	}
-#ifdef _DEBUG
+#if DBG
 if ((nTri < 0) || (nTri >= m_nTriangles))
 	return -1;
 #endif
@@ -302,7 +302,7 @@ for (i = gameData.segs.nTris, grsTriP = TRIANGLES; i; i--, grsTriP++) {
 		}
 	triP->nId = nId;
 	faceP = FACES + grsTriP->nFace;
-#ifdef _DEBUG
+#if DBG
 	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
@@ -326,7 +326,7 @@ if (triP->nPass < -1)
 
 grsFace *faceP = FACES + triP->nFace;
 
-#ifdef _DEBUG
+#if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -471,7 +471,7 @@ do {
 	for (i = h, h = 0; i < j; i++) {
 		if (m_triangles [i].nPass != nPass - 1)
 			continue;
-#ifdef _DEBUG
+#if DBG
 		grsFace *faceP = FACES + m_triangles [i].nFace;
 		if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
@@ -545,7 +545,7 @@ for (i = gameData.segs.nVertices, pointP = gameData.segs.points; i; i--, pointP+
 for (h = 0, triP = gameData.segs.faces.tris; h < gameData.segs.nTris; h++, triP++) {
 	for (i = 0; i < 3; i++) {
 		nVertex = triP->index [i];
-#ifdef _DEBUG
+#if DBG
 		if (nVertex == nDbgVertex)
 			nVertex = nVertex;
 #endif
@@ -580,7 +580,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 		else
 			m_faceP = FACES;
 		nFace = grsTriP->nFace;
-#ifdef _DEBUG
+#if DBG
 		if (m_faceP - FACES != nFace)
 			return 0;
 #endif
@@ -599,7 +599,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 					 gameData.segs.faces.vertices[nIndex],
 					 gameData.segs.faces.vertices[nIndex + 1],
 					 gameData.segs.faces.vertices[nIndex + 2]);
-#ifdef _DEBUG
+#if DBG
 	if (gameData.segs.faces.normals[nIndex].Mag() == 0)
 		m_faceP = m_faceP;
 #endif
@@ -684,7 +684,7 @@ memset (bTags, 0xFF, gameData.segs.nVertices * sizeof (bTags [0]));
 gameData.segs.nFaceVerts = 0;
 for (i = gameData.segs.nFaces, faceP = FACES, nFace = 0; i; i--, faceP++, nFace++) {
 	faceP->triIndex = gameData.segs.faces.faceVerts + gameData.segs.nFaceVerts;
-#ifdef _DEBUG
+#if DBG
 	if (faceP->nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
@@ -1139,7 +1139,7 @@ glGenBuffersARB (1, &gameData.segs.faces.vboDataHandle);
 if ((i = glGetError ())) {
 	glGenBuffersARB (1, &gameData.segs.faces.vboDataHandle);
 	if ((i = glGetError ())) {
-#	ifdef _DEBUG
+#	if DBG
 		HUDMessage (0, "glGenBuffersARB failed (%d)", i);
 #	endif
 		gameStates.ogl.bHaveVBOs = 0;
@@ -1148,7 +1148,7 @@ if ((i = glGetError ())) {
 	}
 glBindBufferARB (GL_ARRAY_BUFFER_ARB, gameData.segs.faces.vboDataHandle);
 if ((i = glGetError ())) {
-#	ifdef _DEBUG
+#	if DBG
 	HUDMessage (0, "glBindBufferARB failed (%d)", i);
 #	endif
 	gameStates.ogl.bHaveVBOs = 0;
@@ -1237,7 +1237,7 @@ gameData.segs.faces.slidingFaces = NULL;
 	short			nSegment, i;
 	ubyte			nSide;
 
-#ifdef RELEASE
+#if !DBG
 if (gameOpts->render.nMeshQuality > 2)
 	gameOpts->render.nMeshQuality = 2;
 #endif
@@ -1257,7 +1257,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 	m_bColoredSeg = ((gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_WATER) &&
 					     (gameData.segs.segment2s [nSegment].special <= SEGMENT_IS_TEAM_RED)) ||
 					     (gameData.segs.xSegments [nSegment].group >= 0);
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		m_faceP = m_faceP;
 #endif
@@ -1265,14 +1265,14 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 	m_nOvlTexCount = 0;
 	m_segFaceP->nFaces = 0;
 	for (nSide = 0, m_sideP = m_segP->sides; nSide < 6; nSide++, m_sideP++) {
-#ifdef _DEBUG
+#if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
 		m_nWall = WallNumI (nSegment, nSide);
 		m_nWallType = IS_WALL (m_nWall) ? WallIsInvisible (m_nWall) ? 0 : 2 : (m_segP->children [nSide] == -1) ? 1 : 0;
 		if (m_bColoredSeg || m_nWallType) {
-#ifdef _DEBUG
+#if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
@@ -1292,7 +1292,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 				}
 			else
 				SetupFace ();
-#ifdef _DEBUG
+#if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				m_faceP = m_faceP;
 #endif

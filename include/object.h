@@ -608,7 +608,7 @@ extern ubyte bIsMissile [];
 #define	IS_MISSILE(_objP)	(((_objP)->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(_objP)->id])
 #define	IS_MISSILE_I(_i)	IS_MISSILE (gameData.objs.objects + (_i))
 
-#ifdef _DEBUG
+#if DBG
 extern tObject *dbgObjP;
 #endif
 
@@ -628,7 +628,7 @@ extern tObject *dbgObjP;
 static inline void KillObject (tObject *objP)
 {
 objP->flags |= OF_SHOULD_BE_DEAD;
-#ifdef _DEBUG
+#if DBG
 if (objP == dbgObjP)
 	objP = objP;
 #endif

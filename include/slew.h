@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //from slew.c
 
-#ifdef _DEBUG
+#if DBG
 
 void slew_init(tObject *obj);                // say this is slew obj
 int slew_stop();                            // Stops tObject

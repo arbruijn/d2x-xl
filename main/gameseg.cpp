@@ -221,7 +221,7 @@ void GetSideNormals (tSegment *segP, int nSide, vmsVector * vm1, vmsVector * vm2
 	int	vvm0, vvm1, vvm2, vvm3, bFlip;
 	sbyte	*vs = sideToVerts [nSide];
 
-#ifdef _DEBUG
+#if DBG
 if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -805,7 +805,7 @@ for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP+
 		int	nCenterCount;
 		int	nVertex;
 		nVertex = min(vertexList [0], vertexList [2]);
-#ifdef _DEBUG
+#if DBG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
 			nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 #endif
@@ -864,7 +864,7 @@ for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP+
 			nVertex = vertexList [2];
 		if (nVertex > vertexList [3])
 			nVertex = vertexList [3];
-#ifdef _DEBUG
+#if DBG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
 			nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 #endif
@@ -927,7 +927,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 		int	nCenterCount;
 		int	nVertex;
 		nVertex = min(vertexList [0], vertexList [2]);
-#ifdef _DEBUG
+#if DBG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
 			nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
 #endif
@@ -971,7 +971,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 			nVertex = vertexList [2];
 		if (nVertex > vertexList [3])
 			nVertex = vertexList [3];
-#ifdef _DEBUG
+#if DBG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
 			nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
 #endif
@@ -990,7 +990,7 @@ return mask;
 }
 
 // -------------------------------------------------------------------------------
-#ifdef _DEBUG
+#if DBG
 #ifndef COMPACT_SEGS
 //returns true if errors detected
 int CheckNorms (int nSegment, int nSide, int facenum, int csegnum, int csidenum, int cfacenum) {
@@ -1759,7 +1759,7 @@ void AddSideAsTwoTriangles (tSegment *segP, int nSide)
 	//		Always triangulate so tSegment is convex.
 	//		Use Matt's formula: Na . AD > 0, where ABCD are vertices on tSide, a is face formed by A, B, C, Na is Normal from face a.
 	//	If not a tWall, then triangulate so whatever is on the other tSide is triangulated the same (ie, between the same absoluate vertices)
-#ifdef _DEBUG
+#if DBG
 if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	segP = segP;
 #endif
@@ -1858,7 +1858,7 @@ void AddToVertexNormal (int nVertex, vmsVector *pvNormal)
 {
 	g3sNormal	*pn = &gameData.segs.points [nVertex].p3_normal;
 
-#ifdef _DEBUG
+#if DBG
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
@@ -1905,7 +1905,7 @@ void CreateWallsOnSide (tSegment *segP, int nSide)
 			tSide			*s;
 
 			nFaces = CreateAbsVertexLists (vertexList, SEG_IDX (segP), nSide);
-#ifdef _DEBUG
+#if DBG
 			if (nFaces != 2)
 				nFaces = CreateAbsVertexLists (vertexList, SEG_IDX (segP), nSide);
 #endif
@@ -1921,7 +1921,7 @@ void CreateWallsOnSide (tSegment *segP, int nSide)
 			}
 #else
 			{
-#	ifdef _DEBUG
+#	if DBG
 			vmsVector normals [2];
 			GetSideNormals (segP, nSide, &normals [0], &normals [1]);
 #	endif
@@ -2078,7 +2078,7 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 	}
 #endif
 
-#ifdef _DEBUG
+#if DBG
 #	ifndef COMPACT_SEGS
 if (CheckSegmentConnections ())
 	Int3 ();		//Get Matt, si vous plait.
@@ -2134,7 +2134,7 @@ if (nDepth == 0)
 	nDepth = 0x7fff;
 while (head < tail) {
 	nSegment = queue [head++];
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
@@ -2143,14 +2143,14 @@ while (head < tail) {
 	for (nSide = MAX_SIDES_PER_SEGMENT; nSide; nSide--, childP++) {
 		if (0 > (nChild = *childP))
 			continue;
-#ifdef _DEBUG
+#if DBG
 		if (nChild >= gameData.segs.nSegments) {
 			Error ("Invalid segment in SetSegmentDepths()\nsegment=%d, side=%d, child=%d",
 					 nSegment, nSide, nChild);
 			return 1;
 			}
 #endif
-#ifdef _DEBUG
+#if DBG
 		if (nChild == nDbgSeg)
 			nDbgSeg = nDbgSeg;
 #endif

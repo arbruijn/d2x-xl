@@ -512,7 +512,7 @@ szScore [0] = (char) 1;
 szScore [1] = (char) (127 + 128);
 szScore [2] = (char) (127 + 128);
 szScore [3] = (char) (0 + 128);
-#ifdef RELEASE
+#if !DBG
 if (!SlowMotionActive ())
 	strcpy (szScore + 4, "          ");
 else
@@ -955,7 +955,7 @@ if (!bomb)
 if ((gameData.app.nGameMode & GM_HOARD) && (bomb == PROXMINE_INDEX))
 	return;
 count = LOCALPLAYER.secondaryAmmo [bomb];
-#ifdef _DEBUG
+#if DBG
 count = min (count, 99);	//only have room for 2 digits - cheating give 200
 #endif
 countx = (bomb == PROXMINE_INDEX) ? count : -count;
@@ -1388,7 +1388,7 @@ void DrawEnergyBar (int energy)
 PAGE_IN_GAUGE (GAUGE_ENERGY_LEFT);
 bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_ENERGY_LEFT);
 HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, F1_0, 0);
-#ifdef _DEBUG
+#if DBG
 	GrSetColorRGBi (RGBA_PAL (255, 255, 255));
 #else
 	GrSetColorRGBi (RGBA_PAL (0, 0, 0));
@@ -1432,7 +1432,7 @@ HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, F1_0, 0);
 //	GrUBitmapM (0, 0, bmP);
 //	GrUBitmapM (RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y, bmP);
 	HUDBitBlt (RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y, bmP, F1_0, 0);
-#ifdef _DEBUG
+#if DBG
 	GrSetColorRGBi (RGBA_PAL (255, 255, 255));
 #else
 	GrSetColorRGBi (RGBA_PAL (0, 0, 0));
@@ -2165,7 +2165,7 @@ nCrossBm = ((nPrimaryBm > 0) || (nSecondaryBm > 0));
 Assert (nPrimaryBm <= 2);
 Assert (nSecondaryBm <= 4);
 Assert (nCrossBm <= 1);
-#ifdef _DEBUG
+#if DBG
 if (gameStates.render.bExternalView)
 #else
 if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
@@ -2387,7 +2387,7 @@ for (i = 0; i < n_players; i++) {
 
 //	-----------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 extern int bSavingMovieFrames;
 #else
 #define bSavingMovieFrames 0

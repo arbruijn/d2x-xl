@@ -99,7 +99,7 @@ void FreeHoardData (void);
 int ReadControls (void);		// located in gamecntl.c
 void DoFinalBossFrame (void);
 
-#ifdef _DEBUG
+#if DBG
 int	MarkCount = 0;                 // number of debugging marks set
 int	Speedtest_startTime;
 int	Speedtest_segnum;
@@ -134,7 +134,7 @@ int	*Toggle_var = &Dummy_var;
 char faded_in;
 #endif
 
-#ifdef _DEBUG                          //these only exist if debugging
+#if DBG                          //these only exist if debugging
 
 int bGameDoubleBuffer = 1;     //double buffer by default
 fix xFixedFrameTime = 0;          //if non-zero, set frametime to this
@@ -157,7 +157,7 @@ void MultiCheckForEntropyWinner ();
 
 // text functions
 
-#ifdef _DEBUG
+#if DBG
 void ShowFrameRate (void);
 #endif
 
@@ -378,23 +378,23 @@ if (!bScanlineDouble) {
 //------------------------------------------------------------------------------
 
 // Sets up the canvases we will be rendering to (NORMAL VERSION)
-void GameInitRenderBuffers (int screen_mode, int render_w, int render_h, int render_method, int flags)
+void GameInitRenderBuffers (int nScreenSize, int render_w, int render_h, int render_method, int flags)
 {
-//	if (vga_check_mode (screen_mode) != 0)
+//	if (vga_check_mode (nScreenSize) != 0)
 //		Error ("Cannot set requested video mode");
 
-gameStates.render.vr.nScreenMode	=	screen_mode;
-gameStates.render.vr.nScreenFlags	=  flags;
+gameStates.render.vr.nScreenSize = nScreenSize;
+gameStates.render.vr.nScreenFlags = flags;
 //NEWVR
 VRResetParams ();
-gameStates.render.vr.nRenderMode 	= render_method;
-gameData.render.window.w 		= render_w;
-gameData.render.window.h		= render_h;
+gameStates.render.vr.nRenderMode = render_method;
+gameData.render.window.w = render_w;
+gameData.render.window.h = render_h;
 if (gameStates.render.vr.buffers.offscreen) {
 	GrFreeCanvas (gameStates.render.vr.buffers.offscreen);
 	}
 
-if ((gameStates.render.vr.nRenderMode==VR_AREA_DET) || (gameStates.render.vr.nRenderMode==VR_INTERLACED))	{
+if ((gameStates.render.vr.nRenderMode == VR_AREA_DET) || (gameStates.render.vr.nRenderMode==VR_INTERLACED))	{
 	if (render_h*2 < 200)	{
 		gameStates.render.vr.buffers.offscreen = GrCreateCanvas (render_w, 200);
 		}
@@ -504,7 +504,7 @@ gameData.time.xLast = TimerGetFixedSeconds ();
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 extern int bSavingMovieFrames;
 int Movie_fixed_frametime;
 #else
@@ -1054,7 +1054,7 @@ void CheckRearView ()
 
 	static int leave_mode;
 	static fix entryTime;
-#ifdef _DEBUG
+#if DBG
 	if (Controls [0].rearViewDownCount) {		//key/button has gone down
 #else
 	if (Controls [0].rearViewDownCount && !gameStates.render.bExternalView) {		//key/button has gone down
@@ -1226,7 +1226,7 @@ if (gameStates.app.nFunctionMode != newFuncMode) {
 	gameStates.app.nLastFuncMode = gameStates.app.nFunctionMode;
 	if ((gameStates.app.nFunctionMode = newFuncMode) == FMODE_GAME)
 		gameStates.app.bEnterGame = 2;
-#ifdef _DEBUG
+#if DBG
 	else if (newFuncMode == FMODE_MENU)
 		gameStates.app.bEnterGame = 0;
 #endif
@@ -1253,7 +1253,7 @@ for (;;) {
 	PROF_START
 	int playerShields;
 		// GAME LOOP!
-#ifdef _DEBUG
+#if DBG
 	if (gameStates.render.automap.bDisplay)
 #endif
 	gameStates.render.automap.bDisplay = 0;
@@ -1485,7 +1485,7 @@ return gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentP
 
 //-----------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 void SpeedtestFrame (void);
 Uint32 nDebugSlowdown = 0;
 #endif
@@ -1513,7 +1513,7 @@ return NULL;
 extern void ProcessSmartMinesFrame (void);
 extern void DoSeismicStuff (void);
 
-#ifdef _DEBUG
+#if DBG
 int bSavingMovieFrames=0;
 int __Movie_frame_num=0;
 
@@ -1743,7 +1743,7 @@ return EGI_FLAG (headlight.bAvailable, 0, 0, 0) &&
 
 int HeadlightIsOn (int nPlayer)
 {
-#ifdef _DEBUG
+#if DBG
 if (!PlayerHasHeadlight (nPlayer))
 	return 0;
 if (!(gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON))
@@ -1880,7 +1880,7 @@ if (bRenderFrame) {
 	//PrintLog ("GameRenderFrame\n");
 	GameRenderFrame ();
 	gameStates.app.bUsingConverter = 0;
-#ifdef _DEBUG
+#if DBG
 	if (bSavingMovieFrames)
 		save_movie_frame ();
 #endif
@@ -1900,7 +1900,7 @@ DoSeismicStuff ();
 DoEffectsFrame ();
 //PrintLog ("DoAmbientSounds\n");
 DoAmbientSounds ();
-#ifdef _DEBUG
+#if DBG
 if (gameData.speedtest.bOn)
 	SpeedtestFrame ();
 #endif
@@ -2053,7 +2053,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 		slideV = (fix) gameData.pig.tex.pTMapInfo [tmn].slide_v;
 		if (!(slideU || slideV))
 			continue;
-#ifdef _DEBUG
+#if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nSegment = nSegment;
 #endif
@@ -2257,7 +2257,7 @@ return 0;
 
 
 //-----------------------------------------------------------------------------
-#ifdef _DEBUG
+#if DBG
 int	Max_objCount_mike = 0;
 
 //	Shows current number of used OBJECTS.

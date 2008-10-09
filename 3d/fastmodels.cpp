@@ -117,7 +117,7 @@ void G3LightModel (tObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 	int				bEmissive = (objP->nType == OBJ_MARKER) ||
 										((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id]);
 
-#ifdef _DEBUG
+#if DBG
 if (OBJ_IDX (objP) == nDbgObj)
 	objP = objP;
 #endif
@@ -528,7 +528,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
 											pm->pIndex [0] + nIndex);
-#if _WIN32
+#ifdef _WIN32
 		else
 			if (bUseVBO)
 				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
@@ -564,7 +564,7 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
 	fVector					color;
-	tTransformation			*posP = OBJPOS (objP);
+	tTransformation		*posP = OBJPOS (objP);
 
 OglSetupTransform (1);
 if (bLighting) {
@@ -598,7 +598,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			glDepthMask (0);
 			}
 		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; activeLightsP++, nLightRange--) {
-#ifdef _DEBUG
+#if DBG
 			if (activeLightsP - gameData.render.lights.dynamic.shader.activeLights [0] >= MAX_SHADER_LIGHTS)
 				break;
 			if (activeLightsP < gameData.render.lights.dynamic.shader.activeLights [0])
@@ -670,7 +670,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (!bLighting)
 		break;
 	}
-#ifdef _DEBUG
+#if DBG
 if (!nLightRange && nLights)
 	nLights = 0;
 #endif
@@ -739,6 +739,12 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 
 if (!objP)
 	return 0;
+if (nModel != 62)
+	return 0;
+#if 1//def _DEBUG
+if (nModel == nDbgModel)
+	nDbgModel = nModel;
+#endif
 if (gameStates.render.bQueryCoronas &&
 	 (((objP->nType == OBJ_WEAPON) && (objP->id < MAX_WEAPONS) &&
 	  gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id]) || gameStates.render.bCloaked))
@@ -758,6 +764,8 @@ if (pm->bValid < 1) {
 		}
 	else {
 		if (IsDefaultModel (nModel)) {
+			if (bUseVBO && pm->bValid && !(pm->vboDataHandle && pm->vboIndexHandle))
+				pm->bValid = 0;
 			i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 1);
 			if (i < 0)	//successfully built new model
 				return gameStates.render.bBuildModels;
@@ -769,6 +777,8 @@ if (pm->bValid < 1) {
 	pm = gameData.models.g3Models [0] + nModel;
 	if (pm->bValid < 0)
 		return 0;
+	if (bUseVBO && pm->bValid && !(pm->vboDataHandle && pm->vboIndexHandle))
+		pm->bValid = 0;
 	if (!(i || pm->bValid)) {
 		i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 0);
 		if (i <= 0) {

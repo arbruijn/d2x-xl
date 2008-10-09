@@ -900,7 +900,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 #endif
 				OOF_VecInc (v+2, v+1);
 				OOF_VecInc (v+3, v);
-#if 1//def RELEASE
+#if 1//!DBG
 				glDrawArrays (GL_QUADS, 0, 4);
 #else
 				glVertex3fv ((GLfloat *) v);
@@ -964,7 +964,7 @@ vmsVector::Normalize(v);
 v *= ((fix) F1_0 * (fix) G3_INFINITY);
 if (!nVisited++)
 	memset (bVisited, 0, gameData.segs.nSegments * sizeof (unsigned int));
-#ifdef _DEBUG
+#if DBG
 if (bPrintLine) {
 	fVector	vf;
 	glLineWidth (3);
@@ -1089,7 +1089,7 @@ float G3ClipDistByFaceCenters (tObject *objP, tPOFObject *po, tPOFSubObject *pso
 for (h = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces + i; i < h; i += incr, ppf += incr) {
 	pf = *ppf;
 	fClipDist = G3FaceClipDist (objP, pf);
-#ifdef _DEBUG
+#if DBG
 	if (fClipDist == G3_INFINITY)
 		fClipDist = G3FaceClipDist (objP, pf);
 #endif
@@ -1127,7 +1127,7 @@ for (m = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces + i; i < m; i += incr,
 			if (nPointSeg < 0)
 				continue;
 			pfc [h] = fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
-#ifdef _DEBUG
+#if DBG
 			if (fClipDist == G3_INFINITY)
 				fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
 #endif
@@ -1167,7 +1167,7 @@ for (j = po->nVerts; i < j; i += incr, pvf += incr) {
 		if (nPointSeg < 0)
 			continue;
 		pfc [i] = fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
-#ifdef _DEBUG
+#if DBG
 		if (fClipDist == G3_INFINITY)
 			fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
 #endif
@@ -1288,7 +1288,7 @@ nClip = gameOpts->render.shadows.nClip ? po->pfClipDist ? gameOpts->render.shado
 fClipDist = (nClip >= 2) ? pso->fClipDist : fInf;
 for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	pf = *ppf;
-#ifdef _DEBUG
+#if DBG
 	if (pf->bFacingLight && (bShadowTest > 3)) {
 		glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
 		v1 = v0 = pf->vCenterf;
@@ -1387,7 +1387,7 @@ h = (int) (pso - po->subObjs.pSubObjs);
 for (i = 0; i < po->subObjs.nSubObjs; i++)
 	if (po->subObjs.pSubObjs [i].nParent == h)
 		G3DrawSubModelShadow (objP, po, po->subObjs.pSubObjs + i);
-#ifdef _DEBUG
+#if DBG
 #	if 0
 if (pso - po->subObjs.pSubObjs == 8)
 #	endif

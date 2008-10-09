@@ -30,7 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "string.h"
 //#define _DEBUG
-#ifdef _DEBUG
+#if DBG
 #include <time.h>
 #endif
 
@@ -84,7 +84,7 @@ tBossProps bossProps [2][NUM_D2_BOSSES] = {
 // These globals are set by a call to FindVectorIntersection, which is a slow routine,
 // so we don't want to call it again (for this tObject) unless we have to.
 
-#ifdef _DEBUG
+#if DBG
 // Index into this array with ailP->mode
 char *pszAIMode [18] = {
 	"STILL",
@@ -729,7 +729,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-#if defined(_WIN32) && defined(RELEASE)
+#if defined(_WIN32) && !DBG
 typedef int (__fastcall * pAIHandler) (tObject *objP, tAIStateInfo *);
 #else
 typedef int (* pAIHandler) (tObject *objP, tAIStateInfo *);
@@ -901,7 +901,7 @@ return 0;
 
 int AIBumpHandler (tObject *objP, tAIStateInfo *siP)
 {
-#ifdef _DEBUG
+#if DBG
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
@@ -1011,7 +1011,7 @@ return 1;
 
 int AIApproachHandler (tObject *objP, tAIStateInfo *siP)
 {
-#ifdef _DEBUG
+#if DBG
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
@@ -1028,14 +1028,14 @@ if (gameData.ai.nOverallAgitation < 71)
 	if (d_rand () * (gameData.ai.nOverallAgitation - 40) <= F1_0 * 5)
 		return 0;
 	}
-#ifdef _DEBUG
+#if DBG
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 if (gameOpts->gameplay.nAIAggressivity && 
 	 (siP->ailP->mode == AIM_FOLLOW_PATH) && 
 	 (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg)) {
-#ifdef _DEBUG
+#if DBG
 	if (OBJ_IDX (objP) == nDbgObj)
 		nDbgObj = nDbgObj;
 #endif
@@ -1205,7 +1205,7 @@ int AINewGoalHandler (tObject *objP, tAIStateInfo *siP)
 
 if (ailP->playerAwarenessType) {
 	siP->nNewGoalState = aiTransitionTable [ailP->playerAwarenessType - 1][aiP->CURRENT_STATE][aiP->GOAL_STATE];
-#ifdef _DEBUG
+#if DBG
 	if (siP->nNewGoalState == AIS_LOCK)
 		siP->nNewGoalState = siP->nNewGoalState;
 #endif
@@ -1305,7 +1305,7 @@ void DoAIFrame (tObject *objP)
 {
 	tAIStateInfo	si;
 
-#ifdef _DEBUG
+#if DBG
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
@@ -1319,7 +1319,7 @@ si.bVisAndVecComputed = 0;
 si.botInfoP = &ROBOTINFO (objP->id);
 si.bMultiGame = !IsRobotGame;
 
-#ifdef _DEBUG
+#if DBG
 if (si.aiP->behavior == AIB_STILL)
 	si.aiP = si.aiP;
 #endif

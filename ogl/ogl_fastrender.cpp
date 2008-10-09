@@ -148,7 +148,7 @@ int G3SetupShader (grsFace *faceP, int bDepthOnly, int bColorKey, int bMultiText
 
 if (!gameStates.ogl.bShadersOk || (gameStates.render.nType == 4))
 	return -1;
-#ifdef _DEBUG
+#if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -173,7 +173,7 @@ return gameStates.render.history.nShader = nShader;
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 
 void RenderWireFrame (grsFace *faceP, int bTextured)
 {
@@ -410,7 +410,7 @@ int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bB
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0, nBlendMode;
 
-#ifdef _DEBUG
+#if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	if (bDepthOnly)
 		nDbgSeg = nDbgSeg;
@@ -474,7 +474,7 @@ if (bDepthOnly) {
 	}
 
 gameData.render.nTotalFaces++;
-#ifdef _DEBUG
+#if DBG
 RenderWireFrame (faceP, bTextured);
 if (!gameOpts->render.debug.bTextures)
 	return 0;
@@ -540,7 +540,7 @@ int G3DrawFaceArraysPPLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, in
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
 
-#ifdef _DEBUG
+#if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	if (bDepthOnly)
 		nDbgSeg = nDbgSeg;
@@ -562,7 +562,7 @@ if (bDepthOnly) {
 else {
 	bColored = G3FaceIsColored (faceP);
 	bMonitor = (faceP->nCamera >= 0);
-#ifdef _DEBUG
+#if DBG
 	if (bmTop)
 		bmTop = bmTop;
 #endif
@@ -593,7 +593,7 @@ if (bDepthOnly) {
 	PROF_END(ptRenderFaces)
 	return 1;
 	}
-#ifdef _DEBUG
+#if DBG
 RenderWireFrame (faceP, bTextured);
 if (!gameOpts->render.debug.bTextures)
 	return 0;
@@ -662,7 +662,7 @@ int G3DrawFaceArraysLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int 
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
 
-#ifdef _DEBUG
+#if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	if (bDepthOnly)
 		nDbgSeg = nDbgSeg;
@@ -684,7 +684,7 @@ if (bDepthOnly) {
 else {
 	bColored = G3FaceIsColored (faceP);
 	bMonitor = (faceP->nCamera >= 0);
-#ifdef _DEBUG
+#if DBG
 	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 	if (bmTop)
@@ -717,7 +717,7 @@ if (bDepthOnly) {
 	PROF_END(ptRenderFaces)
 	return 1;
 	}
-#ifdef _DEBUG
+#if DBG
 RenderWireFrame (faceP, bTextured);
 if (!gameOpts->render.debug.bTextures)
 	return 0;
@@ -794,7 +794,7 @@ int G3DrawHeadlightsPPLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, in
 {
 	int			bColorKey = 0, bMonitor = 0;
 
-#ifdef _DEBUG
+#if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif

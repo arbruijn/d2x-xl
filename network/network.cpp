@@ -155,7 +155,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 void DumpSegments (void)
 {
 	FILE * fp;
@@ -300,7 +300,7 @@ HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DI
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected) 
 		n++;
-#ifndef _DEBUG
+#if !DBG
 if (n == 1)
 	MultiOnlyPlayerMsg (0);
 #endif

@@ -93,7 +93,7 @@ grsFont * names_font;
 
 #define ALLOWED_CHAR 'R'
 
-#ifndef _DEBUG
+#if !DBG
 #	define CREDITS_BACKGROUND_FILENAME (gameStates.menus.bHires ? "\x01starsb.pcx" : "\x01stars.pcx")	//only read from hog file
 #else
 #	define CREDITS_BACKGROUND_FILENAME (gameStates.menus.bHires ? "starsb.pcx" : "stars.pcx")
@@ -388,7 +388,7 @@ get_line:;
 	//see if redbook song needs to be restarted
 	SongsCheckRedbookRepeat();
 	k = KeyInKey ();
-#ifdef _DEBUG
+#if DBG
 	if (k == KEY_BACKSP) {
 		Int3();
 		k = 0;

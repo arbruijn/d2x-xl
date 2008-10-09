@@ -314,7 +314,7 @@ if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.mark
 void TeleportToMarker (void)
 {
 if (!IsMultiGame || IsCoopGame) {
-#ifndef _DEBUG
+#if !DBG
 	if (LOCALPLAYER.energy < F1_0 * 25)
 		HUDMessage (0, TXT_CANNOT_TELEPORT);
 	else
@@ -324,7 +324,7 @@ if (!IsMultiGame || IsCoopGame) {
 		if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
 			tObject	*markerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
 
-#ifndef _DEBUG
+#if !DBG
 			LOCALPLAYER.energy -= F1_0 * 25;
 #endif
 			OBJECTS [LOCALPLAYER.nObject].position.vPos = markerP->position.vPos;

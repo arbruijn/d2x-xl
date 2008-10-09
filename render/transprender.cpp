@@ -45,7 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RI_POLY_OFFSET 0
 #define RI_POLY_CENTER 1
 
-#ifdef _DEBUG
+#if DBG
 static int nDbgPoly = -1, nDbgItem = -1;
 #endif
 
@@ -109,7 +109,7 @@ int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDep
 	tRenderItem *ph, *pi, *pj, **pd;
 	int			nOffset;
 
-#ifdef _DEBUG
+#if DBG
 if (nDepth < renderItems.zMin)
 	return renderItems.nFreeItems;
 if (nDepth > renderItems.zMax) {
@@ -388,7 +388,7 @@ int RIAddFaceTris (grsFace *faceP)
 
 if (bmP)
 	bmP = BmOverride (bmP, -1);
-#ifdef _DEBUG
+#if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	faceP = faceP;
 #endif
@@ -426,7 +426,7 @@ if (gameStates.render.bTriangleMesh)
 
 if (bmP)
 	bmP = BmOverride (bmP, -1);
-#ifdef _DEBUG
+#if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	faceP = faceP;
 #endif
@@ -611,7 +611,7 @@ glEnableClientState (GL_VERTEX_ARRAY);
 
 void RIDisableClientState (int nTMU, char bDecal, char bFull)
 {
-#ifdef _DEBUG
+#if DBG
 if (nTMU == GL_TEXTURE0)
 	nTMU = nTMU;
 #endif
@@ -847,7 +847,7 @@ if (!item->bmP) {
 	glPolygonMode (GL_FRONT, GL_FILL);
 	}
 #endif
-#ifdef _DEBUG
+#if DBG
 if (item->bmP && strstr (item->bmP->szName, "glare.tga"))
 	item = item;
 #endif
@@ -855,7 +855,7 @@ if (item->bmP && strstr (item->bmP->szName, "glare.tga"))
 faceP = item->faceP;
 triP = item->triP;
 bLightmaps = renderItems.bLightmaps && (faceP != NULL);
-#ifdef _DEBUG
+#if DBG
 if (!bLightmaps)
 	bLightmaps = bLightmaps;
 if (faceP) {
@@ -935,7 +935,7 @@ if (LoadRenderItemImage (item->bmP, bLightmaps ? 0 : item->nColors, 0, item->nWr
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#ifdef _DEBUG
+#if DBG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
@@ -1472,7 +1472,7 @@ for (pd = renderItems.pDepthBuffer + renderItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZ
 	if ((pl = *pd)) {
 		nDepth = 0;
 		do {
-#ifdef _DEBUG
+#if DBG
 			if (pl->nItem == nDbgItem)
 				nDbgItem = nDbgItem;
 #endif

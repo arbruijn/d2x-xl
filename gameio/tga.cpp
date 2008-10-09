@@ -641,7 +641,7 @@ bmP->bmBPP = 4;
 if (!(bmMask = GrCreateBitmap ((bmP->bmProps.w  + 1) / 2, (bmP->bmProps.h + 1) / 2, 4)))
 	return NULL;
 BM_MASK (bmP) = bmMask;
-#ifdef _DEBUG
+#if DBG
 sprintf (bmMask->szName, "{%s}", bmP->szName);
 #endif
 bmMask->bmProps.w = bmP->bmProps.w;
@@ -785,7 +785,7 @@ if (!bCustom && (nShrinkFactor > 1)) {
 	tBase = CFDate (fnBase, gameFolders.szModelDir [nType], 0);
 	tShrunk = CFDate (fnBase, szShrunkFolder, 0);
 	if ((tShrunk > tBase) && ReadTGA (fnBase, szShrunkFolder, bmP, -1, 1.0, 0, 0)) {
-#ifdef _DEBUG
+#if DBG
 		strncpy (bmP->szName, fn, sizeof (bmP->szName));
 #endif
 		UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);

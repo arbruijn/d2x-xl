@@ -521,7 +521,7 @@ if (delayTime) {		//wait a little while before creating explosion
 	//now set explosion-specific data
 	objP->lifeleft = delayTime;
 	objP->cType.explInfo.nDeleteObj = OBJ_IDX (hitObjP);
-#ifdef _DEBUG
+#if DBG
 	if (objP->cType.explInfo.nDeleteObj < 0)
 		Int3 (); // See Rob!
 #endif
@@ -642,7 +642,7 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 			}
 		if (botInfoP->thief)
 			DropStolenItems (delObjP);
-#ifndef _DEBUG
+#if !DBG
 		if (botInfoP->companion)
 			DropBuddyMarker (delObjP);
 #endif
@@ -662,7 +662,7 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 			}
 		explObjP->cType.explInfo.nDeleteTime = explObjP->lifeleft / 2;
 		explObjP->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
-#ifdef _DEBUG
+#if DBG
 		if (objP->cType.explInfo.nDeleteObj < 0)
 		  	Int3 (); // See Rob!
 #endif

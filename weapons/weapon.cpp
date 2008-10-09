@@ -698,7 +698,7 @@ else {
 	}
 }
 
-#ifdef _DEBUG
+#if DBG
 
 //	----------------------------------------------------------------------------------------
 //	Show tPlayer which weapons he has, how much ammo...

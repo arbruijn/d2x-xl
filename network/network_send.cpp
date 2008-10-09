@@ -174,7 +174,7 @@ int NetworkSendGameListRequest (void)
 {
 	tSequencePacket me;
 
-#ifdef _DEBUG
+#if DBG
 memset (&me, 0, sizeof (me));
 #endif
 me.nType = PID_GAME_LIST;

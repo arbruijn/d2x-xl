@@ -230,7 +230,7 @@ return -1;
 
 //	-----------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 
 void CHK (void)
 {
@@ -592,7 +592,7 @@ if (gameData.demo.nVersion > DEMO_VERSION + 1) {
 objP->flags = NDReadByte ();
 objP->nSignature = NDReadShort ();
 NDReadPosition (objP, bSkip);
-#ifdef _DEBUG
+#if DBG
 if ((objP->nType == OBJ_ROBOT) && (objP->id == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 #endif
@@ -796,7 +796,7 @@ void NDWriteObject (tObject *objP)
 
 if ((o.renderType > RT_WEAPON_VCLIP) && ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat)))
 	return;
-#ifdef _DEBUG
+#if DBG
 if ((o.nType == OBJ_ROBOT) && (o.id == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 #endif
@@ -3377,7 +3377,7 @@ longjmp (gameExitPoint, 0);               // Exit game loop
 
 //	-----------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 
 #define BUF_SIZE 16384
 

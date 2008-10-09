@@ -665,7 +665,7 @@ int bm_init_use_tbl()
 			 && (Effects [gameStates.app.bD1Data][i].vc.nFrameCount==-1) )
 			Error("EClip %d referenced (by polygon tObject?), but not defined",i);
 
-	#ifdef _DEBUG
+	#if DBG
 	{
 		int used;
 		for (i=used=0; i<numSounds; i++ )

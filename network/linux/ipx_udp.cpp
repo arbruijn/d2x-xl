@@ -549,7 +549,7 @@ static int addiflist (void)
 	unsigned					i, cnt = MAX_BRDINTERFACES;
 	struct ifconf 			ifconf;
 	int 						sock;
-#ifdef _DEBUG
+#if DBG
 	int						ioRes;
 #endif
 	unsigned 				j;
@@ -567,7 +567,7 @@ else
 #	endif
 ifconf.ifc_len = cnt * sizeof (struct ifreq);
 chk (ifconf.ifc_req = (ifreq *) D2_ALLOC (ifconf.ifc_len));
-#	ifdef _DEBUG
+#	if DBG
 memset (ifconf.ifc_req, 0, ifconf.ifc_len);
 ioRes = ioctl (sock, SIOCGIFCONF, &ifconf);
 if (ioRes < 0) {
@@ -1177,7 +1177,7 @@ if (nFirst < (nDrop = ppp->id)) {
 	}
 nDrop = -1;
 t = SDL_GetTicks ();
-#ifdef _DEBUG
+#if DBG
 //PrintLog ("resending packets %d - %d to", nFirst, nLast); dumpaddr (&pdl->addr); //PrintLog ("\n");
 #endif
 for (i = pdl->numPackets, j = pdl->firstPacket; i; i--, j++) {
@@ -1292,7 +1292,7 @@ if (!(bTracker
 #endif
 	memcpy (outBuf, outBuf + 8, dataLen);
 	} //bTracker
-#ifdef _DEBUG
+#if DBG
 else
 	bTracker = 1;
 #endif

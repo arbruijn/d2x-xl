@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "editor/kdefs.h"
 #endif
 //#define _DEBUG
-#ifdef _DEBUG
+#if DBG
 #include "string.h"
 #include <time.h>
 #endif
@@ -170,7 +170,7 @@ void InitAIObjects (void)
 gameData.ai.freePointSegs = gameData.ai.pointSegs;
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	gameData.boss [i].nObject = -1;
-#ifdef _DEBUG
+#if DBG
 //	gameData.boss [i].xPrevShields = -1;
 #endif
 	}

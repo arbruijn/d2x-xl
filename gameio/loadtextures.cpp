@@ -65,7 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
 
-#ifdef _DEBUG
+#if DBG
 #	define PIGGY_MEM_QUOTA	4
 #else
 #	define PIGGY_MEM_QUOTA	8
@@ -90,7 +90,7 @@ static short d2OpaqueDoors [] = {
 
 static int bLowMemory = 0;
 
-#ifdef _DEBUG
+#if DBG
 #	define PIGGY_BUFFER_SIZE ((unsigned int) (512*1024*1024))
 #else
 #	define PIGGY_BUFFER_SIZE ((unsigned int) 0x7fffffff)
@@ -108,7 +108,7 @@ extern ubyte bBigPig;
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 typedef struct tTrackedBitmaps {
 	grsBitmap	*bmP;
 	int			nSize;
@@ -123,7 +123,7 @@ void UseBitmapCache (grsBitmap *bmP, int nSize)
 bitmapCacheUsed += nSize;
 if (0x7fffffff < bitmapCacheUsed)
 	bitmapCacheUsed = 0;
-#ifdef _DEBUG
+#if DBG
 if (nSize < 0) {
 	int i;
 	for (i = 0; i < nTrackedBitmaps; i++)
@@ -493,7 +493,7 @@ int PageInBitmap (grsBitmap *bmP, const char *bmName, int nIndex, int bD1)
 	char				fn [FILENAME_LEN], fnShrunk [FILENAME_LEN];
 	tTgaHeader		h;
 
-#ifdef _DEBUG
+#if DBG
 if (!bmName)
 	return 0;
 #endif
@@ -503,7 +503,7 @@ if (!bmP->bmTexBuf) {
 	nSize = (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize;
 	if (nIndex >= 0)
 		GetFlagData (bmName, nIndex);
-#ifdef _DEBUG
+#if DBG
 	if (strstr (bmName, "door13")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
@@ -601,7 +601,7 @@ reloadTextures:
 
 	if (bRedone) {
 		Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
-#ifndef _DEBUG
+#if !DBG
 		StartTime (0);
 		if (!bDefault)
 			CFClose (cfP);

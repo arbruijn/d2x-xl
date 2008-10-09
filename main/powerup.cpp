@@ -214,7 +214,7 @@ void DrawBlobOutline (void)
 
 void DrawPowerup (tObject *objP)
 {
-#ifdef _DEBUG
+#if DBG
 //return;
 #endif
 if (objP->nType == OBJ_MONSTERBALL)
@@ -255,7 +255,7 @@ AddPointsToScore (score);
 
 //------------------------------------------------------------------------------
 
-//#ifdef _DEBUG
+//#if DBG
 //	Give the megawow powerup!
 void DoMegaWowPowerup (int quantity)
 {
@@ -871,7 +871,7 @@ switch (objP->nId) {
 		bUsed = PickupInvulnerability (objP, 0, 1, NULL, nPlayer);
 		break;
 
-#ifdef _DEBUG
+#if DBG
 	case POW_MEGAWOW:
 		DoMegaWowPowerup (50);
 		bUsed = 1;

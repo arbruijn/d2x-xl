@@ -1177,7 +1177,7 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 			Assert (gameData.endLevel.terrain.bmInstance.bmTexBuf == NULL);
 			iff_error = iff_read_bitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {
-#ifdef _DEBUG
+#if DBG
 				Warning (TXT_EXIT_TERRAIN, p, iff_errormsg (iff_error));
 #endif
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
@@ -1265,7 +1265,7 @@ for (nSegment = 0, gameData.endLevel.exit.nSegNum = -1;
 			}
 
 if (gameData.endLevel.exit.nSegNum == -1) {
-#ifdef _DEBUG
+#if DBG
 	Warning (TXT_EXIT_TERRAIN, p, 12);
 #endif
 	gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence

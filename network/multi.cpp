@@ -882,7 +882,7 @@ if (gameData.app.nGameMode & GM_TEAM)
 else
 	sprintf (szKiller, "%s", pKiller->callsign);
 // Beyond this point, it was definitely a tPlayer-tPlayer kill situation
-#ifdef _DEBUG
+#if DBG
 if ((nKillerPlayer < 0) || (nKillerPlayer  >= gameData.multiplayer.nPlayers))
 	Int3 (); // See rob, tracking down bug with kill HUD messages
 if ((nKilledPlayer < 0) || (nKilledPlayer  >= gameData.multiplayer.nPlayers))
@@ -1031,7 +1031,7 @@ if (gameData.multigame.bQuitGame && !(gameData.multigame.menu.bInvoked || gameSt
 
 void MultiSendData (char *buf, int len, int repeat)
 {
-#ifdef _DEBUG
+#if DBG
 if (len != multiMessageLengths [(int)buf [0]])
 	len = len;
 #endif
@@ -1235,7 +1235,7 @@ void MultiDoPlayerExplode (char *buf)
 	char		nRemoteCreated;
 
 nPlayer = buf [1];
-#ifndef _DEBUG
+#if !DBG
 if ((nPlayer < 0) || (nPlayer >= gameData.multiplayer.nPlayers))
 	return;
 #else
@@ -2034,7 +2034,7 @@ for (i = 0; i < gameData.multigame.create.nLoc; i++) {
 	MapObjnumLocalToLocal ((short)gameData.multigame.create.nObjNums [i]);
 	}
 gameData.multigame.create.nLoc = 0;
-#ifdef _DEBUG
+#if DBG
 if (bufI > multiMessageLengths [MULTI_PLAYER_EXPLODE])
 	Warning ("MultiSendPlayerExplode:\nMax. message length exceeded!"); // See Rob
 #endif
@@ -2866,7 +2866,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 			BashToShield (i, "Red flag");
 		}
 	}
-#ifndef _DEBUG
+#if !DBG
 if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 #endif
 	InitHoardData ();
@@ -3105,7 +3105,7 @@ void MultiInitiateRestoreGame ()
 	ubyte slot;
 	char filename [128];
 
-#ifndef _DEBUG
+#if !DBG
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
 #endif
@@ -3153,7 +3153,7 @@ void MultiRestoreGame (ubyte slot, uint id)
 	int		i;
 	uint		thisid;
 
-#ifndef _DEBUG
+#if !DBG
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
 #endif
@@ -3495,7 +3495,7 @@ gameStates.app.xThisLevelTime = num;
 
 void MultiCheckForEntropyWinner ()
 {
-#if 1//def RELEASE
+#if 1//!DBG
 	xsegment *xSegP;
 	int		h, i, t;
 	char	bGotRoom [2] = {0, 0};
@@ -3504,7 +3504,7 @@ void MultiCheckForEntropyWinner ()
 
 if (!IsEntropyGame)
 	return;
-#if 1//def RELEASE
+#if 1//!DBG
 if (gameData.reactor.bDestroyed) {
 	if (gameStates.app.nSDLTicks - countDown  >= 5000)
 		StopEndLevelSequence ();
@@ -3543,7 +3543,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if ((GetTeam (i) != t) && (gameData.multiplayer.players [i].shields  >= 0))
 		return;
 countDown = gameStates.app.nSDLTicks;
-#if 1//def RELEASE
+#if 1//!DBG
 gameData.reactor.bDestroyed = 1;
 gameData.reactor.countdown.nTimer = -1;
 #endif
@@ -4963,7 +4963,7 @@ if (nType > MULTI_MAX_TYPE) {
 	fflush (RecieveLogFile);
 #endif
 con_printf (CON_VERBOSE, "multi data %d\n", nType);
-#ifndef _DEBUG
+#if !DBG
 if (nType <= MULTI_MAX_TYPE) {
 	tMultiHandlerInfo	*pmh = multiHandlers + nType;
 	if (pmh->fpMultiHandler && !(gameStates.app.bEndLevelSequence && pmh->noEndLevelSeq))

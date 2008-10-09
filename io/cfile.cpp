@@ -369,7 +369,7 @@ return NULL;
 
 int CFEoF (CFILE *cfP)
 {
-#ifdef _DEBUG
+#if DBG
 if (! (cfP && cfP->file))
 	return 1;
 #endif
@@ -389,23 +389,20 @@ int CFExist (const char *filename, const char *folder, int bUseD1Hog)
 {
 	int	length, bNoHOG = 0;
 	FILE	*fp;
+	char	*pfn = (char *) filename;
 
-if (*filename != '\x01') {
-	bNoHOG = (*filename == '\x02');
-	fp = CFGetFileHandle (filename + bNoHOG, folder, "rb"); // Check for non-hog file first...
-	}
+if (*pfn == '\x01') 
+	pfn++;
 else {
-	fp = NULL;		//don't look in dir, only in tHogFile
-	filename++;
+	bNoHOG = (*pfn == '\x02');
+	if ((fp = CFGetFileHandle (pfn + bNoHOG, folder, "rb"))) { // Check for non-hog file first...
+		fclose (fp);
+		return 1;
+		}
+	if (bNoHOG)
+		return 0;
 	}
-if (fp) {
-	fclose (fp);
-	return 1;
-	}
-if (bNoHOG)
-	return 0;
-fp = CFFindLibFile (filename, &length, bUseD1Hog);
-if (fp) {
+if ((fp = CFFindLibFile (pfn, &length, bUseD1Hog))) {
 	fclose (fp);
 	return 2;		// file found in hog
 	}

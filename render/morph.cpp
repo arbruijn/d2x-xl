@@ -90,7 +90,7 @@ int MorphInitPoints (tPolyModel *pmP, vmsVector *vBoxSize, int nSubModel, tMorph
 //printf ("initing %d ", nSubModel);
 data = (ushort *) (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
 nType = *data++;
-#ifdef _DEBUG
+#if DBG
 //Assert (nType == 7 || nType == 1);
 if (nType != 7 && nType != 1)
 	return 0;
@@ -149,7 +149,7 @@ int MorphUpdatePoints (tPolyModel *pmP, int nSubModel, tMorphInfo *mdP)
 	////printf ("updating %d ", nSubModel);
 data = (ushort *) (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
 nType = *data++;
-#ifdef _DEBUG
+#if DBG
 //Assert (nType == 7 || nType == 1);
 if (nType != 7 && nType != 1)
 	return 0;

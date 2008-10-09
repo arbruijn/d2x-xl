@@ -317,7 +317,7 @@ if (gameStates.render.nShadowPass == 2) {
 	RenderFaceShadow (propsP);
 	return;
 	}
-#ifdef _DEBUG //convenient place for a debug breakpoint
+#if DBG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && ((nDbgSide < 0) || (props.sideNum == nDbgSide)))
 	props.segNum = props.segNum;
 if (props.nBaseTex == nDbgBaseTex)
@@ -345,7 +345,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 #endif
 SetVertexColors (&props);
 if (gameStates.render.nType == 2) {
-#ifdef _DEBUG //convenient place for a debug breakpoint
+#if DBG //convenient place for a debug breakpoint
 	if (props.segNum == nDbgSeg && ((nDbgSide < 0) || (props.sideNum == nDbgSide)))
 		props.segNum = props.segNum;
 #endif
@@ -400,7 +400,7 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 	else {
 		if (props.nOvlTex != 0) {
 			bmBot = TexMergeGetCachedBitmap (props.nBaseTex, props.nOvlTex, props.nOvlOrient);
-#ifdef _DEBUG
+#if DBG
 			if (!bmBot)
 				bmBot = TexMergeGetCachedBitmap (props.nBaseTex, props.nOvlTex, props.nOvlOrient);
 #endif
@@ -416,7 +416,7 @@ if (bHaveMonitorBg) {
 	GetCameraUVL (pc, NULL, props.uvls, NULL, NULL);
 	pc->texBuf.glTexture->wrapstate = -1;
 	if (bIsTeleCam) {
-#ifdef _DEBUG
+#if DBG
 		bmBot = &pc->texBuf;
 		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 #else
@@ -435,13 +435,13 @@ if (Render_only_bottom && (nSide == WBOTTOM))
 	G3DrawTexPoly (props.nVertices, pointList, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index, 1, propsP->segNum);
 else
 #endif
-#ifdef _DEBUG //convenient place for a debug breakpoint
+#if DBG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 	props.segNum = props.segNum;
 #endif
 if ((gameOpts->render.bDepthSort > 0) && (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - gameStates.render.grAlpha;
-#ifdef _DEBUG
+#if DBG
 if (bmTop)
 	fpDrawTexPolyMulti (
 		props.nVertices, pointList, props.uvls,
@@ -480,7 +480,7 @@ gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 gameStates.ogl.fAlpha = 1;
 	// render the tSegment the tPlayer is in with a transparent color if it is a water or lava tSegment
 	//if (nSegment == OBJECTS->nSegment)
-#ifdef _DEBUG
+#if DBG
 if (bOutLineMode)
 	DrawOutline (props.nVertices, pointList);
 #endif
@@ -520,7 +520,7 @@ void RenderSide (tSegment *segP, short nSide)
 
 props.segNum = SEG_IDX (segP);
 props.sideNum = nSide;
-#ifdef _DEBUG
+#if DBG
 if ((props.segNum == nDbgSeg) && ((nDbgSide < 0) || (props.sideNum == nDbgSide)))
 	segP = segP;
 #endif
@@ -580,7 +580,7 @@ props.nOvlOrient = sideP->nOvlOrient;
 		}
 #endif
 
-#ifdef _DEBUG //convenient place for a debug breakpoint
+#if DBG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 	props.segNum = props.segNum;
 if (props.nBaseTex == nDbgBaseTex)
@@ -646,7 +646,7 @@ gameData.render.pVerts = gameData.segs.fVertices;
 if (cc.ccAnd /*&& !gameStates.render.automap.bDisplay*/)	//all off screen and not rendering the automap
 	return 0;
 gameStates.render.nState = 0;
-#ifdef _DEBUG //convenient place for a debug breakpoint
+#if DBG //convenient place for a debug breakpoint
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
@@ -814,7 +814,7 @@ return code;
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 void DrawWindowBox (unsigned int color, short left, short top, short right, short bot)
 {
 	short l, t, r, b;
@@ -1199,7 +1199,7 @@ else {
 				}
 			}
 		if ((gameData.objs.viewer == gameData.objs.console) &&
-#ifdef _DEBUG
+#if DBG
 			 gameStates.render.bExternalView) {
 #else
 			 gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))) {
@@ -1309,7 +1309,7 @@ if (nClearWindow == 1) {
 		nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
 	GrClearCanvas (nClearWindowColor);
 	}
-#ifdef _DEBUG
+#if DBG
 if (bShowOnlyCurSide)
 	GrClearCanvas (nClearWindowColor);
 #endif
@@ -1330,7 +1330,7 @@ if (SHOW_SHADOWS &&
 		OglViewport (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, 128, 128);
 #endif
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
-#if 1//def RELEASE
+#if 1//!DBG
 		RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
 #else
 		if (FAST_SHADOWS)
@@ -1430,7 +1430,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 	nSegment = gameData.render.mine.nSegRenderList [nListPos];
 	if (nSegment == -0x7fff)
 		continue;
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
@@ -1634,7 +1634,7 @@ gameData.render.mine.nRenderPos [nStartSeg] = 0;
 sCnt = 0;
 lCnt = eCnt = 1;
 
-#ifdef _DEBUG
+#if DBG
 if (bPreDrawSegs)
 	RenderSegmentFaces (nStartSeg, nWindow);
 #endif
@@ -1657,7 +1657,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		curPortal = renderPortals + sCnt;
 		if (nSegment == -1)
 			continue;
-#ifdef _DEBUG
+#if DBG
 		if (nSegment == -32767)
 			continue;
 		if (nSegment == nDbgSeg)
@@ -1674,7 +1674,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 				continue;
 			if (!(WALL_IS_DOORWAY (segP, nChild, NULL) & WID_RENDPAST_FLAG))
 				continue;
-#ifdef _DEBUG
+#if DBG
 			if (nChildSeg == nDbgSeg)
 				nChildSeg = nChildSeg;
 #endif
@@ -1701,7 +1701,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		for (nChild = 0; nChild < nChildren; nChild++) {
 			nSide = childList [nChild];
 			nChildSeg = segP->children [nSide];
-#ifdef _DEBUG
+#if DBG
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
@@ -1807,7 +1807,7 @@ nFirstTerminalSeg = sCnt;
 gameData.render.mine.nRenderSegs = lCnt;
 
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
-#ifdef _DEBUG
+#if DBG
 	if (gameData.render.mine.nSegRenderList [i] == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
@@ -1827,7 +1827,7 @@ if (!RENDERPATH)
 else {
 	gameData.render.mine.nRenderSegs = 0;
 	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
-#ifdef _DEBUG
+#if DBG
 		if (nSegment == nDbgSeg)
 			nDbgSeg = nDbgSeg;
 #endif
@@ -1921,7 +1921,7 @@ else {
 	if (VISITED (nSegment))
 		return;
 	}
-#ifdef _DEBUG
+#if DBG
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
@@ -1934,7 +1934,7 @@ if (!RenderSegmentFaces (nSegment, gameStates.render.nWindow)) {
 if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)
 	gameData.render.mine.bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
 else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref [gameData.render.mine.nSegRenderList [nListPos]] >= 0)) {
-#ifdef _DEBUG
+#if DBG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
@@ -2019,7 +2019,7 @@ if (nClearWindow == 2) {
 		GrSetColor (nClearWindowColor);
 		for (i = nFirstTerminalSeg, rwP = renderPortals; i < gameData.render.mine.nRenderSegs; i++, rwP++) {
 			if (gameData.render.mine.nSegRenderList [i] != -0x7fff) {
-#ifdef _DEBUG
+#if DBG
 				if ((rwP->left == -1) || (rwP->top == -1) || (rwP->right == -1) || (rwP->bot == -1))
 					Int3();
 				else
@@ -2119,7 +2119,7 @@ extern int bLog;
 void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
 PROF_START
-#ifdef _DEBUG
+#if DBG
 if (nWindow)
 	nWindow = nWindow;
 else

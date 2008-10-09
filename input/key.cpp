@@ -426,7 +426,7 @@ void KeyHandler(SDL_KeyboardEvent *event)
 				keycode |= KEY_CTRLED;
 			if ( gameStates.input.keys.pressed[KEY_LCMD] || gameStates.input.keys.pressed[KEY_RCMD])
 				keycode |= KEY_COMMAND;
-#ifdef _DEBUG
+#if DBG
       if ( gameStates.input.keys.pressed[KEY_DELETE] )
 				keycode |= KEYDBGGED;
 #endif			
@@ -605,7 +605,7 @@ unsigned int KeyGetShiftStatus()
 	if ( gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL] )
 		shift_status |= KEY_CTRLED;
 
-#ifdef _DEBUG
+#if DBG
 	if (gameStates.input.keys.pressed[KEY_DELETE])
 		shift_status |=KEYDBGGED;
 #endif

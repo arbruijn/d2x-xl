@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "glare.h"
 
 #define CORONA_OUTLINE	0
-#ifdef _DEBUG
+#if DBG
 #	define SHADER_SOFT_CORONAS 1
 #else
 #	define SHADER_SOFT_CORONAS 1
@@ -76,7 +76,7 @@ GLuint CopyDepthTexture (void)
 {
 	GLenum nError = glGetError ();
 
-#ifdef _DEBUG
+#if DBG
 if (nError)
 	nError = nError;
 #endif
@@ -250,7 +250,7 @@ int FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *fIntensi
 
 if (IsMultiGame && extraGameInfo [1].bDarkness)
 	return 0;
-#ifdef _DEBUG
+#if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -671,7 +671,7 @@ if ((nSegment != 6) || (nSide != 2))
 #endif
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
-#ifdef _DEBUG
+#if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
@@ -691,7 +691,7 @@ if (RENDERPATH && gameStates.ogl.bOcclusionQuery && CoronaStyle ()) {
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
 						  !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [nSegment]);
 	glDepthFunc (GL_LESS);
-#ifdef _DEBUG
+#if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
@@ -722,7 +722,7 @@ float CoronaVisibility (int nQuery)
 	GLuint	nSamples = 0;
 	GLint		bAvailable = 0;
 	float		fIntensity;
-#ifdef _DEBUG
+#if DBG
 	GLint		nError;
 #endif
 
@@ -733,7 +733,7 @@ if (!(gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [n
 do {
 	glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
 	if (glGetError ()) {
-#ifdef _DEBUG
+#if DBG
 		glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
 		if (nError = glGetError ())
 #endif
@@ -744,7 +744,7 @@ glGetQueryObjectuiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY
 if (glGetError ())
 	return 0;
 if (gameStates.render.bQueryCoronas == 1) {
-#ifdef _DEBUG
+#if DBG
 	if (!nSamples) {
 		GLint nBits;
 		glGetQueryiv (GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &nBits);
@@ -754,7 +754,7 @@ if (gameStates.render.bQueryCoronas == 1) {
 	return (float) (gameData.render.lights.coronaSamples [nQuery - 1] = nSamples);
 	}
 fIntensity = (float) nSamples / (float) gameData.render.lights.coronaSamples [nQuery - 1];
-#ifdef _DEBUG
+#if DBG
 if (fIntensity > 1)
 	fIntensity = 1;
 #endif

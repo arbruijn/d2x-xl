@@ -489,7 +489,7 @@ if (bShaderMerge) {
 	INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapData.buffers, bVertexArrays, 0);
 	glUniform1i (glGetUniformLocation (activeShaderProg, "topTex"), 1);
 	if (bmMask) {
-#ifdef _DEBUG
+#if DBG
 		InitTMU2 (bVertexArrays);
 		G3_BIND (GL_TEXTURE2, bmMask, lightmapData.buffers, bVertexArrays);
 #else

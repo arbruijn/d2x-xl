@@ -52,7 +52,7 @@
 
 #define TEXTURE_COMPRESSION	0
 
-#ifdef _DEBUG
+#if DBG
 #	define DBG_SHADERS			0
 #else
 #	define DBG_SHADERS			0

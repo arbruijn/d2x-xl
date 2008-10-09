@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "monsterball.h"
 #include "text.h"
 
-#ifdef _DEBUG
+#if DBG
 #	define OBJ_PACKETS_PER_FRAME 1
 #else
 #	define OBJ_PACKETS_PER_FRAME 1
@@ -63,7 +63,7 @@ static int objFilter [] = {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1,
 static inline int NetworkFilterObject (tObject *objP)
 {
 	short t = objP->nType;
-#ifdef _DEBUG
+#if DBG
 if (t == nDbgObjType)
 	nDbgObjType = nDbgObjType;
 #endif
@@ -352,7 +352,7 @@ netGame.nLevel = gameData.missions.nCurrentLevel;
 
 static inline fix SyncPollTimeout (void)
 {
-#ifdef _DEBUG
+#if DBG
 return 5000;
 #else
 return 3000;
@@ -398,7 +398,7 @@ if ((time_t) SDL_GetTicks () > networkData.toSyncPoll) {	// Poll time expired, r
 #if 1			
 	con_printf (CONDBG, "Re-sending join request.\n");
 #endif
-#ifdef _DEBUG
+#if DBG
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0 / 2);
 #endif
 	ResetSyncTimeout ();
@@ -425,7 +425,7 @@ m [1].text = (char *) TXT_NET_LEAVE;
 networkData.nJoinState = 0;
 i = NetworkSendRequest ();
 if (i < 0) {
-#ifdef _DEBUG
+#if DBG
 	NetworkSendRequest ();
 #endif
 	return -1;
@@ -461,7 +461,7 @@ return -1;     // they cancelled
 
 static inline fix WaitAllPollTimeout (void)
 {
-#ifdef _DEBUG
+#if DBG
 return 5000;
 #else
 return 3000;

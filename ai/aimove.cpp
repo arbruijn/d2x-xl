@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "editor/kdefs.h"
 #endif
 //#define _DEBUG
-#ifdef _DEBUG
+#if DBG
 #include "string.h"
 #include <time.h>
 #endif
@@ -507,7 +507,7 @@ fix MoveTowardsPoint (tObject *objP, vmsVector *vGoal, fix xMinDist)
 	fix			xDistToGoal;
 	vmsVector	vGoalDir;
 
-#ifdef _DEBUG
+#if DBG
 if ((nDbgSeg >= 0) && (objP->nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif

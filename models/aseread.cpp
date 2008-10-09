@@ -648,7 +648,7 @@ aseFile = &cf;
 memset (pm, 0, sizeof (*pm));
 pm->nModel = nModel;
 pm->nType = nType;
-#ifdef _DEBUG
+#if DBG
 nLine = 0;
 #endif
 while ((pszToken = ASE_ReadLine (&cf))) {

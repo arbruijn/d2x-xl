@@ -518,7 +518,7 @@ tPolyModel *GetPolyModel (tObject *objP, vmsVector *pos, int nModel, int flags)
 	int			bHaveAltModel = gameData.models.altPolyModels [nModel].modelData != NULL,
 					bIsDefModel = IsDefaultModel (nModel);
 
-#ifdef _DEBUG
+#if DBG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
@@ -675,7 +675,7 @@ else {
 				if (!G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
 					if (bHires)
 						return 0;
-#ifdef _DEBUG
+#if DBG
 					G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP);
 #endif
 					G3StartInstanceMatrix(vOffset);

@@ -943,7 +943,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 	if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG))
 		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, (GetTeam (nPlayerId) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG);
 
-#ifndef _DEBUG
+#if !DBG
 		if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
 #endif
 		if (IsHoardGame ||

@@ -162,7 +162,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if DBG
 extern int nDbgVertex;
 #endif
 
@@ -183,7 +183,7 @@ if (!(pDists = (tLightDist *) D2_ALLOC (gameData.render.lights.dynamic.nLights *
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
-#ifdef _DEBUG
+#if DBG
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
@@ -193,13 +193,13 @@ if (gameStates.app.bMultiThreaded)
 else
 	INIT_PROGRESS_LOOP (nVertex, j, gameData.segs.nVertices);
 for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) {
-#ifdef _DEBUG
+#if DBG
 	if (nVertex == nDbgVertex)
 		nVertex = nVertex;
 #endif
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
-#ifdef _DEBUG
+#if DBG
 		if (pl->info.nSegment == nDbgSeg)
 			nDbgSeg = nDbgSeg;
 #endif
@@ -296,7 +296,7 @@ while (!SetSegVis (nStartSeg, nSegment))
 	int			i, nFaces, nTris;
 
 for (nFaces = segFaceP->nFaces, faceP = segFaceP->pFaces; nFaces; nFaces--, faceP++) {
-#ifdef _DEBUG
+#if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nSegment = nSegment;
 #endif
@@ -330,7 +330,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg)
 
 //PrintLog ("computing visibility of segment %d\n", nStartSeg);
 gameStates.ogl.bUseTransform = 1;
-#ifdef _DEBUG
+#if DBG
 if (nStartSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
@@ -367,7 +367,7 @@ for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
-#ifdef _DEBUG
+#if DBG
 		if (nSegment >= gameData.segs.nSegments)
 			continue;
 #endif

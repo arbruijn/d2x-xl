@@ -144,7 +144,7 @@ void OglInitStencilOps (void)
 glEnable (GL_STENCIL_TEST);
 if ((gameStates.render.bHaveStencilBuffer = glIsEnabled (GL_STENCIL_TEST)))
 	glDisable (GL_STENCIL_TEST);
-#ifndef _DEBUG
+#if !DBG
 #	ifdef _WIN32
 glActiveStencilFaceEXT	= (PFNGLACTIVESTENCILFACEEXTPROC) wglGetProcAddress ("glActiveStencilFaceEXT");
 #	endif

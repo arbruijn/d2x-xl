@@ -292,7 +292,7 @@ for (i = 0; i < nPlayers; i++) {
 gameData.objs.viewer = gameData.objs.console = OBJECTS; // + LOCALPLAYER.nObject;
 gameData.multiplayer.nPlayerPositions = nPlayers;
 
-#ifdef _DEBUG
+#if DBG
 if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
 #if TRACE
 	//con_printf (CON_VERBOSE, "--NOT ENOUGH MULTIPLAYER POSITIONS IN THIS MINE!--\n");
@@ -1774,7 +1774,7 @@ if (!funcRes)
 	return 0;
 Assert (gameStates.app.bAutoRunMission || (gameData.missions.nCurrentLevel == nLevel));	//make sure level set right
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for
-#ifdef _DEBUG										  // this level
+#if DBG										  // this level
 InitHoardData ();
 SetMonsterballForces ();
 #endif

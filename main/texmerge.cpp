@@ -358,7 +358,7 @@ scale.c = scale.d = 1;
 #endif
 bTopBPP = bmTop->bmBPP;
 bBtmBPP = bmBot->bmBPP;
-#ifdef _DEBUG
+#if DBG
 memset (dest_data, 253, dest_bmp->bmProps.w * dest_bmp->bmProps.h * 4);
 #endif
 switch(nType)	{

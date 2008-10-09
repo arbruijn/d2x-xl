@@ -28,12 +28,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "string.h"
 //#define _DEBUG
-#ifdef _DEBUG
+#if DBG
 #include <time.h>
 #endif
 
 #undef DBG
-#ifdef _DEBUG
+#if DBG
 #	define DBG(_expr)	_expr
 #else
 #	define DBG(_expr)
@@ -292,7 +292,7 @@ CFWriteInt (gameData.escort.nGoalObject, fp);
 CFWriteInt (gameData.escort.nSpecialGoal, fp);
 CFWriteInt (gameData.escort.nGoalIndex, fp);
 CFWrite (gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS, fp);
-#ifdef _DEBUG
+#if DBG
 i = CFTell (fp);
 #endif
 CFWriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs), fp);

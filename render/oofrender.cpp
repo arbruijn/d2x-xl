@@ -236,7 +236,7 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 #endif
 			OOF_VecInc (v+2, v+1);
 			OOF_VecInc (v+3, v);
-#ifndef _DEBUG
+#if !DBG
 			glEnableClientState (GL_VERTEX_ARRAY);
 			glVertexPointer (3, GL_FLOAT, 0, v);
 			glDrawArrays (GL_QUADS, 0, 4);
@@ -377,7 +377,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		continue;
 #endif
 	if (pf->bTextured) {
-#ifdef _DEBUG
+#if DBG
 		fl = OOF_VecDot (&pf->vNormal, &mView.f);
 		fl = 0.75f + 0.25f * fl;
 		fl = fl * *fLight;
