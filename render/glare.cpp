@@ -41,9 +41,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 float coronaIntensities [] = {0.25f, 0.5f, 0.75f, 1};
 
-GLhandleARB hGlareShader [2] = {0,0};
-GLhandleARB hGlareVS [2] = {0,0};
-GLhandleARB hGlareFS [2] = {0,0};
+GLhandleARB hGlareShader = 0;
+GLhandleARB hGlareVS = 0;
+GLhandleARB hGlareFS = 0;
 
 // -----------------------------------------------------------------------------------
 
@@ -685,7 +685,7 @@ if (RENDERPATH && gameStates.ogl.bOcclusionQuery && CoronaStyle ()) {
 			fSize = 1;
 		else if (fSize > 20)
 			fSize = 20;
-		glUniform1f (glGetUniformLocation (hGlareShader [0], "dMax"), (GLfloat) fSize);
+		glUniform1f (glGetUniformLocation (hGlareShader, "dMax"), (GLfloat) fSize);
 		}
 #endif
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
@@ -779,13 +779,12 @@ if (gameStates.ogl.bDepthBlending) {
 	OglReadBuffer (GL_BACK, 1);
 	if (CopyDepthTexture ()) {
 		gameStates.ogl.bUseDepthBlending = 1;
-		GLhandleARB	h = hGlareShader [0]; //gameStates.render.automap.bDisplay];
 		if (gameStates.render.history.nShader != 999) {
-			glUseProgramObject (h);
+			glUseProgramObject (hGlareShader);
 			gameStates.render.history.nShader = 999;
-			glUniform1i (glGetUniformLocation (h, "glareTex"), 0);
-			glUniform1i (glGetUniformLocation (h, "depthTex"), 1);
-			glUniform2fv (glGetUniformLocation (h, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
+			glUniform1i (glGetUniformLocation (hGlareShader, "glareTex"), 0);
+			glUniform1i (glGetUniformLocation (hGlareShader, "depthTex"), 1);
+			glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
 #if 0
 			if (gameStates.render.automap.bDisplay)
 				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
@@ -793,17 +792,17 @@ if (gameStates.ogl.bDepthBlending) {
 #endif
 				{
 #if 1
-				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) (gameData.render.ogl.depthScale [Z]));
+				//glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) (gameData.render.ogl.depthScale [Z]));
 #else
 				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) X2F (gameData.render.zMax) - gameData.render.ogl.zNear);
 #endif
-				glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) dMax);
+				glUniform1f (glGetUniformLocation (hGlareShader, "dMax"), (GLfloat) dMax);
 				}
 			gameData.render.nShaderChanges++;
 			}
 		else {
 			if (!gameStates.render.automap.bDisplay && (dMaxPrev != dMax)) {
-				glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) dMax);
+				glUniform1f (glGetUniformLocation (hGlareShader, "dMax"), (GLfloat) dMax);
 				}
 			}
 		dMaxPrev = dMax;
@@ -833,32 +832,20 @@ if (gameStates.ogl.bDepthBlending) {
 
 //------------------------------------------------------------------------------
 
-const char *glareFS [2] = {
-	"uniform sampler2D glareTex;\r\n" \
-	"uniform sampler2D depthTex;\r\n" \
-	"uniform float depthScale;\r\n" \
-	"uniform vec2 screenScale;\r\n" \
+const char *glareFS = {
+	"uniform sampler2D glareTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
-	"void main (void) {\r\n" \
-	"float z = texture2D (depthTex, screenScale * gl_FragCoord.xy).r;\r\n" \
-	"float dz = (gl_FragCoord.z * gl_FragCoord.z - z * z) * depthScale;\r\n" \
-	"dz = clamp (dz, 0.0, dMax);\r\n" \
-	"dz = (dMax - dz) / dMax;\r\n" \
-	"/*if (dz < 1.0) dz *= 1.0 - gl_FragCoord.z * gl_FragCoord.z; " \
-	"if (gl_FragCoord.z > 0.99) gl_FragColor = vec4 (0.0, 0.5, 1.0, 0.5); else " \
-	"if (gl_FragCoord.z > 0.5) gl_FragColor = vec4 (1.0, 0.8, 0.0, 0.5); else " \
-	"if (gl_FragCoord.z > 0.1) gl_FragColor = vec4 (1.0, 0.5, 0.0, 0.5); else */" \
-	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
-	"}\r\n"
-,
-	"uniform sampler2D glareTex;\r\n" \
-	"uniform sampler2D depthTex;\r\n" \
-	"uniform vec3 depthScale;\r\n" \
 	"uniform vec2 screenScale;\r\n" \
+	"#define ZNEAR 1.0\r\n" \
+	"#define ZFAR 5000.0\r\n" \
+	"#define ZRANGE (ZFAR - ZNEAR)\r\n" \
+	"#define HOM(_x) ZFAR / (ZFAR - (_x) * ZRANGE)\r\n" \
 	"void main (void) {\r\n" \
-	"float depthZ = depthScale.y / (depthScale.x - texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
-	"float fragZ = depthScale.y / (depthScale.x - gl_FragCoord.z);\r\n" \
-	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color / sqrt (max (1.0, (depthZ - fragZ) / 2.0));\r\n" \
+	"float texZ = HOM (texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
+	"float fragZ = HOM (gl_FragCoord.z);\r\n" \
+	"float dz = clamp (fragZ - texZ, 0.0, dMax);\r\n" \
+	"dz = (dMax - dz) / dMax;\r\n" \
+	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
 	"}\r\n"
 	};
 
@@ -872,7 +859,7 @@ const char *glareVS =
 
 void InitGlareShader (void)
 {
-	int	i, bOk;
+	int	bOk;
 
 gameStates.ogl.bDepthBlending = 0;
 #if SHADER_SOFT_CORONAS
@@ -880,18 +867,15 @@ PrintLog ("building corona blending shader program\n");
 DeleteShaderProg (NULL);
 if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && RENDERPATH) {
 	gameStates.ogl.bDepthBlending = 1;
-	for (i = 0; i < 2; i++) {
-		if (hGlareShader [i])
-			DeleteShaderProg (hGlareShader + i);
-		bOk = CreateShaderProg (hGlareShader + i) &&
-				CreateShaderFunc (hGlareShader + i, hGlareFS + i, hGlareVS + i, glareFS [i], glareVS, 1) &&
-				LinkShaderProg (hGlareShader + i);
-		if (!bOk) {
-			gameStates.ogl.bDepthBlending = 0;
-			while (--i)
-				DeleteShaderProg (hGlareShader + i);
-			return;
-			}
+	if (hGlareShader)
+		DeleteShaderProg (&hGlareShader);
+	bOk = CreateShaderProg (&hGlareShader) &&
+			CreateShaderFunc (&hGlareShader, &hGlareFS, &hGlareVS, glareFS, glareVS, 1) &&
+			LinkShaderProg (&hGlareShader);
+	if (!bOk) {
+		gameStates.ogl.bDepthBlending = 0;
+		DeleteShaderProg (&hGlareShader);
+		return;
 		}
 	OglClearError (0);
 	}
