@@ -786,10 +786,17 @@ if (gameStates.ogl.bDepthBlending) {
 			glUniform1i (glGetUniformLocation (h, "glareTex"), 0);
 			glUniform1i (glGetUniformLocation (h, "depthTex"), 1);
 			glUniform2fv (glGetUniformLocation (h, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
+#if 0
 			if (gameStates.render.automap.bDisplay)
 				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
-			else {
+			else 
+#endif
+				{
+#if 1
 				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) (gameData.render.ogl.depthScale [Z]));
+#else
+				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) X2F (gameData.render.zMax) - gameData.render.ogl.zNear);
+#endif
 				glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) dMax);
 				}
 			gameData.render.nShaderChanges++;
@@ -833,10 +840,14 @@ const char *glareFS [2] = {
 	"uniform vec2 screenScale;\r\n" \
 	"uniform float dMax;\r\n" \
 	"void main (void) {\r\n" \
-	"float dz = (gl_FragCoord.z - texture2D (depthTex, screenScale * gl_FragCoord.xy).r) * depthScale;\r\n" \
+	"float z = texture2D (depthTex, screenScale * gl_FragCoord.xy).r;\r\n" \
+	"float dz = (gl_FragCoord.z * gl_FragCoord.z - z * z) * depthScale;\r\n" \
 	"dz = clamp (dz, 0.0, dMax);\r\n" \
-	"dz = ((dMax - dz) / dMax);\r\n" \
-	"/*if (dz < 1.0) gl_FragColor = vec4 (0.0, 0.5, 1.0, 0.5); else*/\n" \
+	"dz = (dMax - dz) / dMax;\r\n" \
+	"/*if (dz < 1.0) dz *= 1.0 - gl_FragCoord.z * gl_FragCoord.z; " \
+	"if (gl_FragCoord.z > 0.99) gl_FragColor = vec4 (0.0, 0.5, 1.0, 0.5); else " \
+	"if (gl_FragCoord.z > 0.5) gl_FragColor = vec4 (1.0, 0.8, 0.0, 0.5); else " \
+	"if (gl_FragCoord.z > 0.1) gl_FragColor = vec4 (1.0, 0.5, 0.0, 0.5); else */" \
 	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
 	"}\r\n"
 ,

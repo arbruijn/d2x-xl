@@ -329,7 +329,7 @@ return G3EnableClientState (GL_VERTEX_ARRAY, -1);
 
 //------------------------------------------------------------------------------
 
-#define ZNEAR	gameData.render.ogl.zNear
+#define ZNEAR	1
 #define ZFAR	gameData.render.ogl.zFar
 
 void OglSetFOV (void)
