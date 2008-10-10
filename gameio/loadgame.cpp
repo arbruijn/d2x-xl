@@ -726,6 +726,7 @@ gameStates.render.automap.bFull = 0;
 gameData.render.ogl.nHeadlights = -1;
 gameData.render.nColoredFaces = 0;
 gameData.app.nFrameCount = 0;
+gameData.app.nMineRenderCount = 0;
 memset (gameData.app.semaphores, 0, sizeof (gameData.app.semaphores));
 renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 renderItems.nMaxOffs = 0;

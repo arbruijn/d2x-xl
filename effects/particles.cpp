@@ -99,7 +99,7 @@ static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
 #if 0
 static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 #endif
-static float alphaScale [5] = {6.0f / 6.0f, 5.0f / 6.0f, 4.0f / 6.0f, 3.0f / 6.0f, 2.0f / 6.0f};
+static float alphaScale [5] = {5.0f / 5.0f, 5.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0f, 1.0f / 5.0f};
 
 #define PART_BUF_SIZE	4096
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)

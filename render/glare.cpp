@@ -721,6 +721,7 @@ float CoronaVisibility (int nQuery)
 {
 	GLuint	nSamples = 0;
 	GLint		bAvailable = 0;
+	int		nAttempts = 2;
 	float		fIntensity;
 #if DBG
 	GLint		nError;
@@ -730,7 +731,7 @@ if (!(gameStates.ogl.bOcclusionQuery && nQuery) || (CoronaStyle () != 1))
 	return 1;
 if (!(gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [nQuery - 1]))
 	return 0;
-do {
+for (;;) {
 	glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
 	if (glGetError ()) {
 #if DBG
@@ -739,7 +740,12 @@ do {
 #endif
 			return 0;
 		}
-	} while (!bAvailable);
+	if (bAvailable)
+		break;
+	if (!--nAttempts)
+		return 0;
+	G3_SLEEP (1);
+	};
 glGetQueryObjectuiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
 if (glGetError ())
 	return 0;

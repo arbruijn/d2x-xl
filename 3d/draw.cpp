@@ -144,7 +144,7 @@ free_points:
 		if (Vbuf1[i]->p3_flags & PF_TEMP_POINT)
 			free_temp_point (Vbuf1[i]);
 
-//	Assert (free_point_num==0);
+//	Assert (nFreePoints==0);
 
 	return ret;
 }

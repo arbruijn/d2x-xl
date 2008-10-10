@@ -20,12 +20,12 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "clipper.h"
 #include "error.h"
 
-int free_point_num=0;
+int nFreePoints=0;
 
 g3sPoint temp_points[MAX_POINTS_IN_POLY];
 g3sPoint *free_points[MAX_POINTS_IN_POLY];
 
-void init_free_points(void)
+void InitFreePoints(void)
 {
 	int i;
 
@@ -38,8 +38,8 @@ g3sPoint *get_temp_point()
 {
 	g3sPoint *p;
 
-	Assert (free_point_num < MAX_POINTS_IN_POLY );
-	p = free_points[free_point_num++];
+	Assert (nFreePoints < MAX_POINTS_IN_POLY );
+	p = free_points[nFreePoints++];
 
 	p->p3_flags = PF_TEMP_POINT;
 
@@ -50,7 +50,7 @@ void free_temp_point(g3sPoint *p)
 {
 	Assert(p->p3_flags & PF_TEMP_POINT);
 
-	free_points[--free_point_num] = p;
+	free_points[--nFreePoints] = p;
 
 	p->p3_flags &= ~PF_TEMP_POINT;
 }

@@ -447,6 +447,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.lightnings.nQuality, i, 0);
 
 		RP (gameOptions [i].render.cameras.bFitToWall, i, 0);
+		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cameras.nFPS, i, 0);
 		RP (gameOptions [i].render.cameras.nSpeed, i, 0);
 
@@ -1025,6 +1026,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.effects.bTransparent", "1"},
 	{"gameOptions[0].render.bDepthSort", "1"},
 	{"gameOptions[0].render.cameras.bFitToWall", "0"},
+	{"gameOptions[0].render.cameras.bHires", "0"},
 	{"gameOptions[0].render.cameras.nFPS", "0"},
 	{"gameOptions[0].render.cameras.nSpeed", "5000"},
 	{"gameOptions[0].render.automap.bBright", "0"},

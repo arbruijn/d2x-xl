@@ -453,17 +453,19 @@ else {
 if (bDepthOnly) 
 	G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 else {
-	nBlendMode = faceP->bAdditive ? 2 : faceP->bTransparent ? 1 : 0;
-	if (nBlendMode != gameStates.render.history.nBlendMode) {
-		gameStates.render.history.nBlendMode = nBlendMode;
+	if (bMonitor)
 		G3FlushFaceBuffer (1);
-		G3SetBlendMode (faceP);
-		G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
+	else {
+		nBlendMode = faceP->bAdditive ? 2 : faceP->bTransparent ? 1 : 0;
+		if (nBlendMode != gameStates.render.history.nBlendMode) {
+			gameStates.render.history.nBlendMode = nBlendMode;
+			G3FlushFaceBuffer (1);
+			G3SetBlendMode (faceP);
+			G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
+			}
+		else
+			G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
 		}
-	else if (bMonitor)
-		G3FlushFaceBuffer (1);
-	else
-		G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
 	if (faceBuffer.nFaces <= 1)
 		G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 	}

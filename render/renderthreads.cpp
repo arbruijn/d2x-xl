@@ -86,7 +86,7 @@ while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t0 < 1000
 while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 	G3_SLEEP (0);
 #endif
-return 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------

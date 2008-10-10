@@ -584,6 +584,7 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 		if (m_faceP - FACES != nFace)
 			return 0;
 #endif
+		m_faceP->nFrame = -1;
 		m_faceP->nIndex = nIndex;
 		m_faceP->nTriIndex = h;
 		m_faceP->nTris = 1;
@@ -880,6 +881,7 @@ else
 	memset (m_faceP, 0, sizeof (*m_faceP));
 m_faceP->nSegment = nSegment;
 m_faceP->nVerts = 4;
+m_faceP->nFrame = -1;
 m_faceP->nIndex = m_vertexP - gameData.segs.faces.vertices;
 if (gameStates.render.bTriangleMesh)
 	m_faceP->nTriIndex = m_triP - TRIANGLES;

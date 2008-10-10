@@ -52,15 +52,15 @@ fxCanvH2 = X2F (xCanvH2);
 //compute aspect ratio for this canvas
 s = FixMulDiv (grdCurScreen->scAspect, nCanvasHeight, nCanvasWidth);
 if (s <= f1_0) {	   //scale x
-	viewInfo.windowScale[X] = s;
-	viewInfo.windowScale[Y] = f1_0;
+	viewInfo.windowScale [X] = s;
+	viewInfo.windowScale [Y] = f1_0;
 	}
 else {
-	viewInfo.windowScale[Y] = FixDiv (f1_0, s);
-	viewInfo.windowScale[X] = f1_0;
+	viewInfo.windowScale [Y] = FixDiv (f1_0, s);
+	viewInfo.windowScale [X] = f1_0;
 	}
-viewInfo.windowScale[Z] = f1_0;		//always 1
-init_free_points ();
+viewInfo.windowScale [Z] = f1_0;		//always 1
+InitFreePoints ();
 OglStartFrame (bFlat, bResetColorBuf);
 gameStates.render.bHeadlightOn = 1;
 if (RENDERPATH)
@@ -72,8 +72,8 @@ if (RENDERPATH)
 void G3EndFrame(void)
 {
 OglEndFrame();
-//	Assert(free_point_num==0);
-free_point_num = 0;
+//	Assert(nFreePoints==0);
+nFreePoints = 0;
 }
 
 //------------------------------------------------------------------------------

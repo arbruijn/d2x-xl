@@ -1827,6 +1827,7 @@ const char *defaultGameTexts [][2] = {
 	{"Savegame inkompatibel:\nMax. Segmentzahl unterschiedlich (savegame: %d).\nDer Wert kann in d2x.ini gesetzt werden.", 
 	 "Savegame incompatible:\nMaximum segment count differs (savegame: %d).\nYou can change the value in d2x.ini."},
 	{"Musik aus~Blenden", "~Fade out music"},
+	{"~Hochaufloesende Kameras", "~High resolution cameras"},
 #if 0
 	{"", ""},
 #endif
@@ -2483,6 +2484,8 @@ const char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, werden alle Diebe aus dem aktuellen Level\nentfernt.", "If checked, all thief bots are removed when playing a level."},
 	{"Je nach Einstellung verfolgen Roboter die Spieler zunehmend\naggressiv.", "Depending on the setting, robots pursue players increasingly\naggressive."},
 	{"Wenn angekreuzt, wird Musik sanft ausgeblendet;\nandernfalls kann sie abrupt aufhoeren.", "If checked music will be soflty faded out;\notherwise it may end abruptly."},
+	{"Wenn angekreuzt, werden Monitorausgaben in der vollen, sonst\nmit 1/4 Bild-\nschirmaufloesung dargestellt.\n\nHochaufloesende Monitore verbrauchen sehr viel Grafikspeicher.", 
+	 "If checked in-game monitor output is rendered at the full,\notherwise at 1/4 of the screen resolution.\n\nHigh resolution monitors consume a lot of video memory."},
 #if 0
 	{"", ""},
 #endif

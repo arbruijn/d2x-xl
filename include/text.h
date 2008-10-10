@@ -1874,10 +1874,10 @@ void LoadGameTexts(void);
 #define TXT_AI_AGGRESSIVITY			GT(1082)
 #define TXT_MAX_SEGS_WARNING			GT(1083)
 #define TXT_FADE_MUSIC					GT(1084)
+#define TXT_HIRES_CAMERAS				GT(1085)
 
 #if 0
 
-#define TXT_					GT(1085)
 #define TXT_					GT(1086)
 #define TXT_					GT(1087)
 #define TXT_					GT(1088)
@@ -2390,10 +2390,10 @@ void LoadGameTexts(void);
 #define HTX_SUPPRESS_THIEF				HT(376)			
 #define HTX_AI_AGGRESSIVITY			HT(377)			
 #define HTX_FADE_MUSIC					HT(378)			
+#define HTX_HIRES_CAMERAS				HT(379)			
 
 #if 0
 
-#define HTX_						HT(379)			
 #define HTX_						HT(380)			
 #define HTX_						HT(381)			
 #define HTX_						HT(382)			

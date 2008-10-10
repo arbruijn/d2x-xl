@@ -30,9 +30,9 @@ void G3SetViewAngles (vmsVector *vPos, vmsAngVec *mOrient, fix xZoom)
 {
 viewInfo.zoom = xZoom;
 viewInfo.pos = *vPos;
-viewInfo.view[0] = vmsMatrix::Create(*mOrient);
+viewInfo.view[0] = vmsMatrix::Create (*mOrient);
 viewInfo.posf = viewInfo.pos.ToFloat();
-viewInfo.viewf[0] = viewInfo.view[0].ToFloat();
+viewInfo.viewf [0] = viewInfo.view [0].ToFloat();
 ScaleMatrix (1);
 }
 
@@ -42,15 +42,12 @@ void G3SetViewMatrix (const vmsVector& vPos, const vmsMatrix& mOrient, fix xZoom
 {
 viewInfo.zoom = xZoom;
 viewInfo.glZoom = (float) xZoom / 65536.0f;
-
-	viewInfo.pos = vPos;
-	viewInfo.posf = viewInfo.pos.ToFloat();
-	OOF_VecVms2Gl (viewInfo.glPosf, viewInfo.pos);
-
-	viewInfo.view [0] = mOrient;
-	viewInfo.viewf[0] = viewInfo.view[0].ToFloat();
-	OOF_MatVms2Gl (OOF_GlIdent (viewInfo.glViewf), viewInfo.view[0]);
-
+viewInfo.pos = vPos;
+viewInfo.posf = viewInfo.pos.ToFloat();
+OOF_VecVms2Gl (viewInfo.glPosf, viewInfo.pos);
+viewInfo.view [0] = mOrient;
+viewInfo.viewf [0] = viewInfo.view [0].ToFloat();
+OOF_MatVms2Gl (OOF_GlIdent (viewInfo.glViewf), viewInfo.view [0]);
 ScaleMatrix (bOglScale);
 OglSetFOV ();
 }

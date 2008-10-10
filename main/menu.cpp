@@ -2885,7 +2885,7 @@ void CameraOptionsMenu ()
 	int	i, choice = 0;
 	int	nOptions;
 	int	bFSCameras = gameOpts->render.cameras.bFitToWall;
-	int	optFSCameras, optTeleCams;
+	int	optFSCameras, optTeleCams, optHiresCams;
 #if 0
 	int checks;
 #endif
@@ -2899,9 +2899,15 @@ do {
 	ADD_CHECK (nOptions, TXT_USE_CAMS, extraGameInfo [0].bUseCameras, KEY_C, HTX_ADVRND_USECAMS);
 	camOpts.nUse = nOptions++;
 	if (extraGameInfo [0].bUseCameras && gameOpts->app.bExpertMode) {
+		if (gameStates.app.bGameRunning) 
+			optHiresCams = -1;
+		else {
+			ADD_CHECK (nOptions, TXT_HIRES_CAMERAS, gameOpts->render.cameras.bHires, KEY_H, HTX_HIRES_CAMERAS);
+			optHiresCams = nOptions++;
+			}
 		ADD_CHECK (nOptions, TXT_TELEPORTER_CAMS, extraGameInfo [0].bTeleporterCams, KEY_U, HTX_TELEPORTER_CAMS);
 		optTeleCams = nOptions++;
-		ADD_CHECK (nOptions, TXT_ADJUST_CAMS, gameOpts->render.cameras.bFitToWall, KEY_U, HTX_ADVRND_ADJUSTCAMS);
+		ADD_CHECK (nOptions, TXT_ADJUST_CAMS, gameOpts->render.cameras.bFitToWall, KEY_A, HTX_ADVRND_ADJUSTCAMS);
 		optFSCameras = nOptions++;
 		sprintf (szCameraFps + 1, TXT_CAM_REFRESH, gameOpts->render.cameras.nFPS);
 		*szCameraFps = *(TXT_CAM_REFRESH - 1);
@@ -2915,9 +2921,10 @@ do {
 		nOptions++;
 		}
 	else {
-		optTeleCams = -1;
-		optFSCameras = -1;
-		camOpts.nFPS = -1;
+		optHiresCams = 
+		optTeleCams = 
+		optFSCameras =
+		camOpts.nFPS =
 		camOpts.nSpeed = -1;
 		}
 
@@ -2928,6 +2935,8 @@ do {
 	if ((extraGameInfo [0].bUseCameras = m [camOpts.nUse].value)) {
 		GET_VAL (extraGameInfo [0].bTeleporterCams, optTeleCams);
 		GET_VAL (gameOpts->render.cameras.bFitToWall, optFSCameras);
+		if (!gameStates.app.bGameRunning)
+			GET_VAL (gameOpts->render.cameras.bHires, optHiresCams);
 		}
 	if (bFSCameras != gameOpts->render.cameras.bFitToWall) {
 		DestroyCameras ();

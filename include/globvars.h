@@ -56,7 +56,7 @@ typedef struct tViewInfo {
 
 extern tViewInfo	viewInfo;
 
-extern int free_point_num;
+extern int nFreePoints;
 
 //vertex buffers for polygon drawing and clipping
 //list of 2d coords

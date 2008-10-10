@@ -135,20 +135,20 @@ tUVL [2].u =
 tUVL [2].v =
 tUVL [3].v = F1_0;
 
-v1 = gameData.objs.viewer->position.vPos + gameData.objs.viewer->position.mOrient[FVEC] * (F1_0*4);
-v1 += gameData.objs.viewer->position.mOrient[RVEC] * nEyeOffset;
-v2 = v1 + gameData.objs.viewer->position.mOrient[RVEC] * (-F1_0*1);
-v2 += gameData.objs.viewer->position.mOrient[UVEC] * (F1_0*1);
-G3TransformAndEncodePoint(&reticlePoints[0], v2);
-v2 = v1 + gameData.objs.viewer->position.mOrient[RVEC] * (+F1_0*1);
-v2 += gameData.objs.viewer->position.mOrient[UVEC] * (F1_0*1);
-G3TransformAndEncodePoint(&reticlePoints[1], v2);
-v2 = v1 + gameData.objs.viewer->position.mOrient[RVEC] * (+F1_0*1);
-v2 += gameData.objs.viewer->position.mOrient[UVEC] * (-F1_0*1);
-G3TransformAndEncodePoint(&reticlePoints[2], v2);
-v2 = v1 + gameData.objs.viewer->position.mOrient[RVEC] * (-F1_0*1);
-v2 += gameData.objs.viewer->position.mOrient[UVEC] * (-F1_0*1);
-G3TransformAndEncodePoint(&reticlePoints[3], v2);
+v1 = gameData.objs.viewer->position.vPos + gameData.objs.viewer->position.mOrient [FVEC] * (F1_0*4);
+v1 += gameData.objs.viewer->position.mOrient [RVEC] * nEyeOffset;
+v2 = v1 + gameData.objs.viewer->position.mOrient [RVEC] * (-F1_0*1);
+v2 += gameData.objs.viewer->position.mOrient [UVEC] * (F1_0*1);
+G3TransformAndEncodePoint(&reticlePoints [0], v2);
+v2 = v1 + gameData.objs.viewer->position.mOrient [RVEC] * (+F1_0*1);
+v2 += gameData.objs.viewer->position.mOrient [UVEC] * (F1_0*1);
+G3TransformAndEncodePoint(&reticlePoints [1], v2);
+v2 = v1 + gameData.objs.viewer->position.mOrient [RVEC] * (+F1_0*1);
+v2 += gameData.objs.viewer->position.mOrient [UVEC] * (-F1_0*1);
+G3TransformAndEncodePoint(&reticlePoints [2], v2);
+v2 = v1 + gameData.objs.viewer->position.mOrient [RVEC] * (-F1_0*1);
+v2 += gameData.objs.viewer->position.mOrient [UVEC] * (-F1_0*1);
+G3TransformAndEncodePoint(&reticlePoints [3], v2);
 
 if ( reticleCanvas == NULL)	{
 	reticleCanvas = GrCreateCanvas(64, 64);
@@ -609,7 +609,7 @@ else {
 	// new code
 	// non-planar faces are still passed as quads to the renderer as it will render triangles (GL_TRIANGLE_FAN) anyway
 	// just need to make sure the vertices come in the proper order depending of the the orientation of the two non-planar triangles
-	props.vNormal = sideP->normals[0] + sideP->normals[1];
+	props.vNormal = sideP->normals [0] + sideP->normals [1];
 	props.vNormal *= (F1_0 / 2);
 	props.nVertices = 4;
 	if (sideP->nType == SIDE_IS_TRI_02) {
@@ -852,7 +852,7 @@ ubyte bVisible [MAX_SEGMENTS_D2X];
 
 //Given two sides of tSegment, tell the two verts which form the
 //edge between them
-short edgeBetweenTwoSides [6][6][2] = {
+short edgeBetweenTwoSides [6] [6] [2] = {
 	{ {-1, -1}, {3, 7}, {-1, -1}, {2, 6}, {6, 7}, {2, 3} },
 	{ {3, 7}, {-1, -1}, {0, 4}, {-1, -1}, {4, 7}, {0, 3} },
 	{ {-1, -1}, {0, 4}, {-1, -1}, {1, 5}, {4, 5}, {0, 1} },
@@ -862,7 +862,7 @@ short edgeBetweenTwoSides [6][6][2] = {
 };
 
 //given an edge specified by two verts, give the two sides on that edge
-int edgeToSides [8][8][2] = {
+int edgeToSides [8] [8] [2] = {
 	{ {-1, -1}, {2, 5}, {-1, -1}, {1, 5}, {1, 2}, {-1, -1}, {-1, -1}, {-1, -1} },
 	{ {2, 5}, {-1, -1}, {3, 5}, {-1, -1}, {-1, -1}, {2, 3}, {-1, -1}, {-1, -1} },
 	{ {-1, -1}, {3, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {0, 3}, {-1, -1} },
@@ -880,13 +880,13 @@ int edgeToSides [8][8][2] = {
 //@@
 //@@	for (i=0;i<8;i++)
 //@@		for (j=0;j<8;j++)
-//@@			Assert(edgeToSides [i][j][0] == edgeToSides [j][i][0] &&
-//@@					edgeToSides [i][j][1] == edgeToSides [j][i][1]);
+//@@			Assert(edgeToSides [i] [j] [0] == edgeToSides [j] [i] [0] &&
+//@@					edgeToSides [i] [j] [1] == edgeToSides [j] [i] [1]);
 //@@
 //@@	for (i=0;i<6;i++)
 //@@		for (j=0;j<6;j++)
-//@@			Assert(edgeBetweenTwoSides [i][j][0] == edgeBetweenTwoSides [j][i][0] &&
-//@@					edgeBetweenTwoSides [i][j][1] == edgeBetweenTwoSides [j][i][1]);
+//@@			Assert(edgeBetweenTwoSides [i] [j] [0] == edgeBetweenTwoSides [j] [i] [0] &&
+//@@					edgeBetweenTwoSides [i] [j] [1] == edgeBetweenTwoSides [j] [i] [1]);
 //@@
 //@@
 //@@}
@@ -922,7 +922,7 @@ for (i = 0; i < 8; i++) {
 			break;
 		}
 	}
-eptr = edgeToSides [i0][i1];
+eptr = edgeToSides [i0] [i1];
 side0 = eptr [0];
 side1 = eptr [1];
 return (side0 == oppSide) ? side1 : side0;
@@ -949,8 +949,8 @@ int FindAdjacentSideNorms (tSegment *segP, short s0, short s1, tSideNormData *s)
 Assert(s0 != -1 && s1 != -1);
 seg0 = gameData.segs.segments + segP->children [s0];
 seg1 = gameData.segs.segments + segP->children [s1];
-edgeVerts [0] = segP->verts [edgeBetweenTwoSides [s0][s1][0]];
-edgeVerts [1] = segP->verts [edgeBetweenTwoSides [s0][s1][1]];
+edgeVerts [0] = segP->verts [edgeBetweenTwoSides [s0] [s1] [0]];
+edgeVerts [1] = segP->verts [edgeBetweenTwoSides [s0] [s1] [1]];
 Assert(edgeVerts [0] != -1 && edgeVerts [1] != -1);
 oppSide0 = FindConnectedSide (segP, seg0);
 Assert (oppSide0 != -1);
@@ -962,8 +962,8 @@ side0 = seg0->sides + otherSide0;
 side1 = seg1->sides + otherSide1;
 memcpy (s [0].n, side0->normals, 2 * sizeof (vmsVector));
 memcpy (s [1].n, side1->normals, 2 * sizeof (vmsVector));
-s[0].p = gameData.segs.vertices + seg0->verts [sideToVerts [otherSide0][(s [0].t = side0->nType) == 3]];
-s[1].p = gameData.segs.vertices + seg1->verts [sideToVerts [otherSide1][(s [1].t = side1->nType) == 3]];
+s [0].p = gameData.segs.vertices + seg0->verts [sideToVerts [otherSide0] [(s [0].t = side0->nType) == 3]];
+s [1].p = gameData.segs.vertices + seg1->verts [sideToVerts [otherSide1] [(s [1].t = side1->nType) == 3]];
 return 1;
 }
 
@@ -982,14 +982,14 @@ if (sideOpposite [c0] == c1)
 	return 0;
 //find normals of adjoining sides
 FindAdjacentSideNorms (segP, c0, c1, s);
-temp = gameData.render.mine.viewerEye - *s[0].p;
-d0 = vmsVector::Dot(s[0].n[0], temp);
+temp = gameData.render.mine.viewerEye - *s [0].p;
+d0 = vmsVector::Dot(s [0].n [0], temp);
 if (s [0].t != 1)	// triangularized face -> 2 different normals
-	d0 |= vmsVector::Dot(s[0].n[1], temp);	// we only need the sign, so a bitwise or does the trick
-temp = gameData.render.mine.viewerEye - *s[1].p;
-d1 = vmsVector::Dot(s[1].n[0], temp);
+	d0 |= vmsVector::Dot(s [0].n [1], temp);	// we only need the sign, so a bitwise or does the trick
+temp = gameData.render.mine.viewerEye - *s [1].p;
+d1 = vmsVector::Dot(s [1].n [0], temp);
 if (s [1].t != 1)
-	d1 |= vmsVector::Dot(s[1].n[1], temp);
+	d1 |= vmsVector::Dot(s [1].n [1], temp);
 if ((d0 & d1) < 0)	// only < 0 if both negative due to bitwise and
 	return 0;
 if (d0 < 0)
@@ -1113,7 +1113,7 @@ void SetRenderView (fix nEyeOffset, short *pnStartSeg, int bOglScale)
 
 gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
 if (nEyeOffset) {
-	gameData.render.mine.viewerEye += gameData.objs.viewer->position.mOrient[RVEC] * nEyeOffset;
+	gameData.render.mine.viewerEye += gameData.objs.viewer->position.mOrient [RVEC] * nEyeOffset;
 	}
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode == FMODE_EDITOR)
@@ -1123,7 +1123,7 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
 	nStartSeg = gameData.objs.viewer->nSegment;
-	G3SetViewMatrix(gameData.render.mine.viewerEye, gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, bOglScale);
+	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, bOglScale);
 	}
 else {
 	if (!pnStartSeg)
@@ -1148,14 +1148,14 @@ else {
 		vmsMatrix mView;
 
 		mView = gameData.objs.viewer->position.mOrient;
-		mView[FVEC].Neg();
-		mView[RVEC].Neg();
+		mView [FVEC].Neg();
+		mView [RVEC].Neg();
 #else
 		vmsMatrix mHead, mView;
 
-		viewInfo.playerHeadAngles[PA] = 0;
-		viewInfo.playerHeadAngles[BA] = 0x7fff;
-		viewInfo.playerHeadAngles[HA] = 0x7fff;
+		viewInfo.playerHeadAngles [PA] = 0;
+		viewInfo.playerHeadAngles [BA] = 0x7fff;
+		viewInfo.playerHeadAngles [HA] = 0x7fff;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
 #endif
@@ -1471,7 +1471,7 @@ typedef struct tSegZRef {
 	short	nSegment;
 } tSegZRef;
 
-static tSegZRef segZRef [2][MAX_SEGMENTS_D2X];
+static tSegZRef segZRef [2] [MAX_SEGMENTS_D2X];
 
 void QSortSegZRef (short left, short right)
 {
@@ -1515,11 +1515,11 @@ for (; i < j; i++, ps++) {
 	nSegment = gameData.render.mine.nSegRenderList [i];
 	COMPUTE_SEGMENT_CENTER_I (&v, nSegment);
 	G3TransformPoint(v, v, 0);
-	v[Z] += gameData.segs.segRads [1][nSegment];
-	if (zMax < v[Z])
-		zMax = v[Z];
-	ps->z = v[Z];
-	ps->nSegment = gameData.render.mine.nSegRenderList[i];
+	v [Z] += gameData.segs.segRads [1] [nSegment];
+	if (zMax < v [Z])
+		zMax = v [Z];
+	ps->z = v [Z];
+	ps->nSegment = gameData.render.mine.nSegRenderList [i];
 	}
 tiRender.zMax [nThread] = zMax;
 }
@@ -1575,9 +1575,9 @@ fix d2 = vmsVector::Dist(v, vCenter);
 
 if (d1 < d2)
 	d1 = d2;
-fix r = gameData.segs.segRads [1][gameData.objs.viewer->nSegment];
+fix r = gameData.segs.segRads [1] [gameData.objs.viewer->nSegment];
 gameData.render.zMin = 0;
-gameData.render.zMax = vCenter[Z] + d1 + r;
+gameData.render.zMax = vCenter [Z] + d1 + r;
 }
 
 //-----------------------------------------------------------------
@@ -1852,9 +1852,9 @@ void QSortObjRenderList (int left, int right)
 			m = objRenderList [(l + r) / 2].xDist;
 
 do {
-	while (objRenderList[l].xDist < m)
+	while (objRenderList [l].xDist < m)
 		l++;
-	while (objRenderList[r].xDist > m)
+	while (objRenderList [r].xDist > m)
 		r--;
 	if (l <= r) {
 		if (l < r) {
@@ -1942,7 +1942,7 @@ else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref 
 	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0) && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
 	RenderObjList (nListPos, gameStates.render.nWindow);
 	gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
-	//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
+	//gameData.render.lights.dynamic.shader.index [0] [0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 	}
 else if (gameStates.render.nType == 2)	// render objects containing transparency, like explosions
 	RenderObjList (nListPos, gameStates.render.nWindow);
@@ -2222,6 +2222,7 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		}
 	glDepthFunc (GL_LESS);
 	}
+gameData.app.nMineRenderCount++;
 }
 
 // ----------------------------------------------------------------------------

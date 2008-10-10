@@ -348,9 +348,9 @@ if (gameStates.render.bRearView)
 	glScalef (-1.0f, 1.0f, 1.0f);
 gluPerspective (gameStates.render.glFOV * ((double) viewInfo.zoom / 65536.0),
 					 (double) grdCurCanv->cvBitmap.bmProps.w / (double) grdCurCanv->cvBitmap.bmProps.h, ZNEAR, ZFAR);
-gameData.render.ogl.depthScale[X] = (float) (ZFAR / (ZFAR - ZNEAR));
-gameData.render.ogl.depthScale[Y] = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
-gameData.render.ogl.depthScale[Z] = (float) (ZFAR - ZNEAR);
+gameData.render.ogl.depthScale [X] = (float) (ZFAR / (ZFAR - ZNEAR));
+gameData.render.ogl.depthScale [Y] = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
+gameData.render.ogl.depthScale [Z] = (float) (ZFAR - ZNEAR);
 gameData.render.ogl.screenScale.x = 1.0f / (float) grdCurScreen->scWidth;
 gameData.render.ogl.screenScale.y = 1.0f / (float) grdCurScreen->scHeight;
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -361,10 +361,12 @@ glMatrixMode (GL_MODELVIEW);
 
 void OglViewport (int x, int y, int w, int h)
 {
-x >>= gameStates.render.cameras.bActive;
-y >>= gameStates.render.cameras.bActive;
-w >>= gameStates.render.cameras.bActive;
-h >>= gameStates.render.cameras.bActive;
+if (!gameOpts->render.cameras.bHires) {
+	x >>= gameStates.render.cameras.bActive;
+	y >>= gameStates.render.cameras.bActive;
+	w >>= gameStates.render.cameras.bActive;
+	h >>= gameStates.render.cameras.bActive;
+	}
 if ((x != gameStates.ogl.nLastX) || (y != gameStates.ogl.nLastY) || (w != gameStates.ogl.nLastW) || (h != gameStates.ogl.nLastH)) {
 #if !USE_IRRLICHT
 	glViewport ((GLint) x, 

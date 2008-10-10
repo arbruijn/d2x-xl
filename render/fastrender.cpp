@@ -90,18 +90,22 @@ PROF_END(ptFaceList)
 
 //------------------------------------------------------------------------------
 
-void AddFaceListItem (grsFace *faceP, int nThread)
+int AddFaceListItem (grsFace *faceP, int nThread)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
-	return;
+	return 0;
+#if 1
+if (faceP->nFrame == gameData.app.nMineRenderCount)
+	return 0;
+#endif
 #if DBG
 if (faceP - gameData.segs.faces.faces >= gameData.segs.nFaces)
-	return;
+	return 0;
 #endif
 short	i, j, nKey = faceP->nBaseTex;
 
 if (nKey < 0)
-	return;
+	return 0;
 
 PROF_START
 tFaceListIndex	*flxP = gameData.render.faceIndex + nThread;
@@ -130,8 +134,10 @@ else
 gameData.render.faceList [i].nNextItem = -1;
 gameData.render.faceList [i].faceP = faceP;
 flxP->tails [nKey] = i;
+faceP->nFrame = gameData.app.nFrameCount;
 #endif
 PROF_END(ptFaceList)
+return 1;
 }
 
 #endif //SORT_FACES > 1
@@ -730,7 +736,6 @@ void RenderCoronaFaceList (tFaceListIndex *flxP, int nPass)
 for (i = 0; i < flx.nUsedKeys; i++) {
 	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
 		fliP = gameData.render.faceList + j;
-		faceP = fliP->faceP;
 		faceP = fliP->faceP;
 		if (!faceP->nCorona)
 			continue;
@@ -1562,7 +1567,7 @@ PROF_START
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
 	int			h, i, j, nColor, nLights = 0,
-					nnStep = nStart ? -1 : 1,
+					nStep = nStart ? -1 : 1,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
@@ -1577,7 +1582,7 @@ gameStates.render.nState = 0;
 if (gameStates.ogl.bVertexLighting)
 	gameStates.ogl.bVertexLighting = ComputeVertexLight (-1, 0, NULL);
 #endif
-for (i = nStart; i != nEnd; i += nnStep) {
+for (i = nStart; i != nEnd; i += nStep) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
@@ -1612,7 +1617,8 @@ for (i = nStart; i != nEnd; i += nnStep) {
 			continue;
 			}
 #if SORT_FACES > 1
-		AddFaceListItem (faceP, nThread);
+		if (!AddFaceListItem (faceP, nThread))
+			continue;
 #endif
 		faceP->color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
@@ -1697,7 +1703,7 @@ PROF_START
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
 	int			h, i, j, k, nIndex, nColor, nLights = 0,
-					nnStep = nStart ? -1 : 1;
+					nStep = nStart ? -1 : 1;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
@@ -1712,7 +1718,7 @@ gameStates.render.nState = 0;
 if (gameStates.ogl.bVertexLighting)
 	gameStates.ogl.bVertexLighting = ComputeVertexLight (-1, 0, NULL);
 #endif
-for (i = nStart; i != nEnd; i += nnStep) {
+for (i = nStart; i != nEnd; i += nStep) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
@@ -1747,7 +1753,8 @@ for (i = nStart; i != nEnd; i += nnStep) {
 			continue;
 			}
 #if SORT_FACES > 1
-		AddFaceListItem (faceP, nThread);
+		if (!AddFaceListItem (faceP, nThread))
+			continue;
 #endif
 		faceP->color = faceColor [nColor].color;
 #if 1
@@ -1834,7 +1841,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 	float			fAlpha;
 	tUVL			*uvlP;
 	int			h, i, j, uvi, nColor, 
-					nnStep = nStart ? -1 : 1;
+					nStep = nStart ? -1 : 1;
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
@@ -1843,7 +1850,7 @@ ResetFaceList (nThread);
 #endif
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
-for (i = nStart; i != nEnd; i += nnStep) {
+for (i = nStart; i != nEnd; i += nStep) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
@@ -1869,7 +1876,8 @@ for (i = nStart; i != nEnd; i += nnStep) {
 			continue;
 			}
 #if SORT_FACES > 1
-		AddFaceListItem (faceP, nThread);
+		if (!AddFaceListItem (faceP, nThread))
+			continue;
 #endif
 		faceP->color = faceColor [nColor].color;
 		pc = gameData.segs.faces.color + faceP->nIndex;

@@ -159,17 +159,24 @@ if (gameOpts->render.cameras.bFitToWall || bTeleport) {
 	}
 else 
 #endif
+#if 0
+if (gameOpts->render.cameras.bHires) {
+	pc->texBuf.bmProps.w = grdCurCanv->cvBitmap.bmProps.w;
+	pc->texBuf.bmProps.h = grdCurCanv->cvBitmap.bmProps.h;
+	}
+else
+#endif
 	{
-	h = grdCurCanv->cvBitmap.bmProps.w / 2;
+	h = grdCurCanv->cvBitmap.bmProps.w / (2 - gameOpts->render.cameras.bHires);
 	for (i = 1; i < h; i <<= 1)
 		;
 	pc->texBuf.bmProps.w = i;
-	h = grdCurCanv->cvBitmap.bmProps.h / 2;
+	h = grdCurCanv->cvBitmap.bmProps.h / (2 - gameOpts->render.cameras.bHires);
 	for (i = 1; i < h; i <<= 1)
 		;
 	pc->texBuf.bmProps.h = i;
 	}
-pc->texBuf.bmProps.rowSize = grdCurCanv->cvBitmap.bmProps.w;
+pc->texBuf.bmProps.rowSize = max (grdCurCanv->cvBitmap.bmProps.w, pc->texBuf.bmProps.w);
 pc->texBuf.bmBPP = 4;
 #if RENDER2TEXTURE
 if (!OglCreateCamBuf (pc)) 
@@ -212,7 +219,7 @@ else {
 		a = n.ToAnglesVec();
 		}
 	else
-		a = gameData.segs.segments [srcSeg].sides [srcSide].normals[0].ToAnglesVec();
+		a = gameData.segs.segments [srcSeg].sides [srcSide].normals [0].ToAnglesVec();
 	pc->obj.position.mOrient = vmsMatrix::Create(a);
 #if 1
 	if (bTeleport)
@@ -335,7 +342,7 @@ gameData.cameras.nCameras = 0;
 
 void GetCameraUVL (tCamera *pc, grsFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP)
 {
-	int i2, i3, nType = 0;
+	int i2, i3, nType = 0, nScale = 2 - gameOpts->render.cameras.bHires;
 
 if (gameStates.render.bTriangleMesh) {
 	if ((nType = faceP->nType == SIDE_IS_TRI_13)) {
@@ -405,8 +412,8 @@ else
 		}
 	du = dv = 0;
 	if (bCamBufAvail) {
-		duImage = (float) grdCurCanv->cvBitmap.bmProps.w / (float) pc->texBuf.bmProps.w / 2;
-		dvImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) pc->texBuf.bmProps.h / 2;
+		duImage = (float) grdCurCanv->cvBitmap.bmProps.w / (float) pc->texBuf.bmProps.w / nScale;
+		dvImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) pc->texBuf.bmProps.h / nScale;
 		if (!bFitToWall && RENDERPATH) {
 			aImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) grdCurCanv->cvBitmap.bmProps.w;
 			if (vertexP)
@@ -414,8 +421,8 @@ else
 				        fVector::Dist(*(fVector *)(vertexP + 1), *(fVector *)(vertexP + i2));
 			else
 				aFace = dvFace / duFace;
-			dv = (aImage - aFace) / 2.0f;
-			duImage -= du / 2;
+			dv = (aImage - aFace) / (float) nScale;
+			duImage -= du / nScale;
 			dvImage -= dv;
 			}
 		}
@@ -427,13 +434,13 @@ else
 		xFlip = !xFlip;
 	if (uvlP) {
 		uvlP [0].v = 
-		uvlP [3].v = F2X (yFlip ? dvImage : dv / 2);
+		uvlP [3].v = F2X (yFlip ? dvImage : dv / nScale);
 		uvlP [1].v = 
-		uvlP [2].v = F2X (yFlip ? dv / 2 : dvImage);
+		uvlP [2].v = F2X (yFlip ? dv / nScale : dvImage);
 		uvlP [0].u = 
-		uvlP [1].u = F2X (xFlip ? duImage : du / 2);
+		uvlP [1].u = F2X (xFlip ? duImage : du / nScale);
 		uvlP [2].u = 
-		uvlP [3].u = F2X (xFlip ? du / 2 : duImage);
+		uvlP [3].u = F2X (xFlip ? du / nScale : duImage);
 		for (i = 0; i < 4; i++)
 			uvlP [i].l = F1_0;
 		if (rotRight) {
@@ -457,9 +464,9 @@ else
 		texCoord [1].v.v = 
 		texCoord [2].v.v = yFlip ? dv : dvImage;
 		texCoord [0].v.u = 
-		texCoord [1].v.u = xFlip ? duImage : du / 2;
+		texCoord [1].v.u = xFlip ? duImage : du / nScale;
 		texCoord [2].v.u = 
-		texCoord [3].v.u = xFlip ? du / 2 : duImage;
+		texCoord [3].v.u = xFlip ? du / nScale : duImage;
 		if (rotLeft) {
 			tTexCoord2f h = texCoord [0];
 			texCoord [0] = texCoord [1];

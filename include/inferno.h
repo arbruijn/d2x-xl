@@ -170,6 +170,7 @@ typedef struct tCameraOptions {
 	int nFPS;
 	int nSpeed;
 	int bFitToWall;
+	int bHires;
 } tCameraOptions;
 
 //------------------------------------------------------------------------------
@@ -2594,6 +2595,7 @@ typedef enum {
 
 typedef struct tApplicationData {
 	int					nFrameCount;
+	int					nMineRenderCount;
 	int					nGameMode;
 	int					bGamePaused;
 	uint					nStateGameId;
