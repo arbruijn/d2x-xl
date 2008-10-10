@@ -881,7 +881,7 @@ bmTop = faceP ? BmOverride (faceP->bmTop, -1) : NULL;
 if (bmTop && !(bmTop->bmProps.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
 	bmBot = bmTop;
 	bmTop = bmMask = NULL;
-	bDecal = 0;
+	bDecal = -1;
 	}
 #if RENDER_TRANSP_DECALS
 else {
@@ -893,15 +893,15 @@ bDecal = 0;
 bmMask = NULL;
 #endif
 if (LoadRenderItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
-	 (faceP != NULL) || bSoftBlend, bLightmaps, bmMask ? 2 : bDecal, 0) &&
-	 (!bDecal || LoadRenderItemImage (bmTop, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
+	 (faceP != NULL) || bSoftBlend, bLightmaps, bmMask ? 2 : bDecal > 0, 0) &&
+	 ((bDecal < 1) || LoadRenderItemImage (bmTop, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
 	 (!bmMask || LoadRenderItemImage (bmMask, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
 	if (triP || faceP) {
-		RISetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, 0);
+		RISetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
 		if (!bLightmaps)
 			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + nIndex);
-		if (bDecal) {
+		if (bDecal > 0) {
 			RISetRenderPointers (GL_TEXTURE1 + bLightmaps, nIndex, 1);
 			if (bmMask)
 				RISetRenderPointers (GL_TEXTURE2 + bLightmaps, nIndex, 1);
@@ -1022,7 +1022,7 @@ if (LoadRenderItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 				RIResetShader ();
 			}
 		else
-			G3SetupShader (faceP, 0, 0, bDecal, bmBot != NULL,
+			G3SetupShader (faceP, 0, 0, bDecal > 0, bmBot != NULL,
 								(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
 								renderItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
 #if 0
