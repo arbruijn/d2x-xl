@@ -317,7 +317,7 @@ return StartBriefingSound (nChannel, -1, 8 * F1_0, p->pszName);
 extern int NMCheckButtonPress ();
 
 // added by Jan Bobrowski for variable-size menu screen
-static int rescale_x (int x)
+static int RescaleX (int x)
 {
 	return x * GWIDTH / 320;
 }
@@ -439,9 +439,9 @@ return 0;
 void InitCharPos (tBriefingScreen *bsP, int bRescale)
 {
 if (bRescale) {
-	bsP->text_ulx = rescale_x (bsP->text_ulx);
+	bsP->text_ulx = RescaleX (bsP->text_ulx);
 	bsP->text_uly = RescaleY (bsP->text_uly);
-	bsP->text_width = rescale_x (bsP->text_width);
+	bsP->text_width = RescaleX (bsP->text_width);
 	bsP->text_height = RescaleY (bsP->text_height);
 	}
 briefingTextX = bsP->text_ulx;
@@ -456,9 +456,9 @@ void ShowBitmapFrame (int bRedraw)
 	vmsVector p = vmsVector::ZERO;
 
 	grsBitmap *bmP;
-	int x = rescale_x (138);
+	int x = RescaleX (138);
 	int y = RescaleY (55);
-	int w = rescale_x (166);
+	int w = RescaleX (166);
 	int h = RescaleY (138);
 
 	//	Only plot every nth frame.
@@ -633,9 +633,9 @@ void InitSpinningRobot (void) // (int x, int y, int w, int h)
 	//vRobotAngles[BA] += 0;
 	//vRobotAngles[HA] += 0;
 
-int x = rescale_x (138);
+int x = RescaleX (138);
 int y = RescaleY (55);
-int w = rescale_x (163);
+int w = RescaleX (163);
 int h = RescaleY (136);
 robotCanvP = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
 bInitRobot = 1;
@@ -683,10 +683,10 @@ if ((delay > 0) && !bRedraw) {
 			RotateBriefingRobot ();
 		else {
 			if (tImage && (t - tImage >= 10)) {
-				if (*szBitmapName && (delay != 0))
-					ShowBitmapFrame (0);
 				if (nRobot != -1)
 					ShowSpinningRobotFrame (nRobot);
+				else if (*szBitmapName && (delay != 0))
+					ShowBitmapFrame (0);
 				tImage = t;
 				}
 			}
@@ -992,10 +992,7 @@ return 1;
 int _R (tBriefingInfo& bi)
 {
 if (bi.message > bi.pj) {
-	if (robotCanvP != NULL) {
-		D2_FREE (robotCanvP);
-		robotCanvP = NULL;
-		}
+	D2_FREE (robotCanvP);
 	if (bRobotPlaying) {
 		DeInitRobotMovie ();
 		bRobotPlaying = 0;
@@ -1631,6 +1628,7 @@ DigiStopAllChannels ();
 SongsPlaySong (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
 GrSetCurrentCanvas (NULL);
+gameStates.render.nShadowPass = 0;
 con_printf (CONDBG, "Playing briefing screen <%s>, level %d\n", fnBriefing, nLevel);
 KeyFlush ();
 if (gameStates.app.bD1Mission) {

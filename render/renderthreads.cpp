@@ -57,7 +57,7 @@ int RunRenderThreads (int nTask)
 
 if (!gameStates.app.bMultiThreaded)
 	return 0;
-if (!gameData.app.bUseMultiThreading [nTask])
+if ((nTask < rtTaskCount) && !gameData.app.bUseMultiThreading [nTask])
 	return 0;
 tiRender.nTask = (tRenderTask) nTask;
 tiRender.ti [0].bExec =
@@ -153,7 +153,7 @@ do {
 			}
 		G3DynLightModel (tiRender.objP, tiRender.pm, iVerts, nVerts, iFaceVerts, nFaceVerts);
 		}
-	else if (tiRender.nTask == rtPolyModel)
+	else if (tiRender.nTask == rtLightmap)
 		ComputeOneLightmap (nId);
 	tiRender.ti [nId].bExec = 0;
 	} while (!tiRender.ti [nId].bDone);

@@ -549,7 +549,7 @@ else if (!po) {
 //check if should use simple model (depending on detail level chosen)
 if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && po->nSimplerModel && !flags && pos) {
 	int	cnt = 1;
-	fix depth = G3CalcPointDepth(*pos);		//gets 3d depth
+	fix depth = G3CalcPointDepth (*pos);		//gets 3d depth
 	while (po->nSimplerModel && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * po->rad))
 		po = gameData.models.polyModels + po->nSimplerModel - 1;
 	}
@@ -654,7 +654,7 @@ if (!flags)	{	//draw entire tObject
 				gameData.models.nScale = 3 * F1_0 / 2;
 			}
 		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
-		G3StartInstanceMatrix(*pos, *orient);
+		G3StartInstanceMatrix (*pos, *orient);
 		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
 		G3DoneInstance ();
 		}
@@ -830,7 +830,7 @@ atexit (FreePolygonModels);
 //into an off-screen canvas that it creates, then copies to the current
 //canvas.
 
-void DrawModelPicture (int nModel, vmsAngVec *orient_angles)
+void DrawModelPicture (int nModel, vmsAngVec *orientAngles)
 {
 	vmsVector	p = vmsVector::ZERO;
 	vmsMatrix	o = vmsMatrix::IDENTITY;
@@ -838,12 +838,12 @@ void DrawModelPicture (int nModel, vmsAngVec *orient_angles)
 Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
 G3StartFrame (0, 0);
 glDisable (GL_BLEND);
-G3SetViewMatrix(p, o, gameStates.render.xZoom, 1);
+G3SetViewMatrix (p, o, gameStates.render.xZoom, 1);
 if (gameData.models.polyModels [nModel].rad != 0)
-	p[Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [nModel].rad, BASE_MODEL_SIZE);
+	p [Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [nModel].rad, BASE_MODEL_SIZE);
 else
-	p[Z] = DEFAULT_VIEW_DIST;
-o = vmsMatrix::Create(*orient_angles);
+	p [Z] = DEFAULT_VIEW_DIST;
+o = vmsMatrix::Create (*orientAngles);
 DrawPolygonModel (NULL, &p, &o, NULL, nModel, 0, f1_0, NULL, NULL, NULL);
 G3EndFrame ();
 if (gameStates.ogl.nDrawBuffer != GL_BACK)

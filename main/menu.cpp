@@ -2376,7 +2376,7 @@ do {
 		}
 	GET_VAL (gameOpts->render.effects.bTransparent, optTranspExpl);
 	for (j = 0; j < 3; j++)
-	if (optSoftParticles [j]) {
+	if (optSoftParticles [j] >= 0) {
 		if (m [optSoftParticles [j]].value)
 			gameOpts->render.effects.bSoftParticles |= 1 << j;
 		else
@@ -2389,11 +2389,6 @@ do {
 	extraGameInfo [0].bGatlingTrails = m [optGatlingTrails].value;
 	extraGameInfo [0].bShockwaves = 0; //m [optShockwaves].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
-	for (j = 0; j < 3; j++)
-		if (m [optThrusterFlame + j].value) {
-			extraGameInfo [0].bThrusterFlames = j;
-			break;
-			}
 	for (j = 0; j < 3; j++)
 		if (m [optThrusterFlame + j].value) {
 			extraGameInfo [0].bThrusterFlames = j;
