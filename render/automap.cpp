@@ -175,7 +175,7 @@ amData.nMaxDist = F1_0 * 2000;
 amData.nZoom = 0x9000;
 amData.viewPos.SetZero ();
 amData.viewTarget.SetZero ();
-amData.viewMatrix.IDENTITY;
+amData.viewMatrix = vmsMatrix::IDENTITY;
 }
 
 //------------------------------------------------------------------------------

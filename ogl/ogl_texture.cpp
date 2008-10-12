@@ -1270,7 +1270,7 @@ if (t) {
 	GLuint h = (GLuint) t->handle;
 	if (h && (h != -1)) {
 		r_texcount--;
-		OglDeleteTextures (1, &((GLuint) h));
+		OglDeleteTextures (1, (GLuint *) &h);
 		OglInitTexture (t, 0, NULL);
 		}
 	}

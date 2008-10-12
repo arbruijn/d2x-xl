@@ -217,7 +217,6 @@ void StartRenderThreads (void)
 {
 	int	i;
 
-gameData.app.bUseMultiThreading [rtLightmap] = 1;
 memset (&tiRender, 0, sizeof (tiRender));
 for (i = 0; i < 2; i++) {
 	tiRender.ti [i].nId = i;

@@ -43,28 +43,13 @@ extern void timer_set_function( void _far * function );
 // and microseconds.  They time out after 1000 hrs, 100 hrs, 10 hrs, and
 // 1 hr, respectively.
 
-#if 0//def _WIN32
-extern QLONG TimerGetFixedSeconds(void);
-#else
-extern fix TimerGetFixedSeconds();   // Rolls about every 9 hours...
-#endif
 #ifdef __DJGPP__
 extern fix timer_get_fixedSecondsX(); // Assume interrupts already disabled
-extern fix TimerGetApproxSeconds();		// Returns time since program started... accurate to 1/120th of a second
 extern void timer_set_joyhandler( void (*joy_handler)() );
 #else
 #define timer_get_fixedSecondsX TimerGetFixedSeconds
 //#define TimerGetApproxSeconds TimerGetFixedSeconds
-extern fix TimerGetApproxSeconds();
 #endif
-
-//NOT_USED extern unsigned int timer_get_microseconds();
-//NOT_USED extern unsigned int timer_get_milliseconds100();
-//NOT_USED extern unsigned int timer_get_milliseconds10();
-//NOT_USED extern unsigned int timer_get_milliseconds();
-//NOT_USED extern unsigned int timer_get_millisecondsX();	// Assume interrupts disabled
-
-void TimerDelay(fix seconds);
 
 //==========================================================================
 // Use to access the BIOS ticker... ie...   i = TICKER
