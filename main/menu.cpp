@@ -2478,7 +2478,7 @@ do {
 		optSmoke = nOptions++;
 		ADD_CHECK (nOptions, TXT_AUTOMAP_LIGHTNINGS, gameOpts->render.automap.bLightnings, KEY_S, HTX_AUTOMAP_LIGHTNINGS);
 		optLightnings = nOptions++;
-		ADD_CHECK (nOptions, TXT_AUTOMAP_SKYBOX, gameOpts->render.automap.bSkybox, KEY_B, HTX_AUTOMAP_SKYBOX);
+		ADD_CHECK (nOptions, TXT_AUTOMAP_SKYBOX, gameOpts->render.automap.bSkybox, KEY_K, HTX_AUTOMAP_SKYBOX);
 		optSkybox = nOptions++;
 		}
 	else

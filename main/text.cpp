@@ -1650,7 +1650,7 @@ const char *defaultGameTexts [][2] = {
 	{"~Alle missionen spielen", "play ~All missions"},
 	{"Neues Spiel", "New Game"},
 	{"~Schuesse mit Lichthoefen zeichnen", "render coronas for gun ~Shots"},
-	{"~Skybox anzeigen", "show ~Skybox"},
+	{"s~Kybox anzeigen", "show ~sKybox"},
 	{"Zeitlupe/-raffer", "Slowmo/Speed"},
 	{"beschleunige...", "speeding up..."},
 	{"verzoegere...", "slowing down..."},
