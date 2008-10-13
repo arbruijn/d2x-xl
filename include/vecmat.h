@@ -16,7 +16,7 @@
 
 #include "maths.h"
 #include <cstdlib>
-#include <string>
+#include <string.h>
 
 using namespace std;
 

@@ -587,7 +587,7 @@ if (gameData.smoke.objects [i] < 0) {
 	color.green = (float) objP->rType.smokeInfo.color.green / 255.0f;
 	color.blue = (float) objP->rType.smokeInfo.color.blue / 255.0f;
 	if ((bColor = (color.red + color.green + color.blue > 0)))
-		color.alpha = (float) objP->rType.smokeInfo.color.alpha / 255.0f;
+		color.alpha = (float) -objP->rType.smokeInfo.color.alpha / 255.0f;
 	dir = objP->position.mOrient[FVEC] * (objP->rType.smokeInfo.nSpeed * 2 * F1_0 / 55);
 	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, &dir, NULL,
 											  objP->nSegment, 1, -objP->rType.smokeInfo.nParts,

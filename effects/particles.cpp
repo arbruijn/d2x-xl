@@ -364,12 +364,12 @@ return n * n;
 
 //------------------------------------------------------------------------------
 
-inline float ParticleBrightness (tRgbaColorf *pColor)
+inline float ParticleBrightness (tRgbaColorf *colorP)
 {
 #if 0
-return (pColor->red + pColor->green + pColor->blue) / 3.0f;
+return (colorP->red + colorP->green + colorP->blue) / 3.0f;
 #else
-return pColor ? (pColor->red * 3 + pColor->green * 5 + pColor->blue * 2) / 10.0f : 1.0f;
+return colorP ? (colorP->red * 3 + colorP->green * 5 + colorP->blue * 2) / 10.0f : 1.0f;
 #endif
 }
 
@@ -400,7 +400,7 @@ return vPos;
 
 int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
 						  short nSegment, int nLife, int nSpeed, char nSmokeType, char nClass,
-						  float nScale, tRgbaColorf *pColor, int nCurTime, int bBlowUp,
+						  float nScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp,
 						  float fBrightness, vmsVector *vEmittingFace)
 {
 	vmsVector	vDrift, vPos;
@@ -431,13 +431,13 @@ if (nType == 2) {
 	}
 else {
 	pParticle->bBright = nSmokeType ? 0 : (rand () % 50) == 0;
-	if ((pParticle->bColored = (pColor != NULL))) {
+	if ((pParticle->bColored = (colorP != NULL))) {
 		if (nType == 1)
-			pParticle->color = *pColor;
+			pParticle->color = *colorP;
 		else {
-			pParticle->color.red = pColor->red * RANDOM_FADE;
-			pParticle->color.green = pColor->green * RANDOM_FADE;
-			pParticle->color.blue = pColor->blue * RANDOM_FADE;
+			pParticle->color.red = colorP->red * RANDOM_FADE;
+			pParticle->color.green = colorP->green * RANDOM_FADE;
+			pParticle->color.blue = colorP->blue * RANDOM_FADE;
 			}
 		pParticle->nFade = 0;
 		}
@@ -449,8 +449,12 @@ else {
 		}
 	if (pParticle->bEmissive)
 		pParticle->color.alpha = (float) (SMOKE_START_ALPHA + 64) / 255.0f;
-	else if (nType != 1)
-		pParticle->color.alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
+	else if (nType != 1) {
+		if (colorP && (colorP->alpha < 0))
+			pParticle->color.alpha = -colorP->alpha;
+		else
+			pParticle->color.alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
+		}
 #if 1
 	if (gameOpts->render.smoke.bDisperse && !pParticle->bBright) {
 		fBrightness = 1.0f - fBrightness;
@@ -469,8 +473,8 @@ if (pDir) {
 	a[HA] = randN (F1_0 / 4) - F1_0 / 8;
 	m = vmsMatrix::Create(a);
 	vDrift = m * (*pDir);
-	vmsVector::Normalize(vDrift);
-	d = (float) vmsVector::DeltaAngle(vDrift, *pDir, NULL);
+	vmsVector::Normalize (vDrift);
+	d = (float) vmsVector::DeltaAngle (vDrift, *pDir, NULL);
 	if (d) {
 		d = (float) exp ((F1_0 / 8) / d);
 		nSpeed = (fix) ((float) nSpeed / d);
@@ -543,7 +547,7 @@ else {
 	}
 #if 1
 if (pParticle->bEmissive)
-	pParticle->color.alpha *= ParticleBrightness (pColor);
+	pParticle->color.alpha *= ParticleBrightness (colorP);
 else if (nType != 1)
 	pParticle->color.alpha /= nSmokeType + 2;
 #endif
@@ -1220,7 +1224,7 @@ return 1;
 int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
 					  short nSegment, int nObject, int nMaxParts, float nPartScale,
 					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
-					  tRgbaColorf *pColor, int nCurTime, int bBlowUpParts, vmsVector *vEmittingFace)
+					  tRgbaColorf *colorP, int nCurTime, int bBlowUpParts, vmsVector *vEmittingFace)
 {
 if (!(pCloud->pParticles = (tParticle *) D2_ALLOC (nMaxParts * sizeof (tParticle))))
 	return 0;
@@ -1236,8 +1240,8 @@ pCloud->nLife = nLife;
 pCloud->nBirth = nCurTime;
 pCloud->nSpeed = nSpeed;
 pCloud->nType = nType;
-if ((pCloud->bHaveColor = (pColor != NULL)))
-	pCloud->color = *pColor;
+if ((pCloud->bHaveColor = (colorP != NULL)))
+	pCloud->color = *colorP;
 if ((pCloud->bHaveDir = (pDir != NULL)))
 	pCloud->dir = *pDir;
 pCloud->prevPos =
@@ -1803,7 +1807,7 @@ return 1;
 int CreateSmoke (vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
 					  short nSegment, int nMaxClouds, int nMaxParts,
 					  float nPartScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
-					  int nObject, tRgbaColorf *pColor, int bBlowUpParts, char nSide)
+					  int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide)
 {
 #if 0
 if (!(EGI_FLAG (bUseSmoke, 0, 1, 0)))
@@ -1842,7 +1846,7 @@ else {
 	pSmoke->nMaxClouds = nMaxClouds;
 	for (i = 0; i < nMaxClouds; i++)
 		if (CreateCloud (pSmoke->pClouds + i, pPos, pDir, pOrient, nSegment, nObject, nMaxParts, nPartScale, nDensity,
-							  nPartsPerPos, nLife, nSpeed, nType, pColor, t, bBlowUpParts, (nSide < 0) ? NULL : vEmittingFace))
+							  nPartsPerPos, nLife, nSpeed, nType, colorP, t, bBlowUpParts, (nSide < 0) ? NULL : vEmittingFace))
 			pSmoke->nClouds++;
 		else {
 			DestroySmoke (gameData.smoke.iFree);
