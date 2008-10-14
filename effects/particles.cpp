@@ -921,7 +921,8 @@ else {
 if (!nType) {
 	if (SHOW_DYN_LIGHT) {
 		tFaceColor *psc = AvgSgmColor (pParticle->nSegment, NULL);
-		if (psc->index == gameStates.render.nFrameFlipFlop + 1) {
+		//if (psc->index == gameStates.render.nFrameFlipFlop + 1) 
+			{
 			pc.red *= (float) psc->color.red;
 			pc.green *= (float) psc->color.green;
 			pc.blue *= (float) psc->color.blue;
@@ -2240,6 +2241,10 @@ else
 			}
 		}
 	}
+#if DBG
+if (!h)
+	return 0;
+#endif
 return 1;
 }
 

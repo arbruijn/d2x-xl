@@ -126,6 +126,11 @@ if ((faceBuffer.nFaces && bForce) || (faceBuffer.nFaces >= FACE_BUFFER_SIZE)) {
 
 void G3FillFaceBuffer (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bTextured)
 {
+#if DBG
+if (!gameOpts->render.debug.bTextures)
+	return;
+#endif
+
 int i = faceP->nIndex,
 	 j = gameStates.render.bTriangleMesh ? faceP->nTris * 3 : 4;
 

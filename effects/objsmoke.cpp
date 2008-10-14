@@ -588,7 +588,7 @@ if (gameData.smoke.objects [i] < 0) {
 	color.blue = (float) objP->rType.smokeInfo.color.blue / 255.0f;
 	if ((bColor = (color.red + color.green + color.blue > 0)))
 		color.alpha = (float) -objP->rType.smokeInfo.color.alpha / 255.0f;
-	dir = objP->position.mOrient[FVEC] * (objP->rType.smokeInfo.nSpeed * 2 * F1_0 / 55);
+	dir = objP->position.mOrient [FVEC] * (objP->rType.smokeInfo.nSpeed * 2 * F1_0 / 55);
 	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, &dir, NULL,
 											  objP->nSegment, 1, -objP->rType.smokeInfo.nParts,
 											  -PARTICLE_SIZE (objP->rType.smokeInfo.nSize [gameOpts->render.smoke.bDisperse], 2.0f),
@@ -603,9 +603,9 @@ if (objP->rType.smokeInfo.nSide <= 0) {	//don't vary emitter position for smoke 
 	if (!(j = i - i / 2))
 		j = 2;
 	i /= 2;
-	offs[X] = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
-	offs[Y] = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
-	offs[Z] = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
+	offs [X] = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
+	offs [Y] = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
+	offs [Z] = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
 	pos = objP->position.vPos + offs;
 	SetSmokePos (gameData.smoke.objects [i], &pos, NULL, objP->nSegment);
 	}
@@ -630,9 +630,9 @@ if (nParts) {
 		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, NULL, objP->nSegment, 1, nParts,
 												  -PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, 1, i, NULL, 1, -1));
 		}
-	offs[X] = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
-	offs[Y] = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
-	offs[Z] = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs [X] = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs [Y] = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs [Z] = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
 	pos = objP->position.vPos + offs;
 	SetSmokePos (gameData.smoke.objects [i], &pos, NULL, objP->nSegment);
 	}
