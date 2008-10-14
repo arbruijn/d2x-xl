@@ -1986,12 +1986,12 @@ void ComputeVertexNormals (void)
 
 for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
 	if (1 < (h = pp->p3_normal.nFaces)) {
-		pp->p3_normal.vNormal /= h;
+		pp->p3_normal.vNormal /= (float) h;
 		/*
 		pp->p3_normal.vNormal[Y] /= h;
 		pp->p3_normal.vNormal[Z] /= h;
 		*/
-		fVector::Normalize(pp->p3_normal.vNormal);
+		fVector::Normalize (pp->p3_normal.vNormal);
 		}
 	pp->p3_normal.nFaces = 1;
 	}

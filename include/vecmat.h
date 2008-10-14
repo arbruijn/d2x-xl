@@ -18,8 +18,6 @@
 #include <cstdlib>
 #include <string.h>
 
-using namespace std;
-
 const size_t X = 0;
 const size_t Y = 1;
 const size_t Z = 2;
@@ -179,7 +177,7 @@ inline const float fVector3::SqrMag () const {
 }
 
 inline const float fVector3::Mag () const {
-	return sqrt (SqrMag ());
+	return (const float) sqrt (SqrMag ());
 }
 
 inline const fVector3 fVector3::operator- () const {
@@ -367,7 +365,7 @@ inline const float fVector::SqrMag () const {
 }
 
 inline const float fVector::Mag () const {
-	return sqrt (SqrMag ());
+	return (const float) sqrt (SqrMag ());
 }
 
 inline fVector& fVector::Neg () { v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; return *this; }

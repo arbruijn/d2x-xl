@@ -338,7 +338,9 @@ int DoAnyRobotDyingFrame (tObject *objP)
 {
 if (objP->cType.aiInfo.xDyingStartTime) {
 	int bDeathRoll = ROBOTINFO (objP->id).bDeathRoll;
-	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, min (bDeathRoll/2+1,6)*F1_0, &objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP->id).deathrollSound, bDeathRoll*F1_0/8, bDeathRoll*F1_0/2);
+	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, min (bDeathRoll / 2 + 1, 6) * F1_0, 
+											&objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP->id).deathrollSound, 
+											bDeathRoll * F1_0 / 8, bDeathRoll * F1_0 / 2);
 	if (rval) {
 		ExplodeObject (objP, F1_0/4);
 		DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
