@@ -79,24 +79,24 @@ const fMatrix fMatrix::IDENTITY = fMatrix::Create(fVector::Create(1.0f, 0, 0, 0)
 //returns matrix.
 const vmsMatrix vmsMatrix::CreateF(const vmsVector& fVec) {
 	vmsMatrix m;
-	vmsVector& xvec = m[RVEC];
-	vmsVector& yvec = m[UVEC];
-	vmsVector& zvec = m[FVEC];
+	vmsVector& xvec = m [RVEC];
+	vmsVector& yvec = m [UVEC];
+	vmsVector& zvec = m [FVEC];
 
 	zvec = fVec;
 	vmsVector::Normalize(zvec);
 	assert(zvec.Mag() != 0);
 
 	//just forward vec
-	if ((zvec[X] == 0) && (zvec[Z] == 0)) {		//forward vec is straight up or down
-		m[RVEC][X] = F1_0;
-		m[UVEC][Z] = (zvec[Y] < 0) ? F1_0 : -F1_0;
-		m[RVEC][Y] = m[RVEC][Z] = m[UVEC][X] = m[UVEC][Y] = 0;
+	if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
+		m [RVEC][X] = F1_0;
+		m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+		m [RVEC][Y] = m [RVEC][Z] = m [UVEC][X] = m [UVEC][Y] = 0;
 	}
 	else { 		//not straight up or down
-		xvec[X] = zvec[Z];
-		xvec[Y] = 0;
-		xvec[Z] = -zvec[X];
+		xvec [X] = zvec [Z];
+		xvec [Y] = 0;
+		xvec [Z] = -zvec [X];
 		vmsVector::Normalize(xvec);
 		yvec = vmsVector::Cross(zvec, xvec);
 	}
@@ -108,9 +108,9 @@ const vmsMatrix vmsMatrix::CreateF(const vmsVector& fVec) {
 //returns matrix.
 const vmsMatrix vmsMatrix::CreateFU(const vmsVector& fVec, const vmsVector& uVec) {
 	vmsMatrix m;
-	vmsVector& xvec = m[RVEC];
-	vmsVector& yvec = m[UVEC];
-	vmsVector& zvec = m[FVEC];
+	vmsVector& xvec = m [RVEC];
+	vmsVector& yvec = m [UVEC];
+	vmsVector& zvec = m [FVEC];
 
 	zvec = fVec;
 	vmsVector::Normalize(zvec);
@@ -118,15 +118,15 @@ const vmsMatrix vmsMatrix::CreateFU(const vmsVector& fVec, const vmsVector& uVec
 
 	yvec = uVec;
 	if (vmsVector::Normalize(yvec) == 0) {
-		if ((zvec[X] == 0) && (zvec[Z] == 0)) {		//forward vec is straight up or down
-			m[RVEC][X] = F1_0;
-			m[UVEC][Z] = (zvec[Y] < 0) ? F1_0 : -F1_0;
-			m[RVEC][Y] = m[RVEC][Z] = m[UVEC][X] = m[UVEC][Y] = 0;
+		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
+			m [RVEC][X] = F1_0;
+			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m [RVEC][Y] = m [RVEC][Z] = m [UVEC][X] = m [UVEC][Y] = 0;
 		}
 		else { 		//not straight up or down
-			xvec[X] = zvec[Z];
-			xvec[Y] = 0;
-			xvec[Z] = -zvec[X];
+			xvec [X] = zvec [Z];
+			xvec [Y] = 0;
+			xvec [Z] = -zvec [X];
 			vmsVector::Normalize(xvec);
 			yvec = vmsVector::Cross(zvec, xvec);
 		}
@@ -135,15 +135,15 @@ const vmsMatrix vmsMatrix::CreateFU(const vmsVector& fVec, const vmsVector& uVec
 	xvec = vmsVector::Cross(yvec, zvec);
 	//Normalize new perpendicular vector
 	if (vmsVector::Normalize(xvec) == 0) {
-		if ((zvec[X] == 0) && (zvec[Z] == 0)) {		//forward vec is straight up or down
-			m[RVEC][X] = F1_0;
-			m[UVEC][Z] = (zvec[Y] < 0) ? F1_0 : -F1_0;
-			m[RVEC][Y] = m[RVEC][Z] = m[UVEC][X] = m[UVEC][Y] = 0;
+		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
+			m [RVEC][X] = F1_0;
+			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m [RVEC][Y] = m [RVEC][Z] = m [UVEC][X] = m [UVEC][Y] = 0;
 		}
 		else { 		//not straight up or down
-			xvec[X] = zvec[Z];
-			xvec[Y] = 0;
-			xvec[Z] = -zvec[X];
+			xvec [X] = zvec [Z];
+			xvec [Y] = 0;
+			xvec [Z] = -zvec [X];
 			vmsVector::Normalize(xvec);
 			yvec = vmsVector::Cross(zvec, xvec);
 		}
@@ -160,9 +160,9 @@ const vmsMatrix vmsMatrix::CreateFU(const vmsVector& fVec, const vmsVector& uVec
 //returns matrix.
 const vmsMatrix vmsMatrix::CreateFR(const vmsVector& fVec, const vmsVector& rVec) {
 	vmsMatrix m;
-	vmsVector& xvec = m[RVEC];
-	vmsVector& yvec = m[UVEC];
-	vmsVector& zvec = m[FVEC];
+	vmsVector& xvec = m [RVEC];
+	vmsVector& yvec = m [UVEC];
+	vmsVector& zvec = m [FVEC];
 
 	zvec = fVec;
 	vmsVector::Normalize(zvec);
@@ -171,15 +171,15 @@ const vmsMatrix vmsMatrix::CreateFR(const vmsVector& fVec, const vmsVector& rVec
 	//use right vec
 	xvec = rVec;
 	if (vmsVector::Normalize(xvec) == 0) {
-		if ((zvec[X] == 0) && (zvec[Z] == 0)) {		//forward vec is straight up or down
-			m[RVEC][X] = F1_0;
-			m[UVEC][Z] = (zvec[Y] < 0) ? F1_0 : -F1_0;
-			m[RVEC][Y] = m[RVEC][Z] = m[UVEC][X] = m[UVEC][Y] = 0;
+		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
+			m [RVEC][X] = F1_0;
+			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m [RVEC][Y] = m [RVEC][Z] = m [UVEC][X] = m [UVEC][Y] = 0;
 		}
 		else { 		//not straight up or down
-			xvec[X] = zvec[Z];
-			xvec[Y] = 0;
-			xvec[Z] = -zvec[X];
+			xvec [X] = zvec [Z];
+			xvec [Y] = 0;
+			xvec [Z] = -zvec [X];
 			vmsVector::Normalize(xvec);
 			yvec = vmsVector::Cross(zvec, xvec);
 		}
@@ -188,15 +188,15 @@ const vmsMatrix vmsMatrix::CreateFR(const vmsVector& fVec, const vmsVector& rVec
 	yvec = vmsVector::Cross(zvec, xvec);
 	//Normalize new perpendicular vector
 	if (vmsVector::Normalize(yvec) == 0) {
-		if ((zvec[X] == 0) && (zvec[Z] == 0)) {		//forward vec is straight up or down
-			m[RVEC][X] = F1_0;
-			m[UVEC][Z] = (zvec[Y] < 0) ? F1_0 : -F1_0;
-			m[RVEC][Y] = m[RVEC][Z] = m[UVEC][X] = m[UVEC][Y] = 0;
+		if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
+			m [RVEC][X] = F1_0;
+			m [UVEC][Z] = (zvec [Y] < 0) ? F1_0 : -F1_0;
+			m [RVEC][Y] = m [RVEC][Z] = m [UVEC][X] = m [UVEC][Y] = 0;
 		}
 		else { 		//not straight up or down
-			xvec[X] = zvec[Z];
-			xvec[Y] = 0;
-			xvec[Z] = -zvec[X];
+			xvec [X] = zvec [Z];
+			xvec [Y] = 0;
+			xvec [Z] = -zvec [X];
 			vmsVector::Normalize(xvec);
 			yvec = vmsVector::Cross(zvec, xvec);
 		}
@@ -234,18 +234,18 @@ const int VmPointLineIntersection (vmsVector& hitP, const vmsVector& p1, const v
 									  int bClampToFarthest)
 {
 	vmsVector	d31, d21;
-	double		m, u;
+	float			m, u;
 	int			bClamped = 0;
 
 	d21 = p2 - p1;
-	m = fabs ((double) d21[X] * (double) d21[X] + (double) d21[Y] * (double) d21[Y] + (double) d21[Z] * (double) d21[Z]);
+	m = (float) fabs ((float) d21 [X] * (float) d21 [X] + (float) d21 [Y] * (float) d21 [Y] + (float) d21 [Z] * (float) d21 [Z]);
 	if (!m) {
 		//	if (hitP)
 		hitP = p1;
 		return 0;
 	}
 	d31 = p3 - p1;
-	u = (double) d31[X] * (double) d21[X] + (double) d31[Y] * (double) d21[Y] + (double) d31[Z] * (double) d21[Z];
+	u = (float) d31 [X] * (float) d21 [X] + (float) d31 [Y] * (float) d21 [Y] + (float) d31 [Z] * (float) d21 [Z];
 	u /= m;
 	if (u < 0)
 		bClamped = bClampToFarthest ? 2 : 1;
@@ -258,9 +258,9 @@ const int VmPointLineIntersection (vmsVector& hitP, const vmsVector& p1, const v
 	else if (bClamped == 1)
 		hitP = p1;
 	else {
-		hitP[X] = p1[X] + (fix) (u * d21[X]);
-		hitP[Y] = p1[Y] + (fix) (u * d21[Y]);
-		hitP[Z] = p1[Z] + (fix) (u * d21[Z]);
+		hitP [X] = p1 [X] + (fix) (u * d21 [X]);
+		hitP [Y] = p1 [Y] + (fix) (u * d21 [Y]);
+		hitP [Z] = p1 [Z] + (fix) (u * d21 [Z]);
 
 //		hitP = p1 + F2X(u) * d21;
 	}
@@ -276,13 +276,13 @@ int VmPointLineIntersection(vmsVector& hitP, const vmsVector& p1, const vmsVecto
 	int			bClamped = 0;
 
 d21 = p2 - p1;
-m = fabs ((double) d21[X] * (double) d21[X] + (double) d21[Y] * (double) d21[Y] + (double) d21[Z] * (double) d21[Z]);
+m = fabs (d21 [X] * d21 [X] + d21 [Y] * d21 [Y] + d21 [Z] * d21 [Z]);
 if (!m) {
 	hitP = p1;
 	return 0;
 }
 d31 = p3 - p1;
-u = (double) d31[X] * (double) d21[X] + (double) d31[Y] * (double) d21[Y] + (double) d31[Z] * (double) d21[Z];
+u = d31 [X] * d21 [X] + d31 [Y] * d21 [Y] + d31 [Z] * d21 [Z];
 u /= m;
 if (u < 0)
 	bClamped = bClampToFarthest ? 2 : 1;
@@ -312,7 +312,7 @@ const int VmPointLineIntersection (fVector& hitP, const fVector& p1, const fVect
 	int		bClamped = 0;
 
 d21 = p2 - p1;
-m = fabs (d21.SqrMag());
+m = (float) fabs (d21.SqrMag());
 if(!m) {
 	hitP = p1;
 	return 0;
@@ -345,7 +345,7 @@ const int VmPointLineIntersection(fVector& hitP, const fVector& p1, const fVecto
 	int		bClamped = 0;
 
 d21 = p2 - p1;
-m = fabs (d21.SqrMag());
+m = (float) fabs (d21.SqrMag());
 if(!m) {
 	hitP = p1;
 	return 0;
@@ -376,7 +376,7 @@ const int VmPointLineIntersection(fVector3& hitP, const fVector3& p1, const fVec
 	int		bClamped = 0;
 
 	d21 = p2 - p1;
-	m = fabs (d21.SqrMag());
+	m = (float) fabs (d21.SqrMag());
 	if (!m) {
 	//	if (hitP)
 		hitP = p1;
@@ -400,9 +400,9 @@ const int VmPointLineIntersection(fVector3& hitP, const fVector3& p1, const fVec
 	}
 	else {
 /*
-		hitP[X] = p1[X] + (fix)(u * d21[X]);
-		hitP[Y] = p1[Y] + (fix)(u * d21[Y]);
-		hitP[Z] = p1[Z] + (fix)(u * d21[Z]);
+		hitP [X] = p1 [X] + (fix)(u * d21 [X]);
+		hitP [Y] = p1 [Y] + (fix)(u * d21 [Y]);
+		hitP [Z] = p1 [Z] + (fix)(u * d21 [Z]);
 */
 		hitP = p1 + u * d21;
 	}
@@ -515,12 +515,12 @@ num = d1343 * d4321 - d1321 * d4343;
 mua = num / den;
 mub = (d1343 + d4321 * mua) / d4343;
 /*
-va->x() = v1->x() + mua * v21[X];
-va->y() = v1->y() + mua * v21[Y];
-va->z() = v1->z() + mua * v21[Z];
-vb->x() = v3->x() + mub * v43[X];
-vb->y() = v3->y() + mub * v43[Y];
-vb->z() = v3->z() + mub * v43[Z];
+va->x() = v1->x() + mua * v21 [X];
+va->y() = v1->y() + mua * v21 [Y];
+va->z() = v1->z() + mua * v21 [Z];
+vb->x() = v3->x() + mub * v43 [X];
+vb->y() = v3->y() + mub * v43 [Y];
+vb->z() = v3->z() + mub * v43 [Z];
 */
 va = v1 + mua * v21;
 vb = v3 + mub * v43;

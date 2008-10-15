@@ -2164,9 +2164,7 @@ if (!(nParts = psi->nParts))
 psi->nParts = 90 + (nParts * psi->nLife * 3 * (1 << nSpeed)) / (11 - nParts);
 if (psi->nSide > 0) {
 	float faceSize = FaceSize (objP->nSegment, psi->nSide - 1);
-	if (faceSize < 1)
-		faceSize = sqrt (faceSize);
-	psi->nParts = (int) (psi->nParts * faceSize);
+	psi->nParts = (int) (psi->nParts * ((faceSize < 1) ? sqrt (faceSize) : faceSize));
 	}
 psi->nDrift = psi->nDrift ? nSpeed * psi->nDrift * 75 : psi->nSpeed * 50;
 nSize = psi->nSize [0] ? psi->nSize [0] : 5;
