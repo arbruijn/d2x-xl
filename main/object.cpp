@@ -2162,21 +2162,12 @@ psi->nSpeed = i;
 if (!(nParts = psi->nParts))
 	nParts = 5;
 psi->nParts = 90 + (nParts * psi->nLife * 3 * (1 << nSpeed)) / (11 - nParts);
-<<<<<<< .mine
-if (psi->nSide > 0) {
-	float faceSize = FaceSize (objP->nSegment, psi->nSide - 1);
-	if (faceSize < 1.0)
-		faceSize = (float) sqrt (faceSize);
-	psi->nParts = (int) (psi->nParts * faceSize);
-	}
-=======
 if (psi->nSide > 0) {
 	float faceSize = FaceSize (objP->nSegment, psi->nSide - 1);
 	if (faceSize < 1)
 		faceSize = sqrt (faceSize);
 	psi->nParts = (int) (psi->nParts * faceSize);
 	}
->>>>>>> .r2134
 psi->nDrift = psi->nDrift ? nSpeed * psi->nDrift * 75 : psi->nSpeed * 50;
 nSize = psi->nSize [0] ? psi->nSize [0] : 5;
 psi->nSize [0] = nSize + 1;
