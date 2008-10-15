@@ -308,7 +308,7 @@ return bClamped;
 const int VmPointLineIntersection (fVector& hitP, const fVector& p1, const fVector& p2, const fVector& p3, const fVector& vPos, int bClamp) 
 {
 	fVector	d31, d21;
-	double	m, u;
+	float		m, u;
 	int		bClamped = 0;
 
 d21 = p2 - p1;
@@ -318,7 +318,7 @@ if(!m) {
 	return 0;
 	}
 d31 = p3 - p1;
-u = (double)fVector::Dot(d31, d21);
+u = fVector::Dot(d31, d21);
 u /= m;
 if (u < 0)
 	bClamped = 2;
@@ -341,7 +341,7 @@ return bClamped;
 const int VmPointLineIntersection(fVector& hitP, const fVector& p1, const fVector& p2, const fVector& p3, int bClamp) 
 {
 	fVector	d31, d21;
-	double	m, u;
+	float		m, u;
 	int		bClamped = 0;
 
 d21 = p2 - p1;
@@ -351,7 +351,7 @@ if(!m) {
 	return 0;
 	}
 d31 = p3 - p1;
-u = (double)fVector::Dot(d31, d21);
+u = fVector::Dot(d31, d21);
 u /= m;
 if (u < 0)
 	bClamped = 2;
@@ -372,7 +372,7 @@ return bClamped;
 const int VmPointLineIntersection(fVector3& hitP, const fVector3& p1, const fVector3& p2, const fVector3& p3, fVector3 *vPos, int bClamp) 
 {
 	fVector3	d31, d21;
-	double	m, u;
+	float		m, u;
 	int		bClamped = 0;
 
 	d21 = p2 - p1;
@@ -383,7 +383,7 @@ const int VmPointLineIntersection(fVector3& hitP, const fVector3& p1, const fVec
 		return 0;
 		}
 	d31 = p3 - p1;
-	u = (double)fVector3::Dot(d31, d21);
+	u = fVector3::Dot(d31, d21);
 	u /= m;
 	if (u < 0)
 		bClamped = 2;
