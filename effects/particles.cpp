@@ -919,15 +919,14 @@ else {
 	d = deltaUV;
 	}
 if (!nType) {
+#if 0
 	if (SHOW_DYN_LIGHT) {
 		tFaceColor *psc = AvgSgmColor (pParticle->nSegment, NULL);
-		//if (psc->index == gameStates.render.nFrameFlipFlop + 1) 
-			{
-			pc.red *= (float) psc->color.red;
-			pc.green *= (float) psc->color.green;
-			pc.blue *= (float) psc->color.blue;
-			}
+		pc.red *= (float) psc->color.red;
+		pc.green *= (float) psc->color.green;
+		pc.blue *= (float) psc->color.blue;
 		}
+#endif
 	brightness *= 0.9f + (float) (rand () % 1000) / 5000.0f;
 	pc.red *= brightness;
 	pc.green *= brightness;

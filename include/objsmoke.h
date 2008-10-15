@@ -12,7 +12,7 @@
 
 #define SHIP_MAX_PARTS				50
 #define PLR_PART_LIFE				-4000
-#define PLR_PART_SPEED				40
+#define PLR_PART_SPEED				50
 
 #define BOT_MAX_PARTS				250
 #define BOT_PART_LIFE				-6000
@@ -20,7 +20,7 @@
 
 #define MSL_MAX_PARTS				500
 #define MSL_PART_LIFE				-3000
-#define MSL_PART_SPEED				30
+#define MSL_PART_SPEED				50
 
 #define LASER_MAX_PARTS				250
 #define LASER_PART_LIFE				-750
@@ -32,7 +32,7 @@
 
 #define DEBRIS_MAX_PARTS			250
 #define DEBRIS_PART_LIFE			-2000
-#define DEBRIS_PART_SPEED			30
+#define DEBRIS_PART_SPEED			50
 
 #define STATIC_SMOKE_MAX_PARTS	1000
 #define STATIC_SMOKE_PART_LIFE	-3200
