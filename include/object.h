@@ -504,7 +504,7 @@ class CObjectInfo : public CTransformation, public CObjContainerInfo {
 };
 
 // TODO get rid of the structs (former unions) and the union
-typedef struct tObject {
+typedef struct tCoreObject {
 	tObjectInfo			info;
 	// movement info, determined by MOVEMENT_TYPE
 	union {
@@ -529,31 +529,67 @@ typedef struct tObject {
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;
 #endif
+} tCoreObject;
+
+typedef struct tObject : public tCoreObject {
+	tObject	*prevP, *nextP;
 } tObject;
 
 class CObject : public CObjectInfo {
-public:
+	private:
+		CObject	*m_prevP, *m_nextP;
 
-	// initialize a new tObject.  adds to the list for the given tSegment
-	// returns the tObject number
-	static int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
-							 const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType, int bIgnoreLimits);
+	public:
+		CObject ();
+		~CObject ();
+		// initialize a new tObject.  adds to the list for the given tSegment
+		// returns the tObject number
+		static int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
+								 const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType, int bIgnoreLimits);
 
-	inline void Kill (void) { Flags () |= OF_SHOULD_BE_DEAD; }
-	inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
-	// unlinks an tObject from a tSegment's list of objects
-	void Link (short nSegment);
-	void Unlink (void);
-	void Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
-						  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
+		inline CObject*& PrevP () { return m_prevP; }
+		inline CObject*& NextP () { return m_nextP; }
+		inline void Kill (void) { Flags () |= OF_SHOULD_BE_DEAD; }
+		inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
+		// unlinks an tObject from a tSegment's list of objects
+		void Link (short nSegment);
+		void Unlink (void);
+		void Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
+							  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
+		void ToStruct (tCoreObject *objP);
 };
 
 
-class CRobotObject : public CObject, public CPhysicsInfo, public CAIStaticInfo {
+class CRobotObject : public CObject, public CPhysicsInfo, public CAIStaticInfo, public CPolyObjInfo {
 	public:
-		CRobotObject () {};
-		~CRobotObject () {};
+		CRobotObject () {}
+		~CRobotObject () {}
 		void Initialize (void) {};
+		void ToStruct (tCoreObject *objP);
+};
+
+class CPowerupObject : public CObject, public CPhysicsInfo, public CPolyObjInfo {
+	public:
+		CPowerupObject () {}
+		~CPowerupObject () {}
+		void Initialize (void) {};
+		void ToStruct (tCoreObject *objP);
+};
+
+class CWeaponObject : public CObject, public CPhysicsInfo, public CPolyObjInfo {
+	public:
+		CWeaponObject () {}
+		~CWeaponObject () {}
+		void Initialize (void) {};
+		void ToStruct (tCoreObject *objP);
+};
+
+class CLightObject : public CObject, public CObjLightInfo {
+	public:
+		CLightObject () {};
+		~CLightObject () {};
+		void Initialize (void) {};
+		void ToStruct (tCoreObject *objP);
 };
 
 class CLightningObject : public CObject, public CLightningInfo {
@@ -561,6 +597,7 @@ class CLightningObject : public CObject, public CLightningInfo {
 		CLightningObject () {};
 		~CLightningObject () {};
 		void Initialize (void) {};
+		void ToStruct (tCoreObject *objP);
 };
 
 class CSmokeObject : public CObject, public CSmokeInfo {

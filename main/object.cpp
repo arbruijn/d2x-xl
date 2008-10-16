@@ -66,9 +66,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define LIMIT_PHYSICS_FPS	0
 
-void DetachAllObjects (tObject *parent);
-void DetachOneObject (tObject *sub);
-int FreeObjectSlots (int num_used);
+void DetachChildObjects (tObject *parent);
+void DetachFromParent (tObject *sub);
+int FreeObjectSlots (int nRequested);
 
 //info on the various types of OBJECTS
 #if DBG
@@ -443,9 +443,9 @@ InitIdToOOF ();
 }
 
 //------------------------------------------------------------------------------
-//after calling initObject (), the network code has grabbed specific
-//tObject slots without allocating them.  Go though the OBJECTS & build
-//the D2_FREE list, then set the apporpriate globals
+//after calling InitObject (), the network code has grabbed specific
+//object slots without allocating them.  Go through the objects and build
+//the free list, then set the appropriate globals
 void SpecialResetObjects (void)
 {
 	int i;
@@ -626,6 +626,24 @@ if (OBJECTS [0].info.nPrev == 0)
 
 //------------------------------------------------------------------------------
 
+CObject::CObject ()
+{
+PrevP () = NextP () = NULL;
+}
+
+//------------------------------------------------------------------------------
+
+CObject::~CObject ()
+{
+if (PrevP ())
+	PrevP ()->NextP () = NextP ();
+if (NextP ())
+	NextP ()->PrevP () = NextP ();
+PrevP () = NextP () = NULL;
+}
+
+//------------------------------------------------------------------------------
+
 void CObject::Unlink (void)
 {
 #if 0
@@ -654,6 +672,12 @@ if (objP->info.nNext != -1)
 	OBJECTS [objP->info.nNext].info.nPrev = objP->info.nPrev;
 
 objP->info.nSegment = objP->info.nNext = objP->info.nPrev = -1;
+}
+
+//------------------------------------------------------------------------------
+
+void CObject::ToStruct (tCoreObject *objP)
+{
 }
 
 //------------------------------------------------------------------------------
@@ -803,9 +827,9 @@ return nToFree;
 }
 
 //-----------------------------------------------------------------------------
-//	Scan the tObject list, freeing down to num_used OBJECTS
+//	Scan the tObject list, freeing down to nRequested OBJECTS
 //	Returns number of slots freed.
-int FreeObjectSlots (int nUsed)
+int FreeObjectSlots (int nRequested)
 {
 	int		i, nCandidates = 0;
 	int		candidates [MAX_OBJECTS_D2X];
@@ -813,20 +837,20 @@ int FreeObjectSlots (int nUsed)
 
 nAlreadyFree = MAX_OBJECTS - gameData.objs.nLastObject [0] - 1;
 
-if (MAX_OBJECTS - nAlreadyFree < nUsed)
+if (MAX_OBJECTS - nAlreadyFree < nRequested)
 	return 0;
 
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 	if (OBJECTS [i].info.nFlags & OF_SHOULD_BE_DEAD) {
 		nAlreadyFree++;
-		if (MAX_OBJECTS - nAlreadyFree < nUsed)
+		if (MAX_OBJECTS - nAlreadyFree < nRequested)
 			return nAlreadyFree;
 		}
 	else
 		switch (OBJECTS [i].info.nType) {
 			case OBJ_NONE:
 				nAlreadyFree++;
-				if (MAX_OBJECTS - nAlreadyFree < nUsed)
+				if (MAX_OBJECTS - nAlreadyFree < nRequested)
 					return 0;
 				break;
 			case OBJ_FIREBALL:
@@ -838,10 +862,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 #if 1
 			default:
 #else
-			case OBJ_WALL:
 			case OBJ_FLARE:
-				Int3 ();		//	This is curious.  What is an tObject that is a tWall?
-				break;
 			case OBJ_ROBOT:
 			case OBJ_HOSTAGE:
 			case OBJ_PLAYER:
@@ -860,7 +881,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 			}
 	}
 
-nToFree = MAX_OBJECTS - nUsed - nAlreadyFree;
+nToFree = MAX_OBJECTS - nRequested - nAlreadyFree;
 nOrgNumToFree = nToFree;
 if (nToFree > nCandidates) {
 #if TRACE
@@ -1186,9 +1207,9 @@ if (objP->info.nType == OBJ_WEAPON) {
 if (objP == gameData.objs.viewerP)		//deleting the viewerP?
 	gameData.objs.viewerP = gameData.objs.consoleP;						//..make the tPlayer the viewerP
 if (objP->info.nFlags & OF_ATTACHED)		//detach this from tObject
-	DetachOneObject (objP);
+	DetachFromParent (objP);
 if (objP->info.nAttachedObj != -1)		//detach all OBJECTS from this
-	DetachAllObjects (objP);
+	DetachChildObjects (objP);
 if (objP->info.nType == OBJ_DEBRIS)
 	nDebrisObjectCount--;
 UnlinkObject (OBJECTS + nObject);
@@ -2442,7 +2463,7 @@ Assert (childObjP->cType.explInfo.attached.nPrev != OBJ_IDX (childObjP));
 
 //------------------------------------------------------------------------------
 //dettaches one tObject
-void DetachOneObject (tObject *sub)
+void DetachFromParent (tObject *sub)
 {
 if ((OBJECTS [sub->cType.explInfo.attached.nParent].info.nType != OBJ_NONE) &&
 	 (OBJECTS [sub->cType.explInfo.attached.nParent].info.nAttachedObj != -1)) {
@@ -2465,10 +2486,10 @@ sub->info.nFlags &= ~OF_ATTACHED;
 
 //------------------------------------------------------------------------------
 //dettaches all OBJECTS from this tObject
-void DetachAllObjects (tObject *parent)
+void DetachChildObjects (tObject *parent)
 {
 while (parent->info.nAttachedObj != -1)
-	DetachOneObject (OBJECTS + parent->info.nAttachedObj);
+	DetachFromParent (OBJECTS + parent->info.nAttachedObj);
 }
 
 //------------------------------------------------------------------------------
