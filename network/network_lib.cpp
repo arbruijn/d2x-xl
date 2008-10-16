@@ -146,13 +146,13 @@ char *NetworkGetPlayerName (int nObject)
 {
 if (nObject < 0)
 	return NULL;
-if (OBJECTS [nObject].nType != OBJ_PLAYER)
+if (OBJECTS [nObject].info.nType != OBJ_PLAYER)
 	return NULL;
-if (OBJECTS [nObject].id >= MAX_PLAYERS)
+if (OBJECTS [nObject].info.nId >= MAX_PLAYERS)
 	return NULL;
-if (OBJECTS [nObject].id >= gameData.multiplayer.nPlayers)
+if (OBJECTS [nObject].info.nId >= gameData.multiplayer.nPlayers)
 	return NULL;
-return gameData.multiplayer.players [OBJECTS [nObject].id].callsign;
+return gameData.multiplayer.players [OBJECTS [nObject].info.nId].callsign;
 }
 
 //------------------------------------------------------------------------------
@@ -315,10 +315,10 @@ void NetworkCountPowerupsInMine (void)
 
 memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-	if (OBJECTS [i].nType == OBJ_POWERUP) {
-		gameData.multiplayer.powerupsInMine [OBJECTS [i].id]++;
-		if (MultiPowerupIs4Pack (OBJECTS [i].id))
-			gameData.multiplayer.powerupsInMine [OBJECTS [i].id-1]+=4;
+	if (OBJECTS [i].info.nType == OBJ_POWERUP) {
+		gameData.multiplayer.powerupsInMine [OBJECTS [i].info.nId]++;
+		if (MultiPowerupIs4Pack (OBJECTS [i].info.nId))
+			gameData.multiplayer.powerupsInMine [OBJECTS [i].info.nId-1]+=4;
 		}
 	}
 }

@@ -15,10 +15,10 @@
 fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Return true if weapon *tracker is able to track tObject OBJECTS [nMslLock], else return false.
+//	Return true if weapon *trackerP is able to track tObject OBJECTS [nMslLock], else return false.
 //	In order for the tObject to be trackable, it must be within a reasonable turning radius for the missile
 //	and it must not be obstructed by a tWall.
-int ObjectIsTrackeable (int nMslLock, tObject *tracker, fix *xDot)
+int ObjectIsTrackeable (int nMslLock, tObject *trackerP, fix *xDot)
 {
 	vmsVector	vGoal;
 	tObject		*objP;
@@ -34,47 +34,47 @@ if ((nMslLock == LOCALPLAYER.nObject) &&
 	 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return 0;
 //	Can't track AI tObject if he's cloaked.
-if (objP->nType == OBJ_ROBOT) {
+if (objP->info.nType == OBJ_ROBOT) {
 	if (objP->cType.aiInfo.CLOAKED)
 		return 0;
 	//	Your missiles don't track your escort.
-	if (ROBOTINFO (objP->id).companion && 
-		 (tracker->cType.laserInfo.parentType == OBJ_PLAYER))
+	if (ROBOTINFO (objP->info.nId).companion && 
+		 (trackerP->cType.laserInfo.parent.nType == OBJ_PLAYER))
 		return 0;
 	}
-vGoal = objP->position.vPos - tracker->position.vPos;
+vGoal = objP->info.position.vPos - trackerP->info.position.vPos;
 vmsVector::Normalize(vGoal);
-*xDot = vmsVector::Dot(vGoal, tracker->position.mOrient[FVEC]);
+*xDot = vmsVector::Dot(vGoal, trackerP->info.position.mOrient[FVEC]);
 if ((*xDot < xMinTrackableDot) && (*xDot > 9 * F1_0 / 10)) {
 	vmsVector::Normalize(vGoal);
-	*xDot = vmsVector::Dot(vGoal, tracker->position.mOrient[FVEC]);
+	*xDot = vmsVector::Dot(vGoal, trackerP->info.position.mOrient[FVEC]);
 	}
 
 if ((*xDot >= xMinTrackableDot) || 
-	 (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (tracker->nType == OBJ_WEAPON) && (tracker->id == EARTHSHAKER_MEGA_ID) /*&& (*xDot >= 0)*/)) {
+	 (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == EARTHSHAKER_MEGA_ID) /*&& (*xDot >= 0)*/)) {
 	//	xDot is in legal range, now see if tObject is visible
-	return ObjectToObjectVisibility (tracker, objP, FQ_TRANSWALL);
+	return ObjectToObjectVisibility (trackerP, objP, FQ_TRANSWALL);
 	}
 return 0;
 }
 
 //	--------------------------------------------------------------------------------------------
 
-int CallFindHomingObjectComplete (tObject *tracker, vmsVector *curpos)
+int CallFindHomingObjectComplete (tObject *trackerP, vmsVector *curpos)
 {
 if (!IsMultiGame)
-	return FindHomingObjectComplete (curpos, tracker, OBJ_ROBOT, -1);
-if ((tracker->nType == OBJ_PLAYER) || (tracker->cType.laserInfo.parentType == OBJ_PLAYER)) {
+	return FindHomingObjectComplete (curpos, trackerP, OBJ_ROBOT, -1);
+if ((trackerP->info.nType == OBJ_PLAYER) || (trackerP->cType.laserInfo.parent.nType == OBJ_PLAYER)) {
 	//	It's fired by a tPlayer, so if robots present, track robot, else track player.
 	return IsCoopGame ? 
-			 FindHomingObjectComplete (curpos, tracker, OBJ_ROBOT, -1) :
-			 FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, OBJ_ROBOT);
+			 FindHomingObjectComplete (curpos, trackerP, OBJ_ROBOT, -1) :
+			 FindHomingObjectComplete (curpos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
 		} 
 #if DBG
-if ((tracker->cType.laserInfo.parentType != OBJ_ROBOT) && (tracker->cType.laserInfo.parentType != OBJ_PLAYER))
-	tracker = tracker;
+if ((trackerP->cType.laserInfo.parent.nType != OBJ_ROBOT) && (trackerP->cType.laserInfo.parent.nType != OBJ_PLAYER))
+	trackerP = trackerP;
 #endif
-return FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, gameStates.app.cheats.bRobotsKillRobots ? OBJ_ROBOT : -1);
+return FindHomingObjectComplete (curpos, trackerP, OBJ_PLAYER, gameStates.app.cheats.bRobotsKillRobots ? OBJ_ROBOT : -1);
 }
 
 //	--------------------------------------------------------------------------------------------
@@ -82,18 +82,18 @@ return FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, gameStates.app.che
 //	Scan list of OBJECTS rendered last frame, find one that satisfies function of nearness to center and distance.
 int FindHomingObject (vmsVector *vTrackerPos, tObject *trackerP)
 {
-	int	i, bOmega = (trackerP->nType == OBJ_WEAPON) && (trackerP->id == OMEGA_ID);
+	int	i, bOmega = (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == OMEGA_ID);
 	fix	maxDot = -F1_0*2;
 	int	nBestObj = -1;
 	int	curMinTrackableDot;
-	int	bGuidedMslView = (trackerP->nType == OBJ_WEAPON) && (trackerP == GuidedInMainView ());
+	int	bGuidedMslView = (trackerP->info.nType == OBJ_WEAPON) && (trackerP == GuidedInMainView ());
 	int	bSpectate = SPECTATOR (trackerP);
 
 //	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
 Assert (gameStates.app.cheats.bHomingWeapons ||
-		  (trackerP->nType == OBJ_PLAYER) || 
+		  (trackerP->info.nType == OBJ_PLAYER) || 
 		  bGuidedMslView || 
-		  WI_homingFlag (trackerP->id) || 
+		  WI_homingFlag (trackerP->info.nId) || 
 		  bOmega);
 
 	//	Find an tObject to track based on game mode (eg, whether in network play) and who fired it.
@@ -106,9 +106,9 @@ if (bOmega)
 	curMinTrackableDot = OMEGA_MIN_TRACKABLE_DOT;
 
 //	Not in network mode.  If not fired by tPlayer, then track player.
-if ((trackerP->nType != OBJ_PLAYER) && (trackerP->cType.laserInfo.nParentObj != LOCALPLAYER.nObject)) {
+if ((trackerP->info.nType != OBJ_PLAYER) && (trackerP->cType.laserInfo.parent.nObject != LOCALPLAYER.nObject)) {
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-		nBestObj = OBJ_IDX (gameData.objs.console);
+		nBestObj = OBJ_IDX (gameData.objs.consoleP);
 	} 
 else {
 		int	nWindow = -1;
@@ -116,9 +116,9 @@ else {
 
 	//	Find the window which has the forward view.
 	for (i = 0; i < MAX_RENDERED_WINDOWS; i++)
-		if ((windowRenderedData [i].frame >= gameData.app.nFrameCount - 1) &&
-			 ((windowRenderedData [i].viewer == gameData.objs.console) || bGuidedMslView) &&
-			 !windowRenderedData [i].rearView) {
+		if ((windowRenderedData [i].nFrame >= gameData.app.nFrameCount - 1) &&
+			 ((windowRenderedData [i].viewerP == gameData.objs.consoleP) || bGuidedMslView) &&
+			 !windowRenderedData [i].bRearView) {
 			nWindow = i;
 			break;
 			}
@@ -128,13 +128,13 @@ else {
 		return CallFindHomingObjectComplete (trackerP, vTrackerPos);
 
 	maxTrackableDist = MAX_TRACKABLE_DIST;
-	if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->nType == OBJ_WEAPON) && (trackerP->id == EARTHSHAKER_MEGA_ID))
+	if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == EARTHSHAKER_MEGA_ID))
 		maxTrackableDist *= 2;
 	else if (bOmega)
 		maxTrackableDist = OMEGA_MAX_TRACKABLE_DIST;
 
 	//	Not in network mode and fired by player.
-	for (i = windowRenderedData [nWindow].numObjects - 1; i >= 0; i--) {
+	for (i = windowRenderedData [nWindow].nObjects - 1; i >= 0; i--) {
 		fix			dot; //, dist;
 		vmsVector	vecToCurObj;
 		int			nObject = windowRenderedData [nWindow].renderedObjects [i];
@@ -144,24 +144,24 @@ else {
 			continue;
 
 		//	Can't track AI tObject if he's cloaked.
-		if (curObjP->nType == OBJ_ROBOT) {
+		if (curObjP->info.nType == OBJ_ROBOT) {
 			if (curObjP->cType.aiInfo.CLOAKED)
 				continue;
 			//	Your missiles don't track your escort.
-			if (ROBOTINFO (curObjP->id).companion && 
-				 ((trackerP->nType == OBJ_PLAYER) || (trackerP->cType.laserInfo.parentType == OBJ_PLAYER)))
+			if (ROBOTINFO (curObjP->info.nId).companion && 
+				 ((trackerP->info.nType == OBJ_PLAYER) || (trackerP->cType.laserInfo.parent.nType == OBJ_PLAYER)))
 				continue;
 			}
-		else if (curObjP->nType == OBJ_WEAPON) {
-			if (!EGI_FLAG (bKillMissiles, 0, 1, 0) || !bOmega || !(gameData.objs.bIsMissile [curObjP->id] || WeaponIsMine (curObjP->id)))
+		else if (curObjP->info.nType == OBJ_WEAPON) {
+			if (!EGI_FLAG (bKillMissiles, 0, 1, 0) || !bOmega || !(gameData.objs.bIsMissile [curObjP->info.nId] || WeaponIsMine (curObjP->info.nId)))
 				continue;
 			}
-		else if ((curObjP->nType != OBJ_PLAYER) && (curObjP->nType != OBJ_REACTOR))
+		else if ((curObjP->info.nType != OBJ_PLAYER) && (curObjP->info.nType != OBJ_REACTOR))
 			continue;
-		vecToCurObj = curObjP->position.vPos - *vTrackerPos;
+		vecToCurObj = curObjP->info.position.vPos - *vTrackerPos;
 		dist = vmsVector::Normalize(vecToCurObj);
 		if (dist < maxTrackableDist) {
-			dot = vmsVector::Dot(vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient[FVEC] : trackerP->position.mOrient[FVEC]);
+			dot = vmsVector::Dot(vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient[FVEC] : trackerP->info.position.mOrient[FVEC]);
 
 			//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 			//	to determine if an tObject is initially trackable.  FindHomingObject is called on subsequent
@@ -176,7 +176,7 @@ else {
 				} 
 			else if (dot > F1_0 - (F1_0 - curMinTrackableDot) * 2) {
 				vmsVector::Normalize(vecToCurObj);
-				dot = vmsVector::Dot(vecToCurObj, trackerP->position.mOrient[FVEC]);
+				dot = vmsVector::Dot(vecToCurObj, trackerP->info.position.mOrient[FVEC]);
 				if (dot > curMinTrackableDot) {
 					if (dot > maxDot) {
 						if (ObjectToObjectVisibility (trackerP, OBJECTS + nObject, FQ_TRANSWALL)) {
@@ -207,10 +207,10 @@ int FindHomingObjectComplete (vmsVector *curpos, tObject *trackerP, int track_ob
 	fix	minTrackableDot;
 
 	//	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
-//Assert ((WI_homingFlag (trackerP->id)) || (trackerP->id == OMEGA_ID));
+//Assert ((WI_homingFlag (trackerP->info.nId)) || (trackerP->info.nId == OMEGA_ID));
 
 maxTrackableDist = MAX_TRACKABLE_DIST;
-if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->nType == OBJ_WEAPON) && (trackerP->id == EARTHSHAKER_MEGA_ID)) {
+if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == EARTHSHAKER_MEGA_ID)) {
 	maxTrackableDist *= 2;
 	minTrackableDot = -F1_0;
 	}
@@ -221,7 +221,7 @@ else
 	minTrackableDot = MIN_TRACKABLE_DOT;
 #endif
 
-if ((trackerP->nType == OBJ_WEAPON) && (trackerP->id == OMEGA_ID)) {
+if ((trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == OMEGA_ID)) {
 	maxTrackableDist = OMEGA_MAX_TRACKABLE_DIST;
 	minTrackableDot = OMEGA_MIN_TRACKABLE_DOT;
 	}
@@ -232,41 +232,42 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 	vmsVector	vecToCurObj;
 	tObject		*curObjP = OBJECTS + nObject;
 
-	if ((curObjP->nType != track_objType1) && (curObjP->nType != track_objType2)) {
-		if (curObjP->nType != OBJ_WEAPON) 
+	if ((curObjP->info.nType != track_objType1) && (curObjP->info.nType != track_objType2)) {
+		if (curObjP->info.nType != OBJ_WEAPON) 
 			continue;
-		if (!WeaponIsPlayerMine (curObjP->id))
+		if (!WeaponIsPlayerMine (curObjP->info.nId))
 			continue;
-		if (curObjP->cType.laserInfo.nParentSig == trackerP->cType.laserInfo.nParentSig)
+		if (curObjP->cType.laserInfo.parent.nSignature == trackerP->cType.laserInfo.parent.nSignature)
 			continue;
 		bIsProximity = 1;
 		}
-	if (nObject == trackerP->cType.laserInfo.nParentObj) // Don't track shooter
+	if (nObject == trackerP->cType.laserInfo.parent.nObject) // Don't track shooter
 		continue;
 
 	//	Don't track cloaked players.
-	if (curObjP->nType == OBJ_PLAYER) {
-		if (gameData.multiplayer.players [curObjP->id].flags & PLAYER_FLAGS_CLOAKED)
+	if (curObjP->info.nType == OBJ_PLAYER) {
+		if (gameData.multiplayer.players [curObjP->info.nId].flags & PLAYER_FLAGS_CLOAKED)
 			continue;
 		// Don't track teammates in team games
-		if (IsTeamGame && (OBJECTS [trackerP->cType.laserInfo.nParentObj].nType == OBJ_PLAYER) && (GetTeam (curObjP->id) == GetTeam (OBJECTS [trackerP->cType.laserInfo.nParentObj].id)))
+		if (IsTeamGame && (OBJECTS [trackerP->cType.laserInfo.parent.nObject].info.nType == OBJ_PLAYER) && 
+			 (GetTeam (curObjP->info.nId) == GetTeam (OBJECTS [trackerP->cType.laserInfo.parent.nObject].info.nId)))
 			continue;
 		}
 
 	//	Can't track AI tObject if he's cloaked.
-	if ((curObjP->nType == OBJ_ROBOT) && (curObjP->cType.aiInfo.CLOAKED))
+	if ((curObjP->info.nType == OBJ_ROBOT) && (curObjP->cType.aiInfo.CLOAKED))
 		continue;
 	//	Your missiles don't track your escort.
-	if ((ROBOTINFO (curObjP->id).companion) && (trackerP->cType.laserInfo.parentType == OBJ_PLAYER))
+	if ((ROBOTINFO (curObjP->info.nId).companion) && (trackerP->cType.laserInfo.parent.nType == OBJ_PLAYER))
 		continue;
 
-	vecToCurObj = curObjP->position.vPos - *curpos;
+	vecToCurObj = curObjP->info.position.vPos - *curpos;
 	dist = vecToCurObj.Mag();
 
 	if (dist < maxTrackableDist) {
 		vmsVector::Normalize(vecToCurObj);
 		
-		dot = vmsVector::Dot(vecToCurObj, trackerP->position.mOrient[FVEC]);
+		dot = vmsVector::Dot(vecToCurObj, trackerP->info.position.mOrient[FVEC]);
 		if (bIsProximity)
 			dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
 
@@ -287,7 +288,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 //	See if legal to keep tracking currently tracked tObject.  If not, see if another tObject is trackable.  If not, return -1,
 //	else return tObject number of tracking tObject.
 //	Computes and returns a fairly precise dot product.
-int TrackMslLock (int nMslLock, tObject *tracker, fix *dot)
+int TrackMslLock (int nMslLock, tObject *trackerP, fix *dot)
 {
 	int	rVal = -2;
 	int	nFrame;
@@ -295,8 +296,8 @@ int TrackMslLock (int nMslLock, tObject *tracker, fix *dot)
 
 //if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
 	//	Every 8 frames for each tObject, scan all OBJECTS.
-nFrame = OBJ_IDX (tracker) ^ gameData.app.nFrameCount;
-if (ObjectIsTrackeable (nMslLock, tracker, dot)) {
+nFrame = OBJ_IDX (trackerP) ^ gameData.app.nFrameCount;
+if (ObjectIsTrackeable (nMslLock, trackerP, dot)) {
 	if (gameOpts->legacy.bHomers) {
 		if (nFrame % 8)
 			return nMslLock;
@@ -309,23 +310,23 @@ if (ObjectIsTrackeable (nMslLock, tracker, dot)) {
 
 if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 	//	If tPlayer fired missile, then search for an tObject, if not, then give up.
-	if (OBJECTS [tracker->cType.laserInfo.nParentObj].nType == OBJ_PLAYER) {
+	if (OBJECTS [trackerP->cType.laserInfo.parent.nObject].info.nType == OBJ_PLAYER) {
 		if (nMslLock == -1) {
 			if (IsMultiGame) {
 				if (IsCoopGame)
-					rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_ROBOT, -1);
+					rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_ROBOT, -1);
 				else if (gameData.app.nGameMode & GM_MULTI_ROBOTS)		//	Not cooperative, if robots, track either robot or tPlayer
-					rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_PLAYER, OBJ_ROBOT);
+					rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
 				else		//	Not cooperative and no robots, track only a tPlayer
-					rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_PLAYER, -1);
+					rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, -1);
 				}
 			else
-				rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_PLAYER, OBJ_ROBOT);
+				rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
 			} 
 		else {
-			goalType = OBJECTS [tracker->cType.laserInfo.nMslLock].nType;
+			goalType = OBJECTS [trackerP->cType.laserInfo.nMslLock].info.nType;
 			if ((goalType == OBJ_PLAYER) || (goalType == OBJ_ROBOT))
-				rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, goalType, -1);
+				rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, goalType, -1);
 			else
 				rVal = -1;
 			}
@@ -334,10 +335,10 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 		if (gameStates.app.cheats.bRobotsKillRobots)
 			goal2Type = OBJ_ROBOT;
 		if (nMslLock == -1)
-			rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_PLAYER, goal2Type);
+			rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, goal2Type);
 		else {
-			goalType = OBJECTS [tracker->cType.laserInfo.nMslLock].nType;
-			rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, goalType, goal2Type);
+			goalType = OBJECTS [trackerP->cType.laserInfo.nMslLock].info.nType;
+			rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, goalType, goal2Type);
 			}
 		}
 	Assert (rVal != -2);		//	This means it never got set which is bad! Contact Mike.

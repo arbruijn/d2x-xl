@@ -353,20 +353,20 @@ void SquishShortFrameInfo (tFrameInfoShort old_info, ubyte *data)
 	
 NW_SET_BYTE (data, bufI, old_info.nType);                                            
 bufI += 3;
-NW_SET_INT (data, bufI, old_info.numpackets);
-NW_SET_BYTES (data, bufI, old_info.thepos.bytemat, 9);                   
-NW_SET_SHORT (data, bufI, old_info.thepos.xo);
-NW_SET_SHORT (data, bufI, old_info.thepos.yo);
-NW_SET_SHORT (data, bufI, old_info.thepos.zo);
-NW_SET_SHORT (data, bufI, old_info.thepos.nSegment);
-NW_SET_SHORT (data, bufI, old_info.thepos.velx);
-NW_SET_SHORT (data, bufI, old_info.thepos.vely);
-NW_SET_SHORT (data, bufI, old_info.thepos.velz);
-NW_SET_SHORT (data, bufI, old_info.data_size);
+NW_SET_INT (data, bufI, old_info.nPackets);
+NW_SET_BYTES (data, bufI, old_info.objPos.bytemat, 9);                   
+NW_SET_SHORT (data, bufI, old_info.objPos.xo);
+NW_SET_SHORT (data, bufI, old_info.objPos.yo);
+NW_SET_SHORT (data, bufI, old_info.objPos.zo);
+NW_SET_SHORT (data, bufI, old_info.objPos.nSegment);
+NW_SET_SHORT (data, bufI, old_info.objPos.velx);
+NW_SET_SHORT (data, bufI, old_info.objPos.vely);
+NW_SET_SHORT (data, bufI, old_info.objPos.velz);
+NW_SET_SHORT (data, bufI, old_info.dataSize);
 NW_SET_BYTE (data, bufI, old_info.nPlayer);                                     
-NW_SET_BYTE (data, bufI, old_info.obj_renderType);                               
-NW_SET_BYTE (data, bufI, old_info.level_num);                                     
-NW_SET_BYTES (data, bufI, old_info.data, old_info.data_size);
+NW_SET_BYTE (data, bufI, old_info.objRenderType);                               
+NW_SET_BYTE (data, bufI, old_info.nLevel);                                     
+NW_SET_BYTES (data, bufI, old_info.data, old_info.dataSize);
 }
 
 #endif
@@ -375,7 +375,7 @@ NW_SET_BYTES (data, bufI, old_info.data, old_info.data_size);
 
 void NetworkDoFrame (int bForce, int bListen)
 {
-	tFrameInfoShort ShortSyncPack;
+	tFrameInfoShort shortSyncPack;
 	static fix xLastEndlevel = 0;
 	int i;
 
@@ -412,56 +412,56 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 				ubyte send_data [MAX_PACKETSIZE];
 #endif
-				memset (&ShortSyncPack, 0, sizeof (ShortSyncPack));
-				CreateShortPos (&ShortSyncPack.thepos, OBJECTS+nObject, 0);
-				ShortSyncPack.nType = PID_PDATA;
-				ShortSyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
-				ShortSyncPack.obj_renderType = OBJECTS [nObject].renderType;
-				ShortSyncPack.level_num = gameData.missions.nCurrentLevel;
-				ShortSyncPack.data_size = networkData.syncPack.data_size;
-				memcpy (ShortSyncPack.data, networkData.syncPack.data, networkData.syncPack.data_size);
-				networkData.syncPack.numpackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
-				ShortSyncPack.numpackets = networkData.syncPack.numpackets;
+				memset (&shortSyncPack, 0, sizeof (shortSyncPack));
+				CreateShortPos (&shortSyncPack.objPos, OBJECTS+nObject, 0);
+				shortSyncPack.nType = PID_PDATA;
+				shortSyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
+				shortSyncPack.objRenderType = OBJECTS [nObject].info.renderType;
+				shortSyncPack.nLevel = gameData.missions.nCurrentLevel;
+				shortSyncPack.dataSize = networkData.syncPack.dataSize;
+				memcpy (shortSyncPack.data, networkData.syncPack.data, networkData.syncPack.dataSize);
+				networkData.syncPack.nPackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
+				shortSyncPack.nPackets = networkData.syncPack.nPackets;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 				IpxSendGamePacket (
-					(ubyte*)&ShortSyncPack, 
-					sizeof (tFrameInfoShort) - networkData.nMaxXDataSize + networkData.syncPack.data_size);
+					(ubyte*)&shortSyncPack, 
+					sizeof (tFrameInfoShort) - networkData.nMaxXDataSize + networkData.syncPack.dataSize);
 #else
-				SquishShortFrameInfo (ShortSyncPack, send_data);
+				SquishShortFrameInfo (shortSyncPack, send_data);
 				IpxSendGamePacket (
 					(ubyte*)send_data, 
-					IPX_SHORT_INFO_SIZE-networkData.nMaxXDataSize+networkData.syncPack.data_size);
+					IPX_SHORT_INFO_SIZE-networkData.nMaxXDataSize+networkData.syncPack.dataSize);
 #endif
 				}
 			else {// If long packets
-					int send_data_size;
+					int send_dataSize;
 
 				networkData.syncPack.nType = PID_PDATA;
 				networkData.syncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
-				networkData.syncPack.obj_renderType = OBJECTS [nObject].renderType;
-				networkData.syncPack.level_num = gameData.missions.nCurrentLevel;
-				networkData.syncPack.obj_segnum = OBJECTS [nObject].nSegment;
-				networkData.syncPack.obj_pos = OBJECTS [nObject].position.vPos;
-				networkData.syncPack.obj_orient = OBJECTS [nObject].position.mOrient;
-				networkData.syncPack.phys_velocity = OBJECTS [nObject].mType.physInfo.velocity;
-				networkData.syncPack.phys_rotvel = OBJECTS [nObject].mType.physInfo.rotVel;
-				send_data_size = networkData.syncPack.data_size;                  // do this so correct size data is sent
+				networkData.syncPack.objRenderType = OBJECTS [nObject].info.renderType;
+				networkData.syncPack.nLevel = gameData.missions.nCurrentLevel;
+				networkData.syncPack.nObjSeg = OBJECTS [nObject].info.nSegment;
+				networkData.syncPack.objPos = OBJECTS [nObject].info.position.vPos;
+				networkData.syncPack.objOrient = OBJECTS [nObject].info.position.mOrient;
+				networkData.syncPack.physVelocity = OBJECTS [nObject].mType.physInfo.velocity;
+				networkData.syncPack.physRotVel = OBJECTS [nObject].mType.physInfo.rotVel;
+				send_dataSize = networkData.syncPack.dataSize;                  // do this so correct size data is sent
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)                        // do the swap stuff
 				if (gameStates.multi.nGameType >= IPX_GAME) {
-					networkData.syncPack.obj_segnum = INTEL_SHORT (networkData.syncPack.obj_segnum);
-					INTEL_VECTOR (networkData.syncPack.obj_pos);
-					INTEL_MATRIX (networkData.syncPack.obj_orient);
-					INTEL_VECTOR (networkData.syncPack.phys_velocity);
-					INTEL_VECTOR (networkData.syncPack.phys_rotvel);
-					networkData.syncPack.data_size = INTEL_SHORT (networkData.syncPack.data_size);
+					networkData.syncPack.nObjSeg = INTEL_SHORT (networkData.syncPack.nObjSeg);
+					INTEL_VECTOR (networkData.syncPack.objPos);
+					INTEL_MATRIX (networkData.syncPack.objOrient);
+					INTEL_VECTOR (networkData.syncPack.physVelocity);
+					INTEL_VECTOR (networkData.syncPack.physRotVel);
+					networkData.syncPack.dataSize = INTEL_SHORT (networkData.syncPack.dataSize);
 					}
 #endif
-				networkData.syncPack.numpackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
+				networkData.syncPack.nPackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
 				IpxSendGamePacket (
 					(ubyte*)&networkData.syncPack, 
-					sizeof (tFrameInfo) - networkData.nMaxXDataSize + send_data_size);
+					sizeof (tFrameInfo) - networkData.nMaxXDataSize + send_dataSize);
 				}
-			networkData.syncPack.data_size = 0;               // Start data over at 0 length.
+			networkData.syncPack.dataSize = 0;               // Start data over at 0 length.
 			networkData.bD2XData = 0;
 			if (gameData.reactor.bDestroyed) {
 				if (gameStates.app.bPlayerIsDead)
@@ -499,7 +499,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	}
 
 if (!bListen) {
-	networkData.syncPack.data_size = 0;
+	networkData.syncPack.dataSize = 0;
 	return;
 	}
 NetworkListen ();

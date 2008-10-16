@@ -1207,7 +1207,7 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 // -------------------------------------------------------------------------------
 //Tries to find a tSegment for a point, in the following way:
 // 1. Check the given tSegment
-// 2. Recursively trace through attached segments
+// 2. Recursivel [Y] trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
 int FindSegByPos (const vmsVector& p, int nSegment, int bExhaustive, int bSkyBox)
@@ -1309,7 +1309,7 @@ return -1;		//no tSegment found
 //--repair--
 //--repair-- //	------------------------------------------------------------------------------------------
 //--repair-- //	Sort of makes sure create_local_segment_data has been called for the currently executing mine.
-//--repair-- //	It is not failsafe, as you will see if you look at the code.
+//--repair-- //	It is not failsafe, as pos [Y]u will see if pos [Y]u look at the code.
 //--repair-- //	Returns 1 if Lsegments appears valid, 0 if not.
 //--repair-- int check_lsegments_validity (void)
 //--repair-- {
@@ -1520,8 +1520,8 @@ sbyte convert_to_byte (fix f)
 void CreateShortPos (tShortPos *spp, tObject *objP, int swap_bytes)
 {
 	// int	nSegment;
-	vmsMatrix orient = objP->position.mOrient;
-	sbyte   *segP = spp->bytemat;
+	vmsMatrix orient = objP->info.position.mOrient;
+	sbyte   *segP = spp->orient;
 	vmsVector *pv;
 
 	*segP++ = convert_to_byte(orient[RVEC][X]);
@@ -1534,27 +1534,27 @@ void CreateShortPos (tShortPos *spp, tObject *objP, int swap_bytes)
 	*segP++ = convert_to_byte(orient[UVEC][Z]);
 	*segP++ = convert_to_byte(orient[FVEC][Z]);
 
-	pv = gameData.segs.vertices + gameData.segs.segments [objP->nSegment].verts [0];
-	spp->xo = (short) ((objP->position.vPos[X] - (*pv)[X]) >> RELPOS_PRECISION);
-	spp->yo = (short) ((objP->position.vPos[Y] - (*pv)[Y]) >> RELPOS_PRECISION);
-	spp->zo = (short) ((objP->position.vPos[Z] - (*pv)[Z]) >> RELPOS_PRECISION);
+	pv = gameData.segs.vertices + gameData.segs.segments [objP->info.nSegment].verts [0];
+	spp->pos [X] = (short) ((objP->info.position.vPos[X] - (*pv)[X]) >> RELPOS_PRECISION);
+	spp->pos [Y] = (short) ((objP->info.position.vPos[Y] - (*pv)[Y]) >> RELPOS_PRECISION);
+	spp->pos [Z] = (short) ((objP->info.position.vPos[Z] - (*pv)[Z]) >> RELPOS_PRECISION);
 
-	spp->nSegment = objP->nSegment;
+	spp->nSegment = objP->info.nSegment;
 
- 	spp->velx = (short) ((objP->mType.physInfo.velocity[X]) >> VEL_PRECISION);
-	spp->vely = (short) ((objP->mType.physInfo.velocity[Y]) >> VEL_PRECISION);
-	spp->velz = (short) ((objP->mType.physInfo.velocity[Z]) >> VEL_PRECISION);
+ 	spp->vel [X] = (short) ((objP->mType.physInfo.velocity[X]) >> VEL_PRECISION);
+	spp->vel [Y] = (short) ((objP->mType.physInfo.velocity[Y]) >> VEL_PRECISION);
+	spp->vel [Z] = (short) ((objP->mType.physInfo.velocity[Z]) >> VEL_PRECISION);
 
 // swap the short values for the big-endian machines.
 
 	if (swap_bytes) {
-		spp->xo = INTEL_SHORT (spp->xo);
-		spp->yo = INTEL_SHORT (spp->yo);
-		spp->zo = INTEL_SHORT (spp->zo);
+		spp->pos [X] = INTEL_SHORT (spp->pos [X]);
+		spp->pos [Y] = INTEL_SHORT (spp->pos [Y]);
+		spp->pos [Z] = INTEL_SHORT (spp->pos [Z]);
 		spp->nSegment = INTEL_SHORT (spp->nSegment);
-		spp->velx = INTEL_SHORT (spp->velx);
-		spp->vely = INTEL_SHORT (spp->vely);
-		spp->velz = INTEL_SHORT (spp->velz);
+		spp->vel [X] = INTEL_SHORT (spp->vel [X]);
+		spp->vel [Y] = INTEL_SHORT (spp->vel [Y]);
+		spp->vel [Z] = INTEL_SHORT (spp->vel [Z]);
 	}
 }
 
@@ -1566,26 +1566,26 @@ void ExtractShortPos (tObject *objP, tShortPos *spp, int swap_bytes)
 	sbyte   *segP;
 	vmsVector *pv;
 
-	segP = spp->bytemat;
+	segP = spp->orient;
 
-	objP->position.mOrient[RVEC][X] = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient[UVEC][X] = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient[FVEC][X] = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient[RVEC][Y] = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient[UVEC][Y] = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient[FVEC][Y] = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient[RVEC][Z] = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient[UVEC][Z] = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient[FVEC][Z] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient [RVEC][X] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient [UVEC][X] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient [FVEC][X] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient [RVEC][Y] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient [UVEC][Y] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient [FVEC][Y] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient [RVEC][Z] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient [UVEC][Z] = *segP++ << MATRIX_PRECISION;
+	objP->info.position.mOrient [FVEC][Z] = *segP++ << MATRIX_PRECISION;
 
 	if (swap_bytes) {
-		spp->xo = INTEL_SHORT (spp->xo);
-		spp->yo = INTEL_SHORT (spp->yo);
-		spp->zo = INTEL_SHORT (spp->zo);
+		spp->pos [X] = INTEL_SHORT (spp->pos [X]);
+		spp->pos [Y] = INTEL_SHORT (spp->pos [Y]);
+		spp->pos [Z] = INTEL_SHORT (spp->pos [Z]);
 		spp->nSegment = INTEL_SHORT (spp->nSegment);
-		spp->velx = INTEL_SHORT (spp->velx);
-		spp->vely = INTEL_SHORT (spp->vely);
-		spp->velz = INTEL_SHORT (spp->velz);
+		spp->vel [X] = INTEL_SHORT (spp->vel [X]);
+		spp->vel [Y] = INTEL_SHORT (spp->vel [Y]);
+		spp->vel [Z] = INTEL_SHORT (spp->vel [Z]);
 	}
 
 	nSegment = spp->nSegment;
@@ -1593,13 +1593,13 @@ void ExtractShortPos (tObject *objP, tShortPos *spp, int swap_bytes)
 	Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 
 	pv = gameData.segs.vertices + gameData.segs.segments [nSegment].verts [0];
-	objP->position.vPos[X] = (spp->xo << RELPOS_PRECISION) + (*pv)[X];
-	objP->position.vPos[Y] = (spp->yo << RELPOS_PRECISION) + (*pv)[Y];
-	objP->position.vPos[Z] = (spp->zo << RELPOS_PRECISION) + (*pv)[Z];
+	objP->info.position.vPos[X] = (spp->pos [X] << RELPOS_PRECISION) + (*pv)[X];
+	objP->info.position.vPos[Y] = (spp->pos [Y] << RELPOS_PRECISION) + (*pv)[Y];
+	objP->info.position.vPos[Z] = (spp->pos [Z] << RELPOS_PRECISION) + (*pv)[Z];
 
-	objP->mType.physInfo.velocity[X] = (spp->velx << VEL_PRECISION);
-	objP->mType.physInfo.velocity[Y] = (spp->vely << VEL_PRECISION);
-	objP->mType.physInfo.velocity[Z] = (spp->velz << VEL_PRECISION);
+	objP->mType.physInfo.velocity[X] = (spp->vel [X] << VEL_PRECISION);
+	objP->mType.physInfo.velocity[Y] = (spp->vel [Y] << VEL_PRECISION);
+	objP->mType.physInfo.velocity[Z] = (spp->vel [Z] << VEL_PRECISION);
 
 	RelinkObject (OBJ_IDX (objP), nSegment);
 
@@ -1709,7 +1709,7 @@ void AddSideAsQuad (tSegment *segP, int nSide, vmsVector *Normal)
 
 // -------------------------------------------------------------------------------
 //	Return v0, v1, v2 = 3 vertices with smallest numbers.  If *bFlip set, then negate Normal after computation.
-//	Note, you cannot just compute the Normal by treating the points in the opposite direction as this introduces
+//	Note, pos [Y]u cannot just compute the Normal by treating the points in the opposite direction as this introduces
 //	small differences between normals which should merely be opposites of each other.
 int GetVertsForNormal (int v0, int v1, int v2, int v3, int *pv0, int *pv1, int *pv2, int *pv3)
 {

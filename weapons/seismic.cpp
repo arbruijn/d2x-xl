@@ -70,8 +70,8 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
 			rx = FixMul(d_rand() - 16384, h);
 			rz = FixMul(d_rand() - 16384, h);
-			gameData.objs.console->mType.physInfo.rotVel[X] += rx;
-			gameData.objs.console->mType.physInfo.rotVel[Z] += rz;
+			gameData.objs.consoleP->mType.physInfo.rotVel[X] += rx;
+			gameData.objs.consoleP->mType.physInfo.rotVel[Z] += rz;
 			//	Shake the buddy!
 			if (gameData.escort.nObjNum != -1) {
 				OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel[X] += rx*4;
@@ -148,8 +148,8 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 		h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
 		rx = FixMul(d_rand() - 16384, h);
 		rz = FixMul(d_rand() - 16384, h);
-		gameData.objs.console->mType.physInfo.rotVel[X] += rx;
-		gameData.objs.console->mType.physInfo.rotVel[Z] += rz;
+		gameData.objs.consoleP->mType.physInfo.rotVel[X] += rx;
+		gameData.objs.consoleP->mType.physInfo.rotVel[Z] += rz;
 		//	Shake the buddy!
 		if (gameData.escort.nObjNum != -1) {
 			OBJECTS[gameData.escort.nObjNum].mType.physInfo.rotVel[X] += rx*4;

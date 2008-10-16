@@ -178,7 +178,7 @@ gameData.render.terrain.vStartPoint = *vOrgPoint + mSurfaceOrient[RVEC] *
 					(-(gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
 gameData.render.terrain.vStartPoint += mSurfaceOrient[FVEC] *
 					(-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
-tv = gameData.objs.viewer->position.vPos - gameData.render.terrain.vStartPoint;
+tv = gameData.objs.viewerP->info.position.vPos - gameData.render.terrain.vStartPoint;
 iViewer = vmsVector::Dot (tv, mSurfaceOrient[RVEC]) / TERRAIN_GRID_SCALE;
 if (iViewer > iHigh)
 	iViewer = iHigh;

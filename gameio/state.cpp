@@ -568,25 +568,25 @@ CFWrite (&gameStates.app.cheats.bEnabled, sizeof (int), 1, &cf);
 if (!bBetweenLevels)	{
 //Finish all morph OBJECTS
 	for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-		if (OBJECTS [i].nType == OBJ_NONE) 
+		if (OBJECTS [i].info.nType == OBJ_NONE) 
 			continue;
-		if (OBJECTS [i].nType == OBJ_CAMERA)
-			OBJECTS [i].position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
-		else if (OBJECTS [i].renderType==RT_MORPH) {
+		if (OBJECTS [i].info.nType == OBJ_CAMERA)
+			OBJECTS [i].info.position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
+		else if (OBJECTS [i].info.renderType == RT_MORPH) {
 			tMorphInfo *md = MorphFindData (OBJECTS + i);
 			if (md) {
 				tObject *objP = md->objP;
-				objP->controlType = md->saveControlType;
-				objP->movementType = md->saveMovementType;
-				objP->renderType = RT_POLYOBJ;
+				objP->info.controlType = md->saveControlType;
+				objP->info.movementType = md->saveMovementType;
+				objP->info.renderType = RT_POLYOBJ;
 				objP->mType.physInfo = md->savePhysInfo;
 				md->objP = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
 				KillObject (OBJECTS + i);
-				OBJECTS [i].renderType = RT_POLYOBJ;
-				OBJECTS [i].controlType = CT_NONE;
-				OBJECTS [i].movementType = MT_NONE;
+				OBJECTS [i].info.renderType = RT_POLYOBJ;
+				OBJECTS [i].info.controlType = CT_NONE;
+				OBJECTS [i].info.movementType = MT_NONE;
 				}
 			}
 		}
@@ -744,7 +744,7 @@ CFWriteByte ((sbyte) netGame.BrightPlayers, cfP);
 CFWriteByte ((sbyte) netGame.invul, cfP);
 CFWriteByte ((sbyte) netGame.FriendlyFireOff, cfP);
 for (i = 0; i < 2; i++)
-	CFWrite (netGame.team_name [i], 1, CALLSIGN_LEN + 1, cfP);		// 18 bytes
+	CFWrite (netGame.szTeamName [i], 1, CALLSIGN_LEN + 1, cfP);		// 18 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	CFWriteInt (netGame.locations [i], cfP);
 for (i = 0; i < MAX_PLAYERS; i++)
@@ -760,10 +760,10 @@ for (i = 0; i < MAX_PLAYERS; i++)
 CFWriteInt (netGame.KillGoal, cfP);							// 4 bytes
 CFWriteFix (netGame.xPlayTimeAllowed, cfP);					// 4 bytes
 CFWriteFix (netGame.xLevelTime, cfP);							// 4 bytes
-CFWriteInt (netGame.control_invulTime, cfP);				// 4 bytes
-CFWriteInt (netGame.monitor_vector, cfP);					// 4 bytes
+CFWriteInt (netGame.controlInvulTime, cfP);				// 4 bytes
+CFWriteInt (netGame.monitorVector, cfP);					// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	CFWriteInt (netGame.player_score [i], cfP);				// 32 bytes
+	CFWriteInt (netGame.playerScore [i], cfP);				// 32 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	CFWriteByte ((sbyte) netGame.playerFlags [i], cfP);	// 8 bytes
 CFWriteShort (PacketsPerSec (), cfP);					// 2 bytes
@@ -856,28 +856,28 @@ CFWriteByte (playerP->hoursTotal, cfP);            // Hours played (since timeTo
 
 void StateSaveObject (tObject *objP, CFILE *cfP)
 {
-CFWriteInt (objP->nSignature, cfP);      
-CFWriteByte ((sbyte) objP->nType, cfP); 
-CFWriteByte ((sbyte) objP->id, cfP);
-CFWriteShort (objP->next, cfP);
-CFWriteShort (objP->prev, cfP);
-CFWriteByte ((sbyte) objP->controlType, cfP);
-CFWriteByte ((sbyte) objP->movementType, cfP);
-CFWriteByte ((sbyte) objP->renderType, cfP);
-CFWriteByte ((sbyte) objP->flags, cfP);
-CFWriteShort (objP->nSegment, cfP);
-CFWriteShort (objP->attachedObj, cfP);
+CFWriteInt (objP->info.nSignature, cfP);      
+CFWriteByte ((sbyte) objP->info.nType, cfP); 
+CFWriteByte ((sbyte) objP->info.nId, cfP);
+CFWriteShort (objP->info.nNext, cfP);
+CFWriteShort (objP->info.nPrev, cfP);
+CFWriteByte ((sbyte) objP->info.controlType, cfP);
+CFWriteByte ((sbyte) objP->info.movementType, cfP);
+CFWriteByte ((sbyte) objP->info.renderType, cfP);
+CFWriteByte ((sbyte) objP->info.nFlags, cfP);
+CFWriteShort (objP->info.nSegment, cfP);
+CFWriteShort (objP->info.nAttachedObj, cfP);
 CFWriteVector (OBJPOS (objP)->vPos, cfP);     
 CFWriteMatrix (OBJPOS (objP)->mOrient, cfP);  
-CFWriteFix (objP->size, cfP); 
-CFWriteFix (objP->shields, cfP);
-CFWriteVector (objP->vLastPos, cfP);  
-CFWriteByte (objP->containsType, cfP); 
-CFWriteByte (objP->containsId, cfP);   
-CFWriteByte (objP->containsCount, cfP);
-CFWriteByte (objP->matCenCreator, cfP);
-CFWriteFix (objP->lifeleft, cfP);   
-if (objP->movementType == MT_PHYSICS) {
+CFWriteFix (objP->info.xSize, cfP); 
+CFWriteFix (objP->info.xShields, cfP);
+CFWriteVector (objP->info.vLastPos, cfP);  
+CFWriteByte (objP->info.contains.nType, cfP); 
+CFWriteByte (objP->info.contains.nId, cfP);   
+CFWriteByte (objP->info.contains.nCount, cfP);
+CFWriteByte (objP->info.nCreator, cfP);
+CFWriteFix (objP->info.xLifeLeft, cfP);   
+if (objP->info.movementType == MT_PHYSICS) {
 	CFWriteVector (objP->mType.physInfo.velocity, cfP);   
 	CFWriteVector (objP->mType.physInfo.thrust, cfP);     
 	CFWriteFix (objP->mType.physInfo.mass, cfP);       
@@ -888,30 +888,30 @@ if (objP->movementType == MT_PHYSICS) {
 	CFWriteFixAng (objP->mType.physInfo.turnRoll, cfP);   
 	CFWriteShort ((short) objP->mType.physInfo.flags, cfP);      
 	}
-else if (objP->movementType == MT_SPINNING) {
+else if (objP->info.movementType == MT_SPINNING) {
 	CFWriteVector(objP->mType.spinRate, cfP);  
 	}
-switch (objP->controlType) {
+switch (objP->info.controlType) {
 	case CT_WEAPON:
-		CFWriteShort (objP->cType.laserInfo.parentType, cfP);
-		CFWriteShort (objP->cType.laserInfo.nParentObj, cfP);
-		CFWriteInt (objP->cType.laserInfo.nParentSig, cfP);
-		CFWriteFix (objP->cType.laserInfo.creationTime, cfP);
+		CFWriteShort (objP->cType.laserInfo.parent.nType, cfP);
+		CFWriteShort (objP->cType.laserInfo.parent.nObject, cfP);
+		CFWriteInt (objP->cType.laserInfo.parent.nSignature, cfP);
+		CFWriteFix (objP->cType.laserInfo.xCreationTime, cfP);
 		if (objP->cType.laserInfo.nLastHitObj)
 			CFWriteShort (gameData.objs.nHitObjects [OBJ_IDX (objP) * MAX_HIT_OBJECTS + objP->cType.laserInfo.nLastHitObj - 1], cfP);
 		else
 			CFWriteShort (-1, cfP);
 		CFWriteShort (objP->cType.laserInfo.nMslLock, cfP);
-		CFWriteFix (objP->cType.laserInfo.multiplier, cfP);
+		CFWriteFix (objP->cType.laserInfo.xScale, cfP);
 		break;
 
 	case CT_EXPLOSION:
 		CFWriteFix (objP->cType.explInfo.nSpawnTime, cfP);
 		CFWriteFix (objP->cType.explInfo.nDeleteTime, cfP);
 		CFWriteShort (objP->cType.explInfo.nDeleteObj, cfP);
-		CFWriteShort (objP->cType.explInfo.nAttachParent, cfP);
-		CFWriteShort (objP->cType.explInfo.nPrevAttach, cfP);
-		CFWriteShort (objP->cType.explInfo.nNextAttach, cfP);
+		CFWriteShort (objP->cType.explInfo.attached.nParent, cfP);
+		CFWriteShort (objP->cType.explInfo.attached.nPrev, cfP);
+		CFWriteShort (objP->cType.explInfo.attached.nNext, cfP);
 		break;
 
 	case CT_AI:
@@ -932,18 +932,18 @@ switch (objP->controlType) {
 		break;
 
 	case CT_POWERUP:
-		CFWriteInt (objP->cType.powerupInfo.count, cfP);
-		CFWriteFix (objP->cType.powerupInfo.creationTime, cfP);
-		CFWriteInt (objP->cType.powerupInfo.flags, cfP);
+		CFWriteInt (objP->cType.powerupInfo.nCount, cfP);
+		CFWriteFix (objP->cType.powerupInfo.xCreationTime, cfP);
+		CFWriteInt (objP->cType.powerupInfo.nFlags, cfP);
 		break;
 	}
-switch (objP->renderType) {
+switch (objP->info.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
 		CFWriteInt (objP->rType.polyObjInfo.nModel, cfP);
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			CFWriteAngVec (objP->rType.polyObjInfo.animAngles[i], cfP);
+			CFWriteAngVec (objP->rType.polyObjInfo.animAngles [i], cfP);
 		CFWriteInt (objP->rType.polyObjInfo.nSubObjFlags, cfP);
 		CFWriteInt (objP->rType.polyObjInfo.nTexOverride, cfP);
 		CFWriteInt (objP->rType.polyObjInfo.nAltTextures, cfP);
@@ -1152,25 +1152,25 @@ for (i = 0; i < MAX_PLAYERS; i++)
 if (!bBetweenLevels)	{
 //Finish all morph OBJECTS
 	for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-		if (OBJECTS [i].nType == OBJ_NONE) 
+		if (OBJECTS [i].info.nType == OBJ_NONE) 
 			continue;
-		if (OBJECTS [i].nType == OBJ_CAMERA)
-			OBJECTS [i].position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
-		else if (OBJECTS [i].renderType == RT_MORPH) {
+		if (OBJECTS [i].info.nType == OBJ_CAMERA)
+			OBJECTS [i].info.position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
+		else if (OBJECTS [i].info.renderType == RT_MORPH) {
 			tMorphInfo *md = MorphFindData (OBJECTS + i);
 			if (md) {
 				tObject *objP = md->objP;
-				objP->controlType = md->saveControlType;
-				objP->movementType = md->saveMovementType;
-				objP->renderType = RT_POLYOBJ;
+				objP->info.controlType = md->saveControlType;
+				objP->info.movementType = md->saveMovementType;
+				objP->info.renderType = RT_POLYOBJ;
 				objP->mType.physInfo = md->savePhysInfo;
 				md->objP = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
 				KillObject (OBJECTS + i);
-				OBJECTS [i].renderType = RT_POLYOBJ;
-				OBJECTS [i].controlType = CT_NONE;
-				OBJECTS [i].movementType = MT_NONE;
+				OBJECTS [i].info.renderType = RT_POLYOBJ;
+				OBJECTS [i].info.controlType = CT_NONE;
+				OBJECTS [i].info.movementType = MT_NONE;
 				}
 			}
 		}
@@ -1402,12 +1402,12 @@ void SetPosFromReturnSegment (int bRelink)
 {
 	int	nPlayerObj = LOCALPLAYER.nObject;
 
-COMPUTE_SEGMENT_CENTER_I (&OBJECTS [nPlayerObj].position.vPos, 
+COMPUTE_SEGMENT_CENTER_I (&OBJECTS [nPlayerObj].info.position.vPos, 
 							     gameData.segs.secret.nReturnSegment);
 if (bRelink)
 	RelinkObject (nPlayerObj, gameData.segs.secret.nReturnSegment);
 ResetPlayerObject ();
-OBJECTS [nPlayerObj].position.mOrient = gameData.segs.secret.returnOrient;
+OBJECTS [nPlayerObj].info.position.mOrient = gameData.segs.secret.returnOrient;
 }
 
 //	-----------------------------------------------------------------------------------
@@ -1638,15 +1638,15 @@ if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 
 	tObject h = OBJECTS [nServerObjNum];
 	OBJECTS [nServerObjNum] = OBJECTS [nOtherObjNum];
 	OBJECTS [nOtherObjNum] = h;
-	OBJECTS [nServerObjNum].id = nServerObjNum;
-	OBJECTS [nOtherObjNum].id = 0;
+	OBJECTS [nServerObjNum].info.nId = nServerObjNum;
+	OBJECTS [nOtherObjNum].info.nId = 0;
 	if (gameData.multiplayer.nLocalPlayer == nServerObjNum) {
-		OBJECTS [nServerObjNum].controlType = CT_FLYING;
-		OBJECTS [nOtherObjNum].controlType = CT_REMOTE;
+		OBJECTS [nServerObjNum].info.controlType = CT_FLYING;
+		OBJECTS [nOtherObjNum].info.controlType = CT_REMOTE;
 		}
 	else if (gameData.multiplayer.nLocalPlayer == nOtherObjNum) {
-		OBJECTS [nServerObjNum].controlType = CT_REMOTE;
-		OBJECTS [nOtherObjNum].controlType = CT_FLYING;
+		OBJECTS [nServerObjNum].info.controlType = CT_REMOTE;
+		OBJECTS [nOtherObjNum].info.controlType = CT_FLYING;
 		}
 	}
 }
@@ -1662,28 +1662,28 @@ ConvertObjects ();
 gameData.objs.nNextSignature = 0;
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	objP->rType.polyObjInfo.nAltTextures = -1;
-	nSegment = objP->nSegment;
+	nSegment = objP->info.nSegment;
 	// hack for a bug I haven't yet been able to fix 
-	if ((objP->nType != OBJ_REACTOR) && (objP->shields < 0)) {
+	if ((objP->info.nType != OBJ_REACTOR) && (objP->info.xShields < 0)) {
 		j = FindBoss (i);
 		if ((j < 0) || (gameData.boss [j].nDying != i))
-			objP->nType = OBJ_NONE;
+			objP->info.nType = OBJ_NONE;
 		}
-	objP->next = objP->prev = objP->nSegment = -1;
-	if (objP->nType != OBJ_NONE) {
+	objP->info.nNext = objP->info.nPrev = objP->info.nSegment = -1;
+	if (objP->info.nType != OBJ_NONE) {
 		LinkObject (i, nSegment);
-		if (objP->nSignature > gameData.objs.nNextSignature)
-			gameData.objs.nNextSignature = objP->nSignature;
+		if (objP->info.nSignature > gameData.objs.nNextSignature)
+			gameData.objs.nNextSignature = objP->info.nSignature;
 		}
 	//look for, and fix, boss with bogus shields
-	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag) {
-		fix xShieldSave = objP->shields;
+	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).bossFlag) {
+		fix xShieldSave = objP->info.xShields;
 		CopyDefaultsToRobot (objP);		//calculate starting shields
 		//if in valid range, use loaded shield value
-		if (xShieldSave > 0 && (xShieldSave <= objP->shields))
-			objP->shields = xShieldSave;
+		if (xShieldSave > 0 && (xShieldSave <= objP->info.xShields))
+			objP->info.xShields = xShieldSave;
 		else
-			objP->shields /= 2;  //give tPlayer a break
+			objP->info.xShields /= 2;  //give tPlayer a break
 		}
 	}
 }
@@ -1768,7 +1768,7 @@ netGame.BrightPlayers = (ubyte) CFReadByte (cfP);
 netGame.invul = (ubyte) CFReadByte (cfP);
 netGame.FriendlyFireOff = (ubyte) CFReadByte (cfP);
 for (i = 0; i < 2; i++)
-	CFRead (netGame.team_name [i], 1, CALLSIGN_LEN + 1, cfP);		// 18 bytes
+	CFRead (netGame.szTeamName [i], 1, CALLSIGN_LEN + 1, cfP);		// 18 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	netGame.locations [i] = CFReadInt (cfP);
 for (i = 0; i < MAX_PLAYERS; i++)
@@ -1784,10 +1784,10 @@ for (i = 0; i < MAX_PLAYERS; i++)
 netGame.KillGoal = CFReadInt (cfP);							// 4 bytes
 netGame.xPlayTimeAllowed = CFReadFix (cfP);					// 4 bytes
 netGame.xLevelTime = CFReadFix (cfP);							// 4 bytes
-netGame.control_invulTime = CFReadInt (cfP);				// 4 bytes
-netGame.monitor_vector = CFReadInt (cfP);					// 4 bytes
+netGame.controlInvulTime = CFReadInt (cfP);				// 4 bytes
+netGame.monitorVector = CFReadInt (cfP);					// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	netGame.player_score [i] = CFReadInt (cfP);				// 32 bytes
+	netGame.playerScore [i] = CFReadInt (cfP);				// 32 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	netGame.playerFlags [i] = (ubyte) CFReadByte (cfP);	// 8 bytes
 netGame.nPacketsPerSec = CFReadShort (cfP);					// 2 bytes
@@ -1878,35 +1878,35 @@ playerP->hoursTotal = CFReadByte (cfP);            // Hours played (since timeTo
 
 void StateRestoreObject (tObject *objP, CFILE *cfP, int sgVersion)
 {
-objP->nSignature = CFReadInt (cfP);      
-objP->nType = (ubyte) CFReadByte (cfP); 
+objP->info.nSignature = CFReadInt (cfP);      
+objP->info.nType = (ubyte) CFReadByte (cfP); 
 #if DBG
-if (objP->nType == OBJ_REACTOR)
-	objP->nType = objP->nType;
+if (objP->info.nType == OBJ_REACTOR)
+	objP->info.nType = objP->info.nType;
 else 
 #endif
 if ((sgVersion < 32) && IS_BOSS (objP))
 	gameData.boss [(int) extraGameInfo [0].nBossCount++].nObject = OBJ_IDX (objP);
-objP->id = (ubyte) CFReadByte (cfP);
-objP->next = CFReadShort (cfP);
-objP->prev = CFReadShort (cfP);
-objP->controlType = (ubyte) CFReadByte (cfP);
-objP->movementType = (ubyte) CFReadByte (cfP);
-objP->renderType = (ubyte) CFReadByte (cfP);
-objP->flags = (ubyte) CFReadByte (cfP);
-objP->nSegment = CFReadShort (cfP);
-objP->attachedObj = CFReadShort (cfP);
-CFReadVector (objP->position.vPos, cfP);     
-CFReadMatrix (objP->position.mOrient, cfP);  
-objP->size = CFReadFix (cfP); 
-objP->shields = CFReadFix (cfP);
-CFReadVector (objP->vLastPos, cfP);  
-objP->containsType = CFReadByte (cfP); 
-objP->containsId = CFReadByte (cfP);   
-objP->containsCount = CFReadByte (cfP);
-objP->matCenCreator = CFReadByte (cfP);
-objP->lifeleft = CFReadFix (cfP);   
-if (objP->movementType == MT_PHYSICS) {
+objP->info.nId = (ubyte) CFReadByte (cfP);
+objP->info.nNext = CFReadShort (cfP);
+objP->info.nPrev = CFReadShort (cfP);
+objP->info.controlType = (ubyte) CFReadByte (cfP);
+objP->info.movementType = (ubyte) CFReadByte (cfP);
+objP->info.renderType = (ubyte) CFReadByte (cfP);
+objP->info.nFlags = (ubyte) CFReadByte (cfP);
+objP->info.nSegment = CFReadShort (cfP);
+objP->info.nAttachedObj = CFReadShort (cfP);
+CFReadVector (objP->info.position.vPos, cfP);     
+CFReadMatrix (objP->info.position.mOrient, cfP);  
+objP->info.xSize = CFReadFix (cfP); 
+objP->info.xShields = CFReadFix (cfP);
+CFReadVector (objP->info.vLastPos, cfP);  
+objP->info.contains.nType = CFReadByte (cfP); 
+objP->info.contains.nId = CFReadByte (cfP);   
+objP->info.contains.nCount = CFReadByte (cfP);
+objP->info.nCreator = CFReadByte (cfP);
+objP->info.xLifeLeft = CFReadFix (cfP);   
+if (objP->info.movementType == MT_PHYSICS) {
 	CFReadVector (objP->mType.physInfo.velocity, cfP);   
 	CFReadVector (objP->mType.physInfo.thrust, cfP);     
 	objP->mType.physInfo.mass = CFReadFix (cfP);       
@@ -1917,15 +1917,15 @@ if (objP->movementType == MT_PHYSICS) {
 	objP->mType.physInfo.turnRoll = CFReadFixAng (cfP);   
 	objP->mType.physInfo.flags = (ushort) CFReadShort (cfP);      
 	}
-else if (objP->movementType == MT_SPINNING) {
+else if (objP->info.movementType == MT_SPINNING) {
 	CFReadVector (objP->mType.spinRate, cfP);  
 	}
-switch (objP->controlType) {
+switch (objP->info.controlType) {
 	case CT_WEAPON:
-		objP->cType.laserInfo.parentType = CFReadShort (cfP);
-		objP->cType.laserInfo.nParentObj = CFReadShort (cfP);
-		objP->cType.laserInfo.nParentSig = CFReadInt (cfP);
-		objP->cType.laserInfo.creationTime = CFReadFix (cfP);
+		objP->cType.laserInfo.parent.nType = CFReadShort (cfP);
+		objP->cType.laserInfo.parent.nObject = CFReadShort (cfP);
+		objP->cType.laserInfo.parent.nSignature = CFReadInt (cfP);
+		objP->cType.laserInfo.xCreationTime = CFReadFix (cfP);
 		objP->cType.laserInfo.nLastHitObj = CFReadShort (cfP);
 		if (objP->cType.laserInfo.nLastHitObj < 0)
 			objP->cType.laserInfo.nLastHitObj = 0;
@@ -1934,16 +1934,16 @@ switch (objP->controlType) {
 			objP->cType.laserInfo.nLastHitObj = 1;
 			}
 		objP->cType.laserInfo.nMslLock = CFReadShort (cfP);
-		objP->cType.laserInfo.multiplier = CFReadFix (cfP);
+		objP->cType.laserInfo.xScale = CFReadFix (cfP);
 		break;
 
 	case CT_EXPLOSION:
 		objP->cType.explInfo.nSpawnTime = CFReadFix (cfP);
 		objP->cType.explInfo.nDeleteTime = CFReadFix (cfP);
 		objP->cType.explInfo.nDeleteObj = CFReadShort (cfP);
-		objP->cType.explInfo.nAttachParent = CFReadShort (cfP);
-		objP->cType.explInfo.nPrevAttach = CFReadShort (cfP);
-		objP->cType.explInfo.nNextAttach = CFReadShort (cfP);
+		objP->cType.explInfo.attached.nParent = CFReadShort (cfP);
+		objP->cType.explInfo.attached.nPrev = CFReadShort (cfP);
+		objP->cType.explInfo.attached.nNext = CFReadShort (cfP);
 		break;
 
 	case CT_AI:
@@ -1964,12 +1964,12 @@ switch (objP->controlType) {
 		break;
 
 	case CT_POWERUP:
-		objP->cType.powerupInfo.count = CFReadInt (cfP);
-		objP->cType.powerupInfo.creationTime = CFReadFix (cfP);
-		objP->cType.powerupInfo.flags = CFReadInt (cfP);
+		objP->cType.powerupInfo.nCount = CFReadInt (cfP);
+		objP->cType.powerupInfo.xCreationTime = CFReadFix (cfP);
+		objP->cType.powerupInfo.nFlags = CFReadInt (cfP);
 		break;
 	}
-switch (objP->renderType) {
+switch (objP->info.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
@@ -2782,8 +2782,8 @@ else {
 	      }
 		}
 	}
-gameData.objs.viewer = 
-gameData.objs.console = OBJECTS + LOCALPLAYER.nObject;
+gameData.objs.viewerP = 
+gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
 StartTime (1);
 if (!extraGameInfo [0].nBossCount && (!IsMultiGame || IsCoopGame) && OpenExits ())
 	InitCountdown (NULL, 1, -1);

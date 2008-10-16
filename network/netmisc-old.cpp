@@ -118,185 +118,194 @@ return BECalcSegmentCheckSum();
 #include "powerup.h"
 #include "error.h"
 
-ubyte out_buffer[MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending tObject data
+ubyte out_buffer [MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending tObject data
+
+//------------------------------------------------------------------------------
 
 void BEReceiveNetPlayerInfo(ubyte *data, tNetPlayerInfo *info)
 {
-	int loc = 0;
+	int bufI = 0;
 
-memcpy(info->callsign, data + loc, CALLSIGN_LEN+1);
-loc += CALLSIGN_LEN+1;
-memcpy(&(info->network.ipx.server), data + loc, 4);
-loc += 4;
-memcpy(&(info->network.ipx.node), data + loc, 6);
-loc += 6;
-info->versionMajor = data[loc];
-loc++;
-info->versionMinor = data[loc];
-loc++;
-memcpy(&(info->computerType), data + loc, 1);
-loc++;      // memcpy to avoid compile time warning about enum
-info->connected = data[loc];
-loc++;
-memcpy(&(info->socket), data + loc, 2);
-loc += 2;
-memcpy (&(info->rank),data + loc,1);
-loc++;
+memcpy(info->callsign, data + bufI, CALLSIGN_LEN+1);
+bufI += CALLSIGN_LEN+1;
+memcpy(&(info->network.ipx.server), data + bufI, 4);
+bufI += 4;
+memcpy(&(info->network.ipx.node), data + bufI, 6);
+bufI += 6;
+info->versionMajor = data [bufI++];
+info->versionMinor = data [bufI++];
+memcpy(&(info->computerType), data + bufI, 1);
+bufI++;      // memcpy to avoid compile time warning about enum
+info->connected = data [bufI++];
+memcpy(&(info->socket), data + bufI, 2);
+bufI += 2;
+memcpy (&(info->rank), data + bufI++, 1);
 // MWA don't think we need to swap this because we need it in high
 // order  info->socket = INTEL_SHORT(info->socket);
 }
 
+//------------------------------------------------------------------------------
+
 void BESendNetPlayersPacket(ubyte *server, ubyte *node)
 {
 	int i, tmpi;
-	int loc = 0;
+	int bufI = 0;
 	short tmps;
 
 memset(out_buffer, 0, sizeof(out_buffer));
-out_buffer[0] = netPlayers.nType;
-loc++;
+out_buffer [0] = netPlayers.nType;
+bufI++;
 tmpi = INTEL_INT (netPlayers.nSecurity);
-memcpy(out_buffer + loc, &tmpi, 4);
-loc += 4;
+memcpy(out_buffer + bufI, &tmpi, 4);
+bufI += 4;
 for (i = 0; i < MAX_PLAYERS+4; i++) {
-	memcpy(out_buffer + loc, netPlayers.players[i].callsign, CALLSIGN_LEN+1);
-	loc += CALLSIGN_LEN+1;
-	memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.server, 4);
-	loc += 4;
-	memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.node, 6);
-	loc += 6;
-	memcpy(out_buffer + loc, &(netPlayers.players[i].versionMajor), 1);
-	loc++;
-	memcpy(out_buffer + loc, &(netPlayers.players[i].versionMinor), 1);
-	loc++;
-	memcpy(out_buffer + loc, &(netPlayers.players[i].computerType), 1);
-	loc++;
-	memcpy(out_buffer + loc, &(netPlayers.players[i].connected), 1);
-	loc++;
-	tmps = INTEL_SHORT(netPlayers.players[i].socket);
-	memcpy(out_buffer + loc, &tmps, 2);
-	loc += 2;
-	memcpy(out_buffer + loc, &(netPlayers.players[i].rank), 1);
-	loc++;
+	memcpy(out_buffer + bufI, netPlayers.players [i].callsign, CALLSIGN_LEN+1);
+	bufI += CALLSIGN_LEN+1;
+	memcpy(out_buffer + bufI, netPlayers.players [i].network.ipx.server, 4);
+	bufI += 4;
+	memcpy(out_buffer + bufI, netPlayers.players [i].network.ipx.node, 6);
+	bufI += 6;
+	memcpy(out_buffer + bufI, &(netPlayers.players [i].versionMajor), 1);
+	bufI++;
+	memcpy(out_buffer + bufI, &(netPlayers.players [i].versionMinor), 1);
+	bufI++;
+	memcpy(out_buffer + bufI, &(netPlayers.players [i].computerType), 1);
+	bufI++;
+	memcpy(out_buffer + bufI, &(netPlayers.players [i].connected), 1);
+	bufI++;
+	tmps = INTEL_SHORT(netPlayers.players [i].socket);
+	memcpy(out_buffer + bufI, &tmps, 2);
+	bufI += 2;
+	memcpy(out_buffer + bufI, &(netPlayers.players [i].rank), 1);
+	bufI++;
 	}
 if ((server == NULL) && (node == NULL))
-	IPXSendBroadcastData(out_buffer, loc);
+	IPXSendBroadcastData(out_buffer, bufI);
 else
-	IPXSendInternetPacketData(out_buffer, loc, server, node);
+	IPXSendInternetPacketData(out_buffer, bufI, server, node);
 }
+
+//------------------------------------------------------------------------------
 
 void BEReceiveNetPlayersPacket(ubyte *data, tAllNetPlayersInfo *pinfo)
 {
-	int i, loc = 0;
+	int i, bufI = 0;
 
-pinfo->nType = data[loc];
-loc++;
-memcpy(&(pinfo->nSecurity), data + loc, 4);
-loc += 4;
+pinfo->nType = data [bufI];
+bufI++;
+memcpy(&(pinfo->nSecurity), data + bufI, 4);
+bufI += 4;
 pinfo->nSecurity = INTEL_INT (pinfo->nSecurity);
 for (i = 0; i < MAX_PLAYERS+4; i++) {
-	BEReceiveNetPlayerInfo(data + loc, &(pinfo->players[i]));
-	loc += 26;          // sizeof(tNetPlayerInfo) on the PC
+	BEReceiveNetPlayerInfo(data + bufI, &(pinfo->players [i]));
+	bufI += 26;          // sizeof(tNetPlayerInfo) on the PC
 	}
 }
+
+//------------------------------------------------------------------------------
 
 void BESendSequencePacket(tSequencePacket seq, ubyte *server, ubyte *node, ubyte *netAddress)
 {
 	short tmps;
-	int loc, tmpi;
+	int bufI, tmpi;
 
-loc = 0;
+bufI = 0;
 memset(out_buffer, 0, sizeof(out_buffer));
-out_buffer[0] = seq.nType;
-loc++;
+out_buffer [0] = seq.nType;
+bufI++;
 tmpi = INTEL_INT (seq.nSecurity);
-memcpy(out_buffer + loc, &tmpi, 4);
-loc += 4;
-loc += 3;
-memcpy(out_buffer + loc, seq.player.callsign, CALLSIGN_LEN+1);
-loc += CALLSIGN_LEN+1;
-memcpy(out_buffer + loc, seq.player.network.ipx.server, 4);
-loc += 4;
-memcpy(out_buffer + loc, seq.player.network.ipx.node, 6);
-loc += 6;
-out_buffer[loc] = seq.player.versionMajor;
-loc++;
-out_buffer[loc] = seq.player.versionMinor;
-loc++;
-out_buffer[loc] = seq.player.computerType;
-loc++;
-out_buffer[loc] = seq.player.connected;
-loc++;
+memcpy(out_buffer + bufI, &tmpi, 4);
+bufI += 4;
+bufI += 3;
+memcpy(out_buffer + bufI, seq.player.callsign, CALLSIGN_LEN+1);
+bufI += CALLSIGN_LEN+1;
+memcpy(out_buffer + bufI, seq.player.network.ipx.server, 4);
+bufI += 4;
+memcpy(out_buffer + bufI, seq.player.network.ipx.node, 6);
+bufI += 6;
+out_buffer [bufI] = seq.player.versionMajor;
+bufI++;
+out_buffer [bufI] = seq.player.versionMinor;
+bufI++;
+out_buffer [bufI] = seq.player.computerType;
+bufI++;
+out_buffer [bufI] = seq.player.connected;
+bufI++;
 tmps = INTEL_SHORT(seq.player.socket);
-memcpy(out_buffer + loc, &tmps, 2);
-loc += 2;
-out_buffer[loc]=seq.player.rank;
-loc++;      // for pad byte
+memcpy(out_buffer + bufI, &tmps, 2);
+bufI += 2;
+out_buffer [bufI]=seq.player.rank;
+bufI++;      // for pad byte
 if (netAddress != NULL)
-	IPXSendPacketData(out_buffer, loc, server, node, netAddress);
+	IPXSendPacketData(out_buffer, bufI, server, node, netAddress);
 else if (!server && !node)
-	IPXSendBroadcastData(out_buffer, loc);
+	IPXSendBroadcastData(out_buffer, bufI);
 else
-	IPXSendInternetPacketData(out_buffer, loc, server, node);
+	IPXSendInternetPacketData(out_buffer, bufI, server, node);
 }
+
+//------------------------------------------------------------------------------
 
 void BEReceiveSequencePacket(ubyte *data, tSequencePacket *seq)
 {
-	int loc = 0;
+	int bufI = 0;
 
-	seq->nType = data[0];
-	loc++;
-	memcpy(&(seq->nSecurity), data + loc, 4);  loc += 4;   loc += 3;   // +3 for pad byte
+	seq->nType = data [0];
+	bufI++;
+	memcpy(&(seq->nSecurity), data + bufI, 4);  
+	bufI += 7;   // +3 for pad byte
 	seq->nSecurity = INTEL_INT (seq->nSecurity);
-	BEReceiveNetPlayerInfo(data + loc, &(seq->player));
+	BEReceiveNetPlayerInfo(data + bufI, &(seq->player));
 }
+
+//------------------------------------------------------------------------------
 
 void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int liteFlag)     // lite says shorter netgame packets
 {
 	uint tmpi;
 	ushort tmps; // p;
 	int i, j;
-	int loc = 0;
+	int bufI = 0;
 
 memset(out_buffer, 0, MAX_PACKETSIZE);
-memcpy(out_buffer + loc, &(netGame.nType), 1);
-loc++;
+memcpy(out_buffer + bufI, &(netGame.nType), 1);
+bufI++;
 tmpi = INTEL_INT (netGame.nSecurity);
-memcpy(out_buffer + loc, &tmpi, 4);
-loc += 4;
-memcpy(out_buffer + loc, netGame.szGameName, NETGAME_NAME_LEN+1);
-loc += (NETGAME_NAME_LEN+1);
-memcpy(out_buffer + loc, netGame.szMissionTitle, MISSION_NAME_LEN+1);
-loc += (MISSION_NAME_LEN+1);
-memcpy(out_buffer + loc, netGame.szMissionName, 9);
-loc += 9;
+memcpy(out_buffer + bufI, &tmpi, 4);
+bufI += 4;
+memcpy(out_buffer + bufI, netGame.szGameName, NETGAME_NAME_LEN+1);
+bufI += (NETGAME_NAME_LEN+1);
+memcpy(out_buffer + bufI, netGame.szMissionTitle, MISSION_NAME_LEN+1);
+bufI += (MISSION_NAME_LEN+1);
+memcpy(out_buffer + bufI, netGame.szMissionName, 9);
+bufI += 9;
 tmpi = INTEL_INT (netGame.nLevel);
-memcpy(out_buffer + loc, &tmpi, 4);
-loc += 4;
-memcpy(out_buffer + loc, &(netGame.gameMode), 1);
-loc++;
-memcpy(out_buffer + loc, &(netGame.bRefusePlayers), 1);
-loc++;
-memcpy(out_buffer + loc, &(netGame.difficulty), 1);
-loc++;
-memcpy(out_buffer + loc, &(netGame.gameStatus), 1);
-loc++;
-memcpy(out_buffer + loc, &(netGame.nNumPlayers), 1);
-loc++;
-memcpy(out_buffer + loc, &(netGame.nMaxPlayers), 1);
-loc++;
-memcpy(out_buffer + loc, &(netGame.nConnected), 1);
-loc++;
-memcpy(out_buffer + loc, &(netGame.gameFlags), 1);
-loc++;
-memcpy(out_buffer + loc, &(netGame.protocolVersion), 1);
-loc++;
-memcpy(out_buffer + loc, &(netGame.versionMajor), 1);
-loc++;
-memcpy(out_buffer + loc, &(netGame.versionMinor), 1);
-loc++;
-memcpy(out_buffer + loc, &(netGame.teamVector), 1);
-loc++;
+memcpy(out_buffer + bufI, &tmpi, 4);
+bufI += 4;
+memcpy(out_buffer + bufI, &(netGame.gameMode), 1);
+bufI++;
+memcpy(out_buffer + bufI, &(netGame.bRefusePlayers), 1);
+bufI++;
+memcpy(out_buffer + bufI, &(netGame.difficulty), 1);
+bufI++;
+memcpy(out_buffer + bufI, &(netGame.gameStatus), 1);
+bufI++;
+memcpy(out_buffer + bufI, &(netGame.nNumPlayers), 1);
+bufI++;
+memcpy(out_buffer + bufI, &(netGame.nMaxPlayers), 1);
+bufI++;
+memcpy(out_buffer + bufI, &(netGame.nConnected), 1);
+bufI++;
+memcpy(out_buffer + bufI, &(netGame.gameFlags), 1);
+bufI++;
+memcpy(out_buffer + bufI, &(netGame.protocolVersion), 1);
+bufI++;
+memcpy(out_buffer + bufI, &(netGame.versionMajor), 1);
+bufI++;
+memcpy(out_buffer + bufI, &(netGame.versionMinor), 1);
+bufI++;
+memcpy(out_buffer + bufI, &(netGame.teamVector), 1);
+bufI++;
 
 if (liteFlag)
 	goto do_send;
@@ -306,172 +315,154 @@ if (liteFlag)
 // Watcom makes bitfields from left to right.  CW7 on the mac goes
 // from right to left.  then they are endian swapped
 
-tmps = *(ushort *)((ubyte *)(&netGame.teamVector) + 1);    // get the values for the first short bitfield
+tmps = *(ushort *)(&netGame.teamVector + 1);    // get the values for the first short bitfield
 tmps = INTEL_SHORT(tmps);
-memcpy(out_buffer + loc, &tmps, 2);
-loc += 2;
+memcpy(out_buffer + bufI, &tmps, 2);
+bufI += 2;
 
 tmps = *(ushort *)((ubyte *)(&netGame.teamVector) + 3);    // get the values for the second short bitfield
 tmps = INTEL_SHORT(tmps);
-memcpy(out_buffer + loc, &tmps, 2);
-loc += 2;
+memcpy(out_buffer + bufI, &tmps, 2);
+bufI += 2;
 
-#if 0       // removed since I reordered bitfields on mac
-p = *(ushort *)((ubyte *)(&netGame.teamVector) + 1);       // get the values for the first short bitfield
-tmps = 0;
-for (i = 15; i >= 0; i--) {
-	if (p & (1 << i))
-		tmps |= (1 << (15 - i);
-	}
-tmps = INTEL_SHORT(tmps);
-memcpy(out_buffer + loc, &tmps, 2);
-loc += 2;
-p = *(ushort *)((ubyte *)(&netGame.teamVector) + 3);       // get the values for the second short bitfield
-tmps = 0;
-for (i = 15; i >= 0; i--) {
-	if (p & (1 << i))
-		tmps |= (1 << (15 - i);
-	}
-tmps = INTEL_SHORT(tmps);
-memcpy(out_buffer + loc, &tmps, 2);
-loc += 2;
-#endif
-
-memcpy(out_buffer + loc, netGame.team_name, 2*(CALLSIGN_LEN+1)); loc += 2*(CALLSIGN_LEN+1);
+memcpy(out_buffer + bufI, netGame.szTeamName, 2*(CALLSIGN_LEN+1)); 
+bufI += 2*(CALLSIGN_LEN+1);
 for (i = 0; i < MAX_PLAYERS; i++) {
-	tmpi = INTEL_INT (netGame.locations[i]);
-	memcpy(out_buffer + loc, &tmpi, 4);
-	loc += 4;   // SWAP HERE!!!
+	tmpi = INTEL_INT (netGame.locations [i]);
+	memcpy(out_buffer + bufI, &tmpi, 4);
+	bufI += 4;   // SWAP HERE!!!
 	}
 
 for (i = 0; i < MAX_PLAYERS; i++) {
 	for (j = 0; j < MAX_PLAYERS; j++) {
-		tmps = INTEL_SHORT(netGame.kills[i][j]);
-		memcpy(out_buffer + loc, &tmps, 2);
-		loc += 2;   // SWAP HERE!!!
+		tmps = INTEL_SHORT(netGame.kills [i][j]);
+		memcpy(out_buffer + bufI, &tmps, 2);
+		bufI += 2;   // SWAP HERE!!!
 		}
 	}
 
 tmps = INTEL_SHORT(netGame.nSegmentCheckSum);
-memcpy(out_buffer + loc, &tmps, 2);
-loc += 2;   // SWAP_HERE
-tmps = INTEL_SHORT(netGame.teamKills[0]);
-memcpy(out_buffer + loc, &tmps, 2);
-loc += 2;   // SWAP_HERE
-tmps = INTEL_SHORT(netGame.teamKills[1]);
-memcpy(out_buffer + loc, &tmps, 2);
-loc += 2;   // SWAP_HERE
+memcpy(out_buffer + bufI, &tmps, 2);
+bufI += 2;   // SWAP_HERE
+tmps = INTEL_SHORT(netGame.teamKills [0]);
+memcpy(out_buffer + bufI, &tmps, 2);
+bufI += 2;   // SWAP_HERE
+tmps = INTEL_SHORT(netGame.teamKills [1]);
+memcpy(out_buffer + bufI, &tmps, 2);
+bufI += 2;   // SWAP_HERE
 for (i = 0; i < MAX_PLAYERS; i++) {
-	tmps = INTEL_SHORT(netGame.killed[i]);
-	memcpy(out_buffer + loc, &tmps, 2);
-	loc += 2;   // SWAP HERE!!!
+	tmps = INTEL_SHORT(netGame.killed [i]);
+	memcpy(out_buffer + bufI, &tmps, 2);
+	bufI += 2;   // SWAP HERE!!!
 	}
 for (i = 0; i < MAX_PLAYERS; i++) {
-	tmps = INTEL_SHORT(netGame.playerKills[i]);
-	memcpy(out_buffer + loc, &tmps, 2);
-	loc += 2;   // SWAP HERE!!!
+	tmps = INTEL_SHORT(netGame.playerKills [i]);
+	memcpy(out_buffer + bufI, &tmps, 2);
+	bufI += 2;   // SWAP HERE!!!
 	}
 
 tmpi = INTEL_INT (netGame.KillGoal);
-memcpy(out_buffer + loc, &tmpi, 4);
-loc += 4;   // SWAP_HERE
+memcpy(out_buffer + bufI, &tmpi, 4);
+bufI += 4;   // SWAP_HERE
 tmpi = INTEL_INT (netGame.xPlayTimeAllowed);
-memcpy(out_buffer + loc, &tmpi, 4);
-loc += 4;   // SWAP_HERE
+memcpy(out_buffer + bufI, &tmpi, 4);
+bufI += 4;   // SWAP_HERE
 tmpi = INTEL_INT (netGame.xLevelTime);
-memcpy(out_buffer + loc, &tmpi, 4);
-loc += 4;   // SWAP_HERE
-tmpi = INTEL_INT (netGame.control_invulTime);
-memcpy(out_buffer + loc, &tmpi, 4);
-loc += 4;   // SWAP_HERE
-tmpi = INTEL_INT (netGame.monitor_vector);
-memcpy(out_buffer + loc, &tmpi, 4);
-loc += 4;   // SWAP_HERE
+memcpy(out_buffer + bufI, &tmpi, 4);
+bufI += 4;   // SWAP_HERE
+tmpi = INTEL_INT (netGame.controlInvulTime);
+memcpy(out_buffer + bufI, &tmpi, 4);
+bufI += 4;   // SWAP_HERE
+tmpi = INTEL_INT (netGame.monitorVector);
+memcpy(out_buffer + bufI, &tmpi, 4);
+bufI += 4;   // SWAP_HERE
 for (i = 0; i < MAX_PLAYERS; i++) {
-	tmpi = INTEL_INT (netGame.player_score[i]);
-	memcpy(out_buffer + loc, &tmpi, 4);
-	loc += 4;   // SWAP_HERE
+	tmpi = INTEL_INT (netGame.playerScore [i]);
+	memcpy(out_buffer + bufI, &tmpi, 4);
+	bufI += 4;   // SWAP_HERE
 	}
 for (i = 0; i < MAX_PLAYERS; i++) {
-	memcpy(out_buffer + loc, &(netGame.playerFlags[i]), 1); loc++;
+	memcpy(out_buffer + bufI, &(netGame.playerFlags [i]), 1); bufI++;
 	}
 tmps = INTEL_SHORT(PacketsPerSec ());
-memcpy(out_buffer + loc, &tmps, 2);
-loc += 2;
-memcpy(out_buffer + loc, &(netGame.bShortPackets), 1);
-loc++;
+memcpy(out_buffer + bufI, &tmps, 2);
+bufI += 2;
+memcpy(out_buffer + bufI, &(netGame.bShortPackets), 1);
+bufI++;
 
 do_send:
 
 if (netAddress != NULL)
-	IPXSendPacketData(out_buffer, loc, server, node, netAddress);
+	IPXSendPacketData(out_buffer, bufI, server, node, netAddress);
 else if ((server == NULL) && (node == NULL))
-	IPXSendBroadcastData(out_buffer, loc);
+	IPXSendBroadcastData(out_buffer, bufI);
 else
-	IPXSendInternetPacketData(out_buffer, loc, server, node);
+	IPXSendInternetPacketData(out_buffer, bufI, server, node);
 }
+
+//------------------------------------------------------------------------------
 
 void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 {
 	int i, j;
-	int loc = 0;
+	int bufI = 0;
 	short bitfield; // new_field;
 
-memcpy(&(netgame->nType), data + loc, 1);
-loc++;
-memcpy(&(netgame->nSecurity), data + loc, 4);
-loc += 4;
+memcpy(&(netgame->nType), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->nSecurity), data + bufI, 4);
+bufI += 4;
 netgame->nSecurity = INTEL_INT (netgame->nSecurity);
-memcpy(netgame->szGameName, data + loc, NETGAME_NAME_LEN+1);
-loc += (NETGAME_NAME_LEN+1);
-memcpy(netgame->szMissionTitle, data + loc, MISSION_NAME_LEN+1);
-loc += (MISSION_NAME_LEN+1);
-memcpy(netgame->szMissionName, data + loc, 9);
-loc += 9;
-memcpy(&(netgame->nLevel), data + loc, 4);
-loc += 4;
+memcpy(netgame->szGameName, data + bufI, NETGAME_NAME_LEN+1);
+bufI += (NETGAME_NAME_LEN+1);
+memcpy(netgame->szMissionTitle, data + bufI, MISSION_NAME_LEN+1);
+bufI += (MISSION_NAME_LEN+1);
+memcpy(netgame->szMissionName, data + bufI, 9);
+bufI += 9;
+memcpy(&(netgame->nLevel), data + bufI, 4);
+bufI += 4;
 netgame->nLevel = INTEL_INT (netgame->nLevel);
-memcpy(&(netgame->gameMode), data + loc, 1);
-loc++;
-memcpy(&(netgame->bRefusePlayers), data + loc, 1);
-loc++;
-memcpy(&(netgame->difficulty), data + loc, 1);
-loc++;
-memcpy(&(netgame->gameStatus), data + loc, 1);
-loc++;
-memcpy(&(netgame->nNumPlayers), data + loc, 1);
-loc++;
-memcpy(&(netgame->nMaxPlayers), data + loc, 1);
-loc++;
-memcpy(&(netgame->nConnected), data + loc, 1);
-loc++;
-memcpy(&(netgame->gameFlags), data + loc, 1);
-loc++;
-memcpy(&(netgame->protocolVersion), data + loc, 1);
-loc++;
-memcpy(&(netgame->versionMajor), data + loc, 1);
-loc++;
-memcpy(&(netgame->versionMinor), data + loc, 1);
-loc++;
-memcpy(&(netgame->teamVector), data + loc, 1);
-loc++;
+memcpy(&(netgame->gameMode), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->bRefusePlayers), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->difficulty), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->gameStatus), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->nNumPlayers), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->nMaxPlayers), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->nConnected), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->gameFlags), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->protocolVersion), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->versionMajor), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->versionMinor), data + bufI, 1);
+bufI++;
+memcpy(&(netgame->teamVector), data + bufI, 1);
+bufI++;
 
 if (liteFlag)
 	return;
 
-memcpy(&bitfield, data + loc, 2);
-loc += 2;
+memcpy(&bitfield, data + bufI, 2);
+bufI += 2;
 bitfield = INTEL_SHORT(bitfield);
 memcpy(((ubyte *)(&netgame->teamVector) + 1), &bitfield, 2);
 
-memcpy(&bitfield, data + loc, 2);
-loc += 2;
+memcpy(&bitfield, data + bufI, 2);
+bufI += 2;
 bitfield = INTEL_SHORT(bitfield);
 memcpy(((ubyte *)(&netgame->teamVector) + 3), &bitfield, 2);
 
 #if 0       // not used since reordering mac bitfields
-memcpy(&bitfield, data + loc, 2);
-loc += 2;
+memcpy(&bitfield, data + bufI, 2);
+bufI += 2;
 new_field = 0;
 for (i = 15; i >= 0; i--) {
 	if (bitfield & (1 << i))
@@ -480,8 +471,8 @@ for (i = 15; i >= 0; i--) {
 new_field = INTEL_SHORT(new_field);
 memcpy(((ubyte *)(&netgame->teamVector) + 1), &new_field, 2);
 
-memcpy(&bitfield, data + loc, 2);
-loc += 2;
+memcpy(&bitfield, data + bufI, 2);
+bufI += 2;
 new_field = 0;
 for (i = 15; i >= 0; i--) {
 	if (bitfield & (1 << i))
@@ -491,73 +482,74 @@ new_field = INTEL_SHORT(new_field);
 memcpy(((ubyte *)(&netgame->teamVector) + 3), &new_field, 2);
 #endif
 
-memcpy(netgame->team_name, data + loc, 2*(CALLSIGN_LEN+1));
-loc += 2*(CALLSIGN_LEN+1);
+memcpy(netgame->szTeamName, data + bufI, 2*(CALLSIGN_LEN+1));
+bufI += 2*(CALLSIGN_LEN+1);
 for (i = 0; i < MAX_PLAYERS; i++) {
-	memcpy(&(netgame->locations[i]), data + loc, 4);
-	loc += 4;
-	netgame->locations[i] = INTEL_INT (netgame->locations[i]);
+	memcpy(&(netgame->locations [i]), data + bufI, 4);
+	bufI += 4;
+	netgame->locations [i] = INTEL_INT (netgame->locations [i]);
 	}
 
 for (i = 0; i < MAX_PLAYERS; i++) {
 	for (j = 0; j < MAX_PLAYERS; j++) {
-		memcpy(&(netgame->kills[i][j]), data + loc, 2);
-		loc += 2;
-		netgame->kills[i][j] = INTEL_SHORT(netgame->kills[i][j]);
+		memcpy(&(netgame->kills [i][j]), data + bufI, 2);
+		bufI += 2;
+		netgame->kills [i][j] = INTEL_SHORT(netgame->kills [i][j]);
 		}
 	}
 
-memcpy(&(netgame->nSegmentCheckSum), data + loc, 2);
-loc += 2;
+memcpy(&(netgame->nSegmentCheckSum), data + bufI, 2);
+bufI += 2;
 netgame->nSegmentCheckSum = INTEL_SHORT(netgame->nSegmentCheckSum);
-memcpy(&(netgame->teamKills[0]), data + loc, 2);
-loc += 2;
-netgame->teamKills[0] = INTEL_SHORT(netgame->teamKills[0]);
-memcpy(&(netgame->teamKills[1]), data + loc, 2);
-loc += 2;
-netgame->teamKills[1] = INTEL_SHORT(netgame->teamKills[1]);
+memcpy(&(netgame->teamKills [0]), data + bufI, 2);
+bufI += 2;
+netgame->teamKills [0] = INTEL_SHORT(netgame->teamKills [0]);
+memcpy(&(netgame->teamKills [1]), data + bufI, 2);
+bufI += 2;
+netgame->teamKills [1] = INTEL_SHORT(netgame->teamKills [1]);
 for (i = 0; i < MAX_PLAYERS; i++) {
-	memcpy(&(netgame->killed[i]), data + loc, 2);
-	loc += 2;
-	netgame->killed[i] = INTEL_SHORT(netgame->killed[i]);
+	memcpy(&(netgame->killed [i]), data + bufI, 2);
+	bufI += 2;
+	netgame->killed [i] = INTEL_SHORT(netgame->killed [i]);
 	}
 for (i = 0; i < MAX_PLAYERS; i++) {
-	memcpy(&(netgame->playerKills[i]), data + loc, 2);
-	loc += 2;
-	netgame->playerKills[i] = INTEL_SHORT(netgame->playerKills[i]);
+	memcpy(&(netgame->playerKills [i]), data + bufI, 2);
+	bufI += 2;
+	netgame->playerKills [i] = INTEL_SHORT(netgame->playerKills [i]);
 	}
-memcpy(&(netgame->KillGoal), data + loc, 4);
-loc += 4;
+memcpy(&(netgame->KillGoal), data + bufI, 4);
+bufI += 4;
 netgame->KillGoal = INTEL_INT (netgame->KillGoal);
-memcpy(&(netgame->xPlayTimeAllowed), data + loc, 4);
-loc += 4;
+memcpy(&(netgame->xPlayTimeAllowed), data + bufI, 4);
+bufI += 4;
 netgame->xPlayTimeAllowed = INTEL_INT (netgame->xPlayTimeAllowed);
 
-memcpy(&(netgame->xLevelTime), data + loc, 4);
-loc += 4;
+memcpy(&(netgame->xLevelTime), data + bufI, 4);
+bufI += 4;
 netgame->xLevelTime = INTEL_INT (netgame->xLevelTime);
-memcpy(&(netgame->control_invulTime), data + loc, 4);
-loc += 4;
-netgame->control_invulTime = INTEL_INT (netgame->control_invulTime);
-memcpy(&(netgame->monitor_vector), data + loc, 4);
-loc += 4;
-netgame->monitor_vector = INTEL_INT (netgame->monitor_vector);
+memcpy(&(netgame->controlInvulTime), data + bufI, 4);
+bufI += 4;
+netgame->controlInvulTime = INTEL_INT (netgame->controlInvulTime);
+memcpy(&(netgame->monitorVector), data + bufI, 4);
+bufI += 4;
+netgame->monitorVector = INTEL_INT (netgame->monitorVector);
 for (i = 0; i < MAX_PLAYERS; i++) {
-	memcpy(&(netgame->player_score[i]), data + loc, 4);
-	loc += 4;
-	netgame->player_score[i] = INTEL_INT (netgame->player_score[i]);
+	memcpy(&(netgame->playerScore [i]), data + bufI, 4);
+	bufI += 4;
+	netgame->playerScore [i] = INTEL_INT (netgame->playerScore [i]);
 	}
 for (i = 0; i < MAX_PLAYERS; i++) {
-	memcpy(&(netgame->playerFlags[i]), data + loc, 1);
-	loc++;
+	memcpy(&(netgame->playerFlags [i]), data + bufI, 1);
+	bufI++;
 	}
-memcpy(&(netgame->nPacketsPerSec), data + loc, 2);
-loc += 2;
+memcpy(&(netgame->nPacketsPerSec), data + bufI, 2);
+bufI += 2;
 netgame->nPacketsPerSec = INTEL_SHORT(netgame->nPacketsPerSec);
-memcpy(&(netgame->bShortPackets), data + loc, 1);
-loc ++;
+memcpy(&(netgame->bShortPackets), data + bufI, 1);
+bufI ++;
 }
 
+//------------------------------------------------------------------------------
 
 #define EGI_INTEL_SHORT_2BUF(_m) \
   *((short *) (out_buffer + ((char *) &extraGameInfo [1]. _m - (char *) &extraGameInfo [1]))) = INTEL_SHORT (extraGameInfo [1]. _m);
@@ -570,6 +562,8 @@ loc ++;
 
 #define BUF2_EGI_INTEL_INT(_m) \
 	extraGameInfo [1]. _m = INTEL_INT (*((int *) (out_buffer + ((char *) &extraGameInfo [1]. _m - (char *) &extraGameInfo [1]))));
+
+//------------------------------------------------------------------------------
 
 void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *netAddress)
 {
@@ -587,6 +581,7 @@ else
 	IPXSendInternetPacketData(out_buffer, sizeof (tExtraGameInfo), server, node);
 }
 
+//------------------------------------------------------------------------------
 
 void BEReceiveExtraGameInfo(ubyte *data, tExtraGameInfo *extraGameInfo)
 {
@@ -598,6 +593,7 @@ BUF2_EGI_INTEL_SHORT (entropy.nShieldDamageRate);
 BUF2_EGI_INTEL_INT (nSpawnDelay);
 }
 
+//------------------------------------------------------------------------------
 
 void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress)
 {
@@ -614,6 +610,7 @@ else
 	IPXSendInternetPacketData(out_buffer, i, server, node);
 }
 
+//------------------------------------------------------------------------------
 
 void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *missingObjFrames)
 {
@@ -621,65 +618,44 @@ memcpy (missingObjFrames, out_buffer, sizeof (tMissingObjFrames));
 missingObjFrames->nFrame = INTEL_SHORT (missingObjFrames->nFrame);
 }
 
+//------------------------------------------------------------------------------
 
 void BESwapObject(tObject *objP)
 {
 // swap the short and int entries for this tObject
-objP->nSignature     = INTEL_INT (objP->nSignature);
-objP->next          = INTEL_SHORT(objP->next);
-objP->prev          = INTEL_SHORT(objP->prev);
-objP->nSegment       = INTEL_SHORT(objP->nSegment);
-objP->position.vPos[X]         = INTEL_INT (objP->position.vPos[X]);
-objP->position.vPos[Y]         = INTEL_INT (objP->position.vPos[Y]);
-objP->position.vPos[Z]         = INTEL_INT (objP->position.vPos[Z]);
-objP->position.mOrient[RVEC][X] = INTEL_INT (objP->position.mOrient[RVEC][X]);
-objP->position.mOrient[RVEC][Y] = INTEL_INT (objP->position.mOrient[RVEC][Y]);
-objP->position.mOrient[RVEC][Z] = INTEL_INT (objP->position.mOrient[RVEC][Z]);
-objP->position.mOrient[FVEC][X] = INTEL_INT (objP->position.mOrient[FVEC][X]);
-objP->position.mOrient[FVEC][Y] = INTEL_INT (objP->position.mOrient[FVEC][Y]);
-objP->position.mOrient[FVEC][Z] = INTEL_INT (objP->position.mOrient[FVEC][Z]);
-objP->position.mOrient[UVEC][X] = INTEL_INT (objP->position.mOrient[UVEC][X]);
-objP->position.mOrient[UVEC][Y] = INTEL_INT (objP->position.mOrient[UVEC][Y]);
-objP->position.mOrient[UVEC][Z] = INTEL_INT (objP->position.mOrient[UVEC][Z]);
-objP->size          = INTEL_INT (objP->size);
-objP->shields       = INTEL_INT (objP->shields);
-objP->vLastPos[X]    = INTEL_INT (objP->vLastPos[X]);
-objP->vLastPos[Y]    = INTEL_INT (objP->vLastPos[Y]);
-objP->vLastPos[Z]    = INTEL_INT (objP->vLastPos[Z]);
-objP->lifeleft      = INTEL_INT (objP->lifeleft);
-switch (objP->movementType) {
+objP->info.nSignature = INTEL_INT (objP->info.nSignature);
+objP->info.nNext = INTEL_SHORT(objP->info.nNext);
+objP->info.nPrev = INTEL_SHORT(objP->info.nPrev);
+objP->info.nSegment = INTEL_SHORT(objP->info.nSegment);
+INTEL_VECTOR (objP->info.position.vPos);
+INTEL_MATRIX (objP->info.position.mOrient);
+objP->info.xSize = INTEL_INT (objP->info.xSize);
+objP->info.xShields = INTEL_INT (objP->info.xShields);
+INTEL_VECTOR (objP->info.vLastPos);
+objP->info.xLifeLeft = INTEL_INT (objP->info.xLifeLeft);
+switch (objP->info.movementType) {
 	case MT_PHYSICS:
-		objP->mType.physInfo.velocity[X] = INTEL_INT (objP->mType.physInfo.velocity[X]);
-		objP->mType.physInfo.velocity[Y] = INTEL_INT (objP->mType.physInfo.velocity[Y]);
-		objP->mType.physInfo.velocity[Z] = INTEL_INT (objP->mType.physInfo.velocity[Z]);
-		objP->mType.physInfo.thrust[X]   = INTEL_INT (objP->mType.physInfo.thrust[X]);
-		objP->mType.physInfo.thrust[Y]   = INTEL_INT (objP->mType.physInfo.thrust[Y]);
-		objP->mType.physInfo.thrust[Z]   = INTEL_INT (objP->mType.physInfo.thrust[Z]);
-		objP->mType.physInfo.mass       = INTEL_INT (objP->mType.physInfo.mass);
-		objP->mType.physInfo.drag       = INTEL_INT (objP->mType.physInfo.drag);
-		objP->mType.physInfo.brakes     = INTEL_INT (objP->mType.physInfo.brakes);
-		objP->mType.physInfo.rotVel[X]   = INTEL_INT (objP->mType.physInfo.rotVel[X]);
-		objP->mType.physInfo.rotVel[Y]   = INTEL_INT (objP->mType.physInfo.rotVel[Y]);
-		objP->mType.physInfo.rotVel[Z]   = INTEL_INT (objP->mType.physInfo.rotVel[Z]);
-		objP->mType.physInfo.rotThrust[X] = INTEL_INT (objP->mType.physInfo.rotThrust[X]);
-		objP->mType.physInfo.rotThrust[Y] = INTEL_INT (objP->mType.physInfo.rotThrust[Y]);
-		objP->mType.physInfo.rotThrust[Z] = INTEL_INT (objP->mType.physInfo.rotThrust[Z]);
+		INTEL_VECTOR (objP->mType.physInfo.velocity);
+		INTEL_VECTOR (objP->mType.physInfo.thrust);
+		objP->mType.physInfo.mass = INTEL_INT (objP->mType.physInfo.mass);
+		objP->mType.physInfo.drag = INTEL_INT (objP->mType.physInfo.drag);
+		objP->mType.physInfo.brakes = INTEL_INT (objP->mType.physInfo.brakes);
+		INTEL_VECTOR (objP->mType.physInfo.rotVel);
+		INTEL_VECTOR (objP->mType.physInfo.rotThrust);
 		objP->mType.physInfo.turnRoll = INTEL_INT (objP->mType.physInfo.turnRoll);
 		objP->mType.physInfo.flags = INTEL_SHORT(objP->mType.physInfo.flags);
 		break;
 
 	case MT_SPINNING:
-		objP->mType.spinRate[X] = INTEL_INT (objP->mType.spinRate[X]);
-		objP->mType.spinRate[Y] = INTEL_INT (objP->mType.spinRate[Y]);
-		objP->mType.spinRate[Z] = INTEL_INT (objP->mType.spinRate[Z]);
+		INTEL_VECTOR (objP->mType.spinRate);
 		break;
 	}
 
-switch (objP->controlType) {
+switch (objP->info.controlType) {
 	case CT_WEAPON:
-		objP->cType.laserInfo.parentType = INTEL_SHORT(objP->cType.laserInfo.parentType);
-		objP->cType.laserInfo.nParentObj = INTEL_SHORT(objP->cType.laserInfo.nParentObj);
-		objP->cType.laserInfo.nParentSig = INTEL_INT (objP->cType.laserInfo.nParentSig);
+		objP->cType.laserInfo.parent.nType = INTEL_SHORT (objP->cType.laserInfo.parent.nType);
+		objP->cType.laserInfo.parent.nObject = INTEL_SHORT (objP->cType.laserInfo.parent.nObject);
+		objP->cType.laserInfo.parent.nSignature = INTEL_INT (objP->cType.laserInfo.parent.nSignature);
 		objP->cType.laserInfo.creationTime = INTEL_INT (objP->cType.laserInfo.creationTime);
 		objP->cType.laserInfo.nLastHitObj = INTEL_SHORT(objP->cType.laserInfo.nLastHitObj);
 		if (objP->cType.laserInfo.nLastHitObj < 0)
@@ -695,17 +671,17 @@ switch (objP->controlType) {
 	case CT_EXPLOSION:
 		objP->cType.explInfo.nSpawnTime = INTEL_INT (objP->cType.explInfo.nSpawnTime);
 		objP->cType.explInfo.nDeleteTime = INTEL_INT (objP->cType.explInfo.nDeleteTime);
-		objP->cType.explInfo.nDeleteObj = INTEL_SHORT(objP->cType.explInfo.nDeleteObj);
-		objP->cType.explInfo.nAttachParent = INTEL_SHORT(objP->cType.explInfo.nAttachParent);
-		objP->cType.explInfo.nPrevAttach = INTEL_SHORT(objP->cType.explInfo.nPrevAttach);
-		objP->cType.explInfo.nNextAttach = INTEL_SHORT(objP->cType.explInfo.nNextAttach);
+		objP->cType.explInfo.nDeleteObj = INTEL_SHORT (objP->cType.explInfo.nDeleteObj);
+		objP->cType.explInfo.nAttachParent = INTEL_SHORT (objP->cType.explInfo.nAttachParent);
+		objP->cType.explInfo.nPrevAttach = INTEL_SHORT (objP->cType.explInfo.nPrevAttach);
+		objP->cType.explInfo.nNextAttach = INTEL_SHORT (objP->cType.explInfo.nNextAttach);
 		break;
 
 	case CT_AI:
-		objP->cType.aiInfo.nHideSegment = INTEL_SHORT(objP->cType.aiInfo.nHideSegment);
-		objP->cType.aiInfo.nHideIndex = INTEL_SHORT(objP->cType.aiInfo.nHideIndex);
-		objP->cType.aiInfo.nPathLength = INTEL_SHORT(objP->cType.aiInfo.nPathLength);
-		objP->cType.aiInfo.nDangerLaser = INTEL_SHORT(objP->cType.aiInfo.nDangerLaser);
+		objP->cType.aiInfo.nHideSegment = INTEL_SHORT (objP->cType.aiInfo.nHideSegment);
+		objP->cType.aiInfo.nHideIndex = INTEL_SHORT (objP->cType.aiInfo.nHideIndex);
+		objP->cType.aiInfo.nPathLength = INTEL_SHORT (objP->cType.aiInfo.nPathLength);
+		objP->cType.aiInfo.nDangerLaser = INTEL_SHORT (objP->cType.aiInfo.nDangerLaser);
 		objP->cType.aiInfo.nDangerLaserSig = INTEL_INT (objP->cType.aiInfo.nDangerLaserSig);
 		objP->cType.aiInfo.xDyingStartTime = INTEL_INT (objP->cType.aiInfo.xDyingStartTime);
 		break;
@@ -719,21 +695,19 @@ switch (objP->controlType) {
 		objP->cType.powerupInfo.creationTime = INTEL_INT (objP->cType.powerupInfo.creationTime);
 		// Below commented out 5/2/96 by Matt.  I asked Allender why it was
 		// here, and he didn't know, and it looks like it doesn't belong.
-		// if (objP->id == POW_VULCAN)
+		// if (objP->info.nId == POW_VULCAN)
 		// objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
 		break;
 
 	}
 
-switch (objP->renderType) {
+switch (objP->info.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
 		objP->rType.polyObjInfo.nModel = INTEL_INT (objP->rType.polyObjInfo.nModel);
-		for (i=0;i<MAX_SUBMODELS;i++) {
-			objP->rType.polyObjInfo.animAngles[i][PA] = INTEL_INT (objP->rType.polyObjInfo.animAngles [i][PA]);
-			objP->rType.polyObjInfo.animAngles[i][BA] = INTEL_INT (objP->rType.polyObjInfo.animAngles [i][BA]);
-			objP->rType.polyObjInfo.animAngles[i][HA] = INTEL_INT (objP->rType.polyObjInfo.animAngles [i][HA]);
+		for (i = 0; i < MAX_SUBMODELS; i++) {
+			INTEL_ANGVEC (objP->rType.polyObjInfo.animAngles [i]);
 		}
 		objP->rType.polyObjInfo.nSubObjFlags = INTEL_INT (objP->rType.polyObjInfo.nSubObjFlags);
 		objP->rType.polyObjInfo.nTexOverride = INTEL_INT (objP->rType.polyObjInfo.nTexOverride);
@@ -758,7 +732,7 @@ switch (objP->renderType) {
 
 #else /* !WORDS_BIGENDIAN */
 
-
+//------------------------------------------------------------------------------
 // Calculates the checksum of a block of memory.
 ushort NetMiscCalcCheckSum(void * vptr, int len)
 {
@@ -778,104 +752,5 @@ return (sum1 * 256 + sum2 % 255);
 
 #endif /* WORDS_BIGENDIAN */
 
-// needs to be recoded to actually work with big endian!
-//--unused-- //Finds the difference between block1 and block2.  Fills in diff_buffer and
-//--unused-- //returns the size of diff_buffer.
-//--unused-- int netmisc_find_diff(void *block1, void *block2, int block_size, void *diff_buffer)
-//--unused-- {
-//--unused-- 	int mode;
-//--unused-- 	ushort *c1, *c2, *diff_start, *c3;
-//--unused-- 	int i, j, size, diff, n , same;
-//--unused--
-//--unused-- 	size=(block_size+1)/sizeof(ushort);
-//--unused-- 	c1 = (ushort *)block1;
-//--unused-- 	c2 = (ushort *)block2;
-//--unused-- 	c3 = (ushort *)diff_buffer;
-//--unused--
-//--unused-- 	mode = same = diff = n = 0;
-//--unused--
-//--unused-- 	for (i=0; i<size; i++, c1++, c2++) {
-//--unused-- 		if (*c1 != *c2) {
-//--unused-- 			if (mode==0) {
-//--unused-- 				mode = 1;
-//--unused-- 				c3[n++] = same;
-//--unused-- 				same=0; diff=0;
-//--unused-- 				diff_start = c2;
-//--unused-- 			}
-//--unused-- 			*c1 = *c2;
-//--unused-- 			diff++;
-//--unused-- 			if (diff==65535) {
-//--unused-- 				mode = 0;
-//--unused-- 				// send how many diff ones.
-//--unused-- 				c3[n++]=diff;
-//--unused-- 				// send all the diff ones.
-//--unused-- 				for (j=0; j<diff; j++)
-//--unused-- 					c3[n++] = diff_start[j];
-//--unused-- 				same=0; diff=0;
-//--unused-- 				diff_start = c2;
-//--unused-- 			}
-//--unused-- 		} else {
-//--unused-- 			if (mode==1) {
-//--unused-- 				mode=0;
-//--unused-- 				// send how many diff ones.
-//--unused-- 				c3[n++]=diff;
-//--unused-- 				// send all the diff ones.
-//--unused-- 				for (j=0; j<diff; j++)
-//--unused-- 					c3[n++] = diff_start[j];
-//--unused-- 				same=0; diff=0;
-//--unused-- 				diff_start = c2;
-//--unused-- 			}
-//--unused-- 			same++;
-//--unused-- 			if (same==65535) {
-//--unused-- 				mode=1;
-//--unused-- 				// send how many the same
-//--unused-- 				c3[n++] = same;
-//--unused-- 				same=0; diff=0;
-//--unused-- 				diff_start = c2;
-//--unused-- 			}
-//--unused-- 		}
-//--unused--
-//--unused-- 	}
-//--unused-- 	if (mode==0) {
-//--unused-- 		// send how many the same
-//--unused-- 		c3[n++] = same;
-//--unused-- 	} else {
-//--unused-- 		// send how many diff ones.
-//--unused-- 		c3[n++]=diff;
-//--unused-- 		// send all the diff ones.
-//--unused-- 		for (j=0; j<diff; j++)
-//--unused-- 			c3[n++] = diff_start[j];
-//--unused-- 	}
-//--unused--
-//--unused-- 	return n*2;
-//--unused-- }
-
-//--unused-- //Applies diff_buffer to block1 to create a new block1.  Returns the final
-//--unused-- //size of block1.
-//--unused-- int netmisc_apply_diff(void *block1, void *diff_buffer, int diff_size)
-//--unused-- {
-//--unused-- 	unsigned int i, j, n, size;
-//--unused-- 	ushort *c1, *c2;
-//--unused--
-//--unused-- 	c1 = (ushort *)diff_buffer;
-//--unused-- 	c2 = (ushort *)block1;
-//--unused--
-//--unused-- 	size = diff_size/2;
-//--unused--
-//--unused-- 	i=j=0;
-//--unused-- 	while (1) {
-//--unused-- 		j += c1[i];         // Same
-//--unused-- 		i++;
-//--unused-- 		if (i>=size) break;
-//--unused-- 		n = c1[i];          // ndiff
-//--unused-- 		i++;
-//--unused-- 		if (n>0) {
-//--unused-- 			//Assert(n* < 256);
-//--unused-- 			memcpy(&c2[j], &c1[i], n*2);
-//--unused-- 			i += n;
-//--unused-- 			j += n;
-//--unused-- 		}
-//--unused-- 		if (i>=size) break;
-//--unused-- 	}
-//--unused-- 	return j*2;
-//--unused-- }
+//------------------------------------------------------------------------------
+//eof

@@ -53,7 +53,7 @@ if (bInitSinCos) {
 	OglComputeSinCos (sizeofa (sinCosBlip), sinCosBlip);
 	bInitSinCos = 0;
 	}
-n = objP->position.vPos;
+n = objP->info.position.vPos;
 G3TransformPoint (n, n, 0);
 if ((m = n.Mag()) > RADAR_RANGE * F1_0)
 	return;
@@ -167,24 +167,24 @@ glActiveTexture (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
 glLineWidth (1);
 pc = radarColor + gameOpts->render.automap.nColor;
-RenderRadarBlip (gameData.objs.console, pc->red, pc->green, pc->blue, 2.0f / 3.0f); //0.5, 0.75, 0.5, 2.0f / 3.0f);
+RenderRadarBlip (gameData.objs.consoleP, pc->red, pc->green, pc->blue, 2.0f / 3.0f); //0.5, 0.75, 0.5, 2.0f / 3.0f);
 glLineWidth (3);
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
-	if ((objP->nType == OBJ_PLAYER) && (objP != gameData.objs.console)) {
-		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->id)) {
-			pc = shipColors + (IsTeamGame ? GetTeam (objP->id) : objP->id);
+	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objs.consoleP)) {
+		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)) {
+			pc = shipColors + (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId);
 			RenderRadarBlip (objP, pc->red, pc->green, pc->blue, 0.9f / 4);
 			}
 		}
-	else if (objP->nType == OBJ_ROBOT) {
+	else if (objP->info.nType == OBJ_ROBOT) {
 		if (AM_SHOW_ROBOTS) {
-			if (ROBOTINFO (objP->id).companion)
+			if (ROBOTINFO (objP->info.nId).companion)
 				RenderRadarBlip (objP, guidebotColor.red, guidebotColor.green, guidebotColor.blue, 0.9f / 4);
 			else
 				RenderRadarBlip (objP, robotColor.red, robotColor.green, robotColor.blue, 0.9f / 4);
 			}
 		}
-	else if (objP->nType == OBJ_POWERUP) {
+	else if (objP->info.nType == OBJ_POWERUP) {
 		if (AM_SHOW_POWERUPS (2))
 			RenderRadarBlip (objP, powerupColor.red, powerupColor.green, powerupColor.blue, 0.9f / 4);
 		}

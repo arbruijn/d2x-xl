@@ -138,7 +138,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	COMPUTE_SEGMENT_CENTER (&center, segP);
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
-		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].nSegment : pl->info.nSegment;
+		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].info.nSegment : pl->info.nSegment;
 		if (!SEGVIS (m, i))
 			continue;
 		h = (int) (vmsVector::Dist (center, pl->info.vPos) - F2X (pl->info.fRad) / 10.0f);
@@ -206,7 +206,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 		if (IsLightVert (nVertex, pl->info.faceP))
 			h = 0;
 		else {
-			h = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].nSegment : pl->info.nSegment;
+			h = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].info.nSegment : pl->info.nSegment;
 			if (!VERTVIS (h, nVertex))
 				continue;
 			vLightToVert = *vertP - pl->info.vPos;
@@ -334,9 +334,9 @@ gameStates.ogl.bUseTransform = 1;
 if (nStartSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-gameData.objs.viewer = &viewer;
-viewer.nSegment = nStartSeg;
-COMPUTE_SEGMENT_CENTER_I (&viewer.position.vPos, nStartSeg);
+gameData.objs.viewerP = &viewer;
+viewer.info.nSegment = nStartSeg;
+COMPUTE_SEGMENT_CENTER_I (&viewer.info.position.vPos, nStartSeg);
 segP = SEGMENTS + nStartSeg;
 for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 #if 1
@@ -356,10 +356,10 @@ for (sideP = segP->sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 	vNormal = sideP->normals[0] + sideP->normals[1];
 	vNormal *= (-F1_0 / 2);
 	vAngles = vNormal.ToAnglesVec();
-	viewer.position.mOrient = vmsMatrix::Create(vAngles);
+	viewer.info.position.mOrient = vmsMatrix::Create(vAngles);
 	G3StartFrame(0, 0);
 	RenderStartFrame();
-	G3SetViewMatrix(viewer.position.vPos, viewer.position.mOrient, gameStates.render.xZoom, 1);
+	G3SetViewMatrix (viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
 #endif
 	BuildRenderSegList (nStartSeg, 0);
 	G3EndFrame ();

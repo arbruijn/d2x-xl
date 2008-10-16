@@ -688,7 +688,7 @@ void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int leve
 	for (nObject=0; nObject<=gameData.objs.nLastObject [0]; nObject++) {
 		tObject *objP = &OBJECTS[nObject];
 
-		if (objP->renderType == RT_POLYOBJ) {
+		if (objP->info.renderType == RT_POLYOBJ) {
 			tPolyModel *po = &gameData.models.polyModels[objP->rType.polyObjInfo.nModel];
 
 			for (i=0; i<po->nTextures; i++) {

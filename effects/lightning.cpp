@@ -272,7 +272,7 @@ for (i = nLightnings, pl = pfRoot; i > 0; i--, pl++) {
 		}
 	else {
 		pl->nObject = nObject;
-		if (0 > (pl->nSegment = OBJECTS [nObject].nSegment))
+		if (0 > (pl->nSegment = OBJECTS [nObject].info.nSegment))
 			return NULL;
 		}
 	pl->pParent = pParent;
@@ -993,21 +993,21 @@ plb->bSound = -1;
 
 void MoveObjectLightnings (tObject *objP)
 {
-MoveLightnings (gameData.lightnings.objects [OBJ_IDX (objP)], NULL, &OBJPOS (objP)->vPos, objP->nSegment, 0, 0);
+MoveLightnings (gameData.lightnings.objects [OBJ_IDX (objP)], NULL, &OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
 }
 
 //------------------------------------------------------------------------------
 
 tRgbaColorf *LightningColor (tObject *objP)
 {
-if (objP->nType == OBJ_ROBOT) {
-	if (ROBOTINFO (objP->id).energyDrain) {
+if (objP->info.nType == OBJ_ROBOT) {
+	if (ROBOTINFO (objP->info.nId).energyDrain) {
 		static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
 		return &color;
 		}
 	}
-else if ((objP->nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
-	int s = gameData.segs.segment2s [objP->nSegment].special;
+else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
+	int s = gameData.segs.segment2s [objP->info.nSegment].special;
 	if (s == SEGMENT_IS_FUELCEN) {
 		static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
 		return &color;
@@ -1077,27 +1077,27 @@ if (SHOW_LIGHTNINGS) {
 	for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [0]; i++, objP++) {
 		h = gameData.objs.bWantEffect [i];
 		if (h & EXPL_LIGHTNINGS) {
-			if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR))
+			if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))
 				CreateBlowupLightnings (objP);
-			else if (objP->nType != 255)
+			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
 			}
 		else if (h & MISSILE_LIGHTNINGS) {
-			if ((objP->nType == OBJ_WEAPON) || gameData.objs.bIsMissile [objP->id])
+			if ((objP->info.nType == OBJ_WEAPON) || gameData.objs.bIsMissile [objP->info.nId])
 				CreateMissileLightnings (objP);
-			else if (objP->nType != 255)
+			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
 			}
 		else if (h & ROBOT_LIGHTNINGS) {
-			if (objP->nType == OBJ_ROBOT)
+			if (objP->info.nType == OBJ_ROBOT)
 				CreateRobotLightnings (objP, LightningColor (objP));
-			else if (objP->nType != 255)
+			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
 			}
 		else if (h & PLAYER_LIGHTNINGS) {
-			if (objP->nType == OBJ_PLAYER)
+			if (objP->info.nType == OBJ_PLAYER)
 				CreatePlayerLightnings (objP, LightningColor (objP));
-			else if (objP->nType != 255)
+			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
 			}
 		gameData.objs.bWantEffect [i] &= ~(PLAYER_LIGHTNINGS | ROBOT_LIGHTNINGS | MISSILE_LIGHTNINGS | EXPL_LIGHTNINGS);
@@ -1210,7 +1210,7 @@ void DestroyAllObjectLightnings (int nType, int nId)
 	int		i;
 
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
-	if ((objP->nType == nType) && ((nId < 0) || (objP->id == nId)))
+	if ((objP->info.nType == nType) && ((nId < 0) || (objP->info.nId == nId)))
 #if 1
 		RequestEffects (objP, DESTROY_LIGHTNINGS);
 #else
@@ -1956,8 +1956,8 @@ vmsVector *FindLightningTargetPos (tObject *emitterP, short nTarget)
 if (!nTarget)
 	return 0;
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
-	if ((objP != emitterP) && (objP->nType == OBJ_EFFECT) && (objP->id == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nTarget))
-		return &objP->position.vPos;
+	if ((objP != emitterP) && (objP->info.nType == OBJ_EFFECT) && (objP->info.nId == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nTarget))
+		return &objP->info.position.vPos;
 return NULL;
 }
 
@@ -1976,7 +1976,7 @@ if (!SHOW_LIGHTNINGS)
 if (!gameOpts->render.lightnings.bStatic)
 	return;
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
-	if ((objP->nType != OBJ_EFFECT) || (objP->id != LIGHTNING_ID))
+	if ((objP->info.nType != OBJ_EFFECT) || (objP->info.nId != LIGHTNING_ID))
 		continue;
 	if (gameData.lightnings.objects [i] >= 0)
 		continue;
@@ -1986,17 +1986,17 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	if (pli->bRandom && !pli->nAngle)
 		vEnd = NULL;
 	else if ((vEnd = FindLightningTargetPos (objP, pli->nTarget)))
-		pli->nLength = vmsVector::Dist(objP->position.vPos, *vEnd) / F1_0;
+		pli->nLength = vmsVector::Dist(objP->info.position.vPos, *vEnd) / F1_0;
 	else {
-		v = objP->position.vPos + objP->position.mOrient[FVEC] * F1_0 * pli->nLength;
+		v = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * F1_0 * pli->nLength;
 		vEnd = &v;
 		}
 	color.red = (float) pli->color.red / 255.0f;
 	color.green = (float) pli->color.green / 255.0f;
 	color.blue = (float) pli->color.blue / 255.0f;
 	color.alpha = (float) pli->color.alpha / 255.0f;
-	vDelta = pli->bInPlane ? &objP->position.mOrient[RVEC] : NULL;
-	h = CreateLightning (pli->nLightnings, &objP->position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, pli->nLength * F1_0,
+	vDelta = pli->bInPlane ? &objP->info.position.mOrient[RVEC] : NULL;
+	h = CreateLightning (pli->nLightnings, &objP->info.position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, pli->nLength * F1_0,
 							   pli->nAmplitude * F1_0, pli->nAngle, pli->nOffset * F1_0, pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
 							   pli->nSmoothe, pli->bClamp, pli->bPlasma, pli->bSound, 1, pli->nStyle, &color);
 	if (h >= 0)
@@ -2168,7 +2168,7 @@ void CreateExplosionLightnings (tObject *objP, tRgbaColorf *colorP, int nRods, i
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bExplosions) {
 	//gameData.lightnings.objects [OBJ_IDX (objP)] =
 		CreateLightning (
-			nRods, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), nTTL, 0,
+			nRods, &objP->info.position.vPos, NULL, NULL, OBJ_IDX (objP), nTTL, 0,
 			nRad, F1_0 * 4, 0, 2 * F1_0, 50, 5, 1, 3, 1, 1, 0, 0, 1, -1, colorP);
 	}
 }
@@ -2204,12 +2204,12 @@ CreateExplosionLightnings (objP, &color, 30, 15 * F1_0, 750);
 
 int CreateMissileLightnings (tObject *objP)
 {
-if (gameData.objs.bIsMissile [objP->id]) {
-	if ((objP->id == EARTHSHAKER_ID) || (objP->id == EARTHSHAKER_ID))
+if (gameData.objs.bIsMissile [objP->info.nId]) {
+	if ((objP->info.nId == EARTHSHAKER_ID) || (objP->info.nId == EARTHSHAKER_ID))
 		CreateShakerLightnings (objP);
-	else if ((objP->id == EARTHSHAKER_MEGA_ID) || (objP->id == ROBOT_SHAKER_MEGA_ID))
+	else if ((objP->info.nId == EARTHSHAKER_MEGA_ID) || (objP->info.nId == ROBOT_SHAKER_MEGA_ID))
 		CreateShakerMegaLightnings (objP);
-	else if ((objP->id == MEGAMSL_ID) || (objP->id == ROBOT_MEGAMSL_ID))
+	else if ((objP->info.nId == MEGAMSL_ID) || (objP->info.nId == ROBOT_MEGAMSL_ID))
 		CreateMegaLightnings (objP);
 	else
 		return 0;
@@ -2224,7 +2224,7 @@ void CreateBlowupLightnings (tObject *objP)
 {
 static tRgbaColorf color = {0.1f, 0.1f, 0.8f, 0.2f};
 
-int h = X2I (objP->size) * 2;
+int h = X2I (objP->info.xSize) * 2;
 
 CreateExplosionLightnings (objP, &color, h + rand () % h, h * (F1_0 + F1_0 / 2), 500);
 }
@@ -2239,8 +2239,8 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (obj
 	if (0 <= gameData.lightnings.objects [i])
 		MoveObjectLightnings (objP);
 	else {
-		h = CreateLightning (2 * objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 100,
-									objP->size, objP->size / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 1, 0, colorP);
+		h = CreateLightning (2 * objP->info.xSize / F1_0, &objP->info.position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 100,
+									objP->info.xSize, objP->info.xSize / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 1, 0, colorP);
 		if (h >= 0)
 			gameData.lightnings.objects [i] = h;
 		}
@@ -2257,8 +2257,8 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bPlayers && OBJECT_EXISTS (ob
 	if (0 <= gameData.lightnings.objects [i])
 		MoveObjectLightnings (objP);
 	else {
-		h = CreateLightning (4 * objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -5000, 1000,
-									4 * objP->size, objP->size, 0, 2 * objP->size, 50, 5, 1, 5, 1, 1, 0, 1, 1, 1, colorP);
+		h = CreateLightning (4 * objP->info.xSize / F1_0, &objP->info.position.vPos, NULL, NULL, OBJ_IDX (objP), -5000, 1000,
+									4 * objP->info.xSize, objP->info.xSize, 0, 2 * objP->info.xSize, 50, 5, 1, 5, 1, 1, 0, 1, 1, 1, colorP);
 		if (h >= 0)
 			gameData.lightnings.objects [i] = h;
 		}
@@ -2274,7 +2274,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (obj
 		tLightningBundle	*plb;
 
 	n = X2IR (RobotDefaultShields (objP));
-	h = X2IR (objP->shields) * 100 / n;
+	h = X2IR (objP->info.xShields) * 100 / n;
 	if ((h < 0) || (h >= 50))
 		return;
 	n = (5 - h / 10) * 2;
@@ -2286,8 +2286,8 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (obj
 			}
 		DestroyLightnings (h, NULL, 0);
 		}
-	h = CreateLightning (n, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 4000,
-								objP->size, objP->size / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 0, 0, -1, colorP);
+	h = CreateLightning (n, &objP->info.position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 4000,
+								objP->info.xSize, objP->info.xSize / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 0, 0, -1, colorP);
 	if (h >= 0)
 		gameData.lightnings.objects [i] = h;
 	}
@@ -2332,7 +2332,7 @@ void RenderDamageLightnings (tObject *objP, g3sPoint **pointList, tG3ModelVertex
 
 if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage))
 	return;
-if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_PLAYER))
+if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_PLAYER))
 	return;
 if (nVertices < 3)
 	return;

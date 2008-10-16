@@ -548,7 +548,7 @@ if (!networkData.refuse.bWaitForAnswer) {
 			HUDInitMessage ("%s %s wants to join", 
 								 pszRankStrings [their->player.rank], their->player.callsign);
 		HUDInitMessage ("Alt-1 assigns to team %s. Alt-2 to team %s", 
-							 their->player.callsign, netGame.team_name [0], netGame.team_name [1]);
+							 their->player.callsign, netGame.szTeamName [0], netGame.szTeamName [1]);
 		}               
 	else    
 		HUDInitMessage (TXT_JOIN_ACCEPT, their->player.callsign);
@@ -561,7 +561,7 @@ if (!networkData.refuse.bWaitForAnswer) {
 		else
 			sprintf (szRank, "%s ", pszRankStrings [their->player.rank]);
 		sprintf (szJoinMsg, " \n  %s%s wants to join.  \n  Alt-1 assigns to team %s.  \n  Alt-2 to team %s.  \n ", 
-					szRank, their->player.callsign, netGame.team_name [0], netGame.team_name [1]);
+					szRank, their->player.callsign, netGame.szTeamName [0], netGame.szTeamName [1]);
 		joinMsgIndex.nLines = 5;
 		}
 	else {

@@ -44,13 +44,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Return firing status.
 // If ready to fire a weapon, return true, else return false.
 // Ready to fire a weapon if nextPrimaryFire <= 0 or nextSecondaryFire <= 0.
-int ReadyToFire (tRobotInfo *botInfoP, tAILocal *ailP)
+int ReadyToFire (tRobotInfo *botInfoP, tAILocalInfo *ailP)
 {
 return (ailP->nextPrimaryFire <= 0) || ((botInfoP->nSecWeaponType != -1) && (ailP->nextSecondaryFire <= 0));
 }
 
 // ----------------------------------------------------------------------------------
-void SetNextFireTime (tObject *objP, tAILocal *ailP, tRobotInfo *botInfoP, int nGun)
+void SetNextFireTime (tObject *objP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int nGun)
 {
 	//	For guys in snipe mode, they have a 50% shot of getting this shot in D2_FREE.
 if ((nGun != 0) || (botInfoP->nSecWeaponType == -1))
@@ -73,24 +73,24 @@ else {
 // ----------------------------------------------------------------------------------
 //	When some robots collide with the tPlayer, they attack.
 //	If tPlayer is cloaked, then robot probably didn't actually collide, deal with that here.
-void DoAIRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *vCollision)
+void DoAIRobotHitAttack (tObject *robotP, tObject *playerobjP, vmsVector *vCollision)
 {
-	tAILocal		*ailP = gameData.ai.localInfo + OBJ_IDX (robot);
-	tRobotInfo	*botInfoP = &ROBOTINFO (robot->id);
+	tAILocalInfo	*ailP = gameData.ai.localInfo + OBJ_IDX (robotP);
+	tRobotInfo		*botInfoP = &ROBOTINFO (robotP->info.nId);
 
 if (!gameStates.app.cheats.bRobotsFiring)
 	return;
 //	If tPlayer is dead, stop firing.
-if (OBJECTS [LOCALPLAYER.nObject].nType == OBJ_GHOST)
+if (OBJECTS [LOCALPLAYER.nObject].info.nType == OBJ_GHOST)
 	return;
 if (botInfoP->attackType != 1)
 	return;
 if (ailP->nextPrimaryFire > 0)
 	return;
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
-	if (vmsVector::Dist(OBJPOS (gameData.objs.console)->vPos, robot->position.vPos) <
-		 robot->size + gameData.objs.console->size + F1_0 * 2) {
-		CollidePlayerAndNastyRobot (playerobjP, robot, vCollision);
+	if (vmsVector::Dist (OBJPOS (gameData.objs.consoleP)->vPos, robotP->info.position.vPos) <
+		 robotP->info.xSize + gameData.objs.consoleP->info.xSize + F1_0 * 2) {
+		CollidePlayerAndNastyRobot (playerobjP, robotP, vCollision);
 		if (botInfoP->energyDrain && LOCALPLAYER.energy) {
 			LOCALPLAYER.energy -= botInfoP->energyDrain * F1_0;
 			if (LOCALPLAYER.energy < 0)
@@ -98,8 +98,8 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 			}
 		}
 	}
-robot->cType.aiInfo.GOAL_STATE = AIS_RECOVER;
-SetNextFireTime (robot, ailP, botInfoP, 1);	//	1 = nGun: 0 is special (uses nextSecondaryFire)
+robotP->cType.aiInfo.GOAL_STATE = AIS_RECOVER;
+SetNextFireTime (robotP, ailP, botInfoP, 1);	//	1 = nGun: 0 is special (uses nextSecondaryFire)
 }
 
 #define	FIRE_K	8		//	Controls average accuracy of robot firing.  Smaller numbers make firing worse.  Being power of 2 doesn't matter.
@@ -135,7 +135,7 @@ int LeadPlayer (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayer
 
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	return 0;
-vPlayerMovementDir = gameData.objs.console->mType.physInfo.velocity;
+vPlayerMovementDir = gameData.objs.consoleP->mType.physInfo.velocity;
 xPlayerSpeed = vmsVector::Normalize(vPlayerMovementDir);
 if (xPlayerSpeed < MIN_LEAD_SPEED)
 	return 0;
@@ -147,7 +147,7 @@ dot = vmsVector::Dot(vVecToPlayer, vPlayerMovementDir);
 if ((dot < -LEAD_RANGE) || (dot > LEAD_RANGE))
 	return 0;
 //	Looks like it might be worth trying to lead the player.
-botInfoP = &ROBOTINFO (objP->id);
+botInfoP = &ROBOTINFO (objP->info.nId);
 nWeaponType = botInfoP->nWeaponType;
 if ((nGuns == 0) && (botInfoP->nSecWeaponType != -1))
 	nWeaponType = botInfoP->nSecWeaponType;
@@ -165,16 +165,16 @@ if (wiP->matter) {
 		xMaxWeaponSpeed *= (NDL-gameStates.app.nDifficultyLevel);
    }
 xProjectedTime = FixDiv (xDistToPlayer, xMaxWeaponSpeed);
-(*vFire)[X] = ComputeLeadComponent ((*vBelievedPlayerPos)[X], (*vFirePoint)[X], gameData.objs.console->mType.physInfo.velocity[X], xProjectedTime);
-(*vFire)[Y] = ComputeLeadComponent ((*vBelievedPlayerPos)[Y], (*vFirePoint)[Y], gameData.objs.console->mType.physInfo.velocity[Y], xProjectedTime);
-(*vFire)[Z] = ComputeLeadComponent ((*vBelievedPlayerPos)[Z], (*vFirePoint)[Z], gameData.objs.console->mType.physInfo.velocity[Z], xProjectedTime);
+(*vFire)[X] = ComputeLeadComponent ((*vBelievedPlayerPos)[X], (*vFirePoint)[X], gameData.objs.consoleP->mType.physInfo.velocity[X], xProjectedTime);
+(*vFire)[Y] = ComputeLeadComponent ((*vBelievedPlayerPos)[Y], (*vFirePoint)[Y], gameData.objs.consoleP->mType.physInfo.velocity[Y], xProjectedTime);
+(*vFire)[Z] = ComputeLeadComponent ((*vBelievedPlayerPos)[Z], (*vFirePoint)[Z], gameData.objs.consoleP->mType.physInfo.velocity[Z], xProjectedTime);
 vmsVector::Normalize(*vFire);
-Assert (vmsVector::Dot(*vFire, objP->position.mOrient[FVEC]) < 3*F1_0/2);
+Assert (vmsVector::Dot(*vFire, objP->info.position.mOrient[FVEC]) < 3*F1_0/2);
 //	Make sure not firing at especially strange angle.  If so, try to correct.  If still bad, give up after one try.
-if (vmsVector::Dot(*vFire, objP->position.mOrient[FVEC]) < F1_0/2) {
+if (vmsVector::Dot(*vFire, objP->info.position.mOrient[FVEC]) < F1_0/2) {
 	*vFire += vVecToPlayer;
 	*vFire *= F1_0/2;
-	if (vmsVector::Dot(*vFire, objP->position.mOrient[FVEC]) < F1_0/2) {
+	if (vmsVector::Dot(*vFire, objP->info.position.mOrient[FVEC]) < F1_0/2) {
 		return 0;
 		}
 	}
@@ -196,19 +196,19 @@ if (nObject == nDbgObj)
 #endif
 if (nPrevShot >= 0) {
 	tObject *prevShotP = OBJECTS + nPrevShot;
-	if (prevShotP->nSignature == gameData.objs.shots [nObject].nSignature) {
+	if (prevShotP->info.nSignature == gameData.objs.shots [nObject].nSignature) {
 		tObject *lightP, *shotP = OBJECTS + nShot;
 		short nLight = gameData.objs.lightObjs [nPrevShot].nObject;
 		if (nLight < 0)
 			lightP = prevShotP;
 		else {
 			lightP = OBJECTS + nLight;
-			if (lightP->nSignature != gameData.objs.lightObjs [nPrevShot].nSignature) {
+			if (lightP->info.nSignature != gameData.objs.lightObjs [nPrevShot].nSignature) {
 				lightP = prevShotP;
 				nLight = -1;
 				}
 			}
-		if (vmsVector::Dist(shotP->position.vPos, lightP->position.vPos) < 10 * F1_0) {
+		if (vmsVector::Dist (shotP->info.position.vPos, lightP->info.position.vPos) < 10 * F1_0) {
 			if (nLight >= 0) {
 				gameData.objs.lightObjs [nShot].nObject = nLight;
 				lightP->cType.lightInfo.nObjects++;
@@ -220,7 +220,7 @@ if (nPrevShot >= 0) {
 				if (nLight >= 0) {
 					lightP = OBJECTS + nLight;
 					gameData.objs.lightObjs [nShot].nSignature =
-					gameData.objs.lightObjs [nPrevShot].nSignature = lightP->nSignature;
+					gameData.objs.lightObjs [nPrevShot].nSignature = lightP->info.nSignature;
 					lightP->cType.lightInfo.nObjects = 2;
 					}
 				}
@@ -236,8 +236,8 @@ if (nPrevShot >= 0) {
 void AIFireLaserAtPlayer (tObject *objP, vmsVector *vFirePoint, int nGun, vmsVector *vBelievedPlayerPos)
 {
 	short			nShot, nObject = OBJ_IDX (objP);
-	tAILocal		*ailP = gameData.ai.localInfo + nObject;
-	tRobotInfo	*botInfoP = &ROBOTINFO (objP->id);
+	tAILocalInfo		*ailP = gameData.ai.localInfo + nObject;
+	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
 	vmsVector	vFire;
 	vmsVector	bpp_diff;
 	short			nWeaponType;
@@ -250,7 +250,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE)
 	return;
 if (!gameStates.app.cheats.bRobotsFiring)
 	return;
-if (objP->controlType == CT_MORPH)
+if (objP->info.controlType == CT_MORPH)
 	return;
 //	If player is exploded, stop firing.
 if (gameStates.app.bPlayerExploded)
@@ -259,7 +259,7 @@ if (objP->cType.aiInfo.xDyingStartTime)
 	return;		//	No firing while in death roll.
 //	Don't let the boss fire while in death roll.  Sorry, this is the easiest way to do this.
 //	If you try to key the boss off objP->cType.aiInfo.xDyingStartTime, it will hose the endlevel stuff.
-if (ROBOTINFO (objP->id).bossFlag) {
+if (ROBOTINFO (objP->info.nId).bossFlag) {
 	i = FindBoss (nObject);
 	if (gameData.boss [i].nDyingStartTime)
 		return;
@@ -280,13 +280,13 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	//	Well, the gun point is in a different tSegment than the robot's center.
 	//	This is almost always ok, but it is not ok if something solid is in between.
-	int	nGunSeg = FindSegByPos (*vFirePoint, objP->nSegment, 1, 0);
+	int	nGunSeg = FindSegByPos (*vFirePoint, objP->info.nSegment, 1, 0);
 	//	See if these segments are connected, which should almost always be the case.
-	short nConnSide = FindConnectedSide (&gameData.segs.segments [nGunSeg], &gameData.segs.segments [objP->nSegment]);
+	short nConnSide = FindConnectedSide (&gameData.segs.segments [nGunSeg], &gameData.segs.segments [objP->info.nSegment]);
 	if (nConnSide != -1) {
-		//	They are connected via nConnSide in tSegment objP->nSegment.
+		//	They are connected via nConnSide in tSegment objP->info.nSegment.
 		//	See if they are unobstructed.
-		if (!(WALL_IS_DOORWAY (gameData.segs.segments + objP->nSegment, nConnSide, NULL) & WID_FLY_FLAG)) {
+		if (!(WALL_IS_DOORWAY (gameData.segs.segments + objP->info.nSegment, nConnSide, NULL) & WID_FLY_FLAG)) {
 			//	Can't fly through, so don't let this bot fire through!
 			return;
 			}
@@ -297,8 +297,8 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		tFVIData		hit_data;
 		int			fate;
 
-		fq.startSeg			= objP->nSegment;
-		fq.p0					= &objP->position.vPos;
+		fq.startSeg			= objP->info.nSegment;
+		fq.p0					= &objP->info.position.vPos;
 		fq.p1					= vFirePoint;
 		fq.radP0				=
 		fq.radP1				= 0;
@@ -339,7 +339,7 @@ while ((count < 4) && (dot < F1_0/4)) {
 	bpp_diff[Y] = (*vBelievedPlayerPos)[Y] + FixMul ((d_rand ()-16384) * i, aim);
 	bpp_diff[Z] = (*vBelievedPlayerPos)[Z] + FixMul ((d_rand ()-16384) * i, aim);
 	vmsVector::NormalizedDir(vFire, bpp_diff, *vFirePoint);
-	dot = vmsVector::Dot(objP->position.mOrient[FVEC], vFire);
+	dot = vmsVector::Dot(objP->info.position.mOrient[FVEC], vFire);
 	count++;
 	}
 
@@ -355,7 +355,7 @@ if (0 > (nShot = CreateNewLaserEasy (&vFire, vFirePoint, OBJ_IDX (objP), (ubyte)
 
 AICreateClusterLight (objP, nObject, nShot);
 gameData.objs.shots [nObject].nObject = nShot;
-gameData.objs.shots [nObject].nSignature = OBJECTS [nShot].nSignature;
+gameData.objs.shots [nObject].nSignature = OBJECTS [nShot].info.nSignature;
 
 if (IsMultiGame) {
 	AIMultiSendRobotPos (nObject, -1);
@@ -380,10 +380,10 @@ void DoFiringStuff (tObject *objP, int nPlayerVisibility, vmsVector *vVecToPlaye
 if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) ||
 	 (gameData.ai.nPlayerVisibility >= 1)) {
 	//	Now, if in robot's field of view, lock onto tPlayer
-	fix	dot = vmsVector::Dot(objP->position.mOrient[FVEC], gameData.ai.vVecToPlayer);
+	fix	dot = vmsVector::Dot(objP->info.position.mOrient[FVEC], gameData.ai.vVecToPlayer);
 	if ((dot >= 7 * F1_0 / 8) || (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
-		tAIStatic	*aiP = &objP->cType.aiInfo;
-		tAILocal		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
+		tAIStaticInfo	*aiP = &objP->cType.aiInfo;
+		tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
 
 		switch (aiP->GOAL_STATE) {
 			case AIS_NONE:
@@ -399,7 +399,7 @@ if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) 
 			}
 		}
 	else if (dot >= F1_0/2) {
-		tAIStatic	*aiP = &objP->cType.aiInfo;
+		tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 		switch (aiP->GOAL_STATE) {
 			case AIS_NONE:
 			case AIS_REST:
@@ -417,7 +417,7 @@ void DoAIRobotHit (tObject *objP, int nType)
 {
 	int	r;
 
-if (objP->controlType != CT_AI)
+if (objP->info.controlType != CT_AI)
 	return;
 if ((nType != PA_WEAPON_ROBOT_COLLISION) && (nType != PA_PLAYER_COLLISION))
 	return;
@@ -425,12 +425,12 @@ if (objP->cType.aiInfo.behavior != AIB_STILL)
 	return;
 r = d_rand ();
 //	Attack robots (eg, green guy) shouldn't have behavior = still.
-//Assert (ROBOTINFO (objP->id).attackType == 0);
+//Assert (ROBOTINFO (objP->info.nId).attackType == 0);
 //	1/8 time, charge tPlayer, 1/4 time create path, rest of time, do nothing
 if (r < 4096) {
 	CreatePathToPlayer (objP, 10, 1);
 	objP->cType.aiInfo.behavior = AIB_STATION;
-	objP->cType.aiInfo.nHideSegment = objP->nSegment;
+	objP->cType.aiInfo.nHideSegment = objP->info.nSegment;
 	gameData.ai.localInfo [OBJ_IDX (objP)].mode = AIM_CHASE_OBJECT;
 	}
 else if (r < 4096 + 8192) {
@@ -448,10 +448,10 @@ int	Gun_point_hack=0;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Returns true if this tObject should be allowed to fire at the player.
-int AIMaybeDoActualFiringStuff (tObject *objP, tAIStatic *aiP)
+int AIMaybeDoActualFiringStuff (tObject *objP, tAIStaticInfo *aiP)
 {
 if (IsMultiGame &&
-	 (aiP->GOAL_STATE != AIS_FLINCH) && (objP->id != ROBOT_BRAIN) &&
+	 (aiP->GOAL_STATE != AIS_FLINCH) && (objP->info.nId != ROBOT_BRAIN) &&
 	 (aiP->CURRENT_STATE == AIS_FIRE))
 	return 1;
 return 0;
@@ -460,7 +460,7 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 //	If fire_anyway, fire even if tPlayer is not visible.  We're firing near where we believe him to be.  Perhaps he's
 //	lurking behind a corner.
-void AIDoActualFiringStuff (tObject *objP, tAIStatic *aiP, tAILocal *ailP, tRobotInfo *botInfoP, int nGun)
+void AIDoActualFiringStuff (tObject *objP, tAIStaticInfo *aiP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int nGun)
 {
 	fix	dot;
 
@@ -476,15 +476,15 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 	//	Changed by mk, 01/04/95, onearm would take about 9 seconds until he can fire at you.
 	//	Above comment corrected.  Date changed from 1994, to 1995.  Should fix some very subtle bugs, as well as not cause me to wonder, in the future, why I was writing AI code for onearm ten months before he existed.
 	if (!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) {
-		dot = vmsVector::Dot(objP->position.mOrient[FVEC], gameData.ai.vVecToPlayer);
+		dot = vmsVector::Dot(objP->info.position.mOrient[FVEC], gameData.ai.vVecToPlayer);
 		if ((dot >= 7 * F1_0 / 8) || ((dot > F1_0 / 4) && botInfoP->bossFlag)) {
 			if (nGun < botInfoP->nGuns) {
 				if (botInfoP->attackType == 1) {
-					if (gameStates.app.bPlayerExploded || (gameData.ai.xDistToPlayer >= objP->size + gameData.objs.console->size + F1_0*2))	// botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.console->size)
+					if (gameStates.app.bPlayerExploded || (gameData.ai.xDistToPlayer >= objP->info.xSize + gameData.objs.consoleP->info.xSize + F1_0*2))	// botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.consoleP->info.xSize)
 						return;
 					if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION - 2))
 						return;
-					DoAIRobotHitAttack (objP, gameData.objs.console, &objP->position.vPos);
+					DoAIRobotHitAttack (objP, gameData.objs.consoleP, &objP->info.position.vPos);
 					}
 				else {
 #if 1
@@ -543,7 +543,7 @@ else if ((!botInfoP->attackType && gameData.weapons.info [botInfoP->nWeaponType]
 	if ((!gameData.ai.bObjAnimates || (ailP->achievedState [aiP->CURRENT_GUN] == AIS_FIRE))
 			&& (((ailP->nextPrimaryFire <= 0) && (aiP->CURRENT_GUN != 0)) ||
 				((ailP->nextSecondaryFire <= 0) && (aiP->CURRENT_GUN == 0)))
-			&& ((dist = vmsVector::Dist(gameData.ai.vHitPos, objP->position.vPos)) > F1_0*40)) {
+			&& ((dist = vmsVector::Dist(gameData.ai.vHitPos, objP->info.position.vPos)) > F1_0*40)) {
 		if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
 			return;
 		AIFireLaserAtPlayer (objP, &gameData.ai.vGunPoint, nGun, &gameData.ai.vBelievedPlayerPos);
@@ -565,15 +565,15 @@ else {	//	---------------------------------------------------------------
 	if (d_rand ()/2 < FixMul (gameData.time.xFrame, (gameStates.app.nDifficultyLevel << 12) + 0x4000)) {
 		if ((!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) &&
 			 (gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
-			vmsVector::NormalizedDir(vLastPos, gameData.ai.vBelievedPlayerPos, objP->position.vPos);
-			dot = vmsVector::Dot(objP->position.mOrient[FVEC], vLastPos);
+			vmsVector::NormalizedDir(vLastPos, gameData.ai.vBelievedPlayerPos, objP->info.position.vPos);
+			dot = vmsVector::Dot(objP->info.position.mOrient[FVEC], vLastPos);
 			if (dot >= 7 * F1_0 / 8) {
 				if (aiP->CURRENT_GUN < botInfoP->nGuns) {
 					if (botInfoP->attackType == 1) {
-						if (!gameStates.app.bPlayerExploded && (gameData.ai.xDistToPlayer < objP->size + gameData.objs.console->size + F1_0*2)) {		// botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.console->size) {
+						if (!gameStates.app.bPlayerExploded && (gameData.ai.xDistToPlayer < objP->info.xSize + gameData.objs.consoleP->info.xSize + F1_0*2)) {		// botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.consoleP->info.xSize) {
 							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION-2))
 								return;
-							DoAIRobotHitAttack (objP, gameData.objs.console, &objP->position.vPos);
+							DoAIRobotHitAttack (objP, gameData.objs.consoleP, &objP->info.position.vPos);
 							}
 						else
 							return;

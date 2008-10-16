@@ -41,12 +41,12 @@ void CalcReactorGunPoint (vmsVector *vGunPoint, vmsVector *vGunDir, tObject *obj
 	tReactorProps	*props;
 	vmsMatrix		*viewP = ObjectView (objP);
 
-Assert (objP->nType == OBJ_REACTOR);
-Assert (objP->renderType == RT_POLYOBJ);
-props = &gameData.reactor.props [objP->id];
+Assert (objP->info.nType == OBJ_REACTOR);
+Assert (objP->info.renderType == RT_POLYOBJ);
+props = &gameData.reactor.props [objP->info.nId];
 //instance gun position & orientation
 *vGunPoint = *viewP * props->gunPoints[nGun];
-*vGunPoint += objP->position.vPos;
+*vGunPoint += objP->info.position.vPos;
 *vGunDir = *viewP * props->gun_dirs[nGun];
 }
 
@@ -94,7 +94,7 @@ if (gameStates.gameplay.nReactorCount) {
 
 	for (i = 0; i < gameStates.gameplay.nReactorCount; i++, rStatP++) {
 		if ((rStatP->nDeadObj != -1) && 
-			 (OBJECTS [rStatP->nDeadObj].nType == OBJ_REACTOR) &&
+			 (OBJECTS [rStatP->nDeadObj].info.nType == OBJ_REACTOR) &&
 			 (gameData.reactor.countdown.nSecsLeft > 0))
 		if (d_rand () < gameData.time.xFrame * 4)
 			CreateSmallFireballOnObject (OBJECTS + rStatP->nDeadObj, F1_0, 1);
@@ -142,8 +142,8 @@ xScale = 1;
 if (gameStates.app.nDifficultyLevel == 0)
 	xScale = 4;
 h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
-gameData.objs.console->mType.physInfo.rotVel[X] += (FixMul (d_rand () - 16384, h)) / xScale;
-gameData.objs.console->mType.physInfo.rotVel[Z] += (FixMul (d_rand () - 16384, h)) / xScale;
+gameData.objs.consoleP->mType.physInfo.rotVel[X] += (FixMul (d_rand () - 16384, h)) / xScale;
+gameData.objs.consoleP->mType.physInfo.rotVel[Z] += (FixMul (d_rand () - 16384, h)) / xScale;
 //	Hook in the rumble sound effect here.
 oldTime = gameData.reactor.countdown.nTimer;
 if (!TimeStopped ())
@@ -204,13 +204,13 @@ if (bReactorDestroyed)
 //	if objP == NULL that means the boss was the control center and don't set gameData.reactor.nDeadObj
 void DoReactorDestroyedStuff (tObject *objP)
 {
-	int		i, bFinalCountdown, bReactor = objP && (objP->nType == OBJ_REACTOR);
+	int		i, bFinalCountdown, bReactor = objP && (objP->info.nType == OBJ_REACTOR);
 	tTrigger	*trigP = NULL;
 
 if ((gameData.app.nGameMode & GM_MULTI_ROBOTS) && gameData.reactor.bDestroyed)
    return; // Don't allow resetting if control center and boss on same level
 // Must toggle walls whether it is a boss or control center.
-if ((!objP || (objP->nType == OBJ_ROBOT)) && gameStates.gameplay.bKillBossCheat)
+if ((!objP || (objP->info.nType == OBJ_ROBOT)) && gameStates.gameplay.bKillBossCheat)
 	return;
 // And start the countdown stuff.
 bFinalCountdown = !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses && extraGameInfo [0].nBossCount);
@@ -289,7 +289,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		vmsVector	vecToPlayer;
 		fix			xDistToPlayer;
 		int			i;
-		tSegment		*segP = gameData.segs.segments + objP->nSegment;
+		tSegment		*segP = gameData.segs.segments + objP->info.nSegment;
 
 		// This is a hack.  Since the control center is not processed by
 		// ai_do_frame, it doesn't know how to deal with cloaked dudes.  It
@@ -310,10 +310,10 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		if (i == MAX_SIDES_PER_SEGMENT)
 			return;
 
-		vecToPlayer = OBJPOS (gameData.objs.console)->vPos - objP->position.vPos;
+		vecToPlayer = OBJPOS (gameData.objs.consoleP)->vPos - objP->info.position.vPos;
 		xDistToPlayer = vmsVector::Normalize(vecToPlayer);
 		if (xDistToPlayer < F1_0 * 200) {
-			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
+			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
 			rStatP->nNextFireTime = 0;
 			}
 		}		
@@ -327,11 +327,11 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 		vmsVector	vecToPlayer;
 		fix			xDistToPlayer;
 
-		vecToPlayer = gameData.objs.console->position.vPos - objP->position.vPos;
-		xDistToPlayer = vmsVector::Normalize(vecToPlayer);
+		vecToPlayer = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
+		xDistToPlayer = vmsVector::Normalize (vecToPlayer);
 		rStatP->xLastVisCheckTime = gameData.time.xGame;
 		if (xDistToPlayer < F1_0 * 120) {
-			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
+			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
 			if (!rStatP->bSeenPlayer)
 				rStatP->bHit = 0;
 			}
@@ -340,8 +340,8 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 
 if ((rStatP->nNextFireTime < 0) && 
 	 !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0 * 2))) {
-	nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->id].nGuns, rStatP->vGunPos, rStatP->vGunDir, 
-											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.ai.vBelievedPlayerPos : &gameData.objs.console->position.vPos);
+	nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->info.nId].nGuns, rStatP->vGunPos, rStatP->vGunDir, 
+											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.ai.vBelievedPlayerPos : &gameData.objs.consoleP->info.position.vPos);
 	if (nBestGun != -1) {
 		int			nRandProb, count;
 		vmsVector	vecToGoal;
@@ -353,7 +353,7 @@ if ((rStatP->nNextFireTime < 0) &&
 			xDistToPlayer = vmsVector::Normalize(vecToGoal);
 			} 
 		else {
-			vecToGoal = gameData.objs.console->position.vPos - rStatP->vGunPos [nBestGun];
+			vecToGoal = gameData.objs.consoleP->info.position.vPos - rStatP->vGunPos [nBestGun];
 			xDistToPlayer = vmsVector::Normalize(vecToGoal);
 			}
 		if (xDistToPlayer > F1_0 * 300) {
@@ -430,7 +430,7 @@ else {
 	memset (gameData.reactor.states, 0xff, sizeof (gameData.reactor.states));
 	}
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
-	if (objP->nType == OBJ_REACTOR) {
+	if (objP->info.nType == OBJ_REACTOR) {
 		if (gameStates.gameplay.nReactorCount && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
 #if TRACE
 			con_printf (1, "Warning: Two or more control centers including %i and %i\n", 
@@ -450,13 +450,13 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 				rStatP->nDeadObj = -1;
 			rStatP->xLastVisCheckTime = 0;
 			if (rStatP->nDeadObj < 0) {
-				nGuns = gameData.reactor.props [objP->id].nGuns;
+				nGuns = gameData.reactor.props [objP->info.nId].nGuns;
 				for (j = 0; j < nGuns; j++)
 					CalcReactorGunPoint (rStatP->vGunPos + j, rStatP->vGunDir + j, objP, j);
 				gameData.reactor.bPresent = 1;
 				rStatP->nObject = i;
 				if (bNew) {
-					objP->shields = ReactorStrength ();
+					objP->info.xShields = ReactorStrength ();
 					//	Say the control center has not yet been hit.
 					rStatP->bHit = 0;
 					rStatP->bSeenPlayer = 0;

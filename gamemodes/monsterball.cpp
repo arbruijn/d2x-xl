@@ -57,7 +57,7 @@ if (nDropSeg >= 0) {
 	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, vmsVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
 	if (nObject >= 0) {
 		gameData.hoard.monsterballP = OBJECTS + nObject;
-		gameData.hoard.monsterballP->nType = OBJ_MONSTERBALL;
+		gameData.hoard.monsterballP->info.nType = OBJ_MONSTERBALL;
 		gameData.hoard.monsterballP->mType.physInfo.mass = F1_0 * 10;
 		gameData.hoard.monsterballP->mType.physInfo.thrust.SetZero();
 		gameData.hoard.monsterballP->mType.physInfo.rotThrust.SetZero();
@@ -85,9 +85,9 @@ gameData.hoard.monsterballP = NULL;
 gameData.hoard.nMonsterballSeg = -1;
 gameData.hoard.nLastHitter = -1;
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
-	if ((objP->nType == OBJ_MONSTERBALL) || ((objP->nType == OBJ_POWERUP) && (objP->id == POW_MONSTERBALL))) {
+	if ((objP->info.nType == OBJ_MONSTERBALL) || ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_MONSTERBALL))) {
 		if (gameData.hoard.nMonsterballSeg < 0) {
-			gameData.hoard.nMonsterballSeg = objP->nSegment;
+			gameData.hoard.nMonsterballSeg = objP->info.nSegment;
 			gameData.hoard.vMonsterballPos = OBJPOS (objP)->vPos;
 			}
 		ReleaseObject (i);
@@ -114,7 +114,7 @@ if (!gameData.hoard.monsterballP)
 	return 0;
 if (gameData.hoard.nLastHitter != LOCALPLAYER.nObject)
 	return 0;
-special = gameData.segs.segment2s [gameData.hoard.monsterballP->nSegment].special;
+special = gameData.segs.segment2s [gameData.hoard.monsterballP->info.nSegment].special;
 if ((special != SEGMENT_IS_GOAL_BLUE) && (special != SEGMENT_IS_GOAL_RED))
 	return 0;
 if ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) == (special == SEGMENT_IS_GOAL_RED))

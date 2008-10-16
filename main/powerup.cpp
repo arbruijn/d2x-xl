@@ -122,7 +122,7 @@ if (vcP) {
 		h = (-xTime + vcP->xFrameTime - 1) / vcP->xFrameTime;
 		xTime += h * vcP->xFrameTime;
 		h %= nFrames;
-		if ((nObject & 1) && (OBJECTS [nObject].nType != OBJ_EXPLOSION)) 
+		if ((nObject & 1) && (OBJECTS [nObject].info.nType != OBJ_EXPLOSION)) 
 			vciP->nCurFrame -= h;
 		else
 			vciP->nCurFrame += h;
@@ -179,10 +179,10 @@ void DoPowerupFrame (tObject *objP)
 	tVideoClip	*vcP = (vciP->nClipIndex < 0) ? NULL : gameData.eff.vClips [0] + vciP->nClipIndex;
 	int			i = OBJ_IDX (objP);
 
-if (objP->renderType != RT_POLYOBJ)
+if (objP->info.renderType != RT_POLYOBJ)
 	UpdatePowerupClip (vcP, vciP, i);
-if (objP->lifeleft <= 0) {
-	ObjectCreateExplosion (objP->nSegment, &objP->position.vPos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
+if (objP->info.xLifeLeft <= 0) {
+	ObjectCreateExplosion (objP->info.nSegment, &objP->info.position.vPos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
 	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)
 		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, i, 0, F1_0, SOUNDCLASS_GENERIC);
 	}
@@ -217,9 +217,9 @@ void DrawPowerup (tObject *objP)
 #if DBG
 //return;
 #endif
-if (objP->nType == OBJ_MONSTERBALL)
+if (objP->info.nType == OBJ_MONSTERBALL)
 	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
-else if ((objP->id < MAX_POWERUP_TYPES_D2) || ((objP->nType == OBJ_EXPLOSION) && (objP->id < VCLIP_MAXNUM))) {
+else if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < VCLIP_MAXNUM))) {
 		tBitmapIndex	*frameP = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
 		int				iFrame = objP->rType.vClipInfo.nCurFrame;
 #ifdef EDITOR
@@ -395,12 +395,12 @@ if (IsHoardGame) {
 		}
 	}
 else if (IsEntropyGame) {
-	if (objP->matCenCreator != GetTeam ((char) gameData.multiplayer.nLocalPlayer) + 1) {
+	if (objP->info.nCreator != GetTeam ((char) gameData.multiplayer.nLocalPlayer) + 1) {
 		if ((extraGameInfo [1].entropy.nVirusStability < 2) ||
 			 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
-			 ((gameData.segs.xSegments [objP->nSegment].owner != objP->matCenCreator) ||
-			 (gameData.segs.segment2s [objP->nSegment].special != SEGMENT_IS_ROBOTMAKER))))
-			objP->lifeleft = -1;	//make orb disappear if touched by opposing team tPlayer
+			 ((gameData.segs.xSegments [objP->info.nSegment].owner != objP->info.nCreator) ||
+			 (gameData.segs.segment2s [objP->info.nSegment].special != SEGMENT_IS_ROBOTMAKER))))
+			objP->info.xLifeLeft = -1;	//make orb disappear if touched by opposing team tPlayer
 		}
 	else if (!extraGameInfo [1].entropy.nMaxVirusCapacity ||
 				(playerP->secondaryAmmo [PROXMINE_INDEX] < playerP->secondaryAmmo [SMARTMINE_INDEX])) {
@@ -432,7 +432,7 @@ if (playerP->flags & nEquipment) {
 else {
 	playerP->flags |= nEquipment;
 	if (ISLOCALPLAYER (nPlayer)) {
-		id = objP->id;
+		id = objP->info.nId;
 		if (id >= MAX_POWERUP_TYPES_D2)
 			id = POW_AFTERBURNER;
 		MultiSendPlaySound (gameData.objs.pwrUp.info [id].hitSound, F1_0);
@@ -526,8 +526,8 @@ if (ISLOCALPLAYER (nPlayer)) {
 
 	if (playerP->flags & nKey)
 		return 0;
-	MultiSendPlaySound (gameData.objs.pwrUp.info [objP->id].hitSound, F1_0);
-	DigiPlaySample ((short) gameData.objs.pwrUp.info[objP->id].hitSound, F1_0);
+	MultiSendPlaySound (gameData.objs.pwrUp.info [objP->info.nId].hitSound, F1_0);
+	DigiPlaySample ((short) gameData.objs.pwrUp.info[objP->info.nId].hitSound, F1_0);
 	playerP->flags |= nKey;
 	PowerupBasic (15, 0, 0, KEY_SCORE, "%s %s", pszKey, TXT_ACCESS_GRANTED);
 	InvalidateEscortGoal ();
@@ -681,17 +681,17 @@ if (SPECTATOR (OBJECTS + playerP->nObject))
 bLocalPlayer = (nPlayer == gameData.multiplayer.nLocalPlayer);
 if (bLocalPlayer &&
 	 (gameStates.app.bPlayerIsDead || 
-	  (gameData.objs.console->nType == OBJ_GHOST) || 
+	  (gameData.objs.consoleP->info.nType == OBJ_GHOST) || 
 	  (playerP->shields < 0)))
 	return 0;
-if (objP->cType.powerupInfo.creationTime > gameData.time.xGame)		//gametime wrapped!
-	objP->cType.powerupInfo.creationTime = 0;				//allow tPlayer to pick up
-if ((objP->cType.powerupInfo.flags & PF_SPAT_BY_PLAYER) && 
-	 (objP->cType.powerupInfo.creationTime > 0) && 
-	 (gameData.time.xGame < objP->cType.powerupInfo.creationTime + I2X (2)))
+if (objP->cType.powerupInfo.xCreationTime > gameData.time.xGame)		//gametime wrapped!
+	objP->cType.powerupInfo.xCreationTime = 0;				//allow tPlayer to pick up
+if ((objP->cType.powerupInfo.nFlags & PF_SPAT_BY_PLAYER) && 
+	 (objP->cType.powerupInfo.xCreationTime > 0) && 
+	 (gameData.time.xGame < objP->cType.powerupInfo.xCreationTime + I2X (2)))
 	return 0;		//not enough time elapsed
 gameData.hud.bPlayerMessage = 0;	//	Prevent messages from going to HUD if -PlayerMessages switch is set
-nId = objP->id;
+nId = objP->info.nId;
 #if 1
 
 nType = powerupType [nId];
@@ -953,7 +953,7 @@ spitterP->mType.physInfo.velocity.SetZero();
 for (i = nCount; i; i--) {
 	nObject = SpitPowerup (spitterP, nId, d_rand ());
 	objP = OBJECTS + nObject;
-	MultiSendCreatePowerup (nId, objP->nSegment, nObject, &objP->position.vPos);
+	MultiSendCreatePowerup (nId, objP->info.nSegment, nObject, &objP->info.position.vPos);
 	}
 spitterP->mType.physInfo.velocity = velSave;
 return nCount;

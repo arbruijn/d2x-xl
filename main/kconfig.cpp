@@ -1774,9 +1774,9 @@ void KCInitExternalControls (int intno, int address)
 			temp_ptr += sizeof (vmsVector);
 			ship_orient = (vmsMatrix *)temp_ptr;
 			// Fill in ship postion...
-			*ship_pos = OBJECTS [LOCALPLAYER.nObject].position.vPos;
+			*ship_pos = OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 			// Fill in ship orientation...
-			*ship_orient = OBJECTS [LOCALPLAYER.nObject].position.mOrient;
+			*ship_orient = OBJECTS [LOCALPLAYER.nObject].info.position.mOrient;
 		}
 	}
 
@@ -1803,8 +1803,8 @@ void KCInitExternalControls (int intno, int address)
 
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
-				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].position.mOrient,&tempm);
-				OBJECTS [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;	
+				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
+				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
 			}
 			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vmsAngVec);
 			if (oem_message [0] != '\0')
@@ -1861,9 +1861,9 @@ void KCReadExternalControls ()
 			temp_ptr += sizeof (vmsVector);
 			ship_orient = (vmsMatrix *)temp_ptr;
 			// Fill in ship postion...
-			*ship_pos = OBJECTS [LOCALPLAYER.nObject].position.vPos;
+			*ship_pos = OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 			// Fill in ship orientation...
-			*ship_orient = OBJECTS [LOCALPLAYER.nObject].position.mOrient;
+			*ship_orient = OBJECTS [LOCALPLAYER.nObject].info.position.mOrient;
 		}
     if (kc_externalVersion>=4)
 	  {
@@ -1919,8 +1919,8 @@ void KCReadExternalControls ()
 
 			if (!Kconfig_abs_movement->IsZero())	{
 				tempm = vmsMatrix::Create(*Kconfig_abs_movement);
-				ViewMatrix = OBJECTS [LOCALPLAYER.nObject].position.mOrient * tempm;
-				OBJECTS [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;	
+				ViewMatrix = OBJECTS [LOCALPLAYER.nObject].info.position.mOrient * tempm;
+				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
 			}
 			oem_message = (char *) (size_t) ((size_t)Kconfig_abs_movement + sizeof (vmsAngVec));
 			if (oem_message [0] != '\0')

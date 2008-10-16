@@ -201,7 +201,7 @@ if (!OglCreateCamBuf (pc))
 	}
 if (objP) {
 	pc->objP = objP;
-	pc->orient = objP->position.mOrient;
+	pc->orient = objP->info.position.mOrient;
 	pc->curAngle =
 	pc->curDelta = 0;
 	pc->t0 = 0;
@@ -220,25 +220,25 @@ else {
 		}
 	else
 		a = gameData.segs.segments [srcSeg].sides [srcSide].normals [0].ToAnglesVec();
-	pc->obj.position.mOrient = vmsMatrix::Create(a);
+	pc->obj.info.position.mOrient = vmsMatrix::Create(a);
 #if 1
 	if (bTeleport)
-		COMPUTE_SEGMENT_CENTER_I (&pc->obj.position.vPos, srcSeg);
+		COMPUTE_SEGMENT_CENTER_I (&pc->obj.info.position.vPos, srcSeg);
 	else
-		COMPUTE_SIDE_CENTER_I (&pc->obj.position.vPos, srcSeg, srcSide);
+		COMPUTE_SIDE_CENTER_I (&pc->obj.info.position.vPos, srcSeg, srcSide);
 #else
 	GetSideVertIndex (sideVerts, srcSeg, srcSide);
 	for (i = 0; i < 4; i++) {
 		pv = gameData.segs.vertices + sideVerts [i];
-		pc->obj.position.p.vPos.x += pv->x;
-		pc->obj.position.p.vPos.y += pv->y;
-		pc->obj.position.p.vPos.z += pv->z;
+		pc->obj.info.position.p.vPos.x += pv->x;
+		pc->obj.info.position.p.vPos.y += pv->y;
+		pc->obj.info.position.p.vPos.z += pv->z;
 		}
-	pc->obj.position.p.vPos.x /= 4;
-	pc->obj.position.p.vPos.y /= 4;
-	pc->obj.position.p.vPos.z /= 4;
+	pc->obj.info.position.p.vPos.x /= 4;
+	pc->obj.info.position.p.vPos.y /= 4;
+	pc->obj.info.position.p.vPos.z /= 4;
 #endif
-	pc->obj.nSegment = srcSeg;
+	pc->obj.info.nSegment = srcSeg;
 	pc->bMirror = (tgtSeg == srcSeg) && (tgtSide == srcSide);
 	}
 //pc->obj.nSide = srcSide;
@@ -507,7 +507,7 @@ int RenderCamera (tCamera *pc)
 gameStates.render.cameras.bActive = 1;
 if (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)
 	SelectCockpit (CM_FULL_SCREEN);
-gameData.objs.viewer = pc->objP;
+gameData.objs.viewerP = pc->objP;
 gameOpts->render.nMaxFPS = 1;
 #if RENDER2TEXTURE
 if (OglReleaseCamBuf (pc) && OglEnableCamBuf (pc)) {
@@ -615,7 +615,7 @@ int RenderCameras (void)
 {
 	int		i;
 	tCamera	*pc = gameData.cameras.cameras, *pCurCam = NULL;
-	tObject	*viewerSave = gameData.objs.viewer;
+	tObject	*viewerSave = gameData.objs.viewerP;
 	time_t	t;
 	int		nCamsRendered;
 	int		cm = gameStates.render.cockpit.nMode;
@@ -637,7 +637,7 @@ for (i = 0; i < gameData.cameras.nCameras; i++, pc++) {
 		continue;
 	if (pc->bTeleport && !EGI_FLAG (bTeleporterCams, 0, 1, 0))
 		continue;
-	if (pc->objP && (pc->objP->flags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+	if (pc->objP && (pc->objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 		continue;
 	if (gameOpts->render.cameras.nFPS && !pc->bTimedOut) {
 		if (t - pc->nTimeout < 1000 / gameOpts->render.cameras.nFPS)
@@ -669,7 +669,7 @@ for (i = 0; i < gameData.cameras.nCameras; i++, pc++) {
 	pc->bVisible = 0;
 	nCamsRendered += RenderCamera (pc);
 	}
-gameData.objs.viewer = viewerSave;
+gameData.objs.viewerP = viewerSave;
 gameOpts->render.nMaxFPS = frameCap;
 if (gameStates.render.cockpit.nMode != cm) {
 	SelectCockpit (cm);

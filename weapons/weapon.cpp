@@ -201,7 +201,7 @@ if (gameStates.app.bPlayerIsDead) {
 	gameData.missiles.nGlobalFiringCount = 0;
 	return 0;
 	}
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.consoleP->info.nSegment].special == SEGMENT_IS_NODAMAGE))
 	return 0;
 //	Make sure enough time has elapsed to fire laser, but if it looks like it will
 //	be a long while before laser can be fired, then there must be some mistake!
@@ -244,7 +244,7 @@ int AllowedToFireMissile (int nPlayer, int bCheckSegment)
 //	Make sure enough time has elapsed to fire missile, but if it looks like it will
 //	be a long while before missile can be fired, then there must be some mistake!
 if (gameStates.app.bD2XLevel && bCheckSegment && 
-    (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
+    (gameData.segs.segment2s [gameData.objs.consoleP->info.nSegment].special == SEGMENT_IS_NODAMAGE))
 	return 0;
 if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
 	t = gameData.missiles.xLastFiredTime + (fix) ((gameData.missiles.xNextFireTime - gameData.missiles.xLastFiredTime) * s);
@@ -758,23 +758,23 @@ gameStates.gameplay.bHaveSmartMines = 0;
 
 for (i = nStart; i <= gameData.objs.nLastObject [0]; i += nStep) {
 	objPi = OBJECTS + i;
-	if ((objPi->nType != OBJ_WEAPON) || (objPi->id != SMARTMINE_ID))
+	if ((objPi->info.nType != OBJ_WEAPON) || (objPi->info.nId != SMARTMINE_ID))
 		continue;
-	nParentObj = objPi->cType.laserInfo.nParentObj;
+	nParentObj = objPi->cType.laserInfo.parent.nObject;
 	gameStates.gameplay.bHaveSmartMines = 1;
-	if (objPi->lifeleft + F1_0*2 >= gameData.weapons.info [SMARTMINE_ID].lifetime)
+	if (objPi->info.xLifeLeft + F1_0*2 >= gameData.weapons.info [SMARTMINE_ID].lifetime)
 		continue;
-	vBombPos = &objPi->position.vPos;
+	vBombPos = &objPi->info.position.vPos;
 	for (j = 0, objPj = OBJECTS; j <= gameData.objs.nLastObject [0]; j++, objPj++) {
 		if (j == nParentObj) 
 			continue;
-		if ((objPj->nType != OBJ_PLAYER) && (objPj->nType != OBJ_ROBOT))
+		if ((objPj->info.nType != OBJ_PLAYER) && (objPj->info.nType != OBJ_ROBOT))
 			continue;
-		dist = vmsVector::Dist(*vBombPos, objPj->position.vPos);
-		if (dist - objPj->size >= F1_0*20)
+		dist = vmsVector::Dist(*vBombPos, objPj->info.position.vPos);
+		if (dist - objPj->info.xSize >= F1_0*20)
 			continue;
-		if (objPi->nSegment == objPj->nSegment)
-			objPi->lifeleft = 1;
+		if (objPi->info.nSegment == objPj->info.nSegment)
+			objPi->info.xLifeLeft = 1;
 		else {
 			//	Object which is close enough to detonate smart mine is not in same tSegment as smart mine.
 			//	Need to do a more expensive check to make sure there isn't an obstruction.
@@ -783,9 +783,9 @@ for (i = nStart; i <= gameData.objs.nLastObject [0]; i += nStep) {
 				tFVIData		hit_data;
 				int			fate;
 
-				fq.startSeg = objPi->nSegment;
-				fq.p0	= &objPi->position.vPos;
-				fq.p1 = &objPj->position.vPos;
+				fq.startSeg = objPi->info.nSegment;
+				fq.p0	= &objPi->info.position.vPos;
+				fq.p1 = &objPj->info.position.vPos;
 				fq.radP0 =
 				fq.radP1 = 0;
 				fq.thisObjNum = i;
@@ -794,7 +794,7 @@ for (i = nStart; i <= gameData.objs.nLastObject [0]; i += nStep) {
 
 				fate = FindVectorIntersection(&fq, &hit_data);
 				if (fate != HIT_WALL)
-					objPi->lifeleft = 1;
+					objPi->info.xLifeLeft = 1;
 				}
 			}
 		}
@@ -837,7 +837,7 @@ if (Controls [0].useInvulDownCount)
 	ApplyInvul (0, -1);
 if (Controls [0].fireFlareDownCount)
 	if (AllowedToFireFlare ())
-		CreateFlare(gameData.objs.console);
+		CreateFlare(gameData.objs.consoleP);
 if (AllowedToFireMissile (-1, 1)) {
 	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 	gameData.missiles.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].fireSecondaryState || Controls [0].fireSecondaryDownCount);
@@ -862,7 +862,7 @@ if (gameData.missiles.nGlobalFiringCount < 0)
 	gameData.missiles.nGlobalFiringCount = 0;
 //	Drop proximity bombs.
 if (Controls [0].dropBombDownCount) {
-	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
+	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.consoleP->info.nSegment].special == SEGMENT_IS_NODAMAGE))
 		Controls [0].dropBombDownCount = 0;
 	else {
 		int ssw_save = gameData.weapons.nSecondary;

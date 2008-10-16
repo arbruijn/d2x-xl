@@ -287,7 +287,7 @@ int PickupGun (tObject *objP, int nId, int nPlayer)
 {
 if (PickupPrimary (nId, nPlayer)) {
 	if ((nId == OMEGA_INDEX) && (nPlayer == gameData.multiplayer.nLocalPlayer))
-		gameData.omega.xCharge [IsMultiGame] = objP->cType.powerupInfo.count;
+		gameData.omega.xCharge [IsMultiGame] = objP->cType.powerupInfo.nCount;
 	return 1;
 	}
 if (IsMultiGame)
@@ -299,7 +299,7 @@ return PickupEnergyBoost (NULL, nPlayer);
 
 int PickupGatlingGun (tObject *objP, int nId, int nPlayer)
 {
-	int nAmmo = objP->cType.powerupInfo.count;
+	int nAmmo = objP->cType.powerupInfo.nCount;
 	int bUsed = PickupPrimary (nId, nPlayer);
 
 //didn't get the weapon (because we already have it), but
@@ -311,12 +311,12 @@ if (!bUsed)
 		nAmmo -= VULCAN_AMMO_AMOUNT;	//don't let take all nAmmo
 if (nAmmo > 0) {
 	int nAmmoUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, nAmmo, NULL, nPlayer);
-	objP->cType.powerupInfo.count -= nAmmoUsed;
+	objP->cType.powerupInfo.nCount -= nAmmoUsed;
 	if (ISLOCALPLAYER (nPlayer)) {
 		if (!bUsed && nAmmoUsed) {
 			PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO);
 			nId = POW_VULCAN_AMMO;		//set new id for making sound at end of this function
-			return objP->cType.powerupInfo.count ? -1 : -2;
+			return objP->cType.powerupInfo.nCount ? -1 : -2;
 			}
 		}
 	}

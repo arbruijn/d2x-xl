@@ -1161,13 +1161,13 @@ char SmokeObjClass (int nObject)
 {
 if ((nObject >= 0) && (nObject < 0x70000000)) {
 	tObject	*objP = OBJECTS + nObject;
-	if (objP->nType == OBJ_PLAYER)
+	if (objP->info.nType == OBJ_PLAYER)
 		return 1;
-	if (objP->nType == OBJ_ROBOT)
+	if (objP->info.nType == OBJ_ROBOT)
 		return 2;
-	if (objP->nType == OBJ_WEAPON)
+	if (objP->info.nType == OBJ_WEAPON)
 		return 3;
-	if (objP->nType == OBJ_DEBRIS)
+	if (objP->info.nType == OBJ_DEBRIS)
 		return 4;
 	}
 return 0;
@@ -1192,7 +1192,7 @@ if (pCloud->nObjType == OBJ_DEBRIS)
 if ((pCloud->nObjType == OBJ_WEAPON) && (pCloud->nObjId == PROXMINE_ID))
 	return 0.2f;
 objP = OBJECTS + pCloud->nObject;
-if ((objP->nType != pCloud->nObjType) || (objP->flags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
+if ((objP->info.nType != pCloud->nObjType) || (objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
 	return pCloud->fBrightness;
 return pCloud->fBrightness = (float) ObjectDamage (objP) * 0.5f + 0.1f;
 }
@@ -1261,8 +1261,8 @@ pCloud->nPartsPerPos = nPartsPerPos;
 pCloud->nSegment = nSegment;
 pCloud->nObject = nObject;
 if ((nObject >= 0) && (nObject < 0x70000000)) {
-	pCloud->nObjType = OBJECTS [nObject].nType;
-	pCloud->nObjId = OBJECTS [nObject].id;
+	pCloud->nObjType = OBJECTS [nObject].info.nType;
+	pCloud->nObjId = OBJECTS [nObject].info.nId;
 	}
 pCloud->nClass = SmokeObjClass (nObject);
 pCloud->fPartsPerTick = (float) nMaxParts / (float) abs (nLife);
@@ -1550,7 +1550,7 @@ else
 		v = pCloud->prevPos - viewInfo.pos;
 		if (pCloud->bHavePrevPos &&
 			(vmsVector::Dist(pCloud->pos, viewInfo.pos) >= v.Mag()) &&
-			(vmsVector::Dot(v, gameData.objs.viewer->position.mOrient[FVEC]) >= 0)) {	//emitter moving away and facing towards emitter
+			(vmsVector::Dot(v, gameData.objs.viewerP->info.position.mOrient[FVEC]) >= 0)) {	//emitter moving away and facing towards emitter
 			for (i = nParts, j = (nFirstPart + nParts) % nPartLimit; i; i--) {
 				if (!j)
 					j = nPartLimit;
@@ -1837,9 +1837,9 @@ else {
 		return 0;
 		}
 	if ((pSmoke->nObject = nObject) < 0x70000000) {
- 		pSmoke->nSignature = OBJECTS [nObject].nSignature;
-		pSmoke->nObjType = OBJECTS [nObject].nType;
-		pSmoke->nObjId = OBJECTS [nObject].id;
+ 		pSmoke->nSignature = OBJECTS [nObject].info.nSignature;
+		pSmoke->nObjType = OBJECTS [nObject].info.nType;
+		pSmoke->nObjId = OBJECTS [nObject].info.nId;
 		}
 	pSmoke->nClouds = 0;
 	pSmoke->nBirth = t;
@@ -1906,7 +1906,7 @@ else
 			 (gameStates.app.nSDLTicks - pSmoke->nBirth > (MAX_SHRAPNEL_LIFE / F1_0) * 1000))
 			SetSmokeLife (i, 0);
 #if DBG
-		if ((pSmoke->nObject < 0x70000000) && (OBJECTS [pSmoke->nObject].nType == 255))
+		if ((pSmoke->nObject < 0x70000000) && (OBJECTS [pSmoke->nObject].info.nType == 255))
 			i = i;
 #endif
 		if ((pCloud = pSmoke->pClouds))
@@ -1922,7 +1922,7 @@ else
 					}
 				else {
 					//PrintLog ("moving %d (%d)\n", i, pSmoke->nObject);
-					if ((pSmoke->nObject < 0) || ((pSmoke->nObject < 0x70000000) && (OBJECTS [pSmoke->nObject].nType == 255)))
+					if ((pSmoke->nObject < 0) || ((pSmoke->nObject < 0x70000000) && (OBJECTS [pSmoke->nObject].info.nType == 255)))
 						SetCloudLife (pCloud, 0);
 					UpdateCloud (pCloud, t, -1);
 					pCloud++, j++;

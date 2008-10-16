@@ -62,7 +62,7 @@ static int objFilter [] = {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1,
 
 static inline int NetworkFilterObject (tObject *objP)
 {
-	short t = objP->nType;
+	short t = objP->info.nType;
 #if DBG
 if (t == nDbgObjType)
 	nDbgObjType = nDbgObjType;
@@ -71,7 +71,7 @@ if (t >= MAX_OBJECT_TYPES)
 	return 1;
 if (objFilter [t])
 	return 1;
-if ((t == OBJ_WEAPON) && (objP->id != SMALLMINE_ID))
+if ((t == OBJ_WEAPON) && (objP->info.nId != SMALLMINE_ID))
 	return 1;
 return 0;
 }
@@ -340,7 +340,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 		netGame.kills [i][j] = gameData.multigame.kills.matrix [i][j];
 	netGame.killed [i] = gameData.multiplayer.players [i].netKilledTotal;
 	netGame.playerKills [i] = gameData.multiplayer.players [i].netKillsTotal;
-	netGame.player_score [i] = gameData.multiplayer.players [i].score;
+	netGame.playerScore [i] = gameData.multiplayer.players [i].score;
 	netGame.playerFlags [i] = (gameData.multiplayer.players [i].flags & (PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY));
 	}
 netGame.teamKills [0] = gameData.multigame.kills.nTeam [0];

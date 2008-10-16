@@ -202,14 +202,14 @@ return WeaponIsPlayerMine (nId) || (nId == ROBOT_SMARTMINE_ID);
 
 static inline int ObjIsPlayerMine (tObject *objP)
 {
-return (objP->nType == OBJ_WEAPON) && WeaponIsPlayerMine (objP->id);
+return (objP->info.nType == OBJ_WEAPON) && WeaponIsPlayerMine (objP->info.nId);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
 static inline int ObjIsMine (tObject *objP)
 {
-return (objP->nType == OBJ_WEAPON) && WeaponIsMine (objP->id);
+return (objP->info.nType == OBJ_WEAPON) && WeaponIsMine (objP->info.nId);
 }
 
 // ---------------------------------------------------------------------------------

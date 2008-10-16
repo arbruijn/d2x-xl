@@ -155,11 +155,11 @@ void DoTeleportBot (tTrigger *trigP, short nObject)
 if (trigP->nLinks) {
 	tObject *objP = OBJECTS + nObject;
 	short nSegment = trigP->nSegment [d_rand () % trigP->nLinks];
-	if (objP->nSegment != nSegment) {
-		objP->nSegment = nSegment;
-		COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, nSegment);
+	if (objP->info.nSegment != nSegment) {
+		objP->info.nSegment = nSegment;
+		COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, nSegment);
 		RelinkObject (nObject, nSegment);
-		if (ROBOTINFO (objP->id).bossFlag) {
+		if (ROBOTINFO (objP->info.nId).bossFlag) {
 			int	i = FindBoss (nObject);
 
 			if (i >= 0)
@@ -570,7 +570,7 @@ void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPo
 	vmsMatrix	rm;
 	tObject		*objP = OBJECTS + nObject;
 
-TriggerSetOrient (&objP->position, nSegment, nSide, bSetPos, nStep);
+TriggerSetOrient (&objP->info.position, nSegment, nSide, bSetPos, nStep);
 if (nStep <= 0) {
 	n = *gameData.segs.segments [nSegment].sides [nSide].normals;
 	/*
@@ -594,14 +594,14 @@ if (nStep) {
 		av[PA] /= nStep;
 		av[BA] /= nStep;
 		av[HA] /= nStep;
-		ad = objP->position.mOrient.ExtractAnglesVec();
+		ad = objP->info.position.mOrient.ExtractAnglesVec();
 		ad[PA] += (an[PA] - ad[PA]) / nStep;
 		ad[BA] += (an[BA] - ad[BA]) / nStep;
 		ad[HA] += (an[HA] - ad[HA]) / nStep;
-		objP->position.mOrient = vmsMatrix::Create(ad);
+		objP->info.position.mOrient = vmsMatrix::Create(ad);
 		}
 	else
-		objP->position.mOrient = vmsMatrix::Create(an);
+		objP->info.position.mOrient = vmsMatrix::Create(an);
 	}
 rm = vmsMatrix::Create(av);
 vel = rm * objP->mType.physInfo.velocity;
@@ -817,7 +817,7 @@ int CheckTriggerSub (short nObject, tTrigger *triggers, int nTriggerCount,
 {
 	tTrigger	*trigP;
 	tObject	*objP = OBJECTS + nObject;
-	ubyte		bIsPlayer = (objP->nType == OBJ_PLAYER);
+	ubyte		bIsPlayer = (objP->info.nType == OBJ_PLAYER);
 
 if (nTrigger >= nTriggerCount)
 	return 1;
@@ -831,13 +831,13 @@ if (bIsPlayer) {
 else {
 	nPlayer = -1;
 	if ((trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
-		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_REACTOR))
+		if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_REACTOR))
 			return 1;
 		if (!bObjTrigger)
 			return 1;
 		}
 	else
-		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_REACTOR))
+		if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_REACTOR))
 			return 1;
 		}
 #if 1
@@ -1125,7 +1125,7 @@ if (!IS_WALL (nWall))
 	return;
 nTrigger = gameData.walls.walls [nWall].nTrigger;
 if (CheckTriggerSub (nObject, gameData.trigs.triggers, gameData.trigs.nTriggers, nTrigger, 
-							(objP->nType == OBJ_PLAYER) ? objP->id : -1, shot, 0))
+							(objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, shot, 0))
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordTrigger (SEG_IDX (segP), nSide, nObject, shot);

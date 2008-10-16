@@ -98,14 +98,14 @@ return AIM_IDLING;
 void InitAIObject (short nObject, short behavior, short nHideSegment)
 {
 	tObject		*objP = OBJECTS + nObject;
-	tAIStatic	*aiP = &objP->cType.aiInfo;
-	tAILocal		*ailP = gameData.ai.localInfo + nObject;
-	tRobotInfo	*botInfoP = &ROBOTINFO (objP->id);
+	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
+	tAILocalInfo		*ailP = gameData.ai.localInfo + nObject;
+	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
 
 Assert (nObject >= 0);
 if (behavior == AIB_STATIC) {
-	objP->controlType = CT_NONE;
-	objP->movementType = MT_NONE;
+	objP->info.controlType = CT_NONE;
+	objP->info.movementType = MT_NONE;
 	}
 if (behavior == 0) {
 	behavior = AIB_NORMAL;
@@ -175,9 +175,9 @@ for (i = 0; i < MAX_BOSS_COUNT; i++) {
 #endif
 	}
 for (i = j = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
-	if (objP->controlType == CT_AI)
+	if (objP->info.controlType == CT_AI)
 		InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
-	if ((objP->nType == OBJ_ROBOT) && (ROBOTINFO (objP->id).bossFlag))
+	if ((objP->info.nType == OBJ_ROBOT) && (ROBOTINFO (objP->info.nId).bossFlag))
 		gameData.boss [j++].nObject = i;
 	}
 for (h = BOSS_COUNT, i = 0; i < h; i++)
@@ -238,8 +238,8 @@ void InitAIForShip (void)
 
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
-	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.console);
-	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.console)->vPos;
+	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.consoleP);
+	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.consoleP)->vPos;
 	}
 }
 

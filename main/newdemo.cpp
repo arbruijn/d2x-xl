@@ -193,25 +193,25 @@ void my_extract_shortpos (tObject *objP, tShortPos *spp)
 	int nSegment;
 	sbyte *sp;
 
-sp = spp->bytemat;
-objP->position.mOrient[RVEC][X] = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient[UVEC][X] = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient[FVEC][X] = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient[RVEC][Y] = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient[UVEC][Y] = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient[FVEC][Y] = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient[RVEC][Z] = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient[UVEC][Z] = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient[FVEC][Z] = *sp++ << MATRIX_PRECISION;
+sp = spp->orient;
+objP->info.position.mOrient [RVEC][X] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient [UVEC][X] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient [FVEC][X] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient [RVEC][Y] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient [UVEC][Y] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient [FVEC][Y] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient [RVEC][Z] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient [UVEC][Z] = *sp++ << MATRIX_PRECISION;
+objP->info.position.mOrient [FVEC][Z] = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
-objP->nSegment = nSegment;
-const vmsVector& v = gameData.segs.vertices[gameData.segs.segments[nSegment].verts[0]];
-objP->position.vPos[X] = (spp->xo << RELPOS_PRECISION) + v[X];
-objP->position.vPos[Y] = (spp->yo << RELPOS_PRECISION) + v[Y];
-objP->position.vPos[Z] = (spp->zo << RELPOS_PRECISION) + v[Z];
-objP->mType.physInfo.velocity[X] = (spp->velx << VEL_PRECISION);
-objP->mType.physInfo.velocity[Y] = (spp->vely << VEL_PRECISION);
-objP->mType.physInfo.velocity[Z] = (spp->velz << VEL_PRECISION);
+objP->info.nSegment = nSegment;
+const vmsVector& v = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]];
+objP->info.position.vPos [X] = (spp->pos [X] << RELPOS_PRECISION) + v [X];
+objP->info.position.vPos [Y] = (spp->pos [Y] << RELPOS_PRECISION) + v [Y];
+objP->info.position.vPos [Z] = (spp->pos [Z] << RELPOS_PRECISION) + v [Z];
+objP->mType.physInfo.velocity [X] = (spp->vel [X] << VEL_PRECISION);
+objP->mType.physInfo.velocity [Y] = (spp->vel [Y] << VEL_PRECISION);
+objP->mType.physInfo.velocity [Z] = (spp->vel [Z] << VEL_PRECISION);
 }
 
 //	-----------------------------------------------------------------------------
@@ -222,7 +222,7 @@ int NDFindObject (int nSignature)
 	tObject * objP = OBJECTS;
 
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
-if ((objP->nType != OBJ_NONE) && (objP->nSignature == nSignature))
+if ((objP->info.nType != OBJ_NONE) && (objP->info.nSignature == nSignature))
 	return i;
 	}
 return -1;
@@ -364,32 +364,32 @@ CFWriteMatrix(m, &ndOutFile);
 
 void NDWritePosition (tObject *objP)
 {
-	ubyte			renderType = objP->renderType;
+	ubyte			renderType = objP->info.renderType;
 	tShortPos	sp;
 	int			bOldFormat = gameStates.app.bNostalgia || gameOpts->demo.bOldFormat || (bRevertFormat > 0);
 
 if (bOldFormat)
 	CreateShortPos (&sp, objP, 0);
 if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == RT_MORPH) || 
-	 (objP->nType == OBJ_CAMERA) ||
+	 (objP->info.nType == OBJ_CAMERA) ||
 	 (!bOldFormat && (renderType == RT_POWERUP))) {
 	if (bOldFormat)
-		NDWrite (sp.bytemat, sizeof (sp.bytemat [0]), sizeof (sp.bytemat) / sizeof (sp.bytemat [0]));
+		NDWrite (sp.orient, sizeof (sp.orient [0]), sizeof (sp.orient) / sizeof (sp.orient [0]));
 	else
-		NDWriteMatrix(objP->position.mOrient);
+		NDWriteMatrix(objP->info.position.mOrient);
 	}
 if (bOldFormat) {
-	NDWriteShort(sp.xo);
-	NDWriteShort(sp.yo);
-	NDWriteShort(sp.zo);
-	NDWriteShort(sp.nSegment);
-	NDWriteShort(sp.velx);
-	NDWriteShort(sp.vely);
-	NDWriteShort(sp.velz);
+	NDWriteShort (sp.pos [X]);
+	NDWriteShort (sp.pos [Y]);
+	NDWriteShort (sp.pos [Z]);
+	NDWriteShort (sp.nSegment);
+	NDWriteShort (sp.vel [X]);
+	NDWriteShort (sp.vel [Y]);
+	NDWriteShort (sp.vel [Z]);
 	}
 else {
-	NDWriteVector(objP->position.vPos);
-	NDWriteShort (objP->nSegment);
+	NDWriteVector(objP->info.position.vPos);
+	NDWriteShort (objP->info.nSegment);
 	NDWriteVector(objP->mType.physInfo.velocity);
 	}
 }
@@ -513,34 +513,34 @@ static void NDReadPosition (tObject *objP, int bSkip)
 
 if (bRevertFormat > 0)
 	bRevertFormat = 0;	//temporarily suppress writing back data
-renderType = objP->renderType;
+renderType = objP->info.renderType;
 if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == RT_MORPH) || 
-	 (objP->nType == OBJ_CAMERA) ||
+	 (objP->info.nType == OBJ_CAMERA) ||
 	 ((renderType == RT_POWERUP) && (gameData.demo.nVersion > DEMO_VERSION + 1))) {
 	if (gameData.demo.bUseShortPos)
-		NDRead (sp.bytemat, sizeof (sp.bytemat [0]), sizeof (sp.bytemat) / sizeof (sp.bytemat [0]));
+		NDRead (sp.orient, sizeof (sp.orient [0]), sizeof (sp.orient) / sizeof (sp.orient [0]));
 	else
-		CFReadMatrix(objP->position.mOrient, &ndInFile);
+		CFReadMatrix(objP->info.position.mOrient, &ndInFile);
 	}
 if (gameData.demo.bUseShortPos) {
-	sp.xo = NDReadShort ();
-	sp.yo = NDReadShort ();
-	sp.zo = NDReadShort ();
+	sp.pos [X] = NDReadShort ();
+	sp.pos [Y] = NDReadShort ();
+	sp.pos [Z] = NDReadShort ();
 	sp.nSegment = NDReadShort ();
-	sp.velx = NDReadShort ();
-	sp.vely = NDReadShort ();
-	sp.velz = NDReadShort ();
+	sp.vel [X] = NDReadShort ();
+	sp.vel [Y] = NDReadShort ();
+	sp.vel [Z] = NDReadShort ();
 	my_extract_shortpos (objP, &sp);
 	}
 else {
-	NDReadVector(objP->position.vPos);
-	objP->nSegment = NDReadShort ();
+	NDReadVector(objP->info.position.vPos);
+	objP->info.nSegment = NDReadShort ();
 	NDReadVector(objP->mType.physInfo.velocity);
 	}
-if ((objP->id == VCLIP_MORPHING_ROBOT) && 
+if ((objP->info.nId == VCLIP_MORPHING_ROBOT) && 
 	 (renderType == RT_FIREBALL) && 
-	 (objP->controlType == CT_EXPLOSION))
-	ExtractOrientFromSegment (&objP->position.mOrient, gameData.segs.segments + objP->nSegment);
+	 (objP->info.controlType == CT_EXPLOSION))
+	ExtractOrientFromSegment (&objP->info.position.mOrient, gameData.segs.segments + objP->info.nSegment);
 if (!(bRevertFormat || bSkip)) {
 	bRevertFormat = 1;
 	NDWritePosition (objP);
@@ -562,11 +562,11 @@ memset (objP, 0, sizeof (tObject));
  */
 if (bRevertFormat > 0)
 	bRevertFormat = 0;
-objP->renderType = NDReadByte ();
+objP->info.renderType = NDReadByte ();
 if (!bRevertFormat) {
-	if (objP->renderType <= RT_WEAPON_VCLIP) {
+	if (objP->info.renderType <= RT_WEAPON_VCLIP) {
 		bRevertFormat = gameOpts->demo.bRevertFormat;
-		NDWriteByte ((sbyte) objP->renderType);
+		NDWriteByte ((sbyte) objP->info.renderType);
 		}
 	else {
 		bSkip = 1;
@@ -575,95 +575,95 @@ if (!bRevertFormat) {
 		gameData.demo.nWritten--;
 		}
 	}
-objP->nType = NDReadByte ();
-if ((objP->renderType == RT_NONE) && (objP->nType != OBJ_CAMERA)) {
+objP->info.nType = NDReadByte ();
+if ((objP->info.renderType == RT_NONE) && (objP->info.nType != OBJ_CAMERA)) {
 	if (!bRevertFormat)
 		bRevertFormat = gameOpts->demo.bRevertFormat;
 	return;
 	}
-objP->id = NDReadByte ();
+objP->info.nId = NDReadByte ();
 if (gameData.demo.nVersion > DEMO_VERSION + 1) {
 	if (bRevertFormat > 0)
 		bRevertFormat = 0;
-	objP->shields = NDReadFix ();
+	objP->info.xShields = NDReadFix ();
 	if (!(bRevertFormat || bSkip))
 		bRevertFormat = gameOpts->demo.bRevertFormat;
 	}
-objP->flags = NDReadByte ();
-objP->nSignature = NDReadShort ();
+objP->info.nFlags = NDReadByte ();
+objP->info.nSignature = NDReadShort ();
 NDReadPosition (objP, bSkip);
 #if DBG
-if ((objP->nType == OBJ_ROBOT) && (objP->id == SPECIAL_REACTOR_ROBOT))
+if ((objP->info.nType == OBJ_ROBOT) && (objP->info.nId == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 #endif
-objP->attachedObj = -1;
-switch (objP->nType) {
+objP->info.nAttachedObj = -1;
+switch (objP->info.nType) {
 	case OBJ_HOSTAGE:
-		objP->controlType = CT_POWERUP;
-		objP->movementType = MT_NONE;
-		objP->size = HOSTAGE_SIZE;
+		objP->info.controlType = CT_POWERUP;
+		objP->info.movementType = MT_NONE;
+		objP->info.xSize = HOSTAGE_SIZE;
 		break;
 
 	case OBJ_ROBOT:
-		objP->controlType = CT_AI;
+		objP->info.controlType = CT_AI;
 		// (MarkA and MikeK said we should not do the crazy last secret stuff with multiple reactors...
 		// This necessary code is our vindication. --MK, 2/15/96)
-		if (objP->id != SPECIAL_REACTOR_ROBOT)
-			objP->movementType = MT_PHYSICS;
+		if (objP->info.nId != SPECIAL_REACTOR_ROBOT)
+			objP->info.movementType = MT_PHYSICS;
 		else
-			objP->movementType = MT_NONE;
-		objP->size = gameData.models.polyModels [ROBOTINFO (objP->id).nModel].rad;
-		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->id).nModel;
+			objP->info.movementType = MT_NONE;
+		objP->info.xSize = gameData.models.polyModels [ROBOTINFO (objP->info.nId).nModel].rad;
+		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
-		objP->cType.aiInfo.CLOAKED = (ROBOTINFO (objP->id).cloakType?1:0);
+		objP->cType.aiInfo.CLOAKED = (ROBOTINFO (objP->info.nId).cloakType?1:0);
 		break;
 
 	case OBJ_POWERUP:
-		objP->controlType = CT_POWERUP;
-		objP->movementType = NDReadByte ();        // might have physics movement
-		objP->size = gameData.objs.pwrUp.info [objP->id].size;
+		objP->info.controlType = CT_POWERUP;
+		objP->info.movementType = NDReadByte ();        // might have physics movement
+		objP->info.xSize = gameData.objs.pwrUp.info [objP->info.nId].size;
 		break;
 
 	case OBJ_PLAYER:
-		objP->controlType = CT_NONE;
-		objP->movementType = MT_PHYSICS;
-		objP->size = gameData.models.polyModels [gameData.pig.ship.player->nModel].rad;
+		objP->info.controlType = CT_NONE;
+		objP->info.movementType = MT_PHYSICS;
+		objP->info.xSize = gameData.models.polyModels [gameData.pig.ship.player->nModel].rad;
 		objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		break;
 
 	case OBJ_CLUTTER:
-		objP->controlType = CT_NONE;
-		objP->movementType = MT_NONE;
-		objP->size = gameData.models.polyModels [objP->id].rad;
-		objP->rType.polyObjInfo.nModel = objP->id;
+		objP->info.controlType = CT_NONE;
+		objP->info.movementType = MT_NONE;
+		objP->info.xSize = gameData.models.polyModels [objP->info.nId].rad;
+		objP->rType.polyObjInfo.nModel = objP->info.nId;
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		break;
 
 	default:
-		objP->controlType = NDReadByte ();
-		objP->movementType = NDReadByte ();
-		objP->size = NDReadFix ();
+		objP->info.controlType = NDReadByte ();
+		objP->info.movementType = NDReadByte ();
+		objP->info.xSize = NDReadFix ();
 		break;
 	}
 
-NDReadVector(objP->vLastPos);
-if ((objP->nType == OBJ_WEAPON) && (objP->renderType == RT_WEAPON_VCLIP))
-	objP->lifeleft = NDReadFix ();
+NDReadVector(objP->info.vLastPos);
+if ((objP->info.nType == OBJ_WEAPON) && (objP->info.renderType == RT_WEAPON_VCLIP))
+	objP->info.xLifeLeft = NDReadFix ();
 else {
 	ubyte b = NDReadByte ();
-	objP->lifeleft = (fix) b;
-	// MWA old way -- won't work with big endian machines       NDReadByte ((sbyte *) (ubyte *)&(objP->lifeleft);
-	objP->lifeleft = (fix) ((int) objP->lifeleft << 12);
+	objP->info.xLifeLeft = (fix) b;
+	// MWA old way -- won't work with big endian machines       NDReadByte ((sbyte *) (ubyte *)&(objP->info.xLifeLeft);
+	objP->info.xLifeLeft = (fix) ((int) objP->info.xLifeLeft << 12);
 	}
-if (objP->nType == OBJ_ROBOT) {
-	if (ROBOTINFO (objP->id).bossFlag) {
+if (objP->info.nType == OBJ_ROBOT) {
+	if (ROBOTINFO (objP->info.nId).bossFlag) {
 		sbyte cloaked = NDReadByte ();
 		objP->cType.aiInfo.CLOAKED = cloaked;
 		}
 	}
 
-switch (objP->movementType) {
+switch (objP->info.movementType) {
 	case MT_PHYSICS:
 		NDReadVector(objP->mType.physInfo.velocity);
 		NDReadVector(objP->mType.physInfo.thrust);
@@ -680,21 +680,21 @@ switch (objP->movementType) {
 		Int3 ();
 	}
 
-switch (objP->controlType) {
+switch (objP->info.controlType) {
 	case CT_EXPLOSION:
 		objP->cType.explInfo.nSpawnTime = NDReadFix ();
 		objP->cType.explInfo.nDeleteTime = NDReadFix ();
 		objP->cType.explInfo.nDeleteObj = NDReadShort ();
-		objP->cType.explInfo.nNextAttach = 
-		objP->cType.explInfo.nPrevAttach = 
-		objP->cType.explInfo.nAttachParent = -1;
-		if (objP->flags & OF_ATTACHED) {     //attach to previous tObject
+		objP->cType.explInfo.attached.nNext = 
+		objP->cType.explInfo.attached.nPrev = 
+		objP->cType.explInfo.attached.nParent = -1;
+		if (objP->info.nFlags & OF_ATTACHED) {     //attach to previous tObject
 			Assert (prevObjP != NULL);
-			if (prevObjP->controlType == CT_EXPLOSION) {
-				if ((prevObjP->flags & OF_ATTACHED) && (prevObjP->cType.explInfo.nAttachParent != -1))
-					AttachObject (OBJECTS + prevObjP->cType.explInfo.nAttachParent, objP);
+			if (prevObjP->info.controlType == CT_EXPLOSION) {
+				if ((prevObjP->info.nFlags & OF_ATTACHED) && (prevObjP->cType.explInfo.attached.nParent != -1))
+					AttachObject (OBJECTS + prevObjP->cType.explInfo.attached.nParent, objP);
 				else
-					objP->flags &= ~OF_ATTACHED;
+					objP->info.nFlags &= ~OF_ATTACHED;
 				}
 			else
 				AttachObject (prevObjP, objP);
@@ -723,18 +723,18 @@ switch (objP->controlType) {
 		Int3 ();
 	}
 
-switch (objP->renderType) {
+switch (objP->info.renderType) {
 	case RT_NONE:
 		break;
 
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i, tmo;
-		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_CLUTTER)) {
+		if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_CLUTTER)) {
 			objP->rType.polyObjInfo.nModel = NDReadInt ();
 			objP->rType.polyObjInfo.nSubObjFlags = NDReadInt ();
 			}
-		if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_DEBRIS))
+		if ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_DEBRIS))
 		for (i = 0; i < gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels; i++)
 			NDReadAngVec (objP->rType.polyObjInfo.animAngles[i]);
 		tmo = NDReadInt ();
@@ -794,49 +794,49 @@ void NDWriteObject (tObject *objP)
 	int		life;
 	tObject	o = *objP;
 
-if ((o.renderType > RT_WEAPON_VCLIP) && ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat)))
+if ((o.info.renderType > RT_WEAPON_VCLIP) && ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat)))
 	return;
 #if DBG
-if ((o.nType == OBJ_ROBOT) && (o.id == SPECIAL_REACTOR_ROBOT))
+if ((o.info.nType == OBJ_ROBOT) && (o.info.nId == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 #endif
 if (o.cType.aiInfo.behavior == AIB_STATIC)
-	o.movementType = MT_PHYSICS;
+	o.info.movementType = MT_PHYSICS;
 // Do renderType first so on read, we can make determination of
 // what else to read in
-if ((o.nType == OBJ_POWERUP) && (o.renderType == RT_POLYOBJ)) {
+if ((o.info.nType == OBJ_POWERUP) && (o.info.renderType == RT_POLYOBJ)) {
 	ConvertWeaponToPowerup (&o);
 	NDSetPowerupClip (&o);
 	}
-NDWriteByte (o.renderType);
-NDWriteByte (o.nType);
-if ((o.renderType == RT_NONE) && (o.nType != OBJ_CAMERA))
+NDWriteByte (o.info.renderType);
+NDWriteByte (o.info.nType);
+if ((o.info.renderType == RT_NONE) && (o.info.nType != OBJ_CAMERA))
 	return;
-NDWriteByte (o.id);
+NDWriteByte (o.info.nId);
 if (!(gameStates.app.bNostalgia || gameOpts->demo.bOldFormat))
-	NDWriteFix (o.shields);
-NDWriteByte (o.flags);
-NDWriteShort ((short) o.nSignature);
+	NDWriteFix (o.info.xShields);
+NDWriteByte (o.info.nFlags);
+NDWriteShort ((short) o.info.nSignature);
 NDWritePosition (&o);
-if ((o.nType != OBJ_HOSTAGE) && (o.nType != OBJ_ROBOT) && (o.nType != OBJ_PLAYER) && 
-	 (o.nType != OBJ_POWERUP) && (o.nType != OBJ_CLUTTER)) {
-	NDWriteByte (o.controlType);
-	NDWriteByte (o.movementType);
-	NDWriteFix (o.size);
+if ((o.info.nType != OBJ_HOSTAGE) && (o.info.nType != OBJ_ROBOT) && (o.info.nType != OBJ_PLAYER) && 
+	 (o.info.nType != OBJ_POWERUP) && (o.info.nType != OBJ_CLUTTER)) {
+	NDWriteByte (o.info.controlType);
+	NDWriteByte (o.info.movementType);
+	NDWriteFix (o.info.xSize);
 	}
-else if (o.nType == OBJ_POWERUP)
-	NDWriteByte (o.movementType);
-NDWriteVector(o.vLastPos);
-if ((o.nType == OBJ_WEAPON) && (o.renderType == RT_WEAPON_VCLIP))
-	NDWriteFix (o.lifeleft);
+else if (o.info.nType == OBJ_POWERUP)
+	NDWriteByte (o.info.movementType);
+NDWriteVector(o.info.vLastPos);
+if ((o.info.nType == OBJ_WEAPON) && (o.info.renderType == RT_WEAPON_VCLIP))
+	NDWriteFix (o.info.xLifeLeft);
 else {
-	life = ((int) o.lifeleft) >> 12;
+	life = ((int) o.info.xLifeLeft) >> 12;
 	if (life > 255)
 		life = 255;
 	NDWriteByte ((ubyte)life);
 	}
-if (o.nType == OBJ_ROBOT) {
-	if (ROBOTINFO (o.id).bossFlag) {
+if (o.info.nType == OBJ_ROBOT) {
+	if (ROBOTINFO (o.info.nId).bossFlag) {
 		int i = FindBoss (OBJ_IDX (objP));
 		if ((i >= 0) &&
 			 (gameData.time.xGame > gameData.boss [i].nCloakStartTime) && 
@@ -846,7 +846,7 @@ if (o.nType == OBJ_ROBOT) {
 			NDWriteByte (0);
 		}
 	}
-switch (o.movementType) {
+switch (o.info.movementType) {
 	case MT_PHYSICS:
 		NDWriteVector(o.mType.physInfo.velocity);
 		NDWriteVector(o.mType.physInfo.thrust);
@@ -863,7 +863,7 @@ switch (o.movementType) {
 		Int3 ();
 	}
 
-switch (o.controlType) {
+switch (o.info.controlType) {
 	case CT_AI:
 		break;
 
@@ -896,18 +896,18 @@ switch (o.controlType) {
 		Int3 ();
 	}
 
-switch (o.renderType) {
+switch (o.info.renderType) {
 	case RT_NONE:
 		break;
 
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
-		if ((o.nType != OBJ_ROBOT) && (o.nType != OBJ_PLAYER) && (o.nType != OBJ_CLUTTER)) {
+		if ((o.info.nType != OBJ_ROBOT) && (o.info.nType != OBJ_PLAYER) && (o.info.nType != OBJ_CLUTTER)) {
 			NDWriteInt (o.rType.polyObjInfo.nModel);
 			NDWriteInt (o.rType.polyObjInfo.nSubObjFlags);
 			}
-		if ((o.nType != OBJ_PLAYER) && (o.nType != OBJ_DEBRIS))
+		if ((o.info.nType != OBJ_PLAYER) && (o.info.nType != OBJ_DEBRIS))
 #if 0
 			for (i = 0; i < MAX_SUBMODELS; i++)
 				NDWriteAngVec (o.polyObjInfo.animAngles + i);
@@ -957,8 +957,8 @@ else
 	NDWriteInt (gameData.app.nGameMode);
 if (IsTeamGame) {
 	NDWriteByte (netGame.teamVector);
-	NDWriteString (netGame.team_name [0]);
-	NDWriteString (netGame.team_name [1]);
+	NDWriteString (netGame.szTeamName [0]);
+	NDWriteString (netGame.szTeamName [1]);
 	}
 if (gameData.demo.nGameMode & GM_MULTI) {
 	NDWriteByte ((sbyte)gameData.multiplayer.nPlayers);
@@ -1102,7 +1102,7 @@ void NDRecordLinkSoundToObject3 (int soundno, short nObject, fix maxVolume, fix 
 StopTime ();
 NDWriteByte (ND_EVENT_LINK_SOUND_TO_OBJ);
 NDWriteInt (soundno);
-NDWriteInt (OBJECTS [nObject].nSignature);
+NDWriteInt (OBJECTS [nObject].info.nSignature);
 NDWriteInt (maxVolume);
 NDWriteInt (maxDistance);
 NDWriteInt (loop_start);
@@ -1116,7 +1116,7 @@ void NDRecordKillSoundLinkedToObject (int nObject)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_KILL_SOUND_TO_OBJ);
-NDWriteInt (OBJECTS [nObject].nSignature);
+NDWriteInt (OBJECTS [nObject].info.nSignature);
 StartTime (0);
 }
 
@@ -1629,8 +1629,8 @@ gameData.demo.nGameMode = NDReadInt ();
 ChangePlayerNumTo ((gameData.demo.nGameMode >> 16) & 0x7);
 if (gameData.demo.nGameMode & GM_TEAM) {
 	netGame.teamVector = NDReadByte ();
-	NDReadString (netGame.team_name [0]);
-	NDReadString (netGame.team_name [1]);
+	NDReadString (netGame.szTeamName [0]);
+	NDReadString (netGame.szTeamName [1]);
 	}
 if (gameData.demo.nGameMode & GM_MULTI) {
 	MultiNewGame ();
@@ -1811,14 +1811,14 @@ while (!bDone) {
 					}
 				}
 			else {
-				gameData.objs.viewer = OBJECTS;
-				NDReadObject (gameData.objs.viewer);
+				gameData.objs.viewerP = OBJECTS;
+				NDReadObject (gameData.objs.viewerP);
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
-					nSegment = gameData.objs.viewer->nSegment;
-					gameData.objs.viewer->next = 
-					gameData.objs.viewer->prev = 
-					gameData.objs.viewer->nSegment = -1;
+					nSegment = gameData.objs.viewerP->info.nSegment;
+					gameData.objs.viewerP->info.nNext = 
+					gameData.objs.viewerP->info.nPrev = 
+					gameData.objs.viewerP->info.nSegment = -1;
 
 					// HACK HACK HACK -- since we have multiple level recording, it can be the case
 					// HACK HACK HACK -- that when rewinding the demo, the viewer is in a tSegment
@@ -1827,7 +1827,7 @@ while (!bDone) {
 
 					if (nSegment > gameData.segs.nLastSegment)
 						nSegment = 0;
-					LinkObject (OBJ_IDX (gameData.objs.viewer), nSegment);
+					LinkObject (OBJ_IDX (gameData.objs.viewerP), nSegment);
 					}
 				}
 			break;
@@ -1839,18 +1839,18 @@ while (!bDone) {
 			objP = OBJECTS + nObject;
 			NDReadObject (objP);
 			CATCH_BAD_READ
-			if (objP->controlType == CT_POWERUP)
+			if (objP->info.controlType == CT_POWERUP)
 				DoPowerupFrame (objP);
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-				nSegment = objP->nSegment;
-				objP->next = objP->prev = objP->nSegment = -1;
+				nSegment = objP->info.nSegment;
+				objP->info.nNext = objP->info.nPrev = objP->info.nSegment = -1;
 				// HACK HACK HACK -- don't render OBJECTS is segments greater than gameData.segs.nLastSegment
 				// HACK HACK HACK -- (see above)
 				if (nSegment > gameData.segs.nLastSegment)
 					break;
 				LinkObject (OBJ_IDX (objP), nSegment);
-				if ((objP->nType == OBJ_PLAYER) && IsMultiGame) {
-					int tPlayer = IsTeamGame ? GetTeam (objP->id) : objP->id;
+				if ((objP->info.nType == OBJ_PLAYER) && IsMultiGame) {
+					int tPlayer = IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId;
 					if (tPlayer == 0)
 						break;
 					tPlayer--;
@@ -1972,12 +1972,12 @@ while (!bDone) {
 				break;
 			objP = OBJECTS + nObject;
 			NDReadObject (objP);
-			objP->renderType = RT_POLYOBJ;
+			objP->info.renderType = RT_POLYOBJ;
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 				CATCH_BAD_READ
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-					nSegment = objP->nSegment;
-					objP->next = objP->prev = objP->nSegment = -1;
+					nSegment = objP->info.nSegment;
+					objP->info.nNext = objP->info.nPrev = objP->info.nSegment = -1;
 					LinkObject (OBJ_IDX (objP), nSegment);
 					}
 				}
@@ -2170,7 +2170,7 @@ while (!bDone) {
 			//create a dummy tObject which will be the weapon that hits
 			//the monitor. the blowup code wants to know who the parent of the
 			//laser is, so create a laser whose parent is the tPlayer
-			dummy.cType.laserInfo.parentType = OBJ_PLAYER;
+			dummy.cType.laserInfo.parent.nType = OBJ_PLAYER;
 			nSegment = NDReadShort ();
 			nSide = NDReadByte ();
 			NDReadVector(pnt);
@@ -2762,7 +2762,7 @@ for (i = nFrames; i; i--) {
 
 /*
  *  routine to interpolate the viewer position.  the current position is
- *  stored in the gameData.objs.viewer tObject.  Save this position, and read the next
+ *  stored in the gameData.objs.viewerP tObject.  Save this position, and read the next
  *  frame to get all OBJECTS read in.  Calculate the delta playback and
  *  the delta recording frame times between the two frames, then intepolate
  *  the viewers position accordingly.  gameData.demo.xRecordedTime is the time that it
@@ -2799,8 +2799,8 @@ if (NDReadFrameInfo () == -1) {
 	}
 for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 	for (j = OBJECTS + gameData.objs.nLastObject [0], objP = OBJECTS; objP < j; objP++) {
-		if (curObjP->nSignature == objP->nSignature) {
-			renderType = curObjP->renderType;
+		if (curObjP->info.nSignature == objP->info.nSignature) {
+			renderType = curObjP->info.renderType;
 			//fix delta_p, delta_h, delta_b;
 			//vmsAngVec cur_angles, dest_angles;
 			//  Extract the angles from the tObject orientation matrix.
@@ -2811,36 +2811,36 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 					(renderType != RT_THRUSTER) && 
 					(renderType != RT_POWERUP)) {
 
-				fvec1 = curObjP->position.mOrient[FVEC];
+				fvec1 = curObjP->info.position.mOrient[FVEC];
 				fvec1 *= (F1_0-factor);
-				fvec2 = objP->position.mOrient[FVEC];
+				fvec2 = objP->info.position.mOrient[FVEC];
 				fvec2 *= factor;
 				fvec1 += fvec2;
 				mag1 = vmsVector::Normalize(fvec1);
 				if (mag1 > F1_0/256) {
-					rvec1 = curObjP->position.mOrient[RVEC];
+					rvec1 = curObjP->info.position.mOrient[RVEC];
 					rvec1 *= (F1_0-factor);
-					rvec2 = objP->position.mOrient[RVEC];
+					rvec2 = objP->info.position.mOrient[RVEC];
 					rvec2 *= factor;
 					rvec1 += rvec2;
 					vmsVector::Normalize(rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
-					curObjP->position.mOrient = vmsMatrix::CreateFR(fvec1, rvec1);
-					//curObjP->position.mOrient = vmsMatrix::CreateFR(fvec1, NULL, &rvec1);
+					curObjP->info.position.mOrient = vmsMatrix::CreateFR(fvec1, rvec1);
+					//curObjP->info.position.mOrient = vmsMatrix::CreateFR(fvec1, NULL, &rvec1);
 					}
 				}
 			// Interpolate the tObject position.  This is just straight linear
 			// interpolation.
-			delta_x = objP->position.vPos[X] - curObjP->position.vPos[X];
-			delta_y = objP->position.vPos[Y] - curObjP->position.vPos[Y];
-			delta_z = objP->position.vPos[Z] - curObjP->position.vPos[Z];
+			delta_x = objP->info.position.vPos[X] - curObjP->info.position.vPos[X];
+			delta_y = objP->info.position.vPos[Y] - curObjP->info.position.vPos[Y];
+			delta_z = objP->info.position.vPos[Z] - curObjP->info.position.vPos[Z];
 			delta_x = FixMul (delta_x, factor);
 			delta_y = FixMul (delta_y, factor);
 			delta_z = FixMul (delta_z, factor);
-			curObjP->position.vPos[X] += delta_x;
-			curObjP->position.vPos[Y] += delta_y;
-			curObjP->position.vPos[Z] += delta_z;
+			curObjP->info.position.vPos[X] += delta_x;
+			curObjP->info.position.vPos[Y] += delta_y;
+			curObjP->info.position.vPos[Z] += delta_z;
 				// -- old fashioned way --// stuff the new angles back into the tObject structure
-				// -- old fashioned way --				VmAngles2Matrix (&(curObjs [i].position.mOrient), &cur_angles);
+				// -- old fashioned way --				VmAngles2Matrix (&(curObjs [i].info.position.mOrient), &cur_angles);
 			}
 		}
 	}
@@ -2992,12 +2992,12 @@ else {
 				//  copy that interpolated tObject to the new OBJECTS array so that the
 				//  interpolated position and orientation can be preserved.
 				for (i = 0; i <= nObjects; i++) {
-					nSig = curObjs [i].nSignature;
+					nSig = curObjs [i].info.nSignature;
 					objP = OBJECTS;
 					for (j = 0; j <= gameData.objs.nLastObject [0]; j++, objP++) {
-						if (nSig == objP->nSignature) {
-							objP->position.mOrient = curObjs [i].position.mOrient;
-							objP->position.vPos = curObjs [i].position.vPos;
+						if (nSig == objP->info.nSignature) {
+							objP->info.position.mOrient = curObjs [i].info.position.mOrient;
+							objP->info.position.vPos = curObjs [i].info.position.vPos;
 							break;
 							}
 						}
@@ -3317,7 +3317,7 @@ else
 bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
 strncpy (gameData.demo.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
-gameData.objs.viewer = gameData.objs.console = OBJECTS;   // play properly as if console tPlayer
+gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS;   // play properly as if console tPlayer
 if (NDReadDemoStart (bRandom)) {
 	CFClose (&ndInFile);
 	CFClose (&ndOutFile);

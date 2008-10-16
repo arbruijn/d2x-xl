@@ -194,12 +194,12 @@ if (nType == WALL_DOOR) {
 	return WID_WALL;
 	}
 if (nType == WALL_CLOSED) {
-	if (objP && (objP->nType == OBJ_PLAYER)) {
-		if (IsTeamGame && ((wallP->keys >> 1) == GetTeam (objP->id) + 1))
+	if (objP && (objP->info.nType == OBJ_PLAYER)) {
+		if (IsTeamGame && ((wallP->keys >> 1) == GetTeam (objP->info.nId) + 1))
 			return WID_ILLUSORY_WALL;
-		if ((wallP->keys == KEY_BLUE) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_BLUE_KEY))
+		if ((wallP->keys == KEY_BLUE) && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_BLUE_KEY))
 			return WID_ILLUSORY_WALL;
-		if ((wallP->keys == KEY_RED) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_RED_KEY))
+		if ((wallP->keys == KEY_RED) && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_RED_KEY))
 			return WID_ILLUSORY_WALL;
 		}
 	}
@@ -231,14 +231,14 @@ if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 if (objP && gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted &&
-	 (objP == gameData.objs.console) &&
+	 (objP == gameData.objs.consoleP) &&
 	 (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SPEEDBOOST) &&
 	 (gameData.segs.segment2s [nChild].special != SEGMENT_IS_SPEEDBOOST) &&
 	 (!bIsWall || (gameData.trigs.triggers [gameData.walls.walls [nWall].nTrigger].nType != TT_SPEEDBOOST)))
 	return objP ? WID_RENDER_FLAG : bIsWall ? WallIsDoorWay (segP, nSide, objP) : WID_RENDPAST_FLAG;
 if ((gameData.segs.segment2s [nChild].special == SEGMENT_IS_BLOCKED) ||
 	 (gameData.segs.segment2s [nChild].special == SEGMENT_IS_SKYBOX))
-	return (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))) ? WID_RENDER_FLAG :
+	return (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))) ? WID_RENDER_FLAG :
 			 bIsWall ? WallIsDoorWay (segP, nSide, objP) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
 if (!bIsWall)
 	return (WID_FLY_FLAG|WID_RENDPAST_FLAG);
@@ -743,7 +743,7 @@ tObject *objP = OBJECTS + nObject;
 	//note: don't let OBJECTS with zero size block door
 if (nObject == 126)
 	nObject = nObject;
-if (objP->size && GetSideMasks (&objP->position.vPos, nSegment, nSide, objP->size).sideMask)
+if (objP->info.xSize && GetSideMasks (&objP->info.position.vPos, nSegment, nSide, objP->info.xSize).sideMask)
 	return 1;		//pokes through nSide!
 return 0;		//does not!
 }
@@ -763,8 +763,8 @@ Assert(nConnSide != -1);
 //go through each tObject in each of two segments, and see if
 //it pokes into the connecting segP
 
-for (nObject = gameData.segs.objects [SEG_IDX (segP)]; nObject != -1; nObject = OBJECTS [nObject].next) {
-	t = OBJECTS [nObject].nType;
+for (nObject = gameData.segs.objects [SEG_IDX (segP)]; nObject != -1; nObject = OBJECTS [nObject].info.nNext) {
+	t = OBJECTS [nObject].info.nType;
 	if ((t == OBJ_WEAPON) || (t == OBJ_FIREBALL) || (t == OBJ_EXPLOSION) || (t == OBJ_EFFECT))
 		continue;
 	if (CheckPoke (nObject, SEG_IDX (segP), nSide) || CheckPoke (nObject, SEG_IDX (connSegP), nConnSide))
@@ -1172,7 +1172,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordWallHitProcess (SEG_IDX (segP), nSide, damage, nPlayer);
 
 if (wallP->nType == WALL_BLASTABLE) {
-	if (objP->cType.laserInfo.parentType == OBJ_PLAYER)
+	if (objP->cType.laserInfo.parent.nType == OBJ_PLAYER)
 		WallDamage (segP, nSide, damage);
 	return WHP_BLASTABLE;
 	}
@@ -1184,11 +1184,11 @@ Assert(nPlayer > -1);
 
 //	Determine whether tPlayer is moving forward.  If not, don't say negative
 //	messages because he probably didn't intentionally hit the door.
-if (objP->nType == OBJ_PLAYER)
-	bShowMessage = (vmsVector::Dot(objP->position.mOrient[FVEC], objP->mType.physInfo.velocity) > 0);
-else if (objP->nType == OBJ_ROBOT)
+if (objP->info.nType == OBJ_PLAYER)
+	bShowMessage = (vmsVector::Dot(objP->info.position.mOrient[FVEC], objP->mType.physInfo.velocity) > 0);
+else if (objP->info.nType == OBJ_ROBOT)
 	bShowMessage = 0;
-else if ((objP->nType == OBJ_WEAPON) && (objP->cType.laserInfo.parentType == OBJ_ROBOT))
+else if ((objP->info.nType == OBJ_WEAPON) && (objP->cType.laserInfo.parent.nType == OBJ_ROBOT))
 	bShowMessage = 0;
 else
 	bShowMessage = 1;
@@ -1491,7 +1491,7 @@ void AddStuckObject(tObject *objP, short nSegment, short nSide)
 			if (sto->nWall == -1) {
 				sto->nWall = nWall;
 				sto->nObject = OBJ_IDX (objP);
-				sto->nSignature = objP->nSignature;
+				sto->nSignature = objP->info.nSignature;
 				nStuckObjects++;
 				break;
 			}
@@ -1522,9 +1522,9 @@ nObject = gameData.app.nFrameCount % MAX_STUCK_OBJECTS;
 nWall = stuckObjects [nObject].nWall;
 if (IS_WALL (nWall)) {
 	if ((gameData.walls.walls [nWall].state != WALL_DOOR_CLOSED) ||
-		 (OBJECTS [stuckObjects [nObject].nObject].nSignature != stuckObjects [nObject].nSignature)) {
+		 (OBJECTS [stuckObjects [nObject].nObject].info.nSignature != stuckObjects [nObject].nSignature)) {
 		nStuckObjects--;
-		OBJECTS [stuckObjects [nObject].nObject].lifeleft = F1_0/8;
+		OBJECTS [stuckObjects [nObject].nObject].info.xLifeLeft = F1_0/8;
 		stuckObjects [nObject].nWall = -1;
 		}
 	}
@@ -1543,13 +1543,13 @@ nStuckObjects = 0;
 
 for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++)
 	if (stuckObjP->nWall == nWall) {
-		if (OBJECTS [stuckObjP->nObject].nType == OBJ_WEAPON)
-			OBJECTS [stuckObjP->nObject].lifeleft = F1_0/8;
+		if (OBJECTS [stuckObjP->nObject].info.nType == OBJ_WEAPON)
+			OBJECTS [stuckObjP->nObject].info.xLifeLeft = F1_0/8;
 		else {
 #if TRACE
 			con_printf (1,
 				"Warning: Stuck tObject of nType %i, expected to be of nType %i, see tWall.c\n",
-				OBJECTS [stuckObjects [i].nObject].nType, OBJ_WEAPON);
+				OBJECTS [stuckObjects [i].nObject].info.nType, OBJ_WEAPON);
 #endif
 			// Int3();	//	What?  This looks bad.  Object is not a weapon and it is stuck in a tWall!
 			stuckObjP->nWall = -1;
@@ -1580,8 +1580,8 @@ void ClearStuckObjects (void)
 for (int i = 0; i < MAX_STUCK_OBJECTS; i++) {
 	if (IS_WALL (stuckObjects [i].nWall)) {
 		nObject = stuckObjects [i].nObject;
-		if ((OBJECTS [nObject].nType == OBJ_WEAPON) && (OBJECTS [nObject].id == FLARE_ID))
-			OBJECTS [nObject].lifeleft = F1_0/8;
+		if ((OBJECTS [nObject].info.nType == OBJ_WEAPON) && (OBJECTS [nObject].info.nId == FLARE_ID))
+			OBJECTS [nObject].info.xLifeLeft = F1_0/8;
 		stuckObjects [i].nWall = -1;
 		nStuckObjects--;
 		}
@@ -1620,11 +1620,11 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 			if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
 			 	 ((ec == -1) && (gameData.pig.tex.pTMapInfo [tm].destroyed != -1))) {
 				COMPUTE_SIDE_CENTER(&pnt, segp, nSide);
-				dist = vmsVector::Dist(pnt, objP->position.vPos);
+				dist = vmsVector::Dist(pnt, objP->info.position.vPos);
 				if (dist < damage/2) {
-					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->position.vPos, objP->nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
+					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
 					if ((dist > 0) && (dist < damage/2))
-						CheckEffectBlowup(segp, nSide, &pnt, OBJECTS + objP->cType.laserInfo.nParentObj, 1);
+						CheckEffectBlowup(segp, nSide, &pnt, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);
 				}
 			}
 		}
@@ -1695,11 +1695,11 @@ void BlastNearbyGlass(tObject *objP, fix damage)
 	sbyte   visited [MAX_SEGMENTS_D2X];
 	tSegment	*cursegp;
 
-	cursegp = &gameData.segs.segments [objP->nSegment];
+	cursegp = &gameData.segs.segments [objP->info.nSegment];
 	for (i=0; i<=gameData.segs.nLastSegment; i++)
 		visited [i] = 0;
 
-	visited [objP->nSegment] = 1;
+	visited [objP->info.nSegment] = 1;
 	BngProcessSegment(objP, damage, cursegp, 0, visited);
 
 

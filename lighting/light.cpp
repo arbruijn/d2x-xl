@@ -42,7 +42,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int	nLightingFrameDelta = 1;
 int	lightingCache [LIGHTING_CACHE_SIZE];
 int	nCacheHits = 0, nCacheLookups = 1;
-extern vmsVector playerThrust;
 
 typedef struct {
   int    nTexture;
@@ -111,8 +110,8 @@ if (!gameStates.render.bClusterLights)
 	int		i;
 
 for (i = gameData.objs.nLastObject [0] + 1; i; i--, objP++)
-	if ((objP->nType == OBJ_LIGHT) && (objP->id == CLUSTER_LIGHT_ID)) {
-		objP->lifeleft = 0;
+	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
+		objP->info.xLifeLeft = 0;
 		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
 		}
 }
@@ -128,16 +127,16 @@ if (!gameStates.render.bClusterLights)
 	int		h, i;
 
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
-	if ((objP->nType == OBJ_LIGHT) && (objP->id == CLUSTER_LIGHT_ID))	{
+	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID))	{
 		if (!(h = objP->cType.lightInfo.nObjects)) {
 			RemoveDynLight (-1, -1, i);
 			KillObject (objP);
 			}
 		else {
 			if (h > 1) {
-				objP->position.vPos[X] /= h;
-				objP->position.vPos[Y] /= h;
-				objP->position.vPos[Z] /= h;
+				objP->info.position.vPos[X] /= h;
+				objP->info.position.vPos[Y] /= h;
+				objP->info.position.vPos[Z] /= h;
 #if 1
 				objP->cType.lightInfo.color.red /= h;
 				objP->cType.lightInfo.color.green /= h;
@@ -146,10 +145,10 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 #endif
 				}
 			if (1 || (objP->cType.lightInfo.nSegment < 0)) {
-				short nSegment = FindSegByPos (objP->position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
+				short nSegment = FindSegByPos (objP->info.position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
 				objP->cType.lightInfo.nSegment = (nSegment < 0) ? abs (objP->cType.lightInfo.nSegment) : nSegment;
 				}
-			if (objP->nSegment != objP->cType.lightInfo.nSegment)
+			if (objP->info.nSegment != objP->cType.lightInfo.nSegment)
 				RelinkObject (i, objP->cType.lightInfo.nSegment);
 			AddDynLight (NULL, &objP->cType.lightInfo.color, objP->cType.lightInfo.intensity, -1, -1, i, -1, NULL);
 			}
@@ -173,21 +172,21 @@ if (nDbgObj == nLightObj)
 	nDbgObj = nDbgObj;
 #endif
 tObject *lightObjP = OBJECTS + nLightObj;
-if (lightObjP->nSignature != gameData.objs.lightObjs [nObject].nSignature) {
+if (lightObjP->info.nSignature != gameData.objs.lightObjs [nObject].nSignature) {
 	gameData.objs.lightObjs [nObject].nObject = -1;
 	return 0;
 	}
 tObject *objP = OBJECTS + nObject;
-if (lightObjP->lifeleft < objP->lifeleft)
-	lightObjP->lifeleft = objP->lifeleft;
+if (lightObjP->info.xLifeLeft < objP->info.xLifeLeft)
+	lightObjP->info.xLifeLeft = objP->info.xLifeLeft;
 if (!lightObjP->cType.lightInfo.nObjects++) {
-	lightObjP->position.vPos = objP->position.vPos;
-	lightObjP->cType.lightInfo.nSegment = objP->nSegment;
+	lightObjP->info.position.vPos = objP->info.position.vPos;
+	lightObjP->cType.lightInfo.nSegment = objP->info.nSegment;
 	}
 else {
-	lightObjP->position.vPos += objP->position.vPos;
-	if (lightObjP->cType.lightInfo.nSegment != objP->nSegment)
-		lightObjP->cType.lightInfo.nSegment = -lightObjP->nSegment;
+	lightObjP->info.position.vPos += objP->info.position.vPos;
+	if (lightObjP->cType.lightInfo.nSegment != objP->info.nSegment)
+		lightObjP->cType.lightInfo.nSegment = -lightObjP->info.nSegment;
 	}
 lightObjP->cType.lightInfo.intensity += xObjIntensity;
 if (color) {
@@ -314,12 +313,12 @@ else {
 
 bool SkipPowerup (tObject *objP)
 {
-if (objP->nType != OBJ_POWERUP)
+if (objP->info.nType != OBJ_POWERUP)
 	return false;
 if (!EGI_FLAG (bPowerupLights, 0, 0, 0))
 	return true;
 if (gameStates.render.bPerPixelLighting == 2) {
-	int id = objP->id;
+	int id = objP->info.nId;
 	if ((id != POW_EXTRA_LIFE) && (id != POW_ENERGY) && (id != POW_SHIELD_BOOST) &&
 		 (id != POW_HOARD_ORB) && (id != POW_MONSTERBALL) && (id != POW_INVUL)) {
 		return true;
@@ -346,18 +345,18 @@ void ApplyLight (
 	vmsVector	*vVertPos;
 	fix			dist, xOrigIntensity = xObjIntensity;
 	tObject		*lightObjP, *objP = (nObject < 0) ? NULL : OBJECTS + nObject;
-	tPlayer		*playerP = objP ? gameData.multiplayer.players + objP->id : NULL;
+	tPlayer		*playerP = objP ? gameData.multiplayer.players + objP->info.nId : NULL;
 
 if (objP && SHOW_DYN_LIGHT) {
-	if (objP->nType == OBJ_PLAYER) {
+	if (objP->info.nType == OBJ_PLAYER) {
 		if (EGI_FLAG (headlight.bAvailable, 0, 0, 0)) {
-			if (!HeadlightIsOn (objP->id))
+			if (!HeadlightIsOn (objP->info.nId))
 				RemoveOglHeadlight (objP);
-			else if (gameData.render.lights.dynamic.nHeadlights [objP->id] < 0)
-				gameData.render.lights.dynamic.nHeadlights [objP->id] = AddOglHeadlight (objP);
+			else if (gameData.render.lights.dynamic.nHeadlights [objP->info.nId] < 0)
+				gameData.render.lights.dynamic.nHeadlights [objP->info.nId] = AddOglHeadlight (objP);
 			}
 		else {
-			if (HeadlightIsOn (objP->id)) {
+			if (HeadlightIsOn (objP->info.nId)) {
 				playerP->flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 				HUDInitMessage (TXT_NO_HEADLIGHTS);
 				}
@@ -366,12 +365,12 @@ if (objP && SHOW_DYN_LIGHT) {
 			return;
 		xObjIntensity /= 4;
 		}
-	else if (objP->nType == OBJ_POWERUP) {
+	else if (objP->info.nType == OBJ_POWERUP) {
 		xObjIntensity /= 4;
 		}
-	else if (objP->nType == OBJ_ROBOT)
+	else if (objP->info.nType == OBJ_ROBOT)
 		xObjIntensity /= 4;
-	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
+	else if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
 		xObjIntensity /= 2;
 		}
 #if DBG
@@ -390,16 +389,16 @@ if (xObjIntensity) {
 	fix	obji_64 = xObjIntensity * 64;
 
 	if (gameData.render.vertColor.bDarkness) {
-		if (objP->nType == OBJ_PLAYER)
+		if (objP->info.nType == OBJ_PLAYER)
 			xObjIntensity = 0;
 		}
-	if (objP && (objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0))
+	if (objP && (objP->info.nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0))
 		return;
 	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
-	bForceColor = objP && ((objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION));
+	bForceColor = objP && ((objP->info.nType == OBJ_WEAPON) || (objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION));
 	// for pretty dim sources, only process vertices in tObject's own tSegment.
 	//	12/04/95, MK, markers only cast light in own tSegment.
-	if (objP && ((abs (obji_64) <= F1_0 * 8) || (objP->nType == OBJ_MARKER))) {
+	if (objP && ((abs (obji_64) <= F1_0 * 8) || (objP->info.nType == OBJ_MARKER))) {
 		short *vp = gameData.segs.segments [nObjSeg].verts;
 		for (iVertex = 0; iVertex < MAX_VERTICES_PER_SEGMENT; iVertex++) {
 			nVertex = vp [iVertex];
@@ -423,20 +422,20 @@ if (xObjIntensity) {
 	else {
 		int	headlightShift = 0;
 		fix	maxHeadlightDist = F1_0 * 200;
-		if (objP && (objP->nType == OBJ_PLAYER))
-			if ((gameStates.render.bHeadlightOn = HeadlightIsOn (objP->id))) {
+		if (objP && (objP->info.nType == OBJ_PLAYER))
+			if ((gameStates.render.bHeadlightOn = HeadlightIsOn (objP->info.nId))) {
 				headlightShift = 3;
 				if (color) {
 					bUseColor = bForceColor = 1;
 					color->red = color->green = color->blue = 1.0;
 					}
-				if (objP->id != gameData.multiplayer.nLocalPlayer) {
+				if (objP->info.nId != gameData.multiplayer.nLocalPlayer) {
 					vmsVector	tvec;
 					tFVIQuery	fq;
 					tFVIData		hit_data;
 					int			fate;
-					tvec = *vObjPos + objP->position.mOrient[FVEC] * F1_0*200;
-					fq.startSeg			= objP->nSegment;
+					tvec = *vObjPos + objP->info.position.mOrient[FVEC] * F1_0*200;
+					fq.startSeg			= objP->info.nSegment;
 					fq.p0					= vObjPos;
 					fq.p1					= &tvec;
 					fq.radP0				=
@@ -483,7 +482,7 @@ if (xObjIntensity) {
 							vmsVector	vecToPoint;
 							vecToPoint = *vVertPos - *vObjPos;
 							vmsVector::Normalize(vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = vmsVector::Dot(vecToPoint, objP->position.mOrient[FVEC]);
+							dot = vmsVector::Dot(vecToPoint, objP->info.position.mOrient[FVEC]);
 							if (gameData.render.vertColor.bDarkness)
 								maxDot = F1_0 / spotSize;
 							else
@@ -536,7 +535,7 @@ fix	objLightXlat [16] =
 fix ComputeLightIntensity (int nObject, tRgbaColorf *colorP, char *pbGotColor)
 {
 	tObject		*objP = OBJECTS + nObject;
-	int			nObjType = objP->nType;
+	int			nObjType = objP->info.nType;
    fix			hoardlight, s;
 	static tRgbaColorf powerupColors [9] = {
 		{0,1,0,1},{1,0.8f,0,1},{0,0,1,1},{1,1,1,1},{0,0,1,1},{1,0,0,1},{1,0.8f,0,1},{0,1,0,1},{1,0.8f,0,1}
@@ -550,16 +549,16 @@ colorP->blue = 1.0;
 switch (nObjType) {
 	case OBJ_PLAYER:
 		*pbGotColor = 1;
-		 if (HeadlightIsOn (objP->id)) {
+		 if (HeadlightIsOn (objP->info.nId)) {
 			if (nHeadlights < MAX_HEADLIGHTS)
 				Headlights [nHeadlights++] = objP;
 			return HEADLIGHT_SCALE;
 			}
-		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->id].secondaryAmmo [PROXMINE_INDEX]) {
+		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->info.nId].secondaryAmmo [PROXMINE_INDEX]) {
 
 		// If hoard game and tPlayer, add extra light based on how many orbs you have
 		// Pulse as well.
-		  	hoardlight = I2X (gameData.multiplayer.players [objP->id].secondaryAmmo [PROXMINE_INDEX])/2; //I2X (12);
+		  	hoardlight = I2X (gameData.multiplayer.players [objP->info.nId].secondaryAmmo [PROXMINE_INDEX])/2; //I2X (12);
 			hoardlight++;
 		   FixSinCos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
 			s+=F1_0;
@@ -567,8 +566,8 @@ switch (nObjType) {
 			hoardlight = FixMul (s,hoardlight);
 		   return (hoardlight);
 		  }
-		else if (objP->id == gameData.multiplayer.nLocalPlayer) {
-			return max (playerThrust.Mag()/4, F1_0*2) + F1_0/2;
+		else if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
+			return max (gameData.physics.playerThrust.Mag()/4, F1_0*2) + F1_0/2;
 			}
 		else {
 			return max (objP->mType.physInfo.thrust.Mag()/4, F1_0*2) + F1_0/2;
@@ -577,12 +576,12 @@ switch (nObjType) {
 
 	case OBJ_FIREBALL:
 	case OBJ_EXPLOSION:
-		if (objP->id == 0xff)
+		if (objP->info.nId == 0xff)
 			return 0;
-		if ((objP->renderType == RT_THRUSTER) || (objP->renderType == RT_EXPLBLAST) || (objP->renderType == RT_SHRAPNELS))
+		if ((objP->info.renderType == RT_THRUSTER) || (objP->info.renderType == RT_EXPLBLAST) || (objP->info.renderType == RT_SHRAPNELS))
 			return 0;
 		else {
-			tVideoClip *vcP = gameData.eff.vClips [0] + objP->id;
+			tVideoClip *vcP = gameData.eff.vClips [0] + objP->info.nId;
 			fix xLight = vcP->lightValue;
 			int i, j;
 			grsBitmap *bmP;
@@ -614,7 +613,7 @@ switch (nObjType) {
 					}
 				}
 #if 0
-			if (objP->renderType != RT_THRUSTER)
+			if (objP->info.renderType != RT_THRUSTER)
 				xLight /= 8;
 #endif
 			float maxColor = colorP->red;
@@ -627,9 +626,9 @@ switch (nObjType) {
 				colorP->green /= maxColor;
 				colorP->blue /= maxColor;
 				}
-			if (objP->lifeleft < F1_0*4)
-				return FixMul (FixDiv (objP->lifeleft,
-								   gameData.eff.vClips [0][objP->id].xTotalTime), xLight);
+			if (objP->info.xLifeLeft < F1_0*4)
+				return FixMul (FixDiv (objP->info.xLifeLeft,
+								   gameData.eff.vClips [0][objP->info.nId].xTotalTime), xLight);
 			else
 				return xLight;
 			}
@@ -638,36 +637,36 @@ switch (nObjType) {
 	case OBJ_ROBOT:
 		*pbGotColor = 1;
 #if 0//def _DEBUG
-		return ROBOTINFO (objP->id).lighting;
+		return ROBOTINFO (objP->info.nId).lighting;
 #else
-		return ROBOTINFO (objP->id).lightcast ? ROBOTINFO (objP->id).lighting ? ROBOTINFO (objP->id).lighting : F1_0 : 0;
+		return ROBOTINFO (objP->info.nId).lightcast ? ROBOTINFO (objP->info.nId).lighting ? ROBOTINFO (objP->info.nId).lighting : F1_0 : 0;
 #endif
 		break;
 
 	case OBJ_WEAPON: {
-		fix tval = gameData.weapons.info [objP->id].light;
-		if (gameData.objs.bIsMissile [objP->id])
+		fix tval = gameData.weapons.info [objP->info.nId].light;
+		if (gameData.objs.bIsMissile [objP->info.nId])
 			*colorP = missileColor;
 		else if (gameOpts->render.color.bGunLight)
-			*colorP = gameData.weapons.color [objP->id];
+			*colorP = gameData.weapons.color [objP->info.nId];
 		*pbGotColor = 1;
 		if (IsMultiGame)
-			if (objP->id == OMEGA_ID)
+			if (objP->info.nId == OMEGA_ID)
 				if (d_rand () > 8192)
 					return 0;		//	3/4 of time, omega blobs will cast 0 light!
-		if (objP->id == FLARE_ID) {
-			return 2 * (min (tval, objP->lifeleft) + ((gameData.time.xGame ^ objLightXlat [nObject & 0x0f]) & 0x3fff));
+		if (objP->info.nId == FLARE_ID) {
+			return 2 * (min (tval, objP->info.xLifeLeft) + ((gameData.time.xGame ^ objLightXlat [nObject & 0x0f]) & 0x3fff));
 			}
 		else
 			return tval;
 		}
 
 	case OBJ_MARKER: {
-		fix	lightval = objP->lifeleft;
+		fix	lightval = objP->info.xLifeLeft;
 		lightval &= 0xffff;
 		lightval = 8 * abs (F1_0/2 - lightval);
-		if (objP->lifeleft < F1_0*1000)
-			objP->lifeleft += F1_0;	//	Make sure this tObject doesn't go out.
+		if (objP->info.xLifeLeft < F1_0*1000)
+			objP->info.xLifeLeft += F1_0;	//	Make sure this tObject doesn't go out.
 		colorP->red = 0.1f;
 		colorP->green = 1.0f;
 		colorP->blue = 0.1f;
@@ -676,10 +675,10 @@ switch (nObjType) {
 		}
 
 	case OBJ_POWERUP:
-		if (objP->id < 9)
-			*colorP = powerupColors [objP->id];
+		if (objP->info.nId < 9)
+			*colorP = powerupColors [objP->info.nId];
 		*pbGotColor = 1;
-		return gameData.objs.pwrUp.info [objP->id].light;
+		return gameData.objs.pwrUp.info [objP->info.nId].light;
 		break;
 
 	case OBJ_DEBRIS:
@@ -770,16 +769,16 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.nLightingMethod) {
 //	one or two segments if we notice light changing as OBJECTS go offscreen.  I couldn't see any
 //	serious visual degradation.  In fact, I could see no humorous degradation, either. --MK
 for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObject++, objP++) {
-	if (objP->nType == OBJ_NONE)
+	if (objP->info.nType == OBJ_NONE)
 		continue;
 	if (SkipPowerup (objP))
 		continue;
-	objPos = &objP->position.vPos;
+	objPos = &objP->info.position.vPos;
 	xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);
 	if (bGotColor)
 		bKeepDynColoring = 1;
 	if (xObjIntensity) {
-		ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, OBJ_IDX (objP), bGotColor ? &color : NULL);
+		ApplyLight (xObjIntensity, objP->info.nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, OBJ_IDX (objP), bGotColor ? &color : NULL);
 		gameData.render.lights.newObjects [nObject] = 1;
 		}
 	}
@@ -795,12 +794,12 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 		else {
 			//	Lit last frame, but not this frame.  Get intensity...
 			objP = OBJECTS + nObject;
-			objPos = &objP->position.vPos;
+			objPos = &objP->info.position.vPos;
 			xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);
 			if (bGotColor)
 				bKeepDynColoring = 1;
 			if (xObjIntensity) {
-				ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, nObject,
+				ApplyLight (xObjIntensity, objP->info.nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, nObject,
 								bGotColor ? &color : NULL);
 				gameData.render.lights.objects [nObject] = 1;
 				}
@@ -861,14 +860,14 @@ fix ComputeObjectLight (tObject *objP, vmsVector *vRotated)
 		return 0;
 	//First, get static light for this tSegment
 if (gameOpts->render.nLightingMethod && !((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
-	gameData.objs.color = *AvgSgmColor (objP->nSegment, &objP->position.vPos);
+	gameData.objs.color = *AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
 	light = F1_0;
 	}
 else
-	light = gameData.segs.segment2s [objP->nSegment].xAvgSegLight;
+	light = gameData.segs.segment2s [objP->info.nSegment].xAvgSegLight;
 //return light;
 //Now, maybe return different value to smooth transitions
-if (!bResetLightingHack && (gameData.objs.nLightSig [nObject] == objP->nSignature)) {
+if (!bResetLightingHack && (gameData.objs.nLightSig [nObject] == objP->info.nSignature)) {
 	fix xDeltaLight, xFrameDelta;
 	xDeltaLight = light - gameData.objs.xLight [nObject];
 	xFrameDelta = FixMul (LIGHT_RATE, gameData.time.xFrame);
@@ -881,14 +880,14 @@ if (!bResetLightingHack && (gameData.objs.nLightSig [nObject] == objP->nSignatur
 			light = gameData.objs.xLight [nObject] += xFrameDelta;
 	}
 else {		//new tObject, initialize
-	gameData.objs.nLightSig [nObject] = objP->nSignature;
+	gameData.objs.nLightSig [nObject] = objP->info.nSignature;
 	gameData.objs.xLight [nObject] = light;
 	}
 //Next, add in headlight on this tObject
 // -- Matt code: light += ComputeHeadlight (vRotated,f1_0);
 light += ComputeHeadlightLightOnObject (objP);
 //Finally, add in dynamic light for this tSegment
-light += ComputeSegDynamicLight (objP->nSegment);
+light += ComputeSegDynamicLight (objP->info.nSegment);
 return light;
 }
 
@@ -897,8 +896,8 @@ return light;
 void ComputeEngineGlow (tObject *objP, fix *xEngineGlowValue)
 {
 xEngineGlowValue [0] = f1_0/5;
-if (objP->movementType == MT_PHYSICS) {
-	if ((objP->nType == OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->id == gameData.multiplayer.nLocalPlayer)) {
+if (objP->info.movementType == MT_PHYSICS) {
+	if ((objP->info.nType == OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->info.nId == gameData.multiplayer.nLocalPlayer)) {
 		fix thrust_mag = objP->mType.physInfo.thrust.Mag();
 		xEngineGlowValue [0] += (FixDiv (thrust_mag,gameData.pig.ship.player->maxThrust)*4)/5;
 	}
@@ -908,9 +907,9 @@ if (objP->movementType == MT_PHYSICS) {
 		}
 	}
 //set value for tPlayer headlight
-if (objP->nType == OBJ_PLAYER) {
-	if (PlayerHasHeadlight (objP->id) &&  !gameStates.app.bEndLevelSequence)
-		xEngineGlowValue [1] = HeadlightIsOn (objP->id) ? -2 : -1;
+if (objP->info.nType == OBJ_PLAYER) {
+	if (PlayerHasHeadlight (objP->info.nId) &&  !gameStates.app.bEndLevelSequence)
+		xEngineGlowValue [1] = HeadlightIsOn (objP->info.nId) ? -2 : -1;
 	else
 		xEngineGlowValue [1] = -3;			//don't draw
 	}

@@ -139,7 +139,7 @@ void SetDynLightPos (short nObject)
 if (SHOW_DYN_LIGHT) {
 	int	nLight = gameData.render.lights.dynamic.owners [nObject];
 	if (nLight >= 0)
-		gameData.render.lights.dynamic.lights [nLight].info.vPos = OBJECTS [nObject].position.vPos;
+		gameData.render.lights.dynamic.lights [nLight].info.vPos = OBJECTS [nObject].info.position.vPos;
 	}
 }
 
@@ -172,7 +172,7 @@ if (nLight >= 0) {
 	if (!pc)
 		pc = &pl->info.color;
 	if (nObject >= 0)
-		pl->info.vPos = OBJECTS [nObject].position.vPos;
+		pl->info.vPos = OBJECTS [nObject].info.position.vPos;
 	if ((pl->info.fBrightness != fBrightness) ||
 		 (pl->info.color.red != pc->red) || (pl->info.color.green != pc->green) || (pl->info.color.blue != pc->blue)) {
 		SetDynLightColor (nLight, pc->red, pc->green, pc->blue, fBrightness);
@@ -424,24 +424,24 @@ pl->info.bPowerup = 0;
 //3: headlight
 if (nObject >= 0) {
 	tObject *objP = OBJECTS + nObject;
-	//HUDMessage (0, "Adding object light %d, type %d", gameData.render.lights.dynamic.nLights, objP->nType);
+	//HUDMessage (0, "Adding object light %d, type %d", gameData.render.lights.dynamic.nLights, objP->info.nType);
 	pl->info.nType = 2;
-	if (objP->nType == OBJ_POWERUP) {
-		int id = objP->id;
+	if (objP->info.nType == OBJ_POWERUP) {
+		int id = objP->info.nId;
 		if ((id == POW_EXTRA_LIFE) || (id == POW_ENERGY) || (id == POW_SHIELD_BOOST) ||
 			 (id == POW_HOARD_ORB) || (id == POW_MONSTERBALL) || (id == POW_INVUL))
 			pl->info.bPowerup = 1;
 		else
 			pl->info.bPowerup = 2;
 		}
-	pl->info.vPos = objP->position.vPos;
+	pl->info.vPos = objP->info.position.vPos;
 	pl->info.fRad = 0; //X2F (OBJECTS [nObject].size) / 2;
 	if (fBrightness > 1) {
-		if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
+		if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
 			pl->info.fBoost = 1;
 			pl->info.fRad = fBrightness;
 			}
-		else if ((objP->nType == OBJ_WEAPON) && (objP->id == FLARE_ID)) {
+		else if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID)) {
 			pl->info.fBoost = 1;
 			pl->info.fRad = 2 * fBrightness;
 			}
@@ -1203,7 +1203,7 @@ if (gameOpts->render.nLightingMethod) {
 			if (psl->info.nObject >= 0)
 				nDbgObj = nDbgObj;
 #endif
-			nLightSeg = (psl->info.nSegment < 0) ? (psl->info.nObject < 0) ? -1 : OBJECTS [psl->info.nObject].nSegment : psl->info.nSegment;
+			nLightSeg = (psl->info.nSegment < 0) ? (psl->info.nObject < 0) ? -1 : OBJECTS [psl->info.nObject].info.nSegment : psl->info.nSegment;
 			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment))
 				continue;
 			}

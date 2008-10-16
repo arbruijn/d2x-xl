@@ -209,9 +209,9 @@ for (i = 0; i < pmP->nModels; i++)
 		}
 if (!mdP->nSubmodelsActive) {			//done morphing!
 	tObject *objP = mdP->objP;
-	objP->controlType = mdP->saveControlType;
-	objP->movementType = mdP->saveMovementType;
-	objP->renderType = RT_POLYOBJ;
+	objP->info.controlType = mdP->saveControlType;
+	objP->info.movementType = mdP->saveMovementType;
+	objP->info.renderType = RT_POLYOBJ;
 	objP->mType.physInfo = mdP->savePhysInfo;
 	mdP->objP = NULL;
 	}
@@ -242,23 +242,23 @@ void MorphStart (tObject *objP)
 
 for (i=0;i<MAX_MORPH_OBJECTS;i++, mdP++)
 	if (mdP->objP == NULL ||
-			mdP->objP->nType==OBJ_NONE  ||
-			mdP->objP->nSignature!=mdP->nSignature)
+			mdP->objP->info.nType==OBJ_NONE  ||
+			mdP->objP->info.nSignature!=mdP->nSignature)
 		break;
 
 if (i==MAX_MORPH_OBJECTS)		//no D2_FREE slots
 	return;
 
-Assert (objP->renderType == RT_POLYOBJ);
+Assert (objP->info.renderType == RT_POLYOBJ);
 mdP->objP = objP;
-mdP->nSignature = objP->nSignature;
-mdP->saveControlType = objP->controlType;
-mdP->saveMovementType = objP->movementType;
+mdP->nSignature = objP->info.nSignature;
+mdP->saveControlType = objP->info.controlType;
+mdP->saveMovementType = objP->info.movementType;
 mdP->savePhysInfo = objP->mType.physInfo;
-Assert (objP->controlType == CT_AI);		//morph OBJECTS are also AI gameData.objPs.objPects
-objP->controlType = CT_MORPH;
-objP->renderType = RT_MORPH;
-objP->movementType = MT_PHYSICS;		//RT_NONE;
+Assert (objP->info.controlType == CT_AI);		//morph OBJECTS are also AI gameData.objPs.objPects
+objP->info.controlType = CT_MORPH;
+objP->info.renderType = RT_MORPH;
+objP->info.movementType = MT_PHYSICS;		//RT_NONE;
 objP->mType.physInfo.rotVel = morph_rotvel;
 pmP = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 G3CheckAndSwap (pmP->modelData);
@@ -357,7 +357,7 @@ Assert (mdP != NULL);
 Assert (objP->rType.polyObjInfo.nModel < gameData.models.nPolyModels);
 pmP = gameData.models.polyModels+objP->rType.polyObjInfo.nModel;
 light = ComputeObjectLight (objP, NULL);
-G3StartInstanceMatrix(objP->position.vPos, objP->position.mOrient);
+G3StartInstanceMatrix(objP->info.position.vPos, objP->info.position.mOrient);
 G3SetModelPoints (gameData.models.polyModelPoints);
 gameData.render.pVerts = gameData.models.fPolyModelVerts;
 MorphDrawModel (pmP, 0, objP->rType.polyObjInfo.animAngles, light, mdP, objP->rType.polyObjInfo.nModel);

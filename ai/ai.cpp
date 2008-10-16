@@ -40,8 +40,8 @@ void AIDoCloakStuff (void)
 	int i;
 
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++) {
-	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.console)->vPos;
-	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.console);
+	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.consoleP)->vPos;
+	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.consoleP);
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
 	}
 // Make work for control centers.
@@ -59,11 +59,11 @@ if (nType >= PA_WEAPON_WALL_COLLISION)
 
 if (gameData.ai.nAwarenessEvents < MAX_AWARENESS_EVENTS) {
 	if ((nType == PA_WEAPON_WALL_COLLISION) || (nType == PA_WEAPON_ROBOT_COLLISION))
-		if (objP->id == VULCAN_ID)
+		if (objP->info.nId == VULCAN_ID)
 			if (d_rand () > 3276)
 				return 0;       // For vulcan cannon, only about 1/10 actually cause awareness
-	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nSegment = objP->nSegment;
-	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].pos = objP->position.vPos;
+	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nSegment = objP->info.nSegment;
+	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].pos = objP->info.position.vPos;
 	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nType = nType;
 	gameData.ai.nAwarenessEvents++;
 	} 
@@ -132,8 +132,8 @@ void SetPlayerAwarenessAll (void)
 
 ProcessAwarenessEvents ();
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-	if (OBJECTS [i].controlType == CT_AI) {
-		nSegment = OBJECTS [i].nSegment;
+	if (OBJECTS [i].info.controlType == CT_AI) {
+		nSegment = OBJECTS [i].info.nSegment;
 		if (newAwareness [nSegment] > gameData.ai.localInfo [i].playerAwarenessType) {
 			gameData.ai.localInfo [i].playerAwarenessType = newAwareness [nSegment];
 			gameData.ai.localInfo [i].playerAwarenessTime = PLAYER_AWARENESS_INITIAL_TIME;
@@ -157,10 +157,10 @@ if (USE_D1_AI)
 	return;
 if (gameData.ai.nLastMissileCamera != -1) {
 	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
-	if (((gameData.app.nFrameCount & 0x0f) == 0) || (OBJECTS [gameData.ai.nLastMissileCamera].nType != OBJ_WEAPON)) {
+	if (((gameData.app.nFrameCount & 0x0f) == 0) || (OBJECTS [gameData.ai.nLastMissileCamera].info.nType != OBJ_WEAPON)) {
 		gameData.ai.nLastMissileCamera = -1;
 		for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-			if (OBJECTS [i].nType == OBJ_ROBOT)
+			if (OBJECTS [i].info.nType == OBJ_ROBOT)
 				OBJECTS [i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
 	}
@@ -171,7 +171,7 @@ for (h = BOSS_COUNT, j = 0; j < h; j++)
 		else {
 			tObject *objP = OBJECTS;
 			for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
-				if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag)
+				if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).bossFlag)
 					DoBossDyingFrame (objP);
 		}
 	}

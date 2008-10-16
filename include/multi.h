@@ -143,6 +143,7 @@ void ResetNetworkObjects ();
 void MultiInitObjects (void);
 void MultiShowPlayerList (void);
 void MultiDoFrame (void);
+void MultiCapObjects (void);
 
 void MultiSendPlayerWeapons (int nPlayer);
 void MultiSendFlags (char);
@@ -235,7 +236,7 @@ extern void MultiAddLifetimeKills (void);
 
 extern void MultiSendTeleport (char pnum, short nSegment, char nSide);
 
-extern int control_invulTime;
+extern int controlInvulTime;
 
 #define N_PLAYER_SHIP_TEXTURES 6
 
@@ -393,20 +394,20 @@ typedef struct tNetgameInfo {
 	short DoFlash:1;
 #endif
 
-	char    team_name[2][CALLSIGN_LEN+1];		// 18 bytes
-	int     locations[MAX_PLAYERS];				// 32 bytes
-	short   kills[MAX_PLAYERS][MAX_PLAYERS];	// 128 bytes
+	char    szTeamName [2][CALLSIGN_LEN+1];		// 18 bytes
+	int     locations [MAX_PLAYERS];				// 32 bytes
+	short   kills [MAX_PLAYERS][MAX_PLAYERS];	// 128 bytes
 	ushort  nSegmentCheckSum;						// 2 bytes
-	short   teamKills[2];							// 4 bytes
-	short   killed[MAX_PLAYERS];					// 16 bytes
-	short   playerKills[MAX_PLAYERS];			// 16 bytes
+	short   teamKills [2];							// 4 bytes
+	short   killed [MAX_PLAYERS];					// 16 bytes
+	short   playerKills [MAX_PLAYERS];			// 16 bytes
 	int     KillGoal;									// 4 bytes
 	fix     xPlayTimeAllowed;						// 4 bytes
 	fix     xLevelTime;								// 4 bytes
-	int     control_invulTime;						// 4 bytes
-	int     monitor_vector;							// 4 bytes
-	int     player_score[MAX_PLAYERS];			// 32 bytes
-	ubyte   playerFlags[MAX_PLAYERS];			// 8 bytes
+	int     controlInvulTime;						// 4 bytes
+	int     monitorVector;							// 4 bytes
+	int     playerScore [MAX_PLAYERS];			// 32 bytes
+	ubyte   playerFlags [MAX_PLAYERS];			// 8 bytes
 	short   nPacketsPerSec;							// 2 bytes
 	ubyte   bShortPackets;							// 1 bytes
 // 279 bytes

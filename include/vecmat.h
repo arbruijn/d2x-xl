@@ -81,6 +81,8 @@ class fVector3 {
 		const float SqrMag () const;
 
 		const fVector3 operator- () const;
+		const bool operator== (const fVector3& vec);
+		const bool operator!= (const fVector3& vec);
 		const fVector3& operator+= (const fVector3& vec);
 		const fVector3& operator-= (const fVector3& vec);
 		const fVector3& operator*= (const float s);
@@ -180,6 +182,14 @@ inline const float fVector3::Mag () const {
 	return (const float) sqrt (SqrMag ());
 }
 
+inline const bool fVector3::operator== (const fVector3& vec) {
+	return v [0] == vec [0] && v [1] == vec [1] && v [2] == vec [2];
+}
+
+inline const bool fVector3::operator!= (const fVector3& vec) {
+	return v [0] != vec [0] || v [1] != vec [1] || v [2] != vec [2];
+}
+
 inline const fVector3 fVector3::operator- () const {
 	return Create (-v [X], -v [Y], -v [Z]);
 }
@@ -270,6 +280,8 @@ class fVector {
 		fVector3* V3 ();
 
 		const fVector operator- () const;
+		const bool operator== (const fVector& vec);
+		const bool operator!= (const fVector& vec);
 		const fVector& operator+= (const fVector& vec);
 		const fVector& operator-= (const fVector& vec);
 		const fVector& operator*= (const float s);
@@ -374,6 +386,14 @@ inline fVector3* fVector::V3 () { return reinterpret_cast<fVector3*> (v); }
 
 inline const fVector fVector::operator- () const {
 	return Create (-v [X], -v [Y], -v [Z]);
+}
+
+inline const bool fVector::operator== (const fVector& vec) {
+	return v [0] == vec [0] && v [1] == vec [1] && v [2] == vec [2];
+}
+
+inline const bool fVector::operator!= (const fVector& vec) {
+	return v [0] != vec [0] || v [1] != vec [1] || v [2] != vec [2];
 }
 
 inline const fVector& fVector::operator+= (const fVector& vec) {
@@ -503,6 +523,8 @@ class vmsVector {
 		fix Mag () const;
 		vmsVector& Neg ();
 		const vmsVector operator- () const;
+		const bool operator== (const vmsVector& vec);
+		const bool operator!= (const vmsVector& vec);
 		const vmsVector& operator+= (const vmsVector& vec);
 		const vmsVector& operator-= (const vmsVector& vec);
 		const vmsVector& operator*= (const fix s);
@@ -734,6 +756,14 @@ inline vmsVector& vmsVector::Neg () { v [0] = -v [0], v [1] = -v [1], v [2] = -v
 
 inline const vmsVector vmsVector::operator- () const {
 	return Create (-v [X], -v [Y], -v [Z]);
+}
+
+inline const bool vmsVector::operator== (const vmsVector& vec) {
+	return v [0] == vec [0] && v [1] == vec [1] && v [2] == vec [2];
+}
+
+inline const bool vmsVector::operator!= (const vmsVector& vec) {
+	return v [0] != vec [0] || v [1] != vec [1] || v [2] != vec [2];
 }
 
 inline const vmsVector& vmsVector::operator+= (const vmsVector& vec) {

@@ -283,7 +283,7 @@ int RIAddObject (tObject *objP)
 	tRIObject	item;
 	vmsVector	vPos;
 
-if (objP->nType == 255)
+if (objP->info.nType == 255)
 	return 0;
 item.objP = objP;
 G3TransformPoint(vPos, OBJPOS (objP)->vPos, 0);
@@ -498,7 +498,7 @@ item.color.green = green;
 item.color.blue = blue;
 item.color.alpha = alpha;
 item.objP = objP;
-G3TransformPoint(vPos, objP->position.vPos, 0);
+G3TransformPoint(vPos, objP->info.position.vPos, 0);
 return AddRenderItem (riSphere, &item, sizeof (item), vPos[Z], vPos[Z]);
 }
 
@@ -1293,12 +1293,12 @@ void RIRenderBullet (tParticle *pParticle)
 	tObject	o;
 
 memset (&o, 0, sizeof (o));
-o.nType = OBJ_POWERUP;
-o.position.vPos = pParticle->pos;
-o.position.mOrient = pParticle->orient;
-if (0 <= (o.nSegment = FindSegByPos (o.position.vPos, pParticle->nSegment, 0, 0))) {
+o.info.nType = OBJ_POWERUP;
+o.info.position.vPos = pParticle->pos;
+o.info.position.mOrient = pParticle->orient;
+if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->nSegment, 0, 0))) {
 	gameData.render.lights.dynamic.shader.index [0][0].nActive = 0;
-	o.renderType = RT_POLYOBJ;
+	o.info.renderType = RT_POLYOBJ;
 	o.rType.polyObjInfo.nModel = BULLET_MODEL;
 	o.rType.polyObjInfo.nTexOverride = -1;
 	DrawPolygonObject (&o, 0, 1);

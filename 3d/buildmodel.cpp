@@ -316,11 +316,11 @@ return 0;
 	fVector3			vOffsetf;
 	tG3ModelVertex	*pmv;
 
-if (objP->nType == OBJ_PLAYER) {
+if (objP->info.nType == OBJ_PLAYER) {
 	if (IsMultiGame && !IsCoopGame)
 		return 0;
 	}
-else if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_HOSTAGE) && (objP->nType != OBJ_POWERUP))
+else if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_HOSTAGE) && (objP->info.nType != OBJ_POWERUP))
 	return 0;
 if (vOffsetfP)
 	vOffsetf = *vOffsetfP;
@@ -743,9 +743,9 @@ else {
 	if (!po)
 		po = gameData.models.modelToOOF [0][nModel];
 	pp = po->gunPoints.pPoints;
-	if (objP->nType == OBJ_PLAYER)
+	if (objP->info.nType == OBJ_PLAYER)
 		SetShipGunPoints (po, pm);
-	else if (objP->nType == OBJ_ROBOT)
+	else if (objP->info.nType == OBJ_ROBOT)
 		SetRobotGunPoints (po, pm);
 	else {
 		gameData.models.gunInfo [nModel].nGuns = 0;

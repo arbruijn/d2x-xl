@@ -354,7 +354,7 @@ if (!G3AllocModel (pm))
 	return 0;
 G3InitSubModelMinMax (pm->pSubModels);
 #if TRACE_TAGS
-PrintLog ("building model for object type %d, id %d\n", objP->nType, objP->id);
+PrintLog ("building model for object type %d, id %d\n", objP->info.nType, objP->info.nId);
 #endif
 if (!G3GetPOFModelItems (pp->modelData, NULL, pm, 0, -1, 1, modelBitmaps, pObjColor))
 	return 0;

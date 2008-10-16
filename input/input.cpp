@@ -1390,8 +1390,8 @@ void CybermouseAdjust ()
 
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
-				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].position.mOrient,&tempm);
-				OBJECTS [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;	
+				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
+				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
 			}
 			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vmsAngVec);
 			if (oem_message [0] != '\0')

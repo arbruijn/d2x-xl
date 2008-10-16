@@ -362,19 +362,19 @@ void SpeedtestFrame(void)
 
 	gameData.speedtest.nSide=gameData.speedtest.nSegment % MAX_SIDES_PER_SEGMENT;
 
-	COMPUTE_SEGMENT_CENTER(&gameData.objs.viewer->position.vPos, &gameData.segs.segments[gameData.speedtest.nSegment]);
-	gameData.objs.viewer->position.vPos[X] += 0x10;	
-	gameData.objs.viewer->position.vPos[Y] -= 0x10;	
-	gameData.objs.viewer->position.vPos[Z] += 0x17;
+	COMPUTE_SEGMENT_CENTER(&gameData.objs.viewerP->info.position.vPos, &gameData.segs.segments[gameData.speedtest.nSegment]);
+	gameData.objs.viewerP->info.position.vPos[X] += 0x10;	
+	gameData.objs.viewerP->info.position.vPos[Y] -= 0x10;	
+	gameData.objs.viewerP->info.position.vPos[Z] += 0x17;
 
-	RelinkObject(OBJ_IDX (gameData.objs.viewer), gameData.speedtest.nSegment);
+	RelinkObject(OBJ_IDX (gameData.objs.viewerP), gameData.speedtest.nSegment);
 	COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[gameData.speedtest.nSegment], gameData.speedtest.nSide);
-	vmsVector::NormalizedDir(view_dir, center_point, gameData.objs.viewer->position.vPos);
+	vmsVector::NormalizedDir(view_dir, center_point, gameData.objs.viewerP->info.position.vPos);
 	/*
-	gameData.objs.viewer->position.mOrient = vmsMatrix::Create(view_dir, NULL, NULL);
+	gameData.objs.viewerP->info.position.mOrient = vmsMatrix::Create(view_dir, NULL, NULL);
 	*/
 	// TODO: MatrixCreateFCheck
-	gameData.objs.viewer->position.mOrient = vmsMatrix::CreateF(view_dir);
+	gameData.objs.viewerP->info.position.mOrient = vmsMatrix::CreateF(view_dir);
 	if (((gameData.app.nFrameCount - gameData.speedtest.nFrameStart) % 10) == 0) {
 #if TRACE
 		con_printf (CONDBG, ".");

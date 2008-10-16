@@ -116,7 +116,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SUB_FLAGS_CAMERA_AWAKE  0x04    // If set, a camera (on a missile) woke this robot up, so don't fire at tPlayer.  Can look real stupid!
 
 //  Constants defining meaning of flags in aiState
-#define MAX_AI_FLAGS    11          // This MUST cause word (4 bytes) alignment in tAIStatic, allowing for one byte mode
+#define MAX_AI_FLAGS    11          // This MUST cause word (4 bytes) alignment in tAIStaticInfo, allowing for one byte mode
 
 #define CURRENT_GUN     flags[0]    // This is the last gun the tObject fired from
 #define CURRENT_STATE   flags[1]    // current behavioral state
@@ -132,7 +132,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // This is the stuff that is permanent for an AI tObject and is
 // therefore saved to disk.
-typedef struct tAIStatic {
+typedef struct tAIStaticInfo {
 	ubyte   behavior;               //
 	sbyte   flags[MAX_AI_FLAGS];    // various flags, meaning defined by constants
 	short   nHideSegment;           // Segment to go to for hiding.
@@ -140,19 +140,29 @@ typedef struct tAIStatic {
 	short   nPathLength;            // Length of hide path.
 	sbyte   nCurPathIndex;         // Current index in path.
 	sbyte   bDyingSoundPlaying;    // !0 if this robot is playing its dying sound.
-
-	// -- not needed! -- short   follow_path_start_seg;  // Start tSegment for robot which follows path.
-	// -- not needed! -- short   follow_path_end_seg;    // End tSegment for robot which follows path.
-
 	short   nDangerLaser;
 	int     nDangerLaserSig;
 	fix     xDyingStartTime;       // Time at which this robot started dying.
+} tAIStaticInfo;
 
-	//sbyte   extras[28];             // 32 extra bytes for storing stuff so we don't have to change versions on disk
-} __pack__ tAIStatic;
+class CAIStaticInfo {
+	private:
+		tAIStaticInfo m_info;
+	public:
+		inline ubyte& Behavior() { return m_info.behavior; }
+		inline sbyte& Flags(int i) { return m_info.flags [i]; }
+		inline short& HideSegment() { return m_info.nHideSegment; }
+		inline short& HideIndex() { return m_info.nHideIndex; }
+		inline short& PathLength() { return m_info.nPathLength; }
+		inline sbyte& CurPathIndex() { return m_info.nCurPathIndex; }
+		inline sbyte& DyingSoundPlaying() { return m_info.bDyingSoundPlaying; }
+		inline short& DangerLaser() { return m_info.nDangerLaser; }
+		inline int& DangerLaserSig() { return m_info.nDangerLaserSig; }
+		inline fix &DyingStartTime() { return m_info.xDyingStartTime; }
+};
 
 // This is the stuff which doesn't need to be saved to disk.
-typedef struct tAILocal {
+typedef struct tAILocalInfo {
 // These used to be bytes, changed to ints so I could set watchpoints on them.
 // playerAwarenessType..nRapidFireCount used to be bytes
 // nGoalSegment used to be short.
@@ -178,7 +188,7 @@ typedef struct tAILocal {
 	vmsAngVec deltaAngles [MAX_SUBMODELS]; // angles for each subobject
 	sbyte   goalState [MAX_SUBMODELS];     // Goal state for this sub-tObject
 	sbyte   achievedState [MAX_SUBMODELS]; // Last achieved state
-} tAILocal;
+} tAILocalInfo;
 
 typedef struct {
 	int         nSegment;

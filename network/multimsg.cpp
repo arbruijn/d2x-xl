@@ -95,20 +95,20 @@ sprintf (szFeedbackResult, "%s ", TXT_MESSAGE_SENT_TO);
 if ((gameData.app.nGameMode & GM_TEAM) && (atoi (gameData.multigame.msg.szMsg) > 0) && 
 	 (atoi (gameData.multigame.msg.szMsg) < 3)) {
 	sprintf (szFeedbackResult+strlen (szFeedbackResult), "%s '%s'", 
-				TXT_TEAM, netGame.team_name [atoi (gameData.multigame.msg.szMsg)-1]);
+				TXT_TEAM, netGame.szTeamName [atoi (gameData.multigame.msg.szMsg)-1]);
 	bFound = 1;
 	}
 if (!bFound)
 	if (gameData.app.nGameMode & GM_TEAM) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if (!strnicmp (netGame.team_name [i], gameData.multigame.msg.szMsg, l)) {
+			if (!strnicmp (netGame.szTeamName [i], gameData.multigame.msg.szMsg, l)) {
 				if (bFound)
 					strcat (szFeedbackResult, ", ");
 				bFound++;
 				if (!(bFound % 4))
 					strcat (szFeedbackResult, "\n");
 				sprintf (szFeedbackResult+strlen (szFeedbackResult), "%s '%s'", 
-							TXT_TEAM, netGame.team_name [i]);
+							TXT_TEAM, netGame.szTeamName [i]);
 				}
 			}
 		}
@@ -557,7 +557,7 @@ i = atoi (bufP);
 if ((i >= 1) && (i <= 2))
 	return 1;
 for (i = 0; i < 2; i++)
-	if (!strnicmp (netGame.team_name [i], bufP, nLen))
+	if (!strnicmp (netGame.szTeamName [i], bufP, nLen))
 		return 1;
 return 0;
 }
@@ -573,7 +573,7 @@ if (!(gameData.app.nGameMode & GM_TEAM))
 i = GetTeam (gameData.multiplayer.nLocalPlayer);
 if (i == atoi (bufP) - 1)
 	return 1;
-if (!strnicmp (netGame.team_name [i], bufP, nLen))
+if (!strnicmp (netGame.szTeamName [i], bufP, nLen))
 	return 1;
 return 0;
 }

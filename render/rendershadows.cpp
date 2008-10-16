@@ -239,16 +239,16 @@ void RenderObjectShadows (void)
 {
 	tObject		*objP = OBJECTS;
 	int			i, j, bSee;
-	tObject		fakePlayerPos = *gameData.objs.viewer;
+	tObject		fakePlayerPos = *gameData.objs.viewerP;
 
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
-	if (objP == gameData.objs.console)
+	if (objP == gameData.objs.consoleP)
 		RenderObject (objP, 0, 0);
-	else if ((objP->nType == OBJ_PLAYER) || 
-				(gameOpts->render.shadows.bRobots && (objP->nType == OBJ_ROBOT))) {
+	else if ((objP->info.nType == OBJ_PLAYER) || 
+				(gameOpts->render.shadows.bRobots && (objP->info.nType == OBJ_ROBOT))) {
 		for (j = gameData.render.mine.nRenderSegs; j--;) {
-			fakePlayerPos.nSegment = gameData.render.mine.nSegRenderList [j];
-			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.position.vPos, fakePlayerPos.nSegment);
+			fakePlayerPos.info.nSegment = gameData.render.mine.nSegRenderList [j];
+			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.info.position.vPos, fakePlayerPos.info.nSegment);
 			bSee = ObjectToObjectVisibility (objP, &fakePlayerPos, FQ_TRANSWALL);
 			if (bSee) {
 				RenderObject (objP, 0, 0);
@@ -314,7 +314,7 @@ for (i = 0, pc = gameData.render.shadows.shadowMaps; i < 1/*gameData.render.shad
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 	glLoadMatrixf (mTexBiasf);
 	glMultMatrixf (mProjectionf);
-	glMultMatrixf (OOF_MatVms2Gl (mModelViewf, pc->objP->position.mOrient));
+	glMultMatrixf (OOF_MatVms2Gl (mModelViewf, pc->objP->info.position.mOrient));
 	}
 glMatrixMode (GL_MODELVIEW);
 #endif
@@ -351,15 +351,15 @@ for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 for (h = 0; h <= gameData.objs.nLastObject [0] + 1; h++, objP++) {
 	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;
-	pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->nSegment * MAX_NEAREST_LIGHTS;
+	pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
 		psl = gameData.render.lights.dynamic.shader.lights + *pnl;
 		if (!psl->info.bState)
 			continue;
-		if (!CanSeePoint (objP, &objP->position.vPos, &psl->info.vPos, objP->nSegment))
+		if (!CanSeePoint (objP, &objP->info.position.vPos, &psl->info.vPos, objP->info.nSegment))
 			continue;
-		vLightDir = objP->position.vPos - psl->info.vPos;
+		vLightDir = objP->info.position.vPos - psl->info.vPos;
 		vmsVector::Normalize(vLightDir);
 		if (n) {
 			for (j = 0; j < n; j++)
@@ -412,9 +412,9 @@ if (!bShadowTest)
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif			 
 			G3SetViewMatrix(gameData.render.mine.viewerEye, externalView.pPos ? externalView.pPos->mOrient : 
-								  gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, 1);
+								  gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 		else
-			G3SetViewMatrix(gameData.render.mine.viewerEye, gameData.objs.viewer->position.mOrient, 
+			G3SetViewMatrix(gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, 
 								  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), 1);
 		ApplyShadowMaps (nStartSeg, nEyeOffset, nWindow);
 		}

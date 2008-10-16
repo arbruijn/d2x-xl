@@ -33,12 +33,12 @@ if (pPath->nSize && ((pPath->tUpdate < 0) || (t >= pPath->tRefresh))) {
 	pPath->tUpdate = t;
 //	h = pPath->nEnd;
 	pPath->nEnd = (pPath->nEnd + 1) % pPath->nSize;
-	pPath->path[pPath->nEnd].vOrgPos = objP->position.vPos;
-	pPath->path[pPath->nEnd].vPos = objP->position.vPos;
-	pPath->path[pPath->nEnd].mOrient = objP->position.mOrient;
+	pPath->path[pPath->nEnd].vOrgPos = objP->info.position.vPos;
+	pPath->path[pPath->nEnd].vPos = objP->info.position.vPos;
+	pPath->path[pPath->nEnd].mOrient = objP->info.position.mOrient;
 	// TODO: WTF??
-	pPath->path[pPath->nEnd].vPos += objP->position.mOrient[FVEC] * 0;
-	pPath->path[pPath->nEnd].vPos += objP->position.mOrient[UVEC] * 0;
+	pPath->path[pPath->nEnd].vPos += objP->info.position.mOrient[FVEC] * 0;
+	pPath->path[pPath->nEnd].vPos += objP->info.position.mOrient[UVEC] * 0;
 //	if (!memcmp (pPath->path + h, pPath->path + pPath->nEnd, sizeof (tMovementPath)))
 //		pPath->nEnd = h;
 //	else
@@ -77,7 +77,7 @@ void GetViewPoint (void)
 	tPathPoint		*p = GetPathPoint (&externalView);
 
 if (!p)
-	gameData.render.mine.viewerEye += gameData.objs.viewer->position.mOrient[FVEC] * PP_DELTAZ;
+	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient[FVEC] * PP_DELTAZ;
 else {
 	gameData.render.mine.viewerEye = p->vPos;
 	gameData.render.mine.viewerEye += p->mOrient[FVEC] * (PP_DELTAZ * 2 / 3);

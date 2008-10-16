@@ -196,7 +196,7 @@ for (i = 0, playerP = tmpPlayersInfo->players; i < gameData.multiplayer.nPlayers
 	gameData.multiplayer.players [i].netKillsTotal = sp->playerKills [i];
 	gameData.multiplayer.players [i].netKilledTotal = sp->killed [i];
 	if (networkData.nJoinState || (i != gameData.multiplayer.nLocalPlayer))
-		gameData.multiplayer.players [i].score = sp->player_score [i];
+		gameData.multiplayer.players [i].score = sp->playerScore [i];
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
 		gameData.multigame.kills.matrix [i][j] = sp->kills [i][j];
 	}
@@ -209,7 +209,7 @@ if (gameData.multiplayer.nLocalPlayer < 0) {
 if (networkData.nJoinState) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].netKilledTotal = sp->killed [i];
-	NetworkProcessMonitorVector (sp->monitor_vector);
+	NetworkProcessMonitorVector (sp->monitorVector);
 	LOCALPLAYER.timeLevel = sp->xLevelTime;
 	}
 gameData.multigame.kills.nTeam [0] = sp->teamKills [0];
@@ -230,7 +230,7 @@ if (!networkData.nJoinState) {
 		GetPlayerSpawn (j, OBJECTS + gameData.multiplayer.players [i].nObject);
 		}
 	}
-OBJECTS [LOCALPLAYER.nObject].nType = OBJ_PLAYER;
+OBJECTS [LOCALPLAYER.nObject].info.nType = OBJ_PLAYER;
 networkData.nStatus = (NetworkIAmMaster () || (networkData.nJoinState >= 4)) ? NETSTAT_PLAYING : NETSTAT_WAITING;
 SetFunctionMode (FMODE_GAME);
 networkData.bHaveSync = 1;
@@ -248,27 +248,27 @@ void NetworkReadPDataPacket (tFrameInfo *pd)
 // tFrameInfo should be aligned...for mac, make the necessary adjustments
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	pd->numpackets = INTEL_INT (pd->numpackets);
-	pd->obj_pos[X] = INTEL_INT (pd->obj_pos[X]);
-	pd->obj_pos[Y] = INTEL_INT (pd->obj_pos[Y]);
-	pd->obj_pos[Z] = INTEL_INT (pd->obj_pos[Z]);
-	pd->obj_orient[RVEC][X] = (fix)INTEL_INT ((int)pd->obj_orient[RVEC][X]);
-	pd->obj_orient[RVEC][Y] = (fix)INTEL_INT ((int)pd->obj_orient[RVEC][Y]);
-	pd->obj_orient[RVEC][Z] = (fix)INTEL_INT ((int)pd->obj_orient[RVEC][Z]);
-	pd->obj_orient[UVEC][X] = (fix)INTEL_INT ((int)pd->obj_orient[UVEC][X]);
-	pd->obj_orient[UVEC][Y] = (fix)INTEL_INT ((int)pd->obj_orient[UVEC][Y]);
-	pd->obj_orient[UVEC][Z] = (fix)INTEL_INT ((int)pd->obj_orient[UVEC][Z]);
-	pd->obj_orient[FVEC][X] = (fix)INTEL_INT ((int)pd->obj_orient[FVEC][X]);
-	pd->obj_orient[FVEC][Y] = (fix)INTEL_INT ((int)pd->obj_orient[FVEC][Y]);
-	pd->obj_orient[FVEC][Z] = (fix)INTEL_INT ((int)pd->obj_orient[FVEC][Z]);
-	pd->phys_velocity[X] = (fix)INTEL_INT ((int)pd->phys_velocity[X]);
-	pd->phys_velocity[Y] = (fix)INTEL_INT ((int)pd->phys_velocity[Y]);
-	pd->phys_velocity[Z] = (fix)INTEL_INT ((int)pd->phys_velocity[Z]);
-	pd->phys_rotvel[X] = (fix)INTEL_INT ((int)pd->phys_rotvel[X]);
-	pd->phys_rotvel[Y] = (fix)INTEL_INT ((int)pd->phys_rotvel[Y]);
-	pd->phys_rotvel[Z] = (fix)INTEL_INT ((int)pd->phys_rotvel[Z]);
-	pd->obj_segnum = INTEL_SHORT (pd->obj_segnum);
-	pd->data_size = INTEL_SHORT (pd->data_size);
+	pd->nPackets = INTEL_INT (pd->nPackets);
+	pd->objPos[X] = INTEL_INT (pd->objPos[X]);
+	pd->objPos[Y] = INTEL_INT (pd->objPos[Y]);
+	pd->objPos[Z] = INTEL_INT (pd->objPos[Z]);
+	pd->objOrient[RVEC][X] = (fix)INTEL_INT ((int)pd->objOrient[RVEC][X]);
+	pd->objOrient[RVEC][Y] = (fix)INTEL_INT ((int)pd->objOrient[RVEC][Y]);
+	pd->objOrient[RVEC][Z] = (fix)INTEL_INT ((int)pd->objOrient[RVEC][Z]);
+	pd->objOrient[UVEC][X] = (fix)INTEL_INT ((int)pd->objOrient[UVEC][X]);
+	pd->objOrient[UVEC][Y] = (fix)INTEL_INT ((int)pd->objOrient[UVEC][Y]);
+	pd->objOrient[UVEC][Z] = (fix)INTEL_INT ((int)pd->objOrient[UVEC][Z]);
+	pd->objOrient[FVEC][X] = (fix)INTEL_INT ((int)pd->objOrient[FVEC][X]);
+	pd->objOrient[FVEC][Y] = (fix)INTEL_INT ((int)pd->objOrient[FVEC][Y]);
+	pd->objOrient[FVEC][Z] = (fix)INTEL_INT ((int)pd->objOrient[FVEC][Z]);
+	pd->physVelocity[X] = (fix)INTEL_INT ((int)pd->physVelocity[X]);
+	pd->physVelocity[Y] = (fix)INTEL_INT ((int)pd->physVelocity[Y]);
+	pd->physVelocity[Z] = (fix)INTEL_INT ((int)pd->physVelocity[Z]);
+	pd->physRotVel[X] = (fix)INTEL_INT ((int)pd->physRotVel[X]);
+	pd->physRotVel[Y] = (fix)INTEL_INT ((int)pd->physRotVel[Y]);
+	pd->physRotVel[Z] = (fix)INTEL_INT ((int)pd->physRotVel[Z]);
+	pd->nObjSeg = INTEL_SHORT (pd->nObjSeg);
+	pd->dataSize = INTEL_SHORT (pd->dataSize);
 	}
 #endif
 nTheirPlayer = pd->nPlayer;
@@ -289,15 +289,15 @@ if (!gameData.multigame.bQuitGame && (nTheirPlayer >= gameData.multiplayer.nPlay
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
 	int old_Endlevel_sequence = gameStates.app.bEndLevelSequence;
 	gameStates.app.bEndLevelSequence = 1;
-	if (pd->data_size > 0)
+	if (pd->dataSize > 0)
 		// pass pd->data to some parser function....
-		MultiProcessBigData ((char *) pd->data, pd->data_size);
+		MultiProcessBigData ((char *) pd->data, pd->dataSize);
 	gameStates.app.bEndLevelSequence = old_Endlevel_sequence;
 	return;
 	}
-if ((sbyte)pd->level_num != gameData.missions.nCurrentLevel) {
+if ((sbyte)pd->nLevel != gameData.missions.nCurrentLevel) {
 #if 1
-	con_printf (CONDBG, "Got frame packet from tPlayer %d wrong level %d!\n", pd->nPlayer, pd->level_num);
+	con_printf (CONDBG, "Got frame packet from tPlayer %d wrong level %d!\n", pd->nPlayer, pd->nLevel);
 #endif
 	return;
 	}
@@ -307,35 +307,35 @@ theirObjP = OBJECTS + theirObjNum;
 gameData.multiplayer.players [nTheirPlayer].nPacketsGot++;
 networkData.nTotalPacketsGot++;
 ResetPlayerTimeout (nTheirPlayer, -1);
-if  (pd->numpackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot) {
-	networkData.nMissedPackets = pd->numpackets - gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
-	if ((pd->numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot) > 0)
-		networkData.nTotalMissedPackets += pd->numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
+if  (pd->nPackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot) {
+	networkData.nMissedPackets = pd->nPackets - gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
+	if ((pd->nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot) > 0)
+		networkData.nTotalMissedPackets += pd->nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
 #if 1
 	if (networkData.nMissedPackets > 0)
 		con_printf (0,
 			"Missed %d packets from tPlayer #%d (%d total)\n",
-			pd->numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot,
+			pd->nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot,
 			nTheirPlayer,
 			networkData.nMissedPackets);
 	else
 		con_printf (CONDBG,
 			"Got %d late packets from tPlayer #%d (%d total)\n",
-			gameData.multiplayer.players [nTheirPlayer].nPacketsGot-pd->numpackets,
+			gameData.multiplayer.players [nTheirPlayer].nPacketsGot-pd->nPackets,
 			nTheirPlayer,
 			networkData.nMissedPackets);
 #endif
-	gameData.multiplayer.players [nTheirPlayer].nPacketsGot = pd->numpackets;
+	gameData.multiplayer.players [nTheirPlayer].nPacketsGot = pd->nPackets;
 	}
 //------------ Read the tPlayer's ship's tObject info ----------------------
-theirObjP->position.vPos = pd->obj_pos;
-theirObjP->position.mOrient = pd->obj_orient;
-theirObjP->mType.physInfo.velocity = pd->phys_velocity;
-theirObjP->mType.physInfo.rotVel = pd->phys_rotvel;
-if ((theirObjP->renderType != pd->obj_renderType) && (pd->obj_renderType == RT_POLYOBJ))
+theirObjP->info.position.vPos = pd->objPos;
+theirObjP->info.position.mOrient = pd->objOrient;
+theirObjP->mType.physInfo.velocity = pd->physVelocity;
+theirObjP->mType.physInfo.rotVel = pd->physRotVel;
+if ((theirObjP->info.renderType != pd->objRenderType) && (pd->objRenderType == RT_POLYOBJ))
 	MultiMakeGhostPlayer (nTheirPlayer);
-RelinkObject (theirObjNum, pd->obj_segnum);
-if (theirObjP->movementType == MT_PHYSICS)
+RelinkObject (theirObjNum, pd->nObjSeg);
+if (theirObjP->info.movementType == MT_PHYSICS)
 	SetThrustFromVelocity (theirObjP);
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multiplayer.players [nTheirPlayer].connected) {
@@ -355,9 +355,9 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	MultiSendScore ();
 	}
 //------------ Parse the extra dataP at the end ---------------
-if (pd->data_size > 0)
+if (pd->dataSize > 0)
 	// pass pd->data to some parser function....
-	MultiProcessBigData ((char *) pd->data, pd->data_size);
+	MultiProcessBigData ((char *) pd->data, pd->dataSize);
 }
 
 //------------------------------------------------------------------------------
@@ -371,20 +371,20 @@ void GetShortFrameInfo (ubyte *old_info, tFrameInfoShort *new_info)
 NW_GET_BYTE (old_info, bufI, new_info->nType);
 /* skip three for pad byte */
 bufI += 3;
-NW_GET_INT (old_info, bufI, new_info->numpackets);
-NW_GET_BYTES (old_info, bufI, new_info->thepos.bytemat, 9);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.xo);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.yo);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.zo);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.nSegment);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.velx);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.vely);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.velz);
-NW_GET_SHORT (old_info, bufI, new_info->data_size);
+NW_GET_INT (old_info, bufI, new_info->nPackets);
+NW_GET_BYTES (old_info, bufI, new_info->objPos.bytemat, 9);
+NW_GET_SHORT (old_info, bufI, new_info->objPos.xo);
+NW_GET_SHORT (old_info, bufI, new_info->objPos.yo);
+NW_GET_SHORT (old_info, bufI, new_info->objPos.zo);
+NW_GET_SHORT (old_info, bufI, new_info->objPos.nSegment);
+NW_GET_SHORT (old_info, bufI, new_info->objPos.velx);
+NW_GET_SHORT (old_info, bufI, new_info->objPos.vely);
+NW_GET_SHORT (old_info, bufI, new_info->objPos.velz);
+NW_GET_SHORT (old_info, bufI, new_info->dataSize);
 NW_GET_BYTE (old_info, bufI, new_info->nPlayer);
-NW_GET_BYTE (old_info, bufI, new_info->obj_renderType);
-NW_GET_BYTE (old_info, bufI, new_info->level_num);
-NW_GET_BYTES (old_info, bufI, new_info->data, new_info->data_size);
+NW_GET_BYTE (old_info, bufI, new_info->objRenderType);
+NW_GET_BYTE (old_info, bufI, new_info->nLevel);
+NW_GET_BYTES (old_info, bufI, new_info->data, new_info->dataSize);
 }
 #else
 
@@ -430,16 +430,16 @@ if ((networkData.sync [0].nPlayer != -1) && (nTheirPlayer == networkData.sync [0
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
 	int old_Endlevel_sequence = gameStates.app.bEndLevelSequence;
 	gameStates.app.bEndLevelSequence = 1;
-	if (new_pd.data_size > 0) {
+	if (new_pd.dataSize > 0) {
 		// pass pd->data to some parser function....
-		MultiProcessBigData ((char *) new_pd.data, new_pd.data_size);
+		MultiProcessBigData ((char *) new_pd.data, new_pd.dataSize);
 		}
 	gameStates.app.bEndLevelSequence = old_Endlevel_sequence;
 	return;
 	}
-if ((sbyte)new_pd.level_num != gameData.missions.nCurrentLevel) {
+if ((sbyte)new_pd.nLevel != gameData.missions.nCurrentLevel) {
 #if 1
-	con_printf (CONDBG, "Got frame packet from tPlayer %d wrong level %d!\n", new_pd.nPlayer, new_pd.level_num);
+	con_printf (CONDBG, "Got frame packet from tPlayer %d wrong level %d!\n", new_pd.nPlayer, new_pd.nLevel);
 #endif
 	return;
 	}
@@ -448,31 +448,31 @@ theirObjP = OBJECTS + theirObjNum;
 gameData.multiplayer.players [nTheirPlayer].nPacketsGot++;
 networkData.nTotalPacketsGot++;
 networkData.nLastPacketTime [nTheirPlayer] = SDL_GetTicks ();
-if  (new_pd.numpackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot)      {
-	networkData.nMissedPackets = new_pd.numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
-	if ((new_pd.numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot)>0)
-		networkData.nTotalMissedPackets += new_pd.numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
+if  (new_pd.nPackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot) {
+	networkData.nMissedPackets = new_pd.nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
+	if ((new_pd.nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot)>0)
+		networkData.nTotalMissedPackets += new_pd.nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
 #if 1
 	if (networkData.nMissedPackets > 0)
 		con_printf (CONDBG,
 			"Missed %d packets from tPlayer #%d (%d total)\n",
-			new_pd.numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot,
+			new_pd.nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot,
 			nTheirPlayer,
 			networkData.nMissedPackets);
 	else
 		con_printf (CONDBG,
 			"Got %d late packets from tPlayer #%d (%d total)\n",
-			gameData.multiplayer.players [nTheirPlayer].nPacketsGot-new_pd.numpackets,
+			gameData.multiplayer.players [nTheirPlayer].nPacketsGot-new_pd.nPackets,
 			nTheirPlayer,
 			networkData.nMissedPackets);
 #endif
-		gameData.multiplayer.players [nTheirPlayer].nPacketsGot = new_pd.numpackets;
+		gameData.multiplayer.players [nTheirPlayer].nPacketsGot = new_pd.nPackets;
 	}
 //------------ Read the tPlayer's ship's tObject info ----------------------
-ExtractShortPos (theirObjP, &new_pd.thepos, 0);
-if ((theirObjP->renderType != new_pd.obj_renderType) && (new_pd.obj_renderType == RT_POLYOBJ))
+ExtractShortPos (theirObjP, &new_pd.objPos, 0);
+if ((theirObjP->info.renderType != new_pd.objRenderType) && (new_pd.objRenderType == RT_POLYOBJ))
 	MultiMakeGhostPlayer (nTheirPlayer);
-if (theirObjP->movementType == MT_PHYSICS)
+if (theirObjP->info.movementType == MT_PHYSICS)
 	SetThrustFromVelocity (theirObjP);
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multiplayer.players [nTheirPlayer].connected) {
@@ -492,9 +492,9 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	MultiSendScore ();
 	}
 //------------ Parse the extra dataP at the end ---------------
-if (new_pd.data_size>0) {
+if (new_pd.dataSize>0) {
 	// pass pd->data to some parser function....
-	MultiProcessBigData ((char *) new_pd.data, new_pd.data_size);
+	MultiProcessBigData ((char *) new_pd.data, new_pd.dataSize);
 	}
 }
 
@@ -521,7 +521,7 @@ if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 #endif
 //	bHaveReactor = 1;	// multiplayer maps do not need a control center ...
 for (i = 0, nPlayers = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
-	t = objP->nType;
+	t = objP->info.nType;
 	if (t == OBJ_GHOST) {
 		for (j = 0; j < MAX_PLAYERS; j++) {
 			if (nPlayerObjs [j] == i) {
@@ -539,7 +539,7 @@ for (i = 0, nPlayers = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 			nPlayers++;
 		}
 	else if (bCoop) {
-		if ((t == OBJ_REACTOR) || ((t == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag))
+		if ((t == OBJ_REACTOR) || ((t == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).bossFlag))
 			bHaveReactor = 1;
 		}
 	if (nPlayers >= gameData.multiplayer.nMaxPlayers)
@@ -576,9 +576,9 @@ inline bool ObjectIsLinked (tObject *objP, short nSegment)
 {
 if (nSegment != -1) {
 	short nObject = OBJ_IDX (objP);
-	for (short i = gameData.segs.objects [objP->nSegment], j = -1; i >= 0; j = i, i = OBJECTS [i].next) {
+	for (short i = gameData.segs.objects [objP->info.nSegment], j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNext) {
 		if (i == nObject) {
-			objP->prev = j;
+			objP->info.nPrev = j;
 			return true;
 			}
 		}
@@ -685,24 +685,24 @@ else if (i < 0)
 			Assert (nObject < MAX_OBJECTS);
 			objP = OBJECTS + nObject;
 #if 1//def _DEBUG
-			if (objP->nSegment >= 0)
+			if (objP->info.nSegment >= 0)
 				nDbgObj = OBJ_IDX (objP);
 #endif
-			while (ObjectIsLinked (objP, objP->nSegment))
-				OBJECTS[nObject].Unlink();
+			while (ObjectIsLinked (objP, objP->info.nSegment))
+				UnlinkObject (OBJECTS + nObject);
 			NW_GET_BYTES (dataP, bufI, objP, sizeof (tObject));
-			if (objP->nType != OBJ_NONE) {
+			if (objP->info.nType != OBJ_NONE) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
 					SwapObject (objP);
-				nSegment = objP->nSegment;
-				PrintLog ("receiving object %d (type: %d, segment: %d)\n", nObject, objP->nType, nSegment);
-				objP->next = objP->prev = objP->nSegment = -1;
-				objP->attachedObj = -1;
+				nSegment = objP->info.nSegment;
+				PrintLog ("receiving object %d (type: %d, segment: %d)\n", nObject, objP->info.nType, nSegment);
+				objP->info.nNext = objP->info.nPrev = objP->info.nSegment = -1;
+				objP->info.nAttachedObj = -1;
 				if (nSegment < 0)
-					nSegment = FindSegByPos (objP->position.vPos, -1, 1, 0);
+					nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);
 				if (!ObjectIsLinked (objP, nSegment))
 					LinkObject (OBJ_IDX (objP), nSegment);
-				if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_GHOST))
+				if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_GHOST))
 					RemapLocalPlayerObject (nObject, nRemoteObj);
 				if (nObjOwner == nPlayer)
 					MapObjnumLocalToLocal (nObject);

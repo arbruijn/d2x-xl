@@ -139,14 +139,14 @@ if (ShowView_textTimer > 0) {
 	GrSetCurFont (GAME_FONT);
 
 	viewer_id = (char *) "";
-	switch (gameData.objs.viewer->nType) {
+	switch (gameData.objs.viewerP->info.nType) {
 		case OBJ_FIREBALL:
 			viewer_name = "Fireball";
 			break;
 		case OBJ_ROBOT:
 			viewer_name = "Robot";
 #ifdef EDITOR
-			viewer_id = gameData.bots.names [gameData.objs.viewer->id];
+			viewer_id = gameData.bots.names [gameData.objs.viewerP->info.nId];
 #endif
 			break;
 		case OBJ_HOSTAGE:
@@ -164,7 +164,7 @@ if (ShowView_textTimer > 0) {
 		case OBJ_POWERUP:
 			viewer_name = "Powerup";
 #ifdef EDITOR
-			viewer_id = Powerup_names [gameData.objs.viewer->id];
+			viewer_id = Powerup_names [gameData.objs.viewerP->info.nId];
 #endif
 			break;
 		case OBJ_DEBRIS:
@@ -178,7 +178,7 @@ if (ShowView_textTimer > 0) {
 			break;
 		}
 
-	switch (gameData.objs.viewer->controlType) {
+	switch (gameData.objs.viewerP->info.controlType) {
 		case CT_NONE:
 			control_name = "Stopped";
 			break;
@@ -202,7 +202,7 @@ if (ShowView_textTimer > 0) {
 			break;
 		}
 	GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
-	GrPrintF (NULL, 0x8000, 45, "%i: %s [%s] View - %s", OBJ_IDX (gameData.objs.viewer), viewer_name, viewer_id, control_name);
+	GrPrintF (NULL, 0x8000, 45, "%i: %s [%s] View - %s", OBJ_IDX (gameData.objs.viewerP), viewer_name, viewer_id, control_name);
 	}
 }
 #endif
@@ -281,8 +281,8 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	RenderCountdownGauge ();
 	if ((gameData.multiplayer.nLocalPlayer > -1) &&
-		 (gameData.objs.viewer->nType == OBJ_PLAYER) &&
-		 (gameData.objs.viewer->id == gameData.multiplayer.nLocalPlayer))	{
+		 (gameData.objs.viewerP->info.nType == OBJ_PLAYER) &&
+		 (gameData.objs.viewerP->info.nId == gameData.multiplayer.nLocalPlayer))	{
 		int	x = 3;
 		int	y = grdCurCanv->cvBitmap.bmProps.h;
 
@@ -388,9 +388,9 @@ static inline bool GuidedMissileActive (void)
 {
 tObject *gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
 return gmObjP &&
-		 (gmObjP->nType == OBJ_WEAPON) &&
-		 (gmObjP->id == GUIDEDMSL_ID) &&
-		 (gmObjP->nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature);
+		 (gmObjP->info.nType == OBJ_WEAPON) &&
+		 (gmObjP->info.nId == GUIDEDMSL_ID) &&
+		 (gmObjP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature);
 }
 
 //------------------------------------------------------------------------------
@@ -446,14 +446,14 @@ void game_render_frame_stereo ()
 
 	if (bGMView) {
 		char *msg = "Guided Missile View";
-		tObject *viewerSave = gameData.objs.viewer;
+		tObject *viewerSave = gameData.objs.viewerP;
 		int w, h, aw;
 
-		gameData.objs.viewer = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
-		UpdateRenderedData (0, gameData.objs.viewer, 0, 0);
+		gameData.objs.viewerP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+		UpdateRenderedData (0, gameData.objs.viewerP, 0, 0);
 		RenderFrame (0, 0);
-		WakeupRenderedObjects (gameData.objs.viewer, 0);
-		gameData.objs.viewer = viewerSave;
+		WakeupRenderedObjects (gameData.objs.viewerP, 0);
+		gameData.objs.viewerP = viewerSave;
 
 		GrSetCurFont (GAME_FONT);    //GAME_FONT);
 		GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
@@ -680,7 +680,7 @@ void ShowExtraViews ()
 if (gameData.demo.nState==ND_STATE_PLAYBACK) {
    if (nDemoDoLeft) {
       if (nDemoDoLeft == 3)
-			DoCockpitWindowView (0, gameData.objs.console, 1, WBU_REAR, "REAR");
+			DoCockpitWindowView (0, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
       else
 			DoCockpitWindowView (0, &demoLeftExtra, DemoRearCheck [nDemoDoLeft], DemoWBUType [nDemoDoLeft], DemoExtraMessage [nDemoDoLeft]);
 		}
@@ -688,7 +688,7 @@ if (gameData.demo.nState==ND_STATE_PLAYBACK) {
 		DoCockpitWindowView (0, NULL, 0, WBU_WEAPON, NULL);
 	if (nDemoDoRight) {
       if (nDemoDoRight==3)
-			DoCockpitWindowView (1, gameData.objs.console, 1, WBU_REAR, "REAR");
+			DoCockpitWindowView (1, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
       else
 			DoCockpitWindowView (1, &demoRightExtra, DemoRearCheck [nDemoDoRight], DemoWBUType [nDemoDoRight], DemoExtraMessage [nDemoDoRight]);
 		}
@@ -701,7 +701,7 @@ if (gameData.demo.nState==ND_STATE_PLAYBACK) {
 if ((objP = GuidedMslView ())) {
 	if (gameOpts->render.cockpit.bGuidedInMainView)	{
 		gameStates.render.nRenderingType = 6+ (1<<4);
-		DoCockpitWindowView (1, gameData.objs.viewer, 0, WBUMSL, "SHIP");
+		DoCockpitWindowView (1, gameData.objs.viewerP, 0, WBUMSL, "SHIP");
 		}
 	else {
 		gameStates.render.nRenderingType = 1+ (1<<4);
@@ -715,20 +715,18 @@ else {
 			DoCockpitWindowView (1, NULL, 0, WBU_STATIC, NULL);
 		gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP = NULL;
 		}
-	if (gameData.objs.missileViewer && !gameStates.render.bExternalView) {		//do missile view
-		static int mv_sig=-1;
-		if (mv_sig == -1)
-			mv_sig = gameData.objs.missileViewer->nSignature;
+	if (gameData.objs.missileViewerP && !gameStates.render.bExternalView) {		//do missile view
+		static int mv_sig = gameData.objs.missileViewerP->info.nSignature;
 		if (/*!gameStates.app.bD1Mission && */ //allow in D1 levels
 				gameOpts->render.cockpit.bMissileView &&
-				(gameData.objs.missileViewer->nType != OBJ_NONE) &&
-				(gameData.objs.missileViewer->nSignature == mv_sig)) {
+				(gameData.objs.missileViewerP->info.nType != OBJ_NONE) &&
+				(gameData.objs.missileViewerP->info.nSignature == mv_sig)) {
   			gameStates.render.nRenderingType = 2 + (1<<4);
-			DoCockpitWindowView (1, gameData.objs.missileViewer, 0, WBUMSL, "MISSILE");
+			DoCockpitWindowView (1, gameData.objs.missileViewerP, 0, WBUMSL, "MISSILE");
 			bDidMissileView = 1;
 			}
 		else {
-			gameData.objs.missileViewer = NULL;
+			gameData.objs.missileViewerP = NULL;
 			mv_sig = -1;
 			gameStates.render.nRenderingType = 255;
 			DoCockpitWindowView (1, NULL, 0, WBU_STATIC, NULL);
@@ -746,11 +744,11 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		case CV_REAR:
 			if (gameStates.render.bRearView) {		//if big window is rear view, show front here
 				gameStates.render.nRenderingType = 3+ (w<<4);
-				DoCockpitWindowView (w, gameData.objs.console, 0, WBU_REAR, "FRONT");
+				DoCockpitWindowView (w, gameData.objs.consoleP, 0, WBU_REAR, "FRONT");
 				}
 			else {					//show Normal rear view
 				gameStates.render.nRenderingType = 3+ (w<<4);
-				DoCockpitWindowView (w, gameData.objs.console, 1, WBU_REAR, "REAR");
+				DoCockpitWindowView (w, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
 				}
 			break;
 
@@ -797,7 +795,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		case CV_RADAR_TOPDOWN:
 		case CV_RADAR_HEADSUP:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0))
-				DoCockpitWindowView (w, gameData.objs.console, 0,
+				DoCockpitWindowView (w, gameData.objs.consoleP, 0,
 					(gameStates.render.cockpit.n3DView [w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "MINI MAP");
 			else
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
@@ -833,7 +831,7 @@ SetLightningLights ();
 if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	int w, h, aw;
 	const char *msg = "Guided Missile View";
-	tObject *viewerSave = gameData.objs.viewer;
+	tObject *viewerSave = gameData.objs.viewerP;
 
    if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		gameStates.render.cockpit.bBigWindowSwitch = 1;
@@ -841,13 +839,13 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 		gameStates.render.cockpit.nMode = CM_STATUS_BAR;
 		return;
 		}
-  	gameData.objs.viewer = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
-	UpdateRenderedData (0, gameData.objs.viewer, 0, 0);
+  	gameData.objs.viewerP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+	UpdateRenderedData (0, gameData.objs.viewerP, 0, 0);
 	if (RenderCameras ())
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
 	RenderFrame (0, 0);
-  	WakeupRenderedObjects (gameData.objs.viewer, 0);
-	gameData.objs.viewer = viewerSave;
+  	WakeupRenderedObjects (gameData.objs.viewerP, 0);
+	gameData.objs.viewerP = viewerSave;
 	GrSetCurFont (GAME_FONT);    //GAME_FONT);
 	GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 	GrGetStringSize (msg, &w, &h, &aw);
@@ -863,7 +861,7 @@ else {
 		gameStates.render.cockpit.bBigWindowSwitch = 0;
 		return;
 		}
-	UpdateRenderedData (0, gameData.objs.viewer, gameStates.render.bRearView, 0);
+	UpdateRenderedData (0, gameData.objs.viewerP, gameStates.render.bRearView, 0);
 	if (RenderCameras ())
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
 	RenderFrame (0, 0);

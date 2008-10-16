@@ -106,16 +106,16 @@ typedef struct tSequencePacket {
 typedef struct tFrameInfo {
 	ubyte       nType;                   // What nType of packet
 	ubyte       pad[3];                 // Pad out length of tFrameInfo packet
-	int         numpackets;
-	vmsVector	obj_pos;
-	vmsMatrix	obj_orient;
-	vmsVector	phys_velocity;
-	vmsVector	phys_rotvel;
-	short       obj_segnum;
-	ushort      data_size;          // Size of data appended to the net packet
+	int         nPackets;
+	vmsVector	objPos;
+	vmsMatrix	objOrient;
+	vmsVector	physVelocity;
+	vmsVector	physRotVel;
+	short       nObjSeg;
+	ushort      dataSize;          // Size of data appended to the net packet
 	ubyte       nPlayer;
-	ubyte       obj_renderType;
-	ubyte       level_num;
+	ubyte       objRenderType;
+	ubyte       nLevel;
 	ubyte       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
 } tFrameInfo;
 
@@ -126,12 +126,12 @@ typedef struct tFrameInfo {
 typedef struct tFrameInfoShort {
 	ubyte       nType;                   // What nType of packet
 	ubyte       pad[3];                 // Pad out length of tFrameInfo packet
-	int         numpackets;
-	tShortPos   thepos;
-	ushort      data_size;          // Size of data appended to the net packet
+	int         nPackets;
+	tShortPos   objPos;
+	ushort      dataSize;          // Size of data appended to the net packet
 	ubyte       nPlayer;
-	ubyte       obj_renderType;
-	ubyte       level_num;
+	ubyte       objRenderType;
+	ubyte       nLevel;
 	ubyte       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
 } __pack__ tFrameInfoShort;
 
@@ -434,7 +434,7 @@ typedef struct tEndLevelInfo {
 	ubyte                               nPlayer;
 	sbyte                               connected;
 	ubyte                               seconds_left;
-	short											killMatrix [MAX_PLAYERS] [MAX_PLAYERS];
+	short											killMatrix [MAX_PLAYERS][MAX_PLAYERS];
 	short                               kills;
 	short                               killed;
 } tEndLevelInfo;

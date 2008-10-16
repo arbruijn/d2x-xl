@@ -178,9 +178,9 @@ if (pMsgs->nMessages > 0) {
 			tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
 			tObject *gmObjP = gmiP->objP;
 			if (gmObjP && 
-				 (gmObjP->nType == OBJ_WEAPON) && 
-				 (gmObjP->id == GUIDEDMSL_ID) &&
-			    (gmObjP->nSignature == gmiP->nSignature))
+				 (gmObjP->info.nType == OBJ_WEAPON) && 
+				 (gmObjP->info.nId == GUIDEDMSL_ID) &&
+			    (gmObjP->info.nSignature == gmiP->nSignature))
 				yStart += SMALL_FONT->ftHeight + 3;
 			}
 

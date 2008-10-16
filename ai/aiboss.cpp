@@ -99,10 +99,10 @@ nSelectedSegs = 0;
 #endif
 //	See if there is a boss.  If not, quick out.
 nSegments = 0;
-xBossSizeSave = bossObjP->size;
-// -- Causes problems!!	-- bossObjP->size = FixMul ((F1_0/4)*3, bossObjP->size);
-nBossHomeSeg = bossObjP->nSegment;
-vBossHomePos = bossObjP->position.vPos;
+xBossSizeSave = bossObjP->info.xSize;
+// -- Causes problems!!	-- bossObjP->info.xSize = FixMul ((F1_0/4)*3, bossObjP->info.xSize);
+nBossHomeSeg = bossObjP->info.nSegment;
+vBossHomePos = bossObjP->info.position.vPos;
 nGroup = gameData.segs.xSegments [nBossHomeSeg].group;
 head =
 tail = 0;
@@ -155,8 +155,8 @@ while (tail != head) {
 
 errorExit:
 
-bossObjP->size = xBossSizeSave;
-bossObjP->position.vPos = vBossHomePos;
+bossObjP->info.xSize = xBossSizeSave;
+bossObjP->info.position.vPos = vBossHomePos;
 RelinkObject (objList, nBossHomeSeg);
 *segCountP = nSegments;
 }
@@ -236,8 +236,7 @@ if (nBoss < 0)
 if (gameData.time.xGame - gameData.boss [nBoss].nLastGateTime < gameData.boss [nBoss].nGateInterval)
 	return -1;
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-	if ((OBJECTS [i].nType == OBJ_ROBOT) &&
-		 (OBJECTS [i].matCenCreator == BOSS_GATE_MATCEN_NUM))
+	if ((OBJECTS [i].info.nType == OBJ_ROBOT) && (OBJECTS [i].info.nCreator == BOSS_GATE_MATCEN_NUM))
 		count++;
 if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
 	gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
@@ -261,7 +260,7 @@ for (;;) {
 	else
 		break;
 	}
-nObject = tObject::Create (OBJ_ROBOT, nObjId, -1, nSegment, vObjPos, vmsMatrix::IDENTITY, objsize, CT_AI, MT_PHYSICS, RT_POLYOBJ, 0);
+nObject = CreateRobot (nObjId, nSegment, vObjPos);
 if (nObject < 0) {
 	gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
 	return -1;
@@ -269,7 +268,7 @@ if (nObject < 0) {
 // added lifetime increase depending on difficulty level 04/26/06 DM
 gameData.multigame.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
 objP = OBJECTS + nObject;
-objP->lifeleft = F1_0 * 30 + F0_5 * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
+objP->info.xLifeLeft = F1_0 * 30 + F0_5 * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
 //Set polygon-tObject-specific data
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 objP->rType.polyObjInfo.nSubObjFlags = 0;
@@ -277,9 +276,9 @@ objP->rType.polyObjInfo.nSubObjFlags = 0;
 objP->mType.physInfo.mass = botInfoP->mass;
 objP->mType.physInfo.drag = botInfoP->drag;
 objP->mType.physInfo.flags |= (PF_LEVELLING);
-objP->shields = botInfoP->strength;
-objP->matCenCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
-default_behavior = ROBOTINFO (objP->id).behavior;
+objP->info.xShields = botInfoP->strength;
+objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
+default_behavior = ROBOTINFO (objP->info.nId).behavior;
 InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
 ObjectCreateExplosion (nSegment, &vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
@@ -295,7 +294,7 @@ return OBJ_IDX (objP);
 int BossSpewRobot (tObject *objP, vmsVector *pos, short objType, int bObjTrigger)
 {
 	short			nObject, nSegment, maxRobotTypes;
-	short			nBossIndex, nBossId = ROBOTINFO (objP->id).bossFlag;
+	short			nBossIndex, nBossId = ROBOTINFO (objP->info.nId).bossFlag;
 	tRobotInfo	*pri;
 	vmsVector	vPos;
 
@@ -303,7 +302,7 @@ if (!bObjTrigger && FindObjTrigger (OBJ_IDX (objP), TT_SPAWN_BOT, -1))
 	return -1;
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
-nSegment = pos ? FindSegByPos (*pos, objP->nSegment, 1, 0) : objP->nSegment;
+nSegment = pos ? FindSegByPos (*pos, objP->info.nSegment, 1, 0) : objP->info.nSegment;
 if (nSegment == -1) {
 #if TRACE
 	con_printf (CONDBG, "Tried to spew a bot outside the mine! Aborting!\n");
@@ -338,7 +337,7 @@ if (nObject != -1) {
 		newObjP->mType.physInfo.flags |= PF_USES_THRUST;
 
 		//	Now, give a big initial velocity to get moving away from boss.
-		newObjP->mType.physInfo.velocity = *pos - objP->position.vPos;
+		newObjP->mType.physInfo.velocity = *pos - objP->info.position.vPos;
 		vmsVector::Normalize(newObjP->mType.physInfo.velocity);
 		newObjP->mType.physInfo.velocity *= (F1_0*128);
 		}
@@ -375,10 +374,10 @@ gameData.collisions.nSegsVisited = 0;
 COMPUTE_SEGMENT_CENTER_I (&vSegCenter, nSegment);
 for (nPos = 0; nPos < 9; nPos++) {
 	if (!nPos)
-		bossObjP->position.vPos = vSegCenter;
+		bossObjP->info.position.vPos = vSegCenter;
 	else {
 		vVertPos = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [nPos-1]];
-		bossObjP->position.vPos = vmsVector::Avg(vVertPos, vSegCenter);
+		bossObjP->info.position.vPos = vmsVector::Avg(vVertPos, vSegCenter);
 		}
 	RelinkObject (nObject, nSegment);
 	if (!ObjectIntersectsWall (bossObjP))
@@ -397,10 +396,10 @@ int IsValidTeleportDest (vmsVector *vPos, int nMinDist)
 	fix			xDist;
 
 for (i = gameData.objs.nLastObject [0]; i; i--, objP++) {
-	if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) {
-		vOffs = *vPos - objP->position.vPos;
+	if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_PLAYER)) {
+		vOffs = *vPos - objP->info.position.vPos;
 		xDist = vOffs.Mag();
-		if (xDist > ((nMinDist + objP->size) * 3 / 2))
+		if (xDist > ((nMinDist + objP->info.xSize) * 3 / 2))
 			return 1;
 		}
 	}
@@ -429,7 +428,7 @@ do {
 	if (IsMultiGame)
 		MultiSendBossActions (nObject, 1, nRandSeg, 0);
 	COMPUTE_SEGMENT_CENTER_I (&vNewPos, nRandSeg);
-	if (IsValidTeleportDest (&vNewPos, objP->size))
+	if (IsValidTeleportDest (&vNewPos, objP->info.xSize))
 		break;
 	}
 	while (--nAttempts);
@@ -438,12 +437,12 @@ if (!nAttempts)
 RelinkObject (nObject, nRandSeg);
 gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
 //	make boss point right at tPlayer
-objP->position.vPos = vNewPos;
-vBossDir = OBJECTS [LOCALPLAYER.nObject].position.vPos - vNewPos;
-objP->position.mOrient = vmsMatrix::CreateF(vBossDir);
-DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, &objP->position.vPos, 0 , F1_0);
+objP->info.position.vPos = vNewPos;
+vBossDir = OBJECTS [LOCALPLAYER.nObject].info.position.vPos - vNewPos;
+objP->info.position.mOrient = vmsMatrix::CreateF(vBossDir);
+DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, &objP->info.position.vPos, 0 , F1_0);
 DigiKillSoundLinkedToObject (nObject);
-DigiLinkSoundToObject2 (ROBOTINFO (objP->id).seeSound, OBJ_IDX (objP), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
+DigiLinkSoundToObject2 (ROBOTINFO (objP->info.nId).seeSound, OBJ_IDX (objP), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
 //	After a teleport, boss can fire right away.
 gameData.ai.localInfo [nObject].nextPrimaryFire = 0;
 gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
@@ -453,7 +452,7 @@ gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
 
 void StartBossDeathSequence (tObject *objP)
 {
-if (ROBOTINFO (objP->id).bossFlag) {
+if (ROBOTINFO (objP->info.nId).bossFlag) {
 	int	nObject = OBJ_IDX (objP),
 			i = FindBoss (nObject);
 
@@ -474,7 +473,7 @@ if (i < 0)
 	return;
 rval = DoRobotDyingFrame (objP, gameData.boss [i].nDyingStartTime, BOSS_DEATH_DURATION,
 								 &gameData.boss [i].bDyingSoundPlaying,
-								 ROBOTINFO (objP->id).deathrollSound, F1_0*4, F1_0*4);
+								 ROBOTINFO (objP->info.nId).deathrollSound, F1_0*4, F1_0*4);
 if (rval) {
 	RemoveBoss (i);
 	DoReactorDestroyedStuff (NULL);
@@ -493,15 +492,15 @@ nObject = OBJ_IDX (objP);
 i = FindBoss (nObject);
 if (i < 0)
 	return;
-nBossId = ROBOTINFO (objP->id).bossFlag;
+nBossId = ROBOTINFO (objP->info.nId).bossFlag;
 //	Assert ((nBossId >= BOSS_D2) && (nBossId < BOSS_D2 + NUM_D2_BOSSES));
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #if DBG
-if (objP->shields != gameData.boss [i].xPrevShields) {
+if (objP->info.xShields != gameData.boss [i].xPrevShields) {
 #if TRACE
-	con_printf (CONDBG, "Boss shields = %7.3f, tObject %i\n", X2F (objP->shields), OBJ_IDX (objP));
+	con_printf (CONDBG, "Boss shields = %7.3f, tObject %i\n", X2F (objP->info.xShields), OBJ_IDX (objP));
 #endif
-	gameData.boss [i].xPrevShields = objP->shields;
+	gameData.boss [i].xPrevShields = objP->info.xShields;
 	}
 #endif
 	//	New code, fixes stupid bug which meant boss never gated in robots if > 32767 seconds played.
@@ -527,8 +526,8 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 				TeleportBoss (objP);
 				if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewBotsTeleport) {
 					vmsVector	spewPoint;
-					spewPoint = objP->position.mOrient[FVEC] * (objP->size * 2);
-					spewPoint += objP->position.vPos;
+					spewPoint = objP->info.position.mOrient[FVEC] * (objP->info.xSize * 2);
+					spewPoint += objP->info.position.vPos;
 					if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewMore && (d_rand () > 16384) &&
 						 (BossSpewRobot (objP, &spewPoint, -1, 0) != -1))
 						gameData.boss [i].nLastGateTime = gameData.time.xGame - gameData.boss [i].nGateInterval - 1;	//	Force allowing spew of another bot.

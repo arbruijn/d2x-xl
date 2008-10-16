@@ -809,7 +809,7 @@ return 0;
 
 fix CheckHitboxToHitbox (vmsVector *intP, tObject *objP1, tObject *objP2, vmsVector *p0, vmsVector *p1)
 {
-	vmsVector		vHit, vPos = objP2->position.vPos;
+	vmsVector		vHit, vPos = objP2->info.position.vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
 	tModelHitboxes	*pmhb1 = gameData.models.hitboxes + objP1->rType.polyObjInfo.nModel;
 	tModelHitboxes	*pmhb2 = gameData.models.hitboxes + objP2->rType.polyObjInfo.nModel;
@@ -914,14 +914,14 @@ return xDist;
 
 static inline int UseHitbox (tObject *objP)
 {
-return (objP->renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0); // && ((objP->nType != OBJ_WEAPON) || gameData.objs.bIsMissile [objP->id]);
+return (objP->info.renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0); // && ((objP->info.nType != OBJ_WEAPON) || gameData.objs.bIsMissile [objP->info.nId]);
 }
 
 //	-----------------------------------------------------------------------------
 
 static inline int UseSphere (tObject *objP)
 {
-	int nType = objP->nType;
+	int nType = objP->info.nType;
 
 return (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POWERUP);
 }
@@ -939,13 +939,13 @@ fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad,
 if (rad < 0)
 	size = 0;
 else {
-	size = thisObjP->size;
-	if ((thisObjP->nType == OBJ_ROBOT) && ROBOTINFO (thisObjP->id).attackType)
+	size = thisObjP->info.xSize;
+	if ((thisObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (thisObjP->info.nId).attackType)
 		size = 3 * size / 4;
 	//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
-	if ((thisObjP->nType == OBJ_PLAYER) &&
-		 ((otherObjP->nType == OBJ_PLAYER) ||
- 		 (IsCoopGame && (otherObjP->nType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
+	if ((thisObjP->info.nType == OBJ_PLAYER) &&
+		 ((otherObjP->info.nType == OBJ_PLAYER) ||
+ 		 (IsCoopGame && (otherObjP->info.nType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parent.nType == OBJ_PLAYER))))
 		size /= 2;
 	}
 
@@ -956,13 +956,13 @@ if ((bThisPoly = UseHitbox (thisObjP)))
 	PolyObjPos (thisObjP, &vPos);
 else
 #endif
-vPos = thisObjP->position.vPos;
+vPos = thisObjP->info.position.vPos;
 if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
 	VmPointLineIntersection(hitP, *p0, *p1, vPos, 0);
 	dist = vmsVector::Dist(hitP, vPos);
-	if (dist > 2 * (thisObjP->size + otherObjP->size))
+	if (dist > 2 * (thisObjP->info.xSize + otherObjP->info.xSize))
 		return 0;
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
@@ -970,11 +970,11 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 			if (!vmsVector::Dist(*p0, *p1))
 				return 0;
 			dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, 0);
-			if ((dist == 0x7fffffff) || (dist > otherObjP->size))
+			if ((dist == 0x7fffffff) || (dist > otherObjP->info.xSize))
 				return 0;
 			}
 		CheckHitboxToHitbox(&hitP, otherObjP, thisObjP, p0, p1);
-//		VmPointLineIntersection(hitP, *p0, *p1, hitP, thisObjP->position.vPos, 1);
+//		VmPointLineIntersection(hitP, *p0, *p1, hitP, thisObjP->info.position.vPos, 1);
 		VmPointLineIntersection(hitP, *p0, *p1, hitP, 1);
 		}
 	else {
@@ -983,21 +983,21 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
 			vn = *p1-*p0;
 			vmsVector::Normalize(vn);
-			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, otherObjP->size)))
+			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, otherObjP->info.xSize)))
 				return 0;
-//			VmPointLineIntersection(hitP, *p0, *p1, hitP, &otherObjP->position.vPos, 1);
+//			VmPointLineIntersection(hitP, *p0, *p1, hitP, &otherObjP->info.position.vPos, 1);
 			VmPointLineIntersection(hitP, *p0, *p1, hitP, 1);
 			}
 		else {
 		// *otherObjP (moving) has hitboxes, *thisObjP (stationary) a hit sphere. To detect whether the sphere
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
-			v0 = thisObjP->position.vPos;
-			vn = otherObjP->position.vPos - v0;
+			v0 = thisObjP->info.position.vPos;
+			vn = otherObjP->info.position.vPos - v0;
 			vmsVector::Normalize(vn);
-			v1 = v0 + vn * thisObjP->size;
-			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, &v0, &v0, &vn, p1, otherObjP, thisObjP->size)))
+			v1 = v0 + vn * thisObjP->info.xSize;
+			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize)))
 				return 0;
-//			VmPointLineIntersection(hitP, *p0, *p1, hitP, &thisObjP->position.vPos, 1);
+//			VmPointLineIntersection(hitP, *p0, *p1, hitP, &thisObjP->info.position.vPos, 1);
 			VmPointLineIntersection(hitP, *p0, *p1, hitP, 1);
 			}
 		}
@@ -1064,14 +1064,14 @@ if (flags & FQ_GET_SEGLIST)
 *nSegments = 1;
 gameData.collisions.hitData.nNestCount++;
 //first, see if vector hit any objects in this tSegment
-nThisType = (nThisObject < 0) ? -1 : OBJECTS [nThisObject].nType;
+nThisType = (nThisObject < 0) ? -1 : OBJECTS [nThisObject].info.nType;
 #if 1
 if (flags & FQ_CHECK_OBJS) {
 	//PrintLog ("   checking objects...");
 	nObjSegList [0] = nStartSeg;
 	nObjSegs = 1;
 #	if DBG
-	if ((thisObjP->nType == OBJ_WEAPON) && (thisObjP->nSegment == gameData.objs.console->nSegment))
+	if ((thisObjP->info.nType == OBJ_WEAPON) && (thisObjP->info.nSegment == gameData.objs.consoleP->info.nSegment))
 		flags = flags;
 #	endif
 #if 1
@@ -1088,10 +1088,10 @@ if (flags & FQ_CHECK_OBJS) {
 	for (iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
 		short nSegment = nObjSegList [iObjSeg];
 		segP = gameData.segs.segments + nSegment;
-		for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = otherObjP->next) {
+		for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = otherObjP->info.nNext) {
 			otherObjP = OBJECTS + nObject;
-			nOtherType = otherObjP->nType;
-			if (otherObjP->flags & OF_SHOULD_BE_DEAD)
+			nOtherType = otherObjP->info.nType;
+			if (otherObjP->info.nFlags & OF_SHOULD_BE_DEAD)
 				continue;
 			if (nThisObject == nObject)
 				continue;
@@ -1121,13 +1121,13 @@ if (flags & FQ_CHECK_OBJS) {
 					}
 				if (nOtherType == OBJ_ROBOT)
 					nOtherType = OBJ_ROBOT;
-				if (ROBOTINFO (thisObjP->id).attackType)
+				if (ROBOTINFO (thisObjP->info.nId).attackType)
 					nFudgedRad = (radP1 * 3) / 4;
 				}
 			//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
 			if ((nThisType == OBJ_PLAYER) &&
 				 ((nOtherType == OBJ_PLAYER) ||
-				 (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
+				 (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parent.nType == OBJ_PLAYER))))
 				nFudgedRad = radP1 / 2;
 			if (flags & FQ_ANY_OBJECT)
 				d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
@@ -1390,7 +1390,7 @@ gameData.collisions.hitData.nObject = -1;
 //check to make sure start point is in seg its supposed to be in
 //Assert(check_point_in_seg(p0, startseg, 0).centerMask==0);	//start point not in seg
 
-// gameData.objs.viewer is not in tSegment as claimed, so say there is no hit.
+// gameData.objs.viewerP is not in tSegment as claimed, so say there is no hit.
 masks = GetSegMasks (*fq->p0, fq->startSeg, 0);
 if (masks.centerMask) {
 	hitData->hit.nType = HIT_BAD_P0;
@@ -1694,7 +1694,7 @@ return 0;
 //Returns true if the tObject is through any walls
 int ObjectIntersectsWall (tObject *objP)
 {
-return SphereIntersectsWall (&objP->position.vPos, objP->nSegment, objP->size);
+return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, objP->info.xSize);
 }
 
 //------------------------------------------------------------------------------
@@ -1714,9 +1714,9 @@ fq.radP1 = 0;
 fq.thisObjNum = objP ? OBJ_IDX (objP) : -1;
 fq.flags = FQ_TRANSWALL;
 if (SPECTATOR (objP))
-	fq.startSeg = FindSegByPos (objP->position.vPos, objP->nSegment, 1, 0);
+	fq.startSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 else
-	fq.startSeg = objP ? objP->nSegment : nSegment;
+	fq.startSeg = objP ? objP->info.nSegment : nSegment;
 fq.ignoreObjList = NULL;
 nHitType = FindVectorIntersection (&fq, &hit_data);
 return nHitType != HIT_WALL;
@@ -1734,11 +1734,11 @@ int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 do {
 	if (nTries++)
 		fq.startSeg		= bSpectate ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) :
-							  FindSegByPos (objP1->position.vPos, objP1->nSegment, 1, 0);
+							  FindSegByPos (objP1->info.position.vPos, objP1->info.nSegment, 1, 0);
 	else
-		fq.startSeg		= bSpectate ? gameStates.app.nPlayerSegment : objP1->nSegment;
-	fq.p0					= bSpectate ? &gameStates.app.playerPos.vPos : &objP1->position.vPos;
-	fq.p1					= SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->position.vPos;
+		fq.startSeg		= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
+	fq.p0					= bSpectate ? &gameStates.app.playerPos.vPos : &objP1->info.position.vPos;
+	fq.p1					= SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->info.position.vPos;
 	fq.radP0				=
 	fq.radP1				= 0x10;
 	fq.thisObjNum		= OBJ_IDX (objP1);

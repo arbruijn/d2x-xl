@@ -45,7 +45,7 @@ if (OBJ_IDX (objP) == nDbgObj)
 #endif
 if (gameOpts->gameplay.bIdleAnims) {
 		int			h, i, j;
-		tSegment		*segP = gameData.segs.segments + objP->nSegment;
+		tSegment		*segP = gameData.segs.segments + objP->info.nSegment;
 		vmsVector	*vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [OBJ_IDX (objP)];
 
 	for (i = 0; i < 8; i++) {
@@ -53,23 +53,23 @@ if (gameOpts->gameplay.bIdleAnims) {
 		if ((vGoal[X] == (*vVertex)[X]) && (vGoal[Y] == (*vVertex)[Y]) && (vGoal[Z] == (*vVertex)[Z]))
 			break;
 		}
-	vVecToGoal = vGoal - objP->position.vPos; vmsVector::Normalize(vVecToGoal);
+	vVecToGoal = vGoal - objP->info.position.vPos; vmsVector::Normalize(vVecToGoal);
 	if (i == 8)
 		h = 1;
-	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->id).turnTime [2]) < F1_0 - F1_0 / 5) {
-		if (vmsVector::Dot(vVecToGoal, objP->position.mOrient[FVEC]) > F1_0 - F1_0 / 5)
+	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->info.nId).turnTime [2]) < F1_0 - F1_0 / 5) {
+		if (vmsVector::Dot(vVecToGoal, objP->info.position.mOrient[FVEC]) > F1_0 - F1_0 / 5)
 			h = rand () % 2 == 0;
 		else
 			h = 0;
 		}
-	else if (MoveTowardsPoint (objP, &vGoal, objP->size * 3 / 2))
+	else if (MoveTowardsPoint (objP, &vGoal, objP->info.xSize * 3 / 2))
 		h = rand () % 8 == 0;
 	else
 		h = 1;
 	if (h && (rand () % 25 == 0)) {
 		j = rand () % 8;
 		if ((j == i) || (rand () % 3 == 0))
-			COMPUTE_SEGMENT_CENTER_I (&vGoal, objP->nSegment);
+			COMPUTE_SEGMENT_CENTER_I (&vGoal, objP->info.nSegment);
 		else
 			vGoal = gameData.segs.vertices [segP->verts [j]];
 		gameData.objs.vRobotGoals [OBJ_IDX (objP)] = vGoal;
@@ -90,13 +90,13 @@ int DoSillyAnimation (tObject *objP)
 	tJointPos 		*jp_list;
 	int				robotType, nGun, robotState, nJointPositions;
 	tPolyObjInfo	*polyObjInfo = &objP->rType.polyObjInfo;
-	tAIStatic		*aiP = &objP->cType.aiInfo;
+	tAIStaticInfo		*aiP = &objP->cType.aiInfo;
 	int				num_guns, at_goal;
 	int				attackType;
 	int				flinch_attack_scale = 1;
 
 	Assert (nObject >= 0);
-	robotType = objP->id;
+	robotType = objP->info.nId;
 	num_guns = ROBOTINFO (robotType).nGuns;
 	attackType = ROBOTINFO (robotType).attackType;
 
@@ -194,8 +194,8 @@ int DoSillyAnimation (tObject *objP)
 		}
 
 		if (at_goal) {
-			//tAIStatic	*aiP = &objP->cType.aiInfo;
-			tAILocal		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
+			//tAIStaticInfo	*aiP = &objP->cType.aiInfo;
+			tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
 			ailP->achievedState [nGun] = ailP->goalState [nGun];
 			if (ailP->achievedState [nGun] == AIS_RECOVER)
 				ailP->goalState [nGun] = AIS_FIRE;
@@ -337,14 +337,14 @@ objP->cType.aiInfo.SKIP_AI_COUNT = 0;
 int DoAnyRobotDyingFrame (tObject *objP)
 {
 if (objP->cType.aiInfo.xDyingStartTime) {
-	int bDeathRoll = ROBOTINFO (objP->id).bDeathRoll;
+	int bDeathRoll = ROBOTINFO (objP->info.nId).bDeathRoll;
 	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, min (bDeathRoll / 2 + 1, 6) * F1_0, 
-											&objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP->id).deathrollSound, 
+											&objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP->info.nId).deathrollSound, 
 											bDeathRoll * F1_0 / 8, bDeathRoll * F1_0 / 2);
 	if (rval) {
 		ExplodeObject (objP, F1_0/4);
 		DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
-		if ((gameData.missions.nCurrentLevel < 0) && (ROBOTINFO (objP->id).thief))
+		if ((gameData.missions.nCurrentLevel < 0) && (ROBOTINFO (objP->info.nId).thief))
 			RecreateThief (objP);
 		}
 	return 1;

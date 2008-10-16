@@ -58,29 +58,28 @@ tObject *CreateExplBlast (tObject *parentObjP)
 
 if (!gameOpts->render.effects.bExplBlasts)
 	return NULL;
-nObject = tObject::Create(OBJ_FIREBALL, 0, -1, parentObjP->nSegment, parentObjP->position.vPos, vmsMatrix::IDENTITY,
-								2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_EXPLBLAST, 1);
+nObject = CreateFireball (0, parentObjP->info.nSegment, parentObjP->info.position.vPos, 2 * parentObjP->info.xSize, RT_EXPLBLAST);
 if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
-objP->lifeleft = BLAST_LIFE;
+objP->info.xLifeLeft = BLAST_LIFE;
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
-objP->size = parentObjP->size;
-objP->size /= 3;
-if ((parentObjP->nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = parentObjP->id])) {
+objP->info.xSize = parentObjP->info.xSize;
+objP->info.xSize /= 3;
+if ((parentObjP->info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = parentObjP->info.nId])) {
 	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID)) {
-		objP->size = 5 * F1_0 / 2;
-//		objP->lifeleft = 3 * BLAST_LIFE / 2;
+		objP->info.xSize = 5 * F1_0 / 2;
+//		objP->info.xLifeLeft = 3 * BLAST_LIFE / 2;
 		}
 	else if ((id == MEGAMSL_ID) || (id == ROBOT_MEGAMSL_ID) || (id == EARTHSHAKER_MEGA_ID))
-		objP->size = 2 * F1_0;
+		objP->info.xSize = 2 * F1_0;
 	else if ((id == SMARTMSL_ID) || (id == ROBOT_SMARTMSL_ID))
-		objP->size = 3 * F1_0 / 2;
+		objP->info.xSize = 3 * F1_0 / 2;
 	else {
-		//objP->lifeleft /= 2;
-		objP->size = F1_0;
+		//objP->info.xLifeLeft /= 2;
+		objP->info.xSize = F1_0;
 		}
 	}
 return objP;
@@ -95,16 +94,15 @@ tObject *CreateLighting (tObject *parentObjP)
 
 if (!EGI_FLAG (bUseLightnings, 0, 0, 1))
 	return NULL;
-nObject = tObject::Create(OBJ_FIREBALL, 0, -1, parentObjP->nSegment, parentObjP->position.vPos, vmsMatrix::IDENTITY,
-								2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_LIGHTNING, 1);
+nObject = CreateFireball (0, parentObjP->info.nSegment, parentObjP->info.position.vPos, 2 * parentObjP->info.xSize, RT_LIGHTNING);
 if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
-objP->lifeleft = IMMORTAL_TIME;
+objP->info.xLifeLeft = IMMORTAL_TIME;
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
-objP->size = 1;
+objP->info.xSize = 1;
 return objP;
 }
 
@@ -119,8 +117,7 @@ tObject *ObjectCreateExplosionSub (tObject *objP, short nSegment, vmsVector *vPo
 	vmsVector	pos_hit, vForce;
 	int			i, t, id;
 
-nObject = tObject::Create(OBJ_FIREBALL, nVClip, -1, nSegment, *vPos, vmsMatrix::IDENTITY, xSize,
-							   CT_EXPLOSION, MT_NONE, RT_FIREBALL, 1);
+nObject = CreateFireball (nVClip, nSegment, *vPos, xSize, RT_FIREBALL);
 
 if (nObject < 0) {
 #if TRACE
@@ -131,7 +128,7 @@ if (nObject < 0) {
 
 explObjP = OBJECTS + nObject;
 //now set explosion-specific data
-explObjP->lifeleft = gameData.eff.vClips [0][nVClip].xTotalTime;
+explObjP->info.xLifeLeft = gameData.eff.vClips [0][nVClip].xTotalTime;
 explObjP->cType.explInfo.nSpawnTime = -1;
 explObjP->cType.explInfo.nDeleteObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
@@ -140,28 +137,28 @@ if (xMaxDamage <= 0)
 	return explObjP;
 // -- now legal for xBadAss explosions on a tWall. Assert (objP != NULL);
 for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
-	t = obj0P->nType;
-	id = obj0P->id;
+	t = obj0P->info.nType;
+	id = obj0P->info.nId;
 	//	Weapons used to be affected by xBadAss explosions, but this introduces serious problems.
 	//	When a smart bomb blows up, if one of its children goes right towards a nearby tWall, it will
 	//	blow up, blowing up all the children.  So I remove it.  MK, 09/11/94
 	if (obj0P == objP)
 		continue;
-	if (obj0P->flags & OF_SHOULD_BE_DEAD)
+	if (obj0P->info.nFlags & OF_SHOULD_BE_DEAD)
 		continue;
 	if (t == OBJ_WEAPON) {
-		if (!WeaponIsMine (obj0P->id))
+		if (!WeaponIsMine (obj0P->info.nId))
 		continue;
 		}
 	else if (t == OBJ_ROBOT) {
 		if (nParent < 0)
 			continue;
-		if ((OBJECTS [nParent].nType == OBJ_ROBOT) && (OBJECTS [nParent].id == id))
+		if ((OBJECTS [nParent].info.nType == OBJ_ROBOT) && (OBJECTS [nParent].info.nId == id))
 			continue;
 		}
 	else if ((t != OBJ_REACTOR) && (t != OBJ_PLAYER))
 		continue;
-	dist = vmsVector::Dist(obj0P->position.vPos, explObjP->position.vPos);
+	dist = vmsVector::Dist (obj0P->info.position.vPos, explObjP->info.position.vPos);
 	// Make damage be from 'xMaxDamage' to 0.0, where 0.0 is 'xMaxDistance' away;
 	if (dist >= xMaxDistance)
 		continue;
@@ -170,16 +167,16 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 	damage = xMaxDamage - FixMulDiv (dist, xMaxDamage, xMaxDistance);
 	force = xMaxForce - FixMulDiv (dist, xMaxForce, xMaxDistance);
 	// Find the force vector on the tObject
-	vmsVector::NormalizedDir(vForce, obj0P->position.vPos, explObjP->position.vPos);
+	vmsVector::NormalizedDir(vForce, obj0P->info.position.vPos, explObjP->info.position.vPos);
 	vForce *= force;
 	// Find where the point of impact is... (pos_hit)
-	pos_hit = explObjP->position.vPos - obj0P->position.vPos;
-	pos_hit *= (FixDiv (obj0P->size, obj0P->size + dist));
+	pos_hit = explObjP->info.position.vPos - obj0P->info.position.vPos;
+	pos_hit *= (FixDiv (obj0P->info.xSize, obj0P->info.xSize + dist));
 	if (t == OBJ_WEAPON) {
 		PhysApplyForce (obj0P, &vForce);
-		if (WeaponIsMine (obj0P->id) && (FixMul (dist, force) > I2X (8000))) {	//prox bombs have chance of blowing up
+		if (WeaponIsMine (obj0P->info.nId) && (FixMul (dist, force) > I2X (8000))) {	//prox bombs have chance of blowing up
 			KillObject (obj0P);
-			ExplodeBadassWeapon (obj0P, &obj0P->position.vPos);
+			ExplodeBadassWeapon (obj0P, &obj0P->info.position.vPos);
 			}
 		}
 	else if (t == OBJ_ROBOT) {
@@ -188,9 +185,9 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 
 		PhysApplyForce (obj0P, &vForce);
 		//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
-		if (objP && (!ROBOTINFO (obj0P->id).bossFlag) && (gameData.weapons.info [objP->id].flash)) {
-			tAIStatic	*aip = &obj0P->cType.aiInfo;
-			int			force_val = X2I (FixDiv (vForce.Mag() * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
+		if (objP && (!ROBOTINFO (obj0P->info.nId).bossFlag) && (gameData.weapons.info [objP->info.nId].flash)) {
+			tAIStaticInfo	*aip = &obj0P->cType.aiInfo;
+			int			force_val = X2I (FixDiv (vForce.Mag() * gameData.weapons.info [objP->info.nId].flash, gameData.time.xFrame)/128) + 2;
 
 			if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame >= F1_0)
 				aip->SKIP_AI_COUNT--;
@@ -206,16 +203,16 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 		vNegForce[Y] = vForce[Y] * xScale;
 		vNegForce[Z] = vForce[Z] * xScale;
 		PhysApplyRot (obj0P, &vNegForce);
-		if (obj0P->shields >= 0) {
-			if (ROBOTINFO (obj0P->id).bossFlag &&
-				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (obj0P->id).bossFlag-BOSS_D2].bInvulKinetic)
+		if (obj0P->info.xShields >= 0) {
+			if (ROBOTINFO (obj0P->info.nId).bossFlag &&
+				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (obj0P->info.nId).bossFlag-BOSS_D2].bInvulKinetic)
 				damage /= 4;
 			if (ApplyDamageToRobot (obj0P, damage, nParent)) {
 				if (!gameStates.gameplay.bNoBotAI && objP && (nParent == LOCALPLAYER.nObject))
-					AddPointsToScore (ROBOTINFO (obj0P->id).scoreValue);
+					AddPointsToScore (ROBOTINFO (obj0P->info.nId).scoreValue);
 				}
 			}
-		if (objP && ROBOTINFO (obj0P->id).companion && !gameData.weapons.info [objP->id].flash) {
+		if (objP && ROBOTINFO (obj0P->info.nId).companion && !gameData.weapons.info [objP->info.nId].flash) {
 			int	i, count;
 			char	szOuch [6*4 + 2];
 
@@ -233,7 +230,7 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 			}
 		}
 	else if (t == OBJ_REACTOR) {
-		if (obj0P->shields >= 0)
+		if (obj0P->info.xShields >= 0)
 			ApplyDamageToReactor (obj0P, damage, nParent);
 		}
 	else if (t == OBJ_PLAYER) {
@@ -241,9 +238,9 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 		vmsVector	vForce2;
 
 		//	Hack!Warning!Test code!
-		if (objP && gameData.weapons.info [objP->id].flash && obj0P->id==gameData.multiplayer.nLocalPlayer) {
-			int fe = min(F1_0*4, force*gameData.weapons.info [objP->id].flash/32);	//	For four seconds or less
-			if (objP->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {
+		if (objP && gameData.weapons.info [objP->info.nId].flash && obj0P->info.nId==gameData.multiplayer.nLocalPlayer) {
+			int fe = min(F1_0*4, force*gameData.weapons.info [objP->info.nId].flash/32);	//	For four seconds or less
+			if (objP->cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature) {
 				fe /= 2;
 				force /= 2;
 				}
@@ -255,12 +252,12 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 #endif
 				}
 			}
-		if (objP && IsMultiGame && (objP->nType == OBJ_PLAYER))
+		if (objP && IsMultiGame && (objP->info.nType == OBJ_PLAYER))
 			killerP = objP;
 		vForce2 = vForce;
 		if (nParent > -1) {
 			killerP = OBJECTS + nParent;
-			if (killerP != gameData.objs.console)		// if someone else whacks you, cut force by 2x
+			if (killerP != gameData.objs.consoleP)		// if someone else whacks you, cut force by 2x
 				vForce2[X] /= 2;
 				vForce2[Y] /= 2;
 				vForce2[Z] /= 2;
@@ -272,7 +269,7 @@ for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
 		PhysApplyRot (obj0P, &vForce2);
 		if (gameStates.app.nDifficultyLevel == 0)
 			damage /= 4;
-		if (obj0P->shields >= 0)
+		if (obj0P->info.xShields >= 0)
 			ApplyDamageToPlayer (obj0P, killerP, damage);
 		}
 	}
@@ -286,7 +283,7 @@ tObject *ObjectCreateBadassExplosion (tObject *objP, short nSegment, vmsVector *
 {
 	tObject	*explObjP = ObjectCreateExplosionSub (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 
-if (objP && (objP->nType == OBJ_WEAPON))
+if (objP && (objP->info.nType == OBJ_WEAPON))
 	CreateSmartChildren (objP, NUM_SMART_CHILDREN);
 return explObjP;
 }
@@ -296,27 +293,27 @@ return explObjP;
 //return the explosion tObject
 tObject *ExplodeBadassWeapon (tObject *objP, vmsVector *vPos)
 {
-	tWeaponInfo *wi = &gameData.weapons.info [objP->id];
+	tWeaponInfo *wi = &gameData.weapons.info [objP->info.nId];
 
 Assert (wi->damage_radius);
-if ((objP->id == EARTHSHAKER_ID) || (objP->id == ROBOT_EARTHSHAKER_ID))
+if ((objP->info.nId == EARTHSHAKER_ID) || (objP->info.nId == ROBOT_EARTHSHAKER_ID))
 	ShakerRockStuff ();
 DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0, SOUNDCLASS_EXPLOSION);
 vmsVector v;
 if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
-	v = objP->vLastPos - objP->position.vPos;
+	v = objP->info.vLastPos - objP->info.position.vPos;
 	vmsVector::Normalize(v);
 //VmVecScale (&v, F1_0 * 10);
 	v += *vPos;
 	}
 else
 	v = *vPos;
-return ObjectCreateBadassExplosion (objP, objP->nSegment, &v, //objP->vLastPos, //vPos
+return ObjectCreateBadassExplosion (objP, objP->info.nSegment, &v, //objP->info.vLastPos, //vPos
                                     wi->impact_size,
                                     wi->robot_hit_vclip,
                                     wi->strength [gameStates.app.nDifficultyLevel],
                                     wi->damage_radius, wi->strength [gameStates.app.nDifficultyLevel],
-                                    objP->cType.laserInfo.nParentObj);
+                                    objP->cType.laserInfo.parent.nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -324,7 +321,7 @@ return ObjectCreateBadassExplosion (objP, objP->nSegment, &v, //objP->vLastPos, 
 tObject *ExplodeBadassObject (tObject *objP, fix damage, fix distance, fix force)
 {
 
-	tObject 	*explObjP = ObjectCreateBadassExplosion (objP, objP->nSegment, &objP->position.vPos, objP->size,
+	tObject 	*explObjP = ObjectCreateBadassExplosion (objP, objP->info.nSegment, &objP->info.position.vPos, objP->info.xSize,
 																 (ubyte) GetExplosionVClip (objP, 0),
 																 damage, distance, force,
 																 OBJ_IDX (objP));
@@ -358,8 +355,8 @@ double ObjectVolume (tObject *objP)
 	int			i, j;
 	double		size;
 
-if (objP->renderType != RT_POLYOBJ)
-	size = 4 * Pi * pow (X2F (objP->size), 3) / 3;
+if (objP->info.renderType != RT_POLYOBJ)
+	size = 4 * Pi * pow (X2F (objP->info.xSize), 3) / 3;
 else {
 	size = 0;
 	pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
@@ -388,11 +385,8 @@ tObject *ObjectCreateDebris (tObject *parentObjP, int nSubObj)
 	tObject *debrisP;
 	tPolyModel *po;
 
-Assert ((parentObjP->nType == OBJ_ROBOT) || (parentObjP->nType == OBJ_PLAYER));
-nObject = tObject::Create(
-	OBJ_DEBRIS, 0, -1, parentObjP->nSegment, parentObjP->position.vPos, parentObjP->position.mOrient,
-	gameData.models.polyModels [parentObjP->rType.polyObjInfo.nModel].subModels.rads [nSubObj],
-	CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ, 1);
+Assert ((parentObjP->info.nType == OBJ_ROBOT) || (parentObjP->info.nType == OBJ_PLAYER));
+nObject = CreateDebris (parentObjP, nSubObj);
 if ((nObject < 0) && (gameData.objs.nLastObject [0] >= MAX_OBJECTS - 1)) {
 #if TRACE
 	con_printf (1, "Can't create tObject in ObjectCreateDebris.\n");
@@ -424,12 +418,12 @@ VmVecZero (&debrisP->mType.physInfo.rotVel);
 debrisP->mType.physInfo.rotVel = vmsVector::Create(d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
 #endif
 debrisP->mType.physInfo.rotThrust.SetZero();
-debrisP->lifeleft = nDebrisLife [gameOpts->render.nDebrisLife] * F1_0 + 3*DEBRIS_LIFE/4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
+debrisP->info.xLifeLeft = nDebrisLife [gameOpts->render.nDebrisLife] * F1_0 + 3*DEBRIS_LIFE/4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
 debrisP->mType.physInfo.mass =
 #if 0
 	(fix) ((double) parentObjP->mType.physInfo.mass * ObjectVolume (debrisP) / ObjectVolume (parentObjP));
 #else
-	FixMulDiv (parentObjP->mType.physInfo.mass, debrisP->size, parentObjP->size);
+	FixMulDiv (parentObjP->mType.physInfo.mass, debrisP->info.xSize, parentObjP->info.xSize);
 #endif
 debrisP->mType.physInfo.drag = gameOpts->render.nDebrisLife ? 256 : 0; //F2X (0.2);		//parentObjP->mType.physInfo.drag;
 if (gameOpts->render.nDebrisLife) {
@@ -443,21 +437,21 @@ return debrisP;
 
 void DrawFireball (tObject *objP)
 {
-if (objP->lifeleft > 0)
-	DrawVClipObject (objP, objP->lifeleft, 0, objP->id, (objP->nType == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
+if (objP->info.xLifeLeft > 0)
+	DrawVClipObject (objP, objP->info.xLifeLeft, 0, objP->info.nId, (objP->info.nType == OBJ_WEAPON) ? gameData.weapons.color + objP->info.nId : NULL);
 }
 
 //------------------------------------------------------------------------------
 //what tVideoClip does this explode with?
 short GetExplosionVClip (tObject *objP, int stage)
 {
-if (objP->nType==OBJ_ROBOT) {
-	if (stage==0 && ROBOTINFO (objP->id).nExp1VClip>-1)
-		return ROBOTINFO (objP->id).nExp1VClip;
-	else if (stage==1 && ROBOTINFO (objP->id).nExp2VClip>-1)
-		return ROBOTINFO (objP->id).nExp2VClip;
+if (objP->info.nType==OBJ_ROBOT) {
+	if (stage==0 && ROBOTINFO (objP->info.nId).nExp1VClip>-1)
+		return ROBOTINFO (objP->info.nId).nExp1VClip;
+	else if (stage==1 && ROBOTINFO (objP->info.nId).nExp2VClip>-1)
+		return ROBOTINFO (objP->info.nId).nExp2VClip;
 	}
-else if ((objP->nType == OBJ_PLAYER) && (gameData.pig.ship.player->nExplVClip >- 1))
+else if ((objP->info.nType == OBJ_PLAYER) && (gameData.pig.ship.player->nExplVClip >- 1))
 	return gameData.pig.ship.player->nExplVClip;
 return VCLIP_SMALL_EXPLOSION;		//default
 }
@@ -466,7 +460,7 @@ return VCLIP_SMALL_EXPLOSION;		//default
 //blow up a polygon model
 void ExplodePolyModel (tObject *objP)
 {
-Assert (objP->renderType == RT_POLYOBJ);
+Assert (objP->info.renderType == RT_POLYOBJ);
 CreateExplBlast (objP);
 RequestEffects (objP, EXPL_LIGHTNINGS | SHRAPNEL_SMOKE);
 if (gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel] != -1)
@@ -474,7 +468,7 @@ if (gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel] != -1)
 if (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels > 1) {
 	int i;
 	for (i = 1; i < gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels; i++)
-		if ((objP->nType != OBJ_ROBOT) || (objP->id != 44) || (i != 5)) 	//energy sucker energy part
+		if ((objP->info.nType != OBJ_ROBOT) || (objP->info.nId != 44) || (i != 5)) 	//energy sucker energy part
 			ObjectCreateDebris (objP, i);
 	//make parent tObject only draw center part
 	objP->rType.polyObjInfo.nSubObjFlags = 1;
@@ -487,11 +481,11 @@ void MaybeDeleteObject (tObject *delObjP)
 {
 if (gameData.models.nDeadModels [delObjP->rType.polyObjInfo.nModel] != -1) {
 	delObjP->rType.polyObjInfo.nModel = gameData.models.nDeadModels [delObjP->rType.polyObjInfo.nModel];
-	delObjP->flags |= OF_DESTROYED;
+	delObjP->info.nFlags |= OF_DESTROYED;
 	}
 else {		//Normal, multi-stage explosion
-	if (delObjP->nType == OBJ_PLAYER)
-		delObjP->renderType = RT_NONE;
+	if (delObjP->info.nType == OBJ_PLAYER)
+		delObjP->info.renderType = RT_NONE;
 	else
 		KillObject (delObjP);
 	}
@@ -501,14 +495,13 @@ else {		//Normal, multi-stage explosion
 //blow up an tObject.  Takes the tObject to destroy, and the point of impact
 void ExplodeObject (tObject *hitObjP, fix delayTime)
 {
-if (hitObjP->flags & OF_EXPLODING)
+if (hitObjP->info.nFlags & OF_EXPLODING)
 	return;
 if (delayTime) {		//wait a little while before creating explosion
 	int nObject;
 	tObject *objP;
 	//create a placeholder tObject to do the delay, with id==-1
-	nObject = tObject::Create(OBJ_FIREBALL, -1, -1, hitObjP->nSegment, hitObjP->position.vPos, vmsMatrix::IDENTITY, 0,
-									CT_EXPLOSION, MT_NONE, RT_NONE, 1);
+	nObject = CreateFireball (-1, hitObjP->info.nSegment, hitObjP->info.position.vPos, 0, RT_NONE);
 	if (nObject < 0) {
 		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
 #if TRACE
@@ -519,7 +512,7 @@ if (delayTime) {		//wait a little while before creating explosion
 		}
 	objP = OBJECTS + nObject;
 	//now set explosion-specific data
-	objP->lifeleft = delayTime;
+	objP->info.xLifeLeft = delayTime;
 	objP->cType.explInfo.nDeleteObj = OBJ_IDX (hitObjP);
 #if DBG
 	if (objP->cType.explInfo.nDeleteObj < 0)
@@ -533,7 +526,7 @@ else {
 	ubyte		nVClip;
 
 	nVClip = (ubyte) GetExplosionVClip (hitObjP, 0);
-	explObjP = ObjectCreateExplosion (hitObjP->nSegment, &hitObjP->position.vPos, FixMul (hitObjP->size, EXPLOSION_SCALE), nVClip);
+	explObjP = ObjectCreateExplosion (hitObjP->info.nSegment, &hitObjP->info.position.vPos, FixMul (hitObjP->info.xSize, EXPLOSION_SCALE), nVClip);
 	if (!explObjP) {
 		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
 #if TRACE
@@ -544,24 +537,24 @@ else {
 	//don't make debris explosions have physics, because they often
 	//happen when the debris has hit the tWall, so the fireball is trying
 	//to move into the tWall, which shows off FVI problems.
-	if ((hitObjP->nType != OBJ_DEBRIS) && (hitObjP->movementType == MT_PHYSICS)) {
-		explObjP->movementType = MT_PHYSICS;
+	if ((hitObjP->info.nType != OBJ_DEBRIS) && (hitObjP->info.movementType == MT_PHYSICS)) {
+		explObjP->info.movementType = MT_PHYSICS;
 		explObjP->mType.physInfo = hitObjP->mType.physInfo;
 		}
-	if ((hitObjP->renderType == RT_POLYOBJ) && (hitObjP->nType != OBJ_DEBRIS))
+	if ((hitObjP->info.renderType == RT_POLYOBJ) && (hitObjP->info.nType != OBJ_DEBRIS))
 		ExplodePolyModel (hitObjP);
 	MaybeDeleteObject (hitObjP);
 	}
-hitObjP->flags |= OF_EXPLODING;		//say that this is blowing up
-hitObjP->controlType = CT_NONE;		//become inert while exploding
+hitObjP->info.nFlags |= OF_EXPLODING;		//say that this is blowing up
+hitObjP->info.controlType = CT_NONE;		//become inert while exploding
 }
 
 //------------------------------------------------------------------------------
 //do whatever needs to be done for this piece of debris for this frame
 void DoDebrisFrame (tObject *objP)
 {
-Assert (objP->controlType == CT_DEBRIS);
-if (objP->lifeleft < 0)
+Assert (objP->info.controlType == CT_DEBRIS);
+if (objP->info.xLifeLeft < 0)
 	ExplodeObject (objP, 0);
 }
 
@@ -572,20 +565,20 @@ void DoExplosionSequence (tObject *objP)
 {
 	int t;
 
-Assert (objP->controlType == CT_EXPLOSION);
+Assert (objP->info.controlType == CT_EXPLOSION);
 //See if we should die of old age
-if (objP->lifeleft <= 0) {	// We died of old age
+if (objP->info.xLifeLeft <= 0) {	// We died of old age
 	KillObject (objP);
-	objP->lifeleft = 0;
+	objP->info.xLifeLeft = 0;
 	}
-if (objP->renderType == RT_EXPLBLAST)
+if (objP->info.renderType == RT_EXPLBLAST)
 	return;
-if (objP->renderType == RT_SHRAPNELS) {
+if (objP->info.renderType == RT_SHRAPNELS) {
 	//- moved to DoSmokeFrame() - UpdateShrapnels (objP);
 	return;
 	}
 //See if we should create a secondary explosion
-if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo.nDeleteObj >= 0)) {
+if ((objP->info.xLifeLeft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo.nDeleteObj >= 0)) {
 	tObject		*explObjP, *delObjP;
 	ubyte			nVClip;
 	vmsVector	*vSpawnPos;
@@ -600,42 +593,42 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 		return;
 		}
 	delObjP = OBJECTS + objP->cType.explInfo.nDeleteObj;
-	xBadAss = (fix) ROBOTINFO (delObjP->id).badass;
-	vSpawnPos = &delObjP->position.vPos;
-	t = delObjP->nType;
+	xBadAss = (fix) ROBOTINFO (delObjP->info.nId).badass;
+	vSpawnPos = &delObjP->info.position.vPos;
+	t = delObjP->info.nType;
 	if (((t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_REACTOR) && (t != OBJ_PLAYER)) ||
-			(delObjP->nSegment == -1)) {
+			(delObjP->info.nSegment == -1)) {
 		Int3 ();	//pretty bad
 		return;
 		}
 	nVClip = (ubyte) GetExplosionVClip (delObjP, 1);
-	if ((delObjP->nType == OBJ_ROBOT) && xBadAss)
+	if ((delObjP->info.nType == OBJ_ROBOT) && xBadAss)
 		explObjP = ObjectCreateBadassExplosion (
 			NULL,
-			delObjP->nSegment,
+			delObjP->info.nSegment,
 			vSpawnPos,
-			FixMul (delObjP->size, EXPLOSION_SCALE),
+			FixMul (delObjP->info.xSize, EXPLOSION_SCALE),
 			nVClip,
 			F1_0 * xBadAss,
 			I2X (4) * xBadAss,
 			I2X (35) * xBadAss,
 			-1);
 	else
-		explObjP = ObjectCreateExplosion (delObjP->nSegment, vSpawnPos, FixMul (delObjP->size, EXPLOSION_SCALE), nVClip);
-	if ((delObjP->containsCount > 0) && !IsMultiGame) { // Multiplayer handled outside of this code!!
+		explObjP = ObjectCreateExplosion (delObjP->info.nSegment, vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
+	if ((delObjP->info.contains.nCount > 0) && !IsMultiGame) { // Multiplayer handled outside of this code!!
 		//	If dropping a weapon that the tPlayer has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
-		if (delObjP->containsType == OBJ_POWERUP)
+		if (delObjP->info.contains.nType == OBJ_POWERUP)
 			MaybeReplacePowerupWithEnergy (delObjP);
-		if ((delObjP->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))
+		if ((delObjP->info.contains.nType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))
 			ObjectCreateEgg (delObjP);
 		}
-	if ((delObjP->nType == OBJ_ROBOT) && !IsMultiGame) { // Multiplayer handled outside this code!!
-		tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->id);
-		if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))) {
+	if ((delObjP->info.nType == OBJ_ROBOT) && !IsMultiGame) { // Multiplayer handled outside this code!!
+		tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->info.nId);
+		if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))) {
 			if (d_rand () % 16 + 1 < botInfoP->containsProb) {
-				delObjP->containsCount = (d_rand () % botInfoP->containsCount) + 1;
-				delObjP->containsType = botInfoP->containsType;
-				delObjP->containsId = botInfoP->containsId;
+				delObjP->info.contains.nCount = (d_rand () % botInfoP->containsCount) + 1;
+				delObjP->info.contains.nType = botInfoP->containsType;
+				delObjP->info.contains.nId = botInfoP->containsId;
 				MaybeReplacePowerupWithEnergy (delObjP);
 				ObjectCreateEgg (delObjP);
 				}
@@ -647,20 +640,20 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 			DropBuddyMarker (delObjP);
 #endif
 		}
-	if (ROBOTINFO (delObjP->id).nExp2Sound > -1)
-		DigiLinkSoundToPos (ROBOTINFO (delObjP->id).nExp2Sound, delObjP->nSegment, 0, vSpawnPos, 0, F1_0);
-		//PLAY_SOUND_3D (ROBOTINFO (delObjP->id).nExp2Sound, vSpawnPos, delObjP->nSegment);
+	if (ROBOTINFO (delObjP->info.nId).nExp2Sound > -1)
+		DigiLinkSoundToPos (ROBOTINFO (delObjP->info.nId).nExp2Sound, delObjP->info.nSegment, 0, vSpawnPos, 0, F1_0);
+		//PLAY_SOUND_3D (ROBOTINFO (delObjP->info.nId).nExp2Sound, vSpawnPos, delObjP->info.nSegment);
 	objP->cType.explInfo.nSpawnTime = -1;
 	//make debris
-	if (delObjP->renderType == RT_POLYOBJ)
+	if (delObjP->info.renderType == RT_POLYOBJ)
 		ExplodePolyModel (delObjP);		//explode a polygon model
 	//set some parm in explosion
 	if (explObjP) {
-		if (delObjP->movementType == MT_PHYSICS) {
-			explObjP->movementType = MT_PHYSICS;
+		if (delObjP->info.movementType == MT_PHYSICS) {
+			explObjP->info.movementType = MT_PHYSICS;
 			explObjP->mType.physInfo = delObjP->mType.physInfo;
 			}
-		explObjP->cType.explInfo.nDeleteTime = explObjP->lifeleft / 2;
+		explObjP->cType.explInfo.nDeleteTime = explObjP->info.xLifeLeft / 2;
 		explObjP->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
 #if DBG
 		if (objP->cType.explInfo.nDeleteObj < 0)
@@ -675,7 +668,7 @@ if ((objP->lifeleft <= objP->cType.explInfo.nSpawnTime) && (objP->cType.explInfo
 		}
 	}
 	//See if we should delete an tObject
-if ((objP->lifeleft <= objP->cType.explInfo.nDeleteTime) && (objP->cType.explInfo.nDeleteObj >= 0)) {
+if ((objP->info.xLifeLeft <= objP->cType.explInfo.nDeleteTime) && (objP->cType.explInfo.nDeleteObj >= 0)) {
 	tObject *delObjP = OBJECTS + objP->cType.explInfo.nDeleteObj;
 	objP->cType.explInfo.nDeleteTime = -1;
 	MaybeDeleteObject (delObjP);

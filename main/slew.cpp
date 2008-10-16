@@ -45,8 +45,8 @@ void slew_init(tObject *objP)
 {
 	slewObjP = objP;
 
-	slewObjP->controlType = CT_SLEW;
-	slewObjP->movementType = MT_NONE;
+	slewObjP->info.controlType = CT_SLEW;
+	slewObjP->info.movementType = MT_NONE;
 
 	slew_stop();		//make sure not moving
 }
@@ -54,7 +54,7 @@ void slew_init(tObject *objP)
 
 int slew_stop()
 {
-	if (!slewObjP || slewObjP->controlType!=CT_SLEW) return 0;
+	if (!slewObjP || slewObjP->info.controlType!=CT_SLEW) return 0;
 
 	slewObjP->mType.physInfo.velocity.SetZero();
 	return 1;
@@ -62,17 +62,17 @@ int slew_stop()
 
 void slew_reset_orient()
 {
-if (!slewObjP || slewObjP->controlType!=CT_SLEW) 
+if (!slewObjP || slewObjP->info.controlType!=CT_SLEW) 
 	return;
-slewObjP->position.mOrient[RVEC][X] = 
-slewObjP->position.mOrient[UVEC][Y] = 
-slewObjP->position.mOrient[FVEC][Z] = f1_0;
-slewObjP->position.mOrient[RVEC][Y] = 
-slewObjP->position.mOrient[RVEC][Z] = 
-slewObjP->position.mOrient[UVEC][X] =
-slewObjP->position.mOrient[UVEC][Z] = 
-slewObjP->position.mOrient[FVEC][X] = 
-slewObjP->position.mOrient[FVEC][Y] = 0;
+slewObjP->info.position.mOrient[RVEC][X] = 
+slewObjP->info.position.mOrient[UVEC][Y] = 
+slewObjP->info.position.mOrient[FVEC][Z] = f1_0;
+slewObjP->info.position.mOrient[RVEC][Y] = 
+slewObjP->info.position.mOrient[RVEC][Z] = 
+slewObjP->info.position.mOrient[UVEC][X] =
+slewObjP->info.position.mOrient[UVEC][Z] = 
+slewObjP->info.position.mOrient[FVEC][X] = 
+slewObjP->info.position.mOrient[FVEC][Y] = 0;
 }
 
 int do_slew_movement(tObject *objP, int check_keys, int check_joy )
@@ -84,7 +84,7 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 	int joyx_moved,joyy_moved;
 	vmsAngVec rotang;
 
-	if (!slewObjP || slewObjP->controlType!=CT_SLEW) return 0;
+	if (!slewObjP || slewObjP->info.controlType!=CT_SLEW) return 0;
 
 	if (check_keys) {
 		if (gameStates.app.nFunctionMode == FMODE_EDITOR) {
@@ -146,8 +146,8 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 
 	rotmat = vmsMatrix::Create(rotang);
 	// TODO MM
-	new_pm = objP->position.mOrient * rotmat;
-	objP->position.mOrient = new_pm;
+	new_pm = objP->info.position.mOrient * rotmat;
+	objP->info.position.mOrient = new_pm;
 	vmsMatrix::Transpose(new_pm);		//make those columns rows
 
 	moved |= objP->mType.physInfo.velocity[X] | objP->mType.physInfo.velocity[Y] | objP->mType.physInfo.velocity[Z];
@@ -156,8 +156,8 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 	svel *= gameData.time.xFrame;		//movement in this frame
 	movement = new_pm * svel;
 
-//	objP->vLastPos = objP->position.vPos;
-	objP->position.vPos += movement;
+//	objP->info.vLastPos = objP->info.position.vPos;
+	objP->info.position.vPos += movement;
 
 	moved |= (movement[X] || movement[Y] || movement[Z]);
 

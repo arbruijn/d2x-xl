@@ -183,7 +183,7 @@ void PagingTouchObject (tObject *objP)
 {
 	int v;
 
-switch (objP->renderType) {
+switch (objP->info.renderType) {
 	case RT_NONE:
 		break;		//doesn't render, like the tPlayer
 
@@ -215,7 +215,7 @@ switch (objP->renderType) {
 		break;
  	}
 
-switch (objP->nType) {
+switch (objP->info.nType) {
 	case OBJ_PLAYER:
 		v = GetExplosionVClip (objP, 0);
 		if (v > -1)
@@ -223,7 +223,7 @@ switch (objP->nType) {
 		break;
 
 	case OBJ_ROBOT:
-		PagingTouchRobot (objP->id);
+		PagingTouchRobot (objP->info.nId);
 		break;
 
 	case OBJ_REACTOR:
@@ -305,7 +305,7 @@ void PagingTouchObjects (int nType)
 	tObject	*objP;
 
 for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [0]; i++, objP++)
-	if ((nType < 0) || (objP->nType == nType))
+	if ((nType < 0) || (objP->info.nType == nType))
 		PagingTouchObject (objP);
 }
 
@@ -324,7 +324,7 @@ if (seg2p->special == SEGMENT_IS_ROBOTMAKER)
 	PagingTouchRobotMaker (segP);
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 	PagingTouchSide (segP, nSide);
-for (nObject = gameData.segs.objects [SEG_IDX (segP)]; nObject != -1; nObject = OBJECTS [nObject].next)
+for (nObject = gameData.segs.objects [SEG_IDX (segP)]; nObject != -1; nObject = OBJECTS [nObject].info.nNext)
 	PagingTouchObject (OBJECTS + nObject);
 }
 

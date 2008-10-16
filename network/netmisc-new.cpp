@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "mono.h"
 
-#if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
+#if 1 || defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 
 #include "byteswap.h"
 #include "segment.h"
@@ -79,52 +79,55 @@ while(len--) {
 
 ushort BECalcSegmentCheckSum (void)
 {
-	int i, j, k;
-	unsigned int sum1, sum2;
-	short s;
-	int t;
+	int				i, j, k, t;
+	unsigned int	sum1,sum2;
+	short				s;
+	tSegment			*segP;
+	tSide				*sideP;
+	tUVL				*uvlP;
+	vmsVector		*normP;
 
 sum1 = sum2 = 0;
-for (i = 0; i < gameData.segs.nLastSegment + 1; i++) {
-	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
-		BEDoCheckSumCalc (&(gameData.segs.segments [i].sides [j].nType), 1, &sum1, &sum2);
-		BEDoCheckSumCalc (&(gameData.segs.segments [i].sides [j].nFrame), 1, &sum1, &sum2);
+for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
+	for (j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+		BEDoCheckSumCalc ((ubyte *) &(sideP->nType), 1, &sum1, &sum2);
+		BEDoCheckSumCalc ((ubyte *) &(sideP->nFrame), 1, &sum1, &sum2);
 		s = INTEL_SHORT (WallNumI (i, j));
-		BEDoCheckSumCalc ((ubyte *)&s, 2, &sum1, &sum2);
-		s = INTEL_SHORT (gameData.segs.segments [i].sides [j].nBaseTex);
-		BEDoCheckSumCalc ((ubyte *)&s, 2, &sum1, &sum2);
-		s = INTEL_SHORT (gameData.segs.segments [i].sides [j].nOvlTex);
-		BEDoCheckSumCalc ((ubyte *)&s, 2, &sum1, &sum2);
-		for (k = 0; k < 4; k++) {
-			t = INTEL_INT (((int) gameData.segs.segments [i].sides [j].uvls [k].u));
-			BEDoCheckSumCalc ((ubyte *)&t, 4, &sum1, &sum2);
-			t = INTEL_INT (((int) gameData.segs.segments [i].sides [j].uvls [k].v));
-			BEDoCheckSumCalc ((ubyte *)&t, 4, &sum1, &sum2);
-			t = INTEL_INT (((int) gameData.segs.segments [i].sides [j].uvls [k].l));
-			BEDoCheckSumCalc ((ubyte *)&t, 4, &sum1, &sum2);
+		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		s = INTEL_SHORT (sideP->nBaseTex);
+		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		s = INTEL_SHORT (sideP->nOvlOrient + (((short) sideP->nOvlTex) << 2));
+		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		for (k = 0, uvlP = sideP->uvls; k < 4; k++, uvlP++) {
+			t = INTEL_INT (((int) uvlP->u));
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			t = INTEL_INT (((int) uvlP->v));
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			t = INTEL_INT (((int) uvlP->l));
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
 			}
-		for (k = 0; k < 2; k++) {
-			t = INTEL_INT (((int) gameData.segs.segments [i].sides [j].normals [k].x));
-			BEDoCheckSumCalc ((ubyte *)&t, 4, &sum1, &sum2);
-			t = INTEL_INT (((int) gameData.segs.segments [i].sides [j].normals [k].y));
-			BEDoCheckSumCalc ((ubyte *)&t, 4, &sum1, &sum2);
-			t = INTEL_INT (((int) gameData.segs.segments [i].sides [j].normals [k].z));
-			BEDoCheckSumCalc ((ubyte *)&t, 4, &sum1, &sum2);
+		for (k = 0, normP = sideP->normals; k < 2; k++, normP++) {
+			t = INTEL_INT ((int) (*normP) [X]);
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			t = INTEL_INT ((int) (*normP) [Y]);
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			t = INTEL_INT ((int) (*normP) [Z]);
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
 			}
 		}
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
-		s = INTEL_SHORT (gameData.segs.segments [i].children[j]);
-		BEDoCheckSumCalc ((ubyte *)&s, 2, &sum1, &sum2);
-		}
-	for (j = 0; j < MAX_VERTICES_PER_SEGMENT; j++) {
-		s = INTEL_SHORT (gameData.segs.segments [i].verts [j]);
-		BEDoCheckSumCalc ((ubyte *)&s, 2, &sum1, &sum2);
-		}
-	t = INTEL_INT (gameData.segs.segments [i].objects);
-	BEDoCheckSumCalc ((ubyte *)&t, 4, &sum1, &sum2);
+		s = INTEL_SHORT (segP->children [j]);
+		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
 	}
+	for (j = 0; j < MAX_VERTICES_PER_SEGMENT; j++) {
+		s = INTEL_SHORT (segP->verts [j]);
+		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+	}
+	t = INTEL_INT (segP->objList);
+	BEDoCheckSumCalc((ubyte *) &t, 4, &sum1, &sum2);
+}
 sum2 %= 255;
-return ((sum1 << 8) + sum2);
+return ((sum1<<8)+ sum2);
 }
 
 //------------------------------------------------------------------------------
@@ -146,7 +149,8 @@ BE_GET_BYTE (info->computerType);
 BE_GET_BYTE (info->connected);
 //BE_GET_SHORT (info->socket);
 info->socket = *((short *) (data + nmBufI));	//don't swap!
-BE_GET_BYTE (info->rank);                      
+nmBufI += 2;
+BE_GET_BYTE (info->rank);     
 }
 
 //------------------------------------------------------------------------------
@@ -188,10 +192,8 @@ void BEReceiveNetPlayersPacket (ubyte *data, tAllNetPlayersInfo *pinfo)
 nmBufP = data;
 BE_GET_BYTE (pinfo->nType);                            
 BE_GET_INT (pinfo->nSecurity);        
-for (i = 0; i < MAX_PLAYERS + 4; i++) {
-	BEReceiveNetPlayerInfo (data + nmBufI, pinfo->players + i);
-	nmBufI += 26;          // sizeof(tNetPlayerInfo) on the PC
-	}
+for (i = 0; i < MAX_PLAYERS + 4; i++)
+	BEReceiveNetPlayerInfo (nmBufP, pinfo->players + i);
 }
 
 //------------------------------------------------------------------------------
@@ -233,8 +235,7 @@ void BEReceiveSequencePacket (ubyte *data, tSequencePacket *seq)
 nmBufP = data;
 BE_GET_BYTE (seq->nType);                        
 BE_GET_INT (seq->nSecurity);  
-nmBufI += 3;   // +3 for pad bytes
-BEReceiveNetPlayerInfo (data + nmBufI, &(seq->player));
+BEReceiveNetPlayerInfo (data + nmBufI + 3, &(seq->player));	// +3 for pad bytes
 }
 
 //------------------------------------------------------------------------------
@@ -242,26 +243,26 @@ BEReceiveNetPlayerInfo (data + nmBufI, &(seq->player));
 void BESendNetGamePacket (ubyte *server, ubyte *node, ubyte *netAddress, int bLiteData)
 {
 	int	i;
-	short	*ps;
+	short	h;
 	int	nmBufI = 0;
 
 nmBufP = nmDataBuf;
 #if DBG
-memset (nmBufP, 0, IPX_DATALIMIT);	//this takes time and shouldn't be necessary
+memset (nmBufP, 0, MAX_PACKETSIZE);	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (netGame.nType);                 
 BE_SET_INT (netGame.nSecurity);                           
-BE_SET_BYTES (netGame.game_name, NETGAME_NAME_LEN + 1);  
-BE_SET_BYTES (netGame.mission_title, MISSION_NAME_LEN + 1);  
+BE_SET_BYTES (netGame.szGameName, NETGAME_NAME_LEN + 1);  
+BE_SET_BYTES (netGame.szMissionTitle, MISSION_NAME_LEN + 1);  
 BE_SET_BYTES (netGame.szMissionName, 9);            
-BE_SET_INT (netGame.levelnum);
+BE_SET_INT (netGame.nLevel);
 BE_SET_BYTE (netGame.gameMode);             
-BE_SET_BYTE (netGame.RefusePlayers);        
+BE_SET_BYTE (netGame.bRefusePlayers);        
 BE_SET_BYTE (netGame.difficulty);           
 BE_SET_BYTE (netGame.gameStatus);          
-BE_SET_BYTE (netGame.numplayers);           
-BE_SET_BYTE (netGame.max_numplayers);       
-BE_SET_BYTE (netGame.numconnected);         
+BE_SET_BYTE (netGame.nNumPlayers);           
+BE_SET_BYTE (netGame.nMaxPlayers);       
+BE_SET_BYTE (netGame.nConnected);         
 BE_SET_BYTE (netGame.gameFlags);           
 BE_SET_BYTE (netGame.protocolVersion);     
 BE_SET_BYTE (netGame.versionMajor);        
@@ -269,26 +270,20 @@ BE_SET_BYTE (netGame.versionMinor);
 BE_SET_BYTE (netGame.teamVector);          
 if (bLiteData)
 	goto do_send;
-BE_SET_SHORT (((ubyte *) &netGame.teamVector) + 1);    // get the values for the first short bitfield
-BE_SET_SHORT (((ubyte *) &netGame.teamVector) + 3);    // get the values for the first short bitfield
-BE_SET_BYTES (netGame.team_name, 2 * (CALLSIGN_LEN + 1)); 
+h = *((ushort *) (&netGame.teamVector + 1));
+BE_SET_SHORT (h);    // get the values for the first short bitfield
+h = *((ushort *) (&netGame.teamVector + 3));
+BE_SET_SHORT (h);    // get the values for the first short bitfield
+BE_SET_BYTES (netGame.szTeamName, 2 * (CALLSIGN_LEN + 1)); 
 for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_SET_INT (netGame.locations [i]);
 	}
-#if 1
-for (i = MAX_PLAYERS * MAX_PLAYERS, ps = &netGame.kills [0][0]; i; i--, ps++) {
-	BE_SET_SHORT (*ps);
-	}
-#else
-{
 int j;
 for (i = 0; i < MAX_PLAYERS; i++) {
 	for (j = 0; j < MAX_PLAYERS; j++) {
 		BE_SET_SHORT (netGame.kills [i][j]);
 		}
 	}
-}
-#endif
 BE_SET_SHORT (netGame.nSegmentCheckSum);
 BE_SET_SHORT (netGame.teamKills [0]);
 BE_SET_SHORT (netGame.teamKills [1]);
@@ -301,10 +296,10 @@ for (i = 0; i < MAX_PLAYERS; i++) {
 BE_SET_INT (netGame.KillGoal);
 BE_SET_INT (netGame.xPlayTimeAllowed);
 BE_SET_INT (netGame.xLevelTime);
-BE_SET_INT (netGame.control_invulTime);
-BE_SET_INT (netGame.monitor_vector);
+BE_SET_INT (netGame.controlInvulTime);
+BE_SET_INT (netGame.monitorVector);
 for (i = 0; i < MAX_PLAYERS; i++) {
-	BE_SET_INT (netGame.player_score[i]);
+	BE_SET_INT (netGame.playerScore[i]);
 	}
 BE_SET_BYTES (netGame.playerFlags, MAX_PLAYERS);
 BE_SET_SHORT (PacketsPerSec ());
@@ -331,17 +326,17 @@ void BEReceiveNetGamePacket (ubyte *data, tNetgameInfo *netgame, int bLiteData)
 nmBufP = data;
 BE_GET_BYTE (netgame->nType);                      
 BE_GET_INT (netgame->nSecurity);                  
-BE_GET_BYTES (netgame->game_name, NETGAME_NAME_LEN + 1);   
-BE_GET_BYTES (netgame->mission_title, MISSION_NAME_LEN + 1); 
+BE_GET_BYTES (netgame->szGameName, NETGAME_NAME_LEN + 1);   
+BE_GET_BYTES (netgame->szMissionTitle, MISSION_NAME_LEN + 1); 
 BE_GET_BYTES (netgame->szMissionName, 9);                 
-BE_GET_INT (netgame->levelnum);                  
+BE_GET_INT (netgame->nLevel);                  
 BE_GET_BYTE (netgame->gameMode);                  
-BE_GET_BYTE (netgame->RefusePlayers);             
+BE_GET_BYTE (netgame->bRefusePlayers);             
 BE_GET_BYTE (netgame->difficulty);                
 BE_GET_BYTE (netgame->gameStatus);               
-BE_GET_BYTE (netgame->numplayers);                
-BE_GET_BYTE (netgame->max_numplayers);            
-BE_GET_BYTE (netgame->numconnected);              
+BE_GET_BYTE (netgame->nNumPlayers);                
+BE_GET_BYTE (netgame->nMaxPlayers);            
+BE_GET_BYTE (netgame->nConnected);              
 BE_GET_BYTE (netgame->gameFlags);                
 BE_GET_BYTE (netgame->protocolVersion);          
 BE_GET_BYTE (netgame->versionMajor);             
@@ -351,7 +346,7 @@ if (bLiteData)
 	return;
 BE_GET_SHORT (*((short *) (((ubyte *) &netgame->teamVector) + 1)));                             
 BE_GET_SHORT (*((short *) (((ubyte *) &netgame->teamVector) + 3)));                             
-BE_GET_BYTES (netgame->team_name, CALLSIGN_LEN + 1);   
+BE_GET_BYTES (netgame->szTeamName, CALLSIGN_LEN + 1);   
 for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_GET_INT (netgame->locations [i]);          
 	}
@@ -380,10 +375,10 @@ for (i = 0; i < MAX_PLAYERS; i++) {
 BE_GET_INT (netgame->KillGoal);                  
 BE_GET_INT (netgame->xPlayTimeAllowed);           
 BE_GET_INT (netgame->xLevelTime);                
-BE_GET_INT (netgame->control_invulTime);        
-BE_GET_INT (netgame->monitor_vector);            
+BE_GET_INT (netgame->controlInvulTime);        
+BE_GET_INT (netgame->monitorVector);            
 for (i = 0; i < MAX_PLAYERS; i++) {
-	BE_GET_INT (netgame->player_score [i]);       
+	BE_GET_INT (netgame->playerScore [i]);       
 	}
 BE_GET_BYTES (netgame->playerFlags, MAX_PLAYERS);
 BE_GET_SHORT (netgame->nPacketsPerSec);             
@@ -403,6 +398,8 @@ BE_GET_BYTE (netgame->bShortPackets);
 
 #define BUF2_EGI_INTEL_INT(_m) \
 	extraGameInfo [1]._m = INTEL_INT (*((int *) (nmBufP + ((char *) &extraGameInfo [1]._m - (char *) &extraGameInfo [1]))));
+
+//------------------------------------------------------------------------------
 
 void BESendExtraGameInfo (ubyte *server, ubyte *node, ubyte *netAddress)
 {
@@ -436,43 +433,68 @@ BUF2_EGI_INTEL_INT (nSpawnDelay);
 
 //------------------------------------------------------------------------------
 
-void BESwapObject ( tObject *objP)
+void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress)
+{
+	int	i;
+
+memcpy (nmDataBuf, &networkData.sync [0].objs.missingFrames, sizeof (networkData.sync [0].objs.missingFrames));
+((tMissingObjFrames *) &nmDataBuf [0])->nFrame = INTEL_SHORT (networkData.sync [0].objs.missingFrames.nFrame);
+i = 2 * sizeof (ubyte) + sizeof (ushort);
+if (netAddress != NULL)
+	IPXSendPacketData(nmDataBuf, i, server, node, netAddress);
+else if ((server == NULL) && (node == NULL))
+	IPXSendBroadcastData(nmDataBuf, i);
+else
+	IPXSendInternetPacketData(nmDataBuf, i, server, node);
+}
+
+//------------------------------------------------------------------------------
+
+void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *missingObjFrames)
+{
+memcpy (missingObjFrames, nmDataBuf, sizeof (tMissingObjFrames));
+missingObjFrames->nFrame = INTEL_SHORT (missingObjFrames->nFrame);
+}
+
+//------------------------------------------------------------------------------
+
+void BESwapObject (tObject *objP)
 {
 // swap the short and int entries for this tObject
-objP->nSignature = INTEL_INT (objP->nSignature);
-objP->next = INTEL_SHORT (objP->next);
-objP->prev = INTEL_SHORT (objP->prev);
-objP->nSegment = INTEL_SHORT (objP->nSegment);
-INTEL_VECTOR (&objP->position.vPos);
-INTEL_MATRIX (&objP->position.mOrient);
-objP->size = INTEL_INT (objP->size);
-objP->shields = INTEL_INT (objP->shields);
-INTEL_VECTOR (&objP->vLastPos);
-objP->lifeleft = INTEL_INT (objP->lifeleft);
-switch (objP->movementType) {
+objP->info.nSignature = INTEL_INT (objP->info.nSignature);
+objP->info.nNext = INTEL_SHORT (objP->info.nNext);
+objP->info.nPrev = INTEL_SHORT (objP->info.nPrev);
+objP->info.nSegment = INTEL_SHORT (objP->info.nSegment);
+INTEL_VECTOR (objP->info.position.vPos);
+INTEL_MATRIX (objP->info.position.mOrient);
+objP->info.xSize = INTEL_INT (objP->info.xSize);
+objP->info.xShields = INTEL_INT (objP->info.xShields);
+INTEL_VECTOR (objP->info.vLastPos);
+objP->info.xLifeLeft = INTEL_INT (objP->info.xLifeLeft);
+switch (objP->info.movementType) {
 	case MT_PHYSICS:
-		INTEL_VECTOR (&objP->mType.physInfo.velocity);
-		INTEL_VECTOR (&objP->mType.physInfo.thrust);
+		INTEL_VECTOR (objP->mType.physInfo.velocity);
+		INTEL_VECTOR (objP->mType.physInfo.thrust);
 		objP->mType.physInfo.mass = INTEL_INT (objP->mType.physInfo.mass);
 		objP->mType.physInfo.drag = INTEL_INT (objP->mType.physInfo.drag);
 		objP->mType.physInfo.brakes = INTEL_INT (objP->mType.physInfo.brakes);
-		INTEL_VECTOR (&objP->mType.physInfo.rotVel);
-		INTEL_VECTOR (&objP->mType.physInfo.rotThrust);
+		INTEL_VECTOR (objP->mType.physInfo.rotVel);
+		INTEL_VECTOR (objP->mType.physInfo.rotThrust);
 		objP->mType.physInfo.turnRoll = INTEL_INT (objP->mType.physInfo.turnRoll);
 		objP->mType.physInfo.flags = INTEL_SHORT (objP->mType.physInfo.flags);
 		break;
 
 	case MT_SPINNING:
-		INTEL_VECTOR (&objP->mType.spinRate);
+		INTEL_VECTOR (objP->mType.spinRate);
 		break;
 	}
 
-switch (objP->controlType) {
+switch (objP->info.controlType) {
 	case CT_WEAPON:
-		objP->cType.laserInfo.parentType = INTEL_SHORT (objP->cType.laserInfo.parentType);
-		objP->cType.laserInfo.nParentObj = INTEL_SHORT (objP->cType.laserInfo.nParentObj);
-		objP->cType.laserInfo.nParentSig = INTEL_INT (objP->cType.laserInfo.nParentSig);
-		objP->cType.laserInfo.creationTime = INTEL_INT (objP->cType.laserInfo.creationTime);
+		objP->cType.laserInfo.parent.nType = INTEL_SHORT (objP->cType.laserInfo.parent.nType);
+		objP->cType.laserInfo.parent.nObject = INTEL_SHORT (objP->cType.laserInfo.parent.nObject);
+		objP->cType.laserInfo.parent.nSignature = INTEL_INT (objP->cType.laserInfo.parent.nSignature);
+		objP->cType.laserInfo.xCreationTime = INTEL_INT (objP->cType.laserInfo.xCreationTime);
 		objP->cType.laserInfo.nLastHitObj = INTEL_SHORT (objP->cType.laserInfo.nLastHitObj);
 		if (objP->cType.laserInfo.nLastHitObj < 0)
 			objP->cType.laserInfo.nLastHitObj = 0;
@@ -481,16 +503,16 @@ switch (objP->controlType) {
 			objP->cType.laserInfo.nLastHitObj = 1;
 			}
 		objP->cType.laserInfo.nMslLock = INTEL_SHORT (objP->cType.laserInfo.nMslLock);
-		objP->cType.laserInfo.multiplier = INTEL_INT (objP->cType.laserInfo.multiplier);
+		objP->cType.laserInfo.xScale = INTEL_INT (objP->cType.laserInfo.xScale);
 		break;
 
 	case CT_EXPLOSION:
 		objP->cType.explInfo.nSpawnTime = INTEL_INT (objP->cType.explInfo.nSpawnTime);
 		objP->cType.explInfo.nDeleteTime = INTEL_INT (objP->cType.explInfo.nDeleteTime);
 		objP->cType.explInfo.nDeleteObj = INTEL_SHORT (objP->cType.explInfo.nDeleteObj);
-		objP->cType.explInfo.nAttachParent = INTEL_SHORT (objP->cType.explInfo.nAttachParent);
-		objP->cType.explInfo.nPrevAttach = INTEL_SHORT (objP->cType.explInfo.nPrevAttach);
-		objP->cType.explInfo.nNextAttach = INTEL_SHORT (objP->cType.explInfo.nNextAttach);
+		objP->cType.explInfo.attached.nParent = INTEL_SHORT (objP->cType.explInfo.attached.nParent);
+		objP->cType.explInfo.attached.nPrev = INTEL_SHORT (objP->cType.explInfo.attached.nPrev);
+		objP->cType.explInfo.attached.nNext = INTEL_SHORT (objP->cType.explInfo.attached.nNext);
 		break;
 
 	case CT_AI:
@@ -507,12 +529,12 @@ switch (objP->controlType) {
 		break;
 
 	case CT_POWERUP:
-		objP->cType.powerupInfo.count = INTEL_INT (objP->cType.powerupInfo.count);
-		objP->cType.powerupInfo.creationTime = INTEL_INT (objP->cType.powerupInfo.creationTime);
+		objP->cType.powerupInfo.nCount = INTEL_INT (objP->cType.powerupInfo.nCount);
+		objP->cType.powerupInfo.xCreationTime = INTEL_INT (objP->cType.powerupInfo.xCreationTime);
 		break;
 	}
 
-switch (objP->renderType) {
+switch (objP->info.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
@@ -520,7 +542,7 @@ switch (objP->renderType) {
 		objP->rType.polyObjInfo.nModel = INTEL_INT (objP->rType.polyObjInfo.nModel);
 
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			INTEL_ANGVEC (objP->rType.polyObjInfo.animAngles + i);
+			INTEL_ANGVEC (objP->rType.polyObjInfo.animAngles [i]);
 		objP->rType.polyObjInfo.nSubObjFlags = INTEL_INT (objP->rType.polyObjInfo.nSubObjFlags);
 		objP->rType.polyObjInfo.nTexOverride = INTEL_INT (objP->rType.polyObjInfo.nTexOverride);
 		objP->rType.polyObjInfo.nAltTextures = INTEL_INT (objP->rType.polyObjInfo.nAltTextures);
@@ -570,104 +592,4 @@ return (sum1 * 256 + sum2 % 255);
 }
 
 //------------------------------------------------------------------------------
-// needs to be recoded to actually work with big endian!
-//--unused-- //Finds the difference between block1 and block2.  Fills in diff_buffer and
-//--unused-- //returns the size of diff_buffer.
-//--unused-- int netmisc_find_diff(void *block1, void *block2, int block_size, void *diff_buffer)
-//--unused-- {
-//--unused-- 	int mode;
-//--unused-- 	ushort *c1, *c2, *diff_start, *c3;
-//--unused-- 	int i, j, size, diff, n , same;
-//--unused--
-//--unused-- 	size=(block_size+1)/sizeof(ushort);
-//--unused-- 	c1 = (ushort *)block1;
-//--unused-- 	c2 = (ushort *)block2;
-//--unused-- 	c3 = (ushort *)diff_buffer;
-//--unused--
-//--unused-- 	mode = same = diff = n = 0;
-//--unused--
-//--unused-- 	for (i=0; i<size; i++, c1++, c2++) {
-//--unused-- 		if (*c1 != *c2) {
-//--unused-- 			if (mode==0) {
-//--unused-- 				mode = 1;
-//--unused-- 				c3[n++] = same;
-//--unused-- 				same=0; diff=0;
-//--unused-- 				diff_start = c2;
-//--unused-- 			}
-//--unused-- 			*c1 = *c2;
-//--unused-- 			diff++;
-//--unused-- 			if (diff==65535) {
-//--unused-- 				mode = 0;
-//--unused-- 				// send how many diff ones.
-//--unused-- 				c3[n++]=diff;
-//--unused-- 				// send all the diff ones.
-//--unused-- 				for (j=0; j<diff; j++)
-//--unused-- 					c3[n++] = diff_start[j];
-//--unused-- 				same=0; diff=0;
-//--unused-- 				diff_start = c2;
-//--unused-- 			}
-//--unused-- 		} else {
-//--unused-- 			if (mode==1) {
-//--unused-- 				mode=0;
-//--unused-- 				// send how many diff ones.
-//--unused-- 				c3[n++]=diff;
-//--unused-- 				// send all the diff ones.
-//--unused-- 				for (j=0; j<diff; j++)
-//--unused-- 					c3[n++] = diff_start[j];
-//--unused-- 				same=0; diff=0;
-//--unused-- 				diff_start = c2;
-//--unused-- 			}
-//--unused-- 			same++;
-//--unused-- 			if (same==65535) {
-//--unused-- 				mode=1;
-//--unused-- 				// send how many the same
-//--unused-- 				c3[n++] = same;
-//--unused-- 				same=0; diff=0;
-//--unused-- 				diff_start = c2;
-//--unused-- 			}
-//--unused-- 		}
-//--unused--
-//--unused-- 	}
-//--unused-- 	if (mode==0) {
-//--unused-- 		// send how many the same
-//--unused-- 		c3[n++] = same;
-//--unused-- 	} else {
-//--unused-- 		// send how many diff ones.
-//--unused-- 		c3[n++]=diff;
-//--unused-- 		// send all the diff ones.
-//--unused-- 		for (j=0; j<diff; j++)
-//--unused-- 			c3[n++] = diff_start[j];
-//--unused-- 	}
-//--unused--
-//--unused-- 	return n*2;
-//--unused-- }
-
-//--unused-- //Applies diff_buffer to block1 to create a new block1.  Returns the final
-//--unused-- //size of block1.
-//--unused-- int netmisc_apply_diff(void *block1, void *diff_buffer, int diff_size)
-//--unused-- {
-//--unused-- 	unsigned int i, j, n, size;
-//--unused-- 	ushort *c1, *c2;
-//--unused--
-//--unused-- 	c1 = (ushort *)diff_buffer;
-//--unused-- 	c2 = (ushort *)block1;
-//--unused--
-//--unused-- 	size = diff_size/2;
-//--unused--
-//--unused-- 	i=j=0;
-//--unused-- 	while (1) {
-//--unused-- 		j += c1[i];         // Same
-//--unused-- 		i++;
-//--unused-- 		if (i>=size) break;
-//--unused-- 		n = c1[i];          // ndiff
-//--unused-- 		i++;
-//--unused-- 		if (n>0) {
-//--unused-- 			//AsserT (n* < 256);
-//--unused-- 			memcpy(&c2[j], &c1[i], n*2);
-//--unused-- 			i += n;
-//--unused-- 			j += n;
-//--unused-- 		}
-//--unused-- 		if (i>=size) break;
-//--unused-- 	}
-//--unused-- 	return j*2;
-//--unused-- }
+//eof

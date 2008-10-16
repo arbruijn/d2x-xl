@@ -1074,7 +1074,7 @@ inline float G3FaceClipDist (tObject *objP, tPOF_face *pf)
 	vmsVector	vCenter = vmsVector::Create((fix) (pf->vCenterf.x * 65536.0f),
 	                                        (fix) (pf->vCenterf.y * 65536.0f),
 	                                        (fix) (pf->vCenterf.z * 65536.0f));
-return NearestShadowedWallDist (OBJ_IDX (objP), objP->nSegment, &vCenter, 0.0f);
+return NearestShadowedWallDist (OBJ_IDX (objP), objP->info.nSegment, &vCenter, 0.0f);
 }
 
 //------------------------------------------------------------------------------
@@ -1110,7 +1110,7 @@ float G3ClipDistByFaceVerts (tObject *objP, tPOFObject *po, tPOFSubObject *pso,
 	tPOF_face	*pf, **ppf;
 	short			*pfv, h, j, m, n;
 	short			nObject = OBJ_IDX (objP);
-	short			nPointSeg, nSegment = objP->nSegment;
+	short			nPointSeg, nSegment = objP->info.nSegment;
 	float			fClipDist;
 
 pv = po->pvVertsf;
@@ -1149,7 +1149,7 @@ float G3ClipDistByLitVerts (tObject *objP, tPOFObject *po, float fMaxDist, int i
 	short			j;
 	ubyte			*pvf;
 	short			nObject = OBJ_IDX (objP);
-	short			nPointSeg, nSegment = objP->nSegment;
+	short			nPointSeg, nSegment = objP->info.nSegment;
 	float			fClipDist;
 	ubyte			nVertFlag = po->nVertFlag;
 
@@ -1418,7 +1418,7 @@ int POFGatherPolyModelItems (tObject *objP, void *modelP, vmsAngVec *pAnimAngles
 if (!(po->nState || POFAllocPolyModelItems (modelP, po, bShadowData)))
 	return 0;
 if (po->nState == 1) {
-	G3StartInstanceMatrix (objP->position.vPos, objP->position.mOrient);
+	G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
 	POFGetPolyModelItems (modelP, pAnimAngles, po, 1, bShadowData, 0, -1);
 	if (bShadowData) {
 		vCenter.x = vCenter.y = vCenter.z = 0.0f;
@@ -1440,7 +1440,7 @@ if (po->nState == 1) {
 	}
 if (bShadowData) {
 	po->iSubObj = 0;
-	G3StartInstanceMatrix (objP->position.vPos, objP->position.mOrient);
+	G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
 	POFGetPolyModelItems (modelP, pAnimAngles, po, 0, 1, 0, -1);
 	G3DoneInstance ();
 	}
@@ -1457,7 +1457,7 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, 
 	int				h, i, j;
 	tPOFObject		*po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 
-Assert (objP->id < MAX_ROBOT_TYPES);
+Assert (objP->info.nId < MAX_ROBOT_TYPES);
 if (!gameStates.render.bShadowMaps) {
 	if (!POFGatherPolyModelItems (objP, modelP, pAnimAngles, po, 1))
 		return 0;
@@ -1465,16 +1465,16 @@ if (!gameStates.render.bShadowMaps) {
 OglActiveTexture (GL_TEXTURE0, 0);
 glDisable (GL_TEXTURE_2D);
 glEnableClientState (GL_VERTEX_ARRAY);
-pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->nSegment * MAX_NEAREST_LIGHTS;
+pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
 		gameData.render.shadows.pLight = gameData.render.lights.dynamic.shader.lights + *pnl;
 		if (!gameData.render.shadows.pLight->info.bState)
 			continue;
-		if (!CanSeePoint (objP, &objP->position.vPos, &gameData.render.shadows.pLight->info.vPos, objP->nSegment))
+		if (!CanSeePoint (objP, &objP->info.position.vPos, &gameData.render.shadows.pLight->info.vPos, objP->info.nSegment))
 			continue;
-		vLightDir = objP->position.vPos - gameData.render.shadows.pLight->info.vPos;
+		vLightDir = objP->info.position.vPos - gameData.render.shadows.pLight->info.vPos;
 		vmsVector::Normalize(vLightDir);
 		if (gameData.render.shadows.nLight) {
 			for (j = 0; j < gameData.render.shadows.nLight; j++)
@@ -1492,13 +1492,13 @@ if (FAST_SHADOWS) {
 			OOF_VecVms2Oof (&vLightPosf, vLightPos);
 			if (gameOpts->render.shadows.nClip) {
 				// get a default clipping distance using the model position as fall back
-				G3TransformPoint (v, objP->position.vPos, 0);
-				fInf = NearestShadowedWallDist (OBJ_IDX (objP), objP->nSegment, &v, 0);
+				G3TransformPoint (v, objP->info.position.vPos, 0);
+				fInf = NearestShadowedWallDist (OBJ_IDX (objP), objP->info.nSegment, &v, 0);
 				}
 			else
 				fInf = G3_INFINITY;
 			G3PolyModelVerts2Float (po);
-			G3StartInstanceMatrix (objP->position.vPos, objP->position.mOrient);
+			G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
 			po->litFaces.nFaces = 0;
 			if (gameOpts->render.shadows.nClip >= 2)
 				memset (po->pfClipDist, 0, po->nVerts * sizeof (float));
@@ -1518,7 +1518,7 @@ else {
 		if (*pnl == j) {
 			vLightPosf = gameData.render.shadows.vLightPos;
 			G3PolyModelVerts2Float (po);
-			G3StartInstanceMatrix (objP->position.vPos, objP->position.mOrient);
+			G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
 			po->litFaces.nFaces = 0;
 			G3DrawSubModelShadow (objP, po, po->subObjs.pSubObjs);
 			G3DoneInstance ();

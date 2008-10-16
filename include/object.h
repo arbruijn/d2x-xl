@@ -145,6 +145,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_VELOCITY I2X(50)
 
+#define PF_SPAT_BY_PLAYER   1 //this powerup was spat by the tPlayer
+
 extern char szObjectTypeNames [MAX_OBJECT_TYPES][10];
 
 // List of objects rendered last frame in order.  Created at render
@@ -157,12 +159,21 @@ extern char szObjectTypeNames [MAX_OBJECT_TYPES][10];
 
 // A compressed form for sending crucial data about via slow devices,
 // such as modems and buggies.
-class __pack__ tShortPos {
-public:
-	sbyte   bytemat[9];
-	short   xo,yo,zo;
+typedef struct tShortPos {
+	sbyte   orient [9];
+	short   pos [3];
 	short   nSegment;
-	short   velx, vely, velz;
+	short   vel [3];
+} tShortPos;
+
+class CShortPos {
+	private:
+		tShortPos	m_pos;
+	public:
+		inline sbyte& Orient(int i) { return m_pos.orient [i]; }
+		inline short& Pos (int i) { return m_pos.pos [i]; }
+		inline short& Segment () { return m_pos.nSegment; }
+		inline short& Vel (int i) { return m_pos.vel [i]; }
 };
 
 // This is specific to the tShortPos extraction routines in gameseg.c.
@@ -170,6 +181,7 @@ public:
 #define MATRIX_PRECISION    9
 #define MATRIX_MAX          0x7f    // This is based on MATRIX_PRECISION, 9 => 0x7f
 
+#if 0
 class MovementInfo { };
 class PhysicsMovementInfo : public MovementInfo { };
 class SpinMovementInfo    : public MovementInfo { };
@@ -186,10 +198,10 @@ class RenderPolyObjInfo : public RenderInfo { };      // polygon model
 class RenderVClipInfo : public RenderInfo { };     // tVideoClip
 class RenderSmokeInfo : public RenderInfo { };
 class RenderLightningInfo : public RenderInfo { };
+#endif
 
 // information for physics sim for an tObject
-class tPhysicsInfo {
-public:
+typedef struct tPhysicsInfo {
 	vmsVector	velocity;   // velocity vector of this tObject
 	vmsVector	thrust;     // constant force applied to this tObject
 	fix         mass;       // the mass of this tObject
@@ -199,57 +211,127 @@ public:
 	vmsVector	rotThrust;  // rotational acceleration
 	fixang      turnRoll;   // rotation caused by turn banking
 	ushort      flags;      // misc physics flags
-};
+} tPhysicsInfo;
 
+class CPhysicsInfo {
+	private:
+		tPhysicsInfo	m_info;
+	public:
+		inline vmsVector& Velocity () { return m_info.velocity; }
+		inline vmsVector& Thrust () { return m_info.thrust; }
+		inline vmsVector& RotVel () { return m_info.rotVel; }
+		inline vmsVector& RotThrust () { return m_info.rotThrust; }
+		inline fix& Mass () { return m_info.mass; }
+		inline fix& Drag () { return m_info.drag; }
+		inline fix& Brakes () { return m_info.brakes; }
+		inline fixang& TurnRoll () { return m_info.turnRoll; }
+		inline ushort& Flags () { return m_info.flags; }
+};
 // stuctures for different kinds of simulation
 
-class __pack__ tLaserInfo  {
-public:
-	short   parentType;        // The nType of the parent of this tObject
-	short   nParentObj;        // The tObject's parent's number
-	int     nParentSig;			// The tObject's parent's nSignature...
-	fix     creationTime;      // Absolute time of creation.
+typedef struct nParentInfo {
+	short		nType;
+	short		nObject;
+	int		nSignature;
+} tParentInfo;
+
+typedef struct tLaserInfo  {
+	tParentInfo	parent;
+	fix     xCreationTime;      // Absolute time of creation.
 	short   nLastHitObj;       // For persistent weapons (survive tObject collision), tObject it most recently hit.
 	short   nMslLock;				// Object this tObject is tracking.
-	fix     multiplier;        // Power if this is a fusion bolt (or other super weapon to be added).
+	fix     xScale;        // Power if this is a fusion bolt (or other super weapon to be added).
+} tLaserInfo;
+
+class CLaserInfo {
+	private:
+		tLaserInfo	m_info;
+	public:
+		inline short& ParentType () { return m_info.parent.nType; }
+		inline short& ParentObj () { return m_info.parent.nObject; }
+		inline int& ParentSig () { return m_info.parent.nSignature; }
+		inline short& LastHitObj () { return m_info.nLastHitObj; }
+		inline short& MslLock () { return m_info.nMslLock; }
+		inline fix& CreationTime () { return m_info.xCreationTime; }
+		inline fix& Multiplier () { return m_info.xScale; }
 };
 
-class tExplosionInfo {
-public:
+typedef struct tAttachedObjInfo {
+	short	nParent;	// explosion is attached to this tObject
+	short	nPrev;	// previous explosion in attach list
+	short	nNext;	// next explosion in attach list
+} tAttachedObjInfo;
+
+typedef struct tExplosionInfo {
     fix     nSpawnTime;       // when lifeleft is < this, spawn another
     fix     nDeleteTime;      // when to delete tObject
     short   nDeleteObj;			// and what tObject to delete
-    short   nAttachParent;    // explosion is attached to this tObject
-    short   nPrevAttach;      // previous explosion in attach list
-    short   nNextAttach;      // next explosion in attach list
+	 tAttachedObjInfo	attached;
+} tExplosionInfo;
+
+class CExplosionInfo {
+	private:
+		tExplosionInfo	m_info;
+	public:
+		inline fix& SpawnTime () { return m_info.nSpawnTime; }
+		inline fix& DeleteTime () { return m_info.nDeleteTime; }
+		inline short& DeleteObj () { return m_info.nDeleteObj; }
+		inline short& Parent () { return m_info.attached.nParent; }
+		inline short& PrevAttached () { return m_info.attached.nPrev; }
+		inline short& NextAttached () { return m_info.attached.nNext; }
 };
 
-class __pack__ tObjLightInfo {
-public:
+typedef struct tObjLightInfo {
     fix				intensity;  // how bright the light is
 	 short			nSegment;
 	 short			nObjects;
 	 tRgbaColorf	color;
+} tObjLightInfo;
+
+class CObjLightInfo {
+	private:
+		tObjLightInfo	m_info;
+	public:
+		inline fix& Intensity () { return m_info.intensity; }
+		inline short& Segment () { return m_info.nSegment; }
+		inline short& Objects () { return m_info.nObjects; }
+		inline tRgbaColorf& Color () { return m_info.color; }
 };
 
-#define PF_SPAT_BY_PLAYER   1 //this powerup was spat by the tPlayer
+typedef struct tPowerupInfo {
+	int     nCount;          // how many/much we pick up (vulcan cannon only?)
+	fix     xCreationTime;  // Absolute time of creation.
+	int     nFlags;          // spat by tPlayer?
+}  tPowerupInfo;
 
-class __pack__ tPowerupInfo {
-public:
-	int     count;          // how many/much we pick up (vulcan cannon only?)
-	fix     creationTime;  // Absolute time of creation.
-	int     flags;          // spat by tPlayer?
+class CPowerupInfo {
+	private:
+		tPowerupInfo	m_info;
+	public:
+		inline int& Count () { return m_info.nCount; }
+		inline fix& CreationTime () { return m_info.xCreationTime; }
+		inline int& Flags () { return m_info.nFlags; }
 };
 
-class __pack__ tVClipInfo {
+typedef struct tVClipInfo {
 public:
 	int     nClipIndex;
 	fix	  xTotalTime;
 	fix     xFrameTime;
 	sbyte   nCurFrame;
+} tVClipInfo;
+
+class CVClipInfo {
+	private:
+		tVClipInfo	m_info;
+	public:
+		inline int& ClipIndex () { return m_info.nClipIndex; }
+		inline fix& TotalTime () { return m_info.xTotalTime; }
+		inline fix& FrameTime () { return m_info.xFrameTime; }
+		inline sbyte& CurFrame () { return m_info.nCurFrame; }
 };
 
-class __pack__ tSmokeInfo {
+typedef struct tSmokeInfo {
 public:
 	int			nLife;
 	int			nSize [2];
@@ -259,9 +341,23 @@ public:
 	int			nBrightness;
 	tRgbaColorb	color;
 	char			nSide;
+} tSmokeInfo;
+
+class CSmokeInfo {
+	private:
+		tSmokeInfo	m_info;
+	public:
+		inline int& Life () { return m_info.nLife; }
+		inline int& Size (int i) { return m_info.nSize [i]; }
+		inline int& Parts () { return m_info.nParts; }
+		inline int& Speed () { return m_info.nSpeed; }
+		inline int& Drift () { return m_info.nDrift; }
+		inline int& Brightness () { return m_info.nBrightness; }
+		inline tRgbaColorb& Color () { return m_info.color; }
+		inline char& Side () { return m_info.nSide; }
 };
 
-class __pack__ tLightningInfo {
+typedef struct tLightningInfo {
 public:
 	int			nLife;
 	int			nDelay;
@@ -283,61 +379,133 @@ public:
 	char			bRandom;
 	char			bInPlane;
 	tRgbaColorb color;
+} tLightningInfo;
+
+class CLightningInfo {
+	private:
+		tLightningInfo	m_info;
+	public:
+		inline int& Life () { return m_info.nLife; }
+		inline int& Delay () { return m_info.nDelay; }
+		inline int& Length () { return m_info.nLength; }
+		inline int& Amplitude () { return m_info.nAmplitude; }
+		inline int& Offset () { return m_info.nOffset; }
+		inline short& Lightnings () { return m_info.nLightnings; }
+		inline short& Id () { return m_info.nId; }
+		inline short& Target () { return m_info.nTarget; }
+		inline short& Nodes () { return m_info.nNodes; }
+		inline short& Children () { return m_info.nChildren; }
+		inline short& Steps () { return m_info.nSteps; }
+		inline char& Angle () { return m_info.nAngle; }
+		inline char& Style () { return m_info.nStyle; }
+		inline char& Smoothe () { return m_info.nSmoothe; }
+		inline char& Clamp () { return m_info.bClamp; }
+		inline char& Plasma () { return m_info.bPlasma; }
+		inline char& Sound () { return m_info.bSound; }
+		inline char& Random () { return m_info.bRandom; }
+		inline char& InPlane () { return m_info.bInPlane; }
 };
 
 // structures for different kinds of rendering
 
-class __pack__ tPolyObjInfo {
+typedef struct tPolyObjInfo {
 public:
 	int     		nModel;          // which polygon model
 	vmsAngVec 	animAngles [MAX_SUBMODELS]; // angles for each subobject
 	int     		nSubObjFlags;       // specify which subobjs to draw
 	int     		nTexOverride;      // if this is not -1, map all face to this
 	int     		nAltTextures;       // if not -1, use these textures instead
+} tPolyObjInfo;
+
+class CPolyObjInfo {
+	private:
+		tPolyObjInfo	m_info;
+	public:
+		inline int& Model() { return m_info.nModel; }
+		inline vmsAngVec& AnimAngles(int i) { return m_info.animAngles [i]; }
+		inline int& SubObjFlags() { return m_info.nSubObjFlags; }
+		inline int& TexOverride() { return m_info.nTexOverride; }
+		inline int& AltTextures() { return m_info.nAltTextures; }
 };
 
-class tTransformation {
-public:
+typedef struct tTransformation {
 	vmsVector	vPos;				// absolute x,y,z coordinate of center of object
 	vmsMatrix	mOrient;			// orientation of object in world
+	} tTransformation;
+
+class CTransformation {
+private:
+	tTransformation	m_t;
+public:
+	inline vmsVector& Pos() { return m_t.vPos; }
+	inline vmsMatrix& Orient() { return m_t.mOrient; }
 };
 
+typedef struct tObjContainerInfo {
+	sbyte			nType;
+	sbyte			nId;
+	sbyte			nCount;
+} tObjContainerInfo;
+
+class CObjContainerInfo {
+	private:
+		tObjContainerInfo	m_info;
+	public:
+		inline sbyte& ContainsType () { return m_info.nType; }
+		inline sbyte& ContainsId () { return m_info.nId; }
+		inline sbyte& ContainsCount () { return m_info.nCount; }
+};
+
+typedef struct tObjectInfo {
+	int     				nSignature;    // Every tObject ever has a unique nSignature...
+	ubyte   				nType;         // what nType of tObject this is... robot, weapon, hostage, powerup, fireball
+	ubyte   				nId;            // which form of tObject...which powerup, robot, etc.
+#ifdef WORDS_NEED_ALIGNMENT
+	short   				pad;
+#endif
+	short   				nNext, nPrev/*, me*/;    // id of next and previous connected tObject in Objects, -1 = no connection
+	ubyte   				controlType;   // how this tObject is controlled
+	ubyte   				movementType;  // how this tObject moves
+	ubyte   				renderType;    // how this tObject renders
+	ubyte   				nFlags;         // misc flags
+	short					nSegment;
+	short   				nAttachedObj;   // number of attached fireball tObject
+	tTransformation	position;
+	fix     				xSize;          // 3d size of tObject - for collision detection
+	fix     				xShields;       // Starts at maximum, when <0, tObject dies..
+	vmsVector 			vLastPos;		// where tObject was last frame
+	tObjContainerInfo	contains;
+	sbyte   				nCreator; // Materialization center that created this tObject, high bit set if matcen-created
+	fix     				xLifeLeft;      // how long until goes away, or 7fff if immortal
+} tObjectInfo;
+
+class CObjectInfo : public CTransformation, public CObjContainerInfo {
+	private:
+		tObjectInfo	m_info;
+	public:
+		CObjectInfo () { memset (&m_info, 0, sizeof (m_info)); }
+
+		inline int& Signature () { return m_info.nSignature; }
+		inline ubyte& Id () { return m_info.nId; }
+		inline fix& Size () { return m_info.xSize; }
+		inline fix& Shields () { return m_info.xShields; }
+		inline fix& LifeLeft () { return m_info.xLifeLeft; }
+		inline short& Segment () { return m_info.nSegment; }
+		inline short& AttachedObj () { return m_info.nAttachedObj; }
+		inline short& Next () { return m_info.nNext; }
+		inline short& Prev () { return m_info.nPrev; }
+		inline sbyte& Creator () { return m_info.nCreator; }
+		inline ubyte& Type () { return m_info.nType; }
+		inline ubyte& ControlType () { return m_info.controlType; }
+		inline ubyte& MovementType () { return m_info.movementType; }
+		inline ubyte& RenderType () { return m_info.renderType; }
+		inline ubyte& Flags () { return m_info.nFlags; }
+		inline vmsVector& LastPos () { return m_info.vLastPos; }
+};
 
 // TODO get rid of the structs (former unions) and the union
-class tObject {
-public:
-
-	// initialize a new tObject.  adds to the list for the given tSegment
-	// returns the tObject number
-	static int Create (ubyte nType, ubyte id, short owner, short nSegment, const vmsVector& pos,
-							 const vmsMatrix& orient, fix size,
-							 ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
-
-	// unlinks an tObject from a tSegment's list of objects
-	void Unlink();
-
-	int     		nSignature;    // Every tObject ever has a unique nSignature...
-	ubyte   		nType;         // what nType of tObject this is... robot, weapon, hostage, powerup, fireball
-	ubyte   		id;            // which form of tObject...which powerup, robot, etc.
-#ifdef WORDS_NEED_ALIGNMENT
-	short   		pad;
-#endif
-	short   		next, prev, me;    // id of next and previous connected tObject in Objects, -1 = no connection
-	ubyte   		controlType;   // how this tObject is controlled
-	ubyte   		movementType;  // how this tObject moves
-	ubyte   		renderType;    // how this tObject renders
-	ubyte   		flags;         // misc flags
-	short			nSegment;
-	short   		attachedObj;   // number of attached fireball tObject
-	tTransformation	position;
-	fix     		size;          // 3d size of tObject - for collision detection
-	fix     		shields;       // Starts at maximum, when <0, tObject dies..
-	vmsVector 		vLastPos;		// where tObject was last frame
-	sbyte   		containsType;  // Type of tObject this tObject contains (eg, spider contains powerup)
-	sbyte   		containsId;    // ID of tObject this tObject contains (eg, id = blue nType = key)
-	sbyte   		containsCount; // number of objects of nType:id this tObject contains
-	sbyte   		matCenCreator; // Materialization center that created this tObject, high bit set if matcen-created
-	fix     		lifeleft;      // how long until goes away, or 7fff if immortal
+typedef struct tObject {
+	tObjectInfo			info;
 	// movement info, determined by MOVEMENT_TYPE
 	union {
 		tPhysicsInfo	physInfo; // a physics tObject
@@ -347,7 +515,7 @@ public:
 	union {
 		tLaserInfo		laserInfo;
 		tExplosionInfo explInfo;      // NOTE: debris uses this also
-		tAIStatic      aiInfo;
+		tAIStaticInfo  aiInfo;
 		tObjLightInfo  lightInfo;     // why put this here?  Didn't know what else to do with it.
 		tPowerupInfo   powerupInfo;
 		} cType;
@@ -361,33 +529,103 @@ public:
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;
 #endif
+} tObject;
+
+class CObject : public CObjectInfo {
+public:
+
+	// initialize a new tObject.  adds to the list for the given tSegment
+	// returns the tObject number
+	static int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
+							 const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType, int bIgnoreLimits);
+
+	inline void Kill (void) { Flags () |= OF_SHOULD_BE_DEAD; }
+	inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
+	// unlinks an tObject from a tSegment's list of objects
+	void Link (short nSegment);
+	void Unlink (void);
+	void Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
+						  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 };
 
 
-class tObjPosition {
-public:
+class CRobotObject : public CObject, public CPhysicsInfo, public CAIStaticInfo {
+	public:
+		CRobotObject () {};
+		~CRobotObject () {};
+		void Initialize (void) {};
+};
+
+class CLightningObject : public CObject, public CLightningInfo {
+	public:
+		CLightningObject () {};
+		~CLightningObject () {};
+		void Initialize (void) {};
+};
+
+class CSmokeObject : public CObject, public CSmokeInfo {
+	public:
+		CSmokeObject () {};
+		~CSmokeObject () {};
+		void Initialize (void) {};
+};
+
+
+
+
+typedef struct tObjPosition {
 	tTransformation	position;
-	short       nSegment;     // tSegment number containing tObject
-	short			nSegType;		// nType of tSegment
+	short					nSegment;     // tSegment number containing tObject
+	short					nSegType;		// nType of tSegment
+} tObjPosition;
+
+class CObjPosition : public CTransformation {
+	private:
+		short		m_nSegment;
+		short		m_nSegType;
+	public:
+		inline short& Segment () { return m_nSegment; }
+		inline short& SegType () { return m_nSegType; }
 };
 
-class tWindowRenderedData {
-public:
-	int     frame;
-	tObject *viewer;
-	int     rearView;
-	int     user;
-	int     numObjects;
+typedef struct tWindowRenderedData {
+	int     nFrame;
+	tObject *viewerP;
+	int     bRearView;
+	int     nUser;
+	int     nObjects;
 	short   renderedObjects [MAX_RENDERED_OBJECTS];
+} tWindowRenderedData;
+
+class WIndowRenderedData {
+	private:
+		tWindowRenderedData	m_data;
+	public:
+		inline int& Frame () { return m_data.nFrame; }
+		inline int& RearView () { return m_data.bRearView; }
+		inline int& User () { return m_data.nUser; }
+		inline int& Objects () { return m_data.nObjects; }
+		inline short& RenderedObjects (int i) { return m_data.renderedObjects [i]; }
+		inline tObject *Viewer () { return m_data.viewerP; }
 };
 
-class tObjDropInfo {
-public:
+typedef struct tObjDropInfo {
 	time_t	nDropTime;
 	short		nPowerupType;
 	short		nPrevPowerup;
 	short		nNextPowerup;
 	short		nObject;
+} tObjDropInfo;
+
+class CObjDropInfo {
+	private:
+		tObjDropInfo	m_info;
+	public:
+		inline time_t& Time () { return m_info.nDropTime; }
+		inline short& Type () { return m_info.nPowerupType; }
+		inline short& Prev () { return m_info.nPrevPowerup; }
+		inline short& Next () { return m_info.nNextPowerup; }
+		inline short& Object () { return m_info.nObject; }
 };
 
 class tObjectRef {
@@ -418,6 +656,16 @@ extern tObject Follow;
 // do whatever setup needs to be done
 void InitObjects();
 
+int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, const vmsMatrix& mOrient,
+					   fix xSize, ubyte cType, ubyte mType, ubyte rType);
+int CloneObject (tObject *objP);
+int CreateRobot (ubyte nId, short nSegment, const vmsVector& vPos);
+int CreatePowerup (ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, int bIgnoreLimits);
+int CreateWeapon (ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, fix xSize, ubyte rType);
+int CreateFireball (ubyte nId, short nSegment, const vmsVector& vPos, fix xSize, ubyte rType);
+int CreateDebris (tObject *parentP, short nSubModel);
+int CreateCamera (tObject *parentP);
+int CreateLight (ubyte nId, short nSegment, const vmsVector& vPos);
 // returns tSegment number tObject is in.  Searches out from tObject's current
 // seg, so this shouldn't be called if the tObject has "jumped" to a new seg
 // -- unused --
@@ -436,11 +684,11 @@ void RelinkObject(int nObject,int newsegnum);
 void LinkObject(int nObject,int nSegment);
 
 // unlinks an tObject from a tSegment's list of objects
-void UnlinkObject(int nObject);
+void UnlinkObject (tObject *objP);
 
 // initialize a new tObject.  adds to the list for the given tSegment
 // returns the tObject number
-//int tObject::Create(ubyte nType, char id, short owner, short nSegment, const vmsVector& pos,
+//int CObject::Create(ubyte nType, char id, short owner, short nSegment, const vmsVector& pos,
 //               const vmsMatrix& orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
 
 // make a copy of an tObject. returs num of new tObject
@@ -520,7 +768,7 @@ extern void ExtractShortPos(tObject *objp, tShortPos *spp, int swap_bytes);
 void ClearTransientObjects(int clear_all);
 
 // returns the number of a free tObject, updating HighestObject_index.
-// Generally, tObject::Create() should be called to get an tObject, since it
+// Generally, CObject::Create() should be called to get an tObject, since it
 // fills in important fields and does the linking.  returns -1 if no
 // free objects
 int AllocObject(void);
@@ -603,9 +851,9 @@ extern ubyte bIsMissile [];
 #define	SHOW_OBJ_FX \
 			(!(gameStates.app.bNostalgia || COMPETITION))
 
-#define	IS_BOSS(_objP)		(((_objP)->nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->id).bossFlag)
+#define	IS_BOSS(_objP)		(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).bossFlag)
 #define	IS_BOSS_I(_i)		IS_BOSS (gameData.objs.objects + (_i))
-#define	IS_MISSILE(_objP)	(((_objP)->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(_objP)->id])
+#define	IS_MISSILE(_objP)	(((_objP)->info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(_objP)->info.nId])
 #define	IS_MISSILE_I(_i)	IS_MISSILE (gameData.objs.objects + (_i))
 
 #if DBG
@@ -620,14 +868,14 @@ extern tObject *dbgObjP;
 
 #define DISABLE_COLLISION(type1, type2)	SET_COLLISION(type1, type2, RESULT_NOTHING)
 
-#define OBJECT_EXISTS(_objP)	 ((_objP) && !((_objP)->flags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+#define OBJECT_EXISTS(_objP)	 ((_objP) && !((_objP)->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 
 
 //	-----------------------------------------------------------------------------------------------------------
 
 static inline void KillObject (tObject *objP)
 {
-objP->flags |= OF_SHOULD_BE_DEAD;
+objP->info.nFlags |= OF_SHOULD_BE_DEAD;
 #if DBG
 if (objP == dbgObjP)
 	objP = objP;

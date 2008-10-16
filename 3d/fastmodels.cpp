@@ -75,10 +75,10 @@ void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, s
 	tG3ModelVertex	*pmv;
 	tFaceColor		*pc;
 	float				fAlpha = GrAlpha ();
-	int				h, i, bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
+	int				h, i, bEmissive = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
 
 if (!gameStates.render.bBrightObject) {
-	vPos = objP->position.vPos.ToFloat();
+	vPos = objP->info.position.vPos.ToFloat();
 	for (i = iVerts, pv = pm->pVerts + iVerts, pn = pm->pVertNorms + iVerts, pc = pm->pColor + iVerts;
 		  i < nVerts;
 		  i++, pv++, pn++, pc++) {
@@ -114,8 +114,8 @@ void G3LightModel (tObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 	tRgbaColorf		baseColor, *colorP;
 	float				fLight, fAlpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 	int				h, i, j, l;
-	int				bEmissive = (objP->nType == OBJ_MARKER) ||
-										((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id]);
+	int				bEmissive = (objP->info.nType == OBJ_MARKER) ||
+										((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId]);
 
 #if DBG
 if (OBJ_IDX (objP) == nDbgObj)
@@ -126,7 +126,7 @@ if (xModelLight > F1_0)
 	xModelLight = F1_0;
 #endif
 if (SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting ||
-    (gameOpts->ogl.bLightObjects && (gameOpts->ogl.bLightPowerups || (objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))))) {
+    (gameOpts->ogl.bLightObjects && (gameOpts->ogl.bLightPowerups || (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))))) {
 	tiRender.objP = objP;
 	tiRender.pm = pm;
 	if (!RunRenderThreads (rtPolyModel))
@@ -229,7 +229,7 @@ if (!objP)
 	return;
 if (!pm->bRendered || gameData.models.nScale)
 	mtP->nCount = 0;
-else if (mtP->nCount >= (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) ? 2 : 1))
+else if (mtP->nCount >= (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) ? 2 : 1))
 	return;
 vn = (pmf ? pmf->vNormal.ToFloat3() : vNormal->ToFloat3());
 if (fVector3::Dot(vn, vForward) > -1.0f / 3.0f)
@@ -282,7 +282,7 @@ static int bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1};
 
 int G3FilterSubModel (tObject *objP, tG3SubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
-	int nId = objP->id;
+	int nId = objP->info.nId;
 
 if (!psm->bRender)
 	return 0;
@@ -361,9 +361,9 @@ return 0;
 
 static inline int ObjectHasThruster (tObject *objP)
 {
-return (objP->nType == OBJ_PLAYER) ||
-		 (objP->nType == OBJ_ROBOT) ||
-		 ((objP->nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [objP->id]));
+return (objP->info.nType == OBJ_PLAYER) ||
+		 (objP->info.nType == OBJ_ROBOT) ||
+		 ((objP->info.nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [objP->info.nId]));
 }
 
 //------------------------------------------------------------------------------
@@ -376,7 +376,7 @@ int G3AnimateSubModel (tObject *objP, tG3SubModel *psm, short nModel)
 
 if (!psm->nFrames)
 	return 0;
-fP = gameData.multiplayer.weaponStates [objP->id].firing;
+fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
 nTimeout = 25 * gameStates.gameplay.slowmo [0].fSpeed;
 if (gameData.weapons.nPrimary == VULCAN_INDEX)
 	nTimeout /= 2;
@@ -421,8 +421,8 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 						bGetThruster = !nPass && ObjectHasThruster (objP);
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
-if (objP->nType == OBJ_PLAYER)
-	nTeamColor = IsMultiGame ? (IsTeamGame ? GetTeam (objP->id) : objP->id) + 1 : gameOpts->render.ship.nColor;
+if (objP->info.nType == OBJ_PLAYER)
+	nTeamColor = IsMultiGame ? (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId) + 1 : gameOpts->render.ship.nColor;
 else
 	nTeamColor = 0;
 #if 1
@@ -558,8 +558,8 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [0] + sliP->nFirst;
 	tShaderLight			*psl;
 	int						nPass, iLight, nLights, nLightRange;
-	int						bBright = objP && (objP->nType == OBJ_MARKER);
-	int						bEmissive = objP && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
+	int						bBright = objP && (objP->info.nType == OBJ_MARKER);
+	int						bEmissive = objP && (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
 	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
@@ -605,11 +605,11 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				break;
 #endif
 			if (nLights < 0) {
-				tFaceColor *psc = AvgSgmColor (objP->nSegment, NULL);
+				tFaceColor *psc = AvgSgmColor (objP->info.nSegment, NULL);
 				fVector3 vPos;
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
-				vPos = objP->position.vPos.ToFloat3();
+				vPos = objP->info.position.vPos.ToFloat3();
 				glLightfv (hLight, GL_POSITION, (GLfloat *)&vPos);
 				glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &psc->color);
 				glLightfv (hLight, GL_SPECULAR, (GLfloat *) &psc->color);
@@ -744,8 +744,8 @@ if (nModel == nDbgModel)
 	nDbgModel = nModel;
 #endif
 if (gameStates.render.bQueryCoronas &&
-	 (((objP->nType == OBJ_WEAPON) && (objP->id < MAX_WEAPONS) &&
-	  gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id]) || gameStates.render.bCloaked))
+	 (((objP->info.nType == OBJ_WEAPON) && (objP->info.nId < MAX_WEAPONS) &&
+	  gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId]) || gameStates.render.bCloaked))
 	return 1;
 #if G3_FAST_MODELS
 if (!RENDERPATH)
@@ -839,15 +839,15 @@ else
 nGunId = EquippedPlayerGun (objP);
 nBombId = EquippedPlayerBomb (objP);
 nMissileId = EquippedPlayerMissile (objP, &nMissiles);
-if (!bHires && (objP->nType == OBJ_POWERUP)) {
-	if ((objP->id == POW_SMARTMINE) || (objP->id == POW_PROXMINE))
+if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
+	if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
 		gameData.models.nScale = 2 * F1_0;
 	else
 		gameData.models.nScale = 3 * F1_0 / 2;
 	}
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 0,
 				 nGunId, nBombId, nMissileId, nMissiles);
-if ((objP->nType != OBJ_DEBRIS) && bHires && pm->bHasTransparency)
+if ((objP->info.nType != OBJ_DEBRIS) && bHires && pm->bHasTransparency)
 	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 1,
 					 nGunId, nBombId, nMissileId, nMissiles);
 glDisable (GL_TEXTURE_2D);
@@ -857,8 +857,8 @@ if (gameStates.render.bCloaked)
 	G3DisableClientStates (0, 0, 0, -1);
 else
 	G3DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
-if (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR))) {
-	G3StartInstanceMatrix (objP->position.vPos, objP->position.mOrient);
+if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
+	G3StartInstanceMatrix (objP->info.position.vPos, objP->info.position.mOrient);
 	G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL, bHires);
 	G3DoneInstance ();
 	}

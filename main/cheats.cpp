@@ -120,11 +120,11 @@ int KillAllBuddyBots (int bVerbose)
 	//int	boss_index = -1;
 
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion) {
+	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).companion) {
 		if (gameStates.app.bNostalgia)
-			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else 
-			ApplyDamageToRobot (objP, objP->shields + 1, -1);
+			ApplyDamageToRobot (objP, objP->info.xShields + 1, -1);
 		if (bVerbose)
 			HUDInitMessage (TXT_BUDDY_TOASTED);
 		nKilled++;
@@ -144,14 +144,14 @@ void KillAllRobots (int bVerbose)
 
 // Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) &&
-		 !(ROBOTINFO (objP->id).companion || ROBOTINFO (objP->id).bossFlag)) {
+	if ((objP->info.nType == OBJ_ROBOT) &&
+		 !(ROBOTINFO (objP->info.nId).companion || ROBOTINFO (objP->info.nId).bossFlag)) {
 		nKilled++;
 		if (gameStates.app.bNostalgia)
-			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else {
-			ApplyDamageToRobot (objP, objP->shields + 1, -1);
-			objP->flags |= OF_ARMAGEDDON;
+			ApplyDamageToRobot (objP, objP->info.xShields + 1, -1);
+			objP->info.nFlags |= OF_ARMAGEDDON;
 			}
 		}
 // Toast the buddy if nothing else toasted!
@@ -172,13 +172,13 @@ if (gameStates.gameplay.bKillBossCheat)
 	gameStates.gameplay.bKillBossCheat = 0;
 else {
 	for (i = 0, objP = OBJECTS; i<=gameData.objs.nLastObject [0]; i++, objP++)
-		if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag) {
+		if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).bossFlag) {
 			nKilled++;
 			if (gameStates.app.bNostalgia)
-				objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+				objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 			else {
-				ApplyDamageToRobot (objP, objP->shields + 1, -1);
-				objP->flags |= OF_ARMAGEDDON;
+				ApplyDamageToRobot (objP, objP->info.xShields + 1, -1);
+				objP->info.nFlags |= OF_ARMAGEDDON;
 				}
 			gameStates.gameplay.bKillBossCheat = 1;
 			}
@@ -200,10 +200,10 @@ void KillEverything (int bVerbose)
 if (bVerbose)
 	HUDInitMessage (TXT_KILL_ETC);
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-	switch (OBJECTS [i].nType) {
+	switch (OBJECTS [i].info.nType) {
 		case OBJ_ROBOT:
 		case OBJ_REACTOR:
-			OBJECTS [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			OBJECTS [i].info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 			break;
 		case OBJ_POWERUP:
 			DoPowerup (OBJECTS + i, -1);
@@ -218,10 +218,10 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 		for (j = 0; j < gameData.walls.nWalls; j++) {
 			if (gameData.walls.walls [j].nTrigger == i) {
 				short nSegment = gameData.walls.walls [j].nSegment;
-				COMPUTE_SEGMENT_CENTER_I (&gameData.objs.console->position.vPos, nSegment);
-				RelinkObject (OBJ_IDX (gameData.objs.console), nSegment);
-				gameData.objs.console->position.mOrient[FVEC] = gameData.segs.segments [nSegment].sides [gameData.walls.walls [j].nSide].normals [0];
-				gameData.objs.console->position.mOrient[FVEC].Neg();
+				COMPUTE_SEGMENT_CENTER_I (&gameData.objs.consoleP->info.position.vPos, nSegment);
+				RelinkObject (OBJ_IDX (gameData.objs.consoleP), nSegment);
+				gameData.objs.consoleP->info.position.mOrient[FVEC] = gameData.segs.segments [nSegment].sides [gameData.walls.walls [j].nSide].normals [0];
+				gameData.objs.consoleP->info.position.mOrient[FVEC].Neg();
 				return;
 				}
 			}
@@ -239,12 +239,12 @@ void KillThief (int bVerbose)
 	tObject *objP;
 
 for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).thief) {
+	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).thief) {
 		if (gameStates.app.bNostalgia)
-			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else {
-			ApplyDamageToRobot (objP, objP->shields + 1, -1);
-			objP->flags |= OF_ARMAGEDDON;
+			ApplyDamageToRobot (objP, objP->info.xShields + 1, -1);
+			objP->info.nFlags |= OF_ARMAGEDDON;
 			}
 		if (bVerbose)
 			HUDInitMessage (TXT_THIEF_TOASTED);
@@ -261,10 +261,10 @@ void KillAllSnipers (int bVerbose)
 
 //	Kill all snipers.
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-	if (OBJECTS [i].nType == OBJ_ROBOT)
+	if (OBJECTS [i].info.nType == OBJ_ROBOT)
 		if (OBJECTS [i].cType.aiInfo.behavior == AIB_SNIPE) {
 			nKilled++;
-			OBJECTS [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			OBJECTS [i].info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		}
 if (bVerbose)
 	HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
@@ -281,8 +281,8 @@ void KillBuddy (int bVerbose)
 
 	//	Kill buddy.
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion) {
-		OBJECTS [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).companion) {
+		OBJECTS [i].info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		if (bVerbose)
 			HUDInitMessage (TXT_BUDDY_TOASTED);
 		}
@@ -1008,42 +1008,42 @@ void DoCheatMenu ()
 	sprintf ( score_text, "%d", LOCALPLAYER.score );
 
 	memset (mm, 0, sizeof (mm));
-	mm[0].nType=NM_TYPE_CHECK; 
-	mm[0].value=LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE; 
-	mm[0].text="Invulnerability";
-	mm[1].nType=NM_TYPE_CHECK; 
-	mm[1].value=LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED; 
-	mm[1].text="Cloaked";
-	mm[2].nType=NM_TYPE_CHECK; 
-	mm[2].value=0; 
-	mm[2].text="All keys";
-	mm[3].nType=NM_TYPE_NUMBER; 
-	mm[3].value=X2I (LOCALPLAYER.energy); 
-	mm[3].text="% Energy"; mm[3].minValue=0; 
-	mm[3].maxValue=200;
-	mm[4].nType=NM_TYPE_NUMBER; 
-	mm[4].value=X2I (LOCALPLAYER.shields); 
-	mm[4].text="% Shields"; mm[4].minValue=0; 
-	mm[4].maxValue=200;
-	mm[5].nType=NM_TYPE_TEXT; 
-	mm[5].text = "Score:";
-	mm[6].nType=NM_TYPE_INPUT; 
-	mm[6].text_len = 10; 
-	mm[6].text = score_text;
-	//mm[7].nType=NM_TYPE_RADIO; mm[7].value= (LOCALPLAYER.laserLevel==0); mm[7].group=0; mm[7].text="Laser level 1";
-	//mm[8].nType=NM_TYPE_RADIO; mm[8].value= (LOCALPLAYER.laserLevel==1); mm[8].group=0; mm[8].text="Laser level 2";
-	//mm[9].nType=NM_TYPE_RADIO; mm[9].value= (LOCALPLAYER.laserLevel==2); mm[9].group=0; mm[9].text="Laser level 3";
-	//mm[10].nType=NM_TYPE_RADIO; mm[10].value= (LOCALPLAYER.laserLevel==3); mm[10].group=0; mm[10].text="Laser level 4";
+	mm[0].nType = NM_TYPE_CHECK; 
+	mm[0].value = LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE; 
+	mm[0].text = "Invulnerability";
+	mm[1].nType = NM_TYPE_CHECK; 
+	mm[1].value = LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED; 
+	mm[1].text = "Cloaked";
+	mm[2].nType = NM_TYPE_CHECK; 
+	mm[2].value = 0; 
+	mm[2].text = "All keys";
+	mm[3].nType = NM_TYPE_NUMBER; 
+	mm[3].value = X2I (LOCALPLAYER.energy); 
+	mm[3].text = "% Energy"; mm[3].minValue = 0; 
+	mm[3].maxValue = 200;
+	mm[4].nType = NM_TYPE_NUMBER; 
+	mm[4].value = X2I (LOCALPLAYER.shields); 
+	mm[4].text = "% Shields"; mm[4].minValue = 0; 
+	mm[4].maxValue = 200;
+	mm[5].nType = NM_TYPE_TEXT; 
+	mm[5].text  =  "Score:";
+	mm[6].nType = NM_TYPE_INPUT; 
+	mm[6].text_len  =  10; 
+	mm[6].text  =  score_text;
+	//mm[7].nType = NM_TYPE_RADIO; mm[7].value =  (LOCALPLAYER.laserLevel =  = 0); mm[7].group = 0; mm[7].text = "Laser level 1";
+	//mm[8].nType = NM_TYPE_RADIO; mm[8].value =  (LOCALPLAYER.laserLevel =  = 1); mm[8].group = 0; mm[8].text = "Laser level 2";
+	//mm[9].nType = NM_TYPE_RADIO; mm[9].value =  (LOCALPLAYER.laserLevel =  = 2); mm[9].group = 0; mm[9].text = "Laser level 3";
+	//mm[10].nType = NM_TYPE_RADIO; mm[10].value =  (LOCALPLAYER.laserLevel =  = 3); mm[10].group = 0; mm[10].text = "Laser level 4";
 
-	mm[7].nType=NM_TYPE_NUMBER; 
-	mm[7].value=LOCALPLAYER.laserLevel+1; 
-	mm[7].text="Laser Level"; mm[7].minValue=0; 
-	mm[7].maxValue=MAX_SUPER_LASER_LEVEL+1;
-	mm[8].nType=NM_TYPE_NUMBER; 
-	mm[8].value=LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX]; 
-	mm[8].text="Missiles"; 
-	mm[8].minValue=0; 
-	mm[8].maxValue=200;
+	mm[7].nType = NM_TYPE_NUMBER; 
+	mm[7].value = LOCALPLAYER.laserLevel+1; 
+	mm[7].text = "Laser Level"; mm[7].minValue = 0; 
+	mm[7].maxValue = MAX_SUPER_LASER_LEVEL+1;
+	mm[8].nType = NM_TYPE_NUMBER; 
+	mm[8].value = LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX]; 
+	mm[8].text = "Missiles"; 
+	mm[8].minValue = 0; 
+	mm[8].maxValue = 200;
 
 	mmn = ExecMenu ("Wimp Menu", NULL, 9, mm, NULL, NULL );
 

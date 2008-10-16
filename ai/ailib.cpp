@@ -54,26 +54,26 @@ int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVecto
 	//	Assume that robot's gun tip is in same tSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 fq.p0	= pos;
-if (((*pos)[X] != objP->position.vPos[X]) ||
-	 ((*pos)[Y] != objP->position.vPos[Y]) ||
-	 ((*pos)[Z] != objP->position.vPos[Y])) {
-	short nSegment = FindSegByPos (*pos, objP->nSegment, 1, 0);
+if (((*pos)[X] != objP->info.position.vPos[X]) ||
+	 ((*pos)[Y] != objP->info.position.vPos[Y]) ||
+	 ((*pos)[Z] != objP->info.position.vPos[Y])) {
+	short nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
 	if (nSegment == -1) {
-		fq.startSeg = objP->nSegment;
-		*pos = objP->position.vPos;
+		fq.startSeg = objP->info.nSegment;
+		*pos = objP->info.position.vPos;
 #if TRACE
 		con_printf (1, "Object %i, gun is outside mine, moving towards center.\n", OBJ_IDX (objP));
 #endif
 		MoveTowardsSegmentCenter (objP);
 		}
 	else {
-		if (nSegment != objP->nSegment)
+		if (nSegment != objP->info.nSegment)
 			objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
 		fq.startSeg = nSegment;
 		}
 	}
 else
-	fq.startSeg	= objP->nSegment;
+	fq.startSeg	= objP->info.nSegment;
 fq.p1					= &gameData.ai.vBelievedPlayerPos;
 fq.radP0				=
 fq.radP1				= F1_0 / 4;
@@ -85,7 +85,7 @@ gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 if (gameData.ai.nHitType != HIT_NONE)
 	return 0;
-dot = vmsVector::Dot(*vVecToPlayer, objP->position.mOrient[FVEC]);
+dot = vmsVector::Dot(*vVecToPlayer, objP->info.position.mOrient[FVEC]);
 return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 }
 
@@ -95,7 +95,7 @@ int AICanFireAtPlayer (tObject *objP, vmsVector *vGun, vmsVector *vPlayer)
 {
 	tFVIQuery	fq;
 	fix			nSize, h;
-	short			nModel, ignoreObjs [2] = {OBJ_IDX (gameData.objs.console), -1};
+	short			nModel, ignoreObjs [2] = {OBJ_IDX (gameData.objs.consoleP), -1};
 
 //	Assume that robot's gun tip is in same tSegment as robot's center.
 if (vGun->IsZero())
@@ -103,24 +103,24 @@ if (vGun->IsZero())
 if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
 	return 1;
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
-if (((*vGun)[X] == objP->position.vPos[X]) &&
-	 ((*vGun)[Y] == objP->position.vPos[Y]) &&
-	 ((*vGun)[Z] == objP->position.vPos[Z]))
-	fq.startSeg	= objP->nSegment;
+if (((*vGun)[X] == objP->info.position.vPos[X]) &&
+	 ((*vGun)[Y] == objP->info.position.vPos[Y]) &&
+	 ((*vGun)[Z] == objP->info.position.vPos[Z]))
+	fq.startSeg	= objP->info.nSegment;
 else {
-	short nSegment = FindSegByPos (*vGun, objP->nSegment, 1, 0);
+	short nSegment = FindSegByPos (*vGun, objP->info.nSegment, 1, 0);
 	if (nSegment == -1)
 		return -1;
-	if (nSegment != objP->nSegment)
+	if (nSegment != objP->info.nSegment)
 		objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
 	fq.startSeg = nSegment;
 	}
-h = vmsVector::Dist(*vGun, objP->position.vPos);
+h = vmsVector::Dist(*vGun, objP->info.position.vPos);
 h = vmsVector::Dist(*vGun, *vPlayer);
 nModel = objP->rType.polyObjInfo.nModel;
-nSize = objP->size;
+nSize = objP->info.xSize;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested
-objP->size = F1_0 * 2;						//chose some meaningful small size to simulate a weapon
+objP->info.xSize = F1_0 * 2;						//chose some meaningful small size to simulate a weapon
 fq.p0					= vGun;
 fq.p1					= vPlayer;
 fq.radP0				=
@@ -136,13 +136,13 @@ if (gameData.ai.nHitType == 0)
 gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 objP->rType.polyObjInfo.nModel = nModel;
-objP->size = nSize;
+objP->info.xSize = nSize;
 return (gameData.ai.nHitType != HIT_OBJECT);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-inline void LimitPlayerVisibility (fix xMaxVisibleDist, tAILocal *ailP)
+inline void LimitPlayerVisibility (fix xMaxVisibleDist, tAILocalInfo *ailP)
 {
 #if 1
 if ((xMaxVisibleDist > 0) && (gameData.ai.xDistToPlayer > xMaxVisibleDist) && (ailP->playerAwarenessType < PA_RETURN_FIRE))
@@ -161,7 +161,7 @@ if ((xMaxVisibleDist > 0) && (gameData.ai.xDistToPlayer > xMaxVisibleDist) && (a
 //	If the tPlayer is cloaked, set gameData.ai.vVecToPlayer based on time tPlayer cloaked and last uncloaked position.
 //	Updates ailP->nPrevVisibility if tPlayer is not cloaked, in which case the previous visibility is left unchanged
 //	and is copied to gameData.ai.nPlayerVisibility
-void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailP, tRobotInfo *botInfoP, int *flag,
+void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocalInfo *ailP, tRobotInfo *botInfoP, int *flag,
 							  fix xMaxVisibleDist)
 {
 if (*flag) {
@@ -189,7 +189,7 @@ else {
 #endif
 		if ((ailP->nextMiscSoundTime < gameData.time.xGame) && ((ailP->nextPrimaryFire < F1_0) || (ailP->nextSecondaryFire < F1_0)) && (dist < F1_0*20)) {
 			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 1;
-			DigiLinkSoundToPos (botInfoP->seeSound, objP->nSegment, 0, pos, 0 , nRobotSoundVolume);
+			DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 			}
 		}
 	else {
@@ -207,7 +207,7 @@ else {
 		//	This horrible code added by MK in desperation on 12/13/94 to make robots wake up as soon as they
 		//	see you without killing frame rate.
 		{
-			tAIStatic	*aiP = &objP->cType.aiInfo;
+			tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 		if ((gameData.ai.nPlayerVisibility == 2) && (ailP->nPrevVisibility != 2))
 			if ((aiP->GOAL_STATE == AIS_REST) || (aiP->CURRENT_STATE == AIS_REST)) {
 				aiP->GOAL_STATE = AIS_FIRE;
@@ -219,18 +219,18 @@ else {
 			if (ailP->nPrevVisibility == 0) {
 				if (ailP->timePlayerSeen + F1_0/2 < gameData.time.xGame) {
 					// -- if (gameStates.app.bPlayerExploded)
-					// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->nSegment, 0, pos, 0 , nRobotSoundVolume);
+					// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 					// -- else
-						DigiLinkSoundToPos (botInfoP->seeSound, objP->nSegment, 0, pos, 0 , nRobotSoundVolume);
+						DigiLinkSoundToPos (botInfoP->seeSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 					ailP->timePlayerSoundAttacked = gameData.time.xGame;
 					ailP->nextMiscSoundTime = gameData.time.xGame + F1_0 + d_rand ()*4;
 					}
 				}
 			else if (ailP->timePlayerSoundAttacked + F1_0/4 < gameData.time.xGame) {
 				// -- if (gameStates.app.bPlayerExploded)
-				// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->nSegment, 0, pos, 0 , nRobotSoundVolume);
+				// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 				// -- else
-					DigiLinkSoundToPos (botInfoP->attackSound, objP->nSegment, 0, pos, 0 , nRobotSoundVolume);
+					DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 				ailP->timePlayerSoundAttacked = gameData.time.xGame;
 				}
 			}
@@ -238,9 +238,9 @@ else {
 		if ((gameData.ai.nPlayerVisibility == 2) && (ailP->nextMiscSoundTime < gameData.time.xGame)) {
 			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 2;
 			// -- if (gameStates.app.bPlayerExploded)
-			// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->nSegment, 0, pos, 0 , nRobotSoundVolume);
+			// -- 	DigiLinkSoundToPos (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 			// -- else
-				DigiLinkSoundToPos (botInfoP->attackSound, objP->nSegment, 0, pos, 0 , nRobotSoundVolume);
+				DigiLinkSoundToPos (botInfoP->attackSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 			}
 		ailP->nPrevVisibility = gameData.ai.nPlayerVisibility;
 		}
@@ -275,12 +275,12 @@ nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall))		//if there's no door at alld:\temp\dm_test.
 	return 1;				//d:\temp\dm_testthen say it can't be opened
 	//	The mighty console tObject can open all doors (for purposes of determining paths).
-if (objP == gameData.objs.console) {
+if (objP == gameData.objs.consoleP) {
 	if (gameData.walls.walls [nWall].nType == WALL_DOOR)
 		return 1;
 	}
 wallP = gameData.walls.walls + nWall;
-if ((objP == NULL) || (ROBOTINFO (objP->id).companion == 1)) {
+if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 	int	ailp_mode;
 
 	if (wallP->flags & WALL_BUDDY_PROOF) {
@@ -364,7 +364,7 @@ if ((objP == NULL) || (ROBOTINFO (objP->id).companion == 1)) {
 			}
 		}
 	}
-else if ((objP->id == ROBOT_BRAIN) || (objP->cType.aiInfo.behavior == AIB_RUN_FROM) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
+else if ((objP->info.nId == ROBOT_BRAIN) || (objP->cType.aiInfo.behavior == AIB_RUN_FROM) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
 	if (IS_WALL (nWall)) {
 		if ((wallP->nType == WALL_DOOR) && (wallP->keys == KEY_NONE) && !(wallP->flags & WALL_DOOR_LOCKED))
 			return 1;
@@ -447,11 +447,11 @@ short nObject = gameData.segs.objects [SEG_IDX (segP)];
 tObject *objP;
 while (nObject != -1) {
 	objP = OBJECTS + nObject;
-	if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR)) {
-		if (vmsVector::Dist(*pos, objP->position.vPos) < size + objP->size)
+	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR)) {
+		if (vmsVector::Dist(*pos, objP->info.position.vPos) < size + objP->info.xSize)
 			return 1;
 		}
-	nObject = objP->next;
+	nObject = objP->info.nNext;
 	}
 return 0;
 }

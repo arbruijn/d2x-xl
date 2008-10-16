@@ -36,8 +36,8 @@ for (i = 0; i < N_PLAYER_GUNS; i++)
 
 int EquippedPlayerGun (tObject *objP)
 {
-if (objP->nType == OBJ_PLAYER) {
-		int		nPlayer = objP->id;
+if (objP->info.nType == OBJ_PLAYER) {
+		int		nPlayer = objP->info.nId;
 		int		nWeapon = gameData.multiplayer.weaponStates [nPlayer].nPrimary;
 
 	return (nWeapon || (gameData.multiplayer.weaponStates [nPlayer].nLaserLevel <= MAX_LASER_LEVEL)) ? nWeapon : SUPER_LASER_INDEX;
@@ -51,8 +51,8 @@ static int nBombIds [] = {SMART_INDEX, MEGA_INDEX, EARTHSHAKER_INDEX};
 
 int EquippedPlayerBomb (tObject *objP)
 {
-if (objP->nType == OBJ_PLAYER) {
-		int		nPlayer = objP->id;
+if (objP->info.nType == OBJ_PLAYER) {
+		int		nPlayer = objP->info.nId;
 		int		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
 
 	for (i = 0; i < (int) sizeofa (nBombIds); i++)
@@ -68,8 +68,8 @@ static int nMissileIds [] = {CONCUSSION_INDEX, HOMING_INDEX, FLASHMSL_INDEX, GUI
 
 int EquippedPlayerMissile (tObject *objP, int *nMissiles)
 {
-if (objP->nType == OBJ_PLAYER) {
-		int		nPlayer = objP->id;
+if (objP->info.nType == OBJ_PLAYER) {
+		int		nPlayer = objP->info.nId;
 		int		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
 
 	for (i = 0; i < (int) sizeofa (nMissileIds); i++)

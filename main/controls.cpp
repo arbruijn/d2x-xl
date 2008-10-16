@@ -51,19 +51,17 @@ if (wiggleTime < F1_0)// Only scale wiggle if getting at least 1 FPS, to avoid c
 	xWiggle = FixMul (xWiggle * 20, wiggleTime); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 if (SPECTATOR (objP))
 	OBJPOS (objP)->vPos += (OBJPOS (objP)->mOrient [UVEC] * FixMul (xWiggle, gameData.pig.ship.player->wiggle)) * (F1_0 / 20);
-else if ((objP->nType == OBJ_PLAYER) || !pParent)
-	objP->mType.physInfo.velocity += objP->position.mOrient [UVEC] * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
+else if ((objP->info.nType == OBJ_PLAYER) || !pParent)
+	objP->mType.physInfo.velocity += objP->info.position.mOrient [UVEC] * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
 else {
-	objP->mType.physInfo.velocity += pParent->position.mOrient [UVEC] * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
-	objP->position.vPos += objP->mType.physInfo.velocity * wiggleTime;
+	objP->mType.physInfo.velocity += pParent->info.position.mOrient [UVEC] * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
+	objP->info.position.vPos += objP->mType.physInfo.velocity * wiggleTime;
 	}
 }
 
 // ----------------------------------------------------------------------------
 //look at keyboard, mouse, joystick, CyberMan, whatever, and set
 //physics vars rotVel, velocity
-
-vmsVector playerThrust;
 
 #define AFTERBURNER_USE_SECS	3				//use up in 3 seconds
 #define DROP_DELTA_TIME			(f1_0/15)	//drop 3 per second
@@ -92,12 +90,12 @@ void ReadFlyingControls (tObject *objP)
 		return;
 	}
 
-	if ((objP->nType != OBJ_PLAYER) || (objP->id != gameData.multiplayer.nLocalPlayer))
+	if ((objP->info.nType != OBJ_PLAYER) || (objP->info.nId != gameData.multiplayer.nLocalPlayer))
 		return;	//references to tPlayerShip require that this obj be the tPlayer
 
    tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
 	gmObjP = gmiP->objP;
-	if (gmObjP && (gmObjP->nSignature == gmiP->nSignature)) {
+	if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
 		vmsAngVec rotangs;
 		vmsMatrix rotmat,tempm;
 		fix speed;
@@ -109,10 +107,10 @@ void ReadFlyingControls (tObject *objP)
 		rotangs[BA] = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
 		rotangs[HA] = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
 		rotmat = vmsMatrix::Create(rotangs);
-		tempm = gmObjP->position.mOrient * rotmat;
-		gmObjP->position.mOrient = tempm;
-		speed = WI_speed (gmObjP->id, gameStates.app.nDifficultyLevel);
-		gmObjP->mType.physInfo.velocity = gmObjP->position.mOrient[FVEC] * speed;
+		tempm = gmObjP->info.position.mOrient * rotmat;
+		gmObjP->info.position.mOrient = tempm;
+		speed = WI_speed (gmObjP->info.nId, gameStates.app.nDifficultyLevel);
+		gmObjP->mType.physInfo.velocity = gmObjP->info.position.mOrient[FVEC] * speed;
 		if(IsMultiGame)
 			MultiSendGuidedInfo (gmObjP, 0);
 		}
@@ -160,14 +158,13 @@ void ReadFlyingControls (tObject *objP)
 		}
 	}
 	// Set tObject's thrust vector for forward/backward
-	objP->mType.physInfo.thrust = objP->position.mOrient[FVEC] * forwardThrustTime;
+	objP->mType.physInfo.thrust = objP->info.position.mOrient[FVEC] * forwardThrustTime;
 	// slide left/right
-	objP->mType.physInfo.thrust += objP->position.mOrient[RVEC] * Controls [0].sidewaysThrustTime;
+	objP->mType.physInfo.thrust += objP->info.position.mOrient[RVEC] * Controls [0].sidewaysThrustTime;
 	// slide up/down
-	objP->mType.physInfo.thrust += objP->position.mOrient[UVEC] * Controls [0].verticalThrustTime;
+	objP->mType.physInfo.thrust += objP->info.position.mOrient[UVEC] * Controls [0].verticalThrustTime;
 	if (!gameStates.input.bSkipControls)
-		memcpy (&playerThrust, &objP->mType.physInfo.thrust, sizeof (playerThrust));
-	//HUDMessage (0, "%d %d %d", playerThrust.x, playerThrust.y, playerThrust.z);
+		memcpy (&gameData.physics.playerThrust, &objP->mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
 	bMulti = IsMultiGame;
 	if ((objP->mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted) {
 #if 1//ndef _DEBUG

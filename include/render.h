@@ -98,9 +98,9 @@ static inline tObject *GuidedMslView (void)
 	tObject *objP;
 
 return (objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) && 
-		 (objP->nType == OBJ_WEAPON) && 
-		 (objP->id == GUIDEDMSL_ID) && 
-		 (objP->nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature) ?
+		 (objP->info.nType == OBJ_WEAPON) && 
+		 (objP->info.nId == GUIDEDMSL_ID) && 
+		 (objP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature) ?
 	objP : NULL;
 }
 

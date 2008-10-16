@@ -214,7 +214,7 @@ void TransformHitbox (tObject *objP, vmsVector *vPos, int iSubObj)
 	int				i, j;
 
 if (!vPos)
-	vPos = &objP->position.vPos;
+	vPos = &objP->info.position.vPos;
 for (i = 0; i < 8; i++) {
 	VmVecRotate (rotVerts + i, phb->vertices + i, viewP);
 	VmVecInc (rotVerts + i, vPos);
@@ -250,7 +250,7 @@ else {
 	iModel = 1;
 	nModels = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nSubModels;
 	}
-G3StartInstanceMatrix (vPos ? vPos : &objP->position.vPos, &objP->position.mOrient);
+G3StartInstanceMatrix (vPos ? vPos : &objP->info.position.vPos, &objP->info.position.mOrient);
 for (; iModel <= nModels; iModel++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++)
 		G3TransformPoint (rotVerts + i, pmhb->box.vertices + i, 0);
@@ -282,7 +282,7 @@ else {
 	nBoxes = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nHitboxes;
 	}
 if (!vPos)
-	vPos = &objP->position.vPos;
+	vPos = &objP->info.position.vPos;
 for (phb += iBox, pmhb += iBox; iBox <= nBoxes; iBox++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++) {
 		rotVerts[i] = *viewP * pmhb->box.vertices[i];

@@ -1917,10 +1917,10 @@ typedef struct tObjectData {
 	short						nDropped;
 	ushort					*cameraRef;
 	tGuidedMissileInfo	guidedMissile [MAX_PLAYERS];
-	tObject					*console;
-	tObject					*viewer;
+	tObject					*consoleP;
+	tObject					*viewerP;
 	tObject					*trackGoals [2];
-	tObject					*missileViewer;
+	tObject					*missileViewerP;
 	tObject					*deadPlayerCamera;
 	tObject					*endLevelCamera;
 	int						nObjects;
@@ -1970,6 +1970,7 @@ typedef struct tPhysicsData {
 	fix					xTime;
 	fix					xAfterburnerCharge;
 	fix					xBossInvulDot;
+	vmsVector			playerThrust;
 } tPhysicsData;
 
 //------------------------------------------------------------------------------
@@ -2725,7 +2726,7 @@ typedef struct tAIData {
 	vmsVector			vBelievedPlayerPos;
 	vmsVector			vLastPlayerPosFiredAt;
 	fix					nDistToLastPlayerPosFiredAt;
-	tAILocal				*localInfo;
+	tAILocalInfo				*localInfo;
 	tAICloakInfo		cloakInfo [MAX_AI_CLOAK_INFO];
 	tPointSeg			pointSegs [MAX_POINT_SEGS];
 	tPointSeg			*freePointSegs;
@@ -3489,16 +3490,16 @@ extern fix nDebrisLife [];
                    gameOpts->render.nMaxFPS)
 
 #define SPECTATOR(_objP)	(gameStates.app.bFreeCam && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
-#define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->position)
-#define OBJSEG(_objP)		(SPECTATOR (_objP) ? gameStates.app.nPlayerSegment : (_objP)->nSegment)
+#define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->info.position)
+#define OBJSEG(_objP)		(SPECTATOR (_objP) ? gameStates.app.nPlayerSegment : (_objP)->info.nSegment)
 
 //	-----------------------------------------------------------------------------
 
 static inline vmsVector *PolyObjPos (tObject *objP, vmsVector *vPosP)
 {
 vmsVector vPos = OBJPOS (objP)->vPos;
-if (objP->renderType == RT_POLYOBJ) {
-	*vPosP = *ObjectView(objP) * gameData.models.offsets[objP->rType.polyObjInfo.nModel];
+if (objP->info.renderType == RT_POLYOBJ) {
+	*vPosP = *ObjectView (objP) * gameData.models.offsets [objP->rType.polyObjInfo.nModel];
 	*vPosP += vPos;
 	return vPosP;
 	}

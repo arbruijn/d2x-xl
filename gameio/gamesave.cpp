@@ -124,35 +124,35 @@ return !strnicmp(&filename [len-11], "level", 5);
 
 void VerifyObject (tObject * objP)
 {
-objP->lifeleft = IMMORTAL_TIME;		//all loaded tObject are immortal, for now
-if (objP->nType == OBJ_ROBOT) {
+objP->info.xLifeLeft = IMMORTAL_TIME;		//all loaded tObject are immortal, for now
+if (objP->info.nType == OBJ_ROBOT) {
 	nGameSaveOrgRobots++;
 	// Make sure valid id...
-	if (objP->id >= gameData.bots.nTypes [gameStates.app.bD1Data])
-		objP->id %= gameData.bots.nTypes [0];
+	if (objP->info.nId >= gameData.bots.nTypes [gameStates.app.bD1Data])
+		objP->info.nId %= gameData.bots.nTypes [0];
 	// Make sure model number & size are correct...
-	if (objP->renderType == RT_POLYOBJ) {
-		Assert(ROBOTINFO (objP->id).nModel != -1);
+	if (objP->info.renderType == RT_POLYOBJ) {
+		Assert(ROBOTINFO (objP->info.nId).nModel != -1);
 			//if you fail this assert, it means that a robot in this level
 			//hasn't been loaded, possibly because he's marked as
-			//non-shareware.  To see what robot number, print objP->id.
-		Assert(ROBOTINFO (objP->id).always_0xabcd == 0xabcd);
+			//non-shareware.  To see what robot number, print objP->info.nId.
+		Assert(ROBOTINFO (objP->info.nId).always_0xabcd == 0xabcd);
 			//if you fail this assert, it means that the robot_ai for
 			//a robot in this level hasn't been loaded, possibly because
 			//it's marked as non-shareware.  To see what robot number,
-			//print objP->id.
-		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->id).nModel;
-		objP->size = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
+			//print objP->info.nId.
+		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
+		objP->info.xSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		}
-	if (objP->id == 65)						//special "reactor" robots
-		objP->movementType = MT_NONE;
-	if (objP->movementType == MT_PHYSICS) {
-		objP->mType.physInfo.mass = ROBOTINFO (objP->id).mass;
-		objP->mType.physInfo.drag = ROBOTINFO (objP->id).drag;
+	if (objP->info.nId == 65)						//special "reactor" robots
+		objP->info.movementType = MT_NONE;
+	if (objP->info.movementType == MT_PHYSICS) {
+		objP->mType.physInfo.mass = ROBOTINFO (objP->info.nId).mass;
+		objP->mType.physInfo.drag = ROBOTINFO (objP->info.nId).drag;
 		}
 	}
 else {		//Robots taken care of above
-	if (objP->renderType == RT_POLYOBJ) {
+	if (objP->info.renderType == RT_POLYOBJ) {
 		char *name = szSavePOFNames [objP->rType.polyObjInfo.nModel];
 		for (int i = 0; i < gameData.models.nPolyModels; i++)
 			if (!stricmp (Pof_names [i], name)) {		//found it!
@@ -161,83 +161,83 @@ else {		//Robots taken care of above
 				}
 		}
 	}
-if (objP->nType == OBJ_POWERUP) {
-	if (objP->id >= gameData.objs.pwrUp.nTypes + POWERUP_ADDON_COUNT) {
-		objP->id = 0;
-		Assert(objP->renderType != RT_POLYOBJ);
+if (objP->info.nType == OBJ_POWERUP) {
+	if (objP->info.nId >= gameData.objs.pwrUp.nTypes + POWERUP_ADDON_COUNT) {
+		objP->info.nId = 0;
+		Assert(objP->info.renderType != RT_POLYOBJ);
 		}
-	objP->controlType = CT_POWERUP;
-	if (objP->id >= MAX_POWERUP_TYPES_D2)
+	objP->info.controlType = CT_POWERUP;
+	if (objP->info.nId >= MAX_POWERUP_TYPES_D2)
 		InitAddonPowerup (objP);
 	else {
-		objP->size = gameData.objs.pwrUp.info [objP->id].size;
-		objP->cType.powerupInfo.creationTime = 0;
+		objP->info.xSize = gameData.objs.pwrUp.info [objP->info.nId].size;
+		objP->cType.powerupInfo.xCreationTime = 0;
 		if (gameData.app.nGameMode & GM_NETWORK) {
-		if (MultiPowerupIs4Pack (objP->id)) {
-				gameData.multiplayer.powerupsInMine [objP->id-1] += 4;
-	 			gameData.multiplayer.maxPowerupsAllowed [objP->id-1] += 4;
+		if (MultiPowerupIs4Pack (objP->info.nId)) {
+				gameData.multiplayer.powerupsInMine [objP->info.nId-1] += 4;
+	 			gameData.multiplayer.maxPowerupsAllowed [objP->info.nId-1] += 4;
 				}
-			gameData.multiplayer.powerupsInMine [objP->id]++;
-			gameData.multiplayer.maxPowerupsAllowed [objP->id]++;
+			gameData.multiplayer.powerupsInMine [objP->info.nId]++;
+			gameData.multiplayer.maxPowerupsAllowed [objP->info.nId]++;
 #if TRACE
-			con_printf (CONDBG, "PowerupLimiter: ID=%d\n", objP->id);
-			if (objP->id > MAX_POWERUP_TYPES)
+			con_printf (CONDBG, "PowerupLimiter: ID=%d\n", objP->info.nId);
+			if (objP->info.nId > MAX_POWERUP_TYPES)
 				con_printf (1,"POWERUP: Overwriting array bounds!\n");
 #endif
 			}
 		}
 	}
-if (objP->nType == OBJ_WEAPON)	{
-	if (objP->id >= gameData.weapons.nTypes [0])	{
-		objP->id = 0;
-		Assert(objP->renderType != RT_POLYOBJ);
+if (objP->info.nType == OBJ_WEAPON)	{
+	if (objP->info.nId >= gameData.weapons.nTypes [0])	{
+		objP->info.nId = 0;
+		Assert(objP->info.renderType != RT_POLYOBJ);
 		}
-	if (objP->id == SMALLMINE_ID) {		//make sure pmines have correct values
-		objP->mType.physInfo.mass = gameData.weapons.info [objP->id].mass;
-		objP->mType.physInfo.drag = gameData.weapons.info [objP->id].drag;
+	if (objP->info.nId == SMALLMINE_ID) {		//make sure pmines have correct values
+		objP->mType.physInfo.mass = gameData.weapons.info [objP->info.nId].mass;
+		objP->mType.physInfo.drag = gameData.weapons.info [objP->info.nId].drag;
 		objP->mType.physInfo.flags |= PF_FREE_SPINNING;
 		// Make sure model number & size are correct...	
-		Assert(objP->renderType == RT_POLYOBJ);
-		objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->id].nModel;
-		objP->size = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
+		Assert(objP->info.renderType == RT_POLYOBJ);
+		objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel;
+		objP->info.xSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		}
 	}
-if (objP->nType == OBJ_REACTOR) {
-	objP->renderType = RT_POLYOBJ;
-	objP->controlType = CT_CNTRLCEN;
+if (objP->info.nType == OBJ_REACTOR) {
+	objP->info.renderType = RT_POLYOBJ;
+	objP->info.controlType = CT_CNTRLCEN;
 	if (gameData.segs.nLevelVersion <= 1) { // descent 1 reactor
-		objP->id = 0;                         // used to be only one kind of reactor
+		objP->info.nId = 0;                         // used to be only one kind of reactor
 		objP->rType.polyObjInfo.nModel = gameData.reactor.props [0].nModel;// descent 1 reactor
 		}
 #ifdef EDITOR
 	{
 	int i;
 	// Check, and set, strength of reactor
-	for (i = 0; i < gameData.objs.types.nCount; i++)
+	for (i = 0; i < gameData.objs.types.count; i++)
 		if ((gameData.objs.types.nType [i] == OL_CONTROL_CENTER) && 
-			 (gameData.objs.types.nType.nId [i] == objP->id)) {
-			objP->shields = gameData.objs.types.nType.nStrength [i];
+			 (gameData.objs.types.nType.nId [i] == objP->info.nId)) {
+			objP->info.xShields = gameData.objs.types.nType.nStrength [i];
 			break;	
 			}
-		Assert(i < gameData.objs.types.nCount);		//make sure we found it
+		Assert(i < gameData.objs.types.count);		//make sure we found it
 		}
 #endif
 	}
-if (objP->nType == OBJ_PLAYER) {
-	if (objP == gameData.objs.console)	
+if (objP->info.nType == OBJ_PLAYER) {
+	if (objP == gameData.objs.consoleP)	
 		InitPlayerObject();
 	else
-		if (objP->renderType == RT_POLYOBJ)	//recover from Matt's pof file matchup bug
+		if (objP->info.renderType == RT_POLYOBJ)	//recover from Matt's pof file matchup bug
 			objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
 	//Make sure orient matrix is orthogonal
 	gameOpts->render.nMathFormat = 0;
-	objP->position.mOrient.CheckAndFix();
+	objP->info.position.mOrient.CheckAndFix();
 	gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
-	objP->id = nGameSavePlayers++;
+	objP->info.nId = nGameSavePlayers++;
 	}
-if (objP->nType == OBJ_HOSTAGE) {
-	objP->renderType = RT_HOSTAGE;
-	objP->controlType = CT_POWERUP;
+if (objP->info.nType == OBJ_HOSTAGE) {
+	objP->info.renderType = RT_HOSTAGE;
+	objP->info.controlType = CT_POWERUP;
 	}
 }
 
@@ -315,23 +315,23 @@ void ReadObject (tObject *objP, CFILE *cfP, int version)
 {
 	int	i;
 
-objP->nType = CFReadByte (cfP);
-objP->id = CFReadByte (cfP);
-objP->controlType = CFReadByte (cfP);
-objP->movementType = CFReadByte (cfP);
-objP->renderType = CFReadByte (cfP);
-objP->flags = CFReadByte (cfP);
-objP->nSegment = CFReadShort (cfP);
-objP->attachedObj = -1;
-CFReadVector(objP->position.vPos, cfP);
-CFReadMatrix(objP->position.mOrient, cfP);
-objP->size = CFReadFix (cfP);
-objP->shields = CFReadFix (cfP);
-CFReadVector (objP->vLastPos, cfP);
-objP->containsType = CFReadByte (cfP);
-objP->containsId = CFReadByte (cfP);
-objP->containsCount = CFReadByte (cfP);
-switch (objP->movementType) {
+objP->info.nType = CFReadByte (cfP);
+objP->info.nId = CFReadByte (cfP);
+objP->info.controlType = CFReadByte (cfP);
+objP->info.movementType = CFReadByte (cfP);
+objP->info.renderType = CFReadByte (cfP);
+objP->info.nFlags = CFReadByte (cfP);
+objP->info.nSegment = CFReadShort (cfP);
+objP->info.nAttachedObj = -1;
+CFReadVector(objP->info.position.vPos, cfP);
+CFReadMatrix(objP->info.position.mOrient, cfP);
+objP->info.xSize = CFReadFix (cfP);
+objP->info.xShields = CFReadFix (cfP);
+CFReadVector (objP->info.vLastPos, cfP);
+objP->info.contains.nType = CFReadByte (cfP);
+objP->info.contains.nId = CFReadByte (cfP);
+objP->info.contains.nCount = CFReadByte (cfP);
+switch (objP->info.movementType) {
 	case MT_PHYSICS:
 		CFReadVector (objP->mType.physInfo.velocity, cfP);
 		CFReadVector (objP->mType.physInfo.thrust, cfP);
@@ -355,7 +355,7 @@ switch (objP->movementType) {
 		Int3();
 	}
 
-switch (objP->controlType) {
+switch (objP->info.controlType) {
 	case CT_AI: 
 		objP->cType.aiInfo.behavior = CFReadByte (cfP);
 		for (i=0;i<MAX_AI_FLAGS;i++)
@@ -374,13 +374,13 @@ switch (objP->controlType) {
 		objP->cType.explInfo.nSpawnTime = CFReadFix (cfP);
 		objP->cType.explInfo.nDeleteTime	= CFReadFix (cfP);
 		objP->cType.explInfo.nDeleteObj = CFReadShort (cfP);
-		objP->cType.explInfo.nNextAttach = objP->cType.explInfo.nPrevAttach = objP->cType.explInfo.nAttachParent = -1;
+		objP->cType.explInfo.attached.nNext = objP->cType.explInfo.attached.nPrev = objP->cType.explInfo.attached.nParent = -1;
 		break;
 
 	case CT_WEAPON: //do I really need to read these?  Are they even saved to disk?
-		objP->cType.laserInfo.parentType = CFReadShort (cfP);
-		objP->cType.laserInfo.nParentObj	= CFReadShort (cfP);
-		objP->cType.laserInfo.nParentSig	= CFReadInt (cfP);
+		objP->cType.laserInfo.parent.nType = CFReadShort (cfP);
+		objP->cType.laserInfo.parent.nObject = CFReadShort (cfP);
+		objP->cType.laserInfo.parent.nSignature = CFReadInt (cfP);
 		break;
 
 	case CT_LIGHT:
@@ -389,15 +389,15 @@ switch (objP->controlType) {
 
 	case CT_POWERUP:
 		if (version >= 25)
-			objP->cType.powerupInfo.count = CFReadInt (cfP);
+			objP->cType.powerupInfo.nCount = CFReadInt (cfP);
 		else
-			objP->cType.powerupInfo.count = 1;
-		if (objP->id == POW_VULCAN)
-			objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
-		else if (objP->id == POW_GAUSS)
-			objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
-		else if (objP->id == POW_OMEGA)
-			objP->cType.powerupInfo.count = MAX_OMEGA_CHARGE;
+			objP->cType.powerupInfo.nCount = 1;
+		if (objP->info.nId == POW_VULCAN)
+			objP->cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
+		else if (objP->info.nId == POW_GAUSS)
+			objP->cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
+		else if (objP->info.nId == POW_OMEGA)
+			objP->cType.powerupInfo.nCount = MAX_OMEGA_CHARGE;
 		break;
 
 	case CT_NONE:
@@ -418,7 +418,7 @@ switch (objP->controlType) {
 		Int3();
 	}
 
-switch (objP->renderType) {
+switch (objP->info.renderType) {
 	case RT_NONE:
 		break;
 
@@ -515,29 +515,29 @@ switch (objP->renderType) {
 //writes one tObject to the given file
 void writeObject(tObject *objP,FILE *f)
 {
-	gs_write_byte(objP->nType,f);
-	gs_write_byte(objP->id,f);
+	gs_write_byte(objP->info.nType,f);
+	gs_write_byte(objP->info.nId,f);
 
-	gs_write_byte(objP->controlType,f);
-	gs_write_byte(objP->movementType,f);
-	gs_write_byte(objP->renderType,f);
-	gs_write_byte(objP->flags,f);
+	gs_write_byte(objP->info.controlType,f);
+	gs_write_byte(objP->info.movementType,f);
+	gs_write_byte(objP->info.renderType,f);
+	gs_write_byte(objP->info.nFlags,f);
 
-	gs_write_short(objP->nSegment,f);
+	gs_write_short(objP->info.nSegment,f);
 
-	gr_write_vector(&objP->position.vPos,f);
-	gs_write_matrix(&objP->position.mOrient,f);
+	gr_write_vector(&objP->info.position.vPos,f);
+	gs_write_matrix(&objP->info.position.mOrient,f);
 
-	gs_write_fix(objP->size,f);
-	gs_write_fix(objP->shields,f);
+	gs_write_fix(objP->info.xSize,f);
+	gs_write_fix(objP->info.xShields,f);
 
-	gr_write_vector(&objP->vLastPos,f);
+	gr_write_vector(&objP->info.vLastPos,f);
 
-	gs_write_byte(objP->containsType,f);
-	gs_write_byte(objP->containsId,f);
-	gs_write_byte(objP->containsCount,f);
+	gs_write_byte(objP->info.contains.nType,f);
+	gs_write_byte(objP->info.contains.nId,f);
+	gs_write_byte(objP->info.contains.count,f);
 
-	switch (objP->movementType) {
+	switch (objP->info.movementType) {
 
 		case MT_PHYSICS:
 
@@ -568,7 +568,7 @@ void writeObject(tObject *objP,FILE *f)
 			Int3();
 	}
 
-	switch (objP->controlType) {
+	switch (objP->info.controlType) {
 
 		case CT_AI: {
 			int i;
@@ -601,9 +601,9 @@ void writeObject(tObject *objP,FILE *f)
 
 			//do I really need to write these OBJECTS?
 
-			gs_write_short(objP->cType.laserInfo.parentType,f);
-			gs_write_short(objP->cType.laserInfo.nParentObj,f);
-			gs_write_int(objP->cType.laserInfo.nParentSig,f);
+			gs_write_short(objP->cType.laserInfo.parent.nType,f);
+			gs_write_short(objP->cType.laserInfo.parent.nObject,f);
+			gs_write_int(objP->cType.laserInfo.parent.nSignature,f);
 
 			break;
 
@@ -636,7 +636,7 @@ void writeObject(tObject *objP,FILE *f)
 
 	}
 
-	switch (objP->renderType) {
+	switch (objP->info.renderType) {
 
 		case RT_NONE:
 			break;
@@ -914,7 +914,7 @@ if (gameFileInfo.objects.offset > -1) {
 	memset (OBJECTS, 0, gameFileInfo.objects.count * sizeof (tObject));
 	for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 		ReadObject (objP, cfP, gameTopFileInfo.fileinfoVersion);
-		objP->nSignature = gameData.objs.nNextSignature++;
+		objP->info.nSignature = gameData.objs.nNextSignature++;
 		VerifyObject (objP);
 		gameData.objs.init [i] = *objP;
 		}
@@ -1270,17 +1270,17 @@ return 0;
 
 static void CheckAndLinkObjects (void)
 {
-	int	i;
+	int	i, nObjSeg;
 
 for (i = 0; i < gameFileInfo.objects.count; i++) {
-	OBJECTS [i].next = OBJECTS [i].prev = -1;
-	if (OBJECTS [i].nType != OBJ_NONE) {
-		int objsegnum = OBJECTS [i].nSegment;
-		if ((objsegnum < 0) || (objsegnum > gameData.segs.nLastSegment))	
-			OBJECTS [i].nType = OBJ_NONE;
+	OBJECTS [i].info.nNext = OBJECTS [i].info.nPrev = -1;
+	if (OBJECTS [i].info.nType != OBJ_NONE) {
+		nObjSeg = OBJECTS [i].info.nSegment;
+		if ((nObjSeg < 0) || (nObjSeg > gameData.segs.nLastSegment))	
+			OBJECTS [i].info.nType = OBJ_NONE;
 		else {
-			OBJECTS [i].nSegment = -1;	
-			LinkObject (i, objsegnum);
+			OBJECTS [i].info.nSegment = -1;	
+			LinkObject (i, nObjSeg);
 			}
 		}
 	}
@@ -1949,9 +1949,9 @@ int saveLevel_sub(char * filename, int compiledVersion)
 
 	//make sure tPlayer is in a tSegment
 	if (!UpdateObjectSeg(OBJECTS + gameData.multiplayer.players [0].nObject)) {
-		if (gameData.objs.console->nSegment > gameData.segs.nLastSegment)
-			gameData.objs.console->nSegment = 0;
-		COMPUTE_SEGMENT_CENTER (&gameData.objs.console->position.vPos, gameData.segs.segments + gameData.objs.console->nSegment);
+		if (gameData.objs.consoleP->info.nSegment > gameData.segs.nLastSegment)
+			gameData.objs.consoleP->info.nSegment = 0;
+		COMPUTE_SEGMENT_CENTER (&gameData.objs.consoleP->info.position.vPos, gameData.segs.segments + gameData.objs.consoleP->info.nSegment);
 	}
 	FixObjectSegs();
 

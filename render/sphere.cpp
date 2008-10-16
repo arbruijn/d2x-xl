@@ -669,10 +669,10 @@ if (gameData.render.monsterball.nFaces > 0)
 		RIAddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {
 		static tOOF_vector p = {0,0,0};
-		float r = X2F (objP->size);
+		float r = X2F (objP->info.xSize);
 		gameStates.ogl.bUseTransform = 1;
 		OglSetupTransform (0);
-		G3StartInstanceMatrix(objP->position.vPos, objP->position.mOrient);
+		G3StartInstanceMatrix(objP->info.position.vPos, objP->info.position.mOrient);
 		RenderSphere (&gameData.render.monsterball, &p,
 						  r, r, r, red, green, blue, gameData.hoard.monsterball.bm.bmTexBuf ? 1.0f : alpha,
 						  &gameData.hoard.monsterball.bm, 4, 0);

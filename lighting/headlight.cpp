@@ -63,7 +63,7 @@ fix ComputeHeadlightLightOnObject (tObject *objP)
 	int	i;
 	fix	light;
 	//	Let's just illuminate players and robots for speed reasons, ok?
-if ((objP->nType != OBJ_ROBOT) && (objP->nType	!= OBJ_PLAYER))
+if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType	!= OBJ_PLAYER))
 	return 0;
 light = 0;
 for (i = 0; i < nHeadlights; i++) {
@@ -71,10 +71,10 @@ for (i = 0; i < nHeadlights; i++) {
 	vmsVector	vecToObj;
 	tObject		*lightObjP;
 	lightObjP = Headlights [i];
-	vecToObj = objP->position.vPos - lightObjP->position.vPos;
+	vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
 	dist = vmsVector::Normalize(vecToObj);
 	if (dist > 0) {
-		dot = vmsVector::Dot(lightObjP->position.mOrient[FVEC], vecToObj);
+		dot = vmsVector::Dot(lightObjP->info.position.mOrient[FVEC], vecToObj);
 		if (dot < F1_0/2)
 			light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
 		else
@@ -138,16 +138,16 @@ int AddOglHeadlight (tObject *objP)
 	static float spotAngles [] = {0.9f, 0.5f, 0.5f};
 #endif
 
-if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlights [objP->id] < 0)) {
+if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlights [objP->info.nId] < 0)) {
 		tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
 		tDynLight	*pl;
 		int			nLight;
 
 	nLight = AddDynLight (NULL, &c, F1_0 * 200, -1, -1, -1, -1, NULL);
 	if (nLight >= 0) {
-		gameData.render.lights.dynamic.nHeadlights [objP->id] = nLight;
+		gameData.render.lights.dynamic.nHeadlights [objP->info.nId] = nLight;
 		pl = gameData.render.lights.dynamic.lights + nLight;
-		pl->info.nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : 1;
+		pl->info.nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : 1;
 		pl->info.fRad = 0;
 		pl->info.bSpot = 1;
 		pl->info.fSpotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
@@ -163,9 +163,9 @@ return -1;
 
 void RemoveOglHeadlight (tObject *objP)
 {
-if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlights [objP->id] >= 0)) {
-	DeleteDynLight (gameData.render.lights.dynamic.nHeadlights [objP->id]);
-	gameData.render.lights.dynamic.nHeadlights [objP->id] = -1;
+if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlights [objP->info.nId] >= 0)) {
+	DeleteDynLight (gameData.render.lights.dynamic.nHeadlights [objP->info.nId]);
+	gameData.render.lights.dynamic.nHeadlights [objP->info.nId] = -1;
 	gameData.render.lights.dynamic.headlights.nLights--;
 	}
 }
@@ -186,7 +186,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	pl->info.vPos = OBJPOS (objP)->vPos;
 	pl->vDir = OBJPOS (objP)->mOrient[FVEC];
 	//TODO ScaleFrac check
-	pl->info.vPos += pl->vDir * (objP->size / 4);
+	pl->info.vPos += pl->vDir * (objP->info.xSize / 4);
 	}
 }
 
@@ -298,7 +298,7 @@ const char *headlightFS [2][8] = {
 	"float spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
+	"	 vec3 lightVec = vertPos - gl_LightSource [i].info.position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
 	"   if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
@@ -324,7 +324,7 @@ const char *headlightFS [2][8] = {
 	"float spotBrightness = 0.0, normLen = length (Normal);\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
+	"	 vec3 lightVec = vertPos - gl_LightSource [i].info.position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
 	"   if ((normLen == 0.0) || (dot (normalize (Normal), lvNorm) < 0.0)) {\r\n" \
@@ -352,7 +352,7 @@ const char *headlightFS [2][8] = {
 	"float spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
+	"	 vec3 lightVec = vertPos - gl_LightSource [i].info.position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
 	"   if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
@@ -384,7 +384,7 @@ const char *headlightFS [2][8] = {
 	"	 float spotBrightness = 0.0;\r\n" \
 	"	 int i;\r\n" \
 	"	 for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"	    vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
+	"	    vec3 lightVec = vertPos - gl_LightSource [i].info.position.xyz;\r\n" \
 	"	    float lightDist = length (lightVec);\r\n" \
 	"	    vec3 lvNorm = lightVec / lightDist;\r\n" \
 	"	    if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
@@ -500,7 +500,7 @@ const char *headlightFS [2][8] = {
 	"float spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
+	"	 vec3 lightVec = vertPos - gl_LightSource [i].info.position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
 	"   if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
@@ -525,7 +525,7 @@ const char *headlightFS [2][8] = {
 	"float spotBrightness = 0.0, normLen = length (Normal);\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
+	"	 vec3 lightVec = vertPos - gl_LightSource [i].info.position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
 	"   if ((normLen == 0.0) || (dot (normalize (Normal), lvNorm) < 0.0)) {\r\n" \
@@ -552,7 +552,7 @@ const char *headlightFS [2][8] = {
 	"float spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
+	"	 vec3 lightVec = vertPos - gl_LightSource [i].info.position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
 	"   if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
@@ -583,7 +583,7 @@ const char *headlightFS [2][8] = {
 	"	 float spotBrightness = 0.0;\r\n" \
 	"	 int i;\r\n" \
 	"	 for (i = 0; i < LIGHTS; i++) {\r\n" \
-	"	    vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
+	"	    vec3 lightVec = vertPos - gl_LightSource [i].info.position.xyz;\r\n" \
 	"	    float lightDist = length (lightVec);\r\n" \
 	"	    vec3 lvNorm = lightVec / lightDist;\r\n" \
 	"	    if (dot (normalize (Normal), lvNorm) < 0.0) {\r\n" \
@@ -606,14 +606,14 @@ const char *headlightVS [2][8] = {
 	//no lightmaps
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].info.position);\r\n" \
 	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].info.position);\r\n" \
 	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_Position = ftransform();\r\n" \
@@ -621,7 +621,7 @@ const char *headlightVS [2][8] = {
 	,
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].info.position);\r\n" \
 	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
@@ -630,7 +630,7 @@ const char *headlightVS [2][8] = {
 	,
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].info.position);\r\n" \
 	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
@@ -681,14 +681,14 @@ const char *headlightVS [2][8] = {
 	{
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].info.position);\r\n" \
 	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].info.position);\r\n" \
 	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_Position = ftransform();\r\n" \
@@ -696,7 +696,7 @@ const char *headlightVS [2][8] = {
 	,
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].info.position);\r\n" \
 	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_TexCoord [2] = gl_MultiTexCoord2;\r\n"\
@@ -705,7 +705,7 @@ const char *headlightVS [2][8] = {
 	,
 	"varying vec3 Normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
+	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].info.position);\r\n" \
 	"Normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
 	"gl_TexCoord [2] = gl_MultiTexCoord2;\r\n"\

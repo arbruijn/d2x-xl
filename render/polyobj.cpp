@@ -479,29 +479,29 @@ if (po->modelData)
 
 int ObjectHasShadow (tObject *objP)
 {
-if (objP->nType == OBJ_ROBOT) {
+if (objP->info.nType == OBJ_ROBOT) {
 	if (!gameOpts->render.shadows.bRobots)
 		return 0;
 	if (objP->cType.aiInfo.CLOAKED)
 		return 0;
 	}
-else if (objP->nType == OBJ_WEAPON) {
+else if (objP->info.nType == OBJ_WEAPON) {
 	if (!gameOpts->render.shadows.bMissiles)
 		return 0;
-	if (!gameData.objs.bIsMissile [objP->id] && (objP->id != SMALLMINE_ID))
+	if (!gameData.objs.bIsMissile [objP->info.nId] && (objP->info.nId != SMALLMINE_ID))
 		return 0;
 	}
-else if (objP->nType == OBJ_POWERUP) {
+else if (objP->info.nType == OBJ_POWERUP) {
 	if (!gameOpts->render.shadows.bPowerups)
 		return 0;
 	}
-else if (objP->nType == OBJ_PLAYER) {
+else if (objP->info.nType == OBJ_PLAYER) {
 	if (!gameOpts->render.shadows.bPlayers)
 		return 0;
-	if (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
+	if (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_CLOAKED)
 		return 0;
 	}
-else if (objP->nType == OBJ_REACTOR) {
+else if (objP->info.nType == OBJ_REACTOR) {
 	if (!gameOpts->render.shadows.bReactors)
 		return 0;
 	}
@@ -529,12 +529,12 @@ if (!objP)
 	po = ((gameStates.app.bAltModels && bIsDefModel && bHaveAltModel) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
 else if (!po) {
 	if (!(bIsDefModel && bHaveAltModel)) {
-		if (gameStates.app.bFixModels && (objP->nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
+		if (gameStates.app.bFixModels && (objP->info.nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
 			return NULL;
 		po = gameData.models.polyModels + nModel;
 		}
 	else if (gameStates.render.nShadowPass != 2) {
-		if ((gameStates.app.bAltModels || (objP->nType == OBJ_PLAYER)) && bHaveAltModel)
+		if ((gameStates.app.bAltModels || (objP->info.nType == OBJ_PLAYER)) && bHaveAltModel)
 			po = gameData.models.altPolyModels + nModel;
 		else
 			po = gameData.models.polyModels + nModel;
@@ -543,7 +543,7 @@ else if (!po) {
 		po = gameData.models.altPolyModels + nModel;
 	else
 		return NULL;
-	if ((gameStates.render.nShadowPass == 2) && (objP->nType == OBJ_REACTOR) && !(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
+	if ((gameStates.render.nShadowPass == 2) && (objP->info.nType == OBJ_REACTOR) && !(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
 		po--;
 	}
 //check if should use simple model (depending on detail level chosen)
@@ -644,11 +644,11 @@ if (!flags)	{	//draw entire tObject
 		if (bHires)
 			return 0;
 #if 0//def _DEBUG
-		if (objP && (objP->nType == OBJ_ROBOT))
+		if (objP && (objP->info.nType == OBJ_ROBOT))
 			G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, colorP);
 #endif
-		if (objP && (objP->nType == OBJ_POWERUP)) {
-			if ((objP->id == POW_SMARTMINE) || (objP->id == POW_PROXMINE))
+		if (objP && (objP->info.nType == OBJ_POWERUP)) {
+			if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
 				gameData.models.nScale = 2 * F1_0;
 			else
 				gameData.models.nScale = 3 * F1_0 / 2;
@@ -693,8 +693,8 @@ gameData.render.pVerts = NULL;
 {
 	g3sPoint p0, p1;
 
-G3TransformPoint (&p0.p3_vec, &objP->position.vPos);
-VmVecSub (&p1.p3_vec, &objP->position.vPos, &objP->mType.physInfo.velocity);
+G3TransformPoint (&p0.p3_vec, &objP->info.position.vPos);
+VmVecSub (&p1.p3_vec, &objP->info.position.vPos, &objP->mType.physInfo.velocity);
 G3TransformPoint (&p1.p3_vec, &p1.p3_vec);
 glLineWidth (20);
 glDisable (GL_TEXTURE_2D);

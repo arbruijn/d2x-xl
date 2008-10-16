@@ -89,10 +89,10 @@ int CalcGunPoint (vmsVector *vGunPoint, tObject *objP, int nGun)
 	vmsMatrix	m;
 	int			nSubModel;				//submodel number
 
-Assert(objP->renderType == RT_POLYOBJ || objP->renderType == RT_MORPH);
-//Assert(objP->id < gameData.bots.nTypes [gameStates.app.bD1Data]);
+Assert(objP->info.renderType == RT_POLYOBJ || objP->info.renderType == RT_MORPH);
+//Assert(objP->info.nId < gameData.bots.nTypes [gameStates.app.bD1Data]);
 
-botInfoP = &ROBOTINFO (objP->id);
+botInfoP = &ROBOTINFO (objP->info.nId);
 if (!(vGunPoints = GetGunPoints (objP, nGun)))
 	return 0;
 vGunPos = vGunPoints [nGun];
@@ -108,7 +108,7 @@ while (nSubModel != 0) {
 //now instance for the entire tObject
 //VmVecInc (&vGunPos, gameData.models.offsets + botInfoP->nModel);
 *vGunPoint = *ObjectView(objP) * vGunPos;
-*vGunPoint += objP->position.vPos;
+*vGunPoint += objP->info.position.vPos;
 return 1;
 }
 
@@ -131,9 +131,9 @@ void setRobotState(tObject *objP,int state)
 	tRobotInfo *ri;
 	jointlist *jl;
 
-	Assert(objP->nType == OBJ_ROBOT);
+	Assert(objP->info.nType == OBJ_ROBOT);
 
-	ri = &ROBOTINFO (objP->id);
+	ri = &ROBOTINFO (objP->info.nId);
 
 	for (g=0;g<ri->nGuns+1;g++) {
 
@@ -219,20 +219,20 @@ memset (gameData.bots.info [0][gameData.bots.nCamBotId].xMaxSpeed, 0, sizeof (ga
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].circleDistance, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].circleDistance));
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].nRapidFireCount, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].nRapidFireCount));
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
-	if (objP->nType == OBJ_CAMBOT) {
-		objP->id	= gameData.bots.nCamBotId;
-		objP->size = G3PolyModelSize (gameData.models.polyModels + gameData.bots.nCamBotModel, gameData.bots.nCamBotModel);
-		objP->lifeleft = IMMORTAL_TIME;
-		objP->controlType = CT_CAMERA;
-		objP->movementType = MT_NONE;
+	if (objP->info.nType == OBJ_CAMBOT) {
+		objP->info.nId	= gameData.bots.nCamBotId;
+		objP->info.xSize = G3PolyModelSize (gameData.models.polyModels + gameData.bots.nCamBotModel, gameData.bots.nCamBotModel);
+		objP->info.xLifeLeft = IMMORTAL_TIME;
+		objP->info.controlType = CT_CAMERA;
+		objP->info.movementType = MT_NONE;
 		objP->rType.polyObjInfo.nModel = gameData.bots.nCamBotModel;
 		gameData.ai.localInfo [i].mode = AIM_IDLING;
 		}
-	else if (objP->nType == OBJ_EFFECT) {
-		objP->size = 0;
-		objP->lifeleft = IMMORTAL_TIME;
-		objP->controlType = CT_NONE;
-		objP->movementType = MT_NONE;
+	else if (objP->info.nType == OBJ_EFFECT) {
+		objP->info.xSize = 0;
+		objP->info.xLifeLeft = IMMORTAL_TIME;
+		objP->info.controlType = CT_NONE;
+		objP->info.movementType = MT_NONE;
 		}
 }
 

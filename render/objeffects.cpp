@@ -60,7 +60,7 @@ void RenderPowerupCorona (tObject *objP, float red, float green, float blue, flo
 {
 	int	bAdditive = gameOpts->render.coronas.bAdditiveObjs;
 
-if ((IsEnergyPowerup (objP->id) ? gameOpts->render.coronas.bPowerups : gameOpts->render.coronas.bWeapons) &&
+if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gameOpts->render.coronas.bWeapons) &&
 	 (bAdditive ? LoadGlare () : LoadCorona ())) {
 	static tRgbaColorf keyColors [3] = {
 		{0.2f, 0.2f, 0.9f, 0.2f},
@@ -75,8 +75,8 @@ if ((IsEnergyPowerup (objP->id) ? gameOpts->render.coronas.bPowerups : gameOpts-
 	grsBitmap	*bmP = bAdditive ? bmpGlare : bmpCorona;
 
 
-	if ((objP->id >= POW_KEY_BLUE) && (objP->id <= POW_KEY_GOLD)) {
-		int i = objP->id - POW_KEY_BLUE;
+	if ((objP->info.nId >= POW_KEY_BLUE) && (objP->info.nId <= POW_KEY_GOLD)) {
+		int i = objP->info.nId - POW_KEY_BLUE;
 
 		color = keyColors [(((i < 0) || (i > 2)) ? 3 : i)];
 		xSize = 12 * F1_0;
@@ -97,7 +97,7 @@ if ((IsEnergyPowerup (objP->id) ? gameOpts->render.coronas.bPowerups : gameOpts-
 		}
 	bDepthSort = gameOpts->render.bDepthSort;
 	gameOpts->render.bDepthSort = -1;
-	G3DrawSprite(objP->position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
+	G3DrawSprite(objP->info.position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
 	gameOpts->render.bDepthSort = bDepthSort;
 	}
 }
@@ -135,10 +135,10 @@ void RenderHitbox (tObject *objP, float red, float green, float blue, float alph
 
 if (!SHOW_OBJ_FX)
 	return;
-if (objP->nType == OBJ_PLAYER) {
+if (objP->info.nType == OBJ_PLAYER) {
 	if (!EGI_FLAG (bPlayerShield, 0, 1, 0))
 		return;
-	if (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) {
+	if (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
 		fFade = (float) ci.nFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
@@ -148,7 +148,7 @@ if (objP->nType == OBJ_PLAYER) {
 		}
 
 	}
-else if (objP->nType == OBJ_ROBOT) {
+else if (objP->info.nType == OBJ_ROBOT) {
 	if (!gameOpts->render.effects.bRobotShields)
 		return;
 	if (objP->cType.aiInfo.CLOAKED) {
@@ -178,7 +178,7 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDisable (GL_TEXTURE_2D);
 glDepthMask (0);
 glColor4f (red, green, blue, alpha / 2);
-G3StartInstanceMatrix(objP->position.vPos, objP->position.mOrient);
+G3StartInstanceMatrix(objP->info.position.vPos, objP->info.position.mOrient);
 for (; iBox <= nBoxes; iBox++) {
 	if (iBox)
 		G3StartInstanceAngles(pmhb [iBox].vOffset, &vmsAngVec::ZERO);
@@ -210,7 +210,7 @@ if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo
 	tObject	o;
 
 	o.position.vPos = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].vHit;
-	o.position.mOrient = objP->position.mOrient;
+	o.position.mOrient = objP->info.position.mOrient;
 	o.size = F1_0 * 2;
 	//SetRenderView (0, NULL);
 	DrawShieldSphere (&o, 1, 0, 0, 0.33f);
@@ -226,7 +226,7 @@ glDepthFunc (GL_LESS);
 
 void RenderPlayerShield (tObject *objP)
 {
-	int			bStencil, dt = 0, i = objP->id, nColor = 0;
+	int			bStencil, dt = 0, i = objP->info.nId, nColor = 0;
 	float			alpha, scale = 1;
 	tCloakInfo	ci;
 
@@ -304,7 +304,7 @@ RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 
 if (!gameOpts->render.effects.bRobotShields)
 	return;
-if ((objP->nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
+if ((objP->info.nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 	if (!GetCloakInfo (objP, 0, 0, &ci))
 		return;
 	scale = (float) ci.nFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
@@ -316,7 +316,7 @@ if (dt < 300) {
 	DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale);
 	}
 else if (!gameOpts->render.effects.bOnlyShieldHits) {
-	if ((objP->nType != OBJ_ROBOT) || ROBOTINFO (objP->id).companion)
+	if ((objP->info.nType != OBJ_ROBOT) || ROBOTINFO (objP->info.nId).companion)
 		DrawShieldSphere (objP, 0.0f, 0.5f * scale, 1.0f * scale, ObjectDamage (objP) / 2 * scale);
 	else
 		DrawShieldSphere (objP, 0.75f * scale, 0.0f, 0.75f * scale, ObjectDamage (objP) / 2 * scale);
@@ -336,15 +336,15 @@ static inline tRgbColorf *ObjectFrameColor (tObject *objP, tRgbColorf *pc)
 if (pc)
 	return pc;
 if (objP) {
-	if (objP->nType == OBJ_REACTOR)
+	if (objP->info.nType == OBJ_REACTOR)
 		return &reactorDefColor;
-	else if (objP->nType == OBJ_ROBOT) {
-		if (!ROBOTINFO (objP->id).companion)
+	else if (objP->info.nType == OBJ_ROBOT) {
+		if (!ROBOTINFO (objP->info.nId).companion)
 			return &botDefColor;
 		}
-	else if (objP->nType == OBJ_PLAYER) {
+	else if (objP->info.nType == OBJ_PLAYER) {
 		if (IsTeamGame)
-			return playerDefColors + GetTeam (objP->id) + 1;
+			return playerDefColors + GetTeam (objP->info.nId) + 1;
 		return playerDefColors;
 		}
 	}
@@ -376,7 +376,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	PolyObjPos (objP, &vPos);
 	fPos = vPos.ToFloat();
 	G3TransformPoint (fPos, fPos, 0);
-	r = X2F (objP->size);
+	r = X2F (objP->info.xSize);
 	r2 = r / 10;
 	r = r2 * 9;
 	w = 2 * r;
@@ -448,7 +448,7 @@ void RenderMslLockIndicator (tObject *objP)
 	vmsVector			vPos;
 	fVector				fPos, fVerts [3];
 	float					r, r2;
-	int					nTgtInd, bHasDmg, bVertexArrays, bMarker = (objP->nType == OBJ_MARKER);
+	int					nTgtInd, bHasDmg, bVertexArrays, bMarker = (objP->info.nType == OBJ_MARKER);
 
 if (bMarker) {
 	if (objP != SpawnMarkerObject (-1))
@@ -471,7 +471,7 @@ if (gameStates.app.nSDLTicks - t0 [bMarker] > tDelay [bMarker]) {
 PolyObjPos (objP, &vPos);
 fPos = vPos.ToFloat();
 G3TransformPoint (fPos, fPos, 0);
-r = X2F (objP->size);
+r = X2F (objP->info.xSize);
 if (bMarker)
 	r = 17 * r / 12;
 r2 = r / 4;
@@ -589,7 +589,7 @@ void RenderTargetIndicator (tObject *objP, tRgbColorf *pc)
 	vmsVector	vPos;
 	fVector		fPos, fVerts [4];
 	float			r, r2, r3;
-	int			i, bStencil, bDrawArrays, nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : -1;
+	int			i, bStencil, bDrawArrays, nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -607,7 +607,7 @@ if (!EGI_FLAG (bCloakedIndicators, 0, 1, 0)) {
 		if ((gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED) && !GetCloakInfo (objP, 0, 0, NULL))
 			return;
 		}
-	else if (objP->nType == OBJ_ROBOT) {
+	else if (objP->info.nType == OBJ_ROBOT) {
 		if (objP->cType.aiInfo.CLOAKED && !GetCloakInfo (objP, 0, 0, NULL))
 			return;
 		}
@@ -631,7 +631,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	PolyObjPos (objP, &vPos);
 	fPos = vPos.ToFloat();
 	G3TransformPoint (fPos, fPos, 0);
-	r = X2F (objP->size);
+	r = X2F (objP->info.xSize);
 	glColor3fv ((GLfloat *) pc);
 	fVerts [0][W] = fVerts [1][W] = fVerts [2][W] = fVerts [3][W] = 1;
 	glVertexPointer (4, GL_FLOAT, 0, fVerts);
@@ -734,10 +734,10 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
-		vmsVector		vPos = objP->position.vPos;
+if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_FLAG)) {
+		vmsVector		vPos = objP->info.position.vPos;
 		fVector			vPosf;
-		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->id);
+		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->info.nId);
 		tPathPoint		*pp = GetPathPoint (&pf->path);
 		int				i, bStencil;
 		float				r;
@@ -754,8 +754,8 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 			return;
 		bmP = BmCurFrame (bmP, -1);
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
-		vPos += objP->position.mOrient[FVEC] * (-objP->size);
-		r = X2F (objP->size);
+		vPos += objP->info.position.mOrient[FVEC] * (-objP->info.xSize);
+		r = X2F (objP->info.xSize);
 		G3StartInstanceMatrix (vPos, pp->mOrient);
 		glBegin (GL_QUADS);
 		glColor3f (1.0f, 1.0f, 1.0f);
@@ -857,19 +857,19 @@ void CalcShipThrusterPos (tObject *objP, vmsVector *vPos)
 	tTransformation	*pPos = OBJPOS (objP);
 
 if (gameOpts->render.bHiresModels) {
-	vPos[0] = pPos->vPos + pPos->mOrient[FVEC] * (-objP->size);
-	vPos[0] += pPos->mOrient[RVEC] * (-(8 * objP->size / 44));
-	vPos[1] = vPos[0] + pPos->mOrient[RVEC] * (8 * objP->size / 22);
+	vPos[0] = pPos->vPos + pPos->mOrient[FVEC] * (-objP->info.xSize);
+	vPos[0] += pPos->mOrient[RVEC] * (-(8 * objP->info.xSize / 44));
+	vPos[1] = vPos[0] + pPos->mOrient[RVEC] * (8 * objP->info.xSize / 22);
 	}
 else {
-	vPos[0] = pPos->vPos + pPos->mOrient[FVEC] * (-objP->size / 10 * 9);
+	vPos[0] = pPos->vPos + pPos->mOrient[FVEC] * (-objP->info.xSize / 10 * 9);
 	if (gameStates.app.bFixModels)
-		vPos[0] += pPos->mOrient[UVEC] * (objP->size / 40);
+		vPos[0] += pPos->mOrient[UVEC] * (objP->info.xSize / 40);
 	else
-		vPos[0] += pPos->mOrient[UVEC] * (-objP->size / 20);
+		vPos[0] += pPos->mOrient[UVEC] * (-objP->info.xSize / 20);
 	vPos [1] = vPos [0];
-	vPos[0] += pPos->mOrient[RVEC] * (-8 * objP->size / 49);
-	vPos[1] += pPos->mOrient[RVEC] * (8 * objP->size / 49);
+	vPos[0] += pPos->mOrient[RVEC] * (-8 * objP->info.xSize / 49);
+	vPos[1] += pPos->mOrient[RVEC] * (8 * objP->info.xSize / 49);
 	}
 }
 
@@ -887,9 +887,9 @@ ti = *tiP;
 ti.pp = NULL;
 ti.mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
 nThrusters = ti.mtP->nCount;
-if (gameOpts->render.bHiresModels && (objP->nType == OBJ_PLAYER) && !ASEModel (objP->rType.polyObjInfo.nModel)) {
+if (gameOpts->render.bHiresModels && (objP->info.nType == OBJ_PLAYER) && !ASEModel (objP->rType.polyObjInfo.nModel)) {
 	if (!bSpectate) {
-		pt = gameData.render.thrusters + objP->id;
+		pt = gameData.render.thrusters + objP->info.nId;
 		ti.pp = GetPathPoint (&pt->path);
 		}
 	ti.fSize = (ti.fLength + 1) / 2;
@@ -903,11 +903,11 @@ else if (bAfterburnerBlob || (bMissile && !nThrusters)) {
 
 	if (bAfterburnerBlob)
 		nObjRad *= 2;
-	if (objP->id == EARTHSHAKER_ID)
+	if (objP->info.nId == EARTHSHAKER_ID)
 		ti.fSize = 1.0f;
-	else if ((objP->id == MEGAMSL_ID) || (objP->id == EARTHSHAKER_MEGA_ID))
+	else if ((objP->info.nId == MEGAMSL_ID) || (objP->info.nId == EARTHSHAKER_MEGA_ID))
 		ti.fSize = 0.8f;
-	else if (objP->id == SMARTMSL_ID)
+	else if (objP->info.nId == SMARTMSL_ID)
 		ti.fSize = 0.6f;
 	else
 		ti.fSize = 0.5f;
@@ -916,22 +916,22 @@ else if (bAfterburnerBlob || (bMissile && !nThrusters)) {
 		ti.fLength /= 2;
 	if (gameData.models.nScale)
 		ti.vPos[0] *= gameData.models.nScale;
-	*ti.vPos = objP->position.vPos + objP->position.mOrient[FVEC] * (-nObjRad);
+	*ti.vPos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (-nObjRad);
 	ti.mtP = NULL;
 	}
-else if ((objP->nType == OBJ_PLAYER) ||
-			((objP->nType == OBJ_ROBOT) && !objP->cType.aiInfo.CLOAKED) ||
+else if ((objP->info.nType == OBJ_PLAYER) ||
+			((objP->info.nType == OBJ_ROBOT) && !objP->cType.aiInfo.CLOAKED) ||
 			bMissile) {
 	vmsMatrix	m, *viewP;
-	if (!bSpectate && (objP->nType == OBJ_PLAYER)) {
-		pt = gameData.render.thrusters + objP->id;
+	if (!bSpectate && (objP->info.nType == OBJ_PLAYER)) {
+		pt = gameData.render.thrusters + objP->info.nId;
 		ti.pp = GetPathPoint (&pt->path);
 		}
 	if (!nThrusters) {
-		if (objP->nType != OBJ_PLAYER)
+		if (objP->info.nType != OBJ_PLAYER)
 			return 0;
 		if (!bSpectate) {
-			pt = gameData.render.thrusters + objP->id;
+			pt = gameData.render.thrusters + objP->info.nId;
 			ti.pp = GetPathPoint (&pt->path);
 			}
 		ti.fSize = (ti.fLength + 1) / 2;
@@ -989,7 +989,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 	return;
 #endif
-if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
+if ((objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_CLOAKED))
 	return;
 fSpeed = X2F (objP->mType.physInfo.velocity.Mag());
 ti.fLength = fSpeed / 60.0f + 0.5f + (float) (rand () % 100) / 1000.0f;
@@ -1043,7 +1043,7 @@ if (nThrusters > 1) {
 		vmsVector v = ti.vPos [0];
 		ti.vPos [0] = ti.vPos [1];
 		ti.vPos [1] = v;
-		if (objP->nType == OBJ_ROBOT) {
+		if (objP->info.nType == OBJ_ROBOT) {
 			v = ti.vDir [0];
 			ti.vDir [0] = ti.vDir [1];
 			ti.vDir [1] = v;
@@ -1062,10 +1062,10 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	if (gameData.models.nScale)
 		ti.fSize *= X2F (gameData.models.nScale);
 	ti.fLength *= 4 * ti.fSize;
-	ti.fSize *= ((objP->nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
+	ti.fSize *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 #if 1
 	if (!ti.mtP)
-		fVecf = ti.pp ? ti.pp->mOrient[FVEC].ToFloat() : objP->position.mOrient[FVEC].ToFloat();
+		fVecf = ti.pp ? ti.pp->mOrient[FVEC].ToFloat() : objP->info.position.mOrient[FVEC].ToFloat();
 #endif
 	for (h = 0; h < nThrusters; h++) {
 		if (ti.mtP)
@@ -1130,7 +1130,7 @@ else {
 			c [1].blue = 0.0f;
 			c [1].alpha = 0.9f;
 			}
-		G3StartInstanceMatrix(ti.vPos[h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->position.mOrient);
+		G3StartInstanceMatrix(ti.vPos[h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
 		for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 #if 1
 			if (!bTextured) {
@@ -1213,8 +1213,8 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 
 	bmP = bAdditive ? bmpGlare : bmpCorona;
 	colorP->alpha = alpha;
-	vDir = objP->position.mOrient[FVEC].ToFloat();
-	vPos = objP->position.vPos.ToFloat();
+	vDir = objP->info.position.mOrient[FVEC].ToFloat();
+	vPos = objP->info.position.vPos.ToFloat();
 	vCorona[0] = vPos + vDir * (fScale * fLength);
 	vh [4] = vCorona [0];
 	vCorona[3] = vPos + vDir * (-fScale * fLength);
@@ -1258,7 +1258,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		}
 	if (a2 < a1) {
 		fix xSize = F2X (fScale);
-		G3DrawSprite (objP->position.vPos, xSize, xSize, bmP, colorP, alpha, bAdditive, 1);
+		G3DrawSprite (objP->info.position.vPos, xSize, xSize, bmP, colorP, alpha, bAdditive, 1);
 		}
 	else {
 		bStencil = StencilOff ();
@@ -1333,7 +1333,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if ((objP->nType == OBJ_WEAPON) && (objP->renderType == RT_POLYOBJ))
+if ((objP->info.nType == OBJ_WEAPON) && (objP->info.renderType == RT_POLYOBJ))
 	RenderLaserCorona (objP, colorP, alpha, fScale);
 else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	int			bStencil;
@@ -1342,8 +1342,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 
 	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
-	vmsVector	vPos = objP->position.vPos;
-	xSize = (fix) (WeaponBlobSize (objP->id) * fScale * F1_0);
+	vmsVector	vPos = objP->info.position.vPos;
+	xSize = (fix) (WeaponBlobSize (objP->info.nId) * fScale * F1_0);
 	bDepthSort = bDepthSort && bSimple && (gameOpts->render.bDepthSort > 0);
 	if (xOffset) {
 		if (bViewerOffset) {
@@ -1352,7 +1352,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 			vPos += o * xOffset;
 			}
 		else
-			vPos += objP->position.mOrient[FVEC] * xOffset;
+			vPos += objP->info.position.mOrient[FVEC] * xOffset;
 		}
 	if (xSize < F1_0)
 		xSize = F1_0;
@@ -1388,7 +1388,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		if (OglBindBmTex (bmpCorona, 1, -1))
 			return;
 		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
-		G3StartInstanceMatrix(vPos, objP->position.mOrient);
+		G3StartInstanceMatrix(vPos, objP->info.position.mOrient);
 		TransformHitboxf (objP, verts, 0);
 		for (i = 0; i < 6; i++) {
 			vCenter.SetZero();
@@ -1436,25 +1436,25 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id]) {
+if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]) {
 		vmsVector	vPos;
 		int			bStencil;
 
-	vPos = objP->position.vPos + objP->position.mOrient[FVEC] * (objP->size / 2);
+	vPos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (objP->info.xSize / 2);
 	bStencil = StencilOff ();
 	if (EGI_FLAG (bShockwaves, 1, 1, 0) &&
 		 (objP->mType.physInfo.velocity[X] || objP->mType.physInfo.velocity[Y] || objP->mType.physInfo.velocity[Z])) {
 			fVector			vPosf;
 			int				h, i, j, k, n;
 			float				r [4], l [4], alpha;
-			tRgbaColorf		*pc = gameData.weapons.color + objP->id;
+			tRgbaColorf		*pc = gameData.weapons.color + objP->info.nId;
 
-		G3StartInstanceMatrix (vPos, objP->position.mOrient);
+		G3StartInstanceMatrix (vPos, objP->info.position.mOrient);
 		glDepthMask (0);
 		glDisable (GL_TEXTURE_2D);
 		//OglCullFace (1);
 		glDisable (GL_CULL_FACE);
-		r [3] = X2F (objP->size);
+		r [3] = X2F (objP->info.xSize);
 		if (r [3] >= 3.0f)
 			r [3] /= 1.5f;
 		else if (r [3] < 1)
@@ -1523,12 +1523,12 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 #endif
 if (EGI_FLAG (bTracers, 0, 1, 0) &&
-	 (objP->nType == OBJ_WEAPON) && ((objP->id == VULCAN_ID) || (objP->id == GAUSS_ID)
-	 /*&& !gameData.objs.nTracers [objP->cType.laserInfo.nParentObj]*/)) {
+	 (objP->info.nType == OBJ_WEAPON) && ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID)
+	 /*&& !gameData.objs.nTracers [objP->cType.laserInfo.parent.nObject]*/)) {
 #if 0
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
-	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,
-								gameData.weapons.info [objP->id].po_len_to_width_ratio) / 4;
+	objP->info.xSize = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,
+								gameData.weapons.info [objP->info.nId].po_len_to_width_ratio) / 4;
 	gameData.models.nScale = F1_0 / 4;
 	DrawPolygonObject (objP, 0);
 	gameData.models.nScale = 0;
@@ -1538,14 +1538,14 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 		int				bStencil;
 //		static short	patterns [] = {0x0603, 0x0203, 0x0103, 0x0202};
 
-	vPosf[0] = objP->position.vPos.ToFloat();
-	vPosf[1] = objP->vLastPos.ToFloat();
-	G3TransformPoint(vPosf[0], vPosf[0], 0);
-	G3TransformPoint(vPosf[1], vPosf[1], 0);
+	vPosf[0] = objP->info.position.vPos.ToFloat();
+	vPosf[1] = objP->info.vLastPos.ToFloat();
+	G3TransformPoint (vPosf [0], vPosf [0], 0);
+	G3TransformPoint (vPosf [1], vPosf [1], 0);
 	vDirf = vPosf[0] - vPosf[1];
 	if (vDirf.IsZero()) {
 		//return;
-		vPosf[1] = OBJECTS [objP->cType.laserInfo.nParentObj].position.vPos.ToFloat();
+		vPosf[1] = OBJECTS [objP->cType.laserInfo.parent.nObject].info.position.vPos.ToFloat();
 		G3TransformPoint(vPosf[1], vPosf[1], 0);
 		vDirf = vPosf[0] - vPosf[1];
 		if(vDirf.IsZero())
@@ -1596,8 +1596,8 @@ void Laser_draw_one (int nObject, grsBitmap * bmp)
 	fix Laser_length = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad * 2;
 	fix Laser_width = Laser_length / 8;
 
-	start_pos = objP->position.vPos;
-	VmVecScaleAdd (&vEndPos,&start_pos,&objP->position.mOrient[FVEC],-Laser_length);
+	start_pos = objP->info.position.vPos;
+	VmVecScaleAdd (&vEndPos,&start_pos,&objP->info.position.mOrient[FVEC],-Laser_length);
 
 	G3TransformAndEncodePoint (&p1,&start_pos);
 	G3TransformAndEncodePoint (&p2,&vEndPos);
@@ -1638,16 +1638,16 @@ void RenderLightTrail (tObject *objP)
 
 if (!SHOW_OBJ_FX)
 	return;
-if (!gameData.objs.bIsWeapon [objP->id])
+if (!gameData.objs.bIsWeapon [objP->info.nId])
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-bGatling = (objP->id == VULCAN_ID) || (objP->id == GAUSS_ID);
-if (objP->renderType == RT_POLYOBJ)
-	colorP = gameData.weapons.color + objP->id;
+bGatling = (objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID);
+if (objP->info.renderType == RT_POLYOBJ)
+	colorP = gameData.weapons.color + objP->info.nId;
 else {
 	tRgbColorb	*pcb = VClipColor (objP);
 	color.red = pcb->red / 255.0f;
@@ -1656,11 +1656,11 @@ else {
 	colorP = &color;
 	}
 
-if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0)) {
+if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0)) {
 	if (gameOpts->render.smoke.bPlasmaTrails)
 		;//DoObjectSmoke (objP);
-	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) &&
-				!gameData.objs.bIsSlowWeapon [objP->id] &&
+	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->info.nType == OBJ_WEAPON) &&
+				!gameData.objs.bIsSlowWeapon [objP->info.nId] &&
 				(objP->mType.physInfo.velocity[X] || objP->mType.physInfo.velocity[Y] || objP->mType.physInfo.velocity[Z]) &&
 				(bAdditive ? LoadGlare () : LoadCorona ())) {
 			fVector			vNormf, vOffsf, vTrailVerts [4];
@@ -1673,24 +1673,24 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 			static tRgbaColorf	trailColor = {0,0,0,0.33f};
 			static tTexCoord2f	tTexCoordTrail [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
-		if (objP->renderType == RT_POLYOBJ) {
+		if (objP->info.renderType == RT_POLYOBJ) {
 			tHitbox	*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
 			l = X2F (phb->vMax[Z] - phb->vMin[Z]);
 			dx = X2F (phb->vMax[X] - phb->vMin[X]);
 			dy = X2F (phb->vMax[Y] - phb->vMin[Y]);
 			r = (float) (sqrt (dx * dx + dy * dy) / sqrt (2.0f));
-			if (objP->id == FUSION_ID) {
+			if (objP->info.nId == FUSION_ID) {
 				l *= 1.5f;
 				r /= 1.5f;
 				}
 			}
 		else {
-			r = WeaponBlobSize (objP->id) / 1.5f;
+			r = WeaponBlobSize (objP->info.nId) / 1.5f;
 			l = 4 * r;
 			}
 
-		vOffsf = objP->position.mOrient[FVEC].ToFloat();
-		vTrailVerts[0] = objP->position.vPos.ToFloat();
+		vOffsf = objP->info.position.mOrient[FVEC].ToFloat();
+		vTrailVerts[0] = objP->info.position.vPos.ToFloat();
 		vTrailVerts[0] += vOffsf * l;// * -0.75f);
 		vTrailVerts[2] = vTrailVerts[0] + vOffsf * (-100);
 		G3TransformPoint(vTrailVerts[0], vTrailVerts[0], 0);
@@ -1760,7 +1760,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 		}
 	RenderShockwave (objP);
 	}
-if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
+if ((objP->info.renderType != RT_POLYOBJ) || (objP->info.nId == FUSION_ID))
 	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2, 1, 0, 1);
 else
 	RenderWeaponCorona (objP, colorP, 0.75f, 0, bGatling ? 1.0f : 2.0f, 0, 0, 0);
@@ -1774,14 +1774,14 @@ void DrawDebrisCorona (tObject *objP)
 	static	tRgbaColorf	markerGlow = {0, 0.66f, 0, 1};
 	static	time_t t0 = 0;
 
-if (objP->nType == OBJ_MARKER)
+if (objP->info.nType == OBJ_MARKER)
 	RenderWeaponCorona (objP, &markerGlow, 0.75f, 0, 4, 1, 1, 0);
 #if DBG
-else if (objP->nType == OBJ_DEBRIS) {
+else if (objP->info.nType == OBJ_DEBRIS) {
 #else
-else if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
+else if ((objP->info.nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 #endif
-	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - X2F (objP->lifeleft);
+	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - X2F (objP->info.xLifeLeft);
 	if (h < 0)
 		h = 0;
 	if (h < 10) {
@@ -1791,7 +1791,7 @@ else if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			debrisGlow.red = 0.5f + X2F (d_rand () % (F1_0 / 4));
 			debrisGlow.green = X2F (d_rand () % (F1_0 / 4));
 			}
-		RenderWeaponCorona (objP, &debrisGlow, h, 5 * objP->size, 1.5f, 1, 1, 0);
+		RenderWeaponCorona (objP, &debrisGlow, h, 5 * objP->info.xSize, 1.5f, 1, 1, 0);
 		}
 	}
 }
@@ -1806,13 +1806,13 @@ void CreatePlayerAppearanceEffect (tObject *playerObjP)
 	vmsVector	pos;
 	tObject		*effectObjP;
 
-if (playerObjP == gameData.objs.viewer)
-	pos = playerObjP->position.vPos + playerObjP->position.mOrient[FVEC] * FixMul(playerObjP->size,flashDist);
+if (playerObjP == gameData.objs.viewerP)
+	pos = playerObjP->info.position.vPos + playerObjP->info.position.mOrient[FVEC] * FixMul(playerObjP->info.xSize,flashDist);
 else
-	pos = playerObjP->position.vPos;
-effectObjP = ObjectCreateExplosion (playerObjP->nSegment, &pos, playerObjP->size, VCLIP_PLAYER_APPEARANCE);
+	pos = playerObjP->info.position.vPos;
+effectObjP = ObjectCreateExplosion (playerObjP->info.nSegment, &pos, playerObjP->info.xSize, VCLIP_PLAYER_APPEARANCE);
 if (effectObjP) {
-	effectObjP->position.mOrient = playerObjP->position.mOrient;
+	effectObjP->info.position.mOrient = playerObjP->info.position.mOrient;
 	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
 		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, OBJ_IDX (effectObjP), 0, F1_0, SOUNDCLASS_PLAYER);
 	}

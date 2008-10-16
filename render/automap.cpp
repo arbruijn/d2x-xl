@@ -262,7 +262,7 @@ void DrawPlayer (tObject * objP)
 {
 	vmsVector	vArrowPos, vHeadPos;
 	g3sPoint		spherePoint, arrowPoint, headPoint;
-	int			size = objP->size * (gameStates.render.automap.bRadar ? 2 : 1);
+	int			size = objP->info.xSize * (gameStates.render.automap.bRadar ? 2 : 1);
 	int			bUseTransform = gameStates.ogl.bUseTransform;
 
 //gameStates.ogl.bUseTransform = RENDERPATH;
@@ -271,31 +271,31 @@ arrowPoint.p3_index =
 spherePoint.p3_index = -1;
 // Draw Console tPlayer -- shaped like a ellipse with an arrow.
 spherePoint.p3_vec.SetZero();
-G3TransformAndEncodePoint (&spherePoint, objP->position.vPos);
-//G3RotatePoint (&spherePoint.p3_vec, &objP->position.vPos, 0);
-G3DrawSphere (&spherePoint, gameStates.render.automap.bRadar ? objP->size * 2 : objP->size, !gameStates.render.automap.bRadar);
+G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
+//G3RotatePoint (&spherePoint.p3_vec, &objP->info.position.vPos, 0);
+G3DrawSphere (&spherePoint, gameStates.render.automap.bRadar ? objP->info.xSize * 2 : objP->info.xSize, !gameStates.render.automap.bRadar);
 
 if (gameStates.render.automap.bRadar && (OBJ_IDX (objP) != LOCALPLAYER.nObject))
 	return;
 // Draw shaft of arrow
-vArrowPos = objP->position.vPos + objP->position.mOrient[FVEC] * (size*3);
+vArrowPos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (size*3);
 G3TransformAndEncodePoint(&arrowPoint, vArrowPos);
 G3DrawLine (&spherePoint, &arrowPoint);
 
 // Draw right head of arrow
-vHeadPos = objP->position.vPos + objP->position.mOrient[FVEC] * (size*2);
-vHeadPos += objP->position.mOrient[RVEC] * (size*1);
+vHeadPos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (size*2);
+vHeadPos += objP->info.position.mOrient[RVEC] * (size*1);
 G3TransformAndEncodePoint(&headPoint, vHeadPos);
 G3DrawLine (&arrowPoint, &headPoint);
 
 // Draw left head of arrow
-vHeadPos = objP->position.vPos + objP->position.mOrient[FVEC] * (size*2);
-vHeadPos += objP->position.mOrient[RVEC] * (size* (-1));
+vHeadPos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (size*2);
+vHeadPos += objP->info.position.mOrient[RVEC] * (size* (-1));
 G3TransformAndEncodePoint(&headPoint, vHeadPos);
 G3DrawLine (&arrowPoint, &headPoint);
 
 // Draw tPlayer's up vector
-vArrowPos = objP->position.vPos + objP->position.mOrient[UVEC] * (size*2);
+vArrowPos = objP->info.position.vPos + objP->info.position.mOrient[UVEC] * (size*2);
 G3TransformAndEncodePoint(&arrowPoint, vArrowPos);
 G3DrawLine (&spherePoint, &arrowPoint);
 gameStates.ogl.bUseTransform = bUseTransform;
@@ -372,7 +372,7 @@ else {
 	}
 if (!gameStates.render.automap.bRadar && gameOpts->render.automap.bTextured) {
 	gameData.render.mine.viewerEye = amData.viewPos;
-	RenderMine (gameData.objs.console->nSegment, 0, 0);
+	RenderMine (gameData.objs.consoleP->info.nSegment, 0, 0);
 	RenderEffects (0);
 	}
 else
@@ -397,7 +397,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 	if (AM_SHOW_PLAYERS) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((i != gameData.multiplayer.nLocalPlayer) && AM_SHOW_PLAYER (i)) {
-				if (OBJECTS [gameData.multiplayer.players [i].nObject].nType == OBJ_PLAYER) {
+				if (OBJECTS [gameData.multiplayer.players [i].nObject].info.nType == OBJ_PLAYER) {
 					color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
 					GrSetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 					DrawPlayer (OBJECTS + gameData.multiplayer.players [i].nObject);
@@ -407,22 +407,22 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 		}
 	objP = OBJECTS;
 	for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
-		size = objP->size;
-		switch (objP->nType)	{
+		size = objP->info.xSize;
+		switch (objP->info.nType)	{
 			case OBJ_HOSTAGE:
 				GrSetColorRGBi (automapColors.nHostage);
-				G3TransformAndEncodePoint(&spherePoint, objP->position.vPos);
+				G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
 				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);
 				break;
 
 			case OBJ_MONSTERBALL:
 				GrSetColorRGBi (automapColors.nMonsterball);
-				G3TransformAndEncodePoint(&spherePoint, objP->position.vPos);
+				G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
 				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);
 				break;
 
 			case OBJ_ROBOT:
-				if (gameData.render.mine.bAutomapVisited [objP->nSegment] && AM_SHOW_ROBOTS) {
+				if (gameData.render.mine.bAutomapVisited [objP->info.nSegment] && AM_SHOW_ROBOTS) {
 					static int c = 0;
 					static int t = 0;
 					int h = SDL_GetTicks ();
@@ -430,7 +430,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 						t = h;
 						c = !c;
 						}
-					if (ROBOTINFO (objP->id).companion)
+					if (ROBOTINFO (objP->info.nId).companion)
 						if (c)
 							GrSetColorRGB (0, 123, 151, 255); //gr_getcolor (47, 1, 47)); 
 						else
@@ -440,8 +440,8 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 							GrSetColorRGB (123, 0, 135, 255); //gr_getcolor (47, 1, 47)); 
 						else
 							GrSetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
-					G3TransformAndEncodePoint(&spherePoint, objP->position.vPos);
-					//G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+					G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
+					//G3StartInstanceMatrix (&objP->info.position.vPos, &objP->info.position.mOrient);
 					G3DrawSphere (&spherePoint, (size * 3) / 2, !gameStates.render.automap.bRadar);
 					//G3DoneInstance ();
 					}
@@ -449,8 +449,8 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 
 			case OBJ_POWERUP:
 				if (AM_SHOW_POWERUPS (1) && 
-					(gameStates.render.bAllVisited || gameData.render.mine.bAutomapVisited [objP->nSegment]))	{
-					switch (objP->id) {
+					(gameStates.render.bAllVisited || gameData.render.mine.bAutomapVisited [objP->info.nSegment]))	{
+					switch (objP->info.nId) {
 						case POW_KEY_RED:	
 							GrSetColorRGBi (RGBA_PAL2 (63, 5, 5));
 							size *= 4;
@@ -465,9 +465,9 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 							break;
 						default:
 							GrSetColorRGBi (ORANGE_RGBA); //orange
-							//Error ("Illegal key nType: %i", objP->id);
+							//Error ("Illegal key nType: %i", objP->info.nId);
 						}
-					G3TransformAndEncodePoint(&spherePoint, objP->position.vPos);
+					G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
 					G3DrawSphere (&spherePoint, size, !gameStates.render.automap.bRadar);
 					}
 				break;
@@ -666,13 +666,13 @@ if (gameStates.render.automap.bRadar)
 else if (!amData.nViewDist)
 	amData.nViewDist = ZOOM_DEFAULT;
 playerP = OBJECTS + LOCALPLAYER.nObject;
-amData.viewMatrix = playerP->position.mOrient;
+amData.viewMatrix = playerP->info.position.mOrient;
 
 pvTAngles[PA] = PITCH_DEFAULT;
 pvTAngles[HA] = 0;
 pvTAngles[BA] = 0;
 
-amData.viewTarget = playerP->position.vPos;
+amData.viewTarget = playerP->info.position.vPos;
 t1 = *pxEntryTime = TimerGetFixedSeconds ();
 t2 = t1;
 //Fill in gameData.render.mine.bAutomapVisited from OBJECTS [LOCALPLAYER.nObject].nSegment
@@ -691,7 +691,7 @@ else
 //gameData.render.mine.bAutomapVisited [OBJECTS [LOCALPLAYER.nObject].nSegment] = 1;
 gameStates.render.automap.nSegmentLimit =
 gameStates.render.automap.nMaxSegsAway = 
-	SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisible);
+	SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, gameData.render.mine.bAutomapVisible);
 AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisible);
 return bPauseGame;
 }
@@ -709,7 +709,7 @@ if (Controls [0].firePrimaryDownCount)	{
 	pvTAngles[PA] = PITCH_DEFAULT;
 	pvTAngles[HA] = 0;
 	pvTAngles[BA] = 0;
-	amData.viewTarget = playerP->position.vPos;
+	amData.viewTarget = playerP->info.position.vPos;
 	}
 if (Controls [0].forwardThrustTime)
 	amData.viewTarget += amData.viewMatrix[FVEC] * (Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR); 
@@ -720,12 +720,12 @@ pvTAngles[BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 m = vmsMatrix::Create(pvTAngles);
 if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime)	{
 	// TODO MM
-	amData.viewMatrix = playerP->position.mOrient * m;
+	amData.viewMatrix = playerP->info.position.mOrient * m;
 	amData.viewTarget += amData.viewMatrix[UVEC] * (Controls [0].verticalThrustTime * SLIDE_SPEED);
 	amData.viewTarget += amData.viewMatrix[RVEC] * (Controls [0].sidewaysThrustTime * SLIDE_SPEED);
 	}
 // TODO MM
-amData.viewMatrix = playerP->position.mOrient * m;
+amData.viewMatrix = playerP->info.position.mOrient * m;
 if (amData.nViewDist < ZOOM_MIN_VALUE) 
 	amData.nViewDist = ZOOM_MIN_VALUE;
 if (amData.nViewDist > ZOOM_MAX_VALUE) 
@@ -790,7 +790,7 @@ while ((c = KeyInKey ())) {
 			AutomapBuildEdgeList ();
 			gameStates.render.automap.nSegmentLimit = 
 			gameStates.render.automap.nMaxSegsAway = 
-				SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisible);
+				SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, gameData.render.mine.bAutomapVisible);
 			AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisible);
 			}
 			break;
@@ -880,12 +880,12 @@ if (!bPauseGame)	{
 	ushort bWiggleSave;
 	controlInfoSave = Controls [0];				// Save controls so we can zero them
 	memset (&Controls, 0, sizeof (tControlInfo));	// Clear everything...
-	bWiggleSave = gameData.objs.console->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
-	gameData.objs.console->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
+	bWiggleSave = gameData.objs.consoleP->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
+	gameData.objs.consoleP->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
 	if (MultiMenuPoll ())
 		bDone = 1;
 	GameLoop (0, 0);		// Do game loop with no rendering and no reading controls.
-	gameData.objs.console->mType.physInfo.flags |= bWiggleSave;	// Restore wiggle
+	gameData.objs.consoleP->mType.physInfo.flags |= bWiggleSave;	// Restore wiggle
 	Controls [0] = controlInfoSave;
 	}
 return bDone;

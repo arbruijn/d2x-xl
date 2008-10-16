@@ -97,7 +97,7 @@ void RecreateThief(tObject *objP)
 	nSegment = ChooseThiefRecreationSegment();
 	COMPUTE_SEGMENT_CENTER_I (&center_point, nSegment);
 
-	new_obj = CreateMorphRobot( &gameData.segs.segments[nSegment], &center_point, objP->id);
+	new_obj = CreateMorphRobot( &gameData.segs.segments[nSegment], &center_point, objP->info.nId);
 	InitAIObject(OBJ_IDX (new_obj), AIB_SNIPE, -1);
 	gameData.thief.xReInitTime = gameData.time.xGame + F1_0*10;		//	In 10 seconds, re-initialize thief.
 }
@@ -107,7 +107,7 @@ void RecreateThief(tObject *objP)
 void DoThiefFrame(tObject *objP)
 {
 	int			nObject = OBJ_IDX (objP);
-	tAILocal		*ailp = gameData.ai.localInfo + nObject;
+	tAILocalInfo		*ailp = gameData.ai.localInfo + nObject;
 	fix			connectedDistance;
 
 	if ((gameData.missions.nCurrentLevel < 0) && (gameData.thief.xReInitTime < gameData.time.xGame)) {
@@ -131,7 +131,7 @@ void DoThiefFrame(tObject *objP)
 				ailp->nextActionTime = THIEF_ATTACK_TIME/2;
 				return;
 			} else if (gameData.ai.nPlayerVisibility) {
-				CreateNSegmentPath(objP, 15, gameData.objs.console->nSegment);
+				CreateNSegmentPath(objP, 15, gameData.objs.consoleP->info.nSegment);
 				ailp->mode = AIM_THIEF_RETREAT;
 				return;
 			}
@@ -141,7 +141,7 @@ void DoThiefFrame(tObject *objP)
 
 			ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 
-			connectedDistance = FindConnectedDistance (&objP->position.vPos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
+			connectedDistance = FindConnectedDistance (&objP->info.position.vPos, objP->info.nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
 			if (connectedDistance < F1_0*500) {
 				CreatePathToPlayer(objP, 30, 1);
 				ailp->mode = AIM_THIEF_ATTACK;
@@ -157,15 +157,15 @@ void DoThiefFrame(tObject *objP)
 			} else if ((gameData.ai.xDistToPlayer < F1_0*100) || gameData.ai.nPlayerVisibility || (ailp->playerAwarenessType >= PA_PLAYER_COLLISION)) {
 				AIFollowPath(objP, gameData.ai.nPlayerVisibility, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
 				if ((gameData.ai.xDistToPlayer < F1_0*100) || (ailp->playerAwarenessType >= PA_PLAYER_COLLISION)) {
-					tAIStatic	*aip = &objP->cType.aiInfo;
+					tAIStaticInfo	*aip = &objP->cType.aiInfo;
 					if (((aip->nCurPathIndex <=1) && (aip->PATH_DIR == -1)) || ((aip->nCurPathIndex >= aip->nPathLength-1) && (aip->PATH_DIR == 1))) {
 						ailp->playerAwarenessType = 0;
-						CreateNSegmentPath(objP, 10, gameData.objs.console->nSegment);
+						CreateNSegmentPath(objP, 10, gameData.objs.consoleP->info.nSegment);
 
 						//	If path is real short, try again, allowing to go through tPlayer's tSegment
 						if (aip->nPathLength < 4) {
 							CreateNSegmentPath(objP, 10, -1);
-						} else if (objP->shields* 4 < ROBOTINFO (objP->id).strength) {
+						} else if (objP->info.xShields* 4 < ROBOTINFO (objP->info.nId).strength) {
 							//	If robot really low on hits, will run through tPlayer with even longer path
 							if (aip->nPathLength < 8) {
 								CreateNSegmentPath(objP, 10, -1);
@@ -188,7 +188,7 @@ void DoThiefFrame(tObject *objP)
 			if (ailp->playerAwarenessType >= PA_PLAYER_COLLISION) {
 				ailp->playerAwarenessType = 0;
 				if (d_rand() > 8192) {
-					CreateNSegmentPath(objP, 10, gameData.objs.console->nSegment);
+					CreateNSegmentPath(objP, 10, gameData.objs.consoleP->info.nSegment);
 					gameData.ai.localInfo[OBJ_IDX (objP)].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 					gameData.ai.localInfo[OBJ_IDX (objP)].mode = AIM_THIEF_RETREAT;
 				}
@@ -202,9 +202,9 @@ void DoThiefFrame(tObject *objP)
 					//	If the tPlayer is close to looking at the thief, thief shall run away.
 					//	No more stupid thief trying to sneak up on you when you're looking right at him!
 					if (gameData.ai.xDistToPlayer > F1_0*60) {
-						fix dot = vmsVector::Dot(gameData.ai.vVecToPlayer, OBJPOS (gameData.objs.console)->mOrient [FVEC]);
+						fix dot = vmsVector::Dot(gameData.ai.vVecToPlayer, OBJPOS (gameData.objs.consoleP)->mOrient [FVEC]);
 						if (dot < -F1_0/2) {	//	Looking at least towards thief, so thief will run!
-							CreateNSegmentPath(objP, 10, gameData.objs.console->nSegment);
+							CreateNSegmentPath(objP, 10, gameData.objs.consoleP->info.nSegment);
 							gameData.ai.localInfo[OBJ_IDX (objP)].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 							gameData.ai.localInfo[OBJ_IDX (objP)].mode = AIM_THIEF_RETREAT;
 						}
@@ -212,7 +212,7 @@ void DoThiefFrame(tObject *objP)
 					AITurnTowardsVector(&gameData.ai.vVecToPlayer, objP, F1_0/4);
 					MoveTowardsPlayer(objP, &gameData.ai.vVecToPlayer);
 				} else {
-					tAIStatic	*aip = &objP->cType.aiInfo;
+					tAIStaticInfo	*aip = &objP->cType.aiInfo;
 					//	If path length == 0, then he will keep trying to create path, but he is probably stuck in his closet.
 					if ((aip->nPathLength > 1) || ((gameData.app.nFrameCount & 0x0f) == 0)) {
 						AIFollowPath(objP, gameData.ai.nPlayerVisibility, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
@@ -442,13 +442,13 @@ int AttemptToStealItem(tObject *objP, int nPlayer)
 		} else
 			break;
 	}
-	CreateNSegmentPath(objP, 10, gameData.objs.console->nSegment);
+	CreateNSegmentPath(objP, 10, gameData.objs.consoleP->info.nSegment);
 	gameData.ai.localInfo[OBJ_IDX (objP)].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 	gameData.ai.localInfo[OBJ_IDX (objP)].mode = AIM_THIEF_RETREAT;
 	if (rval) {
 		PALETTE_FLASH_ADD(30, 15, -20);
 		UpdateLaserWeaponInfo();
-//		DigiLinkSoundToPos( SOUND_NASTY_ROBOT_HIT_1, objP->nSegment, 0, &objP->position.vPos, 0 , DEFAULT_ROBOT_SOUND_VOLUME);
+//		DigiLinkSoundToPos( SOUND_NASTY_ROBOT_HIT_1, objP->info.nSegment, 0, &objP->info.position.vPos, 0 , DEFAULT_ROBOT_SOUND_VOLUME);
 //	I removed this to make the "steal sound" more obvious -AP
                 if (gameData.app.nGameMode & GM_NETWORK)
                  MultiSendStolenItems();
@@ -490,7 +490,7 @@ void DropStolenItems(tObject *objP)
 
 	for (i=0; i<MAX_STOLEN_ITEMS; i++) {
 		if (gameData.thief.stolenItems[i] != 255)
-			DropPowerup(OBJ_POWERUP, gameData.thief.stolenItems[i], -1, 1, objP->mType.physInfo.velocity, objP->position.vPos, objP->nSegment);
+			DropPowerup(OBJ_POWERUP, gameData.thief.stolenItems[i], -1, 1, objP->mType.physInfo.velocity, objP->info.position.vPos, objP->info.nSegment);
 		gameData.thief.stolenItems[i] = 255;
 	}
 

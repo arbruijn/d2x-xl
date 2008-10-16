@@ -2289,7 +2289,7 @@ for (i = 0; i < n_players; i++) {
 		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
 #if 0//def _DEBUG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
-						teamInd [0], netGame.team_name [i],
+						teamInd [0], netGame.szTeamName [i],
 						netPlayers.players [i].network.ipx.node [0],
 						netPlayers.players [i].network.ipx.node [1],
 						netPlayers.players [i].network.ipx.node [2],
@@ -2297,14 +2297,14 @@ for (i = 0; i < n_players; i++) {
 						netPlayers.players [i].network.ipx.node [5] +
 						 (unsigned) netPlayers.players [i].network.ipx.node [4] * 256);
 #else
-			sprintf (name, "%c%s", teamInd [0], netGame.team_name [i]);
+			sprintf (name, "%c%s", teamInd [0], netGame.szTeamName [i]);
 #endif
 			indent = 0;
 			}
 		else {
 #if SHOW_PLAYER_IP
 			sprintf (name, "%-8s %d.%d.%d.%d:%d",
-						netGame.team_name [i],
+						netGame.szTeamName [i],
 						netPlayers.players [i].network.ipx.node [0],
 						netPlayers.players [i].network.ipx.node [1],
 						netPlayers.players [i].network.ipx.node [2],
@@ -2312,7 +2312,7 @@ for (i = 0; i < n_players; i++) {
 						netPlayers.players [i].network.ipx.node [5] +
 						 (unsigned) netPlayers.players [i].network.ipx.node [4] * 256);
 #else
-			strcpy (name, netGame.team_name [i]);
+			strcpy (name, netGame.szTeamName [i]);
 #endif
 			GrGetStringSize (teamInd, &indent, &sh, &aw);
 			}
@@ -2393,7 +2393,7 @@ extern int bSavingMovieFrames;
 #define bSavingMovieFrames 0
 #endif
 
-//returns true if viewer can see tObject
+//returns true if viewerP can see tObject
 //	-----------------------------------------------------------------------------
 
 int CanSeeObject (int nObject, int bCheckObjs)
@@ -2404,13 +2404,13 @@ int CanSeeObject (int nObject, int bCheckObjs)
 
 	//see if we can see this tPlayer
 
-fq.p0 = &gameData.objs.viewer->position.vPos;
-fq.p1 = &OBJECTS [nObject].position.vPos;
+fq.p0 = &gameData.objs.viewerP->info.position.vPos;
+fq.p1 = &OBJECTS [nObject].info.position.vPos;
 fq.radP0 =
 fq.radP1 = 0;
-fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
+fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP);
 fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
-fq.startSeg = gameData.objs.viewer->nSegment;
+fq.startSeg = gameData.objs.viewerP->info.nSegment;
 fq.ignoreObjList = NULL;
 nHitType = FindVectorIntersection (&fq, &hit_data);
 return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject) : (nHitType != HIT_WALL);
@@ -2451,9 +2451,8 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 	else {
 		//if this is a demo, the nObject in the tPlayer struct is wrong,
 		//so we search the tObject list for the nObject
-		for (nObject = 0;nObject <= gameData.objs.nLastObject [0]; nObject++)
-			if (OBJECTS [nObject].nType==OBJ_PLAYER &&
-				 OBJECTS [nObject].id == p)
+		for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++)
+			if ((OBJECTS [nObject].info.nType == OBJ_PLAYER) && (OBJECTS [nObject].info.nId == p))
 				break;
 		if (nObject > gameData.objs.nLastObject [0])		//not in list, thus not visible
 			bShowName = !bHasFlag;				//..so don't show name
@@ -2463,7 +2462,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 		g3sPoint		vPlayerPos;
 		vmsVector	vPos;
 
-		vPos = OBJECTS [nObject].position.vPos;
+		vPos = OBJECTS [nObject].info.position.vPos;
 		vPos[Y] += 2 * F1_0;
 		G3TransformAndEncodePoint(&vPlayerPos, vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
@@ -2501,7 +2500,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 					}
 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
-					fix dy = -FixMulDiv (OBJECTS [nObject].size, I2X (grdCurCanv->cv_h)/2, vPlayerPos.p3_vec[Z]);
+					fix dy = -FixMulDiv (OBJECTS [nObject].info.xSize, I2X (grdCurCanv->cv_h)/2, vPlayerPos.p3_vec[Z]);
 //					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, viewInfo.scale.y), I2X (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
 					fix dx = FixMul (dy, grdCurScreen->scAspect);
 					fix w = dx/4;
@@ -2720,19 +2719,19 @@ int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
 //	---------------------------------------------------------------------------------------------------------
 //draws a 3d view into one of the cockpit windows.  win is 0 for left,
-//1 for right.  viewer is tObject.  NULL tObject means give up window
-//user is one of the WBU_ constants.  If bRearView is set, show a
+//1 for right.  viewerP is tObject.  NULL tObject means give up window
+//nUser is one of the WBU_ constants.  If bRearView is set, show a
 //rear view.  If label is non-NULL, print the label at the top of the
 //window.
 
 int cockpitWindowScale [4] = {6, 5, 4, 3};
 
-void DoCockpitWindowView (int nWindow, tObject *viewer, int bRearView, int user, const char *pszLabel)
+void DoCockpitWindowView (int nWindow, tObject *viewerP, int bRearView, int nUser, const char *pszLabel)
 {
 	gsrCanvas windowCanv;
 	static gsrCanvas overlap_canv;
 
-	tObject *viewerSave = gameData.objs.viewer;
+	tObject *viewerSave = gameData.objs.viewerP;
 	gsrCanvas *save_canv = grdCurCanv;
 	static int bOverlapDirty [2]={0, 0};
 	int nBox;
@@ -2744,13 +2743,13 @@ void DoCockpitWindowView (int nWindow, tObject *viewer, int bRearView, int user,
 if (HIDE_HUD)
 	return;
 boxP = NULL;
-if (!viewer) {								//this user is done
-	Assert (user == WBU_WEAPON || user == WBU_STATIC);
-	if ((user == WBU_STATIC) && (weaponBoxUser [nWindow] != WBU_STATIC))
+if (!viewerP) {								//this nUser is done
+	Assert (nUser == WBU_WEAPON || nUser == WBU_STATIC);
+	if ((nUser == WBU_STATIC) && (weaponBoxUser [nWindow] != WBU_STATIC))
 		staticTime [nWindow] = 0;
 	if (weaponBoxUser [nWindow] == WBU_WEAPON || weaponBoxUser [nWindow] == WBU_STATIC)
 		return;		//already set
-	weaponBoxUser [nWindow] = user;
+	weaponBoxUser [nWindow] = nUser;
 	if (bOverlapDirty [nWindow]) {
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 		FillBackground ();
@@ -2758,9 +2757,9 @@ if (!viewer) {								//this user is done
 		}
 	return;
 	}
-UpdateRenderedData (nWindow+1, viewer, bRearView, user);
-weaponBoxUser [nWindow] = user;						//say who's using window
-gameData.objs.viewer = viewer;
+UpdateRenderedData (nWindow+1, viewerP, bRearView, nUser);
+weaponBoxUser [nWindow] = nUser;						//say who's using window
+gameData.objs.viewerP = viewerP;
 gameStates.render.bRearView = bRearView;
 
 if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
@@ -2836,8 +2835,8 @@ GrSetCurrentCanvas (&windowCanv);
 G3PushMatrix ();
 nZoomSave = gameStates.render.nZoomFactor;
 gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the tPlayer's zoom factor
-if ((user == WBU_RADAR_TOPDOWN) || (user == WBU_RADAR_HEADSUP)) {
-	gameStates.render.bTopDownRadar = (user == WBU_RADAR_TOPDOWN);
+if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
+	gameStates.render.bTopDownRadar = (nUser == WBU_RADAR_TOPDOWN);
 	if (!IsMultiGame || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
 		DoAutomap (0, 1);
 	else
@@ -2848,16 +2847,16 @@ else
 gameStates.render.nZoomFactor = nZoomSave;
 G3PopMatrix ();
 //	HACK!If guided missile, wake up robots as necessary.
-if (viewer->nType == OBJ_WEAPON) {
-	// -- Used to require to be GUIDED -- if (viewer->id == GUIDEDMSL_ID)
-	WakeupRenderedObjects (viewer, nWindow+1);
+if (viewerP->info.nType == OBJ_WEAPON) {
+	// -- Used to require to be GUIDED -- if (viewerP->id == GUIDEDMSL_ID)
+	WakeupRenderedObjects (viewerP, nWindow+1);
 	}
 if (pszLabel) {
 	GrSetCurFont (GAME_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (NULL, 0x8000, 2, pszLabel);
 	}
-if (user == WBU_GUIDED) {
+if (nUser == WBU_GUIDED) {
 	DrawGuidedCrosshair ();
 	}
 if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
@@ -2902,7 +2901,7 @@ oldWeapon [nWindow][gameStates.render.vr.nCurrentPage] = oldAmmoCount [nWindow][
 
 abort:;
 
-gameData.objs.viewer = viewerSave;
+gameData.objs.viewerP = viewerSave;
 GrSetCurrentCanvas (save_canv);
 gameStates.render.bRearView = bRearViewSave;
 }

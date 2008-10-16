@@ -47,7 +47,7 @@ int AISaveBinState (CFILE *fp)
 
 CFWrite (&gameData.ai.bInitialized, sizeof (int), 1, fp);
 CFWrite (&gameData.ai.nOverallAgitation, sizeof (int), 1, fp);
-CFWrite (gameData.ai.localInfo, sizeof (tAILocal), MAX_OBJECTS, fp);
+CFWrite (gameData.ai.localInfo, sizeof (tAILocalInfo), MAX_OBJECTS, fp);
 CFWrite (gameData.ai.pointSegs, sizeof (tPointSeg), MAX_POINT_SEGS, fp);
 CFWrite (gameData.ai.cloakInfo, sizeof (tAICloakInfo), MAX_AI_CLOAK_INFO, fp);
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
@@ -93,11 +93,11 @@ int AIRestoreBinState (CFILE *fp, int version)
 {
 	int	i;
 
-memset (gameData.ai.localInfo, 0, sizeof (tAILocal) * MAX_OBJECTS);
+memset (gameData.ai.localInfo, 0, sizeof (tAILocalInfo) * MAX_OBJECTS);
 memset (gameData.ai.pointSegs, 0, sizeof (gameData.ai.pointSegs));
 CFRead (&gameData.ai.bInitialized, sizeof (int), 1, fp);
 CFRead (&gameData.ai.nOverallAgitation, sizeof (int), 1, fp);
-CFRead (gameData.ai.localInfo, sizeof (tAILocal), (version > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2, fp);
+CFRead (gameData.ai.localInfo, sizeof (tAILocalInfo), (version > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2, fp);
 CFRead (gameData.ai.pointSegs, sizeof (tPointSeg), (version > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2, fp);
 CFRead (gameData.ai.cloakInfo, sizeof (tAICloakInfo), MAX_AI_CLOAK_INFO, fp);
 if (version < 29) {
@@ -213,7 +213,7 @@ return 1;
 }
 //	-------------------------------------------------------------------------------------------------
 
-void AISaveLocalInfo (tAILocal *ailP, CFILE *fp)
+void AISaveLocalInfo (tAILocalInfo *ailP, CFILE *fp)
 {
 	int	i;
 
@@ -313,7 +313,7 @@ return 1;
 
 //	-------------------------------------------------------------------------------------------------
 
-void AIRestoreLocalInfo (tAILocal *ailP, CFILE *fp)
+void AIRestoreLocalInfo (tAILocalInfo *ailP, CFILE *fp)
 {
 	int	i;
 

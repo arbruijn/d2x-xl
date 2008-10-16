@@ -190,7 +190,7 @@ void HandleDeathKey(int key)
 	}
 
 	if (key == KEY_ESC) {
-		if (gameData.objs.console->flags & OF_EXPLODING)
+		if (gameData.objs.consoleP->info.nFlags & OF_EXPLODING)
 			gameStates.app.bDeathSequenceAborted = 1;
 	}
 
@@ -425,12 +425,12 @@ switch (key) {
 		if ((IsMultiGame && !IsCoopGame) || !gameStates.app.bEnableFreeCam)
 			return 0;
 		if ((gameStates.app.bFreeCam = !gameStates.app.bFreeCam)) {
-			gameStates.app.playerPos = gameData.objs.viewer->position;
-			gameStates.app.nPlayerSegment = gameData.objs.viewer->nSegment;
+			gameStates.app.playerPos = gameData.objs.viewerP->info.position;
+			gameStates.app.nPlayerSegment = gameData.objs.viewerP->info.nSegment;
 			}
 		else {
-			gameData.objs.viewer->position = gameStates.app.playerPos;
-			RelinkObject (OBJ_IDX (gameData.objs.viewer), gameStates.app.nPlayerSegment);
+			gameData.objs.viewerP->info.position = gameStates.app.playerPos;
+			RelinkObject (OBJ_IDX (gameData.objs.viewerP), gameStates.app.nPlayerSegment);
 			}
 		break;
 
@@ -1019,7 +1019,7 @@ void HandleTestKey(int key)
 			break;
 #endif
 		case KEYDBGGED+KEY_SHIFTED+KEY_LAPOSTRO: 
-			gameData.objs.viewer=gameData.objs.console; 
+			gameData.objs.viewerP=gameData.objs.consoleP; 
 			break;
 
 	#if DBG
@@ -1092,11 +1092,11 @@ void HandleTestKey(int key)
 		case KEYDBGGED+KEY_SPACEBAR:		//KEY_F7:				// Toggle physics flying
 			slew_stop();
 			GameFlushInputs();
-			if ( gameData.objs.console->controlType != CT_FLYING ) {
-				FlyInit(gameData.objs.console);
+			if ( gameData.objs.consoleP->info.controlType != CT_FLYING ) {
+				FlyInit(gameData.objs.consoleP);
 				gameStates.app.bGameSuspended &= ~SUSP_ROBOTS;	//robots move
 			} else {
-				slew_init(gameData.objs.console);			//start tPlayer slewing
+				slew_init(gameData.objs.consoleP);			//start tPlayer slewing
 				gameStates.app.bGameSuspended |= SUSP_ROBOTS;	//robots don't move
 			}
 			break;
@@ -1184,12 +1184,12 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 	CheckRearView();
 	//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
 	if (Controls [0].automapDownCount && 
-		 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted && 
+		 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted && 
 		 !(IsMultiGame && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
 		gameStates.render.automap.bDisplay = 1;
 	DoWeaponStuff();
 	}
-if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.console->flags & OF_EXPLODING) ) {
+if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.consoleP->flags & OF_EXPLODING) ) {
 	if (!explodingFlag)  {
 		explodingFlag = 1;			// When tPlayer starts exploding, clear all input devices...
 		GameFlushInputs();

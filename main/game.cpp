@@ -593,15 +593,15 @@ void MovePlayerToSegment (tSegment *segP,int tSide)
 {
 	vmsVector vp;
 
-COMPUTE_SEGMENT_CENTER (&gameData.objs.console->position.vPos,segP);
+COMPUTE_SEGMENT_CENTER (&gameData.objs.consoleP->info.position.vPos,segP);
 COMPUTE_SIDE_CENTER (&vp,segP,tSide);
-vp -= gameData.objs.console->position.vPos;
+vp -= gameData.objs.consoleP->info.position.vPos;
 /*
-gameData.objs.console->position.mOrient = vmsMatrix::Create(vp, NULL, NULL);
+gameData.objs.consoleP->info.position.mOrient = vmsMatrix::Create(vp, NULL, NULL);
 */
 // TODO: MatrixCreateFCheck
-gameData.objs.console->position.mOrient = vmsMatrix::CreateF(vp);
-RelinkObject (OBJ_IDX (gameData.objs.console), SEG_IDX (segP));
+gameData.objs.consoleP->info.position.mOrient = vmsMatrix::CreateF(vp);
+RelinkObject (OBJ_IDX (gameData.objs.consoleP), SEG_IDX (segP));
 }
 
 //------------------------------------------------------------------------------
@@ -725,8 +725,8 @@ end:
 //initialize flying
 void FlyInit (tObject *objP)
 {
-	objP->controlType = CT_FLYING;
-	objP->movementType = MT_PHYSICS;
+	objP->info.controlType = CT_FLYING;
+	objP->info.movementType = MT_PHYSICS;
 
 	objP->mType.physInfo.velocity.SetZero();
 	objP->mType.physInfo.thrust.SetZero();
@@ -807,8 +807,8 @@ int	Ab_scale = 4;
 //@@	rx = (Ab_scale * FixMul (d_rand () - 16384, F1_0/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
 //@@	rz = (Ab_scale * FixMul (d_rand () - 16384, F1_0/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
 //@@
-//@@	gameData.objs.console->mType.physInfo.rotVel.x += rx;
-//@@	gameData.objs.console->mType.physInfo.rotVel.z += rz;
+//@@	gameData.objs.consoleP->mType.physInfo.rotVel.x += rx;
+//@@	gameData.objs.consoleP->mType.physInfo.rotVel.z += rz;
 //@@
 //@@}
 
@@ -1192,17 +1192,17 @@ InitGauges ();
 //gameStates.input.keys.bRepeat = 0;                // Don't allow repeat in game
 gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
 #ifdef EDITOR
-	if (gameData.segs.segments[gameData.objs.console->nSegment].nSegment == -1)      //tSegment no longer exists
-		RelinkObject (OBJ_IDX (gameData.objs.console), SEG_IDX (Cursegp));
+	if (gameData.segs.segments[gameData.objs.consoleP->info.nSegment].nSegment == -1)      //tSegment no longer exists
+		RelinkObject (OBJ_IDX (gameData.objs.consoleP), SEG_IDX (Cursegp));
 
-	if (!check_obj_seg (gameData.objs.console))
+	if (!check_obj_seg (gameData.objs.consoleP))
 		MovePlayerToSegment (Cursegp,Curside);
 #endif
-gameData.objs.viewer = gameData.objs.console;
+gameData.objs.viewerP = gameData.objs.consoleP;
 #if TRACE
 //con_printf (CONDBG, "   FlyInit d:\temp\dm_test.\n");
 #endif
-FlyInit (gameData.objs.console);
+FlyInit (gameData.objs.consoleP);
 gameStates.app.bGameSuspended = 0;
 ResetTime ();
 gameData.time.xFrame = 0;			//make first frame zero
@@ -1258,11 +1258,11 @@ for (;;) {
 #endif
 	gameStates.render.automap.bDisplay = 0;
 	gameStates.app.bConfigMenu = 0;
-	if (gameData.objs.console != OBJECTS + LOCALPLAYER.nObject) {
+	if (gameData.objs.consoleP != OBJECTS + LOCALPLAYER.nObject) {
 #if TRACE
 	    //con_printf (CONDBG,"gameData.multiplayer.nLocalPlayer=%d nObject=%d",gameData.multiplayer.nLocalPlayer,LOCALPLAYER.nObject);
 #endif
-	    //Assert (gameData.objs.console == &OBJECTS[LOCALPLAYER.nObject]);
+	    //Assert (gameData.objs.consoleP == &OBJECTS[LOCALPLAYER.nObject]);
 		}
 	playerShields = LOCALPLAYER.shields;
 	gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
@@ -1503,7 +1503,7 @@ tObject *find_escort ()
 	tObject	*objP = OBJECTS;
 
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion)
+	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).companion)
 		return objP;
 return NULL;
 }
@@ -1640,8 +1640,8 @@ void DoAmbientSounds ()
 	int has_water,has_lava;
 	short sound;
 
-	has_lava = (gameData.segs.segment2s[gameData.objs.console->nSegment].s2Flags & S2F_AMBIENT_LAVA);
-	has_water = (gameData.segs.segment2s[gameData.objs.console->nSegment].s2Flags & S2F_AMBIENT_WATER);
+	has_lava = (gameData.segs.segment2s[gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_LAVA);
+	has_water = (gameData.segs.segment2s[gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_WATER);
 
 	if (has_lava) {							//has lava
 		sound = SOUND_AMBIENT_LAVA;
@@ -1697,13 +1697,13 @@ if (gameData.fusion.xAutoFireTime) {
 			return 0;
 		t0 = t;
 		gameData.laser.nGlobalFiringCount = 0;
-		gameData.objs.console->mType.physInfo.rotVel[X] += (d_rand () - 16384)/8;
-		gameData.objs.console->mType.physInfo.rotVel[Z] += (d_rand () - 16384)/8;
+		gameData.objs.consoleP->mType.physInfo.rotVel[X] += (d_rand () - 16384)/8;
+		gameData.objs.consoleP->mType.physInfo.rotVel[Z] += (d_rand () - 16384)/8;
 		vRand = vmsVector::Random();
 		xBump = F1_0*4;
 		if (gameData.fusion.xCharge > F1_0*2)
 			xBump = gameData.fusion.xCharge*4;
-		BumpOneObject (gameData.objs.console, &vRand, xBump);
+		BumpOneObject (gameData.objs.consoleP, &vRand, xBump);
 		}
 	}
 return 1;
@@ -1859,7 +1859,7 @@ DoFinalBossFrame ();
 DrainHeadlightPower ();
 #ifdef EDITOR
 check_create_player_path ();
-player_follow_path (gameData.objs.console);
+player_follow_path (gameData.objs.consoleP);
 #endif
 
 if (IsMultiGame) {
@@ -1978,7 +1978,7 @@ else { // Note the link to above!
 		gameData.laser.nGlobalFiringCount = 0;
 	}
 if (gameStates.render.bDoAppearanceEffect) {
-	CreatePlayerAppearanceEffect (gameData.objs.console);
+	CreatePlayerAppearanceEffect (gameData.objs.consoleP);
 	gameStates.render.bDoAppearanceEffect = 0;
 	if (IsMultiGame && netGame.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
@@ -2128,10 +2128,10 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 		if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
 			if (gameData.fusion.xCharge > F1_0*2) {
 				DigiPlaySample (11, F1_0);
-				ApplyDamageToPlayer (gameData.objs.console, gameData.objs.console, d_rand () * 4);
+				ApplyDamageToPlayer (gameData.objs.consoleP, gameData.objs.consoleP, d_rand () * 4);
 				}
 			else {
-				CreateAwarenessEvent (gameData.objs.console, WEAPON_ROBOT_COLLISION);
+				CreateAwarenessEvent (gameData.objs.consoleP, WEAPON_ROBOT_COLLISION);
 				DigiPlaySample (SOUND_FUSION_WARMUP, F1_0);
 				if (gameData.app.nGameMode & GM_MULTI)
 					MultiSendPlaySound (SOUND_FUSION_WARMUP, F1_0);
@@ -2154,13 +2154,13 @@ void PowerupGrabCheat (tObject *playerP, int nObject)
 	tTransformation	*posP = OBJPOS (playerP);
 	vmsVector	vCollision;
 
-Assert (powerupP->nType == OBJ_POWERUP);
-if (powerupP->flags & OF_SHOULD_BE_DEAD)
+Assert (powerupP->info.nType == OBJ_POWERUP);
+if (powerupP->info.nFlags & OF_SHOULD_BE_DEAD)
 	return;
-if (vmsVector::Dist(powerupP->position.vPos, posP->vPos) >=
-	 2 * (playerP->size + powerupP->size) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
+if (vmsVector::Dist (powerupP->info.position.vPos, posP->vPos) >=
+	 2 * (playerP->info.xSize + powerupP->info.xSize) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
 	return;
-vCollision = vmsVector::Avg(powerupP->position.vPos, posP->vPos);
+vCollision = vmsVector::Avg (powerupP->info.position.vPos, posP->vPos);
 CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
 }
 
@@ -2173,11 +2173,11 @@ CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
 void PowerupGrabCheatAll (void)
 {
 if (gameStates.app.tick40fps.bTick) {
-	short nObject = gameData.segs.objects [gameData.objs.console->nSegment];
+	short nObject = gameData.segs.objects [gameData.objs.consoleP->info.nSegment];
 	while (nObject != -1) {
-		if (OBJECTS [nObject].nType == OBJ_POWERUP)
-			PowerupGrabCheat (gameData.objs.console, nObject);
-		nObject = OBJECTS [nObject].next;
+		if (OBJECTS [nObject].info.nType == OBJ_POWERUP)
+			PowerupGrabCheat (gameData.objs.consoleP, nObject);
+		nObject = OBJECTS [nObject].info.nNext;
 		}
 	}
 }
@@ -2192,14 +2192,14 @@ int	nLastLevelPathCreated = -1;
 int MarkPlayerPathToSegment (int nSegment)
 {
 	int		i;
-	tObject	*objP = gameData.objs.console;
+	tObject	*objP = gameData.objs.consoleP;
 	short		player_path_length=0;
 	int		player_hide_index=-1;
 
 if (nLastLevelPathCreated == gameData.missions.nCurrentLevel)
 	return 0;
 nLastLevelPathCreated = gameData.missions.nCurrentLevel;
-if (CreatePathPoints (objP, objP->nSegment, nSegment, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
+if (CreatePathPoints (objP, objP->info.nSegment, nSegment, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
 #if TRACE
 	//con_printf (CONDBG, "Unable to form path of length %i for myself\n", 100);
 #endif
@@ -2216,25 +2216,24 @@ if ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs) + MAX_PATH_LENGTH*
 	}
 for (i = 1; i < player_path_length; i++) {
 	short			nSegment, nObject;
-	vmsVector	seg_center;
+	vmsVector	vSegCenter;
 	tObject		*objP;
 
 	nSegment = gameData.ai.pointSegs [player_hide_index + i].nSegment;
 #if TRACE
 	//con_printf (CONDBG, "%3i ", nSegment);
 #endif
-	seg_center = gameData.ai.pointSegs[player_hide_index+i].point;
-	nObject = tObject::Create(OBJ_POWERUP, POW_ENERGY, -1, nSegment, seg_center, vmsMatrix::IDENTITY,
-								   gameData.objs.pwrUp.info [POW_ENERGY].size, CT_POWERUP, MT_NONE, RT_POWERUP, 1);
+	vSegCenter = gameData.ai.pointSegs[player_hide_index+i].point;
+	nObject = CreatePowerup (POW_ENERGY, -1, nSegment, vSegCenter, 1);
 	if (nObject == -1) {
 		Int3 ();		//	Unable to drop energy powerup for path
 		return 1;
 		}
 	objP = OBJECTS + nObject;
-	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 	objP->rType.vClipInfo.nCurFrame = 0;
-	objP->lifeleft = F1_0*100 + d_rand () * 4;
+	objP->info.xLifeLeft = F1_0*100 + d_rand () * 4;
 	}
 return 1;
 }
@@ -2271,7 +2270,7 @@ void show_freeObjects (void)
 		//con_printf (CONDBG, "gameData.objs.nLastObject [0] = %3i, MAX_OBJECTS = %3i, now used = ", gameData.objs.nLastObject [0], MAX_OBJECTS);
 #endif
 		for (i=0; i<=gameData.objs.nLastObject [0]; i++)
-			if (OBJECTS[i].nType != OBJ_NONE)
+			if (OBJECTS [i].info.nType != OBJ_NONE)
 				count++;
 #if TRACE
 		//con_printf (CONDBG, "%3i", count);

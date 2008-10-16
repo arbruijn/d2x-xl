@@ -46,15 +46,15 @@ void MakeNearbyRobotSnipe (void)
 	short			bfsList [MNRS_SEG_MAX];
 	int			nObject, nBfsLength, i;
 
-CreateBfsList (OBJSEG (gameData.objs.console), bfsList, &nBfsLength, MNRS_SEG_MAX);
+CreateBfsList (OBJSEG (gameData.objs.consoleP), bfsList, &nBfsLength, MNRS_SEG_MAX);
 for (i = 0; i < nBfsLength; i++) {
 	nObject = gameData.segs.objects [bfsList [i]];
 	//Assert (nObject >= 0);
 	while (nObject != -1) {
 		objP = OBJECTS + nObject;
-		botInfoP = &ROBOTINFO (objP->id);
+		botInfoP = &ROBOTINFO (objP->info.nId);
 
-		if ((objP->nType == OBJ_ROBOT) && (objP->id != ROBOT_BRAIN) &&
+		if ((objP->info.nType == OBJ_ROBOT) && (objP->info.nId != ROBOT_BRAIN) &&
 			 (objP->cType.aiInfo.behavior != AIB_SNIPE) && 
 			 (objP->cType.aiInfo.behavior != AIB_RUN_FROM) && 
 			 !botInfoP->bossFlag && 
@@ -63,21 +63,21 @@ for (i = 0; i < nBfsLength; i++) {
 			gameData.ai.localInfo [nObject].mode = AIM_SNIPE_ATTACK;
 			return;
 			}
-		nObject = objP->next;
+		nObject = objP->info.nNext;
 		}
 	}
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-void DoSnipeWait (tObject *objP, tAILocal *ailP)
+void DoSnipeWait (tObject *objP, tAILocalInfo *ailP)
 {
 	fix xConnectedDist;
 
 if ((gameData.ai.xDistToPlayer > F1_0 * 50) && (ailP->nextActionTime > 0))
 	return;
 ailP->nextActionTime = SNIPE_WAIT_TIME;
-xConnectedDist = FindConnectedDistance (&objP->position.vPos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, 
+xConnectedDist = FindConnectedDistance (&objP->info.position.vPos, objP->info.nSegment, &gameData.ai.vBelievedPlayerPos, 
 														 gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
 if (xConnectedDist < MAX_SNIPE_DIST) {
 	CreatePathToPlayer (objP, 30, 1);
@@ -88,7 +88,7 @@ if (xConnectedDist < MAX_SNIPE_DIST) {
 
 //	-------------------------------------------------------------------------------------------------
 
-void DoSnipeAttack (tObject *objP, tAILocal *ailP)
+void DoSnipeAttack (tObject *objP, tAILocalInfo *ailP)
 {
 if (ailP->nextActionTime < 0) {
 	ailP->mode = AIM_SNIPE_RETREAT;
@@ -107,11 +107,11 @@ else {
 
 //	-------------------------------------------------------------------------------------------------
 
-void DoSnipeFire (tObject *objP, tAILocal *ailP)
+void DoSnipeFire (tObject *objP, tAILocalInfo *ailP)
 {
 if (ailP->nextActionTime < 0) {
-	tAIStatic	*aiP = &objP->cType.aiInfo;
-	CreateNSegmentPath (objP, 10 + d_rand () / 2048, OBJSEG (gameData.objs.console));
+	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
+	CreateNSegmentPath (objP, 10 + d_rand () / 2048, OBJSEG (gameData.objs.consoleP));
 	aiP->nPathLength = SmoothPath (objP, &gameData.ai.pointSegs [aiP->nHideIndex], aiP->nPathLength);
 	if (d_rand () < 8192)
 		ailP->mode = AIM_SNIPE_RETREAT_BACKWARDS;
@@ -123,7 +123,7 @@ if (ailP->nextActionTime < 0) {
 
 //	-------------------------------------------------------------------------------------------------
 
-void DoSnipeRetreat (tObject *objP, tAILocal *ailP)
+void DoSnipeRetreat (tObject *objP, tAILocalInfo *ailP)
 {
 if (ailP->nextActionTime < 0) {
 	ailP->mode = AIM_SNIPE_WAIT;
@@ -142,9 +142,9 @@ else {
 //	-------------------------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
-typedef void __fastcall tAISnipeHandler (tObject *, tAILocal *);
+typedef void __fastcall tAISnipeHandler (tObject *, tAILocalInfo *);
 #else
-typedef void tAISnipeHandler (tObject *, tAILocal *);
+typedef void tAISnipeHandler (tObject *, tAILocalInfo *);
 #endif
 typedef tAISnipeHandler *pAISnipeHandler;
 
@@ -153,7 +153,7 @@ pAISnipeHandler aiSnipeHandlers [] = {DoSnipeAttack, DoSnipeFire, DoSnipeRetreat
 void DoSnipeFrame (tObject *objP)
 {
 if (gameData.ai.xDistToPlayer <= MAX_SNIPE_DIST) {
-	tAILocal		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
+	tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
 	int			i = ailP->mode;
 
 	if ((i >= AIM_SNIPE_ATTACK) && (i <= AIM_SNIPE_WAIT))

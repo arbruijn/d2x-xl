@@ -444,7 +444,7 @@ int G3DrawPolyModel (
 {
 	ubyte *p = (ubyte *) modelP;
 	short	nTag;
-	short bGetThrusterPos = !objP || ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id]));
+	short bGetThrusterPos = !objP || ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->info.nId]));
 	short bLightnings = SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && objP && (ObjectDamage (objP) < 0.5f);
 
 	static int nDepth = -1;
@@ -460,7 +460,7 @@ if (bShadowTest)
 nDepth++;
 G3CheckAndSwap (modelP);
 if (SHOW_DYN_LIGHT &&
-	!nDepth && !po && objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER))) {
+	!nDepth && !po && objP && ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_PLAYER))) {
 	po = gameData.models.pofData [gameStates.app.bD1Mission][0] + nModel;
 	POFGatherPolyModelItems (objP, modelP, pAnimAngles, po, 0);
 	}

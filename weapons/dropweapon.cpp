@@ -48,7 +48,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) &&
 	return -1;
 #endif
 d_srand(seed);
-newVelocity = spitterP->mType.physInfo.velocity + spitterP->position.mOrient[FVEC] * I2X (SPIT_SPEED);
+newVelocity = spitterP->mType.physInfo.velocity + spitterP->info.position.mOrient [FVEC] * I2X (SPIT_SPEED);
 newVelocity[X] += (d_rand() - 16384) * SPIT_SPEED * 2;
 newVelocity[Y] += (d_rand() - 16384) * SPIT_SPEED * 2;
 newVelocity[Z] += (d_rand() - 16384) * SPIT_SPEED * 2;
@@ -59,12 +59,10 @@ if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 //the distance between him and the powerup is less than 2 time their
 //combined radii.  So we need to create powerups pretty far out from
 //the player.
-newPos = posP->vPos + posP->mOrient[FVEC] * spitterP->size;
+newPos = posP->vPos + posP->mOrient[FVEC] * spitterP->info.xSize;
 if (IsMultiGame && (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS))
 	return (-1);
-nObject = tObject::Create(OBJ_POWERUP, id, (short) (GetTeam (gameData.multiplayer.nLocalPlayer) + 1),
-							  (short) OBJSEG (spitterP), newPos, vmsMatrix::IDENTITY, gameData.objs.pwrUp.info[id].size,
-							  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
+nObject = CreatePowerup (id, (short) (GetTeam (gameData.multiplayer.nLocalPlayer) + 1), (short) OBJSEG (spitterP), newPos,  1);
 if (nObject < 0) {
 	Int3();
 	return nObject;
@@ -74,23 +72,23 @@ objP->mType.physInfo.velocity = newVelocity;
 objP->mType.physInfo.drag = 512;	//1024;
 objP->mType.physInfo.mass = F1_0;
 objP->mType.physInfo.flags = PF_BOUNCE;
-objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 objP->rType.vClipInfo.nCurFrame = 0;
-if (spitterP == gameData.objs.console)
-	objP->cType.powerupInfo.flags |= PF_SPAT_BY_PLAYER;
-switch (objP->id) {
+if (spitterP == gameData.objs.consoleP)
+	objP->cType.powerupInfo.nFlags |= PF_SPAT_BY_PLAYER;
+switch (objP->info.nId) {
 	case POW_CONCUSSION_1:
 	case POW_CONCUSSION_4:
 	case POW_SHIELD_BOOST:
 	case POW_ENERGY:
-		objP->lifeleft = (d_rand() + F1_0*3) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
+		objP->info.xLifeLeft = (d_rand() + F1_0*3) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
 		if (gameData.app.nGameMode & GM_MULTI)
-			objP->lifeleft /= 2;
+			objP->info.xLifeLeft /= 2;
 		break;
 	default:
 		//if (gameData.app.nGameMode & GM_MULTI)
-		//	objP->lifeleft = (d_rand() + F1_0*3) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
+		//	objP->info.xLifeLeft = (d_rand() + F1_0*3) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 		break;
 	}
 MultiSendWeapons (1);
@@ -123,7 +121,7 @@ seed = d_rand ();
 if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 	if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) && !IsBuiltInDevice (PLAYER_FLAGS_QUAD_LASERS)) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_QUAD_LASERS;
-		nObject = SpitPowerup (gameData.objs.console, POW_QUADLASER, seed);
+		nObject = SpitPowerup (gameData.objs.consoleP, POW_QUADLASER, seed);
 		if (nObject == -1) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 			return;
@@ -132,7 +130,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 		}
 	else if ((LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) && !IsBuiltInGun (SUPER_LASER_INDEX)) {
 		LOCALPLAYER.laserLevel--;
-		nObject = SpitPowerup (gameData.objs.console, POW_SUPERLASER, seed);
+		nObject = SpitPowerup (gameData.objs.consoleP, POW_SUPERLASER, seed);
 		if (nObject == -1) {
 			LOCALPLAYER.laserLevel++;
 			return;
@@ -145,7 +143,7 @@ else {
 		gameData.weapons.bTripleFusion = 0;
 	else if (gameData.weapons.nPrimary && !IsBuiltInGun (gameData.weapons.nPrimary)) {//if selected weapon was not the laser
 		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
-		nObject = SpitPowerup (gameData.objs.console, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);
+		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);
 		}
 	if (nObject == -1) {
 		if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
@@ -162,12 +160,12 @@ if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary ==
 		ammo /= 2;		//if both vulcan & gauss, drop half
 	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= ammo;
 	if (nObject != -1)
-		OBJECTS [nObject].cType.powerupInfo.count = ammo;
+		OBJECTS [nObject].cType.powerupInfo.nCount = ammo;
 	}
 if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 	//dropped weapon has current energy
 	if (nObject != -1)
-		OBJECTS [nObject].cType.powerupInfo.count = gameData.omega.xCharge [IsMultiGame];
+		OBJECTS [nObject].cType.powerupInfo.nCount = gameData.omega.xCharge [IsMultiGame];
 	}
 if (IsMultiGame) {
 	MultiSendDropWeapon (nObject, seed);
@@ -208,7 +206,7 @@ if (bMine)
 else
 	LOCALPLAYER.secondaryAmmo [nWeapon]--;
 seed = d_rand();
-nObject = SpitPowerup (gameData.objs.console, nPowerup, seed);
+nObject = SpitPowerup (gameData.objs.consoleP, nPowerup, seed);
 if (nObject == -1) {
 	if (bMine)
 		LOCALPLAYER.secondaryAmmo [nWeapon] += 4;

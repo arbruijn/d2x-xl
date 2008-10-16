@@ -135,19 +135,19 @@ tUVL [2].u =
 tUVL [2].v =
 tUVL [3].v = F1_0;
 
-v1 = gameData.objs.viewer->position.vPos + gameData.objs.viewer->position.mOrient [FVEC] * (F1_0*4);
-v1 += gameData.objs.viewer->position.mOrient [RVEC] * nEyeOffset;
-v2 = v1 + gameData.objs.viewer->position.mOrient [RVEC] * (-F1_0*1);
-v2 += gameData.objs.viewer->position.mOrient [UVEC] * (F1_0*1);
+v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient [FVEC] * (F1_0*4);
+v1 += gameData.objs.viewerP->info.position.mOrient [RVEC] * nEyeOffset;
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient [RVEC] * (-F1_0*1);
+v2 += gameData.objs.viewerP->info.position.mOrient [UVEC] * (F1_0*1);
 G3TransformAndEncodePoint(&reticlePoints [0], v2);
-v2 = v1 + gameData.objs.viewer->position.mOrient [RVEC] * (+F1_0*1);
-v2 += gameData.objs.viewer->position.mOrient [UVEC] * (F1_0*1);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient [RVEC] * (+F1_0*1);
+v2 += gameData.objs.viewerP->info.position.mOrient [UVEC] * (F1_0*1);
 G3TransformAndEncodePoint(&reticlePoints [1], v2);
-v2 = v1 + gameData.objs.viewer->position.mOrient [RVEC] * (+F1_0*1);
-v2 += gameData.objs.viewer->position.mOrient [UVEC] * (-F1_0*1);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient [RVEC] * (+F1_0*1);
+v2 += gameData.objs.viewerP->info.position.mOrient [UVEC] * (-F1_0*1);
 G3TransformAndEncodePoint(&reticlePoints [2], v2);
-v2 = v1 + gameData.objs.viewer->position.mOrient [RVEC] * (-F1_0*1);
-v2 += gameData.objs.viewer->position.mOrient [UVEC] * (-F1_0*1);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient [RVEC] * (-F1_0*1);
+v2 += gameData.objs.viewerP->info.position.mOrient [UVEC] * (-F1_0*1);
 G3TransformAndEncodePoint(&reticlePoints [3], v2);
 
 if ( reticleCanvas == NULL)	{
@@ -681,7 +681,7 @@ if (!(nWindow || gameStates.render.cameras.bActive) && (gameStates.render.nShado
 	return;
 #endif
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
-	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->nType == OBJ_PLAYER) {
+	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->info.nType == OBJ_PLAYER) {
 		// A nice fat hack: keeps the tPlayer ship from showing up in the
 		// small extra view when guiding a missile in the big tPortal
   		return;
@@ -690,24 +690,24 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 //	Added by MK on 09/07/94 (at about 5:28 pm, CDT, on a beautiful, sunny late summer day!) so
 //	that the guided missile system will know what OBJECTS to look at.
 //	I didn't know we had guided missiles before the release of D1. --MK
-nType = objP->nType;
+nType = objP->info.nType;
 if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
-	 ((nType == OBJ_WEAPON) && (WeaponIsPlayerMine (objP->id) || (gameData.objs.bIsMissile [objP->id] && EGI_FLAG (bKillMissiles, 0, 0, 0))))) {
+	 ((nType == OBJ_WEAPON) && (WeaponIsPlayerMine (objP->info.nId) || (gameData.objs.bIsMissile [objP->info.nId] && EGI_FLAG (bKillMissiles, 0, 0, 0))))) {
 	//Assert(windowRenderedData [nWindow].renderedObjects < MAX_RENDERED_OBJECTS);
 	//	This peculiar piece of code makes us keep track of the most recently rendered objects, which
 	//	are probably the higher priority objects, without overflowing the buffer
-	if (wrd->numObjects >= MAX_RENDERED_OBJECTS) {
+	if (wrd->nObjects >= MAX_RENDERED_OBJECTS) {
 		Int3();
-		wrd->numObjects /= 2;
+		wrd->nObjects /= 2;
 		}
-	wrd->renderedObjects [wrd->numObjects++] = nObject;
+	wrd->renderedObjects [wrd->nObjects++] = nObject;
 	}
-if ((count++ > MAX_OBJECTS) || (objP->next == nObject)) {
+if ((count++ > MAX_OBJECTS) || (objP->info.nNext == nObject)) {
 	Int3();					// infinite loop detected
-	objP->next = -1;		// won't this clean things up?
+	objP->info.nNext = -1;		// won't this clean things up?
 	return;					// get out of this infinite loop!
 	}
-	//g3_drawObject(objP->class_id, &objP->position.vPos, &objP->position.mOrient, objP->size);
+	//g3_drawObject(objP->class_id, &objP->info.position.vPos, &objP->info.position.mOrient, objP->info.xSize);
 	//check for editor tObject
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode == FMODE_EDITOR && nObject == CurObject_index) {
@@ -721,11 +721,11 @@ if (bSearchMode)
 	//NOTE LINK TO ABOVE
 if (RenderObject (objP, nWindow, 0))
 	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
-for (n = objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {
+for (n = objP->info.nAttachedObj; n != -1; n = hObj->cType.explInfo.attached.nNext) {
 	hObj = OBJECTS + n;
-	Assert (hObj->nType == OBJ_FIREBALL);
-	Assert (hObj->controlType == CT_EXPLOSION);
-	Assert (hObj->flags & OF_ATTACHED);
+	Assert (hObj->info.nType == OBJ_FIREBALL);
+	Assert (hObj->info.controlType == CT_EXPLOSION);
+	Assert (hObj->info.nFlags & OF_ATTACHED);
 	RenderObject (hObj, nWindow, 1);
 	}
 #ifdef EDITOR
@@ -1111,43 +1111,43 @@ void SetRenderView (fix nEyeOffset, short *pnStartSeg, int bOglScale)
 	static int bStopZoom;
 	short nStartSeg;
 
-gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
+gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
 if (nEyeOffset) {
-	gameData.render.mine.viewerEye += gameData.objs.viewer->position.mOrient [RVEC] * nEyeOffset;
+	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient [RVEC] * nEyeOffset;
 	}
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode == FMODE_EDITOR)
-	gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
+	gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
 #endif
 
 externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
-	nStartSeg = gameData.objs.viewer->nSegment;
-	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, bOglScale);
+	nStartSeg = gameData.objs.viewerP->info.nSegment;
+	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale);
 	}
 else {
 	if (!pnStartSeg)
 		nStartSeg = gameStates.render.nStartSeg;
 	else {
-		nStartSeg = FindSegByPos (gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0);
-		if (!gameStates.render.nWindow && (gameData.objs.viewer == gameData.objs.console)) {
-			SetPathPoint (&externalView, gameData.objs.viewer);
+		nStartSeg = FindSegByPos (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.nSegment, 1, 0);
+		if (!gameStates.render.nWindow && (gameData.objs.viewerP == gameData.objs.consoleP)) {
+			SetPathPoint (&externalView, gameData.objs.viewerP);
 			if (nStartSeg == -1)
-				nStartSeg = gameData.objs.viewer->nSegment;
+				nStartSeg = gameData.objs.viewerP->info.nSegment;
 			}
 		}
-	if ((gameData.objs.viewer == gameData.objs.console) && viewInfo.bUsePlayerHeadAngles) {
+	if ((gameData.objs.viewerP == gameData.objs.consoleP) && viewInfo.bUsePlayerHeadAngles) {
 		vmsMatrix mHead, mView;
 		mHead = vmsMatrix::Create(viewInfo.playerHeadAngles);
 		// TODO MM
-		mView = gameData.objs.viewer->position.mOrient * mHead;
+		mView = gameData.objs.viewerP->info.position.mOrient * mHead;
 		G3SetViewMatrix(gameData.render.mine.viewerEye, mView, gameStates.render.xZoom, bOglScale);
 		}
-	else if (gameStates.render.bRearView && (gameData.objs.viewer == gameData.objs.console)) {
+	else if (gameStates.render.bRearView && (gameData.objs.viewerP == gameData.objs.consoleP)) {
 #if 1
 		vmsMatrix mView;
 
-		mView = gameData.objs.viewer->position.mOrient;
+		mView = gameData.objs.viewerP->info.position.mOrient;
 		mView [FVEC].Neg();
 		mView [RVEC].Neg();
 #else
@@ -1157,12 +1157,12 @@ else {
 		viewInfo.playerHeadAngles [BA] = 0x7fff;
 		viewInfo.playerHeadAngles [HA] = 0x7fff;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
-		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
+		VmMatMul (&mView, &gameData.objs.viewerP->info.position.mOrient, &mHead);
 #endif
 		G3SetViewMatrix(gameData.render.mine.viewerEye, mView,  //gameStates.render.xZoom, bOglScale);
 							  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
 		}
-	else if ((gameData.objs.viewer == gameData.objs.console) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
+	else if ((gameData.objs.viewerP == gameData.objs.consoleP) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
 		gameStates.render.nMinZoomFactor = (fix) (F1_0 * gameStates.render.glAspect); //(((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 * F1_0  / 3 : F1_0) * glAspect);
 		gameStates.render.nMaxZoomFactor = gameStates.render.nMinZoomFactor * 5;
 		if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary != GAUSS_INDEX))
@@ -1198,7 +1198,7 @@ else {
 					break;
 				}
 			}
-		if ((gameData.objs.viewer == gameData.objs.console) &&
+		if ((gameData.objs.viewerP == gameData.objs.consoleP) &&
 #if DBG
 			 gameStates.render.bExternalView) {
 #else
@@ -1206,15 +1206,15 @@ else {
 #endif
 			GetViewPoint ();
 			G3SetViewMatrix(gameData.render.mine.viewerEye,
-								  externalView.pPos ? externalView.pPos->mOrient : gameData.objs.viewer->position.mOrient,
+								  externalView.pPos ? externalView.pPos->mOrient : gameData.objs.viewerP->info.position.mOrient,
 								  gameStates.render.xZoom, bOglScale);
 			}
 		else
-			G3SetViewMatrix(gameData.render.mine.viewerEye, gameData.objs.viewer->position.mOrient,
+			G3SetViewMatrix(gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
 								  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
 		}
 	else
-		G3SetViewMatrix(gameData.render.mine.viewerEye, gameData.objs.viewer->position.mOrient,
+		G3SetViewMatrix(gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
 							  gameStates.render.xZoom, bOglScale);
 	}
 if (pnStartSeg)
@@ -1290,12 +1290,12 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0)) {
    if (!gameStates.render.nRenderingType)
    	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
    if (gameStates.render.nRenderingType != 255)
-   	NDRecordViewerObject (gameData.objs.viewer);
+   	NDRecordViewerObject (gameData.objs.viewerP);
 	}
 #endif
 
 //PrintLog ("StartLightingFrame\n");
-StartLightingFrame (gameData.objs.viewer);		//this is for ugly light-smoothing hack
+StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
 gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 if (!nWindow)
 	gameData.render.dAspect = (double) grdCurCanv->cvBitmap.bmProps.w / (double) grdCurCanv->cvBitmap.bmProps.h;
@@ -1393,10 +1393,10 @@ int nFirstTerminalSeg;
 void UpdateRenderedData (int nWindow, tObject *viewer, int rearViewFlag, int user)
 {
 	Assert(nWindow < MAX_RENDERED_WINDOWS);
-	windowRenderedData [nWindow].frame = gameData.app.nFrameCount;
-	windowRenderedData [nWindow].viewer = viewer;
-	windowRenderedData [nWindow].rearView = rearViewFlag;
-	windowRenderedData [nWindow].user = user;
+	windowRenderedData [nWindow].nFrame = gameData.app.nFrameCount;
+	windowRenderedData [nWindow].viewerP = viewer;
+	windowRenderedData [nWindow].bRearView = rearViewFlag;
+	windowRenderedData [nWindow].nUser = user;
 }
 
 //------------------------------------------------------------------------------
@@ -1408,7 +1408,7 @@ void AddObjectToSegList (short nObject, short nSegment)
 pi->nNextItem = gameData.render.mine.renderObjs.ref [nSegment];
 gameData.render.mine.renderObjs.ref [nSegment] = gameData.render.mine.renderObjs.nUsed++;
 pi->nObject = nObject;
-pi->xDist = vmsVector::Dist (OBJECTS [nObject].position.vPos, gameData.render.mine.viewerEye);
+pi->xDist = vmsVector::Dist (OBJECTS [nObject].info.position.vPos, gameData.render.mine.viewerEye);
 }
 
 //------------------------------------------------------------------------------
@@ -1434,14 +1434,14 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = objP->next) {
+	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = objP->info.nNext) {
 		objP = OBJECTS + nObject;
-		Assert (objP->nSegment == nSegment);
-		if (objP->flags & OF_ATTACHED)
+		Assert (objP->info.nSegment == nSegment);
+		if (objP->info.nFlags & OF_ATTACHED)
 			continue;		//ignore this tObject
 		nNewSeg = nSegment;
-		if ((objP->nType != OBJ_REACTOR) && ((objP->nType != OBJ_ROBOT) || (objP->id == 65))) { //don't migrate controlcen
-			mask = GetSegMasks (OBJPOS (objP)->vPos, nNewSeg, objP->size);
+		if ((objP->info.nType != OBJ_REACTOR) && ((objP->info.nType != OBJ_ROBOT) || (objP->info.nId == 65))) { //don't migrate controlcen
+			mask = GetSegMasks (OBJPOS (objP)->vPos, nNewSeg, objP->info.xSize);
 			if (mask.sideMask) {
 				for (nSide = 0, sideFlag = 1; nSide < 6; nSide++, sideFlag <<= 1) {
 					if (!(mask.sideMask & sideFlag))
@@ -1566,7 +1566,7 @@ if (!RENDERPATH) {
 void CalcRenderDepth (void)
 {
 vmsVector vCenter;
-G3TransformPoint(vCenter, *SEGMENT_CENTER_I(gameData.objs.viewer->nSegment), 0);
+G3TransformPoint(vCenter, *SEGMENT_CENTER_I(gameData.objs.viewerP->info.nSegment), 0);
 vmsVector v;
 G3TransformPoint(v, gameData.segs.vMin, 0);
 fix d1 = vmsVector::Dist(v, vCenter);
@@ -1575,7 +1575,7 @@ fix d2 = vmsVector::Dist(v, vCenter);
 
 if (d1 < d2)
 	d1 = d2;
-fix r = gameData.segs.segRads [1] [gameData.objs.viewer->nSegment];
+fix r = gameData.segs.segRads [1] [gameData.objs.viewerP->info.nSegment];
 gameData.render.zMin = 0;
 gameData.render.zMax = vCenter [Z] + d1 + r;
 }
@@ -1961,7 +1961,7 @@ PROF_START
 
 if (!nWindow)
 	GetPlayerMslLock ();
-windowRenderedData [nWindow].numObjects = 0;
+windowRenderedData [nWindow].nObjects = 0;
 #ifdef LASER_HACK
 nHackLasers = 0;
 #endif
@@ -2040,7 +2040,7 @@ gameStates.ogl.bScaleLight = 0;
 gameStates.render.bUseCameras = USE_CAMERAS;
 renderItems.nItems = 0;
 PROF_END(ptAux);
-return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ_ROBOT);
+return !gameStates.render.cameras.bActive && (gameData.objs.viewerP->info.nType != OBJ_ROBOT);
 }
 
 //------------------------------------------------------------------------------
@@ -2052,7 +2052,7 @@ void RenderSkyBoxObjects (void)
 
 gameStates.render.nType = 1;
 for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++)
-	for (nObject = gameData.segs.objects [*segP]; nObject != -1; nObject = OBJECTS [nObject].next)
+	for (nObject = gameData.segs.objects [*segP]; nObject != -1; nObject = OBJECTS [nObject].info.nNext)
 		DoRenderObject (nObject, gameStates.render.nWindow);
 }
 
@@ -2291,8 +2291,8 @@ void RenderObjectSearch(tObject *objP)
 		changed=1;
 
 	if (changed) {
-		if (objP->nSegment != -1)
-			Cursegp = gameData.segs.segments+objP->nSegment;
+		if (objP->info.nSegment != -1)
+			Cursegp = gameData.segs.segments+objP->info.nSegment;
 		found_seg = -(OBJ_IDX (objP)+1);
 	}
 }

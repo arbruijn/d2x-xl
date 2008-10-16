@@ -521,7 +521,7 @@ doMenu:
 
    //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
 mpParams.nReactorLife = m [optReactorLife].value;
-netGame.control_invulTime = mpParams.nReactorLife * 5 * F1_0 * 60;
+netGame.controlInvulTime = mpParams.nReactorLife * 5 * F1_0 * 60;
 
 if (i == optSetPower) {
 	NetworkSetWeaponsAllowed ();
@@ -1498,7 +1498,7 @@ if (gameStates.app.bNostalgia) {
 	}
 netGame.szMissionName [sizeof (netGame.szMissionName) - 1] = '\0';
 strcpy (netGame.szMissionTitle, gameData.missions.list [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0));
-netGame.control_invulTime = mpParams.nReactorLife * 5 * F1_0 * 60;
+netGame.controlInvulTime = mpParams.nReactorLife * 5 * F1_0 * 60;
 IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
 return key;
 }
@@ -1630,8 +1630,8 @@ doMenu:
 		}
 	
 		netGame.teamVector = teamVector;
-		strcpy (netGame.team_name [0], team_names [0]);
-		strcpy (netGame.team_name [1], team_names [1]);
+		strcpy (netGame.szTeamName [0], team_names [0]);
+		strcpy (netGame.szTeamName [1], team_names [1]);
 		return 1;
 	}
 

@@ -223,7 +223,7 @@ TryNextChannel:
 	SoundSlots[slot].length = Sounddat(nSound)->length;
 	SoundSlots[slot].volume = FixMul(gameStates.sound.digi.nVolume, volume);
 	SoundSlots[slot].pan = pan;
-	SoundSlots[slot].position.vPosition = 0;
+	SoundSlots[slot].info.position.vPosition = 0;
 	SoundSlots[slot].looped = 0;
 	SoundSlots[slot].playing = 1;
 

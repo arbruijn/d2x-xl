@@ -71,12 +71,12 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 ();
 	return 0;
 	}
-else if (objP->nType != OBJ_ROBOT) {
+else if (objP->info.nType != OBJ_ROBOT) {
 	Int3 ();
 	return 0;
 	}
 #endif
-else if (ROBOTINFO (objP->id).bossFlag) {
+else if (ROBOTINFO (objP->info.nId).bossFlag) {
 	int i = FindBoss (nObject);
 	if ((i >= 0) && gameData.boss [i].nDying == 1)
 		return 0;
@@ -143,11 +143,8 @@ if (gameData.app.nGameMode & GM_MULTI_ROBOTS) {
 		for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 			MultiDeleteControlledRobot (gameData.multigame.robots.controlled [i]);
 	for (i = 1; i <= gameData.objs.nLastObject [0]; i++)
-		if ((OBJECTS [i].nType == OBJ_ROBOT) && 
+		if ((OBJECTS [i].info.nType == OBJ_ROBOT) && 
 			 (OBJECTS [i].cType.aiInfo.REMOTE_OWNER == playernum)) {
-			Assert ((OBJECTS [i].controlType == CT_AI) || 
-				    (OBJECTS [i].controlType == CT_NONE) || 
-					 (OBJECTS [i].controlType == CT_MORPH));
 			OBJECTS [i].cType.aiInfo.REMOTE_OWNER = -1;
 			if (playernum == gameData.multiplayer.nLocalPlayer)
 				OBJECTS [i].cType.aiInfo.REMOTE_SLOT_NUM = 4;
@@ -179,14 +176,14 @@ int MultiAddControlledRobot (int nObject, int agitation)
 	int lowest_agitated_bot = -1;
 	int first_freeRobot = -1;
 
-if (ROBOTINFO (OBJECTS [nObject].id).bossFlag) // this is a boss, so make sure he gets a slot
+if (ROBOTINFO (OBJECTS [nObject].info.nId).bossFlag) // this is a boss, so make sure he gets a slot
 	agitation= (agitation*3)+gameData.multiplayer.nLocalPlayer;  
 if (OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM > 0) {
 	OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM -= 1;
 	return 0;
 	}
 for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
-	if ((gameData.multigame.robots.controlled [i] == -1) || (OBJECTS [gameData.multigame.robots.controlled [i]].nType != OBJ_ROBOT)) {
+	if ((gameData.multigame.robots.controlled [i] == -1) || (OBJECTS [gameData.multigame.robots.controlled [i]].info.nType != OBJ_ROBOT)) {
 		first_freeRobot = i;
 		break;
 		}
@@ -257,7 +254,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
-if (OBJECTS [nObject].nType != OBJ_ROBOT) {
+if (OBJECTS [nObject].info.nType != OBJ_ROBOT) {
 	Int3 (); // See rob
 	return;
 	}
@@ -281,7 +278,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
-if (OBJECTS [nObject].nType != OBJ_ROBOT) {
+if (OBJECTS [nObject].info.nType != OBJ_ROBOT) {
 	Int3 (); // See rob
 	return;
 	}
@@ -368,7 +365,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
-if (OBJECTS [nObject].nType != OBJ_ROBOT) {
+if (OBJECTS [nObject].info.nType != OBJ_ROBOT) {
 	Int3 (); // See rob
 	return;
 	}
@@ -483,7 +480,7 @@ gameData.multigame.msg.buf [bufP++] = (sbyte)secondary;  // More info for what h
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nObject);                  
 bufP += 2; // Objnum of tObject created by gate-in action
 if (action == 3) {
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, OBJECTS [nObject].nSegment); 
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, OBJECTS [nObject].info.nSegment); 
 	bufP += 2; // Segment number tObject created in (for gate only)
 	}
 else 
@@ -519,21 +516,21 @@ void MultiSendCreateRobotPowerups (tObject *delObjP)
 gameData.multigame.msg.buf [bufP++] = MULTI_CREATE_ROBOT_POWERUPS;			
 gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.nLocalPlayer;			
 hBufP = bufP++;
-gameData.multigame.msg.buf [bufP++] = delObjP->containsType; 				
-gameData.multigame.msg.buf [bufP++] = delObjP->containsId;					
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, delObjP->nSegment);		        
+gameData.multigame.msg.buf [bufP++] = delObjP->info.contains.nType; 				
+gameData.multigame.msg.buf [bufP++] = delObjP->info.contains.nId;					
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, delObjP->info.nSegment);		        
 bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf + bufP, &delObjP->position.vPos, sizeof (vmsVector));
+memcpy (gameData.multigame.msg.buf + bufP, &delObjP->info.position.vPos, sizeof (vmsVector));
 #else
-vSwapped[X] = (fix)INTEL_INT ((int) delObjP->position.vPos[X]);
-vSwapped[Y] = (fix)INTEL_INT ((int) delObjP->position.vPos[Y]);
-vSwapped[Z] = (fix)INTEL_INT ((int) delObjP->position.vPos[Z]);
+vSwapped[X] = (fix)INTEL_INT ((int) delObjP->info.position.vPos[X]);
+vSwapped[Y] = (fix)INTEL_INT ((int) delObjP->info.position.vPos[Y]);
+vSwapped[Z] = (fix)INTEL_INT ((int) delObjP->info.position.vPos[Z]);
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (vmsVector));     
 #endif
 bufP += 12;
 gameData.multigame.create.nLoc = 0;
-for (nContained = delObjP->containsCount; nContained; nContained -= h) {
+for (nContained = delObjP->info.contains.nCount; nContained; nContained -= h) {
 	h = (nContained > MAX_ROBOT_POWERUPS) ? MAX_ROBOT_POWERUPS : nContained;
 	gameData.multigame.msg.buf [hBufP] = h;
 	memset (gameData.multigame.msg.buf + bufP, -1, MAX_ROBOT_POWERUPS * sizeof (short));
@@ -557,7 +554,7 @@ nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [4]);
 if ((nRobot > gameData.objs.nLastObject [0]) || (nRobot < 0))
 //		Int3 (); // See rob
 	return;
-if (OBJECTS [nRobot].nType != OBJ_ROBOT)
+if (OBJECTS [nRobot].info.nType != OBJ_ROBOT)
 	return;
 if (OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER != -1)
 	if (MULTI_ROBOT_PRIORITY (nRemoteBot, nPlayer) <= MULTI_ROBOT_PRIORITY (nRemoteBot, OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER))
@@ -580,7 +577,7 @@ nRemoteBot = GET_INTEL_SHORT (buf + 2);
 nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [4]);
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
-if (OBJECTS [nRobot].nType != OBJ_ROBOT)
+if (OBJECTS [nRobot].info.nType != OBJ_ROBOT)
 	return;
 if (OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER != nPlayer)
 	return;
@@ -606,8 +603,8 @@ nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [bufP+2]);
 bufP += 3;
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
-if ((OBJECTS [nRobot].nType != OBJ_ROBOT) || 
-	 (OBJECTS [nRobot].flags & OF_EXPLODING)) 
+if ((OBJECTS [nRobot].info.nType != OBJ_ROBOT) || 
+	 (OBJECTS [nRobot].info.nFlags & OF_EXPLODING)) 
 	return;
 if (OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER != nPlayer) {
 	if (OBJECTS [nRobot].cType.aiInfo.REMOTE_OWNER != -1)
@@ -653,16 +650,16 @@ vFire[X] = (fix)INTEL_INT ((int)vFire[X]);
 vFire[Y] = (fix)INTEL_INT ((int)vFire[Y]);
 vFire[Z] = (fix)INTEL_INT ((int)vFire[Z]);
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]) || 
-		 (OBJECTS [nRobot].nType != OBJ_ROBOT) || 
-		 (OBJECTS [nRobot].flags & OF_EXPLODING))
+		 (OBJECTS [nRobot].info.nType != OBJ_ROBOT) || 
+		 (OBJECTS [nRobot].info.nFlags & OF_EXPLODING))
 	return;
 // Do the firing
 if (nGun == -1 || nGun==-2)
 	// Drop proximity bombs
-	vGunPoint = OBJECTS [nRobot].position.vPos + vFire;
+	vGunPoint = OBJECTS [nRobot].info.position.vPos + vFire;
 else 
 	CalcGunPoint (&vGunPoint, &OBJECTS [nRobot], nGun);
-robotP = &ROBOTINFO (OBJECTS [nRobot].id);
+robotP = &ROBOTINFO (OBJECTS [nRobot].info.nId);
 if (nGun == -1) 
 	CreateNewLaserEasy (&vFire, &vGunPoint, nRobot, PROXMINE_ID, 1);
 else if (nGun == -2)
@@ -683,19 +680,19 @@ if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0])) { // Objnum in ran
 	Int3 (); // See rob
 	return 0;
 	}
-if (OBJECTS [nRobot].nType != OBJ_ROBOT) // Object is robotP?
+if (OBJECTS [nRobot].info.nType != OBJ_ROBOT) // Object is robotP?
 	return 0;
-	if (OBJECTS [nRobot].flags & OF_EXPLODING) // Object not already exploding
+	if (OBJECTS [nRobot].info.nFlags & OF_EXPLODING) // Object not already exploding
 		return 0;
 // Data seems valid, explode the sucker
 NetworkResetObjSync (nRobot);
 robotP = OBJECTS + nRobot;
 // Drop non-Random KEY powerups locally only!
-if ((robotP->containsCount > 0) && 
-	 (robotP->containsType == OBJ_POWERUP) && 
+if ((robotP->info.contains.nCount > 0) && 
+	 (robotP->info.contains.nType == OBJ_POWERUP) && 
 	 (gameData.app.nGameMode & GM_MULTI_COOP) && 
-	 (robotP->containsId >= POW_KEY_BLUE) && 
-	 (robotP->containsId <= POW_KEY_GOLD))
+	 (robotP->info.contains.nId >= POW_KEY_BLUE) && 
+	 (robotP->info.contains.nId <= POW_KEY_GOLD))
 	ObjectCreateEgg (robotP);
 else if (robotP->cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
 	MultiDropRobotPowerups (OBJ_IDX (robotP));
@@ -705,20 +702,20 @@ else if (robotP->cType.aiInfo.REMOTE_OWNER == -1 && NetworkIAmMaster ()) {
 	MultiDropRobotPowerups (OBJ_IDX (robotP));
 	//MultiDeleteControlledRobot (OBJ_IDX (robotP));
 	}
-if (bIsThief || ROBOTINFO (robotP->id).thief)
+if (bIsThief || ROBOTINFO (robotP->info.nId).thief)
 	DropStolenItems (robotP);
-if (ROBOTINFO (robotP->id).bossFlag) {
+if (ROBOTINFO (robotP->info.nId).bossFlag) {
 	int i = FindBoss (nRobot);
 	if ((i >= 0) && gameData.boss [i].nDying)
 		return 0;
 	StartBossDeathSequence (robotP);
 	}
-else if (ROBOTINFO (robotP->id).bDeathRoll)
+else if (ROBOTINFO (robotP->info.nId).bDeathRoll)
 	StartRobotDeathSequence (robotP);
 else {
-	if (robotP->id == SPECIAL_REACTOR_ROBOT)
+	if (robotP->info.nId == SPECIAL_REACTOR_ROBOT)
 		SpecialReactorStuff ();
-	if (ROBOTINFO (robotP->id).kamikaze)
+	if (ROBOTINFO (robotP->info.nId).kamikaze)
 		ExplodeObject (robotP,1);	//	Kamikaze, explode right away, IN YOUR FACE!
 	else
 		ExplodeObject (robotP,STANDARD_EXPL_DELAY);
@@ -748,7 +745,7 @@ if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
 rval = MultiExplodeRobotSub (nRobot, nKiller,thief);
 if (rval && (nKiller == LOCALPLAYER.nObject))
-	AddPointsToScore (ROBOTINFO (OBJECTS [nRobot].id).scoreValue);
+	AddPointsToScore (ROBOTINFO (OBJECTS [nRobot].info.nId).scoreValue);
 }
 
 //-----------------------------------------------------------------------------
@@ -776,7 +773,7 @@ robotcen = gameData.matCens.fuelCenters + nFuelCen;
 COMPUTE_SEGMENT_CENTER_I (&curObject_loc, robotcen->nSegment);
 objP = ObjectCreateExplosion ((short) robotcen->nSegment, &curObject_loc, I2X (10), VCLIP_MORPHING_ROBOT);
 if (objP)
-	ExtractOrientFromSegment (&objP->position.mOrient, &gameData.segs.segments [robotcen->nSegment]);
+	ExtractOrientFromSegment (&objP->info.position.mOrient, &gameData.segs.segments [robotcen->nSegment]);
 if (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound > -1)
 	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotcen->nSegment, 0, &curObject_loc, 0, F1_0);
 // Set robot center flags, in case we become the master for the next one
@@ -785,11 +782,11 @@ robotcen->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
 robotcen->xTimer = 0;
 if (! (objP = CreateMorphRobot (gameData.segs.segments + robotcen->nSegment, &curObject_loc, nType)))
 	return; // Cannot create tObject!
-objP->matCenCreator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80;
-//	ExtractOrientFromSegment (&objP->position.mOrient, &gameData.segs.segments [robotcen->nSegment]);
-direction = gameData.objs.console->position.vPos - objP->position.vPos;
-objP->position.mOrient = vmsMatrix::CreateFU(direction, objP->position.mOrient[UVEC]);
-//objP->position.mOrient = vmsMatrix::CreateFU(direction, &objP->position.mOrient[UVEC], NULL);
+objP->info.nCreator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80;
+//	ExtractOrientFromSegment (&objP->info.position.mOrient, &gameData.segs.segments [robotcen->nSegment]);
+direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
+objP->info.position.mOrient = vmsMatrix::CreateFU(direction, objP->info.position.mOrient[UVEC]);
+//objP->info.position.mOrient = vmsMatrix::CreateFU(direction, &objP->info.position.mOrient[UVEC], NULL);
 MorphStart (objP);
 MapObjnumLocalToRemote (OBJ_IDX (objP), nObject, nPlayer);
 Assert (objP->cType.aiInfo.REMOTE_OWNER == -1);
@@ -826,7 +823,7 @@ nBossIdx = FindBoss (nBossObj);
 if (nBossIdx < 0)
 	return;
 bossObjP = OBJECTS + nBossObj;
-if ((bossObjP->nType != OBJ_ROBOT) || !(ROBOTINFO (bossObjP->id).bossFlag)) {
+if ((bossObjP->info.nType != OBJ_ROBOT) || !(ROBOTINFO (bossObjP->info.nId).bossFlag)) {
 	Int3 (); // Got boss actions for a robot who's not a boss?
 	return;
 	}
@@ -845,17 +842,17 @@ switch (action)  {
 			Int3 ();  // See Rob
 			return;
 			}
-		COMPUTE_SEGMENT_CENTER_I (&bossObjP->position.vPos, nTeleportSeg);
+		COMPUTE_SEGMENT_CENTER_I (&bossObjP->info.position.vPos, nTeleportSeg);
 		RelinkObject (nBossObj, nTeleportSeg);
 		gameData.boss [nBossIdx].nLastTeleportTime = gameData.time.xGame;
-		vBossDir = OBJECTS [gameData.multiplayer.players [nPlayer].nObject].position.vPos - bossObjP->position.vPos;
+		vBossDir = OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.position.vPos - bossObjP->info.position.vPos;
 /*
-		bossObjP->position.mOrient = vmsMatrix::Create(vBossDir, NULL, NULL);
+		bossObjP->info.position.mOrient = vmsMatrix::Create(vBossDir, NULL, NULL);
 */
 		// TODO: MatrixCreateFCheck
-		bossObjP->position.mOrient = vmsMatrix::CreateF(vBossDir);
+		bossObjP->info.position.mOrient = vmsMatrix::CreateF(vBossDir);
 
-		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, &bossObjP->position.vPos, 0 , F1_0);
+		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, &bossObjP->info.position.vPos, 0 , F1_0);
 		DigiKillSoundLinkedToObject (OBJ_IDX (bossObjP));
 		DigiLinkSoundToObject2 (SOUND_BOSS_SHARE_SEE, OBJ_IDX (bossObjP), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
 		gameData.ai.localInfo [OBJ_IDX (bossObjP)].nextPrimaryFire = 0;
@@ -910,17 +907,17 @@ void MultiDoCreateRobotPowerups (char *buf)
 	short		s;
 
 nPlayer = buf [bufP++];									
-delObjP.containsCount = buf [bufP++];					
-delObjP.containsType = buf [bufP++];					
-delObjP.containsId = buf [bufP++]; 					
-delObjP.nSegment = GET_INTEL_SHORT (buf + bufP);            
+delObjP.info.contains.nCount = buf [bufP++];					
+delObjP.info.contains.nType = buf [bufP++];					
+delObjP.info.contains.nId = buf [bufP++]; 					
+delObjP.info.nSegment = GET_INTEL_SHORT (buf + bufP);            
 bufP += 2;
-memcpy (&delObjP.position.vPos, buf+bufP, sizeof (vmsVector));      
+memcpy (&delObjP.info.position.vPos, buf+bufP, sizeof (vmsVector));      
 bufP += 12;
 delObjP.mType.physInfo.velocity.SetZero();
-delObjP.position.vPos[X] = (fix)INTEL_INT ((int)delObjP.position.vPos[X]);
-delObjP.position.vPos[Y] = (fix)INTEL_INT ((int)delObjP.position.vPos[Y]);
-delObjP.position.vPos[Z] = (fix)INTEL_INT ((int)delObjP.position.vPos[Z]);
+delObjP.info.position.vPos [X] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [X]);
+delObjP.info.position.vPos [Y] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [Y]);
+delObjP.info.position.vPos [Z] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [Z]);
 Assert ((nPlayer >= 0) && (nPlayer < gameData.multiplayer.nPlayers));
 Assert (nPlayer != gameData.multiplayer.nLocalPlayer); // What? How'd we send ourselves this?
 gameData.multigame.create.nLoc = 0;
@@ -954,26 +951,26 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	return;
 	}
 delObjP = &OBJECTS [nObject];
-if (delObjP->nType != OBJ_ROBOT) {
+if (delObjP->info.nType != OBJ_ROBOT) {
 	Int3 (); // dropping powerups for non-robot, Rob's fault
 	return;
 	}
-robotP = &ROBOTINFO (delObjP->id);
+robotP = &ROBOTINFO (delObjP->info.nId);
 gameData.multigame.create.nLoc = 0;
-if (delObjP->containsCount > 0) { 
+if (delObjP->info.contains.nCount > 0) { 
 	//	If dropping a weapon that the tPlayer has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
-	if (delObjP->containsType == OBJ_POWERUP) {
+	if (delObjP->info.contains.nType == OBJ_POWERUP) {
 		MaybeReplacePowerupWithEnergy (delObjP);
-		if (!MultiPowerupIsAllowed (delObjP->containsId))
-			delObjP->containsId=POW_SHIELD_BOOST;
+		if (!MultiPowerupIsAllowed (delObjP->info.contains.nId))
+			delObjP->info.contains.nId=POW_SHIELD_BOOST;
 		// No key drops in non-coop games!
 		if (! (gameData.app.nGameMode & GM_MULTI_COOP)) {
-			if ((delObjP->containsId >= POW_KEY_BLUE) && (delObjP->containsId <= POW_KEY_GOLD))
-				delObjP->containsCount = 0;
+			if ((delObjP->info.contains.nId >= POW_KEY_BLUE) && (delObjP->info.contains.nId <= POW_KEY_GOLD))
+				delObjP->info.contains.nCount = 0;
 			}
 		}
 	d_srand (1245L);
-	if (delObjP->containsCount > 0)
+	if (delObjP->info.contains.nCount > 0)
 		nEggObj = ObjectCreateEgg (delObjP);
 	}
 else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No Random goodies for robots we weren't in control of
@@ -981,16 +978,16 @@ else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No Random goodies for robo
 else if (robotP->containsCount) {
 	d_srand (TimerGetApproxSeconds ());
 	if (((d_rand () * 16) >> 15) < robotP->containsProb) {
-		delObjP->containsCount = ((d_rand () * robotP->containsCount) >> 15) + 1;
-		delObjP->containsType = robotP->containsType;
-		delObjP->containsId = robotP->containsId;
-		if (delObjP->containsType == OBJ_POWERUP) {
+		delObjP->info.contains.nCount = ((d_rand () * robotP->containsCount) >> 15) + 1;
+		delObjP->info.contains.nType = robotP->containsType;
+		delObjP->info.contains.nId = robotP->containsId;
+		if (delObjP->info.contains.nType == OBJ_POWERUP) {
 			MaybeReplacePowerupWithEnergy (delObjP);
-			if (!MultiPowerupIsAllowed (delObjP->containsId))
-				delObjP->containsId=POW_SHIELD_BOOST;
+			if (!MultiPowerupIsAllowed (delObjP->info.contains.nId))
+				delObjP->info.contains.nId=POW_SHIELD_BOOST;
 			 }
 		d_srand (1245L);
-		if (delObjP->containsCount > 0)
+		if (delObjP->info.contains.nCount > 0)
 			nEggObj = ObjectCreateEgg (delObjP);
 		}
 	}

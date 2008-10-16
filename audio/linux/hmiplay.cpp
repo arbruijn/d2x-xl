@@ -670,9 +670,9 @@ void play_hmi (void * arg)
 	
 		for(i=0;i<n_chunks;i++)
 		{
-			t_info[i].position.vPosition = pos + 12;
+			t_info[i].info.position.vPosition = pos + 12;
 			t_info[i].status = PLAYING;
-			t_info[i].time = get_dtime(data,&t_info[i].position.vPosition);
+			t_info[i].time = get_dtime(data,&t_info[i].info.position.vPosition);
 			pos += (( (0xff & data[pos + 5]) << 8 ) + (0xff & data[pos + 4]);
 		}
 	
@@ -719,7 +719,7 @@ void play_hmi (void * arg)
 		
 			SEQ_WAIT_TIME(csec);
 		
-			t_info[low_chunk].status = do_track_event(data,&t_info[low_chunk].position.vPosition);
+			t_info[low_chunk].status = do_track_event(data,&t_info[low_chunk].info.position.vPosition);
 		
 			if (t_info[low_chunk].status == 3)
 			{
@@ -728,7 +728,7 @@ void play_hmi (void * arg)
 			}
 		
 			if (t_info[low_chunk].status == PLAYING)
-			  t_info[low_chunk].time += get_dtime(data,&t_info[low_chunk].position.vPosition);
+			  t_info[low_chunk].time += get_dtime(data,&t_info[low_chunk].info.position.vPosition);
 		
 			//Check if the song has reached the end
 			stop = t_info[0].status;

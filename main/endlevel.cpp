@@ -234,13 +234,13 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playbac
 	strcpy (szLastPaletteLoaded, "");		//force palette load next time
 	return;
 	}
-if (gameStates.app.bPlayerIsDead || (gameData.objs.console->flags & OF_SHOULD_BE_DEAD))
+if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SHOULD_BE_DEAD))
 	return;				//don't start if dead!
 //	Dematerialize Buddy!
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-	if (OBJECTS [i].nType == OBJ_ROBOT)
-		if (ROBOTINFO (OBJECTS [i].id).companion) {
-			ObjectCreateExplosion (OBJECTS [i].nSegment, &OBJECTS [i].position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
+	if (OBJECTS [i].info.nType == OBJ_ROBOT)
+		if (ROBOTINFO (OBJECTS [i].info.nId).companion) {
+			ObjectCreateExplosion (OBJECTS [i].info.nSegment, &OBJECTS [i].info.position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
 			KillObject (OBJECTS + i);
 		}
 LOCALPLAYER.homingObjectDist = -F1_0; // Turn off homing sound.
@@ -277,8 +277,8 @@ void StartRenderedEndLevelSequence (void)
 	int nSegment, nOldSeg, nEntrySide, i;
 
 //count segments in exit tunnel
-nOldSeg = gameData.objs.console->nSegment;
-nExitSide = FindExitSide (gameData.objs.console);
+nOldSeg = gameData.objs.consoleP->info.nSegment;
+nExitSide = FindExitSide (gameData.objs.consoleP);
 nSegment = gameData.segs.segments [nOldSeg].children [nExitSide];
 nTunnelLength = 0;
 do {
@@ -294,8 +294,8 @@ if (nSegment != -2) {
 	}
 nLastSeg = nOldSeg;
 //now pick transition nSegment 1/3 of the way in
-nOldSeg = gameData.objs.console->nSegment;
-nExitSide = FindExitSide (gameData.objs.console);
+nOldSeg = gameData.objs.consoleP->info.nSegment;
+nExitSide = FindExitSide (gameData.objs.consoleP);
 nSegment = gameData.segs.segments [nOldSeg].children [nExitSide];
 i = nTunnelLength / 3;
 while (i--) {
@@ -314,11 +314,11 @@ Assert (nLastSeg == gameData.endLevel.exit.nSegNum);
 if (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1)
 	SongsPlaySong (SONG_ENDLEVEL, 0);
 gameStates.app.bEndLevelSequence = EL_FLYTHROUGH;
-gameData.objs.console->movementType = MT_NONE;			//movement handled by flythrough
-gameData.objs.console->controlType = CT_NONE;
+gameData.objs.consoleP->info.movementType = MT_NONE;			//movement handled by flythrough
+gameData.objs.consoleP->info.controlType = CT_NONE;
 gameStates.app.bGameSuspended |= SUSP_ROBOTS;          //robots don't move
 gameData.endLevel.xCurFlightSpeed = gameData.endLevel.xDesiredFlightSpeed = FLY_SPEED;
-StartEndLevelFlyThrough (0, gameData.objs.console, gameData.endLevel.xCurFlightSpeed);		//initialize
+StartEndLevelFlyThrough (0, gameData.objs.consoleP, gameData.endLevel.xCurFlightSpeed);		//initialize
 HUDInitMessage (TXT_EXIT_SEQUENCE);
 gameStates.render.bOutsideMine = gameStates.render.bExtExplPlaying = 0;
 gameStates.render.nFlashScale = f1_0;
@@ -428,21 +428,21 @@ void DoEndLevelFrame (void)
 {
 	static fix timer;
 	static fix bank_rate;
-	vmsVector save_last_pos;
+	vmsVector vLastPosSave;
 	static fix explosion_wait1=0;
 	static fix explosion_wait2=0;
 	static fix ext_expl_halflife;
 
-save_last_pos = gameData.objs.console->vLastPos;	//don't let move code change this
+vLastPosSave = gameData.objs.consoleP->info.vLastPos;	//don't let move code change this
 UpdateAllObjects ();
-gameData.objs.console->vLastPos = save_last_pos;
+gameData.objs.consoleP->info.vLastPos = vLastPosSave;
 
 if (gameStates.render.bExtExplPlaying) {
-	externalExplosion.lifeleft -= gameData.time.xFrame;
+	externalExplosion.info.xLifeLeft -= gameData.time.xFrame;
 	DoExplosionSequence (&externalExplosion);
-	if (externalExplosion.lifeleft < ext_expl_halflife)
+	if (externalExplosion.info.xLifeLeft < ext_expl_halflife)
 		gameStates.gameplay.bMineDestroyed = 1;
-	if (externalExplosion.flags & OF_SHOULD_BE_DEAD)
+	if (externalExplosion.info.nFlags & OF_SHOULD_BE_DEAD)
 		gameStates.render.bExtExplPlaying = 0;
 	}
 
@@ -463,7 +463,7 @@ if (!gameStates.render.bOutsideMine) {
 	if (gameStates.app.bEndLevelSequence == EL_OUTSIDE) {
 		vmsVector tvec;
 
-		tvec = gameData.objs.console->position.vPos - gameData.endLevel.exit.vSideExit;
+		tvec = gameData.objs.consoleP->info.position.vPos - gameData.endLevel.exit.vSideExit;
 		if (vmsVector::Dot (tvec, gameData.endLevel.exit.mOrient [FVEC]) > 0) {
 			tObject *objP;
 			gameStates.render.bOutsideMine = 1;
@@ -472,7 +472,7 @@ if (!gameStates.render.bOutsideMine) {
 				externalExplosion = *objP;
 				KillObject (objP);
 				gameStates.render.nFlashScale = 0;	//kill lights in mine
-				ext_expl_halflife = objP->lifeleft;
+				ext_expl_halflife = objP->info.xLifeLeft;
 				gameStates.render.bExtExplPlaying = 1;
 				}
 			DigiLinkSoundToPos (SOUND_BIG_ENDLEVEL_EXPLOSION, gameData.endLevel.exit.nSegNum, 0, &gameData.endLevel.exit.vSideExit, 0, I2X (3)/4);
@@ -486,10 +486,10 @@ if (!gameStates.render.bOutsideMine) {
 		tObject		*expl;
 		static int	soundCount;
 
-		tpnt = gameData.objs.console->position.vPos + gameData.objs.console->position.mOrient [FVEC] * (-gameData.objs.console->size * 5);
-		tpnt += gameData.objs.console->position.mOrient [RVEC] * ((d_rand ()- RAND_MAX / 2) * 15);
-		tpnt += gameData.objs.console->position.mOrient [UVEC] * ((d_rand ()- RAND_MAX / 2) * 15);
-		nSegment = FindSegByPos (tpnt, gameData.objs.console->nSegment, 1, 0);
+		tpnt = gameData.objs.consoleP->info.position.vPos + gameData.objs.consoleP->info.position.mOrient [FVEC] * (-gameData.objs.consoleP->info.xSize * 5);
+		tpnt += gameData.objs.consoleP->info.position.mOrient [RVEC] * ((d_rand ()- RAND_MAX / 2) * 15);
+		tpnt += gameData.objs.consoleP->info.position.mOrient [UVEC] * ((d_rand ()- RAND_MAX / 2) * 15);
+		nSegment = FindSegByPos (tpnt, gameData.objs.consoleP->info.nSegment, 1, 0);
 		if (nSegment != -1) {
 			expl = ObjectCreateExplosion (nSegment, &tpnt, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (d_rand ()<10000 || ++soundCount==7) {		//pseudo-random
@@ -508,17 +508,17 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 		tFVIQuery fq;
 		tFVIData hit_data;
 		//create little explosion on tWall
-		tpnt = gameData.objs.console->position.mOrient [RVEC] * ((d_rand ()-RAND_MAX/2)*100);
-		tpnt += gameData.objs.console->position.mOrient [UVEC] * ((d_rand ()-RAND_MAX/2)*100);
-		tpnt += gameData.objs.console->position.vPos;
+		tpnt = gameData.objs.consoleP->info.position.mOrient [RVEC] * ((d_rand ()-RAND_MAX/2)*100);
+		tpnt += gameData.objs.consoleP->info.position.mOrient [UVEC] * ((d_rand ()-RAND_MAX/2)*100);
+		tpnt += gameData.objs.consoleP->info.position.vPos;
 		if (gameStates.app.bEndLevelSequence == EL_FLYTHROUGH)
-			tpnt += gameData.objs.console->position.mOrient [FVEC] * (d_rand ()*200);
+			tpnt += gameData.objs.consoleP->info.position.mOrient [FVEC] * (d_rand ()*200);
 		else
-			tpnt += gameData.objs.console->position.mOrient [FVEC] * (d_rand ()*60);
+			tpnt += gameData.objs.consoleP->info.position.mOrient [FVEC] * (d_rand ()*60);
 		//find hit point on tWall
-		fq.p0					= &gameData.objs.console->position.vPos;
+		fq.p0					= &gameData.objs.consoleP->info.position.vPos;
 		fq.p1					= &tpnt;
-		fq.startSeg			= gameData.objs.console->nSegment;
+		fq.startSeg			= gameData.objs.consoleP->info.nSegment;
 		fq.radP0				=
 		fq.radP1				= 0;
 		fq.thisObjNum		= 0;
@@ -536,18 +536,14 @@ switch (gameStates.app.bEndLevelSequence) {
 
 	case EL_FLYTHROUGH: {
 		DoEndLevelFlyThrough (0);
-		if (gameData.objs.console->nSegment == gameData.endLevel.exit.nTransitSegNum) {
+		if (gameData.objs.consoleP->info.nSegment == gameData.endLevel.exit.nTransitSegNum) {
 			if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
 					(StartEndLevelMovie () != MOVIE_NOT_PLAYED))
 				StopEndLevelSequence ();
 			else {
 				int nObject;
 				gameStates.app.bEndLevelSequence = EL_LOOKBACK;
-				nObject = tObject::Create (OBJ_CAMERA, 0, -1,
-												gameData.objs.console->nSegment,
-												gameData.objs.console->position.vPos,
-												gameData.objs.console->position.mOrient, 0,
-												CT_NONE, MT_NONE, RT_NONE, 1);
+				nObject = CreateCamera (gameData.objs.consoleP);
 				if (nObject == -1) { //can't get tObject, so abort
 #if TRACE
 					con_printf (1, "Can't get tObject for endlevel sequence.  Aborting endlevel sequence.\n");
@@ -555,14 +551,14 @@ switch (gameStates.app.bEndLevelSequence) {
 					StopEndLevelSequence ();
 					return;
 				}
-				gameData.objs.viewer = gameData.objs.endLevelCamera = OBJECTS + nObject;
+				gameData.objs.viewerP = gameData.objs.endLevelCamera = OBJECTS + nObject;
 				SelectCockpit (CM_LETTERBOX);
 				gameOpts->render.cockpit.bHUD = 0;	//will be restored by reading plr file when loading next level
 				exitFlightObjects [1] = exitFlightObjects [0];
 				exitFlightObjects [1].objP = gameData.objs.endLevelCamera;
 				exitFlightObjects [1].speed = (5 * gameData.endLevel.xCurFlightSpeed) / 4;
 				exitFlightObjects [1].offset_frac = 0x4000;
-				gameData.objs.endLevelCamera->position.vPos += gameData.objs.endLevelCamera->position.mOrient [FVEC] * (I2X (7));
+				gameData.objs.endLevelCamera->info.position.vPos += gameData.objs.endLevelCamera->info.position.mOrient [FVEC] * (I2X (7));
 				timer=0x20000;
 				}
 			}
@@ -577,16 +573,16 @@ switch (gameStates.app.bEndLevelSequence) {
 			if (timer < 0)		//reduce speed
 				exitFlightObjects [1].speed = exitFlightObjects [0].speed;
 			}
-		if (gameData.objs.endLevelCamera->nSegment == gameData.endLevel.exit.nSegNum) {
+		if (gameData.objs.endLevelCamera->info.nSegment == gameData.endLevel.exit.nSegNum) {
 			vmsAngVec cam_angles, exit_seg_angles;
 			gameStates.app.bEndLevelSequence = EL_OUTSIDE;
 			timer = I2X (2);
-			gameData.objs.endLevelCamera->position.mOrient [FVEC] = -gameData.objs.endLevelCamera->position.mOrient [FVEC];
-			gameData.objs.endLevelCamera->position.mOrient [RVEC] = -gameData.objs.endLevelCamera->position.mOrient [RVEC];
-			cam_angles = gameData.objs.endLevelCamera->position.mOrient.ExtractAnglesVec();
+			gameData.objs.endLevelCamera->info.position.mOrient [FVEC] = -gameData.objs.endLevelCamera->info.position.mOrient [FVEC];
+			gameData.objs.endLevelCamera->info.position.mOrient [RVEC] = -gameData.objs.endLevelCamera->info.position.mOrient [RVEC];
+			cam_angles = gameData.objs.endLevelCamera->info.position.mOrient.ExtractAnglesVec();
 			exit_seg_angles = gameData.endLevel.exit.mOrient.ExtractAnglesVec();
 			bank_rate = (-exit_seg_angles [BA] - cam_angles [BA])/2;
-			gameData.objs.console->controlType = gameData.objs.endLevelCamera->controlType = CT_NONE;
+			gameData.objs.consoleP->info.controlType = gameData.objs.endLevelCamera->info.controlType = CT_NONE;
 #ifdef SLEW_ON
 			slewObjP = gameData.objs.endLevelCamera;
 #endif
@@ -598,32 +594,32 @@ switch (gameStates.app.bEndLevelSequence) {
 #ifndef SLEW_ON
 		vmsAngVec cam_angles;
 #endif
-		gameData.objs.console->position.vPos += gameData.objs.console->position.mOrient [FVEC] * (FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed));
+		gameData.objs.consoleP->info.position.vPos += gameData.objs.consoleP->info.position.mOrient [FVEC] * (FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed));
 #ifndef SLEW_ON
-		gameData.objs.endLevelCamera->position.vPos +=
-							gameData.objs.endLevelCamera->position.mOrient [FVEC] *
+		gameData.objs.endLevelCamera->info.position.vPos +=
+							gameData.objs.endLevelCamera->info.position.mOrient [FVEC] *
 							(FixMul (gameData.time.xFrame, -2*gameData.endLevel.xCurFlightSpeed));
-		gameData.objs.endLevelCamera->position.vPos +=
-							gameData.objs.endLevelCamera->position.mOrient [UVEC] *
+		gameData.objs.endLevelCamera->info.position.vPos +=
+							gameData.objs.endLevelCamera->info.position.mOrient [UVEC] *
 							(FixMul (gameData.time.xFrame, -gameData.endLevel.xCurFlightSpeed/10));
-		cam_angles = gameData.objs.endLevelCamera->position.mOrient.ExtractAnglesVec();
+		cam_angles = gameData.objs.endLevelCamera->info.position.mOrient.ExtractAnglesVec();
 		cam_angles [BA] += (fixang) FixMul (bank_rate, gameData.time.xFrame);
-		gameData.objs.endLevelCamera->position.mOrient = vmsMatrix::Create (cam_angles);
+		gameData.objs.endLevelCamera->info.position.mOrient = vmsMatrix::Create (cam_angles);
 #endif
 		timer -= gameData.time.xFrame;
 		if (timer < 0) {
 			gameStates.app.bEndLevelSequence = EL_STOPPED;
-			vPlayerAngles = gameData.objs.console->position.mOrient.ExtractAnglesVec();
+			vPlayerAngles = gameData.objs.consoleP->info.position.mOrient.ExtractAnglesVec();
 			timer = I2X (3);
 			}
 		break;
 		}
 
 	case EL_STOPPED: {
-		GetAnglesToObject (&vPlayerDestAngles, &gameData.endLevel.station.vPos, &gameData.objs.console->position.vPos);
+		GetAnglesToObject (&vPlayerDestAngles, &gameData.endLevel.station.vPos, &gameData.objs.consoleP->info.position.vPos);
 		ChaseAngles (&vPlayerAngles, &vPlayerDestAngles);
-		gameData.objs.console->position.mOrient = vmsMatrix::Create (vPlayerAngles);
-		gameData.objs.console->position.vPos += gameData.objs.console->position.mOrient [FVEC] * (FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed));
+		gameData.objs.consoleP->info.position.mOrient = vmsMatrix::Create (vPlayerAngles);
+		gameData.objs.consoleP->info.position.vPos += gameData.objs.consoleP->info.position.mOrient [FVEC] * (FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed));
 		timer -= gameData.time.xFrame;
 		if (timer < 0) {
 #ifdef SLEW_ON
@@ -636,7 +632,7 @@ switch (gameStates.app.bEndLevelSequence) {
 			StopEndLevelSequence ();
 #	else
 			gameStates.app.bEndLevelSequence = EL_PANNING;
-			VmExtractAnglesMatrix (&vCurrentCameraAngles, &gameData.objs.endLevelCamera->position.mOrient);
+			VmExtractAnglesMatrix (&vCurrentCameraAngles, &gameData.objs.endLevelCamera->info.position.mOrient);
 			timer = I2X (3);
 			if (gameData.app.nGameMode & GM_MULTI) { // try to skip part of the seq if multiplayer
 				StopEndLevelSequence ();
@@ -652,22 +648,22 @@ switch (gameStates.app.bEndLevelSequence) {
 #ifndef SLEW_ON
 		int mask;
 #endif
-		GetAnglesToObject (&vPlayerDestAngles, &gameData.endLevel.station.vPos, &gameData.objs.console->position.vPos);
+		GetAnglesToObject (&vPlayerDestAngles, &gameData.endLevel.station.vPos, &gameData.objs.consoleP->info.position.vPos);
 		ChaseAngles (&vPlayerAngles, &vPlayerDestAngles);
-		VmAngles2Matrix (&gameData.objs.console->position.mOrient, &vPlayerAngles);
-		VmVecScaleInc (&gameData.objs.console->position.vPos, &gameData.objs.console->position.mOrient [FVEC], FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed);
+		VmAngles2Matrix (&gameData.objs.consoleP->info.position.mOrient, &vPlayerAngles);
+		VmVecScaleInc (&gameData.objs.consoleP->info.position.vPos, &gameData.objs.consoleP->info.position.mOrient [FVEC], FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed);
 
 #ifdef SLEW_ON
 		DoSlewMovement (gameData.objs.endLevelCamera, 1, 1);
 #else
-		GetAnglesToObject (&vDesiredCameraAngles, &gameData.objs.console->position.vPos, &gameData.objs.endLevelCamera->position.vPos);
+		GetAnglesToObject (&vDesiredCameraAngles, &gameData.objs.consoleP->info.position.vPos, &gameData.objs.endLevelCamera->info.position.vPos);
 		mask = ChaseAngles (&vCurrentCameraAngles, &vDesiredCameraAngles);
-		VmAngles2Matrix (&gameData.objs.endLevelCamera->position.mOrient, &vCurrentCameraAngles);
+		VmAngles2Matrix (&gameData.objs.endLevelCamera->info.position.mOrient, &vCurrentCameraAngles);
 		if ((mask & 5) == 5) {
 			vmsVector tvec;
 			gameStates.app.bEndLevelSequence = EL_CHASING;
-			VmVecNormalizedDir (&tvec, &gameData.endLevel.station.vPos, &gameData.objs.console->position.vPos);
-			VmVector2Matrix (&gameData.objs.console->position.mOrient, &tvec, &mSurfaceOrient [UVEC], NULL);
+			VmVecNormalizedDir (&tvec, &gameData.endLevel.station.vPos, &gameData.objs.consoleP->info.position.vPos);
+			VmVector2Matrix (&gameData.objs.consoleP->info.position.mOrient, &tvec, &mSurfaceOrient [UVEC], NULL);
 			gameData.endLevel.xDesiredFlightSpeed *= 2;
 			}
 #endif
@@ -681,22 +677,22 @@ switch (gameStates.app.bEndLevelSequence) {
 #ifdef SLEW_ON
 		DoSlewMovement (gameData.objs.endLevelCamera, 1, 1);
 #endif
-		GetAnglesToObject (&vDesiredCameraAngles, &gameData.objs.console->position.vPos, &gameData.objs.endLevelCamera->position.vPos);
+		GetAnglesToObject (&vDesiredCameraAngles, &gameData.objs.consoleP->info.position.vPos, &gameData.objs.endLevelCamera->info.position.vPos);
 		ChaseAngles (&vCurrentCameraAngles, &vDesiredCameraAngles);
 #ifndef SLEW_ON
-		VmAngles2Matrix (&gameData.objs.endLevelCamera->position.mOrient, &vCurrentCameraAngles);
+		VmAngles2Matrix (&gameData.objs.endLevelCamera->info.position.mOrient, &vCurrentCameraAngles);
 #endif
-		d = VmVecDistQuick (&gameData.objs.console->position.vPos, &gameData.objs.endLevelCamera->position.vPos);
+		d = VmVecDistQuick (&gameData.objs.consoleP->info.position.vPos, &gameData.objs.endLevelCamera->info.position.vPos);
 		speed_scale = FixDiv (d, I2X (0x20);
 		if (d < f1_0)
 			d = f1_0;
-		GetAnglesToObject (&vPlayerDestAngles, &gameData.endLevel.station.vPos, &gameData.objs.console->position.vPos);
+		GetAnglesToObject (&vPlayerDestAngles, &gameData.endLevel.station.vPos, &gameData.objs.consoleP->info.position.vPos);
 		ChaseAngles (&vPlayerAngles, &vPlayerDestAngles);
-		VmAngles2Matrix (&gameData.objs.console->position.mOrient, &vPlayerAngles);
-		VmVecScaleInc (&gameData.objs.console->position.vPos, &gameData.objs.console->position.mOrient [FVEC], FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed);
+		VmAngles2Matrix (&gameData.objs.consoleP->info.position.mOrient, &vPlayerAngles);
+		VmVecScaleInc (&gameData.objs.consoleP->info.position.vPos, &gameData.objs.consoleP->info.position.mOrient [FVEC], FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed);
 #ifndef SLEW_ON
-		VmVecScaleInc (&gameData.objs.endLevelCamera->position.vPos, &gameData.objs.endLevelCamera->position.mOrient [FVEC], FixMul (gameData.time.xFrame, FixMul (speed_scale, gameData.endLevel.xCurFlightSpeed));
-		if (VmVecDist (&gameData.objs.console->position.vPos, &gameData.endLevel.station.vPos) < I2X (10))
+		VmVecScaleInc (&gameData.objs.endLevelCamera->info.position.vPos, &gameData.objs.endLevelCamera->info.position.mOrient [FVEC], FixMul (gameData.time.xFrame, FixMul (speed_scale, gameData.endLevel.xCurFlightSpeed));
+		if (VmVecDist (&gameData.objs.consoleP->info.position.vPos, &gameData.endLevel.station.vPos) < I2X (10))
 			StopEndLevelSequence ();
 #endif
 		break;
@@ -715,10 +711,10 @@ int FindExitSide (tObject *objP)
 	vmsVector	vPreferred, vSegCenter, vSide;
 	fix			d, xBestVal = -f2_0;
 	int			nBestSide, i;
-	tSegment		*segP = gameData.segs.segments + objP->nSegment;
+	tSegment		*segP = gameData.segs.segments + objP->info.nSegment;
 
 //find exit tSide
-vmsVector::NormalizedDir (vPreferred, objP->position.vPos, objP->vLastPos);
+vmsVector::NormalizedDir (vPreferred, objP->info.position.vPos, objP->info.vLastPos);
 COMPUTE_SEGMENT_CENTER (&vSegCenter, segP);
 nBestSide = -1;
 for (i = MAX_SIDES_PER_SEGMENT; --i >= 0;) {
@@ -769,10 +765,10 @@ void RenderExternalScene (fix xEyeOffset)
 	vmsVector vDelta;
 	g3sPoint p, pTop;
 
-gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
+gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
 if (xEyeOffset)
-	gameData.render.mine.viewerEye += gameData.objs.viewer->position.mOrient [RVEC] * (xEyeOffset);
-G3SetViewMatrix (gameData.objs.viewer->position.vPos, gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, 1);
+	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient [RVEC] * (xEyeOffset);
+G3SetViewMatrix (gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 GrClearCanvas (BLACK_RGBA);
 G3StartInstanceMatrix (vmsVector::ZERO, mSurfaceOrient);
 DrawStars ();
@@ -797,7 +793,7 @@ DrawExitModel ();
 if (gameStates.render.bExtExplPlaying)
 	DrawFireball (&externalExplosion);
 gameStates.render.nLighting = 0;
-RenderObject (gameData.objs.console, 0, 0);
+RenderObject (gameData.objs.consoleP, 0, 0);
 RenderItems ();
 gameStates.render.nLighting = 1;
 }
@@ -848,32 +844,32 @@ void RenderEndLevelMine (fix xEyeOffset, int nWindowNum)
 {
 	short nStartSeg;
 
-gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
-if (gameData.objs.viewer->nType == OBJ_PLAYER)
-	gameData.render.mine.viewerEye += gameData.objs.viewer->position.mOrient [FVEC] * ((gameData.objs.viewer->size * 3) / 4);
+gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
+if (gameData.objs.viewerP->info.nType == OBJ_PLAYER)
+	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient [FVEC] * ((gameData.objs.viewerP->info.xSize * 3) / 4);
 if (xEyeOffset)
-	gameData.render.mine.viewerEye += gameData.objs.viewer->position.mOrient [RVEC] * (xEyeOffset);
+	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient [RVEC] * (xEyeOffset);
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode == FMODE_EDITOR)
-	gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
+	gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
 #endif
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 	nStartSeg = gameData.endLevel.exit.nSegNum;
 	}
 else {
-	nStartSeg = FindSegByPos (gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0);
+	nStartSeg = FindSegByPos (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.nSegment, 1, 0);
 	if (nStartSeg == -1)
-		nStartSeg = gameData.objs.viewer->nSegment;
+		nStartSeg = gameData.objs.viewerP->info.nSegment;
 	}
 if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 	vmsMatrix headm, viewm;
 	vmsAngVec angles = vmsAngVec::Create(0, 0, 0x7fff);
 	headm = vmsMatrix::Create(angles);
-	viewm = gameData.objs.viewer->position.mOrient * headm;
+	viewm = gameData.objs.viewerP->info.position.mOrient * headm;
 	G3SetViewMatrix (gameData.render.mine.viewerEye, viewm, gameStates.render.xZoom, 1);
 	}
 else
-	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, 1);
+	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 RenderMine (nStartSeg, xEyeOffset, nWindowNum);
 RenderItems ();
 }
@@ -937,19 +933,19 @@ void DoEndLevelFlyThrough (int n)
 
 exitFlightDataP = exitFlightObjects + n;
 objP = exitFlightDataP->objP;
-nOldPlayerSeg = objP->nSegment;
+nOldPlayerSeg = objP->info.nSegment;
 
 //move the tPlayer for this frame
 
 if (!exitFlightDataP->firstTime) {
-	objP->position.vPos += exitFlightDataP->step *gameData.time.xFrame;
+	objP->info.position.vPos += exitFlightDataP->step *gameData.time.xFrame;
 	angvec_add2_scale (&exitFlightDataP->angles, &exitFlightDataP->angstep, gameData.time.xFrame);
-	objP->position.mOrient = vmsMatrix::Create (exitFlightDataP->angles);
+	objP->info.position.mOrient = vmsMatrix::Create (exitFlightDataP->angles);
 	}
 //check new tPlayer seg
 UpdateObjectSeg (objP);
-segP = gameData.segs.segments + objP->nSegment;
-if (exitFlightDataP->firstTime || (objP->nSegment != nOldPlayerSeg)) {		//moved into new seg
+segP = gameData.segs.segments + objP->info.nSegment;
+if (exitFlightDataP->firstTime || (objP->info.nSegment != nOldPlayerSeg)) {		//moved into new seg
 	vmsVector curcenter, nextcenter;
 	fix xStepSize, xSegTime;
 	short nEntrySide, nExitSide = -1;//what sides we entry and leave through
@@ -961,14 +957,14 @@ if (exitFlightDataP->firstTime || (objP->nSegment != nOldPlayerSeg)) {		//moved 
 	nEntrySide = 0;
 	//find new exit tSide
 	if (!exitFlightDataP->firstTime) {
-		nEntrySide = ELFindConnectedSide (objP->nSegment, nOldPlayerSeg);
+		nEntrySide = ELFindConnectedSide (objP->info.nSegment, nOldPlayerSeg);
 		nExitSide = sideOpposite [nEntrySide];
 		}
 	if (exitFlightDataP->firstTime || nEntrySide==-1 || segP->children [nExitSide]==-1)
 		nExitSide = FindExitSide (objP);
 	fix d, dLargest = -f1_0;
 	for (int i = 0; i < 6; i++) {
-		d = vmsVector::Dot (segP->sides [i].normals [0], exitFlightDataP->objP->position.mOrient [UVEC]);
+		d = vmsVector::Dot (segP->sides [i].normals [0], exitFlightDataP->objP->info.position.mOrient [UVEC]);
 		if (d > dLargest) {
 			dLargest = d; 
 			nUpSide = i;
@@ -996,9 +992,9 @@ if (exitFlightDataP->firstTime || (objP->nSegment != nOldPlayerSeg)) {		//moved 
 		if (dist-exitFlightDataP->offsetDist > MAX_SLIDE_PER_SEGMENT)
 			dist = exitFlightDataP->offsetDist + MAX_SLIDE_PER_SEGMENT;
 		exitFlightDataP->offsetDist = dist;
-		vDest += objP->position.mOrient [RVEC] * dist;
+		vDest += objP->info.position.mOrient [RVEC] * dist;
 		}
-	exitFlightDataP->step = vDest - objP->position.vPos;
+	exitFlightDataP->step = vDest - objP->info.position.vPos;
 	xStepSize = vmsVector::Normalize (exitFlightDataP->step);
 	exitFlightDataP->step *= exitFlightDataP->speed;
 	COMPUTE_SEGMENT_CENTER (&curcenter, segP);
@@ -1007,7 +1003,7 @@ if (exitFlightDataP->firstTime || (objP->nSegment != nOldPlayerSeg)) {		//moved 
 	mDest = vmsMatrix::CreateFU (exitFlightDataP->headvec, segP->sides [nUpSide].normals [0]);
 	aDest = mDest.ExtractAnglesVec();
 	if (exitFlightDataP->firstTime)
-		exitFlightDataP->angles = objP->position.mOrient.ExtractAnglesVec();
+		exitFlightDataP->angles = objP->info.position.mOrient.ExtractAnglesVec();
 	xSegTime = FixDiv (xStepSize, exitFlightDataP->speed);	//how long through seg
 	if (xSegTime) {
 		exitFlightDataP->angstep [X] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [PA], aDest [PA]), xSegTime)));
@@ -1068,14 +1064,14 @@ if (check_joy && bJoyPresent)	{
 	}
 moved = rotang [PA]itch | rotang.bank | rotang.head;
 VmAngles2Matrix (&rotmat, &rotang);
-VmMatMul (&new_pm, &objP->position.mOrient, &rotmat);
-objP->position.mOrient = new_pm;
+VmMatMul (&new_pm, &objP->info.position.mOrient, &rotmat);
+objP->info.position.mOrient = new_pm;
 VmTransposeMatrix (&new_pm);		//make those columns rows
 moved |= objP->physInfo.velocity.x | objP->physInfo.velocity.y | objP->physInfo.velocity.z;
 svel = objP->physInfo.velocity;
 VmVecScale (&svel, gameData.time.xFrame);		//movement in this frame
 VmVecRotate (&movement, &svel, &new_pm);
-VmVecInc (&objP->position.vPos, &movement);
+VmVecInc (&objP->info.position.vPos, &movement);
 moved |= (movement.x || movement.y || movement.z);
 return moved;
 }

@@ -121,10 +121,10 @@ for (j = 0; j < MAX_PLAYERS; j++) {
 		netGame.kills [j][i] = gameData.multigame.kills.matrix [j][i];
 	netGame.killed [j] = gameData.multiplayer.players [j].netKilledTotal;
 	netGame.playerKills [j] = gameData.multiplayer.players [j].netKillsTotal;
-	netGame.player_score [j] = gameData.multiplayer.players [j].score;
+	netGame.playerScore [j] = gameData.multiplayer.players [j].score;
 	}       
 netGame.xLevelTime = LOCALPLAYER.timeLevel;
-netGame.monitor_vector = NetworkCreateMonitorVector ();
+netGame.monitorVector = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (
 		syncP->player [1].player.network.ipx.server, 
@@ -151,10 +151,10 @@ for (j = 0; j < MAX_PLAYERS; j++) {
 		netGame.kills [j][i] = gameData.multigame.kills.matrix [j][i];
 	netGame.killed [j] = gameData.multiplayer.players [j].netKilledTotal;
 	netGame.playerKills [j] = gameData.multiplayer.players [j].netKillsTotal;
-	netGame.player_score [j] = gameData.multiplayer.players [j].score;
+	netGame.playerScore [j] = gameData.multiplayer.players [j].score;
 	}       
 netGame.xLevelTime = LOCALPLAYER.timeLevel;
-netGame.monitor_vector = NetworkCreateMonitorVector ();
+netGame.monitorVector = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (
 		networkData.sync.player [1].player.network.ipx.server, 
@@ -583,12 +583,12 @@ if (!networkData.bSyncPackInited) {
 	}
 if (urgent)
 	networkData.bPacketUrgent = 1;
-if ((networkData.syncPack.data_size + len) > networkData.nMaxXDataSize) {
+if ((networkData.syncPack.dataSize + len) > networkData.nMaxXDataSize) {
 	bCheck = ptr [0];
 	NetworkDoFrame (1, 0);
-	if (networkData.syncPack.data_size != 0) {
+	if (networkData.syncPack.dataSize != 0) {
 #if 1			
-	con_printf (CONDBG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.syncPack.data_size);
+	con_printf (CONDBG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.syncPack.dataSize);
 #endif
 	Int3 ();
 	}
@@ -606,13 +606,13 @@ if (gameStates.multi.nGameType == IPX_GAME) {
 	bD2XData = (*ptr > MULTI_MAX_TYPE_D2);
 	if (bD2XData && (gameStates.app.bNostalgia > 1))
 		return;
-	if (networkData.syncPack.data_size && !bD2XData && networkData.bD2XData)
+	if (networkData.syncPack.dataSize && !bD2XData && networkData.bD2XData)
 		NetworkDoFrame (1, 0);
 	networkData.bD2XData = bD2XData;
 	}
-Assert (networkData.syncPack.data_size + len <= networkData.nMaxXDataSize);
-memcpy (networkData.syncPack.data + networkData.syncPack.data_size, ptr, len);
-networkData.syncPack.data_size += len;
+Assert (networkData.syncPack.dataSize + len <= networkData.nMaxXDataSize);
+memcpy (networkData.syncPack.data + networkData.syncPack.dataSize, ptr, len);
+networkData.syncPack.dataSize += len;
 }
 
 //------------------------------------------------------------------------------

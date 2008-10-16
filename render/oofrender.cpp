@@ -364,7 +364,7 @@ glEnable (GL_CULL_FACE);
 OglCullFace (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (!bDynLighting) {
-	sc = *AvgSgmColor (objP->nSegment, &objP->position.vPos);
+	sc = *AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
 	if (sc.index != gameStates.render.nFrameFlipFlop + 1)
 		sc.color.red = sc.color.green = sc.color.blue = 1;
 	}
@@ -566,7 +566,7 @@ int OOF_RenderModel (tObject *objP, tOOFObject *po, float *fLight)
 	int				r = 1, i;
 	tOOF_vector		vo = {0.0f,0.0f,0.0f};
 
-G3StartInstanceMatrix(objP->position.vPos, objP->position.mOrient);
+G3StartInstanceMatrix(objP->info.position.vPos, objP->info.position.mOrient);
 if (!gameStates.ogl.bUseTransform)
 	OOF_MatVms2Oof (&mView, viewInfo.view[0]);
 OOF_VecVms2Oof (&vPos, viewInfo.pos);
@@ -590,7 +590,7 @@ return r;
 
 int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 {
-	short			i, *pnl = gameData.render.lights.dynamic.nNearestSegLights + gameData.objs.console->nSegment * MAX_NEAREST_LIGHTS;
+	short			i, *pnl = gameData.render.lights.dynamic.nNearestSegLights + gameData.objs.consoleP->info.nSegment * MAX_NEAREST_LIGHTS;
 
 gameData.render.shadows.nLight = 0; 
 for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {

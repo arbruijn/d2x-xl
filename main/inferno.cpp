@@ -2531,7 +2531,7 @@ GETMEM (sbyte, gameData.multigame.nObjOwner, MAX_OBJECTS, 0);   // Who created e
 
 void AllocAIData (void)
 {
-GETMEM (tAILocal, gameData.ai.localInfo, MAX_OBJECTS, 0);
+GETMEM (tAILocalInfo, gameData.ai.localInfo, MAX_OBJECTS, 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -2733,7 +2733,7 @@ FREEMEM (sbyte, gameData.multigame.nObjOwner, MAX_OBJECTS);   // Who created eac
 
 void FreeAIData (void)
 {
-FREEMEM (tAILocal, gameData.ai.localInfo, MAX_OBJECTS);
+FREEMEM (tAILocalInfo, gameData.ai.localInfo, MAX_OBJECTS);
 }
 
 // ----------------------------------------------------------------------------
