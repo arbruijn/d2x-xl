@@ -430,6 +430,7 @@ for (i = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
 	objP->cType.explInfo.attached.nParent =
 	objP->info.nAttachedObj = -1;
 	objP->info.nFlags = 0;
+	memset (objP->links, 0, sizeof (objP->links));
 	}
 memset (gameData.segs.objects, 0xff, MAX_SEGMENTS * sizeof (short));
 gameData.objs.consoleP =
@@ -793,8 +794,9 @@ else {
 	else
 		objP->links [1].prev = objP->links [1].next = NULL;
 	LinkObjToList (gameData.objs.objLists.statics, objP, 2);
+	return;
 	}
-LinkObjToList (gameData.objs.objLists.actors, objP, 1);
+LinkObjToList (gameData.objs.objLists.actors, objP, 2);
 }
 
 //------------------------------------------------------------------------------
