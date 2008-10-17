@@ -532,8 +532,14 @@ typedef struct tCoreObject {
 #endif
 } tCoreObject;
 
+struct tObject;
+
+typedef struct tObjListLink {
+	tObject	*prev, *next;
+} tObjListLink;
+
 typedef struct tObject : public tCoreObject {
-	tObject	*prevObjP, *nextObjP;
+	tObjListLink	links [3];		// link into list of objects in same category (0: all, 1: same type, 2: same class)
 } tObject;
 
 class CObject : public CObjectInfo {
@@ -711,7 +717,7 @@ int CreateLight (ubyte nId, short nSegment, const vmsVector& vPos);
 
 // when an tObject has moved into a new tSegment, this function unlinks it
 // from its old tSegment, and links it into the new tSegment
-void RelinkObject(int nObject,int newsegnum);
+void RelinkObjToSeg(int nObject,int nNewSeg);
 
 // move an tObject from one tSegment to another. unlinks & relinks
 // -- unused --
@@ -719,10 +725,10 @@ void RelinkObject(int nObject,int newsegnum);
 
 // links an tObject into a tSegment's list of objects.
 // takes tObject number and tSegment number
-void LinkObject(int nObject,int nSegment);
+void LinkObjToSeg(int nObject,int nSegment);
 
 // unlinks an tObject from a tSegment's list of objects
-void UnlinkObject (tObject *objP);
+void UnlinkObjFromSeg (tObject *objP);
 
 // initialize a new tObject.  adds to the list for the given tSegment
 // returns the tObject number
@@ -746,7 +752,7 @@ void compressObjects(void);
 
 // Draw a blob-nType tObject, like a fireball
 // Deletes all objects that have been marked for death.
-void DeleteAllObjsThatShouldBeDead();
+void CleanupObjects();
 
 // Toggles whether or not lock-boxes draw.
 void object_toggle_lock_targets();
@@ -855,6 +861,9 @@ int DelObjChildrenP (tObject *pParent);
 int DelObjChildN (int nChild);
 int DelObjChildP (tObject *pChild);
 
+void LinkObject (tObject *objP);
+void UnlinkObject (tObject *objP);
+
 void BuildObjectModels (void);
 
 tObjectRef *GetChildObjN (short nParent, tObjectRef *pChildRef);
@@ -875,6 +884,8 @@ vmsMatrix *PlayerSpawnOrient (int nPlayer);
 void GetPlayerSpawn (int nPlayer, tObject *objP);
 void RecreateThief(tObject *objP);
 void DeadPlayerFrame (void);
+
+void SetObjectType (tObject *objP, ubyte nNewType);
 
 extern ubyte bIsMissile [];
 
@@ -911,12 +922,26 @@ extern tObject *dbgObjP;
 
 #define OBJECT_EXISTS(_objP)	 ((_objP) && !((_objP)->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 
+#	define FORALL_OBJSi(_objP,_i)						for ((_objP) = OBJECTS, (_i) = 0; (_i) <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++)
 #if 0
-#	define FORALL_OBJS(_objP,_i)	for ((_objP) = OBJECTS, (_i) = 0; i <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++)
-ä	define IS_OBJECT(_objP, _i)	((_i) <= gameData.objs.nLastObject [0])
+#	define FORALL_CLASS_OBJS(_type,_objP,_i)		for ((_objP) = OBJECTS, (_i) = 0; i <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++) if ((_objP)->info.nType == _type)
+#	define FORALL_ACTOR_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_ROBOT, _objP, _i)
+#	define FORALL_POWERUP_OBJS(_objP,_i)			FORALL_CLASS_OBJS (OBJ_POWERUP, _objP, _i)
+#	define FORALL_WEAPON_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_WEAPON, _objP, _i)
+#	define FORALL_EFFECT_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_EFFECT, _objP, _i)
+ä	define IS_OBJECT(_objP, _i)						((_i) <= gameData.objs.nLastObject [0])
 #else
-#	define FORALL_OBJS(_objP,_i)	for ((_objP) = gameData.objs.firstObjP; (_objP); (_objP) = (_objP)->nextObjP)
-#	define IS_OBJECT(_objP, _i)	((_objP) != NULL)
+#	define FORALL_OBJS(_objP,_i)							for ((_objP) = gameData.objs.objLists.all.head; (_objP); (_objP) = (_objP)->links [0].next)
+#	define FORALL_SUPERCLASS_OBJS(_list,_objP,_i)	for ((_objP) = (_list).head; (_objP); (_objP) = (_objP)->links [2].next)
+#	define FORALL_CLASS_OBJS(_list,_objP,_i)			for ((_objP) = (_list).head; (_objP); (_objP) = (_objP)->links [1].next)
+#	define FORALL_PLAYER_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.objLists.players, _objP, _i)
+#	define FORALL_ROBOT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.objLists.robots, _objP, _i)
+#	define FORALL_POWERUP_OBJS(_objP,_i)				FORALL_CLASS_OBJS (gameData.objs.objLists.powerups, _objP, _i)
+#	define FORALL_WEAPON_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.objLists.weapons, _objP, _i)
+#	define FORALL_EFFECT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.objLists.effects, _objP, _i)
+#	define FORALL_ACTOR_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.objLists.actors, _objP, _i)
+#	define FORALL_STATIC_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.objLists.statics, _objP, _i)
+#	define IS_OBJECT(_objP, _i)							((_objP) != NULL)
 #endif
 
 //	-----------------------------------------------------------------------------------------------------------

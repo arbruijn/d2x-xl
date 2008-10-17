@@ -2443,7 +2443,9 @@ bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
 nTeam = GetTeam (gameData.multiplayer.nLocalPlayer);
 for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 
-	bShowName = (gameStates.multi.bPlayerIsTyping [p] || (bShowAllNames && !(gameData.multiplayer.players [p].flags & PLAYER_FLAGS_CLOAKED)) || (bShowTeamNames && GetTeam (p)==nTeam));
+	bShowName = (gameStates.multi.bPlayerIsTyping [p] || 
+					 (bShowAllNames && !(gameData.multiplayer.players [p].flags & PLAYER_FLAGS_CLOAKED)) || 
+					 (bShowTeamNames && GetTeam (p) == nTeam));
 	bHasFlag = (gameData.multiplayer.players [p].connected && gameData.multiplayer.players [p].flags & PLAYER_FLAGS_FLAG);
 
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
@@ -2452,8 +2454,8 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 		//if this is a demo, the nObject in the tPlayer struct is wrong,
 		//so we search the tObject list for the nObject
 		tObject *objP;
-		FORALL_OBJS (objP, nObject)
-			if ((objP->info.nType == OBJ_PLAYER) && (objP->info.nId == p))
+		FORALL_PLAYER_OBJS (objP, nObject)
+			if (objP->info.nId == p)
 				break;
 		if (IS_OBJECT (objP, nObject))		//not in list, thus not visible
 			bShowName = !bHasFlag;				//..so don't show name

@@ -315,12 +315,10 @@ void NetworkCountPowerupsInMine (void)
   tObject	*objP;
 
 memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
-FORALL_OBJS (objP, i) {
-	if (objP->info.nType == OBJ_POWERUP) {
-		gameData.multiplayer.powerupsInMine [objP->info.nId]++;
-		if (MultiPowerupIs4Pack (objP->info.nId))
-			gameData.multiplayer.powerupsInMine [objP->info.nId - 1] += 4;
-		}
+FORALL_POWERUP_OBJS (objP, i) {
+	gameData.multiplayer.powerupsInMine [objP->info.nId]++;
+	if (MultiPowerupIs4Pack (objP->info.nId))
+		gameData.multiplayer.powerupsInMine [objP->info.nId - 1] += 4;
 	}
 }
 

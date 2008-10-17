@@ -1601,7 +1601,7 @@ void ExtractShortPos (tObject *objP, tShortPos *spp, int swap_bytes)
 	objP->mType.physInfo.velocity[Y] = (spp->vel [Y] << VEL_PRECISION);
 	objP->mType.physInfo.velocity[Z] = (spp->vel [Z] << VEL_PRECISION);
 
-	RelinkObject (OBJ_IDX (objP), nSegment);
+	RelinkObjToSeg (OBJ_IDX (objP), nSegment);
 
 }
 

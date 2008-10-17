@@ -696,8 +696,8 @@ if (!matCenP->bFlag) {
 
 	//	Make sure this robotmaker hasn't put out its max without having any of them killed.
 	nCount = 0;
-	FORALL_OBJS (objP, i)
-		if ((objP->info.nType == OBJ_ROBOT) && ((objP->info.nCreator ^ 0x80) == nMyStation))
+	FORALL_ROBOT_OBJS (objP, i)
+		if ((objP->info.nCreator ^ 0x80) == nMyStation)
 			nCount++;
 	if (nCount > gameStates.app.nDifficultyLevel + 3) {
 #if TRACE

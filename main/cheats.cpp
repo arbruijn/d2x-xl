@@ -119,7 +119,7 @@ int KillAllBuddyBots (int bVerbose)
 	tObject *objP;
 	//int	boss_index = -1;
 
-FORALL_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP)) {
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -143,8 +143,8 @@ void KillAllRobots (int bVerbose)
 	//int	boss_index = -1;
 
 // Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
-FORALL_OBJS (objP, i)
-	if ((objP->info.nType == OBJ_ROBOT) && !(ROBOTINFO (objP->info.nId).companion || ROBOTINFO (objP->info.nId).bossFlag)) {
+FORALL_ROBOT_OBJS (objP, i)
+	if (!(ROBOTINFO (objP->info.nId).companion || ROBOTINFO (objP->info.nId).bossFlag)) {
 		nKilled++;
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -170,8 +170,8 @@ void KillAllBossRobots (int bVerbose)
 if (gameStates.gameplay.bKillBossCheat)
 	gameStates.gameplay.bKillBossCheat = 0;
 else {
-	FORALL_OBJS (objP, i)
-		if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).bossFlag) {
+	FORALL_ROBOT_OBJS (objP, i)
+		if (ROBOTINFO (objP->info.nId).bossFlag) {
 			nKilled++;
 			if (gameStates.app.bNostalgia)
 				objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -219,7 +219,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 			if (gameData.walls.walls [j].nTrigger == i) {
 				short nSegment = gameData.walls.walls [j].nSegment;
 				COMPUTE_SEGMENT_CENTER_I (&gameData.objs.consoleP->info.position.vPos, nSegment);
-				RelinkObject (OBJ_IDX (gameData.objs.consoleP), nSegment);
+				RelinkObjToSeg (OBJ_IDX (gameData.objs.consoleP), nSegment);
 				gameData.objs.consoleP->info.position.mOrient[FVEC] = gameData.segs.segments [nSegment].sides [gameData.walls.walls [j].nSide].normals [0];
 				gameData.objs.consoleP->info.position.mOrient[FVEC].Neg();
 				return;
@@ -238,7 +238,7 @@ void KillThief (int bVerbose)
 	int     i;
 	tObject *objP;
 
-FORALL_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP, i)
 	if (IS_THIEF (objP)) {
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -261,7 +261,7 @@ void KillAllSnipers (int bVerbose)
 	tObject	*objP;
 
 //	Kill all snipers.
-FORALL_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_ROBOT) && (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
 		nKilled++;
 		objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -280,7 +280,7 @@ void KillBuddy (int bVerbose)
 	tObject	*objP;
 
 //	Kill buddy.
-FORALL_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP)) {
 		objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		if (bVerbose)

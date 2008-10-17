@@ -37,17 +37,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // ---------- John: These variables must be saved as part of gamesave. --------
 
 typedef struct tAIStateInfo {
-	short			nObject;
-	short			nObjRef;
-	tRobotInfo	*botInfoP;
+	short				nObject;
+	short				nObjRef;
+	tRobotInfo		*botInfoP;
 	tAIStaticInfo	*aiP;
-	tAILocalInfo		*ailP;
-	vmsVector	vVisPos;
-	int			nPrevVisibility;
-	int			bVisAndVecComputed;
-	int			bHaveGunPos;
-	int			bMultiGame;
-	int			nNewGoalState;
+	tAILocalInfo	*ailP;
+	vmsVector		vVisPos;
+	int				nPrevVisibility;
+	int				bVisAndVecComputed;
+	int				bHaveGunPos;
+	int				bMultiGame;
+	int				nNewGoalState;
 	} tAIStateInfo;
 
 
@@ -1064,9 +1064,7 @@ if (gameStates.app.cheats.bRobotsKillRobots) {
 		fix curDist, minDist = MAX_WAKEUP_DIST;
 		tObject *robotP;
 		
-		FORALL_OBJS (robotP, j) {
-			if (robotP->info.nType != OBJ_ROBOT)
-				continue;
+		FORALL_ROBOT_OBJS (robotP, j) {
 			j = OBJ_IDX (robotP);
 			if (j == siP->nObject)
 				continue;

@@ -143,8 +143,8 @@ if (gameData.app.nGameMode & GM_MULTI_ROBOTS) {
 	if (nPlayer == gameData.multiplayer.nLocalPlayer)
 		for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 			MultiDeleteControlledRobot (gameData.multigame.robots.controlled [i]);
-	FORALL_OBJS (objP, i)
-		if ((objP->info.nType == OBJ_ROBOT) && (objP->cType.aiInfo.REMOTE_OWNER == nPlayer)) {
+	FORALL_ROBOT_OBJS (objP, i)
+		if (objP->cType.aiInfo.REMOTE_OWNER == nPlayer) {
 			objP->cType.aiInfo.REMOTE_OWNER = -1;
 			objP->cType.aiInfo.REMOTE_SLOT_NUM = (nPlayer == gameData.multiplayer.nLocalPlayer) ? 4 : 0;
 	  		}
@@ -840,7 +840,7 @@ switch (action)  {
 			return;
 			}
 		COMPUTE_SEGMENT_CENTER_I (&bossObjP->info.position.vPos, nTeleportSeg);
-		RelinkObject (nBossObj, nTeleportSeg);
+		RelinkObjToSeg (nBossObj, nTeleportSeg);
 		gameData.boss [nBossIdx].nLastTeleportTime = gameData.time.xGame;
 		vBossDir = OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.position.vPos - bossObjP->info.position.vPos;
 /*

@@ -575,14 +575,12 @@ void ValidateAllPaths (void)
 	tObject			*objP;
 	tAIStaticInfo	*aiP;
 
-FORALL_OBJS (objP, i) {
-	if (objP->info.nType == OBJ_ROBOT) {
-		aiP = &objP->cType.aiInfo;
-		if ((objP->info.controlType == CT_AI) &&
-			 (aiP->nHideIndex != -1) && (aiP->nPathLength > 0) &&
-			 !ValidatePath (4, &gameData.ai.pointSegs [aiP->nHideIndex], aiP->nPathLength))
-			aiP->nPathLength = 0;	//	This allows people to resume without harm...
-		}
+FORALL_ROBOT_OBJS (objP, i) {
+	aiP = &objP->cType.aiInfo;
+	if ((objP->info.controlType == CT_AI) &&
+		 (aiP->nHideIndex != -1) && (aiP->nPathLength > 0) &&
+		 !ValidatePath (4, &gameData.ai.pointSegs [aiP->nHideIndex], aiP->nPathLength))
+		aiP->nPathLength = 0;	//	This allows people to resume without harm...
 	}
 }
 #endif
@@ -847,7 +845,7 @@ if (nSegment == -1) {
 	COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, objP->info.nSegment);
 	}
 else
-	RelinkObject (OBJ_IDX (objP), nSegment);
+	RelinkObjToSeg (OBJ_IDX (objP), nSegment);
 }
 
 // -- too much work -- //	----------------------------------------------------------------------------------------------------------
@@ -1252,9 +1250,8 @@ nLastFrameGarbageCollected = gameData.app.nFrameCount;
 ValidateAllPaths ();
 #endif
 	//	Create a list of OBJECTS which have paths of length 1 or more.p.
-FORALL_OBJS (objP, nObject) {
-	if ((objP->info.nType == OBJ_ROBOT) &&
-		 ((objP->info.controlType == CT_AI) || (objP->info.controlType == CT_MORPH))) {
+FORALL_ROBOT_OBJS (objP, nObject) {
+	if ((objP->info.controlType == CT_AI) || (objP->info.controlType == CT_MORPH)) {
 		aiP = &objP->cType.aiInfo;
 		if (aiP->nPathLength) {
 			objectList [nPathObjects].path_start = aiP->nHideIndex;
@@ -1280,13 +1277,12 @@ gameData.ai.freePointSegs = gameData.ai.pointSegs + nFreePathIdx;
 ////printf ("After garbage collection, D2_FREE index = %i\n", gameData.ai.freePointSegs - gameData.ai.pointSegs);
 #if DBG
 force_dump_aiObjects_all ("***** Finish AIPathGarbageCollect *****");
-FORALL_OBJS (objP, i) {
-	aiP = &objP->cType.aiInfo;
-	if ((objP->info.nType == OBJ_ROBOT) && (objP->info.controlType == CT_AI))
-		if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.freePointSegs - gameData.ai.pointSegs) &&
-			 (aiP->nPathLength > 0))
+FORALL_ROBOT_OBJS (objP, i)
+	if (objP->info.controlType == CT_AI) {
+		aiP = &objP->cType.aiInfo; 
+		if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.freePointSegs - gameData.ai.pointSegs) && (aiP->nPathLength > 0))
 			Int3 ();		//	Contact Mike: Debug trap for nasty, elusive bug.
-	}
+		}
 #	if PATH_VALIDATION
 ValidateAllPaths ();
 #	endif

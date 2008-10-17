@@ -169,7 +169,7 @@ glLineWidth (1);
 pc = radarColor + gameOpts->render.automap.nColor;
 RenderRadarBlip (gameData.objs.consoleP, pc->red, pc->green, pc->blue, 2.0f / 3.0f); //0.5, 0.75, 0.5, 2.0f / 3.0f);
 glLineWidth (3);
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objs.consoleP)) {
 		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)) {
 			pc = shipColors + (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId);

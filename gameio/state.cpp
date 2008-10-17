@@ -1413,7 +1413,7 @@ void SetPosFromReturnSegment (int bRelink)
 COMPUTE_SEGMENT_CENTER_I (&OBJECTS [nPlayerObj].info.position.vPos, 
 							     gameData.segs.secret.nReturnSegment);
 if (bRelink)
-	RelinkObject (nPlayerObj, gameData.segs.secret.nReturnSegment);
+	RelinkObjToSeg (nPlayerObj, gameData.segs.secret.nReturnSegment);
 ResetPlayerObject ();
 OBJECTS [nPlayerObj].info.position.mOrient = gameData.segs.secret.returnOrient;
 }
@@ -1679,7 +1679,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		}
 	objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
 	if (objP->info.nType != OBJ_NONE) {
-		LinkObject (i, nSegment);
+		LinkObjToSeg (i, nSegment);
 		if (objP->info.nSignature > gameData.objs.nNextSignature)
 			gameData.objs.nNextSignature = objP->info.nSignature;
 		}

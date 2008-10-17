@@ -193,32 +193,33 @@ for (g = 0; g < r->nGuns + 1; g++) {
 
 void InitCamBots (int bReset)
 {
-	tObject		*objP = OBJECTS;
+	tRobotInfo&	camBotInfo = gameData.bots.info [0][gameData.bots.nCamBotId];
+	tObject		*objP;
 	int			i;
 
 if ((gameData.bots.nCamBotId < 0) || gameStates.app.bD1Mission)
 	return;
-gameData.bots.info [0][gameData.bots.nCamBotId].nModel = gameData.bots.nCamBotModel;
-gameData.bots.info [0][gameData.bots.nCamBotId].attackType = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].containsId = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].containsCount = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].containsProb = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].containsType = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].scoreValue = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].strength = -1;
-gameData.bots.info [0][gameData.bots.nCamBotId].mass = F1_0 / 2;
-gameData.bots.info [0][gameData.bots.nCamBotId].drag = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].seeSound = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].attackSound = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].clawSound = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].tauntSound = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].behavior = AIB_STILL;
-gameData.bots.info [0][gameData.bots.nCamBotId].aim = AIM_IDLING;
-memset (gameData.bots.info [0][gameData.bots.nCamBotId].turnTime, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].turnTime));
-memset (gameData.bots.info [0][gameData.bots.nCamBotId].xMaxSpeed, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].xMaxSpeed));
-memset (gameData.bots.info [0][gameData.bots.nCamBotId].circleDistance, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].circleDistance));
-memset (gameData.bots.info [0][gameData.bots.nCamBotId].nRapidFireCount, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].nRapidFireCount));
-FORALL_OBJS (objP, i) 
+camBotInfo.nModel = gameData.bots.nCamBotModel;
+camBotInfo.attackType = 0;
+camBotInfo.containsId = 0;
+camBotInfo.containsCount = 0;
+camBotInfo.containsProb = 0;
+camBotInfo.containsType = 0;
+camBotInfo.scoreValue = 0;
+camBotInfo.strength = -1;
+camBotInfo.mass = F1_0 / 2;
+camBotInfo.drag = 0;
+camBotInfo.seeSound = 0;
+camBotInfo.attackSound = 0;
+camBotInfo.clawSound = 0;
+camBotInfo.tauntSound = 0;
+camBotInfo.behavior = AIB_STILL;
+camBotInfo.aim = AIM_IDLING;
+memset (camBotInfo.turnTime, 0, sizeof (camBotInfo.turnTime));
+memset (camBotInfo.xMaxSpeed, 0, sizeof (camBotInfo.xMaxSpeed));
+memset (camBotInfo.circleDistance, 0, sizeof (camBotInfo.circleDistance));
+memset (camBotInfo.nRapidFireCount, 0, sizeof (camBotInfo.nRapidFireCount));
+FORALL_STATIC_OBJS (objP, i) 
 	if (objP->info.nType == OBJ_CAMBOT) {
 		objP->info.nId	= gameData.bots.nCamBotId;
 		objP->info.xSize = G3PolyModelSize (gameData.models.polyModels + gameData.bots.nCamBotModel, gameData.bots.nCamBotModel);
@@ -226,7 +227,7 @@ FORALL_OBJS (objP, i)
 		objP->info.controlType = CT_CAMERA;
 		objP->info.movementType = MT_NONE;
 		objP->rType.polyObjInfo.nModel = gameData.bots.nCamBotModel;
-		gameData.ai.localInfo [i].mode = AIM_IDLING;
+		gameData.ai.localInfo [OBJ_IDX (objP)].mode = AIM_IDLING;
 		}
 	else if (objP->info.nType == OBJ_EFFECT) {
 		objP->info.xSize = 0;

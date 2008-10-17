@@ -479,7 +479,7 @@ else {
 			else {
 				int nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 				if (nNewSeg != -1) {
-					RelinkObject (OBJ_IDX (objP), nNewSeg);
+					RelinkObjToSeg (OBJ_IDX (objP), nNewSeg);
 					return;
 					}
 				}

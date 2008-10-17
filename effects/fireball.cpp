@@ -498,10 +498,8 @@ void ExplodeObject (tObject *hitObjP, fix delayTime)
 if (hitObjP->info.nFlags & OF_EXPLODING)
 	return;
 if (delayTime) {		//wait a little while before creating explosion
-	int nObject;
-	tObject *objP;
 	//create a placeholder tObject to do the delay, with id==-1
-	nObject = CreateFireball (-1, hitObjP->info.nSegment, hitObjP->info.position.vPos, 0, RT_NONE);
+	int nObject = CreateFireball (-1, hitObjP->info.nSegment, hitObjP->info.position.vPos, 0, RT_NONE);
 	if (nObject < 0) {
 		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
 #if TRACE
@@ -510,7 +508,7 @@ if (delayTime) {		//wait a little while before creating explosion
 		Int3 ();
 		return;
 		}
-	objP = OBJECTS + nObject;
+	tObject *objP = OBJECTS + nObject;
 	//now set explosion-specific data
 	objP->info.xLifeLeft = delayTime;
 	objP->cType.explInfo.nDeleteObj = OBJ_IDX (hitObjP);

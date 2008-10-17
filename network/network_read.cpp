@@ -230,7 +230,7 @@ if (!networkData.nJoinState) {
 		GetPlayerSpawn (j, OBJECTS + gameData.multiplayer.players [i].nObject);
 		}
 	}
-OBJECTS [LOCALPLAYER.nObject].info.nType = OBJ_PLAYER;
+SetObjectType (OBJECTS + LOCALPLAYER.nObject, OBJ_PLAYER);
 networkData.nStatus = (NetworkIAmMaster () || (networkData.nJoinState >= 4)) ? NETSTAT_PLAYING : NETSTAT_WAITING;
 SetFunctionMode (FMODE_GAME);
 networkData.bHaveSync = 1;
@@ -334,7 +334,7 @@ theirObjP->mType.physInfo.velocity = pd->physVelocity;
 theirObjP->mType.physInfo.rotVel = pd->physRotVel;
 if ((theirObjP->info.renderType != pd->objRenderType) && (pd->objRenderType == RT_POLYOBJ))
 	MultiMakeGhostPlayer (nTheirPlayer);
-RelinkObject (theirObjNum, pd->nObjSeg);
+RelinkObjToSeg (theirObjNum, pd->nObjSeg);
 if (theirObjP->info.movementType == MT_PHYSICS)
 	SetThrustFromVelocity (theirObjP);
 //------------ Welcome them back if reconnecting --------------
@@ -690,8 +690,9 @@ else if (i < 0)
 			if (objP->info.nSegment >= 0)
 				nDbgObj = OBJ_IDX (objP);
 #endif
+			UnlinkObject (objP);
 			while (ObjectIsLinked (objP, objP->info.nSegment))
-				UnlinkObject (OBJECTS + nObject);
+				UnlinkObjFromSeg (objP);
 			NW_GET_BYTES (dataP, bufI, objP, sizeof (tObject));
 			if (objP->info.nType != OBJ_NONE) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
@@ -700,10 +701,11 @@ else if (i < 0)
 				PrintLog ("receiving object %d (type: %d, segment: %d)\n", nObject, objP->info.nType, nSegment);
 				objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
 				objP->info.nAttachedObj = -1;
+				LinkObject (objP);
 				if (nSegment < 0)
 					nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);
 				if (!ObjectIsLinked (objP, nSegment))
-					LinkObject (OBJ_IDX (objP), nSegment);
+					LinkObjToSeg (OBJ_IDX (objP), nSegment);
 				if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_GHOST))
 					RemapLocalPlayerObject (nObject, nRemoteObj);
 				if (nObjOwner == nPlayer)

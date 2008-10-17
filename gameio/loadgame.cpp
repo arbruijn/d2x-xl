@@ -196,9 +196,8 @@ int CountRobotsInLevel (void)
 	int 		i;
 	tObject	*objP;
 
-FORALL_OBJS (objP, i)
-	if (objP->info.nType == OBJ_ROBOT)
-		robotCount++;
+FORALL_ROBOT_OBJS (objP, i)
+	robotCount++;
 return robotCount;
 }
 
@@ -210,7 +209,7 @@ int CountHostagesInLevel (void)
 	int 		i;
 	tObject	*objP;
 
-FORALL_OBJS (objP, i)
+FORALL_STATIC_OBJS (objP, i)
 	if (objP->info.nType == OBJ_HOSTAGE)
 		count++;
 return count;
@@ -224,7 +223,7 @@ void GameStartInitNetworkPlayers (void)
 				segNum, segType,
 				playerObjs [MAX_PLAYERS], startSegs [MAX_PLAYERS],
 				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS : MAX_PLAYERS;
-	tObject	*objP;
+	tObject	*objP, *nextObjP;
 
 	// Initialize network tPlayer start locations and tObject numbers
 
@@ -232,7 +231,8 @@ memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsT
 //VerifyConsoleObject ();
 nPlayers = 0;
 j = 0;
-FORALL_OBJS (objP, i) {
+for (objP = gameData.objs.objLists.all.head; objP; objP = nextObjP) {
+	nextObjP = objP->links [0].next;
 	t = objP->info.nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
 		i = OBJ_IDX (objP);
@@ -240,7 +240,7 @@ FORALL_OBJS (objP, i) {
 			ReleaseObject ((short) i);
 		else {
 			playerObjs [nPlayers] = i;
-			startSegs [nPlayers] = OBJECTS [i].info.nSegment;
+			startSegs [nPlayers] = objP->info.nSegment;
 			nPlayers++;
 			}
 		j++;
@@ -280,7 +280,7 @@ for (i = 0; i < nPlayers; i++) {
 			}
 #endif
 		objP = OBJECTS + playerObjs [j];
-		objP->info.nType = OBJ_PLAYER;
+		SetObjectType (objP, OBJ_PLAYER);
 		gameData.multiplayer.playerInit [i].position = objP->info.position;
 		gameData.multiplayer.playerInit [i].nSegment = objP->info.nSegment;
 		gameData.multiplayer.playerInit [i].nSegType = segType;
@@ -646,7 +646,7 @@ for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLas
 		}
 
 if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
-	FORALL_OBJS (objP, i)
+	FORALL_STATIC_OBJS (objP, i)
 		if (objP->info.nType == OBJ_EXPLOSION) {
 			objP->info.renderType = RT_POWERUP;
 			objP->rType.vClipInfo.nClipIndex = objP->info.nId;
@@ -665,8 +665,8 @@ void SetVertigoRobotFlags (void)
 	int		i;
 
 gameData.objs.nVertigoBotFlags = 0;
-FORALL_OBJS (objP, i)
-	if ((objP->info.nType == OBJ_ROBOT) && (objP->info.nId >= 66) && !IS_BOSS (objP))
+FORALL_ROBOT_OBJS (objP, i)
+	if ((objP->info.nId >= 66) && !IS_BOSS (objP))
 		gameData.objs.nVertigoBotFlags |= (1 << (objP->info.nId - 64));
 }
 
@@ -728,8 +728,7 @@ gameData.render.ogl.nHeadlights = -1;
 gameData.render.nColoredFaces = 0;
 gameData.app.nFrameCount = 0;
 gameData.app.nMineRenderCount = 0;
-gameData.objs.firstObjP = 
-gameData.objs.lastObjP = NULL;
+memset (&gameData.objs.objLists, 0, sizeof (gameData.objs.objLists));
 memset (gameData.app.semaphores, 0, sizeof (gameData.app.semaphores));
 renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 renderItems.nMaxOffs = 0;
@@ -1038,7 +1037,7 @@ LOCALPLAYER.nObject = 0;
 LOCALPLAYER.nInvuls =
 LOCALPLAYER.nCloaks = 0;
 gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
-gameData.objs.consoleP->info.nType = OBJ_PLAYER;
+SetObjectType (gameData.objs.consoleP, OBJ_PLAYER);
 gameData.objs.consoleP->info.nId = gameData.multiplayer.nLocalPlayer;
 gameData.objs.consoleP->info.controlType	= CT_FLYING;
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;
@@ -1873,7 +1872,7 @@ void BashToShield (int i, const char *s)
 
 gameData.multiplayer.powerupsInMine [id] =
 gameData.multiplayer.maxPowerupsAllowed [id] = 0;
-objP->info.nType = OBJ_POWERUP;
+SetObjectType (objP, OBJ_POWERUP);
 objP->info.nId = POW_SHIELD_BOOST;
 objP->info.renderType = RT_POWERUP;
 objP->info.controlType = CT_POWERUP;
@@ -1891,7 +1890,7 @@ void BashToEnergy (int i, const char *s)
 
 gameData.multiplayer.powerupsInMine [id] =
 gameData.multiplayer.maxPowerupsAllowed [id] = 0;
-objP->info.nType = OBJ_POWERUP;
+SetObjectType (objP, OBJ_POWERUP);
 objP->info.nId = POW_ENERGY;
 objP->info.renderType = RT_POWERUP;
 objP->info.controlType = CT_POWERUP;
@@ -1907,10 +1906,9 @@ void FilterObjectsFromLevel (void)
   int 		i;
 	tObject	*objP;
 
-FORALL_OBJS (objP, i) {
-	if ((objP->info.nType == OBJ_POWERUP) &&
-		 ((objP->info.nId == POW_REDFLAG) || (objP->info.nId == POW_BLUEFLAG)))
-		BashToShield (i, "Flag!!!!");
+FORALL_POWERUP_OBJS (objP, i) {
+	if ((objP->info.nId == POW_REDFLAG) || (objP->info.nId == POW_BLUEFLAG))
+		BashToShield (OBJ_IDX (objP), "Flag!!!!");
   }
 }
 
@@ -2201,9 +2199,8 @@ void CopyDefaultsToRobotsAll ()
 	int		i;
 	tObject	*objP;
 
-FORALL_OBJS (objP, i)
-	if (objP->info.nType == OBJ_ROBOT)
-		CopyDefaultsToRobot (objP);
+FORALL_ROBOT_OBJS (objP, i)
+	CopyDefaultsToRobot (objP);
 
 }
 

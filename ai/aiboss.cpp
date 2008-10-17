@@ -157,7 +157,7 @@ errorExit:
 
 bossObjP->info.xSize = xBossSizeSave;
 bossObjP->info.position.vPos = vBossHomePos;
-RelinkObject (objList, nBossHomeSeg);
+RelinkObjToSeg (objList, nBossHomeSeg);
 *segCountP = nSegments;
 }
 
@@ -235,8 +235,8 @@ if (nBoss < 0)
 	return -1;
 if (gameData.time.xGame - gameData.boss [nBoss].nLastGateTime < gameData.boss [nBoss].nGateInterval)
 	return -1;
-FORALL_OBJS (objP, i)
-	if ((objP->info.nType == OBJ_ROBOT) && (objP->info.nCreator == BOSS_GATE_MATCEN_NUM))
+FORALL_ROBOT_OBJS (objP, i)
+	if (objP->info.nCreator == BOSS_GATE_MATCEN_NUM)
 		count++;
 if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
 	gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
@@ -379,7 +379,7 @@ for (nPos = 0; nPos < 9; nPos++) {
 		vVertPos = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [nPos-1]];
 		bossObjP->info.position.vPos = vmsVector::Avg(vVertPos, vSegCenter);
 		}
-	RelinkObject (nObject, nSegment);
+	RelinkObjToSeg (nObject, nSegment);
 	if (!ObjectIntersectsWall (bossObjP))
 		return 1;
 	}
@@ -395,13 +395,11 @@ int IsValidTeleportDest (vmsVector *vPos, int nMinDist)
 	vmsVector	vOffs;
 	fix			xDist;
 
-FORALL_OBJS (objP, i) {
-	if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_PLAYER)) {
-		vOffs = *vPos - objP->info.position.vPos;
-		xDist = vOffs.Mag();
-		if (xDist > ((nMinDist + objP->info.xSize) * 3 / 2))
-			return 1;
-		}
+FORALL_ACTOR_OBJS (objP, i) {
+	vOffs = *vPos - objP->info.position.vPos;
+	xDist = vOffs.Mag();
+	if (xDist > ((nMinDist + objP->info.xSize) * 3 / 2))
+		return 1;
 	}
 return 0;
 }
@@ -434,7 +432,7 @@ do {
 	while (--nAttempts);
 if (!nAttempts)
 	return;
-RelinkObject (nObject, nRandSeg);
+RelinkObjToSeg (nObject, nRandSeg);
 gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
 //	make boss point right at tPlayer
 objP->info.position.vPos = vNewPos;

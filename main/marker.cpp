@@ -151,7 +151,7 @@ int MoveSpawnMarker (tTransformation *posP, short nSegment)
 if (!(markerP = SpawnMarkerObject (-1)))
 	return 0;
 markerP->info.position = *posP;
-RelinkObject (OBJ_IDX (markerP), nSegment);
+RelinkObjToSeg (OBJ_IDX (markerP), nSegment);
 return 1;
 }
 
@@ -328,7 +328,7 @@ if (!IsMultiGame || IsCoopGame) {
 			LOCALPLAYER.energy -= F1_0 * 25;
 #endif
 			OBJECTS [LOCALPLAYER.nObject].info.position.vPos = markerP->info.position.vPos;
-			RelinkObject (LOCALPLAYER.nObject, markerP->info.nSegment);
+			RelinkObjToSeg (LOCALPLAYER.nObject, markerP->info.nSegment);
 			gameStates.render.bDoAppearanceEffect = 1;
 			}
 		gameData.objs.viewerP = gameData.objs.consoleP;

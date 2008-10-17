@@ -972,8 +972,8 @@ void StaticSmokeFrame (void)
 
 if (!SHOW_SMOKE)
 	return;
-FORALL_OBJS (objP, i) {
-	if ((objP->info.nType == OBJ_EFFECT) && (objP->info.nId == SMOKE_ID))
+FORALL_EFFECT_OBJS (objP, i) {
+	if (objP->info.nId == SMOKE_ID)
 		DoStaticSmoke (objP);
 	}
 }
@@ -987,7 +987,7 @@ void ShrapnelFrame (void)
 
 if (!SHOW_SMOKE)
 	return;
-FORALL_OBJS (objP, i) {
+FORALL_STATIC_OBJS (objP, i) {
 	i = OBJ_IDX (objP);
 	if (objP->info.renderType == RT_SHRAPNELS)
 		UpdateShrapnels (objP);

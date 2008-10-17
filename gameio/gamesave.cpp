@@ -239,6 +239,7 @@ if (objP->info.nType == OBJ_HOSTAGE) {
 	objP->info.renderType = RT_HOSTAGE;
 	objP->info.controlType = CT_POWERUP;
 	}
+LinkObject (objP);
 }
 
 //------------------------------------------------------------------------------
@@ -1270,17 +1271,18 @@ return 0;
 
 static void CheckAndLinkObjects (void)
 {
-	int	i, nObjSeg;
+	int		i, nObjSeg;
+	tObject	*objP = OBJECTS;
 
-for (i = 0; i < gameFileInfo.objects.count; i++) {
-	OBJECTS [i].info.nNextInSeg = OBJECTS [i].info.nPrevInSeg = -1;
-	if (OBJECTS [i].info.nType != OBJ_NONE) {
-		nObjSeg = OBJECTS [i].info.nSegment;
+for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
+	objP->info.nNextInSeg = OBJECTS [i].info.nPrevInSeg = -1;
+	if (objP->info.nType != OBJ_NONE) {
+		nObjSeg = objP->info.nSegment;
 		if ((nObjSeg < 0) || (nObjSeg > gameData.segs.nLastSegment))	
-			OBJECTS [i].info.nType = OBJ_NONE;
+			objP->info.nType = OBJ_NONE;
 		else {
-			OBJECTS [i].info.nSegment = -1;	
-			LinkObject (i, nObjSeg);
+			objP->info.nSegment = -1;	
+			LinkObjToSeg (i, nObjSeg);
 			}
 		}
 	}

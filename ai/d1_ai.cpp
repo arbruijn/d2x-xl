@@ -1393,7 +1393,7 @@ void move_object_to_legal_spot(tObject *objP)
 				int	nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 
 				if (nNewSeg != -1) {
-					RelinkObject(OBJ_IDX (objP), nNewSeg);
+					RelinkObjToSeg(OBJ_IDX (objP), nNewSeg);
 					return;
 				}
 			} else
@@ -1534,8 +1534,8 @@ int create_gated_robot( int nSegment, int nObjId)
 	fix			objsize = gameData.models.polyModels[botInfoP->nModel].rad;
 	int			default_behavior;
 
-	FORALL_OBJS (objP, i) {
-		if ((objP->info.nType == OBJ_ROBOT) && (objP->info.nCreator == BOSS_GATE_MATCEN_NUM))
+	FORALL_ROBOT_OBJS (objP, i) {
+		if (objP->info.nCreator == BOSS_GATE_MATCEN_NUM)
 			count++;
 		}
 	if (count > 2 * gameStates.app.nDifficultyLevel + 3) {
@@ -1626,7 +1626,7 @@ int boss_fits_in_seg(tObject *bossObjP, int nSegment)
 		} else
 			bossObjP->info.position.vPos = segcenter;
 
-		RelinkObject(boss_objnum, nSegment);
+		RelinkObjToSeg(boss_objnum, nSegment);
 		if (!ObjectIntersectsWall(bossObjP))
 			return 1;
 	}

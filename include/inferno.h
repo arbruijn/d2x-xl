@@ -1890,11 +1890,25 @@ typedef struct tGuidedMissileInfo {
 	int					nSignature;
 } tGuidedMissileInfo;
 
+typedef struct tObjListRef {
+	tObject	*head, *tail;
+} tObjListRef;
+
+typedef struct tObjLists {
+	tObjListRef				all;
+	tObjListRef				players;
+	tObjListRef				robots;
+	tObjListRef				powerups;
+	tObjListRef				weapons;
+	tObjListRef				effects;
+	tObjListRef				actors;
+	tObjListRef				statics;
+} tObjLists;
+
 typedef struct tObjectData {
 	tObjTypeData			types;
 	tObject					*objects;
-	tObject					*firstObjP;
-	tObject					*lastObjP;
+	tObjLists				objLists;
 	short						*freeList;
 	short						*parentObjs;
 	tObjectRef				*childObjs;

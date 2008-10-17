@@ -480,7 +480,7 @@ if ((parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].
 		objP->info.position.vPos = vEndPos;
 	else if (nEndSeg != -1) {
 		objP->info.position.vPos = vEndPos;
-		RelinkObject (OBJ_IDX (objP), nEndSeg);
+		RelinkObjToSeg (OBJ_IDX (objP), nEndSeg);
 		}
 	}
 

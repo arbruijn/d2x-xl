@@ -1431,16 +1431,14 @@ if (IsMultiGame) {
 	bIsThief = (ROBOTINFO (robotP->info.nId).thief != 0);
 	if (bIsThief)
 		memcpy (tempStolen, gameData.thief.stolenItems, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
-	if (MultiExplodeRobotSub (OBJ_IDX (robotP), nKillerObj, ROBOTINFO (robotP->info.nId).thief)) {
-		if (bIsThief)
-			memcpy (gameData.thief.stolenItems, tempStolen, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
-		MultiSendRobotExplode (OBJ_IDX (robotP), nKillerObj, ROBOTINFO (robotP->info.nId).thief);
-		if (bIsThief)
-			memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
-		return 1;
-		}
-	else
+	if (!MultiExplodeRobotSub (OBJ_IDX (robotP), nKillerObj, ROBOTINFO (robotP->info.nId).thief)) 
 		return 0;
+	if (bIsThief)
+		memcpy (gameData.thief.stolenItems, tempStolen, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
+	MultiSendRobotExplode (OBJ_IDX (robotP), nKillerObj, ROBOTINFO (robotP->info.nId).thief);
+	if (bIsThief)
+		memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
+	return 1;
 	}
 
 if (nKillerObj >= 0) {
@@ -1618,10 +1616,10 @@ return 1;
 
 int CollideRobotAndWeapon (tObject *robotP, tObject *weaponP, vmsVector *vHitPt)
 {
-	int	bDamage = 1;
-	int	bInvulBoss = 0;
-	fix	nStrength = WI_strength (weaponP->info.nId, gameStates.app.nDifficultyLevel);
-	tRobotInfo *botInfoP = &ROBOTINFO (robotP->info.nId);
+	int			bDamage = 1;
+	int			bInvulBoss = 0;
+	fix			nStrength = WI_strength (weaponP->info.nId, gameStates.app.nDifficultyLevel);
+	tRobotInfo	*botInfoP = &ROBOTINFO (robotP->info.nId);
 	tWeaponInfo *wInfoP = gameData.weapons.info + weaponP->info.nId;
 
 if ((weaponP->info.nId == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
@@ -1659,10 +1657,9 @@ if (weaponP->cType.laserInfo.parent.nSignature == robotP->info.nSignature)
 //	Also, only a weaponP hit from a tPlayer weaponP causes smart blobs.
 if ((weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 	if ((robotP->info.xShields > 0) && bIsEnergyWeapon [weaponP->info.nId]) {
-		int	nBlobs;
-		fix	xProb = (gameStates.app.nDifficultyLevel+2) * min (weaponP->info.xShields, robotP->info.xShields);
+		fix xProb = (gameStates.app.nDifficultyLevel+2) * min (weaponP->info.xShields, robotP->info.xShields);
 		xProb = botInfoP->energyBlobs * xProb / (NDL * 32);
-		nBlobs = xProb >> 16;
+		int nBlobs = xProb >> 16;
 		if (2 * d_rand () < (xProb & 0xffff))
 			nBlobs++;
 		if (nBlobs)

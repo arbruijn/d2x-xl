@@ -1957,8 +1957,8 @@ vmsVector *FindLightningTargetPos (tObject *emitterP, short nTarget)
 
 if (!nTarget)
 	return 0;
-FORALL_OBJS (objP, i) {
-	if ((objP != emitterP) && (objP->info.nType == OBJ_EFFECT) && (objP->info.nId == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nTarget))
+FORALL_EFFECT_OBJS (objP, i) {
+	if ((objP != emitterP) && (objP->info.nId == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nTarget))
 		return &objP->info.position.vPos;
 	}
 return NULL;
@@ -1978,8 +1978,8 @@ if (!SHOW_LIGHTNINGS)
 	return;
 if (!gameOpts->render.lightnings.bStatic)
 	return;
-FORALL_OBJS (objP, i) {
-	if ((objP->info.nType != OBJ_EFFECT) || (objP->info.nId != LIGHTNING_ID))
+FORALL_EFFECT_OBJS (objP, i) {
+	if (objP->info.nId != LIGHTNING_ID)
 		continue;
 	i = OBJ_IDX (objP);
 	if (gameData.lightnings.objects [i] >= 0)

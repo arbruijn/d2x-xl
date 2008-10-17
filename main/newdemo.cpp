@@ -218,10 +218,10 @@ objP->mType.physInfo.velocity [Z] = (spp->vel [Z] << VEL_PRECISION);
 
 int NDFindObject (int nSignature)
 {
-	int i;
-	tObject * objP = OBJECTS;
+	int 		i;
+	tObject 	*objP = OBJECTS;
 
-FORALL_OBJS (objP, i)
+FORALL_OBJSi (objP, i)
 	if ((objP->info.nType != OBJ_NONE) && (objP->info.nSignature == nSignature))
 		return OBJ_IDX (objP);
 return -1;
@@ -1826,7 +1826,7 @@ while (!bDone) {
 
 					if (nSegment > gameData.segs.nLastSegment)
 						nSegment = 0;
-					LinkObject (OBJ_IDX (gameData.objs.viewerP), nSegment);
+					LinkObjToSeg (OBJ_IDX (gameData.objs.viewerP), nSegment);
 					}
 				}
 			break;
@@ -1847,7 +1847,7 @@ while (!bDone) {
 				// HACK HACK HACK -- (see above)
 				if (nSegment > gameData.segs.nLastSegment)
 					break;
-				LinkObject (OBJ_IDX (objP), nSegment);
+				LinkObjToSeg (OBJ_IDX (objP), nSegment);
 				if ((objP->info.nType == OBJ_PLAYER) && IsMultiGame) {
 					int tPlayer = IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId;
 					if (tPlayer == 0)
@@ -1977,7 +1977,7 @@ while (!bDone) {
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					nSegment = objP->info.nSegment;
 					objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
-					LinkObject (OBJ_IDX (objP), nSegment);
+					LinkObjToSeg (OBJ_IDX (objP), nSegment);
 					}
 				}
 			}
@@ -2799,7 +2799,7 @@ if (NDReadFrameInfo () == -1) {
 for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 	j = OBJECTS + gameData.objs.nLastObject [0];
 	int h;
-	FORALL_OBJS (objP, h) {
+	FORALL_OBJSi (objP, h) {
 		if (curObjP->info.nSignature == objP->info.nSignature) {
 			renderType = curObjP->info.renderType;
 			//fix delta_p, delta_h, delta_b;
@@ -2995,7 +2995,7 @@ else {
 				for (i = 0; i <= nObjects; i++) {
 					nSig = curObjs [i].info.nSignature;
 					objP;
-					FORALL_OBJS (objP, j) {
+					FORALL_OBJSi (objP, j) {
 						if (nSig == objP->info.nSignature) {
 							objP->info.position.mOrient = curObjs [i].info.position.mOrient;
 							objP->info.position.vPos = curObjs [i].info.position.vPos;

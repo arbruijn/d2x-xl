@@ -109,7 +109,7 @@ if (!gameStates.render.bClusterLights)
 	tObject	*objP;
 	int		i;
 
-FORALL_OBJS (objP, i)
+FORALL_STATIC_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
 		objP->info.xLifeLeft = 0;
 		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
@@ -126,7 +126,7 @@ if (!gameStates.render.bClusterLights)
 	tObject	*objP;
 	int		h, i;
 
-FORALL_OBJS (objP, i) {
+FORALL_STATIC_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID))	{
 		i = OBJ_IDX (objP);
 		if (!(h = objP->cType.lightInfo.nObjects)) {
@@ -150,7 +150,7 @@ FORALL_OBJS (objP, i) {
 				objP->cType.lightInfo.nSegment = (nSegment < 0) ? abs (objP->cType.lightInfo.nSegment) : nSegment;
 				}
 			if (objP->info.nSegment != objP->cType.lightInfo.nSegment)
-				RelinkObject (i, objP->cType.lightInfo.nSegment);
+				RelinkObjToSeg (i, objP->cType.lightInfo.nSegment);
 			AddDynLight (NULL, &objP->cType.lightInfo.color, objP->cType.lightInfo.intensity, -1, -1, i, -1, NULL);
 			}
 		}

@@ -601,7 +601,7 @@ gameData.objs.consoleP->info.position.mOrient = vmsMatrix::Create(vp, NULL, NULL
 */
 // TODO: MatrixCreateFCheck
 gameData.objs.consoleP->info.position.mOrient = vmsMatrix::CreateF(vp);
-RelinkObject (OBJ_IDX (gameData.objs.consoleP), SEG_IDX (segP));
+RelinkObjToSeg (OBJ_IDX (gameData.objs.consoleP), SEG_IDX (segP));
 }
 
 //------------------------------------------------------------------------------
@@ -1193,7 +1193,7 @@ InitGauges ();
 gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
 #ifdef EDITOR
 	if (gameData.segs.segments[gameData.objs.consoleP->info.nSegment].nSegment == -1)      //tSegment no longer exists
-		RelinkObject (OBJ_IDX (gameData.objs.consoleP), SEG_IDX (Cursegp));
+		RelinkObjToSeg (OBJ_IDX (gameData.objs.consoleP), SEG_IDX (Cursegp));
 
 	if (!check_obj_seg (gameData.objs.consoleP))
 		MovePlayerToSegment (Cursegp,Curside);
@@ -1502,7 +1502,7 @@ tObject *find_escort ()
 	int 		i;
 	tObject	*objP = OBJECTS;
 
-FORALL_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP))
 		return objP;
 return NULL;
@@ -1914,7 +1914,7 @@ gameData.time.xGame += gameData.time.xFrame;
 if (gameData.time.xGame < 0 || gameData.time.xGame > I2X (0x7fff - 600)) {
 	gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
 	}
-if ((gameData.app.nGameMode & GM_MULTI) && netGame.xPlayTimeAllowed)
+if (IsMultiGame && netGame.xPlayTimeAllowed)
    gameStates.app.xThisLevelTime +=gameData.time.xFrame;
 //PrintLog ("DigiSyncSounds\n");
 DigiSyncSounds ();

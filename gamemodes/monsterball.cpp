@@ -57,7 +57,7 @@ if (nDropSeg >= 0) {
 	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, vmsVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
 	if (nObject >= 0) {
 		gameData.hoard.monsterballP = OBJECTS + nObject;
-		gameData.hoard.monsterballP->info.nType = OBJ_MONSTERBALL;
+		SetObjectType (gameData.hoard.monsterballP, OBJ_MONSTERBALL);
 		gameData.hoard.monsterballP->mType.physInfo.mass = F1_0 * 10;
 		gameData.hoard.monsterballP->mType.physInfo.thrust.SetZero();
 		gameData.hoard.monsterballP->mType.physInfo.rotThrust.SetZero();
@@ -84,7 +84,7 @@ int FindMonsterball (void)
 gameData.hoard.monsterballP = NULL;
 gameData.hoard.nMonsterballSeg = -1;
 gameData.hoard.nLastHitter = -1;
-FORALL_OBJS (objP, i)
+FORALL_STATIC_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_MONSTERBALL) || ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_MONSTERBALL))) {
 		if (gameData.hoard.nMonsterballSeg < 0) {
 			gameData.hoard.nMonsterballSeg = objP->info.nSegment;

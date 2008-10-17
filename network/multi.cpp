@@ -722,7 +722,7 @@ if ((nPlayer == gameData.multiplayer.nLocalPlayer) || (nPlayer >= MAX_NUM_NET_PL
 	return;
 	}
 objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
-objP->info.nType = OBJ_GHOST;
+SetObjectType (objP, OBJ_GHOST);
 objP->info.renderType = RT_NONE;
 objP->info.movementType = MT_NONE;
 MultiResetPlayerObject (objP);
@@ -741,7 +741,7 @@ if ((nPlayer == gameData.multiplayer.nLocalPlayer) || (nPlayer  >= MAX_NUM_NET_P
 	return;
 	}
 objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
-objP->info.nType = OBJ_PLAYER;
+SetObjectType (objP, OBJ_PLAYER);
 objP->info.movementType = MT_PHYSICS;
 MultiResetPlayerObject (objP);
 }
@@ -1608,7 +1608,7 @@ if (nLocalObj < 0)
 NetworkResetObjSync (nLocalObj);
 OBJECTS [nLocalObj].info.position.vPos = vNewPos;
 OBJECTS [nLocalObj].mType.physInfo.velocity.SetZero();
-RelinkObject (nLocalObj, nSegment);
+RelinkObjToSeg (nLocalObj, nSegment);
 MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
 ObjectCreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 #if 0
@@ -2741,8 +2741,8 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 ng = 1;
 invCount = 0;
 cloakCount = 0;
-FORALL_OBJS (objP, i) {
-	if ((objP->info.nType == OBJ_HOSTAGE) && !IsCoopGame) {
+FORALL_STATIC_OBJS (objP, i) {
+	if (!IsCoopGame) {
 		nObject = CreatePowerup (POW_SHIELD_BOOST, -1, objP->info.nSegment, objP->info.position.vPos, 1);
 		ReleaseObject ((short) i);
 		if (nObject != -1) {

@@ -429,7 +429,7 @@ else {
 	gameStates.gameplay.nLastReactor = -1;
 	memset (gameData.reactor.states, 0xff, sizeof (gameData.reactor.states));
 	}
-FORALL_OBJS (objP, i) {
+FORALL_STATIC_OBJS (objP, i) {
 	if (objP->info.nType == OBJ_REACTOR) {
 		if (gameStates.gameplay.nReactorCount && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
 #if TRACE
@@ -440,7 +440,6 @@ FORALL_OBJS (objP, i) {
 		//else 
 			{
 			//	Compute all gun positions.
-			objP = OBJECTS + i;
 			if ((bNew = (!bRestore || (0 > (j = FindReactor (objP))))))
 				j = gameStates.gameplay.nReactorCount;
 			rStatP = gameData.reactor.states + j;
@@ -478,7 +477,7 @@ FORALL_OBJS (objP, i) {
 #endif
 			}			
 		else
-			nBossObj = i;
+			nBossObj = OBJ_IDX (objP);
 		}
 	}
 

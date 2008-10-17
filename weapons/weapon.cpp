@@ -741,33 +741,31 @@ void ProcessSmartMinesFrame (void)
 	int			i, j;
 	int			nParentObj;
 	fix			dist;
-	tObject		*objPi, *objPj;
+	tObject		*bombP, *actorP;
 	vmsVector	*vBombPos;
 
 	//	If we don't know of there being any super mines in the level, just
 	//	check every 8th tObject each frame.
 gameStates.gameplay.bHaveSmartMines = 0;
 
-FORALL_OBJS (objPi, i) {
-	if ((objPi->info.nType != OBJ_WEAPON) || (objPi->info.nId != SMARTMINE_ID))
+FORALL_WEAPON_OBJS (bombP, i) {
+	if (bombP->info.nId != SMARTMINE_ID)
 		continue;
-	nParentObj = objPi->cType.laserInfo.parent.nObject;
+	nParentObj = bombP->cType.laserInfo.parent.nObject;
 	gameStates.gameplay.bHaveSmartMines = 1;
-	if (objPi->info.xLifeLeft + F1_0*2 >= gameData.weapons.info [SMARTMINE_ID].lifetime)
+	if (bombP->info.xLifeLeft + F1_0 * 2 >= gameData.weapons.info [SMARTMINE_ID].lifetime)
 		continue;
-	vBombPos = &objPi->info.position.vPos;
-	i = OBJ_IDX (objPi);
-	FORALL_OBJS (objPj, j) {
-		j = OBJ_IDX (objPj);
+	vBombPos = &bombP->info.position.vPos;
+	i = OBJ_IDX (bombP);
+	FORALL_ACTOR_OBJS (actorP, j) {
+		j = OBJ_IDX (actorP);
 		if (j == nParentObj) 
 			continue;
-		if ((objPj->info.nType != OBJ_PLAYER) && (objPj->info.nType != OBJ_ROBOT))
+		dist = vmsVector::Dist (*vBombPos, actorP->info.position.vPos);
+		if (dist - actorP->info.xSize >= F1_0*20)
 			continue;
-		dist = vmsVector::Dist (*vBombPos, objPj->info.position.vPos);
-		if (dist - objPj->info.xSize >= F1_0*20)
-			continue;
-		if (objPi->info.nSegment == objPj->info.nSegment)
-			objPi->info.xLifeLeft = 1;
+		if (bombP->info.nSegment == actorP->info.nSegment)
+			bombP->info.xLifeLeft = 1;
 		else {
 			//	Object which is close enough to detonate smart mine is not in same tSegment as smart mine.
 			//	Need to do a more expensive check to make sure there isn't an obstruction.
@@ -776,9 +774,9 @@ FORALL_OBJS (objPi, i) {
 				tFVIData		hit_data;
 				int			fate;
 
-				fq.startSeg = objPi->info.nSegment;
-				fq.p0	= &objPi->info.position.vPos;
-				fq.p1 = &objPj->info.position.vPos;
+				fq.startSeg = bombP->info.nSegment;
+				fq.p0	= &bombP->info.position.vPos;
+				fq.p1 = &actorP->info.position.vPos;
 				fq.radP0 =
 				fq.radP1 = 0;
 				fq.thisObjNum = i;
@@ -787,7 +785,7 @@ FORALL_OBJS (objPi, i) {
 
 				fate = FindVectorIntersection(&fq, &hit_data);
 				if (fate != HIT_WALL)
-					objPi->info.xLifeLeft = 1;
+					bombP->info.xLifeLeft = 1;
 				}
 			}
 		}

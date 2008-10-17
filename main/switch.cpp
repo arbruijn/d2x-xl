@@ -158,7 +158,7 @@ if (trigP->nLinks) {
 	if (objP->info.nSegment != nSegment) {
 		objP->info.nSegment = nSegment;
 		COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, nSegment);
-		RelinkObject (nObject, nSegment);
+		RelinkObjToSeg (nObject, nSegment);
 		if (ROBOTINFO (objP->info.nId).bossFlag) {
 			int	i = FindBoss (nObject);
 
@@ -613,7 +613,7 @@ objP->mType.physInfo.velocity = vel;
 
 void TriggerSetObjPos (short nObject, short nSegment)
 {
-RelinkObject (nObject, nSegment);
+RelinkObjToSeg (nObject, nSegment);
 }
 
 //------------------------------------------------------------------------------

@@ -392,7 +392,7 @@ gameData.objs.consoleP->info.nFlags = 0;
 //make object0 the tPlayer, setting all relevant fields
 void InitPlayerObject ()
 {
-gameData.objs.consoleP->info.nType = OBJ_PLAYER;
+SetObjectType (gameData.objs.consoleP, OBJ_PLAYER);
 gameData.objs.consoleP->info.nId = 0;					//no sub-types for tPlayer
 gameData.objs.consoleP->info.nSignature = 0;			//tPlayer has zero, others start at 1
 gameData.objs.consoleP->info.xSize = gameData.models.polyModels [gameData.pig.ship.player->nModel].rad;
@@ -435,7 +435,7 @@ memset (gameData.segs.objects, 0xff, MAX_SEGMENTS * sizeof (short));
 gameData.objs.consoleP =
 gameData.objs.viewerP = OBJECTS;
 InitPlayerObject ();
-LinkObject (OBJ_IDX (gameData.objs.consoleP), 0);	//put in the world in segment 0
+LinkObjToSeg (OBJ_IDX (gameData.objs.consoleP), 0);	//put in the world in segment 0
 gameData.objs.nObjects = 1;						//just the tPlayer
 gameData.objs.nLastObject [0] = 0;
 InitIdToOOF ();
@@ -447,17 +447,22 @@ InitIdToOOF ();
 //the free list, then set the appropriate globals
 void SpecialResetObjects (void)
 {
-	int i;
+	tObject	*objP;
+	int		i;
 
 gameData.objs.nObjects = MAX_OBJECTS;
 gameData.objs.nLastObject [0] = 0;
+memset (&gameData.objs.objLists, 0, sizeof (gameData.objs.objLists));
 Assert (OBJECTS [0].info.nType != OBJ_NONE);		//0 should be used
-for (i = MAX_OBJECTS; i--; )
-	if (OBJECTS [i].info.nType == OBJ_NONE)
+for (objP = OBJECTS, i = MAX_OBJECTS; i--; objP++)
+	if (objP->info.nType == OBJ_NONE)
 		gameData.objs.freeList [--gameData.objs.nObjects] = i;
-	else
+	else {
 		if (i > gameData.objs.nLastObject [0])
 			gameData.objs.nLastObject [0] = i;
+		memset (objP->links, 0, sizeof (objP->links));
+		LinkObject (objP);
+		}
 }
 
 //------------------------------------------------------------------------------
@@ -565,7 +570,7 @@ FORALL_OBJS (objP, i) {
 #	endif
 			Int3 ();
 #endif
-			RemoveAllObjectsBut (objP->info.nSegment,  OBJ_IDX (objP));
+			RemoveAllObjectsBut (objP->info.nSegment, OBJ_IDX (objP));
 			return count;
 			}
 		}
@@ -593,7 +598,7 @@ return;
 //------------------------------------------------------------------------------
 
 //link the tObject into the list for its tSegment
-void LinkObject (int nObject, int nSegment)
+void LinkObjToSeg (int nObject, int nSegment)
 {
 	tObject *objP;
 
@@ -662,7 +667,7 @@ Assert (OBJECTS [0].info.nPrevInSeg != 0);
 
 //------------------------------------------------------------------------------
 
-void UnlinkObject (tObject *objP)
+void UnlinkObjFromSeg (tObject *objP)
 {
 if (objP->info.nPrevInSeg == -1)
 	gameData.segs.objects [objP->info.nSegment] = objP->info.nNextInSeg;
@@ -713,7 +718,7 @@ int AllocObject (void)
 
 if (gameData.objs.nObjects >= MAX_OBJECTS - 2) {
 	FreeObjectSlots (MAX_OBJECTS - 10);
-	DeleteAllObjsThatShouldBeDead ();
+	CleanupObjects ();
 	}
 if (gameData.objs.nObjects >= MAX_OBJECTS)
 	return -1;
@@ -733,13 +738,98 @@ objP->info.nAttachedObj =
 objP->cType.explInfo.attached.nNext =
 objP->cType.explInfo.attached.nPrev =
 objP->cType.explInfo.attached.nParent = -1;
-objP->prevObjP = gameData.objs.lastObjP;
-if (gameData.objs.lastObjP)
-	gameData.objs.lastObjP->nextObjP = objP;
-else
-	gameData.objs.firstObjP = objP;
-gameData.objs.lastObjP = objP;
 return nObject;
+}
+
+//------------------------------------------------------------------------------
+
+void LinkObjToList (tObjListRef& ref, tObject *objP, int nLink)
+{
+	tObjListLink& link = objP->links [nLink];
+
+link.prev = ref.tail;
+if (ref.tail)
+	ref.tail->links [nLink].next = objP;
+else
+	ref.head = objP;
+ref.tail = objP;
+}
+
+//------------------------------------------------------------------------------
+
+void UnlinkObjFromList (tObjListRef& ref, tObject *objP, int nLink)
+{
+	tObjListLink& link = objP->links [nLink];
+
+if (link.next)
+	link.next->links [nLink].prev = link.prev;
+else
+	ref.tail = link.prev;
+if (link.prev)
+	link.prev->links [nLink].next = link.next;
+else
+	ref.head = link.next;
+link.prev = link.next = NULL;
+}
+
+//------------------------------------------------------------------------------
+
+void LinkObject (tObject *objP)
+{
+	ubyte nType = objP->info.nType;
+
+LinkObjToList (gameData.objs.objLists.all, objP, 0);
+if (nType == OBJ_PLAYER)
+	LinkObjToList (gameData.objs.objLists.players, objP, 1);
+if (nType == OBJ_ROBOT)
+	LinkObjToList (gameData.objs.objLists.robots, objP, 1);
+else {
+	if (nType == OBJ_WEAPON)
+		LinkObjToList (gameData.objs.objLists.weapons, objP, 1);
+	else if (nType == OBJ_POWERUP)
+		LinkObjToList (gameData.objs.objLists.powerups, objP, 1);
+	else if (nType == OBJ_EFFECT)
+		LinkObjToList (gameData.objs.objLists.effects, objP, 1);
+	else
+		objP->links [1].prev = objP->links [1].next = NULL;
+	LinkObjToList (gameData.objs.objLists.statics, objP, 2);
+	}
+LinkObjToList (gameData.objs.objLists.actors, objP, 1);
+}
+
+//------------------------------------------------------------------------------
+
+void UnlinkObject (tObject *objP)
+{
+	ubyte nType = objP->info.nType;
+
+UnlinkObjFromList (gameData.objs.objLists.all, objP, 0);
+if (nType == OBJ_PLAYER)
+	UnlinkObjFromList (gameData.objs.objLists.players, objP, 1);
+else if (nType == OBJ_ROBOT)
+	UnlinkObjFromList (gameData.objs.objLists.robots, objP, 1);
+else {
+	if (nType == OBJ_WEAPON)
+		UnlinkObjFromList (gameData.objs.objLists.weapons, objP, 1);
+	else if (nType == OBJ_POWERUP)
+		UnlinkObjFromList (gameData.objs.objLists.powerups, objP, 1);
+	else if (nType == OBJ_EFFECT)
+		UnlinkObjFromList (gameData.objs.objLists.effects, objP, 1);
+	UnlinkObjFromList (gameData.objs.objLists.statics, objP, 2);
+	return;
+	}
+UnlinkObjFromList (gameData.objs.objLists.actors, objP, 2);
+}
+
+//------------------------------------------------------------------------------
+
+void SetObjectType (tObject *objP, ubyte nNewType)
+{
+if (objP->info.nType != nNewType) {
+	UnlinkObject (objP);
+	objP->info.nType = nNewType;
+	LinkObject (objP);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -750,14 +840,11 @@ void FreeObject (int nObject)
 {
 	tObject	*objP = OBJECTS + nObject;
 
-if ((gameData.objs.lastObjP = objP->prevObjP))
-	gameData.objs.lastObjP->nextObjP = NULL;
-else
-	gameData.objs.firstObjP = NULL;
 #if DBG
 if (nObject == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
+UnlinkObject (objP);
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
 gameData.objs.bWantEffect [nObject] = 0;
@@ -1010,9 +1097,6 @@ if (nType == OBJ_DEBRIS) {
 if (0 > (nObject = AllocObject ()))
 	return -1;
 objP = OBJECTS + nObject;
-Assert (objP->info.nType == OBJ_NONE);		//make sure unused
-Assert (objP->info.nSegment == -1);
-
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
 memset (objP, 0, sizeof (tObject));
 objP->info.nSignature = gameData.objs.nNextSignature++;
@@ -1057,7 +1141,8 @@ else if (objP->info.controlType == CT_EXPLOSION)
 	objP->cType.explInfo.attached.nPrev =
 	objP->cType.explInfo.attached.nParent = -1;
 
-LinkObject (nObject, nSegment);
+LinkObject (objP);
+LinkObjToSeg (nObject, nSegment);
 return nObject;
 }
 
@@ -1077,7 +1162,8 @@ cloneP->mType.physInfo.thrust.SetZero();
 gameData.objs.xCreationTime [nObject] = gameData.time.xGame;
 nSegment = objP->info.nSegment;
 cloneP->info.nSegment = cloneP->info.nPrevInSeg = cloneP->info.nNextInSeg = -1;
-LinkObject (nObject, nSegment);
+LinkObject (objP);
+LinkObjToSeg (nObject, nSegment);
 return nObject;
 }
 
@@ -1183,11 +1269,12 @@ int ObjectCreateCopy (int nObject, vmsVector *new_pos, int nNewSegnum)
 // Find next D2_FREE tObject
 if (newObjNum == -1)
 	return -1;
-obj = OBJECTS + newObjNum;
+objP = OBJECTS + newObjNum;
 *objP = OBJECTS [nObject];
 objP->info.position.vPos = objP->info.vLastPos = *new_pos;
 objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
-LinkObject (newObjNum, nNewSegnum);
+LinkObject (objP);
+LinkObjToSeg (newObjNum, nNewSegnum);
 objP->info.nSignature = gameData.objs.nNextSignature++;
 //we probably should initialize sub-structures here
 return newObjNum;
@@ -1226,7 +1313,7 @@ if (objP->info.nAttachedObj != -1)		//detach all OBJECTS from this
 	DetachChildObjects (objP);
 if (objP->info.nType == OBJ_DEBRIS)
 	nDebrisObjectCount--;
-UnlinkObject (OBJECTS + nObject);
+UnlinkObjFromSeg (OBJECTS + nObject);
 Assert (OBJECTS [0].info.nNextInSeg != 0);
 if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))
 	ExecObjTriggers (nObject, 0);
@@ -1263,7 +1350,7 @@ if (gameData.objs.deadPlayerCamera) {
 SelectCockpit (gameStates.render.cockpit.nModeSave);
 gameStates.render.cockpit.nModeSave = -1;
 gameData.objs.viewerP = viewerSaveP;
-gameData.objs.consoleP->info.nType = OBJ_PLAYER;
+SetObjectType (gameData.objs.consoleP, OBJ_PLAYER);
 gameData.objs.consoleP->info.nFlags = nPlayerFlagsSave;
 Assert ((nControlTypeSave == CT_FLYING) || (nControlTypeSave == CT_SLEW));
 gameData.objs.consoleP->info.controlType = nControlTypeSave;
@@ -1384,7 +1471,7 @@ if (gameStates.app.bPlayerIsDead) {
 			ExplodeObject (gameData.objs.consoleP, 0);
 			gameData.objs.consoleP->info.nFlags &= ~OF_SHOULD_BE_DEAD;		//don't really kill tPlayer
 			gameData.objs.consoleP->info.renderType = RT_NONE;				//..just make him disappear
-			gameData.objs.consoleP->info.nType = OBJ_GHOST;						//..ccAnd kill intersections
+			SetObjectType (gameData.objs.consoleP, OBJ_GHOST);						//..and kill intersections
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 #if 0
 			if (gameOpts->gameplay.bFastRespawn)
@@ -1508,35 +1595,17 @@ PALETTE_FLASH_SET (0, 0, 0);
 
 //------------------------------------------------------------------------------
 
-void DeleteAllObjsThatShouldBeDead ()
+void CleanupObjects (void)
 {
-	int		i;
-	tObject	*objP;
+	tObject	*objP, *nextObjP = NULL;
 	int		nLocalDeadPlayerObj = -1;
 
-FORALL_OBJS (objP, i) {
+for (objP = gameData.objs.objLists.all.head; objP; objP = nextObjP) {
+	nextObjP = objP->links [0].next;
 	if (objP->info.nType == OBJ_NONE)
 		continue;
-	if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD)) {
-#if 1
-#	if DBG
-		if (objP->info.xShields < 0)
-			objP = objP;
-#	endif
+	if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD))
 		continue;
-#else
-		if (objP->info.xShields >= 0)
-			continue;
-		KillObject (objP);
-		if (objP->info.nType == OBJ_ROBOT) {
-			if (ROBOTINFO (objP->info.nId).bossFlag)
-				StartBossDeathSequence (objP);
-			else
-				StartRobotDeathSequence (objP);
-			continue;
-			}
-#endif
-		}
 	Assert ((objP->info.nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
 	if (objP->info.nType != OBJ_PLAYER)
 		ReleaseObject (OBJ_IDX (objP));
@@ -1556,17 +1625,17 @@ FORALL_OBJS (objP, i) {
 //--------------------------------------------------------------------
 //when an tObject has moved into a new tSegment, this function unlinks it
 //from its old tSegment, and links it into the new tSegment
-void RelinkObject (int nObject, int nNewSegnum)
+void RelinkObjToSeg (int nObject, int nNewSegnum)
 {
 Assert ((nObject >= 0) && (nObject <= gameData.objs.nLastObject [0]));
 Assert ((nNewSegnum <= gameData.segs.nLastSegment) && (nNewSegnum >= 0));
-UnlinkObject (OBJECTS + nObject);
-LinkObject (nObject, nNewSegnum);
+UnlinkObjFromSeg (OBJECTS + nObject);
+LinkObjToSeg (nObject, nNewSegnum);
 #if DBG
 #if TRACE
 if (GetSegMasks (OBJECTS [nObject].info.position.vPos,
 					  OBJECTS [nObject].info.nSegment, 0).centerMask)
-	con_printf (1, "RelinkObject violates seg masks.\n");
+	con_printf (1, "RelinkObjToSeg violates seg masks.\n");
 #endif
 #endif
 }
@@ -2129,7 +2198,7 @@ return 1;
 int UpdateAllObjects ()
 {
 	int i;
-	tObject *objP;
+	tObject *objP, *nextObjP;
 
 //	CheckDuplicateObjects ();
 //	RemoveIncorrectObjects ();
@@ -2143,27 +2212,22 @@ gameData.physics.xTime = SECS2X (gameStates.app.tick60fps.nTime);
 #else
 gameData.physics.xTime = gameData.time.xFrame;
 #endif
-DeleteAllObjsThatShouldBeDead ();
+CleanupObjects ();
 if (gameOpts->gameplay.nAutoLeveling)
 	gameData.objs.consoleP->mType.physInfo.flags |= PF_LEVELLING;
 else
 	gameData.objs.consoleP->mType.physInfo.flags &= ~PF_LEVELLING;
 
 // Move all OBJECTS
-objP = OBJECTS;
-#ifndef DEMO_ONLY
 gameStates.entropy.bConquering = 0;
 UpdatePlayerOrient ();
-FORALL_OBJS (objP, i) {
-	if ((objP->info.nType != OBJ_NONE) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD)) {
-		if (!UpdateObject (objP))
-			return 0;
+i = 0;
+for (objP = gameData.objs.objLists.all.head; objP; objP = nextObjP) {
+	nextObjP = objP->links [0].next;
+	if ((objP->info.nType != OBJ_NONE) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !UpdateObject (objP))
+		return 0;
+	i++;
 	}
-	objP++;
-}
-#else
-	i = 0;	//kill warning
-#endif
 return 1;
 }
 
@@ -2199,7 +2263,7 @@ void compressObjects (void)
 			int	segnum_copy;
 
 			segnum_copy = OBJECTS [gameData.objs.nLastObject [0]].info.nSegment;
-			UnlinkObject (OBJECTS + gameData.objs.nLastObject [0]);
+			UnlinkObjFromSeg (OBJECTS + gameData.objs.nLastObject [0]);
 			OBJECTS [start_i] = OBJECTS [gameData.objs.nLastObject [0]];
 
 			#ifdef EDITOR
@@ -2209,7 +2273,7 @@ void compressObjects (void)
 
 			OBJECTS [gameData.objs.nLastObject [0]].info.nType = OBJ_NONE;
 
-			LinkObject (start_i, segnum_copy);
+			LinkObjToSeg (start_i, segnum_copy);
 
 			while (OBJECTS [--gameData.objs.nLastObject [0]].info.nType == OBJ_NONE);
 
@@ -2241,7 +2305,7 @@ void ConvertSmokeObject (tObject *objP)
 	int			j;
 	tTrigger		*trigP;
 
-objP->info.nType = OBJ_EFFECT;
+SetObjectType (objP, OBJ_EFFECT);
 objP->info.nId = SMOKE_ID;
 objP->info.renderType = RT_SMOKE;
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE, -1);
@@ -2278,7 +2342,7 @@ void ConvertObjects (void)
 	int		i;
 
 PrintLog ("   converting deprecated smoke objects\n");
-FORALL_OBJS (objP, i)
+FORALL_STATIC_OBJS (objP, i)
 	if (objP->info.nType == OBJ_SMOKE)
 		ConvertSmokeObject (objP);
 }
@@ -2326,8 +2390,8 @@ void SetupEffects (void)
 	int		i;
 
 PrintLog ("   setting up effects\n");
-FORALL_OBJS (objP, i) 
-	if ((objP->info.nType == OBJ_EFFECT) && (objP->info.nId == SMOKE_ID))
+FORALL_EFFECT_OBJS (objP, i) 
+	if (objP->info.nId == SMOKE_ID)
 		SetupSmokeEffect (objP);
 }
 
@@ -2376,7 +2440,7 @@ int UpdateObjectSeg (tObject * objP)
 if (0 > (nNewSeg = FindObjectSeg (objP)))
 	return 0;
 if (nNewSeg != objP->info.nSegment)
-	RelinkObject (OBJ_IDX (objP), nNewSeg);
+	RelinkObjToSeg (OBJ_IDX (objP), nNewSeg);
 return 1;
 }
 
@@ -2412,9 +2476,8 @@ void FixObjectSizes (void)
 	int 		i;
 	tObject	*objP = OBJECTS;
 
-FORALL_OBJS (objP, i)
-	if (objP->info.nType == OBJ_ROBOT)
-		objP->info.xSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
+FORALL_ROBOT_OBJS (objP, i)
+	objP->info.xSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 }
 
 //------------------------------------------------------------------------------
@@ -2427,8 +2490,8 @@ void ClearTransientObjects (int bClearAll)
 	short nObject;
 	tObject *objP;
 
-FORALL_OBJS (objP, nObject) 
-	if (((objP->info.nType == OBJ_WEAPON) && !(gameData.weapons.info [objP->info.nId].flags&WIF_PLACABLE) &&
+FORALL_WEAPON_OBJS (objP, nObject) 
+	if ((!(gameData.weapons.info [objP->info.nId].flags&WIF_PLACABLE) &&
 		  (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||
 			objP->info.nType == OBJ_FIREBALL ||
 			objP->info.nType == OBJ_DEBRIS ||
@@ -2511,7 +2574,7 @@ int DropMarkerObject (vmsVector *pos, short nSegment, vmsMatrix *orient, ubyte n
 
 Assert (gameData.models.nMarkerModel != -1);
 nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, *pos, *orient,
-								   gameData.models.polyModels [gameData.models.nMarkerModel].rad, CT_NONE, MT_NONE, RT_POLYOBJ);
+								gameData.models.polyModels [gameData.models.nMarkerModel].rad, CT_NONE, MT_NONE, RT_POLYOBJ);
 if (nObject >= 0) {
 	tObject *objP = OBJECTS + nObject;
 	objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
@@ -2716,14 +2779,14 @@ void GetPlayerSpawn (int nSpawnPos, tObject *objP)
 
 if (markerP) {
 	objP->info.position = markerP->info.position;
- 	RelinkObject (OBJ_IDX (objP), markerP->info.nSegment);
+ 	RelinkObjToSeg (OBJ_IDX (objP), markerP->info.nSegment);
 	}
 else {
 	if ((gameData.multiplayer.playerInit [nSpawnPos].nSegment < 0) || 
 		 (gameData.multiplayer.playerInit [nSpawnPos].nSegment >= gameData.segs.nSegments))
 	GameStartInitNetworkPlayers ();
 	objP->info.position = gameData.multiplayer.playerInit [nSpawnPos].position;
- 	RelinkObject (OBJ_IDX (objP), gameData.multiplayer.playerInit [nSpawnPos].nSegment);
+ 	RelinkObjToSeg (OBJ_IDX (objP), gameData.multiplayer.playerInit [nSpawnPos].nSegment);
 	}
 }
 
