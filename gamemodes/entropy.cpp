@@ -87,7 +87,7 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = gameData.segs.segments
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
 				 (gameData.matCens.origStationTypes [f] != SEGMENT_IS_NOTHING))
 				virusGens [--kk] = f;
-			for (nObject = gameData.segs.objects [SEG_IDX (segP)]; nObject >= 0; nObject = objP->info.nNext) {
+			for (nObject = gameData.segs.objects [SEG_IDX (segP)]; nObject >= 0; nObject = objP->info.nNextInSeg) {
 				objP = OBJECTS + nObject;
 				if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nType == POW_ENTROPY_VIRUS))
 					objP->info.nCreator = newOwner;

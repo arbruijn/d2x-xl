@@ -702,9 +702,9 @@ if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
 		}
 	wrd->renderedObjects [wrd->nObjects++] = nObject;
 	}
-if ((count++ > MAX_OBJECTS) || (objP->info.nNext == nObject)) {
+if ((count++ > MAX_OBJECTS) || (objP->info.nNextInSeg == nObject)) {
 	Int3();					// infinite loop detected
-	objP->info.nNext = -1;		// won't this clean things up?
+	objP->info.nNextInSeg = -1;		// won't this clean things up?
 	return;					// get out of this infinite loop!
 	}
 	//g3_drawObject(objP->class_id, &objP->info.position.vPos, &objP->info.position.mOrient, objP->info.xSize);
@@ -1434,7 +1434,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = objP->info.nNext) {
+	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = objP->info.nNextInSeg) {
 		objP = OBJECTS + nObject;
 		Assert (objP->info.nSegment == nSegment);
 		if (objP->info.nFlags & OF_ATTACHED)
@@ -2052,7 +2052,7 @@ void RenderSkyBoxObjects (void)
 
 gameStates.render.nType = 1;
 for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++)
-	for (nObject = gameData.segs.objects [*segP]; nObject != -1; nObject = OBJECTS [nObject].info.nNext)
+	for (nObject = gameData.segs.objects [*segP]; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 		DoRenderObject (nObject, gameStates.render.nWindow);
 }
 

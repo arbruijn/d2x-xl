@@ -576,9 +576,9 @@ inline bool ObjectIsLinked (tObject *objP, short nSegment)
 {
 if (nSegment != -1) {
 	short nObject = OBJ_IDX (objP);
-	for (short i = gameData.segs.objects [objP->info.nSegment], j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNext) {
+	for (short i = gameData.segs.objects [objP->info.nSegment], j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNextInSeg) {
 		if (i == nObject) {
-			objP->info.nPrev = j;
+			objP->info.nPrevInSeg = j;
 			return true;
 			}
 		}
@@ -696,7 +696,7 @@ else if (i < 0)
 					SwapObject (objP);
 				nSegment = objP->info.nSegment;
 				PrintLog ("receiving object %d (type: %d, segment: %d)\n", nObject, objP->info.nType, nSegment);
-				objP->info.nNext = objP->info.nPrev = objP->info.nSegment = -1;
+				objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
 				objP->info.nAttachedObj = -1;
 				if (nSegment < 0)
 					nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);

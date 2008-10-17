@@ -235,8 +235,8 @@ if (nBoss < 0)
 	return -1;
 if (gameData.time.xGame - gameData.boss [nBoss].nLastGateTime < gameData.boss [nBoss].nGateInterval)
 	return -1;
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-	if ((OBJECTS [i].info.nType == OBJ_ROBOT) && (OBJECTS [i].info.nCreator == BOSS_GATE_MATCEN_NUM))
+FORALL_OBJS (objP, i)
+	if ((objP->info.nType == OBJ_ROBOT) && (objP->info.nCreator == BOSS_GATE_MATCEN_NUM))
 		count++;
 if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
 	gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
@@ -390,12 +390,12 @@ return 0;
 
 int IsValidTeleportDest (vmsVector *vPos, int nMinDist)
 {
-	tObject		*objP = OBJECTS;
+	tObject		*objP;
 	int			i;
 	vmsVector	vOffs;
 	fix			xDist;
 
-for (i = gameData.objs.nLastObject [0]; i; i--, objP++) {
+FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_PLAYER)) {
 		vOffs = *vPos - objP->info.position.vPos;
 		xDist = vOffs.Mag();

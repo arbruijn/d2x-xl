@@ -193,12 +193,12 @@ Assert (gameData.objs.consoleP->info.nId == gameData.multiplayer.nLocalPlayer);
 int CountRobotsInLevel (void)
 {
 	int robotCount = 0;
-	int i;
+	int 		i;
+	tObject	*objP;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-	if (OBJECTS [i].info.nType == OBJ_ROBOT)
+FORALL_OBJS (objP, i)
+	if (objP->info.nType == OBJ_ROBOT)
 		robotCount++;
-	}
 return robotCount;
 }
 
@@ -206,13 +206,13 @@ return robotCount;
 
 int CountHostagesInLevel (void)
 {
-	int count = 0;
-	int i;
+	int 		count = 0;
+	int 		i;
+	tObject	*objP;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-	if (OBJECTS [i].info.nType == OBJ_HOSTAGE)
+FORALL_OBJS (objP, i)
+	if (objP->info.nType == OBJ_HOSTAGE)
 		count++;
-	}
 return count;
 }
 
@@ -232,9 +232,10 @@ memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsT
 //VerifyConsoleObject ();
 nPlayers = 0;
 j = 0;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+FORALL_OBJS (objP, i) {
 	t = objP->info.nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
+		i = OBJ_IDX (objP);
 		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP)))
 			ReleaseObject ((short) i);
 		else {
@@ -645,11 +646,11 @@ for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLas
 		}
 
 if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
-	for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
+	FORALL_OBJS (objP, i)
 		if (objP->info.nType == OBJ_EXPLOSION) {
 			objP->info.renderType = RT_POWERUP;
 			objP->rType.vClipInfo.nClipIndex = objP->info.nId;
-			DigiSetObjectSound (i, nSound, NULL);
+			DigiSetObjectSound (OBJ_IDX (objP), nSound, NULL);
 			}
 	}
 //gameStates.sound.bD1Sound = 0;
@@ -664,7 +665,7 @@ void SetVertigoRobotFlags (void)
 	int		i;
 
 gameData.objs.nVertigoBotFlags = 0;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
+FORALL_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_ROBOT) && (objP->info.nId >= 66) && !IS_BOSS (objP))
 		gameData.objs.nVertigoBotFlags |= (1 << (objP->info.nId - 64));
 }
@@ -727,6 +728,8 @@ gameData.render.ogl.nHeadlights = -1;
 gameData.render.nColoredFaces = 0;
 gameData.app.nFrameCount = 0;
 gameData.app.nMineRenderCount = 0;
+gameData.objs.firstObjP = 
+gameData.objs.lastObjP = NULL;
 memset (gameData.app.semaphores, 0, sizeof (gameData.app.semaphores));
 renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 renderItems.nMaxOffs = 0;
@@ -1901,11 +1904,12 @@ objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo
 
 void FilterObjectsFromLevel (void)
 {
-  int i;
+  int 		i;
+	tObject	*objP;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-	if ((OBJECTS [i].info.nType == OBJ_POWERUP) &&
-		 ((OBJECTS [i].info.nId == POW_REDFLAG) || (OBJECTS [i].info.nId == POW_BLUEFLAG)))
+FORALL_OBJS (objP, i) {
+	if ((objP->info.nType == OBJ_POWERUP) &&
+		 ((objP->info.nId == POW_REDFLAG) || (objP->info.nId == POW_BLUEFLAG)))
 		BashToShield (i, "Flag!!!!");
   }
 }
@@ -2194,11 +2198,12 @@ objP->info.xShields = RobotDefaultShields (objP);
 //	This function should be called at level load time.
 void CopyDefaultsToRobotsAll ()
 {
-	int	i;
+	int		i;
+	tObject	*objP;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-	if (OBJECTS [i].info.nType == OBJ_ROBOT)
-		CopyDefaultsToRobot (&OBJECTS [i]);
+FORALL_OBJS (objP, i)
+	if (objP->info.nType == OBJ_ROBOT)
+		CopyDefaultsToRobot (objP);
 
 }
 

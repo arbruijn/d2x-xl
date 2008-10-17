@@ -763,7 +763,7 @@ Assert(nConnSide != -1);
 //go through each tObject in each of two segments, and see if
 //it pokes into the connecting segP
 
-for (nObject = gameData.segs.objects [SEG_IDX (segP)]; nObject != -1; nObject = OBJECTS [nObject].info.nNext) {
+for (nObject = gameData.segs.objects [SEG_IDX (segP)]; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 	t = OBJECTS [nObject].info.nType;
 	if ((t == OBJ_WEAPON) || (t == OBJ_FIREBALL) || (t == OBJ_EXPLOSION) || (t == OBJ_EFFECT))
 		continue;

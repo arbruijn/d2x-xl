@@ -222,7 +222,8 @@ extern char szLastPaletteLoaded [];
 
 void StartEndLevelSequence (int bSecret)
 {
-	int	i, nMoviePlayed = MOVIE_NOT_PLAYED;
+	int		i, nMoviePlayed = MOVIE_NOT_PLAYED;
+	tObject	*objP;
 
 if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 	gameData.demo.nState = ND_STATE_PAUSED;
@@ -237,11 +238,10 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playbac
 if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SHOULD_BE_DEAD))
 	return;				//don't start if dead!
 //	Dematerialize Buddy!
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-	if (OBJECTS [i].info.nType == OBJ_ROBOT)
-		if (ROBOTINFO (OBJECTS [i].info.nId).companion) {
-			ObjectCreateExplosion (OBJECTS [i].info.nSegment, &OBJECTS [i].info.position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
-			KillObject (OBJECTS + i);
+FORALL_OBJS (objP, i)
+	if (IS_GUIDEBOT (objP)) {
+			ObjectCreateExplosion (objP->info.nSegment, &objP->info.position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
+			KillObject (objP);
 		}
 LOCALPLAYER.homingObjectDist = -F1_0; // Turn off homing sound.
 ResetRearView ();		//turn off rear view if set

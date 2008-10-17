@@ -462,8 +462,8 @@ void BESwapObject (tObject *objP)
 {
 // swap the short and int entries for this tObject
 objP->info.nSignature = INTEL_INT (objP->info.nSignature);
-objP->info.nNext = INTEL_SHORT (objP->info.nNext);
-objP->info.nPrev = INTEL_SHORT (objP->info.nPrev);
+objP->info.nNextInSeg = INTEL_SHORT (objP->info.nNextInSeg);
+objP->info.nPrevInSeg = INTEL_SHORT (objP->info.nPrevInSeg);
 objP->info.nSegment = INTEL_SHORT (objP->info.nSegment);
 INTEL_VECTOR (objP->info.position.vPos);
 INTEL_MATRIX (objP->info.position.mOrient);

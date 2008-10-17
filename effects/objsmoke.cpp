@@ -967,26 +967,28 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [1]; i++, objP++) {
 
 void StaticSmokeFrame (void)
 {
-	tObject	*objP = OBJECTS;
+	tObject	*objP;
 	int		i;
 
 if (!SHOW_SMOKE)
 	return;
-for (i = gameData.objs.nLastObject [0] + 1; i; i--, objP++)
+FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_EFFECT) && (objP->info.nId == SMOKE_ID))
 		DoStaticSmoke (objP);
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void ShrapnelFrame (void)
 {
-	tObject	*objP = OBJECTS;
+	tObject	*objP;
 	int		i;
 
 if (!SHOW_SMOKE)
 	return;
-for (i = 0; i < gameData.objs.nLastObject [0]; i++, objP++) {
+FORALL_OBJS (objP, i) {
+	i = OBJ_IDX (objP);
 	if (objP->info.renderType == RT_SHRAPNELS)
 		UpdateShrapnels (objP);
 	if (gameData.objs.bWantEffect [i] & SHRAPNEL_SMOKE) {

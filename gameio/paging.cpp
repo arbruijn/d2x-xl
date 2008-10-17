@@ -301,10 +301,10 @@ for (i = 0, robotIndex = 0; i < 2; i++, robotIndex += 32)
 
 void PagingTouchObjects (int nType)
 {
-	int	i;
+	int		i;
 	tObject	*objP;
 
-for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [0]; i++, objP++)
+FORALL_OBJS (objP, i)
 	if ((nType < 0) || (objP->info.nType == nType))
 		PagingTouchObject (objP);
 }
@@ -324,7 +324,7 @@ if (seg2p->special == SEGMENT_IS_ROBOTMAKER)
 	PagingTouchRobotMaker (segP);
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 	PagingTouchSide (segP, nSide);
-for (nObject = gameData.segs.objects [SEG_IDX (segP)]; nObject != -1; nObject = OBJECTS [nObject].info.nNext)
+for (nObject = gameData.segs.objects [SEG_IDX (segP)]; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 	PagingTouchObject (OBJECTS + nObject);
 }
 
@@ -429,97 +429,6 @@ PagingTouchGauges ();
 PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);
 PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
 PagingTouchAddonTextures ();
-
-#ifdef PSX_BUILD_TOOLS
-
-//PSX STUFF
-PagingTouchWalls ();
-for (s = 0; s <= gameData.objs.nLastObject [0]; s++) {
-	PagingTouchObject (OBJECTS + s);
-	}
-
-	{
-		char * p;
-		extern int gameData.missions.nCurrentLevel;
-		extern ushort gameData.pig.tex.bitmapXlat [MAX_BITMAP_FILES];
-		short bmUsed [MAX_BITMAP_FILES];
-		FILE * fp;
-		char fname [128];
-		int i, bPageIn;
-		grsBitmap *bmP;
-
-		if (gameData.missions.nCurrentLevel<0)                //secret level
-			strcpy (fname, gameData.missions.szSecretLevelNames [-gameData.missions.nCurrentLevel-1]);
-		else                                    //Normal level
-			strcpy (fname, gameData.missions.szLevelNames [gameData.missions.nCurrentLevel-1]);
-		p = strchr (fname, '.');
-		if (p) *p = 0;
-		strcat (fname, ".pag");
-
-		fp = fopen (fname, "wt");
-		for (i=0; i<MAX_BITMAP_FILES;i++)      {
-			bmUsed [i] = 0;
-		}
-		for (i=0; i<MAX_BITMAP_FILES;i++)      {
-			bmUsed [gameData.pig.tex.bitmapXlat [i]]++;
-		}
-
-		//cmp added so that .damage bitmaps are included for paged-in lights of the current level
-		for (i=0; i<MAX_TEXTURES;i++) {
-			if (gameData.pig.tex.pBmIndex [i].index > 0 && gameData.pig.tex.pBmIndex [i].index < MAX_BITMAP_FILES &&
-				bmUsed [gameData.pig.tex.pBmIndex [i].index] > 0 &&
-				gameData.pig.tex.pTMapInfo [i].destroyed > 0 && gameData.pig.tex.pTMapInfo [i].destroyed < MAX_BITMAP_FILES) {
-				bmUsed [gameData.pig.tex.pBmIndex [gameData.pig.tex.pTMapInfo [i].destroyed].index] += 1;
-				PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [gameData.pig.tex.pTMapInfo [i].destroyed].index);
-
-			}
-		}
-
-		//	Force cockpit to be paged in.
-		{
-			tBitmapIndex bonk;
-			bonk.index = 109;
-			PIGGY_PAGE_IN (bonk.index);
-		}
-
-		// Force in the frames for markers
-		{
-			tBitmapIndex bonk2;
-			bonk2.index = 2014;
-			PIGGY_PAGE_IN (bonk2.index);
-			bonk2.index = 2015;
-			PIGGY_PAGE_IN (bonk2.index);
-			bonk2.index = 2016;
-			PIGGY_PAGE_IN (bonk2.index);
-			bonk2.index = 2017;
-			PIGGY_PAGE_IN (bonk2.index);
-			bonk2.index = 2018;
-			PIGGY_PAGE_IN (bonk2.index);
-		}
-
-		for (i = 0, bmP = gameData.pig.tex.pBitmaps; i < MAX_BITMAP_FILES; i++, bmP++) {
-			bPageIn = 1;
-			// cmp debug
-			//piggy_get_bitmap_name (i,fname);
-
-			if (!bmP->bmTexBuf || (bmP->bmProps.flags & BM_FLAG_PAGED_OUT))
-				bPageIn = 0;
-//                      if (gameData.pig.tex.bitmapXlat [i]!=i)
-//                              bPageIn = 0;
-
-			if (!bmUsed [i])
-				bPageIn = 0;
-			if ((i==47) || (i==48))               // Mark red mplayer ship textures as paged in.
-				bPageIn = 1;
-			if (!bPageIn)
-				fprintf (fp, "0,\t// Bitmap %d (%s)\n", i, "test\0"); // cmp debug fname);
-			else
-				fprintf (fp, "1,\t// Bitmap %d (%s)\n", i, "test\0"); // cmp debug fname);
-		}
-
-		fclose (fp);
-	}
-#endif
 
 #if TRACE			
 	con_printf (CON_VERBOSE, "... loading all textures in mine done\n");

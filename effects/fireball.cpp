@@ -136,7 +136,7 @@ explObjP->cType.explInfo.nDeleteTime = -1;
 if (xMaxDamage <= 0)
 	return explObjP;
 // -- now legal for xBadAss explosions on a tWall. Assert (objP != NULL);
-for (i = 0, obj0P = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, obj0P++) {
+FORALL_OBJS (obj0P, i) {
 	t = obj0P->info.nType;
 	id = obj0P->info.nId;
 	//	Weapons used to be affected by xBadAss explosions, but this introduces serious problems.
@@ -381,9 +381,9 @@ fix nDebrisLife [] = {2, 5, 10, 15, 30, 60, 120, 180, 300};
 
 tObject *ObjectCreateDebris (tObject *parentObjP, int nSubObj)
 {
-	int nObject;
-	tObject *debrisP;
-	tPolyModel *po;
+	int 			nObject;
+	tObject 		*debrisP;
+	tPolyModel 	*po;
 
 Assert ((parentObjP->info.nType == OBJ_ROBOT) || (parentObjP->info.nType == OBJ_PLAYER));
 nObject = CreateDebris (parentObjP, nSubObj);

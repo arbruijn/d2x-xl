@@ -1074,7 +1074,8 @@ if (SHOW_LIGHTNINGS) {
 
 	SEM_LEAVE (SEM_LIGHTNINGS)
 
-	for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [0]; i++, objP++) {
+	FORALL_OBJS (objP, i) {
+		i = OBJ_IDX (objP);
 		h = gameData.objs.bWantEffect [i];
 		if (h & EXPL_LIGHTNINGS) {
 			if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))
@@ -1209,13 +1210,14 @@ void DestroyAllObjectLightnings (int nType, int nId)
 	tObject	*objP;
 	int		i;
 
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
+FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == nType) && ((nId < 0) || (objP->info.nId == nId)))
 #if 1
 		RequestEffects (objP, DESTROY_LIGHTNINGS);
 #else
 		DestroyObjectLightnings (objP);
 #endif
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1955,9 +1957,10 @@ vmsVector *FindLightningTargetPos (tObject *emitterP, short nTarget)
 
 if (!nTarget)
 	return 0;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
+FORALL_OBJS (objP, i) {
 	if ((objP != emitterP) && (objP->info.nType == OBJ_EFFECT) && (objP->info.nId == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nTarget))
 		return &objP->info.position.vPos;
+	}
 return NULL;
 }
 
@@ -1975,9 +1978,10 @@ if (!SHOW_LIGHTNINGS)
 	return;
 if (!gameOpts->render.lightnings.bStatic)
 	return;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+FORALL_OBJS (objP, i) {
 	if ((objP->info.nType != OBJ_EFFECT) || (objP->info.nId != LIGHTNING_ID))
 		continue;
+	i = OBJ_IDX (objP);
 	if (gameData.lightnings.objects [i] >= 0)
 		continue;
 	pli = &objP->rType.lightningInfo;

@@ -221,10 +221,9 @@ int NDFindObject (int nSignature)
 	int i;
 	tObject * objP = OBJECTS;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
-if ((objP->info.nType != OBJ_NONE) && (objP->info.nSignature == nSignature))
-	return i;
-	}
+FORALL_OBJS (objP, i)
+	if ((objP->info.nType != OBJ_NONE) && (objP->info.nSignature == nSignature))
+		return OBJ_IDX (objP);
 return -1;
 }
 
@@ -1816,8 +1815,8 @@ while (!bDone) {
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
 					nSegment = gameData.objs.viewerP->info.nSegment;
-					gameData.objs.viewerP->info.nNext = 
-					gameData.objs.viewerP->info.nPrev = 
+					gameData.objs.viewerP->info.nNextInSeg = 
+					gameData.objs.viewerP->info.nPrevInSeg = 
 					gameData.objs.viewerP->info.nSegment = -1;
 
 					// HACK HACK HACK -- since we have multiple level recording, it can be the case
@@ -1843,7 +1842,7 @@ while (!bDone) {
 				DoPowerupFrame (objP);
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 				nSegment = objP->info.nSegment;
-				objP->info.nNext = objP->info.nPrev = objP->info.nSegment = -1;
+				objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
 				// HACK HACK HACK -- don't render OBJECTS is segments greater than gameData.segs.nLastSegment
 				// HACK HACK HACK -- (see above)
 				if (nSegment > gameData.segs.nLastSegment)
@@ -1977,7 +1976,7 @@ while (!bDone) {
 				CATCH_BAD_READ
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					nSegment = objP->info.nSegment;
-					objP->info.nNext = objP->info.nPrev = objP->info.nSegment = -1;
+					objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
 					LinkObject (OBJ_IDX (objP), nSegment);
 					}
 				}
@@ -2798,7 +2797,9 @@ if (NDReadFrameInfo () == -1) {
 	return;
 	}
 for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
-	for (j = OBJECTS + gameData.objs.nLastObject [0], objP = OBJECTS; objP < j; objP++) {
+	j = OBJECTS + gameData.objs.nLastObject [0];
+	int h;
+	FORALL_OBJS (objP, h) {
 		if (curObjP->info.nSignature == objP->info.nSignature) {
 			renderType = curObjP->info.renderType;
 			//fix delta_p, delta_h, delta_b;
@@ -2993,8 +2994,8 @@ else {
 				//  interpolated position and orientation can be preserved.
 				for (i = 0; i <= nObjects; i++) {
 					nSig = curObjs [i].info.nSignature;
-					objP = OBJECTS;
-					for (j = 0; j <= gameData.objs.nLastObject [0]; j++, objP++) {
+					objP;
+					FORALL_OBJS (objP, j) {
 						if (nSig == objP->info.nSignature) {
 							objP->info.position.mOrient = curObjs [i].info.position.mOrient;
 							objP->info.position.vPos = curObjs [i].info.position.vPos;

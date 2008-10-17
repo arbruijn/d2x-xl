@@ -1062,16 +1062,21 @@ if (gameStates.app.cheats.bRobotsKillRobots) {
 	if (gameData.ai.nPlayerVisibility) {
 		int j, nMinObj = -1;
 		fix curDist, minDist = MAX_WAKEUP_DIST;
-
-		for (j = 0; j <= gameData.objs.nLastObject [0]; j++)
-			if ((OBJECTS [j].info.nType == OBJ_ROBOT) && (j != siP->nObject)) {
-				curDist = vmsVector::Dist(objP->info.position.vPos, OBJECTS [j].info.position.vPos);
-				if ((curDist < MAX_WAKEUP_DIST / 2) && (curDist < minDist) &&
-					 ObjectToObjectVisibility (objP, OBJECTS + j, FQ_TRANSWALL)) {
-					nMinObj = j;
-					minDist = curDist;
-					}
+		tObject *robotP;
+		
+		FORALL_OBJS (robotP, j) {
+			if (robotP->info.nType != OBJ_ROBOT)
+				continue;
+			j = OBJ_IDX (robotP);
+			if (j == siP->nObject)
+				continue;
+			curDist = vmsVector::Dist(objP->info.position.vPos, OBJECTS [j].info.position.vPos);
+			if ((curDist < MAX_WAKEUP_DIST / 2) && (curDist < minDist) &&
+				 ObjectToObjectVisibility (objP, robotP, FQ_TRANSWALL)) {
+				nMinObj = j;
+				minDist = curDist;
 				}
+			}
 		if (nMinObj >= 0) {
 			gameData.ai.vBelievedPlayerPos = OBJPOS (OBJECTS + nMinObj)->vPos;
 			gameData.ai.nBelievedPlayerSeg = OBJSEG (OBJECTS + nMinObj);

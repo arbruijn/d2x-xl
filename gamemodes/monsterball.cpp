@@ -84,13 +84,13 @@ int FindMonsterball (void)
 gameData.hoard.monsterballP = NULL;
 gameData.hoard.nMonsterballSeg = -1;
 gameData.hoard.nLastHitter = -1;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
+FORALL_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_MONSTERBALL) || ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_MONSTERBALL))) {
 		if (gameData.hoard.nMonsterballSeg < 0) {
 			gameData.hoard.nMonsterballSeg = objP->info.nSegment;
 			gameData.hoard.vMonsterballPos = OBJPOS (objP)->vPos;
 			}
-		ReleaseObject (i);
+		ReleaseObject (OBJ_IDX (objP));
 		}
 #if !DBG
 if (!(NetworkIAmMaster () && IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))

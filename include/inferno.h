@@ -1893,6 +1893,8 @@ typedef struct tGuidedMissileInfo {
 typedef struct tObjectData {
 	tObjTypeData			types;
 	tObject					*objects;
+	tObject					*firstObjP;
+	tObject					*lastObjP;
 	short						*freeList;
 	short						*parentObjs;
 	tObjectRef				*childObjs;

@@ -1504,7 +1504,7 @@ int special_object_in_seg (int nSegment)
 		if ((OBJECTS [nObject].info.nType == OBJ_PLAYER) || (OBJECTS [nObject].info.nType == OBJ_REACTOR)) {
 			return 1;
 		} else
-			nObject = OBJECTS [nObject].info.nNext;
+			nObject = OBJECTS [nObject].info.nNextInSeg;
 	}
 
 	return 0;
@@ -1525,22 +1525,21 @@ return segP->children[sidenum];
 //	Return true if tObject created, else return false.
 int create_gated_robot( int nSegment, int nObjId)
 {
-	int		nObject;
-	tObject	*objP;
-	tSegment	*segP = &gameData.segs.segments[nSegment];
+	int			nObject;
+	tObject		*objP;
+	tSegment		*segP = &gameData.segs.segments[nSegment];
 	vmsVector	vObjPos;
 	tRobotInfo	*botInfoP = &gameData.bots.info [1][nObjId];
-	int		i, count=0;
-	fix		objsize = gameData.models.polyModels[botInfoP->nModel].rad;
-	int		default_behavior;
+	int			i, count = 0;
+	fix			objsize = gameData.models.polyModels[botInfoP->nModel].rad;
+	int			default_behavior;
 
-	for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-		if (OBJECTS[i].info.nType == OBJ_ROBOT)
-			if (OBJECTS[i].info.nCreator == BOSS_GATE_MATCEN_NUM)
-				count++;
-
-	if (count > 2*gameStates.app.nDifficultyLevel + 3) {
-		gameData.boss [0].nLastGateTime = gameData.time.xGame - 3*gameData.boss [0].nGateInterval/4;
+	FORALL_OBJS (objP, i) {
+		if ((objP->info.nType == OBJ_ROBOT) && (objP->info.nCreator == BOSS_GATE_MATCEN_NUM))
+			count++;
+		}
+	if (count > 2 * gameStates.app.nDifficultyLevel + 3) {
+		gameData.boss [0].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [0].nGateInterval / 4;
 		return 0;
 	}
 

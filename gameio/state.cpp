@@ -536,6 +536,7 @@ void StateSaveBinGameData (CFILE cf, int bBetweenLevels)
 	int		i, j;
 	ushort	nWall, nTexture;
 	short		nObjsWithTrigger, nObject, nFirstTrigger;
+	tObject	*objP;
 
 // Save the Between levels flag...
 CFWrite (&bBetweenLevels, sizeof (int), 1, &cf);
@@ -567,26 +568,26 @@ CFWrite (&gameStates.app.nDifficultyLevel, sizeof (int), 1, &cf);
 CFWrite (&gameStates.app.cheats.bEnabled, sizeof (int), 1, &cf);
 if (!bBetweenLevels)	{
 //Finish all morph OBJECTS
-	for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-		if (OBJECTS [i].info.nType == OBJ_NONE) 
+	FORALL_OBJS (objP, i) {
+		if (objP->info.nType == OBJ_NONE) 
 			continue;
-		if (OBJECTS [i].info.nType == OBJ_CAMERA)
-			OBJECTS [i].info.position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
-		else if (OBJECTS [i].info.renderType == RT_MORPH) {
-			tMorphInfo *md = MorphFindData (OBJECTS + i);
+		if (objP->info.nType == OBJ_CAMERA)
+			objP->info.position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [OBJ_IDX (objP)]].orient;
+		else if (objP->info.renderType == RT_MORPH) {
+			tMorphInfo *md = MorphFindData (objP);
 			if (md) {
-				tObject *objP = md->objP;
-				objP->info.controlType = md->saveControlType;
-				objP->info.movementType = md->saveMovementType;
-				objP->info.renderType = RT_POLYOBJ;
-				objP->mType.physInfo = md->savePhysInfo;
+				tObject *mdObjP = md->objP;
+				mdObjP->info.controlType = md->saveControlType;
+				mdObjP->info.movementType = md->saveMovementType;
+				mdObjP->info.renderType = RT_POLYOBJ;
+				mdObjP->mType.physInfo = md->savePhysInfo;
 				md->objP = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
-				KillObject (OBJECTS + i);
-				OBJECTS [i].info.renderType = RT_POLYOBJ;
-				OBJECTS [i].info.controlType = CT_NONE;
-				OBJECTS [i].info.movementType = MT_NONE;
+				KillObject (objP);
+				objP->info.renderType = RT_POLYOBJ;
+				objP->info.controlType = CT_NONE;
+				objP->info.movementType = MT_NONE;
 				}
 			}
 		}
@@ -616,13 +617,16 @@ if (!bBetweenLevels)	{
 	CFWrite (&gameData.trigs.nObjTriggers, sizeof (int), 1, &cf);
 	CFWrite (gameData.trigs.objTriggers, sizeof (tTrigger), gameData.trigs.nObjTriggers, &cf);
 	CFWrite (gameData.trigs.objTriggerRefs, sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers, &cf);
-	for (nObject = 0, nObjsWithTrigger = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
+	nObjsWithTrigger = 0;
+	FORALL_OBJS (objP, nObject) {
+		nObject = OBJ_IDX (objP);
 		nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 		if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers))
 			nObjsWithTrigger++;
 		}
 	CFWrite (&nObjsWithTrigger, sizeof (nObjsWithTrigger), 1, &cf);
-	for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
+	FORALL_OBJS (objP, nObject) {
+		nObject = OBJ_IDX (objP);
 		nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 		if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers)) {
 			CFWrite (&nObject, sizeof (nObject), 1, &cf);
@@ -859,8 +863,8 @@ void StateSaveObject (tObject *objP, CFILE *cfP)
 CFWriteInt (objP->info.nSignature, cfP);      
 CFWriteByte ((sbyte) objP->info.nType, cfP); 
 CFWriteByte ((sbyte) objP->info.nId, cfP);
-CFWriteShort (objP->info.nNext, cfP);
-CFWriteShort (objP->info.nPrev, cfP);
+CFWriteShort (objP->info.nNextInSeg, cfP);
+CFWriteShort (objP->info.nPrevInSeg, cfP);
 CFWriteByte ((sbyte) objP->info.controlType, cfP);
 CFWriteByte ((sbyte) objP->info.movementType, cfP);
 CFWriteByte ((sbyte) objP->info.renderType, cfP);
@@ -1110,6 +1114,7 @@ void StateSaveUniGameData (CFILE *cfP, int bBetweenLevels)
 {
 	int		i, j;
 	short		nObjsWithTrigger, nObject, nFirstTrigger;
+	tObject	*objP;
 
 CFWriteInt (gameData.segs.nMaxSegments, cfP);
 // Save the Between levels flag...
@@ -1151,26 +1156,26 @@ for (i = 0; i < MAX_PLAYERS; i++)
 	CFWriteInt (gameData.multiplayer.weaponStates [i].bTripleFusion, cfP);
 if (!bBetweenLevels)	{
 //Finish all morph OBJECTS
-	for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-		if (OBJECTS [i].info.nType == OBJ_NONE) 
+	FORALL_OBJS (objP, i) {
+	if (objP->info.nType == OBJ_NONE) 
 			continue;
-		if (OBJECTS [i].info.nType == OBJ_CAMERA)
-			OBJECTS [i].info.position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
-		else if (OBJECTS [i].info.renderType == RT_MORPH) {
-			tMorphInfo *md = MorphFindData (OBJECTS + i);
+		if (objP->info.nType == OBJ_CAMERA)
+			objP->info.position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [OBJ_IDX (objP)]].orient;
+		else if (objP->info.renderType == RT_MORPH) {
+			tMorphInfo *md = MorphFindData (objP);
 			if (md) {
-				tObject *objP = md->objP;
-				objP->info.controlType = md->saveControlType;
-				objP->info.movementType = md->saveMovementType;
-				objP->info.renderType = RT_POLYOBJ;
-				objP->mType.physInfo = md->savePhysInfo;
+				tObject *mdObjP = md->objP;
+				mdObjP->info.controlType = md->saveControlType;
+				mdObjP->info.movementType = md->saveMovementType;
+				mdObjP->info.renderType = RT_POLYOBJ;
+				mdObjP->mType.physInfo = md->savePhysInfo;
 				md->objP = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
-				KillObject (OBJECTS + i);
-				OBJECTS [i].info.renderType = RT_POLYOBJ;
-				OBJECTS [i].info.controlType = CT_NONE;
-				OBJECTS [i].info.movementType = MT_NONE;
+				KillObject (objP);
+				objP->info.renderType = RT_POLYOBJ;
+				objP->info.controlType = CT_NONE;
+				objP->info.movementType = MT_NONE;
 				}
 			}
 		}
@@ -1218,13 +1223,16 @@ if (!bBetweenLevels)	{
 			StateSaveTrigger (gameData.trigs.objTriggers + i, cfP);
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 			StateSaveObjTriggerRef (gameData.trigs.objTriggerRefs + i, cfP);
-		for (nObject = 0, nObjsWithTrigger = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
+		nObjsWithTrigger = 0;
+		FORALL_OBJS (objP, nObject) {
+			nObject = OBJ_IDX (objP);
 			nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers))
 				nObjsWithTrigger++;
 			}
 		CFWriteShort (nObjsWithTrigger, cfP);
-		for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
+		FORALL_OBJS (objP, nObject) {
+			nObject = OBJ_IDX (objP);
 			nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers)) {
 				CFWriteShort (nObject, cfP);
@@ -1669,7 +1677,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		if ((j < 0) || (gameData.boss [j].nDying != i))
 			objP->info.nType = OBJ_NONE;
 		}
-	objP->info.nNext = objP->info.nPrev = objP->info.nSegment = -1;
+	objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
 	if (objP->info.nType != OBJ_NONE) {
 		LinkObject (i, nSegment);
 		if (objP->info.nSignature > gameData.objs.nNextSignature)
@@ -1888,8 +1896,8 @@ else
 if ((sgVersion < 32) && IS_BOSS (objP))
 	gameData.boss [(int) extraGameInfo [0].nBossCount++].nObject = OBJ_IDX (objP);
 objP->info.nId = (ubyte) CFReadByte (cfP);
-objP->info.nNext = CFReadShort (cfP);
-objP->info.nPrev = CFReadShort (cfP);
+objP->info.nNextInSeg = CFReadShort (cfP);
+objP->info.nPrevInSeg = CFReadShort (cfP);
 objP->info.controlType = (ubyte) CFReadByte (cfP);
 objP->info.movementType = (ubyte) CFReadByte (cfP);
 objP->info.renderType = (ubyte) CFReadByte (cfP);

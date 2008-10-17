@@ -459,20 +459,21 @@ class CObjContainerInfo {
 typedef struct tObjectInfo {
 	int     				nSignature;    // Every tObject ever has a unique nSignature...
 	ubyte   				nType;         // what nType of tObject this is... robot, weapon, hostage, powerup, fireball
-	ubyte   				nId;            // which form of tObject...which powerup, robot, etc.
+	ubyte   				nId;           // which form of tObject...which powerup, robot, etc.
 #ifdef WORDS_NEED_ALIGNMENT
 	short   				pad;
 #endif
-	short   				nNext, nPrev/*, me*/;    // id of next and previous connected tObject in Objects, -1 = no connection
+	short   				nNextInSeg, 
+							nPrevInSeg;  // id of next and previous connected tObject in Objects, -1 = no connection
 	ubyte   				controlType;   // how this tObject is controlled
 	ubyte   				movementType;  // how this tObject moves
 	ubyte   				renderType;    // how this tObject renders
-	ubyte   				nFlags;         // misc flags
+	ubyte   				nFlags;        // misc flags
 	short					nSegment;
-	short   				nAttachedObj;   // number of attached fireball tObject
+	short   				nAttachedObj;  // number of attached fireball tObject
 	tTransformation	position;
-	fix     				xSize;          // 3d size of tObject - for collision detection
-	fix     				xShields;       // Starts at maximum, when <0, tObject dies..
+	fix     				xSize;         // 3d size of tObject - for collision detection
+	fix     				xShields;      // Starts at maximum, when <0, tObject dies..
 	vmsVector 			vLastPos;		// where tObject was last frame
 	tObjContainerInfo	contains;
 	sbyte   				nCreator; // Materialization center that created this tObject, high bit set if matcen-created
@@ -492,8 +493,8 @@ class CObjectInfo : public CTransformation, public CObjContainerInfo {
 		inline fix& LifeLeft () { return m_info.xLifeLeft; }
 		inline short& Segment () { return m_info.nSegment; }
 		inline short& AttachedObj () { return m_info.nAttachedObj; }
-		inline short& Next () { return m_info.nNext; }
-		inline short& Prev () { return m_info.nPrev; }
+		inline short& NextInSeg () { return m_info.nNextInSeg; }
+		inline short& PrevInSeg () { return m_info.nPrevInSeg; }
 		inline sbyte& Creator () { return m_info.nCreator; }
 		inline ubyte& Type () { return m_info.nType; }
 		inline ubyte& ControlType () { return m_info.controlType; }
@@ -532,12 +533,12 @@ typedef struct tCoreObject {
 } tCoreObject;
 
 typedef struct tObject : public tCoreObject {
-	tObject	*prevP, *nextP;
+	tObject	*prevObjP, *nextObjP;
 } tObject;
 
 class CObject : public CObjectInfo {
 	private:
-		CObject	*m_prevP, *m_nextP;
+		CObject	*m_prevObjP, *m_nextObjP;
 
 	public:
 		CObject ();
@@ -547,8 +548,8 @@ class CObject : public CObjectInfo {
 		static int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
 								 const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType, int bIgnoreLimits);
 
-		inline CObject*& PrevP () { return m_prevP; }
-		inline CObject*& NextP () { return m_nextP; }
+		inline CObject*& Prev () { return m_prevObjP; }
+		inline CObject*& Next () { return m_nextObjP; }
 		inline void Kill (void) { Flags () |= OF_SHOULD_BE_DEAD; }
 		inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
 		// unlinks an tObject from a tSegment's list of objects
@@ -888,10 +889,13 @@ extern ubyte bIsMissile [];
 #define	SHOW_OBJ_FX \
 			(!(gameStates.app.bNostalgia || COMPETITION))
 
-#define	IS_BOSS(_objP)		(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).bossFlag)
-#define	IS_BOSS_I(_i)		IS_BOSS (gameData.objs.objects + (_i))
-#define	IS_MISSILE(_objP)	(((_objP)->info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(_objP)->info.nId])
-#define	IS_MISSILE_I(_i)	IS_MISSILE (gameData.objs.objects + (_i))
+#define	IS_BOSS(_objP)			(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).bossFlag)
+#define	IS_GUIDEBOT(_objP)	(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).companion)
+#define	IS_THIEF(_objP)		(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).thief)
+#define	IS_BOSS(_objP)			(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).bossFlag)
+#define	IS_BOSS_I(_i)			IS_BOSS (gameData.objs.objects + (_i))
+#define	IS_MISSILE(_objP)		(((_objP)->info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(_objP)->info.nId])
+#define	IS_MISSILE_I(_i)		IS_MISSILE (gameData.objs.objects + (_i))
 
 #if DBG
 extern tObject *dbgObjP;
@@ -907,6 +911,13 @@ extern tObject *dbgObjP;
 
 #define OBJECT_EXISTS(_objP)	 ((_objP) && !((_objP)->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 
+#if 0
+#	define FORALL_OBJS(_objP,_i)	for ((_objP) = OBJECTS, (_i) = 0; i <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++)
+ä	define IS_OBJECT(_objP, _i)	((_i) <= gameData.objs.nLastObject [0])
+#else
+#	define FORALL_OBJS(_objP,_i)	for ((_objP) = gameData.objs.firstObjP; (_objP); (_objP) = (_objP)->nextObjP)
+#	define IS_OBJECT(_objP, _i)	((_objP) != NULL)
+#endif
 
 //	-----------------------------------------------------------------------------------------------------------
 

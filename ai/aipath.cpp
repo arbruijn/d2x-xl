@@ -571,22 +571,17 @@ return 1;
 
 void ValidateAllPaths (void)
 {
-	int	i;
-	tObject	*objP = OBJECTS;
+	int				i;
+	tObject			*objP;
 	tAIStaticInfo	*aiP;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
-	if (OBJECTS [i].info.nType == OBJ_ROBOT) {
+FORALL_OBJS (objP, i) {
+	if (objP->info.nType == OBJ_ROBOT) {
 		aiP = &objP->cType.aiInfo;
-		if (objP->info.controlType == CT_AI) {
-			if ((aiP->nHideIndex != -1) && (aiP->nPathLength > 0))
-				if (!ValidatePath (4, &gameData.ai.pointSegs [aiP->nHideIndex], aiP->nPathLength)) {
-					Int3 ();	//	This path is bogus! Who corrupted it! Danger!Danger!
-								//	Contact Mike, he caused this mess.
-					//force_dump_aiObjects_all ("Error in ValidateAllPaths");
-					aiP->nPathLength=0;	//	This allows people to resume without harm...
-					}
-			}
+		if ((objP->info.controlType == CT_AI) &&
+			 (aiP->nHideIndex != -1) && (aiP->nPathLength > 0) &&
+			 !ValidatePath (4, &gameData.ai.pointSegs [aiP->nHideIndex], aiP->nPathLength))
+			aiP->nPathLength = 0;	//	This allows people to resume without harm...
 		}
 	}
 }
@@ -1241,13 +1236,13 @@ int	nLastFrameGarbageCollected = 0;
 //	Garbage colledion -- Free all unused records in gameData.ai.pointSegs and compress all paths.
 void AIPathGarbageCollect (void)
 {
-	int			nFreePathIdx = 0;
-	int			nPathObjects = 0;
-	int			nObject;
-	int			nObjIdx, i, nOldIndex;
-	tObject		*objP;
+	int				nFreePathIdx = 0;
+	int				nPathObjects = 0;
+	int				nObject;
+	int				nObjIdx, i, nOldIndex;
+	tObject			*objP;
 	tAIStaticInfo	*aiP;
-	obj_path		objectList [MAX_OBJECTS_D2X];
+	obj_path			objectList [MAX_OBJECTS_D2X];
 
 #if DBG
 force_dump_aiObjects_all ("***** Start AIPathGarbageCollect *****");
@@ -1257,14 +1252,13 @@ nLastFrameGarbageCollected = gameData.app.nFrameCount;
 ValidateAllPaths ();
 #endif
 	//	Create a list of OBJECTS which have paths of length 1 or more.p.
-objP = OBJECTS;
-for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++, objP++) {
+FORALL_OBJS (objP, nObject) {
 	if ((objP->info.nType == OBJ_ROBOT) &&
 		 ((objP->info.controlType == CT_AI) || (objP->info.controlType == CT_MORPH))) {
 		aiP = &objP->cType.aiInfo;
 		if (aiP->nPathLength) {
 			objectList [nPathObjects].path_start = aiP->nHideIndex;
-			objectList [nPathObjects++].nObject = nObject;
+			objectList [nPathObjects++].nObject = OBJ_IDX (objP);
 			}
 		}
 	}
@@ -1286,11 +1280,11 @@ gameData.ai.freePointSegs = gameData.ai.pointSegs + nFreePathIdx;
 ////printf ("After garbage collection, D2_FREE index = %i\n", gameData.ai.freePointSegs - gameData.ai.pointSegs);
 #if DBG
 force_dump_aiObjects_all ("***** Finish AIPathGarbageCollect *****");
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+FORALL_OBJS (objP, i) {
 	aiP = &objP->cType.aiInfo;
 	if ((objP->info.nType == OBJ_ROBOT) && (objP->info.controlType == CT_AI))
 		if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.freePointSegs - gameData.ai.pointSegs) &&
-			 (aiP->nPathLength>0))
+			 (aiP->nPathLength > 0))
 			Int3 ();		//	Contact Mike: Debug trap for nasty, elusive bug.
 	}
 #	if PATH_VALIDATION

@@ -106,10 +106,10 @@ static void ResetClusterLights (void)
 if (!gameStates.render.bClusterLights)
 	return;
 
-	tObject	*objP = OBJECTS;
+	tObject	*objP;
 	int		i;
 
-for (i = gameData.objs.nLastObject [0] + 1; i; i--, objP++)
+FORALL_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
 		objP->info.xLifeLeft = 0;
 		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
@@ -123,11 +123,12 @@ static void SetClusterLights (void)
 if (!gameStates.render.bClusterLights)
 	return;
 
-	tObject	*objP = OBJECTS;
+	tObject	*objP;
 	int		h, i;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID))	{
+		i = OBJ_IDX (objP);
 		if (!(h = objP->cType.lightInfo.nObjects)) {
 			RemoveDynLight (-1, -1, i);
 			KillObject (objP);
@@ -708,8 +709,8 @@ void SetDynamicLight (void)
 	vmsVector	*objPos;
 	fix			xObjIntensity;
 	tRgbaColorf	color;
-	nHeadlights = 0;
-
+	
+nHeadlights = 0;
 if (!gameOpts->render.debug.bDynamicLight)
 	return;
 memset (gameData.render.lights.vertexFlags, 0, gameData.segs.nLastVertex + 1);
@@ -768,22 +769,24 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.nLightingMethod) {
 //	Only objects which are in rendered segments cast dynamic light.  We might want to extend this
 //	one or two segments if we notice light changing as OBJECTS go offscreen.  I couldn't see any
 //	serious visual degradation.  In fact, I could see no humorous degradation, either. --MK
-for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObject++, objP++) {
+FORALL_OBJS (objP, nObject) {
 	if (objP->info.nType == OBJ_NONE)
 		continue;
 	if (SkipPowerup (objP))
 		continue;
+	nObject = OBJ_IDX (objP);
 	objPos = &objP->info.position.vPos;
 	xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);
 	if (bGotColor)
 		bKeepDynColoring = 1;
 	if (xObjIntensity) {
-		ApplyLight (xObjIntensity, objP->info.nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, OBJ_IDX (objP), bGotColor ? &color : NULL);
+		ApplyLight (xObjIntensity, objP->info.nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, nObject, bGotColor ? &color : NULL);
 		gameData.render.lights.newObjects [nObject] = 1;
 		}
 	}
 //	Now, process all lights from last frame which haven't been processed this frame.
-for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
+FORALL_OBJS (objP, nObject) {
+	nObject = OBJ_IDX (objP);
 	//	In multiplayer games, process even unprocessed OBJECTS every 4th frame, else don't know about tPlayer sneaking up.
 	if ((gameData.render.lights.objects [nObject]) ||
 		 (IsMultiGame && (((nObject ^ gameData.app.nFrameCount) & 3) == 0))) {
@@ -793,7 +796,6 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 			gameData.render.lights.objects [nObject] = gameData.render.lights.newObjects [nObject];
 		else {
 			//	Lit last frame, but not this frame.  Get intensity...
-			objP = OBJECTS + nObject;
 			objPos = &objP->info.position.vPos;
 			xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);
 			if (bGotColor)

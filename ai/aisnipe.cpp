@@ -63,7 +63,7 @@ for (i = 0; i < nBfsLength; i++) {
 			gameData.ai.localInfo [nObject].mode = AIM_SNIPE_ATTACK;
 			return;
 			}
-		nObject = objP->info.nNext;
+		nObject = objP->info.nNextInSeg;
 		}
 	}
 }

@@ -521,7 +521,7 @@ if (!matCenP->bFlag) {
 			matCenP->xTimer = 0;
 			return;
 			}
-		nObject = objP->info.nNext;
+		nObject = objP->info.nNextInSeg;
 		}
 	CreateMatCenEffect (matCenP, VCLIP_MORPHING_ROBOT);
 	}
@@ -585,7 +585,7 @@ if (!matCenP->bFlag) {
 			matCenP->xTimer = 0;
 			return;
 			}
-		nObject = objP->info.nNext;
+		nObject = objP->info.nNextInSeg;
 		}
 	CreateMatCenEffect (matCenP, VCLIP_POWERUP_DISAPPEARANCE);
 	}
@@ -695,9 +695,9 @@ if (!matCenP->bFlag) {
 	nMyStation = FUELCEN_IDX (matCenP);
 
 	//	Make sure this robotmaker hasn't put out its max without having any of them killed.
-	for (i = 0, nCount = 0; i <= gameData.objs.nLastObject [0]; i++)
-		if ((OBJECTS [i].info.nType == OBJ_ROBOT) &&
-			 ((OBJECTS [i].info.nCreator ^ 0x80) == nMyStation))
+	nCount = 0;
+	FORALL_OBJS (objP, i)
+		if ((objP->info.nType == OBJ_ROBOT) && ((objP->info.nCreator ^ 0x80) == nMyStation))
 			nCount++;
 	if (nCount > gameStates.app.nDifficultyLevel + 3) {
 #if TRACE
@@ -709,7 +709,7 @@ if (!matCenP->bFlag) {
 		//	Whack on any robot or tPlayer in the matcen tSegment.
 	nCount = 0;
 	nSegment = matCenP->nSegment;
-	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = OBJECTS [nObject].info.nNext) {
+	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 		nCount++;
 		if (nCount > MAX_OBJECTS) {
 #if TRACE
@@ -1394,7 +1394,7 @@ int FlagAtHome (int nFlagId)
 	tObject	*objP;
 
 for (i = flagGoalRoots [nFlagId - POW_BLUEFLAG]; i >= 0; i = flagGoalList [i])
-	for (j = gameData.segs.objects [i]; j >= 0; j = objP->info.nNext) {
+	for (j = gameData.segs.objects [i]; j >= 0; j = objP->info.nNextInSeg) {
 		objP = OBJECTS + j;
 		if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == nFlagId))
 			return 1;

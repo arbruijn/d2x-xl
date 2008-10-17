@@ -1502,8 +1502,8 @@ tObject *find_escort ()
 	int 		i;
 	tObject	*objP = OBJECTS;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
-	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).companion)
+FORALL_OBJS (objP, i)
+	if (IS_GUIDEBOT (objP))
 		return objP;
 return NULL;
 }
@@ -2177,7 +2177,7 @@ if (gameStates.app.tick40fps.bTick) {
 	while (nObject != -1) {
 		if (OBJECTS [nObject].info.nType == OBJ_POWERUP)
 			PowerupGrabCheat (gameData.objs.consoleP, nObject);
-		nObject = OBJECTS [nObject].info.nNext;
+		nObject = OBJECTS [nObject].info.nNextInSeg;
 		}
 	}
 }
@@ -2263,14 +2263,15 @@ int	Max_objCount_mike = 0;
 void show_freeObjects (void)
 {
 	if (!(gameData.app.nFrameCount & 8)) {
-		int	i;
-		int	count=0;
+		int		i;
+		tObject	*objP;
+		int		count = 0;
 
 #if TRACE
 		//con_printf (CONDBG, "gameData.objs.nLastObject [0] = %3i, MAX_OBJECTS = %3i, now used = ", gameData.objs.nLastObject [0], MAX_OBJECTS);
 #endif
-		for (i=0; i<=gameData.objs.nLastObject [0]; i++)
-			if (OBJECTS [i].info.nType != OBJ_NONE)
+		FORALL_OBJS (objP, i)
+			if (objP->info.nType != OBJ_NONE)
 				count++;
 #if TRACE
 		//con_printf (CONDBG, "%3i", count);

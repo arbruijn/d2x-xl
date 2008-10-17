@@ -1088,7 +1088,7 @@ if (flags & FQ_CHECK_OBJS) {
 	for (iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
 		short nSegment = nObjSegList [iObjSeg];
 		segP = gameData.segs.segments + nSegment;
-		for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = otherObjP->info.nNext) {
+		for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = otherObjP->info.nNextInSeg) {
 			otherObjP = OBJECTS + nObject;
 			nOtherType = otherObjP->info.nType;
 			if (otherObjP->info.nFlags & OF_SHOULD_BE_DEAD)

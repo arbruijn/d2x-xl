@@ -1273,7 +1273,7 @@ static void CheckAndLinkObjects (void)
 	int	i, nObjSeg;
 
 for (i = 0; i < gameFileInfo.objects.count; i++) {
-	OBJECTS [i].info.nNext = OBJECTS [i].info.nPrev = -1;
+	OBJECTS [i].info.nNextInSeg = OBJECTS [i].info.nPrevInSeg = -1;
 	if (OBJECTS [i].info.nType != OBJ_NONE) {
 		nObjSeg = OBJECTS [i].info.nSegment;
 		if ((nObjSeg < 0) || (nObjSeg > gameData.segs.nLastSegment))	

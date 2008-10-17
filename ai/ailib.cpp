@@ -451,7 +451,7 @@ while (nObject != -1) {
 		if (vmsVector::Dist(*pos, objP->info.position.vPos) < size + objP->info.xSize)
 			return 1;
 		}
-	nObject = objP->info.nNext;
+	nObject = objP->info.nNextInSeg;
 	}
 return 0;
 }

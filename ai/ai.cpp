@@ -127,12 +127,14 @@ gameData.ai.nAwarenessEvents = 0;
 
 void SetPlayerAwarenessAll (void)
 {
-	int	i;
-	short	nSegment;
+	int		i;
+	short		nSegment;
+	tObject	*objP;
 
 ProcessAwarenessEvents ();
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-	if (OBJECTS [i].info.controlType == CT_AI) {
+FORALL_OBJS (objP, i)
+	if (objP->info.controlType == CT_AI) {
+		i = OBJ_IDX (objP);
 		nSegment = OBJECTS [i].info.nSegment;
 		if (newAwareness [nSegment] > gameData.ai.localInfo [i].playerAwarenessType) {
 			gameData.ai.localInfo [i].playerAwarenessType = newAwareness [nSegment];
@@ -140,7 +142,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 			}
 		// Clear the bit that says this robot is only awake because a camera woke it up.
 		if (newAwareness [nSegment] > gameData.ai.localInfo [i].playerAwarenessType)
-			OBJECTS [i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
+			objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
 }
 
@@ -150,7 +152,8 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
 //  Setting player_awareness (a fix, time in seconds which tObject is aware of tPlayer)
 void DoAIFrameAll (void)
 {
-	int	h, i, j;
+	int		h, i, j;
+	tObject	*objP;
 
 SetPlayerAwarenessAll ();
 if (USE_D1_AI)
@@ -159,9 +162,10 @@ if (gameData.ai.nLastMissileCamera != -1) {
 	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
 	if (((gameData.app.nFrameCount & 0x0f) == 0) || (OBJECTS [gameData.ai.nLastMissileCamera].info.nType != OBJ_WEAPON)) {
 		gameData.ai.nLastMissileCamera = -1;
-		for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-			if (OBJECTS [i].info.nType == OBJ_ROBOT)
-				OBJECTS [i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
+		FORALL_OBJS (objP, i) {
+			if (objP->info.nType == OBJ_ROBOT)
+				objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
+			}
 		}
 	}
 for (h = BOSS_COUNT, j = 0; j < h; j++)
@@ -170,7 +174,7 @@ for (h = BOSS_COUNT, j = 0; j < h; j++)
 			DoBossDyingFrame (OBJECTS + gameData.boss [j].nDying);
 		else {
 			tObject *objP = OBJECTS;
-			for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
+			FORALL_OBJS (objP, i)
 				if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).bossFlag)
 					DoBossDyingFrame (objP);
 		}
