@@ -200,11 +200,12 @@ return nBestObj;
 //	Make homing OBJECTS not track parent's prox bombs.
 int FindHomingObjectComplete (vmsVector *curpos, tObject *trackerP, int track_objType1, int track_objType2)
 {
-	int	nObject;
-	fix	maxDot = -F1_0*2;
-	int	nBestObj = -1;
-	fix	maxTrackableDist;
-	fix	minTrackableDot;
+	int		nObject;
+	fix		maxDot = -F1_0*2;
+	int		nBestObj = -1;
+	fix		maxTrackableDist;
+	fix		minTrackableDot;
+	tObject	*curObjP;
 
 	//	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
 //Assert ((WI_homingFlag (trackerP->info.nId)) || (trackerP->info.nId == OMEGA_ID));
@@ -226,11 +227,10 @@ if ((trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == OMEGA_ID)) {
 	minTrackableDot = OMEGA_MIN_TRACKABLE_DOT;
 	}
 
-for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
+FORALL_OBJS (curObjP, nObject) {
 	int			bIsProximity = 0;
 	fix			dot, dist;
 	vmsVector	vecToCurObj;
-	tObject		*curObjP = OBJECTS + nObject;
 
 	if ((curObjP->info.nType != track_objType1) && (curObjP->info.nType != track_objType2)) {
 		if (curObjP->info.nType != OBJ_WEAPON) 
@@ -241,7 +241,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 			continue;
 		bIsProximity = 1;
 		}
-	if (nObject == trackerP->cType.laserInfo.parent.nObject) // Don't track shooter
+	if (OBJ_IDX (curObjP) == trackerP->cType.laserInfo.parent.nObject) // Don't track shooter
 		continue;
 
 	//	Don't track cloaked players.
@@ -274,10 +274,9 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject [0]; nObject++) {
 		//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 		//	to determine if an tObject is initially trackable.  FindHomingObject is called on subsequent
 		//	frames to determine if the tObject remains trackable.
-		if ((dot > minTrackableDot) && (dot > maxDot) &&
-			 (ObjectToObjectVisibility (trackerP, OBJECTS + nObject, FQ_TRANSWALL))) {
+		if ((dot > minTrackableDot) && (dot > maxDot) && (ObjectToObjectVisibility (trackerP, curObjP, FQ_TRANSWALL))) {
 			maxDot = dot;
-			nBestObj = nObject;
+			nBestObj = OBJ_IDX (curObjP);
 			}
 		}
 	}

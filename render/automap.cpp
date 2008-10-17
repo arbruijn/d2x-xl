@@ -406,9 +406,9 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 			}
 		}
 	objP = OBJECTS;
-	for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+	FORALL_OBJS (objP, i) {
 		size = objP->info.xSize;
-		switch (objP->info.nType)	{
+		switch (objP->info.nType) {
 			case OBJ_HOSTAGE:
 				GrSetColorRGBi (automapColors.nHostage);
 				G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);

@@ -61,15 +61,16 @@ if (gameData.omega.xCharge [IsMultiGame] > gameData.omega.xMaxCharge) {
 
 void DeleteOldOmegaBlobs (tObject *parentObjP)
 {
-	short	i;
-	int	count = 0;
-	int	nParentObj = parentObjP->cType.laserInfo.parent.nObject;
+	short		i;
+	int		count = 0;
+	int		nParentObj = parentObjP->cType.laserInfo.parent.nObject;
+	tObject	*objP;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
-	if (OBJECTS [i].info.nType == OBJ_WEAPON)
-		if (OBJECTS [i].info.nId == OMEGA_ID)
-			if (OBJECTS [i].cType.laserInfo.parent.nObject == nParentObj) {
-				ReleaseObject (i);
+FORALL_OBJS (objP, i)
+	if ((objP->info.nType == OBJ_WEAPON) &&
+		 (objP->info.nId == OMEGA_ID) &&
+		 (objP->cType.laserInfo.parent.nObject == nParentObj)) {
+				ReleaseObject (OBJ_IDX (objP));
 				count++;
 				}
 }

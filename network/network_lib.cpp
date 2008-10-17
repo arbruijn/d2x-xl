@@ -310,15 +310,16 @@ return -1;
 //------------------------------------------------------------------------------
 
 void NetworkCountPowerupsInMine (void)
- {
-  int i;
+{
+  int 		i;
+  tObject	*objP;
 
 memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-	if (OBJECTS [i].info.nType == OBJ_POWERUP) {
-		gameData.multiplayer.powerupsInMine [OBJECTS [i].info.nId]++;
-		if (MultiPowerupIs4Pack (OBJECTS [i].info.nId))
-			gameData.multiplayer.powerupsInMine [OBJECTS [i].info.nId-1]+=4;
+FORALL_OBJS (objP, i) {
+	if (objP->info.nType == OBJ_POWERUP) {
+		gameData.multiplayer.powerupsInMine [objP->info.nId]++;
+		if (MultiPowerupIs4Pack (objP->info.nId))
+			gameData.multiplayer.powerupsInMine [objP->info.nId - 1] += 4;
 		}
 	}
 }

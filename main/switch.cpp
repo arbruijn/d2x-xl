@@ -1183,10 +1183,11 @@ return wallP ? wallP->nSegment * 65536 + wallP->nSide : -1;
 
 int ObjTriggerIsValid (int nTrigger)
 {
-	int	h, i, j;
+	int		h, i, j;
+	tObject	*objP;
 
-for (i = 0; i < gameData.objs.nLastObject [0]; i++) {
-	j = gameData.trigs.firstObjTrigger [i];
+FORALL_OBJS (objP, i) {
+	j = gameData.trigs.firstObjTrigger [OBJ_IDX (objP)];
 	if (j < 0)
 		continue;
 	if (gameData.trigs.objTriggerRefs [j].nObject < 0)

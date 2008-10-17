@@ -511,7 +511,7 @@ int NetworkVerifyPlayers (void)
 {
 	int		i, j, t, bCoop = IsCoopGame;
 	int		nPlayers, nPlayerObjs [MAX_PLAYERS], bHaveReactor = !bCoop;
-	tObject	*objP = OBJECTS;
+	tObject	*objP;
 	tPlayer	*playerP;
 
 for (j = 0, playerP = gameData.multiplayer.players; j < MAX_PLAYERS; j++, playerP++)
@@ -520,7 +520,9 @@ for (j = 0, playerP = gameData.multiplayer.players; j < MAX_PLAYERS; j++, player
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 #endif
 //	bHaveReactor = 1;	// multiplayer maps do not need a control center ...
-for (i = 0, nPlayers = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+nPlayers = 0;
+FORALL_OBJS (objP, i) {
+	i = OBJ_IDX (objP);
 	t = objP->info.nType;
 	if (t == OBJ_GHOST) {
 		for (j = 0; j < MAX_PLAYERS; j++) {

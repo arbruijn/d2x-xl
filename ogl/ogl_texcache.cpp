@@ -286,7 +286,7 @@ for (i = 0; i < EXTRA_OBJ_IDS; i++)
 for (i = 0; i < MAX_POWERUP_TYPES; i++)
 	if (i != 9)
 		OglCacheVClipTexturesN (gameData.objs.pwrUp.info [i].nClipIndex, 3);
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++)
+FORALL_OBJS (objP, i)
 	if (objP->info.renderType == RT_POLYOBJ)
 		OglCachePolyModelTextures (objP->rType.polyObjInfo.nModel);
 // cache the hostage clip frame textures

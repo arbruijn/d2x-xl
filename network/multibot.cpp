@@ -131,25 +131,22 @@ if (gameData.time.xGame > lastcheck + F1_0) {
 
 //-----------------------------------------------------------------------------
 
-void MultiStripRobots (int playernum)
+void MultiStripRobots (int nPlayer)
 {
 	// Grab all robots away from a tPlayer 
 	// (tPlayer died or exited the game)
 
-	int i;
+	int 		i;
+	tObject	*objP;
 
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS) {
-	if (playernum == gameData.multiplayer.nLocalPlayer)
+	if (nPlayer == gameData.multiplayer.nLocalPlayer)
 		for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 			MultiDeleteControlledRobot (gameData.multigame.robots.controlled [i]);
-	for (i = 1; i <= gameData.objs.nLastObject [0]; i++)
-		if ((OBJECTS [i].info.nType == OBJ_ROBOT) && 
-			 (OBJECTS [i].cType.aiInfo.REMOTE_OWNER == playernum)) {
-			OBJECTS [i].cType.aiInfo.REMOTE_OWNER = -1;
-			if (playernum == gameData.multiplayer.nLocalPlayer)
-				OBJECTS [i].cType.aiInfo.REMOTE_SLOT_NUM = 4;
-			else
-				OBJECTS [i].cType.aiInfo.REMOTE_SLOT_NUM = 0;
+	FORALL_OBJS (objP, i)
+		if ((objP->info.nType == OBJ_ROBOT) && (objP->cType.aiInfo.REMOTE_OWNER == nPlayer)) {
+			objP->cType.aiInfo.REMOTE_OWNER = -1;
+			objP->cType.aiInfo.REMOTE_SLOT_NUM = (nPlayer == gameData.multiplayer.nLocalPlayer) ? 4 : 0;
 	  		}
 	}
 // Note -- only call this with playernum == gameData.multiplayer.nLocalPlayer if all other players

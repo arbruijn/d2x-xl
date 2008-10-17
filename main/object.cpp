@@ -179,14 +179,12 @@ for (i = 0; i < MAX_BOSS_COUNT; i++)
 //set viewerP tObject to next tObject in array
 void ObjectGotoNextViewer ()
 {
-	int i, nStartObj = 0;
+	int 		i;
+	tObject	*objP;
 
-nStartObj = OBJ_IDX (gameData.objs.viewerP);		//get viewerP tObject number
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-	if (++nStartObj > gameData.objs.nLastObject [0])
-		nStartObj = 0;
-	if (OBJECTS [nStartObj].info.nType != OBJ_NONE) {
-		gameData.objs.viewerP = OBJECTS + nStartObj;
+FORALL_OBJS (objP, i) {
+	if (objP->info.nType != OBJ_NONE) {
+		gameData.objs.viewerP = objP;
 		return;
 		}
 	}
@@ -197,10 +195,11 @@ Error ("Couldn't find a viewerP tObject!");
 //set viewerP tObject to next tObject in array
 void ObjectGotoPrevViewer ()
 {
-	int i, nStartObj = 0;
+	int 		i, nStartObj = 0;
+	tObject	*objP;
 
 nStartObj = OBJ_IDX (gameData.objs.viewerP);		//get viewerP tObject number
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
+FORALL_OBJS (objP, i) {
 	if (--nStartObj < 0)
 		nStartObj = gameData.objs.nLastObject [0];
 	if (OBJECTS [nStartObj].info.nType != OBJ_NONE)	{
@@ -217,9 +216,9 @@ Error ("Couldn't find a viewerP tObject!");
 tObject *ObjFindFirstOfType (int nType)
 {
 	int		i;
-	tObject	*objP = OBJECTS;
+	tObject	*objP;
 
-for (i = gameData.objs.nLastObject [0] + 1; i; i--, objP++)
+FORALL_OBJS (objP, i)
 	if (objP->info.nType == nType)
 		return (objP);
 return (tObject *) NULL;
@@ -230,9 +229,9 @@ return (tObject *) NULL;
 int ObjReturnNumOfType (int nType)
 {
 	int		i, count = 0;
-	tObject	*objP = OBJECTS;
+	tObject	*objP;
 
-for (i = gameData.objs.nLastObject [0] + 1; i; i--, objP++)
+FORALL_OBJS (objP, i)
 	if (objP->info.nType == nType)
 		count++;
 return count;
@@ -243,9 +242,9 @@ return count;
 int ObjReturnNumOfTypeAndId (int nType, int id)
 {
 	int		i, count = 0;
-	tObject	*objP = OBJECTS;
+	tObject	*objP;
 
-for (i = gameData.objs.nLastObject [0] + 1; i; i--, objP++)
+FORALL_OBJS (objP, i)
 	if ((objP->info.nType == nType) && (objP->info.nId == id))
 	 count++;
  return count;
@@ -553,19 +552,20 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++)
 
 int CheckDuplicateObjects (void)
 {
-	int i, count = 0;
+	int 		i, count = 0;
+	tObject	*objP;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-	if (OBJECTS [i].info.nType != OBJ_NONE)	{
-		count = SearchAllSegsForObject (i);
+FORALL_OBJS (objP, i) {
+	if (objP->info.nType != OBJ_NONE)	{
+		count = SearchAllSegsForObject (OBJ_IDX (objP));
 		if (count > 1)	{
 #if DBG
 #	if TRACE
-			con_printf (1, "Object %d is in %d segments!\n", i, count);
+			con_printf (1, "Object %d is in %d segments!\n", OBJ_IDX (objP), count);
 #	endif
 			Int3 ();
 #endif
-			RemoveAllObjectsBut (OBJECTS [i].info.nSegment,  i);
+			RemoveAllObjectsBut (objP->info.nSegment,  OBJ_IDX (objP));
 			return count;
 			}
 		}
@@ -1514,8 +1514,7 @@ void DeleteAllObjsThatShouldBeDead ()
 	tObject	*objP;
 	int		nLocalDeadPlayerObj = -1;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
-	objP = OBJECTS + i;
+FORALL_OBJS (objP, i) {
 	if (objP->info.nType == OBJ_NONE)
 		continue;
 	if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD)) {
@@ -1540,7 +1539,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
 		}
 	Assert ((objP->info.nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
 	if (objP->info.nType != OBJ_PLAYER)
-		ReleaseObject ((short) i);
+		ReleaseObject (OBJ_IDX (objP));
 	else {
 		if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
 			if (nLocalDeadPlayerObj == -1) {
@@ -2155,7 +2154,7 @@ objP = OBJECTS;
 #ifndef DEMO_ONLY
 gameStates.entropy.bConquering = 0;
 UpdatePlayerOrient ();
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
+FORALL_OBJS (objP, i) {
 	if ((objP->info.nType != OBJ_NONE) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD)) {
 		if (!UpdateObject (objP))
 			return 0;
@@ -2226,10 +2225,10 @@ void compressObjects (void)
 
 int ObjectCount (int nType)
 {
-	int		h, i;
+	int		h = 0, i;
 	tObject	*objP = OBJECTS;
 
-for (h = 0, i = gameData.objs.nLastObject [0] + 1; i; i--, objP++)
+FORALL_OBJS (objP, i)
 	if (objP->info.nType == nType)
 		h++;
 return h;
@@ -2279,7 +2278,7 @@ void ConvertObjects (void)
 	int		i;
 
 PrintLog ("   converting deprecated smoke objects\n");
-for (i = gameData.objs.nLastObject [0] + 1, objP = OBJECTS; i; i--, objP++)
+FORALL_OBJS (objP, i)
 	if (objP->info.nType == OBJ_SMOKE)
 		ConvertSmokeObject (objP);
 }
@@ -2327,10 +2326,9 @@ void SetupEffects (void)
 	int		i;
 
 PrintLog ("   setting up effects\n");
-for (i = gameData.objs.nLastObject [0] + 1, objP = OBJECTS; i; i--, objP++)
-	if (objP->info.nType == OBJ_EFFECT)
-		if (objP->info.nId == SMOKE_ID)
-			SetupSmokeEffect (objP);
+FORALL_OBJS (objP, i) 
+	if ((objP->info.nType == OBJ_EFFECT) && (objP->info.nId == SMOKE_ID))
+		SetupSmokeEffect (objP);
 }
 
 //------------------------------------------------------------------------------
@@ -2386,9 +2384,10 @@ return 1;
 //go through all OBJECTS and make sure they have the correct tSegment numbers
 void FixObjectSegs (void)
 {
-	tObject	*objP = OBJECTS;
+	tObject	*objP;
+	int		i;
 
-for (int i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_NONE) || (objP->info.nType == OBJ_CAMBOT) || (objP->info.nType == OBJ_EFFECT))
 		continue;
 	if (UpdateObjectSeg (objP))
@@ -2410,10 +2409,10 @@ for (int i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 //go through all OBJECTS and make sure they have the correct size
 void FixObjectSizes (void)
 {
-	int i;
+	int 		i;
 	tObject	*objP = OBJECTS;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
+FORALL_OBJS (objP, i)
 	if (objP->info.nType == OBJ_ROBOT)
 		objP->info.xSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 }
@@ -2428,7 +2427,7 @@ void ClearTransientObjects (int bClearAll)
 	short nObject;
 	tObject *objP;
 
-for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObject++, objP++)
+FORALL_OBJS (objP, nObject) 
 	if (((objP->info.nType == OBJ_WEAPON) && !(gameData.weapons.info [objP->info.nId].flags&WIF_PLACABLE) &&
 		  (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||
 			objP->info.nType == OBJ_FIREBALL ||
@@ -2437,20 +2436,18 @@ for (nObject = 0, objP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObj
 
 #if DBG
 #	if TRACE
-		if (OBJECTS [nObject].info.xLifeLeft > I2X (2))
+		if (objP->info.xLifeLeft > I2X (2))
 			con_printf (CONDBG, "Note: Clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n",
-							nObject, OBJECTS [nObject].info.nType,
-							OBJECTS [nObject].info.nId, OBJECTS [nObject].info.xLifeLeft);
+							OBJ_IDX (objP), objP->info.nType, objP->info.nId, objP->info.xLifeLeft);
 #	endif
 #endif
-		ReleaseObject (nObject);
+		ReleaseObject (OBJ_IDX (objP));
 	}
 	#if DBG
 #	if TRACE
-		else if (OBJECTS [nObject].info.nType!=OBJ_NONE && OBJECTS [nObject].info.xLifeLeft < I2X (2))
+		else if ((objP->info.nType != OBJ_NONE) && (objP->info.xLifeLeft < I2X (2)))
 		con_printf (CONDBG, "Note: NOT clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n",
-						nObject, OBJECTS [nObject].info.nType, OBJECTS [nObject].info.nId,
-						OBJECTS [nObject].info.xLifeLeft);
+						OBJ_IDX (objP), objP->info.nType, objP->info.nId,	objP->info.xLifeLeft);
 #	endif
 #endif
 }
@@ -2703,7 +2700,7 @@ int CountPlayerObjects (int nPlayer, int nType, int nId)
 	int		i, h = 0;
 	tObject	*objP;
 
-for (i = gameData.objs.nLastObject [0] + 1, objP = OBJECTS; i; i--, objP++)
+FORALL_OBJS (objP, i) 
 	if ((objP->info.nType == nType) && (objP->info.nId == nId) &&
 		 (objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
 		 (OBJECTS [objP->cType.laserInfo.parent.nObject].info.nId == nPlayer))

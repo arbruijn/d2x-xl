@@ -1337,7 +1337,7 @@ void AIResetAllPaths (void)
 	int		i;
 	tObject	*objP = OBJECTS;
 
-for (i = gameData.objs.nLastObject [0]; i; i--, objP++)
+FORALL_OBJS (objP, i)
 	if (objP->info.controlType == CT_AI) {
 		objP->cType.aiInfo.nHideIndex = -1;
 		objP->cType.aiInfo.nPathLength = 0;

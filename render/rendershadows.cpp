@@ -337,7 +337,7 @@ DestroyShadowMaps ();
 
 int GatherShadowLightSources (void)
 {
-	tObject			*objP = OBJECTS;
+	tObject			*objP;
 	int				h, i, j, k, n, m = gameOpts->render.shadows.nLights;
 	short				*pnl;
 //	tDynLight		*pl;
@@ -348,7 +348,7 @@ psl = gameData.render.lights.dynamic.shader.lights;
 for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 	psl->bShadow =
 	psl->bExclusive = 0;
-for (h = 0; h <= gameData.objs.nLastObject [0] + 1; h++, objP++) {
+FORALL_OBJS (objP, h) {
 	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;
 	pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->info.nSegment * MAX_NEAREST_LIGHTS;

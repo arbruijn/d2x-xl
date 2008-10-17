@@ -2741,7 +2741,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 ng = 1;
 invCount = 0;
 cloakCount = 0;
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_HOSTAGE) && !IsCoopGame) {
 		nObject = CreatePowerup (POW_SHIELD_BOOST, -1, objP->info.nSegment, objP->info.position.vPos, 1);
 		ReleaseObject ((short) i);
@@ -3013,8 +3013,7 @@ void MultiSetRobotAI (void)
 
 int MultiDeleteExtraObjects ()
 {
-	int i, nType;
-	int nnp = 0;
+	int 		i, nType, nnp = 0;
 	tObject *objP;
 
 // Go through the tObject list and remove any objects not used in
@@ -3022,7 +3021,7 @@ int MultiDeleteExtraObjects ()
 // This function also prints the total number of available multiplayer
 // positions in this level, even though this should always be 8 or more!
 
-for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+FORALL_OBJS (objP, i) {
 	nType = objP->info.nType;
 	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_CAMBOT))
 		nnp++;
@@ -3035,7 +3034,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		if (nType == OBJ_ROBOT)
 			if (objP->info.contains.nCount && (objP->info.contains.nType == OBJ_POWERUP))
 				ObjectCreateEgg (objP);
-		ReleaseObject ((short) i);
+		KillObject (objP);
 		}
 	}
 return nnp;

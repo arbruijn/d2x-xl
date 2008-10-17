@@ -739,25 +739,16 @@ con_printf (CONDBG, "\n");
 void ProcessSmartMinesFrame (void)
 {
 	int			i, j;
-	int			nStart, nStep, nParentObj;
+	int			nParentObj;
 	fix			dist;
 	tObject		*objPi, *objPj;
 	vmsVector	*vBombPos;
 
 	//	If we don't know of there being any super mines in the level, just
 	//	check every 8th tObject each frame.
-if (gameStates.gameplay.bHaveSmartMines == 0) {
-	nStart = gameData.app.nFrameCount & 7;
-	nStep = 8;
-	} 
-else {
-	nStart = 0;
-	nStep = 1;
-	}
 gameStates.gameplay.bHaveSmartMines = 0;
 
-for (i = nStart; i <= gameData.objs.nLastObject [0]; i += nStep) {
-	objPi = OBJECTS + i;
+FORALL_OBJS (objPi, i) {
 	if ((objPi->info.nType != OBJ_WEAPON) || (objPi->info.nId != SMARTMINE_ID))
 		continue;
 	nParentObj = objPi->cType.laserInfo.parent.nObject;
@@ -765,12 +756,14 @@ for (i = nStart; i <= gameData.objs.nLastObject [0]; i += nStep) {
 	if (objPi->info.xLifeLeft + F1_0*2 >= gameData.weapons.info [SMARTMINE_ID].lifetime)
 		continue;
 	vBombPos = &objPi->info.position.vPos;
-	for (j = 0, objPj = OBJECTS; j <= gameData.objs.nLastObject [0]; j++, objPj++) {
+	i = OBJ_IDX (objPi);
+	FORALL_OBJS (objPj, j) {
+		j = OBJ_IDX (objPj);
 		if (j == nParentObj) 
 			continue;
 		if ((objPj->info.nType != OBJ_PLAYER) && (objPj->info.nType != OBJ_ROBOT))
 			continue;
-		dist = vmsVector::Dist(*vBombPos, objPj->info.position.vPos);
+		dist = vmsVector::Dist (*vBombPos, objPj->info.position.vPos);
 		if (dist - objPj->info.xSize >= F1_0*20)
 			continue;
 		if (objPi->info.nSegment == objPj->info.nSegment)

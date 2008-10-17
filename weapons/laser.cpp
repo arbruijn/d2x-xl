@@ -1532,9 +1532,9 @@ if (((objP->info.nType == OBJ_WEAPON) && (gameData.weapons.info [objP->info.nId]
 	if (IsMultiGame)
 		d_srand (8321L);
 
-	for (nObject = 0, curObjP = OBJECTS; nObject <= gameData.objs.nLastObject [0]; nObject++, curObjP++) {
+	FORALL_OBJS (curObjP, nObject) {
+		nObject = OBJ_IDX (objP);
 		if ((((curObjP->info.nType == OBJ_ROBOT) && (!curObjP->cType.aiInfo.CLOAKED)) || (curObjP->info.nType == OBJ_PLAYER)) && (nObject != parent.nObject)) {
-			fix	dist;
 			if (curObjP->info.nType == OBJ_PLAYER) {
 				if ((parent.nType == OBJ_PLAYER) && (IsCoopGame))
 					continue;
@@ -1553,12 +1553,11 @@ if (((objP->info.nType == OBJ_WEAPON) && (gameData.weapons.info [objP->info.nId]
 					if (ROBOTINFO (curObjP->info.nId).companion)
 						continue;
 				}
-			dist = vmsVector::Dist(objP->info.position.vPos, curObjP->info.position.vPos);
+			fix dist = vmsVector::Dist(objP->info.position.vPos, curObjP->info.position.vPos);
 			if (dist < MAX_SMART_DISTANCE) {
 				int	oovis = ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL);
 				if (oovis) { //ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL)) {
-					objList [nObjects] = nObject;
-					nObjects++;
+					objList [nObjects++] = nObject;
 					if (nObjects >= MAX_OBJDISTS) {
 						nObjects = MAX_OBJDISTS;
 						break;
