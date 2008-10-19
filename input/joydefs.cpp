@@ -144,7 +144,7 @@ return h;
 
 //------------------------------------------------------------------------------
 
-void MouseConfigCallback (int nitems, tMenuItem * items, int *key, int citem)
+int MouseConfigCallback (int nitems, tMenuItem * items, int *key, int nCurItem)
 {
 	int h, i, v;
 	int ocType = gameConfig.nControlType;
@@ -180,11 +180,11 @@ if (gameOpts->input.mouse.bUse != v) {
 		m->rebuild = 1;
 		*key = -2;
 		}
-	return;
+	return nCurItem;
 	}
 
 if (gameStates.app.bNostalgia)
-	return;
+	return nCurItem;
 
 if (gameOpts->input.mouse.bUse) {
 	if (gameOpts->app.bExpertMode) {
@@ -197,7 +197,7 @@ if (gameOpts->input.mouse.bUse) {
 					gameOpts->input.mouse.sensitivity [i] = gameOpts->input.mouse.sensitivity [0];
 			m->rebuild = 1;
 			*key = -2;
-			return;
+			return nCurItem;
 			}
 		m = items + mouseOpts.nJoystick;
 		v = m->value;
@@ -221,6 +221,7 @@ if (gameOpts->input.mouse.bUse) {
 			}
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -311,7 +312,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void JoystickConfigCallback (int nitems, tMenuItem * items, int *key, int citem)
+int JoystickConfigCallback (int nitems, tMenuItem * items, int *key, int nCurItem)
 {
 	int h, i, v;
 	int ocType = gameConfig.nControlType;
@@ -347,11 +348,11 @@ if (gameOpts->input.joystick.bUse != v) {
 		m->rebuild = 1;
 		*key = -2;
 		}
-	return;
+	return nCurItem;
 	}
 
 if (gameStates.app.bNostalgia)
-	return;
+	return nCurItem;
 
 
 if (gameStates.input.nJoysticks && gameOpts->input.joystick.bUse) {
@@ -367,7 +368,7 @@ if (gameStates.input.nJoysticks && gameOpts->input.joystick.bUse) {
 					}
 			m->rebuild = 1;
 			*key = -2;
-			return;
+			return nCurItem;
 			}
 		}
 	h = gameOpts->input.joystick.bSyncAxes ? 1 : UNIQUE_JOY_AXES;
@@ -392,6 +393,7 @@ if (gameStates.input.nJoysticks && gameOpts->input.joystick.bUse) {
 	for (i = h; i < UNIQUE_JOY_AXES; i++)
 		gameOpts->input.joystick.deadzones [i] = gameOpts->input.joystick.deadzones [0];
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -470,7 +472,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void TrackIRConfigCallback (int nitems, tMenuItem * items, int *key, int citem)
+int TrackIRConfigCallback (int nitems, tMenuItem * items, int *key, int nCurItem)
 {
 	int h, i, v;
 	tMenuItem * m;
@@ -480,7 +482,7 @@ v = m->value;
 if (gameOpts->input.trackIR.bUse != v) {
 	gameOpts->input.trackIR.bUse = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 if (gameOpts->input.trackIR.bUse) {
 	for (i = 0; i < 3; i++) {
@@ -491,7 +493,7 @@ if (gameOpts->input.trackIR.bUse) {
 				gameData.trackIR.y = 0;
 				}
 			*key = -2;
-			return;
+			return nCurItem;
 			}
 		}
 	for (i = 0; i < 3; i++) {
@@ -505,7 +507,7 @@ if (gameOpts->input.trackIR.bUse) {
 						gameOpts->input.trackIR.sensitivity [i] = gameOpts->input.trackIR.sensitivity [0];
 				m->rebuild = 1;
 				*key = -2;
-				return;
+				return nCurItem;
 				}
 			}
 		}
@@ -519,20 +521,20 @@ if (gameOpts->input.trackIR.bUse) {
 					h += gameOpts->input.trackIR.bMove [i];
 				if (h < 2) {
 					*key = -2;
-					return;
+					return nCurItem;
 					}
 				}
 			}
 		}
 	if (tirOpts.nSyncAxes < 0)
-		return;
+		return nCurItem;
 	h = gameOpts->input.trackIR.bSyncAxes ? 1 : 3;
 	for (i = 0; i < h; i++)
 		gameOpts->input.trackIR.sensitivity [i] = items [tirOpts.nSensitivity + i].value;
 	for (i = h; i < 3; i++)
 		gameOpts->input.trackIR.sensitivity [i] = gameOpts->input.trackIR.sensitivity [0];
 	if (tirOpts.nDeadzone < 0)
-		return;
+		return nCurItem;
 	m = items + tirOpts.nDeadzone;
 	v = m->value;
 	if (gameOpts->input.trackIR.nDeadzone != v) {
@@ -541,6 +543,7 @@ if (gameOpts->input.trackIR.bUse) {
 		m->rebuild = 1;
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -603,7 +606,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void KeyboardConfigCallback (int nitems, tMenuItem * items, int *key, int citem)
+int KeyboardConfigCallback (int nitems, tMenuItem * items, int *key, int nCurItem)
 {
 	int			i, v;
 	tMenuItem	*m;
@@ -614,7 +617,7 @@ if (!gameStates.app.bNostalgia) {
 	if (gameOpts->input.bUseHotKeys != v) {
 		gameOpts->input.bUseHotKeys = v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	}
 
@@ -638,6 +641,7 @@ if (gameOpts->app.bExpertMode) {
 			}
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------

@@ -120,8 +120,8 @@ typedef struct tMenuProps {
 } tMenuProps;
 
 int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					 void (*subfunction) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem), 
-					 int *cItemP, char *filename, int width, int height, int bTinyMode);
+					 int (*menuCallback) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem), 
+					 int *nCurItemP, char *filename, int width, int height, int bTinyMode);
 
 //------------------------------------------------------------------------------
 
@@ -1052,61 +1052,61 @@ void NMTrimWhitespace (char *text)
 //------------------------------------------------------------------------------
 
 int ExecMenu (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					void (*subfunction) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem),
+					int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem),
 					char *filename)
 {
-return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, subfunction, NULL, filename, -1, -1);
+return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, NULL, filename, -1, -1);
 }
 
 int ExecMenuTiny (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-						 void (*subfunction) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem))
+						int (*menuCallback) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem))
 {
-return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, subfunction, NULL, NULL, LHX (310), -1, 1);
+return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, NULL, NULL, LHX (310), -1, 1);
 }
 
 //------------------------------------------------------------------------------
 
 int ExecMenutiny2 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-						  void (*subfunction) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem))
+						  int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem))
 {
-return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, subfunction, 0, NULL, -1, -1, 1);
+return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, 0, NULL, -1, -1, 1);
 }
 
 //------------------------------------------------------------------------------
 
 int ExecMenu1 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					void (*subfunction) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
-					int *cItemP)
+					int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
+					int *nCurItemP)
 {
-return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, subfunction, cItemP, NULL, -1, -1);
+return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP, NULL, -1, -1);
 }
 
 //------------------------------------------------------------------------------
 
 int ExecMenu2 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					void (*subfunction) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
-					int *cItemP, char *filename)
+					int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
+					int *nCurItemP, char *filename)
 {
-return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, subfunction, cItemP, filename, -1, -1);
+return ExecMenu3 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP, filename, -1, -1);
 }
 
 //------------------------------------------------------------------------------
 
 int ExecMenu3 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					void (*subfunction) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
-					int *cItemP, char *filename, int width, int height)
+					int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
+					int *nCurItemP, char *filename, int width, int height)
  {
- return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, subfunction, cItemP, filename, width, height, 0);
+ return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP, filename, width, height, 0);
  }
 
 //------------------------------------------------------------------------------
 
 int ExecMenuFixedFont (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-							  void (*subfunction) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
-							  int *cItemP, char *filename, int width, int height){
+							  int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
+							  int *nCurItemP, char *filename, int width, int height){
 SetScreenMode (SCREEN_MENU);//hafta set the screen mode before calling or fonts might get changed/freed up if screen res changes
-//	return ExecMenu3_real (pszTitle, pszSubTitle, nItems, itemP, subfunction, nItem, filename, width, height, GAME_FONT, GAME_FONT, GAME_FONT, GAME_FONT);
-return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, subfunction, cItemP, filename, width, height, 0);
+//	return ExecMenu3_real (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nItem, filename, width, height, GAME_FONT, GAME_FONT, GAME_FONT, GAME_FONT);
+return ExecMenu4 (pszTitle, pszSubTitle, nItems, itemP, menuCallback, nCurItemP, filename, width, height, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1445,7 +1445,7 @@ else {
 		D2_FREE (bg->background);
 		} 
 	else {
-		if (!bDontRestore) {	//info passed back from subfunction
+		if (!bDontRestore) {	//info passed back from menuCallback
 			GrBitmap (0, 0, bg->background);
 			}
 		GrFreeBitmap (bg->background);
@@ -1483,10 +1483,10 @@ if (szHelp && *szHelp) {
 #define REDRAW_ALL	for (i = 0; i < nItems; i++) itemP [i].redraw = 1; bRedrawAll = 1
 
 int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuItem *itemP, 
-					 void (*subfunction) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem), 
-					 int *cItemP, char *filename, int width, int height, int bTinyMode)
+					 int (*menuCallback) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem), 
+					 int *nCurItemP, char *filename, int width, int height, int bTinyMode)
 {
-	int			bKeyRepeat, done, nItem = cItemP ? *cItemP : 0;
+	int			bKeyRepeat, done, nItem = nCurItemP ? *nCurItemP : 0;
 	int			choice, old_choice, i;
 	tMenuProps	ctrl;
 	int			k, nLastScrollCheck = -1, sx, sy;
@@ -1593,8 +1593,8 @@ if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING) {
 	}
 GrabMouse (0, 0);
 while (!done) {
-	if (cItemP)
-		*cItemP = choice;
+	if (nCurItemP)
+		*nCurItemP = choice;
 	if (gameStates.app.bGameRunning && IsMultiGame) {
 		gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] = 1;
 		MultiSendTyping ();
@@ -1647,8 +1647,8 @@ while (!done) {
 			ctrl.nScrollOffset = choice - ctrl.nMaxOnMenu + 1;
 		}
 	if (!gameOpts->menus.nStyle) {
-		if (subfunction)
-			(*subfunction) (nItems, itemP, &k, choice);
+		if (menuCallback)
+			(*menuCallback) (nItems, itemP, &k, choice);
 		}
 	else {
 		if (gameStates.app.bGameRunning) {
@@ -1678,8 +1678,8 @@ while (!done) {
 		NMInitBackground (filename, &bg, ctrl.x, ctrl.y, ctrl.w, ctrl.h, bRedraw);
 		if (!gameStates.app.bGameRunning)
 			con_update();
-		if (subfunction)
-     		(*subfunction) (nItems, itemP, &k, choice);
+		if (menuCallback)
+     		choice = (*menuCallback) (nItems, itemP, &k, choice);
 		t = NMDrawTitle (pszTitle, TITLE_FONT, RGBA_PAL (31, 31, 31), ctrl.yOffs);
 		NMDrawTitle (pszSubTitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
 		if (!bRedraw)
@@ -1694,7 +1694,12 @@ while (!done) {
 
 	if (k < -1) {
 		bDontRestore = (k == -3);		//-3 means don't restore
-		choice = k;
+		if (choice >= 0)
+			choice = k;
+		else {
+			choice = -choice - 1;
+			*nCurItemP = choice;
+			}
 		k = -1;
 		done = 1;
 		}
@@ -1859,8 +1864,8 @@ radioOption:
 						goto launchOption;
 					break;
 				case NM_TYPE_RADIO:
-					for (i=0; i<nItems; i++)	{
-						if ((i!=choice) &&(itemP [i].nType==NM_TYPE_RADIO) &&(itemP [i].group==itemP [choice].group) &&(itemP [i].value))	{
+					for (i = 0; i<nItems; i++)	{
+						if ((i != choice) &&(itemP [i].nType == NM_TYPE_RADIO) && (itemP [i].group == itemP [choice].group) &&(itemP [i].value))	{
 							itemP [i].value = 0;
 							itemP [i].redraw = 1;
 						}
@@ -1886,12 +1891,11 @@ radioOption:
             itemP [choice].rebuild=1;
             itemP [choice-1].rebuild=1;
             choice--;
-         }
+				}
          break;
 
       case KEY_SHIFTED+KEY_DOWN:
-         if (gameStates.menus.bReordering && choice !=  (nItems-1))
-         {
+         if (gameStates.menus.bReordering && choice !=  (nItems-1)) {
             Temp=itemP [choice].text;
             TempVal=itemP [choice].value;
             itemP [choice].text=itemP [choice+1].text;
@@ -1901,11 +1905,10 @@ radioOption:
             itemP [choice].rebuild=1;
             itemP [choice+1].rebuild=1;
             choice++;
-         }
+				}
          break;
                 
-		case KEY_ALTED + KEY_ENTER:
-			{
+		case KEY_ALTED + KEY_ENTER: {
 			//int bLoadAltBg = NMFreeAltBg ();
 			NMFreeAllTextBms (itemP, nItems);
 			NMRestoreScreen (filename, &bg, save_canvas, saveFont, bDontRestore);
@@ -1937,8 +1940,8 @@ launchOption:
 					}
 				}
 			else {
-				if (cItemP)
-					*cItemP = choice;
+				if (nCurItemP)
+					*nCurItemP = choice;
 				done = 1;
 				}
 			break;
@@ -1952,8 +1955,8 @@ launchOption:
 				}
 			else {
 				done = 1;
-				if (cItemP)
-					*cItemP = choice;
+				if (nCurItemP)
+					*nCurItemP = choice;
 				choice = -1;
 			}
 			break;
@@ -2019,8 +2022,8 @@ launchOption:
 		}
 
 		if (nMouseState && bAllText) {
-			if (cItemP)
-				*cItemP = choice;
+			if (nCurItemP)
+				*nCurItemP = choice;
 			done = 1;
 			}
 	
@@ -2143,8 +2146,8 @@ launchOption:
 			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 				if (bHackDblClickMenuMode) {
 					if (bDblClick) {
-						if (cItemP)
-							*cItemP = choice;
+						if (nCurItemP)
+							*nCurItemP = choice;
 						done = 1;
 						}
 					else 
@@ -2152,8 +2155,8 @@ launchOption:
 				}
 				else {
 					done = 1;
-					if (cItemP)
-						*cItemP = choice;
+					if (nCurItemP)
+						*nCurItemP = choice;
 				}
 			}
 		}
@@ -2177,8 +2180,8 @@ launchOption:
 			y1 = (gameOpts->menus.nStyle ? ctrl.y : grdCurCanv->cvBitmap.bmProps.y) + CLOSE_Y;
 			y2 = y1 + CLOSE_SIZE;
 			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
-				if (cItemP)
-					*cItemP = choice;
+				if (nCurItemP)
+					*nCurItemP = choice;
 				choice = -1;
 				done = 1;
 				}
@@ -2413,7 +2416,7 @@ return choice;
 
 int _CDECL_ ExecMessageBox1 (
 					const char *pszTitle, 
-					void (*subfunction) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
+					int (*menuCallback) (int nItems, tMenuItem * itemP, int * lastKeyP, int nItem), 
 					char *filename, int nChoices, ...)
 {
 	int i;
@@ -2437,7 +2440,7 @@ strcpy (nm_text, "");
 vsprintf (nm_text, format, args);
 va_end (args);
 Assert (strlen (nm_text) < MESSAGEBOX_TEXT_SIZE);
-return ExecMenu (pszTitle, nm_text, nChoices, nmMsgItems, subfunction, filename);
+return ExecMenu (pszTitle, nm_text, nChoices, nmMsgItems, menuCallback, filename);
 }
 
 //------------------------------------------------------------------------------
@@ -3543,7 +3546,7 @@ void NMWrapText (char *dbuf, char *sbuf, int line_length)
 //------------------------------------------------------------------------------
 
 void NMProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress, 
-						  void (*doProgress) (int nItems, tMenuItem *itemP, int *lastKeyP, int nItem))
+						  int (*doProgress) (int nItems, tMenuItem *itemP, int *lastKeyP, int nCurItemP))
 {
 	tMenuItem	m [3];
 	int			i, nInMenu;

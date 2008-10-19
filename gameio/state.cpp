@@ -156,8 +156,8 @@ int state_default_item = 0;
 
 void ComputeAllStaticLight (void);
 
-static char szDesc [NUM_SAVES + 1] [DESC_LENGTH + 16];
-static char szTime [NUM_SAVES + 1] [DESC_LENGTH + 16];
+static char szDesc [NUM_SAVES + 1][DESC_LENGTH + 16];
+static char szTime [NUM_SAVES + 1][DESC_LENGTH + 16];
 
 void GameRenderFrame (void);
 
@@ -167,18 +167,26 @@ void GameRenderFrame (void);
 
 static int bShowTime = 1;
 
-void state_callback (int nitems, tMenuItem *items, int *last_key, int citem)
+int SaveStateMenuCallback (int nitems, tMenuItem *items, int *lastKey, int nCurItem)
 {
-	int x, y, i = citem - NM_IMG_SPACE;
+	int	x, y, i = nCurItem - NM_IMG_SPACE;
+	char	c = KeyToASCII (*lastKey);
 
-if (citem < 2)
-	return;
+if (nCurItem < 2)
+	return nCurItem;
+if ((c >= '1') && (c <= '9')) {
+	for (i = 0; i < NUM_SAVES; i++)
+		if (items [i + NM_IMG_SPACE].text [0] == c) {
+			*lastKey = -2;
+			return -(i + NM_IMG_SPACE) - 1;
+			}
+	}
 if (!items [NM_IMG_SPACE - 1].text || strcmp (items [NM_IMG_SPACE - 1].text, szTime [i])) {
 	items [NM_IMG_SPACE - 1].text = szTime [i];
 	items [NM_IMG_SPACE - 1].rebuild = 1;
 	}
 if (!sc_bmp [i])
-	return;
+	return nCurItem;
 if (gameStates.menus.bHires) {
 	x = (grdCurCanv->cvBitmap.bmProps.w - sc_bmp [i]->bmProps.w) / 2;
 	y = items [0].y - 16;
@@ -191,8 +199,28 @@ if (gameStates.menus.bHires) {
 		}
 	}
 else {
-	GrBitmap ((grdCurCanv->cvBitmap.bmProps.w-THUMBNAIL_W) / 2,items [0].y - 5, sc_bmp [citem - 1]);
+	GrBitmap ((grdCurCanv->cvBitmap.bmProps.w-THUMBNAIL_W) / 2,items [0].y - 5, sc_bmp [nCurItem - 1]);
 	}
+return nCurItem;
+}
+
+//------------------------------------------------------------------------------
+
+int RestoreStateMenuCallback (int nitems, tMenuItem *items, int *lastKey, int nCurItem)
+{
+	int	x, y, i = nCurItem - NM_IMG_SPACE;
+	char	c = KeyToASCII (*lastKey);
+
+if (nCurItem < 2)
+	return nCurItem;
+if ((c >= '1') && (c <= '9')) {
+	for (i = 0; i < NUM_SAVES; i++)
+		if (items [i].text [0] == c) {
+			*lastKey = -2;
+			return -i - 1;
+			}
+	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -219,7 +247,7 @@ int StateGetSaveFile (char * fname, char * dsc, int bMulti)
 	CFILE cf;
 	int i, menuRes, choice, sgVersion;
 	tMenuItem m [NUM_SAVES+2];
-	char filename [NUM_SAVES+1] [30];
+	char filename [NUM_SAVES+1][30];
 	char id [5];
 	int valid=0;
 
@@ -247,9 +275,7 @@ for (i = 0; i < NUM_SAVES; i++)	{
 		}
 	if (!valid)
 		strcpy (szDesc [i], TXT_EMPTY);
-	m [i].nType = NM_TYPE_INPUT_MENU; 
-	m [i].text = szDesc [i]; 
-	m [i].text_len = DESC_LENGTH-1;
+	ADD_INPUT_MENU (i, szDesc [i], DESC_LENGTH - 1, -1, NULL);
 	}
 
 sc_last_item = -1;
@@ -277,7 +303,7 @@ int StateGetRestoreFile (char * fname, int bMulti)
 	CFILE			cf;
 	int			i, j, choice = -1, sgVersion, nSaves;
 	tMenuItem	m [NUM_SAVES + NM_IMG_SPACE + 1];
-	char			filename [NUM_SAVES+1] [30];
+	char			filename [NUM_SAVES+1][30];
 	char			id [5];
 	ubyte			pal [256 * 3];
 	int			valid;
@@ -304,10 +330,13 @@ int StateGetRestoreFile (char * fname, int bMulti)
 				CFRead (&sgVersion, sizeof (int), 1, &cf);
 				if (sgVersion >= STATE_COMPATIBLE_VERSION)	{
 					// Read description
-					CFRead (szDesc [j], sizeof (char) * DESC_LENGTH, 1, &cf);
+					if (i < NUM_SAVES)
+						sprintf (szDesc [j], "%d. ", i + 1);
+					else
+						strcpy (szDesc [j], "   ");
+					CFRead (szDesc [j] + 3, sizeof (char) * DESC_LENGTH, 1, &cf);
 					// rpad_string (szDesc [i], DESC_LENGTH-1);
-					m [j+NM_IMG_SPACE].nType = NM_TYPE_MENU; 
-					m [j+NM_IMG_SPACE].text = szDesc [j];
+					ADD_MENU (j + NM_IMG_SPACE, szDesc [j], (i < NUM_SAVES) ? -1 : 0, NULL);
 					// Read thumbnail
 					if (sgVersion < 26) {
 						sc_bmp [i] = GrCreateBitmap (THUMBNAIL_W, THUMBNAIL_H, 1);
@@ -368,13 +397,13 @@ int StateGetRestoreFile (char * fname, int bMulti)
 
 	sc_last_item = -1;
 
-   bRestoringMenu=1;
+   bRestoringMenu = 1;
 	choice = state_default_item + NM_IMG_SPACE;
-	i = ExecMenu3 (NULL, TXT_LOAD_GAME_MENU, j + NM_IMG_SPACE, m, state_callback, 
+	i = ExecMenu3 (NULL, TXT_LOAD_GAME_MENU, j + NM_IMG_SPACE, m, SaveStateMenuCallback, 
 					   &choice, NULL, 190, -1);
 	if (i < 0)
 		return 0;
-   bRestoringMenu=0;
+   bRestoringMenu = 0;
 	choice -= NM_IMG_SPACE;
 
 	for (i = 0; i < NUM_SAVES + 1; i++)	{
@@ -439,13 +468,13 @@ int copy_file (const char *old_file, const char *new_file)
 //	-----------------------------------------------------------------------------------
 //	blind_save means don't prompt user for any info.
 
-int StateSaveAll (int bBetweenLevels, int bSecretSave, const char *pszFilenameOverride)
+int StateSaveAll (int bBetweenLevels, int bSecretSave, int bQuick, const char *pszFilenameOverride)
 {
 	int	rval, filenum = -1;
 	char	filename [128], szDesc [DESC_LENGTH+1];
 
 Assert (bBetweenLevels == 0);	//between levels save ripped out
-if (gameData.app.nGameMode & GM_MULTI)	{
+if (IsMultiGame) {
 	MultiInitiateSaveGame ();
 	return 0;
 	}
@@ -464,66 +493,72 @@ if (bSecretSave && gameData.reactor.bDestroyed) {
 	}
 StopTime ();
 gameData.app.bGamePaused = 1;
-if (bSecretSave == 1) {
-	pszFilenameOverride = filename;
-	sprintf (filename, SECRETB_FILENAME);
-	} 
-else if (bSecretSave == 2) {
-	pszFilenameOverride = filename;
-	sprintf (filename, SECRETC_FILENAME);
-	} 
+if (bQuick)
+	sprintf (filename, "%s.quick", LOCALPLAYER.callsign);
 else {
-	if (pszFilenameOverride) {
-		strcpy (filename, pszFilenameOverride);
-		sprintf (szDesc, " [autosave backup]");
-		}
-	else if (!(filenum = StateGetSaveFile (filename, szDesc, 0))) {
-		gameData.app.bGamePaused = 0;
-		StartTime (1);
-		return 0;
-		}
-	}
-//	MK, 1/1/96
-//	If not in multiplayer, do special secret level stuff.
-//	If secret.sgc exists, then copy it to Nsecret.sgc (where N = filenum).
-//	If it doesn't exist, then delete Nsecret.sgc
-if (!bSecretSave && !IsMultiGame) {
-	int	rval;
-	char	temp_fname [32], fc;
-
-	if (filenum != -1) {
-		if (filenum >= 10)
-			fc = (filenum-10) + 'a';
-		else
-			fc = '0' + filenum;
-		sprintf (temp_fname, "%csecret.sgc", fc);
-		if (CFExist (temp_fname,gameFolders.szSaveDir,0)) {
-			rval = CFDelete (temp_fname, gameFolders.szSaveDir);
-			Assert (rval == 0);	//	Oops, error deleting file in temp_fname.
+	if (bSecretSave == 1) {
+		pszFilenameOverride = filename;
+		sprintf (filename, SECRETB_FILENAME);
+		} 
+	else if (bSecretSave == 2) {
+		pszFilenameOverride = filename;
+		sprintf (filename, SECRETC_FILENAME);
+		} 
+	else {
+		if (pszFilenameOverride) {
+			strcpy (filename, pszFilenameOverride);
+			sprintf (szDesc, " [autosave backup]");
 			}
-		if (CFExist (SECRETC_FILENAME,gameFolders.szSaveDir,0)) {
-			rval = copy_file (SECRETC_FILENAME, temp_fname);
-			Assert (rval == 0);	//	Oops, error copying temp_fname to secret.sgc!
+		else if (!(filenum = StateGetSaveFile (filename, szDesc, 0))) {
+			gameData.app.bGamePaused = 0;
+			StartTime (1);
+			return 0;
 			}
 		}
-	}
+	//	MK, 1/1/96
+	//	If not in multiplayer, do special secret level stuff.
+	//	If secret.sgc exists, then copy it to Nsecret.sgc (where N = filenum).
+	//	If it doesn't exist, then delete Nsecret.sgc
+	if (!bSecretSave && !IsMultiGame) {
+		int	rval;
+		char	temp_fname [32], fc;
 
-	//	Save file we're going to save over in last slot and call " [autosave backup]"
-if (!pszFilenameOverride) {
-	CFILE tfp;
-	
-	if (CFOpen (&tfp, filename, gameFolders.szSaveDir, "rb",0)) {
-		char	newname [128];
+		if (filenum != -1) {
+			if (filenum >= 10)
+				fc = (filenum-10) + 'a';
+			else
+				fc = '0' + filenum;
+			sprintf (temp_fname, "%csecret.sgc", fc);
+			if (CFExist (temp_fname,gameFolders.szSaveDir,0)) {
+				rval = CFDelete (temp_fname, gameFolders.szSaveDir);
+				Assert (rval == 0);	//	Oops, error deleting file in temp_fname.
+				}
+			if (CFExist (SECRETC_FILENAME,gameFolders.szSaveDir,0)) {
+				rval = copy_file (SECRETC_FILENAME, temp_fname);
+				Assert (rval == 0);	//	Oops, error copying temp_fname to secret.sgc!
+				}
+			}
+		}
 
-		sprintf (newname, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
-		CFSeek (&tfp, DESC_OFFSET, SEEK_SET);
-		CFWrite ((char *) " [autosave backup]", sizeof (char) * DESC_LENGTH, 1, &tfp);
-		CFClose (&tfp);
-		CFDelete (newname, gameFolders.szSaveDir);
-		CFRename (filename, newname, gameFolders.szSaveDir);
+		//	Save file we're going to save over in last slot and call " [autosave backup]"
+	if (!pszFilenameOverride) {
+		CFILE tfp;
+		
+		if (CFOpen (&tfp, filename, gameFolders.szSaveDir, "rb",0)) {
+			char	newname [128];
+
+			sprintf (newname, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
+			CFSeek (&tfp, DESC_OFFSET, SEEK_SET);
+			CFWrite ((char *) " [autosave backup]", sizeof (char) * DESC_LENGTH, 1, &tfp);
+			CFClose (&tfp);
+			CFDelete (newname, gameFolders.szSaveDir);
+			CFRename (filename, newname, gameFolders.szSaveDir);
+			}
 		}
 	}
-rval = StateSaveAllSub (filename, szDesc, bBetweenLevels);
+if ((rval = StateSaveAllSub (filename, szDesc, bBetweenLevels)))
+	if (bQuick)
+		HUDInitMessage (TXT_QUICKSAVE);
 gameData.app.bGamePaused = 0;
 StartTime (1);
 return rval;
@@ -753,7 +788,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 	CFWriteInt (netGame.locations [i], cfP);
 for (i = 0; i < MAX_PLAYERS; i++)
 	for (j = 0; j < MAX_PLAYERS; j++)
-		CFWriteShort (netGame.kills [i] [j], cfP);			// 128 bytes
+		CFWriteShort (netGame.kills [i][j], cfP);			// 128 bytes
 CFWriteShort (netGame.nSegmentCheckSum, cfP);				// 2 bytes
 for (i = 0; i < 2; i++)
 	CFWriteShort (netGame.teamKills [i], cfP);				// 4 bytes
@@ -1420,9 +1455,9 @@ OBJECTS [nPlayerObj].info.position.mOrient = gameData.segs.secret.returnOrient;
 
 //	-----------------------------------------------------------------------------------
 
-int StateRestoreAll (int bInGame, int bSecretRestore, const char *pszFilenameOverride)
+int StateRestoreAll (int bInGame, int bSecretRestore, int bQuick, const char *pszFilenameOverride)
 {
-	char filename [128];
+	char	filename [128], saveFilename [128];
 	int	i, nFile = -1;
 
 if (IsMultiGame) {
@@ -1437,50 +1472,56 @@ if (gameData.demo.nState != ND_STATE_NORMAL)
 	return 0;
 StopTime ();
 gameData.app.bGamePaused = 1;
-if (pszFilenameOverride) {
-	strcpy (filename, pszFilenameOverride);
-	nFile = NUM_SAVES+1;		//	So we don't tTrigger autosave
+if (bQuick) {
+	sprintf (filename, "%s.quick", LOCALPLAYER.callsign);
+	if (!CFExist (filename, gameFolders.szSaveDir, 0))
+		bQuick = 0;
 	}
-else if (!(nFile = StateGetRestoreFile (filename, 0))) {
-	gameData.app.bGamePaused = 0;
-	StartTime (1);
-	return 0;
-	}
-//	MK, 1/1/96
-//	If not in multiplayer, do special secret level stuff.
-//	If Nsecret.sgc (where N = nFile) exists, then copy it to secret.sgc.
-//	If it doesn't exist, then delete secret.sgc
-
-if (!bSecretRestore && !IsMultiGame) {
-	int	rval;
-	char	temp_fname [32], fc;
-
-	if (nFile != -1) {
-		if (nFile >= 10)
-			fc = (nFile-10) + 'a';
-		else
-			fc = '0' + nFile;
-		sprintf (temp_fname, "%csecret.sgc", fc);
-		if (CFExist (temp_fname, gameFolders.szSaveDir, 0)) {
-			rval = copy_file (temp_fname, SECRETC_FILENAME);
-			Assert (rval == 0);	//	Oops, error copying temp_fname to secret.sgc!
-			}
-		else
-			CFDelete (SECRETC_FILENAME, gameFolders.szSaveDir);
+if (!bQuick) {
+	if (pszFilenameOverride) {
+		strcpy (filename, pszFilenameOverride);
+		nFile = NUM_SAVES+1;		//	So we don't tTrigger autosave
 		}
-	}
-	//	Changed, 11/15/95, MK, don't to autosave if restoring from main menu.
-if ((nFile != (NUM_SAVES + 1)) && bInGame) {
-	char	temp_filename [128];
-	sprintf (temp_filename, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
-	StateSaveAll (!bInGame, bSecretRestore, temp_filename);
-	}
-if (!bSecretRestore && bInGame) {
-	int choice = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
-	if (choice != 0) {
+	else if (!(nFile = StateGetRestoreFile (filename, 0))) {
 		gameData.app.bGamePaused = 0;
 		StartTime (1);
 		return 0;
+		}
+	//	MK, 1/1/96
+	//	If not in multiplayer, do special secret level stuff.
+	//	If Nsecret.sgc (where N = nFile) exists, then copy it to secret.sgc.
+	//	If it doesn't exist, then delete secret.sgc
+
+	if (!bSecretRestore && !IsMultiGame) {
+		int	rval;
+		char	temp_fname [32], fc;
+
+		if (nFile != -1) {
+			if (nFile >= 10)
+				fc = (nFile-10) + 'a';
+			else
+				fc = '0' + nFile;
+			sprintf (temp_fname, "%csecret.sgc", fc);
+			if (CFExist (temp_fname, gameFolders.szSaveDir, 0)) {
+				rval = copy_file (temp_fname, SECRETC_FILENAME);
+				Assert (rval == 0);	//	Oops, error copying temp_fname to secret.sgc!
+				}
+			else
+				CFDelete (SECRETC_FILENAME, gameFolders.szSaveDir);
+			}
+		}
+		//	Changed, 11/15/95, MK, don't to autosave if restoring from main menu.
+	if ((nFile != (NUM_SAVES + 1)) && bInGame) {
+		sprintf (saveFilename, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
+		StateSaveAll (!bInGame, bSecretRestore, 0, saveFilename);
+		}
+	if (!bSecretRestore && bInGame) {
+		int choice = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
+		if (choice != 0) {
+			gameData.app.bGamePaused = 0;
+			StartTime (1);
+			return 0;
+			}
 		}
 	}
 gameStates.app.bGameRunning = 0;
@@ -1488,8 +1529,11 @@ i = StateRestoreAllSub (filename, 0, bSecretRestore);
 gameData.app.bGamePaused = 0;
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
-if (i)
+if (i) {
 	RebuildRenderContext (1);
+	if (bQuick)
+		HUDInitMessage (TXT_QUICKLOAD);
+	}
 StartTime (1);
 return i;
 }
@@ -1781,7 +1825,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 	netGame.locations [i] = CFReadInt (cfP);
 for (i = 0; i < MAX_PLAYERS; i++)
 	for (j = 0; j < MAX_PLAYERS; j++)
-		netGame.kills [i] [j] = CFReadShort (cfP);			// 128 bytes
+		netGame.kills [i][j] = CFReadShort (cfP);			// 128 bytes
 netGame.nSegmentCheckSum = CFReadShort (cfP);				// 2 bytes
 for (i = 0; i < 2; i++)
 	netGame.teamKills [i] = CFReadShort (cfP);				// 4 bytes

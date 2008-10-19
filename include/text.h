@@ -1875,12 +1875,13 @@ void LoadGameTexts(void);
 #define TXT_MAX_SEGS_WARNING			GT(1083)
 #define TXT_FADE_MUSIC					GT(1084)
 #define TXT_HIRES_CAMERAS				GT(1085)
+#define TXT_QUICKSAVE					GT(1086)
+#define TXT_QUICKLOAD					GT(1087)
+#define TXT_HELP_QUICKSAVE				GT(1088)
+#define TXT_HELP_QUICKLOAD				GT(1089)
 
 #if 0
 
-#define TXT_					GT(1086)
-#define TXT_					GT(1087)
-#define TXT_					GT(1088)
 #define TXT_					GT(1089)
 #define TXT_					GT(1090)
 #define TXT_					GT(1091)

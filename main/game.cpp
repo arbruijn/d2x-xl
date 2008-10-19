@@ -986,7 +986,7 @@ GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameS
 void ShowHelp ()
 {
 	int nitems, opt = 0;
-	tMenuItem m[30];
+	tMenuItem m [40];
 	#ifdef MACINTOSH
 	char command_help[64], pixel_double_help[64], save_help[64], restore_help[64];
 	#endif
@@ -1002,6 +1002,8 @@ void ShowHelp ()
 	ADD_HELP_OPT (save_help);
 	ADD_HELP_OPT (restore_help);
 #endif
+	ADD_HELP_OPT (TXT_HELP_QUICKSAVE);
+	ADD_HELP_OPT (TXT_HELP_QUICKLOAD);
 	ADD_HELP_OPT (TXT_HELP_F2);
 	ADD_HELP_OPT (TXT_HELP_F3);
 	ADD_HELP_OPT (TXT_HELP_F4);

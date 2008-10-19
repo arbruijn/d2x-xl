@@ -310,7 +310,7 @@ static void gs_write_angvec(vmsAngVec *v,FILE *file)
 
 //------------------------------------------------------------------------------
 
-extern int MultiPowerupIs4Pack(int);
+int MultiPowerupIs4Pack(int);
 //reads one tObject of the given version from the given file
 void ReadObject (tObject *objP, CFILE *cfP, int version)
 {

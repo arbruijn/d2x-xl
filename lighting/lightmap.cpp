@@ -560,7 +560,7 @@ for (i = 0; i < 2; i++) {
 
 static int nFace = 0;
 
-static void CreateLightmapsPoll (int nItems, tMenuItem *m, int *key, int cItem)
+static int CreateLightmapsPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 GrPaletteStepLoad (NULL);
 if (nFace < gameData.segs.nFaces) {
@@ -570,13 +570,13 @@ if (nFace < gameData.segs.nFaces) {
 else {
 	*key = -2;
 	GrPaletteStepLoad (NULL);
-	return;
+	return nCurItem;
 	}
 m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
 GrPaletteStepLoad (NULL);
-return;
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------

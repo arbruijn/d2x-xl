@@ -170,7 +170,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 static int nCacheSeg = 0;
 static int nCacheObj = -3;
 
-static void TexCachePoll (int nItems, tMenuItem *m, int *key, int cItem)
+static int TexCachePoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 if (nCacheSeg < gameData.segs.nSegments)
 	CacheSideTextures (nCacheSeg++);
@@ -178,12 +178,12 @@ else if (nCacheObj <= gameData.objs.nLastObject [0])
 	CacheSideTextures (nCacheObj++);
 else {
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
-return;
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------

@@ -464,7 +464,7 @@ static int nTouchPowerup1 = 0;
 static int nTouchPowerup2 = 0;
 static int nTouchGauge = 0;
 
-static void PagingTouchPoll (int nItems, tMenuItem *m, int *key, int cItem)
+static int PagingTouchPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 	int	i;
 
@@ -501,13 +501,13 @@ else {
 	PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
 	*key = -2;
 	GrPaletteStepLoad (NULL);
-	return;
+	return nCurItem;
 	}
 m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
 GrPaletteStepLoad (NULL);
-return;
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------

@@ -25,6 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "key.h"
 #include "u_mem.h"
 #include "newmenu.h"
+#include "netmenu.h"
 #include "screens.h"
 #include "mouse.h"
 #include "joy.h"
@@ -382,8 +383,6 @@ if ((gameData.missions.nCurrentLevel >= gameData.missions.nLastLevel) &&
 
 #define LAST_OEM_LEVEL	IS_D2_OEM && (gameData.missions.nCurrentLevel == 8)
 
-extern void NetworkEndLevelPoll3 (int nitems, struct tMenuItem * menus, int * key, int citem);
-
 void ScoreTableView (int bNetwork)
 {											 
    int	i, k, done,choice;
@@ -464,7 +463,7 @@ while (!done) {
 		case KEY_ESC:
 			if (gameData.app.nGameMode & GM_NETWORK) {
 				gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
-				choice=ExecMessageBox1 (NULL, NetworkEndLevelPoll3, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+				choice = ExecMessageBox1 (NULL, NetworkEndLevelPoll3, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 				}
 			else
 				choice=ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);

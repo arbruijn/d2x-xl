@@ -3164,7 +3164,7 @@ return 21;
 
 static int loadOp = 0;
 
-static void InitializePoll (int nItems, tMenuItem *m, int *key, int cItem)
+static int InitializePoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 GrPaletteStepLoad (NULL);
 switch (loadOp) {
@@ -3260,6 +3260,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 		}
 	}
 GrPaletteStepLoad (NULL);
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------

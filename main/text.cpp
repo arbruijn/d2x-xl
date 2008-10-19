@@ -1828,6 +1828,10 @@ const char *defaultGameTexts [][2] = {
 	 "Savegame incompatible:\nMaximum segment count differs (savegame: %d).\nYou can change the value in d2x.ini."},
 	{"Musik aus~Blenden", "~Fade out music"},
 	{"~Hochaufloesende Kameras", "~High resolution cameras"},
+	{"Schnellspeichern erfolgreich", "Quicksave successful"},
+	{"Schnellladen erfolgreich", "Quickload successful"},
+	{"STRG-F5\t  Schnellspeichern", "CTRL-F5\t  Quick Save"},
+	{"STRG-F9\t  Schnellladen", "CTRL-F9\t  Quick Load"},
 #if 0
 	{"", ""},
 #endif

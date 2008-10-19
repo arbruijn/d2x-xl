@@ -65,6 +65,8 @@ extern int Cockpit_rearView;
 			m [_n].nType = NM_TYPE_SLIDER, m [_n].text = (char *) (_t), m [_n].value = NMCLAMP(_v,_min,_max), m [_n].minValue = _min, m [_n].maxValue = _max, m [_n].key = (_k), m [_n].szHelp = (char *) (_h)
 #define	ADD_INPUT(_n,_t,_l,_h) \
 			m [_n].nType = NM_TYPE_INPUT, m [_n].text = (char *) (_t), m [_n].text_len = (_l), m [_n].szHelp = (char *) (_h)
+#define	ADD_INPUT_MENU(_n,_t,_l,_k,_h) \
+			m [_n].nType = NM_TYPE_INPUT_MENU, m [_n].text = (char *) (_t), m [_n].text_len = (_l), m [_n].key = (_k), m [_n].szHelp = (char *) (_h)
 #define	ADD_GAUGE(_n,_t,_v,_max) \
 			m [_n].nType = NM_TYPE_GAUGE, m [_n].text = (char *) (_t), m [_n].text_len = *(_t) ? (int) strlen (_t) : 20, m [_n].value = NMCLAMP(_v,0,_max), m [_n].maxValue = _max
 

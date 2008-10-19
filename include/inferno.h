@@ -1909,7 +1909,7 @@ typedef struct tObjLists {
 typedef struct tObjectData {
 	tObjTypeData			types;
 	tObject					*objects;
-	tObjLists				objLists;
+	tObjLists				lists;
 	short						*freeList;
 	short						*parentObjs;
 	tObjectRef				*childObjs;

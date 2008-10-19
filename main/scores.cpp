@@ -346,7 +346,7 @@ void scores_draw_item (int  i, stats_info * stats)
 
 //------------------------------------------------------------------------------
 
-void ScoresView (int citem)
+void ScoresView (int nCurItem)
 {
 	fix t0 = 0, t1;
 	int c,i,done,looper;
@@ -388,7 +388,7 @@ ReshowScores:
 		//	GrString (234, 46, "Rescues");
 			GrString (xOffs + LHX (288-
 +XX), yOffs + LHY (46+7+YY), TXT_TIME, NULL);
-			if (citem < 0)
+			if (nCurItem < 0)
 				GrString (0x8000, yOffs + LHY (175), TXT_PRESS_CTRL_R, NULL);
 			GrSetFontColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);
 			//GrPrintF (NULL, 0x8000, yOffs + LHY (31), "%c%s%c  - %s", 34, Scores.cool_saying, 34, Scores.stats[0].name);
@@ -405,11 +405,11 @@ ReshowScores:
 
 			GrPaletteFadeIn (NULL,32, 0);
 
-			if (citem < 0)
+			if (nCurItem < 0)
 				GrUpdate (0);
 			bRedraw = 1;
 			}
-		if (citem > -1)	{
+		if (nCurItem > -1)	{
 
 			t1	= TimerGetFixedSeconds ();
 			//if (t1 - t0 >= F1_0/128) 
@@ -420,10 +420,10 @@ ReshowScores:
 				GrSetFontColorRGBi (RGBA_PAL (c, c, c), 1, 0, 0);
 				if (++looper > 63) 
 				 looper=0;
-				if (citem ==  MAX_HIGH_SCORES)
+				if (nCurItem ==  MAX_HIGH_SCORES)
 					scores_draw_item (MAX_HIGH_SCORES, &Last_game);
 				else
-					scores_draw_item (citem, Scores.stats + citem);
+					scores_draw_item (nCurItem, Scores.stats + nCurItem);
 				}
 			GrUpdate (0);
 		}
@@ -439,7 +439,7 @@ ReshowScores:
 		k = KeyInKey ();
 		switch (k)	{
 		case KEY_CTRLED+KEY_R:	
-			if (citem < 0)		{
+			if (nCurItem < 0)		{
 				// Reset scores...
 				if (ExecMessageBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES)==1)	{
 					CFDelete (GetScoresFilename (), gameFolders.szDataDir);

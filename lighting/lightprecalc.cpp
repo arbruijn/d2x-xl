@@ -408,7 +408,7 @@ for (i = startI; i < endI; i++)
 
 //------------------------------------------------------------------------------
 
-static void SortLightsPoll (int nItems, tMenuItem *m, int *key, int cItem)
+static int SortLightsPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 GrPaletteStepLoad (NULL);
 if (loadOp == 0) {
@@ -438,12 +438,13 @@ else if (loadOp == 2) {
 if (loadOp == 3) {
 	*key = -2;
 	GrPaletteStepLoad (NULL);
-	return;
+	return nCurItem;
 	}
 m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
 GrPaletteStepLoad (NULL);
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------

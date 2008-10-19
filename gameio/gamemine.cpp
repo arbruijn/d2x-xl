@@ -1283,7 +1283,7 @@ static int loadIdx = 0;
 static int loadOp = 0;
 static CFILE *mineDataFile;
 
-static void LoadSegmentsPoll (int nItems, tMenuItem *m, int *key, int cItem)
+static int LoadSegmentsPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 	int	bLightmaps = 0, bShadows = 0;
 
@@ -1348,12 +1348,13 @@ else if (loadOp == 6) {
 else {
 	*key = -2;
 	GrPaletteStepLoad (NULL);
-	return;
+	return nCurItem;
 	}
 m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
 GrPaletteStepLoad (NULL);
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------

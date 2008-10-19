@@ -527,21 +527,22 @@ int KeyInKey()
 {
 	int key = 0;
 	int b = gameOpts->legacy.bInput;
-	gameOpts->legacy.bInput = 1;
-	if (!bInstalled)
-		KeyInit();
-   event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
-	if (keyData.nKeyTail!=keyData.nKeyHead) {
-		key = keyData.keybuffer[keyData.nKeyHead];
-		keyData.nKeyHead = KeyAddKey(keyData.nKeyHead);
-		if (key == KEY_CTRLED+KEY_ALTED+KEY_ENTER)
-			exit (0);
+
+gameOpts->legacy.bInput = 1;
+if (!bInstalled)
+	KeyInit();
+event_poll (SDL_KEYDOWNMASK | SDL_KEYUPMASK);
+if (keyData.nKeyTail != keyData.nKeyHead) {
+	key = keyData.keybuffer [keyData.nKeyHead];
+	keyData.nKeyHead = KeyAddKey (keyData.nKeyHead);
+	if (key == KEY_CTRLED + KEY_ALTED + KEY_ENTER)
+		exit (0);
 	}
 //added 9/3/98 by Matt Mueller to D2_FREE cpu time instead of hogging during menus and such
-	else TimerDelay(1);
+else TimerDelay(1);
 //end addition - Matt Mueller
-	gameOpts->legacy.bInput = b;
-	return key;
+gameOpts->legacy.bInput = b;
+return key;
 }
 
 //------------------------------------------------------------------------------

@@ -220,7 +220,7 @@ WF (netGame.invul, 27);
 #define ENDLEVEL_SEND_INTERVAL  2000
 #define ENDLEVEL_IDLE_TIME      20000
 
-void NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int cItem)
+int NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	// Polling loop for End-of-level menu
 
@@ -250,12 +250,12 @@ if (num_ready == gameData.multiplayer.nPlayers) {// All players have checked in 
 	else
 		*key = -2;
 	}
+return nCurItem;
 }
-
 
 //------------------------------------------------------------------------------
 
-void NetworkEndLevelPoll3 (int nitems, tMenuItem * menus, int * key, int cItem)
+int NetworkEndLevelPoll3 (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	// Polling loop for End-of-level menu
    int num_ready = 0, i;
@@ -264,20 +264,23 @@ if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime+ (F1_0 
 	*key = -2;
 NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if ((gameData.multiplayer.players [i].connected != 1) && (gameData.multiplayer.players [i].connected != 5) && (gameData.multiplayer.players [i].connected != 6))
+	if ((gameData.multiplayer.players [i].connected != 1) && 
+		 (gameData.multiplayer.players [i].connected != 5) && 
+		 (gameData.multiplayer.players [i].connected != 6))
 		num_ready++;
 if (num_ready == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
 	*key = -2;
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkStartPoll (int nitems, tMenuItem * menus, int * key, int cItem)
+int NetworkStartPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	int i, n, nm;
 
 	key = key;
-	cItem = cItem;
+	nCurItem = nCurItem;
 
 Assert (networkData.nStatus == NETSTAT_STARTING);
 if (!menus [0].value) {
@@ -347,21 +350,22 @@ else if (n > netGame.nNumPlayers) {
 		menus [i].rebuild = 1;
 		}
    }
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
 
 static int optGameTypes, nGameTypes, nGameItem;
 
-void NetworkGameParamPoll (int nitems, tMenuItem * menus, int * key, int cItem)
+int NetworkGameParamPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	static int oldmaxnet = 0;
 
-if ((cItem >= optGameTypes) && (cItem < optGameTypes + nGameTypes)) {
-	if ((cItem != nGameItem) && (menus [cItem].value)) {
-		nGameItem = cItem;
+if ((nCurItem >= optGameTypes) && (nCurItem < optGameTypes + nGameTypes)) {
+	if ((nCurItem != nGameItem) && (menus [nCurItem].value)) {
+		nGameItem = nCurItem;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	}
 if ((menus [optEntropy].value == (optEntOpts < 0)) ||
@@ -399,7 +403,8 @@ if (lastMaxNet != menus [optMaxNet].value)  {
 	lastMaxNet = menus [optMaxNet].value;
 	menus [optMaxNet].rebuild = 1;
 	}               
- }
+return nCurItem;
+}
 
 //------------------------------------------------------------------------------
 
@@ -417,7 +422,7 @@ int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPena
 
 //------------------------------------------------------------------------------
 
-void NetworkMoreOptionsPoll (int nitems, tMenuItem * menus, int * key, int cItem)
+int NetworkMoreOptionsPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 if (nLastReactorLife != menus [optReactorLife].value)   {
 	sprintf (menus [optReactorLife].text, "%s: %d %s", TXT_REACTOR_LIFE, menus [optReactorLife].value*5, TXT_MINUTES_ABBREV);
@@ -437,6 +442,7 @@ if ((optKillGoal >= 0) && (menus [optKillGoal].value != LastKillGoal)) {
 	LastKillGoal = netGame.KillGoal;
 	menus [optKillGoal].rebuild = 1;
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -573,7 +579,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void NetworkD2XOptionsPoll (int nitems, tMenuItem * menus, int * key, int cItem)
+int NetworkD2XOptionsPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	int	v, j;
 
@@ -581,7 +587,7 @@ v = menus [optCompetition].value;
 if (v != extraGameInfo [1].bCompetition) {
 	extraGameInfo [1].bCompetition = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 if (optPenalty > 0) {
 	v = menus [optPenalty].value;
@@ -589,14 +595,14 @@ if (optPenalty > 0) {
 		extraGameInfo [1].nCoopPenalty = v;
 		sprintf (menus [optPenalty].text, TXT_COOP_PENALTY, nCoopPenalties [v], '%');
 		menus [optPenalty].rebuild = 1;
-		return;
+		return nCurItem;
 		}
 	}
 v = menus [optDarkness].value;
 if (v != extraGameInfo [1].bDarkness) {
 	extraGameInfo [1].bDarkness = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 if (optTgtInd >= 0) {
 	v = menus [optTgtInd].value;
@@ -607,7 +613,7 @@ if (optTgtInd >= 0) {
 				break;
 				}
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	}
 if (optDmgIndicator >= 0) {
@@ -615,7 +621,7 @@ if (optDmgIndicator >= 0) {
 	if (v != extraGameInfo [1].bDamageIndicators) {
 		extraGameInfo [1].bDamageIndicators = v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	}
 if (optHeadlights >= 0) {
@@ -623,7 +629,7 @@ if (optHeadlights >= 0) {
 	if (v == extraGameInfo [1].headlight.bAvailable) {
 		extraGameInfo [1].headlight.bAvailable = !v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	}
 if (optSpotSize >= 0) {
@@ -633,9 +639,10 @@ if (optSpotSize >= 0) {
 		extraGameInfo [1].nSpotStrength = v;
 		sprintf (menus [optSpotSize].text, TXT_SPOTSIZE, GT (664 + v));
 		menus [optSpotSize].rebuild = 1;
-		return;
+		return nCurItem;
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -851,7 +858,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void NetworkDummyCallback (int nitems, tMenuItem * menus, int * key, int cItem) {}
+int NetworkDummyCallback (int nitems, tMenuItem * menus, int * key, int nCurItem) { return nCurItem; }
   
 void NetworkEntropyToggleOptions ()
 {
@@ -985,7 +992,7 @@ extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m [optShieldDmg].te
 
 static int nBonusOpt, nSizeModOpt, nPyroForceOpt;
 
-void MonsterballMenuCallback (int nitems, tMenuItem * menus, int * key, int cItem)
+int MonsterballMenuCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -997,7 +1004,7 @@ if (v != extraGameInfo [0].monsterball.forces [24].nForce) {
 	sprintf (m->text, TXT_MBALL_PYROFORCE, v);
 	m->rebuild = 1;
 	//*key = -2;
-	return;
+	return nCurItem;
 	}
 m = menus + nBonusOpt;
 v = m->value + 1;
@@ -1006,7 +1013,7 @@ if (v != extraGameInfo [0].monsterball.nBonus) {
 	sprintf (m->text, TXT_GOAL_BONUS, v);
 	m->rebuild = 1;
 	//*key = -2;
-	return;
+	return nCurItem;
 	}
 m = menus + nSizeModOpt;
 v = m->value + 2;
@@ -1015,8 +1022,8 @@ if (v != extraGameInfo [0].monsterball.nSizeMod) {
 	sprintf (m->text, TXT_MBALL_SIZE, v / 2, (v & 1) ? 5 : 0);
 	m->rebuild = 1;
 	//*key = -2;
-	return;
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -1507,7 +1514,7 @@ return key;
 
 static time_t	nQueryTimeout;
 
-static void QueryPoll (int nItems, tMenuItem *m, int *key, int cItem)
+static int QueryPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 	time_t t;
 
@@ -1525,7 +1532,7 @@ else {
 		}
 	*key = 0;
 	}
-return;
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -1872,7 +1879,7 @@ const char *szModeLetters []  =
 	 "ENTROPY",
 	 "MONSTER"};
 
-void NetworkJoinPoll (int nitems, tMenuItem * menus, int * key, int cItem)
+int NetworkJoinPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	// Polling loop for Join Game menu
 	static fix t1 = 0;
@@ -1923,7 +1930,7 @@ if ((gameStates.multi.nGameType >= IPX_GAME) && networkData.bAllowSocketChanges)
 		IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
 		RestartNetSearching (menus);
 		NetworkSendGameListRequest ();
-		return;
+		return nCurItem;
 		}
 	}
 	// send a request for game info every 3 seconds
@@ -1933,7 +1940,7 @@ if (!networkData.nActiveGames)
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		if (t > t1 + 3000) {
 			if (!NetworkSendGameListRequest ())
-				return;
+				return nCurItem;
 			t1 = t;
 			}
 		}
@@ -2005,6 +2012,7 @@ for (i = 3 + networkData.nActiveGames; i < MAX_ACTIVE_NETGAMES; i++, h++)
 #endif
 if (bPlaySound)
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+return nCurItem;
 }
 
 
@@ -2319,8 +2327,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void IpAddrMenuCallBack (int nitems, tMenuItem * menus, int * key, int cItem)
+int IpAddrMenuCallBack (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------

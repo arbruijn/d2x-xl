@@ -231,7 +231,7 @@ memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsT
 //VerifyConsoleObject ();
 nPlayers = 0;
 j = 0;
-for (objP = gameData.objs.objLists.all.head; objP; objP = nextObjP) {
+for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->links [0].next;
 	t = objP->info.nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
@@ -728,7 +728,7 @@ gameData.render.ogl.nHeadlights = -1;
 gameData.render.nColoredFaces = 0;
 gameData.app.nFrameCount = 0;
 gameData.app.nMineRenderCount = 0;
-memset (&gameData.objs.objLists, 0, sizeof (gameData.objs.objLists));
+memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
 memset (gameData.app.semaphores, 0, sizeof (gameData.app.semaphores));
 renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 renderItems.nMaxOffs = 0;
@@ -1074,7 +1074,7 @@ return result;
 //------------------------------------------------------------------------------
 
 #ifndef _NETWORK_H
-extern int NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int citem); // network.c
+extern int NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int nCurItem); // network.c
 #endif
 
 //	Does the bonus scoring.
@@ -1319,7 +1319,7 @@ else {
 		pw_save = gameData.weapons.nPrimary;
 		sw_save = gameData.weapons.nSecondary;
 		nCurrentLevel = gameData.missions.nCurrentLevel;
-		StateRestoreAll (1, 1, SECRETC_FILENAME);
+		StateRestoreAll (1, 1, 0, SECRETC_FILENAME);
 		gameData.missions.nEnteredFromLevel = nCurrentLevel;
 		gameData.weapons.nPrimary = pw_save;
 		gameData.weapons.nSecondary = sw_save;
@@ -1361,13 +1361,13 @@ void ExitSecretLevel (void)
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
-	StateSaveAll (0, 2, SECRETC_FILENAME);
+	StateSaveAll (0, 2, 0, SECRETC_FILENAME);
 if (!gameStates.app.bD1Mission && CFExist (SECRETB_FILENAME, gameFolders.szSaveDir, 0)) {
 	int pw_save = gameData.weapons.nPrimary;
 	int sw_save = gameData.weapons.nSecondary;
 
 	ReturningToLevelMessage ();
-	StateRestoreAll (1, 1, SECRETB_FILENAME);
+	StateRestoreAll (1, 1, 0, SECRETB_FILENAME);
 	gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
 	SetDataVersion (-1);
 	gameData.weapons.nPrimary = pw_save;
@@ -1420,7 +1420,7 @@ gameData.missions.nEnteredFromLevel = gameData.missions.nCurrentLevel;
 if (gameData.reactor.bDestroyed)
 	DoEndLevelScoreGlitz (0);
 if (gameData.demo.nState != ND_STATE_PLAYBACK)
-	StateSaveAll (0, 1, NULL);	//	Not between levels (ie, save all), IS a secret level, NO filename override
+	StateSaveAll (0, 1, 0, NULL);	//	Not between levels (ie, save all), IS a secret level, NO filename override
 //	Find secret level number to go to, stuff in gameData.missions.nNextLevel.
 for (i = 0; i < -gameData.missions.nLastSecretLevel; i++)
 	if (gameData.missions.secretLevelTable [i] == gameData.missions.nCurrentLevel) {

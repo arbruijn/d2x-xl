@@ -452,28 +452,28 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int FindNextItemRight (kcItem * items, int nItems, int cItem, tKCItemPos *pos, int *ref)
+int FindNextItemRight (kcItem * items, int nItems, int nCurItem, tKCItemPos *pos, int *ref)
 {
-cItem = ref [cItem];
-return pos [(cItem + 1) % nItems].i;
+nCurItem = ref [nCurItem];
+return pos [(nCurItem + 1) % nItems].i;
 }
 
 //------------------------------------------------------------------------------
 
-int FindNextItemLeft (kcItem *items, int nItems, int cItem, tKCItemPos *pos, int *ref)
+int FindNextItemLeft (kcItem *items, int nItems, int nCurItem, tKCItemPos *pos, int *ref)
 {
-cItem = ref [cItem];
-return pos [cItem ? cItem - 1 : nItems - 1].i;
+nCurItem = ref [nCurItem];
+return pos [nCurItem ? nCurItem - 1 : nItems - 1].i;
 }
 
 //------------------------------------------------------------------------------
 
-int FindNextItemUp (kcItem * items, int nItems, int cItem, tKCItemPos *pos, int *ref)
+int FindNextItemUp (kcItem * items, int nItems, int nCurItem, tKCItemPos *pos, int *ref)
 {
 	int l, r, x, y, yStart, h, i, j, dx, dy, dMin;
 
 h = 0;
-i = j = ref [cItem];
+i = j = ref [nCurItem];
 l = pos [i].l;
 r = pos [i].r;
 x = (l + r) / 2;
@@ -511,12 +511,12 @@ return pos [h].i;
 
 //------------------------------------------------------------------------------
 
-int FindNextItemDown (kcItem * items, int nItems, int cItem, tKCItemPos *pos, int *ref)
+int FindNextItemDown (kcItem * items, int nItems, int nCurItem, tKCItemPos *pos, int *ref)
 {
 	int l, r, x, y, yStart, h, i, j, dx, dy, dMin;
 
 h = 0;
-i = j = ref [cItem];
+i = j = ref [nCurItem];
 l = pos [i].l;
 r = pos [i].r;
 x = (l + r) / 2;
@@ -747,13 +747,13 @@ else if (items == kcHotkeys)
 
 //------------------------------------------------------------------------------
 
-void KCDrawTable (kcItem *items, int nItems, int cItem)
+void KCDrawTable (kcItem *items, int nItems, int nCurItem)
 {
 	int	i;
 
 for (i = 0; i < nItems; i++)
 	KCDrawItemExt (items + i, 0, 0);
-KCDrawItemExt (items + cItem, 1, 0);
+KCDrawItemExt (items + nCurItem, 1, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1192,7 +1192,7 @@ void KConfigSub (kcItem * items, int nItems, const char * pszTitle)
 	int	mouseState, omouseState, mx, my, x1, x2, y1, y2;
 	int	close_x = 0, close_y = 0, close_size = 0;
 
-	int	i,k,ocitem,cItem;
+	int	i,k,ocitem,nCurItem;
 	int	time_stopped = 0;
 	int	bRedraw = 0;
 	int	nChangeMode = BT_NONE, nPrevMode = BT_NONE;
@@ -1221,7 +1221,7 @@ NMDrawBackground (&bg, xOffs, yOffs,
 	yOffs + 479 /*grdCurCanv->cvBitmap.bmProps.h - 1*/, 0);
 GrPaletteStepLoad (NULL);
 
-cItem = 0;
+nCurItem = 0;
 SDL_ShowCursor (1);
 mouseState = omouseState = 0;
 if (items == kcKeyboard)
@@ -1254,29 +1254,29 @@ for (;;) {
 			GrSetColorRGBi (RGBA_PAL2 (21, 21, 21));
 			GrRect (close_x + LHX (1), close_y + LHX (1), close_x + close_size - LHX (1), close_y + close_size - LHX (1));
 			KCDrawHeader (items);
-			KCDrawTable (items, nItems, cItem);
+			KCDrawTable (items, nItems, nCurItem);
 			}
 		SDL_ShowCursor (0);
 		switch (nChangeMode) {
 			case BT_KEY:
-				nChangeMode = KCChangeKey (items + cItem);
+				nChangeMode = KCChangeKey (items + nCurItem);
 				break;
 			case BT_MOUSE_BUTTON:
-				nChangeMode = KCChangeMouseButton (items + cItem);
+				nChangeMode = KCChangeMouseButton (items + nCurItem);
 				break;
 			case BT_MOUSE_AXIS:
-				nChangeMode = KCChangeMouseAxis (items + cItem);
+				nChangeMode = KCChangeMouseAxis (items + nCurItem);
 				break;
 			case BT_JOY_BUTTON:
-				nChangeMode = KCChangeJoyButton (items + cItem);
+				nChangeMode = KCChangeJoyButton (items + nCurItem);
 				break;
 			case BT_JOY_AXIS:
 				if (nChangeMode != nPrevMode)
 					ControlsReadJoystick (startAxis);
-				nChangeMode = KCChangeJoyAxis (items + cItem);
+				nChangeMode = KCChangeJoyAxis (items + nCurItem);
 				break;
 			case BT_INVERT:
-				nChangeMode = KCChangeInvert (items + cItem);
+				nChangeMode = KCChangeInvert (items + nCurItem);
 				break;
 			default:
 				nChangeMode = BT_NONE;
@@ -1297,7 +1297,7 @@ for (;;) {
 		if (MultiMenuPoll () == -1)
 			k = -2;
 		}
-	ocitem = cItem;
+	ocitem = nCurItem;
 	switch (k)	{
 		case KEY_BACKSP:
 			Int3 ();
@@ -1307,8 +1307,8 @@ for (;;) {
 			SaveScreenShot (NULL, 0);
 			break;						
 		case KEY_CTRLED+KEY_D:
-			items [cItem].value = 255;
-			KCDrawItem (items + cItem, 1);
+			items [nCurItem].value = 255;
+			KCDrawItem (items + nCurItem, 1);
 			break;
 		case KEY_CTRLED+KEY_R:
 			if (items==kcKeyboard)	{
@@ -1337,48 +1337,48 @@ for (;;) {
 					KCDrawItem (items + i, 0);
 					}
 				}
-			KCDrawItem (items + cItem, 1);
+			KCDrawItem (items + nCurItem, 1);
 			break;
 		case KEY_DELETE:
-			items [cItem].value = 255;
-			KCDrawItem (items + cItem, 1);
+			items [nCurItem].value = 255;
+			KCDrawItem (items + nCurItem, 1);
 			break;
 		case KEY_UP: 	
 		case KEY_PAD8:
 #if TABLE_CREATION
-			if (items [cItem].u == -1) 
-				items [cItem].u=FindNextItemUp (items,nItems, cItem);
+			if (items [nCurItem].u == -1) 
+				items [nCurItem].u=FindNextItemUp (items,nItems, nCurItem);
 #endif
-			cItem = items [cItem].u; 
+			nCurItem = items [nCurItem].u; 
 			break;
 	
 		case KEY_DOWN: 
 		case KEY_PAD2:
 #if TABLE_CREATION
-			if (items [cItem].d == -1) 
-				items [cItem].d=FindNextItemDown (items,nItems, cItem);
+			if (items [nCurItem].d == -1) 
+				items [nCurItem].d=FindNextItemDown (items,nItems, nCurItem);
 #endif
-			cItem = items [cItem].d; 
+			nCurItem = items [nCurItem].d; 
 			break;
 		case KEY_LEFT: 
 		case KEY_PAD4:
 #if TABLE_CREATION
-			if (items [cItem].l == -1) 
-				items [cItem].l=FindNextItemLeft (items,nItems, cItem);
+			if (items [nCurItem].l == -1) 
+				items [nCurItem].l=FindNextItemLeft (items,nItems, nCurItem);
 #endif
-			cItem = items [cItem].l; 
+			nCurItem = items [nCurItem].l; 
 			break;
 		case KEY_RIGHT: 
 		case KEY_PAD6:
 #if TABLE_CREATION
-			if (items [cItem].r == -1) 
-				items [cItem].r=FindNextItemRight (items,nItems, cItem);
+			if (items [nCurItem].r == -1) 
+				items [nCurItem].r=FindNextItemRight (items,nItems, nCurItem);
 #endif
-			cItem = items [cItem].r; 
+			nCurItem = items [nCurItem].r; 
 			break;
 		case KEY_ENTER:
 		case KEY_PADENTER:
-			nChangeMode = items [cItem].nType;
+			nChangeMode = items [nCurItem].nType;
 			GameFlushInputs ();
 			break;
 		case -2:
@@ -1457,7 +1457,7 @@ for (;;) {
 				y1 = grdCurCanv->cvBitmap.bmProps.y + LHY (items [i].y);
 				y2 = y1 + /*LHY*/ (item_height);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
-					cItem = i;
+					nCurItem = i;
 					break;
 				}
 			}
@@ -1469,13 +1469,13 @@ for (;;) {
 			mx -= xOffs;
 			my -= yOffs;
 			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
-			item_height = KCGetItemHeight (items + cItem);
-			x1 = grdCurCanv->cvBitmap.bmProps.x + LHX (items [cItem].x) + LHX (items [cItem].w1);
-			x2 = x1 + LHX (items [cItem].w2);
-			y1 = grdCurCanv->cvBitmap.bmProps.y + LHY (items [cItem].y);
+			item_height = KCGetItemHeight (items + nCurItem);
+			x1 = grdCurCanv->cvBitmap.bmProps.x + LHX (items [nCurItem].x) + LHX (items [nCurItem].w1);
+			x2 = x1 + LHX (items [nCurItem].w2);
+			y1 = grdCurCanv->cvBitmap.bmProps.y + LHY (items [nCurItem].y);
 			y2 = y1 + /*LHY*/ (item_height);
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
-				nChangeMode = items [cItem].nType;
+				nChangeMode = items [nCurItem].nType;
 				GameFlushInputs ();
 			} else {
 				x1 = grdCurCanv->cvBitmap.bmProps.x + close_x + LHX (1);
@@ -1488,10 +1488,10 @@ for (;;) {
 				}
 			}
 		}
-		if (ocitem!=cItem)	{
+		if (ocitem!=nCurItem)	{
 			SDL_ShowCursor (0);
 			KCDrawItem (items + ocitem, 0);
-			KCDrawItem (items + cItem, 1);
+			KCDrawItem (items + nCurItem, 1);
 			SDL_ShowCursor (1);
 		}
 	}

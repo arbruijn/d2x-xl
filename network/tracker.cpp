@@ -239,7 +239,7 @@ return i;
 
 static time_t	nQueryTimeout;
 
-void TrackerPoll (int nItems, tMenuItem *m, int *key, int cItem)
+int TrackerPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 	time_t t;
 
@@ -257,7 +257,7 @@ else {
 		}
 	*key = 0;
 	}
-return;
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------

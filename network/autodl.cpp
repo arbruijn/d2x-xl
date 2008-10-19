@@ -521,13 +521,13 @@ return 1;
 #define PROGRESS_ITEM	2
 #define PERCENT_ITEM		1
 
-void DownloadPoll (int nItems, tMenuItem *m, int *key, int cItem)
+int DownloadPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 if (*key == KEY_ESC) {
 	m [PERCENT_ITEM].text = (char *) "download aborted";
 	m [1].redraw = 1;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 ResendRequest ();
 NetworkListen ();
@@ -537,11 +537,11 @@ if ((int) SDL_GetTicks () - nTimeout > nDlTimeout) {
 	strcpy (m [1].text, "download timed out");
 	m [1].redraw = 1;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 if (dlResult == -1) {
 	*key = -3;
-	return;
+	return nCurItem;
 	}
 if (dlResult == 1) {
 	if ((dlState == PID_DL_OPEN) || (dlState == PID_DL_DATA)) {
@@ -560,11 +560,12 @@ if (dlResult == 1) {
 			}
 		}
 	*key = 0;
-	return;
+	return nCurItem;
 	}
 m [PERCENT_ITEM].text = (char *) "download failed";
 m [PERCENT_ITEM].redraw = 1;
 *key = -2;
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------

@@ -250,7 +250,7 @@ int NDCountDemos (void);
 
 // ------------------------------------------------------------------------
 
-void AutoDemoMenuCheck (int nitems, tMenuItem * items, int *nLastKey, int citem)
+int AutoDemoMenuCheck (int nitems, tMenuItem * items, int *nLastKey, int nCurItem)
 {
 	int curtime;
 
@@ -288,6 +288,7 @@ try_again:;
 			}
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -579,7 +580,7 @@ else if (nChoice == mainOpts.nSingle) {
 	NewGameMenu ();
 	}
 else if (nChoice == mainOpts.nLoad) {
-	if (!StateRestoreAll (0, 0, NULL))
+	if (!StateRestoreAll (0, 0, 0, NULL))
 		SetFunctionMode (FMODE_MENU);
 	}
 #if DBG
@@ -772,11 +773,11 @@ gameOpts->movies.bHires = m [7].value;
 
 //      -----------------------------------------------------------------------------
 
-void CustomDetailsCallback (int nitems, tMenuItem * items, int *nLastKey, int citem)
+int CustomDetailsCallback (int nitems, tMenuItem * items, int *nLastKey, int nCurItem)
 {
 	nitems = nitems;
 	*nLastKey = *nLastKey;
-	citem = citem;
+	nCurItem = nCurItem;
 
 gameStates.render.detail.nObjectComplexity = items [0].value;
 gameStates.render.detail.nObjectDetail = items [1].value;
@@ -785,6 +786,7 @@ gameStates.render.detail.nWallRenderDepth = items [3].value;
 gameStates.render.detail.nDebrisAmount = items [4].value;
 if (!gameStates.app.bGameRunning)
 	gameStates.sound.nSoundChannels = items [5].value;
+return nCurItem;
 }
 
 // -----------------------------------------------------------------------------
@@ -1134,7 +1136,7 @@ else if (gameStates.app.nCompSpeed == 4) {
 
 static const char *pszCompSpeeds [5];
 
-void PerformanceSettingsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int PerformanceSettingsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem * m;
 	int			v;
@@ -1144,7 +1146,7 @@ v = m->value;
 if (gameStates.app.bUseDefaults != v) {
 	gameStates.app.bUseDefaults = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 if (gameStates.app.bUseDefaults) {
 	m = menus + performanceOpts.nCompSpeed;
@@ -1155,6 +1157,7 @@ if (gameStates.app.bUseDefaults) {
 		}
 	m->rebuild = 1;
 	}
+return nCurItem;
 }
 
 //      -----------------------------------------------------------------------------
@@ -1211,7 +1214,7 @@ return j;
 
 //------------------------------------------------------------------------------
 
-static int ScreenResModeToMenuItem(int mode)
+static int ScreenResModeToMenuItem (int mode)
 {
 	int j;
 	int item = 0;
@@ -1228,7 +1231,7 @@ static int ScreenResModeToMenuItem(int mode)
 
 //------------------------------------------------------------------------------
 
-void ScreenResCallback (int nItems, tMenuItem *m, int *nLastKey, int citem)
+int ScreenResCallback (int nItems, tMenuItem *m, int *nLastKey, int nCurItem)
 {
 	int	i, j;
 
@@ -1244,6 +1247,7 @@ for (i = 0; i < optCustRes; i++)
 			}
 		break;
 		}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -1524,7 +1528,7 @@ if (!StartNewGame (nNewLevel))
 
 static int nOptVerFilter = -1;
 
-void NewGameMenuCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int NewGameMenuCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			i, v;
@@ -1543,6 +1547,7 @@ for (i = 0; i < 3; i++)
 		gameOpts->app.nVersionFilter = i + 1;
 		break;
 		}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -1672,14 +1677,13 @@ static int optContrast = -1;
 
 //------------------------------------------------------------------------------
 
-void options_menuset (int nitems, tMenuItem * items, int *nLastKey, int citem)
+int ConfigMenuCallback (int nitems, tMenuItem * items, int *nLastKey, int nCurItem)
 {
 if (gameStates.app.bNostalgia) {
-	if (citem == optBrightness)
+	if (nCurItem == optBrightness)
 		GrSetPaletteGamma (items [optBrightness].value);
 	}
-nitems++;		//kill warning
-nLastKey++;		//kill warning
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -1691,7 +1695,7 @@ static const char *szCWS [4];
 
 //------------------------------------------------------------------------------
 
-void TgtIndOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int TgtIndOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v, j;
@@ -1705,22 +1709,23 @@ if (v != (extraGameInfo [0].bTargetIndicators == 0)) {
 			break;
 			}
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 m = menus + optDmgInd;
 v = m->value;
 if (v != extraGameInfo [0].bDamageIndicators) {
 	extraGameInfo [0].bDamageIndicators = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 m = menus + optMslLockInd;
 v = m->value;
 if (v != extraGameInfo [0].bMslLockIndicators) {
 	extraGameInfo [0].bMslLockIndicators = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -1785,7 +1790,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void WeaponIconOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int WeaponIconOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -1795,8 +1800,9 @@ v = m->value;
 if (v != bShowWeaponIcons) {
 	bShowWeaponIcons = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -1880,7 +1886,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void GaugeOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int GaugeOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -1890,8 +1896,9 @@ v = !m->value;
 if (v != gameOpts->render.cockpit.bTextGauges) {
 	gameOpts->render.cockpit.bTextGauges = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -1948,7 +1955,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void CockpitOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int CockpitOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -1970,6 +1977,7 @@ if (gameOpts->app.bExpertMode) {
 		m->rebuild = 1;
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -2115,7 +2123,7 @@ return j;
 static const char *pszCoronaInt [4];
 static const char *pszCoronaQual [3];
 
-void CoronaOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int CoronaOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -2165,6 +2173,7 @@ if (effectOpts.nObjCoronaIntensity >= 0) {
 		m->rebuild = -1;
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -2257,7 +2266,7 @@ do {
 
 static const char *pszExplShrapnels [5];
 
-void EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -2275,6 +2284,7 @@ if (gameOpts->render.effects.bEnergySparks != v) {
 	gameOpts->render.effects.bEnergySparks = v;
 	*key = -2;
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -2419,7 +2429,7 @@ SetDebrisCollisions ();
 
 static const char *pszRadarRange [3];
 
-void AutomapOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int AutomapOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem * m;
 	int			v;
@@ -2429,11 +2439,11 @@ v = m->value;
 if (v != gameOpts->render.automap.bTextured) {
 	gameOpts->render.automap.bTextured = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 if (!m [automapOpts.nOptRadar + extraGameInfo [0].nRadar].value) {
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 if (automapOpts.nOptRadarRange >= 0) {
 	m = menus + automapOpts.nOptRadarRange;
@@ -2444,6 +2454,7 @@ if (automapOpts.nOptRadarRange >= 0) {
 		m->rebuild = 1;
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -2569,7 +2580,7 @@ do {
 
 static int nOpt3D;
 
-void PowerupOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int PowerupOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem * m;
 	int			v;
@@ -2580,8 +2591,9 @@ if (v != gameOpts->render.powerups.b3D) {
 	if ((gameOpts->render.powerups.b3D = v))
 		ConvertAllPowerupsToWeapons ();
 	*key = -2;
-	return;
+	return nCurItem;
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -2634,7 +2646,7 @@ do {
 static const char *pszReach [4];
 static const char *pszClip [4];
 
-void ShadowOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int ShadowOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -2644,7 +2656,7 @@ v = m->value;
 if (v != extraGameInfo [0].bShadows) {
 	extraGameInfo [0].bShadows = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 if (extraGameInfo [0].bShadows) {
 	m = menus + shadowOpts.nMaxLights;
@@ -2676,7 +2688,7 @@ if (extraGameInfo [0].bShadows) {
 			bZPass = v;
 			m->rebuild = 1;
 			*key = -2;
-			return;
+			return nCurItem;
 			}
 		m = menus + shadowOpts.nVolume;
 		v = m->value;
@@ -2684,11 +2696,12 @@ if (extraGameInfo [0].bShadows) {
 			bShadowVolume = v;
 			m->rebuild = 1;
 			*key = -2;
-			return;
+			return nCurItem;
 			}
 		}
 #endif
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -2838,7 +2851,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void CameraOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int CameraOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -2848,7 +2861,7 @@ v = m->value;
 if (v != extraGameInfo [0].bUseCameras) {
 	extraGameInfo [0].bUseCameras = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 if (extraGameInfo [0].bUseCameras) {
 	if (camOpts.nFPS >= 0) {
@@ -2870,6 +2883,7 @@ if (extraGameInfo [0].bUseCameras) {
 			}
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -2942,7 +2956,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void SmokeOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int SmokeOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			i, v;
@@ -2954,7 +2968,7 @@ if (v != extraGameInfo [0].bUseSmoke) {
 	if (!v)
 		FreePartList ();
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 if (extraGameInfo [0].bUseSmoke) {
 	m = menus + smokeOpts.nQuality;
@@ -2963,14 +2977,14 @@ if (extraGameInfo [0].bUseSmoke) {
 		gameOpts->render.smoke.bSort = v;
 		sprintf (m->text, TXT_SMOKE_QUALITY, pszSmokeQual [v]);
 		m->rebuild = 1;
-		return;
+		return nCurItem;
 		}
 	m = menus + smokeOpts.nSyncSizes;
 	v = m->value;
 	if (v != gameOpts->render.smoke.bSyncSizes) {
 		gameOpts->render.smoke.bSyncSizes = v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	m = menus + smokeOpts.nPlayer;
 	v = m->value;
@@ -3062,6 +3076,7 @@ if (extraGameInfo [0].bUseSmoke) {
 	}
 else
 	DestroyAllSmoke ();
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -3258,7 +3273,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void AdvancedRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int AdvancedRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -3306,11 +3321,12 @@ if (gameOpts->app.bExpertMode) {
 		m->rebuild = 1;
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
 
-void LightOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int LightOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -3324,7 +3340,7 @@ if (lightOpts.nMethod >= 0) {
 	if (v != gameOpts->render.nLightingMethod) {
 		gameOpts->render.nLightingMethod = v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	}
 if (lightOpts.nLightmapQual >= 0) {
@@ -3342,7 +3358,7 @@ if (lightOpts.nLightmaps >= 0) {
 	if (v != gameOpts->render.bUseLightmaps) {
 		gameOpts->render.bUseLightmaps = v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	}
 if (lightOpts.nHWObjLighting >= 0) {
@@ -3351,7 +3367,7 @@ if (lightOpts.nHWObjLighting >= 0) {
 	if (v != gameOpts->ogl.bObjLighting) {
 		gameOpts->ogl.bObjLighting = v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	}
 if (lightOpts.nGunColor >= 0) {
@@ -3360,7 +3376,7 @@ if (lightOpts.nGunColor >= 0) {
 	if (v != gameOpts->render.color.bGunLight) {
 		gameOpts->render.color.bGunLight = v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	}
 if (lightOpts.nObjectLight >= 0) {
@@ -3369,7 +3385,7 @@ if (lightOpts.nObjectLight >= 0) {
 	if (v != gameOpts->ogl.bLightObjects) {
 		gameOpts->ogl.bLightObjects = v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	}
 if (lightOpts.nMaxLightsPerFace >= 0) {
@@ -3379,7 +3395,7 @@ if (lightOpts.nMaxLightsPerFace >= 0) {
 		gameOpts->ogl.nMaxLightsPerFace = v;
 		sprintf (m->text, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFaceTable [v]);
 		m->rebuild = 1;
-		return;
+		return nCurItem;
 		}
 	}
 if (lightOpts.nMaxLightsPerObject >= 0) {
@@ -3389,7 +3405,7 @@ if (lightOpts.nMaxLightsPerObject >= 0) {
 		gameOpts->ogl.nMaxLightsPerObject = v;
 		sprintf (m->text, TXT_MAX_LIGHTS_PER_OBJECT, nMaxLightsPerFaceTable [v]);
 		m->rebuild = 1;
-		return;
+		return nCurItem;
 		}
 	}
 if (lightOpts.nMaxLightsPerPass >= 0) {
@@ -3399,9 +3415,10 @@ if (lightOpts.nMaxLightsPerPass >= 0) {
 		gameOpts->ogl.nMaxLightsPerPass = v;
 		sprintf (m->text, TXT_MAX_LIGHTS_PER_PASS, v);
 		m->rebuild = 1;
-		return;
+		return nCurItem;
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -3616,7 +3633,7 @@ gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpt
 static const char *pszLightningQuality [2];
 static const char *pszLightningStyle [3];
 
-void LightningOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int LightningOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -3627,7 +3644,7 @@ if (v != extraGameInfo [0].bUseLightnings) {
 	if (!(extraGameInfo [0].bUseLightnings = v))
 		DestroyAllLightnings (0);
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 if (extraGameInfo [0].bUseLightnings) {
 	m = menus + lightningOpts.nQuality;
@@ -3652,11 +3669,12 @@ if (extraGameInfo [0].bUseLightnings) {
 		m->rebuild = 1;
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
 
-void LightningOptionsMenu ()
+void LightningOptionsMenu (void)
 {
 	tMenuItem m [15];
 	int	i, choice = 0;
@@ -3783,7 +3801,7 @@ do {
 
 static const char *pszShipColors [8];
 
-void ShipRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int ShipRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -3803,6 +3821,7 @@ if (shipRenderOpts.nColor >= 0) {
 		m->rebuild = 1;
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -3873,7 +3892,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void RenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int RenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -3937,6 +3956,7 @@ if (gameOpts->app.bExpertMode) {
 		m->rebuild = 1;
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -4228,12 +4248,12 @@ return (extraGameInfo [0].loadout.nDevices & nDeviceFlags [i]) != 0;
 
 //------------------------------------------------------------------------------
 
-void LoadoutCallback (int nitems, tMenuItem * menus, int * key, int cItem)
+int LoadoutCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
-	tMenuItem	*m = menus + cItem;
+	tMenuItem	*m = menus + nCurItem;
 	int			v = m->value;
 
-if (cItem == optGuns) {	//checked/unchecked lasers
+if (nCurItem == optGuns) {	//checked/unchecked lasers
 	if (v != GetGunLoadoutFlag (0)) {
 		SetGunLoadoutFlag (0, v);
 		if (!v) {	//if lasers unchecked, also uncheck super lasers
@@ -4242,7 +4262,7 @@ if (cItem == optGuns) {	//checked/unchecked lasers
 			}
 		}
 	}
-else if (cItem == optGuns + 5) {	//checked/unchecked super lasers
+else if (nCurItem == optGuns + 5) {	//checked/unchecked super lasers
 	if (v != GetGunLoadoutFlag (5)) {
 		SetGunLoadoutFlag (5, v);
 		if (v) {	// if super lasers checked, also check lasers
@@ -4251,7 +4271,7 @@ else if (cItem == optGuns + 5) {	//checked/unchecked super lasers
 			}
 		}
 	}
-else if (cItem == optDevices + 6) {	//checked/unchecked super lasers
+else if (nCurItem == optDevices + 6) {	//checked/unchecked super lasers
 	if (v != GetDeviceLoadoutFlag (6)) {
 		SetDeviceLoadoutFlag (6, v);
 		if (!v) {	// if super lasers checked, also check lasers
@@ -4260,7 +4280,7 @@ else if (cItem == optDevices + 6) {	//checked/unchecked super lasers
 			}
 		}
 	}
-else if (cItem == optDevices + 7) {	//checked/unchecked super lasers
+else if (nCurItem == optDevices + 7) {	//checked/unchecked super lasers
 	if (v != GetDeviceLoadoutFlag (7)) {
 		SetDeviceLoadoutFlag (7, v);
 		if (v) {	// if super lasers checked, also check lasers
@@ -4269,6 +4289,7 @@ else if (cItem == optDevices + 7) {	//checked/unchecked super lasers
 			}
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -4312,7 +4333,7 @@ static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
 static const char *pszAggressivities [5];
 
-void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -4334,7 +4355,7 @@ v = m->value;
 if (extraGameInfo [0].headlight.bAvailable != v) {
 	extraGameInfo [0].headlight.bAvailable = v;
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 
 if (gameOpts->app.bExpertMode) {
@@ -4351,7 +4372,7 @@ if (gameOpts->app.bExpertMode) {
 	if (extraGameInfo [0].bSmokeGrenades != v) {
 		extraGameInfo [0].bSmokeGrenades = v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 
 	m = menus + gplayOpts.nAIAggressivity;
@@ -4372,6 +4393,7 @@ if (gameOpts->app.bExpertMode) {
 			}
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -4574,7 +4596,7 @@ return szRamp;
 
 //------------------------------------------------------------------------------
 
-void PhysicsOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int PhysicsOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -4635,7 +4657,7 @@ if (gameOpts->app.bExpertMode) {
 		gameOpts->gameplay.nSlowMotionSpeedup = v;
 		sprintf (m->text, TXT_SLOWMOTION_SPEEDUP, (float) v / 2);
 		m->rebuild = 1;
-		return;
+		return nCurItem;
 		}
 
 	m = menus + nOptDebrisLife;
@@ -4646,6 +4668,7 @@ if (gameOpts->app.bExpertMode) {
 		m->rebuild = -1;
 		}
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -4892,7 +4915,7 @@ do {
 		optMultiThreading = nOptions++;
 		}
 
-	i = ExecMenu1 (NULL, TXT_OPTIONS, nOptions, m, options_menuset, &choice);
+	i = ExecMenu1 (NULL, TXT_OPTIONS, nOptions, m, ConfigMenuCallback, &choice);
 	if (i >= 0) {
 		if (i == optSound)
 			SoundMenu ();		
@@ -4949,7 +4972,7 @@ return i - 1;
 
 //------------------------------------------------------------------------------
 
-void SoundMenuCallback (int nitems, tMenuItem * m, int *nLastKey, int citem)
+int SoundMenuCallback (int nitems, tMenuItem * m, int *nLastKey, int nCurItem)
 {
 	nitems = nitems;          
 	*nLastKey = *nLastKey;
@@ -4976,7 +4999,7 @@ if ((soundOpts.nVolume >= 0) && (gameOpts->sound.xCustomSoundVolume != m [soundO
 		m [soundOpts.nVolume].rebuild = 1;
 	gameOpts->sound.xCustomSoundVolume = m [soundOpts.nVolume].value;
 	sprintf (m [soundOpts.nVolume].text, TXT_CUSTOM_SOUNDVOL, gameOpts->sound.xCustomSoundVolume * 10, '%');
-	return;
+	return nCurItem;
 	}
 if (m [soundOpts.nRedbook].value != gameStates.sound.bRedbookEnabled) {
 	if (m [soundOpts.nRedbook].value && !gameOpts->sound.bUseRedbook) {
@@ -5031,12 +5054,12 @@ else {
 		}
 	}
 // don't enable redbook for a non-apple demo version of the shareware demo
-citem++;		//kill warning
+return nCurItem;		//kill warning
 }
 
 //------------------------------------------------------------------------------
 
-void SoundMenu ()
+void SoundMenu (void)
 {
    tMenuItem	m [20];
 	char			szChannels [50], szVolume [50];
@@ -5128,7 +5151,7 @@ if (!gameStates.app.bNostalgia) {
 
 extern int screenShotIntervals [];
 
-void MiscellaneousCallback (int nitems, tMenuItem * menus, int * key, int citem)
+int MiscellaneousCallback (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	tMenuItem * m;
 	int			v;
@@ -5139,7 +5162,7 @@ if (!gameStates.app.bNostalgia) {
 	if (gameStates.app.bUseDefaults != v) {
 		gameStates.app.bUseDefaults = v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	m = menus + miscOpts.nScreenshots;
 	v = m->value;
@@ -5151,14 +5174,14 @@ if (!gameStates.app.bNostalgia) {
 			strcpy (m->text, TXT_NO_SCREENSHOTS);
 		m->rebuild = 1;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	m = menus + miscOpts.nExpertMode;
 	v = m->value;
 	if (gameOpts->app.bExpertMode != v) {
 		gameOpts->app.bExpertMode = v;
 		*key = -2;
-		return;
+		return nCurItem;
 		}
 	if (gameOpts->app.bExpertMode) {
 		m = menus + miscOpts.nAutoDl;
@@ -5166,7 +5189,7 @@ if (!gameStates.app.bNostalgia) {
 		if (extraGameInfo [0].bAutoDownload != v) {
 			extraGameInfo [0].bAutoDownload = v;
 			*key = -2;
-			return;
+			return nCurItem;
 			}
 		if (extraGameInfo [0].bAutoDownload) {
 			m = menus + miscOpts.nDlTimeout;
@@ -5181,6 +5204,7 @@ if (!gameStates.app.bNostalgia) {
 	else
 		SetDlTimeout (15);
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -5340,9 +5364,9 @@ if (!i)
 if (i == optOptions)
 	ConfigMenu ();
 else if (i == optLoad)
-	StateRestoreAll (1, 0, NULL);
+	StateRestoreAll (1, 0, 0, NULL);
 else if (i == optSave)
-	StateSaveAll (0, 0, NULL);
+	StateSaveAll (0, 0, 0, NULL);
 return 1;
 }
 

@@ -378,7 +378,7 @@ SpecialResetObjects ();
 /* Polling loop waiting for sync packet to start game
  * after having sent request
  */
-void NetworkSyncPoll (int nitems, tMenuItem * menus, int * key, int citem)
+int NetworkSyncPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	int	nPackets = NetworkListen ();
 
@@ -386,12 +386,12 @@ if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit
 	if (NetworkVerifyPlayers ())
 		NetworkAbortSync ();
 	*key = -2;
-	return;
+	return nCurItem;
 	}
 #if 1 //ndef _DEBUG
 if (nPackets || (networkData.nStatus == NETSTAT_PLAYING)) {
 	ResetSyncTimeout ();
-	return;
+	return nCurItem;
 	}
 #endif
 if ((time_t) SDL_GetTicks () > networkData.toSyncPoll) {	// Poll time expired, re-send request
@@ -405,6 +405,7 @@ if ((time_t) SDL_GetTicks () > networkData.toSyncPoll) {	// Poll time expired, r
 	if (NetworkSendRequest () < 0)
 		*key = -2;
 	}
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
@@ -477,7 +478,7 @@ networkData.toWaitAllPoll = (time_t) SDL_GetTicks () + WaitAllPollTimeout ();
 
 //------------------------------------------------------------------------------
 
-void NetworkWaitAllPoll (int nitems, tMenuItem * menus, int * key, int citem)
+int NetworkWaitAllPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 if ((time_t) SDL_GetTicks () > networkData.toWaitAllPoll) {
 	NetworkSendAllInfoRequest (PID_SEND_ALL_GAMEINFO, networkData.nSecurityCheck);
@@ -486,6 +487,7 @@ if ((time_t) SDL_GetTicks () > networkData.toWaitAllPoll) {
 NetworkDoBigWait (networkData.bWaitAllChoice);  
 if (networkData.nSecurityCheck == -1)
 	*key = -2;
+return nCurItem;
 }
  
 //------------------------------------------------------------------------------
@@ -674,7 +676,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 
 //------------------------------------------------------------------------------
 
-void NetworkRequestPoll (int nitems, tMenuItem * menus, int * key, int citem)
+int NetworkRequestPoll (int nitems, tMenuItem * menus, int * key, int nCurItem)
 {
 	// Polling loop for waiting-for-requests menu
 
@@ -688,6 +690,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	}
 if (nReady == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
 	*key = -2;
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------

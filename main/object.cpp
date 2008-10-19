@@ -455,7 +455,7 @@ void SpecialResetObjects (void)
 
 gameData.objs.nObjects = MAX_OBJECTS;
 gameData.objs.nLastObject [0] = 0;
-memset (&gameData.objs.objLists, 0, sizeof (gameData.objs.objLists));
+memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
 Assert (OBJECTS [0].info.nType != OBJ_NONE);		//0 should be used
 for (objP = OBJECTS + MAX_OBJECTS, i = MAX_OBJECTS; i; ) {
 	objP--, i--;
@@ -774,7 +774,7 @@ for (listObjP = ref.head; listObjP; listObjP = listObjP->links [nLink].next)
 return false;
 }
 
-#endf
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -834,7 +834,7 @@ else if (ref.head == objP) { //this actually means the list is corrupted
 		for (ref.head = ref.tail; ref.head->links [nLink].prev; ref.head = ref.head->links [nLink].prev)
 			;
 	}
-else if (ref.tail == objP) //this actually means the list is corrupted
+else if (ref.tail == objP) { //this actually means the list is corrupted
 	if (!ref.head)
 		ref.head = NULL;
 	else
@@ -869,24 +869,24 @@ if (objP - gameData.objs.objects == nDbgObj) {
 #endif
 UnlinkObject (objP);
 objP->nLinkedType = nType;
-LinkObjToList (gameData.objs.objLists.all, objP, 0);
+LinkObjToList (gameData.objs.lists.all, objP, 0);
 if (nType == OBJ_PLAYER)
-	LinkObjToList (gameData.objs.objLists.players, objP, 1);
+	LinkObjToList (gameData.objs.lists.players, objP, 1);
 if (nType == OBJ_ROBOT)
-	LinkObjToList (gameData.objs.objLists.robots, objP, 1);
+	LinkObjToList (gameData.objs.lists.robots, objP, 1);
 else {
 	if (nType == OBJ_WEAPON)
-		LinkObjToList (gameData.objs.objLists.weapons, objP, 1);
+		LinkObjToList (gameData.objs.lists.weapons, objP, 1);
 	else if (nType == OBJ_POWERUP)
-		LinkObjToList (gameData.objs.objLists.powerups, objP, 1);
+		LinkObjToList (gameData.objs.lists.powerups, objP, 1);
 	else if (nType == OBJ_EFFECT)
-		LinkObjToList (gameData.objs.objLists.effects, objP, 1);
+		LinkObjToList (gameData.objs.lists.effects, objP, 1);
 	else
 		objP->links [1].prev = objP->links [1].next = NULL;
-	LinkObjToList (gameData.objs.objLists.statics, objP, 2);
+	LinkObjToList (gameData.objs.lists.statics, objP, 2);
 	return;
 	}
-LinkObjToList (gameData.objs.objLists.actors, objP, 2);
+LinkObjToList (gameData.objs.lists.actors, objP, 2);
 }
 
 //------------------------------------------------------------------------------
@@ -903,22 +903,22 @@ if (nType != OBJ_NONE) {
 		}
 #endif
 	objP->nLinkedType = OBJ_NONE;
-	UnlinkObjFromList (gameData.objs.objLists.all, objP, 0);
+	UnlinkObjFromList (gameData.objs.lists.all, objP, 0);
 	if (nType == OBJ_PLAYER)
-		UnlinkObjFromList (gameData.objs.objLists.players, objP, 1);
+		UnlinkObjFromList (gameData.objs.lists.players, objP, 1);
 	else if (nType == OBJ_ROBOT)
-		UnlinkObjFromList (gameData.objs.objLists.robots, objP, 1);
+		UnlinkObjFromList (gameData.objs.lists.robots, objP, 1);
 	else {
 		if (nType == OBJ_WEAPON)
-			UnlinkObjFromList (gameData.objs.objLists.weapons, objP, 1);
+			UnlinkObjFromList (gameData.objs.lists.weapons, objP, 1);
 		else if (nType == OBJ_POWERUP)
-			UnlinkObjFromList (gameData.objs.objLists.powerups, objP, 1);
+			UnlinkObjFromList (gameData.objs.lists.powerups, objP, 1);
 		else if (nType == OBJ_EFFECT)
-			UnlinkObjFromList (gameData.objs.objLists.effects, objP, 1);
-		UnlinkObjFromList (gameData.objs.objLists.statics, objP, 2);
+			UnlinkObjFromList (gameData.objs.lists.effects, objP, 1);
+		UnlinkObjFromList (gameData.objs.lists.statics, objP, 2);
 		return;
 		}
-	UnlinkObjFromList (gameData.objs.objLists.actors, objP, 2);
+	UnlinkObjFromList (gameData.objs.lists.actors, objP, 2);
 	}
 }
 
@@ -1707,7 +1707,7 @@ void CleanupObjects (void)
 	tObject	*objP, *nextObjP = NULL;
 	int		nLocalDeadPlayerObj = -1;
 
-for (objP = gameData.objs.objLists.all.head; objP; objP = nextObjP) {
+for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->links [0].next;
 	if (objP->info.nType == OBJ_NONE)
 		continue;
@@ -2329,7 +2329,7 @@ else
 gameStates.entropy.bConquering = 0;
 UpdatePlayerOrient ();
 i = 0;
-for (objP = gameData.objs.objLists.all.head; objP; objP = nextObjP) {
+for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->links [0].next;
 	if ((objP->info.nType != OBJ_NONE) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !UpdateObject (objP))
 		return 0;
@@ -2597,7 +2597,7 @@ void ClearTransientObjects (int bClearAll)
 	short nObject;
 	tObject *objP, *nextObjP;
 
-for (objP = gameData.objs.objLists.weapons.head; objP; objP = nextObjP) {
+for (objP = gameData.objs.lists.weapons.head; objP; objP = nextObjP) {
 	nextObjP = objP->links [1].next;
 	if ((!(gameData.weapons.info [objP->info.nId].flags&WIF_PLACABLE) &&
 		  (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||

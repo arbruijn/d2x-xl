@@ -343,7 +343,7 @@ int NetworkStartGame();
 void NetworkRejoinGame();
 void NetworkLeaveGame();
 int NetworkEndLevel(int *secret);
-void NetworkEndLevelPoll2(int nitems, struct tMenuItem * menus, int * key, int citem);
+int NetworkEndLevelPoll2(int nitems, struct tMenuItem * menus, int * key, int nCurItem);
 
 extern tExtraGameInfo extraGameInfo [2];
 

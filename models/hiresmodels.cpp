@@ -326,7 +326,7 @@ return bCustom ? ++i : LoadLoresModel (i);
 static int loadIdx;
 static int loadOp = 0;
 
-static void LoadModelsPoll (int nItems, tMenuItem *m, int *key, int cItem)
+static int LoadModelsPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 GrPaletteStepLoad (NULL);
 if (loadOp == 0) {
@@ -341,13 +341,14 @@ else if (loadOp == 1) {
 	if (loadIdx >= (int) sizeofa (replacementModels)) {
 		*key = -2;
 		GrPaletteStepLoad (NULL);
-		return;
+		return nCurItem;
 		}
 	}
 m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
 GrPaletteStepLoad (NULL);
+return nCurItem;
 }
 
 //------------------------------------------------------------------------------
