@@ -1474,7 +1474,7 @@ tStuckObject	stuckObjects [MAX_STUCK_OBJECTS];
 //-----------------------------------------------------------------
 //	An tObject got stuck in a door (like a flare).
 //	Add global entry.
-void AddStuckObject(tObject *objP, short nSegment, short nSide)
+void AddStuckObject (tObject *objP, short nSegment, short nSide)
 {
 	int				i;
 	short				nWall;
@@ -1524,7 +1524,7 @@ if (IS_WALL (nWall) &&
 	  (objP->info.nSignature != stuckObjP->nSignature))) {
 	nStuckObjects--;
 	objP->info.xLifeLeft = F1_0/8;
-	stuckObjects [nObject].nWall = NO_WALL;
+	stuckObjP->nWall = NO_WALL;
 	}
 }
 
@@ -1587,7 +1587,8 @@ for (int i = 0; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
 		nStuckObjects--;
 		}
 	}
-Assert(nStuckObjects == 0);
+if (nStuckObjects)
+	nStuckObjects = 0;
 }
 
 // -----------------------------------------------------------------------------------

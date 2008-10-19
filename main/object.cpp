@@ -762,6 +762,8 @@ return nObject;
 
 //------------------------------------------------------------------------------
 
+#if DBG
+
 bool ObjIsInList (tObjListRef& ref, tObject *objP, int nLink)
 {
 	tObject	*listObjP;
@@ -772,17 +774,19 @@ for (listObjP = ref.head; listObjP; listObjP = listObjP->links [nLink].next)
 return false;
 }
 
+#endf
+
 //------------------------------------------------------------------------------
 
 void LinkObjToList (tObjListRef& ref, tObject *objP, int nLink)
 {
 	tObjListLink& link = objP->links [nLink];
 
+#if DBG
 if (ObjIsInList (ref, objP, nLink)) {
-	PrintLog ("object %d, type %d, link %d is already linked\n", objP - gameData.objs.objects, objP->info.nType);
+	//PrintLog ("object %d, type %d, link %d is already linked\n", objP - gameData.objs.objects, objP->info.nType);
 	return;
 	}
-#ifdef _DEBUG
 if (objP - gameData.objs.objects == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
@@ -821,13 +825,27 @@ if (link.prev || link.next) {
 	link.prev = link.next = NULL;
 	ref.nObjects--;
 	}
-else if ((ref.head == objP) || (ref.tail == objP))
+else if ((ref.head == objP) && (ref.tail == objP))
 		ref.head = ref.tail = NULL;
+else if (ref.head == objP) { //this actually means the list is corrupted
+	if (!ref.tail)
+		ref.head = NULL;
+	else
+		for (ref.head = ref.tail; ref.head->links [nLink].prev; ref.head = ref.head->links [nLink].prev)
+			;
+	}
+else if (ref.tail == objP) //this actually means the list is corrupted
+	if (!ref.head)
+		ref.head = NULL;
+	else
+		for (ref.tail = ref.head; ref.tail->links [nLink].next; ref.tail = ref.tail->links [nLink].next)
+			;
+	}
+#if DBG
 if (ObjIsInList (ref, objP, nLink)) {
 	PrintLog ("object %d, type %d, link %d is still linked\n", objP - gameData.objs.objects, objP->info.nType);
 	return;
 	}
-#if DBG
 if (objP = ref.head) {
 	if (objP->links [nLink].next == objP)
 		objP = objP;
@@ -846,7 +864,7 @@ void LinkObject (tObject *objP)
 #if DBG
 if (objP - gameData.objs.objects == nDbgObj) {
 	nDbgObj = nDbgObj;
-	PrintLog ("linking object #%d, type %d\n", objP - gameData.objs.objects, nType);
+	//PrintLog ("linking object #%d, type %d\n", objP - gameData.objs.objects, nType);
 	}
 #endif
 UnlinkObject (objP);
@@ -881,7 +899,7 @@ if (nType != OBJ_NONE) {
 #if DBG
 	if (objP - gameData.objs.objects == nDbgObj) {
 		nDbgObj = nDbgObj;
-		PrintLog ("unlinking object #%d, type %d\n", objP - gameData.objs.objects, nType);
+		//PrintLog ("unlinking object #%d, type %d\n", objP - gameData.objs.objects, nType);
 		}
 #endif
 	objP->nLinkedType = OBJ_NONE;
@@ -925,7 +943,7 @@ void FreeObject (int nObject)
 
 #if DBG
 if (nObject == nDbgObj) {
-	PrintLog ("freeing object #%d\n", nObject);
+	//PrintLog ("freeing object #%d\n", nObject);
 	nDbgObj = nDbgObj;
 	if (dbgObjInstances > 0)
 		dbgObjInstances--;
@@ -1239,12 +1257,15 @@ return nObject;
 int CloneObject (tObject *objP)
 {
 	short		nObject, nSegment;
+	int		nSignature;
 	tObject	*cloneP;
 	
 if (0 > (nObject = AllocObject ()))
 	return -1;
 cloneP = OBJECTS + nObject;
+nSignature = cloneP->info.nSignature;
 memcpy (cloneP, objP, sizeof (tObject));
+cloneP->info.nSignature = nSignature;
 cloneP->info.nCreator = -1;
 cloneP->mType.physInfo.thrust.SetZero();
 gameData.objs.xCreationTime [nObject] = gameData.time.xGame;
