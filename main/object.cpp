@@ -455,7 +455,7 @@ gameData.objs.nObjects = MAX_OBJECTS;
 gameData.objs.nLastObject [0] = 0;
 memset (&gameData.objs.objLists, 0, sizeof (gameData.objs.objLists));
 Assert (OBJECTS [0].info.nType != OBJ_NONE);		//0 should be used
-for (objP = OBJECTS, i = MAX_OBJECTS; i--; objP++)
+for (objP = OBJECTS, i = 0; i < MAX_OBJECTS; i++, objP++)
 	if (objP->info.nType == OBJ_NONE)
 		gameData.objs.freeList [--gameData.objs.nObjects] = i;
 	else {
@@ -609,6 +609,10 @@ if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
 	if (nSegment < 0)
 		return;
 	}
+#ifdef _DEBUG
+if (nSegment == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
 objP->info.nSegment = nSegment;
 if (gameData.segs.objects [nSegment] == nObject)
 	return;
@@ -617,15 +621,8 @@ objP->info.nPrevInSeg = -1;
 gameData.segs.objects [nSegment] = nObject;
 if (objP->info.nNextInSeg != -1)
 	OBJECTS [objP->info.nNextInSeg].info.nPrevInSeg = nObject;
-
-//list_segObjects (nSegment);
-//CheckDuplicateObjects ();
-
-//Assert (OBJECTS [0].info.nNextInSeg != 0);
 if (OBJECTS [0].info.nNextInSeg == 0)
 	OBJECTS [0].info.nNextInSeg = -1;
-
-//Assert (OBJECTS [0].info.nPrevInSeg != 0);
 if (OBJECTS [0].info.nPrevInSeg == 0)
 	OBJECTS [0].info.nPrevInSeg = -1;
 }
@@ -762,15 +759,17 @@ void UnlinkObjFromList (tObjListRef& ref, tObject *objP, int nLink)
 {
 	tObjListLink& link = objP->links [nLink];
 
-if (link.next)
-	link.next->links [nLink].prev = link.prev;
-else
-	ref.tail = link.prev;
-if (link.prev)
-	link.prev->links [nLink].next = link.next;
-else
-	ref.head = link.next;
-link.prev = link.next = NULL;
+if (link.prev || link.next) {
+	if (link.next)
+		link.next->links [nLink].prev = link.prev;
+	else
+		ref.tail = link.prev;
+	if (link.prev)
+		link.prev->links [nLink].next = link.next;
+	else
+		ref.head = link.next;
+	link.prev = link.next = NULL;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -779,6 +778,7 @@ void LinkObject (tObject *objP)
 {
 	ubyte nType = objP->info.nType;
 
+UnlinkObject (objP);
 LinkObjToList (gameData.objs.objLists.all, objP, 0);
 if (nType == OBJ_PLAYER)
 	LinkObjToList (gameData.objs.objLists.players, objP, 1);
@@ -1203,27 +1203,27 @@ return nObject;
 int CreateWeapon (ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, fix xSize, ubyte rType)
 {
 if (rType == 255) {
-switch (gameData.weapons.info [nId].renderType)	{
-	case WEAPON_RENDER_BLOB:
-		rType = RT_LASER;			// Render as a laser even if blob (see render code above for explanation)
-		xSize = gameData.weapons.info [nId].blob_size;
-		break;
-	case WEAPON_RENDER_POLYMODEL:
-		xSize = 0;	//	Filled in below.
-		rType = RT_POLYOBJ;
-		break;
-	case WEAPON_RENDER_NONE:
-		rType = RT_NONE;
-		xSize = F1_0;
-		break;
-	case WEAPON_RENDER_VCLIP:
-		rType = RT_WEAPON_VCLIP;
-		xSize = gameData.weapons.info [nId].blob_size;
-		break;
-	default:
-		Error ("Invalid weapon render nType in CreateNewLaser\n");
-		return -1;
-	}
+	switch (gameData.weapons.info [nId].renderType)	{
+		case WEAPON_RENDER_BLOB:
+			rType = RT_LASER;			// Render as a laser even if blob (see render code above for explanation)
+			xSize = gameData.weapons.info [nId].blob_size;
+			break;
+		case WEAPON_RENDER_POLYMODEL:
+			xSize = 0;	//	Filled in below.
+			rType = RT_POLYOBJ;
+			break;
+		case WEAPON_RENDER_NONE:
+			rType = RT_NONE;
+			xSize = F1_0;
+			break;
+		case WEAPON_RENDER_VCLIP:
+			rType = RT_WEAPON_VCLIP;
+			xSize = gameData.weapons.info [nId].blob_size;
+			break;
+		default:
+			Error ("Invalid weapon render nType in CreateNewLaser\n");
+			return -1;
+		}
 	}
 return CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, vmsMatrix::IDENTITY, xSize, CT_WEAPON, MT_PHYSICS, rType); 
 }
@@ -1293,10 +1293,6 @@ void ReleaseObject (short nObject)
 	int nParent;
 	tObject *objP = OBJECTS + nObject;
 
-Assert (nObject != -1);
-Assert (nObject != 0);
-Assert (objP->info.nType != OBJ_NONE);
-Assert (objP != gameData.objs.consoleP);
 if (objP->info.nType == OBJ_WEAPON) {
 	RespawnDestroyedWeapon (nObject);
 	if (objP->info.nId == GUIDEDMSL_ID) {
