@@ -80,6 +80,8 @@ tObject	*dbgObjP = NULL;
 #	define fabsf(_f)	(float) fabs (_f)
 #endif
 
+int dbgObjInstances = 0;
+
 //------------------------------------------------------------------------------
 // grsBitmap *robot_bms [MAX_ROBOT_BITMAPS];	//all bitmaps for all robots
 
@@ -455,15 +457,24 @@ gameData.objs.nObjects = MAX_OBJECTS;
 gameData.objs.nLastObject [0] = 0;
 memset (&gameData.objs.objLists, 0, sizeof (gameData.objs.objLists));
 Assert (OBJECTS [0].info.nType != OBJ_NONE);		//0 should be used
-for (objP = OBJECTS, i = 0; i < MAX_OBJECTS; i++, objP++)
+for (objP = OBJECTS + MAX_OBJECTS, i = MAX_OBJECTS; i; ) {
+	objP--, i--;
+#ifdef _DEBUG
+	if (i == nDbgObj) {
+		nDbgObj = nDbgObj;
+		if (objP->info.nType != OBJ_NONE)
+			dbgObjInstances++;
+		}
+#endif
+	memset (objP->links, 0, sizeof (objP->links));
 	if (objP->info.nType == OBJ_NONE)
 		gameData.objs.freeList [--gameData.objs.nObjects] = i;
 	else {
 		if (i > gameData.objs.nLastObject [0])
 			gameData.objs.nLastObject [0] = i;
-		memset (objP->links, 0, sizeof (objP->links));
 		LinkObject (objP);
 		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -722,8 +733,12 @@ if (gameData.objs.nObjects >= MAX_OBJECTS)
 	return -1;
 nObject = gameData.objs.freeList [gameData.objs.nObjects++];
 #if DBG
-if (nObject == nDbgObj)
+if (nObject == nDbgObj) {
+	PrintLog ("allocating object #%d\n", nObject);
 	nDbgObj = nDbgObj;
+	if (dbgObjInstances++ > 0)
+		nDbgObj = nDbgObj;
+	}
 #endif
 if (nObject > gameData.objs.nLastObject [0]) {
 	gameData.objs.nLastObject [0] = nObject;
@@ -731,7 +746,13 @@ if (nObject > gameData.objs.nLastObject [0]) {
 		gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
 	}
 objP = OBJECTS + nObject;
-objP->info.nFlags = 0;
+#if DBG
+if (objP->info.nType != OBJ_NONE)
+	objP = objP;
+#endif
+memset (objP, 0, sizeof (*objP));
+objP->info.nType = 
+objP->nLinkedType = OBJ_NONE;
 objP->info.nAttachedObj =
 objP->cType.explInfo.attached.nNext =
 objP->cType.explInfo.attached.nPrev =
@@ -741,16 +762,43 @@ return nObject;
 
 //------------------------------------------------------------------------------
 
+bool ObjIsInList (tObjListRef& ref, tObject *objP, int nLink)
+{
+	tObject	*listObjP;
+
+for (listObjP = ref.head; listObjP; listObjP = listObjP->links [nLink].next)
+	if (listObjP == objP)
+		return true;
+return false;
+}
+
+//------------------------------------------------------------------------------
+
 void LinkObjToList (tObjListRef& ref, tObject *objP, int nLink)
 {
 	tObjListLink& link = objP->links [nLink];
 
+if (ObjIsInList (ref, objP, nLink)) {
+	PrintLog ("object %d, type %d, link %d is already linked\n", objP - gameData.objs.objects, objP->info.nType);
+	return;
+	}
+#ifdef _DEBUG
+if (objP - gameData.objs.objects == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 link.prev = ref.tail;
 if (ref.tail)
 	ref.tail->links [nLink].next = objP;
 else
 	ref.head = objP;
 ref.tail = objP;
+#if DBG
+if (objP->links [nLink].next == objP)
+	objP = objP;
+if (objP->links [nLink].prev == objP)
+	objP = objP;
+#endif
+ref.nObjects++;
 }
 
 //------------------------------------------------------------------------------
@@ -760,6 +808,8 @@ void UnlinkObjFromList (tObjListRef& ref, tObject *objP, int nLink)
 	tObjListLink& link = objP->links [nLink];
 
 if (link.prev || link.next) {
+	if (ref.nObjects <= 0)
+		return;
 	if (link.next)
 		link.next->links [nLink].prev = link.prev;
 	else
@@ -769,7 +819,22 @@ if (link.prev || link.next) {
 	else
 		ref.head = link.next;
 	link.prev = link.next = NULL;
+	ref.nObjects--;
 	}
+else if ((ref.head == objP) || (ref.tail == objP))
+		ref.head = ref.tail = NULL;
+if (ObjIsInList (ref, objP, nLink)) {
+	PrintLog ("object %d, type %d, link %d is still linked\n", objP - gameData.objs.objects, objP->info.nType);
+	return;
+	}
+#if DBG
+if (objP = ref.head) {
+	if (objP->links [nLink].next == objP)
+		objP = objP;
+	if (objP->links [nLink].prev == objP)
+		objP = objP;
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -778,7 +843,14 @@ void LinkObject (tObject *objP)
 {
 	ubyte nType = objP->info.nType;
 
+#if DBG
+if (objP - gameData.objs.objects == nDbgObj) {
+	nDbgObj = nDbgObj;
+	PrintLog ("linking object #%d, type %d\n", objP - gameData.objs.objects, nType);
+	}
+#endif
 UnlinkObject (objP);
+objP->nLinkedType = nType;
 LinkObjToList (gameData.objs.objLists.all, objP, 0);
 if (nType == OBJ_PLAYER)
 	LinkObjToList (gameData.objs.objLists.players, objP, 1);
@@ -803,24 +875,33 @@ LinkObjToList (gameData.objs.objLists.actors, objP, 2);
 
 void UnlinkObject (tObject *objP)
 {
-	ubyte nType = objP->info.nType;
+	ubyte nType = objP->nLinkedType;
 
-UnlinkObjFromList (gameData.objs.objLists.all, objP, 0);
-if (nType == OBJ_PLAYER)
-	UnlinkObjFromList (gameData.objs.objLists.players, objP, 1);
-else if (nType == OBJ_ROBOT)
-	UnlinkObjFromList (gameData.objs.objLists.robots, objP, 1);
-else {
-	if (nType == OBJ_WEAPON)
-		UnlinkObjFromList (gameData.objs.objLists.weapons, objP, 1);
-	else if (nType == OBJ_POWERUP)
-		UnlinkObjFromList (gameData.objs.objLists.powerups, objP, 1);
-	else if (nType == OBJ_EFFECT)
-		UnlinkObjFromList (gameData.objs.objLists.effects, objP, 1);
-	UnlinkObjFromList (gameData.objs.objLists.statics, objP, 2);
-	return;
+if (nType != OBJ_NONE) {
+#if DBG
+	if (objP - gameData.objs.objects == nDbgObj) {
+		nDbgObj = nDbgObj;
+		PrintLog ("unlinking object #%d, type %d\n", objP - gameData.objs.objects, nType);
+		}
+#endif
+	objP->nLinkedType = OBJ_NONE;
+	UnlinkObjFromList (gameData.objs.objLists.all, objP, 0);
+	if (nType == OBJ_PLAYER)
+		UnlinkObjFromList (gameData.objs.objLists.players, objP, 1);
+	else if (nType == OBJ_ROBOT)
+		UnlinkObjFromList (gameData.objs.objLists.robots, objP, 1);
+	else {
+		if (nType == OBJ_WEAPON)
+			UnlinkObjFromList (gameData.objs.objLists.weapons, objP, 1);
+		else if (nType == OBJ_POWERUP)
+			UnlinkObjFromList (gameData.objs.objLists.powerups, objP, 1);
+		else if (nType == OBJ_EFFECT)
+			UnlinkObjFromList (gameData.objs.objLists.effects, objP, 1);
+		UnlinkObjFromList (gameData.objs.objLists.statics, objP, 2);
+		return;
+		}
+	UnlinkObjFromList (gameData.objs.objLists.actors, objP, 2);
 	}
-UnlinkObjFromList (gameData.objs.objLists.actors, objP, 2);
 }
 
 //------------------------------------------------------------------------------
@@ -843,8 +924,14 @@ void FreeObject (int nObject)
 	tObject	*objP = OBJECTS + nObject;
 
 #if DBG
-if (nObject == nDbgObj)
+if (nObject == nDbgObj) {
+	PrintLog ("freeing object #%d\n", nObject);
 	nDbgObj = nDbgObj;
+	if (dbgObjInstances > 0)
+		dbgObjInstances--;
+	else
+		nDbgObj = nDbgObj;
+	}
 #endif
 UnlinkObject (objP);
 DelObjChildrenN (nObject);
@@ -1100,7 +1187,6 @@ if (0 > (nObject = AllocObject ()))
 	return -1;
 objP = OBJECTS + nObject;
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
-memset (objP, 0, sizeof (tObject));
 objP->info.nSignature = gameData.objs.nNextSignature++;
 objP->info.nType = nType;
 objP->info.nId = nId;
@@ -1164,6 +1250,8 @@ cloneP->mType.physInfo.thrust.SetZero();
 gameData.objs.xCreationTime [nObject] = gameData.time.xGame;
 nSegment = objP->info.nSegment;
 cloneP->info.nSegment = cloneP->info.nPrevInSeg = cloneP->info.nNextInSeg = -1;
+memset (cloneP->links, 0, sizeof (cloneP->links));
+cloneP->nLinkedType = OBJ_NONE;
 LinkObject (objP);
 LinkObjToSeg (nObject, nSegment);
 return nObject;
@@ -2486,9 +2574,10 @@ FORALL_ROBOT_OBJS (objP, i)
 void ClearTransientObjects (int bClearAll)
 {
 	short nObject;
-	tObject *objP;
+	tObject *objP, *nextObjP;
 
-FORALL_WEAPON_OBJS (objP, nObject) 
+for (objP = gameData.objs.objLists.weapons.head; objP; objP = nextObjP) {
+	nextObjP = objP->links [1].next;
 	if ((!(gameData.weapons.info [objP->info.nId].flags&WIF_PLACABLE) &&
 		  (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||
 			objP->info.nType == OBJ_FIREBALL ||
@@ -2503,7 +2592,7 @@ FORALL_WEAPON_OBJS (objP, nObject)
 #	endif
 #endif
 		ReleaseObject (OBJ_IDX (objP));
-	}
+		}
 	#if DBG
 #	if TRACE
 		else if ((objP->info.nType != OBJ_NONE) && (objP->info.xLifeLeft < I2X (2)))
@@ -2511,6 +2600,7 @@ FORALL_WEAPON_OBJS (objP, nObject)
 						OBJ_IDX (objP), objP->info.nType, objP->info.nId,	objP->info.xLifeLeft);
 #	endif
 #endif
+	}
 }
 
 //------------------------------------------------------------------------------

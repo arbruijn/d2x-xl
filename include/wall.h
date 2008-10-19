@@ -101,12 +101,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //@@#define WID_NO_WALL                 5   //  1/0/1       no tWall, can fly through
 //@@#define WID_EXTERNAL                8   // 0/0/0/1  don't see it, dont fly through it
 
-#define MAX_STUCK_OBJECTS   32
+#define MAX_STUCK_OBJECTS   64
 
 typedef struct tStuckObject {
 	short   nObject, nWall;
 	int     nSignature;
-} stuckobj;
+} tStuckObject;
 
 //Start old tWall structures
 
@@ -264,11 +264,11 @@ void UnlockAllWalls (int bOnlyDoors);
 // Called once per frame..
 void WallFrameProcess();
 
-extern stuckobj StuckObjects[MAX_STUCK_OBJECTS];
+extern tStuckObject StuckObjects [MAX_STUCK_OBJECTS];
 
 //  An tObject got stuck in a door (like a flare).
 //  Add global entry.
-void AddStuckObject(tObject *objp, short nSegment, short nSide);
+void AddStuckObject (tObject *objP, short nSegment, short nSide);
 void RemoveObsoleteStuckObjects(void);
 
 //set the tmap_num or tmap_num2 field for a tWall/door

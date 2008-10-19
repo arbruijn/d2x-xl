@@ -706,7 +706,7 @@ if (--gameData.walls.nOpenDoors > nDoor)
 }
 
 //-----------------------------------------------------------------
-// This function closes the specified door and restores the closed
+// This function closes the specified door and restuckObjPres the closed
 //  door texture.  This is called when the animation is done
 void WallCloseDoorNum (int nDoor)
 {
@@ -1125,7 +1125,7 @@ for (i = gameData.walls.nWalls, wallP = gameData.walls.walls; i; wallP++, i--) {
 
 //-----------------------------------------------------------------
 // set up renderer for alternative highres animation method
-// (all frames are stored in one texture, and struct nSide.nFrame
+// (all frames are stuckObjPred in one texture, and struct nSide.nFrame
 // holds the frame index).
 
 void InitDoorAnims (void)
@@ -1468,8 +1468,7 @@ for (i = 0; i < gameData.walls.nCloaking; i++, cloakWallP++) {
 	}
 }
 
-int	nStuckObjects=0;
-
+int				nStuckObjects = 0;
 tStuckObject	stuckObjects [MAX_STUCK_OBJECTS];
 
 //-----------------------------------------------------------------
@@ -1477,35 +1476,31 @@ tStuckObject	stuckObjects [MAX_STUCK_OBJECTS];
 //	Add global entry.
 void AddStuckObject(tObject *objP, short nSegment, short nSide)
 {
-	int	i;
-	short	nWall;
-	tStuckObject	*sto;
+	int				i;
+	short				nWall;
+	tStuckObject	*stuckObjP;
 
-	nWall = WallNumI (nSegment, nSide);
+nWall = WallNumI (nSegment, nSide);
+if (IS_WALL (nWall)) {
+	if (gameData.walls.walls [nWall].flags & WALL_BLASTED)
+		KillObject (objP);
 
-	if (IS_WALL (nWall)) {
-		if (gameData.walls.walls [nWall].flags & WALL_BLASTED)
-			KillObject (objP);
-
-		for (i=0, sto = stuckObjects; i<MAX_STUCK_OBJECTS; i++, sto++) {
-			if (sto->nWall == -1) {
-				sto->nWall = nWall;
-				sto->nObject = OBJ_IDX (objP);
-				sto->nSignature = objP->info.nSignature;
-				nStuckObjects++;
-				break;
-			}
+	for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
+		if (stuckObjP->nWall == NO_WALL) {
+			stuckObjP->nWall = nWall;
+			stuckObjP->nObject = OBJ_IDX (objP);
+			stuckObjP->nSignature = objP->info.nSignature;
+			nStuckObjects++;
+			break;
 		}
+	}
 #if TRACE
-		if (i == MAX_STUCK_OBJECTS)
-			con_printf (1,
-				"Warning: Unable to add tObject %i which got stuck in tWall %i to stuckObjects\n",
-				OBJ_IDX (objP), nWall);
+	if (i == MAX_STUCK_OBJECTS)
+		con_printf (1,
+			"Warning: Unable to add tObject %i which got stuck in tWall %i to stuckObjects\n",
+			OBJ_IDX (objP), nWall);
 #endif
 	}
-
-
-
 }
 
 //	--------------------------------------------------------------------------------------------------
@@ -1513,20 +1508,23 @@ void AddStuckObject(tObject *objP, short nSegment, short nSide)
 //	Removes up to one/frame.
 void RemoveObsoleteStuckObjects (void)
 {
-	int	nObject, nWall;
+	short	nObject, nWall;
+	tObject			*objP;
+	tStuckObject	*stuckObjP;
 
 	//	Safety and efficiency code.  If no stuck OBJECTS, should never get inside the IF, but this is faster.
 if (!nStuckObjects)
 	return;
 nObject = gameData.app.nFrameCount % MAX_STUCK_OBJECTS;
-nWall = stuckObjects [nObject].nWall;
-if (IS_WALL (nWall)) {
-	if ((gameData.walls.walls [nWall].state != WALL_DOOR_CLOSED) ||
-		 (OBJECTS [stuckObjects [nObject].nObject].info.nSignature != stuckObjects [nObject].nSignature)) {
-		nStuckObjects--;
-		OBJECTS [stuckObjects [nObject].nObject].info.xLifeLeft = F1_0/8;
-		stuckObjects [nObject].nWall = -1;
-		}
+stuckObjP = stuckObjects + nObject;
+objP = OBJECTS + stuckObjP->nObject;
+nWall = stuckObjP->nWall;
+if (IS_WALL (nWall) &&
+	 ((gameData.walls.walls [nWall].state != WALL_DOOR_CLOSED) ||
+	  (objP->info.nSignature != stuckObjP->nSignature))) {
+	nStuckObjects--;
+	objP->info.xLifeLeft = F1_0/8;
+	stuckObjects [nObject].nWall = NO_WALL;
 	}
 }
 
@@ -1534,8 +1532,9 @@ if (IS_WALL (nWall)) {
 //	Door with tWall index nWall is opening, kill all OBJECTS stuck in it.
 void KillStuckObjects (int nWall)
 {
-	int	i;
+	int				i;
 	tStuckObject	*stuckObjP;
+	tObject			*objP;
 
 if (!IS_WALL (nWall) || (nStuckObjects == 0))
 	return;
@@ -1543,20 +1542,21 @@ nStuckObjects = 0;
 
 for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++)
 	if (stuckObjP->nWall == nWall) {
-		if (OBJECTS [stuckObjP->nObject].info.nType == OBJ_WEAPON)
-			OBJECTS [stuckObjP->nObject].info.xLifeLeft = F1_0/8;
+		objP = OBJECTS + stuckObjP->nObject;
+		if (objP->info.nType == OBJ_WEAPON)
+			objP->info.xLifeLeft = F1_0/8;
 		else {
 #if TRACE
 			con_printf (1,
 				"Warning: Stuck tObject of nType %i, expected to be of nType %i, see tWall.c\n",
-				OBJECTS [stuckObjects [i].nObject].info.nType, OBJ_WEAPON);
+				objP->info.nType, OBJ_WEAPON);
 #endif
 			// Int3();	//	What?  This looks bad.  Object is not a weapon and it is stuck in a tWall!
-			stuckObjP->nWall = -1;
+			stuckObjP->nWall = NO_WALL;
+			}
 		}
-	}
-else if (IS_WALL (stuckObjects [i].nWall)) {
-	nStuckObjects++;
+	else if (IS_WALL (stuckObjP->nWall)) {
+		nStuckObjects++;
 	}
 //	Ok, this is awful, but we need to do things whenever a door opens/closes/disappears, etc.
 FlushFCDCache();
@@ -1567,7 +1567,7 @@ FlushFCDCache();
 void InitStuckObjects (void)
 {
 for (int i = 0; i < MAX_STUCK_OBJECTS; i++)
-	stuckObjects [i].nWall = -1;
+	stuckObjects [i].nWall = NO_WALL;
 nStuckObjects = 0;
 }
 
@@ -1575,19 +1575,19 @@ nStuckObjects = 0;
 // Clear out all stuck OBJECTS.  Called for a new ship
 void ClearStuckObjects (void)
 {
-	int	nObject;
+	tStuckObject	*stuckObjP = stuckObjects;
+	tObject			*objP;
 
-for (int i = 0; i < MAX_STUCK_OBJECTS; i++) {
-	if (IS_WALL (stuckObjects [i].nWall)) {
-		nObject = stuckObjects [i].nObject;
-		if ((OBJECTS [nObject].info.nType == OBJ_WEAPON) && (OBJECTS [nObject].info.nId == FLARE_ID))
-			OBJECTS [nObject].info.xLifeLeft = F1_0/8;
-		stuckObjects [i].nWall = -1;
+for (int i = 0; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
+	if (IS_WALL (stuckObjP->nWall)) {
+		objP = OBJECTS + stuckObjP->nObject;
+		if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID))
+			objP->info.xLifeLeft = F1_0/8;
+		stuckObjP->nWall = NO_WALL;
 		nStuckObjects--;
 		}
 	}
 Assert(nStuckObjects == 0);
-
 }
 
 // -----------------------------------------------------------------------------------
@@ -1603,7 +1603,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 
 	depth++;
 
-	for (nSide=0; nSide<MAX_SIDES_PER_SEGMENT; nSide++) {
+	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		int			tm;
 		fix			dist;
 		vmsVector	pnt;
@@ -1637,7 +1637,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 			if (!visited [nSegment]) {
 				if (WALL_IS_DOORWAY(segp, (short) i, NULL) & WID_FLY_FLAG) {
 					visited [nSegment] = 1;
-					BngProcessSegment(objP, damage, &gameData.segs.segments [nSegment], depth, visited);
+					BngProcessSegment (objP, damage, &gameData.segs.segments [nSegment], depth, visited);
 				}
 			}
 		}

@@ -540,6 +540,7 @@ typedef struct tObjListLink {
 
 typedef struct tObject : public tCoreObject {
 	tObjListLink	links [3];		// link into list of objects in same category (0: all, 1: same type, 2: same class)
+	ubyte				nLinkedType;
 } tObject;
 
 class CObject : public CObjectInfo {

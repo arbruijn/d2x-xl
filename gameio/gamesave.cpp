@@ -187,7 +187,7 @@ if (objP->info.nType == OBJ_POWERUP) {
 			}
 		}
 	}
-if (objP->info.nType == OBJ_WEAPON)	{
+else if (objP->info.nType == OBJ_WEAPON)	{
 	if (objP->info.nId >= gameData.weapons.nTypes [0])	{
 		objP->info.nId = 0;
 		Assert(objP->info.renderType != RT_POLYOBJ);
@@ -202,7 +202,7 @@ if (objP->info.nType == OBJ_WEAPON)	{
 		objP->info.xSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		}
 	}
-if (objP->info.nType == OBJ_REACTOR) {
+else if (objP->info.nType == OBJ_REACTOR) {
 	objP->info.renderType = RT_POLYOBJ;
 	objP->info.controlType = CT_CNTRLCEN;
 	if (gameData.segs.nLevelVersion <= 1) { // descent 1 reactor
@@ -223,7 +223,7 @@ if (objP->info.nType == OBJ_REACTOR) {
 		}
 #endif
 	}
-if (objP->info.nType == OBJ_PLAYER) {
+else if (objP->info.nType == OBJ_PLAYER) {
 	if (objP == gameData.objs.consoleP)	
 		InitPlayerObject();
 	else
@@ -235,7 +235,7 @@ if (objP->info.nType == OBJ_PLAYER) {
 	gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 	objP->info.nId = nGameSavePlayers++;
 	}
-if (objP->info.nType == OBJ_HOSTAGE) {
+else if (objP->info.nType == OBJ_HOSTAGE) {
 	objP->info.renderType = RT_HOSTAGE;
 	objP->info.controlType = CT_POWERUP;
 	}
@@ -916,6 +916,12 @@ if (gameFileInfo.objects.offset > -1) {
 	for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 		ReadObject (objP, cfP, gameTopFileInfo.fileinfoVersion);
 		objP->info.nSignature = gameData.objs.nNextSignature++;
+#if DBG
+		if (i == nDbgObj) {
+			extern int dbgObjInstances;
+			dbgObjInstances++;
+			}
+#endif
 		VerifyObject (objP);
 		gameData.objs.init [i] = *objP;
 		}

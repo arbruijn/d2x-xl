@@ -1892,6 +1892,7 @@ typedef struct tGuidedMissileInfo {
 
 typedef struct tObjListRef {
 	tObject	*head, *tail;
+	short		nObjects;
 } tObjListRef;
 
 typedef struct tObjLists {
