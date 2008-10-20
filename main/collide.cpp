@@ -1540,19 +1540,8 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 			nNewObj = CreateObject (weaponP->info.nType, weaponP->info.nId, -1, weaponP->info.nSegment, weaponP->info.position.vPos,
 											weaponP->info.position.mOrient, weaponP->info.xSize, 
 											weaponP->info.controlType, weaponP->info.movementType, weaponP->info.renderType);
-#else
-			nNewObj = CloneObject (weaponP);
-#endif
-#ifdef _DEBUG
-			if (weaponP->info.nId == SMARTMINE_BLOB_ID)
-				nDbgObj = nDbgObj;
-#endif
 			if (nNewObj != -1) {
-				vmsVector	vImpulse;
-				vmsVector	vWeapon;
-				fix			speed;
 				tObject		*newObjP = OBJECTS + nNewObj;
-#if 1
 				if (weaponP->info.renderType == RT_POLYOBJ) {
 					newObjP->rType.polyObjInfo.nModel = gameData.weapons.info [newObjP->info.nId].nModel;
 					newObjP->info.xSize = FixDiv (gameData.models.polyModels [newObjP->rType.polyObjInfo.nModel].rad, 
@@ -1561,7 +1550,15 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 				newObjP->mType.physInfo.mass = WI_mass (weaponP->info.nType);
 				newObjP->mType.physInfo.drag = WI_drag (weaponP->info.nType);
 				newObjP->mType.physInfo.thrust.SetZero();
+#else
+			nNewObj = CloneObject (weaponP);
+			if (nNewObj != -1) {
+				tObject		*newObjP = OBJECTS + nNewObj;
 #endif
+				vmsVector	vImpulse;
+				vmsVector	vWeapon;
+				fix			speed;
+
 				vImpulse = *vHitPt - robotP->info.position.vPos;
 				vmsVector::Normalize (vImpulse);
 				vWeapon = weaponP->mType.physInfo.velocity;
@@ -1569,6 +1566,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 				vImpulse += vWeapon * (-F1_0 * 2);
 				vImpulse *= (speed / 4);
 				newObjP->mType.physInfo.velocity = vImpulse;
+				newObjP->info.nFlags |= PF_HAS_BOUNCED;
 				}
 			}
 		}

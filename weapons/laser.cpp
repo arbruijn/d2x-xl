@@ -884,23 +884,24 @@ if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FUSION_ID)) {		//alwa
 if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.tick40fps.bTick) &&
 	 (objP->info.nType == OBJ_WEAPON) &&
     (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (objP->info.nId)) &&
+	 !(objP->info.nFlags & PF_HAS_BOUNCED) &&
 	 !((objP->info.nId == GUIDEDMSL_ID) &&
 	   (objP == (gmObjP = gameData.objs.guidedMissile [OBJECTS [objP->cType.laserInfo.parent.nObject].info.nId].objP)) &&
 	   (objP->info.nSignature == gmObjP->info.nSignature))) {
 	vmsVector	vVecToObject, vTemp;
 	fix			dot = F1_0;
 	fix			speed, xMaxSpeed;
-	int			id = objP->info.nId;
+	int			nObjId = objP->info.nId;
 	//	For first 1/2 second of life, missile flies straight.
-	if (objP->cType.laserInfo.xCreationTime + HomingMslStraightTime (id) < gameData.time.xGame) {
+	if (objP->cType.laserInfo.xCreationTime + HomingMslStraightTime (nObjId) < gameData.time.xGame) {
 		int	nHomingTarget = objP->cType.laserInfo.nHomingTarget;
 
 		//	If it's time to do tracking, then it's time to grow up, stop bouncing and start exploding!.
-		if ((id == ROBOT_SMARTMINE_BLOB_ID) ||
-			 (id == ROBOT_SMARTMSL_BLOB_ID) ||
-			 (id == SMARTMINE_BLOB_ID) ||
-			 (id == SMARTMSL_BLOB_ID) ||
-			 (id == EARTHSHAKER_MEGA_ID))
+		if ((nObjId == ROBOT_SMARTMINE_BLOB_ID) ||
+			 (nObjId == ROBOT_SMARTMSL_BLOB_ID) ||
+			 (nObjId == SMARTMINE_BLOB_ID) ||
+			 (nObjId == SMARTMSL_BLOB_ID) ||
+			 (nObjId == EARTHSHAKER_MEGA_ID))
 			objP->mType.physInfo.flags &= ~PF_BOUNCE;
 
 		//	Make sure the tObject we are tracking is still trackable.
@@ -912,9 +913,9 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 					LOCALPLAYER.homingObjectDist = xDistToPlayer;
 				}
 			vVecToObject = OBJECTS [nHomingTarget].info.position.vPos - objP->info.position.vPos;
-			vmsVector::Normalize(vVecToObject);
+			vmsVector::Normalize (vVecToObject);
 			vTemp = objP->mType.physInfo.velocity;
-			speed = vmsVector::Normalize(vTemp);
+			speed = vmsVector::Normalize (vTemp);
 			xMaxSpeed = WI_speed (objP->info.nId,gameStates.app.nDifficultyLevel);
 			if (speed + F1_0 < xMaxSpeed) {
 				speed += FixMul (xMaxSpeed, gameData.time.xFrame / 2);
@@ -922,7 +923,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 					speed = xMaxSpeed;
 				}
 			if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (objP->info.nId == EARTHSHAKER_MEGA_ID)) {
-				fix	h = (objP->info.xLifeLeft + F1_0 - 1) / F1_0;
+				fix h = (objP->info.xLifeLeft + F1_0 - 1) / F1_0;
 
 				if (h > 7)
 					vVecToObject *= (F1_0 / (h - 6));
