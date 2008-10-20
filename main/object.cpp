@@ -872,15 +872,17 @@ objP->nLinkedType = nType;
 LinkObjToList (gameData.objs.lists.all, objP, 0);
 if (nType == OBJ_PLAYER)
 	LinkObjToList (gameData.objs.lists.players, objP, 1);
-if (nType == OBJ_ROBOT)
+else if (nType == OBJ_ROBOT)
 	LinkObjToList (gameData.objs.lists.robots, objP, 1);
-else {
+else if (nType != OBJ_REACTOR) {
 	if (nType == OBJ_WEAPON)
 		LinkObjToList (gameData.objs.lists.weapons, objP, 1);
 	else if (nType == OBJ_POWERUP)
 		LinkObjToList (gameData.objs.lists.powerups, objP, 1);
 	else if (nType == OBJ_EFFECT)
 		LinkObjToList (gameData.objs.lists.effects, objP, 1);
+	else if (nType == OBJ_LIGHT)
+		LinkObjToList (gameData.objs.lists.lights, objP, 1);
 	else
 		objP->links [1].prev = objP->links [1].next = NULL;
 	LinkObjToList (gameData.objs.lists.statics, objP, 2);
@@ -908,13 +910,15 @@ if (nType != OBJ_NONE) {
 		UnlinkObjFromList (gameData.objs.lists.players, objP, 1);
 	else if (nType == OBJ_ROBOT)
 		UnlinkObjFromList (gameData.objs.lists.robots, objP, 1);
-	else {
+	else if (nType != OBJ_REACTOR) {
 		if (nType == OBJ_WEAPON)
 			UnlinkObjFromList (gameData.objs.lists.weapons, objP, 1);
 		else if (nType == OBJ_POWERUP)
 			UnlinkObjFromList (gameData.objs.lists.powerups, objP, 1);
 		else if (nType == OBJ_EFFECT)
 			UnlinkObjFromList (gameData.objs.lists.effects, objP, 1);
+		else if (nType == OBJ_LIGHT)
+			UnlinkObjFromList (gameData.objs.lists.lights, objP, 1);
 		UnlinkObjFromList (gameData.objs.lists.statics, objP, 2);
 		return;
 		}
@@ -2254,6 +2258,8 @@ int UpdateObject (tObject * objP)
 	short	nPrevSegment = (short) objP->info.nSegment;
 
 #if DBG
+if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == SMARTMINE_BLOB_ID))
+	nDbgObj = OBJ_IDX (objP);
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif

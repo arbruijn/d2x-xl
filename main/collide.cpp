@@ -1537,20 +1537,28 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 		//	Cause weapon to bounce.
 		//	Make a copy of this weaponP, because the physics wants to destroy it.
 		if (!WI_matter (weaponP->info.nId)) {
+#if 1
+			nNewObj = CreateObject (weaponP->info.nType, weaponP->info.nId, -1, weaponP->info.nSegment, weaponP->info.position.vPos,
+											weaponP->info.position.mOrient, weaponP->info.xSize, 
+											weaponP->info.controlType, weaponP->info.movementType, weaponP->info.renderType);
+#else
 			nNewObj = CloneObject (weaponP);
-
+#endif
+#ifdef _DEBUG
+			if (weaponP->info.nId == SMARTMINE_BLOB_ID)
+				nDbgObj = nNewObj;
+#endif
 			if (nNewObj != -1) {
 				vmsVector	vImpulse;
 				vmsVector	vWeapon;
 				fix			speed;
 				tObject		*newObjP = OBJECTS + nNewObj;
-#if 0
+#if 1
 				if (weaponP->info.renderType == RT_POLYOBJ) {
 					newObjP->rType.polyObjInfo.nModel = gameData.weapons.info [newObjP->info.nId].nModel;
 					newObjP->info.xSize = FixDiv (gameData.models.polyModels [newObjP->rType.polyObjInfo.nModel].rad, 
 															gameData.weapons.info [newObjP->info.nId].po_len_to_width_ratio);
-				}
-
+					}
 				newObjP->mType.physInfo.mass = WI_mass (weaponP->info.nType);
 				newObjP->mType.physInfo.drag = WI_drag (weaponP->info.nType);
 				newObjP->mType.physInfo.thrust.SetZero();

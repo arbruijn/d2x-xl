@@ -664,7 +664,7 @@ switch (objP->info.controlType) {
 			gameData.objs.nHitObjects [OBJ_IDX (objP) * MAX_HIT_OBJECTS] = objP->cType.laserInfo.nLastHitObj;
 			objP->cType.laserInfo.nLastHitObj = 1;
 			}
-		objP->cType.laserInfo.nMslLock = INTEL_SHORT(objP->cType.laserInfo.nMslLock);
+		objP->cType.laserInfo.nHomingTarget = INTEL_SHORT(objP->cType.laserInfo.nHomingTarget);
 		objP->cType.laserInfo.multiplier = INTEL_INT (objP->cType.laserInfo.multiplier);
 		break;
 

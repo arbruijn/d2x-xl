@@ -109,7 +109,7 @@ if (!gameStates.render.bClusterLights)
 	tObject	*objP;
 	int		i;
 
-FORALL_STATIC_OBJS (objP, i)
+FORALL_LIGHT_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
 		objP->info.xLifeLeft = 0;
 		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
@@ -126,7 +126,7 @@ if (!gameStates.render.bClusterLights)
 	tObject	*objP;
 	int		h, i;
 
-FORALL_STATIC_OBJS (objP, i) {
+FORALL_LIGHT_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID))	{
 		i = OBJ_IDX (objP);
 		if (!(h = objP->cType.lightInfo.nObjects)) {
@@ -343,13 +343,15 @@ void ApplyLight (
 	int			nVertex;
 	int			bApplyLight;
 	short			nLightObj;
+	ubyte			nObjType;
 	vmsVector	*vVertPos;
 	fix			dist, xOrigIntensity = xObjIntensity;
 	tObject		*lightObjP, *objP = (nObject < 0) ? NULL : OBJECTS + nObject;
 	tPlayer		*playerP = objP ? gameData.multiplayer.players + objP->info.nId : NULL;
 
+nObjType = objP ? objP->info.nType : OBJ_NONE;
 if (objP && SHOW_DYN_LIGHT) {
-	if (objP->info.nType == OBJ_PLAYER) {
+	if (nObjType == OBJ_PLAYER) {
 		if (EGI_FLAG (headlight.bAvailable, 0, 0, 0)) {
 			if (!HeadlightIsOn (objP->info.nId))
 				RemoveOglHeadlight (objP);
@@ -366,12 +368,12 @@ if (objP && SHOW_DYN_LIGHT) {
 			return;
 		xObjIntensity /= 4;
 		}
-	else if (objP->info.nType == OBJ_POWERUP) {
+	else if (nObjType == OBJ_POWERUP) {
 		xObjIntensity /= 4;
 		}
-	else if (objP->info.nType == OBJ_ROBOT)
+	else if (nObjType == OBJ_ROBOT)
 		xObjIntensity /= 4;
-	else if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
+	else if ((nObjType == OBJ_FIREBALL) || (nObjType == OBJ_EXPLOSION)) {
 		xObjIntensity /= 2;
 		}
 #if DBG
@@ -386,20 +388,21 @@ if (objP && SHOW_DYN_LIGHT) {
 		AddDynLight (NULL, color, xObjIntensity, -1, -1, nObject, -1, NULL);
 	return;
 	}
+
 if (xObjIntensity) {
 	fix	obji_64 = xObjIntensity * 64;
 
 	if (gameData.render.vertColor.bDarkness) {
-		if (objP->info.nType == OBJ_PLAYER)
+		if (nObjType == OBJ_PLAYER)
 			xObjIntensity = 0;
 		}
-	if (objP && (objP->info.nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0))
+	if (objP && (nObjType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0))
 		return;
 	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
-	bForceColor = objP && ((objP->info.nType == OBJ_WEAPON) || (objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION));
+	bForceColor = objP && ((nObjType == OBJ_WEAPON) || (nObjType == OBJ_FIREBALL) || (nObjType == OBJ_EXPLOSION));
 	// for pretty dim sources, only process vertices in tObject's own tSegment.
 	//	12/04/95, MK, markers only cast light in own tSegment.
-	if (objP && ((abs (obji_64) <= F1_0 * 8) || (objP->info.nType == OBJ_MARKER))) {
+	if (objP && ((abs (obji_64) <= F1_0 * 8) || (nObjType == OBJ_MARKER))) {
 		short *vp = gameData.segs.segments [nObjSeg].verts;
 		for (iVertex = 0; iVertex < MAX_VERTICES_PER_SEGMENT; iVertex++) {
 			nVertex = vp [iVertex];
@@ -423,7 +426,7 @@ if (xObjIntensity) {
 	else {
 		int	headlightShift = 0;
 		fix	maxHeadlightDist = F1_0 * 200;
-		if (objP && (objP->info.nType == OBJ_PLAYER))
+		if (objP && (nObjType == OBJ_PLAYER))
 			if ((gameStates.render.bHeadlightOn = HeadlightIsOn (objP->info.nId))) {
 				headlightShift = 3;
 				if (color) {
@@ -463,7 +466,7 @@ if (xObjIntensity) {
 #endif
 			{
 				vVertPos = gameData.segs.vertices + nVertex;
-				dist = vmsVector::Dist(*vObjPos, *vVertPos);
+				dist = vmsVector::Dist (*vObjPos, *vVertPos);
 				bApplyLight = 0;
 				if ((dist >> headlightShift) < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)

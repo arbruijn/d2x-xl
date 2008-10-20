@@ -239,7 +239,7 @@ typedef struct tLaserInfo  {
 	tParentInfo	parent;
 	fix     xCreationTime;      // Absolute time of creation.
 	short   nLastHitObj;       // For persistent weapons (survive tObject collision), tObject it most recently hit.
-	short   nMslLock;				// Object this tObject is tracking.
+	short   nHomingTarget;				// Object this tObject is tracking.
 	fix     xScale;        // Power if this is a fusion bolt (or other super weapon to be added).
 } tLaserInfo;
 
@@ -251,7 +251,7 @@ class CLaserInfo {
 		inline short& ParentObj () { return m_info.parent.nObject; }
 		inline int& ParentSig () { return m_info.parent.nSignature; }
 		inline short& LastHitObj () { return m_info.nLastHitObj; }
-		inline short& MslLock () { return m_info.nMslLock; }
+		inline short& MslLock () { return m_info.nHomingTarget; }
 		inline fix& CreationTime () { return m_info.xCreationTime; }
 		inline fix& Multiplier () { return m_info.xScale; }
 };
@@ -940,6 +940,7 @@ extern tObject *dbgObjP;
 #	define FORALL_POWERUP_OBJS(_objP,_i)				FORALL_CLASS_OBJS (gameData.objs.lists.powerups, _objP, _i)
 #	define FORALL_WEAPON_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.weapons, _objP, _i)
 #	define FORALL_EFFECT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.effects, _objP, _i)
+#	define FORALL_LIGHT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.lights, _objP, _i)
 #	define FORALL_ACTOR_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.lists.actors, _objP, _i)
 #	define FORALL_STATIC_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.lists.statics, _objP, _i)
 #	define IS_OBJECT(_objP, _i)							((_objP) != NULL)

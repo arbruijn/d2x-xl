@@ -657,10 +657,14 @@ int LaserPlayerFireSpreadDelay (
 #else
 	int bLaserOffs = 0;
 #endif
-	vmsMatrix	m;
-	int			bSpectate = SPECTATOR (objP);
+	vmsMatrix			m;
+	int					bSpectate = SPECTATOR (objP);
 	tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 
+#ifdef _DEBUG
+if (nLaserType == SMARTMINE_BLOB_ID)
+	nLaserType = nLaserType;
+#endif
 CreateAwarenessEvent (objP, PA_WEAPON_WALL_COLLISION);
 // Find the initial vPosition of the laser
 if (!(vGunPoints = GetGunPoints (objP, nGun)))
@@ -759,12 +763,12 @@ if ((objP == gameData.objs.consoleP) && !WeaponIsPlayerMine (laserP->info.nId))
 
 if (gameStates.app.cheats.bHomingWeapons || gameData.weapons.info [nLaserType].homingFlag) {
 	if (objP == gameData.objs.consoleP) {
-		laserP->cType.laserInfo.nMslLock = FindHomingObject (&vLaserPos, laserP);
-		gameData.multigame.laser.nTrack = laserP->cType.laserInfo.nMslLock;
+		laserP->cType.laserInfo.nHomingTarget = FindHomingObject (&vLaserPos, laserP);
+		gameData.multigame.laser.nTrack = laserP->cType.laserInfo.nHomingTarget;
 		}
 	else {// Some other tPlayer shot the homing thing
 		Assert (IsMultiGame);
-		laserP->cType.laserInfo.nMslLock = gameData.multigame.laser.nTrack;
+		laserP->cType.laserInfo.nHomingTarget = gameData.multigame.laser.nTrack;
 		}
 	}
 gameData.objs.lightObjs [nObject].nObject = nLightObj;
@@ -833,9 +837,11 @@ objP->info.position.mOrient = vmsMatrix::CreateF(vNewDir);
 
 static inline fix HomingMslStraightTime (int id)
 {
-	int i = ((id == EARTHSHAKER_MEGA_ID) || (id == ROBOT_SHAKER_MEGA_ID)) ? 1 : nMslSlowDown [(int) extraGameInfo [IsMultiGame].nMslStartSpeed];
-
-return i * HOMINGMSL_STRAIGHT_TIME;
+if (!gameData.objs.bIsMissile [id])
+	return 0;
+if ((id == EARTHSHAKER_MEGA_ID) || (id == ROBOT_SHAKER_MEGA_ID))
+	return HOMINGMSL_STRAIGHT_TIME;
+return HOMINGMSL_STRAIGHT_TIME * nMslSlowDown [(int) extraGameInfo [IsMultiGame].nMslStartSpeed];
 }
 
 //-------------------------------------------------------------------------------------------
@@ -887,7 +893,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 	int			id = objP->info.nId;
 	//	For first 1/2 second of life, missile flies straight.
 	if (objP->cType.laserInfo.xCreationTime + HomingMslStraightTime (id) < gameData.time.xGame) {
-		int	nMslLock = objP->cType.laserInfo.nMslLock;
+		int	nHomingTarget = objP->cType.laserInfo.nHomingTarget;
 
 		//	If it's time to do tracking, then it's time to grow up, stop bouncing and start exploding!.
 		if ((id == ROBOT_SMARTMINE_BLOB_ID) ||
@@ -898,15 +904,14 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 			objP->mType.physInfo.flags &= ~PF_BOUNCE;
 
 		//	Make sure the tObject we are tracking is still trackable.
-		nMslLock = TrackMslLock (nMslLock, objP, &dot);
-		if (nMslLock == LOCALPLAYER.nObject) {
-			xDistToPlayer = vmsVector::Dist(objP->info.position.vPos, OBJECTS [nMslLock].info.position.vPos);
-			if ((xDistToPlayer < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
-				LOCALPLAYER.homingObjectDist = xDistToPlayer;
-
-			}
-		if (nMslLock != -1) {
-			vVecToObject = OBJECTS [nMslLock].info.position.vPos - objP->info.position.vPos;
+		nHomingTarget = TrackHomingTarget (nHomingTarget, objP, &dot);
+		if (nHomingTarget != -1) {
+			if (nHomingTarget == LOCALPLAYER.nObject) {
+				xDistToPlayer = vmsVector::Dist(objP->info.position.vPos, OBJECTS [nHomingTarget].info.position.vPos);
+				if ((xDistToPlayer < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
+					LOCALPLAYER.homingObjectDist = xDistToPlayer;
+				}
+			vVecToObject = OBJECTS [nHomingTarget].info.position.vPos - objP->info.position.vPos;
 			vmsVector::Normalize(vVecToObject);
 			vTemp = objP->mType.physInfo.velocity;
 			speed = vmsVector::Normalize(vTemp);
@@ -1468,30 +1473,19 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objType, int bMakeSo
 	vmsVector	random_vector;
 	//vmsVector	vGoalPos;
 
-	if (nGoalObj == -1) {
-		vGoal = vmsVector::Random();
-	} else {
-		vmsVector::NormalizedDir(vGoal, OBJECTS [nGoalObj].info.position.vPos, objP->info.position.vPos);
-		random_vector = vmsVector::Random();
-		vGoal += random_vector * (F1_0/4);
-		vmsVector::Normalize(vGoal);
+if (nGoalObj == -1)
+	vGoal = vmsVector::Random();
+else {
+	vmsVector::NormalizedDir(vGoal, OBJECTS [nGoalObj].info.position.vPos, objP->info.position.vPos);
+	random_vector = vmsVector::Random();
+	vGoal += random_vector * (F1_0/4);
+	vmsVector::Normalize(vGoal);
 	}
-
-	//	Create a vector towards the goal, then add some noise to it.
-	nObject = CreateNewLaser (&vGoal, &objP->info.position.vPos, objP->info.nSegment,
-									  OBJ_IDX (objP), objType, bMakeSound);
-	if (nObject == -1)
-		return -1;
-
-	// Fixed to make sure the right person gets credit for the kill
-
-//	OBJECTS [nObject].cType.laserInfo.parent.nObject = objP->cType.laserInfo.parent.nObject;
-//	OBJECTS [nObject].cType.laserInfo.parent.nType = objP->cType.laserInfo.parent.nType;
-//	OBJECTS [nObject].cType.laserInfo.parent.nSignature = objP->cType.laserInfo.parent.nSignature;
-
-	OBJECTS [nObject].cType.laserInfo.nMslLock = nGoalObj;
-
-	return nObject;
+//	Create a vector towards the goal, then add some noise to it.
+if (0 > (nObject = CreateNewLaser (&vGoal, &objP->info.position.vPos, objP->info.nSegment, OBJ_IDX (objP), objType, bMakeSound)))
+	return -1;
+OBJECTS [nObject].cType.laserInfo.nHomingTarget = nGoalObj;
+return nObject;
 }
 
 //-----------------------------------------------------------------------------

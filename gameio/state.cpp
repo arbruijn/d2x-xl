@@ -940,7 +940,7 @@ switch (objP->info.controlType) {
 			CFWriteShort (gameData.objs.nHitObjects [OBJ_IDX (objP) * MAX_HIT_OBJECTS + objP->cType.laserInfo.nLastHitObj - 1], cfP);
 		else
 			CFWriteShort (-1, cfP);
-		CFWriteShort (objP->cType.laserInfo.nMslLock, cfP);
+		CFWriteShort (objP->cType.laserInfo.nHomingTarget, cfP);
 		CFWriteFix (objP->cType.laserInfo.xScale, cfP);
 		break;
 
@@ -1985,7 +1985,7 @@ switch (objP->info.controlType) {
 			gameData.objs.nHitObjects [OBJ_IDX (objP) * MAX_HIT_OBJECTS] = objP->cType.laserInfo.nLastHitObj;
 			objP->cType.laserInfo.nLastHitObj = 1;
 			}
-		objP->cType.laserInfo.nMslLock = CFReadShort (cfP);
+		objP->cType.laserInfo.nHomingTarget = CFReadShort (cfP);
 		objP->cType.laserInfo.xScale = CFReadFix (cfP);
 		break;
 

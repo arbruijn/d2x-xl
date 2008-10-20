@@ -1902,6 +1902,7 @@ typedef struct tObjLists {
 	tObjListRef				powerups;
 	tObjListRef				weapons;
 	tObjListRef				effects;
+	tObjListRef				lights;
 	tObjListRef				actors;
 	tObjListRef				statics;
 } tObjLists;

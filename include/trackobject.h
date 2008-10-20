@@ -26,6 +26,6 @@ extern fix xMinTrackableDot;   //  MIN_TRACKABLE_DOT inversely scaled by FrameTi
 int CallFindHomingObjectComplete (tObject *tracker, vmsVector *curpos);
 int FindHomingObject (vmsVector *curpos, tObject *trackerP);
 int FindHomingObjectComplete (vmsVector *curpos, tObject *tracker, int track_objType1, int track_objType2);
-int TrackMslLock (int nMslLock, tObject *tracker, fix *dot);
+int TrackHomingTarget (int nHomingTarget, tObject *tracker, fix *dot);
 
 #endif //_TRACKOBJECT_H
