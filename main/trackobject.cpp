@@ -25,7 +25,6 @@ int ObjectIsTrackeable (int nHomingTarget, tObject *trackerP, fix *xDot)
 
 if (nHomingTarget == -1)
 	return 0;
-
 if (IsCoopGame)
 	return 0;
 objP = OBJECTS + nHomingTarget;
@@ -89,8 +88,6 @@ int FindHomingObject (vmsVector *vTrackerPos, tObject *trackerP)
 
 //	Find an tObject to track based on game mode (eg, whether in network play) and who fired it.
 #ifdef _DEBUG
-if (OBJ_IDX (trackerP) == nDbgObj)
-	nDbgObj = nDbgObj;
 if ((trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == SMARTMINE_BLOB_ID))
 	nDbgObj = nDbgObj;
 #endif

@@ -136,7 +136,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PF_STICK            0x10    // tObject sticks (stops moving) when hits tWall
 #define PF_PERSISTENT       0x20    // tObject keeps going even after it hits another tObject (eg, fusion cannon)
 #define PF_USES_THRUST      0x40    // this tObject uses its thrust
-#define PF_BOUNCED_ONCE     0x80    // Weapon has bounced once.
+#define PF_HAS_BOUNCED      0x80    // Weapon has bounced once.
 #define PF_FREE_SPINNING    0x100   // Drag does not apply to rotation of this tObject
 #define PF_BOUNCES_TWICE    0x200   // This weapon bounces twice, then dies
 

@@ -1402,22 +1402,21 @@ robotP->info.xShields -= damage;
 //	Do unspeakable hacks to make sure tPlayer doesn't die after killing boss.  Or before, sort of.
 if (bIsBoss) {
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
-		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {
-		if ((robotP->info.xShields < 0) && (extraGameInfo [0].nBossCount == 1)) {
-			if (gameData.app.nGameMode & GM_MULTI) {
-				if (!MultiAllPlayersAlive ()) // everyones gotta be alive
-					robotP->info.xShields = 1;
-				else {
-					MultiSendFinishGame ();
-					DoFinalBossHacks ();
-					}
+		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) &&
+		 (robotP->info.xShields < 0) && (extraGameInfo [0].nBossCount == 1)) {
+		if (IsMultiGame) {
+			if (!MultiAllPlayersAlive ()) // everyones gotta be alive
+				robotP->info.xShields = 1;
+			else {
+				MultiSendFinishGame ();
+				DoFinalBossHacks ();
 				}
-			else {	// NOTE LINK TO ABOVE!!!
-				if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
-					robotP->info.xShields = 1;		//	Sorry, we can't allow you to kill the final boss after you've died.  Rough luck.
-				else
-					DoFinalBossHacks ();
-				}
+			}
+		else {	// NOTE LINK TO ABOVE!!!
+			if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
+				robotP->info.xShields = 1;		//	Sorry, we can't allow you to kill the final boss after you've died.  Rough luck.
+			else
+				DoFinalBossHacks ();
 			}
 		}
 	}
@@ -1546,7 +1545,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 #endif
 #ifdef _DEBUG
 			if (weaponP->info.nId == SMARTMINE_BLOB_ID)
-				nDbgObj = nNewObj;
+				nDbgObj = nDbgObj;
 #endif
 			if (nNewObj != -1) {
 				vmsVector	vImpulse;
@@ -1630,10 +1629,18 @@ int CollideRobotAndWeapon (tObject *robotP, tObject *weaponP, vmsVector *vHitPt)
 	tRobotInfo	*botInfoP = &ROBOTINFO (robotP->info.nId);
 	tWeaponInfo *wInfoP = gameData.weapons.info + weaponP->info.nId;
 
-if ((weaponP->info.nId == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
-	return 1;
-if ((weaponP->info.nId == OMEGA_ID) && !OkToDoOmegaDamage (weaponP))
-	return 1;
+#if DBG
+if (OBJ_IDX (weaponP) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
+if (weaponP->info.nId == PROXMINE_ID) {
+	if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+		return 1;
+	}
+else if (weaponP->info.nId == OMEGA_ID) {
+	if (!OkToDoOmegaDamage (weaponP))
+		return 1;
+	}
 if (botInfoP->bossFlag) {
 	int i = FindBoss (OBJ_IDX (robotP));
 	if (i >= 0)

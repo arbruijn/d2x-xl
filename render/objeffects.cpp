@@ -1761,7 +1761,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 	RenderShockwave (objP);
 	}
 if ((objP->info.renderType != RT_POLYOBJ) || (objP->info.nId == FUSION_ID))
-	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2, 1, 0, 1);
+	RenderWeaponCorona (objP, colorP, 0.5f, 0, 
+							  ((objP->info.nId == SMARTMINE_BLOB_ID) || (objP->info.nId == ROBOT_SMARTMINE_BLOB_ID)) ? 4 : 2, 
+								1, 0, 1);
 else
 	RenderWeaponCorona (objP, colorP, 0.75f, 0, bGatling ? 1.0f : 2.0f, 0, 0, 0);
 }

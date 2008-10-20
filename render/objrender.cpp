@@ -374,9 +374,11 @@ if (colorP && (bmi >= 0))
 
 xSize = objP->info.xSize;
 
-if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
-	RenderPowerupCorona (objP, color.red, color.green, color.blue,
-								coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
+if (nType == OBJ_POWERUP) {
+	if ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons))
+		RenderPowerupCorona (objP, color.red, color.green, color.blue,
+									coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
+	}
 if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 	if (bAdditive) {
 #if 1

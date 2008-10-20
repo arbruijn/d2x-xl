@@ -116,7 +116,7 @@ int LocalPlayerFireLaser(void);
 void DoMissileFiring(int do_autoselect);
 void NetMissileFiring(int tPlayer, int weapon, int flags);
 
-int CreateNewLaser(vmsVector * direction, vmsVector * position, short nSegment, short parent, ubyte nType, int makeSound);
+int CreateNewWeapon(vmsVector * direction, vmsVector * position, short nSegment, short parent, ubyte nType, int makeSound);
 
 // Fires a laser-nType weapon (a Primary weapon)
 // Fires from tObject nObject, weapon nType weapon_id.
@@ -127,7 +127,7 @@ int CreateNewLaser(vmsVector * direction, vmsVector * position, short nSegment, 
 // such as vulcan or plasma are fired.
 extern int LaserFireObject(short nObject, ubyte weapon_id, int level, int flags, int nfires);
 
-// Easier to call than CreateNewLaser because it determines the
+// Easier to call than CreateNewWeapon because it determines the
 // tSegment containing the firing point and deals with it being stuck
 // in an tObject or through a tWall.
 // Fires a laser of nType "weaponType" from an tObject (parent) in the

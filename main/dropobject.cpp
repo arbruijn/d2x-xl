@@ -881,7 +881,7 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 		tvec = playerObjP->info.position.vPos + vRandom;
 		nNewSeg = FindSegByPos (tvec, playerObjP->info.nSegment, 1, 0);
 		if (nNewSeg != -1)
-			CreateNewLaser (&vRandom, &tvec, nNewSeg, plrObjNum, SMARTMINE_ID, 0);
+			CreateNewWeapon (&vRandom, &tvec, nNewSeg, plrObjNum, SMARTMINE_ID, 0);
 	  	}
 
 		//	If the tPlayer had proximity bombs, maybe arm one of them.
@@ -896,7 +896,7 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 				tvec = playerObjP->info.position.vPos + vRandom;
 				nNewSeg = FindSegByPos (tvec, playerObjP->info.nSegment, 1, 0);
 				if (nNewSeg != -1)
-					CreateNewLaser (&vRandom, &tvec, nNewSeg, plrObjNum, PROXMINE_ID, 0);
+					CreateNewWeapon (&vRandom, &tvec, nNewSeg, plrObjNum, PROXMINE_ID, 0);
 			}
 		}
 

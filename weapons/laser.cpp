@@ -225,7 +225,7 @@ switch (gameData.weapons.info [nWeaponType].renderType)	{
 		xLaserRadius = gameData.weapons.info [nWeaponType].blob_size;
 		break;
 	default:
-		Error ("Invalid weapon render nType in CreateNewLaser\n");
+		Error ("Invalid weapon render nType in CreateNewWeapon\n");
 		return -1;
 	}
 
@@ -260,7 +260,7 @@ return nObject;
 
 // Initializes a laser after Fire is pressed
 //	Returns tObject number.
-int CreateNewLaser (vmsVector *vDirection, vmsVector *vPosition, short nSegment,
+int CreateNewWeapon (vmsVector *vDirection, vmsVector *vPosition, short nSegment,
 						  short nParent, ubyte nWeaponType, int bMakeSound)
 {
 	int			nObject, nViewer, bBigMsl;
@@ -523,7 +523,7 @@ return nObject;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Calls CreateNewLaser, but takes care of the tSegment and point computation for you.
+//	Calls CreateNewWeapon, but takes care of the tSegment and point computation for you.
 int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short parent, ubyte nWeaponType, int bMakeSound)
 {
 	tFVIQuery	fq;
@@ -533,7 +533,7 @@ int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short par
 
 	//	Find tSegment containing laser fire vPosition.  If the robot is straddling a tSegment, the vPosition from
 	//	which it fires may be in a different tSegment, which is bad news for FindVectorIntersection.  So, cast
-	//	a ray from the tObject center (whose tSegment we know) to the laser vPosition.  Then, in the call to CreateNewLaser
+	//	a ray from the tObject center (whose tSegment we know) to the laser vPosition.  Then, in the call to CreateNewWeapon
 	//	use the data returned from this call to FindVectorIntersection.
 	//	Note that while FindVectorIntersection is pretty slow, it is not terribly slow if the destination point is
 	//	in the same tSegment as the source point.
@@ -550,7 +550,7 @@ fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
 fate = FindVectorIntersection (&fq, &hitData);
 if (fate != HIT_NONE  || hitData.hit.nSegment==-1)
 	return -1;
-return CreateNewLaser (vDirection, &hitData.hit.vPoint, (short) hitData.hit.nSegment, parent, nWeaponType, bMakeSound);
+return CreateNewWeapon (vDirection, &hitData.hit.vPoint, (short) hitData.hit.nSegment, parent, nWeaponType, bMakeSound);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -734,7 +734,7 @@ if (xSpreadR || xSpreadU) {
 	}
 if (bLaserOffs)
 	vLaserDir += m[UVEC] * LASER_OFFS;
-nObject = CreateNewLaser (&vLaserDir, &vLaserPos, nLaserSeg, OBJ_IDX (objP), nLaserType, bMakeSound);
+nObject = CreateNewWeapon (&vLaserDir, &vLaserPos, nLaserSeg, OBJ_IDX (objP), nLaserType, bMakeSound);
 //	Omega cannon is a hack, not surprisingly.  Don't want to do the rest of this stuff.
 if (nLaserType == OMEGA_ID)
 	return -1;
@@ -838,7 +838,7 @@ objP->info.position.mOrient = vmsMatrix::CreateF(vNewDir);
 static inline fix HomingMslStraightTime (int id)
 {
 if (!gameData.objs.bIsMissile [id])
-	return 0;
+	return HOMINGMSL_STRAIGHT_TIME;
 if ((id == EARTHSHAKER_MEGA_ID) || (id == ROBOT_SHAKER_MEGA_ID))
 	return HOMINGMSL_STRAIGHT_TIME;
 return HOMINGMSL_STRAIGHT_TIME * nMslSlowDown [(int) extraGameInfo [IsMultiGame].nMslStartSpeed];
@@ -1170,7 +1170,7 @@ return rVal;
 // -- 		if (tPointSeg == -1)	//	Hey, we thought we were creating points on a line, but we left the mine!
 // -- 			continue;
 // --
-// -- 		nObject = CreateNewLaser (vDirection, &point_pos, tPointSeg, parent, LIGHTNING_BLOB_ID, 0);
+// -- 		nObject = CreateNewWeapon (vDirection, &point_pos, tPointSeg, parent, LIGHTNING_BLOB_ID, 0);
 // --
 // -- 		if (nObject < 0) 	{
 // -- 			Int3 ();
@@ -1466,23 +1466,20 @@ return nRoundsPerShot;
 
 //	-------------------------------------------------------------------------------------------
 //	if nGoalObj == -1, then create Random vector
-int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objType, int bMakeSound)
+int CreateHomingWeapon (tObject *objP, int nGoalObj, ubyte objType, int bMakeSound)
 {
 	short			nObject;
-	vmsVector	vGoal;
-	vmsVector	random_vector;
-	//vmsVector	vGoalPos;
+	vmsVector	vGoal, vRandom;
 
 if (nGoalObj == -1)
-	vGoal = vmsVector::Random();
-else {
-	vmsVector::NormalizedDir(vGoal, OBJECTS [nGoalObj].info.position.vPos, objP->info.position.vPos);
-	random_vector = vmsVector::Random();
-	vGoal += random_vector * (F1_0/4);
-	vmsVector::Normalize(vGoal);
+	vGoal = vmsVector::Random ();
+else { //	Create a vector towards the goal, then add some noise to it.
+	vmsVector::NormalizedDir (vGoal, OBJECTS [nGoalObj].info.position.vPos, objP->info.position.vPos);
+	vRandom = vmsVector::Random ();
+	vGoal += vRandom * (F1_0/4);
+	vmsVector::Normalize (vGoal);
 	}
-//	Create a vector towards the goal, then add some noise to it.
-if (0 > (nObject = CreateNewLaser (&vGoal, &objP->info.position.vPos, objP->info.nSegment, OBJ_IDX (objP), objType, bMakeSound)))
+if (0 > (nObject = CreateNewWeapon (&vGoal, &objP->info.position.vPos, objP->info.nSegment, OBJ_IDX (objP), objType, bMakeSound)))
 	return -1;
 OBJECTS [nObject].cType.laserInfo.nHomingTarget = nGoalObj;
 return nObject;
@@ -1493,15 +1490,15 @@ return nObject;
 void CreateSmartChildren (tObject *objP, int nSmartChildren)
 {
 	tParentInfo	parent;
-	int	bMakeSound;
-	int	nObjects = 0;
-	int	objList [MAX_OBJDISTS];
-	ubyte	nBlobId;
+	int			bMakeSound;
+	int			nObjects = 0;
+	int			objList [MAX_OBJDISTS];
+	ubyte			nBlobId, nObjType = objP->info.nType, nObjId = objP->info.nId;
 
-if (objP->info.nType == OBJ_WEAPON) {
+if (nObjType == OBJ_WEAPON) {
 	parent = objP->cType.laserInfo.parent;
 	}
-else if (objP->info.nType == OBJ_ROBOT) {
+else if (nObjType == OBJ_ROBOT) {
 	parent.nType = OBJ_ROBOT;
 	parent.nObject = OBJ_IDX (objP);
 	}
@@ -1511,71 +1508,71 @@ else {
 	parent.nObject = 0;
 	}
 
-if (objP->info.nId == EARTHSHAKER_ID)
+if (nObjId == EARTHSHAKER_ID)
 	BlastNearbyGlass (objP, gameData.weapons.info [EARTHSHAKER_ID].strength [gameStates.app.nDifficultyLevel]);
 
-if ((objP->info.nType == OBJ_WEAPON) &&
-		((objP->info.nId == SMARTMSL_ID) || (objP->info.nId == SMARTMINE_ID) || (objP->info.nId == ROBOT_SMARTMINE_ID) || (objP->info.nId == EARTHSHAKER_ID)) &&
-		(gameData.weapons.info [objP->info.nId].children == -1))
+if ((nObjType == OBJ_WEAPON) &&
+		((nObjId == SMARTMSL_ID) || (nObjId == SMARTMINE_ID) || (nObjId == ROBOT_SMARTMINE_ID) || (nObjId == EARTHSHAKER_ID)) &&
+		(gameData.weapons.info [nObjId].children == -1))
 	return;
 
-if (((objP->info.nType == OBJ_WEAPON) && (gameData.weapons.info [objP->info.nId].children != -1)) || (objP->info.nType == OBJ_ROBOT)) {
-	int	i, nObject;
-	tObject	*curObjP;
+if ((nObjType != OBJ_ROBOT) && ((nObjType != OBJ_WEAPON) || (gameData.weapons.info [nObjId].children < 1)))
+	return;
 
-	if (IsMultiGame)
-		d_srand (8321L);
+int		i, nObject;
+tObject	*curObjP;
 
-	FORALL_OBJS (curObjP, nObject) {
-		nObject = OBJ_IDX (objP);
-		if ((((curObjP->info.nType == OBJ_ROBOT) && (!curObjP->cType.aiInfo.CLOAKED)) || (curObjP->info.nType == OBJ_PLAYER)) && (nObject != parent.nObject)) {
-			if (curObjP->info.nType == OBJ_PLAYER) {
-				if ((parent.nType == OBJ_PLAYER) && (IsCoopGame))
-					continue;
-				if (IsTeamGame && (GetTeam (curObjP->info.nId) == GetTeam (OBJECTS [parent.nObject].info.nId)))
-					continue;
-				if (gameData.multiplayer.players [curObjP->info.nId].flags & PLAYER_FLAGS_CLOAKED)
-					continue;
-				}
+if (IsMultiGame)
+	d_srand (8321L);
 
-			//	Robot blobs can't track robots.
-			if (curObjP->info.nType == OBJ_ROBOT) {
-				if (parent.nType == OBJ_ROBOT)
-					continue;
-				//	Your shots won't track the buddy.
-				if (parent.nType == OBJ_PLAYER)
-					if (ROBOTINFO (curObjP->info.nId).companion)
-						continue;
-				}
-			fix dist = vmsVector::Dist(objP->info.position.vPos, curObjP->info.position.vPos);
-			if (dist < MAX_SMART_DISTANCE) {
-				int	oovis = ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL);
-				if (oovis) { //ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL)) {
-					objList [nObjects++] = nObject;
-					if (nObjects >= MAX_OBJDISTS) {
-						nObjects = MAX_OBJDISTS;
-						break;
-						}
-					}
+FORALL_OBJS (curObjP, nObject) {
+	nObject = OBJ_IDX (curObjP);
+	if (curObjP->info.nType == OBJ_PLAYER) {
+		if (nObject == parent.nObject)
+			continue;
+		if ((parent.nType == OBJ_PLAYER) && (IsCoopGame))
+			continue;
+		if (IsTeamGame && (GetTeam (curObjP->info.nId) == GetTeam (OBJECTS [parent.nObject].info.nId)))
+			continue;
+		if (gameData.multiplayer.players [curObjP->info.nId].flags & PLAYER_FLAGS_CLOAKED)
+			continue;
+		}
+	else if (curObjP->info.nType == OBJ_ROBOT) {
+		if (curObjP->cType.aiInfo.CLOAKED)
+			continue;
+		if (parent.nType == OBJ_ROBOT)	//	Robot blobs can't track robots.
+			continue;
+		if ((parent.nType == OBJ_PLAYER) &&	ROBOTINFO (curObjP->info.nId).companion)	// Your shots won't track the buddy.
+			continue;
+		}
+	else
+		continue;
+	fix dist = vmsVector::Dist (objP->info.position.vPos, curObjP->info.position.vPos);
+	if (dist < MAX_SMART_DISTANCE) {
+		int	oovis = ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL);
+		if (oovis) { //ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL)) {
+			objList [nObjects++] = nObject;
+			if (nObjects >= MAX_OBJDISTS) {
+				nObjects = MAX_OBJDISTS;
+				break;
 				}
 			}
 		}
-
-	//	Get nType of weapon for child from parent.
-	if (objP->info.nType == OBJ_WEAPON) {
-		nBlobId = gameData.weapons.info [objP->info.nId].children;
-		Assert (nBlobId != -1);		//	Hmm, missing data in bitmaps.tbl.  Need "children=NN" parameter.
-		}
-	else {
-		Assert (objP->info.nType == OBJ_ROBOT);
-		nBlobId = ROBOT_SMARTMSL_BLOB_ID;
-		}
-	bMakeSound = 1;
-	for (i = 0; i < nSmartChildren; i++) {
-		short nObject = (nObjects==0) ? -1 : objList [(d_rand () * nObjects) >> 15];
-		CreateHomingMissile (objP, nObject, nBlobId, bMakeSound);
-		bMakeSound = 0;
-		}
+	}
+//	Get type of weapon for child from parent.
+if (nObjType == OBJ_WEAPON) {
+	nBlobId = gameData.weapons.info [nObjId].children;
+	Assert (nBlobId != -1);		//	Hmm, missing data in bitmaps.tbl.  Need "children=NN" parameter.
+	}
+else {
+	Assert (nObjType == OBJ_ROBOT);
+	nBlobId = ROBOT_SMARTMSL_BLOB_ID;
+	}
+bMakeSound = 1;
+for (i = 0; i < nSmartChildren; i++) {
+	short nTarget = nObjects ? objList [(d_rand () * nObjects) >> 15] : -1;
+	CreateHomingWeapon (objP, nTarget, nBlobId, bMakeSound);
+	bMakeSound = 0;
 	}
 }
 

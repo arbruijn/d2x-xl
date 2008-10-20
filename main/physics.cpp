@@ -852,10 +852,10 @@ retryMove:
 						}
 					if ((objP->mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
 						//Assert (objP->mType.physInfo.flags & PF_BOUNCE);
-						if (objP->mType.physInfo.flags & PF_BOUNCED_ONCE)
-							objP->mType.physInfo.flags &= ~(PF_BOUNCE | PF_BOUNCED_ONCE | PF_BOUNCES_TWICE);
+						if (objP->mType.physInfo.flags & PF_HAS_BOUNCED)
+							objP->mType.physInfo.flags &= ~(PF_BOUNCE | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
 						else
-							objP->mType.physInfo.flags |= PF_BOUNCED_ONCE;
+							objP->mType.physInfo.flags |= PF_HAS_BOUNCED;
 						}
 					bBounced = 1;		//this tObject bBounced
 					}

@@ -1334,7 +1334,7 @@ if (rType == 255) {
 			xSize = gameData.weapons.info [nId].blob_size;
 			break;
 		default:
-			Error ("Invalid weapon render nType in CreateNewLaser\n");
+			Error ("Invalid weapon render nType in CreateNewWeapon\n");
 			return -1;
 		}
 	}
@@ -2258,8 +2258,10 @@ int UpdateObject (tObject * objP)
 	short	nPrevSegment = (short) objP->info.nSegment;
 
 #if DBG
-if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == SMARTMINE_BLOB_ID))
+if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == SMARTMINE_BLOB_ID)) {
 	nDbgObj = OBJ_IDX (objP);
+	nDbgObj = nDbgObj;
+	}
 if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif

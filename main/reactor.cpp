@@ -429,7 +429,7 @@ else {
 	gameStates.gameplay.nLastReactor = -1;
 	memset (gameData.reactor.states, 0xff, sizeof (gameData.reactor.states));
 	}
-FORALL_STATIC_OBJS (objP, i) {
+FORALL_ACTOR_OBJS (objP, i) {
 	if (objP->info.nType == OBJ_REACTOR) {
 		if (gameStates.gameplay.nReactorCount && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
 #if TRACE
