@@ -308,8 +308,8 @@ else if (!gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer > MAX_CHAS
 
 if ((aiP->CURRENT_STATE == AIS_REST) && (aiP->GOAL_STATE == AIS_REST)) {
 	if (gameData.ai.nPlayerVisibility &&
-			(d_rand () < gameData.time.xFrame * gameData.ai.nPlayerVisibility) &&
-			(gameData.ai.xDistToPlayer / 256 < d_rand () * gameData.ai.nPlayerVisibility)) {
+		 (d_rand () < gameData.time.xFrame * gameData.ai.nPlayerVisibility) &&
+		 (gameData.ai.xDistToPlayer / 256 < d_rand () * gameData.ai.nPlayerVisibility)) {
 		aiP->GOAL_STATE = AIS_SEARCH;
 		aiP->CURRENT_STATE = AIS_SEARCH;
 		}
@@ -1232,8 +1232,8 @@ return 0;
 int AIFireGunsHandler (tObject *objP, tAIStateInfo *siP)
 {
 if (siP->aiP->GOAL_STATE == AIS_FIRE) {
-	tAILocalInfo	*ailP = siP->ailP;
-	int		i, nGuns = siP->botInfoP->nGuns;
+	tAILocalInfo *ailP = siP->ailP;
+	int i, nGuns = siP->botInfoP->nGuns;
 	for (i = 0; i < nGuns; i++)
 		ailP->goalState [i] = AIS_FIRE;
 	}

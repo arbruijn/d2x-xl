@@ -714,6 +714,7 @@ DestroyLightmaps ();
 gameStates.app.bBetweenLevels = 1;
 gameStates.app.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;
+gameStates.app.bPlayerExploded = 0;
 gameData.physics.side.nSegment = -1;
 gameData.physics.side.nSide = -1;
 memset (&gameData.marker, 0, sizeof (gameData.marker));

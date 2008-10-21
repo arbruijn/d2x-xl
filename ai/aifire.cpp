@@ -235,14 +235,14 @@ if (nPrevShot >= 0) {
 //	When this routine is complete, the parameter gameData.ai.vVecToPlayer should not be necessary.
 void AIFireLaserAtPlayer (tObject *objP, vmsVector *vFirePoint, int nGun, vmsVector *vBelievedPlayerPos)
 {
-	short			nShot, nObject = OBJ_IDX (objP);
-	tAILocalInfo		*ailP = gameData.ai.localInfo + nObject;
-	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
-	vmsVector	vFire;
-	vmsVector	bpp_diff;
-	short			nWeaponType;
-	fix			aim, dot;
-	int			count, i;
+	short				nShot, nObject = OBJ_IDX (objP);
+	tAILocalInfo	*ailP = gameData.ai.localInfo + nObject;
+	tRobotInfo		*botInfoP = &ROBOTINFO (objP->info.nId);
+	vmsVector		vFire;
+	vmsVector		bpp_diff;
+	short				nWeaponType;
+	fix				aim, dot;
+	int				count, i;
 
 Assert (nObject >= 0);
 //	If this robot is only awake because a camera woke it up, don't fire.
@@ -380,10 +380,10 @@ void DoFiringStuff (tObject *objP, int nPlayerVisibility, vmsVector *vVecToPlaye
 if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) ||
 	 (gameData.ai.nPlayerVisibility >= 1)) {
 	//	Now, if in robot's field of view, lock onto tPlayer
-	fix	dot = vmsVector::Dot(objP->info.position.mOrient[FVEC], gameData.ai.vVecToPlayer);
+	fix dot = vmsVector::Dot(objP->info.position.mOrient[FVEC], gameData.ai.vVecToPlayer);
 	if ((dot >= 7 * F1_0 / 8) || (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 		tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-		tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
+		tAILocalInfo	*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
 
 		switch (aiP->GOAL_STATE) {
 			case AIS_NONE:

@@ -1034,7 +1034,7 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 {
 	tSegment		*segP;				//the tSegment we're looking at
 	int			startMask, endMask, centerMask;	//mask of faces
-	short			nObject, nSegment;
+	short			nObject, nFirstObj, nSegment;
 	tSegMasks	masks;
 	vmsVector	vHitPoint, vClosestHitPoint; 	//where we hit
 	fix			d, dMin = 0x7fffffff;					//distance to hit point
@@ -1088,8 +1088,10 @@ if (flags & FQ_CHECK_OBJS) {
 	for (iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
 		short nSegment = nObjSegList [iObjSeg];
 		segP = gameData.segs.segments + nSegment;
-		for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = otherObjP->info.nNextInSeg) {
+		for (nObject = nFirstObj = gameData.segs.objects [nSegment]; nObject != -1; nObject = otherObjP->info.nNextInSeg) {
 			otherObjP = OBJECTS + nObject;
+			if (otherObjP->info.nNextInSeg == nFirstObj)
+				otherObjP->info.nNextInSeg = -1;
 			nOtherType = otherObjP->info.nType;
 			if (otherObjP->info.nFlags & OF_SHOULD_BE_DEAD)
 				continue;

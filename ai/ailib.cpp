@@ -103,9 +103,9 @@ if (vGun->IsZero())
 if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
 	return 1;
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
-if (((*vGun)[X] == objP->info.position.vPos[X]) &&
-	 ((*vGun)[Y] == objP->info.position.vPos[Y]) &&
-	 ((*vGun)[Z] == objP->info.position.vPos[Z]))
+if (((*vGun) [X] == objP->info.position.vPos [X]) &&
+	 ((*vGun) [Y] == objP->info.position.vPos [Y]) &&
+	 ((*vGun) [Z] == objP->info.position.vPos [Z]))
 	fq.startSeg	= objP->info.nSegment;
 else {
 	short nSegment = FindSegByPos (*vGun, objP->info.nSegment, 1, 0);
@@ -115,8 +115,8 @@ else {
 		objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
 	fq.startSeg = nSegment;
 	}
-h = vmsVector::Dist(*vGun, objP->info.position.vPos);
-h = vmsVector::Dist(*vGun, *vPlayer);
+h = vmsVector::Dist (*vGun, objP->info.position.vPos);
+h = vmsVector::Dist (*vGun, *vPlayer);
 nModel = objP->rType.polyObjInfo.nModel;
 nSize = objP->info.xSize;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested

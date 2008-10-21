@@ -609,6 +609,16 @@ return;
 
 //------------------------------------------------------------------------------
 
+bool ObjIsLinkToSeg (short nObject, short nSegment)
+{
+for (short h = gameData.segs.objects [nSegment]; h >= 0; h = OBJECTS [h].info.nNextInSeg)
+	if (nObject == h)
+		return true;
+return false;
+}
+
+//------------------------------------------------------------------------------
+
 //link the tObject into the list for its tSegment
 void LinkObjToSeg (int nObject, int nSegment)
 {
@@ -625,8 +635,13 @@ if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 objP->info.nSegment = nSegment;
+#if DBG
+if (ObjIsLinkedToSeg (nObject, nSegment))
+	UnlinkObjFromSeg (OBJECTS + nObject);
+#else
 if (gameData.segs.objects [nSegment] == nObject)
 	return;
+#endif
 objP->info.nNextInSeg = gameData.segs.objects [nSegment];
 objP->info.nPrevInSeg = -1;
 gameData.segs.objects [nSegment] = nObject;

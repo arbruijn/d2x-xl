@@ -161,12 +161,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="3"
-				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="1"
-				OmitFramePointers="true"
-				EnableFiberSafeOptimizations="true"
+				Optimization="0"
+				InlineFunctionExpansion="1"
+				EnableIntrinsicFunctions="false"
+				FavorSizeOrSpeed="0"
+				OmitFramePointers="false"
+				EnableFiberSafeOptimizations="false"
 				AdditionalIncludeDirectories="&quot;..\..\..\..\irrlicht-1.4\include&quot;;&quot;..\..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.8&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\..\3d;..\..\include;..\..\input\include;..\..\audio\win32\include;..\..\network\win32\include"
 				PreprocessorDefinitions="NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
@@ -184,7 +184,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 				CallingConvention="1"
 				CompileAs="0"
 			/>
@@ -207,7 +207,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;\projects\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Release&quot;;&quot;..\..\..\d2x\sdl-1.2.13\Release&quot;;&quot;..\..\..\SDL_mixer-1.2.8\VisualC\Release&quot;"
 				IgnoreDefaultLibraryNames="msvcrtd.lib"
-				GenerateDebugInformation="false"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Release/d2x-gl.pdb"
 				GenerateMapFile="true"
 				SubSystem="2"
@@ -4573,11 +4573,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
