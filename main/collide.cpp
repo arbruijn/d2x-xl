@@ -1498,7 +1498,6 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", X2F (dot));
 #endif
 	if (dot > gameData.physics.xBossInvulDot) {
-		short	nNewObj;
 		short	nSegment;
 
 		nSegment = FindSegByPos (*vHitPt, robotP->info.nSegment, 1, 0);
@@ -1536,37 +1535,27 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 		//	Cause weapon to bounce.
 		//	Make a copy of this weaponP, because the physics wants to destroy it.
 		if (!WI_matter (weaponP->info.nId)) {
-#if 1
-			nNewObj = CreateObject (weaponP->info.nType, weaponP->info.nId, -1, weaponP->info.nSegment, weaponP->info.position.vPos,
-											weaponP->info.position.mOrient, weaponP->info.xSize, 
-											weaponP->info.controlType, weaponP->info.movementType, weaponP->info.renderType);
-			if (nNewObj != -1) {
-				tObject		*newObjP = OBJECTS + nNewObj;
+			short nClone = CreateObject (weaponP->info.nType, weaponP->info.nId, -1, weaponP->info.nSegment, weaponP->info.position.vPos,
+												  weaponP->info.position.mOrient, weaponP->info.xSize, 
+												  weaponP->info.controlType, weaponP->info.movementType, weaponP->info.renderType);
+			if (nClone != -1) {
+				tObject	*cloneP = OBJECTS + nClone;
 				if (weaponP->info.renderType == RT_POLYOBJ) {
-					newObjP->rType.polyObjInfo.nModel = gameData.weapons.info [newObjP->info.nId].nModel;
-					newObjP->info.xSize = FixDiv (gameData.models.polyModels [newObjP->rType.polyObjInfo.nModel].rad, 
-															gameData.weapons.info [newObjP->info.nId].po_len_to_width_ratio);
+					cloneP->rType.polyObjInfo.nModel = gameData.weapons.info [cloneP->info.nId].nModel;
+					cloneP->info.xSize = FixDiv (gameData.models.polyModels [cloneP->rType.polyObjInfo.nModel].rad, 
+															gameData.weapons.info [cloneP->info.nId].po_len_to_width_ratio);
 					}
-				newObjP->mType.physInfo.mass = WI_mass (weaponP->info.nType);
-				newObjP->mType.physInfo.drag = WI_drag (weaponP->info.nType);
-				newObjP->mType.physInfo.thrust.SetZero();
-#else
-			nNewObj = CloneObject (weaponP);
-			if (nNewObj != -1) {
-				tObject		*newObjP = OBJECTS + nNewObj;
-#endif
-				vmsVector	vImpulse;
-				vmsVector	vWeapon;
-				fix			speed;
-
-				vImpulse = *vHitPt - robotP->info.position.vPos;
+				cloneP->mType.physInfo.thrust.SetZero();
+				cloneP->mType.physInfo.mass = WI_mass (weaponP->info.nType);
+				cloneP->mType.physInfo.drag = WI_drag (weaponP->info.nType);
+				vmsVector vImpulse = *vHitPt - robotP->info.position.vPos;
 				vmsVector::Normalize (vImpulse);
-				vWeapon = weaponP->mType.physInfo.velocity;
-				speed = vmsVector::Normalize (vWeapon);
+				vmsVector vWeapon = weaponP->mType.physInfo.velocity;
+				fix speed = vmsVector::Normalize (vWeapon);
 				vImpulse += vWeapon * (-F1_0 * 2);
 				vImpulse *= (speed / 4);
-				newObjP->mType.physInfo.velocity = vImpulse;
-				newObjP->info.nFlags |= PF_HAS_BOUNCED;
+				cloneP->mType.physInfo.velocity = vImpulse;
+				cloneP->info.nFlags |= PF_HAS_BOUNCED;
 				}
 			}
 		}
