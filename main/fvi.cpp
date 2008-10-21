@@ -1092,10 +1092,12 @@ restart:
 		nSegObjs = gameData.objs.nObjects;
 		for (nObject = nFirstObj = gameData.segs.objects [nSegment]; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
 			otherObjP = OBJECTS + nObject;
+#if DBG
 			if ((nSegObjs < 0) || !CheckSegObjList (otherObjP, nObject, nFirstObj)) {
 				RelinkAllObjsToSegs ();
 				goto restart;
 				}
+#endif
 			nOtherType = otherObjP->info.nType;
 			if (otherObjP->info.nFlags & OF_SHOULD_BE_DEAD)
 				continue;
