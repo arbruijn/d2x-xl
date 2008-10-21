@@ -459,7 +459,7 @@ memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
 Assert (OBJECTS [0].info.nType != OBJ_NONE);		//0 should be used
 for (objP = OBJECTS + MAX_OBJECTS, i = MAX_OBJECTS; i; ) {
 	objP--, i--;
-#ifdef _DEBUG
+#if DBG
 	if (i == nDbgObj) {
 		nDbgObj = nDbgObj;
 		if (objP->info.nType != OBJ_NONE)
@@ -620,7 +620,7 @@ if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
 	if (nSegment < 0)
 		return;
 	}
-#ifdef _DEBUG
+#if DBG
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif

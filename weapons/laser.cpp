@@ -661,7 +661,7 @@ int LaserPlayerFireSpreadDelay (
 	int					bSpectate = SPECTATOR (objP);
 	tTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 
-#ifdef _DEBUG
+#if DBG
 if (nLaserType == SMARTMINE_BLOB_ID)
 	nLaserType = nLaserType;
 #endif

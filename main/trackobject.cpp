@@ -87,7 +87,7 @@ int FindHomingObject (vmsVector *vTrackerPos, tObject *trackerP)
 	int	bSpectate;
 
 //	Find an tObject to track based on game mode (eg, whether in network play) and who fired it.
-#ifdef _DEBUG
+#if DBG
 if ((trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == SMARTMINE_BLOB_ID))
 	nDbgObj = nDbgObj;
 #endif

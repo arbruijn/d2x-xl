@@ -455,9 +455,11 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 			i = FindBoss (nObject);
 
 	if (i < 0)
-		return;
-	gameData.boss [i].nDying = nObject;
-	gameData.boss [i].nDyingStartTime = gameData.time.xGame;
+		StartRobotDeathSequence (objP);	//kill it anyway, somehow
+	else {
+		gameData.boss [i].nDying = nObject;
+		gameData.boss [i].nDyingStartTime = gameData.time.xGame;
+		}
 	}
 }
 

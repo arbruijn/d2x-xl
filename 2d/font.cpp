@@ -716,12 +716,14 @@ if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
 GrGetStringSizeTabbed (s, &w, &h, &aw, nTabs, nMaxWidth);
 if (!(w && h))
 	return NULL;
-for (i = 1; i < w; i <<= 2)
-	;
-w = i;
-for (i = 1; i < h; i <<= 2)
-	;
-h = i;
+if (bForce >= 0) {
+	for (i = 1; i < w; i <<= 2)
+		;
+	w = i;
+	for (i = 1; i < h; i <<= 2)
+		;
+	h = i;
+	}
 if (!(bmP = GrCreateBitmap (w, h, 4))) {
 	return NULL;
 	}

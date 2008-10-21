@@ -453,7 +453,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 				for (j = 0; j < nGuns; j++)
 					CalcReactorGunPoint (rStatP->vGunPos + j, rStatP->vGunDir + j, objP, j);
 				gameData.reactor.bPresent = 1;
-				rStatP->nObject = i;
+				rStatP->nObject = OBJ_IDX (objP);
 				if (bNew) {
 					objP->info.xShields = ReactorStrength ();
 					//	Say the control center has not yet been hit.

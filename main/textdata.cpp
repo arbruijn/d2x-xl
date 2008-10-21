@@ -192,7 +192,7 @@ else if (!gameStates.render.nWindow) {
 		grdCurCanv->cvFont = NORMAL_FONT;
 		GrSetFontColorRGBi (GOLD_RGBA, 1, 0, 0);
 		}
-	if (msgP->bmP || (msgP->bmP = CreateStringBitmap (indexP->pszText, 0, 0, NULL, 0, 0, 0))) {
+	if (msgP->bmP || (msgP->bmP = CreateStringBitmap (indexP->pszText, 0, 0, NULL, 0, 0, -1))) {
 		w = msgP->bmP->bmProps.w;
 		h = msgP->bmP->bmProps.h;
 		x = (grdCurCanv->cv_w - w) / 2;
