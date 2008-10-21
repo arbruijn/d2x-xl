@@ -1751,10 +1751,10 @@ typedef struct tSegmentData {
 	int					nFaces;
 	int					nTris;
 	int					nLevelVersion;
-	char				szLevelFilename [FILENAME_LEN];
+	char					szLevelFilename [FILENAME_LEN];
 	tSecretData			secret;
 	tSlideSegs			*slideSegs;
-	short				nSlideSegs;
+	short					nSlideSegs;
 	int					bHaveSlideSegs;
 	tFaceData			faces;
 } tSegmentData;
