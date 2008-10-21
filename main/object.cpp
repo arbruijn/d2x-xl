@@ -694,6 +694,7 @@ if ((nObject == nFirstObj) && (objP->info.nPrevInSeg >= 0))
 if (((objP->info.nNextInSeg >= 0) && (OBJECTS [objP->info.nNextInSeg].info.nPrevInSeg != nObject)) ||
 	 ((objP->info.nPrevInSeg >= 0) && (OBJECTS [objP->info.nPrevInSeg].info.nPrevInSeg != nObject))) 
 	return false;
+return true;
 }
 
 //------------------------------------------------------------------------------
