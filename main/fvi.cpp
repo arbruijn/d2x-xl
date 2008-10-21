@@ -1034,7 +1034,7 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 {
 	tSegment		*segP;				//the tSegment we're looking at
 	int			startMask, endMask, centerMask;	//mask of faces
-	short			nObject, nFirstObj, nSegment;
+	short			nObject, nFirstObj, nSegment, nSegObjs;
 	tSegMasks	masks;
 	vmsVector	vHitPoint, vClosestHitPoint; 	//where we hit
 	fix			d, dMin = 0x7fffffff;					//distance to hit point
@@ -1088,10 +1088,14 @@ if (flags & FQ_CHECK_OBJS) {
 	for (iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
 		short nSegment = nObjSegList [iObjSeg];
 		segP = gameData.segs.segments + nSegment;
-		for (nObject = nFirstObj = gameData.segs.objects [nSegment]; nObject != -1; nObject = otherObjP->info.nNextInSeg) {
+restart:
+		nSegObjs = gameData.objs.nObjects;
+		for (nObject = nFirstObj = gameData.segs.objects [nSegment]; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
 			otherObjP = OBJECTS + nObject;
-			if (otherObjP->info.nNextInSeg == nFirstObj)
-				otherObjP->info.nNextInSeg = -1;
+			if ((nSegObjs < 0) || !CheckSegObjList (otherObjP, nObject, nFirstObj)) {
+				RelinkAllObjsToSegs ();
+				goto restart;
+				}
 			nOtherType = otherObjP->info.nType;
 			if (otherObjP->info.nFlags & OF_SHOULD_BE_DEAD)
 				continue;

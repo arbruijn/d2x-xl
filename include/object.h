@@ -718,7 +718,12 @@ int CreateLight (ubyte nId, short nSegment, const vmsVector& vPos);
 
 // when an tObject has moved into a new tSegment, this function unlinks it
 // from its old tSegment, and links it into the new tSegment
-void RelinkObjToSeg(int nObject,int nNewSeg);
+void RelinkObjToSeg (int nObject, int nNewSeg);
+
+void ResetSegObjLists (void);
+void LinkAllObjsToSegs (void);
+void RelinkAllObjsToSegs (void);
+bool CheckSegObjList (tObject *objP, short nObject, short nFirstObj);
 
 // move an tObject from one tSegment to another. unlinks & relinks
 // -- unused --

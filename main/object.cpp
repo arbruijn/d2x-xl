@@ -655,6 +655,49 @@ if (OBJECTS [0].info.nPrevInSeg == 0)
 
 //------------------------------------------------------------------------------
 
+void ResetSegObjLists (void)
+{
+	tSegment	*segP;
+	int		i;
+
+for (segP = SEGMENTS, i = gameData.segs.nSegments; i; i--, segP++)
+	segP->objList = -1;
+}
+
+//------------------------------------------------------------------------------
+
+void LinkAllObjsToSegs (void)
+{
+	tObject	*objP;
+	int		i;
+
+FORALL_OBJS (objP, i)
+	LinkObjToSeg (OBJ_IDX (objP), objP->info.nSegment);
+}
+
+//------------------------------------------------------------------------------
+
+void RelinkAllObjsToSegs (void)
+{
+ResetSegObjLists ();
+LinkAllObjsToSegs ();
+}
+
+//------------------------------------------------------------------------------
+
+bool CheckSegObjList (tObject *objP, short nObject, short nFirstObj)
+{
+if (objP->info.nNextInSeg == nFirstObj)
+	return false;
+if ((nObject == nFirstObj) && (objP->info.nPrevInSeg >= 0))
+	return false;
+if (((objP->info.nNextInSeg >= 0) && (OBJECTS [objP->info.nNextInSeg].info.nPrevInSeg != nObject)) ||
+	 ((objP->info.nPrevInSeg >= 0) && (OBJECTS [objP->info.nPrevInSeg].info.nPrevInSeg != nObject))) 
+	return false;
+}
+
+//------------------------------------------------------------------------------
+
 CObject::CObject ()
 {
 Prev () = Next () = NULL;
