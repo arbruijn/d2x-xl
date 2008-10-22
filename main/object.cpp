@@ -609,7 +609,7 @@ return;
 
 //------------------------------------------------------------------------------
 
-bool ObjIsLinkToSeg (short nObject, short nSegment)
+bool ObjIsLinkedToSeg (short nObject, short nSegment)
 {
 for (short h = gameData.segs.objects [nSegment]; h >= 0; h = OBJECTS [h].info.nNextInSeg)
 	if (nObject == h)
