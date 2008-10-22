@@ -731,8 +731,8 @@ gameData.app.nFrameCount = 0;
 gameData.app.nMineRenderCount = 0;
 memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
 memset (gameData.app.semaphores, 0, sizeof (gameData.app.semaphores));
-renderItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
-renderItems.nMaxOffs = 0;
+transpItems.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
+transpItems.nMaxOffs = 0;
 #if PROFILING
 memset (&gameData.profiler, 0, sizeof (gameData.profiler));
 #endif

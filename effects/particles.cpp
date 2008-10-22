@@ -1531,7 +1531,7 @@ else
 
 	if (gameOpts->render.bDepthSort > 0) {
 		for (h = 0, i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit)
-			if (RIAddParticle (pCloud->pParticles + j, brightness, nThread))
+			if (TIAddParticle (pCloud->pParticles + j, brightness, nThread))
 				h++;
 		return h;
 		}

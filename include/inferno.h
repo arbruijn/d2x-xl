@@ -3550,10 +3550,10 @@ typedef struct fVector3D {
 	float	x, y, z;
 } fVector3D;
 
-typedef struct tTIRInfo {
+typedef struct tTranspRInfo {
 	fVector3D	fvRot;
 	fVector3D	fvTrans;
-	} tTIRInfo;
+	} tTranspRInfo;
 
 #ifndef WIN32
 #	define WINAPI
@@ -3566,7 +3566,7 @@ typedef int (WINAPI *tpfnTIRExit) (void);
 typedef int (WINAPI *tpfnTIRStart) (void);
 typedef int (WINAPI *tpfnTIRStop) (void);
 typedef int (WINAPI *tpfnTIRCenter) (void);
-typedef int (WINAPI *tpfnTIRQuery) (tTIRInfo *);
+typedef int (WINAPI *tpfnTIRQuery) (tTranspRInfo *);
 
 extern tpfnTIRInit	pfnTIRInit;
 extern tpfnTIRExit	pfnTIRExit;

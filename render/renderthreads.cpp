@@ -34,7 +34,7 @@ COPYRIGHT 0993-0999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define KILL_RENDER_THREADS 0
 
 tRenderThreadInfo tiRender;
-tRenderItemThreadInfo tiRenderItems;
+tTranspItemThreadInfo tiTranspItems;
 tThreadInfo tiEffects;
 
 //------------------------------------------------------------------------------
@@ -166,49 +166,49 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ RenderItemThread (void *pThreadId)
+int _CDECL_ TranspItemThread (void *pThreadId)
 {
 #if 1
 	int	i;
 
 do {
-	while (!(tiRenderItems.ti [0].bExec || tiRenderItems.ti [1].bExec))
+	while (!(tiTranspItems.ti [0].bExec || tiTranspItems.ti [1].bExec))
 		G3_SLEEP (0);
 	for (i = 0; i < 2; i++) {
-		if (tiRenderItems.ti [i].bExec) {
-			AddRenderItem ((tRenderItemType) tiRenderItems.itemData [i].nType, 
-								&tiRenderItems.itemData [i].item, 
-								tiRenderItems.itemData [i].nSize, 
-								tiRenderItems.itemData [i].nDepth, 
-								tiRenderItems.itemData [i].nIndex);
-			tiRenderItems.ti [i].bExec = 0;
+		if (tiTranspItems.ti [i].bExec) {
+			AddTranspItem ((tTranspItemType) tiTranspItems.itemData [i].nType, 
+								&tiTranspItems.itemData [i].item, 
+								tiTranspItems.itemData [i].nSize, 
+								tiTranspItems.itemData [i].nDepth, 
+								tiTranspItems.itemData [i].nIndex);
+			tiTranspItems.ti [i].bExec = 0;
 			}
 		}
-	} while (!(tiRenderItems.ti [0].bDone && tiRenderItems.ti [1].bDone));
+	} while (!(tiTranspItems.ti [0].bDone && tiTranspItems.ti [1].bDone));
 return 0;
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-void StartRenderItemThread (void)
+void StartTranspItemThread (void)
 {
 #if 1
-memset (&tiRenderItems, 0, sizeof (tiRenderItems));
-tiRenderItems.ti [0].pThread = SDL_CreateThread (RenderItemThread, NULL);
+memset (&tiTranspItems, 0, sizeof (tiTranspItems));
+tiTranspItems.ti [0].pThread = SDL_CreateThread (TranspItemThread, NULL);
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-void EndRenderItemThread (void)
+void EndTranspItemThread (void)
 {
-if (!tiRenderItems.ti [0].pThread)
+if (!tiTranspItems.ti [0].pThread)
 	return;
-tiRenderItems.ti [0].bDone = 0;
+tiTranspItems.ti [0].bDone = 0;
 G3_SLEEP (10);
-//SDL_KillThread (tiRenderItems.ti [0].pThread);
-tiRenderItems.ti [0].pThread = NULL;
+//SDL_KillThread (tiTranspItems.ti [0].pThread);
+tiTranspItems.ti [0].pThread = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -222,7 +222,7 @@ for (i = 0; i < 2; i++) {
 	tiRender.ti [i].nId = i;
 	tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
 	}
-StartRenderItemThread ();
+StartTranspItemThread ();
 StartEffectsThread ();
 }
 
@@ -241,7 +241,7 @@ for (i = 0; i < 2; i++) {
 		tiRender.ti [i].pThread = NULL;
 		}
 	}
-EndRenderItemThread ();
+EndTranspItemThread ();
 EndEffectsThread ();
 }
 

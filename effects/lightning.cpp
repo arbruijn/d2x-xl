@@ -1664,7 +1664,7 @@ if (bEnd) {
 	vPlasma[3] += vd;
 	}
 if (bDepthSort) {
-	RIAddLightningSegment (vPosf, vPlasma, color, bPlasma, bStart, bEnd, nDepth);
+	TIAddLightningSegment (vPosf, vPlasma, color, bPlasma, bStart, bEnd, nDepth);
 	}
 else {
 #if 1
@@ -1803,7 +1803,7 @@ if (bDepthSort > 0) {
 				RenderLightningPlasma (vPosf, &color, 0, 0, j == 1, j == i, 1, nDepth, 1);
 			}
 #else
-		RIAddLightnings (pl, 1, nDepth);
+		TIAddLightnings (pl, 1, nDepth);
 #endif
 		if (gameOpts->render.lightnings.nQuality)
 			for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++)

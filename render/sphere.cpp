@@ -631,7 +631,7 @@ if (gameData.render.shield.nFaces > 0)
 #endif
 	{
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
-		RIAddSphere (riSphereShield, red, green, blue, alpha, objP);
+		TIAddSphere (riSphereShield, red, green, blue, alpha, objP);
 	else {
 		tOOF_vector	p = {0, 0, 0};
 		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
@@ -666,7 +666,7 @@ if (gameData.render.monsterball.nFaces > 0)
 #endif
 	{
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
-		RIAddSphere (riMonsterball, red, green, blue, alpha, objP);
+		TIAddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {
 		static tOOF_vector p = {0,0,0};
 		float r = X2F (objP->info.xSize);

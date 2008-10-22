@@ -35,19 +35,19 @@ typedef struct tRenderThreadInfo {
 
 extern tRenderThreadInfo tiRender;
 
-typedef struct tRenderItemThreadInfo {
-	tRenderItemData	itemData [2];
+typedef struct tTranspItemThreadInfo {
+	tTranspItemData	itemData [2];
 	tThreadInfo			ti [2];
-	} tRenderItemThreadInfo;
+	} tTranspItemThreadInfo;
 
-extern tRenderItemThreadInfo tiRenderItems;
+extern tTranspItemThreadInfo tiTranspItems;
 extern tThreadInfo tiEffects;
 
 int RunRenderThreads (int nTask);
 void StartRenderThreads (void);
 void EndRenderThreads (void);
-void StartRenderItemThread (void);
-void EndRenderItemThread (void);
+void StartTranspItemThread (void);
+void EndTranspItemThread (void);
 void WaitForRenderThreads (void);
 void StartEffectsThread (void);
 void EndEffectsThread (void);

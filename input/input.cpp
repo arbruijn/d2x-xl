@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "joystick.h"
 #endif
 #ifdef WIN32
-tTIRInfo	tirInfo;
+tTranspRInfo	tirInfo;
 #endif
 
 tControlInfo Controls [4];

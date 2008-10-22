@@ -966,6 +966,60 @@ return nThrusters;
 
 // -----------------------------------------------------------------------------
 
+void CreateLightTrail (vmsVector& vPos, vmsVector &vDir, float fSize, float fLength, grsBitmap *bmP, tRgbaColorf *colorP)
+{
+	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+	static tTexCoord2f	tcTrail [3] = {{{0,0}},{{1,1}},{{1,0}}};
+	static fVector	vEye = fVector::ZERO;
+
+	fVector	vPosf, vDirf, vNormf, vTrail [3], vCorona [4], fVecf;
+	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCorona;
+
+fVecf = vDir.ToFloat();
+vPosf = vPos.ToFloat();
+vTrail [2] = vPosf - fVecf * fLength;
+G3TransformPoint (vTrail [2], vTrail [2], 0);
+G3TransformPoint (vPosf, vPosf, 0);
+vNormf = fVector::Normal (vTrail [2], vPosf, vEye);
+vTrail [0] = vPosf + vNormf * fSize;
+vTrail [1] = vPosf - vNormf * fSize;
+vNormf = fVector::Normal (vTrail [0], vTrail [1], vTrail [2]);
+vCorona [0] = vTrail [0];
+vCorona [2] = vTrail [1];
+vCorona [1] = vPosf + vNormf * fSize;
+vCorona [3] = vPosf + vNormf * (-fSize);
+fVector::Normalize (vPosf);
+v = vTrail [2]; 
+fVector::Normalize (v);
+dotTrail = fVector::Dot (vPosf, v);
+v = *vCorona; 
+fVector::Normalize (v);
+dotCorona = fVector::Dot (vPosf, v);
+if (gameOpts->render.bDepthSort > 0)
+	TIAddLightTrail (bmP, vCorona, tcCorona, (dotTrail < dotCorona) ? vTrail : NULL, tcTrail, colorP);
+else {
+	glDisable (GL_CULL_FACE);
+	glColor3f (c, c, c);
+	if (dotTrail < dotCorona) {
+		glBegin (GL_TRIANGLES);
+		for (i = 0; i < 3; i++) {
+			glTexCoord2fv ((GLfloat *) (tcTrail + i));
+			glVertex3fv ((GLfloat *) (vTrail + i));
+			}
+		glEnd ();
+		}
+	glBegin (GL_QUADS);
+	for (i = 0; i < 4; i++) {
+		glTexCoord2fv ((GLfloat *) (tcCorona + i));
+		glVertex3fv ((GLfloat *) (vCorona + i));
+		}
+	glEnd ();
+	glEnable (GL_CULL_FACE);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
 void RenderThrusterFlames (tObject *objP)
 {
 	int					h, i, j, k, l, nStyle, nThrusters, bStencil, bSpectate, bTextured;
@@ -1054,6 +1108,7 @@ glEnable (GL_BLEND);
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		static tTexCoord2f	tcThruster [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 		static tTexCoord2f	tcFlame [3] = {{{0,0}},{{1,1}},{{1,0}}};
+		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static fVector	vEye = fVector::ZERO;
 
 		fVector	vPosf, vNormf, vFlame [3], vThruster [4], fVecf;
@@ -1067,48 +1122,8 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	if (!ti.mtP)
 		fVecf = ti.pp ? ti.pp->mOrient [FVEC].ToFloat() : objP->info.position.mOrient [FVEC].ToFloat();
 #endif
-	for (h = 0; h < nThrusters; h++) {
-		if (ti.mtP)
-			fVecf = ti.vDir [h].ToFloat();
-		vPosf = ti.vPos [h].ToFloat();
-		vFlame [2] = vPosf + fVecf * (-ti.fLength);
-		G3TransformPoint(vFlame [2], vFlame [2], 0);
-		G3TransformPoint(vPosf, vPosf, 0);
-		vNormf = fVector::Normal(vFlame [2], vPosf, vEye);
-		vFlame [0] = vPosf + vNormf *   ti.fSize;
-		vFlame [1] = vPosf + vNormf * (-ti.fSize);
-		vNormf = fVector::Normal(vFlame [0], vFlame [1], vFlame [2]);
-		vThruster [0] = vFlame [0];
-		vThruster [2] = vFlame [1];
-		vThruster [1] = vPosf + vNormf *   ti.fSize;
-		vThruster [3] = vPosf + vNormf * (-ti.fSize);
-		fVector::Normalize(vPosf);
-		v = vFlame [2]; fVector::Normalize(v);
-		dotFlame = fVector::Dot(vPosf, v);
-		v = *vThruster; fVector::Normalize(v);
-		dotThruster = fVector::Dot(vPosf, v);
-		if (gameOpts->render.bDepthSort > 0)
-			RIAddThruster (bmpThruster [nStyle], vThruster, tcThruster, (dotFlame < dotThruster) ? vFlame : NULL, tcFlame);
-		else {
-			glDisable (GL_CULL_FACE);
-			glColor3f (c, c, c);
-			if (dotFlame < dotThruster) {
-				glBegin (GL_TRIANGLES);
-				for (i = 0; i < 3; i++) {
-					glTexCoord2fv ((GLfloat *) (tcFlame + i));
-					glVertex3fv ((GLfloat *) (vFlame + i));
-					}
-				glEnd ();
-				}
-			glBegin (GL_QUADS);
-			for (i = 0; i < 4; i++) {
-				glTexCoord2fv ((GLfloat *) (tcThruster + i));
-				glVertex3fv ((GLfloat *) (vThruster + i));
-				}
-			glEnd ();
-			glEnable (GL_CULL_FACE);
-			}
-		}
+	for (h = 0; h < nThrusters; h++)
+		CreateLightTrail (ti.vPos [h], ti.vDir [h], ti.fSize, ti.fLength, bmpThruster [nStyle], &tcColor);
 	}
 else {
 	tTexCoord3f	tTexCoord2fl, tTexCoord2flStep;
@@ -1130,7 +1145,7 @@ else {
 			c [1].blue = 0.0f;
 			c [1].alpha = 0.9f;
 			}
-		G3StartInstanceMatrix(ti.vPos [h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
+		G3StartInstanceMatrix (ti.vPos [h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
 		for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 #if 1
 			if (!bTextured) {
@@ -1335,11 +1350,11 @@ int RenderWeaponCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOf
 								float fScale, int bSimple, int bViewerOffset, int bDepthSort)
 {
 if (!SHOW_OBJ_FX)
-	return;
+	return 0;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
-	return;
+	return 0;
 #endif
 if ((objP->info.nType == OBJ_WEAPON) && (objP->info.renderType == RT_POLYOBJ))
 	RenderLaserCorona (objP, colorP, alpha, fScale);
@@ -1375,7 +1390,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	color.blue *= color.blue;
 #endif
 	if (bDepthSort)
-		return RIAddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 1, 3);
+		return TIAddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 1, 3);
 	bStencil = StencilOff ();
 	glDepthMask (0);
 	glBlendFunc (GL_ONE, GL_ONE);
@@ -1392,7 +1407,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		glDepthMask (0);
 		glEnable (GL_TEXTURE_2D);
 		if (OglBindBmTex (bmpCorona, 1, -1))
-			return;
+			return 0;
 		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 		G3StartInstanceMatrix (vPos, objP->info.position.mOrient);
 		TransformHitboxf (objP, verts, 0);
@@ -1427,7 +1442,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	glDepthMask (1);
 	StencilOn (bStencil);
 	}
-return -1;
+return 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -1695,21 +1710,6 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			r = WeaponBlobSize (objP->info.nId) / 1.5f;
 			l = 4 * r;
 			}
-
-		vOffsf = objP->info.position.mOrient [FVEC].ToFloat();
-		vTrailVerts [0] = objP->info.position.vPos.ToFloat();
-		vTrailVerts [0] += vOffsf * l;// * -0.75f);
-		vTrailVerts [2] = vTrailVerts [0] + vOffsf * (-100);
-		G3TransformPoint(vTrailVerts [0], vTrailVerts [0], 0);
-		G3TransformPoint(vTrailVerts [2], vTrailVerts [2], 0);
-		vOffsf = vTrailVerts [2] - vTrailVerts [0];
-		vOffsf = vOffsf * (r * 0.04f);
-		vNormf = fVector::Normal(vTrailVerts [0], vTrailVerts [2], vEye);
-		vNormf = vNormf * (r * 4);
-		vTrailVerts [1] = vTrailVerts [0] + vNormf;
-		vTrailVerts [1] += vOffsf;
-		vTrailVerts [3] = vTrailVerts [0] - vNormf;
-		vTrailVerts [3] += vOffsf;
 		bmP = bAdditive ? bmpGlare : bmpCorona;
 		memcpy (&trailColor, colorP, 3 * sizeof (float));
 		if (bAdditive) {
@@ -1718,8 +1718,27 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			trailColor.green *= fScale;
 			trailColor.blue *= fScale;
 			}
+#if 1
+		CreateLightTrail (objP->info.position.vPos, objP->info.position.mOrient [FVEC], l, 100.0f, bmP, &trailColor);
+		if (bDepthSort)
+			return;
+#else
+		vOffsf = objP->info.position.mOrient [FVEC].ToFloat();
+		vTrailVerts [0] = objP->info.position.vPos.ToFloat();
+		vTrailVerts [0] += vOffsf * l;
+		vTrailVerts [2] = vTrailVerts [0] - vOffsf * 100;
+		G3TransformPoint (vTrailVerts [0], vTrailVerts [0], 0);
+		G3TransformPoint (vTrailVerts [2], vTrailVerts [2], 0);
+		vOffsf = vTrailVerts [2] - vTrailVerts [0];
+		vOffsf = vOffsf * (r * 0.04f);
+		vNormf = fVector::Normal (vTrailVerts [0], vTrailVerts [2], vEye);
+		vNormf = vNormf * (r * 4);
+		vTrailVerts [1] = vTrailVerts [0] + vNormf;
+		vTrailVerts [1] += vOffsf;
+		vTrailVerts [3] = vTrailVerts [0] - vNormf;
+		vTrailVerts [3] += vOffsf;
 		if (bDepthSort) {
-			nTrailItem = RIAddPoly (NULL, NULL, bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
+			nTrailItem = TIAddPoly (NULL, NULL, bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
 			}
 		else {
 			glEnable (GL_BLEND);
@@ -1764,15 +1783,14 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			glEnable (GL_CULL_FACE);
 			glDepthMask (1);
 			}
+#endif
 		}
 	RenderShockwave (objP);
 	}
-nCoronaItem = 
-	(((objP->info.renderType != RT_POLYOBJ) || (objP->info.nId == FUSION_ID)) ?
-	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2.0f + X2F (d_rand() % (F1_0 / 8)), 1, 0, 1) :
+if ((objP->info.renderType != RT_POLYOBJ) || (objP->info.nId == FUSION_ID))
+	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2.0f + X2F (d_rand() % (F1_0 / 8)), 1, 0, 1);
+else
 	RenderWeaponCorona (objP, colorP, 0.75f, 0, bGatling ? 1.0f : 2.0f, 0, 0, 0);
-if (nTrailItem >= 0)
-	RISetParent (nTrailItem, nCoronaItem);
 }
 
 // -----------------------------------------------------------------------------

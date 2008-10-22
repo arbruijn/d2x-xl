@@ -1409,7 +1409,7 @@ RLECacheClose ();
 BMFreeExtraObjBitmaps ();
 BMFreeExtraModels ();
 PrintLog ("unloading render buffers\n");
-FreeRenderItems ();
+FreeTranspItems ();
 PrintLog ("unloading string pool\n");
 FreeStringPool ();
 PrintLog ("unloading level messages\n");

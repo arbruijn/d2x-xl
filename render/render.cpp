@@ -1260,10 +1260,10 @@ if (bLightnings) {
 	//PrintLog ("RenderLightnings\n");
 	RenderLightnings ();
 	}
-//PrintLog ("RenderItems\n");
+//PrintLog ("RenderTranspItems\n");
 if (bLightnings)
 	SEM_LEAVE (SEM_LIGHTNINGS)
-RenderItems ();
+RenderTranspItems ();
 #if 1
 if (bSmoke)
 	SEM_LEAVE (SEM_SMOKE)
@@ -2038,7 +2038,7 @@ gameStates.ogl.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.
 gameStates.ogl.bScaleLight = 0;
 #endif
 gameStates.render.bUseCameras = USE_CAMERAS;
-renderItems.nItems = 0;
+transpItems.nItems = 0;
 PROF_END(ptAux);
 return !gameStates.render.cameras.bActive && (gameData.objs.viewerP->info.nType != OBJ_ROBOT);
 }
@@ -2186,8 +2186,8 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
 			meshBuilder.BuildVBOs ();
 
-		//PrintLog  ("InitRenderItemBuffer\n");
-		InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
+		//PrintLog  ("InitTranspItemBuffer\n");
+		InitTranspItemBuffer (gameData.render.zMin, gameData.render.zMax);
 		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && gameData.render.lights.dynamic.headlights.nLights && 
 												  !(gameStates.render.bFullBright || gameStates.render.automap.bDisplay);
 		}

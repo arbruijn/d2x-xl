@@ -400,9 +400,9 @@ if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 		color.blue = 1;
 	color.alpha = fAlpha;
 	if (bmP->bmProps.w > bmP->bmProps.h)
-		RIAddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
+		TIAddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	else
-		RIAddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
+		TIAddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	}
 else {
 	if (bmP->bmProps.w > bmP->bmProps.h)
@@ -680,7 +680,7 @@ if (gameStates.render.bBuildModels)
 else {
 	xLight = CalcObjectLight (objP, xEngineGlow);
 	if (bCloaked && bDepthSort && (gameStates.render.nShadowPass != 2)) {
-		RIAddObject (objP);
+		TIAddObject (objP);
 		return 1;
 		}
 	if (DrawHiresObject (objP, xLight, xEngineGlow))

@@ -27,7 +27,7 @@ void CalcShipThrusterPos (tObject *objP, vmsVector *vPos);
 int CalcThrusterPos (tObject *objP, tThrusterInfo *tiP, int bAfterburnerBlob);
 void RenderThrusterFlames (tObject *objP);
 void RenderLaserCorona (tObject *objP, tRgbaColorf *colorP, float alpha, float fScale);
-void RenderWeaponCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset, int bDepthSort);
+int RenderWeaponCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset, int bDepthSort);
 void RenderShockwave (tObject *objP);
 void RenderTracers (tObject *objP);
 void RenderLightTrail (tObject *objP);

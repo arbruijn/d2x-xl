@@ -2961,7 +2961,7 @@ if (gameStates.render.bShowFrameRate) {
 		sprintf (szItem, "Faces: %d ", gameData.render.nTotalFaces);
 		}
 	else if (gameStates.render.bShowFrameRate == 3) {
-		sprintf (szItem, "Transp: %d ", renderItems.nItems);
+		sprintf (szItem, "Transp: %d ", transpItems.nItems);
 		}
 	else if (gameStates.render.bShowFrameRate == 4) {
 		sprintf (szItem, "Objects: %d/%d ", gameData.render.nTotalObjects, gameData.render.nTotalSprites);

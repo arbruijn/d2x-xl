@@ -167,7 +167,7 @@ if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) {
 			if (sparkP->nFrame > 31)
 				sparkP->tRender = 0;
 			else
-				RIAddSpark (sparkP->vPos, (char) bFuel, sparkP->xSize, (char) sparkP->nFrame);
+				TIAddSpark (sparkP->vPos, (char) bFuel, sparkP->xSize, (char) sparkP->nFrame);
 			}
 		}
 	}
