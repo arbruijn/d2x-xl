@@ -1331,8 +1331,8 @@ else
 
 // -----------------------------------------------------------------------------
 
-void RenderWeaponCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset,
-								 float fScale, int bSimple, int bViewerOffset, int bDepthSort)
+int RenderWeaponCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset,
+								float fScale, int bSimple, int bViewerOffset, int bDepthSort)
 {
 if (!SHOW_OBJ_FX)
 	return;
@@ -1374,10 +1374,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	color.green *= color.green;
 	color.blue *= color.blue;
 #endif
-	if (bDepthSort) {
-		RIAddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 1, 3);
-		return;
-		}
+	if (bDepthSort)
+		return RIAddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 1, 3);
 	bStencil = StencilOff ();
 	glDepthMask (0);
 	glBlendFunc (GL_ONE, GL_ONE);
@@ -1429,6 +1427,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	glDepthMask (1);
 	StencilOn (bStencil);
 	}
+return -1;
 }
 
 // -----------------------------------------------------------------------------
@@ -1642,7 +1641,7 @@ static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,
 void RenderLightTrail (tObject *objP)
 {
 	tRgbaColorf		color, *colorP;
-	int				bGatling = 0, bAdditive = 1; //gameOpts->render.coronas.bAdditiveObjs;
+	int				nTrailItem = -1, nCoronaItem = -1, bGatling = 0, bAdditive = 1; //gameOpts->render.coronas.bAdditiveObjs;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -1720,7 +1719,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			trailColor.blue *= fScale;
 			}
 		if (bDepthSort) {
-			RIAddPoly (NULL, NULL, bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
+			nTrailItem = RIAddPoly (NULL, NULL, bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
 			}
 		else {
 			glEnable (GL_BLEND);
@@ -1768,11 +1767,12 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		}
 	RenderShockwave (objP);
 	}
-if ((objP->info.renderType != RT_POLYOBJ) || (objP->info.nId == FUSION_ID))
-	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2.0f + X2F (d_rand() % (F1_0 / 8)), 1, 0, 1);
-
-else
+nCoronaItem = 
+	(((objP->info.renderType != RT_POLYOBJ) || (objP->info.nId == FUSION_ID)) ?
+	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2.0f + X2F (d_rand() % (F1_0 / 8)), 1, 0, 1) :
 	RenderWeaponCorona (objP, colorP, 0.75f, 0, bGatling ? 1.0f : 2.0f, 0, 0, 0);
+if (nTrailItem >= 0)
+	RISetParent (nTrailItem, nCoronaItem);
 }
 
 // -----------------------------------------------------------------------------
