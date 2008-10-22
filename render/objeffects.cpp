@@ -972,8 +972,9 @@ void CreateLightTrail (vmsVector& vPos, vmsVector &vDir, float fSize, float fLen
 	static tTexCoord2f	tcTrail [3] = {{{0,0}},{{1,1}},{{1,0}}};
 	static fVector	vEye = fVector::ZERO;
 
-	fVector	vPosf, vDirf, vNormf, vTrail [3], vCorona [4], fVecf;
+	fVector	v, vPosf, vDirf, vNormf, vTrail [3], vCorona [4], fVecf;
 	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCorona;
+	int		i;
 
 fVecf = vDir.ToFloat();
 vPosf = vPos.ToFloat();
