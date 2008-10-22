@@ -473,7 +473,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 		//InitBossData (extraGameInfo [0].nBossCount - 1, OBJ_IDX (objP));
 		if (BOSS_COUNT > 1) {
 #if TRACE
-			con_printf (1, "Warning: Two or more bosses including %i and %i\n", i, nBossObj);
+			con_printf (1, "Warning: Two or more bosses including %i and %i\n", OBJ_IDX (objP), nBossObj);
 #endif
 			}			
 		else

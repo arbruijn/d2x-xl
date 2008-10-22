@@ -1148,9 +1148,8 @@ if (LoadTranspItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftBlend)
 		LoadGlareShader (item->fSoftRad);
-	else if (transpItems.bDepthMask != 1)// item->bDepthMask)
-		glDepthMask (transpItems.bDepthMask = 1); //item->bDepthMask);
-	glEnable (GL_DEPTH_TEST);
+	else if (transpItems.bDepthMask)
+		glDepthMask (transpItems.bDepthMask = 0); 
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	fPos [X] -= w;
@@ -1168,7 +1167,7 @@ if (LoadTranspItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 	glEnd ();
 	if (item->bAdditive)
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//if (bSoftBlend)
+	if (bSoftBlend)
 		glEnable (GL_DEPTH_TEST);
 	}
 }

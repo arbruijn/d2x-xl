@@ -1719,11 +1719,6 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			trailColor.green *= fScale;
 			trailColor.blue *= fScale;
 			}
-#if 1
-		CreateLightTrail (objP->info.position.vPos, objP->info.position.mOrient [FVEC], l, 100.0f, bmP, &trailColor);
-		if (bDepthSort)
-			return;
-#else
 		vOffsf = objP->info.position.mOrient [FVEC].ToFloat();
 		vTrailVerts [0] = objP->info.position.vPos.ToFloat();
 		vTrailVerts [0] += vOffsf * l;
@@ -1784,7 +1779,6 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			glEnable (GL_CULL_FACE);
 			glDepthMask (1);
 			}
-#endif
 		}
 	RenderShockwave (objP);
 	}
