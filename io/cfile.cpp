@@ -36,6 +36,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "console.h"
 #include "findfile.h"
 
+#define SORT_HOGFILES 1
+
 int nCFileError = 0;
 
 tGameHogFiles gameHogFiles;
@@ -171,7 +173,7 @@ for (;;) {
 		Error ("HOGFILE is limited to %d files.\n",  MAX_HOGFILES);
 		}
 	i = (int) fread (hogFiles [*nFiles].name, 13, 1, fp);
-	if (i != 1) 	{		//eof here is ok
+	if (i != 1)	{		//eof here is ok
 		fclose (fp);
 		return 1;
 		}
@@ -192,18 +194,54 @@ for (;;) {
 
 // ----------------------------------------------------------------------------
 
+#if SORT_HOGFILES
+
+void QSortHogFiles (tHogFile *hogFiles, int left, int right)
+{
+	int		l = left,
+				r = right;
+	tHogFile	m = hogFiles [(l + r) / 2];
+
+do {
+	while (stricmp (hogFiles [l].name, m.name) < 0)
+		l++;
+	while (stricmp (hogFiles [r].name, m.name) > 0)
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			tHogFile	h = hogFiles [l];
+			hogFiles [l] = hogFiles [r];
+			hogFiles [r] = h;
+			}
+		l++;
+		r--;
+		}
+	} while (l <= r);
+if (l < right)
+	QSortHogFiles (hogFiles, l, right);
+if (r > left)
+	QSortHogFiles (hogFiles, left, r);
+}
+
+#endif
+
+// ----------------------------------------------------------------------------
+
 int CFUseHogFile (tHogFileList *hogP, const char *name, const char *folder)
 {
 if (hogP->bInitialized)
 	return 1;
 if (name) {
 	strcpy (hogP->szName, name);
-	hogP->bInitialized = 
-		*name && 
-		CFInitHogFile (hogP->szName, folder, hogP->files, &hogP->nFiles);
-	if (* (hogP->szName))
+	hogP->bInitialized = *name && CFInitHogFile (hogP->szName, folder, hogP->files, &hogP->nFiles);
+	if (*(hogP->szName))
 		PrintLog ("   found hogP file '%s'\n", hogP->szName);
-	return hogP->bInitialized && (hogP->nFiles > 0);
+	if (hogP->bInitialized && (hogP->nFiles > 0)) {
+#if SORT_HOGFILES
+		QSortHogFiles (hogP->files, 0, hogP->nFiles - 1);
+#endif
+		return 1;
+		}
 	} 
 return 0;
 }
@@ -259,6 +297,9 @@ Assert (gameHogFiles.D2HogFiles.bInitialized == 0);
 if (CFInitHogFile (pszHogName, pszFolder, gameHogFiles.D2HogFiles.files, &gameHogFiles.D2HogFiles.nFiles)) {
 	strcpy (gameHogFiles.D2HogFiles.szName, pszHogName);
 	gameHogFiles.D2HogFiles.bInitialized = 1;
+#if SORT_HOGFILES
+	QSortHogFiles (gameHogFiles.D2HogFiles.files, 0, gameHogFiles.D2HogFiles.nFiles - 1);
+#endif
 	CFUseD2XHogFile ("d2x.hog");
 	CFUseXLHogFile ("d2x-xl.hog");
 	CFUseExtraHogFile ("extra.hog");
@@ -300,31 +341,59 @@ return size;
 }
 
 // ----------------------------------------------------------------------------
+
+#if SORT_HOGFILES
+
+tHogFile *BFindHogFile (tHogFile *hogFiles, int nFiles, const char *pszFile)
+{
+	int	i, m,
+			l = 0,
+			r = nFiles - 1;
+
+do {
+	m = (l + r) / 2;
+	i = stricmp (hogFiles [m].name, pszFile);
+	if (i < 0)
+		l = m + 1;
+	else if (i > 0)
+		r = m - 1;
+	else
+		return hogFiles + m;
+	} while (l <= r);
+return NULL;
+}
+
+#endif
+
+// ----------------------------------------------------------------------------
 /*
  * return handle for file called "name", embedded in one of the hogfiles
  */
 
-FILE *CFFindHogFile (tHogFileList *hog, const char *folder, const char *name, int *length)
+FILE *CFFindHogFile (tHogFileList *hogP, const char *folder, const char *name, int *length)
 {
 	FILE		*fp;
 	int		i;
 	tHogFile	*phf;
-	char		*hogFilename = hog->szName;
+	char		*hogFilename = hogP->szName;
   
-if (! (hog->bInitialized && *hogFilename))
+if (! (hogP->bInitialized && *hogFilename))
 	return NULL;
 if (*folder) {
 	char fn [FILENAME_LEN];
 
-	sprintf (fn, "%s/%s", folder, hog->szName);
+	sprintf (fn, "%s/%s", folder, hogP->szName);
 	hogFilename = fn;
 	}
-
-for (i = hog->nFiles, phf = hog->files; i; i--, phf++) {
+#if SORT_HOGFILES
+if ((phf = BFindHogFile (hogP->files, hogP->nFiles, name))) {
+#else
+for (i = hogP->nFiles, phf = hogP->files; i; i--, phf++) {
 	if (stricmp (phf->name, name))
 		continue;
-	if (! (fp = CFGetFileHandle (hogFilename, "", "rb")))
-		break;
+#endif
+	if (!(fp = CFGetFileHandle (hogFilename, "", "rb")))
+		return NULL;
 	fseek (fp, phf->offset, SEEK_SET);
 	if (length)
 		*length = phf->length;
@@ -395,7 +464,7 @@ if (*pfn == '\x01')
 	pfn++;
 else {
 	bNoHOG = (*pfn == '\x02');
-	if ((fp = CFGetFileHandle (pfn + bNoHOG, folder, "rb"))) { // Check for non-hog file first...
+	if ((fp = CFGetFileHandle (pfn + bNoHOG, folder, "rb"))) { // Check for non-hogP file first...
 		fclose (fp);
 		return 1;
 		}
@@ -404,7 +473,7 @@ else {
 	}
 if ((fp = CFFindLibFile (pfn, &length, bUseD1Hog))) {
 	fclose (fp);
-	return 2;		// file found in hog
+	return 2;		// file found in hogP
 	}
 return 0;		// Couldn't find it.
 }
@@ -461,12 +530,12 @@ cfP->file = NULL;
 if (! (filename && *filename))
 	return 0;
 if ((*filename != '\x01') /*&& !bUseD1Hog*/) {
-	fp = CFGetFileHandle (filename, folder, mode);		// Check for non-hog file first...
+	fp = CFGetFileHandle (filename, folder, mode);		// Check for non-hogP file first...
 	if (!fp && 
 		 ((pszFileExt = strstr (filename, ".rdl")) || (pszFileExt = strstr (filename, ".rl2"))) &&
 		 (pszHogExt = strchr (gameHogFiles.szAltHogFile, '.')) &&
 		 !stricmp (pszFileExt, pszHogExt))
-		fp = CFGetFileHandle (gameHogFiles.szAltHogFile, folder, mode);		// Check for non-hog file first...
+		fp = CFGetFileHandle (gameHogFiles.szAltHogFile, folder, mode);		// Check for non-hogP file first...
 	}
 else {
 	fp = NULL;		//don't look in dir, only in tHogFile
@@ -476,7 +545,7 @@ else {
 if (!fp) {
 	if ((fp = CFFindLibFile (filename, &length, bUseD1Hog)))
 		if (stricmp (mode, "rb")) {
-			Error ("Cannot read hog file\n (wrong file io mode).\n");
+			Error ("Cannot read hogP file\n (wrong file io mode).\n");
 			return 0;
 			}
 	}

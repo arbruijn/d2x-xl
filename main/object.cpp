@@ -647,10 +647,12 @@ objP->info.nPrevInSeg = -1;
 gameData.segs.objects [nSegment] = nObject;
 if (objP->info.nNextInSeg != -1)
 	OBJECTS [objP->info.nNextInSeg].info.nPrevInSeg = nObject;
+#if DBG
 if (OBJECTS [0].info.nNextInSeg == 0)
 	OBJECTS [0].info.nNextInSeg = -1;
 if (OBJECTS [0].info.nPrevInSeg == 0)
 	OBJECTS [0].info.nPrevInSeg = -1;
+#endif
 }
 
 //------------------------------------------------------------------------------
