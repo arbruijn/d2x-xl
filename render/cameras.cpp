@@ -280,9 +280,11 @@ for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP+
 #endif
 	}
 FORALL_OBJS (objP, i) {
-	r = j = gameData.trigs.firstObjTrigger [i];
+	r = j = gameData.trigs.firstObjTrigger [OBJ_IDX (objP)];
+#if DBG
 	if (j >= 0)
 		j = j;
+#endif
 	for (h = sizeofa (gameData.trigs.objTriggerRefs); (j >= 0) && h; h--) {
 		triggerP = gameData.trigs.objTriggers + j;
 		if (triggerP->nType == TT_CAMERA) {

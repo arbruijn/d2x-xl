@@ -946,6 +946,10 @@ else if (nType != OBJ_REACTOR) {
 		LinkObjToList (gameData.objs.lists.lights, objP, 1);
 	else
 		objP->links [1].prev = objP->links [1].next = NULL;
+#ifdef _DEBUG
+	if (nType == OBJ_CAMBOT)
+		nType = nType;
+#endif
 	LinkObjToList (gameData.objs.lists.statics, objP, 2);
 	return;
 	}
