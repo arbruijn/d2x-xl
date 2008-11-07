@@ -126,4 +126,11 @@ return IsTransparentTexture (gameData.segs.segments [propsP->segNum].sides [prop
 
 //------------------------------------------------------------------------------
 
+static inline int IsWaterTexture (short nTexture)
+{
+return ((nTexture >= 399) && (nTexture <= 403));
+}
+
+//------------------------------------------------------------------------------
+
 #endif // _RENDERLIB_H

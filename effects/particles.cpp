@@ -747,7 +747,8 @@ if (iBuffer) {
 	bufferBrightness = brightness;
 	glEnable (GL_BLEND);
 	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthFunc (GL_LESS);
+	glDepthFunc (GL_LEQUAL);
+	glDepthMask (0);
 	if (gameStates.ogl.bShadersOk) {
 		if (InitParticleBuffer (bLightmaps)) { //gameStates.render.bVertexArrays) {
 #if 1

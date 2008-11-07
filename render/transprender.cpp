@@ -43,7 +43,7 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 
 #define TI_SPLIT_POLYS 0
 #define TI_POLY_OFFSET 0
-#define TI_POLY_CENTER 1
+#define TI_POLY_CENTER 0
 
 #if DBG
 static int nDbgPoly = -1, nDbgItem = -1;
@@ -303,9 +303,7 @@ int TIAddPoly (grsFace *faceP, grsTriangle *triP, grsBitmap *bmP,
 	tTranspPoly	item;
 	int			i;
 	float			z, zMinf, zMaxf, s = GrAlpha ();
-#if TI_POLY_CENTER
 	fix			zCenter;
-#endif
 
 item.faceP = faceP;
 item.triP = triP;
@@ -352,14 +350,11 @@ else
 	{
 #if TI_POLY_CENTER
 	zCenter = 0;
+#endif
 	zMinf = 1e30f;
 	zMaxf = -1e30f;
-#endif
 	for (i = 0; i < item.nVertices; i++) {
 		z = item.vertices [i][Z];
-#if TI_POLY_CENTER
-		zCenter += F2X (z);
-#endif
 		if (zMinf > z)
 			zMinf = z;
 		if (zMaxf < z)
@@ -368,15 +363,15 @@ else
 	if ((F2X (zMaxf) < transpItems.zMin) || (F2X (zMinf) > transpItems.zMax))
 		return -1;
 #if TI_POLY_CENTER
-	zCenter /= item.nVertices;
+	zCenter = F2X ((zMinf + zMaxf) / 2);
+#else
+	zCenter = F2X (zMaxf);
+#endif
 	if (zCenter < transpItems.zMin)
 		return AddTranspItem (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), transpItems.zMin, transpItems.zMin);
 	if (zCenter > transpItems.zMax)
 		return AddTranspItem (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), transpItems.zMax, transpItems.zMax);
 	return AddTranspItem (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), zCenter, zCenter);
-#else
-	return AddTranspItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), F2X (zMin), F2X (zMin));
-#endif
 	}
 }
 
@@ -877,8 +872,13 @@ else
 	bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
 //transpItems.bUseLightmaps = 0;
 #endif
+#if 1
+if (transpItems.bDepthMask)
+	glDepthMask (transpItems.bDepthMask = 0);
+#else
 if (transpItems.bDepthMask != item->bDepthMask)
 	glDepthMask (transpItems.bDepthMask = item->bDepthMask);
+#endif
 bmTop = faceP ? BmOverride (faceP->bmTop, -1) : NULL;
 if (bmTop && !(bmTop->bmProps.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
 	bmBot = bmTop;
@@ -1330,10 +1330,9 @@ else {
 		transpItems.bTextured = 1;
 		//InitParticleBuffer (transpItems.bLightmaps);
 		}
-	if (!bSoftSmoke && transpItems.bDepthMask)
-		glDepthMask (transpItems.bDepthMask = 0);
 	RenderParticle (item->particle, item->fBrightness);
 	TIResetBitmaps ();
+	transpItems.bDepthMask = 1;
 	}
 }
 
@@ -1533,7 +1532,7 @@ pl = transpItems.itemListP + ITEM_BUFFER_SIZE - 1;
 transpItems.bHaveParticles = LoadParticleImages ();
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glDepthFunc (GL_LESS);
+glDepthFunc (GL_LEQUAL);
 glDepthMask (0);
 glEnable (GL_CULL_FACE);
 BeginRenderSmoke (-1, 1);

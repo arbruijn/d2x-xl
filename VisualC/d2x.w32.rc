@@ -19,8 +19,8 @@
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,13,119,0
- PRODUCTVERSION 1,13,119,0
+ FILEVERSION 1,13,121,0
+ PRODUCTVERSION 1,13,121,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -38,14 +38,14 @@ BEGIN
             VALUE "Comments", "D2X-XL - Descent 2 OpenGL for MS Windows\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "D2X-XL - Descent 2 OpenGL for MS Windows\0"
-            VALUE "FileVersion", "1, 13, 119, 0\0"
+            VALUE "FileVersion", "1, 13, 121, 0\0"
             VALUE "InternalName", "D2X-XL\0"
             VALUE "LegalCopyright", "\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "d2x-xl.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "D2X-XL\0"
-            VALUE "ProductVersion", "1, 13, 119, 0\0"
+            VALUE "ProductVersion", "1, 13, 121, 0\0"
             VALUE "SpecialBuild", "\0"
         END
     END

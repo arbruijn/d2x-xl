@@ -639,8 +639,7 @@ int IsTransparentTexture (short nTexture)
 return !gameStates.app.bD1Mission &&
 		 ((nTexture == 378) ||
 		  (nTexture == 353) ||
-		  (nTexture ==
-0) ||
+		  (nTexture == 420) ||
 		  (nTexture == 432) ||
 		  ((nTexture >= 399) && (nTexture <= 409)));
 }

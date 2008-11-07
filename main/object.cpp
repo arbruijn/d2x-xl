@@ -2551,15 +2551,19 @@ psi->nSpeed = i;
 #endif
 if (!(nParts = psi->nParts))
 	nParts = 5;
-psi->nParts = 90 + (nParts * psi->nLife * 3 * (1 << nSpeed)) / (11 - nParts);
-if (psi->nSide > 0) {
-	float faceSize = FaceSize (objP->info.nSegment, psi->nSide - 1);
-	psi->nParts = (int) (psi->nParts * ((faceSize < 1) ? sqrt (faceSize) : faceSize));
-	}
 psi->nDrift = psi->nDrift ? nSpeed * psi->nDrift * 75 : psi->nSpeed * 50;
 nSize = psi->nSize [0] ? psi->nSize [0] : 5;
 psi->nSize [0] = nSize + 1;
 psi->nSize [1] = (nSize * (nSize + 1)) / 2;
+psi->nParts = 90 + (nParts * psi->nLife * 3 * (1 << nSpeed)) / (11 - nParts);
+if (psi->nSide > 0) {
+	float faceSize = FaceSize (objP->info.nSegment, psi->nSide - 1);
+	psi->nParts = (int) (psi->nParts * ((faceSize < 1) ? sqrt (faceSize) : faceSize));
+	if (IsWaterTexture (gameData.segs.segments [objP->info.nSegment].sides [psi->nSide - 1].nBaseTex)) {
+		psi->nParts *= 4;
+		//psi->nSize [1] /= 2;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

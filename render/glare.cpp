@@ -845,7 +845,8 @@ const char *glareFS = {
 	"float fragZ = HOM (gl_FragCoord.z);\r\n" \
 	"float dz = clamp (fragZ - texZ, 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
-	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * dz;\r\n" \
+	"vec4 texColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
+	"gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);\r\n" \
 	"}\r\n"
 	};
 
