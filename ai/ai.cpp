@@ -54,11 +54,11 @@ gameData.ai.nBelievedPlayerSeg = gameData.ai.cloakInfo [0].nLastSeg;
 int AddAwarenessEvent (tObject *objP, int nType)
 {
 	// If tPlayer cloaked and hit a robot, then increase awareness
-if (nType >= PA_WEAPON_WALL_COLLISION)
+if (nType >= WEAPON_WALL_COLLISION)
 	AIDoCloakStuff ();
 
 if (gameData.ai.nAwarenessEvents < MAX_AWARENESS_EVENTS) {
-	if ((nType == PA_WEAPON_WALL_COLLISION) || (nType == PA_WEAPON_ROBOT_COLLISION))
+	if ((nType == WEAPON_WALL_COLLISION) || (nType == WEAPON_ROBOT_COLLISION))
 		if (objP->info.nId == VULCAN_ID)
 			if (d_rand () > 3276)
 				return 0;       // For vulcan cannon, only about 1/10 actually cause awareness

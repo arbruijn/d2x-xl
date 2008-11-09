@@ -426,6 +426,7 @@ void ai_turn_towards_vector(vmsVector *vGoal, tObject *objP, fix rate)
 			new_fVec = *vGoal;		//	if degenerate vector, go right to goal
 		}
 	}
+objP->info.position.mOrient = vmsMatrix::CreateFR(new_fVec, objP->info.position.mOrient[RVEC]);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1068,9 +1069,7 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 		}
 	}
 
-	piP->velocity[X] += vEvade[X];
-	piP->velocity[Y] += vEvade[Y];
-	piP->velocity[Z] += vEvade[Z];
+	piP->velocity += vEvade;
 
 	speed = piP->velocity.Mag();
 	if (speed > botInfoP->xMaxSpeed[gameStates.app.nDifficultyLevel]) {
@@ -1856,7 +1855,10 @@ void DoD1AIFrame (tObject *objP)
 		aiP->SKIP_D1_AI_COUNT--;
 		return;
 	}
-
+#if DBG
+if (nObject == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 	//	Kind of a hack.  If a robotP is flinching, but it is time for it to fire, unflinch it.
 	//	Else, you can turn a big nasty robotP into a wimp by firing flares at it.
 	//	This also allows the playerP to see the cool flinch effect for mechs without unbalancing the game.
@@ -1895,8 +1897,6 @@ void DoD1AIFrame (tObject *objP)
 		gameData.ai.vBelievedPlayerPos = OBJPOS (gameData.objs.consoleP)->vPos;
 
 	dist_to_player = vmsVector::Dist(gameData.ai.vBelievedPlayerPos, objP->info.position.vPos);
-	if (dist_to_player < F1_0 * 40)
-		dist_to_player = dist_to_player;
 	//	If this robotP can fire, compute visibility from gun position.
 	//	Don't want to compute visibility twice, as it is expensive.  (So is call to calc_vGunPoint).
 	if ((ailP->nextPrimaryFire <= 0) && (dist_to_player < F1_0*200) && (botInfoP->nGuns) && !(botInfoP->attackType)) {
@@ -2092,10 +2092,10 @@ void DoD1AIFrame (tObject *objP)
 		#endif
 			if ((dist_to_player > F1_0*250) && (ailP->timeSinceProcessed <= F1_0*2))
 				return;
-			else if (!((aiP->behavior == D1_AIB_STATION) && (ailP->mode == D1_AIM_FOLLOW_PATH) && (aiP->nHideSegment != objP->info.nSegment))) {
+			else if ((aiP->behavior != D1_AIB_STATION) || (ailP->mode != D1_AIM_FOLLOW_PATH) || (aiP->nHideSegment == objP->info.nSegment)) {
 				if ((dist_to_player > F1_0*150) && (ailP->timeSinceProcessed <= F1_0))
 					return;
-				else if ((dist_to_player > F1_0*100) && (ailP->timeSinceProcessed <= F1_0/2))
+				if ((dist_to_player > F1_0*100) && (ailP->timeSinceProcessed <= F1_0/2))
 					return;
 			}
 		#if DBG

@@ -29,7 +29,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PA_RETURN_FIRE					4	 // Level of robot awareness while firing back after having been hit by player
 #define PA_WEAPON_ROBOT_COLLISION   5   // Level of robot awareness after tPlayer weapon hits nearby robot
 
-#define WEAPON_ROBOT_COLLISION (USE_D1_AI ? D1_PA_WEAPON_ROBOT_COLLISION : PA_WEAPON_ROBOT_COLLISION)
+#define WEAPON_WALL_COLLISION 	(USE_D1_AI ? D1_PA_WEAPON_WALL_COLLISION : PA_WEAPON_WALL_COLLISION)
+#define WEAPON_ROBOT_COLLISION 	(USE_D1_AI ? D1_PA_WEAPON_ROBOT_COLLISION : PA_WEAPON_ROBOT_COLLISION)
 
 //#define PAE_WEAPON_HIT_WALL         1   // weapon hit tWall, create tPlayer awareness
 //#define PAE_WEAPON_HIT_ROBOT        2   // weapon hit tWall, create tPlayer awareness

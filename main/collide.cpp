@@ -1781,7 +1781,7 @@ return 1;
 //--unused-- 	//	 (A fine edict, but in contradiction to the milestone: "Robots attack hostages.")
 //--unused-- 	hostage->info.xShields -= weaponP->info.xShields/2;
 //--unused--
-//--unused-- 	CreateAwarenessEvent (weaponP, PA_WEAPON_ROBOT_COLLISION);			// tObject "weapon" can attract attention to tPlayer
+//--unused-- 	CreateAwarenessEvent (weaponP, WEAPON_ROBOT_COLLISION);			// tObject "weapon" can attract attention to tPlayer
 //--unused--
 //--unused-- 	//PLAY_SOUND_3D (SOUND_HOSTAGE_KILLED, vHitPt, hostage->info.nSegment);
 //--unused-- 	DigiLinkSoundToPos (SOUND_HOSTAGE_KILLED, hostage->info.nSegment , 0, vHitPt, 0, F1_0);

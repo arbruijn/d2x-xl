@@ -93,22 +93,27 @@ void CloseDynLighting (void);
 
 //------------------------------------------------------------------------------
 
-static inline tObject *GuidedMslView (void)
+static inline bool GuidedMslView (tObject ** objPP)
 {
-	tObject *objP;
+	tObject *objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
 
-return (objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) && 
+*objPP = objP;
+return objP && 
 		 (objP->info.nType == OBJ_WEAPON) && 
 		 (objP->info.nId == GUIDEDMSL_ID) && 
-		 (objP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature) ?
-	objP : NULL;
+		 (objP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature);
 }
 
 //------------------------------------------------------------------------------
 
 static inline tObject *GuidedInMainView (void)
 {
-return gameOpts->render.cockpit.bGuidedInMainView ? GuidedMslView () : NULL;
+if (!gameOpts->render.cockpit.bGuidedInMainView)
+	return NULL;
+
+tObject *objP;
+
+return GuidedMslView (&objP) ? objP : NULL;
 }
 
 //------------------------------------------------------------------------------

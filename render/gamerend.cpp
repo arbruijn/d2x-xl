@@ -670,14 +670,61 @@ char DemoWBUType []={0, WBUMSL, WBUMSL, WBU_REAR, WBU_ESCORT, WBU_MARKER, WBUMSL
 char DemoRearCheck []={0, 0, 0, 1, 0, 0, 0};
 const char *DemoExtraMessage []={"PLAYER", "GUIDED", "MISSILE", "REAR", "GUIDE-BOT", "MARKER", "SHIP"};
 
-void ShowExtraViews ()
+//------------------------------------------------------------------------------
+
+int ShowMissileView (void)
+{
+	tObject	*objP = NULL;
+
+if (GuidedMslView (&objP)) {
+	if (gameOpts->render.cockpit.bGuidedInMainView)	{
+		gameStates.render.nRenderingType = 6 + (1<<4);
+		DoCockpitWindowView (1, gameData.objs.viewerP, 0, WBUMSL, "SHIP");
+		}
+	else {
+		gameStates.render.nRenderingType = 1+ (1<<4);
+		DoCockpitWindowView (1, objP, 0, WBU_GUIDED, "GUIDED");
+	   }
+	return 1;
+	}
+else {
+	if (objP) {		//used to be active
+		if (!gameOpts->render.cockpit.bGuidedInMainView)
+			DoCockpitWindowView (1, NULL, 0, WBU_STATIC, NULL);
+		gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP = NULL;
+		}
+	if (gameData.objs.missileViewerP && !gameStates.render.bExternalView) {		//do missile view
+		HUDMessage (0, "missile view");
+		static int mslViewerSig = -1;
+		if (mslViewerSig == -1)
+			mslViewerSig = gameData.objs.missileViewerP->info.nSignature;
+		if (gameOpts->render.cockpit.bMissileView &&
+			 (gameData.objs.missileViewerP->info.nType != OBJ_NONE) &&
+			 (gameData.objs.missileViewerP->info.nSignature == mslViewerSig)) {
+  			gameStates.render.nRenderingType = 2 + (1<<4);
+			DoCockpitWindowView (1, gameData.objs.missileViewerP, 0, WBUMSL, "MISSILE");
+			return 1;
+			}
+		else {
+			gameData.objs.missileViewerP = NULL;
+			mslViewerSig = -1;
+			gameStates.render.nRenderingType = 255;
+			DoCockpitWindowView (1, NULL, 0, WBU_STATIC, NULL);
+			}
+		}
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+void ShowExtraViews (void)
 {
 	int		bDidMissileView = 0;
 	int		saveNewDemoState = gameData.demo.nState;
-	tObject	*objP;
 	int		w;
 
-if (gameData.demo.nState==ND_STATE_PLAYBACK) {
+if (gameData.demo.nState == ND_STATE_PLAYBACK) {
    if (nDemoDoLeft) {
       if (nDemoDoLeft == 3)
 			DoCockpitWindowView (0, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
@@ -687,7 +734,7 @@ if (gameData.demo.nState==ND_STATE_PLAYBACK) {
    else
 		DoCockpitWindowView (0, NULL, 0, WBU_WEAPON, NULL);
 	if (nDemoDoRight) {
-      if (nDemoDoRight==3)
+      if (nDemoDoRight == 3)
 			DoCockpitWindowView (1, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
       else
 			DoCockpitWindowView (1, &demoRightExtra, DemoRearCheck [nDemoDoRight], DemoWBUType [nDemoDoRight], DemoExtraMessage [nDemoDoRight]);
@@ -698,41 +745,7 @@ if (gameData.demo.nState==ND_STATE_PLAYBACK) {
 	nDemoDoingLeft = nDemoDoingRight = 0;
    return;
    }
-if ((objP = GuidedMslView ())) {
-	if (gameOpts->render.cockpit.bGuidedInMainView)	{
-		gameStates.render.nRenderingType = 6+ (1<<4);
-		DoCockpitWindowView (1, gameData.objs.viewerP, 0, WBUMSL, "SHIP");
-		}
-	else {
-		gameStates.render.nRenderingType = 1+ (1<<4);
-		DoCockpitWindowView (1, objP, 0, WBU_GUIDED, "GUIDED");
-	   }
-	bDidMissileView = 1;
-	}
-else {
-	if (objP) {		//used to be active
-		if (!gameOpts->render.cockpit.bGuidedInMainView)
-			DoCockpitWindowView (1, NULL, 0, WBU_STATIC, NULL);
-		gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP = NULL;
-		}
-	if (gameData.objs.missileViewerP && !gameStates.render.bExternalView) {		//do missile view
-		static int mv_sig = gameData.objs.missileViewerP->info.nSignature;
-		if (/*!gameStates.app.bD1Mission && */ //allow in D1 levels
-				gameOpts->render.cockpit.bMissileView &&
-				(gameData.objs.missileViewerP->info.nType != OBJ_NONE) &&
-				(gameData.objs.missileViewerP->info.nSignature == mv_sig)) {
-  			gameStates.render.nRenderingType = 2 + (1<<4);
-			DoCockpitWindowView (1, gameData.objs.missileViewerP, 0, WBUMSL, "MISSILE");
-			bDidMissileView = 1;
-			}
-		else {
-			gameData.objs.missileViewerP = NULL;
-			mv_sig = -1;
-			gameStates.render.nRenderingType = 255;
-			DoCockpitWindowView (1, NULL, 0, WBU_STATIC, NULL);
-			}
-		}
-	}
+bDidMissileView = ShowMissileView ();
 for (w = 0; w < 2 - bDidMissileView; w++) {
 	//show special views if selected
 	switch (gameStates.render.cockpit.n3DView [w]) {
