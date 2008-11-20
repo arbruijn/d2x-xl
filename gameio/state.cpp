@@ -1401,7 +1401,7 @@ if ((cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH))) {
 	bm.bmProps.rowSize = bm.bmProps.w * bm.bmBPP;
 	bm.bmTexBuf = (ubyte *) D2_ALLOC (bm.bmProps.w * bm.bmProps.h * bm.bmBPP);
 	//glDisable (GL_TEXTURE_2D);
-	OglReadBuffer (GL_FRONT, 1);
+	OglSetReadBuffer (GL_FRONT, 1);
 	glReadPixels (x, y, bm.bmProps.w, bm.bmProps.h, GL_RGB, GL_UNSIGNED_BYTE, bm.bmTexBuf);
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
 	ShrinkTGA (&bm, bm.bmProps.w / THUMBNAIL_LW, bm.bmProps.h / THUMBNAIL_LH, 0);

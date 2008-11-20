@@ -755,6 +755,7 @@ typedef struct tOglStates {
 	int bDepthBlending;
 	int bUseDepthBlending;
 	int bHaveDepthBuffer;
+	int bHaveBlur;
 	int bGetTexLevelParam;
 	int nDrawBuffer;
 	int nStencil;
@@ -922,6 +923,7 @@ typedef struct tRenderStates {
 	int nRenderPass;
 	int nShadowPass;
 	int nShadowBlurPass;
+	int bBlurPass;
 	int bShadowMaps;
 	int bLoResShadows;
 	int bUseCameras;
@@ -1490,6 +1492,7 @@ typedef struct tOglData {
 	fVector3					depthScale;
 	struct {float x, y;}	screenScale;
 	tFrameBuffer			drawBuffer;
+	tFrameBuffer			glowBuffer;
 	int						nPerPixelLights [8];
 	float						lightRads [8];
 	fVector					lightPos [8];

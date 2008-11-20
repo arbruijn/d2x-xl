@@ -389,7 +389,7 @@ void OglStartFrame (int bFlat, int bResetColorBuf)
 	GLint nError = glGetError ();
 
 if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
-	OglDrawBuffer (GL_BACK, 1);
+	OglSetDrawBuffer (GL_BACK, 1);
 #if SHADOWS
 if (gameStates.render.nShadowPass) {
 #if GL_INFINITY
@@ -606,7 +606,7 @@ void OglEndFrame (void)
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
-	OglDrawBuffer (GL_BACK, 1);
+	OglSetDrawBuffer (GL_BACK, 1);
 if (gameStates.ogl.bShadersOk)
 	glUseProgramObject (0);
 #if 0
@@ -730,7 +730,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 	OglDoPalFx ();
 	OglFlushDrawBuffer ();
 	SDL_GL_SwapBuffers ();
-	OglDrawBuffer (GL_BACK, 1);
+	OglSetDrawBuffer (GL_BACK, 1);
 	if (gameStates.menus.nInMenu || bClear)
 		glClear (GL_COLOR_BUFFER_BIT);
 	}
@@ -781,7 +781,7 @@ OglCreateDrawBuffer ();
 CreateCameras ();
 InitSpheres ();
 BuildObjectModels ();
-OglDrawBuffer (GL_BACK, 1);
+OglSetDrawBuffer (GL_BACK, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -793,9 +793,9 @@ if ((gameStates.video.nLastScreenMode == gameStates.video.nScreenMode) &&
 	 (gameStates.app.bGameRunning || (gameStates.video.nScreenMode == SCREEN_GAME) || (gameStates.ogl.nDrawBuffer == GL_FRONT)))
 	return;
 if (gameStates.video.nScreenMode == SCREEN_GAME)
-	OglDrawBuffer (gameStates.ogl.nDrawBuffer = GL_BACK, 1);
+	OglSetDrawBuffer (gameStates.ogl.nDrawBuffer = GL_BACK, 1);
 else {
-	OglDrawBuffer (gameStates.ogl.nDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT), 1);
+	OglSetDrawBuffer (gameStates.ogl.nDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT), 1);
 	if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle)) {
 		glClearColor (0,0,0,0);
 		glClear (GL_COLOR_BUFFER_BIT);
@@ -902,7 +902,7 @@ if (bSemaphore)
 bSemaphore++;
 #	endif
 if (gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.hFBO) {
-	OglDrawBuffer (GL_BACK, 0);
+	OglSetDrawBuffer (GL_BACK, 0);
 	OglDestroyFBuffer (&gameData.render.ogl.drawBuffer);
 	gameStates.ogl.bDrawBufferActive = 0;
 	}
@@ -914,7 +914,7 @@ bSemaphore--;
 
 //------------------------------------------------------------------------------
 
-void OglDrawBuffer (int nBuffer, int bFBO)
+void OglSetDrawBuffer (int nBuffer, int bFBO)
 {
 #if 1
 	static int bSemaphore = 0;
@@ -955,7 +955,7 @@ bSemaphore--;
 
 //------------------------------------------------------------------------------
 
-void OglReadBuffer (int nBuffer, int bFBO)
+void OglSetReadBuffer (int nBuffer, int bFBO)
 {
 #if FBO_DRAW_BUFFER
 if (bFBO && (nBuffer == GL_BACK) && gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.hFBO) {
@@ -979,12 +979,16 @@ glReadBuffer (nBuffer);
 
 //------------------------------------------------------------------------------
 
-void OglFlushDrawBuffer (void)
+void OglFlushDrawBuffer (bool bAdditive)
 {
 #if FBO_DRAW_BUFFER
 if (OglHaveDrawBuffer ()) {
-	OglDrawBuffer (GL_BACK, 0);
+	OglSetDrawBuffer (GL_BACK, 0);
 	glActiveTexture (GL_TEXTURE0);
+	if (bAdditive) {
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_ONE, GL_ONE);
+		}
 	glEnable (GL_TEXTURE_2D);
 	glBindTexture (GL_TEXTURE_2D, gameData.render.ogl.drawBuffer.hRenderBuffer);
 	glColor3f (1, 1, 1);
@@ -998,7 +1002,7 @@ if (OglHaveDrawBuffer ()) {
 	glTexCoord2f (1, 0);
 	glVertex2f (1, 0);
 	glEnd ();
-	OglDrawBuffer (GL_BACK, 1);
+	OglSetDrawBuffer (GL_BACK, 1);
 	}
 #endif
 }

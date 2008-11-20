@@ -331,6 +331,10 @@ class CVClipInfo {
 		inline sbyte& CurFrame () { return m_info.nCurFrame; }
 };
 
+#define SMOKE_TYPE_SMOKE	0
+#define SMOKE_TYPE_SPRAY	1
+#define SMOKE_TYPE_BUBBLES	2
+
 typedef struct tSmokeInfo {
 public:
 	int			nLife;
@@ -341,6 +345,7 @@ public:
 	int			nBrightness;
 	tRgbaColorb	color;
 	char			nSide;
+	char			nType;
 } tSmokeInfo;
 
 class CSmokeInfo {

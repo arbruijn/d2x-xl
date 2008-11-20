@@ -1,15 +1,4 @@
-/*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
-*/
+// Copyright (c) Dietfrid Mali
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
@@ -111,92 +100,92 @@ return gameStates.ogl.hDepthBuffer;
 void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float dx, float dy, fMatrix *r)
 {
 	fVector	v, h, vdx, vdy;
-	float		d = vCenter->SqrMag();
+	float		d = vCenter->SqrMag ();
 	int		i;
 
 if (!vEye) {
 	vEye = &h;
-	//fVector::Normalize(vEye, vCenter);
-	*vEye = *vCenter; fVector::Normalize(*vEye);
+	//fVector::Normalize (vEye, vCenter);
+	*vEye = *vCenter; fVector::Normalize (*vEye);
 	}
-v[X] = v[Z] = 0;
-v[Y] = (*vCenter)[Y] ? d / (*vCenter)[Y] : 1;
+v [X] = v [Z] = 0;
+v [Y] = (*vCenter) [Y] ? d / (*vCenter) [Y] : 1;
 v -= *vCenter;
-fVector::Normalize(v);
-vdx = fVector::Cross(v, *vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
+fVector::Normalize (v);
+vdx = fVector::Cross (v, *vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
 vdx = vdx * dx;
-v[Y] = v[Z] = 0;
-v[X] = (*vCenter)[X] ? d / (*vCenter)[X] : 1;
+v [Y] = v [Z] = 0;
+v [X] = (*vCenter) [X] ? d / (*vCenter) [X] : 1;
 v -= *vCenter;
-fVector::Normalize(v);
-vdy = fVector::Cross(v, *vEye);
+fVector::Normalize (v);
+vdy = fVector::Cross (v, *vEye);
 if (r) {
-	if((*vCenter)[X] >= 0) {
+	if ((*vCenter) [X] >= 0) {
 		vdy = vdy * dy;
-		v[X] = +vdx[X] + vdy[X];
-		v[Y] = +vdx[Y] + vdy[Y];
-		v[Z] = -vdx[Z] - vdy[Z];
+		v [X] = +vdx [X] + vdy [X];
+		v [Y] = +vdx [Y] + vdy [Y];
+		v [Z] = -vdx [Z] - vdy [Z];
 		*vSprite = *r * v;
-		vSprite[0] += *vCenter;
-		v[X] = v[Y] = v[Z] = 0;
-		v[X] = -vdx[X] + vdy[X];
-		v[Y] = +vdx[Y] + vdy[Y];
-		v[Z] = +vdx[Z] - vdy[Z];
-		vSprite[1] = *r * v;
-		vSprite[1] += *vCenter;
-		v[X] = v[Y] = v[Z] = 0;
-		v[X] = -vdx[X] - vdy[X];
-		v[Y] = -vdx[Y] - vdy[Y];
-		v[Z] = +vdx[Z] + vdy[Z];
-		vSprite[2] =  *r * v;
-		vSprite[2] += *vCenter;
-		v[X] = +vdx[X] - vdy[X];
-		v[Y] = -vdx[Y] - vdy[Y];
-		v[Z] = -vdx[Z] + vdy[Z];
-		vSprite[3] = *r * v;
-		vSprite[3] += *vCenter;
+		vSprite [0] += *vCenter;
+		v [X] = v [Y] = v [Z] = 0;
+		v [X] = -vdx [X] + vdy [X];
+		v [Y] = +vdx [Y] + vdy [Y];
+		v [Z] = +vdx [Z] - vdy [Z];
+		vSprite [1] = *r * v;
+		vSprite [1] += *vCenter;
+		v [X] = v [Y] = v [Z] = 0;
+		v [X] = -vdx [X] - vdy [X];
+		v [Y] = -vdx [Y] - vdy [Y];
+		v [Z] = +vdx [Z] + vdy [Z];
+		vSprite [2] =  *r * v;
+		vSprite [2] += *vCenter;
+		v [X] = +vdx [X] - vdy [X];
+		v [Y] = -vdx [Y] - vdy [Y];
+		v [Z] = -vdx [Z] + vdy [Z];
+		vSprite [3] = *r * v;
+		vSprite [3] += *vCenter;
 		}
 	else {
 		vdy = vdy * dy;
-		v[X] = -vdx[X] - vdy[X];
-		v[Y] = -vdx[Y] - vdy[Y];
-		v[Z] = -vdx[Z] - vdy[Z];
+		v [X] = -vdx [X] - vdy [X];
+		v [Y] = -vdx [Y] - vdy [Y];
+		v [Z] = -vdx [Z] - vdy [Z];
 		*vSprite = *r * v;
-		vSprite[0] += *vCenter;
-		v[X] = v[Y] = v[Z] = 0;
-		v[X] = +vdx[X] - vdy[X];
-		v[Y] = -vdx[Y] - vdy[Y];
-		v[Z] = +vdx[Z] - vdy[Z];
-		vSprite[1] = *r * v;
-		vSprite[1] += *vCenter;
-		v[X] = v[Y] = v[Z] = 0;
-		v[X] = +vdx[X] + vdy[X];
-		v[Y] = +vdx[Y] + vdy[Y];
-		v[Z] = +vdx[Z] + vdy[Z];
-		vSprite[2] = *r * v;
-		vSprite[2] += *vCenter;
-		v[X] = -vdx[X] + vdy[X];
-		v[Y] = +vdx[Y] + vdy[Y];
-		v[Z] = -vdx[Z] + vdy[Z];
-		vSprite[3] = *r * v;
-		vSprite[3] += *vCenter;
+		vSprite [0] += *vCenter;
+		v [X] = v [Y] = v [Z] = 0;
+		v [X] = +vdx [X] - vdy [X];
+		v [Y] = -vdx [Y] - vdy [Y];
+		v [Z] = +vdx [Z] - vdy [Z];
+		vSprite [1] = *r * v;
+		vSprite [1] += *vCenter;
+		v [X] = v [Y] = v [Z] = 0;
+		v [X] = +vdx [X] + vdy [X];
+		v [Y] = +vdx [Y] + vdy [Y];
+		v [Z] = +vdx [Z] + vdy [Z];
+		vSprite [2] = *r * v;
+		vSprite [2] += *vCenter;
+		v [X] = -vdx [X] + vdy [X];
+		v [Y] = +vdx [Y] + vdy [Y];
+		v [Z] = -vdx [Z] + vdy [Z];
+		vSprite [3] = *r * v;
+		vSprite [3] += *vCenter;
 		}
 	}
 else {
-	vSprite [0][X] = -vdx[X] - vdy[X];
-	vSprite [0][Y] = -vdx[Y] - vdy[Y];
-	vSprite [0][Z] = -vdx[Z] - vdy[Z];
-	vSprite [1][X] = +vdx[X] - vdy[X];
-	vSprite [1][Y] = +vdx[Y] - vdy[Y];
-	vSprite [1][Z] = +vdx[Z] - vdy[Z];
-	vSprite [2][X] = +vdx[X] + vdy[X];
-	vSprite [2][Y] = +vdx[Y] + vdy[Y];
-	vSprite [2][Z] = +vdx[Z] + vdy[Z];
-	vSprite [3][X] = -vdx[X] + vdy[X];
-	vSprite [3][Y] = -vdx[Y] + vdy[Y];
-	vSprite [3][Z] = -vdx[Z] + vdy[Z];
+	vSprite [0][X] = -vdx [X] - vdy [X];
+	vSprite [0][Y] = -vdx [Y] - vdy [Y];
+	vSprite [0][Z] = -vdx [Z] - vdy [Z];
+	vSprite [1][X] = +vdx [X] - vdy [X];
+	vSprite [1][Y] = +vdx [Y] - vdy [Y];
+	vSprite [1][Z] = +vdx [Z] - vdy [Z];
+	vSprite [2][X] = +vdx [X] + vdy [X];
+	vSprite [2][Y] = +vdx [Y] + vdy [Y];
+	vSprite [2][Z] = +vdx [Z] + vdy [Z];
+	vSprite [3][X] = -vdx [X] + vdy [X];
+	vSprite [3][Y] = -vdx [Y] + vdy [Y];
+	vSprite [3][Z] = -vdx [Z] + vdy [Z];
 	for (i = 0; i < 4; i++)
-		vSprite[i] += *vCenter;
+		vSprite [i] += *vCenter;
 	}
 }
 
@@ -213,7 +202,7 @@ if (!pSideVerts) {
 	pSideVerts = sideVerts;
 	}
 for (i = j = 0; j < 4; j++) {
-	d = vmsVector::Dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts[(j + 1) % 4]]);
+	d = vmsVector::Dist (gameData.segs.vertices [pSideVerts [j]], gameData.segs.vertices [pSideVerts [ (j + 1) % 4]]);
 	if (dMax < d) {
 		dMax = d;
 		i = j;
@@ -224,16 +213,16 @@ if (w)
 if (i > 2)
 	i--;
 j = i + 1;
-d1 = VmLinePointDist(gameData.segs.vertices[pSideVerts[i]],
-                     gameData.segs.vertices[pSideVerts[j]],
-                     gameData.segs.vertices[pSideVerts[(j+1)%4]]);
-d = vmsVector::Dist(gameData.segs.vertices[pSideVerts[i]], gameData.segs.vertices[pSideVerts [(j + 1) % 4]]);
-d = vmsVector::Dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts [(j + 1) % 4]]);
-d2 = VmLinePointDist(gameData.segs.vertices[pSideVerts[i]],
-                     gameData.segs.vertices[pSideVerts[j]],
-                     gameData.segs.vertices[pSideVerts[(j+2)%4]]);
-d = vmsVector::Dist(gameData.segs.vertices[pSideVerts[i]], gameData.segs.vertices[pSideVerts [(j + 2) % 4]]);
-d = vmsVector::Dist(gameData.segs.vertices[pSideVerts[j]], gameData.segs.vertices[pSideVerts [(j + 2) % 4]]);
+d1 = VmLinePointDist (gameData.segs.vertices [pSideVerts [i]],
+                     gameData.segs.vertices [pSideVerts [j]],
+                     gameData.segs.vertices [pSideVerts [ (j+1)%4]]);
+d = vmsVector::Dist (gameData.segs.vertices [pSideVerts [i]], gameData.segs.vertices [pSideVerts [ (j + 1) % 4]]);
+d = vmsVector::Dist (gameData.segs.vertices [pSideVerts [j]], gameData.segs.vertices [pSideVerts [ (j + 1) % 4]]);
+d2 = VmLinePointDist (gameData.segs.vertices [pSideVerts [i]],
+                     gameData.segs.vertices [pSideVerts [j]],
+                     gameData.segs.vertices [pSideVerts [ (j+2)%4]]);
+d = vmsVector::Dist (gameData.segs.vertices [pSideVerts [i]], gameData.segs.vertices [pSideVerts [ (j + 2) % 4]]);
+d = vmsVector::Dist (gameData.segs.vertices [pSideVerts [j]], gameData.segs.vertices [pSideVerts [ (j + 2) % 4]]);
 if (h)
 	*h = d1 > d2 ? d1 : d2;
 return i;
@@ -266,12 +255,11 @@ if (IS_WALL (nWall)) {
 		return 0;
 	}
 // get and check the corona emitting texture
-if (sideP->nOvlTex && (0 < (nBrightness = IsLight (sideP->nOvlTex)))) {
-	nTexture = sideP->nOvlTex;
+nBrightness = (nTexture = sideP->nOvlTex) ? IsLight (nTexture) : 0;
+if (nBrightness >= F1_0 / 8) {
 	bAdditive = gameOpts->render.coronas.bAdditive;
 	}
-else if ((nBrightness = IsLight (sideP->nBaseTex))) {
-	nTexture = sideP->nBaseTex;
+else if ((nBrightness = IsLight (nTexture = sideP->nBaseTex))) {
 	if (fIntensityP)
 		*fIntensityP /= 2;
 	bAdditive = 0;
@@ -361,12 +349,12 @@ for (i = 0; i < 4; i++) {
 	else
 		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
 	}
-v = SIDE_CENTER_I (nSegment, nSide)->ToFloat();
+v = SIDE_CENTER_I (nSegment, nSide)->ToFloat ();
 G3TransformPoint (*vCenter, v, 0);
 #if 0
 if (gameStates.render.bQueryCoronas) {
 	for (i = 0; i < 4; i++) {
-		v = sprite[i] - *vCenter;
+		v = sprite [i] - *vCenter;
 		VmVecScaleAdd (sprite + i, vCenter, &v, 0.5f);
 	}
 }
@@ -402,14 +390,14 @@ float MoveSpriteIn (fVector *sprite, fVector *vCenter, tIntervalf *zRangeP, floa
 
 ComputeSpriteZRange (sprite, &zRange);
 if (zRange.fMin > 0)
-	*vCenter = *vCenter * (zRange.fMin / (*vCenter)[Z]);
+	*vCenter = *vCenter * (zRange.fMin / (*vCenter) [Z]);
 else {
 	if (zRange.fMin < -zRange.fRad)
 		return 0;
 	fIntensity *= 1 + zRange.fMin / zRange.fRad * 2;
-	(*vCenter)[X] /= (*vCenter)[Z];
-	(*vCenter)[Y] /= (*vCenter)[Y];
-	(*vCenter)[Z] = 1;
+	 (*vCenter) [X] /= (*vCenter) [Z];
+	 (*vCenter) [Y] /= (*vCenter) [Y];
+	 (*vCenter) [Z] = 1;
 	}
 *zRangeP = zRange;
 return fIntensity;
@@ -422,31 +410,31 @@ void ComputeHardGlare (fVector *sprite, fVector *vCenter, fVector *vNormal)
 	fVector	u, v, p, q, e, s, t;
 	float		h, g;
 
-u = sprite[2] + sprite[1];
-u -= sprite[0];
-u -= sprite[3];
+u = sprite [2] + sprite [1];
+u -= sprite [0];
+u -= sprite [3];
 u = u * 0.25f;
-v = sprite[0] + sprite[1];
-v -= sprite[2];
-v -= sprite[3];
+v = sprite [0] + sprite [1];
+v -= sprite [2];
+v -= sprite [3];
 v = v * 0.25f;
-*vNormal = fVector::Cross(v, u);
-fVector::Normalize(*vNormal);
-e = *vCenter; fVector::Normalize(e);
-if (fVector::Dot(e, *vNormal) > 0.999f)
+*vNormal = fVector::Cross (v, u);
+fVector::Normalize (*vNormal);
+e = *vCenter; fVector::Normalize (e);
+if (fVector::Dot (e, *vNormal) > 0.999f)
 	p = v;
 else {
-	p = fVector::Cross(e, *vNormal);
-	fVector::Normalize(p);
+	p = fVector::Cross (e, *vNormal);
+	fVector::Normalize (p);
 }
 
-q = fVector::Cross(p, e);
-h = u.Mag();
-g = v.Mag();
+q = fVector::Cross (p, e);
+h = u.Mag ();
+g = v.Mag ();
 if (h > g)
 	h = g;
-g = 2 * (float) (fabs (fVector::Dot(p, v)) + fabs (fVector::Dot(p, u))) + h * fVector::Dot(p, *vNormal);
-h = 2 * (float) (fabs (fVector::Dot(q, v)) + fabs (fVector::Dot(q, u))) + h * fVector::Dot(q, *vNormal);
+g = 2 * (float) (fabs (fVector::Dot (p, v)) + fabs (fVector::Dot (p, u))) + h * fVector::Dot (p, *vNormal);
+h = 2 * (float) (fabs (fVector::Dot (q, v)) + fabs (fVector::Dot (q, u))) + h * fVector::Dot (q, *vNormal);
 #if 1
 if (g / h > 8)
 	h = g / 8;
@@ -456,21 +444,21 @@ else if (h / g > 8)
 s = p * g;
 t = q * h;
 
-sprite[0] = *vCenter + s;
-sprite[1] = sprite[0];
-sprite[0] += t;
-sprite[1] -= t;
-sprite[3] = *vCenter - s;
-sprite[2] = sprite[3];
-sprite[3] += t;
-sprite[2] -= t;
+sprite [0] = *vCenter + s;
+sprite [1] = sprite [0];
+sprite [0] += t;
+sprite [1] -= t;
+sprite [3] = *vCenter - s;
+sprite [2] = sprite [3];
+sprite [3] += t;
+sprite [2] -= t;
 }
 
 // -----------------------------------------------------------------------------------
 
-#if defined(_DEBUG) && CORONA_OUTLINE
+#if defined (_DEBUG) && CORONA_OUTLINE
 
-void RenderCoronaOutline (fVector *sprite, fVector *vCenter)
+void RenderCoronaOutline(fVector *sprite, fVector *vCenter)
 {
 	int	i;
 
@@ -482,14 +470,14 @@ for (i = 0; i < 4; i++)
 	glVertex3fv ((GLfloat *) (sprite + i));
 glEnd ();
 glBegin (GL_LINES);
-vCenter->x() += 5;
+vCenter->x () += 5;
 glVertex3fv ((GLfloat *) &vCenter);
-vCenter->x() -= 10;
+vCenter->x () -= 10;
 glVertex3fv ((GLfloat *) &vCenter);
-vCenter->x() += 5;
-vCenter->y() += 5;
+vCenter->x () += 5;
+vCenter->y () += 5;
 glVertex3fv ((GLfloat *) &vCenter);
-vCenter->y() -= 10;
+vCenter->y () -= 10;
 glVertex3fv ((GLfloat *) &vCenter);
 glEnd ();
 glLineWidth (1);
@@ -514,7 +502,7 @@ void RenderHardGlare (fVector *sprite, fVector *vCenter, int nTexture, float fLi
 fLight /= 4;
 if (fLight < 0.01f)
 	return;
-color.alpha = vCenter->Mag();
+color.alpha = vCenter->Mag ();
 if (color.alpha < zRangeP->fRad)
 	fIntensity *= color.alpha / zRangeP->fRad;
 
@@ -563,35 +551,35 @@ float ComputeSoftGlare (fVector *sprite, fVector *vLight, fVector *vEye)
 	float 		ul, vl, h, cosine;
 	int 			i;
 
-u = sprite[2] + sprite[1];
-u -= sprite[0];
-u -= sprite[3];
+u = sprite [2] + sprite [1];
+u -= sprite [0];
+u -= sprite [3];
 u = u * 0.25f;
-v = sprite[0] + sprite[1];
-v -= sprite[2];
-v -= sprite[3];
+v = sprite [0] + sprite [1];
+v -= sprite [2];
+v -= sprite [3];
 v = v * 0.25f;
 e = *vEye - *vLight;
-fVector::Normalize(e);
-n = fVector::Cross(v, u);
-fVector::Normalize(n);
-ul = u.Mag();
-vl = v.Mag();
+fVector::Normalize (e);
+n = fVector::Cross (v, u);
+fVector::Normalize (n);
+ul = u.Mag ();
+vl = v.Mag ();
 h = (ul > vl) ? vl : ul;
-s = u + n * (-h * fVector::Dot(e, u) / ul);
-t = v + n * (-h * fVector::Dot(e, v) / vl);
-s = s + e * fVector::Dot(e, s);
-t = t + e * fVector::Dot(e, t);
+s = u + n * (-h * fVector::Dot (e, u) / ul);
+t = v + n * (-h * fVector::Dot (e, v) / vl);
+s = s + e * fVector::Dot (e, s);
+t = t + e * fVector::Dot (e, t);
 s = s * 1.8f;
 t = t * 1.8f;
 v = *vLight;
 for (i = 0; i < 3; i++) {
-	sprite[0][i] = v[i] + s[i] + t[i];
-	sprite[1][i] = v[i] + s[i] - t[i];
-	sprite[2][i] = v[i] - s[i] - t[i];
-	sprite[3][i] = v[i] - s[i] + t[i];
+	sprite [0][i] = v [i] + s [i] + t [i];
+	sprite [1][i] = v [i] + s [i] - t [i];
+	sprite [2][i] = v [i] - s [i] - t [i];
+	sprite [3][i] = v [i] - s [i] + t [i];
 	}
-cosine = fVector::Dot(e, n);
+cosine = fVector::Dot (e, n);
 return (float) sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nIntensity];
 }
 
@@ -669,7 +657,7 @@ if (fIntensity < 0.01f)
 if ((nSegment != 6) || (nSide != 2))
 	return;
 #endif
-if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
+if (! (nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -697,7 +685,7 @@ if (RENDERPATH && gameStates.ogl.bOcclusionQuery && CoronaStyle ()) {
 #endif
 	}
 else {
-	vNormal = fVector::Normal (sprite[0], sprite[1], sprite[2]);
+	vNormal = fVector::Normal (sprite [0], sprite [1], sprite [2]);
 	vEye = vCenter; fVector::Normalize (vEye);
 	//dim corona depending on viewer angle
 	if ((fAngle = fVector::Dot (vNormal, vEye)) > 0) {
@@ -727,9 +715,9 @@ float CoronaVisibility (int nQuery)
 	GLint		nError;
 #endif
 
-if (!(gameStates.ogl.bOcclusionQuery && nQuery) || (CoronaStyle () != 1))
+if (! (gameStates.ogl.bOcclusionQuery && nQuery) || (CoronaStyle () != 1))
 	return 1;
-if (!(gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [nQuery - 1]))
+if (! (gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [nQuery - 1]))
 	return 0;
 for (;;) {
 	glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
@@ -776,7 +764,7 @@ void LoadGlareShader (float dMax)
 OglClearError (0);
 gameStates.ogl.bUseDepthBlending = 0;
 if (gameStates.ogl.bDepthBlending) {
-	OglReadBuffer (GL_BACK, 1);
+	OglSetReadBuffer (GL_BACK, 1);
 	if (CopyDepthTexture ()) {
 		gameStates.ogl.bUseDepthBlending = 1;
 		if (gameStates.render.history.nShader != 999) {
@@ -832,7 +820,7 @@ if (gameStates.ogl.bDepthBlending) {
 
 //------------------------------------------------------------------------------
 
-const char *glareFS = {
+const char *glareFS =
 	"uniform sampler2D glareTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
 	"uniform vec2 screenScale;\r\n" \
@@ -847,13 +835,12 @@ const char *glareFS = {
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 texColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
 	"gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);\r\n" \
-	"}\r\n"
-	};
+	"}\r\n";
 
 const char *glareVS =
-	"void main(void){\r\n" \
+	"void main (void){\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
-	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
+	"gl_Position = ftransform () /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
 	"gl_FrontColor = gl_Color;}\r\n";
 
 //-------------------------------------------------------------------------

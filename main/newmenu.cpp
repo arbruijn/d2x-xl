@@ -1540,7 +1540,7 @@ if (gameStates.app.bGameRunning && IsMultiGame)
 
 SetPopupScreenMode ();
 if (!gameOpts->menus.nStyle) {
-	OglDrawBuffer (GL_FRONT, 1);
+	OglSetDrawBuffer (GL_FRONT, 1);
 	if (gameStates.menus.bNoBackground || gameStates.app.bGameRunning) {
 		NMLoadBackground (NULL, NULL, 0);
 		GrUpdate (0);

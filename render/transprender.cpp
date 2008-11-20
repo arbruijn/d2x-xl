@@ -872,7 +872,7 @@ else
 	bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
 //transpItems.bUseLightmaps = 0;
 #endif
-#if 1
+#if 0
 if (transpItems.bDepthMask)
 	glDepthMask (transpItems.bDepthMask = 0);
 #else

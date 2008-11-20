@@ -141,7 +141,7 @@ glLoadIdentity ();//clear matrix
 glScalef (1.0f, -1.0f, 1.0f);
 glTranslatef (0.0f, -1.0f, 0.0f);
 glDisable (GL_CULL_FACE);
-OglDrawBuffer (GL_BACK, 1);
+OglSetDrawBuffer (GL_BACK, 1);
 glDisable (GL_SCISSOR_TEST);
 glDisable (GL_ALPHA_TEST);
 glDisable (GL_DEPTH_TEST);

@@ -166,7 +166,7 @@ do {
 if ((bTmpBuf = (buf == NULL))) {
 	buf = (unsigned char *) D2_ALLOC (grdCurScreen->scWidth * grdCurScreen->scHeight * 3);
 	glDisable (GL_TEXTURE_2D);
-	OglReadBuffer (GL_FRONT, 1);
+	OglSetReadBuffer (GL_FRONT, 1);
 	glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_RGB, GL_UNSIGNED_BYTE, buf);
 	glErrCode = glGetError ();
 	glErrCode = GL_NO_ERROR;

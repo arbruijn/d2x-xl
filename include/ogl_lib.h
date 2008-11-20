@@ -70,9 +70,9 @@ GLuint OglCreateDepthTexture (int nTMU, int bFBO);
 GLuint OglCreateStencilTexture (int nTMU, int bFBO);
 void OglCreateDrawBuffer (void);
 void OglDestroyDrawBuffer (void);
-void OglDrawBuffer (int nBuffer, int bFBO);
-void OglReadBuffer (int nBuffer, int bFBO);
-void OglFlushDrawBuffer (void);
+void OglSetDrawBuffer (int nBuffer, int bFBO);
+void OglSetReadBuffer (int nBuffer, int bFBO);
+void OglFlushDrawBuffer (bool bAdditive = false);
 
 #if DBG
 

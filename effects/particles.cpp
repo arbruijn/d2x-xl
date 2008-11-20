@@ -73,7 +73,7 @@
 
 #define OGL_VERTEX_ARRAYS	1
 
-#define PARTICLE_TYPES	5
+#define PARTICLE_TYPES	4
 
 #define PARTICLE_FPS	30
 
@@ -82,16 +82,16 @@
 #define PART_DEPTHBUFFER_SIZE 100000
 #define PARTLIST_SIZE 1000000
 
-static int bHavePartImg [2][PARTICLE_TYPES] = {{0, 0, 0, 0},{0, 0, 0, 0}};
+static int bHavePartImg [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
 
-static grsBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL, NULL}};
+static grsBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL}};
 #if 0
 static grsBitmap *bmpBumpMaps [2] = {NULL, NULL};
 #endif
 
 static const char *szParticleImg [2][PARTICLE_TYPES] = {
-	{"smoke.tga", "corona.tga", "bullcase.tga"},
-	{"smoke.tga", "corona.tga", "bullcase.tga"}
+	{"smoke.tga", "corona.tga", "bullcase.tga", "bubble.tga"},
+	{"smoke.tga", "corona.tga", "bullcase.tga", "bubble.tga"}
 	};
 
 static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
@@ -197,10 +197,23 @@ D2_FREE (gameData.smoke.depthBuf.pDepthBuffer);
 }
 
 //	-----------------------------------------------------------------------------
+// 4: gatling projectile trail
+// 3: air bubbles
+// 2: bullet casings
+// 1: light trails
+// 0: smoke
 
 static inline int ParticleImageType (int nType)
 {
-return (nType == 5) ? 2 : ((nType == 3) || (nType == 4)) ? 1 : 0;
+if (nType == SMOKE_PARTICLES)
+	return SMOKE_PARTICLES;
+if (nType == BULLET_PARTICLES)
+	return BULLET_PARTICLES;
+if ((nType == LIGHT_PARTICLES) || (nType == GATLING_PARTICLES))
+	return LIGHT_PARTICLES;
+if (nType == BUBBLE_PARTICLES)
+	return BUBBLE_PARTICLES;
+return -1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -308,7 +321,7 @@ if (OglSetupBmFrames (BmOverride (bmP), 0, 0, 0)) {
 	}
 #endif
 OglLoadBmTexture (bmP, 0, 3, 1);
-if (nType == PARTICLE_TYPES - 1)
+if (nType)
 	nParticleFrames [bPointSprites][nType] = BM_FRAMECOUNT (bmP);
 else {
 	h = bmP->bmProps.w / 64;
@@ -323,7 +336,7 @@ int LoadParticleImages (void)
 {
 	int	i;
 
-for (i = 0; i < 3; i++) {
+for (i = 0; i < PARTICLE_TYPES; i++) {
 	if (!LoadParticleImage (i))
 		return 0;
 	AnimateParticle (i);
@@ -338,7 +351,7 @@ void FreeParticleImages (void)
 	int	i, j;
 
 for (i = 0; i < 2; i++)
-	for (j = 0; j < 3; j++)
+	for (j = 0; j < PARTICLE_TYPES; j++)
 		if (bmpParticle [i][j]) {
 			GrFreeBitmap (bmpParticle [i][j]);
 			bmpParticle [i][j] = NULL;
@@ -417,11 +430,11 @@ else
 if (!nRad)
 	nRad = F1_0;
 pParticle->nType = nType;
-pParticle->bEmissive = (nSmokeType == 3);
+pParticle->bEmissive = (nSmokeType == LIGHT_PARTICLES);
 pParticle->nClass = nClass;
 pParticle->nSegment = nSegment;
 pParticle->nBounce = 0;
-if (nType == 2) {
+if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
 	pParticle->bBright = 0;
 	pParticle->color.red =
 	pParticle->color.green =
@@ -460,18 +473,18 @@ else {
 		fBrightness = 1.0f - fBrightness;
 		pParticle->color.alpha += fBrightness * fBrightness / 8.0f;
 		}
-	}
 #endif
+	}
 //nSpeed = (int) (sqrt (nSpeed) * (float) F1_0);
 nSpeed *= F1_0;
 if (pDir) {
 	vmsAngVec	a;
 	vmsMatrix	m;
-	float		d;
-	a[PA] = randN (F1_0 / 4) - F1_0 / 8;
-	a[BA] = randN (F1_0 / 4) - F1_0 / 8;
-	a[HA] = randN (F1_0 / 4) - F1_0 / 8;
-	m = vmsMatrix::Create(a);
+	float			d;
+	a [PA] = randN (F1_0 / 4) - F1_0 / 8;
+	a [BA] = randN (F1_0 / 4) - F1_0 / 8;
+	a [HA] = randN (F1_0 / 4) - F1_0 / 8;
+	m = vmsMatrix::Create (a);
 	vDrift = m * (*pDir);
 	vmsVector::Normalize (vDrift);
 	d = (float) vmsVector::DeltaAngle (vDrift, *pDir, NULL);
@@ -488,33 +501,40 @@ if (pDir) {
 	}
 else {
 	vmsVector	vOffs;
-	vDrift[X] = nSpeed - randN (2 * nSpeed);
-	vDrift[Y] = nSpeed - randN (2 * nSpeed);
-	vDrift[Z] = nSpeed - randN (2 * nSpeed);
+	vDrift [X] = nSpeed - randN (2 * nSpeed);
+	vDrift [Y] = nSpeed - randN (2 * nSpeed);
+	vDrift [Z] = nSpeed - randN (2 * nSpeed);
 	vOffs = vDrift;
-	pParticle->dir.SetZero();
+	pParticle->dir.SetZero ();
 	pParticle->bHaveDir = 1;
 	}
-if (pOrient) {
+pParticle->drift = vDrift;
+if (vEmittingFace)
+	pParticle->pos = *pPos;
+else if (nType != BUBBLE_PARTICLES)
+	pParticle->pos = *pPos + vDrift * (F1_0 / 64);
+else {
+	//pParticle->pos = *pPos + vDrift * (F1_0 / 32);
+	nSpeed = vDrift.Mag () / 16;
+	vDrift = vmsVector::Avg ((*pOrient) [RVEC] * (nSpeed - randN (2 * nSpeed)), (*pOrient) [UVEC] * (nSpeed - randN (2 * nSpeed)));
+	pParticle->pos = *pPos + vDrift + (*pOrient) [FVEC] * (F1_0 / 2 - randN (F1_0));
+	vmsVector::Normalize (pParticle->drift);
+	}
+if ((nType != BUBBLE_PARTICLES) && pOrient) {
 		vmsAngVec	vRot;
 		vmsMatrix	mRot;
 
-	vRot[BA] = 0;
-	vRot[PA] = 2048 - ((d_rand () % 9) * 512);
-	vRot[HA] = 2048 - ((d_rand () % 9) * 512);
-	mRot = vmsMatrix::Create(vRot);
+	vRot [BA] = 0;
+	vRot [PA] = 2048 - ((d_rand () % 9) * 512);
+	vRot [HA] = 2048 - ((d_rand () % 9) * 512);
+	mRot = vmsMatrix::Create (vRot);
 	//TODO: MM
 	pParticle->orient = *pOrient * mRot;
 	//pParticle->orient = *pOrient;
 	}
-if (vEmittingFace)
-	pParticle->pos = *pPos;
-else
-	pParticle->pos = *pPos + vDrift * (F1_0 / 64);
-pParticle->drift = vDrift;
 if (nLife < 0)
 	nLife = -nLife;
-if (nType < 3) {
+if (nType == SMOKE_PARTICLES) {
 	if (gameOpts->render.smoke.bDisperse)
 		nLife = (nLife * 2) / 3;
 	nLife = nLife / 2 + randN (nLife / 2);
@@ -523,7 +543,12 @@ pParticle->nLife =
 pParticle->nTTL = nLife;
 pParticle->nMoved = nCurTime;
 pParticle->nDelay = 0; //bStart ? randN (nLife) : 0;
-nRad += nType ? nRad : randN (nRad);
+if (nType == SMOKE_PARTICLES)
+	nRad += randN (nRad);
+else if (nType == BUBBLE_PARTICLES)
+	nRad = nRad / 10 + randN (9 * nRad / 10);
+else
+	nRad *= 2;
 if ((pParticle->bBlowUp = bBlowUp)) {
 	pParticle->nRad = nRad;
 	pParticle->nWidth =
@@ -535,7 +560,7 @@ else {
 	pParticle->nRad = nRad / 2;
 	}
 nFrames = nParticleFrames [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)][nType];
-if (pParticle->nType == 2) {
+if (pParticle->nType == BULLET_PARTICLES) {
 	pParticle->nFrame = 0;
 	pParticle->nRotFrame = 0;
 	pParticle->nOrient = 3;
@@ -543,7 +568,10 @@ if (pParticle->nType == 2) {
 else {
 	pParticle->nFrame = rand () % (nFrames * nFrames);
 	pParticle->nRotFrame = pParticle->nFrame / 2;
-	pParticle->nOrient = rand () % 4;
+	if (pParticle->nType == BUBBLE_PARTICLES)
+		pParticle->nOrient = 0;
+	else
+		pParticle->nOrient = rand () % 4;
 	}
 #if 1
 if (pParticle->bEmissive)
@@ -609,9 +637,9 @@ for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
 		else {
 			nVert = min(vlP [0], vlP [2]);
 			if (vlP [4] < vlP [1])
-				nDist = gameData.segs.vertices[vlP[4]].DistToPlane(sideP->normals[0], gameData.segs.vertices[nVert]);
+				nDist = gameData.segs.vertices[vlP[4]].DistToPlane (sideP->normals[0], gameData.segs.vertices[nVert]);
 			else
-				nDist = gameData.segs.vertices[vlP[1]].DistToPlane(sideP->normals[1], gameData.segs.vertices[nVert]);
+				nDist = gameData.segs.vertices[vlP[1]].DistToPlane (sideP->normals[1], gameData.segs.vertices[nVert]);
 			bSidePokesOut [nSide] = (nDist > PLANE_DIST_TOLERANCE);
 			}
 		}
@@ -645,10 +673,10 @@ return 0;
 int UpdateParticle (tParticle *pParticle, int nCurTime)
 {
 	int			j, nRad;
+	short			nSegment;
 	fix			t, dot;
 	vmsVector	pos, drift;
-	fix			drag = F2X ((float) pParticle->nLife / (float) pParticle->nTTL);
-
+	fix			drag = (pParticle->nType == BUBBLE_PARTICLES) ? F1_0 : F2X ((float) pParticle->nLife / (float) pParticle->nTTL);
 
 if ((pParticle->nLife <= 0) /*|| (pParticle->color.alpha < 0.01f)*/)
 	return 0;
@@ -659,9 +687,9 @@ else {
 	pos = pParticle->pos;
 	drift = pParticle->drift;
 	if (!pParticle->nType) {
-		drift[X] = ChangeDir (drift[X]);
-		drift[Y] = ChangeDir (drift[Y]);
-		drift[Z] = ChangeDir (drift[Z]);
+		drift [X] = ChangeDir (drift [X]);
+		drift [Y] = ChangeDir (drift [Y]);
+		drift [Z] = ChangeDir (drift [Z]);
 		}
 	for (j = 0; j < 2; j++) {
 		if (t < 0)
@@ -677,7 +705,20 @@ else {
 //				VmVecScaleInc (&drift, &pParticle->dir, drag);
 			pParticle->pos += pParticle->dir * drag;
 			}
+		if (pParticle->nTTL - pParticle->nLife > F1_0 / 16) {
+			nSegment = FindSegByPos (pParticle->pos, pParticle->nSegment, 0, 0);
+			if (nSegment < 0) {
+				nSegment = FindSegByPos (pParticle->pos, pParticle->nSegment, 0, 1);
+				if (nSegment < 0)
+					return 0;
+				}
+			if ((pParticle->nType == BUBBLE_PARTICLES) && (SEGMENT2S [nSegment].special != SEGMENT_IS_WATER))
+				return 0;
+			pParticle->nSegment = nSegment;
+			}
 		if (gameOpts->render.smoke.bCollisions && CollideParticleAndWall (pParticle)) {	//Reflect the particle
+			if (pParticle->nType == BUBBLE_PARTICLES)
+				return 0;
 			if (j)
 				return 0;
 			else if (!(dot = vmsVector::Dot(drift, *wallNorm)))
@@ -702,7 +743,7 @@ else {
 #else
 		pParticle->nLife -= t;
 #endif
-		if ((pParticle->nType < 2) && (nRad = pParticle->nRad)) {
+		if ((pParticle->nType == SMOKE_PARTICLES) && (nRad = pParticle->nRad)) {
 			if (pParticle->bBlowUp) {
 				if (pParticle->nWidth >= nRad)
 					pParticle->nRad = 0;
@@ -813,9 +854,9 @@ int RenderParticle (tParticle *pParticle, float brightness)
 	tTexCoord2f			texCoord [4];
 	tParticleVertex	*pb;
 	fVector				vOffset, vCenter;
-	float					decay = (float) pParticle->nLife / (float) pParticle->nTTL;
 	int					i, nFrame, nType = pParticle->nType, bEmissive = pParticle->bEmissive,
 							bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0);
+	float					decay = (nType == BUBBLE_PARTICLES) ? 1.0f : (float) pParticle->nLife / (float) pParticle->nTTL;
 
 	static int			nFrames = 1;
 	static float		deltaUV = 1.0f;
@@ -933,16 +974,16 @@ if (!nType) {
 	pc.green *= brightness;
 	pc.blue *= brightness;
 	}
-vCenter[X] = X2F (hp[X]);
-vCenter[Y] = X2F (hp[Y]);
-vCenter[Z] = X2F (hp[Z]);
+vCenter [X] = X2F (hp [X]);
+vCenter [Y] = X2F (hp [Y]);
+vCenter [Z] = X2F (hp [Z]);
 i = pParticle->nOrient;
 if (bEmissive) { //scale light trail particle color to reduce saturation
 	pc.red /= 50.0f;
 	pc.green /= 50.0f;
 	pc.blue /= 50.0f;
 	}
-else {
+else if (pParticle->nType != BUBBLE_PARTICLES) {
 #if 0
 	pc.alpha = (pc.alpha - 0.005f) * decay + 0.005f;
 #	if 1
@@ -964,7 +1005,7 @@ if (!gameData.render.lights.dynamic.headlights.nLights && (pc.red + pc.green + p
 	return 0;
 	}
 #endif
-if (gameOpts->render.smoke.bDisperse && !nType) {
+if ((nType == SMOKE_PARTICLES) && gameOpts->render.smoke.bDisperse) {
 #if 0
 	decay = (float) sqrt (decay);
 #else
@@ -1110,7 +1151,7 @@ int BeginRenderSmoke (int nType, float nScale)
 	static time_t	t0 = 0;
 
 if (gameOpts->render.bDepthSort <= 0) {
-	nType = (nType % PARTICLE_TYPES == PARTICLE_TYPES - 1);
+	nType = (nType % PARTICLE_TYPES);
 	if ((nType >= 0) && !gameOpts->render.smoke.bSort)
 		AnimateParticle (nType);
 	bmP = bmpParticle [0][nType];
@@ -1249,6 +1290,8 @@ pCloud->prevPos =
 pCloud->pos = *pPos;
 if (pOrient)
 	pCloud->orient = *pOrient;
+else
+	pCloud->orient = vmsMatrix::IDENTITY;
 pCloud->bHavePrevPos = 1;
 pCloud->bBlowUpParts = bBlowUpParts;
 pCloud->nParts = 0;
@@ -1370,7 +1413,7 @@ else
 				vDeltaf[Y] /= (float) h;
 				vDeltaf[Z] /= (float) h;
 				}
-			else if ((c.nType == 3) || (c.nType == 4))
+			else if ((c.nType == LIGHT_PARTICLES) || (c.nType == BULLET_PARTICLES))
 				goto funcExit;
 			else {
 #if 1
@@ -1891,8 +1934,6 @@ else
 
 	for (i = gameData.smoke.iUsed; i >= 0; i = n) {
 		pSmoke = gameData.smoke.buffer + i;
-		if (i == 11)
-			i = i;
 		if ((n = pSmoke->nNext) == gameData.smoke.iUsed) {
 			RebuildSmokeList ();
 			break;

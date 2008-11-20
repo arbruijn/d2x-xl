@@ -285,7 +285,7 @@ InitGammaRamp ();
 OglInitExtensions ();
 OglDestroyDrawBuffer ();
 OglCreateDrawBuffer ();
-OglDrawBuffer (GL_BACK, 1);
+OglSetDrawBuffer (GL_BACK, 1);
 return 0;
 }
 

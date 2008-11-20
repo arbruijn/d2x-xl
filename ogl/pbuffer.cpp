@@ -255,8 +255,8 @@ if (!wglMakeContextCurrentARB (pb->hDC, pb->hDC, pb->hRC))
 if (!glXMakeCurrent (pb->hDC, pb->hBuf, pb->hRC))
 #endif
 	return 0;
-OglDrawBuffer (GL_FRONT, 1);
-OglReadBuffer (GL_FRONT, 1);
+OglSetDrawBuffer (GL_FRONT, 1);
+OglSetReadBuffer (GL_FRONT, 1);
 return 1;
 }
 
@@ -272,8 +272,8 @@ if (!wglMakeContextCurrentARB (hGlDC, hGlDC, hGlRC))
 if (!glXMakeCurrent (hGlDC, hGlWindow, hGlRC))
 #endif
 	return 0;
-OglDrawBuffer (GL_BACK, 1);
-OglReadBuffer (GL_FRONT, 1);
+OglSetDrawBuffer (GL_BACK, 1);
+OglSetReadBuffer (GL_FRONT, 1);
 return 1;
 }
 

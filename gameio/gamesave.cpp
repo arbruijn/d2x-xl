@@ -324,8 +324,8 @@ objP->info.renderType = CFReadByte (cfP);
 objP->info.nFlags = CFReadByte (cfP);
 objP->info.nSegment = CFReadShort (cfP);
 objP->info.nAttachedObj = -1;
-CFReadVector(objP->info.position.vPos, cfP);
-CFReadMatrix(objP->info.position.mOrient, cfP);
+CFReadVector (objP->info.position.vPos, cfP);
+CFReadMatrix (objP->info.position.mOrient, cfP);
 objP->info.xSize = CFReadFix (cfP);
 objP->info.xShields = CFReadFix (cfP);
 CFReadVector (objP->info.vLastPos, cfP);
@@ -477,6 +477,10 @@ switch (objP->info.renderType) {
 		objP->rType.smokeInfo.color.blue = CFReadByte (cfP);
 		objP->rType.smokeInfo.color.alpha = CFReadByte (cfP);
 		objP->rType.smokeInfo.nSide = CFReadByte (cfP);
+		if (gameData.segs.nLevelVersion < 18)
+			objP->rType.smokeInfo.nType = 0;
+		else
+			objP->rType.smokeInfo.nType = CFReadByte (cfP);
 		break;
 
 	case RT_LIGHTNING:

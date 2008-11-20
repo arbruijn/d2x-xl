@@ -1303,7 +1303,7 @@ int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 nCurrentColor = 0;
 bRobotPlaying = 0;
 
-//OglDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
+//OglSetDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
 InitMovieBriefing ();
 
 bi.bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 

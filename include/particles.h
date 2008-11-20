@@ -5,6 +5,12 @@
 
 #define MAX_SMOKE 10000
 
+#define SMOKE_PARTICLES		0
+#define LIGHT_PARTICLES		1
+#define BULLET_PARTICLES	2
+#define BUBBLE_PARTICLES	3
+#define GATLING_PARTICLES	4
+
 #define MAX_PARTICLES(_nParts,_nDens)	MaxParticles (_nParts, _nDens)
 #define PARTICLE_SIZE(_nSize,_nScale)	ParticleSize (_nSize, _nScale)
 
