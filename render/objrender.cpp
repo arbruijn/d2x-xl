@@ -982,7 +982,7 @@ switch (objP->info.renderType) {
 					if (objP->info.nType == OBJ_WEAPON) {
 						//DoObjectSmoke (objP);
 						if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID))
-							gameData.models.vScale.Set (F1_0 / 4, F1_0 / 4, F1_0 / 4);
+							gameData.models.vScale.Set (F1_0 / 4, F1_0 / 4, F1_0 * 2);
 						DrawPolygonObject (objP, bDepthSort, 0);
 						gameData.models.vScale.SetZero ();
 						}

@@ -133,11 +133,11 @@ if (gameStates.ogl.bUseTransform) {
 		OglRot (viewInfo.glViewf);
 		h = viewInfo.pos - vPos;
 		VmsMove (h);
+		VmsRot (mOrient);
 		if (!gameData.models.vScale.IsZero ()) {
 			fVector fScale = gameData.models.vScale.ToFloat ();
 			glScalef (fScale [X], fScale [Y], fScale [Z]);
-		}
-		VmsRot (mOrient);
+			}
 		}
 	}
 
@@ -163,7 +163,7 @@ viewInfo.posf = viewInfo.pos.ToFloat();
 //if angles==NULL, don't modify matrix.  This will be like doing an offset
 void G3StartInstanceAngles (const vmsVector& pos, const vmsAngVec& angles) 
 {
-	G3StartInstanceMatrix(pos, vmsMatrix::Create(angles));
+G3StartInstanceMatrix(pos, vmsMatrix::Create(angles));
 }
 
 //------------------------------------------------------------------------------

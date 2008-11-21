@@ -1421,7 +1421,7 @@ else
 				vDeltaf [Y] /= (float) h;
 				vDeltaf [Z] /= (float) h;
 				}
-			else if ((c.nType == LIGHT_PARTICLES) || (c.nType == BULLET_PARTICLES))
+			else if (/*(c.nType == LIGHT_PARTICLES) ||*/ (c.nType == BULLET_PARTICLES))
 				goto funcExit;
 			else {
 #if 1

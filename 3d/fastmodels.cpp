@@ -433,8 +433,7 @@ else
 if (psm->bThruster) {
 	if (!nPass) {
 		vo = psm->vOffset + psm->vCenter;
-		G3GetThrusterPos (objP, nModel, NULL, &vo,
-								&psm->pFaces->vNormal, psm->nRad, bHires);
+		G3GetThrusterPos (objP, nModel, NULL, &vo, &psm->pFaces->vNormal, psm->nRad, bHires);
 	}
 	return;
 	}
@@ -446,7 +445,7 @@ if (!gameData.models.vScale.IsZero ())
 	vo *= gameData.models.vScale;
 #if 1
 if (vOffsetP && (nExclusive < 0)) {
-	G3StartInstanceAngles(vo, va);
+	G3StartInstanceAngles (vo, va);
 	vo += *vOffsetP;
 	}
 #endif

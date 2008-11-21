@@ -2570,10 +2570,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\effects\glow.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\..\effects\lightning.cpp"
 						>
 					</File>
@@ -4577,11 +4573,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
