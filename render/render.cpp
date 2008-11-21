@@ -1405,6 +1405,10 @@ void AddObjectToSegList (short nObject, short nSegment)
 {
 	tObjRenderListItem *pi = gameData.render.mine.renderObjs.objs + gameData.render.mine.renderObjs.nUsed;
 
+#if DBG
+if (nObject == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 pi->nNextItem = gameData.render.mine.renderObjs.ref [nSegment];
 gameData.render.mine.renderObjs.ref [nSegment] = gameData.render.mine.renderObjs.nUsed++;
 pi->nObject = nObject;
@@ -1435,6 +1439,10 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		nSegment = nSegment;
 #endif
 	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = objP->info.nNextInSeg) {
+#if DBG
+		if (nObject == nDbgObj)
+			nDbgObj = nDbgObj;
+#endif
 		objP = OBJECTS + nObject;
 		Assert (objP->info.nSegment == nSegment);
 		if (objP->info.nFlags & OF_ATTACHED)
@@ -1879,6 +1887,8 @@ int SortObjList (int nSegment)
 	tObjRenderListItem	*pi;
 	int						i, j;
 
+if (nSegment < 0)
+	nSegment = -nSegment - 1;
 for (i = gameData.render.mine.renderObjs.ref [nSegment], j = 0; i >= 0; i = pi->nNextItem) {
 	pi = gameData.render.mine.renderObjs.objs + i;
 	objRenderList [j++] = *pi;

@@ -1371,6 +1371,7 @@ void TIRenderLightTrail (tTranspLightTrail *item)
 {
 if (!transpItems.bDepthMask)
 	glDepthMask (transpItems.bDepthMask = 1);
+glEnable (GL_BLEND);
 glBlendFunc (GL_ONE, GL_ONE);
 glDisable (GL_CULL_FACE);
 glColor4fv ((GLfloat *) &(item->color));

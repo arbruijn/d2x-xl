@@ -607,7 +607,7 @@ else if (nSmokeType == BUBBLE_PARTICLES)
 else if (nSmokeType == LIGHT_PARTICLES)
 	pParticle->color [0].alpha /= 5;
 else if (nSmokeType == GATLING_PARTICLES)
-	pParticle->color [0].alpha /= 6;
+	;//pParticle->color [0].alpha /= 6;
 #endif
 return 1;
 }
