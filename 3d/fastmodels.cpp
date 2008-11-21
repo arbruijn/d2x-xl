@@ -193,11 +193,15 @@ else {
 void G3ScaleModel (int nModel, int bHires)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
-	float				fScale = gameData.models.nScale ? X2F (gameData.models.nScale) : 1;
+	fVector			fScale;
 	int				i;
 	fVector3			*pv;
 	tG3ModelVertex	*pmv;
 
+if (gameData.models.vScale.IsZero ())
+	fScale.Create (1,1,1);
+else
+	fScale = gameData.models.vScale.ToFloat ();
 if (pm->fScale == fScale)
 	return;
 fScale /= pm->fScale;
@@ -227,7 +231,7 @@ void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector
 
 if (!objP)
 	return;
-if (!pm->bRendered || gameData.models.nScale)
+if (!pm->bRendered || !gameData.models.vScale.IsZero ())
 	mtP->nCount = 0;
 else if (mtP->nCount >= (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) ? 2 : 1))
 	return;
@@ -438,8 +442,8 @@ if (G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
 	return;
 #endif
 vo = psm->vOffset;
-if (gameData.models.nScale)
-	vo *= gameData.models.nScale;
+if (!gameData.models.vScale.IsZero ())
+	vo *= gameData.models.vScale;
 #if 1
 if (vOffsetP && (nExclusive < 0)) {
 	G3StartInstanceAngles(vo, va);
@@ -711,8 +715,8 @@ if (!objP || (ObjectDamage (objP) > 0.5f))
 	return;
 // set the translation
 vo = psm->vOffset;
-if (gameData.models.nScale)
-	vo *= gameData.models.nScale;
+if (!gameData.models.vScale.IsZero ())
+	vo *= gameData.models.vScale;
 if (vOffsetP) {
 	G3StartInstanceAngles(vo, *va);
 	vo += *vOffsetP;
@@ -811,7 +815,7 @@ G3ScaleModel (nModel);
 #else
 #	if 0
 if (bHires)
-	gameData.models.nScale = 0;
+	gameData.models.vScale.SetZero ();
 #	endif
 #endif
 if (!(gameOpts->ogl.bObjLighting || gameStates.render.bQueryCoronas || gameStates.render.bCloaked))
@@ -841,9 +845,9 @@ nBombId = EquippedPlayerBomb (objP);
 nMissileId = EquippedPlayerMissile (objP, &nMissiles);
 if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 	if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
-		gameData.models.nScale = 2 * F1_0;
+		gameData.models.vScale.Set (2 * F1_0, 2 * F1_0, 2 * F1_0);
 	else
-		gameData.models.nScale = 3 * F1_0 / 2;
+		gameData.models.vScale.Set (3 * F1_0 / 2, 3 * F1_0 / 2, 3 * F1_0 / 2);
 	}
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 0,
 				 nGunId, nBombId, nMissileId, nMissiles);

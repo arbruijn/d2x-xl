@@ -1307,7 +1307,7 @@ if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->nSegm
 	glDisable (GL_TEXTURE_2D);
 	transpItems.bTextured = 0;
 	transpItems.bClientState = 0;
-	gameData.models.nScale = 0;
+	gameData.models.vScale.SetZero ();
 	}
 }
 

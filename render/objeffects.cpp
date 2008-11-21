@@ -914,8 +914,8 @@ else if (bAfterburnerBlob || (bMissile && !nThrusters)) {
 	nThrusters = 1;
 	if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2)
 		ti.fLength /= 2;
-	if (gameData.models.nScale)
-		ti.vPos [0] *= gameData.models.nScale;
+	if (!gameData.models.vScale.IsZero ())
+		ti.vPos [0] *= gameData.models.vScale;
 	*ti.vPos = objP->info.position.vPos + objP->info.position.mOrient [FVEC] * (-nObjRad);
 	ti.mtP = NULL;
 	}
@@ -948,8 +948,8 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 			viewP = ObjectView (objP);
 		for (i = 0; i < nThrusters; i++) {
 			ti.vPos [i] = *viewP * ti.mtP->vPos [i];
-			if (gameData.models.nScale)
-				ti.vPos [i] *= gameData.models.nScale;
+			if (!gameData.models.vScale.IsZero ())
+				ti.vPos [i] *= gameData.models.vScale;
 			ti.vPos [i] += posP->vPos;
 			ti.vDir [i] = *viewP * ti.mtP->vDir [i];
 			}
@@ -1115,8 +1115,8 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		fVector	/*vPosf, vNormf, vFlame [3], vThruster [4],*/ fVecf;
 		float		c = 1/*0.7f + 0.03f * fPulse, dotFlame, dotThruster*/;
 
-	if (gameData.models.nScale)
-		ti.fSize *= X2F (gameData.models.nScale);
+	if (!gameData.models.vScale.IsZero ())
+		ti.fSize *= X2F (gameData.models.vScale [Z]);
 	ti.fLength *= 4 * ti.fSize;
 	ti.fSize *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 #if 1
@@ -1552,9 +1552,9 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
 	objP->info.xSize = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,
 								gameData.weapons.info [objP->info.nId].po_len_to_width_ratio) / 4;
-	gameData.models.nScale = F1_0 / 4;
+	gameData.models.vScale.Set (F1_0 / 4, F1_0 / 4, F1_0 / 4);
 	DrawPolygonObject (objP, 0);
-	gameData.models.nScale = 0;
+	gameData.models.vScale.SetZero ();
 #else
 		fVector			vPosf [2], vDirf;
 		short				i;

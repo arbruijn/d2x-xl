@@ -133,9 +133,9 @@ if (gameStates.ogl.bUseTransform) {
 		OglRot (viewInfo.glViewf);
 		h = viewInfo.pos - vPos;
 		VmsMove (h);
-		if (gameData.models.nScale) {
-			float fScale = X2F (gameData.models.nScale);
-			glScalef (fScale, fScale, fScale);
+		if (!gameData.models.vScale.IsZero ()) {
+			fVector fScale = gameData.models.vScale.ToFloat ();
+			glScalef (fScale [X], fScale [Y], fScale [Z]);
 		}
 		VmsRot (mOrient);
 		}

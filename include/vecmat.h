@@ -527,6 +527,7 @@ class vmsVector {
 		const bool operator!= (const vmsVector& vec);
 		const vmsVector& operator+= (const vmsVector& vec);
 		const vmsVector& operator-= (const vmsVector& vec);
+		const vmsVector& operator*= (const vmsVector& s);
 		const vmsVector& operator*= (const fix s);
 		const vmsVector& operator/= (const fix s);
 		const vmsVector operator+ (const vmsVector& vec) const;
@@ -778,6 +779,11 @@ inline const vmsVector& vmsVector::operator-= (const vmsVector& vec) {
 
 inline const vmsVector& vmsVector::operator*= (const fix s) {
 	v [0] = FixMul (v [0], s); v [1] = FixMul (v [1], s); v [2] = FixMul (v [2], s);
+	return *this;
+}
+
+inline const vmsVector& vmsVector::operator*= (const vmsVector& s) {
+	v [0] = FixMul (v [0], s [0]); v [1] = FixMul (v [1], s [1]); v [2] = FixMul (v [2], s [2]);
 	return *this;
 }
 

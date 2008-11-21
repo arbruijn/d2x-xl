@@ -99,7 +99,7 @@ void RotatePointList (g3sPoint *dest, vmsVector *src, g3sNormal *norms, int n, i
 {
 PROF_START
 	fVector	*pfv = gameData.models.fPolyModelVerts + o;
-	float		fScale;
+	fVector	fScale;
 
 dest += o;
 if (norms)
@@ -120,16 +120,19 @@ while (n--) {
 	else
 #endif
 		dest->p3_normal.nFaces = 0;
-	fScale = (gameData.models.nScale ? X2F (gameData.models.nScale) : 1) / 65536.0f;
+	if (gameData.models.vScale.IsZero ())
+		fScale.Create (1 / 65536.0f, 1 / 65536.0f, 1 / 65536.0f);
+	else
+		fScale = gameData.models.vScale.ToFloat () / 65536.0f;
 	if (gameStates.ogl.bUseTransform) {
-		(*pfv)[X] = (*src)[X] * fScale;
-		(*pfv)[Y] = (*src)[Y] * fScale;
-		(*pfv)[Z] = (*src)[Z] * fScale;
+		(*pfv)[X] = (*src)[X] * fScale [X];
+		(*pfv)[Y] = (*src)[Y] * fScale [Y];
+		(*pfv)[Z] = (*src)[Z] * fScale [Z];
 		}
 	else {
-		if (gameData.models.nScale) {
+		if (!gameData.models.vScale.IsZero ()) {
 			vmsVector v = *src;
-			v *= gameData.models.nScale;
+			v *= gameData.models.vScale;
 #if 1
 			G3TransformPoint(dest->p3_vec, v, 0);
 #else
@@ -597,8 +600,8 @@ for (;;) {
 
 		va = pAnimAngles ? pAnimAngles [WORDVAL (p+2)] : vmsAngVec::ZERO;
 		vo = *VECPTR (p+4);
-		if (gameData.models.nScale)
-			vo *= gameData.models.nScale;
+		if (!gameData.models.vScale.IsZero ())
+			vo *= gameData.models.vScale;
 		G3StartInstanceAngles (vo, va);
 		if (vOffset)
 			vo += *vOffset;
@@ -739,8 +742,8 @@ for (;;) {
 		case OP_SUBCALL: {
 			const vmsAngVec	*va = pAnimAngles ? &pAnimAngles [WORDVAL (p+2)] : &vmsAngVec::ZERO;
 			vmsVector	vo = *VECPTR (p+4);
-			if (gameData.models.nScale)
-				vo *= gameData.models.nScale;
+			if (!gameData.models.vScale.IsZero ())
+				vo *= gameData.models.vScale;
 			G3StartInstanceAngles(vo, *va);
 			if (vOffset)
 				vo += *vOffset;

@@ -811,7 +811,7 @@ for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP+
 #endif
 		if (vertexList [4] < vertexList [1])
 			if (gameStates.render.bRendering)
-				xDist = gameData.segs.points[vertexList[4]].p3_vec.DistToPlane(
+				xDist = gameData.segs.points[vertexList[4]].p3_vec.DistToPlane (
 											  side2P->rotNorms[0],
 											  gameData.segs.points [nVertex].p3_vec);
 			else
@@ -820,20 +820,20 @@ for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP+
 											  gameData.segs.vertices [nVertex]);
 		else
 			if (gameStates.render.bRendering)
-				xDist = gameData.segs.points[vertexList [1]].p3_vec.DistToPlane(
+				xDist = gameData.segs.points[vertexList [1]].p3_vec.DistToPlane (
 											  side2P->rotNorms[1],
 											  gameData.segs.points[nVertex].p3_vec);
 			else
-				xDist = gameData.segs.vertices [vertexList[1]].DistToPlane(
+				xDist = gameData.segs.vertices [vertexList[1]].DistToPlane (
 											  sideP->normals[1],
 											  gameData.segs.vertices [nVertex]);
 		bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
 		nCenterCount = 0;
 		for (nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
 			if (gameStates.render.bRendering)
-				xDist = checkP.DistToPlane(side2P->rotNorms[nFace], gameData.segs.points[nVertex].p3_vec);
+				xDist = checkP.DistToPlane (side2P->rotNorms [nFace], gameData.segs.points [nVertex].p3_vec);
 			else
-				xDist = checkP.DistToPlane(sideP->normals[nFace], gameData.segs.vertices [nVertex]);
+				xDist = checkP.DistToPlane (sideP->normals [nFace], gameData.segs.vertices [nVertex]);
 			if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {	//in front of face
 				nCenterCount++;
 				xSideDists [nSide] += xDist;
@@ -869,9 +869,9 @@ for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP+
 			nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 #endif
 			if (gameStates.render.bRendering)
-				xDist = checkP.DistToPlane(side2P->rotNorms[0], gameData.segs.points[nVertex].p3_vec);
+				xDist = checkP.DistToPlane (side2P->rotNorms[0], gameData.segs.points[nVertex].p3_vec);
 			else
-				xDist = checkP.DistToPlane(sideP->normals[0], gameData.segs.vertices [nVertex]);
+				xDist = checkP.DistToPlane (sideP->normals[0], gameData.segs.vertices [nVertex]);
 		if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {
 			mask |= sideBit;
 			xSideDists [nSide] = xDist;
@@ -1152,34 +1152,19 @@ int	bDoingLightingHack=0;
 
 //figure out what seg the given point is in, tracing through segments
 //returns tSegment number, or -1 if can't find tSegment
-int TraceSegs (const vmsVector& p0, int nOldSeg)
+int TraceSegs (const vmsVector& p0, int nOldSeg, int nTraceDepth, char* bVisited)
 {
-	int				centerMask, nMaxSide;
 	tSegment			*segP;
 	fix				xSideDists [6], xMaxDist;
-	int				nSide, bit, check = -1;
-	static int		nTraceDepth = 0;
-	static char		bVisited [MAX_SEGMENTS_D2X];
+	int				centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
 
-Assert ((nOldSeg <= gameData.segs.nLastSegment) && (nOldSeg >= 0));
-if (nTraceDepth >= gameData.segs.nSegments) {
-#if TRACE
-	con_printf (CONDBG, "TraceSegs: Segment not found\n");
-	con_printf (CONDBG, "TraceSegs (gameseg.c) - Something went wrong - infinite loop\n");
-#endif
+if (nTraceDepth >= gameData.segs.nSegments)
 	return -1;
-}
-if (!nTraceDepth)
-	memset (bVisited, 0, sizeof (bVisited));
 if (bVisited [nOldSeg])
 	return -1;
-nTraceDepth++;
 bVisited [nOldSeg] = 1;
-centerMask = GetSideDists (p0, nOldSeg, xSideDists, 1);		//check old tSegment
-if (!centerMask) {		//we're in the old tSegment
-	nTraceDepth--;
-	return nOldSeg;		//..say so
-	}
+if (!(centerMask = GetSideDists (p0, nOldSeg, xSideDists, 1)))		//we're in the old tSegment
+	return nOldSeg;		
 segP = gameData.segs.segments + nOldSeg;
 for (;;) {
 	nMaxSide = -1;
@@ -1192,12 +1177,10 @@ for (;;) {
 	if (nMaxSide == -1)
 		break;
 	xSideDists [nMaxSide] = 0;
-	check = TraceSegs (p0, segP->children [nMaxSide]);	//trace into adjacent tSegment
-	if (check >= 0)
+	if (0 <= (nMatchSeg = TraceSegs (p0, segP->children [nMaxSide], nTraceDepth + 1, bVisited)))	//trace into adjacent tSegment
 		break;
 	}
-nTraceDepth--;
-return check;		//we haven't found a tSegment
+return nMatchSeg;		//we haven't found a tSegment
 }
 
 
@@ -1210,21 +1193,34 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 // 2. Recursivel [Y] trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPos (const vmsVector& p, int nSegment, int bExhaustive, int bSkyBox)
+int FindSegByPos (const vmsVector& p, int nSegment, int bExhaustive, int bSkyBox, int nThread)
 {
-	int			nNewSeg = -1, i;
-	short		*segP;
+	static char		bVisited [2][MAX_SEGMENTS_D2X]; 
 
+	int		nNewSeg, i;
+	short		*segP;
+#if 0
+	static	int nSemaphore = 0;
+
+while (nSemaphore > 0)
+	G3_SLEEP (0);
+if (nSemaphore < 0)
+	nSemaphore = 0;
+nSemaphore++;
+#endif
 //allow nSegment == -1, meaning we have no idea what tSegment point is in
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
 if (nSegment != -1) {
-	nNewSeg = TraceSegs (p, nSegment);
-	if (nNewSeg != -1)			//we found a tSegment!
-		return nNewSeg;
+	memset (bVisited [nThread], 0, gameData.segs.nSegments);
+	nNewSeg = TraceSegs (p, nSegment, 0, bVisited [nThread]);
+	if (nNewSeg != -1)//we found a tSegment!
+		goto funcExit;
 	}
 //couldn't find via attached segs, so search all segs
-if (bDoingLightingHack || !bExhaustive)
-	return -1;
+if (bDoingLightingHack || !bExhaustive) {
+	nNewSeg = -1;
+	goto funcExit;
+	}
 ++nExhaustiveCount;
 #if 0 //TRACE
 con_printf (1, "Warning: doing exhaustive search to find point tSegment (%i times)\n", nExhaustiveCount);
@@ -1232,20 +1228,45 @@ con_printf (1, "Warning: doing exhaustive search to find point tSegment (%i time
 if (bSkyBox) {
 	for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++)
 		if (!GetSegMasks (p, *segP, 0).centerMask)
-			return nNewSeg;
+			goto funcExit;
 	}
 else {
 	for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++)
-		if ((gameData.segs.segment2s [nNewSeg].special != SEGMENT_IS_SKYBOX) && !GetSegMasks (p, nNewSeg, 0).centerMask)
-			return nNewSeg;
+		if ((SEGMENT2S [nNewSeg].special != SEGMENT_IS_SKYBOX) && !GetSegMasks (p, nNewSeg, 0).centerMask)
+			goto funcExit;
 	}
+nNewSeg = -1;
 ++nExhaustiveFailedCount;
 #if TRACE
 con_printf (1, "Warning: could not find point tSegment (%i times)\n", nExhaustiveFailedCount);
 #endif
-return -1;		//no tSegment found
+
+funcExit:
+#if 0
+if (nSemaphore > 0)
+	nSemaphore--;
+else
+	nSemaphore = 0;
+#endif
+return nNewSeg;		//no tSegment found
 }
 
+// -------------------------------------------------------------------------------
+
+short FindClosestSeg (vmsVector& vPos)
+{
+	short		nSegment, nClosestSeg = -1;
+	fix		nDist, nMinDist = 0x7fffffff;
+
+for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
+	nDist = vmsVector::Dist (vPos, *SEGMENT_CENTER_I (nSegment)) - MinSegRad (nSegment);
+	if (nDist < nMinDist) {
+		nMinDist = nDist;
+		nClosestSeg = nSegment;
+		}
+	}
+return nClosestSeg;
+}
 
 //--repair-- //	------------------------------------------------------------------------------
 //--repair-- void clsd_repair_center (int nSegment)

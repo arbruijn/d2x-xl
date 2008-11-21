@@ -496,7 +496,10 @@ if (pDir) {
 		pParticle->color.green =
 		pParticle->color.blue = 1.0f;//(float) (64 + randN (64)) / 255.0f;
 	vDrift *= nSpeed;
-	pParticle->dir = *pDir;
+	if ((nType == SMOKE_PARTICLES) || (nType == BUBBLE_PARTICLES))
+		pParticle->dir = *pDir * (3 * F1_0 / 4 + randN (16) * F1_0 / 64);
+	else
+		pParticle->dir = *pDir;
 	pParticle->bHaveDir = 1;
 	}
 else {
@@ -519,6 +522,7 @@ else {
 	vDrift = vmsVector::Avg ((*pOrient) [RVEC] * (nSpeed - randN (2 * nSpeed)), (*pOrient) [UVEC] * (nSpeed - randN (2 * nSpeed)));
 	pParticle->pos = *pPos + vDrift + (*pOrient) [FVEC] * (F1_0 / 2 - randN (F1_0));
 	vmsVector::Normalize (pParticle->drift);
+	pParticle->drift *= F1_0 * 32;
 	}
 if ((nType != BUBBLE_PARTICLES) && pOrient) {
 		vmsAngVec	vRot;
@@ -686,7 +690,7 @@ if (pParticle->nDelay > 0)
 else {
 	pos = pParticle->pos;
 	drift = pParticle->drift;
-	if (!pParticle->nType) {
+	if ((pParticle->nType == SMOKE_PARTICLES) || (pParticle->nType == BUBBLE_PARTICLES)) {
 		drift [X] = ChangeDir (drift [X]);
 		drift [Y] = ChangeDir (drift [Y]);
 		drift [Z] = ChangeDir (drift [Z]);
@@ -694,21 +698,25 @@ else {
 	for (j = 0; j < 2; j++) {
 		if (t < 0)
 			t = -t;
-		pParticle->pos = pos + drift * t;
+		pParticle->pos = pos + drift * t; //(t * F1_0 / 1000);
 		if (pParticle->bHaveDir) {
 			vmsVector vi = drift, vj = pParticle->dir;
-			vmsVector::Normalize(vi);
-			vmsVector::Normalize(vj);
+			vmsVector::Normalize (vi);
+			vmsVector::Normalize (vj);
 //				if (vmsVector::Dot(drift, pParticle->dir) < 0)
-			if (vmsVector::Dot(vi, vj) < 0)
+			if (vmsVector::Dot (vi, vj) < 0)
 				drag = -drag;
 //				VmVecScaleInc (&drift, &pParticle->dir, drag);
 			pParticle->pos += pParticle->dir * drag;
 			}
 		if (pParticle->nTTL - pParticle->nLife > F1_0 / 16) {
-			nSegment = FindSegByPos (pParticle->pos, pParticle->nSegment, 0, 0);
+			nSegment = FindSegByPos (pParticle->pos, pParticle->nSegment, 0, 0, 1);
 			if (nSegment < 0) {
-				nSegment = FindSegByPos (pParticle->pos, pParticle->nSegment, 0, 1);
+#if DBG
+				if (pParticle->nSegment == nDbgSeg)
+					nSegment = FindSegByPos (pParticle->pos, pParticle->nSegment, 1, 0, 1);
+#endif
+				nSegment = FindSegByPos (pParticle->pos, pParticle->nSegment, 0, 1, 1);
 				if (nSegment < 0)
 					return 0;
 				}
@@ -1409,9 +1417,9 @@ else
 			if (c.bHavePrevPos && (fDist > 0)) {
 				vPosf = c.prevPos.ToFloat();
 				vDeltaf = vDelta.ToFloat();
-				vDeltaf[X] /= (float) h;
-				vDeltaf[Y] /= (float) h;
-				vDeltaf[Z] /= (float) h;
+				vDeltaf [X] /= (float) h;
+				vDeltaf [Y] /= (float) h;
+				vDeltaf [Z] /= (float) h;
 				}
 			else if ((c.nType == LIGHT_PARTICLES) || (c.nType == BULLET_PARTICLES))
 				goto funcExit;
@@ -1419,14 +1427,14 @@ else
 #if 1
 				vPosf = c.prevPos.ToFloat();
 				vDeltaf = vDelta.ToFloat();
-				vDeltaf[X] /= (float) h;
-				vDeltaf[Y] /= (float) h;
-				vDeltaf[Z] /= (float) h;
+				vDeltaf [X] /= (float) h;
+				vDeltaf [Y] /= (float) h;
+				vDeltaf [Z] /= (float) h;
 #else
 				VmVecFixToFloat (&vPosf, &c.pos);
-				vDeltaf[X] =
-				vDeltaf[Y] =
-				vDeltaf[Z] = 0.0f;
+				vDeltaf [X] =
+				vDeltaf [Y] =
+				vDeltaf [Z] = 0.0f;
 				h = 1;
 #endif
 				}
@@ -1435,8 +1443,8 @@ else
 				vPosf += vDeltaf;
 				vPos = vPosf.ToFix();
 /*
-				vPos[Y] = (fix) (vPosf[Y] * 65536.0f);
-				vPos[Z] = (fix) (vPosf[Z] * 65536.0f);
+				vPos[Y] = (fix) (vPosf [Y] * 65536.0f);
+				vPos[Z] = (fix) (vPosf [Z] * 65536.0f);
 */
 				CreateParticle (c.pParticles + j, &vPos, pDir, &mOrient, c.nSegment, c.nLife,
 									 c.nSpeed, c.nType, c.nClass, c.nPartScale, c.bHaveColor ? &c.color : NULL,
@@ -1633,7 +1641,7 @@ void SetCloudPos (tCloud *pCloud, vmsVector *pos, vmsMatrix *orient, short nSegm
 {
 if (pCloud) {
 	if ((nSegment < 0) && gameOpts->render.smoke.bCollisions)
-		nSegment = FindSegByPos (*pos, pCloud->nSegment, 1, 0);
+		nSegment = FindSegByPos (*pos, pCloud->nSegment, 1, 0, 1);
 	pCloud->pos = *pos;
 	if (orient)
 		pCloud->orient = *orient;

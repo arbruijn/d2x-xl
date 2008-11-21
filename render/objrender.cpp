@@ -921,7 +921,7 @@ switch (objP->info.renderType) {
 				return 0;
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_ROBOTS)
 				return 0;
-			gameData.models.nScale = 0;
+			gameData.models.vScale.SetZero ();
 			//DoObjectSmoke (objP);
 #if DBG
 			if (OBJ_IDX (objP) == nDbgObj)
@@ -950,8 +950,10 @@ switch (objP->info.renderType) {
 						 (gameData.models.g3Models [1][108].bValid > 0)) {	//hires player ship
 						float dt = X2F (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)]);
 
-						if (dt < 1)
-							gameData.models.nScale = (fix) (F1_0 + F1_0 * dt * dt) / 2;
+						if (dt < 1) {
+							fix xScale = (fix) (F1_0 + F1_0 * dt * dt) / 2;
+							gameData.models.vScale.Set (xScale, xScale, xScale);
+							}
 						}
 					//DoObjectSmoke (objP);
 					DrawPolygonObject (objP, bDepthSort, 0);
@@ -963,7 +965,7 @@ switch (objP->info.renderType) {
 #	endif
 #endif
 					RenderThrusterFlames (objP);
-					gameData.models.nScale = 0;
+					gameData.models.vScale.SetZero ();
 					}
 				else {
 #if RENDER_HITBOX
@@ -980,9 +982,9 @@ switch (objP->info.renderType) {
 					if (objP->info.nType == OBJ_WEAPON) {
 						//DoObjectSmoke (objP);
 						if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID))
-							gameData.models.nScale = F1_0 / 4;
+							gameData.models.vScale.Set (F1_0 / 4, F1_0 / 4, F1_0 / 4);
 						DrawPolygonObject (objP, bDepthSort, 0);
-						gameData.models.nScale = 0;
+						gameData.models.vScale.SetZero ();
 						}
 					}
 				}
@@ -1013,7 +1015,7 @@ switch (objP->info.renderType) {
 #if DBG
 				RenderRobotShield (objP);
 #endif
-				gameData.models.nScale = 0;
+				gameData.models.vScale.SetZero ();
 				}
 			else
 				ConvertWeaponToPowerup (objP);

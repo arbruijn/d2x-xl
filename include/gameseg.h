@@ -106,7 +106,8 @@ tSegMasks GetSegMasks(const vmsVector& checkp,int nSegment,fix rad);
 // 2. Recursively trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPos(const vmsVector& vPos, int nSegment, int bExhaustive, int bSkyBox);
+int FindSegByPos(const vmsVector& vPos, int nSegment, int bExhaustive, int bSkyBox, int nThread = 0);
+short FindClosestSeg (vmsVector& vPos);
 
 //--repair-- // Create data specific to segments which does not need to get written to disk.
 //--repair-- extern void create_local_segment_data(void);

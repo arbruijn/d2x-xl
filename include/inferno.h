@@ -2392,7 +2392,7 @@ typedef struct tModelData {
 	vmsVector			offsets [MAX_POLYGON_MODELS];
 	tGunInfo				gunInfo [MAX_POLYGON_MODELS];
 	tModelSphere		spheres [MAX_POLYGON_MODELS];
-	int					nScale;
+	vmsVector			vScale;
 	int					nLightScale;
 } tModelData;
 

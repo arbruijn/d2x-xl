@@ -649,9 +649,9 @@ if (!flags)	{	//draw entire tObject
 #endif
 		if (objP && (objP->info.nType == OBJ_POWERUP)) {
 			if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
-				gameData.models.nScale = 2 * F1_0;
+				gameData.models.vScale.Set (2 * F1_0, 2 * F1_0, 2 * F1_0);
 			else
-				gameData.models.nScale = 3 * F1_0 / 2;
+				gameData.models.vScale.Set (3 * F1_0 / 2, 3 * F1_0 / 2, 3 * F1_0 / 2);
 			}
 		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
 		G3StartInstanceMatrix (*pos, *orient);

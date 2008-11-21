@@ -1801,12 +1801,18 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 //--------------------------------------------------------------------
 //when an tObject has moved into a new tSegment, this function unlinks it
 //from its old tSegment, and links it into the new tSegment
-void RelinkObjToSeg (int nObject, int nNewSegnum)
+void RelinkObjToSeg (int nObject, int nNewSeg)
 {
-Assert ((nObject >= 0) && (nObject <= gameData.objs.nLastObject [0]));
-Assert ((nNewSegnum <= gameData.segs.nLastSegment) && (nNewSegnum >= 0));
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
+	PrintLog ("invalid object in RelinkObjToSeg\r\n");
+	return;
+	}
+if ((nNewSeg < 0) || (nNewSeg >= gameData.segs.nLastSegment)) {
+	PrintLog ("invalid segment in RelinkObjToSeg\r\n");
+	return;
+	}
 UnlinkObjFromSeg (OBJECTS + nObject);
-LinkObjToSeg (nObject, nNewSegnum);
+LinkObjToSeg (nObject, nNewSeg);
 #if DBG
 #if TRACE
 if (GetSegMasks (OBJECTS [nObject].info.position.vPos,
@@ -2568,6 +2574,11 @@ if (psi->nSide > 0) {
 		//psi->nSize [1] /= 2;
 		}
 	}
+#if 1
+if (psi->nType == SMOKE_TYPE_BUBBLES) {
+	psi->nParts *= 2;
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2625,8 +2636,16 @@ int UpdateObjectSeg (tObject * objP)
 {
 	int nNewSeg;
 
-if (0 > (nNewSeg = FindObjectSeg (objP)))
-	return 0;
+#if DBG
+if (OBJ_IDX (objP) == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
+if (0 > (nNewSeg = FindObjectSeg (objP))) {
+	nNewSeg = FindClosestSeg (objP->info.position.vPos);
+	vmsVector vOffset = objP->info.position.vPos - *SEGMENT_CENTER_I (nNewSeg);
+	vmsVector::Normalize (vOffset);
+	objP->info.position.vPos = *SEGMENT_CENTER_I (nNewSeg) + vOffset * MinSegRad (nNewSeg);
+	}
 if (nNewSeg != objP->info.nSegment)
 	RelinkObjToSeg (OBJ_IDX (objP), nNewSeg);
 return 1;

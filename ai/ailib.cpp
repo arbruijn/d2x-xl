@@ -54,9 +54,9 @@ int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVecto
 	//	Assume that robot's gun tip is in same tSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 fq.p0	= pos;
-if (((*pos)[X] != objP->info.position.vPos[X]) ||
-	 ((*pos)[Y] != objP->info.position.vPos[Y]) ||
-	 ((*pos)[Z] != objP->info.position.vPos[Y])) {
+if (((*pos)[X] != objP->info.position.vPos [X]) ||
+	 ((*pos)[Y] != objP->info.position.vPos [Y]) ||
+	 ((*pos)[Z] != objP->info.position.vPos [Y])) {
 	short nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
 	if (nSegment == -1) {
 		fq.startSeg = objP->info.nSegment;
