@@ -6,9 +6,9 @@
 #define MAX_SMOKE 10000
 
 #define SMOKE_PARTICLES		0
-#define LIGHT_PARTICLES		1
+#define BUBBLE_PARTICLES	1
 #define BULLET_PARTICLES	2
-#define BUBBLE_PARTICLES	3
+#define LIGHT_PARTICLES		3
 #define GATLING_PARTICLES	4
 
 #define MAX_PARTICLES(_nParts,_nDens)	MaxParticles (_nParts, _nDens)
@@ -35,14 +35,13 @@ typedef struct tParticle {
 	int			nHeight;
 	int			nRad;
 	short			nSegment;
-	tRgbaColorf	color;			//well ... the color, ya know =)
+	tRgbaColorf	color [2];		//well ... the color, ya know =)
 	char			nType;			//black or white
 	char			nRotDir;
 	char			nBounce;
 	char			bHaveDir;
 	char			bBlowUp;
 	char			bBright;
-	char			bColored;
 	char			bEmissive;
 	char			nFade;
 	char			nClass;
