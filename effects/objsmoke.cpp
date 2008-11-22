@@ -579,7 +579,7 @@ void DoStaticSmoke (tObject *objP)
 	int			i, j, bBubbles = objP->rType.smokeInfo.nType == SMOKE_TYPE_BUBBLES;
 	vmsVector	pos, offs, dir;
 
-	static tRgbaColorf defaultColors [2] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.7f, 0.9f, 1.0f, 1.0f}};
+	static tRgbaColorf defaultColors [2] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}};
 
 i = (int) OBJ_IDX (objP);
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bStatic)) {
