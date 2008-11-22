@@ -149,14 +149,14 @@ static void RebuildSmokeList (void)
 {
 gameData.smoke.iUsed =
 gameData.smoke.iFree = -1;
-tSmoke *pSmoke = gameData.smoke.buffer;
-for (int i = 0; i < MAX_SMOKE; i++, pSmoke++) {
-	if (pSmoke->pClouds) {
-		pSmoke->nNext = gameData.smoke.iUsed;
+tSmoke *smokeP = gameData.smoke.buffer;
+for (int i = 0; i < MAX_SMOKE; i++, smokeP++) {
+	if (smokeP->pClouds) {
+		smokeP->nNext = gameData.smoke.iUsed;
 		gameData.smoke.iUsed = i;
 		}
-	if (pSmoke->pClouds) {
-		pSmoke->nNext = gameData.smoke.iFree;
+	if (smokeP->pClouds) {
+		smokeP->nNext = gameData.smoke.iFree;
 		gameData.smoke.iFree = i;
 		}
 	}
@@ -411,7 +411,7 @@ return vPos;
 
 #define RANDOM_FADE	(0.95f + (float) rand () / (float) RAND_MAX / 20.0f)
 
-int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
+int CreateParticle (tParticle *particleP, vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
 						  short nSegment, int nLife, int nSpeed, char nSmokeType, char nClass,
 						  float nScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp,
 						  float fBrightness, vmsVector *vEmittingFace)
@@ -433,56 +433,56 @@ else
 	nRad = (int) nScale;
 if (!nRad)
 	nRad = F1_0;
-pParticle->nType = nType;
-pParticle->bEmissive = (nSmokeType == LIGHT_PARTICLES);
-pParticle->nClass = nClass;
-pParticle->nSegment = nSegment;
-pParticle->nBounce = 0;
+particleP->nType = nType;
+particleP->bEmissive = (nSmokeType == LIGHT_PARTICLES);
+particleP->nClass = nClass;
+particleP->nSegment = nSegment;
+particleP->nBounce = 0;
 color = colorP ? *colorP : defaultColor;
-pParticle->color [0] = 
-pParticle->color [1] = color;
+particleP->color [0] = 
+particleP->color [1] = color;
 if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
-	pParticle->bBright = 0;
-	pParticle->nFade = -1;
+	particleP->bBright = 0;
+	particleP->nFade = -1;
 	}
 else {
-	pParticle->bBright = (nType == SMOKE_PARTICLES) ? (rand () % 50) == 0 : 0;
+	particleP->bBright = (nType == SMOKE_PARTICLES) ? (rand () % 50) == 0 : 0;
 	if (colorP) {
 		if (nType != LIGHT_PARTICLES) {
-			pParticle->color [0].red *= RANDOM_FADE;
-			pParticle->color [0].green *= RANDOM_FADE;
-			pParticle->color [0].blue *= RANDOM_FADE;
+			particleP->color [0].red *= RANDOM_FADE;
+			particleP->color [0].green *= RANDOM_FADE;
+			particleP->color [0].blue *= RANDOM_FADE;
 			}
-		pParticle->nFade = 0;
+		particleP->nFade = 0;
 		}
 	else {
-		pParticle->color [0].red = 1.0f;
-		pParticle->color [0].green = 0.5f;
-		pParticle->color [0].blue = 0.0f;
-		pParticle->nFade = 2;
+		particleP->color [0].red = 1.0f;
+		particleP->color [0].green = 0.5f;
+		particleP->color [0].blue = 0.0f;
+		particleP->nFade = 2;
 		}
-	if (pParticle->bEmissive)
-		pParticle->color [0].alpha = (float) (SMOKE_START_ALPHA + 64) / 255.0f;
+	if (particleP->bEmissive)
+		particleP->color [0].alpha = (float) (SMOKE_START_ALPHA + 64) / 255.0f;
 	else if (nSmokeType != GATLING_PARTICLES) {
 		if (!colorP) 
-			pParticle->color [0].alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
+			particleP->color [0].alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
 		else {
 			if (colorP->alpha < 0)
-				pParticle->color [0].alpha = -colorP->alpha;
+				particleP->color [0].alpha = -colorP->alpha;
 			else {
-				if (2 == (pParticle->nFade = (char) colorP->alpha)) {
-					pParticle->color [0].red = 1.0f;
-					pParticle->color [0].green = 0.5f;
-					pParticle->color [0].blue = 0.0f;
+				if (2 == (particleP->nFade = (char) colorP->alpha)) {
+					particleP->color [0].red = 1.0f;
+					particleP->color [0].green = 0.5f;
+					particleP->color [0].blue = 0.0f;
 					}
-				pParticle->color [0].alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
+				particleP->color [0].alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
 				}
 			}
 		}
 #if 1
-	if (gameOpts->render.particles.bDisperse && !pParticle->bBright) {
+	if (gameOpts->render.particles.bDisperse && !particleP->bBright) {
 		fBrightness = 1.0f - fBrightness;
-		pParticle->color [0].alpha += fBrightness * fBrightness / 8.0f;
+		particleP->color [0].alpha += fBrightness * fBrightness / 8.0f;
 		}
 #endif
 	}
@@ -505,15 +505,15 @@ if (pDir) {
 		}
 #if 0
 	if (!colorP)	// hack for static smoke w/o user defined color
-		pParticle->color [0].green =
-		pParticle->color [0].blue = 1.0f;
+		particleP->color [0].green =
+		particleP->color [0].blue = 1.0f;
 #endif
 	vDrift *= nSpeed;
 	if ((nType == SMOKE_PARTICLES) || (nType == BUBBLE_PARTICLES))
-		pParticle->dir = *pDir * (3 * F1_0 / 4 + randN (16) * F1_0 / 64);
+		particleP->dir = *pDir * (3 * F1_0 / 4 + randN (16) * F1_0 / 64);
 	else
-		pParticle->dir = *pDir;
-	pParticle->bHaveDir = 1;
+		particleP->dir = *pDir;
+	particleP->bHaveDir = 1;
 	}
 else {
 	vmsVector	vOffs;
@@ -521,21 +521,25 @@ else {
 	vDrift [Y] = nSpeed - randN (2 * nSpeed);
 	vDrift [Z] = nSpeed - randN (2 * nSpeed);
 	vOffs = vDrift;
-	pParticle->dir.SetZero ();
-	pParticle->bHaveDir = 1;
+	particleP->dir.SetZero ();
+	particleP->bHaveDir = 1;
 	}
-pParticle->drift = vDrift;
+particleP->drift = vDrift;
 if (vEmittingFace)
-	pParticle->pos = *pPos;
+	particleP->pos = *pPos;
 else if (nType != BUBBLE_PARTICLES)
-	pParticle->pos = *pPos + vDrift * (F1_0 / 64);
+	particleP->pos = *pPos + vDrift * (F1_0 / 64);
 else {
-	//pParticle->pos = *pPos + vDrift * (F1_0 / 32);
+	//particleP->pos = *pPos + vDrift * (F1_0 / 32);
 	nSpeed = vDrift.Mag () / 16;
 	vDrift = vmsVector::Avg ((*pOrient) [RVEC] * (nSpeed - randN (2 * nSpeed)), (*pOrient) [UVEC] * (nSpeed - randN (2 * nSpeed)));
-	pParticle->pos = *pPos + vDrift + (*pOrient) [FVEC] * (F1_0 / 2 - randN (F1_0));
-	vmsVector::Normalize (pParticle->drift);
-	pParticle->drift *= F1_0 * 32;
+	particleP->pos = *pPos + vDrift + (*pOrient) [FVEC] * (F1_0 / 2 - randN (F1_0));
+#if 1
+	particleP->drift.SetZero ();
+#else
+	vmsVector::Normalize (particleP->drift);
+	particleP->drift *= F1_0 * 32;
+#endif
 	}
 if ((nType != BUBBLE_PARTICLES) && pOrient) {
 		vmsAngVec	vRot;
@@ -546,8 +550,8 @@ if ((nType != BUBBLE_PARTICLES) && pOrient) {
 	vRot [HA] = 2048 - ((d_rand () % 9) * 512);
 	mRot = vmsMatrix::Create (vRot);
 	//TODO: MM
-	pParticle->orient = *pOrient * mRot;
-	//pParticle->orient = *pOrient;
+	particleP->orient = *pOrient * mRot;
+	//particleP->orient = *pOrient;
 	}
 if (nLife < 0)
 	nLife = -nLife;
@@ -556,68 +560,68 @@ if (nType == SMOKE_PARTICLES) {
 		nLife = (nLife * 2) / 3;
 	nLife = nLife / 2 + randN (nLife / 2);
 	}
-pParticle->nLife =
-pParticle->nTTL = nLife;
-pParticle->nMoved = nCurTime;
-pParticle->nDelay = 0; //bStart ? randN (nLife) : 0;
+particleP->nLife =
+particleP->nTTL = nLife;
+particleP->nMoved = nCurTime;
+particleP->nDelay = 0; //bStart ? randN (nLife) : 0;
 if (nType == SMOKE_PARTICLES)
 	nRad += randN (nRad);
 else if (nType == BUBBLE_PARTICLES)
 	nRad = nRad / 10 + randN (9 * nRad / 10);
 else
 	nRad *= 2;
-if ((pParticle->bBlowUp = bBlowUp)) {
-	pParticle->nRad = nRad;
-	pParticle->nWidth =
-	pParticle->nHeight = nRad / 2;
+if ((particleP->bBlowUp = bBlowUp)) {
+	particleP->nRad = nRad;
+	particleP->nWidth =
+	particleP->nHeight = nRad / 2;
 	}
 else {
-	pParticle->nWidth =
-	pParticle->nHeight = nRad;
-	pParticle->nRad = nRad / 2;
+	particleP->nWidth =
+	particleP->nHeight = nRad;
+	particleP->nRad = nRad / 2;
 	}
 nFrames = nParticleFrames [gameStates.render.bPointSprites && !gameOpts->render.particles.bSort && (gameOpts->render.bDepthSort <= 0)][nType];
 if (nType == BULLET_PARTICLES) {
-	pParticle->nFrame = 0;
-	pParticle->nRotFrame = 0;
-	pParticle->nOrient = 3;
+	particleP->nFrame = 0;
+	particleP->nRotFrame = 0;
+	particleP->nOrient = 3;
 	}
 else if (nType == BUBBLE_PARTICLES) {
-	pParticle->nFrame = rand () % (nFrames * nFrames);
-	pParticle->nRotFrame = 0;
-	pParticle->nOrient = 0;
+	particleP->nFrame = rand () % (nFrames * nFrames);
+	particleP->nRotFrame = 0;
+	particleP->nOrient = 0;
 	}
 else if (nType == LIGHT_PARTICLES) {
-	pParticle->nFrame = 0;
-	pParticle->nRotFrame = 0;
-	pParticle->nOrient = 0;
+	particleP->nFrame = 0;
+	particleP->nRotFrame = 0;
+	particleP->nOrient = 0;
 	}
 else {
-	pParticle->nFrame = rand () % (nFrames * nFrames);
-	pParticle->nRotFrame = pParticle->nFrame / 2;
-	pParticle->nOrient = rand () % 4;
+	particleP->nFrame = rand () % (nFrames * nFrames);
+	particleP->nRotFrame = particleP->nFrame / 2;
+	particleP->nOrient = rand () % 4;
 	}
 #if 1
-if (pParticle->bEmissive)
-	pParticle->color [0].alpha *= ParticleBrightness (colorP);
+if (particleP->bEmissive)
+	particleP->color [0].alpha *= ParticleBrightness (colorP);
 else if (nSmokeType == SMOKE_PARTICLES)
-	pParticle->color [0].alpha /= colorP ? color.red + color.green + color.blue + 2 : 2;
+	particleP->color [0].alpha /= colorP ? color.red + color.green + color.blue + 2 : 2;
 else if (nSmokeType == BUBBLE_PARTICLES)
-	pParticle->color [0].alpha /= 2;
+	particleP->color [0].alpha /= 2;
 else if (nSmokeType == LIGHT_PARTICLES)
-	pParticle->color [0].alpha /= 5;
+	particleP->color [0].alpha /= 5;
 else if (nSmokeType == GATLING_PARTICLES)
-	;//pParticle->color [0].alpha /= 6;
+	;//particleP->color [0].alpha /= 6;
 #endif
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int DestroyParticle (tParticle *pParticle)
+int DestroyParticle (tParticle *particleP)
 {
 #if DBG
-memset (pParticle, 0, sizeof (tParticle));
+memset (particleP, 0, sizeof (tParticle));
 #endif
 return 1;
 }
@@ -642,20 +646,20 @@ static int bSidePokesOut [6];
 //static int nVert [6];
 static vmsVector	*wallNorm;
 
-int CollideParticleAndWall (tParticle *pParticle)
+int CollideParticleAndWall (tParticle *particleP)
 {
 	tSegment		*segP;
 	tSide			*sideP;
 	int			bInit, nSide, nVert, nChild, nFace, nInFront;
 	fix			nDist;
 	int			*vlP;
-	vmsVector	pos = pParticle->pos;
+	vmsVector	pos = particleP->pos;
 
 //redo:
 
-segP = gameData.segs.segments + pParticle->nSegment;
-if ((bInit = (pParticle->nSegment != nPartSeg)))
-	nPartSeg = pParticle->nSegment;
+segP = gameData.segs.segments + particleP->nSegment;
+if ((bInit = (particleP->nSegment != nPartSeg)))
+	nPartSeg = particleP->nSegment;
 for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
 	vlP = vertexList [nSide];
 	if (bInit) {
@@ -685,7 +689,7 @@ for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
 	if (!nInFront || (bSidePokesOut [nSide] && (nFaces [nSide] == 2) && (nInFront < 2))) {
 		if (0 > (nChild = segP->children [nSide]))
 			return 1;
-		pParticle->nSegment = nChild;
+		particleP->nSegment = nChild;
 		break;
 #if 0
 		if (bRedo)
@@ -700,23 +704,23 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int UpdateParticle (tParticle *pParticle, int nCurTime)
+int UpdateParticle (tParticle *particleP, int nCurTime)
 {
 	int			j, nRad;
 	short			nSegment;
 	fix			t, dot;
 	vmsVector	pos, drift;
-	fix			drag = (pParticle->nType == BUBBLE_PARTICLES) ? F1_0 : F2X ((float) pParticle->nLife / (float) pParticle->nTTL);
+	fix			drag = (particleP->nType == BUBBLE_PARTICLES) ? F1_0 : F2X ((float) particleP->nLife / (float) particleP->nTTL);
 
-if ((pParticle->nLife <= 0) /*|| (pParticle->color [0].alpha < 0.01f)*/)
+if ((particleP->nLife <= 0) /*|| (particleP->color [0].alpha < 0.01f)*/)
 	return 0;
-t = nCurTime - pParticle->nMoved;
-if (pParticle->nDelay > 0)
-	pParticle->nDelay -= t;
+t = nCurTime - particleP->nMoved;
+if (particleP->nDelay > 0)
+	particleP->nDelay -= t;
 else {
-	pos = pParticle->pos;
-	drift = pParticle->drift;
-	if ((pParticle->nType == SMOKE_PARTICLES) || (pParticle->nType == BUBBLE_PARTICLES)) {
+	pos = particleP->pos;
+	drift = particleP->drift;
+	if ((particleP->nType == SMOKE_PARTICLES) /*|| (particleP->nType == BUBBLE_PARTICLES)*/) {
 		drift [X] = ChangeDir (drift [X]);
 		drift [Y] = ChangeDir (drift [Y]);
 		drift [Z] = ChangeDir (drift [Z]);
@@ -724,89 +728,89 @@ else {
 	for (j = 0; j < 2; j++) {
 		if (t < 0)
 			t = -t;
-		pParticle->pos = pos + drift * t; //(t * F1_0 / 1000);
-		if (pParticle->bHaveDir) {
-			vmsVector vi = drift, vj = pParticle->dir;
+		particleP->pos = pos + drift * t; //(t * F1_0 / 1000);
+		if (particleP->bHaveDir) {
+			vmsVector vi = drift, vj = particleP->dir;
 			vmsVector::Normalize (vi);
 			vmsVector::Normalize (vj);
-//				if (vmsVector::Dot(drift, pParticle->dir) < 0)
+//				if (vmsVector::Dot(drift, particleP->dir) < 0)
 			if (vmsVector::Dot (vi, vj) < 0)
 				drag = -drag;
-//				VmVecScaleInc (&drift, &pParticle->dir, drag);
-			pParticle->pos += pParticle->dir * drag;
+//				VmVecScaleInc (&drift, &particleP->dir, drag);
+			particleP->pos += particleP->dir * drag;
 			}
-		if (pParticle->nTTL - pParticle->nLife > F1_0 / 16) {
-			nSegment = FindSegByPos (pParticle->pos, pParticle->nSegment, 0, 0, 1);
+		if (particleP->nTTL - particleP->nLife > F1_0 / 16) {
+			nSegment = FindSegByPos (particleP->pos, particleP->nSegment, 0, 0, 1);
 			if (nSegment < 0) {
 #if DBG
-				if (pParticle->nSegment == nDbgSeg)
-					nSegment = FindSegByPos (pParticle->pos, pParticle->nSegment, 1, 0, 1);
+				if (particleP->nSegment == nDbgSeg)
+					nSegment = FindSegByPos (particleP->pos, particleP->nSegment, 1, 0, 1);
 #endif
-				nSegment = FindSegByPos (pParticle->pos, pParticle->nSegment, 0, 1, 1);
+				nSegment = FindSegByPos (particleP->pos, particleP->nSegment, 0, 1, 1);
 				if (nSegment < 0)
 					return 0;
 				}
-			if ((pParticle->nType == BUBBLE_PARTICLES) && (SEGMENT2S [nSegment].special != SEGMENT_IS_WATER))
+			if ((particleP->nType == BUBBLE_PARTICLES) && (SEGMENT2S [nSegment].special != SEGMENT_IS_WATER))
 				return 0;
-			pParticle->nSegment = nSegment;
+			particleP->nSegment = nSegment;
 			}
-		if (gameOpts->render.particles.bCollisions && CollideParticleAndWall (pParticle)) {	//Reflect the particle
-			if (pParticle->nType == BUBBLE_PARTICLES)
+		if (gameOpts->render.particles.bCollisions && CollideParticleAndWall (particleP)) {	//Reflect the particle
+			if (particleP->nType == BUBBLE_PARTICLES)
 				return 0;
 			if (j)
 				return 0;
 			else if (!(dot = vmsVector::Dot(drift, *wallNorm)))
 				return 0;
 			else {
-				drift = pParticle->drift + *wallNorm * (-2 * dot);
-				//VmVecScaleAdd (&pParticle->pos, &pos, &drift, 2 * t);
-				pParticle->nBounce = 3;
+				drift = particleP->drift + *wallNorm * (-2 * dot);
+				//VmVecScaleAdd (&particleP->pos, &pos, &drift, 2 * t);
+				particleP->nBounce = 3;
 				continue;
 				}
 			}
-		else if (pParticle->nBounce)
-			pParticle->nBounce--;
+		else if (particleP->nBounce)
+			particleP->nBounce--;
 		else {
 			break;
 			}
 		}
-	pParticle->drift = drift;
-	if (pParticle->nTTL >= 0) {
+	particleP->drift = drift;
+	if (particleP->nTTL >= 0) {
 #if SMOKE_SLOWMO
-		pParticle->nLife -= (int) (t / gameStates.gameplay.slowmo [0].fSpeed);
+		particleP->nLife -= (int) (t / gameStates.gameplay.slowmo [0].fSpeed);
 #else
-		pParticle->nLife -= t;
+		particleP->nLife -= t;
 #endif
-		if ((pParticle->nType == SMOKE_PARTICLES) && (nRad = pParticle->nRad)) {
-			if (pParticle->bBlowUp) {
-				if (pParticle->nWidth >= nRad)
-					pParticle->nRad = 0;
+		if ((particleP->nType == SMOKE_PARTICLES) && (nRad = particleP->nRad)) {
+			if (particleP->bBlowUp) {
+				if (particleP->nWidth >= nRad)
+					particleP->nRad = 0;
 				else {
-					pParticle->nWidth += nRad / 10 / pParticle->bBlowUp;
-					pParticle->nHeight += nRad / 10 / pParticle->bBlowUp;
-					if (pParticle->nWidth > nRad)
-						pParticle->nWidth = nRad;
-					if (pParticle->nHeight > nRad)
-						pParticle->nHeight = nRad;
-					pParticle->color [0].alpha *= (1.0f + 0.0725f / pParticle->bBlowUp);
-					if (pParticle->color [0].alpha > 1)
-						pParticle->color [0].alpha = 1;
+					particleP->nWidth += nRad / 10 / particleP->bBlowUp;
+					particleP->nHeight += nRad / 10 / particleP->bBlowUp;
+					if (particleP->nWidth > nRad)
+						particleP->nWidth = nRad;
+					if (particleP->nHeight > nRad)
+						particleP->nHeight = nRad;
+					particleP->color [0].alpha *= (1.0f + 0.0725f / particleP->bBlowUp);
+					if (particleP->color [0].alpha > 1)
+						particleP->color [0].alpha = 1;
 					}
 				}
 			else {
-				if (pParticle->nWidth <= nRad)
-					pParticle->nRad = 0;
+				if (particleP->nWidth <= nRad)
+					particleP->nRad = 0;
 				else {
-					pParticle->nRad += nRad / 5;
-					pParticle->color [0].alpha *= 1.0725f;
-					if (pParticle->color [0].alpha > 1)
-						pParticle->color [0].alpha = 1;
+					particleP->nRad += nRad / 5;
+					particleP->color [0].alpha *= 1.0725f;
+					if (particleP->color [0].alpha > 1)
+						particleP->color [0].alpha = 1;
 					}
 				}
 			}
 		}
 	}
-pParticle->nMoved = nCurTime;
+particleP->nMoved = nCurTime;
 return 1;
 }
 
@@ -879,7 +883,7 @@ if (iBuffer) {
 
 #define PARTICLE_POSITIONS 64
 
-int RenderParticle (tParticle *pParticle, float brightness)
+int RenderParticle (tParticle *particleP, float brightness)
 {
 	vmsVector			hp;
 	GLfloat				d, u, v;
@@ -888,9 +892,9 @@ int RenderParticle (tParticle *pParticle, float brightness)
 	tTexCoord2f			texCoord [4];
 	tParticleVertex	*pb;
 	fVector				vOffset, vCenter;
-	int					i, nFrame, nType = pParticle->nType, bEmissive = pParticle->bEmissive,
+	int					i, nFrame, nType = particleP->nType, bEmissive = particleP->bEmissive,
 							bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort && (gameOpts->render.bDepthSort <= 0);
-	float					decay = (nType == BUBBLE_PARTICLES) ? 1.0f : (float) pParticle->nLife / (float) pParticle->nTTL;
+	float					decay = (nType == BUBBLE_PARTICLES) ? 1.0f : (float) particleP->nLife / (float) particleP->nTTL;
 
 	static int			nFrames = 1;
 	static float		deltaUV = 1.0f;
@@ -898,14 +902,14 @@ int RenderParticle (tParticle *pParticle, float brightness)
 	static int			bInitSinCos = 1;
 	static fMatrix		mRot;
 
-if (pParticle->nDelay > 0)
+if (particleP->nDelay > 0)
 	return 0;
 if (!(bmP = bmpParticle [0][nType]))
 	return 0;
 if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
 if (gameOpts->render.bDepthSort > 0) {
-	hp = pParticle->transPos;
+	hp = particleP->transPos;
 	if ((gameData.smoke.nLastType != nType) || (brightness != bufferBrightness) || (bBufferEmissive != bEmissive)) {
 		if (gameStates.render.bVertexArrays)
 			FlushParticleBuffer (brightness);
@@ -917,7 +921,7 @@ if (gameOpts->render.bDepthSort > 0) {
 			return 0;
 		nFrames = nParticleFrames [0][nType];
 		deltaUV = 1.0f / (float) nFrames;
-		if (pParticle->bEmissive)
+		if (particleP->bEmissive)
 			glBlendFunc (GL_ONE, GL_ONE);
 		else
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -926,7 +930,7 @@ if (gameOpts->render.bDepthSort > 0) {
 		glBegin (GL_QUADS);
 	}
 else if (gameOpts->render.particles.bSort) {
-	hp = pParticle->transPos;
+	hp = particleP->transPos;
 	if ((gameData.smoke.nLastType != nType) || (brightness != bufferBrightness)) {
 		if (gameStates.render.bVertexArrays)
 			FlushParticleBuffer (brightness);
@@ -937,7 +941,7 @@ else if (gameOpts->render.particles.bSort) {
 			return 0;
 		nFrames = nParticleFrames [bPointSprites][nType];
 		deltaUV = 1.0f / (float) nFrames;
-		if (pParticle->bEmissive)
+		if (particleP->bEmissive)
 			glBlendFunc (GL_ONE, GL_ONE);
 		else
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -946,48 +950,47 @@ else if (gameOpts->render.particles.bSort) {
 		}
 	}
 else
-	G3TransformPoint(hp, pParticle->pos, 0);
-if (pParticle->bBright)
+	G3TransformPoint(hp, particleP->pos, 0);
+if (particleP->bBright)
 	brightness = (float) sqrt (brightness);
 if (nType == SMOKE_PARTICLES) {
-	if (pParticle->nFade > 0) {
-		if (pParticle->color [0].green < pParticle->color [1].green) {
+	if (particleP->nFade > 0) {
+		if (particleP->color [0].green < particleP->color [1].green) {
 #if SMOKE_SLOWMO
-			pParticle->color [0].green += 1.0f / 20.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
+			particleP->color [0].green += 1.0f / 20.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
 #else
-			pParticle->color [0].green += 1.0f / 20.0f;
+			particleP->color [0].green += 1.0f / 20.0f;
 #endif
-			if (pParticle->color [0].green > pParticle->color [1].green) {
-				pParticle->color [0].green = pParticle->color [1].green;
-				pParticle->nFade--;
+			if (particleP->color [0].green > particleP->color [1].green) {
+				particleP->color [0].green = particleP->color [1].green;
+				particleP->nFade--;
 				}
 			}
-		if (pParticle->color [0].blue < pParticle->color [1].blue) {
+		if (particleP->color [0].blue < particleP->color [1].blue) {
 #if SMOKE_SLOWMO
-			pParticle->color [0].blue += 1.0f / 10.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
+			particleP->color [0].blue += 1.0f / 10.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
 #else
-			pParticle->color [0].blue += 1.0f / 10.0f;
+			particleP->color [0].blue += 1.0f / 10.0f;
 #endif
-			if (pParticle->color [0].blue > pParticle->color [1].blue) {
-				pParticle->color [0].blue = pParticle->color [1].blue;
-				pParticle->nFade--;
+			if (particleP->color [0].blue > particleP->color [1].blue) {
+				particleP->color [0].blue = particleP->color [1].blue;
+				particleP->nFade--;
 				}
 			}
 		}
-	else if (pParticle->nFade == 0) {
-		pParticle->color [0].red = pParticle->color [1].red * RANDOM_FADE;
-		pParticle->color [0].green = pParticle->color [1].green * RANDOM_FADE;
-		pParticle->color [0].blue = pParticle->color [1].blue * RANDOM_FADE;
-		pParticle->nFade = -1;
+	else if (particleP->nFade == 0) {
+		particleP->color [0].red = particleP->color [1].red * RANDOM_FADE;
+		particleP->color [0].green = particleP->color [1].green * RANDOM_FADE;
+		particleP->color [0].blue = particleP->color [1].blue * RANDOM_FADE;
+		particleP->nFade = -1;
 		}
 	}
-pc = pParticle->color [0];
+pc = particleP->color [0];
 //pc.alpha *= /*gameOpts->render.particles.bDisperse ? decay2 :*/ decay;
 if ((nType == SMOKE_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
-	if ((nType == BUBBLE_PARTICLES) && !gameOpts->render.particles.bWobbleBubbles)
-		pParticle->nFrame = 0;
-	u = (float) (pParticle->nFrame % nFrames) * deltaUV;
-	v = (float) (pParticle->nFrame / nFrames) * deltaUV;
+	char nFrame = ((nType == BUBBLE_PARTICLES) && !gameOpts->render.particles.bWobbleBubbles) ? 0 : particleP->nFrame;
+	u = (float) (nFrame % nFrames) * deltaUV;
+	v = (float) (nFrame / nFrames) * deltaUV;
 	d = deltaUV;
 	}
 else {
@@ -997,7 +1000,7 @@ else {
 if (nType == SMOKE_PARTICLES) {
 #if 0
 	if (SHOW_DYN_LIGHT) {
-		tFaceColor *psc = AvgSgmColor (pParticle->nSegment, NULL);
+		tFaceColor *psc = AvgSgmColor (particleP->nSegment, NULL);
 		pc.red *= (float) psc->color.red;
 		pc.green *= (float) psc->color.green;
 		pc.blue *= (float) psc->color.blue;
@@ -1009,13 +1012,13 @@ if (nType == SMOKE_PARTICLES) {
 	pc.blue *= brightness;
 	}
 vCenter = hp.ToFloat ();
-i = pParticle->nOrient;
+i = particleP->nOrient;
 if (bEmissive) { //scale light trail particle color to reduce saturation
 	pc.red /= 50.0f;
 	pc.green /= 50.0f;
 	pc.blue /= 50.0f;
 	}
-else if (pParticle->nType != BUBBLE_PARTICLES) {
+else if (particleP->nType != BUBBLE_PARTICLES) {
 #if 0
 	pc.alpha = (pc.alpha - 0.005f) * decay + 0.005f;
 #	if 1
@@ -1025,15 +1028,15 @@ else if (pParticle->nType != BUBBLE_PARTICLES) {
 	float fFade = (float) cos ((double) sqr (1 - decay) * Pi) / 2 + 0.5f;
 	pc.alpha *= fFade;
 #endif
-	pc.alpha *= alphaScale [gameOpts->render.particles.nAlpha [gameOpts->render.particles.bSyncSizes ? 0 : pParticle->nClass]];
+	pc.alpha *= alphaScale [gameOpts->render.particles.nAlpha [gameOpts->render.particles.bSyncSizes ? 0 : particleP->nClass]];
 	}
 if (pc.alpha < 1.0 / 255.0) {
-	pParticle->nLife = 0;
+	particleP->nLife = 0;
 	return 0;
 	}
 #if 0
 if (!gameData.render.lights.dynamic.headlights.nLights && (pc.red + pc.green + pc.blue < 0.001)) {
-	pParticle->nLife = 0;
+	particleP->nLife = 0;
 	return 0;
 	}
 #endif
@@ -1043,12 +1046,12 @@ if ((nType == SMOKE_PARTICLES) && gameOpts->render.particles.bDisperse) {
 #else
 	decay = (float) pow (decay * decay * decay, 1.0f / 5.0f);
 #endif
-	vOffset [X] = X2F (pParticle->nWidth) / decay;
-	vOffset [Y] = X2F (pParticle->nHeight) / decay;
+	vOffset [X] = X2F (particleP->nWidth) / decay;
+	vOffset [Y] = X2F (particleP->nHeight) / decay;
 	}
 else {
-	vOffset [X] = X2F (pParticle->nWidth) * decay;
-	vOffset [Y] = X2F (pParticle->nHeight) * decay;
+	vOffset [X] = X2F (particleP->nWidth) * decay;
+	vOffset [Y] = X2F (particleP->nHeight) * decay;
 	}
 if (gameStates.render.bVertexArrays) {
 	vOffset [Z] = 0;
@@ -1066,7 +1069,7 @@ if (gameStates.render.bVertexArrays) {
 	pb [2].color =
 	pb [3].color = pc;
 	if ((nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
-		vCenter [X] += (float) sin (pParticle->nFrame / 8.0f * Pi) / (10 + rand () % 6);
+		vCenter [X] += (float) sin (particleP->nFrame / 4.0f * Pi) / (10 + rand () % 6);
 	if (!nType && gameOpts->render.particles.bRotate) {
 		if (bInitSinCos) {
 			OglComputeSinCos (sizeofa (sinCosPart), sinCosPart);
@@ -1077,7 +1080,7 @@ if (gameStates.render.bVertexArrays) {
 			mRot [FVEC][Y] = 0;
 			mRot [FVEC][Z] = 1;
 			}
-		nFrame = (pParticle->nOrient & 1) ? 63 - pParticle->nRotFrame : pParticle->nRotFrame;
+		nFrame = (particleP->nOrient & 1) ? 63 - particleP->nRotFrame : particleP->nRotFrame;
 		mRot [RVEC][X] =
 		mRot [UVEC][Y] = sinCosPart [nFrame].fCos;
 		mRot [UVEC][X] = sinCosPart [nFrame].fSin;
@@ -1134,9 +1137,9 @@ else {
 	glVertex3f (vCenter[X] - vOffset[X], vCenter[Y] - vOffset[Y], vCenter[Z]);
 	}
 if (gameData.smoke.bAnimate) {
-	pParticle->nFrame = (pParticle->nFrame + 1) % (nFrames * nFrames);
-	if (!(nType || (pParticle->nFrame & 1)))
-		pParticle->nRotFrame = (pParticle->nRotFrame + 1) % 64;
+	particleP->nFrame = (particleP->nFrame + 1) % (nFrames * nFrames);
+	if (!(nType || (particleP->nFrame & 1)))
+		particleP->nRotFrame = (particleP->nRotFrame + 1) % 64;
 	}
 if (gameOpts->render.bDepthSort > 0)
 	glEnd ();
@@ -1217,7 +1220,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int EndRenderSmoke (tCloud *pCloud)
+int EndRenderSmoke (tCloud *cloudP)
 {
 if (gameOpts->render.bDepthSort <= 0) {
 	if (!CloseParticleBuffer ())
@@ -1251,33 +1254,33 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-float CloudBrightness (tCloud *pCloud)
+float CloudBrightness (tCloud *cloudP)
 {
 	tObject	*objP;
 
-if (pCloud->nObject >= 0x70000000)
+if (cloudP->nObject >= 0x70000000)
 	return 0.5f;
-if (pCloud->nType > 2)
+if (cloudP->nType > 2)
 	return 1.0f;
-if (pCloud->nObject < 0)
-	return pCloud->fBrightness;
-if (pCloud->nObjType == OBJ_EFFECT)
-	return (float) pCloud->nDefBrightness / 100.0f;
-if (pCloud->nObjType == OBJ_DEBRIS)
+if (cloudP->nObject < 0)
+	return cloudP->fBrightness;
+if (cloudP->nObjType == OBJ_EFFECT)
+	return (float) cloudP->nDefBrightness / 100.0f;
+if (cloudP->nObjType == OBJ_DEBRIS)
 	return 0.5f;
-if ((pCloud->nObjType == OBJ_WEAPON) && (pCloud->nObjId == PROXMINE_ID))
+if ((cloudP->nObjType == OBJ_WEAPON) && (cloudP->nObjId == PROXMINE_ID))
 	return 0.2f;
-objP = OBJECTS + pCloud->nObject;
-if ((objP->info.nType != pCloud->nObjType) || (objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
-	return pCloud->fBrightness;
-return pCloud->fBrightness = (float) ObjectDamage (objP) * 0.5f + 0.1f;
+objP = OBJECTS + cloudP->nObject;
+if ((objP->info.nType != cloudP->nObjType) || (objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
+	return cloudP->fBrightness;
+return cloudP->fBrightness = (float) ObjectDamage (objP) * 0.5f + 0.1f;
 }
 
 //------------------------------------------------------------------------------
 
 #if MT_PARTICLES
 
-int RunCloudThread (tCloud *pCloud, int nCurTime, tRenderTask nTask)
+int RunCloudThread (tCloud *cloudP, int nCurTime, tRenderTask nTask)
 {
 int	i;
 
@@ -1286,7 +1289,7 @@ if (!gameStates.app.bMultiThreaded)
 while (tiRender.ti [0].bExec && tiRender.ti [1].bExec)
 	G3_SLEEP (0);
 i = tiRender.ti [0].bExec ? 1 : 0;
-tiRender.clouds [i] = pCloud;
+tiRender.clouds [i] = cloudP;
 tiRender.nCurTime [i] = nCurTime;
 tiRender.nTask = nTask;
 tiRender.ti [i].bExec = 1;
@@ -1297,100 +1300,100 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
+int CreateCloud (tCloud *cloudP, vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
 					  short nSegment, int nObject, int nMaxParts, float nPartScale,
 					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
 					  tRgbaColorf *colorP, int nCurTime, int bBlowUpParts, vmsVector *vEmittingFace)
 {
-if (!(pCloud->pParticles = (tParticle *) D2_ALLOC (nMaxParts * sizeof (tParticle))))
+if (!(cloudP->pParticles = (tParticle *) D2_ALLOC (nMaxParts * sizeof (tParticle))))
 	return 0;
 #if SORT_CLOUD_PARTS
 if (gameOpts->render.particles.bSort) {
-	if (!(pCloud->pPartIdx = (tPartIdx *) D2_ALLOC (nMaxParts * sizeof (tPartIdx))))
+	if (!(cloudP->pPartIdx = (tPartIdx *) D2_ALLOC (nMaxParts * sizeof (tPartIdx))))
 		gameOpts->render.particles.bSort = 0;
 	}
 else
 #endif
-	pCloud->pPartIdx = NULL;
-pCloud->nLife = nLife;
-pCloud->nBirth = nCurTime;
-pCloud->nSpeed = nSpeed;
-pCloud->nType = nType;
-if ((pCloud->bHaveColor = (colorP != NULL)))
-	pCloud->color = *colorP;
-if ((pCloud->bHaveDir = (pDir != NULL)))
-	pCloud->dir = *pDir;
-pCloud->prevPos =
-pCloud->pos = *pPos;
+	cloudP->pPartIdx = NULL;
+cloudP->nLife = nLife;
+cloudP->nBirth = nCurTime;
+cloudP->nSpeed = nSpeed;
+cloudP->nType = nType;
+if ((cloudP->bHaveColor = (colorP != NULL)))
+	cloudP->color = *colorP;
+if ((cloudP->bHaveDir = (pDir != NULL)))
+	cloudP->dir = *pDir;
+cloudP->prevPos =
+cloudP->pos = *pPos;
 if (pOrient)
-	pCloud->orient = *pOrient;
+	cloudP->orient = *pOrient;
 else
-	pCloud->orient = vmsMatrix::IDENTITY;
-pCloud->bHavePrevPos = 1;
-pCloud->bBlowUpParts = bBlowUpParts;
-pCloud->nParts = 0;
-pCloud->nMoved = nCurTime;
-pCloud->nPartLimit =
-pCloud->nMaxParts = nMaxParts;
-pCloud->nFirstPart = 0;
-pCloud->nPartScale = nPartScale;
-pCloud->nDensity = nDensity;
-pCloud->nPartsPerPos = nPartsPerPos;
-pCloud->nSegment = nSegment;
-pCloud->nObject = nObject;
+	cloudP->orient = vmsMatrix::IDENTITY;
+cloudP->bHavePrevPos = 1;
+cloudP->bBlowUpParts = bBlowUpParts;
+cloudP->nParts = 0;
+cloudP->nMoved = nCurTime;
+cloudP->nPartLimit =
+cloudP->nMaxParts = nMaxParts;
+cloudP->nFirstPart = 0;
+cloudP->nPartScale = nPartScale;
+cloudP->nDensity = nDensity;
+cloudP->nPartsPerPos = nPartsPerPos;
+cloudP->nSegment = nSegment;
+cloudP->nObject = nObject;
 if ((nObject >= 0) && (nObject < 0x70000000)) {
-	pCloud->nObjType = OBJECTS [nObject].info.nType;
-	pCloud->nObjId = OBJECTS [nObject].info.nId;
+	cloudP->nObjType = OBJECTS [nObject].info.nType;
+	cloudP->nObjId = OBJECTS [nObject].info.nId;
 	}
-pCloud->nClass = SmokeObjClass (nObject);
-pCloud->fPartsPerTick = (float) nMaxParts / (float) abs (nLife);
-pCloud->nTicks = 0;
-pCloud->nDefBrightness = 0;
-if ((pCloud->bEmittingFace = (vEmittingFace != NULL)))
-	memcpy (pCloud->vEmittingFace, vEmittingFace, sizeof (pCloud->vEmittingFace));
-pCloud->fBrightness = (nObject < 0) ? 0.5f : CloudBrightness (pCloud);
+cloudP->nClass = SmokeObjClass (nObject);
+cloudP->fPartsPerTick = (float) nMaxParts / (float) abs (nLife);
+cloudP->nTicks = 0;
+cloudP->nDefBrightness = 0;
+if ((cloudP->bEmittingFace = (vEmittingFace != NULL)))
+	memcpy (cloudP->vEmittingFace, vEmittingFace, sizeof (cloudP->vEmittingFace));
+cloudP->fBrightness = (nObject < 0) ? 0.5f : CloudBrightness (cloudP);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int DestroyCloud (tCloud *pCloud)
+int DestroyCloud (tCloud *cloudP)
 {
-if (pCloud->pParticles) {
-	D2_FREE (pCloud->pParticles);
-	pCloud->pParticles = NULL;
-	D2_FREE (pCloud->pPartIdx);
-	pCloud->pPartIdx = NULL;
+if (cloudP->pParticles) {
+	D2_FREE (cloudP->pParticles);
+	cloudP->pParticles = NULL;
+	D2_FREE (cloudP->pPartIdx);
+	cloudP->pPartIdx = NULL;
 	}
-pCloud->nParts =
-pCloud->nMaxParts = 0;
+cloudP->nParts =
+cloudP->nMaxParts = 0;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-inline int CloudLives (tCloud *pCloud, int nCurTime)
+inline int CloudLives (tCloud *cloudP, int nCurTime)
 {
-return (pCloud->nLife < 0) || (pCloud->nBirth + pCloud->nLife > nCurTime);
+return (cloudP->nLife < 0) || (cloudP->nBirth + cloudP->nLife > nCurTime);
 }
 
 //------------------------------------------------------------------------------
 
-inline int CloudIsDead (tCloud *pCloud, int nCurTime)
+inline int CloudIsDead (tCloud *cloudP, int nCurTime)
 {
-return !(CloudLives (pCloud, nCurTime) || pCloud->nParts);
+return !(CloudLives (cloudP, nCurTime) || cloudP->nParts);
 }
 
 //------------------------------------------------------------------------------
 
 #if 0
 
-void CheckCloud (tCloud *pCloud)
+void CheckCloud (tCloud *cloudP)
 {
 	int	i, j;
 
-for (i = pCloud->nParts, j = pCloud->nFirstPart; i; i--, j = (j + 1) % pCloud->nPartLimit)
-	if (pCloud->pParticles [j].nType < 0)
+for (i = cloudP->nParts, j = cloudP->nFirstPart; i; i--, j = (j + 1) % cloudP->nPartLimit)
+	if (cloudP->pParticles [j].nType < 0)
 		j = j;
 }
 
@@ -1398,21 +1401,21 @@ for (i = pCloud->nParts, j = pCloud->nFirstPart; i; i--, j = (j + 1) % pCloud->n
 
 //------------------------------------------------------------------------------
 
-int UpdateCloud (tCloud *pCloud, int nCurTime, int nThread)
+int UpdateCloud (tCloud *cloudP, int nCurTime, int nThread)
 {
 #if MT_PARTICLES
-if ((nThread < 0) && RunCloudThread (pCloud, nCurTime, rtUpdateParticles)) {
+if ((nThread < 0) && RunCloudThread (cloudP, nCurTime, rtUpdateParticles)) {
 	return 0;
 	}
 else
 #endif
 	{
-		tCloud		c = *pCloud;
+		tCloud		c = *cloudP;
 		int			t, h, i, j;
 		float			fDist;
-		float			fBrightness = CloudBrightness (pCloud);
-		vmsMatrix	mOrient = pCloud->orient;
-		vmsVector	vDelta, vPos, *pDir = (pCloud->bHaveDir ? &pCloud->dir : NULL),
+		float			fBrightness = CloudBrightness (cloudP);
+		vmsMatrix	mOrient = cloudP->orient;
+		vmsVector	vDelta, vPos, *pDir = (cloudP->bHaveDir ? &cloudP->dir : NULL),
 						*vEmittingFace = c.bEmittingFace ? c.vEmittingFace : NULL;
 		fVector		vDeltaf, vPosf;
 
@@ -1436,7 +1439,7 @@ else
 				goto funcExit;
 			}
 		c.nTicks = 0;
-		if (CloudLives (pCloud, nCurTime)) {
+		if (CloudLives (cloudP, nCurTime)) {
 			vDelta = c.pos - c.prevPos;
 			fDist = X2F (vDelta.Mag());
 			h = c.nPartsPerPos;
@@ -1485,12 +1488,12 @@ else
 
 funcExit:
 
-	pCloud->bHavePrevPos = 1;
-	pCloud->nMoved = nCurTime;
-	pCloud->prevPos = pCloud->pos;
-	pCloud->nTicks = c.nTicks;
-	pCloud->nFirstPart = c.nFirstPart;
-	return pCloud->nParts = c.nParts;
+	cloudP->bHavePrevPos = 1;
+	cloudP->nMoved = nCurTime;
+	cloudP->prevPos = cloudP->pos;
+	cloudP->nTicks = c.nTicks;
+	cloudP->nFirstPart = c.nFirstPart;
+	return cloudP->nParts = c.nParts;
 	}
 }
 
@@ -1592,19 +1595,19 @@ return nParts;
 
 //------------------------------------------------------------------------------
 
-int RenderCloud (tCloud *pCloud, int nThread)
+int RenderCloud (tCloud *cloudP, int nThread)
 {
 #if MT_PARTICLES
-if (((gameOpts->render.bDepthSort > 0) && (nThread < 0)) && RunCloudThread (pCloud, 0, rtRenderParticles)) {
+if (((gameOpts->render.bDepthSort > 0) && (nThread < 0)) && RunCloudThread (cloudP, 0, rtRenderParticles)) {
 	return 0;
 	}
 else
 #endif
 	{
-		float			brightness = CloudBrightness (pCloud);
-		int			nParts = pCloud->nParts, h, i, j,
-						nFirstPart = pCloud->nFirstPart,
-						nPartLimit = pCloud->nPartLimit;
+		float			brightness = CloudBrightness (cloudP);
+		int			nParts = cloudP->nParts, h, i, j,
+						nFirstPart = cloudP->nFirstPart,
+						nPartLimit = cloudP->nPartLimit;
 #if SORT_CLOUD_PARTS
 		int			bSorted = gameOpts->render.particles.bSort && (nParts > 1);
 		tPartIdx		*pPartIdx;
@@ -1613,168 +1616,168 @@ else
 
 	if (gameOpts->render.bDepthSort > 0) {
 		for (h = 0, i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit)
-			if (TIAddParticle (pCloud->pParticles + j, brightness, nThread))
+			if (TIAddParticle (cloudP->pParticles + j, brightness, nThread))
 				h++;
 		return h;
 		}
 	else {
-		if (!BeginRenderSmoke (pCloud->nType, pCloud->nPartScale))
+		if (!BeginRenderSmoke (cloudP->nType, cloudP->nPartScale))
 			return 0;
 #if SORT_CLOUD_PARTS
 		if (bSorted) {
-			pPartIdx = pCloud->pPartIdx;
-			nParts = SortCloudParticles (pCloud->pParticles, pPartIdx, nParts, nFirstPart, nPartLimit);
+			pPartIdx = cloudP->pPartIdx;
+			nParts = SortCloudParticles (cloudP->pParticles, pPartIdx, nParts, nFirstPart, nPartLimit);
 			for (i = 0; i < nParts; i++)
-				RenderParticle (pCloud->pParticles + pPartIdx [i].i, brightness);
+				RenderParticle (cloudP->pParticles + pPartIdx [i].i, brightness);
 			}
 		else
 #endif //SORT_CLOUD_PARTS
-		v = pCloud->prevPos - viewInfo.pos;
-		if (pCloud->bHavePrevPos &&
-			(vmsVector::Dist(pCloud->pos, viewInfo.pos) >= v.Mag()) &&
+		v = cloudP->prevPos - viewInfo.pos;
+		if (cloudP->bHavePrevPos &&
+			(vmsVector::Dist(cloudP->pos, viewInfo.pos) >= v.Mag()) &&
 			(vmsVector::Dot(v, gameData.objs.viewerP->info.position.mOrient[FVEC]) >= 0)) {	//emitter moving away and facing towards emitter
 			for (i = nParts, j = (nFirstPart + nParts) % nPartLimit; i; i--) {
 				if (!j)
 					j = nPartLimit;
 #if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
-				if (!RenderParticle (pCloud->pParticles + --j))
+				if (!RenderParticle (cloudP->pParticles + --j))
 					if (gameStates.render.bVertexArrays && !gameOpts->render.particles.bSort) {
-						FlushParticleBuffer (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
+						FlushParticleBuffer (cloudP->pParticles + iBuffer, nBuffer - iBuffer);
 						nBuffer = iBuffer;
 						}
 #else
-				RenderParticle (pCloud->pParticles + --j, brightness);
+				RenderParticle (cloudP->pParticles + --j, brightness);
 #endif
 				}
 			}
 		else {
 			for (i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit) {
 #if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
-				if (!RenderParticle (pCloud->pParticles + j, brightness))
+				if (!RenderParticle (cloudP->pParticles + j, brightness))
 					if (gameStates.render.bVertexArrays && !gameOpts->render.particles.bSort) {
-						FlushParticleBuffer (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
+						FlushParticleBuffer (cloudP->pParticles + iBuffer, nBuffer - iBuffer);
 						nBuffer = iBuffer;
 						}
 #else
-				RenderParticle (pCloud->pParticles + j, brightness);
+				RenderParticle (cloudP->pParticles + j, brightness);
 #endif
 				}
 			}
-		return EndRenderSmoke (pCloud);
+		return EndRenderSmoke (cloudP);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void SetCloudPos (tCloud *pCloud, vmsVector *pos, vmsMatrix *orient, short nSegment)
+void SetCloudPos (tCloud *cloudP, vmsVector *pos, vmsMatrix *orient, short nSegment)
 {
-if (pCloud) {
+if (cloudP) {
 	if ((nSegment < 0) && gameOpts->render.particles.bCollisions)
-		nSegment = FindSegByPos (*pos, pCloud->nSegment, 1, 0, 1);
-	pCloud->pos = *pos;
+		nSegment = FindSegByPos (*pos, cloudP->nSegment, 1, 0, 1);
+	cloudP->pos = *pos;
 	if (orient)
-		pCloud->orient = *orient;
+		cloudP->orient = *orient;
 	if (nSegment >= 0)
-		pCloud->nSegment = nSegment;
+		cloudP->nSegment = nSegment;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void SetCloudDir (tCloud *pCloud, vmsVector *pDir)
+void SetCloudDir (tCloud *cloudP, vmsVector *pDir)
 {
-if (pCloud && (pCloud->bHaveDir = (pDir != NULL)))
-	pCloud->dir = *pDir;
+if (cloudP && (cloudP->bHaveDir = (pDir != NULL)))
+	cloudP->dir = *pDir;
 }
 
 //------------------------------------------------------------------------------
 
-void SetCloudLife (tCloud *pCloud, int nLife)
+void SetCloudLife (tCloud *cloudP, int nLife)
 {
-if (pCloud) {
-	pCloud->nLife = nLife;
-	pCloud->fPartsPerTick = nLife ? (float) pCloud->nMaxParts / (float) abs (nLife) : 0.0f;
-	pCloud->nTicks = 0;
+if (cloudP) {
+	cloudP->nLife = nLife;
+	cloudP->fPartsPerTick = nLife ? (float) cloudP->nMaxParts / (float) abs (nLife) : 0.0f;
+	cloudP->nTicks = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void SetCloudBrightness (tCloud *pCloud, int nBrightness)
+void SetCloudBrightness (tCloud *cloudP, int nBrightness)
 {
-if (pCloud)
-	pCloud->nDefBrightness = nBrightness;
+if (cloudP)
+	cloudP->nDefBrightness = nBrightness;
 }
 
 //------------------------------------------------------------------------------
 
-void SetCloudSpeed (tCloud *pCloud, int nSpeed)
+void SetCloudSpeed (tCloud *cloudP, int nSpeed)
 {
-if (pCloud)
-	pCloud->nSpeed = nSpeed;
+if (cloudP)
+	cloudP->nSpeed = nSpeed;
 }
 
 //------------------------------------------------------------------------------
 
-void SetCloudType (tCloud *pCloud, int nType)
+void SetCloudType (tCloud *cloudP, int nType)
 {
-if (pCloud)
-	pCloud->nType = nType;
+if (cloudP)
+	cloudP->nType = nType;
 }
 
 //------------------------------------------------------------------------------
 
-int SetCloudDensity (tCloud *pCloud, int nMaxParts, int nDensity)
+int SetCloudDensity (tCloud *cloudP, int nMaxParts, int nDensity)
 {
 	tParticle	*p;
 	int			h;
 
-if (!pCloud)
+if (!cloudP)
 	return 0;
-if (pCloud->nMaxParts == nMaxParts)
+if (cloudP->nMaxParts == nMaxParts)
 	return 1;
-if (nMaxParts > pCloud->nPartLimit) {
+if (nMaxParts > cloudP->nPartLimit) {
 	if (!(p = (tParticle *) D2_ALLOC (nMaxParts * sizeof (tParticle))))
 		return 0;
-	if (pCloud->pParticles) {
-		if (pCloud->nParts > nMaxParts)
-			pCloud->nParts = nMaxParts;
-		h = pCloud->nPartLimit - pCloud->nFirstPart;
-		if (h > pCloud->nParts)
-			h = pCloud->nParts;
-		memcpy (p, pCloud->pParticles + pCloud->nFirstPart, h * sizeof (tParticle));
-		if (h < pCloud->nParts)
-			memcpy (p + h, pCloud->pParticles, (pCloud->nParts - h) * sizeof (tParticle));
-		pCloud->nFirstPart = 0;
-		pCloud->nPartLimit = nMaxParts;
-		D2_FREE (pCloud->pParticles);
+	if (cloudP->pParticles) {
+		if (cloudP->nParts > nMaxParts)
+			cloudP->nParts = nMaxParts;
+		h = cloudP->nPartLimit - cloudP->nFirstPart;
+		if (h > cloudP->nParts)
+			h = cloudP->nParts;
+		memcpy (p, cloudP->pParticles + cloudP->nFirstPart, h * sizeof (tParticle));
+		if (h < cloudP->nParts)
+			memcpy (p + h, cloudP->pParticles, (cloudP->nParts - h) * sizeof (tParticle));
+		cloudP->nFirstPart = 0;
+		cloudP->nPartLimit = nMaxParts;
+		D2_FREE (cloudP->pParticles);
 		}
-	pCloud->pParticles = p;
+	cloudP->pParticles = p;
 #if SORT_CLOUD_PARTS
 	if (gameOpts->render.particles.bSort) {
-		D2_FREE (pCloud->pPartIdx);
-		if (!(pCloud->pPartIdx = (tPartIdx *) D2_ALLOC (nMaxParts * sizeof (tPartIdx))))
+		D2_FREE (cloudP->pPartIdx);
+		if (!(cloudP->pPartIdx = (tPartIdx *) D2_ALLOC (nMaxParts * sizeof (tPartIdx))))
 			gameOpts->render.particles.bSort = 0;
 		}
 #endif
 	}
-pCloud->nDensity = nDensity;
-pCloud->nMaxParts = nMaxParts;
+cloudP->nDensity = nDensity;
+cloudP->nMaxParts = nMaxParts;
 #if 0
-if (pCloud->nParts > nMaxParts)
-	pCloud->nParts = nMaxParts;
+if (cloudP->nParts > nMaxParts)
+	cloudP->nParts = nMaxParts;
 #endif
-pCloud->fPartsPerTick = (float) pCloud->nMaxParts / (float) abs (pCloud->nLife);
+cloudP->fPartsPerTick = (float) cloudP->nMaxParts / (float) abs (cloudP->nLife);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void SetCloudPartScale (tCloud *pCloud, float nPartScale)
+void SetCloudPartScale (tCloud *cloudP, float nPartScale)
 {
-if (pCloud)
-	pCloud->nPartScale = nPartScale;
+if (cloudP)
+	cloudP->nPartScale = nPartScale;
 }
 
 //------------------------------------------------------------------------------
@@ -1800,17 +1803,17 @@ return -1;
 
 int RemoveCloud (int iSmoke, int iCloud)
 {
-	tSmoke	*pSmoke;
+	tSmoke	*smokeP;
 
 if (0 > IsUsedSmoke (iSmoke))
 	return -1;
-pSmoke = gameData.smoke.buffer + iSmoke;
-if ((pSmoke->pClouds) && (iCloud < pSmoke->nClouds)) {
-	DestroyCloud (pSmoke->pClouds + iCloud);
-	if (iCloud < --(pSmoke->nClouds))
-		pSmoke->pClouds [iCloud] = pSmoke->pClouds [pSmoke->nClouds];
+smokeP = gameData.smoke.buffer + iSmoke;
+if ((smokeP->pClouds) && (iCloud < smokeP->nClouds)) {
+	DestroyCloud (smokeP->pClouds + iCloud);
+	if (iCloud < --(smokeP->nClouds))
+		smokeP->pClouds [iCloud] = smokeP->pClouds [smokeP->nClouds];
 	}
-return pSmoke->nClouds;
+return smokeP->nClouds;
 }
 
 //------------------------------------------------------------------------------
@@ -1830,29 +1833,29 @@ return NULL;
 int DestroySmoke (int iSmoke)
 {
 	int		i, nPrev;
-	tSmoke	*pSmoke;
+	tSmoke	*smokeP;
 
 if (iSmoke < 0)
 	iSmoke = -iSmoke - 1;
-pSmoke = gameData.smoke.buffer + iSmoke;
-if (gameData.smoke.objects && (pSmoke->nObject >= 0))
-	SetSmokeObject (pSmoke->nObject, -1);
-if (pSmoke->pClouds) {
-	for (i = pSmoke->nClouds; i; )
-		DestroyCloud (pSmoke->pClouds + --i);
-	D2_FREE (pSmoke->pClouds);
+smokeP = gameData.smoke.buffer + iSmoke;
+if (gameData.smoke.objects && (smokeP->nObject >= 0))
+	SetSmokeObject (smokeP->nObject, -1);
+if (smokeP->pClouds) {
+	for (i = smokeP->nClouds; i; )
+		DestroyCloud (smokeP->pClouds + --i);
+	D2_FREE (smokeP->pClouds);
 	}
 if (0 > (nPrev = IsUsedSmoke (iSmoke)))
 	return -1;
-i = pSmoke->nNext;
+i = smokeP->nNext;
 if (gameData.smoke.iUsed == iSmoke)
 	gameData.smoke.iUsed = i;
-pSmoke->nNext = gameData.smoke.iFree;
-pSmoke->nObject = -1;
-pSmoke->nObjType = -1;
-pSmoke->nObjId = -1;
-pSmoke->nSignature = -1;
-if ((pSmoke = PrevSmoke (iSmoke)))
+smokeP->nNext = gameData.smoke.iFree;
+smokeP->nObject = -1;
+smokeP->nObjType = -1;
+smokeP->nObjId = -1;
+smokeP->nSignature = -1;
+if ((smokeP = PrevSmoke (iSmoke)))
 	gameData.smoke.buffer [nPrev - 1].nNext = i;
 gameData.smoke.iFree = iSmoke;
 return iSmoke;
@@ -1904,7 +1907,7 @@ else if (!LoadParticleImage (nType)) {
 	}
 else {
 		int			i, t = gameStates.app.nSDLTicks;
-		tSmoke		*pSmoke;
+		tSmoke		*smokeP;
 		vmsVector	vEmittingFace [4];
 
 	if (nSide >= 0)
@@ -1913,32 +1916,32 @@ else {
 	if (gameStates.render.bPointSprites)
 		nMaxParts *= 2;
 	srand (SDL_GetTicks ());
-	pSmoke = gameData.smoke.buffer + gameData.smoke.iFree;
-	if (!(pSmoke->pClouds = (tCloud *) D2_ALLOC (nMaxClouds * sizeof (tCloud)))) {
+	smokeP = gameData.smoke.buffer + gameData.smoke.iFree;
+	if (!(smokeP->pClouds = (tCloud *) D2_ALLOC (nMaxClouds * sizeof (tCloud)))) {
 		//PrintLog ("cannot create gameData.smoke.buffer\n");
 		return 0;
 		}
-	if ((pSmoke->nObject = nObject) < 0x70000000) {
- 		pSmoke->nSignature = OBJECTS [nObject].info.nSignature;
-		pSmoke->nObjType = OBJECTS [nObject].info.nType;
-		pSmoke->nObjId = OBJECTS [nObject].info.nId;
+	if ((smokeP->nObject = nObject) < 0x70000000) {
+ 		smokeP->nSignature = OBJECTS [nObject].info.nSignature;
+		smokeP->nObjType = OBJECTS [nObject].info.nType;
+		smokeP->nObjId = OBJECTS [nObject].info.nId;
 		}
-	pSmoke->nClouds = 0;
-	pSmoke->nBirth = t;
-	pSmoke->nMaxClouds = nMaxClouds;
+	smokeP->nClouds = 0;
+	smokeP->nBirth = t;
+	smokeP->nMaxClouds = nMaxClouds;
 	for (i = 0; i < nMaxClouds; i++)
-		if (CreateCloud (pSmoke->pClouds + i, pPos, pDir, pOrient, nSegment, nObject, nMaxParts, nPartScale, nDensity,
+		if (CreateCloud (smokeP->pClouds + i, pPos, pDir, pOrient, nSegment, nObject, nMaxParts, nPartScale, nDensity,
 							  nPartsPerPos, nLife, nSpeed, nType, colorP, t, bBlowUpParts, (nSide < 0) ? NULL : vEmittingFace))
-			pSmoke->nClouds++;
+			smokeP->nClouds++;
 		else {
 			DestroySmoke (gameData.smoke.iFree);
 			//PrintLog ("cannot create gameData.smoke.buffer\n");
 			return -1;
 			}
-	pSmoke->nType = nType;
+	smokeP->nType = nType;
 	i = gameData.smoke.iFree;
-	gameData.smoke.iFree = pSmoke->nNext;
-	pSmoke->nNext = gameData.smoke.iUsed;
+	gameData.smoke.iFree = smokeP->nNext;
+	smokeP->nNext = gameData.smoke.iUsed;
 	gameData.smoke.iUsed = i;
 	//PrintLog ("CreateSmoke (%d) = %d,%d (%d)\n", nObject, i, nMaxClouds, nType);
 	return gameData.smoke.iUsed;
@@ -1967,45 +1970,45 @@ else
 #endif
 {
 		int		i, n, j = 0, t = gameStates.app.nSDLTicks;
-		tSmoke	*pSmoke;
-		tCloud	*pCloud;
+		tSmoke	*smokeP;
+		tCloud	*cloudP;
 
 	for (i = gameData.smoke.iUsed; i >= 0; i = n) {
-		pSmoke = gameData.smoke.buffer + i;
-		if ((n = pSmoke->nNext) == gameData.smoke.iUsed) {
+		smokeP = gameData.smoke.buffer + i;
+		if ((n = smokeP->nNext) == gameData.smoke.iUsed) {
 			RebuildSmokeList ();
 			break;
 			}
 #if 0
-		if ((pSmoke->nObject < 0x70000000) && (pSmoke->nSignature != OBJECTS [pSmoke->nObject].nSignature)) {
+		if ((smokeP->nObject < 0x70000000) && (smokeP->nSignature != OBJECTS [smokeP->nObject].nSignature)) {
 			SetSmokeLife (i, 0);
 			//continue;
 			}
 #endif
-		if ((pSmoke->nObject == 0x7fffffff) && (pSmoke->nType < 3) &&
-			 (gameStates.app.nSDLTicks - pSmoke->nBirth > (MAX_SHRAPNEL_LIFE / F1_0) * 1000))
+		if ((smokeP->nObject == 0x7fffffff) && (smokeP->nType < 3) &&
+			 (gameStates.app.nSDLTicks - smokeP->nBirth > (MAX_SHRAPNEL_LIFE / F1_0) * 1000))
 			SetSmokeLife (i, 0);
 #if DBG
-		if ((pSmoke->nObject < 0x70000000) && (OBJECTS [pSmoke->nObject].info.nType == 255))
+		if ((smokeP->nObject < 0x70000000) && (OBJECTS [smokeP->nObject].info.nType == 255))
 			i = i;
 #endif
-		if ((pCloud = pSmoke->pClouds))
-			for (j = 0; j < pSmoke->nClouds; ) {
-				if (!pSmoke->pClouds)
+		if ((cloudP = smokeP->pClouds))
+			for (j = 0; j < smokeP->nClouds; ) {
+				if (!smokeP->pClouds)
 					return 0;
-				if (CloudIsDead (pCloud, t)) {
+				if (CloudIsDead (cloudP, t)) {
 					if (!RemoveCloud (i, j)) {
-						//PrintLog ("killing gameData.smoke.buffer %d (%d)\n", i, pSmoke->nObject);
+						//PrintLog ("killing gameData.smoke.buffer %d (%d)\n", i, smokeP->nObject);
 						DestroySmoke (i);
 						break;
 						}
 					}
 				else {
-					//PrintLog ("moving %d (%d)\n", i, pSmoke->nObject);
-					if ((pSmoke->nObject < 0) || ((pSmoke->nObject < 0x70000000) && (OBJECTS [pSmoke->nObject].info.nType == 255)))
-						SetCloudLife (pCloud, 0);
-					UpdateCloud (pCloud, t, -1);
-					pCloud++, j++;
+					//PrintLog ("moving %d (%d)\n", i, smokeP->nObject);
+					if ((smokeP->nObject < 0) || ((smokeP->nObject < 0x70000000) && (OBJECTS [smokeP->nObject].info.nType == 255)))
+						SetCloudLife (cloudP, 0);
+					UpdateCloud (cloudP, t, -1);
+					cloudP++, j++;
 					}
 				}
 			}
@@ -2016,7 +2019,7 @@ else
 //------------------------------------------------------------------------------
 
 typedef struct tCloudList {
-	tCloud		*pCloud;
+	tCloud		*cloudP;
 	fix			xDist;
 } tCloudList;
 
@@ -2056,13 +2059,13 @@ if (left < r)
 int CloudCount (void)
 {
 	int		i, j;
-	tSmoke	*pSmoke = gameData.smoke.buffer;
+	tSmoke	*smokeP = gameData.smoke.buffer;
 
-for (i = gameData.smoke.iUsed, j = 0; i >= 0; i = pSmoke->nNext) {
-	pSmoke = gameData.smoke.buffer + i;
-	if (pSmoke->pClouds) {
-		j += pSmoke->nClouds;
-		if ((pSmoke->nObject < 0x70000000) && (gameData.smoke.objects [pSmoke->nObject] < 0))
+for (i = gameData.smoke.iUsed, j = 0; i >= 0; i = smokeP->nNext) {
+	smokeP = gameData.smoke.buffer + i;
+	if (smokeP->pClouds) {
+		j += smokeP->nClouds;
+		if ((smokeP->nObject < 0x70000000) && (gameData.smoke.objects [smokeP->nObject] < 0))
 			SetSmokeLife (i, 0);
 		}
 	}
@@ -2071,9 +2074,9 @@ return j;
 
 //------------------------------------------------------------------------------
 
-inline int CloudMayBeVisible (tCloud *pCloud)
+inline int CloudMayBeVisible (tCloud *cloudP)
 {
-return (pCloud->nSegment < 0) || SegmentMayBeVisible (pCloud->nSegment, 5, -1);
+return (cloudP->nSegment < 0) || SegmentMayBeVisible (cloudP->nSegment, 5, -1);
 }
 
 //------------------------------------------------------------------------------
@@ -2081,8 +2084,8 @@ return (pCloud->nSegment < 0) || SegmentMayBeVisible (pCloud->nSegment, 5, -1);
 int CreateCloudList (void)
 {
 	int			h, i, j, nClouds;
-	tSmoke		*pSmoke = gameData.smoke.buffer;
-	tCloud		*pCloud;
+	tSmoke		*smokeP = gameData.smoke.buffer;
+	tCloud		*cloudP;
 	float		brightness;
 
 h = CloudCount ();
@@ -2090,25 +2093,25 @@ if (!h)
 	return 0;
 if (!(pCloudList = (tCloudList *) D2_ALLOC (h * sizeof (tCloudList))))
 	return -1;
-for (i = gameData.smoke.iUsed, nClouds = 0; i >= 0; i = pSmoke->nNext) {
-	pSmoke = gameData.smoke.buffer + i;
-	if (!LoadParticleImage (pSmoke->nType)) {
+for (i = gameData.smoke.iUsed, nClouds = 0; i >= 0; i = smokeP->nNext) {
+	smokeP = gameData.smoke.buffer + i;
+	if (!LoadParticleImage (smokeP->nType)) {
 		D2_FREE (pCloudList);
 		return 0;
 		}
-	if (pSmoke->pClouds) {
-		for (j = pSmoke->nClouds, pCloud = pSmoke->pClouds; j; j--, pCloud++) {
-			if ((pCloud->nParts > 0) && CloudMayBeVisible (pCloud)) {
-				brightness = CloudBrightness (pCloud);
-				pCloud->fBrightness = pCloud->nDefBrightness ? (float) pCloud->nDefBrightness / 100.0f : brightness;
-				pCloudList [nClouds].pCloud = pCloud;
+	if (smokeP->pClouds) {
+		for (j = smokeP->nClouds, cloudP = smokeP->pClouds; j; j--, cloudP++) {
+			if ((cloudP->nParts > 0) && CloudMayBeVisible (cloudP)) {
+				brightness = CloudBrightness (cloudP);
+				cloudP->fBrightness = cloudP->nDefBrightness ? (float) cloudP->nDefBrightness / 100.0f : brightness;
+				pCloudList [nClouds].cloudP = cloudP;
 #if SORT_CLOUDS
 #	if 1	// use the closest point on a line from first to last particle to the viewer
-				pCloudList [nClouds++].xDist = VmLinePointDist(pCloud->pParticles[pCloud->nFirstPart].pos,
-																				pCloud->pParticles [(pCloud->nFirstPart + pCloud->nParts - 1) % pCloud->nPartLimit].pos,
+				pCloudList [nClouds++].xDist = VmLinePointDist(cloudP->pParticles[cloudP->nFirstPart].pos,
+																				cloudP->pParticles [(cloudP->nFirstPart + cloudP->nParts - 1) % cloudP->nPartLimit].pos,
 																				viewInfo.pos);
 #	else	// use distance of the current emitter position to the viewer
-				pCloudList [nClouds++].xDist = vmsVector::Dist(pCloud->pos, viewInfo.pos);
+				pCloudList [nClouds++].xDist = vmsVector::Dist(cloudP->pos, viewInfo.pos);
 #	endif
 #endif
 				}
@@ -2128,9 +2131,9 @@ int ParticleCount (void)
 {
 	int			i, j, nParts, nFirstPart, nPartLimit, z;
 	int			bUnscaled = gameStates.render.bPerPixelLighting == 2;
-	tSmoke		*pSmoke = gameData.smoke.buffer;
-	tCloud		*pCloud;
-	tParticle	*pParticle;
+	tSmoke		*smokeP = gameData.smoke.buffer;
+	tCloud		*cloudP;
+	tParticle	*particleP;
 
 #if 1
 gameData.smoke.depthBuf.zMin = gameData.render.zMin;
@@ -2140,20 +2143,20 @@ gameData.smoke.depthBuf.zMin = 0x7fffffff;
 gameData.smoke.depthBuf.zMax = -0x7fffffff;
 #endif
 gameData.smoke.depthBuf.nParts = 0;
-for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
-	pSmoke = gameData.smoke.buffer + i;
-	if (pSmoke->pClouds && (j = pSmoke->nClouds)) {
-		for (pCloud = pSmoke->pClouds; j; j--, pCloud++) {
-			if ((nParts = pCloud->nParts)) {
-				nFirstPart = pCloud->nFirstPart;
-				nPartLimit = pCloud->nPartLimit;
-				for (pParticle = pCloud->pParticles + nFirstPart; nParts; nParts--, nFirstPart++, pParticle++) {
+for (i = gameData.smoke.iUsed; i >= 0; i = smokeP->nNext) {
+	smokeP = gameData.smoke.buffer + i;
+	if (smokeP->pClouds && (j = smokeP->nClouds)) {
+		for (cloudP = smokeP->pClouds; j; j--, cloudP++) {
+			if ((nParts = cloudP->nParts)) {
+				nFirstPart = cloudP->nFirstPart;
+				nPartLimit = cloudP->nPartLimit;
+				for (particleP = cloudP->pParticles + nFirstPart; nParts; nParts--, nFirstPart++, particleP++) {
 					if (nFirstPart == nPartLimit) {
 						nFirstPart = 0;
-						pParticle = pCloud->pParticles;
+						particleP = cloudP->pParticles;
 						}
-					G3TransformPoint(pParticle->transPos, pParticle->pos, bUnscaled);
-					z = pParticle->transPos[Z];
+					G3TransformPoint(particleP->transPos, particleP->pos, bUnscaled);
+					z = particleP->transPos[Z];
 #if 0
 					if ((z < gameData.render.zMin) || (z > gameData.render.zMax))
 						continue;
@@ -2169,7 +2172,7 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 					}
 				}
 			}
-		if ((pSmoke->nObject < 0x70000000) && (gameData.smoke.objects [pSmoke->nObject] < 0))
+		if ((smokeP->nObject < 0x70000000) && (gameData.smoke.objects [smokeP->nObject] < 0))
 			SetSmokeLife (i, 0);
 		}
 	}
@@ -2181,9 +2184,9 @@ return gameData.smoke.depthBuf.nParts;
 void DepthSortParticles (void)
 {
 	int			i, j, z, nParts, nFirstPart, nPartLimit, bSort;
-	tSmoke		*pSmoke = gameData.smoke.buffer;
-	tCloud		*pCloud;
-	tParticle	*pParticle;
+	tSmoke		*smokeP = gameData.smoke.buffer;
+	tCloud		*cloudP;
+	tParticle	*particleP;
 	tPartList	*ph, *pi, *pj, **pd;
 	float			fBrightness;
 	float		zScale;
@@ -2193,22 +2196,22 @@ zScale = (float) (PART_DEPTHBUFFER_SIZE - 1) / (float) (gameData.smoke.depthBuf.
 if (zScale > 1)
 	zScale = 1;
 //ResetDepthBuf ();
-for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
-	pSmoke = gameData.smoke.buffer + i;
-	if (pSmoke->pClouds && (j = pSmoke->nClouds)) {
-		for (pCloud = pSmoke->pClouds; j; j--, pCloud++) {
-			if (!CloudMayBeVisible (pCloud))
+for (i = gameData.smoke.iUsed; i >= 0; i = smokeP->nNext) {
+	smokeP = gameData.smoke.buffer + i;
+	if (smokeP->pClouds && (j = smokeP->nClouds)) {
+		for (cloudP = smokeP->pClouds; j; j--, cloudP++) {
+			if (!CloudMayBeVisible (cloudP))
 				continue;
-			if ((nParts = pCloud->nParts)) {
-				fBrightness = (float) CloudBrightness (pCloud);
-				nFirstPart = pCloud->nFirstPart;
-				nPartLimit = pCloud->nPartLimit;
-				for (pParticle = pCloud->pParticles + nFirstPart; nParts; nParts--, nFirstPart++, pParticle++) {
+			if ((nParts = cloudP->nParts)) {
+				fBrightness = (float) CloudBrightness (cloudP);
+				nFirstPart = cloudP->nFirstPart;
+				nPartLimit = cloudP->nPartLimit;
+				for (particleP = cloudP->pParticles + nFirstPart; nParts; nParts--, nFirstPart++, particleP++) {
 					if (nFirstPart == nPartLimit) {
 						nFirstPart = 0;
-						pParticle = pCloud->pParticles;
+						particleP = cloudP->pParticles;
 						}
-					z = pParticle->transPos[Z];
+					z = particleP->transPos[Z];
 #if 1
 					if ((z < F1_0) || (z > gameData.render.zMax))
 						continue;
@@ -2219,22 +2222,22 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 					pd = gameData.smoke.depthBuf.pDepthBuffer + (int) ((float) (z - gameData.smoke.depthBuf.zMin) * zScale);
 					// find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 					ph = gameData.smoke.depthBuf.pPartList + --gameData.smoke.depthBuf.nFreeParts;
-					ph->pParticle = pParticle;
+					ph->particleP = particleP;
 					ph->fBrightness = fBrightness;
 					if (bSort) {
-						for (pi = NULL, pj = *pd; pj && (pj->pParticle->transPos[Z] > z); pj = pj->pNextPart)
+						for (pi = NULL, pj = *pd; pj && (pj->particleP->transPos[Z] > z); pj = pj->nextPartP)
 							pi = pj;
 						if (pi) {
-							ph->pNextPart = pi->pNextPart;
-							pi->pNextPart = ph;
+							ph->nextPartP = pi->nextPartP;
+							pi->nextPartP = ph;
 							}
 						else {
-							ph->pNextPart = *pd;
+							ph->nextPartP = *pd;
 							*pd = ph;
 							}
 						}
 					else {
-						ph->pNextPart = *pd;
+						ph->nextPartP = *pd;
 						*pd = ph;
 						}
 					if (!gameData.smoke.depthBuf.nFreeParts)
@@ -2256,11 +2259,11 @@ int RenderParticles (void)
 if (!AllocPartList ())
 	return 0;
 pl = gameData.smoke.depthBuf.pPartList + 999999;
-pl->pParticle = NULL;
+pl->particleP = NULL;
 if (!(h = ParticleCount ()))
 	return 0;
 pl = gameData.smoke.depthBuf.pPartList + 999999;
-pl->pParticle = NULL;
+pl->particleP = NULL;
 DepthSortParticles ();
 if (!LoadParticleImages ())
 	return 0;
@@ -2270,9 +2273,9 @@ for (pd = gameData.smoke.depthBuf.pDepthBuffer + PART_DEPTHBUFFER_SIZE - 1;
 	  pd--) {
 		if ((pl = *pd)) {
 		do {
-			RenderParticle (pl->pParticle, pl->fBrightness);
-			pn = pl->pNextPart;
-			pl->pNextPart = NULL;
+			RenderParticle (pl->particleP, pl->fBrightness);
+			pn = pl->nextPartP;
+			pl->nextPartP = NULL;
 			pl = pn;
 			} while (pl);
 		*pd = NULL;
@@ -2297,25 +2300,25 @@ if (!h)
 	return 1;
 if (h > 0) {
 	do {
-		RenderCloud (pCloudList [--h].pCloud, -1);
+		RenderCloud (pCloudList [--h].cloudP, -1);
 		} while (h);
 	D2_FREE (pCloudList);
 	pCloudList = NULL;
 	}
 else
 	{
-	tSmoke *pSmoke = gameData.smoke.buffer;
-	tCloud *pCloud;
-	for (h = 0, i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
-		pSmoke = gameData.smoke.buffer + i;
-		if (pSmoke->pClouds) {
-			if (!LoadParticleImage (pSmoke->nType))
+	tSmoke *smokeP = gameData.smoke.buffer;
+	tCloud *cloudP;
+	for (h = 0, i = gameData.smoke.iUsed; i >= 0; i = smokeP->nNext) {
+		smokeP = gameData.smoke.buffer + i;
+		if (smokeP->pClouds) {
+			if (!LoadParticleImage (smokeP->nType))
 				return 0;
-			if ((pSmoke->nObject >= 0) && (pSmoke->nObject < 0x70000000) && (gameData.smoke.objects [pSmoke->nObject] < 0))
+			if ((smokeP->nObject >= 0) && (smokeP->nObject < 0x70000000) && (gameData.smoke.objects [smokeP->nObject] < 0))
 				SetSmokeLife (i, 0);
-			for (j = pSmoke->nClouds, pCloud = pSmoke->pClouds; j; j--, pCloud++) {
-				pCloud->fBrightness = CloudBrightness (pCloud);
-				h += RenderCloud (pCloud, -1);
+			for (j = smokeP->nClouds, cloudP = smokeP->pClouds; j; j--, cloudP++) {
+				cloudP->fBrightness = CloudBrightness (cloudP);
+				h += RenderCloud (cloudP, -1);
 				}
 			}
 		}
@@ -2340,15 +2343,15 @@ return h;
 void SetSmokePos (int i, vmsVector *pos, vmsMatrix *orient, short nSegment)
 {
 if (0 <= IsUsedSmoke (i)) {
-	tSmoke *pSmoke = gameData.smoke.buffer + i;
-	if (pSmoke->pClouds)
-		for (i = 0; i < pSmoke->nClouds; i++)
-			SetCloudPos (pSmoke->pClouds, pos, orient, nSegment);
+	tSmoke *smokeP = gameData.smoke.buffer + i;
+	if (smokeP->pClouds)
+		for (i = 0; i < smokeP->nClouds; i++)
+			SetCloudPos (smokeP->pClouds, pos, orient, nSegment);
 #if DBG
-	else if (pSmoke->nObject >= 0) {
-		HUDMessage (0, "no smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
-		//PrintLog ("no gameData.smoke.buffer in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
-		pSmoke->nObject = -1;
+	else if (smokeP->nObject >= 0) {
+		HUDMessage (0, "no smoke in SetSmokePos (%d,%d)\n", i, smokeP->nObject);
+		//PrintLog ("no gameData.smoke.buffer in SetSmokePos (%d,%d)\n", i, smokeP->nObject);
+		smokeP->nObject = -1;
 		}
 #endif
 	}
@@ -2360,10 +2363,10 @@ void SetSmokeDensity (int i, int nMaxParts, int nDensity)
 {
 if (0 <= IsUsedSmoke (i)) {
 	nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
-	tSmoke *pSmoke = gameData.smoke.buffer + i;
-	if (pSmoke->pClouds)
-		for (i = 0; i < pSmoke->nClouds; i++)
-			SetCloudDensity (pSmoke->pClouds + i, nMaxParts, nDensity);
+	tSmoke *smokeP = gameData.smoke.buffer + i;
+	if (smokeP->pClouds)
+		for (i = 0; i < smokeP->nClouds; i++)
+			SetCloudDensity (smokeP->pClouds + i, nMaxParts, nDensity);
 	}
 }
 
@@ -2372,10 +2375,10 @@ if (0 <= IsUsedSmoke (i)) {
 void SetSmokePartScale (int i, float nPartScale)
 {
 if (0 <= IsUsedSmoke (i)) {
-	tSmoke *pSmoke = gameData.smoke.buffer + i;
-	if (pSmoke->pClouds)
-		for (i = 0; i < pSmoke->nClouds; i++)
-			SetCloudPartScale (pSmoke->pClouds + i, nPartScale);
+	tSmoke *smokeP = gameData.smoke.buffer + i;
+	if (smokeP->pClouds)
+		for (i = 0; i < smokeP->nClouds; i++)
+			SetCloudPartScale (smokeP->pClouds + i, nPartScale);
 	}
 }
 
@@ -2384,12 +2387,12 @@ if (0 <= IsUsedSmoke (i)) {
 void SetSmokeLife (int i, int nLife)
 {
 if (0 <= IsUsedSmoke (i)) {
-	tSmoke *pSmoke = gameData.smoke.buffer + i;
-	if (pSmoke->pClouds && (pSmoke->pClouds->nLife != nLife)) {
-		//PrintLog ("SetSmokeLife (%d,%d) = %d\n", i, pSmoke->nObject, nLife);
+	tSmoke *smokeP = gameData.smoke.buffer + i;
+	if (smokeP->pClouds && (smokeP->pClouds->nLife != nLife)) {
+		//PrintLog ("SetSmokeLife (%d,%d) = %d\n", i, smokeP->nObject, nLife);
 		int j;
-		for (j = 0; j < pSmoke->nClouds; j++)
-			SetCloudLife (pSmoke->pClouds, nLife);
+		for (j = 0; j < smokeP->nClouds; j++)
+			SetCloudLife (smokeP->pClouds, nLife);
 		}
 	}
 }
@@ -2399,12 +2402,12 @@ if (0 <= IsUsedSmoke (i)) {
 void SetSmokeBrightness (int i, int nBrightness)
 {
 if (0 <= IsUsedSmoke (i)) {
-	tSmoke *pSmoke = gameData.smoke.buffer + i;
-	if (pSmoke->pClouds && (pSmoke->pClouds->nDefBrightness != nBrightness)) {
-		//PrintLog ("SetSmokeLife (%d,%d) = %d\n", i, pSmoke->nObject, nLife);
+	tSmoke *smokeP = gameData.smoke.buffer + i;
+	if (smokeP->pClouds && (smokeP->pClouds->nDefBrightness != nBrightness)) {
+		//PrintLog ("SetSmokeLife (%d,%d) = %d\n", i, smokeP->nObject, nLife);
 		int j;
-		for (j = 0; j < pSmoke->nClouds; j++)
-			SetCloudBrightness (pSmoke->pClouds, nBrightness);
+		for (j = 0; j < smokeP->nClouds; j++)
+			SetCloudBrightness (smokeP->pClouds, nBrightness);
 		}
 	}
 }
@@ -2414,10 +2417,10 @@ if (0 <= IsUsedSmoke (i)) {
 void SetSmokeType (int i, int nType)
 {
 if (0 <= IsUsedSmoke (i)) {
-	tSmoke *pSmoke = gameData.smoke.buffer + i;
-	pSmoke->nType = nType;
-	for (i = 0; i < pSmoke->nClouds; i++)
-		SetCloudType (pSmoke->pClouds + i, nType);
+	tSmoke *smokeP = gameData.smoke.buffer + i;
+	smokeP->nType = nType;
+	for (i = 0; i < smokeP->nClouds; i++)
+		SetCloudType (smokeP->pClouds + i, nType);
 	}
 }
 
@@ -2426,10 +2429,10 @@ if (0 <= IsUsedSmoke (i)) {
 void SetSmokeSpeed (int i, int nSpeed)
 {
 if (0 <= IsUsedSmoke (i)) {
-	tSmoke *pSmoke = gameData.smoke.buffer + i;
-	pSmoke->nSpeed = nSpeed;
-	for (i = 0; i < pSmoke->nClouds; i++)
-		SetCloudSpeed (pSmoke->pClouds + i, nSpeed);
+	tSmoke *smokeP = gameData.smoke.buffer + i;
+	smokeP->nSpeed = nSpeed;
+	for (i = 0; i < smokeP->nClouds; i++)
+		SetCloudSpeed (smokeP->pClouds + i, nSpeed);
 	}
 }
 
@@ -2438,9 +2441,9 @@ if (0 <= IsUsedSmoke (i)) {
 void SetSmokeDir (int i, vmsVector *pDir)
 {
 if (0 <= IsUsedSmoke (i)) {
-	tSmoke *pSmoke = gameData.smoke.buffer + i;
-	for (i = 0; i < pSmoke->nClouds; i++)
-		SetCloudDir (pSmoke->pClouds + i, pDir);
+	tSmoke *smokeP = gameData.smoke.buffer + i;
+	for (i = 0; i < smokeP->nClouds; i++)
+		SetCloudDir (smokeP->pClouds + i, pDir);
 	}
 }
 
@@ -2465,8 +2468,8 @@ return (IsUsedSmoke (i)) ? gameData.smoke.buffer [i].nType : -1;
 tCloud *GetCloud (int i, int j)
 {
 if (0 <= IsUsedSmoke (i)) {
-	tSmoke *pSmoke = gameData.smoke.buffer + i;
-	return (pSmoke->pClouds && (j < pSmoke->nClouds)) ? pSmoke->pClouds + j : NULL;
+	tSmoke *smokeP = gameData.smoke.buffer + i;
+	return (smokeP->pClouds && (j < smokeP->nClouds)) ? smokeP->pClouds + j : NULL;
 	}
 else
 	return NULL;

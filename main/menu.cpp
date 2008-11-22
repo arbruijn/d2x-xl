@@ -3278,6 +3278,10 @@ do {
 		GET_VAL (gameOpts->render.particles.bRotate, optRotate);
 		GET_VAL (gameOpts->render.particles.bDecreaseLag, nOptSmokeLag);
 		GET_VAL (gameOpts->render.particles.bAuxViews, optAuxViews);
+		if (gameOpts->render.particles.bBubbles) {
+			GET_VAL (gameOpts->render.particles.bWiggleBubbles, optWiggle);
+			GET_VAL (gameOpts->render.particles.bWobbleBubbles, optWobble);
+			}
 		//GET_VAL (gameOpts->render.particles.bSyncSizes, smokeOpts.nSyncSizes);
 		if (gameOpts->render.particles.bSyncSizes) {
 			for (j = 1; j < 4; j++) {

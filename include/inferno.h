@@ -2939,8 +2939,8 @@ typedef struct tDemoData {
 #include "particles.h"
 
 typedef struct tPartList {
-	struct tPartList	*pNextPart;
-	tParticle			*pParticle;
+	struct tPartList	*nextPartP;
+	tParticle			*particleP;
 	float					fBrightness;
 } tPartList;
 

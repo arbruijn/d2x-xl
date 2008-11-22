@@ -686,8 +686,8 @@ if (!(RENDERPATH && gameStates.render.bUsePerPixelLighting))
 if ((gameStates.render.bUsePerPixelLighting == 1) && !CreateLightmapShader (0))
 	return gameStates.render.bUsePerPixelLighting = 0;
 #if !DBG
-if (gameOpts->render.nLightmapQuality > 2)
-	gameOpts->render.nLightmapQuality = 2;
+if (gameOpts->render.nLightmapQuality > 3)
+	gameOpts->render.nLightmapQuality = 3;
 #endif
 DestroyLightmaps ();
 if (!InitLightData (0))
