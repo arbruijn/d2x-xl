@@ -843,7 +843,7 @@ else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !gameStates.render
 				  (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK))))) {
 #endif
 #if 0
-		if (gameOpts->render.smoke.bPlayers) {
+		if (gameOpts->render.particles.bPlayers) {
 			SEM_ENTER (SEM_SMOKE)
 			DoPlayerSmoke (objP, -1);
 			SEM_LEAVE (SEM_SMOKE)

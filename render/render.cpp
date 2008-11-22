@@ -1241,7 +1241,7 @@ if (gameStates.render.automap.bDisplay) {
 else {
 	bSparks = 1;
 	bLightnings = !nWindow || gameOpts->render.lightnings.bAuxViews;
-	bSmoke = !nWindow || gameOpts->render.smoke.bAuxViews;
+	bSmoke = !nWindow || gameOpts->render.particles.bAuxViews;
 	}
 if (bSparks) {
 	SEM_ENTER (SEM_SPARKS)

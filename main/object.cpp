@@ -2257,7 +2257,7 @@ if ((objP->info.nType == OBJ_WEAPON) && (gameData.weapons.info [objP->info.nId].
 
 #if 1
 	if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->info.nId]) {
-		if (SHOW_SMOKE && gameOpts->render.smoke.bMissiles)
+		if (SHOW_SMOKE && gameOpts->render.particles.bMissiles)
 			return;
 		if ((gameStates.app.bNostalgia || EGI_FLAG (bThrusterFlames, 1, 1, 0)) &&
 			 (objP->info.nId != MERCURYMSL_ID))
@@ -2271,7 +2271,7 @@ if ((objP->info.nType == OBJ_WEAPON) && (gameData.weapons.info [objP->info.nId].
 	else
 		delay = DEG90;
 
-	if ((bSmoke = SHOW_SMOKE && gameOpts->render.smoke.bMissiles)) {
+	if ((bSmoke = SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
 		nSize = F1_0 * 3;
 		lifetime = F1_0 / 12;
 		delay = 0;

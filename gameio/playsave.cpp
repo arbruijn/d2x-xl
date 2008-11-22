@@ -382,10 +382,10 @@ for (i = 0; i < 2; i++) {
 			RP (gameOptions [i].input.trackIR.sensitivity [j], 0, j);
 			}
 		for (j = 0; j < 5; j++) {
-			RP (gameOptions [i].render.smoke.nDens [j], i, j);
-			RP (gameOptions [i].render.smoke.nSize [j], i, j);
-			RP (gameOptions [i].render.smoke.nLife [j], i, j);
-			RP (gameOptions [i].render.smoke.nAlpha [j], i, j);
+			RP (gameOptions [i].render.particles.nDens [j], i, j);
+			RP (gameOptions [i].render.particles.nSize [j], i, j);
+			RP (gameOptions [i].render.particles.nLife [j], i, j);
+			RP (gameOptions [i].render.particles.nAlpha [j], i, j);
 			}
 		for (j = 0; j < 5; j++) {
 			RP (gameOptions [i].input.joystick.deadzones [j], 0, j);
@@ -499,18 +499,21 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.ship.bBullets, i, 0);
 		RP (gameOptions [i].render.ship.nColor, i, 0);
 
-		RP (gameOptions [i].render.smoke.bAuxViews, i, 0);
-		RP (gameOptions [i].render.smoke.bPlasmaTrails, i, 0);
-		RP (gameOptions [i].render.smoke.bDecreaseLag, i, 0);
-		RP (gameOptions [i].render.smoke.bDebris, i, 0);
-		RP (gameOptions [i].render.smoke.bDisperse, i, 0);
-		RP (gameOptions [i].render.smoke.bRotate, i, 0);
-		RP (gameOptions [i].render.smoke.bMissiles, i, 0);
-		RP (gameOptions [i].render.smoke.bPlayers, i, 0);
-		RP (gameOptions [i].render.smoke.bRobots, i, 0);
-		RP (gameOptions [i].render.smoke.bStatic, i, 0);
-		RP (gameOptions [i].render.smoke.bSyncSizes, i, 0);
-		RP (gameOptions [i].render.smoke.bSort, i, 0);
+		RP (gameOptions [i].render.particles.bAuxViews, i, 0);
+		RP (gameOptions [i].render.particles.bPlasmaTrails, i, 0);
+		RP (gameOptions [i].render.particles.bDecreaseLag, i, 0);
+		RP (gameOptions [i].render.particles.bDebris, i, 0);
+		RP (gameOptions [i].render.particles.bDisperse, i, 0);
+		RP (gameOptions [i].render.particles.bRotate, i, 0);
+		RP (gameOptions [i].render.particles.bMissiles, i, 0);
+		RP (gameOptions [i].render.particles.bPlayers, i, 0);
+		RP (gameOptions [i].render.particles.bRobots, i, 0);
+		RP (gameOptions [i].render.particles.bStatic, i, 0);
+		RP (gameOptions [i].render.particles.bBubbles, i, 0);
+		RP (gameOptions [i].render.particles.bWobbleBubbles, i, 1);
+		RP (gameOptions [i].render.particles.bWiggleBubbles, i, 1);
+		RP (gameOptions [i].render.particles.bSyncSizes, i, 0);
+		RP (gameOptions [i].render.particles.bSort, i, 0);
 
 		RP (gameOptions [i].render.weaponIcons.alpha, i, 0);
 		RP (gameOptions [i].render.weaponIcons.bEquipment, i, 0);
@@ -952,26 +955,26 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].input.keyboard.bRamp[2]", "0"},
 	{"gameOptions[0].input.mouse.sensitivity[2]", "8"},
 	{"gameOptions[0].input.trackIR.sensitivity[2]", "4"},
-	{"gameOptions[0].render.smoke.nDens[0]", "1"},
-	{"gameOptions[0].render.smoke.nSize[0]", "1"},
-	{"gameOptions[0].render.smoke.nLife[0]", "1"},
-	{"gameOptions[0].render.smoke.nAlpha[0]", "1"},
-	{"gameOptions[0].render.smoke.nDens[1]", "1"},
-	{"gameOptions[0].render.smoke.nSize[1]", "1"},
-	{"gameOptions[0].render.smoke.nLife[1]", "1"},
-	{"gameOptions[0].render.smoke.nAlpha[1]", "1"},
-	{"gameOptions[0].render.smoke.nDens[2]", "1"},
-	{"gameOptions[0].render.smoke.nSize[2]", "1"},
-	{"gameOptions[0].render.smoke.nLife[2]", "1"},
-	{"gameOptions[0].render.smoke.nAlpha[2]", "1"},
-	{"gameOptions[0].render.smoke.nDens[3]", "1"},
-	{"gameOptions[0].render.smoke.nSize[3]", "1"},
-	{"gameOptions[0].render.smoke.nLife[3]", "1"},
-	{"gameOptions[0].render.smoke.nAlpha[3]", "1"},
-	{"gameOptions[0].render.smoke.nDens[4]", "1"},
-	{"gameOptions[0].render.smoke.nSize[4]", "1"},
-	{"gameOptions[0].render.smoke.nLife[4]", "1"},
-	{"gameOptions[0].render.smoke.nAlpha[4]", "1"},
+	{"gameOptions[0].render.particles.nDens[0]", "1"},
+	{"gameOptions[0].render.particles.nSize[0]", "1"},
+	{"gameOptions[0].render.particles.nLife[0]", "1"},
+	{"gameOptions[0].render.particles.nAlpha[0]", "1"},
+	{"gameOptions[0].render.particles.nDens[1]", "1"},
+	{"gameOptions[0].render.particles.nSize[1]", "1"},
+	{"gameOptions[0].render.particles.nLife[1]", "1"},
+	{"gameOptions[0].render.particles.nAlpha[1]", "1"},
+	{"gameOptions[0].render.particles.nDens[2]", "1"},
+	{"gameOptions[0].render.particles.nSize[2]", "1"},
+	{"gameOptions[0].render.particles.nLife[2]", "1"},
+	{"gameOptions[0].render.particles.nAlpha[2]", "1"},
+	{"gameOptions[0].render.particles.nDens[3]", "1"},
+	{"gameOptions[0].render.particles.nSize[3]", "1"},
+	{"gameOptions[0].render.particles.nLife[3]", "1"},
+	{"gameOptions[0].render.particles.nAlpha[3]", "1"},
+	{"gameOptions[0].render.particles.nDens[4]", "1"},
+	{"gameOptions[0].render.particles.nSize[4]", "1"},
+	{"gameOptions[0].render.particles.nLife[4]", "1"},
+	{"gameOptions[0].render.particles.nAlpha[4]", "1"},
 	{"gameOptions[0].input.joystick.deadzones[0]", "1"},
 	{"gameOptions[0].input.joystick.sensitivity[0]", "7"},
 	{"gameOptions[0].input.trackIR.bMove[0]", "1"},
@@ -1082,18 +1085,21 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.ship.nWingtip", "1"},
 	{"gameOptions[0].render.ship.bBullets", "1"},
 	{"gameOptions[0].render.ship.nColor", "1"},
-	{"gameOptions[0].render.smoke.bAuxViews", "0"},
-	{"gameOptions[0].render.smoke.bPlasmaTrails", "0"},
-	{"gameOptions[0].render.smoke.bDecreaseLag", "0"},
-	{"gameOptions[0].render.smoke.bDebris", "1"},
-	{"gameOptions[0].render.smoke.bDisperse", "1"},
-	{"gameOptions[0].render.smoke.bRotate", "1"},
-	{"gameOptions[0].render.smoke.bMissiles", "1"},
-	{"gameOptions[0].render.smoke.bPlayers", "1"},
-	{"gameOptions[0].render.smoke.bRobots", "1"},
-	{"gameOptions[0].render.smoke.bStatic", "1"},
-	{"gameOptions[0].render.smoke.bSyncSizes", "1"},
-	{"gameOptions[0].render.smoke.bSort", "1"},
+	{"gameOptions[0].render.particles.bAuxViews", "0"},
+	{"gameOptions[0].render.particles.bPlasmaTrails", "0"},
+	{"gameOptions[0].render.particles.bDecreaseLag", "0"},
+	{"gameOptions[0].render.particles.bDebris", "1"},
+	{"gameOptions[0].render.particles.bDisperse", "1"},
+	{"gameOptions[0].render.particles.bRotate", "1"},
+	{"gameOptions[0].render.particles.bMissiles", "1"},
+	{"gameOptions[0].render.particles.bPlayers", "1"},
+	{"gameOptions[0].render.particles.bRobots", "1"},
+	{"gameOptions[0].render.particles.bStatic", "1"},
+	{"gameOptions[0].render.particles.bBubbles", "1"},
+	{"gameOptions[0].render.particles.bWiggleBubbles", "1"},
+	{"gameOptions[0].render.particles.bWobbleBubbles", "1"},
+	{"gameOptions[0].render.particles.bSyncSizes", "1"},
+	{"gameOptions[0].render.particles.bSort", "1"},
 	{"gameOptions[0].render.weaponIcons.alpha", "3"},
 	{"gameOptions[0].render.weaponIcons.bEquipment", "1"},
 	{"gameOptions[0].render.weaponIcons.bShowAmmo", "1"},
@@ -1790,13 +1796,13 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 100) {
 		if (!i)
 			extraGameInfo [0].bUseSmoke = (int) CFReadByte (pcf);
-		gameOptions [i].render.smoke.nDens [0] = CFReadInt (pcf);
-		gameOptions [i].render.smoke.nSize [0] = CFReadInt (pcf);
-		gameOptions [i].render.smoke.nDens [0] = NMCLAMP (gameOptions [i].render.smoke.nDens [0], 0, 4);
-		gameOptions [i].render.smoke.nSize [0] = NMCLAMP (gameOptions [i].render.smoke.nSize [0], 0, 3);
-		gameOptions [i].render.smoke.bPlayers = (int) CFReadByte (pcf);
-		gameOptions [i].render.smoke.bRobots = (int) CFReadByte (pcf);
-		gameOptions [i].render.smoke.bMissiles = (int) CFReadByte (pcf);
+		gameOptions [i].render.particles.nDens [0] = CFReadInt (pcf);
+		gameOptions [i].render.particles.nSize [0] = CFReadInt (pcf);
+		gameOptions [i].render.particles.nDens [0] = NMCLAMP (gameOptions [i].render.particles.nDens [0], 0, 4);
+		gameOptions [i].render.particles.nSize [0] = NMCLAMP (gameOptions [i].render.particles.nSize [0], 0, 3);
+		gameOptions [i].render.particles.bPlayers = (int) CFReadByte (pcf);
+		gameOptions [i].render.particles.bRobots = (int) CFReadByte (pcf);
+		gameOptions [i].render.particles.bMissiles = (int) CFReadByte (pcf);
 		}
 	if (gameStates.input.nPlrFileVersion >= 101) {
 		if (!i) {
@@ -1806,7 +1812,7 @@ for (i = 0; i < 2; i++) {
 		}
 	if (gameStates.input.nPlrFileVersion >= 102) {
 		CFReadByte (pcf);
-		gameOptions [i].render.smoke.bCollisions = 0;
+		gameOptions [i].render.particles.bCollisions = 0;
 		}
 	if (gameStates.input.nPlrFileVersion >= 103)
 		gameOptions [i].gameplay.bShieldWarning = (int) CFReadByte (pcf);
@@ -1889,7 +1895,7 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 122)
 		extraGameInfo [i].bTowFlags = CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 123)
-		gameOptions [i].render.smoke.bDecreaseLag = CFReadByte (pcf);
+		gameOptions [i].render.particles.bDecreaseLag = CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 124)
 		gameOptions [i].render.effects.bAutoTransparency = CFReadByte (pcf);
 	if (!i) {
@@ -1899,10 +1905,10 @@ for (i = 0; i < 2; i++) {
 			extraGameInfo [i].bLightTrails = CFReadByte (pcf);
 		}
 	if (gameStates.input.nPlrFileVersion >= 126) {
-		gameOptions [i].render.smoke.bSyncSizes = CFReadInt (pcf);
+		gameOptions [i].render.particles.bSyncSizes = CFReadInt (pcf);
 		for (j = 1; j < 4; j++) {
-			gameOptions [i].render.smoke.nDens [j] = CFReadInt (pcf);
-			gameOptions [i].render.smoke.nSize [j] = CFReadInt (pcf);
+			gameOptions [i].render.particles.nDens [j] = CFReadInt (pcf);
+			gameOptions [i].render.particles.nSize [j] = CFReadInt (pcf);
 			}
 		}
 	if (!i) {
@@ -1913,12 +1919,12 @@ for (i = 0; i < 2; i++) {
 			}
 		}
 	if (gameStates.input.nPlrFileVersion >= 128)
-		gameOptions [i].render.smoke.bDisperse = (int) CFReadByte (pcf);
+		gameOptions [i].render.particles.bDisperse = (int) CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 129)
 		extraGameInfo [i].bTagOnlyHitObjs = (int) CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 130)
 		for (j = 0; j < 4; j++)
-			gameOptions [i].render.smoke.nLife [j] = CFReadInt (pcf);
+			gameOptions [i].render.particles.nLife [j] = CFReadInt (pcf);
 	if (gameStates.input.nPlrFileVersion >= 131) {
 		gameOptions [i].render.shadows.bRobots = (int) CFReadByte (pcf);
 		gameOptions [i].render.shadows.bMissiles = (int) CFReadByte (pcf);
@@ -1963,8 +1969,8 @@ for (i = 0; i < 2; i++) {
 		if (!i)
 			extraGameInfo [i].nMslTurnSpeed = CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 147) {
-		gameOptions [i].render.smoke.bDebris = (int) CFReadByte (pcf);
-		gameOptions [i].render.smoke.bStatic = (int) CFReadByte (pcf);
+		gameOptions [i].render.particles.bDebris = (int) CFReadByte (pcf);
+		gameOptions [i].render.particles.bStatic = (int) CFReadByte (pcf);
 		}
 	if (gameStates.input.nPlrFileVersion >= 148)
 		gameOptions [i].gameplay.nAIAwareness = (int) CFReadByte (pcf);
@@ -2427,11 +2433,11 @@ for (i = 0; i < 2; i++) {
 		CFWriteInt (gameStates.multi.nConnection, &cf);
 		CFWriteByte ((sbyte) extraGameInfo [0].bUseSmoke, &cf);
 		}
-	CFWriteInt (gameOptions [i].render.smoke.nDens [0], &cf);
-	CFWriteInt (gameOptions [i].render.smoke.nSize [0], &cf);
-	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bPlayers, &cf);
-	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bRobots, &cf);
-	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bMissiles, &cf);
+	CFWriteInt (gameOptions [i].render.particles.nDens [0], &cf);
+	CFWriteInt (gameOptions [i].render.particles.nSize [0], &cf);
+	CFWriteByte ((sbyte) gameOptions [i].render.particles.bPlayers, &cf);
+	CFWriteByte ((sbyte) gameOptions [i].render.particles.bRobots, &cf);
+	CFWriteByte ((sbyte) gameOptions [i].render.particles.bMissiles, &cf);
 	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [0].bDamageExplosions, &cf);
 		CFWriteByte ((sbyte) extraGameInfo [0].bThrusterFlames, &cf);
@@ -2481,25 +2487,25 @@ for (i = 0; i < 2; i++) {
 	CFWriteByte (extraGameInfo [i].bPowerupLights, &cf);
 	CFWriteByte (extraGameInfo [i].nSpotSize, &cf);
 	CFWriteByte (extraGameInfo [i].bTowFlags, &cf);
-	CFWriteByte (gameOptions [i].render.smoke.bDecreaseLag, &cf);
+	CFWriteByte (gameOptions [i].render.particles.bDecreaseLag, &cf);
 	CFWriteByte (gameOptions [i].render.effects.bAutoTransparency, &cf);
 	if (!i) {
 		CFWriteByte (extraGameInfo [i].bUseHitAngles, &cf);
 		CFWriteByte (extraGameInfo [i].bLightTrails, &cf);
 		}
-	CFWriteInt (gameOptions [i].render.smoke.bSyncSizes, &cf);
+	CFWriteInt (gameOptions [i].render.particles.bSyncSizes, &cf);
 	for (j = 1; j < 4; j++) {
-		CFWriteInt (gameOptions [i].render.smoke.nDens [j], &cf);
-		CFWriteInt (gameOptions [i].render.smoke.nSize [j], &cf);
+		CFWriteInt (gameOptions [i].render.particles.nDens [j], &cf);
+		CFWriteInt (gameOptions [i].render.particles.nSize [j], &cf);
 		}
 	if (!i) {
 		CFWriteByte (extraGameInfo [i].bTracers, &cf);
 		CFWriteByte (extraGameInfo [i].bShockwaves, &cf);
 		}
-	CFWriteByte (gameOptions [i].render.smoke.bDisperse, &cf);
+	CFWriteByte (gameOptions [i].render.particles.bDisperse, &cf);
 	CFWriteByte (extraGameInfo [i].bTagOnlyHitObjs, &cf);
 	for (j = 0; j < 4; j++)
-		CFWriteInt (gameOptions [i].render.smoke.nLife [j], &cf);
+		CFWriteInt (gameOptions [i].render.particles.nLife [j], &cf);
 	CFWriteByte (gameOptions [i].render.shadows.bRobots, &cf);
 	CFWriteByte (gameOptions [i].render.shadows.bMissiles, &cf);
 	CFWriteByte (gameOptions [i].render.shadows.bReactors, &cf);
@@ -2524,8 +2530,8 @@ for (i = 0; i < 2; i++) {
 		CFWriteByte (extraGameInfo [i].nMaxSmokeGrenades, &cf);
 		CFWriteByte (extraGameInfo [i].nMslTurnSpeed, &cf);
 		}
-	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bDebris, &cf);
-	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bStatic, &cf);
+	CFWriteByte ((sbyte) gameOptions [i].render.particles.bDebris, &cf);
+	CFWriteByte ((sbyte) gameOptions [i].render.particles.bStatic, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].gameplay.nAIAwareness, &cf);
 	CFWriteByte ((sbyte) extraGameInfo [i].nCoopPenalty, &cf);
 	CFWriteByte ((sbyte) extraGameInfo [i].bKillMissiles, &cf);

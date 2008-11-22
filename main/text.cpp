@@ -1832,6 +1832,9 @@ const char *defaultGameTexts [][2] = {
 	{"Schnellladen erfolgreich", "Quickload successful"},
 	{"STRG-F5\t  Schnellspeichern", "CTRL-F5\t  Quick Save"},
 	{"STRG-F9\t  Schnellladen", "CTRL-F9\t  Quick Load"},
+	{"Luft~Blasen erzeugen", "air B~ubbles"},
+	{"Luftblasen schwingen hin und her", "air bubbles w~Iggle"},
+	{"Luftblasen aendern die Form", "air bubbles w~Obble"},
 #if 0
 	{"", ""},
 #endif
@@ -2490,6 +2493,9 @@ const char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, wird Musik sanft ausgeblendet;\nandernfalls kann sie abrupt aufhoeren.", "If checked music will be soflty faded out;\notherwise it may end abruptly."},
 	{"Wenn angekreuzt, werden Monitorausgaben in der vollen, sonst\nmit 1/4 Bild-\nschirmaufloesung dargestellt.\n\nHochaufloesende Monitore verbrauchen sehr viel Grafikspeicher.", 
 	 "If checked in-game monitor output is rendered at the full,\notherwise at 1/4 of the screen resolution.\n\nHigh resolution monitors consume a lot of video memory."},
+	{"Wenn angekreuzt steigen im Wasser Blasen auf wo vom Autor\ndes Levels vorgesehen.", "If checked air bubbles rise under water where the level\nauthor built it in."},
+	{"Wenn angekreuzt, schweben Luftblasen beim Aufsteigen etwas\nhin und her.", "If checked air bubbles wiggle left and right while rising."},
+	{"Wenn angekreuzt, aendern Luftblasen staendig ihre From", "If checked air bubbles slightly change their shape while\nrising."},
 #if 0
 	{"", ""},
 #endif

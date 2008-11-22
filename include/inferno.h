@@ -226,7 +226,7 @@ typedef struct tTextureOptions {
 
 //------------------------------------------------------------------------------
 
-typedef struct tSmokeOptions {
+typedef struct tParticleOptions {
 	int nDens [5];
 	int nSize [5];
 	int nLife [5];
@@ -238,13 +238,16 @@ typedef struct tSmokeOptions {
 	int bPlasmaTrails;
 	int bDebris;
 	int bStatic;
+	int bBubbles;
+	int bWobbleBubbles;
+	int bWiggleBubbles;
 	int bCollisions;
 	int bDisperse;
 	int bRotate;
 	int bSort;
 	int bDecreaseLag;	//only render if tPlayer is moving forward
 	int bAuxViews;
-} tSmokeOptions;
+} tParticleOptions;
 
 //------------------------------------------------------------------------------
 
@@ -369,7 +372,7 @@ typedef struct tRenderOptions {
 	tCockpitOptions cockpit;
 	tTextureOptions textures;
 	tWeaponIconOptions weaponIcons;
-	tSmokeOptions smoke;
+	tParticleOptions particles;
 	tLightningOptions lightnings;
 	tShadowOptions shadows;
 	tPowerupOptions powerups;

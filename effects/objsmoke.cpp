@@ -111,7 +111,7 @@ VmVecNegate (&dir);
 if (nThrusters < 0) {
 	nThrusters =
 		CreateSmoke (&objP->info.position.vPos, &dir, objP->info.nSegment, 2, -2000, 20000,
-						 gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1],
+						 gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [1],
 						 2, -2000, PLR_PART_SPEED * 50, LIGHT_PARTICLES, OBJ_IDX (objP), NULL, 1, -1);
 	SetSmokeObject (OBJ_IDX (objP)) = nThrusters;
 	}
@@ -289,7 +289,7 @@ if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) ||
 	return;
 	}
 j = OBJ_IDX (objP);
-if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
+if (gameOpts->render.particles.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
 	fn = objP->info.position.mOrient[FVEC];
 	mn = objP->info.position.vPos - objP->info.vLastPos;
 	vmsVector::Normalize(fn);
@@ -342,14 +342,14 @@ else {
 		nParts += 75;
 		}
 	nParts = objP->mType.physInfo.thrust.IsZero() ? SHIP_MAX_PARTS : SHIP_MAX_PARTS / 2;
-	if (SHOW_SMOKE && nParts && gameOpts->render.smoke.bPlayers) {
-		if (gameOpts->render.smoke.bSyncSizes) {
-			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [0]);
-			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale);
+	if (SHOW_SMOKE && nParts && gameOpts->render.particles.bPlayers) {
+		if (gameOpts->render.particles.bSyncSizes) {
+			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [0]);
+			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale);
 			}
 		else {
-			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [1]);
-			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [1], nScale);
+			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [1]);
+			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [1], nScale);
 			}
 		if (!objP->mType.physInfo.thrust.IsZero ())
 			vDirP = NULL;
@@ -364,7 +364,7 @@ else {
 			//PrintLog ("creating tPlayer smoke\n");
 			h = SetSmokeObject (j,
 					CreateSmoke (&objP->info.position.vPos, vDirP, NULL, objP->info.nSegment, 2, nParts, nScale,
-									 gameOpts->render.smoke.nSize [1],
+									 gameOpts->render.particles.nSize [1],
 									 2, PLR_PART_LIFE / (nType + 1) * (vDirP ? 2 : 1), PLR_PART_SPEED, SMOKE_PARTICLES, j, smokeColors + nType, 1, -1));
 			}
 		else {
@@ -373,7 +373,7 @@ else {
 			SetSmokeLife (h, PLR_PART_LIFE / (nType + 1) * (vDirP ? 2 : 1));
 			SetSmokeType (h, SMOKE_PARTICLES);
 			SetSmokePartScale (h, -nScale);
-			SetSmokeDensity (h, nParts, gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1]);
+			SetSmokeDensity (h, nParts, gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [1]);
 			SetSmokeSpeed (gameData.smoke.objects [i],
 								objP->mType.physInfo.thrust.IsZero () ? PLR_PART_SPEED * 2 : PLR_PART_SPEED);
 			}
@@ -398,7 +398,7 @@ void DoRobotSmoke (tObject *objP)
 	vmsVector	pos;
 
 i = OBJ_IDX (objP);
-if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots)) {
+if (!(SHOW_SMOKE && gameOpts->render.particles.bRobots)) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;
@@ -422,19 +422,19 @@ if (nParts > 0) {
 	nParts = BOT_MAX_PARTS;
 	nScale = (float) sqrt (8.0 / X2F (objP->info.xSize));
 	nScale *= 1.0f + h / 25.0f;
-	if (!gameOpts->render.smoke.bSyncSizes) {
-		nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [2]);
-		nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [2], nScale);
+	if (!gameOpts->render.particles.bSyncSizes) {
+		nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [2]);
+		nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [2], nScale);
 		}
 	if (gameData.smoke.objects [i] < 0) {
 		//PrintLog ("creating robot %d smoke\n", i);
 		SetSmokeObject (i, CreateSmoke (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, nScale,
-												  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [2],
+												  gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [2],
 												  1, BOT_PART_LIFE, BOT_PART_SPEED, SMOKE_PARTICLES, i, smokeColors, 1, -1));
 		}
 	else {
 		SetSmokePartScale (gameData.smoke.objects [i], nScale);
-		SetSmokeDensity (gameData.smoke.objects [i], nParts, gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [2]);
+		SetSmokeDensity (gameData.smoke.objects [i], nParts, gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [2]);
 		SetSmokeSpeed (gameData.smoke.objects [i], !objP->mType.physInfo.velocity.IsZero() ?
 							BOT_PART_SPEED : BOT_PART_SPEED * 2 / 3);
 		}
@@ -453,7 +453,7 @@ void DoReactorSmoke (tObject *objP)
 	vmsVector	vDir, vPos;
 
 i = OBJ_IDX (objP);
-if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots)) {
+if (!(SHOW_SMOKE && gameOpts->render.particles.bRobots)) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;
@@ -498,7 +498,7 @@ void DoMissileSmoke (tObject *objP)
 	tThrusterInfo	ti;
 
 i = OBJ_IDX (objP);
-if (!(SHOW_SMOKE && gameOpts->render.smoke.bMissiles)) {
+if (!(SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;
@@ -507,7 +507,7 @@ if ((objP->info.xShields < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DE
 	nParts = 0;
 else {
 	nSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
-	nLife = gameOpts->render.smoke.nLife [3] + 1;
+	nLife = gameOpts->render.particles.nLife [3] + 1;
 #if 1
 	nParts = (int) (MSL_MAX_PARTS * X2F (nSpeed) / (40.0f * (4 - nLife)));
 	if ((objP->info.nId == EARTHSHAKER_MEGA_ID) || (objP->info.nId == ROBOT_SHAKER_MEGA_ID))
@@ -522,12 +522,12 @@ else {
 	}
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
-		if (!gameOpts->render.smoke.bSyncSizes) {
-			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [3]);
-			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [3], nScale);
+		if (!gameOpts->render.particles.bSyncSizes) {
+			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [3]);
+			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale);
 			}
 		SetSmokeObject (i, CreateSmoke (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, nScale,
-												  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
+												  gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3],
 												  1, nLife * MSL_PART_LIFE, MSL_PART_SPEED, SMOKE_PARTICLES, i, smokeColors + 1, 1, -1));
 		}
 	CalcThrusterPos (objP, &ti, 0);
@@ -546,7 +546,7 @@ void DoDebrisSmoke (tObject *objP)
 	vmsVector	pos;
 
 i = OBJ_IDX (objP);
-if (!(SHOW_SMOKE && gameOpts->render.smoke.bDebris)) {
+if (!(SHOW_SMOKE && gameOpts->render.particles.bDebris)) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;
@@ -557,9 +557,9 @@ if ((objP->info.xShields < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DE
 else
 	nParts = DEBRIS_MAX_PARTS;
 if (nParts) {
-	if (!gameOpts->render.smoke.bSyncSizes) {
-		nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [4]);
-		nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [4], nScale);
+	if (!gameOpts->render.particles.bSyncSizes) {
+		nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [4]);
+		nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [4], nScale);
 		}
 	if (gameData.smoke.objects [i] < 0) {
 		SetSmokeObject (i, CreateSmoke (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts / 2,
@@ -582,7 +582,7 @@ void DoStaticSmoke (tObject *objP)
 	static tRgbaColorf defaultColors [2] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}};
 
 i = (int) OBJ_IDX (objP);
-if (!(SHOW_SMOKE && gameOpts->render.smoke.bStatic)) {
+if (!(SHOW_SMOKE && (bBubbles ? gameOpts->render.particles.bBubbles : gameOpts->render.particles.bStatic))) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;
@@ -599,7 +599,7 @@ if (gameData.smoke.objects [i] < 0) {
 	dir = objP->info.position.mOrient [FVEC] * (objP->rType.smokeInfo.nSpeed * 2 * F1_0 / 55);
 	SetSmokeObject (i, CreateSmoke (&objP->info.position.vPos, &dir, &objP->info.position.mOrient,
 											  objP->info.nSegment, 1, -objP->rType.smokeInfo.nParts,
-											  -PARTICLE_SIZE (objP->rType.smokeInfo.nSize [gameOpts->render.smoke.bDisperse], 2.0f),
+											  -PARTICLE_SIZE (objP->rType.smokeInfo.nSize [gameOpts->render.particles.bDisperse], 2.0f),
 											  -1, 3, STATIC_SMOKE_PART_LIFE * objP->rType.smokeInfo.nLife,
 											  objP->rType.smokeInfo.nDrift, bBubbles ? BUBBLE_PARTICLES : SMOKE_PARTICLES, 
 											  i, bColor ? &color : defaultColors + bBubbles, 1, objP->rType.smokeInfo.nSide - 1));
@@ -661,7 +661,7 @@ void DoParticleTrail (tObject *objP)
 if (!(SHOW_OBJ_FX && (bGatling ? EGI_FLAG (bGatlingTrails, 1, 1, 0) : EGI_FLAG (bLightTrails, 1, 1, 0))))
 	return;
 i = OBJ_IDX (objP);
-if (!(bGatling || gameOpts->render.smoke.bPlasmaTrails)) {
+if (!(bGatling || gameOpts->render.particles.bPlasmaTrails)) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;
@@ -706,8 +706,8 @@ if (gameData.smoke.objects [i] < 0) {
 		c.alpha = 0.1f + nScale / 10;
 		}
 	SetSmokeObject (i, CreateSmoke (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale),
-											  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
-											  1, ((gameOpts->render.smoke.nLife [3] + 1) * LASER_PART_LIFE) << bGatling, LASER_PART_SPEED, 
+											  gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3],
+											  1, ((gameOpts->render.particles.nLife [3] + 1) * LASER_PART_LIFE) << bGatling, LASER_PART_SPEED, 
 											  bGatling ? GATLING_PARTICLES : LIGHT_PARTICLES, i, &c, 0, -1));
 	}
 pos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (-objP->info.xSize / 2);
@@ -915,7 +915,7 @@ else if (t == OBJ_WEAPON) {
 		DoParticleTrail (objP);
 	else if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (objP->info.nId == PROXMINE_ID))
 		DoBombSmoke (objP);
-	else if (gameOpts->render.smoke.bPlasmaTrails && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0) &&
+	else if (gameOpts->render.particles.bPlasmaTrails && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0) &&
 				gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsSlowWeapon [objP->info.nId])
 		DoParticleTrail (objP);
 	else
@@ -946,7 +946,7 @@ void PlayerSmokeFrame (void)
 {
 	int	i;
 
-if (!gameOpts->render.smoke.bPlayers)
+if (!gameOpts->render.particles.bPlayers)
 	return;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	DoPlayerSmoke (OBJECTS + gameData.multiplayer.players [i].nObject, i);

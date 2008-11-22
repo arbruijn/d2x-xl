@@ -1680,7 +1680,7 @@ else {
 	}
 
 if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0)) {
-	if (gameOpts->render.smoke.bPlasmaTrails)
+	if (gameOpts->render.particles.bPlasmaTrails)
 		;//DoObjectSmoke (objP);
 	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->info.nType == OBJ_WEAPON) &&
 				!gameData.objs.bIsSlowWeapon [objP->info.nId] &&
