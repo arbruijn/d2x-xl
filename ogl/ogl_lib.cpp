@@ -61,7 +61,7 @@ typedef struct tLibList {
 
 tLibList libList = {0, NULL};
 
-static DWORD nOglLibFlags [2] = {1680960820, -1};
+static DWORD nOglLibFlags [2] = {1680960820, (DWORD) -1};
 
 //------------------------------------------------------------------------------
 
@@ -856,7 +856,7 @@ int OglLoadLibCache (char *pszFilter, char *pszFolder)
 if (libList.nLibs)
 	return libList.nLibs;
 if (!OglCountLibs (pszFilter, pszFolder))
-	return false;
+	return 0;
 libList.libs = (DWORD *) D2_ALLOC (libList.nLibs * sizeof (int));
 
 	FFS	ffs;
@@ -887,14 +887,10 @@ return i;
 
 int OglLibFlags (void)
 {
-OglLoadLibCache ("*.plx", gameFolders.szProfDir);
-if (!libList.nLibs)
+if (!OglLoadLibCache ("*.plx", gameFolders.szProfDir))
 	return -1;
-
-	int	i, j;
-
-for (i = 0; i < libList.nLibs; i++)
-	for (j = 0; nOglLibs [j]; j++)
+for (int i = 0; i < libList.nLibs; i++)
+	for (int j = 0; nOglLibs [j]; j++)
 		if (libList.libs [i] == nOglLibs [j])
 			return libList.libs [i];
 return nOglLibFlags [0];
@@ -921,17 +917,12 @@ bool OglLibsInitialized (void)
 if (RegOpenKeyEx (HKEY_LOCAL_MACHINE, OGL_LIB_KEY, 0, KEY_QUERY_VALUE, &hRegKey) != ERROR_SUCCESS)
 	return false;
 DWORD nType, nData, nDataSize = sizeof (nData);
-int i;
-if ((i = RegQueryValueEx (hRegKey, "Flags", 0, &nType, (LPBYTE) &nData, &nDataSize)) != ERROR_SUCCESS)
+if (RegQueryValueEx (hRegKey, "Flags", 0, &nType, (LPBYTE) &nData, &nDataSize) != ERROR_SUCCESS)
 	return false;
-if ((nDataSize == sizeof (nData)) && (nType == REG_DWORD) && (nData == nOglLibFlags [0]))
-	nOglLibFlags [1] = nData;
-else {
-	if (nData != (DWORD) -1) 
-		return false;
-	if (!OglInitLibFlags (hRegKey))
-		return false;
-	}
+if ((nDataSize == sizeof (nData)) && (nType == REG_DWORD) && (nData != nOglLibFlags [0]) && (nData != (DWORD) -1))
+	return false;
+if (!OglInitLibFlags (hRegKey))
+	return false;
 #endif
 return true;
 }
