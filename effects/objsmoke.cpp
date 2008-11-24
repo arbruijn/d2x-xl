@@ -599,7 +599,7 @@ if (gameData.smoke.objects [i] < 0) {
 	dir = objP->info.position.mOrient [FVEC] * (objP->rType.smokeInfo.nSpeed * 2 * F1_0 / 55);
 	SetSmokeObject (i, CreateSmoke (&objP->info.position.vPos, &dir, &objP->info.position.mOrient,
 											  objP->info.nSegment, 1, -objP->rType.smokeInfo.nParts,
-											  -PARTICLE_SIZE (objP->rType.smokeInfo.nSize [gameOpts->render.particles.bDisperse], 2.0f),
+											  -PARTICLE_SIZE (objP->rType.smokeInfo.nSize [gameOpts->render.particles.bDisperse], bBubbles ? 4.0f : 2.0f),
 											  -1, 3, STATIC_SMOKE_PART_LIFE * objP->rType.smokeInfo.nLife,
 											  objP->rType.smokeInfo.nDrift, bBubbles ? BUBBLE_PARTICLES : SMOKE_PARTICLES, 
 											  i, bColor ? &color : defaultColors + bBubbles, 1, objP->rType.smokeInfo.nSide - 1));
