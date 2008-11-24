@@ -439,7 +439,6 @@ void NMInitBackground (char *filename, bkg *bgP, int x, int y, int w, int h, int
 	static char *pszMenuPcx = NULL;
 	int bVerInfo, bBlueBox;
 
-OglSetLibFlags (gameStates.app.bGameRunning);
 GrPaletteStepUp (0, 0, 0);
 if (!pszMenuPcx)
 	pszMenuPcx = MENU_PCX_NAME ();
