@@ -1227,6 +1227,7 @@ void RenderEffects (int nWindow)
 {
 	int bLightnings, bSmoke, bSparks;
 
+OglSetLibFlags (1);
 #if 1
 if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects] && tiEffects.pThread) {
 	while (tiEffects.bExec)
@@ -2153,6 +2154,7 @@ gameData.render.nTotalLights =
 gameData.render.nMaxLights =
 gameData.render.nStateChanges =
 gameData.render.nShaderChanges = 0;
+OglSetLibFlags (1);
 SetFaceDrawer (-1);
 gameData.render.vertColor.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4);
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;

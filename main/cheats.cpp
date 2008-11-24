@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "escort.h"
 #include "switch.h"
 #include "key.h"
+#include "crypt.h"
 #include "slowmotion.h"
 
 //	Cheat functions ------------------------------------------------------------
@@ -833,7 +834,7 @@ typedef void tCheatFunc (int bVerbose);
 typedef tCheatFunc *pCheatFunc;
 
 typedef struct tCheat {
-	const char		*pszCheat;
+	const char	*pszCheat;
 	pCheatFunc	cheatFunc;
 	char			bPunish;		//0: never punish, 1: always punish, -1: cheat function decides whether to punish
 	char			bEncrypted;
@@ -874,8 +875,6 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-
-extern char *jcrypt (char *);
 
 #define N_LAMER_CHEATS (sizeof (LamerCheats) / sizeof (*LamerCheats))
 

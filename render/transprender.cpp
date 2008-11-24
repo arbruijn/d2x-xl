@@ -1508,6 +1508,7 @@ if (!(gameOpts->render.bDepthSort && transpItems.depthBufP && (transpItems.nFree
 	}
 PROF_START
 gameStates.render.nType = 5;
+OglSetLibFlags (1);
 TIResetShader ();
 bStencil = StencilOff ();
 transpItems.bTextured = -1;

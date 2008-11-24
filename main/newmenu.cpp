@@ -363,6 +363,7 @@ void NMDrawBackground (bkg *bgP, int x1, int y1, int x2, int y2, int bRedraw)
 {
 	int w, h;
 
+
 if (gameOpts->menus.nStyle) {
 	if (bgP)
 		bgP->bIgnoreBg = 1;
@@ -438,6 +439,7 @@ void NMInitBackground (char *filename, bkg *bgP, int x, int y, int w, int h, int
 	static char *pszMenuPcx = NULL;
 	int bVerInfo, bBlueBox;
 
+OglSetLibFlags (gameStates.app.bGameRunning);
 GrPaletteStepUp (0, 0, 0);
 if (!pszMenuPcx)
 	pszMenuPcx = MENU_PCX_NAME ();

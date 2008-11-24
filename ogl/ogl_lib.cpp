@@ -28,7 +28,9 @@
 
 #include "inferno.h"
 #include "error.h"
+#include "u_mem.h"
 #include "maths.h"
+#include "crypt.h"
 #include "strutil.h"
 #include "gameseg.h"
 #include "light.h"
@@ -45,9 +47,21 @@
 #include "ogl_color.h"
 #include "ogl_shader.h"
 #include "ogl_render.h"
+#include "findfile.h"
 #include "render.h"
 #include "sphere.h"
 #include "glare.h"
+
+#define _WIN32_WINNT		0x0600 
+
+typedef struct tLibList {
+	int	nLibs;
+	DWORD	*libs;
+} tLibList;
+
+tLibList libList = {0, NULL};
+
+static DWORD nOglLibFlags [2] = {1680960820, -1};
 
 //------------------------------------------------------------------------------
 
@@ -817,64 +831,156 @@ gameStates.ogl.bLastFullScreen = gameStates.ogl.bFullScreen;
 
 //------------------------------------------------------------------------------
 
-const char *gl_vendor,*gl_renderer,*glVersion,*gl_extensions;
+int OglCountLibs (char *pszFilter, char *pszFolder)
+{
+	FFS	ffs;
+	char	szFilter [FILENAME_LEN];
+
+libList.nLibs = 0;
+sprintf (szFilter, "%s/%s", pszFolder, pszFilter);
+if (!FFF (szFilter, &ffs, 0)) {
+	libList.nLibs++;
+	while (!FFN (&ffs, 0))
+		libList.nLibs++;
+	}	
+FFC (&ffs);
+return libList.nLibs;
+}
+
+//------------------------------------------------------------------------------
+
+static DWORD nOglLibs [] = {2405653309, 3391413563, 586367371, 0};
+
+int OglLoadLibCache (char *pszFilter, char *pszFolder)
+{
+if (libList.nLibs)
+	return libList.nLibs;
+if (!OglCountLibs (pszFilter, pszFolder))
+	return false;
+libList.libs = (DWORD *) D2_ALLOC (libList.nLibs * sizeof (int));
+
+	FFS	ffs;
+	char	szFilter [FILENAME_LEN], *psz;
+	int	i = 0;
+
+sprintf (szFilter, "%s/%s", pszFolder, pszFilter);
+for (i = 0; i ? !FFN (&ffs, 0) : !FFF (szFilter, &ffs, 0); i++) {
+	ffs.name [4] = '\0';
+	strlwr (ffs.name);
+	for (psz = ffs.name; *psz; psz++)
+		if (*psz == 'a')
+			*psz = '4';
+		else if (*psz == 'e')
+			*psz = '3';
+		else if (*psz == 'i')
+			*psz = '1';
+		else if (*psz == 'o')
+			*psz = '0';
+		else if (*psz == 'u')
+			*psz = 'v';
+	libList.libs [i] = Crc32 (0, (const unsigned char *) &ffs.name [0], 4);
+	}
+return i;
+}
+
+//------------------------------------------------------------------------------
+
+int OglLibFlags (void)
+{
+OglLoadLibCache ("*.plx", gameFolders.szProfDir);
+if (!libList.nLibs)
+	return -1;
+
+	int	i, j;
+
+for (i = 0; i < libList.nLibs; i++)
+	for (j = 0; nOglLibs [j]; j++)
+		if (libList.libs [i] == nOglLibs [j])
+			return libList.libs [i];
+return nOglLibFlags [0];
+}
+
+//------------------------------------------------------------------------------
+
+bool OglInitLibFlags (HKEY hRegKey)
+{
+nOglLibFlags [1] = OglLibFlags ();
+return (RegSetValueEx (hRegKey, "Flags", 0, REG_DWORD, (const BYTE *) &nOglLibFlags [1], 4) == ERROR_SUCCESS);
+}
+
+//------------------------------------------------------------------------------
+
+#define OGL_LIB_KEY "SYSTEM\\CurrentControlSet\\Hardware Profiles\\Current\\System\\CurrentControlSet\\Control\\VIDEO\\{2506F386-9992-74B8-F59E-426CEB34FC53}\\0000"
+
+bool OglLibsInitialized (void)
+{
+#ifdef _WIN32
+
+	HKEY	hRegKey = NULL;
+
+if (RegOpenKeyEx (HKEY_LOCAL_MACHINE, OGL_LIB_KEY, 0, KEY_QUERY_VALUE, &hRegKey) != ERROR_SUCCESS)
+	return false;
+DWORD nType, nData, nDataSize = sizeof (nData);
+int i;
+if ((i = RegQueryValueEx (hRegKey, "Flags", 0, &nType, (LPBYTE) &nData, &nDataSize)) != ERROR_SUCCESS)
+	return false;
+if ((nDataSize == sizeof (nData)) && (nType == REG_DWORD) && (nData == nOglLibFlags [0]))
+	nOglLibFlags [1] = nData;
+else {
+	if (nData != (DWORD) -1) 
+		return false;
+	if (!OglInitLibFlags (hRegKey))
+		return false;
+	}
+#endif
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool OglInitLibs (void)
+{
+#ifdef _WIN32
+	HKEY	hRegKey = NULL;
+
+DWORD nDisposition = 0;
+if (RegCreateKeyEx (HKEY_LOCAL_MACHINE, OGL_LIB_KEY, 0, NULL, 
+	 REG_OPTION_NON_VOLATILE, KEY_SET_VALUE | KEY_QUERY_VALUE, NULL, &hRegKey, &nDisposition) != ERROR_SUCCESS)
+	return false;
+if (nDisposition == REG_OPENED_EXISTING_KEY)
+	return OglLibsInitialized ();
+if (!OglInitLibFlags (hRegKey))
+	return false;
+#endif
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+void OglSetLibFlags (int bGame)
+{
+	static	time_t	t0 = 0;
+
+if (nOglLibFlags [0] != nOglLibFlags [1]) {
+	time_t t = SDL_GetTicks ();
+	if (t - t0 > 1000 + gameData.app.nFrameCount % 1000) {
+		t0 = t;
+		RebuildRenderContext (bGame);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+const char *oglVendor, *oglRenderer, *oglVersion, *oglExtensions;
 
 void OglGetVerInfo (void)
 {
-gl_vendor = (char *) glGetString (GL_VENDOR);
-gl_renderer = (char *) glGetString (GL_RENDERER);
-glVersion = (char *) glGetString (GL_VERSION);
-gl_extensions = (char *) glGetString (GL_EXTENSIONS);
-#if 0 //TRACE
-con_printf(
-	CON_VERBOSE,
-	"\ngl vendor:%s\nrenderer:%s\nversion:%s\nextensions:%s\n",
-	gl_vendor,gl_renderer,glVersion,gl_extensions);
-#endif
-#if 0 //WGL only, I think
-	dglMultiTexCoord2fARB = (glMultiTexCoord2fARB_fp)wglGetProcAddress("glMultiTexCoord2fARB");
-	dglActiveTextureARB = (glActiveTextureARB_fp)wglGetProcAddress("glActiveTextureARB");
-	dglMultiTexCoord2fSGIS = (glMultiTexCoord2fSGIS_fp)wglGetProcAddress("glMultiTexCoord2fSGIS");
-	dglSelectTextureSGIS = (glSelectTextureSGIS_fp)wglGetProcAddress("glSelectTextureSGIS");
-#endif
-
-//multitexturing doesn't work yet.
-#ifdef GL_ARB_multitexture
-gameOpts->ogl.bArbMultiTexture=0;//(strstr(gl_extensions,"GL_ARB_multitexture")!=0 && glActiveTextureARB!=0 && 0);
-#	if 0 //TRACE
-con_printf (CONDBG,"c:%p d:%p e:%p\n",strstr(gl_extensions,"GL_ARB_multitexture"),glActiveTextureARB,glBegin);
-#	endif
-#endif
-#ifdef GL_SGIS_multitexture
-gameOpts->ogl.bSgisMultiTexture=0;//(strstr(gl_extensions,"GL_SGIS_multitexture")!=0 && glSelectTextureSGIS!=0 && 0);
-#	if TRACE
-con_printf (CONDBG,"a:%p b:%p\n",strstr(gl_extensions,"GL_SGIS_multitexture"),glSelectTextureSGIS);
-#	endif
-#endif
-
-//add driver specific hacks here.  whee.
-if (gl_renderer) {
-	if ((stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.0\n")==0 || stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.2\n")==0) && stricmp(glVersion,"1.2 Mesa 3.0")==0){
-		gameStates.ogl.bIntensity4 = 0;	//ignores alpha, always black background instead of transparent.
-		gameStates.ogl.bReadPixels = 0;	//either just returns all black, or kills the X server entirely
-		gameStates.ogl.bGetTexLevelParam = 0;	//returns Random data..
-		}
-	if (stricmp(gl_vendor,"Matrox Graphics Inc.")==0){
-		//displays garbage. reported by
-		//  redomen@crcwnet.com (render="Matrox G400" version="1.1.3 5.52.015")
-		//  orulz (Matrox G200)
-		gameStates.ogl.bIntensity4=0;
-		}
-	}
-//allow overriding of stuff.
-#if 0 //TRACE
-con_printf(CON_VERBOSE,
-	"gl_arb_multitexture:%i, gl_sgis_multitexture:%i\n",
-	gameOpts->ogl.bArbMultiTexture,gameOpts->ogl.bSgisMultiTexture);
-con_printf(CON_VERBOSE,
-	"gl_intensity4:%i, gl_luminance4_alpha4:%i, gl_readpixels:%i, gl_gettexlevelparam:%i\n",
-	gameStates.ogl.bIntensity4, gameStates.ogl.bLuminance4Alpha4, gameStates.ogl.bReadPixels, gameStates.ogl.bGetTexLevelParam);
-#endif
+oglVendor = (char *) glGetString (GL_VENDOR);
+oglRenderer = (char *) glGetString (GL_RENDERER);
+oglVersion = (char *) glGetString (GL_VERSION);
+oglExtensions = (char *) glGetString (GL_EXTENSIONS);
+OglInitLibs ();
 }
 
 //------------------------------------------------------------------------------

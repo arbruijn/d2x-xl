@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "joy.h"
 #include "kconfig.h"
 #include "digi.h"
+#include "crypt.h"
 #include "newmenu.h"
 #include "joydefs.h"
 #include "palette.h"
@@ -62,6 +63,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "autodl.h"
 #include "args.h"
 #include "collide.h"
+#include "findfile.h"
 #include "u_mem.h"
 #include "dynlight.h"
 
@@ -107,8 +109,7 @@ hli highestLevels [MAX_MISSIONS];
 //version 23 -> 24: add name of joystick for windows version.
 //version 24 -> 25: add d2x keys array
 
-
-extern void InitWeaponOrdering();
+void InitWeaponOrdering();
 
 //------------------------------------------------------------------------------
 
@@ -2678,7 +2679,6 @@ return num;
 }
 
 //------------------------------------------------------------------------------
-
 //
 // New Game sequencing functions
 //
