@@ -323,7 +323,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bThrusterFlames, 0, 0);
 		RP (extraGameInfo [i].bTracers, 0, 0);
 		RP (extraGameInfo [i].bUseCameras, 0, 0);
-		RP (extraGameInfo [i].bUseSmoke, 0, 0);
+		RP (extraGameInfo [i].bUseParticles, 0, 0);
 		RP (extraGameInfo [i].bUseLightnings, 0, 0);
 		RP (extraGameInfo [i].bUseHitAngles, 0, 0);
 		RP (extraGameInfo [i].bWiggle, 0, 0);
@@ -850,7 +850,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bThrusterFlames", "1"},
 	{"extraGameInfo[0].bTracers", "1"},
 	{"extraGameInfo[0].bUseCameras", "1"},
-	{"extraGameInfo[0].bUseSmoke", "1"},
+	{"extraGameInfo[0].bUseParticles", "1"},
 	{"extraGameInfo[0].bUseLightnings", "1"},
 	{"extraGameInfo[0].bUseHitAngles", "0"},
 	{"extraGameInfo[0].bGatlingSpeedUp", "0"},
@@ -1796,7 +1796,7 @@ for (i = 0; i < 2; i++) {
 		gameStates.multi.nConnection = CFReadInt (pcf);
 	if (gameStates.input.nPlrFileVersion >= 100) {
 		if (!i)
-			extraGameInfo [0].bUseSmoke = (int) CFReadByte (pcf);
+			extraGameInfo [0].bUseParticles = (int) CFReadByte (pcf);
 		gameOptions [i].render.particles.nDens [0] = CFReadInt (pcf);
 		gameOptions [i].render.particles.nSize [0] = CFReadInt (pcf);
 		gameOptions [i].render.particles.nDens [0] = NMCLAMP (gameOptions [i].render.particles.nDens [0], 0, 4);
@@ -2432,7 +2432,7 @@ for (i = 0; i < 2; i++) {
 		for (j = 0; j < 2; j++)
 			CFWriteByte ((sbyte) extraGameInfo [j].bFastPitch, &cf);
 		CFWriteInt (gameStates.multi.nConnection, &cf);
-		CFWriteByte ((sbyte) extraGameInfo [0].bUseSmoke, &cf);
+		CFWriteByte ((sbyte) extraGameInfo [0].bUseParticles, &cf);
 		}
 	CFWriteInt (gameOptions [i].render.particles.nDens [0], &cf);
 	CFWriteInt (gameOptions [i].render.particles.nSize [0], &cf);

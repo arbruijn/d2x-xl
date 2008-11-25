@@ -579,16 +579,16 @@ int load_mine_data (CFILE *loadFile)
 	Assert (gameData.pig.tex.nTextures < MAX_TEXTURES);
 
 	{
-		hashtable ht;
+		tHashTable ht;
 
-		hashtable_init ( &ht, gameData.pig.tex.nTextures );
+		HashTableInit ( &ht, gameData.pig.tex.nTextures );
 
 		// Remove all the file extensions in the textures list
 
 		for (i=0;i<gameData.pig.tex.nTextures;i++)	{
 			temptr = strchr (gameData.pig.tex.pTMapInfo [i].filename, '.');
 			if (temptr) *temptr = '\0';
-			hashtable_insert ( &ht, gameData.pig.tex.pTMapInfo [i].filename, i );
+			HashTableInsert ( &ht, gameData.pig.tex.pTMapInfo [i].filename, i );
 		}
 
 		// For every texture, search through the texture list
@@ -598,7 +598,7 @@ int load_mine_data (CFILE *loadFile)
 			temptr = strchr (old_tmap_list [j], '.');
 			if (temptr) *temptr = '\0';
 
-			tmap_xlate_table [j] = hashtable_search ( &ht, old_tmap_list [j]);
+			tmap_xlate_table [j] = HashTableSearch ( &ht, old_tmap_list [j]);
 			if (tmap_xlate_table [j]	< 0 )	{
 				//tmap_xlate_table [j] = 0;
 				;
@@ -618,7 +618,7 @@ int load_mine_data (CFILE *loadFile)
 #endif
 		}
 
-		hashtable_free ( &ht );
+		HashTableFree ( &ht );
 	}
 
 	//====================== READ VERTEX INFO ==========================

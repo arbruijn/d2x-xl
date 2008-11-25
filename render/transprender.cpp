@@ -1326,7 +1326,7 @@ else {
 	if (transpItems.nPrevType != tiParticle) {
 		glEnable (GL_TEXTURE_2D);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		gameData.smoke.nLastType = -1;
+		gameData.particles.nLastType = -1;
 		transpItems.bTextured = 1;
 		//InitParticleBuffer (transpItems.bLightmaps);
 		}
@@ -1410,14 +1410,14 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 void TIFlushParticleBuffer (int nType)
 {
-if ((nType < 0) || ((nType != tiParticle) && (gameData.smoke.nLastType >= 0))) {
+if ((nType < 0) || ((nType != tiParticle) && (gameData.particles.nLastType >= 0))) {
 	FlushParticleBuffer (-1.0f);
 	if (nType < 0)
 		CloseParticleBuffer ();
 #if 1
 	TIResetBitmaps ();
 #endif
-	gameData.smoke.nLastType = -1;
+	gameData.particles.nLastType = -1;
 	transpItems.bClientColor = 1;
 	transpItems.bUseLightmaps = 0;
 	}
@@ -1537,7 +1537,7 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (0);
 glEnable (GL_CULL_FACE);
-BeginRenderSmoke (-1, 1);
+BeginRenderParticleSystems (-1, 1);
 transpItems.nCurType = -1;
 for (pd = transpItems.depthBufP + transpItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZE - 1*/, nItems = transpItems.nItems;
 	  (pd >= transpItems.depthBufP) && nItems;
@@ -1560,7 +1560,7 @@ for (pd = transpItems.depthBufP + transpItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZE -
 		}
 	}
 TIFlushBuffers (-1);
-EndRenderSmoke (NULL);
+EndRenderParticleSystems (NULL);
 TIResetShader ();
 G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 OGL_BINDTEX (0);

@@ -2953,8 +2953,8 @@ typedef struct tPartDepthBuf {
 	int				zMax;
 } tPartDepthBuf;
 
-typedef struct tSmokeData {
-	tSmoke			buffer [MAX_SMOKE];
+typedef struct tParticleData {
+	tParticleSystem			buffer [MAX_SMOKE];
 	short				*objects;
 	time_t			*objExplTime;
 	int				iFree;
@@ -2963,7 +2963,7 @@ typedef struct tSmokeData {
 	int				bAnimate;
 	int				bStencil;
 	tPartDepthBuf	depthBuf;
-} tSmokeData;
+} tParticleData;
 
 //------------------------------------------------------------------------------
 
@@ -3330,7 +3330,7 @@ typedef struct tGameData {
 	tMenuData			menu;
 	tMatCenData			matCens;
 	tDemoData			demo;
-	tSmokeData			smoke;
+	tParticleData		particles;
 	tLightningData		lightnings;
 	tEscortData			escort;
 	tThiefData			thief;

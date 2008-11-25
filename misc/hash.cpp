@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "hash.h"
 
-int hashtable_init( hashtable *ht, int size )
+int HashTableInit( tHashTable *ht, int size )
 {
 	int i;
 
@@ -56,7 +56,7 @@ return 0;
 }
 
 
-void hashtable_free( hashtable *ht )
+void HashTableFree( tHashTable *ht )
 {
 if (ht->key != NULL)
 	D2_FREE( ht->key);
@@ -66,7 +66,7 @@ ht->size = 0;
 }
 
 
-int hashtable_getkey( const char *key )
+int HashTableGetKey( const char *key )
 {
 	int k = 0, i=0;
 	char c;
@@ -79,11 +79,11 @@ return k;
 }
 
 
-int hashtable_search( hashtable *ht, const char *key )
+int HashTableSearch( tHashTable *ht, const char *key )
 {
 	int i,j,k;
 
-k = hashtable_getkey( key );
+k = HashTableGetKey( key );
 i = 0;
 while(i < ht->size )	{
 	j = (k+(i++)) & ht->and_mask;
@@ -96,11 +96,11 @@ return -1;
 }
 
 
-void hashtable_insert( hashtable *ht, const char *key, int value )
+void HashTableInsert( tHashTable *ht, const char *key, int value )
 {
 	int i,j,k;
 
-k = hashtable_getkey(key);
+k = HashTableGetKey(key);
 i = 0;
 while(i < ht->size) {
 	j = (k+(i++)) & ht->and_mask;

@@ -55,7 +55,7 @@ typedef struct tPartIdx {
 	int			z;
 } tPartIdx;
 
-typedef struct tCloud {
+typedef struct tParticleEmitter {
 	char			nType;			//smoke/light trail (corona)
 	char			nClass;
 	int			nLife;			//max. particle life time
@@ -64,11 +64,11 @@ typedef struct tCloud {
 	int			nParts;			//curent no. of particles
 	int			nFirstPart;
 	int			nMaxParts;		//max. no. of particles
-	int			nDensity;		//density (opaqueness) of smoke cloud
+	int			nDensity;		//density (opaqueness) of particle emitter
 	float			fPartsPerTick;
 	int			nTicks;
 	int			nPartsPerPos;	//particles per interpolated position mutiplier of moving objects
-	int			nPartLimit;		//highest max. part. no ever set for this cloud
+	int			nPartLimit;		//highest max. part. no ever set for this emitter
 	float			nPartScale;
 	int			nDefBrightness;
 	float			fBrightness;
@@ -90,62 +90,62 @@ typedef struct tCloud {
 	char			bHaveColor;
 	char			bBlowUpParts;	//blow particles up at their "birth"
 	char			bEmittingFace;
-} tCloud;
+} tParticleEmitter;
 
-typedef struct tSmoke {
-	int			nNext;
-	int			nObject;
-	short			nObjType;
-	short			nObjId;
-	int			nSignature;
-	char			nType;			//black or white
-	int			nBirth;			//time of creation
-	int			nLife;			//max. particle life time
-	int			nSpeed;			//initial particle speed
-	int			nClouds;			//number of separate particle clouds
-	int			nMaxClouds;		//max. no. of clouds
-	tCloud		*pClouds;		//list of active clouds
-} tSmoke;
+typedef struct tParticleSystem {
+	int					nNext;
+	int					nObject;
+	short					nObjType;
+	short					nObjId;
+	int					nSignature;
+	char					nType;			//black or white
+	int					nBirth;			//time of creation
+	int					nLife;			//max. particle life time
+	int					nSpeed;			//initial particle speed
+	int					nEmitters;		//number of separate particle emitters
+	int					nMaxEmitters;	//max. no. of emitters
+	tParticleEmitter	*emitterP;		//list of active emitters
+} tParticleSystem;
 
-int CreateSmoke (vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
-					  short nSegment, int nMaxClouds, int nMaxParts, 
-					  float nPartScale, int nDensity, int nPartsPerPos, 
-					  int nLife, int nSpeed, char nType, int nObject,
-					  tRgbaColorf *pColor, int bBlowUpParts, char nFace);
-int DestroySmoke (int iSmoke);
-int UpdateSmoke ();
-int RenderSmoke ();
-int DestroyAllSmoke (void);
-void SetSmokeDensity (int i, int nMaxParts, int nDensity);
-void SetSmokePartScale (int i, float nPartScale);
-void SetSmokePos (int i, vmsVector *pos, vmsMatrix *orient, short nSegment);
-void SetSmokeDir (int i, vmsVector *pDir);
-void SetSmokeLife (int i, int nLife);
-void SetSmokeType (int i, int nType);
-void SetSmokeSpeed (int i, int nSpeed);
-void SetSmokeBrightness (int i, int nBrightness);
-tCloud *GetCloud (int i, int j);
-int GetSmokeType (int i);
+int CreateParticleSystem (vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
+								  short nSegment, int nMaxEmitters, int nMaxParts, 
+								  float nPartScale, int nDensity, int nPartsPerPos, 
+								  int nLife, int nSpeed, char nType, int nObject,
+								  tRgbaColorf *pColor, int bBlowUpParts, char nFace);
+int DestroyParticleSystem (int iParticleSystem);
+int UpdateParticleSystems ();
+int RenderParticleSystems ();
+int DestroyAllParticleSystems (void);
+void SetParticleSystemDensity (int i, int nMaxParts, int nDensity);
+void SetParticleSystemPartScale (int i, float nPartScale);
+void SetParticleSystemPos (int i, vmsVector *pos, vmsMatrix *orient, short nSegment);
+void SetParticleSystemDir (int i, vmsVector *pDir);
+void SetParticleSystemLife (int i, int nLife);
+void SetParticleSystemType (int i, int nType);
+void SetParticleSystemSpeed (int i, int nSpeed);
+void SetParticleSystemBrightness (int i, int nBrightness);
+tParticleEmitter *GetParticleEmitter (int i, int j);
+int GetParticleSystemType (int i);
 void FreeParticleImages (void);
-void SetCloudPos (tCloud *pCloud, vmsVector *pos, vmsMatrix *orient, short nSegment);
-void InitSmoke (void);
+void SetParticleEmitterPos (tParticleEmitter *pEmitter, vmsVector *pos, vmsMatrix *orient, short nSegment);
+void InitParticleSystems (void);
 int MaxParticles (int nParts, int nDens);
 float ParticleSize (int nSize, float nScale);
 int AllocPartList (void);
 void FreePartList (void);
 int LoadParticleImages (void);
-int BeginRenderSmoke (int nType, float nScale);
-int EndRenderSmoke (tCloud *pCloud);
+int BeginRenderParticleSystems (int nType, float nScale);
+int EndRenderParticleSystems (tParticleEmitter *pEmitter);
 int RenderParticle (tParticle *pParticle, float brightness);
-int SetSmokeObject (int nObject, int nSmoke);
+int SetParticleSystemObject (int nObject, int nParticleSystem);
 void FlushParticleBuffer (float brightness);
 int InitParticleBuffer (int bLightmaps);
 int CloseParticleBuffer (void);
-int UpdateCloud (tCloud *pCloud, int nCurTime, int nThread);
-int RenderCloud (tCloud *pCloud, int nThread);
+int UpdateParticleEmitter (tParticleEmitter *pEmitter, int nCurTime, int nThread);
+int RenderParticleEmitter (tParticleEmitter *pEmitter, int nThread);
 
-extern int bUseSmoke;
-extern int nSmokeDensScale;
+extern int bUseParticleSystem;
+extern int nParticleSystemDensScale;
 
 #endif //__PARTICLES_H
 //eof

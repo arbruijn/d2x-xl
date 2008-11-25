@@ -887,7 +887,7 @@ if (gameStates.app.nCompSpeed == 0) {
 	gameOpts->ogl.nMaxLightsPerPass = 4;
 	gameOpts->ogl.nMaxLightsPerObject = 4;
 	extraGameInfo [0].bShadows = 0;
-	extraGameInfo [0].bUseSmoke = 0;
+	extraGameInfo [0].bUseParticles = 0;
 	extraGameInfo [0].bUseLightnings = 0;
 	extraGameInfo [0].bUseCameras = 0;
 	extraGameInfo [0].bPlayerShield = 0;
@@ -896,7 +896,7 @@ if (gameStates.app.nCompSpeed == 0) {
 	}
 else if (gameStates.app.nCompSpeed == 1) {
 	gameOpts->render.nQuality = 2;
-	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseParticles = 1;
 	gameOpts->render.particles.bPlayers = 0;
 	gameOpts->render.particles.bRobots = 1;
 	gameOpts->render.particles.bMissiles = 1;
@@ -942,7 +942,7 @@ else if (gameStates.app.nCompSpeed == 1) {
 	gameOpts->render.shadows.nClip = 0;
 	gameOpts->render.shadows.nReach = 0;
 	extraGameInfo [0].bShadows = 1;
-	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseParticles = 1;
 	extraGameInfo [0].bUseLightnings = 1;
 	extraGameInfo [0].bPlayerShield = 0;
 	extraGameInfo [0].bThrusterFlames = 1;
@@ -950,7 +950,7 @@ else if (gameStates.app.nCompSpeed == 1) {
 	}
 else if (gameStates.app.nCompSpeed == 2) {
 	gameOpts->render.nQuality = 2;
-	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseParticles = 1;
 	gameOpts->render.particles.bPlayers = 0;
 	gameOpts->render.particles.bRobots = 1;
 	gameOpts->render.particles.bMissiles = 1;
@@ -1003,7 +1003,7 @@ else if (gameStates.app.nCompSpeed == 2) {
 	gameOpts->render.shadows.nClip = 1;
 	gameOpts->render.shadows.nReach = 1;
 	extraGameInfo [0].bShadows = 1;
-	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseParticles = 1;
 	extraGameInfo [0].bUseLightnings = 1;
 	extraGameInfo [0].bPlayerShield = 1;
 	extraGameInfo [0].bThrusterFlames = 1;
@@ -1011,7 +1011,7 @@ else if (gameStates.app.nCompSpeed == 2) {
 	}
 else if (gameStates.app.nCompSpeed == 3) {
 	gameOpts->render.nQuality = 3;
-	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseParticles = 1;
 	gameOpts->render.particles.bPlayers = 1;
 	gameOpts->render.particles.bRobots = 1;
 	gameOpts->render.particles.bMissiles = 1;
@@ -1064,7 +1064,7 @@ else if (gameStates.app.nCompSpeed == 3) {
 	gameOpts->render.shadows.nClip = 1;
 	gameOpts->render.shadows.nReach = 1;
 	extraGameInfo [0].bShadows = 1;
-	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseParticles = 1;
 	extraGameInfo [0].bUseLightnings = 1;
 	extraGameInfo [0].bPlayerShield = 1;
 	extraGameInfo [0].bThrusterFlames = 1;
@@ -1072,7 +1072,7 @@ else if (gameStates.app.nCompSpeed == 3) {
 	}
 else if (gameStates.app.nCompSpeed == 4) {
 	gameOpts->render.nQuality = 4;
-	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseParticles = 1;
 	gameOpts->render.particles.bPlayers = 1;
 	gameOpts->render.particles.bRobots = 1;
 	gameOpts->render.particles.bMissiles = 1;
@@ -1125,7 +1125,7 @@ else if (gameStates.app.nCompSpeed == 4) {
 	gameOpts->render.shadows.nClip = 1;
 	gameOpts->render.shadows.nReach = 1;
 	extraGameInfo [0].bShadows = 1;
-	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseParticles = 1;
 	extraGameInfo [0].bUseLightnings = 1;
 	extraGameInfo [0].bPlayerShield = 1;
 	extraGameInfo [0].bThrusterFlames = 1;
@@ -2350,7 +2350,7 @@ do {
 		}
 	else
 		optSoftParticles [1] = -1; 
-	if (extraGameInfo [0].bUseSmoke) {
+	if (extraGameInfo [0].bUseParticles) {
 		ADD_CHECK (nOptions, TXT_SOFT_SMOKE, (gameOpts->render.effects.bSoftParticles & 4) != 0, KEY_O, HTX_SOFT_SMOKE);
 		optSoftParticles [2] = nOptions++;
 		}
@@ -2964,14 +2964,14 @@ int SmokeOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurItem
 
 m = menus + smokeOpts.nUse;
 v = m->value;
-if (v != extraGameInfo [0].bUseSmoke) {
-	extraGameInfo [0].bUseSmoke = v;
+if (v != extraGameInfo [0].bUseParticles) {
+	extraGameInfo [0].bUseParticles = v;
 	if (!v)
 		FreePartList ();
 	*key = -2;
 	return nCurItem;
 	}
-if (extraGameInfo [0].bUseSmoke) {
+if (extraGameInfo [0].bUseParticles) {
 	m = menus + smokeOpts.nQuality;
 	v = m->value;
 	if (v != gameOpts->render.particles.bSort) {
@@ -3082,7 +3082,7 @@ if (extraGameInfo [0].bUseSmoke) {
 		}
 	}
 else
-	DestroyAllSmoke ();
+	DestroyAllParticleSystems ();
 return nCurItem;
 }
 
@@ -3125,7 +3125,7 @@ void SmokeOptionsMenu ()
 	tMenuItem m [40];
 	int	i, j, choice = 0;
 	int	nOptions;
-	int	nOptSmokeLag, optStaticSmoke, optCollisions, optDisperse, optRotate = -1, optAuxViews = -1, optWiggle = -1, optWobble = -1;
+	int	nOptSmokeLag, optStaticParticles, optCollisions, optDisperse, optRotate = -1, optAuxViews = -1, optWiggle = -1, optWobble = -1;
 	char	szSmokeQual [50];
 
 pszSmokeSize [0] = TXT_SMALL;
@@ -3157,15 +3157,15 @@ do {
 	memset (m, 0, sizeof (m));
 	memset (&smokeOpts, 0xff, sizeof (smokeOpts));
 	nOptions = 0;
-	nOptSmokeLag = optStaticSmoke = optCollisions = optDisperse = -1;
+	nOptSmokeLag = optStaticParticles = optCollisions = optDisperse = -1;
 
-	ADD_CHECK (nOptions, TXT_USE_SMOKE, extraGameInfo [0].bUseSmoke, KEY_U, HTX_ADVRND_USESMOKE);
+	ADD_CHECK (nOptions, TXT_USE_SMOKE, extraGameInfo [0].bUseParticles, KEY_U, HTX_ADVRND_USESMOKE);
 	smokeOpts.nUse = nOptions++;
 	for (j = 1; j < 5; j++)
 		smokeOpts.nSize [j] =
 		smokeOpts.nDensity [j] = 
 		smokeOpts.nAlpha [j] = -1;
-	if (extraGameInfo [0].bUseSmoke) {
+	if (extraGameInfo [0].bUseParticles) {
 		if (gameOpts->app.bExpertMode) {
 			sprintf (szSmokeQual + 1, TXT_SMOKE_QUALITY, pszSmokeQual [NMCLAMP (gameOpts->render.particles.bSort, 0, 2)]);
 			*szSmokeQual = *(TXT_SMOKE_QUALITY - 1);
@@ -3223,7 +3223,7 @@ do {
 				nOptions++;
 				}
 			ADD_CHECK (nOptions, TXT_SMOKE_STATIC, gameOpts->render.particles.bStatic, KEY_T, HTX_ADVRND_STATICSMOKE);
-			optStaticSmoke = nOptions++;
+			optStaticParticles = nOptions++;
 #if 0
 			ADD_CHECK (nOptions, TXT_SMOKE_COLLISION, gameOpts->render.particles.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
 			optCollisions = nOptions++;
@@ -3253,7 +3253,7 @@ do {
 		smokeOpts.nMissiles =
 		smokeOpts.nDebris =
 		smokeOpts.nBubbles =
-		optStaticSmoke =
+		optStaticParticles =
 		optCollisions =
 		optDisperse = 
 		optRotate = 
@@ -3263,12 +3263,12 @@ do {
 	do {
 		i = ExecMenu1 (NULL, TXT_SMOKE_MENUTITLE, nOptions, m, &SmokeOptionsCallback, &choice);
 		} while (i >= 0);
-	if ((extraGameInfo [0].bUseSmoke = m [smokeOpts.nUse].value)) {
+	if ((extraGameInfo [0].bUseParticles = m [smokeOpts.nUse].value)) {
 		GET_VAL (gameOpts->render.particles.bPlayers, smokeOpts.nPlayer);
 		GET_VAL (gameOpts->render.particles.bRobots, smokeOpts.nRobots);
 		GET_VAL (gameOpts->render.particles.bMissiles, smokeOpts.nMissiles);
 		GET_VAL (gameOpts->render.particles.bDebris, smokeOpts.nDebris);
-		GET_VAL (gameOpts->render.particles.bStatic, optStaticSmoke);
+		GET_VAL (gameOpts->render.particles.bStatic, optStaticParticles);
 #if 0
 		GET_VAL (gameOpts->render.particles.bCollisions, optCollisions);
 #else

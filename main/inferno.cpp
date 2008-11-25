@@ -2336,9 +2336,9 @@ SetSpherePulse (&gameData.render.shield.pulse, 0.02f, 0.5f);
 UseSpherePulse (&gameData.render.shield, &gameData.render.shield.pulse);
 SetSpherePulse (&gameData.render.monsterball.pulse, 0.005f, 0.9f);
 UseSpherePulse (&gameData.render.monsterball, &gameData.render.monsterball.pulse);
-gameData.smoke.iFree = -1;
-gameData.smoke.iUsed = -1;
-gameData.smoke.nLastType = -1;
+gameData.particles.iFree = -1;
+gameData.particles.iUsed = -1;
+gameData.particles.nLastType = -1;
 gameData.lightnings.iFree = -1;
 gameData.lightnings.iUsed = -1;
 gameData.omega.xCharge [0] = 
@@ -2437,8 +2437,8 @@ GETMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS, 0);
 
 void AllocSmokeData (void)
 {
-GETMEM (short, gameData.smoke.objects, MAX_OBJECTS, (char) 0xff);
-GETMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS, 0);
+GETMEM (short, gameData.particles.objects, MAX_OBJECTS, (char) 0xff);
+GETMEM (time_t, gameData.particles.objExplTime, MAX_OBJECTS, 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -2637,8 +2637,8 @@ FREEMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS);
 
 void FreeSmokeData (void)
 {
-FREEMEM (short, gameData.smoke.objects, MAX_OBJECTS);
-FREEMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS);
+FREEMEM (short, gameData.particles.objects, MAX_OBJECTS);
+FREEMEM (time_t, gameData.particles.objExplTime, MAX_OBJECTS);
 }
 
 // ----------------------------------------------------------------------------

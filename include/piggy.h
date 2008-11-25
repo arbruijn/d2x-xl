@@ -263,7 +263,7 @@ extern size_t bitmapCacheUsed;
 extern size_t bitmapCacheSize;
 extern const char *szAddonTextures [MAX_ADDON_BITMAP_FILES];
 
-extern hashtable soundNames [2];
+extern tHashTable soundNames [2];
 extern int soundOffset [2][MAX_SOUND_FILES];
 
 #if USE_SDL_MIXER

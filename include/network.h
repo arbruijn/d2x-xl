@@ -214,7 +214,7 @@ typedef struct tExtraGameInfo {
 	char		nWeaponIcons;
 	char		bSafeUDP;
 	char		bFastPitch;
-	char		bUseSmoke;
+	char		bUseParticles;
 	char		bUseLightnings;
 	char		bDamageExplosions;
 	char		bThrusterFlames;

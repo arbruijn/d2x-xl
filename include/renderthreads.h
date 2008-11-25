@@ -21,16 +21,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct tRenderThreadInfo {
 	tRenderTask	nTask;
-	int			nMiddle;
-	int			nFaces;
-	int			zMax [2];
-	tLightning	*pl;
-	int			nLightnings;
-	tObject		*objP;
-	tG3Model		*pm;
-	tCloud		*clouds [2];
-	int			nCurTime [2];
-	tThreadInfo	ti [2];
+	int					nMiddle;
+	int					nFaces;
+	int					zMax [2];
+	tLightning			*pl;
+	int					nLightnings;
+	tObject				*objP;
+	tG3Model				*pm;
+	tParticleEmitter	*particleEmitters [2];
+	int					nCurTime [2];
+	tThreadInfo			ti [2];
 	} tRenderThreadInfo;
 
 extern tRenderThreadInfo tiRender;

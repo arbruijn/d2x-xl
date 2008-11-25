@@ -55,7 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_CAMBOT		16	 // a camera
 #define OBJ_MONSTERBALL	17	 // a monsterball
 #define OBJ_SMOKE		18	 // static smoke
-#define OBJ_EXPLOSION	19	 // static explosion clouds
+#define OBJ_EXPLOSION	19	 // static explosion particleEmitters
 #define OBJ_EFFECT		20	 // lightnings
 
 // WARNING!! If you add a nType here, add its name to ObjectType_names
@@ -335,7 +335,7 @@ class CVClipInfo {
 #define SMOKE_TYPE_SPRAY	1
 #define SMOKE_TYPE_BUBBLES	2
 
-typedef struct tSmokeInfo {
+typedef struct tParticleInfo {
 public:
 	int			nLife;
 	int			nSize [2];
@@ -346,11 +346,11 @@ public:
 	tRgbaColorb	color;
 	char			nSide;
 	char			nType;
-} tSmokeInfo;
+} tParticleInfo;
 
 class CSmokeInfo {
 	private:
-		tSmokeInfo	m_info;
+		tParticleInfo	m_info;
 	public:
 		inline int& Life () { return m_info.nLife; }
 		inline int& Size (int i) { return m_info.nSize [i]; }
@@ -529,7 +529,7 @@ typedef struct tCoreObject {
 	union {
 		tPolyObjInfo   polyObjInfo;      // polygon model
 		tVClipInfo     vClipInfo;     // tVideoClip
-		tSmokeInfo		smokeInfo;
+		tParticleInfo		particleInfo;
 		tLightningInfo	lightningInfo;
 		} rType;
 #ifdef WORDS_NEED_ALIGNMENT

@@ -299,7 +299,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].nWeaponIcons = 0;
 	extraGameInfo [i].bSafeUDP = 0;
 	extraGameInfo [i].bFastPitch = i ? 0 : 1;
-	extraGameInfo [i].bUseSmoke = 1;
+	extraGameInfo [i].bUseParticles = 1;
 	extraGameInfo [i].bUseLightnings = 1;
 	extraGameInfo [i].bDamageExplosions = 1;
 	extraGameInfo [i].bThrusterFlames = 1;
@@ -441,7 +441,7 @@ else {
 	PrintLog ("   nWeaponIcons: %d\n", extraGameInfo [1].nWeaponIcons);
 	PrintLog ("   bSafeUDP: %d\n", extraGameInfo [1].bSafeUDP);
 	PrintLog ("   bFastPitch: %d\n", extraGameInfo [1].bFastPitch);
-	PrintLog ("   bUseSmoke: %d\n", extraGameInfo [1].bUseSmoke);
+	PrintLog ("   bUseParticles: %d\n", extraGameInfo [1].bUseParticles);
 	PrintLog ("   bUseLightnings: %d\n", extraGameInfo [1].bUseLightnings);
 	PrintLog ("   bDamageExplosions: %d\n", extraGameInfo [1].bDamageExplosions);
 	PrintLog ("   bThrusterFlames: %d\n", extraGameInfo [1].bThrusterFlames);

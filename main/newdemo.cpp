@@ -1728,21 +1728,21 @@ for (i = 0; i < gameData.reactor.triggers.nLinks; i++) {
 
 int NDUpdateSmoke (void)
 {
-if (!EGI_FLAG (bUseSmoke, 0, 1, 0))
+if (!EGI_FLAG (bUseParticles, 0, 1, 0))
 	return 0;
 else {
 		int		i, nObject;
-		tSmoke	*pSmoke = gameData.smoke.buffer;
+		tParticleSystem	*pSmoke = gameData.particles.buffer;
 
-	for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
-		pSmoke = gameData.smoke.buffer + i;
+	for (i = gameData.particles.iUsed; i >= 0; i = pSmoke->nNext) {
+		pSmoke = gameData.particles.buffer + i;
 		nObject = NDFindObject (pSmoke->nSignature);
 		if (nObject < 0) {
-			gameData.smoke.objects [pSmoke->nObject] = -1;
-			SetSmokeLife (i, 0);
+			gameData.particles.objects [pSmoke->nObject] = -1;
+			SetParticleSystemLife (i, 0);
 			}
 		else {
-			gameData.smoke.objects [nObject] = i;
+			gameData.particles.objects [nObject] = i;
 			pSmoke->nObject = nObject;
 			}
 		}
@@ -3439,7 +3439,7 @@ CFSeek (&ndOutFile, 1, SEEK_CUR);
 CFWrite (&nPrevFrameLength, 2, 1, &ndOutFile);
 CFClose (&ndOutFile);
 NDStopPlayback ();
-DestroyAllSmoke ();
+DestroyAllParticleSystems ();
 }
 
 #endif

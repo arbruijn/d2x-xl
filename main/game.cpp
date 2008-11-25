@@ -194,7 +194,7 @@ InitAISystem ();
 /*---*/PrintLog ("  exploding walls...\n");
 InitExplodingWalls ();
 /*---*/PrintLog ("  particle systems...\n");
-InitSmoke ();
+InitParticleSystems ();
 /*---*/PrintLog ("  loading background bitmap...\n");
 LoadBackgroundBitmap ();
 InitAutomapData ();
@@ -1432,7 +1432,7 @@ DestroyTrackerList ();
 PrintLog ("unloading lightmap data\n");
 DestroyLightmaps ();
 PrintLog ("unloading particle data\n");
-DestroyAllSmoke ();
+DestroyAllParticleSystems ();
 PrintLog ("unloading shield sphere data\n");
 DestroySphere (&gameData.render.shield);
 DestroySphere (&gameData.render.monsterball);
@@ -1809,7 +1809,7 @@ if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]
 else {
 	DoLightningFrame ();
 	DoEnergySparkFrame ();
-	DoSmokeFrame ();
+	DoParticleFrame ();
 	}
 }
 

@@ -2497,27 +2497,27 @@ objP->info.renderType = RT_SMOKE;
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE, -1);
 #if 1
 j = (trigP && trigP->value) ? trigP->value : 5;
-objP->rType.smokeInfo.nLife = (j * (j + 1)) / 2;
+objP->rType.particleInfo.nLife = (j * (j + 1)) / 2;
 #else
-objP->rType.smokeInfo.nLife = (trigP && trigP->value) ? trigP->value : 5;
+objP->rType.particleInfo.nLife = (trigP && trigP->value) ? trigP->value : 5;
 #endif
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_BRIGHTNESS, -1);
-objP->rType.smokeInfo.nBrightness = (trigP && trigP->value) ? trigP->value * 10 : 75;
+objP->rType.particleInfo.nBrightness = (trigP && trigP->value) ? trigP->value * 10 : 75;
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SPEED, -1);
 j = (trigP && trigP->value) ? trigP->value : 5;
 #if 1
-objP->rType.smokeInfo.nSpeed = (j * (j + 1)) / 2;
+objP->rType.particleInfo.nSpeed = (j * (j + 1)) / 2;
 #else
-objP->rType.smokeInfo.nSpeed = j;
+objP->rType.particleInfo.nSpeed = j;
 #endif
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DENS, -1);
-objP->rType.smokeInfo.nParts = j * ((trigP && trigP->value) ? trigP->value * 50 : STATIC_SMOKE_MAX_PARTS);
+objP->rType.particleInfo.nParts = j * ((trigP && trigP->value) ? trigP->value * 50 : STATIC_SMOKE_MAX_PARTS);
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
-objP->rType.smokeInfo.nDrift = (trigP && trigP->value) ? j * trigP->value * 50 : objP->rType.smokeInfo.nSpeed * 50;
+objP->rType.particleInfo.nDrift = (trigP && trigP->value) ? j * trigP->value * 50 : objP->rType.particleInfo.nSpeed * 50;
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE, -1);
 j = (trigP && trigP->value) ? trigP->value : 5;
-objP->rType.smokeInfo.nSize [0] = j + 1;
-objP->rType.smokeInfo.nSize [1] = (j * (j + 1)) / 2;
+objP->rType.particleInfo.nSize [0] = j + 1;
+objP->rType.particleInfo.nSize [1] = (j * (j + 1)) / 2;
 }
 
 //------------------------------------------------------------------------------
@@ -2537,7 +2537,7 @@ FORALL_STATIC_OBJS (objP, i)
 
 void SetupSmokeEffect (tObject *objP)
 {
-	tSmokeInfo	*psi = &objP->rType.smokeInfo;
+	tParticleInfo	*psi = &objP->rType.particleInfo;
 	int			nLife, nSpeed, nParts, nSize;
 
 objP->info.renderType = RT_SMOKE;

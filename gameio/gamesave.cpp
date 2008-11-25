@@ -466,21 +466,21 @@ switch (objP->info.renderType) {
 		break;
 
 	case RT_SMOKE:
-		objP->rType.smokeInfo.nLife = CFReadInt (cfP);
-		objP->rType.smokeInfo.nSize [0] = CFReadInt (cfP);
-		objP->rType.smokeInfo.nParts = CFReadInt (cfP);
-		objP->rType.smokeInfo.nSpeed = CFReadInt (cfP);
-		objP->rType.smokeInfo.nDrift = CFReadInt (cfP);
-		objP->rType.smokeInfo.nBrightness = CFReadInt (cfP);
-		objP->rType.smokeInfo.color.red = CFReadByte (cfP);
-		objP->rType.smokeInfo.color.green = CFReadByte (cfP);
-		objP->rType.smokeInfo.color.blue = CFReadByte (cfP);
-		objP->rType.smokeInfo.color.alpha = CFReadByte (cfP);
-		objP->rType.smokeInfo.nSide = CFReadByte (cfP);
+		objP->rType.particleInfo.nLife = CFReadInt (cfP);
+		objP->rType.particleInfo.nSize [0] = CFReadInt (cfP);
+		objP->rType.particleInfo.nParts = CFReadInt (cfP);
+		objP->rType.particleInfo.nSpeed = CFReadInt (cfP);
+		objP->rType.particleInfo.nDrift = CFReadInt (cfP);
+		objP->rType.particleInfo.nBrightness = CFReadInt (cfP);
+		objP->rType.particleInfo.color.red = CFReadByte (cfP);
+		objP->rType.particleInfo.color.green = CFReadByte (cfP);
+		objP->rType.particleInfo.color.blue = CFReadByte (cfP);
+		objP->rType.particleInfo.color.alpha = CFReadByte (cfP);
+		objP->rType.particleInfo.nSide = CFReadByte (cfP);
 		if (gameData.segs.nLevelVersion < 18)
-			objP->rType.smokeInfo.nType = 0;
+			objP->rType.particleInfo.nType = 0;
 		else
-			objP->rType.smokeInfo.nType = CFReadByte (cfP);
+			objP->rType.particleInfo.nType = CFReadByte (cfP);
 		break;
 
 	case RT_LIGHTNING:

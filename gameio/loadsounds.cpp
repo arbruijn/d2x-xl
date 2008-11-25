@@ -69,7 +69,7 @@ int ReadSoundFile ();
 
 extern char CDROM_dir [];
 
-hashtable soundNames [2];
+tHashTable soundNames [2];
 int soundOffset [2][MAX_SOUND_FILES];
 static tSoundFile sounds [2][MAX_SOUND_FILES];
 static int nSoundFilesNew = 0;
@@ -101,7 +101,7 @@ int PiggyRegisterSound (tDigiSound *soundP, char *szFileName, int nInFile)
 
 Assert (gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data] < MAX_SOUND_FILES);
 strncpy (sounds [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]].name, szFileName, 12);
-hashtable_insert (&soundNames [gameStates.app.bD1Data], 
+HashTableInsert (&soundNames [gameStates.app.bD1Data], 
 						sounds [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]].name, 
 						gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]);
 gameData.pig.sound.pSounds [gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = *soundP;
@@ -120,7 +120,7 @@ int PiggyFindSound (const char * name)
 {
 	int i;
 
-i = hashtable_search (&soundNames [gameStates.app.bD1Data], name);
+i = HashTableSearch (&soundNames [gameStates.app.bD1Data], name);
 if (i < 0)
 	return 255;
 return i;

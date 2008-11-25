@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------
 
 #define	SHOW_SMOKE	\
-			(!gameStates.app.bNostalgia && EGI_FLAG (bUseSmoke, 1, 1, 0))
+			(!gameStates.app.bNostalgia && EGI_FLAG (bUseParticles, 1, 1, 0))
 
 #define MAX_SHRAPNEL_LIFE	(2 * F1_0)
 
@@ -56,7 +56,7 @@ void DoMissileSmoke (tObject *objP);
 int DoObjectSmoke (tObject *objP);
 void PlayerSmokeFrame (void);
 void RobotSmokeFrame (void);
-void DoSmokeFrame (void);
+void DoParticleFrame (void);
 void InitObjectSmoke (void);
 void ResetPlayerSmoke (void);
 void ResetRobotSmoke (void);
@@ -70,15 +70,15 @@ void DrawShrapnels (tObject *objP);
 
 #if DBG
 
-void KillObjectSmoke (int i);
+void KillObjectParticleSystem (int i);
 
 #else
 
 static inline void KillObjectSmoke (int i)
 {
-if ((i >= 0) && (gameData.smoke.objects [i] >= 0)) {
-	SetSmokeLife (gameData.smoke.objects [i], 0);
-	gameData.smoke.objects [i] = -1;
+if ((i >= 0) && (gameData.particles.objects [i] >= 0)) {
+	SetParticleSystemLife (gameData.particles.objects [i], 0);
+	gameData.particles.objects [i] = -1;
 	}
 }
 

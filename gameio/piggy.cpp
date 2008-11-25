@@ -82,7 +82,7 @@ static int bLowMemory = 0;
 static int bMustWriteHamFile = 0;
 static int nBitmapFilesNew = 0;
 
-static hashtable bitmapNames [2];
+static tHashTable bitmapNames [2];
 size_t bitmapCacheUsed = 0;
 size_t bitmapCacheSize = 0;
 int bitmapCacheNext [2] = {0, 0};
@@ -177,7 +177,7 @@ if (!bInFile) {
 	nBitmapFilesNew++;
 	}
 strncpy (gameData.pig.tex.pBitmapFiles [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, name, 12);
-hashtable_insert (bitmapNames + gameStates.app.bD1Mission, 
+HashTableInsert (bitmapNames + gameStates.app.bD1Mission, 
 						gameData.pig.tex.pBitmapFiles[gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, 
 						gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
 gameData.pig.tex.pBitmaps [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = *bmP;
@@ -214,7 +214,7 @@ for (i = 0; i < gameData.pig.tex.nAliases; i++)
 			pszName = gameData.pig.tex.aliases [i].file_name; 
 		break;
 		}
-i = hashtable_search (bitmapNames + bD1Data, pszName);
+i = HashTableSearch (bitmapNames + bD1Data, pszName);
 Assert (i != 0);
 bi.index = i;
 return bi;
@@ -695,10 +695,10 @@ int PiggyInit (void)
 	int i;
 
 /*---*/PrintLog ("   Initializing hash tables\n");
-hashtable_init (bitmapNames, MAX_BITMAP_FILES);
-hashtable_init (bitmapNames + 1, D1_MAX_BITMAP_FILES);
-hashtable_init (soundNames, MAX_SOUND_FILES);
-hashtable_init (soundNames + 1, MAX_SOUND_FILES);
+HashTableInit (bitmapNames, MAX_BITMAP_FILES);
+HashTableInit (bitmapNames + 1, D1_MAX_BITMAP_FILES);
+HashTableInit (soundNames, MAX_SOUND_FILES);
+HashTableInit (soundNames + 1, MAX_SOUND_FILES);
 
 /*---*/PrintLog ("   Initializing sound data (%d sounds)\n", MAX_SOUND_FILES);
 for (i=0; i<MAX_SOUND_FILES; i++)	{
@@ -1240,8 +1240,8 @@ for (i = 0; i < 2; i++) {
 			}
 	if (gameData.pig.sound.data [i])
 		D2_FREE (gameData.pig.sound.data [i]);
-	hashtable_free (bitmapNames + i);
-	hashtable_free (soundNames + i);
+	HashTableFree (bitmapNames + i);
+	HashTableFree (soundNames + i);
 	}
 }
 
