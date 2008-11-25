@@ -944,9 +944,9 @@ return (nSound == 255) ? -1 : DigiUnXlatSound (nSound);
 
 //------------------------------------------------------------------------------
 
-int DigiSetObjectSound (int nObject, int nSound, const char *pszSound)
+int DigiSetObjectSound (int nObject, int nSound, const char *pszSound, const fix xVolume)
 {
-return (nObject < 0) ? -1 : DigiLinkSoundToObject3 (nSound, nObject, 1, F1_0, I2X (256), -1, -1, pszSound, 0, SOUNDCLASS_GENERIC);
+return (nObject < 0) ? -1 : DigiLinkSoundToObject3 (nSound, nObject, 1, xVolume, I2X (256), -1, -1, pszSound, 0, SOUNDCLASS_GENERIC);
 }
 
 //------------------------------------------------------------------------------

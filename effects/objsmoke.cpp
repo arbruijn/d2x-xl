@@ -30,11 +30,12 @@ static tRgbaColorf smokeColors [3] = {
 
 #if DBG
 
-void KillObjectSmoke (int i)
+void KillObjectSmoke (int nObject)
 {
-if ((i >= 0) && (gameData.smoke.objects [i] >= 0)) {
-	SetSmokeLife (gameData.smoke.objects [i], 0);
-	SetSmokeObject (i, -1);
+if ((nObject >= 0) && (gameData.smoke.objects [nObject] >= 0)) {
+	DigiKillSoundLinkedToObject (nObject);
+	SetSmokeLife (gameData.smoke.objects [nObject], 0);
+	SetSmokeObject (nObject, -1);
 	}
 }
 
@@ -603,7 +604,10 @@ if (gameData.smoke.objects [i] < 0) {
 											  -1, 3, STATIC_SMOKE_PART_LIFE * objP->rType.smokeInfo.nLife,
 											  objP->rType.smokeInfo.nDrift, bBubbles ? BUBBLE_PARTICLES : SMOKE_PARTICLES, 
 											  i, bColor ? &color : defaultColors + bBubbles, 1, objP->rType.smokeInfo.nSide - 1));
-	SetSmokeBrightness (gameData.smoke.objects [i], objP->rType.smokeInfo.nBrightness);
+	if (bBubbles)
+		DigiSetObjectSound (i, -1, AddonSoundName (SND_ADDON_AIRBUBBLES), F1_0 / 2);
+	else
+		SetSmokeBrightness (gameData.smoke.objects [i], objP->rType.smokeInfo.nBrightness);
 	}
 if (objP->rType.smokeInfo.nSide <= 0) {	//don't vary emitter position for smoke emitting faces
 	i = objP->rType.smokeInfo.nDrift >> 4;

@@ -105,7 +105,7 @@ void DigiSetMidiVolume (int mvolume);
 void DigiSetFxVolume (int dvolume);
 void DigiMidiVolume (int dvolume, int mvolume);
 int DigiGetSoundByName (const char *pszSound);
-int DigiSetObjectSound (int nObject, int nSound, const char *pszSound);
+int DigiSetObjectSound (int nObject, int nSound, const char *pszSound, const fix xVolume = F1_0);
 
 int DigiIsSoundPlaying (short nSound);
 
