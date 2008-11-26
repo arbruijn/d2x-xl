@@ -78,7 +78,7 @@ static inline void KillObjectSmoke (int i)
 {
 if ((i >= 0) && (particleManager.GetObjectSystem (i) >= 0)) {
 	particleManager.SetLife (particleManager.GetObjectSystem (i), 0);
-	particleManager.SetObject (i, -1);
+	particleManager.SetObjectSystem (i, -1);
 	}
 }
 
