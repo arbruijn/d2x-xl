@@ -200,8 +200,8 @@ class CParticleManager {
 	private:
 		CParticleSystem	m_systems [MAX_PARTICLE_SYSTEMS];
 		short*				m_objectSystems;
-		int					m_iFree;
-		int					m_iUsed;
+		int					m_nFree;
+		int					m_nUsed;
 
 	public:
 		CParticleManager () { m_objectSystems = NULL; };
@@ -228,14 +228,12 @@ class CParticleManager {
 
 		void AdjustBrightness (grsBitmap *bmP);
 
-		inline int GetFree (void) { return m_iFree; }
-		inline void SetFree (int i) { m_iFree = i; }
-		inline int GetUsed (void) { return m_iUsed; }
-		inline void SetUsed (int i) { m_iUsed = i; }
+		inline int GetFree (void) { return m_nFree; }
+		inline void SetFree (int i) { m_nFree = i; }
+		inline int GetUsed (void) { return m_nUsed; }
+		inline void SetUsed (int i) { m_nUsed = i; }
 		inline CParticleSystem& GetSystem (int i) { return m_systems [i]; }
 		inline short GetObjectSystem (short nObject) { return m_objectSystems [nObject]; }
-
-		CParticleSystem* PrevSystem (int i);
 
 		inline CParticleEmitter* GetEmitter (int i, int j)
 			{ return (0 <= IsUsed (i)) ? GetSystem (i).GetEmitter (j) : NULL; }

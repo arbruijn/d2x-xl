@@ -36,6 +36,7 @@ if ((nObject >= 0) && (particleManager.GetObjectSystem (nObject) >= 0)) {
 	DigiKillSoundLinkedToObject (nObject);
 	particleManager.SetLife (particleManager.GetObjectSystem (nObject), 0);
 	particleManager.SetObjectSystem (nObject, -1);
+	DestroyShrapnels (OBJECTS + nObject);
 	}
 }
 
@@ -673,7 +674,7 @@ if (!(bGatling || gameOpts->render.particles.bPlasmaTrails)) {
 	return;
 	}
 #if 1
-nParts = 2 * LASER_MAX_PARTS / 3;
+nParts = bGatling ? LASER_MAX_PARTS : 2 * LASER_MAX_PARTS / 3;
 #else
 nParts = gameData.weapons.info [objP->info.nId].speed [0] / F1_0;
 #endif
@@ -712,9 +713,9 @@ if (particleManager.GetObjectSystem (i) < 0) {
 		c.alpha = 0.1f + nScale / 10;
 		}
 	particleManager.SetObjectSystem (i, particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale),
-											  gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3],
-											  1, ((gameOpts->render.particles.nLife [3] + 1) * LASER_PART_LIFE) << bGatling, LASER_PART_SPEED, 
-											  bGatling ? GATLING_PARTICLES : LIGHT_PARTICLES, i, &c, 0, -1));
+											   gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3],
+											   1, ((gameOpts->render.particles.nLife [3] + 1) * LASER_PART_LIFE) << bGatling, LASER_PART_SPEED, 
+											   bGatling ? GATLING_PARTICLES : LIGHT_PARTICLES, i, &c, 0, -1));
 	}
 pos = objP->info.position.vPos + objP->info.position.mOrient[FVEC] * (-objP->info.xSize / 2);
 particleManager.SetPos (particleManager.GetObjectSystem (i), &pos, NULL, objP->info.nSegment);
@@ -763,13 +764,13 @@ sdP->nShrapnels = h;
 srand (gameStates.app.nSDLTicks);
 for (i = 0, shrapnelP = sdP->shrapnels; i < h; i++, shrapnelP++) {
 	if (i & 1) {
-		vDir[X] = -FixMul (vDir[X], F1_0 / 2 + d_rand ()) | 1;
-		vDir[Y] = -FixMul (vDir[Y], F1_0 / 2 + d_rand ());
-		vDir[Z] = -FixMul (vDir[Z], F1_0 / 2 + d_rand ());
-		vmsVector::Normalize(vDir);
+		vDir [X] = -FixMul (vDir [X], F1_0 / 2 + d_rand ()) | 1;
+		vDir [Y] = -FixMul (vDir [Y], F1_0 / 2 + d_rand ());
+		vDir [Z] = -FixMul (vDir [Z], F1_0 / 2 + d_rand ());
+		vmsVector::Normalize (vDir);
 		}
 	else
-		vDir = vmsVector::Random();
+		vDir = vmsVector::Random ();
 	shrapnelP->vDir = vDir;
 	shrapnelP->vPos = parentObjP->info.position.vPos + vDir * (parentObjP->info.xSize / 4 + rand () % (parentObjP->info.xSize / 2));
 	shrapnelP->nTurn = 1;
@@ -779,8 +780,9 @@ for (i = 0, shrapnelP = sdP->shrapnels; i < h; i++, shrapnelP++) {
 	shrapnelP->tUpdate = gameStates.app.nSDLTicks;
 	if (objP->info.xLifeLeft < shrapnelP->xLife)
 		objP->info.xLifeLeft = shrapnelP->xLife;
-	shrapnelP->nSmoke = particleManager.Create (&shrapnelP->vPos, NULL, NULL, objP->info.nSegment, 1, -SHRAPNEL_MAX_PARTS,
-											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE , SHRAPNEL_PART_SPEED, SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
+	shrapnelP->nSmoke = 
+		particleManager.Create (&shrapnelP->vPos, NULL, NULL, objP->info.nSegment, 1, -SHRAPNEL_MAX_PARTS,
+									   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
 	}
 objP->info.xLifeLeft *= 2;
 objP->cType.explInfo.nSpawnTime = -1;
@@ -825,10 +827,10 @@ for (; nTicks >= 25; nTicks -= 25) {
 	else {
 		shrapnelP->nTurn = ((shrapnelP->xTTL > F1_0 / 2) ? 2 : 4) + d_rand () % 4;
 		vOffs = shrapnelP->vDir;
-		vOffs[X] = FixMul (vOffs[X], 2 * d_rand ());
-		vOffs[Y] = FixMul (vOffs[Y], 2 * d_rand ());
-		vOffs[Z] = FixMul (vOffs[Z], 2 * d_rand ());
-		vmsVector::Normalize(vOffs);
+		vOffs [X] = FixMul (vOffs [X], 2 * d_rand ());
+		vOffs [Y] = FixMul (vOffs [Y], 2 * d_rand ());
+		vOffs [Z] = FixMul (vOffs [Z], 2 * d_rand ());
+		vmsVector::Normalize (vOffs);
 		shrapnelP->vOffs = vOffs;
 		}
 	vOffs *= xSpeed;
@@ -1002,10 +1004,11 @@ void ShrapnelFrame (void)
 
 if (!SHOW_SMOKE)
 	return;
-FORALL_STATIC_OBJS (objP, i) {
-	i = OBJ_IDX (objP);
+FORALL_STATIC_OBJS (objP, i)
 	if (objP->info.renderType == RT_SHRAPNELS)
 		UpdateShrapnels (objP);
+FORALL_ACTOR_OBJS (objP, i) {
+	i = OBJ_IDX (objP);
 	if (gameData.objs.bWantEffect [i] & SHRAPNEL_SMOKE) {
 		gameData.objs.bWantEffect [i] &= ~SHRAPNEL_SMOKE;
 		CreateShrapnels (objP);

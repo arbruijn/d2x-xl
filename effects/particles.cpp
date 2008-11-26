@@ -118,18 +118,18 @@ CParticleImageManager particleImageManager;
 
 void CParticleManager::RebuildSystemList (void)
 {
-m_iUsed =
-m_iFree = -1;
+m_nUsed =
+m_nFree = -1;
 CParticleSystem *systemP = m_systems;
 for (int i = 0; i < MAX_PARTICLE_SYSTEMS; i++, systemP++) {
 	if (systemP->HasEmitters ()) {
-		systemP->SetNext (m_iUsed);
-		m_iUsed = i;
+		systemP->SetNext (m_nUsed);
+		m_nUsed = i;
 		}
 	else {
 		systemP->Destroy ();
-		systemP->SetNext (m_iFree);
-		m_iFree = i;
+		systemP->SetNext (m_nFree);
+		m_nFree = i;
 		}
 	}
 }
@@ -1344,9 +1344,9 @@ if (nMaxParts > m_nPartLimit) {
 		h = m_nPartLimit - m_nFirstPart;
 		if (h > m_nParts)
 			h = m_nParts;
-		memcpy (pp, m_particles + m_nFirstPart, h * sizeof (tParticle));
+		memcpy (pp, m_particles + m_nFirstPart, h * sizeof (CParticle));
 		if (h < m_nParts)
-			memcpy (pp + h, m_particles, (m_nParts - h) * sizeof (tParticle));
+			memcpy (pp + h, m_particles, (m_nParts - h) * sizeof (CParticle));
 		m_nFirstPart = 0;
 		m_nPartLimit = nMaxParts;
 		D2_FREE (m_particles);
@@ -1396,6 +1396,8 @@ if ((m_nObject = nObject) < 0x70000000) {
 	m_nObjId = OBJECTS [nObject].info.nId;
 	}
 m_nEmitters = 0;
+m_nLife = nLife;
+m_nSpeed = nSpeed;
 m_nBirth = gameStates.app.nSDLTicks;
 m_nMaxEmitters = nMaxEmitters;
 for (i = 0; i < nMaxEmitters; i++)
@@ -1431,7 +1433,7 @@ if (m_emitters) {
 	for (int i = m_nEmitters; i; )
 		m_emitters [--i].Destroy ();
 	D2_FREE (m_emitters);
-	if (m_nObject >= 0)
+	if ((m_nObject >= 0) && (m_nObject < 0x70000000))
 		particleManager.SetObjectSystem (m_nObject, -1);
 	m_nObject = -1;
 	m_nObjType = -1;
@@ -1449,7 +1451,10 @@ int CParticleSystem::Render (void)
 if (m_emitters) {
 	if (!particleImageManager.Load (m_nType))
 		return 0;
-	if ((m_nObject >= 0) && (m_nObject < 0x70000000) && (particleManager.GetObjectSystem (m_nObject) < 0))
+	if ((m_nObject >= 0) && (m_nObject < 0x70000000) && 
+		 ((OBJECTS [m_nObject].info.nType == OBJ_NONE) || 
+		  (OBJECTS [m_nObject].info.nSignature != m_nSignature) || 
+		  (particleManager.GetObjectSystem (m_nObject) < 0)))
 		SetLife (0);
 	CParticleEmitter *emitterP = m_emitters;
 	for (int i = m_nEmitters; i; i--, emitterP++) 
@@ -1569,7 +1574,8 @@ if ((m_nObject < 0x70000000) && (OBJECTS [m_nObject].info.nType == 255))
 	i = i;
 #endif
 if ((emitterP = m_emitters)) {
-	bool bKill = (m_nObject < 0) || ((m_nObject < 0x70000000) && (OBJECTS [m_nObject].info.nType == 255));
+	bool bKill = (m_nObject < 0) || ((m_nObject < 0x70000000) && 
+					 ((OBJECTS [m_nObject].info.nSignature != m_nSignature) || (OBJECTS [m_nObject].info.nType == OBJ_NONE)));
 	for (i = 0; i < m_nEmitters; ) {
 		if (!m_emitters)
 			return 0;
@@ -1609,22 +1615,22 @@ if (!m_objectSystems)
 for (i = 0, j = 1; j < MAX_PARTICLE_SYSTEMS; i++, j++)
 	m_systems [i].Init (i, j);
 m_systems [i].SetNext (-1);
-m_iFree = 0;
-m_iUsed = -1;
+m_nFree = 0;
+m_nUsed = -1;
 }
 
 //------------------------------------------------------------------------------
 
-int CParticleManager::IsUsed (int iParticleSystem)
+int CParticleManager::IsUsed (int i)
 {
 	int nPrev = -1;
 
-for (int i = m_iUsed; i >= 0; ) {
-	if (iParticleSystem == i)
+for (int j = m_nUsed; j >= 0; ) {
+	if (i == j)
 		return nPrev + 1;
-	nPrev = i;
-	i = m_systems [i].GetNext ();
-	if (i == m_iUsed) {
+	nPrev = j;
+	j = m_systems [j].GetNext ();
+	if (j == m_nUsed) {
 		RebuildSystemList ();
 		return -1;
 		}
@@ -1634,36 +1640,24 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-CParticleSystem* CParticleManager::PrevSystem (int i)
-{
-	int	j, h;
-
-for (j = m_iUsed; j >= 0; j = h)
-	if ((h = m_systems [j].GetNext ()) == i)
-		return m_systems + j;
-return NULL;
-}
-
-//------------------------------------------------------------------------------
-
 int CParticleManager::Destroy (int i)
 {
-	int					h, nPrev;
-	tParticleSystem	*systemP;
+	int					nNext, nPrev;
+	CParticleSystem	*systemP;
 
 if (i < 0)
 	i = -i - 1;
-systemP = m_systems + i;
-m_systems [i].Destroy ();
 if (0 > (nPrev = IsUsed (i)))
 	return -1;
-h = m_systems [i].GetNext ();
-if (m_iUsed == i)
-	m_iUsed = h;
-m_systems [i].SetNext (GetFree ());
-if ((systemP = PrevSystem (i)))
-	m_systems [nPrev - 1].SetNext (h);
-SetFree (i);
+systemP = m_systems + i;
+nNext = systemP->GetNext ();
+if (m_nUsed == i)
+	m_nUsed = nNext;
+systemP->SetNext (m_nFree);
+if (nPrev > 0)
+	m_systems [nPrev - 1].SetNext (nNext);
+m_nFree = i;
+systemP->Destroy ();
 return i;
 }
 
@@ -1677,8 +1671,8 @@ SEM_ENTER (SEM_SMOKE)
 
 while (!bDone) {
 	bDone = 1;
-	for (i = m_iUsed; i >= 0; i = j) {
-		if ((j = m_systems [i].m_nNext) == m_iUsed) {
+	for (i = m_nUsed; i >= 0; i = j) {
+		if ((j = m_systems [i].m_nNext) == m_nUsed) {
 			RebuildSystemList ();
 			bDone = 0;
 			}
@@ -1704,19 +1698,19 @@ if (!(EGI_FLAG (bUseParticleSystem, 0, 1, 0)))
 	return 0;
 else
 #endif
-if (m_iFree < 0)
+if (m_nFree < 0)
 	return -1;
-else if (!particleImageManager.Load (nType))
+if (!particleImageManager.Load (nType))
 	return -1;
-CParticleSystem *systemP = m_systems + m_iFree;
-int h = systemP->Create (vPos, vDir, mOrient, nSegment, nMaxEmitters, nMaxParts, fScale, nDensity, 
+CParticleSystem *systemP = m_systems + m_nFree;
+int i = systemP->Create (vPos, vDir, mOrient, nSegment, nMaxEmitters, nMaxParts, fScale, nDensity, 
 								 nPartsPerPos, nLife, nSpeed, nType, nObject, colorP, bBlowUpParts, nSide);
-if (h < 1)
-	return h;
-h = m_iFree;
-m_iFree = systemP->GetNext ();
-systemP->SetNext (m_iUsed);
-return m_iUsed = h;
+if (i < 1)
+	return i;
+i = m_nFree;
+m_nFree = systemP->GetNext ();
+systemP->SetNext (m_nUsed);
+return m_nUsed = i;
 }
 
 //------------------------------------------------------------------------------
@@ -1736,8 +1730,8 @@ if (!gameStates.app.tick40fps.bTick)
 #endif
 	int	i, j, h = 0;
 
-for (i = m_iUsed; i >= 0; i = j) {
-	if ((j = m_systems [i].GetNext ()) == m_iUsed) {
+for (i = m_nUsed; i >= 0; i = j) {
+	if ((j = m_systems [i].GetNext ()) == m_nUsed) {
 		RebuildSystemList ();
 		break;
 		}
@@ -1750,8 +1744,8 @@ return h;
 
 void CParticleManager::Render (void)
 {
-for (int j, i = m_iUsed; i >= 0; i = j) {
-	if ((j = m_systems [i].GetNext ()) == m_iUsed) {
+for (int j, i = m_nUsed; i >= 0; i = j) {
+	if ((j = m_systems [i].GetNext ()) == m_nUsed) {
 		RebuildSystemList ();
 		break;
 		}
