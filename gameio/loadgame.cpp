@@ -831,7 +831,7 @@ if (gameData.missions.nEnhancedMission) {
 /*---*/PrintLog ("   Destroying camera objects\n");
 DestroyCameras ();
 /*---*/PrintLog ("   Destroying particle data\n");
-DestroyAllParticleSystems ();
+particleManager.DestroyAll ();
 /*---*/PrintLog ("   Destroying lightning data\n");
 DestroyAllLightnings (1);
 DestroyOmegaLightnings (-1);

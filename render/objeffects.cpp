@@ -97,7 +97,7 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		}
 	bDepthSort = gameOpts->render.bDepthSort;
 	gameOpts->render.bDepthSort = -1;
-	G3DrawSprite(objP->info.position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
+	G3DrawSprite (objP->info.position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
 	gameOpts->render.bDepthSort = bDepthSort;
 	}
 }

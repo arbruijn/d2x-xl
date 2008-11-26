@@ -2966,8 +2966,6 @@ m = menus + smokeOpts.nUse;
 v = m->value;
 if (v != extraGameInfo [0].bUseParticles) {
 	extraGameInfo [0].bUseParticles = v;
-	if (!v)
-		FreePartList ();
 	*key = -2;
 	return nCurItem;
 	}
@@ -3082,7 +3080,7 @@ if (extraGameInfo [0].bUseParticles) {
 		}
 	}
 else
-	DestroyAllParticleSystems ();
+	particleManager.DestroyAll ();
 return nCurItem;
 }
 

@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mono.h"
 #include "error.h"
 #include "u_mem.h"
+#include "text.h"
 
 unsigned int nCurAllocd = 0;
 unsigned int nMaxAllocd = 0;
@@ -366,6 +367,20 @@ return newstr;
 }
 
 #endif
+
+// ----------------------------------------------------------------------------
+
+void *GetMem (size_t size, char filler)
+{
+	void	*p = D2_ALLOC ((unsigned int) size);
+
+if (p) {
+	memset (p, filler, size);
+	return p;
+	}
+Error (TXT_OUT_OF_MEMORY);
+exit (1);
+}
 
 //------------------------------------------------------------------------------
 //eof

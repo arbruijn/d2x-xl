@@ -180,7 +180,7 @@ GrRemapBitmapGood (&bmBackground, NULL, -1, -1);
 
 //------------------------------------------------------------------------------
 //this is called once per game
-void InitGame ()
+void InitGame (void)
 {
 atexit (CloseGame);             //for cleanup
 /*---*/PrintLog ("Initializing game data\n  Objects ...\n");
@@ -194,7 +194,8 @@ InitAISystem ();
 /*---*/PrintLog ("  exploding walls...\n");
 InitExplodingWalls ();
 /*---*/PrintLog ("  particle systems...\n");
-InitParticleSystems ();
+particleManager.DestroyAll ();
+particleManager.Init ();
 /*---*/PrintLog ("  loading background bitmap...\n");
 LoadBackgroundBitmap ();
 InitAutomapData ();
@@ -1432,7 +1433,7 @@ DestroyTrackerList ();
 PrintLog ("unloading lightmap data\n");
 DestroyLightmaps ();
 PrintLog ("unloading particle data\n");
-DestroyAllParticleSystems ();
+particleManager.DestroyAll ();
 PrintLog ("unloading shield sphere data\n");
 DestroySphere (&gameData.render.shield);
 DestroySphere (&gameData.render.monsterball);

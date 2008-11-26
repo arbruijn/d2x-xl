@@ -1,7 +1,7 @@
 #ifndef _TRANSPRENDER_H
 #define _TRANSPRENDER_H
 
-#include "inferno.h"
+#include "particles.h"
 
 //------------------------------------------------------------------------------
 
@@ -64,7 +64,7 @@ typedef struct tTranspSpark {
 } tTranspSpark;
 
 typedef struct tTranspParticle {
-	tParticle			*particle;
+	CParticle			*particle;
 	float					fBrightness;
 } tTranspParticle;
 
@@ -175,7 +175,7 @@ int TIAddSprite (grsBitmap *bmP, const vmsVector& position, tRgbaColorf *color,
 					  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad);
 int TIAddSpark (const vmsVector& position, char nType, int nSize, char nFrame);
 int TIAddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, tObject *objP);
-int TIAddParticle (tParticle *particle, float fBrightness, int nThread);
+int TIAddParticle (CParticle *particle, float fBrightness, int nThread);
 int TIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);
 int TIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color,
 									char bPlasma, char bStart, char bEnd, short nDepth);

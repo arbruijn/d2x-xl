@@ -500,17 +500,18 @@ return AddTranspItem (tiSphere, &item, sizeof (item), vPos [Z], vPos [Z]);
 
 //------------------------------------------------------------------------------
 
-int TIAddParticle (tParticle *particle, float fBrightness, int nThread)
+int TIAddParticle (CParticle *particle, float fBrightness, int nThread)
 {
 	tTranspParticle	item;
+	fix					z;
 
 item.particle = particle;
 item.fBrightness = fBrightness;
-G3TransformPoint(particle->transPos, particle->pos, gameStates.render.bPerPixelLighting == 2);
+z = particle->Transform (gameStates.render.bPerPixelLighting == 2);
 if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtTransparency])
-	return AddTranspItemMT (tiParticle, &item, sizeof (item), particle->transPos [Z], particle->transPos [Z], nThread);
+	return AddTranspItemMT (tiParticle, &item, sizeof (item), z, z, nThread);
 else
-	return AddTranspItem (tiParticle, &item, sizeof (item), particle->transPos [Z], particle->transPos [Z]);
+	return AddTranspItem (tiParticle, &item, sizeof (item), z, z);
 }
 
 //------------------------------------------------------------------------------
@@ -1290,15 +1291,15 @@ gameOpts->render.bDepthSort = bDepthSort;
 
 //------------------------------------------------------------------------------
 
-void TIRenderBullet (tParticle *pParticle)
+void TIRenderBullet (CParticle *pParticle)
 {
 	tObject	o;
 
 memset (&o, 0, sizeof (o));
 o.info.nType = OBJ_POWERUP;
-o.info.position.vPos = pParticle->pos;
-o.info.position.mOrient = pParticle->orient;
-if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->nSegment, 0, 0))) {
+o.info.position.vPos = pParticle->m_vPos;
+o.info.position.mOrient = pParticle->m_mOrient;
+if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->m_nSegment, 0, 0))) {
 	gameData.render.lights.dynamic.shader.index [0][0].nActive = 0;
 	o.info.renderType = RT_POLYOBJ;
 	o.rType.polyObjInfo.nModel = BULLET_MODEL;
@@ -1315,7 +1316,7 @@ if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->nSegm
 
 void TIRenderParticle (tTranspParticle *item)
 {
-if (item->particle->nType == 2)
+if (item->particle->m_nType == 2)
 	TIRenderBullet (item->particle);
 else {
 	int bSoftSmoke = (gameOpts->render.effects.bSoftParticles & 4) != 0;
@@ -1330,7 +1331,7 @@ else {
 		transpItems.bTextured = 1;
 		//InitParticleBuffer (transpItems.bLightmaps);
 		}
-	RenderParticle (item->particle, item->fBrightness);
+	item->particle->Render (item->fBrightness);
 	TIResetBitmaps ();
 	transpItems.bDepthMask = 1;
 	}
@@ -1411,9 +1412,9 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 void TIFlushParticleBuffer (int nType)
 {
 if ((nType < 0) || ((nType != tiParticle) && (gameData.particles.nLastType >= 0))) {
-	FlushParticleBuffer (-1.0f);
+	particleManager.FlushBuffer (-1.0f);
 	if (nType < 0)
-		CloseParticleBuffer ();
+		particleManager.CloseBuffer ();
 #if 1
 	TIResetBitmaps ();
 #endif
@@ -1531,13 +1532,13 @@ G3DisableClientStates (1, 1, 0, GL_TEXTURE1 + transpItems.bLightmaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + transpItems.bLightmaps);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 pl = transpItems.itemListP + ITEM_BUFFER_SIZE - 1;
-transpItems.bHaveParticles = LoadParticleImages ();
+transpItems.bHaveParticles = particleImageManager.LoadAll ();
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (0);
 glEnable (GL_CULL_FACE);
-BeginRenderParticleSystems (-1, 1);
+particleManager.BeginRender (-1, 1);
 transpItems.nCurType = -1;
 for (pd = transpItems.depthBufP + transpItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZE - 1*/, nItems = transpItems.nItems;
 	  (pd >= transpItems.depthBufP) && nItems;
@@ -1560,7 +1561,7 @@ for (pd = transpItems.depthBufP + transpItems.nMaxOffs /*ITEM_DEPTHBUFFER_SIZE -
 		}
 	}
 TIFlushBuffers (-1);
-EndRenderParticleSystems (NULL);
+particleManager.EndRender ();
 TIResetShader ();
 G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 OGL_BINDTEX (0);

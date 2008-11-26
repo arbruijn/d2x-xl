@@ -183,7 +183,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 		FreeInventoryIcons ();
 		FreeObjTallyIcons ();
 		ResetHoardData ();
-		FreeParticleImages ();
+		particleImageManager.FreeAll ();
 		FreeExtraImages ();
 		LoadExtraImages ();
 		FreeStringPool ();

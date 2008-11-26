@@ -2936,33 +2936,11 @@ typedef struct tDemoData {
 
 //------------------------------------------------------------------------------
 
-#include "particles.h"
-
-typedef struct tPartList {
-	struct tPartList	*nextPartP;
-	tParticle			*particleP;
-	float					fBrightness;
-} tPartList;
-
-typedef struct tPartDepthBuf {
-	tPartList		**pDepthBuffer;
-	tPartList		*pPartList;
-	int				nParts;
-	int				nFreeParts;
-	int				zMin;
-	int				zMax;
-} tPartDepthBuf;
-
 typedef struct tParticleData {
-	tParticleSystem			buffer [MAX_SMOKE];
-	short				*objects;
-	time_t			*objExplTime;
-	int				iFree;
-	int				iUsed;
-	int				nLastType;
-	int				bAnimate;
-	int				bStencil;
-	tPartDepthBuf	depthBuf;
+	time_t				*objExplTime;
+	int					nLastType;
+	int					bAnimate;
+	int					bStencil;
 } tParticleData;
 
 //------------------------------------------------------------------------------

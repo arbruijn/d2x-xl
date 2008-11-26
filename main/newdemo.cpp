@@ -1731,19 +1731,19 @@ int NDUpdateSmoke (void)
 if (!EGI_FLAG (bUseParticles, 0, 1, 0))
 	return 0;
 else {
-		int		i, nObject;
-		tParticleSystem	*pSmoke = gameData.particles.buffer;
+		int					i, nObject;
+		CParticleSystem	*systemP;
 
-	for (i = gameData.particles.iUsed; i >= 0; i = pSmoke->nNext) {
-		pSmoke = gameData.particles.buffer + i;
-		nObject = NDFindObject (pSmoke->nSignature);
+	for (i = particleManager.GetUsed (); i >= 0; i = systemP->GetNext ()) {
+		systemP = &particleManager.GetSystem (i);
+		nObject = NDFindObject (systemP->m_nSignature);
 		if (nObject < 0) {
-			gameData.particles.objects [pSmoke->nObject] = -1;
-			SetParticleSystemLife (i, 0);
+			particleManager.SetObjectSystem (systemP->m_nObject, -1);
+			systemP->SetLife (0);
 			}
 		else {
-			gameData.particles.objects [nObject] = i;
-			pSmoke->nObject = nObject;
+			particleManager.SetObjectSystem (nObject, i);
+			systemP->m_nObject = nObject;
 			}
 		}
 	return 1;
@@ -3439,7 +3439,7 @@ CFSeek (&ndOutFile, 1, SEEK_CUR);
 CFWrite (&nPrevFrameLength, 2, 1, &ndOutFile);
 CFClose (&ndOutFile);
 NDStopPlayback ();
-DestroyAllParticleSystems ();
+particleManager.DestroyAll ();
 }
 
 #endif

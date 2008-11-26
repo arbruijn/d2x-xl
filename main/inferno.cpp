@@ -2336,8 +2336,6 @@ SetSpherePulse (&gameData.render.shield.pulse, 0.02f, 0.5f);
 UseSpherePulse (&gameData.render.shield, &gameData.render.shield.pulse);
 SetSpherePulse (&gameData.render.monsterball.pulse, 0.005f, 0.9f);
 UseSpherePulse (&gameData.render.monsterball, &gameData.render.monsterball.pulse);
-gameData.particles.iFree = -1;
-gameData.particles.iUsed = -1;
 gameData.particles.nLastType = -1;
 gameData.lightnings.iFree = -1;
 gameData.lightnings.iUsed = -1;
@@ -2351,22 +2349,6 @@ gameData.score.nPhallicMan = -1;
 InitEndLevelData ();
 InitStringPool ();
 SetDataVersion (-1);
-}
-
-// ----------------------------------------------------------------------------
-
-#define	GETMEM(_t,_p,_s,_f)	(_p) = (_t *) GetMem ((_s) * sizeof (*(_p)), _f)
-
-void *GetMem (size_t size, char filler)
-{
-	void	*p = D2_ALLOC ((unsigned int) size);
-
-if (p) {
-	memset (p, filler, size);
-	return p;
-	}
-Error (TXT_OUT_OF_MEMORY);
-exit (1);
 }
 
 // ----------------------------------------------------------------------------
@@ -2437,7 +2419,6 @@ GETMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS, 0);
 
 void AllocSmokeData (void)
 {
-GETMEM (short, gameData.particles.objects, MAX_OBJECTS, (char) 0xff);
 GETMEM (time_t, gameData.particles.objExplTime, MAX_OBJECTS, 0);
 }
 
@@ -2570,8 +2551,6 @@ AllocDemoData ();
 
 // ----------------------------------------------------------------------------
 
-#define FREEMEM(_t,_p,_s) {D2_FREE (_p); (_p) = (_t *) NULL; }
-
 void FreeSegmentData (void)
 {
 FREEMEM (vmsVector, gameData.segs.vertices, MAX_VERTICES);
@@ -2637,7 +2616,6 @@ FREEMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS);
 
 void FreeSmokeData (void)
 {
-FREEMEM (short, gameData.particles.objects, MAX_OBJECTS);
 FREEMEM (time_t, gameData.particles.objExplTime, MAX_OBJECTS);
 }
 

@@ -1253,7 +1253,7 @@ if (bSparks) {
 if (bSmoke) {
 	SEM_ENTER (SEM_SMOKE)
 	//PrintLog ("RenderSmoke\n");
-	RenderParticleSystems ();
+	particleManager.Render ();
 	//SEM_LEAVE (SEM_SMOKE)
 	}
 if (bLightnings) {

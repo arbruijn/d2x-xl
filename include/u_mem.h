@@ -62,4 +62,9 @@ char *MemStrDup (const char * str);
 
 extern unsigned int nCurAllocd, nMaxAllocd;
 
+#define GETMEM(_t,_p,_s,_f)	(_p) = (_t *) GetMem ((_s) * sizeof (*(_p)), _f)
+#define FREEMEM(_t,_p,_s) {D2_FREE (_p); (_p) = (_t *) NULL; }
+
+void *GetMem (size_t size, char filler);
+
 //eof
