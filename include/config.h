@@ -42,6 +42,7 @@ typedef struct tGameConfig {
 	int		vrType;
 	int		vrResolution;
 	int		vrTracking;
+	uint		cfgDataHash;
 } tGameConfig;
 
 extern tGameConfig gameConfig;
@@ -59,5 +60,6 @@ extern tGameConfig gameConfig;
 #define CONTROL_MAX_TYPES 8
 
 void InitGameConfig (void);
+bool CheckGameConfig (void);
 
 #endif

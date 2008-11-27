@@ -26,6 +26,16 @@
 #define SPARK_MIN_PROB		16
 #define SPARK_FRAME_TIME	50
 
+class CEnergySparks {
+	private:
+		short	m_nSegments;
+
+	public:
+		CEnergySparks () { m_nSegments = 0; };
+		~CEnergySparks () {};
+
+};
+
 //-----------------------------------------------------------------------------
 
 void AllocSegmentSparks (short nSegment)
@@ -70,13 +80,13 @@ void CreateSegmentSparks (short nSegment)
 	int				nMatCen = nSegment;
 	tSegment2		*seg2P = gameData.segs.segment2s + (nSegment = gameData.matCens.sparkSegs [nSegment]);
 	int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
-	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel]+ nMatCen;
+	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel] + nMatCen;
 	tEnergySpark	*sparkP = segP->sparks;
 	vmsVector		vOffs;
 	fVector			vMaxf, vMax2f;
 	int				i;
 
-vMaxf = gameData.segs.extent [nSegment].vMax.ToFloat();
+vMaxf = gameData.segs.extent [nSegment].vMax.ToFloat ();
 vMax2f = vMaxf * 2;
 for (i = segP->nMaxSparks; i; i--, sparkP++) {
 	if (sparkP->tRender)
@@ -89,11 +99,11 @@ for (i = segP->nMaxSparks; i; i--, sparkP++) {
 	if (d_rand () % sparkP->nProb)
 		sparkP->nProb--;
 	else {
-		vOffs[X] = F2X (vMaxf[X] - f_rand () * vMax2f[X]);
-		vOffs[Y] = F2X (vMaxf[Y] - f_rand () * vMax2f[Y]);
-		vOffs[Z] = F2X (vMaxf[Z] - f_rand () * vMax2f[Z]);
-		sparkP->vPos = *SEGMENT_CENTER_I(nSegment) + vOffs;
-		if ((vOffs.Mag() > MinSegRad (nSegment)) && GetSegMasks (sparkP->vPos, nSegment, 0).centerMask)
+		vOffs [X] = F2X (vMaxf [X] - f_rand () * vMax2f [X]);
+		vOffs [Y] = F2X (vMaxf [Y] - f_rand () * vMax2f [Y]);
+		vOffs [Z] = F2X (vMaxf [Z] - f_rand () * vMax2f [Z]);
+		sparkP->vPos = *SEGMENT_CENTER_I (nSegment) + vOffs;
+		if ((vOffs.Mag () > MinSegRad (nSegment)) && GetSegMasks (sparkP->vPos, nSegment, 0).centerMask)
 			sparkP->nProb = 1;
 		else {
 			sparkP->xSize = F1_0 + 4 * d_rand ();
@@ -102,14 +112,14 @@ for (i = segP->nMaxSparks; i; i--, sparkP++) {
 			sparkP->bRendered = 0;
 			sparkP->nProb = SPARK_MIN_PROB;
 			if (gameOpts->render.effects.bMovingSparks) {
-				sparkP->vDir[X] = (F1_0 / 4) - d_rand ();
-				sparkP->vDir[Y] = (F1_0 / 4) - d_rand ();
-				sparkP->vDir[Z] = (F1_0 / 4) - d_rand ();
-				vmsVector::Normalize(sparkP->vDir);
+				sparkP->vDir [X] = (F1_0 / 4) - d_rand ();
+				sparkP->vDir [Y] = (F1_0 / 4) - d_rand ();
+				sparkP->vDir [Z] = (F1_0 / 4) - d_rand ();
+				vmsVector::Normalize (sparkP->vDir);
 				sparkP->vDir *= ((F1_0 / (16 + d_rand () % 16)));
 				}
 			else
-				sparkP->vDir.SetZero();
+				sparkP->vDir.SetZero ();
 			}
 		}
 	}

@@ -612,7 +612,7 @@ else {
 			{
 				int	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
 				int	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
-				int	nHat = sdlJoysticks [nStick].n_buttons;
+				int	nHat = sdlJoysticks [nStick].nButtons;
 				//static char szHatDirs [4] = {'U', 'L', 'D', 'R'};
 				static char cHatDirs [4] = { (char) 130, (char) 127, (char) 128, (char) 129};
 
@@ -1539,7 +1539,7 @@ if (bRedraw && gameOpts->menus.nStyle)
 				{
 					int	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
 					int	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
-					int	nHat = sdlJoysticks [nStick].n_buttons;
+					int	nHat = sdlJoysticks [nStick].nButtons;
 					//static char szHatDirs [4] = {'U', 'L', 'D', 'R'};
 					static char cHatDirs [4] = { (char) 130, (char) 127, (char) 128, (char) 129};
 

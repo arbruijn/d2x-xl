@@ -95,4 +95,9 @@ int LoadMission (int nMission);
 int LoadMissionByName(char *szMissionName, int nSubFolder);
 int FindMissionByName(char *szMissionName, int nSubFolder);
 
+static inline bool MsnHasGameVer (const char *pszMission)
+{
+return (pszMission [0] == '[') && ::isdigit (pszMission [1]) && (pszMission [2] == ']');
+}
+
 #endif

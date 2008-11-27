@@ -282,13 +282,14 @@ else {
 
 void ControlsReadFCS (int rawAxis)
 {
-	int raw_button, button, axis_min [4], axis_center [4], axis_max [4];
+	int raw_button, button;
+	tJoyAxisCal	cal [4];
 
 if (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS) 
 	return;
-JoyGetCalVals (axis_min, axis_center, axis_max);
-if (axis_max [3] > 1)
-	raw_button = (rawAxis*100) /axis_max [3];
+JoyGetCalVals (cal, sizeofa (cal));
+if (cal [3].nMax > 1)
+	raw_button = (rawAxis * 100) / cal [3].nMax;
 else
 	raw_button = 0;
 if (raw_button > 88)
@@ -1188,6 +1189,8 @@ nMaxTurnRate = (int) gameStates.input.kcFrameTime;
 #else
 nMaxTurnRate = (int) (gameStates.input.kcFrameTime * (1.0f - X2F (gameData.pig.ship.player->maxRotThrust)));
 #endif
+if (CheckGameConfig ())
+	SDL_Delay (gameData.app.nFrameCount % 100);
 return 0;
 }
 

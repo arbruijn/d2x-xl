@@ -1397,7 +1397,7 @@ do {
 
 int SelectAndLoadMission (int bMulti, int *bAnarchyOnly)
 {
-	int	i, nMissions, nDefaultMission, nNewMission = -1;
+	int	i, j, nMissions, nDefaultMission, nNewMission = -1;
 	char	*szMsnNames [MAX_MISSIONS];
 
 	static const char *menuTitles [4];
@@ -1415,8 +1415,10 @@ do {
 		return -1;
 	nDefaultMission = 0;
 	for (i = 0; i < nMissions; i++) {
+
 		szMsnNames [i] = gameData.missions.list [i].szMissionName;
-		if (!stricmp (szMsnNames [i], gameConfig.szLastMission))
+		j = MsnHasGameVer (szMsnNames [i]) ? 4 : 0;
+		if (!stricmp (szMsnNames [i] + j, gameConfig.szLastMission))
 			nDefaultMission = i;
 		}
 	gameStates.app.nExtGameStatus = bMulti ? GAMESTAT_START_MULTIPLAYER_MISSION : GAMESTAT_SELECT_MISSION;

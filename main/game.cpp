@@ -1640,26 +1640,23 @@ void save_movie_frame ()
 //if water or fire level, make occasional sound
 void DoAmbientSounds ()
 {
-	int has_water,has_lava;
-	short sound;
+	int	bLava, bWater;
+	short nSound;
 
-	has_lava = (gameData.segs.segment2s[gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_LAVA);
-	has_water = (gameData.segs.segment2s[gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_WATER);
+	bLava = (SEGMENT2S [gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_LAVA);
+	bWater = (SEGMENT2S [gameData.objs.consoleP->info.nSegment].s2Flags & S2F_AMBIENT_WATER);
 
-	if (has_lava) {							//has lava
-		sound = SOUND_AMBIENT_LAVA;
-		if (has_water && (d_rand () & 1))	//both, pick one
-			sound = SOUND_AMBIENT_WATER;
+if (bLava) {							//has lava
+	nSound = SOUND_AMBIENT_LAVA;
+	if (bWater && (d_rand () & 1))	//both, pick one
+		nSound = SOUND_AMBIENT_WATER;
 	}
-	else if (has_water)						//just water
-		sound = SOUND_AMBIENT_WATER;
-	else
-		return;
-
-	if (((d_rand () << 3) < gameData.time.xFrame)) {						//play the sound
-		fix volume = d_rand () + f1_0/2;
-		DigiPlaySample (sound, volume);
-	}
+else if (bWater)						//just water
+	nSound = SOUND_AMBIENT_WATER;
+else
+	return;
+if (((d_rand () << 3) < gameData.time.xFrame))	//play the nSound
+	DigiPlaySample (nSound, (fix) (d_rand () + f1_0 / 2));
 }
 
 //-----------------------------------------------------------------------------
@@ -2060,7 +2057,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nSegment = nSegment;
 #endif
-		i = (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) ? 3 : 8;
+		i = (SEGMENT2S [nSegment].special == SEGMENT_IS_SKYBOX) ? 3 : 8;
 		slideU = FixMul (gameData.time.xFrame, slideU << i);
 		slideV = FixMul (gameData.time.xFrame, slideV << i);
 		for (i = 0, uvlP = sideP->uvls; i < 4; i++) {
