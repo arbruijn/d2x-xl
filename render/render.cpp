@@ -1225,7 +1225,7 @@ if (pnStartSeg)
 
 void RenderEffects (int nWindow)
 {
-	int bLightnings, bSmoke, bSparks;
+	int bLightnings, bParticles, bSparks;
 
 OglSetLibFlags (1);
 #if 1
@@ -1236,13 +1236,15 @@ if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]
 #endif
 if (gameStates.render.automap.bDisplay) {
 	bLightnings = gameOpts->render.automap.bLightnings;
-	bSmoke = gameOpts->render.automap.bSmoke;
+	bParticles = gameOpts->render.automap.bParticles;
 	bSparks = gameOpts->render.automap.bSparks;
 	}
 else {
 	bSparks = 1;
-	bLightnings = !nWindow || gameOpts->render.lightnings.bAuxViews;
-	bSmoke = !nWindow || gameOpts->render.particles.bAuxViews;
+	bLightnings = (!nWindow || gameOpts->render.lightnings.bAuxViews) && 
+					  (!gameStates.render.cameras.bActive || gameOpts->render.lightnings.bMonitors);
+	bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
+				(!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
 	}
 if (bSparks) {
 	SEM_ENTER (SEM_SPARKS)
@@ -1250,7 +1252,7 @@ if (bSparks) {
 	RenderEnergySparks ();
 	//SEM_LEAVE (SEM_SPARKS)
 	}
-if (bSmoke) {
+if (bParticles) {
 	SEM_ENTER (SEM_SMOKE)
 	//PrintLog ("RenderSmoke\n");
 	particleManager.Render ();
@@ -1266,7 +1268,7 @@ if (bLightnings)
 	SEM_LEAVE (SEM_LIGHTNINGS)
 RenderTranspItems ();
 #if 1
-if (bSmoke)
+if (bParticles)
 	SEM_LEAVE (SEM_SMOKE)
 if (bSparks)
 	SEM_LEAVE (SEM_SPARKS)

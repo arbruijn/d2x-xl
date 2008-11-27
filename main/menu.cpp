@@ -882,6 +882,8 @@ if (gameStates.app.nCompSpeed == 0) {
 	gameOpts->render.effects.nShrapnels = 0;
 	gameOpts->render.particles.bAuxViews = 0;
 	gameOpts->render.lightnings.bAuxViews = 0;
+	gameOpts->render.particles.bMonitors = 0;
+	gameOpts->render.lightnings.bMonitors = 0;
 	gameOpts->render.coronas.nStyle = 0;
 	gameOpts->ogl.nMaxLightsPerFace = 4;
 	gameOpts->ogl.nMaxLightsPerPass = 4;
@@ -905,6 +907,8 @@ else if (gameStates.app.nCompSpeed == 1) {
 	gameOpts->render.particles.bStatic = 0;
 	gameOpts->render.particles.bAuxViews = 0;
 	gameOpts->render.lightnings.bAuxViews = 0;
+	gameOpts->render.particles.bMonitors = 0;
+	gameOpts->render.lightnings.bMonitors = 0;
 	gameOpts->render.particles.nDens [0] =
 	gameOpts->render.particles.nDens [1] =
 	gameOpts->render.particles.nDens [2] =
@@ -931,6 +935,8 @@ else if (gameStates.app.nCompSpeed == 1) {
 	gameOpts->render.nLightingMethod = 0;
 	gameOpts->render.particles.bAuxViews = 0;
 	gameOpts->render.lightnings.bAuxViews = 0;
+	gameOpts->render.particles.bMonitors = 0;
+	gameOpts->render.lightnings.bMonitors = 0;
 	gameOpts->ogl.bLightObjects = 0;
 	gameOpts->ogl.nMaxLightsPerFace = 8;
 	gameOpts->ogl.nMaxLightsPerPass = 8;
@@ -982,6 +988,8 @@ else if (gameStates.app.nCompSpeed == 2) {
 	gameOpts->render.cockpit.bTextGauges = 0;
 	gameOpts->render.nLightingMethod = 1;
 	gameOpts->render.particles.bAuxViews = 0;
+	gameOpts->render.particles.bMonitors = 0;
+	gameOpts->render.lightnings.bMonitors = 0;
 	gameOpts->render.lightnings.nQuality = 1;
 	gameOpts->render.lightnings.nStyle = 1;
 	gameOpts->render.lightnings.bPlasma = 0;
@@ -1043,6 +1051,8 @@ else if (gameStates.app.nCompSpeed == 3) {
 	gameOpts->render.cockpit.bTextGauges = 0;
 	gameOpts->render.nLightingMethod = 1;
 	gameOpts->render.particles.bAuxViews = 0;
+	gameOpts->render.particles.bMonitors = 0;
+	gameOpts->render.lightnings.bMonitors = 0;
 	gameOpts->render.lightnings.nQuality = 1;
 	gameOpts->render.lightnings.nStyle = 1;
 	gameOpts->render.lightnings.bPlasma = 0;
@@ -1103,6 +1113,8 @@ else if (gameStates.app.nCompSpeed == 4) {
 	gameOpts->render.coronas.nStyle = 2;
 	gameOpts->render.nLightingMethod = 1;
 	gameOpts->render.particles.bAuxViews = 1;
+	gameOpts->render.particles.bMonitors = 1;
+	gameOpts->render.lightnings.bMonitors = 1;
 	gameOpts->render.lightnings.nQuality = 1;
 	gameOpts->render.lightnings.nStyle = 2;
 	gameOpts->render.lightnings.bPlasma = 1;
@@ -2488,7 +2500,7 @@ do {
 		optCoronas = nOptions++;
 		ADD_CHECK (nOptions, TXT_RENDER_SPARKS, gameOpts->render.automap.bSparks, KEY_P, HTX_RENDER_SPARKS);
 		optSparks = nOptions++;
-		ADD_CHECK (nOptions, TXT_AUTOMAP_SMOKE, gameOpts->render.automap.bSmoke, KEY_S, HTX_AUTOMAP_SMOKE);
+		ADD_CHECK (nOptions, TXT_AUTOMAP_SMOKE, gameOpts->render.automap.bParticles, KEY_S, HTX_AUTOMAP_SMOKE);
 		optSmoke = nOptions++;
 		ADD_CHECK (nOptions, TXT_AUTOMAP_LIGHTNINGS, gameOpts->render.automap.bLightnings, KEY_S, HTX_AUTOMAP_LIGHTNINGS);
 		optLightnings = nOptions++;
@@ -2552,7 +2564,7 @@ do {
 	GET_VAL (gameOpts->render.automap.bGrayOut, optGrayOut);
 	GET_VAL (gameOpts->render.automap.bCoronas, optCoronas);
 	GET_VAL (gameOpts->render.automap.bSparks, optSparks);
-	GET_VAL (gameOpts->render.automap.bSmoke, optSmoke);
+	GET_VAL (gameOpts->render.automap.bParticles, optSmoke);
 	GET_VAL (gameOpts->render.automap.bLightnings, optLightnings);
 	GET_VAL (gameOpts->render.automap.bSkybox, optSkybox);
 	if (automapOpts.nOptRadarRange >= 0)
@@ -3125,7 +3137,8 @@ void SmokeOptionsMenu ()
 	tMenuItem m [40];
 	int	i, j, choice = 0;
 	int	nOptions;
-	int	nOptSmokeLag, optStaticParticles, optCollisions, optDisperse, optRotate = -1, optAuxViews = -1, optWiggle = -1, optWobble = -1;
+	int	nOptSmokeLag, optStaticParticles, optCollisions, optDisperse, 
+			optRotate = -1, optAuxViews = -1, optMonitors = -1, optWiggle = -1, optWobble = -1;
 	char	szSmokeQual [50];
 
 pszSmokeSize [0] = TXT_SMALL;
@@ -3234,6 +3247,8 @@ do {
 			optRotate = nOptions++;
 			ADD_CHECK (nOptions, TXT_SMOKE_AUXVIEWS, gameOpts->render.particles.bAuxViews, KEY_W, HTX_SMOKE_AUXVIEWS);
 			optAuxViews = nOptions++;
+			ADD_CHECK (nOptions, TXT_SMOKE_MONITORS, gameOpts->render.particles.bMonitors, KEY_M, HTX_SMOKE_MONITORS);
+			optMonitors = nOptions++;
 			ADD_TEXT (nOptions, "", 0);
 			nOptions++;
 			ADD_CHECK (nOptions, TXT_SMOKE_BUBBLES, gameOpts->render.particles.bBubbles, KEY_B, HTX_SMOKE_BUBBLES);
@@ -3257,7 +3272,8 @@ do {
 		optCollisions =
 		optDisperse = 
 		optRotate = 
-		optAuxViews = -1;
+		optAuxViews = 
+		optMonitors = -1;
 
 	Assert (sizeofa (m) >= nOptions);
 	do {
@@ -3278,6 +3294,7 @@ do {
 		GET_VAL (gameOpts->render.particles.bRotate, optRotate);
 		GET_VAL (gameOpts->render.particles.bDecreaseLag, nOptSmokeLag);
 		GET_VAL (gameOpts->render.particles.bAuxViews, optAuxViews);
+		GET_VAL (gameOpts->render.particles.bMonitors, optMonitors);
 		if (gameOpts->render.particles.bBubbles) {
 			GET_VAL (gameOpts->render.particles.bWiggleBubbles, optWiggle);
 			GET_VAL (gameOpts->render.particles.bWobbleBubbles, optWobble);
@@ -3701,7 +3718,7 @@ void LightningOptionsMenu (void)
 	tMenuItem m [15];
 	int	i, choice = 0;
 	int	nOptions;
-	int	optDamage, optExplosions, optPlayers, optRobots, optStatic, optRobotOmega, optPlasma, optAuxViews;
+	int	optDamage, optExplosions, optPlayers, optRobots, optStatic, optRobotOmega, optPlasma, optAuxViews, optMonitors;
 	char	szQuality [50], szStyle [100];
 
 	pszLightningQuality [0] = TXT_LOW;
@@ -3721,7 +3738,8 @@ do {
 	optStatic = 
 	optRobotOmega = 
 	optPlasma = 
-	optAuxViews = -1;
+	optAuxViews = 
+	optMonitors = -1;
 
 	ADD_CHECK (nOptions, TXT_LIGHTNING_ENABLE, extraGameInfo [0].bUseLightnings, KEY_U, HTX_LIGHTNING_ENABLE);
 	lightningOpts.nUse = nOptions++;
@@ -3756,6 +3774,8 @@ do {
 			}
 		ADD_CHECK (nOptions, TXT_LIGHTNING_AUXVIEWS, gameOpts->render.lightnings.bAuxViews, KEY_D, HTX_LIGHTNING_AUXVIEWS);
 		optAuxViews = nOptions++;
+		ADD_CHECK (nOptions, TXT_LIGHTNING_MONITORS, gameOpts->render.lightnings.bMonitors, KEY_M, HTX_LIGHTNING_MONITORS);
+		optMonitors = nOptions++;
 		}
 	Assert (sizeofa (m) >= (size_t) nOptions);
 	for (;;) {
@@ -3772,6 +3792,7 @@ do {
 		GET_VAL (gameOpts->render.lightnings.bStatic, optStatic);
 		GET_VAL (gameOpts->render.lightnings.bRobotOmega, optRobotOmega);
 		GET_VAL (gameOpts->render.lightnings.bAuxViews, optAuxViews);
+		GET_VAL (gameOpts->render.lightnings.bMonitors, optMonitors);
 		}
 	} while (i == -2);
 if (!gameOpts->render.lightnings.bPlayers)

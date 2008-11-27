@@ -247,6 +247,7 @@ typedef struct tParticleOptions {
 	int bSort;
 	int bDecreaseLag;	//only render if tPlayer is moving forward
 	int bAuxViews;
+	int bMonitors;
 } tParticleOptions;
 
 //------------------------------------------------------------------------------
@@ -263,6 +264,7 @@ typedef struct tLightningOptions {
 	int bOmega;
 	int bRobotOmega;
 	int bAuxViews;
+	int bMonitors;
 } tLightningOptions;
 
 //------------------------------------------------------------------------------
@@ -293,7 +295,7 @@ typedef struct tAutomapOptions {
 	int bTextured;
 	int bBright;
 	int bCoronas;
-	int bSmoke;
+	int bParticles;
 	int bSparks;
 	int bLightnings;
 	int bGrayOut;

@@ -1364,7 +1364,7 @@ if (i) {
 	gameOptions [1].render.powerups.b3D = 0;
 	gameOptions [1].render.powerups.nSpin = 0;
 	gameOptions [1].render.automap.bTextured = 0;
-	gameOptions [1].render.automap.bSmoke = 0;
+	gameOptions [1].render.automap.bParticles = 0;
 	gameOptions [1].render.automap.bLightnings = 0;
 	gameOptions [1].render.automap.bSkybox = 0;
 	gameOptions [1].render.automap.bBright = 1;
@@ -1500,7 +1500,7 @@ else {
 	gameOptions [0].render.powerups.b3D = 0;
 	gameOptions [0].render.powerups.nSpin = 0;
 	gameOptions [0].render.automap.bTextured = 0;
-	gameOptions [0].render.automap.bSmoke = 0;
+	gameOptions [0].render.automap.bParticles = 0;
 	gameOptions [0].render.automap.bLightnings = 0;
 	gameOptions [0].render.automap.bSkybox = 0;
 	gameOptions [0].render.automap.bBright = 1;

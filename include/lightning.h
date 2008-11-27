@@ -139,7 +139,7 @@ typedef struct tLightningSystem {
 
 class CLightningSystem : public tLightningSystem {
 	public:
-		CLightningSystem () { m_lightnings = NULL, m_nLightnings = 0; };
+		CLightningSystem () { m_lightnings = NULL, m_nLightnings = 0, m_nObject = -1; };
 		~CLightningSystem () { Destroy (); };
 		bool Create (int m_nId, int nLightnings, vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
 						 short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,

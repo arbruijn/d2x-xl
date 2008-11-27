@@ -436,6 +436,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.bDepthSort, i, 0);
 
 		RP (gameOptions [i].render.lightnings.bAuxViews, i, 0);
+		RP (gameOptions [i].render.lightnings.bMonitors, i, 0);
 		RP (gameOptions [i].render.lightnings.bPlasma, i, 0);
 		RP (gameOptions [i].render.lightnings.bDamage, i, 0);
 		RP (gameOptions [i].render.lightnings.bExplosions, i, 0);
@@ -456,7 +457,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.automap.bCoronas, i, 0);
 		RP (gameOptions [i].render.automap.bGrayOut, i, 0);
 		RP (gameOptions [i].render.automap.bSparks, i, 0);
-		RP (gameOptions [i].render.automap.bSmoke, i, 0);
+		RP (gameOptions [i].render.automap.bParticles, i, 0);
 		RP (gameOptions [i].render.automap.bLightnings, i, 0);
 		RP (gameOptions [i].render.automap.bTextured, i, 0);
 		RP (gameOptions [i].render.automap.bSkybox, i, 0);
@@ -501,6 +502,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.ship.nColor, i, 0);
 
 		RP (gameOptions [i].render.particles.bAuxViews, i, 0);
+		RP (gameOptions [i].render.particles.bMonitors, i, 0);
 		RP (gameOptions [i].render.particles.bPlasmaTrails, i, 0);
 		RP (gameOptions [i].render.particles.bDecreaseLag, i, 0);
 		RP (gameOptions [i].render.particles.bDebris, i, 0);
@@ -1037,7 +1039,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.automap.bGrayOut", "1"},
 	{"gameOptions[0].render.automap.bCoronas", "1"},
 	{"gameOptions[0].render.automap.bSparks", "1"},
-	{"gameOptions[0].render.automap.bSmoke", "1"},
+	{"gameOptions[0].render.automap.bParticles", "1"},
 	{"gameOptions[0].render.automap.bLightnings", "1"},
 	{"gameOptions[0].render.automap.bTextured", "1"},
 	{"gameOptions[0].render.automap.bSkybox", "0"},
@@ -1062,6 +1064,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.color.bUseLightmaps", "0"},
 	{"gameOptions[0].render.color.nLightmapRange", "0"},
 	{"gameOptions[0].render.lightnings.bAuxViews", "0"},
+	{"gameOptions[0].render.lightnings.bMonitors", "0"},
 	{"gameOptions[0].render.lightnings.bDamage", "1"},
 	{"gameOptions[0].render.lightnings.bExplosions", "1"},
 	{"gameOptions[0].render.lightnings.bOmega", "1"},
@@ -1087,6 +1090,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.ship.bBullets", "1"},
 	{"gameOptions[0].render.ship.nColor", "1"},
 	{"gameOptions[0].render.particles.bAuxViews", "0"},
+	{"gameOptions[0].render.particles.bMonitors", "0"},
 	{"gameOptions[0].render.particles.bPlasmaTrails", "0"},
 	{"gameOptions[0].render.particles.bDecreaseLag", "0"},
 	{"gameOptions[0].render.particles.bDebris", "1"},
@@ -1999,7 +2003,7 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 156)
 		gameOptions [i].render.automap.nRange = (int) CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 157)
-		gameOptions [i].render.automap.bSmoke = (int) CFReadByte (pcf);
+		gameOptions [i].render.automap.bParticles = (int) CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 158)
 		gameOptions [i].render.nDebrisLife = CFReadInt (pcf);
 	if (gameStates.input.nPlrFileVersion >= 159) {
@@ -2546,7 +2550,7 @@ for (i = 0; i < 2; i++) {
 	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].nRadar, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.automap.nRange, &cf);
-	CFWriteByte ((sbyte) gameOptions [i].render.automap.bSmoke, &cf);
+	CFWriteByte ((sbyte) gameOptions [i].render.automap.bParticles, &cf);
 	CFWriteInt (gameOptions [i].render.nDebrisLife, &cf);
 	CFWriteByte ((sbyte) extraGameInfo [i].bMslLockIndicators, &cf);
 	CFWriteByte ((sbyte) gameOpts->render.cockpit.bRotateMslLockInd, &cf);

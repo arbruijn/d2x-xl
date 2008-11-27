@@ -1835,6 +1835,8 @@ const char *defaultGameTexts [][2] = {
 	{"Luft~Blasen erzeugen", "air B~ubbles"},
 	{"Luftblasen schwingen hin und her", "air bubbles w~Iggle"},
 	{"Luftblasen aendern die Form", "air bubbles w~Obble"},
+	{"Rauch auf ~onitoren zeigen", "show smoke on ~Monitors"},
+	{"Blitze auf ~Monitoren zeigen", "show smoke on ~Monitors"},
 #if 0
 	{"", ""},
 #endif
@@ -2496,6 +2498,8 @@ const char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt steigen im Wasser Blasen auf wo vom Autor\ndes Levels vorgesehen.", "If checked air bubbles rise under water where the level\nauthor built it in."},
 	{"Wenn angekreuzt, schweben Luftblasen beim Aufsteigen etwas\nhin und her.", "If checked air bubbles wiggle left and right while rising."},
 	{"Wenn angekreuzt, aendern Luftblasen staendig ihre From", "If checked air bubbles slightly change their shape while\nrising."},
+	{"Wenn angekreuzt, ist Rauch auch auf Monitoren sichtbar.", "If checked smoke is visible on monitors."},
+	{"Wenn angekreuzt, sind Blitze auch auf Monitoren sichtbar.", "If checked lightnings are visible on monitors."},
 #if 0
 	{"", ""},
 #endif

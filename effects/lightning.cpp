@@ -1692,7 +1692,7 @@ if (SHOW_LIGHTNINGS) {
 
 	for (i = m_nUsed; i >= 0; i = n) {
 		systemP = m_systems + i;
-		n = systemP->m_nNext;
+		n = systemP->GetNext ();
 		if (!(systemP->m_nKey [0] | systemP->m_nKey [1]))
 			systemP->Render (0, systemP->m_nLightnings, gameOpts->render.bDepthSort > 0, 0);
 		}
