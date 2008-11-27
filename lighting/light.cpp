@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "headlight.h"
 #include "light.h"
+#include "lightning.h"
 #include "network.h"
 
 #define CACHE_LIGHTS 0
@@ -763,7 +764,7 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.nLightingMethod) {
 	tLightningLight	*pll;
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
-		pll = gameData.lightnings.lights + nSegment;
+		pll = lightningManager.GetLight (nSegment);
 		if (pll->nFrame == gameData.app.nFrameCount)
 			ApplyLight (pll->nBrightness, nSegment, &pll->vPos, nRenderVertices, gameData.render.lights.vertices, -1, &pll->color);
 		}

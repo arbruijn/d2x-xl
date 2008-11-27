@@ -48,7 +48,7 @@ void MakeNearbyRobotSnipe (void)
 
 CreateBfsList (OBJSEG (gameData.objs.consoleP), bfsList, &nBfsLength, MNRS_SEG_MAX);
 for (i = 0; i < nBfsLength; i++) {
-	nObject = gameData.segs.objects [bfsList [i]];
+	nObject = SEGMENTS [bfsList [i]].objects;
 	//Assert (nObject >= 0);
 	while (nObject != -1) {
 		objP = OBJECTS + nObject;

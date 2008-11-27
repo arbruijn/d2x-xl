@@ -1640,6 +1640,9 @@ void save_movie_frame ()
 //if water or fire level, make occasional sound
 void DoAmbientSounds ()
 {
+if (gameStates.app.bPlayerIsDead)
+	return;
+
 	int	bLava, bWater;
 	short nSound;
 
@@ -1805,7 +1808,7 @@ if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]
 	tiEffects.bExec = 1;
 	}
 else {
-	DoLightningFrame ();
+	lightningManager.DoFrame ();
 	DoEnergySparkFrame ();
 	DoParticleFrame ();
 	}
@@ -2173,7 +2176,7 @@ CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
 void PowerupGrabCheatAll (void)
 {
 if (gameStates.app.tick40fps.bTick) {
-	short nObject = gameData.segs.objects [gameData.objs.consoleP->info.nSegment];
+	short nObject = SEGMENTS [gameData.objs.consoleP->info.nSegment].objects;
 	while (nObject != -1) {
 		if (OBJECTS [nObject].info.nType == OBJ_POWERUP)
 			PowerupGrabCheat (gameData.objs.consoleP, nObject);

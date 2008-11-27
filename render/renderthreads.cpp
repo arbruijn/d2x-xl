@@ -254,7 +254,7 @@ do {
 		G3_SLEEP (0);
 	DoParticleFrame ();
 	DoEnergySparkFrame ();
-	DoLightningFrame ();
+	lightningManager.DoFrame ();
 	tiEffects.bExec = 0;
 	} while (!tiEffects.bDone);
 return 0;

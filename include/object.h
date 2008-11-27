@@ -99,9 +99,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_MORPH        6   // a robot being morphed
 #define RT_WEAPON_VCLIP 7   // a weapon that renders as a tVideoClip
 #define RT_THRUSTER		8	 // like afterburner, but doesn't cast light
-#define RT_EXPLBLAST	9	 // white explosion light blast
-#define RT_SHRAPNELS	10	 // white explosion light blast
-#define RT_SMOKE		11
+#define RT_EXPLBLAST		9	 // white explosion light blast
+#define RT_SHRAPNELS		10	 // white explosion light blast
+#define RT_SMOKE			11
 #define RT_LIGHTNING    12
 
 #define SMOKE_ID			0
@@ -170,10 +170,14 @@ class CShortPos {
 	private:
 		tShortPos	m_pos;
 	public:
-		inline sbyte& Orient(int i) { return m_pos.orient [i]; }
-		inline short& Pos (int i) { return m_pos.pos [i]; }
-		inline short& Segment () { return m_pos.nSegment; }
-		inline short& Vel (int i) { return m_pos.vel [i]; }
+		inline sbyte GetOrient (int i) { return m_pos.orient [i]; }
+		inline short GetPos (int i) { return m_pos.pos [i]; }
+		inline short GetSegment (void) { return m_pos.nSegment; }
+		inline short GetVel (int i) { return m_pos.vel [i]; }
+		inline void SetOrient (sbyte orient, int i) { m_pos.orient [i] = orient; }
+		inline void SetPos (short pos, int i) { m_pos.pos [i] = pos; }
+		inline void SetSegment (short nSegment) { m_pos.nSegment = nSegment; }
+		inline void SetVel (short vel, int i) { m_pos.vel [i] = vel; }
 };
 
 // This is specific to the tShortPos extraction routines in gameseg.c.
@@ -217,15 +221,25 @@ class CPhysicsInfo {
 	private:
 		tPhysicsInfo	m_info;
 	public:
-		inline vmsVector& Velocity () { return m_info.velocity; }
-		inline vmsVector& Thrust () { return m_info.thrust; }
-		inline vmsVector& RotVel () { return m_info.rotVel; }
-		inline vmsVector& RotThrust () { return m_info.rotThrust; }
-		inline fix& Mass () { return m_info.mass; }
-		inline fix& Drag () { return m_info.drag; }
-		inline fix& Brakes () { return m_info.brakes; }
-		inline fixang& TurnRoll () { return m_info.turnRoll; }
-		inline ushort& Flags () { return m_info.flags; }
+		inline tPhysicsInfo* GetInfo (void) { return &m_info; };
+		inline vmsVector GetVelocity (void) { return m_info.velocity; }
+		inline vmsVector GetThrust (void) { return m_info.thrust; }
+		inline vmsVector GetRotVel (void) { return m_info.rotVel; }
+		inline vmsVector GetRotThrust (void) { return m_info.rotThrust; }
+		inline fix GetMass (void) { return m_info.mass; }
+		inline fix GetDrag (void) { return m_info.drag; }
+		inline fix GetBrakes (void) { return m_info.brakes; }
+		inline fixang GetTurnRoll (void) { return m_info.turnRoll; }
+		inline ushort GetFlags (void) { return m_info.flags; }
+		inline void SetVelocity (vmsVector* velocity) { m_info.velocity = *velocity; }
+		inline void SetThrust (vmsVector* thrust) { m_info.thrust = *thrust; }
+		inline void SetRotVel (vmsVector* rotVel) { m_info.rotVel = *rotVel; }
+		inline void SetRotThrust (vmsVector* rotThrust) { m_info.rotThrust = *rotThrust; }
+		inline void SetMass (fix mass) { m_info.mass = mass; }
+		inline void SetDrag (fix drag) { m_info.drag = drag; }
+		inline void SetBrakes (fix brakes) { m_info.brakes = brakes; }
+		inline void SetTurnRoll (fixang turnRoll) { m_info.turnRoll = turnRoll; }
+		inline void SetFlags (ushort flags) { m_info.flags = flags; }
 };
 // stuctures for different kinds of simulation
 
@@ -237,23 +251,31 @@ typedef struct nParentInfo {
 
 typedef struct tLaserInfo  {
 	tParentInfo	parent;
-	fix     xCreationTime;      // Absolute time of creation.
-	short   nLastHitObj;       // For persistent weapons (survive tObject collision), tObject it most recently hit.
-	short   nHomingTarget;				// Object this tObject is tracking.
-	fix     xScale;        // Power if this is a fusion bolt (or other super weapon to be added).
+	fix			xCreationTime;      // Absolute time of creation.
+	short			nLastHitObj;       // For persistent weapons (survive tObject collision), tObject it most recently hit.
+	short			nHomingTarget;				// Object this tObject is tracking.
+	fix			xScale;        // Power if this is a fusion bolt (or other super weapon to be added).
 } tLaserInfo;
 
 class CLaserInfo {
 	private:
 		tLaserInfo	m_info;
 	public:
-		inline short& ParentType () { return m_info.parent.nType; }
-		inline short& ParentObj () { return m_info.parent.nObject; }
-		inline int& ParentSig () { return m_info.parent.nSignature; }
-		inline short& LastHitObj () { return m_info.nLastHitObj; }
-		inline short& MslLock () { return m_info.nHomingTarget; }
-		inline fix& CreationTime () { return m_info.xCreationTime; }
-		inline fix& Multiplier () { return m_info.xScale; }
+		inline tLaserInfo* GetInfo (void) { return &m_info; };
+		inline short GetParentType (void) { return m_info.parent.nType; }
+		inline short GetParentObj (void) { return m_info.parent.nObject; }
+		inline int GetParentSig (void) { return m_info.parent.nSignature; }
+		inline short GetLastHitObj (void) { return m_info.nLastHitObj; }
+		inline short GetMslLock (void) { return m_info.nHomingTarget; }
+		inline fix GetCreationTime (void) { return m_info.xCreationTime; }
+		inline fix GetScale (void) { return m_info.xScale; }
+		inline void SetParentType (short nType) { m_info.parent.nType = nType; }
+		inline void SetParentObj (short nObject) { m_info.parent.nObject = nObject; }
+		inline void SetParentSig (int nSignature) { m_info.parent.nSignature = nSignature; }
+		inline void SetLastHitObj (short nLastHitObj) { m_info.nLastHitObj = nLastHitObj; }
+		inline void SetMslLock (short nHomingTarget) { m_info.nHomingTarget = nHomingTarget; }
+		inline void SetCreationTime (fix xCreationTime) { m_info.xCreationTime = xCreationTime; }
+		inline void SetScale (fix xScale) { m_info.xScale = xScale; }
 };
 
 typedef struct tAttachedObjInfo {
@@ -262,6 +284,19 @@ typedef struct tAttachedObjInfo {
 	short	nNext;	// next explosion in attach list
 } tAttachedObjInfo;
 
+class CAttachedInfo {
+	private:
+		tAttachedObjInfo	m_info;
+	public:
+		inline tAttachedObjInfo* GetInfo (void) { return &m_info; };
+		inline short GetParent (void) { return m_info.nParent; }
+		inline short GetPrevAttached (void) { return m_info.nPrev; }
+		inline short GetNextAttached (void) { return m_info.nNext; }
+		inline short SetParent (short nParent) { m_info.nParent = nParent; }
+		inline short SetPrevAttached (short nPrev) { m_info.nPrev = nPrev; }
+		inline short SetNextAttached (short nNext) { m_info.nNext = nNext; }
+};
+
 typedef struct tExplosionInfo {
     fix     nSpawnTime;       // when lifeleft is < this, spawn another
     fix     nDeleteTime;      // when to delete tObject
@@ -269,16 +304,17 @@ typedef struct tExplosionInfo {
 	 tAttachedObjInfo	attached;
 } tExplosionInfo;
 
-class CExplosionInfo {
+class CExplosionInfo : public CAttachedInfo {
 	private:
 		tExplosionInfo	m_info;
 	public:
-		inline fix& SpawnTime () { return m_info.nSpawnTime; }
-		inline fix& DeleteTime () { return m_info.nDeleteTime; }
-		inline short& DeleteObj () { return m_info.nDeleteObj; }
-		inline short& Parent () { return m_info.attached.nParent; }
-		inline short& PrevAttached () { return m_info.attached.nPrev; }
-		inline short& NextAttached () { return m_info.attached.nNext; }
+		inline tExplosionInfo* GetInfo (void) { return &m_info; };
+		inline fix GetSpawnTime (void) { return m_info.nSpawnTime; }
+		inline fix GetDeleteTime (void) { return m_info.nDeleteTime; }
+		inline short GetDeleteObj (void) { return m_info.nDeleteObj; }
+		inline fix SetSpawnTime (fix nSpawnTime) { m_info.nSpawnTime = nSpawnTime; }
+		inline fix SetDeleteTime (fix nDeleteTime) { m_info.nDeleteTime = nDeleteTime; }
+		inline short SetDeleteObj (fix nDeleteObj) { m_info.nDeleteObj = nDeleteObj; }
 };
 
 typedef struct tObjLightInfo {
@@ -292,10 +328,15 @@ class CObjLightInfo {
 	private:
 		tObjLightInfo	m_info;
 	public:
-		inline fix& Intensity () { return m_info.intensity; }
-		inline short& Segment () { return m_info.nSegment; }
-		inline short& Objects () { return m_info.nObjects; }
-		inline tRgbaColorf& Color () { return m_info.color; }
+		inline tObjLightInfo* GetInfo (void) { return &m_info; };
+		inline fix GetIntensity (void) { return m_info.intensity; }
+		inline short GetSegment (void) { return m_info.nSegment; }
+		inline short GetObjects (void) { return m_info.nObjects; }
+		inline tRgbaColorf* GetColor (void) { return &m_info.color; }
+		inline void SetIntensity (fix intensity) { m_info.intensity = intensity; }
+		inline void SetSegment (short nSegment) { m_info.nSegment = nSegment; }
+		inline void SetObjects (short nObjects) { m_info.nObjects = nObjects; }
+		inline void SetColor (tRgbaColorf *color) { m_info.color = *color; }
 };
 
 typedef struct tPowerupInfo {
@@ -308,9 +349,13 @@ class CPowerupInfo {
 	private:
 		tPowerupInfo	m_info;
 	public:
-		inline int& Count () { return m_info.nCount; }
-		inline fix& CreationTime () { return m_info.xCreationTime; }
-		inline int& Flags () { return m_info.nFlags; }
+		inline tPowerupInfo* GetInfo (void) { return &m_info; };
+		inline int GetCount (void) { return m_info.nCount; }
+		inline fix GetCreationTime (void) { return m_info.xCreationTime; }
+		inline int GetFlags (void) { return m_info.nFlags; }
+		inline void SetCount (int nCount) { m_info.nCount = nCount; }
+		inline void SetCreationTime (fix xCreationTime) { m_info.xCreationTime = xCreationTime; }
+		inline void SetFlags (int nFlags) { m_info.nFlags = nFlags; }
 };
 
 typedef struct tVClipInfo {
@@ -325,10 +370,11 @@ class CVClipInfo {
 	private:
 		tVClipInfo	m_info;
 	public:
-		inline int& ClipIndex () { return m_info.nClipIndex; }
-		inline fix& TotalTime () { return m_info.xTotalTime; }
-		inline fix& FrameTime () { return m_info.xFrameTime; }
-		inline sbyte& CurFrame () { return m_info.nCurFrame; }
+		inline tVClipInfo* GetInfo (void) { return &m_info; };
+		inline int GetClipIndex (void) { return m_info.nClipIndex; }
+		inline fix GetTotalTime (void) { return m_info.xTotalTime; }
+		inline fix GetFrameTime (void) { return m_info.xFrameTime; }
+		inline sbyte GetCurFrame (void) { return m_info.nCurFrame; }
 };
 
 #define SMOKE_TYPE_SMOKE	0
@@ -352,14 +398,15 @@ class CSmokeInfo {
 	private:
 		tParticleInfo	m_info;
 	public:
-		inline int& Life () { return m_info.nLife; }
-		inline int& Size (int i) { return m_info.nSize [i]; }
-		inline int& Parts () { return m_info.nParts; }
-		inline int& Speed () { return m_info.nSpeed; }
-		inline int& Drift () { return m_info.nDrift; }
-		inline int& Brightness () { return m_info.nBrightness; }
-		inline tRgbaColorb& Color () { return m_info.color; }
-		inline char& Side () { return m_info.nSide; }
+		inline tParticleInfo* GetInfo (void) { return &m_info; };
+		inline int GetLife (void) { return m_info.nLife; }
+		inline int GetSize (int i) { return m_info.nSize [i]; }
+		inline int GetParts (void) { return m_info.nParts; }
+		inline int GetSpeed (void) { return m_info.nSpeed; }
+		inline int GetDrift (void) { return m_info.nDrift; }
+		inline int GetBrightness (void) { return m_info.nBrightness; }
+		inline tRgbaColorb GetColor (void) { return m_info.color; }
+		inline char GetSide (void) { return m_info.nSide; }
 };
 
 typedef struct tLightningInfo {
@@ -390,25 +437,26 @@ class CLightningInfo {
 	private:
 		tLightningInfo	m_info;
 	public:
-		inline int& Life () { return m_info.nLife; }
-		inline int& Delay () { return m_info.nDelay; }
-		inline int& Length () { return m_info.nLength; }
-		inline int& Amplitude () { return m_info.nAmplitude; }
-		inline int& Offset () { return m_info.nOffset; }
-		inline short& Lightnings () { return m_info.nLightnings; }
-		inline short& Id () { return m_info.nId; }
-		inline short& Target () { return m_info.nTarget; }
-		inline short& Nodes () { return m_info.nNodes; }
-		inline short& Children () { return m_info.nChildren; }
-		inline short& Steps () { return m_info.nSteps; }
-		inline char& Angle () { return m_info.nAngle; }
-		inline char& Style () { return m_info.nStyle; }
-		inline char& Smoothe () { return m_info.nSmoothe; }
-		inline char& Clamp () { return m_info.bClamp; }
-		inline char& Plasma () { return m_info.bPlasma; }
-		inline char& Sound () { return m_info.bSound; }
-		inline char& Random () { return m_info.bRandom; }
-		inline char& InPlane () { return m_info.bInPlane; }
+		inline tLightningInfo* GetInfo (void) { return &m_info; };
+		inline int GetLife (void) { return m_info.nLife; }
+		inline int GetDelay (void) { return m_info.nDelay; }
+		inline int GetLength (void) { return m_info.nLength; }
+		inline int GetAmplitude (void) { return m_info.nAmplitude; }
+		inline int GetOffset (void) { return m_info.nOffset; }
+		inline short GetLightnings (void) { return m_info.nLightnings; }
+		inline short GetId (void) { return m_info.nId; }
+		inline short GetTarget (void) { return m_info.nTarget; }
+		inline short GetNodes (void) { return m_info.nNodes; }
+		inline short GetChildren (void) { return m_info.nChildren; }
+		inline short GetSteps (void) { return m_info.nSteps; }
+		inline char GetAngle (void) { return m_info.nAngle; }
+		inline char GetStyle (void) { return m_info.nStyle; }
+		inline char GetSmoothe (void) { return m_info.nSmoothe; }
+		inline char GetClamp (void) { return m_info.bClamp; }
+		inline char GetPlasma (void) { return m_info.bPlasma; }
+		inline char GetSound (void) { return m_info.bSound; }
+		inline char GetRandom (void) { return m_info.bRandom; }
+		inline char GetInPlane (void) { return m_info.bInPlane; }
 };
 
 // structures for different kinds of rendering
@@ -426,11 +474,17 @@ class CPolyObjInfo {
 	private:
 		tPolyObjInfo	m_info;
 	public:
-		inline int& Model() { return m_info.nModel; }
-		inline vmsAngVec& AnimAngles(int i) { return m_info.animAngles [i]; }
-		inline int& SubObjFlags() { return m_info.nSubObjFlags; }
-		inline int& TexOverride() { return m_info.nTexOverride; }
-		inline int& AltTextures() { return m_info.nAltTextures; }
+		inline tPolyObjInfo* GetInfo (void) { return &m_info; };
+		inline int GetModel (void) { return m_info.nModel; }
+		inline vmsAngVec* GetAnimAngles (int i) { return m_info.animAngles + i; }
+		inline int GetSubObjFlags (void) { return m_info.nSubObjFlags; }
+		inline int GetTexOverride (void) { return m_info.nTexOverride; }
+		inline int GetAltTextures (void) { return m_info.nAltTextures; }
+		inline void SetModel (int nModel) { m_info.nModel = nModel; }
+		inline void SetAnimAngles (const vmsAngVec *vAngles, int i) { m_info.animAngles [i] = *vAngles; }
+		inline void SetSubObjFlags (int nSubObjFlags) { m_info.nSubObjFlags; }
+		inline void SetTexOverride (int nTexOverride) { m_info.nTexOverride; }
+		inline void SetAltTextures (int nAltTextures) { m_info.nAltTextures; }
 };
 
 typedef struct tTransformation {
@@ -442,8 +496,10 @@ class CTransformation {
 private:
 	tTransformation	m_t;
 public:
-	inline vmsVector& Pos() { return m_t.vPos; }
-	inline vmsMatrix& Orient() { return m_t.mOrient; }
+	inline vmsVector* GetPos (void) { return &m_t.vPos; }
+	inline vmsMatrix* GetOrient (void) { return &m_t.mOrient; }
+	inline void SetPos (const vmsVector* vPos) { m_t.vPos = *vPos; }
+	inline void SetOrient (const vmsMatrix* mOrient) { m_t.mOrient = *mOrient ; }
 };
 
 typedef struct tObjContainerInfo {
@@ -456,9 +512,13 @@ class CObjContainerInfo {
 	private:
 		tObjContainerInfo	m_info;
 	public:
-		inline sbyte& ContainsType () { return m_info.nType; }
-		inline sbyte& ContainsId () { return m_info.nId; }
-		inline sbyte& ContainsCount () { return m_info.nCount; }
+		inline tObjContainerInfo* GetInfo (void) { return &m_info; };
+		inline sbyte GetContainsType (void) { return m_info.nType; }
+		inline sbyte GetContainsId (void) { return m_info.nId; }
+		inline sbyte GetContainsCount (void) { return m_info.nCount; }
+		inline void SetContainsType (byte nType) { m_info.nType = nType; }
+		inline void SetContainsId (byte nId) { m_info.nId = nId; }
+		inline void SetContainsCount (byte nCount) { m_info.nCount = nCount; }
 };
 
 typedef struct tObjectInfo {
@@ -491,26 +551,45 @@ class CObjectInfo : public CTransformation, public CObjContainerInfo {
 	public:
 		CObjectInfo () { memset (&m_info, 0, sizeof (m_info)); }
 
-		inline int& Signature () { return m_info.nSignature; }
-		inline ubyte& Id () { return m_info.nId; }
-		inline fix& Size () { return m_info.xSize; }
-		inline fix& Shields () { return m_info.xShields; }
-		inline fix& LifeLeft () { return m_info.xLifeLeft; }
-		inline short& Segment () { return m_info.nSegment; }
-		inline short& AttachedObj () { return m_info.nAttachedObj; }
-		inline short& NextInSeg () { return m_info.nNextInSeg; }
-		inline short& PrevInSeg () { return m_info.nPrevInSeg; }
-		inline sbyte& Creator () { return m_info.nCreator; }
-		inline ubyte& Type () { return m_info.nType; }
-		inline ubyte& ControlType () { return m_info.controlType; }
-		inline ubyte& MovementType () { return m_info.movementType; }
-		inline ubyte& RenderType () { return m_info.renderType; }
-		inline ubyte& Flags () { return m_info.nFlags; }
-		inline vmsVector& LastPos () { return m_info.vLastPos; }
+		inline tObjectInfo* GetInfo (void) { return &m_info; }; 
+		inline void GetInfo (tObjectInfo* info) { m_info = *info; }; 
+		inline int GetSignature () { return m_info.nSignature; }
+		inline ubyte GetId () { return m_info.nId; }
+		inline fix GetSize () { return m_info.xSize; }
+		inline fix GetShields () { return m_info.xShields; }
+		inline fix GetLifeLeft () { return m_info.xLifeLeft; }
+		inline short GetSegment () { return m_info.nSegment; }
+		inline short GetAttachedObj () { return m_info.nAttachedObj; }
+		inline short GetNextInSeg () { return m_info.nNextInSeg; }
+		inline short GetPrevInSeg () { return m_info.nPrevInSeg; }
+		inline sbyte GetCreator () { return m_info.nCreator; }
+		inline ubyte GetType () { return m_info.nType; }
+		inline ubyte GetControlType () { return m_info.controlType; }
+		inline ubyte GetMovementType () { return m_info.movementType; }
+		inline ubyte GetRenderType () { return m_info.renderType; }
+		inline ubyte GetFlags () { return m_info.nFlags; }
+		inline vmsVector GetLastPos () { return m_info.vLastPos; }
+
+		inline void SetSignature (int nSignature) { m_info.nSignature = nSignature; }
+		inline void SetId (ubyte nId) { m_info.nId = nId; }
+		inline void SetSize (fix xSize) { m_info.xSize = xSize; }
+		inline void SetShields (fix xShields) { m_info.xShields = xShields; }
+		inline void SetLifeLeft (fix xLifeLeft) { m_info.xLifeLeft = xLifeLeft; }
+		inline void SetSegment (short nSegment) { m_info.nSegment = nSegment; }
+		inline void SetAttachedObj (short nAttachedObj) { m_info.nAttachedObj = nAttachedObj; }
+		inline void SetNextInSeg (short nNextInSeg) { m_info.nNextInSeg = nNextInSeg; }
+		inline void SetPrevInSeg ( short nPrevInSeg) { m_info.nPrevInSeg = nPrevInSeg; }
+		inline void SetCreator (sbyte nCreator) { m_info.nCreator = nCreator; }
+		inline void SetType (ubyte nType) { m_info.nType = nType; }
+		inline void SetControlType (ubyte controlType) { m_info.controlType = controlType; }
+		inline void SetMovementType (ubyte movementType) { m_info.movementType = movementType; }
+		inline void SetRenderType (ubyte renderType) { m_info.renderType = renderType; }
+		inline void SetFlags (ubyte nFlags) { m_info.nFlags = nFlags; }
+		inline void SetLastPos (const vmsVector *vLastPos) { m_info.vLastPos = *vLastPos; }
 };
 
 // TODO get rid of the structs (former unions) and the union
-typedef struct tCoreObject {
+typedef struct tBaseObject {
 	tObjectInfo			info;
 	// movement info, determined by MOVEMENT_TYPE
 	union {
@@ -529,13 +608,13 @@ typedef struct tCoreObject {
 	union {
 		tPolyObjInfo   polyObjInfo;      // polygon model
 		tVClipInfo     vClipInfo;     // tVideoClip
-		tParticleInfo		particleInfo;
+		tParticleInfo	particleInfo;
 		tLightningInfo	lightningInfo;
 		} rType;
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;
 #endif
-} tCoreObject;
+} tBaseObject;
 
 struct tObject;
 
@@ -543,33 +622,55 @@ typedef struct tObjListLink {
 	tObject	*prev, *next;
 } tObjListLink;
 
-typedef struct tObject : public tCoreObject {
+typedef struct tShotInfo {
+	short					nObject;
+	int					nSignature;
+} tShotInfo;
+
+typedef struct tObject : public tBaseObject {
 	tObjListLink	links [3];		// link into list of objects in same category (0: all, 1: same type, 2: same class)
 	ubyte				nLinkedType;
+	ubyte				nTracers;
+	fix				xCreationTime;
+	fix				xTimeLastHit;
+	tShotInfo		shots;
+	vmsVector		vStartVel;
 } tObject;
 
 class CObject : public CObjectInfo {
 	private:
-		CObject	*m_prevObjP, *m_nextObjP;
+		short				m_nObject;
+		CObject			*m_prev, *m_next;
+		tObjListLink	m_links [3];		// link into list of objects in same category (0: all, 1: same type, 2: same class)
+		ubyte				m_nLinkedType;
+		ubyte				m_nTracers;
+		fix				m_xCreationTime;
+		fix				m_xTimeLastHit;
+		tShotInfo		m_shots;
+		vmsVector		*m_vStartVel;
 
 	public:
 		CObject ();
 		~CObject ();
 		// initialize a new tObject.  adds to the list for the given tSegment
 		// returns the tObject number
-		static int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
-								 const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType, int bIgnoreLimits);
+		int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
+						const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 
-		inline CObject*& Prev () { return m_prevObjP; }
-		inline CObject*& Next () { return m_nextObjP; }
-		inline void Kill (void) { Flags () |= OF_SHOULD_BE_DEAD; }
-		inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
+		inline CObject* GetPrev (void) { return m_prev; }
+		inline CObject* GetNext (void) { return m_next; }
+		inline void SetPrev (CObject *prev) { m_prev = prev; }
+		inline void SetNext (CObject *next) { m_next = next; }
+		inline void Kill (void) { SetFlags (GetFlags () | OF_SHOULD_BE_DEAD); }
+		inline bool Exists (void) { return !(GetFlags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
 		// unlinks an tObject from a tSegment's list of objects
-		void Link (short nSegment);
+		void Link (void);
 		void Unlink (void);
+		void LinkToSeg (int nSegment);
 		void Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
 							  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
-		void ToStruct (tCoreObject *objP);
+		void ToBaseObject (tBaseObject *objP);
+		inline short ObjIdx (void) { return m_nObject; }
 };
 
 
@@ -578,7 +679,7 @@ class CRobotObject : public CObject, public CPhysicsInfo, public CAIStaticInfo, 
 		CRobotObject () {}
 		~CRobotObject () {}
 		void Initialize (void) {};
-		void ToStruct (tCoreObject *objP);
+		void ToBaseObject (tBaseObject *objP);
 };
 
 class CPowerupObject : public CObject, public CPhysicsInfo, public CPolyObjInfo {
@@ -586,7 +687,7 @@ class CPowerupObject : public CObject, public CPhysicsInfo, public CPolyObjInfo 
 		CPowerupObject () {}
 		~CPowerupObject () {}
 		void Initialize (void) {};
-		void ToStruct (tCoreObject *objP);
+		void ToBaseObject (tBaseObject *objP);
 };
 
 class CWeaponObject : public CObject, public CPhysicsInfo, public CPolyObjInfo {
@@ -594,7 +695,7 @@ class CWeaponObject : public CObject, public CPhysicsInfo, public CPolyObjInfo {
 		CWeaponObject () {}
 		~CWeaponObject () {}
 		void Initialize (void) {};
-		void ToStruct (tCoreObject *objP);
+		void ToBaseObject (tBaseObject *objP);
 };
 
 class CLightObject : public CObject, public CObjLightInfo {
@@ -602,7 +703,7 @@ class CLightObject : public CObject, public CObjLightInfo {
 		CLightObject () {};
 		~CLightObject () {};
 		void Initialize (void) {};
-		void ToStruct (tCoreObject *objP);
+		void ToBaseObject (tBaseObject *objP);
 };
 
 class CLightningObject : public CObject, public CLightningInfo {
@@ -610,14 +711,15 @@ class CLightningObject : public CObject, public CLightningInfo {
 		CLightningObject () {};
 		~CLightningObject () {};
 		void Initialize (void) {};
-		void ToStruct (tCoreObject *objP);
+		void ToBaseObject (tBaseObject *objP);
 };
 
-class CSmokeObject : public CObject, public CSmokeInfo {
+class CParticleObject : public CObject, public CSmokeInfo {
 	public:
-		CSmokeObject () {};
-		~CSmokeObject () {};
+		CParticleObject () {};
+		~CParticleObject () {};
 		void Initialize (void) {};
+		void ToBaseObject (tBaseObject *objP);
 };
 
 

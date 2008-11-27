@@ -2,6 +2,7 @@
 #define _TRANSPRENDER_H
 
 #include "particles.h"
+#include "lightning.h"
 
 //------------------------------------------------------------------------------
 
@@ -14,7 +15,6 @@ typedef enum tTranspItemType {
 	tiSphere,
 	tiParticle,
 	tiLightning,
-	tiLightningSegment,
 	tiThruster,
 	tiObject,
 	tiPoly,
@@ -80,20 +80,9 @@ typedef struct tTranspSphere {
 } tTranspSphere;
 
 typedef struct tTranspLightning {
-	tLightning			*lightning;
-	short					nLightnings;
+	CLightning			*lightning;
 	short					nDepth;
 } tTranspLightning;
-
-typedef struct tTranspLightningSegment {
-	fVector					vLine [2];
-	fVector					vPlasma [4];
-	tRgbaColorf				color;
-	short						nDepth;
-	char						bStart;
-	char						bEnd;
-	char						bPlasma;
-} tTranspLightningSegment;
 
 typedef struct tTranspLightTrail {
 	grsBitmap				*bmP;
@@ -119,7 +108,6 @@ typedef struct tTranspItem {
 		tTranspParticle			particle;
 		tTranspSphere				sphere;
 		tTranspLightning			lightning;
-		tTranspLightningSegment	lightningSegment;
 		tTranspLightTrail			thruster;
 	} item;
 } tTranspItem;
@@ -176,9 +164,7 @@ int TIAddSprite (grsBitmap *bmP, const vmsVector& position, tRgbaColorf *color,
 int TIAddSpark (const vmsVector& position, char nType, int nSize, char nFrame);
 int TIAddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, tObject *objP);
 int TIAddParticle (CParticle *particle, float fBrightness, int nThread);
-int TIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);
-int TIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color,
-									char bPlasma, char bStart, char bEnd, short nDepth);
+int TIAddLightning (CLightning *lightningP, short nDepth);
 int TIAddLightTrail (grsBitmap *bmP, fVector *vThruster, tTexCoord2f *tcThruster, fVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP);
 void RenderTranspItems (void);
 void StartRenderThreads (void);

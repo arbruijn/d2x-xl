@@ -2337,8 +2337,7 @@ UseSpherePulse (&gameData.render.shield, &gameData.render.shield.pulse);
 SetSpherePulse (&gameData.render.monsterball.pulse, 0.005f, 0.9f);
 UseSpherePulse (&gameData.render.monsterball, &gameData.render.monsterball.pulse);
 gameData.particles.nLastType = -1;
-gameData.lightnings.iFree = -1;
-gameData.lightnings.iUsed = -1;
+lightningManager.Init ();
 gameData.omega.xCharge [0] = 
 gameData.omega.xCharge [1] = 
 gameData.omega.xMaxCharge = DEFAULT_MAX_OMEGA_CHARGE;
@@ -2361,7 +2360,6 @@ GETMEM (tSegment, gameData.segs.segments, MAX_SEGMENTS, 0);
 GETMEM (tSegment2, gameData.segs.segment2s, MAX_SEGMENTS, 0);
 GETMEM (xsegment, gameData.segs.xSegments, MAX_SEGMENTS, 0);
 GETMEM (g3sPoint, gameData.segs.points, 65536, 0);
-GETMEM (short, gameData.segs.objects, MAX_SEGMENTS, 0);
 #if CALC_SEGRADS
 GETMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS, 0);
 GETMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS, 0);
@@ -2394,7 +2392,6 @@ void AllocObjectData (void)
 GETMEM (tObject, gameData.objs.objects, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.freeList, MAX_OBJECTS, 0);
 GETMEM (tLightObjId, gameData.objs.lightObjs, MAX_OBJECTS, (char) 0xff);
-GETMEM (tShotInfo, gameData.objs.shots, MAX_OBJECTS, (char) 0xff);
 GETMEM (short, gameData.objs.parentObjs, MAX_OBJECTS, (char) 0xff);
 GETMEM (tObjectRef, gameData.objs.childObjs, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.firstChild, MAX_OBJECTS, (char) 0xff);
@@ -2402,13 +2399,9 @@ GETMEM (tObject, gameData.objs.init, MAX_OBJECTS, 0);
 GETMEM (tObjDropInfo, gameData.objs.dropInfo, MAX_OBJECTS, 0);
 GETMEM (tSpeedBoostData, gameData.objs.speedBoost, MAX_OBJECTS, 0);
 GETMEM (vmsVector, gameData.objs.vRobotGoals, MAX_OBJECTS, 0);
-GETMEM (vmsVector, gameData.objs.vStartVel, MAX_OBJECTS, 0);
 GETMEM (fix, gameData.objs.xLastAfterburnerTime, MAX_OBJECTS, 0);
-GETMEM (fix, gameData.objs.xCreationTime, MAX_OBJECTS, 0);
-GETMEM (fix, gameData.objs.xTimeLastHit, MAX_OBJECTS, 0);
 GETMEM (fix, gameData.objs.xLight, MAX_OBJECTS, 0);
 GETMEM (int, gameData.objs.nLightSig, MAX_OBJECTS, 0);
-GETMEM (ubyte, gameData.objs.nTracers, MAX_OBJECTS, 0);
 GETMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS, 0);
 GETMEM (tObjectViewData, gameData.objs.viewData, MAX_OBJECTS, (char) 0xFF);
@@ -2426,8 +2419,6 @@ GETMEM (time_t, gameData.particles.objExplTime, MAX_OBJECTS, 0);
 
 void AllocLightningData (void)
 {
-GETMEM (short, gameData.lightnings.objects, MAX_OBJECTS, (char) 0xff);
-GETMEM (tLightningLight, gameData.lightnings.lights, MAX_SEGMENTS, (char) 0xff);
 }
 
 // ----------------------------------------------------------------------------
@@ -2559,7 +2550,6 @@ FREEMEM (tSegment, gameData.segs.segments, MAX_SEGMENTS);
 FREEMEM (tSegment2, gameData.segs.segment2s, MAX_SEGMENTS);
 FREEMEM (xsegment, gameData.segs.xSegments, MAX_SEGMENTS);
 FREEMEM (g3sPoint, gameData.segs.points, MAX_VERTICES);
-FREEMEM (short, gameData.segs.objects, MAX_SEGMENTS);
 #if CALC_SEGRADS
 FREEMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS);
 FREEMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS);
@@ -2591,21 +2581,15 @@ void FreeObjectData (void)
 FREEMEM (tObject, gameData.objs.objects, MAX_OBJECTS);
 FREEMEM (short, gameData.objs.freeList, MAX_OBJECTS);
 FREEMEM (tLightObjId, gameData.objs.lightObjs, MAX_OBJECTS);
-FREEMEM (tShotInfo, gameData.objs.shots, MAX_OBJECTS);
-FREEMEM (short, gameData.objs.parentObjs, MAX_OBJECTS);
 FREEMEM (tObjectRef, gameData.objs.childObjs, MAX_OBJECTS);
 FREEMEM (short, gameData.objs.firstChild, MAX_OBJECTS);
 FREEMEM (tObject, gameData.objs.init, MAX_OBJECTS);
 FREEMEM (tObjDropInfo, gameData.objs.dropInfo, MAX_OBJECTS);
 FREEMEM (tSpeedBoostData, gameData.objs.speedBoost, MAX_OBJECTS);
 FREEMEM (vmsVector, gameData.objs.vRobotGoals, MAX_OBJECTS);
-FREEMEM (vmsVector, gameData.objs.vStartVel, MAX_OBJECTS);
 FREEMEM (fix, gameData.objs.xLastAfterburnerTime, MAX_OBJECTS);
-FREEMEM (fix, gameData.objs.xCreationTime, MAX_OBJECTS);
-FREEMEM (fix, gameData.objs.xTimeLastHit, MAX_OBJECTS);
 FREEMEM (fix, gameData.objs.xLight, MAX_OBJECTS);
 FREEMEM (int, gameData.objs.nLightSig, MAX_OBJECTS);
-FREEMEM (ubyte, gameData.objs.nTracers, MAX_OBJECTS);
 FREEMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS);
 FREEMEM (short, gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS);
 FREEMEM (tObjectViewData, gameData.objs.viewData, MAX_OBJECTS);
@@ -2624,9 +2608,7 @@ FREEMEM (time_t, gameData.particles.objExplTime, MAX_OBJECTS);
 void FreeLightningData (void)
 {
 PrintLog ("unloading lightning data\n");
-DestroyAllLightnings (1);
-FREEMEM (tLightningLight, gameData.lightnings.lights, MAX_SEGMENTS);
-FREEMEM (short, gameData.lightnings.objects, MAX_OBJECTS);
+lightningManager.DestroyAll (1);
 }
 
 // ----------------------------------------------------------------------------

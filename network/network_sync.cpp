@@ -143,7 +143,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 		NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
 		NW_SET_BYTES (objBuf, bufI, objP, sizeof (tObject));
 		if (gameStates.multi.nGameType >= IPX_GAME)
-			SwapObject ((tObject *) (objBuf + bufI - sizeof (tCoreObject)));
+			SwapObject ((tObject *) (objBuf + bufI - sizeof (tBaseObject)));
 		}
 	if (nObjFrames) {	// Send any objects we've buffered
 		syncP->objs.nCurrent = i;	

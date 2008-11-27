@@ -443,12 +443,12 @@ int OpenableDoorsInSegment (short nSegment)
 int CheckObjectObjectIntersection (vmsVector *pos, fix size, tSegment *segP)
 {
 //	If this would intersect with another tObject (only check those in this tSegment), then try to move.
-short nObject = gameData.segs.objects [SEG_IDX (segP)];
+short nObject = segP->objects;
 tObject *objP;
 while (nObject != -1) {
 	objP = OBJECTS + nObject;
 	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR)) {
-		if (vmsVector::Dist(*pos, objP->info.position.vPos) < size + objP->info.xSize)
+		if (vmsVector::Dist (*pos, objP->info.position.vPos) < size + objP->info.xSize)
 			return 1;
 		}
 	nObject = objP->info.nNextInSeg;

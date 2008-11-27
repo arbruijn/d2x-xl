@@ -1374,7 +1374,7 @@ if (robotP->info.nFlags & OF_EXPLODING)
 	return 0;
 if (robotP->info.xShields < 0)
 	return 0;	//robotP already dead...
-if (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (robotP)] < F1_0)
+if (gameData.time.xGame - robotP->xCreationTime < F1_0)
 	return 0;
 if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
 	// guidebot may kill other bots
@@ -1397,7 +1397,7 @@ if (ROBOTINFO (robotP->info.nId).companion) {
 		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
 		return 0;
 	}
-gameData.objs.xTimeLastHit [OBJ_IDX (robotP)] = gameStates.app.nSDLTicks;
+robotP->xTimeLastHit = gameStates.app.nSDLTicks;
 robotP->info.xShields -= damage;
 //	Do unspeakable hacks to make sure tPlayer doesn't die after killing boss.  Or before, sort of.
 if (bIsBoss) {

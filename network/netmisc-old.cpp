@@ -93,7 +93,7 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 		s = INTEL_SHORT (segP->verts [j]);
 		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
 	}
-	t = INTEL_INT (segP->objList);
+	t = INTEL_INT (segP->objects);
 	BEDoCheckSumCalc((ubyte *) &t, 4, &sum1, &sum2);
 }
 sum2 %= 255;

@@ -557,7 +557,7 @@ for (;;) {
 				G3DrawTexPolySimple (nVerts, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
 			if (!gameStates.render.bBriefing) {
 				if (bLightnings)
-					RenderDamageLightnings (objP, pointList, NULL, nVerts);
+					lightningManager.RenderForDamage (objP, pointList, NULL, nVerts);
 				if (bGetThrusterPos)
 					GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nVerts);
 				}

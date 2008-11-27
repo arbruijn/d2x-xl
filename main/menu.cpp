@@ -3664,7 +3664,7 @@ m = menus + lightningOpts.nUse;
 v = m->value;
 if (v != extraGameInfo [0].bUseLightnings) {
 	if (!(extraGameInfo [0].bUseLightnings = v))
-		DestroyAllLightnings (0);
+		lightningManager.DestroyAll (0);
 	*key = -2;
 	return nCurItem;
 	}
@@ -3675,7 +3675,7 @@ if (extraGameInfo [0].bUseLightnings) {
 		gameOpts->render.lightnings.nQuality = v;
 		sprintf (m->text, TXT_LIGHTNING_QUALITY, pszLightningQuality [v]);
 		m->rebuild = 1;
-		DestroyAllLightnings (0);
+		lightningManager.DestroyAll (0);
 		}
 	m = menus + lightningOpts.nStyle;
 	v = m->value;
@@ -3775,11 +3775,11 @@ do {
 		}
 	} while (i == -2);
 if (!gameOpts->render.lightnings.bPlayers)
-	DestroyPlayerLightnings ();
+	lightningManager.DestroyForPlayers ();
 if (!gameOpts->render.lightnings.bRobots)
-	DestroyRobotLightnings ();
+	lightningManager.DestroyForRobots ();
 if (!gameOpts->render.lightnings.bStatic)
-	DestroyStaticLightnings ();
+	lightningManager.DestroyStatic ();
 }
 
 //------------------------------------------------------------------------------

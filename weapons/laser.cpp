@@ -333,7 +333,7 @@ if (parentP == gameData.objs.consoleP) {
 	}
 #endif
 if ((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID))
-	gameData.objs.nTracers [nParent] = (gameData.objs.nTracers [nParent] + 1) % 3;
+	parentP->nTracers = (parentP->nTracers + 1) % 3;
 objP = OBJECTS + nObject;
 objP->cType.laserInfo.parent.nObject = nParent;
 objP->cType.laserInfo.parent.nType = parentP->info.nType;
@@ -511,7 +511,7 @@ if (WIThrust (objP->info.nId) != 0)
 	xWeaponSpeed /= 2;
 /*test*/objP->mType.physInfo.velocity = *vDirection * (xWeaponSpeed + xParentSpeed);
 if (parentP)
-	gameData.objs.vStartVel [nObject] = parentP->mType.physInfo.velocity;
+	objP->vStartVel = parentP->mType.physInfo.velocity;
 //	Set thrust
 if (WIThrust (nWeaponType) != 0) {
 	objP->mType.physInfo.thrust = objP->mType.physInfo.velocity;
@@ -810,7 +810,7 @@ float MissileSpeedScale (tObject *objP)
 
 if (!i)
 	return 1;
-return nMslSlowDown [i] * X2F (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)]);
+return nMslSlowDown [i] * X2F (gameData.time.xGame - objP->xCreationTime);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1691,6 +1691,9 @@ if (bAutoSelect)
 
 void GetPlayerMslLock (void)
 {
+if (gameStates.app.bPlayerIsDead)
+	return;
+
 	int			nWeapon, nObject, nGun, h, i, j;
 	vmsVector	*vGunPoints, vGunPos;
 	vmsMatrix	*viewP;

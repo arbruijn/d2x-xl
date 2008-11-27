@@ -276,11 +276,11 @@ COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->info.nSegment);
 //HUDMessage (0, "BUMP! %d %d", d1, d2);
 //don't bump tPlayer towards center of reactor tSegment
 vmsVector::NormalizedDir(vBump, vCenter, objP->info.position.vPos);
-if (gameData.segs.segment2s [objP->info.nSegment].special == SEGMENT_IS_CONTROLCEN)
+if (SEGMENT2S [objP->info.nSegment].special == SEGMENT_IS_CONTROLCEN)
 	vBump.Neg();
 objP->info.position.vPos += vBump * (objP->info.xSize / 5);
 //if moving away from seg, might move out of seg, so update
-if (gameData.segs.segment2s [objP->info.nSegment].special == SEGMENT_IS_CONTROLCEN)
+if (SEGMENT2S [objP->info.nSegment].special == SEGMENT_IS_CONTROLCEN)
 	UpdateObjectSeg (objP);
 }
 
@@ -536,9 +536,9 @@ if ((nDbgSeg >= 0) && (objP->info.nSegment == nDbgSeg))
 #endif
 
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
-	if (gameData.segs.segment2s [objP->info.nSegment].special == SEGMENT_IS_WATER)
+	if (SEGMENT2S [objP->info.nSegment].special == SEGMENT_IS_WATER)
 		xTimeScale = 75;
-	else if (gameData.segs.segment2s [objP->info.nSegment].special == SEGMENT_IS_LAVA)
+	else if (SEGMENT2S [objP->info.nSegment].special == SEGMENT_IS_LAVA)
 		xTimeScale = 66;
 	else
 		xTimeScale = 100;
@@ -552,12 +552,12 @@ do {
 						MissileSpeedScale (objP) : 1;
 	bRetry = 0;
 	if (fScale < 1) {
-		vmsVector vStartVel = gameData.objs.vStartVel [nObject];
+		vmsVector vStartVel = objP->vStartVel;
 		vmsVector::Normalize (vStartVel);
 		fix xDot = vmsVector::Dot (objP->info.position.mOrient[FVEC], vStartVel);
-		vFrame = objP->mType.physInfo.velocity + gameData.objs.vStartVel [nObject];
+		vFrame = objP->mType.physInfo.velocity + objP->vStartVel;
 		vFrame *= F2X (fScale * fScale);
-		vFrame += gameData.objs.vStartVel [nObject] * (-(abs (xDot)));
+		vFrame += objP->vStartVel * (-(abs (xDot)));
 		vFrame *= FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1));
 		}
 	else
@@ -661,7 +661,7 @@ retryMove:
 #endif
 #if 1 //make shots and missiles pass through skyboxes
 		if (gameStates.render.bHaveSkyBox && (objP->info.nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
-			if (gameData.segs.segment2s [hi.hit.nSegment].special == SEGMENT_IS_SKYBOX) {
+			if (SEGMENT2S [hi.hit.nSegment].special == SEGMENT_IS_SKYBOX) {
 				short nConnSeg = SEGMENTS [hi.hit.nSegment].children [hi.hit.nSide];
 				if ((nConnSeg < 0) && (objP->info.xLifeLeft > F1_0)) {	//leaving the mine
 					objP->info.xLifeLeft = 0;
@@ -671,7 +671,7 @@ retryMove:
 				}
 			else if (CheckTransWall (&hi.hit.vPoint, SEGMENTS + hi.hit.nSideSegment, hi.hit.nSide, hi.hit.nFace)) {
 				short nNewSeg = FindSegByPos (vNewPos, gameData.segs.skybox.segments [0], 1, 1);
-				if ((nNewSeg >= 0) && (gameData.segs.segment2s [nNewSeg].special == SEGMENT_IS_SKYBOX)) {
+				if ((nNewSeg >= 0) && (SEGMENT2S [nNewSeg].special == SEGMENT_IS_SKYBOX)) {
 					hi.hit.nSegment = nNewSeg;
 					fviResult = HIT_NONE;
 					}

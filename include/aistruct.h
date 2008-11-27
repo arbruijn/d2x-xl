@@ -150,6 +150,7 @@ class CAIStaticInfo {
 	private:
 		tAIStaticInfo m_info;
 	public:
+		inline tAIStaticInfo* GetInfo (void) { return &m_info; }
 		inline ubyte& Behavior() { return m_info.behavior; }
 		inline sbyte& Flags(int i) { return m_info.flags [i]; }
 		inline short& HideSegment() { return m_info.nHideSegment; }

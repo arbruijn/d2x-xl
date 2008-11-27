@@ -297,7 +297,7 @@ while (!CFEoF (&cf)) {
 			gameStates.app.nDetailLevel = strtol (value, NULL, 10);
 			if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS-1) {
 				int count,dummy,oc,od,wd,wrd,da,sc;
-				count = sscanf (value, "%d,%d,%d,%d,%d,%d,%d\n",dummy,oc,od,wd,wrd,da,sc);
+				count = sscanf (value, "%d,%d,%d,%d,%d,%d,%d\n", &dummy, &oc, &od, &wd, &wrd, &da, &sc);
 				if (count == 7) {
 					gameStates.render.detail.nObjectComplexity = oc;
 					gameStates.render.detail.nObjectDetail = od;

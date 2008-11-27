@@ -726,7 +726,7 @@ for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 		G3RenderDamageLightnings (objP, nModel, i, pAnimAngles, &vo, bHires);
 // render the lightnings
 for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pmf = psm->pFaces; i; i--, pmf++)
-	RenderDamageLightnings (objP, NULL, pm->pFaceVerts + pmf->nIndex, pmf->nVerts);
+	lightningManager.RenderForDamage (objP, NULL, pm->pFaceVerts + pmf->nIndex, pmf->nVerts);
 if (vOffsetP)
 	G3DoneInstance ();
 }

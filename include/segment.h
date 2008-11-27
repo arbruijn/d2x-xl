@@ -121,7 +121,7 @@ typedef struct tSegment {
 	tSide   sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
 	short   children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
 	short   verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
-	int     objList;    // pointer to objects in this tSegment
+	int     objects;    // pointer to objects in this tSegment
 } tSegment;
 
 #endif //!EDITOR

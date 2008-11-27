@@ -516,45 +516,22 @@ else
 
 //------------------------------------------------------------------------------
 
-int TIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth)
+int TIAddLightning (CLightning *lightningP, short nDepth)
 {
 	tTranspLightning	item;
 	vmsVector			vPos;
 	int					z;
 
-if (nLightnings < 1)
-	return 0;
-item.lightning = lightnings;
-item.nLightnings = nLightnings;
+item.lightning = lightningP;
 item.nDepth = nDepth;
-for (; nLightnings; nLightnings--, lightnings++) {
-	G3TransformPoint(vPos, lightnings->vPos, 0);
+G3TransformPoint (vPos, lightningP->m_vPos, 0);
+z = vPos [Z];
+G3TransformPoint (vPos, lightningP->m_vEnd, 0);
+if (z < vPos [Z])
 	z = vPos [Z];
-	G3TransformPoint(vPos, lightnings->vEnd, 0);
-	if (z < vPos [Z])
-		z = vPos [Z];
-	}
 if (!AddTranspItem (tiLightning, &item, sizeof (item), z, z))
 	return 0;
 return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int TIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color, char bPlasma, char bStart, char bEnd, short nDepth)
-{
-	tTranspLightningSegment	item;
-	fix							z;
-
-memcpy (item.vLine, vLine, 2 * sizeof (fVector));
-if ((item.bPlasma = bPlasma))
-	memcpy (item.vPlasma, vPlasma, 4 * sizeof (fVector));
-memcpy (&item.color, color, sizeof (tRgbaColorf));
-item.bStart = bStart;
-item.bEnd = bEnd;
-item.nDepth = nDepth;
-z = F2X ((item.vLine [0][Z] + item.vLine [1][Z]) / 2);
-return AddTranspItem (tiLightningSegment, &item, sizeof (item), z, z);
 }
 
 //------------------------------------------------------------------------------
@@ -1345,25 +1322,9 @@ if (transpItems.bDepthMask)
 	glDepthMask (transpItems.bDepthMask = 0);
 TISetClientState (0, 0, 0, 0, 0);
 TIResetShader ();
-RenderLightning (item->lightning, item->nLightnings, item->nDepth, 0);
+item->lightning->Render (item->nDepth, 0, 0);
 TIResetBitmaps ();
 transpItems.bDepthMask = 1;
-}
-
-//------------------------------------------------------------------------------
-
-void TIRenderLightningSegment (tTranspLightningSegment *item)
-{
-if (transpItems.bDepthMask)
-	glDepthMask (transpItems.bDepthMask = 0);
-TISetClientState (0, 0, 0, 0, 0);
-TIResetShader ();
-RenderLightningSegment (item->vLine, item->vPlasma, &item->color, item->bPlasma, item->bStart, item->bEnd, item->nDepth);
-if (item->bPlasma) {
-	TIResetBitmaps ();
-	}
-else
-	transpItems.bTextured = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1481,9 +1442,6 @@ if (!pl->bRendered) {
 		}
 	else if (transpItems.nCurType == tiLightning) {
 		TIRenderLightning (&pl->item.lightning);
-		}
-	else if (transpItems.nCurType == tiLightningSegment) {
-		TIRenderLightningSegment (&pl->item.lightningSegment);
 		}
 	else if (transpItems.nCurType == tiThruster) {
 		TIRenderLightTrail (&pl->item.thruster);

@@ -709,7 +709,7 @@ int load_mine_data (CFILE *loadFile)
 					Error ("Unable to read tSegment %i\n", i);
 			}
 
-			gameData.segs.segments [i].objects = -1;
+			SEGMENTS [i].objects = -1;
 			#ifdef EDITOR
 			gameData.segs.segments [i].group = -1;
 			#endif
@@ -1002,7 +1002,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 			ReadSegSpecialType (nSegment, bitMask, loadFile);
 			}
 		}
-	gameData.segs.objects [nSegment] = -1;
+	SEGMENTS [nSegment].objects = -1;
 
 	if (gameData.segs.nLevelVersion <= 5) { // descent 1 thru d2 SHAREWARE level
 		// Read fix	segP->xAvgSegLight (shift down 5 bits, write as short)

@@ -840,7 +840,7 @@ GrInitSubCanvas (
 	gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.h);
 GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
 
-SetLightningLights ();
+lightningManager.SetLights ();
 if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	int w, h, aw;
 	const char *msg = "Guided Missile View";

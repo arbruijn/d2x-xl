@@ -1736,7 +1736,6 @@ typedef struct tSegmentData {
 	xsegment				*xSegments;
 	tSegFaces			*segFaces;
 	g3sPoint				*points;
-	short					*objects;
 	tSegList				skybox;
 #if CALC_SEGRADS
 	fix					*segRads [2];
@@ -1886,11 +1885,6 @@ typedef struct tLightObjId {
 	int				nSignature;
 } tLightObjId;
 
-typedef struct tShotInfo {
-	short					nObject;
-	int					nSignature;
-} tShotInfo;
-
 typedef struct tGuidedMissileInfo {
 	tObject				*objP;
 	int					nSignature;
@@ -1922,18 +1916,13 @@ typedef struct tObjectData {
 	tObjectRef				*childObjs;
 	short						*firstChild;
 	tLightObjId				*lightObjs;
-	tShotInfo				*shots;
 	tObject					*init;
 	tObjDropInfo			*dropInfo;
 	tSpeedBoostData		*speedBoost;
 	vmsVector				*vRobotGoals;
-	vmsVector				*vStartVel;
 	fix						*xLastAfterburnerTime;
-	fix						*xCreationTime;
-	fix						*xTimeLastHit;
 	fix						*xLight;
 	int						*nLightSig;
-	ubyte						*nTracers;
 	tFaceColor				color;
 	short						nFirstDropped;
 	short						nLastDropped;
@@ -3098,22 +3087,10 @@ typedef struct tFusionData {
 
 //------------------------------------------------------------------------------
 
-typedef struct tOmegaLightningHandles {
-	int		nLightning;
-	short		nParentObj;
-	short		nTargetObj;
-} tOmegaLightningHandles;
-
-typedef struct tOmegaLightningData {
-	tOmegaLightningHandles	handles [MAX_OBJECTS_D2X];
-	int							nHandles;
-} tOmegaLightningData;
-
 typedef struct tOmegaData {
 	fix		xCharge [2];
 	fix		xMaxCharge;
 	int		nLastFireFrame;
-	tOmegaLightningData	lightnings;
 } tOmegaData;
 
 //------------------------------------------------------------------------------
@@ -3223,7 +3200,6 @@ typedef struct tGameData {
 	tMatCenData			matCens;
 	tDemoData			demo;
 	tParticleData		particles;
-	tLightningData		lightnings;
 	tEscortData			escort;
 	tThiefData			thief;
 	tHoardData			hoard;

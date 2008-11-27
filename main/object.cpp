@@ -433,7 +433,7 @@ for (i = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
 	objP->info.nFlags = 0;
 	memset (objP->links, 0, sizeof (objP->links));
 	}
-memset (gameData.segs.objects, 0xff, MAX_SEGMENTS * sizeof (short));
+ResetSegObjLists ();
 gameData.objs.consoleP =
 gameData.objs.viewerP = OBJECTS;
 InitPlayerObject ();
@@ -482,7 +482,7 @@ int IsObjectInSeg (int nSegment, int objn)
 {
 	short nObject, count = 0;
 
-for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)	{
+for (nObject = SEGMENTS [nSegment].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)	{
 	if (count > MAX_OBJECTS) {
 		Int3 ();
 		return count;
@@ -514,7 +514,7 @@ void JohnsObjUnlink (int nSegment, int nObject)
 
 Assert (nObject != -1);
 if (objP->info.nPrevInSeg == -1)
-	gameData.segs.objects [nSegment] = objP->info.nNextInSeg;
+	SEGMENTS [nSegment].objects = objP->info.nNextInSeg;
 else
 	OBJECTS [objP->info.nPrevInSeg].info.nNextInSeg = objP->info.nNextInSeg;
 if (objP->info.nNextInSeg != -1)
@@ -529,7 +529,7 @@ void RemoveIncorrectObjects ()
 
 for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	count = 0;
-	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
+	for (nObject = SEGMENTS [nSegment].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 		count++;
 		#if DBG
 		if (count > MAX_OBJECTS)	{
@@ -591,11 +591,11 @@ FORALL_OBJS (objP, i) {
 
 //------------------------------------------------------------------------------
 
-void list_segObjects (int nSegment)
+void ListSegObjects (int nSegment)
 {
 	int nObject, count = 0;
 
-for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
+for (nObject = SEGMENTS [nSegment].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 	count++;
 	if (count > MAX_OBJECTS) 	{
 		Int3 ();
@@ -610,7 +610,7 @@ return;
 
 bool ObjIsLinkedToSeg (short nObject, short nSegment)
 {
-for (short h = gameData.segs.objects [nSegment]; h >= 0; h = OBJECTS [h].info.nNextInSeg)
+for (short h = SEGMENTS [nSegment].objects; h >= 0; h = OBJECTS [h].info.nNextInSeg)
 	if (nObject == h)
 		return true;
 return false;
@@ -632,18 +632,20 @@ if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
 #if DBG
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
+if (nObject == nDbgObj)
+	nDbgObj = nDbgObj;
 #endif
 objP->info.nSegment = nSegment;
 #if DBG
 if (ObjIsLinkedToSeg (nObject, nSegment))
 	UnlinkObjFromSeg (OBJECTS + nObject);
 #else
-if (gameData.segs.objects [nSegment] == nObject)
+if (SEGMENTS [nSegment].objects == nObject)
 	return;
 #endif
-objP->info.nNextInSeg = gameData.segs.objects [nSegment];
+objP->info.nNextInSeg = SEGMENTS [nSegment].objects;
 objP->info.nPrevInSeg = -1;
-gameData.segs.objects [nSegment] = nObject;
+SEGMENTS [nSegment].objects = nObject;
 if (objP->info.nNextInSeg != -1)
 	OBJECTS [objP->info.nNextInSeg].info.nPrevInSeg = nObject;
 #if DBG
@@ -658,11 +660,10 @@ if (OBJECTS [0].info.nPrevInSeg == 0)
 
 void ResetSegObjLists (void)
 {
-	tSegment	*segP;
-	int		i;
+	int	i, j = gameData.segs.nSegments ? gameData.segs.nSegments : MAX_SEGMENTS;
 
-for (segP = SEGMENTS, i = gameData.segs.nSegments; i; i--, segP++)
-	segP->objList = -1;
+for (i = 0; i < j; i++)
+	SEGMENTS [i].objects = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -702,18 +703,20 @@ return true;
 
 CObject::CObject ()
 {
-Prev () = Next () = NULL;
+SetPrev (NULL);
+SetNext (NULL);
 }
 
 //------------------------------------------------------------------------------
 
 CObject::~CObject ()
 {
-if (Prev ())
-	Prev ()->Next () = Next ();
-if (Next ())
-	Next ()->Prev () = Next ();
-Prev () = Next () = NULL;
+if (GetPrev ())
+	GetPrev ()->SetNext (GetNext ());
+if (GetNext ())
+	GetNext ()->SetPrev (GetPrev ());
+SetPrev (NULL);
+SetNext (NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -721,16 +724,16 @@ Prev () = Next () = NULL;
 void CObject::Unlink (void)
 {
 #if 0
-if (Prev () == -1)
-	gameData.segs.objects [Segment ()] = Next ();
+if (GetPrev ())
+	GetPrev ().SetNext (GetNext ());
 else
-	OBJECTS [Prev ()].Next () = Next ();
-if (Next () != -1)
-	OBJECTS [Next ()].Prev () = Prev ();
+	SEGMENTS [GetSegment ()].objects = GetNext ();
+if (GetNext ())
+	GetNext ().SetPrev (GetPrev ());
 
-Segment () = Next () = Prev () = -1;
-Assert (OBJECTS [0].info.nNextInSeg != 0);
-Assert (OBJECTS [0].info.nPrevInSeg != 0);
+SetSegment (-1);
+SetNext (NULL);
+SetPrev (NULL);
 #endif
 }
 
@@ -738,20 +741,76 @@ Assert (OBJECTS [0].info.nPrevInSeg != 0);
 
 void UnlinkObjFromSeg (tObject *objP)
 {
+#if DBG
+if ((OBJ_IDX (objP) == nDbgObj) && (objP->info.nFlags & OF_SHOULD_BE_DEAD))
+	objP = objP;
+#endif
 if (objP->info.nPrevInSeg == -1)
-	gameData.segs.objects [objP->info.nSegment] = objP->info.nNextInSeg;
+	SEGMENTS [objP->info.nSegment].objects = objP->info.nNextInSeg;
 else
 	OBJECTS [objP->info.nPrevInSeg].info.nNextInSeg = objP->info.nNextInSeg;
 if (objP->info.nNextInSeg != -1)
 	OBJECTS [objP->info.nNextInSeg].info.nPrevInSeg = objP->info.nPrevInSeg;
-
 objP->info.nSegment = objP->info.nNextInSeg = objP->info.nPrevInSeg = -1;
 }
 
 //------------------------------------------------------------------------------
 
-void CObject::ToStruct (tCoreObject *objP)
+void CObject::ToBaseObject (tBaseObject *objP)
 {
+objP->info = *GetInfo ();
+}
+
+//------------------------------------------------------------------------------
+
+void CRobotObject::ToBaseObject (tBaseObject *objP)
+{
+objP->info = *CObject::GetInfo ();
+objP->mType.physInfo = *CPhysicsInfo::GetInfo ();
+objP->cType.aiInfo = *CAIStaticInfo::GetInfo ();
+objP->rType.polyObjInfo = *CPolyObjInfo::GetInfo ();
+}
+
+//------------------------------------------------------------------------------
+
+void CPowerupObject::ToBaseObject (tBaseObject *objP)
+{
+objP->info = *CObject::GetInfo ();
+objP->mType.physInfo = *CPhysicsInfo::GetInfo ();
+objP->rType.polyObjInfo = *CPolyObjInfo::GetInfo ();
+}
+
+//------------------------------------------------------------------------------
+
+void CWeaponObject::ToBaseObject (tBaseObject *objP)
+{
+objP->info = *CObject::GetInfo ();
+objP->mType.physInfo = *CPhysicsInfo::GetInfo ();
+objP->rType.polyObjInfo = *CPolyObjInfo::GetInfo ();
+}
+
+//------------------------------------------------------------------------------
+
+void CLightObject::ToBaseObject (tBaseObject *objP)
+{
+objP->info = *CObject::GetInfo ();
+objP->cType.lightInfo = *CObjLightInfo::GetInfo ();
+}
+
+//------------------------------------------------------------------------------
+
+void CLightningObject::ToBaseObject (tBaseObject *objP)
+{
+objP->info = *CObject::GetInfo ();
+objP->rType.lightningInfo = *CLightningInfo::GetInfo ();
+}
+
+//------------------------------------------------------------------------------
+
+void CParticleObject::ToBaseObject (tBaseObject *objP)
+{
+objP->info = *CObject::GetInfo ();
+objP->rType.particleInfo = *CSmokeInfo::GetInfo ();
 }
 
 //------------------------------------------------------------------------------
@@ -1030,7 +1089,7 @@ SEM_ENTER (SEM_SMOKE)
 KillObjectSmoke (nObject);
 SEM_LEAVE (SEM_SMOKE)
 SEM_ENTER (SEM_LIGHTNINGS)
-DestroyObjectLightnings (OBJECTS + nObject);
+lightningManager.DestroyForObject (OBJECTS + nObject);
 SEM_LEAVE (SEM_LIGHTNINGS)
 #endif
 RemoveDynLight (-1, -1, nObject);
@@ -1178,42 +1237,153 @@ return nOrgNumToFree - nToFree;
 
 //-----------------------------------------------------------------------------
 
-void CObject::Link (short nSegment)
+void CObject::Link (void)
 {
 }
 
 //-----------------------------------------------------------------------------
+
+void CObject::LinkToSeg (int nSegment)
+{
+#if 0
+if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
+	nSegment = FindSegByPos (GetPosition (), 0, 0, 0);
+	if (nSegment < 0)
+		return;
+	}
+SetSegment (nSegment);
+#if DBG
+if (ObjIsLinkedToSeg (this, nSegment))
+	UnlinkObjFromSeg (this);
+#else
+if (SEGMENTS [nSegment].objects == nObject)
+	return;
+#endif
+SetNextInSeg (SEGMENTS [nSegment].objects);
+SetPrevInSeg (NULL);
+SEGMENTS [nSegment].objects = nObject;
+if (objP->info.nNextInSeg != -1)
+	OBJECTS [objP->info.nNextInSeg].info.nPrevInSeg = nObject;
+#endif
+}
+
+//------------------------------------------------------------------------------
 
 void CObject::Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
 								  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType)
 {
-Signature() = gameData.objs.nNextSignature++;
-Type() = nType;
-Id() = nId;
-LastPos() = Pos () = vPos;
-Size() = xSize;
-Creator() = (sbyte) nCreator;
-Orient() = mOrient;
-ControlType() = cType;
-MovementType() = mType;
-RenderType() = rType;
-ContainsType() = -1;
-LifeLeft() = 
-	((gameData.app.nGameMode & GM_ENTROPY) && (nType == OBJ_POWERUP) && (nId == POW_HOARD_ORB) && (extraGameInfo [1].entropy.nVirusLifespan > 0)) ?
-	I2X (extraGameInfo [1].entropy.nVirusLifespan) : IMMORTAL_TIME;
-AttachedObj() = -1;
-Shields() = 20 * F1_0;
-Segment() = -1;					//set to zero by memset, above
-Link (nSegment);
+SetSignature (gameData.objs.nNextSignature++);
+SetType (nType);
+SetId (nId);
+SetLastPos (&vPos);
+SetSize (xSize);
+SetCreator ((sbyte) nCreator);
+SetOrient (&mOrient);
+SetControlType (cType);
+SetMovementType (mType);
+SetRenderType (rType);
+SetContainsType (-1);
+SetLifeLeft (
+	 ((gameData.app.nGameMode & GM_ENTROPY) &&  (nType == OBJ_POWERUP) &&  (nId == POW_HOARD_ORB) &&  (extraGameInfo [1].entropy.nVirusLifespan > 0)) ?
+		I2X (extraGameInfo [1].entropy.nVirusLifespan) : IMMORTAL_TIME);
+SetAttachedObj (-1);
+SetShields (20 * F1_0);
+SetSegment (-1);					//set to zero by memset, above
+LinkToSeg (nSegment);
 }
 
 //-----------------------------------------------------------------------------
 
-int CObject::Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
-					      const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType,
-						   int bIgnoreLimits)
+int CObject::Create (ubyte nType, ubyte nId, short nCreator, short nSegment, 
+							const vmsVector& vPos, const vmsMatrix& mOrient,
+							fix xSize, ubyte cType, ubyte mType, ubyte rType)
 {
-return -1;
+#if DBG
+if (nType == OBJ_WEAPON) {
+	nType = nType;
+	if ((nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_ROBOT))
+		nType = nType;
+	if (nId == FLARE_ID)
+		nType = nType;
+	if (gameData.objs.bIsMissile [(int) nId])
+		nType = nType;
+	}
+else if (nType == OBJ_ROBOT) {
+	if (ROBOTINFO ((int) nId).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
+		return -1;
+	}
+else if (nType == OBJ_HOSTAGE)
+	nType = nType;
+else if (nType == OBJ_FIREBALL)
+	nType = nType;
+else if (nType == OBJ_REACTOR)
+	nType = nType;
+else if (nType == OBJ_DEBRIS)
+	nType = nType;
+else if (nType == OBJ_MARKER)
+	nType = nType;
+else if (nType == OBJ_PLAYER)
+	nType = nType;
+else if (nType == OBJ_POWERUP)
+	nType = nType;
+#endif
+
+SetSegment (FindSegByPos (vPos, nSegment, 1, 0));
+if ((GetSegment () < 0) || (GetSegment () > gameData.segs.nLastSegment))
+	return -1;
+
+if (nType == OBJ_DEBRIS) {
+	if (nDebrisObjectCount >= gameStates.render.detail.nMaxDebrisObjects)
+		return -1;
+	}
+
+// Zero out object structure to keep weird bugs from happening in uninitialized fields.
+m_nObject = this - (CObject *) gameData.objs.objects;
+SetSignature (gameData.objs.nNextSignature++);
+SetType (nType);
+SetId (nId);
+SetLastPos (&vPos);
+SetPos (&vPos);
+SetSize (xSize);
+SetCreator ((sbyte) nCreator);
+SetOrient (&mOrient);
+SetControlType (cType);
+SetMovementType (mType);
+SetRenderType (rType);
+SetContainsType (-1);
+SetLifeLeft (
+	((gameData.app.nGameMode & GM_ENTROPY) && (nType == OBJ_POWERUP) && (nId == POW_HOARD_ORB) && (extraGameInfo [1].entropy.nVirusLifespan > 0)) ?
+	I2X (extraGameInfo [1].entropy.nVirusLifespan) : IMMORTAL_TIME);
+SetAttachedObj (-1);
+m_xCreationTime = gameData.time.xGame;
+#if 0
+if (GetControlType () == CT_POWERUP)
+	CPowerupInfo::SetCount (1);
+// Init physics info for this tObject
+if (GetMovementType () == MT_PHYSICS)
+	m_vStartVel.SetZero();
+if (GetRenderType () == RT_POLYOBJ)
+	CPolyObjInfo::SetTexOverride (-1);
+
+if (GetType () == OBJ_WEAPON) {
+	CPhysicsInfo::SetFlags (CPhysInfo.GetFlags () | WI_persistent (m_info.nId) * PF_PERSISTENT);
+	CLaserInfo::SetCreationTime (gameData.time.xGame);
+	CLaserInfo::SetLastHitObj (0);
+	CLaserInfo::SetScale (F1_0);
+	}
+else if (GetType () == OBJ_DEBRIS)
+	nDebrisObjectCount++;
+if (GetControlType () == CT_POWERUP)
+	CPowerupInfo::SetCreationTime (gameData.time.xGame);
+else if (GetControlType () == CT_EXPLOSION) {
+	CAttachedInfo::SetPrev (-1);
+	CAttachedInfo::SetNext (-1);
+	CAttachedInfo::SetParent (-1);
+	}
+#endif
+Link ();
+LinkToSeg (nSegment);
+return m_nObject;
 }
 
 //-----------------------------------------------------------------------------
@@ -1294,10 +1464,10 @@ if (objP->info.controlType == CT_POWERUP)
 
 // Init physics info for this tObject
 if (objP->info.movementType == MT_PHYSICS)
-	gameData.objs.vStartVel [nObject].SetZero();
+	objP->vStartVel.SetZero();
 if (objP->info.renderType == RT_POLYOBJ)
 	objP->rType.polyObjInfo.nTexOverride = -1;
-gameData.objs.xCreationTime [nObject] = gameData.time.xGame;
+objP->xCreationTime = gameData.time.xGame;
 
 if (objP->info.nType == OBJ_WEAPON) {
 	Assert (objP->info.controlType == CT_WEAPON);
@@ -1336,7 +1506,7 @@ memcpy (cloneP, objP, sizeof (tObject));
 cloneP->info.nSignature = nSignature;
 cloneP->info.nCreator = -1;
 cloneP->mType.physInfo.thrust.SetZero();
-gameData.objs.xCreationTime [nObject] = gameData.time.xGame;
+cloneP->xCreationTime = gameData.time.xGame;
 nSegment = objP->info.nSegment;
 cloneP->info.nSegment = cloneP->info.nPrevInSeg = cloneP->info.nNextInSeg = -1;
 memset (cloneP->links, 0, sizeof (cloneP->links));
@@ -2175,7 +2345,7 @@ switch (objP->info.movementType) {
 #endif
 		DoPhysicsSim (objP);
 		SetDynLightPos (OBJ_IDX (objP));
-		MoveObjectLightnings (objP);
+		lightningManager.MoveForObject (objP);
 		if (objP->info.nType == OBJ_PLAYER)
 			UpdateShipSound (objP);
 		break;	//move by physics
@@ -2312,11 +2482,7 @@ else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayer
 		RequestEffects (objP, PLAYER_LIGHTNINGS);
 		}
 	else
-#if 1
 		RequestEffects (objP, DESTROY_LIGHTNINGS);
-#else
-		DestroyObjectLightnings (objP);
-#endif
 	}
 }
 
@@ -2693,12 +2859,11 @@ FORALL_ROBOT_OBJS (objP, i)
 //if bClearAll is set, clear even proximity bombs
 void ClearTransientObjects (int bClearAll)
 {
-	short nObject;
 	tObject *objP, *nextObjP;
 
 for (objP = gameData.objs.lists.weapons.head; objP; objP = nextObjP) {
 	nextObjP = objP->links [1].next;
-	if ((!(gameData.weapons.info [objP->info.nId].flags&WIF_PLACABLE) &&
+	if ((!(gameData.weapons.info [objP->info.nId].flags & WIF_PLACABLE) &&
 		  (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||
 			objP->info.nType == OBJ_FIREBALL ||
 			objP->info.nType == OBJ_DEBRIS ||

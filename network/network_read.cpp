@@ -578,7 +578,7 @@ inline bool ObjectIsLinked (tObject *objP, short nSegment)
 {
 if (nSegment != -1) {
 	short nObject = OBJ_IDX (objP);
-	for (short i = gameData.segs.objects [objP->info.nSegment], j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNextInSeg) {
+	for (short i = SEGMENTS [objP->info.nSegment].objects, j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNextInSeg) {
 		if (i == nObject) {
 			objP->info.nPrevInSeg = j;
 			return true;

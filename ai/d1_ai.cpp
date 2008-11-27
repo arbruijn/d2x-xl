@@ -1495,18 +1495,14 @@ int openable_doors_in_segment(tObject *objP)
 //	Return true if a special tObject (playerP or control center) is in this tSegment.
 int special_object_in_seg (int nSegment)
 {
-	int	nObject;
+	int nObject = SEGMENTS [nSegment].objects;
 
-	nObject = gameData.segs.segments[nSegment].objList;
-
-	while (nObject != -1) {
-		if ((OBJECTS [nObject].info.nType == OBJ_PLAYER) || (OBJECTS [nObject].info.nType == OBJ_REACTOR)) {
-			return 1;
-		} else
-			nObject = OBJECTS [nObject].info.nNextInSeg;
+while (nObject != -1) {
+	if ((OBJECTS [nObject].info.nType == OBJ_PLAYER) || (OBJECTS [nObject].info.nType == OBJ_REACTOR))
+		return 1;
+	nObject = OBJECTS [nObject].info.nNextInSeg;
 	}
-
-	return 0;
+return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------

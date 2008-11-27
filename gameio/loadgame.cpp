@@ -745,8 +745,8 @@ memset (gameData.multiplayer.weaponStates, 0xff, sizeof (gameData.multiplayer.we
 memset (gameData.multiplayer.bWasHit, 0, sizeof (gameData.multiplayer.bWasHit));
 memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLastHitTime));
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
+memset (gameData.objs.objects, 0, MAX_OBJECTS * sizeof (*gameData.objs.objects));
 memset (gameData.objs.lightObjs, (char) 0xff, MAX_OBJECTS * sizeof (*gameData.objs.lightObjs));
-memset (gameData.objs.shots, (char) 0xff, MAX_OBJECTS * sizeof (*gameData.objs.shots));
 memset (gameData.render.faceIndex [0].roots, 0xff, sizeof (gameData.render.faceIndex [0].roots));
 memset (gameData.render.faceIndex [1].roots, 0xff, sizeof (gameData.render.faceIndex [1].roots));
 memset (gameData.render.faceIndex [0].tails, 0xff, sizeof (gameData.render.faceIndex [0].tails));
@@ -758,7 +758,7 @@ gameData.render.faceIndex [0].nUsedFaces = 0;
 gameData.render.faceIndex [0].nUsedKeys = 0;
 gameData.render.faceIndex [1].nUsedFaces = MAX_FACES;
 gameData.render.faceIndex [1].nUsedKeys = 0;
-gameData.omega.lightnings.nHandles = 0;
+omegaLightnings.Init ();
 gameData.multiplayer.bMoving = -1;
 #if 1
 /*---*/PrintLog ("   stopping music\n");
@@ -833,8 +833,8 @@ DestroyCameras ();
 /*---*/PrintLog ("   Destroying particle data\n");
 particleManager.DestroyAll ();
 /*---*/PrintLog ("   Destroying lightning data\n");
-DestroyAllLightnings (1);
-DestroyOmegaLightnings (-1);
+omegaLightnings.Destroy (-1);
+lightningManager.DestroyAll (1);
 /*---*/PrintLog ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 memset (gameData.pig.tex.bitmapColors, 0, sizeof (gameData.pig.tex.bitmapColors));
@@ -871,7 +871,6 @@ ShowBoxedMessage (TXT_LOADING);
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
 memset (gameData.segs.xSegments, 0xff, sizeof (*gameData.segs.xSegments) * MAX_SEGMENTS);
-memset (gameData.objs.xCreationTime, 0, sizeof (*gameData.objs.xCreationTime) * MAX_OBJECTS);
 /*---*/PrintLog ("   loading texture brightness info\n");
 SetDataVersion (-1);
 

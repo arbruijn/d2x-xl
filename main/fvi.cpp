@@ -1090,7 +1090,7 @@ if (flags & FQ_CHECK_OBJS) {
 		segP = gameData.segs.segments + nSegment;
 restart:
 		nSegObjs = gameData.objs.nObjects;
-		for (nObject = nFirstObj = gameData.segs.objects [nSegment]; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
+		for (nObject = nFirstObj = SEGMENTS [nSegment].objects; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
 			otherObjP = OBJECTS + nObject;
 #if DBG
 			if ((nSegObjs < 0) || !CheckSegObjList (otherObjP, nObject, nFirstObj)) {

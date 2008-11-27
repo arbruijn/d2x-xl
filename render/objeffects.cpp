@@ -310,7 +310,7 @@ if ((objP->info.nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 	scale = (float) ci.nFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
 	scale *= scale;
 	}
-dt = gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)];
+dt = gameStates.app.nSDLTicks - objP->xTimeLastHit;
 if (dt < 300) {
 	scale *= gameOpts->render.effects.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1;
 	DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale);
@@ -1547,7 +1547,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 #endif
 if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	 (objP->info.nType == OBJ_WEAPON) && ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID)
-	 /*&& !gameData.objs.nTracers [objP->cType.laserInfo.parent.nObject]*/)) {
+	 /*&& !OBJECTS [objP->cType.laserInfo.parent.nObject].nTracers*/)) {
 #if 0
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
 	objP->info.xSize = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad,

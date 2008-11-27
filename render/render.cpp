@@ -1259,7 +1259,7 @@ if (bSmoke) {
 if (bLightnings) {
 	SEM_ENTER (SEM_LIGHTNINGS)
 	//PrintLog ("RenderLightnings\n");
-	RenderLightnings ();
+	lightningManager.Render ();
 	}
 //PrintLog ("RenderTranspItems\n");
 if (bLightnings)
@@ -1439,7 +1439,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	for (nObject = gameData.segs.objects [nSegment]; nObject != -1; nObject = objP->info.nNextInSeg) {
+	for (nObject = SEGMENTS [nSegment].objects; nObject != -1; nObject = objP->info.nNextInSeg) {
 #if DBG
 		if (nObject == nDbgObj)
 			nDbgObj = nDbgObj;
@@ -2063,7 +2063,7 @@ void RenderSkyBoxObjects (void)
 
 gameStates.render.nType = 1;
 for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++)
-	for (nObject = gameData.segs.objects [*segP]; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
+	for (nObject = SEGMENTS [*segP].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 		DoRenderObject (nObject, gameStates.render.nWindow);
 }
 
