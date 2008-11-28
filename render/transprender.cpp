@@ -1172,23 +1172,17 @@ void TIFlushSparkBuffer (void)
 {
 	int bSoftSparks = (gameOpts->render.effects.bSoftParticles & 2) != 0;
 
-if (sparkBuffer.nSparks &&
-	 LoadTranspItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
-	if (bSoftSparks) {
+if (sparkBuffer.nSparks && LoadTranspItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
+	G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	glEnable (GL_TEXTURE_2D);
+	OGL_BINDTEX (bmpSparks->glTexture->handle);
+	if (bSoftSparks)
 		LoadGlareShader (3);
-		}
 	else {
 		TIResetShader ();
 		if (transpItems.bDepthMask)
 			glDepthMask (transpItems.bDepthMask = 0);
-		//G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
-		//OGL_BINDTEX (0);
-		//glDisable (GL_TEXTURE_2D);
 		}
-	G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	glEnable (GL_TEXTURE_2D);
-	OGL_BINDTEX (bmpSparks->glTexture->handle);
-	//glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE, GL_ONE);
 	glColor3f (1, 1, 1);
 	glTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].texCoord);
@@ -1197,8 +1191,8 @@ if (sparkBuffer.nSparks &&
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftSparks)
 		glEnable (GL_DEPTH_TEST);
-	sparkBuffer.nSparks = 0;
 	transpItems.bClientColor = 0;
+	sparkBuffer.nSparks = 0;
 	}
 }
 
@@ -1209,7 +1203,7 @@ void TIRenderSpark (tTranspSpark *item)
 if (sparkBuffer.nSparks >= SPARK_BUF_SIZE)
 	TIFlushSparkBuffer ();
 
-	tSparkVertex	*infoP = sparkBuffer.info + 4 * sparkBuffer.nSparks++;
+	tSparkVertex	*infoP = sparkBuffer.info + 4 * sparkBuffer.nSparks;
 	fVector			vPos = item->position;
 	float				nSize = X2F (item->nSize);
 	float				nCol = (float) (item->nFrame / 8);
@@ -1240,6 +1234,7 @@ infoP->vPos [Y] = vPos [Y] - nSize;
 infoP->vPos [Z] = vPos [Z];
 infoP->texCoord.v.u = nCol / 8.0f;
 infoP->texCoord.v.v = nRow / 8.0f;
+sparkBuffer.nSparks++;
 }
 
 //------------------------------------------------------------------------------
@@ -1318,10 +1313,13 @@ else {
 
 void TIRenderLightning (tTranspLightning *item)
 {
-if (transpItems.bDepthMask)
-	glDepthMask (transpItems.bDepthMask = 0);
-TISetClientState (0, 0, 0, 0, 0);
-TIResetShader ();
+if (transpItems.nPrevType != transpItems.nCurType) {
+	if (transpItems.bDepthMask)
+		glDepthMask (transpItems.bDepthMask = 0);
+	TIDisableClientState (GL_TEXTURE2, 1, 0);
+	TISetClientState (1, 0, 0, 0, 0);
+	TIResetShader ();
+	}
 item->lightning->Render (item->nDepth, 0, 0);
 TIResetBitmaps ();
 transpItems.bDepthMask = 1;

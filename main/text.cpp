@@ -1836,7 +1836,7 @@ const char *defaultGameTexts [][2] = {
 	{"Luftblasen schwingen hin und her", "air bubbles w~Iggle"},
 	{"Luftblasen aendern die Form", "air bubbles w~Obble"},
 	{"Rauch auf ~onitoren zeigen", "show smoke on ~Monitors"},
-	{"Blitze auf ~Monitoren zeigen", "show smoke on ~Monitors"},
+	{"Blitze auf ~Monitoren zeigen", "show lightnings on ~Monitors"},
 #if 0
 	{"", ""},
 #endif

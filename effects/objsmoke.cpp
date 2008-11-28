@@ -292,10 +292,10 @@ if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) ||
 	}
 j = OBJ_IDX (objP);
 if (gameOpts->render.particles.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
-	fn = objP->info.position.mOrient[FVEC];
+	fn = objP->info.position.mOrient [FVEC];
 	mn = objP->info.position.vPos - objP->info.vLastPos;
-	vmsVector::Normalize(fn);
-	vmsVector::Normalize(mn);
+	vmsVector::Normalize (fn);
+	vmsVector::Normalize (mn);
 	d = vmsVector::Dot(fn, mn);
 	if (d >= -F1_0 / 2)
 		bForward = 1;
@@ -795,7 +795,10 @@ return 1;
 
 void DestroyShrapnels (tObject *objP)
 {
-	tShrapnelData	*sdP = gameData.objs.shrapnels + OBJ_IDX (objP);
+if ((objP->info.nType != OBJ_FIREBALL) || (objP->info.renderType != RT_SHRAPNELS))
+	return;
+
+		tShrapnelData	*sdP = gameData.objs.shrapnels + OBJ_IDX (objP);
 
 if (sdP->shrapnels) {
 	int	i, h = sdP->nShrapnels;

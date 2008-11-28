@@ -432,6 +432,11 @@ for (i = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
 	objP->info.nAttachedObj = -1;
 	objP->info.nFlags = 0;
 	memset (objP->links, 0, sizeof (objP->links));
+	objP->shots.nObject = -1;
+	objP->shots.nSignature = -1;
+	objP->xCreationTime =
+	objP->xTimeLastHit = 0;
+	objP->vStartVel.SetZero ();
 	}
 ResetSegObjLists ();
 gameData.objs.consoleP =
@@ -1441,6 +1446,8 @@ if (nType == OBJ_DEBRIS) {
 // Find next free object
 if (0 > (nObject = AllocObject ()))
 	return -1;
+if (!nObject)
+	nObject = nObject;
 objP = OBJECTS + nObject;
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
 objP->info.nSignature = gameData.objs.nNextSignature++;
@@ -1637,6 +1644,9 @@ void NDRecordGuidedEnd (void);
 //remove tObject from the world
 void ReleaseObject (short nObject)
 {
+if (!nObject)
+	return;
+
 	int nParent;
 	tObject *objP = OBJECTS + nObject;
 
@@ -2516,7 +2526,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 objP->info.vLastPos = objP->info.position.vPos;			// Save the current position
 HandleSpecialSegments (objP);
 if ((objP->info.xLifeLeft != IMMORTAL_TIME) &&
-	 (objP->info.xLifeLeft != ONE_FRAME_TIME)&&
+	 (objP->info.xLifeLeft != ONE_FRAME_TIME) &&
 	 (gameData.physics.xTime != F1_0))
 	objP->info.xLifeLeft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
@@ -2953,7 +2963,7 @@ if (nObject >= 0) {
 	objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
 	objP->mType.spinRate = objP->info.position.mOrient[UVEC] * (F1_0 / 2);
 	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all OBJECTS.
-	objP->info.xLifeLeft = IMMORTAL_TIME - 1;
+	objP->info.xLifeLeft = IMMORTAL_TIME;
 	}
 return nObject;
 }

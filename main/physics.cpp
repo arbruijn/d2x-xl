@@ -762,8 +762,8 @@ retryMove:
 		fix attemptedDist, actualDist;
 
 		xOldSimTime = xSimTime;
-		actualDist = vmsVector::NormalizedDir(vMoveNormal, objP->info.position.vPos, vSavePos);
-		if ((fviResult == HIT_WALL) && (vmsVector::Dot(vMoveNormal, vFrame) < 0)) {		//moved backwards
+		actualDist = vmsVector::NormalizedDir (vMoveNormal, objP->info.position.vPos, vSavePos);
+		if ((fviResult == HIT_WALL) && (vmsVector::Dot (vMoveNormal, vFrame) < 0)) {		//moved backwards
 			//don't change position or xSimTime
 			objP->info.position.vPos = vSavePos;
 			//iSeg = objP->info.nSegment;		//don't change tSegment

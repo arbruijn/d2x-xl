@@ -53,6 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RENDER_LIGHTNING_OUTLINE 0
 #define RENDER_LIGHTINGS_BUFFERED 1
 #define UPDATE_LIGHTNINGS 1
+#define USE_NEW 1
 
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
@@ -161,7 +162,11 @@ bool CLightningNode::CreateChild (vmsVector *vEnd, vmsVector *vDelta,
 											 short nSmoothe, char bClamp, char bPlasma, char bLight,
 											 char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode)
 {
+#if USE_NEW
+if (!(m_child = new CLightning))
+#else
 if (!(m_child = (CLightning *) D2_ALLOC (sizeof (CLightning))))
+#endif
 	return false;
 return m_child->Create (&m_vPos, vEnd, vDelta, -1, nLife, 0, nLength, nAmplitude, nAngle, 0,
 								nNodes, nChildren, nDepth - 1, nSteps, nSmoothe, bClamp, bPlasma, bLight,
@@ -191,7 +196,12 @@ if (m_child) {
 		m_child = NULL;
 	else {
 		m_child->DestroyNodes ();
+#if USE_NEW
+		delete m_child;
+		m_child = NULL;
+#else
 		D2_FREE (m_child);
+#endif
 		}
 	}
 }
@@ -497,7 +507,11 @@ bool CLightning::Create (vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
 {
 	int	h, bRandom = (vEnd == NULL) || (nAngle > 0);
 
+#if USE_NEW
+if (!(m_nodes = new CLightningNode [nNodes])) 
+#else
 if (!(m_nodes = (CLightningNode *) D2_ALLOC (nNodes * sizeof (CLightningNode)))) 
+#endif
 	return false;
 if (nObject < 0) {
 	m_nObject = -1;
@@ -568,7 +582,12 @@ if (m_nodes) {
 
 	for (i = abs (m_nNodes), nodeP = m_nodes; i > 0; i--, nodeP++)
 		nodeP->Destroy ();
+#if USE_NEW
+	delete[] m_nodes;
+	 m_nodes = NULL;
+#else
 	D2_FREE (m_nodes);
+#endif
 	m_nNodes = 0;
 	}
 }
@@ -1016,29 +1035,44 @@ G3DisableClientStates (1, 0, 0, GL_TEXTURE0);
 
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
-	fVector3			*vPosf = coreBuffer [nThread];
-	int				i;
+	fVector3		*vPosf = coreBuffer [nThread];
+	int			i;
 
+#if DBG
+if (gameStates.render.history.nShader != -1)
+	return;
+//glUseProgramObject (0);
+if (m_nNodes > 10000)
+	return;
+if (!m_nodes)
+	return;
+if (nThread > 0)
+	return;
+#endif
 glBlendFunc (GL_ONE, GL_ONE);
-glDisable (GL_TEXTURE_2D);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? 2 : 4));
-glDisable (GL_LINE_SMOOTH);
+glEnable (GL_LINE_SMOOTH);
 for (i = 0; i < m_nNodes; i++)
-	vPosf[i] = m_nodes [i].m_vPos.ToFloat3();
+	vPosf [i] = m_nodes [i].m_vPos.ToFloat3 ();
 if (!gameStates.ogl.bUseTransform)
 	OglSetupTransform (1);
-if (G3EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
+#if 1
+if (0 && G3EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
+	glDisable (GL_TEXTURE_2D);
 	glVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
 	glDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	G3DisableClientStates (0, 0, 0, -1);
 	}
 else {
+	glActiveTexture (GL_TEXTURE0);
+	glDisable (GL_TEXTURE_2D);
 	glBegin (GL_LINE_STRIP);
-	for (i = 0; i < m_nNodes; i++)
-		glVertex3fv ((GLfloat *) (coreBuffer [nThread] + i));
+	for (i = m_nNodes, vPosf = coreBuffer [nThread]; i; i--, vPosf++)
+		glVertex3fv ((GLfloat *) vPosf);
 	glEnd ();
 	}
+#endif
 if (!gameStates.ogl.bUseTransform)
 	OglResetTransform (1);
 glLineWidth ((GLfloat) 1);
@@ -1070,7 +1104,7 @@ void CLightning::RenderBuffered (int nDepth, int nThread)
 	int				i, bPlasma;
 	tRgbaColorf		color;
 
-if ((m_nNodes < 0) || (m_nSteps < 0))
+if ((m_nNodes <= 0) || (m_nSteps < 0))
 	return;
 if (gameStates.app.bMultiThreaded)
 	tiRender.ti [nThread].bBlock = 1;
@@ -1128,18 +1162,11 @@ if (bDepthSort > 0) {
 				m_nodes [i].GetChild ()->Render (nDepth + 1, 1, nThread);
 	}
 else {
-	if (!nDepth) {
-		glEnable (GL_BLEND);
-		if ((bDepthSort < 1) || (gameOpts->render.bDepthSort < 1)) {
-			glDepthMask (0);
-			glDisable (GL_CULL_FACE);
-			}
-		}
+	if (!nDepth) 
+		glDisable (GL_CULL_FACE);
 	RenderBuffered (0, nThread);
-	if (!nDepth && ((bDepthSort < 1) || (gameOpts->render.bDepthSort < 1))) {
+	if (!nDepth) 
 		glEnable (GL_CULL_FACE);
-		glDepthMask (1);
-		}
 	glLineWidth (1);
 	glDisable (GL_LINE_SMOOTH);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1189,7 +1216,11 @@ if (!(nLife && nLength && (nNodes > 4)))
 	return false;
 m_nLightnings = nLightnings;
 m_bForcefield = !nDelay && (vEnd || (nAngle <= 0));
+#if USE_NEW
+if (!(m_lightnings = new CLightning [nLightnings]))
+#else
 if (!(m_lightnings = (CLightning *) D2_ALLOC (nLightnings * sizeof (CLightning))))
+#endif
 	return false;
 for (int i = 0; i < nLightnings; i++)
 	if (!m_lightnings [i].Create (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude, 
@@ -1212,7 +1243,12 @@ DestroySound ();
 if (m_lightnings) {
 	for (int i = 0; i < m_nLightnings; i++)
 		m_lightnings [i].Destroy ();
+#if USE_NEW
+	delete[] m_lightnings;
+	 m_lightnings = NULL;
+#else
 	D2_FREE (m_lightnings);
+#endif
 	}
 if ((m_nObject >= 0) && (lightningManager.GetObjectSystem (m_nObject) == m_nId)) {
 	lightningManager.SetObjectSystem (m_nObject, -1);
@@ -1378,8 +1414,15 @@ m_lights = NULL;
 CLightningManager::~CLightningManager () 
 { 
 DestroyAll (true);
+#if USE_NEW
+delete[] m_objects;
+m_objects = NULL;
+delete[] m_lights;
+m_lights = NULL;
+#else
 D2_FREE (m_objects);
 D2_FREE (m_lights); 
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1389,9 +1432,17 @@ void CLightningManager::Init (void)
 	int i, j;
 
 if (!m_objects)
+#if USE_NEW
+	m_objects = new short [MAX_OBJECTS];
+#else
 	GETMEM (short, m_objects, MAX_OBJECTS, (char) 0xff);
+#endif
 if (!m_lights)
+#if USE_NEW
+	m_lights = new tLightningLight [2*MAX_SEGMENTS];
+#else
 	GETMEM (tLightningLight, m_lights, MAX_SEGMENTS, (char) 0xff);
+#endif
 for (i = 0, j = 1; j < MAX_LIGHTNINGS; i++, j++)
 	m_systems [i].SetNext (j);
 m_systems [i].SetNext (-1);

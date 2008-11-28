@@ -767,6 +767,8 @@ if (gameStates.ogl.bDepthBlending) {
 	OglSetReadBuffer (GL_BACK, 1);
 	if (CopyDepthTexture ()) {
 		gameStates.ogl.bUseDepthBlending = 1;
+		if (dMax < 1)
+			dMax = 1;
 		if (gameStates.render.history.nShader != 999) {
 			glUseProgramObject (hGlareShader);
 			gameStates.render.history.nShader = 999;
@@ -789,7 +791,7 @@ if (gameStates.ogl.bDepthBlending) {
 			gameData.render.nShaderChanges++;
 			}
 		else {
-			if (!gameStates.render.automap.bDisplay && (dMaxPrev != dMax)) {
+			if (dMaxPrev != dMax) {
 				glUniform1f (glGetUniformLocation (hGlareShader, "dMax"), (GLfloat) dMax);
 				}
 			}

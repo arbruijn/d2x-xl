@@ -231,8 +231,8 @@ class CLightningManager : public tLightningData {
 		int FindDamageLightning (short nObject, int *pKey);
 		void SetSegmentLight (short nSegment, vmsVector *vPosP, tRgbaColorf *colorP);
 		tRgbaColorf *LightningColor (tObject *objP);
-		inline short GetObjectSystem (short nObject) { return m_objects [nObject]; }
-		inline void SetObjectSystem (short nObject, int i) { m_objects [nObject] = i; }
+		inline short GetObjectSystem (short nObject) { return (m_objects && (nObject >= 0)) ? m_objects [nObject] : -1; }
+		inline void SetObjectSystem (short nObject, int i) { if (m_objects && (nObject >= 0)) m_objects [nObject] = i; }
 		inline tLightningLight* GetLight (short nSegment) { return m_lights + nSegment; }
 	private:
 		int IsUsed (int iLightning);
