@@ -1478,27 +1478,27 @@ LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]=0;
 //--------------------------------------------------------------------
 #if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
- * reads an old_tMatCenInfo structure from a CFILE
+ * reads an old_tMatCenInfo structure from a CFile
  */
-void OldMatCenInfoRead (old_tMatCenInfo *mi, CFILE *fp)
+void OldMatCenInfoRead (old_tMatCenInfo *mi, CFile& cf)
 {
-mi->objFlags = CFReadInt (fp);
-mi->xHitPoints = CFReadFix (fp);
-mi->xInterval = CFReadFix (fp);
-mi->nSegment = CFReadShort (fp);
-mi->nFuelCen = CFReadShort (fp);
+mi->objFlags = cf.ReadInt ();
+mi->xHitPoints = cf.ReadFix ();
+mi->xInterval = cf.ReadFix ();
+mi->nSegment = cf.ReadShort ();
+mi->nFuelCen = cf.ReadShort ();
 }
 
 /*
- * reads a tMatCenInfo structure from a CFILE
+ * reads a tMatCenInfo structure from a CFile
  */
-void MatCenInfoRead (tMatCenInfo *mi, CFILE *fp)
+void MatCenInfoRead (tMatCenInfo *mi, CFile& cf)
 {
-mi->objFlags [0] = CFReadInt (fp);
-mi->objFlags [1] = CFReadInt (fp);
-mi->xHitPoints = CFReadFix (fp);
-mi->xInterval = CFReadFix (fp);
-mi->nSegment = CFReadShort (fp);
-mi->nFuelCen = CFReadShort (fp);
+mi->objFlags [0] = cf.ReadInt ();
+mi->objFlags [1] = cf.ReadInt ();
+mi->xHitPoints = cf.ReadFix ();
+mi->xInterval = cf.ReadFix ();
+mi->nSegment = cf.ReadShort ();
+mi->nFuelCen = cf.ReadShort ();
 }
 #endif

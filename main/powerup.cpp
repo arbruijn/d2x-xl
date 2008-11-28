@@ -1353,17 +1353,17 @@ return h;
 //------------------------------------------------------------------------------
 #if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
- * reads n tPowerupTypeInfo structs from a CFILE
+ * reads n tPowerupTypeInfo structs from a CFile
  */
-extern int PowerupTypeInfoReadN (tPowerupTypeInfo *pti, int n, CFILE *fp)
+extern int PowerupTypeInfoReadN (tPowerupTypeInfo *pti, int n, CFile& cf)
 {
 	int i;
 
 for (i = 0; i < n; i++) {
-	pti [i].nClipIndex = CFReadInt (fp);
-	pti [i].hitSound = CFReadInt (fp);
-	pti [i].size = CFReadFix (fp);
-	pti [i].light = CFReadFix (fp);
+	pti [i].nClipIndex = cf.ReadInt ();
+	pti [i].hitSound = cf.ReadInt ();
+	pti [i].size = cf.ReadFix ();
+	pti [i].light = cf.ReadFix ();
 	}
 return i;
 }

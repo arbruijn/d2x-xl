@@ -95,6 +95,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "powerup.h"
 #include "text.h"
 #include "cfile.h"
+#include "hogfile.h"
 #include "piggy.h"
 #include "textdata.h"
 #include "texmerge.h"
@@ -683,7 +684,7 @@ return gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ?
 
 char *MakeLevelFilename (int nLevel, char *pszFilename, const char *pszFileExt)
 {
-ChangeFilenameExtension (pszFilename, strlwr (LevelName (nLevel)), pszFileExt);
+CFile::ChangeFilenameExtension (pszFilename, strlwr (LevelName (nLevel)), pszFileExt);
 return pszFilename;
 }
 
@@ -892,12 +893,12 @@ for (;;) {
 	nLoadRes = 1;
 	if (bRetry)
 		break;
-	if (strstr (gameHogFiles.AltHogFiles.szName, ".hog"))
+	if (strstr (hogFileManager.AltFiles ().szName, ".hog"))
 		break;
 	sprintf (szHogName, "%s%s%s%s",
 				gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "",
 				gameFolders.szMsnSubDir, pszLevelName);
-	if (!CFUseAltHogFile (szHogName))
+	if (!hogFileManager.UseAlt (szHogName))
 		break;
 	bRetry = 1;
 	};
@@ -1220,7 +1221,7 @@ int PSecretLevelDestroyed (void)
 {
 if (gameStates.app.bFirstSecretVisit)
 	return 0;		//	Never been there, can't have been destroyed.
-if (CFExist (SECRETC_FILENAME, gameFolders.szSaveDir, 0))
+if (CFile::Exist (SECRETC_FILENAME, gameFolders.szSaveDir, 0))
 	return 0;
 return 1;
 }
@@ -1286,7 +1287,7 @@ else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	SetScreenMode (SCREEN_MENU);		//go into menu mode
 	if (gameStates.app.bFirstSecretVisit)
 		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
-	else if (CFExist (SECRETC_FILENAME,gameFolders.szSaveDir,0))
+	else if (CFile::Exist (SECRETC_FILENAME,gameFolders.szSaveDir,0))
 		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
 	else {
 		char	text_str [128];
@@ -1313,7 +1314,7 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_ALL_KEYS;
 	}
 else {
-	if (CFExist (SECRETC_FILENAME, gameFolders.szSaveDir, 0)) {
+	if (CFile::Exist (SECRETC_FILENAME, gameFolders.szSaveDir, 0)) {
 		int	pw_save, sw_save, nCurrentLevel;
 
 		pw_save = gameData.weapons.nPrimary;
@@ -1362,7 +1363,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
 	StateSaveAll (0, 2, 0, SECRETC_FILENAME);
-if (!gameStates.app.bD1Mission && CFExist (SECRETB_FILENAME, gameFolders.szSaveDir, 0)) {
+if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.szSaveDir, 0)) {
 	int pw_save = gameData.weapons.nPrimary;
 	int sw_save = gameData.weapons.nSecondary;
 

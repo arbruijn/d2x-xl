@@ -26,6 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "network_lib.h"
 #include "netmisc.h"
+#include "hogfile.h"
 
 #define SECURITY_CHECK	1
 
@@ -354,9 +355,9 @@ int InitAutoNetGame (void)
 if (!gameData.multiplayer.autoNG.bValid)
 	return 0;
 if (gameData.multiplayer.autoNG.bHost) {
-	CFUseAltHogFile (gameData.multiplayer.autoNG.szFile);
+	hogFileManager.UseAlt (gameData.multiplayer.autoNG.szFile);
 	strcpy (szAutoMission, gameData.multiplayer.autoNG.szMission);
-	gameStates.app.bAutoRunMission = gameHogFiles.AltHogFiles.bInitialized;
+	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	strncpy (mpParams.szGameName, gameData.multiplayer.autoNG.szName, sizeof (mpParams.szGameName));
 	mpParams.nLevel = gameData.multiplayer.autoNG.nLevel;
 	extraGameInfo [0].bEnhancedCTF = 0;

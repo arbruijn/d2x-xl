@@ -718,7 +718,7 @@ return GameDataFilename (pszFilename, "mesh", nLevel,
 
 bool CTriMeshBuilder::Load (int nLevel)
 {
-	CFILE					cf;
+	CFile					cf;
 	tMeshDataHeader	mdh;
 	int					nSize;
 	bool					bOk;
@@ -727,9 +727,9 @@ bool CTriMeshBuilder::Load (int nLevel)
 
 if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 	return false;
-if (!CFOpen (&cf, DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
+if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
 	return false;
-bOk = (CFRead (&mdh, sizeof (mdh), 1, &cf) == 1);
+bOk = (cf.Read (&mdh, sizeof (mdh), 1) == 1);
 if (bOk)
 	bOk = (mdh.nVersion == MESH_DATA_VERSION) &&
 			(mdh.nSegments == gameData.segs.nSegments) &&
@@ -750,7 +750,7 @@ if (bOk)
 if (bOk)
 	bOk = ((ioBuffer = (char *) D2_ALLOC (nSize)) != NULL);
 if (bOk)
-	bOk = CFRead (ioBuffer, nSize, 1, &cf) == 1;
+	bOk = cf.Read (ioBuffer, nSize, 1) == 1;
 if (bOk) {
 	bufP = ioBuffer;
 	memcpy (gameData.segs.vertices, bufP, sizeof (*gameData.segs.vertices) * mdh.nVertices);
@@ -782,7 +782,7 @@ if (bOk) {
 	gameData.segs.nTris = mdh.nTris;
 	SetupVertexNormals ();
 	}
-CFClose (&cf);
+cf.Close ();
 CreateFaceVertLists ();
 return bOk;
 }
@@ -791,7 +791,7 @@ return bOk;
 
 bool CTriMeshBuilder::Save (int nLevel)
 {
-	CFILE					cf;
+	CFile					cf;
 	bool					bOk;
 	char					szFilename [FILENAME_LEN];
 
@@ -804,21 +804,21 @@ bool CTriMeshBuilder::Save (int nLevel)
 
 if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 	return 0;
-if (!CFOpen (&cf, DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
+if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
-bOk = (CFWrite (&mdh, sizeof (mdh), 1, &cf) == 1) &&
-		(CFWrite (gameData.segs.vertices, sizeof (*gameData.segs.vertices) * mdh.nVertices, 1, &cf) == 1) &&
-		(CFWrite (gameData.segs.fVertices, sizeof (*gameData.segs.fVertices) * mdh.nVertices, 1, &cf) == 1) &&
-		(CFWrite (gameData.segs.faces.faces, sizeof (*gameData.segs.faces.faces) * mdh.nFaces, 1, &cf) == 1) &&
-		(CFWrite (gameData.segs.faces.tris, sizeof (*gameData.segs.faces.tris) * mdh.nTris, 1, &cf) == 1) &&
-		(CFWrite (gameData.segs.faces.vertices, sizeof (*gameData.segs.faces.vertices) * mdh.nTris, 3, &cf) == 3) &&
-		(CFWrite (gameData.segs.faces.normals, sizeof (*gameData.segs.faces.normals) * mdh.nTris, 3, &cf) == 3) &&
-		(CFWrite (gameData.segs.faces.texCoord, sizeof (*gameData.segs.faces.texCoord) * mdh.nTris, 3, &cf) == 3) &&
-		(CFWrite (gameData.segs.faces.ovlTexCoord, sizeof (*gameData.segs.faces.ovlTexCoord) * mdh.nTris, 3, &cf) == 3) &&
-		(CFWrite (gameData.segs.faces.color, sizeof (*gameData.segs.faces.color) * mdh.nTris, 3, &cf) == 3) &&
-		(CFWrite (gameData.segs.faces.lMapTexCoord, sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces, 2, &cf) == 2) &&
-		(CFWrite (gameData.segs.faces.faceVerts, sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts, 1, &cf) == 1);
-CFClose (&cf);
+bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
+		(cf.Write (gameData.segs.vertices, sizeof (*gameData.segs.vertices) * mdh.nVertices, 1) == 1) &&
+		(cf.Write (gameData.segs.fVertices, sizeof (*gameData.segs.fVertices) * mdh.nVertices, 1) == 1) &&
+		(cf.Write (gameData.segs.faces.faces, sizeof (*gameData.segs.faces.faces) * mdh.nFaces, 1) == 1) &&
+		(cf.Write (gameData.segs.faces.tris, sizeof (*gameData.segs.faces.tris) * mdh.nTris, 1) == 1) &&
+		(cf.Write (gameData.segs.faces.vertices, sizeof (*gameData.segs.faces.vertices) * mdh.nTris, 3) == 3) &&
+		(cf.Write (gameData.segs.faces.normals, sizeof (*gameData.segs.faces.normals) * mdh.nTris, 3) == 3) &&
+		(cf.Write (gameData.segs.faces.texCoord, sizeof (*gameData.segs.faces.texCoord) * mdh.nTris, 3) == 3) &&
+		(cf.Write (gameData.segs.faces.ovlTexCoord, sizeof (*gameData.segs.faces.ovlTexCoord) * mdh.nTris, 3) == 3) &&
+		(cf.Write (gameData.segs.faces.color, sizeof (*gameData.segs.faces.color) * mdh.nTris, 3) == 3) &&
+		(cf.Write (gameData.segs.faces.lMapTexCoord, sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces, 2) == 2) &&
+		(cf.Write (gameData.segs.faces.faceVerts, sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts, 1) == 1);
+cf.Close ();
 return bOk;
 }
 

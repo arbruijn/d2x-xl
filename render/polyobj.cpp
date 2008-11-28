@@ -54,7 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	MODEL_BUF_SIZE	32768
 
 #define POF_CFSeek(_buf, _len, Type) _POF_CFSeek ((_len), (Type))
-#define POF_ReadIntNew(i, f) POF_CFRead (& (i), sizeof (i), 1, (f))
+#define POF_ReadIntNew(i, f) pof_read (& (i), sizeof (i), 1, (f))
 
 int	Pof_file_end;
 int	Pof_addr;
@@ -82,25 +82,21 @@ int pof_read_int (ubyte *bufp)
 	Pof_addr += 4;
 	return INTEL_INT (i);
 
-//	if (CFRead (&i, sizeof (i), 1, f) != 1)
+//	if (cf.Read (&i, sizeof (i), 1, f) != 1)
 //		Error ("Unexpected end-of-file while reading tObject");
 //
 //	return i;
 }
 
-size_t POF_CFRead (void *dst, size_t elsize, size_t nelem, ubyte *bufp)
+size_t pof_read (void *dst, size_t elsize, size_t nelem, ubyte *bufp)
 {
-	if (nelem*elsize + (size_t) Pof_addr > (size_t) Pof_file_end)
-		return 0;
-
-	memcpy (dst, &bufp [Pof_addr], elsize*nelem);
-
-	Pof_addr += (int) (elsize * nelem);
-
-	if (Pof_addr > MODEL_BUF_SIZE)
-		return 0;
-
-	return nelem;
+if (nelem*elsize + (size_t) Pof_addr > (size_t) Pof_file_end)
+	return 0;
+memcpy (dst, &bufp [Pof_addr], elsize*nelem);
+Pof_addr += (int) (elsize * nelem);
+if (Pof_addr > MODEL_BUF_SIZE)
+	return 0;
+return nelem;
 }
 
 short pof_read_short (ubyte *bufp)
@@ -110,7 +106,7 @@ short pof_read_short (ubyte *bufp)
 	s = * ((short *) &bufp [Pof_addr]);
 	Pof_addr += 2;
 	return INTEL_SHORT (s);
-//	if (CFRead (&s, sizeof (s), 1, f) != 1)
+//	if (cf.Read (&s, sizeof (s), 1, f) != 1)
 //		Error ("Unexpected end-of-file while reading tObject");
 //
 //	return s;
@@ -131,7 +127,7 @@ void pof_read_string (char *buf, int max_char, ubyte *bufp)
 
 void pof_read_vecs (vmsVector *vecs, int n, ubyte *bufp)
 {
-//	CFRead (vecs, sizeof (vmsVector), n, f);
+//	cf.Read (vecs, sizeof (vmsVector), n, f);
 
 memcpy (vecs, &bufp [Pof_addr], n*sizeof (*vecs));
 Pof_addr += n*sizeof (*vecs);
@@ -257,20 +253,20 @@ void AlignPolyModelData (tPolyModel *pm)
 //reads a binary file containing a 3d model
 tPolyModel *ReadModelFile (tPolyModel *pm, const char *filename, tRobotInfo *r)
 {
-	CFILE cf;
+	CFile cf;
 	short version;
-	int id, len, next_chunk;
-	int animFlag = 0;
+	int	id, len, next_chunk;
+	int	animFlag = 0;
 	ubyte *model_buf;
 
 if (!(model_buf = (ubyte *)D2_ALLOC (MODEL_BUF_SIZE * sizeof (ubyte))))
 	Error ("Can't allocate space to read model %s\n", filename);
-if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", 0))
+if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0))
 	Error ("Can't open file <%s>", filename);
-Assert (CFLength (&cf, 0) <= MODEL_BUF_SIZE);
+Assert (cf.Length () <= MODEL_BUF_SIZE);
 Pof_addr = 0;
-Pof_file_end = (int) CFRead (model_buf, 1, CFLength (&cf, 0), &cf);
-CFClose (&cf);
+Pof_file_end = (int) cf.Read (model_buf, 1, cf.Length ());
+cf.Close ();
 id = pof_read_int (model_buf);
 if (id!=0x4f505350) /* 'OPSP' */
 	Error ("Bad ID in model file <%s>", filename);
@@ -372,7 +368,7 @@ while (POF_ReadIntNew (id, model_buf) == 1) {
 		case ID_IDTA:		//Interpreter data
 			pm->modelData = (ubyte *) D2_ALLOC (len);
 			pm->nDataSize = len;
-			POF_CFRead (pm->modelData, 1, len, model_buf);
+			pof_read (pm->modelData, 1, len, model_buf);
 			break;
 
 		default:
@@ -400,7 +396,7 @@ return pm;
 //fills in arrays gunPoints & gun_dirs, returns the number of guns read
 int ReadModelGuns (const char *filename, vmsVector *gunPoints, vmsVector *gun_dirs, int *gunSubModels)
 {
-	CFILE cf;
+	CFile cf;
 	short version;
 	int id, len;
 	int nGuns=0;
@@ -410,14 +406,14 @@ int ReadModelGuns (const char *filename, vmsVector *gunPoints, vmsVector *gun_di
 	if (!model_buf)
 		Error ("Can't allocate space to read model %s\n", filename);
 
-	if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", 0))
+	if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0))
 		Error ("Can't open file <%s>", filename);
 
-	Assert (CFLength (&cf, 0) <= MODEL_BUF_SIZE);
+	Assert (cf.Length () <= MODEL_BUF_SIZE);
 
 	Pof_addr = 0;
-	Pof_file_end = (int) CFRead (model_buf, 1, CFLength (&cf, 0), &cf);
-	CFClose (&cf);
+	Pof_file_end = (int) cf.Read (model_buf, 1, cf.Length ());
+	cf.Close ();
 
 	id = pof_read_int (model_buf);
 
@@ -854,9 +850,9 @@ if (gameStates.ogl.nDrawBuffer != GL_BACK)
 
 #if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
- * reads a tPolyModel structure from a CFILE
+ * reads a tPolyModel structure from a CFile
  */
-int PolyModelRead (tPolyModel *pm, CFILE *fp, int bHMEL)
+int PolyModelRead (tPolyModel *pm, CFile& cf, int bHMEL)
 {
 	int	i;
 
@@ -864,55 +860,55 @@ if (bHMEL) {
 	char	szId [4];
 	int	nElement, nBlocks;
 
-	CFRead (szId, sizeof (szId), 1, fp);
+	cf.Read (szId, sizeof (szId), 1);
 	if (strnicmp (szId, "HMEL", 4))
 		return 0;
-	if (CFReadInt (fp) != 1)
+	if (cf.ReadInt () != 1)
 		return 0;
-	nElement = CFReadInt (fp);
-	nBlocks = CFReadInt (fp);
+	nElement = cf.ReadInt ();
+	nBlocks = cf.ReadInt ();
 	pm->nModels = 1;
 	}
 else
-	pm->nModels = CFReadInt (fp);
-pm->nDataSize = CFReadInt (fp);
-CFReadInt (fp);
+	pm->nModels = cf.ReadInt ();
+pm->nDataSize = cf.ReadInt ();
+cf.ReadInt ();
 pm->modelData = NULL;
 for (i = 0; i < MAX_SUBMODELS; i++)
-	pm->subModels.ptrs [i] = CFReadInt (fp);
+	pm->subModels.ptrs [i] = cf.ReadInt ();
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (pm->subModels.offsets[i], fp);
+	cf.ReadVector (pm->subModels.offsets[i]);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (pm->subModels.norms[i], fp);
+	cf.ReadVector (pm->subModels.norms[i]);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (pm->subModels.pnts[i], fp);
+	cf.ReadVector (pm->subModels.pnts[i]);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	pm->subModels.rads [i] = CFReadFix (fp);
-CFRead (pm->subModels.parents, MAX_SUBMODELS, 1, fp);
+	pm->subModels.rads [i] = cf.ReadFix ();
+cf.Read (pm->subModels.parents, MAX_SUBMODELS, 1);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (pm->subModels.mins[i], fp);
+	cf.ReadVector (pm->subModels.mins[i]);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (pm->subModels.maxs[i], fp);
-CFReadVector (pm->mins, fp);
-CFReadVector (pm->maxs, fp);
-pm->rad = CFReadFix (fp);
-pm->nTextures = CFReadByte (fp);
-pm->nFirstTexture = CFReadShort (fp);
-pm->nSimplerModel = CFReadByte (fp);
+	cf.ReadVector (pm->subModels.maxs[i]);
+cf.ReadVector (pm->mins);
+cf.ReadVector (pm->maxs);
+pm->rad = cf.ReadFix ();
+pm->nTextures = cf.ReadByte ();
+pm->nFirstTexture = cf.ReadShort ();
+pm->nSimplerModel = cf.ReadByte ();
 pm->nType = 0;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 /*
- * reads n tPolyModel structs from a CFILE
+ * reads n tPolyModel structs from a CFile
  */
-int PolyModelReadN (tPolyModel *pm, int n, CFILE *fp)
+int PolyModelReadN (tPolyModel *pm, int n, CFile& cf)
 {
 	int i;
 
 for (i = n; i; i--, pm++)
-	if (!PolyModelRead (pm, fp, 0))
+	if (!PolyModelRead (pm, cf, 0))
 		break;
 return i;
 }
@@ -922,13 +918,13 @@ return i;
 /*
  * routine which allocates, reads, and inits a tPolyModel's modelData
  */
-void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFILE *fp)
+void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf)
 {
 if (pm->modelData)
 	D2_FREE (pm->modelData);
 pm->modelData = (ubyte *) D2_ALLOC (pm->nDataSize);
 Assert (pm->modelData != NULL);
-CFRead (pm->modelData, sizeof (ubyte), pm->nDataSize, fp);
+cf.Read (pm->modelData, sizeof (ubyte), pm->nDataSize);
 if (pdm) {
 	if (pdm->modelData)
 		D2_FREE (pdm->modelData);

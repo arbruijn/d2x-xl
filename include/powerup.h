@@ -136,7 +136,7 @@ void _CDECL_ PowerupBasic(int redadd, int greenadd, int blueadd, int score, cons
 /*
  * reads n tPowerupTypeInfo structs from a CFILE
  */
-extern int PowerupTypeInfoReadN(tPowerupTypeInfo *pti, int n, CFILE *fp);
+extern int PowerupTypeInfoReadN(tPowerupTypeInfo *pti, int n, CFile& cf);
 #endif
 int ApplyCloak (int bForce, int nPlayer);
 int ApplyInvul (int bForce, int nPlayer);

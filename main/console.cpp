@@ -90,8 +90,8 @@ int con_init(void)
 
 #ifdef CONSOLE
 
-#define CON_BG_HIRES (CFExist("scoresb.pcx",gameFolders.szDataDir,0)?"scoresb.pcx":"scores.pcx")
-#define CON_BG_LORES (CFExist("scores.pcx",gameFolders.szDataDir,0)?"scores.pcx":"scoresb.pcx") // Mac datafiles only have scoresb.pcx
+#define CON_BG_HIRES (CFile::Exist("scoresb.pcx",gameFolders.szDataDir,0)?"scoresb.pcx":"scores.pcx")
+#define CON_BG_LORES (CFile::Exist("scores.pcx",gameFolders.szDataDir,0)?"scores.pcx":"scoresb.pcx") // Mac datafiles only have scoresb.pcx
 #define CON_BG ((SWIDTH>=640)?CON_BG_HIRES:CON_BG_LORES)
 
 //------------------------------------------------------------------------------

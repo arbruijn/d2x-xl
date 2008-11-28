@@ -1273,66 +1273,66 @@ return 0;
 #endif
 
 /*
- * reads a tTriggerV29 structure from a CFILE
+ * reads a tTriggerV29 structure from a CFile
  */
-extern void V29TriggerRead (tTriggerV29 *trigP, CFILE *fp)
+extern void V29TriggerRead (tTriggerV29 *trigP, CFile& cf)
 {
 	int	i;
 
-trigP->nType = CFReadByte (fp);
-trigP->flags = CFReadShort (fp);
-trigP->value = CFReadFix (fp);
-trigP->time = CFReadFix (fp);
-trigP->link_num = CFReadByte (fp);
-trigP->nLinks = CFReadShort (fp);
+trigP->nType = cf.ReadByte ();
+trigP->flags = cf.ReadShort ();
+trigP->value = cf.ReadFix ();
+trigP->time = cf.ReadFix ();
+trigP->link_num = cf.ReadByte ();
+trigP->nLinks = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSegment [i] = CFReadShort (fp);
+	trigP->nSegment [i] = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSide [i] = CFReadShort (fp);
+	trigP->nSide [i] = cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
 
 /*
- * reads a tTriggerV30 structure from a CFILE
+ * reads a tTriggerV30 structure from a CFile
  */
-extern void V30TriggerRead (tTriggerV30 *trigP, CFILE *fp)
+extern void V30TriggerRead (tTriggerV30 *trigP, CFile& cf)
 {
 	int i;
 
-trigP->flags = CFReadShort (fp);
-trigP->nLinks = CFReadByte (fp);
-trigP->pad = CFReadByte (fp);
-trigP->value = CFReadFix (fp);
-trigP->time = CFReadFix (fp);
+trigP->flags = cf.ReadShort ();
+trigP->nLinks = cf.ReadByte ();
+trigP->pad = cf.ReadByte ();
+trigP->value = cf.ReadFix ();
+trigP->time = cf.ReadFix ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSegment [i] = CFReadShort (fp);
+	trigP->nSegment [i] = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSide [i] = CFReadShort (fp);
+	trigP->nSide [i] = cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
 
 /*
- * reads a tTrigger structure from a CFILE
+ * reads a tTrigger structure from a CFile
  */
-extern void TriggerRead (tTrigger *trigP, CFILE *fp, int bObjTrigger)
+extern void TriggerRead (tTrigger *trigP, CFile& cf, int bObjTrigger)
 {
 	int i;
 
-trigP->nType = CFReadByte (fp);
+trigP->nType = cf.ReadByte ();
 if (bObjTrigger)
-	trigP->flags = (short) CFReadShort (fp);
+	trigP->flags = (short) cf.ReadShort ();
 else
-	trigP->flags = (short) CFReadByte (fp);
-trigP->nLinks = CFReadByte (fp);
-CFReadByte (fp);
-trigP->value = CFReadFix (fp);
-trigP->time = CFReadFix (fp);
+	trigP->flags = (short) cf.ReadByte ();
+trigP->nLinks = cf.ReadByte ();
+cf.ReadByte ();
+trigP->value = cf.ReadFix ();
+trigP->time = cf.ReadFix ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSegment [i] = CFReadShort (fp);
+	trigP->nSegment [i] = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	trigP->nSide [i] = CFReadShort (fp);
+	trigP->nSide [i] = cf.ReadShort ();
 }
 #endif
 

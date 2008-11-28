@@ -232,12 +232,12 @@ extern int RobotGetAnimState(tJointPos **jp_list_ptr,int robotType,int gun_num,i
 /*
  * reads n tRobotInfo structs from a CFILE
  */
-extern int RobotInfoReadN(tRobotInfo *ri, int n, CFILE *fp);
+extern int RobotInfoReadN(tRobotInfo *ri, int n, CFile& cf);
 
 /*
  * reads n tJointPos structs from a CFILE
  */
-extern int JointPosReadN(tJointPos *jp, int n, CFILE *fp);
+extern int JointPosReadN(tJointPos *jp, int n, CFile& cf);
 #endif
 
 #endif

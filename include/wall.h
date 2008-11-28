@@ -289,7 +289,7 @@ bool WallIsTriggerTarget (short nWall);
 bool WallIsVolatile (short nWall);
 bool WallIsInvisible (short nWall);
 
-extern int wclip_read_n_d1(tWallClip *wc, int n, CFILE *fp);
+extern int wclip_read_n_d1(tWallClip *wc, int n, CFile& cf);
 #if 0
 #define WClipReadN(wc, n, fp) CFRead(wc, sizeof(tWallClip), n, fp)
 #define ReadWallV16(w, fp) CFRead(w, sizeof(tWallV16), 1, fp)
@@ -301,32 +301,32 @@ extern int wclip_read_n_d1(tWallClip *wc, int n, CFILE *fp);
 /*
  * reads n tWallClip structs from a CFILE
  */
-extern int WClipReadN(tWallClip *wc, int n, CFILE *fp);
+extern int WClipReadN(tWallClip *wc, int n, CFile& cf);
 
 /*
  * reads a tWallV16 structure from a CFILE
  */
-void ReadWallV16(tWallV16 *w, CFILE *fp);
+void ReadWallV16(tWallV16 *w, CFile& cf);
 
 /*
  * reads a tWallV19 structure from a CFILE
  */
-void ReadWallV19(tWallV19 *w, CFILE *fp);
+void ReadWallV19(tWallV19 *w, CFile& cf);
 
 /*
  * reads a tWall structure from a CFILE
  */
-void ReadWall(tWall *w, CFILE *fp);
+void ReadWall(tWall *w, CFile& cf);
 
 /*
  * reads a v19_door structure from a CFILE
  */
-void ReadActiveDoorV19(v19_door *d, CFILE *fp);
+void ReadActiveDoorV19(v19_door *d, CFile& cf);
 
 /*
  * reads an tActiveDoor structure from a CFILE
  */
-void ReadActiveDoor(tActiveDoor *ad, CFILE *fp);
+void ReadActiveDoor(tActiveDoor *ad, CFile& cf);
 #endif
 
 #endif

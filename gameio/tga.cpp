@@ -24,7 +24,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int ReadTGAImage (CFILE *cfp, tTgaHeader *ph, grsBitmap *bmP, int alpha, 
+int ReadTGAImage (CFile& cf, tTgaHeader *ph, grsBitmap *bmP, int alpha, 
 						double brightness, int bGrayScale, int bReverse)
 {
 	int				i, j, n, nAlpha = 0, nVisible = 0, nFrames, nBytes = ph->bits / 8;
@@ -50,7 +50,7 @@ if (ph->bits == 24) {
 
 	for (i = bmP->bmProps.h; i; i--) {
 		for (j = w; j; j--, p++) {
-			if (CFRead (&c, 1, 3, cfp) != (size_t) 3)
+			if (cf.Read (&c, 1, 3) != (size_t) 3)
 				return 0;
 			if (bGrayScale) {
 				p->red =
@@ -83,7 +83,7 @@ else {
 			n = nFrames - i / w;
 			nSuperTransp = 0;
 			for (j = w; j; j--, p++) {
-				if (CFRead (&c, 1, 4, cfp) != (size_t) 4)
+				if (cf.Read (&c, 1, 4) != (size_t) 4)
 					return 0;
 				if (bGrayScale) {
 					p->red =
@@ -141,7 +141,7 @@ else {
 			n = nFrames - i / w;
 			nSuperTransp = 0;
 			for (j = w; j; j--, p++) {
-				if (CFRead (&c, 1, 4, cfp) != (size_t) 4)
+				if (cf.Read (&c, 1, 4) != (size_t) 4)
 					return 0;
 				if (bGrayScale) {
 					p->red =
@@ -205,7 +205,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int WriteTGAImage (CFILE *cfp, tTgaHeader *ph, grsBitmap *bmP)
+int WriteTGAImage (CFile& cf, tTgaHeader *ph, grsBitmap *bmP)
 {
 	int				i, j, n, nFrames;
 	int				h = bmP->bmProps.h;
@@ -220,7 +220,7 @@ if (ph->bits == 24) {
 				c.r = p->red;
 				c.g = p->green;
 				c.b = p->blue;
-				if (CFWrite (&c, 1, 3, cfp) != (size_t) 3)
+				if (cf.Write (&c, 1, 3) != (size_t) 3)
 					return 0;
 				}
 			p -= 2 * w;
@@ -234,7 +234,7 @@ if (ph->bits == 24) {
 				c.r = p->red;
 				c.g = p->green;
 				c.b = p->blue;
-				if (CFWrite (&c, 1, 3, cfp) != (size_t) 3)
+				if (cf.Write (&c, 1, 3) != (size_t) 3)
 					return 0;
 				}
 			p -= 2 * w;
@@ -261,7 +261,7 @@ else {
 				c.b = p->blue;
 				c.a = ((p->red == 120) && (p->green == 88) && (p->blue == 128)) ? 255 : p->alpha;
 				}
-			if (CFWrite (&c, 1, 4, cfp) != (size_t) 4)
+			if (cf.Write (&c, 1, 4) != (size_t) 4)
 				return 0;
 			}
 		p -= 2 * w;
@@ -272,24 +272,24 @@ return 1;
 
 //---------------------------------------------------------------
 
-int ReadTGAHeader (CFILE *cfp, tTgaHeader *ph, grsBitmap *bmP)
+int ReadTGAHeader (CFile& cf, tTgaHeader *ph, grsBitmap *bmP)
 {
 	tTgaHeader	h;
 
-h.identSize = (char) CFReadByte (cfp);
-h.colorMapType = (char) CFReadByte (cfp);
-h.imageType = (char) CFReadByte (cfp);
-h.colorMapStart = CFReadShort (cfp);
-h.colorMapLength = CFReadShort (cfp);
-h.colorMapBits = (char) CFReadByte (cfp);
-h.xStart = CFReadShort (cfp);
-h.yStart = CFReadShort (cfp);
-h.width = CFReadShort (cfp);
-h.height = CFReadShort (cfp);
-h.bits = (char) CFReadByte (cfp);
-h.descriptor = (char) CFReadByte (cfp);
+h.identSize = (char) cf.ReadByte ();
+h.colorMapType = (char) cf.ReadByte ();
+h.imageType = (char) cf.ReadByte ();
+h.colorMapStart = cf.ReadShort ();
+h.colorMapLength = cf.ReadShort ();
+h.colorMapBits = (char) cf.ReadByte ();
+h.xStart = cf.ReadShort ();
+h.yStart = cf.ReadShort ();
+h.width = cf.ReadShort ();
+h.height = cf.ReadShort ();
+h.bits = (char) cf.ReadByte ();
+h.descriptor = (char) cf.ReadByte ();
 if (h.identSize)
-	CFSeek (cfp, h.identSize, SEEK_CUR);
+	cf.Seek (h.identSize, SEEK_CUR);
 if (bmP) {
 	GrInitBitmap (bmP, 0, 0, 0, h.width, h.height, h.width, NULL, bmP->bmBPP = h.bits / 8);
 	}
@@ -300,48 +300,48 @@ return 1;
 
 //---------------------------------------------------------------
 
-int WriteTGAHeader (CFILE *cfp, tTgaHeader *ph, grsBitmap *bmP)
+int WriteTGAHeader (CFile& cf, tTgaHeader *ph, grsBitmap *bmP)
 {
 memset (ph, 0, sizeof (*ph));
 ph->width = bmP->bmProps.w;
 ph->height = bmP->bmProps.h;
 ph->bits = bmP->bmBPP * 8;
 ph->imageType = 2;
-CFWriteByte (ph->identSize, cfp);
-CFWriteByte (ph->colorMapType, cfp);
-CFWriteByte (ph->imageType, cfp);
-CFWriteShort (ph->colorMapStart, cfp);
-CFWriteShort (ph->colorMapLength, cfp);
-CFWriteByte (ph->colorMapBits, cfp);
-CFWriteShort (ph->xStart, cfp);
-CFWriteShort (ph->yStart, cfp);
-CFWriteShort (ph->width, cfp);
-CFWriteShort (ph->height, cfp);
+cf.WriteByte (ph->identSize);
+cf.WriteByte (ph->colorMapType);
+cf.WriteByte (ph->imageType);
+cf.WriteShort (ph->colorMapStart);
+cf.WriteShort (ph->colorMapLength);
+cf.WriteByte (ph->colorMapBits);
+cf.WriteShort (ph->xStart);
+cf.WriteShort (ph->yStart);
+cf.WriteShort (ph->width);
+cf.WriteShort (ph->height);
 if (!GrBitmapHasTransparency (bmP))
 	ph->bits = 24;
-CFWriteByte (ph->bits, cfp);
-CFWriteByte (ph->descriptor, cfp);
+cf.WriteByte (ph->bits);
+cf.WriteByte (ph->descriptor);
 if (ph->identSize)
-	CFSeek (cfp, ph->identSize, SEEK_CUR);
+	cf.Seek (ph->identSize, SEEK_CUR);
 return 1;
 }
 
 //---------------------------------------------------------------
 
-int LoadTGA (CFILE *cfp, grsBitmap *bmP, int alpha, double brightness, 
+int LoadTGA (CFile& cf, grsBitmap *bmP, int alpha, double brightness, 
 				 int bGrayScale, int bReverse)
 {
 	tTgaHeader	h;
 
-return ReadTGAHeader (cfp, &h, bmP) &&
-		 ReadTGAImage (cfp, &h, bmP, alpha, brightness, bGrayScale, bReverse);
+return ReadTGAHeader (cf, &h, bmP) &&
+		 ReadTGAImage (cf, &h, bmP, alpha, brightness, bGrayScale, bReverse);
 }
 
 //---------------------------------------------------------------
 
-int WriteTGA (CFILE *cfp, tTgaHeader *ph, grsBitmap *bmP)
+int WriteTGA (CFile& cf, tTgaHeader *ph, grsBitmap *bmP)
 {
-return WriteTGAHeader (cfp, ph, bmP) && WriteTGAImage (cfp, ph, bmP);
+return WriteTGAHeader (cf, ph, bmP) && WriteTGAImage (cf, ph, bmP);
 }
 
 //---------------------------------------------------------------
@@ -349,7 +349,7 @@ return WriteTGAHeader (cfp, ph, bmP) && WriteTGAImage (cfp, ph, bmP);
 int ReadTGA (const char *pszFile, const char *pszFolder, grsBitmap *bmP, int alpha, 
 				 double brightness, int bGrayScale, int bReverse)
 {
-	CFILE	cf = {NULL, 0, 0, 0};
+	CFile	cf;
 	char	fn [FILENAME_LEN], *psz;
 	int	r;
 
@@ -359,20 +359,20 @@ if (!pszFolder)
 if (ReadS3TC (bmP, pszFolder, pszFile))
 	return 1;
 #endif
-if (!CFOpen (&cf, pszFile, pszFolder, "rb", 0) && !(psz = (char *) strstr (pszFile, ".tga"))) {
+if (!cf.Open (pszFile, pszFolder, "rb", 0) && !(psz = (char *) strstr (pszFile, ".tga"))) {
 	strcpy (fn, pszFile);
 	if ((psz = strchr (fn, '.')))
 		*psz = '\0';
 	strcat (fn, ".tga");
 	pszFile = fn;
-	CFOpen (&cf, pszFile, pszFolder, "rb", 0);
+	cf.Open (pszFile, pszFolder, "rb", 0);
 	}
-r = (cf.file != NULL) && LoadTGA (&cf, bmP, alpha, brightness, bGrayScale, bReverse);
+r = (cf.File() != NULL) && LoadTGA (cf, bmP, alpha, brightness, bGrayScale, bReverse);
 #if TEXTURE_COMPRESSION
 if (r && CompressTGA (bmP))
 	SaveS3TC (bmP, pszFolder, pszFile);
 #endif
-CFClose (&cf);
+cf.Close ();
 #if 1//def _DEBUG
 strncpy (bmP->szName, pszFile, sizeof (bmP->szName) - 1);
 if ((psz = strrchr (bmP->szName, '.')))
@@ -405,7 +405,7 @@ return NULL;
 
 int SaveTGA (const char *pszFile, const char *pszFolder, tTgaHeader *ph, grsBitmap *bmP)
 {
-	CFILE			cf = {NULL, 0, 0, 0};
+	CFile			cf;
 	char			szFolder [FILENAME_LEN], fn [FILENAME_LEN];
 	int			r;
 	tTgaHeader	h;
@@ -414,12 +414,12 @@ if (!ph)
 	memset (ph = &h, 0, sizeof (h));
 if (!pszFolder)
 	pszFolder = gameFolders.szDataDir;
-CFSplitPath (pszFile, NULL, fn, NULL);
+CFile::SplitPath (pszFile, NULL, fn, NULL);
 sprintf (szFolder, "%s/%d/", pszFolder, bmP->bmProps.w);
 strcat (fn, ".tga");
-r = CFOpen (&cf, fn, szFolder, "wb", 0) && WriteTGA (&cf, ph, bmP);
-if (cf.file)
-	CFClose (&cf);
+r = cf.Open (fn, szFolder, "wb", 0) && WriteTGA (cf, ph, bmP);
+if (cf.File ())
+	cf.Close ();
 return r;
 }
 
@@ -778,12 +778,13 @@ int ReadModelTGA (const char *pszFile, grsBitmap *bmP, short nType, int bCustom)
 
 if (!pszFile)
 	return 1;
-CFSplitPath (pszFile + 1, NULL, fn, NULL);
+CFile::SplitPath (pszFile + 1, NULL, fn, NULL);
 if (!bCustom && (nShrinkFactor > 1)) {
+	CFile	cf;
 	sprintf (fnBase, "%s.tga", fn);
 	sprintf (szShrunkFolder, "%s/%d", gameFolders.szModelCacheDir, 512 / nShrinkFactor); 
-	tBase = CFDate (fnBase, gameFolders.szModelDir [nType], 0);
-	tShrunk = CFDate (fnBase, szShrunkFolder, 0);
+	tBase = cf.Date (fnBase, gameFolders.szModelDir [nType], 0);
+	tShrunk = cf.Date (fnBase, szShrunkFolder, 0);
 	if ((tShrunk > tBase) && ReadTGA (fnBase, szShrunkFolder, bmP, -1, 1.0, 0, 0)) {
 #if DBG
 		strncpy (bmP->szName, fn, sizeof (bmP->szName));
@@ -798,14 +799,14 @@ UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 if (gameStates.app.bCacheTextures && !bCustom && (nShrinkFactor > 1) && 
 	 (bmP->bmProps.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
 	tTgaHeader	h;
-	CFILE			cf;
+	CFile			cf;
 
 	strcat (fn, ".tga");
-	if (!CFOpen (&cf, fn, gameFolders.szModelDir [nType], "rb", 0))
+	if (!cf.Open (fn, gameFolders.szModelDir [nType], "rb", 0))
 		return 1;
-	if (ReadTGAHeader (&cf, &h, NULL))
+	if (ReadTGAHeader (cf, &h, NULL))
 		SaveTGA (fn, gameFolders.szModelCacheDir, &h, bmP);
-	CFClose (&cf);
+	cf.Close ();
 	}
 return 1;
 }

@@ -317,21 +317,21 @@ else
 
 #if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
- * reads n tVideoClip structs from a CFILE
+ * reads n tVideoClip structs from a CFile
  */
-int VClipReadN(tVideoClip *vc, int n, CFILE *fp)
+int VClipReadN(tVideoClip *vc, int n, CFile& cf)
 {
 	int i, j;
 
 for (i = 0; i < n; i++) {
-	vc[i].xTotalTime = CFReadFix(fp);
-	vc[i].nFrameCount = CFReadInt(fp);
-	vc[i].xFrameTime = CFReadFix(fp);
-	vc[i].flags = CFReadInt(fp);
-	vc[i].nSound = CFReadShort(fp);
+	vc[i].xTotalTime = cf.ReadFix ();
+	vc[i].nFrameCount = cf.ReadInt ();
+	vc[i].xFrameTime = cf.ReadFix ();
+	vc[i].flags = cf.ReadInt ();
+	vc[i].nSound = cf.ReadShort ();
 	for (j = 0; j < VCLIP_MAX_FRAMES; j++)
-		vc[i].frames[j].index = CFReadShort(fp);
-	vc[i].lightValue = CFReadFix(fp);
+		vc[i].frames[j].index = cf.ReadShort ();
+	vc[i].lightValue = cf.ReadFix ();
 	}
 return i;
 }

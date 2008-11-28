@@ -13,23 +13,23 @@
 #include "network.h"
 
 //-------------------------------------------------------------------------
-// reads a tPlayerShip structure from a CFILE
+// reads a tPlayerShip structure from a CFile
  
-void PlayerShipRead (tPlayerShip *ps, CFILE *fp)
+void PlayerShipRead (tPlayerShip *ps, CFile& cf)
 {
 	int i;
 
-ps->nModel = CFReadInt (fp);
-ps->nExplVClip = CFReadInt (fp);
-ps->mass = CFReadFix (fp);
-ps->drag = CFReadFix (fp);
-ps->maxThrust = CFReadFix (fp);
-ps->reverseThrust = CFReadFix (fp);
-ps->brakes = CFReadFix (fp);
-ps->wiggle = CFReadFix (fp);
-ps->maxRotThrust = CFReadFix (fp);
+ps->nModel = cf.ReadInt ();
+ps->nExplVClip = cf.ReadInt ();
+ps->mass = cf.ReadFix ();
+ps->drag = cf.ReadFix ();
+ps->maxThrust = cf.ReadFix ();
+ps->reverseThrust = cf.ReadFix ();
+ps->brakes = cf.ReadFix ();
+ps->wiggle = cf.ReadFix ();
+ps->maxRotThrust = cf.ReadFix ();
 for (i = 0; i < N_PLAYER_GUNS; i++)
-	CFReadVector (ps->gunPoints[i], fp);
+	cf.ReadVector (ps->gunPoints[i]);
 }
 
 //-------------------------------------------------------------------------

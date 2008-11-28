@@ -2691,8 +2691,8 @@ void LoadGameTexts (void)
 #elif DUMP_TEXTS == 3
 	FILE *fTxt = fopen ("d:\\temp\\basetex.h", "wt");
 #endif
-	CFILE	tFile;
-	CFILE	iFile;
+	CFile	tFile;
+	CFile	iFile;
 	int	len, h, i, j, bBinary = 0;
 	char	*psz;
 	const char	*filename = "descent.tex";
@@ -2704,28 +2704,28 @@ fclose (fTxt);
 #endif
 if ((i = FindArg ("-text")))
 	filename = pszArgList [i+1];
-if (!CFOpen (&tFile, filename, gameFolders.szDataDir, "rt", 0)) {
+if (!tFile.Open (filename, gameFolders.szDataDir, "rt", 0)) {
 	filename = "descent.txb";
-	if (!CFOpen (&iFile, filename, gameFolders.szDataDir, "rb", 0)) {
+	if (!iFile.Open (filename, gameFolders.szDataDir, "rb", 0)) {
 		Warning (TXT_NO_TEXTFILES);
 		return;
 	}
 	bBinary = 1;
-	len = CFLength (&iFile, 0);
+	len = iFile.Length ();
 	MALLOC (text, char, len);
 	atexit (free_text);
-	CFRead (text, 1, len, &iFile);
-	CFClose (&iFile);
+	iFile.Read (text, 1, len);
+	iFile.Close ();
 	}
 else {
 	int i;
 	char *pi, *pj;
 
-	len = CFLength (&tFile, 0);
+	len = tFile.Length ();
 	MALLOC (text, char, len);
 	atexit (free_text);
 #if 1
-	CFRead (text, 1, len, &tFile);
+	tFile.Read (text, 1, len);
 	for (i = len, pi = pj = text; i; i--, pi++)
 		if (*pi != 13)
 			*pj++ = *pi;
@@ -2738,7 +2738,7 @@ else {
 			*p++ = c;
 	} while (c != EOF);
 #endif
-	CFClose (&tFile);
+	tFile.Close ();
 	}
 
 j = N_BASE_TEXTS + GameTextCount ();

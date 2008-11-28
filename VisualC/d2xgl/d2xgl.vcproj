@@ -609,6 +609,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\crypt.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\error.h"
 						>
 					</File>
@@ -634,6 +638,26 @@
 					>
 					<File
 						RelativePath="..\..\console\CON_console.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\crypt.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -787,10 +811,6 @@
 					</File>
 					<File
 						RelativePath="..\..\include\credits.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\crypt.h"
 						>
 					</File>
 					<File
@@ -1011,26 +1031,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\credits.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\crypt.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -4125,6 +4125,10 @@
 						RelativePath="..\..\io\win32\findfile.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\..\io\hogfile.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Header Files"
@@ -4139,6 +4143,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\d_io.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\hogfile.h"
 						>
 					</File>
 				</Filter>
@@ -4577,11 +4585,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

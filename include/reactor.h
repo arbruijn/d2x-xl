@@ -60,12 +60,12 @@ fix ReactorStrength (void);
 /*
  * reads n reactor structs from a CFILE
  */
-extern int ReactorReadN(tReactorProps *r, int n, CFILE *fp);
+extern int ReactorReadN(tReactorProps *r, int n, CFile& cf);
 
 /*
  * reads n tReactorTriggers structs from a CFILE
  */
-extern int ControlCenterTriggersReadN(tReactorTriggers *cct, int n, CFILE *fp);
+extern int ControlCenterTriggersReadN(tReactorTriggers *cct, int n, CFile& cf);
 #endif
 
 int FindReactor (tObject *objP);

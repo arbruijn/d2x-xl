@@ -279,10 +279,10 @@ void MakeNearbyRobotSnipe (void);
 void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs);
 void InitThiefForLevel ();
 
-int AISaveBinState (CFILE *fp);
-int AISaveUniState (CFILE *fp);
-int AIRestoreBinState (CFILE *fp, int version);
-int AIRestoreUniState (CFILE *fp, int version);
+int AISaveBinState (CFile& cf);
+int AISaveUniState (CFile& cf);
+int AIRestoreBinState (CFile& cf, int version);
+int AIRestoreUniState (CFile& cf, int version);
 
 int CheckObjectObjectIntersection (vmsVector *pos, fix size, tSegment *segP);
 int DoRobotDyingFrame (tObject *objP, fix StartTime, fix xRollDuration, sbyte *bDyingSoundPlaying, short deathSound, fix xExplScale, fix xSoundScale);

@@ -2296,15 +2296,15 @@ void show_freeObjects (void)
 
 //-----------------------------------------------------------------------------
 /*
- * reads a tVariableLight structure from a CFILE
+ * reads a tVariableLight structure from a CFile
  */
-void ReadVariableLight (tVariableLight *fl, CFILE *fp)
+void ReadVariableLight (tVariableLight *fl, CFile& cf)
 {
-	fl->nSegment = CFReadShort (fp);
-	fl->nSide = CFReadShort (fp);
-	fl->mask = CFReadInt (fp);
-	fl->timer = CFReadFix (fp);
-	fl->delay = CFReadFix (fp);
+fl->nSegment = cf.ReadShort ();
+fl->nSide = cf.ReadShort ();
+fl->mask = cf.ReadInt ();
+fl->timer = cf.ReadFix ();
+fl->delay = cf.ReadFix ();
 }
 
 //-----------------------------------------------------------------------------

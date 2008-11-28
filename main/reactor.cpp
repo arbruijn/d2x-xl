@@ -223,7 +223,7 @@ if (bFinalCountdown ||
 		for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
 			WallToggle (gameData.segs.segments + gameData.reactor.triggers.nSegment [i], gameData.reactor.triggers.nSide [i]);
 		if (gameData.missions.nCurrentLevel < 0)
-			CFDelete ("secret.sgc", gameFolders.szSaveDir);
+			CFile::Delete ("secret.sgc", gameFolders.szSaveDir);
 		}
 	InitCountdown (trigP, bFinalCountdown, -1);
 	}
@@ -522,37 +522,37 @@ if (gameData.reactor.bDestroyed) {
 #if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 //------------------------------------------------------------------------------
 /*
- * reads n reactor structs from a CFILE
+ * reads n reactor structs from a CFile
  */
-extern int ReactorReadN (tReactorProps *r, int n, CFILE *fp)
+extern int ReactorReadN (tReactorProps *r, int n, CFile& cf)
 {
 	int i, j;
 
 for (i = 0; i < n; i++) {
-	r[i].nModel = CFReadInt (fp);
-	r[i].nGuns = CFReadInt (fp);
+	r[i].nModel = cf.ReadInt ();
+	r[i].nGuns = cf.ReadInt ();
 	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-		CFReadVector (r[i].gunPoints[j], fp);
+		cf.ReadVector (r[i].gunPoints[j]);
 	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-		CFReadVector (r[i].gun_dirs[j], fp);
+		cf.ReadVector (r[i].gun_dirs[j]);
 	}
 return i;
 }
 
 //------------------------------------------------------------------------------
 /*
- * reads a tReactorTriggers structure from a CFILE
+ * reads a tReactorTriggers structure from a CFile
  */
-extern int ControlCenterTriggersReadN (tReactorTriggers *cct, int n, CFILE *fp)
+extern int ControlCenterTriggersReadN (tReactorTriggers *cct, int n, CFile& cf)
 {
 	int i, j;
 
 for (i = 0; i < n; i++) {
-	cct->nLinks = CFReadShort (fp);
+	cct->nLinks = cf.ReadShort ();
 	for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
-		cct->nSegment [j] = CFReadShort (fp);
+		cct->nSegment [j] = cf.ReadShort ();
 	for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
-		cct->nSide [j] = CFReadShort (fp);
+		cct->nSide [j] = cf.ReadShort ();
 	}
 return i;
 }

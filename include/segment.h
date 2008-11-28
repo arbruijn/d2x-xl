@@ -293,17 +293,17 @@ extern void med_check_all_vertices();
 /*
  * reads a tSegment2 structure from a CFILE
  */
-void ReadSegment2(tSegment2 *s2, CFILE *fp);
+void ReadSegment2(tSegment2 *s2, CFile& cf);
 
 /*
  * reads a tLightDelta structure from a CFILE
  */
-void ReadlightDelta(tLightDelta *dl, CFILE *fp);
+void ReadlightDelta(tLightDelta *dl, CFile& cf);
 
 /*
  * reads a tLightDeltaIndex structure from a CFILE
  */
-void ReadlightDeltaIndex(tLightDeltaIndex *di, CFILE *fp);
+void ReadlightDeltaIndex(tLightDeltaIndex *di, CFile& cf);
 #endif
 
 int CountSkyBoxSegments (void);

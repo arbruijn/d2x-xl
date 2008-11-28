@@ -412,14 +412,14 @@ static short tmapTimes_used [MAX_TEXTURES];
 // -----------------------------------------------------------------------------
 //loads from an already-open file
 // returns 0=everything ok, 1=old version, -1=error
-int load_mine_data (CFILE *loadFile)
+int load_mine_data (CFile& cf)
 {
 	int   i, j, oldsizeadjust;
 	short tmap_xlate;
 	int 	translate;
 	char 	*temptr;
-	int	mine_start = CFTell (loadFile);
-	bD1PigPresent = CFExist (D1_PIGFILE);
+	int	mine_start = CFTell ();
+	bD1PigPresent = CFile::Exist (D1_PIGFILE);
 
 	oldsizeadjust= (sizeof (int)*2)+sizeof (vmsMatrix);
 	FuelCenReset ();
@@ -489,10 +489,10 @@ int load_mine_data (CFILE *loadFile)
 
 	memset ( &mine_top_fileinfo, 0, sizeof (mine_top_fileinfo) );
 
-	if (CFSeek ( loadFile, mine_start, SEEK_SET ))
+	if (cf.Seek ( loadFile, mine_start, SEEK_SET ))
 		Error ( "Error moving to top of file in gamemine.c" );
 
-	if (CFRead ( &mine_top_fileinfo, sizeof (mine_top_fileinfo), 1, loadFile )!=1)
+	if (cf.Read ( &mine_top_fileinfo, sizeof (mine_top_fileinfo), 1 )!=1)
 		Error ( "Error reading mine_top_fileinfo in gamemine.c" );
 
 	if (mine_top_fileinfo.fileinfo_signature != 0x2884)
@@ -503,10 +503,10 @@ int load_mine_data (CFILE *loadFile)
 		return -1;
 
 	// Now, Read in the fileinfo
-	if (CFSeek ( loadFile, mine_start, SEEK_SET ))
+	if (cf.Seek ( loadFile, mine_start, SEEK_SET ))
 		Error ( "Error seeking to top of file in gamemine.c" );
 
-	if (CFRead ( &mine_fileinfo, mine_top_fileinfo.fileinfo_sizeof, 1, loadFile )!=1)
+	if (cf.Read ( &mine_fileinfo, mine_top_fileinfo.fileinfo_sizeof, 1 )!=1)
 		Error ( "Error reading mine_fileinfo in gamemine.c" );
 
 	if (mine_top_fileinfo.fileinfoVersion < 18) {
@@ -532,10 +532,10 @@ int load_mine_data (CFILE *loadFile)
 
 	if (mine_fileinfo.header_offset > -1 )
 	{
-		if (CFSeek ( loadFile, mine_fileinfo.header_offset, SEEK_SET ))
+		if (cf.Seek ( loadFile, mine_fileinfo.header_offset, SEEK_SET ))
 			Error ( "Error seeking to header_offset in gamemine.c" );
 
-		if (CFRead ( &mine_header, mine_fileinfo.header_size, 1, loadFile )!=1)
+		if (cf.Read ( &mine_header, mine_fileinfo.header_size, 1 )!=1)
 			Error ( "Error reading mine_header in gamemine.c" );
 	}
 
@@ -551,10 +551,10 @@ int load_mine_data (CFILE *loadFile)
 
 	if (mine_fileinfo.editor_offset > -1 )
 	{
-		if (CFSeek ( loadFile, mine_fileinfo.editor_offset, SEEK_SET ))
+		if (cf.Seek ( loadFile, mine_fileinfo.editor_offset, SEEK_SET ))
 			Error ( "Error seeking to editor_offset in gamemine.c" );
 
-		if (CFRead ( &mine_editor, mine_fileinfo.editor_size, 1, loadFile )!=1)
+		if (cf.Read ( &mine_editor, mine_fileinfo.editor_size, 1 )!=1)
 			Error ( "Error reading mine_editor in gamemine.c" );
 	}
 
@@ -562,12 +562,12 @@ int load_mine_data (CFILE *loadFile)
 
 	if ((mine_fileinfo.texture_offset > -1) && (mine_fileinfo.texture_howmany > 0))
 	{
-		if (CFSeek ( loadFile, mine_fileinfo.texture_offset, SEEK_SET ))
+		if (cf.Seek ( loadFile, mine_fileinfo.texture_offset, SEEK_SET ))
 			Error ( "Error seeking to texture_offset in gamemine.c" );
 
 		for (i=0; i< mine_fileinfo.texture_howmany; i++ )
 		{
-			if (CFRead ( &old_tmap_list [i], mine_fileinfo.texture_sizeof, 1, loadFile )!=1)
+			if (cf.Read ( &old_tmap_list [i], mine_fileinfo.texture_sizeof, 1 )!=1)
 				Error ( "Error reading old_tmap_list [i] in gamemine.c" );
 		}
 	}
@@ -634,7 +634,7 @@ int load_mine_data (CFILE *loadFile)
 
 	if ((mine_fileinfo.vertex_offset > -1) && (mine_fileinfo.vertex_howmany > 0))
 	{
-		if (CFSeek ( loadFile, mine_fileinfo.vertex_offset, SEEK_SET ))
+		if (cf.Seek ( loadFile, mine_fileinfo.vertex_offset, SEEK_SET ))
 			Error ( "Error seeking to vertex_offset in gamemine.c" );
 
 		for (i=0; i< mine_fileinfo.vertex_howmany; i++ )
@@ -644,7 +644,7 @@ int load_mine_data (CFILE *loadFile)
 			gameData.segs.vertices [i].y = 1;
 			gameData.segs.vertices [i].z = 1;
 
-			if (CFRead ( &gameData.segs.vertices [i], mine_fileinfo.vertex_sizeof, 1, loadFile )!=1)
+			if (cf.Read ( &gameData.segs.vertices [i], mine_fileinfo.vertex_sizeof, 1 )!=1)
 				Error ( "Error reading gameData.segs.vertices [i] in gamemine.c" );
 		}
 	}
@@ -664,7 +664,7 @@ int load_mine_data (CFILE *loadFile)
 
 	if ((mine_fileinfo.segment_offset > -1) && (mine_fileinfo.segment_howmany > 0))	{
 
-		if (CFSeek ( loadFile, mine_fileinfo.segment_offset, SEEK_SET ))
+		if (cf.Seek ( loadFile, mine_fileinfo.segment_offset, SEEK_SET ))
 
 			Error ( "Error seeking to segment_offset in gamemine.c" );
 
@@ -680,7 +680,7 @@ int load_mine_data (CFILE *loadFile)
 
 				Assert (mine_fileinfo.segment_sizeof == sizeof (v16_seg);
 
-				if (CFRead ( &v16_seg, mine_fileinfo.segment_sizeof, 1, loadFile )!=1)
+				if (cf.Read ( &v16_seg, mine_fileinfo.segment_sizeof, 1 )!=1)
 					Error ( "Error reading segments in gamemine.c" );
 
 				#ifdef EDITOR
@@ -705,7 +705,7 @@ int load_mine_data (CFILE *loadFile)
 				FuelCenActivate ( &gameData.segs.segments [i], gameData.segs.segment2s [i].special );
 
 			} else  {
-				if (CFRead (gameData.segs.segments + i, mine_fileinfo.segment_sizeof, 1, loadFile )!=1)
+				if (cf.Read (gameData.segs.segments + i, mine_fileinfo.segment_sizeof, 1 )!=1)
 					Error ("Unable to read tSegment %i\n", i);
 			}
 
@@ -758,7 +758,7 @@ int load_mine_data (CFILE *loadFile)
 
 		if (mine_top_fileinfo.fileinfoVersion >= 20)
 			for (i = 0; i<=gameData.segs.nLastSegment; i++) {
-				CFRead (gameData.segs.segment2s + i, sizeof (tSegment2), 1, loadFile);
+				cf.Read (gameData.segs.segment2s + i, sizeof (tSegment2), 1);
 				FuelCenActivate (gameData.segs.segments + i, gameData.segs.segment2s [i].special );
 			}
 	}
@@ -775,15 +775,15 @@ int load_mine_data (CFILE *loadFile)
 
 	if (mine_editor.newsegment_offset > -1)
 	{
-		if (CFSeek ( loadFile, mine_editor.newsegment_offset, SEEK_SET ))
+		if (cf.Seek ( loadFile, mine_editor.newsegment_offset, SEEK_SET ))
 			Error ( "Error seeking to newsegment_offset in gamemine.c" );
-		if (CFRead ( &New_segment, mine_editor.newsegment_size, 1, loadFile )!=1)
+		if (cf.Read ( &New_segment, mine_editor.newsegment_size, 1 )!=1)
 			Error ( "Error reading new_segment in gamemine.c" );
 	}
 
 	if ((mine_fileinfo.newseg_verts_offset > -1) && (mine_fileinfo.newseg_verts_howmany > 0))
 	{
-		if (CFSeek ( loadFile, mine_fileinfo.newseg_verts_offset, SEEK_SET ))
+		if (cf.Seek ( loadFile, mine_fileinfo.newseg_verts_offset, SEEK_SET ))
 			Error ( "Error seeking to newseg_verts_offset in gamemine.c" );
 		for (i=0; i< mine_fileinfo.newseg_verts_howmany; i++ )
 		{
@@ -792,7 +792,7 @@ int load_mine_data (CFILE *loadFile)
 			gameData.segs.vertices [NEW_SEGMENT_VERTICES+i].y = 1;
 			gameData.segs.vertices [NEW_SEGMENT_VERTICES+i].z = 1;
 
-			if (CFRead ( &gameData.segs.vertices [NEW_SEGMENT_VERTICES+i], mine_fileinfo.newseg_verts_sizeof, 1, loadFile )!=1)
+			if (cf.Read ( &gameData.segs.vertices [NEW_SEGMENT_VERTICES+i], mine_fileinfo.newseg_verts_sizeof, 1 )!=1)
 				Error ( "Error reading gameData.segs.vertices [NEW_SEGMENT_VERTICES+i] in gamemine.c" );
 
 			New_segment.verts [i] = NEW_SEGMENT_VERTICES+i;
@@ -863,35 +863,35 @@ int load_mine_data (CFILE *loadFile)
 
 //------------------------------------------------------------------------------
 
-void ReadSegChildren (int nSegment, ubyte nSideMask, CFILE *loadFile)
+void ReadSegChildren (int nSegment, ubyte nSideMask, CFile& cf)
 {
 	int nSide;
 
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 	if (nSideMask & (1 << nSide)) 
-		gameData.segs.segments [nSegment].children [nSide] = CFReadShort (loadFile);
+		gameData.segs.segments [nSegment].children [nSide] = cf.ReadShort ();
 	else
 		gameData.segs.segments [nSegment].children [nSide] = -1;
 }
 
 //------------------------------------------------------------------------------
 
-void ReadColor (tFaceColor *pc, CFILE *loadFile, int bFloatData, int bRegisterColor)
+void ReadColor (CFile& cf, tFaceColor *pc, int bFloatData, int bRegisterColor)
 {
-pc->index = CFReadByte (loadFile);
+pc->index = cf.ReadByte ();
 if (bFloatData) {
 	tRgbColord	c;
-	CFRead (&c, sizeof (c), 1, loadFile);
+	cf.Read (&c, sizeof (c), 1);
 	pc->color.red = (float) c.red;
 	pc->color.green = (float) c.green;
 	pc->color.blue = (float) c.blue;
 	}
 else {
-	int c = CFReadInt (loadFile);
+	int c = cf.ReadInt ();
 	pc->color.red = (float) c / (float) 0x7fffffff;
-	c = CFReadInt (loadFile);
+	c = cf.ReadInt ();
 	pc->color.green = (float) c / (float) 0x7fffffff;
-	c = CFReadInt (loadFile);
+	c = cf.ReadInt ();
 	pc->color.blue = (float) c / (float) 0x7fffffff;
 	}
 if (bRegisterColor &&
@@ -904,20 +904,20 @@ pc->color.alpha = 1;
 
 //------------------------------------------------------------------------------
 
-void ReadSegVerts (int nSegment, CFILE *loadFile)
+void ReadSegVerts (int nSegment, CFile& cf)
 {
 for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
-	gameData.segs.segments [nSegment].verts [i] = CFReadShort (loadFile);
+	gameData.segs.segments [nSegment].verts [i] = cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
 
-void ReadSegSpecialType (int nSegment, ubyte bitMask, CFILE *loadFile)
+void ReadSegSpecialType (int nSegment, ubyte bitMask, CFile& cf)
 {
 if (bitMask & (1 << MAX_SIDES_PER_SEGMENT)) {
-	gameData.segs.segment2s [nSegment].special = CFReadByte (loadFile);
-	gameData.segs.segment2s [nSegment].nMatCen = CFReadByte (loadFile);
-	gameData.segs.segment2s [nSegment].value = (char) CFReadShort (loadFile);
+	gameData.segs.segment2s [nSegment].special = cf.ReadByte ();
+	gameData.segs.segment2s [nSegment].nMatCen = cf.ReadByte ();
+	gameData.segs.segment2s [nSegment].value = (char) cf.ReadShort ();
 	}
 else {
 	gameData.segs.segment2s [nSegment].special = 0;
@@ -953,7 +953,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void LoadSegmentsCompiled (short nSegment, CFILE *loadFile)
+void LoadSegmentsCompiled (short nSegment, CFile& cf)
 {
 	short			lastSeg, nSide, i;
 	tSegment		*segP;
@@ -978,37 +978,37 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 #endif
 	segFaceP->nFaces = 0;
 	if (gameStates.app.bD2XLevel) {
-		gameData.segs.xSegments [nSegment].owner = CFReadByte (loadFile);
-		gameData.segs.xSegments [nSegment].group = CFReadByte (loadFile);
+		gameData.segs.xSegments [nSegment].owner = cf.ReadByte ();
+		gameData.segs.xSegments [nSegment].group = cf.ReadByte ();
 		}
 	else {
 		gameData.segs.xSegments [nSegment].owner = -1;
 		gameData.segs.xSegments [nSegment].group = -1;
 		}
 	if (bNewFileFormat)
-		bitMask = CFReadByte (loadFile);
+		bitMask = cf.ReadByte ();
 	else
 		bitMask = 0x7f; // read all six children and special stuff...
 
 	if (gameData.segs.nLevelVersion == 5) { // d2 SHAREWARE level
-		ReadSegSpecialType (nSegment, bitMask, loadFile);
-		ReadSegVerts (nSegment, loadFile);
-		ReadSegChildren (nSegment, bitMask, loadFile);
+		ReadSegSpecialType (nSegment, bitMask, cf);
+		ReadSegVerts (nSegment, cf);
+		ReadSegChildren (nSegment, bitMask, cf);
 		}
 	else {
-		ReadSegChildren (nSegment, bitMask, loadFile);
-		ReadSegVerts (nSegment, loadFile);
+		ReadSegChildren (nSegment, bitMask, cf);
+		ReadSegVerts (nSegment, cf);
 		if (gameData.segs.nLevelVersion <= 1) { // descent 1 level
-			ReadSegSpecialType (nSegment, bitMask, loadFile);
+			ReadSegSpecialType (nSegment, bitMask, cf);
 			}
 		}
 	SEGMENTS [nSegment].objects = -1;
 
 	if (gameData.segs.nLevelVersion <= 5) { // descent 1 thru d2 SHAREWARE level
 		// Read fix	segP->xAvgSegLight (shift down 5 bits, write as short)
-		temp_ushort = CFReadShort (loadFile);
+		temp_ushort = cf.ReadShort ();
 		gameData.segs.segment2s [nSegment].xAvgSegLight	= ((fix)temp_ushort) << 4;
-		//CFRead ( &segP->xAvgSegLight, sizeof (fix), 1, loadFile );
+		//cf.Read ( &segP->xAvgSegLight, sizeof (fix), 1 );
 		}
 
 	// Read the walls as a 6 byte array
@@ -1017,16 +1017,16 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 		}
 
 	if (bNewFileFormat)
-		bitMask = CFReadByte (loadFile);
+		bitMask = cf.ReadByte ();
 	else
 		bitMask = 0x3f; // read all six sides
 	for (nSide = 0, sideP = segP->sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
 		sideP->nWall = (ushort) -1;
 		if (bitMask & (1 << nSide)) {
 			if (gameData.segs.nLevelVersion >= 13)
-				nWall = (ushort) CFReadShort (loadFile);
+				nWall = (ushort) cf.ReadShort ();
 			else
-				nWall = (ushort) ((ubyte) CFReadByte (loadFile));
+				nWall = (ushort) ((ubyte) cf.ReadByte ());
 			if (IS_WALL (nWall))
 				sideP->nWall = nWall;
 			}
@@ -1053,18 +1053,18 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 #endif
 			// Read short sideP->nBaseTex;
 			if (bNewFileFormat) {
-				temp_ushort = CFReadShort (loadFile);
+				temp_ushort = cf.ReadShort ();
 				sideP->nBaseTex = temp_ushort & 0x7fff;
 				}
 			else
-				sideP->nBaseTex = CFReadShort (loadFile);
+				sideP->nBaseTex = cf.ReadShort ();
 			if (gameData.segs.nLevelVersion <= 1)
 				sideP->nBaseTex = ConvertD1Texture (sideP->nBaseTex, 0);
 			if (bNewFileFormat && !(temp_ushort & 0x8000))
 				sideP->nOvlTex = 0;
 			else {
 				// Read short sideP->nOvlTex;
-				short h = CFReadShort (loadFile);
+				short h = cf.ReadShort ();
 				sideP->nOvlTex = h & 0x3fff;
 				sideP->nOvlOrient = (h >> 14) & 3;
 				if ((gameData.segs.nLevelVersion <= 1) && sideP->nOvlTex)
@@ -1074,11 +1074,11 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 			// Read tUVL sideP->uvls [4] (u, v>>5, write as short, l>>1 write as short)
 			GetSideVertIndex (sideVerts, nSegment, nSide);
 			for (i = 0; i < 4; i++) {
-				temp_short = CFReadShort (loadFile);
+				temp_short = cf.ReadShort ();
 				sideP->uvls [i].u = ((fix)temp_short) << 5;
-				temp_short = CFReadShort (loadFile);
+				temp_short = cf.ReadShort ();
 				sideP->uvls [i].v = ((fix)temp_short) << 5;
-				temp_ushort = CFReadShort (loadFile);
+				temp_ushort = cf.ReadShort ();
 #if 0 //LIGHTMAPS
 				if (USE_LIGHTMAPS)
 					sideP->uvls [i].l = F1_0 / 2;
@@ -1098,21 +1098,21 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 
 //------------------------------------------------------------------------------
 
-void LoadSegment2sCompiled (CFILE *loadFile)
+void LoadSegment2sCompiled (CFile& cf)
 {
 	int	i;
 
 gameData.matCens.nRepairCenters = 0;
 for (i = 0; i < gameData.segs.nSegments; i++) {
 	if (gameData.segs.nLevelVersion > 5)
-		ReadSegment2 (gameData.segs.segment2s + i, loadFile);
+		ReadSegment2 (gameData.segs.segment2s + i, cf);
 	FuelCenActivate (gameData.segs.segments + i, gameData.segs.segment2s [i].special);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void LoadVertLightsCompiled (int i, CFILE *loadFile)
+void LoadVertLightsCompiled (int i, CFile& cf)
 {
 	int	j;
 
@@ -1120,7 +1120,7 @@ gameData.render.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
 	for (; i < j; i++) {
-		ReadColor (gameData.render.color.ambient + i, loadFile, gameData.segs.nLevelVersion <= 14, 1);
+		ReadColor (cf, gameData.render.color.ambient + i, gameData.segs.nLevelVersion <= 14, 1);
 		}
 	}
 }
@@ -1169,7 +1169,7 @@ for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
 
 //------------------------------------------------------------------------------
 
-void LoadTexColorsCompiled (int i, CFILE *loadFile)
+void LoadTexColorsCompiled (int i, CFile& cf)
 {
 	int			j;
 
@@ -1177,14 +1177,14 @@ void LoadTexColorsCompiled (int i, CFILE *loadFile)
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, MAX_WALL_TEXTURES);
 	for (; i < j; i++)
-		ReadColor (gameData.render.color.textures + i, loadFile, gameData.segs.nLevelVersion <= 15,
+		ReadColor (cf, gameData.render.color.textures + i, gameData.segs.nLevelVersion <= 15,
 					  gameOpts->render.nLightingMethod);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void LoadSideLightsCompiled (int i, CFILE *loadFile)
+void LoadSideLightsCompiled (int i, CFile& cf)
 {
 	tFaceColor	*pc;
 	int			j;
@@ -1195,7 +1195,7 @@ if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments * 6);
 	pc = gameData.render.color.lights + i;
 	for (; i < j; i++, pc++) {
-		ReadColor (pc, loadFile, gameData.segs.nLevelVersion <= 13, 1);
+		ReadColor (cf, pc, gameData.segs.nLevelVersion <= 13, 1);
 #if 0//SHADOWS
 		RegisterLight (pc, (short) (i / 6), (short) (i % 6));
 #endif
@@ -1281,7 +1281,7 @@ for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; n
 
 static int loadIdx = 0;
 static int loadOp = 0;
-static CFILE *mineDataFile;
+static CFile *mineDataFile;
 
 static int LoadSegmentsPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
@@ -1297,7 +1297,7 @@ bShadows = 1;
 
 GrPaletteStepLoad (NULL);
 if (loadOp == 0) {
-	LoadSegmentsCompiled (loadIdx, mineDataFile);
+	LoadSegmentsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
@@ -1309,11 +1309,11 @@ else if (loadOp == 1) {
 	loadOp = 2;
 	}
 else if (loadOp == 2) {
-	LoadSegment2sCompiled (mineDataFile);
+	LoadSegment2sCompiled (*mineDataFile);
 	loadOp = 3;
 	}
 else if (loadOp == 3) {
-	LoadVertLightsCompiled (loadIdx, mineDataFile);
+	LoadVertLightsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (!gameStates.app.bD2XLevel || (loadIdx >= gameData.segs.nVertices)) {
 		loadIdx = 0;
@@ -1321,7 +1321,7 @@ else if (loadOp == 3) {
 		}
 	}
 else if (loadOp == 4) {
-	LoadSideLightsCompiled (loadIdx, mineDataFile);
+	LoadSideLightsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= (gameStates.app.bD2XLevel ?
 						 gameData.segs.nSegments * 6 : bShadows ? gameData.segs.nSegments : 1)) {
@@ -1330,7 +1330,7 @@ else if (loadOp == 4) {
 		}
 	}
 else if (loadOp == 5) {
-	LoadTexColorsCompiled (loadIdx, mineDataFile);
+	LoadTexColorsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (!gameStates.app.bD2XLevel || (loadIdx >= MAX_WALL_TEXTURES)) {
 		loadIdx = 0;
@@ -1387,17 +1387,17 @@ return i;
 
 //------------------------------------------------------------------------------
 
-void LoadSegmentsGauge (CFILE *loadFile)
+void LoadSegmentsGauge (CFile& cf)
 {
 loadOp = 0;
 loadIdx = 0;
-mineDataFile = loadFile;
+mineDataFile = &cf;
 NMProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), LoadSegmentsPoll);
 }
 
 //------------------------------------------------------------------------------
 
-int LoadMineSegmentsCompiled (CFILE *loadFile)
+int LoadMineSegmentsCompiled (CFile& cf)
 {
 	int			i;
 	ubyte			nCompiledVersion;
@@ -1413,7 +1413,7 @@ gameData.segs.vMax[X] =
 gameData.segs.vMax[Y] =
 gameData.segs.vMax[Y] = -0x7fffffff;*/
 gameStates.render.bColored = 0;
-bD1PigPresent = CFExist (D1_PIGFILE, gameFolders.szDataDir, 0);
+bD1PigPresent = CFile::Exist (D1_PIGFILE, gameFolders.szDataDir, 0);
 psz = strchr (gameData.segs.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");
 //	For compiled levels, textures map to themselves, prevent nTexOverride always being gray,
@@ -1426,19 +1426,19 @@ for (i = 0; i < MAX_TEXTURES; i++)
 //	memset ( gameData.segs.segments, 0, sizeof (tSegment)*MAX_SEGMENTS );
 FuelCenReset ();
 //=============================== Reading part ==============================
-nCompiledVersion = CFReadByte (loadFile);
+nCompiledVersion = cf.ReadByte ();
 //Assert ( nCompiledVersion==COMPILED_MINE_VERSION );
 #if TRACE
 if (nCompiledVersion != COMPILED_MINE_VERSION)
 	con_printf (CONDBG, "compiled mine version=%i\n", nCompiledVersion); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
 con_printf (CONDBG, "   compiled mine version = %d\n", nCompiledVersion);
 #endif
-gameData.segs.nVertices = bNewFileFormat ? CFReadShort (loadFile) : CFReadInt (loadFile);
+gameData.segs.nVertices = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
 Assert (gameData.segs.nVertices <= MAX_VERTICES);
 #if TRACE
 con_printf (CONDBG, "   %d vertices\n", gameData.segs.nVertices);
 #endif
-gameData.segs.nSegments = bNewFileFormat ? CFReadShort (loadFile) : CFReadInt (loadFile);
+gameData.segs.nSegments = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
 if (gameData.segs.nSegments >= MAX_SEGMENTS) {
 	Warning (TXT_LEVEL_TOO_LARGE);
 	return -1;
@@ -1447,7 +1447,7 @@ if (gameData.segs.nSegments >= MAX_SEGMENTS) {
 con_printf (CONDBG, "   %d segments\n", gameData.segs.nSegments);
 #endif
 for (i = 0; i < gameData.segs.nVertices; i++) {
-	CFReadVector (gameData.segs.vertices[i], loadFile);
+	cf.ReadVector (gameData.segs.vertices[i]);
 #if !FLOAT_COORD
 	gameData.segs.fVertices [i][X] = X2F (gameData.segs.vertices [i][X]);
 	gameData.segs.fVertices [i][Y] = X2F (gameData.segs.vertices [i][Y]);
@@ -1473,14 +1473,14 @@ con_printf (CONDBG, "   loading segments ...\n");
 gameData.segs.nLastVertex = gameData.segs.nVertices - 1;
 gameData.segs.nLastSegment = gameData.segs.nSegments - 1;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
-	LoadSegmentsGauge (loadFile);
+	LoadSegmentsGauge (cf);
 else {
-	LoadSegmentsCompiled (-1, loadFile);
+	LoadSegmentsCompiled (-1, cf);
 	ValidateSegmentAll ();			// Fill in side type and normals.
-	LoadSegment2sCompiled (loadFile);
-	LoadVertLightsCompiled (-1, loadFile);
-	LoadSideLightsCompiled (-1, loadFile);
-	LoadTexColorsCompiled (-1, loadFile);
+	LoadSegment2sCompiled (cf);
+	LoadVertLightsCompiled (-1, cf);
+	LoadSideLightsCompiled (-1, cf);
+	LoadTexColorsCompiled (-1, cf);
 	ComputeSegSideCenters (-1);
 	}
 gameData.segs.fRad = X2F (vmsVector::Dist(gameData.segs.vMax, gameData.segs.vMin));

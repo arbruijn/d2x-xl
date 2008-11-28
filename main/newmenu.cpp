@@ -351,8 +351,8 @@ else if (bmP != pAltBg)
 
 //------------------------------------------------------------------------------
 
-#define MENU_BACKGROUND_BITMAP_HIRES (CFExist ("scoresb.pcx", gameFolders.szDataDir, 0)?"scoresb.pcx":"scores.pcx")
-#define MENU_BACKGROUND_BITMAP_LORES (CFExist ("scores.pcx", gameFolders.szDataDir, 0)?"scores.pcx":"scoresb.pcx") // Mac datafiles only have scoresb.pcx
+#define MENU_BACKGROUND_BITMAP_HIRES (CFile::Exist ("scoresb.pcx", gameFolders.szDataDir, 0)?"scoresb.pcx":"scores.pcx")
+#define MENU_BACKGROUND_BITMAP_LORES (CFile::Exist ("scores.pcx", gameFolders.szDataDir, 0)?"scores.pcx":"scoresb.pcx") // Mac datafiles only have scoresb.pcx
 
 #define MENU_BACKGROUND_BITMAP (gameStates.menus.bHires ? MENU_BACKGROUND_BITMAP_HIRES : MENU_BACKGROUND_BITMAP_LORES)
 
@@ -2527,7 +2527,7 @@ void DeletePlayerSavedGames (char *name)
 
 for (i = 0; i < 10; i++) {
 	sprintf (filename, "%s.sg%d", name, i);
-	CFDelete (filename, gameFolders.szSaveDir);
+	CFile::Delete (filename, gameFolders.szSaveDir);
 	}
 }
 
@@ -2781,11 +2781,11 @@ while (!done)	{
 				p = pszFile + strlen (pszFile);
 				if (bPlayerMode)
 					*p = '.';
-				ret = CFDelete (pszFile, bPlayerMode ? gameFolders.szProfDir : gameFolders.szDemoDir);
+				ret = CFile::Delete (pszFile, bPlayerMode ? gameFolders.szProfDir : gameFolders.szDemoDir);
 				if (bPlayerMode) {
 					if (!ret) {
 						p [3] = 'x';	//turn ".plr" to ".plx"
-						CFDelete (pszFile, gameFolders.szProfDir);
+						CFile::Delete (pszFile, gameFolders.szProfDir);
 						*p = 0;
 						DeletePlayerSavedGames (pszFile);
 						}
@@ -3057,7 +3057,7 @@ return exitValue;
 // 
 // 	if (*keypress = KEY_CTRLED+KEY_D)	{
 // 		if (*nItems > 1)	{
-// 			CFDelete (itemP [*nItem]);    // Delete the file
+// 			CFile::Delete (itemP [*nItem]);    // Delete the file
 // 			for (i=*nItem; i<*nItems-1; i++)	{
 // 				itemP [i] = itemP [i+1];
 // 			}

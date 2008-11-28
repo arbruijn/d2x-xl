@@ -132,8 +132,8 @@ static int		bRevertFormat = -1;
 
 #define DEMO_FILENAME           "tmpdemo.dem"
 
-CFILE ndInFile = {NULL, 0, 0, 0};
-CFILE ndOutFile = {NULL, 0, 0, 0};
+CFile ndInFile;
+CFile ndOutFile;
 
 //	-----------------------------------------------------------------------------
 
@@ -178,9 +178,9 @@ gameData.demo.xJasonPlaybackTotal = 0;
 int NDGetPercentDone () 
 {
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
-	return (CFTell (&ndInFile) * 100) / gameData.demo.nSize;
+	return (ndInFile.Tell () * 100) / gameData.demo.nSize;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	return CFTell (&ndOutFile);
+	return ndOutFile.Tell ();
 return 0;
 }
 
@@ -233,7 +233,7 @@ return -1;
 
 void CHK (void)
 {
-Assert (&ndOutFile.file != NULL);
+Assert (&ndOutFile.File () != NULL);
 if (gameData.demo.nWritten >= 750)
 	gameData.demo.nWritten = gameData.demo.nWritten;
 }
@@ -252,9 +252,9 @@ int NDWrite (void *buffer, int elsize, int nelem)
 
 gameData.demo.nFrameBytesWritten += nTotalSize;
 gameData.demo.nWritten += nTotalSize;
-Assert (&ndOutFile.file != NULL);
+Assert (&ndOutFile.File () != NULL);
 CHK();
-nWritten = CFWrite (buffer, elsize, nelem, &ndOutFile);
+nWritten = ndOutFile.Write (buffer, elsize, nelem);
 if ((bRevertFormat < 1) && (gameData.demo.nWritten > gameData.demo.nSize) && !gameData.demo.bNoSpace)
 	gameData.demo.bNoSpace = 1;
 if ((nWritten == nelem) && !gameData.demo.bNoSpace)
@@ -277,7 +277,7 @@ static inline void NDWriteByte (sbyte b)
 gameData.demo.nFrameBytesWritten += sizeof (b);
 gameData.demo.nWritten += sizeof (b);
 CHK();
-CFWriteByte (b, &ndOutFile);
+ndOutFile.WriteByte (b);
 }
 
 //	-----------------------------------------------------------------------------
@@ -287,7 +287,7 @@ static inline void NDWriteShort (short s)
 gameData.demo.nFrameBytesWritten += sizeof (s);
 gameData.demo.nWritten += sizeof (s);
 CHK();
-CFWriteShort (s, &ndOutFile);
+ndOutFile.WriteShort (s);
 }
 
 //	-----------------------------------------------------------------------------
@@ -297,7 +297,7 @@ static void NDWriteInt (int i)
 gameData.demo.nFrameBytesWritten += sizeof (i);
 gameData.demo.nWritten += sizeof (i);
 CHK();
-CFWriteInt (i, &ndOutFile);
+ndOutFile.WriteInt (i);
 }
 
 //	-----------------------------------------------------------------------------
@@ -317,7 +317,7 @@ static inline void NDWriteFix (fix f)
 gameData.demo.nFrameBytesWritten += sizeof (f);
 gameData.demo.nWritten += sizeof (f);
 CHK();
-CFWriteFix (f, &ndOutFile);
+ndOutFile.WriteFix (f);
 }
 
 //	-----------------------------------------------------------------------------
@@ -326,7 +326,7 @@ static inline void NDWriteFixAng (fixang f)
 {
 gameData.demo.nFrameBytesWritten += sizeof (f);
 gameData.demo.nWritten += sizeof (f);
-CFWriteFixAng (f, &ndOutFile);
+ndOutFile.WriteFixAng (f);
 }
 
 //	-----------------------------------------------------------------------------
@@ -336,7 +336,7 @@ static inline void NDWriteVector(const vmsVector& v)
 gameData.demo.nFrameBytesWritten += sizeof (v);
 gameData.demo.nWritten += sizeof (v);
 CHK();
-CFWriteVector (v, &ndOutFile);
+ndOutFile.WriteVector (v);
 }
 
 //	-----------------------------------------------------------------------------
@@ -346,7 +346,7 @@ static inline void NDWriteAngVec (const vmsAngVec& v)
 gameData.demo.nFrameBytesWritten += sizeof (v);
 gameData.demo.nWritten += sizeof (v);
 CHK();
-CFWriteAngVec (v, &ndOutFile);
+ndOutFile.WriteAngVec (v);
 }
 
 //	-----------------------------------------------------------------------------
@@ -356,7 +356,7 @@ static inline void NDWriteMatrix (const vmsMatrix& m)
 gameData.demo.nFrameBytesWritten += sizeof (m);
 gameData.demo.nWritten += sizeof (m);
 CHK();
-CFWriteMatrix(m, &ndOutFile);
+ndOutFile.WriteMatrix(m);
 }
 
 //	-----------------------------------------------------------------------------
@@ -397,8 +397,8 @@ else {
 
 int NDRead (void *buffer, int elsize, int nelem)
 {
-int nRead = (int) CFRead (buffer, elsize, nelem, &ndInFile);
-if (CFError (&ndInFile) || CFEoF (&ndInFile))
+int nRead = (int) ndInFile.Read (buffer, elsize, nelem);
+if (ndInFile.Error () || ndInFile.EoF ())
 	bNDBadRead = -1;
 else if (bRevertFormat > 0)
 	NDWrite (buffer, elsize, nelem);
@@ -410,11 +410,11 @@ return nRead;
 static inline ubyte NDReadByte (void)
 {
 if (bRevertFormat > 0) {
-	ubyte	h = CFReadByte (&ndInFile);
+	ubyte	h = ndInFile.ReadByte ();
 	NDWriteByte (h);
 	return h;
 	}
-return CFReadByte (&ndInFile);
+return ndInFile.ReadByte ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -422,11 +422,11 @@ return CFReadByte (&ndInFile);
 static inline short NDReadShort (void)
 {
 if (bRevertFormat > 0) {
-	short	h = CFReadShort (&ndInFile);
+	short	h = ndInFile.ReadShort ();
 	NDWriteShort (h);
 	return h;
 	}
-return CFReadShort (&ndInFile);
+return ndInFile.ReadShort ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -434,11 +434,11 @@ return CFReadShort (&ndInFile);
 static inline int NDReadInt ()
 {
 if (bRevertFormat > 0) {
-	int h = CFReadInt (&ndInFile);
+	int h = ndInFile.ReadInt ();
 	NDWriteInt (h);
 	return h;
 	}
-return CFReadInt (&ndInFile);
+return ndInFile.ReadInt ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -457,11 +457,11 @@ return str;
 static inline fix NDReadFix (void)
 {
 if (bRevertFormat > 0) {
-	fix h = CFReadFix (&ndInFile);
+	fix h = ndInFile.ReadFix ();
 	NDWriteFix (h);
 	return h;
 	}
-return CFReadFix (&ndInFile);
+return ndInFile.ReadFix ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -469,18 +469,18 @@ return CFReadFix (&ndInFile);
 static inline fixang NDReadFixAng (void)
 {
 if (bRevertFormat > 0) {
-	fixang h = CFReadFixAng (&ndInFile);
+	fixang h = ndInFile.ReadFixAng ();
 	NDWriteFixAng (h);
 	return h;
 	}
-return CFReadFixAng (&ndInFile);
+return ndInFile.ReadFixAng ();
 }
 
 //	-----------------------------------------------------------------------------
 
 static inline void NDReadVector(vmsVector& v)
 {
-CFReadVector(v, &ndInFile);
+ndInFile.ReadVector(v);
 if (bRevertFormat > 0)
 	NDWriteVector(v);
 }
@@ -489,7 +489,7 @@ if (bRevertFormat > 0)
 
 static inline void NDReadAngVec (vmsAngVec& v)
 {
-CFReadAngVec (v, &ndInFile);
+ndInFile.ReadAngVec (v);
 if (bRevertFormat > 0)
 	NDWriteAngVec (v);
 }
@@ -498,7 +498,7 @@ if (bRevertFormat > 0)
 
 static inline void NDReadMatrix(vmsMatrix& m)
 {
-CFReadMatrix(m, &ndInFile);
+ndInFile.ReadMatrix(m);
 if (bRevertFormat > 0)
 	NDWriteMatrix (m);
 }
@@ -519,7 +519,7 @@ if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == R
 	if (gameData.demo.bUseShortPos)
 		NDRead (sp.orient, sizeof (sp.orient [0]), sizeof (sp.orient) / sizeof (sp.orient [0]));
 	else
-		CFReadMatrix(objP->info.position.mOrient, &ndInFile);
+		ndInFile.ReadMatrix(objP->info.position.mOrient);
 	}
 if (gameData.demo.bUseShortPos) {
 	sp.pos [X] = NDReadShort ();
@@ -569,7 +569,7 @@ if (!bRevertFormat) {
 		}
 	else {
 		bSkip = 1;
-		CFSeek (&ndOutFile, -1, SEEK_CUR);
+		ndOutFile.Seek (-1, SEEK_CUR);
 		gameData.demo.nFrameBytesWritten--;
 		gameData.demo.nWritten--;
 		}
@@ -1586,7 +1586,6 @@ int NDReadDemoStart (int bRandom)
 	int	nVersionFilter;
 	char	szMsg [128], szCurrentMission [FILENAME_LEN];
 
-i = CFTell (&ndInFile);
 c = NDReadByte ();
 if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {
 	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_CORRUPT);
@@ -1666,7 +1665,6 @@ if (laserLevel != LOCALPLAYER.laserLevel) {
 	UpdateLaserWeaponInfo ();
 	}
 // Support for missions
-i = CFTell (&ndInFile);
 NDReadString (szCurrentMission);
 nVersionFilter = gameOpts->app.nVersionFilter;
 gameOpts->app.nVersionFilter = 3;	//make sure mission will be loaded
@@ -2609,14 +2607,14 @@ while (!bDone) {
 
 		case ND_EVENT_EOF:
 			bDone = -1;
-			CFSeek (&ndInFile, -1, SEEK_CUR);        // get back to the EOF marker
+			ndInFile.Seek (-1, SEEK_CUR);        // get back to the EOF marker
 			gameData.demo.bEof = 1;
 			gameData.demo.nFrameCount++;
 			break;
 
 		default:
 			bDone = -1;
-			CFSeek (&ndInFile, -1, SEEK_CUR);        // get back to the EOF marker
+			ndInFile.Seek (-1, SEEK_CUR);        // get back to the EOF marker
 			gameData.demo.bEof = 1;
 			gameData.demo.nFrameCount++;
 			break;
@@ -2634,7 +2632,7 @@ return bDone;
 
 void NDGotoBeginning ()
 {
-CFSeek (&ndInFile, 0, SEEK_SET);
+ndInFile.Seek (0, SEEK_SET);
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
 if (NDReadDemoStart (0))
 	NDStopPlayback ();
@@ -2655,7 +2653,7 @@ void NDGotoEnd ()
 	ubyte energy, shield, c;
 	int i, loc, bint;
 
-CFSeek (&ndInFile, -2, SEEK_END);
+ndInFile.Seek (-2, SEEK_END);
 level = NDReadByte ();
 if ((level < gameData.missions.nLastSecretLevel) || (level > gameData.missions.nLastLevel)) {
 	NDErrorMsg (TXT_CANT_PLAYBACK, TXT_LEVEL_CANT_LOAD, TXT_DEMO_OLD_CORRUPT);
@@ -2664,12 +2662,12 @@ if ((level < gameData.missions.nLastSecretLevel) || (level > gameData.missions.n
 	}
 if (level != gameData.missions.nCurrentLevel)
 	LoadLevel (level, 1, 0);
-CFSeek (&ndInFile, -4, SEEK_END);
+ndInFile.Seek (-4, SEEK_END);
 byteCount = NDReadShort ();
-CFSeek (&ndInFile, -2 - byteCount, SEEK_CUR);
+ndInFile.Seek (-2 - byteCount, SEEK_CUR);
 
 nFrameLength = NDReadShort ();
-loc = CFTell (&ndInFile);
+loc = ndInFile.Tell ();
 if (gameData.demo.nGameMode & GM_MULTI)
 	gameData.demo.bPlayersCloaked = NDReadByte ();
 else
@@ -2718,10 +2716,10 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 	}
 else
 	LOCALPLAYER.score = NDReadInt ();
-CFSeek (&ndInFile, loc - nFrameLength, SEEK_SET);
+ndInFile.Seek (loc - nFrameLength, SEEK_SET);
 gameData.demo.nFrameCount = NDReadInt ();            // get the frame count
 gameData.demo.nFrameCount--;
-CFSeek (&ndInFile, 4, SEEK_CUR);
+ndInFile.Seek (4, SEEK_CUR);
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
 NDReadFrameInfo ();           // then the frame information
 gameData.demo.nVcrState = ND_STATE_PAUSED;
@@ -2734,9 +2732,9 @@ inline void NDBackOneFrame (void)
 {
 	short nPrevFrameLength;
 
-CFSeek (&ndInFile, -10, SEEK_CUR);
+ndInFile.Seek (-10, SEEK_CUR);
 nPrevFrameLength = NDReadShort ();
-CFSeek (&ndInFile, 8 - nPrevFrameLength, SEEK_CUR);
+ndInFile.Seek (8 - nPrevFrameLength, SEEK_CUR);
 }
 
 //	-----------------------------------------------------------------------------
@@ -2895,7 +2893,7 @@ if ((gameData.demo.nVcrState == ND_STATE_REWINDING) ||
 		}
 	nFramesBack = (gameData.demo.nVcrState == ND_STATE_REWINDING) ? 10 : 1;
 	if (gameData.demo.bEof) {
-		CFSeek (&ndInFile, 11, SEEK_CUR);
+		ndInFile.Seek (11, SEEK_CUR);
 		}
 	NDBackFrames (nFramesBack);
 	if (level != gameData.missions.nCurrentLevel)
@@ -3046,16 +3044,16 @@ gameData.demo.nWritten = 0;
 gameData.demo.bNoSpace = 0;
 gameData.demo.xStartTime = gameData.time.xGame;
 gameData.demo.nState = ND_STATE_RECORDING;
-CFOpen (&ndOutFile, DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
+ndOutFile.Open (DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
 #ifndef _WIN32_WCE
-if (!ndOutFile.file && (errno == ENOENT)) {   //dir doesn't exist?
+if (!ndOutFile.File () && (errno == ENOENT)) {   //dir doesn't exist?
 #else
-if (&ndOutFile.file) {                      //dir doesn't exist and no errno on mac!
+if (&ndOutFile.File ()) {                      //dir doesn't exist and no errno on mac!
 #endif
-	CFMkDir (gameFolders.szDemoDir); //try making directory
-	CFOpen (&ndOutFile, DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
+	CFile::MkDir (gameFolders.szDemoDir); //try making directory
+	ndOutFile.Open (DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
 	}
-if (!ndOutFile.file) {
+if (!ndOutFile.File ()) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, "Cannot open demo temp file");
 	gameData.demo.nState = ND_STATE_NORMAL;
 	}
@@ -3125,7 +3123,7 @@ else {
 NDWriteShort (byteCount);
 NDWriteByte ((sbyte) gameData.missions.nCurrentLevel);
 NDWriteByte (ND_EVENT_EOF);
-CFClose (&ndOutFile);
+ndOutFile.Close ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -3196,12 +3194,12 @@ if (exit == -2) {                   // got bumped out from network menu
 		strcat (save_file, ".dem");
 	} else
 		sprintf (save_file, "tmp%d.dem", tmpcnt++);
-	CFDelete (save_file, gameFolders.szDemoDir);
-	CFRename (DEMO_FILENAME, save_file, gameFolders.szDemoDir);
+	CFile::Delete (save_file, gameFolders.szDemoDir);
+	CFile::Rename (DEMO_FILENAME, save_file, gameFolders.szDemoDir);
 	return;
 	}
 if (exit == -1) {               // pressed ESC
-	CFDelete (DEMO_FILENAME, gameFolders.szDemoDir);      // might as well remove the file
+	CFile::Delete (DEMO_FILENAME, gameFolders.szDemoDir);      // might as well remove the file
 	return;                     // return without doing anything
 	}
 if (filename [0]==0) //null string
@@ -3217,8 +3215,8 @@ if (gameData.demo.bNoSpace)
 else
 	strcpy (fullname, m [0].text);
 strcat (fullname, ".dem");
-CFDelete (fullname, gameFolders.szDemoDir);
-CFRename (DEMO_FILENAME, fullname, gameFolders.szDemoDir);
+CFile::Delete (fullname, gameFolders.szDemoDir);
+CFile::Rename (DEMO_FILENAME, fullname, gameFolders.szDemoDir);
 }
 
 //	-----------------------------------------------------------------------------
@@ -3302,7 +3300,7 @@ if (!filename)
 	return;
 strcpy (filename2, filename);
 bRevertFormat = gameOpts->demo.bRevertFormat ? 1 : -1;
-if (!CFOpen (&ndInFile, filename2, gameFolders.szDemoDir, "rb", 0)) {
+if (!ndInFile.Open (filename2, gameFolders.szDemoDir, "rb", 0)) {
 #if TRACE			
 	con_printf (CONDBG, "Error reading '%s'\n", filename);
 #endif
@@ -3310,29 +3308,29 @@ if (!CFOpen (&ndInFile, filename2, gameFolders.szDemoDir, "rb", 0)) {
 	}
 if (bRevertFormat > 0) {
 	strcat (filename2, ".v15");
-	if (!CFOpen (&ndOutFile, filename2, gameFolders.szDemoDir, "wb", 0))
+	if (!ndOutFile.Open (filename2, gameFolders.szDemoDir, "wb", 0))
 		bRevertFormat = -1;
 	}
 else
-	ndOutFile.file = NULL;
+	ndOutFile.File () = NULL;
 bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
 strncpy (gameData.demo.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
 gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS;   // play properly as if console tPlayer
 if (NDReadDemoStart (bRandom)) {
-	CFClose (&ndInFile);
-	CFClose (&ndOutFile);
+	ndInFile.Close ();
+	ndOutFile.Close ();
 	return;
 	}
-if (gameOpts->demo.bRevertFormat && ndOutFile.file && (bRevertFormat < 0)) {
-	CFClose (&ndOutFile);
-	CFDelete (filename2, gameFolders.szDemoDir);
+if (gameOpts->demo.bRevertFormat && ndOutFile.File () && (bRevertFormat < 0)) {
+	ndOutFile.Close ();
+	CFile::Delete (filename2, gameFolders.szDemoDir);
 	}
 gameData.app.nGameMode = GM_NORMAL;
 gameData.demo.nState = ND_STATE_PLAYBACK;
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
 gameData.demo.nOldCockpit = gameStates.render.cockpit.nMode;
-gameData.demo.nSize = CFLength (&ndInFile, 0);
+gameData.demo.nSize = ndInFile.Length ();
 bNDBadRead = 0;
 gameData.demo.bEof = 0;
 gameData.demo.nFrameCount = 0;
@@ -3352,7 +3350,7 @@ NDPlayBackOneFrame ();       // get all of the OBJECTS to renderb game
 void NDStopPlayback ()
 {
 if (bRevertFormat > 0) {
-	int h = CFLength (&ndInFile, 0) - CFTell (&ndInFile);
+	int h = ndInFile.Length () - ndInFile.Tell ();
 	char *p = (char *) D2_ALLOC (h);
 	if (p) {
 		bRevertFormat = 0;
@@ -3362,10 +3360,10 @@ if (bRevertFormat > 0) {
 		NDWrite (p + 3, h - 3, 1);
 		D2_FREE (p);
 		}
-	CFClose (&ndOutFile);
+	ndOutFile.Close ();
 	bRevertFormat = -1;
 	}
-CFClose (&ndInFile);
+ndInFile.Close ();
 gameData.demo.nState = ND_STATE_NORMAL;
 ChangePlayerNumTo (0);             //this is reality
 strncpy (LOCALPLAYER.callsign, gameData.demo.callSignSave, CALLSIGN_LEN);
@@ -3384,60 +3382,60 @@ longjmp (gameExitPoint, 0);               // Exit game loop
 
 void NDStripFrames (char *outname, int bytes_to_strip)
 {
-	CFILE	ndOutFile;
+	CFile	ndOutFile;
 	char	*buf;
 	int	nTotalSize, bytes_done, read_elems, bytes_back;
 	int	trailer_start, loc1, loc2, stop_loc, bytes_to_read;
 	short	nPrevFrameLength;
 
 bytes_done = 0;
-nTotalSize = CFLength (&ndInFile, 0);
-if (!CFOpen (&ndOutFile, outname, "", "wb", 0)) {
+nTotalSize = ndInFile.Length ();
+if (!ndOutFile.Open (outname, "", "wb", 0)) {
 	NDErrorMsg ("Can't open output file", NULL, NULL);
 	NDStopPlayback ();
 	return;
 	}
 if (!(buf = (char *) D2_ALLOC (BUF_SIZE))) {
 	NDErrorMsg ("Mot enough memory for output buffer", NULL, NULL);
-	CFClose (&ndOutFile);
+	ndOutFile.Close ();
 	NDStopPlayback ();
 	return;
 	}
 NDGotoEnd ();
-trailer_start = CFTell (&ndInFile);
-CFSeek (&ndInFile, 11, SEEK_CUR);
+trailer_start = ndInFile.Tell ();
+ndInFile.Seek (11, SEEK_CUR);
 bytes_back = 0;
 while (bytes_back < bytes_to_strip) {
-	loc1 = CFTell (&ndInFile);
-	//CFSeek (&ndInFile, -10, SEEK_CUR);
+	loc1 = ndInFile.Tell ();
+	//ndInFile.Seek (-10, SEEK_CUR);
 	//NDReadShort (&nPrevFrameLength);
-	//CFSeek (&ndInFile, 8 - nPrevFrameLength, SEEK_CUR);
+	//ndInFile.Seek (8 - nPrevFrameLength, SEEK_CUR);
 	NDBackFrames (1);
-	loc2 = CFTell (&ndInFile);
+	loc2 = ndInFile.Tell ();
 	bytes_back += (loc1 - loc2);
 	}
-CFSeek (&ndInFile, -10, SEEK_CUR);
+ndInFile.Seek (-10, SEEK_CUR);
 nPrevFrameLength = NDReadShort ();
-CFSeek (&ndInFile, -3, SEEK_CUR);
-stop_loc = CFTell (&ndInFile);
-CFSeek (&ndInFile, 0, SEEK_SET);
+ndInFile.Seek (-3, SEEK_CUR);
+stop_loc = ndInFile.Tell ();
+ndInFile.Seek (0, SEEK_SET);
 while (stop_loc > 0) {
 	if (stop_loc < BUF_SIZE)
 		bytes_to_read = stop_loc;
 	else
 		bytes_to_read = BUF_SIZE;
-	read_elems = (int) CFRead (buf, 1, bytes_to_read, &ndInFile);
-	CFWrite (buf, 1, read_elems, &ndOutFile);
+	read_elems = (int) ndInFile.Read (buf, 1, bytes_to_read);
+	ndOutFile.Write (buf, 1, read_elems);
 	stop_loc -= read_elems;
 	}
-stop_loc = CFTell (&ndOutFile);
-CFSeek (&ndInFile, trailer_start, SEEK_SET);
-while ((read_elems = (int) CFRead (buf, 1, BUF_SIZE, &ndInFile)))
-	CFWrite (buf, 1, read_elems, &ndOutFile);
-CFSeek (&ndOutFile, stop_loc, SEEK_SET);
-CFSeek (&ndOutFile, 1, SEEK_CUR);
-CFWrite (&nPrevFrameLength, 2, 1, &ndOutFile);
-CFClose (&ndOutFile);
+stop_loc = ndOutFile.Tell ();
+ndInFile.Seek (trailer_start, SEEK_SET);
+while ((read_elems = (int) ndInFile.Read (buf, 1, BUF_SIZE)))
+	ndOutFile.Write (buf, 1, read_elems);
+ndOutFile.Seek (stop_loc, SEEK_SET);
+ndOutFile.Seek (1, SEEK_CUR);
+ndOutFile.Write (&nPrevFrameLength, 2, 1);
+ndOutFile.Close ();
 NDStopPlayback ();
 particleManager.DestroyAll ();
 }

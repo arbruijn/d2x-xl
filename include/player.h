@@ -201,7 +201,7 @@ typedef struct tPlayerShip {
 /*
  * reads a tPlayerShip structure from a CFILE
  */
-void PlayerShipRead(tPlayerShip *ps, CFILE *fp);
+void PlayerShipRead(tPlayerShip *ps, CFile& cf);
 int EquippedPlayerGun (tObject *objP);
 int EquippedPlayerBomb (tObject *objP);
 int EquippedPlayerMissile (tObject *objP, int *nMissiles);

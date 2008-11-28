@@ -104,8 +104,8 @@ typedef struct box {
 } box;
 
 #define CREDITS_FILE    \
-		  (CFExist("mcredits.tex",gameFolders.szDataDir,0)?"mcredits.tex":\
-			CFExist("ocredits.tex",gameFolders.szDataDir,0)?"ocredits.tex":"credits.tex")
+		  (CFile::Exist("mcredits.tex",gameFolders.szDataDir,0)?"mcredits.tex":\
+			CFile::Exist("ocredits.tex",gameFolders.szDataDir,0)?"ocredits.tex":"credits.tex")
 
 #define cr_gr_printf(x,y,s)	GrPrintF (NULL, (x) == 0x8000 ? (x) : (x), (y), s)
 
@@ -152,7 +152,7 @@ static const char *xlCredits [] = {
 void ShowCredits(char *credits_filename)
 {
 	int			i, j, l, bDone;
-	CFILE			cf;
+	CFile			cf;
 	char			buffer [NUM_LINES_HIRES][80];
 	grsBitmap	bmBackdrop;
 	int			nPcxError;
@@ -178,7 +178,7 @@ if (credits_filename) {
 	strcpy(filename,credits_filename);
 	bBinary = 1;
 	}
-if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", 0)) {
+if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0)) {
 	char nfile [32];
 
 	if (credits_filename)
@@ -187,7 +187,7 @@ if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", 0)) {
 	if ((pszTemp = strchr (filename, '.')))
 		*pszTemp = '\0';
 	sprintf (nfile, "%s.txb", filename);
-	if (!CFOpen (&cf, nfile, gameFolders.szDataDir, "rb", 0))
+	if (!cf.Open (nfile, gameFolders.szDataDir, "rb", 0))
 		Error("Missing CREDITS.TEX and CREDITS.TXB &cf\n");
 	bBinary = 1;
 	}
@@ -211,7 +211,7 @@ bmBackdrop.bmPalette = NULL;
 
 nPcxError = PCXReadBitmap ((char *) CREDITS_BACKGROUND_FILENAME, &bmBackdrop, BM_LINEAR, 0);
 if (nPcxError != PCX_ERROR_NONE) {
-	CFClose(&cf);
+	cf.Close();
 	return;
 	}
 SongsPlaySong(SONG_CREDITS, 1);
@@ -258,7 +258,7 @@ while (1) {
 	do {
 		nLine = (nLine + 1) % NUM_LINES;
 get_line:;
-		if (CFGetS (buffer [nLine], 80, &cf)) {
+		if (cf.GetS (buffer [nLine], 80)) {
 			char *p = buffer [nLine];
 			if (bBinary)				// is this a binary tbl &cf
 				for (i = (int) strlen (buffer [nLine]); i > 0; i--, p++)
@@ -415,7 +415,7 @@ get_line:;
 		GrPaletteFadeOut (NULL, 32, 0);
 		GrUsePaletteTable (D2_DEFAULT_PALETTE, NULL);
 		D2_FREE (bmBackdrop.bmTexBuf);
-		CFClose (&cf);
+		cf.Close ();
 		GrSetCurrentCanvas (saveCanv);
 		SongsPlaySong (SONG_TITLE, 1);
 

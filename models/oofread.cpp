@@ -53,54 +53,54 @@ if (bLogOOF) {
 
 //------------------------------------------------------------------------------
 
-sbyte OOF_ReadByte (CFILE *fp, const char *pszIdent)
+sbyte OOF_ReadByte (CFile& cf, const char *pszIdent)
 {
-sbyte b = CFReadByte (fp);
+sbyte b = cf.ReadByte ();
 OOF_PrintLog ("      %s = %d\n", pszIdent, b);
 return b;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadInt (CFILE *fp, const char *pszIdent)
+int OOF_ReadInt (CFile& cf, const char *pszIdent)
 {
-int i = CFReadInt (fp);
+int i = cf.ReadInt ();
 OOF_PrintLog ("      %s = %d\n", pszIdent, i);
 return i;
 }
 
 //------------------------------------------------------------------------------
 
-float OOF_ReadFloat (CFILE *fp, const char *pszIdent)
+float OOF_ReadFloat (CFile& cf, const char *pszIdent)
 {
-float f = CFReadFloat (fp);
+float f = cf.ReadFloat ();
 OOF_PrintLog ("      %s = %1.4f\n", pszIdent, f);
 return f;
 }
 
 //------------------------------------------------------------------------------
 
-void OOF_ReadVector (CFILE *fp, tOOF_vector *pv, const char *pszIdent)
+void OOF_ReadVector (CFile& cf, tOOF_vector *pv, const char *pszIdent)
 {
-pv->x = CFReadFloat (fp);
-pv->y = CFReadFloat (fp);
-pv->z = CFReadFloat (fp);
+pv->x = cf.ReadFloat ();
+pv->y = cf.ReadFloat ();
+pv->z = cf.ReadFloat ();
 OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, pv->x, pv->y, pv->z);
 }
 
 //------------------------------------------------------------------------------
 
-char *OOF_ReadString (CFILE *fp, const char *pszIdent, const char *pszPrefix)
+char *OOF_ReadString (CFile& cf, const char *pszIdent, const char *pszPrefix)
 {
 	char	*psz;
 	int	l, lPrefix = pszPrefix ? (int) strlen (pszPrefix) : 0;
 
-l = OOF_ReadInt (fp, "string length");
+l = OOF_ReadInt (cf, "string length");
 if (!(psz = (char *) D2_ALLOC (l + lPrefix + 1)))
 	return NULL;
 if (lPrefix)
 	memcpy (psz, pszPrefix, lPrefix);
-if (CFRead (psz + lPrefix, l, 1, fp)) {
+if (cf.Read (psz + lPrefix, l, 1)) {
 	psz [l + lPrefix] = '\0';
 	OOF_PrintLog ("      %s = '%s'\n", pszIdent, psz);
 	return psz;
@@ -345,7 +345,7 @@ if (!stricmp (command,"$custom")) { // this subobject has custom textures/colors
 
 //------------------------------------------------------------------------------
 
-static tOOF_vector *OOF_ReadVertList (CFILE *fp, int nVerts, tOOF_vector *pvMin, tOOF_vector *pvMax)
+static tOOF_vector *OOF_ReadVertList (CFile& cf, int nVerts, tOOF_vector *pvMin, tOOF_vector *pvMax)
 {
 	tOOF_vector	*pv;
 	char			szId [20] = "";
@@ -357,7 +357,7 @@ if ((pv = (tOOF_vector *) D2_ALLOC (nVerts * sizeof (tOOF_vector)))) {
 	for (i = 0; i < nVerts; i++) {
 		if (bLogOOF)
 			sprintf (szId, "pv [%d]", i);
-		OOF_ReadVector (fp, pv + i, szId);
+		OOF_ReadVector (cf, pv + i, szId);
 #if OOF_TEST_CUBE
 		pv [i].x -= 10;
 		pv [i].y += 15;
@@ -374,14 +374,14 @@ return pv;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFrameInfo (CFILE *fp, tOOFObject *po, tOOF_frameInfo *pfi, int bTimed)
+int OOF_ReadFrameInfo (CFile& cf, tOOFObject *po, tOOF_frameInfo *pfi, int bTimed)
 {
 nIndent += 2;
 OOF_PrintLog ("reading frame info\n");
 if (bTimed) {
-	pfi->nFrames = OOF_ReadInt (fp, "nFrames");
-	pfi->nFirstFrame = OOF_ReadInt (fp, "nFirstFrame");
-	pfi->nLastFrame = OOF_ReadInt (fp, "nLastFrame");
+	pfi->nFrames = OOF_ReadInt (cf, "nFrames");
+	pfi->nFirstFrame = OOF_ReadInt (cf, "nFirstFrame");
+	pfi->nLastFrame = OOF_ReadInt (cf, "nLastFrame");
 	if (po->frameInfo.nFirstFrame > pfi->nFirstFrame)
 		po->frameInfo.nFirstFrame = pfi->nFirstFrame;
 	if (po->frameInfo.nLastFrame < pfi->nLastFrame)
@@ -395,18 +395,18 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadRotFrame (CFILE *fp, tOOF_rotFrame *pf, int bTimed)
+int OOF_ReadRotFrame (CFile& cf, tOOF_rotFrame *pf, int bTimed)
 {
 	float	fMag;
 
 nIndent += 2;
 OOF_PrintLog ("reading rot frame\n");
 if (bTimed)
-	pf->nStartTime = OOF_ReadInt (fp, "nStartTime");
-OOF_ReadVector (fp, &pf->vAxis, "vAxis");
+	pf->nStartTime = OOF_ReadInt (cf, "nStartTime");
+OOF_ReadVector (cf, &pf->vAxis, "vAxis");
 if (0 < (fMag = OOF_VecMag (&pf->vAxis)))
 	OOF_VecScale (&pf->vAxis, 1.0f / fMag);
-pf->nAngle = OOF_ReadInt (fp, "nAngle");
+pf->nAngle = OOF_ReadInt (cf, "nAngle");
 nIndent -= 2;
 return 1;
 }
@@ -422,13 +422,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadRotAnim (CFILE *fp, tOOFObject *po, tOOF_rotAnim *pa, int bTimed)
+int OOF_ReadRotAnim (CFile& cf, tOOFObject *po, tOOF_rotAnim *pa, int bTimed)
 {
 	tOOF_rotAnim a;
 	int	i;
 
 memset (&a, 0, sizeof (a));
-OOF_ReadFrameInfo (fp, po, &a.frameInfo, bTimed);
+OOF_ReadFrameInfo (cf, po, &a.frameInfo, bTimed);
 if (!(a.pFrames = (tOOF_rotFrame *) D2_ALLOC (a.frameInfo.nFrames * sizeof (tOOF_rotFrame))))
 	return 0;
 memset (a.pFrames, 0, a.frameInfo.nFrames * sizeof (tOOF_rotFrame));
@@ -438,7 +438,7 @@ if (bTimed &&
 	return OOF_FreeRotAnim (&a);
 if (a.nTicks)
 	for (i = 0; i < a.frameInfo.nFrames; i++)
-		if (!OOF_ReadRotFrame (fp, a.pFrames + i, bTimed))
+		if (!OOF_ReadRotFrame (cf, a.pFrames + i, bTimed))
 			return OOF_FreeRotAnim (&a);
 *pa = a;
 return 1;
@@ -446,13 +446,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadPosFrame (CFILE *fp, tOOF_posFrame *pf, int bTimed)
+int OOF_ReadPosFrame (CFile& cf, tOOF_posFrame *pf, int bTimed)
 {
 nIndent += 2;
 OOF_PrintLog ("reading pos frame\n");
 if (bTimed)
-	pf->nStartTime = OOF_ReadInt (fp, "nStartTime");
-OOF_ReadVector (fp, &pf->vPos, "vPos");
+	pf->nStartTime = OOF_ReadInt (cf, "nStartTime");
+OOF_ReadVector (cf, &pf->vPos, "vPos");
 nIndent -= 2;
 return 1;
 }
@@ -468,13 +468,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadPosAnim (CFILE *fp, tOOFObject *po, tOOF_posAnim *pa, int bTimed)
+int OOF_ReadPosAnim (CFile& cf, tOOFObject *po, tOOF_posAnim *pa, int bTimed)
 {
 	tOOF_posAnim a;
 	int	i;
 
 memset (&a, 0, sizeof (a));
-OOF_ReadFrameInfo (fp, po, &a.frameInfo, bTimed);
+OOF_ReadFrameInfo (cf, po, &a.frameInfo, bTimed);
 if (bTimed &&
 	 (a.nTicks = a.frameInfo.nLastFrame - a.frameInfo.nFirstFrame) &&
 	 !(a.pRemapTicks = (ubyte *) D2_ALLOC (a.nTicks * sizeof (ubyte))))
@@ -483,7 +483,7 @@ if (!(a.pFrames = (tOOF_posFrame *) D2_ALLOC (a.frameInfo.nFrames * sizeof (tOOF
 	return OOF_FreePosAnim (pa);
 memset (a.pFrames, 0, a.frameInfo.nFrames * sizeof (tOOF_posFrame));
 for (i = 0; i < a.frameInfo.nFrames; i++)
-	if (!OOF_ReadPosFrame (fp, a.pFrames + i, bTimed))
+	if (!OOF_ReadPosFrame (cf, a.pFrames + i, bTimed))
 		return OOF_FreePosAnim (pa);
 *pa = a;
 return 1;
@@ -500,22 +500,22 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadSpecialPoint (CFILE *fp, tOOF_specialPoint *pVert)
+int OOF_ReadSpecialPoint (CFile& cf, tOOF_specialPoint *pVert)
 {
 	memset (pVert, 0, sizeof (tOOF_specialPoint));
 
 nIndent += 2;
 OOF_PrintLog ("reading special point\n");
-if (!(pVert->pszName = OOF_ReadString (fp, "pszName", NULL))) {
+if (!(pVert->pszName = OOF_ReadString (cf, "pszName", NULL))) {
 	nIndent -= 2;
 	return 0;
 	}
-if (!(pVert->pszProps = OOF_ReadString (fp, "pszProps", NULL))) {
+if (!(pVert->pszProps = OOF_ReadString (cf, "pszProps", NULL))) {
 	nIndent -= 2;
 	return 0;
 	}
-OOF_ReadVector (fp, &pVert->vPos, "vPos");
-pVert->fRadius = OOF_ReadFloat (fp, "fRadius");
+OOF_ReadVector (cf, &pVert->vPos, "vPos");
+pVert->fRadius = OOF_ReadFloat (cf, "fRadius");
 nIndent -= 2;
 return 1;
 }
@@ -536,29 +536,29 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadSpecialList (CFILE *fp, tOOF_specialList *pList)
+int OOF_ReadSpecialList (CFile& cf, tOOF_specialList *pList)
 {
 	int	i;
 
-pList->nVerts = OOF_ReadInt (fp, "nVerts");
+pList->nVerts = OOF_ReadInt (cf, "nVerts");
 if (!pList->nVerts)
 	return 1;
 if (!(pList->pVerts = (tOOF_specialPoint *) D2_ALLOC (pList->nVerts * sizeof (tOOF_specialPoint))))
 	return 0;
 for (i = 0; i < pList->nVerts; i++)
-	OOF_ReadSpecialPoint (fp, pList->pVerts + i);
+	OOF_ReadSpecialPoint (cf, pList->pVerts + i);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadPoint (CFILE *fp, tOOF_point *pPoint, int bParent)
+int OOF_ReadPoint (CFile& cf, tOOF_point *pPoint, int bParent)
 {
 nIndent += 2;
 OOF_PrintLog ("reading point\n");
-pPoint->nParent = bParent ? OOF_ReadInt (fp, "nParent") : 0;
-OOF_ReadVector (fp, &pPoint->vPos, "vPos");
-OOF_ReadVector (fp, &pPoint->vDir, "vDir");
+pPoint->nParent = bParent ? OOF_ReadInt (cf, "nParent") : 0;
+OOF_ReadVector (cf, &pPoint->vPos, "vPos");
+OOF_ReadVector (cf, &pPoint->vDir, "vDir");
 nIndent -= 2;
 return 1;
 }
@@ -573,13 +573,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadPointList (CFILE *fp, tOOF_pointList *pList, int bParent, int nSize)
+int OOF_ReadPointList (CFile& cf, tOOF_pointList *pList, int bParent, int nSize)
 {
 	int	i;
 
 nIndent += 2;
 OOF_PrintLog ("reading point list\n");
-pList->nPoints = OOF_ReadInt (fp, "nPoints");
+pList->nPoints = OOF_ReadInt (cf, "nPoints");
 if (nSize < pList->nPoints)
 	nSize = pList->nPoints;
 if (!(pList->pPoints = (tOOF_point *) D2_ALLOC (nSize * sizeof (tOOF_point)))) {
@@ -587,7 +587,7 @@ if (!(pList->pPoints = (tOOF_point *) D2_ALLOC (nSize * sizeof (tOOF_point)))) {
 	return OOF_FreePointList (pList);
 	}
 for (i = 0; i < pList->nPoints; i++)
-	if (!OOF_ReadPoint (fp, pList->pPoints + i, bParent)) {
+	if (!OOF_ReadPoint (cf, pList->pPoints + i, bParent)) {
 		nIndent -= 2;
 		return 0;
 		}
@@ -605,19 +605,19 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadAttachList (CFILE *fp, tOOF_attachList *pList)
+int OOF_ReadAttachList (CFile& cf, tOOF_attachList *pList)
 {
 	int	i;
 
 nIndent += 2;
 OOF_PrintLog ("reading attach list\n");
-pList->nPoints = OOF_ReadInt (fp, "nPoints");
+pList->nPoints = OOF_ReadInt (cf, "nPoints");
 if (!(pList->pPoints = (tOOF_attachPoint *) D2_ALLOC (pList->nPoints * sizeof (tOOF_attachPoint)))) {
 	nIndent -= 2;
 	return OOF_FreeAttachList (pList);
 	}
 for (i = 0; i < pList->nPoints; i++)
-	if (!OOF_ReadPoint (fp, &pList->pPoints [i].point, 1)) {
+	if (!OOF_ReadPoint (cf, &pList->pPoints [i].point, 1)) {
 		nIndent -= 2;
 		return OOF_FreeAttachList (pList);
 		}
@@ -627,21 +627,21 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadAttachNormals (CFILE *fp, tOOF_attachList *pList)
+int OOF_ReadAttachNormals (CFile& cf, tOOF_attachList *pList)
 {
 	int	i;
 	tOOF_attachPoint *pp = pList->pPoints;
 
 nIndent += 2;
 OOF_PrintLog ("reading attach normals\n");
-i = OOF_ReadInt (fp, "nPoints");
+i = OOF_ReadInt (cf, "nPoints");
 if (i != pList->nPoints) {
 	nIndent -= 2;
 	return 0;
 	}
 for (i = 0; i < pList->nPoints; i++) {
-	OOF_ReadVector (fp, &pp->vu, "vu");	//actually ignored
-	OOF_ReadVector (fp, &pp->vu, "vu");
+	OOF_ReadVector (cf, &pp->vu, "vu");	//actually ignored
+	OOF_ReadVector (cf, &pp->vu, "vu");
 	pList->pPoints->bu = 1;
 	}
 nIndent -= 2;
@@ -650,12 +650,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int OOF_ReadIntList (CFILE *fp, int **ppList)
+static int OOF_ReadIntList (CFile& cf, int **ppList)
 {
 	int	*pList, nList, i;
 	char	szId [20] = "";
 
-if (!(nList = OOF_ReadInt (fp, "nList"))) {
+if (!(nList = OOF_ReadInt (cf, "nList"))) {
 	*ppList = NULL;
 	return 0;
 	}
@@ -664,7 +664,7 @@ if (!(pList = (int *) D2_ALLOC (nList * sizeof (int))))
 for (i = 0; i < nList; i++) {
 	if (bLogOOF)
 		sprintf (szId, "pList [%d]", i);
-	pList [i] = OOF_ReadInt (fp, szId);
+	pList [i] = OOF_ReadInt (cf, szId);
 	}
 *ppList = pList;
 return nList;
@@ -681,15 +681,15 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadBattery (CFILE *fp, tOOF_battery *pBatt)
+int OOF_ReadBattery (CFile& cf, tOOF_battery *pBatt)
 {
 nIndent += 2;
 OOF_PrintLog ("reading battery\n");
-if (0 > (pBatt->nVerts = OOF_ReadIntList (fp, &pBatt->pVertIndex))) {
+if (0 > (pBatt->nVerts = OOF_ReadIntList (cf, &pBatt->pVertIndex))) {
 	nIndent -= 2;
 	return OOF_FreeBattery (pBatt);
 	}
-if (0 > (pBatt->nTurrets = OOF_ReadIntList (fp, &pBatt->pTurretIndex))) {
+if (0 > (pBatt->nTurrets = OOF_ReadIntList (cf, &pBatt->pTurretIndex))) {
 	nIndent -= 2;
 	return OOF_FreeBattery (pBatt);
 	}
@@ -713,13 +713,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadArmament (CFILE *fp, tOOF_armament *pa)
+int OOF_ReadArmament (CFile& cf, tOOF_armament *pa)
 {
 	int	i;
 
 nIndent += 2;
 OOF_PrintLog ("reading armament\n");
-if (!(pa->nBatts = OOF_ReadInt (fp, "nBatts"))) {
+if (!(pa->nBatts = OOF_ReadInt (cf, "nBatts"))) {
 	nIndent -= 2;
 	return 1;
 	}
@@ -728,7 +728,7 @@ if (!(pa->pBatts = (tOOF_battery *) D2_ALLOC (pa->nBatts * sizeof (tOOF_battery)
 	return OOF_FreeArmament (pa);
 	}
 for (i = 0; i < pa->nBatts; i++)
-	if (!OOF_ReadBattery (fp, pa->pBatts + i)) {
+	if (!OOF_ReadBattery (cf, pa->pBatts + i)) {
 		nIndent -= 2;
 		return OOF_FreeArmament (pa);
 		}
@@ -738,13 +738,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFaceVert (CFILE *fp, tOOF_faceVert *pfv, int bFlipV)
+int OOF_ReadFaceVert (CFile& cf, tOOF_faceVert *pfv, int bFlipV)
 {
 nIndent += 2;
 OOF_PrintLog ("reading face vertex\n");
-pfv->nIndex = OOF_ReadInt (fp, "nIndex");
-pfv->fu = OOF_ReadFloat (fp, "fu");
-pfv->fv = OOF_ReadFloat (fp, "fv");
+pfv->nIndex = OOF_ReadInt (cf, "nIndex");
+pfv->fu = OOF_ReadFloat (cf, "fu");
+pfv->fv = OOF_ReadFloat (cf, "fv");
 if (bFlipV)
 	pfv->fv = -pfv->fv;
 #if OOF_TEST_CUBE
@@ -899,7 +899,7 @@ return OOF_VecNormal (&pf->vRotNormal, pv + pfv [0].nIndex, pv + pfv [1].nIndex,
 /*!!!*/static int nTexId = 0;
 #endif
 
-int OOF_ReadFace (CFILE *fp, tOOF_subObject *pso, tOOF_face *pf, tOOF_faceVert *pfv, int bFlipV)
+int OOF_ReadFace (CFile& cf, tOOF_subObject *pso, tOOF_face *pf, tOOF_faceVert *pfv, int bFlipV)
 {
 	tOOF_face	f;
 	int			i, v0 = 0;
@@ -908,25 +908,25 @@ int OOF_ReadFace (CFILE *fp, tOOF_subObject *pso, tOOF_face *pf, tOOF_faceVert *
 nIndent += 2;
 OOF_PrintLog ("reading face\n");
 memset (&f, 0, sizeof (f));
-OOF_ReadVector (fp, &f.vNormal, "vNormal");
+OOF_ReadVector (cf, &f.vNormal, "vNormal");
 #if 0
 f.vNormal.x = -f.vNormal.x;
 f.vNormal.y = -f.vNormal.y;
 f.vNormal.z = -f.vNormal.z;
 #endif
-f.nVerts = OOF_ReadInt (fp, "nVerts");
-f.bTextured = OOF_ReadInt (fp, "bTextured");
+f.nVerts = OOF_ReadInt (cf, "nVerts");
+f.bTextured = OOF_ReadInt (cf, "bTextured");
 if (f.bTextured) {
-	f.texProps.nTexId = OOF_ReadInt (fp, "texProps.nTexId");
+	f.texProps.nTexId = OOF_ReadInt (cf, "texProps.nTexId");
 #if OOF_TEST_CUBE
 /*!!!*/	f.texProps.nTexId = nTexId % 6;
 /*!!!*/	nTexId++;
 #endif
 	}
 else {
-	f.texProps.color.r = OOF_ReadByte (fp, "texProps.color.r");
-	f.texProps.color.g = OOF_ReadByte (fp, "texProps.color.g");
-	f.texProps.color.b = OOF_ReadByte (fp, "texProps.color.b");
+	f.texProps.color.r = OOF_ReadByte (cf, "texProps.color.r");
+	f.texProps.color.g = OOF_ReadByte (cf, "texProps.color.g");
+	f.texProps.color.b = OOF_ReadByte (cf, "texProps.color.b");
 	}
 #if OOF_MEM_OPT
 if (pfv) {
@@ -940,7 +940,7 @@ if (pfv) {
 	OOF_InitMinMax (&f.vMin, &f.vMax);
 	e.v1 [0] = -1;
 	for (i = 0; i < f.nVerts; i++)
-		if (!OOF_ReadFaceVert (fp, f.pVerts + i, bFlipV)) {
+		if (!OOF_ReadFaceVert (cf, f.pVerts + i, bFlipV)) {
 			nIndent -= 2;
 			return OOF_FreeFace (&f);
 			}
@@ -959,10 +959,10 @@ if (pfv) {
 #if OOF_MEM_OPT
 	}
 else
-	CFSeek (fp, f.nVerts * sizeof (tOOF_faceVert), SEEK_CUR);
+	cf.Seek (f.nVerts * sizeof (tOOF_faceVert), SEEK_CUR);
 #endif
-f.fBoundingLength = OOF_ReadFloat (fp, "fBoundingLength");
-f.fBoundingWidth = OOF_ReadFloat (fp, "fBoundingWidth");
+f.fBoundingLength = OOF_ReadFloat (cf, "fBoundingLength");
+f.fBoundingWidth = OOF_ReadFloat (cf, "fBoundingWidth");
 *pf = f;
 nIndent -= 2;
 return f.nVerts;
@@ -1000,7 +1000,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadSubObject (CFILE *fp, tOOFObject *po, int bFlipV)
+int OOF_ReadSubObject (CFile& cf, tOOFObject *po, int bFlipV)
 {
 	tOOF_subObject	so;
 	int				h, i;
@@ -1012,34 +1012,34 @@ int OOF_ReadSubObject (CFILE *fp, tOOFObject *po, int bFlipV)
 nIndent += 2;
 OOF_PrintLog ("reading sub tObject\n");
 memset (&so, 0, sizeof (so));
-so.nIndex = OOF_ReadInt (fp, "nIndex");
+so.nIndex = OOF_ReadInt (cf, "nIndex");
 if (so.nIndex >= OOF_MAX_SUBOBJECTS) {
 	nIndent -= 2;
 	return 0;
 	}
-so.nParent = OOF_ReadInt (fp, "nParent");
-OOF_ReadVector (fp, &so.vNormal, "vNormal");
-so.fd = OOF_ReadFloat (fp, "fd");
-OOF_ReadVector (fp, &so.vPlaneVert, "vPlaneVert");
-OOF_ReadVector (fp, &so.vOffset, "vOffset");
-so.fRadius = OOF_ReadFloat (fp, "fRadius");
-so.nTreeOffset = OOF_ReadInt (fp, "nTreeOffset");
-so.nDataOffset = OOF_ReadInt (fp, "nDataOffset");
+so.nParent = OOF_ReadInt (cf, "nParent");
+OOF_ReadVector (cf, &so.vNormal, "vNormal");
+so.fd = OOF_ReadFloat (cf, "fd");
+OOF_ReadVector (cf, &so.vPlaneVert, "vPlaneVert");
+OOF_ReadVector (cf, &so.vOffset, "vOffset");
+so.fRadius = OOF_ReadFloat (cf, "fRadius");
+so.nTreeOffset = OOF_ReadInt (cf, "nTreeOffset");
+so.nDataOffset = OOF_ReadInt (cf, "nDataOffset");
 if (po->nVersion > 1805)
-	OOF_ReadVector (fp, &so.vCenter, "vCenter");
-if (!(so.pszName = OOF_ReadString (fp, "pszName", NULL)))
+	OOF_ReadVector (cf, &so.vCenter, "vCenter");
+if (!(so.pszName = OOF_ReadString (cf, "pszName", NULL)))
 	return OOF_FreeSubObject (&so);
-if (!(so.pszProps = OOF_ReadString (fp, "pszProps", NULL)))
+if (!(so.pszProps = OOF_ReadString (cf, "pszProps", NULL)))
 	return OOF_FreeSubObject (&so);
 OOF_SetModelProps (&so, so.pszProps);
-so.nMovementType = OOF_ReadInt (fp, "nMovementType");
-so.nMovementAxis = OOF_ReadInt (fp, "nMovementAxis");
+so.nMovementType = OOF_ReadInt (cf, "nMovementType");
+so.nMovementAxis = OOF_ReadInt (cf, "nMovementAxis");
 so.pFSList = NULL;
-if ((so.nFSLists = OOF_ReadInt (fp, "nFSLists")))
-	CFSeek (fp, so.nFSLists * sizeof (int), SEEK_CUR);
-so.nVerts = OOF_ReadInt (fp, "nVerts");
+if ((so.nFSLists = OOF_ReadInt (cf, "nFSLists")))
+	cf.Seek (so.nFSLists * sizeof (int), SEEK_CUR);
+so.nVerts = OOF_ReadInt (cf, "nVerts");
 if (so.nVerts) {
-	if (!(so.pvVerts = OOF_ReadVertList (fp, so.nVerts, &so.vMin, &so.vMax))) {
+	if (!(so.pvVerts = OOF_ReadVertList (cf, so.nVerts, &so.vMin, &so.vMax))) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		OOF_VecAdd (&so.vCenter, &so.vMin, &so.vMax);
@@ -1054,7 +1054,7 @@ if (so.nVerts) {
 		return OOF_FreeSubObject (&so);
 		}
 	memset (so.pVertColors, 0, so.nVerts * sizeof (tFaceColor));
-	if (!(so.pvNormals = OOF_ReadVertList (fp, so.nVerts, NULL, NULL))) {
+	if (!(so.pvNormals = OOF_ReadVertList (cf, so.nVerts, NULL, NULL))) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
@@ -1068,21 +1068,21 @@ if (so.nVerts) {
 		else {
 			if (bLogOOF)
 				sprintf (szId, "pfAlpha [%d]", i);
-			so.pfAlpha [i] = OOF_ReadFloat (fp, szId);
+			so.pfAlpha [i] = OOF_ReadFloat (cf, szId);
 			if	(so.pfAlpha [i] < 0.99)
 				po->nFlags |= OOF_PMF_ALPHA;
 			}
 	}
-so.faces.nFaces = OOF_ReadInt (fp, "nFaces");
+so.faces.nFaces = OOF_ReadInt (cf, "nFaces");
 if (!(so.faces.pFaces = (tOOF_face *) D2_ALLOC (so.faces.nFaces * sizeof (tOOF_face)))) {
 	nIndent -= 2;
 	return OOF_FreeSubObject (&so);
 	}
 #if OOF_MEM_OPT
-nPos = CFTell (fp);
+nPos = cf.Tell ();
 so.edges.nEdges = 0;
 for (bReadData = 0; bReadData < 2; bReadData++) {
-	CFSeek (fp, nPos, SEEK_SET);
+	cf.Seek (nPos, SEEK_SET);
 	if (bReadData) {
 		if (!(so.faces.pFaceVerts = (tOOF_faceVert *) D2_ALLOC (nFaceVerts * sizeof (tOOF_faceVert)))) {
 			nIndent -= 2;
@@ -1096,7 +1096,7 @@ for (bReadData = 0; bReadData < 2; bReadData++) {
 		so.edges.nEdges = 0;
 		}
 	for (i = 0, nFaceVerts = 0; i < so.faces.nFaces; i++) {
-		if (!(h = OOF_ReadFace (fp, &so, so.faces.pFaces + i, bReadData ? so.faces.pFaceVerts + nFaceVerts : NULL, bFlipV))) {
+		if (!(h = OOF_ReadFace (cf, &so, so.faces.pFaces + i, bReadData ? so.faces.pFaceVerts + nFaceVerts : NULL, bFlipV))) {
 			nIndent -= 2;
 			return OOF_FreeSubObject (&so);
 			}
@@ -1105,7 +1105,7 @@ for (bReadData = 0; bReadData < 2; bReadData++) {
 	}
 #else
 for (i = 0; i < so.faces.nFaces; i++)
-	if (!OOF_ReadFace (fp, &so, so.faces.pFaces + i, NULL, bFlipV)) {
+	if (!OOF_ReadFace (cf, &so, so.faces.pFaces + i, NULL, bFlipV)) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
@@ -1156,7 +1156,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadTextures (CFILE *fp, tOOFObject *po, short nType, int bCustom)
+int OOF_ReadTextures (CFile& cf, tOOFObject *po, short nType, int bCustom)
 {
 	tOOFObject	o = *po;
 	int			i;
@@ -1167,7 +1167,7 @@ int OOF_ReadTextures (CFILE *fp, tOOFObject *po, short nType, int bCustom)
 
 nIndent += 2;
 OOF_PrintLog ("reading textures\n");
-o.textures.nBitmaps = OOF_ReadInt (fp, "nBitmaps");
+o.textures.nBitmaps = OOF_ReadInt (cf, "nBitmaps");
 #if OOF_TEST_CUBE
 /*!!!*/o.textures.nBitmaps = 6;
 #endif
@@ -1188,7 +1188,7 @@ for (i = 0; i < o.textures.nBitmaps; i++) {
 #if OOF_TEST_CUBE
 if (!i)	//cube.oof only contains one texture
 #endif
-	if (!(o.textures.pszNames [i] = OOF_ReadString (fp, szId, "\001"))) {
+	if (!(o.textures.pszNames [i] = OOF_ReadString (cf, szId, "\001"))) {
 		nIndent -= 2;
 		return OOF_FreeTextures (&o);
 		}
@@ -1242,24 +1242,24 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadObject (CFILE *fp, tOOFObject *po)
+int OOF_ReadObject (CFile& cf, tOOFObject *po)
 {
 	tOOFObject	o = *po;
 
 nIndent += 2;
 OOF_PrintLog ("reading tObject\n");
 o.nVersion = po->nVersion;
-o.nSubObjects = OOF_ReadInt (fp, "nSubObjects");
+o.nSubObjects = OOF_ReadInt (cf, "nSubObjects");
 if (o.nSubObjects >= OOF_MAX_SUBOBJECTS) {
 	nIndent -= 2;
 	return 0;
 	}
-o.fMaxRadius = OOF_ReadFloat (fp, "fMaxRadius");
-OOF_ReadVector (fp, &o.vMin, "vMin");
-OOF_ReadVector (fp, &o.vMax, "vMax");
-o.nDetailLevels = OOF_ReadInt (fp, "nDetailLevels");
+o.fMaxRadius = OOF_ReadFloat (cf, "fMaxRadius");
+OOF_ReadVector (cf, &o.vMin, "vMin");
+OOF_ReadVector (cf, &o.vMax, "vMax");
+o.nDetailLevels = OOF_ReadInt (cf, "nDetailLevels");
 nIndent -= 2;
-CFSeek (fp, o.nDetailLevels * sizeof (int), SEEK_CUR);
+cf.Seek (o.nDetailLevels * sizeof (int), SEEK_CUR);
 if (!(o.pSubObjects = (tOOF_subObject *) D2_ALLOC (o.nSubObjects * sizeof (tOOF_subObject))))
 	return 0;
 *po = o;
@@ -1497,7 +1497,7 @@ for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
 
 int OOF_ReadFile (char *pszFile, tOOFObject *po, short nModel, short nType, int bFlipV, int bCustom)
 {
-	CFILE				cf;
+	CFile				cf;
 	char				fileId [4];
 	tOOFObject		o;
 	int				i, nLength, nFrames, bTimed = 0;
@@ -1505,23 +1505,23 @@ int OOF_ReadFile (char *pszFile, tOOFObject *po, short nModel, short nType, int 
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
 nIndent = 0;
 OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [nType], pszFile);
-if (!CFOpen (&cf, pszFile, gameFolders.szModelDir [nType], "rb", 0)) {
+if (!cf.Open (pszFile, gameFolders.szModelDir [nType], "rb", 0)) {
 	OOF_PrintLog ("  file not found");
 	return 0;
 	}
 
-if (!CFRead (fileId, sizeof (fileId), 1, &cf)) {
+if (!cf.Read (fileId, sizeof (fileId), 1)) {
 	OOF_PrintLog ("  invalid file id\n");
-	CFClose (&cf);
+	cf.Close ();
 	return 0;
 	}
 if (strncmp (fileId, "PSPO", 4)) {
 	OOF_PrintLog ("  invalid file id\n");
-	CFClose (&cf);
+	cf.Close ();
 	return 0;
 	}
 memset (&o, 0, sizeof (o));
-o.nVersion = OOF_ReadInt (&cf, "nVersion");
+o.nVersion = OOF_ReadInt (cf, "nVersion");
 if (o.nVersion >= 2100)
 	o.nFlags |= OOF_PMF_LIGHTMAP_RES;
 if (o.nVersion >= 22) {
@@ -1533,52 +1533,52 @@ if (o.nVersion >= 22) {
 o.nModel = nModel;
 o.nType = nType;
 
-while (!CFEoF (&cf)) {
+while (!cf.EoF ()) {
 	char chunkId [4];
 
-	if (!CFRead (chunkId, sizeof (chunkId), 1, &cf)) {
-		CFClose (&cf);
+	if (!cf.Read (chunkId, sizeof (chunkId), 1)) {
+		cf.Close ();
 		return 0;
 		}
 	OOF_PrintLog ("  chunkId = '%c%c%c%c'\n", chunkId [0], chunkId [1], chunkId [2], chunkId [3]);
-	nLength = OOF_ReadInt (&cf, "nLength");
+	nLength = OOF_ReadInt (cf, "nLength");
 	switch (ListType (chunkId)) {
 		case 0:
-			if (!OOF_ReadTextures (&cf, &o, nType, bCustom))
+			if (!OOF_ReadTextures (cf, &o, nType, bCustom))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 1:
-			if (!OOF_ReadObject (&cf, &o))
+			if (!OOF_ReadObject (cf, &o))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 2:
-			if (!OOF_ReadSubObject (&cf, &o, bFlipV))
+			if (!OOF_ReadSubObject (cf, &o, bFlipV))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 3:
-			if (!OOF_ReadPointList (&cf, &o.gunPoints, o.nVersion >= 1908, MAX_GUNS))
+			if (!OOF_ReadPointList (cf, &o.gunPoints, o.nVersion >= 1908, MAX_GUNS))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 4:
-			if (!OOF_ReadSpecialList (&cf, &o.specialPoints))
+			if (!OOF_ReadSpecialList (cf, &o.specialPoints))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 5:
-			if (!OOF_ReadAttachList (&cf, &o.attachPoints))
+			if (!OOF_ReadAttachList (cf, &o.attachPoints))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 6:
 			nFrames = o.frameInfo.nFrames;
 			if (!bTimed)
-				o.frameInfo.nFrames = OOF_ReadInt (&cf, "nFrames");
+				o.frameInfo.nFrames = OOF_ReadInt (cf, "nFrames");
 			for (i = 0; i < o.nSubObjects; i++)
-				if (!OOF_ReadPosAnim (&cf, &o, &o.pSubObjects [i].posAnim, bTimed))
+				if (!OOF_ReadPosAnim (cf, &o, &o.pSubObjects [i].posAnim, bTimed))
 				return OOF_FreeObject (&o);
 			if (o.frameInfo.nFrames < nFrames)
 				o.frameInfo.nFrames = nFrames;
@@ -1588,30 +1588,30 @@ while (!CFEoF (&cf)) {
 		case 8:
 			nFrames = o.frameInfo.nFrames;
 			if (!bTimed)
-				o.frameInfo.nFrames = OOF_ReadInt (&cf, "nFrames");
+				o.frameInfo.nFrames = OOF_ReadInt (cf, "nFrames");
 			for (i = 0; i < o.nSubObjects; i++)
-				if (!OOF_ReadRotAnim (&cf, &o, &o.pSubObjects [i].rotAnim, bTimed))
+				if (!OOF_ReadRotAnim (cf, &o, &o.pSubObjects [i].rotAnim, bTimed))
 					return OOF_FreeObject (&o);
 			if (o.frameInfo.nFrames < nFrames)
 				o.frameInfo.nFrames = nFrames;
 			break;
 
 		case 9:
-			if (!OOF_ReadArmament (&cf, &o.armament))
+			if (!OOF_ReadArmament (cf, &o.armament))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 10:
-			if (!OOF_ReadAttachNormals (&cf, &o.attachPoints))
+			if (!OOF_ReadAttachNormals (cf, &o.attachPoints))
 				return OOF_FreeObject (&o);
 			break;
 
 		default:
-			CFSeek (&cf, nLength, SEEK_CUR);
+			cf.Seek (nLength, SEEK_CUR);
 			break;
 		}
 	}
-CFClose (&cf);
+cf.Close ();
 ConfigureSubObjects (&o);
 BuildAnimMatrices (&o);
 AssignChildren (&o);

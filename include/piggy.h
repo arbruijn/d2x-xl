@@ -114,8 +114,8 @@ typedef struct tARGB {
 } tARGB;
 
 typedef struct alias {
-	char alias_name[FILENAME_LEN];
-	char file_name[FILENAME_LEN];
+	char aliasname [FILENAME_LEN];
+	char filename [FILENAME_LEN];
 } alias;
 
 typedef struct tPIGBitmapHeader {
@@ -207,12 +207,12 @@ void LoadD1BitmapReplacements();
 /*
  * reads a tBitmapIndex structure from a CFILE
  */
-void BitmapIndexRead (tBitmapIndex *bi, CFILE *cfP);
+void BitmapIndexRead (tBitmapIndex *bi, CFile& cf);
 
 /*
  * reads n tBitmapIndex structs from a CFILE
  */
-int BitmapIndexReadN (tBitmapIndex *bi, int n, CFILE *cfP);
+int BitmapIndexReadN (tBitmapIndex *bi, int n, CFile& cf);
 #endif // FAST_FILE_IO
 
 /*
@@ -220,8 +220,8 @@ int BitmapIndexReadN (tBitmapIndex *bi, int n, CFILE *cfP);
  */
 tBitmapIndex ReadExtraBitmapD1Pig (const char *name);
 
-void PIGBitmapHeaderRead (tPIGBitmapHeader *dbh, CFILE *cfP);
-void PIGBitmapHeaderD1Read (tPIGBitmapHeader *dbh, CFILE *cfP);
+void PIGBitmapHeaderRead (tPIGBitmapHeader *dbh, CFile& cf);
+void PIGBitmapHeaderD1Read (tPIGBitmapHeader *dbh, CFile& cf);
 
 grsBitmap *PiggyLoadBitmap (const char *pszFile);
 void PiggyFreeBitmap (grsBitmap *bmP, int i, int bD1);
@@ -234,9 +234,9 @@ ubyte *LoadD1Palette (void);
 void UseBitmapCache (grsBitmap *bmP, int nSize);
 int IsAnimatedTexture (short nTexture);
 
-int LoadSounds (CFILE *fpSound, int nSoundNum, int nSoundStart);
+int LoadSounds (CFile& fpSound, int nSoundNum, int nSoundStart);
 
-int IsMacDataFile (CFILE *cfP, int bD1);
+int IsMacDataFile (CFile* cfP, int bD1);
 
 void PiggyCriticalError (void);
 
@@ -244,7 +244,7 @@ void swap_0_255 (grsBitmap *bmP);
 
 //------------------------------------------------------------------------------
 
-extern CFILE cfPiggy [2];
+extern CFile cfPiggy [2];
 
 extern int nDescentCriticalError;
 extern unsigned descent_critical_deverror;

@@ -30,10 +30,10 @@ typedef struct tModelTextures {
 } tModelTextures;
 
 int ShrinkTGA (grsBitmap *bm, int xFactor, int yFactor, int bRealloc);
-int ReadTGAHeader (CFILE *fp, tTgaHeader *ph, grsBitmap *pb);
-int ReadTGAImage (CFILE *fp, tTgaHeader *ph, grsBitmap *pb, int alpha, 
+int ReadTGAHeader (CFile& cf, tTgaHeader *ph, grsBitmap *pb);
+int ReadTGAImage (CFile& cf, tTgaHeader *ph, grsBitmap *pb, int alpha, 
 						double brightness, int bGrayScale, int bRedBlueFlip);
-int LoadTGA (CFILE *fp, grsBitmap *pb, int alpha, double brightness, 
+int LoadTGA (CFile& cf, grsBitmap *pb, int alpha, double brightness, 
 				 int bGrayScale, int bRedBlueFlip);
 int ReadTGA (const char *pszFile, const char *pszFolder, grsBitmap *pb, int alpha, 
 				 double brightness, int bGrayScale, int bRedBlueFlip);

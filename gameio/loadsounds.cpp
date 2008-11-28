@@ -76,14 +76,14 @@ static int nSoundFilesNew = 0;
 
 //------------------------------------------------------------------------------
 /*
- * reads a tPIGSoundHeader structure from a CFILE
+ * reads a tPIGSoundHeader structure from a CFile
  */
-void PIGSoundHeaderRead (tPIGSoundHeader *dsh, CFILE *cfp)
+void PIGSoundHeaderRead (tPIGSoundHeader *dsh, CFile& cf)
 {
-CFRead (dsh->name, 8, 1, cfp);
-dsh->length = CFReadInt (cfp);
-dsh->data_length = CFReadInt (cfp);
-dsh->offset = CFReadInt (cfp);
+cf.Read (dsh->name, 8, 1);
+dsh->length = cf.ReadInt ();
+dsh->data_length = cf.ReadInt ();
+dsh->offset = cf.ReadInt ();
 }
 
 //------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ for (i = 0; i < 2; i++)
 
 int LoadSoundReplacements (const char *pszFilename)
 {
-	CFILE					cf;
+	CFile					cf;
 	char					szId [4];
 	int					nSounds;
 	int					i, l;
@@ -162,25 +162,25 @@ if (gameOpts->sound.bHires)
 //first, D2_FREE up data allocated for old bitmaps
 PrintLog ("   loading replacement sounds\n");
 FreeSoundReplacements ();
-ChangeFilenameExtension (szFilename, pszFilename, ".dtx");
-if (!CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0))
+CFile::ChangeFilenameExtension (szFilename, pszFilename, ".dtx");
+if (!cf.Open (szFilename, gameFolders.szDataDir, "rb", 0))
 	return -1;
-if (CFRead (szId, 1, sizeof (szId), &cf) != sizeof (szId)) {
-	CFClose (&cf);
+if (cf.Read (szId, 1, sizeof (szId)) != sizeof (szId)) {
+	cf.Close ();
 	return -1;
 	}
 if (strncmp (szId, "DTX2", sizeof (szId))) {
-	CFClose (&cf);
+	cf.Close ();
 	return -1;
 	}
-nSounds = CFReadInt (&cf);
+nSounds = cf.ReadInt ();
 if (!b11K)
 	nSounds *= 2;
-nHeaderOffs = CFTell (&cf);
+nHeaderOffs = cf.Tell ();
 nDataOffs = nHeaderOffs + nSounds * sizeof (tPIGSoundHeader);
 for (i = b11K ? 0 : nSounds / 2; i < nSounds; i++) {
-	CFSeek (&cf, (long) (nHeaderOffs + i * sizeof (tPIGSoundHeader)), SEEK_SET);
-	PIGSoundHeaderRead (&dsh, &cf);
+	cf.Seek ((long) (nHeaderOffs + i * sizeof (tPIGSoundHeader)), SEEK_SET);
+	PIGSoundHeaderRead (&dsh, cf);
 	j = PiggyFindSound (dsh.name);
 	if (j == 255)
 		continue;
@@ -188,16 +188,16 @@ for (i = b11K ? 0 : nSounds / 2; i < nSounds; i++) {
 	l = dsh.length;
 	if (!(dsP->data [1] = (ubyte *) (ubyte *) D2_ALLOC (l)))
 		continue;
-	CFSeek (&cf, (long) (nDataOffs + dsh.offset), SEEK_SET);
-	if (CFRead (dsP->data [1], 1, l, &cf) != (unsigned int) l) {
-		CFClose (&cf);
+	cf.Seek ((long) (nDataOffs + dsh.offset), SEEK_SET);
+	if (cf.Read (dsP->data [1], 1, l) != (unsigned int) l) {
+		cf.Close ();
 		D2_FREE (dsP->data [1]);
 		return -1;
 		}
 	dsP->bDTX = 1;
 	dsP->nLength [1] = l;
 	}
-CFClose (&cf);
+cf.Close ();
 return 1;
 }
 
@@ -205,34 +205,34 @@ return 1;
 
 int LoadHiresSound (tDigiSound *soundP, char *pszSoundName)
 {
-	CFILE			cf;
+	CFile			cf;
 	char			szSoundFile [FILENAME_LEN];
 
 if (!gameOpts->sound.bHires)
 	return 0;
 sprintf (szSoundFile, "%s.wav", pszSoundName);
-if (!CFOpen (&cf, szSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], "rb", 0))
+if (!cf.Open (szSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], "rb", 0))
 	return 0;
-if (0 >= (soundP->nLength [0] = CFLength (&cf, 0))) {
-	CFClose (&cf);
+if (0 >= (soundP->nLength [0] = cf.Length ())) {
+	cf.Close ();
 	return 0;
 	}
 if (!(soundP->data [0] = (ubyte *) (ubyte *) D2_ALLOC (soundP->nLength [0]))) {
-	CFClose (&cf);
+	cf.Close ();
 	return 0;
 	}
-if (CFRead (soundP->data [0], soundP->nLength [0], 1, &cf) != 1) {
-	CFClose (&cf);
+if (cf.Read (soundP->data [0], soundP->nLength [0], 1) != 1) {
+	cf.Close ();
 	return 0;
 	}
-CFClose (&cf);
+cf.Close ();
 soundP->bHires = 1;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int LoadSounds (CFILE *fpSound, int nSoundNum, int nSoundStart)
+int LoadSounds (CFile& cf, int nSoundNum, int nSoundStart)
 {
 	tPIGSoundHeader	sndh;
 	tDigiSound			sound;
@@ -243,13 +243,13 @@ int LoadSounds (CFILE *fpSound, int nSoundNum, int nSoundStart)
 
 
 /*---*/PrintLog ("      Loading sound data (%d sounds)\n", nSoundNum);
-CFSeek (fpSound, nSoundStart, SEEK_SET);
+cf.Seek (nSoundStart, SEEK_SET);
 memset (&sound, 0, sizeof (sound));
 #if USE_OPENAL
 memset (&sound.buffer, 0xFF, sizeof (sound.buffer));
 #endif
 for (i = 0; i < nSoundNum; i++) {
-	PIGSoundHeaderRead (&sndh, fpSound);
+	PIGSoundHeaderRead (&sndh, cf);
 	//size -= sizeof (tPIGSoundHeader);
 	memcpy (szSoundName, sndh.name, 8);
 	szSoundName [8] = 0;
@@ -279,32 +279,30 @@ return 1;
 
 int ReadSoundFile (void)
 {
-	CFILE cfSound;
-	int snd_id,sndVersion;
-	int nSoundNum;
-	int nSoundStart;
-	int size, length;
+	CFile		cf;
+	int		snd_id,sndVersion;
+	int		nSoundNum;
+	int		nSoundStart;
+	int		size, length;
 
-CFOpen (&cfSound, (char *) DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0);
-
-if (&cfSound == NULL)
+if (!cf.Open ((char *) DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0))
 	return 0;
 
 //make sure soundfile is valid nType file & is up-to-date
-snd_id = CFReadInt (&cfSound);
-sndVersion = CFReadInt (&cfSound);
+snd_id = cf.ReadInt ();
+sndVersion = cf.ReadInt ();
 if (snd_id != SNDFILE_ID || sndVersion != SNDFILE_VERSION) {
-	CFClose (&cfSound);						//out of date sound file
+	cf.Close ();						//out of date sound file
 	return 0;
-}
+	}
 
-nSoundNum = CFReadInt (&cfSound);
-nSoundStart = CFTell (&cfSound);
-size = CFLength (&cfSound,0) - nSoundStart;
+nSoundNum = cf.ReadInt ();
+nSoundStart = cf.Tell ();
+size = cf.Length () - nSoundStart;
 length = size;
-//	PiggyReadSounds (&cfSound);
-LoadSounds (&cfSound, nSoundNum, nSoundStart);
-CFClose (&cfSound);
+//	PiggyReadSounds ();
+LoadSounds (cf, nSoundNum, nSoundStart);
+cf.Close ();
 return 1;
 }
 
@@ -355,25 +353,25 @@ return 1;
 
 void PiggyReadSounds (void)
 {
-	CFILE			cf;
+	CFile			cf;
 	ubyte			*ptr;
 	int			i, j, sbytes;
 	tDigiSound	*soundP = gameData.pig.sound.pSounds;
 
 ptr = gameData.pig.sound.data [gameStates.app.bD1Data];
 sbytes = 0;
-if (!CFOpen (&cf, gameStates.app.bD1Mission ? (char *) "descent.pig" : (char *) DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0))
+if (!cf.Open (gameStates.app.bD1Mission ? (char *) "descent.pig" : (char *) DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0))
 	return;
 for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; i++, soundP++) {
 	if (soundOffset [gameStates.app.bD1Data][i] > 0) {
 		if (PiggySoundIsNeeded (i)) {
-			CFSeek (&cf, soundOffset [gameStates.app.bD1Data][i], SEEK_SET);
+			cf.Seek (soundOffset [gameStates.app.bD1Data][i], SEEK_SET);
 
 			// Read in the sound data!!!
 			soundP->data [0] = ptr;
 			ptr += soundP->nLength [0];
 			sbytes += soundP->nLength [0];
-			CFRead (soundP->data [0], soundP->nLength [0], 1, &cf);
+			cf.Read (soundP->data [0], soundP->nLength [0], 1);
 #if USE_OPENAL
 			PiggyBufferSound (soundP);
 #endif
@@ -382,7 +380,7 @@ for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; 
 			soundP->data [0] = (ubyte *) -1;
 		}
 	}
-CFClose (&cf);
+cf.Close ();
 #if TRACE			
 	con_printf (CON_VERBOSE, "\nActual Sound usage: %d KB\n", sbytes/1024);
 #endif
@@ -428,6 +426,7 @@ Mix_Chunk *LoadAddonSound (const char *pszSoundFile, ubyte *bBuiltIn)
 	Mix_Chunk	*chunkP;
 	char			szWAV [FILENAME_LEN];
 	int			i;
+	CFile			cf;
 
 if (!::isdigit (*pszSoundFile))
 	i = -1;
@@ -440,8 +439,8 @@ else {
 		return chunkP;
 	pszSoundFile += 3;
 	}
-if (!(CFExtract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav") ||
-		CFExtract (pszSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], 0, "d2x-temp.wav")))
+if (!(cf.Extract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav") ||
+		cf.Extract (pszSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], 0, "d2x-temp.wav")))
 	return NULL;
 sprintf (szWAV, "%s%sd2x-temp.wav", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "");
 if (!(chunkP = Mix_LoadWAV (szWAV)))

@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "joy.h"
 #include "slew.h"
 #include "args.h"
+#include "hogfile.h"
 #include "newdemo.h"
 #include "timer.h"
 #include "text.h"
@@ -365,7 +366,7 @@ ADD_MENU (nOptions, TXT_VIEW_DEMO, KEY_D, HTX_MAIN_DEMO);
 mainOpts.nDemo = nOptions++;
 ADD_MENU (nOptions, TXT_VIEW_SCORES, KEY_H, HTX_MAIN_SCORES);
 mainOpts.nScores = nOptions++;
-if (CFExist ("orderd2.pcx", gameFolders.szDataDir, 0)) { // SHAREWARE
+if (CFile::Exist ("orderd2.pcx", gameFolders.szDataDir, 0)) { // SHAREWARE
 	ADD_MENU (nOptions, TXT_ORDERING_INFO, -1, NULL);
 	mainOpts.nOrder = nOptions++;
 	}
@@ -478,13 +479,13 @@ static void PlayMenuSong (void)
 {
 	int h, i, j = 0;
 	char * m [MAX_NUM_SONGS + 2];
-	CFILE cf;
+	CFile cf;
 	char	szSongTitles [2][14] = {"- Descent 2 -", "- Descent 1 -"};
 
 m [j++] = szSongTitles [0];
 for (i = 0; i < gameData.songs.nTotalSongs; i++) {
-	if (CFOpen (&cf, (char *) gameData.songs.info [i].filename, gameFolders.szDataDir, "rb", i >= gameData.songs.nSongs [0])) {
-		CFClose (&cf);
+	if (cf.Open ((char *) gameData.songs.info [i].filename, gameFolders.szDataDir, "rb", i >= gameData.songs.nSongs [0])) {
+		cf.Close ();
 		if (i == gameData.songs.nSongs [0])
 			m [j++] = szSongTitles [1];
 		m [j++] = gameData.songs.info [i].filename;
@@ -1473,7 +1474,7 @@ gameStates.app.bD1Data = 0;
 SetDataVersion (-1);
 if ((nMission < 0) || gameOpts->app.bSinglePlayer)
 	gameFolders.szMsnSubDir [0] = '\0';
-CFUseAltHogFile ("");
+hogFileManager.UseAlt ("");
 do {
 	nMissions = BuildMissionList (0, nFolder);
 	if (nMissions < 1)
@@ -1589,7 +1590,7 @@ gameStates.app.bD1Data = 0;
 SetDataVersion (-1);
 if ((nMission < 0) || gameOpts->app.bSinglePlayer)
 	gameFolders.szMsnSubDir [0] = '\0';
-CFUseAltHogFile ("");
+hogFileManager.UseAlt ("");
 for (;;) {
 	memset (m, 0, sizeof (m));
 	nOptions = 0;
@@ -5571,11 +5572,11 @@ ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
 
  char *MENU_PCX_NAME (void)
 {
-if (CFExist (MENU_PCX_FULL, gameFolders.szDataDir, 0))
+if (CFile::Exist (MENU_PCX_FULL, gameFolders.szDataDir, 0))
 	return (char *) MENU_PCX_FULL;
-if (CFExist (MENU_PCX_OEM, gameFolders.szDataDir, 0))
+if (CFile::Exist (MENU_PCX_OEM, gameFolders.szDataDir, 0))
 	return (char *) MENU_PCX_OEM;
-if (CFExist (MENU_PCX_SHAREWARE, gameFolders.szDataDir, 0))
+if (CFile::Exist (MENU_PCX_SHAREWARE, gameFolders.szDataDir, 0))
 	return (char *) MENU_PCX_SHAREWARE;
 return (char *) MENU_PCX_MAC_SHARE;
 }

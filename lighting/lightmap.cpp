@@ -590,7 +590,7 @@ return GameDataFilename (pszFilename, "lmap", nLevel, gameOpts->render.nLightmap
 
 int SaveLightmapData (int nLevel)
 {
-	CFILE				cf;
+	CFile				cf;
 	tLightmapDataHeader ldh = {LIGHTMAP_DATA_VERSION, 
 										gameData.segs.nSegments, 
 										gameData.segs.nVertices, 
@@ -604,24 +604,24 @@ int SaveLightmapData (int nLevel)
 
 if (!(RENDERPATH && gameStates.app.bCacheLightmaps && lightmapData.nLights && lightmapData.nBuffers))
 	return 0;
-if (!CFOpen (&cf, LightmapDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
+if (!cf.Open (LightmapDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
-bOk = (CFWrite (&ldh, sizeof (ldh), 1, &cf) == 1);
+bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1);
 if (bOk) {
 	for (i = gameData.segs.nFaces, faceP = gameData.segs.faces.faces; i; i--, faceP++) {
-		bOk = CFWrite (&faceP->nLightmap, sizeof (faceP->nLightmap), 1, &cf) == 1;
+		bOk = cf.Write (&faceP->nLightmap, sizeof (faceP->nLightmap), 1) == 1;
 		if (!bOk)
 			break;
 		}
 	}
 if (bOk) {
 	for (i = 0; i < lightmapData.nBuffers; i++) {
-		bOk = CFWrite (lightmapData.buffers [i].bmP, sizeof (lightmapData.buffers [i].bmP), 1, &cf) == 1;
+		bOk = cf.Write (lightmapData.buffers [i].bmP, sizeof (lightmapData.buffers [i].bmP), 1) == 1;
 		if (!bOk)
 			break;
 		}
 	}
-CFClose (&cf);
+cf.Close ();
 return bOk;
 }
 
@@ -639,7 +639,7 @@ if (lightmapData.nBuffers > nBuffers) {
 
 int LoadLightmapData (int nLevel)
 {
-	CFILE				cf;
+	CFile				cf;
 	tLightmapDataHeader ldh;
 	int				i, bOk;
 	char				szFilename [FILENAME_LEN];
@@ -647,9 +647,9 @@ int LoadLightmapData (int nLevel)
 
 if (!(RENDERPATH && gameStates.app.bCacheLightmaps))
 	return 0;
-if (!CFOpen (&cf, LightmapDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
+if (!cf.Open (LightmapDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
 	return 0;
-bOk = (CFRead (&ldh, sizeof (ldh), 1, &cf) == 1);
+bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
 if (bOk)
 	bOk = (ldh.nVersion == LIGHTMAP_DATA_VERSION) && 
 			(ldh.nSegments == gameData.segs.nSegments) && 
@@ -659,21 +659,21 @@ if (bOk)
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk) {
 	for (i = ldh.nFaces, faceP = gameData.segs.faces.faces; i; i--, faceP++) {
-		bOk = CFRead (&faceP->nLightmap, sizeof (faceP->nLightmap), 1, &cf) == 1;
+		bOk = cf.Read (&faceP->nLightmap, sizeof (faceP->nLightmap), 1) == 1;
 		if (!bOk)
 			break;
 		}
 	}
 if (bOk) {
 	for (i = 0; i < ldh.nBuffers; i++) {
-		bOk = CFRead (lightmapData.buffers [i].bmP, sizeof (lightmapData.buffers [i].bmP), 1, &cf) == 1;
+		bOk = cf.Read (lightmapData.buffers [i].bmP, sizeof (lightmapData.buffers [i].bmP), 1) == 1;
 		if (!bOk)
 			break;
 		}
 	}
 if (bOk)
 	ReallocLightmaps (ldh.nBuffers);
-CFClose (&cf);
+cf.Close ();
 return bOk;
 }
 

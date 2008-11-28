@@ -30,6 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "timer.h"
 #include "u_mem.h"
+#include "hogfile.h"
 
 char CDROM_dir[40] = ".";
 
@@ -53,22 +54,22 @@ void SongsInit ()
 {
 	int	i, bD1Songs;
 	char	*p, inputline [81];
-	CFILE	cf;
+	CFile	cf;
 
 if (gameData.songs.bInitialized)
 	return;
-CFUseD1HogFile ("descent.hog");
+hogFileManager.UseD1 ("descent.hog");
 for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 		if (!FindArg ("-nomixer"))
 			CD_blast_mixer ();   // Crank it!
-	if (CFExist ("descent.sng", gameFolders.szDataDir, bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
-		if (!CFOpen (&cf, "descent.sng", gameFolders.szDataDir, "rb", bD1Songs)) {
+	if (CFile::Exist ("descent.sng", gameFolders.szDataDir, bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
+		if (!cf.Open ("descent.sng", gameFolders.szDataDir, "rb", bD1Songs)) {
 			if (bD1Songs)
 				break;
 			else
 				Error ("Couldn't open descent.sng");
 			}
-		while (CFGetS (inputline, 80, &cf)) {
+		while (cf.GetS (inputline, 80)) {
 			if ((p = strchr (inputline,'\n')))
 				*p = '\0';
 			if (*inputline) {
@@ -89,7 +90,7 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 		gameData.songs.nLevelSongs [bD1Songs] = gameData.songs.nSongs [bD1Songs] - gameData.songs.nFirstLevelSong [bD1Songs];
 		if (!gameData.songs.nFirstLevelSong [bD1Songs])
 			Error ("Descent 1 songs are missing.");
-		CFClose(&cf);
+		cf.Close ();
 		}
 	gameData.songs.nTotalSongs = i;
 	gameData.songs.bInitialized = 1;
@@ -330,8 +331,9 @@ if (bForceRBRegister) {
 	bForceRBRegister = 0;
 	}
 if (bFromHog) {
+	CFile	cf;
 	strcpy (szFilename, LevelSongName (nLevel));
-	if (*szFilename && CFExtract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
+	if (*szFilename && cf.Extract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
 		char	szSong [FILENAME_LEN];
 
 		sprintf (szSong, "%s%s%s", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "", szFilename);
@@ -411,19 +413,19 @@ if (nCurrentLevelSong > 1)
 
 int LoadPlayList (char *pszPlayList)
 {
-	CFILE	cf;
+	CFile	cf;
 	char	szSong [FILENAME_LEN], szListFolder [FILENAME_LEN], szSongFolder [FILENAME_LEN], *pszSong;
 	int	l, bRead, nSongs, bMP3;
 
-CFSplitPath (pszPlayList, szListFolder, NULL, NULL);
+CFile::SplitPath (pszPlayList, szListFolder, NULL, NULL);
 for (l = (int) strlen (pszPlayList) - 1; (l >= 0) && isspace (pszPlayList [l]); l--)
 	;
 pszPlayList [++l] = '\0';
 for (bRead = 0; bRead < 2; bRead++) {
-	if (!CFOpen (&cf, pszPlayList, "", "rt", 0))
+	if (!cf.Open (pszPlayList, "", "rt", 0))
 		return 0;
 	nSongs = 0;
-	while (CFGetS (szSong, sizeof (szSong), &cf)) {
+	while (cf.GetS (szSong, sizeof (szSong))) {
 		if ((bMP3 = (strstr (szSong, ".mp3") != NULL)) || strstr (szSong, ".ogg")) {
 			if (bRead) {
 				if (bMP3)
@@ -433,11 +435,11 @@ for (bRead = 0; bRead < 2; bRead++) {
 				if ((pszSong = strchr (szSong, '\n')))
 					*pszSong = '\0';
 				l = (int) strlen (szSong) + 1;
-				CFSplitPath (szSong, szSongFolder, NULL, NULL);
+				CFile::SplitPath (szSong, szSongFolder, NULL, NULL);
 				if (!*szSongFolder)
 					l += (int) strlen (szListFolder);
 				if (!(pszSong = (char *) D2_ALLOC (l))) {
-					CFClose (&cf);
+					cf.Close ();
 					return nSongs = nSongs;
 					}
 				if (*szSongFolder)
@@ -449,7 +451,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 			nSongs++;
 			}
 		}
-	CFClose (&cf);
+	cf.Close ();
 	if (!bRead) {
 		if (!(gameData.songs.user.pszLevelSongs = (char **) D2_ALLOC (nSongs * sizeof (char **))))
 			return 0;

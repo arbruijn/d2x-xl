@@ -21,18 +21,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 char *jcrypt (char *pszPlain)
 {
 	int i, t, len;
-	static char szCrypt[20];
+	static char szCrypt [20];
 
 len =(int) strlen (pszPlain);
 if (len > 8)
 	len = 8;
 
 for (i = 0; i < len; i++) {
-	szCrypt[i] = 0;
+	szCrypt [i] = 0;
 	for (t = 0; t < 8; t++) {
-		szCrypt[i] ^= (pszPlain [t] ^ pszPlain [i % (t + 1)]);
-		szCrypt[i] %= 90;
-		szCrypt[i] += 33;
+		szCrypt [i] ^= (pszPlain [t] ^ pszPlain [i % (t + 1)]);
+		szCrypt [i] %= 90;
+		szCrypt [i] += 33;
 		}
 	}
 szCrypt [i] = 0;

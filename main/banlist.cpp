@@ -45,14 +45,14 @@ return 1;
 
 int LoadBanList (void)
 {
-	CFILE	cf;
+	CFile	cf;
 	tBanListEntry	szPlayer;
 	unsigned int i;
 
-if (!CFOpen (&cf, "banlist.txt", gameFolders.szDataDir, "rt", 0))
+if (!cf.Open ("banlist.txt", gameFolders.szDataDir, "rt", 0))
 	return 0;
-while (!feof (cf.file)) {
-	fgets ((char *) szPlayer, sizeof (szPlayer), cf.file);
+while (!feof (cf.File ())) {
+	fgets ((char *) szPlayer, sizeof (szPlayer), cf.File ());
 	for (i = 0; i < sizeof (tBanListEntry); i++)
 		if (szPlayer [i] == '\n')
 			szPlayer [i] = '\0';
@@ -60,7 +60,7 @@ while (!feof (cf.file)) {
 	if (!AddPlayerToBanList (szPlayer))
 		break;
 	}
-CFClose (&cf);
+cf.Close ();
 return 1;
 }
 
@@ -69,14 +69,14 @@ return 1;
 int SaveBanList (void)
 {
 if (pBanList && nBanListSize) {
-	CFILE	cf;
+	CFile	cf;
 	int i;
 
-	if (!CFOpen (&cf, "banlist.txt", gameFolders.szDataDir, "wt", 0))
+	if (!cf.Open ("banlist.txt", gameFolders.szDataDir, "wt", 0))
 		return 0;
 	for (i = 0; i < nBanListSize; i++)
-		fputs ((const char *) pBanList [i], cf.file);
-	CFClose (&cf);
+		fputs ((const char *) pBanList [i], cf.File ());
+	cf.Close ();
 	}
 return 1;
 }

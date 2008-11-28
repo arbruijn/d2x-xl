@@ -143,12 +143,12 @@ void SetEquipGenStates (void);
 /*
  * reads an old_tMatCenInfo structure from a CFILE
  */
-void OldMatCenInfoRead(old_tMatCenInfo *mi, CFILE *fp);
+void OldMatCenInfoRead(old_tMatCenInfo *mi, CFile& cf);
 
 /*
  * reads a tMatCenInfo structure from a CFILE
  */
-void MatCenInfoRead (tMatCenInfo *ps, CFILE *fp);
+void MatCenInfoRead (tMatCenInfo *ps, CFile& cf);
 #endif
 
 #define FUELCEN_IDX(_fuelcenP)	((short) ((_fuelcenP) - gameData.matCens.fuelCenters))

@@ -51,6 +51,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "iff.h"
 #include "pcx.h"
 #include "args.h"
+#include "hogfile.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_shader.h"
@@ -246,7 +247,7 @@ GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.bmProps.h - GAME_FONT->ftHeight - h
 GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w - w - 2, 
 			 grdCurCanv->cvBitmap.bmProps.h - GAME_FONT->ftHeight - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 if (bVertigo < 0)
-	bVertigo = CFExist ("d2x.hog", gameFolders.szMissionDir, 0);
+	bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
 if (bVertigo) {
 	GrSetCurFont (MEDIUM2_FONT);
 	GrGetStringSize (TXT_VERTIGO, &w, &h, &aw);
@@ -269,17 +270,17 @@ GrSetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
 //read help from a file & print to screen
 void PrintCmdLineHelp ()
 {
-	CFILE cf;
+	CFile cf;
 	int bHaveBinary = 0;
 	char line[LINE_LEN];
 
-	if (!(CFOpen (&cf, "help.tex", gameFolders.szDataDir, "rb", 0) || 
-			CFOpen (&cf, "help.txb", gameFolders.szDataDir, "rb", 0))) {
+	if (!(cf.Open ("help.tex", gameFolders.szDataDir, "rb", 0) || 
+			cf.Open ("help.txb", gameFolders.szDataDir, "rb", 0))) {
 			Warning (TXT_NO_HELP);
 		bHaveBinary = 1;
 	}
-	if (cf.file) {
-		while (CFGetS (line, LINE_LEN, &cf)) {
+	if (cf.File ()) {
+		while (cf.GetS (line, LINE_LEN)) {
 			if (bHaveBinary) {
 				int i;
 				for (i = 0; i < (int) strlen (line) - 1; i++) {
@@ -289,7 +290,7 @@ void PrintCmdLineHelp ()
 			if (line[0] == ';')
 				continue;		//don't show comments
 		}
-		CFClose (&cf);
+		cf.Close ();
 	}
 
 	con_printf ((int) con_threshold.value, " D2X Options:\n\n");
@@ -623,38 +624,38 @@ if (*gameFolders.szHomeDir) {
 		char	fn [FILENAME_LEN];
 
 	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
-	CFMkDir (szDataRootDir);
+	CFile::MkDir (szDataRootDir);
 	sprintf (fn, "%s/%s", szDataRootDir, PROFDIR);
-	CFMkDir (fn);
+	CFile::MkDir (fn);
 	sprintf (fn, "%s/%s", szDataRootDir, SAVEDIR);
-	CFMkDir (fn);
+	CFile::MkDir (fn);
 	sprintf (fn, "%s/%s", szDataRootDir, SCRSHOTDIR);
-	CFMkDir (fn);
+	CFile::MkDir (fn);
 	sprintf (fn, "%s/%s", szDataRootDir, DEMODIR);
-	CFMkDir (fn);
+	CFile::MkDir (fn);
 	sprintf (fn, "%s/%s", szDataRootDir, CONFIGDIR);
-	CFMkDir (fn);
+	CFile::MkDir (fn);
 	sprintf (fn, "%s/%s", szDataRootDir, CONFIGDIR);
-	CFMkDir (fn);
+	CFile::MkDir (fn);
 	}
 #endif
 if (*gameFolders.szHomeDir) {
 #ifdef __macosx__
 	char *pszOSXCacheDir = GetMacOSXCacheFolder ();
 	sprintf (gameFolders.szTextureCacheDir [0], "%s/%s",pszOSXCacheDir, TEXTUREDIR_D2);
-	CFMkDir (gameFolders.szTextureCacheDir [0]);
+	CFile::MkDir (gameFolders.szTextureCacheDir [0]);
 	sprintf (gameFolders.szTextureCacheDir [1], "%s/%s", pszOSXCacheDir, TEXTUREDIR_D1);
-	CFMkDir (gameFolders.szTextureCacheDir [1]);
+	CFile::MkDir (gameFolders.szTextureCacheDir [1]);
 	sprintf (gameFolders.szModelCacheDir, "%s/%s", pszOSXCacheDir, MODELDIR);
-	CFMkDir (gameFolders.szModelCacheDir);
+	CFile::MkDir (gameFolders.szModelCacheDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s", pszOSXCacheDir, CACHEDIR);
-	CFMkDir (gameFolders.szCacheDir);
+	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s/256", pszOSXCacheDir, CACHEDIR);
-	CFMkDir (gameFolders.szCacheDir);
+	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s/128", pszOSXCacheDir, CACHEDIR);
-	CFMkDir (gameFolders.szCacheDir);
+	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s/64", pszOSXCacheDir, CACHEDIR);
-	CFMkDir (gameFolders.szCacheDir);
+	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s", pszOSXCacheDir, CACHEDIR);
 #else
 #	if defined (__unix__)
@@ -664,15 +665,15 @@ if (*gameFolders.szHomeDir) {
 	if (szDataRootDir [i = (int) strlen (szDataRootDir) - 1] == '\\')
 		szDataRootDir [i] = '\0';
 #	endif // __unix__
-	CFMkDir (szDataRootDir);
+	CFile::MkDir (szDataRootDir);
 	sprintf (gameFolders.szTextureCacheDir [0], "%s/%s", szDataRootDir, TEXTUREDIR_D2);
-	CFMkDir (gameFolders.szTextureCacheDir [0]);
+	CFile::MkDir (gameFolders.szTextureCacheDir [0]);
 	sprintf (gameFolders.szTextureCacheDir [1], "%s/%s", szDataRootDir, TEXTUREDIR_D1);
-	CFMkDir (gameFolders.szTextureCacheDir [1]);
+	CFile::MkDir (gameFolders.szTextureCacheDir [1]);
 	sprintf (gameFolders.szModelCacheDir, "%s/%s", szDataRootDir, MODELDIR);
-	CFMkDir (gameFolders.szModelCacheDir);
+	CFile::MkDir (gameFolders.szModelCacheDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s", szDataRootDir, CACHEDIR);
-	CFMkDir (gameFolders.szCacheDir);
+	CFile::MkDir (gameFolders.szCacheDir);
 #endif // __macosx__
 	}
 GetAppFolder (szDataRootDir, gameFolders.szProfDir, PROFDIR, "");
@@ -693,12 +694,12 @@ static char *szTexSubFolders [] = {"256", "128", "64"};
 for (i = 0; i < 2; i++) {
 	for (j = 0; j < 3; j++) {
 		sprintf (szTemp, "%s/%s", gameFolders.szTextureCacheDir [i], szTexSubFolders [j]);
-		CFMkDir (szTemp);
+		CFile::MkDir (szTemp);
 		}
 	}
 for (j = 0; j < 3; j++) {
 	sprintf (szTemp, "%s/%s", gameFolders.szModelCacheDir, szTexSubFolders [j]);
-	CFMkDir (szTemp);
+	CFile::MkDir (szTemp);
 	}
 		
 }
@@ -2739,7 +2740,7 @@ con_printf(CON_NORMAL, "\nDESCENT 2 %s v%d.%d.%d\n", VERSION_TYPE, D2X_MAJOR, D2
 #elif defined(__macosx__)
 con_printf(CON_NORMAL, "\nDESCENT 2 %s -- %s\n", VERSION_TYPE, DESCENT_VERSION);
 #endif
-if (gameHogFiles.D2XHogFiles.bInitialized)
+if (hogFileManager.D2XFiles ().bInitialized)
 	con_printf ((int) CON_NORMAL, "  Vertigo Enhanced\n");
 con_printf(CON_NORMAL, "\nBuilt: %s %s\n", __DATE__, __TIME__);
 #ifdef __VERSION__
@@ -2803,11 +2804,11 @@ else {
 	con_printf(CONDBG, "\nShowing loading screen...\n"); fflush (fErr);
 #endif
 	strcpy (filename, gameStates.menus.bHires ? "descentb.pcx" : "descent.pcx");
-	if (!CFExist (filename, gameFolders.szDataDir, 0))
+	if (!CFile::Exist (filename, gameFolders.szDataDir, 0))
 		strcpy (filename, gameStates.menus.bHires ? "descntob.pcx" : "descento.pcx"); // OEM
-	if (!CFExist (filename, gameFolders.szDataDir, 0))
+	if (!CFile::Exist (filename, gameFolders.szDataDir, 0))
 		strcpy (filename, "descentd.pcx"); // SHAREWARE
-	if (!CFExist (filename, gameFolders.szDataDir, 0))
+	if (!CFile::Exist (filename, gameFolders.szDataDir, 0))
 		strcpy (filename, "descentb.pcx"); // MAC SHAREWARE
 	GrSetMode (
 		gameStates.menus.bHires ? 
@@ -3251,7 +3252,7 @@ signal (SIGTERM, D2SignalHandler);
 #ifdef _WIN32
 SDL_SetSpecialKeyHandling (0);
 #endif
-CFileInit ("", "");
+hogFileManager.Init ("", "");
 InitGameData ();
 InitGameStates ();
 InitExtraGameInfo ();
@@ -3285,17 +3286,16 @@ InitGameOptions (1);
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 AllocGameData ();
 /*---*/PrintLog ("Loading text resources\n");
-CFSetCriticalErrorCounterPtr (&nDescentCriticalError);
 /*---*/PrintLog ("Loading main hog file\n");
-if (!(CFileInit ("descent2.hog", gameFolders.szDataDir) || 
-	  (gameStates.app.bDemoData = CFileInit ("d2demo.hog", gameFolders.szDataDir)))) {
+if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir) || 
+	  (gameStates.app.bDemoData = hogFileManager.Init ("d2demo.hog", gameFolders.szDataDir)))) {
 	/*---*/PrintLog ("Descent 2 data not found\n");
 	Error (TXT_NO_HOG2);
 	}
 LoadGameTexts ();
 if (*szAutoHogFile && *szAutoMission) {
-	CFUseAltHogFile (szAutoHogFile);
-	gameStates.app.bAutoRunMission = gameHogFiles.AltHogFiles.bInitialized;
+	hogFileManager.UseAlt (szAutoHogFile);
+	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}
 /*---*/PrintLog ("Reading configuration file\n");
 ReadConfigFile ();
@@ -3439,13 +3439,13 @@ void ShowOrderForm ()
 	KeyFlush ();
 
 	strcpy (exit_screen, gameStates.menus.bHires?"ordrd2ob.pcx":"ordrd2o.pcx"); // OEM
-	if (! CFExist (exit_screen, gameFolders.szDataDir, 0))
+	if (! CFile::Exist (exit_screen, gameFolders.szDataDir, 0))
 		strcpy (exit_screen, gameStates.menus.bHires?"orderd2b.pcx":"orderd2.pcx"); // SHAREWARE, prefer mac if hires
-	if (! CFExist (exit_screen, gameFolders.szDataDir, 0))
+	if (! CFile::Exist (exit_screen, gameFolders.szDataDir, 0))
 		strcpy (exit_screen, gameStates.menus.bHires?"orderd2.pcx":"orderd2b.pcx"); // SHAREWARE, have to rescale
-	if (! CFExist (exit_screen, gameFolders.szDataDir, 0))
+	if (! CFile::Exist (exit_screen, gameFolders.szDataDir, 0))
 		strcpy (exit_screen, gameStates.menus.bHires?"warningb.pcx":"warning.pcx"); // D1
-	if (! CFExist (exit_screen, gameFolders.szDataDir, 0))
+	if (! CFile::Exist (exit_screen, gameFolders.szDataDir, 0))
 		return; // D2 registered
 
 	if ((pcx_error=PcxReadFullScrImage (exit_screen, 0))==PCX_ERROR_NONE) {

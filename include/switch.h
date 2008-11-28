@@ -141,17 +141,17 @@ void ExecObjTriggers (short nObject, int bDamage);
 /*
  * reads a tTriggerV29 structure from a CFILE
  */
-void V29TriggerRead(tTriggerV29 *t, CFILE *fp);
+void V29TriggerRead(tTriggerV29 *t, CFile& cf);
 
 /*
  * reads a tTriggerV30 structure from a CFILE
  */
-void V30TriggerRead(tTriggerV30 *t, CFILE *fp);
+void V30TriggerRead(tTriggerV30 *t, CFile& cf);
 
 /*
  * reads a tTrigger structure from a CFILE
  */
-void TriggerRead(tTrigger *t, CFILE *fp, int bObjTrigger);
+void TriggerRead(tTrigger *t, CFile& cf, int bObjTrigger);
 #endif
 
 void SetSpeedBoostVelocity (short nObject, fix speed, 

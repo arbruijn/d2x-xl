@@ -108,12 +108,12 @@ extern struct me mine_editor;
 // returns 1 if error, else 0
 int game_load_mine(char * filename);
 
-void ReadColor (tFaceColor *pc, CFILE *loadFile, int bFloatData, int bRegisterColor);
+void ReadColor (CFile& cf, tFaceColor *pc, int bFloatData, int bRegisterColor);
 
 // loads from an already-open file
 // returns 0=everything ok, 1=old version, -1=error
-int load_mine_data(CFILE *LoadFile);
-int LoadMineSegmentsCompiled (CFILE *LoadFile);
+int load_mine_data(CFile& cf);
+int LoadMineSegmentsCompiled (CFile& cf);
 void CreateFaceList (void);
 void ComputeNearestLights (int nLevel);
 void InitTexColors (void);

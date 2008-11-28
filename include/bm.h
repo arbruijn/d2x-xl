@@ -88,9 +88,9 @@ void InitTextures();
 // Initializes all bitmaps from BITMAPS.TBL file.
 int bm_init_use_tbl(void);
 
-void BMReadAll (CFILE * fp);
-void BMReadWeaponInfoD1 (CFILE * fp);
-void BMReadGameDataD1 (CFILE * fp);
+void BMReadAll (CFile&  cf);
+void BMReadWeaponInfoD1 (CFile&  cf);
+void BMReadGameDataD1 (CFile&  cf);
 void RestoreDefaultRobots (void);
 int ComputeAvgPixel (grsBitmap *newBm);
 

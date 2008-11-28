@@ -15,23 +15,23 @@
 #include "u_mem.h"
 //end additions - adb
 
-char *fsplitword (CFILE *f, char splitchar)
+char *fsplitword (CFile& cf, char splitchar)
 {
 	int	i, mem;
 	char	c, *buf;
 
 mem = 256;
 buf = (char *) D2_ALLOC (sizeof (char) * mem);
-c = CFGetC (f);
-for (i = 0; (c != splitchar) && !CFEoF (f); i++) {
+c = cf.GetC ();
+for (i = 0; (c != splitchar) && !cf.EoF (); i++) {
 	if (i == mem) {
 		mem += 256;
 		buf = (char *) D2_REALLOC (buf, mem);
 		}
 	buf [i] = c;
-	c = CFGetC (f);
+	c = cf.GetC ();
 	}
-if (CFEoF (f) && (c != splitchar))
+if (cf.EoF () && (c != splitchar))
 	buf [i++] = c;
 buf [i] = 0;
 return buf;

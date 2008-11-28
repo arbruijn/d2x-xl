@@ -224,26 +224,26 @@ memset (gameData.models.modelToPOL, 0, sizeof (gameData.models.modelToPOL));
 
 short LoadLoresModel (short i)
 {
-	CFILE			cf;
+	CFile			cf;
 	tPolyModel	*pm;
 	short			nModel, j = sizeofa (replacementModels);
 	char			szModel [FILENAME_LEN];
 
 sprintf (szModel, "model%d.pol", replacementModels [i].nModel);
 if (!(replacementModels [i].pszLores && 
-	  (CFOpen (&cf, replacementModels [i].pszLores, gameFolders.szDataDir, "rb", 0) ||
-	   CFOpen (&cf, szModel, gameFolders.szDataDir, "rb", 0))))
+	  (cf.Open (replacementModels [i].pszLores, gameFolders.szDataDir, "rb", 0) ||
+	   cf.Open (szModel, gameFolders.szDataDir, "rb", 0))))
 	return ++i;
 nModel = replacementModels [i].nModel;
 pm = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
-if (!PolyModelRead (pm, &cf, 1)) {
-	CFClose (&cf);
+if (!PolyModelRead (pm, cf, 1)) {
+	cf.Close ();
 	return ++i;
 	}
 pm->modelData = 
 pm->modelData = NULL;
-PolyModelDataRead (pm, nModel, gameData.models.defPolyModels + nModel, &cf);
-CFClose (&cf);
+PolyModelDataRead (pm, nModel, gameData.models.defPolyModels + nModel, cf);
+cf.Close ();
 pm->rad = G3PolyModelSize (pm, nModel);
 do {
 	gameData.models.modelToPOL [nModel] = pm;

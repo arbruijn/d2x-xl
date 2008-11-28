@@ -1105,7 +1105,7 @@ void LoadEndLevelData (int nLevel)
 {
 	char		filename [13];
 	char		line [LINE_LEN], *p;
-	CFILE		cf;
+	CFile		cf;
 	int		var, nSegment, nSide;
 	int		nExitSide = 0, i;
 	int		bHaveBinary = 0;
@@ -1124,9 +1124,9 @@ else					//Normal level
 	strcpy (filename, gameData.missions.szLevelNames [nLevel-1]);
 if (!ConvertExt (filename, "end"))
 	Error ("Error converting filename\n'<%s>'\nfor endlevel data\n", filename);
-if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {
+if (!cf.Open (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {
 	ConvertExt (filename, "txb");
-	if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {
+	if (!cf.Open (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {
 		if (nLevel == 1) {
 #if TRACE
 			con_printf (CONDBG, "Cannot load file text\nof binary version of\n'<%s>'\n", filename);
@@ -1146,7 +1146,7 @@ if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Missi
 //everything else must be in the right place
 var = 0;
 PrintLog ("      parsing endlevel description\n");
-while (CFGetS (line, LINE_LEN, &cf)) {
+while (cf.GetS (line, LINE_LEN)) {
 	if (bHaveBinary) {
 		int l = (int) strlen (line);
 		for (i = 0; i < l; i++)
@@ -1163,6 +1163,7 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 		continue;
 	switch (var) {
 		case 0: {						//ground terrain
+			CIFF iff;
 			int iff_error;
 
 			PrintLog ("         loading terrain bitmap\n");
@@ -1171,10 +1172,10 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 				D2_FREE (gameData.endLevel.terrain.bmInstance.bmTexBuf);
 				}
 			Assert (gameData.endLevel.terrain.bmInstance.bmTexBuf == NULL);
-			iff_error = iff_read_bitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
+			iff_error = iff.ReadBitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {
 #if DBG
-				Warning (TXT_EXIT_TERRAIN, p, iff_errormsg (iff_error));
+				Warning (TXT_EXIT_TERRAIN, p, iff.ErrorMsg (iff_error));
 #endif
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 				return;
@@ -1200,6 +1201,7 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 			break;
 
 		case 4: {						//planet bitmap
+			CIFF iff;
 			int iff_error;
 
 			PrintLog ("         loading satellite bitmap\n");
@@ -1207,9 +1209,9 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 				OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
 				D2_FREE (gameData.endLevel.satellite.bmInstance.bmTexBuf);
 				}
-			iff_error = iff_read_bitmap (p, &gameData.endLevel.satellite.bmInstance, BM_LINEAR);
+			iff_error = iff.ReadBitmap (p, &gameData.endLevel.satellite.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {
-				Warning (TXT_SATELLITE, p, iff_errormsg (iff_error));
+				Warning (TXT_SATELLITE, p, iff.ErrorMsg (iff_error));
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 				return;
 			}
@@ -1288,7 +1290,7 @@ gameData.endLevel.exit.vGroundExit = gameData.endLevel.exit.vMineExit + gameData
 	tm = vmsMatrix::CreateFU (tv, mSurfaceOrient [UVEC]);
 	gameData.endLevel.satellite.vUp = tm [UVEC] * SATELLITE_HEIGHT;
 	}
-CFClose (&cf);
+cf.Close ();
 gameStates.app.bEndLevelDataLoaded = 1;
 }
 

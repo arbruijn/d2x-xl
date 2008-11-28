@@ -21,41 +21,85 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h"
 
 // the maximum length of a filename
-#define FILENAME_LEN 255
+#define FILENAME_LEN			255
 #define SHORT_FILENAME_LEN 13
-#define MAX_HOGFILES 300
+#define MAX_HOGFILES			300
 
 typedef struct CFILE {
 	FILE		*file;
 	char		*filename;
 	int		size;
-	int		lib_offset;
-	int		raw_position;
+	int		libOffset;
+	int		rawPosition;
 } CFILE;
 
-typedef struct tHogFile {
-	char		name [13];
-	int		offset;
-	int		length;
-} tHogFile;
+class CFile {
+	private:
+		CFILE	m_cf;
 
-typedef struct tHogFileList {
-	tHogFile		files [MAX_HOGFILES];
-	char			szName [FILENAME_LEN];
-	int			nFiles;
-	int			bInitialized;
-} tHogFileList;
+	public:
+		CFile () { 
+			memset (&m_cf, 0, sizeof (m_cf)); 
+			m_cf.rawPosition = -1; 
+			};
+		~CFile () { Close (); };
+		int Open (const char *filename, const char *folder, const char *mode, int bUseD1Hog);
+		int Length (void);							// Returns actual size of file...
+		size_t Read (void *buf, size_t elsize, size_t nelem);
+		int Close (void);
+		int Size (const char *hogname, const char *folder, int bUseD1Hog);
+		int Seek (long int offset, int where);
+		int Tell (void);
+		char *GetS (char *buf, size_t n);
+		int EoF (void);
+		int Error (void);
+		int Write (const void *buf, int elsize, int nelem);
+		int GetC (void);
+		int PutC (int c);
+		int PutS (const char *str);
 
-typedef struct tGameHogFiles {
-	tHogFileList D1HogFiles;
-	tHogFileList D2HogFiles;
-	tHogFileList D2XHogFiles;
-	tHogFileList XLHogFiles;
-	tHogFileList ExtraHogFiles;
-	tHogFileList AltHogFiles;
-	char szAltHogFile [FILENAME_LEN];
-	int bAltHogFileInited;
-} tGameHogFiles;
+		// prototypes for reading basic types from fp
+		int ReadInt (void);
+		short ReadShort (void);
+		sbyte ReadByte (void);
+		fix ReadFix (void);
+		fixang ReadFixAng (void);
+		void ReadVector (vmsVector& v);
+		void ReadAngVec (vmsAngVec& v);
+		void ReadMatrix (vmsMatrix& v);
+		float ReadFloat (void);
+		double ReadDouble (void);
+		void ReadString (char *buf, int n);
+		char *ReadData (const char *filename, const char *folder, int bUseD1Hog);
+
+		int WriteFix (fix x);
+		int WriteInt (int i);
+		int WriteShort (short s);
+		int WriteByte (sbyte u);
+		int WriteFixAng (fixang a);
+		int WriteFloat (float f);
+		int WriteDouble (double d);
+		void WriteAngVec (const vmsAngVec& v);
+		void WriteVector (const vmsVector& v);
+		void WriteMatrix (const vmsMatrix& m);
+		int WriteString (const char *buf);
+
+		int Copy (const char *pszSrc, const char *pszDest);
+		int Extract (const char *filename, const char *folder, int bUseD1Hog, const char *szDest);
+		time_t Date (const char *hogname, const char *folder, int bUseD1Hog);
+
+		static int Exist (const char *filename, const char *folder, int bUseD1Hog);	// Returns true if file exists on disk (1) or in hog (2).
+		static int Delete (const char *filename, const char* folder);
+		static int Rename (const char *oldname, const char *newname, const char *folder);
+		static int MkDir (const char *pathname);
+		static FILE *GetFileHandle (const char *filename, const char *folder, const char *mode);
+		static void SplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt);
+		static void ChangeFilenameExtension (char *dest, const char *src, const char *new_ext);
+
+		inline FILE*& File () { return m_cf.file; }
+		inline char* Name () { return m_cf.filename; }
+	};
+
 
 typedef struct tGameFolders {
 	char szHomeDir [FILENAME_LEN];
@@ -83,100 +127,7 @@ typedef struct tGameFolders {
 
 int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, const char *szFilter);
 
-//Specify the name of the tHogFile.  Returns 1 if tHogFile found & had files
-int CFileInit (const char *hogname, const char *folder);
-
-int CFSize (const char *hogname, const char *folder, int bUseD1Hog);
-
-int CFOpen (CFILE *fp, const char *filename, const char *folder, const char *mode, int bUseD1Hog);
-int CFLength (CFILE *fp, int bUseD1Hog);							// Returns actual size of file...
-size_t CFRead (void *buf, size_t elsize, size_t nelem, CFILE *fp);
-int CFClose (CFILE *fp);
-int CFGetC (CFILE *fp);
-int CFSeek (CFILE *fp, long int offset, int where);
-int CFTell (CFILE *fp);
-char *CFGetS (char *buf, size_t n, CFILE *fp);
-
-int CFEoF (CFILE *fp);
-int CFError (CFILE *fp);
-
-int CFExist (const char *filename, const char *folder, int bUseD1Hog);	// Returns true if file exists on disk (1) or in hog (2).
-
-// Deletes a file.
-int CFDelete (const char *filename, const char* folder);
-
-// Rename a file.
-int CFRename (const char *oldname, const char *newname, const char *folder);
-
-// Make a directory
-int CFMkDir (const char *pathname);
-
-// CFWrite () writes to the file
-int CFWrite (const void *buf, int elsize, int nelem, CFILE *fp);
-
-// CFPutC () writes a character to a file
-int CFPutC (int c, CFILE *fp);
-
-// CFPutS () writes a string to a file
-int CFPutS (const char *str, CFILE *fp);
-
-// Allows files to be gotten from an alternate hog file.
-// Passing NULL disables this.
-// Returns 1 if tHogFile found (& contains file), else 0.
-// If NULL passed, returns 1
-int CFUseAltHogFile (const char *name);
-
-// Allows files to be gotten from the Descent 1 hog file.
-// Passing NULL disables this.
-// Returns 1 if tHogFile found (& contains file), else 0.
-// If NULL passed, returns 1
-int CFUseD1HogFile (const char *name);
-
-// All fp functions will check this directory if no file exists
-// in the current directory.
-void CFUseAltHogDir (const char *path);
-
-//tell fp about your critical error counter
-void CFSetCriticalErrorCounterPtr (int *ptr);
-
-FILE *CFFindHogFile (tHogFileList *hog, const char *folder, const char *name, int *length);
-
-int CFExtract (const char *filename, const char *folder, int bUseD1Hog, const char *szDest);
-
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
-
-// prototypes for reading basic types from fp
-int CFReadInt (CFILE *file);
-short CFReadShort (CFILE *file);
-sbyte CFReadByte (CFILE *file);
-fix CFReadFix (CFILE *file);
-fixang CFReadFixAng (CFILE *file);
-void CFReadVector (vmsVector& v, CFILE *file);
-void CFReadAngVec (vmsAngVec& v, CFILE *file);
-void CFReadMatrix (vmsMatrix& v, CFILE *file);
-float CFReadFloat (CFILE *file);
-double CFReadDouble (CFILE *file);
-char *CFReadData (const char *filename, const char *folder, int bUseD1Hog);
-
-// Reads variable length, null-termined string.   Will only read up
-// to n characters.
-void CFReadString (char *buf, int n, CFILE *cfP);
-
-// functions for writing cfiles
-int CFWriteFix (fix x, CFILE *file);
-int CFWriteInt (int i, CFILE *file);
-int CFWriteShort (short s, CFILE *file);
-int CFWriteByte (sbyte u, CFILE *file);
-int CFWriteFixAng (fixang a, CFILE *file);
-void CFWriteAngVec (const vmsAngVec& v, CFILE *file);
-void CFWriteVector (const vmsVector& v, CFILE *file);
-void CFWriteMatrix (const vmsMatrix& m,CFILE *file);
-void CFSplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt);
-void ChangeFilenameExtension (char *dest, const char *src, const char *new_ext);
-time_t CFDate (const char *hogname, const char *folder, int bUseD1Hog);
-
-// writes variable length, null-termined string.
-int CFWriteString (const char *buf, CFILE *cfP);
 
 #ifdef _WIN32
 char *UnicodeToAsc (char *str, const wchar_t *w_str);
@@ -184,7 +135,6 @@ wchar_t *AscToUnicode (wchar_t *w_str, const char *str);
 #endif
 
 extern int nCFileError;
-extern tGameHogFiles	gameHogFiles;
 extern tGameFolders	gameFolders;
 
 #endif

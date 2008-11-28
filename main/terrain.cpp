@@ -287,14 +287,15 @@ void LoadTerrain (char *filename)
 	int			iff_error;
 	int			i, j;
 	ubyte			h, hMin, hMax;
+	CIFF			iff;
 
 PrintLog ("            loading terrain height map\n");
-iff_error = iff_read_bitmap (filename, &bmHeight, BM_LINEAR);
+iff_error = iff.ReadBitmap (filename, &bmHeight, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR) {
 #if TRACE
-	con_printf (1, "File %s - IFF error: %s", filename, iff_errormsg (iff_error));
+	con_printf (1, "File %s - IFF error: %s", filename, iff.ErrorMsg (iff_error));
 #endif
-	Error ("File %s - IFF error: %s", filename, iff_errormsg (iff_error));
+	Error ("File %s - IFF error: %s", filename, iff.ErrorMsg (iff_error));
 }
 if (gameData.render.terrain.pHeightmap)
 	D2_FREE (gameData.render.terrain.pHeightmap)

@@ -322,7 +322,7 @@ void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 
 int ds_load( char * filename )	{
 	int i;
-	CFILE * cfP;
+	CFile * cfP;
 	tDigiSound newBmP;
 	char fname[20];
 	char rawname[100];
@@ -335,13 +335,13 @@ int ds_load( char * filename )	{
 		return i;
 	}
 
-	cfP = CFOpen( rawname, gameFolders.szDataDir, "rb", 0 );
+	cfP = cf.Open( rawname, gameFolders.szDataDir, "rb", 0 );
 
 	if (cfP) {
-		newBmP.length	= CFLength(cfP);
+		newBmP.length	= cf.Length(cfP);
 		MALLOC( newBmP.data, ubyte, newBmP.length );
-		CFRead( newBmP.data, 1, newBmP.length, cfP );
-		CFClose(cfP);
+		cf.Read( newBmP.data, 1, newBmP.length, cfP );
+		cf.Close(cfP);
 	} else {
 #if TRACE
 		con_printf (1, "Warning: Couldn't find '%bObjectRendered'\n", filename );
@@ -416,7 +416,7 @@ int get_texture(char *name)
 // If no editor, BMInit() is called.
 int bm_init_use_tbl()
 {
-	CFILE	* InfoFile;
+	CFile	* InfoFile;
 	char	szInput[LINEBUF_SIZE];
 	int	i, have_bin_tbl;
 
@@ -483,16 +483,16 @@ int bm_init_use_tbl()
 
 	// Open BITMAPS.TBL for reading.
 	have_bin_tbl = 0;
-	InfoFile = CFOpen( "BITMAPS.TBL", gameFolders.szDataDir, "rb", 0 );
+	InfoFile = cf.Open( "BITMAPS.TBL", gameFolders.szDataDir, "rb", 0 );
 	if (InfoFile == NULL) {
-		InfoFile = CFOpen("BITMAPS.BIN", gameFolders.szDataDir, "rb", 0);
+		InfoFile = cf.Open("BITMAPS.BIN", gameFolders.szDataDir, "rb", 0);
 		if (InfoFile == NULL)
 			Error("Missing BITMAPS.TBL and BITMAPS.BIN file\n");
 		have_bin_tbl = 1;
 	}
 	linenum = 0;
 
-	CFSeek( InfoFile, 0L, SEEK_SET);
+	cf.Seek( InfoFile, 0L, SEEK_SET);
 
 	while (CFGetS(szInput, LINEBUF_SIZE, InfoFile)) {
 		int l;
@@ -648,7 +648,7 @@ int bm_init_use_tbl()
 
 	Textures [gameStates.app.bD1Data][NumTextures++].index = 0;		//entry for bogus tmap
 
-	CFClose( InfoFile );
+	cf.Close( InfoFile );
 
 	atexit(BMClose);
 

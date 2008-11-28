@@ -47,7 +47,7 @@ void EnableVariableLight (int nSegment, int nSide);
 // returns 1 if ok, 0 if error
 int AddVariableLight(int nSegment, int nSide, fix delay, unsigned long mask);
 
-void ReadVariableLight (tVariableLight *fl, CFILE *fp);
+void ReadVariableLight (tVariableLight *fl, CFile& cf);
 
 void InitTextureBrightness (void);
 

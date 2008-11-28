@@ -99,18 +99,18 @@ void FreeModel (tPolyModel *po);
 /*
  * reads a tPolyModel structure from a CFILE
  */
-int PolyModelRead(tPolyModel *pm, CFILE *fp, int bHMEL);
+int PolyModelRead(tPolyModel *pm, CFile &cf, int bHMEL);
 
 /*
  * reads n tPolyModel structs from a CFILE
  */
-extern int PolyModelReadN(tPolyModel *pm, int n, CFILE *fp);
+extern int PolyModelReadN(tPolyModel *pm, int n, CFile& cf);
 #endif
 
 /*
  * routine which allocates, reads, and inits a tPolyModel's modelData
  */
-void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFILE *fp);
+void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf);
 
 tPolyModel *GetPolyModel (tObject *objP, vmsVector *pos, int nModel, int flags);
 

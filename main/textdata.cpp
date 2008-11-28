@@ -62,7 +62,7 @@ if (left < r)
 void LoadTextData (const char *pszLevelName, const char *pszExt, tTextData *msgP)
 {
 	char			szFilename [SHORT_FILENAME_LEN];
-	CFILE			cf;
+	CFile			cf;
 	int			bufSize, nLines;
 	char			*p, *q;
 	tTextIndex	*pi;
@@ -70,18 +70,18 @@ void LoadTextData (const char *pszLevelName, const char *pszExt, tTextData *msgP
 	//first, D2_FREE up data allocated for old bitmaps
 PrintLog ("   loading mission messages\n");
 FreeTextData (msgP);
-ChangeFilenameExtension (szFilename, pszLevelName, pszExt);
-bufSize = CFSize (szFilename, gameFolders.szDataDir, 0);
+CFile::ChangeFilenameExtension (szFilename, pszLevelName, pszExt);
+bufSize = cf.Size (szFilename, gameFolders.szDataDir, 0);
 if (bufSize <= 0)
 	return;
 if (!(msgP->textBuffer = (char *) D2_ALLOC (bufSize + 2)))
 	return;
-if (!CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
+if (!cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 	FreeTextData (msgP);
 	return;
 	}
-CFRead (msgP->textBuffer + 1, 1, bufSize, &cf);
-CFClose (&cf);
+cf.Read (msgP->textBuffer + 1, 1, bufSize);
+cf.Close ();
 msgP->textBuffer [0] = '\n';
 msgP->textBuffer [bufSize + 1] = '\0';
 for (p = msgP->textBuffer + 1, nLines = 1; *p; p++) {

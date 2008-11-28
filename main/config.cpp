@@ -242,7 +242,7 @@ int bRedbookEnabledSave;
 
 int ReadConfigFile (void)
 {
-	CFILE			cf;
+	CFile			cf;
 	char			line [80], *token, *value, *ptr;
 	ubyte			gamma;
 	tJoyAxisCal	cal [7];
@@ -262,11 +262,11 @@ gameConfig.cfgDataHash = (uint) -1;
 bHiresMoviesSave = gameOpts->movies.bHires;
 bRedbookEnabledSave = gameStates.sound.bRedbookEnabled;
 
-if (!CFOpen (&cf, "descent.cfg", gameFolders.szConfigDir, "rt", 0))
+if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "rt", 0))
 	return 1;
-while (!CFEoF (&cf)) {
+while (!cf.EoF ()) {
 	memset (line, 0, 80);
-	CFGetS (line, 80, &cf);
+	cf.GetS (line, 80);
 	ptr = line;
 	while (::isspace (*ptr))
 		ptr++;
@@ -340,7 +340,7 @@ while (!CFEoF (&cf)) {
 			bHiresMoviesSave = gameOpts->movies.bHires = strtol (value, NULL, 10);
 	}
 }
-CFClose (&cf);
+cf.Close ();
 
 i = FindArg ("-volume");
 if (i > 0) {
@@ -361,10 +361,10 @@ if (gameConfig.nMidiVolume > 8)
 if (gameConfig.nRedbookVolume > 8) 
 	gameConfig.nRedbookVolume = 8;
 DigiMidiVolume ((gameConfig.nDigiVolume * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
-if (CFOpen (&cf, "descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
-	while (!CFEoF (&cf)) {
+if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
+	while (!cf.EoF ()) {
 		memset (line, 0, 80);
-		CFGetS (line, 80, &cf);
+		cf.GetS (line, 80);
 		ptr = line;
 		while (::isspace(*ptr))
 			ptr++;
@@ -388,7 +388,7 @@ if (CFOpen (&cf, "descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
 						  &cal [0].nCenter, &cal [1].nCenter, &cal [2].nCenter, &cal [3].nCenter, &cal [4].nCenter, &cal [5].nCenter, &cal [6].nCenter);
 			}
 		}
-	CFClose (&cf);
+	cf.Close ();
 	}
 JoySetCalVals (cal, sizeofa (cal));
 CfgInitHashs ();
@@ -399,7 +399,7 @@ return 0;
 
 int WriteConfigFile (void)
 {
-	CFILE cf;
+	CFile cf;
 	char str [256];
 	int i, j;
 	tJoyAxisCal cal [JOY_MAX_AXES];
@@ -409,22 +409,22 @@ con_printf (CON_VERBOSE, "writing config file ...\n");
 con_printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
 JoyGetCalVals(cal, sizeofa (cal));
 
-if (!CFOpen (&cf, "descent.cfg", gameFolders.szConfigDir, "wt", 0))
+if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "wt", 0))
 	return 1;
 sprintf (str, "%s=%ul\n", pszCfgDataHash, gameConfig.cfgDataHash);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nDigiVolume);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d\n", pszMidiVolume, gameConfig.nMidiVolume);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d\n", pszRedbookEnabled, FindArg("-noredbook")?bRedbookEnabledSave:gameStates.sound.bRedbookEnabled);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d\n", pszRedbookVolume, gameConfig.nRedbookVolume);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d\n", pszStereoRev, gameConfig.bReverseChannels);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d\n", pszGammaLevel, gamma);
-CFPutS(str, &cf);
+cf.PutS(str);
 if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS-1)
 	sprintf (str, "%s=%d,%d,%d,%d,%d,%d,%d\n", 
 				pszDetailLevel, 
@@ -437,17 +437,17 @@ if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS-1)
 				gameStates.sound.nSoundChannels);
 else
 	sprintf (str, "%s=%d\n", pszDetailLevel, gameStates.app.nDetailLevel);
-CFPutS(str, &cf);
+cf.PutS(str);
 
 sprintf (str, "%s=%d,%d,%d,%d\n", pszJoystickMin, cal [0].nMin, cal [1].nMin, cal [2].nMin, cal [3].nMin);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d,%d,%d,%d\n", pszJoystickCen, cal [0].nCenter, cal [1].nCenter, cal [2].nCenter, cal [3].nCenter);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d,%d,%d,%d\n", pszJoystickMax, cal [0].nMax, cal [1].nMax, cal [2].nMax, cal [3].nMax);
-CFPutS(str, &cf);
+cf.PutS(str);
 
 sprintf (str, "%s=%s\n", pszLastPlayer, LOCALPLAYER.callsign);
-CFPutS(str, &cf);
+cf.PutS(str);
 for (i = 0; gameConfig.szLastMission [i]; i++)
 	if (!isprint (gameConfig.szLastMission [i])) {
 		*gameConfig.szLastMission = '\0';
@@ -455,16 +455,16 @@ for (i = 0; gameConfig.szLastMission [i]; i++)
 		}
 j = MsnHasGameVer (gameConfig.szLastMission) ? 4 : 0;
 sprintf (str, "%s=%s\n", pszLastMission, gameConfig.szLastMission + j);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d\n", pszVrType, gameConfig.vrType);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d\n", pszVrResolution, gameConfig.vrResolution);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d\n", pszVrTracking, gameConfig.vrTracking);
-CFPutS(str, &cf);
+cf.PutS(str);
 sprintf (str, "%s=%d\n", pszHiresMovies, (FindArg("-nohires") || FindArg("-nohighres") || FindArg("-lowresmovies"))?bHiresMoviesSave:gameOpts->movies.bHires);
-CFPutS(str, &cf);
-CFClose(&cf);
+cf.PutS(str);
+cf.Close ();
 return 0;
 }	
 

@@ -26,6 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pcx.h"
 #include "u_mem.h"
 #include "joy.h"
+#include "hogfile.h"
 #include "mono.h"
 #include "gamefont.h"
 #include "error.h"
@@ -887,6 +888,7 @@ int _B (tBriefingInfo& bi)
 {
 	char        szBitmap [32];
 	grsBitmap   guy_bitmap;
+	CIFF			iff;
 	int         iff_error;
 
 if (bi.message > bi.pj) {
@@ -896,7 +898,7 @@ if (bi.message > bi.pj) {
 GetMessageName (&bi.message, szBitmap);
 strcat (szBitmap, ".bbm");
 memset (&guy_bitmap, 0, sizeof (guy_bitmap));
-iff_error = iff_read_bitmap (szBitmap, &guy_bitmap, BM_LINEAR);
+iff_error = iff.ReadBitmap (szBitmap, &guy_bitmap, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR)
 	return 0;
 ShowBriefingBitmap (&guy_bitmap);
@@ -1078,8 +1080,8 @@ for (i = 0; bi.szBriefScreen [i] != '.'; i++)
 	bi.szBriefScreenB [i] = bi.szBriefScreen [i];
 memcpy (bi.szBriefScreenB + i, "b.pcx", sizeof ("b.pcx"));
 i += sizeof ("b.pcx");
-if ((gameStates.menus.bHires && CFExist (bi.szBriefScreenB, gameFolders.szDataDir, 0)) || 
-	 !CFExist (bi.szBriefScreen, gameFolders.szDataDir, 0))
+if ((gameStates.menus.bHires && CFile::Exist (bi.szBriefScreenB, gameFolders.szDataDir, 0)) || 
+	 !CFile::Exist (bi.szBriefScreen, gameFolders.szDataDir, 0))
 	LoadNewBriefingScreen (bi.szBriefScreenB, bi.message <= bi.pj);
 else
 	LoadNewBriefingScreen (bi.szBriefScreen, bi.message <= bi.pj);
@@ -1434,7 +1436,7 @@ return (NULL);
 //	Load Descent briefing text.
 int LoadScreenText (char *filename, char **buf)
 {
-	CFILE cf;
+	CFile cf;
 	int	len, i;
 	int	bHaveBinary;
 	char	*bufP;
@@ -1442,39 +1444,39 @@ int LoadScreenText (char *filename, char **buf)
 if (!strstr (filename, ".t"))
 	strcat (filename, ".tex");
 bHaveBinary = (strstr (filename, ".txb") != NULL);
-if (!CFOpen (&cf, filename, gameFolders.szDataDir, bHaveBinary ? (char *) "rb" : (char *) "rt", gameStates.app.bD1Mission)) {
+if (!cf.Open (filename, gameFolders.szDataDir, bHaveBinary ? (char *) "rb" : (char *) "rt", gameStates.app.bD1Mission)) {
 	bHaveBinary = !bHaveBinary;
 	strcpy (strstr (filename, ".t"), bHaveBinary ? ".txb" : ".tex");
-	if (!CFOpen (&cf, filename, gameFolders.szDataDir, bHaveBinary ? (char *) "rb" : (char *) "rt", gameStates.app.bD1Mission)) {
+	if (!cf.Open (filename, gameFolders.szDataDir, bHaveBinary ? (char *) "rb" : (char *) "rt", gameStates.app.bD1Mission)) {
 		PrintLog ("can't open briefing '%s'!\n", filename);
 		return (0);
 		}
 	}
 if (bHaveBinary) {
-	len = CFLength (&cf, 0);
+	len = cf.Length ();
 	MALLOC (bufP, char, len);
 	*buf = bufP;
 	for (i = 0; i < len; i++, bufP++) {
-		CFRead (bufP, 1, 1, &cf);
+		cf.Read (bufP, 1, 1);
 			if (*bufP == 13)
 				bufP--;
 		}
-	CFClose (&cf);
+	cf.Close ();
 	for (i = 0, bufP = *buf; i < len; i++, bufP++)
 		if (*bufP != '\n')
 			*bufP = EncodeRotateLeft ((char) (EncodeRotateLeft (*bufP) ^ BITMAP_TBL_XOR));
 	}
 else {
-	len = CFLength (&cf, 0);
+	len = cf.Length ();
 	MALLOC (bufP, char, len+500);
 	*buf = bufP;
 	for (i = 0; i < len; i++, bufP++) {
-		CFRead (bufP, 1, 1, &cf);
+		cf.Read (bufP, 1, 1);
 			if (*bufP == 13)
 				bufP--;
 		}
 	*bufP = 0;
-	CFClose (&cf);
+	cf.Close ();
 	}
 nBriefingTextLen = (int) (bufP - *buf);
 return (1);
@@ -1610,7 +1612,7 @@ if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.
 		if ((psz = strchr (fnBriefing, '.')))
 			*psz = '\0';
 		strcat (fnBriefing, i ? ".txb" : ".tex");
-		if	 ((fp = CFFindHogFile (&gameHogFiles.AltHogFiles, "", fnBriefing, NULL))) {
+		if	 ((fp = hogFileManager.Find (&hogFileManager.AltFiles (), "", fnBriefing, NULL))) {
 			fclose (fp);
 			break;
 			}

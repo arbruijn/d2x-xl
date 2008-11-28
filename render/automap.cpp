@@ -608,7 +608,7 @@ const char	*pszMapBackgroundFilename [2] = {"\x01MAP.PCX", "\x01MAPB.PCX"};
 #else
 char	*pszMapBackgroundFilename [2] = {"MAP.PCX", "MAPB.PCX"};
 
-#	define MAP_BACKGROUND_FILENAME pszMapBackgroundFilename [amData.bHires && CFExist ("mapb.pcx",gameFolders.szDataDir,0)]
+#	define MAP_BACKGROUND_FILENAME pszMapBackgroundFilename [amData.bHires && CFile::Exist ("mapb.pcx",gameFolders.szDataDir,0)]
 #endif
 
 

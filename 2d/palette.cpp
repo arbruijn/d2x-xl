@@ -75,7 +75,7 @@ gameData.render.nComputedColors = 0;
 
 ubyte *GrUsePaletteTable (const char *pszFile, const char *pszLevel)
 {
-	CFILE		cf;
+	CFile		cf;
 	int		i = 0, fsize;
 	tPalette	palette;
 #ifdef SWAP_0_255
@@ -85,26 +85,26 @@ ubyte *GrUsePaletteTable (const char *pszFile, const char *pszLevel)
 if (pszLevel) {
 	char ifile_name [FILENAME_LEN];
 
-	ChangeFilenameExtension (ifile_name, pszLevel, ".pal");
-	i = CFOpen (&cf, ifile_name, gameFolders.szDataDir, "rb", 0);
+	CFile::ChangeFilenameExtension (ifile_name, pszLevel, ".pal");
+	i = cf.Open (ifile_name, gameFolders.szDataDir, "rb", 0);
 	}
 if (!i)
-	i = CFOpen (&cf, pszFile, gameFolders.szDataDir, "rb", 0);
+	i = cf.Open (pszFile, gameFolders.szDataDir, "rb", 0);
 	// the following is a hack to enable the loading of d2 levels
 	// even if only the d2 mac shareware datafiles are present.
 	// However, if the pig file is present but the palette file isn't,
 	// the textures in the level will look wierd...
 if (!i)
-	i = CFOpen (&cf, DEFAULT_LEVEL_PALETTE, gameFolders.szDataDir, "rb", 0);
+	i = cf.Open (DEFAULT_LEVEL_PALETTE, gameFolders.szDataDir, "rb", 0);
 if (!i) {
 	Error(TXT_PAL_FILES, pszFile, DEFAULT_LEVEL_PALETTE);
 	return NULL;
 	}
-fsize	= CFLength (&cf, 0);
+fsize	= cf.Length ();
 Assert (fsize == 9472);
-CFRead (palette, 256*3, 1, &cf);
-CFRead (grFadeTable, 256*34, 1, &cf);
-CFClose (&cf);
+cf.Read (palette, 256*3, 1);
+cf.Read (grFadeTable, 256*34, 1);
+cf.Close ();
 // This is the TRANSPARENCY COLOR
 for (i = 0; i < GR_FADE_LEVELS; i++)
 	grFadeTable [i * 256 + 255] = 255;

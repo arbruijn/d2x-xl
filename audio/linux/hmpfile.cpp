@@ -27,38 +27,38 @@ hmp_file *hmp_open(const char *filename, int bUseD1Hog)
 	int i;
 	char buf [256];
 	long data = 0;
-	CFILE cf;
+	CFile cf;
 	hmp_file *hmp;
 	int num_tracks, midi_div;
 	unsigned char *p;
 
-	if (!CFOpen(&cf, (char *)filename, gameFolders.szDataDir, "rb", bUseD1Hog))
+	if (!cf.Open(&cf, (char *)filename, gameFolders.szDataDir, "rb", bUseD1Hog))
 		return NULL;
 	hmp = (hmp_file *) D2_ALLOC(sizeof(hmp_file));
 	if (!hmp) {
-		CFClose(&cf);
+		cf.Close(&cf);
 		return NULL;
 	}
 	memset(hmp, 0, sizeof(*hmp));
-	if ((CFRead (buf, 1, 8, &cf) != 8) || (memcmp(buf, "HMIMIDIP", 8)))
+	if ((cf.Read (buf, 1, 8) != 8) || (memcmp(buf, "HMIMIDIP", 8)))
 		goto err;
-	if (CFSeek (&cf, 0x30, SEEK_SET))
+	if (cf.Seek (&cf, 0x30, SEEK_SET))
 		goto err;
-	if (CFRead (&num_tracks, 4, 1, &cf) != 1)
+	if (cf.Read (&num_tracks, 4, 1) != 1)
 		goto err;
-	if (CFSeek (&cf, 0x38, SEEK_SET))
+	if (cf.Seek (&cf, 0x38, SEEK_SET))
 		goto err;
-	if (CFRead (&midi_div, 4, 1, &cf) != 1)
+	if (cf.Read (&midi_div, 4, 1) != 1)
 		goto err;
 	if ((num_tracks < 1) || (num_tracks > HMP_TRACKS))
 		goto err;
 	hmp->num_trks = num_tracks;
 	hmp->midi_division = midi_div;
    hmp->tempo = 120;
-	if (CFSeek(&cf, 0x308, SEEK_SET))
+	if (cf.Seek(&cf, 0x308, SEEK_SET))
 		goto err;
     for (i = 0; i < num_tracks; i++) {
-		if ((CFSeek(&cf, 4, SEEK_CUR)) || (CFRead(&data, 4, 1, &cf) != 1))
+		if ((cf.Seek(&cf, 4, SEEK_CUR)) || (cf.Read(&data, 4, 1) != 1))
 			goto err;
 		data -= 12;
 #if 0
@@ -76,14 +76,14 @@ hmp_file *hmp_open(const char *filename, int bUseD1Hog)
 		}
 #endif
 					     /* finally, read track data */
-		if ((CFSeek(&cf, 4, SEEK_CUR)) || (CFRead(p, data, 1, &cf) != 1))
+		if ((cf.Seek(&cf, 4, SEEK_CUR)) || (cf.Read(p, data, 1) != 1))
             goto err;
    }
-   CFClose(&cf);
+   cf.Close(&cf);
    return hmp;
 
 err:
-   CFClose(&cf);
+   cf.Close(&cf);
    hmp_close(hmp);
    return NULL;
 }

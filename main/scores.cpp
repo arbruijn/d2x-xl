@@ -94,13 +94,13 @@ char *GetScoresFilename ()
 
 void scores_read ()
 {
-	CFILE cf;
+	CFile cf;
 	int fsize;
 
 	// clear score array...
 	memset (&Scores, 0, sizeof (all_scores));
 
-	if (!CFOpen (&cf, GetScoresFilename (), gameFolders.szDataDir, "rb", 0)) {
+	if (!cf.Open (GetScoresFilename (), gameFolders.szDataDir, "rb", 0)) {
 		int i;
 	 	// No error message needed, code will work without a scores file
 		sprintf (Scores.cool_saying, COOL_SAYING);
@@ -120,15 +120,15 @@ void scores_read ()
 		return;
 	}
 	
-	fsize = CFLength (&cf,0);
+	fsize = cf.Length ();
 
 	if (fsize != sizeof (all_scores))	{
-		CFClose (&cf);
+		cf.Close ();
 		return;
 	}
 	// Read 'em in...
-	CFRead (&Scores, sizeof (all_scores), 1, &cf);
-	CFClose (&cf);
+	cf.Read (&Scores, sizeof (all_scores), 1);
+	cf.Close ();
 
 	if ((Scores.version!=VERSION_NUMBER)|| (Scores.nSignature[0]!='D')|| (Scores.nSignature[1]!='H')|| (Scores.nSignature[2]!='S'))	{
 		memset (&Scores, 0, sizeof (all_scores));
@@ -140,9 +140,9 @@ void scores_read ()
 
 void scores_write ()
 {
-	CFILE cf;
+	CFile cf;
 
-if (!CFOpen (&cf, GetScoresFilename (), gameFolders.szDataDir, "wb", 0)) {
+if (!cf.Open (GetScoresFilename (), gameFolders.szDataDir, "wb", 0)) {
 	ExecMessageBox (TXT_WARNING, NULL, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, GetScoresFilename () );
 	return;
 	}
@@ -151,8 +151,8 @@ Scores.nSignature[0]='D';
 Scores.nSignature[1]='H';
 Scores.nSignature[2]='S';
 Scores.version = VERSION_NUMBER;
-CFWrite (&Scores,sizeof (all_scores),1, &cf);
-CFClose (&cf);
+cf.Write (&Scores,sizeof (all_scores),1);
+cf.Close ();
 }
 
 //------------------------------------------------------------------------------
@@ -442,7 +442,7 @@ ReshowScores:
 			if (nCurItem < 0)		{
 				// Reset scores...
 				if (ExecMessageBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES)==1)	{
-					CFDelete (GetScoresFilename (), gameFolders.szDataDir);
+					CFile::Delete (GetScoresFilename (), gameFolders.szDataDir);
 					GrPaletteFadeOut (NULL, 32, 0);
 					goto ReshowScores;
 				}

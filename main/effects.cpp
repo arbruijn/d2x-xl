@@ -396,27 +396,27 @@ gameData.eff.pEffects [effect_num].flags &= ~EF_STOPPED;
 // ----------------------------------------------------------------------------
 #if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
- * reads n tEffectClip structs from a CFILE
+ * reads n tEffectClip structs from a CFile
  */
-int EClipReadN(tEffectClip *ecP, int n, CFILE *fp)
+int EClipReadN(tEffectClip *ecP, int n, CFile& cf)
 {
 	int i = n;
 
 for (; n; n--, ecP++) {
-	VClipReadN(&ecP->vc, 1, fp);
-	ecP->time_left = CFReadFix(fp);
-	ecP->nCurFrame = CFReadInt(fp);
-	ecP->changingWallTexture = CFReadShort(fp);
-	ecP->changingObjectTexture = CFReadShort(fp);
-	ecP->flags = CFReadInt(fp);
-	ecP->crit_clip = CFReadInt(fp);
-	ecP->nDestBm = CFReadInt(fp);
-	ecP->dest_vclip = CFReadInt(fp);
-	ecP->dest_eclip = CFReadInt(fp);
-	ecP->dest_size = CFReadFix(fp);
-	ecP->nSound = CFReadInt(fp);
-	ecP->nSegment = CFReadInt(fp);
-	ecP->nSide = CFReadInt(fp);
+	VClipReadN (&ecP->vc, 1, cf);
+	ecP->time_left = cf.ReadFix ();
+	ecP->nCurFrame = cf.ReadInt ();
+	ecP->changingWallTexture = cf.ReadShort ();
+	ecP->changingObjectTexture = cf.ReadShort ();
+	ecP->flags = cf.ReadInt ();
+	ecP->crit_clip = cf.ReadInt ();
+	ecP->nDestBm = cf.ReadInt ();
+	ecP->dest_vclip = cf.ReadInt ();
+	ecP->dest_eclip = cf.ReadInt ();
+	ecP->dest_size = cf.ReadFix ();
+	ecP->nSound = cf.ReadInt ();
+	ecP->nSegment = cf.ReadInt ();
+	ecP->nSide = cf.ReadInt ();
 	}
 	return i;
 }

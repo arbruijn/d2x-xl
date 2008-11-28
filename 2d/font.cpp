@@ -1215,24 +1215,24 @@ for (nFont=0;nFont<MAX_OPEN_FONTS;nFont++) {
 //------------------------------------------------------------------------------
 
 #if 0//def FAST_FILE_IO
-#define grs_font_read (gf, fp) CFRead (gf, GRS_FONT_SIZE, 1, fp)
+#define grs_font_read (gf, fp) cf.Read (gf, GRS_FONT_SIZE, 1, fp)
 #else
 /*
- * reads a grsFont structure from a CFILE
+ * reads a grsFont structure from a CFile
  */
-void grs_font_read (grsFont *gf, CFILE *fp)
+void grs_font_read (grsFont *gf, CFile& cf)
 {
-	gf->ftWidth = CFReadShort (fp);
-	gf->ftHeight = CFReadShort (fp);
-	gf->ftFlags = CFReadShort (fp);
-	gf->ftBaseLine = CFReadShort (fp);
-	gf->ftMinChar = CFReadByte (fp);
-	gf->ftMaxChar = CFReadByte (fp);
-	gf->ftByteWidth = CFReadShort (fp);
-	gf->ftData = (ubyte *) (size_t) CFReadInt (fp);
-	gf->ftChars = (ubyte **) (size_t) CFReadInt (fp);
-	gf->ftWidths = (short *) (size_t) CFReadInt (fp);
-	gf->ftKernData = (ubyte *) (size_t) CFReadInt (fp);
+	gf->ftWidth = cf.ReadShort ();
+	gf->ftHeight = cf.ReadShort ();
+	gf->ftFlags = cf.ReadShort ();
+	gf->ftBaseLine = cf.ReadShort ();
+	gf->ftMinChar = cf.ReadByte ();
+	gf->ftMaxChar = cf.ReadByte ();
+	gf->ftByteWidth = cf.ReadShort ();
+	gf->ftData = (ubyte *) (size_t) cf.ReadInt ();
+	gf->ftChars = (ubyte **) (size_t) cf.ReadInt ();
+	gf->ftWidths = (short *) (size_t) cf.ReadInt ();
+	gf->ftKernData = (ubyte *) (size_t) cf.ReadInt ();
 }
 #endif
 
@@ -1246,7 +1246,7 @@ grsFont *GrInitFont (const char *fontname)
 	int i, nFont;
 	unsigned char *ptr;
 	int nchars;
-	CFILE fontfile;
+	CFile cf;
 	char file_id[4];
 	int datasize;	//size up to (but not including) palette
 	int freq[256];
@@ -1265,14 +1265,14 @@ for (nFont = 0; (nFont < MAX_OPEN_FONTS) && openFont [nFont].ptr; nFont++)
 	;
 Assert (nFont<MAX_OPEN_FONTS);	//did we find one?
 strncpy (openFont[nFont].filename, fontname, SHORT_FILENAME_LEN);
-if (!CFOpen (&fontfile, fontname, gameFolders.szDataDir, "rb", 0)) {
+if (!cf.Open (fontname, gameFolders.szDataDir, "rb", 0)) {
 #if TRACE
 	con_printf (CON_VERBOSE, "Can't open font file %s\n", fontname);
 #endif
 	return NULL;
 	}
 
-CFRead (file_id, 4, 1, &fontfile);
+cf.Read (file_id, 4, 1);
 if (!strncmp (file_id, "NFSP", 4)) {
 #if TRACE
 	con_printf (CON_NORMAL, "File %s is not a font file\n", fontname);
@@ -1280,14 +1280,14 @@ if (!strncmp (file_id, "NFSP", 4)) {
 	return NULL;
 }
 
-datasize = CFReadInt (&fontfile);
+datasize = cf.ReadInt ();
 datasize -= GRS_FONT_SIZE; // subtract the size of the header.
 
 MALLOC (font, grsFont, sizeof (grsFont));
-grs_font_read (font, &fontfile);
+grs_font_read (font, cf);
 
 MALLOC (fontDataP, char, datasize);
-CFRead (fontDataP, 1, datasize, &fontfile);
+cf.Read (fontDataP, 1, datasize);
 
 openFont[nFont].ptr = font;
 openFont[nFont].pData = fontDataP;
@@ -1325,7 +1325,7 @@ memset (&font->ftParentBitmap, 0, sizeof (font->ftParentBitmap));
 memset (freq, 0, sizeof (freq));
 if (font->ftFlags & FT_COLOR) {		//remap palette
 	ubyte palette[256*3];
-	CFRead (palette, 3, 256, &fontfile);		//read the palette
+	cf.Read (palette, 3, 256);		//read the palette
 #ifdef SWAP_0_255			// swap the first and last palette entries (black and white)
 	{
 		int i;
@@ -1352,7 +1352,7 @@ if (font->ftFlags & FT_COLOR) {		//remap palette
 	}
 else
 	GrSetPalette (&font->ftParentBitmap, defaultPalette, TRANSPARENCY_COLOR, -1, freq);
-CFClose (&fontfile);
+cf.Close ();
 
 FONT = font;
 FG_COLOR.index = 0;
@@ -1375,23 +1375,23 @@ void GrRemapFont (grsFont *font, char * fontname, char *fontDataP)
 {
 	int i;
 	int nchars;
-	CFILE fontfile;
+	CFile cf;
 	char file_id[4];
 	int datasize;        //size up to (but not including) palette
 	unsigned char *ptr;
 
 //	if (!(font->ftFlags & FT_COLOR))
 //		return;
-	if (!CFOpen (&fontfile, fontname, gameFolders.szDataDir, "rb", 0))
+	if (!cf.Open (fontname, gameFolders.szDataDir, "rb", 0))
 		Error (TXT_FONT_FILE, fontname);
-	CFRead (file_id, 4, 1, &fontfile);
+	cf.Read (file_id, 4, 1);
 	if (!strncmp (file_id, "NFSP", 4))
 		Error (TXT_FONT_FILETYPE, fontname);
-	datasize = CFReadInt (&fontfile);
+	datasize = cf.ReadInt ();
 	datasize -= GRS_FONT_SIZE; // subtract the size of the header.
 	D2_FREE (font->ftChars);
-	grs_font_read (font, &fontfile); // have to reread in case mission tHogFile overrides font.
-	CFRead (fontDataP, 1, datasize, &fontfile);  //read raw data
+	grs_font_read (font, cf); // have to reread in case mission tHogFile overrides font.
+	cf.Read (fontDataP, 1, datasize);  //read raw data
 	// make these offsets relative to fontDataP
 	font->ftData = (ubyte *) ((size_t)font->ftData - GRS_FONT_SIZE);
 	font->ftWidths = (short *) ((size_t)font->ftWidths - GRS_FONT_SIZE);
@@ -1422,7 +1422,7 @@ void GrRemapFont (grsFont *font, char * fontname, char *fontDataP)
 	if (font->ftFlags & FT_COLOR) {		//remap palette
 		ubyte palette[256*3];
 		int freq[256];
-		CFRead (palette, 3, 256, &fontfile);		//read the palette
+		cf.Read (palette, 3, 256);		//read the palette
 #ifdef SWAP_0_255			// swap the first and last palette entries (black and white)
 		{
 			int i;
@@ -1446,7 +1446,7 @@ void GrRemapFont (grsFont *font, char * fontname, char *fontDataP)
 		GrCountColors (font->ftData, (int) (ptr - font->ftData), freq);
 		GrSetPalette (&font->ftParentBitmap, palette, TRANSPARENCY_COLOR, -1, freq);
 	}
-CFClose (&fontfile);
+cf.Close ();
 if (font->ftBitmaps) {
 	D2_FREE (font->ftBitmaps);
 	}

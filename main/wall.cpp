@@ -1709,121 +1709,121 @@ void BlastNearbyGlass(tObject *objP, fix damage)
 #define MAX_CLIP_FRAMES_D1 20
 
 /*
- * reads a tWallClip structure from a CFILE
+ * reads a tWallClip structure from a CFile
  */
-int wclip_read_n_d1(tWallClip *wc, int n, CFILE *fp)
+int wclip_read_n_d1(tWallClip *wc, int n, CFile& cf)
 {
 	int i, j;
 
 	for (i = 0; i < n; i++) {
-		wc [i].xTotalTime = CFReadFix(fp);
-		wc [i].nFrameCount = CFReadShort(fp);
+		wc [i].xTotalTime = cf.ReadFix ();
+		wc [i].nFrameCount = cf.ReadShort ();
 		for (j = 0; j < MAX_CLIP_FRAMES_D1; j++)
-			wc [i].frames [j] = CFReadShort(fp);
-		wc [i].openSound = CFReadShort(fp);
-		wc [i].closeSound = CFReadShort(fp);
-		wc [i].flags = CFReadShort(fp);
-		CFRead(wc [i].filename, 13, 1, fp);
-		wc [i].pad = CFReadByte(fp);
+			wc [i].frames [j] = cf.ReadShort ();
+		wc [i].openSound = cf.ReadShort ();
+		wc [i].closeSound = cf.ReadShort ();
+		wc [i].flags = cf.ReadShort ();
+		cf.Read (wc [i].filename, 13, 1);
+		wc [i].pad = cf.ReadByte ();
 	}
 	return i;
 }
 
 #if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
- * reads a tWallClip structure from a CFILE
+ * reads a tWallClip structure from a CFile
  */
-int WClipReadN(tWallClip *wc, int n, CFILE *fp)
+int WClipReadN(tWallClip *wc, int n, CFile& cf)
 {
 	int i, j;
 
 for (i = 0; i < n; i++) {
-	wc [i].xTotalTime = CFReadFix(fp);
-	wc [i].nFrameCount = CFReadShort(fp);
+	wc [i].xTotalTime = cf.ReadFix ();
+	wc [i].nFrameCount = cf.ReadShort ();
 	for (j = 0; j < MAX_CLIP_FRAMES; j++)
-		wc [i].frames [j] = CFReadShort(fp);
-	wc [i].openSound = CFReadShort(fp);
-	wc [i].closeSound = CFReadShort(fp);
-	wc [i].flags = CFReadShort(fp);
-	CFRead(wc [i].filename, 13, 1, fp);
-	wc [i].pad = CFReadByte(fp);
+		wc [i].frames [j] = cf.ReadShort ();
+	wc [i].openSound = cf.ReadShort ();
+	wc [i].closeSound = cf.ReadShort ();
+	wc [i].flags = cf.ReadShort ();
+	cf.Read(wc [i].filename, 13, 1);
+	wc [i].pad = cf.ReadByte ();
 	}
 return i;
 }
 
 /*
- * reads a tWallV16 structure from a CFILE
+ * reads a tWallV16 structure from a CFile
  */
-void ReadWallV16(tWallV16 *w, CFILE *fp)
+void ReadWallV16(tWallV16 *w, CFile& cf)
 {
-w->nType = CFReadByte(fp);
-w->flags = CFReadByte(fp);
-w->hps = CFReadFix(fp);
-w->nTrigger = (ubyte) CFReadByte(fp);
-w->nClip = CFReadByte(fp);
-w->keys = CFReadByte(fp);
+w->nType = cf.ReadByte ();
+w->flags = cf.ReadByte ();
+w->hps = cf.ReadFix ();
+w->nTrigger = (ubyte) cf.ReadByte ();
+w->nClip = cf.ReadByte ();
+w->keys = cf.ReadByte ();
 }
 
 /*
- * reads a tWallV19 structure from a CFILE
+ * reads a tWallV19 structure from a CFile
  */
-void ReadWallV19(tWallV19 *w, CFILE *fp)
+void ReadWallV19(tWallV19 *w, CFile& cf)
 {
-w->nSegment = CFReadInt(fp);
-w->nSide = CFReadInt(fp);
-w->nType = CFReadByte(fp);
-w->flags = CFReadByte(fp);
-w->hps = CFReadFix(fp);
-w->nTrigger = (ubyte) CFReadByte(fp);
-w->nClip = CFReadByte(fp);
-w->keys = CFReadByte(fp);
-w->nLinkedWall = CFReadInt(fp);
+w->nSegment = cf.ReadInt ();
+w->nSide = cf.ReadInt ();
+w->nType = cf.ReadByte ();
+w->flags = cf.ReadByte ();
+w->hps = cf.ReadFix ();
+w->nTrigger = (ubyte) cf.ReadByte ();
+w->nClip = cf.ReadByte ();
+w->keys = cf.ReadByte ();
+w->nLinkedWall = cf.ReadInt ();
 }
 
 /*
- * reads a tWall structure from a CFILE
+ * reads a tWall structure from a CFile
  */
-void ReadWall(tWall *w, CFILE *fp)
+void ReadWall(tWall *w, CFile& cf)
 {
-w->nSegment = CFReadInt(fp);
-w->nSide = CFReadInt(fp);
-w->hps = CFReadFix(fp);
-w->nLinkedWall = CFReadInt(fp);
-w->nType = CFReadByte(fp);
-w->flags = CFReadByte(fp);
-w->state = CFReadByte(fp);
-w->nTrigger = (ubyte) CFReadByte(fp);
-w->nClip = CFReadByte(fp);
-w->keys = CFReadByte(fp);
-w->controllingTrigger = CFReadByte(fp);
-w->cloakValue = CFReadByte(fp);
+w->nSegment = cf.ReadInt ();
+w->nSide = cf.ReadInt ();
+w->hps = cf.ReadFix ();
+w->nLinkedWall = cf.ReadInt ();
+w->nType = cf.ReadByte ();
+w->flags = cf.ReadByte ();
+w->state = cf.ReadByte ();
+w->nTrigger = (ubyte) cf.ReadByte ();
+w->nClip = cf.ReadByte ();
+w->keys = cf.ReadByte ();
+w->controllingTrigger = cf.ReadByte ();
+w->cloakValue = cf.ReadByte ();
 }
 
 /*
- * reads a v19_door structure from a CFILE
+ * reads a v19_door structure from a CFile
  */
-extern void ReadActiveDoorV19(v19_door *d, CFILE *fp)
+extern void ReadActiveDoorV19(v19_door *d, CFile& cf)
 {
-	d->nPartCount = CFReadInt(fp);
-	d->seg [0] = CFReadShort(fp);
-	d->seg [1] = CFReadShort(fp);
-	d->nSide [0] = CFReadShort(fp);
-	d->nSide [1] = CFReadShort(fp);
-	d->nType [0] = CFReadShort(fp);
-	d->nType [1] = CFReadShort(fp);
-	d->open = CFReadFix(fp);
+	d->nPartCount = cf.ReadInt ();
+	d->seg [0] = cf.ReadShort ();
+	d->seg [1] = cf.ReadShort ();
+	d->nSide [0] = cf.ReadShort ();
+	d->nSide [1] = cf.ReadShort ();
+	d->nType [0] = cf.ReadShort ();
+	d->nType [1] = cf.ReadShort ();
+	d->open = cf.ReadFix ();
 }
 
 /*
- * reads an tActiveDoor structure from a CFILE
+ * reads an tActiveDoor structure from a CFile
  */
-extern void ReadActiveDoor(tActiveDoor *ad, CFILE *fp)
+extern void ReadActiveDoor(tActiveDoor *ad, CFile& cf)
 {
-	ad->nPartCount = CFReadInt(fp);
-	ad->nFrontWall [0] = CFReadShort(fp);
-	ad->nFrontWall [1] = CFReadShort(fp);
-	ad->nBackWall [0] = CFReadShort(fp);
-	ad->nBackWall [1] = CFReadShort(fp);
-	ad->time = CFReadFix(fp);
+	ad->nPartCount = cf.ReadInt ();
+	ad->nFrontWall [0] = cf.ReadShort ();
+	ad->nFrontWall [1] = cf.ReadShort ();
+	ad->nBackWall [0] = cf.ReadShort ();
+	ad->nBackWall [1] = cf.ReadShort ();
+	ad->time = cf.ReadFix ();
 }
 #endif
