@@ -53,7 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RENDER_LIGHTNING_OUTLINE 0
 #define RENDER_LIGHTINGS_BUFFERED 1
 #define UPDATE_LIGHTNINGS 1
-#define USE_NEW 1
+#define USE_NEW 0
 
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
@@ -798,7 +798,7 @@ int CLightning::SetLife (void)
 
 if (m_nTTL <= 0) {
 	if (m_nLife < 0) {
-		if (0 > (m_nNodes = -m_nNodes)) {
+		if ((m_nDelay > 1) && (0 > (m_nNodes = -m_nNodes))) {
 			h = m_nDelay / 2;
 			m_nTTL = h + (int) (dbl_rand () * h);
 			}
@@ -1038,17 +1038,6 @@ void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 	fVector3		*vPosf = coreBuffer [nThread];
 	int			i;
 
-#if DBG
-if (gameStates.render.history.nShader != -1)
-	return;
-//glUseProgramObject (0);
-if (m_nNodes > 10000)
-	return;
-if (!m_nodes)
-	return;
-if (nThread > 0)
-	return;
-#endif
 glBlendFunc (GL_ONE, GL_ONE);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? 2 : 4));
@@ -1058,7 +1047,7 @@ for (i = 0; i < m_nNodes; i++)
 if (!gameStates.ogl.bUseTransform)
 	OglSetupTransform (1);
 #if 1
-if (0 && G3EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
+if (G3EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	glDisable (GL_TEXTURE_2D);
 	glVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
 	glDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
@@ -1888,40 +1877,47 @@ if (SHOW_LIGHTNINGS || bForce) {
 
 void CLightningManager::SetLights (void)
 {
+	int nLights = 0;
+
 ResetLights (0);
 if (SHOW_LIGHTNINGS) {
 		tLightningLight	*llP = NULL;
-		int					i, n, nLights = 0, bDynLighting = gameOpts->render.nLightingMethod;
+		int					i, n, bDynLighting = gameOpts->render.nLightingMethod;
 
 	m_nFirstLight = -1;
 	for (i = m_nUsed; i >= 0; i = m_systems [i].GetNext ())
 		nLights += m_systems [i].SetLight ();
-	if (nLights) {
-		for (i = m_nFirstLight; i >= 0; i = llP->nNext) {
-			if ((i < 0) || (i >= MAX_SEGMENTS))
-				continue;
-			llP = m_lights + i;
+	if (!nLights)
+		return;
+	nLights = 0;
+	for (i = m_nFirstLight; i >= 0; i = llP->nNext) {
+		if ((i < 0) || (i >= MAX_SEGMENTS))
+			continue;
+		llP = m_lights + i;
 #if DBG
-			if (llP->nSegment == nDbgSeg)
-				nDbgSeg = nDbgSeg;
+		if (llP->nSegment == nDbgSeg)
+			nDbgSeg = nDbgSeg;
 #endif
-			n = llP->nLights;
-			llP->vPos [X] /= n;
-			llP->vPos [Y] /= n;
-			llP->vPos [Z] /= n;
-			llP->color.red /= n;
-			llP->color.green /= n;
-			llP->color.blue /= n;
+		n = llP->nLights;
+		llP->vPos [X] /= n;
+		llP->vPos [Y] /= n;
+		llP->vPos [Z] /= n;
+		llP->color.red /= n;
+		llP->color.green /= n;
+		llP->color.blue /= n;
 
-			if (gameStates.render.bPerPixelLighting == 2)
-				llP->nBrightness = F2X (sqrt ((llP->color.red * 3 + llP->color.green * 5 + llP->color.blue * 2) * llP->color.alpha));
-			else
-				llP->nBrightness = F2X ((llP->color.red * 3 + llP->color.green * 5 + llP->color.blue * 2) * llP->color.alpha);
-			if (bDynLighting)
-				llP->nDynLight = AddDynLight (NULL, &llP->color, llP->nBrightness, llP->nSegment, -1, -1, -1, &llP->vPos);
+		if (gameStates.render.bPerPixelLighting == 2)
+			llP->nBrightness = F2X (sqrt ((llP->color.red * 3 + llP->color.green * 5 + llP->color.blue * 2) * llP->color.alpha));
+		else
+			llP->nBrightness = F2X ((llP->color.red * 3 + llP->color.green * 5 + llP->color.blue * 2) * llP->color.alpha);
+		if (bDynLighting) {
+			llP->nDynLight = AddDynLight (NULL, &llP->color, llP->nBrightness, llP->nSegment, -1, -1, -1, &llP->vPos);
+			nLights++;
 			}
 		}
 	}
+if (!nLights)
+	nLights = 1;
 }
 
 //------------------------------------------------------------------------------

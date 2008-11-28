@@ -1321,6 +1321,7 @@ if (transpItems.nPrevType != transpItems.nCurType) {
 	TIResetShader ();
 	}
 item->lightning->Render (item->nDepth, 0, 0);
+TISetClientState (0, 0, 0, 0, 0);
 TIResetBitmaps ();
 transpItems.bDepthMask = 1;
 }
