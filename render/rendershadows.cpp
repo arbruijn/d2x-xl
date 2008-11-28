@@ -214,7 +214,7 @@ glPopMatrix ();
 
 int RenderShadowMap (tDynLight *pLight)
 {
-	tCamera	*pc;
+	CCamera	*cameraP;
 
 if (pLight->shadow.nFrame == gameData.render.shadows.nFrame)
 	return 0;
@@ -222,9 +222,10 @@ if (gameData.render.shadows.nShadowMaps == MAX_SHADOW_MAPS)
 	return 0;
 pLight->shadow.nFrame = !pLight->shadow.nFrame;
 gameStates.render.nShadowPass = 2;
-pc = gameData.render.shadows.shadowMaps + gameData.render.shadows.nShadowMaps++;
-CreateCamera (pc, pLight->info.nSegment, pLight->info.nSide, pLight->info.nSegment, pLight->info.nSide, NULL, 1, 0);
-RenderCamera (pc);
+cameraP = gameData.render.shadows.shadowMaps + gameData.render.shadows.nShadowMaps;
+cameraP->Create (gameData.render.shadows.nShadowMaps++, pLight->info.nSegment, 
+					  pLight->info.nSide, pLight->info.nSegment, pLight->info.nSide, NULL, 1, 0);
+cameraP->Render ();
 gameStates.render.nShadowPass = 2;
 return 1;
 }
@@ -262,10 +263,8 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
 
 void DestroyShadowMaps (void)
 {
-	tCamera	*pc;
-
-for (pc = gameData.render.shadows.shadowMaps; gameData.render.shadows.nShadowMaps; gameData.render.shadows.nShadowMaps--, pc++)
-	DestroyCamera (pc);
+for (; gameData.render.shadows.nShadowMaps;)
+	gameData.render.shadows.shadowMaps [--gameData.render.shadows.nShadowMaps].Destroy ();
 }
 
 //------------------------------------------------------------------------------
@@ -290,7 +289,7 @@ void ApplyShadowMaps (short nStartSeg, fix nEyeOffset, int nWindow)
 	float mModelViewf [16];
 
 	int			i;
-	tCamera		*pc;
+	CCamera		*cameraP;
 
 #if 1
 OglActiveTexture (GL_TEXTURE0, 0);
@@ -308,13 +307,13 @@ for (i = 0; i < 4; i++)
 
 glGetFloatv (GL_PROJECTION_MATRIX, mProjectionf);
 glMatrixMode (GL_TEXTURE);
-for (i = 0, pc = gameData.render.shadows.shadowMaps; i < 1/*gameData.render.shadows.nShadowMaps*/; i++) {
-	glBindTexture (GL_TEXTURE_2D, pc->fb.hRenderBuffer);
+for (i = 0, cameraP = gameData.render.shadows.shadowMaps; i < 1/*gameData.render.shadows.nShadowMaps*/; i++) {
+	glBindTexture (GL_TEXTURE_2D, cameraP->FrameBuffer ().hRenderBuffer);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 	glLoadMatrixf (mTexBiasf);
 	glMultMatrixf (mProjectionf);
-	glMultMatrixf (OOF_MatVms2Gl (mModelViewf, pc->objP->info.position.mOrient));
+	glMultMatrixf (OOF_MatVms2Gl (mModelViewf, cameraP->GetObject ()->info.position.mOrient));
 	}
 glMatrixMode (GL_MODELVIEW);
 #endif

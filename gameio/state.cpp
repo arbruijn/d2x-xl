@@ -574,7 +574,7 @@ if (!bBetweenLevels)	{
 		if (objP->info.nType == OBJ_NONE) 
 			continue;
 		if (objP->info.nType == OBJ_CAMERA)
-			objP->info.position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [OBJ_IDX (objP)]].orient;
+			objP->info.position.mOrient = cameraManager.Camera (objP)->Orient ();
 		else if (objP->info.renderType == RT_MORPH) {
 			tMorphInfo *md = MorphFindData (objP);
 			if (md) {
@@ -1162,7 +1162,7 @@ if (!bBetweenLevels)	{
 	if (objP->info.nType == OBJ_NONE) 
 			continue;
 		if (objP->info.nType == OBJ_CAMERA)
-			objP->info.position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [OBJ_IDX (objP)]].orient;
+			objP->info.position.mOrient = cameraManager.Camera (objP)->Orient ();
 		else if (objP->info.renderType == RT_MORPH) {
 			tMorphInfo *md = MorphFindData (objP);
 			if (md) {

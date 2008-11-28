@@ -82,6 +82,10 @@ tObject	*dbgObjP = NULL;
 
 int dbgObjInstances = 0;
 
+#define	DEG90		 (F1_0 / 4)
+#define	DEG45		 (F1_0 / 8)
+#define	DEG1		 (F1_0 / (4 * 90))
+
 //------------------------------------------------------------------------------
 // grsBitmap *robot_bms [MAX_ROBOT_BITMAPS];	//all bitmaps for all robots
 
@@ -2063,49 +2067,7 @@ if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted) {
 
 void RotateCamera (tObject *objP)
 {
-
-#define	DEG90		 (F1_0 / 4)
-#define	DEG45		 (F1_0 / 8)
-#define	DEG1		 (F1_0 / (4 * 90))
-
-	tCamera	*pc = gameData.cameras.cameras + gameData.objs.cameraRef [OBJ_IDX (objP)];
-	fixang	curAngle = pc->curAngle;
-	fixang	curDelta = pc->curDelta;
-
-#if 1
-	time_t	t0 = pc->t0;
-	time_t	t = gameStates.app.nSDLTicks;
-
-if ((t0 < 0) || (t - t0 >= 1000 / 90))
-#endif
-	if (objP->cType.aiInfo.behavior == AIB_NORMAL) {
-		vmsAngVec	a;
-		vmsMatrix	r;
-
-		int	h = abs (curDelta);
-		int	d = DEG1 / (gameOpts->render.cameras.nSpeed / 1000);
-		int	s = h ? curDelta / h : 1;
-
-	if (h != d)
-		curDelta = s * d;
-#if 1
-	objP->mType.physInfo.brakes = (fix) t;
-#endif
-	if ((curAngle >= DEG45) || (curAngle <= -DEG45)) {
-		if (curAngle * s - DEG45 >= curDelta * s)
-			curAngle = s * DEG45 + curDelta - s;
-		curDelta = -curDelta;
-		}
-
-	curAngle += curDelta;
-	a[HA] = curAngle;
-	a[BA] =	a[PA] = 0;
-	r = vmsMatrix::Create(a);
-	// TODO MM
-	objP->info.position.mOrient = pc->orient * r;
-	pc->curAngle = curAngle;
-	pc->curDelta = curDelta;
-	}
+cameraManager.Rotate (objP);
 }
 
 //--------------------------------------------------------------------

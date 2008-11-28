@@ -854,7 +854,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 		}
   	gameData.objs.viewerP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
 	UpdateRenderedData (0, gameData.objs.viewerP, 0, 0);
-	if (RenderCameras ())
+	if (cameraManager.Render ())
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
 	RenderFrame (0, 0);
   	WakeupRenderedObjects (gameData.objs.viewerP, 0);
@@ -875,7 +875,7 @@ else {
 		return;
 		}
 	UpdateRenderedData (0, gameData.objs.viewerP, gameStates.render.bRearView, 0);
-	if (RenderCameras ())
+	if (cameraManager.Render ())
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
 	RenderFrame (0, 0);
 	}

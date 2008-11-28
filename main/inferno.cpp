@@ -2403,7 +2403,6 @@ GETMEM (vmsVector, gameData.objs.vRobotGoals, MAX_OBJECTS, 0);
 GETMEM (fix, gameData.objs.xLastAfterburnerTime, MAX_OBJECTS, 0);
 GETMEM (fix, gameData.objs.xLight, MAX_OBJECTS, 0);
 GETMEM (int, gameData.objs.nLightSig, MAX_OBJECTS, 0);
-GETMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS, 0);
 GETMEM (tObjectViewData, gameData.objs.viewData, MAX_OBJECTS, (char) 0xFF);
 GETMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS, 0);
@@ -2426,7 +2425,6 @@ void AllocLightningData (void)
 
 void AllocCameraData (void)
 {
-GETMEM (char, gameData.cameras.nSides, 2 * MAX_SEGMENTS * 6, 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -2591,7 +2589,6 @@ FREEMEM (vmsVector, gameData.objs.vRobotGoals, MAX_OBJECTS);
 FREEMEM (fix, gameData.objs.xLastAfterburnerTime, MAX_OBJECTS);
 FREEMEM (fix, gameData.objs.xLight, MAX_OBJECTS);
 FREEMEM (int, gameData.objs.nLightSig, MAX_OBJECTS);
-FREEMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS);
 FREEMEM (short, gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS);
 FREEMEM (tObjectViewData, gameData.objs.viewData, MAX_OBJECTS);
 FREEMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS);
@@ -2616,7 +2613,6 @@ lightningManager.DestroyAll (1);
 
 void FreeCameraData (void)
 {
-FREEMEM (char, gameData.cameras.nSides, MAX_SEGMENTS * 6);
 }
 
 // ----------------------------------------------------------------------------

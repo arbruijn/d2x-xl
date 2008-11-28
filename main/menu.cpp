@@ -2964,8 +2964,8 @@ do {
 			GET_VAL (gameOpts->render.cameras.bHires, optHiresCams);
 		}
 	if (bFSCameras != gameOpts->render.cameras.bFitToWall) {
-		DestroyCameras ();
-		CreateCameras ();
+		cameraManager.Destroy ();
+		cameraManager.Create ();
 		}
 	} while (i == -2);
 }

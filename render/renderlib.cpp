@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_render.h"
 #include "renderlib.h"
 #include "renderthreads.h"
+#include "cameras.h"
 
 //------------------------------------------------------------------------------
 
@@ -434,38 +435,38 @@ return segmentColors + nColor;
 //------------------------------------------------------------------------------
 // If any color component > 1, scale all components down so that the greatest == 1.
 
-static inline void ScaleColor (tFaceColor *pc, float l)
+static inline void ScaleColor (tFaceColor *colorP, float l)
 {
-	float m = pc->color.red;
+	float m = colorP->color.red;
 
-if (m < pc->color.green)
-	m = pc->color.green;
-if (m < pc->color.blue)
-	m = pc->color.blue;
+if (m < colorP->color.green)
+	m = colorP->color.green;
+if (m < colorP->color.blue)
+	m = colorP->color.blue;
 if (m > l) {
 	m = l / m;
-	pc->color.red *= m;
-	pc->color.green *= m;
-	pc->color.blue *= m;
+	colorP->color.red *= m;
+	colorP->color.green *= m;
+	colorP->color.blue *= m;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int SetVertexColor (int nVertex, tFaceColor *pc)
+int SetVertexColor (int nVertex, tFaceColor *colorP)
 {
 #if DBG
 if (nVertex == nDbgVertex)
 	nVertex = nVertex;
 #endif
 if (gameStates.render.bAmbientColor) {
-	pc->color.red += gameData.render.color.ambient [nVertex].color.red;
-	pc->color.green += gameData.render.color.ambient [nVertex].color.green;
-	pc->color.blue += gameData.render.color.ambient [nVertex].color.blue;
+	colorP->color.red += gameData.render.color.ambient [nVertex].color.red;
+	colorP->color.green += gameData.render.color.ambient [nVertex].color.green;
+	colorP->color.blue += gameData.render.color.ambient [nVertex].color.blue;
 	}
 #if 0
 else
-	memset (pc, 0, sizeof (*pc));
+	memset (colorP, 0, sizeof (*colorP));
 #endif
 return 1;
 }
@@ -492,7 +493,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-fix SetVertexLight (int nSegment, int nSide, int nVertex, tFaceColor *pc, fix light)
+fix SetVertexLight (int nSegment, int nSide, int nVertex, tFaceColor *colorP, fix light)
 {
 	tRgbColorf	*pdc;
 	fix			dynLight;
@@ -532,53 +533,53 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 				if (gameStates.render.bAmbientColor) {
 					if ((fl != 0) && gameData.render.color.vertBright [nVertex]) {
 						hl = fl / gameData.render.color.vertBright [nVertex];
-						pc->color.red = pc->color.red * hl + pdc->red * dl;
-						pc->color.green = pc->color.green * hl + pdc->green * dl;
-						pc->color.blue = pc->color.blue * hl + pdc->blue * dl;
-						ScaleColor (pc, fl + dl);
+						colorP->color.red = colorP->color.red * hl + pdc->red * dl;
+						colorP->color.green = colorP->color.green * hl + pdc->green * dl;
+						colorP->color.blue = colorP->color.blue * hl + pdc->blue * dl;
+						ScaleColor (colorP, fl + dl);
 						}
 					else {
-						pc->color.red = pdc->red * dl;
-						pc->color.green = pdc->green * dl;
-						pc->color.blue = pdc->blue * dl;
-						ScaleColor (pc, dl);
+						colorP->color.red = pdc->red * dl;
+						colorP->color.green = pdc->green * dl;
+						colorP->color.blue = pdc->blue * dl;
+						ScaleColor (colorP, dl);
 						}
 					}
 				else {
-					pc->color.red = fl + pdc->red * dl;
-					pc->color.green = fl + pdc->green * dl;
-					pc->color.blue = fl + pdc->blue * dl;
-					ScaleColor (pc, fl + dl);
+					colorP->color.red = fl + pdc->red * dl;
+					colorP->color.green = fl + pdc->green * dl;
+					colorP->color.blue = fl + pdc->blue * dl;
+					ScaleColor (colorP, fl + dl);
 					}
 				}
 			else {
-				pc->color.red =
-				pc->color.green =
-				pc->color.blue = fl + dl;
+				colorP->color.red =
+				colorP->color.green =
+				colorP->color.blue = fl + dl;
 				}
 			if (gameOpts->render.color.bCap) {
-				if (pc->color.red > 1.0)
-					pc->color.red = 1.0;
-				if (pc->color.green > 1.0)
-					pc->color.green = 1.0;
-				if (pc->color.blue > 1.0)
-					pc->color.blue = 1.0;
+				if (colorP->color.red > 1.0)
+					colorP->color.red = 1.0;
+				if (colorP->color.green > 1.0)
+					colorP->color.green = 1.0;
+				if (colorP->color.blue > 1.0)
+					colorP->color.blue = 1.0;
 				}
 			}
 		else {
 			float dl = X2F (light);
 			dl = (float) pow (dl, 1.0f / 3.0f);
-			pc->color.red = pdc->red * dl;
-			pc->color.green = pdc->green * dl;
-			pc->color.blue = pdc->blue * dl;
+			colorP->color.red = pdc->red * dl;
+			colorP->color.green = pdc->green * dl;
+			colorP->color.blue = pdc->blue * dl;
 			}
 		}
 	else {
-		ScaleColor (pc, fl + dl);
+		ScaleColor (colorP, fl + dl);
 		}
 	}
 else {
-	ScaleColor (pc, fl + dl);
+	ScaleColor (colorP, fl + dl);
 	}
 //saturate at max value
 if (light > MAX_LIGHT)
@@ -704,50 +705,50 @@ return colorP->alpha = 1;
 
 int IsMonitorFace (short nSegment, short nSide, int bForce)
 {
-return ((bForce || gameStates.render.bDoCameras) && gameData.cameras.nSides) ? gameData.cameras.nSides [nSegment * 6 + nSide] : -1;
+return (bForce || gameStates.render.bDoCameras) ? cameraManager.GetFaceCamera (nSegment * 6 + nSide) : -1;
 }
 
 //------------------------------------------------------------------------------
 
 int SetupMonitorFace (short nSegment, short nSide, short nCamera, grsFace *faceP)
 {
-	tCamera		*pc = gameData.cameras.cameras + nCamera;
-	int			bHaveMonitorBg, bIsTeleCam = pc->bTeleport;
+	CCamera		*cameraP = cameraManager.Camera (nCamera);
+	int			bHaveMonitorBg, bIsTeleCam = cameraP->GetTeleport ();
 #if !DBG
 	int			i;
 #endif
 #if RENDER2TEXTURE
-	int			bCamBufAvail = OglCamBufAvail (pc, 1) == 1;
+	int			bCamBufAvail = cameraP->HaveBuffer (1) == 1;
 #else
 	int			bCamBufAvail = 0;
 #endif
 
 if (!gameStates.render.bDoCameras)
 	return 0;
-bHaveMonitorBg = pc->bValid && /*!pc->bShadowMap &&*/
-					  (pc->texBuf.glTexture || bCamBufAvail) &&
+bHaveMonitorBg = cameraP->Valid () && /*!cameraP->bShadowMap &&*/
+					  (cameraP->Texture ().glTexture || bCamBufAvail) &&
 					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 if (bHaveMonitorBg) {
-	GetCameraUVL (pc, faceP, NULL, gameData.segs.faces.texCoord + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex);
-	pc->texBuf.glTexture->wrapstate = -1;
+	cameraP->GetUVL (faceP, NULL, gameData.segs.faces.texCoord + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex);
+	cameraP->Texture ().glTexture->wrapstate = -1;
 	if (bIsTeleCam) {
 #if DBG
-		faceP->bmBot = &pc->texBuf;
+		faceP->bmBot = &cameraP->Texture ();
 		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 #else
-		faceP->bmTop = &pc->texBuf;
+		faceP->bmTop = &cameraP->texBuf;
 		for (i = 0; i < 4; i++)
 			gameData.render.color.vertices [faceP->index [i]].color.alpha = 0.7f;
 #endif
 		}
 	else if (/*gameOpts->render.cameras.bFitToWall ||*/ (faceP->nOvlTex == 0) || !faceP->bmBot)
-		faceP->bmBot = &pc->texBuf;
+		faceP->bmBot = &cameraP->Texture ();
 	else
-		faceP->bmTop = &pc->texBuf;
-	faceP->pTexCoord = pc->texCoord;
+		faceP->bmTop = &cameraP->Texture ();
+	faceP->pTexCoord = cameraP->TexCoord ();
 	}
 faceP->bTeleport = bIsTeleCam;
-pc->bVisible = 1;
+cameraP->SetVisible (1);
 return bHaveMonitorBg || gameOpts->render.cameras.bFitToWall;
 }
 
@@ -785,7 +786,7 @@ if (! cc.ccAnd) {		//all off screen?
 
 //------------------------------------------------------------------------------
 
-void AdjustVertexColor (grsBitmap *bmP, tFaceColor *pc, fix xLight)
+void AdjustVertexColor (grsBitmap *bmP, tFaceColor *colorP, fix xLight)
 {
 	float l = (bmP && (bmP->bmProps.flags & BM_FLAG_NO_LIGHTING)) ? 1.0f : X2F (xLight);
 	float s = 1.0f;
@@ -794,17 +795,17 @@ void AdjustVertexColor (grsBitmap *bmP, tFaceColor *pc, fix xLight)
 if (gameStates.ogl.bScaleLight)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 #endif
-if (!pc->index || !gameStates.render.bAmbientColor || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) {
-	pc->color.red =
-	pc->color.green =
-	pc->color.blue = l * s;
+if (!colorP->index || !gameStates.render.bAmbientColor || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) {
+	colorP->color.red =
+	colorP->color.green =
+	colorP->color.blue = l * s;
 	}
 else if (s != 1) {
-	pc->color.red *= s;
-	pc->color.green *= s;
-	pc->color.blue *= s;
+	colorP->color.red *= s;
+	colorP->color.green *= s;
+	colorP->color.blue *= s;
 	}
-pc->color.alpha = 1;
+colorP->color.alpha = 1;
 }
 
 // -----------------------------------------------------------------------------------

@@ -1445,7 +1445,7 @@ typedef struct tShadowData {
 	short				nLights;
 	tShaderLight	*pLight;
 	short				nShadowMaps;
-	tCamera			shadowMaps [MAX_SHADOW_MAPS];
+	CCamera			shadowMaps [MAX_SHADOW_MAPS];
 	tObject			lightSource;
 	tOOF_vector		vLightPos;
 	vmsVector		vLightDir [MAX_SHADOW_LIGHTS];
@@ -1930,7 +1930,6 @@ typedef struct tObjectData {
 	short						nLastDropped;
 	short						nFreeDropped;
 	short						nDropped;
-	ushort					*cameraRef;
 	tGuidedMissileInfo	guidedMissile [MAX_PLAYERS];
 	tObject					*consoleP;
 	tObject					*viewerP;
@@ -3105,14 +3104,6 @@ typedef struct tMissileData {
 
 //------------------------------------------------------------------------------
 
-typedef struct tCameraData {
-	short		nCameras;
-	tCamera	cameras [MAX_CAMERAS];
-	char		*nSides;
-} tCameraData;
-
-//------------------------------------------------------------------------------
-
 typedef struct tPlayerStats {
 	int	nShots [2];
 	int	nHits [2];
@@ -3219,7 +3210,6 @@ typedef struct tGameData {
 	tFusionData			fusion;
 	tOmegaData			omega;
 	tMissileData		missiles;
-	tCameraData			cameras;
 	tCockpitData		cockpit;
 	tCollisionData		collisions;
 	tScoreData			score;

@@ -830,7 +830,7 @@ if (gameData.missions.nEnhancedMission) {
 	}
 #endif
 /*---*/PrintLog ("   Destroying camera objects\n");
-DestroyCameras ();
+cameraManager.Destroy ();
 /*---*/PrintLog ("   Destroying particle data\n");
 particleManager.DestroyAll ();
 /*---*/PrintLog ("   Destroying lightning data\n");

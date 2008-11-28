@@ -1251,7 +1251,7 @@ gameStates.render.nFacePrimitive = gameStates.render.bTriangleMesh ? GL_TRIANGLE
 if (gameStates.render.bSplitPolys)
 	gameStates.render.bSplitPolys = (gameStates.render.bPerPixelLighting || !gameOpts->render.nMeshQuality) ? 1 : -1;
 if (gameStates.render.bTriangleMesh)
-	CreateCameras ();
+	cameraManager.Create ();
 PrintLog ("   Creating face list\n");
 gameData.segs.nFaces = 0;
 gameData.segs.nTris = 0;
@@ -1332,7 +1332,7 @@ if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel)) {
 	}
 BuildSlidingFaceList ();
 if (gameStates.render.bTriangleMesh)
-	DestroyCameras ();
+	cameraManager.Destroy ();
 gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
 return 1;
 }

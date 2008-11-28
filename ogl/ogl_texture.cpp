@@ -137,7 +137,7 @@ void OglSmashTextureListInternal (void)
 	int			i, j, bUnlink = 0;
 
 OglDestroyDrawBuffer ();
-DestroyCameras ();
+cameraManager.Destroy ();
 OglDeleteLists (&hBigSphere, 1);
 OglDeleteLists (&hSmallSphere, 1);
 OglDeleteLists (&circleh5, 1);

@@ -792,7 +792,7 @@ if (HaveLightmaps ())
 CloseDynLighting ();
 InitDynLighting ();
 OglCreateDrawBuffer ();
-CreateCameras ();
+cameraManager.Create ();
 InitSpheres ();
 BuildObjectModels ();
 OglSetDrawBuffer (GL_BACK, 1);

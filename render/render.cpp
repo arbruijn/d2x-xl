@@ -302,7 +302,7 @@ void RenderFace (tFaceProps *propsP)
 	g3sPoint		*pointList [8], **pp;
 	tSegment		*segP = gameData.segs.segments + props.segNum;
 	tSide			*sideP = segP->sides + props.sideNum;
-	tCamera		*pc = NULL;
+	CCamera		*cameraP = NULL;
 
 if (props.nBaseTex < 0)
 	return;
@@ -355,16 +355,16 @@ if (gameStates.render.nType == 2) {
 	}
 nCamNum = IsMonitorFace (props.segNum, props.sideNum, 0);
 if ((bIsMonitor = gameStates.render.bUseCameras && (nCamNum >= 0))) {
-	pc = gameData.cameras.cameras + nCamNum;
-	pc->bVisible = 1;
-	bIsTeleCam = pc->bTeleport;
+	cameraP = cameraManager.Camera (nCamNum);
+	cameraP->SetVisible (1);
+	bIsTeleCam = cameraP->GetTeleport ();
 #if RENDER2TEXTURE
-	bCamBufAvail = OglCamBufAvail (pc, 1) == 1;
+	bCamBufAvail = cameraP->HaveBuffer (1) == 1;
 #else
 	bCamBufAvail = 0;
 #endif
-	bHaveMonitorBg = pc->bValid && /*!pc->bShadowMap &&*/
-						  (pc->texBuf.glTexture || bCamBufAvail) &&
+	bHaveMonitorBg = cameraP->Valid () && /*!cameraP->bShadowMap &&*/
+						  (cameraP->HaveTexture () || bCamBufAvail) &&
 						  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 	}
 else
@@ -413,21 +413,21 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 	}
 
 if (bHaveMonitorBg) {
-	GetCameraUVL (pc, NULL, props.uvls, NULL, NULL);
-	pc->texBuf.glTexture->wrapstate = -1;
+	cameraP->GetUVL (NULL, props.uvls, NULL, NULL);
+	cameraP->Texture ().glTexture->wrapstate = -1;
 	if (bIsTeleCam) {
 #if DBG
-		bmBot = &pc->texBuf;
+		bmBot = &cameraP->Texture ();
 		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 #else
-		bmTop = &pc->texBuf;
+		bmTop = &cameraP->Texture ();
 		gameStates.render.grAlpha = (GR_ACTUAL_FADE_LEVELS * 7) / 10;
 #endif
 		}
 	else if (gameOpts->render.cameras.bFitToWall || (props.nOvlTex > 0))
-		bmBot = &pc->texBuf;
+		bmBot = &cameraP->Texture ();
 	else
-		bmTop = &pc->texBuf;
+		bmTop = &cameraP->Texture ();
 	}
 SetFaceLight (&props);
 #ifdef EDITOR
