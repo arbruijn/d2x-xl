@@ -1238,6 +1238,7 @@ if (m_lightnings) {
 #else
 	D2_FREE (m_lightnings);
 #endif
+	m_nLightnings = 0;
 	}
 if ((m_nObject >= 0) && (lightningManager.GetObjectSystem (m_nObject) == m_nId)) {
 	lightningManager.SetObjectSystem (m_nObject, -1);
@@ -1383,8 +1384,9 @@ int CLightningSystem::SetLight (void)
 {
 	int nLights = 0;
 
-for (int i = 0; i < m_nLightnings; i++)
-	nLights += m_lightnings [i].SetLight ();
+if (m_lightnings)
+	for (int i = 0; i < m_nLightnings; i++)
+		nLights += m_lightnings [i].SetLight ();
 return nLights;
 }
 
@@ -1916,8 +1918,6 @@ if (SHOW_LIGHTNINGS) {
 			}
 		}
 	}
-if (!nLights)
-	nLights = 1;
 }
 
 //------------------------------------------------------------------------------

@@ -914,7 +914,8 @@ return xDist;
 
 static inline int UseHitbox (tObject *objP)
 {
-return (objP->info.renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0); // && ((objP->info.nType != OBJ_WEAPON) || gameData.objs.bIsMissile [objP->info.nId]);
+return (objP->info.renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0) && 
+		 ((objP->info.nType != OBJ_WEAPON) || ((objP->info.nId != GAUSS_ID) && (objP->info.nId != VULCAN_ID)));
 }
 
 //	-----------------------------------------------------------------------------
@@ -960,8 +961,8 @@ vPos = thisObjP->info.position.vPos;
 if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
-	VmPointLineIntersection(hitP, *p0, *p1, vPos, 0);
-	dist = vmsVector::Dist(hitP, vPos);
+	VmPointLineIntersection (hitP, *p0, *p1, vPos, 0);
+	dist = vmsVector::Dist (hitP, vPos);
 	if (dist > 2 * (thisObjP->info.xSize + otherObjP->info.xSize))
 		return 0;
 	// check hitbox collisions for all polygonal objects
@@ -973,20 +974,20 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 			if ((dist == 0x7fffffff) || (dist > otherObjP->info.xSize))
 				return 0;
 			}
-		CheckHitboxToHitbox(&hitP, otherObjP, thisObjP, p0, p1);
-//		VmPointLineIntersection(hitP, *p0, *p1, hitP, thisObjP->info.position.vPos, 1);
-		VmPointLineIntersection(hitP, *p0, *p1, hitP, 1);
+		CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1);
+//		VmPointLineIntersection (hitP, *p0, *p1, hitP, thisObjP->info.position.vPos, 1);
+		VmPointLineIntersection (hitP, *p0, *p1, hitP, 1);
 		}
 	else {
 		if (bThisPoly) {
 		// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
 			vn = *p1-*p0;
-			vmsVector::Normalize(vn);
+			vmsVector::Normalize (vn);
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, otherObjP->info.xSize)))
 				return 0;
-//			VmPointLineIntersection(hitP, *p0, *p1, hitP, &otherObjP->info.position.vPos, 1);
-			VmPointLineIntersection(hitP, *p0, *p1, hitP, 1);
+//			VmPointLineIntersection (hitP, *p0, *p1, hitP, &otherObjP->info.position.vPos, 1);
+			VmPointLineIntersection (hitP, *p0, *p1, hitP, 1);
 			}
 		else {
 		// *otherObjP (moving) has hitboxes, *thisObjP (stationary) a hit sphere. To detect whether the sphere
@@ -997,8 +998,8 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 			v1 = v0 + vn * thisObjP->info.xSize;
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize)))
 				return 0;
-//			VmPointLineIntersection(hitP, *p0, *p1, hitP, &thisObjP->info.position.vPos, 1);
-			VmPointLineIntersection(hitP, *p0, *p1, hitP, 1);
+//			VmPointLineIntersection (hitP, *p0, *p1, hitP, &thisObjP->info.position.vPos, 1);
+			VmPointLineIntersection (hitP, *p0, *p1, hitP, 1);
 			}
 		}
 	}
