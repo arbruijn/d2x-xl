@@ -488,11 +488,11 @@ switch (key) {
 		break;
 		
 	case KEY_CTRLED+KEY_F5:
-		StateSaveAll (0, 0, 1, 0);
+		saveGameHandler.Save (0, 0, 1, 0);
 		break;
 
 	case KEY_CTRLED+KEY_F9:
-		StateRestoreAll (0, 0, 1, 0);
+		saveGameHandler.Load (0, 0, 1, 0);
 		break;
 
 #if 1//ndef _DEBUG
@@ -570,7 +570,7 @@ switch (key) {
 			gameStates.ogl.palAdd.red = rsave;
 			gameStates.ogl.palAdd.green = gsave;
 			gameStates.ogl.palAdd.blue = bsave;
-			StateSaveAll( 0, 0, 0, NULL );
+			saveGameHandler.Save (0, 0, 0, NULL);
 			PaletteRestore();
 		}
 		break;  // 0 means not between levels.
@@ -578,7 +578,7 @@ switch (key) {
 	case KEY_ALTED+KEY_F3:
 		if (!gameStates.app.bPlayerIsDead && (!IsMultiGame || IsCoopGame)) {
 			FullPaletteSave ();
-			StateRestoreAll (1, 0, 0, NULL);
+			saveGameHandler.Load (1, 0, 0, NULL);
 			if (gameData.app.bGamePaused)
 				DoGamePause();
 		}

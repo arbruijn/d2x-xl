@@ -21,6 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "error.h"
+#include "state.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -41,78 +42,30 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-------------------------------------------------------------------------------------------------
 
-int AISaveBinState (CFile& cf)
-{
-	int	i;
-
-cf.Write (&gameData.ai.bInitialized, sizeof (int), 1);
-cf.Write (&gameData.ai.nOverallAgitation, sizeof (int), 1);
-cf.Write (gameData.ai.localInfo, sizeof (tAILocalInfo), MAX_OBJECTS);
-cf.Write (gameData.ai.pointSegs, sizeof (tPointSeg), MAX_POINT_SEGS);
-cf.Write (gameData.ai.cloakInfo, sizeof (tAICloakInfo), MAX_AI_CLOAK_INFO);
-for (i = 0; i < MAX_BOSS_COUNT; i++) {
-	cf.Write (&gameData.boss [i].nCloakStartTime, sizeof (fix), 1);
-	cf.Write (&gameData.boss [i].nCloakEndTime , sizeof (fix), 1);
-	cf.Write (&gameData.boss [i].nLastTeleportTime , sizeof (fix), 1);
-	cf.Write (&gameData.boss [i].nTeleportInterval, sizeof (fix), 1);
-	cf.Write (&gameData.boss [i].nCloakInterval, sizeof (fix), 1);
-	cf.Write (&gameData.boss [i].nCloakDuration, sizeof (fix), 1);
-	cf.Write (&gameData.boss [i].nLastGateTime, sizeof (fix), 1);
-	cf.Write (&gameData.boss [i].nGateInterval, sizeof (fix), 1);
-	cf.Write (&gameData.boss [i].nDyingStartTime, sizeof (fix), 1);
-	cf.Write (&gameData.boss [i].nDying, sizeof (int), 1);
-	cf.Write (&gameData.boss [i].bDyingSoundPlaying, sizeof (int), 1);
-	cf.Write (&gameData.boss [i].nHitTime, sizeof (fix), 1);
-	}
-cf.Write (&gameData.escort.nKillObject, sizeof (gameData.escort.nKillObject), 1);
-cf.Write (&gameData.escort.xLastPathCreated, sizeof (gameData.escort.xLastPathCreated), 1);
-cf.Write (&gameData.escort.nGoalObject, sizeof (gameData.escort.nGoalObject), 1);
-cf.Write (&gameData.escort.nSpecialGoal, sizeof (gameData.escort.nSpecialGoal), 1);
-cf.Write (&gameData.escort.nGoalIndex, sizeof (gameData.escort.nGoalIndex), 1);
-cf.Write (&gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS);
-
-i = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
-cf.Write (&i, sizeof (int), 1);
-
-for (i = 0; i < MAX_BOSS_COUNT; i++)
-	cf.Write (&gameData.boss [i].nTeleportSegs, sizeof (gameData.boss [i].nTeleportSegs), 1);
-for (i = 0; i < MAX_BOSS_COUNT; i++)
-	cf.Write (&gameData.boss [i].nGateSegs, sizeof (gameData.boss [i].nGateSegs), 1);
-for (i = 0; i < MAX_BOSS_COUNT; i++) {
-	if (gameData.boss [i].nGateSegs)
-		cf.Write (gameData.boss [i].gateSegs, sizeof (gameData.boss [i].gateSegs [0]), gameData.boss [i].nGateSegs);
-	if (gameData.boss [i].nTeleportSegs)
-		cf.Write (gameData.boss [i].teleportSegs, sizeof (gameData.boss [i].teleportSegs [0]), gameData.boss [i].nTeleportSegs);
-	}
-return 1;
-}
-
-//	-------------------------------------------------------------------------------------------------
-
-int AIRestoreBinState (CFile& cf, int version)
+int CSaveGameHandler::LoadAIBinFormat (void)
 {
 	int	i;
 
 memset (gameData.ai.localInfo, 0, sizeof (tAILocalInfo) * MAX_OBJECTS);
 memset (gameData.ai.pointSegs, 0, sizeof (gameData.ai.pointSegs));
-cf.Read (&gameData.ai.bInitialized, sizeof (int), 1);
-cf.Read (&gameData.ai.nOverallAgitation, sizeof (int), 1);
-cf.Read (gameData.ai.localInfo, sizeof (tAILocalInfo), (version > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2);
-cf.Read (gameData.ai.pointSegs, sizeof (tPointSeg), (version > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2);
-cf.Read (gameData.ai.cloakInfo, sizeof (tAICloakInfo), MAX_AI_CLOAK_INFO);
-if (version < 29) {
-	cf.Read (&gameData.boss [0].nCloakStartTime, sizeof (fix), 1);
-	cf.Read (&gameData.boss [0].nCloakEndTime , sizeof (fix), 1);
-	cf.Read (&gameData.boss [0].nLastTeleportTime , sizeof (fix), 1);
-	cf.Read (&gameData.boss [0].nTeleportInterval, sizeof (fix), 1);
-	cf.Read (&gameData.boss [0].nCloakInterval, sizeof (fix), 1);
-	cf.Read (&gameData.boss [0].nCloakDuration, sizeof (fix), 1);
-	cf.Read (&gameData.boss [0].nLastGateTime, sizeof (fix), 1);
-	cf.Read (&gameData.boss [0].nGateInterval, sizeof (fix), 1);
-	cf.Read (&gameData.boss [0].nDyingStartTime, sizeof (fix), 1);
-	cf.Read (&gameData.boss [0].nDying, sizeof (int), 1);
-	cf.Read (&gameData.boss [0].bDyingSoundPlaying, sizeof (int), 1);
-	cf.Read (&gameData.boss [0].nHitTime, sizeof (fix), 1);
+m_cf.Read (&gameData.ai.bInitialized, sizeof (int), 1);
+m_cf.Read (&gameData.ai.nOverallAgitation, sizeof (int), 1);
+m_cf.Read (gameData.ai.localInfo, sizeof (tAILocalInfo), (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2);
+m_cf.Read (gameData.ai.pointSegs, sizeof (tPointSeg), (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2);
+m_cf.Read (gameData.ai.cloakInfo, sizeof (tAICloakInfo), MAX_AI_CLOAK_INFO);
+if (m_nVersion < 29) {
+	m_cf.Read (&gameData.boss [0].nCloakStartTime, sizeof (fix), 1);
+	m_cf.Read (&gameData.boss [0].nCloakEndTime , sizeof (fix), 1);
+	m_cf.Read (&gameData.boss [0].nLastTeleportTime , sizeof (fix), 1);
+	m_cf.Read (&gameData.boss [0].nTeleportInterval, sizeof (fix), 1);
+	m_cf.Read (&gameData.boss [0].nCloakInterval, sizeof (fix), 1);
+	m_cf.Read (&gameData.boss [0].nCloakDuration, sizeof (fix), 1);
+	m_cf.Read (&gameData.boss [0].nLastGateTime, sizeof (fix), 1);
+	m_cf.Read (&gameData.boss [0].nGateInterval, sizeof (fix), 1);
+	m_cf.Read (&gameData.boss [0].nDyingStartTime, sizeof (fix), 1);
+	m_cf.Read (&gameData.boss [0].nDying, sizeof (int), 1);
+	m_cf.Read (&gameData.boss [0].bDyingSoundPlaying, sizeof (int), 1);
+	m_cf.Read (&gameData.boss [0].nHitTime, sizeof (fix), 1);
 	for (i = 1; i < MAX_BOSS_COUNT; i++) {
 		gameData.boss [i].nCloakStartTime = 0;
 		gameData.boss [i].nCloakEndTime = 0;
@@ -130,29 +83,29 @@ if (version < 29) {
 	}
 else {
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
-		cf.Read (&gameData.boss [i].nCloakStartTime, sizeof (fix), 1);
-		cf.Read (&gameData.boss [i].nCloakEndTime , sizeof (fix), 1);
-		cf.Read (&gameData.boss [i].nLastTeleportTime , sizeof (fix), 1);
-		cf.Read (&gameData.boss [i].nTeleportInterval, sizeof (fix), 1);
-		cf.Read (&gameData.boss [i].nCloakInterval, sizeof (fix), 1);
-		cf.Read (&gameData.boss [i].nCloakDuration, sizeof (fix), 1);
-		cf.Read (&gameData.boss [i].nLastGateTime, sizeof (fix), 1);
-		cf.Read (&gameData.boss [i].nGateInterval, sizeof (fix), 1);
-		cf.Read (&gameData.boss [i].nDyingStartTime, sizeof (fix), 1);
-		cf.Read (&gameData.boss [i].nDying, sizeof (int), 1);
-		cf.Read (&gameData.boss [i].bDyingSoundPlaying, sizeof (int), 1);
-		cf.Read (&gameData.boss [i].nHitTime, sizeof (fix), 1);
+		m_cf.Read (&gameData.boss [i].nCloakStartTime, sizeof (fix), 1);
+		m_cf.Read (&gameData.boss [i].nCloakEndTime , sizeof (fix), 1);
+		m_cf.Read (&gameData.boss [i].nLastTeleportTime , sizeof (fix), 1);
+		m_cf.Read (&gameData.boss [i].nTeleportInterval, sizeof (fix), 1);
+		m_cf.Read (&gameData.boss [i].nCloakInterval, sizeof (fix), 1);
+		m_cf.Read (&gameData.boss [i].nCloakDuration, sizeof (fix), 1);
+		m_cf.Read (&gameData.boss [i].nLastGateTime, sizeof (fix), 1);
+		m_cf.Read (&gameData.boss [i].nGateInterval, sizeof (fix), 1);
+		m_cf.Read (&gameData.boss [i].nDyingStartTime, sizeof (fix), 1);
+		m_cf.Read (&gameData.boss [i].nDying, sizeof (int), 1);
+		m_cf.Read (&gameData.boss [i].bDyingSoundPlaying, sizeof (int), 1);
+		m_cf.Read (&gameData.boss [i].nHitTime, sizeof (fix), 1);
 		}
 	}
-// -- MK, 10/21/95, unused!-- cf.Read (&Boss_been_hit, sizeof (int), 1);
+// -- MK, 10/21/95, unused!-- m_cf.Read (&Boss_been_hit, sizeof (int), 1);
 
-if (version >= 8) {
-	cf.Read (&gameData.escort.nKillObject, sizeof (gameData.escort.nKillObject), 1);
-	cf.Read (&gameData.escort.xLastPathCreated, sizeof (gameData.escort.xLastPathCreated), 1);
-	cf.Read (&gameData.escort.nGoalObject, sizeof (gameData.escort.nGoalObject), 1);
-	cf.Read (&gameData.escort.nSpecialGoal, sizeof (gameData.escort.nSpecialGoal), 1);
-	cf.Read (&gameData.escort.nGoalIndex, sizeof (gameData.escort.nGoalIndex), 1);
-	cf.Read (&gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS);
+if (m_nVersion >= 8) {
+	m_cf.Read (&gameData.escort.nKillObject, sizeof (gameData.escort.nKillObject), 1);
+	m_cf.Read (&gameData.escort.xLastPathCreated, sizeof (gameData.escort.xLastPathCreated), 1);
+	m_cf.Read (&gameData.escort.nGoalObject, sizeof (gameData.escort.nGoalObject), 1);
+	m_cf.Read (&gameData.escort.nSpecialGoal, sizeof (gameData.escort.nSpecialGoal), 1);
+	m_cf.Read (&gameData.escort.nGoalIndex, sizeof (gameData.escort.nGoalIndex), 1);
+	m_cf.Read (&gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS);
 	}
 else {
 	int i;
@@ -166,38 +119,38 @@ else {
 		gameData.thief.stolenItems [i] = 255;
 		}
 	}
-if (version >= 15) {
+if (m_nVersion >= 15) {
 	int temp;
-	cf.Read (&temp, sizeof (int), 1);
+	m_cf.Read (&temp, sizeof (int), 1);
 	gameData.ai.freePointSegs = gameData.ai.pointSegs + temp;
 	}
 else
 	AIResetAllPaths ();
-if (version >= 24) {
+if (m_nVersion >= 24) {
 	for (i = 0; i < MAX_BOSS_COUNT; i++)
-		cf.Read (&gameData.boss [i].nTeleportSegs, sizeof (gameData.boss [i].nTeleportSegs), 1);
+		m_cf.Read (&gameData.boss [i].nTeleportSegs, sizeof (gameData.boss [i].nTeleportSegs), 1);
 	for (i = 0; i < MAX_BOSS_COUNT; i++)
-		cf.Read (&gameData.boss [i].nGateSegs, sizeof (gameData.boss [i].nGateSegs), 1);
+		m_cf.Read (&gameData.boss [i].nGateSegs, sizeof (gameData.boss [i].nGateSegs), 1);
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
 		if (gameData.boss [i].nGateSegs)
-			cf.Read (gameData.boss [i].gateSegs, sizeof (gameData.boss [i].gateSegs [0]), gameData.boss [i].nGateSegs);
+			m_cf.Read (gameData.boss [i].gateSegs, sizeof (gameData.boss [i].gateSegs [0]), gameData.boss [i].nGateSegs);
 		if (gameData.boss [i].nTeleportSegs)
-			cf.Read (gameData.boss [i].teleportSegs, sizeof (gameData.boss [i].teleportSegs [0]), gameData.boss [i].nTeleportSegs);
+			m_cf.Read (gameData.boss [i].teleportSegs, sizeof (gameData.boss [i].teleportSegs [0]), gameData.boss [i].nTeleportSegs);
 		}
 	}
-else if (version >= 21) {
+else if (m_nVersion >= 21) {
 	short nTeleportSegs, nGateSegs;
 
-	cf.Read (&nTeleportSegs, sizeof (nTeleportSegs), 1);
-	cf.Read (&nGateSegs, sizeof (nGateSegs), 1);
+	m_cf.Read (&nTeleportSegs, sizeof (nTeleportSegs), 1);
+	m_cf.Read (&nGateSegs, sizeof (nGateSegs), 1);
 
 	if (nGateSegs) {
 		gameData.boss [0].nGateSegs = nGateSegs;
-		cf.Read (gameData.boss [0].gateSegs, sizeof (gameData.boss [0].gateSegs [0]), nGateSegs);
+		m_cf.Read (gameData.boss [0].gateSegs, sizeof (gameData.boss [0].gateSegs [0]), nGateSegs);
 		}
 	if (nTeleportSegs) {
 		gameData.boss [0].nTeleportSegs = nTeleportSegs;
-		cf.Read (gameData.boss [0].teleportSegs, sizeof (gameData.boss [0].teleportSegs [0]), nTeleportSegs);
+		m_cf.Read (gameData.boss [0].teleportSegs, sizeof (gameData.boss [0].teleportSegs [0]), nTeleportSegs);
 		}
 } else {
 	// -- gameData.boss.nTeleportSegs = 1;
@@ -213,185 +166,185 @@ return 1;
 }
 //	-------------------------------------------------------------------------------------------------
 
-void AISaveLocalInfo (tAILocalInfo *ailP, CFile& cf)
+void CSaveGameHandler::SaveAILocalInfo (tAILocalInfo *ailP)
 {
 	int	i;
 
-cf.WriteInt (ailP->playerAwarenessType);
-cf.WriteInt (ailP->nRetryCount);
-cf.WriteInt (ailP->nConsecutiveRetries);
-cf.WriteInt (ailP->mode);
-cf.WriteInt (ailP->nPrevVisibility);
-cf.WriteInt (ailP->nRapidFireCount);
-cf.WriteInt (ailP->nGoalSegment);
-cf.WriteFix (ailP->nextActionTime);
-cf.WriteFix (ailP->nextPrimaryFire);
-cf.WriteFix (ailP->nextSecondaryFire);
-cf.WriteFix (ailP->playerAwarenessTime);
-cf.WriteFix (ailP->timePlayerSeen);
-cf.WriteFix (ailP->timePlayerSoundAttacked);
-cf.WriteFix (ailP->nextMiscSoundTime);
-cf.WriteFix (ailP->timeSinceProcessed);
+m_cf.WriteInt (ailP->playerAwarenessType);
+m_cf.WriteInt (ailP->nRetryCount);
+m_cf.WriteInt (ailP->nConsecutiveRetries);
+m_cf.WriteInt (ailP->mode);
+m_cf.WriteInt (ailP->nPrevVisibility);
+m_cf.WriteInt (ailP->nRapidFireCount);
+m_cf.WriteInt (ailP->nGoalSegment);
+m_cf.WriteFix (ailP->nextActionTime);
+m_cf.WriteFix (ailP->nextPrimaryFire);
+m_cf.WriteFix (ailP->nextSecondaryFire);
+m_cf.WriteFix (ailP->playerAwarenessTime);
+m_cf.WriteFix (ailP->timePlayerSeen);
+m_cf.WriteFix (ailP->timePlayerSoundAttacked);
+m_cf.WriteFix (ailP->nextMiscSoundTime);
+m_cf.WriteFix (ailP->timeSinceProcessed);
 for (i = 0; i < MAX_SUBMODELS; i++) {
-	cf.WriteAngVec (ailP->goalAngles[i]);
-	cf.WriteAngVec (ailP->deltaAngles[i]);
+	m_cf.WriteAngVec (ailP->goalAngles[i]);
+	m_cf.WriteAngVec (ailP->deltaAngles[i]);
 	}
-cf.Write (ailP->goalState, sizeof (ailP->goalState [0]), 1);
-cf.Write (ailP->achievedState, sizeof (ailP->achievedState [0]), 1);
+m_cf.Write (ailP->goalState, sizeof (ailP->goalState [0]), 1);
+m_cf.Write (ailP->achievedState, sizeof (ailP->achievedState [0]), 1);
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-void AISavePointSeg (tPointSeg *psegP, CFile& cf)
+void CSaveGameHandler::SaveAIPointSeg (tPointSeg *psegP)
 {
-cf.WriteInt (psegP->nSegment);
-cf.WriteVector (psegP->point);
+m_cf.WriteInt (psegP->nSegment);
+m_cf.WriteVector (psegP->point);
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-void AISaveCloakInfo (tAICloakInfo *ciP, CFile& cf)
+void CSaveGameHandler::SaveAICloakInfo (tAICloakInfo *ciP)
 {
-cf.WriteFix (ciP->lastTime);
-cf.WriteInt (ciP->nLastSeg);
-cf.WriteVector (ciP->vLastPos);
+m_cf.WriteFix (ciP->lastTime);
+m_cf.WriteInt (ciP->nLastSeg);
+m_cf.WriteVector (ciP->vLastPos);
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-int AISaveUniState (CFile& cf)
+int CSaveGameHandler::SaveAI (void)
 {
 	int	h, i, j;
 
-cf.WriteInt (gameData.ai.bInitialized);
-cf.WriteInt (gameData.ai.nOverallAgitation);
+m_cf.WriteInt (gameData.ai.bInitialized);
+m_cf.WriteInt (gameData.ai.nOverallAgitation);
 for (i = 0; i < MAX_OBJECTS; i++)
-	AISaveLocalInfo (gameData.ai.localInfo + i, cf);
+	SaveAILocalInfo (gameData.ai.localInfo + i);
 for (i = 0; i < MAX_POINT_SEGS; i++)
-	AISavePointSeg (gameData.ai.pointSegs + i, cf);
+	SaveAIPointSeg (gameData.ai.pointSegs + i);
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
-	AISaveCloakInfo (gameData.ai.cloakInfo + i, cf);
+	SaveAICloakInfo (gameData.ai.cloakInfo + i);
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
-	cf.WriteShort (gameData.boss [i].nObject);
-	cf.WriteFix (gameData.boss [i].nCloakStartTime);
-	cf.WriteFix (gameData.boss [i].nCloakEndTime );
-	cf.WriteFix (gameData.boss [i].nLastTeleportTime );
-	cf.WriteFix (gameData.boss [i].nTeleportInterval);
-	cf.WriteFix (gameData.boss [i].nCloakInterval);
-	cf.WriteFix (gameData.boss [i].nCloakDuration);
-	cf.WriteFix (gameData.boss [i].nLastGateTime);
-	cf.WriteFix (gameData.boss [i].nGateInterval);
-	cf.WriteFix (gameData.boss [i].nDyingStartTime);
-	cf.WriteInt (gameData.boss [i].nDying);
-	cf.WriteInt (gameData.boss [i].bDyingSoundPlaying);
-	cf.WriteFix (gameData.boss [i].nHitTime);
+	m_cf.WriteShort (gameData.boss [i].nObject);
+	m_cf.WriteFix (gameData.boss [i].nCloakStartTime);
+	m_cf.WriteFix (gameData.boss [i].nCloakEndTime );
+	m_cf.WriteFix (gameData.boss [i].nLastTeleportTime );
+	m_cf.WriteFix (gameData.boss [i].nTeleportInterval);
+	m_cf.WriteFix (gameData.boss [i].nCloakInterval);
+	m_cf.WriteFix (gameData.boss [i].nCloakDuration);
+	m_cf.WriteFix (gameData.boss [i].nLastGateTime);
+	m_cf.WriteFix (gameData.boss [i].nGateInterval);
+	m_cf.WriteFix (gameData.boss [i].nDyingStartTime);
+	m_cf.WriteInt (gameData.boss [i].nDying);
+	m_cf.WriteInt (gameData.boss [i].bDyingSoundPlaying);
+	m_cf.WriteFix (gameData.boss [i].nHitTime);
 	}
-cf.WriteInt (gameData.escort.nKillObject);
-cf.WriteFix (gameData.escort.xLastPathCreated);
-cf.WriteInt (gameData.escort.nGoalObject);
-cf.WriteInt (gameData.escort.nSpecialGoal);
-cf.WriteInt (gameData.escort.nGoalIndex);
-cf.Write (gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS);
+m_cf.WriteInt (gameData.escort.nKillObject);
+m_cf.WriteFix (gameData.escort.xLastPathCreated);
+m_cf.WriteInt (gameData.escort.nGoalObject);
+m_cf.WriteInt (gameData.escort.nSpecialGoal);
+m_cf.WriteInt (gameData.escort.nGoalIndex);
+m_cf.Write (gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS);
 #if DBG
 i = CFTell ();
 #endif
-cf.WriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs));
+m_cf.WriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs));
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
-	cf.WriteShort (gameData.boss [i].nTeleportSegs);
-	cf.WriteShort (gameData.boss [i].nGateSegs);
+	m_cf.WriteShort (gameData.boss [i].nTeleportSegs);
+	m_cf.WriteShort (gameData.boss [i].nGateSegs);
 	}
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	if ((h = gameData.boss [i].nGateSegs))
 		for (j = 0; j < h; j++)
-			cf.WriteShort (gameData.boss [i].gateSegs [j]);
+			m_cf.WriteShort (gameData.boss [i].gateSegs [j]);
 	if ((h = gameData.boss [i].nTeleportSegs))
 		for (j = 0; j < h; j++)
-			cf.WriteShort (gameData.boss [i].teleportSegs [j]);
+			m_cf.WriteShort (gameData.boss [i].teleportSegs [j]);
 	}
 return 1;
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-void AIRestoreLocalInfo (tAILocalInfo *ailP, CFile& cf)
+void CSaveGameHandler::LoadAILocalInfo (tAILocalInfo *ailP)
 {
 	int	i;
 
-ailP->playerAwarenessType = cf.ReadInt ();
-ailP->nRetryCount = cf.ReadInt ();
-ailP->nConsecutiveRetries = cf.ReadInt ();
-ailP->mode = cf.ReadInt ();
-ailP->nPrevVisibility = cf.ReadInt ();
-ailP->nRapidFireCount = cf.ReadInt ();
-ailP->nGoalSegment = cf.ReadInt ();
-ailP->nextActionTime = cf.ReadFix ();
-ailP->nextPrimaryFire = cf.ReadFix ();
-ailP->nextSecondaryFire = cf.ReadFix ();
-ailP->playerAwarenessTime = cf.ReadFix ();
-ailP->timePlayerSeen = cf.ReadFix ();
-ailP->timePlayerSoundAttacked = cf.ReadFix ();
-ailP->nextMiscSoundTime = cf.ReadFix ();
-ailP->timeSinceProcessed = cf.ReadFix ();
+ailP->playerAwarenessType = m_cf.ReadInt ();
+ailP->nRetryCount = m_cf.ReadInt ();
+ailP->nConsecutiveRetries = m_cf.ReadInt ();
+ailP->mode = m_cf.ReadInt ();
+ailP->nPrevVisibility = m_cf.ReadInt ();
+ailP->nRapidFireCount = m_cf.ReadInt ();
+ailP->nGoalSegment = m_cf.ReadInt ();
+ailP->nextActionTime = m_cf.ReadFix ();
+ailP->nextPrimaryFire = m_cf.ReadFix ();
+ailP->nextSecondaryFire = m_cf.ReadFix ();
+ailP->playerAwarenessTime = m_cf.ReadFix ();
+ailP->timePlayerSeen = m_cf.ReadFix ();
+ailP->timePlayerSoundAttacked = m_cf.ReadFix ();
+ailP->nextMiscSoundTime = m_cf.ReadFix ();
+ailP->timeSinceProcessed = m_cf.ReadFix ();
 for (i = 0; i < MAX_SUBMODELS; i++) {
-	cf.ReadAngVec (ailP->goalAngles [i]);
-	cf.ReadAngVec (ailP->deltaAngles [i]);
+	m_cf.ReadAngVec (ailP->goalAngles [i]);
+	m_cf.ReadAngVec (ailP->deltaAngles [i]);
 	}
-cf.Read (ailP->goalState, sizeof (ailP->goalState [0]), 1);
-cf.Read (ailP->achievedState, sizeof (ailP->achievedState [0]), 1);
+m_cf.Read (ailP->goalState, sizeof (ailP->goalState [0]), 1);
+m_cf.Read (ailP->achievedState, sizeof (ailP->achievedState [0]), 1);
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-void AIRestorePointSeg (tPointSeg *psegP, CFile& cf)
+void CSaveGameHandler::LoadAIPointSeg (tPointSeg *psegP)
 {
-psegP->nSegment = cf.ReadInt ();
-cf.ReadVector (psegP->point);
+psegP->nSegment = m_cf.ReadInt ();
+m_cf.ReadVector (psegP->point);
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-void AIRestoreCloakInfo (tAICloakInfo *ciP, CFile& cf)
+void CSaveGameHandler::LoadAICloakInfo (tAICloakInfo *ciP)
 {
-ciP->lastTime = cf.ReadFix ();
-ciP->nLastSeg = cf.ReadInt ();
-cf.ReadVector (ciP->vLastPos);
+ciP->lastTime = m_cf.ReadFix ();
+ciP->nLastSeg = m_cf.ReadInt ();
+m_cf.ReadVector (ciP->vLastPos);
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-int AIRestoreUniState (CFile& cf, int version)
+int CSaveGameHandler::LoadAIUniFormat (void)
 {
 	int	h, i, j, nMaxBossCount, nMaxPointSegs;
 
 memset (gameData.ai.localInfo, 0, sizeof (*gameData.ai.localInfo) * MAX_OBJECTS);
-gameData.ai.bInitialized = cf.ReadInt ();
-gameData.ai.nOverallAgitation = cf.ReadInt ();
-h = (version > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2;
+gameData.ai.bInitialized = m_cf.ReadInt ();
+gameData.ai.nOverallAgitation = m_cf.ReadInt ();
+h = (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2;
 DBG (i = CFTell (fp));
 for (i = 0; i < h; i++)
-	AIRestoreLocalInfo (gameData.ai.localInfo + i, cf);
-nMaxPointSegs = (version > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
+	LoadAILocalInfo (gameData.ai.localInfo + i);
+nMaxPointSegs = (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
 memset (gameData.ai.pointSegs, 0, sizeof (*gameData.ai.pointSegs) * nMaxPointSegs);
 DBG (i = CFTell (fp));
 for (i = 0; i < nMaxPointSegs; i++)
-	AIRestorePointSeg (gameData.ai.pointSegs + i, cf);
+	LoadAIPointSeg (gameData.ai.pointSegs + i);
 DBG (i = CFTell (fp));
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
-	AIRestoreCloakInfo (gameData.ai.cloakInfo + i, cf);
+	LoadAICloakInfo (gameData.ai.cloakInfo + i);
 DBG (i = CFTell (fp));
-if (version < 29) {
-	gameData.boss [0].nCloakStartTime = cf.ReadFix ();
-	gameData.boss [0].nCloakEndTime = cf.ReadFix ();
-	gameData.boss [0].nLastTeleportTime = cf.ReadFix ();
-	gameData.boss [0].nTeleportInterval = cf.ReadFix ();
-	gameData.boss [0].nCloakInterval = cf.ReadFix ();
-	gameData.boss [0].nCloakDuration = cf.ReadFix ();
-	gameData.boss [0].nLastGateTime = cf.ReadFix ();
-	gameData.boss [0].nGateInterval = cf.ReadFix ();
-	gameData.boss [0].nDyingStartTime = cf.ReadFix ();
-	gameData.boss [0].nDying = cf.ReadInt ();
-	gameData.boss [0].bDyingSoundPlaying = cf.ReadInt ();
-	gameData.boss [0].nHitTime = cf.ReadFix ();
+if (m_nVersion < 29) {
+	gameData.boss [0].nCloakStartTime = m_cf.ReadFix ();
+	gameData.boss [0].nCloakEndTime = m_cf.ReadFix ();
+	gameData.boss [0].nLastTeleportTime = m_cf.ReadFix ();
+	gameData.boss [0].nTeleportInterval = m_cf.ReadFix ();
+	gameData.boss [0].nCloakInterval = m_cf.ReadFix ();
+	gameData.boss [0].nCloakDuration = m_cf.ReadFix ();
+	gameData.boss [0].nLastGateTime = m_cf.ReadFix ();
+	gameData.boss [0].nGateInterval = m_cf.ReadFix ();
+	gameData.boss [0].nDyingStartTime = m_cf.ReadFix ();
+	gameData.boss [0].nDying = m_cf.ReadInt ();
+	gameData.boss [0].bDyingSoundPlaying = m_cf.ReadInt ();
+	gameData.boss [0].nHitTime = m_cf.ReadFix ();
 	for (i = 1; i < MAX_BOSS_COUNT; i++) {
 		gameData.boss [i].nCloakStartTime = 0;
 		gameData.boss [i].nCloakEndTime = 0;
@@ -409,29 +362,29 @@ if (version < 29) {
 	}
 else {
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
-		if (version > 31)
-			gameData.boss [i].nObject = cf.ReadShort ();
-		gameData.boss [i].nCloakStartTime = cf.ReadFix ();
-		gameData.boss [i].nCloakEndTime = cf.ReadFix ();
-		gameData.boss [i].nLastTeleportTime = cf.ReadFix ();
-		gameData.boss [i].nTeleportInterval = cf.ReadFix ();
-		gameData.boss [i].nCloakInterval = cf.ReadFix ();
-		gameData.boss [i].nCloakDuration = cf.ReadFix ();
-		gameData.boss [i].nLastGateTime = cf.ReadFix ();
-		gameData.boss [i].nGateInterval = cf.ReadFix ();
-		gameData.boss [i].nDyingStartTime = cf.ReadFix ();
-		gameData.boss [i].nDying = cf.ReadInt ();
-		gameData.boss [i].bDyingSoundPlaying = cf.ReadInt ();
-		gameData.boss [i].nHitTime = cf.ReadFix ();
+		if (m_nVersion > 31)
+			gameData.boss [i].nObject = m_cf.ReadShort ();
+		gameData.boss [i].nCloakStartTime = m_cf.ReadFix ();
+		gameData.boss [i].nCloakEndTime = m_cf.ReadFix ();
+		gameData.boss [i].nLastTeleportTime = m_cf.ReadFix ();
+		gameData.boss [i].nTeleportInterval = m_cf.ReadFix ();
+		gameData.boss [i].nCloakInterval = m_cf.ReadFix ();
+		gameData.boss [i].nCloakDuration = m_cf.ReadFix ();
+		gameData.boss [i].nLastGateTime = m_cf.ReadFix ();
+		gameData.boss [i].nGateInterval = m_cf.ReadFix ();
+		gameData.boss [i].nDyingStartTime = m_cf.ReadFix ();
+		gameData.boss [i].nDying = m_cf.ReadInt ();
+		gameData.boss [i].bDyingSoundPlaying = m_cf.ReadInt ();
+		gameData.boss [i].nHitTime = m_cf.ReadFix ();
 		}
 	}
-if (version >= 8) {
-	gameData.escort.nKillObject = cf.ReadInt ();
-	gameData.escort.xLastPathCreated = cf.ReadFix ();
-	gameData.escort.nGoalObject = cf.ReadInt ();
-	gameData.escort.nSpecialGoal = cf.ReadInt ();
-	gameData.escort.nGoalIndex = cf.ReadInt ();
-	cf.Read (&gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS);
+if (m_nVersion >= 8) {
+	gameData.escort.nKillObject = m_cf.ReadInt ();
+	gameData.escort.xLastPathCreated = m_cf.ReadFix ();
+	gameData.escort.nGoalObject = m_cf.ReadInt ();
+	gameData.escort.nSpecialGoal = m_cf.ReadInt ();
+	gameData.escort.nGoalIndex = m_cf.ReadInt ();
+	m_cf.Read (&gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS);
 	}
 else {
 	gameData.escort.nKillObject = -1;
@@ -442,9 +395,9 @@ else {
 	memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
 	}
 
-if (version >= 15) {
+if (m_nVersion >= 15) {
 	DBG (i = CFTell (fp));
-	i = cf.ReadInt ();
+	i = m_cf.ReadInt ();
 	if ((i >= 0) && (i < nMaxPointSegs))
 		gameData.ai.freePointSegs = gameData.ai.pointSegs + i;
 	else
@@ -453,24 +406,24 @@ if (version >= 15) {
 else
 	AIResetAllPaths ();
 
-if (version < 21) {
+if (m_nVersion < 21) {
 	#if TRACE
 	con_printf (1, "Warning: If you fight the boss, he might teleport to tSegment #0!\n");
 	#endif
 	}
 else {
-	nMaxBossCount = (version >= 24) ? MAX_BOSS_COUNT : 1;
+	nMaxBossCount = (m_nVersion >= 24) ? MAX_BOSS_COUNT : 1;
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
-		gameData.boss [i].nTeleportSegs = cf.ReadShort ();
-		gameData.boss [i].nGateSegs = cf.ReadShort ();
+		gameData.boss [i].nTeleportSegs = m_cf.ReadShort ();
+		gameData.boss [i].nGateSegs = m_cf.ReadShort ();
 		}
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
 		if ((h = gameData.boss [i].nGateSegs))
 			for (j = 0; j < h; j++)
-				gameData.boss [i].gateSegs [j] = cf.ReadShort ();
+				gameData.boss [i].gateSegs [j] = m_cf.ReadShort ();
 		if ((h = gameData.boss [i].nTeleportSegs))
 			for (j = 0; j < h; j++)
-				gameData.boss [i].teleportSegs [j] = cf.ReadShort ();
+				gameData.boss [i].teleportSegs [j] = m_cf.ReadShort ();
 		}
 	}
 return 1;

@@ -24,7 +24,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern int LastLevel, Last_secretLevel, Last_mission;   //set by mission code
 
-
 // CurrentLevel_num starts at 1 for the first level
 // -1,-2,-3 are secret levels
 // 0 means not a real level loaded
@@ -66,6 +65,7 @@ void PlayerFinishedLevel(int secretFlag);
 // called when the tPlayer has died
 void DoPlayerDead (void);
 
+void SetPosFromReturnSegment (int bRelink);
 // load a level off disk. level numbers start at 1.
 // Secret levels are -1,-2,-3
 int LoadLevel (int nLevel, int bPageInTextures, int bRestore);

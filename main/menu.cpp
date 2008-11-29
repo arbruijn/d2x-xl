@@ -582,7 +582,7 @@ else if (nChoice == mainOpts.nSingle) {
 	NewGameMenu ();
 	}
 else if (nChoice == mainOpts.nLoad) {
-	if (!StateRestoreAll (0, 0, 0, NULL))
+	if (!saveGameHandler.Load (0, 0, 0, NULL))
 		SetFunctionMode (FMODE_MENU);
 	}
 #if DBG
@@ -5408,9 +5408,9 @@ if (!i)
 if (i == optOptions)
 	ConfigMenu ();
 else if (i == optLoad)
-	StateRestoreAll (1, 0, 0, NULL);
+	saveGameHandler.Load (1, 0, 0, NULL);
 else if (i == optSave)
-	StateSaveAll (0, 0, 0, NULL);
+	saveGameHandler.Save (0, 0, 0, NULL);
 return 1;
 }
 

@@ -27,6 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "args.h"
 #include "findfile.h"
 #include "crypt.h"
+#include "strutil.h"
 #include "error.h"
 
 static const char *pszDigiVolume = "DigiVolume";
@@ -61,18 +62,18 @@ typedef struct tHashList {
 
 tHashList hashList = {0, NULL};
 
-static uint nDefaultHash = 0x346d3164;
+static uint nDefaultHash = 0xba61cc0b;
 
 //------------------------------------------------------------------------------
 
 int CfgCountHashs (char *pszFilter, char *pszFolder)
 {
 	FFS	ffs;
-	char	szFilter [FILENAME_LEN];
+	char	szTag [FILENAME_LEN];
 
 hashList.nHashs = 0;
-sprintf (szFilter, "%s/%s", pszFolder, pszFilter);
-if (!FFF (szFilter, &ffs, 0)) {
+sprintf (szTag, "%s/%s", pszFolder, pszFilter);
+if (!FFF (szTag, &ffs, 0)) {
 	hashList.nHashs++;
 	while (!FFN (&ffs, 0))
 		hashList.nHashs++;
@@ -93,10 +94,26 @@ static uint cfgHashs [] = {
 	586367371, 
 	3391413563, 
 	2405653309, 
+	3915091710,
+	2943260375,
+	891560507,
+	2042098877,
+	2405671997,
+	2124113385,
+	1461184298,
+	17673152,
+	3007579330,
+	3684198094,
+	1260878687,
+	3612316049,
+	3090073029,
+	1347391164,
+	1032917202,
 	0};
 
 int CfgLoadHashs (char *pszFilter, char *pszFolder)
 {
+nDefaultHash = Crc32 (0, (unsigned char *) "m4d1", 4);
 if (hashList.nHashs)
 	return hashList.nHashs;
 if (!CfgCountHashs (pszFilter, pszFolder))
@@ -104,34 +121,37 @@ if (!CfgCountHashs (pszFilter, pszFolder))
 hashList.hashs = (uint *) D2_ALLOC (hashList.nHashs * sizeof (int));
 
 	FFS	ffs;
-	char	szFilter [FILENAME_LEN], *psz;
+	char	szTag [FILENAME_LEN];
 	int	i = 0;
 
-sprintf (szFilter, "%s/%s", pszFolder, pszFilter);
-for (i = 0; i ? !FFN (&ffs, 0) : !FFF (szFilter, &ffs, 0); i++) {
+sprintf (szTag, "%s/%s", pszFolder, pszFilter);
+for (i = 0; i ? !FFN (&ffs, 0) : !FFF (szTag, &ffs, 0); i++) {
 	ffs.name [4] = '\0';
 	strlwr (ffs.name);
-	for (psz = ffs.name; *psz; psz++)
-		if (*psz == 'a')
-			*psz = '4';
-		else if (*psz == 'e')
-			*psz = '3';
-		else if (*psz == 'i')
-			*psz = '1';
-		else if (*psz == 'o')
-			*psz = '0';
-		else if (*psz == 'u')
-			*psz = 'v';
-	hashList.hashs [i] = Crc32 (0, (const unsigned char *) &ffs.name [0], 4);
+	strcompress (ffs.name);
+	hashList.hashs [i] = Crc16 (0, (const unsigned char *) &ffs.name [0], 4);
 	}
 return i;
 }
 
 //------------------------------------------------------------------------------
 
+char *CfgFileTag (void)
+{
+	char szMask [6] = {4, 1, 19, 10, 31, 0};
+	char szKey [6] = {'.', '/', 'c', 'f', 'g', '\0'};
+	static char szTag [6] = {0, 0, 0, 0, 0, 0};
+
+for (int i = 0; i < 6; i++)
+	szTag [i] = szKey [i] ^ szMask [i];
+return szTag;
+}
+
+//------------------------------------------------------------------------------
+
 int GetCfgHash (void)
 {
-if (!CfgLoadHashs ("*.plx", gameFolders.szProfDir))
+if (!CfgLoadHashs (CfgFileTag (), gameFolders.szProfDir))
 	return -1;
 for (int i = 0; i < hashList.nHashs; i++)
 	for (int j = 0; cfgHashs [j]; j++)

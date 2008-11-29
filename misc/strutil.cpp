@@ -23,6 +23,22 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "error.h"
 
+char *strcompress (char *str)
+{
+for (char *ps = str; *ps; ps++)
+	if (*ps == 'a')
+		*ps = '4';
+	else if (*ps == 'e')
+		*ps = '3';
+	else if (*ps == 'i')
+		*ps = '1';
+	else if (*ps == 'o')
+		*ps = '0';
+	else if (*ps == 'u')
+		*ps = 'v';
+return str;
+}
+
 #if 0
 // string compare without regard to case
 

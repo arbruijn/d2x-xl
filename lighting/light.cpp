@@ -1273,5 +1273,31 @@ memset (gameData.render.lights.subtracted, 0,
 		  gameData.segs.nLastSegment * sizeof (gameData.render.lights.subtracted [0]));
 }
 
+//------------------------------------------------------------------------------
+//	When loading a saved game, segp->xAvgSegLight is bogus.
+//	This is because ApplyAllChangedLight, which is supposed to properly update this value,
+//	cannot do so because it needs the original light cast from a light which is no longer there.
+//	That is, a light has been blown out, so the texture remaining casts 0 light, but the static light
+//	which is present in the xAvgSegLight field contains the light cast from that light.
+void ComputeAllStaticLight (void)
+{
+	int		h, i, j, k;
+	tSegment	*segP;
+	tSide		*sideP;
+	fix		xTotal;
+
+for (i = 0, segP = gameData.segs.segments; i <= gameData.segs.nLastSegment; i++, segP++) {
+	xTotal = 0;
+	for (h = j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+		if ((segP->children [j] < 0) || IS_WALL (sideP->nWall)) {
+			h++;
+			for (k = 0; k < 4; k++)
+				xTotal += sideP->uvls [k].l;
+			}
+		}
+	gameData.segs.segment2s [i].xAvgSegLight = h ? xTotal / (h * 4) : 0;
+	}
+}
+
 // ----------------------------------------------------------------------------------------------
 //eof

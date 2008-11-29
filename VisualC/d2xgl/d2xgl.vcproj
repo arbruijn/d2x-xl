@@ -2966,6 +2966,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\state.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\tga.h"
 						>
 					</File>
@@ -4585,11 +4589,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

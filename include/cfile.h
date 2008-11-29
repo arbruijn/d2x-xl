@@ -38,11 +38,9 @@ class CFile {
 		CFILE	m_cf;
 
 	public:
-		CFile () { 
-			memset (&m_cf, 0, sizeof (m_cf)); 
-			m_cf.rawPosition = -1; 
-			};
+		CFile () { Init (); }
 		~CFile () { Close (); };
+		void Init (void);
 		int Open (const char *filename, const char *folder, const char *mode, int bUseD1Hog);
 		int Length (void);							// Returns actual size of file...
 		size_t Read (void *buf, size_t elsize, size_t nelem);

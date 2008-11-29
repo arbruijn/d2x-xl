@@ -1320,7 +1320,7 @@ else {
 		pw_save = gameData.weapons.nPrimary;
 		sw_save = gameData.weapons.nSecondary;
 		nCurrentLevel = gameData.missions.nCurrentLevel;
-		StateRestoreAll (1, 1, 0, SECRETC_FILENAME);
+		saveGameHandler.Load (1, 1, 0, SECRETC_FILENAME);
 		gameData.missions.nEnteredFromLevel = nCurrentLevel;
 		gameData.weapons.nPrimary = pw_save;
 		gameData.weapons.nSecondary = sw_save;
@@ -1362,13 +1362,13 @@ void ExitSecretLevel (void)
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
-	StateSaveAll (0, 2, 0, SECRETC_FILENAME);
+	saveGameHandler.Save (0, 2, 0, SECRETC_FILENAME);
 if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.szSaveDir, 0)) {
 	int pw_save = gameData.weapons.nPrimary;
 	int sw_save = gameData.weapons.nSecondary;
 
 	ReturningToLevelMessage ();
-	StateRestoreAll (1, 1, 0, SECRETB_FILENAME);
+	saveGameHandler.Load (1, 1, 0, SECRETB_FILENAME);
 	gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
 	SetDataVersion (-1);
 	gameData.weapons.nPrimary = pw_save;
@@ -1421,7 +1421,7 @@ gameData.missions.nEnteredFromLevel = gameData.missions.nCurrentLevel;
 if (gameData.reactor.bDestroyed)
 	DoEndLevelScoreGlitz (0);
 if (gameData.demo.nState != ND_STATE_PLAYBACK)
-	StateSaveAll (0, 1, 0, NULL);	//	Not between levels (ie, save all), IS a secret level, NO filename override
+	saveGameHandler.Save (0, 1, 0, NULL);	//	Not between levels (ie, save all), IS a secret level, NO filename override
 //	Find secret level number to go to, stuff in gameData.missions.nNextLevel.
 for (i = 0; i < -gameData.missions.nLastSecretLevel; i++)
 	if (gameData.missions.secretLevelTable [i] == gameData.missions.nCurrentLevel) {
@@ -1675,6 +1675,20 @@ SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel + 1);
 ExecMessageBox (NULL, (char *) STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
+}
+
+//	-----------------------------------------------------------------------------------
+//	Set the tPlayer's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
+void SetPosFromReturnSegment (int bRelink)
+{
+	int	nPlayerObj = LOCALPLAYER.nObject;
+
+COMPUTE_SEGMENT_CENTER_I (&OBJECTS [nPlayerObj].info.position.vPos, 
+							     gameData.segs.secret.nReturnSegment);
+if (bRelink)
+	RelinkObjToSeg (nPlayerObj, gameData.segs.secret.nReturnSegment);
+ResetPlayerObject ();
+OBJECTS [nPlayerObj].info.position.mOrient = gameData.segs.secret.returnOrient;
 }
 
 //------------------------------------------------------------------------------

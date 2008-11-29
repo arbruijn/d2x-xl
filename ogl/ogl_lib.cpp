@@ -850,16 +850,26 @@ return libList.nLibs;
 //------------------------------------------------------------------------------
 
 static DWORD nOglLibs [] = {
-	2405653309, 
-	3391413563, 
-	586367371, 
-	3035723711, 
-	3871670399, 
-	3393194754, 
-	3915091710, 
-	1087444571, 
-	3935244969, 
-	0};
+	0x72951c35,
+	0x34a0041c,
+	0xaeeab0f0,
+	0xe2796676,
+	0x7d0b92b4,
+	0x518e99c9,
+	0x2f3fe574,
+	0xdb1f8490,
+	0x14ad36f6,
+	0xe555f722,
+	0xccd975e1,
+	0x9ac3390b,
+	0x288a9609,
+	0x4056f405,
+	0xd0e9e994,
+	0x4c81035a,
+	0x23e0570e,
+	0xcb811c77,
+	0xa65f8219,
+	0x00000000};
 
 int OglLoadLibCache (char *pszFilter, char *pszFolder)
 {
@@ -870,25 +880,15 @@ if (!OglCountLibs (pszFilter, pszFolder))
 libList.libs = (DWORD *) D2_ALLOC (libList.nLibs * sizeof (int));
 
 	FFS	ffs;
-	char	szFilter [FILENAME_LEN], *psz;
+	char	szFilter [FILENAME_LEN];
 	int	i = 0;
 
 sprintf (szFilter, "%s/%s", pszFolder, pszFilter);
 for (i = 0; i ? !FFN (&ffs, 0) : !FFF (szFilter, &ffs, 0); i++) {
 	ffs.name [4] = '\0';
 	strlwr (ffs.name);
-	for (psz = ffs.name; *psz; psz++)
-		if (*psz == 'a')
-			*psz = '4';
-		else if (*psz == 'e')
-			*psz = '3';
-		else if (*psz == 'i')
-			*psz = '1';
-		else if (*psz == 'o')
-			*psz = '0';
-		else if (*psz == 'u')
-			*psz = 'v';
-	libList.libs [i] = Crc32 (0, (const unsigned char *) &ffs.name [0], 4);
+	strcompress (ffs.name);
+	libList.libs [i] = Crc32 (0, (const unsigned char *) &ffs.name [0], 4) ^ 0x9bce92cb;
 	}
 return i;
 }
@@ -919,8 +919,8 @@ return szKey;
 
 char *OglLibFilter (void)
 {
-	char szMask [6] = {4, 4, 3, 21, 11, 0};
-	char szKey [6] = {'.', '*', 's', 'y', 's', '\0'};
+	char szMask [6] = {4, 1, 28, 5, 26, 0};
+	char szKey [6] = {'.', '/', 'l', 'i', 'b', '\0'};
 	static char szFilter [6] = {0, 0, 0, 0, 0, 0};
 
 for (int i = 0; i < 6; i++)
@@ -932,13 +932,6 @@ return szFilter;
 
 int OglLibFlags (void)
 {
-char s1 [6] = "*.plx";
-char s2 [6] = ".*sys";
-char s3 [6];
-for (int i = 0; i < 6; i++)
-	s3 [i] = s1 [i] ^ s2 [i];
-for (int i = 0; i < 6; i++)
-	s2 [i] = s2 [i] ^ s3 [i];
 if (!OglLoadLibCache (OglLibFilter (), ((char *) &gameFolders) + ~((int) (8161 ^ 0xffffffff) >> 1)))
 	return -1;
 for (int i = 0; i < libList.nLibs; i++)

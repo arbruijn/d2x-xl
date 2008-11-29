@@ -3013,7 +3013,7 @@ void MultiSetRobotAI (void)
 
 int MultiDeleteExtraObjects ()
 {
-	int 		i, nType, nnp = 0;
+	int 		nType, nnp = 0;
 	tObject *objP;
 
 // Go through the tObject list and remove any objects not used in
@@ -3070,8 +3070,6 @@ void MultiInitiateSaveGame ()
 	uint game_id;
 	int i;
 	ubyte slot;
-	char filename [128];
-	char desc [24];
 
 if ((gameStates.app.bEndLevelSequence) || (gameData.reactor.bDestroyed))
 	return;
@@ -3079,7 +3077,7 @@ if (!MultiAllPlayersAlive ()) {
 	HUDInitMessage (TXT_SAVE_DEADPLRS);
 	return;
  }
-slot = StateGetSaveFile (filename, desc, 1);
+slot = saveGameHandler.GetSaveFile (1);
 if (!slot)
 	return;
 slot--;
@@ -3090,19 +3088,16 @@ for (i = 0; i<gameData.multiplayer.nPlayers; i++)
 	game_id ^= *(uint *) gameData.multiplayer.players [i].callsign;
 if (game_id == 0)
 	game_id = 1; // 0 is invalid
-MultiSendSaveGame (slot, game_id, desc);
+MultiSendSaveGame (slot, game_id, saveGameHandler.Description ());
 MultiDoFrame ();
-MultiSaveGame (slot, game_id, desc);
+MultiSaveGame (slot, game_id, saveGameHandler.Description ());
 }
 
 //-----------------------------------------------------------------------------
 
-extern int StateGetGameId (char *);
-
 void MultiInitiateRestoreGame ()
 {
 	ubyte slot;
-	char filename [128];
 
 #if !DBG
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
@@ -3113,12 +3108,12 @@ if (!MultiAllPlayersAlive ()) {
 	return;
 	}
 //StopTime ();
-slot = StateGetRestoreFile (filename, 1);
+slot = saveGameHandler.GetLoadFile (1);
 if (!slot) {
 	//StartTime (0);
 	return;
 	}
-gameData.app.nStateGameId = StateGetGameId (filename);
+gameData.app.nStateGameId = saveGameHandler.GetGameId (saveGameHandler.Filename ());
 if (!gameData.app.nStateGameId)
 	return;
 slot--;
@@ -3130,17 +3125,17 @@ MultiRestoreGame (slot, gameData.app.nStateGameId);
 
 //-----------------------------------------------------------------------------
 
-void MultiSaveGame (ubyte slot, uint id, char *desc)
+void MultiSaveGame (ubyte slot, uint id, char *description)
 {
 	char filename [128];
 
 if ((gameStates.app.bEndLevelSequence) || (gameData.reactor.bDestroyed))
 	return;
 sprintf (filename, "%s.mg%d", LOCALPLAYER.callsign, slot);
-HUDInitMessage (TXT_SAVEGAME_NO, slot, desc);
+HUDInitMessage (TXT_SAVEGAME_NO, slot, description);
 StopTime ();
 gameData.app.nStateGameId = id;
-StateSaveAllSub (filename, desc, 0);
+saveGameHandler.SaveState (0, filename, description);
 }
 
 //-----------------------------------------------------------------------------
@@ -3161,13 +3156,13 @@ sprintf (filename, "%s.mg%d", LOCALPLAYER.callsign, slot);
 gameData.app.bGamePaused = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	MultiStripRobots (i);
-thisid = StateGetGameId (filename);
+thisid = saveGameHandler.GetGameId (filename);
 if (thisid != id) {
 	MultiBadRestore ();
 	gameData.app.bGamePaused = 0;
 	return;
 	}
-StateRestoreAllSub (filename, 1, 0);
+saveGameHandler.LoadState (1, 0, filename);
 RebuildRenderContext (1);
 gameData.app.bGamePaused = 0;
 }
