@@ -394,7 +394,6 @@ int bRestoringMenu = 0;
 
 int CSaveGameHandler::GetLoadFile (int bMulti)
 {
-	CFile			m_cf;
 	int			i, choice = -1, nSaves;
 	tMenuItem	m [NUM_SAVES + NM_IMG_SPACE + 1];
 	char			filename [NUM_SAVES + 1][30];
@@ -411,8 +410,10 @@ if (gameStates.app.bGameRunning) {
 	}
 for (i = 0; i < NUM_SAVES + 1; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
-	if (saveGameInfo [i].Load (filename [i], i))
+	if (saveGameInfo [i].Load (filename [i], i)) {
 		ADD_MENU (i + NM_IMG_SPACE, saveGameInfo [i].Label (), (i < NUM_SAVES) ? -1 : 0, NULL);
+		nSaves++;
+		}
 	else {
 		m [i + NM_IMG_SPACE].nType = NM_TYPE_MENU; 
 		m [i + NM_IMG_SPACE].text = saveGameInfo [i].Label ();
@@ -1306,6 +1307,7 @@ void CSaveGameHandler::PopSecretSave (int nSaveSlot)
 if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 	int	rval;
 	char	tempname [32], fc;
+
 	if (nSaveSlot >= 10)
 		fc = (nSaveSlot-10) + 'a';
 	else
@@ -1329,6 +1331,7 @@ int CSaveGameHandler::Load (int bInGame, int bSecret, int bQuick, const char *ps
 m_bInGame = bInGame;
 m_bQuick = bQuick;
 m_override = pszFilenameOverride;
+m_bBetweenLevels = 0;
 if (IsMultiGame) {
 	MultiInitiateRestoreGame ();
 	return 0;
@@ -2049,7 +2052,6 @@ int CSaveGameHandler::LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel)
 	tPlayer	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
-	int		m_bBetweenLevels;
 	int		nCurrentLevel, nNextLevel;
 	tWall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
@@ -2369,7 +2371,6 @@ int CSaveGameHandler::LoadBinFormat (int bMulti, fix xOldGameTime, int *nLevel)
 	tPlayer	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
-	int		m_bBetweenLevels;
 	int		nCurrentLevel, nNextLevel;
 	tWall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
@@ -2625,7 +2626,7 @@ int CSaveGameHandler::LoadState (int bMulti, int bSecret, char *filename)
 {
 	char		szDescription [DESC_LENGTH + 1];
 	char		nId [5];
-	int		nLevel, m_nVersion, i;
+	int		nLevel, i;
 	fix		xOldGameTime = gameData.time.xGame;
 
 StopTime ();

@@ -1305,13 +1305,15 @@ return m_nLightnings;
 
 //------------------------------------------------------------------------------
 
-int CLightningSystem::Update (void)
+int CLightningSystem::Update (bool bDamage)
 {
+if (m_bDestroy) {
+	Destroy ();
+	return -1;
+	}
 if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
-	m_tUpdate = gameStates.app.nSDLTicks;
-	if (m_bDestroy)
-		Destroy ();
-	else if (!(m_nKey [0] || m_nKey [1])) {
+	if (bDamage || !(m_nKey [0] || m_nKey [1])) {
+		m_tUpdate = gameStates.app.nSDLTicks;
 		Animate (0, m_nLightnings);
 		if (!(m_nLightnings = SetLife ()))
 			lightningManager.Destroy (m_nId, NULL, true);
@@ -1479,14 +1481,14 @@ return m_nUsed;
 
 int CLightningManager::IsUsed (int iSystem)
 {
-	int	i;
+	int	i, j;
 
 if (iSystem < 0)
-	return 0;
-for (i = m_nUsed; i >= 0; i = m_systems [i].GetNext ())
+	return -1;
+for (i = m_nUsed, j = -1; i >= 0; j = i, i = m_systems [i].GetNext ())
 	if (iSystem == i)
-		return i + 1;
-return 0;
+		return j + 1;
+return -1;
 }
 
 //------------------------------------------------------------------------------
@@ -1513,10 +1515,10 @@ void CLightningManager::Destroy (int iSystem, CLightning *lightningP, bool bDest
 if (lightningP)
 	lightningP->Destroy ();
 else {
-	if (!(j = IsUsed (iSystem)))
+	if (0 > (j = IsUsed (iSystem)))
 		return;
 	systemP = m_systems + iSystem;
-	if (!systemP->m_bDestroy) {
+	if (!bDestroy) {
 		systemP->m_bDestroy = 1;
 		return;
 		}
@@ -1561,7 +1563,7 @@ void CLightningManager::Move (int i, vmsVector *vNewPos, short nSegment, bool bS
 {
 if (nSegment < 0)
 	return;
-if (SHOW_LIGHTNINGS && IsUsed (i))
+if (SHOW_LIGHTNINGS && (IsUsed (i) >= 0))
 	m_systems [i].Move (vNewPos, nSegment, bStretch, bFromEnd);
 }
 
@@ -1628,7 +1630,8 @@ if (SHOW_LIGHTNINGS) {
 		}
 	for (i = m_nUsed; i >= 0; i = n) {
 		n = m_systems [i].GetNext ();
-		m_systems [i].Update ();
+		if (0 > m_systems [i].Update ())
+			Destroy (i, NULL, true);
 		}
 
 	SEM_LEAVE (SEM_LIGHTNINGS)
@@ -2150,7 +2153,7 @@ if (i >= 0) {
 		systemP->m_nKey [0] = key.i [0];
 		systemP->m_nKey [1] = key.i [1];
 		}
-	if ((systemP->m_nLightnings = systemP->Update ()))
+	if (systemP->Lightnings () && (systemP->m_nLightnings = systemP->Lightnings ()->Update (0)))
 		systemP->Render (0, -1, 0, -1);
 	else
 		Destroy (i, NULL, 1);

@@ -355,7 +355,7 @@ while (!cf.EoF ()) {
 		else if (!strcmp (token, pszVrTracking))
 			gameConfig.vrTracking = strtol (value, NULL, 10);
 		else if (!strcmp (token, pszCfgDataHash))
-			gameConfig.cfgDataHash = strtol (value, NULL, 10);
+			gameConfig.cfgDataHash = strtoul (value, NULL, 10);
 		else if (!strcmp (token, pszHiresMovies))
 			bHiresMoviesSave = gameOpts->movies.bHires = strtol (value, NULL, 10);
 	}
@@ -431,7 +431,7 @@ JoyGetCalVals(cal, sizeofa (cal));
 
 if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "wt", 0))
 	return 1;
-sprintf (str, "%s=%ul\n", pszCfgDataHash, gameConfig.cfgDataHash);
+sprintf (str, "%s=%u\n", pszCfgDataHash, gameConfig.cfgDataHash);
 cf.PutS(str);
 sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nDigiVolume);
 cf.PutS(str);

@@ -148,10 +148,11 @@ class CLightningSystem : public tLightningSystem {
 		void Destroy (void);
 		void Animate (int nStart, int nLightnings);
 		void Render (int nStart, int nLightnings, int bDepthSort, int nThread);
-		int Update (void);
+		int Update (bool bDamage = false);
 		void Move (vmsVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
 		int SetLife (void);
 		int SetLight (void);
+		inline CLightning* Lightnings (void) { return m_lightnings; }
 		inline int GetNext (void) { return m_nNext; }
 		inline void SetNext (int nNext) { m_nNext = nNext; }
 	private:
