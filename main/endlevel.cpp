@@ -735,7 +735,7 @@ return nBestSide;
 
 //------------------------------------------------------------------------------
 
-void DrawExitModel ()
+void DrawExitModel (void)
 {
 	vmsVector	vModelPos;
 	int			f = 15, u = 0;	//21;
@@ -744,7 +744,7 @@ vModelPos = gameData.endLevel.exit.vMineExit + gameData.endLevel.exit.mOrient [F
 vModelPos += gameData.endLevel.exit.mOrient [UVEC] * (I2X (u));
 gameStates.app.bD1Model = gameStates.app.bD1Mission && gameStates.app.bD1Data;
 DrawPolygonModel (NULL, &vModelPos, &gameData.endLevel.exit.mOrient, NULL,
-						(gameStates.gameplay.bMineDestroyed) ? gameData.endLevel.exit.nDestroyedModel : gameData.endLevel.exit.nModel,
+						gameStates.gameplay.bMineDestroyed ? gameData.endLevel.exit.nDestroyedModel : gameData.endLevel.exit.nModel,
 						0, f1_0, NULL, NULL, NULL);
 gameStates.app.bD1Model = 0;
 }

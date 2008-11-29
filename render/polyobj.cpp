@@ -511,9 +511,17 @@ return 1;
 tPolyModel *GetPolyModel (tObject *objP, vmsVector *pos, int nModel, int flags)
 {
 	tPolyModel	*po = NULL;
-	int			bHaveAltModel = gameData.models.altPolyModels [nModel].modelData != NULL,
-					bIsDefModel = IsDefaultModel (nModel);
+	int			bHaveAltModel, bIsDefModel;
 
+if (gameStates.app.bEndLevelSequence && 
+	 ((nModel == gameData.endLevel.exit.nModel) || (nModel == gameData.endLevel.exit.nDestroyedModel))) {
+	bHaveAltModel = 0;
+	bIsDefModel = 1;
+	}
+else {
+	bHaveAltModel = gameData.models.altPolyModels [nModel].modelData != NULL;
+	bIsDefModel = IsDefaultModel (nModel);
+	}
 #if DBG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
@@ -649,7 +657,9 @@ if (!flags)	{	//draw entire tObject
 			else
 				gameData.models.vScale.Set (3 * F1_0 / 2, 3 * F1_0 / 2, 3 * F1_0 / 2);
 			}
-		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
+		gameStates.ogl.bUseTransform = 
+			(gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
+			!(SHOW_DYN_LIGHT && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
 		G3StartInstanceMatrix (*pos, *orient);
 		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
 		G3DoneInstance ();
