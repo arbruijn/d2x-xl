@@ -1990,7 +1990,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	PrintLog ("invalid object in RelinkObjToSeg\r\n");
 	return;
 	}
-if ((nNewSeg < 0) || (nNewSeg >= gameData.segs.nLastSegment)) {
+if ((nNewSeg < 0) || (nNewSeg > gameData.segs.nLastSegment)) {
 	PrintLog ("invalid segment in RelinkObjToSeg\r\n");
 	return;
 	}
@@ -2769,7 +2769,7 @@ return FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 //If an tObject is in a tSegment, set its nSegment field and make sure it's
 //properly linked.  If not in any tSegment, returns 0, else 1.
 //callers should generally use FindVectorIntersection ()
-int UpdateObjectSeg (tObject * objP)
+int UpdateObjectSeg (tObject * objP, bool bMove)
 {
 	int nNewSeg;
 
@@ -2778,6 +2778,8 @@ if (OBJ_IDX (objP) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 if (0 > (nNewSeg = FindObjectSeg (objP))) {
+	if (!bMove)
+		return 0;
 	nNewSeg = FindClosestSeg (objP->info.position.vPos);
 	vmsVector vOffset = objP->info.position.vPos - *SEGMENT_CENTER_I (nNewSeg);
 	vmsVector::Normalize (vOffset);

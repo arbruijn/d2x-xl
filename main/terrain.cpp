@@ -290,6 +290,7 @@ void LoadTerrain (char *filename)
 	CIFF			iff;
 
 PrintLog ("            loading terrain height map\n");
+memset (&bmHeight, 0, sizeof (bmHeight));
 iff_error = iff.ReadBitmap (filename, &bmHeight, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR) {
 #if TRACE

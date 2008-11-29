@@ -541,16 +541,15 @@ switch (gameStates.app.bEndLevelSequence) {
 					(StartEndLevelMovie () != MOVIE_NOT_PLAYED))
 				StopEndLevelSequence ();
 			else {
-				int nObject;
 				gameStates.app.bEndLevelSequence = EL_LOOKBACK;
-				nObject = CreateCamera (gameData.objs.consoleP);
+				int nObject = CreateCamera (gameData.objs.consoleP);
 				if (nObject == -1) { //can't get tObject, so abort
 #if TRACE
 					con_printf (1, "Can't get tObject for endlevel sequence.  Aborting endlevel sequence.\n");
 #endif
 					StopEndLevelSequence ();
 					return;
-				}
+					}
 				gameData.objs.viewerP = gameData.objs.endLevelCamera = OBJECTS + nObject;
 				SelectCockpit (CM_LETTERBOX);
 				gameOpts->render.cockpit.bHUD = 0;	//will be restored by reading plr file when loading next level
@@ -745,8 +744,8 @@ vModelPos = gameData.endLevel.exit.vMineExit + gameData.endLevel.exit.mOrient [F
 vModelPos += gameData.endLevel.exit.mOrient [UVEC] * (I2X (u));
 gameStates.app.bD1Model = gameStates.app.bD1Mission && gameStates.app.bD1Data;
 DrawPolygonModel (NULL, &vModelPos, &gameData.endLevel.exit.mOrient, NULL,
-						 (gameStates.gameplay.bMineDestroyed) ? gameData.endLevel.exit.nDestroyedModel : gameData.endLevel.exit.nModel,
-						 0, f1_0, NULL, NULL, NULL);
+						(gameStates.gameplay.bMineDestroyed) ? gameData.endLevel.exit.nDestroyedModel : gameData.endLevel.exit.nModel,
+						0, f1_0, NULL, NULL, NULL);
 gameStates.app.bD1Model = 0;
 }
 
@@ -938,84 +937,89 @@ nOldPlayerSeg = objP->info.nSegment;
 //move the tPlayer for this frame
 
 if (!exitFlightDataP->firstTime) {
-	objP->info.position.vPos += exitFlightDataP->step *gameData.time.xFrame;
+	objP->info.position.vPos += exitFlightDataP->step * gameData.time.xFrame;
 	angvec_add2_scale (&exitFlightDataP->angles, &exitFlightDataP->angstep, gameData.time.xFrame);
 	objP->info.position.mOrient = vmsMatrix::Create (exitFlightDataP->angles);
 	}
 //check new tPlayer seg
-UpdateObjectSeg (objP);
-segP = gameData.segs.segments + objP->info.nSegment;
-if (exitFlightDataP->firstTime || (objP->info.nSegment != nOldPlayerSeg)) {		//moved into new seg
-	vmsVector curcenter, nextcenter;
-	fix xStepSize, xSegTime;
-	short nEntrySide, nExitSide = -1;//what sides we entry and leave through
-	vmsVector vDest;		//where we are heading (center of nExitSide)
-	vmsAngVec aDest;		//where we want to be pointing
-	vmsMatrix mDest;
-	int nUpSide = 0;
+if (UpdateObjectSeg (objP, false)) {
+	segP = gameData.segs.segments + objP->info.nSegment;
+	if (exitFlightDataP->firstTime || (objP->info.nSegment != nOldPlayerSeg)) {		//moved into new seg
+		vmsVector curcenter, nextcenter;
+		fix xStepSize, xSegTime;
+		short nEntrySide, nExitSide = -1;//what sides we entry and leave through
+		vmsVector vDest;		//where we are heading (center of nExitSide)
+		vmsAngVec aDest;		//where we want to be pointing
+		vmsMatrix mDest;
+		int nUpSide = 0;
 
-	nEntrySide = 0;
-	//find new exit tSide
-	if (!exitFlightDataP->firstTime) {
-		nEntrySide = ELFindConnectedSide (objP->info.nSegment, nOldPlayerSeg);
-		nExitSide = sideOpposite [nEntrySide];
-		}
-	if (exitFlightDataP->firstTime || nEntrySide==-1 || segP->children [nExitSide]==-1)
-		nExitSide = FindExitSide (objP);
-	fix d, dLargest = -f1_0;
-	for (int i = 0; i < 6; i++) {
-		d = vmsVector::Dot (segP->sides [i].normals [0], exitFlightDataP->objP->info.position.mOrient [UVEC]);
-		if (d > dLargest) {
-			dLargest = d; 
-			nUpSide = i;
+	#if DBG
+		if (n && objP->info.nSegment == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+	#endif
+		nEntrySide = 0;
+		//find new exit tSide
+		if (!exitFlightDataP->firstTime) {
+			nEntrySide = ELFindConnectedSide (objP->info.nSegment, nOldPlayerSeg);
+			nExitSide = sideOpposite [nEntrySide];
+			}
+		if (exitFlightDataP->firstTime || nEntrySide==-1 || segP->children [nExitSide]==-1)
+			nExitSide = FindExitSide (objP);
+		fix d, dLargest = -f1_0;
+		for (int i = 0; i < 6; i++) {
+			d = vmsVector::Dot (segP->sides [i].normals [0], exitFlightDataP->objP->info.position.mOrient [UVEC]);
+			if (d > dLargest) {
+				dLargest = d; 
+				nUpSide = i;
+				}
+			}
+		//update target point & angles
+		COMPUTE_SIDE_CENTER (&vDest, segP, nExitSide);
+		//update target point and movement points
+		//offset tObject sideways
+		if (exitFlightDataP->offset_frac) {
+			int s0=-1, s1=0, i;
+			vmsVector s0p, s1p;
+			fix dist;
+
+			for (i = 0; i < 6; i++)
+				if (i!=nEntrySide && i!=nExitSide && i!=nUpSide && i!=sideOpposite [nUpSide]) {
+					if (s0==-1)
+						s0 = i;
+					else
+						s1 = i;
+					}
+			COMPUTE_SIDE_CENTER (&s0p, segP, s0);
+			COMPUTE_SIDE_CENTER (&s1p, segP, s1);
+			dist = FixMul (vmsVector::Dist (s0p, s1p), exitFlightDataP->offset_frac);
+			if (dist-exitFlightDataP->offsetDist > MAX_SLIDE_PER_SEGMENT)
+				dist = exitFlightDataP->offsetDist + MAX_SLIDE_PER_SEGMENT;
+			exitFlightDataP->offsetDist = dist;
+			vDest += objP->info.position.mOrient [RVEC] * dist;
+			}
+		exitFlightDataP->step = vDest - objP->info.position.vPos;
+		xStepSize = vmsVector::Normalize (exitFlightDataP->step);
+		exitFlightDataP->step *= exitFlightDataP->speed;
+		COMPUTE_SEGMENT_CENTER (&curcenter, segP);
+		COMPUTE_SEGMENT_CENTER_I (&nextcenter, segP->children [nExitSide]);
+		exitFlightDataP->headvec = nextcenter - curcenter;
+		mDest = vmsMatrix::CreateFU (exitFlightDataP->headvec, segP->sides [nUpSide].normals [0]);
+		aDest = mDest.ExtractAnglesVec();
+		if (exitFlightDataP->firstTime)
+			exitFlightDataP->angles = objP->info.position.mOrient.ExtractAnglesVec();
+		xSegTime = FixDiv (xStepSize, exitFlightDataP->speed);	//how long through seg
+		if (xSegTime) {
+			exitFlightDataP->angstep [X] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [PA], aDest [PA]), xSegTime)));
+			exitFlightDataP->angstep [Z] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [BA], aDest [BA]), xSegTime)));
+			exitFlightDataP->angstep [Y] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [HA], aDest [HA]), xSegTime)));
+			}
+		else {
+			exitFlightDataP->angles = aDest;
+			exitFlightDataP->angstep.SetZero();
 			}
 		}
-	//update target point & angles
-	COMPUTE_SIDE_CENTER (&vDest, segP, nExitSide);
-	//update target point and movement points
-	//offset tObject sideways
-	if (exitFlightDataP->offset_frac) {
-		int s0=-1, s1=0, i;
-		vmsVector s0p, s1p;
-		fix dist;
-
-		for (i = 0; i < 6; i++)
-			if (i!=nEntrySide && i!=nExitSide && i!=nUpSide && i!=sideOpposite [nUpSide]) {
-				if (s0==-1)
-					s0 = i;
-				else
-					s1 = i;
-				}
-		COMPUTE_SIDE_CENTER (&s0p, segP, s0);
-		COMPUTE_SIDE_CENTER (&s1p, segP, s1);
-		dist = FixMul (vmsVector::Dist (s0p, s1p), exitFlightDataP->offset_frac);
-		if (dist-exitFlightDataP->offsetDist > MAX_SLIDE_PER_SEGMENT)
-			dist = exitFlightDataP->offsetDist + MAX_SLIDE_PER_SEGMENT;
-		exitFlightDataP->offsetDist = dist;
-		vDest += objP->info.position.mOrient [RVEC] * dist;
-		}
-	exitFlightDataP->step = vDest - objP->info.position.vPos;
-	xStepSize = vmsVector::Normalize (exitFlightDataP->step);
-	exitFlightDataP->step *= exitFlightDataP->speed;
-	COMPUTE_SEGMENT_CENTER (&curcenter, segP);
-	COMPUTE_SEGMENT_CENTER_I (&nextcenter, segP->children [nExitSide]);
-	exitFlightDataP->headvec = nextcenter - curcenter;
-	mDest = vmsMatrix::CreateFU (exitFlightDataP->headvec, segP->sides [nUpSide].normals [0]);
-	aDest = mDest.ExtractAnglesVec();
-	if (exitFlightDataP->firstTime)
-		exitFlightDataP->angles = objP->info.position.mOrient.ExtractAnglesVec();
-	xSegTime = FixDiv (xStepSize, exitFlightDataP->speed);	//how long through seg
-	if (xSegTime) {
-		exitFlightDataP->angstep [X] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [PA], aDest [PA]), xSegTime)));
-		exitFlightDataP->angstep [Z] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [BA], aDest [BA]), xSegTime)));
-		exitFlightDataP->angstep [Y] = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles [HA], aDest [HA]), xSegTime)));
-		}
-	else {
-		exitFlightDataP->angles = aDest;
-		exitFlightDataP->angstep.SetZero();
-		}
 	}
-exitFlightDataP->firstTime=0;
+exitFlightDataP->firstTime = 0;
 }
 
 //------------------------------------------------------------------------------

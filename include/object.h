@@ -889,14 +889,14 @@ void InitPlayerObject();
 // segs.  if not any of these, returns false, else sets obj->nSegment &
 // returns true callers should really use FindVectorIntersection()
 // Note: this function is in gameseg.c
-extern int UpdateObjectSeg(tObject *obj);
+int UpdateObjectSeg(tObject *objP, bool bMove = true);
 
 
 // Finds what tSegment *obj is in, returns tSegment number.  If not in
 // any tSegment, returns -1.  Note: This function is defined in
 // gameseg.h, but object[HA] depends on gameseg.h, and object[HA] is where
 // tObject is defined...get it?
-extern int FindObjectSeg(tObject * obj);
+int FindObjectSeg(tObject * obj);
 
 // go through all objects and make sure they have the correct tSegment
 // numbers used when debugging is on

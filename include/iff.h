@@ -81,8 +81,11 @@ public:
 		int RLESpan (ubyte *dest, ubyte *src, int len);
 
 		inline ubyte*& Data () { return m_file.data; }
-		inline int& Pos () { return m_file.position; }
-		inline int& Len () { return m_file.length; }
+		inline int Pos () { return m_file.position; }
+		inline int Len () { return m_file.length; }
+		inline void SetPos (int position) { m_file.position = position; }
+		inline void SetLen (int length) { m_file.length = length; }
+		inline int NextPos () { return (Pos () < Len ()) ? m_file.position++ : m_file.position; }
 
 		inline ubyte HasTransparency (void) { return m_hasTransparency; }
 		inline ubyte TransparentColor (void) { return m_transparentColor; }
