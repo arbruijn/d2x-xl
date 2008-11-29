@@ -1352,7 +1352,7 @@ for (j = 0; j < t; j++) {
 		}
 	pm = bAltModels ? gameData.models.altPolyModels + i : gameData.models.polyModels + i;
 	FreeModel (pm);
-	if (!PolyModelRead (pm, cf, 0))
+	if (!PolyModelRead (pm, 0, cf))
 		return -1;
 	PolyModelDataRead (pm, i, NULL, cf);
 	pm->nType = bAltModels ? 1 : -1;
@@ -1505,9 +1505,9 @@ int LoadExitModels (void)
 	if (cf.Open ("exit.ham", gameFolders.szDataDir, "rb", 0)) {
 		gameData.endLevel.exit.nModel = gameData.models.nPolyModels++;
 		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
-		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, cf, 0))
+		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, 0, cf))
 			return 0;
-		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, cf, 0))
+		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, 0, cf))
 			return 0;
 		gameData.models.polyModels [gameData.endLevel.exit.nModel].nFirstTexture = start_num;
 		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].nFirstTexture = start_num + 3;
@@ -1551,9 +1551,9 @@ int LoadExitModels (void)
 		cf.Seek (offset, SEEK_SET);
 		gameData.endLevel.exit.nModel = gameData.models.nPolyModels++;
 		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
-		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, cf, 0))
+		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, 0, cf))
 			return 0;
-		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, cf, 0))
+		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, 0, cf))
 			return 0;
 		gameData.models.polyModels [gameData.endLevel.exit.nModel].nFirstTexture = start_num;
 		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].nFirstTexture = start_num+3;

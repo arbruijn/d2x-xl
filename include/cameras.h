@@ -97,7 +97,7 @@ class CCameraManager {
 		CCamera* Camera (tObject *objP);
 		inline int GetObjectCamera (int nObject);
 		inline void SetObjectCamera (int nObject, int i);
-		inline int GetFaceCamera (int nFace);
+		int GetFaceCamera (int nFace);
 		inline void SetFaceCamera (int nFace, int i);
 	};
 

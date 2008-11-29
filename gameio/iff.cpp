@@ -589,7 +589,7 @@ if (bmheader.raw_data) {
 	bmheader.w = bmP->bmProps.w;
 	bmheader.h = bmP->bmProps.h;
 	}
-sig=GetSig ();
+sig = GetSig ();
 if (sig != form_sig)
 	return IFF_NOT_IFF;
 form_len = GetLong ();
@@ -679,7 +679,7 @@ int CIFF::WritePalette (FILE *fp, tIFFBitmapHeader *bitmap_header)
 {
 	int	i;
 
-	int n_colors = 1<<bitmap_header->nplanes;
+	int n_colors = 1 << bitmap_header->nplanes;
 
 PutSig(cmap_sig, fp);
 PutLong(3 * n_colors, fp);
@@ -826,7 +826,7 @@ return ret;
 int CIFF::WriteBitmap (const char *cfname, grsBitmap *bmP, ubyte *palette)
 {
 	FILE					*fp;
-	tIFFBitmapHeader bmheader;
+	tIFFBitmapHeader	bmheader;
 	int					ret;
 	int					bCompression;
 
@@ -870,7 +870,7 @@ return ret;
 int CIFF::ReadAnimBrush (const char *cfname, grsBitmap **bm_list, int max_bitmaps, int *n_bitmaps)
 {
 	int					ret;			//return code
-	tIFFBitmapHeader bmheader;
+	tIFFBitmapHeader	bmheader;
 	int					sig, form_len;
 	int					formType;
 

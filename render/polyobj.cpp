@@ -852,7 +852,7 @@ if (gameStates.ogl.nDrawBuffer != GL_BACK)
 /*
  * reads a tPolyModel structure from a CFile
  */
-int PolyModelRead (tPolyModel *pm, CFile& cf, int bHMEL)
+int PolyModelRead (tPolyModel *pm, int bHMEL, CFile& cf)
 {
 	int	i;
 
@@ -908,7 +908,7 @@ int PolyModelReadN (tPolyModel *pm, int n, CFile& cf)
 	int i;
 
 for (i = n; i; i--, pm++)
-	if (!PolyModelRead (pm, cf, 0))
+	if (!PolyModelRead (pm, 0, cf))
 		break;
 return i;
 }

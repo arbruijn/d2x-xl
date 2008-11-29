@@ -160,14 +160,14 @@ if (!*filename || (strlen (filename) + strlen (folder) >= FILENAME_LEN)) {
 	return NULL;
 	}
 if ((*filename != '/') && (strstr (filename, "./") != filename) && *folder) {
-	sprintf (fn, "%s/%s", filename);
+	sprintf (fn, "%s/%s", folder, filename);
    pfn = fn;
 	}
  else
  	pfn = filename;
  
 fp = fopen (pfn, mode);
- if (!fp && gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogDir)) {
+if (!fp && gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogDir)) {
    sprintf (fn, "%s/%s", gameFolders.szAltHogDir);
    pfn = fn;
    fp = fopen (pfn, mode);
@@ -303,7 +303,7 @@ int CFile::Open (const char *filename, const char *folder, const char *mode, int
 	const char	*pszHogExt, *pszFileExt;
 
 m_cf.file = NULL;
-if (! (filename && *filename))
+if (!(filename && *filename))
 	return 0;
 if ((*filename != '\x01') /*&& !bUseD1Hog*/) {
 	fp = GetFileHandle (filename, folder, mode);		// Check for non-hogP file first...
@@ -468,22 +468,22 @@ int CFile::Seek (long int offset, int where)
 if (!m_cf.size)
 	return -1;
 
-	int c, goal_position;
+	int destPos;
 
 switch (where) {
 	case SEEK_SET:
-		goal_position = offset;
+		destPos = offset;
 		break;
 	case SEEK_CUR:
-		goal_position = m_cf.rawPosition + offset;
+		destPos = m_cf.rawPosition + offset;
 		break;
 	case SEEK_END:
-		goal_position = m_cf.size + offset;
+		destPos = m_cf.size + offset;
 		break;
 	default:
 		return 1;
 	}
-c = fseek (m_cf.file, m_cf.libOffset + goal_position, SEEK_SET);
+int c = fseek (m_cf.file, m_cf.libOffset + destPos, SEEK_SET);
 m_cf.rawPosition = ftell (m_cf.file) - m_cf.libOffset;
 return c;
 }

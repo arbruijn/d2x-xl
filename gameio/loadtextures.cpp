@@ -636,9 +636,8 @@ reloadTextures:
 		bmP->bmProps.flags = gameData.pig.tex.bitmapFlags [bD1][nIndex];
 	bmP->bmHandle = nIndex;
 	if (bmP->bmProps.flags & BM_FLAG_RLE) {
-		int zSize = 0;
 		nDescentCriticalError = 0;
-		zSize = cfP->ReadInt ();
+		int zSize = cfP->ReadInt ();
 		if (nDescentCriticalError) {
 			PiggyCriticalError ();
 			goto reloadTextures;

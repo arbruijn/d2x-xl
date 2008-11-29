@@ -236,7 +236,7 @@ if (!(replacementModels [i].pszLores &&
 	return ++i;
 nModel = replacementModels [i].nModel;
 pm = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
-if (!PolyModelRead (pm, cf, 1)) {
+if (!PolyModelRead (pm, 1, cf)) {
 	cf.Close ();
 	return ++i;
 	}
