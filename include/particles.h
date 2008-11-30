@@ -125,7 +125,7 @@ class CParticleEmitter : public tParticleEmitter {
 		int Destroy (void);
 		int Update (int nCurTime, int nThread);
 		int Render (int nThread);
-		inline void SetPos (vmsVector *vPos, vmsMatrix *mOrient, short nSegment);
+		void SetPos (vmsVector *vPos, vmsMatrix *mOrient, short nSegment);
 		inline void SetDir (vmsVector *vDir);
 		inline void SetLife (int nLife);
 		inline void SetBrightness (int nBrightness);

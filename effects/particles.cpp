@@ -1277,7 +1277,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-inline void CParticleEmitter::SetPos (vmsVector *vPos, vmsMatrix *mOrient, short nSegment)
+void CParticleEmitter::SetPos (vmsVector *vPos, vmsMatrix *mOrient, short nSegment)
 {
 if ((nSegment < 0) && gameOpts->render.particles.bCollisions)
 	nSegment = FindSegByPos (*vPos, m_nSegment, 1, 0, 1);

@@ -857,6 +857,10 @@ SOURCE=..\..\io\d_io.cpp
 
 SOURCE=..\..\io\win32\findfile.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\io\hogfile.cpp
+# End Source File
 # End Group
 # Begin Group "lighting"
 
