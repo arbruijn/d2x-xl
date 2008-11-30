@@ -736,7 +736,7 @@ if (bHaveMonitorBg) {
 		faceP->bmBot = &cameraP->Texture ();
 		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 #else
-		faceP->bmTop = &cameraP->texBuf;
+		faceP->bmTop = &cameraP->Texture ();
 		for (i = 0; i < 4; i++)
 			gameData.render.color.vertices [faceP->index [i]].color.alpha = 0.7f;
 #endif

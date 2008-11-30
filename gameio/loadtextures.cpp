@@ -604,7 +604,7 @@ reloadTextures:
 #if !DBG
 		StartTime (0);
 		if (!bDefault)
-			cfP->Close (cfP);
+			cfP->Close ();
 		return 0;
 #endif
 		}
