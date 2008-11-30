@@ -168,9 +168,10 @@ if (!(m_child = new CLightning))
 if (!(m_child = (CLightning *) D2_ALLOC (sizeof (CLightning))))
 #endif
 	return false;
-return m_child->Create (&m_vPos, vEnd, vDelta, -1, nLife, 0, nLength, nAmplitude, nAngle, 0,
-								nNodes, nChildren, nDepth - 1, nSteps, nSmoothe, bClamp, bPlasma, bLight,
-								nStyle, colorP, parentP, nNode);
+m_child->Init (&m_vPos, vEnd, vDelta, -1, nLife, 0, nLength, nAmplitude, nAngle, 0,
+					nNodes, nChildren, nSteps, nSmoothe, bClamp, bPlasma, bLight,
+					nStyle, colorP, parentP, nNode);
+return m_child->Create (nDepth - 1);
 }
 
 //------------------------------------------------------------------------------
@@ -499,40 +500,38 @@ m_nSteps = -abs (m_nSteps);
 
 //------------------------------------------------------------------------------
 
-bool CLightning::Create (vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
-								 short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
-								 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps,
-								 short nSmoothe, char bClamp, char bPlasma, char bLight,
-								 char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode)
+void CLightning::Init (vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
+							  short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
+							  char nAngle, int nOffset, short nNodes, short nChildren, short nSteps,
+							  short nSmoothe, char bClamp, char bPlasma, char bLight,
+							  char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode)
 {
-	int	h, bRandom = (vEnd == NULL) || (nAngle > 0);
+	int	bRandom = (vEnd == NULL) || (nAngle > 0);
 
-#if USE_NEW
-if (!(m_nodes = new CLightningNode [nNodes])) 
-#else
-if (!(m_nodes = (CLightningNode *) D2_ALLOC (nNodes * sizeof (CLightningNode)))) 
-#endif
-	return false;
 if (nObject < 0) {
 	m_nObject = -1;
 	m_nSegment = -nObject - 1;
 	}
 else {
 	m_nObject = nObject;
-	if (0 > (m_nSegment = OBJECTS [nObject].info.nSegment))
-		return NULL;
 	}
 m_parent = parentP;
 m_nNode = nNode;
 m_nNodes = nNodes;
 m_nChildren = gameOpts->render.lightnings.nQuality ? (nChildren < 0) ? nNodes / 10 : nChildren : 0;
+if (vEnd) {
+	m_vRefEnd = *vEnd;
+	m_vEnd = *vEnd;
+	}
+if ((m_bInPlane = (vDelta != NULL)))
+	m_vDelta = *vDelta;
+m_bRandom = bRandom;
 m_nLife = nLife;
-h = abs (nLife);
-m_nTTL = (bRandom) ? 3 * h / 4 + (int) (dbl_rand () * h / 2) : h;
+m_nTTL = abs (nLife);
+m_nLength = nLength;
 m_nDelay = abs (nDelay) * 10;
-m_nLength = (bRandom) ? 3 * nLength / 4 + (int) (dbl_rand () * nLength / 2) : nLength;
-m_nAmplitude = (nAmplitude < 0) ? nLength / 6 : nAmplitude;
-m_nAngle = vEnd ? nAngle : 0;
+m_nAmplitude = nAmplitude;
+m_nAngle = nAngle;
 m_nOffset = nOffset;
 m_nSteps = -nSteps;
 m_nSmoothe = nSmoothe;
@@ -544,28 +543,41 @@ m_vBase = *vPos;
 m_bLight = bLight;
 m_nStyle = nStyle;
 m_nNext = -1;
-if (vEnd)
-	m_vRefEnd = *vEnd;
-if (!(m_bRandom = bRandom))
-	m_vEnd = *vEnd;
-if ((m_bInPlane = (vDelta != NULL)))
-	m_vDelta = *vDelta;
-Setup (1);
-if (gameOpts->render.lightnings.nQuality && nDepth && nChildren) {
-	vmsVector	vEnd;
-	int			l, n, nNode;
+}
+
+//------------------------------------------------------------------------------
+
+bool CLightning::Create (char nDepth)
+{
+if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
+	return NULL;
+#if USE_NEW
+if (!(m_nodes = new CLightningNode [nNodes])) 
+#else
+if (!(m_nodes = (CLightningNode *) D2_ALLOC (m_nNodes * sizeof (CLightningNode)))) 
+#endif
+	return false;
+if (m_bRandom) {
+	m_nTTL = 3 * m_nTTL / 4 + (int) (dbl_rand () * m_nTTL / 2);
+	m_nLength = 3 * m_nLength / 4 + (int) (dbl_rand () * m_nLength / 2);
+	}
+if (m_nAmplitude < 0)
+	m_nAmplitude = m_nLength / 6;
+Setup (true);
+if (gameOpts->render.lightnings.nQuality && nDepth && m_nChildren) {
+	int			h, l, n, nNode;
 	double		nStep, j;
 
-	n = nChildren + 1 + (nChildren < 2);
-	nStep = (double) m_nNodes / (double) nChildren;
-	l = nLength / n;
+	n = m_nChildren + 1 + (m_nChildren < 2);
+	nStep = (double) m_nNodes / (double) m_nChildren;
+	l = m_nLength / n;
 	for (h = m_nNodes - (int) nStep, j = nStep / 2; j < h; j += nStep) {
 		nNode = (int) j + 2 - d_rand () % 5;
 		if (nNode < 1)
 			nNode = (int) j;
-		if (!m_nodes [nNode].CreateChild (&vEnd, vDelta, m_nLife, l, nAmplitude / n * 2, nAngle,
-													 2 * m_nNodes / n, nChildren / 5, nDepth - 1, nSteps / 2, nSmoothe, bClamp, bPlasma, bLight,
-													 nStyle, colorP, this, nNode))
+		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, m_nAmplitude / n * 2, m_nAngle,
+													 2 * m_nNodes / n, m_nChildren / 5, nDepth - 1, m_nSteps / 2, m_nSmoothe, m_bClamp, m_bPlasma, m_bLight,
+													 m_nStyle, &m_color, this, nNode))
 			return false;
 		}
 	}
@@ -1211,11 +1223,15 @@ if (!(m_lightnings = new CLightning [nLightnings]))
 if (!(m_lightnings = (CLightning *) D2_ALLOC (nLightnings * sizeof (CLightning))))
 #endif
 	return false;
-for (int i = 0; i < nLightnings; i++)
-	if (!m_lightnings [i].Create (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude, 
-											nAngle, nOffset, nNodes, nChildren, 0, nSteps,
-											nSmoothe, bClamp, bPlasma, bLight, nStyle, colorP, false, -1))
-	return false;
+CLightning l;
+l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude, 
+		  nAngle, nOffset, nNodes, nChildren, nSteps,
+		  nSmoothe, bClamp, bPlasma, bLight, nStyle, colorP, false, -1);
+for (int i = 0; i < nLightnings; i++) {
+	m_lightnings [i] = l;
+	if (!m_lightnings [i].Create (0))
+		return false;
+	}
 CreateSound (bSound);
 m_nKey [0] =
 m_nKey [1] = 0;
@@ -1305,14 +1321,14 @@ return m_nLightnings;
 
 //------------------------------------------------------------------------------
 
-int CLightningSystem::Update (bool bDamage)
+int CLightningSystem::Update (void)
 {
 if (m_bDestroy) {
 	Destroy ();
 	return -1;
 	}
 if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
-	if (bDamage || !(m_nKey [0] || m_nKey [1])) {
+	if (!(m_nKey [0] || m_nKey [1])) {
 		m_tUpdate = gameStates.app.nSDLTicks;
 		Animate (0, m_nLightnings);
 		if (!(m_nLightnings = SetLife ()))

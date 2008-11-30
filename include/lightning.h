@@ -92,11 +92,12 @@ class CLightning : public tLightning {
 	public:
 		CLightning () { m_parent = NULL, m_nodes = NULL, m_nNodes = 0; };
 		~CLightning () { Destroy (); };
-		bool Create (vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
-						 short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
-						 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps,
-						 short nSmoothe, char bClamp, char bPlasma, char bLight,
-						 char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode);
+		bool Create (char nDepth);
+		void Init (vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
+					  short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
+					  char nAngle, int nOffset, short nNodes, short nChildren, short nSteps,
+					  short nSmoothe, char bClamp, char bPlasma, char bLight,
+					  char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode);
 		void Setup (bool bInit);
 		void Destroy (void);
 		void DestroyNodes (void);
@@ -110,6 +111,10 @@ class CLightning : public tLightning {
 		void Render (int nDepth, int bDepthSort, int nThread);
 		int SetLight (void);
 		inline int MayBeVisible (void);
+		CLightning& operator= (CLightning& source) { 
+			memcpy (this, &source, sizeof (CLightning)); 
+			return *this;
+			}
 	private:
 		void CreatePath (int bSeed, int nDepth);
 		int ComputeChildEnd (vmsVector *vPos, vmsVector *vEnd, vmsVector *vDir, vmsVector *vParentDir, int nLength);
@@ -148,7 +153,7 @@ class CLightningSystem : public tLightningSystem {
 		void Destroy (void);
 		void Animate (int nStart, int nLightnings);
 		void Render (int nStart, int nLightnings, int bDepthSort, int nThread);
-		int Update (bool bDamage = false);
+		int Update (void);
 		void Move (vmsVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
 		int SetLife (void);
 		int SetLight (void);
