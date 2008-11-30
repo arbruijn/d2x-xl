@@ -206,7 +206,7 @@ class CLightningManager : public tLightningData {
 						short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
 						char bClamp, char bPlasma, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
 		void Destroy (int iLightning, CLightning *pl, bool bDestroy);
-		int DestroyAll (bool bForce);
+		int ShutDown (bool bForce);
 		void Render (void);
 		void Update (void);
 		void Move (int i, vmsVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);

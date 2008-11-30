@@ -292,9 +292,9 @@ class CAttachedInfo {
 		inline short GetParent (void) { return m_info.nParent; }
 		inline short GetPrevAttached (void) { return m_info.nPrev; }
 		inline short GetNextAttached (void) { return m_info.nNext; }
-		inline short SetParent (short nParent) { m_info.nParent = nParent; }
-		inline short SetPrevAttached (short nPrev) { m_info.nPrev = nPrev; }
-		inline short SetNextAttached (short nNext) { m_info.nNext = nNext; }
+		inline void SetParent (short nParent) { m_info.nParent = nParent; }
+		inline void SetPrevAttached (short nPrev) { m_info.nPrev = nPrev; }
+		inline void SetNextAttached (short nNext) { m_info.nNext = nNext; }
 };
 
 typedef struct tExplosionInfo {
@@ -312,9 +312,9 @@ class CExplosionInfo : public CAttachedInfo {
 		inline fix GetSpawnTime (void) { return m_info.nSpawnTime; }
 		inline fix GetDeleteTime (void) { return m_info.nDeleteTime; }
 		inline short GetDeleteObj (void) { return m_info.nDeleteObj; }
-		inline fix SetSpawnTime (fix nSpawnTime) { m_info.nSpawnTime = nSpawnTime; }
-		inline fix SetDeleteTime (fix nDeleteTime) { m_info.nDeleteTime = nDeleteTime; }
-		inline short SetDeleteObj (fix nDeleteObj) { m_info.nDeleteObj = nDeleteObj; }
+		inline void SetSpawnTime (fix nSpawnTime) { m_info.nSpawnTime = nSpawnTime; }
+		inline void SetDeleteTime (fix nDeleteTime) { m_info.nDeleteTime = nDeleteTime; }
+		inline void SetDeleteObj (fix nDeleteObj) { m_info.nDeleteObj = nDeleteObj; }
 };
 
 typedef struct tObjLightInfo {
@@ -482,9 +482,9 @@ class CPolyObjInfo {
 		inline int GetAltTextures (void) { return m_info.nAltTextures; }
 		inline void SetModel (int nModel) { m_info.nModel = nModel; }
 		inline void SetAnimAngles (const vmsAngVec *vAngles, int i) { m_info.animAngles [i] = *vAngles; }
-		inline void SetSubObjFlags (int nSubObjFlags) { m_info.nSubObjFlags; }
-		inline void SetTexOverride (int nTexOverride) { m_info.nTexOverride; }
-		inline void SetAltTextures (int nAltTextures) { m_info.nAltTextures; }
+		inline void SetSubObjFlags (int nSubObjFlags) { m_info.nSubObjFlags = nSubObjFlags; }
+		inline void SetTexOverride (int nTexOverride) { m_info.nTexOverride = nTexOverride; }
+		inline void SetAltTextures (int nAltTextures) { m_info.nAltTextures = nAltTextures; }
 };
 
 typedef struct tTransformation {
@@ -516,9 +516,9 @@ class CObjContainerInfo {
 		inline sbyte GetContainsType (void) { return m_info.nType; }
 		inline sbyte GetContainsId (void) { return m_info.nId; }
 		inline sbyte GetContainsCount (void) { return m_info.nCount; }
-		inline void SetContainsType (byte nType) { m_info.nType = nType; }
-		inline void SetContainsId (byte nId) { m_info.nId = nId; }
-		inline void SetContainsCount (byte nCount) { m_info.nCount = nCount; }
+		inline void SetContainsType (sbyte nType) { m_info.nType = nType; }
+		inline void SetContainsId (sbyte nId) { m_info.nId = nId; }
+		inline void SetContainsCount (sbyte nCount) { m_info.nCount = nCount; }
 };
 
 typedef struct tObjectInfo {
@@ -1042,7 +1042,7 @@ extern tObject *dbgObjP;
 #	define FORALL_POWERUP_OBJS(_objP,_i)			FORALL_CLASS_OBJS (OBJ_POWERUP, _objP, _i)
 #	define FORALL_WEAPON_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_WEAPON, _objP, _i)
 #	define FORALL_EFFECT_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_EFFECT, _objP, _i)
-ä	define IS_OBJECT(_objP, _i)						((_i) <= gameData.objs.nLastObject [0])
+ï¿½	define IS_OBJECT(_objP, _i)						((_i) <= gameData.objs.nLastObject [0])
 #else
 #	define FORALL_OBJS(_objP,_i)							for ((_objP) = gameData.objs.lists.all.head; (_objP); (_objP) = (_objP)->links [0].next)
 #	define FORALL_SUPERCLASS_OBJS(_list,_objP,_i)	for ((_objP) = (_list).head; (_objP); (_objP) = (_objP)->links [2].next)

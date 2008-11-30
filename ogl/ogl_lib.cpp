@@ -54,6 +54,8 @@
 
 #define _WIN32_WINNT		0x0600 
 
+#ifdef _WIN32
+
 typedef struct tLibList {
 	int	nLibs;
 	DWORD	*libs;
@@ -62,6 +64,8 @@ typedef struct tLibList {
 tLibList libList = {0, NULL};
 
 static DWORD nOglLibFlags [2] = {1680960820, (DWORD) -1};
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -831,6 +835,8 @@ gameStates.ogl.bLastFullScreen = gameStates.ogl.bFullScreen;
 
 //------------------------------------------------------------------------------
 
+#ifdef _WIN32
+
 int OglCountLibs (char *pszFilter, char *pszFolder)
 {
 	FFS	ffs;
@@ -949,6 +955,7 @@ nOglLibFlags [1] = OglLibFlags ();
 return (RegSetValueEx (hRegKey, "Flags", 0, REG_DWORD, (const BYTE *) &nOglLibFlags [1], 4) == ERROR_SUCCESS);
 }
 
+#endif //_WIN32
 //------------------------------------------------------------------------------
 
 bool OglLibsInitialized (void)
@@ -993,6 +1000,7 @@ return true;
 
 void OglSetLibFlags (int bGame)
 {
+#ifdef _WIN32
 	static	time_t	t0 = 0;
 
 if (nOglLibFlags [0] != nOglLibFlags [1]) {
@@ -1001,6 +1009,7 @@ if (nOglLibFlags [0] != nOglLibFlags [1]) {
 		t0 = SDL_GetTicks ();
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

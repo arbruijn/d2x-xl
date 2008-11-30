@@ -56,7 +56,7 @@ return OglFBufferAvail (&m_info.fb);
 
 int CCamera::HaveTexture (void)
 {
-return (int) m_info.texture.glTexture > 0;
+return m_info.texture.glTexture && ((int) m_info.texture.glTexture->handle > 0);
 }
 
 //------------------------------------------------------------------------------
