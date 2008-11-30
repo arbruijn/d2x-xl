@@ -16,6 +16,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 #include <sys/types.h>
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+#ifndef _WIN32_WCE
+#include <errno.h>
+#endif
 
 #include "maths.h"
 #include "vecmat.h"
@@ -134,5 +140,10 @@ wchar_t *AscToUnicode (wchar_t *w_str, const char *str);
 
 extern int nCFileError;
 extern tGameFolders	gameFolders;
+
+#ifdef _WIN32_WCE
+# define errno -1
+# define strerror (x) "Unknown Error"
+#endif
 
 #endif
