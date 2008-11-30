@@ -1663,7 +1663,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int CParticleManager::ShutDown (void)
+int CParticleManager::Shutdown (void)
 {
 SEM_ENTER (SEM_SMOKE)
 
@@ -1757,7 +1757,7 @@ for (int j, i = m_nUsed; i >= 0; i = j) {
 
 CParticleManager::~CParticleManager ()
 {
-ShutDown ();
+Shutdown ();
 particleImageManager.FreeAll ();
 FREEMEM (short, m_objectSystems, MAX_OBJECTS);
 }

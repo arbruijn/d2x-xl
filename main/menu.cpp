@@ -3095,7 +3095,7 @@ if (extraGameInfo [0].bUseParticles) {
 		}
 	}
 else
-	particleManager.DestroyAll ();
+	particleManager.Shutdown ();
 return nCurItem;
 }
 
@@ -3682,7 +3682,7 @@ m = menus + lightningOpts.nUse;
 v = m->value;
 if (v != extraGameInfo [0].bUseLightnings) {
 	if (!(extraGameInfo [0].bUseLightnings = v))
-		lightningManager.DestroyAll (0);
+		lightningManager.Shutdown (0);
 	*key = -2;
 	return nCurItem;
 	}
@@ -3693,7 +3693,7 @@ if (extraGameInfo [0].bUseLightnings) {
 		gameOpts->render.lightnings.nQuality = v;
 		sprintf (m->text, TXT_LIGHTNING_QUALITY, pszLightningQuality [v]);
 		m->rebuild = 1;
-		lightningManager.DestroyAll (0);
+		lightningManager.Shutdown (0);
 		}
 	m = menus + lightningOpts.nStyle;
 	v = m->value;

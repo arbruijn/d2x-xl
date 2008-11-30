@@ -1422,7 +1422,7 @@ m_lights = NULL;
 
 CLightningManager::~CLightningManager () 
 { 
-ShutDown (true);
+Shutdown (true);
 #if USE_NEW
 delete[] m_objects;
 m_objects = NULL;
@@ -1551,7 +1551,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int CLightningManager::ShutDown (bool bForce)
+int CLightningManager::Shutdown (bool bForce)
 {
 	int	i, j;
 
@@ -1827,7 +1827,7 @@ void CLightningManager::DoFrame (void)
 {
 if (m_bDestroy) {
 	m_bDestroy = -1;
-	ShutDown (0);
+	Shutdown (0);
 	}
 else {
 	Update ();

@@ -832,10 +832,10 @@ if (gameData.missions.nEnhancedMission) {
 /*---*/PrintLog ("   Destroying camera objects\n");
 cameraManager.Destroy ();
 /*---*/PrintLog ("   Destroying particle data\n");
-particleManager.DestroyAll ();
+particleManager.Shutdown ();
 /*---*/PrintLog ("   Destroying lightning data\n");
 omegaLightnings.Destroy (-1);
-lightningManager.DestroyAll (1);
+lightningManager.Shutdown (1);
 /*---*/PrintLog ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 memset (gameData.pig.tex.bitmapColors, 0, sizeof (gameData.pig.tex.bitmapColors));

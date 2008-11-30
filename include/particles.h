@@ -216,7 +216,7 @@ class CParticleManager {
 						float fScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
 						int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide);
 		int Destroy (int iParticleSystem);
-		int ShutDown (void);
+		int Shutdown (void);
 		int AllocPartList (void);
 		void FreePartList (void);
 

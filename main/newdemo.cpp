@@ -3437,7 +3437,7 @@ ndOutFile.Seek (1, SEEK_CUR);
 ndOutFile.Write (&nPrevFrameLength, 2, 1);
 ndOutFile.Close ();
 NDStopPlayback ();
-particleManager.DestroyAll ();
+particleManager.Shutdown ();
 }
 
 #endif

@@ -2606,7 +2606,7 @@ FREEMEM (time_t, gameData.particles.objExplTime, MAX_OBJECTS);
 void FreeLightningData (void)
 {
 PrintLog ("unloading lightning data\n");
-lightningManager.DestroyAll (1);
+lightningManager.Shutdown (1);
 }
 
 // ----------------------------------------------------------------------------
