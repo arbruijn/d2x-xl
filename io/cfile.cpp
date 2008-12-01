@@ -22,6 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include <sys/stat.h>
 #else
 #	include <sys/stat.h>
+#	include <errno.h>
 #endif
 
 #include "inferno.h"
