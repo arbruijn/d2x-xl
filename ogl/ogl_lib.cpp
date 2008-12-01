@@ -1001,7 +1001,11 @@ return true;
 
 bool OglCheckLibFlags (void)
 {
+#ifdef _WIN32
 return nOglLibFlags [0] != nOglLibFlags [1];
+#else
+return false;
+#endif
 }
 
 //------------------------------------------------------------------------------
