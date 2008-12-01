@@ -29,6 +29,7 @@
 #include "inferno.h"
 #include "error.h"
 #include "u_mem.h"
+#include "config.h"
 #include "maths.h"
 #include "crypt.h"
 #include "strutil.h"
@@ -998,12 +999,19 @@ return true;
 
 //------------------------------------------------------------------------------
 
+bool OglCheckLibFlags (void)
+{
+return nOglLibFlags [0] != nOglLibFlags [1];
+}
+
+//------------------------------------------------------------------------------
+
 void OglSetLibFlags (int bGame)
 {
 #ifdef _WIN32
 	static	time_t	t0 = 0;
 
-if (nOglLibFlags [0] != nOglLibFlags [1]) {
+if (OglCheckLibFlags ()) {
 	if (SDL_GetTicks () - t0 > 5000 + gameData.app.nFrameCount % 5000) {
 		RebuildRenderContext (bGame);
 		t0 = SDL_GetTicks ();
@@ -1023,6 +1031,8 @@ oglRenderer = (char *) glGetString (GL_RENDERER);
 oglVersion = (char *) glGetString (GL_VERSION);
 oglExtensions = (char *) glGetString (GL_EXTENSIONS);
 OglInitLibs ();
+if (!OglCheckLibFlags ())
+	SetNostalgia (3);
 }
 
 //------------------------------------------------------------------------------

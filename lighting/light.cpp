@@ -276,7 +276,7 @@ void InitDynColoring (void)
 {
 if (!gameOpts->render.nLightingMethod && gameData.render.lights.bInitDynColoring) {
 	gameData.render.lights.bInitDynColoring = 0;
-	memset (gameData.render.lights.bGotDynColor, 0, sizeof (*gameData.render.lights.bGotDynColor) * MAX_VERTICES);
+	memset (gameData.render.lights.bGotDynColor, 0, sizeof (*gameData.render.lights.bGotDynColor) * gameData.segs.nVertices);
 	}
 gameData.render.lights.bGotGlobalDynColor = 0;
 gameData.render.lights.bStartDynColoring = 0;
@@ -284,7 +284,7 @@ gameData.render.lights.bStartDynColoring = 0;
 
 // ----------------------------------------------------------------------------------------------
 
-void SetDynColor (tRgbaColorf *color, tRgbColorf *pDynColor, int nVertex, char *pbGotDynColor, int bForce)
+void SetDynColor (tRgbaColorf *color, tRgbColorf *dynColorP, int nVertex, char *bGotDynColorP, int bForce)
 {
 if (!color)
 	return;
@@ -295,19 +295,19 @@ if (!bForce && (color->red == 1.0) && (color->green == 1.0) && (color->blue == 1
 if (gameData.render.lights.bStartDynColoring) {
 	InitDynColoring ();
 	}
-if (!pDynColor) {
+if (!dynColorP) {
 	SetDynColor (color, &gameData.render.lights.globalDynColor, 0, &gameData.render.lights.bGotGlobalDynColor, bForce);
-	pDynColor = gameData.render.lights.dynamicColor + nVertex;
-	pbGotDynColor = gameData.render.lights.bGotDynColor + nVertex;
+	dynColorP = gameData.render.lights.dynamicColor + nVertex;
+	bGotDynColorP = gameData.render.lights.bGotDynColor + nVertex;
 	}
-if (*pbGotDynColor) {
-	pDynColor->red = (pDynColor->red + color->red) / 2;
-	pDynColor->green = (pDynColor->green + color->green) / 2;
-	pDynColor->blue = (pDynColor->blue + color->blue) / 2;
+if (*bGotDynColorP) {
+	dynColorP->red = (dynColorP->red + color->red) / 2;
+	dynColorP->green = (dynColorP->green + color->green) / 2;
+	dynColorP->blue = (dynColorP->blue + color->blue) / 2;
 	}
 else {
-	memcpy (pDynColor, color, sizeof (tRgbColorf));
-	*pbGotDynColor = 1;
+	memcpy (dynColorP, color, sizeof (tRgbColorf));
+	*bGotDynColorP = 1;
 	}
 }
 
@@ -412,7 +412,7 @@ if (xObjIntensity) {
 #endif
 			{
 				vVertPos = gameData.segs.vertices + nVertex;
-				dist = vmsVector::Dist(*vObjPos, *vVertPos) / 4;
+				dist = vmsVector::Dist (*vObjPos, *vVertPos) / 4;
 				dist = FixMul (dist, dist);
 				if (dist < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)

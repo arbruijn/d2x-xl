@@ -1305,7 +1305,8 @@ int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 nCurrentColor = 0;
 bRobotPlaying = 0;
 
-//OglSetDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
+if (gameStates.app.bNostalgia)
+	OglSetDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
 InitMovieBriefing ();
 
 bi.bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
@@ -1591,6 +1592,8 @@ void DoBriefingScreens (const char *filename, int nLevel)
 PrintLog ("Starting the briefing\n");
 gameStates.render.bBriefing = 1;
 RebuildRenderContext (1);
+if (gameStates.app.bNostalgia)
+	OglSetDrawBuffer (gameStates.ogl.nDrawBuffer = GL_FRONT, 0);
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	con_printf (CONDBG, "Skipping all briefing screens.\n");
 	gameStates.render.bBriefing = 0;

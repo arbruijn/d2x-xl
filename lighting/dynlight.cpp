@@ -1476,7 +1476,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	ResetUsedLights (0, nThread);
 	SetNearestVertexLights (-1, nVertex, NULL, 1, 1, bColorize, nThread);
 	gameData.render.color.vertices [nVertex].index = 0;
-	G3VertexColor(gameData.segs.points [nVertex].p3_normal.vNormal.V3(), vVertex.V3(), nVertex, pf, NULL, 1, 0, nThread);
+	G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.V3(), vVertex.V3(), nVertex, pf, NULL, 1, 0, nThread);
 	}
 }
 

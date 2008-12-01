@@ -1140,19 +1140,10 @@ if ((t = FindArg ("-enable_freecam")))
 	gameStates.app.bEnableFreeCam = NumArg (t, 1);
 if ((t = FindArg ("-pured2")))
 	gameStates.app.bNostalgia = 3;
-else if ((t = FindArg ("-nostalgia"))) {
-	if (pszArgList [t+1]) {
-		gameStates.app.bNostalgia = NumArg (t, 0);
-		if (gameStates.app.bNostalgia < 0)
-			gameStates.app.bNostalgia = 0;
-		else if (gameStates.app.bNostalgia > 3)
-			gameStates.app.bNostalgia = 3;
-		}
-	else
-		gameStates.app.bNostalgia = 1;
-	}
-gameStates.app.iNostalgia = (gameStates.app.bNostalgia > 0);
-gameOpts = gameOptions + gameStates.app.iNostalgia;
+else if ((t = FindArg ("-nostalgia")))
+	SetNostalgia (pszArgList [t+1] ? NumArg (t, 0) : 1);
+else
+	SetNostalgia (0);
 
 #if 1 //MULTI_THREADED
 if ((t = FindArg ("-multithreaded")))

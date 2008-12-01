@@ -54,7 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_MARKER      15  // a map marker
 #define OBJ_CAMBOT		16	 // a camera
 #define OBJ_MONSTERBALL	17	 // a monsterball
-#define OBJ_SMOKE		18	 // static smoke
+#define OBJ_SMOKE			18	 // static smoke
 #define OBJ_EXPLOSION	19	 // static explosion particleEmitters
 #define OBJ_EFFECT		20	 // lightnings
 

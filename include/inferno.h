@@ -1409,7 +1409,7 @@ typedef struct tVariableLight {
 
 typedef struct tFlickerLightData {
 	tVariableLight	lights [MAX_FLICKERING_LIGHTS];
-	int					nLights;
+	int				nLights;
 } tFlickerLightData;
 
 //------------------------------------------------------------------------------

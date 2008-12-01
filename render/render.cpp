@@ -2137,8 +2137,18 @@ if (nWindow)
 	nWindow = nWindow;
 else
 	nWindow = nWindow;
+if (gameStates.app.bNostalgia) {
+	gameOptions [1].render.debug.bWireFrame = 0;
+	gameOptions [1].render.debug.bTextures = 1;
+	gameOptions [1].render.debug.bObjects = 1;
+	gameOptions [1].render.debug.bWalls = 1;
+	gameOptions [1].render.debug.bDynamicLight = 1;
+	}
 #endif
-if (!(RENDERPATH && HaveLightmaps ()))
+if (gameStates.app.bNostalgia > 1)
+	gameStates.render.nLightingMethod =
+	gameStates.render.bPerPixelLighting = 0;
+else if (!(RENDERPATH && HaveLightmaps ()))
 	gameStates.render.bPerPixelLighting = 0;
 else {
 	if (gameStates.render.nLightingMethod == 2)
@@ -2156,7 +2166,8 @@ gameData.render.nTotalLights =
 gameData.render.nMaxLights =
 gameData.render.nStateChanges =
 gameData.render.nShaderChanges = 0;
-OglSetLibFlags (1);
+if (!gameStates.app.bNostalgia)
+	OglSetLibFlags (1);
 SetFaceDrawer (-1);
 gameData.render.vertColor.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4);
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;

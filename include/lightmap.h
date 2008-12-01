@@ -67,7 +67,7 @@ extern GLhandleARB		lmShaderProgs [3];
 
 static inline int HaveLightmaps (void)
 {
-return (lightmapData.info != NULL);
+return !gameStates.app.bNostalgia && (lightmapData.info != NULL);
 }
 
 //------------------------------------------------------------------------------

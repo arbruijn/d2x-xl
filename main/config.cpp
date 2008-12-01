@@ -66,6 +66,15 @@ static uint nDefaultHash = 0xba61cc0b;
 
 //------------------------------------------------------------------------------
 
+void SetNostalgia (int nLevel)
+{
+gameStates.app.bNostalgia = (nLevel < 0) ? 0 : (nLevel > 3) ? 3 : nLevel;
+gameStates.app.iNostalgia = (gameStates.app.bNostalgia > 0);
+gameOpts = gameOptions + gameStates.app.iNostalgia;
+}
+
+//------------------------------------------------------------------------------
+
 int CfgCountHashs (char *pszFilter, char *pszFolder)
 {
 	FFS	ffs;
@@ -188,7 +197,7 @@ return true;
 
 bool CheckGameConfig (void)
 {
-return (nDefaultHash != gameConfig.cfgDataHash);
+return !gameStates.app.bNostalgia && (nDefaultHash != gameConfig.cfgDataHash);
 }
 
 // ----------------------------------------------------------------------------
@@ -412,6 +421,8 @@ if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
 	}
 JoySetCalVals (cal, sizeofa (cal));
 CfgInitHashs ();
+if (CheckGameConfig ())
+	SetNostalgia (3);
 return 0;
 }
 

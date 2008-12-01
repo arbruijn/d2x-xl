@@ -61,5 +61,6 @@ extern tGameConfig gameConfig;
 
 void InitGameConfig (void);
 bool CheckGameConfig (void);
+void SetNostalgia (int nLevel);
 
 #endif

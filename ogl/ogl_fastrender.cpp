@@ -54,8 +54,8 @@ tG3FaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
 typedef struct tFaceBuffer {
 	grsBitmap	*bmBot;
 	grsBitmap	*bmTop;
-	short		nFaces;
-	short		nElements;
+	short			nFaces;
+	short			nElements;
 	int			bTextured;
 	int			index [FACE_BUFFER_INDEX_SIZE];
 } tFaceBuffer;
@@ -108,7 +108,7 @@ else {
 void G3FlushFaceBuffer (int bForce)
 {
 #if G3_BUFFER_FACES
-if ((faceBuffer.nFaces && bForce) || (faceBuffer.nFaces >= FACE_BUFFER_SIZE)) {
+if (faceBuffer.nFaces && (bForce || (faceBuffer.nFaces >= FACE_BUFFER_SIZE))) {
 	if (gameStates.render.bFullBright)
 		glColor3f (1,1,1);
 	if (gameStates.render.bTriangleMesh)
