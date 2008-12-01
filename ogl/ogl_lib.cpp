@@ -1031,7 +1031,7 @@ oglRenderer = (char *) glGetString (GL_RENDERER);
 oglVersion = (char *) glGetString (GL_VERSION);
 oglExtensions = (char *) glGetString (GL_EXTENSIONS);
 OglInitLibs ();
-if (!OglCheckLibFlags ())
+if (OglCheckLibFlags ())
 	SetNostalgia (3);
 }
 
