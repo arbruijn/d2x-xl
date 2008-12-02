@@ -328,7 +328,7 @@ static int loadOp = 0;
 
 static int LoadModelsPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 if (loadOp == 0) {
 	loadIdx = LoadHiresModel (gameData.models.nHiresModels, loadIdx, 0);
 	if (loadIdx >= (int) sizeofa (replacementModels)) {
@@ -340,14 +340,14 @@ else if (loadOp == 1) {
 	loadIdx = LoadLoresModel (loadIdx);
 	if (loadIdx >= (int) sizeofa (replacementModels)) {
 		*key = -2;
-		GrPaletteStepLoad (NULL);
+		paletteManager.LoadEffect  ();
 		return nCurItem;
 		}
 	}
 m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 return nCurItem;
 }
 

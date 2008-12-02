@@ -320,7 +320,7 @@ while (!cf.EoF ()) {
 			gameConfig.bReverseChannels = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszGammaLevel)) {
 			gamma = (ubyte) strtol (value, NULL, 10);
-			GrSetPaletteGamma (gamma);
+			paletteManager.SetGamma (gamma);
 			}
 		else if (!strcmp (token, pszDetailLevel)) {
 			gameStates.app.nDetailLevel = strtol (value, NULL, 10);
@@ -434,7 +434,7 @@ int WriteConfigFile (void)
 	char str [256];
 	int i, j;
 	tJoyAxisCal cal [JOY_MAX_AXES];
-	ubyte gamma = GrGetPaletteGamma();
+	ubyte gamma = paletteManager.GetGamma ();
 
 con_printf (CON_VERBOSE, "writing config file ...\n");
 con_printf (CON_VERBOSE, "   getting joystick calibration values ...\n");

@@ -98,15 +98,13 @@ int con_init(void)
 
 void con_background (const char *filename)
 {
-	int pcx_error;
-	grsBitmap bmp;
+	int		pcx_error;
+	CBitmap	bm;
 
-	GrInitBitmapData(&bmp);
-	pcx_error = PCXReadBitmap(filename, &bmp, BM_LINEAR, 0);
-	Assert(pcx_error == PCX_ERROR_NONE);
-	GrRemapBitmapGood(&bmp, NULL, -1, -1);
-	CON_Background (Console, &bmp);
-	GrFreeBitmapData (&bmp);
+pcx_error = PCXReadBitmap (filename, &bm, BM_LINEAR, 0);
+Assert(pcx_error == PCX_ERROR_NONE);
+bm.Remap (NULL, -1, -1);
+CON_Background (Console, &bm);
 }
 
 //------------------------------------------------------------------------------

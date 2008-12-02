@@ -81,8 +81,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 u_int32_t nCurrentVGAMode;
 
-void GamePaletteStepUp (int r, int g, int b);
-
 #ifdef MWPROFILER
 #include <profiler.h>
 #endif
@@ -141,7 +139,7 @@ fix xFixedFrameTime = 0;          //if non-zero, set frametime to this
 
 #endif
 
-grsBitmap bmBackground;
+CBitmap bmBackground;
 
 #define BACKGROUND_NAME "statback.pcx"
 
@@ -163,22 +161,6 @@ void ShowFrameRate (void);
 
 //	==============================================================================================
 
-void LoadBackgroundBitmap ()
-{
-	int pcx_error;
-
-if (bmBackground.bmTexBuf)
-	D2_FREE (bmBackground.bmTexBuf);
-bmBackground.bmTexBuf=NULL;
-pcx_error = PCXReadBitmap (gameStates.app.cheats.bJohnHeadOn ? (char *) "johnhead.pcx" : (char *) BACKGROUND_NAME,
-							&bmBackground, BM_LINEAR,0);
-if (pcx_error != PCX_ERROR_NONE)
-	Error ("File %s - PCX error: %s",BACKGROUND_NAME,pcx_errormsg (pcx_error));
-GrRemapBitmapGood (&bmBackground, NULL, -1, -1);
-}
-
-
-//------------------------------------------------------------------------------
 //this is called once per game
 void InitGame (void)
 {
@@ -214,19 +196,6 @@ fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLig
 
 //------------------------------------------------------------------------------
 
-void ResetPaletteAdd ()
-{
-gameStates.ogl.palAdd.red =
-gameStates.ogl.palAdd.green =
-gameStates.ogl.palAdd.blue	= 0;
-gameData.render.xFlashEffect = 0;
-gameData.render.xTimeFlashLastPlayed = 0;
-GrPaletteStepUp (0, 0, 0);
-//gameStates.ogl.bDoPalStep = !(gameOpts->ogl.bSetGammaRamp && gameStates.ogl.bBrightness);
-}
-
-//------------------------------------------------------------------------------
-
 void ShowInGameWarning (const char *s)
 {
 if (grdCurScreen) {
@@ -257,8 +226,8 @@ if (grdCurScreen) {
 
 //------------------------------------------------------------------------------
 //these should be in gr.h
-#define cv_w  cvBitmap.bmProps.w
-#define cv_h  cvBitmap.bmProps.h
+#define cv_w  cvBitmap.props.w
+#define cv_h  cvBitmap.props.h
 
 extern void NDRecordCockpitChange (int);
 
@@ -308,7 +277,7 @@ switch (gameStates.render.cockpit.nMode) {
 
 	case CM_STATUS_BAR:
 		{
-		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].bmProps.h;
+		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].props.h;
 		if (gameStates.app.bDemoData)
 			h *= 2;
 		if (grdCurScreen->scHeight > 480)
@@ -324,9 +293,9 @@ switch (gameStates.render.cockpit.nMode) {
 
 	case CM_LETTERBOX: {
 		int x = 0;
-		int w = gameStates.render.vr.buffers.render[0].cvBitmap.bmProps.w;		//VR_render_width;
-		int h = (int) ((gameStates.render.vr.buffers.render[0].cvBitmap.bmProps.h * 7) / 10 / ((double) grdCurScreen->scHeight / (double) grdCurScreen->scWidth / 0.75));
-		int y = (gameStates.render.vr.buffers.render[0].cvBitmap.bmProps.h - h) / 2;
+		int w = gameStates.render.vr.buffers.render[0].cvBitmap.props.w;		//VR_render_width;
+		int h = (int) ((gameStates.render.vr.buffers.render[0].cvBitmap.props.h * 7) / 10 / ((double) grdCurScreen->scHeight / (double) grdCurScreen->scWidth / 0.75));
+		int y = (gameStates.render.vr.buffers.render[0].cvBitmap.props.h - h) / 2;
 		GameInitRenderSubBuffers (x, y, w, h);
 		break;
 		}
@@ -412,7 +381,7 @@ else {
 	else {
 		gameStates.render.vr.buffers.offscreen = GrCreateCanvas (render_w, render_h);
       }
-	gameStates.render.vr.buffers.offscreen->cvBitmap.bmProps.nType = BM_OGL;
+	gameStates.render.vr.buffers.offscreen->cvBitmap.props.nMode = BM_OGL;
 	GrInitSubCanvas (&gameStates.render.vr.buffers.render[0], gameStates.render.vr.buffers.offscreen, 0, 0, render_w, render_h);
 	GrInitSubCanvas (&gameStates.render.vr.buffers.render[1], gameStates.render.vr.buffers.offscreen, 0, 0, render_w, render_h);
 	}
@@ -854,132 +823,6 @@ gameStates.gameplay.bLastAfterburnerState = Controls [0].afterburnerState;
 gameStates.gameplay.xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge;
 }
 
-// -- //	------------------------------------------------------------------------------------
-// -- //	if energy < F1_0/2, recharge up to F1_0/2
-// -- void recharge_energy_frame (void)
-// -- {
-// -- 	if (LOCALPLAYER.energy < gameData.weapons.info[0].energy_usage) {
-// -- 		LOCALPLAYER.energy += gameData.time.xFrame/4;
-// --
-// -- 		if (LOCALPLAYER.energy > gameData.weapons.info[0].energy_usage)
-// -- 			LOCALPLAYER.energy = gameData.weapons.info[0].energy_usage;
-// -- 	}
-// -- }
-
-//	Amount to diminish guns towards Normal, per second.
-#define	DIMINISH_RATE	16		//	gots to be a power of 2, else change the code in DiminishPaletteTowardsNormal
-
- //adds to rgb values for palette flash
-void PALETTE_FLASH_ADD (int dr, int dg, int db)
-{
-	int	maxVal;
-
-	maxVal = gameData.render.xFlashEffect ? 60 : MAX_PALETTE_ADD;
-#if 0
-	dMax = maxVal - gameStates.ogl.palAdd.red;
-	h = maxVal - gameStates.ogl.palAdd.green;
-	if (h < dMax)
-		dMax = h;
-	h = maxVal - gameStates.ogl.palAdd.blue;
-	if (h < dMax)
-		dMax = h;
-	//the following code will keep the color of the flash effect
-	//by limiting the intensity increase of the other color components
-	//if one color component hits the ceiling.
-	if ((dr > dMax) || (dg > dMax) || (db > dMax))
-		dr = dg = db = dMax;
-#endif
-	gameStates.ogl.palAdd.red += dr;
-	gameStates.ogl.palAdd.green += dg;
-	gameStates.ogl.palAdd.blue += db;
-	CLAMP (gameStates.ogl.palAdd.red, -maxVal, maxVal);
-	CLAMP (gameStates.ogl.palAdd.green, -maxVal, maxVal);
-	CLAMP (gameStates.ogl.palAdd.blue, -maxVal, maxVal);
-}
-
-//	------------------------------------------------------------------------------------
-//	Diminish palette effects towards Normal.
-
-void DiminishPaletteTowardsNormal (void)
-{
-	int	dec_amount = 0;
-
-	//	Diminish at DIMINISH_RATE units/second.
-	//	For frame rates > DIMINISH_RATE Hz, use randomness to achieve this.
-if (gameData.time.xFrame < F1_0/DIMINISH_RATE) {
-	if (d_rand () < gameData.time.xFrame*DIMINISH_RATE/2)	//	Note: d_rand () is in 0d:\temp\dm_test32767, and 8 Hz means decrement every frame
-		dec_amount = 1;
-	}
-else {
-	dec_amount = X2I (gameData.time.xFrame*DIMINISH_RATE);		// one second = DIMINISH_RATE counts
-	if (dec_amount == 0)
-		dec_amount++;						// make sure we decrement by something
-	}
-
-if (gameData.render.xFlashEffect) {
-	int	force_do = 0;
-
-	//	Part of hack system to force update of palette after exiting a menu.
-	if (gameData.render.xTimeFlashLastPlayed) {
-		force_do = 1;
-		gameStates.ogl.palAdd.red ^= 1;	//	Very Tricky!  In GrPaletteStepUp, if all stepups same as last time, won't do anything!
-		}
-
-	if ((gameData.render.xTimeFlashLastPlayed + F1_0/8 < gameData.time.xGame) || (gameData.render.xTimeFlashLastPlayed > gameData.time.xGame)) {
-		DigiPlaySample (SOUND_CLOAK_OFF, gameData.render.xFlashEffect/4);
-		gameData.render.xTimeFlashLastPlayed = gameData.time.xGame;
-		}
-
-	gameData.render.xFlashEffect -= gameData.time.xFrame;
-	if (gameData.render.xFlashEffect < 0)
-		gameData.render.xFlashEffect = 0;
-
-	if (force_do || (d_rand () > 4096)) {
-      if ((gameData.demo.nState==ND_STATE_RECORDING) && (gameStates.ogl.palAdd.red || gameStates.ogl.palAdd.green || gameStates.ogl.palAdd.blue))
-	      NDRecordPaletteEffect (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
-		GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
-		return;
-		}
-
-	}
-
-if (gameStates.ogl.palAdd.red > 0) {
-	gameStates.ogl.palAdd.red -= dec_amount;
-	if (gameStates.ogl.palAdd.red < 0)
-		gameStates.ogl.palAdd.red = 0;
-	}
-else if (gameStates.ogl.palAdd.red < 0) {
-	gameStates.ogl.palAdd.red += dec_amount;
-	if (gameStates.ogl.palAdd.red > 0)
-		gameStates.ogl.palAdd.red = 0;
-	}
-if (gameStates.ogl.palAdd.green > 0) {
-	gameStates.ogl.palAdd.green -= dec_amount;
-	if (gameStates.ogl.palAdd.green < 0)
-		gameStates.ogl.palAdd.green = 0;
-	}
-else if (gameStates.ogl.palAdd.green < 0) {
-	gameStates.ogl.palAdd.green += dec_amount;
-	if (gameStates.ogl.palAdd.green > 0)
-		gameStates.ogl.palAdd.green = 0;
-	}
-if (gameStates.ogl.palAdd.blue > 0) {
-	gameStates.ogl.palAdd.blue -= dec_amount;
-	if (gameStates.ogl.palAdd.blue < 0)
-		gameStates.ogl.palAdd.blue = 0;
-	}
-else if (gameStates.ogl.palAdd.blue < 0) {
-	gameStates.ogl.palAdd.blue += dec_amount;
-	if (gameStates.ogl.palAdd.blue > 0)
-		gameStates.ogl.palAdd.blue = 0;
-	}
-
-if ((gameData.demo.nState==ND_STATE_RECORDING) &&
-		(gameStates.ogl.palAdd.red || gameStates.ogl.palAdd.green || gameStates.ogl.palAdd.blue))
-	NDRecordPaletteEffect (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
-GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
-}
-
 //------------------------------------------------------------------------------
 
 #define ADD_HELP_OPT(_text)	m [opt].nType = NM_TYPE_TEXT; m [opt++].text = (char *) (_text);
@@ -1041,9 +884,9 @@ void ShowHelp ()
 	ADD_HELP_OPT (command_help);
 #endif
 	nitems = opt;
-	FullPaletteSave ();
+	paletteManager.SaveEffectAndReset ();
 	ExecMenutiny2 (NULL, TXT_KEYS, nitems, m, NULL);
-	PaletteRestore ();
+	paletteManager.LoadEffect ();
 }
 
 //------------------------------------------------------------------------------
@@ -1179,9 +1022,9 @@ gameStates.app.bGameAborted = 0;
 gameStates.render.cockpit.nLastDrawn[0] = -1;				// Force cockpit to redraw next time a frame renders.
 gameStates.render.cockpit.nLastDrawn[1] = -1;				// Force cockpit to redraw next time a frame renders.
 gameStates.app.bEndLevelSequence = 0;
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 SetScreenMode (SCREEN_GAME);
-ResetPaletteAdd ();
+paletteManager.ResetEffect ();
 SetWarnFunc (ShowInGameWarning);
 #if TRACE
 //con_printf (CONDBG, "   InitCockpit d:\temp\dm_test.\n");
@@ -1287,15 +1130,15 @@ for (;;) {
 	if (gameStates.app.bConfigMenu) {
 		int double_save = bScanlineDouble;
 		if (!IsMultiGame) {
-			PaletteSave ();
-			ResetPaletteAdd ();
-			GrPaletteStepLoad (NULL);
+			paletteManager.SaveEffect ();
+			paletteManager.ResetEffect ();
+			paletteManager.LoadEffect  ();
 			}
 		ConfigMenu ();
 		if (bScanlineDouble != double_save)
 			InitCockpit ();
 		if (!IsMultiGame)
-			PaletteRestore ();
+			paletteManager.LoadEffect ();
 		}
 	if (gameStates.render.automap.bDisplay) {
 		int	save_w = gameData.render.window.w,
@@ -1318,11 +1161,11 @@ for (;;) {
 		int choice, fmode;
 		fmode = gameStates.app.nFunctionMode;
 		SetFunctionMode (FMODE_GAME);
-		PaletteSave ();
-		ResetPaletteAdd ();
-		GrPaletteStepLoad (NULL);
+		paletteManager.SaveEffect ();
+		paletteManager.ResetEffect ();
+		paletteManager.LoadEffect  ();
 		choice = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
-		PaletteRestore ();
+		paletteManager.LoadEffect ();
 		SetFunctionMode (fmode);
 		if (choice)
 			SetFunctionMode (FMODE_GAME);
@@ -1370,7 +1213,7 @@ if (gameStates.render.cockpit.nModeSave != -1) {
 	gameStates.render.cockpit.nModeSave = -1;
 	}
 if (gameStates.app.nFunctionMode != FMODE_EDITOR)
-	GrPaletteFadeOut (NULL,32,0);			// Fade out before going to menu
+	paletteManager.FadeOut ();			// Fade out before going to menu
 //@@	if ((!demo_playing) && (!multi_game) && (gameStates.app.nFunctionMode != FMODE_EDITOR))	{
 //@@		MaybeAddPlayerScore (gameStates.app.bGameAborted);
 //@@	}
@@ -1445,7 +1288,6 @@ FreeExtraImages ();
 PrintLog ("unloading shield data\n");
 FreeSphereCoord ();
 PrintLog ("unloading palettes\n");
-FreePalettes ();
 FreeSkyBoxSegList ();
 CloseDynLighting ();
 if (gameStates.render.vr.buffers.offscreen)	{
@@ -1460,9 +1302,9 @@ if (bGameCockpitCopyCode) {
 	D2_FREE (bGameCockpitCopyCode);
 	bGameCockpitCopyCode = NULL;
 }
-if (bmBackground.bmTexBuf) {
+if (bmBackground.texBuf) {
 	PrintLog ("unloading background bitmap\n");
-	D2_FREE (bmBackground.bmTexBuf);
+	D2_FREE (bmBackground.texBuf);
 	}
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 PrintLog ("unloading custom background data\n");
@@ -1525,10 +1367,9 @@ int __Movie_frame_num=0;
 
 ubyte *Movie_frame_buffer;
 int nMovieFrames;
-ubyte Movie_pal[768];
 char movie_path[50] = ".\\";
 
-grsBitmap bmMovie;
+CBitmap bmMovie;
 
 void flush_movie_buffer ()
 {
@@ -1539,13 +1380,13 @@ void flush_movie_buffer ()
 #if TRACE
 	//con_printf (CONDBG,"Flushing movie bufferd:\temp\dm_test.");
 #endif
-	bmMovie.bmTexBuf = Movie_frame_buffer;
+	bmMovie.texBuf = Movie_frame_buffer;
 
 	for (f=0;f<nMovieFrames;f++) {
 		sprintf (savename, "%sfrm%04d.pcx",movie_path,__Movie_frame_num);
 		__Movie_frame_num++;
 		pcx_write_bitmap (savename, &bmMovie);
-		bmMovie.bmTexBuf += MOVIE_FRAME_SIZE;
+		bmMovie.texBuf += MOVIE_FRAME_SIZE;
 
 		if (f % 5 == 0) {
 #if TRACE
@@ -1598,15 +1439,13 @@ void toggle_movie_saving ()
 
 			nMovieFrames=0;
 
-			bmMovie.bmProps.x = bmMovie.bmProps.y = 0;
-			bmMovie.bmProps.w = 320;
-			bmMovie.bmProps.h = 200;
-			bmMovie.bmProps.nType = BM_LINEAR;
-			bmMovie.bmProps.flags = 0;
-			bmMovie.bmProps.rowSize = 320;
-			//bmMovie.bmHandle = 0;
-
-			GrPaletteRead (Movie_pal);		//get actual palette from the hardware
+			bmMovie.props.x = bmMovie.props.y = 0;
+			bmMovie.props.w = 320;
+			bmMovie.props.h = 200;
+			bmMovie.props.nMode = BM_LINEAR;
+			bmMovie.props.flags = 0;
+			bmMovie.props.rowSize = 320;
+			//bmMovie.nId = 0;
 
 			if (gameData.demo.nState == ND_STATE_PLAYBACK)
 				gameData.demo.bInterpolate = 0;
@@ -1625,7 +1464,7 @@ void toggle_movie_saving ()
 
 void save_movie_frame ()
 {
-	memcpy (Movie_frame_buffer+nMovieFrames*MOVIE_FRAME_SIZE,grdCurScreen->scCanvas.cvBitmap.bmTexBuf,MOVIE_FRAME_SIZE);
+	memcpy (Movie_frame_buffer+nMovieFrames*MOVIE_FRAME_SIZE,grdCurScreen->scCanvas.cvBitmap.texBuf,MOVIE_FRAME_SIZE);
 
 	nMovieFrames++;
 
@@ -1843,7 +1682,7 @@ MultiSyncKills ();
 MultiRefillPowerups ();
 UpdatePlayerStats ();
 UpdatePlayerWeaponInfo ();
-DiminishPaletteTowardsNormal ();		//	Should leave palette effect up for as long as possible by putting right before render.
+paletteManager.FadeEffect ();		//	Should leave palette effect up for as long as possible by putting right before render.
 //PrintLog ("DoAfterburnerStuff\n");
 DoAfterburnerStuff ();
 //PrintLog ("DoCloakStuff\n");
@@ -2123,9 +1962,9 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 		if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
 			return;
 		if (gameData.fusion.xCharge < F1_0*2)
-			PALETTE_FLASH_ADD (gameData.fusion.xCharge >> 11, 0, gameData.fusion.xCharge >> 11);
+			paletteManager.BumpEffect (gameData.fusion.xCharge >> 11, 0, gameData.fusion.xCharge >> 11);
 		else
-			PALETTE_FLASH_ADD (gameData.fusion.xCharge >> 11, gameData.fusion.xCharge >> 11, 0);
+			paletteManager.BumpEffect (gameData.fusion.xCharge >> 11, gameData.fusion.xCharge >> 11, 0);
 		if (gameData.time.xGame < gameData.fusion.xLastSoundTime)		//gametime has wrapped
 			gameData.fusion.xNextSoundTime = gameData.fusion.xLastSoundTime = gameData.time.xGame;
 		if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
@@ -2305,6 +2144,20 @@ fl->nSide = cf.ReadShort ();
 fl->mask = cf.ReadInt ();
 fl->timer = cf.ReadFix ();
 fl->delay = cf.ReadFix ();
+}
+
+//------------------------------------------------------------------------------
+
+void LoadBackgroundBitmap (void)
+{
+	int pcx_error;
+
+bmBackground.DestroyTexBuf ();
+pcx_error = PCXReadBitmap (gameStates.app.cheats.bJohnHeadOn ? (char *) "johnhead.pcx" : (char *) BACKGROUND_NAME,
+									&bmBackground, BM_LINEAR,0);
+if (pcx_error != PCX_ERROR_NONE)
+	Error ("File %s - PCX error: %s",BACKGROUND_NAME,pcx_errormsg (pcx_error));
+bmBackground.Remap (NULL, -1, -1);
 }
 
 //-----------------------------------------------------------------------------

@@ -28,56 +28,401 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "mono.h"
 #include "fix.h"
+#include "newdemo.h"
 #include "text.h"
-//added/remove by dph on 1/9/99
-//#include "key.h"
-//end remove
-
+#include "texmerge.h"
+#include "rle.h"
+#include "bitmap.h"
 #include "palette.h"
 
 //#define Sqr(x) ((x)*(x))
 
-ubyte *defaultPalette = NULL;
-ubyte *fadePalette = NULL;
+CPaletteManager paletteManager;
 
-ubyte grFadeTable[256*GR_FADE_LEVELS];
+//	-----------------------------------------------------------------------------
 
+inline int Sqr (int i)
+{
+return i * i;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CPalette::Init (void)
+{
+m_nComputedColors = 0;
+memset (m_computedColors, 0xff, sizeof (m_computedColors));
+}
 
 //------------------------------------------------------------------------------
 
-void GrSetPaletteGamma (int gamma)
+bool CPalette::Read (CFile& cf)
+{
+return cf.File () && (cf.Read (&m_data, sizeof (m_data), 1) == 1);
+}
+
+//------------------------------------------------------------------------------
+
+bool CPalette::Write (CFile& cf)
+{
+return cf.File () && (cf.Write (&m_data, sizeof (m_data), 1) == 1);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CPalette::ToRgbaf (ubyte nIndex, tRgbaColorf& color)
+{
+color.red = (float) m_data.rgb [nIndex].red / 63.0f;
+color.green = (float) m_data.rgb [nIndex].green / 63.0f;
+color.blue = (float) m_data.rgb [nIndex].blue / 63.0f;
+color.alpha = -1;
+}
+
+//------------------------------------------------------------------------------
+
+//	Add a computed color (by GrFindClosestColor) to list of computed colors in m_computedColors.
+//	If list wasn't full already, increment gameData.render.m_nComputedColors.
+//	If was full, replace a random one.
+void CPalette::AddComputedColor (int r, int g, int b, int nIndex)
+{
+	int	i;
+
+if (m_nComputedColors < MAX_COMPUTED_COLORS) {
+	i = m_nComputedColors;
+	m_nComputedColors++;
+	} 
+else
+	i = (d_rand() * MAX_COMPUTED_COLORS) >> 15;
+m_computedColors [i].color.red = r;
+m_computedColors [i].color.green = g;
+m_computedColors [i].color.blue = b;
+m_computedColors [i].nIndex = nIndex;
+}
+
+//	-----------------------------------------------------------------------------
+
+void CPalette::InitComputedColors (void)
+{
+memset (m_computedColors, 0xff, sizeof (m_computedColors));
+}
+
+//	-----------------------------------------------------------------------------
+
+static inline int ColorDelta (ubyte *palette, int r, int g, int b, int j)
+{
+return Sqr (r - palette [j]) + Sqr (g - palette [j + 1]) + Sqr (b - palette [j + 2]);
+}
+
+//	-----------------------------------------------------------------------------
+
+int CPalette::ClosestColor (int r, int g, int b)
+{
+	int				i, j, n;
+	int				nBestValue, nBestIndex, value;
+	tComputedColor	*pci, *pcj;
+
+#if 0
+if (!palette)
+	palette = paletteManager.Default ();
+if (!palette)
+	return -1;
+#endif
+n = m_nComputedColors;
+//if (!n)
+//	InitComputedColors (plP);
+
+//	If we've already computed this color, return it!
+pci = m_computedColors;
+for (i = 0; i < n; i++, pci++)
+	if ((r == pci->color.red) && (g == pci->color.green) && (b == pci->color.blue)) {
+		if (i <= 4)
+			return pci->nIndex;
+		else {
+			tComputedColor	h;
+			pcj = pci - 1;
+			h = *pcj;
+			*pcj = *pci;
+			*pci = h;
+			return pcj->nIndex;
+			}
+		}
+
+if (!(nBestValue = ColorDelta (m_data.raw, r, g, b, 0))) {
+	AddComputedColor (r, g, b, 0);
+	return 0;
+	}
+
+nBestIndex = 0;
+// only go to 255, 'cause we dont want to check the transparent color.
+for (i = 1, j = 0; i < 255; i++) {
+	j += 3;
+	if (!(value = ColorDelta (m_data.raw, r, g, b, j))) {
+		AddComputedColor (r, g, b, i);
+		return i;
+		}
+	if (value < nBestValue) {
+		nBestValue = value;
+		nBestIndex = i;
+		}
+	}
+AddComputedColor (r, g, b, nBestIndex);
+return nBestIndex;
+}
+
+//	-----------------------------------------------------------------------------
+
+void CPalette::SwapTransparency (void)
+{
+for (int i = 0; i < 3; i++) {
+	ubyte h = m_data.raw [i];
+	m_data.raw [i] = m_data.raw [765 + i];
+	m_data.raw [765 + i] = h;
+	}
+}
+
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+
+int CPaletteManager::FindClosestColor15bpp (int rgb)
+{
+return m_data.game ? m_data.game->ClosestColor (((rgb >> 10) & 31) * 2, ((rgb >> 5) & 31) * 2, (rgb & 31) * 2) : 1;
+}
+
+//	-----------------------------------------------------------------------------
+
+CPalette* CPaletteManager::Find (CPalette& palette)
+{
+	tPaletteList	*plP;
+#if DBG
+	int				i;
+#endif
+
+for (plP = m_data.list; plP; plP = plP->next)
+#if DBG
+	{
+	for (i = 0; i < PALETTE_SIZE * 3; i++)
+		if (palette.Data ().raw [i] != plP->palette.Data ().raw [i])
+			break;
+	if (i == 768)
+		return Activate (&plP->palette);
+	}
+#else
+	if (palette == plP->palette)
+		return Activate (&plP->palette);
+#endif
+return NULL;
+}
+
+//	-----------------------------------------------------------------------------
+
+CPalette *CPaletteManager::Add (CPalette& palette)
+{
+	tPaletteList	*plP;
+
+if (Find (palette))
+	return m_data.current;
+if (!(plP = (tPaletteList *) D2_ALLOC (sizeof (tPaletteList))))
+	return NULL;
+plP->next = m_data.list;
+m_data.list = plP;
+plP->palette = palette;
+plP->palette.Init ();
+m_data.nPalettes++;
+return Activate (&plP->palette);
+}
+
+//	-----------------------------------------------------------------------------
+
+CPalette *CPaletteManager::Add (ubyte* buffer)
+{
+	CPalette	palette;
+
+memcpy (palette.Raw (), buffer, PALETTE_SIZE * 3);
+return Add (palette);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CPaletteManager::Destroy (void)
+{
+	tPaletteList	*pi, *pj;
+
+for (pi = m_data.list; pi; pi = pj) {
+	pj = pi->next;
+	D2_FREE (pi);
+	}
+m_data.list = NULL;
+m_data.nPalettes = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void CPaletteManager::SetEffect (void)
+{
+if (gameStates.render.vr.bUseRegCode)
+	;//GrPaletteStepUpVR (r, g, b, VR_WHITE_INDEX, VR_BLACK_INDEX);
+else
+	SetEffect (m_data.effect.red, m_data.effect.green, m_data.effect.blue);
+}
+
+//	------------------------------------------------------------------------------------
+
+#define MAX_PALETTE_ADD 30
+
+void CPaletteManager::BumpEffect (int dr, int dg, int db)
+{
+	int	maxVal = paletteManager.EffectDuration () ? 60 : MAX_PALETTE_ADD;
+
+m_data.effect.red = dr;
+m_data.effect.green = dg;
+m_data.effect.blue = db;
+CLAMP (m_data.effect.red, -maxVal, maxVal);
+CLAMP (m_data.effect.green, -maxVal, maxVal);
+CLAMP (m_data.effect.blue, -maxVal, maxVal);
+}
+
+//------------------------------------------------------------------------------
+
+void CPaletteManager::SaveEffect (void)
+{
+m_data.lastEffect = m_data.effect;
+}
+
+//------------------------------------------------------------------------------
+
+void CPaletteManager::LoadEffect (CPalette *palette)
+{
+SetEffect (m_data.lastEffect.red, m_data.lastEffect.green, m_data.lastEffect.blue);
+//	Forces flash effect to fixup palette next frame.
+if (palette)
+	Activate (palette);
+m_data.xLastEffectTime = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void CPaletteManager::SaveEffectAndReset (void)
+{
+SaveEffect ();
+ResetEffect ();
+LoadEffect ();
+}
+
+//------------------------------------------------------------------------------
+
+void CPaletteManager::ResetEffect (void)
+{
+m_data.effect.red =
+m_data.effect.green =
+m_data.effect.blue= 0;
+m_data.xEffectDuration = 0;
+m_data.xLastEffectTime = 0;
+SetEffect (0, 0, 0);
+}
+
+//	------------------------------------------------------------------------------------
+
+static inline ubyte UpdateEffect (sbyte nColor, int nChange)
+{
+if (nColor > 0)
+	nColor -= nChange;
+else
+	nColor += nChange;
+return (nColor < 0) ? 0 : nColor;
+}
+
+//	------------------------------------------------------------------------------------
+//	Diminish palette effects towards Normal.
+
+void CPaletteManager::FadeEffect (void)
+{
+	int	nDecAmount = 0;
+
+	//	Diminish at FADE_RATE units/second.
+	//	For frame rates > FADE_RATE Hz, use randomness to achieve this.
+if (gameData.time.xFrame < F1_0/FADE_RATE) {
+	if (d_rand () < gameData.time.xFrame * FADE_RATE / 2)	//	Note: d_rand () is in 0d:\temp\dm_test32767, and 8 Hz means decrement every frame
+		nDecAmount = 1;
+	}
+else {
+	if (!(nDecAmount = X2I (gameData.time.xFrame * FADE_RATE)))		// one second = FADE_RATE counts
+		nDecAmount++;						// make sure we decrement by something
+	}
+
+if (m_data.xEffectDuration) {
+	int	bForce = 0;
+
+	//	Part of hack system to force update of palette after exiting a menu.
+	if (m_data.xLastEffectTime) {
+		bForce = 1;
+		m_data.effect.red ^= 1;	//	Very Tricky!  In paletteManager.SetEffect, if all stepups same as last time, won't do anything!
+		}
+
+	if ((m_data.xLastEffectTime + F1_0/8 < gameData.time.xGame) || (m_data.xLastEffectTime > gameData.time.xGame)) {
+		DigiPlaySample (SOUND_CLOAK_OFF, m_data.xEffectDuration/4);
+		m_data.xLastEffectTime = gameData.time.xGame;
+		}
+
+	m_data.xEffectDuration -= gameData.time.xFrame;
+	if (m_data.xEffectDuration < 0)
+		m_data.xEffectDuration = 0;
+
+	if (bForce || (d_rand () > 4096)) {
+      if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.red || m_data.effect.green || m_data.effect.blue))
+	      NDRecordPaletteEffect (m_data.effect.red, m_data.effect.green, m_data.effect.blue);
+		paletteManager.SetEffect ();
+		return;
+		}
+
+	}
+
+m_data.effect.red = UpdateEffect (m_data.effect.red, nDecAmount);
+m_data.effect.green = UpdateEffect (m_data.effect.green, nDecAmount);
+m_data.effect.blue = UpdateEffect (m_data.effect.blue, nDecAmount);
+
+if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.red || m_data.effect.green || m_data.effect.blue))
+	NDRecordPaletteEffect (m_data.effect.red, m_data.effect.green, m_data.effect.blue);
+SetEffect ();
+}
+
+//------------------------------------------------------------------------------
+
+void CPaletteManager::SetGamma (int gamma)
 {
 CLAMP (gamma, 0, 16);
-if (gameData.render.nPaletteGamma != gamma) {
-	gameData.render.nPaletteGamma = gamma;
+if (m_data.nGamma != gamma) {
+	m_data.nGamma = gamma;
 #if 0
 	if (!gameStates.render.bPaletteFadedOut)
-		GrPaletteStepLoad (NULL);
+		paletteManager.LoadEffect  ();
 #endif
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int GrGetPaletteGamma()
+int CPaletteManager::GetGamma (void)
 {
-return gameData.render.nPaletteGamma;
+return m_data.nGamma;
+}
+
+//	-----------------------------------------------------------------------------
+
+void CPaletteManager::Init (void)
+{
+memset (&m_data, 0, sizeof (m_data));
 }
 
 //------------------------------------------------------------------------------
 
-void GrCopyPalette (ubyte *pCurPal, ubyte *pal, int size)
-{
-gameData.render.nComputedColors = 0;
-}
-
-//------------------------------------------------------------------------------
-
-ubyte *GrUsePaletteTable (const char *pszFile, const char *pszLevel)
+CPalette *CPaletteManager::Load (const char *pszFile, const char *pszLevel)
 {
 	CFile		cf;
 	int		i = 0, fsize;
-	tPalette	palette;
+	CPalette	palette;
 #ifdef SWAP_0_255
 	ubyte		c;
 #endif
@@ -102,238 +447,87 @@ if (!i) {
 	}
 fsize	= cf.Length ();
 Assert (fsize == 9472);
-cf.Read (palette, 256*3, 1);
-cf.Read (grFadeTable, 256*34, 1);
+palette.Read (cf);
+cf.Read (m_data.fadeTable, sizeof (m_data.fadeTable), 1);
 cf.Close ();
 // This is the TRANSPARENCY COLOR
-for (i = 0; i < GR_FADE_LEVELS; i++)
-	grFadeTable [i * 256 + 255] = 255;
-gameData.render.nComputedColors = 0;	//	Flush palette cache.
+for (i = 0; i < MAX_FADE_LEVELS; i++)
+	m_data.fadeTable [i * 256 + 255] = 255;
 // swap colors 0 and 255 of the palette along with fade table entries
 #ifdef SWAP_0_255
-for (i = 0; i < 3; i++) {
-	c = palette [i];
-	palette [i] = palette [765 + i];
-	palette [765 + i] = c;
-	}
-for (i = 0; i < GR_FADE_LEVELS * 256; i++)
-	if (grFadeTable [i] == 0)
-		grFadeTable [i] = 255;
-for (i = 0; i < GR_FADE_LEVELS; i++)
-	grFadeTable [i * 256] = TRANSPARENCY_COLOR;
+palette.SwapTransparency ();
+for (i = 0; i < MAX_FADE_LEVELS * 256; i++)
+	if (m_fadeTable [i] == 0)
+		m_fadeTable [i] = 255;
+for (i = 0; i < MAX_FADE_LEVELS; i++)
+	m_fadeTable [i * 256] = TRANSPARENCY_COLOR;
 #endif
-return fadePalette = AddPalette (palette);
+ClearEffect (&palette);
+return Add (palette);
 }
 
-//	-----------------------------------------------------------------------------
-//	Add a computed color (by GrFindClosestColor) to list of computed colors in computedColors.
-//	If list wasn't full already, increment gameData.render.nComputedColors.
-//	If was full, replace a random one.
-void AddComputedColor (tPaletteList *plP, int r, int g, int b, int nColor)
+//------------------------------------------------------------------------------
+//load a palette by name. returns 1 if new palette loaded, else 0
+//if nUsedForLevel is set, load pig, etc.
+//if bNoScreenChange is set, the current screen does not get remapped,
+//and the hardware palette does not get changed
+CPalette *CPaletteManager::Load (const char *pszPaletteName, const char *pszLevelName, int nUsedForLevel, int bNoScreenChange, int bForce)
 {
-	int	i;
+	char		szPigName [FILENAME_LEN];
+	CPalette	*palette = NULL;
 
-if (plP->nComputedColors < MAX_COMPUTED_COLORS) {
-	i = plP->nComputedColors;
-	plP->nComputedColors++;
-	} 
-else
-	i = (d_rand() * MAX_COMPUTED_COLORS) >> 15;
-plP->computedColors [i].r = r;
-plP->computedColors [i].g = g;
-plP->computedColors [i].b = b;
-plP->computedColors [i].nColor = nColor;
-}
-
-//	-----------------------------------------------------------------------------
-
-void InitComputedColors (tPaletteList *plP)
-{
-memset (plP->computedColors, 0xff, sizeof (plP->computedColors));
-}
-
-//	-----------------------------------------------------------------------------
-
-inline int Sqr (int i)
-{
-return i * i;
-}
-
-//	-----------------------------------------------------------------------------
-
-inline int ColorDelta (ubyte *palette, int r, int g, int b, int j)
-{
-return Sqr (r - palette [j]) + Sqr (g - palette [j + 1]) + Sqr (b - palette [j + 2]);
-}
-
-//	-----------------------------------------------------------------------------
-
-int GrFindClosestColor (ubyte *palette, int r, int g, int b)
-{
-	int				i, j, n;
-	int				nBestValue, nBestIndex, value;
-	color_record	*pci, *pcj;
-	tPaletteList	*plP;
-
-if (!palette)
-	palette = defaultPalette;
-if (!palette)
-	return -1;
-plP = (tPaletteList *) palette;
-n = plP->nComputedColors;
-//if (!n)
-//	InitComputedColors (plP);
-
-//	If we've already computed this color, return it!
-pci = plP->computedColors;
-for (i = 0; i < n; i++, pci++)
-	if ((r == pci->r) && (g == pci->g) && (b == pci->b)) {
-		if (i <= 4)
-			return pci->nColor;
-		else {
-			color_record	trec;
-			pcj = pci - 1;
-			trec = *pcj;
-			*pcj = *pci;
-			*pci = trec;
-			return pcj->nColor;
-			}
-		}
-
-if (!(nBestValue = ColorDelta (palette, r, g, b, 0))) {
-	AddComputedColor (plP, r, g, b, 0);
-	return 0;
+	//special hack to tell that palette system about a pig that's been loaded elsewhere
+if (nUsedForLevel == -2) {
+	paletteManager.SetLastPig (pszPaletteName);
+	return m_data.last;
 	}
-
-nBestIndex = 0;
-// only go to 255, 'cause we dont want to check the transparent color.
-for (i = 1, j = 0; i < 255; i++) {
-	j += 3;
-	if (!(value = ColorDelta (palette, r, g, b, j))) {
-		AddComputedColor (plP, r, g, b, i);
-		return i;
-		}
-	if (value < nBestValue) {
-		nBestValue = value;
-		nBestIndex = i;
+if (!pszPaletteName)
+	pszPaletteName = paletteManager.LastPig ();
+if (!*pszPaletteName)
+	pszPaletteName = "groupa.256";
+if (nUsedForLevel && stricmp (paletteManager.LastPig (), pszPaletteName) != 0) {
+	if (gameStates.app.bD1Mission)
+		strcpy (szPigName, "groupa.pig");
+	else {
+		_splitpath ((char *) pszPaletteName, NULL, NULL, szPigName, NULL);
+		strcat (szPigName, ".pig");
+		PiggyInitPigFile (szPigName);
 		}
 	}
-AddComputedColor (plP, r, g, b, nBestIndex);
-return nBestIndex;
-}
-
-//	-----------------------------------------------------------------------------
-
-int GrFindClosestColor15bpp (int rgb)
-{
-return GrFindClosestColor (gamePalette, ((rgb >> 10) & 31) * 2, ((rgb >> 5) & 31) * 2, (rgb & 31) * 2);
-}
-
-//	-----------------------------------------------------------------------------
-
-int GrFindClosestColorCurrent(int r, int g, int b)
-{
-return GrFindClosestColor (gameData.render.pal.pCurPal, r, g, b);
-}
-
-//	-----------------------------------------------------------------------------
-
-ubyte *FindPalette (ubyte *palette)
-{
-	tPaletteList	*plP;
-#if DBG
-	int				i;
-#endif
-
-for (plP = gameData.render.pal.palettes; plP; plP = plP->pNextPal)
-#if DBG
-	{
-	for (i = 0; i < 768; i++)
-		if (palette [i] != plP->palette [i])
-			break;
-	if (i == 768)
-		return gameData.render.pal.pCurPal = plP->palette;
+if (bForce || pszLevelName || stricmp(paletteManager.LastLoaded (), pszPaletteName)) {
+	strncpy (paletteManager.LastLoaded (), pszPaletteName, sizeof (paletteManager.LastLoaded ()));
+	palette = paletteManager.Load (pszPaletteName, pszLevelName);
+	if (!paletteManager.FadedOut () && !bNoScreenChange)
+		LoadEffect ();
+	//RemapFontsAndMenus (0);
+	gameData.hud.msgs [0].nColor = -1;
+	LoadBackgroundBitmap ();
 	}
-#else
-	if (!memcmp (palette, plP->palette, sizeof (tPalette)))
-		return gameData.render.pal.pCurPal = plP->palette;
-#endif
-return NULL;
+if (nUsedForLevel && stricmp (paletteManager.LastPig (), pszPaletteName) != 0) {
+	strncpy (paletteManager.LastPig (), pszPaletteName, sizeof (paletteManager.LastPig ()));
+	TexMergeFlush ();
+	RLECacheFlush ();
+	}
+return palette;
 }
 
-//	-----------------------------------------------------------------------------
-
-ubyte *AddPalette (ubyte *palette)
+//------------------------------------------------------------------------------
+/* calculate table to translate d1 bitmaps to current palette,
+ * return -1 on error
+ */
+CPalette* CPaletteManager::LoadD1 (void)
 {
-	tPaletteList	*plP;
-
-if (!palette)
+	CPalette	palette;
+	CFile 	cf;
+	
+if (!cf.Open (D1_PALETTE, gameFolders.szDataDir, "rb", 1) || (cf.Length () != 9472))
 	return NULL;
-if (FindPalette (palette))
-	return gameData.render.pal.pCurPal;
-if (!(plP = (tPaletteList *) D2_ALLOC (sizeof (tPaletteList))))
-	return NULL;
-plP->pNextPal = gameData.render.pal.palettes;
-gameData.render.pal.palettes = plP;
-memcpy (plP->palette, palette, sizeof (tPalette));
-gameData.render.pal.nPalettes++;
-plP->nComputedColors = 0;
-memset (plP->computedColors, 0xff, sizeof (plP->computedColors));
-return gameData.render.pal.pCurPal = plP->palette;
-}
-
-//	-----------------------------------------------------------------------------
-
-void FreePalettes (void)
-{
-	tPaletteList	*pi, *pj;
-
-for (pi = gameData.render.pal.palettes; pi; pi = pj) {
-	pj = pi->pNextPal;
-	D2_FREE (pi);
-	}
-gameData.render.pal.palettes = NULL;
-gameData.render.pal.nPalettes = 0;
-}
-
-//------------------------------------------------------------------------------
-
-tRgbColors palAddSave;
-
-void PaletteSave (void)
-{
-palAddSave = gameStates.ogl.palAdd;
-}
-
-//------------------------------------------------------------------------------
-
-void GamePaletteStepUp (int r, int g, int b)
-{
-if (gameStates.render.vr.bUseRegCode)
-	;//GrPaletteStepUpVR (r, g, b, VR_WHITE_INDEX, VR_BLACK_INDEX);
-else
-	GrPaletteStepUp (r, g, b);
-}
-
-//------------------------------------------------------------------------------
-
-void PaletteRestore (void)
-{
-gameStates.ogl.palAdd = palAddSave; 
-GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
-//	Forces flash effect to fixup palette next frame.
-gameData.render.xTimeFlashLastPlayed = 0;
-}
-
-void DeadPlayerFrame (void);
-
-//------------------------------------------------------------------------------
-
-void FullPaletteSave (void)
-{
-PaletteSave ();
-ResetPaletteAdd ();
-GrPaletteStepLoad (NULL);
+palette.Read (cf);
+cf.Close ();
+palette.Raw () [254] = SUPER_TRANSP_COLOR;
+palette.Raw () [255] = TRANSPARENCY_COLOR;
+SetD1 (Add (palette));
+return D1 ();
 }
 
 //	-----------------------------------------------------------------------------

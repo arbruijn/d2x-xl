@@ -31,7 +31,7 @@ void GrURect(int left,int top,int right,int bot)
 {
 	int i;
 
-	if (TYPE == BM_OGL) {
+	if (MODE == BM_OGL) {
 		OglURect(left,top,right,bot);
 		return;
 	}
@@ -43,7 +43,7 @@ void GrRect(int left,int top,int right,int bot)
 {
 	int i;
 
-	if (TYPE == BM_OGL) {
+	if (MODE == BM_OGL) {
 		OglURect(left,top,right,bot);
 		return;
 	}

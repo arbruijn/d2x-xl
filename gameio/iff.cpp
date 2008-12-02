@@ -378,7 +378,7 @@ if (Pos() >= Len())
 //------------------------------------------------------------------------------
 //read an ILBM or PBM file
 // Pass pointer to opened file, and to empty bitmap_header structure, and form length
-int CIFF::Parse (int formType, tIFFBitmapHeader *bmHeader, int formLen, grsBitmap *prevBmP)
+int CIFF::Parse (int formType, tIFFBitmapHeader *bmHeader, int formLen, CBitmap *prevBmP)
 {
 	int sig, len;
 	//char ignore=0;
@@ -415,11 +415,11 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 		case anhd_sig:
 			if (!prevBmP) 
 				return IFF_CORRUPT;
-			bmHeader->w = prevBmP->bmProps.w;
-			bmHeader->h = prevBmP->bmProps.h;
-			bmHeader->nType = prevBmP->bmProps.nType;
+			bmHeader->w = prevBmP->props.w;
+			bmHeader->h = prevBmP->props.h;
+			bmHeader->nType = prevBmP->props.nMode;
 			MALLOC (bmHeader->raw_data, ubyte, bmHeader->w * bmHeader->h);
-			memcpy (bmHeader->raw_data, prevBmP->bmTexBuf, bmHeader->w * bmHeader->h);
+			memcpy (bmHeader->raw_data, prevBmP->texBuf, bmHeader->w * bmHeader->h);
 			SkipChunk (len);
 			break;
 
@@ -496,7 +496,7 @@ return IFF_NO_ERROR;
 
 #define INDEX_TO_15BPP(i) ((short)((((palptr[(i)].r/2)&31)<<10)+(((palptr[(i)].g/2)&31)<<5)+((palptr[(i)].b/2)&31)))
 
-int CIFF::ConvertRgb15 (grsBitmap *bmP, tIFFBitmapHeader *bmHeader)
+int CIFF::ConvertRgb15 (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
 {
 	ushort *new_data;
 	int x, y;
@@ -504,16 +504,16 @@ int CIFF::ConvertRgb15 (grsBitmap *bmP, tIFFBitmapHeader *bmHeader)
 	tPalEntry *palptr;
 
 palptr = bmHeader->palette;
-MALLOC(new_data, ushort, bmP->bmProps.w * bmP->bmProps.h * 2);
+MALLOC(new_data, ushort, bmP->props.w * bmP->props.h * 2);
 if (new_data == NULL)
 	return IFF_NO_MEM;
-for (y=0; y<bmP->bmProps.h; y++) {
+for (y=0; y<bmP->props.h; y++) {
 	for (x=0; x<bmHeader->w; x++)
 		new_data[newptr++] = INDEX_TO_15BPP(bmHeader->raw_data[y*bmHeader->w+x]);
 	}
-D2_FREE(bmP->bmTexBuf);				//get rid of old-style data
-bmP->bmTexBuf = (ubyte *) new_data;			//..ccAnd point to new data
-bmP->bmProps.rowSize *= 2;				//two bytes per row
+D2_FREE(bmP->texBuf);				//get rid of old-style data
+bmP->texBuf = (ubyte *) new_data;			//..ccAnd point to new data
+bmP->props.rowSize *= 2;				//two bytes per row
 return IFF_NO_ERROR;
 }
 
@@ -549,33 +549,33 @@ SetLen (0);
 }
 
 //------------------------------------------------------------------------------
-//copy an iff header structure to a grsBitmap structure
-void CIFF::CopyIffToGrs (grsBitmap *bmP, tIFFBitmapHeader *bmHeader)
+//copy an iff header structure to a CBitmap structure
+void CIFF::CopyIffToGrs (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
 {
-D2_FREE (bmP->bmTexBuf);
-bmP->bmProps.x = 
-bmP->bmProps.y = 0;
-bmP->bmProps.w = bmHeader->w;
-bmP->bmProps.h = bmHeader->h;
-bmP->bmProps.nType = (char) bmHeader->nType;
-bmP->bmProps.rowSize = bmHeader->w;
-bmP->bmTexBuf = bmHeader->raw_data;
-bmP->bmProps.flags = 0;
+D2_FREE (bmP->texBuf);
+bmP->props.x = 
+bmP->props.y = 0;
+bmP->props.w = bmHeader->w;
+bmP->props.h = bmHeader->h;
+bmP->props.nMode = (char) bmHeader->nType;
+bmP->props.rowSize = bmHeader->w;
+bmP->texBuf = bmHeader->raw_data;
+bmP->props.flags = 0;
 }
 
 //------------------------------------------------------------------------------
-//if bmP->bmTexBuf is set, use it (making sure w & h are correct), else
+//if bmP->texBuf is set, use it (making sure w & h are correct), else
 //allocate the memory
-int CIFF::ParseBitmap (grsBitmap *bmP, int bitmapType, grsBitmap *prevBmP)
+int CIFF::ParseBitmap (CBitmap *bmP, int bitmapType, CBitmap *prevBmP)
 {
 	tIFFBitmapHeader	bmHeader;
 	int					ret, sig, formLen;
 	int					formType;
 
 memset (&bmHeader, 0, sizeof (bmHeader));
-if (bmHeader.raw_data = bmP->bmTexBuf) {
-	bmHeader.w = bmP->bmProps.w;
-	bmHeader.h = bmP->bmProps.h;
+if (bmHeader.raw_data = bmP->texBuf) {
+	bmHeader.w = bmP->props.w;
+	bmHeader.h = bmP->props.h;
 	}
 sig = GetSig ();
 if (sig != form_sig)
@@ -599,9 +599,9 @@ if (bmHeader.nType == TYPE_ILBM) {
 	if (ret != IFF_NO_ERROR)
 		return ret;
 	}
-//Copy data from tIFFBitmapHeader structure into grsBitmap structure
+//Copy data from tIFFBitmapHeader structure into CBitmap structure
 CopyIffToGrs (bmP, &bmHeader);
-bmP->bmPalette = AddPalette ((ubyte *) &bmHeader.palette);
+bmP->SetPalette (paletteManager.Add ((ubyte *) &bmHeader.palette));
 //Now do post-process if required
 if (bitmapType == BM_RGB15)
 	ret = ConvertRgb15 (bmP, &bmHeader);
@@ -610,7 +610,7 @@ return ret;
 
 //------------------------------------------------------------------------------
 //returns error codes - see IFF.H.  see GR[HA] for bitmapType
-int CIFF::ReadBitmap (const char *cfname, grsBitmap *bmP, int bitmapType)
+int CIFF::ReadBitmap (const char *cfname, CBitmap *bmP, int bitmapType)
 {
 	int ret;			//return code
 
@@ -625,13 +625,13 @@ return ret;
 //------------------------------------------------------------------------------
 //like iff_read_bitmap(), but reads into a bitmap that already exists, 
 //without allocating memory for the bitmap.
-int CIFF::ReplaceBitmap (const char *cfname, grsBitmap *bmP)
+int CIFF::ReplaceBitmap (const char *cfname, CBitmap *bmP)
 {
 	int ret;			//return code
 
 ret = Open (cfname);		//read in entire file
 if (ret == IFF_NO_ERROR)
-	ret = ParseBitmap (bmP, bmP->bmProps.nType, NULL);
+	ret = ParseBitmap (bmP, bmP->props.nMode, NULL);
 Close();
 return ret;
 }
@@ -808,29 +808,29 @@ return ret;
 }
 
 //------------------------------------------------------------------------------
-//writes an IFF file from a grsBitmap structure. writes palette if not null
+//writes an IFF file from a CBitmap structure. writes palette if not null
 //returns error codes - see IFF.H.
-int CIFF::WriteBitmap (const char *cfname, grsBitmap *bmP, ubyte *palette)
+int CIFF::WriteBitmap (const char *cfname, CBitmap *bmP, ubyte *palette)
 {
 	FILE					*fp;
 	tIFFBitmapHeader	bmHeader;
 	int					ret;
 	int					bCompression;
 
-if (bmP->bmProps.nType == BM_RGB15) return IFF_BAD_BM_TYPE;
+if (bmP->props.nMode == BM_RGB15) return IFF_BAD_BM_TYPE;
 #if COMPRESS
-	bCompression = (bmP->bmProps.w>=MIN_COMPRESS_WIDTH);
+	bCompression = (bmP->props.w>=MIN_COMPRESS_WIDTH);
 #else
 	bCompression = 0;
 #endif
 //fill in values in bmHeader
 bmHeader.x = bmHeader.y = 0;
-bmHeader.w = bmP->bmProps.w;
-bmHeader.h = bmP->bmProps.h;
+bmHeader.w = bmP->props.w;
+bmHeader.h = bmP->props.h;
 bmHeader.nType = TYPE_PBM;
 bmHeader.transparentcolor = m_transparentColor;
-bmHeader.pagewidth = bmP->bmProps.w;	//I don't think it matters what I write
-bmHeader.pageheight = bmP->bmProps.h;
+bmHeader.pagewidth = bmP->props.w;	//I don't think it matters what I write
+bmHeader.pageheight = bmP->props.h;
 bmHeader.nplanes = 8;
 bmHeader.masking = mskNone;
 if (m_hasTransparency)	{
@@ -838,8 +838,8 @@ if (m_hasTransparency)	{
 	}
 bmHeader.compression = (bCompression?cmpByteRun1:cmpNone);
 bmHeader.xaspect = bmHeader.yaspect = 1;	//I don't think it matters what I write
-bmHeader.raw_data = bmP->bmTexBuf;
-bmHeader.row_size = bmP->bmProps.rowSize;
+bmHeader.raw_data = bmP->texBuf;
+bmHeader.row_size = bmP->props.rowSize;
 if (palette) 
 	memcpy(&bmHeader.palette, palette, 256*3);
 //open file and write
@@ -854,7 +854,7 @@ return ret;
 //------------------------------------------------------------------------------
 //read in many brushes.  fills in array of pointers, and n_bitmaps.
 //returns iff error codes
-int CIFF::ReadAnimBrush (const char *cfname, grsBitmap **bm_list, int max_bitmaps, int *n_bitmaps)
+int CIFF::ReadAnimBrush (const char *cfname, CBitmap **bm_list, int max_bitmaps, int *n_bitmaps)
 {
 	int					ret;			//return code
 	tIFFBitmapHeader	bmHeader;
@@ -878,10 +878,10 @@ if ((formType == pbm_sig) || (formType == ilbm_sig))
 else if (formType == anim_sig) {
 	int anim_end = Pos() + formLen - 4;
 		while (Pos() < anim_end && *n_bitmaps < max_bitmaps) {
-			grsBitmap *prevBmP;
+			CBitmap *prevBmP;
 			prevBmP = *n_bitmaps>0?bm_list[*n_bitmaps-1]:NULL;
-			MALLOC(bm_list[*n_bitmaps] , grsBitmap, 1);
-			bm_list[*n_bitmaps]->bmTexBuf = NULL;
+			MALLOC(bm_list[*n_bitmaps] , CBitmap, 1);
+			bm_list[*n_bitmaps]->texBuf = NULL;
 			ret = ParseBitmap (bm_list[*n_bitmaps], formType, prevBmP);
 			if (ret != IFF_NO_ERROR)
 				goto done;

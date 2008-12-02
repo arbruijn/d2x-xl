@@ -1091,7 +1091,7 @@ glActiveTexture (GL_TEXTURE0);
 glClientActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
 if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
-	OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
+	OglTexWrap (bmpCorona->TexInfo (), GL_CLAMP);
 	return 1;
 	}
 G3DisableClientStates (1, 0, 0, GL_TEXTURE0);

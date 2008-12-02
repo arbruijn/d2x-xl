@@ -39,6 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hud_defs.h"
 #include "statusbar.h"
 #include "slowmotion.h"
+#include "gr.h"
 
 #define SHOW_PLAYER_IP		0
 
@@ -77,7 +78,7 @@ int weaponBoxUser [2] = {WBU_WEAPON, WBU_WEAPON};		//see WBU_ constants in gauge
 int weaponBoxStates [2];
 fix weaponBoxFadeValues [2];
 
-#define FADE_SCALE	 (2*I2X (GR_ACTUAL_FADE_LEVELS)/REARM_TIME)		// fade out and back in REARM_TIME, in fade levels per seconds (int)
+#define FADE_SCALE	 (2*I2X (FADE_LEVELS)/REARM_TIME)		// fade out and back in REARM_TIME, in fade levels per seconds (int)
 
 //store delta x values from left of box
 tSpan weaponWindowLeft [] = {		//first tSpan 67, 151
@@ -458,7 +459,7 @@ return GrString (HUD_SCALE_X (x), HUD_SCALE_Y (y), szBuf, idP);
 
 //copy a box from the off-screen buffer to the visible page
 
-void CopyGaugeBox (tGaugeBox *box, grsBitmap *bmP)
+void CopyGaugeBox (tGaugeBox *box, CBitmap *bmP)
 {
 #if 0
 if (box->spanlist) {
@@ -494,8 +495,8 @@ else {
 
 //	-----------------------------------------------------------------------------
 //these should be in gr.h
-#define cv_w  cvBitmap.bmProps.w
-#define cv_h  cvBitmap.bmProps.h
+#define cv_w  cvBitmap.props.w
+#define cv_h  cvBitmap.props.h
 
 void HUDShowScore (void)
 {
@@ -718,7 +719,7 @@ if (HIDE_HUD)
 	return;
 if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 	int x = 0, y = 0;
-	grsBitmap *bmP = NULL;
+	CBitmap *bmP = NULL;
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		y = 2*nHUDLineSpacing;
@@ -742,7 +743,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 	bmP = &gameData.hoard.icon [gameStates.render.fonts.bHires].bm;
 	GrUBitmapM (x, y, bmP);
 
-	x+=bmP->bmProps.w+bmP->bmProps.w/2;
+	x+=bmP->props.w+bmP->props.w/2;
 	y+= (gameStates.render.fonts.bHires?2:1);
 	if (gameData.app.nGameMode & GM_ENTROPY) {
 		char	szInfo [20];
@@ -1064,7 +1065,7 @@ switch (gameData.weapons.nPrimary) {
 	}
 
 GrGetStringSize (szWeapon, &w, &h, &aw);
-nIdWeapons [0] = GrPrintF (nIdWeapons + 0, grdCurCanv->cvBitmap.bmProps.w - 5 - w, y-2*nHUDLineSpacing, szWeapon);
+nIdWeapons [0] = GrPrintF (nIdWeapons + 0, grdCurCanv->cvBitmap.props.w - 5 - w, y-2*nHUDLineSpacing, szWeapon);
 
 if (gameData.weapons.nPrimary == VULCAN_INDEX) {
 	if (LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] != oldAmmoCount [0][gameStates.render.vr.nCurrentPage]) {
@@ -1085,14 +1086,14 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 pszWeapon = SECONDARY_WEAPON_NAMES_VERY_SHORT (gameData.weapons.nSecondary);
 sprintf (szWeapon, "%s %d", pszWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 GrGetStringSize (szWeapon, &w, &h, &aw);
-nIdWeapons [1] = GrPrintF (nIdWeapons + 1, grdCurCanv->cvBitmap.bmProps.w-5-w, y-nHUDLineSpacing, szWeapon);
+nIdWeapons [1] = GrPrintF (nIdWeapons + 1, grdCurCanv->cvBitmap.props.w-5-w, y-nHUDLineSpacing, szWeapon);
 
 if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != oldAmmoCount [1][gameStates.render.vr.nCurrentPage]) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordSecondaryAmmo (oldAmmoCount [1][gameStates.render.vr.nCurrentPage], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 	oldAmmoCount [1][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 	}
-ShowBombCount (grdCurCanv->cvBitmap.bmProps.w- (3*GAME_FONT->ftWidth+ (gameStates.render.fonts.bHires?0:2)), y-3*nHUDLineSpacing, -1, 1);
+ShowBombCount (grdCurCanv->cvBitmap.props.w- (3*GAME_FONT->ftWidth+ (gameStates.render.fonts.bHires?0:2)), y-3*nHUDLineSpacing, -1, 1);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1218,13 +1219,13 @@ if (IsMultiGame) {
 	nIdLives = GrPrintF (&nIdLives, 10, 3, "%s: %d", TXT_DEATHS, LOCALPLAYER.netKilledTotal);
 	}
 else if (LOCALPLAYER.lives > 1)  {
-	grsBitmap *bmP;
+	CBitmap *bmP;
 	GrSetCurFont (GAME_FONT);
 	GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	PAGE_IN_GAUGE (GAUGE_LIVES);
 	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_LIVES);
 	GrUBitmapM (10, 3, bmP);
-	nIdLives = GrPrintF (&nIdLives, 10 + bmP->bmProps.w + bmP->bmProps.w / 2, 4, "x %d", LOCALPLAYER.lives - 1);
+	nIdLives = GrPrintF (&nIdLives, 10 + bmP->props.w + bmP->props.w / 2, 4, "x %d", LOCALPLAYER.lives - 1);
 	}
 }
 
@@ -1313,7 +1314,7 @@ void AddBonusPointsToScore (int points)
 
 void InitGaugeCanvases ()
 {
-if (!bHaveGaugeCanvases && gamePalette) {
+if (!bHaveGaugeCanvases && paletteManager.Game ()) {
 	PAGE_IN_GAUGE (SB_GAUGE_ENERGY);
 	PAGE_IN_GAUGE (GAUGE_AFTERBURNER);
 	Canv_LeftEnergyGauge = GrCreateCanvas (LEFT_ENERGY_GAUGE_W, LEFT_ENERGY_GAUGE_H);
@@ -1373,7 +1374,7 @@ weaponBoxUser [0] = weaponBoxUser [1] = WBU_WEAPON;
 
 void DrawEnergyBar (int energy)
 {
-	grsBitmap *bmP;
+	CBitmap *bmP;
 	int energy0;
 	int x1, x2, y, yMax, i;
 	int h0 = HUD_SCALE_X (LEFT_ENERGY_GAUGE_H - 1);
@@ -1398,7 +1399,7 @@ HUDBitBlt (LEFT_ENERGY_GAUGE_X, LEFT_ENERGY_GAUGE_Y, bmP, F1_0, 0);
 	energy0 = energy0 - (energy * energy0) / 100;
 	//energy0 = HUD_SCALE_X (energy0);
 	if (energy < 100) {
-		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+		gameStates.render.grAlpha = FADE_LEVELS;
 		for (i = 0; i < LEFT_ENERGY_GAUGE_H; i++) {
 			yMax = HUD_SCALE_Y (i + 1);
 			for (y = i; y <= yMax; y++) {
@@ -1588,7 +1589,7 @@ void DrawAfterburnerBar (int afterburner)
 {
 	int not_afterburner;
 	int i, j, y, yMax;
-	grsBitmap *bmP;
+	CBitmap *bmP;
 	ubyte *pabt = gameStates.video.nDisplayMode ? afterburner_bar_table_hires : afterburner_bar_table;
 
 // Draw afterburner bar
@@ -1600,7 +1601,7 @@ bmP =  gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_AFTERBURNER);
 HUDBitBlt (AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y, bmP, F1_0, 0);
 GrSetColorRGB (0, 0, 0, 255);
 not_afterburner = FixMul (f1_0 - afterburner, AFTERBURNER_GAUGE_H);
-gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+gameStates.render.grAlpha = FADE_LEVELS;
 yMax = HUD_SCALE_Y (not_afterburner);
 for (y = 0; y < not_afterburner; y++) {
 	for (i = HUD_SCALE_Y (y), j = HUD_SCALE_Y (y + 1); i < j; i++) {
@@ -1630,9 +1631,9 @@ HUDBitBlt (SHIELD_GAUGE_X, SHIELD_GAUGE_Y, gameData.pig.tex.bitmaps [0] + GET_GA
 void DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y)
 {
 	static fix xCloakFadeTimer = 0;
-	static int nCloakFadeValue = GR_ACTUAL_FADE_LEVELS - 1;
+	static int nCloakFadeValue = FADE_LEVELS - 1;
 	static int refade = 0;
-	grsBitmap *bmP = NULL;
+	CBitmap *bmP = NULL;
 
 if (IsTeamGame) {
 	PAGE_IN_GAUGE (GAUGE_SHIPS + GetTeam (gameData.multiplayer.nLocalPlayer));
@@ -1645,7 +1646,7 @@ else {
 if ((nOldCloakState == -1) && nCloakState)
 	nCloakFadeValue = 0;
 if (!nCloakState) {
-	nCloakFadeValue = GR_ACTUAL_FADE_LEVELS - 1;
+	nCloakFadeValue = FADE_LEVELS - 1;
 	nCloakFadeState = 0;
 	}
 if ((nCloakState == 1) && !nOldCloakState)
@@ -1661,8 +1662,8 @@ if (nCloakFadeState)
 while (nCloakFadeState && (xCloakFadeTimer < 0)) {
 	xCloakFadeTimer += CLOAK_FADE_WAIT_TIME;
 	nCloakFadeValue += nCloakFadeState;
-	if (nCloakFadeValue >= GR_ACTUAL_FADE_LEVELS - 1) {
-		nCloakFadeValue = GR_ACTUAL_FADE_LEVELS - 1;
+	if (nCloakFadeValue >= FADE_LEVELS - 1) {
+		nCloakFadeValue = FADE_LEVELS - 1;
 		if (nCloakFadeState == 2 && nCloakState)
 			nCloakFadeState = -2;
 		else
@@ -1687,20 +1688,20 @@ else if (nCloakState && nOldCloakState && !nCloakFadeState && !refade) {
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 	GrSetCurrentCanvas (&gameStates.render.vr.buffers.render [0]);
 	}
-//if (nCloakFadeValue >= GR_ACTUAL_FADE_LEVELS - 1)
+//if (nCloakFadeValue >= FADE_LEVELS - 1)
 	{
-	gameStates.render.grAlpha = (float) nCloakFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
+	gameStates.render.grAlpha = (float) nCloakFadeValue / (float) FADE_LEVELS;
 	HUDBitBlt (x, y, bmP, F1_0, 0);
-	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+	gameStates.render.grAlpha = FADE_LEVELS;
 	}
 //		gameStates.render.grAlpha = nCloakFadeValue;
-//		GrRect (x, y, x+bmP->bmProps.w-1, y+bmP->bmProps.h-1);
-//		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+//		GrRect (x, y, x+bmP->props.w-1, y+bmP->props.h-1);
+//		gameStates.render.grAlpha = FADE_LEVELS;
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 	GrSetCurrentCanvas (GetCurrentGameScreen ());
 #if 0
 GrBmUBitBltM (
-	(int) (bmP->bmProps.w * cmScaleX), (int) (bmP->bmProps.h * cmScaleY),
+	(int) (bmP->props.w * cmScaleX), (int) (bmP->props.h * cmScaleY),
 	(int) (x * cmScaleX), (int) (y * cmScaleY), x, y,
 	&gameStates.render.vr.buffers.render [0].cvBitmap, &grdCurCanv->cvBitmap, 1);
 #endif
@@ -1780,7 +1781,7 @@ else {
 void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, const char *pszName, int text_x,
 								int text_y, int orient)
 {
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	char			szName [100], *p;
 	int			l;
 
@@ -1935,7 +1936,7 @@ bLaserLevelChanged = ((nWeaponType == 0) &&
 
 if ((nWeaponNum != oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage] || bLaserLevelChanged) && weaponBoxStates [nWeaponType] == WS_SET) {
 	weaponBoxStates [nWeaponType] = WS_FADING_OUT;
-	weaponBoxFadeValues [nWeaponType]=I2X (GR_ACTUAL_FADE_LEVELS-1);
+	weaponBoxFadeValues [nWeaponType]=I2X (FADE_LEVELS-1);
 	}
 
 if ((oldWeapon [nWeaponType][gameStates.render.vr.nCurrentPage] == -1) || 1/* (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)*/) {
@@ -1973,7 +1974,7 @@ else if (weaponBoxStates [nWeaponType] == WS_FADING_IN) {
 		xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
 		bDrew=1;
 		weaponBoxFadeValues [nWeaponType] += gameData.time.xFrame * FADE_SCALE;
-		if (weaponBoxFadeValues [nWeaponType] >= I2X (GR_ACTUAL_FADE_LEVELS-1)) {
+		if (weaponBoxFadeValues [nWeaponType] >= I2X (FADE_LEVELS-1)) {
 			weaponBoxStates [nWeaponType] = WS_SET;
 			oldWeapon [nWeaponType][!gameStates.render.vr.nCurrentPage] = -1;		//force redraw (at full fade-in) of other page
 			}
@@ -1988,7 +1989,7 @@ if (weaponBoxStates [nWeaponType] != WS_SET) {		//fade gauge
 			  gaugeBoxes [boxofs + nWeaponType].top,
 			  gaugeBoxes [boxofs + nWeaponType].right,
 			  gaugeBoxes [boxofs + nWeaponType].bot);
-	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+	gameStates.render.grAlpha = FADE_LEVELS;
 	}
 GrSetCurrentCanvas (GetCurrentGameScreen ());
 return bDrew;
@@ -2001,7 +2002,7 @@ fix staticTime [2];
 void DrawStatic (int win)
 {
 	tVideoClip *vc = gameData.eff.vClips [0] + VCLIP_MONITOR_STATIC;
-	grsBitmap *bmp;
+	CBitmap *bmp;
 	int framenum;
 	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
 	int x, y;
@@ -2015,8 +2016,8 @@ void DrawStatic (int win)
 	PIGGY_PAGE_IN (vc->frames [framenum].index, 0);
 	bmp = gameData.pig.tex.bitmaps [0] + vc->frames [framenum].index;
 	GrSetCurrentCanvas (&gameStates.render.vr.buffers.render [0]);
-	for (x=gaugeBoxes [boxofs+win].left;x<gaugeBoxes [boxofs+win].right;x+=bmp->bmProps.w)
-		for (y=gaugeBoxes [boxofs+win].top;y<gaugeBoxes [boxofs+win].bot;y+=bmp->bmProps.h)
+	for (x=gaugeBoxes [boxofs+win].left;x<gaugeBoxes [boxofs+win].right;x+=bmp->props.w)
+		for (y=gaugeBoxes [boxofs+win].top;y<gaugeBoxes [boxofs+win].bot;y+=bmp->props.h)
 			/*GrBitmap*/HUDBitBlt (x, y, bmp, F1_0, 0);
 	GrSetCurrentCanvas (GetCurrentGameScreen ());
 	CopyGaugeBox (&gaugeBoxes [boxofs+win], &gameStates.render.vr.buffers.render [0].cvBitmap);
@@ -2172,11 +2173,11 @@ if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats,
 #endif
 	return;
 cmScaleX *= HUD_ASPECT;
-if ((gameStates.ogl.nReticle == 2) || (gameStates.ogl.nReticle && grdCurCanv->cvBitmap.bmProps.w > 320))
+if ((gameStates.ogl.nReticle == 2) || (gameStates.ogl.nReticle && grdCurCanv->cvBitmap.props.w > 320))
    OglDrawReticle (nCrossBm, nPrimaryBm, nSecondaryBm);
 else {
 	bHiresReticle = (gameStates.render.fonts.bHires != 0);
-	bSmallReticle = !bForceBig && (grdCurCanv->cvBitmap.bmProps.w * 3 <= gameData.render.window.wMax * 2);
+	bSmallReticle = !bForceBig && (grdCurCanv->cvBitmap.props.w * 3 <= gameData.render.window.wMax * 2);
 	ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 
 	nGaugeIndex = (bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm;
@@ -2766,40 +2767,40 @@ gameData.objs.viewerP = viewerP;
 gameStates.render.bRearView = bRearView;
 
 if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
-	w = (int) (gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);			// hmm.  I could probably do the sub_buffer assigment for all macines, but I aint gonna chance it
+	w = (int) (gameStates.render.vr.buffers.render [0].cvBitmap.props.w / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);			// hmm.  I could probably do the sub_buffer assigment for all macines, but I aint gonna chance it
 	h = I2X (w) / grdCurScreen->scAspect;
 	dx = (nWindow==0)?- (w+ (w/10)): (w/10);
 	switch (gameOpts->render.cockpit.nWindowPos) {
 		case 0:
 			window_x = nWindow ?
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w - w - h / 10 :
+				gameStates.render.vr.buffers.render [0].cvBitmap.props.w - w - h / 10 :
 				h / 10;
-			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
+			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.props.h - h - h / 10;
 			break;
 		case 1:
 			window_x = nWindow ?
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 * 2 - w / 3 :
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 - 2 * w / 3;
-			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
+				gameStates.render.vr.buffers.render [0].cvBitmap.props.w / 3 * 2 - w / 3 :
+				gameStates.render.vr.buffers.render [0].cvBitmap.props.w / 3 - 2 * w / 3;
+			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.props.h - h - h / 10;
 			break;
 		case 2:	// only makes sense if there's only one cockpit window
-			window_x = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 2 - w / 2;
-			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
+			window_x = gameStates.render.vr.buffers.render [0].cvBitmap.props.w / 2 - w / 2;
+			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.props.h - h - h / 10;
 			break;
 		case 3:
 			window_x = nWindow ?
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w - w - h / 10 :
+				gameStates.render.vr.buffers.render [0].cvBitmap.props.w - w - h / 10 :
 				h / 10;
 			window_y = h / 10;
 			break;
 		case 4:
 			window_x = nWindow ?
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 * 2 - w / 3 :
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 - 2 * w / 3;
+				gameStates.render.vr.buffers.render [0].cvBitmap.props.w / 3 * 2 - w / 3 :
+				gameStates.render.vr.buffers.render [0].cvBitmap.props.w / 3 - 2 * w / 3;
 			window_y = h / 10;
 			break;
 		case 5:	// only makes sense if there's only one cockpit window
-			window_x = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 2 - w / 2;
+			window_x = gameStates.render.vr.buffers.render [0].cvBitmap.props.w / 2 - w / 2;
 			window_y = h / 10;
 			break;
 		}
@@ -2866,7 +2867,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 	int small_window_bottom, big_window_bottom, extra_part_h;
 
 	GrSetColorRGBi (RGBA_PAL (0, 0, 32));
-	GrUBox (0, 0, grdCurCanv->cvBitmap.bmProps.w-1, grdCurCanv->cvBitmap.bmProps.h);
+	GrUBox (0, 0, grdCurCanv->cvBitmap.props.w-1, grdCurCanv->cvBitmap.props.h);
 
 	//if the window only partially overlaps the big 3d window, copy
 	//the extra part to the visible screen
@@ -2882,10 +2883,10 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 		bOverlapDirty [nWindow] = 1;
 		}
 	else {
-		small_window_bottom = window_y + windowCanv.cvBitmap.bmProps.h - 1;
+		small_window_bottom = window_y + windowCanv.cvBitmap.props.h - 1;
 		extra_part_h = small_window_bottom - big_window_bottom;
 		if (extra_part_h > 0) {
-			GrInitSubCanvas (&overlap_canv, &windowCanv, 0, windowCanv.cvBitmap.bmProps.h-extra_part_h, windowCanv.cvBitmap.bmProps.w, extra_part_h);
+			GrInitSubCanvas (&overlap_canv, &windowCanv, 0, windowCanv.cvBitmap.props.h-extra_part_h, windowCanv.cvBitmap.props.w, extra_part_h);
 			if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)
 				GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
 			else

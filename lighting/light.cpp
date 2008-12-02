@@ -589,11 +589,11 @@ switch (nObjType) {
 			tVideoClip *vcP = gameData.eff.vClips [0] + objP->info.nId;
 			fix xLight = vcP->lightValue;
 			int i, j;
-			grsBitmap *bmP;
-			if ((bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + vcP->frames [0].index))) {
-				colorP->red = (float) bmP->bmAvgRGB.red;
-				colorP->green = (float) bmP->bmAvgRGB.green;
-				colorP->blue = (float) bmP->bmAvgRGB.blue;
+			CBitmap *bmP;
+			if ((bmP = gameData.pig.tex.pBitmaps [vcP->frames [0].index].Override ())) {
+				colorP->red = (float) bmP->avgRGB.red;
+				colorP->green = (float) bmP->avgRGB.green;
+				colorP->blue = (float) bmP->avgRGB.blue;
 				*pbGotColor = 1;
 				}
 			else {
@@ -602,12 +602,13 @@ switch (nObjType) {
 				colorP->blue = 0.0f;
 				for (i = j = 0; i < vcP->nFrameCount; i++) {
 					bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [i].index;
-					if (bmP->bmAvgRGB.red + bmP->bmAvgRGB.green + bmP->bmAvgRGB.blue == 0)
-						if (!BitmapColor (bmP, bmP->bmTexBuf))
+					if (bmP->avgRGB.red + bmP->avgRGB.green + bmP->avgRGB.blue == 0)
+						if (!bmP->AverageColor (bmP->texBuf))
 							continue;
-					colorP->red += (float) bmP->bmAvgRGB.red / 255.0f;
-					colorP->green += (float) bmP->bmAvgRGB.green / 255.0f;
-					colorP->blue += (float) bmP->bmAvgRGB.blue / 255.0f;
+					tRgbaColorf avgRGB = *bmP->AverageRGB ();
+					colorP->red += (float) avgRGB.red / 255.0f;
+					colorP->green += (float) avgRGB.green / 255.0f;
+					colorP->blue += (float) avgRGB.blue / 255.0f;
 					j++;
 					}
 				if (j) {

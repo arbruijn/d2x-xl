@@ -83,7 +83,7 @@ ubyte fadeValues_hires[480] = { 1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,
 12,12,12,12,12,11,11,11,11,11,10,10,10,10,10,10,9,9,9,9,9,8,8,8,8,8,7,7,7,7,7,6,6,6,6,6,5,5,5,5,
 5,5,4,4,4,4,4,3,3,3,3,3,2,2,2,2,2,1,1};
 
-ubyte *creditsPalette = NULL;
+CPalette *creditsPalette = NULL;
 
 extern ubyte *grBitBltFadeTable;
 
@@ -154,7 +154,7 @@ void ShowCredits(char *credits_filename)
 	int			i, j, l, bDone;
 	CFile			cf;
 	char			buffer [NUM_LINES_HIRES][80];
-	grsBitmap	bmBackdrop;
+	CBitmap	bmBackdrop;
 	int			nPcxError;
 	unsigned int	nLine = 0;
 	unsigned int	nXlLine = 0;
@@ -192,22 +192,22 @@ if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0)) {
 	bBinary = 1;
 	}
 SetScreenMode(SCREEN_MENU);
-xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
-yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
+xOffs = (grdCurCanv->cvBitmap.props.w - 640) / 2;
+yOffs = (grdCurCanv->cvBitmap.props.h - 480) / 2;
 if (xOffs < 0)
 	xOffs = 0;
 if (yOffs < 0)
 	yOffs = 0;
-creditsPalette = GrUsePaletteTable("credits.256", NULL);
-GrPaletteStepLoad (NULL);
+creditsPalette = paletteManager.Load ("credits.256", NULL);
+paletteManager.LoadEffect  ();
 header_font = GrInitFont(gameStates.menus.bHires ? (char *) "font1-1h.fnt" : (char *) "font1-1.fnt");
 title_font = GrInitFont(gameStates.menus.bHires ? (char *) "font2-3h.fnt" : (char *) "font2-3.fnt");
 names_font = GrInitFont(gameStates.menus.bHires ? (char *) "font2-2h.fnt" : (char *) "font2-2.fnt");
-bmBackdrop.bmTexBuf = NULL;
-bmBackdrop.bmPalette = NULL;
+bmBackdrop.texBuf = NULL;
+bmBackdrop.SetPalette (NULL);
 
 //MWA  Made bmBackdrop bitmap linear since it should always be.  the current canvas may not
-//MWA  be linear, so we can't rely on grdCurCanv->cvBitmap->bmProps.nType.
+//MWA  be linear, so we can't rely on grdCurCanv->cvBitmap->props.nMode.
 
 nPcxError = PCXReadBitmap ((char *) CREDITS_BACKGROUND_FILENAME, &bmBackdrop, BM_LINEAR, 0);
 if (nPcxError != PCX_ERROR_NONE) {
@@ -215,17 +215,17 @@ if (nPcxError != PCX_ERROR_NONE) {
 	return;
 	}
 SongsPlaySong(SONG_CREDITS, 1);
-GrRemapBitmapGood(&bmBackdrop, NULL, -1, -1);
+bmBackdrop.Remap (NULL, -1, -1);
 
 if (!gameOpts->menus.nStyle) {
 	GrSetCurrentCanvas(NULL);
 	GrBitmap(xOffs,yOffs,&bmBackdrop);
-	if ((grdCurCanv->cvBitmap.bmProps.w > 640) || (grdCurCanv->cvBitmap.bmProps.h > 480)) {
+	if ((grdCurCanv->cvBitmap.props.w > 640) || (grdCurCanv->cvBitmap.props.h > 480)) {
 		GrSetColorRGBi (RGBA_PAL (0,0,32));
-		GrUBox(xOffs,yOffs,xOffs+bmBackdrop.bmProps.w+1,yOffs+bmBackdrop.bmProps.h+1);
+		GrUBox(xOffs,yOffs,xOffs+bmBackdrop.props.w+1,yOffs+bmBackdrop.props.h+1);
 		}
 	}
-GrPaletteFadeIn(NULL, 32, 0);
+paletteManager.FadeIn ();
 
 //	Create a new offscreen buffer for the credits screen
 //MWA  Let's be a little smarter about this and check the VR_offscreen buffer
@@ -240,9 +240,9 @@ else
 	creditsOffscreenBuf = GrCreateCanvas(320,200);
 if (!creditsOffscreenBuf)
 	Error("Not enough memory to allocate Credits Buffer.");
-creditsOffscreenBuf->cvBitmap.bmPalette = grdCurCanv->cvBitmap.bmPalette;
+creditsOffscreenBuf->cvBitmap.SetPalette (grdCurCanv->cvBitmap.Palette ());
 if (gameOpts->menus.nStyle)
-	creditsOffscreenBuf->cvBitmap.bmProps.flags |= BM_FLAG_TRANSPARENT;
+	creditsOffscreenBuf->cvBitmap.props.flags |= BM_FLAG_TRANSPARENT;
 KeyFlush ();
 
 bDone = 0;
@@ -295,9 +295,9 @@ get_line:;
 			ShowFullscreenImage (&bmBackdrop);
 	//			GrUpdate (0);
 	#if 0
-			if ((grdCurCanv->cvBitmap.bmProps.w > 640) || (grdCurCanv->cvBitmap.bmProps.h > 480)) {
+			if ((grdCurCanv->cvBitmap.props.w > 640) || (grdCurCanv->cvBitmap.props.h > 480)) {
 				GrSetColorRGBi (RGBA_PAL (0,0,32));
-				GrUBox (xOffs, yOffs, xOffs + bmBackdrop. bmProps.w + 1, yOffs + bmBackdrop.bmProps.h + 1);
+				GrUBox (xOffs, yOffs, xOffs + bmBackdrop. props.w + 1, yOffs + bmBackdrop.props.h + 1);
 				}
 	#endif
 			}
@@ -364,7 +364,7 @@ get_line:;
 
 		{	// Wacky Fast Credits Thing
 		box	*newBox;
-		grsBitmap *tempBmP;
+		CBitmap *tempBmP;
 
 		for (j = 0; j < NUM_LINES; j++) {
 			newBox = dirtyBox + j;
@@ -412,9 +412,9 @@ get_line:;
 		GrCloseFont (header_font);
 		GrCloseFont (title_font);
 		GrCloseFont (names_font);
-		GrPaletteFadeOut (NULL, 32, 0);
-		GrUsePaletteTable (D2_DEFAULT_PALETTE, NULL);
-		D2_FREE (bmBackdrop.bmTexBuf);
+		paletteManager.FadeOut ();
+		paletteManager.Load (D2_DEFAULT_PALETTE, NULL);
+		D2_FREE (bmBackdrop.texBuf);
 		cf.Close ();
 		GrSetCurrentCanvas (saveCanv);
 		SongsPlaySong (SONG_TITLE, 1);

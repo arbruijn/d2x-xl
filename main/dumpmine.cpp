@@ -54,7 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef EDITOR
 
 extern ubyte bogus_data[1024*1024];
-extern grsBitmap bogus_bitmap;
+extern CBitmap bogus_bitmap;
 
 // ----------------------------------------------------------------------------
 char	*objectTypes(int nObject)
@@ -570,7 +570,7 @@ void write_game_text_file(char *filename)
 
 		sprintf( ErrorMessage, "ERROR: Unable to open %s\nErrno = %i", my_file, errno );
 		StopTime();
-		GrPaletteStepLoad (NULL);
+		paletteManager.LoadEffect  ();
 		ExecMessageBox( NULL, 1, "Ok", ErrorMessage );
 		StartTime();
 
@@ -832,7 +832,7 @@ void say_unused_tmaps(FILE *my_file, int *tb)
 
 	for (i=0; i<MAX_BITMAP_FILES; i++)
 		if (!tb[i]) {
-			if (gameData.pig.tex.bitmaps[gameData.pig.tex.pBmIndex[i].index].bmTexBuf == &bogus_data)
+			if (gameData.pig.tex.bitmaps[gameData.pig.tex.pBmIndex[i].index].texBuf == &bogus_data)
 				fprintf(my_file, "U");
 			else
 				fprintf(my_file, " ");
@@ -933,7 +933,7 @@ void sayTotals_all(void)
 
 		sprintf( ErrorMessage, "ERROR: Unable to open levels.all\nErrno=%i", errno );
 		StopTime();
-		GrPaletteStepLoad (NULL);
+		paletteManager.LoadEffect  ();
 		ExecMessageBox( NULL, 1, "Ok", ErrorMessage );
 		StartTime();
 
@@ -1006,7 +1006,7 @@ sayTotals_all();
 
 		sprintf( ErrorMessage, "ERROR: Can't open textures.dmp\nErrno=%i", errno);
 		StopTime();
-		GrPaletteStepLoad (NULL);
+		paletteManager.LoadEffect  ();
 		ExecMessageBox( NULL, 1, "Ok", ErrorMessage );
 		StartTime();
 

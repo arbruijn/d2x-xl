@@ -45,7 +45,7 @@ void tmap_scanline_flat(int y, fix xleft, fix xright)
 	fx_xleft = X2I(xleft);
 	fx_xright = X2I(xright);
 
-	if ( gameStates.render.grAlpha >= GR_ACTUAL_FADE_LEVELS )
+	if ( gameStates.render.grAlpha >= FADE_LEVELS )
 		cur_tmap_scanline_flat();
 	else	{
 		tmap_flat_shadeValue = gameStates.render.grAlpha;
@@ -194,7 +194,7 @@ typedef struct pnt2d {
 #endif
 
 //this takes the same partms as draw_tmap, but draws a flat-shaded polygon
-void DrawTexPolyFlat(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
+void DrawTexPolyFlat(CBitmap *bp,int nverts,g3sPoint **vertbuf)
 {
 	pnt2d	points[MAX_TMAP_VERTS];
 	int	i;
@@ -217,7 +217,7 @@ void DrawTexPolyFlat(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 	else if (average_light > NUM_LIGHTING_LEVELS-1)
 		average_light = NUM_LIGHTING_LEVELS-1;
 
-	color = grFadeTable[average_light*256 + bp->bmAvgColor];
+	color = paletteManager.FadeTable ()[average_light*256 + bp->avgColor];
 	GrSetColor(color);
 
 	for (i=0;i<nverts;i++) {

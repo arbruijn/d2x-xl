@@ -245,8 +245,8 @@ FORALL_OBJS (obj0P, i) {
 				force /= 2;
 				}
 			if (force > F1_0) {
-				gameData.render.xFlashEffect = fe;
-				PALETTE_FLASH_ADD (PK1 + X2I (PK2*force), PK1 + X2I (PK2*force), PK1 + X2I (PK2*force));
+				paletteManager.SetEffectDuration (fe);
+				paletteManager.BumpEffect (PK1 + X2I (PK2*force), PK1 + X2I (PK2*force), PK1 + X2I (PK2*force));
 #if TRACE
 				con_printf (CONDBG, "force = %7.3f, adding %i\n", X2F (force), PK1 + X2I (PK2*force));
 #endif

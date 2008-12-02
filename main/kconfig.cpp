@@ -769,7 +769,7 @@ SDL_ShowCursor (0);
 if (time_stopped)
 	StartTime (0);
 gameStates.menus.nInMenu--;
-GrPaletteStepUp (0, 0, 0);
+paletteManager.SetEffect (0, 0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1202,7 +1202,7 @@ All_items = items;
 Num_items = nItems;
 memset (&bg, 0, sizeof (bg));
 bg.bIgnoreBg = 1;
-GrPaletteStepUp (0, 0, 0);
+paletteManager.SetEffect (0, 0, 0);
 gameStates.menus.nInMenu++;
 memset (startAxis, 0, sizeof (startAxis));
 
@@ -1217,9 +1217,9 @@ save_font = grdCurCanv->cvFont;
 
 FlushInput ();
 NMDrawBackground (&bg, xOffs, yOffs, 
-	xOffs + 639 /*grdCurCanv->cvBitmap.bmProps.w - 1*/, 
-	yOffs + 479 /*grdCurCanv->cvBitmap.bmProps.h - 1*/, 0);
-GrPaletteStepLoad (NULL);
+	xOffs + 639 /*grdCurCanv->cvBitmap.props.w - 1*/, 
+	yOffs + 479 /*grdCurCanv->cvBitmap.props.h - 1*/, 0);
+paletteManager.LoadEffect  ();
 
 nCurItem = 0;
 SDL_ShowCursor (1);
@@ -1452,9 +1452,9 @@ for (;;) {
 //			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 			for (i = 0; i < nItems; i++)	{
 				item_height = KCGetItemHeight (items + i);
-				x1 = grdCurCanv->cvBitmap.bmProps.x + LHX (items [i].x) + LHX (items [i].w1);
+				x1 = grdCurCanv->cvBitmap.props.x + LHX (items [i].x) + LHX (items [i].w1);
 				x2 = x1 + LHX (items [i].w2);
-				y1 = grdCurCanv->cvBitmap.bmProps.y + LHY (items [i].y);
+				y1 = grdCurCanv->cvBitmap.props.y + LHY (items [i].y);
 				y2 = y1 + /*LHY*/ (item_height);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 					nCurItem = i;
@@ -1470,17 +1470,17 @@ for (;;) {
 			my -= yOffs;
 			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 			item_height = KCGetItemHeight (items + nCurItem);
-			x1 = grdCurCanv->cvBitmap.bmProps.x + LHX (items [nCurItem].x) + LHX (items [nCurItem].w1);
+			x1 = grdCurCanv->cvBitmap.props.x + LHX (items [nCurItem].x) + LHX (items [nCurItem].w1);
 			x2 = x1 + LHX (items [nCurItem].w2);
-			y1 = grdCurCanv->cvBitmap.bmProps.y + LHY (items [nCurItem].y);
+			y1 = grdCurCanv->cvBitmap.props.y + LHY (items [nCurItem].y);
 			y2 = y1 + /*LHY*/ (item_height);
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				nChangeMode = items [nCurItem].nType;
 				GameFlushInputs ();
 			} else {
-				x1 = grdCurCanv->cvBitmap.bmProps.x + close_x + LHX (1);
+				x1 = grdCurCanv->cvBitmap.props.x + close_x + LHX (1);
 				x2 = x1 + close_size - LHX (1);
-				y1 = grdCurCanv->cvBitmap.bmProps.y + close_y + LHX (1);
+				y1 = grdCurCanv->cvBitmap.props.y + close_y + LHX (1);
 				y2 = y1 + close_size - LHY (1);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 					KCQuitMenu (save_canvas, save_font, &bg, time_stopped);
@@ -1596,11 +1596,11 @@ if (bRedraw && gameOpts->menus.nStyle)
 
 void KConfig (int n, const char *pszTitle)
 {
-	grsBitmap	*bmSave;
+	CBitmap	*bmSave;
 	int			i, j, b = gameOpts->legacy.bInput;
 
-	xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
-	yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
+	xOffs = (grdCurCanv->cvBitmap.props.w - 640) / 2;
+	yOffs = (grdCurCanv->cvBitmap.props.h - 480) / 2;
 	if (xOffs < 0)
 		xOffs = 0;
 	if (yOffs < 0)
@@ -1613,10 +1613,10 @@ void KConfig (int n, const char *pszTitle)
 	if (gameOpts->menus.bFastMenus)
 		bmSave = NULL;
 	else {
-		bmSave = GrCreateBitmap (grdCurCanv->cvBitmap.bmProps.w, grdCurCanv->cvBitmap.bmProps.h, 1);
+		bmSave = CBitmap::Create (0, grdCurCanv->cvBitmap.props.w, grdCurCanv->cvBitmap.props.h, 1);
 		Assert (bmSave != NULL);
-		bmSave->bmPalette = gameData.render.ogl.palette;
-		GrBmBitBlt (grdCurCanv->cvBitmap.bmProps.w, grdCurCanv->cvBitmap.bmProps.w, 
+		bmSave->SetPalette (paletteManager.Texture ());
+		GrBmBitBlt (grdCurCanv->cvBitmap.props.w, grdCurCanv->cvBitmap.props.w, 
 						 0, 0, 0, 0, &grdCurCanv->cvBitmap, bmSave);
 		}
 	if (n == 0)
@@ -1643,7 +1643,7 @@ void KConfig (int n, const char *pszTitle)
 	//restore screen
 	if (bmSave) {
 		GrBitmap (xOffs, yOffs, bmSave);
-		GrFreeBitmap (bmSave);
+		D2_FREE (bmSave);
 		}
 	ResetCockpit ();		//force cockpit redraw next time
 	// Update save values...

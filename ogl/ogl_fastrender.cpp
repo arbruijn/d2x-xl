@@ -52,8 +52,8 @@ tG3FaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
 #define FACE_BUFFER_INDEX_SIZE	(FACE_BUFFER_SIZE * 4 * 4)
 
 typedef struct tFaceBuffer {
-	grsBitmap	*bmBot;
-	grsBitmap	*bmTop;
+	CBitmap	*bmBot;
+	CBitmap	*bmTop;
 	short			nFaces;
 	short			nElements;
 	int			bTextured;
@@ -124,7 +124,7 @@ if (faceBuffer.nFaces && (bForce || (faceBuffer.nFaces >= FACE_BUFFER_SIZE))) {
 
 //------------------------------------------------------------------------------
 
-void G3FillFaceBuffer (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bTextured)
+void G3FillFaceBuffer (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured)
 {
 #if DBG
 if (!gameOpts->render.debug.bTextures)
@@ -227,12 +227,12 @@ else
 
 //------------------------------------------------------------------------------
 
-int G3SetRenderStates (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored)
+int G3SetRenderStates (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored)
 {
 PROF_START
 if (bTextured) {
 	bool bStateChange = false;
-	grsBitmap *bmMask = NULL;
+	CBitmap *mask = NULL;
 	if (bmBot != gameStates.render.history.bmBot) {
 		bStateChange = true;
 		gameStates.render.history.bmBot = bmBot;
@@ -248,15 +248,15 @@ if (bTextured) {
 			glActiveTexture (GL_TEXTURE1);
 			glClientActiveTexture (GL_TEXTURE1);
 			OGL_BINDTEX (0);
-			bmMask = NULL;
+			mask = NULL;
 			}
 		}
-	bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
-	if (bmMask != gameStates.render.history.bmMask) {
+	mask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
+	if (mask != gameStates.render.history.bmMask) {
 		bStateChange = true;
-		gameStates.render.history.bmMask = bmMask;
-		if (bmMask) {
-			{INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, lightmapData.buffers, 2, 0);}
+		gameStates.render.history.bmMask = mask;
+		if (mask) {
+			{INIT_TMU (InitTMU2, GL_TEXTURE2, mask, lightmapData.buffers, 2, 0);}
 			G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
 			}
 		else {
@@ -289,12 +289,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3SetRenderStatesLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored)
+int G3SetRenderStatesLM (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored)
 {
 PROF_START
 if (bTextured) {
 	bool bStateChange = false;
-	grsBitmap *bmMask = NULL;
+	CBitmap *mask = NULL;
 	if (bmBot != gameStates.render.history.bmBot) {
 		bStateChange = true;
 		gameStates.render.history.bmBot = bmBot;
@@ -310,16 +310,16 @@ if (bTextured) {
 			glActiveTexture (GL_TEXTURE2);
 			glClientActiveTexture (GL_TEXTURE2);
 			OGL_BINDTEX (0);
-			bmMask = NULL;
+			mask = NULL;
 			}
 		}
 	if (bColorKey)
-		bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
-	if (bmMask != gameStates.render.history.bmMask) {
+		mask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
+	if (mask != gameStates.render.history.bmMask) {
 		bStateChange = true;
-		gameStates.render.history.bmMask = bmMask;
-		if (bmMask) {
-			{INIT_TMU (InitTMU3, GL_TEXTURE3, bmMask, lightmapData.buffers, 2, 0);}
+		gameStates.render.history.bmMask = mask;
+		if (mask) {
+			{INIT_TMU (InitTMU3, GL_TEXTURE3, mask, lightmapData.buffers, 2, 0);}
 			G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
 			}
 		else {
@@ -348,7 +348,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3SetupMonitor (grsFace *faceP, grsBitmap *bmTop, int bTextured, int bLightmaps)
+void G3SetupMonitor (grsFace *faceP, CBitmap *bmTop, int bTextured, int bLightmaps)
 {
 if (bmTop) {
 	glActiveTexture (GL_TEXTURE1 + bLightmaps);
@@ -368,7 +368,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void G3ResetMonitor (grsBitmap *bmTop, int bLightmaps)
+void G3ResetMonitor (CBitmap *bmTop, int bLightmaps)
 {
 if (bmTop) {
 	glActiveTexture (GL_TEXTURE1 + bLightmaps);
@@ -387,17 +387,17 @@ else {
 
 //------------------------------------------------------------------------------
 
-static inline int G3FaceIsTransparent (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop)
+static inline int G3FaceIsTransparent (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
 if (!bmBot)
 	return 0;
 if (faceP->bTransparent)
 	return 1;
-if (!(bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU)))
+if (!(bmBot->props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU)))
 	return 0;
 if (!bmTop)
 	return 1;
-if (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)
+if (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT)
 	return 1;
 return 0;
 }
@@ -411,7 +411,7 @@ return !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisit
 
 //------------------------------------------------------------------------------
 
-int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawFaceArrays (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0, nBlendMode;
@@ -427,7 +427,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
-	bmBot = BmOverride (bmBot, -1);
+	bmBot = bmBot->Override (-1);
 bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)
@@ -438,12 +438,12 @@ else {
 	bColored = G3FaceIsColored (faceP);
 	bMonitor = (faceP->nCamera >= 0);
 	if (bmTop) {
-		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
-			bmTop = BM_CURFRAME (bmTop);
+		if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+			bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bmTop = bmTop->CurFrame ();
 			}
 		else
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		}
 	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
@@ -549,7 +549,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int G3DrawFaceArraysPPLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawFaceArraysPPLM (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
@@ -565,7 +565,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
-	bmBot = BmOverride (bmBot, -1);
+	bmBot = bmBot->Override (-1);
 bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 
 if (bDepthOnly) {
@@ -581,12 +581,12 @@ else {
 		bmTop = bmTop;
 #endif
 	if (bmTop) {
-		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
-			bmTop = BM_CURFRAME (bmTop);
+		if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+			bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bmTop = bmTop->CurFrame ();
 			}
 		else
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		}
 	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
@@ -671,7 +671,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int G3DrawFaceArraysLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawFaceArraysLM (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
@@ -687,7 +687,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
-	bmBot = BmOverride (bmBot, -1);
+	bmBot = bmBot->Override (-1);
 bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 
 if (bDepthOnly) {
@@ -705,12 +705,12 @@ else {
 		bmTop = bmTop;
 #endif
 	if (bmTop) {
-		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
-			bmTop = BM_CURFRAME (bmTop);
+		if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+			bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bmTop = bmTop->CurFrame ();
 			}
 		else
-			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		}
 	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
@@ -770,24 +770,24 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int G3DrawHeadlights (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawHeadlights (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 	int			bColorKey = 0, bMonitor = 0;
 
 if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
-	bmBot = BmOverride (bmBot, -1);
+	bmBot = bmBot->Override (-1);
 if (G3FaceIsTransparent (faceP, bmBot, bmTop) && !(bMonitor || bmTop))
 	return 0;
 bMonitor = (faceP->nCamera >= 0);
 if (bmTop) {
-	if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
-		bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
-		bmTop = BM_CURFRAME (bmTop);
+	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+		bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bmTop = bmTop->CurFrame ();
 		}
 	else
-		bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 G3SetRenderStates (faceP, bmBot, bmTop, 0, 1, bColorKey, 1);
@@ -804,7 +804,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int G3DrawHeadlightsPPLM (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawHeadlightsPPLM (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 	int			bColorKey = 0, bMonitor = 0;
 
@@ -815,17 +815,17 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
-	bmBot = BmOverride (bmBot, -1);
+	bmBot = bmBot->Override (-1);
 if (G3FaceIsTransparent (faceP, bmBot, bmTop) && !(bMonitor || bmTop))
 	return 0;
 bMonitor = (faceP->nCamera >= 0);
 if (bmTop) {
-	if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
-		bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
-		bmTop = BM_CURFRAME (bmTop);
+	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+		bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bmTop = bmTop->CurFrame ();
 		}
 	else
-		bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 G3SetRenderStatesLM (faceP, bmBot, bmTop, 0, 1, bColorKey, 1);

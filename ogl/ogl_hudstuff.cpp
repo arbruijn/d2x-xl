@@ -21,6 +21,7 @@
 
 #include "inferno.h"
 #include "error.h"
+#include "u_mem.h"
 #include "maths.h"
 #include "mouse.h"
 #include "input.h"
@@ -33,7 +34,7 @@
 
 //------------------------------------------------------------------------------
 
-grsBitmap *bmpDeadzone = NULL;
+CBitmap *bmpDeadzone = NULL;
 int bHaveDeadzone = 0;
 
 int LoadDeadzone (void)
@@ -50,8 +51,7 @@ return bHaveDeadzone > 0;
 void FreeDeadzone (void)
 {
 if (bmpDeadzone) {
-	GrFreeBitmap (bmpDeadzone);
-	bmpDeadzone = NULL;
+	D2_FREE (bmpDeadzone);
 	bHaveDeadzone = 0;
 	}
 }
@@ -101,7 +101,7 @@ else {
 		glEnable (GL_TEXTURE_2D);
 		if (OglBindBmTex (bmpDeadzone, 1, -1)) 
 			return;
-		OglTexWrap (bmpDeadzone->glTexture, GL_CLAMP);
+		OglTexWrap (bmpDeadzone->TexInfo (), GL_CLAMP);
 		glColor4f (1.0f, 1.0f, 1.0f, 0.8f / (float) gameOpts->input.mouse.nDeadzone);
 		glBegin (GL_QUADS);
 		glTexCoord2f (0, 0);
@@ -157,8 +157,8 @@ if (bInitSinCos) {
 glPushMatrix ();
 //	glTranslated (0.5, 0.5, 0);
 glTranslated (
-	(grdCurCanv->cvBitmap.bmProps.w/2+grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW, 
-	1.0f - (grdCurCanv->cvBitmap.bmProps.h/ ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2)+grdCurCanv->cvBitmap.bmProps.y)/ (float)gameStates.ogl.nLastH, 
+	(grdCurCanv->cvBitmap.props.w/2+grdCurCanv->cvBitmap.props.x) / (float) gameStates.ogl.nLastW, 
+	1.0f - (grdCurCanv->cvBitmap.props.h/ ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2)+grdCurCanv->cvBitmap.props.y)/ (float)gameStates.ogl.nLastH, 
 	0);
 glScaled (scale/320.0f, scale/200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
 glDisable (GL_TEXTURE_2D);

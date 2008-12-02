@@ -155,8 +155,8 @@ if (!gameData.app.bGamePaused) {
 	DigiPauseAll();
 	RBAPause();
 	StopTime();
-	PaletteSave();
-	ResetPaletteAdd();
+	paletteManager.SaveEffect();
+	paletteManager.ResetEffect();
 	GameFlushInputs();
 #if defined (TACTILE)
 	if (TactileStick)
@@ -171,7 +171,7 @@ void ResumeGame (void)
 {
 GameFlushInputs ();
 ResetCockpit ();
-PaletteRestore ();
+paletteManager.LoadEffect ();
 StartTime (0);
 if (gameStates.sound.bRedbookPlaying)
 	RBAResume ();
@@ -213,7 +213,7 @@ else if (gameData.app.nGameMode & GM_MULTI) {
 	}
 PauseGame ();
 SetPopupScreenMode();
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 formatTime(totalTime, X2I(LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal*3600);
 formatTime(xLevelTime, X2I(LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel*3600);
   if (gameData.demo.nState!=ND_STATE_PLAYBACK)
@@ -237,7 +237,7 @@ while (gameData.app.bGamePaused) {
 		gameStates.menus.nInMenu++;
 		while (!(key = KeyInKey ())) {
 			GameRenderFrame ();
-			GrPaletteStepLoad(NULL);
+			paletteManager.LoadEffect (NULL);
 			RemapFontsAndMenus (1);
 			ShowBoxedMessage(msg);
 			G3_SLEEP (0);

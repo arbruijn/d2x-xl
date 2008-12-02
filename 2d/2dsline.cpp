@@ -35,7 +35,7 @@ void gr_linear_darken(ubyte * dest, int darkeningLevel, int count, ubyte * fade_
 }
 
 
-void gr_linear_stosd( ubyte * dest, grsColor *color, unsigned int nbytes) 
+void gr_linear_stosd( ubyte * dest, tCanvasColor *color, unsigned int nbytes) 
 {
 memset(dest, color->index, nbytes);
 }
@@ -43,8 +43,8 @@ memset(dest, color->index, nbytes);
 
 void gr_uscanline( int x1, int x2, int y )
 {
-	if (gameStates.render.grAlpha >= GR_ACTUAL_FADE_LEVELS ) {
-		switch(TYPE)
+	if (gameStates.render.grAlpha >= FADE_LEVELS ) {
+		switch(MODE)
 		{
 		case BM_LINEAR:
 		case BM_OGL:
@@ -52,11 +52,11 @@ void gr_uscanline( int x1, int x2, int y )
 			break;
 		}
 	} else {
-		switch(TYPE)
+		switch(MODE)
 		{
 		case BM_LINEAR:
 		case BM_OGL:
-			gr_linear_darken( DATA + ROWSIZE*y + x1, (int) gameStates.render.grAlpha, x2-x1+1, grFadeTable);
+			gr_linear_darken( DATA + ROWSIZE*y + x1, (int) gameStates.render.grAlpha, x2-x1+1, paletteManager.FadeTable ());
 			break;
 		}
 	}
@@ -74,8 +74,8 @@ void GrScanLine( int x1, int x2, int y )
 	if (x1 < MINX) x1 = MINX;
 	if (x2 > MAXX) x2 = MAXX;
 
-	if (gameStates.render.grAlpha >= GR_ACTUAL_FADE_LEVELS ) {
-		switch(TYPE)
+	if (gameStates.render.grAlpha >= FADE_LEVELS ) {
+		switch(MODE)
 		{
 		case BM_LINEAR:
 		case BM_OGL:
@@ -83,11 +83,11 @@ void GrScanLine( int x1, int x2, int y )
 			break;
 		}
 	} else {
-		switch(TYPE)
+		switch(MODE)
 		{
 		case BM_LINEAR:
 		case BM_OGL:
-			gr_linear_darken( DATA + ROWSIZE*y + x1, (int) gameStates.render.grAlpha, x2-x1+1, grFadeTable);
+			gr_linear_darken( DATA + ROWSIZE*y + x1, (int) gameStates.render.grAlpha, x2-x1+1, paletteManager.FadeTable ());
 			break;
 		}
 	}

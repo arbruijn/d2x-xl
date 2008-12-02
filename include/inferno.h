@@ -714,7 +714,6 @@ typedef struct tOglStates {
 	int bUseTransform;
 	int bGlTexMerge;
 	int bBrightness;
-	int bDoPalStep;
 	int nColorBits;
 	GLint nDepthBits;
 	GLint nStencilBits;
@@ -770,9 +769,6 @@ typedef struct tOglStates {
 #ifdef GL_SGIS_multitexture
 	int bSgisMultiTexture;
 #endif
-	tRgbColorb bright;
-	tRgbColorf fBright;
-	tRgbColors palAdd;
 	float fAlpha;
 	float fLightRange;
 	GLuint hDepthBuffer; 
@@ -878,11 +874,11 @@ typedef struct tAutomapStates {
 	} tAutomapStates;
 
 typedef struct tRenderHistory {
-	grsBitmap	*bmBot;
-	grsBitmap	*bmTop;
-	grsBitmap	*bmMask;
-	ubyte		bSuperTransp;
-	ubyte		bShaderMerge;
+	CBitmap		*bmBot;
+	CBitmap		*bmTop;
+	CBitmap		*bmMask;
+	ubyte			bSuperTransp;
+	ubyte			bShaderMerge;
 	int			bOverlay;
 	int			bColored;
 	int			nShader;
@@ -1389,7 +1385,7 @@ typedef struct tDynLightData {
 	tShaderLightData	shader;
 	tHeadlightData		headlights;
 	tOglMaterial		material;
-	tFrameBuffer		fb;
+	CFBO					fbo;
 } tDynLightData;
 
 extern int nMaxNearestLights [21];
@@ -1464,40 +1460,19 @@ typedef struct tMorphData {
 
 //------------------------------------------------------------------------------
 
-#define	MAX_COMPUTED_COLORS	64
-
-typedef struct {
-	ubyte		r,g,b,nColor;
-} color_record;
-
-typedef struct tPaletteList {
-	tPalette					palette;
-	color_record			computedColors [MAX_COMPUTED_COLORS];
-	short						nComputedColors;
-	struct tPaletteList	*pNextPal;
-} tPaletteList;
-
-typedef struct tPaletteData {
-	struct tPaletteList	*palettes;
-	int						nPalettes;
-	ubyte						*pCurPal;
-} tPaletteData;
-
-//------------------------------------------------------------------------------
-
 #define OGLTEXBUFSIZE (2048*2048*4)
 
 typedef struct tOglData {
 	GLubyte					texBuf [OGLTEXBUFSIZE];
-	ubyte						*palette;
+	CPalette					*palette;
 	GLenum					nSrcBlend;
 	GLenum					nDestBlend;
 	float						zNear;
 	float						zFar;
 	fVector3					depthScale;
 	struct {float x, y;}	screenScale;
-	tFrameBuffer			drawBuffer;
-	tFrameBuffer			glowBuffer;
+	CFBO						drawBuffer;
+	CFBO						glowBuffer;
 	int						nPerPixelLights [8];
 	float						lightRads [8];
 	fVector					lightPos [8];
@@ -1515,7 +1490,7 @@ typedef struct tTerrainRenderData {
 	ubyte			*pHeightmap;
 	fix			*pLightmap;
 	vmsVector	*pPoints;
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	g3sPoint	saveRow [TERRAIN_GRID_MAX_SIZE];
 	vmsVector	vStartPoint;
 	tUVL			uvlList [2][3];
@@ -1626,8 +1601,6 @@ typedef struct tRenderData {
 	tSphereData				shield;
 	tSphereData				monsterball;
 	tFaceListItem			*faceList;
-	int						nPaletteGamma;
-	int						nComputedColors;
 	fix						xFlashEffect;
 	fix						xTimeFlashLastPlayed;
 	fVector					*pVerts;
@@ -1635,7 +1608,6 @@ typedef struct tRenderData {
 	tLightData				lights;
 	tMorphData				morph;
 	tShadowData				shadows;
-	tPaletteData			pal;
 	tOglData					ogl;
 	tTerrainRenderData	terrain;
 	tThrusterData			thrusters [MAX_PLAYERS];
@@ -1644,7 +1616,7 @@ typedef struct tRenderData {
 	fix						zMin;
 	fix						zMax;
 	double					dAspect;
-	tFrameBuffer			glareBuffer;
+	CFBO						glareBuffer;
 	int						nTotalFaces;
 	int						nTotalObjects;
 	int						nTotalSprites;
@@ -2127,7 +2099,7 @@ typedef struct tG3VertNorm {
 } tG3VertNorm;
 
 typedef struct tG3Model {
-	grsBitmap				*pTextures;
+	CBitmap				*pTextures;
 	int						teamTextures [8];
 	fVector3					*pVerts;
 	fVector3					*pVertNorms;
@@ -2216,9 +2188,9 @@ typedef struct tSoundData {
 typedef struct tTextureData {
 	tBitmapFile			bitmapFiles [2][MAX_BITMAP_FILES];
 	sbyte					bitmapFlags [2][MAX_BITMAP_FILES];
-	grsBitmap			bitmaps [2][MAX_BITMAP_FILES];
-	grsBitmap			altBitmaps [2][MAX_BITMAP_FILES];
-	grsBitmap			addonBitmaps [MAX_ADDON_BITMAP_FILES];
+	CBitmap				bitmaps [2][MAX_BITMAP_FILES];
+	CBitmap				altBitmaps [2][MAX_BITMAP_FILES];
+	CBitmap				addonBitmaps [MAX_ADDON_BITMAP_FILES];
 	ushort				bitmapXlat [MAX_BITMAP_FILES];
 	alias					aliases [MAX_ALIASES];
 	tBitmapIndex		bmIndex [2][MAX_TEXTURES];
@@ -2237,8 +2209,8 @@ typedef struct tTextureData {
 	int					nTextures [2];
 	int					nFirstMultiBitmap;
 	tBitmapFile			*pBitmapFiles;
-	grsBitmap			*pBitmaps;
-	grsBitmap			*pAltBitmaps;
+	CBitmap				*pBitmaps;
+	CBitmap				*pAltBitmaps;
 	tBitmapIndex		*pBmIndex;
 	tTexMapInfo			*pTMapInfo;
 	ubyte					*rleBuffer;
@@ -2372,7 +2344,7 @@ typedef struct tModelData {
 	int					nDefPolyModels;
 	g3sPoint				polyModelPoints [MAX_POLYGON_VERTS];
 	fVector				fPolyModelVerts [MAX_POLYGON_VERTS];
-	grsBitmap			*textures [MAX_POLYOBJ_TEXTURES];
+	CBitmap				*textures [MAX_POLYOBJ_TEXTURES];
 	tBitmapIndex		textureIndex [MAX_POLYOBJ_TEXTURES];
 	int					nSimpleModelThresholdScale;
 	int					nMarkerModel;
@@ -2758,22 +2730,22 @@ typedef struct tAIData {
 //------------------------------------------------------------------------------
 
 typedef struct tSatelliteData {
-	grsBitmap			bmInstance;
-	grsBitmap			*bmP;
+	CBitmap			bmInstance;
+	CBitmap			*bmP;
 	vmsVector			vPos;
 	vmsVector			vUp;
 } tSatelliteData;
 
 typedef struct tStationData {
-	grsBitmap			*bmP;
-	grsBitmap			**bmList [1];
+	CBitmap			*bmP;
+	CBitmap			**bmList [1];
 	vmsVector			vPos;
 	int					nModel;
 } tStationData;
 
 typedef struct tTerrainData {
-	grsBitmap			bmInstance;
-	grsBitmap			*bmP;
+	CBitmap			bmInstance;
+	CBitmap			*bmP;
 } tTerrainData;
 
 typedef struct tExitData {
@@ -2973,8 +2945,8 @@ typedef struct tHoardItem {
 	int			nSize;
 	int			nFrames;
 	int			nClip;
-	grsBitmap	bm;
-	ubyte			*palette;
+	CBitmap	bm;
+	CPalette		*palette;
 } tHoardItem;
 
 typedef struct tHoardData {
@@ -3155,7 +3127,7 @@ typedef struct tTextData {
 	int			nMessages;
 	int			nStartTime;
 	int			nEndTime;
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 } tTextData;
 
 //------------------------------------------------------------------------------
@@ -3299,8 +3271,8 @@ return (short) (i / sizeof (tObject));
 
 static inline void PIGGY_PAGE_IN (int bmi, int bD1) 
 {
-grsBitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
-if (!bmP->bmTexBuf || (bmP->bmProps.flags & BM_FLAG_PAGED_OUT))
+CBitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
+if (!bmP->texBuf || (bmP->props.flags & BM_FLAG_PAGED_OUT))
 	PiggyBitmapPageIn (bmi, bD1);
 }
 
@@ -3333,9 +3305,9 @@ else
 
 static inline float GrAlpha (void)
 {
-if (gameStates.render.grAlpha >= (float) GR_ACTUAL_FADE_LEVELS)
+if (gameStates.render.grAlpha >= (float) FADE_LEVELS)
 	return 1.0f;
-return 1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
+return 1.0f - gameStates.render.grAlpha / (float) FADE_LEVELS;
 }
 
 //	-----------------------------------------------------------------------------------------------------------

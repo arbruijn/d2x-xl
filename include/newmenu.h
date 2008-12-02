@@ -48,17 +48,17 @@ typedef struct tMenuItem {
 	ubyte			noscroll;
 	ubyte			unavailable;
 	ubyte			centered;
-	char			saved_text[NM_MAX_TEXT_LEN+1];
-	grsBitmap	*text_bm [2];
+	char			saved_text [NM_MAX_TEXT_LEN+1];
+	CBitmap		*text_bm [2];
 	char			*szHelp;
 } tMenuItem;
 
 typedef struct bkg {
 	short			x, y, w, h;			// The location of the menu.
 	gsrCanvas	*menu_canvas;
-	grsBitmap	*saved;			// The background under the menu.
-	grsBitmap	*background;
-	grsBitmap	*bmp;
+	CBitmap		*saved;			// The background under the menu.
+	CBitmap		*background;
+	CBitmap		*bmP;
 	char			bIgnoreBg;
 	char			bIgnoreCanv;
 	char			*pszPrevBg;

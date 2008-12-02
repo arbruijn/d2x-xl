@@ -35,7 +35,7 @@ tmap_drawer_fp tmap_drawer_ptr = draw_tmap;
 flat_drawer_fp flat_drawer_ptr = gr_upoly_tmap;
 line_drawer_fp line_drawer_ptr = GrLine;
 #else
-void (*tmap_drawer_ptr) (grsBitmap *bm, int nv, g3sPoint **vertlist) = draw_tmap;
+void (*tmap_drawer_ptr) (CBitmap *bm, int nv, g3sPoint **vertlist) = draw_tmap;
 void (*flat_drawer_ptr) (int nv, int *vertlist) = gr_upoly_tmap;
 int (*line_drawer_ptr) (fix x0, fix y0, fix x1, fix y1) = GrLine;
 #endif
@@ -96,7 +96,7 @@ int G3CheckAndDrawPoly (int nv, g3sPoint **pointlist, vmsVector *norm, vmsVector
 //------------------------------------------------------------------------------
 
 int G3CheckAndDrawTMap (
-	int nv, g3sPoint **pointlist, tUVL *uvl_list, grsBitmap *bm, vmsVector *norm, vmsVector *pnt)
+	int nv, g3sPoint **pointlist, tUVL *uvl_list, CBitmap *bm, vmsVector *norm, vmsVector *pnt)
 {
 if (DoFacingCheck (norm, pointlist, pnt))
 	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, norm, 1, -1);

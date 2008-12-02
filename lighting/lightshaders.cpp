@@ -1388,7 +1388,7 @@ return -1;
 int G3SetupPerPixelShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadlight)
 {
 PROF_START
-	static grsBitmap	*nullBmP = NULL;
+	static CBitmap	*nullBmP = NULL;
 
 	int	bLightmaps, nLights, nShader;
 
@@ -1454,7 +1454,7 @@ return gameStates.render.history.nShader = nShader;
 int G3SetupLightmapShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadlight)
 {
 PROF_START
-	static grsBitmap	*nullBmP = NULL;
+	static CBitmap	*nullBmP = NULL;
 
 	int	nShader;
 

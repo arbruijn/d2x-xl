@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define CLOAKING_WALL_TIME f1_0
 
-//--unused-- grsBitmap *wall_title_bms [MAX_WALL_ANIMS];
+//--unused-- CBitmap *wall_title_bms [MAX_WALL_ANIMS];
 
 //#define BM_FLAG_TRANSPARENT			1
 //#define BM_FLAG_SUPER_TRANSPARENT	2
@@ -74,10 +74,10 @@ int AnimFrameCount (tWallClip *anim)
 {
 	int	n;
 
-grsBitmap *bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [anim->frames [0]].index;
-if (BM_OVERRIDE (bmP))
-	bmP = BM_OVERRIDE (bmP);
-n = (bmP->bmType == BM_TYPE_ALT) ? BM_PARENT (bmP) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP) : anim->nFrameCount;
+CBitmap *bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [anim->frames [0]].index;
+if (bmP->Override ())
+	bmP = bmP->Override ();
+n = (bmP->Type () == BM_TYPE_ALT) ? bmP->FrameCount () : anim->nFrameCount;
 return (n > 1) ? n : anim->nFrameCount;
 }
 
@@ -101,23 +101,23 @@ return (fix) (((double) pt * (double) anim->nFrameCount) / (double) nFrames);
 int CheckTransparency (tSegment *segP, short nSide)
 {
 	tSide *sideP = segP->sides + nSide;
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 
 if (sideP->nOvlTex) {
-	bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nOvlTex].index, -1);
-	if (bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)
+	bmP = gameData.pig.tex.pBitmaps [gameData.pig.tex.pBmIndex [sideP->nOvlTex].index].Override (-1);
+	if (bmP->props.flags & BM_FLAG_SUPER_TRANSPARENT)
 		return 1;
-	if (!(bmP->bmProps.flags & BM_FLAG_TRANSPARENT))
+	if (!(bmP->props.flags & BM_FLAG_TRANSPARENT))
 		return 0;
 	}
-bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nBaseTex].index, -1);
-if (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+bmP = gameData.pig.tex.pBitmaps [gameData.pig.tex.pBmIndex [sideP->nBaseTex].index].Override (-1);
+if (bmP->props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
 if (gameStates.app.bD2XLevel) {
 	short	c, nWallNum = WallNumP (segP, nSide);
 	if (IS_WALL (nWallNum)) {
 		c = gameData.walls.walls [nWallNum].cloakValue;
-		if (c && (c < GR_ACTUAL_FADE_LEVELS))
+		if (c && (c < FADE_LEVELS))
 			return 1;
 		}
 	}
@@ -161,7 +161,7 @@ if (nType == WALL_OPEN)
 if (nType == WALL_ILLUSION) {
 	if (flags & WALL_ILLUSION_OFF)
 		return WID_NO_WALL;
-	if ((wallP->cloakValue < GR_ACTUAL_FADE_LEVELS) || CheckTransparency (segP, nSide))
+	if ((wallP->cloakValue < FADE_LEVELS) || CheckTransparency (segP, nSide))
 		return WID_TRANSILLUSORY_WALL;
 	return WID_ILLUSORY_WALL;
 	}
@@ -169,7 +169,7 @@ if (nType == WALL_ILLUSION) {
 if (nType == WALL_BLASTABLE) {
 	if (flags & WALL_BLASTED)
 		return WID_TRANSILLUSORY_WALL;
-	if ((wallP->cloakValue < GR_ACTUAL_FADE_LEVELS) || CheckTransparency (segP, nSide))
+	if ((wallP->cloakValue < FADE_LEVELS) || CheckTransparency (segP, nSide))
 		return WID_TRANSPARENT_WALL;
 	return WID_WALL;
 	}
@@ -189,7 +189,7 @@ state = wallP->state;
 if (nType == WALL_DOOR) {
 	if ((state == WALL_DOOR_OPENING) || (state == WALL_DOOR_CLOSING))
 		return WID_TRANSPARENT_WALL;
-	if ((wallP->cloakValue && (wallP->cloakValue < GR_ACTUAL_FADE_LEVELS)) || CheckTransparency (segP, nSide))
+	if ((wallP->cloakValue && (wallP->cloakValue < FADE_LEVELS)) || CheckTransparency (segP, nSide))
 		return WID_TRANSPARENT_WALL;
 	return WID_WALL;
 	}
@@ -204,7 +204,7 @@ if (nType == WALL_CLOSED) {
 		}
 	}
 // If none of the above flags are set, there is no doorway.
-if ((wallP->cloakValue && (wallP->cloakValue < GR_ACTUAL_FADE_LEVELS)) || CheckTransparency (segP, nSide)) {
+if ((wallP->cloakValue && (wallP->cloakValue < FADE_LEVELS)) || CheckTransparency (segP, nSide)) {
 #if DBG
 	CheckTransparency (segP, nSide);
 #endif
@@ -299,7 +299,7 @@ void WallSetTMapNum (tSegment *segP, short nSide, tSegment *connSegP, short cSid
 {
 	tWallClip	*anim = gameData.walls.pAnims + nAnim;
 	short			tmap = anim->frames [(anim->flags & WCF_ALTFMT) ? 0 : nFrame];
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	int			nFrames;
 
 //if (gameData.demo.nState == ND_STATE_PLAYBACK)
@@ -313,17 +313,16 @@ if (anim->flags & WCF_ALTFMT) {
 	if (!bmP)
 		anim->flags &= ~WCF_ALTFMT;
 	else {
-		bmP->bmWallAnim = 1;
+		bmP->bWallAnim = 1;
 		if (!gameOpts->ogl.bGlTexMerge)
 			anim->flags &= ~WCF_ALTFMT;
-		else if (!BM_FRAMES (bmP))
+		else if (!bmP->Frames ())
 			anim->flags &= ~WCF_ALTFMT;
 		else {
 			anim->flags |= WCF_INITIALIZED;
-			BM_CURFRAME (bmP) = BM_FRAMES (bmP) + nFrame;
-			OglLoadBmTexture (BM_CURFRAME (bmP), 1, 3, 1);
-			nFrame++;
-			if (nFrame > nFrames)
+			bmP->SetCurFrame (bmP->Frames () + nFrame);
+			OglLoadBmTexture (bmP->CurFrame (), 1, 3, 1);
+			if (++nFrame > nFrames)
 				nFrame = nFrames;
 			}
 		}
@@ -1316,9 +1315,9 @@ if (cloakWallP->time > CLOAKING_WALL_TIME) {
 else if (SHOW_DYN_LIGHT || (cloakWallP->time > CLOAKING_WALL_TIME / 2)) {
 	int oldType = frontWallP->nType;
 	if (SHOW_DYN_LIGHT)
-		frontWallP->cloakValue = (GR_ACTUAL_FADE_LEVELS * (CLOAKING_WALL_TIME - cloakWallP->time)) / CLOAKING_WALL_TIME;
+		frontWallP->cloakValue = (FADE_LEVELS * (CLOAKING_WALL_TIME - cloakWallP->time)) / CLOAKING_WALL_TIME;
 	else
-		frontWallP->cloakValue = ((cloakWallP->time - CLOAKING_WALL_TIME / 2) * (GR_ACTUAL_FADE_LEVELS - 2)) / (CLOAKING_WALL_TIME / 2);
+		frontWallP->cloakValue = ((cloakWallP->time - CLOAKING_WALL_TIME / 2) * (FADE_LEVELS - 2)) / (CLOAKING_WALL_TIME / 2);
 	if (backWallP)
 		backWallP->cloakValue = frontWallP->cloakValue;
 	if (oldType != WALL_CLOAKED) {		//just switched
@@ -1395,7 +1394,7 @@ else if (cloakWallP->time > CLOAKING_WALL_TIME/2) {		//fading in
 		}
 	}
 else {		//cloaking in
-	frontWallP->cloakValue = ((CLOAKING_WALL_TIME/2 - cloakWallP->time) * (GR_ACTUAL_FADE_LEVELS-2)) / (CLOAKING_WALL_TIME/2);
+	frontWallP->cloakValue = ((CLOAKING_WALL_TIME/2 - cloakWallP->time) * (FADE_LEVELS-2)) / (CLOAKING_WALL_TIME/2);
 	frontWallP->nType = WALL_CLOAKED;
 	if (backWallP) {
 		backWallP->cloakValue = frontWallP->cloakValue;
@@ -1682,7 +1681,7 @@ bool WallIsInvisible (short nWall)
 if (!IS_WALL (nWall))
 	return false;
 tWall	*wallP = WALLS + nWall;
-if ((wallP->nType != WALL_OPEN) && ((wallP->nType != WALL_CLOAKED) || (wallP->cloakValue <  GR_ACTUAL_FADE_LEVELS)))
+if ((wallP->nType != WALL_OPEN) && ((wallP->nType != WALL_CLOAKED) || (wallP->cloakValue <  FADE_LEVELS)))
 	return false;
 return !WallIsTriggerTarget (nWall);
 }

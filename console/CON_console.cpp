@@ -367,7 +367,7 @@ void CON_UpdateOffset(ConsoleInformation* console) {
 
 void CON_DrawConsole(ConsoleInformation *console) {
 	gsrCanvas *canv_save;
-	grsBitmap *clip;
+	CBitmap *clip;
 
 	if(!console)
 		return;
@@ -394,11 +394,11 @@ void CON_DrawConsole(ConsoleInformation *console) {
 	else {
 		canv_save = grdCurCanv;
 		GrSetCurrentCanvas(&console->OutputScreen->scCanvas);
-		clip = GrCreateSubBitmap(&console->ConsoleSurface->cvBitmap, 0, 
-											 console->ConsoleSurface->cv_h - console->RaiseOffset, 
-											 console->ConsoleSurface->cv_w, console->RaiseOffset);
+		clip = console->ConsoleSurface->cvBitmap.CreateChild (
+			0, console->ConsoleSurface->cv_h - console->RaiseOffset, 
+			console->ConsoleSurface->cv_w, console->RaiseOffset);
 		GrBitmap(console->DispX, console->DispY, clip);
-		GrFreeSubBitmap(clip);
+		clip->Destroy ();
 #if 0
 		if(console->OutputScreen->flags & SDL_OPENGLBLIT)
 			SDL_UpdateRects(console->OutputScreen, 1, &DestRect);
@@ -473,7 +473,7 @@ ConsoleInformation *CON_Init(grsFont *Font, grsScreen *DisplayScreen, int lines,
 
 
 	/* Load the dirty rectangle for user input */
-	newinfo->InputBackground = GrCreateBitmap(w, newinfo->ConsoleSurface->cvFont->ftHeight, 1);
+	newinfo->InputBackground = CBitmap::Create (0, w, newinfo->ConsoleSurface->cvFont->ftHeight, 1);
 #if 0
 	SDL_FillRect(newinfo->InputBackground, NULL, SDL_MapRGBA(newinfo->ConsoleSurface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
 #endif
@@ -561,10 +561,10 @@ void CON_Free(ConsoleInformation *console) {
 	console->ConsoleSurface = NULL;
 
 	if (console->BackgroundImage)
-		GrFreeBitmap(console->BackgroundImage);
+		D2_FREE (console->BackgroundImage);
 	console->BackgroundImage = NULL;
 
-	GrFreeBitmap(console->InputBackground);
+	D2_FREE (console->InputBackground);
 	console->InputBackground = NULL;
 
 	D2_FREE(console);
@@ -801,7 +801,7 @@ void CON_Alpha(ConsoleInformation *console, unsigned char alpha) {
 
 //------------------------------------------------------------------------------
 /* Adds  background image to the console, scaled to size of console*/
-int CON_Background(ConsoleInformation *console, grsBitmap *image)
+int CON_Background(ConsoleInformation *console, CBitmap *image)
 {
 	if(!console)
 		return 1;
@@ -809,7 +809,7 @@ int CON_Background(ConsoleInformation *console, grsBitmap *image)
 	/* Free the background from the console */
 	if (image == NULL) {
 		if (console->BackgroundImage)
-			GrFreeBitmap(console->BackgroundImage);
+			D2_FREE (console->BackgroundImage);
 		console->BackgroundImage = NULL;
 #if 0
 		SDL_FillRect(console->InputBackground, NULL, SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -819,14 +819,14 @@ int CON_Background(ConsoleInformation *console, grsBitmap *image)
 
 	/* Load a new background */
 	if (console->BackgroundImage)
-		GrFreeBitmap(console->BackgroundImage);
-	console->BackgroundImage = GrCreateBitmap(console->ConsoleSurface->cv_w, console->ConsoleSurface->cv_h, 1);
+		D2_FREE (console->BackgroundImage);
+	console->BackgroundImage = CBitmap::Create (0, console->ConsoleSurface->cv_w, console->ConsoleSurface->cv_h, 1);
 	GrBitmapScaleTo(image, console->BackgroundImage);
 
 #if 0
 	SDL_FillRect(console->InputBackground, NULL, SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
 #endif
-	GrBmBitBlt(console->BackgroundImage->bmProps.w, console->InputBackground->bmProps.h, 0, 0, 0, console->ConsoleSurface->cv_h - console->ConsoleSurface->cvFont->ftHeight, console->BackgroundImage, console->InputBackground);
+	GrBmBitBlt(console->BackgroundImage->props.w, console->InputBackground->props.h, 0, 0, 0, console->ConsoleSurface->cv_h - console->ConsoleSurface->cvFont->ftHeight, console->BackgroundImage, console->InputBackground);
 
 	return 0;
 }
@@ -885,12 +885,12 @@ int CON_Resize(ConsoleInformation *console, int x, int y, int w, int h)
 		console->DispY = y;
 
 	/* resize console surface */
-	GrFreeBitmapData(&console->ConsoleSurface->cvBitmap);
-	GrInitBitmapAlloc(&console->ConsoleSurface->cvBitmap, BM_LINEAR, 0, 0, w, h, w, 1);
+	console->ConsoleSurface->cvBitmap.Destroy ();
+	console->ConsoleSurface->cvBitmap.Create (BM_LINEAR, w, h, 1);
 
 	/* Load the dirty rectangle for user input */
-	GrFreeBitmap(console->InputBackground);
-	console->InputBackground = GrCreateBitmap(w, console->ConsoleSurface->cvFont->ftHeight, 1);
+	D2_FREE (console->InputBackground);
+	console->InputBackground = CBitmap::Create (0, w, console->ConsoleSurface->cvFont->ftHeight, 1);
 
 	/* Now reset some stuff dependent on the previous size */
 	console->ConsoleScrollBack = 0;
@@ -900,7 +900,7 @@ int CON_Resize(ConsoleInformation *console, int x, int y, int w, int h)
 #if 0
 		SDL_FillRect(console->InputBackground, NULL, SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
 #endif
-		GrBmBitBlt(console->BackgroundImage->bmProps.w, console->InputBackground->bmProps.h, 0, 0, 0, console->ConsoleSurface->cv_h - console->ConsoleSurface->cvFont->ftHeight, console->BackgroundImage, console->InputBackground);
+		GrBmBitBlt(console->BackgroundImage->props.w, console->InputBackground->props.h, 0, 0, 0, console->ConsoleSurface->cv_h - console->ConsoleSurface->cvFont->ftHeight, console->BackgroundImage, console->InputBackground);
 	}
 
 #if 0

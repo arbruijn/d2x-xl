@@ -58,7 +58,7 @@ void OglDestroyLightmaps (void);
 
 //------------------------------------------------------------------------------
 
-//extern tOglTexture	*lightmaps;
+//extern tTextureInfo	*lightmaps;
 extern tLightmapData		lightmapData;
 extern int					lightmapWidth [5];
 extern GLhandleARB		lmShaderProgs [3];

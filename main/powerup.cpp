@@ -141,7 +141,7 @@ else {
 		vciP->xTotalTime = gameStates.app.nSDLTicks;
 		h = 0;
 		}
-	else if ((h = h / 80) && (nFrames = BM_FRAMECOUNT (gameData.pig.tex.addonBitmaps - vciP->nClipIndex - 1))) {
+	else if ((h = h / 80) && (nFrames = gameData.pig.tex.addonBitmaps [-vciP->nClipIndex - 1].FrameCount ())) { //???
 		vciP->xTotalTime += h * 80;
 		if (gameStates.app.nSDLTicks < vciP->xTotalTime)
 			vciP->xTotalTime = gameStates.app.nSDLTicks;
@@ -247,7 +247,7 @@ void _CDECL_ PowerupBasic (int redAdd, int greenAdd, int blueAdd, int score, con
 va_start (args, format);
 vsprintf (text, format, args);
 va_end (args);
-PALETTE_FLASH_ADD (redAdd, greenAdd, blueAdd);
+paletteManager.BumpEffect (redAdd, greenAdd, blueAdd);
 HUDInitMessage (text);
 //mprintf_gameData.objs.pwrUp.Info ();
 AddPointsToScore (score);

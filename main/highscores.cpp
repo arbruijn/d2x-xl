@@ -51,8 +51,6 @@ void ScoreTableDrawCoop ();
 
 static int xOffs = 0, yOffs = 0;
 
-ubyte *starsPalette = NULL;
-
 void LoadStars (bkg *bg, int bRedraw);
 
 //-----------------------------------------------------------------------------
@@ -299,8 +297,8 @@ void ScoreTableRedraw ()
 	int i, color;
 	int sorted [MAX_NUM_NET_PLAYERS];
 
-xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
-yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
+xOffs = (grdCurCanv->cvBitmap.props.w - 640) / 2;
+yOffs = (grdCurCanv->cvBitmap.props.h - 480) / 2;
 if (xOffs < 0)
 	xOffs = 0;
 if (yOffs < 0)
@@ -328,7 +326,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	}
 ScoreTableDrawDeaths (sorted);
 GrUpdate (0);
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 }
 
 //-----------------------------------------------------------------------------
@@ -354,7 +352,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	}
 ScoreTableDrawDeaths (sorted);
 GrSetCurrentCanvas (NULL);
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 GrUpdate (0);
 }
 
@@ -539,7 +537,7 @@ while (!done) {
 	}
 LOCALPLAYER.connected = 7;
 // Restore background and exit
-GrPaletteFadeOut (NULL, 32, 0);
+paletteManager.FadeOut ();
 GameFlushInputs ();
 ScoreTableQuit (&bg, 0, bNetwork);
 }

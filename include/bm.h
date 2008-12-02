@@ -92,7 +92,7 @@ void BMReadAll (CFile&  cf);
 void BMReadWeaponInfoD1 (CFile&  cf);
 void BMReadGameDataD1 (CFile&  cf);
 void RestoreDefaultRobots (void);
-int ComputeAvgPixel (grsBitmap *newBm);
+int ComputeAvgPixel (CBitmap *newBm);
 
 void LoadTextureBrightness (const char *pszLevel, int *brightnessP);
 int LoadExitModels ();

@@ -863,8 +863,8 @@ GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
 #endif
 nLastMsgYCrd = -1;		//so we don't restore backgound under msg
 /*---*/PrintLog ("   loading palette\n");
-GrPaletteStepLoad (NULL);
- //LoadPalette ("groupa.256", NULL, 0, 0, 1);		//don't change screen
+paletteManager.LoadEffect  ();
+ //paletteManager.Load ("groupa.256", NULL, 0, 0, 1);		//don't change screen
 if (!gameOpts->menus.nStyle)
 	NMLoadBackground (NULL, NULL, 0);
 ShowBoxedMessage (TXT_LOADING);
@@ -910,7 +910,7 @@ if (nLoadRes) {
 	return 0;
 	}
 
-gamePalette = LoadPalette (szCurrentLevelPalette, pszLevelName, 1, 1, 1);		//don't change screen
+paletteManager.SetGame (paletteManager.Load (szCurrentLevelPalette, pszLevelName, 1, 1, 1));		//don't change screen
 InitGaugeCanvases ();
 ResetPogEffects ();
 if (gameStates.app.bD1Mission) {
@@ -976,7 +976,7 @@ if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 ClearBoxedMessage ();		//remove message before new palette loaded
-GrPaletteStepLoad (NULL);		//actually load the palette
+paletteManager.LoadEffect  ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
 if (!bRestore)
@@ -1169,7 +1169,7 @@ sprintf (szTitle,
 			gameData.missions.szCurrentLevel,
 			TXT_DESTROYED);
 Assert (c <= N_GLITZITEMS);
-GrPaletteFadeOut (NULL, 32, 0);
+paletteManager.FadeOut ();
 if (network && (gameData.app.nGameMode & GM_NETWORK))
 	ExecMenu2 (NULL, szTitle, c, m, NetworkEndLevelPoll2, 0, (char *) STARS_BACKGROUND);
 else
@@ -1254,7 +1254,7 @@ GameStartRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
 InitCockpit ();
-ResetPaletteAdd ();
+paletteManager.ResetEffect ();
 }
 
 //	-----------------------------------------------------------------------------------------------------
@@ -1283,7 +1283,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
 	}
 else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	GrPaletteFadeOut (NULL, 32, 0);
+	paletteManager.FadeOut ();
 	SetScreenMode (SCREEN_MENU);		//go into menu mode
 	if (gameStates.app.bFirstSecretVisit)
 		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
@@ -1540,8 +1540,8 @@ if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
 	 !(gameData.app.nGameMode & (GM_MULTI | GM_MULTI_COOP))) {
 	GrSetCurrentCanvas (NULL);
 	GrClearCanvas (BLACK_RGBA);
-	GrPaletteStepClear ();
-	//LoadPalette (D2_DEFAULT_PALETTE, NULL, 0, 1, 0);
+	paletteManager.ClearEffect ();
+	//paletteManager.Load (D2_DEFAULT_PALETTE, NULL, 0, 1, 0);
 	MaybeAddPlayerScore (0);
 	}
 SetFunctionMode (FMODE_MENU);
@@ -1609,7 +1609,6 @@ gameStates.app.bBetweenLevels = 0;
 void LoadStars (bkg *bg, int bRedraw)
 {
 NMLoadBackground ((char *) STARS_BACKGROUND, bg, bRedraw);
-starsPalette = gameData.render.pal.pCurPal;
 }
 
 //------------------------------------------------------------------------------
@@ -1621,7 +1620,7 @@ void DiedInMineMessage (void)
 
 if (gameData.app.nGameMode & GM_MULTI)
 	return;
-GrPaletteFadeOut (NULL, 32, 0);
+paletteManager.FadeOut ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 GrSetCurrentCanvas (NULL);
 old_fmode = gameStates.app.nFunctionMode;
@@ -1641,7 +1640,7 @@ void ReturningToLevelMessage (void)
 if (gameData.app.nGameMode & GM_MULTI)
 	return;
 StopTime ();
-GrPaletteFadeOut (NULL, 32, 0);
+paletteManager.FadeOut ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 GrSetCurrentCanvas (NULL);
 old_fmode = gameStates.app.nFunctionMode;
@@ -1667,7 +1666,7 @@ void AdvancingToLevelMessage (void)
 Assert (gameData.missions.nCurrentLevel < 0);
 if (IsMultiGame)
 	return;
-GrPaletteFadeOut (NULL, 32, 0);
+paletteManager.FadeOut ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 GrSetCurrentCanvas (NULL);
 old_fmode = gameStates.app.nFunctionMode;
@@ -1698,8 +1697,8 @@ void DoPlayerDead (void)
 	int bSecret = (gameData.missions.nCurrentLevel < 0);
 
 gameStates.app.bGameRunning = 0;
-ResetPaletteAdd ();
-GrPaletteStepLoad (NULL);
+paletteManager.ResetEffect ();
+paletteManager.LoadEffect  ();
 DigiStopDigiSounds ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
@@ -1844,7 +1843,7 @@ InitRobotsForLevel ();
 InitShakerDetonates ();
 MorphInit ();
 InitAllMatCens ();
-ResetPaletteAdd ();
+paletteManager.ResetEffect ();
 InitThiefForLevel ();
 InitStuckObjects ();
 GameFlushInputs ();		// clear out the keyboard

@@ -45,7 +45,7 @@ int nOglMemTarget = -1;
 
 void OglCleanTextureCache (void)
 {
-	tOglTexture* t;
+	tTextureInfo* t;
 	int i,bytes;
 	int time=120;
 
@@ -58,7 +58,7 @@ if (nOglMemTarget < 0) {
 bytes = OglTextureStats ();
 while (bytes>nOglMemTarget){
 	for (i = 0, t = oglTextureList; i < OGL_TEXTURE_LIST_SIZE; i++, t++) {
-		if (!t->bFrameBuf && (t->handle > 0)) {
+		if (!t->bFrameBuffer && (t->handle > 0)) {
 			if (t->lastrend + f1_0 * time < gameData.time.xGame) {
 				OglFreeTexture (t);
 				bytes -= t->bytes;
@@ -111,25 +111,25 @@ else if (w->renderType == WEAPON_RENDER_POLYMODEL)
 
 //------------------------------------------------------------------------------
 
-grsBitmap *OglLoadFaceBitmap (short nTexture, short nFrameIdx)
+CBitmap *OglLoadFaceBitmap (short nTexture, short nFrameIdx)
 {
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	int			nFrames;
 
 PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [nTexture].index, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [nTexture].index;
-if (BM_OVERRIDE (bmP)) {
-	bmP = BM_OVERRIDE (bmP);
-	if (bmP->bmWallAnim) {
-		nFrames = BM_FRAMECOUNT (bmP);
+if (bmP->Override ()) {
+	bmP = bmP->Override ();
+	if (bmP->WallAnim ()) {
+		nFrames = bmP->FrameCount ();
 		if (nFrames > 1) {
 			OglLoadBmTexture (bmP, 1, 3, 1);
-			if (BM_FRAMES (bmP)) {
+			if (bmP->Frames ()) {
 				if ((nFrameIdx >= 0) || (-nFrames > nFrameIdx))
-					BM_CURFRAME (bmP) = BM_FRAMES (bmP);
+					bmP->SetCurFrame (bmP->Frames ());
 				else
-					BM_CURFRAME (bmP) = BM_FRAMES (bmP) - nFrameIdx - 1;
-				OglLoadBmTexture (BM_CURFRAME (bmP), 1, 3, 1);
+					bmP->SetCurFrame (bmP->Frames () - nFrameIdx - 1);
+				OglLoadBmTexture (bmP->CurFrame (), 1, 3, 1);
 				}
 			}
 		}
@@ -141,8 +141,8 @@ return bmP;
 
 void CacheSideTextures (int nSeg)
 {
-	short			nSide, tMap1, tMap2;
-	grsBitmap	*bmP, *bm2, *bmm;
+	short				nSide, tMap1, tMap2;
+	CBitmap			*bmP, *bm2, *bmm;
 	struct tSide	*sideP;
 
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
@@ -153,7 +153,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	bmP = OglLoadFaceBitmap (tMap1, sideP->nFrame);
 	if ((tMap2 = sideP->nOvlTex)) {
 		bm2 = OglLoadFaceBitmap (tMap1, sideP->nFrame);
-		if (!(bm2->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) ||
+		if (!(bm2->props.flags & BM_FLAG_SUPER_TRANSPARENT) ||
 			 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 			OglLoadBmTexture (bm2, 1, 3, 1);
 		else if ((bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->nOvlOrient)))
@@ -225,7 +225,7 @@ int OglCacheLevelTextures (void)
 	int			max_efx = 0, ef;
 	int			nSegment, nSide;
 	short			nBaseTex, nOvlTex;
-	grsBitmap	*bmBot,*bmTop, *bmm;
+	CBitmap	*bmBot,*bmTop, *bmm;
 	tSegment		*segP;
 	tSide			*sideP;
 	tObject		*objP;
@@ -261,7 +261,7 @@ for (segP = SEGMENTS, nSegment = 0; nSegment < gameData.segs.nSegments; nSegment
 		bmBot = OglLoadFaceBitmap (nBaseTex, sideP->nFrame);
 		if ((nOvlTex = sideP->nOvlTex)) {
 			bmTop = OglLoadFaceBitmap (nOvlTex, sideP->nFrame);
-			if (!(bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) ||
+			if (!(bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) ||
 				 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 				OglLoadBmTexture (bmTop, 1, 3, 1);
 			else if ((bmm = TexMergeGetCachedBitmap (nBaseTex, nOvlTex, sideP->nOvlOrient)))

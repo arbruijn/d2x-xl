@@ -72,7 +72,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 short *d1_tmap_nums = NULL;
 
 ubyte bogus_data [4096*4096];
-grsBitmap bogusBitmap;
+CBitmap bogusBitmap;
 ubyte bogusBitmap_initialized=0;
 tDigiSound bogusSound;
 
@@ -91,7 +91,6 @@ int bitmapOffsets [2][MAX_BITMAP_FILES];
 static ubyte *bitmapBits [2] = {NULL, NULL};
 #endif
 ubyte d1ColorMap [256];
-ubyte *d1Palette = NULL;
 
 #if DBG
 #	define PIGGY_BUFFER_SIZE ((unsigned int) (512*1024*1024))
@@ -137,7 +136,7 @@ dbh->width = cf.ReadByte ();
 dbh->height = cf.ReadByte ();
 dbh->wh_extra = cf.ReadByte ();
 dbh->flags = cf.ReadByte ();
-dbh->bmAvgColor = cf.ReadByte ();
+dbh->avgColor = cf.ReadByte ();
 dbh->offset = cf.ReadInt ();
 }
 
@@ -153,13 +152,13 @@ dbh->width = cf.ReadByte ();
 dbh->height = cf.ReadByte ();
 dbh->wh_extra = 0;
 dbh->flags = cf.ReadByte ();
-dbh->bmAvgColor = cf.ReadByte ();
+dbh->avgColor = cf.ReadByte ();
 dbh->offset = cf.ReadInt ();
 }
 
 //------------------------------------------------------------------------------
 
-tBitmapIndex PiggyRegisterBitmap (grsBitmap *bmP, const char *name, int bInFile)
+tBitmapIndex PiggyRegisterBitmap (CBitmap *bmP, const char *name, int bInFile)
 {
 	tBitmapIndex temp;
 	Assert (gameData.pig.tex.nBitmaps [gameStates.app.bD1Data] < MAX_BITMAP_FILES);
@@ -183,7 +182,7 @@ HashTableInsert (bitmapNames + gameStates.app.bD1Mission,
 gameData.pig.tex.pBitmaps [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = *bmP;
 if (!bInFile) {
 	bitmapOffsets [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = 0;
-	gameData.pig.tex.bitmapFlags [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = bmP->bmProps.flags;
+	gameData.pig.tex.bitmapFlags [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = bmP->props.flags;
 	}
 gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]++;
 return temp;
@@ -245,7 +244,7 @@ return cf.Open (filename, gameFolders.szDataDir, "rb", 0);
 	int ret;
 
 ShowBoxedMessage ("Copying bitmap data from CD...");
-GrPaletteStepLoad (NULL);    //I don't think this line is really needed
+paletteManager.LoadEffect  ();    //I don't think this line is really needed
 //First, delete all PIG files currently in the directory
 if (!FFF ("*.pig", &ffs, 0)) {
 	do {
@@ -339,7 +338,7 @@ void PiggyInitPigFile (char *filename)
 	char					szNameRead [16];
 	char					szPigName [FILENAME_LEN];
 	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, i;
-	grsBitmap			bmTemp;
+	CBitmap			bmTemp;
 	tPIGBitmapHeader	bmh;
 
 PiggyCloseFile ();             //close old pig if still open
@@ -377,11 +376,11 @@ for (i = 0; i < nBitmapNum; i++) {
 		sprintf (szName, "%s#%d", szNameRead, bmh.dflags & DBM_NUM_FRAMES);
 	else
 		strcpy (szName, szNameRead);
-	memset (&bmTemp, 0, sizeof (grsBitmap));
-	bmTemp.bmProps.w = bmTemp.bmProps.rowSize = bmh.width + ((short) (bmh.wh_extra & 0x0f) << 8);
-	bmTemp.bmProps.h = bmh.height + ((short) (bmh.wh_extra & 0xf0) << 4);
-	bmTemp.bmProps.flags |= BM_FLAG_PAGED_OUT;
-	bmTemp.bmAvgColor = bmh.bmAvgColor;
+	memset (&bmTemp, 0, sizeof (CBitmap));
+	bmTemp.props.w = bmTemp.props.rowSize = bmh.width + ((short) (bmh.wh_extra & 0x0f) << 8);
+	bmTemp.props.h = bmh.height + ((short) (bmh.wh_extra & 0xf0) << 4);
+	bmTemp.props.flags |= BM_FLAG_PAGED_OUT;
+	bmTemp.avgColor = bmh.avgColor;
 	gameData.pig.tex.bitmapFlags [0][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 	bitmapOffsets [0][i+1] = bmh.offset + nDataStart;
 	Assert ((i+1) == gameData.pig.tex.nBitmaps [0]);
@@ -467,17 +466,17 @@ if (!bogusBitmap_initialized) {
 	ubyte c;
 /*---*/PrintLog ("   Initializing placeholder bitmap\n");
 	bogusBitmap_initialized = 1;
-	memset (&bogusBitmap, 0, sizeof (grsBitmap));
-	bogusBitmap.bmProps.w = 
-	bogusBitmap.bmProps.h = 
-	bogusBitmap.bmProps.rowSize = 64;
-	bogusBitmap.bmTexBuf = bogus_data;
-	bogusBitmap.bmPalette = gamePalette;
-	c = GrFindClosestColor (gamePalette, 0, 0, 63);
+	memset (&bogusBitmap, 0, sizeof (CBitmap));
+	bogusBitmap.props.w = 
+	bogusBitmap.props.h = 
+	bogusBitmap.props.rowSize = 64;
+	bogusBitmap.texBuf = bogus_data;
+	bogusBitmap.SetPalette (paletteManager.Game ());
+	c = paletteManager.Game ()->ClosestColor (0, 0, 63);
 	memset (bogus_data, c, 4096);
-	c = GrFindClosestColor (gamePalette, 63, 0, 0);
+	c = paletteManager.Game ()->ClosestColor (63, 0, 0);
 	// Make a big red X !
-	for (i=0; i<1024; i++) {
+	for (i=0; i < 1024; i++) {
 		bogus_data [i * 1024 + i] = c;
 		bogus_data [i * 1024 + (1023 - i)] = c;
 		}
@@ -535,7 +534,7 @@ void PiggyCriticalError (void)
 	int i;
 	save_canv = grdCurCanv;
 	save_font = grdCurCanv->cvFont;
-	GrPaletteStepLoad (NULL);
+	paletteManager.LoadEffect  ();
 	i = ExecMessageBox ("Disk Error", NULL, 2, "Retry", "Exit", "%s\non drive %c:", szCriticalErrors [descent_critical_errcode&0xf], (descent_critical_deverror&0xf)+'A');
 	if (i == 1)
 		exit (1);
@@ -576,31 +575,13 @@ PagingTouchAll ();
 }
 
 //------------------------------------------------------------------------------
-/* calculate table to translate d1 bitmaps to current palette,
- * return -1 on error
- */
-ubyte *LoadD1Palette (void)
-{
-	tPalette	palette;
-	CFile cf;
-	
-if (!cf.Open (D1_PALETTE, gameFolders.szDataDir, "rb", 1) || (cf.Length () != 9472))
-	return NULL;
-cf.Read (palette, 256, 3);
-cf.Close ();
-palette [254] = SUPER_TRANSP_COLOR;
-palette [255] = TRANSPARENCY_COLOR;
-return d1Palette = AddPalette (palette);
-}
 
-//------------------------------------------------------------------------------
-
-void swap_0_255 (grsBitmap *bmP)
+void swap_0_255 (CBitmap *bmP)
 {
 	int i;
 	ubyte	*p;
 
-for (i = bmP->bmProps.h * bmP->bmProps.w, p = bmP->bmTexBuf; i; i--, p++) {
+for (i = bmP->props.h * bmP->props.w, p = bmP->texBuf; i; i--, p++) {
 	if (!*p)
 		*p = 255;
 	else if (*p == 255)
@@ -612,7 +593,7 @@ for (i = bmP->bmProps.h * bmP->bmProps.w, p = bmP->bmTexBuf; i; i--, p++) {
 
 void PiggyBitmapReadD1 (
 	CFile					&cf,
-	grsBitmap			*bmP, /* read into this bmP */
+	CBitmap				*bmP, /* read into this bmP */
 	int					nBmDataOffs, /* specific to file */
    tPIGBitmapHeader	*bmh, /* header info for bmP */
    ubyte					**pNextBmP, /* where to write it (if 0, use (ubyte *) D2_ALLOC) */
@@ -621,11 +602,11 @@ void PiggyBitmapReadD1 (
 {
 	int zSize, bSwap0255;
 
-memset (bmP, 0, sizeof (grsBitmap));
-bmP->bmProps.w = bmP->bmProps.rowSize = bmh->width + ((short) (bmh->wh_extra&0x0f)<<8);
-bmP->bmProps.h = bmh->height + ((short) (bmh->wh_extra&0xf0)<<4);
-bmP->bmAvgColor = bmh->bmAvgColor;
-bmP->bmProps.flags |= bmh->flags & BM_FLAGS_TO_COPY;
+memset (bmP, 0, sizeof (CBitmap));
+bmP->props.w = bmP->props.rowSize = bmh->width + ((short) (bmh->wh_extra&0x0f)<<8);
+bmP->props.h = bmh->height + ((short) (bmh->wh_extra&0xf0)<<4);
+bmP->avgColor = bmh->avgColor;
+bmP->props.flags |= bmh->flags & BM_FLAGS_TO_COPY;
 
 cf.Seek (nBmDataOffs + bmh->offset, SEEK_SET);
 if (bmh->flags & BM_FLAG_RLE) {
@@ -633,17 +614,17 @@ if (bmh->flags & BM_FLAG_RLE) {
 	cf.Seek (-4, SEEK_CUR);
 	}
 else
-	zSize = bmP->bmProps.h * bmP->bmProps.w;
+	zSize = bmP->props.h * bmP->props.w;
 
 if (pNextBmP) {
-	bmP->bmTexBuf = *pNextBmP;
+	bmP->texBuf = *pNextBmP;
 	*pNextBmP += zSize;
 	}
 else {
-	bmP->bmTexBuf = (ubyte *) D2_ALLOC (bmP->bmProps.h * bmP->bmProps.rowSize);
-	UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
+	bmP->texBuf = (ubyte *) D2_ALLOC (bmP->props.h * bmP->props.rowSize);
+	UseBitmapCache (bmP, (int) bmP->props.h * (int) bmP->props.rowSize);
 	}
-cf.Read (bmP->bmTexBuf, 1, zSize);
+cf.Read (bmP->texBuf, 1, zSize);
 bSwap0255 = 0;
 switch (cf.Length ()) {
 	case D1_MAC_PIGSIZE:
@@ -655,7 +636,7 @@ switch (cf.Length ()) {
 		}
 if (bmh->flags & BM_FLAG_RLE)
 	rle_expand (bmP, NULL, bSwap0255);
-GrRemapBitmapGood (bmP, d1Palette, TRANSPARENCY_COLOR, -1);
+bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, -1);
 }
 
 //------------------------------------------------------------------------------
@@ -763,7 +744,7 @@ if (pSoundNum)
 
 static int bHaveD1Sounds = 0;
 
-grsBitmap bmTemp;
+CBitmap bmTemp;
 
 #define D1_BITMAPS_SIZE (128 * 1024 * 1024)
 
@@ -780,11 +761,7 @@ else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.szDataDir, "rb", 0)) {
 	return;
 	}
 //first, free up data allocated for old bitmaps
-#if DBG
-Assert (LoadD1Palette () != NULL);
-#else
-LoadD1Palette ();
-#endif
+paletteManager.LoadD1 ();
 
 LoadD1PigHeader (cfPiggy [1], &nSoundNum, &nBmHdrOffs, &nBmDataOffs, &nBitmapNum, 1);
 if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.bHaveD1Textures) {
@@ -802,7 +779,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		PIGBitmapHeaderD1Read (&bmh, cfPiggy [1]);
 		memcpy (szNameRead, bmh.name, 8);
 		szNameRead [8] = 0;
-		memset (&bmTemp, 0, sizeof (grsBitmap));
+		memset (&bmTemp, 0, sizeof (CBitmap));
 		if (bmh.dflags & DBM_FLAG_ABM)        
 			sprintf (bmTemp.szName, "%s#%d", szNameRead, bmh.dflags & DBM_NUM_FRAMES);
 		else
@@ -811,13 +788,13 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		if (strstr (bmTemp.szName, "door13"))
 			i = i;
 #endif
-		bmTemp.bmProps.w = bmTemp.bmProps.rowSize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
-		bmTemp.bmProps.h = bmh.height + ((short) (bmh.wh_extra&0xf0)<<4);
-		bmTemp.bmProps.flags = bmh.flags | BM_FLAG_PAGED_OUT;
-		bmTemp.bmAvgColor = bmh.bmAvgColor;
-		bmTemp.bmTexBuf = NULL; //(ubyte *) D2_ALLOC (bmTemp.bmProps.w * bmTemp.bmProps.h);
-		bmTemp.bmBPP = 1;
-		bitmapCacheUsed += bmTemp.bmProps.h * bmTemp.bmProps.w;
+		bmTemp.props.w = bmTemp.props.rowSize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
+		bmTemp.props.h = bmh.height + ((short) (bmh.wh_extra&0xf0)<<4);
+		bmTemp.props.flags = bmh.flags | BM_FLAG_PAGED_OUT;
+		bmTemp.avgColor = bmh.avgColor;
+		bmTemp.texBuf = NULL; //(ubyte *) D2_ALLOC (bmTemp.props.w * bmTemp.props.h);
+		bmTemp.nBPP = 1;
+		bitmapCacheUsed += bmTemp.props.h * bmTemp.props.w;
 		gameData.pig.tex.bitmapFlags [1][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 		bitmapOffsets [1][i+1] = bmh.offset + nBmDataOffs;
 		Assert ((i+1) == gameData.pig.tex.nBitmaps [1]);
@@ -841,7 +818,7 @@ tBitmapIndex ReadExtraBitmapD1Pig (const char *name)
 	tPIGBitmapHeader	bmh;
 	int					i, nBmHdrOffs, nBmDataOffs, nBitmapNum;
 	tBitmapIndex		bmi;
-	grsBitmap			*newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
+	CBitmap			*newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
 
 bmi.index = 0;
 if (!cf.Open (D1_PIGFILE, gameFolders.szDataDir, "rb", 0)) {
@@ -869,7 +846,7 @@ if (i >= nBitmapNum) {
 	}
 PiggyBitmapReadD1 (cf, newBm, nBmDataOffs, &bmh, 0, d1Palette, d1ColorMap);
 cf.Close ();
-newBm->bmAvgColor = 0;	//ComputeAvgPixel (newBm);
+newBm->avgColor = 0;	//ComputeAvgPixel (newBm);
 bmi.index = gameData.pig.tex.nExtraBitmaps;
 gameData.pig.tex.pBitmaps [gameData.pig.tex.nExtraBitmaps++] = *newBm;
 return bmi;
@@ -925,10 +902,10 @@ typedef struct tBitmapInfoHeader {
 	unsigned int biClrImportant;
 } tBitmapInfoHeader;
 
-grsBitmap *PiggyLoadBitmap (const char *pszFile)
+CBitmap *PiggyLoadBitmap (const char *pszFile)
 {
 	CFile					cf;
-	grsBitmap			*bmp;
+	CBitmap			*bmP;
 	tBitmapFileHeader	bfh;
 	tBitmapInfoHeader	bih;
 
@@ -953,17 +930,17 @@ bih.biYPelsPerMeter = (unsigned int) cf.ReadInt ();
 bih.biClrUsed = (unsigned int) cf.ReadInt ();
 bih.biClrImportant = (unsigned int) cf.ReadInt ();
 
-if (!(bmp = GrCreateBitmap (bih.biWidth, bih.biHeight, 1))) {
+if (!(bmP = CBitmap::Create (0, bih.biWidth, bih.biHeight, 1))) {
 	cf.Close ();
 	return NULL;
 	}
 cf.Seek (bfh.bfOffBits, SEEK_SET);
-if (cf.Read (bmp->bmTexBuf, bih.biWidth * bih.biHeight, 1) != 1) {
-	GrFreeBitmap (bmp);
+if (cf.Read (bmP->TexBuf (), bih.biWidth * bih.biHeight, 1) != 1) {
+	D2_FREE (bmP);
 	return NULL;
 	}
 cf.Close ();
-return bmp;
+return bmP;
 }
 
 //------------------------------------------------------------------------------

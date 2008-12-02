@@ -116,7 +116,7 @@ tGameData		gameData;
 //static const char desc_id_checksum_str[] = DESC_ID_CHKSUM_TAG "0000"; // 4-byte checksum
 char desc_id_exit_num = 0;
 
-//--unused-- grsBitmap Inferno_bitmap_title;
+//--unused-- CBitmap Inferno_bitmap_title;
 
 int WVIDEO_running=0;		//debugger can set to 1 if running
 
@@ -241,27 +241,27 @@ GrSetCurrentCanvas (NULL);
 GrSetCurFont (GAME_FONT);
 GrGetStringSize ("V2.2", &w, &h, &aw);
 GrSetFontColorRGBi (RGBA_PAL (63, 47, 0), 1, 0, 0);
-GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.bmProps.h - GAME_FONT->ftHeight - 2, "visit www.descent2.de");
+GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.props.h - GAME_FONT->ftHeight - 2, "visit www.descent2.de");
 GrSetFontColorRGBi (RGBA_PAL (23, 23, 23), 1, 0, 0);
-GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.bmProps.h - GAME_FONT->ftHeight - h - 6, TXT_COPYRIGHT);
-GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w - w - 2, 
-			 grdCurCanv->cvBitmap.bmProps.h - GAME_FONT->ftHeight - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
+GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.props.h - GAME_FONT->ftHeight - h - 6, TXT_COPYRIGHT);
+GrPrintF (NULL, grdCurCanv->cvBitmap.props.w - w - 2, 
+			 grdCurCanv->cvBitmap.props.h - GAME_FONT->ftHeight - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 if (bVertigo < 0)
 	bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
 if (bVertigo) {
 	GrSetCurFont (MEDIUM2_FONT);
 	GrGetStringSize (TXT_VERTIGO, &w, &h, &aw);
-	GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w - w - SUBVER_XOFFS, 
+	GrPrintF (NULL, grdCurCanv->cvBitmap.props.w - w - SUBVER_XOFFS, 
 				 y + (gameOpts->menus.altBg.bHave ? h + 2 : 0), TXT_VERTIGO);
 	}
 GrSetCurFont (MEDIUM2_FONT);
 GrGetStringSize (D2X_NAME, &w, &h, &aw);
-GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w - w - SUBVER_XOFFS, 
+GrPrintF (NULL, grdCurCanv->cvBitmap.props.w - w - SUBVER_XOFFS, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
 GrSetCurFont (SMALL_FONT);
 GrGetStringSize (VERSION, &ws, &hs, &aw);
 GrSetFontColorRGBi (D2BLUE_RGBA, 1, 0, 0);
-GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w - ws - 1, 
+GrPrintF (NULL, grdCurCanv->cvBitmap.props.w - ws - 1, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
 GrSetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
 }
@@ -1943,7 +1943,6 @@ gameStates.ogl.bBrightness = 0;
 gameStates.ogl.nContrast = 8;
 gameStates.ogl.bFullScreen = 0;
 gameStates.ogl.bUseTransform = 0;
-gameStates.ogl.bDoPalStep = 0;
 gameStates.ogl.nColorBits = 32;
 gameStates.ogl.nDepthBits = 24;
 gameStates.ogl.bEnableTexture2D = -1;
@@ -1994,7 +1993,7 @@ gameStates.render.bExternalView = 0;
 gameStates.render.bTopDownRadar = 0;
 gameStates.render.bDisableFades = 0;
 gameStates.render.bDropAfterburnerBlob = 0;
-gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+gameStates.render.grAlpha = FADE_LEVELS;
 gameStates.render.bShowFrameRate = 0;
 gameStates.render.bShowTime = 0;
 gameStates.render.cameras.bActive = 0;
@@ -2249,7 +2248,7 @@ strcpy (gameData.missions.szBriefingFilename, "briefing.txt");
 gameData.marker.fScale = 2.0f;
 gameData.time.xFrame = 0x1000;
 gameData.app.nGameMode = GM_GAME_OVER;
-gameData.render.nPaletteGamma = -1;
+paletteManager.SetGamma (-1);
 gameData.reactor.bDestroyed = 0;
 gameData.reactor.nStrength = 0;
 gameData.reactor.countdown.nTimer = 0;
@@ -2806,8 +2805,8 @@ else {
 	SetScreenMode (SCREEN_MENU);
 	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 	if ((pcx_error = PcxReadFullScrImage (filename, 0)) == PCX_ERROR_NONE)	{
-		GrPaletteStepClear ();
-		GrPaletteFadeIn (gameData.render.pal.pCurPal, 32, 0);
+		paletteManager.ClearEffect ();
+		paletteManager.FadeIn ();
 		} 
 	else
 		Error ("Couldn't load pcx file '%s', \nPCX load error: %s\n", filename, pcx_errormsg (pcx_error));
@@ -2821,8 +2820,8 @@ void LoadHoardData (void)
 #ifdef EDITOR
 if (FindArg ("-hoarddata")) {
 #define MAX_BITMAPS_PER_BRUSH 30
-	grsBitmap * bm[MAX_BITMAPS_PER_BRUSH];
-	grsBitmap icon;
+	CBitmap * bm[MAX_BITMAPS_PER_BRUSH];
+	CBitmap icon;
 	int nframes;
 	short nframes_short;
 	ubyte palette[256*3];
@@ -2840,28 +2839,28 @@ if (FindArg ("-hoarddata")) {
 	Assert (iff_error == IFF_NO_ERROR);
 	nframes_short = nframes;
 	fwrite (&nframes_short, sizeof (nframes_short), 1, ofile);
-	fwrite (&bm[0]->bmProps.w, sizeof (short), 1, ofile);
-	fwrite (&bm[0]->bmProps.h, sizeof (short), 1, ofile);
+	fwrite (&bm[0]->props.w, sizeof (short), 1, ofile);
+	fwrite (&bm[0]->props.h, sizeof (short), 1, ofile);
 	fwrite (palette, 3, 256, ofile);
 	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->bmTexBuf, 1, bm[i]->bmProps.w*bm[i]->bmProps.h, ofile);
+		fwrite (bm[i]->texBuf, 1, bm[i]->props.w*bm[i]->props.h, ofile);
 
 	iff_error = iff_read_animbrush ("orbgoal.abm", bm, MAX_BITMAPS_PER_BRUSH, &nframes, palette);
 	Assert (iff_error == IFF_NO_ERROR);
-	Assert (bm[0]->bmProps.w == 64 && bm[0]->bmProps.h == 64);
+	Assert (bm[0]->props.w == 64 && bm[0]->props.h == 64);
 	nframes_short = nframes;
 	fwrite (&nframes_short, sizeof (nframes_short), 1, ofile);
 	fwrite (palette, 3, 256, ofile);
 	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->bmTexBuf, 1, bm[i]->bmProps.w*bm[i]->bmProps.h, ofile);
+		fwrite (bm[i]->texBuf, 1, bm[i]->props.w*bm[i]->props.h, ofile);
 
 	for (i=0;i<2;i++) {
 		iff_error = iff_read_bitmap (i?"orbb.bbm":"orb.bbm", &icon, BM_LINEAR, palette);
 		Assert (iff_error == IFF_NO_ERROR);
-		fwrite (&icon.bmProps.w, sizeof (short), 1, ofile);
-		fwrite (&icon.bmProps.h, sizeof (short), 1, ofile);
+		fwrite (&icon.props.w, sizeof (short), 1, ofile);
+		fwrite (&icon.props.h, sizeof (short), 1, ofile);
 		fwrite (palette, 3, 256, ofile);
-		fwrite (icon.bmTexBuf, 1, icon.bmProps.w*icon.bmProps.h, ofile);
+		fwrite (icon.texBuf, 1, icon.props.w*icon.props.h, ofile);
 		}
 
 	for (i=0;i<sizeof (sounds)/sizeof (*sounds);i++) {
@@ -2918,13 +2917,13 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 					}
 #endif
 				check_joystick_calibration ();
-				GrPaletteStepClear ();		//I'm not sure why we need this, but we do
+				paletteManager.ClearEffect ();		//I'm not sure why we need this, but we do
 				MainMenu ();
 #ifdef EDITOR
 				if (gameStates.app.nFunctionMode == FMODE_EDITOR)	{
 					create_new_mine ();
 					SetPlayerFromCurseg ();
-					LoadPalette (NULL, 1, 0);
+					paletteManager.Load (NULL, 1, 0);
 					}
 #endif
 				}
@@ -2939,9 +2938,9 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			GrabMouse (1, 1);
 			RunGame ();
 			GrabMouse (0, 1);
-			GrPaletteFadeIn (NULL, 0, 0);
-			ResetPaletteAdd ();
-			GrPaletteFadeOut (NULL, 0, 0);
+			paletteManager.FadeIn ();
+			paletteManager.ResetEffect ();
+			paletteManager.FadeOut ();
 			gameStates.app.bD1Mission = 0;
 			if (gameData.multiplayer.autoNG.bValid)
 				gameStates.app.nFunctionMode = FMODE_EXIT;
@@ -3096,8 +3095,8 @@ _3dfx_Init ();
 if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
 /*---*/PrintLog ("Loading default palette\n");
-defaultPalette = GrUsePaletteTable (D2_DEFAULT_PALETTE, NULL);
-grdCurCanv->cvBitmap.bmPalette = defaultPalette;	//just need some valid palette here
+paletteManager.SetDefault (paletteManager.Load (D2_DEFAULT_PALETTE, NULL));
+grdCurCanv->cvBitmap.SetPalette (paletteManager.Default ());	//just need some valid palette here
 /*---*/PrintLog ("Initializing game fonts\n");
 GameFontInit ();	// must load after palette data loaded.
 /*---*/PrintLog ("Setting screen mode\n");
@@ -3120,7 +3119,7 @@ static int loadOp = 0;
 
 static int InitializePoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 switch (loadOp) {
 	case 0:
 		/*---*/PrintLog ("Creating default tracker list\n");
@@ -3213,7 +3212,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 		*key = 0;
 		}
 	}
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 return nCurItem;
 }
 
@@ -3359,7 +3358,7 @@ else
 /*---*/PrintLog ("Loading player profile\n");
 DoSelectPlayer ();
 StartSoundThread (); //needs to be repeated here due to dependency on data read in DoSelectPlayer()
-GrPaletteFadeOut (NULL, 32, 0);
+paletteManager.FadeOut ();
 // handle direct loading and starting of a mission specified via the command line
 if (gameStates.app.bAutoRunMission) {
 	gameStates.app.nFunctionMode = StartNewGame (1) ? FMODE_GAME : FMODE_MENU;
@@ -3417,11 +3416,10 @@ void ShowOrderForm ()
 {
 #ifndef EDITOR
 	int 	pcx_error;
-	ubyte titlePal [768];
 	char	exit_screen[16];
 
 	GrSetCurrentCanvas (NULL);
-	GrPaletteStepClear ();
+	paletteManager.ClearEffect ();
 
 	KeyFlush ();
 
@@ -3436,11 +3434,11 @@ void ShowOrderForm ()
 		return; // D2 registered
 
 	if ((pcx_error=PcxReadFullScrImage (exit_screen, 0))==PCX_ERROR_NONE) {
-		GrPaletteFadeIn (NULL, 32, 0);
+		paletteManager.FadeIn ();
 		GrUpdate (0);
 		while (!(KeyInKey () || MouseButtonState (0)))
 			;
-		GrPaletteFadeOut (titlePal, 32, 0);
+		paletteManager.FadeOut ();
 	}
 	else
 		Int3 ();		//can't load order screen

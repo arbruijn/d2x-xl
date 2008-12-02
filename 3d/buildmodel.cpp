@@ -167,12 +167,12 @@ if (psm->vMax[Z] < v[Z])
 
 //------------------------------------------------------------------------------
 
-inline int G3CmpFaces (tG3ModelFace *pmf, tG3ModelFace *pm, grsBitmap *pTextures)
+inline int G3CmpFaces (tG3ModelFace *pmf, tG3ModelFace *pm, CBitmap *pTextures)
 {
 if (pTextures && (pmf->nBitmap >= 0) && (pm->nBitmap >= 0)) {
-	if (pTextures [pmf->nBitmap].bmBPP < pTextures [pm->nBitmap].bmBPP)
+	if (pTextures [pmf->nBitmap].nBPP < pTextures [pm->nBitmap].nBPP)
 		return -1;
-	if (pTextures [pmf->nBitmap].bmBPP > pTextures [pm->nBitmap].bmBPP)
+	if (pTextures [pmf->nBitmap].nBPP > pTextures [pm->nBitmap].nBPP)
 		return 1;
 	}
 if (pmf->nBitmap < pm->nBitmap)
@@ -188,7 +188,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void G3SortFaces (tG3SubModel *psm, int left, int right, grsBitmap *pTextures)
+void G3SortFaces (tG3SubModel *psm, int left, int right, CBitmap *pTextures)
 {
 	int				l = left,
 						r = right;
@@ -244,7 +244,7 @@ void G3SetupModel (tG3Model *pm, int bHires, int bSort)
 	fVector3			*pv, *pn;
 	tTexCoord2f		*pt;
 	tRgbaColorf		*pc;
-	grsBitmap		*pTextures = bHires ? pm->pTextures : NULL;
+	CBitmap		*pTextures = bHires ? pm->pTextures : NULL;
 	int				i, j;
 	short				nId;
 
@@ -264,7 +264,7 @@ for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
 		if (G3CmpFaces (pfi, pfj, pTextures))
 			nId++;
 #if G3_ALLOW_TRANSPARENCY
-		if (pTextures && (pTextures [pfi->nBitmap].bmProps.flags & BM_FLAG_TRANSPARENT))
+		if (pTextures && (pTextures [pfi->nBitmap].props.flags & BM_FLAG_TRANSPARENT))
 			pm->bHasTransparency = 1;
 #endif
 		}
@@ -771,7 +771,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int G3BuildModel (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor, int bHires)
+int G3BuildModel (tObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *pObjColor, int bHires)
 {
 	tG3Model	*pm = gameData.models.g3Models [bHires] + nModel;
 

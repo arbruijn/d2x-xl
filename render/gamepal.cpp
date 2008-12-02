@@ -57,9 +57,6 @@ void LoadBackgroundBitmap(void);
 
 char szLastPaletteLoaded [FILENAME_LEN] = "";
 char szLastPalettePig [FILENAME_LEN] = "";
-ubyte *lastPalette = NULL;
-
-ubyte *gamePalette;
 
 //------------------------------------------------------------------------------
 
@@ -81,66 +78,11 @@ if (bDoFadeTableHack) {
 	for (i=0;i<256;i++) {
 		int c;
 		c = GrFindClosestColor(gamma[grPalette[i*3]],gamma[grPalette[i*3+1]],gamma[grPalette[i*3+2]]);
-		grFadeTable[14*256+i] = c;
+		paletteManager.FadeTable ()[14*256+i] = c;
 		}
 	}
 memcpy(last_palette_for_color_fonts,grPalette,sizeof(last_palette_for_color_fonts));
 #endif
-}
-
-//------------------------------------------------------------------------------
-//load a palette by name. returns 1 if new palette loaded, else 0
-//if nUsedForLevel is set, load pig, etc.
-//if bNoScreenChange is set, the current screen does not get remapped,
-//and the hardware palette does not get changed
-ubyte *LoadPalette (const char *pszPaletteName, const char *pszLevelName, int nUsedForLevel, 
-						  int bNoScreenChange, int bForce)
-{
-	char	szPigName[FILENAME_LEN];
-	ubyte *palette = NULL;
-
-	//special hack to tell that palette system about a pig that's been loaded elsewhere
-if (nUsedForLevel == -2) {
-	strncpy (szLastPalettePig, pszPaletteName, sizeof (szLastPalettePig));
-	return lastPalette;
-	}
-if (!pszPaletteName)
-	pszPaletteName = szLastPalettePig;
-if (!*pszPaletteName)
-	pszPaletteName = "groupa.256";
-if (nUsedForLevel && stricmp (szLastPalettePig, pszPaletteName) != 0) {
-	if (gameStates.app.bD1Mission)
-		strcpy (szPigName, "groupa.pig");
-	else {
-		_splitpath ((char *) pszPaletteName, NULL, NULL, szPigName, NULL);
-		strcat (szPigName, ".pig");
-		PiggyInitPigFile (szPigName);
-		}
-//if not editor, load pig first so small install message can come
-//up in old palette.  If editor version, we must load the pig after
-//the palette is loaded so we can remap new textures.
-#ifdef EDITOR
-	piggy_new_pigfile(szPigName);
-#endif
-	}
-if (bForce || pszLevelName || stricmp(szLastPaletteLoaded, pszPaletteName)) {
-	strncpy (szLastPaletteLoaded, pszPaletteName, sizeof (szLastPaletteLoaded));
-	palette = GrUsePaletteTable (pszPaletteName, pszLevelName);
-	if (!gameStates.render.bPaletteFadedOut && !bNoScreenChange)
-		GrPaletteStepLoad (NULL);
-	//RemapFontsAndMenus (0);
-	gameData.hud.msgs [0].nColor = -1;
-	LoadBackgroundBitmap();
-	}
-if (nUsedForLevel && stricmp(szLastPalettePig,pszPaletteName) != 0) {
-	strncpy(szLastPalettePig,pszPaletteName,sizeof(szLastPalettePig));
-#ifdef EDITOR
-	piggy_new_pigfile(szPigName);
-#endif
-	TexMergeFlush();
-	RLECacheFlush();
-	}
-return palette;
 }
 
 //------------------------------------------------------------------------------

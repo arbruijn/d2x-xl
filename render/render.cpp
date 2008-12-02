@@ -100,7 +100,7 @@ void _CDECL_ FreeReticleCanvas (void)
 {
 if (reticleCanvas) {
 	PrintLog ("unloading reticle data\n");
-	D2_FREE( reticleCanvas->cvBitmap.bmTexBuf);
+	D2_FREE( reticleCanvas->cvBitmap.texBuf);
 	D2_FREE( reticleCanvas);
 	reticleCanvas	= NULL;
 	}
@@ -155,8 +155,8 @@ if ( reticleCanvas == NULL)	{
 	if ( !reticleCanvas)
 		Error( "Couldn't D2_ALLOC reticleCanvas");
 	atexit( FreeReticleCanvas);
-	//reticleCanvas->cvBitmap.bmHandle = 0;
-	reticleCanvas->cvBitmap.bmProps.flags = BM_FLAG_TRANSPARENT;
+	//reticleCanvas->cvBitmap.nId = 0;
+	reticleCanvas->cvBitmap.props.flags = BM_FLAG_TRANSPARENT;
 	}
 
 saved_canvas = grdCurCanv;
@@ -185,7 +185,7 @@ if (!(gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)) {
 	}
 if (gameStates.app.bEndLevelSequence)
 	return;
-if (gameStates.ogl.palAdd.blue > 10)		//whiting out
+if (paletteManager.BlueEffect () > 10)		//whiting out
 	return;
 //	flash_ang += FixMul(FLASH_CYCLE_RATE, gameData.time.xFrame);
 if (gameStates.gameplay.seismic.nMagnitude) {
@@ -253,7 +253,7 @@ if (IS_WALL (nWallNum)) {
 			if (!RenderColoredSegFace (propsP->segNum, propsP->sideNum, propsP->nVertices, pointList)) {
 				c = gameData.walls.walls [nWallNum].cloakValue;
 				if (propsP->widFlags & WID_CLOAKED_FLAG) {
-					if (c < GR_ACTUAL_FADE_LEVELS) {
+					if (c < FADE_LEVELS) {
 						gameStates.render.grAlpha = (float) c;
 						G3DrawPolyAlpha (propsP->nVertices, pointList, &cloakColor, 1, propsP->segNum);		//draw as flat poly
 						}
@@ -262,30 +262,32 @@ if (IS_WALL (nWallNum)) {
 					if (!gameOpts->render.color.bWalls)
 						c = 0;
 					if (gameData.walls.walls [nWallNum].hps)
-						gameStates.render.grAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWallNum].hps / ((float) F1_0 * 100.0f)) * GR_ACTUAL_FADE_LEVELS);
+						gameStates.render.grAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWallNum].hps / ((float) F1_0 * 100.0f)) * FADE_LEVELS);
 					else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
-						gameStates.render.grAlpha = COMPETITION ? GR_ACTUAL_FADE_LEVELS * 3.0f / 2.0f : (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [1].grWallTransparency);
+						gameStates.render.grAlpha = COMPETITION ? FADE_LEVELS * 3.0f / 2.0f : (float) (FADE_LEVELS - extraGameInfo [1].grWallTransparency);
 					else
-						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [0].grWallTransparency);
-					if (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS) {
-						tRgbaColorf wallColor = {CPAL2Tr (gamePalette, c), CPAL2Tg (gamePalette, c), CPAL2Tb (gamePalette, c), -1};
+						gameStates.render.grAlpha = (float) (FADE_LEVELS - extraGameInfo [0].grWallTransparency);
+					if (gameStates.render.grAlpha < FADE_LEVELS) {
+						tRgbaColorf wallColor;
+						
+						paletteManager.Game ()->ToRgbaf ((ubyte) c, wallColor); 
 						G3DrawPolyAlpha (propsP->nVertices, pointList, &wallColor, 1, propsP->segNum);	//draw as flat poly
 						}
 					}
 				}
-			gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+			gameStates.render.grAlpha = FADE_LEVELS;
 			return 1;
 			}
 		}
 	else if (gameStates.app.bD2XLevel) {
 		c = gameData.walls.walls [nWallNum].cloakValue;
-		if (c && (c < GR_ACTUAL_FADE_LEVELS))
-			gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - c);
+		if (c && (c < FADE_LEVELS))
+			gameStates.render.grAlpha = (float) (FADE_LEVELS - c);
 		}
 	else if (gameOpts->render.effects.bAutoTransparency && IsTransparentFace (propsP))
-		gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS * 0.8f;
+		gameStates.render.grAlpha = (float) FADE_LEVELS * 0.8f;
 	else
-		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+		gameStates.render.grAlpha = FADE_LEVELS;
 	}
 return 0;
 }
@@ -295,8 +297,8 @@ return 0;
 void RenderFace (tFaceProps *propsP)
 {
 	tFaceProps	props = *propsP;
-	grsBitmap  *bmBot = NULL;
-	grsBitmap  *bmTop = NULL;
+	CBitmap  *bmBot = NULL;
+	CBitmap  *bmTop = NULL;
 
 	int			i, bIsMonitor, bIsTeleCam, bHaveMonitorBg, nCamNum, bCamBufAvail;
 	g3sPoint		*pointList [8], **pp;
@@ -414,14 +416,14 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 
 if (bHaveMonitorBg) {
 	cameraP->GetUVL (NULL, props.uvls, NULL, NULL);
-	cameraP->Texture ().glTexture->wrapstate = -1;
+	cameraP->Texture ().TexInfo ()->wrapstate = -1;
 	if (bIsTeleCam) {
 #if DBG
 		bmBot = &cameraP->Texture ();
-		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+		gameStates.render.grAlpha = FADE_LEVELS;
 #else
 		bmTop = &cameraP->Texture ();
-		gameStates.render.grAlpha = (GR_ACTUAL_FADE_LEVELS * 7) / 10;
+		gameStates.render.grAlpha = (FADE_LEVELS * 7) / 10;
 #endif
 		}
 	else if (gameOpts->render.cameras.bFitToWall || (props.nOvlTex > 0))
@@ -439,8 +441,8 @@ else
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 	props.segNum = props.segNum;
 #endif
-if ((gameOpts->render.bDepthSort > 0) && (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
-	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - gameStates.render.grAlpha;
+if ((gameOpts->render.bDepthSort > 0) && (gameStates.render.grAlpha < FADE_LEVELS))
+	gameStates.render.grAlpha = FADE_LEVELS - gameStates.render.grAlpha;
 #if DBG
 if (bmTop)
 	fpDrawTexPolyMulti (
@@ -476,7 +478,7 @@ fpDrawTexPolyMulti (
 	props.segNum);
 #endif
 	}
-gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+gameStates.render.grAlpha = FADE_LEVELS;
 gameStates.ogl.fAlpha = 1;
 	// render the tSegment the tPlayer is in with a transparent color if it is a water or lava tSegment
 	//if (nSegment == OBJECTS->nSegment)
@@ -825,15 +827,15 @@ t=top;
 r=right;
 b=bot;
 
-if ( r<0 || b<0 || l>=grdCurCanv->cvBitmap.bmProps.w || (t>=grdCurCanv->cvBitmap.bmProps.h && b>=grdCurCanv->cvBitmap.bmProps.h))
+if ( r<0 || b<0 || l>=grdCurCanv->cvBitmap.props.w || (t>=grdCurCanv->cvBitmap.props.h && b>=grdCurCanv->cvBitmap.props.h))
 	return;
 
 if (l<0)
 	l=0;
 if (t<0)
 	t=0;
-if (r>=grdCurCanv->cvBitmap.bmProps.w) r=grdCurCanv->cvBitmap.bmProps.w-1;
-if (b>=grdCurCanv->cvBitmap.bmProps.h) b=grdCurCanv->cvBitmap.bmProps.h-1;
+if (r>=grdCurCanv->cvBitmap.props.w) r=grdCurCanv->cvBitmap.props.w-1;
+if (b>=grdCurCanv->cvBitmap.props.h) b=grdCurCanv->cvBitmap.props.h-1;
 
 GrLine(I2X(l), I2X(t), I2X(r), I2X(t));
 GrLine(I2X(r), I2X(t), I2X(r), I2X(b));
@@ -1301,7 +1303,7 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0)) {
 StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
 gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 if (!nWindow)
-	gameData.render.dAspect = (double) grdCurCanv->cvBitmap.bmProps.w / (double) grdCurCanv->cvBitmap.bmProps.h;
+	gameData.render.dAspect = (double) grdCurCanv->cvBitmap.props.w / (double) grdCurCanv->cvBitmap.props.h;
 //PrintLog ("G3StartFrame\n");
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
 //PrintLog ("SetRenderView\n");
@@ -1330,7 +1332,7 @@ if (SHOW_SHADOWS &&
 #endif
 		OglStartFrame (0, 0);
 #if SOFT_SHADOWS
-		OglViewport (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, 128, 128);
+		OglViewport (grdCurCanv->cvBitmap.props.x, grdCurCanv->cvBitmap.props.y, 128, 128);
 #endif
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 #if 1//!DBG
@@ -1652,8 +1654,8 @@ if (bPreDrawSegs)
 
 renderPortals [0].left =
 renderPortals [0].top = 0;
-renderPortals [0].right = grdCurCanv->cvBitmap.bmProps.w - 1;
-renderPortals [0].bot = grdCurCanv->cvBitmap.bmProps.h - 1;
+renderPortals [0].right = grdCurCanv->cvBitmap.props.w - 1;
+renderPortals [0].bot = grdCurCanv->cvBitmap.props.h - 1;
 
 //breadth-first renderer
 
@@ -1979,7 +1981,7 @@ windowRenderedData [nWindow].nObjects = 0;
 nHackLasers = 0;
 #endif
 //set up for rendering
-gameStates.ogl.fAlpha = GR_ACTUAL_FADE_LEVELS;
+gameStates.ogl.fAlpha = FADE_LEVELS;
 if (((gameStates.render.nRenderPass <= 0) &&
 	  (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) ||
 	 gameStates.render.bShadowMaps) {
@@ -2262,7 +2264,7 @@ void CheckFace(int nSegment, int nSide, int facenum, int nVertices, short *vp, i
 
 	if (bSearchMode) {
 		int save_lighting;
-		grsBitmap *bm;
+		CBitmap *bm;
 		tUVL uvlCopy [8];
 		g3sPoint *pointList [4];
 
@@ -2341,7 +2343,7 @@ int FindSegSideFace(short x, short y, int *seg, int *tSide, int *face, int *poly
 		gsrCanvas temp_canvas;
 
 		GrInitSubCanvas(&temp_canvas, canv_offscreen, 0, 0,
-			LargeView.ev_canv->cvBitmap.bmProps.w, LargeView.ev_canv->cvBitmap.bmProps.h);
+			LargeView.ev_canv->cvBitmap.props.w, LargeView.ev_canv->cvBitmap.props.h);
 		GrSetCurrentCanvas(&temp_canvas);
 		RenderFrame(0, 0);
 	}

@@ -46,7 +46,7 @@ gsrCanvas *Canv_SBAfterburnerGauge;
 
 void SBInitGaugeCanvases (void)
 {
-if (!bHaveGaugeCanvases && gamePalette) {
+if (!bHaveGaugeCanvases && paletteManager.Game ()) {
 	PAGE_IN_GAUGE (SB_GAUGE_ENERGY);
 	Canv_SBEnergyGauge = GrCreateCanvas (SB_ENERGY_GAUGE_W, SB_ENERGY_GAUGE_H);
 	Canv_SBAfterburnerGauge = GrCreateCanvas (SB_AFTERBURNER_GAUGE_W, SB_AFTERBURNER_GAUGE_H);
@@ -184,7 +184,7 @@ void SBShowLives (void)
 {
 	int x = SB_LIVES_X, y = SB_LIVES_Y;
 
-	grsBitmap *bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_LIVES);
+	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_LIVES);
 
 	static int nIdLives [2] = {0, 0}, nIdKilled = 0;
   
@@ -217,13 +217,13 @@ if ((oldLives [gameStates.render.vr.nCurrentPage] == -1) ||
 //erase old icons
 	GrSetColorRGBi (RGBA_PAL (0, 0, 0));
    
-	HUDRect (x, y, SB_SCORE_RIGHT, y + bmP->bmProps.h);
+	HUDRect (x, y, SB_SCORE_RIGHT, y + bmP->props.h);
 	if (LOCALPLAYER.lives - 1 > 0) {
 		GrSetCurFont (GAME_FONT);
 		GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		PAGE_IN_GAUGE (GAUGE_LIVES);
 		HUDBitBlt (x, y, bmP, F1_0, 0);
-		nIdLives [1] = HUDPrintF (&nIdLives [1], x + bmP->bmProps.w + GAME_FONT->ftWidth, y, "x %d", LOCALPLAYER.lives - 1);
+		nIdLives [1] = HUDPrintF (&nIdLives [1], x + bmP->props.w + GAME_FONT->ftWidth, y, "x %d", LOCALPLAYER.lives - 1);
 		}
 	}
 }
@@ -344,7 +344,7 @@ HUDBitBlt (SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][G
 
 void SBDrawKeys (void)
 {
-	grsBitmap * bmP;
+	CBitmap * bmP;
 	int flags = LOCALPLAYER.flags;
 
 GrSetCurrentCanvas (GetCurrentGameScreen ());

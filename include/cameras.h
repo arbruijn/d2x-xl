@@ -12,7 +12,7 @@ typedef struct tCamera {
 	short				nId;
 	short				nSegment;
 	short				nSide;
-	grsBitmap		texture;
+	CBitmap			texture;
 	char				*screenBuf;
 	GLuint			glTexId;
 	time_t			nTimeout;
@@ -29,10 +29,10 @@ typedef struct tCamera {
 	tTexCoord2f		texCoord [6];
 #if RENDER2TEXTURE == 1
 	tPixelBuffer	pb;
-	tOglTexture	glTex;
+	tTextureInfo		glTex;
 #elif RENDER2TEXTURE == 2
-	tFrameBuffer	fb;
-	tOglTexture		glTex;
+	CFBO				fbo;
+	tTextureInfo	glTex;
 #endif
 	vmsMatrix		orient;
 	fixang			curAngle;
@@ -62,10 +62,10 @@ class CCamera {
 		inline char GetTeleport (void) { return m_info.bTeleport; }
 		inline char Valid (void) { return m_info.bValid; }
 		inline vmsMatrix& Orient (void) { return m_info.orient; }
-		inline grsBitmap& Texture (void) { return m_info.texture; }
+		inline CBitmap& Texture (void) { return m_info.texture; }
 		inline tTexCoord2f* TexCoord (void) { return m_info.texCoord; }
 		inline tObject* GetObject (void) { return m_info.objP; }
-		inline tFrameBuffer& FrameBuffer (void) { return m_info.fb; } 
+		inline CFBO& FrameBuffer (void) { return m_info.fbo; } 
 
 	private:
 		int CreateBuffer (void);

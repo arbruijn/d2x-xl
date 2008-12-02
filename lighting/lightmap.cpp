@@ -562,20 +562,20 @@ static int nFace = 0;
 
 static int CreateLightmapsPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect ();
 if (nFace < gameData.segs.nFaces) {
 	ComputeLightmaps (nFace, 0);
 	nFace += PROGRESS_INCR;
 	}
 else {
 	*key = -2;
-	GrPaletteStepLoad (NULL);
+	paletteManager.LoadEffect  ();
 	return nCurItem;
 	}
 m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 return nCurItem;
 }
 

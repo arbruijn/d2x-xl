@@ -236,7 +236,7 @@ OglInitShaders ();
 #if RENDER2TEXTURE == 1
 OglInitPBuffer ();
 #elif RENDER2TEXTURE == 2
-OglInitFBuffer ();
+CFBO::Setup ();
 #endif
 //InitShaders ();
 }

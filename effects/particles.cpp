@@ -78,9 +78,9 @@
 
 static int bHavePartImg [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
 
-static grsBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL}};
+static CBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL}};
 #if 0
-static grsBitmap *bmpBumpMaps [2] = {NULL, NULL};
+static CBitmap *bmpBumpMaps [2] = {NULL, NULL};
 #endif
 
 static const char *szParticleImg [2][PARTICLE_TYPES] = {
@@ -591,7 +591,7 @@ int CParticle::Render (float brightness)
 {
 	vmsVector			hp;
 	GLfloat				d, u, v;
-	grsBitmap			*bmP;
+	CBitmap			*bmP;
 	tRgbaColorf			pc;
 	tTexCoord2f			texCoord [4];
 	tParticleVertex	*pb;
@@ -610,8 +610,8 @@ if (m_nDelay > 0)
 	return 0;
 if (!(bmP = bmpParticle [0][nType]))
 	return 0;
-if (BM_CURFRAME (bmP))
-	bmP = BM_CURFRAME (bmP);
+if (bmP->CurFrame ())
+	bmP = bmP->CurFrame ();
 if (gameOpts->render.bDepthSort > 0) {
 	hp = m_vTransPos;
 	if ((gameData.particles.nLastType != nType) || (brightness != bufferBrightness) || (bBufferEmissive != bEmissive)) {
@@ -889,14 +889,14 @@ if (iBuffer) {
 	if (gameStates.ogl.bShadersOk) {
 		if (InitBuffer (bLightmaps)) { //gameStates.render.bVertexArrays) {
 #if 1
-			grsBitmap *bmP = bmpParticle [0][gameData.particles.nLastType];
+			CBitmap *bmP = bmpParticle [0][gameData.particles.nLastType];
 			if (!bmP)
 				return;
 			glActiveTexture (GL_TEXTURE0);
 			glClientActiveTexture (GL_TEXTURE0);
 			glEnable (GL_TEXTURE_2D);
-			if (BM_CURFRAME (bmP))
-				bmP = BM_CURFRAME (bmP);
+			if (bmP->CurFrame ())
+				bmP = bmP->CurFrame ();
 			if (OglBindBmTex (bmP, 0, 1))
 				return;
 #endif
@@ -952,7 +952,7 @@ return 1;
 
 int CParticleManager::BeginRender (int nType, float nScale)
 {
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	int			bLightmaps = HaveLightmaps ();
 	static time_t	t0 = 0;
 
@@ -1798,11 +1798,11 @@ if (nFrames > 1) {
 	int			iFrameIncr = iPartFrameIncr [bPointSprites][nType];
 #endif
 	int			bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort;
-	grsBitmap	*bmP = bmpParticle [bPointSprites][GetType (nType)];
+	CBitmap	*bmP = bmpParticle [bPointSprites][GetType (nType)];
 
-	if (!BM_FRAMES (bmP))
+	if (!bmP->Frames ())
 		return;
-	BM_CURFRAME (bmP) = BM_FRAMES (bmP) + iFrame;
+	bmP->SetCurFrame (iFrame);
 #if 1
 	if (t - t0 [nType] > 150)
 #endif
@@ -1824,23 +1824,23 @@ if (nFrames > 1) {
 
 //	-----------------------------------------------------------------------------
 
-void CParticleImageManager::AdjustBrightness (grsBitmap *bmP)
+void CParticleImageManager::AdjustBrightness (CBitmap *bmP)
 {
-	grsBitmap	*bmfP;
-	int			i, j = bmP->bmData.alt.bmFrameCount;
+	CBitmap	*bmfP;
+	int			i, j = bmP->FrameCount ();
 	float			*fFrameBright, fAvgBright = 0, fMaxBright = 0;
 
 if (j < 2)
 	return;
 if (!(fFrameBright = (float *) D2_ALLOC (j * sizeof (float))))
 	return;
-for (i = 0, bmfP = BM_FRAMES (bmP); i < j; i++, bmfP++) {
+for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
 	fAvgBright += (fFrameBright [i] = (float) TGABrightness (bmfP));
 	if (fMaxBright < fFrameBright [i])
 		fMaxBright = fFrameBright [i];
 	}
 fAvgBright /= j;
-for (i = 0, bmfP = BM_FRAMES (bmP); i < j; i++, bmfP++) {
+for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
 	TGAChangeBrightness (bmfP, 0, 1, 2 * (int) (255 * fFrameBright [i] * (fAvgBright - fFrameBright [i])), 0);
 	}
 D2_FREE (fFrameBright);
@@ -1853,7 +1853,7 @@ int CParticleImageManager::Load (int nType)
 	int			h,
 					bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort,
 					*flagP;
-	grsBitmap	*bmP = NULL;
+	CBitmap	*bmP = NULL;
 
 nType = particleImageManager.GetType (nType);
 flagP = bHavePartImg [bPointSprites] + nType;
@@ -1877,12 +1877,12 @@ if (TGAMakeSquare (bmP)) {
 	}
 }
 #endif
-BM_FRAMECOUNT (bmP) = bmP->bmProps.h / bmP->bmProps.w;
+bmP->SetFrameCount ();
 #if 0
 if (OglSetupBmFrames (BmOverride (bmP), 0, 0, 0)) {
 	AdjustParticleBrightness (bmP);
-	D2_FREE (BM_FRAMES (bmP));	// make sure frames get loaded to OpenGL in OglLoadBmTexture ()
-	BM_CURFRAME (bmP) = NULL;
+	D2_FREE (bmP->Frames ());	// make sure frames get loaded to OpenGL in OglLoadBmTexture ()
+	bmP->CurFrame () = NULL;
 	}
 #endif
 OglLoadBmTexture (bmP, 0, 3, 1);
@@ -1891,7 +1891,7 @@ if (nType == SMOKE_PARTICLES)
 else if (nType == BUBBLE_PARTICLES)
 	h = 4;
 else
-	h = BM_FRAMECOUNT (bmP);
+	h = bmP->FrameCount ();
 nParticleFrames [bPointSprites][nType] = h;
 return *flagP > 0;
 }
@@ -1919,8 +1919,7 @@ void CParticleImageManager::FreeAll (void)
 for (i = 0; i < 2; i++)
 	for (j = 0; j < PARTICLE_TYPES; j++)
 		if (bmpParticle [i][j]) {
-			GrFreeBitmap (bmpParticle [i][j]);
-			bmpParticle [i][j] = NULL;
+			D2_FREE (bmpParticle [i][j]);
 			bHavePartImg [i][j] = 0;
 			}
 }

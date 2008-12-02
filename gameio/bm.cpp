@@ -70,30 +70,30 @@ fix	gameData.objs.types.nType.nStrength [MAX_OBJTYPE];
 
 //---------------- Variables for tWall textures ------------------
 
-int ComputeAvgPixel (grsBitmap *newBm)
+int ComputeAvgPixel (CBitmap *bmP)
 {
-	int	row, column, color, size;
-	char	*pptr;
-	int	total_red, total_green, total_blue;
-	ubyte	*palette;
+	int		row, column, size;
+	char		*pptr;
+	int		total_red, total_green, total_blue;
+	CPalette	*palette;
 
-pptr = (char *)newBm->bmTexBuf;
+pptr = (char *)bmP->texBuf;
 total_red = 0;
 total_green = 0;
 total_blue = 0;
-palette = newBm->bmPalette;
-for (row = 0; row < newBm->bmProps.h; row++)
-	for (column = 0; column < newBm->bmProps.w; column++) {
-		color = *pptr++;
-		total_red += palette [color*3];
-		total_green += palette [color*3+1];
-		total_blue += palette [color*3+2];
+palette = bmP->Palette ();
+tRgbColorb * colorP = palette->Color ();
+for (row = 0; row < bmP->Height (); row++)
+	for (column = 0; column < bmP->Width (); column++, colorP++) {
+		total_red += colorP->red;
+		total_green += colorP->green;
+		total_blue += colorP->blue;
 		}
-size = newBm->bmProps.h * newBm->bmProps.w * 2;
+size = bmP->Height () * bmP->Width () * 2;
 total_red /= size;
 total_green /= size;
 total_blue /= size;
-return GrFindClosestColor (palette, total_red, total_green, total_blue);
+return palette->ClosestColor (total_red, total_green, total_blue);
 }
 
 //---------------- Variables for tObject textures ----------------
@@ -1100,7 +1100,7 @@ void BMReadAllD1 (CFile& cf)
 void _CDECL_ BMFreeExtraObjBitmaps (void)
 {
 	int			i;
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 
 PrintLog ("unloading extra bitmaps\n");
 if (!gameData.pig.tex.nExtraBitmaps)
@@ -1108,10 +1108,10 @@ if (!gameData.pig.tex.nExtraBitmaps)
 for (i = gameData.pig.tex.nBitmaps [0], bmP = gameData.pig.tex.bitmaps [0] + i; 
 	  i < gameData.pig.tex.nExtraBitmaps; i++, bmP++) {
 	gameData.pig.tex.nObjBitmaps--;
-	OglFreeBmTexture (bmP);
-	if (bmP->bmTexBuf) {
-		D2_FREE (bmP->bmTexBuf);
-		UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
+	bmP->FreeTexture ();
+	if (bmP->texBuf) {
+		D2_FREE (bmP->texBuf);
+		UseBitmapCache (bmP, (int) -bmP->Height () * (int) bmP->props.rowSize);
 		}
 	}
 gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
@@ -1419,14 +1419,14 @@ return 1;
 tBitmapIndex ReadExtraBitmapIFF (const char * filename)
 {
 	tBitmapIndex bitmap_num;
-	grsBitmap * newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
+	CBitmap * bmP = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
 	int iff_error;		//reference parm to avoid warning message
 	CIFF	iff;
 
 	bitmap_num.index = 0;
-	//MALLOC (newBm, grsBitmap, 1);
-	iff_error = iff.ReadBitmap (filename, newBm, BM_LINEAR);
-	//newBm->bmHandle=0;
+	//MALLOC (bmP, CBitmap, 1);
+	iff_error = iff.ReadBitmap (filename, bmP, BM_LINEAR);
+	//bmP->nId=0;
 	if (iff_error != IFF_NO_ERROR)		{
 #if TRACE
 		con_printf (CONDBG, 
@@ -1436,20 +1436,20 @@ tBitmapIndex ReadExtraBitmapIFF (const char * filename)
 		return bitmap_num;
 	}
 	if (iff.HasTransparency ())
-		GrRemapBitmapGood (newBm, NULL, iff.TransparentColor (), 254);
+		bmP->Remap (NULL, iff.TransparentColor (), 254);
 	else
-		GrRemapBitmapGood (newBm, NULL, -1, 254);
-	newBm->bmAvgColor = ComputeAvgPixel (newBm);
+		bmP->Remap (NULL, -1, 254);
+	bmP->avgColor = ComputeAvgPixel (bmP);
 	bitmap_num.index = gameData.pig.tex.nExtraBitmaps;
-	gameData.pig.tex.pBitmaps [gameData.pig.tex.nExtraBitmaps++] = *newBm;
+	gameData.pig.tex.pBitmaps [gameData.pig.tex.nExtraBitmaps++] = *bmP;
 	//D2_FREE (new);
 	return bitmap_num;
 }
 
 //------------------------------------------------------------------------------
-extern int GrAvgColor (grsBitmap *bm);
+extern int GrAvgColor (CBitmap *bm);
 // formerly load_exit_model_bitmap
-grsBitmap *BMLoadExtraBitmap (const char *name)
+CBitmap *BMLoadExtraBitmap (const char *name)
 {
 	int i;
 	tBitmapIndex	*bip = gameData.pig.tex.objBmIndex + gameData.pig.tex.nObjBitmaps;
@@ -1464,7 +1464,7 @@ if (!bip->index) {
 	}
 if (!(i = bip->index))
 	return NULL;
-//if (gameData.pig.tex.bitmaps [0][i].bmProps.w != 64 || gameData.pig.tex.bitmaps [0][i].bmProps.h != 64)
+//if (gameData.pig.tex.bitmaps [0][i].Width () != 64 || gameData.pig.tex.bitmaps [0][i].Height () != 64)
 //	Error ("Bitmap <%s> is not 64x64", name);
 gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nObjBitmaps] = gameData.pig.tex.nObjBitmaps;
 gameData.pig.tex.nObjBitmaps++;

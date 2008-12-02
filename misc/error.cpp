@@ -270,7 +270,7 @@ return 0;
 }
 
 
-int TrapBmp (grsBitmap *bmP, char *pszName)
+int TrapBmp (CBitmap *bmP, char *pszName)
 {
 if (strstr (bmP->szName, pszName))
 	return 1;

@@ -420,7 +420,7 @@ if (gameData.pig.tex.pTMapInfo [nBaseTex].damage > 0)
 	return;
 if (gameData.pig.tex.pTMapInfo [nBaseTex].flags & TMI_FORCE_FIELD) {
 	vmsVector vForce;
-	PALETTE_FLASH_ADD (0, 0, 60);	//flash blue
+	paletteManager.BumpEffect (0, 0, 60);	//flash blue
 	//knock tPlayer around
 	vForce[X] = 40 * (d_rand () - 16384);
 	vForce[Y] = 40 * (d_rand () - 16384);
@@ -509,7 +509,7 @@ if (d > 0 || water) {
 				Tactile_Xvibrate (50, 25);
 #endif
 
-			PALETTE_FLASH_ADD (X2I (damage*4), 0, 0);	//flash red
+			paletteManager.BumpEffect (X2I (damage*4), 0, 0);	//flash red
 			}
 		objP->mType.physInfo.rotVel[X] = (d_rand () - 16384)/2;
 		objP->mType.physInfo.rotVel[Z] = (d_rand () - 16384)/2;
@@ -562,7 +562,7 @@ if (d > 0) {
 		Tactile_Xvibrate (50, 25);
 #endif
 	if ((objP->info.nType == OBJ_PLAYER) && (objP->info.nId == gameData.multiplayer.nLocalPlayer))
-		PALETTE_FLASH_ADD (X2I (damage*4), 0, 0);	//flash red
+		paletteManager.BumpEffect (X2I (damage*4), 0, 0);	//flash red
 	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) {
 		objP->mType.physInfo.rotVel[X] = (d_rand () - 16384) / 4;
 		objP->mType.physInfo.rotVel[Z] = (d_rand () - 16384) / 4;
@@ -635,7 +635,7 @@ int CheckEffectBlowup (tSegment *segP, short nSide, vmsVector *pnt, tObject *blo
 	fix			u, v;
 	fix			xDestSize;
 	tEffectClip			*ecP = NULL;
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	//	If this tWall has a tTrigger and the blower-upper is not the tPlayer or the buddy, abort!
 
 if (blower->cType.laserInfo.parent.nType == OBJ_ROBOT)
@@ -1333,7 +1333,7 @@ if (nFinalBossCountdownTime == 0)
 nFinalBossCountdownTime -= gameData.time.xFrame;
 if (nFinalBossCountdownTime > 0)
 	return;
-GrPaletteFadeOut (NULL, 256, 0);
+paletteManager.FadeOut ();
 StartEndLevelSequence (0);		//pretend we hit the exit tTrigger
 }
 
@@ -1904,7 +1904,7 @@ if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the 
 		}
 	playerP->shields -= damage;
 	MultiSendShields ();
-	PALETTE_FLASH_ADD (X2I (damage)*4, -X2I (damage/2), -X2I (damage/2));	//flash red
+	paletteManager.BumpEffect (X2I (damage)*4, -X2I (damage/2), -X2I (damage/2));	//flash red
 	if (playerP->shields < 0)	{
   		playerP->nKillerObj = OBJ_IDX (killerObjP);
 		KillObject (playerObjP);

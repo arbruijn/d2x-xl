@@ -1105,7 +1105,7 @@ static tVertLightData vld;
 void InitDynLighting (void)
 {
 if (gameStates.ogl.bVertexLighting)
-	gameStates.ogl.bVertexLighting = OglCreateFBuffer (&gameData.render.lights.dynamic.fb, VLBUF_WIDTH, VLBUF_WIDTH, 2);
+	gameStates.ogl.bVertexLighting = gameData.render.lights.dynamic.fbo.Create (VLBUF_WIDTH, VLBUF_WIDTH, 2);
 }
 
 //------------------------------------------------------------------------------
@@ -1114,7 +1114,7 @@ void CloseDynLighting (void)
 {
 if (gameStates.ogl.bVertexLighting) {
 	PrintLog ("unloading dynamic lighting buffers\n");
-	OglDestroyFBuffer (&gameData.render.lights.dynamic.fb);
+	gameData.render.lights.dynamic.fbo.Destroy ();
 	}
 }
 
@@ -1338,7 +1338,7 @@ if (nState == 0) {
 	glLoadIdentity ();
 	glPushAttrib (GL_VIEWPORT_BIT);
    glViewport (0, 0, VLBUF_WIDTH, VLBUF_WIDTH);
-	OglEnableFBuffer (&gameData.render.lights.dynamic.fb);
+	gameData.render.lights.dynamic.fbo.Enable ();
 #if 1
 	glUseProgramObject (hVertLightShader);
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
@@ -1421,7 +1421,7 @@ else if (nState == 1) {
 else if (nState == 2) {
 	RenderVertLightBuffers ();
 	glUseProgramObject (0);
-	OglDisableFBuffer (&gameData.render.lights.dynamic.fb);
+	gameData.render.lights.dynamic.fbo.Disable ();
 	glMatrixMode (GL_PROJECTION);    
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);                         

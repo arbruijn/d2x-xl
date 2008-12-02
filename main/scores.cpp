@@ -360,8 +360,8 @@ ReshowScores:
 	scores_read ();
 	SetScreenMode (SCREEN_MENU);
  	GrSetCurrentCanvas (NULL);
-	xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
-	yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
+	xOffs = (grdCurCanv->cvBitmap.props.w - 640) / 2;
+	yOffs = (grdCurCanv->cvBitmap.props.h - 480) / 2;
 	if (xOffs < 0)
 		xOffs = 0;
 	if (yOffs < 0)
@@ -396,14 +396,14 @@ ReshowScores:
 				//@@if (i==0)	{
 				//@@	GrSetFontColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);
 				//@@} else {
-				//@@	GrSetFontColor (grFadeTable[BM_XRGB (28,28,28)+ ((28-i*2)*256)], 1, 0, 0);
+				//@@	GrSetFontColor (paletteManager.FadeTable ()[BM_XRGB (28,28,28)+ ((28-i*2)*256)], 1, 0, 0);
 				//@@}														 
 				c = 28 - i * 2;
 				GrSetFontColorRGBi (RGBA_PAL (c, c, c), 1, 0, 0);
 				scores_draw_item (i, Scores.stats + i);
 			}
 
-			GrPaletteFadeIn (NULL,32, 0);
+			paletteManager.FadeIn ();
 
 			if (nCurItem < 0)
 				GrUpdate (0);
@@ -415,7 +415,7 @@ ReshowScores:
 			//if (t1 - t0 >= F1_0/128) 
 			{
 				t0 = t1;
-				//@@GrSetFontColor (grFadeTable[fades[looper]*256+BM_XRGB (28,28,28)], -1);
+				//@@GrSetFontColor (paletteManager.FadeTable ()[fades[looper]*256+BM_XRGB (28,28,28)], -1);
 				c = 7 + fades [looper];
 				GrSetFontColorRGBi (RGBA_PAL (c, c, c), 1, 0, 0);
 				if (++looper > 63) 
@@ -443,7 +443,7 @@ ReshowScores:
 				// Reset scores...
 				if (ExecMessageBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES)==1)	{
 					CFile::Delete (GetScoresFilename (), gameFolders.szDataDir);
-					GrPaletteFadeOut (NULL, 32, 0);
+					paletteManager.FadeOut ();
 					goto ReshowScores;
 				}
 			}
@@ -465,7 +465,7 @@ ReshowScores:
 		}
 	}
 // Restore background and exit
-GrPaletteFadeOut (NULL, 32, 0);
+paletteManager.FadeOut ();
 GrSetCurrentCanvas (NULL);
 GameFlushInputs ();
 NMRemoveBackground (&bg);

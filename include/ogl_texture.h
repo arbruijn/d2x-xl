@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <stddef.h>
 #endif
+#include "ogl_defs.h"
 
 //------------------------------------------------------------------------------
 
@@ -17,32 +18,32 @@
 
 //------------------------------------------------------------------------------
 
-typedef struct tOglTexture {
+typedef struct tTextureInfo {
 	GLuint	 		handle;
 	GLint				internalformat;
 	GLenum			format;
 	int 				w, h, tw, th, lw;
 	int 				bytesu;
 	int 				bytes;
-	GLfloat			u,v;
+	GLfloat			u, v;
 	GLfloat 			prio;
 	int 				wrapstate;
 	fix 				lastrend;
 	unsigned	long	numrend;
 	ubyte				bMipMaps;
-	ubyte				bFrameBuf;
+	ubyte				bFrameBuffer;
 #if RENDER2TEXTURE == 1
-	tPixelBuffer	pbuffer;
+	CPBO				pbo;
 #elif RENDER2TEXTURE == 2
-	tFrameBuffer	fbuffer;
-	grsBitmap		*bmP;
+	CFBO				fbo;
+	tBitmap			*bmP;
 #endif
-} tOglTexture;
+} tTextureInfo;
 
 //------------------------------------------------------------------------------
 
-tOglTexture *OglGetFreeTexture (grsBitmap *bmP);
-void OglInitTexture (tOglTexture *t, int bMask, grsBitmap *bmP);
+tTextureInfo *OglGetFreeTexture (CBitmap *bmP);
+void OglInitTexture (tTextureInfo *t, int bMask, CBitmap *bmP);
 void OglResetTextureStatsInternal (void);
 void OglInitTextureListInternal (void);
 void OglSmashTextureListInternal (void);
@@ -50,30 +51,30 @@ void OglVivifyTextureListInternal (void);
 
 int OglTextureStats (void);
 
-int OglBindBmTex (grsBitmap *bmP, int bMipMaps, int nTransp);
+int OglBindBmTex (CBitmap *bmP, int bMipMaps, int nTransp);
 #if RENDER2TEXTURE == 1
-int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, tPixelBuffer *pb);
+int OglLoadBmTextureM (CBitmap *bm, int bMipMap, int nTransp, int bMask, CPBO *pbo);
 #elif RENDER2TEXTURE == 2
-int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, tFrameBuffer *pb);
+int OglLoadBmTextureM (CBitmap *bm, int bMipMap, int nTransp, int bMask, CFBO  *fbo);
 #else
-int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, void *pb);
+int OglLoadBmTextureM (CBitmap *bm, int bMipMap, int nTransp, int bMask, void *pb);
 #endif
-int OglLoadBmTexture (grsBitmap *bm, int bMipMap, int nTransp, int bLoad);
-int OglLoadTexture (grsBitmap *bmP, int dxo,int dyo, tOglTexture *tex, int nTransp, int bSuperTransp);
-void OglFreeTexture (tOglTexture *glTexture);
-void OglFreeBmTexture (grsBitmap *bm);
-int OglSetupBmFrames (grsBitmap *bmP, int bDoMipMap, int nTransp, int bLoad);
+int OglLoadBmTexture (CBitmap *bm, int bMipMap, int nTransp, int bLoad);
+int OglLoadTexture (CBitmap *bmP, int dxo,int dyo, tTextureInfo *tex, int nTransp, int bSuperTransp);
+void OglFreeTexture (tTextureInfo *glTexture);
+void OglFreeBmTexture (CBitmap *bm);
+int OglSetupBmFrames (CBitmap *bmP, int bDoMipMap, int nTransp, int bLoad);
 
-tRgbColorf *BitmapColor (grsBitmap *bmP, ubyte *bufP);
+tRgbColorf *BitmapColor (CBitmap *bmP, ubyte *bufP);
 
-void OglTexWrap (tOglTexture *tex, int state);
+void OglTexWrap (tTextureInfo *tex, int state);
 
 GLuint EmptyTexture (int Xsize, int Ysize);
 
 //------------------------------------------------------------------------------
 
 extern int nOglMemTarget;
-extern tOglTexture oglTextureList [OGL_TEXTURE_LIST_SIZE];
+extern tTextureInfo oglTextureList [OGL_TEXTURE_LIST_SIZE];
 
 //------------------------------------------------------------------------------
 

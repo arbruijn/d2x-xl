@@ -32,7 +32,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef D1XD3D
 void gr_upixel( int x, int y )
 {
-	switch (TYPE)
+	switch (MODE)
 	{
 	case BM_OGL:
 		OglUPixelC(x,y, &COLOR);
@@ -60,38 +60,38 @@ void gr_pixel( int x, int y )
 }
 
 #ifndef D1XD3D
-inline void gr_bm_upixel( grsBitmap * bm, int x, int y, unsigned char color )
+inline void gr_bm_upixel( CBitmap * bmP, int x, int y, unsigned char color )
 {
-	grsColor c;
-	switch (bm->bmProps.nType)
+	tCanvasColor c;
+	switch (bmP->Mode ())
 	{
 	case BM_OGL:
 		c.index = color;
 		c.rgb = 0;
-		OglUPixelC(bm->bmProps.x + x, bm->bmProps.y + y, &c);
+		OglUPixelC (bmP->Left () + x, bmP->Top () + y, &c);
 		return;
 	case BM_LINEAR:
-		bm->bmTexBuf[ bm->bmProps.rowSize*y+x ] = color;
+		bmP->TexBuf () [bmP->RowSize () * y + x] = color;
 		return;
 #ifdef __DJGPP__
 	case BM_MODEX:
-		x += bm->bmProps.x;
-		y += bm->bmProps.y;
+		x += bmP->Left ();
+		y += bmP->Top ();
 		gr_modex_setplane( x & 3 );
-		gr_video_memory[(bm->bmProps.rowSize * y) + (x/4)] = color;
+		gr_video_memory[(bmP->RowSize () * y) + (x/4)] = color;
 		return;
 	case BM_SVGA:
-		gr_vesa_pixel(color,(unsigned int)bm->bmTexBuf + (unsigned int)bm->bmProps.rowSize * y + x);
+		gr_vesa_pixel(color,(unsigned int)bmP->TexBuf () + (unsigned int)bmP->RowSize () * y + x);
 		return;
 #endif
 	}
 }
 #endif
 
-void gr_bm_pixel( grsBitmap * bm, int x, int y, unsigned char color )
+void gr_bm_pixel( CBitmap * bmP, int x, int y, unsigned char color )
 {
-	if ((x<0) || (y<0) || (x>=bm->bmProps.w) || (y>=bm->bmProps.h)) return;
-	gr_bm_upixel (bm, x, y, color);
+	if ((x<0) || (y<0) || (x >= bmP->Width ()) || (y >= bmP->Height ())) return;
+	gr_bm_upixel (bmP, x, y, color);
 }
 
 

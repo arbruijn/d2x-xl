@@ -104,7 +104,7 @@ int nGameSaveOrgRobots = 0;
 int nSavePOFNames = 0;
 char szSavePOFNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
-//--unused-- grsBitmap * Gamesave_saved_bitmap = NULL;
+//--unused-- CBitmap * Gamesave_saved_bitmap = NULL;
 
 //------------------------------------------------------------------------------
 #ifdef EDITOR
@@ -1658,7 +1658,7 @@ if (Errors_in_mine) {
 
 		sprintf(ErrorMessage, TXT_MINE_ERRORS, Errors_in_mine, Level_being_loaded);
 		StopTime();
-		GrPaletteStepLoad (NULL);
+		paletteManager.LoadEffect  ();
 		ExecMessageBox(NULL, 1, TXT_CONTINUE, ErrorMessage);
 		StartTime();
 	} else {
@@ -1681,7 +1681,7 @@ if (!no_oldLevel_file_error && (gameStates.app.nFunctionMode == FMODE_EDITOR) &&
 				"it as a current version level?");
 
 	StopTime();
-	GrPaletteStepLoad (NULL);
+	paletteManager.LoadEffect  ();
 	if (ExecMessageBox(NULL, 2, "Don't Save", "Save", ErrorMessage)==1)
 		SaveLevel(filename);
 	StartTime();
@@ -1918,7 +1918,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 
 				sprintf(ErrorMessage, TXT_MINE_ERRORS2, Errors_in_mine);
 				StopTime();
-				GrPaletteStepLoad (NULL);
+				paletteManager.LoadEffect  ();
 	 
 				if (ExecMessageBox(NULL, 2, TXT_CANCEL_SAVE, TXT_DO_SAVE, ErrorMessage)!=1)	{
 					StartTime();
@@ -1946,7 +1946,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 			"ERROR: Cannot write to '%s'.\nYou probably need to check out a locked\nversion of the file. You should save\nthis under a different filename, and then\ncheck out a locked copy by typing\n\'co -l %s.lvl'\nat the DOS prompt.\n" 
 			, temp_filename, fname);
 		StopTime();
-		GrPaletteStepLoad (NULL);
+		paletteManager.LoadEffect  ();
 		ExecMessageBox(NULL, 1, "Ok", ErrorMessage);
 		StartTime();
 		return 1;
@@ -2124,14 +2124,14 @@ void DoLoadSaveLevels(int save)
 
 	for (level_num=1;level_num<=gameData.missions.nLastLevel;level_num++) {
 		LoadLevelSub(gameData.missions.szLevelNames [level_num-1]);
-		LoadPalette(szCurrentLevelPalette,1,1,0);		//don't change screen
+		paletteManager.Load(szCurrentLevelPalette,1,1,0);		//don't change screen
 		if (save)
 			saveLevel_sub(gameData.missions.szLevelNames [level_num-1],1);
 	}
 
 	for (level_num = -1; level_num >= gameData.missions.nLastSecretLevel; level_num--) {
 		LoadLevelSub(gameData.missions.szSecretLevelNames [-level_num-1]);
-		LoadPalette(szCurrentLevelPalette,1,1,0);		//don't change screen
+		paletteManager.Load(szCurrentLevelPalette,1,1,0);		//don't change screen
 		if (save)
 			saveLevel_sub (gameData.missions.szSecretLevelNames [-level_num-1],1);
 	}

@@ -29,11 +29,11 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int PCXGetDimensions (const char *filename, int *width, int *height);
 
-int PCXReadBitmap (const char * filename, grsBitmap * bmp, int bitmapType, int bD1Mission );
+int PCXReadBitmap (const char * filename, CBitmap * bmp, int bitmapType, int bD1Mission );
 
 // Writes the bitmap bmp to filename, using palette. Returns error code.
 
-int pcx_write_bitmap (const char * filename, grsBitmap * bmp);
+int pcx_write_bitmap (const char * filename, CBitmap * bmp);
 
 const char *pcx_errormsg(int error_number);
 

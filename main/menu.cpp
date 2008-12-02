@@ -402,7 +402,7 @@ int MainMenu (void)
 
 IpxClose ();
 memset (m, 0, sizeof (m));
-//LoadPalette (MENU_PALETTE, NULL, 0, 1, 0);		//get correct palette
+//paletteManager.Load (MENU_PALETTE, NULL, 0, 1, 0);		//get correct palette
 
 if (!LOCALPLAYER.callsign [0]) {
 	SelectPlayer ();
@@ -432,7 +432,7 @@ do {
 		ExecMainMenuOption (nChoice);
 } while (gameStates.app.nFunctionMode == FMODE_MENU);
 if (gameStates.app.nFunctionMode == FMODE_GAME)
-	GrPaletteFadeOut (NULL, 32, 0);
+	paletteManager.FadeOut ();
 FlushInput ();
 StopPlayerMovement ();
 return mainOpts.nChoice;
@@ -595,7 +595,7 @@ else if (nChoice == mainOpts.nLoadDirect) {
 	ExecMenu (NULL, "Enter level to load", 1, m, NULL, NULL);
 	nLevel = atoi (m->text);
 	if (nLevel && (nLevel >= gameData.missions.nLastSecretLevel) && (nLevel <= gameData.missions.nLastLevel)) {
-		GrPaletteFadeOut (NULL, 32, 0);
+		paletteManager.FadeOut ();
 		StartNewGame (nLevel);
 		}
 	}
@@ -618,7 +618,7 @@ else if (nChoice == mainOpts.nDemo) {
 		NDStartPlayback (demoFile);
 	}
 else if (nChoice == mainOpts.nScores) {
-	GrPaletteFadeOut (NULL, 32, 0);
+	paletteManager.FadeOut ();
 	ScoresView (-1);
 	}
 else if (nChoice == mainOpts.nMovies) {
@@ -628,7 +628,7 @@ else if (nChoice == mainOpts.nSongs) {
 	PlayMenuSong ();
 	}
 else if (nChoice == mainOpts.nCredits) {
-	GrPaletteFadeOut (NULL, 32, 0);
+	paletteManager.FadeOut ();
 	SongsStopAll ();
 	ShowCredits (NULL); 
 	}
@@ -645,7 +645,7 @@ else if (nChoice == mainOpts.nQuit) {
 #ifdef EDITOR
 	if (SafetyCheck ()) {
 #endif
-	GrPaletteFadeOut (NULL, 32, 0);
+	paletteManager.FadeOut ();
 	SetFunctionMode (FMODE_EXIT);
 #ifdef EDITOR
 	}
@@ -1535,7 +1535,7 @@ try_again:
 WritePlayerFile ();
 if (!DifficultyMenu ())
 	return;
-GrPaletteFadeOut (NULL, 32, 0);
+paletteManager.FadeOut ();
 if (!StartNewGame (nNewLevel))
 	SetFunctionMode (FMODE_MENU);
 }
@@ -1679,7 +1679,7 @@ if (gameStates.app.nDifficultyLevel != i) {
 WritePlayerFile ();
 if (optLevel > 0)
 	nLevel = atoi (m [optLevel].text);
-GrPaletteFadeOut (NULL, 32, 0);
+paletteManager.FadeOut ();
 if (!bMsnLoaded)
 	LoadMission (nMission);
 if (!StartNewGame (nLevel))
@@ -1697,7 +1697,7 @@ int ConfigMenuCallback (int nitems, tMenuItem * items, int *nLastKey, int nCurIt
 {
 if (gameStates.app.bNostalgia) {
 	if (nCurItem == optBrightness)
-		GrSetPaletteGamma (items [optBrightness].value);
+		paletteManager.SetGamma (items [optBrightness].value);
 	}
 return nCurItem;
 }
@@ -3354,7 +3354,7 @@ if (gameOpts->app.bExpertMode) {
 			}
 		}
 	m = menus + renderOpts.nWallTransp;
-	v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
+	v = (FADE_LEVELS * m->value + 5) / 10;
 	if (extraGameInfo [0].grWallTransparency != v) {
 		extraGameInfo [0].grWallTransparency = v;
 		sprintf (m->text, TXT_WALL_TRANSP, m->value * 10, '%');
@@ -3944,8 +3944,8 @@ int RenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int nCurIte
 if (!gameStates.app.bNostalgia) {
 	m = menus + optBrightness;
 	v = m->value;
-	if (v != GrGetPaletteGamma ())
-		GrSetPaletteGamma (v);
+	if (v != paletteManager.GetGamma ())
+		paletteManager.SetGamma (v);
 	}
 m = menus + renderOpts.nMaxFPS;
 v = fpsTable [m->value];
@@ -3993,7 +3993,7 @@ if (gameOpts->app.bExpertMode) {
 			}
 		}
 	m = menus + renderOpts.nWallTransp;
-	v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
+	v = (FADE_LEVELS * m->value + 5) / 10;
 	if (extraGameInfo [0].grWallTransparency != v) {
 		extraGameInfo [0].grWallTransparency = v;
 		sprintf (m->text, TXT_WALL_TRANSP, m->value * 10, '%');
@@ -4048,7 +4048,7 @@ do {
 	nOptions = 0;
 	optPowerupOpts = optAutomapOpts = -1;
 	if (!gameStates.app.bNostalgia) {
-		ADD_SLIDER (nOptions, TXT_BRIGHTNESS, GrGetPaletteGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
+		ADD_SLIDER (nOptions, TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 		optBrightness = nOptions++;
 		}
 	if (gameOpts->render.nMaxFPS > 1)
@@ -4089,7 +4089,7 @@ do {
 			}
 		ADD_TEXT (nOptions, "", 0);
 		nOptions++;
-		h = extraGameInfo [0].grWallTransparency * 10 / GR_ACTUAL_FADE_LEVELS;
+		h = extraGameInfo [0].grWallTransparency * 10 / FADE_LEVELS;
 		sprintf (szWallTransp + 1, TXT_WALL_TRANSP, h * 10, '%');
 		*szWallTransp = *(TXT_WALL_TRANSP - 1);
 		ADD_SLIDER (nOptions, szWallTransp + 1, h, 0, 10, KEY_T, HTX_ADVRND_WALLTRANSP);
@@ -4203,7 +4203,7 @@ do {
 			}
 		} while (i >= 0);
 	if (!gameStates.app.bNostalgia)
-		GrSetPaletteGamma (m [optBrightness].value);
+		paletteManager.SetGamma (m [optBrightness].value);
 	if (gameOpts->app.bExpertMode) {
 		gameOpts->render.color.bWalls = m [optColoredWalls].value;
 		GET_VAL (gameOpts->render.bDepthSort, optDepthSort);
@@ -4919,7 +4919,7 @@ do {
 	ADD_TEXT (nOptions, "", 0);
 	nOptions++;
 	if (gameStates.app.bNostalgia) {
-		ADD_SLIDER (nOptions, TXT_BRIGHTNESS, GrGetPaletteGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
+		ADD_SLIDER (nOptions, TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 		optBrightness = nOptions++;
 		}
 	

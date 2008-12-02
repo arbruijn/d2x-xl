@@ -134,24 +134,24 @@ if (mode <= 0)
 w = SM_W (mode);
 h = SM_H (mode);
 nCurrentVGAMode = mode;
-gr_bm_data = grdCurScreen->scCanvas.cvBitmap.bmTexBuf;//since we use realloc, we want to keep this pointer around.
+gr_bm_data = grdCurScreen->scCanvas.cvBitmap.texBuf;//since we use realloc, we want to keep this pointer around.
 memset (grdCurScreen, 0, sizeof(grsScreen));
 grdCurScreen->scMode = mode;
 grdCurScreen->scWidth = w;
 grdCurScreen->scHeight = h;
 //grdCurScreen->scAspect = FixDiv(grdCurScreen->scWidth*3,grdCurScreen->scHeight*4);
 grdCurScreen->scAspect = FixDiv (grdCurScreen->scWidth, (fix) (grdCurScreen->scHeight * ((double) w / (double) h)));
-grdCurScreen->scCanvas.cvBitmap.bmProps.x = 0;
-grdCurScreen->scCanvas.cvBitmap.bmProps.y = 0;
-grdCurScreen->scCanvas.cvBitmap.bmProps.w = w;
-grdCurScreen->scCanvas.cvBitmap.bmProps.h = h;
-grdCurScreen->scCanvas.cvBitmap.bmBPP = 1;
-grdCurScreen->scCanvas.cvBitmap.bmPalette = defaultPalette; //just need some valid palette here
-//grdCurScreen->scCanvas.cvBitmap.bmProps.rowSize = screen->pitch;
-grdCurScreen->scCanvas.cvBitmap.bmProps.rowSize = w;
-grdCurScreen->scCanvas.cvBitmap.bmProps.nType = BM_OGL;
-//grdCurScreen->scCanvas.cvBitmap.bmTexBuf = (unsigned char *)screen->pixels;
-grdCurScreen->scCanvas.cvBitmap.bmTexBuf = (ubyte *) D2_REALLOC (gr_bm_data, w * h);
+grdCurScreen->scCanvas.cvBitmap.props.x = 0;
+grdCurScreen->scCanvas.cvBitmap.props.y = 0;
+grdCurScreen->scCanvas.cvBitmap.props.w = w;
+grdCurScreen->scCanvas.cvBitmap.props.h = h;
+grdCurScreen->scCanvas.cvBitmap.nBPP = 1;
+grdCurScreen->scCanvas.cvBitmap.SetPalette (paletteManager.Default ()); //just need some valid palette here
+//grdCurScreen->scCanvas.cvBitmap.props.rowSize = screen->pitch;
+grdCurScreen->scCanvas.cvBitmap.props.rowSize = w;
+grdCurScreen->scCanvas.cvBitmap.props.nMode = BM_OGL;
+//grdCurScreen->scCanvas.cvBitmap.texBuf = (unsigned char *)screen->pixels;
+grdCurScreen->scCanvas.cvBitmap.texBuf = (ubyte *) D2_REALLOC (gr_bm_data, w * h);
 GrSetCurrentCanvas (NULL);
 /***/PrintLog ("   initializing OpenGL window\n");
 if (!OglInitWindow (w, h, 0))	//platform specific code
@@ -254,7 +254,7 @@ OglInitTextureListInternal();
 /***/PrintLog ("   allocating screen buffer\n");
 MALLOC (grdCurScreen, grsScreen, 1);
 memset (grdCurScreen, 0, sizeof (grsScreen));
-grdCurScreen->scCanvas.cvBitmap.bmTexBuf = NULL;
+grdCurScreen->scCanvas.cvBitmap.texBuf = NULL;
 
 // Set the mode.
 for (t = 0; scrSizes [t].x && scrSizes [t].y; t++)
@@ -296,8 +296,8 @@ void _CDECL_ GrClose (void)
 PrintLog ("shutting down graphics subsystem\n");
 OglClose();//platform specific code
 if (grdCurScreen) {
-	if (grdCurScreen->scCanvas.cvBitmap.bmTexBuf)
-		D2_FREE (grdCurScreen->scCanvas.cvBitmap.bmTexBuf);
+	if (grdCurScreen->scCanvas.cvBitmap.texBuf)
+		D2_FREE (grdCurScreen->scCanvas.cvBitmap.texBuf);
 	D2_FREE (grdCurScreen);
 	}
 #ifdef OGL_RUNTIME_LOAD
@@ -456,7 +456,7 @@ if (nCurrentVGAMode != nMenuMode) {
 	if (GrSetMode (nMenuMode))
 		Error ("Cannot set screen mode for menu");
 	if (!gameStates.render.bPaletteFadedOut)
-		GrPaletteStepLoad (NULL);
+		paletteManager.LoadEffect  ();
 	gameStates.menus.bInitBG = 1;
 	RebuildRenderContext (gameStates.app.bGameRunning);
 	}
@@ -533,7 +533,7 @@ if (grdCurScreen->scMode != SM (800,600))	{
 		return 0;
 		}
 	}
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 GrInitSubCanvas (&gameStates.render.vr.buffers.editorCanvas, &grdCurScreen->scCanvas, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 Canv_editor = &gameStates.render.vr.buffers.editorCanvas;
 GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], Canv_editor, 0, 0, Canv_editor->cv_w, Canv_editor->cv_h);

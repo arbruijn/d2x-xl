@@ -108,13 +108,13 @@ extern int nHUDLineSpacing;
 
 //	-----------------------------------------------------------------------------
 
-static inline void HUDBitBlt (int x, int y, grsBitmap *bmP, int scale, int orient)
+static inline void HUDBitBlt (int x, int y, CBitmap *bmP, int scale, int orient)
 {
 OglUBitMapMC (
 	 (x < 0) ? -x : HUD_SCALE_X (x), 
 	 (y < 0) ? -y : HUD_SCALE_Y (y), 
-	HUD_SCALE_X (bmP->bmProps.w) * (gameStates.app.bDemoData + 1), 
-	HUD_SCALE_Y (bmP->bmProps.h) * (gameStates.app.bDemoData + 1), 
+	HUD_SCALE_X (bmP->props.w) * (gameStates.app.bDemoData + 1), 
+	HUD_SCALE_Y (bmP->props.h) * (gameStates.app.bDemoData + 1), 
 	bmP, 
 	NULL, 
 	scale, 

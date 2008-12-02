@@ -571,7 +571,7 @@ if (altTextures) {
 		gameData.models.textureIndex [i] = altTextures [i];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + altTextures [i].index;
 #ifdef _3DFX
-      gameData.models.textures [i]->bmHandle = gameData.models.textureIndex [i].index;
+      gameData.models.textures [i]->nId = gameData.models.textureIndex [i].index;
 #endif
 		}
 	}
@@ -580,7 +580,7 @@ else {
 		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [j]];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
 #ifdef _3DFX
-      gameData.models.textures [i]->bmHandle = gameData.models.textureIndex [i].index;
+      gameData.models.textures [i]->nId = gameData.models.textureIndex [i].index;
 #endif
 		}
 	}
@@ -777,7 +777,7 @@ char Pof_names [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 #ifndef DRIVE
 int LoadPolygonModel (const char *filename, int nTextures, int nFirstTexture, tRobotInfo *r)
 #else
-int LoadPolygonModel (const char *filename, int nTextures, grsBitmap ***textures)
+int LoadPolygonModel (const char *filename, int nTextures, CBitmap ***textures)
 #endif
 {
 	#ifdef DRIVE

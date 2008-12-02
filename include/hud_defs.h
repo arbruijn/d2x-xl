@@ -380,13 +380,13 @@ PIGGY_PAGE_IN (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0][x].i
 
 //	-----------------------------------------------------------------------------
 
-static inline void HUDStretchBlt (int x, int y, grsBitmap *bmP, int scale, int orient, double xScale, double yScale)
+static inline void HUDStretchBlt (int x, int y, CBitmap *bmP, int scale, int orient, double xScale, double yScale)
 {
 OglUBitMapMC (
 	 (x < 0) ? -x : HUD_SCALE_X (x), 
 	 (y < 0) ? -y : HUD_SCALE_Y (y), 
-	HUD_SCALE_X ((int) (bmP->bmProps.w * xScale + 0.5)), 
-	HUD_SCALE_Y ((int) (bmP->bmProps.h * yScale + 0.5)), 
+	HUD_SCALE_X ((int) (bmP->props.w * xScale + 0.5)), 
+	HUD_SCALE_Y ((int) (bmP->props.h * yScale + 0.5)), 
 	bmP, 
 	NULL, 
 	scale, 

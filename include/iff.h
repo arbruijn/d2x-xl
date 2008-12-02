@@ -59,21 +59,21 @@ public:
 		int GetWord ();
 		int GetLong ();
 
-		int ReadBitmap (const char *cfname, grsBitmap *bmP, int bitmapType);
-		int ReplaceBitmap (const char *cfname, grsBitmap *bmP);
-		int ReadAnimBrush (const char *cfname, grsBitmap **bm_list, int max_bitmaps, int *n_bitmaps);
+		int ReadBitmap (const char *cfname, CBitmap *bmP, int bitmapType);
+		int ReplaceBitmap (const char *cfname, CBitmap *bmP);
+		int ReadAnimBrush (const char *cfname, CBitmap **bm_list, int max_bitmaps, int *n_bitmaps);
 
-		int ParseBitmap (grsBitmap *bmP, int bitmapType, grsBitmap *prevBmP);
-		int Parse (int formType, tIFFBitmapHeader *bmheader, int form_len, grsBitmap *prevBmP);
+		int ParseBitmap (CBitmap *bmP, int bitmapType, CBitmap *prevBmP);
+		int Parse (int formType, tIFFBitmapHeader *bmheader, int form_len, CBitmap *prevBmP);
 		int ParseHeader (int len, tIFFBitmapHeader *bmheader);
 		int ParseBody (int len, tIFFBitmapHeader *bmheader);
 		int ParseDelta (int len, tIFFBitmapHeader *bmheader);
 		void SkipChunk (int len);
 		int ConvertToPBM (tIFFBitmapHeader *bmheader);
-		int ConvertRgb15 (grsBitmap *bmP, tIFFBitmapHeader *bmheader);
-		void CopyIffToGrs (grsBitmap *bmP, tIFFBitmapHeader *bmheader);
+		int ConvertRgb15 (CBitmap *bmP, tIFFBitmapHeader *bmheader);
+		void CopyIffToGrs (CBitmap *bmP, tIFFBitmapHeader *bmheader);
 
-		int WriteBitmap (const char *cfname, grsBitmap *bmP, ubyte *palette);
+		int WriteBitmap (const char *cfname, CBitmap *bmP, ubyte *palette);
 		int WriteHeader (FILE *fp, tIFFBitmapHeader *bitmap_header);
 		int WritePalette (FILE *fp, tIFFBitmapHeader *bitmap_header);
 		int WriteBody (FILE *fp, tIFFBitmapHeader *bitmap_header, int bCompression);

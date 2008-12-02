@@ -95,7 +95,7 @@ if (bTrapError && nError)
 
 static inline int OglHaveDrawBuffer (void)
 {
-return gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.hFBO && gameStates.ogl.bDrawBufferActive;
+return gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.Handle () && gameStates.ogl.bDrawBufferActive;
 }
 
 //------------------------------------------------------------------------------

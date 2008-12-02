@@ -45,8 +45,8 @@ void G3StartFrame (int bFlat, int bResetColorBuf)
 	fix s;
 
 //set int w,h & fixed-point w,h/2
-xCanvW2 = (nCanvasWidth = grdCurCanv->cvBitmap.bmProps.w) << 15;
-xCanvH2 = (nCanvasHeight = grdCurCanv->cvBitmap.bmProps.h) << 15;
+xCanvW2 = (nCanvasWidth = grdCurCanv->cvBitmap.props.w) << 15;
+xCanvH2 = (nCanvasHeight = grdCurCanv->cvBitmap.props.h) << 15;
 fxCanvW2 = X2F (xCanvW2);
 fxCanvH2 = X2F (xCanvH2);
 //compute aspect ratio for this canvas

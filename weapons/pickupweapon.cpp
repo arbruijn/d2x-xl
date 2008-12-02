@@ -62,7 +62,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 		 (POrderList (nWeaponIndex) < nCutPoint) && 
 		 (POrderList (nWeaponIndex) < POrderList (nSupposedWeapon)))
 		SelectWeapon (nWeaponIndex, 0, 0, 1);
-	PALETTE_FLASH_ADD (7,14,21);
+	paletteManager.BumpEffect (7,14,21);
 	if (nWeaponIndex != LASER_INDEX)
   		HUDInitMessage ("%s!", PRIMARY_WEAPON_NAMES (nWeaponIndex));
 	}
@@ -135,11 +135,11 @@ if (ISLOCALPLAYER (nPlayer)) {
 		}
 	//note: flash for all but concussion was 7,14,21
 	if (nAmount>1) {
-		PALETTE_FLASH_ADD (15,15,15);
+		paletteManager.BumpEffect (15,15,15);
 		HUDInitMessage("%d %s%s", nPickedUp, bSmokeGrens ? TXT_SMOKE_GRENADES : SECONDARY_WEAPON_NAMES (nWeaponIndex), TXT_SX);
 		}
 	else {
-		PALETTE_FLASH_ADD (10,10,10);
+		paletteManager.BumpEffect (10,10,10);
 		HUDInitMessage("%s!", bSmokeGrens ? TXT_SMOKE_GRENADE : SECONDARY_WEAPON_NAMES (nWeaponIndex));
 		}
 	}

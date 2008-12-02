@@ -449,13 +449,14 @@ switch (key) {
 			int bScanlineSave = bScanlineDouble;
 
 			if (!IsMultiGame) {
-				PaletteSave(); 
-				ResetPaletteAdd(); 
-				GrPaletteStepLoad (NULL); 
+				paletteManager.SaveEffect(); 
+				paletteManager.ResetEffect (); 
+				saveGameHandler.Save (0, 0, 0, NULL);
+				paletteManager.LoadEffect (); 
 				}
 			ConfigMenu();
 			if (!IsMultiGame) 
-				PaletteRestore();
+				paletteManager.LoadEffect ();
 			if (bScanlineSave != bScanlineDouble)   
 				InitCockpit();	// reset the cockpit after changing...
 			break;
@@ -470,9 +471,9 @@ switch (key) {
 		break;
 
 	case KEY_F7+KEY_SHIFTED: 
-		PaletteSave(); 
+		paletteManager.SaveEffect(); 
 		JoyDefsCalibrate(); 
-		PaletteRestore(); 
+		paletteManager.LoadEffect (); 
 		break;
 
 	case KEY_SHIFTED+KEY_MINUS:
@@ -561,23 +562,16 @@ switch (key) {
 
 	case KEY_ALTED+KEY_F2:
 		if (!gameStates.app.bPlayerIsDead && !(IsMultiGame && !IsCoopGame)) {
-			int     rsave, gsave, bsave;
-			rsave = gameStates.ogl.palAdd.red;
-			gsave = gameStates.ogl.palAdd.green;
-			bsave = gameStates.ogl.palAdd.blue;
-
-			FullPaletteSave();
-			gameStates.ogl.palAdd.red = rsave;
-			gameStates.ogl.palAdd.green = gsave;
-			gameStates.ogl.palAdd.blue = bsave;
+			paletteManager.SaveEffectAndReset ();
+			paletteManager.SetEffect (); // get only the effect color back
 			saveGameHandler.Save (0, 0, 0, NULL);
-			PaletteRestore();
+			paletteManager.LoadEffect ();
 		}
 		break;  // 0 means not between levels.
 
 	case KEY_ALTED+KEY_F3:
 		if (!gameStates.app.bPlayerIsDead && (!IsMultiGame || IsCoopGame)) {
-			FullPaletteSave ();
+			paletteManager.SaveEffectAndReset ();
 			saveGameHandler.Load (1, 0, 0, NULL);
 			if (gameData.app.bGamePaused)
 				DoGamePause();
@@ -994,7 +988,7 @@ void HandleTestKey(int key)
 			SetScreenMode(SCREEN_GAME);
 			ResetCockpit();
 			memcpy(grPalette, pal_save, 768);
-			GrPaletteStepLoad (NULL);
+			paletteManager.LoadEffect  ();
 			break;
 		}
 		case KEY_C + KEY_SHIFTED + KEYDBGGED:
@@ -1072,9 +1066,9 @@ void HandleTestKey(int key)
 			break;
 
 		case KEYDBGGED + KEY_C:
-			FullPaletteSave();
+			paletteManager.SaveEffectAndReset();
 			DoCheatMenu();
-			PaletteRestore();
+			paletteManager.LoadEffect ();
 			break;
 
 		case KEYDBGGED + KEY_SHIFTED + KEY_A:

@@ -182,18 +182,18 @@ return NULL;
 
 static int ASE_ReadTexture (CFile& cf, tASEModel *pm, int nBitmap, int nType, int bCustom)
 {
-	grsBitmap	*bmP = pm->textures.pBitmaps + nBitmap;
+	CBitmap	*bmP = pm->textures.pBitmaps + nBitmap;
 	char			fn [FILENAME_LEN], *ps;
 	int			l;
 
 if (CharTok (" \t") != '{')
 	return ASE_Error ("syntax error");
-bmP->bmFlat = 0;
+bmP->bFlat = 0;
 while ((pszToken = ASE_ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*BITMAP")) {
-		if (bmP->bmTexBuf)	//duplicate
+		if (bmP->texBuf)	//duplicate
 			return ASE_Error ("duplicate item");
 		*fn = '\001';
 		CFile::SplitPath (StrTok ("\""), NULL, fn + 1, NULL);
@@ -207,7 +207,7 @@ while ((pszToken = ASE_ReadLine (cf))) {
 			pm->textures.nTeam [nBitmap] = atoi (ps + 5) + 1;
 		else
 			pm->textures.nTeam [nBitmap] = 0;
-		bmP->bmTeam = pm->textures.nTeam [nBitmap];
+		bmP->nTeam = pm->textures.nTeam [nBitmap];
 		}
 	}
 return ASE_Error ("unexpected end of file");
@@ -218,7 +218,7 @@ return ASE_Error ("unexpected end of file");
 static int ASE_ReadMaterial (CFile& cf, tASEModel *pm, int nType, int bCustom)
 {
 	int			i;
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 
 i = IntTok (" \t");
 if ((i < 0) || (i >= pm->textures.nBitmaps))
@@ -226,14 +226,14 @@ if ((i < 0) || (i >= pm->textures.nBitmaps))
 if (CharTok (" \t") != '{')
 	return ASE_Error ("syntax error");
 bmP = pm->textures.pBitmaps + i;
-bmP->bmFlat = 1;
+bmP->bFlat = 1;
 while ((pszToken = ASE_ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MATERAL_DIFFUSE")) {
-		bmP->bmAvgRGB.red = (ubyte) (FloatTok (" \t") * 255 + 0.5);
-		bmP->bmAvgRGB.green = (ubyte) (FloatTok (" \t") * 255 + 0.5);
-		bmP->bmAvgRGB.blue = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		bmP->avgRGB.red = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		bmP->avgRGB.green = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		bmP->avgRGB.blue = (ubyte) (FloatTok (" \t") * 255 + 0.5);
 		}
 	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {
 		if (!ASE_ReadTexture (cf, pm, i, nType, bCustom))
@@ -256,13 +256,13 @@ if (strcmp (pszToken, "*MATERIAL_COUNT"))
 pm->textures.nBitmaps = IntTok (" \t");
 if (!pm->textures.nBitmaps)
 	return ASE_Error ("no bitmaps specified");
-if (!(pm->textures.pBitmaps = (grsBitmap *) D2_ALLOC (pm->textures.nBitmaps * sizeof (grsBitmap))))
+if (!(pm->textures.pBitmaps = (CBitmap *) D2_ALLOC (pm->textures.nBitmaps * sizeof (CBitmap))))
 	return ASE_Error ("out of memory");
 if (!(pm->textures.pszNames = (char **) D2_ALLOC (pm->textures.nBitmaps * sizeof (char *))))
 	return ASE_Error ("out of memory");
 if (!(pm->textures.nTeam = (ubyte *) D2_ALLOC (pm->textures.nBitmaps * sizeof (ubyte))))
 	return ASE_Error ("out of memory");
-memset (pm->textures.pBitmaps, 0, pm->textures.nBitmaps * sizeof (grsBitmap));
+memset (pm->textures.pBitmaps, 0, pm->textures.nBitmaps * sizeof (CBitmap));
 memset (pm->textures.pszNames, 0, pm->textures.nBitmaps * sizeof (char *));
 memset (pm->textures.nTeam, 0, pm->textures.nBitmaps * sizeof (ubyte));
 while ((pszToken = ASE_ReadLine (cf))) {

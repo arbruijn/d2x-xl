@@ -1176,8 +1176,8 @@ if (!(o.textures.pszNames = (char **) D2_ALLOC (o.textures.nBitmaps * sizeof (ch
 	return OOF_FreeTextures (&o);
 	}
 memset (o.textures.pszNames, 0, o.textures.nBitmaps * sizeof (char **));
-i = o.textures.nBitmaps * sizeof (grsBitmap);
-if (!(o.textures.pBitmaps = (grsBitmap *) D2_ALLOC (i))) {
+i = o.textures.nBitmaps * sizeof (CBitmap);
+if (!(o.textures.pBitmaps = (CBitmap *) D2_ALLOC (i))) {
 	nIndent -= 2;
 	return OOF_FreeTextures (&o);
 	}

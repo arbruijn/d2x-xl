@@ -22,8 +22,8 @@ int G3DrawTexPolyMulti (
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
 	tUVL			*uvlLMap, 
-	grsBitmap	*bmBot, 
-	grsBitmap	*bmTop, 
+	CBitmap		*bmBot, 
+	CBitmap		*bmTop, 
 	tLightmap	*lightmap, 
 	vmsVector	*pvNormal,
 	int			orient, 
@@ -35,8 +35,8 @@ int G3DrawTexPolyLightmap (
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
 	tUVL			*uvlLMap, 
-	grsBitmap	*bmBot, 
-	grsBitmap	*bmTop, 
+	CBitmap		*bmBot, 
+	CBitmap		*bmTop, 
 	tLightmap	*lightmap, 
 	vmsVector	*pvNormal,
 	int			orient, 
@@ -48,8 +48,8 @@ int G3DrawTexPolyFlat (
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
 	tUVL			*uvlLMap, 
-	grsBitmap	*bmBot, 
-	grsBitmap	*bmTop, 
+	CBitmap		*bmBot, 
+	CBitmap		*bmTop, 
 	tLightmap	*lightmap, 
 	vmsVector	*pvNormal,
 	int			orient, 
@@ -60,14 +60,14 @@ int G3DrawTexPolySimple (
 	int			nVertices, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
-	grsBitmap	*bmP, 
+	CBitmap		*bmP, 
 	vmsVector	*pvNormal,
 	int			bBlend);
 
 void OglCachePolyModelTextures (int nModel);
 
-void DrawTexPolyFlat (grsBitmap *bm,int nv,g3sPoint **vertlist);
-int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord2f *texCoordP, 
+void DrawTexPolyFlat (CBitmap *bm,int nv,g3sPoint **vertlist);
+int OglRenderArrays (CBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord2f *texCoordP, 
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap);
 
 void OglURect(int left,int top,int right,int bot);
@@ -76,7 +76,7 @@ void InitGrayScaleShader (void);
 
 //------------------------------------------------------------------------------
 
-typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, tLightmap *, vmsVector *, int, int, short);
+typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, CBitmap *, CBitmap *, tLightmap *, vmsVector *, int, int, short);
 
 extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
 
@@ -87,7 +87,7 @@ extern GLhandleARB	activeShaderProg;
 //------------------------------------------------------------------------------
 
 static inline int G3DrawTexPoly (int nVerts, g3sPoint **pointList, tUVL *uvlList,
-											grsBitmap *bmP, vmsVector *pvNormal, int bBlend, short nSegment)
+											CBitmap *bmP, vmsVector *pvNormal, int bBlend, short nSegment)
 {
 return fpDrawTexPolyMulti (nVerts, pointList, uvlList, NULL, bmP, NULL, NULL, pvNormal, 0, bBlend, nSegment);
 }

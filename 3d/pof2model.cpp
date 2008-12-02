@@ -106,13 +106,13 @@ return 1;
 //------------------------------------------------------------------------------
 
 tG3ModelFace *G3AddModelFace (tG3Model *pm, tG3SubModel *psm, tG3ModelFace *pmf, vmsVector *pn, ubyte *p,
-										grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
+										CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
 	short				nVerts = WORDVAL (p+2);
 	tG3ModelVertex	*pmv;
 	short				*pfv;
 	tUVL				*uvl;
-	grsBitmap		*bmP;
+	CBitmap		*bmP;
 	tRgbaColorf		baseColor;
 	fVector3			n, *pvn;
 	short				i, j;
@@ -126,12 +126,8 @@ if (modelBitmaps && *modelBitmaps) {
 	bTextured = 1;
 	pmf->nBitmap = WORDVAL (p+28);
 	bmP = modelBitmaps [pmf->nBitmap];
-	if (pObjColor) {
-		ubyte c = bmP->bmAvgColor;
-		pObjColor->red = CPAL2Tr (gamePalette, c);
-		pObjColor->green = CPAL2Tg (gamePalette, c);
-		pObjColor->blue = CPAL2Tb (gamePalette, c);
-		}
+	if (objColorP)
+		paletteManager.Game ()->ToRgbaf (bmP->AverageColor (), *objColorP);
 	baseColor.red = baseColor.green = baseColor.blue = baseColor.alpha = 1;
 	i = (int) (bmP - gameData.pig.tex.bitmaps [0]);
 	pmf->bThruster = (i == 24) || ((i >= 1741) && (i <= 1745));
@@ -144,8 +140,8 @@ else {
 	baseColor.green = (float) PAL2RGBA (((c >> 5) & 31) << 1) / 255.0f;
 	baseColor.blue = (float) PAL2RGBA ((c & 31) << 1) / 255.0f;
 	baseColor.alpha = GrAlpha ();
-	if (pObjColor)
-		*pObjColor = baseColor;
+	if (objColorP)
+		*objColorP = baseColor;
 	}
 pmf->nSubModel = psm - pm->pSubModels;
 pmf->vNormal = *pn;
@@ -181,7 +177,7 @@ return ++pmf;
 //------------------------------------------------------------------------------
 
 int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int nThis, int nParent,
-								int bSubObject, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
+								int bSubObject, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
 	ubyte				*p = (ubyte *) modelP;
 	tG3SubModel		*psm = pm->pSubModels + nThis;
@@ -237,23 +233,23 @@ for (;;) {
 
 		case OP_FLATPOLY: {
 			int nVerts = WORDVAL (p+2);
-			pmf = G3AddModelFace (pm, psm, pmf, VECPTR (p+16), p, NULL, pObjColor);
+			pmf = G3AddModelFace (pm, psm, pmf, VECPTR (p+16), p, NULL, objColorP);
 			p += 30 + (nVerts | 1) * 2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
 			int nVerts = WORDVAL (p + 2);
-			pmf = G3AddModelFace (pm, psm, pmf, VECPTR (p+16), p, modelBitmaps, pObjColor);
+			pmf = G3AddModelFace (pm, psm, pmf, VECPTR (p+16), p, modelBitmaps, objColorP);
 			p += 30 + (nVerts | 1) * 2 + nVerts * 12;
 			break;
 			}
 
 		case OP_SORTNORM:
-			if (!G3GetPOFModelItems (p + WORDVAL (p+28), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, pObjColor))
+			if (!G3GetPOFModelItems (p + WORDVAL (p+28), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, objColorP))
 				return 0;
 			pmf = pm->pFaces + pm->iFace;
-			if (!G3GetPOFModelItems (p + WORDVAL (p+30), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, pObjColor))
+			if (!G3GetPOFModelItems (p + WORDVAL (p+30), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, objColorP))
 				return 0;
 			pmf = pm->pFaces + pm->iFace;
 			p += 32;
@@ -268,7 +264,7 @@ for (;;) {
 			pm->pSubModels [nChild].vOffset = *VECPTR (p+4);
 			pm->pSubModels [nChild].nAngles = WORDVAL (p+2);
 			G3InitSubModelMinMax (pm->pSubModels + nChild);
-			if (!G3GetPOFModelItems (p + WORDVAL (p+16), pAnimAngles, pm, nChild, nThis, 1, modelBitmaps, pObjColor))
+			if (!G3GetPOFModelItems (p + WORDVAL (p+16), pAnimAngles, pm, nChild, nThis, 1, modelBitmaps, objColorP))
 				return 0;
 			pmf = pm->pFaces + pm->iFace;
 			p += 20;
@@ -335,7 +331,7 @@ for (pmf = pm->pFaces, i = pm->nFaces; i; i--, pmf++)
 
 //------------------------------------------------------------------------------
 
-int G3BuildModelFromPOF (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
+int G3BuildModelFromPOF (tObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
 	tG3Model	*pm = gameData.models.g3Models [0] + nModel;
 
@@ -356,7 +352,7 @@ G3InitSubModelMinMax (pm->pSubModels);
 #if TRACE_TAGS
 PrintLog ("building model for object type %d, id %d\n", objP->info.nType, objP->info.nId);
 #endif
-if (!G3GetPOFModelItems (pp->modelData, NULL, pm, 0, -1, 1, modelBitmaps, pObjColor))
+if (!G3GetPOFModelItems (pp->modelData, NULL, pm, 0, -1, 1, modelBitmaps, objColorP))
 	return 0;
 G3SortModelFaces (pm->pFaces, 0, pm->nFaces - 1);
 G3AssignModelFaces (pm);

@@ -63,11 +63,11 @@ PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
 
 #if RENDER2TEXTURE == 2
 
-int OglFBufferAvail (tFrameBuffer *fb)
+int CFBO::Available (void)
 {
 if (!gameStates.ogl.bRender2TextureOk)
 	return 0;
-switch (fb->nStatus = glCheckFramebufferStatusEXT (GL_FRAMEBUFFER_EXT)) {                                          
+switch (m_info.nStatus = glCheckFramebufferStatusEXT (GL_FRAMEBUFFER_EXT)) {                                          
 	case GL_FRAMEBUFFER_COMPLETE_EXT:                       
 		return 1;
 	case GL_FRAMEBUFFER_UNSUPPORTED_EXT:                    
@@ -79,34 +79,41 @@ switch (fb->nStatus = glCheckFramebufferStatusEXT (GL_FRAMEBUFFER_EXT)) {
 
 //------------------------------------------------------------------------------
 
-int OglCreateFBuffer (tFrameBuffer *fb, int nWidth, int nHeight, int nType)
+void CFBO::Init (void)
+{
+memset (&m_info, 0, sizeof (m_info));
+}
+
+//------------------------------------------------------------------------------
+
+int CFBO::Create (int nWidth, int nHeight, int nType)
 {
 	GLenum	nError;
 
 if (!gameStates.ogl.bRender2TextureOk)
 	return 0;
-OglDestroyFBuffer (fb);
-glGenFramebuffersEXT (1, &fb->hFBO);
-glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, fb->hFBO);
+Destroy ();
+glGenFramebuffersEXT (1, &m_info.hFBO);
+glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 
 if (nWidth > 0)
-	fb->nWidth = nWidth;
+	m_info.nWidth = nWidth;
 if (nHeight > 0)
-	fb->nHeight = nHeight;
-OglGenTextures (1, &fb->hRenderBuffer);
+	m_info.nHeight = nHeight;
+OglGenTextures (1, &m_info.hRenderBuffer);
 if (nType == 2) { //GPGPU
-	glBindTexture (GL_TEXTURE_2D, fb->hRenderBuffer);
+	glBindTexture (GL_TEXTURE_2D, m_info.hRenderBuffer);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); 
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, fb->nWidth, fb->nHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb->hRenderBuffer, 0);
-	fb->hDepthBuffer = 0;
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, m_info.nWidth, m_info.nHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, m_info.hRenderBuffer, 0);
+	m_info.hDepthBuffer = 0;
 	}
 else {
-	glBindTexture (GL_TEXTURE_2D, fb->hRenderBuffer);
+	glBindTexture (GL_TEXTURE_2D, m_info.hRenderBuffer);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //LINEAR /*GL_LINEAR_MIPMAP_LINEAR*/);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -117,75 +124,75 @@ else {
 	else 
 #endif
 		{
-		glTexImage2D (GL_TEXTURE_2D, 0, 3, fb->nWidth, fb->nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D (GL_TEXTURE_2D, 0, 3, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		glGenerateMipmapEXT (GL_TEXTURE_2D);
 		}
-	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb->hRenderBuffer, 0);
+	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, m_info.hRenderBuffer, 0);
 #if FBO_STENCIL_BUFFER
-	if ((nType == 1) && (fb->hDepthBuffer = OglCreateDepthTexture (0, 1))) {
-		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, fb->hDepthBuffer, 0);
-		glGenRenderbuffersEXT (1, &fb->hStencilBuffer);
-		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, fb->hStencilBuffer);
-		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_STENCIL_INDEX8_EXT, fb->nWidth, fb->nHeight);
-		glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb->hStencilBuffer);
-		if (OglFBufferAvail (fb) < 0)
+	if ((nType == 1) && (m_info.hDepthBuffer = OglCreateDepthTexture (0, 1))) {
+		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hDepthBuffer, 0);
+		glGenRenderbuffersEXT (1, &m_info.hStencilBuffer);
+		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hStencilBuffer);
+		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_STENCIL_INDEX8_EXT, m_info.nWidth, m_info.nHeight);
+		glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, m_info.hStencilBuffer);
+		if (Available () < 0)
 			return 0;
 		}
 	else 
 #else
-	fb->hStencilBuffer = 0;
+	m_info.hStencilBuffer = 0;
 #endif
 		{
-		glGenRenderbuffersEXT (1, &fb->hDepthBuffer);
-		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, fb->hDepthBuffer);
-		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, fb->nWidth, fb->nHeight);
-		glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb->hDepthBuffer);
+		glGenRenderbuffersEXT (1, &m_info.hDepthBuffer);
+		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
+		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, m_info.nWidth, m_info.nHeight);
+		glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
 		if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
 			return 0;
 		}
 	if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
 		return 0;
-	if (OglFBufferAvail (fb) < 0)
+	if (Available () < 0)
 		return 0;
 	}
-fb->nType = nType;
+m_info.nType = nType;
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void OglDestroyFBuffer (tFrameBuffer *fb)
+void CFBO::Destroy (void)
 {
 if (!gameStates.ogl.bRender2TextureOk)
 	return;
-if (fb->hFBO) {
-	if (fb->hRenderBuffer) {
-		OglDeleteTextures (1, &fb->hRenderBuffer);
-		fb->hRenderBuffer = 0;
+if (m_info.hFBO) {
+	if (m_info.hRenderBuffer) {
+		OglDeleteTextures (1, &m_info.hRenderBuffer);
+		m_info.hRenderBuffer = 0;
 		}
-	if (fb->hDepthBuffer) {
+	if (m_info.hDepthBuffer) {
 #if 1
-		if (fb->nType == 1) {
-			OglDeleteTextures (1, &fb->hDepthBuffer);
+		if (m_info.nType == 1) {
+			OglDeleteTextures (1, &m_info.hDepthBuffer);
 #if FBO_STENCIL_BUFFER
-			glDeleteRenderbuffersEXT (1, &fb->hStencilBuffer);
-			fb->hStencilBuffer = 0;
+			glDeleteRenderbuffersEXT (1, &m_info.hStencilBuffer);
+			m_info.hStencilBuffer = 0;
 #endif
 			}
 		else
 #endif
-			glDeleteRenderbuffersEXT (1, &fb->hDepthBuffer);
-		fb->hDepthBuffer = 0;
+			glDeleteRenderbuffersEXT (1, &m_info.hDepthBuffer);
+		m_info.hDepthBuffer = 0;
 		}
-	glDeleteFramebuffersEXT (1, &fb->hFBO);
-	fb->hFBO = 0;
+	glDeleteFramebuffersEXT (1, &m_info.hFBO);
+	m_info.hFBO = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int OglEnableFBuffer (tFrameBuffer *fb)
+int CFBO::Enable (void)
 {
 if (!gameStates.ogl.bRender2TextureOk)
 	return 0;
@@ -193,9 +200,9 @@ glDrawBuffer (GL_BACK);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 gameStates.ogl.bDrawBufferActive = 0;
 glBindTexture (GL_TEXTURE_2D, 0);
-glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, fb->hFBO);
+glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 #if 1//def _DEBUG
-if (!OglFBufferAvail (fb))
+if (!Available ())
 	return 0;
 #endif
 OglSetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
@@ -204,16 +211,16 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OglDisableFBuffer (tFrameBuffer *fb)
+int CFBO::Disable (void)
 {
 if (!gameStates.ogl.bRender2TextureOk)
 	return 0;
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 #if 1//def _DEBUG
-if (!OglFBufferAvail (fb))
+if (!Available ())
 	return 0;
 #endif
-//glBindTexture (GL_TEXTURE_2D, fb->hRenderBuffer);
+//glBindTexture (GL_TEXTURE_2D, m_info.hRenderBuffer);
 OglSetDrawBuffer (GL_BACK, 1);
 return 1;
 }
@@ -222,7 +229,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void OglInitFBuffer (void)
+void CFBO::Setup (void)
 {
 #if RENDER2TEXTURE
 if (gameStates.ogl.bUseRender2Texture) {

@@ -112,7 +112,7 @@ void G3LightModel (tObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 	tG3ModelVertex	*pmv;
 	tG3ModelFace	*pmf;
 	tRgbaColorf		baseColor, *colorP;
-	float				fLight, fAlpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
+	float				fLight, fAlpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS;
 	int				h, i, j, l;
 	int				bEmissive = (objP->info.nType == OBJ_MARKER) ||
 										((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId]);
@@ -411,14 +411,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclusive, grsBitmap **modelBitmaps,
+void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclusive, CBitmap **modelBitmaps,
 						   vmsAngVec *pAnimAngles, vmsVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel		*psm = pm->pSubModels + nSubModel;
 	tG3ModelFace	*pmf;
-	grsBitmap		*bmP = NULL;
+	CBitmap		*bmP = NULL;
 	vmsAngVec		va = pAnimAngles ? pAnimAngles [psm->nAngles] : vmsAngVec::ZERO;
 	vmsVector		vo;
 	int				h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/),
@@ -475,7 +475,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 					bmP = modelBitmaps [nBitmap];
 				else {
 					bmP = pm->pTextures + nBitmap;
-					if (nTeamColor && bmP->bmTeam && (0 <= (h = pm->teamTextures [nTeamColor % MAX_PLAYERS]))) {
+					if (nTeamColor && bmP->nTeam && (0 <= (h = pm->teamTextures [nTeamColor % MAX_PLAYERS]))) {
 						nBitmap = h;
 						bmP = pm->pTextures + nBitmap;
 						}
@@ -483,17 +483,17 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				glActiveTexture (GL_TEXTURE0);
 				glClientActiveTexture (GL_TEXTURE0);
 				glEnable (GL_TEXTURE_2D);
-				bmP = BmOverride (bmP, -1);
-				if (BM_FRAMES (bmP))
-					bmP = BM_CURFRAME (bmP);
+				bmP = bmP->Override (-1);
+				if (bmP->Frames ())
+					bmP = bmP->CurFrame ();
 				if (OglBindBmTex (bmP, 1, 3))
 					continue;
-				OglTexWrap (bmP->glTexture, GL_REPEAT);
+				OglTexWrap (bmP->texInfo, GL_REPEAT);
 				}
 			}
 		nIndex = pmf->nIndex;
 		if (bHires) {
-			bTransparent = bmP && ((bmP->bmProps.flags & BM_FLAG_TRANSPARENT) != 0);
+			bTransparent = bmP && ((bmP->props.flags & BM_FLAG_TRANSPARENT) != 0);
 			if (bTransparent != bTransparency) {
 				if (bTransparent)
 					pm->bHasTransparency = 1;
@@ -552,7 +552,7 @@ if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
 
 //------------------------------------------------------------------------------
 
-void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **modelBitmaps,
+void G3DrawModel (tObject *objP, short nModel, short nSubModel, CBitmap **modelBitmaps,
 						vmsAngVec *pAnimAngles, vmsVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
@@ -733,7 +733,7 @@ if (vOffsetP)
 
 //------------------------------------------------------------------------------
 
-int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp, grsBitmap **modelBitmaps,
+int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
 						 vmsAngVec *pAnimAngles, vmsVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;

@@ -9,7 +9,7 @@
 
 #include "inferno.h"
 
-extern grsBitmap *bmpDeadzone;
+extern CBitmap *bmpDeadzone;
 extern int bHaveDeadzone;
 
 int LoadDeadzone (void);

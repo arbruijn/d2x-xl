@@ -37,22 +37,23 @@ ubyte * scale_dest_ptr;
 
 ubyte scale_rle_data[1600];
 
-void scale_up_bitmap(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  );
-void scale_up_bitmap_rle(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  );
+void scale_up_bitmap(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  );
+void scale_up_bitmap_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  );
 void rls_stretch_scanline_setup( int XDelta, int YDelta );
 void rls_stretch_scanline(void);
 
 
-void decode_row( grsBitmap * bmp, int y )
+void decode_row (CBitmap * bmp, int y)
 {
-	int i, offset=4+bmp->bmProps.h;
+	int i, offset=4+bmp->Height ();
 
 	for (i=0; i<y; i++ )
-		offset += bmp->bmTexBuf[4+i];
-	gr_rle_decode( &bmp->bmTexBuf[offset], scale_rle_data );
+		offset += bmp->TexBuf () [4+i];
+	gr_rle_decode( &bmp->TexBuf () [offset], scale_rle_data );
 }
 
-void scale_up_bitmap(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+
+void scale_up_bitmap(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
 	fix dv, v;
 	int y;
@@ -78,9 +79,9 @@ void scale_up_bitmap(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0,
 
 	v = v0;
 
-	for (y=y0; y<=y1; y++ )			{
-		scale_source_ptr = &source_bmp->bmTexBuf[source_bmp->bmProps.rowSize*X2I(v)+X2I(u0)];
-		scale_dest_ptr = &dest_bmp->bmTexBuf[dest_bmp->bmProps.rowSize*y+x0];
+	for (y = y0; y <= y1; y++ ) {
+		scale_source_ptr = &source_bmp->TexBuf () [source_bmp->RowSize () * X2I(v) + X2I(u0)];
+		scale_dest_ptr = &dest_bmp->TexBuf () [dest_bmp->RowSize () * y + x0];
 		rls_stretch_scanline();
 		v += dv;
 	}
@@ -89,7 +90,7 @@ void scale_up_bitmap(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0,
 
 
 
-void scale_up_bitmap_rle(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+void scale_up_bitmap_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
 	fix dv, v;
 	int y, last_row = -1;
@@ -119,7 +120,7 @@ void scale_up_bitmap_rle(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int
 			decode_row( source_bmp, last_row );
 		}
 		scale_source_ptr = &scale_rle_data[X2I(u0)];
-		scale_dest_ptr = &dest_bmp->bmTexBuf[dest_bmp->bmProps.rowSize*y+x0];
+		scale_dest_ptr = &dest_bmp->TexBuf ()[dest_bmp->RowSize ()*y+x0];
 		rls_stretch_scanline( );
 		v += dv;
 	}
@@ -274,7 +275,7 @@ void rls_stretch_scanline()
 #endif
 // old stuff here...
 
-void scale_bitmap_c(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+void scale_bitmap_c(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
 	fix u, v, du, dv;
 	int x, y;
@@ -298,8 +299,8 @@ void scale_bitmap_c(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, 
 	v = v0;
 
 	for (y=y0; y<=y1; y++ )			{
-		sbits = &source_bmp->bmTexBuf[source_bmp->bmProps.rowSize*X2I(v)];
-		dbits = &dest_bmp->bmTexBuf[dest_bmp->bmProps.rowSize*y+x0];
+		sbits = &source_bmp->TexBuf ()[source_bmp->RowSize () * X2I(v)];
+		dbits = &dest_bmp->TexBuf ()[dest_bmp->RowSize () * y + x0];
 		u = u0;
 		v += dv;
 		for (x=x0; x<=x1; x++ )			{
@@ -383,7 +384,7 @@ NonTransparent:
 	}
 }
 
-void scale_bitmap_c_rle(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+void scale_bitmap_c_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
 	fix du, dv, v;
 	int y, last_row=-1;
@@ -422,7 +423,7 @@ void scale_bitmap_c_rle(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int 
 			last_row = X2I(v);
 			decode_row( source_bmp, last_row );
 		}
-		scale_row_asm_transparent (scale_rle_data, &dest_bmp->bmTexBuf[dest_bmp->bmProps.rowSize*y+x0], x1-x0+1, u0, du );
+		scale_row_asm_transparent (scale_rle_data, &dest_bmp->TexBuf ()[dest_bmp->RowSize ()*y+x0], x1-x0+1, u0, du );
 		v += dv;
 	}
 }
@@ -430,9 +431,9 @@ void scale_bitmap_c_rle(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int 
 #define FIND_SCALED_NUM(x,x0,x1,y0,y1) (FixMulDiv((x)-(x0),(y1)-(y0),(x1)-(x0))+(y0))
 
 // Scales bitmap, bp, into vertbuf[0] to vertbuf[1]
-void ScaleBitmap(grsBitmap *bp, grsPoint *vertbuf, int orientation )
+void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int orientation )
 {
-	grsBitmap * dbp = &grdCurCanv->cvBitmap;
+	CBitmap * dbp = &CCanvas::Current ()->Bitmap ();
 	fix x0, y0, x1, y1;
 	fix u0, v0, u1, v1;
 	fix clipped_x0, clipped_y0, clipped_x1, clipped_y1;
@@ -446,10 +447,10 @@ void ScaleBitmap(grsBitmap *bp, grsPoint *vertbuf, int orientation )
 	x1 = vertbuf[2].x; y1 = vertbuf[2].y;
 
 	xmin = 0; ymin = 0;
-	xmax = I2X(dbp->bmProps.w)-F2X(.5); ymax = I2X(dbp->bmProps.h)-F2X(.5);
+	xmax = I2X(dbp->Width ())-F2X(.5); ymax = I2X(dbp->Height ())-F2X(.5);
 
 	u0 = I2X(0); v0 = I2X(0);
-	u1 = I2X(bp->bmProps.w-1); v1 = I2X(bp->bmProps.h-1);
+	u1 = I2X(bmP->Width ()-1); v1 = I2X(bmP->Height ()-1);
 
 	// Check for obviously offscreen bitmaps...
 	if ( (y1<=y0) || (x1<=x0) ) return;
@@ -494,27 +495,27 @@ void ScaleBitmap(grsBitmap *bp, grsPoint *vertbuf, int orientation )
 
 //	Assert( dx0>=0 );
 //	Assert( dy0>=0 );
-//	Assert( dx1<dbp->bmProps.w );
-//	Assert( dy1<dbp->bmProps.h );
+//	Assert( dx1<dbp->Width () );
+//	Assert( dy1<dbp->Height () );
 //	Assert( X2I(u0)<=X2I(u1) );
 //	Assert( X2I(v0)<=X2I(v1) );
 //	Assert( X2I(u0)>=0 );
 //	Assert( X2I(v0)>=0 );
-//	Assert( u1<I2X(bp->bmProps.w) );
-//	Assert( v1<I2X(bp->bmProps.h) );
+//	Assert( u1<I2X(bmP->Width ()) );
+//	Assert( v1<I2X(bmP->Height ()) );
 
 	dtemp = X2I(clipped_u1)-X2I(clipped_u0);
 
-	if ( bp->bmProps.flags & BM_FLAG_RLE )	{
+	if ( bmP->Flags () & BM_FLAG_RLE )	{
 		if ( (dtemp < (X2I(clipped_x1)-X2I(clipped_x0))) && (dtemp>0) )
-			scale_up_bitmap_rle(bp, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
+			scale_up_bitmap_rle(bmP, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
 		else
-			scale_bitmap_c_rle(bp, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
+			scale_bitmap_c_rle(bmP, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
 	} else {
 		if ( (dtemp < (X2I(clipped_x1)-X2I(clipped_x0))) && (dtemp>0) )
-			scale_up_bitmap(bp, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
+			scale_up_bitmap(bmP, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
 		else
-			scale_bitmap_c(bp, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
+			scale_bitmap_c(bmP, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
 	}
 }
 

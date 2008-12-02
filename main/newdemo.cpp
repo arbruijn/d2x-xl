@@ -2030,7 +2030,7 @@ while (!bDone) {
 			g = NDReadShort ();
 			b = NDReadShort ();
 			CATCH_BAD_READ
-			PALETTE_FLASH_SET (r, g, b);
+			paletteManager.SetEffect (r, g, b);
 			}
 			break;
 
@@ -2600,7 +2600,7 @@ while (!bDone) {
 					MultiApplyGoalTextures ();
 				bJustStartedPlayback = 0;
 				}
-			ResetPaletteAdd ();                // get palette back to Normal
+			paletteManager.ResetEffect ();                // get palette back to Normal
 			StartTime (0);
 			}
 			break;
@@ -2881,7 +2881,7 @@ if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
 	DoJasonInterpolate (gameData.demo.xRecordedTime);
 gameData.reactor.bDestroyed = 0;
 gameData.reactor.countdown.nSecsLeft = -1;
-PALETTE_FLASH_SET (0, 0, 0);       //clear flash
+paletteManager.SetEffect (0, 0, 0);       //clear flash
 if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 	 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 	level = gameData.missions.nCurrentLevel;
@@ -3139,7 +3139,7 @@ void NDStopRecording (void)
 
 NDFinishRecording ();
 gameData.demo.nState = ND_STATE_NORMAL;
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 if (filename [0] != '\0') {
 	int num, i = (int) strlen (filename) - 1;
 	char newfile [15];

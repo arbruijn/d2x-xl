@@ -23,6 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "error.h"
+#include "u_mem.h"
 #include "text.h"
 #include "gamefont.h"
 #include "input.h"
@@ -43,9 +44,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define INV_ITEM_SLOWMOTION	8
 #define INV_ITEM_BULLETTIME	9
 
-grsBitmap	*bmpInventory = NULL;
-grsBitmap	bmInvItems [NUM_INV_ITEMS];
-grsBitmap	bmObjTally [2];
+CBitmap	*bmpInventory = NULL;
+CBitmap	bmInvItems [NUM_INV_ITEMS];
+CBitmap	*bmObjTally [2];
 
 int bHaveInvBms = -1;
 int bHaveObjTallyBms = -1;
@@ -62,9 +63,9 @@ if (bHaveObjTallyBms > -1)
 	return bHaveObjTallyBms;
 memset (bmObjTally, 0, sizeof (bmObjTally));
 for (i = 0; i < 2; i++)
-	if (!ReadTGA (pszObjTallyIcons [i], gameFolders.szDataDir, bmObjTally + i, -1, 1.0, 0, 0)) {
+	if (!ReadTGA (pszObjTallyIcons [i], gameFolders.szDataDir, bmObjTally [i], -1, 1.0, 0, 0)) {
 		while (i)
-			GrFreeBitmapData (bmObjTally + --i);
+			D2_FREE (bmObjTally [--i]);
 		return bHaveObjTallyBms = 0;
 		}
 return bHaveObjTallyBms = 1;
@@ -78,7 +79,7 @@ void FreeObjTallyIcons (void)
 
 if (bHaveObjTallyBms > 0) {
 	for (i = 0; i < 2; i++)
-		GrFreeBitmapData (bmObjTally + i);
+		D2_FREE (bmObjTally [i]);
 	memset (bmObjTally, 0, sizeof (bmObjTally));
 	bHaveObjTallyBms = -1;
 	}
@@ -123,10 +124,10 @@ if (!IsMultiGame || IsCoopGame) {
 		}
 	if (!gameOpts->render.cockpit.bTextGauges && (LoadObjTallyIcons () > 0)) {
 		for (i = 0; i < 2; i++) {
-			bmH = bmObjTally [i].bmProps.h / 2;
-			bmW = bmObjTally [i].bmProps.w / 2;
+			bmH = bmObjTally [i]->Width () / 2;
+			bmW = bmObjTally [i]->Height () / 2;
 			x = x0 - bmW - HUD_LHX (2);
-			OglUBitMapMC (x, y, bmW, bmH, bmObjTally + i, NULL, F1_0, 0);
+			OglUBitMapMC (x, y, bmW, bmH, bmObjTally [i], NULL, F1_0, 0);
 			sprintf (szInfo, "%d", objCounts [i]);
 			GrGetStringSize (szInfo, &w, &h, &aw);
 			x -= w + HUD_LHY (2);
@@ -217,7 +218,7 @@ for (i = 0; i < Controls [0].toggleIconsCount; i++)
 
 void HUDShowWeaponIcons (void)
 {
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	int	nWeaponIcons = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? 3 : extraGameInfo [0].nWeaponIcons;
 	int	nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) ? 4 : 3;
 	int	nIconPos = nWeaponIcons - 1;
@@ -249,7 +250,7 @@ if (nWeaponIcons < 3) {
 #if 0
 	if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 #endif
-		dy = (grdCurScreen->scHeight - grdCurCanv->cvBitmap.bmProps.h);
+		dy = (grdCurScreen->scHeight - grdCurCanv->cvBitmap.props.h);
 		y = nIconPos ? grdCurScreen->scHeight - dy - oy : oy + hIcon + 12;
 #if 0
 		}
@@ -270,12 +271,12 @@ for (i = 0; i < 2; i++) {
 #if DBG
 			h = gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0);
 			h = gameData.pig.tex.cockpitBmIndex [h].index;
-			h = gameData.pig.tex.bitmaps [0][h].bmProps.h;
+			h = gameData.pig.tex.bitmaps [0][h].props.h;
 #else
-			h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index].bmProps.h;
+			h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index].props.h;
 #endif
 			}
-		y = (grdCurCanv->cvBitmap.bmProps.h - h - n * (hIcon + oy)) / 2 + hIcon;
+		y = (grdCurCanv->cvBitmap.props.h - h - n * (hIcon + oy)) / 2 + hIcon;
 		x = i ? grdCurScreen->scWidth - wIcon - ox : ox;
 		}
 	else {
@@ -306,10 +307,10 @@ for (i = 0; i < 2; i++) {
 			PIGGY_PAGE_IN (gameData.weapons.info [m].picture.index, 0);
 			}
 		Assert (bmP != NULL);
-		if (w < bmP->bmProps.w)
-			w = bmP->bmProps.w;
-		if (h < bmP->bmProps.h)
-			h = bmP->bmProps.h;
+		if (w < bmP->props.w)
+			w = bmP->props.w;
+		if (h < bmP->props.h)
+			h = bmP->props.h;
 		wIcon = (int) ((w + nIconScale - 1) / nIconScale * cmScaleX);
 		hIcon = (int) ((h + nIconScale - 1) / nIconScale * cmScaleY);
 		if (bInitIcons)
@@ -332,7 +333,7 @@ for (i = 0; i < 2; i++) {
 				 LOCALPLAYER.primaryWeaponFlags & (1 << (l + 5)))
 				continue;
 			}
-		HUDBitBlt (nIconScale * - (x + (w - bmP->bmProps.w) / (2 * nIconScale)), 
+		HUDBitBlt (nIconScale * - (x + (w - bmP->props.w) / (2 * nIconScale)), 
 					  nIconScale * - (y - hIcon), bmP, nIconScale * F1_0, 0);
 		*szAmmo = '\0';
 		nAmmoColor = GREEN_RGBA;
@@ -374,14 +375,14 @@ for (i = 0; i < 2; i++) {
 		if (i && !bLoaded)
 			bHave = 0;
 		if (bHave) {
-			//gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS * 2 / 3;
+			//gameStates.render.grAlpha = FADE_LEVELS * 2 / 3;
 			if (bLoaded)
 				GrSetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
 			else
 				GrSetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
 			}
 		else {
-			//gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS * 2 / 7;
+			//gameStates.render.grAlpha = FADE_LEVELS * 2 / 7;
 			GrSetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 			}
 		GrURect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
@@ -417,7 +418,7 @@ for (i = 0; i < 2; i++) {
 			nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
 			GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 			}
-		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+		gameStates.render.grAlpha = FADE_LEVELS;
 		if (nWeaponIcons > 2)
 			y += hIcon + oy;
 		else {
@@ -436,17 +437,19 @@ bInitIcons = 0;
 int LoadInventoryIcons (void)
 {
 	int	h, i;
+	ubyte	*texBuf;
 
 if (!((bmpInventory = PiggyLoadBitmap ("inventry.bmp")) ||
 	   (bmpInventory = PiggyLoadBitmap ("inventory.bmp"))))
 	return bHaveInvBms = 0;
 memset (bmInvItems, 0, sizeof (bmInvItems));
-h = bmpInventory->bmProps.w * bmpInventory->bmProps.w;
+h = bmpInventory->Width () * bmpInventory->Height ();
+texBuf = bmpInventory->TexBuf ();
 for (i = 0; i < NUM_INV_ITEMS; i++) {
 	bmInvItems [i] = *bmpInventory;
-	bmInvItems [i].bmProps.h = bmInvItems [i].bmProps.w;
-	bmInvItems [i].bmTexBuf += h * i;
-	bmInvItems [i].bmPalette = gamePalette;
+	bmInvItems [i].props.h = bmInvItems [i].props.w;
+	bmInvItems [i].SetTexBuf (texBuf + h * i);
+	bmInvItems [i].SetPalette (paletteManager.Game ());
 	}
 return bHaveInvBms = 1;
 }
@@ -456,8 +459,7 @@ return bHaveInvBms = 1;
 void FreeInventoryIcons (void)
 {
 if (bmpInventory) {
-	GrFreeBitmap (bmpInventory);
-	bmpInventory = NULL;
+	D2_FREE (bmpInventory);
 	bHaveInvBms = -1;
 	}
 }
@@ -495,7 +497,7 @@ return 0;
 
 void HUDShowInventoryIcons (void)
 {
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	char	szCount [4];
 	int nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) ? 3 : 2;
 	int nIconPos = extraGameInfo [0].nWeaponIcons & 1;
@@ -504,8 +506,8 @@ void HUDShowInventoryIcons (void)
 			oy = 6, 
 			ox = 6, 
 			x, y, dy;
-	int	w = bmpInventory->bmProps.w, 
-			h = bmpInventory->bmProps.w;
+	int	w = bmpInventory->props.w, 
+			h = bmpInventory->props.w;
 	int	wIcon = (int) ((w + nIconScale - 1) / nIconScale * cmScaleX), 
 			hIcon = (int) ((h + nIconScale - 1) / nIconScale * cmScaleY);
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
@@ -524,7 +526,7 @@ void HUDShowInventoryIcons (void)
 	static int nEnergyType [NUM_INV_ITEMS] = {F1_0, 100 * F1_0, 0, F1_0, 0, F1_0, 0, 0, F1_0, F1_0};
 	static int nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-dy = (grdCurScreen->scHeight - grdCurCanv->cvBitmap.bmProps.h);
+dy = (grdCurScreen->scHeight - grdCurCanv->cvBitmap.props.h);
 if (gameStates.render.cockpit.nMode != CM_STATUS_BAR) //(!SHOW_COCKPIT)
 	y = nIconPos ? grdCurScreen->scHeight - dy - oy : oy + hIcon + 12;
 else
@@ -535,7 +537,7 @@ x = (grdCurScreen->scWidth - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox)
 for (j = firstItem; j < n; j++) {
 	int bHave, bArmed, bActive = HUDEquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
-	HUDBitBlt (nIconScale * - (x + (w - bmP->bmProps.w) / (2 * nIconScale)), nIconScale * - (y - hIcon), bmP, nIconScale * F1_0, 0);
+	HUDBitBlt (nIconScale * - (x + (w - bmP->props.w) / (2 * nIconScale)), nIconScale * - (y - hIcon), bmP, nIconScale * F1_0, 0);
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_HEADLIGHT)
@@ -556,7 +558,7 @@ for (j = firstItem; j < n; j++) {
 		bHave = LOCALPLAYER.flags & nInvFlags [j];
 	bArmed = (LOCALPLAYER.energy > nEnergyType [j]);
 	if (bHave) {
-		//gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS * 2 / 3;
+		//gameStates.render.grAlpha = FADE_LEVELS * 2 / 3;
 		if (bArmed)
 			if (bActive)
 				GrSetColorRGB (255, 208, 0, (ubyte) (alpha * 16));
@@ -566,7 +568,7 @@ for (j = firstItem; j < n; j++) {
 			GrSetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
 		}
 	else {
-		//gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS * 2 / 7;
+		//gameStates.render.grAlpha = FADE_LEVELS * 2 / 7;
 		GrSetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 		}
 	GrURect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
@@ -585,7 +587,7 @@ for (j = firstItem; j < n; j++) {
 		GrGetStringSize (szCount, &fw, &fh, &faw);
 		nIdItems [j] = GrString (x + wIcon + 2 - fw, y - fh, szCount, nIdItems + j);
 		}
-	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+	gameStates.render.grAlpha = FADE_LEVELS;
 	x += wIcon + ox;
 	}
 }

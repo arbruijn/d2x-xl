@@ -72,7 +72,7 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 	fix			xSize;
 	float			fScale;
 	int			bDepthSort;
-	grsBitmap	*bmP = bAdditive ? bmpGlare : bmpCorona;
+	CBitmap		*bmP = bAdditive ? bmpGlare : bmpCorona;
 
 
 	if ((objP->info.nId >= POW_KEY_BLUE) && (objP->info.nId <= POW_KEY_GOLD)) {
@@ -129,7 +129,7 @@ void RenderHitbox (tObject *objP, float red, float green, float blue, float alph
 {
 	fVector		vertList [8], v;
 	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
-	tCloakInfo	ci = {0, GR_ACTUAL_FADE_LEVELS, 0, 0, 0, 0, 0};
+	tCloakInfo	ci = {0, FADE_LEVELS, 0, 0, 0, 0, 0};
 	int			i, j, iBox, nBoxes, bHit = 0;
 	float			fFade;
 
@@ -141,7 +141,7 @@ if (objP->info.nType == OBJ_PLAYER) {
 	if (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
-		fFade = (float) ci.nFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
+		fFade = (float) ci.nFadeValue / (float) FADE_LEVELS;
 		red *= fFade;
 		green *= fFade;
 		blue *= fFade;
@@ -154,7 +154,7 @@ else if (objP->info.nType == OBJ_ROBOT) {
 	if (objP->cType.aiInfo.CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
-		fFade = (float) ci.nFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
+		fFade = (float) ci.nFadeValue / (float) FADE_LEVELS;
 		red *= fFade;
 		green *= fFade;
 		blue *= fFade;
@@ -243,7 +243,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
-		scale = (float) ci.nFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
+		scale = (float) ci.nFadeValue / (float) FADE_LEVELS;
 		scale *= scale;
 		}
 	bStencil = StencilOff ();
@@ -307,7 +307,7 @@ if (!gameOpts->render.effects.bRobotShields)
 if ((objP->info.nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 	if (!GetCloakInfo (objP, 0, 0, &ci))
 		return;
-	scale = (float) ci.nFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
+	scale = (float) ci.nFadeValue / (float) FADE_LEVELS;
 	scale *= scale;
 	}
 dt = gameStates.app.nSDLTicks - objP->xTimeLastHit;
@@ -741,7 +741,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		tPathPoint		*pp = GetPathPoint (&pf->path);
 		int				i, bStencil;
 		float				r;
-		grsBitmap		*bmP;
+		CBitmap		*bmP;
 
 	if (pp) {
 		bStencil = StencilOff ();
@@ -752,8 +752,8 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		bmP = gameData.pig.tex.pBitmaps + pf->vcP->frames [pf->vci.nCurFrame].index;
 		if (OglBindBmTex (bmP, 1, 2))
 			return;
-		bmP = BmCurFrame (bmP, -1);
-		OglTexWrap (bmP->glTexture, GL_REPEAT);
+		bmP = bmP->CurFrame (-1);
+		OglTexWrap (bmP->texInfo, GL_REPEAT);
 		vPos += objP->info.position.mOrient [FVEC] * (-objP->info.xSize);
 		r = X2F (objP->info.xSize);
 		G3StartInstanceMatrix (vPos, pp->mOrient);
@@ -966,7 +966,7 @@ return nThrusters;
 
 // -----------------------------------------------------------------------------
 
-void CreateLightTrail (vmsVector& vPos, vmsVector &vDir, float fSize, float fLength, grsBitmap *bmP, tRgbaColorf *colorP)
+void CreateLightTrail (vmsVector& vPos, vmsVector &vDir, float fSize, float fLength, CBitmap *bmP, tRgbaColorf *colorP)
 {
 	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	static tTexCoord2f	tcTrail [3] = {{{0,0}},{{1,1}},{{1,0}}};
@@ -1086,14 +1086,14 @@ else if (gameOpts->render.bDepthSort <= 0) {
 		glDisable (GL_TEXTURE_2D);
 		}
 	else {
-		OglTexWrap (bmpThruster [nStyle]->glTexture, GL_CLAMP);
+		OglTexWrap (bmpThruster [nStyle]->TexInfo (), GL_CLAMP);
 		bTextured = 1;
 		}
 	}
 if (nThrusters > 1) {
 	vmsVector vRot [2];
 	for (i = 0; i < 2; i++)
-		G3RotatePoint(vRot [i], ti.vPos [i], 0);
+		G3RotatePoint (vRot [i], ti.vPos [i], 0);
 	if (vRot [0][Z] < vRot [1][Z]) {
 		vmsVector v = ti.vPos [0];
 		ti.vPos [0] = ti.vPos [1];
@@ -1221,7 +1221,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 	float			dx = X2F (phb->vMax [X] - phb->vMin [X]);
 	float			dy = X2F (phb->vMax [Y] - phb->vMin [Y]);
 	float			fRad = (float) (sqrt (dx * dx + dy * dy) / 2);
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	tRgbaColorf	color;
 
 	static fVector	vEye = fVector::ZERO;
@@ -1284,7 +1284,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		glColor4fv ((GLfloat *) colorP);
 		if (OglBindBmTex (bmP, 1, -1))
 			return;
-		OglTexWrap (bmP->glTexture, GL_CLAMP);
+		OglTexWrap (bmP->texInfo, GL_CLAMP);
 		if (bAdditive)
 			glBlendFunc (GL_ONE, GL_ONE);
 		if ((bDrawArrays = G3EnableClientStates (1, 0, 0, GL_TEXTURE0))) {
@@ -1391,12 +1391,12 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	color.blue *= color.blue;
 #endif
 	if (bDepthSort)
-		return TIAddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 1, 3);
+		return TIAddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->props.w, bmpCorona->props.h), xSize, 0, 1, 3);
 	bStencil = StencilOff ();
 	glDepthMask (0);
 	glBlendFunc (GL_ONE, GL_ONE);
 	if (bSimple) {
-		G3DrawSprite (vPos, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, bmpCorona, &color, alpha, 1, 3);
+		G3DrawSprite (vPos, FixMulDiv (xSize, bmpCorona->props.w, bmpCorona->props.h), xSize, bmpCorona, &color, alpha, 1, 3);
 		}
 	else {
 		fVector	quad [4], verts [8], vCenter, vNormal, v;
@@ -1409,7 +1409,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		glEnable (GL_TEXTURE_2D);
 		if (OglBindBmTex (bmpCorona, 1, -1))
 			return 0;
-		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
+		OglTexWrap (bmpCorona->TexInfo (), GL_CLAMP);
 		G3StartInstanceMatrix (vPos, objP->info.position.mOrient);
 		TransformHitboxf (objP, verts, 0);
 		for (i = 0; i < 6; i++) {
@@ -1610,7 +1610,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 // -----------------------------------------------------------------------------
 // Draws a texture-mapped laser bolt
 #if 0
-void Laser_draw_one (int nObject, grsBitmap * bmp)
+void Laser_draw_one (int nObject, CBitmap * bmp)
 {
 	int t1, t2, t3;
 	g3sPoint p1, p2;
@@ -1689,7 +1689,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			fVector			vNormf, vOffsf, vTrailVerts [4];
 			int				i, bStencil, bDrawArrays, bDepthSort = (gameOpts->render.bDepthSort > 0);
 			float				l, r, dx, dy;
-			grsBitmap		*bmP;
+			CBitmap		*bmP;
 
 			static fVector vEye = fVector::ZERO;
 
@@ -1750,7 +1750,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			glEnable (GL_TEXTURE_2D);
 			if (OglBindBmTex (bmP, 1, -1))
 				return;
-			OglTexWrap (bmP->glTexture, GL_CLAMP);
+			OglTexWrap (bmP->texInfo, GL_CLAMP);
 			if (bDrawArrays) {
 				glTexCoordPointer (2, GL_FLOAT, 0, tTexCoordTrail);
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);

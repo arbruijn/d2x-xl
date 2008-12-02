@@ -269,7 +269,7 @@ int gr_uline(fix _a1, fix _b1, fix _a2, fix _b2)
 {
 	int a1,b1,a2,b2;
 	a1 = X2I(_a1); b1 = X2I(_b1); a2 = X2I(_a2); b2 = X2I(_b2);
-	switch(TYPE)
+	switch(MODE)
 	{
 	case BM_OGL:
 		OglULineC(a1,b1,a2,b2,&COLOR);
@@ -283,7 +283,7 @@ int gr_uline(fix _a1, fix _b1, fix _a2, fix _b2)
 		modex_line_y1 = b1+YOFFSET;
 		modex_line_x2 = a2+XOFFSET;
 		modex_line_y2 = b2+YOFFSET;
-		modex_line_Color = grdCurCanv->cvColor;
+		modex_line_Color = CCanvas::Current ()->Color ();
 		gr_modex_line();
 		return 0;
 	default:

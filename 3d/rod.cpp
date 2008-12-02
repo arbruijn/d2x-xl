@@ -101,7 +101,7 @@ return G3DrawPoly (4, rodPointList);
 //------------------------------------------------------------------------------
 //draw a bitmap tObject that is always facing you
 //returns 1 if off screen, 0 if drew
-int G3DrawRodTexPoly (grsBitmap *bmP, g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList)
+int G3DrawRodTexPoly (CBitmap *bmP, g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList)
 {
 if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;

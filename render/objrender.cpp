@@ -271,13 +271,13 @@ return xLight;
 
 //------------------------------------------------------------------------------
 
-static float ObjectBlobColor (tObject *objP, grsBitmap *bmP, tRgbaColorf *colorP)
+static float ObjectBlobColor (tObject *objP, CBitmap *bmP, tRgbaColorf *colorP)
 {
 	float	fScale;
 
-colorP->red = (float) bmP->bmAvgRGB.red / 255.0f;
-colorP->green = (float) bmP->bmAvgRGB.green / 255.0f;
-colorP->blue = (float) bmP->bmAvgRGB.blue / 255.0f;
+colorP->red = (float) bmP->avgRGB.red / 255.0f;
+colorP->green = (float) bmP->avgRGB.green / 255.0f;
+colorP->blue = (float) bmP->avgRGB.blue / 255.0f;
 #if DBG
 if ((objP->info.nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->info.nId == nDbgObjId)))
 	nDbgObjType = nDbgObjType;
@@ -296,7 +296,7 @@ return fScale;
 
 void DrawObjectBlob (tObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
 {
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	tRgbaColorf	color;
 	int			nType = objP->info.nType;
 	int			nId = objP->info.nId;
@@ -343,7 +343,7 @@ if (bmi < 0) {
 	PageInAddonBitmap (bmi);
 	bmP = gameData.pig.tex.addonBitmaps - bmi - 1;
 #if DBG
-	if ((objP->rType.vClipInfo.nCurFrame < 0) || (objP->rType.vClipInfo.nCurFrame >= BM_FRAMECOUNT (bmP))) {
+	if ((objP->rType.vClipInfo.nCurFrame < 0) || (objP->rType.vClipInfo.nCurFrame >= bmP->FrameCount ())) {
 		objP->rType.vClipInfo.nCurFrame = 0;
 		return;
 		}
@@ -353,10 +353,10 @@ else {
 	PIGGY_PAGE_IN (bmi, 0);
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 	}
-if ((bmi < 0) || ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP))) {
+if ((bmi < 0) || ((bmP->nType == BM_TYPE_STD) && bmP->Override ())) {
 	OglLoadBmTexture (bmP, 1, nTransp = -1, gameOpts->render.bDepthSort <= 0);
 	//fScale = ObjectBlobColor (objP, bmP, &color);
-	bmP = BmOverride (bmP, iFrame);
+	bmP = bmP->Override (iFrame);
 	//fAlpha = 1;
 	}
 else {
@@ -367,7 +367,7 @@ else {
 if (!bmP)
 	return;
 fScale = ObjectBlobColor (objP, bmP, &color);
-if (!bmP->bmTexBuf)
+if (!bmP->texBuf)
 	return;
 if (colorP && (bmi >= 0))
 	memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (tRgbaColorf));
@@ -399,17 +399,17 @@ if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 		color.green =
 		color.blue = 1;
 	color.alpha = fAlpha;
-	if (bmP->bmProps.w > bmP->bmProps.h)
-		TIAddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
+	if (bmP->props.w > bmP->props.h)
+		TIAddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->props.h, bmP->props.w), iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	else
-		TIAddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
+		TIAddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->props.w, bmP->props.h), xSize, iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	}
 else {
-	if (bmP->bmProps.w > bmP->bmProps.h)
-		G3DrawBitmap (objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), bmP,
+	if (bmP->props.w > bmP->props.h)
+		G3DrawBitmap (objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->props.h, bmP->props.w), bmP,
 						  NULL, fAlpha, nTransp);
 	else
-		G3DrawBitmap (objP->info.position.vPos, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, bmP,
+		G3DrawBitmap (objP->info.position.vPos, FixMulDiv (xSize, bmP->props.w, bmP->props.h), xSize, bmP,
 						  NULL, fAlpha, nTransp);
 	}
 gameData.render.nTotalSprites++;
@@ -419,21 +419,21 @@ gameData.render.nTotalSprites++;
 //draw an tObject that is a texture-mapped rod
 void DrawObjectRodTexPoly (tObject *objP, tBitmapIndex bmi, int bLit, int iFrame)
 {
-	grsBitmap *bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
+	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 	fix light;
 	vmsVector delta, top_v, bot_v;
 	g3sPoint top_p, bot_p;
 
 PIGGY_PAGE_IN (bmi.index, 0);
-if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
+if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
 	OglLoadBmTexture (bmP, 1, -1, gameOpts->render.bDepthSort <= 0);
-	bmP = BmOverride (bmP, iFrame);
+	bmP = bmP->Override (iFrame);
 	}
 delta = objP->info.position.mOrient[UVEC] * objP->info.xSize;
 top_v = objP->info.position.vPos + delta;
 bot_v = objP->info.position.vPos - delta;
-G3TransformAndEncodePoint(&top_p, top_v);
-G3TransformAndEncodePoint(&bot_p, bot_v);
+G3TransformAndEncodePoint (&top_p, top_v);
+G3TransformAndEncodePoint (&bot_p, bot_v);
 if (bLit)
 	light = ComputeObjectLight (objP, &top_p.p3_vec);
 else
@@ -588,7 +588,7 @@ else {
 									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
 									light, glow, NULL, NULL);
 	G3SetSpecialRender (NULL, NULL, NULL);
-	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+	gameStates.render.grAlpha = FADE_LEVELS;
 	gameStates.render.bCloaked = 0;
 	}
 return bOk;
@@ -737,7 +737,7 @@ else {
 			bBlendPolys = bEnergyWeapon && (gameData.weapons.info [id].nInnerModel > -1);
 			bBrightPolys = bGatling || (bBlendPolys && WI_energy_usage (id));
 			if (bEnergyWeapon) {
-				gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - 2.0f;
+				gameStates.render.grAlpha = FADE_LEVELS - 2.0f;
 				if (!gameOpts->legacy.bRender)
 					OglBlendFunc (GL_ONE, GL_ONE);
 				}
@@ -757,9 +757,9 @@ else {
 						NULL);
 				}
 			if (bEnergyWeapon)
-				gameStates.render.grAlpha = 4 * (float) GR_ACTUAL_FADE_LEVELS / 5;
+				gameStates.render.grAlpha = 4 * (float) FADE_LEVELS / 5;
 			else if (!bBlendPolys)
-				gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
+				gameStates.render.grAlpha = (float) FADE_LEVELS;
 			}
 		bOk = DrawPolygonModel (
 			objP, &objP->info.position.vPos, &objP->info.position.mOrient,
@@ -772,10 +772,10 @@ else {
 			(bGatling || bEnergyWeapon) ? gameData.weapons.color + id : NULL);
 		if (!gameStates.render.bBuildModels) {
 			if (!gameOpts->legacy.bRender) {
-				gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
+				gameStates.render.grAlpha = (float) FADE_LEVELS;
 				OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				}
-			gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
+			gameStates.render.grAlpha = (float) FADE_LEVELS;
 			}
 		}
 	}

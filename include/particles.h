@@ -226,7 +226,7 @@ class CParticleManager {
 		void FlushBuffer (float brightness);
 		int CloseBuffer (void);
 
-		void AdjustBrightness (grsBitmap *bmP);
+		void AdjustBrightness (CBitmap *bmP);
 
 		inline int GetFree (void) { return m_nFree; }
 		inline void SetFree (int i) { m_nFree = i; }
@@ -322,7 +322,7 @@ class CParticleImageManager {
 		int LoadAll (void);
 		void FreeAll (void);
 		void Animate (int nType);
-		void AdjustBrightness (grsBitmap *bmP);
+		void AdjustBrightness (CBitmap *bmP);
 		int GetType (int nType);
 };
 

@@ -118,16 +118,6 @@ extern int Global_missile_firingCount;
 extern int Render_depth;
 extern fix Auto_fire_fusion_cannonTime, Fusion_charge;
 
-#define MAX_PALETTE_ADD 30
-
-extern void PALETTE_FLASH_ADD(int dr, int dg, int db);
-
-//sets the rgb values for palette flash
-#define	PALETTE_FLASH_SET(_r,_g,_b) \
-			gameStates.ogl.palAdd.red=(_r), \
-			gameStates.ogl.palAdd.green=(_g), \
-			gameStates.ogl.palAdd.blue=(_b)
-
 extern int draw_gauges_on;
 
 extern void init_game_screen(void);

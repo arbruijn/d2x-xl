@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "text.h"
-#include "gr.h"
+#include "font.h"
 #include "grdef.h"
 #include "error.h"
 
@@ -52,9 +52,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)
 
 typedef struct tOpenFont {
-	char filename[SHORT_FILENAME_LEN];
-	grsFont *ptr;
-	char *pData;
+	char		filename[SHORT_FILENAME_LEN];
+	tFont		*ptr;
+	char		*pData;
 } tOpenFont;
 
 //list of open fonts, for use (for now) for palette remapping
@@ -67,7 +67,7 @@ int GrInternalStringClippedM (int x, int y, const char *s);
 
 //------------------------------------------------------------------------------
 
-ubyte *find_kern_entry (grsFont *font, ubyte first, ubyte second)
+ubyte *find_kern_entry (tFont *font, ubyte first, ubyte second)
 {
 	ubyte *p=font->ftKernData;
 
@@ -150,7 +150,7 @@ return w;
 
 int GetCenteredX (const char *s)
 {
-return ((grdCurCanv->cvBitmap.bmProps.w - GetLineWidth (s)) / 2);
+return ((CCanvas::Current ()->Width () - GetLineWidth (s)) / 2);
 }
 
 //------------------------------------------------------------------------------
@@ -214,20 +214,17 @@ int GrInternalString0 (int x, int y, const char *s)
 	int r, BitMask, i, bits, width, spacing, letter, underline;
 	int	skip_lines = 0;
 	unsigned int VideoOffset, VideoOffset1;
-	ubyte *palette = grdCurCanv->cvBitmap.bmPalette;
-
-if (!palette)
-	palette = gamePalette;
-
+	CPalette *palette = paletteManager.Game ();
+	
 if (FG_COLOR.rgb) {
 	FG_COLOR.rgb = 0;
-	FG_COLOR.index = GrFindClosestColor (gamePalette,
-													 FG_COLOR.color.red, FG_COLOR.color.green, FG_COLOR.color.blue);
+	FG_COLOR.index = palette->ClosestColor (
+		FG_COLOR.color.red, FG_COLOR.color.green, FG_COLOR.color.blue);
 	}
 if (BG_COLOR.rgb) {
 	BG_COLOR.rgb = 0;
-	BG_COLOR.index = GrFindClosestColor (gamePalette,
-													 BG_COLOR.color.red, BG_COLOR.color.green, BG_COLOR.color.blue);
+	BG_COLOR.index = palette->ClosestColor (
+			BG_COLOR.color.red, BG_COLOR.color.green, BG_COLOR.color.blue);
 	}
 bits=0;
 VideoOffset1 = y * ROWSIZE + x;
@@ -309,23 +306,21 @@ return 0;
 
 int GrInternalString0m (int x, int y, const char *s)
 {
-	unsigned char * fp;
-	const char * textP, * nextRowP, * text_ptr1;
-	int r, BitMask, i, bits, width, spacing, letter, underline;
-	int	skip_lines = 0;
-	char c;
-	int orig_color;
-	unsigned int VideoOffset, VideoOffset1;
+	unsigned char	* fp;
+	const char		* textP, * nextRowP, * text_ptr1;
+	int				r, BitMask, i, bits, width, spacing, letter, underline;
+	int				skip_lines = 0;
+	char				c;
+	int				orig_color;
+	unsigned int	VideoOffset, VideoOffset1;
 
 if (FG_COLOR.rgb) {
 	FG_COLOR.rgb = 0;
-	FG_COLOR.index = GrFindClosestColor (FONT->ftParentBitmap.bmPalette,
-													 FG_COLOR.color.red, FG_COLOR.color.green, FG_COLOR.color.blue);
+	FG_COLOR.index = FONT->ftParentBitmap.Palette ()->ClosestColor (FG_COLOR.color.red, FG_COLOR.color.green, FG_COLOR.color.blue);
 	}
 if (BG_COLOR.rgb) {
 	BG_COLOR.rgb = 0;
-	BG_COLOR.index = GrFindClosestColor (FONT->ftParentBitmap.bmPalette,
-													 BG_COLOR.color.red, BG_COLOR.color.green, BG_COLOR.color.blue);
+	BG_COLOR.index = FONT->ftParentBitmap.Palette ()->ClosestColor (BG_COLOR.color.red, BG_COLOR.color.green, BG_COLOR.color.blue);
 	}
 orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 bits=0;
@@ -446,7 +441,7 @@ int Pow2ize (int x);//from ogl.c
 
 //------------------------------------------------------------------------------
 
-int get_fontTotal_width (grsFont * font){
+int get_fontTotal_width (tFont * font){
 	if (font->ftFlags & FT_PROPORTIONAL){
 		int i, w = 0, c=font->ftMinChar;
 		for (i=0;c<=font->ftMaxChar;i++, c++){
@@ -462,9 +457,9 @@ int get_fontTotal_width (grsFont * font){
 
 //------------------------------------------------------------------------------
 
-void OglFontChooseSize (grsFont * font, int gap, int *rw, int *rh)
+void OglFontChooseSize (tFont * font, int gap, int *rw, int *rh)
 {
-	int	nchars = font->ftMaxChar-font->ftMinChar+1;
+	int	nChars = font->ftMaxChar-font->ftMinChar+1;
 	int r, x, y, nc=0, smallest=999999, smallr=-1, tries;
 	int smallprop=10000;
 	int h, w;
@@ -472,7 +467,7 @@ void OglFontChooseSize (grsFont * font, int gap, int *rw, int *rh)
 //		h=Pow2ize (font->ftHeight*rows+gap* (rows-1);
 		if (font->ftHeight>h)continue;
 		r= (h/ (font->ftHeight+gap));
-		w = Pow2ize ((get_fontTotal_width (font)+ (nchars-r)*gap)/r);
+		w = Pow2ize ((get_fontTotal_width (font)+ (nChars-r)*gap)/r);
 		tries=0;
 		do {
 			if (tries)
@@ -485,7 +480,7 @@ void OglFontChooseSize (grsFont * font, int gap, int *rw, int *rh)
 			while (y+font->ftHeight<=h){
 				x=0;
 				while (x<w){
-					if (nc==nchars)
+					if (nc==nChars)
 						break;
 					if (font->ftFlags & FT_PROPORTIONAL){
 						if (x+font->ftWidths[nc]+gap>w)break;
@@ -496,14 +491,14 @@ void OglFontChooseSize (grsFont * font, int gap, int *rw, int *rh)
 						nc++;
 					}
 				}
-				if (nc==nchars)
+				if (nc==nChars)
 					break;
 				y+=font->ftHeight+gap;
 			}
 
 			tries++;
-		}while (nc!=nchars);
-		if (nc!=nchars)
+		}while (nc!=nChars);
+		if (nc!=nChars)
 			continue;
 
 		if (w*h==smallest){//this gives squarer sizes priority (ie, 128x128 would be better than 512*32)
@@ -532,28 +527,29 @@ void OglFontChooseSize (grsFont * font, int gap, int *rw, int *rh)
 
 //------------------------------------------------------------------------------
 
-void OglInitFont (grsFont * font, const char *fontname)
+void OglInitFont (tFont * font, const char *fontname)
 {
-	int	nchars = font->ftMaxChar-font->ftMinChar+1;
-	int i, w, h, tw, th, x, y, curx=0, cury=0;
-	ubyte *fp, *data, *palette;
+	int		nChars = font->ftMaxChar-font->ftMinChar+1;
+	int		i, w, h, tw, th, x, y, curx=0, cury=0;
+	ubyte		*fp;
+	CPalette *palette;
 	//	char data[32*32*4];
 	int gap = 0;//having a gap just wastes ram, since we don't filter text textures at all.
 	//	char s[2];
 
 OglFontChooseSize (font, gap, &tw, &th);
-data = (ubyte *) D2_ALLOC (tw*th);
-palette = font->ftParentBitmap.bmPalette;
-GrInitBitmap (&font->ftParentBitmap, BM_LINEAR, 0, 0, tw, th, tw, data, 1);
-font->ftParentBitmap.bmPalette = palette;
+palette = font->ftParentBitmap.Palette ();
+font->ftParentBitmap.Init (BM_LINEAR, 0, 0, tw, th, 1, NULL);
+font->ftParentBitmap.SetTexBuf (new ubyte [tw * th]);
+font->ftParentBitmap.SetPalette (palette);
 if (!(font->ftFlags & FT_COLOR))
-	font->ftParentBitmap.glTexture = OglGetFreeTexture (&font->ftParentBitmap);
-font->ftBitmaps = (grsBitmap*) D2_ALLOC (nchars * sizeof (grsBitmap));
-memset (font->ftBitmaps, 0, nchars * sizeof (grsBitmap));
-strncpy (font->ftParentBitmap.szName, fontname, sizeof (font->ftParentBitmap.szName));
+	font->ftParentBitmap.SetTexInfo (OglGetFreeTexture (&font->ftParentBitmap));
+font->ftBitmaps = new CBitmap [nChars]; //(CBitmap*) D2_ALLOC (nChars * sizeof (CBitmap));
+memset (font->ftBitmaps, 0, nChars * sizeof (CBitmap));
+font->ftParentBitmap.SetName (fontname);
 h = font->ftHeight;
 
-for (i = 0; i < nchars; i++) {
+for (i = 0; i < nChars; i++) {
 	if (font->ftFlags & FT_PROPORTIONAL)
 		w = font->ftWidths [i];
 	else
@@ -565,7 +561,7 @@ for (i = 0; i < nchars; i++) {
 		curx = 0;
 		}
 	if (cury + h > th)
-		Error (TXT_FONT_SIZE, i, nchars);
+		Error (TXT_FONT_SIZE, i, nChars);
 	if (font->ftFlags & FT_COLOR) {
 		if (font->ftFlags & FT_PROPORTIONAL)
 			fp = font->ftChars[i];
@@ -573,13 +569,11 @@ for (i = 0; i < nchars; i++) {
 			fp = font->ftData + i * w*h;
 		for (y = 0; y < h; y++)
 			for (x = 0; x < w; x++){
-				font->ftParentBitmap.bmTexBuf [curx + x + (cury + y) * tw] = fp [x + y * w];
+				font->ftParentBitmap [curx + x + (cury + y) * tw] = fp [x + y * w];
 			}
-
-		//			GrInitBitmap (&font->ftBitmaps[i], BM_LINEAR, 0, 0, w, h, w, font->);
 		}
 	else {
-		int BitMask, bits = 0, white = GrFindClosestColor (palette, 63, 63, 63);
+		int BitMask, bits = 0, white = palette->ClosestColor (63, 63, 63);
 		//			if (w*h>sizeof (data))
 		//				Error ("OglInitFont: toobig\n");
 		if (font->ftFlags & FT_PROPORTIONAL)
@@ -593,29 +587,29 @@ for (i = 0; i < nchars; i++) {
 					bits = *fp++;
 					BitMask = 0x80;
 					}
-				font->ftParentBitmap.bmTexBuf [curx + x + (cury + y) * tw] = (bits & BitMask) ? white : 255;
+				font->ftParentBitmap [curx + x + (cury + y) * tw] = (bits & BitMask) ? white : 255;
 				BitMask >>= 1;
 				}
 			}
 		}
-	GrInitSubBitmap (&font->ftBitmaps[i], &font->ftParentBitmap, curx, cury, w, h);
+	font->ftBitmaps[i] = *font->ftParentBitmap.CreateChild (curx, cury, w, h);
 	curx += w + gap;
 	}
 if (!(font->ftFlags & FT_COLOR)) {
 	//use GL_INTENSITY instead of GL_RGB
 	if (gameStates.ogl.bIntensity4) {
-		font->ftParentBitmap.glTexture->internalformat = 1;
-		font->ftParentBitmap.glTexture->format = GL_LUMINANCE;
+		font->ftParentBitmap.TexInfo ()->internalformat = 1;
+		font->ftParentBitmap.TexInfo ()->format = GL_LUMINANCE;
 		}
 	else if (gameStates.ogl.bLuminance4Alpha4){
-		font->ftParentBitmap.glTexture->internalformat = 1;
-		font->ftParentBitmap.glTexture->format = GL_LUMINANCE_ALPHA;
+		font->ftParentBitmap.TexInfo ()->internalformat = 1;
+		font->ftParentBitmap.TexInfo ()->format = GL_LUMINANCE_ALPHA;
 		}
 	else {
-		font->ftParentBitmap.glTexture->internalformat = gameStates.ogl.bpp / 8;
-		font->ftParentBitmap.glTexture->format = gameStates.ogl.nRGBAFormat;
+		font->ftParentBitmap.TexInfo ()->internalformat = gameStates.ogl.bpp / 8;
+		font->ftParentBitmap.TexInfo ()->format = gameStates.ogl.nRGBAFormat;
 		}
-	OglLoadBmTextureM (&font->ftParentBitmap, 0, 2, 0, NULL);
+	font->ftParentBitmap.LoadTexture (0, 2, 0, NULL);
 	}
 }
 
@@ -628,11 +622,11 @@ int OglInternalString (int x, int y, const char *s)
 	int xx, yy;
 	int orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 	ubyte c;
-	grsBitmap *bmf;
+	CBitmap *bmf;
 
 nextRowP = s;
 yy = y;
-if (grdCurScreen->scCanvas.cvBitmap.bmProps.nType != BM_OGL)
+if (screen.Bitmap ().Mode () != BM_OGL)
 	Error ("carp.\n");
 while (nextRowP != NULL) {
 	text_ptr1 = nextRowP;
@@ -680,11 +674,11 @@ while (nextRowP != NULL) {
 			continue;
 			}
 		bmf = FONT->ftBitmaps + letter;
-		bmf->bmProps.flags |= BM_FLAG_TRANSPARENT;
+		bmf->AddFlags (BM_FLAG_TRANSPARENT);
 		if (FFLAGS & FT_COLOR)
 			GrBitmapM (xx, yy, bmf, 2); // credits need clipping
 		else {
-			if (grdCurCanv->cvBitmap.bmProps.nType == BM_OGL)
+			if (CCanvas::Current ()->Bitmap ().Mode () == BM_OGL)
 				OglUBitMapMC (xx, yy, 0, 0, bmf, &FG_COLOR, F1_0, 0);
 			else
 				Error ("OglInternalString: non-color string to non-ogl dest\n");
@@ -699,14 +693,16 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-grsBitmap *CreateStringBitmap (
+CBitmap *CreateStringBitmap (
 	const char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
 {
 	int			orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;
-	grsBitmap	*bmP, *bmfP;
-	grsRgba		hc, kc, *pc;
-	ubyte			*pf, *palP = NULL;
+	CBitmap		*bmP, *bmfP;
+	tRgbaColorb		hc, kc, *pc;
+	ubyte			*pf;
+	CPalette		*palP = NULL;
+	tRgbColorb	*colorP;
 	ubyte			c;
 	const char	*textP, *text_ptr1, *nextRowP;
 	int			letter;
@@ -724,15 +720,15 @@ if (bForce >= 0) {
 		;
 	h = i;
 	}
-if (!(bmP = GrCreateBitmap (w, h, 4))) {
+if (!(bmP = CBitmap::Create (0, w, h, 4))) {
 	return NULL;
 	}
-if (!bmP->bmTexBuf) {
-	GrFreeBitmap (bmP);
+if (!bmP->TexBuf ()) {
+	D2_FREE (bmP);
 	return NULL;
 	}
-memset (bmP->bmTexBuf, 0, w * h * bmP->bmBPP);
-bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
+memset (bmP->TexBuf (), 0, w * h * bmP->BPP ());
+bmP->AddFlags (BM_FLAG_TRANSPARENT);
 nextRowP = s;
 y = 0;
 nTab = 0;
@@ -809,7 +805,8 @@ while (nextRowP) {
 		if ((bHotKey = ((nKey < 0) && isalnum (c)) || (nKey && ((int) c == nKey))))
 			nKey = 0;
 		bmfP = (bHotKey && (FONT != SMALL_FONT)) ? SELECTED_FONT->ftBitmaps + letter : FONT->ftBitmaps + letter;
-		palP = BM_PARENT (bmfP) ? BM_PARENT (bmfP)->bmPalette : bmfP->bmPalette;
+		palP = bmfP->Parent () ? bmfP->Parent ()->Palette () : bmfP->Palette ();
+		colorP = palP->Color ();
 		nChars++;
 		i = nKeyColor * 3;
 		kc.red = RGBA_RED (nKeyColor);
@@ -817,15 +814,15 @@ while (nextRowP) {
 		kc.blue = RGBA_BLUE (nKeyColor);
 		kc.alpha = 255;
 		if (FFLAGS & FT_COLOR) {
-			for (hy = 0; hy < bmfP->bmProps.h; hy++) {
-				pc = ((grsRgba *) bmP->bmTexBuf) + (y + hy) * w + x;
-				pf = bmfP->bmTexBuf + hy * bmfP->bmProps.rowSize;
-				for (hx = bmfP->bmProps.w; hx; hx--, pc++, pf++)
+			for (hy = 0; hy < bmfP->Height (); hy++) {
+				pc = ((tRgbaColorb *) bmP->TexBuf ()) + (y + hy) * w + x;
+				pf = bmfP->TexBuf () + hy * bmfP->RowSize ();
+				for (hx = bmfP->Width (); hx; hx--, pc++, pf++, colorP++)
 					if ((c = *pf) != TRANSPARENCY_COLOR) {
 						i = c * 3;
-						pc->red = palP [i] * 4;
-						pc->green = palP [i + 1] * 4;
-						pc->blue = palP [i + 2] * 4;
+						pc->red = colorP->red * 4;
+						pc->green = colorP->green * 4;
+						pc->blue = colorP->blue * 4;
 						pc->alpha = 255;
 						}
 				}
@@ -838,17 +835,17 @@ while (nextRowP) {
 					hc = FG_COLOR.color;
 					}
 				else {
-					i = FG_COLOR.index * 3;
-					hc.red = palP [i] * 4;
-					hc.green = palP [i + 1] * 4;
-					hc.blue = palP [i + 2] * 4;
+					colorP = palP->Color () + FG_COLOR.index;
+					hc.red = colorP->red * 4;
+					hc.green = colorP->green * 4;
+					hc.blue = colorP->blue * 4;
 					hc.alpha = 255;
 					}
 				}
-			for (hy = 0; hy < bmfP->bmProps.h; hy++) {
-				pc = ((grsRgba *) bmP->bmTexBuf) + (y + hy) * w + x;
-				pf = bmfP->bmTexBuf + hy * bmfP->bmProps.rowSize;
-				for (hx = bmfP->bmProps.w; hx; hx--, pc++, pf++)
+			for (hy = 0; hy < bmfP->Height (); hy++) {
+				pc = ((tRgbaColorb *) bmP->TexBuf ()) + (y + hy) * w + x;
+				pf = bmfP->TexBuf () + hy * bmfP->RowSize ();
+				for (hx = bmfP->Width (); hx; hx--, pc++, pf++)
 					if (*pf != TRANSPARENCY_COLOR)
 						*pc = bHotKey ? kc : hc;
 				}
@@ -857,8 +854,8 @@ while (nextRowP) {
 		textP++;
 		}
 	}
-bmP->bmPalette = palP;
-//OglLoadBmTexture (bmP, 0, 2, 1);
+bmP->SetPalette (palP);
+//bmP->SetupTexture (0, 2, 1);
 return bmP;
 }
 
@@ -896,8 +893,8 @@ for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
 	D2_FREE (ps->pszText);
 	if (ps->pId)
 		*ps->pId = 0;
-	OglFreeBmTexture (ps->bmP);
-	GrFreeBitmap (ps->bmP);
+	ps->bmP->FreeTexture ();
+	D2_FREE (ps->bmP);
 	}
 PrintLog ("initializing string pool\n");
 InitStringPool ();
@@ -913,7 +910,7 @@ grsString *CreatePoolString (const char *s, int *idP)
 if (*idP) {
 	ps = stringPool + *idP - 1;
 	OglFreeBmTexture (ps->bmP);
-	GrFreeBitmap (ps->bmP);
+	D2_FREE (ps->bmP);
 	}
 else {
 	if (nPoolStrings >= GRS_MAX_STRINGS)
@@ -931,8 +928,7 @@ if (ps->pszText && (ps->nLength < l))
 if (!ps->pszText) {
 	ps->nLength = 3 * l / 2;
 	if (!(ps->pszText = (char *) D2_ALLOC (ps->nLength))) {
-		GrFreeBitmap (ps->bmP);
-		ps->bmP = NULL;
+		D2_FREE (ps->bmP);
 		*idP = 0;
 		return NULL;
 		}
@@ -964,7 +960,9 @@ return CreatePoolString (s, idP);
 }
 
 //------------------------------------------------------------------------------
-int OglUBitMapMC2 (int x, int y, int dw, int dh, grsBitmap *bmP, grsColor *c, int scale, int orient);
+
+int OglUBitMapMC2 (int x, int y, int dw, int dh, CBitmap *bmP, tCanvasColor *c, int scale, int orient);
+
 int GrString (int x, int y, const char *s, int *idP)
 {
 	int			w, h, aw, clipped = 0;
@@ -972,7 +970,7 @@ int GrString (int x, int y, const char *s, int *idP)
 if (gameOpts->render.coronas.nStyle < 2) {
 		grsString	*ps;
 
-	if ((TYPE == BM_OGL) && (ps = GetPoolString (s, idP))) {
+	if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
 		OglUBitMapMC (x, y, 0, 0, ps->bmP, &FG_COLOR, F1_0, 0);
 		return (int) (ps - stringPool) + 1;
 		}
@@ -984,11 +982,11 @@ if (x == 0x8000)	{
 	GrGetStringSize (s, &w, &h, &aw);
 	// for x, since this will be centered, only look at
 	// width.
-	if (w > grdCurCanv->cvBitmap.bmProps.w)
+	if (w > CCanvas::Current ()->Width ())
 		clipped |= 1;
-	if (y > grdCurCanv->cvBitmap.bmProps.h)
+	if (y > CCanvas::Current ()->Bitmap ().Height ())
 		clipped |= 3;
-	else if ((y+h) > grdCurCanv->cvBitmap.bmProps.h)
+	else if ((y+h) > CCanvas::Current ()->Bitmap ().Height ())
 		clipped |= 1;
 	else if ((y+h) < 0)
 		clipped |= 2;
@@ -997,15 +995,15 @@ else {
 	if ((x < 0) || (y < 0))
 		clipped |= 1;
 	GrGetStringSize (s, &w, &h, &aw);
-	if (x > grdCurCanv->cvBitmap.bmProps.w)
+	if (x > CCanvas::Current ()->Width ())
 		clipped |= 3;
-	else if ((x + w) > grdCurCanv->cvBitmap.bmProps.w)
+	else if ((x + w) > CCanvas::Current ()->Width ())
 		clipped |= 1;
 	else if ((x + w) < 0)
 		clipped |= 2;
-	if (y > grdCurCanv->cvBitmap.bmProps.h)
+	if (y > CCanvas::Current ()->Bitmap ().Height ())
 		clipped |= 3;
-	else if ((y + h) > grdCurCanv->cvBitmap.bmProps.h)
+	else if ((y + h) > CCanvas::Current ()->Bitmap ().Height ())
 		clipped |= 1;
 	else if ((y + h) < 0)
 		clipped |= 2;
@@ -1020,7 +1018,7 @@ if (clipped & 1) {
 	// Partially clipped...
 	}
 // Partially clipped...
-if (TYPE == BM_OGL)
+if (MODE == BM_OGL)
 	return OglInternalString (x, y, s);
 if (FFLAGS & FT_COLOR)
 	return GrInternalColorString (x, y, s);
@@ -1033,11 +1031,11 @@ return GrInternalStringClipped (x, y, s);
 
 int GrUString (int x, int y, const char *s)
 {
-if (TYPE == BM_OGL)
+if (MODE == BM_OGL)
 	return OglInternalString (x, y, s);
 if (FFLAGS & FT_COLOR)
 	return GrInternalColorString (x, y, s);
-else if (TYPE != BM_LINEAR)
+else if (MODE != BM_LINEAR)
 	return 0;
 if (BG_COLOR.index == -1)
 	return GrInternalString0m (x, y, s);
@@ -1155,7 +1153,7 @@ return GrString (x, y, buffer, idP);
 
 //------------------------------------------------------------------------------
 
-void GrCloseFont (grsFont * font)
+void GrCloseFont (tFont * font)
 {
 	if (font)
 	{
@@ -1175,10 +1173,10 @@ void GrCloseFont (grsFont * font)
 		font->ftChars = NULL;
 		}
 	if (font->ftBitmaps) {
-		D2_FREE (font->ftBitmaps);
+		delete[] font->ftBitmaps; //D2_FREE (font->ftBitmaps);
 		font->ftBitmaps = NULL;
 		}
-	GrFreeBitmapData (&font->ftParentBitmap);
+	font->ftParentBitmap.Destroy ();
 	D2_FREE (font);
 	font = NULL;
 	}
@@ -1191,7 +1189,7 @@ void GrRemapMonoFonts ()
 	int nFont;
 
 	for (nFont=0;nFont<MAX_OPEN_FONTS;nFont++) {
-		grsFont *font;
+		tFont *font;
 		font = openFont[nFont].ptr;
 		if (font && !(font->ftFlags & FT_COLOR))
 			GrRemapFont (font, openFont[nFont].filename, openFont[nFont].pData);
@@ -1205,7 +1203,7 @@ void GrRemapColorFonts ()
 	int nFont;
 
 for (nFont=0;nFont<MAX_OPEN_FONTS;nFont++) {
-	grsFont *font;
+	tFont *font;
 	font = openFont[nFont].ptr;
 	if (font && (font->ftFlags & FT_COLOR))
 		GrRemapFont (font, openFont[nFont].filename, openFont[nFont].pData);
@@ -1218,9 +1216,9 @@ for (nFont=0;nFont<MAX_OPEN_FONTS;nFont++) {
 #define grs_font_read (gf, fp) cf.Read (gf, GRS_FONT_SIZE, 1, fp)
 #else
 /*
- * reads a grsFont structure from a CFile
+ * reads a tFont structure from a CFile
  */
-void grs_font_read (grsFont *gf, CFile& cf)
+void grs_font_read (tFont *gf, CFile& cf)
 {
 	gf->ftWidth = cf.ReadShort ();
 	gf->ftHeight = cf.ReadShort ();
@@ -1238,18 +1236,19 @@ void grs_font_read (grsFont *gf, CFile& cf)
 
 //------------------------------------------------------------------------------
 
-grsFont *GrInitFont (const char *fontname)
+tFont *GrInitFont (const char *fontname)
 {
 	static int bFirstTime = 1;
-	grsFont *font;
-	char *fontDataP;
-	int i, nFont;
-	unsigned char *ptr;
-	int nchars;
-	CFile cf;
-	char file_id[4];
-	int datasize;	//size up to (but not including) palette
-	int freq[256];
+	
+	tFont 			*font;
+	char 				*fontDataP;
+	int 				i, nFont;
+	unsigned char	*ptr;
+	int 				nChars;
+	CFile 			cf;
+	char 				file_id[4];
+	int 				datasize;	//size up to (but not including) palette
+	int 				freq[256];
 
 if (bFirstTime) {
 	int i;
@@ -1283,7 +1282,7 @@ if (!strncmp (file_id, "NFSP", 4)) {
 datasize = cf.ReadInt ();
 datasize -= GRS_FONT_SIZE; // subtract the size of the header.
 
-MALLOC (font, grsFont, sizeof (grsFont));
+MALLOC (font, tFont, sizeof (tFont));
 grs_font_read (font, cf);
 
 MALLOC (fontDataP, char, datasize);
@@ -1297,14 +1296,14 @@ font->ftData = (ubyte *) ((size_t)font->ftData - GRS_FONT_SIZE);
 font->ftWidths = (short *) ((size_t)font->ftWidths - GRS_FONT_SIZE);
 font->ftKernData = (ubyte *) ((size_t)font->ftKernData - GRS_FONT_SIZE);
 
-nchars = font->ftMaxChar - font->ftMinChar + 1;
+nChars = font->ftMaxChar - font->ftMinChar + 1;
 
 if (font->ftFlags & FT_PROPORTIONAL) {
 	font->ftWidths = (short *) &fontDataP[ (size_t)font->ftWidths];
 	font->ftData = (ubyte *) (fontDataP + (size_t)font->ftData);
-	font->ftChars = (unsigned char **)D2_ALLOC (nchars * sizeof (unsigned char *));
+	font->ftChars = (unsigned char **)D2_ALLOC (nChars * sizeof (unsigned char *));
 	ptr = font->ftData;
-	for (i = 0; i < nchars; i++) {
+	for (i = 0; i < nChars; i++) {
 		font->ftWidths[i] = INTEL_SHORT (font->ftWidths[i]);
 		font->ftChars[i] = ptr;
 		if (font->ftFlags & FT_COLOR)
@@ -1317,25 +1316,18 @@ else  {
 	font->ftData   = (ubyte *) fontDataP;
 	font->ftChars  = NULL;
 	font->ftWidths = NULL;
-	ptr = font->ftData + (nchars * font->ftWidth * font->ftHeight);
+	ptr = font->ftData + (nChars * font->ftWidth * font->ftHeight);
 	}
 if (font->ftFlags & FT_KERNED)
 	font->ftKernData = (ubyte *) (fontDataP + (size_t)font->ftKernData);
 memset (&font->ftParentBitmap, 0, sizeof (font->ftParentBitmap));
 memset (freq, 0, sizeof (freq));
 if (font->ftFlags & FT_COLOR) {		//remap palette
-	ubyte palette[256*3];
-	cf.Read (palette, 3, 256);		//read the palette
+	CPalette	palette;
+	
+	palette.Read (cf);		//read the palette
 #ifdef SWAP_0_255			// swap the first and last palette entries (black and white)
-	{
-		int i;
-		ubyte c;
-
-	for (i = 0; i < 3; i++) {
-		c = palette[i];
-		palette[i] = palette[765+i];
-		palette[765+i] = c;
-		}
+	palette.SwapTransparency ();
 
 //  we also need to swap the data entries as well.  black is white and white is black
 
@@ -1347,14 +1339,14 @@ if (font->ftFlags & FT_COLOR) {		//remap palette
 		}
 	}
 #endif
-	GrCountColors (font->ftData, (int) (ptr - font->ftData), freq);
-	GrSetPalette (&font->ftParentBitmap, palette, TRANSPARENCY_COLOR, -1, freq);
+	CountColors (font->ftData, (int) (ptr - font->ftData), freq);
+	font->ftParentBitmap.SetPalette (&palette, TRANSPARENCY_COLOR, -1, freq);
 	}
 else
-	GrSetPalette (&font->ftParentBitmap, defaultPalette, TRANSPARENCY_COLOR, -1, freq);
+	font->ftParentBitmap.SetPalette (paletteManager.Default (), TRANSPARENCY_COLOR, -1, freq);
 cf.Close ();
 
-FONT = font;
+CCanvas::Current ()->SetFont (font);
 FG_COLOR.index = 0;
 BG_COLOR.index = 0;
 
@@ -1371,10 +1363,10 @@ return font;
 //------------------------------------------------------------------------------
 
 //remap a font by re-reading its data & palette
-void GrRemapFont (grsFont *font, char * fontname, char *fontDataP)
+void GrRemapFont (tFont *font, char * fontname, char *fontDataP)
 {
 	int i;
-	int nchars;
+	int nChars;
 	CFile cf;
 	char file_id[4];
 	int datasize;        //size up to (but not including) palette
@@ -1396,13 +1388,13 @@ void GrRemapFont (grsFont *font, char * fontname, char *fontDataP)
 	font->ftData = (ubyte *) ((size_t)font->ftData - GRS_FONT_SIZE);
 	font->ftWidths = (short *) ((size_t)font->ftWidths - GRS_FONT_SIZE);
 	font->ftKernData = (ubyte *) ((size_t)font->ftKernData - GRS_FONT_SIZE);
-	nchars = font->ftMaxChar - font->ftMinChar + 1;
+	nChars = font->ftMaxChar - font->ftMinChar + 1;
 	if (font->ftFlags & FT_PROPORTIONAL) {
 		font->ftWidths = (short *) (fontDataP + (size_t)font->ftWidths);
 		font->ftData = (ubyte *) (fontDataP + (size_t) font->ftData);
-		font->ftChars = (unsigned char **)D2_ALLOC (nchars * sizeof (unsigned char *));
+		font->ftChars = (unsigned char **)D2_ALLOC (nChars * sizeof (unsigned char *));
 		ptr = font->ftData;
-		for (i=0; i< nchars; i++) {
+		for (i=0; i< nChars; i++) {
 			font->ftWidths[i] = INTEL_SHORT (font->ftWidths[i]);
 			font->ftChars[i] = ptr;
 			if (font->ftFlags & FT_COLOR)
@@ -1415,24 +1407,16 @@ void GrRemapFont (grsFont *font, char * fontname, char *fontDataP)
 		font->ftData   = (ubyte *) fontDataP;
 		font->ftChars  = NULL;
 		font->ftWidths = NULL;
-		ptr = font->ftData + (nchars * font->ftWidth * font->ftHeight);
+		ptr = font->ftData + (nChars * font->ftWidth * font->ftHeight);
 		}
 	if (font->ftFlags & FT_KERNED)
 		font->ftKernData = (ubyte *) (fontDataP + (size_t)font->ftKernData);
 	if (font->ftFlags & FT_COLOR) {		//remap palette
-		ubyte palette[256*3];
+		CPalette palette;
 		int freq[256];
-		cf.Read (palette, 3, 256);		//read the palette
+		palette.Read (cf);		//read the palette
 #ifdef SWAP_0_255			// swap the first and last palette entries (black and white)
-		{
-			int i;
-			ubyte c;
-
-			for (i = 0; i < 3; i++) {
-				c = palette[i];
-				palette[i] = palette[765+i];
-				palette[765+i] = c;
-			}
+		palette.SwapTransparency ();
 //  we also need to swap the data entries as well.  black is white and white is black
 			for (i = 0; i < ptr-font->ftData; i++) {
 				if (font->ftData[i] == 0)
@@ -1443,20 +1427,20 @@ void GrRemapFont (grsFont *font, char * fontname, char *fontDataP)
 		}
 #endif
 		memset (freq, 0, sizeof (freq));
-		GrCountColors (font->ftData, (int) (ptr - font->ftData), freq);
-		GrSetPalette (&font->ftParentBitmap, palette, TRANSPARENCY_COLOR, -1, freq);
+		CountColors (font->ftData, (int) (ptr - font->ftData), freq);
+		font->ftParentBitmap.SetPalette (&palette, TRANSPARENCY_COLOR, -1, freq);
 	}
 cf.Close ();
 if (font->ftBitmaps) {
 	D2_FREE (font->ftBitmaps);
 	}
-GrFreeBitmapData (&font->ftParentBitmap);
+font->ftParentBitmap.Destroy ();
 OglInitFont (font, fontname);
 }
 
 //------------------------------------------------------------------------------
 
-void GrSetFontColor (int fg, int bg)
+void SetFontColor (int fg, int bg)
 {
 if (fg >= 0)
 	FG_COLOR.index = fg;
@@ -1468,7 +1452,7 @@ BG_COLOR.rgb = 0;
 
 //------------------------------------------------------------------------------
 
-void GrSetFontColorRGB (grsRgba *fg, grsRgba *bg)
+void SetFontColorRGB (tRgbaColorb *fg, tRgbaColorb *bg)
 {
 if (fg) {
 	FG_COLOR.rgb = 1;
@@ -1482,7 +1466,7 @@ if (bg) {
 
 //------------------------------------------------------------------------------
 
-void GrSetFontColorRGBi (unsigned int fg, int bSetFG, unsigned int bg, int bSetBG)
+void SetFontColorRGBi (unsigned int fg, int bSetFG, unsigned int bg, int bSetBG)
 {
 if (bSetFG) {
 	FG_COLOR.rgb = 1;
@@ -1502,9 +1486,9 @@ if (bSetBG) {
 
 //------------------------------------------------------------------------------
 
-void GrSetCurFont (grsFont * newFont)
+void GrSetCurFont (tFont * font)
 {
-	FONT = newFont;
+CCanvas::Current ()->SetFont (font);
 }
 
 
@@ -1578,7 +1562,7 @@ int GrInternalStringClipped (int x, int y, const char *s)
 
 				if (underline)	{
 					for (i=0; i< width; i++)	{
-						GrSetColor (FG_COLOR.index);
+						CCanvas::Current ()->SetColor (FG_COLOR.index);
 						gr_pixel (x++, y);
 					}
 				} else {
@@ -1592,9 +1576,9 @@ int GrInternalStringClipped (int x, int y, const char *s)
 							BitMask = 0x80;
 						}
 						if (bits & BitMask)
-							GrSetColor (FG_COLOR.index);
+							CCanvas::Current ()->SetColor (FG_COLOR.index);
 						else
-							GrSetColor (BG_COLOR.index);
+							CCanvas::Current ()->SetColor (BG_COLOR.index);
 						gr_pixel (x++, y);
 						BitMask >>= 1;
 					}
@@ -1681,7 +1665,7 @@ int GrInternalStringClippedM (int x, int y, const char *s)
 
 				if (underline)	{
 					for (i=0; i< width; i++)	{
-						GrSetColor (FG_COLOR.index);
+						CCanvas::Current ()->SetColor (FG_COLOR.index);
 						gr_pixel (x++, y);
 					}
 				} else {
@@ -1695,7 +1679,7 @@ int GrInternalStringClippedM (int x, int y, const char *s)
 							BitMask = 0x80;
 						}
 						if (bits & BitMask)	{
-							GrSetColor (FG_COLOR.index);
+							CCanvas::Current ()->SetColor (FG_COLOR.index);
 							gr_pixel (x++, y);
 						} else {
 							x++;

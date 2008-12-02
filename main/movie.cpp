@@ -101,7 +101,7 @@ typedef struct tRobotMovie {
 
 typedef struct tMovieData {
 	tMovieLib	*libs [N_MOVIE_LIBS];
-	ubyte			*palette;
+	CPalette		*palette;
 	tRobotMovie	robot;
 } tMovieData;
 
@@ -178,37 +178,37 @@ return ret;
 void MovieShowFrame (ubyte *buf, uint bufw, uint bufh, uint sx, uint sy, 
 							uint w, uint h, uint dstx, uint dsty)
 {
-	grsBitmap bmFrame;
+	CBitmap bmFrame;
 
 Assert (bufw == w && bufh == h);
 
 memset (&bmFrame, 0, sizeof (bmFrame));
-bmFrame.bmProps.w = bmFrame.bmProps.rowSize = bufw;
-bmFrame.bmProps.h = bufh;
-bmFrame.bmProps.nType = BM_LINEAR;
-bmFrame.bmTexBuf = buf;
-bmFrame.bmPalette = movies.palette;
+bmFrame.props.w = bmFrame.props.rowSize = bufw;
+bmFrame.props.h = bufh;
+bmFrame.props.nMode = BM_LINEAR;
+bmFrame.texBuf = buf;
+*bmFrame.palette = *movies.palette;
 
 TRANSPARENCY_COLOR = -1;
 if (gameOpts->menus.nStyle) {
 	//memset (grPalette, 0, 768);
-	//GrPaletteStepLoad (NULL);
+	//paletteManager.LoadEffect  ();
 	}
 if (gameOpts->movies.bFullScreen) {
 	double r = (double) bufh / (double) bufw;
-	int dh = (int) (grdCurCanv->cvBitmap.bmProps.w * r);
-	int yOffs = (grdCurCanv->cvBitmap.bmProps.h - dh) / 2;
+	int dh = (int) (grdCurCanv->cvBitmap.props.w * r);
+	int yOffs = (grdCurCanv->cvBitmap.props.h - dh) / 2;
 
 	glDisable (GL_BLEND);
-	OglUBitBltI (grdCurCanv->cvBitmap.bmProps.w, dh, 0, yOffs, 
+	OglUBitBltI (grdCurCanv->cvBitmap.props.w, dh, 0, yOffs, 
 					 bufw, bufh, sx, sy, 
 					 &bmFrame, &grdCurCanv->cvBitmap, 
 					 gameOpts->movies.nQuality, 1, 1.0f);
 	glEnable (GL_BLEND);
 	}
 else {
-	int xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
-	int yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
+	int xOffs = (grdCurCanv->cvBitmap.props.w - 640) / 2;
+	int yOffs = (grdCurCanv->cvBitmap.props.h - 480) / 2;
 
 	if (xOffs < 0)
 		xOffs = 0;
@@ -216,7 +216,7 @@ else {
 		yOffs = 0;
 	dstx += xOffs;
 	dsty += yOffs;
-	if ((grdCurCanv->cvBitmap.bmProps.w > 640) || (grdCurCanv->cvBitmap.bmProps.h > 480)) {
+	if ((grdCurCanv->cvBitmap.props.w > 640) || (grdCurCanv->cvBitmap.props.h > 480)) {
 		GrSetColorRGBi (RGBA_PAL (0, 0, 32));
 		GrUBox (dstx-1, dsty, dstx+w, dsty+h+1);
 		}
@@ -229,23 +229,25 @@ TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 //our routine to set the palette, called from the movie code
 void MovieSetPalette (unsigned char *p, unsigned start, unsigned count)
 {
-	tPalette	palette;
+	CPalette	palette;
 
 if (count == 0)
 	return;
 
-//GrPaletteStepLoad (NULL);
+//paletteManager.LoadEffect  ();
 //Color 0 should be black, and we get color 255
 //movie libs palette into our array
-Assert (start>=0 && start+count<=256);
-memcpy (palette + start * 3, p + start * 3, count * 3);
+Assert (start>=0 && start+count<=PALETTE_SIZE);
+if (start + count > PALETTE_SIZE)
+	count = PALETTE_SIZE - start;
+memcpy (palette.Color () + start, p + start * 3, count * 3);
 //Set color 0 to be black
-palette [0] = palette [1] = palette [2] = 0;
+palette.SetBlack (0, 0, 0);
 //Set color 255 to be our subtitle color
-palette [765] = palette [766] = palette [767] = 50;
+palette.SetTransparency (50, 50, 50);
 //finally set the palette in the hardware
-movies.palette = AddPalette (palette);
-GrPaletteStepLoad (NULL);
+movies.palette = paletteManager.Add (palette);
+paletteManager.LoadEffect  ();
 }
 
 //-----------------------------------------------------------------------
@@ -319,7 +321,7 @@ if (!(cf.Open (filename, gameFolders.szDataDir, "rb", 0) || OpenMovieFile (cf, f
 MVE_memCallbacks (MPlayAlloc, MPlayFree);
 MVE_ioCallbacks (FileRead);
 SetScreenMode (SCREEN_MENU);
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 MVE_sfCallbacks (MovieShowFrame);
 MVE_palCallbacks (MovieSetPalette);
 if (MVE_rmPrepMovie ((void *) &cf, dx, dy, track, libP ? libP->bLittleEndian : 1)) {
@@ -330,7 +332,7 @@ nFrame = 0;
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && hiresFlag;
 while ((result = MVE_rmStepMovie ()) == 0) {
 	DrawSubTitles (nFrame);
-	GrPaletteStepLoad (NULL); // moved this here because of flashing
+	paletteManager.LoadEffect  (); // moved this here because of flashing
 	GrUpdate (1);
 	key = KeyInKey ();
 	// If ESCAPE pressed, then quit movie.
@@ -355,7 +357,7 @@ MVE_rmEndMovie ();
 cf.Close ();                           // Close Movie File
 // Restore old graphic state
 gameStates.video.nScreenMode = -1;  //force reset of screen mode
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 return (aborted ? MOVIE_ABORTED : MOVIE_PLAYED_FULL);
 }
 
@@ -382,9 +384,9 @@ int RotateRobot ()
 
 gameOpts->movies.bFullScreen = 1;
 if (gameStates.ogl.nDrawBuffer == GL_BACK)
-	GrPaletteStepLoad (NULL);
+	paletteManager.LoadEffect  ();
 err = MVE_rmStepMovie ();
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 if (err == MVE_ERR_EOF) {   //end of movie, so reset
 	ResetMovieFile (movies.robot.cf);
 	if (MVE_rmPrepMovie ((void *) &movies.robot.cf, 
@@ -573,12 +575,12 @@ while (nNextSubTitle < subTitles.nCaptions && nFrame >= subTitles.captions [nNex
 	}
 
 //find y coordinate for first line of subtitles
-y = grdCurCanv->cvBitmap.bmProps.h- ((nLineSpacing+1)*MAX_ACTIVE_SUBTITLES+2);
+y = grdCurCanv->cvBitmap.props.h- ((nLineSpacing+1)*MAX_ACTIVE_SUBTITLES+2);
 
 //erase old subtitles if necessary
 if (bMustErase) {
 	GrSetColorRGB (0, 0, 0, 255);
-	GrRect (0, y, grdCurCanv->cvBitmap.bmProps.w-1, grdCurCanv->cvBitmap.bmProps.h-1);
+	GrRect (0, y, grdCurCanv->cvBitmap.props.w-1, grdCurCanv->cvBitmap.props.h-1);
 	}
 //now draw the current subtitles
 for (t=0;t<nActiveSubTitles;t++)
@@ -728,7 +730,7 @@ int RequestCD (void)
 	GrPaletteStepClear ();
 	gr_ubitmap (0, 0, &tcanv->cvBitmap);
 	if (!was_faded)
-		GrPaletteStepLoad (NULL);
+		paletteManager.LoadEffect  ();
 	GrFreeCanvas (tcanv);
 	return ret;
 #else

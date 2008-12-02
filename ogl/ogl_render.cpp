@@ -31,7 +31,6 @@
 #include "maths.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
-#include "ogl_defs.h"
 #include "ogl_color.h"
 #include "ogl_shader.h"
 #include "ogl_hudstuff.h"
@@ -99,7 +98,7 @@ else
 
 //------------------------------------------------------------------------------
 
-inline int G3BindTex (grsBitmap *bmP, GLint nTexId, GLhandleARB lmProg, char *pszTexId,
+inline int G3BindTex (CBitmap *bmP, GLint nTexId, GLhandleARB lmProg, char *pszTexId,
 						    pInitTMU initTMU, int bShaderVar, int bVertexArrays)
 {
 if (bmP || (nTexId >= 0)) {
@@ -109,7 +108,7 @@ if (bmP || (nTexId >= 0)) {
 	else {
 		if (OglBindBmTex (bmP, 1, 3))
 			return 1;
-		OglTexWrap (bmP->glTexture, GL_REPEAT);
+		OglTexWrap (bmP->texInfo, GL_REPEAT);
 		}
 	if (bShaderVar)
 		glUniform1i (glGetUniformLocation (lmProg, pszTexId), 0);
@@ -211,8 +210,8 @@ glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cvColor);
 glPushMatrix ();
 glTranslatef (
-			(X2F (xc1) + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW,
-		1.0f - (X2F (yc1) + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH, 0);
+			(X2F (xc1) + grdCurCanv->cvBitmap.props.x) / (float) gameStates.ogl.nLastW,
+		1.0f - (X2F (yc1) + grdCurCanv->cvBitmap.props.y) / (float) gameStates.ogl.nLastH, 0);
 glScalef (X2F (r1), X2F (r1), X2F (r1));
 if (r1<=I2X (5)){
 	if (!circleh5)
@@ -270,7 +269,7 @@ for (i = 0; i < nVertices; i++, pointList++) {
 	OglVertex3f (*pointList);
 	}
 #if 1
-if (grdCurCanv->cvColor.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
+if (grdCurCanv->cvColor.rgb || (gameStates.render.grAlpha < FADE_LEVELS))
 	glDisable (GL_BLEND);
 #endif
 glEnd ();
@@ -289,7 +288,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	return 0;
 	}
 if (color->alpha < 0)
-	color->alpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
+	color->alpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS;
 #if 1
 if (gameOpts->render.bDepthSort > 0) {
 	fVector	vertices [8];
@@ -336,7 +335,7 @@ con_printf (CONDBG, "gr_upoly_tmap: unhandled\n");//should never get called
 
 //------------------------------------------------------------------------------
 
-void DrawTexPolyFlat (grsBitmap *bmP, int nVertices, g3sPoint **vertlist)
+void DrawTexPolyFlat (CBitmap *bmP, int nVertices, g3sPoint **vertlist)
 {
 #if TRACE
 con_printf (CONDBG, "DrawTexPolyFlat: unhandled\n");//should never get called
@@ -350,8 +349,8 @@ int G3DrawTexPolyFlat (
 	g3sPoint		**pointList,
 	tUVL			*uvlList,
 	tUVL			*uvlLMap,
-	grsBitmap	*bmBot,
-	grsBitmap	*bmTop,
+	CBitmap	*bmBot,
+	CBitmap	*bmTop,
 	tLightmap	*lightmap,
 	vmsVector	*pvNormal,
 	int			orient,
@@ -404,8 +403,8 @@ int G3DrawTexPolyMulti (
 	g3sPoint		**pointList,
 	tUVL			*uvlList,
 	tUVL			*uvlLMap,
-	grsBitmap	*bmBot,
-	grsBitmap	*bmTop,
+	CBitmap	*bmBot,
+	CBitmap	*bmTop,
 	tLightmap	*lightmap,
 	vmsVector	*pvNormal,
 	int			orient,
@@ -421,7 +420,7 @@ int G3DrawTexPolyMulti (
 					bResetColor = 0,
 					bOverlay = 0;
 	tFaceColor	*pc;
-	grsBitmap	*bmP = NULL, *bmMask = NULL;
+	CBitmap	*bmP = NULL, *mask = NULL;
 	g3sPoint		*pl, **ppl;
 #if USE_VERTNORMS
 	fVector		vNormal, vVertPos;
@@ -456,22 +455,22 @@ else {
 		}
 	}
 glDepthFunc (GL_LEQUAL);
-bmBot = BmOverride (bmBot, -1);
+bmBot = bmBot->Override (-1);
 bDepthSort = (!bmTop && (gameOpts->render.bDepthSort > 0) &&
-				  ((gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS) ||
-				   (bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA)));
-if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
-	nFrame = (int) (BM_CURFRAME (bmTop) - BM_FRAMES (bmTop));
+				  ((gameStates.render.grAlpha < FADE_LEVELS) ||
+				   (bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA)));
+if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+	nFrame = (int) (bmTop->CurFrame () - bmTop->Frames ());
 	bmP = bmTop;
-	bmTop = BM_CURFRAME (bmTop);
+	bmTop = bmTop->CurFrame ();
 	}
 else
 	nFrame = -1;
 if (bmTop) {
 	if (nFrame < 0)
-      bSuperTransp = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+      bSuperTransp = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	else
-		bSuperTransp = (bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bSuperTransp = (bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	bShaderMerge = bSuperTransp && gameStates.ogl.bGlTexMerge;
 	bOverlay = !bShaderMerge;
 	}
@@ -481,24 +480,24 @@ else
 retry:
 #endif
 if (bShaderMerge) {
-	bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL;
-	nShader = bSuperTransp ? bmMask ? 2 : 1 : 0;
+	mask = gameStates.render.textures.bHaveMaskShader ? bmTop->Mask () : NULL;
+	nShader = bSuperTransp ? mask ? 2 : 1 : 0;
 	glUseProgramObject (activeShaderProg = tmShaderProgs [nShader]);
 	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapData.buffers, bVertexArrays, 0);
 	glUniform1i (glGetUniformLocation (activeShaderProg, "btmTex"), 0);
 	INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapData.buffers, bVertexArrays, 0);
 	glUniform1i (glGetUniformLocation (activeShaderProg, "topTex"), 1);
-	if (bmMask) {
+	if (mask) {
 #if DBG
 		InitTMU2 (bVertexArrays);
-		G3_BIND (GL_TEXTURE2, bmMask, lightmapData.buffers, bVertexArrays);
+		G3_BIND (GL_TEXTURE2, mask, lightmapData.buffers, bVertexArrays);
 #else
-		INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, lightmapData.buffers, bVertexArrays, 0);
+		INIT_TMU (InitTMU2, GL_TEXTURE2, mask, lightmapData.buffers, bVertexArrays, 0);
 #endif
 		glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2);
 		}
 	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"),
-					 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+					 gameStates.render.grAlpha / (float) FADE_LEVELS);
 	}
 else if (!bDepthSort) {
 	if (bmBot == gameData.endLevel.satellite.bmP) {
@@ -509,11 +508,11 @@ else if (!bDepthSort) {
 		InitTMU0 (bVertexArrays);
 	if (OglBindBmTex (bmBot, 1, 3))
 		return 1;
-	bmBot = BmCurFrame (bmBot, -1);
+	bmBot = bmBot->CurFrame (-1);
 	if (bmBot == bmpDeadzone)
-		OglTexWrap (bmBot->glTexture, GL_CLAMP);
+		OglTexWrap (bmBot->TexInfo (), GL_CLAMP);
 	else
-		OglTexWrap (bmBot->glTexture, GL_REPEAT);
+		OglTexWrap (bmBot->TexInfo (), GL_REPEAT);
 	}
 
 if (!bDepthSort) {
@@ -542,7 +541,7 @@ if (!bDepthSort) {
 	gameStates.ogl.bDynObjLight = bDynLight;
 	}
 
-gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
+gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) FADE_LEVELS;
 if (bVertexArrays || bDepthSort) {
 		fVector		vertices [8];
 		tFaceColor	vertColors [8];
@@ -626,7 +625,7 @@ else
 				G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.V3(), pl->p3_index, NULL, NULL,
 									/*gameStates.render.nState ? X2F (uvlList [i].l) :*/ 1, 1, 0);
 				glMultiTexCoord2f (GL_TEXTURE0, X2F (uvlList [i].u), X2F (uvlList [i].v));
-				SetTexCoord (uvlList + i, orient, 1, NULL, bmMask != NULL);
+				SetTexCoord (uvlList + i, orient, 1, NULL, mask != NULL);
 				glVertex3fv ((GLfloat *) &vVertPos);
 				}
 			}
@@ -654,7 +653,7 @@ else
 					glColor3fv ((GLfloat *) &pc->color);
 					}
 				glMultiTexCoord2f (GL_TEXTURE0, X2F (uvlList [i].u), X2F (uvlList [i].v));
-				SetTexCoord (uvlList + i, orient, 1, NULL, bmMask != NULL);
+				SetTexCoord (uvlList + i, orient, 1, NULL, mask != NULL);
 				OglVertex3f (*ppl);
 				}
 			}
@@ -669,7 +668,7 @@ else
 		else {
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				glMultiTexCoord2f (GL_TEXTURE0, X2F (uvlList [i].u), X2F (uvlList [i].v));
-				SetTexCoord (uvlList + i, orient, 1, NULL, bmMask != NULL);
+				SetTexCoord (uvlList + i, orient, 1, NULL, mask != NULL);
 				OglVertex3f (*ppl);
 				}
 			}
@@ -682,27 +681,27 @@ if (bOverlay > 0) {
 	glEnable (GL_TEXTURE_2D);
 	if (OglBindBmTex (bmTop, 1, 3))
 		return 1;
-	bmTop = BmCurFrame (bmTop, -1);
-	OglTexWrap (bmTop->glTexture, GL_REPEAT);
+	bmTop = bmTop->CurFrame (-1);
+	OglTexWrap (bmTop->TexInfo (), GL_REPEAT);
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 			*vVertPos.V3() = ((*ppl)->p3_vec).ToFloat3();
 			G3VertexColor (G3GetNormal (*ppl, &vNormal), vVertPos.V3(), (*ppl)->p3_index, NULL, NULL, 1, 1, 0);
-			SetTexCoord (uvlList + i, orient, 0, NULL, bmMask != NULL);
+			SetTexCoord (uvlList + i, orient, 0, NULL, mask != NULL);
 			OglVertex3f (*ppl);
 			}
 		}
 	else if (bLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 			SetTMapColor (uvlList + i, i, bmTop, 1, NULL);
-			SetTexCoord (uvlList + i, orient, 0, NULL, bmMask != NULL);
+			SetTexCoord (uvlList + i, orient, 0, NULL, mask != NULL);
 			OglVertex3f (*ppl);
 			}
 		}
 	else {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-			SetTexCoord (uvlList + i, orient, 0, NULL, bmMask != NULL);
+			SetTexCoord (uvlList + i, orient, 0, NULL, mask != NULL);
 			OglVertex3f (*ppl);
 			}
 		}
@@ -738,8 +737,8 @@ int G3DrawTexPolyLightmap (
 	g3sPoint		**pointList,
 	tUVL			*uvlList,
 	tUVL			*uvlLMap,
-	grsBitmap	*bmBot,
-	grsBitmap	*bmTop,
+	CBitmap	*bmBot,
+	CBitmap	*bmTop,
 	tLightmap	*lightmap,
 	vmsVector	*pvNormal,
 	int			orient,
@@ -747,7 +746,7 @@ int G3DrawTexPolyLightmap (
 	short			nSegment)
 {
 	int			i, nFrame, bShaderMerge;
-	grsBitmap	*bmP = NULL;
+	CBitmap	*bmP = NULL;
 	g3sPoint		**ppl;
 
 if (gameStates.render.nShadowBlurPass == 1) {
@@ -772,11 +771,11 @@ else {
 		}
 	}
 glDepthFunc (GL_LEQUAL);
-bmBot = BmOverride (bmBot, -1);
-if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
-	nFrame = (int) (BM_CURFRAME (bmTop) - BM_FRAMES (bmTop));
+bmBot = bmBot->Override (-1);
+if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+	nFrame = (int) (bmTop->CurFrame () - bmTop->Frames ());
 	bmP = bmTop;
-	bmTop = BM_CURFRAME (bmTop);
+	bmTop = bmTop->CurFrame ();
 	}
 else
 	nFrame = -1;
@@ -784,22 +783,22 @@ if (!lightmap) //lightmapping enabled
 	return fpDrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightmap, pvNormal, orient, bBlend, nSegment);
 // chose shaders depending on whether overlay bitmap present or not
 if ((bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge)) {
-	lmProg = lmShaderProgs [(bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0];
+	lmProg = lmShaderProgs [(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0];
 	glUseProgramObject (lmProg);
 	}
 InitTMU0 (0);	// use render pipeline 0 for bottom texture
 if (OglBindBmTex (bmBot, 1, 3))
 	return 1;
-bmBot = BmCurFrame (bmBot, -1);
-OglTexWrap (bmBot->glTexture, GL_REPEAT);
+bmBot = bmBot->CurFrame (-1);
+OglTexWrap (bmBot->TexInfo (), GL_REPEAT);
 if (bShaderMerge)
 	glUniform1i (glGetUniformLocation (lmProg, "btmTex"), 0);
 if (bmTop) { // use render pipeline 1 for overlay texture
 	InitTMU1 (0);
 	if (OglBindBmTex (bmTop, 1, 3))
 		return 1;
-	bmTop = BmCurFrame (bmTop, -1);
-	OglTexWrap (bmTop->glTexture, GL_REPEAT);
+	bmTop = bmTop->CurFrame (-1);
+	OglTexWrap (bmTop->TexInfo (), GL_REPEAT);
 	glUniform1i (glGetUniformLocation (lmProg, "topTex"), 1);
 	}
 // use render pipeline 2 for lightmap texture
@@ -833,7 +832,7 @@ int G3DrawTexPolySimple (
 	int			nVertices,
 	g3sPoint		**pointList,
 	tUVL			*uvlList,
-	grsBitmap	*bmP,
+	CBitmap	*bmP,
 	vmsVector	*pvNormal,
 	int			bBlend)
 {
@@ -867,7 +866,7 @@ else {
 		}
 	}
 glDepthFunc (GL_LEQUAL);
-bmP = BmOverride (bmP, -1);
+bmP = bmP->Override (-1);
 if (bmP == gameData.endLevel.satellite.bmP) {
 	glActiveTexture (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
@@ -876,11 +875,10 @@ else
 	InitTMU0 (0);
 if (OglBindBmTex (bmP, 1, 3))
 	return 1;
-//bmP = BmCurFrame (bmP, -1);
 if (bmP == bmpDeadzone)
-	OglTexWrap (bmP->glTexture, GL_CLAMP);
+	OglTexWrap (bmP->texInfo, GL_CLAMP);
 else
-	OglTexWrap (bmP->glTexture, GL_REPEAT);
+	OglTexWrap (bmP->texInfo, GL_REPEAT);
 
 if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
@@ -903,7 +901,7 @@ else if (!bLight)
 if (!bLight)
 	bDynLight = 0;
 gameStates.ogl.bDynObjLight = bDynLight;
-gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
+gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) FADE_LEVELS;
 glBegin (GL_TRIANGLE_FAN);
 if (bDynLight) {
 	for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
@@ -943,7 +941,7 @@ int G3DrawSprite (
 	const vmsVector&	vPos,
 	fix			xWidth,
 	fix			xHeight,
-	grsBitmap	*bmP,
+	CBitmap	*bmP,
 	tRgbaColorf	*colorP,
 	float			alpha,
 	int			bAdditive,
@@ -987,8 +985,8 @@ else {
 		glEnable (GL_TEXTURE_2D);
 		if (OglBindBmTex (bmP, 1, 1))
 			return 1;
-		bmP = BmOverride (bmP, -1);
-		OglTexWrap (bmP->glTexture, GL_CLAMP);
+		bmP = bmP->Override (-1);
+		OglTexWrap (bmP->texInfo, GL_CLAMP);
 		glEnable (GL_BLEND);
 		if (bAdditive == 2)
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -1001,8 +999,8 @@ else {
 		else
 			glColor4d (1, 1, 1, (double) alpha);
 		glBegin (GL_QUADS);
-		u = bmP->glTexture->u;
-		v = bmP->glTexture->v;
+		u = bmP->texInfo->u;
+		v = bmP->texInfo->v;
 		glTexCoord2d (0, 0);
 		glVertex3d (x - w, y + h, z);
 		glTexCoord2d (u, 0);
@@ -1023,7 +1021,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord2f *texCoordP,
+int OglRenderArrays (CBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord2f *texCoordP,
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap)
 {
 	int	bVertexArrays = G3EnableClientStates (bmP && texCoordP, colorP && (nColors == nVertices), 0, GL_TEXTURE0);
@@ -1035,10 +1033,10 @@ else
 if (bmP) {
 	if (OglBindBmTex (bmP, 1, 1))
 		return 0;
-	bmP = BmOverride (bmP, -1);
-	if (BM_FRAMES (bmP))
-		bmP = BM_FRAMES (bmP) + nFrame;
-	OglTexWrap (bmP->glTexture, nWrap);
+	bmP = bmP->Override (-1);
+	if (bmP->Frames ())
+		bmP = bmP->Frames () + nFrame;
+	OglTexWrap (bmP->texInfo, nWrap);
 	}
 if (bVertexArrays) {
 	if (texCoordP)

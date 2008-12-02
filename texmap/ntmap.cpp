@@ -45,8 +45,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Temporary texture map, interface from Matt's 3d system to Mike's texture mapper.
 g3ds_tmap Tmap1;
 
-grsBitmap Texmap_ptrs[NUM_TMAPS];
-grsBitmap Texmap4_ptrs[NUM_TMAPS];
+CBitmap Texmap_ptrs[NUM_TMAPS];
+CBitmap Texmap4_ptrs[NUM_TMAPS];
 
 int	nCurrentSegDepth;		// HACK INTERFACE: how far away the current tSegment (& thus texture) is
 
@@ -104,19 +104,19 @@ void init_fix_recip_table(void)
 //	not at all.  I'm pretty sure these variables are only being used for range checking.
 void init_interface_vars_to_assembler(void)
 {
-	grsBitmap	*bp;
+	CBitmap	*bp;
 
 	bp = &grdCurCanv->cvBitmap;
 
 	Assert(bp!=NULL);
-	Assert(bp->bmTexBuf!=NULL);
-	Assert(bp->bmProps.h <= MAX_Y_POINTERS);
+	Assert(bp->texBuf!=NULL);
+	Assert(bp->props.h <= MAX_Y_POINTERS);
 
 	//	If bytes_per_row has changed, create new table of pointers.
-	if (bytes_per_row != (int) bp->bmProps.rowSize) {
+	if (bytes_per_row != (int) bp->props.rowSize) {
 		int	y_val, i;
 
-		bytes_per_row = (int) bp->bmProps.rowSize;
+		bytes_per_row = (int) bp->props.rowSize;
 
 		y_val = 0;
 		for (i=0; i<MAX_Y_POINTERS; i++) {
@@ -125,20 +125,20 @@ void init_interface_vars_to_assembler(void)
 		}
 	}
 
-        write_buffer = (unsigned char *) bp->bmTexBuf;
+        write_buffer = (unsigned char *) bp->texBuf;
 
 	window_left = 0;
-	window_right = (int) bp->bmProps.w-1;
+	window_right = (int) bp->props.w-1;
 	window_top = 0;
-	window_bottom = (int) bp->bmProps.h-1;
+	window_bottom = (int) bp->props.h-1;
 
 	nWindowClipLeft = window_left;
 	nWindowClipRight = window_right;
 	nWindowClipTop = window_top;
 	nWindowClipBot = window_bottom;
 
-	window_width = bp->bmProps.w;
-	window_height = bp->bmProps.h;
+	window_width = bp->props.w;
+	window_height = bp->props.h;
 
 	if (!bFixRecipTableComputed)
 		init_fix_recip_table();
@@ -331,7 +331,7 @@ int Skip_shortFlag=0;
 // -------------------------------------------------------------------------------------
 //	Texture map current scanline in perspective.
 // -------------------------------------------------------------------------------------
-void ntmap_scanline_lighted(grsBitmap *srcb, int y, fix xleft, fix xright, fix uleft, fix uright, fix vleft, fix vright, fix zleft, fix zright, fix lleft, fix lright)
+void ntmap_scanline_lighted(CBitmap *srcb, int y, fix xleft, fix xright, fix uleft, fix uright, fix vleft, fix vright, fix zleft, fix zright, fix lleft, fix lright)
 {
 	fix	dx,recip_dx;
 
@@ -362,7 +362,7 @@ void ntmap_scanline_lighted(grsBitmap *srcb, int y, fix xleft, fix xright, fix u
 	fx_dv_dx = FixMul(vright - vleft,recip_dx);
 	fx_dz_dx = FixMul(zright - zleft,recip_dx);
 	fx_y = y;
-	pixptr = srcb->bmTexBuf;
+	pixptr = srcb->texBuf;
 
 	switch (bLightingEnabled) {
 		case 0:
@@ -425,7 +425,7 @@ int	Break_on_flat=0;
 // -------------------------------------------------------------------------------------
 //	Render a texture map with lighting using perspective interpolation in inner and outer loops.
 // -------------------------------------------------------------------------------------
-void ntexture_map_lighted(grsBitmap *srcb, g3ds_tmap *t)
+void ntexture_map_lighted(CBitmap *srcb, g3ds_tmap *t)
 {
 	int	vlt,vrt,vlb,vrb;	// vertex left top, vertex right top, vertex left bottom, vertex right bottom
 	int	topy,boty,y, dy;
@@ -615,7 +615,7 @@ void ntexture_map_lighted(grsBitmap *srcb, g3ds_tmap *t)
 // -------------------------------------------------------------------------------------
 //	Texture map current scanline using linear interpolation.
 // -------------------------------------------------------------------------------------
-void ntmap_scanline_lighted_linear(grsBitmap *srcb, int y, fix xleft, fix xright, fix uleft, fix uright, fix vleft, fix vright, fix lleft, fix lright)
+void ntmap_scanline_lighted_linear(CBitmap *srcb, int y, fix xleft, fix xright, fix uleft, fix uright, fix vleft, fix vright, fix lleft, fix lright)
 {
 	fix	u,v,l;
 	fix	dx,recip_dx;
@@ -646,7 +646,7 @@ void ntmap_scanline_lighted_linear(grsBitmap *srcb, int y, fix xleft, fix xright
 		fx_y = y;
 		fx_xright = X2I(xright);
 		fx_xleft = X2I(xleft);
-		pixptr = srcb->bmTexBuf;
+		pixptr = srcb->texBuf;
 
 		switch (bLightingEnabled) {
 			case 0:
@@ -708,7 +708,7 @@ void ntmap_scanline_lighted_linear(grsBitmap *srcb, int y, fix xleft, fix xright
 // -------------------------------------------------------------------------------------
 //	Render a texture map with lighting using perspective interpolation in inner and outer loops.
 // -------------------------------------------------------------------------------------
-void ntexture_map_lighted_linear(grsBitmap *srcb, g3ds_tmap *t)
+void ntexture_map_lighted_linear(CBitmap *srcb, g3ds_tmap *t)
 {
 	int	vlt,vrt,vlb,vrb;	// vertex left top, vertex right top, vertex left bottom, vertex right bottom
 	int	topy,boty,y, dy;
@@ -882,12 +882,12 @@ void ntexture_map_lighted_linear(grsBitmap *srcb, g3ds_tmap *t)
 
 // fix	DivNum = F1_0*12;
 
-extern void DrawTexPolyFlat(grsBitmap *bp,int nverts,g3sPoint **vertbuf);
+extern void DrawTexPolyFlat(CBitmap *bp,int nverts,g3sPoint **vertbuf);
 
 // -------------------------------------------------------------------------------------
 // Interface from Matt's data structures to Mike's texture mapper.
 // -------------------------------------------------------------------------------------
-void draw_tmap(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
+void draw_tmap(CBitmap *bp,int nverts,g3sPoint **vertbuf)
 {
 	int	i;
 
@@ -905,16 +905,16 @@ void draw_tmap(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 	// -- now called from G3StartFrame -- init_interface_vars_to_assembler();
 
 	//	If no transparency and seg depth is large, render as flat shaded.
-	if ((nCurrentSegDepth > gameStates.render.detail.nMaxLinearDepth) && ((bp->bmProps.flags & 3) == 0)) {
+	if ((nCurrentSegDepth > gameStates.render.detail.nMaxLinearDepth) && ((bp->props.flags & 3) == 0)) {
 		DrawTexPolyFlat(bp, nverts, vertbuf);
 		return;
 	}
 
-	if ( bp->bmProps.flags & BM_FLAG_RLE )
+	if ( bp->props.flags & BM_FLAG_RLE )
 		bp = rle_expand_texture( bp );		// Expand if rle'd
 
-	gameStates.render.bTransparency = bp->bmProps.flags & BM_FLAG_TRANSPARENT;
-	if (bp->bmProps.flags & BM_FLAG_NO_LIGHTING)
+	gameStates.render.bTransparency = bp->props.flags & BM_FLAG_TRANSPARENT;
+	if (bp->props.flags & BM_FLAG_NO_LIGHTING)
 		gameStates.render.nLighting = 0;
 
 
@@ -937,8 +937,8 @@ void draw_tmap(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 		}
 
 		tvp->z = FixDiv(F1_0*12, vp->p3_vec[Z]);
-		tvp->u = vp->p3_uvl.u << 6; //* bp->bmProps.w;
-		tvp->v = vp->p3_uvl.v << 6; //* bp->bmProps.h;
+		tvp->u = vp->p3_uvl.u << 6; //* bp->props.w;
+		tvp->v = vp->p3_uvl.v << 6; //* bp->props.h;
 
 		Assert(gameStates.render.nLighting < 3);
 

@@ -4162,7 +4162,11 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\..\2d\bitmap.h"
+						RelativePath="..\..\include\bitmap.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\color.h"
 						>
 					</File>
 					<File

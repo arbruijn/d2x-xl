@@ -79,7 +79,7 @@ void RestartEffect(int effect_num);
 extern int EClipReadN(tEffectClip *ec, int n, CFile& cf);
 #endif
 
-grsBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObj, int *pnFrames);
+CBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObj, int *pnFrames);
 void ResetPogEffects (void);
 void CacheObjectEffects (void);
 

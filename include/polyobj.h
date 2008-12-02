@@ -71,7 +71,7 @@ void InitPolygonModels();
 #ifndef DRIVE
 int LoadPolygonModel(const char *filename,int n_textures,int first_texture,tRobotInfo *r);
 #else
-int LoadPolygonModel(const char *filename,int n_textures,grsBitmap ***textures);
+int LoadPolygonModel(const char *filename,int n_textures,CBitmap ***textures);
 #endif
 
 // draw a polygon model

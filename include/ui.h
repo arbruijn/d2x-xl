@@ -72,7 +72,7 @@ typedef struct  {
 	int             keypress;
 	short           mouse_onme;
 	short           mouse_x, mouse_y;
-	grsBitmap *    bitmap;
+	CBitmap *    bitmap;
 } UI_GADGET_USERBOX;
 
 typedef struct  {
@@ -183,7 +183,7 @@ typedef struct ui_window {
 	short           text_x, text_y;
 	gsrCanvas *    canvas;
 	gsrCanvas *    oldcanvas;
-	grsBitmap *    background;
+	CBitmap *    background;
 	UI_GADGET *     gadget;
 	UI_GADGET *     keyboard_focus_gadget;
 	struct ui_window * next;
@@ -205,8 +205,8 @@ typedef struct  {
 	short           b3_last_status;
 	short           bg_x, bg_y;
 	short           bg_saved;
-	grsBitmap *    background;
-	grsBitmap *    pointer;
+	CBitmap *    background;
+	CBitmap *    pointer;
 	unsigned int    time_lastpressed;
 	short           moved;
 } UI_MOUSE;
@@ -249,7 +249,7 @@ void ui_string_centered( short x, short y, char * s );
 int PopupMenu( int NumItems, char * text[] );
 
 extern void ui_mouse_init();
-extern grsBitmap * ui_mouse_set_pointer( grsBitmap * new );
+extern CBitmap * ui_mouse_set_pointer( CBitmap * new );
 
 extern void ui_mouse_process();
 extern void ui_mouse_hide();

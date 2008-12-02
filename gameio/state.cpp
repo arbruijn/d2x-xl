@@ -165,9 +165,9 @@ CSaveGameHandler saveGameHandler;
 //------------------------------------------------------------------------------
 
 typedef struct tSaveGameInfo {
-	char			szLabel [DESC_LENGTH + 16];
-	char			szTime [DESC_LENGTH + 16];
-	grsBitmap	*image;
+	char		szLabel [DESC_LENGTH + 16];
+	char		szTime [DESC_LENGTH + 16];
+	CBitmap	*image;
 } tSaveGameInfo;
 
 class CSaveGameInfo {
@@ -179,7 +179,7 @@ class CSaveGameInfo {
 		void Init (void);
 		inline char* Label (void) { return m_info.szLabel; }
 		inline char* Time (void) { return m_info.szTime; }
-		inline grsBitmap* Image (void) { return m_info.image; }
+		inline CBitmap* Image (void) { return m_info.image; }
 		bool Load (char *filename, int nSlot);
 		void Destroy (void);
 };
@@ -197,10 +197,8 @@ strcpy (m_info.szLabel, TXT_EMPTY);
 
 void CSaveGameInfo::Destroy (void)
 {
-if (m_info.image) {
-	GrFreeBitmap (m_info.image);
-	m_info.image = NULL;
-	}
+if (m_info.image)
+	D2_FREE (m_info.image);
 }
 
 //------------------------------------------------------------------------------
@@ -233,17 +231,17 @@ else {
 		strcpy (m_info.szLabel, "   ");
 	cf.Read (m_info.szLabel + 3, DESC_LENGTH, 1);
 	if (nVersion < 26) {
-		m_info.image = GrCreateBitmap (THUMBNAIL_W, THUMBNAIL_H, 1);
-		cf.Read (m_info.image->bmTexBuf, THUMBNAIL_W * THUMBNAIL_H, 1);
+		m_info.image = CBitmap::Create (0, THUMBNAIL_W, THUMBNAIL_H, 1);
+		cf.Read (m_info.image->texBuf, THUMBNAIL_W * THUMBNAIL_H, 1);
 		}
 	else {
-		m_info.image = GrCreateBitmap (THUMBNAIL_LW, THUMBNAIL_LH, 1);
-		cf.Read (m_info.image->bmTexBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1);
+		m_info.image = CBitmap::Create (0, THUMBNAIL_LW, THUMBNAIL_LH, 1);
+		cf.Read (m_info.image->texBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1);
 		}
 	if (nVersion >= 9) {
-		ubyte palette [3 * 356];
-		cf.Read (palette, 3, 256);
-		GrRemapBitmapGood (m_info.image, palette, -1, -1);
+		CPalette palette;
+		palette.Read (cf);
+		m_info.image->Remap (&palette, -1, -1);
 		}
 	struct tm	*t;
 	int			h;
@@ -280,7 +278,7 @@ int SaveStateMenuCallback (int nitems, tMenuItem *items, int *lastKey, int nCurI
 {
 	int			x, y, i = nCurItem - NM_IMG_SPACE;
 	char			c = KeyToASCII (*lastKey);
-	grsBitmap	*image = saveGameInfo [i].Image ();
+	CBitmap	*image = saveGameInfo [i].Image ();
 
 if (nCurItem < 2)
 	return nCurItem;
@@ -298,18 +296,18 @@ if (!items [NM_IMG_SPACE - 1].text || strcmp (items [NM_IMG_SPACE - 1].text, sav
 if (!image)
 	return nCurItem;
 if (gameStates.menus.bHires) {
-	x = (grdCurCanv->cvBitmap.bmProps.w - image->bmProps.w) / 2;
+	x = (grdCurCanv->cvBitmap.props.w - image->props.w) / 2;
 	y = items [0].y - 16;
 	if (gameStates.app.bGameRunning)
-		GrPaletteStepLoad (NULL);
+		paletteManager.LoadEffect  ();
 	GrBitmap (x, y, image);
 	if (gameOpts->menus.nStyle) {
 		GrSetColorRGBi (RGBA_PAL (0, 0, 32));
-		GrUBox (x - 1, y - 1, x + image->bmProps.w + 1, y + image->bmProps.h + 1);
+		GrUBox (x - 1, y - 1, x + image->props.w + 1, y + image->props.h + 1);
 		}
 	}
 else {
-	GrBitmap ((grdCurCanv->cvBitmap.bmProps.w-THUMBNAIL_W) / 2, items [0].y - 5, saveGameInfo [nCurItem - 1].Image ());
+	GrBitmap ((grdCurCanv->cvBitmap.props.w-THUMBNAIL_W) / 2, items [0].y - 5, saveGameInfo [nCurItem - 1].Image ());
 	}
 return nCurItem;
 }
@@ -406,7 +404,7 @@ for (i = 0; i < NM_IMG_SPACE; i++) {
 	m [i].noscroll = 1;
 	}
 if (gameStates.app.bGameRunning) {
-	GrPaletteStepLoad (NULL);
+	paletteManager.LoadEffect  ();
 	}
 for (i = 0; i < NUM_SAVES + 1; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
@@ -420,7 +418,7 @@ for (i = 0; i < NUM_SAVES + 1; i++) {
 		}
 	}
 if (gameStates.app.bGameRunning) 
-	GrPaletteStepLoad (NULL);
+	paletteManager.LoadEffect  ();
 if (nSaves < 1) {
 	ExecMessageBox (NULL, NULL, 1, "Ok", TXT_NO_SAVEGAMES);
 	return 0;
@@ -1173,11 +1171,11 @@ m_cf.WriteFix (gameData.physics.xAfterburnerCharge);
 m_cf.Write (bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 m_cf.Write (bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
 //	Save flash effect stuff
-m_cf.WriteFix (gameData.render.xFlashEffect);
-m_cf.WriteFix (gameData.render.xTimeFlashLastPlayed);
-m_cf.WriteShort (gameStates.ogl.palAdd.red);
-m_cf.WriteShort (gameStates.ogl.palAdd.green);
-m_cf.WriteShort (gameStates.ogl.palAdd.blue);
+m_cf.WriteFix (paletteManager.EffectDuration ());
+m_cf.WriteFix (paletteManager.LastEffectTime ());
+m_cf.WriteShort (paletteManager.RedEffect ());
+m_cf.WriteShort (paletteManager.GreenEffect ());
+m_cf.WriteShort (paletteManager.BlueEffect ());
 m_cf.Write (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtracted [0]), MAX_SEGMENTS);
 m_cf.WriteInt (gameStates.app.bFirstSecretVisit);
 m_cf.WriteFix (gameData.omega.xCharge [0]);
@@ -1193,7 +1191,7 @@ void CSaveGameHandler::SaveImage (void)
 	gsrCanvas	*thumbCanv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH);
 
 if (thumbCanv) {
-		grsBitmap	bm;
+		CBitmap	bm;
 		int			i, k, x, y;
 		gsrCanvas*	saveCanv = grdCurCanv;
 	
@@ -1205,36 +1203,37 @@ if (thumbCanv) {
 		}
 	else
 		RenderFrame (0, 0);
-	bm.bmProps.w = (grdCurScreen->scWidth / THUMBNAIL_LW) * THUMBNAIL_LW;
-	bm.bmProps.h = bm.bmProps.w * 3 / 5;	//force 5:3 aspect ratio
-	if (bm.bmProps.h > grdCurScreen->scHeight) {
-		bm.bmProps.h = (grdCurScreen->scHeight / THUMBNAIL_LH) * THUMBNAIL_LH;
-		bm.bmProps.w = bm.bmProps.h * 5 / 3;
+	bm.props.w = (grdCurScreen->scWidth / THUMBNAIL_LW) * THUMBNAIL_LW;
+	bm.props.h = bm.props.w * 3 / 5;	//force 5:3 aspect ratio
+	if (bm.props.h > grdCurScreen->scHeight) {
+		bm.props.h = (grdCurScreen->scHeight / THUMBNAIL_LH) * THUMBNAIL_LH;
+		bm.props.w = bm.props.h * 5 / 3;
 		}
-	x = (grdCurScreen->scWidth - bm.bmProps.w) / 2;
-	y = (grdCurScreen->scHeight - bm.bmProps.h) / 2;
-	bm.bmBPP = 3;
-	bm.bmProps.rowSize = bm.bmProps.w * bm.bmBPP;
-	bm.bmTexBuf = (ubyte *) D2_ALLOC (bm.bmProps.w * bm.bmProps.h * bm.bmBPP);
+	x = (grdCurScreen->scWidth - bm.props.w) / 2;
+	y = (grdCurScreen->scHeight - bm.props.h) / 2;
+	bm.nBPP = 3;
+	bm.props.rowSize = bm.props.w * bm.nBPP;
+	bm.texBuf = (ubyte *) D2_ALLOC (bm.props.w * bm.props.h * bm.nBPP);
 	//glDisable (GL_TEXTURE_2D);
 	OglSetReadBuffer (GL_FRONT, 1);
-	glReadPixels (x, y, bm.bmProps.w, bm.bmProps.h, GL_RGB, GL_UNSIGNED_BYTE, bm.bmTexBuf);
+	glReadPixels (x, y, bm.props.w, bm.props.h, GL_RGB, GL_UNSIGNED_BYTE, bm.texBuf);
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
-	ShrinkTGA (&bm, bm.bmProps.w / THUMBNAIL_LW, bm.bmProps.h / THUMBNAIL_LH, 0);
-	GrPaletteStepLoad (NULL);
+	ShrinkTGA (&bm, bm.props.w / THUMBNAIL_LW, bm.props.h / THUMBNAIL_LH, 0);
+	paletteManager.LoadEffect  ();
 	// convert the resized TGA to bmp
+	ubyte *texBuf = bm.TexBuf ();
 	for (y = 0; y < THUMBNAIL_LH; y++) {
 		i = y * THUMBNAIL_LW * 3;
 		k = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
 		for (x = 0; x < THUMBNAIL_LW; x++, k++, i += 3)
-			thumbCanv->cvBitmap.bmTexBuf [k] = GrFindClosestColor (gamePalette, bm.bmTexBuf [i] / 4, bm.bmTexBuf [i+1] / 4, bm.bmTexBuf [i+2] / 4);
+			thumbCanv->cvBitmap.texBuf [k] = paletteManager.Game ()->ClosestColor (texBuf [i] / 4, texBuf [i+1] / 4, texBuf [i+2] / 4);
 			}
-	GrPaletteStepLoad (NULL);
-	D2_FREE (bm.bmTexBuf);
-	m_cf.Write (thumbCanv->cvBitmap.bmTexBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1);
+	paletteManager.LoadEffect  ();
+	D2_FREE (bm.texBuf);
+	m_cf.Write (thumbCanv->cvBitmap.texBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1);
 	GrSetCurrentCanvas (saveCanv);
 	GrFreeCanvas (thumbCanv);
-	m_cf.Write (gamePalette, 3, 256);
+	m_cf.Write (paletteManager.Game (), 3, 256);
 	}
 else	{
  	ubyte color = 0;
@@ -2330,11 +2329,11 @@ else {
 //read last was super information
 m_cf.Read (&bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
-gameData.render.xFlashEffect = m_cf.ReadFix ();
-gameData.render.xTimeFlashLastPlayed = m_cf.ReadFix ();
-gameStates.ogl.palAdd.red = m_cf.ReadShort ();
-gameStates.ogl.palAdd.green = m_cf.ReadShort ();
-gameStates.ogl.palAdd.blue = m_cf.ReadShort ();
+paletteManager.SetEffectDuration (m_cf.ReadFix ());
+paletteManager.SetLastEffectTime (m_cf.ReadFix ());
+paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
+paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
+paletteManager.SetBlueEffect ((ubyte) m_cf.ReadShort ());
 m_cf.Read (gameData.render.lights.subtracted, 
 		  sizeof (gameData.render.lights.subtracted [0]), 
 		  (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
@@ -2582,14 +2581,14 @@ if (m_nVersion >= 12) {
 	//read last was super information
 	m_cf.Read (&bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 	m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
-	m_cf.Read (&gameData.render.xFlashEffect, sizeof (int), 1);
-	m_cf.Read (&gameData.render.xTimeFlashLastPlayed, sizeof (int), 1);
-	m_cf.Read (&gameStates.ogl.palAdd.red, sizeof (int), 1);
-	m_cf.Read (&gameStates.ogl.palAdd.green, sizeof (int), 1);
-	m_cf.Read (&gameStates.ogl.palAdd.blue, sizeof (int), 1);
+	paletteManager.SetEffectDuration ((fix) m_cf.ReadInt ());
+	paletteManager.SetLastEffectTime ((fix) m_cf.ReadInt ());
+	paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
+	paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
+	paletteManager.SetBlueEffect ((ubyte) m_cf.ReadShort ());
 	}
 else {
-	ResetPaletteAdd ();
+	paletteManager.ResetEffect ();
 	}
 
 //	Load gameData.render.lights.subtracted

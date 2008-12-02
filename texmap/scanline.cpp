@@ -69,7 +69,7 @@ void c_tmap_scanline_shaded(void)
 	fade = tmap_flat_shadeValue<<8;
 	for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
 		tmp = *dest;
-		*dest++ = grFadeTable[ fade |(tmp)];
+		*dest++ = paletteManager.FadeTable ()[ fade |(tmp)];
 	}
 }
 
@@ -125,7 +125,7 @@ void c_tmap_scanline_lin(void)
 
 	if (!gameStates.render.bTransparency)	{
 		ubyte*			pixPtrLocalCopy = pixptr;
-		ubyte*			fadeTableLocalCopy = grFadeTable;
+		ubyte*			fadeTableLocalCopy = paletteManager.FadeTable ();
 		unsigned int	destlong;
 
 		x = fx_xright-fx_xleft+1;
@@ -198,7 +198,7 @@ void c_tmap_scanline_lin(void)
 			c = (uint)pixptr[ (X2I(v)&(64*63)) + (X2I(u)&63) ];
 			if ( (int) c!=TRANSPARENCY_COLOR)
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-				*dest = grFadeTable[ (l&(0x7f00)) + c ];
+				*dest = paletteManager.FadeTable ()[ (l&(0x7f00)) + c ];
 			//end edit -MM
 			dest++;
 			l += dldx;
@@ -228,7 +228,7 @@ void c_tmap_scanline_lin(void)
 	if (!gameStates.render.bTransparency)	{
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			*dest++ = grFadeTable[ (l&(0x7f00)) + (uint)pixptr[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
+			*dest++ = paletteManager.FadeTable ()[ (l&(0x7f00)) + (uint)pixptr[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
 			//end edit -MM
 			l += dldx;
 			u += dudx;
@@ -239,7 +239,7 @@ void c_tmap_scanline_lin(void)
 			c = (uint)pixptr[ (X2I(v)&(64*63)) + (X2I(u)&63) ];
 			if ( c!=255)
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-				*dest = grFadeTable[ (l&(0x7f00)) + c ];
+				*dest = paletteManager.FadeTable ()[ (l&(0x7f00)) + c ];
 			//end edit -MM
 			dest++;
 			l += dldx;
@@ -561,7 +561,7 @@ void c_fp_tmap_scanline_per(void)
 
 				while (j > 0) {
 					*dest++ =
-					    grFadeTable[((int) fabs(l)) * 256 +
+					    paletteManager.FadeTable ()[((int) fabs(l)) * 256 +
 							  (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) +
 									(((int) (u * rec_z)) & 63)]];
 					l += dldx;
@@ -577,7 +577,7 @@ void c_fp_tmap_scanline_per(void)
 			j = x;
 			while (j >= 8) {
 				destlong =
-				    (u_int64_t) grFadeTable[((int) fabs(l)) * 256 +
+				    (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 +
 							      (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) +
 									    (((int) (u * rec_z)) & 63)]];
 				l += dldx;
@@ -586,7 +586,7 @@ void c_fp_tmap_scanline_per(void)
 				z += dzdx;
 				rec_z = 1.0 / z;
 				destlong |=
-				    (u_int64_t) grFadeTable[((int) fabs(l)) * 256 +
+				    (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 +
 							      (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) +
 									    (((int) (u * rec_z)) & 63)]] << 8;
 				l += dldx;
@@ -595,7 +595,7 @@ void c_fp_tmap_scanline_per(void)
 				z += dzdx;
 				rec_z = 1.0 / z;
 				destlong |=
-				    (u_int64_t) grFadeTable[((int) fabs(l)) * 256 +
+				    (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 +
 							      (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) +
 									    (((int) (u * rec_z)) & 63)]] << 16;
 				l += dldx;
@@ -604,7 +604,7 @@ void c_fp_tmap_scanline_per(void)
 				z += dzdx;
 				rec_z = 1.0 / z;
 				destlong |=
-				    (u_int64_t) grFadeTable[((int) fabs(l)) * 256 +
+				    (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 +
 							      (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) +
 									    (((int) (u * rec_z)) & 63)]] << 24;
 				l += dldx;
@@ -613,7 +613,7 @@ void c_fp_tmap_scanline_per(void)
 				z += dzdx;
 				rec_z = 1.0 / z;
 				destlong |=
-				    (u_int64_t) grFadeTable[((int) fabs(l)) * 256 +
+				    (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 +
 							      (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) +
 									    (((int) (u * rec_z)) & 63)]] << 32;
 				l += dldx;
@@ -622,7 +622,7 @@ void c_fp_tmap_scanline_per(void)
 				z += dzdx;
 				rec_z = 1.0 / z;
 				destlong |=
-				    (u_int64_t) grFadeTable[((int) fabs(l)) * 256 +
+				    (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 +
 							      (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) +
 									    (((int) (u * rec_z)) & 63)]] << 40;
 				l += dldx;
@@ -631,7 +631,7 @@ void c_fp_tmap_scanline_per(void)
 				z += dzdx;
 				rec_z = 1.0 / z;
 				destlong |=
-				    (u_int64_t) grFadeTable[((int) fabs(l)) * 256 +
+				    (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 +
 							      (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) +
 									    (((int) (u * rec_z)) & 63)]] << 48;
 				l += dldx;
@@ -640,7 +640,7 @@ void c_fp_tmap_scanline_per(void)
 				z += dzdx;
 				rec_z = 1.0 / z;
 				destlong |=
-				    (u_int64_t) grFadeTable[((int) fabs(l)) * 256 +
+				    (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 +
 							      (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) +
 									    (((int) (u * rec_z)) & 63)]] << 56;
 				l += dldx;
@@ -657,7 +657,7 @@ void c_fp_tmap_scanline_per(void)
 		}
 		while (x-- > 0) {
 			*dest++ =
-			    grFadeTable[((int) fabs(l)) * 256 +
+			    paletteManager.FadeTable ()[((int) fabs(l)) * 256 +
 					  (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)]];
 			l += dldx;
 			u += dudx;
@@ -673,7 +673,7 @@ void c_fp_tmap_scanline_per(void)
 				while (j > 0) {
 					c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)];
 					if (c != 255)
-						*dest = grFadeTable[((int) fabs(l)) * 256 + c];
+						*dest = paletteManager.FadeTable ()[((int) fabs(l)) * 256 + c];
 					dest++;
 					l += dldx;
 					u += dudx;
@@ -691,7 +691,7 @@ void c_fp_tmap_scanline_per(void)
 				c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)];
 				if (c != 255) {
 					destlong &= ~(u_int64_t)0xFF;
-					destlong |= (u_int64_t) grFadeTable[((int) fabs(l)) * 256 + c];
+					destlong |= (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 + c];
 				}
 				l += dldx;
 				u += dudx;
@@ -701,7 +701,7 @@ void c_fp_tmap_scanline_per(void)
 				c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)];
 				if (c != 255) {
 					destlong &= ~((u_int64_t)0xFF << 8);
-					destlong |= (u_int64_t) grFadeTable[((int) fabs(l)) * 256 + c] << 8;
+					destlong |= (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 + c] << 8;
 				}
 				l += dldx;
 				u += dudx;
@@ -711,7 +711,7 @@ void c_fp_tmap_scanline_per(void)
 				c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)];
 				if (c != 255) {
 					destlong &= ~((u_int64_t)0xFF << 16);
-					destlong |= (u_int64_t) grFadeTable[((int) fabs(l)) * 256 + c] << 16;
+					destlong |= (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 + c] << 16;
 				}
 				l += dldx;
 				u += dudx;
@@ -721,7 +721,7 @@ void c_fp_tmap_scanline_per(void)
 				c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)];
 				if (c != 255) {
 					destlong &= ~((u_int64_t)0xFF << 24);
-					destlong |= (u_int64_t) grFadeTable[((int) fabs(l)) * 256 + c] << 24;
+					destlong |= (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 + c] << 24;
 				}
 				l += dldx;
 				u += dudx;
@@ -731,7 +731,7 @@ void c_fp_tmap_scanline_per(void)
 				c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)];
 				if (c != 255) {
 					destlong &= ~((u_int64_t)0xFF << 32);
-					destlong |= (u_int64_t) grFadeTable[((int) fabs(l)) * 256 + c] << 32;
+					destlong |= (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 + c] << 32;
 				}
 				l += dldx;
 				u += dudx;
@@ -741,7 +741,7 @@ void c_fp_tmap_scanline_per(void)
 				c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)];
 				if (c != 255) {
 					destlong &= ~((u_int64_t)0xFF << 40);
-					destlong |= (u_int64_t) grFadeTable[((int) fabs(l)) * 256 + c] << 40;
+					destlong |= (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 + c] << 40;
 				}
 				l += dldx;
 				u += dudx;
@@ -751,7 +751,7 @@ void c_fp_tmap_scanline_per(void)
 				c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)];
 				if (c != 255) {
 					destlong &= ~((u_int64_t)0xFF << 48);
-					destlong |= (u_int64_t) grFadeTable[((int) fabs(l)) * 256 + c] << 48;
+					destlong |= (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 + c] << 48;
 				}
 				l += dldx;
 				u += dudx;
@@ -761,7 +761,7 @@ void c_fp_tmap_scanline_per(void)
 				c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)];
 				if (c != 255) {
 					destlong &= ~((u_int64_t)0xFF << 56);
-					destlong |= (u_int64_t) grFadeTable[((int) fabs(l)) * 256 + c] << 56;
+					destlong |= (u_int64_t) paletteManager.FadeTable ()[((int) fabs(l)) * 256 + c] << 56;
 				}
 				l += dldx;
 				u += dudx;
@@ -778,7 +778,7 @@ void c_fp_tmap_scanline_per(void)
 		while (x-- > 0) {
 			c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)];
 			if (c != 255)
-				*dest = grFadeTable[((int) fabs(l)) * 256 + c];
+				*dest = paletteManager.FadeTable ()[((int) fabs(l)) * 256 + c];
 			dest++;
 			l += dldx;
 			u += dudx;
@@ -812,7 +812,7 @@ void c_tmap_scanline_per(void)
 
 	if (!gameStates.render.bTransparency)	{
 		ubyte*			pixPtrLocalCopy = pixptr;
-		ubyte*			fadeTableLocalCopy = grFadeTable;
+		ubyte*			fadeTableLocalCopy = paletteManager.FadeTable ();
 		unsigned int	destlong;
 
 		x = fx_xright-fx_xleft+1;
@@ -891,7 +891,7 @@ void c_tmap_scanline_per(void)
 			c = (uint)pixptr[ ( (v/z)&(64*63) ) + ((u/z)&63) ];
 			if ( (int) c!=TRANSPARENCY_COLOR)
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-				*dest = grFadeTable[ (l&(0x7f00)) + c ];
+				*dest = paletteManager.FadeTable ()[ (l&(0x7f00)) + c ];
 			//end edit -MM
 			dest++;
 			l += dldx;
@@ -924,7 +924,7 @@ void c_tmap_scanline_per(void)
 	if (!gameStates.render.bTransparency)	{
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			*dest++ = grFadeTable[ (l&(0x7f00)) + (uint)pixptr[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ];
+			*dest++ = paletteManager.FadeTable ()[ (l&(0x7f00)) + (uint)pixptr[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ];
 			//end edit -MM
 			l += dldx;
 			u += dudx;
@@ -936,7 +936,7 @@ void c_tmap_scanline_per(void)
 			c = (uint)pixptr[ ( (v/z)&(64*63) ) + ((u/z)&63) ];
 			if ( c!=255)
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-				*dest = grFadeTable[ (l&(0x7f00)) + c ];
+				*dest = paletteManager.FadeTable ()[ (l&(0x7f00)) + c ];
 			//end edit -MM
 			dest++;
 			l += dldx;

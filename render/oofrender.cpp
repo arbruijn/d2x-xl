@@ -346,7 +346,7 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float
 	tOOF_faceVert	*pfv;
 	tOOF_vector		*pv, *pvn, *phv;
 	tFaceColor		*pvc, vc, sc = {{1,1,1,1}};
-	grsBitmap		*bmP;
+	CBitmap			*bmP;
 	int				h, i, j;
 	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0);
 	int				bDynLighting = gameStates.render.bApplyDynLight;
@@ -388,11 +388,11 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			fl = 1;
 //		fl = 1.0f;
 		bmP = po->textures.pBitmaps + pf->texProps.nTexId;
-		if (bmP->glTexture && ((int) bmP->glTexture->handle < 0))
-			bmP->glTexture->handle = 0;
+		if (bmP->texInfo && ((int) bmP->texInfo->handle < 0))
+			bmP->texInfo->handle = 0;
 		if (OglBindBmTex (bmP, 1, 0))
 			return 0;
-		OglTexWrap (bmP->glTexture, GL_REPEAT);
+		OglTexWrap (bmP->texInfo, GL_REPEAT);
 		if (pso->nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
 			glColor4f (fl * pso->glowInfo.color.r, 
 						  fl * pso->glowInfo.color.g, 

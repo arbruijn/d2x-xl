@@ -46,7 +46,7 @@ void G3GetASEModelItems (int nModel, tASEModel *pa, tG3Model *pm, float fScale)
 	tG3SubModel			*psm;
 	tG3ModelFace		*pmf = pm->pFaces;
 	tG3ModelVertex		*pmv = pm->pFaceVerts;
-	grsBitmap			*bmP;
+	CBitmap			*bmP;
 	int					h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
 	int					bTextured;
 
@@ -84,7 +84,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 		i = pfa->nBitmap;
 #endif
 		bmP = pa->textures.pBitmaps + i;
-		bTextured = !bmP->bmFlat;
+		bTextured = !bmP->bFlat;
 		pmf->nBitmap = bTextured ? i : -1;
 		pmf->nVerts = 3;
 		pmf->nId = iFace;
@@ -96,9 +96,9 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 				pmv->baseColor.green =
 				pmv->baseColor.blue = 1;
 			else {
-				pmv->baseColor.red = (float) bmP->bmAvgRGB.red / 255.0f;
-				pmv->baseColor.green = (float) bmP->bmAvgRGB.green / 255.0f;
-				pmv->baseColor.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
+				pmv->baseColor.red = (float) bmP->avgRGB.red / 255.0f;
+				pmv->baseColor.green = (float) bmP->avgRGB.green / 255.0f;
+				pmv->baseColor.blue = (float) bmP->avgRGB.blue / 255.0f;
 				}
 			pmv->baseColor.alpha = 1;
 			pmv->renderColor = pmv->baseColor;
@@ -144,7 +144,7 @@ pm->pTextures = pa->textures.pBitmaps;
 pm->nTextures = pa->textures.nBitmaps;
 memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
 for (i = 0; i < pm->nTextures; i++)
-	if ((j = (int) pm->pTextures [i].bmTeam))
+	if ((j = (int) pm->pTextures [i].nTeam))
 		pm->teamTextures [j - 1] = i;
 pm->nType = 2;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);

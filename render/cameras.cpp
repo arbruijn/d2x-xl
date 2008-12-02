@@ -26,13 +26,13 @@ CCameraManager cameraManager;
 int CCamera::CreateBuffer (void)
 {
 #if RENDER2TEXTURE == 1
-if (!OglCreatePBuffer (&m_info.pb, m_info.texture.bmProps.w, m_info.texture.bmProps.h, 0))
+if (!OglCreatePBuffer (&m_info.pb, m_info.texture.props.w, m_info.texture.props.h, 0))
 	return 0;
 m_info.glTexId = m_info.pb.texId;
 #elif RENDER2TEXTURE == 2
-if (!OglCreateFBuffer (&m_info.fb, m_info.texture.bmProps.w, m_info.texture.bmProps.h, m_info.bShadowMap))
+if (!m_info.fbo.Create (m_info.texture.props.w, m_info.texture.props.h, m_info.bShadowMap))
 	return 0;
-m_info.glTexId = m_info.fb.hRenderBuffer;
+m_info.glTexId = m_info.fbo.RenderBuffer ();
 #endif
 sprintf (m_info.texture.szName, "CAM#%04d", m_info.nId);
 return 1;
@@ -47,8 +47,8 @@ if (bCheckTexture)
 	return m_info.texture.glTexture ? OglPBufferAvail (&m_info.texture.glTexture->pbuffer) : -1;
 return OglPHaveBuffer (&m_info.pb);
 #elif RENDER2TEXTURE == 2
-	return m_info.texture.glTexture ? OglFBufferAvail (&m_info.texture.glTexture->fbuffer) : -1;
-return OglFBufferAvail (&m_info.fb);
+	return m_info.texture.TexInfo () ? m_info.texture.TexInfo ()->fbo.Available () : -1;
+return m_info.fbo.Available ();
 #endif
 }
 
@@ -56,7 +56,7 @@ return OglFBufferAvail (&m_info.fb);
 
 int CCamera::HaveTexture (void)
 {
-return m_info.texture.glTexture && ((int) m_info.texture.glTexture->handle > 0);
+return m_info.texture.TexInfo () && ((int) m_info.texture.TexInfo ()->handle > 0);
 }
 
 //------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ int CCamera::EnableBuffer (void)
 if (!OglEnablePBuffer (&m_info.pb))
 	return 0;
 #elif RENDER2TEXTURE == 2
-if (!OglEnableFBuffer (&m_info.fb))
+if (!m_info.fbo.Enable ())
 	return 0;
 #endif
 OglFreeBmTexture (&m_info.texture);
@@ -84,10 +84,10 @@ if (!OglDisablePBuffer (&m_info.pb))
 if (!m_info.texture.glTexture)
 	OglLoadBmTextureM (&m_info.texture, 0, -1, 0, &m_info.pb);
 #elif RENDER2TEXTURE == 2
-if (!OglDisableFBuffer (&m_info.fb))
+if (!m_info.fbo.Disable ())
 	return 0;
-if (!m_info.texture.glTexture)
-	OglLoadBmTextureM (&m_info.texture, 0, -1, 0, &m_info.fb);
+if (!m_info.texture.TexInfo ())
+	OglLoadBmTextureM (&m_info.texture, 0, -1, 0, &m_info.fbo);
 #endif
 return 1;
 }
@@ -101,7 +101,7 @@ if ((HaveBuffer (0) != 1) && !CreateBuffer ())
 OGL_BINDTEX (m_info.glTexId);
 #if RENDER2TEXTURE == 1
 #	ifdef _WIN32
-return m_info.pb.bBound = wglBindTexImageARB (m_info.pb.hBuf, WGL_FRONT_LEFT_ARB);
+return m_info.pbo.Bind ();
 #	endif
 #endif
 return 1;
@@ -133,7 +133,7 @@ if (!HaveBuffer (0))
 #if RENDER2TEXTURE == 1
 OglDestroyPBuffer (&m_info.pb);
 #elif RENDER2TEXTURE == 2
-OglDestroyFBuffer (&m_info.fb);
+m_info.fbo.Destroy ();
 #endif
 return 1;
 }
@@ -160,33 +160,33 @@ int CCamera::Create (short nId, short srcSeg, short srcSide, short tgtSeg, short
 Init ();
 m_info.nId = nId;
 m_info.bShadowMap = bShadowMap;
-h = grdCurCanv->cvBitmap.bmProps.w / (2 - gameOpts->render.cameras.bHires);
+h = grdCurCanv->cvBitmap.props.w / (2 - gameOpts->render.cameras.bHires);
 for (i = 1; i < h; i <<= 1)
 	;
-m_info.texture.bmProps.w = i;
-h = grdCurCanv->cvBitmap.bmProps.h / (2 - gameOpts->render.cameras.bHires);
+m_info.texture.props.w = i;
+h = grdCurCanv->cvBitmap.props.h / (2 - gameOpts->render.cameras.bHires);
 for (i = 1; i < h; i <<= 1)
 	;
-m_info.texture.bmProps.h = i;
-m_info.texture.bmProps.rowSize = max (grdCurCanv->cvBitmap.bmProps.w, m_info.texture.bmProps.w);
-m_info.texture.bmBPP = 4;
+m_info.texture.props.h = i;
+m_info.texture.props.rowSize = max (grdCurCanv->cvBitmap.props.w, m_info.texture.props.w);
+m_info.texture.nBPP = 4;
 #if RENDER2TEXTURE
 if (!CreateBuffer ()) 
 #endif
 {
 #if CAMERA_READPIXELS
-	if (!(m_info.texture.bmTexBuf = (char *) D2_ALLOC (m_info.texture.bmProps.w * m_info.texture.bmProps.h * 4)))
+	if (!(m_info.texture.texBuf = (char *) D2_ALLOC (m_info.texture.props.w * m_info.texture.props.h * 4)))
 		return 0;
 	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport)
-		m_info.screenBuf = m_info.texture.bmTexBuf;
+		m_info.screenBuf = m_info.texture.texBuf;
 	else {
-		m_info.screenBuf = D2_ALLOC (grdCurCanv->cvBitmap.bmProps.w * grdCurCanv->cvBitmap.bmProps.h * 4);
+		m_info.screenBuf = D2_ALLOC (grdCurCanv->cvBitmap.props.w * grdCurCanv->cvBitmap.props.h * 4);
 		if (!m_info.screenBuf) {
 			gameOpts->render.cameras.bFitToWall = 1;
-			m_info.screenBuf = m_info.texture.bmTexBuf;
+			m_info.screenBuf = m_info.texture.texBuf;
 			}
 		}
-	memset (m_info.texture.bmTexBuf, 0, m_info.texture.bmProps.w * m_info.texture.bmProps.h * 4);
+	memset (m_info.texture.texBuf, 0, m_info.texture.props.w * m_info.texture.props.h * 4);
 #else
 	return 0;
 #endif
@@ -246,11 +246,11 @@ void CCamera::Destroy (void)
 {
 OglFreeBmTexture (&m_info.texture);
 OglDeleteTextures (1, &m_info.glTexId);
-if (m_info.screenBuf && (m_info.screenBuf != (char *) m_info.texture.bmTexBuf))
+if (m_info.screenBuf && (m_info.screenBuf != (char *) m_info.texture.texBuf))
 	D2_FREE (m_info.screenBuf);
-if (m_info.texture.bmTexBuf) {
-	D2_FREE (m_info.texture.bmTexBuf);
-	m_info.texture.bmTexBuf = NULL;
+if (m_info.texture.texBuf) {
+	D2_FREE (m_info.texture.texBuf);
+	m_info.texture.texBuf = NULL;
 	}
 #if RENDER2TEXTURE
 if (gameStates.ogl.bRender2TextureOk)
@@ -332,10 +332,10 @@ else
 		}
 	du = dv = 0;
 	if (bHaveBuffer) {
-		duImage = (float) grdCurCanv->cvBitmap.bmProps.w / (float) m_info.texture.bmProps.w / nScale;
-		dvImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) m_info.texture.bmProps.h / nScale;
+		duImage = (float) grdCurCanv->cvBitmap.props.w / (float) m_info.texture.props.w / nScale;
+		dvImage = (float) grdCurCanv->cvBitmap.props.h / (float) m_info.texture.props.h / nScale;
 		if (!bFitToWall && RENDERPATH) {
-			aImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) grdCurCanv->cvBitmap.bmProps.w;
+			aImage = (float) grdCurCanv->cvBitmap.props.h / (float) grdCurCanv->cvBitmap.props.w;
 			if (vertexP)
 				aFace = fVector::Dist(*(fVector *)vertexP, *(fVector *)(vertexP + 1)) / 
 				        fVector::Dist(*(fVector *)(vertexP + 1), *(fVector *)(vertexP + i2));
@@ -466,7 +466,7 @@ if (ReleaseBuffer () && EnableBuffer ()) {
 	}
 else 
 #	if CAMERA_READPIXELS
-if (m_info.texture.bmTexBuf) 
+if (m_info.texture.texBuf) 
 #	endif
 #endif
 	{
@@ -474,7 +474,7 @@ if (m_info.texture.bmTexBuf)
 	m_info.bValid = 1;
 	OglFreeBmTexture (&m_info.texture);
 #if CAMERA_READPIXELS
-	memset (m_info.texture.bmTexBuf, 0, m_info.texture.bmProps.w * m_info.texture.bmProps.h * 4);
+	memset (m_info.texture.texBuf, 0, m_info.texture.props.w * m_info.texture.props.h * 4);
 	glDisable (GL_TEXTURE_2D);
 #endif
 	glReadBuffer (GL_BACK);
@@ -482,15 +482,15 @@ if (m_info.texture.bmTexBuf)
 #if CAMERA_READPIXELS == 0
 		OglLoadBmTextureM (&m_info.texture, 0, -1, 0, NULL);
 		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
-			(grdCurCanv->cvBitmap.bmProps.w - m_info.texture.bmProps.w) / 2, 
-			(grdCurCanv->cvBitmap.bmProps.h - m_info.texture.bmProps.h) / 2, 
-			m_info.texture.bmProps.w, m_info.texture.bmProps.h, 0);
+			(grdCurCanv->cvBitmap.props.w - m_info.texture.props.w) / 2, 
+			(grdCurCanv->cvBitmap.props.h - m_info.texture.props.h) / 2, 
+			m_info.texture.props.w, m_info.texture.props.h, 0);
 #else
 		glReadPixels (
-			(grdCurCanv->cvBitmap.bmProps.w - m_info.texture.bmProps.w) / 2, 
-			(grdCurCanv->cvBitmap.bmProps.h - m_info.texture.bmProps.h) / 2, 
-			m_info.texture.bmProps.w, m_info.texture.bmProps.h, 
-			GL_RGBA, GL_UNSIGNED_BYTE, m_info.texture.bmTexBuf);
+			(grdCurCanv->cvBitmap.props.w - m_info.texture.props.w) / 2, 
+			(grdCurCanv->cvBitmap.props.h - m_info.texture.props.h) / 2, 
+			m_info.texture.props.w, m_info.texture.props.h, 
+			GL_RGBA, GL_UNSIGNED_BYTE, m_info.texture.texBuf);
 		OglLoadBmTextureM (&m_info.texture, 0, -1, NULL);
 #endif
 		}
@@ -498,33 +498,33 @@ if (m_info.texture.bmTexBuf)
 #if CAMERA_READPIXELS == 0
 			OglLoadBmTextureM (&m_info.texture, 0, -1, 0, NULL);
 			glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
-				-(m_info.texture.bmProps.w - grdCurCanv->cvBitmap.bmProps.w) / 2,
-				-(m_info.texture.bmProps.h - grdCurCanv->cvBitmap.bmProps.h) / 2, 
-				m_info.texture.bmProps.w, m_info.texture.bmProps.h, 0);
+				-(m_info.texture.props.w - grdCurCanv->cvBitmap.props.w) / 2,
+				-(m_info.texture.props.h - grdCurCanv->cvBitmap.props.h) / 2, 
+				m_info.texture.props.w, m_info.texture.props.h, 0);
 #else
 		char	*pSrc, *pDest;
-		int	dxBuf = (m_info.texture.bmProps.w - grdCurCanv->cvBitmap.bmProps.w) / 2;
-		int	dyBuf = (m_info.texture.bmProps.h - grdCurCanv->cvBitmap.bmProps.h) / 2;
-		int	wSrc = grdCurCanv->cvBitmap.bmProps.w * 4;
-		int	wDest = m_info.texture.bmProps.w * 4;
+		int	dxBuf = (m_info.texture.props.w - grdCurCanv->cvBitmap.props.w) / 2;
+		int	dyBuf = (m_info.texture.props.h - grdCurCanv->cvBitmap.props.h) / 2;
+		int	wSrc = grdCurCanv->cvBitmap.props.w * 4;
+		int	wDest = m_info.texture.props.w * 4;
 
-		if (grdCurCanv->cvBitmap.bmProps.w == m_info.texture.bmProps.w) {
+		if (grdCurCanv->cvBitmap.props.w == m_info.texture.props.w) {
 			glReadPixels (
-				0, 0, grdCurCanv->cvBitmap.bmProps.w, grdCurCanv->cvBitmap.bmProps.h,
-				GL_RGBA, GL_UNSIGNED_BYTE, m_info.texture.bmTexBuf + dyBuf * m_info.texture.bmProps.w * 4);
+				0, 0, grdCurCanv->cvBitmap.props.w, grdCurCanv->cvBitmap.props.h,
+				GL_RGBA, GL_UNSIGNED_BYTE, m_info.texture.texBuf + dyBuf * m_info.texture.props.w * 4);
 			}
 		else {
 			glReadPixels (
-				0, 0, grdCurCanv->cvBitmap.bmProps.w, grdCurCanv->cvBitmap.bmProps.h,
+				0, 0, grdCurCanv->cvBitmap.props.w, grdCurCanv->cvBitmap.props.h,
 				GL_RGBA, GL_UNSIGNED_BYTE, m_info.screenBuf);
 			pSrc = m_info.screenBuf;
-			pDest = m_info.texture.bmTexBuf + (dyBuf - 1) * wDest + dxBuf * 4;
+			pDest = m_info.texture.texBuf + (dyBuf - 1) * wDest + dxBuf * 4;
 #	ifndef _WIN32
-			for (dyBuf = grdCurCanv->cvBitmap.bmProps.h; dyBuf; dyBuf--, pSrc += wSrc, pDest += wDest)
+			for (dyBuf = grdCurCanv->cvBitmap.props.h; dyBuf; dyBuf--, pSrc += wSrc, pDest += wDest)
 				memcpy (pDest, pSrc, wSrc);
 #	else
-			dxBuf = m_info.texture.bmProps.w - grdCurCanv->cvBitmap.bmProps.w;
-			dyBuf = grdCurCanv->cvBitmap.bmProps.h;
+			dxBuf = m_info.texture.props.w - grdCurCanv->cvBitmap.props.w;
+			dyBuf = grdCurCanv->cvBitmap.props.h;
 			wSrc /= 4;
 			__asm {
 				push	edi

@@ -176,8 +176,8 @@ else
 			if (_bmP) {\
 				if (OglBindBmTex (_bmP, 1, 3)) \
 					return 1; \
-				(_bmP) = BmCurFrame (_bmP, -1); \
-				OglTexWrap ((_bmP)->glTexture, GL_REPEAT); \
+				(_bmP) = (_bmP)->CurFrame (-1); \
+				OglTexWrap ((_bmP)->TexInfo (), GL_REPEAT); \
 				} \
 			else { \
 				OGL_BINDTEX ((_lmP)->handle); \

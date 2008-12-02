@@ -64,7 +64,7 @@ typedef tPOF_string	char [9];
 typedef struct tPOF_textures {
 	int					nTextures;
 	tPOF_string			*pszNames;
-	grsBitmap			*pBitmaps;
+	tBitmap			*pBitmaps;
 } tPOF_textures;
 
 typedef struct tPOF_faceVert {

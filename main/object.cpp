@@ -87,7 +87,7 @@ int dbgObjInstances = 0;
 #define	DEG1		 (F1_0 / (4 * 90))
 
 //------------------------------------------------------------------------------
-// grsBitmap *robot_bms [MAX_ROBOT_BITMAPS];	//all bitmaps for all robots
+// CBitmap *robot_bms [MAX_ROBOT_BITMAPS];	//all bitmaps for all robots
 
 // int robot_bm_nums [MAX_ROBOT_TYPES];		//starting bitmap num for each robot
 // int robot_n_bitmaps [MAX_ROBOT_TYPES];		//how many bitmaps for each robot
@@ -1916,7 +1916,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 			if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]<12)
 				LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]++;
 	}
-gameStates.ogl.palAdd.red = 40;
+paletteManager.SetRedEffect (40);
 gameStates.app.bPlayerIsDead = 1;
 #ifdef TACTILE
    if (TactileStick)
@@ -1949,7 +1949,7 @@ if (!gameStates.entropy.bExitSequence) {
 	playerP->info.xShields = F1_0*1000;
 	MultiSendShields ();
 	}
-PALETTE_FLASH_SET (0, 0, 0);
+paletteManager.SetEffect (0, 0, 0);
 }
 
 //------------------------------------------------------------------------------

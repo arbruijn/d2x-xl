@@ -85,7 +85,7 @@ typedef struct g3sObject {
 
 } g3sObject;
 
-typedef void tmap_drawer_func (grsBitmap *, int, g3sPoint **);
+typedef void tmap_drawer_func (CBitmap *, int, g3sPoint **);
 typedef void flat_drawer_func (int, int *);
 typedef int line_drawer_func (fix, fix, fix, fix);
 typedef tmap_drawer_func *tmap_drawer_fp;
@@ -259,7 +259,7 @@ int G3DrawPoly (int nv,g3sPoint **pointlist);
 
 //draw a texture-mapped face.
 //returns 1 if off screen, 0 if drew
-int G3DrawTMap (int nv,g3sPoint **pointlist,tUVL *uvl_list,grsBitmap *bm, int bBlend);
+int G3DrawTMap (int nv,g3sPoint **pointlist,tUVL *uvl_list,CBitmap *bm, int bBlend);
 
 //draw a sortof sphere - i.e., the 2d radius is proportional to the 3d
 //radius, but not to the distance from the eye
@@ -276,7 +276,7 @@ int G3DrawSphere (g3sPoint *pnt,fix rad, int bBigSphere);
 //G3DrawPoly ().
 //returns -1 if not facing, 1 if off screen, 0 if drew
 int G3CheckAndDrawPoly (int nv, g3sPoint **pointlist, vmsVector *norm, vmsVector *pnt);
-int G3CheckAndDrawTMap (int nv, g3sPoint **pointlist, tUVL *uvl_list, grsBitmap *bmP, vmsVector *norm, vmsVector *pnt);
+int G3CheckAndDrawTMap (int nv, g3sPoint **pointlist, tUVL *uvl_list, CBitmap *bmP, vmsVector *norm, vmsVector *pnt);
 
 //draws a line. takes two points.
 int G3DrawLine (g3sPoint *p0,g3sPoint *p1);
@@ -287,13 +287,13 @@ int G3DrawRodPoly (g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top
 
 //draw a bitmap tObject that is always facing you
 //returns 1 if off screen, 0 if drew
-int G3DrawRodTexPoly (grsBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width,fix light, tUVL *uvlList);
+int G3DrawRodTexPoly (CBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width,fix light, tUVL *uvlList);
 
 //draws a bitmap with the specified 3d width & height
 //returns 1 if off screen, 0 if drew
-int G3DrawBitmap (const vmsVector& vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int nTransp);
+int G3DrawBitmap (const vmsVector& vPos, fix xWidth, fix xHeight, CBitmap *bmP, tRgbaColorf *color, float alpha, int nTransp);
 
-int G3DrawSprite (const vmsVector& vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int bAdditive, float fSoftRad);
+int G3DrawSprite (const vmsVector& vPos, fix xWidth, fix xHeight, CBitmap *bmP, tRgbaColorf *color, float alpha, int bAdditive, float fSoftRad);
 
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults

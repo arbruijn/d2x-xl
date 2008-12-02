@@ -140,7 +140,7 @@ if (!(oldFlags & flag) &&
 	else
 		SelectWeapon (nWeaponIndex, 0, 0, 1);
 	}
-PALETTE_FLASH_ADD (7, 14, 21);
+paletteManager.BumpEffect (7, 14, 21);
 return 1;
 }
 

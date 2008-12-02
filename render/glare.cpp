@@ -496,7 +496,7 @@ void RenderHardGlare (fVector *sprite, fVector *vCenter, int nTexture, float fLi
 {
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	tRgbaColorf	color;
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	int			i;
 
 fLight /= 4;
@@ -524,7 +524,7 @@ glEnable (GL_TEXTURE_2D);
 bmP = bAdditive ? bmpGlare : bmpCorona;
 if (OglBindBmTex (bmP, 1, -1))
 	return;
-OglTexWrap (bmP->glTexture, GL_CLAMP);
+OglTexWrap (bmP->texInfo, GL_CLAMP);
 glDisable (GL_CULL_FACE);
 if (bAdditive) {
 	fLight *= color.alpha;
@@ -590,7 +590,7 @@ void RenderSoftGlare (fVector *sprite, fVector *vCenter, int nTexture, float fIn
 	tRgbaColorf color;
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	int 			i;
-	grsBitmap	*bmP = NULL;
+	CBitmap	*bmP = NULL;
 
 if (gameStates.render.bQueryCoronas) {
 	glDisable (GL_TEXTURE_2D);

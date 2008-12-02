@@ -446,7 +446,7 @@ int AttemptToStealItem(tObject *objP, int nPlayer)
 	gameData.ai.localInfo[OBJ_IDX (objP)].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 	gameData.ai.localInfo[OBJ_IDX (objP)].mode = AIM_THIEF_RETREAT;
 	if (rval) {
-		PALETTE_FLASH_ADD(30, 15, -20);
+		paletteManager.BumpEffect(30, 15, -20);
 		UpdateLaserWeaponInfo();
 //		DigiLinkSoundToPos( SOUND_NASTY_ROBOT_HIT_1, objP->info.nSegment, 0, &objP->info.position.vPos, 0 , DEFAULT_ROBOT_SOUND_VOLUME);
 //	I removed this to make the "steal sound" more obvious -AP

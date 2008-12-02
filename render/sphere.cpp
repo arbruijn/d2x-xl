@@ -270,7 +270,7 @@ return pSphere;
 
 //------------------------------------------------------------------------------
 
-int InitSphereSurface (tSphereData *sdP, float red, float green, float blue, float alpha, grsBitmap *bmP, float *pfScale)
+int InitSphereSurface (tSphereData *sdP, float red, float green, float blue, float alpha, CBitmap *bmP, float *pfScale)
 {
 	float	fScale;
 	int	bTextured = 0;
@@ -297,11 +297,9 @@ else
 if (bmP && (bmP == bmpShield)) {
 	static time_t t0 = 0;
 	bTextured = 1;
-	if ((gameStates.app.nSDLTicks - t0 > 40) && BM_CURFRAME (bmP)) {
+	if ((gameStates.app.nSDLTicks - t0 > 40) && bmP->CurFrame ()) {
 		t0 = gameStates.app.nSDLTicks;
-		BM_CURFRAME (bmP)++;
-		if (BM_CURFRAME (bmP) >= BM_FRAMES (bmP) + BM_FRAMECOUNT (bmP))
-			BM_CURFRAME (bmP) = BM_FRAMES (bmP);
+		bmP->NextFrame ();
 		}
 	}
 #endif
@@ -312,8 +310,8 @@ if (bmP) {
 	if (OglBindBmTex (bmP, 1, 1))
 		bmP = NULL;
 	else {
-		if (BM_CURFRAME (bmP))
-			bmP = BM_CURFRAME (bmP);
+		if (bmP->CurFrame ())
+			bmP = bmP->CurFrame ();
 		if (!bTextured)
 			bTextured = -1;
 		}
@@ -324,7 +322,7 @@ if (!bmP) {
 	alpha /= 2;
 	}
 if (alpha < 0)
-	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) FADE_LEVELS);
 if (alpha < 1.0f) {
 #if ADDITIVE_SPHERE_BLENDING
 	fScale *= coronaIntensities [gameOpts->render.coronas.nObjIntensity];
@@ -520,7 +518,7 @@ else {
 //------------------------------------------------------------------------------
 
 int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScale, float zScale,
-					   float red, float green, float blue, float alpha, grsBitmap *bmP, int nTiles, int bAdditive)
+					   float red, float green, float blue, float alpha, CBitmap *bmP, int nTiles, int bAdditive)
 {
 	//static float fTexCoord [4][2] = {{0,0},{1,0},{1,1},{0,1}};
 
@@ -674,7 +672,7 @@ if (gameData.render.monsterball.nFaces > 0)
 		OglSetupTransform (0);
 		G3StartInstanceMatrix(objP->info.position.vPos, objP->info.position.mOrient);
 		RenderSphere (&gameData.render.monsterball, &p,
-						  r, r, r, red, green, blue, gameData.hoard.monsterball.bm.bmTexBuf ? 1.0f : alpha,
+						  r, r, r, red, green, blue, gameData.hoard.monsterball.bm.texBuf ? 1.0f : alpha,
 						  &gameData.hoard.monsterball.bm, 4, 0);
 		G3DoneInstance ();
 		OglResetTransform (1);

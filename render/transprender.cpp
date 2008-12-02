@@ -295,7 +295,7 @@ return AddTranspItem (tiObject, &item, sizeof (item), vPos [Z], vPos [Z]);
 
 //------------------------------------------------------------------------------
 
-int TIAddPoly (grsFace *faceP, grsTriangle *triP, grsBitmap *bmP,
+int TIAddPoly (grsFace *faceP, grsTriangle *triP, CBitmap *bmP,
 					fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 					short nSegment)
@@ -382,10 +382,10 @@ int TIAddFaceTris (grsFace *faceP)
 	grsTriangle	*triP;
 	fVector		vertices [3];
 	int			h, i, j, bAdditive = FaceIsAdditive (faceP);
-	grsBitmap	*bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
+	CBitmap	*bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
 
 if (bmP)
-	bmP = BmOverride (bmP, -1);
+	bmP = bmP->Override (-1);
 #if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	faceP = faceP;
@@ -420,10 +420,10 @@ if (gameStates.render.bTriangleMesh)
 
 	fVector		vertices [4];
 	int			i, j;
-	grsBitmap	*bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
+	CBitmap	*bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
 
 if (bmP)
-	bmP = BmOverride (bmP, -1);
+	bmP = bmP->Override (-1);
 #if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	faceP = faceP;
@@ -447,7 +447,7 @@ return TIAddPoly (faceP, NULL, bmP,
 
 //------------------------------------------------------------------------------
 
-int TIAddSprite (grsBitmap *bmP, const vmsVector& position, tRgbaColorf *color,
+int TIAddSprite (CBitmap *bmP, const vmsVector& position, tRgbaColorf *color,
 					  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad)
 {
 	tTranspSprite	item;
@@ -536,7 +536,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int TIAddLightTrail (grsBitmap *bmP, fVector *vThruster, tTexCoord2f *tcThruster, fVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP)
+int TIAddLightTrail (CBitmap *bmP, fVector *vThruster, tTexCoord2f *tcThruster, fVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP)
 {
 	tTranspLightTrail	item;
 	int					i, j;
@@ -750,7 +750,7 @@ if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
 
 //------------------------------------------------------------------------------
 
-int LoadTranspItemImage (grsBitmap *bmP, char nColors, char nFrame, int nWrap,
+int LoadTranspItemImage (CBitmap *bmP, char nColors, char nFrame, int nWrap,
 								 int bClientState, int nTransp, int bShader, int bUseLightmaps,
 								 int bHaveDecal, int bDecal)
 {
@@ -763,7 +763,7 @@ if (bmP) {
 		transpItems.bTextured = 1;
 		}
 	if (bDecal == 1)
-		bmP = BmOverride (bmP, -1);
+		bmP = bmP->Override (-1);
 	if ((bmP != transpItems.bmP [bDecal]) || (nFrame != transpItems.nFrame) || (nWrap != transpItems.nWrap)) {
 		gameData.render.nStateChanges++;
 		if (bmP) {
@@ -772,8 +772,8 @@ if (bmP) {
 				return 0;
 				}
 			if (bDecal != 2)
-				bmP = BmOverride (bmP, nFrame);
-			OglTexWrap (bmP->glTexture, nWrap);
+				bmP = bmP->Override (nFrame);
+			OglTexWrap (bmP->texInfo, nWrap);
 			transpItems.nWrap = nWrap;
 			transpItems.nFrame = nFrame;
 			}
@@ -812,7 +812,7 @@ void TIRenderPoly (tTranspPoly *item)
 PROF_START
 	grsFace		*faceP;
 	grsTriangle	*triP;
-	grsBitmap	*bmBot = item->bmP, *bmTop = NULL, *bmMask;
+	CBitmap		*bmBot = item->bmP, *bmTop = NULL, *mask;
 	int			i, j, nIndex, bLightmaps, bDecal, bSoftBlend = 0;
 
 #if TI_POLY_OFFSET
@@ -857,25 +857,25 @@ if (transpItems.bDepthMask)
 if (transpItems.bDepthMask != item->bDepthMask)
 	glDepthMask (transpItems.bDepthMask = item->bDepthMask);
 #endif
-bmTop = faceP ? BmOverride (faceP->bmTop, -1) : NULL;
-if (bmTop && !(bmTop->bmProps.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
+bmTop = faceP ? faceP->bmTop->Override (-1) : NULL;
+if (bmTop && !(bmTop->props.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
 	bmBot = bmTop;
-	bmTop = bmMask = NULL;
+	bmTop = mask = NULL;
 	bDecal = -1;
 	}
 #if RENDER_TRANSP_DECALS
 else {
 	bDecal = bmTop != NULL;
-	bmMask = (bDecal && ((bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0) && gameStates.render.textures.bHaveMaskShader) ? BM_MASK (bmTop) : NULL;
+	mask = (bDecal && ((bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0) && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
 	}
 #else
 bDecal = 0;
-bmMask = NULL;
+mask = NULL;
 #endif
 if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
-	 (faceP != NULL) || bSoftBlend, bLightmaps, bmMask ? 2 : bDecal > 0, 0) &&
+	 (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
 	 ((bDecal < 1) || LoadTranspItemImage (bmTop, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
-	 (!bmMask || LoadTranspItemImage (bmMask, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
+	 (!mask || LoadTranspItemImage (mask, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
 	if (triP || faceP) {
 		TISetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
@@ -883,7 +883,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals + nIndex);
 		if (bDecal > 0) {
 			TISetRenderPointers (GL_TEXTURE1 + bLightmaps, nIndex, 1);
-			if (bmMask)
+			if (mask)
 				TISetRenderPointers (GL_TEXTURE2 + bLightmaps, nIndex, 1);
 			}
 		}
@@ -1112,8 +1112,8 @@ if (LoadTranspItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 
 	w = (float) X2F (item->nWidth);
 	h = (float) X2F (item->nHeight);
-	u = item->bmP->glTexture->u;
-	v = item->bmP->glTexture->v;
+	u = item->bmP->texInfo->u;
+	v = item->bmP->texInfo->v;
 	if (item->bColor)
 		glColor4fv ((GLfloat *) &item->color);
 	else
@@ -1175,7 +1175,7 @@ void TIFlushSparkBuffer (void)
 if (sparkBuffer.nSparks && LoadTranspItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
 	G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
-	OGL_BINDTEX (bmpSparks->glTexture->handle);
+	OGL_BINDTEX (bmpSparks->TexInfo ()->handle);
 	if (bSoftSparks)
 		LoadGlareShader (3);
 	else {

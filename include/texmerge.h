@@ -15,7 +15,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _TEXMERGE_H
 
 int TexMergeInit (int num_cached_textures);
-grsBitmap *TexMergeGetCachedBitmap (int nBaseTex, int nOvlTex, int nOrient);
+CBitmap *TexMergeGetCachedBitmap (int nBaseTex, int nOvlTex, int nOrient);
 void _CDECL_ TexMergeClose (void);
 void TexMergeFlush ();
 void InitTexMergeShaders ();

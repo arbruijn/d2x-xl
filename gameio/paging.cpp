@@ -414,7 +414,7 @@ StopTime ();
 bBlackScreen = gameStates.render.bPaletteFadedOut;
 if (gameStates.render.bPaletteFadedOut)	{
 	GrClearCanvas (BLACK_RGBA);
-	GrPaletteStepLoad (NULL);
+	paletteManager.LoadEffect  ();
 	}
 //	ShowBoxedMessage (TXT_LOADING);
 #if TRACE			
@@ -436,7 +436,7 @@ PagingTouchAddonTextures ();
 //@@	ClearBoxedMessage ();
 
 	if (bBlackScreen)	{
-		GrPaletteStepClear ();
+		paletteManager.ClearEffect ();
 		GrClearCanvas (BLACK_RGBA);
 	}
 	StartTime (0);
@@ -468,7 +468,7 @@ static int PagingTouchPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 	int	i;
 
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 if (nTouchSeg < gameData.segs.nSegments) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchSeg < gameData.segs.nSegments); i++)
 		PagingTouchSegment (gameData.segs.segments + nTouchSeg++);
@@ -500,13 +500,13 @@ else {
 	PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);
 	PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
 	*key = -2;
-	GrPaletteStepLoad (NULL);
+	paletteManager.LoadEffect  ();
 	return nCurItem;
 	}
 m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
-GrPaletteStepLoad (NULL);
+paletteManager.LoadEffect  ();
 return nCurItem;
 }
 

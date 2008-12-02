@@ -21,10 +21,8 @@ void FreeTextData (tTextData *msgP)
 {
 D2_FREE (msgP->textBuffer);
 D2_FREE (msgP->index);
-if (msgP->bmP) {
-	GrFreeBitmap (msgP->bmP);
-	msgP->bmP = NULL;
-	}
+if (msgP->bmP)
+	D2_FREE (msgP->bmP);
 msgP->nMessages = 0;
 }
 
@@ -174,10 +172,8 @@ else {
 	msgP->currentMsg = indexP;
 	msgP->nStartTime = gameStates.app.nSDLTicks;
 	msgP->nEndTime = (nDuration < 0) ? -1 : gameStates.app.nSDLTicks + 1000 * nDuration;
-	if (msgP->bmP) {
-		GrFreeBitmap (msgP->bmP);
-		msgP->bmP = NULL;
-		}
+	if (msgP->bmP)
+		D2_FREE (msgP->bmP);
 	}
 if (msgP->nEndTime < 0) {
 	if (nId < 0)
@@ -193,8 +189,8 @@ else if (!gameStates.render.nWindow) {
 		GrSetFontColorRGBi (GOLD_RGBA, 1, 0, 0);
 		}
 	if (msgP->bmP || (msgP->bmP = CreateStringBitmap (indexP->pszText, 0, 0, NULL, 0, 0, -1))) {
-		w = msgP->bmP->bmProps.w;
-		h = msgP->bmP->bmProps.h;
+		w = msgP->bmP->props.w;
+		h = msgP->bmP->props.h;
 		x = (grdCurCanv->cv_w - w) / 2;
 		y = (grdCurCanv->cv_h - h) * 2 / 5;
 		if (msgP->nEndTime < 0)

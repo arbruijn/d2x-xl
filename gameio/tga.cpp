@@ -9,13 +9,13 @@
 
 //------------------------------------------------------------------------------
 
-int CompressTGA (grsBitmap *bmP)
+int CompressTGA (CBitmap *bmP)
 {
 if (!(gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression))
 	return 0;
-if (bmP->bmProps.h / bmP->bmProps.w > 1)
+if (bmP->Height () / bmP->Width () > 1)
 	return 0;	//don't compress animations
-if (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+if (bmP->props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 0;	//don't compress textures containing some form of transparency
 if (OglLoadTexture (bmP, 0, 0, NULL, -1, 0))
 	return 0;
@@ -24,31 +24,27 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int ReadTGAImage (CFile& cf, tTgaHeader *ph, grsBitmap *bmP, int alpha, 
+int ReadTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *bmP, int alpha, 
 						double brightness, int bGrayScale, int bReverse)
 {
 	int				i, j, n, nAlpha = 0, nVisible = 0, nFrames, nBytes = ph->bits / 8;
-	int				h = bmP->bmProps.h;
-	int				w = bmP->bmProps.w;
+	int				h = bmP->Height ();
+	int				w = bmP->Width ();
 	tRgbColorf		avgColor;
+	tRgbColorb		avgColorb;
 	float				a, avgAlpha = 0;
 
-if (!(bmP->bmTexBuf || (bmP->bmTexBuf = (ubyte *) D2_ALLOC (ph->height * w * nBytes))))
+if (!(bmP->TexBuf () || (bmP->SetTexBuf ((ubyte *) D2_ALLOC (ph->height * w * nBytes)))))
 	 return 0;
-if (!bmP->bmTexBuf) {
-	int nSize = ph->width * ph->height * nBytes;
-	if (!(bmP->bmTexBuf = (ubyte *) D2_ALLOC (nSize)))
-		return 0;
-	}
-bmP->bmBPP = nBytes;
-memset (bmP->bmTransparentFrames, 0, sizeof (bmP->bmTransparentFrames));
-memset (bmP->bmSupertranspFrames, 0, sizeof (bmP->bmSupertranspFrames));
+bmP->SetBPP (nBytes);
+memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
+memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
 avgColor.red = avgColor.green = avgColor.blue = 0;
 if (ph->bits == 24) {
 	tBGRA	c;
-	tRgbColorb *p = ((tRgbColorb *) (bmP->bmTexBuf)) + w * (bmP->bmProps.h - 1);
+	tRgbColorb *p = ((tRgbColorb *) (bmP->texBuf)) + w * (bmP->Height () - 1);
 
-	for (i = bmP->bmProps.h; i; i--) {
+	for (i = bmP->Height (); i; i--) {
 		for (j = w; j; j--, p++) {
 			if (cf.Read (&c, 1, 3) != (size_t) 3)
 				return 0;
@@ -72,10 +68,10 @@ if (ph->bits == 24) {
 		}
 	}
 else {
-	bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
+	bmP->SetFlags (bmP->Flags () | BM_FLAG_SEE_THRU);
 	if (bReverse) {
 		tRGBA	c;
-		tRgbaColorb	*p = (tRgbaColorb *) bmP->bmTexBuf;
+		tRgbaColorb	*p = (tRgbaColorb *) bmP->texBuf;
 		int nSuperTransp;
 
 		nFrames = h / w - 1;
@@ -108,12 +104,12 @@ else {
 					}
 				if (p->alpha < 196) {
 					if (!n) {
-						bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
+						bmP->SetFlags (bmP->Flags () | BM_FLAG_TRANSPARENT);
 						if (p->alpha)
-							bmP->bmProps.flags &= ~BM_FLAG_SEE_THRU;
+							bmP->SetFlags (bmP->Flags () & ~BM_FLAG_SEE_THRU);
 						}
 					if (bmP)
-						bmP->bmTransparentFrames [n / 32] |= (1 << (n % 32));
+						bmP->transparentFrames [n / 32] |= (1 << (n % 32));
 					avgAlpha += p->alpha;
 					nAlpha++;
 					}
@@ -125,15 +121,15 @@ else {
 				}
 			if (nSuperTransp > 50) {
 				if (!n)
-					bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
-				bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
-				bmP->bmSupertranspFrames [n / 32] |= (1 << (n % 32));
+					bmP->SetFlags (bmP->Flags () | BM_FLAG_SUPER_TRANSPARENT);
+				bmP->SetFlags (bmP->Flags () | BM_FLAG_SEE_THRU);
+				bmP->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
 				}
 			}
 		}
 	else {
 		tBGRA	c;
-		tRgbaColorb *p = ((tRgbaColorb *) (bmP->bmTexBuf)) + w * (bmP->bmProps.h - 1);
+		tRgbaColorb *p = ((tRgbaColorb *) (bmP->texBuf)) + w * (bmP->Height () - 1);
 		int nSuperTransp;
 
 		nFrames = h / w - 1;
@@ -166,11 +162,11 @@ else {
 					}
 				if (p->alpha < 196) {
 					if (!n) {
-						bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
+						bmP->SetFlags (bmP->Flags () | BM_FLAG_TRANSPARENT);
 						if (p->alpha)
-							bmP->bmProps.flags &= ~BM_FLAG_SEE_THRU;
+							bmP->SetFlags (bmP->Flags () & ~BM_FLAG_SEE_THRU);
 						}
-					bmP->bmTransparentFrames [n / 32] |= (1 << (n % 32));
+					bmP->TransparentFrames () [n / 32] |= (1 << (n % 32));
 					avgAlpha += p->alpha;
 					nAlpha++;
 					}
@@ -182,40 +178,41 @@ else {
 				}
 			if (nSuperTransp > w * w / 2000) {
 				if (!n)
-					bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
-				bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
-				bmP->bmSupertranspFrames [n / 32] |= (1 << (n % 32));
+					bmP->SetFlags (bmP->Flags () | BM_FLAG_SUPER_TRANSPARENT);
+				bmP->SetFlags (bmP->Flags () | BM_FLAG_SEE_THRU);
+				bmP->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
 				}
 			p -= 2 * w;
 			}
 		}
 	}
 a = (float) nVisible / 255.0f;
-bmP->bmAvgRGB.red = (ubyte) (avgColor.red / a);
-bmP->bmAvgRGB.green = (ubyte) (avgColor.green / a);
-bmP->bmAvgRGB.blue = (ubyte) (avgColor.blue / a);
+avgColorb.red = (ubyte) (avgColor.red / a);
+avgColorb.green = (ubyte) (avgColor.green / a);
+avgColorb.blue = (ubyte) (avgColor.blue / a);
+bmP->SetAvgRGB (avgColorb);
 if (!nAlpha)
-	bmP->bmProps.flags &= ~BM_FLAG_SEE_THRU;
+	bmP->SetFlags (bmP->Flags () & ~BM_FLAG_SEE_THRU);
 #if 0
 if (nAlpha && ((ubyte) (avgAlpha / nAlpha) < 2))
-	bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
+	bmP->props.flags |= BM_FLAG_SEE_THRU;
 #endif
 return 1;
 }
 
 //	-----------------------------------------------------------------------------
 
-int WriteTGAImage (CFile& cf, tTgaHeader *ph, grsBitmap *bmP)
+int WriteTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *bmP)
 {
 	int				i, j, n, nFrames;
-	int				h = bmP->bmProps.h;
-	int				w = bmP->bmProps.w;
+	int				h = bmP->Height ();
+	int				w = bmP->Width ();
 
 if (ph->bits == 24) {
-	if (bmP->bmBPP == 3) {
+	if (bmP->BPP () == 3) {
 		tBGR	c;
-		tRgbColorb *p = ((tRgbColorb *) (bmP->bmTexBuf)) + w * (bmP->bmProps.h - 1);
-		for (i = bmP->bmProps.h; i; i--) {
+		tRgbColorb *p = ((tRgbColorb *) (bmP->texBuf)) + w * (bmP->Height () - 1);
+		for (i = bmP->Height (); i; i--) {
 			for (j = w; j; j--, p++) {
 				c.r = p->red;
 				c.g = p->green;
@@ -228,8 +225,8 @@ if (ph->bits == 24) {
 		}
 	else {
 		tBGR	c;
-		tRgbaColorb *p = ((tRgbaColorb *) (bmP->bmTexBuf)) + w * (bmP->bmProps.h - 1);
-		for (i = bmP->bmProps.h; i; i--) {
+		tRgbaColorb *p = ((tRgbaColorb *) (bmP->texBuf)) + w * (bmP->Height () - 1);
+		for (i = bmP->Height (); i; i--) {
 			for (j = w; j; j--, p++) {
 				c.r = p->red;
 				c.g = p->green;
@@ -243,7 +240,7 @@ if (ph->bits == 24) {
 	}
 else {
 	tBGRA	c;
-	tRgbaColorb *p = ((tRgbaColorb *) (bmP->bmTexBuf)) + w * (bmP->bmProps.h - 1);
+	tRgbaColorb *p = ((tRgbaColorb *) (bmP->texBuf)) + w * (bmP->Height () - 1);
 	int bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
@@ -272,7 +269,7 @@ return 1;
 
 //---------------------------------------------------------------
 
-int ReadTGAHeader (CFile& cf, tTgaHeader *ph, grsBitmap *bmP)
+int ReadTGAHeader (CFile& cf, tTgaHeader *ph, CBitmap *bmP)
 {
 	tTgaHeader	h;
 
@@ -291,7 +288,7 @@ h.descriptor = (char) cf.ReadByte ();
 if (h.identSize)
 	cf.Seek (h.identSize, SEEK_CUR);
 if (bmP) {
-	GrInitBitmap (bmP, 0, 0, 0, h.width, h.height, h.width, NULL, bmP->bmBPP = h.bits / 8);
+	bmP->Init (0, 0, 0, h.width, h.height, bmP->nBPP = h.bits / 8, NULL);
 	}
 if (ph)
 	*ph = h;
@@ -300,12 +297,12 @@ return 1;
 
 //---------------------------------------------------------------
 
-int WriteTGAHeader (CFile& cf, tTgaHeader *ph, grsBitmap *bmP)
+int WriteTGAHeader (CFile& cf, tTgaHeader *ph, CBitmap *bmP)
 {
 memset (ph, 0, sizeof (*ph));
-ph->width = bmP->bmProps.w;
-ph->height = bmP->bmProps.h;
-ph->bits = bmP->bmBPP * 8;
+ph->width = bmP->Width ();
+ph->height = bmP->Height ();
+ph->bits = bmP->nBPP * 8;
 ph->imageType = 2;
 cf.WriteByte (ph->identSize);
 cf.WriteByte (ph->colorMapType);
@@ -317,7 +314,7 @@ cf.WriteShort (ph->xStart);
 cf.WriteShort (ph->yStart);
 cf.WriteShort (ph->width);
 cf.WriteShort (ph->height);
-if (!GrBitmapHasTransparency (bmP))
+if (!bmP->HasTransparency ())
 	ph->bits = 24;
 cf.WriteByte (ph->bits);
 cf.WriteByte (ph->descriptor);
@@ -328,7 +325,7 @@ return 1;
 
 //---------------------------------------------------------------
 
-int LoadTGA (CFile& cf, grsBitmap *bmP, int alpha, double brightness, 
+int LoadTGA (CFile& cf, CBitmap *bmP, int alpha, double brightness, 
 				 int bGrayScale, int bReverse)
 {
 	tTgaHeader	h;
@@ -339,14 +336,14 @@ return ReadTGAHeader (cf, &h, bmP) &&
 
 //---------------------------------------------------------------
 
-int WriteTGA (CFile& cf, tTgaHeader *ph, grsBitmap *bmP)
+int WriteTGA (CFile& cf, tTgaHeader *ph, CBitmap *bmP)
 {
 return WriteTGAHeader (cf, ph, bmP) && WriteTGAImage (cf, ph, bmP);
 }
 
 //---------------------------------------------------------------
 
-int ReadTGA (const char *pszFile, const char *pszFolder, grsBitmap *bmP, int alpha, 
+int ReadTGA (const char *pszFile, const char *pszFolder, CBitmap *bmP, int alpha, 
 				 double brightness, int bGrayScale, int bReverse)
 {
 	CFile	cf;
@@ -374,36 +371,38 @@ if (r && CompressTGA (bmP))
 #endif
 cf.Close ();
 #if 1//def _DEBUG
-strncpy (bmP->szName, pszFile, sizeof (bmP->szName) - 1);
-if ((psz = strrchr (bmP->szName, '.')))
+char szName [20];
+strncpy (szName, pszFile, sizeof (bmP->szName) - 1);
+if ((psz = strrchr (szName, '.')))
 	*psz = '\0';
 else
-	bmP->szName [sizeof (bmP->szName) - 1] = '\0';
+	szName [sizeof (szName) - 1] = '\0';
+bmP->SetName (szName);
 #endif
 return r;
 }
 
 //	-----------------------------------------------------------------------------
 
-grsBitmap *CreateAndReadTGA (const char *szFile)
+CBitmap *CreateAndReadTGA (const char *szFile)
 {
-	grsBitmap	*bmP = NULL;
+	CBitmap	*bmP = NULL;
 
-if (!(bmP = GrCreateBitmap (0, 0, 4)))
+if (!(bmP = CBitmap::Create (0, 0, 0, 4)))
 	return NULL;
 if (ReadTGA (szFile, NULL, bmP, -1, 1.0, 0, 0)) {
-	bmP->bmType = BM_TYPE_ALT;
+	bmP->nType = BM_TYPE_ALT;
 	strncpy (bmP->szName, szFile, sizeof (bmP->szName));
 	return bmP;
 	}
-bmP->bmType = BM_TYPE_ALT;
-GrFreeBitmap (bmP);
+bmP->nType = BM_TYPE_ALT;
+D2_FREE (bmP);
 return NULL;
 }
 
 //	-----------------------------------------------------------------------------
 
-int SaveTGA (const char *pszFile, const char *pszFolder, tTgaHeader *ph, grsBitmap *bmP)
+int SaveTGA (const char *pszFile, const char *pszFolder, tTgaHeader *ph, CBitmap *bmP)
 {
 	CFile			cf;
 	char			szFolder [FILENAME_LEN], fn [FILENAME_LEN];
@@ -415,7 +414,7 @@ if (!ph)
 if (!pszFolder)
 	pszFolder = gameFolders.szDataDir;
 CFile::SplitPath (pszFile, NULL, fn, NULL);
-sprintf (szFolder, "%s/%d/", pszFolder, bmP->bmProps.w);
+sprintf (szFolder, "%s/%d/", pszFolder, bmP->Width ());
 strcat (fn, ".tga");
 r = cf.Open (fn, szFolder, "wb", 0) && WriteTGA (cf, ph, bmP);
 if (cf.File ())
@@ -425,32 +424,32 @@ return r;
 
 //	-----------------------------------------------------------------------------
 
-int ShrinkTGA (grsBitmap *bmP, int xFactor, int yFactor, int bRealloc)
+int ShrinkTGA (CBitmap *bmP, int xFactor, int yFactor, int bRealloc)
 {
-	int		bpp = bmP->bmBPP;
+	int		bpp = bmP->nBPP;
 	int		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
 	ubyte		*pData, *pSrc, *pDest;
 	int		cSum [4];
 
 	static ubyte superTranspKeys [3] = {120,88,128};
 
-if (!bmP->bmTexBuf)
+if (!bmP->texBuf)
 	return 0;
 if ((xFactor < 1) || (yFactor < 1))
 	return 0;
 if ((xFactor == 1) && (yFactor == 1))
 	return 0;
-w = bmP->bmProps.w;
-h = bmP->bmProps.h;
+w = bmP->Width ();
+h = bmP->Height ();
 xMax = w / xFactor;
 yMax = h / yFactor;
 nFactor2 = xFactor * yFactor;
 if (!bRealloc)
-	pDest = pData = bmP->bmTexBuf;
+	pDest = pData = bmP->texBuf;
 else {
 	if (!(pData = (ubyte *) D2_ALLOC (xMax * yMax * bpp)))
 		return 0;
-	UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
+	UseBitmapCache (bmP, (int) -bmP->Height () * (int) bmP->RowSize ());
 	pDest = pData;
 	}
 if (bpp == 3) {
@@ -460,7 +459,7 @@ if (bpp == 3) {
 			ySrc = yDest * yFactor;
 			for (y = yFactor; y; ySrc++, y--) {
 				xSrc = xDest * xFactor;
-				pSrc = bmP->bmTexBuf + (ySrc * w + xSrc) * bpp;
+				pSrc = bmP->texBuf + (ySrc * w + xSrc) * bpp;
 				for (x = xFactor; x; xSrc++, x--) {
 					for (i = 0; i < bpp; i++)
 						cSum [i] += *pSrc++;
@@ -479,7 +478,7 @@ else {
 			nSuperTransp = 0;
 			for (y = yFactor; y; ySrc++, y--) {
 				xSrc = xDest * xFactor;
-				pSrc = bmP->bmTexBuf + (ySrc * w + xSrc) * bpp;
+				pSrc = bmP->texBuf + (ySrc * w + xSrc) * bpp;
 				for (x = xFactor; x; xSrc++, x--) {
 						bSuperTransp = (pSrc [0] == 120) && (pSrc [1] == 88) && (pSrc [2] == 128);
 					if (bSuperTransp) {
@@ -501,7 +500,7 @@ else {
 			else {
 				for (i = 0, bSuperTransp = 1; i < bpp; i++)
 					pDest [i] = (ubyte) (cSum [i] / (nFactor2 - nSuperTransp));
-				if (!(bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)) {
+				if (!(bmP->props.flags & BM_FLAG_SUPER_TRANSPARENT)) {
 					for (i = 0; i < 3; i++) 
 						if (pDest [i] != superTranspKeys [i])
 							break;
@@ -517,33 +516,33 @@ else {
 		}
 	}
 if (bRealloc) {
-	D2_FREE (bmP->bmTexBuf);
-	bmP->bmTexBuf = pData;
+	D2_FREE (bmP->texBuf);
+	bmP->texBuf = pData;
 	}
-bmP->bmProps.w = xMax;
-bmP->bmProps.h = yMax;
-bmP->bmProps.rowSize /= xFactor;
+bmP->SetWidth (xMax);
+bmP->SetHeight (yMax);
+bmP->SetRowSize (bmP->RowSize () / xFactor);
 if (bRealloc)
-	UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
+	UseBitmapCache (bmP, (int) bmP->Height () * (int) bmP->RowSize ());
 return 1;
 }
 
 //	-----------------------------------------------------------------------------
 
-double TGABrightness (grsBitmap *bmP)
+double TGABrightness (CBitmap *bmP)
 {
 if (!bmP) 
 	return 0;
 else {
-		int		bAlpha = bmP->bmBPP == 4, i, j;
+		int		bAlpha = bmP->nBPP == 4, i, j;
 		ubyte		*pData;
 		double	pixelBright, totalBright, nPixels, alpha;
 
-	if (!(pData = bmP->bmTexBuf))
+	if (!(pData = bmP->texBuf))
 		return 0;
 	totalBright = 0;
 	nPixels = 0;
-	for (i = bmP->bmProps.w * bmP->bmProps.h; i; i--) {
+	for (i = bmP->Width () * bmP->Height (); i; i--) {
 		for (pixelBright = 0, j = 0; j < 3; j++)
 			pixelBright += ((double) (*pData++)) / 255.0;
 		pixelBright /= 3;
@@ -560,19 +559,19 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void TGAChangeBrightness (grsBitmap *bmP, double dScale, int bInverse, int nOffset, int bSkipAlpha)
+void TGAChangeBrightness (CBitmap *bmP, double dScale, int bInverse, int nOffset, int bSkipAlpha)
 {
 if (bmP) {
-		int		bpp = bmP->bmBPP, h, i, j, c, bAlpha = (bpp == 4);
+		int		bpp = bmP->nBPP, h, i, j, c, bAlpha = (bpp == 4);
 		ubyte		*pData;
 
-	if ((pData = bmP->bmTexBuf)) {
+	if ((pData = bmP->texBuf)) {
 	if (!bAlpha)
 		bSkipAlpha = 1;
 	else if (bSkipAlpha)
 		bpp = 3;
 		if (nOffset) {
-			for (i = bmP->bmProps.w * bmP->bmProps.h; i; i--) {
+			for (i = bmP->Width () * bmP->Height (); i; i--) {
 				for (h = 0, j = 3; j; j--, pData++) {
 					c = (int) *pData + nOffset;
 					h += c;
@@ -591,7 +590,7 @@ if (bmP) {
 			}
 		else if (dScale && (dScale != 1.0)) {
 			if (dScale < 0) {
-				for (i = bmP->bmProps.w * bmP->bmProps.h; i; i--) {
+				for (i = bmP->Width () * bmP->Height (); i; i--) {
 					for (j = bpp; j; j--, pData++)
 						*pData = (ubyte) (*pData * dScale);
 					if (bSkipAlpha)
@@ -600,7 +599,7 @@ if (bmP) {
 				}
 			else if (bInverse) {
 				dScale = 1.0 / dScale;
-				for (i = bmP->bmProps.w * bmP->bmProps.h; i; i--) {
+				for (i = bmP->Width () * bmP->Height (); i; i--) {
 					for (j = bpp; j; j--, pData++)
 						if ((c = 255 - *pData))
 							*pData = 255 - (ubyte) (c * dScale);
@@ -609,7 +608,7 @@ if (bmP) {
 					}
 				}
 			else {
-				for (i = bmP->bmProps.w * bmP->bmProps.h; i; i--) {
+				for (i = bmP->Width () * bmP->Height (); i; i--) {
 					for (j = bpp; j; j--, pData++)
 						if ((c = 255 - *pData)) {
 							c = (int) (*pData * dScale);
@@ -626,70 +625,72 @@ if (bmP) {
 
 //------------------------------------------------------------------------------
 
-grsBitmap *CreateSuperTranspMask (grsBitmap *bmP)
+CBitmap *CreateSuperTranspMask (CBitmap *bmP)
 {
-	grsBitmap	*bmMask;
-	int			i = (int) bmP->bmProps.w * (int) bmP->bmProps.h;
-	ubyte			*pi;
-	ubyte			*pm;
+	CBitmap	*mask;
+	int		i = (int) bmP->Width () * (int) bmP->Height ();
+	ubyte		*pi;
+	ubyte		*pm;
+	char		szName [20];
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return NULL;
-if (BM_MASK (bmP))
-	return BM_MASK (bmP);
-bmP->bmBPP = 4;
-if (!(bmMask = GrCreateBitmap ((bmP->bmProps.w  + 1) / 2, (bmP->bmProps.h + 1) / 2, 4)))
+if (bmP->Mask ())
+	return bmP->Mask ();
+bmP->nBPP = 4;
+if (!(mask = CBitmap::Create (0, (bmP->Width ()  + 1) / 2, (bmP->Height () + 1) / 2, 4)))
 	return NULL;
-BM_MASK (bmP) = bmMask;
+bmP->SetMask (mask);
 #if DBG
-sprintf (bmMask->szName, "{%s}", bmP->szName);
+sprintf (szName, "{%s}", bmP->szName);
+mask->SetName (szName);
 #endif
-bmMask->bmProps.w = bmP->bmProps.w;
-bmMask->bmProps.h = bmP->bmProps.w;
-bmMask->bmProps.rowSize = bmMask->bmProps.w;
-bmMask->bmBPP = 1;
-UseBitmapCache (bmMask, (int) bmMask->bmProps.h * (int) bmMask->bmProps.rowSize);
-if (bmP->bmProps.flags & BM_FLAG_TGA) {
-	for (pi = bmP->bmTexBuf, pm = bmMask->bmTexBuf; i; i--, pi += 4, pm++)
+mask->SetWidth (bmP->Width ());
+mask->SetHeight (bmP->Width ());
+mask->SetRowSize (mask->Width ());
+mask->SetBPP (1);
+UseBitmapCache (mask, (int) mask->Width () * (int) mask->RowSize ());
+if (bmP->Flags () & BM_FLAG_TGA) {
+	for (pi = bmP->TexBuf (), pm = mask->TexBuf (); i; i--, pi += 4, pm++)
 		if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128))
 			*pm = 0;
 		else
 			*pm = 0xff;
 	}
 else {
-	for (pi = bmP->bmTexBuf, pm = bmMask->bmTexBuf; i; i--, pi++, pm++)
+	for (pi = bmP->TexBuf (), pm = mask->TexBuf (); i; i--, pi++, pm++)
 		if (*pi == SUPER_TRANSP_COLOR)
 			*pm = 0;
 		else
 			*pm = 0xff;
 	}
-return bmP->bmData.std.bmMask;
+return bmP->Mask ();
 }
 
 //------------------------------------------------------------------------------
 
-int CreateSuperTranspMasks (grsBitmap *bmP)
+int CreateSuperTranspMasks (CBitmap *bmP)
 {
 	int	nMasks, i, nFrames;
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return 0;
-if ((bmP->bmType != BM_TYPE_ALT) || !bmP->bmData.alt.bmFrames) {
-	if (bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)
+if ((bmP->Type () != BM_TYPE_ALT) || !bmP->Frames ()) {
+	if (bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT)
 		return CreateSuperTranspMask (bmP) != NULL;
 	return 0;
 	}
-nFrames = BM_FRAMECOUNT (bmP);
+nFrames = bmP->FrameCount ();
 for (nMasks = i = 0; i < nFrames; i++)
-	if (bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)
-		if (CreateSuperTranspMask (bmP->bmData.alt.bmFrames + i))
+	if (bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT)
+		if (CreateSuperTranspMask (bmP->Frames () + i))
 			nMasks++;
 return nMasks;
 }
 
 //------------------------------------------------------------------------------
 
-int TGAInterpolate (grsBitmap *bmP, int nScale)
+int TGAInterpolate (CBitmap *bmP, int nScale)
 {
 	ubyte	*bufP, *destP, *srcP1, *srcP2;
 	int	nSize, nFrameSize, nStride, nFrames, i, j;
@@ -699,14 +700,14 @@ if (nScale < 1)
 else if (nScale > 3)
 	nScale = 3;
 nScale = 1 << nScale;
-nFrames = bmP->bmProps.h / bmP->bmProps.w;
-nFrameSize = bmP->bmProps.w * bmP->bmProps.w * bmP->bmBPP;
+nFrames = bmP->Height () / bmP->Width ();
+nFrameSize = bmP->Width () * bmP->Width () * bmP->nBPP;
 nSize = nFrameSize * nFrames * nScale;
 if (!(bufP = (ubyte *) D2_ALLOC (nSize)))
 	return 0;
-bmP->bmProps.h *= nScale;
+bmP->SetHeight (bmP->Height () * nScale);
 memset (bufP, 0, nSize);
-for (destP = bufP, srcP1 = bmP->bmTexBuf, i = 0; i < nFrames; i++) {
+for (destP = bufP, srcP1 = bmP->texBuf, i = 0; i < nFrames; i++) {
 	memcpy (destP, srcP1, nFrameSize);
 	destP += nFrameSize * nScale;
 	srcP1 += nFrameSize;
@@ -728,32 +729,32 @@ while (nScale > 1) {
 	nFrames <<= 1;
 	}
 #endif
-D2_FREE (bmP->bmTexBuf);
-bmP->bmTexBuf = bufP;
+D2_FREE (bmP->texBuf);
+bmP->texBuf = bufP;
 return nFrames;
 }
 
 //------------------------------------------------------------------------------
 
-int TGAMakeSquare (grsBitmap *bmP)
+int TGAMakeSquare (CBitmap *bmP)
 {
 	ubyte	*bufP, *destP, *srcP;
 	int	nSize, nFrameSize, nRowSize, nFrames, i, j, w, q;
 
-nFrames = bmP->bmProps.h / bmP->bmProps.w;
+nFrames = bmP->Height () / bmP->Width ();
 if (nFrames < 4)
 	return 0;
 for (q = nFrames; q * q > nFrames; q >>= 1)
 	;
 if (q * q != nFrames)
 	return 0;
-w = bmP->bmProps.w;
-nFrameSize = w * w * bmP->bmBPP;
+w = bmP->Width ();
+nFrameSize = w * w * bmP->nBPP;
 nSize = nFrameSize * nFrames;
 if (!(bufP = (ubyte *) D2_ALLOC (nSize)))
 	return 0;
-srcP = bmP->bmTexBuf;
-nRowSize = w * bmP->bmBPP;
+srcP = bmP->texBuf;
+nRowSize = w * bmP->nBPP;
 for (destP = bufP, i = 0; i < nFrames; i++) {
 	for (j = 0; j < w; j++) {
 		destP = bufP + (i / q) * q * nFrameSize + j * q * nRowSize + (i % q) * nRowSize;
@@ -761,16 +762,16 @@ for (destP = bufP, i = 0; i < nFrames; i++) {
 		srcP += nRowSize;
 		}
 	}
-D2_FREE (bmP->bmTexBuf);
-bmP->bmTexBuf = bufP;
-bmP->bmProps.w =
-bmP->bmProps.h = q * w;
+D2_FREE (bmP->texBuf);
+bmP->texBuf = bufP;
+bmP->SetWidth (q * w);
+bmP->SetHeight (q * w);
 return q;
 }
 
 //------------------------------------------------------------------------------
 
-int ReadModelTGA (const char *pszFile, grsBitmap *bmP, short nType, int bCustom)
+int ReadModelTGA (const char *pszFile, CBitmap *bmP, short nType, int bCustom)
 {
 	char			fn [FILENAME_LEN], fnBase [FILENAME_LEN], szShrunkFolder [FILENAME_LEN];
 	int			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);
@@ -789,15 +790,15 @@ if (!bCustom && (nShrinkFactor > 1)) {
 #if DBG
 		strncpy (bmP->szName, fn, sizeof (bmP->szName));
 #endif
-		UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
+		UseBitmapCache (bmP, (int) bmP->Height () * (int) bmP->RowSize ());
 		return 1;
 		}
 	}
 if (!ReadTGA (pszFile + !bCustom, gameFolders.szModelDir [nType], bmP, -1, 1.0, 0, 0))
 	return 0;
-UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
+UseBitmapCache (bmP, (int) bmP->Height () * (int) bmP->RowSize ());
 if (gameStates.app.bCacheTextures && !bCustom && (nShrinkFactor > 1) && 
-	 (bmP->bmProps.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
+	 (bmP->Width () == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
 	tTgaHeader	h;
 	CFile			cf;
 
@@ -815,17 +816,17 @@ return 1;
 
 int ReadModelTextures (tModelTextures *pt, int nType, int bCustom)
 {
-	grsBitmap	*bmP;
-	int			i;
+	CBitmap	*bmP;
+	int		i;
 
 for (i = 0; i < pt->nBitmaps; i++) {
 	if (!ReadModelTGA (pt->pszNames [i], bmP = pt->pBitmaps + i, nType, bCustom))
 		return 0;
-	bmP = BmOverride (bmP, -1);
-	if (BM_FRAMES (bmP))
-		bmP = BM_CURFRAME (bmP);
+	bmP = bmP->Override (-1);
+	if (bmP->Frames ())
+		bmP = bmP->CurFrame ();
 	OglBindBmTex (bmP, 1, 3);
-	pt->pBitmaps [i].bmTeam = pt->nTeam ? pt->nTeam [i] : 0;
+	pt->pBitmaps [i].nTeam = pt->nTeam ? pt->nTeam [i] : 0;
 	}
 return 1;
 }
@@ -834,13 +835,13 @@ return 1;
 
 void ReleaseModelTextures (tModelTextures *pt)
 {
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	int			i;
 
 if ((bmP = pt->pBitmaps))
 	for (i = pt->nBitmaps; i; i--, bmP++) {
-		UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
-		GrFreeBitmapData (bmP);
+		UseBitmapCache (bmP, (int) -bmP->Width () * (int) bmP->RowSize ());
+		D2_FREE (bmP);
 		}
 }
 
@@ -854,7 +855,7 @@ if (pt->pszNames) {
 	for (i = 0; i < pt->nBitmaps; i++) {
 		D2_FREE (pt->pszNames [i]);
 		if (pt->pBitmaps)
-			GrFreeBitmapData (pt->pBitmaps + i);
+			pt->pBitmaps [i].Destroy ();
 		}
 	D2_FREE (pt->nTeam);
 	D2_FREE (pt->pszNames);

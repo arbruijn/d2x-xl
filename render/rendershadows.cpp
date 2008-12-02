@@ -109,7 +109,7 @@ glPopMatrix ();
 #define STB_SIZE_X	2048
 #define STB_SIZE_Y	2048
 
-grsBitmap	shadowBuf;
+CBitmap	shadowBuf;
 ubyte			shadowTexBuf [STB_SIZE_X * STB_SIZE_Y * 4];
 static int	bHaveShadowBuf = 0;
 
@@ -119,10 +119,10 @@ void CreateShadowTexture (void)
 
 if (!bHaveShadowBuf) {
 	memset (&shadowBuf, 0, sizeof (shadowBuf));
-	shadowBuf.bmProps.w = STB_SIZE_X;
-	shadowBuf.bmProps.h = STB_SIZE_Y;
-	shadowBuf.bmProps.flags = (char) BM_FLAG_TGA;
-	shadowBuf.bmTexBuf = shadowTexBuf;
+	shadowBuf.props.w = STB_SIZE_X;
+	shadowBuf.props.h = STB_SIZE_Y;
+	shadowBuf.props.flags = (char) BM_FLAG_TGA;
+	shadowBuf.texBuf = shadowTexBuf;
 	OglLoadBmTextureM (&shadowBuf, 0, -1, 0, NULL);
 	bHaveShadowBuf = 1;
 	}
@@ -130,11 +130,11 @@ if (!bHaveShadowBuf) {
 //glStencilFunc (GL_EQUAL, 0, ~0);
 //RenderShadowQuad (1);
 #	if 0
-glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, grdCurCanv->cvBitmap.bmProps.h - 128, 128, 128, 0);
+glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, grdCurCanv->cvBitmap.props.h - 128, 128, 128, 0);
 #	else
 glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, 0,
-						grdCurCanv->cvBitmap.bmProps.w, 
-						grdCurCanv->cvBitmap.bmProps.h, 0);
+						grdCurCanv->cvBitmap.props.w, 
+						grdCurCanv->cvBitmap.props.h, 0);
 #	endif
 #else
 glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, 128, 128);
@@ -308,7 +308,7 @@ for (i = 0; i < 4; i++)
 glGetFloatv (GL_PROJECTION_MATRIX, mProjectionf);
 glMatrixMode (GL_TEXTURE);
 for (i = 0, cameraP = gameData.render.shadows.shadowMaps; i < 1/*gameData.render.shadows.nShadowMaps*/; i++) {
-	glBindTexture (GL_TEXTURE_2D, cameraP->FrameBuffer ().hRenderBuffer);
+	glBindTexture (GL_TEXTURE_2D, cameraP->FrameBuffer ().RenderBuffer ());
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 	glLoadMatrixf (mTexBiasf);

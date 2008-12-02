@@ -53,7 +53,7 @@ tRgbColorb *VClipColor (tObject *objP)
 {
 	int				nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
 	tBitmapIndex	bmi;
-	grsBitmap		*bmP;
+	CBitmap		*bmP;
 
 if (nVClip) {
 	tVideoClip *vcP = gameData.eff.vClips [0] + nVClip;
@@ -63,9 +63,9 @@ else
 	bmi = gameData.weapons.info [objP->info.nId].bitmap;
 PIGGY_PAGE_IN (bmi.index, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
-if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP))
-	bmP = BM_OVERRIDE (bmP);
-return &bmP->bmAvgRGB;
+if ((bmP->nType == BM_TYPE_STD) && bmP->Override ())
+	bmP = bmP->Override ();
+return &bmP->avgRGB;
 }
 
 //------------------------------------------------------------------------------
@@ -75,10 +75,10 @@ int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP)
 	int nFrames = vcP->nFrameCount;
 
 if (vcP->flags & WCF_ALTFMT) {
-	grsBitmap	*bmP;
+	CBitmap	*bmP;
 	if (vcP->flags & WCF_INITIALIZED) {
-		bmP = BM_OVERRIDE (gameData.pig.tex.bitmaps [0] + vcP->frames [0].index);
-		nFrames = ((bmP->bmType != BM_TYPE_ALT) && BM_PARENT (bmP)) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP);
+		bmP = gameData.pig.tex.bitmaps [0] [vcP->frames [0].index].Override ();
+		nFrames = ((bmP->Type () != BM_TYPE_ALT) && bmP->Parent ()) ? bmP->Parent ()->FrameCount () : bmP->FrameCount ();
 		}
 	else {
 		bmP = SetupHiresAnim ((short *) vcP->frames, nFrames, -1, 0, 1, &nFrames);

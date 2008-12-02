@@ -184,13 +184,13 @@ return r;
 void _CDECL_ FreeEndLevelData (void)
 {
 PrintLog ("unloading endlevel data\n");
-if (gameData.endLevel.terrain.bmInstance.bmTexBuf) {
+if (gameData.endLevel.terrain.bmInstance.texBuf) {
 	OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
-	D2_FREE (gameData.endLevel.terrain.bmInstance.bmTexBuf);
+	D2_FREE (gameData.endLevel.terrain.bmInstance.texBuf);
 	}
-if (gameData.endLevel.satellite.bmInstance.bmTexBuf) {
+if (gameData.endLevel.satellite.bmInstance.texBuf) {
 	OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
-	D2_FREE (gameData.endLevel.satellite.bmInstance.bmTexBuf);
+	D2_FREE (gameData.endLevel.satellite.bmInstance.texBuf);
 	}
 }
 
@@ -206,8 +206,8 @@ void InitEndLevel (void)
 #endif
 GenerateStarfield ();
 atexit (FreeEndLevelData);
-gameData.endLevel.terrain.bmInstance.bmTexBuf =
-gameData.endLevel.satellite.bmInstance.bmTexBuf = NULL;
+gameData.endLevel.terrain.bmInstance.texBuf =
+gameData.endLevel.satellite.bmInstance.texBuf = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -264,7 +264,7 @@ if ((nMoviePlayed == MOVIE_NOT_PLAYED) && gameStates.app.bEndLevelDataLoaded) { 
 		}
 	}
 //don't have movie or rendered sequence, fade out
-GrPaletteFadeOut (NULL, 32, 0);
+paletteManager.FadeOut ();
 if (!bSecret)
 	PlayerFinishedLevel (0);		//done with level
 }
@@ -403,7 +403,7 @@ void StopEndLevelSequence (void)
 {
 	gameStates.render.nInterpolationMethod = 0;
 
-GrPaletteFadeOut (NULL, 32, 0);
+paletteManager.FadeOut ();
 SelectCockpit (gameStates.render.cockpit.nModeSave);
 gameStates.app.bEndLevelSequence = EL_OFF;
 PlayerFinishedLevel (0);
@@ -1171,11 +1171,11 @@ while (cf.GetS (line, LINE_LEN)) {
 			int iff_error;
 
 			PrintLog ("         loading terrain bitmap\n");
-			if (gameData.endLevel.terrain.bmInstance.bmTexBuf) {
+			if (gameData.endLevel.terrain.bmInstance.texBuf) {
 				OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
-				D2_FREE (gameData.endLevel.terrain.bmInstance.bmTexBuf);
+				D2_FREE (gameData.endLevel.terrain.bmInstance.texBuf);
 				}
-			Assert (gameData.endLevel.terrain.bmInstance.bmTexBuf == NULL);
+			Assert (gameData.endLevel.terrain.bmInstance.texBuf == NULL);
 			iff_error = iff.ReadBitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {
 #if DBG
@@ -1209,9 +1209,9 @@ while (cf.GetS (line, LINE_LEN)) {
 			int iff_error;
 
 			PrintLog ("         loading satellite bitmap\n");
-			if (gameData.endLevel.satellite.bmInstance.bmTexBuf) {
+			if (gameData.endLevel.satellite.bmInstance.texBuf) {
 				OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
-				D2_FREE (gameData.endLevel.satellite.bmInstance.bmTexBuf);
+				D2_FREE (gameData.endLevel.satellite.bmInstance.texBuf);
 				}
 			iff_error = iff.ReadBitmap (p, &gameData.endLevel.satellite.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {

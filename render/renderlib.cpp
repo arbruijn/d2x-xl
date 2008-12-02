@@ -108,15 +108,15 @@ return bShowOnlyCurSide = !bShowOnlyCurSide;
 
 //------------------------------------------------------------------------------
 
-inline int LoadExtraBitmap (grsBitmap **bmPP, const char *pszName, int *bHaveP)
+inline int LoadExtraBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP)
 {
 if (!*bHaveP) {
-	grsBitmap *bmP = CreateAndReadTGA (pszName);
+	CBitmap *bmP = CreateAndReadTGA (pszName);
 	if (!bmP)
 		*bHaveP = -1;
 	else {
 		*bHaveP = 1;
-		BM_FRAMECOUNT (bmP) = bmP->bmProps.h / bmP->bmProps.w;
+		bmP->SetFrameCount ();
 		OglBindBmTex (bmP, 1, 1);
 		}
 	*bmPP = bmP;
@@ -126,7 +126,7 @@ return *bHaveP > 0;
 
 //------------------------------------------------------------------------------
 
-grsBitmap *bmpExplBlast = NULL;
+CBitmap *bmpExplBlast = NULL;
 int bHaveExplBlast = 0;
 
 int LoadExplBlast (void)
@@ -139,15 +139,14 @@ return LoadExtraBitmap (&bmpExplBlast, "blast.tga", &bHaveExplBlast);
 void FreeExplBlast (void)
 {
 if (bmpExplBlast) {
-	GrFreeBitmap (bmpExplBlast);
-	bmpExplBlast = NULL;
+	D2_FREE (bmpExplBlast);
 	bHaveExplBlast = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-grsBitmap *bmpSparks = NULL;
+CBitmap *bmpSparks = NULL;
 int bHaveSparks = 0;
 
 int LoadSparks (void)
@@ -160,15 +159,14 @@ return LoadExtraBitmap (&bmpSparks, "sparks.tga", &bHaveSparks);
 void FreeSparks (void)
 {
 if (bmpSparks) {
-	GrFreeBitmap (bmpSparks);
-	bmpSparks = NULL;
+	D2_FREE (bmpSparks);
 	bHaveSparks = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-grsBitmap *bmpCorona = NULL;
+CBitmap *bmpCorona = NULL;
 int bHaveCorona = 0;
 
 int LoadCorona (void)
@@ -181,15 +179,14 @@ return LoadExtraBitmap (&bmpCorona, "corona.tga", &bHaveCorona);
 void FreeCorona (void)
 {
 if (bmpCorona) {
-	GrFreeBitmap (bmpCorona);
-	bmpCorona = NULL;
+	D2_FREE (bmpCorona);
 	bHaveCorona = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-grsBitmap *bmpGlare = NULL;
+CBitmap *bmpGlare = NULL;
 int bHaveGlare = 0;
 
 int LoadGlare (void)
@@ -202,15 +199,14 @@ return LoadExtraBitmap (&bmpGlare, "glare.tga", &bHaveGlare);
 void FreeGlare (void)
 {
 if (bmpGlare) {
-	GrFreeBitmap (bmpGlare);
-	bmpGlare = NULL;
+	D2_FREE (bmpGlare);
 	bHaveGlare = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-grsBitmap *bmpHalo = NULL;
+CBitmap *bmpHalo = NULL;
 int bHaveHalo = 0;
 
 int LoadHalo (void)
@@ -223,15 +219,14 @@ return LoadExtraBitmap (&bmpHalo, "halo.tga", &bHaveHalo);
 void FreeHalo (void)
 {
 if (bmpHalo) {
-	GrFreeBitmap (bmpHalo);
-	bmpHalo = NULL;
+	D2_FREE (bmpHalo);
 	bHaveHalo = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-grsBitmap *bmpThruster [2] = {NULL, NULL};
+CBitmap *bmpThruster [2] = {NULL, NULL};
 int bHaveThruster [2] = {0, 0};
 
 int LoadThruster (void)
@@ -251,7 +246,7 @@ void FreeThruster (void)
 
 for (i = 0; i < 2; i++)
 	if (bmpThruster [i]) {
-		GrFreeBitmap (bmpThruster [i]);
+		D2_FREE (bmpThruster [i]);
 		bmpThruster [i] = NULL;
 		bHaveThruster [i] = 0;
 		}
@@ -259,7 +254,7 @@ for (i = 0; i < 2; i++)
 
 //------------------------------------------------------------------------------
 
-grsBitmap *bmpShield = NULL;
+CBitmap *bmpShield = NULL;
 int bHaveShield = 0;
 
 int LoadShield (void)
@@ -272,7 +267,7 @@ return LoadExtraBitmap (&bmpShield, "shield.tga", &bHaveShield);
 void FreeShield (void)
 {
 if (bmpShield) {
-	GrFreeBitmap (bmpShield);
+	D2_FREE (bmpShield);
 	bmpShield = NULL;
 	bHaveShield = 0;
 	}
@@ -672,21 +667,22 @@ if (bCloaked || (widFlags & WID_TRANSPARENT_FLAG)) {
 		*colorP = cloakColor;
 		*nColor = 1;
 		*bTextured = 0;
-		return colorP->alpha = (c >= GR_ACTUAL_FADE_LEVELS) ? 0 : 1.0f - (float) c / (float) GR_ACTUAL_FADE_LEVELS;
+		return colorP->alpha = (c >= FADE_LEVELS) ? 0 : 1.0f - (float) c / (float) FADE_LEVELS;
 		}
 	if (!gameOpts->render.color.bWalls)
 		c = 0;
 	if (gameData.walls.walls [nWall].hps)
 		fAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWall].hps / ((float) F1_0 * 100.0f)));
 	else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
-		fAlpha = COMPETITION ? 0.5f : (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [1].grWallTransparency) / (float) GR_ACTUAL_FADE_LEVELS;
+		fAlpha = COMPETITION ? 0.5f : (float) (FADE_LEVELS - extraGameInfo [1].grWallTransparency) / (float) FADE_LEVELS;
 	else
-		fAlpha = 1.0f - extraGameInfo [0].grWallTransparency / (float) GR_ACTUAL_FADE_LEVELS;
+		fAlpha = 1.0f - extraGameInfo [0].grWallTransparency / (float) FADE_LEVELS;
 	if (fAlpha < 1) {
 		//fAlpha = (float) sqrt (fAlpha);
-		colorP->red = (float) CPAL2Tr (gamePalette, c) / fAlpha;
-		colorP->green = (float) CPAL2Tg (gamePalette, c) / fAlpha;
-		colorP->blue = (float) CPAL2Tb (gamePalette, c) / fAlpha;
+		paletteManager.Game ()->ToRgbaf ((ubyte) c, *colorP);
+		colorP->red /= fAlpha;
+		colorP->green /= fAlpha;
+		colorP->blue /= fAlpha;
 		*bTextured = 0;
 		*nColor = 1;
 		}
@@ -694,7 +690,7 @@ if (bCloaked || (widFlags & WID_TRANSPARENT_FLAG)) {
 	}
 if (gameStates.app.bD2XLevel) {
 	c = wallP->cloakValue;
-	return colorP->alpha = (c && (c < GR_ACTUAL_FADE_LEVELS)) ? (float) (GR_ACTUAL_FADE_LEVELS - c) / (float) GR_ACTUAL_FADE_LEVELS : 1;
+	return colorP->alpha = (c && (c < FADE_LEVELS)) ? (float) (FADE_LEVELS - c) / (float) FADE_LEVELS : 1;
 	}
 if (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (gameData.segs.segments [nSegment].sides [nSide].nBaseTex))
 	return colorP->alpha = 0.8f;
@@ -726,15 +722,15 @@ int SetupMonitorFace (short nSegment, short nSide, short nCamera, grsFace *faceP
 if (!gameStates.render.bDoCameras)
 	return 0;
 bHaveMonitorBg = cameraP->Valid () && /*!cameraP->bShadowMap &&*/
-					  (cameraP->Texture ().glTexture || bCamBufAvail) &&
+					  (cameraP->Texture ().TexInfo () || bCamBufAvail) &&
 					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 if (bHaveMonitorBg) {
 	cameraP->GetUVL (faceP, NULL, gameData.segs.faces.texCoord + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex);
-	cameraP->Texture ().glTexture->wrapstate = -1;
+	cameraP->Texture ().TexInfo ()->wrapstate = -1;
 	if (bIsTeleCam) {
 #if DBG
 		faceP->bmBot = &cameraP->Texture ();
-		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+		gameStates.render.grAlpha = FADE_LEVELS;
 #else
 		faceP->bmTop = &cameraP->Texture ();
 		for (i = 0; i < 4; i++)
@@ -786,9 +782,9 @@ if (! cc.ccAnd) {		//all off screen?
 
 //------------------------------------------------------------------------------
 
-void AdjustVertexColor (grsBitmap *bmP, tFaceColor *colorP, fix xLight)
+void AdjustVertexColor (CBitmap *bmP, tFaceColor *colorP, fix xLight)
 {
-	float l = (bmP && (bmP->bmProps.flags & BM_FLAG_NO_LIGHTING)) ? 1.0f : X2F (xLight);
+	float l = (bmP && (bmP->props.flags & BM_FLAG_NO_LIGHTING)) ? 1.0f : X2F (xLight);
 	float s = 1.0f;
 
 #if SHADOWS

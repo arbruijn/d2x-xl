@@ -54,7 +54,7 @@ int TrapSeg (short nSegment);
 int TrapSegSide (short nSegment, short nSide);
 int TrapVert (int nVertex);
 int TrapTex (int nBaseTex, int nOvlTex);
-int TrapBmp (grsBitmap *bmP, char *pszName);
+int TrapBmp (CBitmap *bmP, char *pszName);
 
 #else
 
@@ -62,7 +62,7 @@ int TrapBmp (grsBitmap *bmP, char *pszName);
 #define TrapSegSide (short nSegment, short nSide)
 #define TrapVert (int nVertex)
 #define TrapTex (int nBaseTex, int nOvlTex)
-#define TrapBmp (grsBitmap *bmP, char *pszName)
+#define TrapBmp (CBitmap *bmP, char *pszName)
 
 #endif
 

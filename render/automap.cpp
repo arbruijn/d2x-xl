@@ -142,7 +142,7 @@ static int DrawingListBright [MAX_EDGES];
 #define ROT_SPEED_DIVISOR		 (115000)
 
 //static gsrCanvas	automap_canvas;
-static grsBitmap bmAutomapBackground;
+static CBitmap bmAutomapBackground;
 
 typedef struct tAutomapData {
 	int			bCheat;
@@ -491,11 +491,11 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (NULL, offs, offs, amLevelNum);
 	GrGetStringSize (amLevelName, &w, &h, &aw);
-	GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w - offs - w, offs, amLevelName);
+	GrPrintF (NULL, grdCurCanv->cvBitmap.props.w - offs - w, offs, amLevelName);
 	GrSetCurFont (curFont);
 #else
 	GrBitmapM (offs, offs, &levelNumCanv->cvBitmap, 2);
-	GrBitmapM (grdCurCanv->cvBitmap.bmProps.w - offs - levelNameCanv->cvBitmap.bmProps.w, 
+	GrBitmapM (grdCurCanv->cvBitmap.props.w - offs - levelNameCanv->cvBitmap.props.w, 
 				  offs, &levelNameCanv->cvBitmap, 2);
 #endif
 	if (gameOpts->render.automap.bTextured)
@@ -528,7 +528,7 @@ GrSetCurFont (save_font);				//restore real font
 
 //temp_canv = GrCreateCanvas (font->ftWidth*strlen (s),font->ftHeight*2);
 temp_canv = GrCreateCanvas (w,font->ftHeight*2);
-temp_canv->cvBitmap.bmPalette = gamePalette;
+temp_canv->cvBitmap.palette = paletteManager.Game ();
 GrSetCurrentCanvas (temp_canv);
 GrSetCurFont (font);
 GrClearCanvas (0);						//trans color
@@ -536,12 +536,12 @@ GrSetFontColorRGBi (fc, 1, bc, 1);
 GrPrintF (NULL, 0, 0, s);
 //now float it, since we're drawing to 400-line modex screen
 if (doubleFlag) {
-	data = temp_canv->cvBitmap.bmTexBuf;
-	rs = temp_canv->cvBitmap.bmProps.rowSize;
+	data = temp_canv->cvBitmap.texBuf;
+	rs = temp_canv->cvBitmap.props.rowSize;
 
-	for (y=temp_canv->cvBitmap.bmProps.h/2;y--;) {
-		memcpy (data+ (rs*y*2),data+ (rs*y),temp_canv->cvBitmap.bmProps.w);
-		memcpy (data+ (rs* (y*2+1)),data+ (rs*y),temp_canv->cvBitmap.bmProps.w);
+	for (y=temp_canv->cvBitmap.props.h/2;y--;) {
+		memcpy (data+ (rs*y*2),data+ (rs*y),temp_canv->cvBitmap.props.w);
+		memcpy (data+ (rs* (y*2+1)),data+ (rs*y),temp_canv->cvBitmap.props.w);
 		}
 	}
 GrSetCurrentCanvas (save_canv);
@@ -634,12 +634,12 @@ nMaxEdges = MAX_EDGES; //min (MAX_EDGES_FROM_VERTS (gameData.segs.nVertices), MA
 if (gameStates.render.automap.bRadar || (gameStates.video.nDisplayMode > 1)) {
 	//GrSetMode (gameStates.video.nLastScreenMode);
 	if (gameStates.render.automap.bRadar) {
-		automap_width = grdCurCanv->cvBitmap.bmProps.w;
-		automap_height = grdCurCanv->cvBitmap.bmProps.h;
+		automap_width = grdCurCanv->cvBitmap.props.w;
+		automap_height = grdCurCanv->cvBitmap.props.h;
 		}
 	else {
-		automap_width = grdCurScreen->scCanvas.cvBitmap.bmProps.w;
-		automap_height = grdCurScreen->scCanvas.cvBitmap.bmProps.h;
+		automap_width = grdCurScreen->scCanvas.cvBitmap.props.w;
+		automap_height = grdCurScreen->scCanvas.cvBitmap.props.h;
 		}
 	amData.bHires = 1;
 	 }
@@ -650,14 +650,14 @@ else {
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && amData.bHires;
 if (!gameStates.render.automap.bRadar) {
 	CreateNameCanv ();
-	GrPaletteStepClear ();
+	paletteManager.ResetEffect ();
 	}
 if (!gameStates.render.automap.bRadar) {
-	GrInitBitmapData (&bmAutomapBackground);
+	bmAutomapBackground.Init ();
 	nPCXError = PCXReadBitmap (MAP_BACKGROUND_FILENAME, &bmAutomapBackground, BM_LINEAR, 0);
 	if (nPCXError != PCX_ERROR_NONE)
 		Error ("File %s - PCX error: %s", MAP_BACKGROUND_FILENAME, pcx_errormsg (nPCXError));
-	GrRemapBitmapGood (&bmAutomapBackground, NULL, -1, -1);
+	bmAutomapBackground.Remap (NULL, -1, -1);
 	}
 if (gameStates.render.automap.bRadar || !gameOpts->render.automap.bTextured)
 	AutomapBuildEdgeList ();
@@ -932,7 +932,7 @@ while (!bDone)	{
 	DrawAutomap ();
 	if (bFirstTime) {
 		bFirstTime = 0;
-		GrPaletteStepLoad (NULL);
+		paletteManager.LoadEffect ();
 		}
 	t2 = TimerGetFixedSeconds ();
 	if (bPauseGame)

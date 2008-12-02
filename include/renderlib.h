@@ -73,13 +73,13 @@ int SetVertexColor (int nVertex, tFaceColor *pc);
 int SetVertexColors (tFaceProps *propsP);
 fix SetVertexLight (int nSegment, int nSide, int nVertex, tFaceColor *pc, fix light);
 int SetFaceLight (tFaceProps *propsP);
-void AdjustVertexColor (grsBitmap *bmP, tFaceColor *pc, fix xLight);
+void AdjustVertexColor (CBitmap *bmP, tFaceColor *pc, fix xLight);
 char IsColoredSegFace (short nSegment, short nSide);
 tRgbaColorf *ColoredSegmentColor (int nSegment, int nSide, char nColor);
 int IsMonitorFace (short nSegment, short nSide, int bForce);
 float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, tRgbaColorf *pc, int *bCloaking, ubyte *bTextured);
 int SetupMonitorFace (short nSegment, short nSide, short nCamera, grsFace *faceP);
-grsBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
+CBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
 void DrawOutline (int nVertices, g3sPoint **pointList);
 int ToggleOutlineMode (void);
 int ToggleShowOnlyCurSide (void);
@@ -97,13 +97,13 @@ void DrawWindowBox (unsigned int color, short left, short top, short right, shor
 
 //------------------------------------------------------------------------------
 
-extern grsBitmap *bmpCorona;
-extern grsBitmap *bmpGlare;
-extern grsBitmap *bmpHalo;
-extern grsBitmap *bmpThruster [2];
-extern grsBitmap *bmpShield;
-extern grsBitmap *bmpExplBlast;
-extern grsBitmap *bmpSparks;
+extern CBitmap *bmpCorona;
+extern CBitmap *bmpGlare;
+extern CBitmap *bmpHalo;
+extern CBitmap *bmpThruster [2];
+extern CBitmap *bmpShield;
+extern CBitmap *bmpExplBlast;
+extern CBitmap *bmpSparks;
 
 extern tRgbaColorf segmentColors [4];
 

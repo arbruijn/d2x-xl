@@ -37,12 +37,12 @@
 
 //------------------------------------------------------------------------------
 
-tOglTexture oglTextureList [OGL_TEXTURE_LIST_SIZE];
+tTextureInfo oglTextureList [OGL_TEXTURE_LIST_SIZE];
 int oglTexListCur;
 
 //------------------------------------------------------------------------------
 
-inline void OglInitTextureStats (tOglTexture* t)
+inline void OglInitTextureStats (tTextureInfo* t)
 {
 t->prio = (float) 0.3;//default prio
 t->lastrend = 0;
@@ -54,7 +54,7 @@ t->numrend = 0;
 void OglResetTextureStatsInternal (void)
 {
 	int			i;
-	tOglTexture	*t = oglTextureList;
+	tTextureInfo	*t = oglTextureList;
 
 for (i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
 	if (t->handle)
@@ -63,7 +63,7 @@ for (i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
 
 //------------------------------------------------------------------------------
 
-void OglInitTexture (tOglTexture *t, int bMask, grsBitmap *bmP)
+void OglInitTexture (tTextureInfo *t, int bMask, CBitmap *bmP)
 {
 t->handle = 0;
 t->internalformat = bMask ? 1 : gameStates.ogl.bpp / 8;
@@ -71,7 +71,7 @@ t->format = bMask ? GL_RED : gameStates.ogl.nRGBAFormat;
 t->wrapstate = -1;
 t->w =
 t->h = 0;
-t->bFrameBuf = 0;
+t->bFrameBuffer = 0;
 t->bmP = bmP;
 OglInitTextureStats (t);
 }
@@ -80,7 +80,7 @@ OglInitTextureStats (t);
 
 void OglInitTextureListInternal (void)
 {
-	tOglTexture	*t = oglTextureList;
+	tTextureInfo	*t = oglTextureList;
 	
 oglTexListCur = 0;
 for (int i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
@@ -89,37 +89,37 @@ for (int i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
 
 //------------------------------------------------------------------------------
 
-inline void UnlinkTexture (grsBitmap *bmP)
+inline void UnlinkTexture (CBitmap *bmP)
 {
-if (bmP->glTexture && (bmP->glTexture->handle == (GLuint) -1)) {
-	bmP->glTexture->handle = 0;
-	bmP->glTexture = NULL;
+if (bmP->texInfo && (bmP->texInfo->handle == (GLuint) -1)) {
+	bmP->texInfo->handle = 0;
+	bmP->texInfo = NULL;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void UnlinkBitmap (grsBitmap *bmP, int bAddon)
+void UnlinkBitmap (CBitmap *bmP, int bAddon)
 {
-	grsBitmap	*altBmP, *bmfP;
+	CBitmap	*altBmP, *bmfP;
 	int			i, j;
 
-if (bAddon || (bmP->bmType == BM_TYPE_STD)) {
-	if (BM_MASK (bmP))
-		UnlinkTexture (BM_MASK (bmP));
-	if (!(bAddon || BM_OVERRIDE (bmP)))
+if (bAddon || (bmP->nType == BM_TYPE_STD)) {
+	if (bmP->Mask ())
+		UnlinkTexture (bmP->Mask ());
+	if (!(bAddon || bmP->Override ()))
 		UnlinkTexture (bmP);
 	else {
-		altBmP = bAddon ? bmP : BM_OVERRIDE (bmP);
-		if (BM_MASK (altBmP))
-			UnlinkTexture (BM_MASK (altBmP));
+		altBmP = bAddon ? bmP : bmP->Override ();
+		if (altBmP->Mask ())
+			UnlinkTexture (altBmP->Mask ());
 		UnlinkTexture (altBmP);
-		if ((altBmP->bmType == BM_TYPE_ALT) && BM_FRAMES (altBmP)) {
-			i = BM_FRAMECOUNT (altBmP);
+		if ((altBmP->Type () == BM_TYPE_ALT) && altBmP->Frames ()) {
+			i = altBmP->FrameCount ();
 			if (i > 1) {
-				for (j = i, bmfP = BM_FRAMES (altBmP); j; j--, bmfP++) {
-					if (BM_MASK (bmfP))
-						UnlinkTexture (BM_MASK (bmfP));
+				for (j = i, bmfP = altBmP->Frames (); j; j--, bmfP++) {
+					if (bmfP->Mask ())
+						UnlinkTexture (bmfP->Mask ());
 					UnlinkTexture (bmfP);
 					}
 				}
@@ -132,9 +132,9 @@ if (bAddon || (bmP->bmType == BM_TYPE_STD)) {
 
 void OglSmashTextureListInternal (void)
 {
-	grsBitmap	*bmP;
-	tOglTexture *t;
-	int			i, j, bUnlink = 0;
+	CBitmap			*bmP;
+	tTextureInfo	*t;
+	int				i, j, bUnlink = 0;
 
 OglDestroyDrawBuffer ();
 cameraManager.Destroy ();
@@ -150,7 +150,7 @@ OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
 
 for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
-	if (!t->bFrameBuf && t->handle && (t->handle != (GLuint) -1)) {
+	if (!t->bFrameBuffer && t->handle && (t->handle != (GLuint) -1)) {
 		OglDeleteTextures (1, (GLuint *) &t->handle);
 		t->handle = (GLuint) -1;
 		bUnlink = 1;
@@ -177,10 +177,10 @@ if (bUnlink) {
 // Make sure all textures (bitmaps) not in the game texture lists that had an OpenGL handle get the handle reset
 // (Can be fonts and other textures, e.g. those used for the menus)
 for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++)
-	if (!t->bFrameBuf && (t->handle == (GLuint) -1)) {
+	if (!t->bFrameBuffer && (t->handle == (GLuint) -1)) {
 		if (t->bmP) {
-			if (t->bmP->glTexture == t)
-				t->bmP->glTexture = NULL;
+			if (t->bmP->texInfo == t)
+				t->bmP->texInfo = NULL;
 			else
 				t->bmP = NULL;	// this would mean the texture list is messed up
 			}
@@ -191,10 +191,10 @@ oglTexListCur = 0;
 
 //------------------------------------------------------------------------------
 
-tOglTexture *OglGetFreeTextureInternal (void)
+tTextureInfo *OglGetFreeTextureInternal (void)
 {
 	int i;
-	tOglTexture *t = oglTextureList + oglTexListCur;
+	tTextureInfo *t = oglTextureList + oglTexListCur;
 
 for (i = 0; i < OGL_TEXTURE_LIST_SIZE; i++) {
 	if (!(t->handle || t->w))
@@ -211,9 +211,9 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-tOglTexture *OglGetFreeTexture (grsBitmap *bmP)
+tTextureInfo *OglGetFreeTexture (CBitmap *bmP)
 {
-tOglTexture *t = OglGetFreeTextureInternal ();
+tTextureInfo *t = OglGetFreeTextureInternal ();
 if (t)
 	t->bmP = bmP;
 else {
@@ -235,7 +235,7 @@ int OglTextureStats (void)
 	int used=0,databytes=0,truebytes=0,datatexel=0,truetexel=0,i;
 	int prio0=0,prio1=0,prio2=0,prio3=0,prioh=0;
 //	int grabbed=0;
-	tOglTexture* t;
+	tTextureInfo* t;
 for (i = 0, t=oglTextureList; i < OGL_TEXTURE_LIST_SIZE; i++, t++) {
 	if (t->handle) {
 		used++;
@@ -262,7 +262,7 @@ return truebytes;
 
 //------------------------------------------------------------------------------
 
-int OglBindTexImage (tOglTexture *texP)
+int OglBindTexImage (tTextureInfo *texP)
 {
 #if RENDER2TEXTURE == 1
 #	if 1
@@ -282,41 +282,37 @@ OGL_BINDTEX (texP->pbuffer.texId);
 #	endif
 #	ifdef _WIN32
 #		if DBG
-if (!texP->pbuffer.bBound) {
-	texP->pbuffer.bBound = wglBindTexImageARB (texP->pbuffer.hBuf, WGL_FRONT_LEFT_ARB);
-	if (!texP->pbuffer.bBound) {
-		char *psz = (char *) gluErrorString (glGetError ());
-		return 1;
-		}
+if (!texP->pbo.Bind ()) {
+	char *psz = (char *) gluErrorString (glGetError ());
+	return 1;
 	}
 #		else
-if (!(texP->pbuffer.bBound ||
-	 (texP->pbuffer.bBound = wglBindTexImageARB (texP->pbuffer.hBuf, WGL_FRONT_LEFT_ARB))))
+if (!(texP->pbo.Bind ())
 	return 1;
 #		endif
 #	endif
 #elif RENDER2TEXTURE == 2
-OGL_BINDTEX (texP->fbuffer.hRenderBuffer);
+OGL_BINDTEX (texP->fbo.RenderBuffer ());
 #endif
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int OglBindBmTex (grsBitmap *bmP, int bMipMaps, int nTransp)
+int OglBindBmTex (CBitmap *bmP, int bMipMaps, int nTransp)
 {
-	tOglTexture	*texP;
-	grsBitmap	*bmMask;
+	tTextureInfo	*texP;
+	CBitmap	*mask;
 #if RENDER2TEXTURE
 	int			bPBuffer;
 #endif
 
 if (!bmP)
 	return 1;
-bmP = BmOverride (bmP, -1);
-texP = bmP->glTexture;
+bmP = bmP->Override (-1);
+texP = bmP->texInfo;
 #if RENDER2TEXTURE
-if ((bPBuffer = texP && texP->bFrameBuf)) {
+if ((bPBuffer = texP && texP->bFrameBuffer)) {
 	if (OglBindTexImage (texP))
 		return 1;
 	}
@@ -326,134 +322,55 @@ else
 	if (!(texP && (texP->handle > 0))) {
 		if (OglLoadBmTexture (bmP, bMipMaps, nTransp, 1))
 			return 1;
-		bmP = BmOverride (bmP, -1);
-		texP = bmP->glTexture;
+		bmP = bmP->Override (-1);
+		texP = bmP->texInfo;
 #if 1//def _DEBUG
 		if (!texP)
 			OglLoadBmTexture (bmP, 1, nTransp, 1);
 #endif
 		}
 	OGL_BINDTEX (texP->handle);
-	if ((bmMask = BM_MASK (bmP))) {
-		texP = bmMask->glTexture;
+	if ((mask = bmP->Mask ())) {
+		texP = mask->TexInfo ();
 		if (!(texP && (texP->handle > 0)))
-			OglLoadBmTexture (bmMask, 0, -1, 1);
+			OglLoadBmTexture (mask, 0, -1, 1);
 		}
 	}
 #if DBG
-bmP->glTexture->lastrend = gameData.time.xGame;
-bmP->glTexture->numrend++;
+bmP->texInfo->lastrend = gameData.time.xGame;
+bmP->texInfo->numrend++;
 #endif
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-tRgbColorf *BitmapColor (grsBitmap *bmP, ubyte *bufP)
+void OglResetFrames (CBitmap *bmP)
 {
-	int c, h, i, j = 0, r = 0, g = 0, b = 0;
-	tRgbColorf *color;
-	ubyte	*palette;
-	
-if (!(bufP || (bufP = bmP->bmTexBuf)))
-	return NULL;
-h = (int) (bmP - gameData.pig.tex.pBitmaps);
-if ((h < 0) || (h >= MAX_BITMAP_FILES)) {
-	h = (int) (bmP - gameData.pig.tex.pAltBitmaps);
-	if ((h < 0) || (h >= MAX_BITMAP_FILES)) {
-		h = (int) (bmP - gameData.pig.tex.bitmaps [0]);
-		if ((h < 0) || (h >= MAX_BITMAP_FILES))
-			return NULL;
-		}
-	}
-color = gameData.pig.tex.bitmapColors + h;
-if (color->red || color->green || color->blue)
-	return color;
-palette = bmP->bmPalette;
-if (!palette)
-	palette = defaultPalette;
-for (h = i = bmP->bmProps.w * bmP->bmProps.h; i; i--, bufP++) {
-	if ((c = *bufP) && (c != TRANSPARENCY_COLOR) && (c != SUPER_TRANSP_COLOR)) {
-		c *= 3;
-		r += palette [c];
-		g += palette [c+1];
-		b += palette [c+2];
-		j++;
-		}
-	}
-if (j) {
-	bmP->bmAvgRGB.red = 4 *(ubyte) (r / j);
-	bmP->bmAvgRGB.green = 4 *(ubyte) (g / j);
-	bmP->bmAvgRGB.blue = 4 *(ubyte) (b / j);
-	j *= 63;	//palette entries are all /4, so do not divide by 256
-	color->red = (float) r / (float) j;
-	color->green = (float) g / (float) j;
-	color->blue = (float) b / (float) j;
-	}
-else {
-	bmP->bmAvgRGB.red =
-	bmP->bmAvgRGB.green =
-	bmP->bmAvgRGB.blue = 0;
-	color->red =
-	color->green =
-	color->blue = 0.0f;
-	}
-if (color->red > 1.0 || color->green > 1.0 || color->blue > 1.0)
-	c = c;
-return color;
+bmP->FreeTexture ();
 }
 
 //------------------------------------------------------------------------------
 
-int GrAvgColor (grsBitmap *bmP)
+CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx)
 {
-if (bmP->bmTexBuf && !bmP->bmAvgColor) {
-		int c, h, i, j = 0, r = 0, g = 0, b = 0;
-		ubyte *p = bmP->bmTexBuf;
-		ubyte *palette = bmP->bmPalette;
-
-	for (h = i = bmP->bmProps.w * bmP->bmProps.h; i; i--, p++) {
-		if ((c = *p) && (c != TRANSPARENCY_COLOR) && (c != SUPER_TRANSP_COLOR)) {
-			c *= 3;
-			r += palette [c++];
-			g += palette [c++];
-			b += palette [c];
-			j++;
-			}
-		}
-	return j ? GrFindClosestColor (bmP->bmPalette, r / j, g / j, b / j) : 0;
-	}
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-void OglResetFrames (grsBitmap *bmP)
-{
-OglFreeBmTexture (bmP);
-}
-
-//------------------------------------------------------------------------------
-
-grsBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx)
-{
-	grsBitmap	*bmP;
-	int			nFrames;
+	CBitmap	*bmP;
+	int		nFrames;
 
 PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [nTexture].index, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [nTexture].index;
-if (BM_OVERRIDE (bmP)) {
-	bmP = BM_OVERRIDE (bmP);
-	if (bmP->bmWallAnim) {
-		nFrames = BM_FRAMECOUNT (bmP);
+if (bmP->Override ()) {
+	bmP = bmP->Override ();
+	if (bmP->WallAnim ()) {
+		nFrames = bmP->FrameCount ();
 		if (nFrames > 1) {
 			OglLoadBmTexture (bmP, 1, 3, 1);
-			if (BM_FRAMES (bmP)) {
+			if (bmP->Frames ()) {
 				if ((nFrameIdx >= 0) || (-nFrames > nFrameIdx))
-					BM_CURFRAME (bmP) = BM_FRAMES (bmP);
+					bmP->SetCurFrame (bmP->Frames ());
 				else
-					BM_CURFRAME (bmP) = BM_FRAMES (bmP) - nFrameIdx - 1;
-				OglLoadBmTexture (BM_CURFRAME (bmP), 1, 3, 1);
+					bmP->SetCurFrame (bmP->Frames () - nFrameIdx - 1);
+				OglLoadBmTexture (bmP->CurFrame (), 1, 3, 1);
 				}
 			}
 		}
@@ -494,7 +411,7 @@ return (minColor + maxColor) / 2;
 //GLubyte gameData.render.ogl.texBuf [512*512*4];
 
 int OglFillTexBuf (
-	grsBitmap	*bmP,
+	CBitmap	*bmP,
 	GLubyte		*texBuf,
 	int			truewidth,
 	int			width,
@@ -508,35 +425,38 @@ int OglFillTexBuf (
 	int			bSuperTransp)
 {
 //	GLushort *texP= (GLushort *)texBuf;
-	ubyte		*data = bmP->bmTexBuf;
-	GLubyte	*bufP;
-	int		x, y, c, i, j;
-	ushort	r, g, b, a;
-	int		bTransp;
+	ubyte			*data = bmP->texBuf;
+	GLubyte		*bufP;
+	tRgbColorb	*colorP;
+	int			x, y, c, i, j;
+	ushort		r, g, b, a;
+	int			bTransp;
 
 #if DBG
 if (strstr (bmP->szName, "phoenix"))
 	bmP = bmP;
 #endif
-gameData.render.ogl.palette = (BM_PARENT (bmP) ? BM_PARENT (bmP)->bmPalette : bmP->bmPalette);
-if (!gameData.render.ogl.palette)
-	gameData.render.ogl.palette = defaultPalette;
-if (!gameData.render.ogl.palette)
-	return nFormat;
+paletteManager.SetTexture (bmP->Parent () ? bmP->Parent ()->Palette () : bmP->Palette ());
+if (!paletteManager.Texture ()) {
+	paletteManager.SetTexture (paletteManager.Default ());
+	if (!paletteManager.Texture ())
+		return nFormat;
+	}
 if (tWidth * tHeight * 4 > (int) sizeof (gameData.render.ogl.texBuf))//shouldn't happen, descent never uses textures that big.
 	Error ("texture too big %i %i",tWidth, tHeight);
-bTransp = (nTransp || bSuperTransp) && GrBitmapHasTransparency (bmP);
+bTransp = (nTransp || bSuperTransp) && bmP->HasTransparency ();
 if (!bTransp)
 	nFormat = GL_RGB;
 #if DBG
 if (!nTransp)
 	nTransp = 0;
 #endif
+colorP = paletteManager.Texture ()->Color ();
 restart:
 
 i = 0;
 bufP = texBuf;
-//bmP->bmProps.flags &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
+//bmP->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 for (y = 0; y < tHeight; y++) {
 	i = dxo + truewidth *(y + dyo);
 	for (x = 0; x < tWidth; x++){
@@ -545,7 +465,7 @@ for (y = 0; y < tHeight; y++) {
 		else
 			c = TRANSPARENCY_COLOR;	//fill the pad space with transparancy
 		if (nTransp && ((int) c == TRANSPARENCY_COLOR)) {
-			//bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
+			//bmP->Flags () |= BM_FLAG_TRANSPARENT;
 			switch (nFormat) {
 				case GL_LUMINANCE:
 					(*(bufP++)) = 0;
@@ -588,15 +508,14 @@ for (y = 0; y < tHeight; y++) {
 				case GL_RGB:
 				case GL_RGB5:
 					if (bSuperTransp && (c == SUPER_TRANSP_COLOR)) {
-						//bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
+						//bmP->Flags () |= BM_FLAG_SUPER_TRANSPARENT;
 						nFormat = gameStates.ogl.nRGBAFormat;
 						goto restart;
 						}
 					else {
-						j = c * 3;
-						r = gameData.render.ogl.palette [j] * 4;
-						g = gameData.render.ogl.palette [j + 1] * 4;
-						b = gameData.render.ogl.palette [j + 2] * 4;
+						r = colorP [j].red * 4;
+						g = colorP [j].green * 4;
+						b = colorP [j].blue * 4;
 						if (nFormat == GL_RGB) {
 							(*(bufP++)) = (GLubyte) r;
 							(*(bufP++)) = (GLubyte) g;
@@ -615,7 +534,7 @@ for (y = 0; y < tHeight; y++) {
 				case GL_RGBA:
 				case GL_RGBA4: {
 					if (bSuperTransp && (c == SUPER_TRANSP_COLOR)) {
-						//bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
+						//bmP->Flags () |= BM_FLAG_SUPER_TRANSPARENT;
 #if 0
 						if (bShaderMerge) {
 							r = g = b = 0;
@@ -632,9 +551,9 @@ for (y = 0; y < tHeight; y++) {
 						}
 					else {
 						j = c * 3;
-						r = gameData.render.ogl.palette [j] * 4;
-						g = gameData.render.ogl.palette [j + 1] * 4;
-						b = gameData.render.ogl.palette [j + 2] * 4;
+						r = colorP [j].red * 4;
+						g = colorP [j].green * 4;
+						b = colorP [j].blue * 4;
 						if (nTransp == 1) {
 #if 0 //non-linear formula
 							double da = (double) (r * 3 + g * 5 + b * 2) / (10.0 * 255.0);
@@ -671,7 +590,7 @@ return nFormat;
 //------------------------------------------------------------------------------
 //create texture buffer from data already in RGBA format
 
-ubyte *OglCopyTexBuf (tOglTexture *texP, int dxo, int dyo, ubyte *data)
+ubyte *OglCopyTexBuf (tTextureInfo *texP, int dxo, int dyo, ubyte *data)
 {
 if (!dxo && !dyo && (texP->w == texP->tw) && (texP->h == texP->th))
 	return data;	//can use data 1:1
@@ -698,7 +617,7 @@ else {	//need to reformat
 
 //------------------------------------------------------------------------------
 
-int TexFormatSupported (tOglTexture *texP)
+int TexFormatSupported (tTextureInfo *texP)
 {
 	GLint nFormat = 0;
 
@@ -777,7 +696,7 @@ return nFormat == texP->internalformat;
 
 //------------------------------------------------------------------------------
 
-int TexFormatVerify (tOglTexture *texP)
+int TexFormatVerify (tTextureInfo *texP)
 {
 while (!TexFormatSupported (texP)) {
 	switch (texP->format) {
@@ -820,7 +739,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void TexSetSizeSub (tOglTexture *texP,int dbits,int bits,int w, int h)
+void TexSetSizeSub (tTextureInfo *texP,int dbits,int bits,int w, int h)
 {
 	int u;
 
@@ -836,7 +755,7 @@ texP->bytesu = (int) (((double) u * bits) / 8.0);
 
 //------------------------------------------------------------------------------
 
-void TexSetSize (tOglTexture *texP)
+void TexSetSize (tTextureInfo *texP)
 {
 	GLint	w, h;
 	int	nBits = 16, a = 0;
@@ -909,7 +828,7 @@ TexSetSizeSub (texP, nBits, a, w, h);
 
 #if TEXTURE_COMPRESSION
 
-int OglCompressTexture (grsBitmap *bmP, tOglTexture *texP)
+int OglCompressTexture (CBitmap *bmP, tTextureInfo *texP)
 {
 	GLint nFormat, nParam;
 	ubyte	*data;
@@ -924,9 +843,9 @@ if (nParam) {
 		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)) {
 		glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &nParam);
 		if (nParam && (data = (ubyte *) D2_ALLOC (nParam))) {
-			D2_FREE (bmP->bmTexBuf);
+			D2_FREE (bmP->texBuf);
 			glGetCompressedTexImage (GL_TEXTURE_2D, 0, (GLvoid *) data);
-			bmP->bmTexBuf = data;
+			bmP->texBuf = data;
 			bmP->bmBufSize = nParam;
 			bmP->bmFormat = nFormat;
 			bmP->bmCompressed = 1;
@@ -935,7 +854,7 @@ if (nParam) {
 	}
 if (bmP->bmCompressed)
 	return 1;
-if (bmP->bmBPP == 3) {
+if (bmP->nBPP == 3) {
 	texP->format = GL_RGB;
 	texP->internalformat = 3;
 	}
@@ -954,17 +873,17 @@ return 0;
 //In theory this could be a problem for repeating textures, but all real
 //textures (not sprites, etc) in descent are 64x64, so we are ok.
 //stores OpenGL textured id in *texid and u/v values required to get only the real data in *u/*v
-int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, tOglTexture *texP, int nTransp, int superTransp)
+int OglLoadTexture (CBitmap *bmP, int dxo, int dyo, tTextureInfo *texP, int nTransp, int superTransp)
 {
-	ubyte			*data = bmP->bmTexBuf;
-	GLubyte		*bufP = gameData.render.ogl.texBuf;
-	tOglTexture	tex;
-	int			bLocalTexture;
+	ubyte				*data = bmP->TexBuf ();
+	GLubyte			*bufP = gameData.render.ogl.texBuf;
+	tTextureInfo	tex;
+	int				bLocalTexture;
 
 if (!bmP)
 	return 1;
 #if DBG
-if (strstr (bmP->szName, "phoenix"))
+if (strstr (bmP->Name (), "phoenix"))
 	bmP = bmP;
 #endif
 if (texP) {
@@ -972,8 +891,8 @@ if (texP) {
 	//calculate smallest texture size that can accomodate us (must be multiples of 2)
 #if TEXTURE_COMPRESSION
 	if (bmP->bmCompressed) {
-		texP->w = bmP->bmProps.w;
-		texP->h = bmP->bmProps.h;
+		texP->w = bmP->props.w;
+		texP->h = bmP->props.h;
 		}
 #endif
 	texP->tw = Pow2ize (texP->w);
@@ -982,9 +901,9 @@ if (texP) {
 else {
 	bLocalTexture = 1;
 	texP = &tex;
-	tex.tw = Pow2ize (tex.w = bmP->bmProps.w);
-	tex.th = Pow2ize (tex.h = bmP->bmProps.h);
-	if (bmP->bmBPP == 3) {
+	tex.tw = Pow2ize (tex.w = bmP->Width ());
+	tex.th = Pow2ize (tex.h = bmP->Height ());
+	if (bmP->BPP () == 3) {
 		texP->format = GL_RGB;
 		texP->internalformat = 3;
 		}
@@ -994,10 +913,10 @@ else {
 		}
 	tex.handle = 0;
 	}
-if (bmP && (bmP->bmBPP == 3)) {
+if (bmP && (bmP->BPP () == 3)) {
 	texP->format = GL_RGB;
 	texP->internalformat = 3;
-	texP->lw = bmP->bmBPP * texP->w;
+	texP->lw = bmP->BPP () * texP->w;
 	}
 
 if (gr_badtexture > 0) 
@@ -1021,7 +940,7 @@ texP->u = (float) ((double) texP->w / (double) texP->tw);
 texP->v = (float) ((double) texP->h / (double) texP->th);
 //	if (width!=twidth || height!=theight)
 #if RENDER2TEXTURE
-if (!texP->bFrameBuf) 
+if (!texP->bFrameBuffer) 
 #endif
 	{
 #if TEXTURE_COMPRESSION
@@ -1071,7 +990,7 @@ if (!texP->bFrameBuf)
 	if (bmP->bmCompressed) {
 		glCompressedTexImage2D (
 			GL_TEXTURE_2D, 0, bmP->bmFormat,
-			texP->tw, texP->th, 0, bmP->bmBufSize, bmP->bmTexBuf);
+			texP->tw, texP->th, 0, bmP->bmBufSize, bmP->texBuf);
 		}
 	else 
 #endif
@@ -1105,42 +1024,43 @@ return 0;
 unsigned char decodebuf [2048*2048];
 
 #if RENDER2TEXTURE == 1
-int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, tPixelBuffer *pb)
+int OglLoadBmTextureM (CBitmap *bmP, int bMipMap, int nTransp, int bMask, tPixelBuffer *pbo)
 #elif RENDER2TEXTURE == 2
-int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, tFrameBuffer *fb)
+int OglLoadBmTextureM (CBitmap *bmP, int bMipMap, int nTransp, int bMask, CFBO *fbo)
 #else
-int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, void *pb)
+int OglLoadBmTextureM (CBitmap *bmP, int bMipMap, int nTransp, int bMask, CPBO *pbo)
 #endif
 {
 	unsigned char	*buf;
-	tOglTexture		*t;
-	grsBitmap		*bmParent;
+	tTextureInfo		*t;
+	CBitmap		*parent;
 
-while ((bmP->bmType == BM_TYPE_STD) && (bmParent = BM_PARENT (bmP)) && (bmParent != bmP))
-	bmP = bmParent;
-buf = bmP->bmTexBuf;
-if (!(t = bmP->glTexture)) {
-	t = bmP->glTexture = OglGetFreeTexture (bmP);
+while ((bmP->Type () == BM_TYPE_STD) && (parent = bmP->Parent ()) && (parent != bmP))
+	bmP = parent;
+buf = bmP->TexBuf ();
+if (!(t = bmP->TexInfo ())) {
+	t = OglGetFreeTexture (bmP);
 	if (!t)
 		return 1;
+	bmP->SetTexInfo (t);
 	OglInitTexture (t, bMask, bmP);
-	t->lw = bmP->bmProps.w;
-	if (bmP->bmProps.flags & BM_FLAG_TGA)
-		t->lw *= bmP->bmBPP;
-	t->w = bmP->bmProps.w;
-	t->h = bmP->bmProps.h;
+	t->lw = bmP->Width ();
+	if (bmP->Flags () & BM_FLAG_TGA)
+		t->lw *= bmP->BPP ();
+	t->w = bmP->Width ();
+	t->h = bmP->Height ();
 	t->bMipMaps = bMipMap && !bMask;
 #if RENDER2TEXTURE == 1
-	if (pb) {
-		t->pbuffer = *pb;
-		t->handle = pb->texId;
-		t->bFrameBuf = 1;
+	if (pbo) {
+		t->pbo = *pbo;
+		t->handle = pbo->TexId ();
+		t->bFrameBuffer = 1;
 		}
 #elif RENDER2TEXTURE == 2
-	if (fb) {
-		t->fbuffer = *fb;
-		t->handle = fb->hRenderBuffer;
-		t->bFrameBuf = 1;
+	if (fbo) {
+		t->fbo = *fbo;
+		t->handle = fbo->RenderBuffer ();
+		t->bFrameBuffer = 1;
 		}
 #endif
 	}
@@ -1148,78 +1068,74 @@ else {
 	if (t->handle > 0)
 		return 0;
 	if (!t->w) {
-		t->lw = bmP->bmProps.w;
-		t->w = bmP->bmProps.w;
-		t->h = bmP->bmProps.h;
+		t->lw = bmP->Width ();
+		t->w = bmP->Width ();
+		t->h = bmP->Height ();
 		}
 	}
 #if 1
-if (bmP->bmProps.flags & BM_FLAG_RLE)
+if (bmP->Flags () & BM_FLAG_RLE)
 	rle_expand (bmP, NULL, 0);
-buf = bmP->bmTexBuf;
+buf = bmP->TexBuf ();
 #else
-if (bmP->bmProps.flags & BM_FLAG_RLE) {
+if (bmP->Flags () & BM_FLAG_RLE) {
 	unsigned char * dbits;
 	unsigned char * sbits;
-	int i, data_offset, bBig = bmP->bmProps.flags & BM_FLAG_RLE_BIG;
+	int i, data_offset, bBig = bmP->Flags () & BM_FLAG_RLE_BIG;
 
 	data_offset = bBig ? 2 : 1;
-	sbits = bmP->bmTexBuf + 4 + (bmP->bmProps.h * data_offset);
+	sbits = bmP->texBuf + 4 + (bmP->props.h * data_offset);
 	dbits = decodebuf;
-	for (i = 0; i < bmP->bmProps.h; i++) {
+	for (i = 0; i < bmP->props.h; i++) {
 		gr_rle_decode (sbits, dbits);
 		if (bBig)
-			sbits += (int) INTEL_SHORT (*((short *) (bmP->bmTexBuf + 4 + (i * data_offset))));
+			sbits += (int) INTEL_SHORT (*((short *) (bmP->texBuf + 4 + (i * data_offset))));
 		else
-			sbits += (int) bmP->bmTexBuf [4 + i];
-		dbits += bmP->bmProps.w;
+			sbits += (int) bmP->texBuf [4 + i];
+		dbits += bmP->props.w;
 		}
 	buf = decodebuf;
 	}
 #endif
-#if DBG
-if (bmP->bmProps.flags & BM_FLAG_TGA)
-	bmP->bmProps.flags = bmP->bmProps.flags;
-else 
-#endif
 if (!bMask) {
 	tRgbColorf	*c;
 
-	c = BitmapColor (bmP, buf);
-	if (c && !bmP->bmAvgColor)
-		bmP->bmAvgColor = GrFindClosestColor (bmP->bmPalette, (int) c->red, (int) c->green, (int) c->blue);
+	c = AverageRGB (buf);
+	if (!bmP->AverageColor ())
+		bmP->SetAvgColor ((ubyte) bmP->Palette ()->ClosestColor ((int) c->red, (int) c->green, (int) c->blue));
 	}
-OglLoadTexture (bmP, 0, 0, bmP->glTexture, (bmP->bmProps.flags & BM_FLAG_TGA) ? -1 : nTransp, 
-					 (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
+OglLoadTexture (bmP, 0, 0, bmP->TexInfo (), (bmP->Flags () & BM_FLAG_TGA) ? -1 : nTransp, 
+					 (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int OglSetupBmFrames (grsBitmap *bmP, int bDoMipMap, int nTransp, int bLoad)
+int CBitmap::SetupFrames (int bDoMipMap, int nTransp, int bLoad)
 {
-	int nFrames = (bmP->bmType == BM_TYPE_ALT) ? BM_FRAMECOUNT (bmP) : 0;
+	int	nFrames = (m_bm.nType == BM_TYPE_ALT) ? m_bm.info.alt.nFrameCount : 0;
+	ubyte	nFlags;
 
 if (nFrames < 2)
 	return 0;
 else {
-	grsBitmap	*bmfP = (grsBitmap *) D2_ALLOC (nFrames * sizeof (struct grsBitmap));
-	int			i, w = bmP->bmProps.w;
+	CBitmap	*bmfP = (CBitmap *) D2_ALLOC (nFrames * sizeof (CBitmap));
+	int		i, w = m_bm.props.w;
 
-	memset (bmfP, 0, nFrames * sizeof (struct grsBitmap));
-	BM_FRAMES (bmP) = bmfP;
+	memset (bmfP, 0, nFrames * sizeof (CBitmap));
+	m_bm.info.alt.frames = bmfP;
 	for (i = 0; i < nFrames; i++, bmfP++) {
-		BM_CURFRAME (bmP) = bmfP;
-		GrInitSubBitmap (bmfP, bmP, 0, i * w, w, w);
-		bmfP->bmType = BM_TYPE_FRAME;
-		bmfP->bmProps.y = 0;
-		BM_PARENT (bmfP) = bmP;
-		if (bmP->bmTransparentFrames [i / 32] & (1 << (i % 32)))
-			bmfP->bmProps.flags |= BM_FLAG_TRANSPARENT;
-		if (bmP->bmSupertranspFrames [i / 32] & (1 << (i % 32)))
-			bmfP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
-		if (bmP->bmProps.flags & BM_FLAG_SEE_THRU)
-			bmfP->bmProps.flags |= BM_FLAG_SEE_THRU;
+		bmfP = CreateChild (0, i * w, w, w);
+		bmfP->SetType (BM_TYPE_FRAME);
+		bmfP->SetWidth (0);
+		nFlags = bmfP->Flags ();
+		if (m_bm.transparentFrames [i / 32] & (1 << (i % 32)))
+			nFlags |= BM_FLAG_TRANSPARENT;
+		if (m_bm.supertranspFrames [i / 32] & (1 << (i % 32)))
+			nFlags |= BM_FLAG_SUPER_TRANSPARENT;
+		if (nFlags & BM_FLAG_SEE_THRU)
+			nFlags |= BM_FLAG_SEE_THRU;
+		bmfP->SetFlags (nFlags);
 		if (bLoad)
 			OglLoadBmTextureM (bmfP, bDoMipMap, nTransp, 0, NULL);
 		}
@@ -1229,42 +1145,42 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OglLoadBmTexture (grsBitmap *bmP, int bDoMipMap, int nTransp, int bLoad)
+int OglLoadBmTexture (CBitmap *bmP, int bDoMipMap, int nTransp, int bLoad)
 {
 	int	i, h, w, nFrames;
 
-bmP = BmOverride (bmP, -1);
+bmP = bmP->Override (-1);
 #if DBG
 if (strstr (bmP->szName, "phoenix"))
 	bmP = bmP;
 #endif
-h = bmP->bmProps.h;
-w = bmP->bmProps.w;
+h = bmP->props.h;
+w = bmP->props.w;
 if (!(h * w))
 	return 1;
-nFrames = (bmP->bmType == BM_TYPE_ALT) ? BM_FRAMECOUNT (bmP) : 0;
-if (!(bmP->bmProps.flags & BM_FLAG_TGA) || (nFrames < 2)) {
+nFrames = (bmP->nType == BM_TYPE_ALT) ? bmP->FrameCount () : 0;
+if (!(bmP->Flags () & BM_FLAG_TGA) || (nFrames < 2)) {
 	if (bLoad && OglLoadBmTextureM (bmP, bDoMipMap, nTransp, 0, NULL))
 		return 1;
-	if (CreateSuperTranspMasks (bmP) && OglLoadBmTextureM (BM_MASK (bmP), 0, -1, 1, NULL))
+	if (CreateSuperTranspMasks (bmP) && OglLoadBmTextureM (bmP->Mask (), 0, -1, 1, NULL))
 		return 1;
 	}
-else if (!BM_FRAMES (bmP)) {
-	grsBitmap	*bmfP;
+else if (!bmP->Frames ()) {
+	CBitmap	*bmfP;
 
 	OglSetupBmFrames (bmP, bDoMipMap, nTransp, bLoad);
-	BM_CURFRAME (bmP) = BM_FRAMES (bmP);
+	bmP->SetCurFrame (bmP->Frames ());
 	if ((i = CreateSuperTranspMasks (bmP)))
-		for (i = nFrames, bmfP = BM_FRAMES (bmP); i; i--, bmfP++)
-			if (bLoad && BM_MASK (bmfP))
-				OglLoadBmTextureM (BM_MASK (bmfP), 0, -1, 1, NULL);
+		for (i = nFrames, bmfP = bmP->Frames (); i; i--, bmfP++)
+			if (bLoad && bmfP->Mask ())
+				OglLoadBmTextureM (bmfP->Mask (), 0, -1, 1, NULL);
 	}
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-void OglFreeTexture (tOglTexture *t)
+void OglFreeTexture (tTextureInfo *t)
 {
 if (t) {
 	GLuint h = t->handle;
@@ -1278,51 +1194,16 @@ if (t) {
 
 //------------------------------------------------------------------------------
 
-void OglFreeBmTexture (grsBitmap *bmP)
+void OglFreeBmTexture (CBitmap *bmP)
 {
-	tOglTexture	*t;
-
-while ((bmP->bmType != BM_TYPE_ALT) && BM_PARENT (bmP) && (bmP != BM_PARENT (bmP)))
-	bmP = BM_PARENT (bmP);
-if (BM_FRAMES (bmP)) {
-	int i, nFrames = bmP->bmProps.h / bmP->bmProps.w;
-
-	for (i = 0; i < nFrames; i++) {
-		OglFreeTexture (BM_FRAMES (bmP) [i].glTexture);
-		BM_FRAMES (bmP) [i].glTexture = NULL;
-		}
-	}
-else if ((t = bmP->glTexture)) {
-#if RENDER2TEXTURE == 2
-	if (t->bFrameBuf)
-		OGL_BINDTEX (0);
-	else
-#elif RENDER2TEXTURE == 1
-#	ifdef _WIN32
-	if (t->bFrameBuf) {
-		if (t->pbuffer.bBound) {
-			if (wglReleaseTexImageARB (t->pbuffer.hBuf, WGL_FRONT_LEFT_ARB))
-				t->pbuffer.bBound = 0;
-#		if DBG
-			else {
-				char *psz = (char *) gluErrorString (glGetError ());
-				}
-#		endif
-			}
-		}
-	else
-#	endif
-#endif
-		{
-		OglFreeTexture (t);
-		bmP->glTexture = NULL;
-		}
-	}
+while ((bmP->Type () != BM_TYPE_ALT) && bmP->Parent () && (bmP != bmP->Parent ()))
+	bmP = bmP->Parent ();
+bmP->FreeTexture ();
 }
 
 //------------------------------------------------------------------------------
-//glTexture MUST be bound first
-void OglTexWrap (tOglTexture *tex, int state)
+//TexInfo () MUST be bound first
+void OglTexWrap (tTextureInfo *tex, int state)
 {
 #if 0
 if (!tex || (tex->handle < 0))

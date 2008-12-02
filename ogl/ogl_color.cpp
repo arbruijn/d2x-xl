@@ -25,6 +25,7 @@
 #include "endlevel.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"
+#include "palette.h"
 
 #define CHECK_LIGHT_VERT 1
 #define BRIGHT_SHOTS 0
@@ -59,28 +60,26 @@ tRgbaColorf modelColor [2] = {{0.0f, 0.5f, 1.0f, 0.5f}, {0.0f, 1.0f, 0.5f, 0.5f}
 
 //------------------------------------------------------------------------------
 
-void OglPalColor (ubyte *palette, int c)
+void OglPalColor (CPalette *palette, int c)
 {
-	GLfloat	fc [4];
+	tRgbaColorf	color;
 
 if (c < 0)
 	glColor3f (1.0, 1.0, 1.0);
 else {
-	if (!palette)
-		palette = gamePalette;
-	if (!palette)
-		palette = defaultPalette;
-	c *= 3;
-	fc [0] = (float) (palette [c]) / 63.0f;
-	fc [1] = (float) (palette [c]) / 63.0f;
-	fc [2] = (float) (palette [c]) / 63.0f;
-	if (gameStates.render.grAlpha >= GR_ACTUAL_FADE_LEVELS)
-		fc [3] = 1.0f;
+	if (!palette) {
+		palette = paletteManager.Game ();
+		if (!palette)
+			palette = paletteManager.Default ();
+		}
+	palette->ToRgbaf (c * 3, color);
+	if (gameStates.render.grAlpha >= FADE_LEVELS)
+		color.alpha = 1.0f;
 	else {
-		fc [3] = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS; //1.0f - (float) gameStates.render.grAlpha / ((float) GR_ACTUAL_FADE_LEVELS - 1.0f);
+		color.alpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS; //1.0f - (float) gameStates.render.grAlpha / ((float) FADE_LEVELS - 1.0f);
 		glEnable (GL_BLEND);
 		}
-	glColor4fv (fc);
+	glColor4fv ((GLfloat *) &color);
 	}
 }
 
@@ -104,7 +103,7 @@ else if (pc->rgb) {
 	glColor4fv (fc);
 	}
 else
-	OglPalColor (gamePalette, pc->index);
+	OglPalColor (paletteManager.Game (), pc->index);
 }
 
 //------------------------------------------------------------------------------
@@ -117,18 +116,18 @@ else
 // exceed 1.0. If so, all three color values are scaled so that their maximum multiplied
 // with the max. brightness does not exceed 1.0.
 
-inline void CapTMapColor (tUVL *uvlList, int nVertices, grsBitmap *bm)
+inline void CapTMapColor (tUVL *uvlList, int nVertices, CBitmap *bm)
 {
 #if 0
 	tFaceColor *color = tMapColor.index ? &tMapColor : lightColor.index ? &lightColor : NULL;
 
-if (! (bm->bmProps.flags & BM_FLAG_NO_LIGHTING) && color) {
+if (! (bm->props.flags & BM_FLAG_NO_LIGHTING) && color) {
 		double	a, m = tMapColor.color.red;
 		double	h, l = 0;
 		int		i;
 
 	for (i = 0; i < nVertices; i++, uvlList++) {
-		h = (bm->bmProps.flags & BM_FLAG_NO_LIGHTING) ? 1.0 : X2F (uvlList->l);
+		h = (bm->props.flags & BM_FLAG_NO_LIGHTING) ? 1.0 : X2F (uvlList->l);
 		if (l < h)
 			l = h;
 		}
@@ -195,9 +194,9 @@ else {
 //------------------------------------------------------------------------------
 
 /*inline*/
-void SetTMapColor (tUVL *uvlList, int i, grsBitmap *bmP, int bResetColor, tFaceColor *vertColor)
+void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tFaceColor *vertColor)
 {
-	float l = (bmP->bmProps.flags & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
+	float l = (bmP->props.flags & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
 	float s = 1.0f;
 
 #if SHADOWS

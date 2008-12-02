@@ -906,7 +906,7 @@ switch (trigP->nType) {
 			gameData.demo.nState = ND_STATE_PAUSED;
 		DigiStopAll ();		//kill the sounds
 		DigiPlaySample (SOUND_SECRET_EXIT, F1_0);
-		GrPaletteFadeOut (NULL, 32, 0);
+		paletteManager.FadeOut ();
 		EnterSecretLevel ();
 		gameData.reactor.bDestroyed = 0;
 		return 1;

@@ -387,7 +387,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void GetThrusterPos (int nModel, vmsVector *vNormal, vmsVector *vOffset, grsBitmap *bmP, int nPoints)
+void GetThrusterPos (int nModel, vmsVector *vNormal, vmsVector *vOffset, CBitmap *bmP, int nPoints)
 {
 	int					h, i, nSize;
 	vmsVector			v, vForward = vmsVector::Create(0,0,F1_0);
@@ -436,7 +436,7 @@ if (!mtP->nCount++) {
 int G3DrawPolyModel (
 	tObject		*objP,
 	void			*modelP,
-	grsBitmap	**modelBitmaps,
+	CBitmap	**modelBitmaps,
 	vmsAngVec	*pAnimAngles,
 	vmsVector	*vOffset,
 	fix			xModelLight,
@@ -541,12 +541,8 @@ for (;;) {
 			for (i = 0; i < nVerts; i++)
 				uvlList [i].l = l;
 
-			if (colorP) {
-				unsigned char c = modelBitmaps [WORDVAL (p+28)]->bmAvgColor;
-				colorP->red = CPAL2Tr (gamePalette, c);
-				colorP->green = CPAL2Tg (gamePalette, c);
-				colorP->blue = CPAL2Tb (gamePalette, c);
-				}
+			if (colorP)
+				paletteManager.Game ()->ToRgbaf (modelBitmaps [WORDVAL (p+28)]->AverageColor (), *colorP);
 			p += 30;
 			for (i = 0; i < nVerts; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
@@ -634,7 +630,7 @@ int nestCount;
 
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing tObject
-int G3DrawMorphingModel (void *modelP, grsBitmap **modelBitmaps, vmsAngVec *pAnimAngles, vmsVector *vOffset,
+int G3DrawMorphingModel (void *modelP, CBitmap **modelBitmaps, vmsAngVec *pAnimAngles, vmsVector *vOffset,
 								  fix xModelLight, vmsVector *new_points, int nModel)
 {
 	ubyte *p = (ubyte *) modelP;

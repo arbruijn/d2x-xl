@@ -85,11 +85,11 @@ extern unsigned int Table8to32[256];
 #define MINY    0
 #define MAXX    (GWIDTH-1)
 #define MAXY    (GHEIGHT-1)
-#define TYPE    grdCurCanv->cvBitmap.bmProps.nType
-#define XOFFSET grdCurCanv->cvBitmap.bmProps.x
-#define YOFFSET grdCurCanv->cvBitmap.bmProps.y
-#define ROWSIZE grdCurCanv->cvBitmap.bmProps.rowSize
-#define DATA    grdCurCanv->cvBitmap.bmTexBuf
+#define TYPE    grdCurCanv->cvBitmap.props.nMode
+#define XOFFSET grdCurCanv->cvBitmap.props.x
+#define YOFFSET grdCurCanv->cvBitmap.props.y
+#define ROWSIZE grdCurCanv->cvBitmap.props.rowSize
+#define DATA    grdCurCanv->cvBitmap.texBuf
 #define COLOR   (grdCurCanv->cvColor)
 
 void order( int *x1, int *x2 );
