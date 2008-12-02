@@ -4174,6 +4174,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\font.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\mono.h"
 						>
 					</File>
@@ -4597,11 +4601,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

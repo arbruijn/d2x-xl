@@ -411,7 +411,7 @@ return (minColor + maxColor) / 2;
 //GLubyte gameData.render.ogl.texBuf [512*512*4];
 
 int OglFillTexBuf (
-	CBitmap	*bmP,
+	CBitmap		*bmP,
 	GLubyte		*texBuf,
 	int			truewidth,
 	int			width,
@@ -428,7 +428,7 @@ int OglFillTexBuf (
 	ubyte			*data = bmP->TexBuf ();
 	GLubyte		*bufP;
 	tRgbColorb	*colorP;
-	int			x, y, c, i, j;
+	int			x, y, c, i;
 	ushort		r, g, b, a;
 	int			bTransp;
 
