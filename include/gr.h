@@ -19,15 +19,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "palette.h"
 #include "bitmap.h"
 #include "vecmat.h"
+#include "canvas.h"
 
 //-----------------------------------------------------------------------------
-
-#define GWIDTH  grdCurCanv->cvBitmap.props.w
-#define GHEIGHT grdCurCanv->cvBitmap.props.h
-#define SWIDTH  (grdCurScreen->scWidth)
-#define SHEIGHT (grdCurScreen->scHeight)
-
-#define MAX_BMP_SIZE(width, height) (4 + ((width) + 2) * (height))
 
 //these are control characters that have special meaning in the font code
 
@@ -46,77 +40,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SM(w,h) ((((u_int32_t)w)<<16)+(((u_int32_t)h)&0xFFFF))
 #define SM_W(m) (m>>16)
 #define SM_H(m) (m&0xFFFF)
-
-//-----------------------------------------------------------------------------
-
-//font structure
-typedef struct grsFont {
-	short       ftWidth;       // Width in pixels
-	short       ftHeight;      // Height in pixels
-	short       ftFlags;       // Proportional?
-	short       ftBaseLine;    //
-	ubyte       ftMinChar;     // First char defined by this font
-	ubyte       ftMaxChar;     // Last char defined by this font
-	short       ftByteWidth;   // Width in unsigned chars
-	ubyte     	*ftData;        // Ptr to raw data.
-	ubyte    	**ftChars;       // Ptrs to data for each char (required for prop font)
-	short     	*ftWidths;      // Array of widths (required for prop font)
-	ubyte     	*ftKernData;    // Array of kerning triplet data
-	// These fields do not participate in disk i/o!
-	CBitmap 		*ftBitmaps;
-	CBitmap 		ftParentBitmap;
-} __pack__ grsFont;
-
-#define GRS_FONT_SIZE 28    // how much space it takes up on disk
-
-#define FONT			grdCurCanv->cvFont
-#define FG_COLOR		grdCurCanv->cvFontFgColor
-#define BG_COLOR		grdCurCanv->cvFontBgColor
-#define FWIDTH       FONT->ftWidth
-#define FHEIGHT      FONT->ftHeight
-#define FBASELINE    FONT->ftBaseLine
-#define FFLAGS       FONT->ftFlags
-#define FMINCHAR     FONT->ftMinChar
-#define FMAXCHAR     FONT->ftMaxChar
-#define FDATA        FONT->ftData
-#define FCHARS       FONT->ftChars
-#define FWIDTHS      FONT->ftWidths
-
-//-----------------------------------------------------------------------------
-
-typedef struct grsRgba {
-	ubyte			red;
-	ubyte			green;
-	ubyte			blue;
-	ubyte			alpha;
-} grsRgba;
-
-typedef struct grsColor {
-	short       index;       // current color
-	ubyte			rgb;
-	grsRgba		color;
-} grsColor;
-
-typedef struct grsCanvas {
-	CBitmap		cvBitmap;      // the bitmap for this canvas
-	grsColor		cvColor;
-	short       cvDrawMode;    // fill, XOR, etc.
-	grsFont		*cvFont;        // the currently selected font
-	grsColor		cvFontFgColor;   // current font foreground color (-1==Invisible)
-	grsColor		cvFontBgColor;   // current font background color (-1==Invisible)
-} gsrCanvas;
-
-//shortcuts
-#define cv_w cvBitmap.props.w
-#define cv_h cvBitmap.props.h
-
-typedef struct grsScreen {    // This is a video screen
-	gsrCanvas  	scCanvas;  // Represents the entire screen
-	u_int32_t	scMode;        // Video mode number
-	short   		scWidth, scHeight;     // Actual Width and Height
-	fix     		scAspect;      //aspect ratio (w/h) for this screen
-} grsScreen;
-
 
 //=========================================================================
 // System functions:
@@ -150,40 +73,6 @@ extern unsigned char *gr_video_memory;
 void _CDECL_ GrClose(void);
 
 //=========================================================================
-// Canvas functions:
-
-// Makes a new canvas. allocates memory for the canvas and its bitmap, 
-// including the raw pixel buffer.
-
-gsrCanvas *GrCreateCanvas(int w, int h);
-// Creates a canvas that is part of another canvas.  this can be used to make
-// a window on the screen.  the canvas structure is malloc'd; the address of
-// the raw pixel data is inherited from the parent canvas.
-
-gsrCanvas *GrCreateSubCanvas(gsrCanvas *canvP, int x, int y, int w, int h);
-
-// Initialize the specified canvas. the raw pixel data buffer is passed as
-// a parameter. no memory allocation is performed.
-
-void GrInitCanvas(gsrCanvas *canvP, unsigned char *pixdata, int pixtype, int w, int h);
-
-// Initialize the specified sub canvas. no memory allocation is performed.
-
-void GrInitSubCanvas(gsrCanvas *canvP, gsrCanvas *src, int x, int y, int w, int h);
-
-// Free up the canvas and its pixel data.
-
-void GrFreeCanvas(gsrCanvas *canvP);
-
-// Free up the canvas. do not free the pixel data, which belongs to the
-// parent canvas.
-
-void GrFreeSubCanvas(gsrCanvas *canvP);
-
-// Clear the current canvas to the specified color
-void GrClearCanvas(unsigned int color);
-
-//=========================================================================
 void gr_bm_pixel (CBitmap * bmP, int x, int y, unsigned char color);
 void gr_bm_upixel (CBitmap * bmP, int x, int y, unsigned char color);
 void GrBmBitBlt (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest);
@@ -208,20 +97,7 @@ void GrCopyPalette (ubyte *gr_palette, ubyte *pal, int size);
 //=========================================================================
 // Drawing functions:
 
-// For solid, XOR, or other fill modes.
-int gr_set_drawmode(int mode);
-
-// Sets the color in the current canvas.  should be a macro
-// Use: GrSetColor(int color);
-void GrSetColor(int color);
-void GrSetColorRGB (ubyte red, ubyte green, ubyte blue, ubyte alpha);
-void GrSetColorRGB15bpp (ushort c, ubyte alpha);
-void GrFadeColorRGB (double dFade);
-
-#define GrSetColorRGBi(_c)	GrSetColorRGB (RGBA_RED (_c), RGBA_GREEN (_c), RGBA_BLUE (_c), 255) //RGBA_ALPHA (_c))
-
 //	-----------------------------------------------------------------------------
-
 // Draw a polygon into the current canvas in the current color and drawmode.
 // verts points to an ordered list of x, y pairs.  the polygon should be
 // convex; a concave polygon will be handled in some reasonable manner, 
@@ -268,60 +144,20 @@ void GrScanLine(int x1, int x2, int y);
 void gr_uscanline(int x1, int x2, int y);
 
 
-// Reads in a font file... current font set to this one.
-grsFont * GrInitFont(const char *fontfile);
-void GrCloseFont(grsFont * font);
-
-//remap a font, re-reading its data & palette
-void GrRemapFont(grsFont *font, char * fontname, char *font_data);
-
-//remap (by re-reading) all the color fonts
-void GrRemapColorFonts();
-void GrRemapMonoFonts();
-
-// Writes a string using current font. Returns the next column after last char.
-void GrSetFontColor(int fg, int bg);
-void GrSetFontColorRGB (grsRgba *fg, grsRgba *bg);
-void GrSetFontColorRGBi (unsigned int fg, int bSetFG, unsigned int bg, int bSetBG);
-void GrSetCurFont (grsFont * fontP);
-int GrString (int x, int y, const char *s, int *idP);
-int GrUString (int x, int y, const char *s);
-int _CDECL_ GrPrintF (int *idP, int x, int y, const char * format, ...);
-int _CDECL_ GrUPrintf (int x, int y, const char * format, ...);
-void GrGetStringSize(const char *s, int *string_width, int *string_height, int *average_width);
-void GrGetStringSizeTabbed (const char *s, int *string_width, int *string_height, int *average_width, int *nTabs, int nMaxWidth);
-CBitmap *CreateStringBitmap (const char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce);
-int GetCenteredX (const char *s);
-
-//  From roller.c
 void RotateBitmap(CBitmap *bp, grsPoint *vertbuf, int lightValue);
 
-// From scale.c
 void ScaleBitmap(CBitmap *bp, grsPoint *vertbuf, int orientation);
 
 void OglURect(int left,int top,int right,int bot);
-void OglUPixelC (int x, int y, grsColor *c);
-void OglULineC (int left,int top,int right,int bot, grsColor *c);
-void OglUPolyC (int left, int top, int right, int bot, grsColor *c);
+void OglUPixelC (int x, int y, tCanvasColor *c);
+void OglULineC (int left,int top,int right,int bot, tCanvasColor *c);
+void OglUPolyC (int left, int top, int right, int bot, tCanvasColor *c);
 
 //===========================================================================
 // Global variables
-extern gsrCanvas *grdCurCanv;             //active canvas
-extern grsScreen *grdCurScreen;           //active screen
 extern unsigned char Test_bitmap_data[64*64];
 
-//shortcut to look at current font
-#define grd_curfont grdCurCanv->cvFont
-
 extern unsigned int FixDivide(unsigned int x, unsigned int y);
-
-extern void GrShowCanvas(gsrCanvas *canvP);
-extern void GrSetCurrentCanvas(gsrCanvas *canvP);
-
-//flags for fonts
-#define FT_COLOR        1
-#define FT_PROPORTIONAL 2
-#define FT_KERNED       4
 
 extern void gr_vesa_update(CBitmap * source1, CBitmap * dest, CBitmap * source2);
 
@@ -331,7 +167,6 @@ extern void gr_snow_out(int num_dots);
 extern void TestRotateBitmap(void);
 extern void RotateBitmap(CBitmap *bp, grsPoint *vertbuf, int lightValue);
 
-extern ubyte grFadeTable[256*FADE_LEVELS];
 extern ubyte grInverseTable[32*32*32];
 
 extern ushort grPaletteSelector;
@@ -348,16 +183,6 @@ extern ushort grFadeTableSelector;
 //			GrRemapBitmap(new, newpal, iff_transparent_color);
 //		else
 //			GrRemapBitmap(new, newpal, -1);
-void GrRemapBitmap(CBitmap * bmPp, ubyte * palette, int transparent_color, int super_transparent_color);
-
-// Same as above, but searches using GrFindClosestColor which uses
-// 18-bit accurracy instead of 15bit when translating colors.
-void GrRemapBitmapGood(CBitmap * bmPp, ubyte * palette, int transparent_color, int super_transparent_color);
-
-void GrPaletteStepUp(int r, int g, int b);
-
-void GrBitmapCheckTransparency(CBitmap * bmPp);
-
 // Allocates a selector that has a base address at 'address' and length 'size'.
 // Returns 0 if successful... BE SURE TO CHECK the return value since there
 // is a limited number of selectors available!!!
@@ -378,10 +203,6 @@ int GrBitmapAssignSelector(CBitmap * bmPp);
 
 // Given: r, g, b, each in range of 0-63, return the color index that
 // best matches the input.
-int GrFindClosestColor(ubyte *palette, int r, int g, int b);
-int GrFindClosestColor15bpp(int rgb);
-int GrAvgColor (CBitmap *bm);
-
 void GrMergeTextures(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
 void GrMergeTextures1(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
 void GrMergeTextures2(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
@@ -396,25 +217,11 @@ void SaveScreenShot (unsigned char *buf, int automapFlag);
  */
 #define GR_SUPPORTS_FULLSCREEN_TOGGLE
 
-/*
- * must return 0 if windowed, 1 if fullscreen
- */
-int GrCheckFullScreen(void);
-
 void ResetTextures (int bReload, int bGame);
 
-/*
- * returns state after toggling (ie, same as if you had called
- * check_fullscreen immediatly after)
- */
+int GrCheckFullScreen(void);
 int GrToggleFullScreen(void);
-
 int GrToggleFullScreenMenu(void);//returns state after toggling (ie, same as if you had called check_fullscreen immediatly after)
-
-void OglDoPalFx (void);
-
-void InitStringPool (void);
-void FreeStringPool (void);
 
 typedef struct tScrSize {
 	int	x, y, c;
@@ -496,14 +303,6 @@ typedef struct grsFace {
 	char					nShader;
 	struct grsFace		*nextSlidingFace;
 	} grsFace;
-
-typedef struct grsString {
-	char					*pszText;
-	CBitmap			*bmP;
-	int					*pId;
-	short					nWidth;
-	short					nLength;
-	} grsString;
 
 typedef struct tDisplayModeInfo {
 	int	VGA_mode;

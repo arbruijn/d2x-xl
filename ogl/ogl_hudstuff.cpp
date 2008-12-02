@@ -60,7 +60,7 @@ if (bmpDeadzone) {
 
 void OglDrawMouseIndicator (void)
 {
-	float 	scale = (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight;
+	float 	scale = (float) screen.Width () / (float) screen.Height ();
 
 	static tSinCosf sinCos30 [30];
 	static tSinCosf sinCos12 [12];
@@ -88,16 +88,16 @@ else {
 	glTranslatef ((float) (mouseData.x) / (float) SWIDTH, 1.0f - (float) (mouseData.y) / (float) SHEIGHT, 0);
 	glScalef (scale / 320.0f, scale / 200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
 	glLineWidth (3);
-	OglDrawEllipse (12, GL_LINE_LOOP, 1.5f, 0, 1.5f * (float) grdCurScreen->scHeight / (float) grdCurScreen->scWidth, 0, sinCos12);
+	OglDrawEllipse (12, GL_LINE_LOOP, 1.5f, 0, 1.5f * (float) screen.Height () / (float) screen.Width (), 0, sinCos12);
 	glPopMatrix ();
 	glPushMatrix ();
 	glTranslatef (0.5f, 0.5f, 0);
 	if (LoadDeadzone ()) {
-		grsColor c = {-1, 1, {255, 255, 255, 128}};
+		tCanvasColor c = {-1, 1, {255, 255, 255, 128}};
 		OglUBitMapMC (0, 0, 16, 16, bmpDeadzone, &c, 1, 0);
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
-		w = r / (float) grdCurScreen->scWidth;
-		h = r / (float) grdCurScreen->scHeight;
+		w = r / (float) screen.Width ();
+		h = r / (float) screen.Height ();
 		glEnable (GL_TEXTURE_2D);
 		if (OglBindBmTex (bmpDeadzone, 1, -1)) 
 			return;
@@ -121,7 +121,7 @@ else {
 		glColor4d (1.0f, 0.8, 0.0f, 1.0f / (3.0f + 0.5 * gameOpts->input.mouse.nDeadzone));
 		glLineWidth ((GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone) / 4;
-		OglDrawEllipse (30, GL_LINE_LOOP, r, 0, r * (float) grdCurScreen->scHeight / (float) grdCurScreen->scWidth, 0, sinCos30);
+		OglDrawEllipse (30, GL_LINE_LOOP, r, 0, r * (float) screen.Height () / (float) screen.Width (), 0, sinCos30);
 		}
 	glPopMatrix ();
 	glDisable (GL_LINE_SMOOTH);
@@ -141,7 +141,7 @@ float darker_g [4]={32.0f/256, 128.0f/256, 32.0f/256, 1.0f};
 
 void OglDrawReticle (int cross, int primary, int secondary)
 {
-	float scale = (float)nCanvasHeight / (float) grdCurScreen->scHeight;
+	float scale = (float)nCanvasHeight / (float) screen.Height ();
 
 	static tSinCosf sinCos8 [8];
 	static tSinCosf sinCos12 [12];
@@ -157,8 +157,9 @@ if (bInitSinCos) {
 glPushMatrix ();
 //	glTranslated (0.5, 0.5, 0);
 glTranslated (
-	(grdCurCanv->cvBitmap.props.w/2+grdCurCanv->cvBitmap.props.x) / (float) gameStates.ogl.nLastW, 
-	1.0f - (grdCurCanv->cvBitmap.props.h/ ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2)+grdCurCanv->cvBitmap.props.y)/ (float)gameStates.ogl.nLastH, 
+	(CCanvas::Current ()->Width ()/2+CCanvas::Current ()->Bitmap ().Left ()) / (float) gameStates.ogl.nLastW, 
+	1.0f - (CCanvas::Current ()->Bitmap ().Height ()/ ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2) +
+	CCanvas::Current ()->Bitmap ().Top ()) / (float) gameStates.ogl.nLastH, 
 	0);
 glScaled (scale/320.0f, scale/200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
 glDisable (GL_TEXTURE_2D);

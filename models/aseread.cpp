@@ -188,12 +188,12 @@ static int ASE_ReadTexture (CFile& cf, tASEModel *pm, int nBitmap, int nType, in
 
 if (CharTok (" \t") != '{')
 	return ASE_Error ("syntax error");
-bmP->bFlat = 0;
+bmP->SetFlat (0);
 while ((pszToken = ASE_ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*BITMAP")) {
-		if (bmP->texBuf)	//duplicate
+		if (bmP->TexBuf ())	//duplicate
 			return ASE_Error ("duplicate item");
 		*fn = '\001';
 		CFile::SplitPath (StrTok ("\""), NULL, fn + 1, NULL);
@@ -207,7 +207,7 @@ while ((pszToken = ASE_ReadLine (cf))) {
 			pm->textures.nTeam [nBitmap] = atoi (ps + 5) + 1;
 		else
 			pm->textures.nTeam [nBitmap] = 0;
-		bmP->nTeam = pm->textures.nTeam [nBitmap];
+		bmP->SetTeam (pm->textures.nTeam [nBitmap]);
 		}
 	}
 return ASE_Error ("unexpected end of file");
@@ -217,7 +217,7 @@ return ASE_Error ("unexpected end of file");
 
 static int ASE_ReadMaterial (CFile& cf, tASEModel *pm, int nType, int bCustom)
 {
-	int			i;
+	int		i;
 	CBitmap	*bmP;
 
 i = IntTok (" \t");
@@ -226,14 +226,16 @@ if ((i < 0) || (i >= pm->textures.nBitmaps))
 if (CharTok (" \t") != '{')
 	return ASE_Error ("syntax error");
 bmP = pm->textures.pBitmaps + i;
-bmP->bFlat = 1;
+bmP->SetFlat (1);
 while ((pszToken = ASE_ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MATERAL_DIFFUSE")) {
-		bmP->avgRGB.red = (ubyte) (FloatTok (" \t") * 255 + 0.5);
-		bmP->avgRGB.green = (ubyte) (FloatTok (" \t") * 255 + 0.5);
-		bmP->avgRGB.blue = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		tRgbColorb	avgRGB;
+		avgRGB.red = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		avgRGB.green = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		avgRGB.blue = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		bmP->SetAvgColor (avgRGB);
 		}
 	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {
 		if (!ASE_ReadTexture (cf, pm, i, nType, bCustom))

@@ -45,12 +45,12 @@ void G3StartFrame (int bFlat, int bResetColorBuf)
 	fix s;
 
 //set int w,h & fixed-point w,h/2
-xCanvW2 = (nCanvasWidth = grdCurCanv->cvBitmap.props.w) << 15;
-xCanvH2 = (nCanvasHeight = grdCurCanv->cvBitmap.props.h) << 15;
+xCanvW2 = (nCanvasWidth = CCanvas::Current ()->Width ()) << 15;
+xCanvH2 = (nCanvasHeight = CCanvas::Current ()->Bitmap ().Height ()) << 15;
 fxCanvW2 = X2F (xCanvW2);
 fxCanvH2 = X2F (xCanvH2);
 //compute aspect ratio for this canvas
-s = FixMulDiv (grdCurScreen->scAspect, nCanvasHeight, nCanvasWidth);
+s = FixMulDiv (screen.Aspect (), nCanvasHeight, nCanvasWidth);
 if (s <= f1_0) {	   //scale x
 	viewInfo.windowScale [X] = s;
 	viewInfo.windowScale [Y] = f1_0;

@@ -103,7 +103,6 @@ static int bLowMemory = 0;
 #define BM_FLAGS_TO_COPY (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT \
                          | BM_FLAG_NO_LIGHTING | BM_FLAG_RLE | BM_FLAG_RLE_BIG)
 
-extern char szLastPalettePig [];
 extern ubyte bBigPig;
 
 //------------------------------------------------------------------------------
@@ -176,11 +175,11 @@ if (cf.Exist (szFilename, pszFolder, 0))
 	return 1;
 if (!cf.Open (szFilename + 1, pszFolder, "wb", 0))
 	return 0;
-if ((cf.Write (&bmP->props.w, sizeof (bmP->props.w), 1) != 1) ||
-	 (cf.Write (&bmP->props.h, sizeof (bmP->props.h), 1) != 1) ||
+if ((cf.Write (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
+	 (cf.Write (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
 	 (cf.Write (&bmP->bmFormat, sizeof (bmP->bmFormat), 1) != 1) ||
     (cf.Write (&bmP->bmBufSize, sizeof (bmP->bmBufSize), 1) != 1) ||
-    (cf.Write (bmP->texBuf, bmP->bmBufSize, 1) != 1)) {
+    (cf.Write (bmP->TexBuf (), bmP->bmBufSize, 1) != 1)) {
 	cf.Close ();
 	return 0;
 	}
@@ -204,18 +203,18 @@ if (*szFolder)
 	pszFolder = szFolder;
 if (!cf.Open (szFilename, pszFolder, "rb", 0))
 	return 0;
-if ((cf.Read (&bmP->props.w, sizeof (bmP->props.w), 1) != 1) ||
-	 (cf.Read (&bmP->props.h, sizeof (bmP->props.h), 1) != 1) ||
+if ((cf.Read (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
+	 (cf.Read (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
 	 (cf.Read (&bmP->bmFormat, sizeof (bmP->bmFormat), 1) != 1) ||
 	 (cf.Read (&bmP->bmBufSize, sizeof (bmP->bmBufSize), 1) != 1)) {
 	cf.Close ();
 	return 0;
 	}
-if (!(bmP->texBuf = (ubyte *) (ubyte *) D2_ALLOC (bmP->bmBufSize))) {
+if (!(bmP->TexBuf () = (ubyte *) (ubyte *) D2_ALLOC (bmP->bmBufSize))) {
 	cf.Close ();
 	return 0;
 	}
-if (cf.Read (bmP->texBuf, bmP->bmBufSize, 1) != 1) {
+if (cf.Read (bmP->TexBuf (), bmP->bmBufSize, 1) != 1) {
 	cf.Close ();
 	return 0;
 	}
@@ -304,9 +303,9 @@ return NULL;
 
 inline void PiggyFreeBitmapData (CBitmap *bmP)
 {
-if (bmP->texBuf) {
-	D2_FREE (bmP->texBuf);
-	UseBitmapCache (bmP, (int) -bmP->props.h * (int) bmP->props.rowSize);
+if (bmP->TexBuf ()) {
+	bmP->DestroyTexBuf ();
+	UseBitmapCache (bmP, (int) -bmP->Width () * (int) bmP->RowSize ());
 	}
 }
 
@@ -327,10 +326,10 @@ if ((mask = bmP->Mask ())) {
 int PiggyFreeHiresFrame (CBitmap *bmP, int bD1)
 {
 
-gameData.pig.tex.bitmaps [bD1][bmP->nId].SetOverride (NULL);
+gameData.pig.tex.bitmaps [bD1][bmP->Id ()].SetOverride (NULL);
 bmP->FreeTexture ();
 PiggyFreeMask (bmP);
-bmP->nType = 0;
+bmP->SetType (0);
 bmP->SetTexBuf (NULL);
 return 1;
 }
@@ -387,7 +386,7 @@ PiggyFreeMask (bmP);
 if (!PiggyFreeHiresAnimation (bmP, 0))
 	bmP->FreeTexture ();
 if (bitmapOffsets [bD1][i] > 0)
-	bmP->SetFlags (bmP->Flags () | BM_FLAG_PAGED_OUT);
+	bmP->AddFlags (BM_FLAG_PAGED_OUT);
 bmP->SetFromPog (0);
 bmP->SetPalette (NULL);
 PiggyFreeBitmapData (bmP);
@@ -412,7 +411,7 @@ for (bD1 = 0; bD1 < 2; bD1++) {
 		  i < gameData.pig.tex.nBitmaps [bD1]; 
 		  i++, bmP++) {
 		if (bmP->TexBuf () && (bitmapOffsets [bD1][i] > 0)) { // only page out bitmaps read from disk
-			bmP->SetFlags (bmP->Flags () | BM_FLAG_PAGED_OUT);
+			bmP->AddFlags (BM_FLAG_PAGED_OUT);
 			PiggyFreeBitmap (bmP, i, bD1);
 			}
 		}
@@ -456,15 +455,15 @@ static int BestShrinkFactor (CBitmap *bmP, int nShrinkFactor)
 	int	nBaseSize, nTargetSize, nBaseFactor;
 
 #if 0
-if (bmP->props.h >= 2 * bmP->props.w) {
+if (bmP->Width () >= 2 * bmP->Width ()) {
 #endif
-	nBaseSize = bmP->props.w;
+	nBaseSize = bmP->Width ();
 	nTargetSize = 512 / nShrinkFactor;
 	nBaseFactor = (3 * nBaseSize / 2) / nTargetSize;
 #if 0
 	}
 else {
-	nBaseSize = bmP->props.w * bmP->props.h;
+	nBaseSize = bmP->Width () * bmP->Width ();
 	nTargetSize = (512 * 512) / (nShrinkFactor * nShrinkFactor);
 	nBaseFactor = (int) sqrt ((double) (3 * nBaseSize / 2) / nTargetSize);
 	}
@@ -494,10 +493,10 @@ int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1)
 if (!bmName)
 	return 0;
 #endif
-if (!bmP->texBuf) {
+if (!bmP->TexBuf ()) {
 	StopTime ();
 	nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
-	nSize = (int) bmP->props.h * (int) bmP->props.rowSize;
+	nSize = (int) bmP->Width () * (int) bmP->RowSize ();
 	if (nIndex >= 0)
 		GetFlagData (bmName, nIndex);
 #if DBG
@@ -524,7 +523,7 @@ if (!bmP->texBuf) {
 			}
 		}
 	bTGA = 0;
-	bmP->nBPP = 1;
+	bmP->SetBPP (1);
 	if (*bmName && ((nIndex < 0) || (gameOpts->render.textures.bUseHires && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
 #if 0
 		if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureCacheDir [bD1], bmName)) {
@@ -547,18 +546,18 @@ if (!bmP->texBuf) {
 				altBmP = gameData.pig.tex.addonBitmaps - nIndex - 1;
 			else
 				altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;
-			altBmP->nType = BM_TYPE_ALT;
+			altBmP->SetType (BM_TYPE_ALT);
 			bmP->SetOverride (altBmP);
 			bmP = altBmP;
 			ReadTGAHeader (*cfP, &h, bmP);
-			nSize = (int) h.width * (int) h.height * bmP->nBPP;
+			nSize = (int) h.width * (int) h.height * bmP->BPP ();
 			nFrames = (h.height % h.width) ? 1 : h.height / h.width;
 			bmP->SetFrameCount ((ubyte) nFrames);
 			nOffset = cfP->Tell ();
 			if (nIndex >= 0) {
 				gameData.pig.tex.bitmapFlags [bD1][nIndex] &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 				gameData.pig.tex.bitmapFlags [bD1][nIndex] |= BM_FLAG_TGA;
-				if (bmP->props.h > bmP->props.w) {
+				if (bmP->Width () > bmP->Width ()) {
 					tEffectClip	*ecP = NULL;
 					tWallClip *wcP;
 					tVideoClip *vcP;
@@ -612,7 +611,7 @@ reloadTextures:
 		goto reloadTextures;
 		}
 #if 1//def _DEBUG
-	strncpy (bmP->szName, bmName, sizeof (bmP->szName));
+	bmP->SetName (bmName);
 #endif
 #if TEXTURE_COMPRESSION
 	if (bmP->bmCompressed)
@@ -620,31 +619,31 @@ reloadTextures:
 	else 
 #endif
 		{
-		bmP->texBuf = (ubyte *) D2_ALLOC (nSize);
-		if (bmP->texBuf) 
+		//bmP->SetTexBuf ((ubyte *) D2_ALLOC (nSize));
+		if (bmP->CreateTexBuf ()) 
 			UseBitmapCache (bmP, nSize);
 		}
-	if (!bmP->texBuf || (bitmapCacheUsed > bitmapCacheSize)) {
+	if (!bmP->TexBuf () || (bitmapCacheUsed > bitmapCacheSize)) {
 		Int3 ();
 		PiggyBitmapPageOutAll (0);
 		goto reloadTextures;
 		}
 	if (nIndex >= 0)
-		bmP->props.flags = gameData.pig.tex.bitmapFlags [bD1][nIndex];
-	bmP->nId = nIndex;
-	if (bmP->props.flags & BM_FLAG_RLE) {
+		bmP->SetFlags (gameData.pig.tex.bitmapFlags [bD1][nIndex]);
+	bmP->SetId (nIndex);
+	if (bmP->Flags () & BM_FLAG_RLE) {
 		nDescentCriticalError = 0;
 		int zSize = cfP->ReadInt ();
 		if (nDescentCriticalError) {
 			PiggyCriticalError ();
 			goto reloadTextures;
 			}
-		temp = (int) cfP->Read (bmP->texBuf + 4, 1, zSize-4);
+		temp = (int) cfP->Read (bmP->TexBuf () + 4, 1, zSize-4);
 		if (nDescentCriticalError) {
 			PiggyCriticalError ();
 			goto reloadTextures;
 			}
-		zSize = rle_expand (bmP, NULL, 0);
+		zSize = bmP->RLEExpand (NULL, 0);
 		if (bD1)
 			bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 		else
@@ -657,7 +656,7 @@ reloadTextures:
 		{
 		nDescentCriticalError = 0;
 		if (bDefault) {
-			temp = (int) cfP->Read (bmP->texBuf, 1, nSize);
+			temp = (int) cfP->Read (bmP->TexBuf (), 1, nSize);
 			if (bD1)
 				bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			else
@@ -666,11 +665,11 @@ reloadTextures:
 		else {
 			ReadTGAImage (*cfP, &h, bmP, -1, 1.0, 0, 0);
 			if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
-				bmP->SetFlags (bmP->Flags () | BM_FLAG_SEE_THRU);
+				bmP->AddFlags (BM_FLAG_SEE_THRU);
 			bmP->SetType (BM_TYPE_ALT);
 			if (IsOpaqueDoor (nIndex)) {
-				bmP->SetFlags (bmP->Flags () & ~BM_FLAG_TRANSPARENT);
-				bmP->transparentFrames [0] &= ~1;
+				bmP->DelFlags (BM_FLAG_TRANSPARENT);
+				bmP->TransparentFrames () [0] &= ~1;
 				}
 #if TEXTURE_COMPRESSION
 			if (CompressTGA (bmP))
@@ -694,7 +693,7 @@ reloadTextures:
 		}
 #ifndef MACDATA
 	if (!bTGA && IsMacDataFile (cfP, bD1))
-		swap_0_255 (bmP);
+		bmP->Swap_0_255 ();
 #endif
 	StartTime (0);
 	}
@@ -742,7 +741,7 @@ if (bLowMemory) {
 		bmi = bmiSave;
 		}
 	}
-gameData.pig.tex.bitmaps [bD1][bmi].props.flags &= ~BM_FLAG_PAGED_OUT;
+gameData.pig.tex.bitmaps [bD1][bmi].DelFlags (BM_FLAG_PAGED_OUT);
 return 1;
 }
 
@@ -801,29 +800,30 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 	for (i = 0; i < nBitmapNum; i++) {
 		bmOffset = bmh [i].offset;
 		memset (&bm, 0, sizeof (CBitmap));
-		bm.props.flags |= bmh [i].flags & (BM_FLAGS_TO_COPY | BM_FLAG_TGA);
-		bm.props.w = bm.props.rowSize = bmh [i].width + ((short) (bmh [i].wh_extra & 0x0f) << 8);
-		if ((bTGA = (bm.props.flags & BM_FLAG_TGA)) && (bm.props.w > 256))
-			bm.SetHeight (bm.props.w * bmh [i].height);
+		bm.AddFlags (bmh [i].flags & (BM_FLAGS_TO_COPY | BM_FLAG_TGA));
+		bm.SetWidth (bmh [i].width + ((short) (bmh [i].wh_extra & 0x0f) << 8));
+		bm.SetRowSize (bm.Width ());
+		if ((bTGA = (bm.Flags () & BM_FLAG_TGA)) && (bm.Width () > 256))
+			bm.SetHeight (bm.Width () * bmh [i].height);
 		else
 			bm.SetHeight (bmh [i].height + ((short) (bmh [i].wh_extra & 0xf0) << 4));
-		bm.nBPP = bTGA ? 4 : 1;
-		if (!(bm.props.w * bm.props.h))
+		bm.SetBPP (bTGA ? 4 : 1);
+		if (!(bm.Width () * bm.Width ()))
 			continue;
-		bm.avgColor = bmh [i].avgColor;
-		bm.nType = BM_TYPE_ALT;
+		bm.SetAvgColorIndex (bmh [i].avgColor);
+		bm.SetType (BM_TYPE_ALT);
 		if (bm.CreateTexBuf ())
 			break;
 		cf.Seek (bmDataOffset + bmOffset, SEEK_SET);
 		if (bTGA) {
-			int			nFrames = bm.props.h / bm.props.w;
+			int			nFrames = bm.Height () / bm.Width ();
 			tTgaHeader	h;
 
-			h.width = bm.props.w;
-			h.height = bm.props.h;
+			h.width = bm.Width ();
+			h.height = bm.Width ();
 			h.bits = 32;
 			if (!ReadTGAImage (cf, &h, &bm, -1, 1.0, 0, 1)) {
-				D2_FREE (bm.texBuf);
+				bm.DestroyTexBuf ();
 				break;
 				}
 			bm.SetRowSize (bm.RowSize () * bm.BPP ());
@@ -848,40 +848,38 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 					}
 				}
 			j = indices [i];
-			bm.nId = j;
+			bm.SetId (j);
 			}
 		else {
-			int nSize = (int) bm.props.w * (int) bm.props.h;
-			cf.Read (bm.texBuf, 1, nSize);
+			int nSize = (int) bm.Width () * (int) bm.Width ();
+			cf.Read (bm.TexBuf (), 1, nSize);
 			bm.SetPalette (paletteManager.Game ());
 			j = indices [i];
-			bm.nId = j;
-			rle_expand (&bm, NULL, 0);
-			bm.props = gameData.pig.tex.pBitmaps [j].props;
+			bm.SetId (j);
+			bm.RLEExpand (NULL, 0);
+			*bm.Props () = *gameData.pig.tex.pBitmaps [j].Props ();
 			bm.Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
 		PiggyFreeBitmap (NULL, j, 0);
-		bm.bFromPog = 1;
-		if (*gameData.pig.tex.pBitmaps [j].szName)
-			sprintf (bm.szName, "[%s]", gameData.pig.tex.pBitmaps [j].szName);
+		bm.SetFromPog (1);
+		char szName [20];
+		if (*gameData.pig.tex.pBitmaps [j].Name ())
+			sprintf (szName, "[%s]", gameData.pig.tex.pBitmaps [j].Name ());
 		else
-			sprintf (bm.szName, "POG#%04d", j);
+			sprintf (szName, "POG#%04d", j);
+		bm.SetName (szName);
 		gameData.pig.tex.pAltBitmaps [j] = bm;
 		gameData.pig.tex.pBitmaps [j].SetOverride (gameData.pig.tex.pAltBitmaps + j);
-		{
-		tRgbColorf	c = {0,0,0};
-		CBitmap	*	bmP = gameData.pig.tex.pAltBitmaps + j;
-
-		;
-		if (!(c = bmP->AverageRGB (NULL))
-			bmP->SetAverageColor (bmP->Palette ()->ClosestColor ((int) c->red, (int) c->green, (int) c->blue));
-		}
-		UseBitmapCache (gameData.pig.tex.pAltBitmaps + j, (int) bm.props.h * (int) bm.props.rowSize);
+		CBitmap* bmP = gameData.pig.tex.pAltBitmaps + j;
+		tRgbColorf color;
+		if (0 <= bmP->AvgColor (&color))
+			bmP->SetAvgColorIndex (bmP->Palette ()->ClosestColor (&color));
+		UseBitmapCache (gameData.pig.tex.pAltBitmaps + j, (int) bm.Width () * (int) bm.RowSize ());
 		}
 	D2_FREE (indices);
 	D2_FREE (bmh);
 	cf.Close ();
-	szLastPalettePig [0] = 0;  //force pig re-load
+	paletteManager.SetLastPig ("");
 	TexMergeFlush ();       //for re-merging with new textures
 	}
 }

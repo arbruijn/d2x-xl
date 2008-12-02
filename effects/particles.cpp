@@ -1881,11 +1881,11 @@ bmP->SetFrameCount ();
 #if 0
 if (OglSetupBmFrames (BmOverride (bmP), 0, 0, 0)) {
 	AdjustParticleBrightness (bmP);
-	D2_FREE (bmP->Frames ());	// make sure frames get loaded to OpenGL in OglLoadBmTexture ()
+	D2_FREE (bmP->Frames ());	// make sure frames get loaded to OpenGL in SetupTexture ()
 	bmP->CurFrame () = NULL;
 	}
 #endif
-OglLoadBmTexture (bmP, 0, 3, 1);
+bmP->SetupTexture (0, 3, 1);
 if (nType == SMOKE_PARTICLES)
 	h = 8;
 else if (nType == BUBBLE_PARTICLES)

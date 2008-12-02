@@ -150,7 +150,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct editorView {
 	short ev_num;				//each view has it's own number
 	short ev_changed;			//set to true if view changed
-	gsrCanvas *ev_canv;		//points to this window's canvas
+	CCanvas *ev_canv;		//points to this window's canvas
 	fix evDist;				//the distance from the view point
 	vmsMatrix ev_matrix;	//the view matrix
 	fix ev_zoom;				//zoom for this window
@@ -163,7 +163,7 @@ typedef struct editorView {
 
 extern editorView *Views[];
 extern int NViews;
-extern gsrCanvas *canv_offscreen;		//for off-screen rendering
+extern CCanvas *canv_offscreen;		//for off-screen rendering
 extern int LargeView_index;
 extern UI_GADGET_USERBOX * LargeViewBox;
 extern int Found_seg_index;				// Index in Found_segs corresponding to Cursegp
@@ -185,7 +185,7 @@ extern	tSegment	*Markedsegp;			// Marked tSegment, used in conjunction with *Cur
 extern	int		Markedside;				// Marked tSide on Markedsegp.
 extern	byte		Vertex_active[MAX_VERTICES];	// !0 means vertex is in use, 0 means not in use.
 
-extern	gsrCanvas *Pad_text_canvas;		// Keypad text
+extern	CCanvas *Pad_text_canvas;		// Keypad text
 
 // The extra group in the following arrays is used for group rotation.
 extern 	group		GroupList[MAX_GROUPS+1];
@@ -618,14 +618,14 @@ extern int render_3d_in_big_window;
 extern void moveObject_to_mouse_click(void);
 
 //these are instances of canvases, pointed to by variables below
-extern gsrCanvas _canv_editor_game;		//the game on the editor screen
+extern CCanvas _canv_editor_game;		//the game on the editor screen
 
 //these are pointers to our canvases
-extern gsrCanvas *Canv_editor;			//the editor screen
-extern gsrCanvas *Canv_editor_game; //the game on the editor screen
+extern CCanvas *Canv_editor;			//the editor screen
+extern CCanvas *Canv_editor_game; //the game on the editor screen
 
-extern gsrCanvas *canv_offscreen;		//for off-screen rendering
-extern gsrCanvas *Pad_text_canvas;		// Keypad text
+extern CCanvas *canv_offscreen;		//for off-screen rendering
+extern CCanvas *Pad_text_canvas;		// Keypad text
 
 //where the editor is looking
 extern vmsVector EdView_target;
@@ -640,7 +640,7 @@ extern UI_GADGET_USERBOX * GameViewBox;
 extern UI_GADGET_USERBOX * LargeViewBox;
 extern UI_GADGET_USERBOX * GroupViewBox;
 
-extern void med_point_2_vec(gsrCanvas *canv,vmsVector *v,short sx,short sy);
+extern void med_point_2_vec(CCanvas *canv,vmsVector *v,short sx,short sy);
 
 //shutdown ui on the editor screen
 void close_editor_screen(void);

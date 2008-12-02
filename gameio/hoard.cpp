@@ -36,17 +36,9 @@
 ///
 void InitHoardBitmap (CBitmap *bmP, int w, int h, int flags, ubyte *data)
 {
-bmP->props.x = 
-bmP->props.y = 0;
-bmP->props.w = 
-bmP->props.rowSize = w;
-bmP->props.h = h;
-bmP->props.nMode = BM_LINEAR;
-bmP->props.flags = flags;
-if (data)
-	bmP->texBuf = data;
-//bmP->nId = 0;
-bmP->avgColor = 0;
+bmP->Init (BM_LINEAR, 0, 0, w, h, 1, data);
+bmP->SetFlags (flags);
+bmP->SetAvgColorIndex (0);
 }
 
 //-----------------------------------------------------------------------------
@@ -152,7 +144,8 @@ if (!gameData.hoard.bInitialized) {
 	vcP->flags = 0;
 	vcP->nSound = -1;
 	vcP->lightValue = F1_0;
-	bmDataP = gameData.hoard.orb.bm.texBuf = (ubyte *) D2_ALLOC (gameData.hoard.orb.nSize);
+	bmDataP = (ubyte *) D2_ALLOC (gameData.hoard.orb.nSize);
+	gameData.hoard.orb.bm.SetTexBuf (bmDataP);
 	for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		vcP->frames [i].index = nBitmap;
@@ -184,7 +177,8 @@ if (!gameData.hoard.bInitialized) {
 	gameData.pig.tex.pTMapInfo [i].flags = TMI_GOAL_HOARD;
 	gameData.pig.tex.nTextures [0]++;
 	Assert (gameData.pig.tex.nTextures [0] < MAX_TEXTURES);
-	bmDataP = gameData.hoard.goal.bm.texBuf = (ubyte *) D2_ALLOC (gameData.hoard.goal.nSize);
+	bmDataP = (ubyte *) D2_ALLOC (gameData.hoard.goal.nSize);
+	gameData.hoard.goal.bm.SetTexBuf (bmDataP);
 	for (i = 0; i < gameData.hoard.goal.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		ecP->vc.frames [i].index = nBitmap;
@@ -206,12 +200,12 @@ else {
 paletteManager.Game ();
 gameData.hoard.orb.palette = paletteManager.Add (palette);
 vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
-bmDataP = gameData.hoard.orb.bm.texBuf;
+bmDataP = gameData.hoard.orb.bm.TexBuf ();
 for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 	CBitmap *bmP = &gameData.pig.tex.bitmaps [0][vcP->frames [i].index];
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	cf.Read (bmP->texBuf, 1, gameData.hoard.orb.nFrameSize);
+	cf.Read (bmP->TexBuf (), 1, gameData.hoard.orb.nFrameSize);
 	bmP->Remap (gameData.hoard.orb.palette, 255, -1);
 	}
 
@@ -219,12 +213,12 @@ for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 cf.ReadShort ();        //skip frame count
 paletteManager.Game ();
 gameData.hoard.goal.palette = paletteManager.Add (palette);
-bmDataP = gameData.hoard.goal.bm.texBuf;
+bmDataP = gameData.hoard.goal.bm.TexBuf ();
 for (i = 0; i < gameData.hoard.goal.nFrames; i++) {
 	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + ecP->vc.frames [i].index;
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	cf.Read (bmP->texBuf, 1, gameData.hoard.goal.nFrameSize);
+	cf.Read (bmP->TexBuf (), 1, gameData.hoard.goal.nFrameSize);
 	bmP->Remap (gameData.hoard.goal.palette, 255, -1);
 	}
 
@@ -235,16 +229,16 @@ for (i = 0; i < 2; i++) {
 	gameData.hoard.icon [i].nWidth = cf.ReadShort ();
 	CalcHoardItemSizes (gameData.hoard.icon [i]);
 	if (!gameData.hoard.bInitialized) {
-		gameData.hoard.icon [i].bm.texBuf = (ubyte *) D2_ALLOC (gameData.hoard.icon [i].nSize);
 		InitHoardBitmap (&gameData.hoard.icon [i].bm, 
 							  gameData.hoard.icon [i].nHeight, 
 							  gameData.hoard.icon [i].nWidth, 
 							  BM_FLAG_TRANSPARENT, 
-							  gameData.hoard.icon [i].bm.texBuf);
+							  NULL);
+		gameData.hoard.icon [i].bm.CreateTexBuf ();
 		}
 	palette.Read (cf);
 	gameData.hoard.icon [i].palette = paletteManager.Add (palette);
-	cf.Read (gameData.hoard.icon [i].bm.texBuf, 1, gameData.hoard.icon [i].nFrameSize);
+	cf.Read (gameData.hoard.icon [i].bm.TexBuf (), 1, gameData.hoard.icon [i].nFrameSize);
 	gameData.hoard.icon [i].bm.Remap (gameData.hoard.icon [i].palette, 255, -1);
 	}
 
@@ -298,23 +292,19 @@ void FreeHoardData (void)
 if (!gameData.hoard.bInitialized)
 	return;
 bmP = gameData.hoard.monsterball.bm.Override () ? gameData.hoard.monsterball.bm.Override () : &gameData.hoard.monsterball.bm;
-if (bmP->texBuf == gameData.hoard.orb.bm.texBuf)
-	bmP->texBuf = NULL;
+if (bmP->TexBuf () == gameData.hoard.orb.bm.TexBuf ())
+	bmP->SetTexBuf (NULL);
 else {
-	D2_FREE (bmP->texBuf);
+	bmP->DestroyTexBuf ();
 	if (gameData.hoard.monsterball.bm.Override ())
 		D2_FREE (bmP);
 	}
-D2_FREE (gameData.hoard.orb.bm.texBuf);
-gameData.hoard.orb.bm.texBuf = NULL;
-D2_FREE (gameData.hoard.goal.bm.texBuf);
-gameData.hoard.goal.bm.texBuf = NULL;
+gameData.hoard.orb.bm.DestroyTexBuf ();
+gameData.hoard.goal.bm.DestroyTexBuf ();
 bmP = &gameData.hoard.monsterball.bm;
 memset (&gameData.hoard.orb.bm, 0, sizeof (CBitmap));
-for (i = 0; i < 2; i++) {
-	D2_FREE (gameData.hoard.icon [i].bm.texBuf);
-	gameData.hoard.icon [i].bm.texBuf = NULL;
-	}
+for (i = 0; i < 2; i++)
+	gameData.hoard.icon [i].bm.DestroyTexBuf ();
 for (i = 1; i <= 4; i++) {
 	D2_FREE (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] - i].data [0]);
 	}

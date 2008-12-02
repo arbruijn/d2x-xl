@@ -24,8 +24,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SCREEN_EDITOR	2	// viewing the editor screen
 
 //from editor.c
-extern gsrCanvas *Canv_editor;			// the full on-scrren editor canvas
-extern gsrCanvas *Canv_editor_game;	// the game window on the editor screen
+extern CCanvas *Canv_editor;			// the full on-scrren editor canvas
+extern CCanvas *Canv_editor_game;	// the game window on the editor screen
 
 //from game.c
 extern int SetScreenMode(u_int32_t sm);		// True = editor screen
@@ -54,11 +54,11 @@ extern int 			VR_show_hud;
 extern int			VR_sensitivity;
 extern u_int32_t  bScreenModeOverride;
 
-extern gsrCanvas	*VR_offscreen_buffer;		// The offscreen data buffer
-extern gsrCanvas	VR_render_buffer[2];		// Two offscreen buffers for left/right eyes.
-extern gsrCanvas	VR_render_sub_buffer[2];	// Two sub buffers for left/right eyes.
-extern gsrCanvas	VR_screen_pages[2];			// Two pages of VRAM if paging is available
-extern gsrCanvas	VR_screen_sub_pages[2];		// Two sub pages of VRAM if paging is available
+extern CCanvas	*VR_offscreen_buffer;		// The offscreen data buffer
+extern CCanvas	VR_render_buffer[2];		// Two offscreen buffers for left/right eyes.
+extern CCanvas	VR_render_sub_buffer[2];	// Two sub buffers for left/right eyes.
+extern CCanvas	VR_screen_pages[2];			// Two pages of VRAM if paging is available
+extern CCanvas	VR_screen_sub_pages[2];		// Two sub pages of VRAM if paging is available
 
 //values for VR_screenFlags
 

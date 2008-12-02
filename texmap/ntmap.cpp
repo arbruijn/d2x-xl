@@ -104,19 +104,19 @@ void init_fix_recip_table(void)
 //	not at all.  I'm pretty sure these variables are only being used for range checking.
 void init_interface_vars_to_assembler(void)
 {
-	CBitmap	*bp;
+	CBitmap	*bmP;
 
-	bp = &grdCurCanv->cvBitmap;
+	bmP = &CCanvas::Current ()->Bitmap ();
 
-	Assert(bp!=NULL);
-	Assert(bp->texBuf!=NULL);
-	Assert(bp->props.h <= MAX_Y_POINTERS);
+	Assert(bmP!=NULL);
+	Assert(bmP->TexBuf ()!=NULL);
+	Assert(bmP->Height () <= MAX_Y_POINTERS);
 
 	//	If bytes_per_row has changed, create new table of pointers.
-	if (bytes_per_row != (int) bp->props.rowSize) {
+	if (bytes_per_row != (int) bmP->RowSize ()) {
 		int	y_val, i;
 
-		bytes_per_row = (int) bp->props.rowSize;
+		bytes_per_row = (int) bmP->RowSize ();
 
 		y_val = 0;
 		for (i=0; i<MAX_Y_POINTERS; i++) {
@@ -125,20 +125,20 @@ void init_interface_vars_to_assembler(void)
 		}
 	}
 
-        write_buffer = (unsigned char *) bp->texBuf;
+        write_buffer = (unsigned char *) bmP->TexBuf ();
 
 	window_left = 0;
-	window_right = (int) bp->props.w-1;
+	window_right = (int) bmP->Width ()-1;
 	window_top = 0;
-	window_bottom = (int) bp->props.h-1;
+	window_bottom = (int) bmP->Height ()-1;
 
 	nWindowClipLeft = window_left;
 	nWindowClipRight = window_right;
 	nWindowClipTop = window_top;
 	nWindowClipBot = window_bottom;
 
-	window_width = bp->props.w;
-	window_height = bp->props.h;
+	window_width = bmP->Width ();
+	window_height = bmP->Height ();
 
 	if (!bFixRecipTableComputed)
 		init_fix_recip_table();
@@ -362,7 +362,7 @@ void ntmap_scanline_lighted(CBitmap *srcb, int y, fix xleft, fix xright, fix ule
 	fx_dv_dx = FixMul(vright - vleft,recip_dx);
 	fx_dz_dx = FixMul(zright - zleft,recip_dx);
 	fx_y = y;
-	pixptr = srcb->texBuf;
+	pixptr = srcb->TexBuf ();
 
 	switch (bLightingEnabled) {
 		case 0:
@@ -646,7 +646,7 @@ void ntmap_scanline_lighted_linear(CBitmap *srcb, int y, fix xleft, fix xright, 
 		fx_y = y;
 		fx_xright = X2I(xright);
 		fx_xleft = X2I(xleft);
-		pixptr = srcb->texBuf;
+		pixptr = srcb->TexBuf ();
 
 		switch (bLightingEnabled) {
 			case 0:
@@ -882,12 +882,12 @@ void ntexture_map_lighted_linear(CBitmap *srcb, g3ds_tmap *t)
 
 // fix	DivNum = F1_0*12;
 
-extern void DrawTexPolyFlat(CBitmap *bp,int nverts,g3sPoint **vertbuf);
+extern void DrawTexPolyFlat(CBitmap *bmP,int nverts,g3sPoint **vertbuf);
 
 // -------------------------------------------------------------------------------------
 // Interface from Matt's data structures to Mike's texture mapper.
 // -------------------------------------------------------------------------------------
-void draw_tmap(CBitmap *bp,int nverts,g3sPoint **vertbuf)
+void draw_tmap(CBitmap *bmP,int nverts,g3sPoint **vertbuf)
 {
 	int	i;
 
@@ -905,16 +905,16 @@ void draw_tmap(CBitmap *bp,int nverts,g3sPoint **vertbuf)
 	// -- now called from G3StartFrame -- init_interface_vars_to_assembler();
 
 	//	If no transparency and seg depth is large, render as flat shaded.
-	if ((nCurrentSegDepth > gameStates.render.detail.nMaxLinearDepth) && ((bp->props.flags & 3) == 0)) {
-		DrawTexPolyFlat(bp, nverts, vertbuf);
+	if ((nCurrentSegDepth > gameStates.render.detail.nMaxLinearDepth) && ((bmP->Flags () & 3) == 0)) {
+		DrawTexPolyFlat(bmP, nverts, vertbuf);
 		return;
 	}
 
-	if ( bp->props.flags & BM_FLAG_RLE )
-		bp = rle_expand_texture( bp );		// Expand if rle'd
+	if ( bmP->Flags () & BM_FLAG_RLE )
+		bmP = rle_expand_texture( bmP );		// Expand if rle'd
 
-	gameStates.render.bTransparency = bp->props.flags & BM_FLAG_TRANSPARENT;
-	if (bp->props.flags & BM_FLAG_NO_LIGHTING)
+	gameStates.render.bTransparency = bmP->Flags () & BM_FLAG_TRANSPARENT;
+	if (bmP->Flags () & BM_FLAG_NO_LIGHTING)
 		gameStates.render.nLighting = 0;
 
 
@@ -937,8 +937,8 @@ void draw_tmap(CBitmap *bp,int nverts,g3sPoint **vertbuf)
 		}
 
 		tvp->z = FixDiv(F1_0*12, vp->p3_vec[Z]);
-		tvp->u = vp->p3_uvl.u << 6; //* bp->props.w;
-		tvp->v = vp->p3_uvl.v << 6; //* bp->props.h;
+		tvp->u = vp->p3_uvl.u << 6; //* bmP->Width ();
+		tvp->v = vp->p3_uvl.v << 6; //* bmP->Height ();
 
 		Assert(gameStates.render.nLighting < 3);
 
@@ -955,21 +955,21 @@ void draw_tmap(CBitmap *bp,int nverts,g3sPoint **vertbuf)
 			case 0:								// choose best interpolation
 				per2Flag = 1;
 				if (nCurrentSegDepth > gameStates.render.detail.nMaxPerspectiveDepth)
-					ntexture_map_lighted_linear(bp, &Tmap1);
+					ntexture_map_lighted_linear(bmP, &Tmap1);
 				else
-					ntexture_map_lighted(bp, &Tmap1);
+					ntexture_map_lighted(bmP, &Tmap1);
 				break;
 			case 1:								// linear interpolation
 				per2Flag = 1;
-				ntexture_map_lighted_linear(bp, &Tmap1);
+				ntexture_map_lighted_linear(bmP, &Tmap1);
 				break;
 			case 2:								// perspective every 8th pixel interpolation
 				per2Flag = 1;
-				ntexture_map_lighted(bp, &Tmap1);
+				ntexture_map_lighted(bmP, &Tmap1);
 				break;
 			case 3:								// perspective every pixel interpolation
 				per2Flag = 0;					// this hack means do divide every pixel
-				ntexture_map_lighted(bp, &Tmap1);
+				ntexture_map_lighted(bmP, &Tmap1);
 				break;
 			default:
 				Assert(0);				// Illegal value for gameStates.render.nInterpolationMethod, must be 0,1,2,3
@@ -979,21 +979,21 @@ void draw_tmap(CBitmap *bp,int nverts,g3sPoint **vertbuf)
 			case 0:								// choose best interpolation
 				per2Flag = 1;
 				if (nCurrentSegDepth > gameStates.render.detail.nMaxPerspectiveDepth)
-					ntexture_map_lighted_linear(bp, &Tmap1);
+					ntexture_map_lighted_linear(bmP, &Tmap1);
 				else
-					ntexture_map_lighted(bp, &Tmap1);
+					ntexture_map_lighted(bmP, &Tmap1);
 				break;
 			case 1:								// linear interpolation
 				per2Flag = 1;
-				ntexture_map_lighted_linear(bp, &Tmap1);
+				ntexture_map_lighted_linear(bmP, &Tmap1);
 				break;
 			case 2:								// perspective every 8th pixel interpolation
 				per2Flag = 1;
-				ntexture_map_lighted(bp, &Tmap1);
+				ntexture_map_lighted(bmP, &Tmap1);
 				break;
 			case 3:								// perspective every pixel interpolation
 				per2Flag = 0;					// this hack means do divide every pixel
-				ntexture_map_lighted(bp, &Tmap1);
+				ntexture_map_lighted(bmP, &Tmap1);
 				break;
 			default:
 				Assert(0);				// Illegal value for gameStates.render.nInterpolationMethod, must be 0,1,2,3

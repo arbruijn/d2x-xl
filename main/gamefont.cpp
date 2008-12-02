@@ -37,7 +37,7 @@ const char * Gamefont_filenames[] = {
         "font3-1h.fnt",     // Font 4 High-res
         };
 
-grsFont *Gamefonts[MAX_FONTS];
+tFont *Gamefonts[MAX_FONTS];
 
 void _CDECL_ GameFontClose(void)
 {

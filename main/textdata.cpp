@@ -185,14 +185,14 @@ if (msgP->nEndTime < 0) {
 	}
 else if (!gameStates.render.nWindow) {
 	if (!msgP->bmP) {
-		grdCurCanv->cvFont = NORMAL_FONT;
-		GrSetFontColorRGBi (GOLD_RGBA, 1, 0, 0);
+		CCanvas::Current ()->SetFont (NORMAL_FONT);
+		SetFontColorRGBi (GOLD_RGBA, 1, 0, 0);
 		}
 	if (msgP->bmP || (msgP->bmP = CreateStringBitmap (indexP->pszText, 0, 0, NULL, 0, 0, -1))) {
-		w = msgP->bmP->props.w;
-		h = msgP->bmP->props.h;
-		x = (grdCurCanv->cv_w - w) / 2;
-		y = (grdCurCanv->cv_h - h) * 2 / 5;
+		w = msgP->bmP->Width ();
+		h = msgP->bmP->Height ();
+		x = (CCanvas::Current ()->Bitmap ().Width () - w) / 2;
+		y = (CCanvas::Current ()->Bitmap ().Height () - h) * 2 / 5;
 		if (msgP->nEndTime < 0)
 			fAlpha = 1.0f;
 		else if (gameStates.app.nSDLTicks - msgP->nStartTime < 250)
@@ -202,7 +202,7 @@ else if (!gameStates.render.nWindow) {
 		else
 			fAlpha = 1.0f;
 		NMBlueBox (x - 8, y - 8, x + w + 4, y + h + 4, 3, fAlpha, 1);
-		OglUBitBltI (w, h, x, y, w, h, 0, 0, msgP->bmP, &grdCurCanv->cvBitmap, 0, 1, fAlpha);
+		OglUBitBltI (w, h, x, y, w, h, 0, 0, msgP->bmP, &CCanvas::Current ()->Bitmap (), 0, 1, fAlpha);
 		}
 	}
 return 1;

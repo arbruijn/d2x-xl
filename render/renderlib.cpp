@@ -332,7 +332,7 @@ if (gameStates.render.bQueryOcclusion) {
 
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);
-GrSetColorRGB (255, 255, 255, 255);
+CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 center.p3_vec.SetZero();
 for (i = 0; i < nVertices; i++) {
 	G3DrawLine (pointList [i], pointList [(i + 1) % nVertices]);
@@ -763,7 +763,7 @@ cc = RotateVertexList (8, seg->verts);
 if (! cc.ccAnd) {		//all off screen?
 	g3sPoint *pnt;
 	//render curedge of curside of curseg in green
-	GrSetColorRGB (0, 255, 0, 255);
+	CCanvas::Current ()->SetColorRGB (0, 255, 0, 255);
 	G3DrawLine(gameData.segs.points + seg->verts [sideToVerts [_side][edge]],
 						gameData.segs.points + seg->verts [sideToVerts [_side][(edge+1)%4]]);
 	//draw a little cross at the current vert
@@ -784,7 +784,7 @@ if (! cc.ccAnd) {		//all off screen?
 
 void AdjustVertexColor (CBitmap *bmP, tFaceColor *colorP, fix xLight)
 {
-	float l = (bmP && (bmP->props.flags & BM_FLAG_NO_LIGHTING)) ? 1.0f : X2F (xLight);
+	float l = (bmP && (bmP->Flags () & BM_FLAG_NO_LIGHTING)) ? 1.0f : X2F (xLight);
 	float s = 1.0f;
 
 #if SHADOWS

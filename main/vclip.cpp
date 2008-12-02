@@ -53,7 +53,7 @@ tRgbColorb *VClipColor (tObject *objP)
 {
 	int				nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
 	tBitmapIndex	bmi;
-	CBitmap		*bmP;
+	CBitmap			*bmP;
 
 if (nVClip) {
 	tVideoClip *vcP = gameData.eff.vClips [0] + nVClip;
@@ -63,9 +63,10 @@ else
 	bmi = gameData.weapons.info [objP->info.nId].bitmap;
 PIGGY_PAGE_IN (bmi.index, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
-if ((bmP->nType == BM_TYPE_STD) && bmP->Override ())
+if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ())
 	bmP = bmP->Override ();
-return &bmP->avgRGB;
+bmP->AvgColor ();
+return bmP->GetAvgColor ();
 }
 
 //------------------------------------------------------------------------------

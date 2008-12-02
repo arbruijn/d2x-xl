@@ -55,7 +55,7 @@ typedef struct tMenuItem {
 
 typedef struct bkg {
 	short			x, y, w, h;			// The location of the menu.
-	gsrCanvas	*menu_canvas;
+	CCanvas	*menu_canvas;
 	CBitmap		*saved;			// The background under the menu.
 	CBitmap		*background;
 	CBitmap		*bmP;
@@ -149,7 +149,7 @@ void NMRemapBackground (void);
 void NMLoadAltBg (void);
 int NMFreeAltBg (int bForce);
 
-void NMRestoreScreen (char *filename, bkg *bgP, gsrCanvas *saveCanvasP, grsFont *saveFontP, int bDontRestore);
+void NMRestoreScreen (char *filename, bkg *bgP, CCanvas *saveCanvasP, tFont *saveFontP, int bDontRestore);
 void NMBlueBox (int x1, int y1, int x2, int y2, int nLineWidth, float fAlpha, int bForce);
 
 extern double altBgAlpha;

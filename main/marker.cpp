@@ -78,16 +78,16 @@ void DrawMarkerNumber (int nMarker)
 if (gameData.marker.fScale == 0.0f)
 	gameData.marker.fScale = 2.0f;
 if (nMarker == gameData.marker.nHighlight)
-	GrSetColorRGB (255, 255, 255, 255);
+	CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 else if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN"))
-	GrSetColorRGBi (RGBA_PAL2 (63, 0, 47));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 0, 47));
 else
-	GrSetColorRGBi (RGBA_PAL2 (63, 15, 0));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 15, 0));
 G3TransformAndEncodePoint (&basePoint, MarkerObj (-1, nMarker)->info.position.vPos);
 glPushMatrix ();
 glTranslatef (X2F (basePoint.p3_vec[X]), X2F (basePoint.p3_vec[Y]), X2F (basePoint.p3_vec[Z]));
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&grdCurCanv->cvColor);
+OglGrsColor (&CCanvas::Current ()->Color ());
 glBegin (GL_LINES);
 px = xCoord [nMarker];
 py = yCoord [nMarker];
@@ -121,7 +121,7 @@ for (i = 0; i < nMaxDrop; i++)
 		bSpawn = (objP == SpawnMarkerObject (-1));
 		G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
 		for (j = 0; j < 3; j++) {
-			GrSetColorRGB (PAL2RGBA (colors [bSpawn][j]), 0, 0, 255);
+			CCanvas::Current ()->SetColorRGB (PAL2RGBA (colors [bSpawn][j]), 0, 0, 255);
 			G3DrawSphere (&spherePoint, (int) (gameData.marker.fScale * MARKER_SPHERE_SIZE) >> j, 1);
 			}
 		DrawMarkerNumber (i);

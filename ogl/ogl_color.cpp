@@ -85,7 +85,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void OglGrsColor (grsColor *pc)
+void OglGrsColor (tCanvasColor *pc)
 {
 	GLfloat	fc [4];
 
@@ -196,7 +196,7 @@ else {
 /*inline*/
 void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tFaceColor *vertColor)
 {
-	float l = (bmP->props.flags & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
+	float l = (bmP->Flags () & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
 	float s = 1.0f;
 
 #if SHADOWS

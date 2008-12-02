@@ -42,7 +42,7 @@ typedef struct
 	struct gadget  * parent;    \
 	int             status;     \
 	int             oldstatus;  \
-	gsrCanvas *    canvas;     \
+	CCanvas *    canvas;     \
 	int             hotkey;     \
 	short           x1,y1,x2,y2;
 
@@ -181,8 +181,8 @@ typedef struct ui_window {
 	short           x, y;
 	short           width, height;
 	short           text_x, text_y;
-	gsrCanvas *    canvas;
-	gsrCanvas *    oldcanvas;
+	CCanvas *    canvas;
+	CCanvas *    oldcanvas;
 	CBitmap *    background;
 	UI_GADGET *     gadget;
 	UI_GADGET *     keyboard_focus_gadget;
@@ -223,7 +223,7 @@ typedef struct  {
 #define B1_JUST_RELEASED    (Mouse.b1_status & BUTTON_JUST_RELEASED)
 #define B1_DOUBLE_CLICKED   (Mouse.b1_status & BUTTON_DOUBLE_CLICKED)
 
-extern grsFont * ui_small_font;
+extern tFont * ui_small_font;
 
 extern UI_MOUSE Mouse;
 extern UI_WINDOW * CurWindow;

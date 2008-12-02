@@ -198,7 +198,7 @@ fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLig
 
 void ShowInGameWarning (const char *s)
 {
-if (grdCurScreen) {
+if (screen.Width () && screen.Height ()) {
 	const char	*hs, *ps = strstr (s, "Error");
 
 	if (ps > s) {	//skip trailing non alphanum chars
@@ -226,8 +226,8 @@ if (grdCurScreen) {
 
 //------------------------------------------------------------------------------
 //these should be in gr.h
-#define cv_w  cvBitmap.props.w
-#define cv_h  cvBitmap.props.h
+#define cv_w  Width ()
+#define cv_h  Bitmap ().Height ()
 
 extern void NDRecordCockpitChange (int);
 
@@ -247,7 +247,7 @@ if (gameStates.render.vr.nRenderMode != VR_NONE)
 	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
-GrSetCurrentCanvas (NULL);
+CCanvas::SetCurrent (NULL);
 GrSetCurFont (GAME_FONT);
 
 if (bGameCockpitCopyCode)
@@ -256,7 +256,7 @@ bGameCockpitCopyCode  = NULL;
 switch (gameStates.render.cockpit.nMode) {
 	case CM_FULL_COCKPIT:
 	case CM_REAR_VIEW:
-     	gameData.render.window.hMax = (grdCurScreen->scHeight * 2) / 3;
+     	gameData.render.window.hMax = (screen.Height () * 2) / 3;
 		if (gameData.render.window.h > gameData.render.window.hMax)
 			gameData.render.window.h = gameData.render.window.hMax;
 		if (gameData.render.window.w > gameData.render.window.wMax)
@@ -267,7 +267,7 @@ switch (gameStates.render.cockpit.nMode) {
 		break;
 
 	case CM_FULL_SCREEN:
-		gameData.render.window.hMax = grdCurScreen->scHeight;
+		gameData.render.window.hMax = screen.Height ();
 		gameData.render.window.h = gameData.render.window.hMax;
 		gameData.render.window.w = gameData.render.window.wMax;
 		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
@@ -277,12 +277,12 @@ switch (gameStates.render.cockpit.nMode) {
 
 	case CM_STATUS_BAR:
 		{
-		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].props.h;
+		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].Height ();
 		if (gameStates.app.bDemoData)
 			h *= 2;
-		if (grdCurScreen->scHeight > 480)
-			h = (int) ((double) h * (double) grdCurScreen->scHeight / 480.0);
-     	gameData.render.window.hMax = grdCurScreen->scHeight - h;
+		if (screen.Height () > 480)
+			h = (int) ((double) h * (double) screen.Height () / 480.0);
+     	gameData.render.window.hMax = screen.Height () - h;
 		gameData.render.window.h = gameData.render.window.hMax;
 		gameData.render.window.w = gameData.render.window.wMax;
 		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
@@ -293,14 +293,14 @@ switch (gameStates.render.cockpit.nMode) {
 
 	case CM_LETTERBOX: {
 		int x = 0;
-		int w = gameStates.render.vr.buffers.render[0].cvBitmap.props.w;		//VR_render_width;
-		int h = (int) ((gameStates.render.vr.buffers.render[0].cvBitmap.props.h * 7) / 10 / ((double) grdCurScreen->scHeight / (double) grdCurScreen->scWidth / 0.75));
-		int y = (gameStates.render.vr.buffers.render[0].cvBitmap.props.h - h) / 2;
+		int w = gameStates.render.vr.buffers.render[0].Width ();		//VR_render_width;
+		int h = (int) ((gameStates.render.vr.buffers.render[0].Bitmap ().Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75));
+		int y = (gameStates.render.vr.buffers.render[0].Bitmap ().Height () - h) / 2;
 		GameInitRenderSubBuffers (x, y, w, h);
 		break;
 		}
 	}
-GrSetCurrentCanvas (NULL);
+CCanvas::SetCurrent (NULL);
 gameStates.render.cockpit.nShieldFlash = 0;
 }
 
@@ -340,8 +340,8 @@ gameStates.render.vr.bEyeOffsetChanged = 2;
 void GameInitRenderSubBuffers (int x, int y, int w, int h)
 {
 if (!bScanlineDouble) {
-	GrInitSubCanvas (&gameStates.render.vr.buffers.subRender[0], &gameStates.render.vr.buffers.render[0], x, y, w, h);
-	GrInitSubCanvas (&gameStates.render.vr.buffers.subRender[1], &gameStates.render.vr.buffers.render[1], x, y, w, h);
+	gameStates.render.vr.buffers.render[0].SetupPane (&gameStates.render.vr.buffers.subRender[0], x, y, w, h);
+	gameStates.render.vr.buffers.render[1].SetupPane (&gameStates.render.vr.buffers.subRender[1], x, y, w, h);
 	}
 }
 
@@ -361,29 +361,29 @@ gameStates.render.vr.nRenderMode = render_method;
 gameData.render.window.w = render_w;
 gameData.render.window.h = render_h;
 if (gameStates.render.vr.buffers.offscreen) {
-	GrFreeCanvas (gameStates.render.vr.buffers.offscreen);
+	gameStates.render.vr.buffers.offscreen->Destroy ();
 	}
 
 if ((gameStates.render.vr.nRenderMode == VR_AREA_DET) || (gameStates.render.vr.nRenderMode==VR_INTERLACED))	{
 	if (render_h*2 < 200)	{
-		gameStates.render.vr.buffers.offscreen = GrCreateCanvas (render_w, 200);
+		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, 200);
 		}
 	else {
-		gameStates.render.vr.buffers.offscreen = GrCreateCanvas (render_w, render_h*2);
+		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, render_h*2);
 		}
-	GrInitSubCanvas (&gameStates.render.vr.buffers.render[0], gameStates.render.vr.buffers.offscreen, 0, 0, render_w, render_h);
-	GrInitSubCanvas (&gameStates.render.vr.buffers.render[1], gameStates.render.vr.buffers.offscreen, 0, render_h, render_w, render_h);
+	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[0], 0, 0, render_w, render_h);
+	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[1], 0, render_h, render_w, render_h);
 	}
 else {
 	if (render_h < 200) {
-		gameStates.render.vr.buffers.offscreen = GrCreateCanvas (render_w, 200);
+		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, 200);
 		}
 	else {
-		gameStates.render.vr.buffers.offscreen = GrCreateCanvas (render_w, render_h);
+		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, render_h);
       }
-	gameStates.render.vr.buffers.offscreen->cvBitmap.props.nMode = BM_OGL;
-	GrInitSubCanvas (&gameStates.render.vr.buffers.render[0], gameStates.render.vr.buffers.offscreen, 0, 0, render_w, render_h);
-	GrInitSubCanvas (&gameStates.render.vr.buffers.render[1], gameStates.render.vr.buffers.offscreen, 0, 0, render_w, render_h);
+	gameStates.render.vr.buffers.offscreen->Bitmap ().SetMode (BM_OGL);
+	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[0], 0, 0, render_w, render_h);
+	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[1], 0, 0, render_w, render_h);
 	}
 GameInitRenderSubBuffers (0, 0, render_w, render_h);
 }
@@ -585,7 +585,7 @@ void GameDrawTimeLeft ()
 	static int nId = 0;
 
 GrSetCurFont (GAME_FONT);    //GAME_FONT
-GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
+SetFontColorRGBi (RED_RGBA, 1, 0, 0);
 timevar=I2X (netGame.xPlayTimeAllowed*5*60);
 i = X2I (timevar-gameStates.app.xThisLevelTime) + 1;
 sprintf (temp_string, TXT_TIME_LEFT, i);
@@ -598,15 +598,15 @@ if (i >= 0)
 
 void modex_clear_box (int x,int y,int w,int h)
 {
-	gsrCanvas *temp_canv,*save_canv;
+	CCanvas *canvP;
 
-	save_canv = grdCurCanv;
-	temp_canv = GrCreateCanvas (w,h);
-	GrSetCurrentCanvas (temp_canv);
-	GrClearCanvas (BLACK_RGBA);
-	GrSetCurrentCanvas (save_canv);
-	GrBitmapM (x,y,&temp_canv->cvBitmap, 0);
-	GrFreeCanvas (temp_canv);
+CCanvas::Push ();
+canvP = CCanvas::Create (w,h);
+CCanvas::SetCurrent (canvP);
+CCanvas::Current ()->Clear (BLACK_RGBA);
+CCanvas::Pop ();
+GrBitmapM (x,y, &canvP->Bitmap (), 0);
+canvP->Destroy ();
 
 }
 
@@ -1291,7 +1291,7 @@ PrintLog ("unloading palettes\n");
 FreeSkyBoxSegList ();
 CloseDynLighting ();
 if (gameStates.render.vr.buffers.offscreen)	{
-	GrFreeCanvas (gameStates.render.vr.buffers.offscreen);
+	gameStates.render.vr.buffers.offscreen->Destroy ();
 	gameStates.render.vr.buffers.offscreen = NULL;
 }
 PrintLog ("unloading gauge data\n");
@@ -1302,9 +1302,9 @@ if (bGameCockpitCopyCode) {
 	D2_FREE (bGameCockpitCopyCode);
 	bGameCockpitCopyCode = NULL;
 }
-if (bmBackground.texBuf) {
+if (bmBackground.TexBuf ()) {
 	PrintLog ("unloading background bitmap\n");
-	D2_FREE (bmBackground.texBuf);
+	bmBackground.DestroyTexBuf ();
 	}
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 PrintLog ("unloading custom background data\n");
@@ -1323,7 +1323,7 @@ if (fErr) {
 
 //-----------------------------------------------------------------------------
 
-gsrCanvas *GetCurrentGameScreen ()
+CCanvas *GetCurrentGameScreen (void)
 {
 return gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage;
 }
@@ -1365,7 +1365,7 @@ int __Movie_frame_num=0;
 #define MAX_MOVIE_BUFFER_FRAMES 250
 #define MOVIE_FRAME_SIZE	 (320 * 200)
 
-ubyte *Movie_frame_buffer;
+ubyte *movieFrameBuffer;
 int nMovieFrames;
 char movie_path[50] = ".\\";
 
@@ -1376,30 +1376,21 @@ void flush_movie_buffer ()
 	char savename[128];
 	int f;
 
-	StopTime ();
+StopTime ();
 #if TRACE
 	//con_printf (CONDBG,"Flushing movie bufferd:\temp\dm_test.");
 #endif
-	bmMovie.texBuf = Movie_frame_buffer;
-
-	for (f=0;f<nMovieFrames;f++) {
-		sprintf (savename, "%sfrm%04d.pcx",movie_path,__Movie_frame_num);
-		__Movie_frame_num++;
-		pcx_write_bitmap (savename, &bmMovie);
-		bmMovie.texBuf += MOVIE_FRAME_SIZE;
-
-		if (f % 5 == 0) {
-#if TRACE
-			//con_printf (CONDBG,"%3d/%3d\10\10\10\10\10\10\10",f,nMovieFrames);
-#endif
-		}
+bmMovie.SetTexBuf (movieFrameBuffer);
+for (f = 0;f < nMovieFrames; f++) {
+	sprintf (savename, "%sfrm%04d.pcx",movie_path,__Movie_frame_num);
+	__Movie_frame_num++;
+	pcx_write_bitmap (savename, &bmMovie);
+	bmMovie.SetTexBuf (bmMovie.TexBuf () + MOVIE_FRAME_SIZE);
 	}
 
-	nMovieFrames=0;
-#if TRACE
-	//con_printf (CONDBG,"done   \n");
-#endif
-	StartTime (0);
+nMovieFrames = 0;
+bmMovie.SetTexBuf (NULL);
+StartTime (0);
 }
 
 //-----------------------------------------------------------------------------
@@ -1430,22 +1421,17 @@ void toggle_movie_saving ()
 			strcat (movie_path,"\\");
 
 
-		if (!Movie_frame_buffer) {
-			Movie_frame_buffer = (ubyte *) D2_ALLOC (MAX_MOVIE_BUFFER_FRAMES * MOVIE_FRAME_SIZE);
-			if (!Movie_frame_buffer) {
+		if (!movieFrameBuffer) {
+			movieFrameBuffer = (ubyte *) D2_ALLOC (MAX_MOVIE_BUFFER_FRAMES * MOVIE_FRAME_SIZE);
+			if (!movieFrameBuffer) {
 				Int3 ();
 				bSavingMovieFrames=0;
 			}
 
 			nMovieFrames=0;
 
-			bmMovie.props.x = bmMovie.props.y = 0;
-			bmMovie.props.w = 320;
-			bmMovie.props.h = 200;
-			bmMovie.props.nMode = BM_LINEAR;
-			bmMovie.props.flags = 0;
-			bmMovie.props.rowSize = 320;
-			//bmMovie.nId = 0;
+			bmMovie.Init (BM_LINEAR, 0, 0, 320, 200, 1, NULL);
+			bmMovie.SetFlags (0);
 
 			if (gameData.demo.nState == ND_STATE_PLAYBACK)
 				gameData.demo.bInterpolate = 0;
@@ -1464,13 +1450,10 @@ void toggle_movie_saving ()
 
 void save_movie_frame ()
 {
-	memcpy (Movie_frame_buffer+nMovieFrames*MOVIE_FRAME_SIZE,grdCurScreen->scCanvas.cvBitmap.texBuf,MOVIE_FRAME_SIZE);
-
-	nMovieFrames++;
-
-	if (nMovieFrames == MAX_MOVIE_BUFFER_FRAMES)
-		flush_movie_buffer ();
-
+memcpy (movieFrameBuffer + nMovieFrames * MOVIE_FRAME_SIZE, screen.Bitmap ().TexBuf (), MOVIE_FRAME_SIZE);
+nMovieFrames++;
+if (nMovieFrames == MAX_MOVIE_BUFFER_FRAMES)
+	flush_movie_buffer ();
 }
 
 #endif

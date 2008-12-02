@@ -36,7 +36,7 @@ extern tG3FaceDrawerP g3FaceDrawer;
 
 static inline int FaceIsAdditive (grsFace *faceP)
 {
-return (int) ((faceP->bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->bFromPog) : faceP->bAdditive);
+return (int) ((faceP->bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->FromPog ()) : faceP->bAdditive);
 }
 
 //------------------------------------------------------------------------------

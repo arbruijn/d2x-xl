@@ -813,11 +813,11 @@ typedef struct tCockpitStates {
 //------------------------------------------------------------------------------
 
 typedef struct tVRBuffers {
-	gsrCanvas  *offscreen;			// The offscreen data buffer
-	gsrCanvas	render [2];			//  Two offscreen buffers for left/right eyes.
-	gsrCanvas	subRender [2];		//  Two sub buffers for left/right eyes.
-	gsrCanvas	screenPages [2];	//  Two pages of VRAM if paging is available
-	gsrCanvas	editorCanvas;		//  The canvas that the editor writes to.
+	CCanvas  *offscreen;			// The offscreen data buffer
+	CCanvas	render [2];			//  Two offscreen buffers for left/right eyes.
+	CCanvas	subRender [2];		//  Two sub buffers for left/right eyes.
+	CCanvas	screenPages [2];	//  Two pages of VRAM if paging is available
+	CCanvas	editorCanvas;		//  The canvas that the editor writes to.
 } tVRBuffers;
 
 typedef struct tVRStates {
@@ -3272,7 +3272,7 @@ return (short) (i / sizeof (tObject));
 static inline void PIGGY_PAGE_IN (int bmi, int bD1) 
 {
 CBitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
-if (!bmP->texBuf || (bmP->props.flags & BM_FLAG_PAGED_OUT))
+if (!bmP->TexBuf () || (bmP->Flags () & BM_FLAG_PAGED_OUT))
 	PiggyBitmapPageIn (bmi, bD1);
 }
 

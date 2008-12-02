@@ -111,7 +111,7 @@ CON_Background (Console, &bm);
 
 void con_init_real(void)
 {
-	Console = CON_Init(SMALL_FONT, grdCurScreen, CON_NUM_LINES, 0, 0, SWIDTH, SHEIGHT / 2);
+	Console = CON_Init(SMALL_FONT, &screen, CON_NUM_LINES, 0, 0, SWIDTH, SHEIGHT / 2);
 
 	Assert(Console);
 	CON_SetExecuteFunction(Console, con_parse);

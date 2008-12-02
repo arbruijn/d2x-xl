@@ -1575,10 +1575,10 @@ bmP = BmOverride (gameData.pig.tex.pBitmaps + bmiP->index);
 #else
 bmP = LoadFaceBitmap (nTexture, nFrame);
 #endif
-if (bmP->props.flags & BM_FLAG_RLE)
+if (bmP->Flags () & BM_FLAG_RLE)
 	bmP = rle_expand_texture (bmP);
-w = bmP->props.w;
-h = ((bmP->nType == BM_TYPE_ALT) && bmP->Frames ()) ? w : bmP->props.h;
+w = bmP->Width ();
+h = ((bmP->Type () == BM_TYPE_ALT) && bmP->Frames ()) ? w : bmP->Height ();
 if (nOrient == 0) {
 	bmx = ((unsigned) X2I (u * w)) % w;
 	bmy = ((unsigned) X2I (v * h)) % h;
@@ -1596,12 +1596,12 @@ else {
 	bmy = ((unsigned) X2I ((F1_0 - u) * h)) % h;
 	}
 offs = bmy * w + bmx;
-if (bmP->props.flags & BM_FLAG_TGA) {
+if (bmP->Flags () & BM_FLAG_TGA) {
 	ubyte *p;
 
-	if (bmP->nBPP == 3)	//no alpha -> no transparency
+	if (bmP->BPP () == 3)	//no alpha -> no transparency
 		return 0;
-	p = bmP->texBuf + offs * bmP->nBPP;
+	p = bmP->TexBuf () + offs * bmP->BPP ();
 	// check super transparency color
 #if 1
 	if ((p[0] == 120) && (p[1] == 88) && (p[2] == 128))
@@ -1615,7 +1615,7 @@ if (bmP->props.flags & BM_FLAG_TGA) {
 		return 1;
 	}
 else {
-	c = bmP->texBuf [offs];
+	c = bmP->TexBuf () [offs];
 	if (c == SUPER_TRANSP_COLOR)
 		return -1;
 	if (c == TRANSPARENCY_COLOR)

@@ -218,7 +218,7 @@ void DrawTexPolyFlat(CBitmap *bp,int nverts,g3sPoint **vertbuf)
 		average_light = NUM_LIGHTING_LEVELS-1;
 
 	color = paletteManager.FadeTable ()[average_light*256 + bp->avgColor];
-	GrSetColor(color);
+	CCanvas::Current ()->SetColor(color);
 
 	for (i=0;i<nverts;i++) {
 		points[i].x = I2X (vertbuf[i]->p3_screen.x);

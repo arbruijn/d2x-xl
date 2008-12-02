@@ -496,12 +496,12 @@ for (;;) {
 			{
 			int i;
 			//fix l = X2I (32 * xModelLight);
-			GrSetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
-			GrFadeColorRGB (1.0);
+			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
+			CCanvas::Current ()->FadeColorRGB (1.0);
 			if (colorP) {
-				colorP->red = (float) grdCurCanv->cvColor.color.red / 255.0f;
-				colorP->green = (float) grdCurCanv->cvColor.color.green / 255.0f;
-				colorP->blue = (float) grdCurCanv->cvColor.color.blue / 255.0f;
+				colorP->red = (float) CCanvas::Current ()->Color ().color.red / 255.0f;
+				colorP->green = (float) CCanvas::Current ()->Color ().color.green / 255.0f;
+				colorP->blue = (float) CCanvas::Current ()->Color ().color.blue / 255.0f;
 				}
 			p += 30;
 			for (i = 0; i < nVerts; i++)
@@ -542,7 +542,7 @@ for (;;) {
 				uvlList [i].l = l;
 
 			if (colorP)
-				paletteManager.Game ()->ToRgbaf (modelBitmaps [WORDVAL (p+28)]->AverageColor (), *colorP);
+				paletteManager.Game ()->ToRgbaf (modelBitmaps [WORDVAL (p+28)]->AvgColor (), *colorP);
 			p += 30;
 			for (i = 0; i < nVerts; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
@@ -661,7 +661,7 @@ for (;;) {
 		case OP_FLATPOLY: {
 			int nVerts = WORDVAL (p+2);
 			int i, nTris;
-			GrSetColor (WORDVAL (p+28));
+			CCanvas::Current ()->SetColor (WORDVAL (p+28));
 			for (i = 0; i < 2; i++)
 				pointList [i] = modelPointList + WORDPTR (p+30) [i];
 			for (nTris=nVerts-2;nTris;nTris--) {
@@ -786,7 +786,6 @@ for (;;) {
 		case OP_FLATPOLY: {
 			int nVerts = WORDVAL (p+2);
 			Assert (nVerts > 2);		//must have 3 or more points
-//				*WORDPTR (p+28) = (short)GrFindClosestColor15bpp (WORDVAL (p+28);
 			p += 30 + ((nVerts&~1)+1)*2;
 			break;
 			}

@@ -753,7 +753,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		if (OglBindBmTex (bmP, 1, 2))
 			return;
 		bmP = bmP->CurFrame (-1);
-		OglTexWrap (bmP->texInfo, GL_REPEAT);
+		OglTexWrap (bmP->TexInfo (), GL_REPEAT);
 		vPos += objP->info.position.mOrient [FVEC] * (-objP->info.xSize);
 		r = X2F (objP->info.xSize);
 		G3StartInstanceMatrix (vPos, pp->mOrient);
@@ -1284,7 +1284,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		glColor4fv ((GLfloat *) colorP);
 		if (OglBindBmTex (bmP, 1, -1))
 			return;
-		OglTexWrap (bmP->texInfo, GL_CLAMP);
+		OglTexWrap (bmP->TexInfo (), GL_CLAMP);
 		if (bAdditive)
 			glBlendFunc (GL_ONE, GL_ONE);
 		if ((bDrawArrays = G3EnableClientStates (1, 0, 0, GL_TEXTURE0))) {
@@ -1391,12 +1391,12 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	color.blue *= color.blue;
 #endif
 	if (bDepthSort)
-		return TIAddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->props.w, bmpCorona->props.h), xSize, 0, 1, 3);
+		return TIAddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, 0, 1, 3);
 	bStencil = StencilOff ();
 	glDepthMask (0);
 	glBlendFunc (GL_ONE, GL_ONE);
 	if (bSimple) {
-		G3DrawSprite (vPos, FixMulDiv (xSize, bmpCorona->props.w, bmpCorona->props.h), xSize, bmpCorona, &color, alpha, 1, 3);
+		G3DrawSprite (vPos, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, bmpCorona, &color, alpha, 1, 3);
 		}
 	else {
 		fVector	quad [4], verts [8], vCenter, vNormal, v;
@@ -1634,7 +1634,7 @@ void Laser_draw_one (int nObject, CBitmap * bmp)
 	gameStates.render.nInterpolationMethod = 1;	//Linear
 	gameStates.render.bTransparency = 1;
 #if 0
-	GrSetColor (gr_getcolor (31,15,0);
+	CCanvas::Current ()->SetColor (gr_getcolor (31,15,0);
 	g3_draw_line_ptrs (p1,p2);
 	g3_draw_rod (p1,0x2000,p2,0x2000);
 	g3_draw_rod (p1,Laser_width,p2,Laser_width);
@@ -1750,7 +1750,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			glEnable (GL_TEXTURE_2D);
 			if (OglBindBmTex (bmP, 1, -1))
 				return;
-			OglTexWrap (bmP->texInfo, GL_CLAMP);
+			OglTexWrap (bmP->TexInfo (), GL_CLAMP);
 			if (bDrawArrays) {
 				glTexCoordPointer (2, GL_FLOAT, 0, tTexCoordTrail);
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);

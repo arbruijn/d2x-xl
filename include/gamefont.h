@@ -52,10 +52,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_FONTS 10
 
-extern grsFont *Gamefonts[MAX_FONTS];
+extern tFont *Gamefonts[MAX_FONTS];
 
 void GameFontInit();
 void _CDECL_ GameFontClose(void);
-int get_fontTotal_width(grsFont * font);
+int get_fontTotal_width(tFont * font);
 
 #endif /* _GAMEFONT_H */

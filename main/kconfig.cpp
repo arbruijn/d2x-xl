@@ -671,7 +671,7 @@ if (p) {
 	szTitle [l] = '\0';
 	p = szTitle;
 	}
-grdCurCanv->cvFont = MEDIUM3_FONT;
+CCanvas::Current ()->SetFont (MEDIUM3_FONT);
 GrString (0x8000, KC_LHY (8), p, NULL);
 }
 
@@ -679,14 +679,14 @@ GrString (0x8000, KC_LHY (8), p, NULL);
 
 void KCDrawHeader (kcItem *items)
 {
-grdCurCanv->cvFont = GAME_FONT;
-GrSetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
+CCanvas::Current ()->SetFont (GAME_FONT);
+SetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 
 GrString (0x8000, KC_LHY (20), TXT_KCONFIG_STRING_1, NULL);
-GrSetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
+SetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 if (items == kcKeyboard)	{
-	GrSetFontColorRGBi (RGBA_PAL2 (31, 27, 6), 1, 0, 0);
-	GrSetColorRGBi (RGBA_PAL2 (31, 27, 6));
+	SetFontColorRGBi (RGBA_PAL2 (31, 27, 6), 1, 0, 0);
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 	kc_gr_scanline (KC_LHX (98), KC_LHX (106), KC_LHY (42));
 	kc_gr_scanline (KC_LHX (120), KC_LHX (128), KC_LHY (42));
 	kc_gr_pixel (KC_LHX (98), KC_LHY (43));					
@@ -707,37 +707,37 @@ if (items == kcKeyboard)	{
 
 }
 if (items == kcJoystick)	{
-	GrSetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
-	GrSetColorRGBi (RGBA_PAL2 (31, 27, 6));
+	SetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 	kc_gr_scanline (KC_LHX (18), KC_LHX (135), KC_LHY (37));
 	kc_gr_scanline (KC_LHX (181), KC_LHX (294), KC_LHY (37));
 	kc_gr_scanline (KC_LHX (18), KC_LHX (144), KC_LHY (119+18));
 	kc_gr_scanline (KC_LHX (174), KC_LHX (294), KC_LHY (119+18));
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS_HATS, NULL);
 	GrString (0x8000,KC_LHY (125+18), TXT_AXES, NULL);
-	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
+	SetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (KC_LHX (85), KC_LHY (145+8), TXT_AXIS, NULL);
 	GrString (KC_LHX (120), KC_LHY (145+8), TXT_INVERT, NULL);
 	GrString (KC_LHX (235), KC_LHY (145+8), TXT_AXIS, NULL);
 	GrString (KC_LHX (270), KC_LHY (145+8), TXT_INVERT, NULL);
 } else if (items == kcMouse)	{
-	GrSetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
-	GrSetColorRGBi (RGBA_PAL2 (31,27,6));
+	SetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31,27,6));
 	kc_gr_scanline (KC_LHX (18), KC_LHX (135), KC_LHY (37));
 	kc_gr_scanline (KC_LHX (181), KC_LHX (294), KC_LHY (37));
 	kc_gr_scanline (KC_LHX (18), KC_LHX (144), KC_LHY (119+5));
 	kc_gr_scanline (KC_LHX (174), KC_LHX (294), KC_LHY (119+5));
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS, NULL);
 	GrString (0x8000,KC_LHY (125+5), TXT_AXES, NULL);
-	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
+	SetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (KC_LHX (169), KC_LHY (137), TXT_AXIS, NULL);
 	GrString (KC_LHX (199), KC_LHY (137), TXT_INVERT, NULL);
 }
 #ifdef D2X_KEYS
 else if (items == kcHotkeys)
 {
-	GrSetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
-	GrSetColorRGBi (RGBA_PAL2 (31, 27, 6));
+	SetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 
 	GrString (KC_LHX (94), KC_LHY (40), "KB", NULL);
 	GrString (KC_LHX (121), KC_LHY (40), "JOY", NULL);
@@ -758,11 +758,10 @@ KCDrawItemExt (items + nCurItem, 1, 0);
 
 //------------------------------------------------------------------------------
 
-void KCQuitMenu (gsrCanvas *save_canvas, grsFont *save_font, bkg *bg, int time_stopped)
+void KCQuitMenu (tFont *save_font, bkg *bg, int time_stopped)
 {
-grdCurCanv->cvFont	= save_font;
+CCanvas::Pop ();
 //bg->menu_canvas = NULL;
-GrSetCurrentCanvas (save_canvas);		
 GameFlushInputs ();
 NMRemoveBackground (bg);
 SDL_ShowCursor (0);
@@ -791,10 +790,10 @@ for (i = 0, n = (int) (item - All_items); i < Num_items; i++)	{
 item->value = code;					 
 if (gameStates.ogl.nDrawBuffer == GL_FRONT) {
 	KCDrawItem (item, 1);
-	NMRestoreBackground (0, KC_LHY (INFO_Y), xOffs, yOffs, KC_LHX (310), grdCurCanv->cvFont->ftHeight);
+	NMRestoreBackground (0, KC_LHY (INFO_Y), xOffs, yOffs, KC_LHX (310), CCanvas::Current ()->Font ()->ftHeight);
 	}
 GameFlushInputs ();
-GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 1);
+SetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 1);
 return BT_NONE;
 }
 
@@ -808,12 +807,12 @@ void KCDrawQuestion (kcItem *item)
 
 
 	GrGetStringSize ("?", &w, &h, &aw);
-	GrSetColorRGBi (RGBA_PAL2 (21*fades [looper]/31, 0, 24*fades [looper]/31));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21*fades [looper]/31, 0, 24*fades [looper]/31));
 	if (++looper>63) 
 		looper=0;
 	GrURect (KC_LHX (item->w1 + item->x), KC_LHY (item->y - 1), 
 				KC_LHX (item->w1 + item->x + item->w2), KC_LHY (item->y) + h);
-	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
+	SetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+xOffs;
 	GrString (x, KC_LHY (item->y), "?", NULL);
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
@@ -953,7 +952,7 @@ int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const ch
 {
 	int k = 255;
 
-	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
+	SetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (0x8000, KC_LHY (INFO_Y), pszMsg, NULL);
 {			
 	if ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
@@ -1187,8 +1186,7 @@ nLinked |= tableFlags;
 
 void KConfigSub (kcItem * items, int nItems, const char * pszTitle)
 {
-	gsrCanvas * save_canvas;
-	grsFont * save_font;
+	tFont * save_font;
 	int	mouseState, omouseState, mx, my, x1, x2, y1, y2;
 	int	close_x = 0, close_y = 0, close_size = 0;
 
@@ -1211,14 +1209,14 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 	StopTime ();
 	}
 
-save_canvas = grdCurCanv;
-GrSetCurrentCanvas (NULL);	
-save_font = grdCurCanv->cvFont;
+CCanvas::Push ();
+CCanvas::SetCurrent (NULL);	
+save_font = CCanvas::Current ()->Font ();
 
 FlushInput ();
 NMDrawBackground (&bg, xOffs, yOffs, 
-	xOffs + 639 /*grdCurCanv->cvBitmap.props.w - 1*/, 
-	yOffs + 479 /*grdCurCanv->cvBitmap.props.h - 1*/, 0);
+	xOffs + 639 /*CCanvas::Current ()->Width () - 1*/, 
+	yOffs + 479 /*CCanvas::Current ()->Bitmap ().Height () - 1*/, 0);
 paletteManager.LoadEffect  ();
 
 nCurItem = 0;
@@ -1249,9 +1247,9 @@ for (;;) {
 			close_x += xOffs;
 			close_y += yOffs;
 			close_size = gameStates.menus.bHires?10:5;
-			GrSetColorRGB (0, 0, 0, 255);
+			CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 			GrRect (close_x, close_y, close_x + close_size, close_y + close_size);
-			GrSetColorRGBi (RGBA_PAL2 (21, 21, 21));
+			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
 			GrRect (close_x + LHX (1), close_y + LHX (1), close_x + close_size - LHX (1), close_y + close_size - LHX (1));
 			KCDrawHeader (items);
 			KCDrawTable (items, nItems, nCurItem);
@@ -1383,7 +1381,7 @@ for (;;) {
 			break;
 		case -2:
 		case KEY_ESC:
-			KCQuitMenu (save_canvas, save_font, &bg, time_stopped);
+			KCQuitMenu (save_font, &bg, time_stopped);
 			return;
 #if TABLE_CREATION
 		case KEYDBGGED+KEY_F12:	{
@@ -1452,9 +1450,9 @@ for (;;) {
 //			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 			for (i = 0; i < nItems; i++)	{
 				item_height = KCGetItemHeight (items + i);
-				x1 = grdCurCanv->cvBitmap.props.x + LHX (items [i].x) + LHX (items [i].w1);
+				x1 = CCanvas::Current ()->Bitmap ().Left () + LHX (items [i].x) + LHX (items [i].w1);
 				x2 = x1 + LHX (items [i].w2);
-				y1 = grdCurCanv->cvBitmap.props.y + LHY (items [i].y);
+				y1 = CCanvas::Current ()->Bitmap ().Top () + LHY (items [i].y);
 				y2 = y1 + /*LHY*/ (item_height);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 					nCurItem = i;
@@ -1470,20 +1468,20 @@ for (;;) {
 			my -= yOffs;
 			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 			item_height = KCGetItemHeight (items + nCurItem);
-			x1 = grdCurCanv->cvBitmap.props.x + LHX (items [nCurItem].x) + LHX (items [nCurItem].w1);
+			x1 = CCanvas::Current ()->Bitmap ().Left () + LHX (items [nCurItem].x) + LHX (items [nCurItem].w1);
 			x2 = x1 + LHX (items [nCurItem].w2);
-			y1 = grdCurCanv->cvBitmap.props.y + LHY (items [nCurItem].y);
+			y1 = CCanvas::Current ()->Bitmap ().Top () + LHY (items [nCurItem].y);
 			y2 = y1 + /*LHY*/ (item_height);
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				nChangeMode = items [nCurItem].nType;
 				GameFlushInputs ();
 			} else {
-				x1 = grdCurCanv->cvBitmap.props.x + close_x + LHX (1);
+				x1 = CCanvas::Current ()->Bitmap ().Left () + close_x + LHX (1);
 				x2 = x1 + close_size - LHX (1);
-				y1 = grdCurCanv->cvBitmap.props.y + close_y + LHX (1);
+				y1 = CCanvas::Current ()->Bitmap ().Top () + close_y + LHX (1);
 				y2 = y1 + close_size - LHY (1);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
-					KCQuitMenu (save_canvas, save_font, &bg, time_stopped);
+					KCQuitMenu (save_font, &bg, time_stopped);
 					return;
 				}
 			}
@@ -1495,7 +1493,7 @@ for (;;) {
 			SDL_ShowCursor (1);
 		}
 	}
-KCQuitMenu (save_canvas, save_font, &bg, time_stopped);
+KCQuitMenu (save_font, &bg, time_stopped);
 }
 
 //------------------------------------------------------------------------------
@@ -1509,9 +1507,9 @@ if (bRedraw && gameOpts->menus.nStyle)
 	return;
 
 	if (is_current)
-		GrSetFontColorRGBi (RGBA_PAL2 (20,20,29), 1, 0, 0);
+		SetFontColorRGBi (RGBA_PAL2 (20,20,29), 1, 0, 0);
 	else
-		GrSetFontColorRGBi (RGBA_PAL2 (15,15,24), 1, 0, 0);
+		SetFontColorRGBi (RGBA_PAL2 (15,15,24), 1, 0, 0);
    GrString (KC_LHX (item->x), KC_LHY (item->y), item->textId ? GT (item->textId) : item->text, NULL);
 
 	*szText = '\0';
@@ -1579,12 +1577,12 @@ if (bRedraw && gameOpts->menus.nStyle)
 		GrGetStringSize (szText, &w, &h, &aw);
 
 		if (is_current)
-			GrSetColorRGBi (RGBA_PAL2 (21, 0, 24));
+			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 0, 24));
 		else
-			GrSetColorRGBi (RGBA_PAL2 (16, 0, 19));
+			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (16, 0, 19));
 		GrURect (KC_LHX (item->x + item->w1), KC_LHY (item->y - 1), 
 					KC_LHX (item->x + item->w1 + item->w2), KC_LHY (item->y) + h);
-		GrSetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
+		SetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 		x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2) + xOffs;
 		GrString (x, KC_LHY (item->y), szText, NULL);
 	}
@@ -1599,8 +1597,8 @@ void KConfig (int n, const char *pszTitle)
 	CBitmap	*bmSave;
 	int			i, j, b = gameOpts->legacy.bInput;
 
-	xOffs = (grdCurCanv->cvBitmap.props.w - 640) / 2;
-	yOffs = (grdCurCanv->cvBitmap.props.h - 480) / 2;
+	xOffs = (CCanvas::Current ()->Width () - 640) / 2;
+	yOffs = (CCanvas::Current ()->Bitmap ().Height () - 480) / 2;
 	if (xOffs < 0)
 		xOffs = 0;
 	if (yOffs < 0)
@@ -1613,11 +1611,11 @@ void KConfig (int n, const char *pszTitle)
 	if (gameOpts->menus.bFastMenus)
 		bmSave = NULL;
 	else {
-		bmSave = CBitmap::Create (0, grdCurCanv->cvBitmap.props.w, grdCurCanv->cvBitmap.props.h, 1);
+		bmSave = CBitmap::Create (0, CCanvas::Current ()->Width (), CCanvas::Current ()->Bitmap ().Height (), 1);
 		Assert (bmSave != NULL);
 		bmSave->SetPalette (paletteManager.Texture ());
-		GrBmBitBlt (grdCurCanv->cvBitmap.props.w, grdCurCanv->cvBitmap.props.w, 
-						 0, 0, 0, 0, &grdCurCanv->cvBitmap, bmSave);
+		GrBmBitBlt (CCanvas::Current ()->Width (), CCanvas::Current ()->Width (), 
+						 0, 0, 0, 0, &CCanvas::Current ()->Bitmap (), bmSave);
 		}
 	if (n == 0)
 		KConfigSub (kcKeyboard, NUM_KEY_CONTROLS, pszTitle);

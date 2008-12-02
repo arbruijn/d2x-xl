@@ -90,17 +90,17 @@ int	briefFgColorIndex [MAX_BRIEFING_COLORS],
 int	nCurrentColor = 0;
 unsigned int nEraseColor = BLACK_RGBA;
 
-grsRgba briefFgColors [2][MAX_BRIEFING_COLORS] = {
+tRgbaColorb briefFgColors [2][MAX_BRIEFING_COLORS] = {
 	{{0, 160, 0, 255}, {160, 132, 140, 255}, {32, 124, 216, 255}, {0, 0, 216, 255}, {56, 56, 56, 255}, {216, 216, 0, 255}, {0, 216, 216, 255}, {255, 255, 255, 255}}, 
 	{{0, 216, 0, 255}, {168, 152, 128, 255}, {252, 0, 0, 255}, {0, 0, 216, 255}, {56, 56, 56, 255}, {216, 216, 0, 255}, {0, 216, 216, 255}, {255, 255, 255, 255}}
 	};
 
-grsRgba briefBgColors [2][MAX_BRIEFING_COLORS] = {
+tRgbaColorb briefBgColors [2][MAX_BRIEFING_COLORS] = {
 	{{0, 24, 255}, {20, 20, 20, 255}, {4, 16, 28, 255}, {0, 0, 76, 255}, {0, 0, 0, 255}, {76, 76, 0, 255}, {0, 76, 76, 255}, {255, 255, 255, 255}}, 
 	{{0, 76, 0, 255}, {56, 56, 56, 255}, {124, 0, 0, 255}, {0, 0, 76, 255}, {0, 0, 0, 255}, {76, 76, 0, 255}, {0, 76, 76, 255}, {255, 255, 255, 255}}
 	};
 
-grsRgba eraseColorRgb = {0, 0, 0, 255};
+tRgbaColorb eraseColorRgb = {0, 0, 0, 255};
 
 typedef struct tD1ExtraBotSound {
 	const char	*pszName;
@@ -198,7 +198,7 @@ tBriefingScreen briefingScreens [] = {
 
 int	briefingTextX, briefingTextY;
 
-gsrCanvas	*robotCanvP = NULL;
+CCanvas	*robotCanvP = NULL;
 vmsAngVec	vRobotAngles;
 
 char    szBitmapName [32] = "";
@@ -409,7 +409,7 @@ if (from_hog_only)
 strcat (new_filename, filename);
 filename = new_filename;
 
-title_bm.texBuf=NULL;
+title_bm.SetTexBuf (NULL);
 if ((pcxResult = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
 #if TRACE
 	con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n", filename, pcx_errormsg (pcxResult), pcxResult);
@@ -418,7 +418,7 @@ if ((pcxResult = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
 }
 //vfx_set_palette_sub (brief_palette);
 paletteManager.LoadEffect  ();
-GrSetCurrentCanvas (NULL);
+CCanvas::SetCurrent (NULL);
 ShowFullscreenImage (&title_bm);
 if (paletteManager.FadeIn ())
 	return 1;
@@ -431,7 +431,7 @@ while (1) {
 }
 if (paletteManager.FadeOut ())
 	return 1;
-D2_FREE (title_bm.texBuf);
+title_bm.DestroyTexBuf ();
 return 0;
 }
 
@@ -453,7 +453,7 @@ briefingTextY = gameStates.app.bD1Mission ? bsP->text_uly : bsP->text_uly - (8 *
 
 void ShowBitmapFrame (int bRedraw)
 {
-	gsrCanvas *curCanvSave, *bitmapCanv=0;
+	CCanvas *curCanvSave, *bitmapCanv=0;
 	vmsVector p = vmsVector::ZERO;
 
 	CBitmap *bmP;
@@ -475,18 +475,18 @@ if (*szBitmapName) {
 	//	Set supertransparency color to black
 	switch (nAnimatingBitmapType) {
 		case 0: 
-			bitmapCanv = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
+			bitmapCanv = CCanvas::Current ()->CreatePane (x, y, w, h);
 			break;
 		case 1:
-			bitmapCanv = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
+			bitmapCanv = CCanvas::Current ()->CreatePane (x, y, w, h);
 			break;
 		// Adam: Change here for your new animating bitmap thing. 94, 94 are bitmap size.
 		default:
 			Int3 (); // Impossible, illegal value for nAnimatingBitmapType
 		}
-	curCanvSave = grdCurCanv; 
-	grdCurCanv = bitmapCanv;
-	GrClearCanvas (0);
+	curCanvSave = CCanvas::Current (); 
+	CCanvas::SetCurrent (bitmapCanv);
+	CCanvas::Current ()->Clear (0);
 	if (!bRedraw) {	//extract current bitmap nFrameber from bitmap name (<name>#<nFrameber>)
 		poundSignP = strchr (szBitmapName, '#');
 		Assert (poundSignP != NULL);
@@ -551,7 +551,7 @@ if (*szBitmapName) {
 	if (!gameOpts->menus.nStyle)
 		GrUpdate (0);
 	paletteManager.LoadEffect  ();
-	grdCurCanv = curCanvSave;
+	CCanvas::SetCurrent (curCanvSave);
 	D2_FREE (bitmapCanv);
 	if (!(bRedraw || nDoorDivCount)) {
 #if 1
@@ -580,27 +580,27 @@ if (*szBitmapName) {
 
 void ShowBriefingBitmap (CBitmap *bmp)
 {
-	gsrCanvas	*curCanvSave, *bitmapCanv;
+	CCanvas	*bitmapCanv;
 
-bitmapCanv = GrCreateSubCanvas (grdCurCanv, 220, 45, bmp->props.w, bmp->props.h);
-curCanvSave = grdCurCanv;
-GrSetCurrentCanvas (bitmapCanv);
+bitmapCanv = CCanvas::Current ()->CreatePane (220, 45, bmp->Width (), bmp->Height ());
+CCanvas::Push ();
+CCanvas::SetCurrent (bitmapCanv);
 GrBitmapM (0, 0, bmp, 0);
-GrSetCurrentCanvas (curCanvSave);
-D2_FREE (bitmapCanv);
+CCanvas::Pop ();
+bitmapCanv->Destroy ();
 }
 
 //-----------------------------------------------------------------------------
 
 void ShowSpinningRobotFrame (int nRobot)
 {
-	gsrCanvas	*curCanvSave;
+	CCanvas	*curCanvSave;
 
 if (nRobot != -1) {
 	vRobotAngles [HA] += 150;
 
-	curCanvSave = grdCurCanv;
-	GrSetCurrentCanvas (robotCanvP);
+	curCanvSave = CCanvas::Current ();
+	CCanvas::SetCurrent (robotCanvP);
 	Assert (ROBOTINFO (nRobot).nModel != -1);
 	if (bInitRobot) {
 		paletteManager.Load ("", "", 0, 0, 1);
@@ -609,10 +609,10 @@ if (nRobot != -1) {
 		bInitRobot = 0;
 		}
 	gameStates.render.bFullBright	= 1;
-	GrClearCanvas (0);
+	CCanvas::Current ()->Clear (0);
 	DrawModelPicture (ROBOTINFO (nRobot).nModel, &vRobotAngles);
 	gameStates.render.bFullBright = 0;
-	GrSetCurrentCanvas (curCanvSave);
+	CCanvas::SetCurrent (curCanvSave);
 	}
 }
 
@@ -620,10 +620,10 @@ if (nRobot != -1) {
 
 void RotateBriefingRobot (void)
 {
-gsrCanvas	*curCanvSave = grdCurCanv;
-grdCurCanv = robotCanvP;
+CCanvas::Push ();
+CCanvas::SetCurrent (robotCanvP);
 RotateRobot ();
-grdCurCanv = curCanvSave;
+CCanvas::Pop ();
 }
 
 //-----------------------------------------------------------------------------
@@ -638,7 +638,7 @@ int x = RescaleX (138);
 int y = RescaleY (55);
 int w = RescaleX (163);
 int h = RescaleY (136);
-robotCanvP = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
+robotCanvP = CCanvas::Current ()->CreatePane (x, y, w, h);
 bInitRobot = 1;
 	// 138, 55, 166, 138
 }
@@ -667,7 +667,7 @@ Assert ((nCurrentColor >= 0) && (nCurrentColor < MAX_BRIEFING_COLORS));
 
 //	Draw cursor if there is some delay and caller says to draw cursor
 if (cursorFlag && !bRedraw) {
-	GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
+	SetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 	GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
 	if (!gameOpts->menus.nStyle)
 		GrUpdate (0);
@@ -698,14 +698,14 @@ tText = SDL_GetTicks ();
 
 //	Erase cursor
 if (cursorFlag && (delay > 0) && !bRedraw) {
-	GrSetFontColorRGBi (nEraseColor, 1, 0, 0);
+	SetFontColorRGBi (nEraseColor, 1, 0, 0);
 	GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
 	//	erase the character
-	GrSetFontColorRGB (briefBgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
+	SetFontColorRGB (briefBgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 	GrPrintF (NULL, briefingTextX, briefingTextY, message);
 }
 //draw the character
-GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
+SetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 GrPrintF (NULL, briefingTextX+1, briefingTextY, message);
 
 if (!(bRedraw || gameOpts->menus.nStyle)) 
@@ -811,9 +811,9 @@ void FlashCursor (int cursorFlag)
 if (cursorFlag == 0)
 	return;
 if ((TimerGetFixedSeconds () % (F1_0/2)) > (F1_0/4))
-	GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
+	SetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 else
-	GrSetFontColorRGB (&eraseColorRgb, NULL);
+	SetFontColorRGB (&eraseColorRgb, NULL);
 GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
 if (gameStates.ogl.nDrawBuffer == GL_FRONT)
 	GrUpdate (0);
@@ -902,7 +902,7 @@ iff_error = iff.ReadBitmap (szBitmap, &guy_bitmap, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR)
 	return 0;
 ShowBriefingBitmap (&guy_bitmap);
-D2_FREE (guy_bitmap.texBuf);
+guy_bitmap.DestroyTexBuf ();
 bi.prevCh = 10;
 return 1;
 }
@@ -1011,10 +1011,10 @@ if (gameStates.app.bD1Mission)
 else {
 	bi.szSpinningRobot [2] = *bi.message++; // ugly but proud
 	if (bi.message > bi.pj) {
-		gsrCanvas *curCanvSave = grdCurCanv;
-		grdCurCanv = robotCanvP;
+		CCanvas::Push ();
+		CCanvas::SetCurrent (robotCanvP);
 		bRobotPlaying = InitRobotMovie (bi.szSpinningRobot);
-		grdCurCanv = curCanvSave;
+		CCanvas::Pop ();
 		if (bRobotPlaying) {
 			RotateBriefingRobot ();
 			DoBriefingColorStuff ();
@@ -1566,7 +1566,7 @@ if (gameStates.app.bD1Mission) {
 		return 0;
 		}
 	paletteManager.LoadEffect (bmBriefing.Palette ());
-	GrSetCurrentCanvas (NULL);
+	CCanvas::SetCurrent (NULL);
 	ShowFullscreenImage (&bmBriefing);
 	GrUpdate (0);
 	bmBriefing.Destroy ();
@@ -1632,7 +1632,7 @@ if (!LoadScreenText (fnBriefing, &szBriefingText)) {
 DigiStopAllChannels ();
 SongsPlaySong (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
-GrSetCurrentCanvas (NULL);
+CCanvas::SetCurrent (NULL);
 gameStates.render.nShadowPass = 0;
 con_printf (CONDBG, "Playing briefing screen <%s>, level %d\n", fnBriefing, nLevel);
 KeyFlush ();

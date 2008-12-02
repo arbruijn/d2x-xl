@@ -237,33 +237,33 @@ else
 	y = 37;
 
 gameStates.menus.bDrawCopyright = 0;
-GrSetCurrentCanvas (NULL);
+CCanvas::SetCurrent (NULL);
 GrSetCurFont (GAME_FONT);
 GrGetStringSize ("V2.2", &w, &h, &aw);
-GrSetFontColorRGBi (RGBA_PAL (63, 47, 0), 1, 0, 0);
-GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.props.h - GAME_FONT->ftHeight - 2, "visit www.descent2.de");
-GrSetFontColorRGBi (RGBA_PAL (23, 23, 23), 1, 0, 0);
-GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.props.h - GAME_FONT->ftHeight - h - 6, TXT_COPYRIGHT);
-GrPrintF (NULL, grdCurCanv->cvBitmap.props.w - w - 2, 
-			 grdCurCanv->cvBitmap.props.h - GAME_FONT->ftHeight - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
+SetFontColorRGBi (RGBA_PAL (63, 47, 0), 1, 0, 0);
+GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->ftHeight - 2, "visit www.descent2.de");
+SetFontColorRGBi (RGBA_PAL (23, 23, 23), 1, 0, 0);
+GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->ftHeight - h - 6, TXT_COPYRIGHT);
+GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, 
+			 CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->ftHeight - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 if (bVertigo < 0)
 	bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
 if (bVertigo) {
 	GrSetCurFont (MEDIUM2_FONT);
 	GrGetStringSize (TXT_VERTIGO, &w, &h, &aw);
-	GrPrintF (NULL, grdCurCanv->cvBitmap.props.w - w - SUBVER_XOFFS, 
+	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
 				 y + (gameOpts->menus.altBg.bHave ? h + 2 : 0), TXT_VERTIGO);
 	}
 GrSetCurFont (MEDIUM2_FONT);
 GrGetStringSize (D2X_NAME, &w, &h, &aw);
-GrPrintF (NULL, grdCurCanv->cvBitmap.props.w - w - SUBVER_XOFFS, 
+GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
 GrSetCurFont (SMALL_FONT);
 GrGetStringSize (VERSION, &ws, &hs, &aw);
-GrSetFontColorRGBi (D2BLUE_RGBA, 1, 0, 0);
-GrPrintF (NULL, grdCurCanv->cvBitmap.props.w - ws - 1, 
+SetFontColorRGBi (D2BLUE_RGBA, 1, 0, 0);
+GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
-GrSetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
+SetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -2779,7 +2779,7 @@ if (!gameStates.app.bNostalgia) {
 		bkg	bg;
 
 	memset (&bg, 0, sizeof (bg));
-	NMInitBackground (NULL, &bg, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, -1);
+	NMInitBackground (NULL, &bg, 0, 0, screen.Width (), screen.Height (), -1);
 	GrUpdate (0);
 	}
 else {
@@ -2839,28 +2839,28 @@ if (FindArg ("-hoarddata")) {
 	Assert (iff_error == IFF_NO_ERROR);
 	nframes_short = nframes;
 	fwrite (&nframes_short, sizeof (nframes_short), 1, ofile);
-	fwrite (&bm[0]->props.w, sizeof (short), 1, ofile);
-	fwrite (&bm[0]->props.h, sizeof (short), 1, ofile);
+	fwrite (&bm[0]->Width (), sizeof (short), 1, ofile);
+	fwrite (&bm[0]->Height (), sizeof (short), 1, ofile);
 	fwrite (palette, 3, 256, ofile);
 	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->texBuf, 1, bm[i]->props.w*bm[i]->props.h, ofile);
+		fwrite (bm[i]->texBuf, 1, bm[i]->Width ()*bm[i]->Height (), ofile);
 
 	iff_error = iff_read_animbrush ("orbgoal.abm", bm, MAX_BITMAPS_PER_BRUSH, &nframes, palette);
 	Assert (iff_error == IFF_NO_ERROR);
-	Assert (bm[0]->props.w == 64 && bm[0]->props.h == 64);
+	Assert (bm[0]->Width () == 64 && bm[0]->Height () == 64);
 	nframes_short = nframes;
 	fwrite (&nframes_short, sizeof (nframes_short), 1, ofile);
 	fwrite (palette, 3, 256, ofile);
 	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->texBuf, 1, bm[i]->props.w*bm[i]->props.h, ofile);
+		fwrite (bm[i]->texBuf, 1, bm[i]->Width ()*bm[i]->Height (), ofile);
 
 	for (i=0;i<2;i++) {
 		iff_error = iff_read_bitmap (i?"orbb.bbm":"orb.bbm", &icon, BM_LINEAR, palette);
 		Assert (iff_error == IFF_NO_ERROR);
-		fwrite (&icon.props.w, sizeof (short), 1, ofile);
-		fwrite (&icon.props.h, sizeof (short), 1, ofile);
+		fwrite (&icon.Width (), sizeof (short), 1, ofile);
+		fwrite (&icon.Height (), sizeof (short), 1, ofile);
 		fwrite (palette, 3, 256, ofile);
-		fwrite (icon.texBuf, 1, icon.props.w*icon.props.h, ofile);
+		fwrite (icon.texBuf, 1, icon.Width ()*icon.Height (), ofile);
 		}
 
 	for (i=0;i<sizeof (sounds)/sizeof (*sounds);i++) {
@@ -3096,7 +3096,7 @@ if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by hea
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
 /*---*/PrintLog ("Loading default palette\n");
 paletteManager.SetDefault (paletteManager.Load (D2_DEFAULT_PALETTE, NULL));
-grdCurCanv->cvBitmap.SetPalette (paletteManager.Default ());	//just need some valid palette here
+CCanvas::Current ()->Bitmap ().SetPalette (paletteManager.Default ());	//just need some valid palette here
 /*---*/PrintLog ("Initializing game fonts\n");
 GameFontInit ();	// must load after palette data loaded.
 /*---*/PrintLog ("Setting screen mode\n");
@@ -3418,7 +3418,7 @@ void ShowOrderForm ()
 	int 	pcx_error;
 	char	exit_screen[16];
 
-	GrSetCurrentCanvas (NULL);
+	CCanvas::SetCurrent (NULL);
 	paletteManager.ClearEffect ();
 
 	KeyFlush ();

@@ -68,34 +68,6 @@ fix	gameData.objs.types.nType.nStrength [MAX_OBJTYPE];
 //right now there's only one tPlayer ship, but we can have another by
 //adding an array and setting the pointer to the active ship.
 
-//---------------- Variables for tWall textures ------------------
-
-int ComputeAvgPixel (CBitmap *bmP)
-{
-	int		row, column, size;
-	char		*pptr;
-	int		total_red, total_green, total_blue;
-	CPalette	*palette;
-
-pptr = (char *)bmP->texBuf;
-total_red = 0;
-total_green = 0;
-total_blue = 0;
-palette = bmP->Palette ();
-tRgbColorb * colorP = palette->Color ();
-for (row = 0; row < bmP->Height (); row++)
-	for (column = 0; column < bmP->Width (); column++, colorP++) {
-		total_red += colorP->red;
-		total_green += colorP->green;
-		total_blue += colorP->blue;
-		}
-size = bmP->Height () * bmP->Width () * 2;
-total_red /= size;
-total_green /= size;
-total_blue /= size;
-return palette->ClosestColor (total_red, total_green, total_blue);
-}
-
 //---------------- Variables for tObject textures ----------------
 
 #if 0//def FAST_FILE_IO /*disabled for a reason!*/
@@ -1109,9 +1081,9 @@ for (i = gameData.pig.tex.nBitmaps [0], bmP = gameData.pig.tex.bitmaps [0] + i;
 	  i < gameData.pig.tex.nExtraBitmaps; i++, bmP++) {
 	gameData.pig.tex.nObjBitmaps--;
 	bmP->FreeTexture ();
-	if (bmP->texBuf) {
-		D2_FREE (bmP->texBuf);
-		UseBitmapCache (bmP, (int) -bmP->Height () * (int) bmP->props.rowSize);
+	if (bmP->TexBuf ()) {
+		bmP->DestroyTexBuf ();
+		UseBitmapCache (bmP, (int) -bmP->Height () * (int) bmP->RowSize ());
 		}
 	}
 gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
@@ -1418,32 +1390,29 @@ return 1;
 // formerly exitmodel_bm_load_sub
 tBitmapIndex ReadExtraBitmapIFF (const char * filename)
 {
-	tBitmapIndex bitmap_num;
+	tBitmapIndex bmi;
 	CBitmap * bmP = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
 	int iff_error;		//reference parm to avoid warning message
 	CIFF	iff;
 
-	bitmap_num.index = 0;
-	//MALLOC (bmP, CBitmap, 1);
-	iff_error = iff.ReadBitmap (filename, bmP, BM_LINEAR);
-	//bmP->nId=0;
-	if (iff_error != IFF_NO_ERROR)		{
+bmi.index = 0;
+iff_error = iff.ReadBitmap (filename, bmP, BM_LINEAR);
+if (iff_error != IFF_NO_ERROR)		{
 #if TRACE
-		con_printf (CONDBG, 
-			"Error loading exit model bitmap <%s> - IFF error: %s\n", 
-			filename, iff.ErrorMsg (iff_error));
+	con_printf (CONDBG, 
+		"Error loading exit model bitmap <%s> - IFF error: %s\n", 
+		filename, iff.ErrorMsg (iff_error));
 #endif		
-		return bitmap_num;
+	return bmi;
 	}
-	if (iff.HasTransparency ())
-		bmP->Remap (NULL, iff.TransparentColor (), 254);
-	else
-		bmP->Remap (NULL, -1, 254);
-	bmP->avgColor = ComputeAvgPixel (bmP);
-	bitmap_num.index = gameData.pig.tex.nExtraBitmaps;
-	gameData.pig.tex.pBitmaps [gameData.pig.tex.nExtraBitmaps++] = *bmP;
-	//D2_FREE (new);
-	return bitmap_num;
+if (iff.HasTransparency ())
+	bmP->Remap (NULL, iff.TransparentColor (), 254);
+else
+	bmP->Remap (NULL, -1, 254);
+bmP->AvgColorIndex ();
+bmi.index = gameData.pig.tex.nExtraBitmaps;
+gameData.pig.tex.pBitmaps [gameData.pig.tex.nExtraBitmaps++] = *bmP;
+return bmi;
 }
 
 //------------------------------------------------------------------------------

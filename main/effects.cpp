@@ -148,7 +148,7 @@ if (!(bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame)))
 	return NULL;
 if (bmP->FrameCount () < 2)
 	return NULL;
-OglLoadBmTexture (bmP, 1, 3, 1);
+bmP->SetupTexture (1, 3, 1);
 if (gameOpts->ogl.bGlTexMerge) {
 	pBitmaps = bObject ? gameData.pig.tex.bitmaps [0] : gameData.pig.tex.pBitmaps;
 	for (i = 0; i < nFrames; i++) {
@@ -166,7 +166,7 @@ else {
 
 #if DBG
 	if (!bmP->Frames ())
-		OglLoadBmTexture (bmP, 1, 3, 1);
+		bmP->SetupTexture (1, 3, 1);
 #endif
 	nBmFrames = bmP->FrameCount ();
 	if ((bmfP = bmP->Frames ())) {
@@ -179,7 +179,7 @@ else {
 				hbmP->SetOverride (NULL);	//prevent the root texture from being deleted
 			PiggyFreeBitmap (hbmP, j, gameStates.app.bD1Data);
 			hbmP->SetOverride (bmfP);
-			bmfP->nId = j;
+			bmfP->SetId (j);
 			bmfP += nFrameStep;
 			}
 		}
@@ -263,9 +263,9 @@ xEffectTime += gameData.time.xFrame;
 			gameData.pig.tex.pBmIndex [t] = bmi;
 			}
 		else if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT) && (bmP->FrameCount () > 1)) {
-			OglLoadBmTexture (bmP, 1, 3, 1);
+			bmP->SetupTexture (1, 3, 1);
 			bmP->SetCurFrame (bmP->Frames () + min (ecP->nCurFrame, bmP->FrameCount () - 1));
-			OglLoadBmTexture (bmP->CurFrame (), 1, 3, 1);
+			bmP->CurFrame ()->SetupTexture (1, 3, 1);
 			}
 		else {
 			if ((ecP->flags & EF_ALTFMT) && (ecP->nCurFrame >= nFrames))
@@ -324,10 +324,10 @@ xEffectTime += gameData.time.xFrame;
 			gameData.pig.tex.objBmIndex [t] = bmi;
 			}
 		else if ((ecP->flags & EF_ALTFMT) && bmP->Frames ()) {
-			OglLoadBmTexture (bmP, 1, 3, 1);
+			bmP->SetupTexture (1, 3, 1);
 			if (bmP->Frames ()) {
 				bmP->SetCurFrame (bmP->Frames () + ecP->nCurFrame);
-				OglLoadBmTexture (bmP->CurFrame (), 1, 3, 1);
+				bmP->CurFrame ()->SetupTexture (1, 3, 1);
 				}
 			}
 		else {

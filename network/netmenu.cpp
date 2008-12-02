@@ -1835,7 +1835,7 @@ char *PruneText (char *pszDest, char *pszSrc, int nSize, int nPos, int nVersion)
 {
 	int		lDots, lMax, l, tx, ty, ta;
 	char		*psz;
-	grsFont	*curFont = grdCurCanv->cvFont;
+	tFont	*curFont = CCanvas::Current ()->Font ();
 
 if (gameOpts->menus.bShowLevelVersion && (nVersion >= 0)) {
 	if (nVersion)
@@ -1849,7 +1849,7 @@ else
 pszDest [nSize - 1] = '\0';
 if ((psz = strchr (pszDest, '\t')))
 	*psz = '\0';
-grdCurCanv->cvFont = SMALL_FONT;
+CCanvas::Current ()->SetFont (SMALL_FONT);
 GrGetStringSize ("... ", &lDots, &ty, &ta);
 GrGetStringSize (pszDest, &tx, &ty, &ta);
 l = (int) strlen (pszDest);
@@ -1862,7 +1862,7 @@ if (tx > lMax) {
 	} while (tx > lMax);
 	strcat (pszDest, "...");
 	}
-grdCurCanv->cvFont = curFont; 
+CCanvas::Current ()->SetFont (curFont); 
 return pszDest;
 }
 
@@ -2054,7 +2054,7 @@ networkData.nLastActiveGames = 0;
 memset (activeNetGames, 0, sizeof (activeNetGames));
 memset (activeNetPlayers, 0, sizeof (activeNetPlayers));
 if (!bAutoRun) {
-	GrSetFontColorRGBi (RGBA_PAL (15, 15, 23), 1, 0, 0);
+	SetFontColorRGBi (RGBA_PAL (15, 15, 23), 1, 0, 0);
 	memset (m, 0, sizeof (m));
 	m [0].text = szNMTextBuffer [0];
 	m [0].nType = NM_TYPE_TEXT;

@@ -184,13 +184,13 @@ return r;
 void _CDECL_ FreeEndLevelData (void)
 {
 PrintLog ("unloading endlevel data\n");
-if (gameData.endLevel.terrain.bmInstance.texBuf) {
+if (gameData.endLevel.terrain.bmInstance.TexBuf ()) {
 	OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
-	D2_FREE (gameData.endLevel.terrain.bmInstance.texBuf);
+	gameData.endLevel.terrain.bmInstance.DestroyTexBuf ();
 	}
-if (gameData.endLevel.satellite.bmInstance.texBuf) {
+if (gameData.endLevel.satellite.bmInstance.TexBuf ()) {
 	OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
-	D2_FREE (gameData.endLevel.satellite.bmInstance.texBuf);
+	gameData.endLevel.satellite.bmInstance.DestroyTexBuf ();
 	}
 }
 
@@ -206,8 +206,8 @@ void InitEndLevel (void)
 #endif
 GenerateStarfield ();
 atexit (FreeEndLevelData);
-gameData.endLevel.terrain.bmInstance.texBuf =
-gameData.endLevel.satellite.bmInstance.texBuf = NULL;
+gameData.endLevel.terrain.bmInstance.SetTexBuf (NULL);
+gameData.endLevel.satellite.bmInstance.SetTexBuf (NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -217,8 +217,6 @@ tObject externalExplosion;
 vmsAngVec vExitAngles = vmsAngVec::Create(-0xa00, 0, 0);
 
 vmsMatrix mSurfaceOrient;
-
-extern char szLastPaletteLoaded [];
 
 void StartEndLevelSequence (int bSecret)
 {
@@ -232,7 +230,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playbac
 		 ((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) &&
 		 gameStates.app.bHaveExtraMovies))
 		StartEndLevelMovie ();
-	strcpy (szLastPaletteLoaded, "");		//force palette load next time
+	paletteManager.SetLastLoaded ("");		//force palette load next time
 	return;
 	}
 if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SHOULD_BE_DEAD))
@@ -768,7 +766,7 @@ gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
 if (xEyeOffset)
 	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient [RVEC] * (xEyeOffset);
 G3SetViewMatrix (gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
-GrClearCanvas (BLACK_RGBA);
+CCanvas::Current ()->Clear (BLACK_RGBA);
 G3StartInstanceMatrix (vmsVector::ZERO, mSurfaceOrient);
 DrawStars ();
 G3DoneInstance ();
@@ -824,7 +822,7 @@ void DrawStars ()
 
 for (i = 0; i < MAX_STARS; i++) {
 	if ((i&63) == 0) {
-		GrSetColorRGBi (RGBA_PAL (intensity, intensity, intensity));
+		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (intensity, intensity, intensity));
 		intensity-=3;
 		}
 	G3RotateDeltaVec (p.p3_vec, stars [i]);
@@ -1171,11 +1169,11 @@ while (cf.GetS (line, LINE_LEN)) {
 			int iff_error;
 
 			PrintLog ("         loading terrain bitmap\n");
-			if (gameData.endLevel.terrain.bmInstance.texBuf) {
+			if (gameData.endLevel.terrain.bmInstance.TexBuf ()) {
 				OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
-				D2_FREE (gameData.endLevel.terrain.bmInstance.texBuf);
+				gameData.endLevel.terrain.bmInstance.DestroyTexBuf ();
 				}
-			Assert (gameData.endLevel.terrain.bmInstance.texBuf == NULL);
+			Assert (gameData.endLevel.terrain.bmInstance.TexBuf () == NULL);
 			iff_error = iff.ReadBitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {
 #if DBG
@@ -1209,9 +1207,9 @@ while (cf.GetS (line, LINE_LEN)) {
 			int iff_error;
 
 			PrintLog ("         loading satellite bitmap\n");
-			if (gameData.endLevel.satellite.bmInstance.texBuf) {
+			if (gameData.endLevel.satellite.bmInstance.TexBuf ()) {
 				OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
-				D2_FREE (gameData.endLevel.satellite.bmInstance.texBuf);
+				gameData.endLevel.satellite.bmInstance.DestroyTexBuf ();
 				}
 			iff_error = iff.ReadBitmap (p, &gameData.endLevel.satellite.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {

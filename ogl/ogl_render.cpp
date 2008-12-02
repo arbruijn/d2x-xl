@@ -108,7 +108,7 @@ if (bmP || (nTexId >= 0)) {
 	else {
 		if (OglBindBmTex (bmP, 1, 3))
 			return 1;
-		OglTexWrap (bmP->texInfo, GL_REPEAT);
+		OglTexWrap (bmP->TexInfo (), GL_REPEAT);
 		}
 	if (bShaderVar)
 		glUniform1i (glGetUniformLocation (lmProg, pszTexId), 0);
@@ -121,11 +121,11 @@ return 0;
 int G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 {
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&grdCurCanv->cvColor);
+OglGrsColor (&CCanvas::Current ()->Color ());
 glBegin (GL_LINES);
 OglVertex3x (p0->p3_vec[X], p0->p3_vec[Y], p0->p3_vec[Z]);
 OglVertex3x (p1->p3_vec[X], p1->p3_vec[Y], p1->p3_vec[Z]);
-if (grdCurCanv->cvColor.rgb)
+if (CCanvas::Current ()->Color ().rgb)
 	glDisable (GL_BLEND);
 glEnd ();
 return 1;
@@ -174,7 +174,7 @@ int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 	double r;
 
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&grdCurCanv->cvColor);
+OglGrsColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
 glTranslatef (X2F (pnt->p3_vec[X]), X2F (pnt->p3_vec[Y]), X2F (pnt->p3_vec[Z]));
 r = X2F (rad);
@@ -196,7 +196,7 @@ else {
 		hSmallSphere = CircleListInit (12, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
 	}
 glPopMatrix ();
-if (grdCurCanv->cvColor.rgb)
+if (CCanvas::Current ()->Color ().rgb)
 	glDisable (GL_BLEND);
 return 0;
 }
@@ -207,11 +207,11 @@ int GrUCircle (fix xc1, fix yc1, fix r1)
 {//dunno if this really works, radar doesn't seem to.. hm..
 glDisable (GL_TEXTURE_2D);
 //	glPointSize (X2F (rad);
-OglGrsColor (&grdCurCanv->cvColor);
+OglGrsColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
 glTranslatef (
-			(X2F (xc1) + grdCurCanv->cvBitmap.props.x) / (float) gameStates.ogl.nLastW,
-		1.0f - (X2F (yc1) + grdCurCanv->cvBitmap.props.y) / (float) gameStates.ogl.nLastH, 0);
+			(X2F (xc1) + CCanvas::Current ()->Bitmap ().Left ()) / (float) gameStates.ogl.nLastW,
+		1.0f - (X2F (yc1) + CCanvas::Current ()->Bitmap ().Top ()) / (float) gameStates.ogl.nLastH, 0);
 glScalef (X2F (r1), X2F (r1), X2F (r1));
 if (r1<=I2X (5)){
 	if (!circleh5)
@@ -226,7 +226,7 @@ else{
 		glCallList (circleh10);
 }
 glPopMatrix ();
-if (grdCurCanv->cvColor.rgb)
+if (CCanvas::Current ()->Color ().rgb)
 	glDisable (GL_BLEND);
 return 0;
 }
@@ -262,14 +262,14 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	}
 r_polyc++;
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&grdCurCanv->cvColor);
+OglGrsColor (&CCanvas::Current ()->Color ());
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0; i < nVertices; i++, pointList++) {
 //	glVertex3f (X2F (pointList [c]->p3_vec[X]), X2F (pointList [c]->p3_vec[Y]), X2F (pointList [c]->p3_vec[Z]);
 	OglVertex3f (*pointList);
 	}
 #if 1
-if (grdCurCanv->cvColor.rgb || (gameStates.render.grAlpha < FADE_LEVELS))
+if (CCanvas::Current ()->Color ().rgb || (gameStates.render.grAlpha < FADE_LEVELS))
 	glDisable (GL_BLEND);
 #endif
 glEnd ();
@@ -509,10 +509,7 @@ else if (!bDepthSort) {
 	if (OglBindBmTex (bmBot, 1, 3))
 		return 1;
 	bmBot = bmBot->CurFrame (-1);
-	if (bmBot == bmpDeadzone)
-		OglTexWrap (bmBot->TexInfo (), GL_CLAMP);
-	else
-		OglTexWrap (bmBot->TexInfo (), GL_REPEAT);
+	OglTexWrap (bmBot->TexInfo (), (bmBot == bmpDeadzone) ? GL_CLAMP : GL_REPEAT);
 	}
 
 if (!bDepthSort) {
@@ -569,7 +566,7 @@ if (bVertexArrays || bDepthSort) {
 		}
 #if 1
 	if (gameOpts->render.bDepthSort > 0) {
-		OglLoadBmTexture (bmBot, 1, 3, 0);
+		bmBot->SetupTexture (1, 3, 0);
 		TIAddPoly (NULL, NULL, bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 		return 0;
 		}
@@ -876,9 +873,9 @@ else
 if (OglBindBmTex (bmP, 1, 3))
 	return 1;
 if (bmP == bmpDeadzone)
-	OglTexWrap (bmP->texInfo, GL_CLAMP);
+	OglTexWrap (bmP->TexInfo (), GL_CLAMP);
 else
-	OglTexWrap (bmP->texInfo, GL_REPEAT);
+	OglTexWrap (bmP->TexInfo (), GL_REPEAT);
 
 if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
@@ -986,7 +983,7 @@ else {
 		if (OglBindBmTex (bmP, 1, 1))
 			return 1;
 		bmP = bmP->Override (-1);
-		OglTexWrap (bmP->texInfo, GL_CLAMP);
+		OglTexWrap (bmP->TexInfo (), GL_CLAMP);
 		glEnable (GL_BLEND);
 		if (bAdditive == 2)
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -999,8 +996,8 @@ else {
 		else
 			glColor4d (1, 1, 1, (double) alpha);
 		glBegin (GL_QUADS);
-		u = bmP->texInfo->u;
-		v = bmP->texInfo->v;
+		u = bmP->TexInfo ()->u;
+		v = bmP->TexInfo ()->v;
 		glTexCoord2d (0, 0);
 		glVertex3d (x - w, y + h, z);
 		glTexCoord2d (u, 0);
@@ -1036,7 +1033,7 @@ if (bmP) {
 	bmP = bmP->Override (-1);
 	if (bmP->Frames ())
 		bmP = bmP->Frames () + nFrame;
-	OglTexWrap (bmP->texInfo, nWrap);
+	OglTexWrap (bmP->TexInfo (), nWrap);
 	}
 if (bVertexArrays) {
 	if (texCoordP)

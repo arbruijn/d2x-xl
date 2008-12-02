@@ -36,7 +36,7 @@ typedef struct tTextureInfo {
 	CPBO				pbo;
 #elif RENDER2TEXTURE == 2
 	CFBO				fbo;
-	tBitmap			*bmP;
+	CBitmap			*bmP;
 #endif
 } tTextureInfo;
 

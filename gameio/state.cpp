@@ -232,11 +232,11 @@ else {
 	cf.Read (m_info.szLabel + 3, DESC_LENGTH, 1);
 	if (nVersion < 26) {
 		m_info.image = CBitmap::Create (0, THUMBNAIL_W, THUMBNAIL_H, 1);
-		cf.Read (m_info.image->texBuf, THUMBNAIL_W * THUMBNAIL_H, 1);
+		cf.Read (m_info.image->TexBuf (), THUMBNAIL_W * THUMBNAIL_H, 1);
 		}
 	else {
 		m_info.image = CBitmap::Create (0, THUMBNAIL_LW, THUMBNAIL_LH, 1);
-		cf.Read (m_info.image->texBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1);
+		cf.Read (m_info.image->TexBuf (), THUMBNAIL_LW * THUMBNAIL_LH, 1);
 		}
 	if (nVersion >= 9) {
 		CPalette palette;
@@ -296,18 +296,18 @@ if (!items [NM_IMG_SPACE - 1].text || strcmp (items [NM_IMG_SPACE - 1].text, sav
 if (!image)
 	return nCurItem;
 if (gameStates.menus.bHires) {
-	x = (grdCurCanv->cvBitmap.props.w - image->props.w) / 2;
+	x = (CCanvas::Current ()->Width () - image->Width ()) / 2;
 	y = items [0].y - 16;
 	if (gameStates.app.bGameRunning)
 		paletteManager.LoadEffect  ();
 	GrBitmap (x, y, image);
 	if (gameOpts->menus.nStyle) {
-		GrSetColorRGBi (RGBA_PAL (0, 0, 32));
-		GrUBox (x - 1, y - 1, x + image->props.w + 1, y + image->props.h + 1);
+		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 32));
+		GrUBox (x - 1, y - 1, x + image->Width () + 1, y + image->Height () + 1);
 		}
 	}
 else {
-	GrBitmap ((grdCurCanv->cvBitmap.props.w-THUMBNAIL_W) / 2, items [0].y - 5, saveGameInfo [nCurItem - 1].Image ());
+	GrBitmap ((CCanvas::Current ()->Width ()-THUMBNAIL_W) / 2, items [0].y - 5, saveGameInfo [nCurItem - 1].Image ());
 	}
 return nCurItem;
 }
@@ -1188,14 +1188,14 @@ for (i = 0; i < MAX_PLAYERS; i++)
 
 void CSaveGameHandler::SaveImage (void)
 {
-	gsrCanvas	*thumbCanv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH);
+	CCanvas	*thumbCanv = CCanvas::Create (THUMBNAIL_LW, THUMBNAIL_LH);
 
 if (thumbCanv) {
 		CBitmap	bm;
 		int			i, k, x, y;
-		gsrCanvas*	saveCanv = grdCurCanv;
-	
-	GrSetCurrentCanvas (thumbCanv);
+
+	CCanvas::Push ();
+	CCanvas::SetCurrent (thumbCanv);
 	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 	if (gameStates.ogl.nDrawBuffer == GL_BACK) {
 		gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
@@ -1203,22 +1203,21 @@ if (thumbCanv) {
 		}
 	else
 		RenderFrame (0, 0);
-	bm.props.w = (grdCurScreen->scWidth / THUMBNAIL_LW) * THUMBNAIL_LW;
-	bm.props.h = bm.props.w * 3 / 5;	//force 5:3 aspect ratio
-	if (bm.props.h > grdCurScreen->scHeight) {
-		bm.props.h = (grdCurScreen->scHeight / THUMBNAIL_LH) * THUMBNAIL_LH;
-		bm.props.w = bm.props.h * 5 / 3;
+	bm.SetWidth ((screen.Width () / THUMBNAIL_LW) * THUMBNAIL_LW);
+	bm.SetHeight (bm.Width () * 3 / 5);	//force 5:3 aspect ratio
+	if (bm.Height () > screen.Height ()) {
+		bm.SetHeight ((screen.Height () / THUMBNAIL_LH) * THUMBNAIL_LH);
+		bm.SetWidth (bm.Height () * 5 / 3);
 		}
-	x = (grdCurScreen->scWidth - bm.props.w) / 2;
-	y = (grdCurScreen->scHeight - bm.props.h) / 2;
-	bm.nBPP = 3;
-	bm.props.rowSize = bm.props.w * bm.nBPP;
-	bm.texBuf = (ubyte *) D2_ALLOC (bm.props.w * bm.props.h * bm.nBPP);
+	x = (screen.Width () - bm.Width ()) / 2;
+	y = (screen.Height () - bm.Height ()) / 2;
+	bm.SetBPP (3);
+	bm.CreateTexBuf ();
 	//glDisable (GL_TEXTURE_2D);
 	OglSetReadBuffer (GL_FRONT, 1);
-	glReadPixels (x, y, bm.props.w, bm.props.h, GL_RGB, GL_UNSIGNED_BYTE, bm.texBuf);
+	glReadPixels (x, y, bm.Width (), bm.Height (), GL_RGB, GL_UNSIGNED_BYTE, bm.TexBuf ());
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
-	ShrinkTGA (&bm, bm.props.w / THUMBNAIL_LW, bm.props.h / THUMBNAIL_LH, 0);
+	ShrinkTGA (&bm, bm.Width () / THUMBNAIL_LW, bm.Height () / THUMBNAIL_LH, 0);
 	paletteManager.LoadEffect  ();
 	// convert the resized TGA to bmp
 	ubyte *texBuf = bm.TexBuf ();
@@ -1226,13 +1225,13 @@ if (thumbCanv) {
 		i = y * THUMBNAIL_LW * 3;
 		k = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
 		for (x = 0; x < THUMBNAIL_LW; x++, k++, i += 3)
-			thumbCanv->cvBitmap.texBuf [k] = paletteManager.Game ()->ClosestColor (texBuf [i] / 4, texBuf [i+1] / 4, texBuf [i+2] / 4);
+			thumbCanv->Bitmap ().TexBuf () [k] = paletteManager.Game ()->ClosestColor (texBuf [i] / 4, texBuf [i+1] / 4, texBuf [i+2] / 4);
 			}
 	paletteManager.LoadEffect  ();
-	D2_FREE (bm.texBuf);
-	m_cf.Write (thumbCanv->cvBitmap.texBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1);
-	GrSetCurrentCanvas (saveCanv);
-	GrFreeCanvas (thumbCanv);
+	bm.DestroyTexBuf ();
+	m_cf.Write (thumbCanv->Bitmap ().TexBuf (), THUMBNAIL_LW * THUMBNAIL_LH, 1);
+	CCanvas::Pop ();
+	thumbCanv->Destroy ();
 	m_cf.Write (paletteManager.Game (), 3, 256);
 	}
 else	{

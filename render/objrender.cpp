@@ -275,9 +275,7 @@ static float ObjectBlobColor (tObject *objP, CBitmap *bmP, tRgbaColorf *colorP)
 {
 	float	fScale;
 
-colorP->red = (float) bmP->avgRGB.red / 255.0f;
-colorP->green = (float) bmP->avgRGB.green / 255.0f;
-colorP->blue = (float) bmP->avgRGB.blue / 255.0f;
+bmP->GetAvgColor (colorP);
 #if DBG
 if ((objP->info.nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->info.nId == nDbgObjId)))
 	nDbgObjType = nDbgObjType;
@@ -353,21 +351,21 @@ else {
 	PIGGY_PAGE_IN (bmi, 0);
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 	}
-if ((bmi < 0) || ((bmP->nType == BM_TYPE_STD) && bmP->Override ())) {
-	OglLoadBmTexture (bmP, 1, nTransp = -1, gameOpts->render.bDepthSort <= 0);
+if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && bmP->Override ())) {
+	bmP->SetupTexture (1, nTransp = -1, gameOpts->render.bDepthSort <= 0);
 	//fScale = ObjectBlobColor (objP, bmP, &color);
 	bmP = bmP->Override (iFrame);
 	//fAlpha = 1;
 	}
 else {
 	if (colorP && gameOpts->render.bDepthSort)
-		OglLoadBmTexture (bmP, 1, nTransp, 0);
+		bmP->SetupTexture (1, nTransp, 0);
 	//fScale = ObjectBlobColor (objP, bmP, &color);
 	}
 if (!bmP)
 	return;
 fScale = ObjectBlobColor (objP, bmP, &color);
-if (!bmP->texBuf)
+if (!bmP->TexBuf ())
 	return;
 if (colorP && (bmi >= 0))
 	memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (tRgbaColorf));
@@ -399,17 +397,19 @@ if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 		color.green =
 		color.blue = 1;
 	color.alpha = fAlpha;
-	if (bmP->props.w > bmP->props.h)
-		TIAddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->props.h, bmP->props.w), iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
+	if (bmP->Width () > bmP->Height ())
+		TIAddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), 
+						 iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	else
-		TIAddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->props.w, bmP->props.h), xSize, iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
+		TIAddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, 
+						 iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	}
 else {
-	if (bmP->props.w > bmP->props.h)
-		G3DrawBitmap (objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->props.h, bmP->props.w), bmP,
+	if (bmP->Width () > bmP->Height ())
+		G3DrawBitmap (objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), bmP,
 						  NULL, fAlpha, nTransp);
 	else
-		G3DrawBitmap (objP->info.position.vPos, FixMulDiv (xSize, bmP->props.w, bmP->props.h), xSize, bmP,
+		G3DrawBitmap (objP->info.position.vPos, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, bmP,
 						  NULL, fAlpha, nTransp);
 	}
 gameData.render.nTotalSprites++;
@@ -426,7 +426,7 @@ void DrawObjectRodTexPoly (tObject *objP, tBitmapIndex bmi, int bLit, int iFrame
 
 PIGGY_PAGE_IN (bmi.index, 0);
 if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
-	OglLoadBmTexture (bmP, 1, -1, gameOpts->render.bDepthSort <= 0);
+	bmP->SetupTexture (1, -1, gameOpts->render.bDepthSort <= 0);
 	bmP = bmP->Override (iFrame);
 	}
 delta = objP->info.position.mOrient[UVEC] * objP->info.xSize;
@@ -581,7 +581,7 @@ if (ci.bFading < 0) {
 else {
 	gameStates.render.bCloaked = 1;
 	gameStates.render.grAlpha = (float) ci.nFadeValue;
-	GrSetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
+	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
 	G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
 	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient,
 									(vmsAngVec *)&objP->rType.polyObjInfo.animAngles,

@@ -854,7 +854,7 @@ if (nShader != gameStates.render.history.nShader) {
 	glUniform1fv (glGetUniformLocation (activeShaderProg, "brightness"), nLights,
 					  (GLfloat *) gameData.render.lights.dynamic.headlights.brightness);
 #	endif
-	//glUniform1f (glGetUniformLocation (activeShaderProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
+	//glUniform1f (glGetUniformLocation (activeShaderProg, "aspect"), (float) screen.Width () / (float) screen.Height ());
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
 #if 1
 	if ((bTransform = !nOglTransformCalls))

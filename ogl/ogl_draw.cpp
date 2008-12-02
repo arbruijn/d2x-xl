@@ -47,15 +47,15 @@
 
 extern int r_upixelc;
 
-void OglUPixelC (int x, int y, grsColor *colorP)
+void OglUPixelC (int x, int y, tCanvasColor *colorP)
 {
 r_upixelc++;
 glDisable (GL_TEXTURE_2D);
-glPointSize(1.0);
-glBegin(GL_POINTS);
+glPointSize (1.0);
+glBegin (GL_POINTS);
 OglGrsColor (colorP);
-glVertex2d ((x + grdCurCanv->cvBitmap.props.x) / (double) gameStates.ogl.nLastW,
-				1.0 - (y + grdCurCanv->cvBitmap.props.y) / (double) gameStates.ogl.nLastW);
+glVertex2d ((x + CCanvas::Current ()->Bitmap ().Left ()) / (double) gameStates.ogl.nLastW,
+				1.0 - (y + CCanvas::Current ()->Bitmap ().Top ()) / (double) gameStates.ogl.nLastW);
 if (colorP->rgb)
 	glDisable (GL_BLEND);
 glEnd();
@@ -67,10 +67,10 @@ void OglURect(int left, int top, int right, int bot)
 {
 	GLfloat		xo, yo, xf, yf;
 
-xo = ((float) left + grdCurCanv->cvBitmap.props.x) / (float) gameStates.ogl.nLastW;
-xf = (float) (right + grdCurCanv->cvBitmap.props.x)/ (float) gameStates.ogl.nLastW;
-yo = 1.0f - (float) (top + grdCurCanv->cvBitmap.props.y) / (float) gameStates.ogl.nLastH;
-yf = 1.0f - (float) (bot + grdCurCanv->cvBitmap.props.y) / (float) gameStates.ogl.nLastH;
+xo = ((float) left + CCanvas::Current ()->Bitmap ().Left ()) / (float) gameStates.ogl.nLastW;
+xf = (float) (right + CCanvas::Current ()->Bitmap ().Left ()) / (float) gameStates.ogl.nLastW;
+yo = 1.0f - (float) (top + CCanvas::Current ()->Bitmap ().Top ()) / (float) gameStates.ogl.nLastH;
+yf = 1.0f - (float) (bot + CCanvas::Current ()->Bitmap ().Top ()) / (float) gameStates.ogl.nLastH;
 
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&COLOR);
@@ -86,14 +86,14 @@ if (COLOR.rgb || (gameStates.render.grAlpha < FADE_LEVELS))
 
 //------------------------------------------------------------------------------
 
-void OglULineC (int left,int top,int right,int bot, grsColor *c)
+void OglULineC (int left,int top,int right,int bot, tCanvasColor *c)
 {
 	GLfloat xo, yo, xf, yf;
 
-xo = (left + grdCurCanv->cvBitmap.props.x) / (float) gameStates.ogl.nLastW;
-xf = (right + grdCurCanv->cvBitmap.props.x) / (float) gameStates.ogl.nLastW;
-yo = 1.0f - (top + grdCurCanv->cvBitmap.props.y) / (float) gameStates.ogl.nLastH;
-yf = 1.0f - (bot + grdCurCanv->cvBitmap.props.y) / (float) gameStates.ogl.nLastH;
+xo = (left + CCanvas::Current ()->Bitmap ().Left ()) / (float) gameStates.ogl.nLastW;
+xf = (right + CCanvas::Current ()->Bitmap ().Left ()) / (float) gameStates.ogl.nLastW;
+yo = 1.0f - (top + CCanvas::Current ()->Bitmap ().Top ()) / (float) gameStates.ogl.nLastH;
+yf = 1.0f - (bot + CCanvas::Current ()->Bitmap ().Top ()) / (float) gameStates.ogl.nLastH;
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (c);
 glBegin (GL_LINES);
@@ -106,14 +106,14 @@ glEnd();
 
 //------------------------------------------------------------------------------
 
-void OglUPolyC (int left, int top, int right, int bot, grsColor *c)
+void OglUPolyC (int left, int top, int right, int bot, tCanvasColor *c)
 {
 	GLfloat xo, yo, xf, yf;
 
-xo = (left + grdCurCanv->cvBitmap.props.x) / (float) gameStates.ogl.nLastW;
-xf = (right + grdCurCanv->cvBitmap.props.x) / (float) gameStates.ogl.nLastW;
-yo = 1.0f - (top + grdCurCanv->cvBitmap.props.y) / (float) gameStates.ogl.nLastH;
-yf = 1.0f - (bot + grdCurCanv->cvBitmap.props.y) / (float) gameStates.ogl.nLastH;
+xo = (left + CCanvas::Current ()->Bitmap ().Left ()) / (float) gameStates.ogl.nLastW;
+xf = (right + CCanvas::Current ()->Bitmap ().Left ()) / (float) gameStates.ogl.nLastW;
+yo = 1.0f - (top + CCanvas::Current ()->Bitmap ().Top ()) / (float) gameStates.ogl.nLastH;
+yf = 1.0f - (bot + CCanvas::Current ()->Bitmap ().Top ()) / (float) gameStates.ogl.nLastH;
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (c);
 glBegin (GL_LINE_LOOP);

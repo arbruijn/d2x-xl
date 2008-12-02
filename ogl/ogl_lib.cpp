@@ -357,7 +357,7 @@ void OglSetFOV (void)
 gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #else
 if (gameStates.ogl.bUseTransform)
-	gameStates.render.glAspect = (double) grdCurScreen->scWidth / (double) grdCurScreen->scHeight;
+	gameStates.render.glAspect = (double) screen.Width () / (double) screen.Height ();
 else
 	gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #endif
@@ -366,12 +366,12 @@ glLoadIdentity ();//clear matrix
 if (gameStates.render.bRearView)
 	glScalef (-1.0f, 1.0f, 1.0f);
 gluPerspective (gameStates.render.glFOV * ((double) viewInfo.zoom / 65536.0),
-					 (double) grdCurCanv->cvBitmap.props.w / (double) grdCurCanv->cvBitmap.props.h, ZNEAR, ZFAR);
+					 (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Bitmap ().Height (), ZNEAR, ZFAR);
 gameData.render.ogl.depthScale [X] = (float) (ZFAR / (ZFAR - ZNEAR));
 gameData.render.ogl.depthScale [Y] = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
 gameData.render.ogl.depthScale [Z] = (float) (ZFAR - ZNEAR);
-gameData.render.ogl.screenScale.x = 1.0f / (float) grdCurScreen->scWidth;
-gameData.render.ogl.screenScale.y = 1.0f / (float) grdCurScreen->scHeight;
+gameData.render.ogl.screenScale.x = 1.0f / (float) screen.Width ();
+gameData.render.ogl.screenScale.y = 1.0f / (float) screen.Height ();
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 glMatrixMode (GL_MODELVIEW);
 }
@@ -389,7 +389,7 @@ if (!gameOpts->render.cameras.bHires) {
 if ((x != gameStates.ogl.nLastX) || (y != gameStates.ogl.nLastY) || (w != gameStates.ogl.nLastW) || (h != gameStates.ogl.nLastH)) {
 #if !USE_IRRLICHT
 	glViewport ((GLint) x, 
-					(GLint) (grdCurScreen->scCanvas.cvBitmap.props.h >> gameStates.render.cameras.bActive) - y - h, 
+					(GLint) (screen.Bitmap ().Height () >> gameStates.render.cameras.bActive) - y - h, 
 					(GLsizei) w, (GLsizei) h);
 #endif
 	gameStates.ogl.nLastX = x;
@@ -560,12 +560,12 @@ else
 		{
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();
-		OglViewport (grdCurCanv->cvBitmap.props.x, grdCurCanv->cvBitmap.props.y, nCanvasWidth, nCanvasHeight);
+		OglViewport (CCanvas::Current ()->Bitmap ().Left (), CCanvas::Current ()->Bitmap ().Top (), nCanvasWidth, nCanvasHeight);
 		}
 	if (gameStates.ogl.bEnableScissor) {
 		glScissor (
-			grdCurCanv->cvBitmap.props.x,
-			grdCurScreen->scCanvas.cvBitmap.props.h - grdCurCanv->cvBitmap.props.y - nCanvasHeight,
+			CCanvas::Current ()->Bitmap ().Left (),
+			screen.Bitmap ().Height () - CCanvas::Current ()->Bitmap ().Top () - nCanvasHeight,
 			nCanvasWidth,
 			nCanvasHeight);
 		glEnable (GL_SCISSOR_TEST);
@@ -620,8 +620,8 @@ nError = glGetError ();
 
 void OglEndFrame (void)
 {
-//	OglViewport (grdCurCanv->cvBitmap.props.x, grdCurCanv->cvBitmap.props.y, );
-//	glViewport (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+//	OglViewport (CCanvas::Current ()->Bitmap ().Left (), CCanvas::Current ()->Bitmap ().Top (), );
+//	glViewport (0, 0, screen.Width (), screen.Height ());
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
@@ -643,7 +643,7 @@ OGL_BINDTEX (0);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 OGL_BINDTEX (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-OglViewport (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+OglViewport (0, 0, screen.Width (), screen.Height ());
 #ifndef NMONO
 //	merge_textures_stats ();
 //	ogl_texture_stats ();
@@ -724,7 +724,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 			t0 = t1;
 			}
 		int h = SMALL_FONT->ftHeight + 3, i = 3;
-		GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
+		SetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
 		float t, s = 0;
 		GrPrintF (NULL, 5, h * i++, "frame: %ld", p.t [ptFrame]);
 		GrPrintF (NULL, 5, h * i++, "  scene: %1.2f %c", 100.0f * (float) p.t [ptRenderMine] / (float) p.t [ptFrame], '%');

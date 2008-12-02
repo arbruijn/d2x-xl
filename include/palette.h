@@ -58,6 +58,10 @@ class CPalette {
 		bool Read (CFile& cf);
 		bool Write (CFile& cf);
 		int ClosestColor (int r, int g, int b);
+		inline int ClosestColor (tRgbColorb* colorP)
+			{ return ClosestColor ((int) colorP->red, (int) colorP->green, (int) colorP->blue); }
+		inline int ClosestColor (tRgbColorf* colorP)
+			{ return ClosestColor ((int) (colorP->red * 63.0f), (int) (colorP->green * 63.0f), (int) (colorP->blue * 63.0f)); }
 		void SwapTransparency (void);
 		void AddComputedColor (int r, int g, int b, int nIndex);
 		void InitComputedColors (void);
@@ -77,8 +81,8 @@ class CPalette {
 			Init ();
 			return *this;
 			}
-		inline bool operator== (CPalette& source) 
-			{ return !memcmp (&Data (), &source.Data (), sizeof (tPalette)); }
+		inline bool operator== (CPalette& source) { return !memcmp (&Data (), &source.Data (), sizeof (tPalette)); }
+		inline tRgbColorb& operator[] (int i) { return m_data.rgb [i]; }
 	};
 
 //------------------------------------------------------------------------------
@@ -100,8 +104,8 @@ typedef struct tPaletteData {
 		CPalette			*current;
 		CPalette			*prev;
 		tPaletteList	*list;
-		char				szLastPaletteLoaded [FILENAME_LEN];
-		char				szLastPalettePig [FILENAME_LEN];
+		char				szLastLoaded [FILENAME_LEN];
+		char				szLastPig [FILENAME_LEN];
 		int				nPalettes;
 		int				nGamma;
 		int				nLastGamma;
@@ -183,15 +187,21 @@ class CPaletteManager {
 		inline void SetD1 (CPalette* palette) { m_data.D1 = palette; }
 
 		inline CPalette* Default (void) { return m_data.default; }
-		inline CPalette* Current (void) { return m_data.current; }
-		inline CPalette* Game (void) { return m_data.game; }
+		inline CPalette* Current (void) { return m_data.current ? m_data.current : m_data.default; }
+		inline CPalette* Game (void) { return m_data.game ? m_data.game : m_data.current ? m_data.current : m_data.default; }
 		CPalette* Texture (void) { return m_data.texture; };
-		inline CPalette* D1 (void) { return m_data.D1; }
+		inline CPalette* D1 (void) { return m_data.D1 ? m_data.D1 : m_data.current ? m_data.current : m_data.default; }
 		inline void SetDefault (CPalette* defPal) { m_data.default = defPal; }
 		inline CPalette* Fade (CPalette* fadePal) { m_data.fade = fadePal; }
 		inline CPalette* GetFade (void) { return m_data.fade; }
 		inline ubyte* FadeTable (void) { return m_data.fadeTable; }
 		inline bool DoEffect (void) { return m_data.bDoEffect; }
+
+		inline char* LastLoaded (void) { return m_data.szLastLoaded; }
+		inline char* LastPig (void) { return m_data.szLastPig; }
+		inline void SetLastLoaded (const char *name) { strncpy (m_data.szLastLoaded, name, sizeof (m_data.szLastLoaded)); }
+		inline void SetLastPig (const char *name) { strncpy (m_data.szLastPig, name, sizeof (m_data.szLastPig)); }
+
 
 		inline int ClosestColor (int r, int g, int b)
 			{ return m_data.current ? m_data.current->ClosestColor (r, g, b) : 0; }

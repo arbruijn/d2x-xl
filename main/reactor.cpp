@@ -172,8 +172,8 @@ else {
 		DigiPlaySample (SOUND_MINE_BLEW_UP, F1_0);
 	paletteManager.SetEffect (flashValue, flashValue, flashValue);
 	if (paletteManager.BlueEffect () > 64) {
-		GrSetCurrentCanvas (NULL);
-		GrClearCanvas (RGBA_PAL2 (31,31,31));	//make screen all white to match palette effect
+		CCanvas::SetCurrent (NULL);
+		CCanvas::Current ()->Clear (RGBA_PAL2 (31,31,31));	//make screen all white to match palette effect
 		ResetCockpit ();		//force cockpit redraw next time
 		paletteManager.ResetEffect ();	//restore palette for death message
 		DoPlayerDead ();		//kill_player ();

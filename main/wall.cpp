@@ -105,13 +105,13 @@ int CheckTransparency (tSegment *segP, short nSide)
 
 if (sideP->nOvlTex) {
 	bmP = gameData.pig.tex.pBitmaps [gameData.pig.tex.pBmIndex [sideP->nOvlTex].index].Override (-1);
-	if (bmP->props.flags & BM_FLAG_SUPER_TRANSPARENT)
+	if (bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT)
 		return 1;
-	if (!(bmP->props.flags & BM_FLAG_TRANSPARENT))
+	if (!(bmP->Flags () & BM_FLAG_TRANSPARENT))
 		return 0;
 	}
 bmP = gameData.pig.tex.pBitmaps [gameData.pig.tex.pBmIndex [sideP->nBaseTex].index].Override (-1);
-if (bmP->props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
 if (gameStates.app.bD2XLevel) {
 	short	c, nWallNum = WallNumP (segP, nSide);
@@ -313,7 +313,7 @@ if (anim->flags & WCF_ALTFMT) {
 	if (!bmP)
 		anim->flags &= ~WCF_ALTFMT;
 	else {
-		bmP->bWallAnim = 1;
+		bmP->SetWallAnim (1);
 		if (!gameOpts->ogl.bGlTexMerge)
 			anim->flags &= ~WCF_ALTFMT;
 		else if (!bmP->Frames ())
@@ -321,7 +321,7 @@ if (anim->flags & WCF_ALTFMT) {
 		else {
 			anim->flags |= WCF_INITIALIZED;
 			bmP->SetCurFrame (bmP->Frames () + nFrame);
-			OglLoadBmTexture (bmP->CurFrame (), 1, 3, 1);
+			bmP->CurFrame ()->SetupTexture (1, 3, 1);
 			if (++nFrame > nFrames)
 				nFrame = nFrames;
 			}

@@ -114,8 +114,8 @@ if (!IsMultiGame || IsCoopGame) {
 	if (gameOpts->render.cockpit.bPlayerStats)
 		y += 2 * nHUDLineSpacing;
 
-	x0 = grdCurCanv->cv_w;
-	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	x0 = CCanvas::Current ()->Bitmap ().Width ();
+	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 	t = gameStates.app.nSDLTicks;
 	if (t - t0 > 333) {	//update 3 times per second
 		t0 = t;
@@ -140,7 +140,7 @@ if (!IsMultiGame || IsCoopGame) {
 		for (i = 0; i < 2; i++) {
 			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", objCounts [i]);
 			GrGetStringSize (szInfo, &w, &h, &aw);
-			nIdTally [i] = GrPrintF (nIdTally + i, grdCurCanv->cv_w - w - HUD_LHX (2), y, szInfo);
+			nIdTally [i] = GrPrintF (nIdTally + i, CCanvas::Current ()->Bitmap ().Width () - w - HUD_LHX (2), y, szInfo);
 			y += nHUDLineSpacing;
 			}
 		}
@@ -170,7 +170,7 @@ else {//if (!SHOW_COCKPIT) {
 	if (gameStates.render.fonts.bHires)
 		y += nHUDLineSpacing;
 	}
-GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
+SetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
 y = 6 + 2 * nHUDLineSpacing;
 h = (gameData.stats.nDisplayMode - 1) / 2;
 if ((gameData.stats.nDisplayMode - 1) % 2 == 0) {
@@ -193,7 +193,7 @@ else {
 	sprintf (szStats, "%s%1.1f%c %1.1f%c %1.1f%c", h ? "T:" : "", p [0], '%', p [1], '%', p [2], '%');
 	}
 GrGetStringSize (szStats, &w, &h, &aw);
-nIdStats = GrString (grdCurCanv->cv_w - w - HUD_LHX (2), y, szStats, &nIdStats);
+nIdStats = GrString (CCanvas::Current ()->Bitmap ().Width () - w - HUD_LHX (2), y, szStats, &nIdStats);
 }
 
 //	-----------------------------------------------------------------------------
@@ -243,15 +243,15 @@ void HUDShowWeaponIcons (void)
 ll = LOCALPLAYER.laserLevel;
 if (gameOpts->render.weaponIcons.bShowAmmo) {
 	GrSetCurFont (SMALL_FONT);
-	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 	}
 dx = (int) (10 * cmScaleX);
 if (nWeaponIcons < 3) {
 #if 0
 	if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 #endif
-		dy = (grdCurScreen->scHeight - grdCurCanv->cvBitmap.props.h);
-		y = nIconPos ? grdCurScreen->scHeight - dy - oy : oy + hIcon + 12;
+		dy = (screen.Height () - CCanvas::Current ()->Bitmap ().Height ());
+		y = nIconPos ? screen.Height () - dy - oy : oy + hIcon + 12;
 #if 0
 		}
 	else {
@@ -271,16 +271,16 @@ for (i = 0; i < 2; i++) {
 #if DBG
 			h = gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0);
 			h = gameData.pig.tex.cockpitBmIndex [h].index;
-			h = gameData.pig.tex.bitmaps [0][h].props.h;
+			h = gameData.pig.tex.bitmaps [0][h].Height ();
 #else
-			h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index].props.h;
+			h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index].Height ();
 #endif
 			}
-		y = (grdCurCanv->cvBitmap.props.h - h - n * (hIcon + oy)) / 2 + hIcon;
-		x = i ? grdCurScreen->scWidth - wIcon - ox : ox;
+		y = (CCanvas::Current ()->Bitmap ().Height () - h - n * (hIcon + oy)) / 2 + hIcon;
+		x = i ? screen.Width () - wIcon - ox : ox;
 		}
 	else {
-		x = grdCurScreen->scWidth / 2;
+		x = screen.Width () / 2;
 		if (i)
 			x += dx;
 		else
@@ -307,10 +307,10 @@ for (i = 0; i < 2; i++) {
 			PIGGY_PAGE_IN (gameData.weapons.info [m].picture.index, 0);
 			}
 		Assert (bmP != NULL);
-		if (w < bmP->props.w)
-			w = bmP->props.w;
-		if (h < bmP->props.h)
-			h = bmP->props.h;
+		if (w < bmP->Width ())
+			w = bmP->Width ();
+		if (h < bmP->Height ())
+			h = bmP->Height ();
 		wIcon = (int) ((w + nIconScale - 1) / nIconScale * cmScaleX);
 		hIcon = (int) ((h + nIconScale - 1) / nIconScale * cmScaleY);
 		if (bInitIcons)
@@ -333,7 +333,7 @@ for (i = 0; i < 2; i++) {
 				 LOCALPLAYER.primaryWeaponFlags & (1 << (l + 5)))
 				continue;
 			}
-		HUDBitBlt (nIconScale * - (x + (w - bmP->props.w) / (2 * nIconScale)), 
+		HUDBitBlt (nIconScale * - (x + (w - bmP->Width ()) / (2 * nIconScale)), 
 					  nIconScale * - (y - hIcon), bmP, nIconScale * F1_0, 0);
 		*szAmmo = '\0';
 		nAmmoColor = GREEN_RGBA;
@@ -377,13 +377,13 @@ for (i = 0; i < 2; i++) {
 		if (bHave) {
 			//gameStates.render.grAlpha = FADE_LEVELS * 2 / 3;
 			if (bLoaded)
-				GrSetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
+				CCanvas::Current ()->SetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
 			else
-				GrSetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
+				CCanvas::Current ()->SetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
 			}
 		else {
 			//gameStates.render.grAlpha = FADE_LEVELS * 2 / 7;
-			GrSetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
+			CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 			}
 		GrURect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 		if (i) {
@@ -402,21 +402,21 @@ for (i = 0; i < 2; i++) {
 			}
 		if (bArmed)
 			if (bLoaded)
-				GrSetColorRGB (255, 192, 0, 255);
+				CCanvas::Current ()->SetColorRGB (255, 192, 0, 255);
 			else
-				GrSetColorRGB (160, 0, 0, 255);
+				CCanvas::Current ()->SetColorRGB (160, 0, 0, 255);
 		else if (bHave)
 			if (bLoaded)
-				GrSetColorRGB (0, 160, 0, 255);
+				CCanvas::Current ()->SetColorRGB (0, 160, 0, 255);
 			else
-				GrSetColorRGB (96, 0, 0, 255);
+				CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 		else
-			GrSetColorRGB (64, 64, 64, 255);
+			CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
 		GrUBox (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 		if (*szAmmo) {
-			GrSetFontColorRGBi (nAmmoColor, 1, 0, 0);
+			SetFontColorRGBi (nAmmoColor, 1, 0, 0);
 			nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
-			GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
+			SetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 			}
 		gameStates.render.grAlpha = FADE_LEVELS;
 		if (nWeaponIcons > 2)
@@ -447,7 +447,7 @@ h = bmpInventory->Width () * bmpInventory->Height ();
 texBuf = bmpInventory->TexBuf ();
 for (i = 0; i < NUM_INV_ITEMS; i++) {
 	bmInvItems [i] = *bmpInventory;
-	bmInvItems [i].props.h = bmInvItems [i].props.w;
+	bmInvItems [i].SetHeight (bmInvItems [i].Width ());
 	bmInvItems [i].SetTexBuf (texBuf + h * i);
 	bmInvItems [i].SetPalette (paletteManager.Game ());
 	}
@@ -506,8 +506,8 @@ void HUDShowInventoryIcons (void)
 			oy = 6, 
 			ox = 6, 
 			x, y, dy;
-	int	w = bmpInventory->props.w, 
-			h = bmpInventory->props.w;
+	int	w = bmpInventory->Width (), 
+			h = bmpInventory->Width ();
 	int	wIcon = (int) ((w + nIconScale - 1) / nIconScale * cmScaleX), 
 			hIcon = (int) ((h + nIconScale - 1) / nIconScale * cmScaleY);
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
@@ -526,18 +526,18 @@ void HUDShowInventoryIcons (void)
 	static int nEnergyType [NUM_INV_ITEMS] = {F1_0, 100 * F1_0, 0, F1_0, 0, F1_0, 0, 0, F1_0, F1_0};
 	static int nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-dy = (grdCurScreen->scHeight - grdCurCanv->cvBitmap.props.h);
+dy = (screen.Height () - CCanvas::Current ()->Bitmap ().Height ());
 if (gameStates.render.cockpit.nMode != CM_STATUS_BAR) //(!SHOW_COCKPIT)
-	y = nIconPos ? grdCurScreen->scHeight - dy - oy : oy + hIcon + 12;
+	y = nIconPos ? screen.Height () - dy - oy : oy + hIcon + 12;
 else
 	y = oy + hIcon + 12;
 n = (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) ? NUM_INV_ITEMS : NUM_INV_ITEMS - 2;
 firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
-x = (grdCurScreen->scWidth - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
+x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 for (j = firstItem; j < n; j++) {
 	int bHave, bArmed, bActive = HUDEquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
-	HUDBitBlt (nIconScale * - (x + (w - bmP->props.w) / (2 * nIconScale)), nIconScale * - (y - hIcon), bmP, nIconScale * F1_0, 0);
+	HUDBitBlt (nIconScale * - (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * - (y - hIcon), bmP, nIconScale * F1_0, 0);
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_HEADLIGHT)
@@ -561,27 +561,27 @@ for (j = firstItem; j < n; j++) {
 		//gameStates.render.grAlpha = FADE_LEVELS * 2 / 3;
 		if (bArmed)
 			if (bActive)
-				GrSetColorRGB (255, 208, 0, (ubyte) (alpha * 16));
+				CCanvas::Current ()->SetColorRGB (255, 208, 0, (ubyte) (alpha * 16));
 			else
-				GrSetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
+				CCanvas::Current ()->SetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
 		else
-			GrSetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
+			CCanvas::Current ()->SetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
 		}
 	else {
 		//gameStates.render.grAlpha = FADE_LEVELS * 2 / 7;
-		GrSetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
+		CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 		}
 	GrURect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (bHave)
 		if (bArmed)
 			if (bActive)
-				GrSetColorRGB (255, 208, 0, 255);
+				CCanvas::Current ()->SetColorRGB (255, 208, 0, 255);
 			else
-				GrSetColorRGB (0, 160, 0, 255);
+				CCanvas::Current ()->SetColorRGB (0, 160, 0, 255);
 		else
-			GrSetColorRGB (96, 0, 0, 255);
+			CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 	else
-		GrSetColorRGB (64, 64, 64, 255);
+		CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
 	GrUBox (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 	if (*szCount) {
 		GrGetStringSize (szCount, &fw, &fh, &faw);

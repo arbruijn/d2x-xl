@@ -35,28 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 char szCurrentLevelPalette[SHORT_FILENAME_LEN];
 
 //give a filename a new extension
-void ChangeFilenameExt( char *dest, char *src, char *ext )
-{
-	char *p;
-
-	strcpy (dest, src);
-
-	if (ext[0] == '.')
-		ext++;
-
-	p = strchr(dest,'.');
-	if (!p) {
-		p = dest + strlen(dest);
-		*p = '.';
-	}
-
-	strcpy(p+1,ext);
-}
-
 void LoadBackgroundBitmap(void);
-
-char szLastPaletteLoaded [FILENAME_LEN] = "";
-char szLastPalettePig [FILENAME_LEN] = "";
 
 //------------------------------------------------------------------------------
 

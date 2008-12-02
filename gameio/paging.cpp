@@ -413,7 +413,7 @@ void PagingTouchAllSub ()
 StopTime ();
 bBlackScreen = gameStates.render.bPaletteFadedOut;
 if (gameStates.render.bPaletteFadedOut)	{
-	GrClearCanvas (BLACK_RGBA);
+	CCanvas::Current ()->Clear (BLACK_RGBA);
 	paletteManager.LoadEffect  ();
 	}
 //	ShowBoxedMessage (TXT_LOADING);
@@ -437,7 +437,7 @@ PagingTouchAddonTextures ();
 
 	if (bBlackScreen)	{
 		paletteManager.ClearEffect ();
-		GrClearCanvas (BLACK_RGBA);
+		CCanvas::Current ()->Clear (BLACK_RGBA);
 	}
 	StartTime (0);
 	ResetCockpit ();		//force cockpit redraw next time

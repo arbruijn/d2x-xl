@@ -393,11 +393,11 @@ if (!bmBot)
 	return 0;
 if (faceP->bTransparent)
 	return 1;
-if (!(bmBot->props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU)))
+if (!(bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU)))
 	return 0;
 if (!bmTop)
 	return 1;
-if (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT)
+if (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT)
 	return 1;
 return 0;
 }
@@ -582,11 +582,11 @@ else {
 #endif
 	if (bmTop) {
 		if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
-			bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 			bmTop = bmTop->CurFrame ();
 			}
 		else
-			bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		}
 	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
@@ -706,11 +706,11 @@ else {
 #endif
 	if (bmTop) {
 		if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
-			bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 			bmTop = bmTop->CurFrame ();
 			}
 		else
-			bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+			bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		}
 	gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 	if (bTransparent && (gameStates.render.nType < 4) && !bMonitor) {
@@ -783,11 +783,11 @@ if (G3FaceIsTransparent (faceP, bmBot, bmTop) && !(bMonitor || bmTop))
 bMonitor = (faceP->nCamera >= 0);
 if (bmTop) {
 	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
-		bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		bmTop = bmTop->CurFrame ();
 		}
 	else
-		bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 G3SetRenderStates (faceP, bmBot, bmTop, 0, 1, bColorKey, 1);
@@ -821,11 +821,11 @@ if (G3FaceIsTransparent (faceP, bmBot, bmTop) && !(bMonitor || bmTop))
 bMonitor = (faceP->nCamera >= 0);
 if (bmTop) {
 	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
-		bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		bmTop = bmTop->CurFrame ();
 		}
 	else
-		bColorKey = (bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 G3SetRenderStatesLM (faceP, bmBot, bmTop, 0, 1, bColorKey, 1);

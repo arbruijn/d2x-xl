@@ -329,13 +329,13 @@ void OglSetScreenMode (void);
 int OglCacheLevelTextures (void);
 
 void OglURect(int left,int top,int right,int bot);
-int OglUBitMapMC (int x, int y, int dw, int dh, CBitmap *bm, grsColor *c, int scale, int orient);
+int OglUBitMapMC (int x, int y, int dw, int dh, CBitmap *bm, tCanvasColor *c, int scale, int orient);
 int OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, CBitmap * src, CBitmap * dest, int bMipMaps, int bTransp);
 int OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, CBitmap * src, CBitmap * dest);
 int OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, CBitmap * src, CBitmap * dest);
-void OglUPixelC (int x, int y, grsColor *c);
-void OglULineC (int left,int top,int right,int bot, grsColor *c);
-void OglUPolyC (int left, int top, int right, int bot, grsColor *c);
+void OglUPixelC (int x, int y, tCanvasColor *c);
+void OglULineC (int left,int top,int right,int bot, tCanvasColor *c);
+void OglUPolyC (int left, int top, int right, int bot, tCanvasColor *c);
 void OglTexWrap (tTextureInfo *tex, int state);
 void RebuildRenderContext (int bGame);
 
@@ -423,7 +423,7 @@ void DrawTexPolyFlat (CBitmap *bm,int nv,g3sPoint **vertlist);
 void OglSetupTransform (int bForce);
 void OglResetTransform (int bForce);
 void OglPalColor (ubyte *palette, int c);
-void OglGrsColor (grsColor *pc);
+void OglGrsColor (tCanvasColor *pc);
 void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
 int G3EnableClientState (GLuint nState, int nTMU);
 int G3EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);

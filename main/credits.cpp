@@ -87,9 +87,9 @@ CPalette *creditsPalette = NULL;
 
 extern ubyte *grBitBltFadeTable;
 
-grsFont * header_font;
-grsFont * title_font;
-grsFont * names_font;
+tFont * header_font;
+tFont * title_font;
+tFont * names_font;
 
 #define ALLOWED_CHAR 'R'
 
@@ -165,8 +165,8 @@ void ShowCredits(char *credits_filename)
 	char			filename [32];
 	int			xOffs, yOffs;
 	box			dirtyBox [NUM_LINES_HIRES];
-	gsrCanvas	*creditsOffscreenBuf = NULL;
-	gsrCanvas	*saveCanv = grdCurCanv;
+	CCanvas	*creditsOffscreenBuf = NULL;
+	CCanvas	*saveCanv = CCanvas::Current ();
 
 	// Clear out all tex buffer lines.
 memset (buffer, 0, sizeof (buffer));
@@ -192,22 +192,22 @@ if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0)) {
 	bBinary = 1;
 	}
 SetScreenMode(SCREEN_MENU);
-xOffs = (grdCurCanv->cvBitmap.props.w - 640) / 2;
-yOffs = (grdCurCanv->cvBitmap.props.h - 480) / 2;
+xOffs = (CCanvas::Current ()->Width () - 640) / 2;
+yOffs = (CCanvas::Current ()->Bitmap ().Height () - 480) / 2;
 if (xOffs < 0)
 	xOffs = 0;
 if (yOffs < 0)
 	yOffs = 0;
 creditsPalette = paletteManager.Load ("credits.256", NULL);
 paletteManager.LoadEffect  ();
-header_font = GrInitFont(gameStates.menus.bHires ? (char *) "font1-1h.fnt" : (char *) "font1-1.fnt");
-title_font = GrInitFont(gameStates.menus.bHires ? (char *) "font2-3h.fnt" : (char *) "font2-3.fnt");
-names_font = GrInitFont(gameStates.menus.bHires ? (char *) "font2-2h.fnt" : (char *) "font2-2.fnt");
-bmBackdrop.texBuf = NULL;
+header_font = GrInitFont (gameStates.menus.bHires ? (char *) "font1-1h.fnt" : (char *) "font1-1.fnt");
+title_font = GrInitFont (gameStates.menus.bHires ? (char *) "font2-3h.fnt" : (char *) "font2-3.fnt");
+names_font = GrInitFont (gameStates.menus.bHires ? (char *) "font2-2h.fnt" : (char *) "font2-2.fnt");
+bmBackdrop.SetTexBuf (NULL);
 bmBackdrop.SetPalette (NULL);
 
 //MWA  Made bmBackdrop bitmap linear since it should always be.  the current canvas may not
-//MWA  be linear, so we can't rely on grdCurCanv->cvBitmap->props.nMode.
+//MWA  be linear, so we can't rely on CCanvas::Current ()->Bitmap ()->props.nMode.
 
 nPcxError = PCXReadBitmap ((char *) CREDITS_BACKGROUND_FILENAME, &bmBackdrop, BM_LINEAR, 0);
 if (nPcxError != PCX_ERROR_NONE) {
@@ -218,11 +218,11 @@ SongsPlaySong(SONG_CREDITS, 1);
 bmBackdrop.Remap (NULL, -1, -1);
 
 if (!gameOpts->menus.nStyle) {
-	GrSetCurrentCanvas(NULL);
+	CCanvas::SetCurrent(NULL);
 	GrBitmap(xOffs,yOffs,&bmBackdrop);
-	if ((grdCurCanv->cvBitmap.props.w > 640) || (grdCurCanv->cvBitmap.props.h > 480)) {
-		GrSetColorRGBi (RGBA_PAL (0,0,32));
-		GrUBox(xOffs,yOffs,xOffs+bmBackdrop.props.w+1,yOffs+bmBackdrop.props.h+1);
+	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Bitmap ().Height () > 480)) {
+		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0,0,32));
+		GrUBox(xOffs,yOffs,xOffs+bmBackdrop.Width ()+1,yOffs+bmBackdrop.Height ()+1);
 		}
 	}
 paletteManager.FadeIn ();
@@ -232,17 +232,17 @@ paletteManager.FadeIn ();
 //MWA  for size to determine if we can use that buffer.  If the game size
 //MWA  matches what we need, then lets save memory.
 
-if (gameStates.menus.bHires && !gameOpts->menus.nStyle && gameStates.render.vr.buffers.offscreen->cv_w == 640)
+if (gameStates.menus.bHires && !gameOpts->menus.nStyle && gameStates.render.vr.buffers.offscreen->Bitmap ().Width () == 640)
 	creditsOffscreenBuf = gameStates.render.vr.buffers.offscreen;
 else if (gameStates.menus.bHires)
-	creditsOffscreenBuf = GrCreateCanvas(640,480);
+	creditsOffscreenBuf = CCanvas::Create(640,480);
 else
-	creditsOffscreenBuf = GrCreateCanvas(320,200);
+	creditsOffscreenBuf = CCanvas::Create(320,200);
 if (!creditsOffscreenBuf)
 	Error("Not enough memory to allocate Credits Buffer.");
-creditsOffscreenBuf->cvBitmap.SetPalette (grdCurCanv->cvBitmap.Palette ());
+creditsOffscreenBuf->Bitmap ().SetPalette (CCanvas::Current ()->Bitmap ().Palette ());
 if (gameOpts->menus.nStyle)
-	creditsOffscreenBuf->cvBitmap.props.flags |= BM_FLAG_TRANSPARENT;
+	creditsOffscreenBuf->Bitmap ().AddFlags (BM_FLAG_TRANSPARENT);
 KeyFlush ();
 
 bDone = 0;
@@ -291,20 +291,20 @@ get_line:;
 		int y;
 
 		if (gameOpts->menus.nStyle) {
-			GrSetCurrentCanvas (NULL);
+			CCanvas::SetCurrent (NULL);
 			ShowFullscreenImage (&bmBackdrop);
 	//			GrUpdate (0);
 	#if 0
-			if ((grdCurCanv->cvBitmap.props.w > 640) || (grdCurCanv->cvBitmap.props.h > 480)) {
-				GrSetColorRGBi (RGBA_PAL (0,0,32));
-				GrUBox (xOffs, yOffs, xOffs + bmBackdrop. props.w + 1, yOffs + bmBackdrop.props.h + 1);
+			if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Bitmap ().Height () > 480)) {
+				CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0,0,32));
+				GrUBox (xOffs, yOffs, xOffs + bmBackdrop. Width () + 1, yOffs + bmBackdrop.Height () + 1);
 				}
 	#endif
 			}
 		y = nFirstLineOffs - i;
-		GrSetCurrentCanvas (creditsOffscreenBuf);
+		CCanvas::SetCurrent (creditsOffscreenBuf);
 		if (gameOpts->menus.nStyle)
-			GrClearCanvas (0);	
+			CCanvas::Current ()->Clear (0);	
 		else
 			GrBitmap (0, 0, &bmBackdrop);
 		for (j = 0; j < NUM_LINES; j++)	{
@@ -315,15 +315,15 @@ get_line:;
 			if (s[0] == '!') 
 				s++;
 			else if (s[0] == '$') {
-				grdCurCanv->cvFont = header_font;
+				CCanvas::Current ()->SetFont (header_font);
 				s++;
 				} 
 			else if (s[0] == '*') {
-				grdCurCanv->cvFont = title_font;
+				CCanvas::Current ()->SetFont (title_font);
 				s++;
 				} 
 			else
-				grdCurCanv->cvFont = names_font;
+				CCanvas::Current ()->SetFont (names_font);
 			grBitBltFadeTable = (gameStates.menus.bHires ? fadeValues_hires : fadeValues);
 			pszTemp = strchr (s, '\t');
 			if (pszTemp) {	//	Wacky Credits thing
@@ -360,7 +360,7 @@ get_line:;
 			}
 
 		if (gameOpts->menus.nStyle) 
-			GrSetCurrentCanvas (NULL);
+			CCanvas::SetCurrent (NULL);
 
 		{	// Wacky Fast Credits Thing
 		box	*newBox;
@@ -368,12 +368,12 @@ get_line:;
 
 		for (j = 0; j < NUM_LINES; j++) {
 			newBox = dirtyBox + j;
-			tempBmP = &creditsOffscreenBuf->cvBitmap;
+			tempBmP = &creditsOffscreenBuf->Bitmap ();
 
 			GrBmBitBlt (newBox->width + 1, newBox->height +4,
 							newBox->left + xOffs, newBox->top + yOffs, 
 							newBox->left, newBox->top,
-							tempBmP, &grdCurScreen->scCanvas.cvBitmap);
+							tempBmP, &screen.Canvas ()->Bitmap ());
 			}
 		}
 	GrUpdate (0);
@@ -414,13 +414,13 @@ get_line:;
 		GrCloseFont (names_font);
 		paletteManager.FadeOut ();
 		paletteManager.Load (D2_DEFAULT_PALETTE, NULL);
-		D2_FREE (bmBackdrop.texBuf);
+		bmBackdrop.DestroyTexBuf ();
 		cf.Close ();
-		GrSetCurrentCanvas (saveCanv);
+		CCanvas::SetCurrent (saveCanv);
 		SongsPlaySong (SONG_TITLE, 1);
 
 		if (creditsOffscreenBuf != gameStates.render.vr.buffers.offscreen)
-			GrFreeCanvas (creditsOffscreenBuf);
+			creditsOffscreenBuf->Destroy ();
 		glDisable (GL_BLEND);
 		gameStates.menus.nInMenu = 0;
 		return;

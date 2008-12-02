@@ -887,7 +887,7 @@ if (bGetSlideBank == 2) {
 					dx += dz;
 				}
 			else {
-				//dz = dz * grdCurScreen->scWidth / grdCurScreen->scHeight;
+				//dz = dz * screen.Width () / screen.Height ();
 				if (dx < dz)
 					dx = 0;
 				else

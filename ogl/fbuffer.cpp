@@ -120,7 +120,7 @@ else {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 #if 0
 	if (nType == 1) //depth texture
-		glTexImage2D (GL_TEXTURE_2D, 0, 1, grdCurScreen->scWidth, grdCurScreen->scHeight, 0, GL_DEPTH_COMPONENT, GL_INT, NULL);
+		glTexImage2D (GL_TEXTURE_2D, 0, 1, screen.Width (), screen.Height (), 0, GL_DEPTH_COMPONENT, GL_INT, NULL);
 	else 
 #endif
 		{

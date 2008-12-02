@@ -672,7 +672,7 @@ if (gameData.render.monsterball.nFaces > 0)
 		OglSetupTransform (0);
 		G3StartInstanceMatrix(objP->info.position.vPos, objP->info.position.mOrient);
 		RenderSphere (&gameData.render.monsterball, &p,
-						  r, r, r, red, green, blue, gameData.hoard.monsterball.bm.texBuf ? 1.0f : alpha,
+						  r, r, r, red, green, blue, gameData.hoard.monsterball.bm.TexBuf () ? 1.0f : alpha,
 						  &gameData.hoard.monsterball.bm, 4, 0);
 		G3DoneInstance ();
 		OglResetTransform (1);

@@ -77,12 +77,12 @@ if (gameStates.ogl.hDepthBuffer || (gameStates.ogl.hDepthBuffer = OglCreateDepth
 	glBindTexture (GL_TEXTURE_2D, gameStates.ogl.hDepthBuffer);
 	if (!gameStates.ogl.bHaveDepthBuffer) {
 #if 0
-		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
+		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, screen.Width (), screen.Height (), 0);
 #else
-		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 #endif
 		if (nError = glGetError ()) {
-			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 			if (nError = glGetError ()) {
 				DestroyGlareDepthTexture ();
 				return gameStates.ogl.hDepthBuffer = 0;
@@ -524,7 +524,7 @@ glEnable (GL_TEXTURE_2D);
 bmP = bAdditive ? bmpGlare : bmpCorona;
 if (OglBindBmTex (bmP, 1, -1))
 	return;
-OglTexWrap (bmP->texInfo, GL_CLAMP);
+OglTexWrap (bmP->TexInfo (), GL_CLAMP);
 glDisable (GL_CULL_FACE);
 if (bAdditive) {
 	fLight *= color.alpha;

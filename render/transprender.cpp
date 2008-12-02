@@ -773,7 +773,7 @@ if (bmP) {
 				}
 			if (bDecal != 2)
 				bmP = bmP->Override (nFrame);
-			OglTexWrap (bmP->texInfo, nWrap);
+			OglTexWrap (bmP->TexInfo (), nWrap);
 			transpItems.nWrap = nWrap;
 			transpItems.nFrame = nFrame;
 			}
@@ -823,7 +823,7 @@ if (!bmBot) {
 	}
 #endif
 #if DBG
-if (bmBot && strstr (bmBot->szName, "glare.tga"))
+if (bmBot && strstr (bmBot->Name (), "glare.tga"))
 	item = item;
 #endif
 #if 1
@@ -858,7 +858,7 @@ if (transpItems.bDepthMask != item->bDepthMask)
 	glDepthMask (transpItems.bDepthMask = item->bDepthMask);
 #endif
 bmTop = faceP ? faceP->bmTop->Override (-1) : NULL;
-if (bmTop && !(bmTop->props.flags & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
+if (bmTop && !(bmTop->Flags () & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
 	bmBot = bmTop;
 	bmTop = mask = NULL;
 	bDecal = -1;
@@ -1112,8 +1112,8 @@ if (LoadTranspItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 
 	w = (float) X2F (item->nWidth);
 	h = (float) X2F (item->nHeight);
-	u = item->bmP->texInfo->u;
-	v = item->bmP->texInfo->v;
+	u = item->bmP->TexInfo ()->u;
+	v = item->bmP->TexInfo ()->v;
 	if (item->bColor)
 		glColor4fv ((GLfloat *) &item->color);
 	else

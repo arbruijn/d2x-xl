@@ -200,7 +200,7 @@ void DrawBlobOutline (void)
 	v3x = blob_vertices[4] - blob_vertices[2] + blob_vertices[0];
 	v3y = blob_vertices[5] - blob_vertices[3] + blob_vertices[1];
 
-	GrSetColorRGB (255, 255, 255, 255);
+	CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 
 	GrLine (blob_vertices[0], blob_vertices[1], blob_vertices[2], blob_vertices[3]);
 	GrLine (blob_vertices[2], blob_vertices[3], blob_vertices[4], blob_vertices[5]);

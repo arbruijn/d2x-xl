@@ -858,7 +858,7 @@ if (!gameStates.app.bAutoRunMission &&
 strlwr (pszLevelName = LevelName (nLevel));
 /*---*/PrintLog ("   loading level '%s'\n", pszLevelName);
 #if 0
-GrSetCurrentCanvas (NULL);
+CCanvas::SetCurrent (NULL);
 GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
 #endif
 nLastMsgYCrd = -1;		//so we don't restore backgound under msg
@@ -1491,7 +1491,7 @@ SetFunctionMode (FMODE_MENU);
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 SetScreenMode (SCREEN_MENU);
-GrSetCurrentCanvas (NULL);
+CCanvas::SetCurrent (NULL);
 KeyFlush ();
 if (!IsMultiGame) {
 	if (gameData.missions.nCurrentMission == (gameStates.app.bD1Mission ? gameData.missions.nD1BuiltinMission : gameData.missions.nBuiltinMission)) {
@@ -1538,8 +1538,8 @@ else
 
 if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
 	 !(gameData.app.nGameMode & (GM_MULTI | GM_MULTI_COOP))) {
-	GrSetCurrentCanvas (NULL);
-	GrClearCanvas (BLACK_RGBA);
+	CCanvas::SetCurrent (NULL);
+	CCanvas::Current ()->Clear (BLACK_RGBA);
 	paletteManager.ClearEffect ();
 	//paletteManager.Load (D2_DEFAULT_PALETTE, NULL, 0, 1, 0);
 	MaybeAddPlayerScore (0);
@@ -1622,7 +1622,7 @@ if (gameData.app.nGameMode & GM_MULTI)
 	return;
 paletteManager.FadeOut ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
-GrSetCurrentCanvas (NULL);
+CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 ExecMessageBox (NULL, (char *) STARS_BACKGROUND, 1, TXT_OK, TXT_DIED_IN_MINE);
@@ -1642,7 +1642,7 @@ if (gameData.app.nGameMode & GM_MULTI)
 StopTime ();
 paletteManager.FadeOut ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
-GrSetCurrentCanvas (NULL);
+CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 if (gameData.missions.nEnteredFromLevel < 0)
@@ -1668,7 +1668,7 @@ if (IsMultiGame)
 	return;
 paletteManager.FadeOut ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
-GrSetCurrentCanvas (NULL);
+CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel + 1);

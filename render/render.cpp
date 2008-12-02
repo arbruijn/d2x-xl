@@ -94,14 +94,14 @@ void RenderSkyBox (int nWindow);
 
 extern int bLog;
 
-gsrCanvas * reticleCanvas = NULL;
+CCanvas * reticleCanvas = NULL;
 
 void _CDECL_ FreeReticleCanvas (void)
 {
 if (reticleCanvas) {
 	PrintLog ("unloading reticle data\n");
-	D2_FREE( reticleCanvas->cvBitmap.texBuf);
-	D2_FREE( reticleCanvas);
+	reticleCanvas->Bitmap ().DestroyTexBuf ();
+	D2_FREE (reticleCanvas);
 	reticleCanvas	= NULL;
 	}
 }
@@ -116,7 +116,6 @@ void Draw3DReticle (fix nEyeOffset)
 	g3sPoint		*pointList [4];
 	int 			i;
 	vmsVector	v1, v2;
-	gsrCanvas	*saved_canvas;
 	int			saved_interp_method;
 
 //	if (!viewInfo.bUsePlayerHeadAngles) return;
@@ -151,23 +150,22 @@ v2 += gameData.objs.viewerP->info.position.mOrient [UVEC] * (-F1_0*1);
 G3TransformAndEncodePoint(&reticlePoints [3], v2);
 
 if ( reticleCanvas == NULL)	{
-	reticleCanvas = GrCreateCanvas(64, 64);
+	reticleCanvas = CCanvas::Create (64, 64);
 	if ( !reticleCanvas)
 		Error( "Couldn't D2_ALLOC reticleCanvas");
-	atexit( FreeReticleCanvas);
-	//reticleCanvas->cvBitmap.nId = 0;
-	reticleCanvas->cvBitmap.props.flags = BM_FLAG_TRANSPARENT;
+	//reticleCanvas->Bitmap ().nId = 0;
+	reticleCanvas->Bitmap ().SetFlags (BM_FLAG_TRANSPARENT);
 	}
 
-saved_canvas = grdCurCanv;
-GrSetCurrentCanvas(reticleCanvas);
-GrClearCanvas(0);		// Clear to Xparent
-ShowReticle(1);
-GrSetCurrentCanvas(saved_canvas);
+CCanvas::Push ();
+CCanvas::SetCurrent (reticleCanvas);
+reticleCanvas->Clear (0);		// Clear to Xparent
+ShowReticle (1);
+CCanvas::Pop ();
 
-saved_interp_method=gameStates.render.nInterpolationMethod;
+saved_interp_method = gameStates.render.nInterpolationMethod;
 gameStates.render.nInterpolationMethod	= 3;		// The best, albiet slowest.
-G3DrawTexPoly (4, pointList, tUVL, &reticleCanvas->cvBitmap, NULL, 1, -1);
+G3DrawTexPoly (4, pointList, tUVL, &reticleCanvas->Bitmap (), NULL, 1, -1);
 gameStates.render.nInterpolationMethod	= saved_interp_method;
 }
 
@@ -821,21 +819,21 @@ void DrawWindowBox (unsigned int color, short left, short top, short right, shor
 {
 	short l, t, r, b;
 
-GrSetColorRGBi (color);
+CCanvas::Current ()->SetColorRGBi (color);
 l=left;
 t=top;
 r=right;
 b=bot;
 
-if ( r<0 || b<0 || l>=grdCurCanv->cvBitmap.props.w || (t>=grdCurCanv->cvBitmap.props.h && b>=grdCurCanv->cvBitmap.props.h))
+if ( r<0 || b<0 || l>=CCanvas::Current ()->Width () || (t >= CCanvas::Current ()->Bitmap ().Height () && b >= CCanvas::Current ()->Bitmap ().Height ()))
 	return;
 
 if (l<0)
 	l=0;
 if (t<0)
 	t=0;
-if (r>=grdCurCanv->cvBitmap.props.w) r=grdCurCanv->cvBitmap.props.w-1;
-if (b>=grdCurCanv->cvBitmap.props.h) b=grdCurCanv->cvBitmap.props.h-1;
+if (r>=CCanvas::Current ()->Width ()) r=CCanvas::Current ()->Width ()-1;
+if (b>=CCanvas::Current ()->Bitmap ().Height ()) b=CCanvas::Current ()->Bitmap ().Height ()-1;
 
 GrLine(I2X(l), I2X(t), I2X(r), I2X(t));
 GrLine(I2X(r), I2X(t), I2X(r), I2X(b));
@@ -1303,7 +1301,7 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0)) {
 StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
 gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 if (!nWindow)
-	gameData.render.dAspect = (double) grdCurCanv->cvBitmap.props.w / (double) grdCurCanv->cvBitmap.props.h;
+	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Bitmap ().Height ();
 //PrintLog ("G3StartFrame\n");
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
 //PrintLog ("SetRenderView\n");
@@ -1312,11 +1310,11 @@ gameStates.render.nStartSeg = nStartSeg;
 if (nClearWindow == 1) {
 	if (!nClearWindowColor)
 		nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
-	GrClearCanvas (nClearWindowColor);
+	CCanvas::Current ()->Clear (nClearWindowColor);
 	}
 #if DBG
 if (bShowOnlyCurSide)
-	GrClearCanvas (nClearWindowColor);
+	CCanvas::Current ()->Clear (nClearWindowColor);
 #endif
 #if SHADOWS
 if (!gameStates.render.bHaveStencilBuffer)
@@ -1332,7 +1330,7 @@ if (SHOW_SHADOWS &&
 #endif
 		OglStartFrame (0, 0);
 #if SOFT_SHADOWS
-		OglViewport (grdCurCanv->cvBitmap.props.x, grdCurCanv->cvBitmap.props.y, 128, 128);
+		OglViewport (CCanvas::Current ()->Bitmap ().props.x, CCanvas::Current ()->Bitmap ().props.y, 128, 128);
 #endif
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 #if 1//!DBG
@@ -1654,8 +1652,8 @@ if (bPreDrawSegs)
 
 renderPortals [0].left =
 renderPortals [0].top = 0;
-renderPortals [0].right = grdCurCanv->cvBitmap.props.w - 1;
-renderPortals [0].bot = grdCurCanv->cvBitmap.props.h - 1;
+renderPortals [0].right = CCanvas::Current ()->Width () - 1;
+renderPortals [0].bot = CCanvas::Current ()->Bitmap ().Height () - 1;
 
 //breadth-first renderer
 
@@ -2031,7 +2029,7 @@ if (nClearWindow == 2) {
 
 		if (nClearWindowColor == (unsigned int) -1)
 			nClearWindowColor = BLACK_RGBA;
-		GrSetColor (nClearWindowColor);
+		CCanvas::Current ()->SetColor (nClearWindowColor);
 		for (i = nFirstTerminalSeg, rwP = renderPortals; i < gameData.render.mine.nRenderSegs; i++, rwP++) {
 			if (gameData.render.mine.nSegRenderList [i] != -0x7fff) {
 #if DBG
@@ -2278,16 +2276,16 @@ void CheckFace(int nSegment, int nSide, int facenum, int nVertices, short *vp, i
 			pointList [i] = gameData.segs.points + vp [i];
 		}
 
-		GrSetColor(0);
+		CCanvas::Current ()->SetColor(0);
 		gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
-		GrSetColor(1);					//and render in color one
+		CCanvas::Current ()->SetColor(1);					//and render in color one
  save_lighting = gameStates.render.nLighting;
  gameStates.render.nLighting = 2;
 		//G3DrawPoly(nVertices, vp);
 		G3DrawTexPoly (nVertices, pointList, (tUVL *)uvlCopy, bm, 1, -1);
  gameStates.render.nLighting = save_lighting;
 
-		if (gr_ugpixel(&grdCurCanv->cvBitmap, _search_x, _search_y) == 1) {
+		if (gr_ugpixel(&CCanvas::Current ()->Bitmap (), _search_x, _search_y) == 1) {
 			found_seg = nSegment;
 			found_side = nSide;
 			found_face = facenum;
@@ -2305,16 +2303,16 @@ void RenderObjectSearch(tObject *objP)
 	//what color the tObject draws in, so we try color 0, then color 1,
 	//in case the tObject itself is rendering color 0
 
-	GrSetColor(0);
+	CCanvas::Current ()->SetColor(0);
 	gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
 	RenderObject (objP, 0, 0);
-	if (gr_ugpixel(&grdCurCanv->cvBitmap, _search_x, _search_y) != 0)
+	if (gr_ugpixel(&CCanvas::Current ()->Bitmap (), _search_x, _search_y) != 0)
 		changed=1;
 
-	GrSetColor(1);
+	CCanvas::Current ()->SetColor(1);
 	gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
 	RenderObject (objP, 0, 0);
-	if (gr_ugpixel(&grdCurCanv->cvBitmap, _search_x, _search_y) != 1)
+	if (gr_ugpixel(&CCanvas::Current ()->Bitmap (), _search_x, _search_y) != 1)
 		changed=1;
 
 	if (changed) {
@@ -2340,15 +2338,15 @@ int FindSegSideFace(short x, short y, int *seg, int *tSide, int *face, int *poly
 	_search_x = x; _search_y = y;
 	found_seg = -1;
 	if (render_3d_in_big_tPortal) {
-		gsrCanvas temp_canvas;
+		CCanvas temp_canvas;
 
 		GrInitSubCanvas(&temp_canvas, canv_offscreen, 0, 0,
-			LargeView.ev_canv->cvBitmap.props.w, LargeView.ev_canv->cvBitmap.props.h);
-		GrSetCurrentCanvas(&temp_canvas);
+			LargeView.ev_canv->Width (), LargeView.ev_canv->Bitmap ().Height ());
+		CCanvas::SetCurrent(&temp_canvas);
 		RenderFrame(0, 0);
 	}
 	else {
-		GrSetCurrentCanvas(&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
+		CCanvas::SetCurrent(&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 		RenderFrame(0, 0);
 	}
 	bSearchMode = 0;

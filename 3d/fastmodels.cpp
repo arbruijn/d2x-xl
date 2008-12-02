@@ -475,7 +475,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 					bmP = modelBitmaps [nBitmap];
 				else {
 					bmP = pm->pTextures + nBitmap;
-					if (nTeamColor && bmP->nTeam && (0 <= (h = pm->teamTextures [nTeamColor % MAX_PLAYERS]))) {
+					if (nTeamColor && bmP->Team () && (0 <= (h = pm->teamTextures [nTeamColor % MAX_PLAYERS]))) {
 						nBitmap = h;
 						bmP = pm->pTextures + nBitmap;
 						}
@@ -488,12 +488,12 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 					bmP = bmP->CurFrame ();
 				if (OglBindBmTex (bmP, 1, 3))
 					continue;
-				OglTexWrap (bmP->texInfo, GL_REPEAT);
+				OglTexWrap (bmP->TexInfo (), GL_REPEAT);
 				}
 			}
 		nIndex = pmf->nIndex;
 		if (bHires) {
-			bTransparent = bmP && ((bmP->props.flags & BM_FLAG_TRANSPARENT) != 0);
+			bTransparent = bmP && ((bmP->Flags () & BM_FLAG_TRANSPARENT) != 0);
 			if (bTransparent != bTransparency) {
 				if (bTransparent)
 					pm->bHasTransparency = 1;

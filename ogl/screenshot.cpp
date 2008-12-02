@@ -164,17 +164,17 @@ do {
 	} while (!access (szSaveName, 0));
 
 if ((bTmpBuf = (buf == NULL))) {
-	buf = (unsigned char *) D2_ALLOC (grdCurScreen->scWidth * grdCurScreen->scHeight * 3);
+	buf = (unsigned char *) D2_ALLOC (screen.Width () * screen.Height () * 3);
 	glDisable (GL_TEXTURE_2D);
 	OglSetReadBuffer (GL_FRONT, 1);
-	glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_RGB, GL_UNSIGNED_BYTE, buf);
+	glReadPixels (0, 0, screen.Width (), screen.Height (), GL_RGB, GL_UNSIGNED_BYTE, buf);
 	glErrCode = glGetError ();
 	glErrCode = GL_NO_ERROR;
 	}
 else
 	glErrCode = GL_NO_ERROR;
 if (glErrCode == GL_NO_ERROR) {
-	WriteScreenShot (szSaveName, grdCurScreen->scWidth, grdCurScreen->scHeight, buf, 0);
+	WriteScreenShot (szSaveName, screen.Width (), screen.Height (), buf, 0);
 	if (!(bAutomap || screenShotIntervals [gameOpts->app.nScreenShotInterval])) {
 		sprintf (szMessage, "%s '%s'", TXT_DUMPING_SCREEN, szSaveName);
 		HUDMessage (MSGC_GAME_FEEDBACK, szMessage);

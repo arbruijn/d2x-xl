@@ -127,7 +127,7 @@ if (modelBitmaps && *modelBitmaps) {
 	pmf->nBitmap = WORDVAL (p+28);
 	bmP = modelBitmaps [pmf->nBitmap];
 	if (objColorP)
-		paletteManager.Game ()->ToRgbaf (bmP->AverageColor (), *objColorP);
+		paletteManager.Game ()->ToRgbaf (bmP->AvgColorIndex (), *objColorP);
 	baseColor.red = baseColor.green = baseColor.blue = baseColor.alpha = 1;
 	i = (int) (bmP - gameData.pig.tex.bitmaps [0]);
 	pmf->bThruster = (i == 24) || ((i >= 1741) && (i <= 1745));

@@ -137,7 +137,7 @@ if (*szExitMsg) {
 void D2MsgBox (const char *pszMsg, unsigned int nType)
 {
 gameData.app.bGamePaused = 1;
-if (grdCurScreen && pWarnFunc)
+if (screen.Width () && screen.Height () && pWarnFunc)
 	(*pWarnFunc)(pszMsg);
 #if defined (WIN32)
 else 
@@ -272,7 +272,7 @@ return 0;
 
 int TrapBmp (CBitmap *bmP, char *pszName)
 {
-if (strstr (bmP->szName, pszName))
+if (strstr (bmP->Name (), pszName))
 	return 1;
 return 0;
 }

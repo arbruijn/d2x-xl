@@ -90,7 +90,7 @@ void OglCacheVClipTextures (tVideoClip *vc, int nTransp)
 
 for (i = 0; i < vc->nFrameCount; i++) {
 	PIGGY_PAGE_IN (vc->frames [i].index, 0);
-	OglLoadBmTexture (gameData.pig.tex.bitmaps [0] + vc->frames [i].index, 1, nTransp, 1);
+	gameData.pig.tex.bitmaps [0] [vc->frames [i].index].SetupTexture (1, nTransp, 1);
 	}
 }
 
@@ -123,13 +123,13 @@ if (bmP->Override ()) {
 	if (bmP->WallAnim ()) {
 		nFrames = bmP->FrameCount ();
 		if (nFrames > 1) {
-			OglLoadBmTexture (bmP, 1, 3, 1);
+			bmP->SetupTexture (1, 3, 1);
 			if (bmP->Frames ()) {
 				if ((nFrameIdx >= 0) || (-nFrames > nFrameIdx))
 					bmP->SetCurFrame (bmP->Frames ());
 				else
 					bmP->SetCurFrame (bmP->Frames () - nFrameIdx - 1);
-				OglLoadBmTexture (bmP->CurFrame (), 1, 3, 1);
+				bmP->CurFrame ()->SetupTexture (1, 3, 1);
 				}
 			}
 		}
@@ -153,15 +153,15 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	bmP = OglLoadFaceBitmap (tMap1, sideP->nFrame);
 	if ((tMap2 = sideP->nOvlTex)) {
 		bm2 = OglLoadFaceBitmap (tMap1, sideP->nFrame);
-		if (!(bm2->props.flags & BM_FLAG_SUPER_TRANSPARENT) ||
+		if (!(bm2->Flags () & BM_FLAG_SUPER_TRANSPARENT) ||
 			 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
-			OglLoadBmTexture (bm2, 1, 3, 1);
+			bm2->SetupTexture (1, 3, 1);
 		else if ((bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->nOvlOrient)))
 			bmP = bmm;
 		else
-			OglLoadBmTexture (bm2, 1, 3, 1);
+			bm2->SetupTexture (1, 3, 1);
 		}
-	OglLoadBmTexture (bmP, 1, 3, 1);
+	bmP->SetupTexture (1, 3, 1);
 	}
 }
 
@@ -212,7 +212,7 @@ void CacheAddonTextures (void)
 
 for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
 	PageInAddonBitmap (-i - 1);
-	OglLoadBmTexture (BM_ADDON (i), 1, 0, gameOpts->render.bDepthSort <= 0);
+	BM_ADDON (i)->SetupTexture (1, 0, gameOpts->render.bDepthSort <= 0);
 	}
 }
 
@@ -261,15 +261,15 @@ for (segP = SEGMENTS, nSegment = 0; nSegment < gameData.segs.nSegments; nSegment
 		bmBot = OglLoadFaceBitmap (nBaseTex, sideP->nFrame);
 		if ((nOvlTex = sideP->nOvlTex)) {
 			bmTop = OglLoadFaceBitmap (nOvlTex, sideP->nFrame);
-			if (!(bmTop->props.flags & BM_FLAG_SUPER_TRANSPARENT) ||
+			if (!(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) ||
 				 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
-				OglLoadBmTexture (bmTop, 1, 3, 1);
+				bmTop->SetupTexture (1, 3, 1);
 			else if ((bmm = TexMergeGetCachedBitmap (nBaseTex, nOvlTex, sideP->nOvlOrient)))
 				bmBot = bmm;
 			else
-				OglLoadBmTexture (bmTop, 1, 3, 1);
+				bmTop->SetupTexture (1, 3, 1);
 			}
-		OglLoadBmTexture (bmBot, 1, 3, 1);
+		bmBot->SetupTexture (1, 3, 1);
 		}
 	}
 ResetSpecialEffects ();

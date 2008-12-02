@@ -415,11 +415,11 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 		case anhd_sig:
 			if (!prevBmP) 
 				return IFF_CORRUPT;
-			bmHeader->w = prevBmP->props.w;
-			bmHeader->h = prevBmP->props.h;
-			bmHeader->nType = prevBmP->props.nMode;
+			bmHeader->w = prevBmP->Width ();
+			bmHeader->h = prevBmP->Height ();
+			bmHeader->nType = prevBmP->Mode ();
 			MALLOC (bmHeader->raw_data, ubyte, bmHeader->w * bmHeader->h);
-			memcpy (bmHeader->raw_data, prevBmP->texBuf, bmHeader->w * bmHeader->h);
+			memcpy (bmHeader->raw_data, prevBmP->TexBuf (), bmHeader->w * bmHeader->h);
 			SkipChunk (len);
 			break;
 
@@ -504,16 +504,16 @@ int CIFF::ConvertRgb15 (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
 	tPalEntry *palptr;
 
 palptr = bmHeader->palette;
-MALLOC(new_data, ushort, bmP->props.w * bmP->props.h * 2);
+MALLOC(new_data, ushort, bmP->Width () * bmP->Height () * 2);
 if (new_data == NULL)
 	return IFF_NO_MEM;
-for (y=0; y<bmP->props.h; y++) {
+for (y=0; y<bmP->Height (); y++) {
 	for (x=0; x<bmHeader->w; x++)
 		new_data[newptr++] = INDEX_TO_15BPP(bmHeader->raw_data[y*bmHeader->w+x]);
 	}
-D2_FREE(bmP->texBuf);				//get rid of old-style data
-bmP->texBuf = (ubyte *) new_data;			//..ccAnd point to new data
-bmP->props.rowSize *= 2;				//two bytes per row
+bmP->DestroyTexBuf ();				//get rid of old-style data
+bmP->SetTexBuf ((ubyte *) new_data);			//..ccAnd point to new data
+bmP->SetRowSize (bmP->RowSize () * 2);				//two bytes per row
 return IFF_NO_ERROR;
 }
 
@@ -552,19 +552,13 @@ SetLen (0);
 //copy an iff header structure to a CBitmap structure
 void CIFF::CopyIffToGrs (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
 {
-D2_FREE (bmP->texBuf);
-bmP->props.x = 
-bmP->props.y = 0;
-bmP->props.w = bmHeader->w;
-bmP->props.h = bmHeader->h;
-bmP->props.nMode = (char) bmHeader->nType;
-bmP->props.rowSize = bmHeader->w;
-bmP->texBuf = bmHeader->raw_data;
-bmP->props.flags = 0;
+bmP->DestroyTexBuf ();
+bmP->SetFlags (0);
+bmP->Init (bmHeader->nType, 0, 0, bmHeader->w, bmHeader->h, 1, bmHeader->raw_data);
 }
 
 //------------------------------------------------------------------------------
-//if bmP->texBuf is set, use it (making sure w & h are correct), else
+//if bmP->TexBuf () is set, use it (making sure w & h are correct), else
 //allocate the memory
 int CIFF::ParseBitmap (CBitmap *bmP, int bitmapType, CBitmap *prevBmP)
 {
@@ -573,9 +567,9 @@ int CIFF::ParseBitmap (CBitmap *bmP, int bitmapType, CBitmap *prevBmP)
 	int					formType;
 
 memset (&bmHeader, 0, sizeof (bmHeader));
-if (bmHeader.raw_data = bmP->texBuf) {
-	bmHeader.w = bmP->props.w;
-	bmHeader.h = bmP->props.h;
+if (bmHeader.raw_data = bmP->TexBuf ()) {
+	bmHeader.w = bmP->Width ();
+	bmHeader.h = bmP->Height ();
 	}
 sig = GetSig ();
 if (sig != form_sig)
@@ -631,7 +625,7 @@ int CIFF::ReplaceBitmap (const char *cfname, CBitmap *bmP)
 
 ret = Open (cfname);		//read in entire file
 if (ret == IFF_NO_ERROR)
-	ret = ParseBitmap (bmP, bmP->props.nMode, NULL);
+	ret = ParseBitmap (bmP, bmP->Mode (), NULL);
 Close();
 return ret;
 }
@@ -817,20 +811,20 @@ int CIFF::WriteBitmap (const char *cfname, CBitmap *bmP, ubyte *palette)
 	int					ret;
 	int					bCompression;
 
-if (bmP->props.nMode == BM_RGB15) return IFF_BAD_BM_TYPE;
+if (bmP->Mode () == BM_RGB15) return IFF_BAD_BM_TYPE;
 #if COMPRESS
-	bCompression = (bmP->props.w>=MIN_COMPRESS_WIDTH);
+	bCompression = (bmP->Width ()>=MIN_COMPRESS_WIDTH);
 #else
 	bCompression = 0;
 #endif
 //fill in values in bmHeader
 bmHeader.x = bmHeader.y = 0;
-bmHeader.w = bmP->props.w;
-bmHeader.h = bmP->props.h;
+bmHeader.w = bmP->Width ();
+bmHeader.h = bmP->Height ();
 bmHeader.nType = TYPE_PBM;
 bmHeader.transparentcolor = m_transparentColor;
-bmHeader.pagewidth = bmP->props.w;	//I don't think it matters what I write
-bmHeader.pageheight = bmP->props.h;
+bmHeader.pagewidth = bmP->Width ();	//I don't think it matters what I write
+bmHeader.pageheight = bmP->Height ();
 bmHeader.nplanes = 8;
 bmHeader.masking = mskNone;
 if (m_hasTransparency)	{
@@ -838,8 +832,8 @@ if (m_hasTransparency)	{
 	}
 bmHeader.compression = (bCompression?cmpByteRun1:cmpNone);
 bmHeader.xaspect = bmHeader.yaspect = 1;	//I don't think it matters what I write
-bmHeader.raw_data = bmP->texBuf;
-bmHeader.row_size = bmP->props.rowSize;
+bmHeader.raw_data = bmP->TexBuf ();
+bmHeader.row_size = bmP->RowSize ();
 if (palette) 
 	memcpy(&bmHeader.palette, palette, 256*3);
 //open file and write
@@ -881,7 +875,7 @@ else if (formType == anim_sig) {
 			CBitmap *prevBmP;
 			prevBmP = *n_bitmaps>0?bm_list[*n_bitmaps-1]:NULL;
 			MALLOC(bm_list[*n_bitmaps] , CBitmap, 1);
-			bm_list[*n_bitmaps]->texBuf = NULL;
+			bm_list[*n_bitmaps]->SetTexBuf (NULL);
 			ret = ParseBitmap (bm_list[*n_bitmaps], formType, prevBmP);
 			if (ret != IFF_NO_ERROR)
 				goto done;

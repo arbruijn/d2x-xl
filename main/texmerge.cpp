@@ -172,14 +172,14 @@ if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)) {
 	if (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) {
 //			return bmTop;
 		MergeTextures (nOrient, bmBot, bmTop, bmP, 1);
-		bmP->SetFlags (bmP->Flags () | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
-		bmP->SetAvgColor (bmTop->AverageColor ());
+		bmP->AddFlags (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
+		bmP->SetAvgColorIndex (bmTop->AvgColorIndex ());
 		}
 	else {
-//			MergeTexturesNormal (nOrient, bmBot, bmTop, bmP->texBuf);
+//			MergeTexturesNormal (nOrient, bmBot, bmTop, bmP->TexBuf ());
 		MergeTextures (nOrient, bmBot, bmTop, bmP, 0);
-		bmP->SetFlags (bmP->Flags () | bmBot->Flags () & (~BM_FLAG_RLE));
-		bmP->avgColor = bmBot->avgColor;
+		bmP->AddFlags (bmBot->Flags () & (~BM_FLAG_RLE));
+		bmP->SetAvgColorIndex (bmBot->AvgColorIndex ());
 		}
 	}
 cacheP->bmTop = bmTop;
@@ -203,8 +203,8 @@ if (bmTop->Flags () & BM_FLAG_RLE)
 if (bmBot->Flags () & BM_FLAG_RLE)
 	bmBot = rle_expand_texture(bmBot);
 //	Assert(bmBot != bmTop);
-top_data = bmTop->texBuf;
-bottom_data = bmBot->texBuf;
+top_data = bmTop->TexBuf ();
+bottom_data = bmBot->TexBuf ();
 scale = bmBot->Width () / bmTop->Width ();
 if (!scale)
 	scale = 1;
@@ -300,7 +300,7 @@ void MergeTextures (
 	int		i, x, y, bw, bh, tw, th, dw, dh;
 	int		bTopBPP, bBtmBPP, bST = 0;
 	frac		topScale, btmScale;
-	tRGBA		*dest_data = (tRGBA *) dest_bmp->texBuf;
+	tRGBA		*dest_data = (tRGBA *) dest_bmp->TexBuf ();
 
 	ubyte		*top_data, *bottom_data, *top_pal, *btmPalette;
 
@@ -316,8 +316,8 @@ if (bmBot->Flags () & BM_FLAG_RLE)
 
 //	Assert(bmBot != bmTop);
 
-top_data = bmTop->texBuf;
-bottom_data = bmBot->texBuf;
+top_data = bmTop->TexBuf ();
+bottom_data = bmBot->TexBuf ();
 top_pal = bmTop->Palette ()->Raw ();
 btmPalette = bmBot->Palette ()->Raw ();
 
@@ -355,8 +355,8 @@ if (w > bmTop->Width ())
 	w = h = bmBot->Width ();
 scale.c = scale.d = 1;
 #endif
-bTopBPP = bmTop->nBPP;
-bBtmBPP = bmBot->nBPP;
+bTopBPP = bmTop->BPP ();
+bBtmBPP = bmBot->BPP ();
 #if DBG
 memset (dest_data, 253, dest_bmp->Width () * dest_bmp->Height () * 4);
 #endif
