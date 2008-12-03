@@ -26,7 +26,6 @@ template < class _T > class CArray {
 			}
 		inline _T* Buffer (void) { return m_buffer; }
 		inline void SetBuffer (_T *buffer, unsigned int size = 0xffffffff) {
-			Destroy ();
 			m_buffer = buffer;
 			m_size = size;
 			}

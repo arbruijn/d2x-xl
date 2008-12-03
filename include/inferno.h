@@ -813,11 +813,11 @@ typedef struct tCockpitStates {
 //------------------------------------------------------------------------------
 
 typedef struct tVRBuffers {
-	CCanvas  *offscreen;			// The offscreen data buffer
-	CCanvas	render [2];			//  Two offscreen buffers for left/right eyes.
-	CCanvas	subRender [2];		//  Two sub buffers for left/right eyes.
-	CCanvas	screenPages [2];	//  Two pages of VRAM if paging is available
-	CCanvas	editorCanvas;		//  The canvas that the editor writes to.
+	CCanvas		*offscreen;			// The offscreen data buffer
+	CCanvas		render [2];			//  Two offscreen buffers for left/right eyes.
+	CCanvas		subRender [2];		//  Two sub buffers for left/right eyes.
+	CCanvas		screenPages [2];	//  Two pages of VRAM if paging is available
+	CCanvas		editorCanvas;		//  The canvas that the editor writes to.
 } tVRBuffers;
 
 typedef struct tVRStates {
