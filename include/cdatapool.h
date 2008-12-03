@@ -46,9 +46,9 @@ template < class _T > class CDataPool {
 			if (!m_buffer.Create (size))
 				return false;
 			unsigned int i;
-			for (i = 0; i < size; ) {
+			for (i = 0; i < size; i++) {
 				m_buffer [i].prev = i - 1;
-				m_buffer [i].next = ++i;
+				m_buffer [i].next = i + 1;
 				}
 			m_buffer [i - 1].next = -1;
 			m_free = 0;
