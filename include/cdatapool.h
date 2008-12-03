@@ -63,7 +63,8 @@ template < class _T > class CDataPool {
 			int next = e.next;
 			e.prev = -1;
 			e.next = m_used;
-			m_buffer [m_used].prev = m_free;
+			if (m_used >= 0)
+				m_buffer [m_used].prev = m_free;
 			m_used = m_free;
 			m_free = next;
 			return &e.data; 

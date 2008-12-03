@@ -1010,7 +1010,7 @@ int CBitmap::SetupFrames (int bDoMipMap, int nTransp, int bLoad)
 if (nFrames < 2)
 	return 0;
 else {
-	CBitmap	*bmfP = (CBitmap *) D2_ALLOC (nFrames * sizeof (CBitmap));
+	CBitmap	*bmfP = new CBitmap [nFrames];
 	int		i, w = m_bm.props.w;
 
 	memset (bmfP, 0, nFrames * sizeof (CBitmap));
@@ -1133,7 +1133,7 @@ CBitmap *CBitmap::SetupTexture (int bDoMipMap, int nTransp, int bLoad)
 {
 	CBitmap *bmP;
 
-if ((bmP = Override (-1)))
+if ((bmP = HasOverride ()))
 	bmP->PrepareTexture (bDoMipMap, nTransp, bLoad);
 
 int	i, h, w, nFrames;

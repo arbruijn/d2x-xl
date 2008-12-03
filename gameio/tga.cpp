@@ -35,7 +35,7 @@ int ReadTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *bmP, int alpha,
 	float				a, avgAlpha = 0;
 
 bmP->SetBPP (nBytes);
-if (!(bmP->Buffer () || (bmP->CreateBuffer ())))
+if (!(bmP->Buffer () || bmP->CreateBuffer ()))
 	 return 0;
 memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
 memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
@@ -372,7 +372,7 @@ if (r && CompressTGA (bmP))
 cf.Close ();
 #if 1//def _DEBUG
 char szName [20];
-strncpy (szName, pszFile, sizeof (bmP->Name ()) - 1);
+strncpy (szName, pszFile, sizeof (szName));
 if ((psz = strrchr (szName, '.')))
 	*psz = '\0';
 else

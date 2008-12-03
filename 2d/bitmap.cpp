@@ -86,7 +86,7 @@ DestroyMask ();
 
 void CBitmap::DestroyFrames (void)
 {
-D2_FREE (m_bm.info.alt.frames);
+delete[] m_bm.info.alt.frames;
 m_bm.info.alt.curFrame = NULL;
 m_bm.info.alt.nFrameCount = 0;
 }
@@ -95,7 +95,8 @@ m_bm.info.alt.nFrameCount = 0;
 
 void CBitmap::DestroyMask (void)
 {
-D2_FREE (m_bm.info.std.mask);
+delete m_bm.info.std.mask;
+m_bm.info.std.mask = NULL;
 }
 
 //------------------------------------------------------------------------------

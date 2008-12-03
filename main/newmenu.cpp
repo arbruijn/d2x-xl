@@ -286,13 +286,13 @@ return 1;
 
 void NMLoadBackground (char *filename, bkg *bgP, int bRedraw)
 {
-	int			nPCXResult;
-	int			width, height;
+	int		nPCXResult;
+	int		width, height;
 	CBitmap	*bmP = bgP ? bgP->background : NULL;
 
 if (!(bRedraw && gameOpts->menus.nStyle && bgP && bmP)) {
 	if (bmP && (bmP != pAltBg)) {
-		D2_FREE (bmP);
+		delete bmP;
 		}
 	if (!filename)
 		filename = pszCurBg;
@@ -314,12 +314,8 @@ if (!(bRedraw && gameOpts->menus.nStyle && bgP && bmP)) {
 		if ((bmP = CBitmap::Create (0, width, height, 1)))
 			bmP->SetName (filename);
 		}
-	nPCXResult = PCXReadBitmap (filename, (pAltBg && (bmP == pAltBg)) ? NULL : bmP, bmP ? bmP->Mode () : 0, 0);
-	Assert (nPCXResult == PCX_ERROR_NONE);
-// Remap stuff. this code is kind of a hack. Before we bring up the menu, we need to
-// do some stuff to make sure the palette is ok. First,we need to get our current palette 
-// into the 2d's array, so the remapping will work.  Second, we need to remap the fonts.  
-// Third, we need to fill in part of the fade tables so the darkening of the menu edges works.
+	if (bmP && !pAltBg || (bmP != pAltBg))
+		nPCXResult = PCXReadBitmap (filename, bmP, bmP->Mode (), 0);
 	paletteManager.ClearEffect ();
 	paletteManager.SetLastLoaded ("");		//force palette load next time
 	if (bgP) {
