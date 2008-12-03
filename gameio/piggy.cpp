@@ -469,7 +469,7 @@ if (!bogusBitmap_initialized) {
 	bogusBitmap.SetWidth (64); 
 	bogusBitmap.SetHeight (64);
 	bogusBitmap.SetRowSize (64);
-	bogusBitmap.SetTexBuf (bogus_data);
+	bogusBitmap.SetBuffer (bogus_data);
 	bogusBitmap.SetPalette (paletteManager.Game ());
 	c = paletteManager.Game ()->ClosestColor (0, 0, 63);
 	memset (bogus_data, c, 4096);
@@ -601,16 +601,16 @@ else
 	zSize = bmP->Width () * bmP->Width ();
 
 if (pNextBmP) {
-	bmP->SetTexBuf (*pNextBmP);
+	bmP->SetBuffer (*pNextBmP);
 	*pNextBmP += zSize;
 	}
 else {
-	if (bmP->CreateTexBuf ())
+	if (bmP->CreateBuffer ())
 		UseBitmapCache (bmP, (int) bmP->BufSize ());
 	else
 		return;
 	}
-cf.Read (bmP->TexBuf (), 1, zSize);
+cf.Read (bmP->Buffer (), 1, zSize);
 bSwap0255 = 0;
 switch (cf.Length ()) {
 	case D1_MAC_PIGSIZE:
@@ -782,7 +782,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		bmTemp.SetBPP (1);
 		bmTemp.SetFlags (bmh.flags | BM_FLAG_PAGED_OUT);
 		bmTemp.SetAvgColorIndex (bmh.avgColor);
-		bmTemp.SetTexBuf (NULL); //(ubyte *) D2_ALLOC (bmTemp.props.w * bmTemp.Width ());
+		bmTemp.SetBuffer (NULL); //(ubyte *) D2_ALLOC (bmTemp.props.w * bmTemp.Width ());
 		bmTemp.SetBPP (1);
 		bitmapCacheUsed += bmTemp.BufSize ();
 		gameData.pig.tex.bitmapFlags [1][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
@@ -920,7 +920,7 @@ if (!(bmP = CBitmap::Create (0, bih.biWidth, bih.biHeight, 1))) {
 	return NULL;
 	}
 cf.Seek (bfh.bfOffBits, SEEK_SET);
-if (cf.Read (bmP->TexBuf (), bih.biWidth * bih.biHeight, 1) != 1) {
+if (cf.Read (bmP->Buffer (), bih.biWidth * bih.biHeight, 1) != 1) {
 	D2_FREE (bmP);
 	return NULL;
 	}

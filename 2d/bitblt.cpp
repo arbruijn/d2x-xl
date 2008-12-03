@@ -182,9 +182,9 @@ void gr_ubitmap00(int x, int y, CBitmap *bmP)
 	unsigned char * src;
 
 	dest_rowSize=CCanvas::Current ()->Bitmap ().RowSize () << gr_bitblt_dest_step_shift;
-	dest = &(CCanvas::Current ()->Bitmap ().TexBuf ()[ dest_rowSize*y+x ]);
+	dest = &(CCanvas::Current ()->Bitmap ().Buffer ()[ dest_rowSize*y+x ]);
 
-	src = bmP->TexBuf ();
+	src = bmP->Buffer ();
 
 	for (y1=0; y1 < bmP->Height (); y1++)    {
 		if (gr_bitblt_double)
@@ -207,9 +207,9 @@ void gr_ubitmap00m(int x, int y, CBitmap *bmP)
 	unsigned char * src;
 
 	dest_rowSize=CCanvas::Current ()->Bitmap ().RowSize () << gr_bitblt_dest_step_shift;
-	dest = &(CCanvas::Current ()->Bitmap ().TexBuf ()[ dest_rowSize*y+x ]);
+	dest = &(CCanvas::Current ()->Bitmap ().Buffer ()[ dest_rowSize*y+x ]);
 
-	src = bmP->TexBuf ();
+	src = bmP->Buffer ();
 
 	if (grBitBltFadeTable==NULL) {
 		for (y1=0; y1 < bmP->Height (); y1++)    {
@@ -234,7 +234,7 @@ void gr_ubitmap012(int x, int y, CBitmap *bmP)
 	register int x1, y1;
 	unsigned char * src;
 
-	src = bmP->TexBuf ();
+	src = bmP->Buffer ();
 
 	for (y1=y; y1 < (y+bmP->Height ()); y1++)    {
 		for (x1=x; x1 < (x+bmP->Width ()); x1++)    {
@@ -251,7 +251,7 @@ void gr_ubitmap012m(int x, int y, CBitmap *bmP)
 	register int x1, y1;
 	unsigned char * src;
 
-	src = bmP->TexBuf ();
+	src = bmP->Buffer ();
 
 	for (y1=y; y1 < (y+bmP->Height ()); y1++) {
 		for (x1=x; x1 < (x+bmP->Width ()); x1++) {
@@ -309,8 +309,8 @@ void gr_bm_ubitblt00(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src
 
 	int i;
 
-	sbits =   src->TexBuf ()  + (src->RowSize () * sy) + sx;
-	dbits =   dest->TexBuf () + (dest->RowSize () * dy) + dx;
+	sbits =   src->Buffer ()  + (src->RowSize () * sy) + sx;
+	dbits =   dest->Buffer () + (dest->RowSize () * dy) + dx;
 
 	dstep = dest->RowSize () << gr_bitblt_dest_step_shift;
 
@@ -335,8 +335,8 @@ void gr_bm_ubitblt00m(int w, int h, int dx, int dy, int sx, int sy, CBitmap * sr
 
 	int i;
 
-	sbits =   src->TexBuf ()  + (src->RowSize () * sy) + sx;
-	dbits =   dest->TexBuf () + (dest->RowSize () * dy) + dx;
+	sbits =   src->Buffer ()  + (src->RowSize () * sy) + sx;
+	dbits =   dest->Buffer () + (dest->RowSize () * dy) + dx;
 
 	// No interlacing, copy the whole buffer.
 
@@ -405,9 +405,9 @@ GrBmUBitBlt (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, &CCanvas::Curr
 //-NOT-used
 //-NOT-used 	dbpr = dest->RowSize () << gr_bitblt_dest_step_shift;
 //-NOT-used
-//-NOT-used 	VideoLocation = (unsigned int)dest->TexBuf () + (dest->RowSize () * dy) + dx;
+//-NOT-used 	VideoLocation = (unsigned int)dest->Buffer () + (dest->RowSize () * dy) + dx;
 //-NOT-used
-//-NOT-used 	sbits = src->TexBuf () + (sbpr*sy) + sx;
+//-NOT-used 	sbits = src->Buffer () + (sbpr*sy) + sx;
 //-NOT-used
 //-NOT-used 	for (y1=0; y1 < h; y1++)    {
 //-NOT-used
@@ -454,8 +454,8 @@ GrBmUBitBlt (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, &CCanvas::Curr
 //-NOT-used
 //-NOT-used 	int i;
 //-NOT-used
-//-NOT-used 	sbits =   src->TexBuf ()  + (src->RowSize () * sy) + sx;
-//-NOT-used 	dbits =   dest->TexBuf () + (dest->RowSize () * dy) + dx;
+//-NOT-used 	sbits =   src->Buffer ()  + (src->RowSize () * sy) + sx;
+//-NOT-used 	dbits =   dest->Buffer () + (dest->RowSize () * dy) + dx;
 //-NOT-used
 //-NOT-used 	// No interlacing, copy the whole buffer.
 //-NOT-used 	for (i=0; i < h; i++)    {
@@ -478,20 +478,20 @@ void gr_bm_ubitblt00_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 	if (src->Flags () & BM_FLAG_RLE_BIG)
 		data_offset = 2;
 
-	sbits = &src->TexBuf ()[4 + (src->Height ()*data_offset)];
+	sbits = &src->Buffer ()[4 + (src->Height ()*data_offset)];
 
 	for (i=0; i<sy; i++)
-		sbits += (int)(INTEL_SHORT(src->TexBuf ()[4+(i*data_offset)]));
+		sbits += (int)(INTEL_SHORT(src->Buffer ()[4+(i*data_offset)]));
 
-	dbits = dest->TexBuf () + (dest->RowSize () * dy) + dx;
+	dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
 
 	// No interlacing, copy the whole buffer.
 	for (i=0; i < h; i++)    {
 		gr_rle_expand_scanline(dbits, sbits, sx, sx+w-1);
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*((short *)&(src->TexBuf ()[4+((i+sy)*data_offset)])));
+			sbits += (int)INTEL_SHORT(*((short *)&(src->Buffer ()[4+((i+sy)*data_offset)])));
 		else
-			sbits += (int)(src->TexBuf ()[4+i+sy]);
+			sbits += (int)(src->Buffer ()[4+i+sy]);
 		dbits += dest->RowSize () << gr_bitblt_dest_step_shift;
 	}
 }
@@ -508,19 +508,19 @@ void gr_bm_ubitblt00m_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap 
 	if (src->Flags () & BM_FLAG_RLE_BIG)
 		data_offset = 2;
 
-	sbits = &src->TexBuf ()[4 + (src->Height ()*data_offset)];
+	sbits = &src->Buffer ()[4 + (src->Height ()*data_offset)];
 	for (i=0; i<sy; i++)
-		sbits += (int)(INTEL_SHORT(src->TexBuf ()[4+(i*data_offset)]));
+		sbits += (int)(INTEL_SHORT(src->Buffer ()[4+(i*data_offset)]));
 
-	dbits = dest->TexBuf () + (dest->RowSize () * dy) + dx;
+	dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
 
 	// No interlacing, copy the whole buffer.
 	for (i=0; i < h; i++)    {
 		gr_rle_expand_scanline_masked(dbits, sbits, sx, sx+w-1);
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*((short *)&(src->TexBuf ()[4+((i+sy)*data_offset)])));
+			sbits += (int)INTEL_SHORT(*((short *)&(src->Buffer ()[4+((i+sy)*data_offset)])));
 		else
-			sbits += (int)(src->TexBuf ()[4+i+sy]);
+			sbits += (int)(src->Buffer ()[4+i+sy]);
 		dbits += dest->RowSize () << gr_bitblt_dest_step_shift;
 	}
 }
@@ -542,16 +542,16 @@ void gr_bm_ubitblt0x_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 	if (src->Flags () & BM_FLAG_RLE_BIG)
 		data_offset = 2;
 
-	sbits = &src->TexBuf ()[4 + (src->Height ()*data_offset)];
+	sbits = &src->Buffer ()[4 + (src->Height ()*data_offset)];
 	for (i=0; i<sy; i++)
-		sbits += (int)(INTEL_SHORT(src->TexBuf ()[4+(i*data_offset)]));
+		sbits += (int)(INTEL_SHORT(src->Buffer ()[4+(i*data_offset)]));
 
 	for (y1=0; y1 < h; y1++)    {
 		gr_rle_expand_scanline_generic(dest, dx, dy+y1,  sbits, sx, sx+w-1 );
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*((short *)&(src->TexBuf ()[4+((y1+sy)*data_offset)])));
+			sbits += (int)INTEL_SHORT(*((short *)&(src->Buffer ()[4+((y1+sy)*data_offset)])));
 		else
-			sbits += (int)src->TexBuf ()[4+y1+sy];
+			sbits += (int)src->Buffer ()[4+y1+sy];
 	}
 
 }
@@ -568,16 +568,16 @@ void gr_bm_ubitblt0xm_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap 
 	if (src->Flags () & BM_FLAG_RLE_BIG)
 		data_offset = 2;
 
-	sbits = &src->TexBuf ()[4 + (src->Height ()*data_offset)];
+	sbits = &src->Buffer ()[4 + (src->Height ()*data_offset)];
 	for (i=0; i<sy; i++)
-		sbits += (int)(INTEL_SHORT(src->TexBuf ()[4+(i*data_offset)]));
+		sbits += (int)(INTEL_SHORT(src->Buffer ()[4+(i*data_offset)]));
 
 	for (y1=0; y1 < h; y1++)    {
 		gr_rle_expand_scanline_generic_masked(dest, dx, dy+y1,  sbits, sx, sx+w-1 );
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*((short *)&(src->TexBuf ()[4+((y1+sy)*data_offset)])));
+			sbits += (int)INTEL_SHORT(*((short *)&(src->Buffer ()[4+((y1+sy)*data_offset)])));
 		else
-			sbits += (int)src->TexBuf ()[4+y1+sy];
+			sbits += (int)src->Buffer ()[4+y1+sy];
 	}
 
 }
@@ -826,8 +826,8 @@ inline void scale_line(sbyte *in, sbyte *out, int ilen, int olen)
 
 void GrBitmapScaleTo(CBitmap *src, CBitmap *dst)
 {
-	sbyte *s = (sbyte *) (src->TexBuf ());
-	sbyte *d = (sbyte *) (dst->TexBuf ());
+	sbyte *s = (sbyte *) (src->Buffer ());
+	sbyte *d = (sbyte *) (dst->Buffer ());
 	int h = src->Height ();
 	int a = dst->Height ()/h, b = dst->Height ()%h;
 	int c = 0, i, y;

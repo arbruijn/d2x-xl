@@ -279,10 +279,10 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
-//GLubyte gameData.render.ogl.texBuf [512*512*4];
+//GLubyte gameData.render.ogl.buffer [512*512*4];
 
 ubyte* CTexture::Convert (
-//	GLubyte		*texBuf,
+//	GLubyte		*buffer,
 //	int			width,
 //	int			height,
 	int			dxo,
@@ -294,7 +294,7 @@ ubyte* CTexture::Convert (
 	int			nTransp,
 	int			bSuperTransp)
 {
-	ubyte			*rawData = bmP->TexBuf ();
+	ubyte			*rawData = bmP->Buffer ();
 	GLubyte		*bufP;
 	tRgbColorb	*colorP;
 	int			x, y, c, i;
@@ -308,7 +308,7 @@ if (strstr (bmP->Name (), "phoenix"))
 paletteManager.SetTexture (bmP->Parent () ? bmP->Parent ()->Palette () : bmP->Palette ());
 if (!paletteManager.Texture ())
 	return NULL;
-if (m_info.tw * m_info.th * 4 > (int) sizeof (gameData.render.ogl.texBuf))//shouldn'texP happen, descent never uses textures that big.
+if (m_info.tw * m_info.th * 4 > (int) sizeof (gameData.render.ogl.buffer))//shouldn'texP happen, descent never uses textures that big.
 	Error ("texture too big %i %i", m_info.tw, m_info.th);
 bTransp = (nTransp || bSuperTransp) && bmP->HasTransparency ();
 if (!bTransp)
@@ -322,7 +322,7 @@ colorP = paletteManager.Texture ()->Color ();
 restart:
 
 i = 0;
-bufP = gameData.render.ogl.texBuf;
+bufP = gameData.render.ogl.buffer;
 //bmP->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 for (y = 0; y < m_info.th; y++) {
 	i = dxo + m_info.lw *(y + dyo);
@@ -456,7 +456,7 @@ else if (m_info.format == GL_RGBA)
 	m_info.internalFormat = 4;
 else if ((m_info.format == GL_RGB5) || (m_info.format == GL_RGBA4))
 	m_info.internalFormat = 2;
-return gameData.render.ogl.texBuf;
+return gameData.render.ogl.buffer;
 }
 
 //------------------------------------------------------------------------------
@@ -473,7 +473,7 @@ else {	//need to reformat
 	h = m_info.lw / m_info.w;
 	w = (m_info.w - dxo) * h;
 	data += m_info.lw * dyo + h * dxo;
-	bufP = gameData.render.ogl.texBuf;
+	bufP = gameData.render.ogl.buffer;
 	tw = m_info.tw * h;
 	h = tw - w;
 	for (; dyo < m_info.h; dyo++, data += m_info.lw) {
@@ -482,8 +482,8 @@ else {	//need to reformat
 		memset (bufP, 0, h);
 		bufP += h;
 		}
-	memset (bufP, 0, m_info.th * tw - (bufP - gameData.render.ogl.texBuf));
-	return gameData.render.ogl.texBuf;
+	memset (bufP, 0, m_info.th * tw - (bufP - gameData.render.ogl.buffer));
+	return gameData.render.ogl.buffer;
 	}
 }
 
@@ -529,7 +529,7 @@ switch (m_info.format) {
 	}
 
 glTexImage2D (GL_PROXY_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0,
-				  m_info.format, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);//NULL?
+				  m_info.format, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);//NULL?
 glGetTexLevelParameteriv (GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &nFormat);
 switch (m_info.format) {
 	case GL_RGBA:
@@ -798,9 +798,9 @@ if (nParam) {
 		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)) {
 		glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &nParam);
 		if (nParam && (data = new ubyte [nParam])) {
-			bmP->DestroyTexBuf ();
+			bmP->DestroyBuffer ();
 			glGetCompressedTexImage (GL_TEXTURE_2D, 0, (GLvoid *) data);
-			bmP->SetTexBuf (data);
+			bmP->SetBuffer (data);
 			bmP->SetBufSize (nParam);
 			bmP->SetFormat (nFormat);
 			bmP->SetCompressed (1);
@@ -950,7 +950,7 @@ return bmP;
 //stores OpenGL textured id in *texid and u/v values required to get only the real data in *u/*v
 int CBitmap::LoadTexture (int dxo, int dyo, int nTransp, int superTransp)
 {
-	ubyte			*data = TexBuf ();
+	ubyte			*data = Buffer ();
 	GLubyte		*bufP;
 	CTexture		texture, *texP;
 	bool			bLocal;
@@ -989,7 +989,7 @@ if (!texP->IsRenderBuffer ())
 			bufP = texP->Convert (dxo, dyo, this, nTransp, superTransp);
 		}
 #if TEXTURE_COMPRESSION
-	texP->Load (Compressed () ? TexBuf () : bufP, BufSize (), Format (), Compressed ());
+	texP->Load (Compressed () ? Buffer () : bufP, BufSize (), Format (), Compressed ());
 #else
 	funcRes = texP->Load (bufP);
 #endif
@@ -1099,14 +1099,14 @@ m_bm.info.std.mask->SetHeight (m_bm.props.w);
 m_bm.info.std.mask->SetBPP (1);
 UseBitmapCache (m_bm.info.std.mask, (int) m_bm.info.std.mask->Width () * (int) m_bm.info.std.mask->RowSize ());
 if (m_bm.props.flags & BM_FLAG_TGA) {
-	for (pi = TexBuf (), pm = m_bm.info.std.mask->TexBuf (); i; i--, pi += 4, pm++)
+	for (pi = Buffer (), pm = m_bm.info.std.mask->Buffer (); i; i--, pi += 4, pm++)
 		if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128))
 			*pm = 0;
 		else
 			*pm = 0xff;
 	}
 else {
-	for (pi = TexBuf (), pm = m_bm.info.std.mask->TexBuf (); i; i--, pi++, pm++)
+	for (pi = Buffer (), pm = m_bm.info.std.mask->Buffer (); i; i--, pi++, pm++)
 		if (*pi == SUPER_TRANSP_COLOR)
 			*pm = 0;
 		else

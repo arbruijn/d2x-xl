@@ -35,14 +35,14 @@ int ReadTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *bmP, int alpha,
 	float				a, avgAlpha = 0;
 
 bmP->SetBPP (nBytes);
-if (!(bmP->TexBuf () || (bmP->CreateTexBuf ())))
+if (!(bmP->Buffer () || (bmP->CreateBuffer ())))
 	 return 0;
 memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
 memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
 avgColor.red = avgColor.green = avgColor.blue = 0;
 if (ph->bits == 24) {
 	tBGRA	c;
-	tRgbColorb *p = ((tRgbColorb *) (bmP->TexBuf ())) + w * (bmP->Height () - 1);
+	tRgbColorb *p = ((tRgbColorb *) (bmP->Buffer ())) + w * (bmP->Height () - 1);
 
 	for (i = bmP->Height (); i; i--) {
 		for (j = w; j; j--, p++) {
@@ -71,7 +71,7 @@ else {
 	bmP->AddFlags (BM_FLAG_SEE_THRU);
 	if (bReverse) {
 		tRGBA	c;
-		tRgbaColorb	*p = (tRgbaColorb *) bmP->TexBuf ();
+		tRgbaColorb	*p = (tRgbaColorb *) bmP->Buffer ();
 		int nSuperTransp;
 
 		nFrames = h / w - 1;
@@ -129,7 +129,7 @@ else {
 		}
 	else {
 		tBGRA	c;
-		tRgbaColorb *p = ((tRgbaColorb *) (bmP->TexBuf ())) + w * (bmP->Height () - 1);
+		tRgbaColorb *p = ((tRgbaColorb *) (bmP->Buffer ())) + w * (bmP->Height () - 1);
 		int nSuperTransp;
 
 		nFrames = h / w - 1;
@@ -211,7 +211,7 @@ int WriteTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *bmP)
 if (ph->bits == 24) {
 	if (bmP->BPP () == 3) {
 		tBGR	c;
-		tRgbColorb *p = ((tRgbColorb *) (bmP->TexBuf ())) + w * (bmP->Height () - 1);
+		tRgbColorb *p = ((tRgbColorb *) (bmP->Buffer ())) + w * (bmP->Height () - 1);
 		for (i = bmP->Height (); i; i--) {
 			for (j = w; j; j--, p++) {
 				c.r = p->red;
@@ -225,7 +225,7 @@ if (ph->bits == 24) {
 		}
 	else {
 		tBGR	c;
-		tRgbaColorb *p = ((tRgbaColorb *) (bmP->TexBuf ())) + w * (bmP->Height () - 1);
+		tRgbaColorb *p = ((tRgbaColorb *) (bmP->Buffer ())) + w * (bmP->Height () - 1);
 		for (i = bmP->Height (); i; i--) {
 			for (j = w; j; j--, p++) {
 				c.r = p->red;
@@ -240,7 +240,7 @@ if (ph->bits == 24) {
 	}
 else {
 	tBGRA	c;
-	tRgbaColorb *p = ((tRgbaColorb *) (bmP->TexBuf ())) + w * (bmP->Height () - 1);
+	tRgbaColorb *p = ((tRgbaColorb *) (bmP->Buffer ())) + w * (bmP->Height () - 1);
 	int bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
@@ -433,7 +433,7 @@ int ShrinkTGA (CBitmap *bmP, int xFactor, int yFactor, int bRealloc)
 
 	static ubyte superTranspKeys [3] = {120,88,128};
 
-if (!bmP->TexBuf ())
+if (!bmP->Buffer ())
 	return 0;
 if ((xFactor < 1) || (yFactor < 1))
 	return 0;
@@ -445,7 +445,7 @@ xMax = w / xFactor;
 yMax = h / yFactor;
 nFactor2 = xFactor * yFactor;
 if (!bRealloc)
-	pDest = pData = bmP->TexBuf ();
+	pDest = pData = bmP->Buffer ();
 else {
 	if (!(pData = (ubyte *) D2_ALLOC (xMax * yMax * bpp)))
 		return 0;
@@ -459,7 +459,7 @@ if (bpp == 3) {
 			ySrc = yDest * yFactor;
 			for (y = yFactor; y; ySrc++, y--) {
 				xSrc = xDest * xFactor;
-				pSrc = bmP->TexBuf () + (ySrc * w + xSrc) * bpp;
+				pSrc = bmP->Buffer () + (ySrc * w + xSrc) * bpp;
 				for (x = xFactor; x; xSrc++, x--) {
 					for (i = 0; i < bpp; i++)
 						cSum [i] += *pSrc++;
@@ -478,7 +478,7 @@ else {
 			nSuperTransp = 0;
 			for (y = yFactor; y; ySrc++, y--) {
 				xSrc = xDest * xFactor;
-				pSrc = bmP->TexBuf () + (ySrc * w + xSrc) * bpp;
+				pSrc = bmP->Buffer () + (ySrc * w + xSrc) * bpp;
 				for (x = xFactor; x; xSrc++, x--) {
 						bSuperTransp = (pSrc [0] == 120) && (pSrc [1] == 88) && (pSrc [2] == 128);
 					if (bSuperTransp) {
@@ -516,8 +516,8 @@ else {
 		}
 	}
 if (bRealloc) {
-	bmP->DestroyTexBuf ();
-	bmP->SetTexBuf (pData);
+	bmP->DestroyBuffer ();
+	bmP->SetBuffer (pData);
 	}
 bmP->SetWidth (xMax);
 bmP->SetHeight (yMax);
@@ -538,7 +538,7 @@ else {
 		ubyte		*pData;
 		double	pixelBright, totalBright, nPixels, alpha;
 
-	if (!(pData = bmP->TexBuf ()))
+	if (!(pData = bmP->Buffer ()))
 		return 0;
 	totalBright = 0;
 	nPixels = 0;
@@ -565,7 +565,7 @@ if (bmP) {
 		int		bpp = bmP->BPP (), h, i, j, c, bAlpha = (bpp == 4);
 		ubyte		*pData;
 
-	if ((pData = bmP->TexBuf ())) {
+	if ((pData = bmP->Buffer ())) {
 	if (!bAlpha)
 		bSkipAlpha = 1;
 	else if (bSkipAlpha)
@@ -642,7 +642,7 @@ if (!(bufP = (ubyte *) D2_ALLOC (nSize)))
 	return 0;
 bmP->SetHeight (bmP->Height () * nScale);
 memset (bufP, 0, nSize);
-for (destP = bufP, srcP1 = bmP->TexBuf (), i = 0; i < nFrames; i++) {
+for (destP = bufP, srcP1 = bmP->Buffer (), i = 0; i < nFrames; i++) {
 	memcpy (destP, srcP1, nFrameSize);
 	destP += nFrameSize * nScale;
 	srcP1 += nFrameSize;
@@ -664,8 +664,8 @@ while (nScale > 1) {
 	nFrames <<= 1;
 	}
 #endif
-bmP->DestroyTexBuf ();
-bmP->SetTexBuf (bufP);
+bmP->DestroyBuffer ();
+bmP->SetBuffer (bufP);
 return nFrames;
 }
 
@@ -688,7 +688,7 @@ nFrameSize = w * w * bmP->BPP ();
 nSize = nFrameSize * nFrames;
 if (!(bufP = (ubyte *) D2_ALLOC (nSize)))
 	return 0;
-srcP = bmP->TexBuf ();
+srcP = bmP->Buffer ();
 nRowSize = w * bmP->BPP ();
 for (destP = bufP, i = 0; i < nFrames; i++) {
 	for (j = 0; j < w; j++) {
@@ -697,8 +697,8 @@ for (destP = bufP, i = 0; i < nFrames; i++) {
 		srcP += nRowSize;
 		}
 	}
-bmP->DestroyTexBuf ();
-bmP->SetTexBuf (bufP);
+bmP->DestroyBuffer ();
+bmP->SetBuffer (bufP);
 bmP->SetWidth (q * w);
 bmP->SetHeight (q * w);
 return q;

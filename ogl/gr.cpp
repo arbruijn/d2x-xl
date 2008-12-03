@@ -134,7 +134,7 @@ if (mode <= 0)
 w = SM_W (mode);
 h = SM_H (mode);
 nCurrentVGAMode = mode;
-gr_bm_data = screen.Bitmap ().TexBuf ();//since we use realloc, we want to keep this pointer around.
+gr_bm_data = screen.Bitmap ().Buffer ();//since we use realloc, we want to keep this pointer around.
 screen.Init ();
 screen.SetMode (mode);
 screen.SetWidth (w);
@@ -144,7 +144,7 @@ screen.SetAspect (FixDiv (screen.Width (), (fix) (screen.Height () * ((double) w
 screen.Bitmap ().Init (BM_OGL, 0, 0, w, h, 1, (ubyte *) D2_REALLOC (gr_bm_data, w * h));
 screen.Bitmap ().SetPalette (paletteManager.Default ()); //just need some valid palette here
 //screen.Bitmap ().props.rowSize = screen->pitch;
-//screen.Bitmap ().TexBuf () = (unsigned char *)screen->pixels;
+//screen.Bitmap ().Buffer () = (unsigned char *)screen->pixels;
 CCanvas::SetCurrent (NULL);
 /***/PrintLog ("   initializing OpenGL window\n");
 if (!OglInitWindow (w, h, 0))	//platform specific code
@@ -241,7 +241,7 @@ if ((t=FindArg ("-gl_reticle")))
 /***/PrintLog ("   initializing internal texture list\n");
 textureManager.Init ();
 /***/PrintLog ("   allocating screen buffer\n");
-screen.Bitmap ().SetTexBuf (NULL);
+screen.Bitmap ().SetBuffer (NULL);
 
 // Set the mode.
 for (t = 0; scrSizes [t].x && scrSizes [t].y; t++)

@@ -203,7 +203,7 @@ paletteManager.LoadEffect  ();
 header_font = GrInitFont (gameStates.menus.bHires ? (char *) "font1-1h.fnt" : (char *) "font1-1.fnt");
 title_font = GrInitFont (gameStates.menus.bHires ? (char *) "font2-3h.fnt" : (char *) "font2-3.fnt");
 names_font = GrInitFont (gameStates.menus.bHires ? (char *) "font2-2h.fnt" : (char *) "font2-2.fnt");
-bmBackdrop.SetTexBuf (NULL);
+bmBackdrop.SetBuffer (NULL);
 bmBackdrop.SetPalette (NULL);
 
 //MWA  Made bmBackdrop bitmap linear since it should always be.  the current canvas may not
@@ -414,7 +414,7 @@ get_line:;
 		GrCloseFont (names_font);
 		paletteManager.FadeOut ();
 		paletteManager.Load (D2_DEFAULT_PALETTE, NULL);
-		bmBackdrop.DestroyTexBuf ();
+		bmBackdrop.DestroyBuffer ();
 		cf.Close ();
 		CCanvas::SetCurrent (saveCanv);
 		SongsPlaySong (SONG_TITLE, 1);

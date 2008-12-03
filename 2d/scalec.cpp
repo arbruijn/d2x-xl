@@ -43,15 +43,19 @@ void rls_stretch_scanline_setup( int XDelta, int YDelta );
 void rls_stretch_scanline(void);
 
 
+//	-----------------------------------------------------------------------------
+
 void decode_row (CBitmap * bmp, int y)
 {
 	int i, offset=4+bmp->Height ();
 
 	for (i=0; i<y; i++ )
-		offset += bmp->TexBuf () [4+i];
-	gr_rle_decode( &bmp->TexBuf () [offset], scale_rle_data );
+		offset += bmp->Buffer () [4+i];
+	gr_rle_decode( &bmp->Buffer () [offset], scale_rle_data );
 }
 
+
+//	-----------------------------------------------------------------------------
 
 void scale_up_bitmap(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
@@ -80,8 +84,8 @@ void scale_up_bitmap(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int
 	v = v0;
 
 	for (y = y0; y <= y1; y++ ) {
-		scale_source_ptr = &source_bmp->TexBuf () [source_bmp->RowSize () * X2I(v) + X2I(u0)];
-		scale_dest_ptr = &dest_bmp->TexBuf () [dest_bmp->RowSize () * y + x0];
+		scale_source_ptr = &source_bmp->Buffer () [source_bmp->RowSize () * X2I(v) + X2I(u0)];
+		scale_dest_ptr = &dest_bmp->Buffer () [dest_bmp->RowSize () * y + x0];
 		rls_stretch_scanline();
 		v += dv;
 	}
@@ -89,6 +93,8 @@ void scale_up_bitmap(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int
 
 
 
+
+//	-----------------------------------------------------------------------------
 
 void scale_up_bitmap_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
@@ -120,11 +126,13 @@ void scale_up_bitmap_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0,
 			decode_row( source_bmp, last_row );
 		}
 		scale_source_ptr = &scale_rle_data[X2I(u0)];
-		scale_dest_ptr = &dest_bmp->TexBuf ()[dest_bmp->RowSize ()*y+x0];
+		scale_dest_ptr = &dest_bmp->Buffer ()[dest_bmp->RowSize ()*y+x0];
 		rls_stretch_scanline( );
 		v += dv;
 	}
 }
+
+//	-----------------------------------------------------------------------------
 
 void rls_stretch_scanline_setup( int XDelta, int YDelta )
 {
@@ -170,6 +178,8 @@ void rls_stretch_scanline_setup( int XDelta, int YDelta )
       }
 
 }
+
+//	-----------------------------------------------------------------------------
 
 void rls_stretch_scanline( )
 {
@@ -223,57 +233,9 @@ void rls_stretch_scanline( )
 	}
 }
 
-#if 0
-void rls_stretch_scanline()
-{
-	ubyte   c;
-	int i, j, len, ErrorTerm, x;
-
-	// Setup initial variables
-	ErrorTerm = scale_error_term;
-
-	// Draw the first, partial run of pixels
-
-	c = *scale_source_ptr++;
-	if ( c != TRANSPARENCY_COLOR )  {
-		for (i=0; i<scale_initial_pixelCount; i++ )
-			*scale_dest_ptr++ = c;
-	} else {
-		scale_dest_ptr += scale_initial_pixelCount;
-	}
-
-	// Draw all full runs
-
-	for (j=0; j<scale_ydelta_minus_1; j++)	{
-		len = scale_whole_step;		// run is at least this long
-
- 		// Advance the error term and add an extra pixel if the error term so indicates
-		if ((ErrorTerm += scale_adj_up) > 0)	{
-			len++;
-			ErrorTerm -= scale_adjDown;   // reset the error term
-		}
-
-		// Draw this run o' pixels
-		c = *scale_source_ptr++;
-		if ( c != TRANSPARENCY_COLOR )	{
-			for (i=len; i>0; i-- )
-				*scale_dest_ptr++ = c;
-		} else {
-			scale_dest_ptr += len;
-		}
-	}
-
-	// Draw the final run of pixels
-	c = *scale_source_ptr++;
-	if ( c != TRANSPARENCY_COLOR )	{
-		for (i=0; i<scale_final_pixelCount; i++ )
-			*scale_dest_ptr++ = c;
-	} else {
-		scale_dest_ptr += scale_final_pixelCount;
-	}
-}
-#endif
 // old stuff here...
+
+//	-----------------------------------------------------------------------------
 
 void scale_bitmap_c(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
@@ -299,8 +261,8 @@ void scale_bitmap_c(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int 
 	v = v0;
 
 	for (y=y0; y<=y1; y++ )			{
-		sbits = &source_bmp->TexBuf ()[source_bmp->RowSize () * X2I(v)];
-		dbits = &dest_bmp->TexBuf ()[dest_bmp->RowSize () * y + x0];
+		sbits = &source_bmp->Buffer ()[source_bmp->RowSize () * X2I(v)];
+		dbits = &dest_bmp->Buffer ()[dest_bmp->RowSize () * y + x0];
 		u = u0;
 		v += dv;
 		for (x=x0; x<=x1; x++ )			{
@@ -312,6 +274,8 @@ void scale_bitmap_c(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int 
 		}
 	}
 }
+
+//	-----------------------------------------------------------------------------
 
 void scale_row_asm_transparent( ubyte * sbits, ubyte * dbits, int width, fix u, fix du )
 {
@@ -384,6 +348,8 @@ NonTransparent:
 	}
 }
 
+//	-----------------------------------------------------------------------------
+
 void scale_bitmap_c_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
 	fix du, dv, v;
@@ -423,13 +389,14 @@ void scale_bitmap_c_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, 
 			last_row = X2I(v);
 			decode_row( source_bmp, last_row );
 		}
-		scale_row_asm_transparent (scale_rle_data, &dest_bmp->TexBuf ()[dest_bmp->RowSize ()*y+x0], x1-x0+1, u0, du );
+		scale_row_asm_transparent (scale_rle_data, &dest_bmp->Buffer ()[dest_bmp->RowSize ()*y+x0], x1-x0+1, u0, du );
 		v += dv;
 	}
 }
 
 #define FIND_SCALED_NUM(x,x0,x1,y0,y1) (FixMulDiv((x)-(x0),(y1)-(y0),(x1)-(x0))+(y0))
 
+//	-----------------------------------------------------------------------------
 // Scales bitmap, bp, into vertbuf[0] to vertbuf[1]
 void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int orientation )
 {
@@ -518,4 +485,6 @@ void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int orientation )
 			scale_bitmap_c(bmP, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
 	}
 }
+
+//	-----------------------------------------------------------------------------
 

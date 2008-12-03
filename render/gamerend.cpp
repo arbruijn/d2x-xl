@@ -345,7 +345,7 @@ void GameExpandBitmap (CBitmap * bmP, uint flags)
 switch (flags & 3) {
 	case 2:	// expand x
 		Assert (bmP->RowSize () == bmP->Width ()*2);
-		dptr = &bmP->TexBuf () [(bmP->Height ()-1)*bmP->RowSize ()];
+		dptr = &bmP->Buffer () [(bmP->Height ()-1)*bmP->RowSize ()];
 		for (i=bmP->Height ()-1; i>=0; i--)	{
 			ExpandRow (dptr, dptr, bmP->Width ());
 			dptr -= bmP->RowSize ();
@@ -354,8 +354,8 @@ switch (flags & 3) {
 		break;
 
 	case 1:	// expand y
-		dptr = &bmP->TexBuf () [(2* (bmP->Height ()-1)+1)*bmP->RowSize ()];
-		sptr = &bmP->TexBuf () [(bmP->Height ()-1)*bmP->RowSize ()];
+		dptr = &bmP->Buffer () [(2* (bmP->Height ()-1)+1)*bmP->RowSize ()];
+		sptr = &bmP->Buffer () [(bmP->Height ()-1)*bmP->RowSize ()];
 		for (i=bmP->Height ()-1; i>=0; i--)	{
 			memcpy (dptr, sptr, bmP->Width ());
 			dptr -= bmP->RowSize ();
@@ -368,8 +368,8 @@ switch (flags & 3) {
 
 	case 3:	// expand x & y
 		Assert (bmP->RowSize () == bmP->Width ()*2);
-		dptr = &bmP->TexBuf () [(2* (bmP->Height ()-1)+1) * bmP->RowSize ()];
-		sptr = &bmP->TexBuf () [(bmP->Height ()-1) * bmP->RowSize ()];
+		dptr = &bmP->Buffer () [(2* (bmP->Height ()-1)+1) * bmP->RowSize ()];
+		sptr = &bmP->Buffer () [(bmP->Height ()-1) * bmP->RowSize ()];
 		for (i=bmP->Height ()-1; i>=0; i--)	{
 			ExpandRow (dptr, sptr, bmP->Width ());
 			dptr -= bmP->RowSize ();
@@ -639,7 +639,7 @@ void game_render_frame_stereo ()
 			gr_wait_for_retrace = 0;
 
 //	Added by Samir from John's code
-		if ((gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ().Mode () == BM_MODEX) && (Game_3dmaxFlag==3))	{
+		if ((gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ().Mode () == BM_MODEX)) {
 			int old_x, old_y, new_x;
 			old_x = gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Width ();
 			old_y = gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].Bitmap ().Height ();

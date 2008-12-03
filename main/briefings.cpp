@@ -409,7 +409,7 @@ if (from_hog_only)
 strcat (new_filename, filename);
 filename = new_filename;
 
-title_bm.SetTexBuf (NULL);
+title_bm.SetBuffer (NULL);
 if ((pcxResult = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
 #if TRACE
 	con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n", filename, pcx_errormsg (pcxResult), pcxResult);
@@ -431,7 +431,7 @@ while (1) {
 }
 if (paletteManager.FadeOut ())
 	return 1;
-title_bm.DestroyTexBuf ();
+title_bm.DestroyBuffer ();
 return 0;
 }
 
@@ -902,7 +902,7 @@ iff_error = iff.ReadBitmap (szBitmap, &guy_bitmap, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR)
 	return 0;
 ShowBriefingBitmap (&guy_bitmap);
-guy_bitmap.DestroyTexBuf ();
+guy_bitmap.DestroyBuffer ();
 bi.prevCh = 10;
 return 1;
 }

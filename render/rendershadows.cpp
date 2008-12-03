@@ -122,7 +122,7 @@ if (!bHaveShadowBuf) {
 	shadowBuf.SetWidth (STB_SIZE_X);
 	shadowBuf.SetHeight (STB_SIZE_Y);
 	shadowBuf.SetFlags ((char) BM_FLAG_TGA);
-	shadowBuf.SetTexBuf (shadowTexBuf);
+	shadowBuf.SetBuffer (shadowTexBuf);
 	shadowBuf.PrepareTexture (0, -1, 0, NULL);
 	bHaveShadowBuf = 1;
 	}

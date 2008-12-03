@@ -82,7 +82,7 @@ class CPalette {
 			return *this;
 			}
 		inline bool operator== (CPalette& source) { return !memcmp (&Data (), &source.Data (), sizeof (tPalette)); }
-		inline tRgbColorb& operator[] (int i) { return m_data.rgb [i]; }
+		inline tRgbColorb& operator[] (const int i) { return m_data.rgb [i]; }
 	};
 
 //------------------------------------------------------------------------------

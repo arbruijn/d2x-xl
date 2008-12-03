@@ -177,18 +177,18 @@ if (!CreateBuffer ())
 #endif
 {
 #if CAMERA_READPIXELS
-	if (!(m_info.buffer.TexBuf () = (char *) D2_ALLOC (m_info.buffer.Width () * m_info.buffer.Height () * 4)))
+	if (!(m_info.buffer.Buffer () = (char *) D2_ALLOC (m_info.buffer.Width () * m_info.buffer.Height () * 4)))
 		return 0;
 	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport)
-		m_info.screenBuf = m_info.buffer.TexBuf ();
+		m_info.screenBuf = m_info.buffer.Buffer ();
 	else {
 		m_info.screenBuf = D2_ALLOC (CCanvas::Current ()->Width () * CCanvas::Current ()->Bitmap ().Height () * 4);
 		if (!m_info.screenBuf) {
 			gameOpts->render.cameras.bFitToWall = 1;
-			m_info.screenBuf = m_info.buffer.TexBuf ();
+			m_info.screenBuf = m_info.buffer.Buffer ();
 			}
 		}
-	memset (m_info.buffer.TexBuf (), 0, m_info.buffer.Width () * m_info.buffer.Height () * 4);
+	memset (m_info.buffer.Buffer (), 0, m_info.buffer.Width () * m_info.buffer.Height () * 4);
 #else
 	return 0;
 #endif
@@ -248,10 +248,10 @@ void CCamera::Destroy (void)
 {
 m_info.buffer.FreeTexture ();
 OglDeleteTextures (1, &m_info.glTexId);
-if (m_info.screenBuf && (m_info.screenBuf != (char *) m_info.buffer.TexBuf ()))
+if (m_info.screenBuf && (m_info.screenBuf != (char *) m_info.buffer.Buffer ()))
 	D2_FREE (m_info.screenBuf);
-if (m_info.buffer.TexBuf ()) {
-	m_info.buffer.DestroyTexBuf ();
+if (m_info.buffer.Buffer ()) {
+	m_info.buffer.DestroyBuffer ();
 	}
 #if RENDER2TEXTURE
 if (gameStates.ogl.bRender2TextureOk)
@@ -467,7 +467,7 @@ if (ReleaseBuffer () && EnableBuffer ()) {
 	}
 else 
 #	if CAMERA_READPIXELS
-if (m_info.buffer.TexBuf ()) 
+if (m_info.buffer.Buffer ()) 
 #	endif
 #endif
 	{
@@ -475,7 +475,7 @@ if (m_info.buffer.TexBuf ())
 	m_info.bValid = 1;
 	m_info.buffer.FreeTexture ();
 #if CAMERA_READPIXELS
-	memset (m_info.buffer.TexBuf (), 0, m_info.buffer.Width () * m_info.buffer.Height () * 4);
+	memset (m_info.buffer.Buffer (), 0, m_info.buffer.Width () * m_info.buffer.Height () * 4);
 	glDisable (GL_TEXTURE_2D);
 #endif
 	glReadBuffer (GL_BACK);
@@ -491,7 +491,7 @@ if (m_info.buffer.TexBuf ())
 			(CCanvas::Current ()->Width () - m_info.buffer.Width ()) / 2, 
 			(CCanvas::Current ()->Bitmap ().Height () - m_info.buffer.Height ()) / 2, 
 			m_info.buffer.Width (), m_info.buffer.Height (), 
-			GL_RGBA, GL_UNSIGNED_BYTE, m_info.buffer.TexBuf ());
+			GL_RGBA, GL_UNSIGNED_BYTE, m_info.buffer.Buffer ());
 		PrepareTexture (&m_info.buffer, 0, -1, NULL);
 #endif
 		}
@@ -512,14 +512,14 @@ if (m_info.buffer.TexBuf ())
 		if (CCanvas::Current ()->Width () == m_info.buffer.Width ()) {
 			glReadPixels (
 				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Bitmap ().Height (),
-				GL_RGBA, GL_UNSIGNED_BYTE, m_info.buffer.TexBuf () + dyBuf * m_info.buffer.Width () * 4);
+				GL_RGBA, GL_UNSIGNED_BYTE, m_info.buffer.Buffer () + dyBuf * m_info.buffer.Width () * 4);
 			}
 		else {
 			glReadPixels (
 				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Bitmap ().Height (),
 				GL_RGBA, GL_UNSIGNED_BYTE, m_info.screenBuf);
 			pSrc = m_info.screenBuf;
-			pDest = m_info.buffer.TexBuf () + (dyBuf - 1) * wDest + dxBuf * 4;
+			pDest = m_info.buffer.Buffer () + (dyBuf - 1) * wDest + dxBuf * 4;
 #	ifndef _WIN32
 			for (dyBuf = CCanvas::Current ()->Bitmap ().Height (); dyBuf; dyBuf--, pSrc += wSrc, pDest += wDest)
 				memcpy (pDest, pSrc, wSrc);

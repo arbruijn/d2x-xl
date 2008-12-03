@@ -193,10 +193,10 @@ if (gameStates.app.bGameRunning) {
 void _CDECL_ NewMenuClose (void)
 {
 PrintLog ("unloading menu data\n");
-if (nmBackground.TexBuf ())
-	nmBackground.DestroyTexBuf ();
-if (nmBackgroundSave.TexBuf ())
-	nmBackgroundSave.DestroyTexBuf ();
+if (nmBackground.Buffer ())
+	nmBackground.DestroyBuffer ();
+if (nmBackgroundSave.Buffer ())
+	nmBackgroundSave.DestroyBuffer ();
 bNewMenuFirstTime = 1;
 }
 
@@ -207,9 +207,9 @@ ubyte bgPalette [256*3];
 void NMRemapBackground ()
 {
 if (!bNewMenuFirstTime) {
-	if (!nmBackground.TexBuf ())
-		nmBackground.CreateTexBuf ();
-	memcpy (nmBackground.TexBuf (), nmBackgroundSave.TexBuf (), nmBackground.Width () * nmBackground.Height ());
+	if (!nmBackground.Buffer ())
+		nmBackground.CreateBuffer ();
+	memcpy (nmBackground.Buffer (), nmBackgroundSave.Buffer (), nmBackground.Width () * nmBackground.Height ());
 	//GrRemapBitmapGood (&nmBackground, bgPalette, -1, -1);
 	}
 }
@@ -370,18 +370,18 @@ else {
 		if (bNewMenuFirstTime) {
 			atexit (NewMenuClose);
 			bNewMenuFirstTime = 0;
-			nmBackgroundSave.SetTexBuf (NULL);
+			nmBackgroundSave.SetBuffer (NULL);
 			}
 		else {
-			if (nmBackgroundSave.TexBuf ())
-				nmBackgroundSave.DestroyTexBuf ();
-			if (nmBackground.TexBuf ())
-				nmBackground.DestroyTexBuf ();
+			if (nmBackgroundSave.Buffer ())
+				nmBackgroundSave.DestroyBuffer ();
+			if (nmBackground.Buffer ())
+				nmBackground.DestroyBuffer ();
 			}
 		nPCXResult = PCXReadBitmap ((char *) MENU_BACKGROUND_BITMAP, &nmBackgroundSave, BM_LINEAR, 0);
 		Assert (nPCXResult == PCX_ERROR_NONE);
 		nmBackground = nmBackgroundSave;
-		nmBackground.SetTexBuf (NULL);	
+		nmBackground.SetBuffer (NULL);	
 		NMRemapBackground ();
 		bHiresBackground = gameStates.menus.bHires;
 		}

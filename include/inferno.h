@@ -1463,7 +1463,7 @@ typedef struct tMorphData {
 #define OGLTEXBUFSIZE (2048*2048*4)
 
 typedef struct tOglData {
-	GLubyte					texBuf [OGLTEXBUFSIZE];
+	GLubyte					buffer [OGLTEXBUFSIZE];
 	CPalette					*palette;
 	GLenum					nSrcBlend;
 	GLenum					nDestBlend;
@@ -3272,7 +3272,7 @@ return (short) (i / sizeof (tObject));
 static inline void PIGGY_PAGE_IN (int bmi, int bD1) 
 {
 CBitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
-if (!bmP->TexBuf () || (bmP->Flags () & BM_FLAG_PAGED_OUT))
+if (!bmP->Buffer () || (bmP->Flags () & BM_FLAG_PAGED_OUT))
 	PiggyBitmapPageIn (bmi, bD1);
 }
 

@@ -2843,7 +2843,7 @@ if (FindArg ("-hoarddata")) {
 	fwrite (&bm[0]->Height (), sizeof (short), 1, ofile);
 	fwrite (palette, 3, 256, ofile);
 	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->texBuf, 1, bm[i]->Width ()*bm[i]->Height (), ofile);
+		fwrite (bm[i]->buffer, 1, bm[i]->Width ()*bm[i]->Height (), ofile);
 
 	iff_error = iff_read_animbrush ("orbgoal.abm", bm, MAX_BITMAPS_PER_BRUSH, &nframes, palette);
 	Assert (iff_error == IFF_NO_ERROR);
@@ -2852,7 +2852,7 @@ if (FindArg ("-hoarddata")) {
 	fwrite (&nframes_short, sizeof (nframes_short), 1, ofile);
 	fwrite (palette, 3, 256, ofile);
 	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->texBuf, 1, bm[i]->Width ()*bm[i]->Height (), ofile);
+		fwrite (bm[i]->buffer, 1, bm[i]->Width ()*bm[i]->Height (), ofile);
 
 	for (i=0;i<2;i++) {
 		iff_error = iff_read_bitmap (i?"orbb.bbm":"orb.bbm", &icon, BM_LINEAR, palette);
@@ -2860,7 +2860,7 @@ if (FindArg ("-hoarddata")) {
 		fwrite (&icon.Width (), sizeof (short), 1, ofile);
 		fwrite (&icon.Height (), sizeof (short), 1, ofile);
 		fwrite (palette, 3, 256, ofile);
-		fwrite (icon.texBuf, 1, icon.Width ()*icon.Height (), ofile);
+		fwrite (icon.buffer, 1, icon.Width ()*icon.Height (), ofile);
 		}
 
 	for (i=0;i<sizeof (sounds)/sizeof (*sounds);i++) {

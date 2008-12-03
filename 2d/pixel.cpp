@@ -28,6 +28,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "modex.h"
 #include "ogl_defs.h"
 #include "gr.h"
+#include "bitmap.h"
 
 #ifndef D1XD3D
 void gr_upixel( int x, int y )
@@ -71,7 +72,7 @@ inline void gr_bm_upixel( CBitmap * bmP, int x, int y, unsigned char color )
 		OglUPixelC (bmP->Left () + x, bmP->Top () + y, &c);
 		return;
 	case BM_LINEAR:
-		bmP->TexBuf () [bmP->RowSize () * y + x] = color;
+		(*bmP) [bmP->RowSize () * y + x] = color;
 		return;
 #ifdef __DJGPP__
 	case BM_MODEX:
@@ -81,7 +82,7 @@ inline void gr_bm_upixel( CBitmap * bmP, int x, int y, unsigned char color )
 		gr_video_memory[(bmP->RowSize () * y) + (x/4)] = color;
 		return;
 	case BM_SVGA:
-		gr_vesa_pixel(color,(unsigned int)bmP->TexBuf () + (unsigned int)bmP->RowSize () * y + x);
+		gr_vesa_pixel(color,(unsigned int)bmP->Buffer () + (unsigned int)bmP->RowSize () * y + x);
 		return;
 #endif
 	}

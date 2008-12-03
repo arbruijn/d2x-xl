@@ -184,13 +184,13 @@ return r;
 void _CDECL_ FreeEndLevelData (void)
 {
 PrintLog ("unloading endlevel data\n");
-if (gameData.endLevel.terrain.bmInstance.TexBuf ()) {
+if (gameData.endLevel.terrain.bmInstance.Buffer ()) {
 	gameData.endLevel.terrain.bmInstance.FreeTexture ();
-	gameData.endLevel.terrain.bmInstance.DestroyTexBuf ();
+	gameData.endLevel.terrain.bmInstance.DestroyBuffer ();
 	}
-if (gameData.endLevel.satellite.bmInstance.TexBuf ()) {
+if (gameData.endLevel.satellite.bmInstance.Buffer ()) {
 	gameData.endLevel.satellite.bmInstance.FreeTexture ();
-	gameData.endLevel.satellite.bmInstance.DestroyTexBuf ();
+	gameData.endLevel.satellite.bmInstance.DestroyBuffer ();
 	}
 }
 
@@ -206,8 +206,8 @@ void InitEndLevel (void)
 #endif
 GenerateStarfield ();
 atexit (FreeEndLevelData);
-gameData.endLevel.terrain.bmInstance.SetTexBuf (NULL);
-gameData.endLevel.satellite.bmInstance.SetTexBuf (NULL);
+gameData.endLevel.terrain.bmInstance.SetBuffer (NULL);
+gameData.endLevel.satellite.bmInstance.SetBuffer (NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -1169,11 +1169,11 @@ while (cf.GetS (line, LINE_LEN)) {
 			int iff_error;
 
 			PrintLog ("         loading terrain bitmap\n");
-			if (gameData.endLevel.terrain.bmInstance.TexBuf ()) {
+			if (gameData.endLevel.terrain.bmInstance.Buffer ()) {
 				gameData.endLevel.terrain.bmInstance.FreeTexture ();
-				gameData.endLevel.terrain.bmInstance.DestroyTexBuf ();
+				gameData.endLevel.terrain.bmInstance.DestroyBuffer ();
 				}
-			Assert (gameData.endLevel.terrain.bmInstance.TexBuf () == NULL);
+			Assert (gameData.endLevel.terrain.bmInstance.Buffer () == NULL);
 			iff_error = iff.ReadBitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {
 #if DBG
@@ -1207,9 +1207,9 @@ while (cf.GetS (line, LINE_LEN)) {
 			int iff_error;
 
 			PrintLog ("         loading satellite bitmap\n");
-			if (gameData.endLevel.satellite.bmInstance.TexBuf ()) {
+			if (gameData.endLevel.satellite.bmInstance.Buffer ()) {
 				gameData.endLevel.satellite.bmInstance.FreeTexture ();
-				gameData.endLevel.satellite.bmInstance.DestroyTexBuf ();
+				gameData.endLevel.satellite.bmInstance.DestroyBuffer ();
 				}
 			iff_error = iff.ReadBitmap (p, &gameData.endLevel.satellite.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {

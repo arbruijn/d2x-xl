@@ -31,7 +31,7 @@ unsigned char gr_ugpixel( CBitmap * bitmap, int x, int y )
 	{
 	case BM_LINEAR:
 #endif
-		return bitmap->TexBuf () [bitmap->RowSize () * y + x];
+		return bitmap->Buffer () [bitmap->RowSize () * y + x];
 #ifdef __DJGPP__
 	case BM_MODEX:
 		x += bitmap->props.x;
@@ -41,7 +41,7 @@ unsigned char gr_ugpixel( CBitmap * bitmap, int x, int y )
 	case BM_SVGA:
 		{
 		unsigned int offset;
-		offset = (unsigned int)bitmap->TexBuf () + (unsigned int)bitmap->RowSize () * y + x;
+		offset = (unsigned int)bitmap->Buffer () + (unsigned int)bitmap->RowSize () * y + x;
 		gr_vesa_setpage( offset >> 16 );
 		return gr_video_memory[offset & 0xFFFF];
 		}
@@ -58,7 +58,7 @@ unsigned char gr_gpixel( CBitmap * bitmap, int x, int y )
 	{
 	case BM_LINEAR:
 #endif
-		return bitmap->TexBuf ()[ bitmap->RowSize ()*y + x ];
+		return bitmap->Buffer ()[ bitmap->RowSize ()*y + x ];
 #ifdef __DJGPP__
 	case BM_MODEX:
 		x += bitmap->props.x;
@@ -68,7 +68,7 @@ unsigned char gr_gpixel( CBitmap * bitmap, int x, int y )
 	case BM_SVGA:
 		{
 		unsigned int offset;
-		offset = (unsigned int)bitmap->TexBuf () + (unsigned int)bitmap->RowSize () * y + x;
+		offset = (unsigned int)bitmap->Buffer () + (unsigned int)bitmap->RowSize () * y + x;
 		gr_vesa_setpage( offset >> 16 );
 		return gr_video_memory[offset & 0xFFFF];
 		}

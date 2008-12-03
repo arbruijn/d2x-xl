@@ -419,7 +419,7 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 			bmHeader->h = prevBmP->Height ();
 			bmHeader->nType = prevBmP->Mode ();
 			MALLOC (bmHeader->raw_data, ubyte, bmHeader->w * bmHeader->h);
-			memcpy (bmHeader->raw_data, prevBmP->TexBuf (), bmHeader->w * bmHeader->h);
+			memcpy (bmHeader->raw_data, prevBmP->Buffer (), bmHeader->w * bmHeader->h);
 			SkipChunk (len);
 			break;
 
@@ -511,8 +511,8 @@ for (y=0; y<bmP->Height (); y++) {
 	for (x=0; x<bmHeader->w; x++)
 		new_data[newptr++] = INDEX_TO_15BPP(bmHeader->raw_data[y*bmHeader->w+x]);
 	}
-bmP->DestroyTexBuf ();				//get rid of old-style data
-bmP->SetTexBuf ((ubyte *) new_data);			//..ccAnd point to new data
+bmP->DestroyBuffer ();				//get rid of old-style data
+bmP->SetBuffer ((ubyte *) new_data);			//..ccAnd point to new data
 bmP->SetRowSize (bmP->RowSize () * 2);				//two bytes per row
 return IFF_NO_ERROR;
 }
@@ -552,13 +552,13 @@ SetLen (0);
 //copy an iff header structure to a CBitmap structure
 void CIFF::CopyIffToGrs (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
 {
-bmP->DestroyTexBuf ();
+bmP->DestroyBuffer ();
 bmP->SetFlags (0);
 bmP->Init (bmHeader->nType, 0, 0, bmHeader->w, bmHeader->h, 1, bmHeader->raw_data);
 }
 
 //------------------------------------------------------------------------------
-//if bmP->TexBuf () is set, use it (making sure w & h are correct), else
+//if bmP->Buffer () is set, use it (making sure w & h are correct), else
 //allocate the memory
 int CIFF::ParseBitmap (CBitmap *bmP, int bitmapType, CBitmap *prevBmP)
 {
@@ -567,7 +567,7 @@ int CIFF::ParseBitmap (CBitmap *bmP, int bitmapType, CBitmap *prevBmP)
 	int					formType;
 
 memset (&bmHeader, 0, sizeof (bmHeader));
-if (bmHeader.raw_data = bmP->TexBuf ()) {
+if (bmHeader.raw_data = bmP->Buffer ()) {
 	bmHeader.w = bmP->Width ();
 	bmHeader.h = bmP->Height ();
 	}
@@ -832,7 +832,7 @@ if (m_hasTransparency)	{
 	}
 bmHeader.compression = (bCompression?cmpByteRun1:cmpNone);
 bmHeader.xaspect = bmHeader.yaspect = 1;	//I don't think it matters what I write
-bmHeader.raw_data = bmP->TexBuf ();
+bmHeader.raw_data = bmP->Buffer ();
 bmHeader.row_size = bmP->RowSize ();
 if (palette) 
 	memcpy(&bmHeader.palette, palette, 256*3);
@@ -875,7 +875,7 @@ else if (formType == anim_sig) {
 			CBitmap *prevBmP;
 			prevBmP = *n_bitmaps>0?bm_list[*n_bitmaps-1]:NULL;
 			MALLOC(bm_list[*n_bitmaps] , CBitmap, 1);
-			bm_list[*n_bitmaps]->SetTexBuf (NULL);
+			bm_list[*n_bitmaps]->SetBuffer (NULL);
 			ret = ParseBitmap (bm_list[*n_bitmaps], formType, prevBmP);
 			if (ret != IFF_NO_ERROR)
 				goto done;

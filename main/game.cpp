@@ -1302,9 +1302,9 @@ if (bGameCockpitCopyCode) {
 	D2_FREE (bGameCockpitCopyCode);
 	bGameCockpitCopyCode = NULL;
 }
-if (bmBackground.TexBuf ()) {
+if (bmBackground.Buffer ()) {
 	PrintLog ("unloading background bitmap\n");
-	bmBackground.DestroyTexBuf ();
+	bmBackground.DestroyBuffer ();
 	}
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 PrintLog ("unloading custom background data\n");
@@ -1380,16 +1380,16 @@ StopTime ();
 #if TRACE
 	//con_printf (CONDBG,"Flushing movie bufferd:\temp\dm_test.");
 #endif
-bmMovie.SetTexBuf (movieFrameBuffer);
+bmMovie.SetBuffer (movieFrameBuffer);
 for (f = 0;f < nMovieFrames; f++) {
 	sprintf (savename, "%sfrm%04d.pcx",movie_path,__Movie_frame_num);
 	__Movie_frame_num++;
 	pcx_write_bitmap (savename, &bmMovie);
-	bmMovie.SetTexBuf (bmMovie.TexBuf () + MOVIE_FRAME_SIZE);
+	bmMovie.SetBuffer (bmMovie.Buffer () + MOVIE_FRAME_SIZE);
 	}
 
 nMovieFrames = 0;
-bmMovie.SetTexBuf (NULL);
+bmMovie.SetBuffer (NULL);
 StartTime (0);
 }
 
@@ -1450,7 +1450,7 @@ void toggle_movie_saving ()
 
 void save_movie_frame ()
 {
-memcpy (movieFrameBuffer + nMovieFrames * MOVIE_FRAME_SIZE, screen.Bitmap ().TexBuf (), MOVIE_FRAME_SIZE);
+memcpy (movieFrameBuffer + nMovieFrames * MOVIE_FRAME_SIZE, screen.Bitmap ().Buffer (), MOVIE_FRAME_SIZE);
 nMovieFrames++;
 if (nMovieFrames == MAX_MOVIE_BUFFER_FRAMES)
 	flush_movie_buffer ();
@@ -2135,7 +2135,7 @@ void LoadBackgroundBitmap (void)
 {
 	int pcx_error;
 
-bmBackground.DestroyTexBuf ();
+bmBackground.DestroyBuffer ();
 pcx_error = PCXReadBitmap (gameStates.app.cheats.bJohnHeadOn ? (char *) "johnhead.pcx" : (char *) BACKGROUND_NAME,
 									&bmBackground, BM_LINEAR,0);
 if (pcx_error != PCX_ERROR_NONE)

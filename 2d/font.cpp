@@ -540,7 +540,7 @@ void OglInitFont (tFont * font, const char *fontname)
 OglFontChooseSize (font, gap, &tw, &th);
 palette = font->ftParentBitmap.Palette ();
 font->ftParentBitmap.Init (BM_LINEAR, 0, 0, tw, th, 1, NULL);
-font->ftParentBitmap.SetTexBuf (new ubyte [tw * th]);
+font->ftParentBitmap.SetBuffer (new ubyte [tw * th]);
 font->ftParentBitmap.SetPalette (palette);
 if (!(font->ftFlags & FT_COLOR))
 	font->ftParentBitmap.SetTexture (textureManager.Get (&font->ftParentBitmap));
@@ -723,11 +723,11 @@ if (bForce >= 0) {
 if (!(bmP = CBitmap::Create (0, w, h, 4))) {
 	return NULL;
 	}
-if (!bmP->TexBuf ()) {
+if (!bmP->Buffer ()) {
 	D2_FREE (bmP);
 	return NULL;
 	}
-memset (bmP->TexBuf (), 0, w * h * bmP->BPP ());
+memset (bmP->Buffer (), 0, w * h * bmP->BPP ());
 bmP->AddFlags (BM_FLAG_TRANSPARENT);
 nextRowP = s;
 y = 0;
@@ -815,8 +815,8 @@ while (nextRowP) {
 		kc.alpha = 255;
 		if (FFLAGS & FT_COLOR) {
 			for (hy = 0; hy < bmfP->Height (); hy++) {
-				pc = ((tRgbaColorb *) bmP->TexBuf ()) + (y + hy) * w + x;
-				pf = bmfP->TexBuf () + hy * bmfP->RowSize ();
+				pc = ((tRgbaColorb *) bmP->Buffer ()) + (y + hy) * w + x;
+				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
 				for (hx = bmfP->Width (); hx; hx--, pc++, pf++, colorP++)
 					if ((c = *pf) != TRANSPARENCY_COLOR) {
 						i = c * 3;
@@ -843,8 +843,8 @@ while (nextRowP) {
 					}
 				}
 			for (hy = 0; hy < bmfP->Height (); hy++) {
-				pc = ((tRgbaColorb *) bmP->TexBuf ()) + (y + hy) * w + x;
-				pf = bmfP->TexBuf () + hy * bmfP->RowSize ();
+				pc = ((tRgbaColorb *) bmP->Buffer ()) + (y + hy) * w + x;
+				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
 				for (hx = bmfP->Width (); hx; hx--, pc++, pf++)
 					if (*pf != TRANSPARENCY_COLOR)
 						*pc = bHotKey ? kc : hc;

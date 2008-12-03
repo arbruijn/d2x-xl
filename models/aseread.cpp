@@ -193,7 +193,7 @@ while ((pszToken = ASE_ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*BITMAP")) {
-		if (bmP->TexBuf ())	//duplicate
+		if (bmP->Buffer ())	//duplicate
 			return ASE_Error ("duplicate item");
 		*fn = '\001';
 		CFile::SplitPath (StrTok ("\""), NULL, fn + 1, NULL);

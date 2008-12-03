@@ -111,7 +111,7 @@ class CCanvas {
 		inline short Top (void) { return m_info.bm.Top (); }
 		inline short RowSize (void) { return m_info.bm.RowSize (); }
 		inline short Mode (void) { return m_info.bm.Mode (); }
-		inline ubyte* TexBuf (void) { return m_info.bm.TexBuf (); }
+		inline ubyte* Buffer (void) { return m_info.bm.Buffer (); }
 };
 
 //===========================================================================

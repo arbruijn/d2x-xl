@@ -179,7 +179,7 @@ if ((cf.Write (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
 	 (cf.Write (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
 	 (cf.Write (&bmP->bmFormat, sizeof (bmP->bmFormat), 1) != 1) ||
     (cf.Write (&bmP->bmBufSize, sizeof (bmP->bmBufSize), 1) != 1) ||
-    (cf.Write (bmP->TexBuf (), bmP->bmBufSize, 1) != 1)) {
+    (cf.Write (bmP->Buffer (), bmP->bmBufSize, 1) != 1)) {
 	cf.Close ();
 	return 0;
 	}
@@ -210,11 +210,11 @@ if ((cf.Read (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
 	cf.Close ();
 	return 0;
 	}
-if (!(bmP->TexBuf () = (ubyte *) (ubyte *) D2_ALLOC (bmP->bmBufSize))) {
+if (!(bmP->Buffer () = (ubyte *) (ubyte *) D2_ALLOC (bmP->bmBufSize))) {
 	cf.Close ();
 	return 0;
 	}
-if (cf.Read (bmP->TexBuf (), bmP->bmBufSize, 1) != 1) {
+if (cf.Read (bmP->Buffer (), bmP->bmBufSize, 1) != 1) {
 	cf.Close ();
 	return 0;
 	}
@@ -303,8 +303,8 @@ return NULL;
 
 inline void PiggyFreeBitmapData (CBitmap *bmP)
 {
-if (bmP->TexBuf ()) {
-	bmP->DestroyTexBuf ();
+if (bmP->Buffer ()) {
+	bmP->DestroyBuffer ();
 	UseBitmapCache (bmP, (int) -bmP->Width () * (int) bmP->RowSize ());
 	}
 }
@@ -330,7 +330,7 @@ gameData.pig.tex.bitmaps [bD1][bmP->Id ()].SetOverride (NULL);
 bmP->FreeTexture ();
 PiggyFreeMask (bmP);
 bmP->SetType (0);
-bmP->SetTexBuf (NULL);
+bmP->SetBuffer (NULL);
 return 1;
 }
 
@@ -410,7 +410,7 @@ for (bD1 = 0; bD1 < 2; bD1++) {
 	for (i = 0, bmP = gameData.pig.tex.bitmaps [bD1]; 
 		  i < gameData.pig.tex.nBitmaps [bD1]; 
 		  i++, bmP++) {
-		if (bmP->TexBuf () && (bitmapOffsets [bD1][i] > 0)) { // only page out bitmaps read from disk
+		if (bmP->Buffer () && (bitmapOffsets [bD1][i] > 0)) { // only page out bitmaps read from disk
 			bmP->AddFlags (BM_FLAG_PAGED_OUT);
 			PiggyFreeBitmap (bmP, i, bD1);
 			}
@@ -493,7 +493,7 @@ int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1)
 if (!bmName)
 	return 0;
 #endif
-if (!bmP->TexBuf ()) {
+if (!bmP->Buffer ()) {
 	StopTime ();
 	nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
 	nSize = (int) bmP->Width () * (int) bmP->RowSize ();
@@ -619,11 +619,11 @@ reloadTextures:
 	else 
 #endif
 		{
-		//bmP->SetTexBuf ((ubyte *) D2_ALLOC (nSize));
-		if (bmP->CreateTexBuf ()) 
+		//bmP->SetBuffer ((ubyte *) D2_ALLOC (nSize));
+		if (bmP->CreateBuffer ()) 
 			UseBitmapCache (bmP, nSize);
 		}
-	if (!bmP->TexBuf () || (bitmapCacheUsed > bitmapCacheSize)) {
+	if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize)) {
 		Int3 ();
 		PiggyBitmapPageOutAll (0);
 		goto reloadTextures;
@@ -638,7 +638,7 @@ reloadTextures:
 			PiggyCriticalError ();
 			goto reloadTextures;
 			}
-		temp = (int) cfP->Read (bmP->TexBuf () + 4, 1, zSize-4);
+		temp = (int) cfP->Read (bmP->Buffer () + 4, 1, zSize-4);
 		if (nDescentCriticalError) {
 			PiggyCriticalError ();
 			goto reloadTextures;
@@ -656,7 +656,7 @@ reloadTextures:
 		{
 		nDescentCriticalError = 0;
 		if (bDefault) {
-			temp = (int) cfP->Read (bmP->TexBuf (), 1, nSize);
+			temp = (int) cfP->Read (bmP->Buffer (), 1, nSize);
 			if (bD1)
 				bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			else
@@ -812,7 +812,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			continue;
 		bm.SetAvgColorIndex (bmh [i].avgColor);
 		bm.SetType (BM_TYPE_ALT);
-		if (bm.CreateTexBuf ())
+		if (bm.CreateBuffer ())
 			break;
 		cf.Seek (bmDataOffset + bmOffset, SEEK_SET);
 		if (bTGA) {
@@ -823,7 +823,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			h.height = bm.Width ();
 			h.bits = 32;
 			if (!ReadTGAImage (cf, &h, &bm, -1, 1.0, 0, 1)) {
-				bm.DestroyTexBuf ();
+				bm.DestroyBuffer ();
 				break;
 				}
 			bm.SetRowSize (bm.RowSize () * bm.BPP ());
@@ -852,7 +852,7 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			}
 		else {
 			int nSize = (int) bm.Width () * (int) bm.Width ();
-			cf.Read (bm.TexBuf (), 1, nSize);
+			cf.Read (bm.Buffer (), 1, nSize);
 			bm.SetPalette (paletteManager.Game ());
 			j = indices [i];
 			bm.SetId (j);

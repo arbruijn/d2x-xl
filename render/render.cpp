@@ -100,7 +100,7 @@ void _CDECL_ FreeReticleCanvas (void)
 {
 if (reticleCanvas) {
 	PrintLog ("unloading reticle data\n");
-	reticleCanvas->Bitmap ().DestroyTexBuf ();
+	reticleCanvas->Bitmap ().DestroyBuffer ();
 	D2_FREE (reticleCanvas);
 	reticleCanvas	= NULL;
 	}

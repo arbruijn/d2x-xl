@@ -534,7 +534,7 @@ SetFontColorRGBi (fc, 1, bc, 1);
 GrPrintF (NULL, 0, 0, s);
 //now float it, since we're drawing to 400-line modex screen
 if (doubleFlag) {
-	data = canvP->Bitmap ().TexBuf ();
+	data = canvP->Bitmap ().Buffer ();
 	rs = canvP->Bitmap ().RowSize ();
 
 	for (y=canvP->Bitmap ().Height () / 2;y--;) {

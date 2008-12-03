@@ -437,18 +437,18 @@ bInitIcons = 0;
 int LoadInventoryIcons (void)
 {
 	int	h, i;
-	ubyte	*texBuf;
+	ubyte	*buffer;
 
 if (!((bmpInventory = PiggyLoadBitmap ("inventry.bmp")) ||
 	   (bmpInventory = PiggyLoadBitmap ("inventory.bmp"))))
 	return bHaveInvBms = 0;
 memset (bmInvItems, 0, sizeof (bmInvItems));
 h = bmpInventory->Width () * bmpInventory->Height ();
-texBuf = bmpInventory->TexBuf ();
+buffer = bmpInventory->Buffer ();
 for (i = 0; i < NUM_INV_ITEMS; i++) {
 	bmInvItems [i] = *bmpInventory;
 	bmInvItems [i].SetHeight (bmInvItems [i].Width ());
-	bmInvItems [i].SetTexBuf (texBuf + h * i);
+	bmInvItems [i].SetBuffer (buffer + h * i);
 	bmInvItems [i].SetPalette (paletteManager.Game ());
 	}
 return bHaveInvBms = 1;

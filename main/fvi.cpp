@@ -1601,7 +1601,7 @@ if (bmP->Flags () & BM_FLAG_TGA) {
 
 	if (bmP->BPP () == 3)	//no alpha -> no transparency
 		return 0;
-	p = bmP->TexBuf () + offs * bmP->BPP ();
+	p = bmP->Buffer () + offs * bmP->BPP ();
 	// check super transparency color
 #if 1
 	if ((p[0] == 120) && (p[1] == 88) && (p[2] == 128))
@@ -1615,7 +1615,7 @@ if (bmP->Flags () & BM_FLAG_TGA) {
 		return 1;
 	}
 else {
-	c = bmP->TexBuf () [offs];
+	c = bmP->Buffer () [offs];
 	if (c == SUPER_TRANSP_COLOR)
 		return -1;
 	if (c == TRANSPARENCY_COLOR)

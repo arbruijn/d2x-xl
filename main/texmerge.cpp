@@ -165,7 +165,7 @@ if (!bmP ||
 	}
 else
 	bmP->SetFlags ((char) BM_FLAG_TGA);
-if (!bmP->TexBuf ())
+if (!bmP->Buffer ())
 	return NULL;
 bmP->SetPalette (paletteManager.Game ());
 if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)) {
@@ -176,7 +176,7 @@ if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)) {
 		bmP->SetAvgColorIndex (bmTop->AvgColorIndex ());
 		}
 	else {
-//			MergeTexturesNormal (nOrient, bmBot, bmTop, bmP->TexBuf ());
+//			MergeTexturesNormal (nOrient, bmBot, bmTop, bmP->Buffer ());
 		MergeTextures (nOrient, bmBot, bmTop, bmP, 0);
 		bmP->AddFlags (bmBot->Flags () & (~BM_FLAG_RLE));
 		bmP->SetAvgColorIndex (bmBot->AvgColorIndex ());
@@ -203,8 +203,8 @@ if (bmTop->Flags () & BM_FLAG_RLE)
 if (bmBot->Flags () & BM_FLAG_RLE)
 	bmBot = rle_expand_texture(bmBot);
 //	Assert(bmBot != bmTop);
-top_data = bmTop->TexBuf ();
-bottom_data = bmBot->TexBuf ();
+top_data = bmTop->Buffer ();
+bottom_data = bmBot->Buffer ();
 scale = bmBot->Width () / bmTop->Width ();
 if (!scale)
 	scale = 1;
@@ -300,7 +300,7 @@ void MergeTextures (
 	int		i, x, y, bw, bh, tw, th, dw, dh;
 	int		bTopBPP, bBtmBPP, bST = 0;
 	frac		topScale, btmScale;
-	tRGBA		*dest_data = (tRGBA *) dest_bmp->TexBuf ();
+	tRGBA		*dest_data = (tRGBA *) dest_bmp->Buffer ();
 
 	ubyte		*top_data, *bottom_data, *top_pal, *btmPalette;
 
@@ -316,8 +316,8 @@ if (bmBot->Flags () & BM_FLAG_RLE)
 
 //	Assert(bmBot != bmTop);
 
-top_data = bmTop->TexBuf ();
-bottom_data = bmBot->TexBuf ();
+top_data = bmTop->Buffer ();
+bottom_data = bmBot->Buffer ();
 top_pal = bmTop->Palette ()->Raw ();
 btmPalette = bmBot->Palette ()->Raw ();
 

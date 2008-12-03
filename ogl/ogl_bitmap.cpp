@@ -309,34 +309,34 @@ if (gameStates.ogl.bReadPixels > 0) {
 	glDisable (GL_TEXTURE_2D);
 	OglSetReadBuffer (GL_FRONT, 1);
 	if (bTGA)
-		glReadPixels (0, 0, w1, h1, GL_RGBA, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
-//			glReadPixels (sx, screen.Height () - (sy + h), w, h, GL_RGBA, GL_UNSIGNED_BYTE, dest->TexBuf ());
+		glReadPixels (0, 0, w1, h1, GL_RGBA, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
+//			glReadPixels (sx, screen.Height () - (sy + h), w, h, GL_RGBA, GL_UNSIGNED_BYTE, dest->Buffer ());
 	else {
 		if (w1*h1*3>OGLTEXBUFSIZE)
 			Error ("OglUBitBltToLinear: screen res larger than OGLTEXBUFSIZE\n");
-		glReadPixels (0, 0, w1, h1, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
+		glReadPixels (0, 0, w1, h1, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
 		}
-//		glReadPixels (sx, screen.Height ()- (sy+h), w, h, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
-//		glReadPixels (sx, sy, w+sx, h+sy, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
+//		glReadPixels (sx, screen.Height ()- (sy+h), w, h, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
+//		glReadPixels (sx, sy, w+sx, h+sy, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
 	}
 else {
 	if (dest->Flags () & BM_FLAG_TGA)
-		memset (dest->TexBuf (), 0, w1*h1*4);
+		memset (dest->Buffer (), 0, w1*h1*4);
 	else
-		memset (gameData.render.ogl.texBuf, 0, w1*h1*3);
+		memset (gameData.render.ogl.buffer, 0, w1*h1*3);
 	}
 if (bTGA) {
 	sx += src->Left ();
 	sy += src->Top ();
 	for (i = 0; i < h; i++) {
-		d = dest->TexBuf () + dx + (dy + i) * dest->RowSize ();
-		s = gameData.render.ogl.texBuf + ((h1 - (i + sy + 1)) * w1 + sx) * 4;
+		d = dest->Buffer () + dx + (dy + i) * dest->RowSize ();
+		s = gameData.render.ogl.buffer + ((h1 - (i + sy + 1)) * w1 + sx) * 4;
 		memcpy (d, s, w * 4);
 		}
 /*
 	for (i = 0; i < h; i++)
-		memcpy (dest->TexBuf () + (h - i - 1) * dest->RowSize (), 
-				  gameData.render.ogl.texBuf + ((sy + i) * h1 + sx) * 4, 
+		memcpy (dest->Buffer () + (h - i - 1) * dest->RowSize (), 
+				  gameData.render.ogl.buffer + ((sy + i) * h1 + sx) * 4, 
 				  dest->RowSize ());
 */
 	}
@@ -344,8 +344,8 @@ else {
 	sx += src->Left ();
 	sy += src->Top ();
 	for (i = 0; i < h; i++) {
-		d = dest->TexBuf () + dx + (dy + i) * dest->RowSize ();
-		s = gameData.render.ogl.texBuf + ((h1 - (i + sy + 1)) * w1 + sx) * 3;
+		d = dest->Buffer () + dx + (dy + i) * dest->RowSize ();
+		s = gameData.render.ogl.buffer + ((h1 - (i + sy + 1)) * w1 + sx) * 3;
 		for (j = 0; j < w; j++) {
 			*d++ = dest->Palette ()->ClosestColor (s [0] / 4, s [1] / 4, s [2] / 4);
 			s += 3;
@@ -374,7 +374,7 @@ int OglUBitBltCopy (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src,
 	glDisable (GL_TEXTURE_2D);
 	OglSetReadBuffer (GL_FRONT, 1);
 	glRasterPos2f (xo, yo);
-//	glReadPixels (0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
+//	glReadPixels (0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
 	glCopyPixels (sx, screen.Height ()- (sy+h), w, h, GL_COLOR);
 	glRasterPos2f (0, 0);
 #endif

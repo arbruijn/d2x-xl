@@ -145,7 +145,7 @@ if (!gameData.hoard.bInitialized) {
 	vcP->nSound = -1;
 	vcP->lightValue = F1_0;
 	bmDataP = (ubyte *) D2_ALLOC (gameData.hoard.orb.nSize);
-	gameData.hoard.orb.bm.SetTexBuf (bmDataP);
+	gameData.hoard.orb.bm.SetBuffer (bmDataP);
 	for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		vcP->frames [i].index = nBitmap;
@@ -178,7 +178,7 @@ if (!gameData.hoard.bInitialized) {
 	gameData.pig.tex.nTextures [0]++;
 	Assert (gameData.pig.tex.nTextures [0] < MAX_TEXTURES);
 	bmDataP = (ubyte *) D2_ALLOC (gameData.hoard.goal.nSize);
-	gameData.hoard.goal.bm.SetTexBuf (bmDataP);
+	gameData.hoard.goal.bm.SetBuffer (bmDataP);
 	for (i = 0; i < gameData.hoard.goal.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		ecP->vc.frames [i].index = nBitmap;
@@ -200,12 +200,12 @@ else {
 paletteManager.Game ();
 gameData.hoard.orb.palette = paletteManager.Add (palette);
 vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
-bmDataP = gameData.hoard.orb.bm.TexBuf ();
+bmDataP = gameData.hoard.orb.bm.Buffer ();
 for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 	CBitmap *bmP = &gameData.pig.tex.bitmaps [0][vcP->frames [i].index];
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	cf.Read (bmP->TexBuf (), 1, gameData.hoard.orb.nFrameSize);
+	cf.Read (bmP->Buffer (), 1, gameData.hoard.orb.nFrameSize);
 	bmP->Remap (gameData.hoard.orb.palette, 255, -1);
 	}
 
@@ -213,12 +213,12 @@ for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 cf.ReadShort ();        //skip frame count
 paletteManager.Game ();
 gameData.hoard.goal.palette = paletteManager.Add (palette);
-bmDataP = gameData.hoard.goal.bm.TexBuf ();
+bmDataP = gameData.hoard.goal.bm.Buffer ();
 for (i = 0; i < gameData.hoard.goal.nFrames; i++) {
 	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + ecP->vc.frames [i].index;
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	cf.Read (bmP->TexBuf (), 1, gameData.hoard.goal.nFrameSize);
+	cf.Read (bmP->Buffer (), 1, gameData.hoard.goal.nFrameSize);
 	bmP->Remap (gameData.hoard.goal.palette, 255, -1);
 	}
 
@@ -234,11 +234,11 @@ for (i = 0; i < 2; i++) {
 							  gameData.hoard.icon [i].nWidth, 
 							  BM_FLAG_TRANSPARENT, 
 							  NULL);
-		gameData.hoard.icon [i].bm.CreateTexBuf ();
+		gameData.hoard.icon [i].bm.CreateBuffer ();
 		}
 	palette.Read (cf);
 	gameData.hoard.icon [i].palette = paletteManager.Add (palette);
-	cf.Read (gameData.hoard.icon [i].bm.TexBuf (), 1, gameData.hoard.icon [i].nFrameSize);
+	cf.Read (gameData.hoard.icon [i].bm.Buffer (), 1, gameData.hoard.icon [i].nFrameSize);
 	gameData.hoard.icon [i].bm.Remap (gameData.hoard.icon [i].palette, 255, -1);
 	}
 
@@ -292,19 +292,19 @@ void FreeHoardData (void)
 if (!gameData.hoard.bInitialized)
 	return;
 bmP = gameData.hoard.monsterball.bm.Override () ? gameData.hoard.monsterball.bm.Override () : &gameData.hoard.monsterball.bm;
-if (bmP->TexBuf () == gameData.hoard.orb.bm.TexBuf ())
-	bmP->SetTexBuf (NULL);
+if (bmP->Buffer () == gameData.hoard.orb.bm.Buffer ())
+	bmP->SetBuffer (NULL);
 else {
-	bmP->DestroyTexBuf ();
+	bmP->DestroyBuffer ();
 	if (gameData.hoard.monsterball.bm.Override ())
 		D2_FREE (bmP);
 	}
-gameData.hoard.orb.bm.DestroyTexBuf ();
-gameData.hoard.goal.bm.DestroyTexBuf ();
+gameData.hoard.orb.bm.DestroyBuffer ();
+gameData.hoard.goal.bm.DestroyBuffer ();
 bmP = &gameData.hoard.monsterball.bm;
 memset (&gameData.hoard.orb.bm, 0, sizeof (CBitmap));
 for (i = 0; i < 2; i++)
-	gameData.hoard.icon [i].bm.DestroyTexBuf ();
+	gameData.hoard.icon [i].bm.DestroyBuffer ();
 for (i = 1; i <= 4; i++) {
 	D2_FREE (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] - i].data [0]);
 	}

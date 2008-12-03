@@ -109,7 +109,7 @@ void init_interface_vars_to_assembler(void)
 	bmP = &CCanvas::Current ()->Bitmap ();
 
 	Assert(bmP!=NULL);
-	Assert(bmP->TexBuf ()!=NULL);
+	Assert(bmP->Buffer ()!=NULL);
 	Assert(bmP->Height () <= MAX_Y_POINTERS);
 
 	//	If bytes_per_row has changed, create new table of pointers.
@@ -125,7 +125,7 @@ void init_interface_vars_to_assembler(void)
 		}
 	}
 
-        write_buffer = (unsigned char *) bmP->TexBuf ();
+        write_buffer = (unsigned char *) bmP->Buffer ();
 
 	window_left = 0;
 	window_right = (int) bmP->Width ()-1;
@@ -362,7 +362,7 @@ void ntmap_scanline_lighted(CBitmap *srcb, int y, fix xleft, fix xright, fix ule
 	fx_dv_dx = FixMul(vright - vleft,recip_dx);
 	fx_dz_dx = FixMul(zright - zleft,recip_dx);
 	fx_y = y;
-	pixptr = srcb->TexBuf ();
+	pixptr = srcb->Buffer ();
 
 	switch (bLightingEnabled) {
 		case 0:
@@ -646,7 +646,7 @@ void ntmap_scanline_lighted_linear(CBitmap *srcb, int y, fix xleft, fix xright, 
 		fx_y = y;
 		fx_xright = X2I(xright);
 		fx_xleft = X2I(xleft);
-		pixptr = srcb->TexBuf ();
+		pixptr = srcb->Buffer ();
 
 		switch (bLightingEnabled) {
 			case 0:

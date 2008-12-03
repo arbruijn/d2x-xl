@@ -146,14 +146,14 @@ if (!bmP) {
 	}
 
 if (bitmapType == BM_LINEAR) {
-	if (bmP->TexBuf () == NULL) 
+	if (bmP->Buffer () == NULL) 
 		bmP->Setup (bitmapType, xsize, ysize, 1);
 
 	}
 
 if (bmP->Mode () == BM_LINEAR) {
 	for (row = 0; row < ysize ; row++) {
-		pixdata = bmP->TexBuf (bmP->RowSize () * row);
+		pixdata = bmP->Buffer (bmP->RowSize () * row);
 		for (col = 0; col < xsize ;) {
 			if (cf.Read (&data, 1, 1) != 1) {
 				cf.Close ();
@@ -254,7 +254,7 @@ int pcx_write_bitmap (const char * filename, CBitmap * bmP)
 	}
 
 	for (i=0; i < bmP->Height (); i++)	{
-		if (!PCXEncodeLine (&bmP->TexBuf ()[bmP->RowSize ()*i], bmP->Width (), cf))	{
+		if (!PCXEncodeLine (&bmP->Buffer ()[bmP->RowSize ()*i], bmP->Width (), cf))	{
 			cf.Close ();
 			return PCX_ERROR_WRITING;
 		}

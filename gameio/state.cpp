@@ -232,11 +232,11 @@ else {
 	cf.Read (m_info.szLabel + 3, DESC_LENGTH, 1);
 	if (nVersion < 26) {
 		m_info.image = CBitmap::Create (0, THUMBNAIL_W, THUMBNAIL_H, 1);
-		cf.Read (m_info.image->TexBuf (), THUMBNAIL_W * THUMBNAIL_H, 1);
+		cf.Read (m_info.image->Buffer (), THUMBNAIL_W * THUMBNAIL_H, 1);
 		}
 	else {
 		m_info.image = CBitmap::Create (0, THUMBNAIL_LW, THUMBNAIL_LH, 1);
-		cf.Read (m_info.image->TexBuf (), THUMBNAIL_LW * THUMBNAIL_LH, 1);
+		cf.Read (m_info.image->Buffer (), THUMBNAIL_LW * THUMBNAIL_LH, 1);
 		}
 	if (nVersion >= 9) {
 		CPalette palette;
@@ -1212,24 +1212,24 @@ if (thumbCanv) {
 	x = (screen.Width () - bm.Width ()) / 2;
 	y = (screen.Height () - bm.Height ()) / 2;
 	bm.SetBPP (3);
-	bm.CreateTexBuf ();
+	bm.CreateBuffer ();
 	//glDisable (GL_TEXTURE_2D);
 	OglSetReadBuffer (GL_FRONT, 1);
-	glReadPixels (x, y, bm.Width (), bm.Height (), GL_RGB, GL_UNSIGNED_BYTE, bm.TexBuf ());
+	glReadPixels (x, y, bm.Width (), bm.Height (), GL_RGB, GL_UNSIGNED_BYTE, bm.Buffer ());
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
 	ShrinkTGA (&bm, bm.Width () / THUMBNAIL_LW, bm.Height () / THUMBNAIL_LH, 0);
 	paletteManager.LoadEffect  ();
 	// convert the resized TGA to bmp
-	ubyte *texBuf = bm.TexBuf ();
+	ubyte *buffer = bm.Buffer ();
 	for (y = 0; y < THUMBNAIL_LH; y++) {
 		i = y * THUMBNAIL_LW * 3;
 		k = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
 		for (x = 0; x < THUMBNAIL_LW; x++, k++, i += 3)
-			thumbCanv->Bitmap ().TexBuf () [k] = paletteManager.Game ()->ClosestColor (texBuf [i] / 4, texBuf [i+1] / 4, texBuf [i+2] / 4);
+			thumbCanv->Bitmap ().Buffer () [k] = paletteManager.Game ()->ClosestColor (buffer [i] / 4, buffer [i+1] / 4, buffer [i+2] / 4);
 			}
 	paletteManager.LoadEffect  ();
-	bm.DestroyTexBuf ();
-	m_cf.Write (thumbCanv->Bitmap ().TexBuf (), THUMBNAIL_LW * THUMBNAIL_LH, 1);
+	bm.DestroyBuffer ();
+	m_cf.Write (thumbCanv->Bitmap ().Buffer (), THUMBNAIL_LW * THUMBNAIL_LH, 1);
 	CCanvas::Pop ();
 	thumbCanv->Destroy ();
 	m_cf.Write (paletteManager.Game (), 3, 256);

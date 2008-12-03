@@ -32,16 +32,15 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-ubyte* CBitmap::CreateTexBuf (void)
+ubyte* CBitmap::CreateBuffer (void)
 {
 if (m_bm.props.rowSize * m_bm.props.h) {
-	m_bm.texBuf = new ubyte [(m_bm.nBPP > 1) ? m_bm.props.h * m_bm.props.rowSize : MAX_BMP_SIZE (m_bm.props.w, m_bm.props.h)];
+	m_bm.buffer.Create ((m_bm.nBPP > 1) ? m_bm.props.h * m_bm.props.rowSize : MAX_BMP_SIZE (m_bm.props.w, m_bm.props.h));
 #if DBG
-	if (m_bm.texBuf) 
-		memset (m_bm.texBuf, 0, (m_bm.nBPP > 1) ? m_bm.props.h * m_bm.props.rowSize : MAX_BMP_SIZE (m_bm.props.w, m_bm.props.h));
+	m_bm.buffer.Clear ();
 #endif
 	}
-return m_bm.texBuf;
+return m_bm.buffer.Buffer ();
 }
 
 //------------------------------------------------------------------------------
@@ -57,21 +56,19 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-bool CBitmap::Setup (ubyte mode, int w, int h, int bpp, ubyte* texBuf)
+bool CBitmap::Setup (ubyte mode, int w, int h, int bpp, ubyte* buffer)
 {
 Init (mode, 0, 0, w, h, bpp);
-return SetTexBuf (texBuf ? texBuf : CreateTexBuf ()) != NULL;
+return SetBuffer (buffer ? buffer : CreateBuffer ()) != NULL;
 }
 
 //------------------------------------------------------------------------------
 
-void CBitmap::DestroyTexBuf (void)
+void CBitmap::DestroyBuffer (void)
 {
-if (m_bm.texBuf) {
-	FreeTexture (this);
-	delete[] m_bm.texBuf;
-	m_bm.texBuf = NULL;
-	}
+if (!m_bm.bChild)
+	m_bm.buffer.Destroy ();
+FreeTexture ();
 }
 
 //------------------------------------------------------------------------------
@@ -80,7 +77,7 @@ void CBitmap::Destroy (void)
 {
 SetPalette (NULL);
 if ((Type () == BM_TYPE_ALT) || !Parent ())
-	DestroyTexBuf ();
+	DestroyBuffer ();
 DestroyFrames ();
 DestroyMask ();
 }
@@ -110,7 +107,7 @@ memset (&m_bm, 0, sizeof (m_bm));
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Init (int mode, int x, int y, int w, int h, int bpp, ubyte *texBuf) 
+void CBitmap::Init (int mode, int x, int y, int w, int h, int bpp, ubyte *buffer) 
 {
 Init ();
 m_bm.props.x = x;
@@ -122,7 +119,7 @@ m_bm.nBPP = bpp ? bpp : 1;
 m_bm.props.rowSize = w * bpp;
 if (bpp > 2)
 	m_bm.props.flags = (char) BM_FLAG_TGA;
-SetTexBuf (texBuf);
+SetBuffer (buffer);
 }
 
 //------------------------------------------------------------------------------
@@ -142,12 +139,13 @@ return child;
 void CBitmap::InitChild (CBitmap *parent, int x, int y, int w, int h)
 {
 *this = *parent;
+m_bm.bChild = 1;
 m_bm.props.x += x;
 m_bm.props.y += y;
 m_bm.props.w = w;
 m_bm.props.h = h;
 SetParent (parent ? parent : this);
-m_bm.texBuf += (unsigned int) ((m_bm.props.y * m_bm.props.rowSize) + m_bm.props.x * m_bm.nBPP);
+m_bm.buffer.SetBuffer (parent->Buffer () + (unsigned int) ((m_bm.props.y * m_bm.props.rowSize) + m_bm.props.x * m_bm.nBPP));
 }
 
 //------------------------------------------------------------------------------
@@ -209,10 +207,10 @@ if (!palette)
 if (!palette)
 	return;
 if (m_bm.props.w == m_bm.props.rowSize)
-	CountColors (m_bm.texBuf, m_bm.props.w * m_bm.props.h, freq);
+	CountColors (m_bm.buffer.Buffer (), m_bm.props.w * m_bm.props.h, freq);
 else {
 	int y;
-	ubyte *p = m_bm.texBuf;
+	ubyte *p = m_bm.buffer.Buffer ();
 	for (y = m_bm.props.h; y; y--, p += m_bm.props.rowSize)
 		CountColors (p, m_bm.props.w, freq);
 	}
@@ -223,7 +221,7 @@ SetPalette (palette, transparentColor, supertranspColor, freq);
 
 void CBitmap::CheckTransparency (void)
 {
-	ubyte *data = m_bm.texBuf;
+	ubyte *data = m_bm.buffer.Buffer ();
 
 for (int i = m_bm.props.w * m_bm.props.h; i; i--, data++)
 	if  (*data++ == TRANSPARENCY_COLOR)	{
@@ -306,7 +304,7 @@ int CBitmap::AvgColor (tRgbColorf* colorP)
 	CPalette		*palette;
 	ubyte			*bufP;
 	
-if (!(bufP = m_bm.texBuf))
+if (!(bufP = m_bm.buffer.Buffer ()))
 	return -1;
 h = (int) (this - gameData.pig.tex.pBitmaps);
 if ((h < 0) || (h >= MAX_BITMAP_FILES)) {
@@ -359,13 +357,14 @@ return h;
 
 int CBitmap::AvgColorIndex (void)
 {
-if (!m_bm.texBuf)
+	ubyte *p = m_bm.buffer.Buffer ();
+
+if (!p)
 	return 0;
 if (m_bm.avgColorIndex) 
 	return m_bm.avgColorIndex;
 
 	int			c, h, i, j = 0, r = 0, g = 0, b = 0;
-	ubyte			*p = m_bm.texBuf;
 	tRgbColorb	*palette = m_bm.palette->Color ();
 
 for (h = i = m_bm.props.w * m_bm.props.h; i; i--, p++) {
@@ -386,7 +385,7 @@ void CBitmap::Swap_0_255 (void)
 	int	i;
 	ubyte	*p;
 
-for (i = m_bm.props.h * m_bm.props.w, p = m_bm.texBuf; i; i--, p++) {
+for (i = m_bm.props.h * m_bm.props.w, p = m_bm.buffer.Buffer (); i; i--, p++) {
 	if (!*p)
 		*p = 255;
 	else if (*p == 255)
