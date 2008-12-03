@@ -157,15 +157,23 @@ m_info.bmP = NULL;
 
 //------------------------------------------------------------------------------
 
-void CTexture::Setup (int w, int h, int lw, int bMask, int bMipMap, CBitmap *bmP)
+void CTexture::Setup (int w, int h, int bpp, int bMask, int bMipMap, CBitmap *bmP)
 {
 m_info.internalFormat = bMask ? 1 : gameStates.ogl.bpp / 8;
 m_info.format = bMask ? GL_RED : gameStates.ogl.nRGBAFormat;
 m_info.w = w;
 m_info.h = h;
-m_info.lw = lw;
+m_info.lw = w * bpp;
 m_info.tw = Pow2ize (w);
 m_info.th = Pow2ize (h);
+if (bpp == 3) {
+	m_info.format = GL_RGB;
+	m_info.internalFormat = 3;
+	}
+else {
+	m_info.format = GL_RGB;
+	m_info.internalFormat = 4;
+	}
 m_info.bMipMaps = bMipMap && !bMask;
 m_info.bmP = bmP;
 }
@@ -572,16 +580,8 @@ return 0;
 
 void CTexture::SetBufSize (int dbits, int bits, int w, int h)
 {
-	int u;
-
-if (m_info.tw != w || m_info.th != h)
-	u = (int) ((m_info.w / (double) m_info.tw * w) *(m_info.h / (double) m_info.th * h));
-else
-	u = (int) (m_info.w * m_info.h);
 if (bits <= 0) //the beta nvidia GLX server. doesn'texP ever return any bit sizes, so just use some assumptions.
 	bits = dbits;
-//m_info.bytes = (int) (((double) w * h * bits) / 8.0);
-//m_info.bytesu = (int) (((double) u * bits) / 8.0);
 }
 
 //------------------------------------------------------------------------------
@@ -703,33 +703,14 @@ return m_info.handle;
 
 //------------------------------------------------------------------------------
 
-int CTexture::Prepare (int w, int h, int bpp, bool bLocal, bool bCompressed)
+int CTexture::Prepare (bool bCompressed)
 {
-if (bLocal) {
-	m_info.w = w;
-	m_info.h = h;
-	m_info.tw = Pow2ize (w);
-	m_info.th = Pow2ize (h);
-	if (bpp == 3) {
-		m_info.format = GL_RGB;
-		m_info.internalFormat = 3;
-		}
-	else {
-		m_info.format = GL_RGB;
-		m_info.internalFormat = 4;
-		}
-	m_info.handle = 0;
-	m_info.lw = bpp * w;
-	}
-else {
-	//calculate smallest texture size that can accomodate us (must be multiples of 2)
 #if TEXTURE_COMPRESSION
-	if (bCompressed) {
-		m_info.SetWidth (w);
-		m_info.SetHeight (h);
-		}
-#endif
+if (bCompressed) {
+	m_info.SetWidth (w);
+	m_info.SetHeight (h);
 	}
+#endif
 //calculate u/v values that would make the resulting texture correctly sized
 m_info.u = (float) m_info.w / (float) m_info.tw;
 m_info.v = (float) m_info.h / (float) m_info.th;
@@ -799,6 +780,16 @@ if (!m_info.handle) {
 #endif
 	return 1;
 	}
+Bind ();
+glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+if (m_info.bMipMaps) {
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gameStates.ogl.texMinFilter);
+	}
+else {
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
 #if TEXTURE_COMPRESSION
 if (bCompressed) {
 	glCompressedTexImage2D (
@@ -816,16 +807,6 @@ else
 	Compress ();
 #endif
 	SetSize ();
-	}
-Bind ();
-glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-if (m_info.bMipMaps) {
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gameStates.ogl.texMinFilter);
-	}
-else {
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
 return 0;
 }
@@ -916,10 +897,12 @@ int CBitmap::LoadTexture (int dxo, int dyo, int nTransp, int superTransp)
 	int			funcRes = 1;
 
 texP = Texture ();
-if ((bLocal = (texP == NULL)))
+if ((bLocal = (texP == NULL))) {
+	texture.Setup (m_bm.props.w, m_bm.props.h, m_bm.nBPP);
 	texP = &texture;
-texP->Prepare (m_bm.props.w, m_bm.props.h, m_bm.nBPP, bLocal);
+	}
 #if TEXTURE_COMPRESSION
+texP->Prepare (m_bm.bCompressed);
 #	ifndef __macosx__
 if (!(m_bm.bCompressed || superTransp || Parent ())) {
 	if (gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression &&
@@ -930,6 +913,8 @@ if (!(m_bm.bCompressed || superTransp || Parent ())) {
 		return 1;
 	}
 #	endif
+#else
+texP->Prepare ();
 #endif
 
 //	if (width!=twidth || height!=theight)
@@ -979,14 +964,14 @@ if (!(texP = Texture ())) {
 	if (!(texP = textureManager.Get (this)))
 		return 1;
 	SetTexture (texP);
-	texP->Setup (Width (), Height (), RowSize (), bMask, bMipMap, this);
+	texP->Setup (m_bm.props.w, m_bm.props.h, m_bm.nBPP, bMask, bMipMap, this);
 	texP->SetRenderBuffer (renderBuffer);
 	}
 else {
 	if (texP->Handle () > 0)
 		return 0;
 	if (!texP->Width ())
-		texP->Setup (Width (), Height (), RowSize (), bMask, bMipMap, this);
+		texP->Setup (m_bm.props.w, m_bm.props.h, m_bm.nBPP, bMask, bMipMap, this);
 	}
 if (Flags () & BM_FLAG_RLE)
 	RLEExpand (NULL, 0);
@@ -995,8 +980,8 @@ if (!bMask) {
 	if (0 <= (AvgColor (&color)))
 		SetAvgColorIndex ((ubyte) Palette ()->ClosestColor (&color));
 	}
-LoadTexture (0, 0, (Flags () & BM_FLAG_TGA) ? -1 : nTransp, 
-				 (Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
+LoadTexture (0, 0, (m_bm.props.flags & BM_FLAG_TGA) ? -1 : nTransp, 
+				 (m_bm.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
 return 0;
 }
 
@@ -1103,7 +1088,7 @@ int CBitmap::Bind (int bMipMaps, int nTransp)
 	CTexture		*texP = Texture ();
 	CBitmap		*bmP, *mask;
 
-if (bmP = Override (-1))
+if (bmP = HasOverride ())
 	bmP->Bind (bMipMaps, nTransp);
 #if RENDER2TEXTURE
 if (!texP->IsRenderBuffer ())
@@ -1144,7 +1129,7 @@ if (!(h * w))
 	return NULL;
 nFrames = (m_bm.nType == BM_TYPE_ALT) ? FrameCount () : 0;
 if (!(m_bm.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
-	if (bLoad && bmP->PrepareTexture (bDoMipMap, nTransp, 0, NULL))
+	if (bLoad && PrepareTexture (bDoMipMap, nTransp, 0, NULL))
 		return NULL;
 	if (CreateMasks () && Mask ()->PrepareTexture (0, -1, 1, NULL))
 		return NULL;

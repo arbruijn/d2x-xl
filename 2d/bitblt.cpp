@@ -862,7 +862,7 @@ if ((src->Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
 		glEnable (GL_BLEND);
 	return;
 	}
-if(dest->Mode () != BM_LINEAR) {
+if (dest->Mode () != BM_LINEAR) {
 	CBitmap *tmp = CBitmap::Create (0, dest->Width (), dest->Height (), 1);
 	GrBitmapScaleTo(src, tmp);
 	GrBitmap(0, 0, tmp);

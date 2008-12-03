@@ -152,6 +152,8 @@ class CBitmap {
 			return m_bm.info.alt.curFrame = (m_bm.info.alt.frames ? m_bm.info.alt.frames + iFrame % m_bm.info.alt.nFrameCount : this);
 			}
 
+		inline CBitmap* HasParent (void)
+			{ return (m_bm.nType == BM_TYPE_STD) ? m_bm.info.std.parent :  NULL; } 
 		inline CBitmap* HasOverride (void)
 			{ return (m_bm.nType == BM_TYPE_STD) ? m_bm.info.std.override :  m_bm.info.alt.curFrame; } 
 

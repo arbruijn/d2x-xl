@@ -93,7 +93,6 @@ paneP->Bitmap ().InitChild (&m_info.bm, x, y, w, h);
 
 void CCanvas::Destroy (void)
 {
-m_info.bm.Destroy ();
 delete this;
 }
 
@@ -101,7 +100,7 @@ delete this;
 
 void CCanvas::SetCurrent (CCanvas *canvP)
 {
-m_current = canvP ? canvP : CScreen::Current ()->Canvas ();
+m_current = canvP ? canvP : screen.Canvas ();
 }
 
 //	-----------------------------------------------------------------------------

@@ -68,7 +68,7 @@ class CCanvas {
 
 	public:
 		CCanvas () { Init (); }
-		~CCanvas () { Destroy (); }
+		~CCanvas () {}
 
 		static CCanvas* Create (int w, int h);
 		void Init (void);

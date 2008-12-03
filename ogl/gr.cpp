@@ -255,9 +255,6 @@ for (t = 0; scrSizes [t].x && scrSizes [t].y; t++)
 if ((retcode = GrSetMode (mode)))
 	return retcode;
 
-screen.Canvas ()->Init ();
-CCanvas::SetCurrent (screen.Canvas ());
-
 gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();
 //atexit(GrClose);
