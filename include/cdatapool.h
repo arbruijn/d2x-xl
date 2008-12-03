@@ -93,7 +93,7 @@ template < class _T > class CDataPool {
 			return &e.data;
 			}
 
-		inline _T* GetFirst (int i) { 
+		inline _T* GetFirst (int i = -1) { 
 			m_current = (i < 0) ? m_used : i;
 			return GetNext ();
 			}
