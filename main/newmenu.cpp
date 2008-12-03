@@ -277,7 +277,8 @@ if (!bForce && (gameOpts->menus.altBg.bHave == 1))
 	return 0;
 if (bForce || !--gameOpts->menus.altBg.bHave) {
 	gameOpts->menus.altBg.bHave = 0;
-	D2_FREE (pAltBg);
+	delete pAltBg;
+	pAltBg = NULL;
 	}
 return 1;
 }
@@ -334,7 +335,7 @@ if (!((gameStates.menus.bNoBackground || gameStates.app.bGameRunning) && gameOpt
 if (bgP)
 	bgP->background = bmP;
 else if (bmP != pAltBg)
-	D2_FREE (bmP);
+	delete bmP;
 }
 
 //------------------------------------------------------------------------------

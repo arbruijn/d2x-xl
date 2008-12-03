@@ -890,7 +890,7 @@ typedef struct tBitmapInfoHeader {
 CBitmap *PiggyLoadBitmap (const char *pszFile)
 {
 	CFile					cf;
-	CBitmap			*bmP;
+	CBitmap				*bmP;
 	tBitmapFileHeader	bfh;
 	tBitmapInfoHeader	bih;
 
@@ -921,7 +921,7 @@ if (!(bmP = CBitmap::Create (0, bih.biWidth, bih.biHeight, 1))) {
 	}
 cf.Seek (bfh.bfOffBits, SEEK_SET);
 if (cf.Read (bmP->Buffer (), bih.biWidth * bih.biHeight, 1) != 1) {
-	D2_FREE (bmP);
+	delete bmP;
 	return NULL;
 	}
 cf.Close ();

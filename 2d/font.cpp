@@ -721,7 +721,7 @@ if (!(bmP = CBitmap::Create (0, w, h, 4))) {
 	return NULL;
 	}
 if (!bmP->Buffer ()) {
-	D2_FREE (bmP);
+	delete bmP;
 	return NULL;
 	}
 memset (bmP->Buffer (), 0, w * h * bmP->BPP ());

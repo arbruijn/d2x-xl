@@ -157,7 +157,7 @@ if (!bmP ||
 	(bmP->Width () != bmBot->Width ()) || 
 	(bmP->Height () != bmBot->Height ())) {
 	if (bmP)
-		D2_FREE (bmP);
+		delete bmP;
 	cacheP->bitmap =
 	bmP = CBitmap::Create (0, bmBot->Width (), bmBot->Height (), 4);
 	if (!bmP)

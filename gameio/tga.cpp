@@ -396,7 +396,7 @@ if (ReadTGA (szFile, NULL, bmP, -1, 1.0, 0, 0)) {
 	return bmP;
 	}
 bmP->SetType (BM_TYPE_ALT);
-D2_FREE (bmP);
+delete bmP;
 return NULL;
 }
 
@@ -755,13 +755,13 @@ int ReadModelTextures (tModelTextures *pt, int nType, int bCustom)
 	int		i;
 
 for (i = 0; i < pt->nBitmaps; i++) {
-	if (!ReadModelTGA (pt->pszNames [i], bmP = pt->pBitmaps + i, nType, bCustom))
+	if (!ReadModelTGA (pt->pszNames [i], bmP = pt->bitmaps + i, nType, bCustom))
 		return 0;
 	bmP = bmP->Override (-1);
 	if (bmP->Frames ())
 		bmP = bmP->CurFrame ();
 	bmP->Bind (1, 3);
-	pt->pBitmaps [i].SetTeam (pt->nTeam ? pt->nTeam [i] : 0);
+	pt->bitmaps [i].SetTeam (pt->nTeam ? pt->nTeam [i] : 0);
 	}
 return 1;
 }
@@ -771,13 +771,14 @@ return 1;
 void ReleaseModelTextures (tModelTextures *pt)
 {
 	CBitmap	*bmP;
-	int			i;
+	int		i;
 
-if ((bmP = pt->pBitmaps))
+if ((bmP = pt->bitmaps)) {
 	for (i = pt->nBitmaps; i; i--, bmP++) {
 		UseBitmapCache (bmP, (int) -bmP->Width () * (int) bmP->RowSize ());
-		D2_FREE (bmP);
+		delete bmP;
 		}
+	memset (pt->bitmaps, 0, pt->nBitmaps * sizeof (CBitmap));
 }
 
 //------------------------------------------------------------------------------
@@ -789,12 +790,12 @@ void FreeModelTextures (tModelTextures *pt)
 if (pt->pszNames) {
 	for (i = 0; i < pt->nBitmaps; i++) {
 		D2_FREE (pt->pszNames [i]);
-		if (pt->pBitmaps)
-			pt->pBitmaps [i].Destroy ();
+		if (pt->bitmaps)
+			pt->bitmaps [i].Destroy ();
 		}
 	D2_FREE (pt->nTeam);
 	D2_FREE (pt->pszNames);
-	D2_FREE (pt->pBitmaps);
+	D2_FREE (pt->bitmaps);
 	pt->nBitmaps = 0;
 	}
 }

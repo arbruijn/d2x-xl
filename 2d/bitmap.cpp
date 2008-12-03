@@ -66,7 +66,9 @@ return SetBuffer (buffer ? buffer : CreateBuffer ()) != NULL;
 
 void CBitmap::DestroyBuffer (void)
 {
-if (!m_bm.bChild)
+if (m_bm.bChild)
+	m_bm.buffer.SetBuffer (NULL, 0);
+else
 	m_bm.buffer.Destroy ();
 FreeTexture ();
 }
@@ -78,6 +80,8 @@ void CBitmap::Destroy (void)
 SetPalette (NULL);
 if ((Type () == BM_TYPE_ALT) || !Parent ())
 	DestroyBuffer ();
+else
+	m_bm.buffer.SetBuffer (NULL, 0);
 DestroyFrames ();
 DestroyMask ();
 }

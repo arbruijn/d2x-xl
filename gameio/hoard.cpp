@@ -286,7 +286,7 @@ for (i = 0; i < 2; i++)
 
 void FreeHoardData (void)
 {
-	int			i;
+	int		i;
 	CBitmap	*bmP;
 
 if (!gameData.hoard.bInitialized)
@@ -297,7 +297,7 @@ if (bmP->Buffer () == gameData.hoard.orb.bm.Buffer ())
 else {
 	bmP->DestroyBuffer ();
 	if (gameData.hoard.monsterball.bm.Override ())
-		D2_FREE (bmP);
+		delete bmP;
 	}
 gameData.hoard.orb.bm.DestroyBuffer ();
 gameData.hoard.goal.bm.DestroyBuffer ();

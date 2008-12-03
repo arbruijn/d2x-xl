@@ -1093,7 +1093,7 @@ int CBitmap::Bind (int bMipMaps, int nTransp)
 if (bmP = HasOverride ())
 	bmP->Bind (bMipMaps, nTransp);
 #if RENDER2TEXTURE
-if (texP->IsRenderBuffer ())
+if (texP && texP->IsRenderBuffer ())
 	texP->BindRenderBuffer ();
 else
 #endif

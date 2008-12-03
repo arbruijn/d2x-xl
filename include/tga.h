@@ -25,7 +25,7 @@ typedef struct {
 typedef struct tModelTextures {
 	int					nBitmaps;
 	char					**pszNames;
-	CBitmap				*pBitmaps;
+	CBitmap				*bitmaps;
 	ubyte					*nTeam;
 } tModelTextures;
 
