@@ -167,7 +167,7 @@ if (gameStates.ogl.bInitialized) {
 		return -1;
 	if ((w != gameStates.ogl.nCurWidth) || (h != gameStates.ogl.nCurHeight) || 
 		 (gameStates.ogl.bCurFullScreen != gameStates.ogl.bFullScreen)) {
-		OglSmashTextureListInternal ();//if we are or were fullscreen, changing vid mode will invalidate current textures
+		textureManager.Destroy ();//if we are or were fullscreen, changing vid mode will invalidate current textures
 		bRebuild = 1;
 		}
 	}

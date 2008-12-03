@@ -279,7 +279,7 @@ if (frames) {
 	}
 else if (m_bm.texture) {
 #if RENDER2TEXTURE == 2
-	if (m_bm.texture->bFrameBuffer)
+	if (m_bm.texture->IsRenderBuffer ())
 		OGL_BINDTEX (0);
 	else
 #elif RENDER2TEXTURE == 1
@@ -290,7 +290,7 @@ else if (m_bm.texture) {
 #	endif
 #endif
 		{
-		OglFreeTexture (m_bm.texture);
+		m_bm.texture->Destroy ();
 		m_bm.texture = NULL;
 		}
 	}

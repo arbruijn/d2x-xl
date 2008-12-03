@@ -1081,12 +1081,12 @@ if (!LoadThruster ()) {
 	}
 else if (gameOpts->render.bDepthSort <= 0) {
 	glEnable (GL_TEXTURE_2D);
-	if (OglBindBmTex (bmpThruster [nStyle], 1, -1)) {
+	if (bmpThruster [nStyle]->Bind (1, -1)) {
 		extraGameInfo [IsMultiGame].bThrusterFlames = 2;
 		glDisable (GL_TEXTURE_2D);
 		}
 	else {
-		OglTexWrap (bmpThruster [nStyle]->Texture (), GL_CLAMP);
+		bmpThruster [nStyle]->Texture ()->Wrap (GL_CLAMP);
 		bTextured = 1;
 		}
 	}
@@ -1407,9 +1407,9 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		glDepthFunc (GL_LEQUAL);
 		glDepthMask (0);
 		glEnable (GL_TEXTURE_2D);
-		if (OglBindBmTex (bmpCorona, 1, -1))
+		if (bmpCorona->Bind (1, -1))
 			return 0;
-		OglTexWrap (bmpCorona->Texture (), GL_CLAMP);
+		bmpCorona->Texture ()->Wrap (GL_CLAMP);
 		G3StartInstanceMatrix (vPos, objP->info.position.mOrient);
 		TransformHitboxf (objP, verts, 0);
 		for (i = 0; i < 6; i++) {

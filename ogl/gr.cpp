@@ -165,7 +165,7 @@ void GrRemapMonoFonts ();
 void ResetTextures (int bReload, int bGame)
 {
 if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
-	OglSmashTextureListInternal (); 
+	textureManager.Destroy (); 
 	if (HaveLightmaps ())
 		OglDestroyLightmaps ();
 	DestroyGlareDepthTexture ();
@@ -236,14 +236,10 @@ if ((t = FindArg("-fullscreen"))) {
 	//GrToggleFullScreen();
 	}
 SetRenderQuality ();
-if ((t=FindArg ("-gl_vidmem"))){
-	nOglMemTarget=atoi(pszArgList[t+1])*1024*1024;
-}
-if ((t=FindArg ("-gl_reticle"))){
+if ((t=FindArg ("-gl_reticle")))
 	gameStates.ogl.nReticle=atoi(pszArgList[t+1]);
-}
 /***/PrintLog ("   initializing internal texture list\n");
-OglInitTextureListInternal();
+textureManager.Init ();
 /***/PrintLog ("   allocating screen buffer\n");
 screen.Bitmap ().SetTexBuf (NULL);
 

@@ -185,11 +185,11 @@ void _CDECL_ FreeEndLevelData (void)
 {
 PrintLog ("unloading endlevel data\n");
 if (gameData.endLevel.terrain.bmInstance.TexBuf ()) {
-	OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
+	gameData.endLevel.terrain.bmInstance.FreeTexture ();
 	gameData.endLevel.terrain.bmInstance.DestroyTexBuf ();
 	}
 if (gameData.endLevel.satellite.bmInstance.TexBuf ()) {
-	OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
+	gameData.endLevel.satellite.bmInstance.FreeTexture ();
 	gameData.endLevel.satellite.bmInstance.DestroyTexBuf ();
 	}
 }
@@ -777,7 +777,7 @@ G3AddDeltaVec (&pTop, &p, &vDelta);
 if (!(p.p3_codes & CC_BEHIND)&& !(p.p3_flags & PF_OVERFLOW)) {
 	int imSave = gameStates.render.nInterpolationMethod;
 	gameStates.render.nInterpolationMethod = 0;
-	if (!OglBindBmTex (gameData.endLevel.satellite.bmP, 1, 0))
+	if (!gameData.endLevel.satellite.bmP->Bind (1, 0))
 		G3DrawRodTexPoly (gameData.endLevel.satellite.bmP, &p, SATELLITE_WIDTH, &pTop, SATELLITE_WIDTH, f1_0, satUVL);
 	gameStates.render.nInterpolationMethod = imSave;
 	}
@@ -1170,7 +1170,7 @@ while (cf.GetS (line, LINE_LEN)) {
 
 			PrintLog ("         loading terrain bitmap\n");
 			if (gameData.endLevel.terrain.bmInstance.TexBuf ()) {
-				OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
+				gameData.endLevel.terrain.bmInstance.FreeTexture ();
 				gameData.endLevel.terrain.bmInstance.DestroyTexBuf ();
 				}
 			Assert (gameData.endLevel.terrain.bmInstance.TexBuf () == NULL);
@@ -1208,7 +1208,7 @@ while (cf.GetS (line, LINE_LEN)) {
 
 			PrintLog ("         loading satellite bitmap\n");
 			if (gameData.endLevel.satellite.bmInstance.TexBuf ()) {
-				OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
+				gameData.endLevel.satellite.bmInstance.FreeTexture ();
 				gameData.endLevel.satellite.bmInstance.DestroyTexBuf ();
 				}
 			iff_error = iff.ReadBitmap (p, &gameData.endLevel.satellite.bmInstance, BM_LINEAR);

@@ -1975,9 +1975,9 @@ launchOption:
 		if (!done && nMouseState && !nOldMouseState && !bAllText) {
 			MouseGetPos (&mx, &my);
 			for (i = 0; i < nItems; i++)	{
-				x1 = CCanvas::Current ()->.Left () + itemP [i].x - itemP [i].right_offset - 6;
+				x1 = CCanvas::Current ()->Left () + itemP [i].x - itemP [i].right_offset - 6;
 				x2 = x1 + itemP [i].w;
-				y1 = CCanvas::Current ()->.Top () + itemP [i].y;
+				y1 = CCanvas::Current ()->Top () + itemP [i].y;
 				y2 = y1 + itemP [i].h;
 				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 					if (i + ctrl.nScrollOffset - ctrl.nMaxNoScroll != choice) {
@@ -2026,8 +2026,8 @@ launchOption:
 			
 				if (ctrl.nScrollOffset > ctrl.nMaxNoScroll) {
 					GrGetStringSize (UP_ARROW_MARKER, &arrow_width, &arrow_height, &aw);
-					x2 = CCanvas::Current ()->.Left () + itemP [ctrl.nScrollOffset].x- (gameStates.menus.bHires?24:12);
-		         y1 = CCanvas::Current ()->.Top () + itemP [ctrl.nScrollOffset].y- ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
+					x2 = CCanvas::Current ()->Left () + itemP [ctrl.nScrollOffset].x- (gameStates.menus.bHires?24:12);
+		         y1 = CCanvas::Current ()->Top () + itemP [ctrl.nScrollOffset].y- ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 					x1 = x2 - arrow_width;
 					y2 = y1 + arrow_height;
 					if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
@@ -2041,8 +2041,8 @@ launchOption:
 					}
 				if ((i = ctrl.nScrollOffset + ctrl.nMaxDisplayable - ctrl.nMaxNoScroll) < nItems) {
 					GrGetStringSize (DOWN_ARROW_MARKER, &arrow_width, &arrow_height, &aw);
-					x2 = CCanvas::Current ()->.Left () + itemP [i-1].x - (gameStates.menus.bHires?24:12);
-					y1 = CCanvas::Current ()->.Top () + itemP [i-1].y - ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
+					x2 = CCanvas::Current ()->Left () + itemP [i-1].x - (gameStates.menus.bHires?24:12);
+					y1 = CCanvas::Current ()->Top () + itemP [i-1].y - ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 					x1 = x2 - arrow_width;
 					y2 = y1 + arrow_height;
 					if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
@@ -2057,9 +2057,9 @@ launchOption:
 				}
 		
 			for (i = ctrl.nScrollOffset; i < nItems; i++)	{
-				x1 = CCanvas::Current ()->.Left () + itemP [i].x - itemP [i].right_offset - 6;
+				x1 = CCanvas::Current ()->Left () + itemP [i].x - itemP [i].right_offset - 6;
 				x2 = x1 + itemP [i].w;
-				y1 = CCanvas::Current ()->.Top () + itemP [i].y;
+				y1 = CCanvas::Current ()->Top () + itemP [i].y;
 				y1 -= ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 				y2 = y1 + itemP [i].h;
 				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2)) &&(itemP [i].nType != NM_TYPE_TEXT)) {
@@ -2086,7 +2086,7 @@ launchOption:
 							GrGetStringSize (SLIDER_RIGHT, &sright_width, &height, &aw);
 							GrGetStringSize (SLIDER_MIDDLE, &smiddle_width, &height, &aw);
 
-							x1 = CCanvas::Current ()->.Left () + itemP [choice].x + itemP [choice].w - slider_width;
+							x1 = CCanvas::Current ()->Left () + itemP [choice].x + itemP [choice].w - slider_width;
 							x2 = x1 + slider_width + sright_width;
 							if ((mx > x1) &&(mx < (x1 + sleft_width)) &&(itemP [choice].value != itemP [choice].minValue)) {
 								itemP [choice].value = itemP [choice].minValue;
@@ -2127,9 +2127,9 @@ launchOption:
 	
 		if (!done && !nMouseState && nOldMouseState && !bAllText &&(choice != -1) &&(itemP [choice].nType == NM_TYPE_MENU)) {
 			MouseGetPos (&mx, &my);
-			x1 = CCanvas::Current ()->.Left () + itemP [choice].x;
+			x1 = CCanvas::Current ()->Left () + itemP [choice].x;
 			x2 = x1 + itemP [choice].w;
-			y1 = CCanvas::Current ()->.Top () + itemP [choice].y;
+			y1 = CCanvas::Current ()->Top () + itemP [choice].y;
 			if (choice >= ctrl.nScrollOffset)
 				y1 -= ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 			y2 = y1 + itemP [choice].h;
@@ -2165,9 +2165,9 @@ launchOption:
 	
 		if (!done && !nMouseState && nOldMouseState && bCloseBox) {
 			MouseGetPos (&mx, &my);
-			x1 = (gameOpts->menus.nStyle ? ctrl.x : CCanvas::Current ()->.Left ()) + CLOSE_X;
+			x1 = (gameOpts->menus.nStyle ? ctrl.x : CCanvas::Current ()->Left ()) + CLOSE_X;
 			x2 = x1 + CLOSE_SIZE;
-			y1 = (gameOpts->menus.nStyle ? ctrl.y : CCanvas::Current ()->.Top ()) + CLOSE_Y;
+			y1 = (gameOpts->menus.nStyle ? ctrl.y : CCanvas::Current ()->Top ()) + CLOSE_Y;
 			y2 = y1 + CLOSE_SIZE;
 			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 				if (nCurItemP)
@@ -2368,7 +2368,7 @@ launchOption:
 			if (gameOpts->menus.nStyle)
 				NMDrawCloseBox (ctrl.x, ctrl.y);
 			else
-				NMDrawCloseBox (ctrl.x - CCanvas::Current ()->.Left (), ctrl.y - CCanvas::Current ()->.Top ());
+				NMDrawCloseBox (ctrl.x - CCanvas::Current ()->Left (), ctrl.y - CCanvas::Current ()->Top ());
 			bCloseBox = 1;
 			}
 		if (bRedraw || !gameOpts->menus.nStyle)

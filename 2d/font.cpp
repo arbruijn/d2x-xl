@@ -543,7 +543,7 @@ font->ftParentBitmap.Init (BM_LINEAR, 0, 0, tw, th, 1, NULL);
 font->ftParentBitmap.SetTexBuf (new ubyte [tw * th]);
 font->ftParentBitmap.SetPalette (palette);
 if (!(font->ftFlags & FT_COLOR))
-	font->ftParentBitmap.SetTexture (OglGetFreeTexture (&font->ftParentBitmap));
+	font->ftParentBitmap.SetTexture (textureManager.Get (&font->ftParentBitmap));
 font->ftBitmaps = new CBitmap [nChars]; //(CBitmap*) D2_ALLOC (nChars * sizeof (CBitmap));
 memset (font->ftBitmaps, 0, nChars * sizeof (CBitmap));
 font->ftParentBitmap.SetName (fontname);
@@ -598,16 +598,16 @@ for (i = 0; i < nChars; i++) {
 if (!(font->ftFlags & FT_COLOR)) {
 	//use GL_INTENSITY instead of GL_RGB
 	if (gameStates.ogl.bIntensity4) {
-		font->ftParentBitmap.Texture ()->internalformat = 1;
-		font->ftParentBitmap.Texture ()->format = GL_LUMINANCE;
+		font->ftParentBitmap.Texture ()->SetInternalFormat (1);
+		font->ftParentBitmap.Texture ()->SetFormat (GL_LUMINANCE);
 		}
 	else if (gameStates.ogl.bLuminance4Alpha4){
-		font->ftParentBitmap.Texture ()->internalformat = 1;
-		font->ftParentBitmap.Texture ()->format = GL_LUMINANCE_ALPHA;
+		font->ftParentBitmap.Texture ()->SetInternalFormat (1);
+		font->ftParentBitmap.Texture ()->SetFormat (GL_LUMINANCE_ALPHA);
 		}
 	else {
-		font->ftParentBitmap.Texture ()->internalformat = gameStates.ogl.bpp / 8;
-		font->ftParentBitmap.Texture ()->format = gameStates.ogl.nRGBAFormat;
+		font->ftParentBitmap.Texture ()->SetInternalFormat (gameStates.ogl.bpp / 8);
+		font->ftParentBitmap.Texture ()->SetFormat (gameStates.ogl.nRGBAFormat);
 		}
 	font->ftParentBitmap.PrepareTexture (0, 2, 0, NULL);
 	}
@@ -699,7 +699,7 @@ CBitmap *CreateStringBitmap (
 	int			orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;
 	CBitmap		*bmP, *bmfP;
-	tRgbaColorb		hc, kc, *pc;
+	tRgbaColorb	hc, kc, *pc;
 	ubyte			*pf;
 	CPalette		*palP = NULL;
 	tRgbColorb	*colorP;
@@ -909,8 +909,8 @@ grsString *CreatePoolString (const char *s, int *idP)
 
 if (*idP) {
 	ps = stringPool + *idP - 1;
-	OglFreeBmTexture (ps->bmP);
-	D2_FREE (ps->bmP);
+	ps->bmP->FreeTexture ();
+	delete ps->bmP;
 	}
 else {
 	if (nPoolStrings >= GRS_MAX_STRINGS)
@@ -928,7 +928,7 @@ if (ps->pszText && (ps->nLength < l))
 if (!ps->pszText) {
 	ps->nLength = 3 * l / 2;
 	if (!(ps->pszText = (char *) D2_ALLOC (ps->nLength))) {
-		D2_FREE (ps->bmP);
+		delete ps->bmP;
 		*idP = 0;
 		return NULL;
 		}

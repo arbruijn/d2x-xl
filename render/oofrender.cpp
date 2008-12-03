@@ -388,8 +388,8 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			fl = 1;
 //		fl = 1.0f;
 		bmP = po->textures.pBitmaps + pf->texProps.nTexId;
-		if (bmP->Texture () && ((int) bmP->Texture ()->handle < 0))
-			bmP->Texture ()->handle = 0;
+		if (bmP->Texture () && ((int) bmP->Texture ()->Handle () < 0))
+			bmP->Texture ()->SetHandle (0);
 		if (bmP->Bind (1, 0))
 			return 0;
 		bmP->Texture ()->Wrap (GL_REPEAT);

@@ -560,12 +560,12 @@ else
 		{
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();
-		OglViewport (CCanvas::Current ()->.Left (), CCanvas::Current ()->.Top (), nCanvasWidth, nCanvasHeight);
+		OglViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), nCanvasWidth, nCanvasHeight);
 		}
 	if (gameStates.ogl.bEnableScissor) {
 		glScissor (
-			CCanvas::Current ()->.Left (),
-			screen.Bitmap ().Height () - CCanvas::Current ()->.Top () - nCanvasHeight,
+			CCanvas::Current ()->Left (),
+			screen.Bitmap ().Height () - CCanvas::Current ()->Top () - nCanvasHeight,
 			nCanvasWidth,
 			nCanvasHeight);
 		glEnable (GL_SCISSOR_TEST);
@@ -620,7 +620,7 @@ nError = glGetError ();
 
 void OglEndFrame (void)
 {
-//	OglViewport (CCanvas::Current ()->.Left (), CCanvas::Current ()->.Top (), );
+//	OglViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), );
 //	glViewport (0, 0, screen.Width (), screen.Height ());
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
@@ -713,7 +713,6 @@ if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 void OglSwapBuffers (int bForce, int bClear)
 {
 if (!gameStates.menus.nInMenu || bForce) {
-	OglCleanTextureCache ();
 #	if PROFILING
 	if (gameStates.render.bShowProfiler && gameStates.app.bGameRunning && !gameStates.menus.nInMenu && FONT && SMALL_FONT) {
 		static time_t t0 = -1000;

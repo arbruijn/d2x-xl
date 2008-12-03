@@ -132,7 +132,7 @@ if (pMsgs->nMessages > 0) {
 
 		if (strcmp (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg)) {
 				CCanvas	*canv_save = CCanvas::Current ();
-				int			ycrd = CCanvas::Current ()->.Top () - (SMALL_FONT->ftHeight+2);
+				int			ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->ftHeight+2);
 
 			if (ycrd < 0)
 				ycrd = 0;

@@ -39,40 +39,6 @@
 
 //------------------------------------------------------------------------------
 
-int nOglMemTarget = -1;
-
-//------------------------------------------------------------------------------
-
-void OglCleanTextureCache (void)
-{
-	CTexture* t;
-	int i,bytes;
-	int time=120;
-
-if (nOglMemTarget < 0) {
-	if (gr_renderstats)
-		OglTextureStats ();
-	return;
-	}
-
-bytes = OglTextureStats ();
-while (bytes>nOglMemTarget){
-	for (i = 0, t = oglTextureList; i < OGL_TEXTURE_LIST_SIZE; i++, t++) {
-		if (!t->bFrameBuffer && (t->handle > 0)) {
-			if (t->lastrend + f1_0 * time < gameData.time.xGame) {
-				OglFreeTexture (t);
-				bytes -= t->bytes;
-				if (bytes < nOglMemTarget)
-					return;
-				}
-			}
-		}
-	if (time == 0)
-		Error ("not enough mem?");
-	time /= 2;
-	}
-}
-
 //------------------------------------------------------------------------------
 
 void OglCachePolyModelTextures (int nModel)
@@ -233,7 +199,6 @@ int OglCacheLevelTextures (void)
 if (gameStates.render.bBriefing)
 	return 0;
 PrintLog ("caching level textures\n");
-OglResetTextureStatsInternal ();//loading a new lev should reset textures
 TexMergeClose ();
 TexMergeInit (-1);
 PrintLog ("   caching effect textures\n");

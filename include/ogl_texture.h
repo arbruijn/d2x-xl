@@ -7,6 +7,8 @@
 #include <stddef.h>
 #endif
 #include "ogl_defs.h"
+#include "fbuffer.h"
+#include "pbuffer.h"
 
 //------------------------------------------------------------------------------
 
@@ -58,7 +60,7 @@ class CTexture {
 #endif
 		void Destroy (void);
 		void Unlink (void);
-		void Wrap (int state);
+		static void Wrap (int state);
 		inline void Bind (void) { 
 			if (m_info.bRenderBuffer)
 				BindRenderBuffer ();
@@ -84,10 +86,10 @@ class CTexture {
 		inline void SetInternalFormat (GLint internalFormat) { m_info.internalFormat = internalFormat; }
 		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
 #if RENDER2TEXTURE == 1
-		inline CPBO* PBO (void) { return &m_info.pbo; }
+		inline CPBO& PBO (void) { return m_info.pbo; }
 		inline void SetRenderBuffer (CPBO *pbo);
 #elif RENDER2TEXTURE == 2
-		inline CFBO* FBO (void) { return &m_info.fbo; }
+		inline CFBO& FBO (void) { return m_info.fbo; }
 		inline void SetRenderBuffer (CFBO *fbo);
 #endif
 		ubyte *Copy (int dxo, int dyo, ubyte *data);
@@ -130,17 +132,15 @@ class CTextureManager {
 
 };
 
-//------------------------------------------------------------------------------
+extern CTextureManager textureManager;
 
-CTexture *OglGetFreeTexture (CBitmap *bmP);
-void OglFreeTexture (CTexture *glTexture);
+//------------------------------------------------------------------------------
 
 tRgbColorf *BitmapColor (CBitmap *bmP, ubyte *bufP);
 
 //------------------------------------------------------------------------------
 
 extern int nOglMemTarget;
-extern CTexture oglTextureList [OGL_TEXTURE_LIST_SIZE];
 
 //------------------------------------------------------------------------------
 

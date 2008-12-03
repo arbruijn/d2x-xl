@@ -491,7 +491,7 @@ gameStates.render.history.bmTop =
 gameStates.render.history.bmMask = NULL;
 gameStates.render.bQueryCoronas = 0;
 glEnable (GL_CULL_FACE);
-OglTexWrap (NULL, GL_REPEAT);
+CTexture::Wrap (GL_REPEAT);
 if (!bDepthOnly) 
 	glDepthFunc (GL_LEQUAL);
 else {

@@ -267,7 +267,7 @@ nIdEnergyBar = HUDPrintF (&nIdEnergyBar,
 								  SB_ENERGY_GAUGE_X + ((SB_ENERGY_GAUGE_W - w)/2), 
 								  SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - GAME_FONT->ftHeight - (GAME_FONT->ftHeight / 4), 
 							     "%d", nEnergy);
-OglFreeBmTexture (&Canv_SBEnergyGauge->Bitmap ());
+Canv_SBEnergyGauge->Bitmap ().FreeTexture ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -311,7 +311,7 @@ nIdAfterBurner = HUDPrintF (&nIdAfterBurner,
 									 SB_AFTERBURNER_GAUGE_X + ((SB_AFTERBURNER_GAUGE_W - w)/2), 
 									 SB_AFTERBURNER_GAUGE_Y+SB_AFTERBURNER_GAUGE_H-GAME_FONT->ftHeight - (GAME_FONT->ftHeight / 4), 
 									 "AB");
-OglFreeBmTexture (&Canv_SBAfterburnerGauge->Bitmap ());
+Canv_SBAfterburnerGauge->Bitmap ().FreeTexture ();
 }
 
 //	-----------------------------------------------------------------------------

@@ -99,9 +99,9 @@ else {
 		w = r / (float) screen.Width ();
 		h = r / (float) screen.Height ();
 		glEnable (GL_TEXTURE_2D);
-		if (OglBindBmTex (bmpDeadzone, 1, -1)) 
+		if (bmpDeadzone->Bind (1, -1)) 
 			return;
-		OglTexWrap (bmpDeadzone->Texture (), GL_CLAMP);
+		bmpDeadzone->Texture ()->Wrap (GL_CLAMP);
 		glColor4f (1.0f, 1.0f, 1.0f, 0.8f / (float) gameOpts->input.mouse.nDeadzone);
 		glBegin (GL_QUADS);
 		glTexCoord2f (0, 0);
@@ -157,9 +157,9 @@ if (bInitSinCos) {
 glPushMatrix ();
 //	glTranslated (0.5, 0.5, 0);
 glTranslated (
-	(CCanvas::Current ()->Width ()/2+CCanvas::Current ()->.Left ()) / (float) gameStates.ogl.nLastW, 
+	(CCanvas::Current ()->Width ()/2+CCanvas::Current ()->Left ()) / (float) gameStates.ogl.nLastW, 
 	1.0f - (CCanvas::Current ()->Bitmap ().Height ()/ ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2) +
-	CCanvas::Current ()->.Top ()) / (float) gameStates.ogl.nLastH, 
+	CCanvas::Current ()->Top ()) / (float) gameStates.ogl.nLastH, 
 	0);
 glScaled (scale/320.0f, scale/200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
 glDisable (GL_TEXTURE_2D);

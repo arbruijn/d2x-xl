@@ -1450,9 +1450,9 @@ for (;;) {
 //			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 			for (i = 0; i < nItems; i++)	{
 				item_height = KCGetItemHeight (items + i);
-				x1 = CCanvas::Current ()->.Left () + LHX (items [i].x) + LHX (items [i].w1);
+				x1 = CCanvas::Current ()->Left () + LHX (items [i].x) + LHX (items [i].w1);
 				x2 = x1 + LHX (items [i].w2);
-				y1 = CCanvas::Current ()->.Top () + LHY (items [i].y);
+				y1 = CCanvas::Current ()->Top () + LHY (items [i].y);
 				y2 = y1 + /*LHY*/ (item_height);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 					nCurItem = i;
@@ -1468,17 +1468,17 @@ for (;;) {
 			my -= yOffs;
 			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 			item_height = KCGetItemHeight (items + nCurItem);
-			x1 = CCanvas::Current ()->.Left () + LHX (items [nCurItem].x) + LHX (items [nCurItem].w1);
+			x1 = CCanvas::Current ()->Left () + LHX (items [nCurItem].x) + LHX (items [nCurItem].w1);
 			x2 = x1 + LHX (items [nCurItem].w2);
-			y1 = CCanvas::Current ()->.Top () + LHY (items [nCurItem].y);
+			y1 = CCanvas::Current ()->Top () + LHY (items [nCurItem].y);
 			y2 = y1 + /*LHY*/ (item_height);
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				nChangeMode = items [nCurItem].nType;
 				GameFlushInputs ();
 			} else {
-				x1 = CCanvas::Current ()->.Left () + close_x + LHX (1);
+				x1 = CCanvas::Current ()->Left () + close_x + LHX (1);
 				x2 = x1 + close_size - LHX (1);
-				y1 = CCanvas::Current ()->.Top () + close_y + LHX (1);
+				y1 = CCanvas::Current ()->Top () + close_y + LHX (1);
 				y2 = y1 + close_size - LHY (1);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 					KCQuitMenu (save_font, &bg, time_stopped);

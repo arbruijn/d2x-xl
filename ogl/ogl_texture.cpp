@@ -123,18 +123,6 @@ for (i = 0; i < 2; i++) {
 	for (j = gameData.pig.tex.nBitmaps [i] + (i ? 0 : gameData.hoard.nBitmaps); j; j--, bmP++)
 		bmP->Unlink (0);
 	}
-// Make sure all textures (bitmaps) not in the game texture lists that had an OpenGL handle get the handle reset
-// (Can be fonts and other textures, e.g. those used for the menus)
-for (i = OGL_TEXTURE_LIST_SIZE, texP = oglTextureList; i; i--, texP++)
-	if (!texP->IsRenderBuffer () && (texP->Handle () == (GLuint) -1)) {
-		if (texP->Bitmap ()) {
-			if (texP->Bitmap ()->Texture () == texP)
-				texP->Bitmap ()->SetTexture (NULL);
-			else
-				texP->SetBitmap (NULL);	// this would mean the texture list is messed up
-			}
-		texP->SetHandle (0);
-		}
 #endif
 }
 

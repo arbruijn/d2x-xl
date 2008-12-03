@@ -17,7 +17,7 @@ if (bmP->Height () / bmP->Width () > 1)
 	return 0;	//don't compress animations
 if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 0;	//don't compress textures containing some form of transparency
-if (OglLoadTexture (bmP, 0, 0, NULL, -1, 0))
+if (bmP->LoadTexture (0, 0, -1, 0))
 	return 0;
 return 1;
 }

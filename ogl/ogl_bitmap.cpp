@@ -153,12 +153,12 @@ if (orient & 1) {
 	int h = dw;
 	dw = dh;
 	dh = h;
-	dx = (float) CCanvas::Current ()->.Top () / (float) gameStates.ogl.nLastH;
-	dy = (float) CCanvas::Current ()->.Left () / (float) gameStates.ogl.nLastW;
+	dx = (float) CCanvas::Current ()->Top () / (float) gameStates.ogl.nLastH;
+	dy = (float) CCanvas::Current ()->Left () / (float) gameStates.ogl.nLastW;
 	}
 else {
-	dx = (float) CCanvas::Current ()->.Left () / (float) gameStates.ogl.nLastW;
-	dy = (float) CCanvas::Current ()->.Top () / (float) gameStates.ogl.nLastH;
+	dx = (float) CCanvas::Current ()->Left () / (float) gameStates.ogl.nLastW;
+	dy = (float) CCanvas::Current ()->Top () / (float) gameStates.ogl.nLastH;
 	}
 a = (float) screen.Width () / (float) screen.Height ();
 h = (float) scale / (float) F1_0;
@@ -182,8 +182,8 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 if (bmP->Left () == 0) {
 	u1 = 0;
-	if (bmP->Width () == texP->w)
-		u2 = texP->u;
+	if (bmP->Width () == texP->Width ())
+		u2 = texP->U ();
 	else
 		u2 = (float) bmP->Right () / (float) texP->TW ();
 	}
@@ -193,8 +193,8 @@ else {
 	}
 if (bmP->Top () == 0) {
 	v1 = 0;
-	if (bmP->Height () == texP->h)
-		v2 = texP->v;
+	if (bmP->Height () == texP->Height ())
+		v2 = texP->V ();
 	else
 		v2 = (float) bmP->Bottom () / (float) texP->TH ();
 	}
@@ -253,18 +253,15 @@ glActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
 if (!(texP = src->Texture ())) {
 	texP = &tex;
-	OglInitTexture (texP, 0, NULL);
-	texP->w = sw;
-	texP->h = sh;
-	texP->prio = 0.0;
-	texP->bMipMaps = bMipMaps;
-	texP->lw = src->RowSize ();
-	OglLoadTexture (src, sx, sy, texP, nTransp, 0);
+	texP->Init ();
+	texP->Setup (sw, sh, src->RowSize (), 0, bMipMaps, src);
+	src->SetTexture (texP);
+	src->LoadTexture (sx, sy, nTransp, 0);
 	}
 else
 	src->SetupTexture (0, bTransp, 1);
-OGL_BINDTEX (texP->handle);
-OglTexWrap (texP, GL_CLAMP);
+texP->Bind ();
+texP->Wrap (GL_CLAMP);
 glGetIntegerv (GL_DEPTH_FUNC, &curFunc);
 glDepthFunc (GL_ALWAYS); 
 if (bTransp && nTransp) {
@@ -279,19 +276,19 @@ else {
 glBegin (GL_QUADS);
 glTexCoord2f (u1, v1); 
 glVertex2f (xo, yo);
-glTexCoord2f (texP->u, v1); 
+glTexCoord2f (texP->U (), v1); 
 glVertex2f (xo + xs, yo);
-glTexCoord2f (texP->u, texP->v); 
+glTexCoord2f (texP->U (), texP->V ()); 
 glVertex2f (xo + xs, yo-ys);
-glTexCoord2f (u1, texP->v); 
+glTexCoord2f (u1, texP->V ()); 
 glVertex2f (xo, yo - ys);
 glEnd ();
 if (bTransp && nTransp)
 	glDisable (GL_BLEND);
 glDisable (GL_TEXTURE_2D);
 glDepthFunc (curFunc);
-if (!src->Texture())
-	OglFreeTexture (texP);
+if (texP == &tex)
+	texP->Destroy ();
 return 0;
 }
 

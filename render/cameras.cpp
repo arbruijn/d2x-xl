@@ -49,7 +49,7 @@ if (bCheckTexture)
 	return m_info.buffer.Texture () ? m_info.Texture ()->PBO ()->Available() : -1;
 return OglPHaveBuffer (&m_info.pb);
 #elif RENDER2TEXTURE == 2
-	return m_info.buffer.Texture () ? m_info.buffer.Texture ()->FBO) ().Available () : -1;
+	return m_info.buffer.Texture () ? m_info.buffer.Texture ()->FBO ().Available () : -1;
 return m_info.fbo.Available ();
 #endif
 }
@@ -58,7 +58,7 @@ return m_info.fbo.Available ();
 
 int CCamera::HaveTexture (void)
 {
-return m_info.buffer.Texture () && ((int) m_info.buffer.Texture ()->handle > 0);
+return m_info.buffer.Texture () && ((int) m_info.buffer.Texture ()->Handle () > 0);
 }
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ if (!OglEnablePBuffer (&m_info.pb))
 if (!m_info.fbo.Enable ())
 	return 0;
 #endif
-m_info.buffer->FreeTexture ();
+m_info.buffer.FreeTexture ();
 return 1;
 }
 
@@ -119,7 +119,7 @@ if (HaveBuffer (0) != 1)
 if (!m_info.pb.bBound)
 	return 1;
 #endif
-OglFreeBmTexture (&m_info.buffer);
+m_info.buffer.FreeTexture ();
 #if RENDER2TEXTURE == 1
 m_info.pb.bBound = 0;
 #endif
@@ -246,7 +246,7 @@ return 1;
 
 void CCamera::Destroy (void)
 {
-OglFreeBmTexture (&m_info.buffer);
+m_info.buffer.FreeTexture ();
 OglDeleteTextures (1, &m_info.glTexId);
 if (m_info.screenBuf && (m_info.screenBuf != (char *) m_info.buffer.TexBuf ()))
 	D2_FREE (m_info.screenBuf);
@@ -473,7 +473,7 @@ if (m_info.buffer.TexBuf ())
 	{
 	RenderFrame (0, 0);
 	m_info.bValid = 1;
-	OglFreeBmTexture (&m_info.buffer);
+	m_info.buffer.FreeTexture ();
 #if CAMERA_READPIXELS
 	memset (m_info.buffer.TexBuf (), 0, m_info.buffer.Width () * m_info.buffer.Height () * 4);
 	glDisable (GL_TEXTURE_2D);

@@ -1090,8 +1090,8 @@ if (!(gameOpts->render.lightnings.bPlasma && m_bPlasma && G3EnableClientStates (
 glActiveTexture (GL_TEXTURE0);
 glClientActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
-if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
-	OglTexWrap (bmpCorona->Texture (), GL_CLAMP);
+if (LoadCorona () && !bmpCorona->Bind (1, -1)) {
+	bmpCorona->Texture ()->Wrap (GL_CLAMP);
 	return 1;
 	}
 G3DisableClientStates (1, 0, 0, GL_TEXTURE0);

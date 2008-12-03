@@ -184,7 +184,7 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 glEnable (GL_TEXTURE_2D);
 OglActiveTexture (GL_TEXTURE0, 0);
-if (OglBindBmTex (&shadowBuf, 0, 0))
+if (shadowBuf.Bind (0, 0))
 	return;
 glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #if 0

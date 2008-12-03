@@ -210,8 +210,8 @@ glDisable (GL_TEXTURE_2D);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
 glTranslatef (
-			(X2F (xc1) + CCanvas::Current ()->.Left ()) / (float) gameStates.ogl.nLastW,
-		1.0f - (X2F (yc1) + CCanvas::Current ()->.Top ()) / (float) gameStates.ogl.nLastH, 0);
+			(X2F (xc1) + CCanvas::Current ()->Left ()) / (float) gameStates.ogl.nLastW,
+		1.0f - (X2F (yc1) + CCanvas::Current ()->Top ()) / (float) gameStates.ogl.nLastH, 0);
 glScalef (X2F (r1), X2F (r1), X2F (r1));
 if (r1<=I2X (5)){
 	if (!circleh5)
@@ -506,10 +506,10 @@ else if (!bDepthSort) {
 		}
 	else
 		InitTMU0 (bVertexArrays);
-	if (OglBindBmTex (bmBot, 1, 3))
+	if (bmBot->Bind (1, 3))
 		return 1;
 	bmBot = bmBot->CurFrame (-1);
-	OglTexWrap (bmBot->Texture (), (bmBot == bmpDeadzone) ? GL_CLAMP : GL_REPEAT);
+	bmBot->Texture ()->Wrap ((bmBot == bmpDeadzone) ? GL_CLAMP : GL_REPEAT);
 	}
 
 if (!bDepthSort) {
@@ -676,10 +676,10 @@ if (bOverlay > 0) {
 	r_tpolyc++;
 	OglActiveTexture (GL_TEXTURE0, 0);
 	glEnable (GL_TEXTURE_2D);
-	if (OglBindBmTex (bmTop, 1, 3))
+	if (bmTop->Bind (1, 3))
 		return 1;
 	bmTop = bmTop->CurFrame (-1);
-	OglTexWrap (bmTop->Texture (), GL_REPEAT);
+	bmTop->Texture ()->Wrap (GL_REPEAT);
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
@@ -784,18 +784,18 @@ if ((bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge)) {
 	glUseProgramObject (lmProg);
 	}
 InitTMU0 (0);	// use render pipeline 0 for bottom texture
-if (OglBindBmTex (bmBot, 1, 3))
+if (bmBot->Bind (1, 3))
 	return 1;
 bmBot = bmBot->CurFrame (-1);
-OglTexWrap (bmBot->Texture (), GL_REPEAT);
+bmBot->Texture ()->Wrap (GL_REPEAT);
 if (bShaderMerge)
 	glUniform1i (glGetUniformLocation (lmProg, "btmTex"), 0);
 if (bmTop) { // use render pipeline 1 for overlay texture
 	InitTMU1 (0);
-	if (OglBindBmTex (bmTop, 1, 3))
+	if (bmTop->Bind (1, 3))
 		return 1;
 	bmTop = bmTop->CurFrame (-1);
-	OglTexWrap (bmTop->Texture (), GL_REPEAT);
+	bmTop->Texture ()->Wrap (GL_REPEAT);
 	glUniform1i (glGetUniformLocation (lmProg, "topTex"), 1);
 	}
 // use render pipeline 2 for lightmap texture
@@ -996,8 +996,8 @@ else {
 		else
 			glColor4d (1, 1, 1, (double) alpha);
 		glBegin (GL_QUADS);
-		u = bmP->Texture ()->u;
-		v = bmP->Texture ()->v;
+		u = bmP->Texture ()->U ();
+		v = bmP->Texture ()->V ();
 		glTexCoord2d (0, 0);
 		glVertex3d (x - w, y + h, z);
 		glTexCoord2d (u, 0);
