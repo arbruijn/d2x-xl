@@ -226,7 +226,7 @@ if (screen.Width () && screen.Height ()) {
 
 //------------------------------------------------------------------------------
 //these should be in gr.h
-#define cv_w  Width ()
+#define cv_w  Bitmap ().Width ()
 #define cv_h  Bitmap ().Height ()
 
 extern void NDRecordCockpitChange (int);

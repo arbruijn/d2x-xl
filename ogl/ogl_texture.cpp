@@ -157,21 +157,23 @@ m_info.bmP = NULL;
 
 //------------------------------------------------------------------------------
 
-void CTexture::Setup (int w, int h, int bpp, int bMask, int bMipMap, CBitmap *bmP)
+void CTexture::Setup (int w, int h, int lw, int bpp, int bMask, int bMipMap, CBitmap *bmP)
 {
-m_info.internalFormat = bMask ? 1 : gameStates.ogl.bpp / 8;
-m_info.format = bMask ? GL_RED : gameStates.ogl.nRGBAFormat;
 m_info.w = w;
 m_info.h = h;
-m_info.lw = w * bpp;
+m_info.lw = lw;
 m_info.tw = Pow2ize (w);
 m_info.th = Pow2ize (h);
-if (bpp == 3) {
+if (bMask) {
+	m_info.format = GL_RED;
+	m_info.internalFormat = 1;
+	}
+else if (bpp == 3) {
 	m_info.format = GL_RGB;
 	m_info.internalFormat = 3;
 	}
 else {
-	m_info.format = GL_RGB;
+	m_info.format = GL_RGBA;
 	m_info.internalFormat = 4;
 	}
 m_info.bMipMaps = bMipMap && !bMask;
@@ -898,7 +900,7 @@ int CBitmap::LoadTexture (int dxo, int dyo, int nTransp, int superTransp)
 
 texP = Texture ();
 if ((bLocal = (texP == NULL))) {
-	texture.Setup (m_bm.props.w, m_bm.props.h, m_bm.nBPP);
+	texture.Setup (m_bm.props.w, m_bm.props.h, m_bm.props.rowSize, m_bm.nBPP);
 	texP = &texture;
 	}
 #if TEXTURE_COMPRESSION
@@ -964,14 +966,14 @@ if (!(texP = Texture ())) {
 	if (!(texP = textureManager.Get (this)))
 		return 1;
 	SetTexture (texP);
-	texP->Setup (m_bm.props.w, m_bm.props.h, m_bm.nBPP, bMask, bMipMap, this);
+	texP->Setup (m_bm.props.w, m_bm.props.h, m_bm.props.rowSize, m_bm.nBPP, bMask, bMipMap, this);
 	texP->SetRenderBuffer (renderBuffer);
 	}
 else {
 	if (texP->Handle () > 0)
 		return 0;
 	if (!texP->Width ())
-		texP->Setup (m_bm.props.w, m_bm.props.h, m_bm.nBPP, bMask, bMipMap, this);
+		texP->Setup (m_bm.props.w, m_bm.props.h, m_bm.props.rowSize, m_bm.nBPP, bMask, bMipMap, this);
 	}
 if (Flags () & BM_FLAG_RLE)
 	RLEExpand (NULL, 0);
@@ -1091,8 +1093,8 @@ int CBitmap::Bind (int bMipMaps, int nTransp)
 if (bmP = HasOverride ())
 	bmP->Bind (bMipMaps, nTransp);
 #if RENDER2TEXTURE
-if (!texP->IsRenderBuffer ())
-	return 1;
+if (texP->IsRenderBuffer ())
+	texP->BindRenderBuffer ();
 else
 #endif
 	{

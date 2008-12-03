@@ -465,7 +465,8 @@ void OglFontChooseSize (tFont * font, int gap, int *rw, int *rh)
 	int h, w;
 	for (h=32;h<=256;h*=2){
 //		h=Pow2ize (font->ftHeight*rows+gap* (rows-1);
-		if (font->ftHeight>h)continue;
+		if (font->ftHeight>h)
+			continue;
 		r= (h/ (font->ftHeight+gap));
 		w = Pow2ize ((get_fontTotal_width (font)+ (nChars-r)*gap)/r);
 		tries=0;
@@ -592,10 +593,11 @@ for (i = 0; i < nChars; i++) {
 				}
 			}
 		}
-	font->ftBitmaps[i] = *font->ftParentBitmap.CreateChild (curx, cury, w, h);
+	font->ftBitmaps [i].InitChild (&font->ftParentBitmap, curx, cury, w, h);
 	curx += w + gap;
 	}
 if (!(font->ftFlags & FT_COLOR)) {
+	font->ftParentBitmap.PrepareTexture (0, 2, 0, NULL);
 	//use GL_INTENSITY instead of GL_RGB
 	if (gameStates.ogl.bIntensity4) {
 		font->ftParentBitmap.Texture ()->SetInternalFormat (1);
@@ -609,7 +611,6 @@ if (!(font->ftFlags & FT_COLOR)) {
 		font->ftParentBitmap.Texture ()->SetInternalFormat (gameStates.ogl.bpp / 8);
 		font->ftParentBitmap.Texture ()->SetFormat (gameStates.ogl.nRGBAFormat);
 		}
-	font->ftParentBitmap.PrepareTexture (0, 2, 0, NULL);
 	}
 }
 
@@ -678,11 +679,7 @@ while (nextRowP != NULL) {
 		if (FFLAGS & FT_COLOR)
 			GrBitmapM (xx, yy, bmf, 2); // credits need clipping
 		else {
-			if (CCanvas::Current ()->Bitmap ().Mode () == BM_OGL)
-				OglUBitMapMC (xx, yy, 0, 0, bmf, &FG_COLOR, F1_0, 0);
-			else
-				Error ("OglInternalString: non-color string to non-ogl dest\n");
-	//					GrUBitmapM (xx, yy, &FONT->ftBitmaps[letter]);//ignores color..
+			OglUBitMapMC (xx, yy, 0, 0, bmf, &FG_COLOR, F1_0, 0);
 			}
 		xx += spacing;
 		textP++;
