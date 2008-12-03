@@ -486,9 +486,9 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				bmP = bmP->Override (-1);
 				if (bmP->Frames ())
 					bmP = bmP->CurFrame ();
-				if (OglBindBmTex (bmP, 1, 3))
+				if (bmP->Bind (1, 3))
 					continue;
-				OglTexWrap (bmP->Texture (), GL_REPEAT);
+				bmP->Texture ()->Wrap (GL_REPEAT);
 				}
 			}
 		nIndex = pmf->nIndex;

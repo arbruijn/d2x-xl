@@ -621,7 +621,7 @@ if (gameOpts->render.bDepthSort > 0) {
 		bBufferEmissive = bEmissive;
 		glActiveTexture (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
-		if (OglBindBmTex (bmP, 0, 1))
+		if (bmP->Bind (0, 1))
 			return 0;
 		nFrames = nParticleFrames [0][nType];
 		deltaUV = 1.0f / (float) nFrames;
@@ -641,7 +641,7 @@ else if (gameOpts->render.particles.bSort) {
 		else
 			glEnd ();
 		gameData.particles.nLastType = nType;
-		if (OglBindBmTex (bmP, 0, 1))
+		if (bmP->Bind (0, 1))
 			return 0;
 		nFrames = nParticleFrames [bPointSprites][nType];
 		deltaUV = 1.0f / (float) nFrames;
@@ -897,7 +897,7 @@ if (iBuffer) {
 			glEnable (GL_TEXTURE_2D);
 			if (bmP->CurFrame ())
 				bmP = bmP->CurFrame ();
-			if (OglBindBmTex (bmP, 0, 1))
+			if (bmP->Bind (0, 1))
 				return;
 #endif
 			if (gameData.render.lights.dynamic.headlights.nLights && !(gameStates.render.automap.bDisplay || gameData.particles.nLastType))
@@ -969,7 +969,7 @@ if (gameOpts->render.bDepthSort <= 0) {
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable (GL_TEXTURE_2D);
-	if ((nType >= 0) && OglBindBmTex (bmP, 0, 1))
+	if ((nType >= 0) && bmP->Bind (0, 1))
 		return 0;
 	glDepthFunc (GL_LESS);
 	glDepthMask (0);

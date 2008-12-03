@@ -750,10 +750,10 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		PIGGY_PAGE_IN (pf->bmi.index, 0);
 		bmP = gameData.pig.tex.pBitmaps + pf->vcP->frames [pf->vci.nCurFrame].index;
-		if (OglBindBmTex (bmP, 1, 2))
+		if (bmP->Bind (1, 2))
 			return;
 		bmP = bmP->CurFrame (-1);
-		OglTexWrap (bmP->Texture (), GL_REPEAT);
+		bmP->Texture ()->Wrap (GL_REPEAT);
 		vPos += objP->info.position.mOrient [FVEC] * (-objP->info.xSize);
 		r = X2F (objP->info.xSize);
 		G3StartInstanceMatrix (vPos, pp->mOrient);
@@ -1282,9 +1282,9 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		glEnable (GL_TEXTURE_2D);
 		glEnable (GL_BLEND);
 		glColor4fv ((GLfloat *) colorP);
-		if (OglBindBmTex (bmP, 1, -1))
+		if (bmP->Bind (1, -1))
 			return;
-		OglTexWrap (bmP->Texture (), GL_CLAMP);
+		bmP->Texture ()->Wrap (GL_CLAMP);
 		if (bAdditive)
 			glBlendFunc (GL_ONE, GL_ONE);
 		if ((bDrawArrays = G3EnableClientStates (1, 0, 0, GL_TEXTURE0))) {
@@ -1748,9 +1748,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			glDisable (GL_CULL_FACE);
 			glDepthMask (0);
 			glEnable (GL_TEXTURE_2D);
-			if (OglBindBmTex (bmP, 1, -1))
+			if (bmP->Bind (1, -1))
 				return;
-			OglTexWrap (bmP->Texture (), GL_CLAMP);
+			bmP->Texture ()->Wrap (GL_CLAMP);
 			if (bDrawArrays) {
 				glTexCoordPointer (2, GL_FLOAT, 0, tTexCoordTrail);
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);

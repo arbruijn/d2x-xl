@@ -307,7 +307,7 @@ if (bmP) {
 	glActiveTexture (GL_TEXTURE0);
 	glClientActiveTexture (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
-	if (OglBindBmTex (bmP, 1, 1))
+	if (bmP->Bind (1, 1))
 		bmP = NULL;
 	else {
 		if (bmP->CurFrame ())

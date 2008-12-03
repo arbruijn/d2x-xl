@@ -67,11 +67,8 @@ void OglPalColor (CPalette *palette, int c)
 if (c < 0)
 	glColor3f (1.0, 1.0, 1.0);
 else {
-	if (!palette) {
+	if (!palette)
 		palette = paletteManager.Game ();
-		if (!palette)
-			palette = paletteManager.Default ();
-		}
 	palette->ToRgbaf (c * 3, color);
 	if (gameStates.render.grAlpha >= FADE_LEVELS)
 		color.alpha = 1.0f;
@@ -85,7 +82,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void OglGrsColor (tCanvasColor *pc)
+void OglCanvasColor (tCanvasColor *pc)
 {
 	GLfloat	fc [4];
 

@@ -390,9 +390,9 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		bmP = po->textures.pBitmaps + pf->texProps.nTexId;
 		if (bmP->Texture () && ((int) bmP->Texture ()->handle < 0))
 			bmP->Texture ()->handle = 0;
-		if (OglBindBmTex (bmP, 1, 0))
+		if (bmP->Bind (1, 0))
 			return 0;
-		OglTexWrap (bmP->Texture (), GL_REPEAT);
+		bmP->Texture ()->Wrap (GL_REPEAT);
 		if (pso->nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
 			glColor4f (fl * pso->glowInfo.color.r, 
 						  fl * pso->glowInfo.color.g, 

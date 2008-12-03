@@ -208,7 +208,7 @@ int G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
 	float				ang;
 
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&CCanvas::Current ()->Color ());
+OglCanvasColor (&CCanvas::Current ()->Color ());
 x = f2glf (p.p3_vec[X]);
 y = f2glf (p.p3_vec[Y]);
 z = f2glf (p.p3_vec[Z]);
@@ -237,7 +237,7 @@ int G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 	float			ang;
 
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&CCanvas::Current ()->Color ());
+OglCanvasColor (&CCanvas::Current ()->Color ());
 x = f2glf (p.p3_vec[X]);
 y = f2glf (p.p3_vec[Y]);
 v[Z] = f2glf (p.p3_vec[Z]);

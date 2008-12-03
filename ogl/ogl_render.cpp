@@ -106,9 +106,9 @@ if (bmP || (nTexId >= 0)) {
 	if (nTexId >= 0)
 		OGL_BINDTEX (nTexId);
 	else {
-		if (OglBindBmTex (bmP, 1, 3))
+		if (bmP->Bind (1, 3))
 			return 1;
-		OglTexWrap (bmP->Texture (), GL_REPEAT);
+		bmP->Texture ()->Wrap (GL_REPEAT);
 		}
 	if (bShaderVar)
 		glUniform1i (glGetUniformLocation (lmProg, pszTexId), 0);
@@ -121,7 +121,7 @@ return 0;
 int G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 {
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&CCanvas::Current ()->Color ());
+OglCanvasColor (&CCanvas::Current ()->Color ());
 glBegin (GL_LINES);
 OglVertex3x (p0->p3_vec[X], p0->p3_vec[Y], p0->p3_vec[Z]);
 OglVertex3x (p1->p3_vec[X], p1->p3_vec[Y], p1->p3_vec[Z]);
@@ -174,7 +174,7 @@ int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 	double r;
 
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&CCanvas::Current ()->Color ());
+OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
 glTranslatef (X2F (pnt->p3_vec[X]), X2F (pnt->p3_vec[Y]), X2F (pnt->p3_vec[Z]));
 r = X2F (rad);
@@ -207,11 +207,11 @@ int GrUCircle (fix xc1, fix yc1, fix r1)
 {//dunno if this really works, radar doesn't seem to.. hm..
 glDisable (GL_TEXTURE_2D);
 //	glPointSize (X2F (rad);
-OglGrsColor (&CCanvas::Current ()->Color ());
+OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
 glTranslatef (
-			(X2F (xc1) + CCanvas::Current ()->Bitmap ().Left ()) / (float) gameStates.ogl.nLastW,
-		1.0f - (X2F (yc1) + CCanvas::Current ()->Bitmap ().Top ()) / (float) gameStates.ogl.nLastH, 0);
+			(X2F (xc1) + CCanvas::Current ()->.Left ()) / (float) gameStates.ogl.nLastW,
+		1.0f - (X2F (yc1) + CCanvas::Current ()->.Top ()) / (float) gameStates.ogl.nLastH, 0);
 glScalef (X2F (r1), X2F (r1), X2F (r1));
 if (r1<=I2X (5)){
 	if (!circleh5)
@@ -262,7 +262,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	}
 r_polyc++;
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&CCanvas::Current ()->Color ());
+OglCanvasColor (&CCanvas::Current ()->Color ());
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0; i < nVertices; i++, pointList++) {
 //	glVertex3f (X2F (pointList [c]->p3_vec[X]), X2F (pointList [c]->p3_vec[Y]), X2F (pointList [c]->p3_vec[Z]);
@@ -870,12 +870,12 @@ if (bmP == gameData.endLevel.satellite.bmP) {
 	}
 else
 	InitTMU0 (0);
-if (OglBindBmTex (bmP, 1, 3))
+if (bmP->Bind (1, 3))
 	return 1;
 if (bmP == bmpDeadzone)
-	OglTexWrap (bmP->Texture (), GL_CLAMP);
+	bmP->Texture ()->Wrap (GL_CLAMP);
 else
-	OglTexWrap (bmP->Texture (), GL_REPEAT);
+	bmP->Texture ()->Wrap (GL_REPEAT);
 
 if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
@@ -980,10 +980,10 @@ else {
 	else {
 		glDepthMask (0);
 		glEnable (GL_TEXTURE_2D);
-		if (OglBindBmTex (bmP, 1, 1))
+		if (bmP->Bind (1, 1))
 			return 1;
 		bmP = bmP->Override (-1);
-		OglTexWrap (bmP->Texture (), GL_CLAMP);
+		bmP->Texture ()->Wrap (GL_CLAMP);
 		glEnable (GL_BLEND);
 		if (bAdditive == 2)
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -1028,12 +1028,12 @@ if (bmP)
 else
 	glDisable (GL_TEXTURE_2D);
 if (bmP) {
-	if (OglBindBmTex (bmP, 1, 1))
+	if (bmP->Bind (1, 1))
 		return 0;
 	bmP = bmP->Override (-1);
 	if (bmP->Frames ())
 		bmP = bmP->Frames () + nFrame;
-	OglTexWrap (bmP->Texture (), nWrap);
+	bmP->Texture ()->Wrap (nWrap);
 	}
 if (bVertexArrays) {
 	if (texCoordP)

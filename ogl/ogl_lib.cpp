@@ -560,12 +560,12 @@ else
 		{
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();
-		OglViewport (CCanvas::Current ()->Bitmap ().Left (), CCanvas::Current ()->Bitmap ().Top (), nCanvasWidth, nCanvasHeight);
+		OglViewport (CCanvas::Current ()->.Left (), CCanvas::Current ()->.Top (), nCanvasWidth, nCanvasHeight);
 		}
 	if (gameStates.ogl.bEnableScissor) {
 		glScissor (
-			CCanvas::Current ()->Bitmap ().Left (),
-			screen.Bitmap ().Height () - CCanvas::Current ()->Bitmap ().Top () - nCanvasHeight,
+			CCanvas::Current ()->.Left (),
+			screen.Bitmap ().Height () - CCanvas::Current ()->.Top () - nCanvasHeight,
 			nCanvasWidth,
 			nCanvasHeight);
 		glEnable (GL_SCISSOR_TEST);
@@ -620,7 +620,7 @@ nError = glGetError ();
 
 void OglEndFrame (void)
 {
-//	OglViewport (CCanvas::Current ()->Bitmap ().Left (), CCanvas::Current ()->Bitmap ().Top (), );
+//	OglViewport (CCanvas::Current ()->.Left (), CCanvas::Current ()->.Top (), );
 //	glViewport (0, 0, screen.Width (), screen.Height ());
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);

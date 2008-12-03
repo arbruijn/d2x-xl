@@ -26,17 +26,17 @@ CCameraManager cameraManager;
 int CCamera::CreateBuffer (void)
 {
 #if RENDER2TEXTURE == 1
-if (!OglCreatePBuffer (&m_info.pb, m_info.texture.Width (), m_info.texture.Height (), 0))
+if (!OglCreatePBuffer (&m_info.pb, m_info.buffer.Width (), m_info.buffer.Height (), 0))
 	return 0;
 m_info.glTexId = m_info.pb.texId;
 #elif RENDER2TEXTURE == 2
-if (!m_info.fbo.Create (m_info.texture.Width (), m_info.texture.Height (), m_info.bShadowMap))
+if (!m_info.fbo.Create (m_info.buffer.Width (), m_info.buffer.Height (), m_info.bShadowMap))
 	return 0;
 m_info.glTexId = m_info.fbo.RenderBuffer ();
 #endif
 char szName [20];
 sprintf (szName, "CAM#%04d", m_info.nId);
-m_info.texture.SetName (szName);
+m_info.buffer.SetName (szName);
 return 1;
 }
 
@@ -46,10 +46,10 @@ int CCamera::HaveBuffer (int bCheckTexture)
 {
 if (bCheckTexture)
 #if RENDER2TEXTURE == 1
-	return m_info.texture.glTexture ? OglPBufferAvail (&m_info.texture.glTexture->pbuffer) : -1;
+	return m_info.buffer.Texture () ? m_info.Texture ()->PBO ()->Available() : -1;
 return OglPHaveBuffer (&m_info.pb);
 #elif RENDER2TEXTURE == 2
-	return m_info.texture.Texture () ? m_info.texture.Texture ()->fbo.Available () : -1;
+	return m_info.buffer.Texture () ? m_info.buffer.Texture ()->FBO) ().Available () : -1;
 return m_info.fbo.Available ();
 #endif
 }
@@ -58,7 +58,7 @@ return m_info.fbo.Available ();
 
 int CCamera::HaveTexture (void)
 {
-return m_info.texture.Texture () && ((int) m_info.texture.Texture ()->handle > 0);
+return m_info.buffer.Texture () && ((int) m_info.buffer.Texture ()->handle > 0);
 }
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ if (!OglEnablePBuffer (&m_info.pb))
 if (!m_info.fbo.Enable ())
 	return 0;
 #endif
-OglFreeBmTexture (&m_info.texture);
+m_info.buffer->FreeTexture ();
 return 1;
 }
 
@@ -83,13 +83,13 @@ int CCamera::DisableBuffer (void)
 #if RENDER2TEXTURE == 1
 if (!OglDisablePBuffer (&m_info.pb))
 	return 0;
-if (!m_info.texture.glTexture)
-	PrepareTexture (&m_info.texture, 0, -1, 0, &m_info.pb);
+if (!m_info.buffer.glTexture)
+	PrepareTexture (&m_info.buffer, 0, -1, 0, &m_info.pb);
 #elif RENDER2TEXTURE == 2
 if (!m_info.fbo.Disable ())
 	return 0;
-if (!m_info.texture.Texture ())
-	m_info.texture.PrepareTexture (0, -1, 0, &m_info.fbo);
+if (!m_info.buffer.Texture ())
+	m_info.buffer.PrepareTexture (0, -1, 0, &m_info.fbo);
 #endif
 return 1;
 }
@@ -119,7 +119,7 @@ if (HaveBuffer (0) != 1)
 if (!m_info.pb.bBound)
 	return 1;
 #endif
-OglFreeBmTexture (&m_info.texture);
+OglFreeBmTexture (&m_info.buffer);
 #if RENDER2TEXTURE == 1
 m_info.pb.bBound = 0;
 #endif
@@ -165,30 +165,30 @@ m_info.bShadowMap = bShadowMap;
 h = CCanvas::Current ()->Width () / (2 - gameOpts->render.cameras.bHires);
 for (i = 1; i < h; i <<= 1)
 	;
-m_info.texture.SetWidth (i);
+m_info.buffer.SetWidth (i);
 h = CCanvas::Current ()->Bitmap ().Height () / (2 - gameOpts->render.cameras.bHires);
 for (i = 1; i < h; i <<= 1)
 	;
-m_info.texture.SetHeight (i);
-m_info.texture.SetRowSize (max (CCanvas::Current ()->Width (), m_info.texture.Width ()));
-m_info.texture.SetBPP (4);
+m_info.buffer.SetHeight (i);
+m_info.buffer.SetRowSize (max (CCanvas::Current ()->Width (), m_info.buffer.Width ()));
+m_info.buffer.SetBPP (4);
 #if RENDER2TEXTURE
 if (!CreateBuffer ()) 
 #endif
 {
 #if CAMERA_READPIXELS
-	if (!(m_info.texture.TexBuf () = (char *) D2_ALLOC (m_info.texture.Width () * m_info.texture.Height () * 4)))
+	if (!(m_info.buffer.TexBuf () = (char *) D2_ALLOC (m_info.buffer.Width () * m_info.buffer.Height () * 4)))
 		return 0;
 	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport)
-		m_info.screenBuf = m_info.texture.TexBuf ();
+		m_info.screenBuf = m_info.buffer.TexBuf ();
 	else {
 		m_info.screenBuf = D2_ALLOC (CCanvas::Current ()->Width () * CCanvas::Current ()->Bitmap ().Height () * 4);
 		if (!m_info.screenBuf) {
 			gameOpts->render.cameras.bFitToWall = 1;
-			m_info.screenBuf = m_info.texture.TexBuf ();
+			m_info.screenBuf = m_info.buffer.TexBuf ();
 			}
 		}
-	memset (m_info.texture.TexBuf (), 0, m_info.texture.Width () * m_info.texture.Height () * 4);
+	memset (m_info.buffer.TexBuf (), 0, m_info.buffer.Width () * m_info.buffer.Height () * 4);
 #else
 	return 0;
 #endif
@@ -246,12 +246,12 @@ return 1;
 
 void CCamera::Destroy (void)
 {
-OglFreeBmTexture (&m_info.texture);
+OglFreeBmTexture (&m_info.buffer);
 OglDeleteTextures (1, &m_info.glTexId);
-if (m_info.screenBuf && (m_info.screenBuf != (char *) m_info.texture.TexBuf ()))
+if (m_info.screenBuf && (m_info.screenBuf != (char *) m_info.buffer.TexBuf ()))
 	D2_FREE (m_info.screenBuf);
-if (m_info.texture.TexBuf ()) {
-	m_info.texture.DestroyTexBuf ();
+if (m_info.buffer.TexBuf ()) {
+	m_info.buffer.DestroyTexBuf ();
 	}
 #if RENDER2TEXTURE
 if (gameStates.ogl.bRender2TextureOk)
@@ -333,8 +333,8 @@ else
 		}
 	du = dv = 0;
 	if (bHaveBuffer) {
-		duImage = (float) CCanvas::Current ()->Width () / (float) m_info.texture.Width () / nScale;
-		dvImage = (float) CCanvas::Current ()->Bitmap ().Height () / (float) m_info.texture.Height () / nScale;
+		duImage = (float) CCanvas::Current ()->Width () / (float) m_info.buffer.Width () / nScale;
+		dvImage = (float) CCanvas::Current ()->Bitmap ().Height () / (float) m_info.buffer.Height () / nScale;
 		if (!bFitToWall && RENDERPATH) {
 			aImage = (float) CCanvas::Current ()->Bitmap ().Height () / (float) CCanvas::Current ()->Width ();
 			if (vertexP)
@@ -467,64 +467,64 @@ if (ReleaseBuffer () && EnableBuffer ()) {
 	}
 else 
 #	if CAMERA_READPIXELS
-if (m_info.texture.TexBuf ()) 
+if (m_info.buffer.TexBuf ()) 
 #	endif
 #endif
 	{
 	RenderFrame (0, 0);
 	m_info.bValid = 1;
-	OglFreeBmTexture (&m_info.texture);
+	OglFreeBmTexture (&m_info.buffer);
 #if CAMERA_READPIXELS
-	memset (m_info.texture.TexBuf (), 0, m_info.texture.Width () * m_info.texture.Height () * 4);
+	memset (m_info.buffer.TexBuf (), 0, m_info.buffer.Width () * m_info.buffer.Height () * 4);
 	glDisable (GL_TEXTURE_2D);
 #endif
 	glReadBuffer (GL_BACK);
 	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport) {
 #if CAMERA_READPIXELS == 0
-		m_info.texture.PrepareTexture (0, -1, 0, NULL);
+		m_info.buffer.PrepareTexture (0, -1, 0, NULL);
 		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
-			(CCanvas::Current ()->Width () - m_info.texture.Width ()) / 2, 
-			(CCanvas::Current ()->Bitmap ().Height () - m_info.texture.Height ()) / 2, 
-			m_info.texture.Width (), m_info.texture.Height (), 0);
+			(CCanvas::Current ()->Width () - m_info.buffer.Width ()) / 2, 
+			(CCanvas::Current ()->Bitmap ().Height () - m_info.buffer.Height ()) / 2, 
+			m_info.buffer.Width (), m_info.buffer.Height (), 0);
 #else
 		glReadPixels (
-			(CCanvas::Current ()->Width () - m_info.texture.Width ()) / 2, 
-			(CCanvas::Current ()->Bitmap ().Height () - m_info.texture.Height ()) / 2, 
-			m_info.texture.Width (), m_info.texture.Height (), 
-			GL_RGBA, GL_UNSIGNED_BYTE, m_info.texture.TexBuf ());
-		PrepareTexture (&m_info.texture, 0, -1, NULL);
+			(CCanvas::Current ()->Width () - m_info.buffer.Width ()) / 2, 
+			(CCanvas::Current ()->Bitmap ().Height () - m_info.buffer.Height ()) / 2, 
+			m_info.buffer.Width (), m_info.buffer.Height (), 
+			GL_RGBA, GL_UNSIGNED_BYTE, m_info.buffer.TexBuf ());
+		PrepareTexture (&m_info.buffer, 0, -1, NULL);
 #endif
 		}
 	else {
 #if CAMERA_READPIXELS == 0
-			m_info.texture.PrepareTexture (0, -1, 0, NULL);
+			m_info.buffer.PrepareTexture (0, -1, 0, NULL);
 			glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
-				-(m_info.texture.Width () - CCanvas::Current ()->Width ()) / 2,
-				-(m_info.texture.Height () - CCanvas::Current ()->Bitmap ().Height ()) / 2, 
-				m_info.texture.Width (), m_info.texture.Height (), 0);
+				-(m_info.buffer.Width () - CCanvas::Current ()->Width ()) / 2,
+				-(m_info.buffer.Height () - CCanvas::Current ()->Bitmap ().Height ()) / 2, 
+				m_info.buffer.Width (), m_info.buffer.Height (), 0);
 #else
 		char	*pSrc, *pDest;
-		int	dxBuf = (m_info.texture.Width () - CCanvas::Current ()->Width ()) / 2;
-		int	dyBuf = (m_info.texture.Height () - CCanvas::Current ()->Bitmap ().Height ()) / 2;
+		int	dxBuf = (m_info.buffer.Width () - CCanvas::Current ()->Width ()) / 2;
+		int	dyBuf = (m_info.buffer.Height () - CCanvas::Current ()->Bitmap ().Height ()) / 2;
 		int	wSrc = CCanvas::Current ()->Width () * 4;
-		int	wDest = m_info.texture.Width () * 4;
+		int	wDest = m_info.buffer.Width () * 4;
 
-		if (CCanvas::Current ()->Width () == m_info.texture.Width ()) {
+		if (CCanvas::Current ()->Width () == m_info.buffer.Width ()) {
 			glReadPixels (
 				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Bitmap ().Height (),
-				GL_RGBA, GL_UNSIGNED_BYTE, m_info.texture.TexBuf () + dyBuf * m_info.texture.Width () * 4);
+				GL_RGBA, GL_UNSIGNED_BYTE, m_info.buffer.TexBuf () + dyBuf * m_info.buffer.Width () * 4);
 			}
 		else {
 			glReadPixels (
 				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Bitmap ().Height (),
 				GL_RGBA, GL_UNSIGNED_BYTE, m_info.screenBuf);
 			pSrc = m_info.screenBuf;
-			pDest = m_info.texture.TexBuf () + (dyBuf - 1) * wDest + dxBuf * 4;
+			pDest = m_info.buffer.TexBuf () + (dyBuf - 1) * wDest + dxBuf * 4;
 #	ifndef _WIN32
 			for (dyBuf = CCanvas::Current ()->Bitmap ().Height (); dyBuf; dyBuf--, pSrc += wSrc, pDest += wDest)
 				memcpy (pDest, pSrc, wSrc);
 #	else
-			dxBuf = m_info.texture.Width () - CCanvas::Current ()->Width ();
+			dxBuf = m_info.buffer.Width () - CCanvas::Current ()->Width ();
 			dyBuf = CCanvas::Current ()->Bitmap ().Height ();
 			wSrc /= 4;
 			__asm {
@@ -550,7 +550,7 @@ if (m_info.texture.TexBuf ())
 				pop	edi
 				}
 #	endif
-			PrepareTexture (&m_info.texture, 0, -1);
+			PrepareTexture (&m_info.buffer, 0, -1);
 			}
 #endif
 		}

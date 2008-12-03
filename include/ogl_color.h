@@ -32,7 +32,7 @@ extern float fLightRanges [5];
 //------------------------------------------------------------------------------
 
 void OglPalColor (ubyte *palette, int c);
-void OglGrsColor (tCanvasColor *pc);
+void OglCanvasColor (tCanvasColor *pc);
 void OglColor4sf (float r, float g, float b, float s);
 void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tFaceColor *vertColor);
 int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, int nThread);

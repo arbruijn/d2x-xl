@@ -117,7 +117,7 @@ if (!*bHaveP) {
 	else {
 		*bHaveP = 1;
 		bmP->SetFrameCount ();
-		OglBindBmTex (bmP, 1, 1);
+		bmP->Bind (1, 1);
 		}
 	*bmPP = bmP;
 	}

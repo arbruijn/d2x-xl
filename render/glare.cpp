@@ -522,9 +522,9 @@ if (color.alpha < 0.01f)
 	return;
 glEnable (GL_TEXTURE_2D);
 bmP = bAdditive ? bmpGlare : bmpCorona;
-if (OglBindBmTex (bmP, 1, -1))
+if (bmP->Bind (1, -1))
 	return;
-OglTexWrap (bmP->Texture (), GL_CLAMP);
+bmP->Texture ()->Wrap (GL_CLAMP);
 glDisable (GL_CULL_FACE);
 if (bAdditive) {
 	fLight *= color.alpha;
@@ -615,7 +615,7 @@ else
 	glColor4f (color.red, color.green, color.blue, fIntensity);
 if (G3EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0)) {
 	if (gameStates.render.bQueryCoronas == 0) {
-		OglBindBmTex (bmP, 1, -1);
+		bmP->Bind (1, -1);
 		glTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 		}
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), sprite);
@@ -624,7 +624,7 @@ if (G3EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE
 	}
 else {
 	if (gameStates.render.bQueryCoronas == 0)
-		OglBindBmTex (bmP, 1, -1);
+		bmP->Bind (1, -1);
 	glBegin (GL_QUADS);
 	for  (i = 0; i < 4; i++) {
 		glTexCoord2fv ((GLfloat *) (tcGlare + i));

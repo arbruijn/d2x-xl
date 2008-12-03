@@ -31,7 +31,7 @@ typedef struct tTexture {
 	GLfloat 			prio;
 	int 				wrapstate;
 	ubyte				bMipMaps;
-	ubyte				bFrameBuffer;
+	ubyte				bRenderBuffer;
 #if RENDER2TEXTURE == 1
 	CPBO				pbo;
 #elif RENDER2TEXTURE == 2
@@ -47,14 +47,25 @@ class CTexture {
 	public:
 		CTexture () { Init (); }
 		~CTexture () { Destroy (); }
-		void Create (int w, int h);
+		GLuint Create (int w, int h);
 		void Init (void);
 		void Setup (int w, int h, int lw, int bMask, int bMipMap, CBitmap *bmP);
-		int Prepare (int w, int h, int bpp, bool bLocal);
+		int Prepare (int w, int h, int bpp, bool bLocal, bool bCompressed = false);
+#if TEXTURE_COMPRESSION
+		int Load (ubyte *buffer, int nBufSize = 0, int nFormat = 0, bool bCompressed = false);
+#else
+		int Load (ubyte *buffer);
+#endif
 		void Destroy (void);
 		void Unlink (void);
-		void Wrap (void);
-		inline void Bind (void) { OGL_BINDTEX (m_info.handle); }
+		void Wrap (int state);
+		inline void Bind (void) { 
+			if (m_info.bRenderBuffer)
+				BindRenderBuffer ();
+			else
+				OGL_BINDTEX (m_info.handle); 
+			}
+		int BindRenderBuffer (void);
 
 		inline GLint Handle (void) { return (GLint) m_info.handle; }
 		inline GLenum Format (void) { return m_info.format; }
@@ -66,15 +77,17 @@ class CTexture {
 		inline int TW (void) { return m_info.tw; }
 		inline int TH (void) { return m_info.th; }
 		inline CBitmap* Bitmap (void) { return m_info.bmP; }
-		inline ubyte IsFrameBuffer (void) { return m_info.bFrameBuffer; }
+		inline ubyte IsRenderBuffer (void) { return m_info.bRenderBuffer; }
 
 		inline void SetHandle (GLuint handle) { m_info.handle = handle; }
 		inline void SetFormat (GLenum format) { m_info.format = format; }
 		inline void SetInternalFormat (GLint internalFormat) { m_info.internalFormat = internalFormat; }
 		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
 #if RENDER2TEXTURE == 1
+		inline CPBO* PBO (void) { return &m_info.pbo; }
 		inline void SetRenderBuffer (CPBO *pbo);
 #elif RENDER2TEXTURE == 2
+		inline CFBO* FBO (void) { return &m_info.fbo; }
 		inline void SetRenderBuffer (CFBO *fbo);
 #endif
 		ubyte *Copy (int dxo, int dyo, ubyte *data);
@@ -84,6 +97,10 @@ class CTexture {
 		inline int Next (void) { return m_next; }
 		inline void SetPrev (int prev) { m_prev = prev; }
 		inline void SetNext (int next) { m_next = next; }
+
+#if TEXTURE_COMPRESSION
+		Compress ();
+#endif
 
 	private:
 		void SetSize (void);

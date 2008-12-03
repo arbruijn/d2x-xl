@@ -760,7 +760,7 @@ for (i = 0; i < pt->nBitmaps; i++) {
 	bmP = bmP->Override (-1);
 	if (bmP->Frames ())
 		bmP = bmP->CurFrame ();
-	OglBindBmTex (bmP, 1, 3);
+	bmP->Bind (1, 3);
 	pt->pBitmaps [i].SetTeam (pt->nTeam ? pt->nTeam [i] : 0);
 	}
 return 1;

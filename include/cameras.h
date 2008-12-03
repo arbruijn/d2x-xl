@@ -12,7 +12,7 @@ typedef struct tCamera {
 	short				nId;
 	short				nSegment;
 	short				nSide;
-	CBitmap			texture;
+	CBitmap			buffer;
 	char				*screenBuf;
 	GLuint			glTexId;
 	time_t			nTimeout;
@@ -62,7 +62,7 @@ class CCamera {
 		inline char GetTeleport (void) { return m_info.bTeleport; }
 		inline char Valid (void) { return m_info.bValid; }
 		inline vmsMatrix& Orient (void) { return m_info.orient; }
-		inline CBitmap& Texture (void) { return m_info.texture; }
+		inline CBitmap& Texture (void) { return m_info.buffer; }
 		inline tTexCoord2f* TexCoord (void) { return m_info.texCoord; }
 		inline tObject* GetObject (void) { return m_info.objP; }
 		inline CFBO& FrameBuffer (void) { return m_info.fbo; } 

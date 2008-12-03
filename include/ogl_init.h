@@ -423,7 +423,7 @@ void DrawTexPolyFlat (CBitmap *bm,int nv,g3sPoint **vertlist);
 void OglSetupTransform (int bForce);
 void OglResetTransform (int bForce);
 void OglPalColor (ubyte *palette, int c);
-void OglGrsColor (tCanvasColor *pc);
+void OglCanvasColor (tCanvasColor *pc);
 void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
 int G3EnableClientState (GLuint nState, int nTMU);
 int G3EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
