@@ -4625,6 +4625,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\carray.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cdatapool.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\checker.h"
 				>
 			</File>

@@ -35,6 +35,10 @@
 #include "ogl_texture.h"
 #include "texmerge.h"
 
+//------------------------------------------------------------------------------
+
+#define TEXTURE_LIST_SIZE 5000
+
 CTextureManager textureManager;
 
 //------------------------------------------------------------------------------
@@ -70,16 +74,9 @@ return (minColor + maxColor) / 2;
 
 void CTextureManager::Init (void)
 {
-	CTexture	*texP = m_list;
-	
-m_used = -1;
-m_free = 0;
-for (int i = 0; i < OGL_TEXTURE_LIST_SIZE; texP++) {
-	texP->Init ();
-	texP->SetPrev (i - 1);
-	texP->SetNext (++i);
-	}
-(texP - 1)->SetNext (-1);
+m_textures.Create (TEXTURE_LIST_SIZE);
+for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
+	m_textures [i].SetIndex (i);
 }
 
 //------------------------------------------------------------------------------
@@ -103,15 +100,12 @@ OglDeleteLists (g3InitTMU [0], sizeof (g3InitTMU) / sizeof (GLuint));
 OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
 
-if (m_used < 0)
+if (!(texP = GetFirst ()))
 	return;
-
-for (i = m_used; i >= 0; i = j) {
-	texP = m_list + i;
-	j = texP->Next ();
+do {
 	Push (texP);
 	texP->SetHandle ((GLuint) -1);
-	}
+	} while ((texP = GetNext ()));
 
 for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
 	gameData.pig.tex.addonBitmaps [i].Unlink (1);
@@ -124,41 +118,6 @@ for (i = 0; i < 2; i++) {
 		bmP->Unlink (0);
 	}
 #endif
-}
-
-//------------------------------------------------------------------------------
-
-CTexture *CTextureManager::Pop (void)
-{
-if (m_free < 0)
-	return NULL;
-CTexture *texP = m_list + m_free;
-int h = texP->Next ();
-texP->SetNext (m_used);
-texP->SetPrev (-1);
-m_used = m_free;
-m_free = h;
-return texP;
-}
-
-//------------------------------------------------------------------------------
-
-void CTextureManager::Push (CTexture *texP)
-{
-	int i = texP - m_list,
-		 prev = texP->Prev (),
-		 next = texP->Next ();
-
-if (prev >= 0)
-	m_list [prev].SetNext (next);
-if (next >= 0)
-	m_list [next].SetPrev (prev);
-if (m_used == i)
-	m_used = next;
-texP->Destroy ();
-texP->SetPrev (-1);
-texP->SetNext (m_free);
-m_free = i;
 }
 
 //------------------------------------------------------------------------------
@@ -621,8 +580,8 @@ else
 	u = (int) (m_info.w * m_info.h);
 if (bits <= 0) //the beta nvidia GLX server. doesn'texP ever return any bit sizes, so just use some assumptions.
 	bits = dbits;
-m_info.bytes = (int) (((double) w * h * bits) / 8.0);
-m_info.bytesu = (int) (((double) u * bits) / 8.0);
+//m_info.bytes = (int) (((double) w * h * bits) / 8.0);
+//m_info.bytesu = (int) (((double) u * bits) / 8.0);
 }
 
 //------------------------------------------------------------------------------

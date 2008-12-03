@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
-template <class _T> class CArray {
+template < class _T > class CArray {
 	private:
 		_T					*m_buffer;
 		_T					*m_null;
@@ -37,8 +37,6 @@ template <class _T> class CArray {
 		inline _T& operator[] (unsigned int i) { return m_buffer [i]; }
 #endif
 	};
-
-class CByteArray : public CArray<ubyte> {};
 
 //-----------------------------------------------------------------------------
 

@@ -9,10 +9,9 @@
 #include "ogl_defs.h"
 #include "fbuffer.h"
 #include "pbuffer.h"
+#include "cdatapool.h"
 
 //------------------------------------------------------------------------------
-
-#define OGL_TEXTURE_LIST_SIZE 5000
 
 #define OglActiveTexture(i,b)	if (b) glClientActiveTexture (i); else glActiveTexture (i)
 
@@ -23,15 +22,14 @@
 class CBitmap;
 
 typedef struct tTexture {
+	int				index;
 	GLuint	 		handle;
 	GLint				internalFormat;
 	GLenum			format;
 	int 				w, h, tw, th, lw;
-	int 				bytesu;
-	int 				bytes;
+//	int 				bytesu;
+//	int 				bytes;
 	GLfloat			u, v;
-	GLfloat 			prio;
-	int 				wrapstate;
 	ubyte				bMipMaps;
 	ubyte				bRenderBuffer;
 #if RENDER2TEXTURE == 1
@@ -44,7 +42,9 @@ typedef struct tTexture {
 
 class CTexture {
 	private:
+#if 0
 		int		m_prev, m_next;
+#endif
 		tTexture	m_info;
 	public:
 		CTexture () { Init (); }
@@ -69,6 +69,8 @@ class CTexture {
 			}
 		int BindRenderBuffer (void);
 
+		inline int Index (void) { return m_info.index; }
+		inline void SetIndex (int index) { m_info.index = index; }
 		inline GLint Handle (void) { return (GLint) m_info.handle; }
 		inline GLenum Format (void) { return m_info.format; }
 		inline GLint InternalFormat (void) { return m_info.internalFormat; }
@@ -94,12 +96,12 @@ class CTexture {
 #endif
 		ubyte *Copy (int dxo, int dyo, ubyte *data);
 		ubyte *Convert (int dxo, int dyo,  CBitmap *bmP, int nTransp, int bSuperTransp);
-
+#if 0
 		inline int Prev (void) { return m_prev; }
 		inline int Next (void) { return m_next; }
 		inline void SetPrev (int prev) { m_prev = prev; }
 		inline void SetNext (int next) { m_next = next; }
-
+#endif
 #if TEXTURE_COMPRESSION
 		Compress ();
 #endif
@@ -109,16 +111,16 @@ class CTexture {
 		void SetBufSize (int dbits, int bits, int w, int h);
 		int Verify (void);
 		int FormatSupported (void);
-};
+	};
 
 //------------------------------------------------------------------------------
 
+class CTexturePool : public CDataPool< CTexture > {};
+
 class CTextureManager {
 	private:
-		CTexture	m_info;
-		CTexture	m_list [OGL_TEXTURE_LIST_SIZE];
-		int		m_used;
-		int		m_free;
+		CTexture			m_info;
+		CTexturePool	m_textures;
 
 	public:
 		CTextureManager () { Init (); }
@@ -126,11 +128,17 @@ class CTextureManager {
 		void Init (void);
 		void Smash (void);
 		void Destroy (void);
-		CTexture *Pop (void);
-		void Push (CTexture *texP);
+		inline CTexture *Pop (void) { return m_textures.Pop (); }
+		void Push (CTexture *texP) { 
+			texP->Destroy ();
+			m_textures.Push (texP->Index ()); 
+			}
 		CTexture *Get (CBitmap *bmP);
 
-};
+	private:
+		CTexture* GetFirst (void) { return m_textures.GetFirst (); }
+		CTexture* GetNext (void) { return m_textures.GetNext (); }
+	};
 
 extern CTextureManager textureManager;
 
