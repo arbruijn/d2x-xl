@@ -91,7 +91,7 @@ typedef struct tFaceColor {
 
 #define D2BLUE_RGBA			RGBA_PAL (35,35,55)
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 static inline void CountColors (ubyte *data, int i, int *freq)
 {
