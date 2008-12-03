@@ -93,12 +93,15 @@ template < class _T > class CDataPool {
 			return &e.data;
 			}
 
-		inline _T* GetFirst (void) { 
-			m_current = m_used;
+		inline _T* GetFirst (int i) { 
+			m_current = (i < 0) ? m_used : i;
 			return GetNext ();
 			}
 
 		inline int Size (void) { return m_buffer.Size (); }
+
+		inline int UsedList (void) { return m_used; }
+		inline int FreeList (void) { return m_free; }
 	};
 
 
