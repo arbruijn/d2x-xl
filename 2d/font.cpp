@@ -543,7 +543,7 @@ font->ftParentBitmap.Init (BM_LINEAR, 0, 0, tw, th, 1, NULL);
 font->ftParentBitmap.SetTexBuf (new ubyte [tw * th]);
 font->ftParentBitmap.SetPalette (palette);
 if (!(font->ftFlags & FT_COLOR))
-	font->ftParentBitmap.SetTexInfo (OglGetFreeTexture (&font->ftParentBitmap));
+	font->ftParentBitmap.SetTexture (OglGetFreeTexture (&font->ftParentBitmap));
 font->ftBitmaps = new CBitmap [nChars]; //(CBitmap*) D2_ALLOC (nChars * sizeof (CBitmap));
 memset (font->ftBitmaps, 0, nChars * sizeof (CBitmap));
 font->ftParentBitmap.SetName (fontname);
@@ -598,18 +598,18 @@ for (i = 0; i < nChars; i++) {
 if (!(font->ftFlags & FT_COLOR)) {
 	//use GL_INTENSITY instead of GL_RGB
 	if (gameStates.ogl.bIntensity4) {
-		font->ftParentBitmap.TexInfo ()->internalformat = 1;
-		font->ftParentBitmap.TexInfo ()->format = GL_LUMINANCE;
+		font->ftParentBitmap.Texture ()->internalformat = 1;
+		font->ftParentBitmap.Texture ()->format = GL_LUMINANCE;
 		}
 	else if (gameStates.ogl.bLuminance4Alpha4){
-		font->ftParentBitmap.TexInfo ()->internalformat = 1;
-		font->ftParentBitmap.TexInfo ()->format = GL_LUMINANCE_ALPHA;
+		font->ftParentBitmap.Texture ()->internalformat = 1;
+		font->ftParentBitmap.Texture ()->format = GL_LUMINANCE_ALPHA;
 		}
 	else {
-		font->ftParentBitmap.TexInfo ()->internalformat = gameStates.ogl.bpp / 8;
-		font->ftParentBitmap.TexInfo ()->format = gameStates.ogl.nRGBAFormat;
+		font->ftParentBitmap.Texture ()->internalformat = gameStates.ogl.bpp / 8;
+		font->ftParentBitmap.Texture ()->format = gameStates.ogl.nRGBAFormat;
 		}
-	font->ftParentBitmap.LoadTexture (0, 2, 0, NULL);
+	font->ftParentBitmap.PrepareTexture (0, 2, 0, NULL);
 	}
 }
 

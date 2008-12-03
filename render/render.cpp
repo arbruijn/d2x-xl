@@ -414,7 +414,7 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 
 if (bHaveMonitorBg) {
 	cameraP->GetUVL (NULL, props.uvls, NULL, NULL);
-	cameraP->Texture ().TexInfo ()->wrapstate = -1;
+	cameraP->Texture ().Texture ()->wrapstate = -1;
 	if (bIsTeleCam) {
 #if DBG
 		bmBot = &cameraP->Texture ();

@@ -88,13 +88,13 @@ else {
 	if (OglBindBmTex (bmP, 1, transp)) 
 		return 1;
 	bmP = bmP->Override (-1);
-	OglTexWrap (bmP->TexInfo (), GL_CLAMP);
+	OglTexWrap (bmP->Texture (), GL_CLAMP);
 	if (color)
 		glColor4f (color->red, color->green, color->blue, alpha);
 	else
 		glColor4d (1, 1, 1, (double) alpha);
-	u = bmP->TexInfo ()->u;
-	v = bmP->TexInfo ()->v;
+	u = bmP->Texture ()->u;
+	v = bmP->Texture ()->v;
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	fPos[X] -= w;
@@ -143,7 +143,7 @@ int OglUBitMapMC (int x, int y, int dw, int dh, CBitmap *bmP, tCanvasColor *c, i
 	GLfloat	u1, u2, v1, v2;
 	GLfloat	h, a;
 	GLfloat	dx, dy;
-	tTextureInfo	*texInfo;
+	CTexture	*texture;
 
 bmP = bmP->Override (-1);
 bmP->DelFlags (BM_FLAG_SUPER_TRANSPARENT);
@@ -183,7 +183,7 @@ yf = 1.0f - dy - (dh + y) / ((float) gameStates.ogl.nLastH * h);
 OglActiveTexture (GL_TEXTURE0, 0);
 if (OglBindBmTex (bmP, 0, 3))
 	return 1;
-OglTexWrap (texInfo = bmP->TexInfo (), GL_CLAMP);
+OglTexWrap (texture = bmP->Texture (), GL_CLAMP);
 
 glEnable (GL_TEXTURE_2D);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
@@ -195,25 +195,25 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 if (bmP->Left () == 0) {
 	u1 = 0;
-	if (bmP->Width () == texInfo->w)
-		u2 = texInfo->u;
+	if (bmP->Width () == texture->w)
+		u2 = texture->u;
 	else
-		u2 = (bmP->Width () + bmP->Left ()) / (float) texInfo->tw;
+		u2 = (bmP->Width () + bmP->Left ()) / (float) texture->tw;
 	}
 else {
-	u1 = bmP->Left () / (float) texInfo->tw;
-	u2 = (bmP->Width () + bmP->Left ()) / (float) texInfo->tw;
+	u1 = bmP->Left () / (float) texture->tw;
+	u2 = (bmP->Width () + bmP->Left ()) / (float) texture->tw;
 	}
 if (bmP->Top () == 0) {
 	v1 = 0;
-	if (bmP->Height () == texInfo->h)
-		v2 = texInfo->v;
+	if (bmP->Height () == texture->h)
+		v2 = texture->v;
 	else
-		v2 = (bmP->Height () + bmP->Top ()) / (float) texInfo->th;
+		v2 = (bmP->Height () + bmP->Top ()) / (float) texture->th;
 	}
 else{
-	v1 = bmP->Top () / (float) bmP->TexInfo ()->th;
-	v2 = (bmP->Height () + bmP->Top ()) / (float) texInfo->th;
+	v1 = bmP->Top () / (float) bmP->Texture ()->th;
+	v2 = (bmP->Height () + bmP->Top ()) / (float) texture->th;
 	}
 
 OglGrsColor (c);
@@ -247,7 +247,7 @@ int OglUBitBltI (
 {
 	GLfloat xo, yo, xs, ys;
 	GLfloat u1, v1;//, u2, v2;
-	tTextureInfo tex, *texP;
+	CTexture tex, *texP;
 	GLint curFunc; 
 	int nTransp = (src->Flags () & BM_FLAG_TGA) ? -1 : src->HasTransparency () ? 2 : 0;
 
@@ -264,7 +264,7 @@ ys = dh / (float) gameStates.ogl.nLastH;
 
 glActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
-if (!(texP = src->TexInfo ())) {
+if (!(texP = src->Texture ())) {
 	texP = &tex;
 	OglInitTexture (texP, 0, NULL);
 	texP->w = sw;
@@ -303,7 +303,7 @@ if (bTransp && nTransp)
 	glDisable (GL_BLEND);
 glDisable (GL_TEXTURE_2D);
 glDepthFunc (curFunc);
-if (!src->TexInfo())
+if (!src->Texture())
 	OglFreeTexture (texP);
 return 0;
 }

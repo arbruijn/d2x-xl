@@ -29,10 +29,10 @@ typedef struct tCamera {
 	tTexCoord2f		texCoord [6];
 #if RENDER2TEXTURE == 1
 	tPixelBuffer	pb;
-	tTextureInfo		glTex;
+	CTexture		glTex;
 #elif RENDER2TEXTURE == 2
 	CFBO				fbo;
-	tTextureInfo	glTex;
+	CTexture	glTex;
 #endif
 	vmsMatrix		orient;
 	fixang			curAngle;

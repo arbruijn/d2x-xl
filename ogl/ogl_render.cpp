@@ -108,7 +108,7 @@ if (bmP || (nTexId >= 0)) {
 	else {
 		if (OglBindBmTex (bmP, 1, 3))
 			return 1;
-		OglTexWrap (bmP->TexInfo (), GL_REPEAT);
+		OglTexWrap (bmP->Texture (), GL_REPEAT);
 		}
 	if (bShaderVar)
 		glUniform1i (glGetUniformLocation (lmProg, pszTexId), 0);
@@ -509,7 +509,7 @@ else if (!bDepthSort) {
 	if (OglBindBmTex (bmBot, 1, 3))
 		return 1;
 	bmBot = bmBot->CurFrame (-1);
-	OglTexWrap (bmBot->TexInfo (), (bmBot == bmpDeadzone) ? GL_CLAMP : GL_REPEAT);
+	OglTexWrap (bmBot->Texture (), (bmBot == bmpDeadzone) ? GL_CLAMP : GL_REPEAT);
 	}
 
 if (!bDepthSort) {
@@ -679,7 +679,7 @@ if (bOverlay > 0) {
 	if (OglBindBmTex (bmTop, 1, 3))
 		return 1;
 	bmTop = bmTop->CurFrame (-1);
-	OglTexWrap (bmTop->TexInfo (), GL_REPEAT);
+	OglTexWrap (bmTop->Texture (), GL_REPEAT);
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
@@ -787,7 +787,7 @@ InitTMU0 (0);	// use render pipeline 0 for bottom texture
 if (OglBindBmTex (bmBot, 1, 3))
 	return 1;
 bmBot = bmBot->CurFrame (-1);
-OglTexWrap (bmBot->TexInfo (), GL_REPEAT);
+OglTexWrap (bmBot->Texture (), GL_REPEAT);
 if (bShaderMerge)
 	glUniform1i (glGetUniformLocation (lmProg, "btmTex"), 0);
 if (bmTop) { // use render pipeline 1 for overlay texture
@@ -795,7 +795,7 @@ if (bmTop) { // use render pipeline 1 for overlay texture
 	if (OglBindBmTex (bmTop, 1, 3))
 		return 1;
 	bmTop = bmTop->CurFrame (-1);
-	OglTexWrap (bmTop->TexInfo (), GL_REPEAT);
+	OglTexWrap (bmTop->Texture (), GL_REPEAT);
 	glUniform1i (glGetUniformLocation (lmProg, "topTex"), 1);
 	}
 // use render pipeline 2 for lightmap texture
@@ -873,9 +873,9 @@ else
 if (OglBindBmTex (bmP, 1, 3))
 	return 1;
 if (bmP == bmpDeadzone)
-	OglTexWrap (bmP->TexInfo (), GL_CLAMP);
+	OglTexWrap (bmP->Texture (), GL_CLAMP);
 else
-	OglTexWrap (bmP->TexInfo (), GL_REPEAT);
+	OglTexWrap (bmP->Texture (), GL_REPEAT);
 
 if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
@@ -983,7 +983,7 @@ else {
 		if (OglBindBmTex (bmP, 1, 1))
 			return 1;
 		bmP = bmP->Override (-1);
-		OglTexWrap (bmP->TexInfo (), GL_CLAMP);
+		OglTexWrap (bmP->Texture (), GL_CLAMP);
 		glEnable (GL_BLEND);
 		if (bAdditive == 2)
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -996,8 +996,8 @@ else {
 		else
 			glColor4d (1, 1, 1, (double) alpha);
 		glBegin (GL_QUADS);
-		u = bmP->TexInfo ()->u;
-		v = bmP->TexInfo ()->v;
+		u = bmP->Texture ()->u;
+		v = bmP->Texture ()->v;
 		glTexCoord2d (0, 0);
 		glVertex3d (x - w, y + h, z);
 		glTexCoord2d (u, 0);
@@ -1033,7 +1033,7 @@ if (bmP) {
 	bmP = bmP->Override (-1);
 	if (bmP->Frames ())
 		bmP = bmP->Frames () + nFrame;
-	OglTexWrap (bmP->TexInfo (), nWrap);
+	OglTexWrap (bmP->Texture (), nWrap);
 	}
 if (bVertexArrays) {
 	if (texCoordP)

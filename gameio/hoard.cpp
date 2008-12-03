@@ -272,14 +272,14 @@ void ResetHoardData (void)
 {
 	int	i;
 
-gameData.hoard.orb.bm.SetTexInfo (NULL);
-gameData.hoard.goal.bm.SetTexInfo (NULL);
+gameData.hoard.orb.bm.SetTexture (NULL);
+gameData.hoard.goal.bm.SetTexture (NULL);
 if (gameData.hoard.monsterball.bm.Override ())
-	gameData.hoard.monsterball.bm.Override ()->SetTexInfo (NULL);
+	gameData.hoard.monsterball.bm.Override ()->SetTexture (NULL);
 else
-	gameData.hoard.monsterball.bm.SetTexInfo (NULL);
+	gameData.hoard.monsterball.bm.SetTexture (NULL);
 for (i = 0; i < 2; i++)
-	gameData.hoard.icon [i].bm.SetTexInfo (NULL);
+	gameData.hoard.icon [i].bm.SetTexture (NULL);
 }
 
 //-----------------------------------------------------------------------------

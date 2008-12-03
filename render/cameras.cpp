@@ -49,7 +49,7 @@ if (bCheckTexture)
 	return m_info.texture.glTexture ? OglPBufferAvail (&m_info.texture.glTexture->pbuffer) : -1;
 return OglPHaveBuffer (&m_info.pb);
 #elif RENDER2TEXTURE == 2
-	return m_info.texture.TexInfo () ? m_info.texture.TexInfo ()->fbo.Available () : -1;
+	return m_info.texture.Texture () ? m_info.texture.Texture ()->fbo.Available () : -1;
 return m_info.fbo.Available ();
 #endif
 }
@@ -58,7 +58,7 @@ return m_info.fbo.Available ();
 
 int CCamera::HaveTexture (void)
 {
-return m_info.texture.TexInfo () && ((int) m_info.texture.TexInfo ()->handle > 0);
+return m_info.texture.Texture () && ((int) m_info.texture.Texture ()->handle > 0);
 }
 
 //------------------------------------------------------------------------------
@@ -84,12 +84,12 @@ int CCamera::DisableBuffer (void)
 if (!OglDisablePBuffer (&m_info.pb))
 	return 0;
 if (!m_info.texture.glTexture)
-	LoadTexture (&m_info.texture, 0, -1, 0, &m_info.pb);
+	PrepareTexture (&m_info.texture, 0, -1, 0, &m_info.pb);
 #elif RENDER2TEXTURE == 2
 if (!m_info.fbo.Disable ())
 	return 0;
-if (!m_info.texture.TexInfo ())
-	m_info.texture.LoadTexture (0, -1, 0, &m_info.fbo);
+if (!m_info.texture.Texture ())
+	m_info.texture.PrepareTexture (0, -1, 0, &m_info.fbo);
 #endif
 return 1;
 }
@@ -481,7 +481,7 @@ if (m_info.texture.TexBuf ())
 	glReadBuffer (GL_BACK);
 	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport) {
 #if CAMERA_READPIXELS == 0
-		m_info.texture.LoadTexture (0, -1, 0, NULL);
+		m_info.texture.PrepareTexture (0, -1, 0, NULL);
 		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
 			(CCanvas::Current ()->Width () - m_info.texture.Width ()) / 2, 
 			(CCanvas::Current ()->Bitmap ().Height () - m_info.texture.Height ()) / 2, 
@@ -492,12 +492,12 @@ if (m_info.texture.TexBuf ())
 			(CCanvas::Current ()->Bitmap ().Height () - m_info.texture.Height ()) / 2, 
 			m_info.texture.Width (), m_info.texture.Height (), 
 			GL_RGBA, GL_UNSIGNED_BYTE, m_info.texture.TexBuf ());
-		LoadTexture (&m_info.texture, 0, -1, NULL);
+		PrepareTexture (&m_info.texture, 0, -1, NULL);
 #endif
 		}
 	else {
 #if CAMERA_READPIXELS == 0
-			m_info.texture.LoadTexture (0, -1, 0, NULL);
+			m_info.texture.PrepareTexture (0, -1, 0, NULL);
 			glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
 				-(m_info.texture.Width () - CCanvas::Current ()->Width ()) / 2,
 				-(m_info.texture.Height () - CCanvas::Current ()->Bitmap ().Height ()) / 2, 
@@ -550,7 +550,7 @@ if (m_info.texture.TexBuf ())
 				pop	edi
 				}
 #	endif
-			LoadTexture (&m_info.texture, 0, -1);
+			PrepareTexture (&m_info.texture, 0, -1);
 			}
 #endif
 		}

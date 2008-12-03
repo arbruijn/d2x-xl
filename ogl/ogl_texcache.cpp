@@ -45,7 +45,7 @@ int nOglMemTarget = -1;
 
 void OglCleanTextureCache (void)
 {
-	tTextureInfo* t;
+	CTexture* t;
 	int i,bytes;
 	int time=120;
 

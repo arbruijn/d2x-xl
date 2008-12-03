@@ -524,7 +524,7 @@ glEnable (GL_TEXTURE_2D);
 bmP = bAdditive ? bmpGlare : bmpCorona;
 if (OglBindBmTex (bmP, 1, -1))
 	return;
-OglTexWrap (bmP->TexInfo (), GL_CLAMP);
+OglTexWrap (bmP->Texture (), GL_CLAMP);
 glDisable (GL_CULL_FACE);
 if (bAdditive) {
 	fLight *= color.alpha;

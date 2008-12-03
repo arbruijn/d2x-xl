@@ -388,11 +388,11 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			fl = 1;
 //		fl = 1.0f;
 		bmP = po->textures.pBitmaps + pf->texProps.nTexId;
-		if (bmP->TexInfo () && ((int) bmP->TexInfo ()->handle < 0))
-			bmP->TexInfo ()->handle = 0;
+		if (bmP->Texture () && ((int) bmP->Texture ()->handle < 0))
+			bmP->Texture ()->handle = 0;
 		if (OglBindBmTex (bmP, 1, 0))
 			return 0;
-		OglTexWrap (bmP->TexInfo (), GL_REPEAT);
+		OglTexWrap (bmP->Texture (), GL_REPEAT);
 		if (pso->nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
 			glColor4f (fl * pso->glowInfo.color.r, 
 						  fl * pso->glowInfo.color.g, 

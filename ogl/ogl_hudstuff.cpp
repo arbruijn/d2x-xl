@@ -101,7 +101,7 @@ else {
 		glEnable (GL_TEXTURE_2D);
 		if (OglBindBmTex (bmpDeadzone, 1, -1)) 
 			return;
-		OglTexWrap (bmpDeadzone->TexInfo (), GL_CLAMP);
+		OglTexWrap (bmpDeadzone->Texture (), GL_CLAMP);
 		glColor4f (1.0f, 1.0f, 1.0f, 0.8f / (float) gameOpts->input.mouse.nDeadzone);
 		glBegin (GL_QUADS);
 		glTexCoord2f (0, 0);

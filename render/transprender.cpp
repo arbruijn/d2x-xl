@@ -773,7 +773,7 @@ if (bmP) {
 				}
 			if (bDecal != 2)
 				bmP = bmP->Override (nFrame);
-			OglTexWrap (bmP->TexInfo (), nWrap);
+			OglTexWrap (bmP->Texture (), nWrap);
 			transpItems.nWrap = nWrap;
 			transpItems.nFrame = nFrame;
 			}
@@ -1112,8 +1112,8 @@ if (LoadTranspItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 
 	w = (float) X2F (item->nWidth);
 	h = (float) X2F (item->nHeight);
-	u = item->bmP->TexInfo ()->u;
-	v = item->bmP->TexInfo ()->v;
+	u = item->bmP->Texture ()->u;
+	v = item->bmP->Texture ()->v;
 	if (item->bColor)
 		glColor4fv ((GLfloat *) &item->color);
 	else
@@ -1175,7 +1175,7 @@ void TIFlushSparkBuffer (void)
 if (sparkBuffer.nSparks && LoadTranspItemImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
 	G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
-	OGL_BINDTEX (bmpSparks->TexInfo ()->handle);
+	OGL_BINDTEX (bmpSparks->Texture ()->handle);
 	if (bSoftSparks)
 		LoadGlareShader (3);
 	else {

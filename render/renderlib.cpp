@@ -722,11 +722,10 @@ int SetupMonitorFace (short nSegment, short nSide, short nCamera, grsFace *faceP
 if (!gameStates.render.bDoCameras)
 	return 0;
 bHaveMonitorBg = cameraP->Valid () && /*!cameraP->bShadowMap &&*/
-					  (cameraP->Texture ().TexInfo () || bCamBufAvail) &&
+					  (cameraP->Texture ().Texture () || bCamBufAvail) &&
 					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 if (bHaveMonitorBg) {
 	cameraP->GetUVL (faceP, NULL, gameData.segs.faces.texCoord + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex);
-	cameraP->Texture ().TexInfo ()->wrapstate = -1;
 	if (bIsTeleCam) {
 #if DBG
 		faceP->bmBot = &cameraP->Texture ();

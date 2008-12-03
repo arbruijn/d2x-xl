@@ -97,11 +97,11 @@ typedef struct tFaceColord {
 	char			index;
 } tFaceColord;
 
-extern tTextureInfo ogl_texture_list[OGL_TEXTURE_LIST_SIZE];
+extern CTexture ogl_texture_list[OGL_TEXTURE_LIST_SIZE];
 
 extern int nOglMemTarget;
-tTextureInfo* OglGetFreeTexture(void);
-void OglInitTexture(tTextureInfo* t, int bMask);
+CTexture* OglGetFreeTexture(void);
+void OglInitTexture(CTexture* t, int bMask);
 void OglInitTextureListInternal(void);
 void OglSmashTextureListInternal(void);
 void OglVivifyTextureListInternal(void);
@@ -317,8 +317,8 @@ int OglLoadBmTextureM (CBitmap *bm, int bMipMap, int nTransp, int bMask, void *p
 #endif
 int OglLoadBmTexture (CBitmap *bm, int bMipMap, int nTransp, int bLoad);
 //void ogl_loadtexture(unsigned char * data, int width, int height,int dxo,int dyo, int *texid,double *u,double *v,char bMipMap,double prio);
-int OglLoadTexture (CBitmap *bmP, int dxo,int dyo, tTextureInfo *tex, int nTransp, int bSuperTransp);
-void OglFreeTexture (tTextureInfo *glTexture);
+int OglLoadTexture (CBitmap *bmP, int dxo,int dyo, CTexture *tex, int nTransp, int bSuperTransp);
+void OglFreeTexture (CTexture *glTexture);
 void OglFreeBmTexture (CBitmap *bm);
 int OglSetupBmFrames (CBitmap *bmP, int bDoMipMap, int nTransp, int bLoad);
 void OglDoPalFx (void);
@@ -336,7 +336,7 @@ int OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, CBitmap * src, CB
 void OglUPixelC (int x, int y, tCanvasColor *c);
 void OglULineC (int left,int top,int right,int bot, tCanvasColor *c);
 void OglUPolyC (int left, int top, int right, int bot, tCanvasColor *c);
-void OglTexWrap (tTextureInfo *tex, int state);
+void OglTexWrap (CTexture *tex, int state);
 void RebuildRenderContext (int bGame);
 
 tRgbColorf *BitmapColor (CBitmap *bmP, ubyte *bufP);
@@ -507,7 +507,7 @@ else if (!handle || (boundHandles [nTMU] != handle)) {
 
 extern GLhandleARB	genShaderProg;
 
-typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, CBitmap *, CBitmap *, tTextureInfo *, vmsVector *, int, int);
+typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, CBitmap *, CBitmap *, CTexture *, vmsVector *, int, int);
 extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
 
 int G3DrawTexPolySimple (

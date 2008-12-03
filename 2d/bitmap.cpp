@@ -274,24 +274,24 @@ if (frames) {
 
 	for (i = 0; i < nFrames; i++) {
 		frames [i].FreeTexture ();
-		frames [i].SetTexInfo (NULL);
+		frames [i].SetTexture (NULL);
 		}
 	}
-else if (m_bm.texInfo) {
+else if (m_bm.texture) {
 #if RENDER2TEXTURE == 2
-	if (m_bm.texInfo->bFrameBuffer)
+	if (m_bm.texture->bFrameBuffer)
 		OGL_BINDTEX (0);
 	else
 #elif RENDER2TEXTURE == 1
 #	ifdef _WIN32
-	if (m_bm.texInfo->bFrameBuf)
-		m_bm.texInfo->pbo.Release ();
+	if (m_bm.texture->bFrameBuf)
+		m_bm.texture->pbo.Release ();
 	else
 #	endif
 #endif
 		{
-		OglFreeTexture (m_bm.texInfo);
-		m_bm.texInfo = NULL;
+		OglFreeTexture (m_bm.texture);
+		m_bm.texture = NULL;
 		}
 	}
 }

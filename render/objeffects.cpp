@@ -753,7 +753,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		if (OglBindBmTex (bmP, 1, 2))
 			return;
 		bmP = bmP->CurFrame (-1);
-		OglTexWrap (bmP->TexInfo (), GL_REPEAT);
+		OglTexWrap (bmP->Texture (), GL_REPEAT);
 		vPos += objP->info.position.mOrient [FVEC] * (-objP->info.xSize);
 		r = X2F (objP->info.xSize);
 		G3StartInstanceMatrix (vPos, pp->mOrient);
@@ -1086,7 +1086,7 @@ else if (gameOpts->render.bDepthSort <= 0) {
 		glDisable (GL_TEXTURE_2D);
 		}
 	else {
-		OglTexWrap (bmpThruster [nStyle]->TexInfo (), GL_CLAMP);
+		OglTexWrap (bmpThruster [nStyle]->Texture (), GL_CLAMP);
 		bTextured = 1;
 		}
 	}
@@ -1284,7 +1284,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		glColor4fv ((GLfloat *) colorP);
 		if (OglBindBmTex (bmP, 1, -1))
 			return;
-		OglTexWrap (bmP->TexInfo (), GL_CLAMP);
+		OglTexWrap (bmP->Texture (), GL_CLAMP);
 		if (bAdditive)
 			glBlendFunc (GL_ONE, GL_ONE);
 		if ((bDrawArrays = G3EnableClientStates (1, 0, 0, GL_TEXTURE0))) {
@@ -1409,7 +1409,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		glEnable (GL_TEXTURE_2D);
 		if (OglBindBmTex (bmpCorona, 1, -1))
 			return 0;
-		OglTexWrap (bmpCorona->TexInfo (), GL_CLAMP);
+		OglTexWrap (bmpCorona->Texture (), GL_CLAMP);
 		G3StartInstanceMatrix (vPos, objP->info.position.mOrient);
 		TransformHitboxf (objP, verts, 0);
 		for (i = 0; i < 6; i++) {
@@ -1750,7 +1750,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			glEnable (GL_TEXTURE_2D);
 			if (OglBindBmTex (bmP, 1, -1))
 				return;
-			OglTexWrap (bmP->TexInfo (), GL_CLAMP);
+			OglTexWrap (bmP->Texture (), GL_CLAMP);
 			if (bDrawArrays) {
 				glTexCoordPointer (2, GL_FLOAT, 0, tTexCoordTrail);
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);
