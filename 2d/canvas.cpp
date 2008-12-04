@@ -84,8 +84,8 @@ void CCanvas::SetupPane (CCanvas *paneP, int x, int y, int w, int h)
 paneP->SetColor (m_info.color);
 paneP->SetDrawMode (m_info.nDrawMode);
 paneP->SetFont (m_info.font);
-paneP->SetFontColor (m_info.fontColors [0], 0);
-paneP->SetFontColor (m_info.fontColors [1], 1);
+paneP->fontManager.SetColor (m_info.fontColors [0], 0);
+paneP->fontManager.SetColor (m_info.fontColors [1], 1);
 paneP->Bitmap ().InitChild (&m_info.bm, x, y, w, h);
 }
 

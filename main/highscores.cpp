@@ -72,21 +72,21 @@ for (j=0; j<gameData.multiplayer.nPlayers; j++) {
 	x = LHX (70 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + j*25) + xOffs;
 	if (sorted [i]==sorted [j]) {
 		if (gameData.multigame.kills.matrix [sorted [i]] [sorted [j]] == 0) {
-			SetFontColorRGBi (RGBA_PAL2 (10,10,10), 1, 0, 0);
+			fontManager.SetColorRGBi (RGBA_PAL2 (10,10,10), 1, 0, 0);
 			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
 			} 
 		else {
-			SetFontColorRGBi (RGBA_PAL2 (25,25,25), 1, 0, 0);
+			fontManager.SetColorRGBi (RGBA_PAL2 (25,25,25), 1, 0, 0);
 			GrPrintF (NULL, x, y, "-%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
 			}
 		} 
 	else {
 		if (gameData.multigame.kills.matrix [sorted [i]] [sorted [j]] <= 0) {
-			SetFontColorRGBi (RGBA_PAL2 (10,10,10), 1, 0, 0);
+			fontManager.SetColorRGBi (RGBA_PAL2 (10,10,10), 1, 0, 0);
 			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
 			} 
 		else {
-			SetFontColorRGBi (RGBA_PAL2 (25,25,25), 1, 0, 0);
+			fontManager.SetColorRGBi (RGBA_PAL2 (25,25,25), 1, 0, 0);
 			GrPrintF (NULL, x, y, "%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
 			}
 		}
@@ -97,7 +97,7 @@ if (gameData.multiplayer.players [sorted [i]].netKilledTotal + gameData.multipla
 else
    sprintf (temp,"%d%%", (int) ((double) ((double)gameData.multiplayer.players [sorted [i]].netKillsTotal/ ((double)gameData.multiplayer.players [sorted [i]].netKilledTotal+ (double)gameData.multiplayer.players [sorted [i]].netKillsTotal))*100.0));	
 x = LHX (60 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + gameData.multiplayer.nPlayers*25) + xOffs;
-SetFontColorRGBi (RGBA_PAL2 (25,25,25),1, 0, 0);
+fontManager.SetColorRGBi (RGBA_PAL2 (25,25,25),1, 0, 0);
 GrPrintF (NULL, x ,y,"%4d/%s",gameData.multiplayer.players [sorted [i]].netKillsTotal,temp);
 }
 
@@ -111,10 +111,10 @@ void ScoreTableDrawCoopItem (int  i, int *sorted)
 GrPrintF (NULL, LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)) + xOffs, y, "%s", gameData.multiplayer.players [sorted [i]].callsign);
 GrPrintF (NULL, LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)-15) + xOffs,y,"%c",szConditionLetters [gameData.multiplayer.players [sorted [i]].connected]);
 x = CENTERSCREEN + xOffs;
-SetFontColorRGBi (RGBA_PAL2 (60,40,10),1, 0, 0);
+fontManager.SetColorRGBi (RGBA_PAL2 (60,40,10),1, 0, 0);
 GrPrintF (NULL, x, y, "%d", gameData.multiplayer.players [sorted [i]].score);
 x = CENTERSCREEN+LHX (50) + xOffs;
-SetFontColorRGBi (RGBA_PAL2 (60,40,10),1, 0, 0);
+fontManager.SetColorRGBi (RGBA_PAL2 (60,40,10),1, 0, 0);
 GrPrintF (NULL, x, y, "%d", gameData.multiplayer.players [sorted [i]].netKilledTotal);
 }
 
@@ -126,7 +126,7 @@ void ScoreTableDrawNames (int *sorted)
 	int color;
 
 if (gameData.score.bNoMovieMessage) {
-	SetFontColorRGBi (RED_RGBA, 1, 0, 0);
+	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 	GrPrintF (NULL, CENTERSCREEN-LHX (40), LHY (20), " (Movie not played)");
 	}
 
@@ -137,13 +137,13 @@ for (j = 0; j<gameData.multiplayer.nPlayers; j++) {
 		color = sorted [j];
 	x = LHX (70 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + j*25) + xOffs;
 	if (gameData.multiplayer.players [sorted [j]].connected == 0)
-		SetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
+		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
    else
-      SetFontColorRGBi (RGBA_PAL2 (playerColors  [color].r, playerColors  [color].g, playerColors  [color].b), 1, 0, 0);
+      fontManager.SetColorRGBi (RGBA_PAL2 (playerColors  [color].r, playerColors  [color].g, playerColors  [color].b), 1, 0, 0);
 	GrPrintF (NULL, x, LHY (40) + yOffs, "%c", gameData.multiplayer.players [sorted [j]].callsign [0]);
 	}
 x = LHX (72 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + gameData.multiplayer.nPlayers*25) + xOffs;
-SetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
+fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 GrPrintF (NULL, x, LHY (40) + yOffs, "K/E");
 }
 
@@ -154,12 +154,12 @@ void ScoreTableDrawCoopNames (int *sorted)
 	sorted=sorted;
 
 if (gameData.score.bNoMovieMessage) {
-	SetFontColorRGBi (RED_RGBA, 1, 0, 0);
+	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 	GrPrintF (NULL, CENTERSCREEN-LHX (40), LHY (20), " (Movie not played)");
 	}
-SetFontColorRGBi (RGBA_PAL2 (63,31,31), 1, 0, 0);
+fontManager.SetColorRGBi (RGBA_PAL2 (63,31,31), 1, 0, 0);
 GrPrintF (NULL, CENTERSCREEN, LHY (40), "SCORE");
-SetFontColorRGBi (RGBA_PAL2 (63,31,31), 1, 0, 0);
+fontManager.SetColorRGBi (RGBA_PAL2 (63,31,31), 1, 0, 0);
 GrPrintF (NULL, CENTERSCREEN+LHX (50), LHY (40), "DEATHS");
 }
 
@@ -175,7 +175,7 @@ y = LHY (55 + 72 + 35) + yOffs;
 x = LHX (35) + xOffs;
          
 	   			
-SetFontColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);
+fontManager.SetColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);
 GrGetStringSize ("P-Playing E-Escaped D-Died", &sw, &sh, &aw);
 if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"P-Playing E-Escaped D-Died");
@@ -184,7 +184,7 @@ GrGetStringSize ("V-Viewing scores W-Waiting", &sw, &sh, &aw);
 if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
-SetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
+fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 if (LOCALPLAYER.connected==7) {
    GrGetStringSize ("Waiting for other players...",&sw, &sh, &aw);
    GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"Waiting for other players...");
@@ -212,8 +212,8 @@ void ScoreTableDrawCoopDeaths (int *sorted)
 	char	reactor_message [50];
 
 y = LHY (55 + gameData.multiplayer.nPlayers * 9) + yOffs;
-//	SetFontColor (gr_getcolor (playerColors [j].r,playerColors [j].g,playerColors [j].b),-1);
-SetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
+//	fontManager.SetColor (gr_getcolor (playerColors [j].r,playerColors [j].g,playerColors [j].b),-1);
+fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 x = CENTERSCREEN+LHX (50) + xOffs;
 GrPrintF (NULL, x, y, TXT_DEATHS);
 for (j=0; j<gameData.multiplayer.nPlayers; j++) {
@@ -222,7 +222,7 @@ for (j=0; j<gameData.multiplayer.nPlayers; j++) {
 	}
 y = LHY (55 + 72 + 35) + yOffs;
 x = LHX (35) + xOffs;
-SetFontColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);
+fontManager.SetColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);
 GrGetStringSize ("P-Playing E-Escaped D-Died", &sw, &sh, &aw);
 if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"P-Playing E-Escaped D-Died");
@@ -231,7 +231,7 @@ GrGetStringSize ("V-Viewing scores W-Waiting", &sw, &sh, &aw);
 if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
    GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
-SetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
+fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 if (LOCALPLAYER.connected==7) {
 	GrGetStringSize ("Waiting for other players...",&sw, &sh, &aw);
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"Waiting for other players...");
@@ -259,10 +259,10 @@ if ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL))
 	return;
 CCanvas::Current ()->SetFont (SMALL_FONT);
 if (oldmessage [0]!=0) {
-	SetFontColorRGBi (RGBA_PAL2 (0, 1, 0), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (0, 1, 0), 1, 0, 0);
 	GrGetStringSize (oldmessage, &sw, &sh, &aw);
 	}
-SetFontColorRGBi (RGBA_PAL2 (0, 32, 63), 1, 0, 0);
+fontManager.SetColorRGBi (RGBA_PAL2 (0, 32, 63), 1, 0, 0);
 GrGetStringSize (message, &sw, &sh, &aw);
 GrPrintF (NULL, CENTERSCREEN- (sw/2), LHY (55+72+12), message);
 strcpy ((char *)&oldmessage,message);
@@ -284,7 +284,7 @@ if (gameData.score.nPhallicMan==-1)
 else
 	sprintf (message, TXT_BEST_RECORD, gameData.multiplayer.players [gameData.score.nPhallicMan].callsign,gameData.score.nPhallicLimit);
 CCanvas::Current ()->SetFont (SMALL_FONT);
-SetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
+fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 GrGetStringSize (message, &sw, &sh, &aw);
 GrPrintF (NULL, CENTERSCREEN- (sw/2), LHY (55+72+3), message);
 }
@@ -319,9 +319,9 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	else
 		color = sorted [i];
 	if (!gameData.multiplayer.players [sorted [i]].connected)
-		SetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
+		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
-		SetFontColorRGBi (RGBA_PAL2 (playerColors  [color].r, playerColors  [color].g, playerColors [color].b), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors  [color].r, playerColors  [color].g, playerColors [color].b), 1, 0, 0);
 	ScoreTableDrawItem (i, sorted);
 	}
 ScoreTableDrawDeaths (sorted);
@@ -345,9 +345,9 @@ ScoreTableDrawCoopNames (sorted);
 for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	color = sorted [i];
 	if (gameData.multiplayer.players [sorted [i]].connected==0)
-		SetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
+		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
-		SetFontColorRGBi (RGBA_PAL2 (playerColors  [color].r, playerColors  [color].g, playerColors [color].b), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors  [color].r, playerColors  [color].g, playerColors [color].b), 1, 0, 0);
 	ScoreTableDrawCoopItem (i, sorted);
 	}
 ScoreTableDrawDeaths (sorted);

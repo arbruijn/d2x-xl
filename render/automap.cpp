@@ -55,7 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_NO_FADE  32  // An edge that doesn't fade with distance
 #define EF_TOO_FAR  64  // An edge that is too far away
 
-void ModexPrintF (int x,int y, char *s, tFont *font, unsigned int color);
+void ModexPrintF (int x,int y, char *s, CFont *font, unsigned int color);
 
 typedef struct tEdgeInfo {
 	short verts [2];     // 4 bytes
@@ -346,11 +346,11 @@ if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
 	}
 if (bAutomapFrame) {
 	ShowFullscreenImage (&bmAutomapBackground);
-	GrSetCurFont (HUGE_FONT);
-	SetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (HUGE_FONT);
+	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	GrPrintF (NULL, RESCALE_X (80), RESCALE_Y (36), TXT_AUTOMAP, HUGE_FONT);
-	GrSetCurFont (SMALL_FONT);
-	SetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (SMALL_FONT);
+	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (
 6), TXT_TURN_SHIP);
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (443), TXT_SLIDE_UPDOWN);
@@ -483,15 +483,15 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 	int offs = amData.bHires ? 10 : 5;
 
 #if 1
-	tFont	*curFont = CCanvas::Current ()->Font ();
+	CFont	*curFont = CCanvas::Current ()->Font ();
 	int		w, h, aw;
 
-	GrSetCurFont (SMALL_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (SMALL_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (NULL, offs, offs, amLevelNum);
 	GrGetStringSize (amLevelName, &w, &h, &aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - offs - w, offs, amLevelName);
-	GrSetCurFont (curFont);
+	fontManager.SetCurrent (curFont);
 #else
 	GrBitmapM (offs, offs, &levelNumCanv->Bitmap (), 2);
 	GrBitmapM (CCanvas::Current ()->Width () - offs - levelNameCanv->Width (), 
@@ -509,28 +509,28 @@ OglSwapBuffers (0, 0);
 //------------------------------------------------------------------------------
 
 //print to canvas & float height
-CCanvas *PrintToCanvas (char *s, tFont *font, unsigned int fc, unsigned int bc, int doubleFlag)
+CCanvas *PrintToCanvas (char *s, CFont *font, unsigned int fc, unsigned int bc, int doubleFlag)
 {
 	int		y;
 	ubyte		*data;
 	int		rs;
 	CCanvas	*canvP;
-	tFont		*save_font;
+	CFont		*save_font;
 	int		w,h,aw;
 
 save_font = CCanvas::Current ()->Font ();
-GrSetCurFont (font);					//set the font we're going to use
+fontManager.SetCurrent (font);					//set the font we're going to use
 GrGetStringSize (s,&w,&h,&aw);		//now get the string size
-GrSetCurFont (save_font);				//restore real font
+fontManager.SetCurrent (save_font);				//restore real font
 
-//canvP = GrCreateCanvas (font->ftWidth*strlen (s),font->ftHeight*2);
-canvP = CCanvas::Create (w, font->ftHeight * 2);
+//canvP = GrCreateCanvas (font->width*strlen (s),font->height*2);
+canvP = CCanvas::Create (w, font->height * 2);
 canvP->Bitmap ().SetPalette (paletteManager.Game ());
 CCanvas::Push ();
 CCanvas::SetCurrent (canvP);
-GrSetCurFont (font);
+fontManager.SetCurrent (font);
 canvP->Clear (0);						//trans color
-SetFontColorRGBi (fc, 1, bc, 1);
+fontManager.SetColorRGBi (fc, 1, bc, 1);
 GrPrintF (NULL, 0, 0, s);
 //now float it, since we're drawing to 400-line modex screen
 if (doubleFlag) {
@@ -548,7 +548,7 @@ return canvP;
 
 //------------------------------------------------------------------------------
 //print to buffer, float heights, and blit bitmap to screen
-void ModexPrintF (int x,int y,char *s,tFont *font, unsigned int color)
+void ModexPrintF (int x,int y,char *s,CFont *font, unsigned int color)
 {
 	CCanvas *canvP;
 

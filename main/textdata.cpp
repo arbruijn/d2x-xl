@@ -186,7 +186,7 @@ if (msgP->nEndTime < 0) {
 else if (!gameStates.render.nWindow) {
 	if (!msgP->bmP) {
 		CCanvas::Current ()->SetFont (NORMAL_FONT);
-		SetFontColorRGBi (GOLD_RGBA, 1, 0, 0);
+		fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
 		}
 	if (msgP->bmP || (msgP->bmP = CreateStringBitmap (indexP->pszText, 0, 0, NULL, 0, 0, -1))) {
 		w = msgP->bmP->Width ();

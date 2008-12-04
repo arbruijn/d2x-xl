@@ -680,12 +680,12 @@ GrString (0x8000, KC_LHY (8), p, NULL);
 void KCDrawHeader (kcItem *items)
 {
 CCanvas::Current ()->SetFont (GAME_FONT);
-SetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
+fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 
 GrString (0x8000, KC_LHY (20), TXT_KCONFIG_STRING_1, NULL);
-SetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
+fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 if (items == kcKeyboard)	{
-	SetFontColorRGBi (RGBA_PAL2 (31, 27, 6), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (31, 27, 6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 	kc_gr_scanline (KC_LHX (98), KC_LHX (106), KC_LHY (42));
 	kc_gr_scanline (KC_LHX (120), KC_LHX (128), KC_LHY (42));
@@ -707,7 +707,7 @@ if (items == kcKeyboard)	{
 
 }
 if (items == kcJoystick)	{
-	SetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 	kc_gr_scanline (KC_LHX (18), KC_LHX (135), KC_LHY (37));
 	kc_gr_scanline (KC_LHX (181), KC_LHX (294), KC_LHY (37));
@@ -715,13 +715,13 @@ if (items == kcJoystick)	{
 	kc_gr_scanline (KC_LHX (174), KC_LHX (294), KC_LHY (119+18));
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS_HATS, NULL);
 	GrString (0x8000,KC_LHY (125+18), TXT_AXES, NULL);
-	SetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (KC_LHX (85), KC_LHY (145+8), TXT_AXIS, NULL);
 	GrString (KC_LHX (120), KC_LHY (145+8), TXT_INVERT, NULL);
 	GrString (KC_LHX (235), KC_LHY (145+8), TXT_AXIS, NULL);
 	GrString (KC_LHX (270), KC_LHY (145+8), TXT_INVERT, NULL);
 } else if (items == kcMouse)	{
-	SetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31,27,6));
 	kc_gr_scanline (KC_LHX (18), KC_LHX (135), KC_LHY (37));
 	kc_gr_scanline (KC_LHX (181), KC_LHX (294), KC_LHY (37));
@@ -729,14 +729,14 @@ if (items == kcJoystick)	{
 	kc_gr_scanline (KC_LHX (174), KC_LHX (294), KC_LHY (119+5));
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS, NULL);
 	GrString (0x8000,KC_LHY (125+5), TXT_AXES, NULL);
-	SetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (KC_LHX (169), KC_LHY (137), TXT_AXIS, NULL);
 	GrString (KC_LHX (199), KC_LHY (137), TXT_INVERT, NULL);
 }
 #ifdef D2X_KEYS
 else if (items == kcHotkeys)
 {
-	SetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 
 	GrString (KC_LHX (94), KC_LHY (40), "KB", NULL);
@@ -758,7 +758,7 @@ KCDrawItemExt (items + nCurItem, 1, 0);
 
 //------------------------------------------------------------------------------
 
-void KCQuitMenu (tFont *save_font, bkg *bg, int time_stopped)
+void KCQuitMenu (CFont *save_font, bkg *bg, int time_stopped)
 {
 CCanvas::Pop ();
 //bg->menu_canvas = NULL;
@@ -790,10 +790,10 @@ for (i = 0, n = (int) (item - All_items); i < Num_items; i++)	{
 item->value = code;					 
 if (gameStates.ogl.nDrawBuffer == GL_FRONT) {
 	KCDrawItem (item, 1);
-	NMRestoreBackground (0, KC_LHY (INFO_Y), xOffs, yOffs, KC_LHX (310), CCanvas::Current ()->Font ()->ftHeight);
+	NMRestoreBackground (0, KC_LHY (INFO_Y), xOffs, yOffs, KC_LHX (310), CCanvas::Current ()->Font ()->height);
 	}
 GameFlushInputs ();
-SetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 1);
+fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 1);
 return BT_NONE;
 }
 
@@ -812,7 +812,7 @@ void KCDrawQuestion (kcItem *item)
 		looper=0;
 	GrURect (KC_LHX (item->w1 + item->x), KC_LHY (item->y - 1), 
 				KC_LHX (item->w1 + item->x + item->w2), KC_LHY (item->y) + h);
-	SetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+xOffs;
 	GrString (x, KC_LHY (item->y), "?", NULL);
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
@@ -952,7 +952,7 @@ int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const ch
 {
 	int k = 255;
 
-	SetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (0x8000, KC_LHY (INFO_Y), pszMsg, NULL);
 {			
 	if ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
@@ -1186,7 +1186,7 @@ nLinked |= tableFlags;
 
 void KConfigSub (kcItem * items, int nItems, const char * pszTitle)
 {
-	tFont * save_font;
+	CFont * save_font;
 	int	mouseState, omouseState, mx, my, x1, x2, y1, y2;
 	int	close_x = 0, close_y = 0, close_size = 0;
 
@@ -1507,9 +1507,9 @@ if (bRedraw && gameOpts->menus.nStyle)
 	return;
 
 	if (is_current)
-		SetFontColorRGBi (RGBA_PAL2 (20,20,29), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (20,20,29), 1, 0, 0);
 	else
-		SetFontColorRGBi (RGBA_PAL2 (15,15,24), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (15,15,24), 1, 0, 0);
    GrString (KC_LHX (item->x), KC_LHY (item->y), item->textId ? GT (item->textId) : item->text, NULL);
 
 	*szText = '\0';
@@ -1582,7 +1582,7 @@ if (bRedraw && gameOpts->menus.nStyle)
 			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (16, 0, 19));
 		GrURect (KC_LHX (item->x + item->w1), KC_LHY (item->y - 1), 
 					KC_LHX (item->x + item->w1 + item->w2), KC_LHY (item->y) + h);
-		SetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 		x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2) + xOffs;
 		GrString (x, KC_LHY (item->y), szText, NULL);
 	}

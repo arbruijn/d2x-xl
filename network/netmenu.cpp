@@ -1835,7 +1835,7 @@ char *PruneText (char *pszDest, char *pszSrc, int nSize, int nPos, int nVersion)
 {
 	int		lDots, lMax, l, tx, ty, ta;
 	char		*psz;
-	tFont	*curFont = CCanvas::Current ()->Font ();
+	CFont	*curFont = CCanvas::Current ()->Font ();
 
 if (gameOpts->menus.bShowLevelVersion && (nVersion >= 0)) {
 	if (nVersion)
@@ -2054,7 +2054,7 @@ networkData.nLastActiveGames = 0;
 memset (activeNetGames, 0, sizeof (activeNetGames));
 memset (activeNetPlayers, 0, sizeof (activeNetPlayers));
 if (!bAutoRun) {
-	SetFontColorRGBi (RGBA_PAL (15, 15, 23), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL (15, 15, 23), 1, 0, 0);
 	memset (m, 0, sizeof (m));
 	m [0].text = szNMTextBuffer [0];
 	m [0].nType = NM_TYPE_TEXT;

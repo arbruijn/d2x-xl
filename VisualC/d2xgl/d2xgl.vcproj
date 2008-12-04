@@ -1190,26 +1190,6 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\main\gamefont.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
 						RelativePath="..\..\main\gameseg.cpp"
 						>
 						<FileConfiguration
@@ -4562,6 +4542,10 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\..\2d\string.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\2d\tmerge.cpp"
 						>
 						<FileConfiguration
@@ -4601,11 +4585,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

@@ -1246,11 +1246,11 @@ void ShowEscortMenu (char *msg)
 	bg.bIgnoreBg = 1;
 
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [0]);
-	GrSetCurFont ( GAME_FONT );
+	fontManager.SetCurrent ( GAME_FONT );
 	GrGetStringSize (msg,&w,&h,&aw);
 	x = (screen.Width ()-w)/2;
 	y = (screen.Height ()-h)/4;
-	SetFontColorRGBi (RGBA (0, PAL2RGBA (28), 0, 255), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA (0, PAL2RGBA (28), 0, 255), 1, 0, 0);
    NMDrawBackground (NULL,x-15,y-15,x+w+15-1,y+h+15-1);
   	GrUString ( x, y, msg );
 	ResetCockpit ();

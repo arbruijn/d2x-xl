@@ -667,7 +667,7 @@ Assert ((nCurrentColor >= 0) && (nCurrentColor < MAX_BRIEFING_COLORS));
 
 //	Draw cursor if there is some delay and caller says to draw cursor
 if (cursorFlag && !bRedraw) {
-	SetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
+	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 	GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
 	if (!gameOpts->menus.nStyle)
 		GrUpdate (0);
@@ -698,14 +698,14 @@ tText = SDL_GetTicks ();
 
 //	Erase cursor
 if (cursorFlag && (delay > 0) && !bRedraw) {
-	SetFontColorRGBi (nEraseColor, 1, 0, 0);
+	fontManager.SetColorRGBi (nEraseColor, 1, 0, 0);
 	GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
 	//	erase the character
-	SetFontColorRGB (briefBgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
+	fontManager.SetColorRGB (briefBgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 	GrPrintF (NULL, briefingTextX, briefingTextY, message);
 }
 //draw the character
-SetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
+fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 GrPrintF (NULL, briefingTextX+1, briefingTextY, message);
 
 if (!(bRedraw || gameOpts->menus.nStyle)) 
@@ -811,9 +811,9 @@ void FlashCursor (int cursorFlag)
 if (cursorFlag == 0)
 	return;
 if ((TimerGetFixedSeconds () % (F1_0/2)) > (F1_0/4))
-	SetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
+	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 else
-	SetFontColorRGB (&eraseColorRgb, NULL);
+	fontManager.SetColorRGB (&eraseColorRgb, NULL);
 GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
 if (gameStates.ogl.nDrawBuffer == GL_FRONT)
 	GrUpdate (0);
@@ -1315,7 +1315,7 @@ bi.bOnlyRobots = gameStates.app.bHaveExtraMovies && bi.bExtraSounds && (bi.nLeve
 if (!gameData.songs.bPlaying)
 	bi.nHumChannel = StartBriefingHum (bi.nHumChannel, bi.nLevel, bi.nScreen, bi.bExtraSounds);
 
-GrSetCurFont (GAME_FONT);
+fontManager.SetCurrent (GAME_FONT);
 
 bi.briefBuf = briefingScreens [bi.nScreen % MAX_BRIEFING_SCREENS];
 bi.bsP = &bi.briefBuf;

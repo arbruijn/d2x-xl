@@ -238,32 +238,32 @@ else
 
 gameStates.menus.bDrawCopyright = 0;
 CCanvas::SetCurrent (NULL);
-GrSetCurFont (GAME_FONT);
+fontManager.SetCurrent (GAME_FONT);
 GrGetStringSize ("V2.2", &w, &h, &aw);
-SetFontColorRGBi (RGBA_PAL (63, 47, 0), 1, 0, 0);
-GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->ftHeight - 2, "visit www.descent2.de");
-SetFontColorRGBi (RGBA_PAL (23, 23, 23), 1, 0, 0);
-GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->ftHeight - h - 6, TXT_COPYRIGHT);
+fontManager.SetColorRGBi (RGBA_PAL (63, 47, 0), 1, 0, 0);
+GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->height - 2, "visit www.descent2.de");
+fontManager.SetColorRGBi (RGBA_PAL (23, 23, 23), 1, 0, 0);
+GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->height - h - 6, TXT_COPYRIGHT);
 GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, 
-			 CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->ftHeight - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
+			 CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->height - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 if (bVertigo < 0)
 	bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
 if (bVertigo) {
-	GrSetCurFont (MEDIUM2_FONT);
+	fontManager.SetCurrent (MEDIUM2_FONT);
 	GrGetStringSize (TXT_VERTIGO, &w, &h, &aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
 				 y + (gameOpts->menus.altBg.bHave ? h + 2 : 0), TXT_VERTIGO);
 	}
-GrSetCurFont (MEDIUM2_FONT);
+fontManager.SetCurrent (MEDIUM2_FONT);
 GrGetStringSize (D2X_NAME, &w, &h, &aw);
 GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
-GrSetCurFont (SMALL_FONT);
+fontManager.SetCurrent (SMALL_FONT);
 GrGetStringSize (VERSION, &ws, &hs, &aw);
-SetFontColorRGBi (D2BLUE_RGBA, 1, 0, 0);
+fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
-SetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
+fontManager.SetColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
 }
 
 // ----------------------------------------------------------------------------

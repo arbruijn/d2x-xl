@@ -248,7 +248,7 @@ if (gameStates.render.vr.nRenderMode != VR_NONE)
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
 CCanvas::SetCurrent (NULL);
-GrSetCurFont (GAME_FONT);
+fontManager.SetCurrent (GAME_FONT);
 
 if (bGameCockpitCopyCode)
 	D2_FREE (bGameCockpitCopyCode);
@@ -584,8 +584,8 @@ void GameDrawTimeLeft ()
 	int i;
 	static int nId = 0;
 
-GrSetCurFont (GAME_FONT);    //GAME_FONT
-SetFontColorRGBi (RED_RGBA, 1, 0, 0);
+fontManager.SetCurrent (GAME_FONT);    //GAME_FONT
+fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 timevar=I2X (netGame.xPlayTimeAllowed*5*60);
 i = X2I (timevar-gameStates.app.xThisLevelTime) + 1;
 sprintf (temp_string, TXT_TIME_LEFT, i);

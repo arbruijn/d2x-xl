@@ -115,7 +115,7 @@ if (!IsMultiGame || IsCoopGame) {
 		y += 2 * nHUDLineSpacing;
 
 	x0 = CCanvas::Current ()->Bitmap ().Width ();
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	t = gameStates.app.nSDLTicks;
 	if (t - t0 > 333) {	//update 3 times per second
 		t0 = t;
@@ -170,7 +170,7 @@ else {//if (!SHOW_COCKPIT) {
 	if (gameStates.render.fonts.bHires)
 		y += nHUDLineSpacing;
 	}
-SetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
+fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 y = 6 + 2 * nHUDLineSpacing;
 h = (gameData.stats.nDisplayMode - 1) / 2;
 if ((gameData.stats.nDisplayMode - 1) % 2 == 0) {
@@ -242,8 +242,8 @@ void HUDShowWeaponIcons (void)
 
 ll = LOCALPLAYER.laserLevel;
 if (gameOpts->render.weaponIcons.bShowAmmo) {
-	GrSetCurFont (SMALL_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (SMALL_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	}
 dx = (int) (10 * cmScaleX);
 if (nWeaponIcons < 3) {
@@ -414,9 +414,9 @@ for (i = 0; i < 2; i++) {
 			CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
 		GrUBox (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
 		if (*szAmmo) {
-			SetFontColorRGBi (nAmmoColor, 1, 0, 0);
+			fontManager.SetColorRGBi (nAmmoColor, 1, 0, 0);
 			nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
-			SetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
+			fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 			}
 		gameStates.render.grAlpha = FADE_LEVELS;
 		if (nWeaponIcons > 2)

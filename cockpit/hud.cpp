@@ -40,7 +40,7 @@ int bMSGPlayerMsgs = 0;
 int bNoMsgRedundancy = 0;
 int nModexHUDMsgs;
 
-CCanvas *PrintToCanvas (char *s,tFont *font, unsigned int fc, unsigned int bc, int doubleFlag);
+CCanvas *PrintToCanvas (char *s,CFont *font, unsigned int fc, unsigned int bc, int doubleFlag);
 
 // ----------------------------------------------------------------------------
 
@@ -83,7 +83,7 @@ for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 
 //	-----------------------------------------------------------------------------
 //	print to buffer, double heights, and blit bitmap to screen
-void HUDModexMessage (int x, int y, char *s, tFont *font, unsigned int color)
+void HUDModexMessage (int x, int y, char *s, CFont *font, unsigned int color)
 {
 CCanvas *tempCanv = PrintToCanvas (s, font, color, 0, 1);
 GrBitmapM (x, y, &tempCanv->Bitmap (), 2);
@@ -132,12 +132,12 @@ if (pMsgs->nMessages > 0) {
 
 		if (strcmp (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg)) {
 				CCanvas	*canv_save = CCanvas::Current ();
-				int			ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->ftHeight+2);
+				int			ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->height+2);
 
 			if (ycrd < 0)
 				ycrd = 0;
 			CCanvas::SetCurrent (GetCurrentGameScreen ());
-			GrSetCurFont (SMALL_FONT);
+			fontManager.SetCurrent (SMALL_FONT);
 			GrGetStringSize (pszMsg, &w, &h, &aw);
 			ClearBackgroundMessages ();
 			if (CCanvas::Current ()->Bitmap ().Mode () == BM_MODEX) {
@@ -154,7 +154,7 @@ if (pMsgs->nMessages > 0) {
 			else {
 				if (pMsgs->nColor == (unsigned int) -1)
 					pMsgs->nColor = GREEN_RGBA;
-				SetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
+				fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
 				pMsgs->nMsgIds [nMsg] = GrPrintF (pMsgs->nMsgIds + nMsg, (CCanvas::Current ()->Width ()-w) / 2, ycrd, pszMsg);
 				strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
 				}
@@ -164,16 +164,16 @@ if (pMsgs->nMessages > 0) {
 			}
 		} 
 	else {
-		GrSetCurFont (SMALL_FONT);
+		fontManager.SetCurrent (SMALL_FONT);
 		if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || 
 			 (gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
 			if (gameData.render.window.w == gameData.render.window.wMax)
-				yStart = SMALL_FONT->ftHeight / 2;
+				yStart = SMALL_FONT->height / 2;
 			else
-				yStart= SMALL_FONT->ftHeight * 2;
+				yStart= SMALL_FONT->height * 2;
 			}
 		else
-			yStart = SMALL_FONT->ftHeight / 2;
+			yStart = SMALL_FONT->height / 2;
 		if (gameOpts->render.cockpit.bGuidedInMainView) {
 			tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
 			tObject *gmObjP = gmiP->objP;
@@ -181,7 +181,7 @@ if (pMsgs->nMessages > 0) {
 				 (gmObjP->info.nType == OBJ_WEAPON) && 
 				 (gmObjP->info.nId == GUIDEDMSL_ID) &&
 			    (gmObjP->info.nSignature == gmiP->nSignature))
-				yStart += SMALL_FONT->ftHeight + 3;
+				yStart += SMALL_FONT->height + 3;
 			}
 
 		for (i = 0, y = yStart; i < pMsgs->nMessages; i++)	{
@@ -191,7 +191,7 @@ if (pMsgs->nMessages > 0) {
 			if (!strcmp (pMsgs->szMsgs [n], "This is a bug."))
 				return; // Get Rob!!
 			GrGetStringSize (pMsgs->szMsgs [n], &w, &h, &aw);
-			SetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
+			fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
 			y = yStart + i * (h + 1);
 			if (nType)
 				y += ((2 * HUD_MAX_MSGS - 1) * (h + 1)) / 2;
@@ -213,7 +213,7 @@ else if (GetCurrentGameScreen ()->Bitmap ().Mode () == BM_MODEX) {
 		nLastMsgYCrd = temp;
 		}
 	}
-GrSetCurFont (GAME_FONT);
+fontManager.SetCurrent (GAME_FONT);
 }
 
 // ----------------------------------------------------------------------------
@@ -328,7 +328,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 
    if (LOCALPLAYER.lives < 2) {
       int x, y, w, h, aw;
-      GrSetCurFont (HUGE_FONT);
+      fontManager.SetCurrent (HUGE_FONT);
       GrGetStringSize (TXT_GAME_OVER, &w, &h, &aw);
       w += 20;
       h += 8;
@@ -338,7 +338,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
       CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
       GrRect (x, y, x+w, y+h);
       gameStates.render.grAlpha = FADE_LEVELS;
-      GrString (0x8000, (CCanvas::Current ()->Bitmap ().Height () - CCanvas::Current ()->Font ()->ftHeight)/2 + h/8, TXT_GAME_OVER, NULL);
+      GrString (0x8000, (CCanvas::Current ()->Bitmap ().Height () - CCanvas::Current ()->Font ()->height)/2 + h/8, TXT_GAME_OVER, NULL);
 #if 0
       // Automatically exit death after 10 secs
       if (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0*10) {
@@ -348,11 +348,11 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 	      }
 #endif
 	   }
-   GrSetCurFont (GAME_FONT);
+   fontManager.SetCurrent (GAME_FONT);
    if (pMsgs->nColor == (unsigned int) -1)
       pMsgs->nColor = RGBA_PAL2 (0, 28, 0);
-	SetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
-   GrString (0x8000, CCanvas::Current ()->Bitmap ().Height ()- (CCanvas::Current ()->Font ()->ftHeight+3), TXT_PRESS_ANY_KEY, NULL);
+	fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
+   GrString (0x8000, CCanvas::Current ()->Bitmap ().Height ()- (CCanvas::Current ()->Font ()->height+3), TXT_PRESS_ANY_KEY, NULL);
 	}
 }
 

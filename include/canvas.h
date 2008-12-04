@@ -53,7 +53,7 @@ typedef struct tCanvasColor {
 typedef struct tCanvas {
 	CBitmap			bm;					// the bitmap for this canvas
 	tCanvasColor	color;
-	tFont				*font;				// the currently selected font
+	CFont				*font;				// the currently selected font
 	tCanvasColor	fontColors [2];   // current font background color (-1==Invisible)
 	short				nDrawMode;			// fill, XOR, etc.
 } tCanvas;
@@ -83,13 +83,12 @@ class CCanvas {
 		inline CBitmap& Bitmap (void) { return m_info.bm; }
 		inline tCanvasColor& Color (void) { return m_info.color; }
 		inline tCanvasColor& FontColor (int i) { return m_info.fontColors [i]; }
-		inline tFont* Font (void) { return m_info.font; }
+		inline CFont* Font (void) { return m_info.font; }
 		inline short DrawMode (void) { return m_info.nDrawMode; }
 
 		inline void SetBitmap (CBitmap& bm) { m_info.bm = bm; }
 		inline void SetColor (tCanvasColor& color) { m_info.color = color; }
-		inline void SetFontColor (tCanvasColor& color, int i) { m_info.fontColors [i] = color; }
-		inline void SetFont (tFont *font) { m_info.font = font; }
+		inline void SetFont (CFont *font) { m_info.font = font; }
 		inline void SetDrawMode (short nDrawMode) { m_info.nDrawMode = nDrawMode; }
 
 		static CCanvas* Current (void) { return m_current; }

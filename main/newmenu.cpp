@@ -537,11 +537,11 @@ if (bTiny) {
 		gameData.menu.bValid = 1;
 		}
 	if (gameData.menu.colorOverride)
-		SetFontColorRGBi (gameData.menu.colorOverride, 1, 0, 0);
+		fontManager.SetColorRGBi (gameData.menu.colorOverride, 1, 0, 0);
 	else if (itemP->text [0] == '\t')
-		SetFontColorRGBi (gameData.menu.tabbedColor, 1, 0, 0);
+		fontManager.SetColorRGBi (gameData.menu.tabbedColor, 1, 0, 0);
 	else 
-		SetFontColorRGBi (gameData.menu.tinyColors [bIsCurrent][itemP->unavailable], 1, 0, 0);
+		fontManager.SetColorRGBi (gameData.menu.tinyColors [bIsCurrent][itemP->unavailable], 1, 0, 0);
 	}
 else {
 	if (bIsCurrent)
@@ -565,7 +565,7 @@ void NMHotKeyString (tMenuItem *itemP, int bIsCurrent, int bTiny, int bCreateTex
 if (!*itemP->text)
 	return;
 if (itemP->color)
-	SetFontColorRGBi (itemP->color, 1, 0, 0);
+	fontManager.SetColorRGBi (itemP->color, 1, 0, 0);
 else
 	NMSetItemColor (itemP, bIsCurrent, bTiny);
 if (bCreateTextBms && gameOpts->menus.bFastMenus &&
@@ -869,7 +869,7 @@ if (time & 0x8000)
 	GrString (x, y, CURSOR_STRING, NULL);
 else {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	GrRect (x, y, x+CCanvas::Current ()->Font ()->ftWidth-1, y+CCanvas::Current ()->Font ()->ftHeight-1);
+	GrRect (x, y, x+CCanvas::Current ()->Font ()->width-1, y+CCanvas::Current ()->Font ()->height-1);
 	}
 }
 
@@ -1156,13 +1156,13 @@ GrRect (x + CLOSE_X + LHX (1), y + CLOSE_Y + LHX (1), x + CLOSE_X + CLOSE_SIZE -
 
 //------------------------------------------------------------------------------
 
-int NMDrawTitle (const char *pszTitle, tFont *font, unsigned int color, int ty)
+int NMDrawTitle (const char *pszTitle, CFont *font, unsigned int color, int ty)
 {
 if (pszTitle && *pszTitle)	{
 		int nStringWidth, nStringHeight, nAverageWidth, tw, th;
 
 	CCanvas::Current ()->SetFont (font);
-	SetFontColorRGBi (color, 1, 0, 0);
+	fontManager.SetColorRGBi (color, 1, 0, 0);
 	GrGetStringSize (pszTitle, &nStringWidth, &nStringHeight, &nAverageWidth);
 	tw = nStringWidth;
 	th = nStringHeight;
@@ -1174,7 +1174,7 @@ return ty;
 
 //------------------------------------------------------------------------------
 
-void NMGetTitleSize (const char *pszTitle, tFont *font, int *tw, int *th)
+void NMGetTitleSize (const char *pszTitle, CFont *font, int *tw, int *th)
 {
 if (pszTitle && *pszTitle)	{
 		int nStringWidth, nStringHeight, nAverageWidth;
@@ -1266,7 +1266,7 @@ for (i = 0; i < nItems; i++, itemP++) {
 		Assert (strlen (itemP->text) < NM_MAX_TEXT_LEN);
 		strncpy (itemP->saved_text, itemP->text, NM_MAX_TEXT_LEN);
 		(*nOthers)++;
-		nStringWidth = itemP->text_len*CCanvas::Current ()->Font ()->ftWidth+ ((gameStates.menus.bHires?3:1)*itemP->text_len);
+		nStringWidth = itemP->text_len*CCanvas::Current ()->Font ()->width+ ((gameStates.menus.bHires?3:1)*itemP->text_len);
 		if (nStringWidth > MAX_TEXT_WIDTH) 
 			nStringWidth = MAX_TEXT_WIDTH;
 		itemP->value = -1;
@@ -1275,7 +1275,7 @@ for (i = 0; i < nItems; i++, itemP++) {
 		Assert (strlen (itemP->text) < NM_MAX_TEXT_LEN);
 		strncpy (itemP->saved_text, itemP->text, NM_MAX_TEXT_LEN);
 		(*nMenus)++;
-		nStringWidth = itemP->text_len*CCanvas::Current ()->Font ()->ftWidth+ ((gameStates.menus.bHires?3:1)*itemP->text_len);
+		nStringWidth = itemP->text_len*CCanvas::Current ()->Font ()->width+ ((gameStates.menus.bHires?3:1)*itemP->text_len);
 		itemP->value = -1;
 		itemP->group = 0;
 		}
@@ -1413,7 +1413,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void NMSaveScreen (CCanvas **save_canvas, CCanvas **game_canvas, tFont **saveFont)
+void NMSaveScreen (CCanvas **save_canvas, CCanvas **game_canvas, CFont **saveFont)
 {
 *game_canvas = CCanvas::Current ();
 *save_canvas = CCanvas::Current ();
@@ -1423,7 +1423,7 @@ CCanvas::SetCurrent (NULL);
 
 //------------------------------------------------------------------------------
 
-void NMRestoreScreen (char *filename, bkg *bg, CCanvas *save_canvas, tFont *saveFont, int bDontRestore)
+void NMRestoreScreen (char *filename, bkg *bg, CCanvas *save_canvas, CFont *saveFont, int bDontRestore)
 {
 CCanvas::SetCurrent (bg->menu_canvas);
 if (gameOpts->menus.nStyle) {
@@ -1482,7 +1482,7 @@ int ExecMenu4 (const char *pszTitle, const char *pszSubTitle, int nItems, tMenuI
 	int			choice, old_choice, i;
 	tMenuProps	ctrl;
 	int			k, nLastScrollCheck = -1, sx, sy;
-	tFont		*saveFont;
+	CFont		*saveFont;
 	bkg			bg;
 	int			bAllText=0;		//set true if all text itemP
 	int			sound_stopped=0, time_stopped=0;
@@ -2647,14 +2647,14 @@ if (!bInitialized) {
 		GrGetStringSize (pszTitle, &w, &h, &aw);	
 		if (w > w_w)
 			w_w = w;
-		nTitleHeight = h + (CCanvas::Current ()->Font ()->ftHeight*2);		// add a little space at the bottom of the pszTitle
+		nTitleHeight = h + (CCanvas::Current ()->Font ()->height*2);		// add a little space at the bottom of the pszTitle
 		}
 
 	box_w = w_w;
-	box_h = ((CCanvas::Current ()->Font ()->ftHeight + 2) * nFilesDisplayed);
+	box_h = ((CCanvas::Current ()->Font ()->height + 2) * nFilesDisplayed);
 
-	w_w += (CCanvas::Current ()->Font ()->ftWidth * 4);
-	w_h = nTitleHeight + box_h + (CCanvas::Current ()->Font ()->ftHeight * 2);		// more space at bottom
+	w_w += (CCanvas::Current ()->Font ()->width * 4);
+	w_h = nTitleHeight + box_h + (CCanvas::Current ()->Font ()->height * 2);		// more space at bottom
 
 	if (w_w > CCanvas::Current ()->Bitmap ().Width ()) 
 		w_w = CCanvas::Current ()->Bitmap ().Width ();
@@ -2673,7 +2673,7 @@ if (!bInitialized) {
 	if (w_y < 0) 
 		w_y = 0;
 
-	box_x = w_x + (CCanvas::Current ()->Font ()->ftWidth*2);			// must be in sync with w_w!!!
+	box_x = w_x + (CCanvas::Current ()->Font ()->width*2);			// must be in sync with w_w!!!
 	box_y = w_y + nTitleHeight;
 
 // save the screen behind the menu.
@@ -2899,7 +2899,7 @@ while (!done)	{
 			GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 			x1 = box_x;
 			x2 = box_x + box_w - 1;
-			y1 = (i-nFirstItem)* (CCanvas::Current ()->Font ()->ftHeight + 2) + box_y;
+			y1 = (i-nFirstItem)* (CCanvas::Current ()->Font ()->height + 2) + box_y;
 			y2 = y1+h+1;
 			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 				if (i == nItem && !mouse2State)
@@ -2918,7 +2918,7 @@ while (!done)	{
 		MouseGetPos (&mx, &my);
 		x1 = box_x;
 		x2 = box_x + box_w - 1;
-		y1 = (nItem-nFirstItem)* (CCanvas::Current ()->Font ()->ftHeight + 2) + box_y;
+		y1 = (nItem-nFirstItem)* (CCanvas::Current ()->Font ()->height + 2) + box_y;
 		y2 = y1+h+1;
 		if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 			if (bDblClick) 
@@ -2949,18 +2949,18 @@ while (!done)	{
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 		for (i = nFirstItem; i < nFirstItem + nFilesDisplayed; i++) {
 			int w, h, aw, y;
-			y = (i-nFirstItem) * (CCanvas::Current ()->Font ()->ftHeight + 2) + box_y;
+			y = (i-nFirstItem) * (CCanvas::Current ()->Font ()->height + 2) + box_y;
 	
 			if (i >= nFileCount)	{
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
-				GrRect (box_x + box_w, y-1, box_x + box_w, y + CCanvas::Current ()->Font ()->ftHeight + 1);
-				//GrRect (box_x, y + CCanvas::Current ()->Font ()->ftHeight + 2, box_x + box_w, y + CCanvas::Current ()->Font ()->ftHeight + 2);
+				GrRect (box_x + box_w, y-1, box_x + box_w, y + CCanvas::Current ()->Font ()->height + 1);
+				//GrRect (box_x, y + CCanvas::Current ()->Font ()->height + 2, box_x + box_w, y + CCanvas::Current ()->Font ()->height + 2);
 			
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
-				GrRect (box_x - 1, y - 1, box_x - 1, y + CCanvas::Current ()->Font ()->ftHeight + 2);
+				GrRect (box_x - 1, y - 1, box_x - 1, y + CCanvas::Current ()->Font ()->height + 2);
 			
 				CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-				GrRect (box_x, y - 1, box_x + box_w - 1, y + CCanvas::Current ()->Font ()->ftHeight + 1);
+				GrRect (box_x, y - 1, box_x + box_w - 1, y + CCanvas::Current ()->Font ()->height + 1);
 				} 
 			else {
 				CCanvas::Current ()->SetFont ((i == nItem) ? SELECTED_FONT : NORMAL_FONT);
@@ -2983,7 +2983,7 @@ while (!done)	{
 			SDL_ShowCursor (0);
 		i = ocitem;
 		if ((i >= 0) && (i < nFileCount))	{
-			y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->ftHeight+2)+box_y;
+			y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->height+2)+box_y;
 			if (i == nItem)
 				CCanvas::Current ()->SetFont (SELECTED_FONT);
 			else
@@ -2994,7 +2994,7 @@ while (!done)	{
 			}
 		i = nItem;
 		if ((i>=0) &&(i<nFileCount))	{
-			y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->ftHeight+2)+box_y;
+			y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->height+2)+box_y;
 			if (i == nItem)
 				CCanvas::Current ()->SetFont (SELECTED_FONT);
 			else
@@ -3105,7 +3105,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			width = w;
 	}
 	nItemsOnScreen = LB_ITEMS_ON_SCREEN * CCanvas::Current ()->Bitmap ().Height () / 480;
-	height = (CCanvas::Current ()->Font ()->ftHeight + 2) * nItemsOnScreen;
+	height = (CCanvas::Current ()->Font ()->height + 2) * nItemsOnScreen;
 
 	{
 		int w, h, aw;
@@ -3115,11 +3115,11 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 		nTitleHeight = h + 5;
 	}
 
-	border_size = CCanvas::Current ()->Font ()->ftWidth;
+	border_size = CCanvas::Current ()->Font ()->width;
 	
-	width += (CCanvas::Current ()->Font ()->ftWidth);
-	if (width > CCanvas::Current ()->Bitmap ().Width () - (CCanvas::Current ()->Font ()->ftWidth * 3))
-		width = CCanvas::Current ()->Bitmap ().Width () - (CCanvas::Current ()->Font ()->ftWidth * 3);
+	width += (CCanvas::Current ()->Font ()->width);
+	if (width > CCanvas::Current ()->Bitmap ().Width () - (CCanvas::Current ()->Font ()->width * 3))
+		width = CCanvas::Current ()->Bitmap ().Width () - (CCanvas::Current ()->Font ()->width * 3);
 
 	wx = (CCanvas::Current ()->Width ()-width)/2;
 	wy = (CCanvas::Current ()->Bitmap ().Height ()- (height+nTitleHeight))/2 + nTitleHeight;
@@ -3321,7 +3321,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 				GrGetStringSize (itemP [i], &w, &h, &aw);
 				x1 = wx;
 				x2 = wx + width;
-				y1 = (i-nFirstItem)* (CCanvas::Current ()->Font ()->ftHeight+2)+wy;
+				y1 = (i-nFirstItem)* (CCanvas::Current ()->Font ()->height+2)+wy;
 				y2 = y1+h+1;
 				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 					//if (i == nItem) {
@@ -3361,10 +3361,10 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 			for (i=nFirstItem; i<nFirstItem+nItemsOnScreen; i++)	{
 				int w, h, aw, y;
-				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->ftHeight+2)+wy;
+				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->height+2)+wy;
 				if (i >= nItems)	{
 					CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-					GrRect (wx, y-1, wx+width-1, y+CCanvas::Current ()->Font ()->ftHeight + 1);
+					GrRect (wx, y-1, wx+width-1, y+CCanvas::Current ()->Font ()->height + 1);
 				} else {
 					if (i == nItem)
 						CCanvas::Current ()->SetFont (SELECTED_FONT);
@@ -3388,7 +3388,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 
 			i = ocitem;
 			if ((i>=0) &&(i<nItems))	{
-				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->ftHeight+2)+wy;
+				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->height+2)+wy;
 				if (i == nItem)
 					CCanvas::Current ()->SetFont (SELECTED_FONT);
 				else
@@ -3400,7 +3400,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			}
 			i = nItem;
 			if ((i>=0) &&(i<nItems))	{
-				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->ftHeight+2)+wy;
+				y = (i-nFirstItem)* (CCanvas::Current ()->Font ()->height+2)+wy;
 				if (i == nItem)
 					CCanvas::Current ()->SetFont (SELECTED_FONT);
 				else

@@ -257,7 +257,7 @@ void ShowPauseMessage (const char *msg)
 	int x, y;
 
 CCanvas::SetCurrent (NULL);
-GrSetCurFont (SMALL_FONT);
+fontManager.SetCurrent (SMALL_FONT);
 GrGetStringSize (msg, &w, &h, &aw);
 x = (screen.Width () - w) / 2;
 y = (screen.Height () - h) / 2;
@@ -276,7 +276,7 @@ GrBmUBitBlt (w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, &
 #endif
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 GrRect (x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1);
-SetFontColor (255, -1);
+fontManager.SetColor (255, -1);
 GrUString (0x8000, y, msg);
 GrUpdate (0);
 }
@@ -538,9 +538,9 @@ void DrawSubTitles (int nFrame)
 if (nFrame == 0) {
 	nActiveSubTitles = 0;
 	nNextSubTitle = 0;
-	GrSetCurFont (GAME_FONT);
-	nLineSpacing = CCanvas::Current ()->Font ()->ftHeight + (CCanvas::Current ()->Font ()->ftHeight / 4);
-	SetFontColor (255, -1);
+	fontManager.SetCurrent (GAME_FONT);
+	nLineSpacing = CCanvas::Current ()->Font ()->height + (CCanvas::Current ()->Font ()->height / 4);
+	fontManager.SetColor (255, -1);
 	}
 
 //get rid of any subtitles that have expired

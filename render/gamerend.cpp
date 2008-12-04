@@ -85,7 +85,7 @@ for (i=0; i<l; i++)	{
 		s [i] = 0;
 		GrString (0x8000, y, s, NULL);
 		s [i] = p;
-		GrString (0x8000, y+CCanvas::Current ()->Font ()->ftHeight+1, &s [i], NULL);
+		GrString (0x8000, y+CCanvas::Current ()->Font ()->height+1, &s [i], NULL);
 		return;
 		}
 	}
@@ -99,8 +99,8 @@ void GameDrawMarkerMessage ()
 	char temp_string [MAX_MARKER_MESSAGE_LEN+25];
 
 if (gameData.marker.nDefiningMsg) {
-	GrSetCurFont (GAME_FONT);    //GAME_FONT
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
    sprintf (temp_string, TXT_DEF_MARKER, gameData.marker.szInput);
 	DrawCenteredText (CCanvas::Current ()->Bitmap ().Height ()/2-16, temp_string);
    }
@@ -113,14 +113,14 @@ void GameDrawMultiMessage ()
 	char temp_string [MAX_MULTI_MESSAGE_LEN+25];
 
 if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bSending))	{
-	GrSetCurFont (GAME_FONT);    //GAME_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	sprintf (temp_string, "%s: %s_", TXT_MESSAGE, gameData.multigame.msg.szMsg);
 	DrawCenteredText (CCanvas::Current ()->Bitmap ().Height ()/2-16, temp_string);
 	}
 if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bDefining))	{
-	GrSetCurFont (GAME_FONT);    //GAME_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	sprintf (temp_string, "%s #%d: %s_", TXT_MACRO, gameData.multigame.msg.bDefining, gameData.multigame.msg.szMsg);
 	DrawCenteredText (CCanvas::Current ()->Bitmap ().Height ()/2-16, temp_string);
 	}
@@ -137,7 +137,7 @@ if (ShowView_textTimer > 0) {
 	char *viewer_name, *control_name;
 	char	*viewer_id;
 	ShowView_textTimer -= gameData.time.xFrame;
-	GrSetCurFont (GAME_FONT);
+	fontManager.SetCurrent (GAME_FONT);
 
 	viewer_id = (char *) "";
 	switch (gameData.objs.viewerP->info.nType) {
@@ -202,7 +202,7 @@ if (ShowView_textTimer > 0) {
 			control_name = "Unknown";
 			break;
 		}
-	SetFontColorRGBi (RED_RGBA, 1, 0, 0);
+	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 	GrPrintF (NULL, 0x8000, 45, "%i: %s [%s] View - %s", OBJ_IDX (gameData.objs.viewerP), viewer_name, viewer_id, control_name);
 	}
 }
@@ -225,13 +225,13 @@ if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameDa
 				return;
 			}
 		}
-	GrSetCurFont (SMALL_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-	y = SMALL_FONT->ftHeight*4;
+	fontManager.SetCurrent (SMALL_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+	y = SMALL_FONT->height*4;
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
-		y += SMALL_FONT->ftHeight*2;
+		y += SMALL_FONT->height*2;
 	if (gameStates.app.bPlayerIsDead)
-		y += SMALL_FONT->ftHeight*2;
+		y += SMALL_FONT->height*2;
 	GrPrintF (NULL, 0x8000, y, "T-%d s", gameData.reactor.countdown.nSecsLeft);
 	}
 }
@@ -242,8 +242,8 @@ void GameDrawHUDStuff ()
 {
 #if DBG
 if (Debug_pause) {
-	GrSetCurFont (MEDIUM1_FONT);
-	SetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (MEDIUM1_FONT);
+	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	GrUString (0x8000, 85/2, "Debug Pause - Press P to exit");
 	}
 DrawWindowLabel ();
@@ -265,8 +265,8 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 		}
 	else
 		sprintf (message, TXT_DEMO_RECORDING);
-	GrSetCurFont (GAME_FONT);    //GAME_FONT);
-	SetFontColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
+	fontManager.SetColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
 	GrGetStringSize (message, &w, &h, &aw);
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		if (CCanvas::Current ()->Bitmap ().Height () > 240)
@@ -287,10 +287,10 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.re
 		int	x = 3;
 		int	y = CCanvas::Current ()->Bitmap ().Height ();
 
-		GrSetCurFont (GAME_FONT);
-		SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+		fontManager.SetCurrent (GAME_FONT);
+		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 		if (gameStates.input.nCruiseSpeed > 0) {
-			int line_spacing = GAME_FONT->ftHeight + GAME_FONT->ftHeight/4;
+			int line_spacing = GAME_FONT->height + GAME_FONT->height/4;
 
 			if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 				if (gameData.app.nGameMode & GM_MULTI)
@@ -456,8 +456,8 @@ void game_render_frame_stereo ()
 		WakeupRenderedObjects (gameData.objs.viewerP, 0);
 		gameData.objs.viewerP = viewerSave;
 
-		GrSetCurFont (GAME_FONT);    //GAME_FONT);
-		SetFontColorRGBi (RED_RGBA, 1, 0, 0);
+		fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
+		fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 		GrGetStringSize (msg, &w, &h, &aw);
 
 		GrPrintF (NULL, (CCanvas::Current ()->Width ()-w)/2, 3, msg);
@@ -860,8 +860,8 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	RenderFrame (0, 0);
   	WakeupRenderedObjects (gameData.objs.viewerP, 0);
 	gameData.objs.viewerP = viewerSave;
-	GrSetCurFont (GAME_FONT);    //GAME_FONT);
-	SetFontColorRGBi (RED_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
+	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 	GrGetStringSize (msg, &w, &h, &aw);
 	GrPrintF (NULL, (CCanvas::Current ()->Width ()-w) / 2, 3, msg);
 	DrawGuidedCrosshair ();
@@ -1254,7 +1254,7 @@ void ShowBoxedMessage (const char *pszMsg)
 if (bg.bmP)
 	D2_FREE (bg.bmP);
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-GrSetCurFont (MEDIUM1_FONT);
+fontManager.SetCurrent (MEDIUM1_FONT);
 GrGetStringSize (pszMsg, &w, &h, &aw);
 x = (screen.Width ()-w)/2;
 y = (screen.Height ()-h)/2;
@@ -1268,8 +1268,8 @@ if (!gameOpts->menus.nStyle) {
 	GrBmUBitBlt (w + BOX_BORDER, h + BOX_BORDER, 0, 0, x - BOX_BORDER / 2, y - BOX_BORDER / 2, &(CCanvas::Current ()->Bitmap ()), bg.bmP, 1);
 	}
 NMDrawBackground (&bg, x - BOX_BORDER / 2, y - BOX_BORDER / 2, x+w + BOX_BORDER / 2-1, y+h + BOX_BORDER / 2-1, 0);
-SetFontColorRGBi (DKGRAY_RGBA, 1, 0, 0);
-GrSetCurFont (MEDIUM1_FONT);
+fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
+fontManager.SetCurrent (MEDIUM1_FONT);
 GrPrintF (NULL, 0x8000, y, pszMsg);
 GrUpdate (0);
 NMRemoveBackground (&bg);

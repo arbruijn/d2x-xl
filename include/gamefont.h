@@ -37,11 +37,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define GFONT_MEDIUM_3  6
 #define GFONT_SMALL     8
 
-#define SMALL_FONT      (Gamefonts[GFONT_SMALL + gameStates.render.fonts.bHires])
-#define MEDIUM1_FONT    (Gamefonts[GFONT_MEDIUM_1 + gameStates.render.fonts.bHires])
-#define MEDIUM2_FONT    (Gamefonts[GFONT_MEDIUM_2 + gameStates.render.fonts.bHires])
-#define MEDIUM3_FONT    (Gamefonts[GFONT_MEDIUM_3 + gameStates.render.fonts.bHires])
-#define HUGE_FONT       (Gamefonts[GFONT_BIG_1 + gameStates.render.fonts.bHires])
+#define SMALL_FONT      fontManager.GameFont (GFONT_SMALL + gameStates.render.fonts.bHires)
+#define MEDIUM1_FONT    fontManager.GameFont (GFONT_MEDIUM_1 + gameStates.render.fonts.bHires)
+#define MEDIUM2_FONT    fontManager.GameFont (GFONT_MEDIUM_2 + gameStates.render.fonts.bHires)
+#define MEDIUM3_FONT    fontManager.GameFont (GFONT_MEDIUM_3 + gameStates.render.fonts.bHires)
+#define HUGE_FONT       fontManager.GameFont (GFONT_BIG_1 + gameStates.render.fonts.bHires)
 
 #define GAME_FONT       SMALL_FONT
 
@@ -52,10 +52,4 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_FONTS 10
 
-extern tFont *Gamefonts[MAX_FONTS];
-
-void GameFontInit();
-void _CDECL_ GameFontClose(void);
-int get_fontTotal_width(tFont * font);
-
-#endif /* _GAMEFONT_H */
+#endif //_GAMEFONT_H

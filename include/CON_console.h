@@ -107,7 +107,7 @@ extern "C" {
 	/*! Draws the console to the screen if it isVisible()*/
 	void CON_DrawConsole(ConsoleInformation *console);
 	/*! Initializes a new console */
-	ConsoleInformation *CON_Init(tFont *Font, CScreen *DisplayScreen, int lines, int x, int y, int w, int h);
+	ConsoleInformation *CON_Init(CFont *Font, CScreen *DisplayScreen, int lines, int x, int y, int w, int h);
 	/*! Calls CON_Free */
 	void CON_Destroy(ConsoleInformation *console);
 	/*! Frees all the memory loaded by the console */
@@ -125,7 +125,7 @@ extern "C" {
 #endif
 	int CON_Background(ConsoleInformation *console, CBitmap *image);
 	/*! Sets font info for the console */
-	void CON_Font(ConsoleInformation *console, tFont *font, unsigned int fg, unsigned int bg);
+	void CON_Font(ConsoleInformation *console, CFont *font, unsigned int fg, unsigned int bg);
 	/*! Changes current position of the console */
 	void CON_Position(ConsoleInformation *console, int x, int y);
 	/*! Changes the size of the console */

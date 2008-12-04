@@ -223,7 +223,7 @@ typedef struct  {
 #define B1_JUST_RELEASED    (Mouse.b1_status & BUTTON_JUST_RELEASED)
 #define B1_DOUBLE_CLICKED   (Mouse.b1_status & BUTTON_DOUBLE_CLICKED)
 
-extern tFont * ui_small_font;
+extern CFont * ui_small_font;
 
 extern UI_MOUSE Mouse;
 extern UI_WINDOW * CurWindow;

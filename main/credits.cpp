@@ -87,9 +87,9 @@ CPalette *creditsPalette = NULL;
 
 extern ubyte *grBitBltFadeTable;
 
-tFont * header_font;
-tFont * title_font;
-tFont * names_font;
+CFont * header_font;
+CFont * title_font;
+CFont * names_font;
 
 #define ALLOWED_CHAR 'R'
 

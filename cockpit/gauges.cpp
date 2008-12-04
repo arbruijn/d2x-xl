@@ -505,7 +505,7 @@ if (HIDE_HUD)
 if ((gameData.hud.msgs [0].nMessages > 0) &&
 	 (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
-GrSetCurFont (GAME_FONT);
+fontManager.SetCurrent (GAME_FONT);
 szScore [0] = (char) 1;
 szScore [1] = (char) (127 + 128);
 szScore [2] = (char) (127 + 128);
@@ -527,7 +527,7 @@ if ((IsMultiGame && !IsCoopGame))
 else
 	sprintf (szScore + 18, "   %s: %5d", TXT_SCORE, LOCALPLAYER.score);
 GrGetStringSize (szScore, &w, &h, &aw);
-SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Bitmap ().Width ()-w-HUD_LHX (2), 3, szScore);
 }
 
@@ -552,7 +552,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
 	i++;
 	sprintf (szScore, "T - %5d", i);
 	GrGetStringSize (szScore, &w, &h, &aw);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	if ((i >= 0) && !gameData.reactor.bDestroyed)
 		nIdTimer = GrPrintF (&nIdTimer, CCanvas::Current ()->Bitmap ().Width ()-w-HUD_LHX (10), HUD_LHX (11), szScore);
 	}
@@ -575,7 +575,7 @@ if (IsMultiGame && !IsCoopGame)
 	return;
 if (scoreDisplay [0] == 0)
 	return;
-GrSetCurFont (GAME_FONT);
+fontManager.SetCurrent (GAME_FONT);
 scoreTime -= gameData.time.xFrame;
 if (scoreTime > 0) {
 	color = X2I (scoreTime * 20) + 12;
@@ -589,7 +589,7 @@ if (scoreTime > 0) {
 	else
 		sprintf (szScore, "%5d", scoreDisplay [0]);
 	GrGetStringSize (szScore, &w, &h, &aw);
-	SetFontColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
 	nIdTotalScore = GrPrintF (&nIdTotalScore, CCanvas::Current ()->Bitmap ().Width ()-w-HUD_LHX (2+10), nHUDLineSpacing+4, szScore);
 	}
 else {
@@ -674,8 +674,8 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 			int wy = (weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
 			y = min (y, (wy - nHUDLineSpacing - gameData.render.window.y));
 			}
-		GrSetCurFont (GAME_FONT);
-		SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+		fontManager.SetCurrent (GAME_FONT);
+		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 		nIdLock = GrPrintF (&nIdLock, x, y, TXT_LOCK);
 		}
 	}
@@ -686,7 +686,7 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 void HUDShowKeys (void)
 {
 	int y = 3 * nHUDLineSpacing;
-	int dx = GAME_FONT->ftWidth + GAME_FONT->ftWidth / 2;
+	int dx = GAME_FONT->width + GAME_FONT->width / 2;
 
 if (HIDE_HUD)
 	return;
@@ -720,17 +720,17 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		y = 2*nHUDLineSpacing;
-		x = 4*GAME_FONT->ftWidth;
+		x = 4*GAME_FONT->width;
 		}
 	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 		y = nHUDLineSpacing;
-		x = GAME_FONT->ftWidth;
+		x = GAME_FONT->width;
 		}
 	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ||
 				(gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
 //			y = 5*nHUDLineSpacing;
 		y = nHUDLineSpacing;
-		x = GAME_FONT->ftWidth;
+		x = GAME_FONT->width;
 		if (gameStates.render.fonts.bHires)
 			y += nHUDLineSpacing;
 		}
@@ -746,9 +746,9 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 		char	szInfo [20];
 		int	w, h, aw;
 		if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] >= extraGameInfo [1].entropy.nCaptureVirusLimit)
-			SetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
+			fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 		else
-			SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+			fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 		sprintf (szInfo,
 			"x %d [%d]",
 			LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX],
@@ -762,7 +762,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 				t = 0;
 			GrGetStringSize (szInfo, &w, &h, &aw);
 			x += w;
-			SetFontColorRGBi (RED_RGBA, 1, 0, 0);
+			fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 			sprintf (szInfo, " %d.%d", t / 1000, (t % 1000) / 100);
 			nIdEntropy [1] = GrPrintF (nIdEntropy + 1, x, y, szInfo);
 			}
@@ -783,16 +783,16 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_F
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		y = 2*nHUDLineSpacing;
-		x = 4*GAME_FONT->ftWidth;
+		x = 4*GAME_FONT->width;
 		}
 	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 		y = nHUDLineSpacing;
-		x = GAME_FONT->ftWidth;
+		x = GAME_FONT->width;
 		}
 	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ||
 				 (gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
 		y = 5*nHUDLineSpacing;
-		x = GAME_FONT->ftWidth;
+		x = GAME_FONT->width;
 		if (gameStates.render.fonts.bHires)
 			y += nHUDLineSpacing;
 		}
@@ -852,8 +852,8 @@ if (HIDE_HUD)
 h = LOCALPLAYER.energy ? X2IR (LOCALPLAYER.energy) : 0;
 if (gameOpts->render.cockpit.bTextGauges) {
 	y = CCanvas::Current ()->Bitmap ().Height () - (IsMultiGame ? 5 : 1) * nHUDLineSpacing;
-	GrSetCurFont (GAME_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdEnergy = GrPrintF (&nIdEnergy, 2, y, "%s: %i", TXT_ENERGY, h);
 	}
 else {
@@ -907,8 +907,8 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 h = FixMul (gameData.physics.xAfterburnerCharge, 100);
 if (gameOpts->render.cockpit.bTextGauges) {
 	y = CCanvas::Current ()->Bitmap ().Height () - ((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nHUDLineSpacing;
-	GrSetCurFont (GAME_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdAfterBurner = GrPrintF (&nIdAfterBurner, 2, y, TXT_HUD_BURN, h);
 	}
 else {
@@ -976,11 +976,11 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {		//draw background
 		}
 	}
 if (count)
-	SetFontColorRGBi (
+	fontManager.SetColorRGBi (
 		(bomb == PROXMINE_INDEX) ? RGBA_PAL2 (55, 0, 0) : RGBA_PAL2 (59, 59, 21), 1,
 		bg_color, bg_color != -1);
 else if (bg_color != -1)
-	SetFontColorRGBi (bg_color, 1, bg_color, 1);	//erase by drawing in background color
+	fontManager.SetColorRGBi (bg_color, 1, bg_color, 1);	//erase by drawing in background color
 sprintf (txt, "B:%02d", count);
 while ((t = strchr (txt, '1')))
 	*t = '\x84';	//convert to wide '1'
@@ -1018,8 +1018,8 @@ if (HIDE_HUD)
 HUDShowIcons ();
 #endif
 //	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
-GrSetCurFont (GAME_FONT);
-SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+fontManager.SetCurrent (GAME_FONT);
+fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 y = CCanvas::Current ()->Bitmap ().Height ();
 if (IsMultiGame)
 	y -= 4*nHUDLineSpacing;
@@ -1090,7 +1090,7 @@ if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != oldAmmoCount [1][
 		NDRecordSecondaryAmmo (oldAmmoCount [1][gameStates.render.vr.nCurrentPage], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 	oldAmmoCount [1][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 	}
-ShowBombCount (CCanvas::Current ()->Width ()- (3*GAME_FONT->ftWidth+ (gameStates.render.fonts.bHires?0:2)), y-3*nHUDLineSpacing, -1, 1);
+ShowBombCount (CCanvas::Current ()->Width ()- (3*GAME_FONT->width+ (gameStates.render.fonts.bHires?0:2)), y-3*nHUDLineSpacing, -1, 1);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1102,7 +1102,7 @@ void HUDShowCloakInvul (void)
 
 if (HIDE_HUD)
 	return;
-SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 	int	y = CCanvas::Current ()->Bitmap ().Height ();
@@ -1148,8 +1148,8 @@ if ((t = HUDShowFlashGauge (h, &gameStates.render.cockpit.nShieldFlash, (int) tT
 	}
 if (gameOpts->render.cockpit.bTextGauges) {
 	y = CCanvas::Current ()->Bitmap ().Height () - (IsMultiGame ? 6 : 2) * nHUDLineSpacing;
-	GrSetCurFont (GAME_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdShield = GrPrintF (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, h);
 	}
 else {
@@ -1211,14 +1211,14 @@ if (HIDE_HUD)
 if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
 if (IsMultiGame) {
-	GrSetCurFont (GAME_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdLives = GrPrintF (&nIdLives, 10, 3, "%s: %d", TXT_DEATHS, LOCALPLAYER.netKilledTotal);
 	}
 else if (LOCALPLAYER.lives > 1)  {
 	CBitmap *bmP;
-	GrSetCurFont (GAME_FONT);
-	SetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	PAGE_IN_GAUGE (GAUGE_LIVES);
 	bmP = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_LIVES);
 	GrUBitmapM (10, 3, bmP);
@@ -1236,9 +1236,9 @@ if (gameStates.render.bShowTime) {
 
 		static int nIdTime = 0;
 
-	GrSetCurFont (GAME_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-	nIdTime = GrPrintF (&nIdTime, CCanvas::Current ()->Bitmap ().Width () - 4 * GAME_FONT->ftWidth,
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+	nIdTime = GrPrintF (&nIdTime, CCanvas::Current ()->Bitmap ().Width () - 4 * GAME_FONT->width,
 							  CCanvas::Current ()->Bitmap ().Height () - 4 * nHUDLineSpacing,
 							  "%d:%02d", mins, secs);
 	}
@@ -1728,10 +1728,10 @@ void DrawNumericalDisplay (int shield, int energy)
 	PAGE_IN_GAUGE (GAUGE_NUMERICAL);
 //	gr_ubitmap (dx, dy, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_NUMERICAL));
 	HUDBitBlt (dx, dy, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_NUMERICAL), F1_0, 0);
-	GrSetCurFont (GAME_FONT);
-	SetFontColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 	nIdShields = HUDPrintF (&nIdShields, NumDispX (shield), dy + (gameStates.video.nDisplayMode ? 36 : 16), "%d", shield);
-	SetFontColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
+	fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 	nIdEnergy = HUDPrintF (&nIdEnergy, NumDispX (energy), dy + (gameStates.video.nDisplayMode ? 5 : 2), "%d", energy);
 
 	if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
@@ -1805,12 +1805,12 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, co
 	HUDBitBlt (pic_x, pic_y, bmP, (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ? 2 * F1_0 : F1_0, orient);
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 		return;
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	if ((p = (char *) strchr (pszName, '\n'))) {
 		memcpy (szName, pszName, l = p - pszName);
 		szName [l + 1] = '\0';
 		nIdWeapon [0] = HUDPrintF (&nIdWeapon [0], text_x, text_y, szName);
-		nIdWeapon [1] = HUDPrintF (&nIdWeapon [1], text_x, text_y + CCanvas::Current ()->Font ()->ftHeight + 1, p + 1);
+		nIdWeapon [1] = HUDPrintF (&nIdWeapon [1], text_x, text_y + CCanvas::Current ()->Font ()->height + 1, p + 1);
 		}
 	else {
 		nIdWeapon [2] = HUDPrintF (&nIdWeapon [2], text_x, text_y, pszName);
@@ -1896,14 +1896,14 @@ void DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
 
 	static int nIdAmmo [2][2] = {{0, 0},{0, 0}};
 
-w = (CCanvas::Current ()->Font ()->ftWidth * (bPrimary ? 7 : 5)) / 2;
+w = (CCanvas::Current ()->Font ()->width * (bPrimary ? 7 : 5)) / 2;
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-GrRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->ftHeight));
-SetFontColorRGBi (RED_RGBA, 1, 0, 0);
+GrRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->height));
+fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 sprintf (str, "%03d", ammoCount);
 convert_1s (str);
 nIdAmmo [bPrimary][0] = HUDPrintF (&nIdAmmo [bPrimary][0], x, y, str);
-GrRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->ftHeight));
+GrRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->height));
 nIdAmmo [bPrimary][1] = HUDPrintF (&nIdAmmo [bPrimary][1], x, y, str);
 }
 
@@ -1926,7 +1926,7 @@ int DrawWeaponBox (int nWeaponType, int nWeaponNum)
 	int bLaserLevelChanged;
 
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
-GrSetCurFont (GAME_FONT);
+fontManager.SetCurrent (GAME_FONT);
 bLaserLevelChanged = ((nWeaponType == 0) &&
 								(nWeaponNum == LASER_INDEX) &&
 								((LOCALPLAYER.laserLevel != oldLaserLevel [gameStates.render.vr.nCurrentPage])));
@@ -2225,12 +2225,12 @@ if (gameData.multigame.kills.xShowListTimer > 0) {
 	if (gameData.multigame.kills.xShowListTimer < 0)
 		gameData.multigame.kills.bShowList = 0;
 	}
-GrSetCurFont (GAME_FONT);
+fontManager.SetCurrent (GAME_FONT);
 n_players = (gameData.multigame.kills.bShowList == 3) ? 2 : MultiGetKillList (player_list);
 n_left = (n_players <= 4) ? n_players : (n_players+1)/2;
 //If font size changes, this code might not work right anymore
-//Assert (GAME_FONT->ftHeight==5 && GAME_FONT->ftWidth==7);
-fth = GAME_FONT->ftHeight;
+//Assert (GAME_FONT->height==5 && GAME_FONT->width==7);
+fth = GAME_FONT->height;
 x0 = HUD_LHX (1);
 x1 = (IsCoopGame) ? HUD_LHX (43) : HUD_LHX (43);
 save_y = y = CCanvas::Current ()->Bitmap ().Height () - n_left* (fth+1);
@@ -2240,7 +2240,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 	}
 if (gameStates.render.cockpit.bShowPingStats) {
 	if (faw < 0)
-		faw = get_fontTotal_width (GAME_FONT) / (GAME_FONT->ftMaxChar - GAME_FONT->ftMinChar + 1);
+		faw = get_fontTotal_width (GAME_FONT) / (GAME_FONT->maxChar - GAME_FONT->minChar + 1);
 		if (gameData.multigame.kills.bShowList == 2)
 			xo = faw * 24;//was +25;
 		else if (IsCoopGame)
@@ -2272,17 +2272,17 @@ for (i = 0; i < n_players; i++) {
 		int color;
 
 		if (gameData.multiplayer.players [nPlayer].connected != 1)
-			SetFontColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
+			fontManager.SetColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 		else {
 			if (IsTeamGame)
 				color = GetTeam (nPlayer);
 			else
 				color = nPlayer;
-			SetFontColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b), 1, 0, 0);
+			fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b), 1, 0, 0);
 			}
 		}
 	else
-		SetFontColorRGBi (RGBA_PAL2 (playerColors [nPlayer].r, playerColors [nPlayer].g, playerColors [nPlayer].b), 1, 0, 0);
+		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [nPlayer].r, playerColors [nPlayer].g, playerColors [nPlayer].b), 1, 0, 0);
 	if (gameData.multigame.kills.bShowList == 3) {
 		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
 #if 0//def _DEBUG
@@ -2488,7 +2488,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 
 					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multiplayer.players [p].callsign);
 					GrGetStringSize (s, &w, &h, &aw);
-					SetFontColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b), 1, 0, 0);
+					fontManager.SetColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b), 1, 0, 0);
 					x1 = x - w / 2;
 					y1 = y - h / 2;
 					//glBlendFunc (GL_ONE, GL_ONE);
@@ -2550,7 +2550,7 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 //	vr_reset_display ();
   }
 SetCMScales ();
-nHUDLineSpacing = GAME_FONT->ftHeight + GAME_FONT->ftHeight/4;
+nHUDLineSpacing = GAME_FONT->height + GAME_FONT->height/4;
 
 	//	Show score so long as not in rearview
 if (!(gameStates.render.bRearView || bSavingMovieFrames ||
@@ -2619,8 +2619,8 @@ if (!gameStates.render.bRearView && (gameStates.render.cockpit.nMode != CM_REAR_
 
 if (gameStates.render.bRearView && gameStates.render.cockpit.nMode!=CM_REAR_VIEW) {
 	HUDRenderMessageFrame ();
-	GrSetCurFont (GAME_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - ((gameData.demo.nState == ND_STATE_PLAYBACK) ? 14 : 10), TXT_REAR_VIEW);
 	}
 }
@@ -2649,7 +2649,7 @@ if (old_display_mode != gameStates.video.nDisplayMode) {
 if (nShields < 0)
 	nShields = 0;
 CCanvas::SetCurrent (GetCurrentGameScreen ());
-GrSetCurFont (GAME_FONT);
+fontManager.SetCurrent (GAME_FONT);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	if (LOCALPLAYER.homingObjectDist >= 0)
 		NDRecordHomingDistance (LOCALPLAYER.homingObjectDist);
@@ -2853,8 +2853,8 @@ if (viewerP->info.nType == OBJ_WEAPON) {
 	WakeupRenderedObjects (viewerP, nWindow+1);
 	}
 if (pszLabel) {
-	GrSetCurFont (GAME_FONT);
-	SetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (NULL, 0x8000, 2, pszLabel);
 	}
 if (nUser == WBU_GUIDED) {
@@ -2979,11 +2979,11 @@ if (gameStates.render.bShowFrameRate) {
 		y = 7;
 	else
 		y = 6;
-	GrSetCurFont (GAME_FONT);
-	SetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 	nIdFrameRate = GrPrintF (&nIdFrameRate,
-									 CCanvas::Current ()->Bitmap ().Width () - (x * GAME_FONT->ftWidth),
-									 CCanvas::Current ()->Bitmap ().Height () - y * (GAME_FONT->ftHeight + GAME_FONT->ftHeight / 4),
+									 CCanvas::Current ()->Bitmap ().Width () - (x * GAME_FONT->width),
+									 CCanvas::Current ()->Bitmap ().Height () - y * (GAME_FONT->height + GAME_FONT->height / 4),
 									 szItem);
 	}
 }

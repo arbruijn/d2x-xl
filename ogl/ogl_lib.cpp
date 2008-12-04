@@ -722,8 +722,8 @@ if (!gameStates.menus.nInMenu || bForce) {
 			memcpy (&p, &gameData.profiler, sizeof (p));
 			t0 = t1;
 			}
-		int h = SMALL_FONT->ftHeight + 3, i = 3;
-		SetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
+		int h = SMALL_FONT->height + 3, i = 3;
+		fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 		float t, s = 0;
 		GrPrintF (NULL, 5, h * i++, "frame: %ld", p.t [ptFrame]);
 		GrPrintF (NULL, 5, h * i++, "  scene: %1.2f %c", 100.0f * (float) p.t [ptRenderMine] / (float) p.t [ptFrame], '%');

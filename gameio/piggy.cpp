@@ -524,7 +524,7 @@ const char * szCriticalErrors [13] = {
 void PiggyCriticalError (void)
 {
 	CCanvas * save_canv;
-	tFont * save_font;
+	CFont * save_font;
 	int i;
 	save_canv = CCanvas::Current ();
 	save_font = CCanvas::Current ()->Font ();
