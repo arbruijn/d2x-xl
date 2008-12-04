@@ -900,13 +900,13 @@ int CBitmap::LoadTexture (int dxo, int dyo, int nTransp, int superTransp)
 
 texP = Texture ();
 if ((bLocal = (texP == NULL))) {
-	texture.Setup (m_bm.props.w, m_bm.props.h, m_bm.props.rowSize, m_bm.nBPP);
+	texture.Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP);
 	texP = &texture;
 	}
 #if TEXTURE_COMPRESSION
-texP->Prepare (m_bm.bCompressed);
+texP->Prepare (m_info.bCompressed);
 #	ifndef __macosx__
-if (!(m_bm.bCompressed || superTransp || Parent ())) {
+if (!(m_info.bCompressed || superTransp || Parent ())) {
 	if (gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression &&
 		 ((texP->Format () == GL_RGBA) || (texP->Format () == GL_RGB)) && 
 		 (TextureP->TW () >= 64) && (texP->TH () >= m_info.tw))
@@ -925,7 +925,7 @@ if (!texP->IsRenderBuffer ())
 #endif
 	{
 #if TEXTURE_COMPRESSION
-	if (data && !m_bm.bCompressed)
+	if (data && !m_info.bCompressed)
 #else
 	if (data) {
 #endif
@@ -959,21 +959,21 @@ int CBitmap::PrepareTexture (int bMipMap, int nTransp, int bMask, tPixelBuffer *
 {
 	CTexture	*texP;
 
-if ((m_bm.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
+if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
 	return Parent ()->PrepareTexture (bMipMap, nTransp, bMask, renderBuffer);
 
 if (!(texP = Texture ())) {
 	if (!(texP = textureManager.Get (this)))
 		return 1;
 	SetTexture (texP);
-	texP->Setup (m_bm.props.w, m_bm.props.h, m_bm.props.rowSize, m_bm.nBPP, bMask, bMipMap, this);
+	texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, this);
 	texP->SetRenderBuffer (renderBuffer);
 	}
 else {
 	if (texP->Handle () > 0)
 		return 0;
 	if (!texP->Width ())
-		texP->Setup (m_bm.props.w, m_bm.props.h, m_bm.props.rowSize, m_bm.nBPP, bMask, bMipMap, this);
+		texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, this);
 	}
 if (Flags () & BM_FLAG_RLE)
 	RLEExpand (NULL, 0);
@@ -982,8 +982,8 @@ if (!bMask) {
 	if (0 <= (AvgColor (&color)))
 		SetAvgColorIndex ((ubyte) Palette ()->ClosestColor (&color));
 	}
-LoadTexture (0, 0, (m_bm.props.flags & BM_FLAG_TGA) ? -1 : nTransp, 
-				 (m_bm.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
+LoadTexture (0, 0, (m_info.props.flags & BM_FLAG_TGA) ? -1 : nTransp, 
+				 (m_info.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
 return 0;
 }
 
@@ -991,26 +991,26 @@ return 0;
 
 int CBitmap::SetupFrames (int bDoMipMap, int nTransp, int bLoad)
 {
-	int	nFrames = (m_bm.nType == BM_TYPE_ALT) ? m_bm.info.alt.nFrameCount : 0;
+	int	nFrames = (m_info.nType == BM_TYPE_ALT) ? m_info.info.alt.nFrameCount : 0;
 	ubyte	nFlags;
 
 if (nFrames < 2)
 	return 0;
 else {
 	CBitmap	*bmfP = new CBitmap [nFrames];
-	int		i, w = m_bm.props.w;
+	int		i, w = m_info.props.w;
 
 	memset (bmfP, 0, nFrames * sizeof (CBitmap));
-	m_bm.info.alt.frames = 
-	m_bm.info.alt.curFrame = bmfP;
+	m_info.info.alt.frames = 
+	m_info.info.alt.curFrame = bmfP;
 	for (i = 0; i < nFrames; i++, bmfP++) {
 		bmfP->InitChild (this, 0, i * w, w, w);
 		bmfP->SetType (BM_TYPE_FRAME);
 		bmfP->SetTop (0);
 		nFlags = bmfP->Flags ();
-		if (m_bm.transparentFrames [i / 32] & (1 << (i % 32)))
+		if (m_info.transparentFrames [i / 32] & (1 << (i % 32)))
 			nFlags |= BM_FLAG_TRANSPARENT;
-		if (m_bm.supertranspFrames [i / 32] & (1 << (i % 32)))
+		if (m_info.supertranspFrames [i / 32] & (1 << (i % 32)))
 			nFlags |= BM_FLAG_SUPER_TRANSPARENT;
 		if (nFlags & BM_FLAG_SEE_THRU)
 			nFlags |= BM_FLAG_SEE_THRU;
@@ -1032,33 +1032,33 @@ CBitmap *CBitmap::CreateMask (void)
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return NULL;
-if (m_bm.info.std.mask)
-	return m_bm.info.std.mask;
+if (m_info.info.std.mask)
+	return m_info.info.std.mask;
 SetBPP (4);
-if (!(m_bm.info.std.mask = CBitmap::Create (0, (Width ()  + 1) / 2, (Height () + 1) / 2, 4)))
+if (!(m_info.info.std.mask = CBitmap::Create (0, (Width ()  + 1) / 2, (Height () + 1) / 2, 4)))
 	return NULL;
 #if DBG
-sprintf (m_bm.szName, "{%s}", Name ());
+sprintf (m_info.szName, "{%s}", Name ());
 #endif
-m_bm.info.std.mask->SetWidth (m_bm.props.w);
-m_bm.info.std.mask->SetHeight (m_bm.props.w);
-m_bm.info.std.mask->SetBPP (1);
-UseBitmapCache (m_bm.info.std.mask, (int) m_bm.info.std.mask->Width () * (int) m_bm.info.std.mask->RowSize ());
-if (m_bm.props.flags & BM_FLAG_TGA) {
-	for (pi = Buffer (), pm = m_bm.info.std.mask->Buffer (); i; i--, pi += 4, pm++)
+m_info.info.std.mask->SetWidth (m_info.props.w);
+m_info.info.std.mask->SetHeight (m_info.props.w);
+m_info.info.std.mask->SetBPP (1);
+UseBitmapCache (m_info.info.std.mask, (int) m_info.info.std.mask->Width () * (int) m_info.info.std.mask->RowSize ());
+if (m_info.props.flags & BM_FLAG_TGA) {
+	for (pi = Buffer (), pm = m_info.info.std.mask->Buffer (); i; i--, pi += 4, pm++)
 		if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128))
 			*pm = 0;
 		else
 			*pm = 0xff;
 	}
 else {
-	for (pi = Buffer (), pm = m_bm.info.std.mask->Buffer (); i; i--, pi++, pm++)
+	for (pi = Buffer (), pm = m_info.info.std.mask->Buffer (); i; i--, pi++, pm++)
 		if (*pi == SUPER_TRANSP_COLOR)
 			*pm = 0;
 		else
 			*pm = 0xff;
 	}
-return m_bm.info.std.mask;
+return m_info.info.std.mask;
 }
 
 //------------------------------------------------------------------------------
@@ -1069,15 +1069,15 @@ int CBitmap::CreateMasks (void)
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return 0;
-if ((m_bm.nType != BM_TYPE_ALT) || !m_bm.info.alt.frames) {
-	if (m_bm.props.flags & BM_FLAG_SUPER_TRANSPARENT)
+if ((m_info.nType != BM_TYPE_ALT) || !m_info.info.alt.frames) {
+	if (m_info.props.flags & BM_FLAG_SUPER_TRANSPARENT)
 		return CreateMask () != NULL;
 	return 0;
 	}
 nFrames = FrameCount ();
 for (nMasks = i = 0; i < nFrames; i++)
-	if (m_bm.supertranspFrames [i / 32] & (1 << (i % 32)))
-		if (m_bm.info.alt.frames [i].CreateMask ())
+	if (m_info.supertranspFrames [i / 32] & (1 << (i % 32)))
+		if (m_info.info.alt.frames [i].CreateMask ())
 			nMasks++;
 return nMasks;
 }
@@ -1125,12 +1125,12 @@ if ((bmP = HasOverride ()))
 
 int	i, h, w, nFrames;
 
-h = m_bm.props.h;
-w = m_bm.props.w;
+h = m_info.props.h;
+w = m_info.props.w;
 if (!(h * w))
 	return NULL;
-nFrames = (m_bm.nType == BM_TYPE_ALT) ? FrameCount () : 0;
-if (!(m_bm.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
+nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
+if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	if (bLoad && PrepareTexture (bDoMipMap, nTransp, 0, NULL))
 		return NULL;
 	if (CreateMasks () && Mask ()->PrepareTexture (0, -1, 1, NULL))

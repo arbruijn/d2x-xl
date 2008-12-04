@@ -72,7 +72,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 short *d1_tmap_nums = NULL;
 
 CBitmap bogusBitmap;
-ubyte bogusBitmap_initialized=0;
 tDigiSound bogusSound;
 
 #define RLE_REMAP_MAX_INCREASE 132 /* is enough for d1 pc registered */
@@ -159,12 +158,12 @@ dbh->offset = cf.ReadInt ();
 
 tBitmapIndex PiggyRegisterBitmap (CBitmap *bmP, const char *name, int bInFile)
 {
-	tBitmapIndex temp;
+	tBitmapIndex bmi;
 	Assert (gameData.pig.tex.nBitmaps [gameStates.app.bD1Data] < MAX_BITMAP_FILES);
 
 if (strstr (name, "door13"))
 	name = name;
-temp.index = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
+bmi.index = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
 if (!bInFile) {
 #ifdef EDITOR
 	if (FindArg ("-macdata"))
@@ -177,12 +176,13 @@ HashTableInsert (bitmapNames + gameStates.app.bD1Mission,
 					  gameData.pig.tex.pBitmapFiles [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, 
 					  gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
 gameData.pig.tex.pBitmaps [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = *bmP;
+bmP->SetBuffer (NULL);	//avoid automatic destruction trying to delete the same buffer twice
 if (!bInFile) {
 	bitmapOffsets [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = 0;
 	gameData.pig.tex.bitmapFlags [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = bmP->Flags ();
 	}
 gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]++;
-return temp;
+return bmi;
 }
 
 //------------------------------------------------------------------------------
@@ -335,7 +335,7 @@ void PiggyInitPigFile (char *filename)
 	char					szNameRead [16];
 	char					szPigName [FILENAME_LEN];
 	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, i;
-	CBitmap				bmTemp;
+	CBitmap				bm;
 	tPIGBitmapHeader	bmh;
 
 PiggyCloseFile ();             //close old pig if still open
@@ -373,16 +373,16 @@ for (i = 0; i < nBitmapNum; i++) {
 		sprintf (szName, "%s#%d", szNameRead, bmh.dflags & DBM_NUM_FRAMES);
 	else
 		strcpy (szName, szNameRead);
-	memset (&bmTemp, 0, sizeof (CBitmap));
-	bmTemp.SetWidth (bmh.width + ((short) (bmh.wh_extra & 0x0f) << 8));
-	bmTemp.SetHeight (bmh.height + ((short) (bmh.wh_extra & 0xf0) << 4));
-	bmTemp.SetBPP (1);
-	bmTemp.AddFlags (BM_FLAG_PAGED_OUT);
-	bmTemp.SetAvgColorIndex (bmh.avgColor);
+	memset (&bm, 0, sizeof (CBitmap));
+	bm.SetWidth (bmh.width + ((short) (bmh.wh_extra & 0x0f) << 8));
+	bm.SetHeight (bmh.height + ((short) (bmh.wh_extra & 0xf0) << 4));
+	bm.SetBPP (1);
+	bm.SetFlags (BM_FLAG_PAGED_OUT);
+	bm.SetAvgColorIndex (bmh.avgColor);
 	gameData.pig.tex.bitmapFlags [0][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 	bitmapOffsets [0][i+1] = bmh.offset + nDataStart;
 	Assert ((i+1) == gameData.pig.tex.nBitmaps [0]);
-	PiggyRegisterBitmap (&bmTemp, szName, 1);
+	PiggyRegisterBitmap (&bm, szName, 1);
 	}
 bPigFileInitialized = 1;
 }
@@ -459,22 +459,18 @@ for (i=0; i<MAX_SOUND_FILES; i++)	{
 for (i = 0; i < MAX_BITMAP_FILES; i++)     
 	gameData.pig.tex.bitmapXlat [i] = i;
 
-if (!bogusBitmap_initialized) {
+if (!bogusBitmap.BufSize ()) {
 	int i;
 	ubyte c;
 /*---*/PrintLog ("   Initializing placeholder bitmap\n");
-	bogusBitmap_initialized = 1;
-	memset (&bogusBitmap, 0, sizeof (CBitmap));
-	bogusBitmap.SetWidth (64); 
-	bogusBitmap.SetHeight (64);
-	bogusBitmap.SetRowSize (64);
+	bogusBitmap.Setup (0, 64, 64, 1, "Bogus Bitmap");
 	bogusBitmap.SetBuffer (new ubyte [4096 * 4096]);
 	bogusBitmap.SetPalette (paletteManager.Game ());
 	c = paletteManager.Game ()->ClosestColor (0, 0, 63);
 	memset (bogusBitmap.Buffer (), c, 4096);
 	c = paletteManager.Game ()->ClosestColor (63, 0, 0);
 	// Make a big red X !
-	for (i=0; i < 1024; i++) {
+	for (i = 0; i < 1024; i++) {
 		bogusBitmap [i * 1024 + i] = c;
 		bogusBitmap [i * 1024 + (1023 - i)] = c;
 		}

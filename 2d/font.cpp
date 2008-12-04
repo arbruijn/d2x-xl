@@ -540,14 +540,12 @@ void OglInitFont (tFont * font, const char *fontname)
 
 OglFontChooseSize (font, gap, &tw, &th);
 palette = font->ftParentBitmap.Palette ();
-font->ftParentBitmap.Init (BM_LINEAR, 0, 0, tw, th, 1, NULL);
-font->ftParentBitmap.SetBuffer (new ubyte [tw * th]);
+font->ftParentBitmap.Setup (BM_LINEAR, tw, th, 1, fontname, NULL);
 font->ftParentBitmap.SetPalette (palette);
 if (!(font->ftFlags & FT_COLOR))
 	font->ftParentBitmap.SetTexture (textureManager.Get (&font->ftParentBitmap));
 font->ftBitmaps = new CBitmap [nChars]; //(CBitmap*) D2_ALLOC (nChars * sizeof (CBitmap));
 memset (font->ftBitmaps, 0, nChars * sizeof (CBitmap));
-font->ftParentBitmap.SetName (fontname);
 h = font->ftHeight;
 
 for (i = 0; i < nChars; i++) {
