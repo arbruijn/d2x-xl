@@ -83,7 +83,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 #else
 		i = pfa->nBitmap;
 #endif
-		bmP = pa->textures.pBitmaps + i;
+		bmP = pa->textures.bitmaps + i;
 		bTextured = !bmP->Flat ();
 		pmf->nBitmap = bTextured ? i : -1;
 		pmf->nVerts = 3;
@@ -137,7 +137,7 @@ G3CountASEModelItems (pa, pm);
 if (!G3AllocModel (pm))
 	return 0;
 G3GetASEModelItems (nModel, pa, pm, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.145f : 1.0f);
-pm->pTextures = pa->textures.pBitmaps;
+pm->pTextures = pa->textures.bitmaps;
 pm->nTextures = pa->textures.nBitmaps;
 memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
 for (i = 0; i < pm->nTextures; i++)

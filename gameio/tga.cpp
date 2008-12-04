@@ -779,6 +779,7 @@ if ((bmP = pt->bitmaps)) {
 		delete bmP;
 		}
 	memset (pt->bitmaps, 0, pt->nBitmaps * sizeof (CBitmap));
+	}
 }
 
 //------------------------------------------------------------------------------

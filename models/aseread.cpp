@@ -182,9 +182,9 @@ return NULL;
 
 static int ASE_ReadTexture (CFile& cf, tASEModel *pm, int nBitmap, int nType, int bCustom)
 {
-	CBitmap	*bmP = pm->textures.pBitmaps + nBitmap;
-	char			fn [FILENAME_LEN], *ps;
-	int			l;
+	CBitmap	*bmP = pm->textures.bitmaps + nBitmap;
+	char		fn [FILENAME_LEN], *ps;
+	int		l;
 
 if (CharTok (" \t") != '{')
 	return ASE_Error ("syntax error");
@@ -225,7 +225,7 @@ if ((i < 0) || (i >= pm->textures.nBitmaps))
 	return ASE_Error ("invalid bitmap number");
 if (CharTok (" \t") != '{')
 	return ASE_Error ("syntax error");
-bmP = pm->textures.pBitmaps + i;
+bmP = pm->textures.bitmaps + i;
 bmP->SetFlat (1);
 while ((pszToken = ASE_ReadLine (cf))) {
 	if (*pszToken == '}')
@@ -258,13 +258,13 @@ if (strcmp (pszToken, "*MATERIAL_COUNT"))
 pm->textures.nBitmaps = IntTok (" \t");
 if (!pm->textures.nBitmaps)
 	return ASE_Error ("no bitmaps specified");
-if (!(pm->textures.pBitmaps = (CBitmap *) D2_ALLOC (pm->textures.nBitmaps * sizeof (CBitmap))))
+if (!(pm->textures.bitmaps = (CBitmap *) D2_ALLOC (pm->textures.nBitmaps * sizeof (CBitmap))))
 	return ASE_Error ("out of memory");
 if (!(pm->textures.pszNames = (char **) D2_ALLOC (pm->textures.nBitmaps * sizeof (char *))))
 	return ASE_Error ("out of memory");
 if (!(pm->textures.nTeam = (ubyte *) D2_ALLOC (pm->textures.nBitmaps * sizeof (ubyte))))
 	return ASE_Error ("out of memory");
-memset (pm->textures.pBitmaps, 0, pm->textures.nBitmaps * sizeof (CBitmap));
+memset (pm->textures.bitmaps, 0, pm->textures.nBitmaps * sizeof (CBitmap));
 memset (pm->textures.pszNames, 0, pm->textures.nBitmaps * sizeof (char *));
 memset (pm->textures.nTeam, 0, pm->textures.nBitmaps * sizeof (ubyte));
 while ((pszToken = ASE_ReadLine (cf))) {

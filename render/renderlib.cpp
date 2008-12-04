@@ -139,7 +139,7 @@ return LoadExtraBitmap (&bmpExplBlast, "blast.tga", &bHaveExplBlast);
 void FreeExplBlast (void)
 {
 if (bmpExplBlast) {
-	D2_FREE (bmpExplBlast);
+	delete bmpExplBlast;
 	bHaveExplBlast = 0;
 	}
 }
@@ -159,7 +159,7 @@ return LoadExtraBitmap (&bmpSparks, "sparks.tga", &bHaveSparks);
 void FreeSparks (void)
 {
 if (bmpSparks) {
-	D2_FREE (bmpSparks);
+	delete bmpSparks;
 	bHaveSparks = 0;
 	}
 }
@@ -179,7 +179,7 @@ return LoadExtraBitmap (&bmpCorona, "corona.tga", &bHaveCorona);
 void FreeCorona (void)
 {
 if (bmpCorona) {
-	D2_FREE (bmpCorona);
+	delete bmpCorona;
 	bHaveCorona = 0;
 	}
 }
@@ -199,7 +199,7 @@ return LoadExtraBitmap (&bmpGlare, "glare.tga", &bHaveGlare);
 void FreeGlare (void)
 {
 if (bmpGlare) {
-	D2_FREE (bmpGlare);
+	delete bmpGlare;
 	bHaveGlare = 0;
 	}
 }
@@ -219,7 +219,7 @@ return LoadExtraBitmap (&bmpHalo, "halo.tga", &bHaveHalo);
 void FreeHalo (void)
 {
 if (bmpHalo) {
-	D2_FREE (bmpHalo);
+	delete bmpHalo;
 	bHaveHalo = 0;
 	}
 }
@@ -246,7 +246,7 @@ void FreeThruster (void)
 
 for (i = 0; i < 2; i++)
 	if (bmpThruster [i]) {
-		D2_FREE (bmpThruster [i]);
+		delete bmpThruster [i];
 		bmpThruster [i] = NULL;
 		bHaveThruster [i] = 0;
 		}
@@ -267,7 +267,7 @@ return LoadExtraBitmap (&bmpShield, "shield.tga", &bHaveShield);
 void FreeShield (void)
 {
 if (bmpShield) {
-	D2_FREE (bmpShield);
+	delete bmpShield;
 	bmpShield = NULL;
 	bHaveShield = 0;
 	}

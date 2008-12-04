@@ -1176,12 +1176,11 @@ if (!(o.textures.pszNames = (char **) D2_ALLOC (o.textures.nBitmaps * sizeof (ch
 	return OOF_FreeTextures (&o);
 	}
 memset (o.textures.pszNames, 0, o.textures.nBitmaps * sizeof (char **));
-i = o.textures.nBitmaps * sizeof (CBitmap);
-if (!(o.textures.pBitmaps = (CBitmap *) D2_ALLOC (i))) {
+if (!(o.textures.bitmaps = new CBitmap [o.textures.nBitmaps])) {
 	nIndent -= 2;
 	return OOF_FreeTextures (&o);
 	}
-memset (o.textures.pBitmaps, 0, i);
+memset (o.textures.bitmaps, 0, o.textures.nBitmaps * sizeof (CBitmap));
 for (i = 0; i < o.textures.nBitmaps; i++) {
 	if (bLogOOF)
 		sprintf (szId, "textures.pszId [%d]", i);
@@ -1198,7 +1197,7 @@ if (!i)
 o.textures.pszNames [i] = D2_ALLOC (20);
 sprintf (o.textures.pszNames [i], "%d.tga", i + 1);
 #endif
-	if (!ReadModelTGA (o.textures.pszNames [i], o.textures.pBitmaps + i, nType, bCustom)) {
+	if (!ReadModelTGA (o.textures.pszNames [i], o.textures.bitmaps + i, nType, bCustom)) {
 #if DBG
 		bOk = 0;
 #else

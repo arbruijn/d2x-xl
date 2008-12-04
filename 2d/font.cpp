@@ -803,7 +803,6 @@ while (nextRowP) {
 			nKey = 0;
 		bmfP = (bHotKey && (FONT != SMALL_FONT)) ? SELECTED_FONT->ftBitmaps + letter : FONT->ftBitmaps + letter;
 		palP = bmfP->Parent () ? bmfP->Parent ()->Palette () : bmfP->Palette ();
-		colorP = palP->Color ();
 		nChars++;
 		i = nKeyColor * 3;
 		kc.red = RGBA_RED (nKeyColor);
@@ -814,9 +813,9 @@ while (nextRowP) {
 			for (hy = 0; hy < bmfP->Height (); hy++) {
 				pc = ((tRgbaColorb *) bmP->Buffer ()) + (y + hy) * w + x;
 				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
-				for (hx = bmfP->Width (); hx; hx--, pc++, pf++, colorP++)
+				for (hx = bmfP->Width (); hx; hx--, pc++, pf++)
 					if ((c = *pf) != TRANSPARENCY_COLOR) {
-						i = c * 3;
+						colorP = palP->Color () + c;
 						pc->red = colorP->red * 4;
 						pc->green = colorP->green * 4;
 						pc->blue = colorP->blue * 4;
@@ -1185,11 +1184,10 @@ void GrRemapMonoFonts ()
 {
 	int nFont;
 
-	for (nFont=0;nFont<MAX_OPEN_FONTS;nFont++) {
-		tFont *font;
-		font = openFont[nFont].ptr;
-		if (font && !(font->ftFlags & FT_COLOR))
-			GrRemapFont (font, openFont[nFont].filename, openFont[nFont].pData);
+for (nFont=0;nFont<MAX_OPEN_FONTS;nFont++) {
+	tFont *font = openFont[nFont].ptr;
+	if (font && !(font->ftFlags & FT_COLOR))
+		GrRemapFont (font, openFont[nFont].filename, openFont[nFont].pData);
 	}
 }
 

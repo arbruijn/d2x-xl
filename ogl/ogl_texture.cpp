@@ -1004,9 +1004,9 @@ else {
 	m_bm.info.alt.frames = 
 	m_bm.info.alt.curFrame = bmfP;
 	for (i = 0; i < nFrames; i++, bmfP++) {
-		bmfP = CreateChild (0, i * w, w, w);
+		bmfP->InitChild (this, 0, i * w, w, w);
 		bmfP->SetType (BM_TYPE_FRAME);
-		bmfP->SetWidth (0);
+		bmfP->SetTop (0);
 		nFlags = bmfP->Flags ();
 		if (m_bm.transparentFrames [i / 32] & (1 << (i % 32)))
 			nFlags |= BM_FLAG_TRANSPARENT;
@@ -1140,7 +1140,7 @@ else if (!Frames ()) {
 	CBitmap	*bmfP;
 
 	SetupFrames (bDoMipMap, nTransp, bLoad);
-	if ((i = bmP->CreateMasks ()))
+	if ((i = CreateMasks ()))
 		for (i = nFrames, bmfP = Frames (); i; i--, bmfP++)
 			if (bLoad) {
 				if (bmfP->PrepareTexture (bDoMipMap, nTransp, 1))

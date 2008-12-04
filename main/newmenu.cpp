@@ -143,7 +143,7 @@ inline void NMFreeTextBm (tMenuItem *itemP)
 	int	i;
 
 for (i = 0; i < 2; i++) {
-	D2_FREE (itemP->text_bm [i]);
+	delete itemP->text_bm [i];
 	}
 }
 
@@ -165,7 +165,7 @@ if (gameOpts->menus.nStyle) {
 			if (bgP->background == pAltBg)
 				NMFreeAltBg (0);
 			else
-				D2_FREE (bgP->background);
+				delete bgP->background;
 			bgP->background = NULL;
 			}
 		if (bgP->pszPrevBg)
