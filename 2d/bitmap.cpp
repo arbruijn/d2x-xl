@@ -90,9 +90,11 @@ DestroyMask ();
 
 void CBitmap::DestroyFrames (void)
 {
-delete[] m_bm.info.alt.frames;
-m_bm.info.alt.curFrame = NULL;
-m_bm.info.alt.nFrameCount = 0;
+if (m_bm.info.alt.frames) {
+	delete[] m_bm.info.alt.frames;
+	m_bm.info.alt.curFrame = NULL;
+	m_bm.info.alt.nFrameCount = 0;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -144,6 +146,7 @@ return child;
 void CBitmap::InitChild (CBitmap *parent, int x, int y, int w, int h)
 {
 *this = *parent;
+memset (&m_bm.info, 0, sizeof (m_bm.info));
 m_bm.bChild = 1;
 m_bm.props.x += x;
 m_bm.props.y += y;

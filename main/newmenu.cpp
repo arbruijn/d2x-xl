@@ -144,6 +144,7 @@ inline void NMFreeTextBm (tMenuItem *itemP)
 
 for (i = 0; i < 2; i++) {
 	delete itemP->text_bm [i];
+	itemP->text_bm [i] = NULL;
 	}
 }
 

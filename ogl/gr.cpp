@@ -126,7 +126,6 @@ return OglVideoModeOK (SM_W (mode), SM_H (mode)); // platform specific code
 int GrSetMode (u_int32_t mode)
 {
 	unsigned int w, h;
-	unsigned char *gr_bm_data;
 	//int bForce = (nCurrentVGAMode < 0);
 
 if (mode <= 0)
@@ -134,14 +133,15 @@ if (mode <= 0)
 w = SM_W (mode);
 h = SM_H (mode);
 nCurrentVGAMode = mode;
-gr_bm_data = screen.Bitmap ().Buffer ();//since we use realloc, we want to keep this pointer around.
+screen.Destroy ();
 screen.Init ();
 screen.SetMode (mode);
 screen.SetWidth (w);
 screen.SetHeight (h);
 //screen.Aspect () = FixDiv(screen.Width ()*3,screen.Height ()*4);
 screen.SetAspect (FixDiv (screen.Width (), (fix) (screen.Height () * ((double) w / (double) h))));
-screen.Bitmap ().Init (BM_OGL, 0, 0, w, h, 1, (ubyte *) D2_REALLOC (gr_bm_data, w * h));
+screen.Bitmap ().Init (BM_OGL, 0, 0, w, h, 1, NULL);
+screen.Bitmap ().CreateBuffer ();
 screen.Bitmap ().SetPalette (paletteManager.Default ()); //just need some valid palette here
 //screen.Bitmap ().props.rowSize = screen->pitch;
 //screen.Bitmap ().Buffer () = (unsigned char *)screen->pixels;

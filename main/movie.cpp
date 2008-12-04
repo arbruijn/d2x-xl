@@ -362,14 +362,6 @@ return (aborted ? MOVIE_ABORTED : MOVIE_PLAYED_FULL);
 
 int InitMovieBriefing ()
 {
-#if 0
-if (gameStates.menus.bHires)
-	GrSetMode (SM (640, 480);
-else
-	GrSetMode (SM (320, 200);
-GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages [0], screen.Canvas (), 0, 0, screen.Width (), screen.Height ());
-GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages [1], screen.Canvas (), 0, 0, screen.Width (), screen.Height ());
-#endif
 return 1;
 }
 

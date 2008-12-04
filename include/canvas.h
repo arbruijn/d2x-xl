@@ -135,7 +135,7 @@ class CScreen {
 		~CScreen () { Destroy (); }
 
 		void Init (void) { memset (&m_info, 0, sizeof (m_info)); }
-		void Destroy (void) {};
+		void Destroy (void) { m_info.canvas.Bitmap ().Destroy (); };
 
 		inline CCanvas* Canvas (void) { return &m_info.canvas; }
 		inline u_int32_t Mode (void) { return m_info.mode; }
