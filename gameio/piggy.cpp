@@ -71,7 +71,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 short *d1_tmap_nums = NULL;
 
-ubyte bogus_data [4096*4096];
 CBitmap bogusBitmap;
 ubyte bogusBitmap_initialized=0;
 tDigiSound bogusSound;
@@ -469,19 +468,19 @@ if (!bogusBitmap_initialized) {
 	bogusBitmap.SetWidth (64); 
 	bogusBitmap.SetHeight (64);
 	bogusBitmap.SetRowSize (64);
-	bogusBitmap.SetBuffer (bogus_data);
+	bogusBitmap.SetBuffer (new ubyte [4096 * 4096]);
 	bogusBitmap.SetPalette (paletteManager.Game ());
 	c = paletteManager.Game ()->ClosestColor (0, 0, 63);
-	memset (bogus_data, c, 4096);
+	memset (bogusBitmap.Buffer (), c, 4096);
 	c = paletteManager.Game ()->ClosestColor (63, 0, 0);
 	// Make a big red X !
 	for (i=0; i < 1024; i++) {
-		bogus_data [i * 1024 + i] = c;
-		bogus_data [i * 1024 + (1023 - i)] = c;
+		bogusBitmap [i * 1024 + i] = c;
+		bogusBitmap [i * 1024 + (1023 - i)] = c;
 		}
 	PiggyRegisterBitmap (&bogusBitmap, "bogus", 1);
 	bogusSound.nLength [0] = 1024*1024;
-	bogusSound.data [0] = bogus_data;
+	bogusSound.data [0] = bogusBitmap.Buffer ();
 	bitmapOffsets [0][0] =
 	bitmapOffsets [1][0] = 0;
 }

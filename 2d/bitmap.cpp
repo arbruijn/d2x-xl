@@ -45,20 +45,21 @@ return m_bm.buffer.Buffer ();
 
 //------------------------------------------------------------------------------
 
-CBitmap* CBitmap::Create (ubyte mode, int w, int h, int bpp)
+CBitmap* CBitmap::Create (ubyte mode, int w, int h, int bpp, const char* pszName)
 {
 	CBitmap	*bmP = new CBitmap; //(CBitmap *) D2_ALLOC (sizeof (CBitmap));
 
 if (bmP)
-	bmP->Setup (mode, w, h, bpp);
+	bmP->Setup (mode, w, h, bpp, pszName);
 return bmP;
 }
 
 //------------------------------------------------------------------------------
 
-bool CBitmap::Setup (ubyte mode, int w, int h, int bpp, ubyte* buffer)
+bool CBitmap::Setup (ubyte mode, int w, int h, int bpp, const char* pszName, ubyte* buffer)
 {
 Init (mode, 0, 0, w, h, bpp);
+SetName (pszName);
 return SetBuffer (buffer ? buffer : CreateBuffer ()) != NULL;
 }
 
@@ -66,9 +67,9 @@ return SetBuffer (buffer ? buffer : CreateBuffer ()) != NULL;
 
 void CBitmap::DestroyBuffer (void)
 {
-if (m_bm.bChild)
+if ((m_bm.nType != BM_TYPE_ALT) && m_bm.info.std.parent)
 	m_bm.buffer.SetBuffer (NULL, 0);
-else
+else if (m_bm.buffer.Buffer ())
 	m_bm.buffer.Destroy ();
 FreeTexture ();
 }
@@ -78,10 +79,7 @@ FreeTexture ();
 void CBitmap::Destroy (void)
 {
 SetPalette (NULL);
-if ((Type () == BM_TYPE_ALT) || !Parent ())
-	DestroyBuffer ();
-else
-	m_bm.buffer.SetBuffer (NULL, 0);
+DestroyBuffer ();
 DestroyFrames ();
 DestroyMask ();
 }
@@ -109,7 +107,12 @@ m_bm.info.std.mask = NULL;
 
 void CBitmap::Init (void) 
 {
+	static int nSignature = 0;
+	char szSignature [20];
+
 memset (&m_bm, 0, sizeof (m_bm));
+sprintf (szSignature, "Bitmap %d", nSignature++);
+SetName (szSignature);
 }
 
 //------------------------------------------------------------------------------

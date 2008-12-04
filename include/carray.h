@@ -8,6 +8,7 @@ template < class _T > class CArray {
 		_T					*m_buffer;
 		_T					*m_null;
 		unsigned int	m_size;
+		bool				m_bExternal;
 	public:
 		CArray () { Init (); }
 		~CArray() { Destroy (); }
@@ -15,7 +16,12 @@ template < class _T > class CArray {
 		inline void Clear (void) { if (m_buffer) memset (m_buffer, 0, m_size); }
 		inline void Destroy (void) { 
 			if (m_buffer) {
-				delete[] m_buffer;
+#if 0
+				if (m_bExternal)
+					m_buffer = NULL;
+				else
+#endif
+					delete[] m_buffer;
 				Init ();
 				}
 			}
@@ -28,6 +34,7 @@ template < class _T > class CArray {
 		inline void SetBuffer (_T *buffer, unsigned int size = 0xffffffff) {
 			m_buffer = buffer;
 			m_size = size;
+			m_bExternal = buffer != NULL;
 			}
 		inline unsigned int Size (void) { return m_size; }
 #if DBG

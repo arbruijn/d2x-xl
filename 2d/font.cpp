@@ -569,9 +569,12 @@ for (i = 0; i < nChars; i++) {
 		else
 			fp = font->ftData + i * w*h;
 		for (y = 0; y < h; y++)
-			for (x = 0; x < w; x++){
+#if 1
+			memcpy (font->ftParentBitmap.Buffer () + curx + (cury + y) * tw, fp + y * w, w);
+#else
+			for (x = 0; x < w; x++)
 				font->ftParentBitmap [curx + x + (cury + y) * tw] = fp [x + y * w];
-			}
+#endif
 		}
 	else {
 		int BitMask, bits = 0, white = palette->ClosestColor (63, 63, 63);
@@ -717,13 +720,13 @@ if (bForce >= 0) {
 		;
 	h = i;
 	}
-if (!(bmP = CBitmap::Create (0, w, h, 4))) {
+if (!(bmP = CBitmap::Create (0, w, h, 4))) 
 	return NULL;
-	}
 if (!bmP->Buffer ()) {
 	delete bmP;
 	return NULL;
 	}
+bmP->SetName ("String Bitmap");
 memset (bmP->Buffer (), 0, w * h * bmP->BPP ());
 bmP->AddFlags (BM_FLAG_TRANSPARENT);
 nextRowP = s;

@@ -1076,7 +1076,7 @@ if ((m_bm.nType != BM_TYPE_ALT) || !m_bm.info.alt.frames) {
 	}
 nFrames = FrameCount ();
 for (nMasks = i = 0; i < nFrames; i++)
-	if (m_bm.transparentFrames [i / 32] & (1 << (i % 32)))
+	if (m_bm.supertranspFrames [i / 32] & (1 << (i % 32)))
 		if (m_bm.info.alt.frames [i].CreateMask ())
 			nMasks++;
 return nMasks;

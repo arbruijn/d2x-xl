@@ -54,7 +54,7 @@ memset (&m_info, 0, sizeof (m_info));
 void CCanvas::Setup (int w, int h)
 {
 Init ();
-Bitmap ().Setup (BM_LINEAR, w, h, 1);
+Bitmap ().Setup (BM_LINEAR, w, h, 1, "Canvas");
 }
 
 //	-----------------------------------------------------------------------------

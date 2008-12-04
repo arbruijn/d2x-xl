@@ -147,7 +147,7 @@ if (!bmP) {
 
 if (bitmapType == BM_LINEAR) {
 	if (bmP->Buffer () == NULL) 
-		bmP->Setup (bitmapType, xsize, ysize, 1);
+		bmP->Setup (bitmapType, xsize, ysize, 1, "PCX");
 
 	}
 

@@ -251,7 +251,6 @@ else if (gameOpts->menus.altBg.bHave > 0)
 	gameOpts->menus.altBg.bHave++;
 else if (!gameOpts->menus.altBg.bHave) {
 	if ((pAltBg = CBitmap::Create (0, 0, 0, 1))) {
-		memset (pAltBg, 0, sizeof (*pAltBg));
 		gameOpts->menus.altBg.bHave = 
 			ReadTGA (gameOpts->menus.altBg.szName, 
 #ifdef __linux__
@@ -304,8 +303,10 @@ if (!(bRedraw && gameOpts->menus.nStyle && bgP && bmP)) {
 		filename = gameStates.app.bDemoData ? (char *) MENU_PCX_SHAREWARE : (char *) MENU_PCX_FULL;
 	if (!(filename && strcmp (filename, (char *) MENU_PCX_FULL) && strcmp (filename, (char *) MENU_PCX_SHAREWARE))) {
 		NMLoadAltBg ();
-		if (gameOpts->menus.altBg.bHave > 0)
+		if (gameOpts->menus.altBg.bHave > 0) {
 			bmP = pAltBg;
+			pAltBg->SetName ("Menu Background");
+			}
 		}
 	if (!pAltBg || !bmP || (bmP != pAltBg)) {
 		if (!filename)

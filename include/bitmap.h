@@ -123,9 +123,9 @@ class CBitmap {
 		CBitmap () { Init (); };
 		~CBitmap () { Destroy (); };
 		inline ubyte& operator[] (const unsigned int i) { return m_bm.buffer [i]; }
-		static CBitmap* Create (ubyte mode, int w, int h, int bpp);
+		static CBitmap* Create (ubyte mode, int w, int h, int bpp, const char* pszName = NULL);
 		ubyte* CreateBuffer (void);
-		bool Setup (ubyte mode, int w, int h, int bpp = 1, ubyte* buffer = NULL);
+		bool Setup (ubyte mode, int w, int h, int bpp, const char* pszName, ubyte* buffer = NULL);
 		void Destroy (void);
 		void DestroyMask (void);
 		void DestroyFrames (void);
@@ -234,7 +234,7 @@ class CBitmap {
 		inline int BufSize (void) { return m_bm.buffer.Buffer () ? (int) m_bm.props.h * (int) m_bm.props.rowSize : 0; }
 #endif
 		inline void SetId (ushort nId) { m_bm.nId = nId; }
-		inline void SetName (const char* pszName) { strncpy (m_bm.szName, pszName, sizeof (m_bm.szName)); }
+		inline void SetName (const char* pszName) { if (pszName) strncpy (m_bm.szName, pszName, sizeof (m_bm.szName)); }
 		inline void SetWidth (short w) { m_bm.props.w = w; m_bm.props.rowSize = w * m_bm.nBPP; }
 		inline void SetHeight (short h) { m_bm.props.h = h; }
 		inline void SetLeft (short x) { m_bm.props.x = x; }

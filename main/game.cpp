@@ -1290,7 +1290,7 @@ FreeSphereCoord ();
 PrintLog ("unloading palettes\n");
 FreeSkyBoxSegList ();
 CloseDynLighting ();
-if (gameStates.render.vr.buffers.offscreen)	{
+if (gameStates.render.vr.buffers.offscreen) {
 	gameStates.render.vr.buffers.offscreen->Destroy ();
 	gameStates.render.vr.buffers.offscreen = NULL;
 }
