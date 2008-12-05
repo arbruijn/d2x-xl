@@ -1850,15 +1850,15 @@ pszDest [nSize - 1] = '\0';
 if ((psz = strchr (pszDest, '\t')))
 	*psz = '\0';
 CCanvas::Current ()->SetFont (SMALL_FONT);
-FONT->StringSize ("... ", &lDots, &ty, &ta);
-FONT->StringSize (pszDest, &tx, &ty, &ta);
+FONT->StringSize ("... ", lDots, ty, ta);
+FONT->StringSize (pszDest, tx, ty, ta);
 l = (int) strlen (pszDest);
 lMax = LHX (nTabs [nPos]) - LHX (nTabs [nPos - 1]);
 if (tx > lMax) {
 	lMax -= lDots;
 	do {
 		pszDest [--l] = '\0';
-		FONT->StringSize (pszDest, &tx, &ty, &ta);
+		FONT->StringSize (pszDest, tx, ty, ta);
 	} while (tx > lMax);
 	strcat (pszDest, "...");
 	}

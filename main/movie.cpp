@@ -258,7 +258,7 @@ void ShowPauseMessage (const char *msg)
 
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (SMALL_FONT);
-FONT->StringSize (msg, &w, &h, &aw);
+FONT->StringSize (msg, w, h, aw);
 x = (screen.Width () - w) / 2;
 y = (screen.Height () - h) / 2;
 #if 0

@@ -329,7 +329,7 @@ get_line:;
 			if (pszTemp) {	//	Wacky Credits thing
 				int w, h, aw, w2, x1, x2;
 				*pszTemp = 0;
-				FONT->StringSize(s, &w, &h, &aw);
+				FONT->StringSize(s, w, h, aw);
 				x1 = ((gameStates.menus.bHires?320:160)-w)/2;
 				cr_gr_printf (x1 , y, s);
 				FONT->StringSize (pszTemp + 1, &w2, &h, &aw);
@@ -345,7 +345,7 @@ get_line:;
 			// Wacky Fast Credits thing
 				int w, h, aw;
 
-				FONT->StringSize (s, &w, &h, &aw);
+				FONT->StringSize (s, w, h, aw);
 				dirtyBox [j].width = w;
         		dirtyBox [j].height = h;
         		dirtyBox [j].top = y;

@@ -239,7 +239,7 @@ else
 gameStates.menus.bDrawCopyright = 0;
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
-FONT->StringSize ("V2.2", &w, &h, &aw);
+FONT->StringSize ("V2.2", w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL (63, 47, 0), 1, 0, 0);
 GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->Height () - 2, "visit www.descent2.de");
 fontManager.SetColorRGBi (RGBA_PAL (23, 23, 23), 1, 0, 0);
@@ -250,16 +250,16 @@ if (bVertigo < 0)
 	bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
 if (bVertigo) {
 	fontManager.SetCurrent (MEDIUM2_FONT);
-	FONT->StringSize (TXT_VERTIGO, &w, &h, &aw);
+	FONT->StringSize (TXT_VERTIGO, w, h, aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
 				 y + (gameOpts->menus.altBg.bHave ? h + 2 : 0), TXT_VERTIGO);
 	}
 fontManager.SetCurrent (MEDIUM2_FONT);
-FONT->StringSize (D2X_NAME, &w, &h, &aw);
+FONT->StringSize (D2X_NAME, w, h, aw);
 GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
 fontManager.SetCurrent (SMALL_FONT);
-FONT->StringSize (VERSION, &ws, &hs, &aw);
+FONT->StringSize (VERSION, ws, hs, aw);
 fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
@@ -3098,7 +3098,7 @@ if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by hea
 paletteManager.SetDefault (paletteManager.Load (D2_DEFAULT_PALETTE, NULL));
 CCanvas::Current ()->Bitmap ().SetPalette (paletteManager.Default ());	//just need some valid palette here
 /*---*/PrintLog ("Initializing game fonts\n");
-GameFontInit ();	// must load after palette data loaded.
+fontManager.Setup ();	// must load after palette data loaded.
 /*---*/PrintLog ("Setting screen mode\n");
 SetScreenMode (SCREEN_MENU);
 /*---*/PrintLog ("Showing loading screen\n");

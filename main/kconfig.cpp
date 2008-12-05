@@ -647,7 +647,7 @@ else {
 			break;
 		}
 	}
-FONT->StringSize (szText, &w, &h, &aw);
+FONT->StringSize (szText, w, h, aw);
 return h;
 }
 
@@ -806,7 +806,7 @@ void KCDrawQuestion (kcItem *item)
 	int x, w, h, aw;
 
 
-	FONT->StringSize ("?", &w, &h, &aw);
+	FONT->StringSize ("?", w, h, aw);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21*fades [looper]/31, 0, 24*fades [looper]/31));
 	if (++looper>63) 
 		looper=0;
@@ -1574,7 +1574,7 @@ if (bRedraw && gameOpts->menus.nStyle)
 		}
 	}
 	if (item->w1) {
-		FONT->StringSize (szText, &w, &h, &aw);
+		FONT->StringSize (szText, w, h, aw);
 
 		if (is_current)
 			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 0, 24));

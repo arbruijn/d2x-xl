@@ -602,6 +602,13 @@ do {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+void CFontManager::Init (void)
+{
+memset (m_fonts, 0, sizeof (m_fonts));
+}
+
+//------------------------------------------------------------------------------
+
 const char* gameFontFilenames [] = { 
 	"font1-1.fnt",      // Font 0
 	"font1-1h.fnt",     // Font 0 High-res
@@ -615,7 +622,7 @@ const char* gameFontFilenames [] = {
 	"font3-1h.fnt",     // Font 4 High-res
 	};
 
-void CFontManager::Init (void)
+void CFontManager::Setup (void)
 {
 memset (m_fonts, 0, sizeof (m_fonts));
 

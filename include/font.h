@@ -142,6 +142,7 @@ class CFontManager {
 		CFontManager () { Init (); }
 		~CFontManager () { Destroy (); }
 		void Init (void);
+		void Setup (void);
 		void Destroy (void);
 		CFont* Load (const char* fontname);
 		void Close (CFont* font);

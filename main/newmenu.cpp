@@ -184,7 +184,7 @@ if (gameStates.app.bGameRunning) {
 	paletteManager.LoadEffect  ();
 #if 1
 	RemapFontsAndMenus (1);
-	GrRemapMonoFonts ();
+	fontManager.RemapMono ();
 #endif
 	}
 }
@@ -589,7 +589,7 @@ if (!nDepth)
 if ((t = strchr (ps, '\n'))) {
 	strncpy (s, ps, sizeof (s));
 	itemP->text = s;
-	FONT->StringSize (s, &w, &h, &aw);
+	FONT->StringSize (s, w, h, aw);
 	do {
 		if ((t = strchr (itemP->text, '\n')))
 			*t = '\0';
@@ -605,7 +605,7 @@ if ((t = strchr (ps, '\n'))) {
 else if ((t = strchr (ps, '\t'))) {
 	strncpy (s, ps, sizeof (s));
 	itemP->text = s;
-	FONT->StringSize (s, &w, &h, &aw);
+	FONT->StringSize (s, w, h, aw);
 	do {
 		if ((t = strchr (itemP->text, '\t')))
 			*t = '\0';
@@ -631,7 +631,7 @@ else {
 		}
 	strncpy (s, ps, sizeof (s));
 	s [i] = '\0';
-	FONT->StringSize (s, &w, &h, &aw);
+	FONT->StringSize (s, w, h, aw);
 	if (nTabIndex >= 0) {
 		x += LHX (nTabs [nTabIndex]);
 		if (!gameStates.multi.bSurfingNet)
@@ -656,7 +656,7 @@ else {
 #endif
 		NMSetItemColor (itemP, 0, bTiny);
 		if (i < l) { // print text following the hotkey
-			FONT->StringSize (s + i - 1, &w, &h, &aw);
+			FONT->StringSize (s + i - 1, w, h, aw);
 			x += w;
 			s [i] = ch2;
 			GrString (x, y, s + i, NULL);
@@ -701,7 +701,7 @@ if (!gameStates.multi.bSurfingNet) {
 	}
 if (w1 > 0)
 	w = w1;
-FONT->StringSize (s2, &w, &h, &aw);
+FONT->StringSize (s2, w, h, aw);
 // CHANGED
 if (gameStates.ogl.nDrawBuffer != GL_BACK)
 	GrBmBitBlt (bgP->background->Width ()-15, h+2, 5, y-1, 5, y-1, bgP->background, &(CCanvas::Current ()->Bitmap ()));
@@ -715,7 +715,7 @@ if (0 && gameStates.multi.bSurfingNet) {
 			continue;
 			}
 		measure [0]=s2 [i];
-		FONT->StringSize (measure, &tx, &h, &aw);
+		FONT->StringSize (measure, tx, h, aw);
 		GrString (x, y, measure, NULL);
 		x += tx;
 		}
@@ -726,7 +726,7 @@ else {
 	}         
 
 if (!gameStates.multi.bSurfingNet && p && (w1 > 0)) {
-	FONT->StringSize (s1, &w, &h, &aw);
+	FONT->StringSize (s1, w, h, aw);
 	GrString (x+w1-w, y, s1, NULL);
 	*p = '\t';
 	}
@@ -752,7 +752,7 @@ void NMStringSlider (tMenuItem *itemP, bkg * bgP, int bIsCurrent, int bTiny)
 		s1 = p+1;
 	}
 
-	FONT->StringSize (s, &w, &h, &aw);
+	FONT->StringSize (s, w, h, aw);
 	// CHANGED
 
 		if (gameStates.ogl.nDrawBuffer != GL_BACK)
@@ -765,7 +765,7 @@ void NMStringSlider (tMenuItem *itemP, bkg * bgP, int bIsCurrent, int bTiny)
 		//GrString (x, y, s, NULL);
 
 		if (p)	{
-			FONT->StringSize (s1, &w, &h, &aw);
+			FONT->StringSize (s1, w, h, aw);
 
 			// CHANGED
 			if (gameStates.ogl.nDrawBuffer != GL_BACK) {
@@ -785,7 +785,7 @@ void NMStringBlack (bkg * bgP, int w1, int x, int y, const char *s)
 {
 	int w, h, aw;
 
-FONT->StringSize (s, &w, &h, &aw);
+FONT->StringSize (s, w, h, aw);
 if (w1 == 0) 
 	w1 = w;
 
@@ -810,7 +810,7 @@ void NMRString (tMenuItem *itemP, bkg * bgP, int bIsCurrent, int bTiny, char *s)
 			y = itemP->y;
 	char	*hs;
 
-FONT->StringSize (s, &w, &h, &aw);
+FONT->StringSize (s, w, h, aw);
 x -= 3;
 if (w1 == 0) 
 	w1 = w;
@@ -831,7 +831,7 @@ void NMRStringWXY (bkg * bgP, int w1, int x, int y, const char *s)
 {
 	int	w, h, aw;
 
-FONT->StringSize (s, &w, &h, &aw);
+FONT->StringSize (s, w, h, aw);
 x -= 3;
 if (w1 == 0) 
 	w1 = w;
@@ -855,7 +855,7 @@ void NMUpdateCursor (tMenuItem *itemP)
 	Assert (itemP->nType == NM_TYPE_INPUT_MENU || itemP->nType == NM_TYPE_INPUT);
 
 while (*text)	{
-	FONT->StringSize (text, &w, &h, &aw);
+	FONT->StringSize (text, w, h, aw);
 	if (w > itemP->w-10)
 		text++;
 	else
@@ -880,7 +880,7 @@ void NMStringInputBox (bkg *bgP, int w, int x, int y, char *text, int current)
 	int w1, h1, aw;
 
 while (*text) {
-	FONT->StringSize (text, &w1, &h1, &aw);
+	FONT->StringSize (text, w1, h1, aw);
 	if (w1 > w-10)
 		text++;
 	else
@@ -899,7 +899,7 @@ void NMGauge (bkg *bgP, int w, int x, int y, int val, int maxVal, int current)
 {
 	int w1, h, aw;
 
-FONT->StringSize (" ", &w1, &h, &aw);
+FONT->StringSize (" ", w1, h, aw);
 if (!w) 
 	w = w1 * 30;
 w1 = w * val / maxVal;
@@ -1159,15 +1159,13 @@ GrRect (x + CLOSE_X + LHX (1), y + CLOSE_Y + LHX (1), x + CLOSE_X + CLOSE_SIZE -
 int NMDrawTitle (const char *pszTitle, CFont *font, unsigned int color, int ty)
 {
 if (pszTitle && *pszTitle)	{
-		int nStringWidth, nStringHeight, nAverageWidth, tw, th;
+		int w, h, aw;
 
 	CCanvas::Current ()->SetFont (font);
 	fontManager.SetColorRGBi (color, 1, 0, 0);
-	FONT->StringSize (pszTitle, &nStringWidth, &nStringHeight, &nAverageWidth);
-	tw = nStringWidth;
-	th = nStringHeight;
+	FONT->StringSize (pszTitle, w, h, aw);
 	GrPrintF (NULL, 0x8000, ty, pszTitle);
-	ty += nStringHeight;
+	ty += h;
 	}
 return ty;
 }
@@ -1180,7 +1178,7 @@ if (pszTitle && *pszTitle)	{
 		int nStringWidth, nStringHeight, nAverageWidth;
 
 	CCanvas::Current ()->SetFont (font);
-	FONT->StringSize (pszTitle, &nStringWidth, &nStringHeight, &nAverageWidth);
+	FONT->StringSize (pszTitle, nStringWidth, nStringHeight, nAverageWidth);
 	if (nStringWidth > *tw)
 		*tw = nStringWidth;
 	*th += nStringHeight;
@@ -1211,7 +1209,7 @@ for (i = 0; i < nItems; i++, itemP++) {
 		}
 	itemP->redraw = 1;
 	itemP->y = *h;
-	FONT->StringSize (itemP->text, &nStringWidth, &nStringHeight, &nAverageWidth);
+	FONT->StringSize (itemP->text, nStringWidth, nStringHeight, nAverageWidth);
 	itemP->right_offset = 0;
 
 	if (gameStates.multi.bSurfingNet)
@@ -1226,7 +1224,7 @@ for (i = 0; i < nItems; i++, itemP++) {
 			sprintf (itemP->saved_text, "%s%s", itemP->saved_text, SLIDER_MIDDLE);
 			}
 		sprintf (itemP->saved_text, "%s%s", itemP->saved_text, SLIDER_RIGHT);
-		FONT->StringSize (itemP->saved_text, &w1, &h1, &aw1);
+		FONT->StringSize (itemP->saved_text, w1, h1, aw1);
 		nStringWidth += w1 + *aw;
 		}
 	else if (itemP->nType == NM_TYPE_MENU)	{
@@ -1235,18 +1233,18 @@ for (i = 0; i < nItems; i++, itemP++) {
 	else if (itemP->nType == NM_TYPE_CHECK)	{
 		int w1, h1, aw1;
 		(*nOthers)++;
-		FONT->StringSize (NORMAL_CHECK_BOX, &w1, &h1, &aw1);
+		FONT->StringSize (NORMAL_CHECK_BOX, w1, h1, aw1);
 		itemP->right_offset = w1;
-		FONT->StringSize (CHECKED_CHECK_BOX, &w1, &h1, &aw1);
+		FONT->StringSize (CHECKED_CHECK_BOX, w1, h1, aw1);
 		if (w1 > itemP->right_offset)
 			itemP->right_offset = w1;
 		}
 	else if (itemP->nType == NM_TYPE_RADIO) {
 		int w1, h1, aw1;
 		(*nOthers)++;
-		FONT->StringSize (NORMAL_RADIO_BOX, &w1, &h1, &aw1);
+		FONT->StringSize (NORMAL_RADIO_BOX, w1, h1, aw1);
 		itemP->right_offset = w1;
-		FONT->StringSize (CHECKED_RADIO_BOX, &w1, &h1, &aw1);
+		FONT->StringSize (CHECKED_RADIO_BOX, w1, h1, aw1);
 		if (w1 > itemP->right_offset)
 			itemP->right_offset = w1;
 		}
@@ -1255,10 +1253,10 @@ for (i = 0; i < nItems; i++, itemP++) {
 		char test_text [20];
 		(*nOthers)++;
 		sprintf (test_text, "%d", itemP->maxValue);
-		FONT->StringSize (test_text, &w1, &h1, &aw1);
+		FONT->StringSize (test_text, w1, h1, aw1);
 		itemP->right_offset = w1;
 		sprintf (test_text, "%d", itemP->minValue);
-		FONT->StringSize (test_text, &w1, &h1, &aw1);
+		FONT->StringSize (test_text, w1, h1, aw1);
 		if (w1 > itemP->right_offset)
 			itemP->right_offset = w1;
 		}
@@ -1300,7 +1298,7 @@ void NMSetItemPos (tMenuItem *itemP, int nItems, int twidth, int xOffs, int yOff
 for (i = 0; i < nItems; i++)	{
 	if (gameOpts->menus.nStyle && ((itemP [i].x == (short) 0x8000) || itemP [i].centered)) {
 		itemP [i].centered = 1;
-		itemP [i].x = GetCenteredX (itemP [i].text);
+		itemP [i].x = FONT->GetCenteredX (itemP [i].text);
 		}
 	else
 		itemP [i].x = xOffs + twidth + right_offset;
@@ -2021,14 +2019,14 @@ launchOption:
 		
 			// check possible scrollbar stuff first
 			if (ctrl.bIsScrollBox) {
-				int i, arrow_width, arrow_height, aw;
+				int i, arrowWidth, arrowHeight, aw;
 			
 				if (ctrl.nScrollOffset > ctrl.nMaxNoScroll) {
-					FONT->StringSize (UP_ARROW_MARKER, &arrow_width, &arrow_height, &aw);
+					FONT->StringSize (UP_ARROW_MARKER, arrowWidth, arrowHeight, aw);
 					x2 = CCanvas::Current ()->Left () + itemP [ctrl.nScrollOffset].x- (gameStates.menus.bHires?24:12);
 		         y1 = CCanvas::Current ()->Top () + itemP [ctrl.nScrollOffset].y- ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
-					x1 = x2 - arrow_width;
-					y2 = y1 + arrow_height;
+					x1 = x2 - arrowWidth;
+					y2 = y1 + arrowHeight;
 					if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 						choice--;
 		           	nLastScrollCheck=-1;
@@ -2039,11 +2037,11 @@ launchOption:
 						}
 					}
 				if ((i = ctrl.nScrollOffset + ctrl.nMaxDisplayable - ctrl.nMaxNoScroll) < nItems) {
-					FONT->StringSize (DOWN_ARROW_MARKER, &arrow_width, &arrow_height, &aw);
+					FONT->StringSize (DOWN_ARROW_MARKER, arrowWidth, arrowHeight, aw);
 					x2 = CCanvas::Current ()->Left () + itemP [i-1].x - (gameStates.menus.bHires?24:12);
 					y1 = CCanvas::Current ()->Top () + itemP [i-1].y - ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
-					x1 = x2 - arrow_width;
-					y2 = y1 + arrow_height;
+					x1 = x2 - arrowWidth;
+					y2 = y1 + arrowHeight;
 					if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 						choice++;
 		            nLastScrollCheck=-1;
@@ -2080,10 +2078,10 @@ launchOption:
 							s1 = p+1;
 						}
 						if (p) {
-							FONT->StringSize (s1, &slider_width, &height, &aw);
-							FONT->StringSize (SLIDER_LEFT, &sleft_width, &height, &aw);
-							FONT->StringSize (SLIDER_RIGHT, &sright_width, &height, &aw);
-							FONT->StringSize (SLIDER_MIDDLE, &smiddle_width, &height, &aw);
+							FONT->StringSize (s1, slider_width, height, aw);
+							FONT->StringSize (SLIDER_LEFT, sleft_width, height, aw);
+							FONT->StringSize (SLIDER_RIGHT, sright_width, height, aw);
+							FONT->StringSize (SLIDER_MIDDLE, smiddle_width, height, aw);
 
 							x1 = CCanvas::Current ()->Left () + itemP [choice].x + itemP [choice].w - slider_width;
 							x2 = x1 + slider_width + sright_width;
@@ -2325,7 +2323,7 @@ launchOption:
 			if (bStart || (gameStates.ogl.nDrawBuffer == GL_BACK) || itemP [i].redraw || itemP [i].rebuild) {// warning! ugly hack below                  
 				bRedraw = 1;
 				if (itemP [i].rebuild && itemP [i].centered)
-					itemP [i].x = GetCenteredX (itemP [i].text);
+					itemP [i].x = FONT->GetCenteredX (itemP [i].text);
 				if (i >= ctrl.nScrollOffset)
          		itemP [i].y -= ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 				if (!gameOpts->menus.nStyle) 
@@ -2638,13 +2636,13 @@ if (!bInitialized) {
 
 	for (i = 0; i < nFileCount; i++) {
 		int w, h, aw;
-		FONT->StringSize (filenames+i* (FILENAME_LEN+1), &w, &h, &aw);	
+		FONT->StringSize (filenames+i* (FILENAME_LEN+1), w, h, aw);	
 		if (w > w_w)
 			w_w = w;
 		}
 	if (pszTitle) {
 		int w, h, aw;
-		FONT->StringSize (pszTitle, &w, &h, &aw);	
+		FONT->StringSize (pszTitle, w, h, aw);	
 		if (w > w_w)
 			w_w = w;
 		nTitleHeight = h + (CCanvas::Current ()->Font ()->Height ()*2);		// add a little space at the bottom of the pszTitle
@@ -2896,7 +2894,7 @@ while (!done)	{
 
 		MouseGetPos (&mx, &my);
 		for (i=nFirstItem; i<nFirstItem+nFilesDisplayed; i++)	{
-			FONT->StringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
+			FONT->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
 			x1 = box_x;
 			x2 = box_x + box_w - 1;
 			y1 = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + box_y;
@@ -2914,7 +2912,7 @@ while (!done)	{
 	if (!nMouseState && nOldMouseState) {
 		int w, h, aw;
 
-		FONT->StringSize (&filenames [nItem* (FILENAME_LEN+1)], &w, &h, &aw);
+		FONT->StringSize (&filenames [nItem* (FILENAME_LEN+1)], w, h, aw);
 		MouseGetPos (&mx, &my);
 		x1 = box_x;
 		x2 = box_x + box_w - 1;
@@ -2964,7 +2962,7 @@ while (!done)	{
 				} 
 			else {
 				CCanvas::Current ()->SetFont ((i == nItem) ? SELECTED_FONT : NORMAL_FONT);
-				FONT->StringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
+				FONT->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
 				GrRect (box_x + box_w, y - 1, box_x + box_w, y + h + 1);
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
@@ -2988,7 +2986,7 @@ while (!done)	{
 				CCanvas::Current ()->SetFont (SELECTED_FONT);
 			else
 				CCanvas::Current ()->SetFont (NORMAL_FONT);
-			FONT->StringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
+			FONT->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
 			GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
 			GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
 			}
@@ -2999,7 +2997,7 @@ while (!done)	{
 				CCanvas::Current ()->SetFont (SELECTED_FONT);
 			else
 				CCanvas::Current ()->SetFont (NORMAL_FONT);
-			FONT->StringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
+			FONT->StringSize (&filenames [i* (FILENAME_LEN+1)], w, h, aw);
 			GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
 			GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
 			}
@@ -3100,7 +3098,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 	width = 0;
 	for (i=0; i<nItems; i++)	{
 		int w, h, aw;
-		FONT->StringSize (itemP [i], &w, &h, &aw);	
+		FONT->StringSize (itemP [i], w, h, aw);	
 		if (w > width)
 			width = w;
 	}
@@ -3109,7 +3107,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 
 	{
 		int w, h, aw;
-		FONT->StringSize (pszTitle, &w, &h, &aw);	
+		FONT->StringSize (pszTitle, w, h, aw);	
 		if (w > width)
 			width = w;
 		nTitleHeight = h + 5;
@@ -3318,7 +3316,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 			for (i=nFirstItem; i<nFirstItem+nItemsOnScreen; i++)	{
 				if (i > nItems)
 					break;
-				FONT->StringSize (itemP [i], &w, &h, &aw);
+				FONT->StringSize (itemP [i], w, h, aw);
 				x1 = wx;
 				x2 = wx + width;
 				y1 = (i-nFirstItem)* (CCanvas::Current ()->Font ()->Height ()+2)+wy;
@@ -3370,7 +3368,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 						CCanvas::Current ()->SetFont (SELECTED_FONT);
 					else
 						CCanvas::Current ()->SetFont (NORMAL_FONT);
-					FONT->StringSize (itemP [i], &w, &h, &aw);
+					FONT->StringSize (itemP [i], w, h, aw);
 					GrRect (wx, y-1, wx+width-1, y+h+1);
 					GrString (wx+5, y, itemP [i], NULL);
 				}
@@ -3393,7 +3391,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 					CCanvas::Current ()->SetFont (SELECTED_FONT);
 				else
 					CCanvas::Current ()->SetFont (NORMAL_FONT);
-				FONT->StringSize (itemP [i], &w, &h, &aw);
+				FONT->StringSize (itemP [i], w, h, aw);
 				GrRect (wx, y-1, wx+width-1, y+h+1);
 				GrString (wx+5, y, itemP [i], NULL);
 
@@ -3405,7 +3403,7 @@ int ExecMenuListBox1 (const char *pszTitle, int nItems, char *itemP [], int bAll
 					CCanvas::Current ()->SetFont (SELECTED_FONT);
 				else
 					CCanvas::Current ()->SetFont (NORMAL_FONT);
-				FONT->StringSize (itemP [i], &w, &h, &aw);
+				FONT->StringSize (itemP [i], w, h, aw);
 				GrRect (wx, y-1, wx+width-1, y+h);
 				GrString (wx+5, y, itemP [i], NULL);
 			}

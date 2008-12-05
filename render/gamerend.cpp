@@ -459,7 +459,7 @@ void game_render_frame_stereo ()
 
 		fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 		fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-		FONT->StringSize (msg, &w, &h, &aw);
+		FONT->StringSize (msg, w, h, aw);
 
 		GrPrintF (NULL, (CCanvas::Current ()->Width ()-w)/2, 3, msg);
 

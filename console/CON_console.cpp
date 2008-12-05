@@ -707,7 +707,7 @@ void DrawCommandLine() {
 	if(bBlink) {
 #if 1
 		int w, h, aw;
-		FONT->StringSize (Topmost->VCommand, &w, &h, &aw);
+		FONT->StringSize (Topmost->VCommand, w, h, aw);
 		x = CON_CHAR_BORDER + w;
 #else
 		x = CON_CHAR_BORDER + Topmost->ConsoleSurface->Font ()->Width () * (Topmost->CursorPos - Topmost->Offset + (int) strlen(Topmost->Prompt));
