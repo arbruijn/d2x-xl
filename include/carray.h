@@ -5,11 +5,11 @@
 
 template < class _T > class CArray {
 	protected:
-		_T					*m_buffer;
-		_T					*m_null;
+		_T		*m_buffer;
+		_T		*m_null;
 		uint	m_size;
-		bool				m_bExternal;
-		bool				m_bChild;
+		bool	m_bExternal;
+		bool	m_bChild;
 	public:
 		CArray () { Init (); }
 		
@@ -19,8 +19,12 @@ template < class _T > class CArray {
 			m_buffer = m_null = reinterpret_cast<_T *> (NULL); 
 			m_bExternal = m_bChild = false;
 			}
-		inline void Clear (void) { if (m_buffer) memset (m_buffer, 0, m_size); }
+		inline void Clear (ubyte filler = 0) { if (m_buffer) memset (m_buffer, filler, m_size); }
 		
+		inline uint Index (_T* elem) { return elem - m_buffer; }
+
+		inline _T* Pointer (uint i) { return m_buffer + i; }
+
 		inline void Destroy (void) { 
 			if (m_buffer) {
 #if 0

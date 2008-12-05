@@ -107,7 +107,7 @@ m_edges.Destroy ();
 int CTriMeshBuilder::AllocData (void)
 {
 if (m_nMaxTriangles && m_nMaxEdges) {
-	if (!(m_edges.Resize (m_nMaxEdges * 2) && m_triangles.Resize (m_nMaxTriangles * 2)))
+	if (!(m_edges.Resize (m_nMaxEdges * 2) && m_triangles.Resize (m_nMaxTriangles * 2))) {
 		FreeData ();
 		return 0;
 		}
@@ -125,8 +125,8 @@ else {
 		FreeData ();
 		return 0;
 		}
-	memset (m_edges, 0xff, m_nMaxTriangles * sizeof (tEdge));
-	memset (m_triangles, 0xff, m_nMaxTriangles * sizeof (tTriangle));
+	m_edges.Clear (0xff);
+	m_triangles.Clear (0xff);
 	}
 return 1;
 }
@@ -135,7 +135,7 @@ return 1;
 
 tEdge *CTriMeshBuilder::FindEdge (ushort nVert1, ushort nVert2, int i)
 {
-	tEdge	*edgeP = m_edges + ++i;
+	tEdge	*edgeP = &m_edges [++i];
 
 for (; i < m_nEdges; i++, edgeP++)
 	if ((edgeP->verts [0] == nVert1) && (edgeP->verts [1] == nVert2))
@@ -160,7 +160,7 @@ tEdge *edgeP;
 for (int i = -1;;) {
 	if (!(edgeP = FindEdge (nVert1, nVert2, i)))
 		break;
-	i = edgeP - m_edges;
+	i = edgeP - &m_edges [0];
 	if (edgeP->tris [0] < 0) {
 		edgeP->tris [0] = nTri;
 		return i;
@@ -171,20 +171,20 @@ for (int i = -1;;) {
 		}
 	}
 if (m_nFreeEdges >= 0) {
-	edgeP = m_edges + m_nFreeEdges;
+	edgeP = &m_edges [m_nFreeEdges];
 	m_nFreeEdges = edgeP->nNext;
 	edgeP->nNext = -1;
 	}
 else {
 	if ((m_nEdges == m_nMaxEdges - 1) && !AllocData ())
 		return -1;
-	edgeP = m_edges + m_nEdges++;
+	edgeP = &m_edges [m_nEdges++];
 	}
 edgeP->tris [0] = nTri;
 edgeP->verts [0] = nVert1;
 edgeP->verts [1] = nVert2;
 edgeP->fLength = fVector::Dist(gameData.segs.fVertices [nVert1], gameData.segs.fVertices [nVert2]);
-return edgeP - m_edges;
+return m_edges.Index (edgeP);
 }
 
 //------------------------------------------------------------------------------
@@ -198,7 +198,7 @@ if (triP)
 else {
 	if ((m_nTriangles == m_nMaxTriangles - 1) && !AllocData ())
 		return NULL;
-	triP = m_triangles + m_nTriangles++;
+	triP = &m_triangles [m_nTriangles++];
 	triP->nIndex = nIndex;
 	if (nIndex >= 0) {
 		i = TRIANGLES [nIndex].nIndex;
@@ -207,11 +207,11 @@ else {
 		memcpy (triP->color, gameData.segs.faces.color + i, sizeof (triP->color));
 		}
 	}
-nIndex = triP - m_triangles;
+nIndex = m_triangles.Index (triP);
 for (i = 0; i < 3; i++) {
 	if (0 > (h = AddEdge (nIndex, index [i], index [(i + 1) % 3])))
 		return NULL;
-	triP = m_triangles + nIndex;
+	triP = &m_triangles [nIndex];
 	triP->lines [i] = h;
 	}
 triP->nFace = nFace;
@@ -232,7 +232,7 @@ void CTriMeshBuilder::DeleteEdge (tEdge *edgeP)
 {
 #if 1
 edgeP->nNext = m_nFreeEdges;
-m_nFreeEdges = edgeP - m_edges;
+m_nFreeEdges = m_edges.Index (edgeP);
 #else
 	tTriangle	*triP;
 	int		h = edgeP - m_edges, i, j;
@@ -256,10 +256,10 @@ if (h < --m_nEdges) {
 void CTriMeshBuilder::DeleteTriangle (tTriangle *triP)
 {
 	tEdge	*edgeP;
-	int			i, nTri = triP - m_triangles;
+	int	i, nTri = m_triangles.Index (triP);
 
 for (i = 0; i < 3; i++) {
-	edgeP = m_edges + triP->lines [i];
+	edgeP = &m_edges [triP->lines [i]];
 	if (edgeP->tris [0] == nTri)
 		edgeP->tris [0] = edgeP->tris [1];
 	edgeP->tris [1] = -1;
@@ -318,7 +318,7 @@ int CTriMeshBuilder::SplitTriangleByEdge (int nTri, ushort nVert1, ushort nVert2
 if (nTri < 0)
 	return 1;
 
-tTriangle *triP = m_triangles + nTri;
+tTriangle *triP = &m_triangles [nTri];
 
 if (triP->nPass < -1)
 	return 1;
@@ -398,7 +398,7 @@ return 1;
 
 float CTriMeshBuilder::NewEdgeLen (int nTri, int nVert1, int nVert2)
 {
-	tTriangle	*triP = m_triangles + nTri;
+	tTriangle	*triP = &m_triangles [nTri];
 	int			h, i;
 
 for (i = 0; i < 3; i++) {
@@ -452,7 +452,7 @@ for (i = 0; i < 3; i++) {
 	}
 if (lMax <= MAX_EDGE_LEN)
 	return -1;
-return SplitEdge (m_edges + triP->lines [h], nPass);
+return SplitEdge (&m_edges [triP->lines [h]], nPass);
 }
 
 //------------------------------------------------------------------------------
@@ -475,7 +475,7 @@ do {
 		if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-		nSplitRes = SplitTriangle (m_triangles + i, nPass);
+		nSplitRes = SplitTriangle (&m_triangles [i], nPass);
 		if (gameData.segs.nVertices == 65536)
 			return 0;
 		if (!nSplitRes)
@@ -559,7 +559,7 @@ ComputeVertexNormals ();
 
 int CTriMeshBuilder::InsertTriangles (void)
 {
-	tTriangle	*triP = m_triangles;
+	tTriangle	*triP = &m_triangles [0];
 	grsTriangle	*grsTriP = TRIANGLES;
 	grsFace		*m_faceP = NULL;
 	vmsVector	vNormal;

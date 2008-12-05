@@ -507,12 +507,12 @@ palptr = bmHeader->palette;
 new_data = new ushort [bmP->BufSize () * 2];
 if (new_data == NULL)
 	return IFF_NO_MEM;
-for (y=0; y<bmP->Height (); y++) {
+for (y=0; y < bmP->Height (); y++) {
 	for (x=0; x<bmHeader->w; x++)
 		new_data[newptr++] = INDEX_TO_15BPP(bmHeader->raw_data[y*bmHeader->w+x]);
 	}
 bmP->DestroyBuffer ();				//get rid of old-style data
-bmP->SetBuffer (new_data);			//..ccAnd point to new data
+bmP->SetBuffer (reinterpret_cast<ubyte*> (new_data));			//..ccAnd point to new data
 bmP->SetRowSize (bmP->RowSize () * 2);				//two bytes per row
 return IFF_NO_ERROR;
 }

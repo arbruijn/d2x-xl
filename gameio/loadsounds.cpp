@@ -258,13 +258,13 @@ for (i = 0; i < nSoundNum; i++) {
 	else {
 		sound.bHires = 0;
 		sound.nLength [0] = sndh.length;
-		sound.data [0] = reinterpret_cast<ubyte*> ((size_t) (sndh.offset + nHeaderSize + nSoundStart);
+		sound.data [0] = reinterpret_cast<ubyte*> ((size_t) (sndh.offset + nHeaderSize + nSoundStart));
 		soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + nSoundStart;
 		sbytes += sndh.length;
 		}
 	PiggyRegisterSound (&sound, szSoundName, 1);
 	}
-if (!(gameData.pig.sound.data [gameStates.app.bD1Data] = reinterpret_cast<ubyte*> (D2_ALLOC (sbytes + 16))) {
+if (!(gameData.pig.sound.data [gameStates.app.bD1Data] = new ubyte [sbytes + 16])) {
 	Error ("Not enough memory to load sounds\n");
 	return 0;
 	}
@@ -285,7 +285,7 @@ int ReadSoundFile (void)
 	int		nSoundStart;
 	int		size, length;
 
-if (!cf.Open (reinterpret_cast<char*> (DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0))
+if (!cf.Open (reinterpret_cast<char*> (DEFAULT_SNDFILE), gameFolders.szDataDir, "rb", 0))
 	return 0;
 
 //make sure soundfile is valid nType file & is up-to-date
@@ -360,7 +360,8 @@ void PiggyReadSounds (void)
 
 ptr = gameData.pig.sound.data [gameStates.app.bD1Data];
 sbytes = 0;
-if (!cf.Open (gameStates.app.bD1Mission ? reinterpret_cast<char*> ("descent.pig" : reinterpret_cast<char*> (DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0))
+if (!cf.Open (gameStates.app.bD1Mission ? reinterpret_cast<char*> ("descent.pig") : reinterpret_cast<char*> (DEFAULT_SNDFILE), 
+				  gameFolders.szDataDir, "rb", 0))
 	return;
 for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; i++, soundP++) {
 	if (soundOffset [gameStates.app.bD1Data][i] > 0) {
@@ -377,7 +378,7 @@ for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; 
 #endif
 			}
 		else
-			soundP->data [0] = reinterpret_cast<ubyte*> (-1;
+			soundP->data [0] = reinterpret_cast<ubyte*> (-1);
 		}
 	}
 cf.Close ();

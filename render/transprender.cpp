@@ -1022,7 +1022,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 	}
 else
 #endif
-if (LoadTranspItemImage (bmBot, item->nColors, 0, item->nWrap, 0, 3, 1, HaveLightmaps () && (faceP != NULL), 0, 0)) {
+if (LoadTranspItemImage (bmBot, item->nColors, 0, item->nWrap, 0, 3, 1, lightmapManager.HaveLightmaps () && (faceP != NULL), 0, 0)) {
 	if (item->bAdditive == 1) {
 		TIResetShader ();
 		glBlendFunc (GL_ONE, GL_ONE);
@@ -1479,7 +1479,7 @@ transpItems.bClientColor = 0;
 transpItems.bDepthMask = 0;
 transpItems.bUseLightmaps = 0;
 transpItems.bDecal = 0;
-transpItems.bLightmaps = HaveLightmaps ();
+transpItems.bLightmaps = lightmapManager.HaveLightmaps ();
 transpItems.bSplitPolys = (gameStates.render.bPerPixelLighting != 2) && (gameStates.render.bSplitPolys > 0);
 transpItems.nWrap = 0;
 transpItems.nFrame = -1;

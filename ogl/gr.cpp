@@ -164,8 +164,8 @@ void ResetTextures (int bReload, int bGame)
 {
 if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 	textureManager.Destroy (); 
-	if (HaveLightmaps ())
-		OglDestroyLightmaps ();
+	if (lightmapManager.HaveLightmaps ())
+		lightmapManager.Release ();
 	DestroyGlareDepthTexture ();
 	NMFreeAltBg (1);
 	if (bReload)

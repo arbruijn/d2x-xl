@@ -87,10 +87,10 @@ void event_poll(ulong mask)
 				joy_button_handler(reinterpret_cast<SDL_JoyButtonEvent*> (&event));
 				break;
 			case SDL_JOYAXISMOTION:
-				joy_axis_handler(SDL_JoyButtonEventSDL_JoyAxisEvent*> (&event));
+				joy_axis_handler(reinterpret_cast<SDL_JoyAxisEvent*> (&event));
 				break;
 			case SDL_JOYHATMOTION:
-				joy_hat_handler(SDL_JoyButtonEventSDL_JoyHatEvent*> (&event));
+				joy_hat_handler(reinterpret_cast<SDL_JoyHatEvent*> (&event));
 				break;
 			case SDL_JOYBALLMOTION:
 				break;

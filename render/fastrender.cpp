@@ -477,7 +477,7 @@ return tiRender.nFaces;
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	//bVBO = 0,
-			bLightmaps = (nType < 4) && !gameStates.render.bFullBright && HaveLightmaps (),
+			bLightmaps = (nType < 4) && !gameStates.render.bFullBright && lightmapManager.HaveLightmaps (),
 			bNormals = !bDepthOnly; 
 
 gameData.threads.vertColor.data.bDarkness = 0;
@@ -924,7 +924,7 @@ void RenderHeadlights (int nType, int bVertexArrays)
 {
 if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-	g3FaceDrawer = HaveLightmaps () ? G3DrawHeadlightsPPLM : G3DrawHeadlights;
+	g3FaceDrawer = lightmapManager.HaveLightmaps () ? G3DrawHeadlightsPPLM : G3DrawHeadlights;
 	RenderSegments (nType, bVertexArrays, 0, 1);
 	SetFaceDrawer (-1);
 	}
@@ -1458,7 +1458,7 @@ PROF_START
 	float			fAlpha;
 	int			h, i, nStep, nColor, nLights = 0,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
-					bLightmaps = HaveLightmaps ();
+					bLightmaps = lightmapManager.HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
 #if SORT_FACES > 1
@@ -1569,7 +1569,7 @@ PROF_START
 	int			h, i, j, nColor, nLights = 0,
 					nStep = nStart ? -1 : 1,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
-					bLightmaps = HaveLightmaps ();
+					bLightmaps = lightmapManager.HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
 #if SORT_FACES > 1

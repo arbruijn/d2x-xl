@@ -154,7 +154,7 @@ do {
 		G3DynLightModel (tiRender.objP, tiRender.pm, iVerts, nVerts, iFaceVerts, nFaceVerts);
 		}
 	else if (tiRender.nTask == rtLightmap)
-		ComputeOneLightmap (nId);
+		lightmapManager.Build (nId);
 	tiRender.ti [nId].bExec = 0;
 	} while (!tiRender.ti [nId].bDone);
 #ifdef _WIN32

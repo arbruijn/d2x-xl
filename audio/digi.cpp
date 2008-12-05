@@ -212,7 +212,7 @@ for (sl = soundSlots; sl < soundSlots + MAX_SOUND_SLOTS; sl++) {
 					sl->bPlaying = 0;
 					break;
 					}
-				sldata = reinterpret_cast<ubyte*> (sl->sampleP;
+				sldata = reinterpret_cast<ubyte*> (sl->sampleP);
 				}
 			v = *(sldata++) - 0x80;
 			s = *sp;
@@ -220,7 +220,7 @@ for (sl = soundSlots; sl < soundSlots + MAX_SOUND_SLOTS; sl++) {
 			s = *sp;
 			*(sp++) = mix8 [s + FixMul (v, vr) + 0x80];
 			}
-		sl->nPosition = (int) (sldata - reinterpret_cast<ubyte*> (sl->sampleP);
+		sl->nPosition = (int) (sldata - reinterpret_cast<ubyte*> (sl->sampleP));
 #endif
 		}
 	}
@@ -709,7 +709,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 			if (nSpeed < F1_0)
 				l = DigiSpeedupSound (dsP, ssP, nSpeed);
 			}
-		ssP->mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<ubyte*> (ssP->sampleP, l));
+		ssP->mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<ubyte*> (ssP->sampleP), l);
 		}
 	Mix_VolPan (gameStates.sound.digi.nFreeChannel, xVolume, xPan);
 	Mix_PlayChannel (gameStates.sound.digi.nFreeChannel, ssP->mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);

@@ -235,7 +235,7 @@ int CFile::Exist (const char *filename, const char *folder, int bUseD1Hog)
 {
 	int	length, bNoHOG = 0;
 	FILE	*fp;
-	char	*pfn = reinterpret_cast<char*> (filename);
+	char	*pfn = (char*) (filename);
 
 if (*pfn == '\x01') 
 	pfn++;
@@ -332,7 +332,7 @@ m_cf.file = fp;
 m_cf.rawPosition = 0;
 m_cf.size = (length < 0) ? ffilelength (fp) : length;
 m_cf.libOffset = (length < 0) ? 0 : ftell (fp);
-m_cf.filename = reinterpret_cast<char*> (filename);
+m_cf.filename = (char*) (filename);
 return 1;
 }
 

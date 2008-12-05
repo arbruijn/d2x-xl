@@ -1499,7 +1499,7 @@ gameStates.render.nState = 0;
 TransformDynLights (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++)
 	gameData.render.lights.dynamic.nVariableVertLights [i] = VariableVertexLights (i);
-if (RENDERPATH && gameStates.render.bPerPixelLighting && HaveLightmaps ()) {
+if (RENDERPATH && gameStates.render.bPerPixelLighting && lightmapManager.HaveLightmaps ()) {
 	memset (gameData.render.color.ambient, 0, gameData.segs.nVertices * sizeof (*gameData.render.color.ambient));
 	return;
 	}

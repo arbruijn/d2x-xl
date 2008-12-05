@@ -75,10 +75,8 @@ class CLightmapManager {
 		void Build (int nThread);
 		void BuildAll (int nFace, int nThread);
 		int _CDECL_ Thread (void *pThreadId);
-		inline int HaveLightmaps (void) {
-			return !gameStates.app.bNostalgia && (m_list.buffers.Buffer () != NULL);
-			}
-
+		inline tLightmapBuffer* Buffer (uint i = 0) { return &m_list.buffers [i]; }
+		inline int HaveLightmaps (void) { return !gameStates.app.bNostalgia && (m_list.buffers.Buffer () != NULL); }
 
 	private:
 		int Init (int bVariable);
@@ -93,6 +91,8 @@ class CLightmapManager {
 		char* Filename (char *pszFilename, int nLevel);
 
 	};
+
+extern CLightmapManager lightmapManager;
 
 //------------------------------------------------------------------------------
 

@@ -799,7 +799,7 @@ if ((gameStates.ogl.bHeadlight = (gameStates.ogl.bShadersOk && RENDERPATH))) {
 				DeleteShaderProg (&headlightShaderProgs [i][j]);
 #if 1//ndef _DEBUG
 			if (nLights == 1)
-				pszFS = static_cast<char*> (headlightFS [i][h = j]);
+				pszFS = (char*) (headlightFS [i][h = j]);
 			else
 #endif
 				pszFS = BuildLightingShader (headlightFS [i][h = j + 4], nLights);

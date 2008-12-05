@@ -61,7 +61,7 @@ ulong GetDiskFree()
 // remove extension from filename, doesn't work with paths.
 void removeext(const char *filename, char *out) {
 	char *p;
-	if ((p = reinterpret_cast<char*> (strrchr (filename, '.')))) {
+	if ((p = (char*) (strrchr (filename, '.')))) {
 		strncpy(out, filename, p - filename);
 		out[p - filename] = 0;
 	} else

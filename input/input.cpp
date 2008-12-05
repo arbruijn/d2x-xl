@@ -1284,7 +1284,7 @@ for (i = 0; i < 3; i++) {
 	if (bUseJoystick)
 		ControlsDoJoystick (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
 	if (bUseMouse)
-		ControlsDoMouse (reinterpret_cast<int*> (&mouseAxis [0], nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime, 
+		ControlsDoMouse (reinterpret_cast<int*> (&mouseAxis [0]), nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime, 
 							  reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
 	Controls [0].pitchTime = Controls [1].pitchTime + Controls [2].pitchTime + Controls [3].pitchTime;
 	Controls [0].headingTime = Controls [1].headingTime + Controls [2].headingTime + Controls [3].headingTime;

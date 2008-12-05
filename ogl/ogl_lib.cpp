@@ -790,8 +790,8 @@ ResetTextures (1, bGame);
 G3FreeAllPolyModelItems ();
 InitShaders ();
 #if LIGHTMAPS
-if (HaveLightmaps ())
-	OglCreateLightmaps ();
+if (lightmapManager.HaveLightmaps ())
+	lightmapManager.BindAll ();
 #endif
 CloseDynLighting ();
 InitDynLighting ();
@@ -883,7 +883,7 @@ if (libList.nLibs)
 	return libList.nLibs;
 if (!OglCountLibs (pszFilter, pszFolder))
 	return 0;
-libList.libs = new DWORD [libList.nLibs]);
+libList.libs = new DWORD [libList.nLibs];
 
 	FFS	ffs;
 	char	szFilter [FILENAME_LEN];
@@ -1029,10 +1029,10 @@ const char *oglVendor, *oglRenderer, *oglVersion, *oglExtensions;
 
 void OglGetVerInfo (void)
 {
-oglVendor = reinterpret_cast<char*> (glGetString (GL_VENDOR));
-oglRenderer = reinterpret_cast<char*> (glGetString (GL_RENDERER));
-oglVersion = reinterpret_cast<char*> (glGetString (GL_VERSION));
-oglExtensions = reinterpret_cast<char*> (glGetString (GL_EXTENSIONS));
+oglVendor = reinterpret_cast<const char*> (glGetString (GL_VENDOR));
+oglRenderer = reinterpret_cast<const char*> (glGetString (GL_RENDERER));
+oglVersion = reinterpret_cast<const char*> (glGetString (GL_VERSION));
+oglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
 OglInitLibs ();
 if (OglCheckLibFlags ())
 	SetNostalgia (3);

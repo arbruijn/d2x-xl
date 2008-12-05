@@ -941,7 +941,7 @@ for (i = 0; i < 2; i++) {
 			dsP->bDTX = 0;
 			}
 	if (gameData.pig.sound.data [i])
-		D2_FREE (gameData.pig.sound.data [i]);
+		delete[] gameData.pig.sound.data [i];
 	HashTableFree (bitmapNames + i);
 	HashTableFree (soundNames + i);
 	}

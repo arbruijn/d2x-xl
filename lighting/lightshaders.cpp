@@ -1127,7 +1127,7 @@ for (h = 0; h <= 3; h++) {
 		{
 		if (perPixelLightingShaderProgs [i][h])
 			continue;
-		if (HaveLightmaps ()) {
+		if (lightmapManager.HaveLightmaps ()) {
 			if (i) {
 				fsP = (i == 1) ? pszPP1LMLightingFS : pszPPXLMLightingFS;
 				vsP = pszPPLMLightingVS;
@@ -1331,7 +1331,7 @@ for (nLights = 0;
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, OBJ_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, OBJ_QUAD_ATT / fBrightness);
-		glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&fVector3::ZERO));
+		glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat*) (&fVector3::ZERO));
 		ambient.red = psl->info.color.red * PPL_AMBIENT_LIGHT;
 		ambient.green = psl->info.color.green * PPL_AMBIENT_LIGHT;
 		ambient.blue = psl->info.color.blue * PPL_AMBIENT_LIGHT;
@@ -1408,12 +1408,12 @@ nShader = 20 + 4 * nLights + nType;
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if ((bLightmaps = HaveLightmaps ())) {
+if ((bLightmaps = lightmapManager.HaveLightmaps ())) {
 	int i = faceP->nLightmap / LIGHTMAP_BUFSIZE;
 #if 1//def _DEBUG
-	if (OglCreateLightmap (i))
+	if (lightmapManager.Bind (i))
 #endif
-		{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapData.buffers + i, 1, 1);}
+		{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
 	}
 if (nShader != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
@@ -1468,8 +1468,8 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	nDbgSeg = nDbgSeg;
 #endif
 int i = faceP->nLightmap / LIGHTMAP_BUFSIZE;
-if (OglCreateLightmap (i))
-	{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapData.buffers + i, 1, 1);}
+if (lightmapManager.Bind (i))
+	{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
 if (nShader != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
 #if CONST_LIGHT_COUNT
@@ -1501,7 +1501,7 @@ int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP)
 if (gameStates.render.textures.bHaveGrayScaleShader) {
 	if (nType > 2)
 		nType = 2;
-	int bLightmaps = HaveLightmaps ();
+	int bLightmaps = lightmapManager.HaveLightmaps ();
 	int nShader = 90 + 3 * bLightmaps + nType;
 	if (gameStates.render.history.nShader != nShader) {
 		gameData.render.nShaderChanges++;

@@ -880,7 +880,7 @@ if (bufferBrightness < 0)
 	bufferBrightness = brightness;
 if (iBuffer) {
 	tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
-	int bLightmaps = HaveLightmaps ();
+	int bLightmaps = lightmapManager.HaveLightmaps ();
 	bufferBrightness = brightness;
 	glEnable (GL_BLEND);
 	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -944,7 +944,7 @@ int CParticleManager::CloseBuffer (void)
 if (!gameStates.render.bVertexArrays)
 	return 0;
 FlushBuffer (-1);
-G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + HaveLightmaps ());
+G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + lightmapManager.HaveLightmaps ());
 return 1;
 }
 
@@ -953,7 +953,7 @@ return 1;
 int CParticleManager::BeginRender (int nType, float nScale)
 {
 	CBitmap	*bmP;
-	int			bLightmaps = HaveLightmaps ();
+	int			bLightmaps = lightmapManager.HaveLightmaps ();
 	static time_t	t0 = 0;
 
 if (gameOpts->render.bDepthSort <= 0) {

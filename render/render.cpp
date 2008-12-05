@@ -2146,7 +2146,7 @@ if (gameStates.app.bNostalgia) {
 if (gameStates.app.bNostalgia > 1)
 	gameStates.render.nLightingMethod =
 	gameStates.render.bPerPixelLighting = 0;
-else if (!(RENDERPATH && HaveLightmaps ()))
+else if (!(RENDERPATH && lightmapManager.HaveLightmaps ()))
 	gameStates.render.bPerPixelLighting = 0;
 else {
 	if (gameStates.render.nLightingMethod == 2)
