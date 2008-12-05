@@ -1640,8 +1640,8 @@ if (!gameStates.app.bNostalgia) {
 		AddDynGeometryLights ();
 		ComputeNearestLights (nLevel);
 		if (gameStates.render.bPerPixelLighting) {
-			CreateLightmaps (nLevel);
-			if (HaveLightmaps ())
+			lightmapManager.Build (nLevel);
+			if (lightmapManager.HaveLightmaps ())
 				meshBuilder.RebuildLightmapTexCoord ();	//rebuild to create proper lightmap texture coordinates
 			else
 				gameOpts->render.bUseLightmaps = 0;

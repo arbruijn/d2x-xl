@@ -301,7 +301,7 @@ int CBitmap::RLECompress (void)
 		}
 	}
 
-	if (!(rle_data = new ubyte* [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)]))
+	if (!(rle_data = new ubyte [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)]))
 		return 0;
 	if (!large_rle)
 		doffset = 4 + m_info.props.h;
@@ -318,7 +318,7 @@ int CBitmap::RLECompress (void)
 		Assert (d==d1);
 		doffset	+= d;
 		if (large_rle)
-			* (reinterpret_cast<short*> (rle_data + 2 * y + 4) = (short) d;
+			*reinterpret_cast<short*> (rle_data + 2 * y + 4) = (short) d;
 		else
 			rle_data[y+4] = d;
 	}
@@ -602,7 +602,7 @@ void CBitmap::RLESwap_0_255 (void)
 	ushort nLineSize;
 
 rle_big = m_info.props.flags & BM_FLAG_RLE_BIG;
-temp = new ubyte* [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)];
+temp = new ubyte [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)];
 if (rle_big) {                  // set ptrs to first lines
 	ptr = Buffer () + 4 + 2 * m_info.props.h;
 	ptr2 = temp + 4 + 2 * m_info.props.h;
@@ -661,7 +661,7 @@ int CBitmap::RLERemap (ubyte *colorMap, int maxLen)
 	ushort nLineSize;
 
 bBigRLE = m_info.props.flags & BM_FLAG_RLE_BIG;
-remapBuf = new ubyte*> [MAX_BMP_SIZE (m_info.props.w, m_info.props.h) + 30000];
+remapBuf = new ubyte [MAX_BMP_SIZE (m_info.props.w, m_info.props.h) + 30000];
 if (bBigRLE) {                  // set ptrs to first lines
 	pSrc = Buffer () + 4 + 2 * m_info.props.h;
 	pDest = remapBuf + 4 + 2 * m_info.props.h;
@@ -673,7 +673,7 @@ else {
 for (i = 0; i < m_info.props.h; i++) {
 	start = pDest;
 	if (bBigRLE)
-		nLineSize = INTEL_SHORT (*(reinterpret_cast<ushort*> ((Buffer () + 4 + 2 * i)));
+		nLineSize = INTEL_SHORT (*reinterpret_cast<ushort*> (Buffer (4 + 2 * i)));
 	else
 		nLineSize = Buffer () [4 + i];
 	for (j = 0; j < nLineSize; j++) {

@@ -227,7 +227,7 @@ tObject *ObjFindFirstOfType (int nType)
 FORALL_OBJS (objP, i)
 	if (objP->info.nType == nType)
 		return (objP);
-return reinterpret_cast<tObject*> (NULL;
+return reinterpret_cast<tObject*> (NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -2238,15 +2238,6 @@ switch (objP->info.controlType) {
 		break;
 
 	case CT_SLEW:
-#if DBG
-		if (gameStates.input.keys.pressed [KEY_PAD5])
-			slew_stop ();
-		if (gameStates.input.keys.pressed [KEY_NUMLOCK]) {
-			slew_reset_orient ();
-			* reinterpret_cast<ubyte*> (0x417 &= ~0x20);		//kill numlock
-		}
-		slew_frame (0);		// Does velocity addition for us.
-#endif
 		break;	//ignore
 
 	case CT_DEBRIS:

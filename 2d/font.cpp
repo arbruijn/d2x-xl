@@ -334,8 +334,8 @@ m_info.parentBitmap.Destroy ();
 // make these offsets relative to font data
 nChars = m_info.maxChar - m_info.minChar + 1;
 if (m_info.flags & FT_PROPORTIONAL) {
-	m_info.widths = reinterpret_cast<short*> ((fontData + (size_t) m_info.widthOffs - GRS_FONT_SIZE);
-	m_info.data = reinterpret_cast<ubyte*> ((fontData + (size_t) m_info.dataOffs - GRS_FONT_SIZE);
+	m_info.widths = reinterpret_cast<short*> (fontData + (size_t) m_info.widthOffs - GRS_FONT_SIZE);
+	m_info.data = reinterpret_cast<ubyte*> (fontData + (size_t) m_info.dataOffs - GRS_FONT_SIZE);
 	m_info.chars = new ubyte* [nChars];
 	ptr = m_info.data;
 	for (i = 0; i < nChars; i++) {
@@ -354,7 +354,7 @@ else  {
 	ptr = m_info.data + (nChars * m_info.width * m_info.height);
 	}
 if (m_info.flags & FT_KERNED)
-	m_info.kernData = reinterpret_cast<ubyte*> ((fontData + (size_t) m_info.kernDataOffs - GRS_FONT_SIZE);
+	m_info.kernData = reinterpret_cast<ubyte*> (fontData + (size_t) m_info.kernDataOffs - GRS_FONT_SIZE);
 m_info.parentBitmap.Destroy ();
 if (m_info.flags & FT_COLOR) {		//remap palette
 #ifdef SWAP_0_255			// swap the first and last palette entries (black and white)

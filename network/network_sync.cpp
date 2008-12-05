@@ -143,7 +143,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 		NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
 		NW_SET_BYTES (objBuf, bufI, objP, sizeof (tObject));
 		if (gameStates.multi.nGameType >= IPX_GAME)
-			SwapObject (reinterpret_cast<tObject*> (objBuf + bufI - sizeof (tBaseObject));
+			SwapObject (reinterpret_cast<tObject*> (objBuf + bufI - sizeof (tBaseObject)));
 		}
 	if (nObjFrames) {	// Send any objects we've buffered
 		syncP->objs.nCurrent = i;	
@@ -422,7 +422,7 @@ memset (m, 0, sizeof (m));
 m [0].nType = NM_TYPE_TEXT; 
 m [0].text = text;
 m [1].nType = NM_TYPE_TEXT; 
-m [1].text = reinterpret_cast<char*> (TXT_NET_LEAVE);
+m [1].text = (char*) (TXT_NET_LEAVE);
 networkData.nJoinState = 0;
 i = NetworkSendRequest ();
 if (i < 0) {
@@ -704,7 +704,7 @@ void NetworkWaitForRequests (void)
 networkData.nStatus = NETSTAT_WAITING;
 memset (m, 0, sizeof (m));
 m [0].nType= NM_TYPE_TEXT; 
-m [0].text = reinterpret_cast<char*> (TXT_NET_LEAVE);
+m [0].text = (char*) (TXT_NET_LEAVE);
 NetworkFlush ();
 LOCALPLAYER.connected = 1;
 

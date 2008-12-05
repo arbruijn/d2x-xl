@@ -20,7 +20,7 @@ hmp_file *hmp_open(const char *filename, int bUseD1Hog)
 	int num_tracks, midi_div;
 	ubyte *p;
 
-	if (!cf.Open (reinterpret_cast<char*> (filename), gameFolders.szDataDir, "rb", bUseD1Hog))
+	if (!cf.Open ((char*) (filename), gameFolders.szDataDir, "rb", bUseD1Hog))
 		return NULL;
 	hmp = reinterpret_cast<hmp_file*> (D2_ALLOC(sizeof(hmp_file)));
 	if (!hmp) {
@@ -281,7 +281,7 @@ static int setup_buffers(hmp_file *hmp)
 		if (!(buf = reinterpret_cast<MIDIHDR*> (D2_ALLOC (HMP_BUFSIZE + sizeof(MIDIHDR)))))
 			return HMP_OUT_OF_MEM;
 		memset (buf, 0, sizeof (MIDIHDR));
-		buf->lpData = reinterpret_cast<char*< (buf + 1);
+		buf->lpData = reinterpret_cast<char*> (buf + 1);
 		buf->dwBufferLength = HMP_BUFSIZE;
 		buf->dwUser = (DWORD)(size_t)hmp;
 		buf->lpNext = lastbuf;

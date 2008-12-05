@@ -1806,7 +1806,7 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, co
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 		return;
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	if ((p = reinterpret_cast<char*> (strchr (pszName, '\n')))) {
+	if ((p = (char*) (strchr (pszName, '\n')))) {
 		memcpy (szName, pszName, l = p - pszName);
 		szName [l + 1] = '\0';
 		nIdWeapon [0] = HUDPrintF (&nIdWeapon [0], text_x, text_y, szName);

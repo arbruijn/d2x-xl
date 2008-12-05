@@ -164,7 +164,7 @@ void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, uint num_pixels)
 		work = ((work << 8) & 0xFF000000) | (work & 0x00FFFFFF); // 0xABEFGHGH -> 0xEFEFGHGH
 		doubletemp[1] = work;
 
-		*d = *(reinterpret_cast<double*> (doubletemp);
+		*d = *reinterpret_cast<double*> (doubletemp);
 		d++;
 	}
 }
@@ -444,9 +444,9 @@ void gr_bm_ubitblt00m_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap 
 	for (i=0; i < h; i++)    {
 		gr_rle_expand_scanline_masked(dbits, sbits, sx, sx+w-1);
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*(reinterpret_cast<short*> (src->Buffer (4 + (i + sy) * data_offset)))));
+			sbits += (int) INTEL_SHORT (*reinterpret_cast<short*> (src->Buffer () + 4 + (i + sy) * data_offset));
 		else
-			sbits += (int)(src->Buffer ()[4+i+sy]);
+			sbits += (int) (*src) [4 + i + sy];
 		dbits += dest->RowSize () << gr_bitblt_dest_step_shift;
 	}
 }
@@ -475,9 +475,9 @@ void gr_bm_ubitblt0x_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 	for (y1=0; y1 < h; y1++)    {
 		gr_rle_expand_scanline_generic(dest, dx, dy+y1,  sbits, sx, sx+w-1 );
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*(reinterpret_cast<short*> &(src->Buffer (4 + (y1 + sy) * data_offset))));
+			sbits += (int)INTEL_SHORT (*reinterpret_cast<short*> (src->Buffer () + 4 + (y1 + sy) * data_offset));
 		else
-			sbits += (int)src->Buffer ()[4+y1+sy];
+			sbits += (int) (*src) [4 + y1 + sy];
 	}
 
 }
@@ -501,7 +501,7 @@ void gr_bm_ubitblt0xm_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap 
 	for (y1=0; y1 < h; y1++)    {
 		gr_rle_expand_scanline_generic_masked(dest, dx, dy+y1,  sbits, sx, sx+w-1 );
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*(reinterpret_cast<short*> &(src->Buffer (4 + (y1 + sy) * data_offset))));
+			sbits += (int)INTEL_SHORT(*(reinterpret_cast<short*> (src->Buffer (4 + (y1 + sy) * data_offset))));
 		else
 			sbits += (int)src->Buffer ()[4+y1+sy];
 	}

@@ -619,13 +619,13 @@ if (strstr (pp->szTag, "Slowmo/Speed"))
 #if 1
 switch (pp->nSize) {
 	case 1:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<sbyte*> (pp->valP)));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<sbyte*> (pp->valP));
 		break;
 	case 2:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<short*> (pp->valP)));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<short*> (pp->valP));
 		break;
 	case 4:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<int*> (pp->valP)));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<int*> (pp->valP));
 		break;
 	default:
 		sprintf (szVal, "=%s\n", pp->valP);
@@ -728,7 +728,7 @@ switch (pp->nSize) {
 		*reinterpret_cast<int*> (pp->valP) = (int) nVal;
 		break;
 	default:
-		strncpy (reinterpret_cast<char*> (pp->valP, pszValue, pp->nSize);
+		strncpy (reinterpret_cast<char*> (pp->valP), pszValue, pp->nSize);
 		break;
 	}
 return 1;
@@ -1483,11 +1483,11 @@ RetrySelection:
 memset (m, 0, sizeof (m));
 for (i = 0; i < mct; i++ )	{
 	m [i].nType = NM_TYPE_MENU;
-	m [i].text = reinterpret_cast<char*> (CONTROL_TEXT(i));
+	m [i].text = (char*) (CONTROL_TEXT(i));
 	m [i].key = -1;
 	}
 nitems = i;
-m [0].text = reinterpret_cast<char*> (TXT_CONTROL_KEYBOARD);
+m [0].text = (char*) (TXT_CONTROL_KEYBOARD);
 choice = gameConfig.nControlType;				// Assume keyboard
 #ifndef APPLE_DEMO
 i = ExecMenu1( NULL, TXT_CHOOSE_INPUT, i, m, NULL, &choice );

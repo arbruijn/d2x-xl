@@ -1111,7 +1111,7 @@ for (bReadData = 0; bReadData < 2; bReadData++) {
 			nIndent -= 2;
 			return OOF_FreeSubObject (&so);
 			}
-		if (!(so.edges.pEdges= new tOOF_edge [nFaceVerts * sizeof (tOOF_edge)))) {
+		if (!(so.edges.pEdges = new tOOF_edge [nFaceVerts])) {
 			nIndent -= 2;
 			return OOF_FreeSubObject (&so);
 			}
