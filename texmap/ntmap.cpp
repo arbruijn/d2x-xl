@@ -56,7 +56,7 @@ int nWindowClipLeft, nWindowClipTop, nWindowClipRight, nWindowClipBot;
 //	They should be set only when they change, which is generally when the window bounds change.  And, even still, it's
 //	a pretty bad interface.
 int	bytes_per_row=-1;
-unsigned char *write_buffer;
+ubyte *write_buffer;
 int  	window_left;
 int	window_right;
 int	window_top;
@@ -75,7 +75,7 @@ int	bFixRecipTableComputed=0;
 
 fix fx_l, fx_u, fx_v, fx_z, fx_du_dx, fx_dv_dx, fx_dz_dx, fx_dl_dx;
 int fx_xleft, fx_xright, fx_y;
-unsigned char * pixptr;
+ubyte * pixptr;
 int per2Flag = 0;
 
 ubyte * tmap_flat_cthru_table;
@@ -125,7 +125,7 @@ void init_interface_vars_to_assembler(void)
 		}
 	}
 
-        write_buffer = (unsigned char *) bmP->Buffer ();
+        write_buffer = reinterpret_cast<ubyte*> (bmP->Buffer ());
 
 	window_left = 0;
 	window_right = (int) bmP->Width ()-1;

@@ -6,7 +6,7 @@ extern void gr_vesa_setstart(int x, int y );
 extern void gr_vesa_setpage(int page);
 extern void gr_vesa_incpage();
 extern int  gr_vesa_setlogical(int pixels_per_scanline);
-extern void gr_vesa_scanline(int x1, int x2, int y, unsigned char color );
-extern void gr_vesa_bitblt( unsigned char * source_ptr, unsigned int vesa_address, int height, int width );
-extern void gr_vesa_pixel( unsigned char color, unsigned int offset );
+extern void gr_vesa_scanline(int x1, int x2, int y, ubyte color );
+extern void gr_vesa_bitblt( ubyte * source_ptr, uint vesa_address, int height, int width );
+extern void gr_vesa_pixel( ubyte color, uint offset );
 #endif

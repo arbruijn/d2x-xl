@@ -131,7 +131,7 @@ int MustClipFlatFace (int nv, g3sCodes cc)
 			polyVertList[i*2+1] = I2X (p->p3_screen.y);
 		}
 
-		 (*flat_drawer_ptr) (nv, (int *)polyVertList);
+		 (*flat_drawer_ptr) (nv, reinterpret_cast<int*> (polyVertList));
 	}
 	else
 		ret=1;

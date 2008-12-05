@@ -427,8 +427,8 @@ if (gameData.render.terrain.pLightmap)
 else
 	atexit (FreeTerrainLightmap);		//first time
 
-gameData.render.terrain.pPoints = (vmsVector *) D2_ALLOC (GRID_SIZE * sizeof (vmsVector));
-gameData.render.terrain.pLightmap = (fix *) D2_ALLOC (GRID_SIZE * sizeof (fix));
+gameData.render.terrain.pPoints = reinterpret_cast<vmsVector*> (D2_ALLOC (GRID_SIZE * sizeof (vmsVector)));
+gameData.render.terrain.pLightmap = reinterpret_cast<fix*> (D2_ALLOC (GRID_SIZE * sizeof (fix)));
 ComputeTerrainPoints ();
 for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 	for (j = 0; j < gameData.render.terrain.nGridH; j++) {

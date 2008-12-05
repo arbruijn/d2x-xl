@@ -26,8 +26,8 @@
 
 #define MAX_POINTS_PER_POLY 25
 
-#define WORDVAL(_p)	(*((short *) (_p)))
-#define WORDPTR(_p)	((short *) (_p))
+#define WORDVAL(_p)	(*(reinterpret_cast<short *> (_p)))
+#define WORDPTR(_p)	(reinterpret_cast<short *> (_p))
 #define FIXPTR(_p)	((fix *) (_p))
 #define VECPTR(_p)	((vmsVector *) (_p))
 

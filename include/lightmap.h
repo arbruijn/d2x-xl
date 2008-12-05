@@ -3,6 +3,7 @@
 
 #include "ogl_defs.h"
 #include "ogl_texture.h"
+#include "carray.h"
 
 //------------------------------------------------------------------------------
 
@@ -33,11 +34,11 @@ typedef struct tLightmapBuffer {
 } tLightmapBuffer;
 
 typedef struct tLightmapData {
-	tLightmapInfo		*info;
-	tLightmapBuffer	*buffers;
-	int					nBuffers;
-	int					nLights; 
-	ushort				nLightmaps;
+	CArray<tLightmapInfo>	info;
+	CArray<tLightmapBuffer>	buffers;
+	int							nBuffers;
+	int							nLights; 
+	ushort						nLightmaps;
 } tLightmapData;
 
 //------------------------------------------------------------------------------

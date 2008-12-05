@@ -97,9 +97,9 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 		h = pfv->nIndex;
 		if (nModel > 200) {
 			vNormal = fVector3::Normal(
-							*((fVector3 *) (pso->pvVerts + pfv [0].nIndex)),
-							*((fVector3 *) (pso->pvVerts + pfv [1].nIndex)),
-							*((fVector3 *) (pso->pvVerts + pfv [2].nIndex)));
+							*reinterpret_cast<fVector3*> (pso->pvVerts + pfv [0].nIndex),
+							*reinterpret_cast<fVector3*> (pso->pvVerts + pfv [1].nIndex),
+							*reinterpret_cast<fVector3*> (pso->pvVerts + pfv [2].nIndex));
 			}
 		else
 			memcpy (&vNormal, &pof->vNormal, sizeof (fVector3));
@@ -109,7 +109,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 			pmv->texCoord.v.u = pfv->fu;
 			pmv->texCoord.v.v = pfv->fv;
 			pmv->normal = vNormal;
-			*((fVector *) (pm->pVerts + h)) = *((fVector *) (pso->pvVerts + h)) * fScale;
+			*reinterpret_cast<fVector*> (pm->pVerts + h) = *reinterpret_cast<fVector*> (pso->pvVerts + h) * fScale;
 			pmv->vertex = pm->pVerts [h];
 			G3SetSubModelMinMax (psm, &pmv->vertex);
 			*pvn = vNormal;

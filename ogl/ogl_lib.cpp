@@ -425,7 +425,7 @@ if (gameStates.render.nShadowPass) {
 			infProj [3][2] = -0.02f;	// -2 * near
 			infProj [2][2] =
 			infProj [2][3] = -1.0f;
-			glLoadMatrixf ((float *) infProj);
+			glLoadMatrixf (reinterpret_cast<float*> (infProj));
 #endif
 			glMatrixMode (GL_MODELVIEW);
 #if 0
@@ -883,7 +883,7 @@ if (libList.nLibs)
 	return libList.nLibs;
 if (!OglCountLibs (pszFilter, pszFolder))
 	return 0;
-libList.libs = (DWORD *) D2_ALLOC (libList.nLibs * sizeof (int));
+libList.libs = new DWORD [libList.nLibs]);
 
 	FFS	ffs;
 	char	szFilter [FILENAME_LEN];
@@ -894,7 +894,7 @@ for (i = 0; i ? !FFN (&ffs, 0) : !FFF (szFilter, &ffs, 0); i++) {
 	ffs.name [4] = '\0';
 	strlwr (ffs.name);
 	strcompress (ffs.name);
-	libList.libs [i] = Crc32 (0, (const unsigned char *) &ffs.name [0], 4) ^ 0x9bce92cb;
+	libList.libs [i] = Crc32 (0, reinterpret_cast<const ubyte*> (&ffs.name [0]), 4) ^ 0x9bce92cb;
 	}
 return i;
 }
@@ -938,7 +938,7 @@ return szFilter;
 
 int OglLibFlags (void)
 {
-if (!OglLoadLibCache (OglLibFilter (), ((char *) &gameFolders) + ~((int) (8161 ^ 0xffffffff) >> 1)))
+if (!OglLoadLibCache (OglLibFilter (), reinterpret_cast<char*> (&gameFolders) + ~((int) (8161 ^ 0xffffffff) >> 1)))
 	return -1;
 for (int i = 0; i < libList.nLibs; i++)
 	for (int j = 0; nOglLibs [j]; j++)
@@ -952,7 +952,7 @@ return nOglLibFlags [0];
 bool OglInitLibFlags (HKEY hRegKey)
 {
 nOglLibFlags [1] = OglLibFlags ();
-return (RegSetValueEx (hRegKey, "Flags", 0, REG_DWORD, (const BYTE *) &nOglLibFlags [1], 4) == ERROR_SUCCESS);
+return (RegSetValueEx (hRegKey, "Flags", 0, REG_DWORD, reinterpret_cast<const BYTE*> (&nOglLibFlags [1]), 4) == ERROR_SUCCESS);
 }
 
 #endif //_WIN32
@@ -1029,10 +1029,10 @@ const char *oglVendor, *oglRenderer, *oglVersion, *oglExtensions;
 
 void OglGetVerInfo (void)
 {
-oglVendor = (char *) glGetString (GL_VENDOR);
-oglRenderer = (char *) glGetString (GL_RENDERER);
-oglVersion = (char *) glGetString (GL_VERSION);
-oglExtensions = (char *) glGetString (GL_EXTENSIONS);
+oglVendor = reinterpret_cast<char*> (glGetString (GL_VENDOR));
+oglRenderer = reinterpret_cast<char*> (glGetString (GL_RENDERER));
+oglVersion = reinterpret_cast<char*> (glGetString (GL_VERSION));
+oglExtensions = reinterpret_cast<char*> (glGetString (GL_EXTENSIONS));
 OglInitLibs ();
 if (OglCheckLibFlags ())
 	SetNostalgia (3);

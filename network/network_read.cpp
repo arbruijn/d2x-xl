@@ -41,7 +41,7 @@ void NetworkReadEndLevelPacket (ubyte *dataP)
 {
 	// Special packet for end of level syncing
 	int nPlayer;
-	tEndLevelInfo *end = (tEndLevelInfo *)dataP;
+	tEndLevelInfo *end = reinterpret_cast<tEndLevelInfo*> (dataP);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	int i, j;
 
@@ -77,7 +77,7 @@ void NetworkReadEndLevelShortPacket (ubyte *dataP)
 	int nPlayer;
 	tEndLevelInfoShort *end;
 
-end = (tEndLevelInfoShort *)dataP;
+end = reinterpret_cast<tEndLevelInfoShort*> (dataP);
 nPlayer = end->nPlayer;
 Assert (nPlayer != gameData.multiplayer.nLocalPlayer);
 if (nPlayer >= gameData.multiplayer.nPlayers) {
@@ -104,7 +104,7 @@ void NetworkReadSyncPacket (tNetgameInfo * sp, int rsinit)
 	tNetgameInfo	tmp_info;
 
 if ((gameStates.multi.nGameType >= IPX_GAME) && (sp != &netGame)) { // for macintosh -- get the values unpacked to our structure format
-	ReceiveFullNetGamePacket ((ubyte *)sp, &tmp_info);
+	ReceiveFullNetGamePacket (reinterpret_cast<ubyte*> (sp), &tmp_info);
 	sp = &tmp_info;
 	}
 #endif
@@ -113,11 +113,11 @@ if (rsinit)
 	tmpPlayersInfo = &netPlayers;
 	// This function is now called by all people entering the netgame.
 if (sp != &netGame) {
-	char *p = (char *) sp;
+	char *p = reinterpret_cast<char*> (sp);
 	ushort h;
 	int i, s;
 	for (i = 0, h = -1; i < (int) sizeof (tNetgameInfo) - 1; i++, p++) {
-		s = *((ushort *) p);
+		s = *reinterpret_cast<ushort*> (p);
 		if (s == networkData.nSegmentCheckSum) {
 			h = i;
 			break;
@@ -177,11 +177,11 @@ for (i = 0, playerP = tmpPlayersInfo->players; i < gameData.multiplayer.nPlayers
 		memcpy (&server, playerP->network.ipx.server, 4);
 		if (server != 0)
 			IpxGetLocalTarget (
-				(ubyte *)&server,
+				reinterpret_cast<ubyte*> (&server),
 				tmpPlayersInfo->players [i].network.ipx.node,
 				gameData.multiplayer.players [i].netAddress);
 #else // WORDS_NEED_ALIGNMENT
-		if ((* (uint *)tmpPlayersInfo->players [i].network.ipx.server) != 0)
+		if (*reinterpret_cast<uint*> (tmpPlayersInfo->players [i].network.ipx.server) != 0)
 			IpxGetLocalTarget (
 				tmpPlayersInfo->players [i].network.ipx.server,
 				tmpPlayersInfo->players [i].network.ipx.node,
@@ -291,7 +291,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	gameStates.app.bEndLevelSequence = 1;
 	if (pd->dataSize > 0)
 		// pass pd->data to some parser function....
-		MultiProcessBigData ((char *) pd->data, pd->dataSize);
+		MultiProcessBigData (reinterpret_cast<char*> (pd->data), pd->dataSize);
 	gameStates.app.bEndLevelSequence = old_Endlevel_sequence;
 	return;
 	}
@@ -345,7 +345,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	MultiMakeGhostPlayer (nTheirPlayer);
 	CreatePlayerAppearanceEffect (OBJECTS + theirObjNum);
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-	ClipRank ((char *) &netPlayers.players [nTheirPlayer].rank);
+	ClipRank (reinterpret_cast<char*> (&netPlayers.players [nTheirPlayer].rank));
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	else
@@ -357,7 +357,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 //------------ Parse the extra dataP at the end ---------------
 if (pd->dataSize > 0)
 	// pass pd->data to some parser function....
-	MultiProcessBigData ((char *) pd->data, pd->dataSize);
+	MultiProcessBigData (reinterpret_cast<char*> (pd->data), pd->dataSize);
 }
 
 //------------------------------------------------------------------------------
@@ -406,9 +406,9 @@ void NetworkReadPDataShortPacket (tFrameInfoShort *pd)
 // will call totally hacked and gross function to fix this up.
 
 if (gameStates.multi.nGameType >= IPX_GAME)
-	GetShortFrameInfo ((ubyte *)pd, &new_pd);
+	GetShortFrameInfo (reinterpret_cast<ubyte*> (pd), &new_pd);
 else
-	memcpy (&new_pd, (ubyte *)pd, sizeof (tFrameInfoShort));
+	memcpy (&new_pd, reinterpret_cast<ubyte*> (pd), sizeof (tFrameInfoShort));
 nTheirPlayer = new_pd.nPlayer;
 theirObjNum = gameData.multiplayer.players [new_pd.nPlayer].nObject;
 if (nTheirPlayer < 0) {
@@ -432,7 +432,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	gameStates.app.bEndLevelSequence = 1;
 	if (new_pd.dataSize > 0) {
 		// pass pd->data to some parser function....
-		MultiProcessBigData ((char *) new_pd.data, new_pd.dataSize);
+		MultiProcessBigData (reinterpret_cast<char*> (new_pd.data), new_pd.dataSize);
 		}
 	gameStates.app.bEndLevelSequence = old_Endlevel_sequence;
 	return;
@@ -482,7 +482,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	MultiMakeGhostPlayer (nTheirPlayer);
 	CreatePlayerAppearanceEffect (OBJECTS + theirObjNum);
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-	ClipRank ((char *) &netPlayers.players [nTheirPlayer].rank);
+	ClipRank (reinterpret_cast<char*> (&netPlayers.players [nTheirPlayer].rank));
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	else
@@ -494,7 +494,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 //------------ Parse the extra dataP at the end ---------------
 if (new_pd.dataSize>0) {
 	// pass pd->data to some parser function....
-	MultiProcessBigData ((char *) new_pd.data, new_pd.dataSize);
+	MultiProcessBigData (reinterpret_cast<char*> (new_pd.data), new_pd.dataSize);
 	}
 }
 

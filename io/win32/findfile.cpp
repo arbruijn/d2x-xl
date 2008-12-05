@@ -46,14 +46,14 @@ if (!str)
 int len = (int) strlen (str) + 1;
 if (!w_str) {
 	bAlloc = true;
-	w_str = (wchar_t *) D2_ALLOC (sizeof (wchar_t) * len);
+	w_str = new wchar_t [len];
 	if (!w_str)
 		return NULL;
 	}
 if (MultiByteToWideChar (CP_ACP, 0, str, -1, w_str, len))
 	return w_str;
 if (bAlloc)
-	D2_FREE (w_str);
+	delete[] w_str;
 return NULL;
 }
 #else

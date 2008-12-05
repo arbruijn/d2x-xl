@@ -596,8 +596,8 @@ void SetDynLightMaterial (short nSegment, short nSide, short nObject)
 if (nLight >= 0) {
 	tDynLight *pl = gameData.render.lights.dynamic.lights + nLight;
 	if (pl->info.bState) {
-		gameData.render.lights.dynamic.material.emissive = *((fVector *) &pl->fEmissive);
-		gameData.render.lights.dynamic.material.specular = *((fVector *) &pl->fEmissive);
+		gameData.render.lights.dynamic.material.emissive = *reinterpret_cast<fVector*> (&pl->fEmissive);
+		gameData.render.lights.dynamic.material.specular = *reinterpret_cast<fVector*> (&pl->fEmissive);
 		gameData.render.lights.dynamic.material.shininess = 8;
 		gameData.render.lights.dynamic.material.bValid = 1;
 		gameData.render.lights.dynamic.material.nLight = nLight;
@@ -811,7 +811,7 @@ if (left < r)
 static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight *psl, short nType, int nThread)
 {
 #if DBG
-if (((char *) psl - (char *) gameData.render.lights.dynamic.shader.lights) % sizeof (*psl))
+if ((reinterpret_cast<char*> (psl - reinterpret_cast<char*> (gameData.render.lights.dynamic.shader.lights)) % sizeof (*psl))
 	return 0;
 #endif
 if (psl->bUsed [nThread])
@@ -878,7 +878,7 @@ if (psl) {
 		}
 	}
 #endif
-if (psl == (tShaderLight *) 0xffffffff)
+if (psl == reinterpret_cast<tShaderLight*> (0xffffffff))
 	return NULL;
 return psl;
 }
@@ -1360,7 +1360,7 @@ else if (gameStates.render.bPerPixelLighting) {
 			}
 		vcd.pVertPos = &vcd.vertPos;
 		vcd.fMatShininess = 4;
-		G3AccumVertColor (-1, (fVector3 *) psc, &vcd, 0);
+		G3AccumVertColor (-1, reinterpret_cast<fVector3*> (psc), &vcd, 0);
 		}
 #if DBG
 	if (psc->color.red + psc->color.green + psc->color.blue == 0)
@@ -1421,12 +1421,12 @@ else {
 				//G3TransformPoint (&vVertex, &vVertex);
 				fLightDist = VmVecDist (psl->vPosf, &vPosf) / fLightRange;
 				fAttenuation = fLightDist / psl->info.fBrightness;
-				VmVecScaleAdd ((fVector *) &c.color, (fVector *) &c.color, (fVector *) &psl->color, 1.0f / fAttenuation);
+				VmVecScaleAdd (reinterpret_cast<fVector*> (&c.color), reinterpret_cast<fVector*> (&c.color, reinterpret_cast<fVector*> (&psl->color, 1.0f / fAttenuation);
 				}
 			else
 #endif
 				{
-				VmVecInc ((fVector *) &psc->color, (fVector *) &psl->color);
+				VmVecInc (reinterpret_cast<fVector*> (&psc->color), reinterpret_cast<fVector*> (&psl->color);
 				}
 			}
 		}

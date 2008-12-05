@@ -47,13 +47,13 @@ long ffilelength(FILE *file)
 }
 
 
-unsigned long d_getdiskfree()
+ulong d_getdiskfree()
 {
  // FIXME:
 return 999999999;
 }
 
-unsigned long GetDiskFree()
+ulong GetDiskFree()
 {
  return d_getdiskfree();
 }
@@ -61,7 +61,7 @@ unsigned long GetDiskFree()
 // remove extension from filename, doesn't work with paths.
 void removeext(const char *filename, char *out) {
 	char *p;
-	if ((p = (char *) strrchr (filename, '.'))) {
+	if ((p = reinterpret_cast<char*> (strrchr (filename, '.')))) {
 		strncpy(out, filename, p - filename);
 		out[p - filename] = 0;
 	} else

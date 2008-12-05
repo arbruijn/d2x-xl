@@ -30,7 +30,7 @@ typedef union dSwap {
 	char		b [8];
 } dSwap;
 
-#define DSWAP(_d)	((dSwap *) &(_d))
+#define DSWAP(_d)	(reinterpret_cast<dSwap *> &(_d))
 
 static inline double SWAPDOUBLE (double i)
 {
@@ -75,7 +75,7 @@ typedef union fSwap {
 	char	b [4];
 } fSwap;
 
-#define FSWAP(_f)	((fSwap *) &(_f))
+#define FSWAP(_f)	(reinterpret_cast<fSwap *> &(_f))
 
 static inline float SWAPFLOAT (float i)
 {
@@ -112,7 +112,7 @@ typedef union iSwap {
 	char	b [4];
 } iSwap;
 
-#define ISWAP(_i)	((iSwap *) &(_i))
+#define ISWAP(_i)	(reinterpret_cast<iSwap *> &(_i))
 
 static inline int SWAPINT (int i)
 {
@@ -136,7 +136,7 @@ typedef union sSwap {
 	char	b [2];
 } sSwap;
 
-#define SSWAP(_s)	((sSwap *) &(_s))
+#define SSWAP(_s)	(reinterpret_cast<sSwap *> &(_s))
 
 static inline short SWAPSHORT (short i)
 {
@@ -203,27 +203,27 @@ return m;
 #define BE_SHORT(_x)			SwapShort(_x,0)
 
 #ifndef WORDS_NEED_ALIGNMENT
-#define GET_INTEL_INT(s)        INTEL_INT(*(uint *)(s))
-#define GET_INTEL_SHORT(s)      INTEL_SHORT(*(ushort *)(s))
-#define PUT_INTEL_INT(d, s)     { *(uint *)(d) = INTEL_INT((uint)(s)); }
-#define PUT_INTEL_SHORT(d, s)   { *(ushort *)(d) = INTEL_SHORT((ushort)(s)); }
+#define GET_INTEL_INT(s)        INTEL_INT(*reinterpret_cast<uint *>(s))
+#define GET_INTEL_SHORT(s)      INTEL_SHORT(*reinterpret_cast<ushort *>(s))
+#define PUT_INTEL_INT(d, s)     { *reinterpret_cast<uint *>(d) = INTEL_INT((uint)(s)); }
+#define PUT_INTEL_SHORT(d, s)   { *reinterpret_cast<ushort *>(d) = INTEL_SHORT((ushort)(s)); }
 #else // ! WORDS_NEED_ALIGNMENT
 static inline uint GET_INTEL_INT(void *s)
 {
 	uint tmp;
-	memcpy((void *)&tmp, s, 4);
+	memcpy(reinterpret_cast<void *>&tmp, s, 4);
 	return INTEL_INT(tmp);
 }
 static inline uint GET_INTEL_SHORT(void *s)
 {
 	ushort tmp;
-	memcpy((void *)&tmp, s, 2);
+	memcpy(reinterpret_cast<void *>&tmp, s, 2);
 	return INTEL_SHORT(tmp);
 }
 #define PUT_INTEL_INT(d, s)     { uint tmp = INTEL_INT(s); \
-                                  memcpy((void *)(d), (void *)&tmp, 4); }
+                                  memcpy(reinterpret_cast<void *>(d), reinterpret_cast<void *>&tmp, 4); }
 #define PUT_INTEL_SHORT(d, s)   { ushort tmp = INTEL_SHORT(s); \
-                                  memcpy((void *)(d), (void *)&tmp, 2); }
+                                  memcpy(reinterpret_cast<void *>(d), reinterpret_cast<void *>&tmp, 2); }
 #endif // ! WORDS_NEED_ALIGNMENT
 
 #endif // ! _BYTESWAP_H

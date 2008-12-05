@@ -76,7 +76,7 @@ else {
 		color.alpha = (float) gameStates.render.grAlpha / (float) FADE_LEVELS; //1.0f - (float) gameStates.render.grAlpha / ((float) FADE_LEVELS - 1.0f);
 		glEnable (GL_BLEND);
 		}
-	glColor4fv ((GLfloat *) &color);
+	glColor4fv (reinterpret_cast<GLfloat*> (&color));
 	}
 }
 
@@ -325,7 +325,7 @@ if (nThread == 1)
 	nThread = nThread;
 #endif
 colorSum = *pColorSum;
-vertPos = *vcd.pVertPos - *((fVector3 *) &viewInfo.glPosf);
+vertPos = *vcd.pVertPos - *(reinterpret_cast<fVector3*> (&viewInfo.glPosf));
 vertPos.Neg();
 fVector3::Normalize(vertPos);
 nLights = sliP->nActive;
@@ -361,7 +361,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 	if (psl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
-	lightColor = *((fVector3 *) &psl->info.color);
+	lightColor = *(reinterpret_cast<fVector3*> (&psl->info.color));
 	lightPos = *psl->vPosf [bTransform].V3();
 	lightDir = lightPos - *vcd.pVertPos;
 	bInRad = 0;
@@ -514,7 +514,7 @@ int G3AccumVertColor (int nVertex, fVector3 *pColorSum, tVertColorData *vcdP, in
 	tVertColorData			vcd = *vcdP;
 
 colorSum = *pColorSum;
-VmVecSub (&vertPos, vcd.pVertPos, (fVector3 *) &viewInfo.glPosf);
+VmVecSub (&vertPos, vcd.pVertPos, reinterpret_cast<fVector3*> (&viewInfo.glPosf));
 vmsVector::Normalize(vertPos, VmVecNegate (&vertPos));
 nLights = sliP->nActive;
 if (nLights > gameData.render.lights.dynamic.nLights)
@@ -533,7 +533,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #endif
 	if (psl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
-	lightColor = *((fVector3 *) &psl->info.color);
+	lightColor = *(reinterpret_cast<fVector3*> (&psl->info.color));
 	lightPos = psl->vPosf [gameStates.render.nState && !gameStates.ogl.bUseTransform].V3;
 #if VECMAT_CALLS
 	VmVecSub (&lightDir, &lightPos, vcd.pVertPos);

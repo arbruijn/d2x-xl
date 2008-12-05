@@ -177,7 +177,7 @@ if (!CreateBuffer ())
 #endif
 {
 #if CAMERA_READPIXELS
-	if (!(m_info.buffer.Buffer () = (char *) D2_ALLOC (m_info.buffer.Width () * m_info.buffer.Height () * 4)))
+	if (!(m_info.buffer.Buffer () = reinterpret_cast<char*> (D2_ALLOC (m_info.buffer.Width () * m_info.buffer.Height () * 4))))
 		return 0;
 	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport)
 		m_info.screenBuf = m_info.buffer.Buffer ();
@@ -248,7 +248,7 @@ void CCamera::Destroy (void)
 {
 m_info.buffer.FreeTexture ();
 OglDeleteTextures (1, &m_info.glTexId);
-if (m_info.screenBuf && (m_info.screenBuf != (char *) m_info.buffer.Buffer ()))
+if (m_info.screenBuf && (m_info.screenBuf != reinterpret_cast<char*> (m_info.buffer.Buffer ())))
 	D2_FREE (m_info.screenBuf);
 if (m_info.buffer.Buffer ()) {
 	m_info.buffer.DestroyBuffer ();
@@ -338,8 +338,8 @@ else
 		if (!bFitToWall && RENDERPATH) {
 			aImage = (float) CCanvas::Current ()->Bitmap ().Height () / (float) CCanvas::Current ()->Width ();
 			if (vertexP)
-				aFace = fVector::Dist(*(fVector *)vertexP, *(fVector *)(vertexP + 1)) / 
-				        fVector::Dist(*(fVector *)(vertexP + 1), *(fVector *)(vertexP + i2));
+				aFace = fVector::Dist(*reinterpret_cast<fVector*> (vertexP), *reinterpret_cast<fVector*> (vertexP + 1)) / 
+				        fVector::Dist(*reinterpret_cast<fVector*> (vertexP + 1), *reinterpret_cast<fVector*> (vertexP + i2));
 			else
 				aFace = dvFace / duFace;
 			dv = (aImage - aFace) / (float) nScale;

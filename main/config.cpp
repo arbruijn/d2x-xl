@@ -122,12 +122,12 @@ static uint cfgHashs [] = {
 
 int CfgLoadHashs (char *pszFilter, char *pszFolder)
 {
-nDefaultHash = Crc32 (0, (unsigned char *) "m4d1", 4);
+nDefaultHash = Crc32 (0, reinterpret_cast<ubyte*> ("m4d1"), 4);
 if (hashList.nHashs)
 	return hashList.nHashs;
 if (!CfgCountHashs (pszFilter, pszFolder))
 	return 0;
-hashList.hashs = (uint *) D2_ALLOC (hashList.nHashs * sizeof (int));
+hashList.hashs = reinterpret_cast<uint*> (D2_ALLOC (hashList.nHashs * sizeof (int)));
 
 	FFS	ffs;
 	char	szTag [FILENAME_LEN];
@@ -138,7 +138,7 @@ for (i = 0; i ? !FFN (&ffs, 0) : !FFF (szTag, &ffs, 0); i++) {
 	ffs.name [4] = '\0';
 	strlwr (ffs.name);
 	strcompress (ffs.name);
-	hashList.hashs [i] = Crc16 (0, (const unsigned char *) &ffs.name [0], 4);
+	hashList.hashs [i] = Crc16 (0, reinterpret_cast<const ubyte*> (&ffs.name [0]), 4);
 	}
 return i;
 }

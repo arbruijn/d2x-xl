@@ -47,7 +47,7 @@ typedef struct kaliaddr_ipx_tag {
     short sa_family;
     char  sa_netnum[4];
     char  sa_nodenum[6];
-    unsigned short sa_socket;
+    ushort sa_socket;
 } kaliaddr_ipx;
 
 // Process name that shows up in /whois and /games list.
@@ -67,7 +67,7 @@ typedef struct kaliaddr_ipx_tag {
 // };
 
 int KaliGetNodeNum(kaliaddr_ipx *myaddr);
-int KaliOpenSocket(unsigned short port);
+int KaliOpenSocket(ushort port);
 int KaliCloseSocket(int hand);
 int KaliSendPacket(int hand, char *data, int len, kaliaddr_ipx *to);
 int KaliReceivePacket(int hand, char *data, int len, kaliaddr_ipx *from);

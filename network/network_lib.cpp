@@ -35,7 +35,7 @@ char *iptos (char *pszIP, char *addr)
 {
 sprintf (pszIP, "%d.%d.%d.%d:%d",
 			addr [0], addr [1], addr [2], addr [3],
-			ntohs (*((short *) (addr + 4))));
+			ntohs (*reinterpret_cast<short*> (addr + 4)));
 return pszIP;
 }
 
@@ -336,7 +336,7 @@ void OpenSendLog ()
  {
   int i;
 
-SendLogFile = (FILE *)fopen ("sendlog.net", "w");
+SendLogFile = reinterpret_cast<FILE*> (fopen ("sendlog.net", "w"));
 for (i = 0; i < 100; i++)
 	TTSent [i] = 0;
  }
@@ -347,7 +347,7 @@ void OpenReceiveLog ()
  {
 int i;
 
-ReceiveLogFile= (FILE *)fopen ("recvlog.net", "w");
+ReceiveLogFile= reinterpret_cast<FILE*> (fopen ("recvlog.net", "w"));
 for (i = 0; i < 100; i++)
 	TTRecv [i] = 0;
  }

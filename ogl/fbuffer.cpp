@@ -265,7 +265,9 @@ gameStates.ogl.bRender2TextureOk = 2;
 #	endif
 	}
 #endif
-PrintLog ((gameStates.ogl.bRender2TextureOk == 2) ? (char *) "Rendering to texture is available\n" : (char *) "No rendering to texture available\n");
+PrintLog ((gameStates.ogl.bRender2TextureOk == 2) ? 
+			 reinterpret_cast<char*> ("Rendering to texture is available\n") : 
+			 reinterpret_cast<char*> ("No rendering to texture available\n"));
 }
 
 //------------------------------------------------------------------------------

@@ -100,7 +100,7 @@ if (nWidth > 0)
 	m_info.nWidth = nWidth;
 if (nHeight > 0)
 	m_info.nHeight = nHeight;
-wglChoosePixelFormatARB (hGlDC, (const int *) pfAttribs, NULL, 1, &pf, &nPf);
+wglChoosePixelFormatARB (hGlDC, reinterpret_cast<const int*> (pfAttribs), NULL, 1, &pf, &nPf);
 if (!nPf)
 	return 0;
 if (!(m_info.hBuf = wglCreatePbufferARB (hGlDC, pf, m_info.nWidth, m_info.nHeight, pbAttribs)))
@@ -313,8 +313,8 @@ if (gameStates.ogl.bUseRender2Texture) {
 #endif
   
 PrintLog ((gameStates.ogl.bRender2TextureOk == 1) ? 
-		(char *) "Rendering to pixel buffers is available\n" : 
-		(char *) "No rendering to pixel buffers available\n");
+		reinterpret_cast<char*> ("Rendering to pixel buffers is available\n") : 
+		reinterpret_cast<char*> ("No rendering to pixel buffers available\n"));
 
 }
 

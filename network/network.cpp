@@ -385,7 +385,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	if (nakedData.nLength) {
 		Assert (nakedData.nDestPlayer >- 1);
 		if (gameStates.multi.nGameType >= IPX_GAME) 
-			IPXSendPacketData ((ubyte *) nakedData.buf, nakedData.nLength, 
+			IPXSendPacketData (reinterpret_cast<ubyte*> (nakedData.buf), nakedData.nLength, 
 									netPlayers.players [nakedData.nDestPlayer].network.ipx.server, 
 									netPlayers.players [nakedData.nDestPlayer].network.ipx.node, 
 									gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
@@ -424,12 +424,12 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				shortSyncPack.nPackets = networkData.syncPack.nPackets;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 				IpxSendGamePacket (
-					(ubyte*)&shortSyncPack, 
+					reinterpret_cast<ubyte*> (&shortSyncPack), 
 					sizeof (tFrameInfoShort) - networkData.nMaxXDataSize + networkData.syncPack.dataSize);
 #else
 				SquishShortFrameInfo (shortSyncPack, send_data);
 				IpxSendGamePacket (
-					(ubyte*)send_data, 
+					reinterpret_cast<ubyte*> (send_data), 
 					IPX_SHORT_INFO_SIZE-networkData.nMaxXDataSize+networkData.syncPack.dataSize);
 #endif
 				}
@@ -458,7 +458,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 #endif
 				networkData.syncPack.nPackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
 				IpxSendGamePacket (
-					(ubyte*)&networkData.syncPack, 
+					reinterpret_cast<ubyte*> (&networkData.syncPack), 
 					sizeof (tFrameInfo) - networkData.nMaxXDataSize + send_dataSize);
 				}
 			networkData.syncPack.dataSize = 0;               // Start data over at 0 length.
@@ -538,7 +538,7 @@ mybuf [0]=flag;
 mybuf [1]=gameData.multiplayer.nLocalPlayer;
 if (gameStates.multi.nGameType >= IPX_GAME)
 	IPXSendPacketData (
-			(ubyte *)mybuf, 2, 
+			reinterpret_cast<ubyte*> (mybuf), 2, 
 		netPlayers.players [nPlayer].network.ipx.server, 
 		netPlayers.players [nPlayer].network.ipx.node, 
 		gameData.multiplayer.players [nPlayer].netAddress);
@@ -577,7 +577,7 @@ void OpenSendLog (void)
  {
   int i;
 
-SendLogFile= (FILE *)fopen ("sendlog.net", "w");
+SendLogFile = reinterpret_cast<FILE*> (fopen ("sendlog.net", "w"));
 for (i = 0; i < 100; i++)
 	TTSent [i] = 0;
  }
@@ -588,7 +588,7 @@ void OpenReceiveLog (void)
  {
 int i;
 
-ReceiveLogFile= (FILE *)fopen ("recvlog.net", "w");
+ReceiveLogFile= reinterpret_cast<FILE*> (fopen ("recvlog.net", "w"));
 for (i = 0; i < 100; i++)
 	TTRecv [i] = 0;
  }

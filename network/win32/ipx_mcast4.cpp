@@ -30,7 +30,7 @@
 
 //#define IPX_MCAST4DBG
 
-extern unsigned char ipx_MyAddress[10];
+extern ubyte ipx_MyAddress[10];
 
 #define UDP_BASEPORT 28342
 
@@ -94,12 +94,12 @@ return 1;
 #ifdef IPX_MCAST4DBG
 /* Dump raw form of IP address/port by fancy output to user
  */
-static void dumpraddr(unsigned char *a)
+static void dumpraddr(ubyte *a)
 {
 	short port;
 
 	//printf("[%u.%u.%u.%u]", a[0], a[1], a[2], a[3]);
-	port=(signed short)ntohs(*(unsigned short *)(a+4);
+	port=(signed short)ntohs(*reinterpret_cast<ushort*> (a+4);
 	//if (port) printf(":%+d",port);
 }
 
@@ -107,8 +107,8 @@ static void dumpraddr(unsigned char *a)
  */
 static void dumpaddr(struct sockaddr_in *sin)
 {
-	unsigned short ports;
-	unsigned char qhbuf[8];
+	ushort ports;
+	ubyte qhbuf[8];
 
 	memcpy(qhbuf + 0, &sin->sin_addr, 4);
 	ports = htons(((short)ntohs(sin->sin_port)) - UDP_BASEPORT);
@@ -143,7 +143,7 @@ static int ipx_mcast4_OpenSocket(ipx_socket_t *sk, int port)
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = htonl(INADDR_ANY);
 	sin.sin_port = htons(baseport);
-	if (bind(sk->fd, (struct sockaddr *)&sin, sizeof(sin)))
+	if (bind(sk->fd, reinterpret_cast<struct sockaddr*> (&sin), sizeof(sin)))
 	{
 		closesocket(sk->fd);
 		sk->fd = -1;
@@ -155,19 +155,19 @@ static int ipx_mcast4_OpenSocket(ipx_socket_t *sk, int port)
 	}
 
 	// Set the TTL so the packets can get out of the local network.
-	if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_TTL, (const char *) &ttl, sizeof(ttl)) < 0)
+	if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_TTL, reinterpret_cast<const char*> (&ttl), sizeof(ttl)) < 0)
 		FAIL("setsockopt() failed to set TTL to 128");
 
 	// Disable multicast loopback
 	loop = 0;
-	if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_LOOP, (const char *) &loop, sizeof(loop)) < 0)
+	if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_LOOP, reinterpret_cast<const char*> (&loop), sizeof(loop)) < 0)
 		FAIL("setsockopt() failed to disable multicast loopback: %m");
 
 	// Subscribe to the game announcement address
 	memset(&mreq, 0, sizeof(mreq));
 	mreq.imr_multiaddr.s_addr = DESCENT2_ANNOUNCE_ADDR;
 	mreq.imr_interface.s_addr = INADDR_ANY;
-	if(setsockopt(sk->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const char *) &mreq, sizeof(mreq)) < 0)
+	if(setsockopt(sk->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&mreq), sizeof(mreq)) < 0)
 		FAIL("setsockopt() failed to subscribe to the game announcement multicast group");
 
 	// We're not subscribed to a game address yet
@@ -195,7 +195,7 @@ static int ipx_mcast4_SendPacket(ipx_socket_t *sk, IPXPacket_t *IPXHeader, u_cha
 
 	toaddr.sin_family = AF_INET;
 	memcpy(&toaddr.sin_addr, IPXHeader->Destination.Node + 0, 4);
-	//toaddr.sin_port = htons(((short)ntohs(*(unsigned short *)(IPXHeader->Destination.Node + 4))) + UDP_BASEPORT);
+	//toaddr.sin_port = htons(((short)ntohs (*reinterpret_cast<ushort*> (IPXHeader->Destination.Node + 4))) + UDP_BASEPORT);
 	// For now, just use the same port for everything
 	toaddr.sin_port = htons(UDP_BASEPORT);
 
@@ -217,7 +217,7 @@ static int ipx_mcast4_SendPacket(ipx_socket_t *sk, IPXPacket_t *IPXHeader, u_cha
 	//puts(").");
 #endif
 
-	i = sendto(sk->fd, (const char *) data, dataLen, 0, (struct sockaddr *)&toaddr, sizeof(toaddr));
+	i = sendto(sk->fd, reinterpret_cast<const char*> (data), dataLen, 0, reinterpret_cast<struct sockaddr*> (&toaddr), sizeof(toaddr));
 	return i;
 }
 
@@ -227,7 +227,8 @@ static int ipx_mcast4_ReceivePacket(ipx_socket_t *sk, ubyte *outbuf, int outbufs
 	struct sockaddr_in fromaddr;
 	int fromaddrsize = sizeof(fromaddr);
 
-	if((size = recvfrom(sk->fd, (char *) outbuf, outbufsize, 0, (struct sockaddr*)&fromaddr, &fromaddrsize)) < 0)
+	if((size = recvfrom (sk->fd, reinterpret_cast<char*> (outbuf), outbufsize, 
+								0, reinterpret_cast<struct sockaddr*> (&fromaddr), &fromaddrsize)) < 0)
 		return -1;
 
 #ifdef IPX_MCAST4DBG
@@ -285,14 +286,14 @@ static int ipx_mcast4_HandleNetgameAuxData(ipx_socket_t *sk, const u_char buf[NE
 #endif
 
 	// Set the TTL so the packets can get out of the local network.
-	if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_TTL, (const char *) &ttl, sizeof(ttl)) < 0)
+	if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_TTL, reinterpret_cast<const char*> (&ttl), sizeof(ttl)) < 0)
 		FAIL("setsockopt() failed to set TTL to 128");
 
 	memset(&mreq, 0, sizeof(mreq));
 	mreq.imr_multiaddr = game_addr;
 	mreq.imr_interface.s_addr = INADDR_ANY;
 
-	if(setsockopt(sk->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const char *) &mreq, sizeof(mreq)) < 0)
+	if(setsockopt(sk->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&mreq), sizeof(mreq)) < 0)
 		FAIL("setsockopt() failed to subscribe to the game group");
 
 	return 0;
@@ -335,7 +336,7 @@ static void ipx_mcast4_HandleLeaveGame(ipx_socket_t *sk)
 
 	mreq.imr_multiaddr = game_addr;
 	mreq.imr_interface.s_addr = INADDR_ANY;
-	setsockopt(sk->fd, IPPROTO_IP, IP_DROP_MEMBERSHIP, (const char *) &mreq, sizeof(mreq));
+	setsockopt(sk->fd, IPPROTO_IP, IP_DROP_MEMBERSHIP, reinterpret_cast<const char*> (&mreq), sizeof(mreq));
 	game_addr.s_addr = 0;
 }
 
@@ -352,7 +353,7 @@ static int ipx_mcast4_SendGamePacket(ipx_socket_t *sk, ubyte *data, int dataLen)
 
 	//msg("ipx_mcast4_SendGamePacket");
 
-	i = sendto(sk->fd, (const char *) data, dataLen, 0, (struct sockaddr *)&toaddr, sizeof(toaddr));
+	i = sendto(sk->fd, reinterpret_cast<const char*> ( data, dataLen, 0, reinterpret_cast<struct sockaddr*> (&toaddr), sizeof(toaddr));
 
 	return i;
 }

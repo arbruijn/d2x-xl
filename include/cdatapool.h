@@ -27,7 +27,7 @@ template < class _T > class CDataPool {
 		CDataPool () { Init (); }
 		~CDataPool() { Destroy (); }
 
-		_T& operator[] (unsigned int i) { return m_buffer [i].data; }
+		_T& operator[] (uint i) { return m_buffer [i].data; }
 
 		inline void Init (void) { 
 			m_buffer.Init ();
@@ -41,11 +41,11 @@ template < class _T > class CDataPool {
 			Init (); 
 			}
 
-		inline bool Create (unsigned int size) { 
+		inline bool Create (uint size) { 
 			Destroy ();
 			if (!m_buffer.Create (size))
 				return false;
-			unsigned int i;
+			uint i;
 			for (i = 0; i < size; i++) {
 				m_buffer [i].prev = i - 1;
 				m_buffer [i].next = i + 1;
@@ -70,7 +70,7 @@ template < class _T > class CDataPool {
 			return &e.data; 
 			}
 
-		void Push (unsigned int i) {
+		void Push (uint i) {
 			CPoolElem<_T>& e = m_buffer [i];
 			if (e.prev < 0)
 				m_used = e.next;

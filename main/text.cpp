@@ -2541,15 +2541,15 @@ char **InitTexts (char *szTextFile, int bInitHotKeys)
 #endif
 
 j = N_BASE_TEXTS + GameTextCount ();
-if (!(pszTexts = (char **) D2_ALLOC ((j + 1) * sizeof (char *))))
+if (!(pszTexts = reinterpret_cast<char **> (D2_ALLOC ((j + 1) * sizeof (char *)))))
 	return NULL;
 h = GameTextSize ();
-if (!(*pszTexts = (char *) D2_ALLOC (h))) {
+if (!(*pszTexts = reinterpret_cast<char*> (D2_ALLOC (h)))) {
 	D2_FREE (pszTexts);
 	return NULL;
 	}
 for (i = 0; i < j; i++) {
-	pSrc = (char *) ((i < N_BASE_TEXTS) ? baseGameTexts [i] : defaultGameTexts [i - N_BASE_TEXTS][gameStates.app.bEnglish]);
+	pSrc = (i < N_BASE_TEXTS) ? reinterpret_cast<char*> (baseGameTexts [i]) : reinterpret_cast<char*> (defaultGameTexts [i - N_BASE_TEXTS][gameStates.app.bEnglish]);
 #if DUMP_TEXTS == 1
 	{
 		char *pi, *pj, s [200];
@@ -2621,14 +2621,14 @@ return pszTexts;
 
 void InitGameTexts (void)
 {
-pszGameTexts = InitTexts (gameStates.app.bEnglish ? (char *) "descent.tex.eng" : (char *) "descent.tex.ger", 1);
+pszGameTexts = InitTexts (gameStates.app.bEnglish ? reinterpret_cast<char*> ("descent.tex.eng") : reinterpret_cast<char*> ("descent.tex.ger"), 1);
 }
 
 //------------------------------------------------------------------------------
 
 void InitHelpTexts (void)
 {
-pszHelpTexts = InitTexts (gameStates.app.bEnglish ? (char *) "descent.hlp.eng" : (char *) "descent.hlp.ger", 0);
+pszHelpTexts = InitTexts (gameStates.app.bEnglish ? reinterpret_cast<char*> ("descent.hlp.eng") : reinterpret_cast<char*> ("descent.hlp.ger"), 0);
 }
 
 //------------------------------------------------------------------------------
@@ -2800,13 +2800,13 @@ if (i == 644) {
 		baseGameTexts[172] = baseGameTexts[171];
 		baseGameTexts[171] = baseGameTexts[170];
 		baseGameTexts[170] = baseGameTexts[169];
-		baseGameTexts[169] = (char *) "Windows Joystick";
+		baseGameTexts[169] = reinterpret_cast<char*> ("Windows Joystick");
 		}
-	baseGameTexts[644] = (char *) "Z1";
-	baseGameTexts[645] = (char *) "UN";
-	baseGameTexts[646] = (char *) "P1";
-	baseGameTexts[647] = (char *) "R1";
-	baseGameTexts[648] = (char *) "Y1";
+	baseGameTexts[644] = reinterpret_cast<char*> ("Z1");
+	baseGameTexts[645] = reinterpret_cast<char*> ("UN");
+	baseGameTexts[646] = reinterpret_cast<char*> ("P1");
+	baseGameTexts[647] = reinterpret_cast<char*> ("R1");
+	baseGameTexts[648] = reinterpret_cast<char*> ("Y1");
 	}
 #if DUMP_TEXTS 
 fclose (fTxt);

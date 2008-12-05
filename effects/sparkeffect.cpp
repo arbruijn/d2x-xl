@@ -47,7 +47,7 @@ void AllocSegmentSparks (short nSegment)
 	tEnergySpark	*sparkP = segP->sparks;
 
 segP->nMaxSparks = (ushort) (2 * AvgSegRadf (nSegment) + 0.5f);
-if (!(sparkP = (tEnergySpark *) D2_ALLOC (segP->nMaxSparks * sizeof (tEnergySpark))))
+if (!(sparkP = new tEnergySpark [segP->nMaxSparks]))
 	segP->nMaxSparks = 0;
 else {
 	segP->sparks = sparkP;
@@ -68,7 +68,7 @@ void FreeSegmentSparks (short nSegment)
 	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel]+ nMatCen;
 
 if (segP->sparks) {
-	D2_FREE (segP->sparks);
+	delete[] segP->sparks;
 	segP->nMaxSparks = 0;
 	}
 }

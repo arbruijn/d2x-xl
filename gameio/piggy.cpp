@@ -91,9 +91,9 @@ static ubyte *bitmapBits [2] = {NULL, NULL};
 ubyte d1ColorMap [256];
 
 #if DBG
-#	define PIGGY_BUFFER_SIZE ((unsigned int) (512*1024*1024))
+#	define PIGGY_BUFFER_SIZE ((uint) (512*1024*1024))
 #else
-#	define PIGGY_BUFFER_SIZE ((unsigned int) 0x7fffffff)
+#	define PIGGY_BUFFER_SIZE ((uint) 0x7fffffff)
 #endif
 #define PIGGY_SMALL_BUFFER_SIZE (16*1024*1024)		// size of buffer when bLowMemory is set
 
@@ -310,7 +310,7 @@ if (bLowMemory)
 // until memory could be allocated, and then once more to leave enough memory
 // for other parts of the program
 for (;;) {
-	if ((bitmapBits [0] = (ubyte *) D2_ALLOC (bitmapCacheSize))) {
+	if ((bitmapBits [0] = reinterpret_cast<ubyte*> (D2_ALLOC (bitmapCacheSize)))) {
 		D2_FREE (bitmapBits [0]);
 		break;
 		}
@@ -398,7 +398,7 @@ int ReadHamFile (void)
 	int nHAMId;
 	int nSoundOffset = 0;
 
-if (!cf.Open ((char *) DEFAULT_HAMFILE, gameFolders.szDataDir, "rb", 0)) {
+if (!cf.Open (reinterpret_cast<char*> (DEFAULT_HAMFILE), gameFolders.szDataDir, "rb", 0)) {
 	bMustWriteHamFile = 1;
 	return 0;
 	}
@@ -494,7 +494,7 @@ if (bLowMemory)
 	gameStates.sound.digi.bLoMem = 1;
 /*---*/PrintLog ("   Loading game data\n");
 #if 1 //def EDITOR //need for d1 mission briefings
-PiggyInitPigFile ((char *) DEFAULT_PIGFILE);
+PiggyInitPigFile (reinterpret_cast<char*> (DEFAULT_PIGFILE));
 #endif
 /*---*/PrintLog ("   Loading main ham file\n");
 bSoundOk = bHamOk = ReadHamFile ();
@@ -570,7 +570,7 @@ void PiggyBitmapReadD1 (
 	CBitmap				*bmP, /* read into this bmP */
 	int					nBmDataOffs, /* specific to file */
    tPIGBitmapHeader	*bmh, /* header info for bmP */
-   ubyte					**pNextBmP, /* where to write it (if 0, use (ubyte *) D2_ALLOC) */
+   ubyte					**pNextBmP, /* where to write it (if 0, use reinterpret_cast<ubyte*> (D2_ALLOC) */
    ubyte					*colorMap) /* how to translate bmP's colors */
 {
 	int zSize, bSwap0255;
@@ -772,7 +772,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		bmTemp.SetBPP (1);
 		bmTemp.SetFlags (bmh.flags | BM_FLAG_PAGED_OUT);
 		bmTemp.SetAvgColorIndex (bmh.avgColor);
-		bmTemp.SetBuffer (NULL); //(ubyte *) D2_ALLOC (bmTemp.props.w * bmTemp.Width ());
+		bmTemp.SetBuffer (NULL); 
 		bmTemp.SetBPP (1);
 		bitmapCacheUsed += bmTemp.BufSize ();
 		gameData.pig.tex.bitmapFlags [1][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
@@ -857,24 +857,24 @@ return i;
 
 typedef struct tBitmapFileHeader {
 	short	bfType;
-	unsigned int bfSize;
+	uint bfSize;
 	short bfReserved1;
 	short bfReserved2;
-	unsigned int bfOffBits;
+	uint bfOffBits;
 } tBitmapFileHeader;
 
 typedef struct tBitmapInfoHeader {
-	unsigned int biSize;
-	unsigned int biWidth;
-	unsigned int biHeight;
+	uint biSize;
+	uint biWidth;
+	uint biHeight;
 	short biPlanes;
 	short biBitCount;
-	unsigned int biCompression;
-	unsigned int biSizeImage;
-	unsigned int biXPelsPerMeter;
-	unsigned int biYPelsPerMeter;
-	unsigned int biClrUsed;
-	unsigned int biClrImportant;
+	uint biCompression;
+	uint biSizeImage;
+	uint biXPelsPerMeter;
+	uint biYPelsPerMeter;
+	uint biClrUsed;
+	uint biClrImportant;
 } tBitmapInfoHeader;
 
 CBitmap *PiggyLoadBitmap (const char *pszFile)
@@ -888,22 +888,22 @@ if (!cf.Open (pszFile, gameFolders.szDataDir, "rb", 0))
 	return NULL;
 
 bfh.bfType = cf.ReadShort ();
-bfh.bfSize = (unsigned int) cf.ReadInt ();
+bfh.bfSize = (uint) cf.ReadInt ();
 bfh.bfReserved1 = cf.ReadShort ();
 bfh.bfReserved2 = cf.ReadShort ();
-bfh.bfOffBits = (unsigned int) cf.ReadInt ();
+bfh.bfOffBits = (uint) cf.ReadInt ();
 
-bih.biSize = (unsigned int) cf.ReadInt ();
-bih.biWidth = (unsigned int) cf.ReadInt ();
-bih.biHeight = (unsigned int) cf.ReadInt ();
+bih.biSize = (uint) cf.ReadInt ();
+bih.biWidth = (uint) cf.ReadInt ();
+bih.biHeight = (uint) cf.ReadInt ();
 bih.biPlanes = cf.ReadShort ();
 bih.biBitCount = cf.ReadShort ();
-bih.biCompression = (unsigned int) cf.ReadInt ();
-bih.biSizeImage = (unsigned int) cf.ReadInt ();
-bih.biXPelsPerMeter = (unsigned int) cf.ReadInt ();
-bih.biYPelsPerMeter = (unsigned int) cf.ReadInt ();
-bih.biClrUsed = (unsigned int) cf.ReadInt ();
-bih.biClrImportant = (unsigned int) cf.ReadInt ();
+bih.biCompression = (uint) cf.ReadInt ();
+bih.biSizeImage = (uint) cf.ReadInt ();
+bih.biXPelsPerMeter = (uint) cf.ReadInt ();
+bih.biYPelsPerMeter = (uint) cf.ReadInt ();
+bih.biClrUsed = (uint) cf.ReadInt ();
+bih.biClrImportant = (uint) cf.ReadInt ();
 
 if (!(bmP = CBitmap::Create (0, bih.biWidth, bih.biHeight, 1))) {
 	cf.Close ();
@@ -931,11 +931,13 @@ PrintLog ("unloading sounds\n");
 for (i = 0; i < 2; i++) {
 	for (j = 0, dsP = gameData.pig.sound.sounds [i]; j < MAX_SOUND_FILES; j++, dsP++)
 		if (dsP->bHires) {
-			D2_FREE (dsP->data [0]);
+			delete[] dsP->data [0];
+			dsP->data [0] = NULL;
 			dsP->bHires = 0;
 			}
 		else if (dsP->bDTX) {
-			D2_FREE (dsP->data [1]);
+			delete[] dsP->data [1];
+			dsP->data [1] = NULL;
 			dsP->bDTX = 0;
 			}
 	if (gameData.pig.sound.data [i])

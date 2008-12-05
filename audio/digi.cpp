@@ -43,7 +43,7 @@
  * the value to avoid overflow.  (used with permission from ARDI)
  * DPH: Taken from SDL/src/SDL_mixer.c.
  */
-static const Uint8 mix8[] =
+static const ubyte mix8[] =
 {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -103,8 +103,8 @@ typedef struct tSoundSlot {
 	fix				xPan;				// 0 = far left, 1 = far right
 	fix				xVolume;			// 0 = nothing, 1 = fully on
 	ubyte				*sampleP;
-	unsigned int	nLength;			// Length of the sample
-	unsigned int	nPosition;		// Position we are at at the moment.
+	uint	nLength;			// Length of the sample
+	uint	nPosition;		// Position we are at at the moment.
 	int				nSoundObj;		// Which soundobject is on this nChannel
 	int				nSoundClass;
 	ubyte				bPlaying;		// Is there a sample playing on this nChannel?
@@ -135,11 +135,11 @@ soundSlots [nChannel].bPlaying = 0;
 
 #if 0//def _WIN32
 
-static void MixSoundSlot (tSoundSlot *sl, Uint8 *sldata, Uint8 *stream, int len)
+static void MixSoundSlot (tSoundSlot *sl, ubyte *sldata, ubyte *stream, int len)
 {
-	Uint8 *streamend = stream + len;
-	Uint8 *slend = sldata - sl->nPosition + sl->nLength;
-	Uint8 *sp = stream, s;
+	ubyte *streamend = stream + len;
+	ubyte *slend = sldata - sl->nPosition + sl->nLength;
+	ubyte *sp = stream, s;
 	signed char v;
 	fix vl, vr;
 	int x;
@@ -176,9 +176,9 @@ sl->nPosition = (int) (sldata - sl->sampleP);
 //------------------------------------------------------------------------------
 /* Audio mixing callback */
 //changed on 980905 by adb to cleanup, add xPan support and optimize mixer
-static void _CDECL_ AudioMixCallback (void *userdata, Uint8 *stream, int len)
+static void _CDECL_ AudioMixCallback (void *userdata, ubyte *stream, int len)
 {
-	Uint8 *streamend = stream + len;
+	ubyte *streamend = stream + len;
 	tSoundSlot *sl;
 
 if (!gameStates.sound.digi.bAvailable)
@@ -189,8 +189,9 @@ for (sl = soundSlots; sl < soundSlots + MAX_SOUND_SLOTS; sl++) {
 #if 0
 		MixSoundSlot (sl, sl->sampleP + sl->nPosition, stream, len);
 #else
-		Uint8 *sldata = (Uint8 *) sl->sampleP + sl->nPosition, *slend = (Uint8 *) sl->sampleP + sl->nLength;
-		Uint8 *sp = stream, s;
+		ubyte *sldata = reinterpret_cast<ubyte*> (sl->sampleP + sl->nPosition), 
+				*slend = reinterpret_cast<ubyte*> (sl->sampleP + sl->nLength);
+		ubyte *sp = stream, s;
 		signed char v;
 		fix vl, vr;
 		int x;
@@ -211,7 +212,7 @@ for (sl = soundSlots; sl < soundSlots + MAX_SOUND_SLOTS; sl++) {
 					sl->bPlaying = 0;
 					break;
 					}
-				sldata = (Uint8 *) sl->sampleP;
+				sldata = reinterpret_cast<ubyte*> (sl->sampleP;
 				}
 			v = *(sldata++) - 0x80;
 			s = *sp;
@@ -219,7 +220,7 @@ for (sl = soundSlots; sl < soundSlots + MAX_SOUND_SLOTS; sl++) {
 			s = *sp;
 			*(sp++) = mix8 [s + FixMul (v, vr) + 0x80];
 			}
-		sl->nPosition = (int) (sldata - (Uint8 *) sl->sampleP);
+		sl->nPosition = (int) (sldata - reinterpret_cast<ubyte*> (sl->sampleP);
 #endif
 		}
 	}
@@ -420,11 +421,11 @@ else {
 else
 	l *= 2;
 #endif
-if (!(ssP->sampleP = (ubyte *) D2_ALLOC (l)))
+if (!(ssP->sampleP = reinterpret_cast<ubyte*> (D2_ALLOC (l))))
 	return -1;
 ssP->bResampled = 1;
-ph = (ushort *) ssP->sampleP;
-ps = (ushort *) (ssP->sampleP + l);
+ph = reinterpret_cast<ushort*> (ssP->sampleP);
+ps = reinterpret_cast<ushort*> (ssP->sampleP + l);
 k = 0;
 for (;;) {
 	if (i) 
@@ -500,7 +501,7 @@ if (!cf.Open ("d2x-temp.wav", gameFolders.szDataDir, "rb", 0))
 	return 0;
 if (0 >= (l = cf.Length ()))
 	l = -1;
-else if (!(ssP->sampleP = (ubyte *) D2_ALLOC (l)))
+else if (!(ssP->sampleP = reinterpret_cast<ubyte*> (D2_ALLOC (l))))
 	l = -1;
 else if (cf.Read (ssP->sampleP, 1, l) != (size_t) l)
 	l = -1;
@@ -520,7 +521,7 @@ int DigiSpeedupSound (tDigiSound *dsP, tSoundSlot *ssP, int speed)
 	ubyte	*pDest, *pSrc;
 
 l = FixMulDiv (ssP->bResampled ? ssP->nLength : dsP->nLength [dsP->bDTX], speed, F1_0);
-if (!(pDest = (ubyte *) D2_ALLOC (l)))
+if (!(pDest = reinterpret_cast<ubyte*> (D2_ALLOC (l))))
 	return -1;
 pSrc = ssP->bResampled ? ssP->sampleP : dsP->data [dsP->bDTX];
 for (h = i = j = 0; i < l; i++) {
@@ -633,7 +634,6 @@ if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	dsP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound % gameData.pig.sound.nSoundFiles [gameStates.sound.bD1Sound];
 	if (!(dsP->data && dsP->nLength))
 		return -1;
-	Assert (dsP->data != (void *) -1);
 	}
 if (bPersistent && !nSoundClass)
 	nSoundClass = -1;
@@ -659,7 +659,7 @@ if (ssP->source == 0xFFFFFFFF) {
 		return -1;
 	alSourcef (ssP->source, AL_GAIN, ((xVolume < F1_0) ? X2F (xVolume) : 1) * 2 * X2F (gameStates.sound.digi.nVolume));
 	alSourcei (ssP->source, AL_LOOPING, (ALuint) ((nSoundObj > -1) || bLooping || (xVolume > F1_0)));
-	alSourcefv (ssP->source, AL_POSITION, (ALfloat*) VmVecFixToFloat (&fPos, vPos ? vPos : &OBJECTS [LOCALPLAYER.nObject].nPosition.vPos));
+	alSourcefv (ssP->source, AL_POSITION, reinterpret_cast<ALfloat*> (VmVecFixToFloat (&fPos, vPos ? vPos : &OBJECTS [LOCALPLAYER.nObject].nPosition.vPos)));
 	alSource3f (ssP->source, AL_VELOCITY, 0, 0, 0);
 	alSource3f (ssP->source, AL_DIRECTION, 0, 0, 0);
 	if (DigiALError ())
@@ -709,7 +709,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 			if (nSpeed < F1_0)
 				l = DigiSpeedupSound (dsP, ssP, nSpeed);
 			}
-		ssP->mixChunkP = Mix_QuickLoad_RAW ((Uint8 *) ssP->sampleP, l);
+		ssP->mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<ubyte*> (ssP->sampleP, l));
 		}
 	Mix_VolPan (gameStates.sound.digi.nFreeChannel, xVolume, xPan);
 	Mix_PlayChannel (gameStates.sound.digi.nFreeChannel, ssP->mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);

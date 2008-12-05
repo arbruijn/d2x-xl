@@ -40,7 +40,7 @@ int bMSGPlayerMsgs = 0;
 int bNoMsgRedundancy = 0;
 int nModexHUDMsgs;
 
-CCanvas *PrintToCanvas (char *s,CFont *font, unsigned int fc, unsigned int bc, int doubleFlag);
+CCanvas *PrintToCanvas (char *s,CFont *font, uint fc, uint bc, int doubleFlag);
 
 // ----------------------------------------------------------------------------
 
@@ -83,7 +83,7 @@ for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 
 //	-----------------------------------------------------------------------------
 //	print to buffer, double heights, and blit bitmap to screen
-void HUDModexMessage (int x, int y, char *s, CFont *font, unsigned int color)
+void HUDModexMessage (int x, int y, char *s, CFont *font, uint color)
 {
 CCanvas *tempCanv = PrintToCanvas (s, font, color, 0, 1);
 GrBitmapM (x, y, &tempCanv->Bitmap (), 2);
@@ -121,7 +121,7 @@ if (pMsgs->xTimer < 0)	{
 }
 
 if (pMsgs->nMessages > 0) {
-	if (pMsgs->nColor == (unsigned int) -1)
+	if (pMsgs->nColor == (uint) -1)
 		pMsgs->nColor = GREEN_RGBA;
 
 	if ((gameStates.render.vr.nRenderMode == VR_NONE) && ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || 
@@ -152,7 +152,7 @@ if (pMsgs->nMessages > 0) {
 					strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
 				}
 			else {
-				if (pMsgs->nColor == (unsigned int) -1)
+				if (pMsgs->nColor == (uint) -1)
 					pMsgs->nColor = GREEN_RGBA;
 				fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
 				pMsgs->nMsgIds [nMsg] = GrPrintF (pMsgs->nMsgIds + nMsg, (CCanvas::Current ()->Width ()-w) / 2, ycrd, pszMsg);
@@ -245,7 +245,7 @@ pszMsg = pMsgs->szMsgs [pMsgs->nLast];
 vsprintf (pszMsg, format, args);
 /* Produce a colorised version and send it to the console */
 con_message [0] = CC_COLOR;
-if (pMsgs->nColor != (unsigned int) -1) {
+if (pMsgs->nColor != (uint) -1) {
 	con_message [1] = (char) RGBA_RED (pMsgs->nColor) / 2 + 128;
 	con_message [2] = (char) RGBA_GREEN (pMsgs->nColor) / 2 + 128;
 	con_message [3] = (char) RGBA_BLUE (pMsgs->nColor) / 2 + 128;
@@ -349,7 +349,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 #endif
 	   }
    fontManager.SetCurrent (GAME_FONT);
-   if (pMsgs->nColor == (unsigned int) -1)
+   if (pMsgs->nColor == (uint) -1)
       pMsgs->nColor = RGBA_PAL2 (0, 28, 0);
 	fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
    GrString (0x8000, CCanvas::Current ()->Bitmap ().Height ()- (CCanvas::Current ()->Font ()->Height () + 3), TXT_PRESS_ANY_KEY, NULL);

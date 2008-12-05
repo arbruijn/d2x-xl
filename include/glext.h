@@ -3062,16 +3062,16 @@ typedef ptrdiff_t GLsizeiptrARB;
 #ifndef GL_ARB_shaderObjects
 /* GL types for handling shader tObject handles and program/shader text */
 typedef char GLcharARB;		/* native character */
-typedef unsigned int GLhandleARB;	/* shader tObject handle */
+typedef uint GLhandleARB;	/* shader tObject handle */
 #endif
 
 /* GL types for "half" precision (s10e5) float data in host memory */
 #ifndef GL_ARB_half_float_pixel
-typedef unsigned short GLhalfARB;
+typedef ushort GLhalfARB;
 #endif
 
 #ifndef GL_NV_half_float
-typedef unsigned short GLhalfNV;
+typedef ushort GLhalfNV;
 #endif
 
 #ifndef GL_VERSION_1_2

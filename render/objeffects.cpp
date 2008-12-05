@@ -186,7 +186,7 @@ for (; iBox <= nBoxes; iBox++) {
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
 		for (j = 0; j < 4; j++)
-			glVertex3fv ((GLfloat *) (vertList + hitboxFaceVerts [i][j]));
+			glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
 		}
 	glEnd ();
 	glLineWidth (2);
@@ -194,7 +194,7 @@ for (; iBox <= nBoxes; iBox++) {
 		glBegin (GL_LINES);
 		v.SetZero();
 		for (j = 0; j < 4; j++) {
-			glVertex3fv ((GLfloat *) (vertList + hitboxFaceVerts [i][j]));
+			glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
 			v += vertList [hitboxFaceVerts [i][j]];
 			}
 		glEnd ();
@@ -399,7 +399,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	else {
 		glBegin (GL_QUADS);
 		for (i = 0; i < 4; i++)
-			glVertex3fv ((GLfloat *) (fVerts + i));
+			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
 		glEnd ();
 		}
 #else
@@ -413,7 +413,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 #endif
 	w = 2 * r;
 	fVerts [1][X] = fVerts [2][X] = fPos [X] + w;
-	glColor3fv ((GLfloat *) pc);
+	glColor3fv (reinterpret_cast<GLfloat*> (pc));
 	if (bDrawArrays) {
 		glVertexPointer (4, GL_FLOAT, 0, fVerts);
 		glDrawArrays (GL_LINE_LOOP, 0, 4);
@@ -422,7 +422,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	else {
 		glBegin (GL_LINE_LOOP);
 		for (i = 0; i < 4; i++)
-			glVertex3fv ((GLfloat *) (fVerts + i));
+			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
 		glEnd ();
 		}
 	StencilOn (bStencil);
@@ -481,7 +481,7 @@ G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 bVertexArrays = G3EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 glActiveTexture (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
-glColor4fv ((GLfloat *) (trackGoalColor + bMarker));
+glColor4fv (reinterpret_cast<GLfloat*> (trackGoalColor + bMarker));
 if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 	fVector	rotVerts [3];
 	fMatrix	mRot;
@@ -528,7 +528,7 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 		else {
 			glBegin (bMarker ? GL_LINE_LOOP : GL_TRIANGLES);
 			for (h = 0; h < 3; h++)
-				glVertex3fv ((GLfloat *) (rotVerts + h));
+				glVertex3fv (reinterpret_cast<GLfloat*> (rotVerts + h));
 			glEnd ();
 			}
 		if (bMarker)
@@ -627,12 +627,12 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	glDisable (GL_TEXTURE_2D);
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) &&
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ?
-		  (tRgbColorf *) &trackGoalColor [0] : ObjectFrameColor (objP, pc);
+		  reinterpret_cast<tRgbColorf*> (&trackGoalColor [0]) : ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
 	fPos = vPos.ToFloat();
 	G3TransformPoint (fPos, fPos, 0);
 	r = X2F (objP->info.xSize);
-	glColor3fv ((GLfloat *) pc);
+	glColor3fv (reinterpret_cast<GLfloat*> (pc));
 	fVerts [0][W] = fVerts [1][W] = fVerts [2][W] = fVerts [3][W] = 1;
 	glVertexPointer (4, GL_FLOAT, 0, fVerts);
 	if (extraGameInfo [IsMultiGame].bTargetIndicators == 1) {	//square brackets
@@ -650,7 +650,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		else {
 			glBegin (GL_LINE_STRIP);
 			for (i = 0; i < 4; i++)
-				glVertex3fv ((GLfloat *) (fVerts + i));
+				glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
 			glEnd ();
 			}
 		fVerts [0][X] = fVerts [3][X] = fPos [X] + r2;
@@ -662,7 +662,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		else {
 			glBegin (GL_LINE_STRIP);
 			for (i = 0; i < 4; i++)
-				glVertex3fv ((GLfloat *) (fVerts + i));
+				glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
 			glEnd ();
 			}
 		}
@@ -680,9 +680,9 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			glDrawArrays (GL_LINE_LOOP, 0, 3);
 		else {
 			glBegin (GL_LINE_LOOP);
-			glVertex3fv ((GLfloat *) fVerts);
-			glVertex3fv ((GLfloat *) (fVerts + 1));
-			glVertex3fv ((GLfloat *) (fVerts + 2));
+			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts));
+			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + 1));
+			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + 2));
 			glEnd ();
 			}
 		if (EGI_FLAG (bDamageIndicators, 0, 1, 0)) {
@@ -705,7 +705,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		else {
 			glBegin (GL_TRIANGLES);
 			for (i = 0; i < 3; i++)
-			glVertex3fv ((GLfloat *) (fVerts + i));
+			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
 			glEnd ();
 			}
 		}
@@ -764,16 +764,16 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 			vPosf [Y] = fVerts [i][Y] * r;
 			vPosf [Z] = fVerts [i][Z] * r;
 			G3TransformPoint (vPosf, vPosf, 0);
-			glTexCoord2fv ((GLfloat *) (texCoordList + i));
-			glVertex3fv ((GLfloat *) &vPosf);
+			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordList + i));
+			glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
 			}
 		for (i = 3; i >= 0; i--) {
 			vPosf [X] = 0;
 			vPosf [Y] = fVerts [i][Y] * r;
 			vPosf [Z] = fVerts [i][Z] * r;
 			G3TransformPoint (vPosf, vPosf, 0);
-			glTexCoord2fv ((GLfloat *) (texCoordList + i));
-			glVertex3fv ((GLfloat *) &vPosf);
+			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordList + i));
+			glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
 			}
 		glEnd ();
 		G3DoneInstance ();
@@ -1004,15 +1004,15 @@ else {
 	if (dotTrail < dotCorona) {
 		glBegin (GL_TRIANGLES);
 		for (i = 0; i < 3; i++) {
-			glTexCoord2fv ((GLfloat *) (tcTrail + i));
-			glVertex3fv ((GLfloat *) (vTrail + i));
+			glTexCoord2fv (reinterpret_cast<GLfloat*> (tcTrail + i));
+			glVertex3fv (reinterpret_cast<GLfloat*> (vTrail + i));
 			}
 		glEnd ();
 		}
 	glBegin (GL_QUADS);
 	for (i = 0; i < 4; i++) {
-		glTexCoord2fv ((GLfloat *) (tcCorona + i));
-		glVertex3fv ((GLfloat *) (vCorona + i));
+		glTexCoord2fv (reinterpret_cast<GLfloat*> (tcCorona + i));
+		glVertex3fv (reinterpret_cast<GLfloat*> (vCorona + i));
 		}
 	glEnd ();
 	glEnable (GL_CULL_FACE);
@@ -1167,11 +1167,11 @@ else {
 					G3TransformPoint(v, v, 0);
 					if (bTextured) {
 						tTexCoord2fl.v.v = 0.25f + tTexCoord2flStep.v.v * (i + l);
-						glTexCoord2fv ((GLfloat *) &tTexCoord2fl);
+						glTexCoord2fv (reinterpret_cast<GLfloat*> (&tTexCoord2fl));
 						}
 					else
-						glColor4fv ((GLfloat *) (c + l)); // (c [l].red, c [l].green, c [l].blue, c [l].alpha);
-					glVertex3fv ((GLfloat *) &v);
+						glColor4fv (reinterpret_cast<GLfloat*> (c + l)); // (c [l].red, c [l].green, c [l].blue, c [l].alpha);
+					glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 					}
 				}
 			glEnd ();
@@ -1180,7 +1180,7 @@ else {
 			glColor4f (c [1].red, c [1].green, c [1].blue, c [1].alpha);
 			for (j = 0; j < RING_SIZE; j++) {
 				G3TransformPoint (&v, vFlame [i] + j);
-				glVertex3fv ((GLfloat *) &v);
+				glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 				}
 			glEnd ();
 #endif
@@ -1188,7 +1188,7 @@ else {
 		glBegin (GL_TRIANGLE_STRIP);
 		for (j = 0; j < RING_SIZE; j++) {
 			G3TransformPoint(v, vFlame [0][nStripIdx [j]], 0);
-			glVertex3fv ((GLfloat *) &v);
+			glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 			}
 		glEnd ();
 		G3DoneInstance ();
@@ -1259,10 +1259,10 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 	glDisable (GL_TEXTURE_2D);
 	glBegin (GL_LINES);
 	for (i = 1; i < 3; i++)
-		glVertex3fv ((GLfloat *) (vh + i));
+		glVertex3fv (reinterpret_cast<GLfloat*> (vh + i));
 	glEnd ();
 	glLineWidth (1);
-	glColor4fv ((GLfloat *) colorP);
+	glColor4fv (reinterpret_cast<GLfloat*> (colorP));
 #endif
 	if (bAdditive) {
 		float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
@@ -1281,7 +1281,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		glDepthMask (0);
 		glEnable (GL_TEXTURE_2D);
 		glEnable (GL_BLEND);
-		glColor4fv ((GLfloat *) colorP);
+		glColor4fv (reinterpret_cast<GLfloat*> (colorP));
 		if (bmP->Bind (1, -1))
 			return;
 		bmP->Texture ()->Wrap (GL_CLAMP);
@@ -1296,8 +1296,8 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		else {
 			glBegin (GL_QUADS);
 			for (i = 0; i < 4; i++) {
-				glTexCoord2fv ((GLfloat *) (tcCorona + i));
-				glVertex3fv ((GLfloat *) (vCorona + i));
+				glTexCoord2fv (reinterpret_cast<GLfloat*> (tcCorona + i));
+				glVertex3fv (reinterpret_cast<GLfloat*> (vCorona + i));
 				}
 			glEnd ();
 			}
@@ -1309,7 +1309,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		glDisable (GL_TEXTURE_2D);
 		glBegin (GL_LINE_LOOP);
 		for (i = 0; i < 4; i++)
-			glVertex3fv ((GLfloat *) (vCorona + i));
+			glVertex3fv (reinterpret_cast<GLfloat*> (vCorona + i));
 		glEnd ();
 		glLineWidth (1);
 #endif
@@ -1429,8 +1429,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 			for (j = 0; j < 4; j++) {
 				v = quad [j] - vCenter;
 				quad [j] += v * fScale;
- 				glTexCoord2fv ((GLfloat *) (tcCorona + j));
-				glVertex3fv ((GLfloat *) (quad + j));
+ 				glTexCoord2fv (reinterpret_cast<GLfloat*> (tcCorona + j));
+				glVertex3fv (reinterpret_cast<GLfloat*> (quad + j));
 				}
 			glEnd ();
 			}
@@ -1504,7 +1504,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 					vPosf [Y] *= r [n];
 					vPosf [Z] = -l [n];
 					G3TransformPoint(vPosf, vPosf, 0);
-					glVertex3fv ((GLfloat *) &vPosf);
+					glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
 					}
 				}
 			glEnd ();
@@ -1520,7 +1520,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 				vPosf [Y] *= r [h];
 				vPosf [Z] = -l [h];
 				G3TransformPoint(vPosf, vPosf, 0);
-				glVertex3fv ((GLfloat *) &vPosf);
+				glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
 				}
 			glEnd ();
 			}
@@ -1590,8 +1590,8 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 		glLineWidth ((GLfloat) (TRACER_WIDTH * i));
 		glBegin (GL_LINES);
 		glColor4d (1, 1, 1, 0.5 / i);
-		glVertex3fv ((GLfloat *) (vPosf + 1));
-		glVertex3fv ((GLfloat *) vPosf);
+		glVertex3fv (reinterpret_cast<GLfloat*> (vPosf + 1));
+		glVertex3fv (reinterpret_cast<GLfloat*> (vPosf));
 #if 0
 		VmVecDec (vPosf, &vDirf);
 		VmVecDec (vPosf + 1, &vDirf);
@@ -1742,7 +1742,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				glBlendFunc (GL_ONE, GL_ONE);
 			else
 				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glColor4fv ((GLfloat *) &trailColor);
+			glColor4fv (reinterpret_cast<GLfloat*> (&trailColor));
 			bDrawArrays = G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			bStencil = StencilOff ();
 			glDisable (GL_CULL_FACE);
@@ -1760,8 +1760,8 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			else {
 				glBegin (GL_QUADS);
 				for (i = 0; i < 4; i++) {
-					glTexCoord3fv ((GLfloat *) (tTexCoordTrail + i));
-					glVertex3fv ((GLfloat *) (vTrailVerts + i));
+					glTexCoord3fv (reinterpret_cast<GLfloat*> (tTexCoordTrail + i));
+					glVertex3fv (reinterpret_cast<GLfloat*> (vTrailVerts + i));
 					}
 				glEnd ();
 			if (bAdditive)
@@ -1771,7 +1771,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				glColor3d (1, 0, 0);
 				glBegin (GL_LINE_LOOP);
 				for (i = 0; i < 4; i++)
-					glVertex3fv ((GLfloat *) (vTrailVerts + i));
+					glVertex3fv (reinterpret_cast<GLfloat*> (vTrailVerts + i));
 				glEnd ();
 #endif
 				}

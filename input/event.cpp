@@ -38,7 +38,7 @@ extern void joy_axis_handler(SDL_JoyAxisEvent *jae);
 
 static int initialised=0;
 
-int PollEvent (SDL_Event *event, unsigned long mask)
+int PollEvent (SDL_Event *event, ulong mask)
 {
 	SDL_PumpEvents();
 	/* We can't return -1, just return 0 (no event) on error */
@@ -47,7 +47,7 @@ int PollEvent (SDL_Event *event, unsigned long mask)
 
 void quit_request();
 
-void event_poll(unsigned long mask)
+void event_poll(ulong mask)
 {
 	SDL_Event event;
 #if TO_EVENT_POLL
@@ -69,28 +69,28 @@ void event_poll(unsigned long mask)
 #endif
 		switch(event.type) {
 			case SDL_KEYDOWN:
-				KeyHandler((SDL_KeyboardEvent *)&event);
+				KeyHandler(reinterpret_cast<SDL_KeyboardEvent*> (&event));
 				break;
 			case SDL_KEYUP:
-				KeyHandler((SDL_KeyboardEvent *)&event);
+				KeyHandler(reinterpret_cast<SDL_KeyboardEvent*> (&event));
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
-				MouseButtonHandler((SDL_MouseButtonEvent *)&event);
+				MouseButtonHandler(reinterpret_cast<SDL_MouseButtonEvent*> (&event));
 				break;
 			case SDL_MOUSEMOTION:
-				MouseMotionHandler((SDL_MouseMotionEvent *)&event);
+				MouseMotionHandler(reinterpret_cast<SDL_MouseMotionEvent*> (&event));
 				break;
 #ifndef USE_LINUX_JOY       // stpohle - so we can choose at compile time..
 			case SDL_JOYBUTTONDOWN:
 			case SDL_JOYBUTTONUP:
-				joy_button_handler((SDL_JoyButtonEvent *)&event);
+				joy_button_handler(reinterpret_cast<SDL_JoyButtonEvent*> (&event));
 				break;
 			case SDL_JOYAXISMOTION:
-				joy_axis_handler((SDL_JoyAxisEvent *)&event);
+				joy_axis_handler(SDL_JoyButtonEventSDL_JoyAxisEvent*> (&event));
 				break;
 			case SDL_JOYHATMOTION:
-				joy_hat_handler((SDL_JoyHatEvent *)&event);
+				joy_hat_handler(SDL_JoyButtonEventSDL_JoyHatEvent*> (&event));
 				break;
 			case SDL_JOYBALLMOTION:
 				break;

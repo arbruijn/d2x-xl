@@ -229,7 +229,7 @@ void HUDShowWeaponIcons (void)
 			oy = 6, 
 			x, dx, y = 0, dy = 0;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
-	unsigned int nAmmoColor;
+	uint nAmmoColor;
 	char	szAmmo [10];
 	int	nLvlMap [2][10] = {{9, 4, 8, 3, 7, 2, 6, 1, 5, 0}, {4, 3, 2, 1, 0, 4, 3, 2, 1, 0}};
 	static int	wIcon = 0, 

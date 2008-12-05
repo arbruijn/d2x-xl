@@ -46,7 +46,7 @@
 
 #define POF_PAGENAME_LEN	35
 
-typedef unsigned short tPOF_angle;	//make sure this matches up with fix.h
+typedef ushort tPOF_angle;	//make sure this matches up with fix.h
 
 typedef char tPOF_chunkType [4];
 

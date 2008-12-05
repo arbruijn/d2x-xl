@@ -451,7 +451,7 @@ for (h = j = 0; j < i; j++)
 		h += GetNumMovies (j);
 if (!h)
 	return;
-if (!(m = (char **) D2_ALLOC (h * sizeof (char **))))
+if (!(m = reinterpret_cast<char **> (D2_ALLOC (h * sizeof (char **)))))
 	return;
 for (i = j = 0; i < h; i++)
 	if ((ps = CycleThroughMovies (i == 0, 0))) {
@@ -484,7 +484,7 @@ static void PlayMenuSong (void)
 
 m [j++] = szSongTitles [0];
 for (i = 0; i < gameData.songs.nTotalSongs; i++) {
-	if (cf.Open ((char *) gameData.songs.info [i].filename, gameFolders.szDataDir, "rb", i >= gameData.songs.nSongs [0])) {
+	if (cf.Open (reinterpret_cast<char*> (gameData.songs.info [i].filename), gameFolders.szDataDir, "rb", i >= gameData.songs.nSongs [0])) {
 		cf.Close ();
 		if (i == gameData.songs.nSongs [0])
 			m [j++] = szSongTitles [1];
@@ -1526,7 +1526,7 @@ try_again:
 		return;
 	nNewLevel = atoi (m [1].text);
 	if ((nNewLevel <= 0) || (nNewLevel > nHighestPlayerLevel)) {
-		m [0].text = (char *) TXT_ENTER_TO_CONT;
+		m [0].text = reinterpret_cast<char*> (TXT_ENTER_TO_CONT);
 		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		goto try_again;
 	}
@@ -1981,7 +1981,7 @@ if (gameOpts->app.bExpertMode) {
 	v = m->value;
 	if (gameOpts->render.cockpit.nWindowSize != v) {
 		gameOpts->render.cockpit.nWindowSize = v;
-		m->text = (char *) szCWS [v];
+		m->text = reinterpret_cast<char*> (szCWS [v]);
 		m->rebuild = 1;
 		}
 
@@ -5068,7 +5068,7 @@ if (m [soundOpts.nRedbook].value != gameStates.sound.bRedbookEnabled) {
 			m [soundOpts.nRedbook].rebuild = 1;
 			}
 		}
-	m [soundOpts.nMusicVol].text = (char *) (gameStates.sound.bRedbookEnabled ? TXT_CD_VOLUME : TXT_MIDI_VOLUME);
+	m [soundOpts.nMusicVol].text = gameStates.sound.bRedbookEnabled ? reinterpret_cast<char*> (TXT_CD_VOLUME) : reinterpret_cast<char*> (TXT_MIDI_VOLUME);
 	m [soundOpts.nMusicVol].rebuild = 1;
 	}
 
@@ -5418,7 +5418,7 @@ return 1;
 
 static inline int MultiChoice (int nType, int bJoin)
 {
-return *(((int *) &multiOpts) + 2 * nType + bJoin);
+return *(reinterpret_cast<int*> (&multiOpts) + 2 * nType + bJoin);
 }
 
 void MultiplayerMenu ()
@@ -5573,12 +5573,12 @@ ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
  char *MENU_PCX_NAME (void)
 {
 if (CFile::Exist (MENU_PCX_FULL, gameFolders.szDataDir, 0))
-	return (char *) MENU_PCX_FULL;
+	return reinterpret_cast<char*> (MENU_PCX_FULL);
 if (CFile::Exist (MENU_PCX_OEM, gameFolders.szDataDir, 0))
-	return (char *) MENU_PCX_OEM;
+	return reinterpret_cast<char*> (MENU_PCX_OEM);
 if (CFile::Exist (MENU_PCX_SHAREWARE, gameFolders.szDataDir, 0))
-	return (char *) MENU_PCX_SHAREWARE;
-return (char *) MENU_PCX_MAC_SHARE;
+	return reinterpret_cast<char*> (MENU_PCX_SHAREWARE);
+return reinterpret_cast<char*> (MENU_PCX_MAC_SHARE);
 }
 //------------------------------------------------------------------------------
 //eof

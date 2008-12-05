@@ -96,7 +96,7 @@ char *OOF_ReadString (CFile& cf, const char *pszIdent, const char *pszPrefix)
 	int	l, lPrefix = pszPrefix ? (int) strlen (pszPrefix) : 0;
 
 l = OOF_ReadInt (cf, "string length");
-if (!(psz = (char *) D2_ALLOC (l + lPrefix + 1)))
+if (!(psz = new char [l + lPrefix + 1]))
 	return NULL;
 if (lPrefix)
 	memcpy (psz, pszPrefix, lPrefix);
@@ -105,7 +105,7 @@ if (cf.Read (psz + lPrefix, l, 1)) {
 	OOF_PrintLog ("      %s = '%s'\n", pszIdent, psz);
 	return psz;
 	}
-D2_FREE (psz);
+delete[] psz;
 return NULL;
 }
 
@@ -232,7 +232,7 @@ if (!stricmp (command,"$glow=")) {
 	nValues = sscanf (data, " %f, %f, %f, %f", &r,&g,&b,&size);
 	Assert (nValues == 4);
 	pso->nFlags |= OOF_SOF_GLOW;
-	//pso->glowInfo = (tOOF_glowInfo *) D2_ALLOC (sizeof(tOOF_glowInfo));
+	//pso->glowInfo = new tOOF_glowInfo;
 	pso->glowInfo.color.r = r;
 	pso->glowInfo.color.g = g;
 	pso->glowInfo.color.b = b;
@@ -249,7 +249,7 @@ if (!stricmp (command,"$thruster=")) {
 	nValues = sscanf(data, " %f, %f, %f, %f", &r,&g,&b,&size);
 	Assert(nValues == 4);
 	pso->nFlags |= OOF_SOF_THRUSTER;
-	//pso->glowInfo = (tOOF_glowInfo *) D2_ALLOC (sizeof (tOOF_glowInfo));
+	//pso->glowInfo = new tOOF_glowInfo;
 	pso->glowInfo.color.r = r;
 	pso->glowInfo.color.g = g;
 	pso->glowInfo.color.b = b;
@@ -351,7 +351,7 @@ static tOOF_vector *OOF_ReadVertList (CFile& cf, int nVerts, tOOF_vector *pvMin,
 	char			szId [20] = "";
 
 OOF_InitMinMax (pvMin, pvMax);
-if ((pv = (tOOF_vector *) D2_ALLOC (nVerts * sizeof (tOOF_vector)))) {
+if ((pv = new tOOF_vector [nVerts])) {
 	int	i;
 
 	for (i = 0; i < nVerts; i++) {
@@ -415,8 +415,10 @@ return 1;
 
 int OOF_FreeRotAnim (tOOF_rotAnim *pa)
 {
-D2_FREE (pa->pFrames);
-D2_FREE (pa->pRemapTicks);
+delete[] pa->pFrames;
+pa->pFrames = NULL;
+delete[] pa->pRemapTicks;
+pa->pRemapTicks = NULL;
 return 0;
 }
 
@@ -429,12 +431,12 @@ int OOF_ReadRotAnim (CFile& cf, tOOFObject *po, tOOF_rotAnim *pa, int bTimed)
 
 memset (&a, 0, sizeof (a));
 OOF_ReadFrameInfo (cf, po, &a.frameInfo, bTimed);
-if (!(a.pFrames = (tOOF_rotFrame *) D2_ALLOC (a.frameInfo.nFrames * sizeof (tOOF_rotFrame))))
+if (!(a.pFrames= new tOOF_rotFrame [a.frameInfo.nFrames]))
 	return 0;
 memset (a.pFrames, 0, a.frameInfo.nFrames * sizeof (tOOF_rotFrame));
 if (bTimed &&
 	 (a.nTicks = abs (a.frameInfo.nLastFrame - a.frameInfo.nFirstFrame) + 1) &&
-	 !(a.pRemapTicks = (ubyte *) D2_ALLOC (a.nTicks * sizeof (ubyte))))
+	 !(a.pRemapTicks = new ubyte [a.nTicks]))
 	return OOF_FreeRotAnim (&a);
 if (a.nTicks)
 	for (i = 0; i < a.frameInfo.nFrames; i++)
@@ -461,8 +463,10 @@ return 1;
 
 int OOF_FreePosAnim (tOOF_posAnim *pa)
 {
-D2_FREE (pa->pFrames);
-D2_FREE (pa->pRemapTicks);
+delete[] pa->pFrames;
+pa->pFrames = NULL;
+delete[] pa->pRemapTicks;
+pa->pRemapTicks = NULL;
 return 0;
 }
 
@@ -477,9 +481,9 @@ memset (&a, 0, sizeof (a));
 OOF_ReadFrameInfo (cf, po, &a.frameInfo, bTimed);
 if (bTimed &&
 	 (a.nTicks = a.frameInfo.nLastFrame - a.frameInfo.nFirstFrame) &&
-	 !(a.pRemapTicks = (ubyte *) D2_ALLOC (a.nTicks * sizeof (ubyte))))
+	 !(a.pRemapTicks =new ubyte [a.nTicks]))
 	return OOF_FreePosAnim (&a);
-if (!(a.pFrames = (tOOF_posFrame *) D2_ALLOC (a.frameInfo.nFrames * sizeof (tOOF_posFrame))))
+if (!(a.pFrames= new tOOF_posFrame [a.frameInfo.nFrames]))
 	return OOF_FreePosAnim (pa);
 memset (a.pFrames, 0, a.frameInfo.nFrames * sizeof (tOOF_posFrame));
 for (i = 0; i < a.frameInfo.nFrames; i++)
@@ -493,8 +497,10 @@ return 1;
 
 int OOF_FreeSpecialPoint (tOOF_specialPoint *pVert)
 {
-D2_FREE (pVert->pszName);
-D2_FREE (pVert->pszProps);
+delete[] pVert->pszName;
+pVert->pszName = NULL;
+delete[] pVert->pszProps;
+pVert->pszProps = NULL;
 return 0;
 }
 
@@ -529,7 +535,8 @@ int OOF_FreeSpecialList (tOOF_specialList *pList)
 if (pList->pVerts) {
 	for (i = 0; i < pList->nVerts; i++)
 		OOF_FreeSpecialPoint (pList->pVerts + i);
-	D2_FREE (pList->pVerts);
+	delete[] pList->pVerts;
+	pList->pVerts = NULL;
 	}
 return 0;
 }
@@ -543,7 +550,7 @@ int OOF_ReadSpecialList (CFile& cf, tOOF_specialList *pList)
 pList->nVerts = OOF_ReadInt (cf, "nVerts");
 if (!pList->nVerts)
 	return 1;
-if (!(pList->pVerts = (tOOF_specialPoint *) D2_ALLOC (pList->nVerts * sizeof (tOOF_specialPoint))))
+if (!(pList->pVerts= new tOOF_specialPoint [pList->nVerts]))
 	return 0;
 for (i = 0; i < pList->nVerts; i++)
 	OOF_ReadSpecialPoint (cf, pList->pVerts + i);
@@ -567,7 +574,8 @@ return 1;
 
 int OOF_FreePointList (tOOF_pointList *pList)
 {
-D2_FREE (pList->pPoints);
+delete[] pList->pPoints;
+pList->pPoints = NULL;
 return 0;
 }
 
@@ -582,7 +590,7 @@ OOF_PrintLog ("reading point list\n");
 pList->nPoints = OOF_ReadInt (cf, "nPoints");
 if (nSize < pList->nPoints)
 	nSize = pList->nPoints;
-if (!(pList->pPoints = (tOOF_point *) D2_ALLOC (nSize * sizeof (tOOF_point)))) {
+if (!(pList->pPoints= new tOOF_point [nSize])) {
 	nIndent -= 2;
 	return OOF_FreePointList (pList);
 	}
@@ -599,7 +607,8 @@ return 1;
 
 int OOF_FreeAttachList (tOOF_attachList *pList)
 {
-D2_FREE (pList->pPoints);
+delete[] pList->pPoints;
+pList->pPoints = NULL;
 return 0;
 }
 
@@ -612,7 +621,7 @@ int OOF_ReadAttachList (CFile& cf, tOOF_attachList *pList)
 nIndent += 2;
 OOF_PrintLog ("reading attach list\n");
 pList->nPoints = OOF_ReadInt (cf, "nPoints");
-if (!(pList->pPoints = (tOOF_attachPoint *) D2_ALLOC (pList->nPoints * sizeof (tOOF_attachPoint)))) {
+if (!(pList->pPoints= new tOOF_attachPoint [pList->nPoints])) {
 	nIndent -= 2;
 	return OOF_FreeAttachList (pList);
 	}
@@ -659,7 +668,7 @@ if (!(nList = OOF_ReadInt (cf, "nList"))) {
 	*ppList = NULL;
 	return 0;
 	}
-if (!(pList = (int *) D2_ALLOC (nList * sizeof (int))))
+if (!(pList = new int [nList]))
 	return -1;
 for (i = 0; i < nList; i++) {
 	if (bLogOOF)
@@ -674,8 +683,10 @@ return nList;
 
 int OOF_FreeBattery (tOOF_battery *pBatt)
 {
-D2_FREE (pBatt->pVertIndex);
-D2_FREE (pBatt->pTurretIndex);
+delete[] pBatt->pVertIndex;
+pBatt->pVertIndex = NULL;
+delete[] pBatt->pTurretIndex;
+pBatt->pTurretIndex = NULL;
 return 0;
 }
 
@@ -706,7 +717,8 @@ if (pa->pBatts) {
 
 	for (i = 0; i < pa->nBatts; i++)
 		OOF_FreeBattery (pa->pBatts + i);
-	D2_FREE (pa->pBatts);
+	delete[] pa->pBatts;
+	pa->pBatts = NULL;
 	}
 return 0;
 }
@@ -723,7 +735,7 @@ if (!(pa->nBatts = OOF_ReadInt (cf, "nBatts"))) {
 	nIndent -= 2;
 	return 1;
 	}
-if (!(pa->pBatts = (tOOF_battery *) D2_ALLOC (pa->nBatts * sizeof (tOOF_battery)))) {
+if (!(pa->pBatts = new tOOF_battery [pa->nBatts ])) {
 	nIndent -= 2;
 	return OOF_FreeArmament (pa);
 	}
@@ -762,7 +774,8 @@ return 1;
 int OOF_FreeFace (tOOF_face *pf)
 {
 #if !OOF_MEM_OPT
-D2_FREE (pf->pVerts);
+delete[] pf->pVerts;
+pf->pVerts = NULL;
 #endif
 return 0;
 }
@@ -932,7 +945,7 @@ else {
 if (pfv) {
 	f.pVerts = pfv;
 #else
-	if (!(f.pVerts = (tOOF_faceVert *) D2_ALLOC (f.nVerts * sizeof (tOOF_faceVert)))) {
+	if (!(f.pVerts= new tOOF_faceVert [f.nVerts])) {
 		nIndent -= 2;
 		return OOF_FreeFace (&f);
 		}
@@ -976,25 +989,35 @@ int OOF_FreeSubObject (tOOF_subObject *pso)
 	int	i;
 #endif
 
-D2_FREE (pso->pszName);
-D2_FREE (pso->pszProps);
-D2_FREE (pso->pvVerts);
-D2_FREE (pso->pvRotVerts);
-D2_FREE (pso->pVertColors);
-D2_FREE (pso->pvNormals);
-D2_FREE (pso->pfAlpha);
+delete[] pso->pszName;
+pso->pszName = NULL;
+delete[] pso->pszProps;
+pso->pszProps = NULL;
+delete[] pso->pvVerts;
+pso->pvVerts = NULL;
+delete[] pso->pvRotVerts;
+pso->pvRotVerts = NULL;
+delete[] pso->pVertColors;
+pso->pVertColors = NULL;
+delete[] pso->pvNormals;
+pso->pvNormals = NULL;
+delete[] pso->pfAlpha;
+pso->pfAlpha = NULL;
 OOF_FreePosAnim (&pso->posAnim);
 OOF_FreeRotAnim (&pso->rotAnim);
 if (pso->faces.pFaces) {
 #if OOF_MEM_OPT
-	D2_FREE (pso->faces.pFaceVerts);
+	delete[] pso->faces.pFaceVerts;
+	pso->faces.pFaceVerts = NULL;
 #else
 	for (i = 0; i < pso->faces.nFaces; i++)
 		OOF_FreeFace (pso->faces.pFaces + i);
 #endif
-	D2_FREE (pso->faces.pFaces);
+	delete[] pso->faces.pFaces;
+	pso->faces.pFaces = NULL;
 	}
-D2_FREE (pso->edges.pEdges);
+delete[] pso->edges.pEdges;
+pso->edges.pEdges = NULL;
 return 0;
 }
 
@@ -1045,11 +1068,11 @@ if (so.nVerts) {
 		OOF_VecAdd (&so.vCenter, &so.vMin, &so.vMax);
 		OOF_VecScale (&so.vCenter, 0.5f);
 		}
-	if (!(so.pvRotVerts = (tOOF_vector *) D2_ALLOC (so.nVerts * sizeof (tOOF_vector)))) {
+	if (!(so.pvRotVerts = new tOOF_vector [so.nVerts])) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
-	if (!(so.pVertColors = (tFaceColor *) D2_ALLOC (so.nVerts * sizeof (tFaceColor)))) {
+	if (!(so.pVertColors = new tFaceColor [so.nVerts])) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
@@ -1058,7 +1081,7 @@ if (so.nVerts) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
-	if (!(so.pfAlpha = (float *) D2_ALLOC (so.nVerts * sizeof (float)))) {
+	if (!(so.pfAlpha = new float [so.nVerts])) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
@@ -1074,7 +1097,7 @@ if (so.nVerts) {
 			}
 	}
 so.faces.nFaces = OOF_ReadInt (cf, "nFaces");
-if (!(so.faces.pFaces = (tOOF_face *) D2_ALLOC (so.faces.nFaces * sizeof (tOOF_face)))) {
+if (!(so.faces.pFaces = new tOOF_face [so.faces.nFaces])) {
 	nIndent -= 2;
 	return OOF_FreeSubObject (&so);
 	}
@@ -1084,11 +1107,11 @@ so.edges.nEdges = 0;
 for (bReadData = 0; bReadData < 2; bReadData++) {
 	cf.Seek (nPos, SEEK_SET);
 	if (bReadData) {
-		if (!(so.faces.pFaceVerts = (tOOF_faceVert *) D2_ALLOC (nFaceVerts * sizeof (tOOF_faceVert)))) {
+		if (!(so.faces.pFaceVerts= new tOOF_faceVert [nFaceVerts])) {
 			nIndent -= 2;
 			return OOF_FreeSubObject (&so);
 			}
-		if (!(so.edges.pEdges = (tOOF_edge *) D2_ALLOC (nFaceVerts * sizeof (tOOF_edge)))) {
+		if (!(so.edges.pEdges= new tOOF_edge [nFaceVerts * sizeof (tOOF_edge)))) {
 			nIndent -= 2;
 			return OOF_FreeSubObject (&so);
 			}
@@ -1171,7 +1194,7 @@ o.textures.nBitmaps = OOF_ReadInt (cf, "nBitmaps");
 #if OOF_TEST_CUBE
 /*!!!*/o.textures.nBitmaps = 6;
 #endif
-if (!(o.textures.pszNames = (char **) D2_ALLOC (o.textures.nBitmaps * sizeof (char **)))) {
+if (!(o.textures.pszNames = new char* [o.textures.nBitmaps])) {
 	nIndent -= 2;
 	return OOF_FreeTextures (&o);
 	}
@@ -1192,9 +1215,11 @@ if (!i)	//cube.oof only contains one texture
 		return OOF_FreeTextures (&o);
 		}
 #if OOF_TEST_CUBE
-if (!i)
-	D2_FREE (o.textures.pszNames [i]);
-o.textures.pszNames [i] = D2_ALLOC (20);
+if (!i) {
+	delete[] o.textures.pszNames [i];
+	o.textures.pszNames [i] = NULL;
+	}
+o.textures.pszNames [i] = new char [20];
 sprintf (o.textures.pszNames [i], "%d.tga", i + 1);
 #endif
 	if (!ReadModelTGA (o.textures.pszNames [i], o.textures.bitmaps + i, nType, bCustom)) {
@@ -1226,7 +1251,8 @@ OOF_FreeTextures (po);
 if (po->pSubObjects) {
 	for (i = 0; i < po->nSubObjects; i++)
 		OOF_FreeSubObject (po->pSubObjects + i);
-	D2_FREE (po->pSubObjects);
+	delete[] po->pSubObjects;
+	po->pSubObjects = NULL;
 	}
 OOF_FreePointList (&po->gunPoints);
 OOF_FreeAttachList (&po->attachPoints);
@@ -1234,7 +1260,8 @@ OOF_FreeSpecialList (&po->specialPoints);
 if (po->armament.pBatts) {
 	for (i = 0; i < po->armament.nBatts; i++)
 		OOF_FreeBattery (po->armament.pBatts + i);
-	D2_FREE (po->armament.pBatts);
+	delete[] po->armament.pBatts;
+	po->armament.pBatts = NULL;
 	}
 return 0;
 }
@@ -1259,7 +1286,7 @@ OOF_ReadVector (cf, &o.vMax, "vMax");
 o.nDetailLevels = OOF_ReadInt (cf, "nDetailLevels");
 nIndent -= 2;
 cf.Seek (o.nDetailLevels * sizeof (int), SEEK_CUR);
-if (!(o.pSubObjects = (tOOF_subObject *) D2_ALLOC (o.nSubObjects * sizeof (tOOF_subObject))))
+if (!(o.pSubObjects= new tOOF_subObject [o.nSubObjects]))
 	return 0;
 *po = o;
 return 1;

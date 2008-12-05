@@ -333,7 +333,7 @@ typedef struct {
     GLXDrawable drawable;	  /* i.d. of Drawable */
     int eventType;		  /* GLX_DAMAGED_SGIX or GLX_SAVED_SGIX */
     int drawType;		  /* GLX_WINDOW_SGIX or GLX_PBUFFER_SGIX */
-    unsigned int mask;	  /* mask indicating which buffers are affected*/
+    uint mask;	  /* mask indicating which buffers are affected*/
     int x, y;
     int width, height;
     int count;		  /* if nonzero, at least this many more */
@@ -368,7 +368,7 @@ extern GLXPixmap glXCreatePixmap (Display *, GLXFBConfig, Pixmap, const int *);
 extern void glXDestroyPixmap (Display *, GLXPixmap);
 extern GLXPbuffer glXCreatePbuffer (Display *, GLXFBConfig, const int *);
 extern void glXDestroyPbuffer (Display *, GLXPbuffer);
-extern void glXQueryDrawable (Display *, GLXDrawable, int, unsigned int *);
+extern void glXQueryDrawable (Display *, GLXDrawable, int, uint *);
 extern GLXContext glXCreateNewContext (Display *, GLXFBConfig, int, GLXContext, Bool);
 extern Bool glXMakeContextCurrent (Display *, GLXDrawable, GLXDrawable, GLXContext);
 extern GLXDrawable glXGetCurrentReadDrawable (void);
@@ -387,7 +387,7 @@ typedef GLXPixmap ( * PFNGLXCREATEPIXMAPPROC) (Display *dpy, GLXFBConfig config,
 typedef void ( * PFNGLXDESTROYPIXMAPPROC) (Display *dpy, GLXPixmap pixmap);
 typedef GLXPbuffer ( * PFNGLXCREATEPBUFFERPROC) (Display *dpy, GLXFBConfig config, const int *attrib_list);
 typedef void ( * PFNGLXDESTROYPBUFFERPROC) (Display *dpy, GLXPbuffer pbuf);
-typedef void ( * PFNGLXQUERYDRAWABLEPROC) (Display *dpy, GLXDrawable draw, int attribute, unsigned int *value);
+typedef void ( * PFNGLXQUERYDRAWABLEPROC) (Display *dpy, GLXDrawable draw, int attribute, uint *value);
 typedef GLXContext ( * PFNGLXCREATENEWCONTEXTPROC) (Display *dpy, GLXFBConfig config, int renderType, GLXContext share_list, Bool direct);
 typedef Bool ( * PFNGLXMAKECONTEXTCURRENTPROC) (Display *dpy, GLXDrawable draw, GLXDrawable read, GLXContext ctx);
 typedef GLXDrawable ( * PFNGLXGETCURRENTREADDRAWABLEPROC) (void);
@@ -440,11 +440,11 @@ typedef int ( * PFNGLXSWAPINTERVALSGIPROC) (int interval);
 #ifndef GLX_SGI_video_sync
 #define GLX_SGI_video_sync 1
 #ifdef GLX_GLXEXT_PROTOTYPES
-extern int glXGetVideoSyncSGI (unsigned int *);
-extern int glXWaitVideoSyncSGI (int, int, unsigned int *);
+extern int glXGetVideoSyncSGI reinterpret_cast<uint *>;
+extern int glXWaitVideoSyncSGI (int, int, uint *);
 #endif /* GLX_GLXEXT_PROTOTYPES */
-typedef int ( * PFNGLXGETVIDEOSYNCSGIPROC) (unsigned int *count);
-typedef int ( * PFNGLXWAITVIDEOSYNCSGIPROC) (int divisor, int remainder, unsigned int *count);
+typedef int ( * PFNGLXGETVIDEOSYNCSGIPROC) (uint *count);
+typedef int ( * PFNGLXWAITVIDEOSYNCSGIPROC) (int divisor, int remainder, uint *count);
 #endif
 
 #ifndef GLX_SGI_make_current_read
@@ -510,15 +510,15 @@ typedef GLXFBConfigSGIX ( * PFNGLXGETFBCONFIGFROMVISUALSGIXPROC) (Display *dpy, 
 #ifndef GLX_SGIX_pbuffer
 #define GLX_SGIX_pbuffer 1
 #ifdef GLX_GLXEXT_PROTOTYPES
-extern GLXPbufferSGIX glXCreateGLXPbufferSGIX (Display *, GLXFBConfigSGIX, unsigned int, unsigned int, int *);
+extern GLXPbufferSGIX glXCreateGLXPbufferSGIX (Display *, GLXFBConfigSGIX, uint, uint, int *);
 extern void glXDestroyGLXPbufferSGIX (Display *, GLXPbufferSGIX);
-extern int glXQueryGLXPbufferSGIX (Display *, GLXPbufferSGIX, int, unsigned int *);
+extern int glXQueryGLXPbufferSGIX (Display *, GLXPbufferSGIX, int, uint *);
 extern void glXSelectEventSGIX (Display *, GLXDrawable, unsigned long);
 extern void glXGetSelectedEventSGIX (Display *, GLXDrawable, unsigned long *);
 #endif /* GLX_GLXEXT_PROTOTYPES */
-typedef GLXPbufferSGIX ( * PFNGLXCREATEGLXPBUFFERSGIXPROC) (Display *dpy, GLXFBConfigSGIX config, unsigned int width, unsigned int height, int *attrib_list);
+typedef GLXPbufferSGIX ( * PFNGLXCREATEGLXPBUFFERSGIXPROC) (Display *dpy, GLXFBConfigSGIX config, uint width, uint height, int *attrib_list);
 typedef void ( * PFNGLXDESTROYGLXPBUFFERSGIXPROC) (Display *dpy, GLXPbufferSGIX pbuf);
-typedef int ( * PFNGLXQUERYGLXPBUFFERSGIXPROC) (Display *dpy, GLXPbufferSGIX pbuf, int attribute, unsigned int *value);
+typedef int ( * PFNGLXQUERYGLXPBUFFERSGIXPROC) (Display *dpy, GLXPbufferSGIX pbuf, int attribute, uint *value);
 typedef void ( * PFNGLXSELECTEVENTSGIXPROC) (Display *dpy, GLXDrawable drawable, unsigned long mask);
 typedef void ( * PFNGLXGETSELECTEDEVENTSGIXPROC) (Display *dpy, GLXDrawable drawable, unsigned long *mask);
 #endif
@@ -654,7 +654,7 @@ typedef struct {
 typedef struct {
     char    pipeName[GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX];
     int     channel;
-    unsigned int
+    uint
       participationType;
     int     timeSlice;
 } GLXHyperpipeConfigSGIX;
@@ -693,9 +693,9 @@ typedef int ( * PFNGLXQUERYHYPERPIPEATTRIBSGIXPROC) (Display *dpy, int timeSlice
 #ifndef GLX_MESA_agp_offset
 #define GLX_MESA_agp_offset 1
 #ifdef GLX_GLXEXT_PROTOTYPES
-extern unsigned int glXGetAGPOffsetMESA (const void *);
+extern uint glXGetAGPOffsetMESA (const void *);
 #endif /* GLX_GLXEXT_PROTOTYPES */
-typedef unsigned int ( * PFNGLXGETAGPOFFSETMESAPROC) (const void *pointer);
+typedef uint ( * PFNGLXGETAGPOFFSETMESAPROC) (const void *pointer);
 #endif
 
 

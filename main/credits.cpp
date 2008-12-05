@@ -156,8 +156,8 @@ void ShowCredits(char *credits_filename)
 	char				buffer [NUM_LINES_HIRES][80];
 	CBitmap			bmBackdrop;
 	int				nPcxError;
-	unsigned int	nLine = 0;
-	unsigned int	nXlLine = 0;
+	uint	nLine = 0;
+	uint	nXlLine = 0;
 	fix				xTimeout, xDelay = X2I (2800 * 1000);
 	int				nFirstLineOffs, nExtraInc = 0;
 	int				bBinary = 0;
@@ -200,16 +200,16 @@ if (yOffs < 0)
 	yOffs = 0;
 creditsPalette = paletteManager.Load ("credits.256", NULL);
 paletteManager.LoadEffect  ();
-header_font = fontManager.Load (gameStates.menus.bHires ? (char *) "font1-1h.fnt" : (char *) "font1-1.fnt");
-title_font = fontManager.Load (gameStates.menus.bHires ? (char *) "font2-3h.fnt" : (char *) "font2-3.fnt");
-names_font = fontManager.Load (gameStates.menus.bHires ? (char *) "font2-2h.fnt" : (char *) "font2-2.fnt");
+header_font = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font1-1h.fnt") : reinterpret_cast<char*> ("font1-1.fnt"));
+title_font = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font2-3h.fnt") : reinterpret_cast<char*> ("font2-3.fnt"));
+names_font = fontManager.Load (gameStates.menus.bHires ? reinterpret_cast<char*> ("font2-2h.fnt") : reinterpret_cast<char*> ("font2-2.fnt"));
 bmBackdrop.SetBuffer (NULL);
 bmBackdrop.SetPalette (NULL);
 
 //MWA  Made bmBackdrop bitmap linear since it should always be.  the current canvas may not
 //MWA  be linear, so we can't rely on CCanvas::Current ()->Bitmap ()->props.nMode.
 
-nPcxError = PCXReadBitmap ((char *) CREDITS_BACKGROUND_FILENAME, &bmBackdrop, BM_LINEAR, 0);
+nPcxError = PCXReadBitmap (reinterpret_cast<char*> (CREDITS_BACKGROUND_FILENAME), &bmBackdrop, BM_LINEAR, 0);
 if (nPcxError != PCX_ERROR_NONE) {
 	cf.Close();
 	return;

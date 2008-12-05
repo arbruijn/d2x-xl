@@ -3,7 +3,7 @@
 extern int  gr_modex_setmode(short mode);
 extern void gr_modex_setplane(short plane);
 extern void gr_modex_setstart(short x, short y, int wait_for_retrace);
-extern void gr_modex_uscanline( short x1, short x2, short y, unsigned char color );
+extern void gr_modex_uscanline( short x1, short x2, short y, ubyte color );
 extern void gr_modex_line();
 extern void gr_sync_display();
 

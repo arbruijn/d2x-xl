@@ -1352,9 +1352,9 @@ if (nState == 0) {
 #endif
 #if 0
 	glUniform1f (glGetUniformLocation (hVertLightShader, "shininess"), 64.0f);
-	glUniform3fv (glGetUniformLocation (hVertLightShader, "matAmbient"), 1, (GLfloat *) &gameData.render.vertColor.matAmbient);
-	glUniform3fv (glGetUniformLocation (hVertLightShader, "matDiffuse"), 1, (GLfloat *) &gameData.render.vertColor.matDiffuse);
-	glUniform3fv (glGetUniformLocation (hVertLightShader, "matSpecular"), 1, (GLfloat *) &matSpecular);
+	glUniform3fv (glGetUniformLocation (hVertLightShader, "matAmbient"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matAmbient));
+	glUniform3fv (glGetUniformLocation (hVertLightShader, "matDiffuse"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matDiffuse));
+	glUniform3fv (glGetUniformLocation (hVertLightShader, "matSpecular"), 1, reinterpret_cast<GLfloat*> (&matSpecular));
 #endif
 	OglSetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 0); 
 	OglSetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 0);
@@ -1402,7 +1402,7 @@ else if (nState == 1) {
 		vld.buffers [0][i] = vPos;
 		vld.buffers [1][i] = vNormal;
 		vld.buffers [2][i] = psl->vPosf [0];
-		vld.buffers [3][i] = *((fVector *) &psl->info.color);
+		vld.buffers [3][i] = *(reinterpret_cast<fVector*> (&psl->info.color));
 		vld.buffers [0][i][W] = 1.0f;
 		vld.buffers [1][i][W] = (psl->info.nType < 2) ? 1.0f : 0.0f;
 		vld.buffers [2][i][W] = psl->info.fRad;

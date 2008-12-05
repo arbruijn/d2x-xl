@@ -988,7 +988,7 @@ if (flP)
 
 #ifdef EDITOR
 //returns 1 if ok, 0 if error
-int AddVariableLight (int nSegment, int nSide, fix delay, unsigned int mask)
+int AddVariableLight (int nSegment, int nSide, fix delay, uint mask)
 {
 	int l;
 	tVariableLight *flP;

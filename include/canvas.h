@@ -100,7 +100,7 @@ class CCanvas {
 			fontManager.Pop ();
 			}
 
-		void Clear (unsigned int color);
+		void Clear (uint color);
 		void SetColor (int color);
 		void SetColorRGB (ubyte red, ubyte green, ubyte blue, ubyte alpha);
 		void SetColorRGB15bpp (ushort c, ubyte alpha);

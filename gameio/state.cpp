@@ -400,7 +400,7 @@ nSaves = 0;
 memset (m, 0, sizeof (m));
 for (i = 0; i < NM_IMG_SPACE; i++) {
 	m [i].nType = NM_TYPE_TEXT; 
-	m [i].text = (char *) "";
+	m [i].text = reinterpret_cast<char*> ("");
 	m [i].noscroll = 1;
 	}
 if (gameStates.app.bGameRunning) {
@@ -458,7 +458,7 @@ if (!m_override) {
 
 		sprintf (newname, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
 		cf.Seek (DESC_OFFSET, SEEK_SET);
-		cf.Write ((char *) " [autosave backup]", sizeof (char) * DESC_LENGTH, 1);
+		cf.Write (reinterpret_cast<char*> (" [autosave backup]"), sizeof (char) * DESC_LENGTH, 1);
 		cf.Close ();
 		cf.Delete (newname, gameFolders.szSaveDir);
 		cf.Rename (m_filename, newname, gameFolders.szSaveDir);
@@ -1475,8 +1475,8 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 #if 0
 	memcpy (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, 
 			 IpxGetMyLocalAddress (), 6);
-	*((ushort *) (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)) = 
-		htons (*((ushort *) (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)));
+	*reinterpret_cast<ushort*> ((netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)) = 
+		htons (*reinterpret_cast<ushort*> ((netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)));
 #endif
 	}
 *pnOtherObjNum = nOtherObjNum;
@@ -2507,7 +2507,8 @@ if (!m_bBetweenLevels)	{
 		return 0;
 	for (i = 0; i < gameData.matCens.nBotCenters; i++) {
 		m_cf.Read (gameData.matCens.botGens [i].objFlags, sizeof (int), 2);
-		m_cf.Read (&gameData.matCens.botGens [i].xHitPoints, sizeof (tMatCenInfo) - ((char *) &gameData.matCens.botGens [i].xHitPoints - (char *) &gameData.matCens.botGens [i]), 1);
+		m_cf.Read (&gameData.matCens.botGens [i].xHitPoints, 
+						sizeof (tMatCenInfo) - (reinterpret_cast<char*> (&gameData.matCens.botGens [i].xHitPoints) - reinterpret_cast<char*> (&gameData.matCens.botGens [i])), 1);
 		}
 	m_cf.Read (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1);
 	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters))

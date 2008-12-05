@@ -727,7 +727,7 @@ int load_mine_data (CFile& cf)
 
 			if (translate == 1)
 				for (j=0;j<MAX_SIDES_PER_SEGMENT;j++) {
-					unsigned short orient;
+					ushort orient;
 					tmap_xlate = gameData.segs.segments [i].sides [j].nBaseTex;
 					gameData.segs.segments [i].sides [j].nBaseTex = tmap_xlate_table [tmap_xlate];
 					if ((WALL_IS_DOORWAY (gameData.segs.segments + i, j, NULL) & WID_RENDER_FLAG))

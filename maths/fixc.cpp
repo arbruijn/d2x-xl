@@ -126,7 +126,7 @@ if (M == 0)	{
 		T = ((nl & 0x80000000L) != 0);
 		nl <<= 1;
 		if (Q == 0) {
-			Q = (unsigned char)((0x80000000L & nh) != 0 );
+			Q = (ubyte)((0x80000000L & nh) != 0 );
 			nh = (nh << 1) | (u_int32_t)T;
 			tmp0 = nh;
 			nh -= d;
@@ -134,10 +134,10 @@ if (M == 0)	{
 			if (Q == 0)
 				Q = tmp1;
 			else
-				Q = (unsigned char)(tmp1 == 0);
+				Q = (ubyte)(tmp1 == 0);
 			}
 		else if (Q == 1) {
-			Q = (unsigned char)((0x80000000L & nh) != 0 );
+			Q = (ubyte)((0x80000000L & nh) != 0 );
 			nh = (nh << 1) | (u_int32_t)T;
 			tmp0 = nh;
 			nh += d;
@@ -145,7 +145,7 @@ if (M == 0)	{
 			if (Q == 0)
 				Q = tmp1;
 			else
-				Q = (unsigned char)(tmp1 == 0);
+				Q = (ubyte)(tmp1 == 0);
 			}
 		T = (Q == M);
 		}
@@ -157,7 +157,7 @@ else {
 		T = ((nl & 0x80000000L) != 0);
 		nl <<= 1;
 		if (Q == 0) {
-			Q = (unsigned char)((0x80000000L & nh) != 0 );
+			Q = (ubyte)((0x80000000L & nh) != 0 );
 			nh = (nh << 1) | (u_int32_t)T;
 			tmp0 = nh;
 			nh += d;
@@ -165,10 +165,10 @@ else {
 			if (Q == 1)
 				Q = tmp1;
 			else
-				Q = (unsigned char)(tmp1 == 0);
+				Q = (ubyte)(tmp1 == 0);
 			}
 		else if (Q == 1) {
-			Q = (unsigned char) ((0x80000000L & nh) != 0);
+			Q = (ubyte) ((0x80000000L & nh) != 0);
 			nh = (nh << 1) | (u_int32_t) T;
 			tmp0 = nh;
 			nh = nh - d;
@@ -176,7 +176,7 @@ else {
 			if (Q == 1)
 				Q = tmp1;
 			else
-				Q = (unsigned char) (tmp1 == 0);
+				Q = (ubyte) (tmp1 == 0);
 			}
 		T = (Q == M);
 		}
@@ -186,9 +186,9 @@ return (r << 1) | T;
 
 // ------------------------------------------------------------------------
 
-unsigned int FixDivQuadLongU (uint nl, uint nh, uint d)
+uint FixDivQuadLongU (uint nl, uint nh, uint d)
 {
-return (unsigned int) (((u_int64_t) nl | (((u_int64_t) nh) << 32)) / ((u_int64_t) d));
+return (uint) (((u_int64_t) nl | (((u_int64_t) nh) << 32)) / ((u_int64_t) d));
 }
 
 // ------------------------------------------------------------------------

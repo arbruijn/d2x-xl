@@ -42,7 +42,7 @@ cvar_t *cvar_vars = NULL;
 
 /* Console specific cvars */
 /* How discriminating we are about which messages are displayed */
-cvar_t con_threshold = {"con_threshold", (char *) "0",};
+cvar_t con_threshold = {"con_threshold", reinterpret_cast<char*> ("0"),};
 
 /* Private console stuff */
 #define CON_NUM_LINES 400
@@ -226,7 +226,7 @@ void cvar_registervariable (cvar_t *cvar)
 	Assert(cvar != NULL);
 
 	cvar->next = NULL;
-	cvar->value = cvar->string ? strtod(cvar->string, (char **) NULL) : 0;
+	cvar->value = cvar->string ? strtod(cvar->string, reinterpret_cast<char **> (NULL)) : 0;
 
 	if (cvar_vars == NULL)
 	{
@@ -251,7 +251,7 @@ void cvar_set (const char *cvar_name, char *value)
 
 	if (ptr == NULL) return; // If we didn't find the cvar, give up
 
-	ptr->value = strtod(value, (char **) NULL);
+	ptr->value = strtod(value, reinterpret_cast<char **> (NULL));
 }
 
 /* ======

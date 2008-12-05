@@ -438,7 +438,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 				CFile::SplitPath (szSong, szSongFolder, NULL, NULL);
 				if (!*szSongFolder)
 					l += (int) strlen (szListFolder);
-				if (!(pszSong = (char *) D2_ALLOC (l))) {
+				if (!(pszSong = reinterpret_cast<char*> (D2_ALLOC (l)))) {
 					cf.Close ();
 					return nSongs = nSongs;
 					}
@@ -453,7 +453,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 		}
 	cf.Close ();
 	if (!bRead) {
-		if (!(gameData.songs.user.pszLevelSongs = (char **) D2_ALLOC (nSongs * sizeof (char **))))
+		if (!(gameData.songs.user.pszLevelSongs = reinterpret_cast<char **> (D2_ALLOC (nSongs * sizeof (char **)))))
 			return 0;
 		}
 	}

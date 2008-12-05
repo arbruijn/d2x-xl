@@ -58,7 +58,7 @@ else if (m_data.bDoEffect) {
 	else
 		glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE,GL_ONE);
-	glColor3fv ((GLfloat *) &m_data.fflash);
+	glColor3fv (reinterpret_cast<GLfloat*> (&m_data.fflash));
 	}
 else
 	return;

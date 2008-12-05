@@ -1564,7 +1564,7 @@ for (i = 0; i < gameData.models.nDefPolyModels; i++) {
 	memcpy (gameData.models.polyModels + i, gameData.models.defPolyModels + i, sizeof (*gameData.models.defPolyModels));
 	if (gameData.models.defPolyModels [i].modelData) {
 		if (!p)
-			p = (ubyte *) D2_ALLOC (gameData.models.defPolyModels [i].nDataSize);
+			p = reinterpret_cast<ubyte*> (D2_ALLOC (gameData.models.defPolyModels [i].nDataSize));
 		Assert (p != NULL);
 		memcpy (p, gameData.models.defPolyModels [i].modelData, gameData.models.defPolyModels [i].nDataSize);
 		gameData.models.polyModels [i].modelData = p;

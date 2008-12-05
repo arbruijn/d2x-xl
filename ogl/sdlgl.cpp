@@ -45,14 +45,14 @@ void FreeInventoryIcons (void);
 
 //------------------------------------------------------------------------------
 
-static Uint16 gammaRamp [512];
+static ushort gammaRamp [512];
 
 //------------------------------------------------------------------------------
 
 void InitGammaRamp (void)
 {
 	int i, j;
-	Uint16 *pg = gammaRamp;
+	ushort *pg = gammaRamp;
 
 for (i = 256, j = 0; i; i--, j += 256, pg++)
 	*pg = j;
@@ -181,7 +181,7 @@ OglInitAttributes ();
 if (!IrrInit (w, h, (bool) gameStates.ogl.bFullScreen))
 	return 0;
 #else
-SDL_putenv ((char *) "SDL_VIDEO_CENTERED=1");
+SDL_putenv (reinterpret_cast<char*> ("SDL_VIDEO_CENTERED=1"));
 /***/PrintLog ("setting SDL video mode (%dx%dx%d, %s)\n",
 				 w, h, gameStates.ogl.nColorBits, gameStates.ogl.bFullScreen ? "fullscreen" : "windowed");
 if (!OglVideoModeOK (w, h) ||

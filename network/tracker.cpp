@@ -78,13 +78,13 @@ return -1;
 
 static void CallTracker (int i, ubyte *pData, int nDataLen)
 {
-	unsigned int	network = 0;
+	uint	network = 0;
 	tUdpAddress		tracker;
 
 UDP_ADDR (&tracker) = UDP_ADDR (trackerList.servers + i);
 UDP_PORT (&tracker) = htons (UDP_PORT (trackerList.servers + i));
 gameStates.multi.bTrackerCall = 1;
-IPXSendInternetPacketData (pData, nDataLen, (ubyte *) &network, (ubyte *) &tracker);
+IPXSendInternetPacketData (pData, nDataLen, reinterpret_cast<ubyte*> (&network, reinterpret_cast<ubyte*> (&tracker));
 gameStates.multi.bTrackerCall = 0;
 }
 
@@ -132,7 +132,7 @@ return 1;
 int ReceiveServerListFromTracker (ubyte *data)
 {
 	tServerListTable	*pslt;
-	int					i = FindTracker ((tUdpAddress *) &ipx_udpSrc.src_node);
+	int					i = FindTracker (reinterpret_cast<tUdpAddress*> (&ipx_udpSrc.src_node));
 
 if (i < 0)
 	return 0;
@@ -142,7 +142,7 @@ for (pslt = serverListTable; pslt; pslt = pslt->nextList)
 
 		memcpy (&pslt->serverList, data, sizeof (tServerList));
 		for (i = pslt->serverList.nServers; i; i--, ps++)
-			UDP_PORT (ps) = (unsigned short) ntohs (UDP_PORT (ps));
+			UDP_PORT (ps) = (ushort) ntohs (UDP_PORT (ps));
 		pslt->lastActive = SDL_GetTicks ();
 		return 1;
 		}
@@ -154,7 +154,7 @@ return 0;
 void SetServerFromList (tServerList *psl, int i)
 {
 memcpy (ipx_ServerAddress + 4, psl->servers + i, 4);
-*((ushort *) (ipx_ServerAddress + 8)) = (ushort) htons (UDP_PORT (psl->servers + i));
+*reinterpret_cast<ushort*> (ipx_ServerAddress + 8) = (ushort) htons (UDP_PORT (psl->servers + i));
 //udpBasePort = psl->servers [i].port;
 }
 
@@ -177,11 +177,11 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int IsTracker (unsigned int addr, ushort port)
+int IsTracker (uint addr, ushort port)
 {
 	int	i;
 #if DBG
-	unsigned int a;
+	uint a;
 	ushort p;
 #endif
 
@@ -209,7 +209,7 @@ if (trackerList.nServers >= MAX_TRACKER_SERVERS)
 	return -1;
 if (0 < (i = FindTracker (addr)))
 	return i;
-if (!(pslt = (tServerListTable *) D2_ALLOC (sizeof (tServerListTable))))
+if (!(pslt = new tServerListTable))
 	return -1;
 memset (pslt, 0, sizeof (*pslt));
 pslt->nextList = serverListTable;
@@ -292,7 +292,7 @@ return CountActiveTrackers ();
 
 //------------------------------------------------------------------------------
 
-extern int stoip (char *szServerIpAddr, unsigned char *pIpAddr);
+extern int stoip (char *szServerIpAddr, ubyte *pIpAddr);
 int stoport (char *szPort, int *pPort, int *pSign);
 
 static int ParseIpAndPort (char *pszAddr, tUdpAddress *addr)
@@ -305,7 +305,7 @@ szAddr [21] = '\0';
 if (!(pszPort = strchr (szAddr, ':')))
 	return 0;
 *pszPort++ = '\0';
-if (!stoip (szAddr, (unsigned char *) addr)) 
+if (!stoip (szAddr, reinterpret_cast<ubyte*> (addr)) 
 	return 0;
 if (!stoport (pszPort, &port, NULL))
 	return 0;
@@ -319,7 +319,7 @@ return 1;
 
 void AddTrackersFromCmdLine (void)
 {
-	unsigned int	i, j, t;
+	uint	i, j, t;
 	char			szKwd [20];
 	tUdpAddress	tracker;
 
@@ -372,7 +372,8 @@ void DestroyTrackerList (void)
 while (serverListTable) {
 	pslt = serverListTable;
 	serverListTable = serverListTable->nextList;
-	D2_FREE (pslt);
+	delete pslt;
+	pslt = NULL;
 	}
 ResetTrackerList ();
 }

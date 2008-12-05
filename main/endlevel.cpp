@@ -1157,9 +1157,9 @@ while (cf.GetS (line, LINE_LEN)) {
 		}
 	if ((p = strchr (line, ';')))
 		*p = 0;		//cut off comment
-	for (p = line + strlen (line) - 1; (p > line) && ::isspace ((unsigned char) *p); *p-- = 0)
+	for (p = line + strlen (line) - 1; (p > line) && ::isspace ((ubyte) *p); *p-- = 0)
 		;
-	for (p = line; ::isspace ((unsigned char) *p); p++)
+	for (p = line; ::isspace ((ubyte) *p); p++)
 		;
 	if (!*p)		//empty line
 		continue;

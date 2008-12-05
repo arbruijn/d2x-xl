@@ -79,11 +79,13 @@ void FreeStringPool (void)
 
 PrintLog ("unloading string pool\n");
 for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
-	D2_FREE (ps->pszText);
+	delete[] ps->pszText;
+	ps->pszText = NULL;
 	if (ps->pId)
 		*ps->pId = 0;
 	ps->bmP->FreeTexture ();
-	D2_FREE (ps->bmP);
+	delete ps->bmP;
+	ps->bmP = NULL;
 	}
 PrintLog ("initializing string pool\n");
 InitStringPool ();
@@ -100,6 +102,7 @@ if (*idP) {
 	ps = stringPool + *idP - 1;
 	ps->bmP->FreeTexture ();
 	delete ps->bmP;
+	ps->bmP = NULL;
 	}
 else {
 	if (nPoolStrings >= GRS_MAX_STRINGS)
@@ -113,11 +116,12 @@ if (!(ps->bmP = CreateStringBitmap (s, 0, 0, 0, 0, w, 1))) {
 	}
 l = (int) strlen (s) + 1;
 if (ps->pszText && (ps->nLength < l))
-	D2_FREE (ps->pszText);
+	delete[] ps->pszText;
 if (!ps->pszText) {
 	ps->nLength = 3 * l / 2;
-	if (!(ps->pszText = (char *) D2_ALLOC (ps->nLength))) {
+	if (!(ps->pszText = new char [ps->nLength])) {
 		delete ps->bmP;
+		ps->bmP = NULL;
 		*idP = 0;
 		return NULL;
 		}
@@ -206,11 +210,11 @@ return textP;
 
 int GrInternalString0 (int x, int y, const char *s)
 {
-	unsigned char * fp;
+	ubyte * fp;
 	const char *textP, *nextRowP, *text_ptr1;
 	int r, mask, i, bits, width, spacing, letter, underline;
 	int	skip_lines = 0;
-	unsigned int videoOffset, videoOffset1;
+	uint videoOffset, videoOffset1;
 	CPalette *palette = paletteManager.Game ();
 	ubyte* videoBuffer = CCanvas::Current ()->Buffer ();
 	int rowSize = CCanvas::Current ()->RowSize ();
@@ -275,7 +279,7 @@ while (nextRowP != NULL) {
 				fp = font.data + letter * BITS_TO_BYTES (width)*font.height;
 			if (underline)
 				for (i = 0; i < width; i++)
-					videoBuffer[videoOffset++] = (unsigned char) FG_COLOR.index;
+					videoBuffer[videoOffset++] = (ubyte) FG_COLOR.index;
 				else {
 					fp += BITS_TO_BYTES (width)*r;
 					mask = 0;
@@ -285,9 +289,9 @@ while (nextRowP != NULL) {
 							mask = 0x80;
 							}
 						if (bits & mask)
-							videoBuffer[videoOffset++] = (unsigned char) FG_COLOR.index;
+							videoBuffer[videoOffset++] = (ubyte) FG_COLOR.index;
 						else
-							videoBuffer[videoOffset++] = (unsigned char) BG_COLOR.index;
+							videoBuffer[videoOffset++] = (ubyte) BG_COLOR.index;
 						mask >>= 1;
 						}
 					}
@@ -307,13 +311,13 @@ return 0;
 
 int GrInternalString0m (int x, int y, const char *s)
 {
-	unsigned char	* fp;
+	ubyte	* fp;
 	const char		* textP, * nextRowP, * text_ptr1;
 	int				r, mask, i, bits, width, spacing, letter, underline;
 	int				skip_lines = 0;
 	char				c;
 	int				orig_color;
-	unsigned int	videoOffset, videoOffset1;
+	uint	videoOffset, videoOffset1;
 	CPalette			*palette = paletteManager.Game ();
 	ubyte*			videoBuffer = CCanvas::Current ()->Buffer ();
 	int				rowSize = CCanvas::Current ()->RowSize ();
@@ -406,7 +410,7 @@ FONT->GetInfo (font);
 
 				if (underline)
 					for (i=0; i< width; i++)
-						videoBuffer[videoOffset++] = (unsigned int) FG_COLOR.index;
+						videoBuffer[videoOffset++] = (uint) FG_COLOR.index;
 				else {
 					fp += BITS_TO_BYTES (width)*r;
 					mask = 0;
@@ -416,7 +420,7 @@ FONT->GetInfo (font);
 							mask = 0x80;
 						}
 						if (bits & mask)
-							videoBuffer[videoOffset++] = (unsigned int) FG_COLOR.index;
+							videoBuffer[videoOffset++] = (uint) FG_COLOR.index;
 						else
 							videoOffset++;
 						mask >>= 1;
@@ -524,7 +528,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 CBitmap *CreateStringBitmap (
-	const char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
+	const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
 {
 	int			orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;
@@ -646,7 +650,7 @@ while (nextRowP) {
 		kc.alpha = 255;
 		if (font.flags & FT_COLOR) {
 			for (hy = 0; hy < bmfP->Height (); hy++) {
-				pc = ((tRgbaColorb *) bmP->Buffer ()) + (y + hy) * w + x;
+				pc = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + (y + hy) * w + x;
 				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
 				for (hx = bmfP->Width (); hx; hx--, pc++, pf++)
 					if ((c = *pf) != TRANSPARENCY_COLOR) {
@@ -674,7 +678,7 @@ while (nextRowP) {
 					}
 				}
 			for (hy = 0; hy < bmfP->Height (); hy++) {
-				pc = ((tRgbaColorb *) bmP->Buffer ()) + (y + hy) * w + x;
+				pc = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + (y + hy) * w + x;
 				pf = bmfP->Buffer () + hy * bmfP->RowSize ();
 				for (hx = bmfP->Width (); hx; hx--, pc++, pf++)
 					if (*pf != TRANSPARENCY_COLOR)
@@ -809,7 +813,7 @@ return GrString (x, y, buffer, idP);
 
 int GrInternalStringClipped (int x, int y, const char *s)
 {
-	unsigned char * fp;
+	ubyte * fp;
 	const char * textP, * nextRowP, * text_ptr1;
 	int r, mask, i, bits, width, spacing, letter, underline;
 	int x1 = x, last_x;
@@ -905,7 +909,7 @@ return 0;
 
 int GrInternalStringClippedM (int x, int y, const char *s)
 {
-	unsigned char * fp;
+	ubyte * fp;
 	const char * textP, * nextRowP, * text_ptr1;
 	int r, mask, i, bits, width, spacing, letter, underline;
 	int x1 = x, last_x;

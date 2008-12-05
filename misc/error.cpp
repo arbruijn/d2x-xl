@@ -41,7 +41,7 @@ FILE *fErr = NULL;
 int err_initialized=0;
 //end edit -MM
 
-static void (*ErrorPrintFunc)(const char *);
+static void (*ErrorPrintFunc) (char *) ();
 
 char szExitMsg[MAX_MSG_LEN]="";
 char szWarnMsg[MAX_MSG_LEN];
@@ -134,7 +134,7 @@ if (*szExitMsg) {
 #	define MB_ICONERROR 0
 #endif
 
-void D2MsgBox (const char *pszMsg, unsigned int nType)
+void D2MsgBox (const char *pszMsg, uint nType)
 {
 gameData.app.bGamePaused = 1;
 if (screen.Width () && screen.Height () && pWarnFunc)
@@ -210,7 +210,7 @@ gameStates.app.bShowError = 0;
 
 //------------------------------------------------------------------------------
 //initialize error handling system, and set default message. returns 0=ok
-int _CDECL_ error_init(void (*func)(const char *), const char *fmt, ...)
+int _CDECL_ error_init (void (*func) (const char*) (, const char *fmt, ...)
 {
 	va_list arglist;
 	int len;

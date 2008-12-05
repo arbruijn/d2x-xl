@@ -83,8 +83,8 @@ if (!gameStates.render.bBrightObject) {
 		  i < nVerts;
 		  i++, pv++, pn++, pc++) {
 		pc->index = 0;
-		vVertex = vPos + *(fVector *) pv;
-		G3VertexColor ((fVector3 *) pn, vVertex.V3(), i, pc, NULL, 1, 0, 0);
+		vVertex = vPos + *reinterpret_cast<fVector*> (pv);
+		G3VertexColor (reinterpret_cast<fVector3*> (pn), vVertex.V3(), i, pc, NULL, 1, 0, 0);
 		}
 	}
 for (i = iFaceVerts, h = iFaceVerts, pmv = pm->pFaceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {
@@ -613,9 +613,9 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
 				vPos = objP->info.position.vPos.ToFloat3();
-				glLightfv (hLight, GL_POSITION, (GLfloat *)&vPos);
-				glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &psc->color);
-				glLightfv (hLight, GL_SPECULAR, (GLfloat *) &psc->color);
+				glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (&vPos));
+				glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&psc->color));
+				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&psc->color));
 				glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f);
 				glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f);
 				glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f);
@@ -626,20 +626,20 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				glEnable (hLight);
 	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);
 				fBrightness = psl->info.fBrightness * fLightScale;
-				color = *((fVector *) &psl->info.color);
+				color = *(reinterpret_cast<fVector*> (&psl->info.color));
 				color[R] *= fLightScale;
 				color[G] *= fLightScale;
 				color[B] *= fLightScale;
-				glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->vPosf));
-				glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &color);
-				glLightfv (hLight, GL_SPECULAR, (GLfloat *) &color);
+				glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (psl->vPosf));
+				glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&color));
+				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&color));
 				if (psl->info.bSpot) {
 #if 0
 					psl = psl;
 #else
 					glLighti (hLight, GL_SPOT_EXPONENT, 12);
 					glLighti (hLight, GL_SPOT_CUTOFF, 25);
-					glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &psl->info.vDirf);
+					glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&psl->info.vDirf));
 #endif
 					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / fBrightness);
 					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);
@@ -804,10 +804,10 @@ if (bUseVBO) {
 		}
 	}
 else {
-	pm->pVBVerts = (fVector3 *) pm->pVertBuf [0];
+	pm->pVBVerts = reinterpret_cast<fVector3*> (pm->pVertBuf [0]);
 	pm->pVBNormals = pm->pVBVerts + pm->nFaceVerts;
-	pm->pVBColor = (tRgbaColorf *) (pm->pVBNormals + pm->nFaceVerts);
-	pm->pVBTexCoord = (tTexCoord2f *) (pm->pVBColor + pm->nFaceVerts);
+	pm->pVBColor = reinterpret_cast<tRgbaColorf*> (pm->pVBNormals + pm->nFaceVerts);
+	pm->pVBTexCoord = reinterpret_cast<tTexCoord2f*> (pm->pVBColor + pm->nFaceVerts);
 	}
 #if G3_SW_SCALING
 G3ScaleModel (nModel);

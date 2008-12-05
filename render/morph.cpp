@@ -52,13 +52,13 @@ void MorphFindModelBounds (tPolyModel *pmP, int nSubModel, vmsVector& minv, vmsV
 	vmsVector *vp;
 	ushort *data, nType;
 
-	data = (ushort *) (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
+	data = reinterpret_cast<ushort*> (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
 	nType = *data++;
 	Assert (nType == 7 || nType == 1);
 	nVerts = *data++;
 	if (nType==7)
 		data+=2;		//skip start & pad
-	vp = (vmsVector *) data;
+	vp = reinterpret_cast<vmsVector*> (data);
 	minv = maxv = *vp++;
 	nVerts--;
 	while (nVerts--) {
@@ -88,7 +88,7 @@ int MorphInitPoints (tPolyModel *pmP, vmsVector *vBoxSize, int nSubModel, tMorph
 	int			i;
 
 //printf ("initing %d ", nSubModel);
-data = (ushort *) (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
+data = reinterpret_cast<ushort*> (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
 nType = *data++;
 #if DBG
 //Assert (nType == 7 || nType == 1);
@@ -105,7 +105,7 @@ else
 	i = 0;				//start at zero
 Assert (i+nVerts < MAX_VECS);
 mdP->submodelStartPoints [nSubModel] = i;
-vp = (vmsVector *) data;
+vp = reinterpret_cast<vmsVector*> (data);
 v = *vp;
 while (nVerts--) {
 	fix k, dist;
@@ -147,7 +147,7 @@ int MorphUpdatePoints (tPolyModel *pmP, int nSubModel, tMorphInfo *mdP)
 	int i;
 
 	////printf ("updating %d ", nSubModel);
-data = (ushort *) (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
+data = reinterpret_cast<ushort*> (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
 nType = *data++;
 #if DBG
 //Assert (nType == 7 || nType == 1);
@@ -161,7 +161,7 @@ if (nType == 7) {
 	}
 else
 	i = 0;				//start at zero
-vp = (vmsVector *) data;
+vp = reinterpret_cast<vmsVector*> (data);
 while (nVerts--) {
 	if (mdP->times [i]) {		//not done yet
 		if ((mdP->times [i] -= gameData.time.xFrame) <= 0) {

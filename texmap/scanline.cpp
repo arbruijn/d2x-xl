@@ -50,7 +50,7 @@ void c_tmap_scanline_flat(void)
 	ubyte *dest;
 //        int x;
 
-	dest = (ubyte *)(write_buffer + fx_xleft + (bytes_per_row * fx_y )  );
+	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y ));
 
 /*	for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
 		*dest++ = tmap_flat_color;
@@ -64,7 +64,7 @@ void c_tmap_scanline_shaded(void)
 	ubyte *dest, tmp;
 	int x;
 
-	dest = (ubyte *)(write_buffer + fx_xleft + (bytes_per_row * fx_y)  );
+	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
 	fade = tmap_flat_shadeValue<<8;
 	for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
@@ -85,7 +85,7 @@ void c_tmap_scanline_lin_nolight(void)
 	dudx = fx_du_dx; 
 	dvdx = fx_dv_dx*64; 
 
-	dest = (ubyte *)(write_buffer + fx_xleft + (bytes_per_row * fx_y)  );
+	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
 	if (!gameStates.render.bTransparency)	{
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
@@ -121,12 +121,12 @@ void c_tmap_scanline_lin(void)
 
 	l = fx_l>>8;
 	dldx = fx_dl_dx>>8;
-	dest = (ubyte *)(write_buffer + fx_xleft + (bytes_per_row * fx_y)  );
+	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
 	if (!gameStates.render.bTransparency)	{
 		ubyte*			pixPtrLocalCopy = pixptr;
 		ubyte*			fadeTableLocalCopy = paletteManager.FadeTable ();
-		unsigned int	destlong;
+		uint	destlong;
 
 		x = fx_xright-fx_xleft+1;
 
@@ -140,7 +140,7 @@ void c_tmap_scanline_lin(void)
 			while (j > 0)
 				{
 				//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-				*dest++ = (ubyte) (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
+				*dest++ = (ubyte) (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
 				//end edit -MM
 				l += dldx;
 				u += dudx;
@@ -154,30 +154,30 @@ void c_tmap_scanline_lin(void)
 		while (j > 0)
 			{
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong = (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ] << 24;
+			destlong = (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ] << 24;
 			//end edit -MM
 			l += dldx;
 			u += dudx;
 			v += dvdx;
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ] << 16;
+			destlong |= (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ] << 16;
 			//end edit -MM
 			l += dldx;
 			u += dudx;
 			v += dvdx;
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ] << 8;
+			destlong |= (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ] << 8;
 			//end edit -MM
 			l += dldx;
 			u += dudx;
 			v += dvdx;
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
+			destlong |= (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
 			//end edit -MM
 			l += dldx;
 			u += dudx;
 			v += dvdx;
-			*((unsigned int *) dest) = destlong;
+			*reinterpret_cast<uint*> (dest) = destlong;
 			dest += 4;
 			x -= 4;
 			j -= 4;
@@ -186,7 +186,7 @@ void c_tmap_scanline_lin(void)
 		while (x-- > 0)
 			{
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			*dest++ = (ubyte) (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
+			*dest++ = (ubyte) (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (X2I(v)&(64*63)) + (X2I(u)&63) ] ];
 			//end edit -MM
 			l += dldx;
 			u += dudx;
@@ -223,7 +223,7 @@ void c_tmap_scanline_lin(void)
 
 	l = fx_l>>8;
 	dldx = fx_dl_dx>>8;
-	dest = (ubyte *)(write_buffer + fx_xleft + (bytes_per_row * fx_y)  );
+	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
 	if (!gameStates.render.bTransparency)	{
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
@@ -268,7 +268,7 @@ void c_fp_tmap_scanline_per_nolight(void)
 
 	rec_z = 1.0 / z;
 
-	dest = (ubyte *) (write_buffer + fx_xleft + (bytes_per_row * fx_y));
+	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
 	x = fx_xright - fx_xleft + 1;
 	if (!gameStates.render.bTransparency) {
@@ -347,7 +347,7 @@ void c_fp_tmap_scanline_per_nolight(void)
 				z += dzdx;
 				rec_z = 1.0 / z;
 
-				*((u_int64_t *) dest) = destlong;
+				*reinterpret_cast<u_int64_t*> ( dest) = destlong;
 				dest += 8;
 				x -= 8;
 				j -= 8;
@@ -385,7 +385,7 @@ void c_fp_tmap_scanline_per_nolight(void)
 
 			j = x;
 			while (j >= 8) {
-				destlong = *((u_int64_t *) dest);
+				destlong = *reinterpret_cast<u_int64_t*> ( dest);
 				c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) +
 						  (((int) (u * rec_z)) & 63)];
 				if (c != 255) {
@@ -467,7 +467,7 @@ void c_fp_tmap_scanline_per_nolight(void)
 				z += dzdx;
 				rec_z = 1.0 / z;
 
-				*((u_int64_t *) dest) = destlong;
+				*reinterpret_cast<u_int64_t*> ( dest) = destlong;
 				dest += 8;
 				x -= 8;
 				j -= 8;
@@ -501,7 +501,7 @@ void c_tmap_scanline_per_nolight(void)
 	dvdx = fx_dv_dx*64; 
 	dzdx = fx_dz_dx;
 
-	dest = (ubyte *)(write_buffer + fx_xleft + (bytes_per_row * fx_y)  );
+	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
 	if (!gameStates.render.bTransparency)	{
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
@@ -551,7 +551,7 @@ void c_fp_tmap_scanline_per(void)
 
 	rec_z = 1.0 / z; // gcc 2.95.2 is won't do this optimization itself
 
-	dest = (ubyte *) (write_buffer + fx_xleft + (bytes_per_row * fx_y));
+	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 	x = fx_xright - fx_xleft + 1;
 
 	if (!gameStates.render.bTransparency) {
@@ -649,7 +649,7 @@ void c_fp_tmap_scanline_per(void)
 				z += dzdx;
 				rec_z = 1.0 / z;
 
-				*((u_int64_t *) dest) = destlong;
+				*reinterpret_cast<u_int64_t*> ( dest) = destlong;
 				dest += 8;
 				x -= 8;
 				j -= 8;
@@ -687,7 +687,7 @@ void c_fp_tmap_scanline_per(void)
 
 			j = x;
 			while (j >= 8) {
-				destlong = *((u_int64_t *) dest);
+				destlong = *reinterpret_cast<u_int64_t*> ( dest);
 				c = (uint) pixptr[(((int) (v * rec_z)) & (64 * 63)) + (((int) (u * rec_z)) & 63)];
 				if (c != 255) {
 					destlong &= ~(u_int64_t)0xFF;
@@ -769,7 +769,7 @@ void c_fp_tmap_scanline_per(void)
 				z += dzdx;
 				rec_z = 1.0 / z;
 
-				*((u_int64_t *) dest) = destlong;
+				*reinterpret_cast<u_int64_t*> ( dest) = destlong;
 				dest += 8;
 				x -= 8;
 				j -= 8;
@@ -808,12 +808,12 @@ void c_tmap_scanline_per(void)
 
 	l = fx_l>>8;
 	dldx = fx_dl_dx>>8;
-	dest = (ubyte *)(write_buffer + fx_xleft + (bytes_per_row * fx_y)  );
+	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
 	if (!gameStates.render.bTransparency)	{
 		ubyte*			pixPtrLocalCopy = pixptr;
 		ubyte*			fadeTableLocalCopy = paletteManager.FadeTable ();
-		unsigned int	destlong;
+		uint	destlong;
 
 		x = fx_xright-fx_xleft+1;
 
@@ -842,34 +842,34 @@ void c_tmap_scanline_per(void)
 		while (j > 0)
 			{
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong = (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ] << 24;
+			destlong = (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ] << 24;
 			//end edit -MM
 			l += dldx;
 			u += dudx;
 			v += dvdx;
 			z += dzdx;
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ] << 16;
+			destlong |= (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ] << 16;
 			//end edit -MM
 			l += dldx;
 			u += dudx;
 			v += dvdx;
 			z += dzdx;
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ] << 8;
+			destlong |= (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ] << 8;
 			//end edit -MM
 			l += dldx;
 			u += dudx;
 			v += dvdx;
 			z += dzdx;
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			destlong |= (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ];
+			destlong |= (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ];
 			//end edit -MM
 			l += dldx;
 			u += dudx;
 			v += dvdx;
 			z += dzdx;
-			*((unsigned int *) dest) = destlong;
+			*reinterpret_cast<uint*> (dest) = destlong;
 			dest += 4;
 			x -= 4;
 			j -= 4;
@@ -878,7 +878,7 @@ void c_tmap_scanline_per(void)
 		while (x-- > 0)
 			{
 			//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
-			*dest++ = (ubyte) (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ];
+			*dest++ = (ubyte) (uint) fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ];
 			//end edit -MM
 			l += dldx;
 			u += dudx;
@@ -919,7 +919,7 @@ void c_tmap_scanline_per(void)
 
 	l = fx_l>>8;
 	dldx = fx_dl_dx>>8;
-	dest = (ubyte *)(write_buffer + fx_xleft + (bytes_per_row * fx_y)  );
+	dest = reinterpret_cast<ubyte*> (write_buffer + fx_xleft + (bytes_per_row * fx_y));
 
 	if (!gameStates.render.bTransparency)	{
 		for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {

@@ -137,7 +137,7 @@ if (lightmapData.buffers) {
 	tLightmapBuffer *lmP = lightmapData.buffers;
 	for (int i = lightmapData.nBuffers; i; i--, lmP++)
 		if (lmP->handle) {
-			OglDeleteTextures (1, (GLuint *) &lmP->handle);
+			OglDeleteTextures (1, reinterpret_cast<GLuint*> (&lmP->handle));
 			lmP->handle = 0;
 			}
 	} 
@@ -149,8 +149,8 @@ void DestroyLightmaps (void)
 {
 if (lightmapData.info) { 
 	OglDestroyLightmaps ();
-	D2_FREE (lightmapData.info);
-	D2_FREE (lightmapData.buffers);
+	lightmapData.info.Destroy ();
+	lightmapData.buffers.Destroy ();
 	lightmapData.nBuffers = 0;
 	}
 }
@@ -242,15 +242,15 @@ int InitLightData (int bVariable)
 //first step find all the lights in the level.  By iterating through every surface in the level.
 if (!(lightmapData.nLights = CountLights (bVariable)))
 	return 0;
-if (!(lightmapData.info = (tLightmapInfo *) D2_ALLOC (sizeof (tLightmapInfo) * lightmapData.nLights)))
+if (!(lightmapData.info.Create (lightmapData.nLights))
 	return lightmapData.nLights = 0; 
 lightmapData.nBuffers = (gameData.segs.nFaces + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
-if (!(lightmapData.buffers = (tLightmapBuffer *) D2_ALLOC (lightmapData.nBuffers * sizeof (tLightmapBuffer)))) {
-	D2_FREE (lightmapData.info);
+if (!(lightmapData.buffers.Create (lightmapData.nBuffers)) {
+	lightmapData.info.Destroy ();
 	return lightmapData.nLights = 0; 
 	}
-memset (lightmapData.buffers, 0, lightmapData.nBuffers * sizeof (tLightmapBuffer)); 
-memset (lightmapData.info, 0, sizeof (tLightmapInfo) * lightmapData.nLights); 
+lightmapData.buffers.Clear (); 
+lightmapData.info.Clear (); 
 lightmapData.nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
 lmiP = lightmapData.info; 
@@ -517,7 +517,7 @@ static tThreadInfo	ti [2];
 
 int _CDECL_ LightmapThread (void *pThreadId)
 {
-	int		nId = *((int *) pThreadId);
+	int		nId = *(reinterpret_cast<int*> (pThreadId));
 
 gameData.render.lights.dynamic.shader.index [0][nId].nFirst = MAX_SHADER_LIGHTS;
 gameData.render.lights.dynamic.shader.index [0][nId].nLast = 0;
@@ -630,7 +630,7 @@ return bOk;
 void ReallocLightmaps (int nBuffers)
 {
 if (lightmapData.nBuffers > nBuffers) {
-	lightmapData.buffers = (tLightmapBuffer *) D2_REALLOC (lightmapData.buffers, nBuffers * sizeof (tLightmapBuffer));
+	lightmapData.buffers.Resize (nBuffers);
 	lightmapData.nBuffers = nBuffers;
 	}
 }

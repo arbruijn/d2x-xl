@@ -233,7 +233,7 @@ OGL_BINDTEX (m_info.pbuffer.texId);
 #	ifdef _WIN32
 #		if DBG
 if (!m_info.pbo.Bind ()) {
-	char *psz = (char *) gluErrorString (glGetError ());
+	char *psz = reinterpret_cast<char*> (gluErrorString (glGetError ())));
 	return 1;
 	}
 #		else
@@ -308,7 +308,7 @@ for (y = 0; y < m_info.th; y++) {
 					break;
 
 				case GL_LUMINANCE_ALPHA:
-					*((GLushort *) bufP) = 0;
+					*reinterpret_cast<GLushort*> (bufP) = 0;
 					bufP += 2; 
 					break;
 
@@ -319,12 +319,12 @@ for (y = 0; y < m_info.th; y++) {
 					break;
 
 				case GL_RGBA:
-					*((GLuint *) bufP) = (nTransp ? 0 : 0xffffffff);
+					*reinterpret_cast<GLuint*> ( bufP) = (nTransp ? 0 : 0xffffffff);
 					bufP += 4;
 					break;
 				
 				case GL_RGBA4:
-					*((GLushort *) bufP) = (nTransp ? 0 : 0xffff);
+					*reinterpret_cast<GLushort*> ( bufP) = (nTransp ? 0 : 0xffff);
 					bufP += 2;
 					break;
 				}
@@ -361,7 +361,7 @@ for (y = 0; y < m_info.th; y++) {
 							r >>= 3;
 							g >>= 2;
 							b >>= 3;
-							*((GLushort *) bufP) = r + (g << 5) + (b << 11);
+							*reinterpret_cast<GLushort*> ( bufP) = r + (g << 5) + (b << 11);
 							bufP += 2;
 							}
 						}
@@ -410,7 +410,7 @@ for (y = 0; y < m_info.th; y++) {
 						(*(bufP++)) = (GLubyte) a;
 						}
 					else {
-						*((GLushort *) bufP) = (r >> 4) + ((g >> 4) << 4) + ((b >> 4) << 8) + ((a >> 4) << 12);
+						*reinterpret_cast<GLushort*> ( bufP) = (r >> 4) + ((g >> 4) << 4) + ((b >> 4) << 8) + ((a >> 4) << 12);
 						bufP += 2;
 						}
 					break;
@@ -670,7 +670,7 @@ if (m_info.bmP && (m_info.bmP->Texture () == this))
 void CTexture::Destroy (void)
 {
 if (m_info.handle && (m_info.handle != (GLuint) -1)) {
-	OglDeleteTextures (1, (GLuint *) &m_info.handle);
+	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 	Unlink ();
 	Init ();
 	}
@@ -688,7 +688,7 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, state);
 
 GLuint CTexture::Create (int w, int h)			
 {
-	int		nSize = w * h * sizeof (unsigned int); 
+	int		nSize = w * h * sizeof (uint); 
 	ubyte		*data = new ubyte [nSize]; 
 
 if (!data)
@@ -741,7 +741,7 @@ if (nParam) {
 		glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &nParam);
 		if (nParam && (data = new ubyte [nParam])) {
 			bmP->DestroyBuffer ();
-			glGetCompressedTexImage (GL_TEXTURE_2D, 0, (GLvoid *) data);
+			glGetCompressedTexImage (GL_TEXTURE_2D, 0, reinterpret_cast<GLvoid*> (data));
 			bmP->SetBuffer (data);
 			bmP->SetBufSize (nParam);
 			bmP->SetFormat (nFormat);
@@ -775,7 +775,7 @@ int CTexture::Load (ubyte *buffer)
 if (!buffer)
 	return 1;
 // Generate OpenGL texture IDs.
-OglGenTextures (1, (GLuint *) &m_info.handle);
+OglGenTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 if (!m_info.handle) {
 #if DBG
 	int nError = glGetError ();
@@ -947,7 +947,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-unsigned char decodebuf [2048*2048];
+ubyte decodebuf [2048*2048];
 
 #if RENDER2TEXTURE == 1
 int CBitmap::PrepareTexture (int bMipMap, int nTransp, int bMask, CBO *renderBuffer)

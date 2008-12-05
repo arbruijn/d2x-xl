@@ -11,9 +11,9 @@
 
 # define FD_ZERO(set)  \
   do {                                                                        \
-	      unsigned int __i;                                                         \
+	      uint __i;                                                         \
 			      for (__i = 0; __i < sizeof (__fd_set) / sizeof (__fd_mask); ++__i)        \
-					        ((__fd_mask *) set)[__i] = 0;                                           \
+					        (reinterpret_cast<__fd_mask *> set)[__i] = 0;                                           \
 								  } while (0)
 # define FD_SET(d, set)       ((set)->fds_bits[__FDELT(d)] |= __FDMASK(d))
 # define FD_CLR(d, set)       ((set)->fds_bits[__FDELT(d)] &= ~__FDMASK(d))

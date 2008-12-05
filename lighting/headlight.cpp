@@ -799,7 +799,7 @@ if ((gameStates.ogl.bHeadlight = (gameStates.ogl.bShadersOk && RENDERPATH))) {
 				DeleteShaderProg (&headlightShaderProgs [i][j]);
 #if 1//ndef _DEBUG
 			if (nLights == 1)
-				pszFS = (char *) headlightFS [i][h = j];
+				pszFS = reinterpret_cast<char*> (headlightFS [i][h = j]);
 			else
 #endif
 				pszFS = BuildLightingShader (headlightFS [i][h = j + 4], nLights);
@@ -852,7 +852,7 @@ if (nShader != gameStates.render.history.nShader) {
 	glUniform1f (glGetUniformLocation (activeShaderProg, "spotExp"), 8.0f);
 	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"), 1.0f);
 	glUniform1fv (glGetUniformLocation (activeShaderProg, "brightness"), nLights,
-					  (GLfloat *) gameData.render.lights.dynamic.headlights.brightness);
+					  reinterpret_cast<GLfloat*> (gameData.render.lights.dynamic.headlights.brightness));
 #	endif
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "aspect"), (float) screen.Width () / (float) screen.Height ());
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
@@ -861,16 +861,16 @@ if (nShader != gameStates.render.history.nShader) {
 		OglSetupTransform (1);
 	for (int i = 0; i < nLights; i++) {
 		glEnable (GL_LIGHT0 + i);
-		glLightfv (GL_LIGHT0 + i, GL_POSITION, (GLfloat *) (gameData.render.lights.dynamic.headlights.pos + i));
-		glLightfv (GL_LIGHT0 + i, GL_SPOT_DIRECTION, (GLfloat *) (gameData.render.lights.dynamic.headlights.dir + i));
+		glLightfv (GL_LIGHT0 + i, GL_POSITION, reinterpret_cast<GLfloat*> (gameData.render.lights.dynamic.headlights.pos + i));
+		glLightfv (GL_LIGHT0 + i, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (gameData.render.lights.dynamic.headlights.dir + i));
 		}
 	if (bTransform)
 		OglResetTransform (1);
 #else
 	glUniform3fv (glGetUniformLocation (activeShaderProg, "lightPosWorld"), nLights,
-					  (GLfloat *) gameData.render.lights.dynamic.headlights.pos);
+					  reinterpret_cast<GLfloat*> (gameData.render.lights.dynamic.headlights.pos));
 	glUniform3fv (glGetUniformLocation (activeShaderProg, "lightDirWorld"), nLights,
-					  (GLfloat *) gameData.render.lights.dynamic.headlights.dir);
+					  reinterpret_cast<GLfloat*> (gameData.render.lights.dynamic.headlights.dir));
 #endif
 #endif
 	if (colorP) {
@@ -883,7 +883,7 @@ if (nShader != gameStates.render.history.nShader) {
 		color.red = color.green = color.blue = 2.0f;
 		color.alpha = 1;
 		}
-	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &color);
+	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&color));
 	OglClearError (0);
 	}
 return gameStates.render.history.nShader = nShader;

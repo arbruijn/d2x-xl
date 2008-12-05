@@ -68,7 +68,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #if DBG
 //void printsig(int s)
 //{
-//	char *t=(char *) &s;
+//	char *t=reinterpret_cast<char*> (&s);
 //
 ///*  //printf("%c%c%c%c", *(&s+3), *(&s+2), *(&s+1), s);*/
 //	//printf("%c%c%c%c", t[3], t[2], t[1], t[0]);
@@ -79,7 +79,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int PutSig (int sig, FILE *fp)
 {
-	char *s = (char *) &sig;
+	char *s = reinterpret_cast<char*> (&sig);
 
 fputc(s[3], fp);
 fputc(s[2], fp);
@@ -90,7 +90,7 @@ return fputc(s[0], fp);
 
 //------------------------------------------------------------------------------
 
-int PutByte (unsigned char c, FILE *fp)
+int PutByte (ubyte c, FILE *fp)
 {
 return fputc(c, fp);
 }
@@ -99,7 +99,7 @@ return fputc(c, fp);
 
 int PutWord (int n, FILE *fp)
 {
-	unsigned char c0, c1;
+	ubyte c0, c1;
 
 c0 = (n & 0xff00) >> 8;
 c1 = n & 0xff;
@@ -143,7 +143,7 @@ int CIFF::GetSig (void)
 	s[2] = Data() [NextPos()];
 	s[3] = Data() [NextPos()];
 #endif
-	return(*((int *) s));
+	return *reinterpret_cast<int*> (s);
 }
 
 //------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ return Data() [NextPos()];
 
 int CIFF::GetWord (void)
 {
-unsigned char c0, c1;
+ubyte c0, c1;
 if (Pos() > Len() - 2) return EOF;
 c1 = Data() [NextPos()];
 c0 = Data() [NextPos()];
@@ -170,7 +170,7 @@ return(((int)c1<<8) + c0);
 
 int CIFF::GetLong (void)
 {
-	unsigned char c0, c1, c2, c3;
+	ubyte c0, c1, c2, c3;
 if (Pos() > Len() - 4) return EOF;
 c3 = Data() [NextPos()];
 c2 = Data() [NextPos()];
@@ -209,12 +209,12 @@ return IFF_NO_ERROR;
 
 int CIFF::ParseBody (int len, tIFFBitmapHeader *bmHeader)
 {
-	unsigned char  *p = bmHeader->raw_data;
+	ubyte  *p = bmHeader->raw_data;
 	int				width, depth;
 	signed char		n;
 	int				nn, wid_cnt, end_cnt, plane;
 	char				ignore = 0;
-	unsigned char	*data_end;
+	ubyte	*data_end;
 	int				endPos;
 
 #if DBG
@@ -248,7 +248,7 @@ if (bmHeader->compression == cmpNone) {        /* no compression */
 	}
 else if (bmHeader->compression == cmpByteRun1)
 	for (wid_cnt = width, plane = 0;Pos() < endPos && p < data_end;) {
-		unsigned char c;
+		ubyte c;
 		if (wid_cnt == end_cnt) {
 			wid_cnt = width;
 			plane++;
@@ -309,7 +309,7 @@ return IFF_NO_ERROR;
 //modify passed bitmap
 int CIFF::ParseDelta (int len, tIFFBitmapHeader *bmHeader)
 {
-	unsigned char  *p=bmHeader->raw_data;
+	ubyte  *p=bmHeader->raw_data;
 	int y;
 	int chunk_end = Pos() + len;
 
@@ -504,7 +504,7 @@ int CIFF::ConvertRgb15 (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
 	tPalEntry *palptr;
 
 palptr = bmHeader->palette;
-MALLOC(new_data, ushort, bmP->Width () * bmP->Height () * 2);
+new_data = new ushort [bmP->BufSize () * 2];
 if (new_data == NULL)
 	return IFF_NO_MEM;
 for (y=0; y<bmP->Height (); y++) {
@@ -512,7 +512,7 @@ for (y=0; y<bmP->Height (); y++) {
 		new_data[newptr++] = INDEX_TO_15BPP(bmHeader->raw_data[y*bmHeader->w+x]);
 	}
 bmP->DestroyBuffer ();				//get rid of old-style data
-bmP->SetBuffer ((ubyte *) new_data);			//..ccAnd point to new data
+bmP->SetBuffer (new_data);			//..ccAnd point to new data
 bmP->SetRowSize (bmP->RowSize () * 2);				//two bytes per row
 return IFF_NO_ERROR;
 }
@@ -595,7 +595,7 @@ if (bmHeader.nType == TYPE_ILBM) {
 	}
 //Copy data from tIFFBitmapHeader structure into CBitmap structure
 CopyIffToGrs (bmP, &bmHeader);
-bmP->SetPalette (paletteManager.Add ((ubyte *) &bmHeader.palette));
+bmP->SetPalette (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette)));
 //Now do post-process if required
 if (bitmapType == BM_RGB15)
 	ret = ConvertRgb15 (bmP, &bmHeader);
@@ -665,7 +665,7 @@ int CIFF::WritePalette (FILE *fp, tIFFBitmapHeader *bitmap_header)
 PutSig(cmap_sig, fp);
 PutLong(3 * n_colors, fp);
 for (i=0; i<256; i++) {
-	unsigned char r, g, b;
+	ubyte r, g, b;
 	r = bitmap_header->palette[i].r * 4 + (bitmap_header->palette[i].r?3:0);
 	g = bitmap_header->palette[i].g * 4 + (bitmap_header->palette[i].g?3:0);
 	b = bitmap_header->palette[i].b * 4 + (bitmap_header->palette[i].b?3:0);

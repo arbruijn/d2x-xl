@@ -544,7 +544,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 	if (gameData.app.nGameMode & GM_CAPTURE) {
 		if (GetTeam ((char) gameData.multiplayer.nLocalPlayer) == nOtherTeam) {
-			PowerupBasic (15, 0, 15, 0, nOtherTeam ? (char *) "RED FLAG" : (char *) "BLUE FLAG!", nPlayer);
+			PowerupBasic (15, 0, 15, 0, nOtherTeam ? reinterpret_cast<char*> ("RED FLAG!") : reinterpret_cast<char*> ("BLUE FLAG!"), nPlayer);
 			playerP->flags |= PLAYER_FLAGS_FLAG;
 			ResetFlightPath (&gameData.pig.flags [nThisTeam].path, 10, -1);
 			MultiSendGotFlag ((char) gameData.multiplayer.nLocalPlayer);
@@ -1159,43 +1159,43 @@ weaponToModel [PROXMINE_ID] = MAX_POLYGON_MODELS - 2;
 weaponToModel [SMARTMINE_ID] = MAX_POLYGON_MODELS - 4;
 weaponToModel [ROBOT_SMARTMINE_ID] = MAX_POLYGON_MODELS - 4;
 
-pickupHandler [POW_EXTRA_LIFE] = (void *) PickupExtraLife;
-pickupHandler [POW_ENERGY] = (void *) PickupEnergyBoost;
-pickupHandler [POW_SHIELD_BOOST] = (void *) PickupShieldBoost;
-pickupHandler [POW_CLOAK] = (void *) PickupCloakingDevice;
+pickupHandler [POW_EXTRA_LIFE] = reinterpret_cast<void*> (PickupExtraLife);
+pickupHandler [POW_ENERGY] = reinterpret_cast<void*> (PickupEnergyBoost);
+pickupHandler [POW_SHIELD_BOOST] = reinterpret_cast<void*> (PickupShieldBoost);
+pickupHandler [POW_CLOAK] = reinterpret_cast<void*> (PickupCloakingDevice);
 pickupHandler [POW_TURBO] = NULL;
-pickupHandler [POW_INVUL] = (void *) PickupInvulnerability;
+pickupHandler [POW_INVUL] = reinterpret_cast<void*> (PickupInvulnerability);
 pickupHandler [POW_MEGAWOW] = NULL;
 
-pickupHandler [POW_FULL_MAP] = (void *) PickupFullMap;
-pickupHandler [POW_CONVERTER] = (void *) PickupConverter;
-pickupHandler [POW_AMMORACK] = (void *) PickupAmmoRack;
-pickupHandler [POW_AFTERBURNER] = (void *) PickupAfterburner;
-pickupHandler [POW_HEADLIGHT] = (void *) PickupHeadlight;
-pickupHandler [POW_SLOWMOTION] = (void *) PickupSlowMotion;
-pickupHandler [POW_BULLETTIME] = (void *) PickupBulletTime;
-pickupHandler [POW_HOARD_ORB] = (void *) PickupHoardOrb;
+pickupHandler [POW_FULL_MAP] = reinterpret_cast<void*> (PickupFullMap);
+pickupHandler [POW_CONVERTER] = reinterpret_cast<void*> (PickupConverter);
+pickupHandler [POW_AMMORACK] = reinterpret_cast<void*> (PickupAmmoRack);
+pickupHandler [POW_AFTERBURNER] = reinterpret_cast<void*> (PickupAfterburner);
+pickupHandler [POW_HEADLIGHT] = reinterpret_cast<void*> (PickupHeadlight);
+pickupHandler [POW_SLOWMOTION] = reinterpret_cast<void*> (PickupSlowMotion);
+pickupHandler [POW_BULLETTIME] = reinterpret_cast<void*> (PickupBulletTime);
+pickupHandler [POW_HOARD_ORB] = reinterpret_cast<void*> (PickupHoardOrb);
 pickupHandler [POW_MONSTERBALL] = NULL;
-pickupHandler [POW_VULCAN_AMMO] = (void *) PickupVulcanAmmo;
+pickupHandler [POW_VULCAN_AMMO] = reinterpret_cast<void*> (PickupVulcanAmmo);
 
 pickupHandler [POW_BLUEFLAG] =
-pickupHandler [POW_REDFLAG] = (void *) PickupFlag;
+pickupHandler [POW_REDFLAG] = reinterpret_cast<void*> (PickupFlag);
 
 pickupHandler [POW_KEY_BLUE] =
 pickupHandler [POW_KEY_RED] =
-pickupHandler [POW_KEY_GOLD] = (void *) PickupKey;
+pickupHandler [POW_KEY_GOLD] = reinterpret_cast<void*> (PickupKey);
 
-pickupHandler [POW_LASER] = (void *) PickupLaser;
-pickupHandler [POW_SUPERLASER] = (void *) PickupSuperLaser;
-pickupHandler [POW_QUADLASER] = (void *) PickupQuadLaser;
+pickupHandler [POW_LASER] = reinterpret_cast<void*> (PickupLaser);
+pickupHandler [POW_SUPERLASER] = reinterpret_cast<void*> (PickupSuperLaser);
+pickupHandler [POW_QUADLASER] = reinterpret_cast<void*> (PickupQuadLaser);
 pickupHandler [POW_SPREADFIRE] = 
 pickupHandler [POW_PLASMA] = 
 pickupHandler [POW_FUSION] = 
 pickupHandler [POW_HELIX] = 
 pickupHandler [POW_PHOENIX] = 
-pickupHandler [POW_OMEGA] = (void *) PickupGun;
+pickupHandler [POW_OMEGA] = reinterpret_cast<void*> (PickupGun);
 pickupHandler [POW_VULCAN] = 
-pickupHandler [POW_GAUSS] = (void *) PickupGatlingGun;
+pickupHandler [POW_GAUSS] = reinterpret_cast<void*> (PickupGatlingGun);
 
 pickupHandler [POW_PROXMINE] =
 pickupHandler [POW_SMARTMINE] =
@@ -1211,7 +1211,7 @@ pickupHandler [POW_GUIDEDMSL_1] =
 pickupHandler [POW_GUIDEDMSL_4] =
 pickupHandler [POW_MERCURYMSL_1] =
 pickupHandler [POW_MERCURYMSL_4] =
-pickupHandler [POW_EARTHSHAKER] = (void *) PickupSecondary;
+pickupHandler [POW_EARTHSHAKER] = reinterpret_cast<void*> (PickupSecondary);
 
 powerupType [POW_TURBO] = 
 powerupType [POW_MEGAWOW] = 

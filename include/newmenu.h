@@ -37,7 +37,7 @@ typedef struct tMenuItem {
 	int			text_len;       // The maximum length of characters that can be entered by this inputboxes
 	char			*text;          // The text associated with this item.
 	char			*textSave;
-	unsigned int color;
+	uint color;
 	short			key;
 	// The rest of these are used internally by by the menu system, so don't set 'em!!
 	short			x, y, xSave, ySave;

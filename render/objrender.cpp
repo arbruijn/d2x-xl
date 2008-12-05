@@ -572,7 +572,7 @@ if (ci.bFading < 0) {
 	glow [0] = FixMul (glow [0], ci.xLightScale);
 	gameData.models.nLightScale = ci.xLightScale;
 	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient,
-									(vmsAngVec *)&objP->rType.polyObjInfo.animAngles,
+									reinterpret_cast<vmsAngVec*> (&objP->rType.polyObjInfo.animAngles),
 									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
 									xNewLight, glow, altTextures, NULL);
 	gameData.models.nLightScale = 0;
@@ -584,7 +584,7 @@ else {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
 	G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
 	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient,
-									(vmsAngVec *)&objP->rType.polyObjInfo.animAngles,
+									reinterpret_cast<vmsAngVec*> (&objP->rType.polyObjInfo.animAngles),
 									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
 									light, glow, NULL, NULL);
 	G3SetSpecialRender (NULL, NULL, NULL);
@@ -705,7 +705,7 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 		bmiP [i] = bm;
 	bOk = DrawPolygonModel (objP, &objP->info.position.vPos,
 									&objP->info.position.mOrient,
-									(vmsAngVec *) &objP->rType.polyObjInfo.animAngles,
+									reinterpret_cast<vmsAngVec*> ( &objP->rType.polyObjInfo.animAngles),
 									objP->rType.polyObjInfo.nModel,
 									objP->rType.polyObjInfo.nSubObjFlags,
 									xLight,
@@ -748,7 +748,7 @@ else {
 #endif
 					bOk = DrawPolygonModel (
 						objP, &objP->info.position.vPos, &objP->info.position.mOrient,
-						(vmsAngVec *) &objP->rType.polyObjInfo.animAngles,
+						reinterpret_cast<vmsAngVec*> ( &objP->rType.polyObjInfo.animAngles),
 						gameData.weapons.info [id].nInnerModel,
 						objP->rType.polyObjInfo.nSubObjFlags,
 						bBrightPolys ? F1_0 : xLight,

@@ -27,10 +27,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 
 #if 1
-#	define	NW_SET_INT(_b, _loc, _i)		*((int *) ((_b) + (_loc))) = INTEL_INT ((int) (_i)); (_loc) += 4
-#	define	NW_SET_SHORT(_b, _loc, _i)		*((short *) ((_b) + (_loc))) = INTEL_SHORT ((short) (_i)); (_loc) += 2
-#	define	NW_GET_INT(_b, _loc, _i)		(_i) = INTEL_INT (*((int *) ((_b) + (_loc)))); (_loc) += 4
-#	define	NW_GET_SHORT(_b, _loc, _i)		(_i) = INTEL_SHORT (*((short *) ((_b) + (_loc)))); (_loc) += 2
+#	define	NW_SET_INT(_b, _loc, _i)		*(reinterpret_cast<int *> ((_b) + (_loc))) = INTEL_INT ((int) (_i)); (_loc) += 4
+#	define	NW_SET_SHORT(_b, _loc, _i)		*(reinterpret_cast<short *> ((_b) + (_loc))) = INTEL_SHORT ((short) (_i)); (_loc) += 2
+#	define	NW_GET_INT(_b, _loc, _i)		(_i) = INTEL_INT (*(reinterpret_cast<int *> ((_b) + (_loc)))); (_loc) += 4
+#	define	NW_GET_SHORT(_b, _loc, _i)		(_i) = INTEL_SHORT (*(reinterpret_cast<short *> ((_b) + (_loc)))); (_loc) += 2
 #else
 #	define	NW_SET_INT(_b, _loc, _i)		{int tmpi = INTEL_INT (_i); memcpy ((_b) + (_loc), &tmpi, 4); (_loc) += 4; }
 #	define	NW_SET_SHORT(_b, _loc, _i)		{int tmps = INTEL_SHORT (_i); memcpy ((_b) + (_loc), &tmpi, 2); (_loc) += 2; }

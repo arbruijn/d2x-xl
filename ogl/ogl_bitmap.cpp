@@ -74,13 +74,13 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	glBegin (GL_QUADS);
 	fPos[X] -= w;
 	fPos[Y] += h;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	fPos[X] += 2 * w;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	fPos[Y] -= 2 * h;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	fPos[X] -= 2 * w;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glEnd ();
 	}
 else {
@@ -99,16 +99,16 @@ else {
 	glTexCoord2f (0, 0);
 	fPos [X] -= w;
 	fPos [Y] += h;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glTexCoord2f (u, 0);
 	fPos[X] += 2 * w;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glTexCoord2f (u, v);
 	fPos[Y] -= 2 * h;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glTexCoord2f (0, v);
 	fPos[X] -= 2 * w;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glEnd ();
 	}
 return 0;
@@ -238,7 +238,7 @@ int OglUBitBltI (
 	GLint curFunc; 
 	int nTransp = (src->Flags () & BM_FLAG_TGA) ? -1 : src->HasTransparency () ? 2 : 0;
 
-//	unsigned char *oldpal;
+//	ubyte *oldpal;
 r_ubitbltc++;
 
 u1 = v1 = 0;
@@ -297,7 +297,7 @@ return 0;
 int OglUBitBltToLinear (int w, int h, int dx, int dy, int sx, int sy, 
 								 CBitmap * src, CBitmap * dest)
 {
-	unsigned char *d, *s;
+	ubyte *d, *s;
 	int i, j;
 	int w1, h1;
 	int bTGA = (dest->Flags () & BM_FLAG_TGA) != 0;

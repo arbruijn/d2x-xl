@@ -35,7 +35,7 @@ void gr_linear_darken(ubyte * dest, int darkeningLevel, int count, ubyte * fade_
 }
 
 
-void gr_linear_stosd( ubyte * dest, tCanvasColor *color, unsigned int nbytes) 
+void gr_linear_stosd( ubyte * dest, tCanvasColor *color, uint nbytes) 
 {
 memset(dest, color->index, nbytes);
 }

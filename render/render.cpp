@@ -85,7 +85,7 @@ typedef struct tPortal {
 void StartLightingFrame (tObject *viewer);
 void ShowReticle(int force_big);
 
-unsigned int	nClearWindowColor = 0;
+uint	nClearWindowColor = 0;
 int				nClearWindow = 2;	// 1 = Clear whole background tPortal, 2 = clear view portals into rest of world, 0 = no clear
 
 void RenderSkyBox (int nWindow);
@@ -814,7 +814,7 @@ return code;
 //------------------------------------------------------------------------------
 
 #if DBG
-void DrawWindowBox (unsigned int color, short left, short top, short right, short bot)
+void DrawWindowBox (uint color, short left, short top, short right, short bot)
 {
 	short l, t, r, b;
 
@@ -2026,7 +2026,7 @@ if (nClearWindow == 2) {
 	if (nFirstTerminalSeg < gameData.render.mine.nRenderSegs) {
 		int i;
 
-		if (nClearWindowColor == (unsigned int) -1)
+		if (nClearWindowColor == (uint) -1)
 			nClearWindowColor = BLACK_RGBA;
 		CCanvas::Current ()->SetColor (nClearWindowColor);
 		for (i = nFirstTerminalSeg, rwP = renderPortals; i < gameData.render.mine.nRenderSegs; i++, rwP++) {
@@ -2281,7 +2281,7 @@ void CheckFace(int nSegment, int nSide, int facenum, int nVertices, short *vp, i
  save_lighting = gameStates.render.nLighting;
  gameStates.render.nLighting = 2;
 		//G3DrawPoly(nVertices, vp);
-		G3DrawTexPoly (nVertices, pointList, (tUVL *)uvlCopy, bm, 1, -1);
+		G3DrawTexPoly (nVertices, pointList, reinterpret_cast<tUVL*> (uvlCopy), bm, 1, -1);
  gameStates.render.nLighting = save_lighting;
 
 		if (gr_ugpixel(&CCanvas::Current ()->Bitmap (), _search_x, _search_y) == 1) {

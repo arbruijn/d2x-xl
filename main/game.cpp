@@ -825,7 +825,7 @@ gameStates.gameplay.xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge
 
 //------------------------------------------------------------------------------
 
-#define ADD_HELP_OPT(_text)	m [opt].nType = NM_TYPE_TEXT; m [opt++].text = (char *) (_text);
+#define ADD_HELP_OPT(_text)	m [opt].nType = NM_TYPE_TEXT; m [opt++].text = reinterpret_cast<char*> (_text);
 
 void ShowHelp ()
 {
@@ -1332,7 +1332,7 @@ return gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentP
 
 #if DBG
 void SpeedtestFrame (void);
-Uint32 nDebugSlowdown = 0;
+uint nDebugSlowdown = 0;
 #endif
 
 #ifdef EDITOR
@@ -1422,7 +1422,7 @@ void toggle_movie_saving ()
 
 
 		if (!movieFrameBuffer) {
-			movieFrameBuffer = (ubyte *) D2_ALLOC (MAX_MOVIE_BUFFER_FRAMES * MOVIE_FRAME_SIZE);
+			movieFrameBuffer = reinterpret_cast<ubyte*> (D2_ALLOC (MAX_MOVIE_BUFFER_FRAMES * MOVIE_FRAME_SIZE));
 			if (!movieFrameBuffer) {
 				Int3 ();
 				bSavingMovieFrames=0;
@@ -2136,7 +2136,7 @@ void LoadBackgroundBitmap (void)
 	int pcx_error;
 
 bmBackground.DestroyBuffer ();
-pcx_error = PCXReadBitmap (gameStates.app.cheats.bJohnHeadOn ? (char *) "johnhead.pcx" : (char *) BACKGROUND_NAME,
+pcx_error = PCXReadBitmap (gameStates.app.cheats.bJohnHeadOn ? reinterpret_cast<char*> ("johnhead.pcx") : reinterpret_cast<char*> (BACKGROUND_NAME),
 									&bmBackground, BM_LINEAR,0);
 if (pcx_error != PCX_ERROR_NONE)
 	Error ("File %s - PCX error: %s",BACKGROUND_NAME,pcx_errormsg (pcx_error));

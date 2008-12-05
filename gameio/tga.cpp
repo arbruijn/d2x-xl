@@ -42,7 +42,7 @@ memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
 avgColor.red = avgColor.green = avgColor.blue = 0;
 if (ph->bits == 24) {
 	tBGRA	c;
-	tRgbColorb *p = ((tRgbColorb *) (bmP->Buffer ())) + w * (bmP->Height () - 1);
+	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ()) + w * (bmP->Height () - 1);
 
 	for (i = bmP->Height (); i; i--) {
 		for (j = w; j; j--, p++) {
@@ -71,7 +71,7 @@ else {
 	bmP->AddFlags (BM_FLAG_SEE_THRU);
 	if (bReverse) {
 		tRGBA	c;
-		tRgbaColorb	*p = (tRgbaColorb *) bmP->Buffer ();
+		tRgbaColorb	*p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 		int nSuperTransp;
 
 		nFrames = h / w - 1;
@@ -129,7 +129,7 @@ else {
 		}
 	else {
 		tBGRA	c;
-		tRgbaColorb *p = ((tRgbaColorb *) (bmP->Buffer ())) + w * (bmP->Height () - 1);
+		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + w * (bmP->Height () - 1);
 		int nSuperTransp;
 
 		nFrames = h / w - 1;
@@ -211,7 +211,7 @@ int WriteTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *bmP)
 if (ph->bits == 24) {
 	if (bmP->BPP () == 3) {
 		tBGR	c;
-		tRgbColorb *p = ((tRgbColorb *) (bmP->Buffer ())) + w * (bmP->Height () - 1);
+		tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ()) + w * (bmP->Height () - 1);
 		for (i = bmP->Height (); i; i--) {
 			for (j = w; j; j--, p++) {
 				c.r = p->red;
@@ -225,7 +225,7 @@ if (ph->bits == 24) {
 		}
 	else {
 		tBGR	c;
-		tRgbaColorb *p = ((tRgbaColorb *) (bmP->Buffer ())) + w * (bmP->Height () - 1);
+		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + w * (bmP->Height () - 1);
 		for (i = bmP->Height (); i; i--) {
 			for (j = w; j; j--, p++) {
 				c.r = p->red;
@@ -240,7 +240,7 @@ if (ph->bits == 24) {
 	}
 else {
 	tBGRA	c;
-	tRgbaColorb *p = ((tRgbaColorb *) (bmP->Buffer ())) + w * (bmP->Height () - 1);
+	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + w * (bmP->Height () - 1);
 	int bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
@@ -356,7 +356,7 @@ if (!pszFolder)
 if (ReadS3TC (bmP, pszFolder, pszFile))
 	return 1;
 #endif
-if (!cf.Open (pszFile, pszFolder, "rb", 0) && !(psz = (char *) strstr (pszFile, ".tga"))) {
+if (!cf.Open (pszFile, pszFolder, "rb", 0) && !(psz = reinterpret_cast<char*> (strstr (pszFile, ".tga")))) {
 	strcpy (fn, pszFile);
 	if ((psz = strchr (fn, '.')))
 		*psz = '\0';
@@ -447,7 +447,7 @@ nFactor2 = xFactor * yFactor;
 if (!bRealloc)
 	pDest = pData = bmP->Buffer ();
 else {
-	if (!(pData = (ubyte *) D2_ALLOC (xMax * yMax * bpp)))
+	if (!(pData = new ubyte [xMax * yMax * bpp]))
 		return 0;
 	UseBitmapCache (bmP, (int) -bmP->Height () * (int) bmP->RowSize ());
 	pDest = pData;
@@ -638,7 +638,7 @@ nScale = 1 << nScale;
 nFrames = bmP->Height () / bmP->Width ();
 nFrameSize = bmP->Width () * bmP->Width () * bmP->BPP ();
 nSize = nFrameSize * nFrames * nScale;
-if (!(bufP = (ubyte *) D2_ALLOC (nSize)))
+if (!(bufP = new ubyte [nSize]))
 	return 0;
 bmP->SetHeight (bmP->Height () * nScale);
 memset (bufP, 0, nSize);
@@ -686,7 +686,7 @@ if (q * q != nFrames)
 w = bmP->Width ();
 nFrameSize = w * w * bmP->BPP ();
 nSize = nFrameSize * nFrames;
-if (!(bufP = (ubyte *) D2_ALLOC (nSize)))
+if (!(bufP = new ubyte [nSize]))
 	return 0;
 srcP = bmP->Buffer ();
 nRowSize = w * bmP->BPP ();

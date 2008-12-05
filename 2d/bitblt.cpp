@@ -34,7 +34,7 @@ ubyte *grBitBltFadeTable=NULL;
 
 extern void gr_vesa_bitmap(CBitmap * source, CBitmap * dest, int x, int y);
 
-void gr_linear_movsd(ubyte * source, ubyte * dest, unsigned int nbytes);
+void gr_linear_movsd(ubyte * source, ubyte * dest, uint nbytes);
 // This code aligns edi so that the destination is aligned to a dword boundry before rep movsd
 
 //------------------------------------------------------------------------------
@@ -47,9 +47,9 @@ void gr_linear_movsd(ubyte * source, ubyte * dest, unsigned int nbytes);
 ubyte test_byteblit = 0;
 #endif
 
-void gr_linear_movsd(ubyte * src, ubyte * dest, unsigned int num_pixels)
+void gr_linear_movsd(ubyte * src, ubyte * dest, uint num_pixels)
 {
-	unsigned int i;
+	uint i;
 	uint n, r;
 	double *d, *s;
 	ubyte *d1, *s1;
@@ -73,23 +73,23 @@ void gr_linear_movsd(ubyte * src, ubyte * dest, unsigned int num_pixels)
 
 	n = num_pixels / 8;
 	r = num_pixels % 8;
-	s = (double *)src;
-	d = (double *)dest;
+	s = reinterpret_cast<double*> (src);
+	d = reinterpret_cast<double*> (dest);
 	for (i = 0; i < n; i++)
 		*d++ = *s++;
-	s1 = (ubyte *)s;
-	d1 = (ubyte *)d;
+	s1 = reinterpret_cast<ubyte*> (s);
+	d1 = reinterpret_cast<ubyte*> (d);
 	for (i = 0; i < r; i++)
 		*d1++ = *s1++;
 }
 
 //------------------------------------------------------------------------------
 
-static void gr_linear_rep_movsdm(ubyte * src, ubyte * dest, unsigned int num_pixels);
+static void gr_linear_rep_movsdm(ubyte * src, ubyte * dest, uint num_pixels);
 
-static void gr_linear_rep_movsdm(ubyte * src, ubyte * dest, unsigned int num_pixels)
+static void gr_linear_rep_movsdm(ubyte * src, ubyte * dest, uint num_pixels)
 {
-	unsigned int i;
+	uint i;
 	for (i=0; i<num_pixels; i++) {
 		if (*src != TRANSPARENCY_COLOR)
 			*dest = *src;
@@ -100,10 +100,10 @@ static void gr_linear_rep_movsdm(ubyte * src, ubyte * dest, unsigned int num_pix
 
 //------------------------------------------------------------------------------
 
-static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int num_pixels, 
+static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, uint num_pixels, 
 													ubyte fadeValue, CPalette *srcPalette, CPalette *destPalette);
 
-static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int num_pixels, 
+static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, uint num_pixels, 
 													ubyte fadeValue, CPalette *srcPalette, CPalette *destPalette)
 {
 	int	i;
@@ -134,15 +134,15 @@ static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int n
 
 //------------------------------------------------------------------------------
 
-void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, unsigned int num_dest_pixels);
+void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, uint num_dest_pixels);
 
-void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, unsigned int num_pixels)
+void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, uint num_pixels)
 {
-	double  *d = (double *)dest;
-	uint    *s = (uint *)src;
+	double  *d = reinterpret_cast<double*> (dest);
+	uint    *s = reinterpret_cast<uint*> (src);
 	uint   doubletemp[2];
 	uint    temp, work;
-	unsigned int     i;
+	uint     i;
 
 	if (num_pixels & 0x3) {
 		// not a multiple of 4?  do single pixel at a time
@@ -164,7 +164,7 @@ void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, unsigned int num_pixels)
 		work = ((work << 8) & 0xFF000000) | (work & 0x00FFFFFF); // 0xABEFGHGH -> 0xEFEFGHGH
 		doubletemp[1] = work;
 
-		*d = *((double *) doubletemp);
+		*d = *(reinterpret_cast<double*> (doubletemp);
 		d++;
 	}
 }
@@ -178,8 +178,8 @@ void gr_ubitmap00(int x, int y, CBitmap *bmP)
 	register int y1;
 	int dest_rowSize;
 
-	unsigned char * dest;
-	unsigned char * src;
+	ubyte * dest;
+	ubyte * src;
 
 	dest_rowSize=CCanvas::Current ()->Bitmap ().RowSize () << gr_bitblt_dest_step_shift;
 	dest = &(CCanvas::Current ()->Bitmap ().Buffer ()[ dest_rowSize*y+x ]);
@@ -203,8 +203,8 @@ void gr_ubitmap00m(int x, int y, CBitmap *bmP)
 	register int y1;
 	int dest_rowSize;
 
-	unsigned char * dest;
-	unsigned char * src;
+	ubyte * dest;
+	ubyte * src;
 
 	dest_rowSize=CCanvas::Current ()->Bitmap ().RowSize () << gr_bitblt_dest_step_shift;
 	dest = &(CCanvas::Current ()->Bitmap ().Buffer ()[ dest_rowSize*y+x ]);
@@ -232,7 +232,7 @@ void gr_ubitmap00m(int x, int y, CBitmap *bmP)
 void gr_ubitmap012(int x, int y, CBitmap *bmP)
 {
 	register int x1, y1;
-	unsigned char * src;
+	ubyte * src;
 
 	src = bmP->Buffer ();
 
@@ -249,7 +249,7 @@ void gr_ubitmap012(int x, int y, CBitmap *bmP)
 void gr_ubitmap012m(int x, int y, CBitmap *bmP)
 {
 	register int x1, y1;
-	unsigned char * src;
+	ubyte * src;
 
 	src = bmP->Buffer ();
 
@@ -302,8 +302,8 @@ void gr_ubitmapGENERICm(int x, int y, CBitmap * bmP)
 // From Linear to Linear
 void gr_bm_ubitblt00(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
-	unsigned char * dbits;
-	unsigned char * sbits;
+	ubyte * dbits;
+	ubyte * sbits;
 	//int src_bm_rowSize_2, dest_bm_rowSize_2;
 	int dstep;
 
@@ -329,8 +329,8 @@ void gr_bm_ubitblt00(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src
 // From Linear to Linear Masked
 void gr_bm_ubitblt00m(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
-	unsigned char * dbits;
-	unsigned char * sbits;
+	ubyte * dbits;
+	ubyte * sbits;
 	//int src_bm_rowSize_2, dest_bm_rowSize_2;
 
 	int i;
@@ -392,86 +392,12 @@ if (dy2 >= scr->Height ())
 GrBmUBitBlt (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bmP, &CCanvas::Current ()->Bitmap (), 0);
 }
 
-//-NOT-used // From linear to SVGA
-//-NOT-used void gr_bm_ubitblt02_2x(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
-//-NOT-used {
-//-NOT-used 	unsigned char * sbits;
-//-NOT-used
-//-NOT-used 	unsigned int offset, EndingOffset, VideoLocation;
-//-NOT-used
-//-NOT-used 	int sbpr, dbpr, y1, page, BytesToMove;
-//-NOT-used
-//-NOT-used 	sbpr = src->RowSize ();
-//-NOT-used
-//-NOT-used 	dbpr = dest->RowSize () << gr_bitblt_dest_step_shift;
-//-NOT-used
-//-NOT-used 	VideoLocation = (unsigned int)dest->Buffer () + (dest->RowSize () * dy) + dx;
-//-NOT-used
-//-NOT-used 	sbits = src->Buffer () + (sbpr*sy) + sx;
-//-NOT-used
-//-NOT-used 	for (y1=0; y1 < h; y1++)    {
-//-NOT-used
-//-NOT-used 		page    = VideoLocation >> 16;
-//-NOT-used 		offset  = VideoLocation & 0xFFFF;
-//-NOT-used
-//-NOT-used 		gr_vesa_setpage(page);
-//-NOT-used
-//-NOT-used 		EndingOffset = offset+w-1;
-//-NOT-used
-//-NOT-used 		if (EndingOffset <= 0xFFFF)
-//-NOT-used 		{
-//-NOT-used 			gr_linear_rep_movsd_2x((void *)sbits, (void *)(offset+0xA0000), w);
-//-NOT-used
-//-NOT-used 			VideoLocation += dbpr;
-//-NOT-used 			sbits += sbpr;
-//-NOT-used 		}
-//-NOT-used 		else
-//-NOT-used 		{
-//-NOT-used 			BytesToMove = 0xFFFF-offset+1;
-//-NOT-used
-//-NOT-used 			gr_linear_rep_movsd_2x((void *)sbits, (void *)(offset+0xA0000), BytesToMove);
-//-NOT-used
-//-NOT-used 			page++;
-//-NOT-used 			gr_vesa_setpage(page);
-//-NOT-used
-//-NOT-used 			gr_linear_rep_movsd_2x((void *)(sbits+BytesToMove/2), (void *)0xA0000, EndingOffset - 0xFFFF);
-//-NOT-used
-//-NOT-used 			VideoLocation += dbpr;
-//-NOT-used 			sbits += sbpr;
-//-NOT-used 		}
-//-NOT-used
-//-NOT-used
-//-NOT-used 	}
-//-NOT-used }
-
-
-//-NOT-used // From Linear to Linear
-//-NOT-used void gr_bm_ubitblt00_2x(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
-//-NOT-used {
-//-NOT-used 	unsigned char * dbits;
-//-NOT-used 	unsigned char * sbits;
-//-NOT-used 	//int src_bm_rowSize_2, dest_bm_rowSize_2;
-//-NOT-used
-//-NOT-used 	int i;
-//-NOT-used
-//-NOT-used 	sbits =   src->Buffer ()  + (src->RowSize () * sy) + sx;
-//-NOT-used 	dbits =   dest->Buffer () + (dest->RowSize () * dy) + dx;
-//-NOT-used
-//-NOT-used 	// No interlacing, copy the whole buffer.
-//-NOT-used 	for (i=0; i < h; i++)    {
-//-NOT-used 		gr_linear_rep_movsd_2x(sbits, dbits, w);
-//-NOT-used
-//-NOT-used 		sbits += src->RowSize ();
-//-NOT-used 		dbits += dest->RowSize () << gr_bitblt_dest_step_shift;
-//-NOT-used 	}
-//-NOT-used }
-
 //------------------------------------------------------------------------------
 
 void gr_bm_ubitblt00_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
-	unsigned char * dbits;
-	unsigned char * sbits;
+	ubyte * dbits;
+	ubyte * sbits;
 	int i, data_offset;
 
 	data_offset = 1;
@@ -489,7 +415,7 @@ void gr_bm_ubitblt00_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 	for (i=0; i < h; i++)    {
 		gr_rle_expand_scanline(dbits, sbits, sx, sx+w-1);
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*((short *)&(src->Buffer ()[4+((i+sy)*data_offset)])));
+			sbits += (int)INTEL_SHORT(*(reinterpret_cast<short*> (src->Buffer (4 + (i + sy) * data_offset))));
 		else
 			sbits += (int)(src->Buffer ()[4+i+sy]);
 		dbits += dest->RowSize () << gr_bitblt_dest_step_shift;
@@ -500,8 +426,8 @@ void gr_bm_ubitblt00_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 
 void gr_bm_ubitblt00m_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
-	unsigned char * dbits;
-	unsigned char * sbits;
+	ubyte * dbits;
+	ubyte * sbits;
 	int i, data_offset;
 
 	data_offset = 1;
@@ -518,7 +444,7 @@ void gr_bm_ubitblt00m_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap 
 	for (i=0; i < h; i++)    {
 		gr_rle_expand_scanline_masked(dbits, sbits, sx, sx+w-1);
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*((short *)&(src->Buffer ()[4+((i+sy)*data_offset)])));
+			sbits += (int)INTEL_SHORT(*(reinterpret_cast<short*> (src->Buffer (4 + (i + sy) * data_offset)))));
 		else
 			sbits += (int)(src->Buffer ()[4+i+sy]);
 		dbits += dest->RowSize () << gr_bitblt_dest_step_shift;
@@ -536,7 +462,7 @@ void gr_bm_ubitblt0x_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 {
 	int i, data_offset;
 	register int y1;
-	unsigned char * sbits;
+	ubyte * sbits;
 
 	data_offset = 1;
 	if (src->Flags () & BM_FLAG_RLE_BIG)
@@ -549,7 +475,7 @@ void gr_bm_ubitblt0x_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap *
 	for (y1=0; y1 < h; y1++)    {
 		gr_rle_expand_scanline_generic(dest, dx, dy+y1,  sbits, sx, sx+w-1 );
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*((short *)&(src->Buffer ()[4+((y1+sy)*data_offset)])));
+			sbits += (int)INTEL_SHORT(*(reinterpret_cast<short*> &(src->Buffer (4 + (y1 + sy) * data_offset))));
 		else
 			sbits += (int)src->Buffer ()[4+y1+sy];
 	}
@@ -562,7 +488,7 @@ void gr_bm_ubitblt0xm_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap 
 {
 	int i, data_offset;
 	register int y1;
-	unsigned char * sbits;
+	ubyte * sbits;
 
 	data_offset = 1;
 	if (src->Flags () & BM_FLAG_RLE_BIG)
@@ -575,7 +501,7 @@ void gr_bm_ubitblt0xm_rle(int w, int h, int dx, int dy, int sx, int sy, CBitmap 
 	for (y1=0; y1 < h; y1++)    {
 		gr_rle_expand_scanline_generic_masked(dest, dx, dy+y1,  sbits, sx, sx+w-1 );
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int)INTEL_SHORT(*((short *)&(src->Buffer ()[4+((y1+sy)*data_offset)])));
+			sbits += (int)INTEL_SHORT(*(reinterpret_cast<short*> &(src->Buffer (4 + (y1 + sy) * data_offset))));
 		else
 			sbits += (int)src->Buffer ()[4+y1+sy];
 	}
@@ -826,8 +752,8 @@ inline void scale_line(sbyte *in, sbyte *out, int ilen, int olen)
 
 void GrBitmapScaleTo(CBitmap *src, CBitmap *dst)
 {
-	sbyte *s = (sbyte *) (src->Buffer ());
-	sbyte *d = (sbyte *) (dst->Buffer ());
+	sbyte *s = reinterpret_cast<sbyte*> (src->Buffer ());
+	sbyte *d = reinterpret_cast<sbyte*> (dst->Buffer ());
 	int h = src->Height ();
 	int a = dst->Height ()/h, b = dst->Height ()%h;
 	int c = 0, i, y;

@@ -224,7 +224,7 @@ CPalette *CPaletteManager::Add (CPalette& palette)
 
 if (Find (palette))
 	return m_data.current;
-if (!(plP = (tPaletteList *) D2_ALLOC (sizeof (tPaletteList))))
+if (!(plP = new tPaletteList))
 	return NULL;
 plP->next = m_data.list;
 m_data.list = plP;
@@ -252,7 +252,7 @@ void CPaletteManager::Destroy (void)
 
 for (pi = m_data.list; pi; pi = pj) {
 	pj = pi->next;
-	D2_FREE (pi);
+	delete pi;
 	}
 m_data.list = NULL;
 m_data.nPalettes = 0;
@@ -489,7 +489,7 @@ if (nUsedForLevel && stricmp (paletteManager.LastPig (), pszPaletteName) != 0) {
 	if (gameStates.app.bD1Mission)
 		strcpy (szPigName, "groupa.pig");
 	else {
-		_splitpath ((char *) pszPaletteName, NULL, NULL, szPigName, NULL);
+		_splitpath (reinterpret_cast<char*> (pszPaletteName), NULL, NULL, szPigName, NULL);
 		strcat (szPigName, ".pig");
 		PiggyInitPigFile (szPigName);
 		}

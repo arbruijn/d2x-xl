@@ -18,7 +18,7 @@ extern mve_cb_SetPalette mve_setpalette;
 typedef struct MVEFILE
 {
     void          *stream;
-    unsigned char	*cur_chunk;
+    ubyte	*cur_chunk;
     int           buf_size;
     int           cur_fill;
     int           next_segment;
@@ -42,18 +42,18 @@ int mvefile_get_next_segment_size(MVEFILE *movie);
 /*
  * get nType of next tSegment in chunk (0xff if no more segments in chunk)
  */
-unsigned char mvefile_get_next_segmentMajor(MVEFILE *movie);
+ubyte mvefile_get_next_segmentMajor(MVEFILE *movie);
 
 /*
  * get subtype (version) of next tSegment in chunk (0xff if no more segments in
  * chunk)
  */
-unsigned char mvefile_get_next_segmentMinor(MVEFILE *movie);
+ubyte mvefile_get_next_segmentMinor(MVEFILE *movie);
 
 /*
  * see next tSegment (return NULL if no next tSegment)
  */
-unsigned char *mvefile_get_next_segment(MVEFILE *movie);
+ubyte *mvefile_get_next_segment(MVEFILE *movie);
 
 /*
  * advance to next tSegment
@@ -68,7 +68,7 @@ int mvefile_fetch_next_chunk(MVEFILE *movie);
 /*
  * callback for tSegment nType
  */
-typedef int (*MVESEGMENTHANDLER)(unsigned char major, unsigned char minor, unsigned char *data, int len, void *context);
+typedef int (*MVESEGMENTHANDLER)(ubyte major, ubyte minor, ubyte *data, int len, void *context);
 
 /*
  * structure for maintaining an MVE stream
@@ -99,7 +99,7 @@ void mve_reset(MVESTREAM *movie);
 /*
  * set tSegment nType handler
  */
-void mve_set_handler(MVESTREAM *movie, unsigned char major, MVESEGMENTHANDLER handler);
+void mve_set_handler(MVESTREAM *movie, ubyte major, MVESEGMENTHANDLER handler);
 
 /*
  * set tSegment handler context

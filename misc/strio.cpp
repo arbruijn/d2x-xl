@@ -21,12 +21,12 @@ char *fsplitword (CFile& cf, char splitchar)
 	char	c, *buf;
 
 mem = 256;
-buf = (char *) D2_ALLOC (sizeof (char) * mem);
+buf = reinterpret_cast<char*> (D2_ALLOC (sizeof (char) * mem));
 c = cf.GetC ();
 for (i = 0; (c != splitchar) && !cf.EoF (); i++) {
 	if (i == mem) {
 		mem += 256;
-		buf = (char *) D2_REALLOC (buf, mem);
+		buf = reinterpret_cast<char*> (D2_REALLOC (buf, mem));
 		}
 	buf [i] = c;
 	c = cf.GetC ();
@@ -46,7 +46,7 @@ char *splitword (char *s, char splitchar)
 l = (int) strlen (s);
 p = strchr (s, splitchar);
 lw = p ? (int) (p - s) : l;
-buf = (char *) D2_ALLOC (lw + 1);
+buf = reinterpret_cast<char*> (D2_ALLOC (lw + 1));
 memcpy (buf, s, lw + 1);
 buf [lw] = '\0';
 if (p)

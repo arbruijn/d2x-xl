@@ -93,7 +93,7 @@ return 1;
 
 int _CDECL_ RenderThread (void *pThreadId)
 {
-	int		nId = *((int *) pThreadId);
+	int		nId = *reinterpret_cast<int*> (pThreadId);
 #ifdef _WIN32
 	HGLRC		myContext = 0;
 #endif

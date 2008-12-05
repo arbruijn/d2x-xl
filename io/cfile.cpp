@@ -235,7 +235,7 @@ int CFile::Exist (const char *filename, const char *folder, int bUseD1Hog)
 {
 	int	length, bNoHOG = 0;
 	FILE	*fp;
-	char	*pfn = (char *) filename;
+	char	*pfn = reinterpret_cast<char*> (filename);
 
 if (*pfn == '\x01') 
 	pfn++;
@@ -332,7 +332,7 @@ m_cf.file = fp;
 m_cf.rawPosition = 0;
 m_cf.size = (length < 0) ? ffilelength (fp) : length;
 m_cf.libOffset = (length < 0) ? 0 : ftell (fp);
-m_cf.filename = (char *) filename;
+m_cf.filename = reinterpret_cast<char*> (filename);
 return 1;
 }
 
@@ -453,7 +453,7 @@ return  t;
 
 size_t CFile::Read (void *buf, size_t elsize, size_t nelem) 
 {
-unsigned int i, size = (int) (elsize * nelem);
+uint i, size = (int) (elsize * nelem);
 
 if (!m_cf.file || (m_cf.size < 1)) 
 	return 0;
@@ -811,7 +811,7 @@ char *CFile::ReadData (const char *filename, const char *folder, int bUseD1Hog)
 if (!Open (filename, folder, "rb", bUseD1Hog))
 	return NULL;
 nSize = Length ();
-if (! (pData = (char *) D2_ALLOC ((unsigned int) nSize)))
+if (!(pData = reinterpret_cast<char*> (D2_ALLOC ((uint) nSize))))
 	return NULL;
 if (!Read (pData, nSize, 1)) {
 	D2_FREE (pData);

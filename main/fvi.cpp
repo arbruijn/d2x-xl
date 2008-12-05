@@ -1389,7 +1389,7 @@ int FindVectorIntersection (tFVIQuery *fq, tFVIData *hitData)
 	int			i;
 	tSegMasks	masks;
 
-Assert(fq->ignoreObjList != (short *)(-1));
+Assert(fq->ignoreObjList != reinterpret_cast<short*> (-1));
 gameData.collisions.hitData.vNormal.SetZero();
 gameData.collisions.hitData.nNormals = 0;
 Assert((fq->startSeg <= gameData.segs.nLastSegment) && (fq->startSeg >= 0));
@@ -1517,21 +1517,21 @@ jj = (biggest == 2) ? 1 : 2;
 //2. compute u, v of intersection point
 //vec from 1 -> 0
 h = iFace * 3;
-vPoints = (vmsVector *) (gameData.segs.vertices + vertList [h+1]);
+vPoints = reinterpret_cast<vmsVector*> (gameData.segs.vertices + vertList [h+1]);
 p1.i = (*vPoints)[ii];
 p1.j = (*vPoints)[jj];
 
-vPoints = (vmsVector *) (gameData.segs.vertices + vertList [h]);
+vPoints = reinterpret_cast<vmsVector*> (gameData.segs.vertices + vertList [h]);
 vec0.i = (*vPoints)[ii] - p1.i;
 vec0.j = (*vPoints)[jj] - p1.j;
 
 //vec from 1 -> 2
-vPoints = (vmsVector *) (gameData.segs.vertices + vertList [h+2]);
+vPoints = reinterpret_cast<vmsVector*> (gameData.segs.vertices + vertList [h+2]);
 vec1.i = (*vPoints)[ii] - p1.i;
 vec1.j = (*vPoints)[jj] - p1.j;
 
 //vec from 1 -> checkPoint
-//vPoints = (vmsVector *)pnt;
+//vPoints = reinterpret_cast<vmsVector*> (pnt);
 checkP.i = (*pnt)[ii];
 checkP.j = (*pnt)[jj];
 
@@ -1563,7 +1563,7 @@ int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v)
 {
 	CBitmap *bmP;
 	int bmx, bmy, w, h, offs;
-	unsigned char	c;
+	ubyte	c;
 #if 0
 	tBitmapIndex *bmiP;
 

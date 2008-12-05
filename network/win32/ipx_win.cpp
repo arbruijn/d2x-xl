@@ -20,7 +20,7 @@
 #include "mono.h"
 
 extern int _CDECL_ Fail (const char *fmt, ...);
-extern unsigned char *queryhost(char *buf);
+extern ubyte *queryhost(char *buf);
 
 #define FAIL	return Fail
 
@@ -31,7 +31,7 @@ static int ipx_win_GetMyAddress( void )
 #if 1
 #	if 0
 	char buf[256];
-	unsigned char *qhbuf;
+	ubyte *qhbuf;
 
 if (gethostname(buf,sizeof(buf))) 
 	FAIL("Error getting my hostname");
@@ -67,7 +67,7 @@ if (!(qhbuf = queryhost(buf)))
 #endif  
   ipxs.sa_socket=0;
   
-  if(bind(sock,(struct sockaddr *)&ipxs,sizeof(ipxs))==-1)
+  if (bind (sock, reinterpret_cast<struct sockaddr*> (&ipxs), sizeof (ipxs)) == -1)
   {
 #if TRACE
     con_printf (1,"IPX: could bind to network 0 in GetMyAddress\n");
@@ -77,7 +77,7 @@ if (!(qhbuf = queryhost(buf)))
   }
   
   len = sizeof(ipxs2);
-  if (getsockname(sock,(struct sockaddr *)&ipxs2,&len) < 0) {
+  if (getsockname(sock, reinterpret_cast<struct sockaddr*> (&ipxs2), &len) < 0) {
 #if TRACE
     con_printf (1,"IPX: could not get socket name in GetMyAddress\n");
 #endif
@@ -89,7 +89,7 @@ if (!(qhbuf = queryhost(buf)))
   for (i = 0; i < 6; i++) {
     ipx_MyAddress[4+i] = ipxs2.sa_nodenum[i];
   }
-/*printf("My address is 0x%.4X:%.2X.%.2X.%.2X.%.2X.%.2X.%.2X\n", *((int *)ipxs2.sa_netnum), ipxs2.sa_nodenum[0],
+/*printf("My address is 0x%.4X:%.2X.%.2X.%.2X.%.2X.%.2X.%.2X\n", *reinterpret_cast<int*> (ipxs2.sa_netnum), ipxs2.sa_nodenum[0],
   ipxs2.sa_nodenum[1], ipxs2.sa_nodenum[2], ipxs2.sa_nodenum[3], ipxs2.sa_nodenum[4], ipxs2.sa_nodenum[5]);
 */
     closesocket( sock );
@@ -131,7 +131,7 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
   opt = 1;
   /* Permit broadcast output */
   if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST,
-		 (const char *)&opt, sizeof(opt)) == -1) {
+		 reinterpret_cast<const char*> (&opt), sizeof(opt)) == -1) {
 #if TRACE
     con_printf (1,"IPX: could not set socket option for broadcast.\n");
 #endif
@@ -139,14 +139,14 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
   }
   ipxs.sa_family = AF_IPX;
   memcpy(ipxs.sa_netnum, ipx_MyAddress, 4);
-//  *((unsigned int *)&ipxs.sa_netnum[0]) = *((unsigned int *)&ipx_MyAddress[0]);
+//  *reinterpret_cast<uint*> (&ipxs.sa_netnum[0]) = *reinterpret_cast<uint*> (&ipx_MyAddress[0]);
 /*  ipxs.sa_netnum = htonl(MyNetwork); */
   memset(ipxs.sa_nodenum, 0, 6);
 //  bzero(ipxs.sa_nodenum, 6);	/* Please fill in my node name */
   ipxs.sa_socket = htons((short)port);
 
   /* now bind to this port */
-  if (bind(sock, (struct sockaddr *) &ipxs, sizeof(ipxs)) == -1) {
+  if (bind(sock,  reinterpret_cast<struct sockaddr*> (&ipxs), sizeof(ipxs)) == -1) {
 #if TRACE
     con_printf (1,"IPX: could not bind socket to address\n");
 #endif
@@ -156,14 +156,14 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
   
 //  if( port==0 ) {
 //    len = sizeof(ipxs2);
-//    if (getsockname(sock,(struct sockaddr *)&ipxs2,&len) < 0) {
+//    if (getsockname(sock, reinterpret_cast<struct sockaddr*> (&ipxs2), &len) < 0) {
 //     closesocket( sock );
 //      return -1;
 //    } else {
 //      port = htons(ipxs2.sa_socket);
 //    }
   len = sizeof(ipxs2);
-  if (getsockname(sock,(struct sockaddr *)&ipxs2,&len) < 0) {
+  if (getsockname(sock, reinterpret_cast<struct sockaddr*> (&ipxs2), &len) < 0) {
 #if TRACE
     con_printf (1,"IPX: could not get socket name in IPXOpenSocket\n");
 #endif
@@ -205,16 +205,16 @@ static int ipx_win_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
   /* get destination address from IPX packet header */
   memcpy(&ipxs.sa_netnum, IPXHeader->Destination.Network, 4);
   /* if destination address is 0, then send to my net */
-  if ((*(unsigned int *)&ipxs.sa_netnum) == 0) {
-    (*(unsigned int *)&ipxs.sa_netnum)= *((unsigned int *)&ipx_MyAddress[0]);
+  if (*reinterpret_cast<uint*> (&ipxs.sa_netnum) == 0) {
+    (*reinterpret_cast<uint*> (&ipxs.sa_netnum)= *reinterpret_cast<uint*> (&ipx_MyAddress[0]);
 /*  ipxs.sa_netnum = htonl(MyNetwork); */
   }
   memcpy(&ipxs.sa_nodenum, IPXHeader->Destination.Node, 6);
   memcpy(&ipxs.sa_socket, IPXHeader->Destination.Socket, 2);
 //  ipxs.saType = IPXHeader->PacketType;
   /*	ipxs.sipx_port=htons(0x452); */
-  return sendto(mysock->fd, (const char *) data, dataLen, 0,
-	     (struct sockaddr *) &ipxs, sizeof(ipxs));
+  return sendto(mysock->fd, reinterpret_cast<const char*> (data), dataLen, 0,
+	      reinterpret_cast<struct sockaddr*> (&ipxs), sizeof(ipxs));
 }
 
 //------------------------------------------------------------------------------
@@ -225,7 +225,7 @@ static int ipx_win_ReceivePacket(ipx_socket_t *s, ubyte *buffer, int bufsize,
 	struct sockaddr_ipx ipxs;
  
 	sz = sizeof(ipxs);
-	if ((size = recvfrom(s->fd, (char *) buffer, bufsize, 0, (struct sockaddr *) &ipxs, &sz)) <= 0)
+	if ((size = recvfrom(s->fd, reinterpret_cast<char*> (buffer), bufsize, 0,  reinterpret_cast<struct sockaddr*> (&ipxs), &sz)) <= 0)
 	   return size;
    memcpy(rd->src_network, ipxs.sa_netnum, 4);
 	memcpy(rd->src_node, ipxs.sa_nodenum, 6);

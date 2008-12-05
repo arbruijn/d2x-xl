@@ -53,7 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RENDER_LIGHTNING_OUTLINE 0
 #define RENDER_LIGHTINGS_BUFFERED 1
 #define UPDATE_LIGHTNINGS 1
-#define USE_NEW 0
+#define USE_NEW 1
 
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
@@ -82,7 +82,7 @@ static fVector3 coreBuffer [2][MAX_LIGHTNING_SEGMENTS];
 
 void TRAP (CLightningNode *nodeP)
 {
-if (nodeP->m_child == (CLightning *) (size_t) 0xfeeefeee)
+if (nodeP->m_child == reinterpret_cast<CLightning*> ((size_t) 0xfeeefeee)
 	nodeP = nodeP;
 }
 
@@ -162,11 +162,7 @@ bool CLightningNode::CreateChild (vmsVector *vEnd, vmsVector *vDelta,
 											 short nSmoothe, char bClamp, char bPlasma, char bLight,
 											 char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode)
 {
-#if USE_NEW
 if (!(m_child = new CLightning))
-#else
-if (!(m_child = (CLightning *) D2_ALLOC (sizeof (CLightning))))
-#endif
 	return false;
 m_child->Init (&m_vPos, vEnd, vDelta, -1, nLife, 0, nLength, nAmplitude, nAngle, 0,
 					nNodes, nChildren, nSteps, nSmoothe, bClamp, bPlasma, bLight,
@@ -197,12 +193,8 @@ if (m_child) {
 		m_child = NULL;
 	else {
 		m_child->DestroyNodes ();
-#if USE_NEW
 		delete m_child;
 		m_child = NULL;
-#else
-		D2_FREE (m_child);
-#endif
 		}
 	}
 }
@@ -551,11 +543,7 @@ bool CLightning::Create (char nDepth)
 {
 if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 	return NULL;
-#if USE_NEW
 if (!(m_nodes = new CLightningNode [nNodes])) 
-#else
-if (!(m_nodes = (CLightningNode *) D2_ALLOC (m_nNodes * sizeof (CLightningNode)))) 
-#endif
 	return false;
 if (m_bRandom) {
 	m_nTTL = 3 * m_nTTL / 4 + (int) (dbl_rand () * m_nTTL / 2);
@@ -594,12 +582,8 @@ if (m_nodes) {
 
 	for (i = abs (m_nNodes), nodeP = m_nodes; i > 0; i--, nodeP++)
 		nodeP->Destroy ();
-#if USE_NEW
 	delete[] m_nodes;
 	 m_nodes = NULL;
-#else
-	D2_FREE (m_nodes);
-#endif
 	m_nNodes = 0;
 	}
 }
@@ -1033,8 +1017,8 @@ for (bScale = 0; bScale < 2; bScale++) {
 	for (i = nNodes - 1; i; i--) {
 		glBegin (GL_LINE_LOOP);
 		for (j = 0; j < 4; j++) {
-			glTexCoord2fv ((GLfloat *) texCoordP++);
-			glVertex3fv ((GLfloat *) vertexP++);
+			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP++));
+			glVertex3fv (reinterpret_cast<GLfloat*> (vertexP++));
 			}
 		glEnd ();
 		}
@@ -1070,7 +1054,7 @@ else {
 	glDisable (GL_TEXTURE_2D);
 	glBegin (GL_LINE_STRIP);
 	for (i = m_nNodes, vPosf = coreBuffer [nThread]; i; i--, vPosf++)
-		glVertex3fv ((GLfloat *) vPosf);
+		glVertex3fv (reinterpret_cast<GLfloat*> (vPosf));
 	glEnd ();
 	}
 #endif
@@ -1217,11 +1201,7 @@ if (!(nLife && nLength && (nNodes > 4)))
 	return false;
 m_nLightnings = nLightnings;
 m_bForcefield = !nDelay && (vEnd || (nAngle <= 0));
-#if USE_NEW
 if (!(m_lightnings = new CLightning [nLightnings]))
-#else
-if (!(m_lightnings = (CLightning *) D2_ALLOC (nLightnings * sizeof (CLightning))))
-#endif
 	return false;
 CLightning l;
 l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude, 
@@ -1248,12 +1228,8 @@ DestroySound ();
 if (m_lightnings) {
 	for (int i = 0; i < m_nLightnings; i++)
 		m_lightnings [i].Destroy ();
-#if USE_NEW
 	delete[] m_lightnings;
 	 m_lightnings = NULL;
-#else
-	D2_FREE (m_lightnings);
-#endif
 	m_nLightnings = 0;
 	}
 if ((m_nObject >= 0) && (lightningManager.GetObjectSystem (m_nObject) == m_nId)) {
@@ -1423,15 +1399,10 @@ m_lights = NULL;
 CLightningManager::~CLightningManager () 
 { 
 Shutdown (true);
-#if USE_NEW
 delete[] m_objects;
 m_objects = NULL;
 delete[] m_lights;
 m_lights = NULL;
-#else
-D2_FREE (m_objects);
-D2_FREE (m_lights); 
-#endif
 }
 
 //------------------------------------------------------------------------------

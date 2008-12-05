@@ -59,7 +59,7 @@ void gr_ibitblt(CBitmap *src_bmp, CBitmap *dest_bmp, ubyte pixel_double)
 	}
 
  	if (pixel_double) {
-		ubyte *scan = (ubyte *)scanline;    // set up for byte processing of scanline
+		ubyte *scan = reinterpret_cast<ubyte*> (scanline);    // set up for byte processing of scanline
 
 		dy = sy;
 		for (y = sy; y < sy + sh; y++) {
@@ -160,7 +160,7 @@ void gr_ibitblt_find_hole_size(CBitmap *mask_bmp, int *minx, int *miny, int *max
 	*maxy = 0;
 
 	if (scanline == NULL)
-		scanline = (double *)D2_ALLOC(sizeof(double) * (MAX_WIDTH / sizeof(double)));
+		scanline = reinterpret_cast<double*> (D2_ALLOC(sizeof(double) * (MAX_WIDTH / sizeof(double))));
 
 	for (y = 0; y < mask_bmp->Height (); y++) {
 		for (x = 0; x < mask_bmp->Width (); x++) {

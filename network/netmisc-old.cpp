@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // routine to calculate the checksum of the segments.  We add these specialized routines
 // since the current way is byte order dependent.
 
-void BEDoCheckSumCalc(ubyte *b, int len, unsigned int *s1, unsigned int *s2)
+void BEDoCheckSumCalc(ubyte *b, int len, uint *s1, uint *s2)
 {
 
 	while(len--) {
@@ -50,7 +50,7 @@ void BEDoCheckSumCalc(ubyte *b, int len, unsigned int *s1, unsigned int *s2)
 ushort BECalcSegmentCheckSum (void)
 {
 	int				i, j, k, t;
-	unsigned int	sum1,sum2;
+	uint	sum1,sum2;
 	short				s;
 	tSegment			*segP;
 	tSide				*sideP;
@@ -60,41 +60,41 @@ ushort BECalcSegmentCheckSum (void)
 sum1 = sum2 = 0;
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
-		BEDoCheckSumCalc ((ubyte *) &(sideP->nType), 1, &sum1, &sum2);
-		BEDoCheckSumCalc ((ubyte *) &(sideP->nFrame), 1, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&sideP->nType), 1, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&sideP->nFrame), 1, &sum1, &sum2);
 		s = INTEL_SHORT (WallNumI (i, j));
-		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 		s = INTEL_SHORT (sideP->nBaseTex);
-		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 		s = INTEL_SHORT (sideP->nOvlOrient + (((short) sideP->nOvlTex) << 2));
-		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s, 2, &sum1, &sum2);
 		for (k = 0, uvlP = sideP->uvls; k < 4; k++, uvlP++) {
 			t = INTEL_INT (((int) uvlP->u));
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT (((int) uvlP->v));
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT (((int) uvlP->l));
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			}
 		for (k = 0, normP = sideP->normals; k < 2; k++, normP++) {
 			t = INTEL_INT ((int) (*normP) [X]);
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT ((int) (*normP) [Y]);
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT ((int) (*normP) [Z]);
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			}
 		}
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
 		s = INTEL_SHORT (segP->children [j]);
-		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 	}
 	for (j = 0; j < MAX_VERTICES_PER_SEGMENT; j++) {
 		s = INTEL_SHORT (segP->verts [j]);
-		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 	}
 	t = INTEL_INT (segP->objects);
-	BEDoCheckSumCalc((ubyte *) &t, 4, &sum1, &sum2);
+	BEDoCheckSumCalc(reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 }
 sum2 %= 255;
 return ((sum1<<8)+ sum2);
@@ -315,12 +315,12 @@ if (liteFlag)
 // Watcom makes bitfields from left to right.  CW7 on the mac goes
 // from right to left.  then they are endian swapped
 
-tmps = *(ushort *)(&netGame.teamVector + 1);    // get the values for the first short bitfield
+tmps = *reinterpret_cast<ushort*> (&netGame.teamVector + 1);    // get the values for the first short bitfield
 tmps = INTEL_SHORT(tmps);
 memcpy(out_buffer + bufI, &tmps, 2);
 bufI += 2;
 
-tmps = *(ushort *)((ubyte *)(&netGame.teamVector) + 3);    // get the values for the second short bitfield
+tmps = *reinterpret_cast<ushort*> ((reinterpret_cast<ubyte*> (&netGame.teamVector) + 3);    // get the values for the second short bitfield
 tmps = INTEL_SHORT(tmps);
 memcpy(out_buffer + bufI, &tmps, 2);
 bufI += 2;
@@ -453,12 +453,12 @@ if (liteFlag)
 memcpy(&bitfield, data + bufI, 2);
 bufI += 2;
 bitfield = INTEL_SHORT(bitfield);
-memcpy(((ubyte *)(&netgame->teamVector) + 1), &bitfield, 2);
+memcpy((reinterpret_cast<ubyte*> (&netgame->teamVector) + 1), &bitfield, 2);
 
 memcpy(&bitfield, data + bufI, 2);
 bufI += 2;
 bitfield = INTEL_SHORT(bitfield);
-memcpy(((ubyte *)(&netgame->teamVector) + 3), &bitfield, 2);
+memcpy((reinterpret_cast<ubyte*> (&netgame->teamVector) + 3), &bitfield, 2);
 
 #if 0       // not used since reordering mac bitfields
 memcpy(&bitfield, data + bufI, 2);
@@ -469,7 +469,7 @@ for (i = 15; i >= 0; i--) {
 		new_field |= (1 << (15 - i);
 	}
 new_field = INTEL_SHORT(new_field);
-memcpy(((ubyte *)(&netgame->teamVector) + 1), &new_field, 2);
+memcpy((reinterpret_cast<ubyte*> (&netgame->teamVector) + 1), &new_field, 2);
 
 memcpy(&bitfield, data + bufI, 2);
 bufI += 2;
@@ -479,7 +479,7 @@ for (i = 15; i >= 0; i--) {
 		new_field |= (1 << (15 - i);
 	}
 new_field = INTEL_SHORT(new_field);
-memcpy(((ubyte *)(&netgame->teamVector) + 3), &new_field, 2);
+memcpy((reinterpret_cast<ubyte*> (&netgame->teamVector) + 3), &new_field, 2);
 #endif
 
 memcpy(netgame->szTeamName, data + bufI, 2*(CALLSIGN_LEN+1));
@@ -552,16 +552,16 @@ bufI ++;
 //------------------------------------------------------------------------------
 
 #define EGI_INTEL_SHORT_2BUF(_m) \
-  *((short *) (out_buffer + ((char *) &extraGameInfo [1]. _m - (char *) &extraGameInfo [1]))) = INTEL_SHORT (extraGameInfo [1]. _m);
+  *reinterpret_cast<short*> (out_buffer + (reinterpret_cast<char*> (&extraGameInfo [1]. _m) - reinterpret_cast<char*> (&extraGameInfo [1]))) = INTEL_SHORT (extraGameInfo [1]. _m);
 
 #define EGI_INTEL_INT_2BUF(_m) \
-	*((int *) (out_buffer + ((char *) &extraGameInfo [1]. _m - (char *) &extraGameInfo [1]))) = INTEL_INT (extraGameInfo [1]. _m);
+	*reinterpret_cast<int*> (out_buffer + (reinterpret_cast<char*> (&extraGameInfo [1]. _m) - reinterpret_cast<char*> (&extraGameInfo [1]))) = INTEL_INT (extraGameInfo [1]. _m);
 
 #define BUF2_EGI_INTEL_SHORT(_m) \
-	extraGameInfo [1]. _m = INTEL_SHORT (*((short *) (out_buffer + ((char *) &extraGameInfo [1]. _m - (char *) &extraGameInfo [1]))));
+	extraGameInfo [1]. _m = INTEL_SHORT (*reinterpret_cast<short*> (out_buffer + (reinterpret_cast<char*> (&extraGameInfo [1]. _m) - reinterpret_cast<char*> (&extraGameInfo [1]))));
 
 #define BUF2_EGI_INTEL_INT(_m) \
-	extraGameInfo [1]. _m = INTEL_INT (*((int *) (out_buffer + ((char *) &extraGameInfo [1]. _m - (char *) &extraGameInfo [1]))));
+	extraGameInfo [1]. _m = INTEL_INT (*reinterpret_cast<int*> (out_buffer + (reinterpret_cast<char*> (&extraGameInfo [1]. _m) - reinterpret_cast<char*> (&extraGameInfo [1]))));
 
 //------------------------------------------------------------------------------
 
@@ -600,7 +600,7 @@ void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress)
 	int	i;
 
 memcpy (out_buffer, &networkData.sync [0].objs.missingFrames, sizeof (networkData.sync [0].objs.missingFrames));
-((tMissingObjFrames *) &out_buffer [0])->nFrame = INTEL_SHORT (networkData.sync [0].objs.missingFrames.nFrame);
+(reinterpret_cast<tMissingObjFrames*> (&out_buffer [0])->nFrame = INTEL_SHORT (networkData.sync [0].objs.missingFrames.nFrame);
 i = 2 * sizeof (ubyte) + sizeof (ushort);
 if (netAddress != NULL)
 	IPXSendPacketData(out_buffer, i, server, node, netAddress);
@@ -736,8 +736,8 @@ switch (objP->info.renderType) {
 // Calculates the checksum of a block of memory.
 ushort NetMiscCalcCheckSum(void * vptr, int len)
 {
-	ubyte *ptr = (ubyte *)vptr;
-	unsigned int sum1,sum2;
+	ubyte *ptr = reinterpret_cast<ubyte*> (vptr);
+	uint sum1,sum2;
 
 	sum1 = sum2 = 0;
 

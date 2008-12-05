@@ -143,7 +143,7 @@ static char *StrTok (const char *delims)
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
 	ASE_Error ("missing data");
-return pszToken ? pszToken : (char *) "";
+return pszToken ? pszToken : reinterpret_cast<char*> ("");
 }
 
 //------------------------------------------------------------------------------
@@ -200,7 +200,7 @@ while ((pszToken = ASE_ReadLine (cf))) {
 		if (!ReadModelTGA (strlwr (fn), bmP, nType, bCustom))
 			return ASE_Error ("texture not found");
 		l = (int) strlen (fn) + 1;
-		if (!(pm->textures.pszNames [nBitmap] = (char *) D2_ALLOC (l)))
+		if (!(pm->textures.pszNames [nBitmap] = reinterpret_cast<char*> (D2_ALLOC (l))))
 			return ASE_Error ("out of memory");
 		memcpy (pm->textures.pszNames [nBitmap], fn, l);
 		if ((ps = strstr (fn, "color")))
@@ -258,11 +258,11 @@ if (strcmp (pszToken, "*MATERIAL_COUNT"))
 pm->textures.nBitmaps = IntTok (" \t");
 if (!pm->textures.nBitmaps)
 	return ASE_Error ("no bitmaps specified");
-if (!(pm->textures.bitmaps = (CBitmap *) D2_ALLOC (pm->textures.nBitmaps * sizeof (CBitmap))))
+if (!(pm->textures.bitmaps = reinterpret_cast<CBitmap*> (D2_ALLOC (pm->textures.nBitmaps * sizeof (CBitmap)))))
 	return ASE_Error ("out of memory");
-if (!(pm->textures.pszNames = (char **) D2_ALLOC (pm->textures.nBitmaps * sizeof (char *))))
+if (!(pm->textures.pszNames = reinterpret_cast<char **> (D2_ALLOC (pm->textures.nBitmaps * sizeof (char *)))))
 	return ASE_Error ("out of memory");
-if (!(pm->textures.nTeam = (ubyte *) D2_ALLOC (pm->textures.nBitmaps * sizeof (ubyte))))
+if (!(pm->textures.nTeam = reinterpret_cast<ubyte*> (D2_ALLOC (pm->textures.nBitmaps * sizeof (ubyte)))))
 	return ASE_Error ("out of memory");
 memset (pm->textures.bitmaps, 0, pm->textures.nBitmaps * sizeof (CBitmap));
 memset (pm->textures.pszNames, 0, pm->textures.nBitmaps * sizeof (char *));
@@ -472,7 +472,7 @@ while ((pszToken = ASE_ReadLine (cf))) {
 		if (!psm->nVerts)
 			return ASE_Error ("no vertices found");
 		pm->nVerts += psm->nVerts;
-		if (!(psm->pVerts = (tASEVertex *) D2_ALLOC (psm->nVerts * sizeof (tASEVertex))))
+		if (!(psm->pVerts = reinterpret_cast<tASEVertex*> (D2_ALLOC (psm->nVerts * sizeof (tASEVertex)))))
 			return ASE_Error ("out of memory");
 		memset (psm->pVerts, 0, psm->nVerts * sizeof (tASEVertex));
 		}
@@ -481,7 +481,7 @@ while ((pszToken = ASE_ReadLine (cf))) {
 			return ASE_Error ("no texture coordinates found");
 		psm->nTexCoord = IntTok (" \t");
 		if (psm->nTexCoord) {
-			if (!(psm->pTexCoord = (tTexCoord2f *) D2_ALLOC (psm->nTexCoord * sizeof (tTexCoord2f))))
+			if (!(psm->pTexCoord = reinterpret_cast<tTexCoord2f*> (D2_ALLOC (psm->nTexCoord * sizeof (tTexCoord2f)))))
 				return ASE_Error ("out of memory");
 			}
 		}
@@ -492,7 +492,7 @@ while ((pszToken = ASE_ReadLine (cf))) {
 		if (!psm->nFaces)
 			return ASE_Error ("no faces specified");
 		pm->nFaces += psm->nFaces;
-		if (!(psm->pFaces = (tASEFace *) D2_ALLOC (psm->nFaces * sizeof (tASEFace))))
+		if (!(psm->pFaces = reinterpret_cast<tASEFace*> (D2_ALLOC (psm->nFaces * sizeof (tASEFace)))))
 			return ASE_Error ("out of memory");
 		memset (psm->pFaces, 0, psm->nFaces * sizeof (tASEFace));
 		}
@@ -529,7 +529,7 @@ static int ASE_ReadSubModel (CFile& cf, tASEModel *pm)
 
 if (CharTok (" \t") != '{')
 	return ASE_Error ("syntax error");
-if (!(pml = (tASESubModelList *) D2_ALLOC (sizeof (tASESubModelList))))
+if (!(pml = reinterpret_cast<tASESubModelList*> (D2_ALLOC (sizeof (tASESubModelList)))))
 	return ASE_Error ("out of memory");
 memset (pml, 0, sizeof (*pml));
 pml->pNextModel = pm->pSubModels;

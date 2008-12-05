@@ -1,6 +1,8 @@
 #ifndef _CREATEMESH_H
 #define _CREATEMESH_H
 
+#include "carray.h"
+
 namespace mesh {
 
 	typedef struct tEdge {
@@ -24,15 +26,15 @@ namespace mesh {
 
 class CTriMeshBuilder {
 	private:
-		tEdge			*m_edges;
-		tTriangle	*m_triangles;
-		int			m_nEdges;
-		int			m_nFreeEdges;
-		int			m_nTriangles;
-		int			m_nMaxTriangles;
-		int			m_nMaxEdges;
-		int			m_nVertices;
-		int			m_nTris;
+		CArray<tEdge>		m_edges;
+		CArray<tTriangle>	m_triangles;
+		int					m_nEdges;
+		int					m_nFreeEdges;
+		int					m_nTriangles;
+		int					m_nMaxTriangles;
+		int					m_nMaxEdges;
+		int					m_nVertices;
+		int					m_nTris;
 
 	private:
 		void FreeData (void);

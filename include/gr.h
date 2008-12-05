@@ -61,20 +61,20 @@ int GrSetMode(u_int32_t mode);
 //-----------------------------------------------------------------------------
 // These 4 functions actuall change screen colors.
 
-extern void gr_pal_fade_out(unsigned char * pal);
-extern void gr_pal_fade_in(unsigned char * pal);
+extern void gr_pal_fade_out(ubyte * pal);
+extern void gr_pal_fade_in(ubyte * pal);
 extern void gr_pal_clear(void);
-extern void gr_pal_setblock(int start, int number, unsigned char * pal);
-extern void gr_pal_getblock(int start, int number, unsigned char * pal);
+extern void gr_pal_setblock(int start, int number, ubyte * pal);
+extern void gr_pal_getblock(int start, int number, ubyte * pal);
 
-extern unsigned char *gr_video_memory;
+extern ubyte *gr_video_memory;
 
 //shut down the 2d.  Restore the screen mode.
 void _CDECL_ GrClose(void);
 
 //=========================================================================
-void gr_bm_pixel (CBitmap * bmP, int x, int y, unsigned char color);
-void gr_bm_upixel (CBitmap * bmP, int x, int y, unsigned char color);
+void gr_bm_pixel (CBitmap * bmP, int x, int y, ubyte color);
+void gr_bm_upixel (CBitmap * bmP, int x, int y, ubyte color);
 void GrBmBitBlt (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest);
 void GrBmUBitBlt (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest, int bTransp);
 void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest, int bTransp);
@@ -113,8 +113,8 @@ void gr_pixel(int x, int y);
 void gr_upixel(int x, int y);
 
 // Gets a pixel;
-unsigned char gr_gpixel(CBitmap * bitmap, int x, int y);
-unsigned char gr_ugpixel(CBitmap * bitmap, int x, int y);
+ubyte gr_gpixel(CBitmap * bitmap, int x, int y);
+ubyte gr_ugpixel(CBitmap * bitmap, int x, int y);
 
 // Draws a line into the current canvas in the current color and drawmode.
 int GrLine(fix x0, fix y0, fix x1, fix y1);
@@ -155,9 +155,9 @@ void OglUPolyC (int left, int top, int right, int bot, tCanvasColor *c);
 
 //===========================================================================
 // Global variables
-extern unsigned char Test_bitmap_data[64*64];
+extern ubyte Test_bitmap_data[64*64];
 
-extern unsigned int FixDivide(unsigned int x, unsigned int y);
+extern uint FixDivide(uint x, uint y);
 
 extern void gr_vesa_update(CBitmap * source1, CBitmap * dest, CBitmap * source2);
 
@@ -186,7 +186,7 @@ extern ushort grFadeTableSelector;
 // Allocates a selector that has a base address at 'address' and length 'size'.
 // Returns 0 if successful... BE SURE TO CHECK the return value since there
 // is a limited number of selectors available!!!
-int GetSelector(void * address, int size, unsigned int * selector);
+int GetSelector(void * address, int size, uint * selector);
 
 // Assigns a selector to a bitmap. Returns 0 if successful.  BE SURE TO CHECK
 // this return value since there is a limited number of selectors!!!!!!!
@@ -209,7 +209,7 @@ void GrMergeTextures2(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, 
 void GrMergeTextures3(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
 
 void GrUpdate (int bClear);
-void SaveScreenShot (unsigned char *buf, int automapFlag);
+void SaveScreenShot (ubyte *buf, int automapFlag);
 
 /*
  * currently SDL and OGL are the only things that supports toggling

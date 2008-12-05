@@ -947,7 +947,7 @@ else {
 					ipx_udpSrc.src_node [1],
 					ipx_udpSrc.src_node [2],
 					ipx_udpSrc.src_node [3],
-					*((ushort *) (ipx_udpSrc.src_node + 4)));
+					*reinterpret_cast<ushort*> (ipx_udpSrc.src_node + 4));
 		pKiller->netKillsTotal++;
 		pKiller->nKillGoalCount++;
 		}
@@ -1041,7 +1041,7 @@ Assert (buf [0] <= MULTI_MAX_TYPE);
 if ((gameData.app.nGameMode & GM_NETWORK) && (buf [0] < 1))
 	return;
 else if (gameData.app.nGameMode & GM_NETWORK)
-	NetworkSendData ((ubyte *) buf, len, repeat);
+	NetworkSendData (reinterpret_cast<ubyte*> (buf), len, repeat);
 }
 
 //-----------------------------------------------------------------------------
@@ -1198,10 +1198,10 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	return;
 	}
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-ExtractShortPos (objP, (tShortPos *) (buf+1), 0);
+ExtractShortPos (objP, reinterpret_cast<tShortPos*> (buf+1), 0);
 #else
-memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + 1), 9);
-memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + 10), 14);
+memcpy (reinterpret_cast<ubyte*> (sp.bytemat), reinterpret_cast<ubyte*> ((buf + 1), 9);
+memcpy (reinterpret_cast<ubyte*> (&sp.xo), reinterpret_cast<ubyte*> (buf + 10), 14);
 ExtractShortPos (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], &sp, 1);
 #endif
 if (objP->info.movementType == MT_PHYSICS)
@@ -1786,12 +1786,12 @@ void MultiDoReqPlayer (char *buf)
 tNetPlayerStats ps;
 ubyte player_n;
 // Send my tNetPlayerStats to everyone!
-player_n = *(ubyte *) (buf+1);
+player_n = *reinterpret_cast<ubyte*> (buf+1);
 if ((player_n == gameData.multiplayer.nLocalPlayer) || (player_n == 255)) {
 	extract_netplayer_stats (&ps, gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
 	ps.nLocalPlayer = gameData.multiplayer.nLocalPlayer;
 	ps.messageType = MULTI_SEND_PLAYER;            // SET
-	MultiSendData ((char *)&ps, sizeof (tNetPlayerStats), 0);
+	MultiSendData (reinterpret_cast<char*> (&ps), sizeof (tNetPlayerStats), 0);
 	}
 }
 
@@ -1800,7 +1800,7 @@ if ((player_n == gameData.multiplayer.nLocalPlayer) || (player_n == 255)) {
 
 void MultiDoSendPlayer (char *buf)
 {
-tNetPlayerStats *p = (tNetPlayerStats *)buf;
+tNetPlayerStats *p = reinterpret_cast<tNetPlayerStats*> (buf);
 Assert (p->nLocalPlayer <= gameData.multiplayer.nPlayers);
 use_netplayer_stats (gameData.multiplayer.players  + p->nLocalPlayer, p);
 }
@@ -2255,13 +2255,13 @@ if (gameData.app.nGameMode & GM_NETWORK)
 	return;
 gameData.multigame.msg.buf [count++] = (char)MULTI_POSITION;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-CreateShortPos ((tShortPos *) (gameData.multigame.msg.buf + count), OBJECTS+nObject, 0);
+CreateShortPos (reinterpret_cast<tShortPos*> (gameData.multigame.msg.buf + count), OBJECTS+nObject, 0);
 count += sizeof (tShortPos);
 #else
 CreateShortPos (&sp, OBJECTS+nObject, 1);
-memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *) (sp.bytemat), 9);
+memcpy (gameData.multigame.msg.buf + count, reinterpret_cast<ubyte*> (sp.bytemat), 9);
 count += 9;
-memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *)& (sp.xo), 14);
+memcpy (gameData.multigame.msg.buf + count, reinterpret_cast<ubyte*> (&sp.xo), 14);
 count += 14;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 0);
@@ -2281,7 +2281,7 @@ gameData.multigame.msg.buf [0] = (char) MULTI_KILL;
 gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
 if (nKillerObj > -1) {
 	// do it with variable player since INTEL_SHORT won't work on return val from function.
-	short s = (short) ObjnumLocalToRemote (nKillerObj, (sbyte *) &gameData.multigame.msg.buf [4]);
+	short s = (short) ObjnumLocalToRemote (nKillerObj, reinterpret_cast<sbyte*> (&gameData.multigame.msg.buf [4]));
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + 2, s);
 	}
 else {
@@ -3085,7 +3085,7 @@ slot--;
 game_id = TimerGetFixedSeconds ();
 game_id ^= gameData.multiplayer.nPlayers<<4;
 for (i = 0; i<gameData.multiplayer.nPlayers; i++)
-	game_id ^= *(uint *) gameData.multiplayer.players [i].callsign;
+	game_id ^= *reinterpret_cast<uint*> (gameData.multiplayer.players [i].callsign);
 if (game_id == 0)
 	game_id = 1; // 0 is invalid
 MultiSendSaveGame (slot, game_id, saveGameHandler.Description ());
@@ -3308,13 +3308,13 @@ gameData.multigame.msg.buf [count++] = (char)MULTI_GUIDED;
 gameData.multigame.msg.buf [count++] = (char)gameData.multiplayer.nLocalPlayer;
 gameData.multigame.msg.buf [count++] = done;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-CreateShortPos ((tShortPos *) (gameData.multigame.msg.buf + count), miss, 0);
+CreateShortPos (reinterpret_cast<tShortPos*> (gameData.multigame.msg.buf + count), miss, 0);
 count += sizeof (tShortPos);
 #else
 CreateShortPos (&sp, miss, 1);
-memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *) (sp.bytemat), 9);
+memcpy (& (gameData.multigame.msg.buf [count]), reinterpret_cast<ubyte*> (sp.bytemat), 9);
 count += 9;
-memcpy (& (gameData.multigame.msg.buf [count]), (ubyte *) &sp.xo, 14);
+memcpy (& (gameData.multigame.msg.buf [count]), reinterpret_cast<ubyte*> (&sp.xo), 14);
 count += 14;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 0);
@@ -3349,10 +3349,10 @@ else if (++fun >= 50)
 		return;
 		}
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-ExtractShortPos (gmObjP, (tShortPos *) (buf + count), 0);
+ExtractShortPos (gmObjP, reinterpret_cast<tShortPos*> (buf + count), 0);
 #else
-memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + count), 9);
-memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + count + 9), 14);
+memcpy (reinterpret_cast<ubyte*> ((sp.bytemat), reinterpret_cast<ubyte*> (buf + count), 9);
+memcpy (reinterpret_cast<ubyte*> (& (sp.xo), reinterpret_cast<ubyte*> (buf + count + 9), 14);
 ExtractShortPos (gmObjP, &sp, 1);
 #endif
 count += sizeof (tShortPos);
@@ -3849,7 +3849,7 @@ memcpy (gameData.multigame.msg.buf + 3, gameData.walls.activeDoors + i, sizeof (
 count += sizeof (tActiveDoor);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 {
-tActiveDoor *ad = (tActiveDoor *) (gameData.multigame.msg.buf + 3);
+tActiveDoor *ad = reinterpret_cast<tActiveDoor*> (gameData.multigame.msg.buf + 3);
 ad->nPartCount = INTEL_INT (ad->nPartCount);
 ad->nFrontWall [0] = INTEL_SHORT (ad->nFrontWall [0]);
 ad->nFrontWall [1] = INTEL_SHORT (ad->nFrontWall [1]);
@@ -4669,7 +4669,7 @@ void MultiQuickSoundHack (int nSound)
 
 nSound = DigiXlatSound ((short) nSound);
 l = dsP->nLength [dsP->bDTX];
-ReversedSound.data [0] = (ubyte *) D2_ALLOC (l);
+ReversedSound.data [0] = reinterpret_cast<ubyte*> (D2_ALLOC (l));
 ReversedSound.nLength [0] = l;
 dataP = dsP->data [dsP->bDTX] + l;
 for (i = 0, j = l; i < l; i++)
@@ -4802,7 +4802,7 @@ void MultiSendTeleport (char nPlayer, short nSegment, char nSide)
 {
 gameData.multigame.msg.buf [0] = (char) MULTI_TELEPORT;
 gameData.multigame.msg.buf [1] = nPlayer; // dummy values
-* ((short *) (gameData.multigame.msg.buf + 2)) = INTEL_SHORT (nSegment);
+*reinterpret_cast<short*> (gameData.multigame.msg.buf + 2) = INTEL_SHORT (nSegment);
 gameData.multigame.msg.buf [4] = nSide; // dummy values
 MultiSendData (gameData.multigame.msg.buf, 5, 0);
 }

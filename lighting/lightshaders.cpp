@@ -1074,7 +1074,7 @@ char *BuildLightingShader (const char *pszTemplate, int nLights)
 	int	l = (int) strlen (pszTemplate) + 1;
 	char	*pszFS, szLights [2];
 
-if (!(pszFS = (char *) D2_ALLOC (l)))
+if (!(pszFS = reinterpret_cast<char*> (D2_ALLOC (l))))
 	return NULL;
 if (nLights > MAX_LIGHTS_PER_PIXEL)
 	nLights = MAX_LIGHTS_PER_PIXEL;
@@ -1331,7 +1331,7 @@ for (nLights = 0;
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, OBJ_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, OBJ_QUAD_ATT / fBrightness);
-		glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &fVector3::ZERO);
+		glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&fVector3::ZERO));
 		ambient.red = psl->info.color.red * PPL_AMBIENT_LIGHT;
 		ambient.green = psl->info.color.green * PPL_AMBIENT_LIGHT;
 		ambient.blue = psl->info.color.blue * PPL_AMBIENT_LIGHT;
@@ -1345,7 +1345,7 @@ for (nLights = 0;
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, GEO_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, GEO_QUAD_ATT / fBrightness);
-		glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &psl->info.vDirf);
+		glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&psl->info.vDirf));
 		ambient.red = psl->info.color.red * PPL_AMBIENT_LIGHT;
 		ambient.green = psl->info.color.green * PPL_AMBIENT_LIGHT;
 		ambient.blue = psl->info.color.blue * PPL_AMBIENT_LIGHT;
@@ -1356,10 +1356,10 @@ for (nLights = 0;
 		diffuse.blue = psl->info.color.blue * fBrightness;
 		diffuse.alpha = 1.0f;
 		}
-	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &diffuse);
-	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &specular);
-	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &ambient);
-	glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->vPosf));
+	glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&diffuse));
+	glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&specular));
+	glLightfv (hLight, GL_AMBIENT, reinterpret_cast<GLfloat*> (&ambient));
+	glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (psl->vPosf));
 	gameStates.ogl.iLight++;
 	}
 if (nLightRange <= 0) {
@@ -1434,7 +1434,7 @@ if (nShader != gameStates.render.history.nShader) {
 		}
 	}
 if (!nType)
-	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &faceP->color);
+	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->color));
 #if CONST_LIGHT_COUNT
 glUniform1f (glGetUniformLocation (activeShaderProg, "nLights"), (GLfloat) nLights);
 #endif
@@ -1488,7 +1488,7 @@ if (nShader != gameStates.render.history.nShader) {
 		}
 	}
 if (!nType)
-	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, (GLfloat *) &faceP->color);
+	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->color));
 OglClearError (0);
 PROF_END(ptShaderStates)
 return gameStates.render.history.nShader = nShader;
@@ -1507,7 +1507,7 @@ if (gameStates.render.textures.bHaveGrayScaleShader) {
 		gameData.render.nShaderChanges++;
 		glUseProgramObject (activeShaderProg = gsShaderProg [bLightmaps][nType]);
 		if (!nType)
-			glUniform4fv (glGetUniformLocation (activeShaderProg, "faceColor"), 1, (GLfloat *) colorP);
+			glUniform4fv (glGetUniformLocation (activeShaderProg, "faceColor"), 1, reinterpret_cast<GLfloat*> (colorP));
 		else {
 			glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightmaps);
 			if (nType > 1)

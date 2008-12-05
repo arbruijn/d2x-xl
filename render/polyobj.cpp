@@ -78,7 +78,7 @@ int pof_read_int (ubyte *bufp)
 {
 	int i;
 
-	i = * ((int *) &bufp [Pof_addr]);
+	i = * (reinterpret_cast<int*> (&bufp [Pof_addr]));
 	Pof_addr += 4;
 	return INTEL_INT (i);
 
@@ -103,7 +103,7 @@ short pof_read_short (ubyte *bufp)
 {
 	short s;
 
-	s = * ((short *) &bufp [Pof_addr]);
+	s = * (reinterpret_cast<short*> (&bufp [Pof_addr]));
 	Pof_addr += 2;
 	return INTEL_SHORT (s);
 //	if (cf.Read (&s, sizeof (s), 1, f) != 1)
@@ -163,14 +163,14 @@ void robot_set_angles (tRobotInfo *r, tPolyModel *pm, vmsAngVec angs [N_ANIM_STA
 
 ubyte * old_dest (chunk o) // return where chunk is (in unaligned struct)
 {
-	return o.old_base + INTEL_SHORT (* ((short *) (o.old_base + o.offset)));
+	return o.old_base + INTEL_SHORT (*reinterpret_cast<short*> (o.old_base + o.offset));
 }
 
 //------------------------------------------------------------------------------
 
 ubyte * new_dest (chunk o) // return where chunk is (in aligned struct)
 {
-	return o.new_base + INTEL_SHORT (* ((short *) (o.old_base + o.offset))) + o.correction;
+	return o.new_base + INTEL_SHORT (*reinterpret_cast<short*> (o.old_base + o.offset)) + o.correction;
 }
 
 //------------------------------------------------------------------------------
@@ -226,9 +226,9 @@ void AlignPolyModelData (tPolyModel *pm)
 			Assert (total_correction <= SHIFT_SPACE); // if you get this, increase SHIFT_SPACE
 		}
 		//write (corrected) chunk for current chunk:
-		* ((short *) (cur_ch.new_base + cur_ch.offset))
+		* (reinterpret_cast<short*> (cur_ch.new_base + cur_ch.offset))
 		  = INTEL_SHORT (cur_ch.correction)
-				+ INTEL_SHORT (* ((short *) (cur_ch.old_base + cur_ch.offset)));
+				+ INTEL_SHORT (* (reinterpret_cast<short*> (cur_ch.old_base + cur_ch.offset)));
 		//write (correctly aligned) chunk:
 		cur_old = old_dest (cur_ch);
 		cur_new = new_dest (cur_ch);
@@ -259,7 +259,7 @@ tPolyModel *ReadModelFile (tPolyModel *pm, const char *filename, tRobotInfo *r)
 	int	animFlag = 0;
 	ubyte *model_buf;
 
-if (!(model_buf = (ubyte *)D2_ALLOC (MODEL_BUF_SIZE * sizeof (ubyte))))
+if (!(model_buf = reinterpret_cast<ubyte*> (D2_ALLOC (MODEL_BUF_SIZE * sizeof (ubyte)))))
 	Error ("Can't allocate space to read model %s\n", filename);
 if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0))
 	Error ("Can't open file <%s>", filename);
@@ -366,7 +366,7 @@ while (POF_ReadIntNew (id, model_buf) == 1) {
 			}
 
 		case ID_IDTA:		//Interpreter data
-			pm->modelData = (ubyte *) D2_ALLOC (len);
+			pm->modelData = reinterpret_cast<ubyte*> (D2_ALLOC (len));
 			pm->nDataSize = len;
 			pof_read (pm->modelData, 1, len, model_buf);
 			break;
@@ -402,7 +402,7 @@ int ReadModelGuns (const char *filename, vmsVector *gunPoints, vmsVector *gun_di
 	int nGuns=0;
 	ubyte	*model_buf;
 
-	model_buf = (ubyte *)D2_ALLOC (MODEL_BUF_SIZE * sizeof (ubyte));
+	model_buf = reinterpret_cast<ubyte*> (D2_ALLOC (MODEL_BUF_SIZE * sizeof (ubyte)));
 	if (!model_buf)
 		Error ("Can't allocate space to read model %s\n", filename);
 
@@ -733,13 +733,13 @@ void PolyObjFindMinMax (tPolyModel *pm)
 		vmsVector& mn = pm->subModels.mins[m];
 		vmsVector& mx = pm->subModels.maxs[m];
 		vmsVector& ofs= pm->subModels.offsets[m];
-		data = (ushort *) (pm->modelData + pm->subModels.ptrs [m]);
+		data = reinterpret_cast<ushort*> (pm->modelData + pm->subModels.ptrs [m]);
 		nType = *data++;
 		Assert (nType == 7 || nType == 1);
 		nverts = *data++;
 		if (nType==7)
 			data+=2;		//skip start & pad
-		vp = (vmsVector *) data;
+		vp = reinterpret_cast<vmsVector*> (data);
 		mn = mx = *vp++;
 		nverts--;
 		if (m == 0)
@@ -932,13 +932,13 @@ void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf)
 {
 if (pm->modelData)
 	D2_FREE (pm->modelData);
-pm->modelData = (ubyte *) D2_ALLOC (pm->nDataSize);
+pm->modelData = reinterpret_cast<ubyte*> (D2_ALLOC (pm->nDataSize));
 Assert (pm->modelData != NULL);
 cf.Read (pm->modelData, sizeof (ubyte), pm->nDataSize);
 if (pdm) {
 	if (pdm->modelData)
 		D2_FREE (pdm->modelData);
-	pdm->modelData = (ubyte *) D2_ALLOC (pm->nDataSize);
+	pdm->modelData = reinterpret_cast<ubyte*> (D2_ALLOC (pm->nDataSize));
 	Assert (pdm->modelData != NULL);
 	memcpy (pdm->modelData, pm->modelData, pm->nDataSize);
 	}

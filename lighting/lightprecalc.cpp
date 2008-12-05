@@ -124,7 +124,7 @@ int ComputeNearestSegmentLights (int i)
 PrintLog ("computing nearest segment lights (%d)\n", i);
 if (!gameData.render.lights.dynamic.nLights)
 	return 0;
-if (!(pDists = (tLightDist *) D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
+if (!(pDists = new tLightDist [gameData.render.lights.dynamic.nLights])) {
 	gameOpts->render.nLightingMethod = 0;
 	gameData.render.shadows.nLights = 0;
 	return 0;
@@ -156,7 +156,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	for (; l < MAX_NEAREST_LIGHTS; l++)
 		gameData.render.lights.dynamic.nNearestSegLights [k + l] = -1;
 	}
-D2_FREE (pDists);
+delete[] pDists;
 return 1;
 }
 
@@ -178,7 +178,7 @@ int ComputeNearestVertexLights (int nVertex)
 PrintLog ("computing nearest vertex lights (%d)\n", nVertex);
 if (!gameData.render.lights.dynamic.nLights)
 	return 0;
-if (!(pDists = (tLightDist *) D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
+if (!(pDists = new tLightDist [gameData.render.lights.dynamic.nLights])) {
 	gameOpts->render.nLightingMethod = 0;
 	gameData.render.shadows.nLights = 0;
 	return 0;
@@ -233,7 +233,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 	for (; l < MAX_NEAREST_LIGHTS; l++)
 		gameData.render.lights.dynamic.nNearestVertLights [k + l] = -1;
 	}
-D2_FREE (pDists);
+delete[] pDists;
 return 1;
 }
 
@@ -387,7 +387,7 @@ void ComputeSegmentVisibility (int startI)
 PrintLog ("computing segment visibility (%d)\n", startI);
 if (startI <= 0) {
 	i = sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS;
-	if (!(gameData.segs.bVertVis = (ubyte *) D2_ALLOC (i)))
+	if (!(gameData.segs.bVertVis = new ubyte [i]))
 		return;
 	memset (gameData.segs.bVertVis, 0, i);
 	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * gameData.segs.nSegments * SEGVIS_FLAGS);
@@ -549,7 +549,7 @@ static tThreadInfo	ti [2];
 
 int _CDECL_ SegLightsThread (void *pThreadId)
 {
-	int		nId = *((int *) pThreadId);
+	int		nId = *(reinterpret_cast<int*> (pThreadId));
 
 ComputeNearestSegmentLights (nId ? gameData.segs.nSegments / 2 : 0);
 SDL_SemPost (ti [nId].done);
@@ -561,7 +561,7 @@ return 0;
 
 int _CDECL_ VertLightsThread (void *pThreadId)
 {
-	int		nId = *((int *) pThreadId);
+	int		nId = *(reinterpret_cast<int*> (pThreadId));
 
 ComputeNearestVertexLights (nId ? gameData.segs.nVertices / 2 : 0);
 SDL_SemPost (ti [nId].done);
@@ -641,7 +641,7 @@ else {
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}
-D2_FREE (gameData.segs.bVertVis);
+delete[] gameData.segs.bVertVis;
 PrintLog ("Saving precompiled light data\n");
 SaveLightData (nLevel);
 }

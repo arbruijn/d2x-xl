@@ -18,7 +18,7 @@ static int audio_exp_table[256] =
        -16,    -15,    -14,    -13,    -12,    -11,    -10,     -9,     -8,     -7,     -6,     -5,     -4,     -3,     -2,     -1
 };
 
-static int getWord(unsigned char **fin)
+static int getWord(ubyte **fin)
 {
     int value = ((*fin)[1] << 8) | (*fin)[0];
     *fin += 2;
@@ -30,7 +30,7 @@ static void sendWord(short **fout, int nOffset)
     *(*fout)++ = nOffset;
 }
 
-static void processSwath(short *fout, unsigned char *data, int swath, int *offsets)
+static void processSwath(short *fout, ubyte *data, int swath, int *offsets)
 {
     int i;
     for (i=0; i<swath; i++)
@@ -40,7 +40,7 @@ static void processSwath(short *fout, unsigned char *data, int swath, int *offse
     }
 }
 
-void mveaudio_uncompress(short *buffer, unsigned char *data, int length)
+void mveaudio_uncompress(short *buffer, ubyte *data, int length)
 {
     int nCurOffsets[2];
     int swath;

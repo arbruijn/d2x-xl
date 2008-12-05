@@ -225,7 +225,7 @@ void DrawTexPolyFlat(CBitmap *bp,int nverts,g3sPoint **vertbuf)
 		points[i].y = I2X (vertbuf[i]->p3_screen.y);
 	}
 
-	gr_upoly_tmap(nverts,(int *) points);
+	gr_upoly_tmap(nverts,reinterpret_cast<int*> (points));
 
 }
 #ifdef __WATCOMC__

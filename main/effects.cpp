@@ -228,7 +228,7 @@ xEffectTime += gameData.time.xFrame;
 					nFrames = bmP->FrameCount ();
 				}
 			else {
-				bmP = SetupHiresAnim ((short *) ecP->vc.frames, nFrames, t, 0, 0, &nFrames);
+				bmP = SetupHiresAnim (reinterpret_cast<short*> (ecP->vc.frames), nFrames, t, 0, 0, &nFrames);
 				if (!bmP)
 					ecP->flags &= ~EF_ALTFMT;
 #if 0
@@ -290,7 +290,7 @@ xEffectTime += gameData.time.xFrame;
 					nFrames = bmP->FrameCount ();
 				}
 			else {
-   			bmP = SetupHiresAnim ((short *) ecP->vc.frames, nFrames, t, 0, 1, &nFrames);
+   			bmP = SetupHiresAnim (reinterpret_cast<short*> (ecP->vc.frames), nFrames, t, 0, 1, &nFrames);
 	   		if (!bmP)
 		   		ecP->flags &= ~EF_ALTFMT;
 			   else if (!gameOpts->ogl.bGlTexMerge)

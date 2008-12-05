@@ -27,11 +27,11 @@ extern void _CDECL_ KeyClose(void);
 // These are configuration parameters to setup how the buffer works.
 // set keyd_bufferType to 0 for no key buffering.
 // set it to 1 and it will buffer scancodes.
-extern unsigned char keyd_bufferType;
+extern ubyte keyd_bufferType;
 
 // keyd_editor_mode... 0=game mode, 1=editor mode.
 // Editor mode makes KeyDownTime always return 0 if modifiers are down.
-extern unsigned char keyd_editor_mode;	
+extern ubyte keyd_editor_mode;	
 
 // Time in seconds when last key was pressed...
 extern volatile int xLastKeyPressTime;
@@ -40,7 +40,7 @@ extern volatile int xLastKeyPressTime;
 // These are the "buffered" keypress routines.  Use them by setting the
 // "keyd_bufferType" variable.
 
-extern void KeyPutKey (unsigned short); // simulates a keystroke
+extern void KeyPutKey (ushort); // simulates a keystroke
 extern void KeyFlush();    // Clears the 256 char buffer
 extern int KeyCheckChar();   // Returns 1 if a char is waiting
 extern int KeyGetChar();     // Gets key if one waiting other waits for one.
@@ -48,7 +48,7 @@ extern int KeyInKey();     // Gets key if one, other returns 0.
 extern int KeyInKeyTime(fix *time);     // Same as inkey, but returns the time the key was pressed down.
 extern int KeyPeekKey();   // Same as inkey, but doesn't remove key from buffer.
 
-extern unsigned char KeyToASCII(int keycode );
+extern ubyte KeyToASCII(int keycode );
 
 extern void key_debug();    // Does an INT3
 
@@ -56,20 +56,20 @@ extern void key_debug();    // Does an INT3
 // These are the unbuffered routines. Index by the keyboard scancode.
 
 // Set to 1 if the key is currently down, else 0
-extern volatile unsigned char keyd_pressed[];
-extern volatile unsigned char keydFlags[];
-extern volatile unsigned char keyd_last_pressed;
-extern volatile unsigned char keyd_last_released;
+extern volatile ubyte keyd_pressed[];
+extern volatile ubyte keydFlags[];
+extern volatile ubyte keyd_last_pressed;
+extern volatile ubyte keyd_last_released;
 
 // Returns the seconds this key has been down since last call.
 extern fix KeyDownTime(int scancode);
 
 // Returns number of times key has went from up to down since last call.
-extern unsigned int KeyDownCount(int scancode);
+extern uint KeyDownCount(int scancode);
 
 extern ubyte KeyFlags(int scancode);
 // Returns number of times key has went from down to up since last call.
-extern unsigned int KeyUpCount(int scancode);
+extern uint KeyUpCount(int scancode);
 
 // Clears the times & counts used by the above functions
 // Took out... use KeyFlush();

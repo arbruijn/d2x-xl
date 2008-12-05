@@ -77,6 +77,6 @@ struct ipx_driver {
 
 int IxpGeneralPacketReady(ipx_socket_t *s);
 
-extern unsigned char ipx_MyAddress[10];
+extern ubyte ipx_MyAddress[10];
 
 #endif /* _IPX_DRV_H */

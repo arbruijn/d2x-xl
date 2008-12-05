@@ -207,7 +207,7 @@ for (;;) {
 			VmsVectorSwap(*VECPTR (p + 4));
 			VmsVectorSwap(*VECPTR (p + 16));
 			for (i = 0; i < n; i++) {
-				uvl_val = (tUVL *) ((p+30+ ((n&~1)+1)*2) + (i * sizeof (tUVL)));
+				uvl_val = reinterpret_cast<tUVL*> (((p+30+ ((n&~1)+1)*2))) + i;
 				FixSwap (&uvl_val->u);
 				FixSwap (&uvl_val->v);
 			}
@@ -381,7 +381,7 @@ if ((h >= 0) && (h <= OP_GLOW))
 ShortSwap (&h);
 if ((h < 0) || (h > OP_GLOW))
 	return 0;
-G3SwapPolyModelData ((ubyte *) modelP);
+G3SwapPolyModelData (reinterpret_cast<ubyte*> (modelP);
 return 1;
 }
 
@@ -445,7 +445,7 @@ int G3DrawPolyModel (
 	tPOFObject  *po,
 	int			nModel)
 {
-	ubyte *p = (ubyte *) modelP;
+	ubyte *p = reinterpret_cast<ubyte*> (modelP);
 	short	nTag;
 	short bGetThrusterPos = !objP || ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->info.nId]));
 	short bLightnings = SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && objP && (ObjectDamage (objP) < 0.5f);
@@ -537,7 +537,7 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			uvlList = (tUVL *) (p + 30 + (nVerts | 1) * 2);
+			uvlList = reinterpret_cast<tUVL*> (p + 30 + (nVerts | 1) * 2);
 			for (i = 0; i < nVerts; i++)
 				uvlList [i].l = l;
 
@@ -633,7 +633,7 @@ int nestCount;
 int G3DrawMorphingModel (void *modelP, CBitmap **modelBitmaps, vmsAngVec *pAnimAngles, vmsVector *vOffset,
 								  fix xModelLight, vmsVector *new_points, int nModel)
 {
-	ubyte *p = (ubyte *) modelP;
+	ubyte *p = reinterpret_cast<ubyte*> (modelP);
 	fix *xGlowValues = NULL;
 
 G3CheckAndSwap (modelP);
@@ -690,7 +690,7 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			uvlList = (tUVL *) (p+30+ ((nVerts&~1)+1)*2);
+			uvlList = reinterpret_cast<tUVL*> (p+30+ ((nVerts&~1)+1)*2);
 			for (i = 0; i < 3; i++)
 				morph_uvls [i].l = light;
 			for (i = 0; i < 2; i++) {
@@ -835,7 +835,7 @@ void G3InitPolyModel (tPolyModel *pm, int nModel)
 
 nHighestTexture = -1;
 G3CheckAndSwap (pm->modelData);
-InitSubModel ((ubyte *) pm->modelData);
+InitSubModel (reinterpret_cast<ubyte*> (pm->modelData);
 G3PolyModelSize (pm, nModel);
 }
 

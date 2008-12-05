@@ -467,18 +467,18 @@ glColor4d (1,1,1,1);
 glLineWidth (2);
 glBegin (GL_LINE_LOOP);
 for (i = 0; i < 4; i++)
-	glVertex3fv ((GLfloat *) (sprite + i));
+	glVertex3fv (reinterpret_cast<GLfloat*> (sprite + i));
 glEnd ();
 glBegin (GL_LINES);
 vCenter->x () += 5;
-glVertex3fv ((GLfloat *) &vCenter);
+glVertex3fv (reinterpret_cast<GLfloat*> (&vCenter));
 vCenter->x () -= 10;
-glVertex3fv ((GLfloat *) &vCenter);
+glVertex3fv (reinterpret_cast<GLfloat*> (&vCenter));
 vCenter->x () += 5;
 vCenter->y () += 5;
-glVertex3fv ((GLfloat *) &vCenter);
+glVertex3fv (reinterpret_cast<GLfloat*> (&vCenter));
 vCenter->y () -= 10;
-glVertex3fv ((GLfloat *) &vCenter);
+glVertex3fv (reinterpret_cast<GLfloat*> (&vCenter));
 glEnd ();
 glLineWidth (1);
 }
@@ -530,11 +530,11 @@ if (bAdditive) {
 	fLight *= color.alpha;
 	glBlendFunc (GL_ONE, GL_ONE);
 	}
-glColor4fv ((GLfloat *) &color);
+glColor4fv (reinterpret_cast<GLfloat*> (&color));
 glBegin (GL_QUADS);
 for (i = 0; i < 4; i++) {
-	glTexCoord2fv ((GLfloat *) (tcGlare + i));
-	glVertex3fv ((GLfloat *) (sprite + i));
+	glTexCoord2fv (reinterpret_cast<GLfloat*> (tcGlare + i));
+	glVertex3fv (reinterpret_cast<GLfloat*> (sprite + i));
 	}
 glEnd ();
 if (bAdditive)
@@ -627,8 +627,8 @@ else {
 		bmP->Bind (1, -1);
 	glBegin (GL_QUADS);
 	for  (i = 0; i < 4; i++) {
-		glTexCoord2fv ((GLfloat *) (tcGlare + i));
-		glVertex3fv ((GLfloat *) (sprite + i));
+		glTexCoord2fv (reinterpret_cast<GLfloat*> (tcGlare + i));
+		glVertex3fv (reinterpret_cast<GLfloat*> (sprite + i));
 		}
 	glEnd ();
 	}
@@ -774,10 +774,10 @@ if (gameStates.ogl.bDepthBlending) {
 			gameStates.render.history.nShader = 999;
 			glUniform1i (glGetUniformLocation (hGlareShader, "glareTex"), 0);
 			glUniform1i (glGetUniformLocation (hGlareShader, "depthTex"), 1);
-			glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
+			glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, reinterpret_cast<GLfloat*> (&gameData.render.ogl.screenScale));
 #if 0
 			if (gameStates.render.automap.bDisplay)
-				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
+				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, reinterpret_cast<GLfloat*> (&gameData.render.ogl.depthScale));
 			else 
 #endif
 				{

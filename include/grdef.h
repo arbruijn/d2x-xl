@@ -20,24 +20,24 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern void gr_set_buffer(int w, int h, int r, int (*buffer_func)());
 
-extern void gr_pal_setblock( int start, int n, unsigned char * palette );
-extern void gr_pal_getblock( int start, int n, unsigned char * palette );
-extern void gr_pal_setone( int index, unsigned char red, unsigned char green, unsigned char blue );
+extern void gr_pal_setblock( int start, int n, ubyte * palette );
+extern void gr_pal_getblock( int start, int n, ubyte * palette );
+extern void gr_pal_setone( int index, ubyte red, ubyte green, ubyte blue );
 
 void gr_linear_movsb( ubyte * source, ubyte * dest, int nbytes);
 void gr_linear_movsw( ubyte * source, ubyte * dest, int nbytes);
-void gr_linear_stosd( ubyte * dest, tCanvasColor *color, unsigned int nbytes);
+void gr_linear_stosd( ubyte * dest, tCanvasColor *color, uint nbytes);
 
-extern unsigned int gr_var_color;
-extern unsigned int gr_var_bwidth;
-extern unsigned char * gr_var_bitmap;
+extern uint gr_var_color;
+extern uint gr_var_bwidth;
+extern ubyte * gr_var_bitmap;
 
-void gr_linear_movsd( ubyte * source, ubyte * dest, unsigned int nbytes);
-void gr_linear_rep_movsd_2x(ubyte *source, ubyte *dest, unsigned int nbytes);
+void gr_linear_movsd( ubyte * source, ubyte * dest, uint nbytes);
+void gr_linear_rep_movsd_2x(ubyte *source, ubyte *dest, uint nbytes);
 
 void gr_linear_line( int x0, int y0, int x1, int y1);
 
-extern unsigned int Table8to32[256];
+extern uint Table8to32[256];
 
 #define MINX    0
 #define MINY    0

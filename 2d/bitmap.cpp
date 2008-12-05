@@ -47,7 +47,7 @@ return m_info.buffer.Buffer ();
 
 CBitmap* CBitmap::Create (ubyte mode, int w, int h, int bpp, const char* pszName)
 {
-	CBitmap	*bmP = new CBitmap; //(CBitmap *) D2_ALLOC (sizeof (CBitmap));
+	CBitmap	*bmP = new CBitmap; 
 
 if (bmP)
 	bmP->Setup (mode, w, h, bpp, pszName);
@@ -158,7 +158,7 @@ m_info.props.y += y;
 m_info.props.w = w;
 m_info.props.h = h;
 SetParent (parent ? parent : this);
-m_info.buffer.SetBuffer (parent->Buffer () + (unsigned int) ((m_info.props.y * m_info.props.rowSize) + m_info.props.x * m_info.nBPP), true);
+m_info.buffer.SetBuffer (parent->Buffer () + (uint) ((m_info.props.y * m_info.props.rowSize) + m_info.props.x * m_info.nBPP), true);
 }
 
 //------------------------------------------------------------------------------

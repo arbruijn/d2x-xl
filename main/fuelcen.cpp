@@ -470,13 +470,13 @@ if (objP) {
 int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags)
 {
 	int				i, nObjIndex, nTypes = 0;
-	unsigned int	flags;
+	uint	flags;
 	sbyte				objTypes [64];
 
 memset (objTypes, 0, sizeof (objTypes));
 for (i = 0; i < 3; i++) {
 	nObjIndex = i * 32;
-	flags = (unsigned int) objFlags [i];
+	flags = (uint) objFlags [i];
 	while (flags) {
 		if (flags & 1)
 			objTypes [nTypes++] = nObjIndex;

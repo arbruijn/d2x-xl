@@ -43,7 +43,7 @@ int knix_newSock(void) {
 
 	fcntl(tempsock, F_SETFL, fcntl(tempsock, F_GETFL) | O_NONBLOCK);
 
-	if ((bind(tempsock, (struct sockaddr *)&taddr, sizeof(taddr))) < 0) {
+	if ((bind(tempsock, reinterpret_cast<struct sockaddr*> (&taddr), sizeof(taddr))) < 0) {
 		close(tempsock);
 		return -1;
 	}
@@ -53,7 +53,7 @@ int knix_newSock(void) {
 int knix_Send(int hand, char *data, int len) {
 	int i = 0, t;
 
-	while ((t = sendto(hand, data, len, 0, (struct sockaddr *)&kalinix_addr, 
+	while ((t = sendto(hand, data, len, 0, reinterpret_cast<struct sockaddr*> (&kalinix_addr), 
 			sizeof(kalinix_addr))) < 0) {
 		i++;
 		if (i > 10)
@@ -65,11 +65,11 @@ int knix_Send(int hand, char *data, int len) {
 
 int knix_Recv(int hand, char *data, int len) {
 	struct sockaddr_in taddr;
-	unsigned int tlen;
+	uint tlen;
 
 	tlen = sizeof(taddr);
 
-	return (int) recvfrom(hand, data, len, 0, (struct sockaddr *)&taddr, &tlen);
+	return (int) recvfrom(hand, data, len, 0, reinterpret_cast<struct sockaddr*> (&taddr), &tlen);
 
 }
 
@@ -105,7 +105,7 @@ int knix_ReceivePacket(int hand, char *outdata, int *outlen, kaliaddr_ipx *from)
 			from->sa_family = AF_IPX;
 			memcpy(from->sa_nodenum, &data[1], sizeof(from->sa_nodenum));
 			memset(from->sa_netnum, 0, sizeof(from->sa_netnum));
-			memcpy(&from->sa_socket, &data[9], sizeof(unsigned short));
+			memcpy(&from->sa_socket, &data[9], sizeof(ushort));
 			memcpy(outdata, &data[11], len-11 > *outlen ? *outlen : len-11);
 			*outlen = len-11;
 			break;
@@ -231,7 +231,7 @@ int KaliCloseSocket(int hand) {
 
 }
 
-int KaliOpenSocket(unsigned short port) {
+int KaliOpenSocket(ushort port) {
 	char opendata[16];
 	int hand;
 	int tcount = 0;

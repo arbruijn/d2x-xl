@@ -91,9 +91,9 @@ static short d2OpaqueDoors [] = {
 static int bLowMemory = 0;
 
 #if DBG
-#	define PIGGY_BUFFER_SIZE ((unsigned int) (512*1024*1024))
+#	define PIGGY_BUFFER_SIZE ((uint) (512*1024*1024))
 #else
-#	define PIGGY_BUFFER_SIZE ((unsigned int) 0x7fffffff)
+#	define PIGGY_BUFFER_SIZE ((uint) 0x7fffffff)
 #endif
 #define PIGGY_SMALL_BUFFER_SIZE (16*1024*1024)		// size of buffer when bLowMemory is set
 
@@ -210,7 +210,7 @@ if ((cf.Read (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
 	cf.Close ();
 	return 0;
 	}
-if (!(bmP->Buffer () = (ubyte *) (ubyte *) D2_ALLOC (bmP->bmBufSize))) {
+if (!(bmP->SetBuffer (new ubyte [bmP->bmBufSize])) {
 	cf.Close ();
 	return 0;
 	}
@@ -619,7 +619,6 @@ reloadTextures:
 	else 
 #endif
 		{
-		//bmP->SetBuffer ((ubyte *) D2_ALLOC (nSize));
 		if (bmP->CreateBuffer ()) 
 			UseBitmapCache (bmP, nSize);
 		}

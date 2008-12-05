@@ -36,8 +36,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "text.h"
 
-unsigned int nCurAllocd = 0;
-unsigned int nMaxAllocd = 0;
+uint nCurAllocd = 0;
+uint nMaxAllocd = 0;
 
 #if DBG_MALLOC
 #	define FULL_MEM_CHECKING 1
@@ -55,8 +55,8 @@ unsigned int nMaxAllocd = 0;
 #define MEM_MAX_INDEX 1000000
 
 static void *pMallocBase [MEM_MAX_INDEX];
-static unsigned int nMallocSize [MEM_MAX_INDEX];
-static unsigned char bPresent [MEM_MAX_INDEX];
+static uint nMallocSize [MEM_MAX_INDEX];
+static ubyte bPresent [MEM_MAX_INDEX];
 static char * szFilename [MEM_MAX_INDEX];
 static char * szVarname [MEM_MAX_INDEX];
 static int nLineNum [MEM_MAX_INDEX];
@@ -76,15 +76,15 @@ typedef struct tMemBlock {
 	void	*p;
 	char	*pszFile;
 	int	nLine;
-	unsigned int nId;
+	uint nId;
 } tMemBlock;
 
 #define MAX_MEM_BLOCKS	100000
 
 tMemBlock	memBlocks [MAX_MEM_BLOCKS];
 int nMemBlocks = 0;
-unsigned int nMemBlockId = 0;
-unsigned int nDbgMemBlockId = 0xffffffff;
+uint nMemBlockId = 0;
+uint nDbgMemBlockId = 0xffffffff;
 
 //------------------------------------------------------------------------------
 
@@ -151,8 +151,8 @@ int MemCheckIntegrity (void *buffer)
 	int	i, nSize, nErrors;
 	ubyte	*pCheckData;
 
-nSize = *((int *) buffer);
-pCheckData = (ubyte*) (((int *) buffer) + 1) + nSize;
+nSize = *reinterpret_cast<int*> (buffer);
+pCheckData = reinterpret_cast<ubyte*> (reinterpret_cast<int*> (buffer) + 1) + nSize;
 for (i = 0, nErrors = 0; i < CHECKSIZE; i++)
 	if (pCheckData [i] != CHECKBYTE) {
 		nErrors++;
@@ -162,7 +162,7 @@ for (i = 0, nErrors = 0; i < CHECKSIZE; i++)
 if (nErrors && !bOutOfMemory)	{
 	PrintLog ("\nMEM_OVERWRITE: Memory after the end of allocated block overwritten.\n");
 #if LONG_MEM_ID
-	PrintLog ("%s\n", (char *) buffer - 256);
+	PrintLog ("%s\n", reinterpret_cast<char*> (buffer) - 256);
 #endif
 	PrintLog ("\t%d/%d check bytes were overwritten.\n", nErrors, CHECKSIZE);
 	Int3 ();
@@ -200,8 +200,8 @@ void MemFree (void *buffer)
 {
 if (!buffer)
 	return;
-nCurAllocd -= *(((unsigned int *) buffer) - 1);
-free (((unsigned int *) buffer) - 1);
+nCurAllocd -= *(reinterpret_cast<uint*> (buffer) - 1);
+free (reinterpret_cast<uint*> (buffer) - 1);
 }
 
 #else
@@ -214,13 +214,13 @@ if (!buffer)
 	return;
 if (UnregisterMemBlock (buffer) < 0)
 	return;
-buffer = (void *) (((int *) buffer) - 1);
+buffer = reinterpret_cast<void*> (reinterpret_cast<int*> (buffer) - 1);
 #ifndef __macosx__
-nBytesMalloced -= *((int *) buffer);
+nBytesMalloced -= *reinterpret_cast<int*> (buffer);
 #endif
 MemCheckIntegrity (buffer);
 #if LONG_MEM_ID
-buffer = (void *) (((char *) buffer) - 256);
+buffer = reinterpret_cast<void*> (reinterpret_cast<char*> (buffer) - 256);
 #endif
 free (buffer);
 }
@@ -231,26 +231,26 @@ free (buffer);
 
 #if !DBG_MALLOC
 
-void *MemAlloc (unsigned int size)
+void *MemAlloc (uint size)
 {
 if (!size)
 	return NULL;
-size += sizeof (unsigned int);
-unsigned int *p = (unsigned int *) malloc (size);
+size += sizeof (uint);
+uint *p = reinterpret_cast<uint*> (malloc (size));
 if (!p)
 	return NULL;
 *p = size;
 nCurAllocd += size;
 if (nMaxAllocd < nCurAllocd)
 	nMaxAllocd = nCurAllocd;
-return (void *) (p + 1);
+return reinterpret_cast<void*> (p + 1);
 }
 
 #else	//!RELEASE
 
-void *MemAlloc (unsigned int size, const char * var, const char * pszFile, int nLine, int bZeroFill)
+void *MemAlloc (uint size, const char * var, const char * pszFile, int nLine, int bZeroFill)
 {
-	unsigned int *ptr;
+	uint *ptr;
 
 if (!bMemInitialized)
 	MemInit ();
@@ -271,16 +271,16 @@ if (!ptr) {
 	}
 
 #if LONG_MEM_ID
-sprintf ((char *) ptr, "%s:%d", pszFile, nLine);
-ptr = (int *) (((char *) ptr) + 256);
+sprintf (reinterpret_cast<char*> (ptr, "%s:%d", pszFile, nLine);
+ptr = reinterpret_cast<int*> (reinterpret_cast<char*> (ptr) + 256);
 #endif
 *ptr++ = size;
 nBytesMalloced += size;
-memset ((char *) ptr + size, CHECKBYTE, CHECKSIZE);
+memset (reinterpret_cast<char*> (ptr + size), CHECKBYTE, CHECKSIZE);
 if (bZeroFill)
 	memset (ptr, 0, size);
 RegisterMemBlock (ptr, pszFile, nLine);
-return (void *) ptr;
+return reinterpret_cast<void*> (ptr);
 }
 
 #endif
@@ -289,7 +289,7 @@ return (void *) ptr;
 
 #if !DBG_MALLOC
 
-void *MemRealloc (void * buffer, unsigned int size)
+void *MemRealloc (void * buffer, uint size)
 {
 if (!buffer)
 	return MemAlloc (size);
@@ -300,7 +300,7 @@ if (!size) {
 void *newBuffer = MemAlloc (size);
 if (!newBuffer)
 	return buffer;
-unsigned int oldSize = *(((unsigned int *) buffer) - 1);
+uint oldSize = *(reinterpret_cast<uint*> (buffer) - 1);
 memcpy (newBuffer, buffer, (size < oldSize) ? size : oldSize);
 MemFree (buffer);
 return newBuffer;
@@ -308,7 +308,7 @@ return newBuffer;
 
 #else
 
-void *MemRealloc (void * buffer, unsigned int size, const char * var, const char * pszFile, int nLine)
+void *MemRealloc (void * buffer, uint size, const char * var, const char * pszFile, int nLine)
 {
 	void *newbuffer = NULL;
 
@@ -331,7 +331,7 @@ if (!size)
 else {
 	newbuffer = MemAlloc (size, var, pszFile, nLine, 0);
 	if (FindMemBlock (buffer) >= 0) {
-		memcpy (newbuffer, buffer, *(((int *) buffer) - 1));
+		memcpy (newbuffer, buffer, *(reinterpret_cast<int*> (buffer) - 1));
 		MemFree (buffer);
 		}
 	}
@@ -347,8 +347,8 @@ return newbuffer;
 
 char *MemStrDup (const char *str)
 {
-unsigned int l = (unsigned int) strlen (str) + 1;
-char *newstr = (char *) MemAlloc (l);
+uint l = (uint) strlen (str) + 1;
+char *newstr = reinterpret_cast<char*> (MemAlloc (l));
 if (newstr)
 	memcpy (newstr, str, l);
 return newstr;
@@ -372,7 +372,7 @@ return newstr;
 
 void *GetMem (size_t size, char filler)
 {
-	void	*p = D2_ALLOC ((unsigned int) size);
+	void	*p = D2_ALLOC ((uint) size);
 
 if (p) {
 	memset (p, filler, size);

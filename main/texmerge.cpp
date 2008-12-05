@@ -240,7 +240,7 @@ inline tRGBA *C (ubyte *palP, ubyte *b, int i, int bpp, int *pbST)
 	int bST;
 
 if (bpp == 4) {
-	c = ((tRGBA *) (b)) [i];
+	c = reinterpret_cast<tRGBA*> (b) [i];
 	if ((*pbST = ((c.r == 120) && (c.g == 88) && (c.b == 128))))
 		c.a = 0;
 	return &c;
@@ -300,7 +300,7 @@ void MergeTextures (
 	int		i, x, y, bw, bh, tw, th, dw, dh;
 	int		bTopBPP, bBtmBPP, bST = 0;
 	frac		topScale, btmScale;
-	tRGBA		*dest_data = (tRGBA *) dest_bmp->Buffer ();
+	tRGBA		*dest_data = reinterpret_cast<tRGBA*> (dest_bmp->Buffer ());
 
 	ubyte		*top_data, *bottom_data, *top_pal, *btmPalette;
 

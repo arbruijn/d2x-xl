@@ -147,7 +147,7 @@ class CFontManager {
 		inline void SetCurrent (CFont* fontP) { m_current = fontP; }
 		void SetColor (int fgColor, int bgColor);
 		void SetColorRGB (tRgbaColorb *fgColor, tRgbaColorb *bgColor);
-		void SetColorRGBi (unsigned int fgColor, int bSetFG, unsigned int bgColor, int bSetBG);
+		void SetColorRGBi (uint fgColor, int bSetFG, uint bgColor, int bSetBG);
 		void Push (void) { m_save.Push (m_current); }
 		void Pop (void) { m_current = m_save.Pop (); }
 		void RemapColor ();
@@ -162,7 +162,7 @@ int GrString (int x, int y, const char *s, int *idP);
 int GrUString (int x, int y, const char *s);
 int _CDECL_ GrPrintF (int *idP, int x, int y, const char * format, ...);
 int _CDECL_ GrUPrintf (int x, int y, const char * format, ...);
-CBitmap *CreateStringBitmap (const char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce);
+CBitmap *CreateStringBitmap (const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce);
 
 //-----------------------------------------------------------------------------
 // Global variables

@@ -88,7 +88,7 @@ extern int Cockpit_rearView;
 			(_j) = (_max); \
 		}
 
-int stoip (char *szServerIpAddr, unsigned char *pIpAddr);
+int stoip (char *szServerIpAddr, ubyte *pIpAddr);
 int stoport (char *szPort, int *pPort, int *pSign);
 int SetCustomDisplayMode (int x, int y);
 

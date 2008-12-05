@@ -29,7 +29,7 @@
 
 #define KEY_BUFFER_SIZE 16
 
-static unsigned char bInstalled = 0;
+static ubyte bInstalled = 0;
 
 //-------- Variable accessed by outside functions ---------
 
@@ -45,18 +45,18 @@ typedef struct tKeyInfo {
 } tKeyInfo;
 
 typedef struct tKeyboard	{
-	unsigned short		keybuffer [KEY_BUFFER_SIZE];
+	ushort		keybuffer [KEY_BUFFER_SIZE];
 	tKeyInfo				keys [256];
 	fix					xTimePressed [KEY_BUFFER_SIZE];
-	unsigned int 		nKeyHead, nKeyTail;
+	uint 		nKeyHead, nKeyTail;
 } tKeyboard;
 
 static tKeyboard keyData;
 
 typedef struct tKeyProps {
 	const char *pszKeyText;
-	unsigned char asciiValue;
-	unsigned char shiftedAsciiValue;
+	ubyte asciiValue;
+	ubyte shiftedAsciiValue;
 	SDLKey sym;
 } tKeyProps;
 
@@ -346,7 +346,7 @@ const char *pszKeyText [256];
 
 //------------------------------------------------------------------------------
 
-unsigned char KeyToASCII(int keycode )
+ubyte KeyToASCII(int keycode )
 {
 	int shifted;
 
@@ -362,7 +362,7 @@ void KeyHandler(SDL_KeyboardEvent *event)
 	ubyte				state;
 	int				i, keycode, event_key, keyState;
 	tKeyInfo			*key;
-	unsigned char	temp;
+	ubyte	temp;
 
    event_key = event->keysym.sym;
 	keyState = (event->state == SDL_PRESSED); //  !(wInfo & KF_UP);
@@ -593,9 +593,9 @@ int KeyGetChar()
 
 //------------------------------------------------------------------------------
 
-unsigned int KeyGetShiftStatus()
+uint KeyGetShiftStatus()
 {
-	unsigned int shift_status = 0;
+	uint shift_status = 0;
 
 	if ( gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT] )
 		shift_status |= KEY_SHIFTED;
@@ -657,7 +657,7 @@ if (timeDown && timeDown < gameStates.input.kcPollTime)
 
 //------------------------------------------------------------------------------
 
-unsigned int KeyDownCount(int scancode)
+uint KeyDownCount(int scancode)
 {
 	int n;
 #ifndef FAST_EVENTPOLL
@@ -686,7 +686,7 @@ if (!bFastPoll)
 
 //------------------------------------------------------------------------------
 
-unsigned int KeyUpCount(int scancode)
+uint KeyUpCount(int scancode)
 {
 	int n;
 #ifndef FAST_EVENTPOLL

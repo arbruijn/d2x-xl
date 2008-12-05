@@ -1055,7 +1055,7 @@ tKCItemPos *GetItemPos (kcItem *items, int nItems)
 	tKCItemPos	*pos;
 	int			i;
 
-if (!(pos = (tKCItemPos *) D2_ALLOC (nItems * sizeof (tKCItemPos))))
+if (!(pos = reinterpret_cast<tKCItemPos*> (D2_ALLOC (nItems * sizeof (tKCItemPos)))))
 	return NULL;
 for (i = 0; i < nItems; i++) {
 	pos [i].l = items [i].x + items [i].w1;
@@ -1074,7 +1074,7 @@ int *GetItemRef (kcItem *items, int nItems, tKCItemPos *pos)
 	int	*ref;
 	int	i;
 
-if (!(ref = (int *) D2_ALLOC (nItems * sizeof (int))))
+if (!(ref = reinterpret_cast<int*> (D2_ALLOC (nItems * sizeof (int)))))
 	return NULL;
 for (i = 0; i < nItems; i++)
 	ref [pos [i].i] = i;
@@ -1731,17 +1731,17 @@ void KCInitExternalControls (int intno, int address)
 {
 	int i;
 	kc_external_intno = intno;
-	kc_external_control	= (ext_control_info *) (size_t) address;
+	kc_external_control = reinterpret_cast<ext_control_info*> ((size_t) address);
 	kc_use_external_control = 1;
 	kc_enable_external_control  = 1;
 
 	i = FindArg ("-xname");
 	if (i)
-		kc_external_name = (ubyte *) pszArgList [i+1];
+		kc_external_name = reinterpret_cast<ubyte*> (pszArgList [i+1]);
 	else
-		kc_external_name = (ubyte *) "External Controller";
-
-   for (i = 0; i < (int) strlen ((char *) kc_external_name);i++)
+		kc_external_name = reinterpret_cast<ubyte*> ("External Controller");
+ 
+   for (i = 0; i < (int) strlen (reinterpret_cast<char*> (kc_external_name)); i++)
     if (kc_external_name [i]=='_')
 	  kc_external_name [i]=' '; 
 
@@ -1763,14 +1763,14 @@ void KCInitExternalControls (int intno, int address)
 		memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (vmsAngVec) + 64);
 		if (kc_externalVersion > 1) {
 			// Write ship pos and angles to external controls...
-			ubyte *temp_ptr = (ubyte *)kc_external_control;
+			ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
 			vmsVector *ship_pos;
 			vmsMatrix *ship_orient;
 			memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (vmsAngVec) + 64 + sizeof (vmsVector)+sizeof (vmsMatrix);
 			temp_ptr += sizeof (tControlInfo)+sizeof (vmsAngVec) + 64;
-			ship_pos = (vmsVector *)temp_ptr;
+			ship_pos = reinterpret_cast<vmsVector*> (temp_ptr);
 			temp_ptr += sizeof (vmsVector);
-			ship_orient = (vmsMatrix *)temp_ptr;
+			ship_orient = reinterpret_cast<vmsMatrix*> (temp_ptr);
 			// Fill in ship postion...
 			*ship_pos = OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 			// Fill in ship orientation...
@@ -1797,14 +1797,14 @@ void KCInitExternalControls (int intno, int address)
 			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;
 
-			Kconfig_abs_movement = (vmsAngVec *) ((uint)kc_external_control + sizeof (tControlInfo);
+			Kconfig_abs_movement = reinterpret_cast<vmsAngVec*> ((uint)kc_external_control) + sizeof (tControlInfo);
 
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
 				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
 				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
 			}
-			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vmsAngVec);
+			oem_message = reinterpret_cast<char*> ((uint)Kconfig_abs_movement) + sizeof (vmsAngVec);
 			if (oem_message [0] != '\0')
 				HUDInitMessage (oem_message);
 		}
@@ -1850,14 +1850,14 @@ void KCReadExternalControls ()
 
 		if (kc_externalVersion > 1) {
 			// Write ship pos and angles to external controls...
-			ubyte *temp_ptr = (ubyte *)kc_external_control;
+			ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
 			vmsVector *ship_pos;
 			vmsMatrix *ship_orient;
 			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64 + sizeof (vmsVector)+sizeof (vmsMatrix));
 			temp_ptr += sizeof (ext_control_info) + sizeof (vmsAngVec) + 64;
-			ship_pos = (vmsVector *)temp_ptr;
+			ship_pos = reinterpret_cast<vmsVector*> (temp_ptr);
 			temp_ptr += sizeof (vmsVector);
-			ship_orient = (vmsMatrix *)temp_ptr;
+			ship_orient = reinterpret_cast<vmsMatrix*> (temp_ptr);
 			// Fill in ship postion...
 			*ship_pos = OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 			// Fill in ship orientation...
@@ -1865,7 +1865,7 @@ void KCReadExternalControls ()
 		}
     if (kc_externalVersion>=4)
 	  {
-	   advanced_ext_control_info *temp_ptr= (advanced_ext_control_info *)kc_external_control;
+	   advanced_ext_control_info *temp_ptr = reinterpret_cast<advanced_ext_control_info*> (kc_external_control);
  
       temp_ptr->headlightState = PlayerHasHeadlight (-1);
 		temp_ptr->primaryWeaponFlags = LOCALPLAYER.primaryWeaponFlags;
@@ -1882,8 +1882,8 @@ void KCReadExternalControls ()
 		temp_ptr->x_vibrate_clear=ExtXVibrateClear;
  	   temp_ptr->gameStatus=gameStates.app.nExtGameStatus;
    
-      memset ((void *)&ExtForceVec,0,sizeof (vmsVector));
-      memset ((void *)&ExtApplyForceMatrix,0,sizeof (vmsMatrix));
+      memset (&ExtForceVec, 0, sizeof (vmsVector));
+      memset (&ExtApplyForceMatrix, 0, sizeof (vmsMatrix));
       
       for (i=0;i<3;i++)
 		 ExtJoltInfo [i]=0;
@@ -1913,14 +1913,14 @@ void KCReadExternalControls ()
 			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;
 
-			Kconfig_abs_movement = (vmsAngVec *) (size_t) ((size_t) kc_external_control + sizeof (ext_control_info));
+			Kconfig_abs_movement = reinterpret_cast<vmsAngVec*> ((size_t) kc_external_control + sizeof (ext_control_info));
 
 			if (!Kconfig_abs_movement->IsZero())	{
 				tempm = vmsMatrix::Create(*Kconfig_abs_movement);
 				ViewMatrix = OBJECTS [LOCALPLAYER.nObject].info.position.mOrient * tempm;
 				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
 			}
-			oem_message = (char *) (size_t) ((size_t)Kconfig_abs_movement + sizeof (vmsAngVec));
+			oem_message = reinterpret_cast<char*> ((size_t) Kconfig_abs_movement + sizeof (vmsAngVec));
 			if (oem_message [0] != '\0')
 				HUDInitMessage (oem_message);
 		}
@@ -1945,7 +1945,7 @@ void KCReadExternalControls ()
 
    if (kc_externalVersion>=3)
 	 {
-		ubyte *temp_ptr = (ubyte *)kc_external_control;
+		ubyte *temp_ptr = reinterpret_cast<ubyte*> (kc_external_control);
 		temp_ptr += (sizeof (ext_control_info) + sizeof (vmsAngVec) + 64 + sizeof (vmsVector) + sizeof (vmsMatrix));
   
 	   if (* (temp_ptr))
@@ -1960,7 +1960,7 @@ void KCReadExternalControls ()
   	 }
    if (kc_externalVersion>=4)
 	 {
-	  advanced_ext_control_info *temp_ptr= (advanced_ext_control_info *)kc_external_control;
+	  advanced_ext_control_info *temp_ptr = reinterpret_cast<advanced_ext_control_info*> (kc_external_control);
      
      if (temp_ptr->Reactor_blown)
       {

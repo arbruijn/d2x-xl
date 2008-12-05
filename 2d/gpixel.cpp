@@ -24,7 +24,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vesa.h"
 #endif
 
-unsigned char gr_ugpixel( CBitmap * bitmap, int x, int y )
+ubyte gr_ugpixel( CBitmap * bitmap, int x, int y )
 {
 #ifdef __DJGPP__
 	switch(bitmap->props.nMode)
@@ -40,8 +40,8 @@ unsigned char gr_ugpixel( CBitmap * bitmap, int x, int y )
 		return gr_video_memory[(bitmap->RowSize () * y) + (x/4)];
 	case BM_SVGA:
 		{
-		unsigned int offset;
-		offset = (unsigned int)bitmap->Buffer () + (unsigned int)bitmap->RowSize () * y + x;
+		uint offset;
+		offset = (uint)bitmap->Buffer () + (uint)bitmap->RowSize () * y + x;
 		gr_vesa_setpage( offset >> 16 );
 		return gr_video_memory[offset & 0xFFFF];
 		}
@@ -50,7 +50,7 @@ unsigned char gr_ugpixel( CBitmap * bitmap, int x, int y )
 #endif
 }
 
-unsigned char gr_gpixel( CBitmap * bitmap, int x, int y )
+ubyte gr_gpixel( CBitmap * bitmap, int x, int y )
 {
 	if ((x<0) || (y<0) || (x>=bitmap->Width ()) || (y>=bitmap->Height ())) return 0;
 #ifdef __DJGPP__
@@ -67,8 +67,8 @@ unsigned char gr_gpixel( CBitmap * bitmap, int x, int y )
 		return gr_video_memory[(bitmap->RowSize () * y) + (x/4)];
 	case BM_SVGA:
 		{
-		unsigned int offset;
-		offset = (unsigned int)bitmap->Buffer () + (unsigned int)bitmap->RowSize () * y + x;
+		uint offset;
+		offset = (uint)bitmap->Buffer () + (uint)bitmap->RowSize () * y + x;
 		gr_vesa_setpage( offset >> 16 );
 		return gr_video_memory[offset & 0xFFFF];
 		}

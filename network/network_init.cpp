@@ -103,8 +103,8 @@ networkData.thisPlayer.player.rank=GetMyNetRanking ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (networkData.thisPlayer.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
 	if (gameStates.multi.nGameType == UDP_GAME)
-		* ((ushort *) (networkData.thisPlayer.player.network.ipx.node + 4)) = 
-			htons (* ((ushort *) (networkData.thisPlayer.player.network.ipx.node + 4)));
+		*reinterpret_cast<ushort*> (networkData.thisPlayer.player.network.ipx.node + 4) = 
+			htons (*reinterpret_cast<ushort*> (networkData.thisPlayer.player.network.ipx.node + 4)));
 //		if (gameStates.multi.nGameType == UDP_GAME)
 //			memcpy (networkData.thisPlayer.player.network.ipx.node, ipx_LocalAddress + 4, 4);
 	memcpy (networkData.thisPlayer.player.network.ipx.server, IpxGetMyServerAddress (), 4);

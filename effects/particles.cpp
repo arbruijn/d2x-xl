@@ -830,14 +830,14 @@ else {
 	texCoord [2].v.u = u + d;
 	texCoord [2].v.v =
 	texCoord [3].v.v = v + d;
-	glColor4fv ((GLfloat *) &pc);
-	glTexCoord2fv ((GLfloat *) (texCoord + i));
+	glColor4fv (reinterpret_cast<GLfloat*> (&pc));
+	glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoord + i));
 	glVertex3f (vCenter[X] - vOffset[X], vCenter[Y] + vOffset[Y], vCenter[Z]);
-	glTexCoord2fv ((GLfloat *) (texCoord + (i + 1) % 4));
+	glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoord + (i + 1) % 4));
 	glVertex3f (vCenter[X] + vOffset[X], vCenter[Y] + vOffset[Y], vCenter[Z]);
-	glTexCoord2fv ((GLfloat *) (texCoord + (i + 2) % 4));
+	glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoord + (i + 2) % 4));
 	glVertex3f (vCenter[X] + vOffset[X], vCenter[Y] - vOffset[Y], vCenter[Z]);
-	glTexCoord2fv ((GLfloat *) (texCoord + (i + 3) % 4));
+	glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoord + (i + 3) % 4));
 	glVertex3f (vCenter[X] - vOffset[X], vCenter[Y] - vOffset[Y], vCenter[Z]);
 	}
 if (gameData.particles.bAnimate) {
@@ -922,9 +922,9 @@ if (iBuffer) {
 		glNormal3f (0, 0, 0);
 		glBegin (GL_QUADS);
 		for (pb = particleBuffer; iBuffer; iBuffer--, pb++) {
-			glTexCoord2fv ((GLfloat *) &pb->texCoord);
-			glColor4fv ((GLfloat *) &pb->color);
-			glVertex3fv ((GLfloat *) &pb->vertex);
+			glTexCoord2fv (reinterpret_cast<GLfloat*> (&pb->texCoord));
+			glColor4fv (reinterpret_cast<GLfloat*> (&pb->color));
+			glVertex3fv (reinterpret_cast<GLfloat*> (&pb->vertex));
 			}
 		glEnd ();
 		}
@@ -1081,7 +1081,7 @@ int CParticleEmitter::Create (vmsVector *vPos, vmsVector *vDir, vmsMatrix *mOrie
 										int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
 										tRgbaColorf *colorP, int nCurTime, int bBlowUpParts, vmsVector *vEmittingFace)
 {
-if (!(m_particles = (CParticle *) D2_ALLOC (sizeof (CParticle) * nMaxParts)))
+if (!(m_particles = new CParticle [nMaxParts]))
 	return 0;
 m_nLife = nLife;
 m_nBirth = nCurTime;
@@ -1128,7 +1128,8 @@ return 1;
 int CParticleEmitter::Destroy (void)
 {
 if (m_particles) {
-	D2_FREE (m_particles);
+	delete[] m_particles;
+	m_particles = NULL;
 	}
 m_nParts =
 m_nMaxParts = 0;
@@ -1336,7 +1337,7 @@ int CParticleEmitter::SetDensity (int nMaxParts, int nDensity)
 if (m_nMaxParts == nMaxParts)
 	return 1;
 if (nMaxParts > m_nPartLimit) {
-	if (!(pp = (CParticle *) D2_ALLOC (sizeof (CParticle) * nMaxParts)))
+	if (!(pp = new CParticle [nMaxParts]))
 		return 0;
 	if (m_particles) {
 		if (m_nParts > nMaxParts)
@@ -1349,7 +1350,7 @@ if (nMaxParts > m_nPartLimit) {
 			memcpy (pp + h, m_particles, (m_nParts - h) * sizeof (CParticle));
 		m_nFirstPart = 0;
 		m_nPartLimit = nMaxParts;
-		D2_FREE (m_particles);
+		delete[] m_particles;
 		}
 	m_particles = pp;
 	}
@@ -1386,7 +1387,7 @@ nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 if (gameStates.render.bPointSprites)
 	nMaxParts *= 2;
 srand (SDL_GetTicks ());
-if (!(m_emitters = (CParticleEmitter *) D2_ALLOC (sizeof (CParticleEmitter) * nMaxEmitters))) {
+if (!(m_emitters = new CParticleEmitter [nMaxEmitters])) {
 	//PrintLog ("cannot create m_systems\n");
 	return 0;
 	}
@@ -1432,7 +1433,8 @@ void CParticleSystem::Destroy (void)
 if (m_emitters) {
 	for (int i = m_nEmitters; i; )
 		m_emitters [--i].Destroy ();
-	D2_FREE (m_emitters);
+	delete[] m_emitters;
+	m_emitters = NULL;
 	if ((m_nObject >= 0) && (m_nObject < 0x70000000))
 		particleManager.SetObjectSystem (m_nObject, -1);
 	m_nObject = -1;
@@ -1832,7 +1834,7 @@ void CParticleImageManager::AdjustBrightness (CBitmap *bmP)
 
 if (j < 2)
 	return;
-if (!(fFrameBright = (float *) D2_ALLOC (j * sizeof (float))))
+if (!(fFrameBright = new float [j]))
 	return;
 for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
 	fAvgBright += (fFrameBright [i] = (float) TGABrightness (bmfP));
@@ -1843,16 +1845,16 @@ fAvgBright /= j;
 for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
 	TGAChangeBrightness (bmfP, 0, 1, 2 * (int) (255 * fFrameBright [i] * (fAvgBright - fFrameBright [i])), 0);
 	}
-D2_FREE (fFrameBright);
+delete[] fFrameBright;
 }
 
 //	-----------------------------------------------------------------------------
 
 int CParticleImageManager::Load (int nType)
 {
-	int			h,
-					bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort,
-					*flagP;
+	int		h,
+				bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort,
+				*flagP;
 	CBitmap	*bmP = NULL;
 
 nType = particleImageManager.GetType (nType);
@@ -1878,13 +1880,6 @@ if (TGAMakeSquare (bmP)) {
 }
 #endif
 bmP->SetFrameCount ();
-#if 0
-if (OglSetupBmFrames (BmOverride (bmP), 0, 0, 0)) {
-	AdjustParticleBrightness (bmP);
-	D2_FREE (bmP->Frames ());	// make sure frames get loaded to OpenGL in SetupTexture ()
-	bmP->CurFrame () = NULL;
-	}
-#endif
 bmP->SetupTexture (0, 3, 1);
 if (nType == SMOKE_PARTICLES)
 	h = 8;
@@ -1919,7 +1914,7 @@ void CParticleImageManager::FreeAll (void)
 for (i = 0; i < 2; i++)
 	for (j = 0; j < PARTICLE_TYPES; j++)
 		if (bmpParticle [i][j]) {
-			D2_FREE (bmpParticle [i][j]);
+			delete bmpParticle [i][j];
 			bHavePartImg [i][j] = 0;
 			}
 }

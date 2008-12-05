@@ -98,8 +98,8 @@ CQuadMeshBuilder meshBuilder;
 
 void CTriMeshBuilder::FreeData (void)
 {
-D2_FREE (m_triangles);
-D2_FREE (m_edges);
+m_triangles.Destroy ();
+m_edges.Destroy ();
 }
 
 //------------------------------------------------------------------------------
@@ -107,22 +107,21 @@ D2_FREE (m_edges);
 int CTriMeshBuilder::AllocData (void)
 {
 if (m_nMaxTriangles && m_nMaxEdges) {
-	if (!((m_edges = (tEdge *) D2_REALLOC (m_edges, 2 * m_nMaxTriangles * sizeof (tEdge))) &&
-			(m_triangles = (tTriangle *) D2_REALLOC (m_triangles, 2 * m_nMaxTriangles * sizeof (tTriangle))))) {
+	if (!(m_edges.Resize (m_nMaxEdges * 2) && m_triangles.Resize (m_nMaxTriangles * 2)))
 		FreeData ();
 		return 0;
 		}
-	memset (m_edges + m_nMaxTriangles, 0xff, m_nMaxTriangles * sizeof (tEdge));
-	memset (m_triangles + m_nMaxEdges, 0xff, m_nMaxTriangles * sizeof (tTriangle));
+	memset (&m_edges [m_nMaxTriangles], 0xff, m_nMaxTriangles * sizeof (tEdge));
+	memset (&m_triangles [m_nMaxEdges], 0xff, m_nMaxTriangles * sizeof (tTriangle));
 	m_nMaxTriangles *= 2;
 	m_nMaxEdges *= 2;
 	}
 else {
 	m_nMaxTriangles = gameData.segs.nFaces * 4;
 	m_nMaxEdges = gameData.segs.nFaces * 4;
-	if (!(m_edges = (tEdge *) D2_ALLOC (m_nMaxEdges * sizeof (tEdge))))
+	if (!m_edges.Create (m_nMaxEdges))
 		return 0;
-	if (!(m_triangles = (tTriangle *) D2_ALLOC (m_nMaxTriangles * sizeof (tTriangle)))) {
+	if (!m_triangles.Create (m_nMaxTriangles)) {
 		FreeData ();
 		return 0;
 		}
@@ -748,7 +747,7 @@ if (bOk)
 		 sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces * 2 +
 		 sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts;
 if (bOk)
-	bOk = ((ioBuffer = (char *) D2_ALLOC (nSize)) != NULL);
+	bOk = ((ioBuffer = new char [nSize]) != NULL);
 if (bOk)
 	bOk = cf.Read (ioBuffer, nSize, 1) == 1;
 if (bOk) {
@@ -775,8 +774,10 @@ if (bOk) {
 	bufP += sizeof (*gameData.segs.faces.lMapTexCoord) * mdh.nFaces * 2;
 	memcpy (gameData.segs.faces.faceVerts, bufP, sizeof (*gameData.segs.faces.faceVerts) * mdh.nFaceVerts);
 	}
-if (ioBuffer)
-	D2_FREE (ioBuffer);
+if (ioBuffer) {
+	delete[] ioBuffer;
+	ioBuffer = NULL;
+	}
 if (bOk) {
 	gameData.segs.nVertices = mdh.nVertices;
 	gameData.segs.nTris = mdh.nTris;
@@ -1165,14 +1166,14 @@ if ((i = glGetError ())) {
 	return false;
 	}
 gameData.segs.faces.nVertices = gameStates.render.bTriangleMesh ? gameData.segs.nTris * 3 : gameData.segs.nFaces * 4;
-glBufferDataARB (GL_ARRAY_BUFFER, gameData.segs.faces.nVertices * sizeof (tFaceRenderVertex), NULL, GL_STATIC_DRAW_ARB);
-gameData.segs.faces.vertexP = (ubyte *) glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
+glBufferDataARB (GL_ARRAY_BUFFER, gameData.segs.faces.nVertices * sizeof (tFaceRenderVertex), NULL, GL_STATIC_DRAW_ARB));
+gameData.segs.faces.vertexP = reinterpret_cast<ubyte*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB));
 gameData.segs.faces.vboIndexHandle = 0;
 glGenBuffersARB (1, &gameData.segs.faces.vboIndexHandle);
 if (gameData.segs.faces.vboIndexHandle) {
 	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, gameData.segs.faces.vboIndexHandle);
 	glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, gameData.segs.faces.nVertices * sizeof (ushort), NULL, GL_STATIC_DRAW_ARB);
-	gameData.segs.faces.indexP = (ushort *) glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
+	gameData.segs.faces.indexP = reinterpret_cast<ushort*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
 	}
 else
 	gameData.segs.faces.indexP = NULL;

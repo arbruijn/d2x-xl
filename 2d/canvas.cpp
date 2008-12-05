@@ -25,7 +25,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "canvas.h"
 
 CCanvas*	CCanvas::m_current = NULL;
-CStack<CCanvas*> CCanvas::m_save;
+CStack<CCanvas*> (CCanvas::m_save;
 CScreen* CScreen::m_current = NULL;
 
 CScreen screen;
@@ -36,7 +36,7 @@ CCanvas *CCanvas::Create (int w, int h)
 {
 	CCanvas *canvP;
 
-if ((canvP = new CCanvas)) //(CCanvas *)D2_ALLOC( sizeof(CCanvas) );
+if ((canvP = new CCanvas)) 
 	canvP->Setup (w, h);
 return canvP;
 }
@@ -63,7 +63,7 @@ CCanvas *CCanvas::CreatePane (int x, int y, int w, int h)
 {
 	CCanvas *paneP;
 
-if (!(paneP = new CCanvas))	//(CCanvas *) D2_ALLOC (sizeof (CCanvas))))
+if (!(paneP = new CCanvas))	
 	return NULL;
 SetupPane (paneP, x, y, w, h);
 return paneP;
@@ -106,7 +106,7 @@ fontManager.SetCurrent (m_current->Font ());
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::Clear (unsigned int color)
+void CCanvas::Clear (uint color)
 {
 if (MODE == BM_OGL)
 	SetColorRGBi (color);

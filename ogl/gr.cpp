@@ -125,7 +125,7 @@ return OglVideoModeOK (SM_W (mode), SM_H (mode)); // platform specific code
 
 int GrSetMode (u_int32_t mode)
 {
-	unsigned int w, h;
+	uint w, h;
 	//int bForce = (nCurrentVGAMode < 0);
 
 if (mode <= 0)
@@ -144,7 +144,7 @@ screen.Bitmap ().Init (BM_OGL, 0, 0, w, h, 1, NULL);
 screen.Bitmap ().CreateBuffer ();
 screen.Bitmap ().SetPalette (paletteManager.Default ()); //just need some valid palette here
 //screen.Bitmap ().props.rowSize = screen->pitch;
-//screen.Bitmap ().Buffer () = (unsigned char *)screen->pixels;
+//screen.Bitmap ().Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
 CCanvas::SetCurrent (NULL);
 /***/PrintLog ("   initializing OpenGL window\n");
 if (!OglInitWindow (w, h, 0))	//platform specific code
@@ -581,7 +581,7 @@ int GrToggleFullScreenGame (void)
 int i = GrToggleFullScreen ();
 FlushInput ();
 if (gameStates.app.bGameRunning) {
-	HUDMessage (MSGC_GAME_FEEDBACK, i ? (char *) "toggling fullscreen mode on" : (char *) "toggling fullscreen mode off");
+	HUDMessage (MSGC_GAME_FEEDBACK, i ? reinterpret_cast<char*> ("toggling fullscreen mode on") : reinterpret_cast<char*> ("toggling fullscreen mode off"));
 	StopPlayerMovement ();
 	}
 return i;

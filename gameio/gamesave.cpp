@@ -1718,7 +1718,7 @@ void GetLevelName()
 //NO_UI!!!	ui_wprintf_at(NameWindow, 10, 12,"Please enter a name for this mine:");
 //NO_UI!!!	NameText = ui_add_gadget_inputbox(NameWindow, 10, 30, LEVEL_NAME_LEN, LEVEL_NAME_LEN, gameData.missions.szCurrentLevel);
 //NO_UI!!!
-//NO_UI!!!	NameWindow->keyboard_focus_gadget = (UI_GADGET *)NameText;
+//NO_UI!!!	NameWindow->keyboard_focus_gadget = reinterpret_cast<UI_GADGET*> (NameText);
 //NO_UI!!!	QuitButton->hotkey = KEY_ENTER;
 //NO_UI!!!
 //NO_UI!!!	ui_gadget_calc_keys(NameWindow);

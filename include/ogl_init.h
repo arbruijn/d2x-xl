@@ -306,8 +306,8 @@ void OglClose (void);//one time shutdown
 //generic funcs
 //#define OGLTEXBUFSIZE (1024*1024*4)
 
-//void ogl_filltexbuf(unsigned char *data,GLubyte *texp,int width,int height,int twidth,int theight);
-void ogl_filltexbuf(unsigned char *data,GLubyte *texp,int truewidth,int width,int height,int dxo,int dyo,int twidth,int theight,int nType,int nTransp,int bSuperTransp);
+//void ogl_filltexbuf(ubyte *data,GLubyte *texp,int width,int height,int twidth,int theight);
+void ogl_filltexbuf(ubyte *data,GLubyte *texp,int truewidth,int width,int height,int dxo,int dyo,int twidth,int theight,int nType,int nTransp,int bSuperTransp);
 #if RENDER2TEXTURE == 1
 int OglLoadBmTextureM (CBitmap *bm, int bMipMap, int nTransp, int bMask, tPixelBuffer *pb);
 #elif RENDER2TEXTURE == 2
@@ -316,7 +316,7 @@ int OglLoadBmTextureM (CBitmap *bm, int bMipMap, int nTransp, int bMask, tFrameB
 int OglLoadBmTextureM (CBitmap *bm, int bMipMap, int nTransp, int bMask, void *pb);
 #endif
 int OglLoadBmTexture (CBitmap *bm, int bMipMap, int nTransp, int bLoad);
-//void ogl_loadtexture(unsigned char * data, int width, int height,int dxo,int dyo, int *texid,double *u,double *v,char bMipMap,double prio);
+//void ogl_loadtexture(ubyte * data, int width, int height,int dxo,int dyo, int *texid,double *u,double *v,char bMipMap,double prio);
 int OglLoadTexture (CBitmap *bmP, int dxo,int dyo, CTexture *tex, int nTransp, int bSuperTransp);
 void OglFreeTexture (CTexture *glTexture);
 void OglFreeBmTexture (CBitmap *bm);

@@ -1170,11 +1170,11 @@ sprintf (szTitle,
 Assert (c <= N_GLITZITEMS);
 paletteManager.FadeOut ();
 if (network && (gameData.app.nGameMode & GM_NETWORK))
-	ExecMenu2 (NULL, szTitle, c, m, NetworkEndLevelPoll2, 0, (char *) STARS_BACKGROUND);
+	ExecMenu2 (NULL, szTitle, c, m, NetworkEndLevelPoll2, 0, reinterpret_cast<char*> (STARS_BACKGROUND)));
 else
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
-ExecMenu2 (NULL, szTitle, c, m, NULL, 0, (char *) STARS_BACKGROUND);
+ExecMenu2 (NULL, szTitle, c, m, NULL, 0, reinterpret_cast<char*> (STARS_BACKGROUND)));
 }
 
 //	-----------------------------------------------------------------------------------------------------
@@ -1233,7 +1233,7 @@ void DoSecretMessage (const char *msg)
 
 StopTime ();
 SetFunctionMode (FMODE_MENU);
-ExecMessageBox (NULL, (char *) STARS_BACKGROUND, 1, TXT_OK, msg);
+ExecMessageBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
 SetFunctionMode (fMode);
 StartTime (0);
 }
@@ -1269,7 +1269,7 @@ int StartNewLevelSecret (int nLevel, int bPageInTextures)
 gameStates.app.xThisLevelTime=0;
 
 m [0].nType = NM_TYPE_TEXT;
-m [0].text = (char *) " ";
+m [0].text = reinterpret_cast<char*> (" ");
 
 gameStates.render.cockpit.nLastDrawn [0] = -1;
 gameStates.render.cockpit.nLastDrawn [1] = -1;
@@ -1509,11 +1509,12 @@ if (!IsMultiGame) {
 		if (!bPlayed) {
 			if (IS_D2_OEM) {
 				SongsPlaySong (SONG_TITLE, 0);
-				DoBriefingScreens ((char *) "end2oem.tex",1);
+				DoBriefingScreens (reinterpret_cast<char*> ("end2oem.tex"), 1);
 				}
 			else {
 				SongsPlaySong (SONG_ENDGAME, 0);
-				DoBriefingScreens (gameStates.app.bD1Mission ? (char *) "endreg.tex" : (char *) "ending2.tex", gameStates.app.bD1Mission ? 0x7e : 1);
+				DoBriefingScreens (gameStates.app.bD1Mission ? reinterpret_cast<char*> ("endreg.tex") : reinterpret_cast<char*> ("ending2.tex"), 
+										 gameStates.app.bD1Mission ? 0x7e : 1);
 				}
 			}
 		}
@@ -1607,7 +1608,7 @@ gameStates.app.bBetweenLevels = 0;
 
 void LoadStars (bkg *bg, int bRedraw)
 {
-NMLoadBackground ((char *) STARS_BACKGROUND, bg, bRedraw);
+NMLoadBackground (reinterpret_cast<char*> (STARS_BACKGROUND), bg, bRedraw);
 }
 
 //------------------------------------------------------------------------------
@@ -1624,7 +1625,7 @@ SetScreenMode (SCREEN_MENU);		//go into menu mode
 CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
-ExecMessageBox (NULL, (char *) STARS_BACKGROUND, 1, TXT_OK, TXT_DIED_IN_MINE);
+ExecMessageBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, TXT_DIED_IN_MINE);
 SetFunctionMode (old_fmode);
 }
 
@@ -1648,7 +1649,7 @@ if (gameData.missions.nEnteredFromLevel < 0)
 	sprintf (msg, TXT_SECRET_LEVEL_RETURN);
 else
 	sprintf (msg, TXT_RETURN_LVL, gameData.missions.nEnteredFromLevel);
-ExecMessageBox (NULL, (char *) STARS_BACKGROUND, 1, TXT_OK, msg);
+ExecMessageBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 StartTime (0);
 }
@@ -1671,7 +1672,7 @@ CCanvas::SetCurrent (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel + 1);
-ExecMessageBox (NULL, (char *) STARS_BACKGROUND, 1, TXT_OK, msg);
+ExecMessageBox (NULL, reinterpret_cast<char*> (STARS_BACKGROUND), 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 }
 
@@ -1944,17 +1945,17 @@ void ShowLevelIntro (int nLevel)
 {
 //if shareware, show a briefing?
 if (!IsMultiGame) {
-	unsigned int i, bPlayed = 0;
+	uint i, bPlayed = 0;
 
 	PlayLevelIntroMovie (nLevel);
 	if (!gameStates.app.bD1Mission && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)) {
 		if (IS_SHAREWARE) {
 			if (nLevel == 1)
-				DoBriefingScreens ((char *) "brief2.tex", 1);
+				DoBriefingScreens (reinterpret_cast<char*> ("brief2.tex"), 1);
 			}
 		else if (IS_D2_OEM) {
 			if ((nLevel == 1) && !gameStates.movies.bIntroPlayed)
-				DoBriefingScreens ((char *) "brief2o.tex", 1);
+				DoBriefingScreens (reinterpret_cast<char*> ("brief2o.tex"), 1);
 			}
 		else { // full version
 			if (gameStates.app.bHaveExtraMovies && (nLevel == 1)) {
@@ -1975,7 +1976,7 @@ if (!IsMultiGame) {
 					if (hires_save != gameStates.menus.bHiresAvailable)
 						gameStates.video.nScreenMode = -1;		//force reset
 					}
-				DoBriefingScreens ((char *) "robot.tex", nLevel);
+				DoBriefingScreens (reinterpret_cast<char*> ("robot.tex"), nLevel);
 				gameStates.menus.bHiresAvailable = hires_save;
 				}
 			}

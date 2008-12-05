@@ -46,13 +46,13 @@ static ubyte *nmBufP = NULL;
 // or the macros won't work as intended, as the buffer pointer nmBufI will only be incremented
 // after the loop has been fully executed!
 
-#define	BE_SET_INT(_src)						*((int *) (nmBufP + nmBufI)) = INTEL_INT ((int) (_src)); nmBufI += 4
-#define	BE_SET_SHORT(_src)					*((short *) (nmBufP + nmBufI)) = INTEL_SHORT ((short) (_src)); nmBufI += 2
+#define	BE_SET_INT(_src)						*(reinterpret_cast<int*> (nmBufP + nmBufI)) = INTEL_INT ((int) (_src)); nmBufI += 4
+#define	BE_SET_SHORT(_src)					*(reinterpret_cast<short*> (nmBufP + nmBufI)) = INTEL_SHORT ((short) (_src)); nmBufI += 2
 #define	BE_SET_BYTE(_src)						nmBufP [nmBufI++] = (ubyte) (_src)
 #define	BE_SET_BYTES(_src,_srcSize)		memcpy (nmBufP + nmBufI, _src, _srcSize); nmBufI += (_srcSize)
 
-#define	BE_GET_INT(_dest)						(_dest) = INTEL_INT (*((int *) (nmBufP + nmBufI))); nmBufI += 4
-#define	BE_GET_SHORT(_dest)					(_dest) = INTEL_SHORT (*((short *) (nmBufP + nmBufI))); nmBufI += 2
+#define	BE_GET_INT(_dest)						(_dest) = INTEL_INT (*(reinterpret_cast<int*> (nmBufP + nmBufI))); nmBufI += 4
+#define	BE_GET_SHORT(_dest)					(_dest) = INTEL_SHORT (*(reinterpret_cast<short*> (nmBufP + nmBufI))); nmBufI += 2
 #define	BE_GET_BYTE(_dest)					(_dest) = nmBufP [nmBufI++]
 #define	BE_GET_BYTES(_dest,_destSize)		memcpy (_dest, nmBufP + nmBufI, _destSize); nmBufI += (_destSize)
 
@@ -60,7 +60,7 @@ static ubyte *nmBufP = NULL;
 // routine to calculate the checksum of the segments.  We add these specialized routines
 // since the current way is byte order dependent.
 
-void BEDoCheckSumCalc (ubyte *b, int len, unsigned int *ps1, unsigned int *ps2)
+void BEDoCheckSumCalc (ubyte *b, int len, uint *ps1, uint *ps2)
 {
 	int	s1 = *ps1;
 	int	s2 = *ps2;
@@ -80,7 +80,7 @@ while(len--) {
 ushort BECalcSegmentCheckSum (void)
 {
 	int				i, j, k, t;
-	unsigned int	sum1,sum2;
+	uint	sum1,sum2;
 	short				s;
 	tSegment			*segP;
 	tSide				*sideP;
@@ -90,41 +90,41 @@ ushort BECalcSegmentCheckSum (void)
 sum1 = sum2 = 0;
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
-		BEDoCheckSumCalc ((ubyte *) &(sideP->nType), 1, &sum1, &sum2);
-		BEDoCheckSumCalc ((ubyte *) &(sideP->nFrame), 1, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&sideP->nType), 1, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&sideP->nFrame), 1, &sum1, &sum2);
 		s = INTEL_SHORT (WallNumI (i, j));
-		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 		s = INTEL_SHORT (sideP->nBaseTex);
-		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 		s = INTEL_SHORT (sideP->nOvlOrient + (((short) sideP->nOvlTex) << 2));
-		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 		for (k = 0, uvlP = sideP->uvls; k < 4; k++, uvlP++) {
 			t = INTEL_INT (((int) uvlP->u));
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT (((int) uvlP->v));
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT (((int) uvlP->l));
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			}
 		for (k = 0, normP = sideP->normals; k < 2; k++, normP++) {
 			t = INTEL_INT ((int) (*normP) [X]);
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT ((int) (*normP) [Y]);
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			t = INTEL_INT ((int) (*normP) [Z]);
-			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 			}
 		}
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
 		s = INTEL_SHORT (segP->children [j]);
-		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 	}
 	for (j = 0; j < MAX_VERTICES_PER_SEGMENT; j++) {
 		s = INTEL_SHORT (segP->verts [j]);
-		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&s), 2, &sum1, &sum2);
 	}
 	t = INTEL_INT (segP->objects);
-	BEDoCheckSumCalc((ubyte *) &t, 4, &sum1, &sum2);
+	BEDoCheckSumCalc(reinterpret_cast<ubyte*> (&t), 4, &sum1, &sum2);
 }
 sum2 %= 255;
 return ((sum1<<8)+ sum2);
@@ -148,7 +148,7 @@ BE_GET_BYTE (info->versionMinor);
 BE_GET_BYTE (info->computerType);            
 BE_GET_BYTE (info->connected);
 //BE_GET_SHORT (info->socket);
-info->socket = *((short *) (data + nmBufI));	//don't swap!
+info->socket = *(reinterpret_cast<short*> (data + nmBufI));	//don't swap!
 nmBufI += 2;
 BE_GET_BYTE (info->rank);     
 }
@@ -270,9 +270,9 @@ BE_SET_BYTE (netGame.versionMinor);
 BE_SET_BYTE (netGame.teamVector);          
 if (bLiteData)
 	goto do_send;
-h = *((ushort *) (&netGame.teamVector + 1));
+h = *(reinterpret_cast<ushort*> (&netGame.teamVector + 1));
 BE_SET_SHORT (h);    // get the values for the first short bitfield
-h = *((ushort *) (&netGame.teamVector + 3));
+h = *(reinterpret_cast<ushort*> (&netGame.teamVector + 3));
 BE_SET_SHORT (h);    // get the values for the first short bitfield
 BE_SET_BYTES (netGame.szTeamName, 2 * (CALLSIGN_LEN + 1)); 
 for (i = 0; i < MAX_PLAYERS; i++) {
@@ -344,8 +344,8 @@ BE_GET_BYTE (netgame->versionMinor);
 BE_GET_BYTE (netgame->teamVector);               
 if (bLiteData)
 	return;
-BE_GET_SHORT (*((short *) (((ubyte *) &netgame->teamVector) + 1)));                             
-BE_GET_SHORT (*((short *) (((ubyte *) &netgame->teamVector) + 3)));                             
+BE_GET_SHORT (*reinterpret_cast<short*> ((reinterpret_cast<ubyte*> (&netgame->teamVector) + 1)));                             
+BE_GET_SHORT (*reinterpret_cast<short*> ((reinterpret_cast<ubyte*> (&netgame->teamVector) + 3)));                             
 BE_GET_BYTES (netgame->szTeamName, CALLSIGN_LEN + 1);   
 for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_GET_INT (netgame->locations [i]);          
@@ -388,16 +388,16 @@ BE_GET_BYTE (netgame->bShortPackets);
 //------------------------------------------------------------------------------
 
 #define EGI_INTEL_SHORT_2BUF(_m) \
-  *((short *) (nmBufP + ((char *) &extraGameInfo [1]._m - (char *) &extraGameInfo [1]))) = INTEL_SHORT (extraGameInfo [1]._m);
+  *(reinterpret_cast<short*> (nmBufP + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))) = INTEL_SHORT (extraGameInfo [1]._m);
 
 #define EGI_INTEL_INT_2BUF(_m) \
-	*((int *) (nmBufP + ((char *) &extraGameInfo [1]._m - (char *) &extraGameInfo [1]))) = INTEL_INT (extraGameInfo [1]._m);
+	*(reinterpret_cast<int*> (nmBufP + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))) = INTEL_INT (extraGameInfo [1]._m);
 
 #define BUF2_EGI_INTEL_SHORT(_m) \
-	extraGameInfo [1]._m = INTEL_SHORT (*((short *) (nmBufP + ((char *) &extraGameInfo [1]._m - (char *) &extraGameInfo [1]))));
+	extraGameInfo [1]._m = INTEL_SHORT (*reinterpret_cast<short*> (nmBufP + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))));
 
 #define BUF2_EGI_INTEL_INT(_m) \
-	extraGameInfo [1]._m = INTEL_INT (*((int *) (nmBufP + ((char *) &extraGameInfo [1]._m - (char *) &extraGameInfo [1]))));
+	extraGameInfo [1]._m = INTEL_INT (*reinterpret_cast<int*> (nmBufP + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))));
 
 //------------------------------------------------------------------------------
 
@@ -438,7 +438,7 @@ void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress)
 	int	i;
 
 memcpy (nmDataBuf, &networkData.sync [0].objs.missingFrames, sizeof (networkData.sync [0].objs.missingFrames));
-((tMissingObjFrames *) &nmDataBuf [0])->nFrame = INTEL_SHORT (networkData.sync [0].objs.missingFrames.nFrame);
+reinterpret_cast<tMissingObjFrames*> (&nmDataBuf [0])->nFrame = INTEL_SHORT (networkData.sync [0].objs.missingFrames.nFrame);
 i = 2 * sizeof (ubyte) + sizeof (ushort);
 if (netAddress != NULL)
 	IPXSendPacketData(nmDataBuf, i, server, node, netAddress);
@@ -573,8 +573,8 @@ ushort NetMiscCalcCheckSum (void * vptr, int len)
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 return BECalcSegmentCheckSum ();
 #else
-	ubyte *ptr = (ubyte *) vptr;
-	unsigned int sum1, sum2;
+	ubyte *ptr = reinterpret_cast<ubyte*> (vptr);
+	uint sum1, sum2;
 
 sum1 = sum2 = 0;
 for (; len; len--) {

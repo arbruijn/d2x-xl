@@ -28,8 +28,8 @@
 
 //------------------------------------------------------------------------------
 
-extern unsigned char ipx_ServerAddress [10];
-extern unsigned char ipx_LocalAddress [10];
+extern ubyte ipx_ServerAddress [10];
+extern ubyte ipx_LocalAddress [10];
 
 //------------------------------------------------------------------------------
 
@@ -459,7 +459,7 @@ switch (pId) {
 			return DownloadError (1);
 		{
 			char	szDest [FILENAME_LEN];
-			char	*pszFile = (char *) data + 6;
+			char	*pszFile = reinterpret_cast<char*> (data + 6);
 
 		if (!pszFile)
 			return DownloadError (2);
@@ -524,7 +524,7 @@ return 1;
 int DownloadPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 if (*key == KEY_ESC) {
-	m [PERCENT_ITEM].text = (char *) "download aborted";
+	m [PERCENT_ITEM].text = reinterpret_cast<char*> ("download aborted");
 	m [1].redraw = 1;
 	*key = -2;
 	return nCurItem;
@@ -562,7 +562,7 @@ if (dlResult == 1) {
 	*key = 0;
 	return nCurItem;
 	}
-m [PERCENT_ITEM].text = (char *) "download failed";
+m [PERCENT_ITEM].text = reinterpret_cast<char*> ("download failed");
 m [PERCENT_ITEM].redraw = 1;
 *key = -2;
 return nCurItem;

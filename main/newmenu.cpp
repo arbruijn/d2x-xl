@@ -300,8 +300,8 @@ if (!(bRedraw && gameOpts->menus.nStyle && bgP && bmP)) {
 	else if (!pszCurBg)
 		pszCurBg = filename;
 	if (!filename)
-		filename = gameStates.app.bDemoData ? (char *) MENU_PCX_SHAREWARE : (char *) MENU_PCX_FULL;
-	if (!(filename && strcmp (filename, (char *) MENU_PCX_FULL) && strcmp (filename, (char *) MENU_PCX_SHAREWARE))) {
+		filename = gameStates.app.bDemoData ? reinterpret_cast<char*> (MENU_PCX_SHAREWARE) : reinterpret_cast<char*> (MENU_PCX_FULL);
+	if (!(filename && strcmp (filename, reinterpret_cast<char*> (MENU_PCX_FULL)) && strcmp (filename, reinterpret_cast<char*> (MENU_PCX_SHAREWARE)))) {
 		NMLoadAltBg ();
 		if (gameOpts->menus.altBg.bHave > 0) {
 			bmP = pAltBg;
@@ -377,7 +377,7 @@ else {
 			if (nmBackground.Buffer ())
 				nmBackground.DestroyBuffer ();
 			}
-		nPCXResult = PCXReadBitmap ((char *) MENU_BACKGROUND_BITMAP, &nmBackgroundSave, BM_LINEAR, 0);
+		nPCXResult = PCXReadBitmap (reinterpret_cast<char*> (MENU_BACKGROUND_BITMAP), &nmBackgroundSave, BM_LINEAR, 0);
 		Assert (nPCXResult == PCX_ERROR_NONE);
 		nmBackground = nmBackgroundSave;
 		nmBackground.SetBuffer (NULL);	
@@ -1156,7 +1156,7 @@ GrRect (x + CLOSE_X + LHX (1), y + CLOSE_Y + LHX (1), x + CLOSE_X + CLOSE_SIZE -
 
 //------------------------------------------------------------------------------
 
-int NMDrawTitle (const char *pszTitle, CFont *font, unsigned int color, int ty)
+int NMDrawTitle (const char *pszTitle, CFont *font, uint color, int ty)
 {
 if (pszTitle && *pszTitle)	{
 		int w, h, aw;
@@ -2547,7 +2547,7 @@ int ExecMenuFileSelector (const char *pszTitle, const char *filespec, char *file
 
 w_x = w_y = w_w = w_h = nTitleHeight = 0;
 box_x = box_y = box_w = box_h = 0;
-if (! (filenames = (char *) D2_ALLOC (MAX_FILES * (FILENAME_LEN + 1))))
+if (! (filenames = reinterpret_cast<char*> (D2_ALLOC (MAX_FILES * (FILENAME_LEN + 1)))))
 	return 0;
 memset (&bg, 0, sizeof (bg));
 bg.bIgnoreBg = 1;
@@ -3507,7 +3507,7 @@ void NMWrapText (char *dbuf, char *sbuf, int line_length)
 	char *wordptr;
 	char *tbuf;
 
-	tbuf = (char *)D2_ALLOC ((int) strlen (sbuf)+1);
+	tbuf = reinterpret_cast<char*> (D2_ALLOC ((int) strlen (sbuf)+1));
 	strcpy (tbuf, sbuf);
 
 	wordptr = strtok (tbuf, " ");

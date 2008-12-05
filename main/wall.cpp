@@ -308,7 +308,7 @@ if (cSide < 0)
 	connSegP = NULL;
 if (anim->flags & WCF_ALTFMT) {
 	nFrames = anim->nFrameCount;
-	bmP = SetupHiresAnim ((short *) anim->frames, nFrames, -1, 1, 0, &nFrames);
+	bmP = SetupHiresAnim (reinterpret_cast<short*> (anim->frames), nFrames, -1, 1, 0, &nFrames);
 	//if (anim->flags & WCF_TMAP1)
 	if (!bmP)
 		anim->flags &= ~WCF_ALTFMT;

@@ -180,10 +180,10 @@ int CON_Events(int event)
  * specified value.  Preconditions: the surface in question is RGBA.
  * 0 <= a <= 255, where 0 is transparent and 255 is opaque. */
 void CON_AlphaGL(SDL_Surface *s, int alpha) {
-	Uint8 val;
+	ubyte val;
 	int x, y, w, h;
-	Uint32 pixel;
-	Uint8 r, g, b, a;
+	uint pixel;
+	ubyte r, g, b, a;
 	SDL_PixelFormat *format;
 	static char errorPrinted = 0;
 
@@ -220,9 +220,9 @@ void CON_AlphaGL(SDL_Surface *s, int alpha) {
 			 * so it usually ends up taking this route too.  Win!  Unroll loop
 			 * and use pointer arithmetic for extra speed. */
 			int numpixels = h * (w << 2);
-			Uint8 *pix = (Uint8 *) (s->pixels);
-			Uint8 *last = pix + numpixels;
-			Uint8 *pixel;
+			ubyte *pix = reinterpret_cast<ubyte*> (s->pixels);
+			ubyte *last = pix + numpixels;
+			ubyte *pixel;
 			if((numpixels & 0x7) == 0)
 				for(pixel = pix + 3; pixel < last; pixel += 32)
 					*pixel = *(pixel + 4) = *(pixel + 8) = *(pixel + 12) = *(pixel + 16) = *(pixel + 20) = *(pixel + 24) = *(pixel + 28) = val;
@@ -299,7 +299,7 @@ void CON_UpdateConsole(ConsoleInformation *console) {
 	 */
 #if 0
 	if((console->OutputScreen->flags & SDL_OPENGLBLIT) && (console->OutputScreen->format->BytesPerPixel > 2)) {
-		Uint32 *pix = (Uint32 *) (CurrentFont->FontSurface->pixels);
+		uint *pix = reinterpret_cast<uint*> (CurrentFont->FontSurface->pixels);
 		SDL_SetColorKey(CurrentFont->FontSurface, SDL_SRCCOLORKEY, *pix);
 	}
 #endif
@@ -416,7 +416,7 @@ ConsoleInformation *CON_Init(CFont *font, CScreen *DisplayScreen, int lines, int
 
 
 	/* Create a new console struct and init it. */
-	if((newinfo = (ConsoleInformation *) D2_ALLOC(sizeof(ConsoleInformation))) == NULL) {
+	if((newinfo = reinterpret_cast<ConsoleInformation*> (D2_ALLOC(sizeof(ConsoleInformation))) == NULL) {
 		//PRINT_ERROR("Could not allocate the space for a new console info struct.\n");
 		return NULL;
 	}
@@ -436,7 +436,7 @@ ConsoleInformation *CON_Init(CFont *font, CScreen *DisplayScreen, int lines, int
 	newinfo->CursorPos = 0;
 	newinfo->CommandScrollBack = 0;
 	newinfo->OutputScreen = DisplayScreen;
-	newinfo->Prompt = (char *) CON_DEFAULT_PROMPT;
+	newinfo->Prompt = reinterpret_cast<char*> (CON_DEFAULT_PROMPT);
 	newinfo->HideKey = CON_DEFAULT_HIDEKEY;
 
 	CON_SetExecuteFunction(newinfo, Default_CmdFunction);
@@ -487,11 +487,11 @@ ConsoleInformation *CON_Init(CFont *font, CScreen *DisplayScreen, int lines, int
 		newinfo->LineBuffer = lines;
 
 
-	newinfo->ConsoleLines = (char **)D2_ALLOC(sizeof(char *) * newinfo->LineBuffer);
-	newinfo->CommandLines = (char **)D2_ALLOC(sizeof(char *) * newinfo->LineBuffer);
+	newinfo->ConsoleLines = reinterpret_cast<char **> (D2_ALLOC (sizeof (char *) * newinfo->LineBuffer));
+	newinfo->CommandLines = reinterpret_cast<char **> (D2_ALLOC (sizeof (char *) * newinfo->LineBuffer));
 	for(loop = 0; loop < newinfo->LineBuffer; loop++) {
-		newinfo->ConsoleLines[loop] = (char *)D2_CALLOC(CON_CHARS_PER_LINE, sizeof(char));
-		newinfo->CommandLines[loop] = (char *)D2_CALLOC(CON_CHARS_PER_LINE, sizeof(char));
+		newinfo->ConsoleLines[loop] = reinterpret_cast<char*> (D2_CALLOC (CON_CHARS_PER_LINE, sizeof (char)));
+		newinfo->CommandLines[loop] = reinterpret_cast<char*> (D2_CALLOC (CON_CHARS_PER_LINE, sizeof (char)));
 	}
 	memset(newinfo->Command, 0, CON_CHARS_PER_LINE);
 	memset(newinfo->LCommand, 0, CON_CHARS_PER_LINE);
@@ -668,7 +668,7 @@ void DrawCommandLine() {
 	//once again we're drawing text, so in OpenGL context we need to temporarily set up
 	//software-mode transparency.
 	if(Topmost->OutputScreen->flags & SDL_OPENGLBLIT) {
-		Uint32 *pix = (Uint32 *) (CurrentFont->FontSurface->pixels);
+		uint *pix = reinterpret_cast<uint*> (CurrentFont->FontSurface->pixels);
 		SDL_SetColorKey(CurrentFont->FontSurface, SDL_SRCCOLORKEY, *pix);
 	}
 #endif
@@ -777,7 +777,7 @@ void _CDECL_ CON_Out(ConsoleInformation *console, const char *str, ...) {
 //------------------------------------------------------------------------------
 #if 0
 /* Sets the alpha level of the console, 0 turns off alpha blending */
-void CON_Alpha(ConsoleInformation *console, unsigned char alpha) {
+void CON_Alpha(ConsoleInformation *console, ubyte alpha) {
 	if(!console)
 		return;
 
@@ -831,7 +831,7 @@ int CON_Background(ConsoleInformation *console, CBitmap *image)
 
 //------------------------------------------------------------------------------
 /* Sets font info for the console */
-void CON_Font(ConsoleInformation *console, CFont *font, unsigned int fg, unsigned int bg)
+void CON_Font(ConsoleInformation *console, CFont *font, uint fg, uint bg)
 {
 	CCanvas *canv_save;
 

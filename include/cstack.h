@@ -7,7 +7,7 @@
 
 template < class _T > class CStack : public CArray<_T> {
 	private:
-		unsigned int	m_tos;
+		uint	m_tos;
 	public:
 		CStack () { Init (); }
 		~CStack() { Destroy (); }
@@ -35,7 +35,7 @@ template < class _T > class CStack : public CArray<_T> {
 			Init ();
 			}
 
-		inline _T *Create (unsigned int size) {
+		inline _T *Create (uint size) {
 			Destroy ();
 			return CArray<_T>::Create (size);
 			}

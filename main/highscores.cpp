@@ -196,8 +196,8 @@ else {
 if (gameData.reactor.countdown.nSecsLeft <=0)
    ScoreTableReactor (TXT_REACTOR_EXPLODED);
 else {
-   sprintf ((char *)&reactor_message, "%s: %d %s  ", TXT_TIME_REMAINING, gameData.reactor.countdown.nSecsLeft, TXT_SECONDS);
-   ScoreTableReactor ((char *)&reactor_message);
+   sprintf (reinterpret_cast<char*> (&reactor_message), "%s: %d %s  ", TXT_TIME_REMAINING, gameData.reactor.countdown.nSecsLeft, TXT_SECONDS);
+   ScoreTableReactor (reinterpret_cast<char*> (&reactor_message));
    }
 if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) 
 	ScoreTablePhallic ();
@@ -243,8 +243,8 @@ else {
 if (gameData.reactor.countdown.nSecsLeft <=0)
 	ScoreTableReactor (TXT_REACTOR_EXPLODED);
 else {
-	sprintf ((char *)&reactor_message, "%s: %d %s  ", TXT_TIME_REMAINING, gameData.reactor.countdown.nSecsLeft, TXT_SECONDS);
-	ScoreTableReactor ((char *)&reactor_message);
+	sprintf (reinterpret_cast<char*> (&reactor_message), "%s: %d %s  ", TXT_TIME_REMAINING, gameData.reactor.countdown.nSecsLeft, TXT_SECONDS);
+	ScoreTableReactor (reinterpret_cast<char*> (&reactor_message));
 	}
 }
 
@@ -265,7 +265,7 @@ if (oldmessage [0]!=0) {
 fontManager.SetColorRGBi (RGBA_PAL2 (0, 32, 63), 1, 0, 0);
 FONT->StringSize (message, sw, sh, aw);
 GrPrintF (NULL, CENTERSCREEN- (sw/2), LHY (55+72+12), message);
-strcpy ((char *)&oldmessage,message);
+strcpy (reinterpret_cast<char*> (&oldmessage), message);
 }
 
 //-----------------------------------------------------------------------------

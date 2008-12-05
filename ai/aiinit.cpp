@@ -52,7 +52,7 @@ void InitAISystem (void)
 	con_printf (CONDBG, "Trying to D2_ALLOC %i bytes for gameData.bots.pInfo.\n",
 					gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
 #endif
-	gameData.bots.pInfo = (tRobotInfo *) D2_ALLOC (gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
+	gameData.bots.pInfo = reinterpret_cast<tRobotInfo*> (D2_ALLOC (gameData.bots.nTypes * sizeof (*gameData.bots.pInfo)));
 #if TRACE
 	con_printf (CONDBG, "gameData.bots.pInfo = %i\n", gameData.bots.pInfo);
 #endif

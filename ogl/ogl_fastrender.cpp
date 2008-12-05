@@ -193,7 +193,7 @@ if (gameOpts->render.debug.bWireFrame) {
 		glLineWidth (6);
 		glBegin (GL_LINE_LOOP);
 		for (int i = 0; i < 4; i++)
-			glVertex3fv ((GLfloat *) (gameData.segs.fVertices + faceP->index [i]));
+			glVertex3fv (reinterpret_cast<GLfloat*> (gameData.segs.fVertices + faceP->index [i]));
 		glEnd ();
 		if (gameStates.render.bTriangleMesh) {
 			glLineWidth (2);

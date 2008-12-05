@@ -24,7 +24,7 @@ typedef struct {
 
 typedef struct
 {
-	unsigned int frame;
+	uint frame;
 	int nType;
 	int data;
 } UI_EVENT;
@@ -49,7 +49,7 @@ typedef struct
 
 typedef struct gadget {
 	BASE_GADGET
-	unsigned char rsvd[256];
+	ubyte rsvd[256];
 } UI_GADGET;
 
 
@@ -151,7 +151,7 @@ typedef struct  {
 	int             fake_size;
 	UI_GADGET_BUTTON * up_button;
 	UI_GADGET_BUTTON * down_button;
-	unsigned int    last_scrolled;
+	uint    last_scrolled;
 	short           drag_x, drag_y;
 	int             drag_starting;
 	int             dragging;
@@ -170,7 +170,7 @@ typedef struct  {
 	int             current_item;
 	int             selected_item;
 	int             old_current_item;
-	unsigned int    last_scrolled;
+	uint    last_scrolled;
 	int             dragging;
 	int             textheight;
 	UI_GADGET_SCROLLBAR * scrollbar;
@@ -207,7 +207,7 @@ typedef struct  {
 	short           bg_saved;
 	CBitmap *    background;
 	CBitmap *    pointer;
-	unsigned int    time_lastpressed;
+	uint    time_lastpressed;
 	short           moved;
 } UI_MOUSE;
 
@@ -230,7 +230,7 @@ extern UI_WINDOW * CurWindow;
 extern UI_WINDOW * FirstWindow;
 extern UI_WINDOW * LastWindow;
 
-extern unsigned char CBLACK,CGREY,CWHITE,CBRIGHT,CRED;
+extern ubyte CBLACK,CGREY,CWHITE,CBRIGHT,CRED;
 extern UI_GADGET * selected_gadget;
 extern int last_keypress;
 
@@ -355,8 +355,8 @@ int ui_play_events_fast( int NumberOfEvents, UI_EVENT * buffer );
 int ui_recorder_status();
 void ui_set_playback_speed( int speed );
 
-extern unsigned int ui_number_of_events;
-extern unsigned int ui_eventCounter;
+extern uint ui_number_of_events;
+extern uint ui_eventCounter;
 
 
 int ui_get_file( char * filename, char * Filespec  );

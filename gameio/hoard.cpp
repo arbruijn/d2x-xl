@@ -51,7 +51,7 @@ bmP->SetAvgColorIndex (0);
 
 int InitMonsterball (int nBitmap)
 {
-	CBitmap			*bmP, *altBmP;
+	CBitmap				*bmP, *altBmP;
 	tVideoClip			*vcP;
 	tPowerupTypeInfo	*ptP;
 	int					i;
@@ -62,7 +62,7 @@ memcpy (&gameData.eff.vClips [0][gameData.hoard.monsterball.nClip],
 		  &gameData.eff.vClips [0][gameData.hoard.orb.nClip],
 		  sizeof (tVideoClip));
 if (!ReadTGA ("monsterball.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0)) {
-	altBmP = (CBitmap *) D2_ALLOC (sizeof (CBitmap));
+	altBmP = CBitmap::Create (0, 0, 0, 1, "Monsterball");
 	if (altBmP && 
 		(ReadTGA ("mballgold#0.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0) ||
 		 ReadTGA ("mballred#0.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0))) {
@@ -144,7 +144,7 @@ if (!gameData.hoard.bInitialized) {
 	vcP->flags = 0;
 	vcP->nSound = -1;
 	vcP->lightValue = F1_0;
-	bmDataP = (ubyte *) D2_ALLOC (gameData.hoard.orb.nSize);
+	bmDataP = new ubyte [gameData.hoard.orb.nSize];
 	gameData.hoard.orb.bm.SetBuffer (bmDataP);
 	for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
@@ -177,7 +177,7 @@ if (!gameData.hoard.bInitialized) {
 	gameData.pig.tex.pTMapInfo [i].flags = TMI_GOAL_HOARD;
 	gameData.pig.tex.nTextures [0]++;
 	Assert (gameData.pig.tex.nTextures [0] < MAX_TEXTURES);
-	bmDataP = (ubyte *) D2_ALLOC (gameData.hoard.goal.nSize);
+	bmDataP = new ubyte [gameData.hoard.goal.nSize];
 	gameData.hoard.goal.bm.SetBuffer (bmDataP);
 	for (i = 0; i < gameData.hoard.goal.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
@@ -251,7 +251,7 @@ if (!gameData.hoard.bInitialized) {
 			len = cf.ReadInt ();    //get 22k len
 			}
 		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].nLength [0] = len;
-		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0] = (ubyte *) D2_ALLOC (len);
+		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0] = reinterpret_cast<ubyte*> (D2_ALLOC (len));
 		cf.Read (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0], 1, len);
 		if (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K) {
 			len = cf.ReadInt ();    //get 22k len

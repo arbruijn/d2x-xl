@@ -59,10 +59,11 @@ inline int AllocTranspItems (void)
 {
 if (transpItems.depthBufP)
 	return 1;
-if (!(transpItems.depthBufP = (struct tTranspItem **) D2_ALLOC (ITEM_DEPTHBUFFER_SIZE * sizeof (struct tTranspItem *))))
+if (!(transpItems.depthBufP = new tTranspItem* [ITEM_DEPTHBUFFER_SIZE]))
 	return 0;
-if (!(transpItems.itemListP = (struct tTranspItem *) D2_ALLOC (ITEM_BUFFER_SIZE * sizeof (struct tTranspItem)))) {
-	D2_FREE (transpItems.depthBufP);
+if (!(transpItems.itemListP = new tTranspItem [ITEM_BUFFER_SIZE])) {
+	delete[] transpItems.depthBufP;
+	transpItems.depthBufP = NULL;
 	return 0;
 	}
 transpItems.nFreeItems = 0;
@@ -74,8 +75,10 @@ return 1;
 
 void FreeTranspItems (void)
 {
-D2_FREE (transpItems.itemListP);
-D2_FREE (transpItems.depthBufP);
+delete[] transpItems.itemListP;
+transpItems.itemListP = NULL;
+delete[] transpItems.depthBufP;
+transpItems.depthBufP = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -233,7 +236,7 @@ if (split [0].nVertices == 3) {
 		split [1].texCoord [i1].v.v = (split [0].texCoord [i1].v.v + split [0].texCoord [i0].v.v) / 2;
 		}
 	if (split [0].nColors == 3) {
-		for (i = 4, c = (float *) &color, c0 = (float *) (split [0].color + i0), c1 = (float *) (split [0].color + i1); i; i--)
+		for (i = 4, c = reinterpret_cast<float*> (&color, c0 = reinterpret_cast<float*> (split [0].color + i0), c1 = reinterpret_cast<float*> (split [0].color + i1); i; i--)
 			*c++ = (*c0++ + *c1++) / 2;
 		split [0].color [i0] =
 		split [1].color [i1] = color;
@@ -260,11 +263,11 @@ else {
 		split [1].texCoord [i3].v.v = (split [0].texCoord [i3].v.v + split [0].texCoord [i2].v.v) / 2;
 		}
 	if (split [0].nColors == 4) {
-		for (i = 4, c = (float *) &color, c0 = (float *) (split [0].color + i0), c1 = (float *) (split [0].color + i1); i; i--)
+		for (i = 4, c = reinterpret_cast<float*> (&color, c0 = reinterpret_cast<float*> (split [0].color + i0), c1 = reinterpret_cast<float*> (split [0].color + i1); i; i--)
 			*c++ = (*c0++ + *c1++) / 2;
 		split [0].color [i1] =
 		split [1].color [i0] = color;
-		for (i = 4, c = (float *) &color, c0 = (float *) (split [0].color + i2), c1 = (float *) (split [0].color + i3); i; i--)
+		for (i = 4, c = reinterpret_cast<float*> (&color, c0 = reinterpret_cast<float*> (split [0].color + i2), c1 = reinterpret_cast<float*> (split [0].color + i3); i; i--)
 			*c++ = (*c0++ + *c1++) / 2;
 		split [0].color [i2] =
 		split [1].color [i3] = color;
@@ -394,7 +397,7 @@ triP = gameData.segs.faces.tris + faceP->nTriIndex;
 for (h = faceP->nTris; h; h--, triP++) {
 	for (i = 0, j = triP->nIndex; i < 3; i++, j++) {
 #if 1
-		G3TransformPoint (vertices [i], *((fVector *)(gameData.segs.faces.vertices + j)), 0);
+		G3TransformPoint (vertices [i], *(reinterpret_cast<fVector*> (gameData.segs.faces.vertices + j)), 0);
 #else
 		if (gameStates.render.automap.bDisplay)
 			G3TransformPoint (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
@@ -430,7 +433,7 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 #endif
 for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 #if 1
-	G3TransformPoint (vertices [i], *((fVector *) (gameData.segs.faces.vertices + j)), 0);
+	G3TransformPoint (vertices [i], *(reinterpret_cast<fVector*> (gameData.segs.faces.vertices + j)), 0);
 #else
 	if (gameStates.render.automap.bDisplay)
 		G3TransformPoint(vertices [i], gameData.segs.fVertices [faceP->index [i]], 0);
@@ -910,7 +913,7 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 			}
 		}
 	else if (item->nColors == 1)
-		glColor4fv ((GLfloat *) item->color);
+		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 	else
 		glColor3d (1, 1, 1);
 	i = item->bAdditive;
@@ -1007,9 +1010,9 @@ if (LoadTranspItemImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 
 								transpItems.bTextured ? NULL : faceP ? &faceP->color : item->color);
 #if 0
 		if (triP)
-			glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + triP->nIndex));
+			glNormal3fv (reinterpret_cast<GLfloat*> (gameData.segs.faces.normals + triP->nIndex));
 		else if (faceP)
-			glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
+			glNormal3fv (reinterpret_cast<GLfloat*> (gameData.segs.faces.normals + faceP->nIndex));
 #endif
 		glDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
@@ -1039,32 +1042,32 @@ if (LoadTranspItemImage (bmBot, item->nColors, 0, item->nWrap, 0, 3, 1, HaveLigh
 	if (item->nColors > 1) {
 		if (bmBot) {
 			for (i = 0; i < j; i++) {
-				glColor4fv ((GLfloat *) (item->color + i));
-				glTexCoord2fv ((GLfloat *) (item->texCoord + i));
-				glVertex3fv ((GLfloat *) (item->vertices + i));
+				glColor4fv (reinterpret_cast<GLfloat*> (item->color + i));
+				glTexCoord2fv (reinterpret_cast<GLfloat*> (item->texCoord + i));
+				glVertex3fv (reinterpret_cast<GLfloat*> (item->vertices + i));
 				}
 			}
 		else {
 			for (i = 0; i < j; i++) {
-				glColor4fv ((GLfloat *) (item->color + i));
-				glVertex3fv ((GLfloat *) (item->vertices + i));
+				glColor4fv (reinterpret_cast<GLfloat*> (item->color + i));
+				glVertex3fv (reinterpret_cast<GLfloat*> (item->vertices + i));
 				}
 			}
 		}
 	else {
 		if (item->nColors)
-			glColor4fv ((GLfloat *) item->color);
+			glColor4fv (reinterpret_cast<GLfloat*> (item->color);
 		else
 			glColor3d (1, 1, 1);
 		if (bmBot) {
 			for (i = 0; i < j; i++) {
-				glTexCoord2fv ((GLfloat *) (item->texCoord + i));
-				glVertex3fv ((GLfloat *) (item->vertices + i));
+				glTexCoord2fv (reinterpret_cast<GLfloat*> (item->texCoord + i));
+				glVertex3fv (reinterpret_cast<GLfloat*> (item->vertices + i));
 				}
 			}
 		else {
 			for (i = 0; i < j; i++) {
-				glVertex3fv ((GLfloat *) (item->vertices + i));
+				glVertex3fv (reinterpret_cast<GLfloat*> (item->vertices + i));
 				}
 			}
 		}
@@ -1115,7 +1118,7 @@ if (LoadTranspItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 	u = item->bmP->Texture ()->U ();
 	v = item->bmP->Texture ()->V ();
 	if (item->bColor)
-		glColor4fv ((GLfloat *) &item->color);
+		glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 	else
 		glColor3f (1, 1, 1);
 	if (item->bAdditive == 2)
@@ -1132,16 +1135,16 @@ if (LoadTranspItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1,
 	glTexCoord2f (0, 0);
 	fPos [X] -= w;
 	fPos [Y] += h;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glTexCoord2f (u, 0);
 	fPos [X] += 2 * w;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glTexCoord2f (u, v);
 	fPos [Y] -= 2 * h;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glTexCoord2f (0, v);
 	fPos [X] -= 2 * w;
-	glVertex3fv ((GLfloat *) &fPos);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glEnd ();
 	if (item->bAdditive)
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1335,7 +1338,7 @@ if (!transpItems.bDepthMask)
 glEnable (GL_BLEND);
 glBlendFunc (GL_ONE, GL_ONE);
 glDisable (GL_CULL_FACE);
-glColor4fv ((GLfloat *) &(item->color));
+glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 #if 1
 if (LoadTranspItemImage (item->bmP, 1, 0, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
@@ -1351,15 +1354,15 @@ if (LoadTranspItemImage (item->bmP, 0, 0, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 	if (item->bTrail) {
 		glBegin (GL_TRIANGLES);
 		for (i = 0; i < 3; i++) {
-			glTexCoord2fv ((GLfloat *) (item->texCoord + 4 + i));
-			glVertex3fv ((GLfloat *) (item->vertices + 4 + i));
+			glTexCoord2fv (reinterpret_cast<GLfloat*> (item->texCoord + 4 + i));
+			glVertex3fv (reinterpret_cast<GLfloat*> (item->vertices + 4 + i));
 			}
 		glEnd ();
 		}
 	glBegin (GL_QUADS);
 	for (i = 0; i < 4; i++) {
-		glTexCoord2fv ((GLfloat *) (item->texCoord + i));
-		glVertex3fv ((GLfloat *) (item->vertices + i));
+		glTexCoord2fv (reinterpret_cast<GLfloat*> (item->texCoord + i));
+		glVertex3fv (reinterpret_cast<GLfloat*> (tem->vertices + i));
 		}
 	glEnd ();
 	}

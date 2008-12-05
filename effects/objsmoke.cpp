@@ -758,7 +758,7 @@ objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
 sdP = gameData.objs.shrapnels + nObject;
 h += d_rand () % h;
-if (!(sdP->shrapnels = (tShrapnel *) D2_ALLOC (h * sizeof (tShrapnel))))
+if (!(sdP->shrapnels = new tShrapnel [h]))
 	return 0;
 sdP->nShrapnels = h;
 srand (gameStates.app.nSDLTicks);
@@ -807,7 +807,7 @@ if (sdP->shrapnels) {
 	for (i = 0; i < h; i++)
 		if (sdP->shrapnels [i].nSmoke >= 0)
 			particleManager.SetLife (sdP->shrapnels [i].nSmoke, 0);
-	D2_FREE (sdP->shrapnels);
+	delete[] sdP->shrapnels;
 	sdP->shrapnels = 0;
 	}
 objP->info.xLifeLeft = -1;

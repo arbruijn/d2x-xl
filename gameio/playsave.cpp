@@ -167,11 +167,11 @@ int RegisterParam (void *valP, const char *pszIdent, int i, int j, ubyte nSize)
 	tParam	*pp;
 
 l = (int) strlen (MakeTag (szTag, pszIdent, i, j));
-pp = (tParam *) D2_ALLOC (sizeof (tParam) + l);
+pp = reinterpret_cast<tParam*> (D2_ALLOC (sizeof (tParam) + l));
 if (!pp)
 	return 0;
 memcpy (pp->szTag, szTag, l + 1);
-pp->valP = (char *) valP;
+pp->valP = reinterpret_cast<char*> (valP);
 pp->nSize = nSize;
 pp->nValues = 1;
 pp->next = NULL;
@@ -183,7 +183,7 @@ lastParam = pp;
 return 1;
 }
 
-#define RP(_v,_i,_j)	RegisterParam ((void *) &(_v), #_v, _i, _j, sizeof (_v))
+#define RP(_v,_i,_j)	RegisterParam (reinterpret_cast<void*> (&(_v)), #_v, _i, _j, sizeof (_v))
 
 //------------------------------------------------------------------------------
 // returns number of config items with identical ids before the current one
@@ -234,7 +234,7 @@ for (i = 0; i < nItems; i++) {
 
 void RegisterParams (void)
 {
-	unsigned int	i, j;
+	uint	i, j;
 
 	static int bRegistered = 0;
 
@@ -619,13 +619,13 @@ if (strstr (pp->szTag, "Slowmo/Speed"))
 #if 1
 switch (pp->nSize) {
 	case 1:
-		sprintf (szVal, "=%d\n", *((sbyte *) (pp->valP)));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<sbyte*> (pp->valP)));
 		break;
 	case 2:
-		sprintf (szVal, "=%d\n", *((short *) (pp->valP)));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<short*> (pp->valP)));
 		break;
 	case 4:
-		sprintf (szVal, "=%d\n", *((int *) (pp->valP)));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<int*> (pp->valP)));
 		break;
 	default:
 		sprintf (szVal, "=%s\n", pp->valP);
@@ -640,16 +640,16 @@ for (nValues = pp->nValues; nValues; nValues--, valP += nSize) {
 	p = szVal + strlen (szVal);
 	switch (nSize) {
 		case 1:
-			sprintf (p, "%d ", *((sbyte *) (pp->valP)));
+			sprintf (p, "%d ", *reinterpret_cast<sbyte*> (pp->valP));
 			break;
 		case 2:
-			sprintf (p, "%d ", *((short *) (pp->valP)));
+			sprintf (p, "%d ", *reinterpret_cast<short*> (pp->valP));
 			break;
 		case 4:
-			sprintf (p, "%d ", *((int *) (pp->valP)));
+			sprintf (p, "%d ", *reinterpret_cast<int*> (pp->valP));
 			break;
 		default:
-			sprintf (p, "%s", (char *) (pp->valP));
+			sprintf (p, "%s", reinterpret_cast<char*> (pp->valP));
 			goto done;
 		}
 	}
@@ -715,20 +715,20 @@ switch (pp->nSize) {
 	case 1:
 		if (!(::isdigit (*pszValue) || issign (*pszValue)) || (nVal < SCHAR_MIN) || (nVal > SCHAR_MAX))
 			return 0;
-		*((sbyte *) pp->valP) = (sbyte) nVal;
+		*reinterpret_cast<sbyte*> (pp->valP) = (sbyte) nVal;
 		break;
 	case 2:
 		if (!(::isdigit (*pszValue) || issign (*pszValue))  || (nVal < SHRT_MIN) || (nVal > SHRT_MAX))
 			return 0;
-		*((short *) pp->valP) = (short) nVal;
+		*reinterpret_cast<short*> (pp->valP) = (short) nVal;
 		break;
 	case 4:
 		if (!(::isdigit (*pszValue) || issign (*pszValue)))
 			return 0;
-		*((int *) pp->valP) = (int) nVal;
+		*reinterpret_cast<int*> (pp->valP) = (int) nVal;
 		break;
 	default:
-		strncpy ((char *) pp->valP, pszValue, pp->nSize);
+		strncpy (reinterpret_cast<char*> (pp->valP, pszValue, pp->nSize);
 		break;
 	}
 return 1;
@@ -1483,11 +1483,11 @@ RetrySelection:
 memset (m, 0, sizeof (m));
 for (i = 0; i < mct; i++ )	{
 	m [i].nType = NM_TYPE_MENU;
-	m [i].text = (char *) CONTROL_TEXT(i);
+	m [i].text = reinterpret_cast<char*> (CONTROL_TEXT(i));
 	m [i].key = -1;
 	}
 nitems = i;
-m [0].text = (char *) TXT_CONTROL_KEYBOARD;
+m [0].text = reinterpret_cast<char*> (TXT_CONTROL_KEYBOARD);
 choice = gameConfig.nControlType;				// Assume keyboard
 #ifndef APPLE_DEMO
 i = ExecMenu1( NULL, TXT_CHOOSE_INPUT, i, m, NULL, &choice );
@@ -1549,7 +1549,7 @@ return 1;
 
 void ReadBinD2XParams (CFile& cf)
 {
-	unsigned int	i, j, gameOptsSize = 0;
+	uint	i, j, gameOptsSize = 0;
 
 if (gameStates.input.nPlrFileVersion >= 97)
 	gameOptsSize = cf.ReadInt ();
@@ -2029,7 +2029,7 @@ int ReadPlayerFile (int bOnlyWindowSizes)
 	short		nControlTypes, gameWindowW, gameWindowH;
 	int		funcRes = EZERO;
 	int		id, bRewriteIt = 0, nMaxControls;
-	unsigned int i;
+	uint i;
 
 Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
 
@@ -2101,9 +2101,9 @@ for (i = 0; i < 4; i++)
 nControlTypes = (gameStates.input.nPlrFileVersion < 20) ? 7 : CONTROL_MAX_TYPES;
 if (cf.Read (controlSettings.custom, nMaxControls * nControlTypes, 1) != 1)
 	funcRes = errno;
-else if (cf.Read ((ubyte *) &dosControlType, sizeof (ubyte), 1) != 1)
+else if (cf.Read (reinterpret_cast<ubyte*> (&dosControlType), sizeof (ubyte), 1) != 1)
 	funcRes = errno;
-else if ((gameStates.input.nPlrFileVersion >= 21) && cf.Read ((ubyte *) &winControlType, sizeof (ubyte), 1) != 1)
+else if ((gameStates.input.nPlrFileVersion >= 21) && cf.Read (reinterpret_cast<ubyte*> (&winControlType), sizeof (ubyte), 1) != 1)
 	funcRes = errno;
 else if (cf.Read (gameOptions [0].input.joystick.sensitivity, sizeof (ubyte), 1) != 1)
 	funcRes = errno;

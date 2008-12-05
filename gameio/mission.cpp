@@ -682,7 +682,7 @@ if (count > nTopPlace)
 	qsort(gameData.missions.list + nTopPlace,
 		   count - nTopPlace,
 		   sizeof(*gameData.missions.list),
-		   (int (_CDECL_ *) (const void *, const void * ))MLSortFunc);
+		   (int (_CDECL_ *) (const void *, const void * )) MLSortFunc);
 
 //LoadMission(0);   //set built-in mission as default
 nMissionCount = count;
@@ -698,7 +698,7 @@ char *MsnTrimComment (char *buf)
 if ((ps = strchr (buf, ';'))) {
 	while (ps > buf) {
 		--ps;
-		if (!::isspace ((unsigned char) *ps)) {
+		if (!::isspace ((ubyte) *ps)) {
 			++ps;
 			break;
 			}

@@ -258,7 +258,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			NetworkSendEndLevelShortSub (nPlayer, i);
 		else if (gameStates.multi.nGameType >= IPX_GAME)
 			IPXSendPacketData (
-				(ubyte *)&end, sizeof (tEndLevelInfo), 
+				reinterpret_cast<ubyte*> (&end), sizeof (tEndLevelInfo), 
 			netPlayers.players [i].network.ipx.server, 
 			netPlayers.players [i].network.ipx.node, gameData.multiplayer.players [i].netAddress);
 		}
@@ -293,7 +293,7 @@ if ((to_player != gameData.multiplayer.nLocalPlayer) &&
 	 (gameData.multiplayer.players [to_player].connected)) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		IPXSendPacketData (
-		 (ubyte *)&end, sizeof (tEndLevelInfoShort), 
+		 reinterpret_cast<ubyte*> (&end), sizeof (tEndLevelInfoShort), 
 		netPlayers.players [to_player].network.ipx.server, 
 		netPlayers.players [to_player].network.ipx.node, gameData.multiplayer.players [to_player].netAddress);
 	}
@@ -472,7 +472,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((gameData.multiplayer.players [i].connected) && (i != gameData.multiplayer.nLocalPlayer)) {
 		if (gameStates.multi.nGameType >= IPX_GAME) {
 			PrintLog ("   %s (%s)\n", netPlayers.players [i].callsign, 
-				iptos (szIP, (char *) netPlayers.players [i].network.ipx.node));
+				iptos (szIP, reinterpret_cast<char*> (netPlayers.players [i].network.ipx.node)));
 			SendLiteNetGamePacket (
 				netPlayers.players [i].network.ipx.server, 
 				netPlayers.players [i].network.ipx.node, 
@@ -663,7 +663,7 @@ if (nakedData.nLength == 0) {
 if (len + nakedData.nLength>networkData.nMaxXDataSize) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		IPXSendPacketData (
-			(ubyte *) nakedData.buf, 
+			reinterpret_cast<ubyte*> (nakedData.buf), 
 			nakedData.nLength, 
 			netPlayers.players [who].network.ipx.server, 
 			netPlayers.players [who].network.ipx.node, gameData.multiplayer.players [who].netAddress);
@@ -696,7 +696,7 @@ if (!their) {
 	}
 buf [0] = PID_NAMES_RETURN; 
 count++;
-(*(int *) (buf+1)) = netGame.nSecurity; 
+*reinterpret_cast<int*> (buf + 1) = netGame.nSecurity; 
 count+=4;
 if (!bNameReturning) {
 	buf [count++] = (char) 255; 
@@ -718,7 +718,7 @@ buf [count++] = (char) PacketsPerSec ();
  
 sendit:	   
 
-IPXSendInternetPacketData ((ubyte *)buf, count, 
+IPXSendInternetPacketData (reinterpret_cast<ubyte*> (buf), count, 
 									their->player.network.ipx.server, 
 									their->player.network.ipx.node);
 }

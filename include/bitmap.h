@@ -122,7 +122,7 @@ class CBitmap {
 	public:
 		CBitmap () { Init (); };
 		~CBitmap () { Destroy (); };
-		inline ubyte& operator[] (const unsigned int i) { return m_info.buffer [i]; }
+		inline ubyte& operator[] (const uint i) { return m_info.buffer [i]; }
 		static CBitmap* Create (ubyte mode, int w, int h, int bpp, const char* pszName = NULL);
 		ubyte* CreateBuffer (void);
 		bool Setup (ubyte mode, int w, int h, int bpp, const char* pszName, ubyte* buffer = NULL);
@@ -226,7 +226,7 @@ class CBitmap {
 		inline CTexture *Texture (void) { return m_info.texture; }
 		inline int *TransparentFrames (int i = 0) { return m_info.transparentFrames + i; }
 		inline int *SuperTranspFrames (int i = 0) { return m_info.supertranspFrames + i; }
-		inline ubyte* Buffer (unsigned int i = 0) { return m_info.buffer.Buffer () + i; }
+		inline ubyte* Buffer (uint i = 0) { return m_info.buffer.Buffer () + i; }
 		inline char* Name (void) { return m_info.szName; }
 #if TEXTURE_COMPRESSION
 		inline int BufSize (void) { return m_info.buffer ? m_info.bCompressed ? m_info.nBufSize : (int) m_info.props.h * (int) m_info.props.rowSize : 0; }

@@ -192,14 +192,14 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiConnect (nPlayer, nPlayer == gameData.multiplayer.nPlayers, their->player.callsign);
 memcpy (gameData.multiplayer.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN+1);
 memcpy (netPlayers.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN+1);
-ClipRank ((char *) &their->player.rank);
+ClipRank (reinterpret_cast<char*> (&their->player.rank));
 netPlayers.players [nPlayer].rank = their->player.rank;
 netPlayers.players [nPlayer].versionMajor = their->player.versionMajor;
 netPlayers.players [nPlayer].versionMinor = their->player.versionMinor;
 NetworkCheckForOldVersion ((char) nPlayer);
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if ((* (uint *)their->player.network.ipx.server) != 0)
+	if (*reinterpret_cast<uint*> (their->player.network.ipx.server) != 0)
 		IpxGetLocalTarget (
 			their->player.network.ipx.server, 
 			their->player.network.ipx.node, 
@@ -221,7 +221,7 @@ if (nPlayer == gameData.multiplayer.nPlayers) {
 	netGame.nNumPlayers = gameData.multiplayer.nPlayers;
 	}
 DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-ClipRank ((char *) &their->player.rank);
+ClipRank (reinterpret_cast<char*> (&their->player.rank));
 if (gameOpts->multi.bNoRankings)
 	HUDInitMessage ("'%s' %s\n", their->player.callsign, TXT_JOINING);
 else   
@@ -422,7 +422,7 @@ if (!(syncP = AcceptJoinRequest (player)))
 memset (&syncP->player [1], 0, sizeof (tSequencePacket));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if ((*(uint *) player->player.network.ipx.server) != 0)
+	if (*reinterpret_cast<uint*> (player->player.network.ipx.server) != 0)
 		IpxGetLocalTarget (
 			player->player.network.ipx.server, 
 			player->player.network.ipx.node, 
@@ -476,7 +476,7 @@ if (NetworkFindPlayer (&player->player) > -1)
 	return;
 npiP = netPlayers.players + gameData.multiplayer.nPlayers;
 memcpy (&npiP->network, &player->player.network, sizeof (tNetworkInfo));
-ClipRank ((char *) &player->player.rank);
+ClipRank (reinterpret_cast<char*> (&player->player.rank));
 memcpy (npiP->callsign, player->player.callsign, CALLSIGN_LEN+1);
 npiP->versionMajor = player->player.versionMajor;
 npiP->versionMinor = player->player.versionMinor;
@@ -511,7 +511,7 @@ for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	netPlayers.players [j].versionMajor = netPlayers.players [i].versionMajor;
 	netPlayers.players [j].versionMinor = netPlayers.players [i].versionMinor;
    netPlayers.players [j].rank = netPlayers.players [i].rank;
-	ClipRank ((char *) &netPlayers.players [j].rank);
+	ClipRank (reinterpret_cast<char*> (&netPlayers.players [j].rank));
    NetworkCheckForOldVersion ((char) i);
 	}
 gameData.multiplayer.nPlayers--;
@@ -529,7 +529,7 @@ void DoRefuseStuff (tSequencePacket *their)
   static tTextIndex	joinMsgIndex;
   static char			szJoinMsg [200];
 
-ClipRank ((char *) &their->player.rank);
+ClipRank (reinterpret_cast<char*> (&their->player.rank));
 
 for (i = 0; i < MAX_PLAYERS; i++)
 	if (!strcmp (their->player.callsign, gameData.multiplayer.players [i].callsign)) {

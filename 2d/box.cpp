@@ -25,8 +25,8 @@ void gr_ubox0(int left,int top,int right,int bot)
 {
 	int i, d, c = COLOR.index;
 
-	unsigned char * ptr1;
-	unsigned char * ptr2;
+	ubyte * ptr1;
+	ubyte * ptr2;
 
 	ptr1 = DATA + ROWSIZE *top+left;
 

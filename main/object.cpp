@@ -227,7 +227,7 @@ tObject *ObjFindFirstOfType (int nType)
 FORALL_OBJS (objP, i)
 	if (objP->info.nType == nType)
 		return (objP);
-return (tObject *) NULL;
+return reinterpret_cast<tObject*> (NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -1347,7 +1347,7 @@ if (nType == OBJ_DEBRIS) {
 	}
 
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
-m_nObject = this - (CObject *) gameData.objs.objects;
+m_nObject = this - reinterpret_cast<CObject*> (gameData.objs.objects);
 SetSignature (gameData.objs.nNextSignature++);
 SetType (nType);
 SetId (nId);
@@ -2243,7 +2243,7 @@ switch (objP->info.controlType) {
 			slew_stop ();
 		if (gameStates.input.keys.pressed [KEY_NUMLOCK]) {
 			slew_reset_orient ();
-			* (ubyte *) 0x417 &= ~0x20;		//kill numlock
+			* reinterpret_cast<ubyte*> (0x417 &= ~0x20);		//kill numlock
 		}
 		slew_frame (0);		// Does velocity addition for us.
 #endif

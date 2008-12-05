@@ -88,7 +88,7 @@ char	bRobotPlaying = 0;
 int	briefFgColorIndex [MAX_BRIEFING_COLORS], 
 		briefBgColorIndex [MAX_BRIEFING_COLORS];
 int	nCurrentColor = 0;
-unsigned int nEraseColor = BLACK_RGBA;
+uint nEraseColor = BLACK_RGBA;
 
 tRgbaColorb briefFgColors [2][MAX_BRIEFING_COLORS] = {
 	{{0, 160, 0, 255}, {160, 132, 140, 255}, {32, 124, 216, 255}, {0, 0, 216, 255}, {56, 56, 56, 255}, {216, 216, 0, 255}, {0, 216, 216, 255}, {255, 255, 255, 255}}, 
@@ -978,7 +978,7 @@ int _P (tBriefingInfo& bi)
 {
 if (!bi.bGotZ) {
 	Int3 (); // Hey ryan!!!!You gotta load a screen before you start printing to it!You know, $Z !!!
-	LoadNewBriefingScreen (gameStates.menus.bHires ? (char *) "end01b.pcx" : (char *) "end01.pcx", bi.message <= bi.pj);
+	LoadNewBriefingScreen (gameStates.menus.bHires ? reinterpret_cast<char*> ("end01b.pcx") : reinterpret_cast<char*> ("end01.pcx"), bi.message <= bi.pj);
 	bi.bHaveScreen = 1;
 	}
 bi.bNewPage = 1;
@@ -1146,7 +1146,7 @@ return 1;
 int _ANY (tBriefingInfo& bi)
 {
 if (!bi.bGotZ) 
-	LoadNewBriefingScreen (gameStates.menus.bHires ? (char *) "end01b.pcx" : (char *) "end01.pcx", bi.message <= bi.pj);
+	LoadNewBriefingScreen (gameStates.menus.bHires ? reinterpret_cast<char*> ("end01b.pcx") : reinterpret_cast<char*> ("end01.pcx"), bi.message <= bi.pj);
 bi.prevCh = bi.ch;
 bi.bRedraw = !bi.nDelayCount || (bi.message <= bi.pj);
 if (!bi.bRedraw) {
@@ -1445,10 +1445,10 @@ int LoadScreenText (char *filename, char **buf)
 if (!strstr (filename, ".t"))
 	strcat (filename, ".tex");
 bHaveBinary = (strstr (filename, ".txb") != NULL);
-if (!cf.Open (filename, gameFolders.szDataDir, bHaveBinary ? (char *) "rb" : (char *) "rt", gameStates.app.bD1Mission)) {
+if (!cf.Open (filename, gameFolders.szDataDir, bHaveBinary ? reinterpret_cast<char*> ("rb") : reinterpret_cast<char*> ("rt"), gameStates.app.bD1Mission)) {
 	bHaveBinary = !bHaveBinary;
 	strcpy (strstr (filename, ".t"), bHaveBinary ? ".txb" : ".tex");
-	if (!cf.Open (filename, gameFolders.szDataDir, bHaveBinary ? (char *) "rb" : (char *) "rt", gameStates.app.bD1Mission)) {
+	if (!cf.Open (filename, gameFolders.szDataDir, bHaveBinary ? reinterpret_cast<char*> ("rb") : reinterpret_cast<char*> ("rt"), gameStates.app.bD1Mission)) {
 		PrintLog ("can't open briefing '%s'!\n", filename);
 		return (0);
 		}

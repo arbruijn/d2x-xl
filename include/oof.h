@@ -56,7 +56,7 @@
 
 #define OOF_PAGENAME_LEN	35
 
-typedef unsigned short tOOF_angle;	//make sure this matches up with fix.h
+typedef ushort tOOF_angle;	//make sure this matches up with fix.h
 
 typedef char tOOF_chunkType [4];
 

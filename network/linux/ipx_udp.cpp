@@ -173,14 +173,14 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "byteswap.h"
 #include "error.h"
 
-extern unsigned char ipx_MyAddress [10];
+extern ubyte ipx_MyAddress [10];
 
 #define UDPDEBUG	0
 
 #define PORTSHIFT_TOLERANCE 0x100
 
-unsigned char ipx_LocalAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
-unsigned char ipx_ServerAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
+ubyte ipx_LocalAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
+ubyte ipx_ServerAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
 int udpBasePorts [2] = {UDP_BASEPORT, UDP_BASEPORT};
 
 /* Packet format: first is the nSignature { 0xD1,'X' } which can be also
@@ -348,12 +348,12 @@ static void QuerySafeMode (tDestListEntry *pdl);
  
 #if 0//def _DEBUG
 
-static void dumpraddr (unsigned char *a)
+static void dumpraddr (ubyte *a)
 {
-unsigned short port;
+ushort port;
 
 PrintLog (" [%u.%u.%u.%u",a [0],a [1],a [2],a [3]);
-port= (unsigned short)ntohs (* (unsigned short *) (a+4));
+port= (ushort)ntohs (* reinterpret_cast<ushort*> (a+4));
 if (port) 
 	PrintLog (":%u",port);
 PrintLog ("]");
@@ -364,13 +364,13 @@ PrintLog ("]");
 //------------------------------------------------------------------------------
 /* Like //dumpraddr () but for structure "sockaddr_in"
  */
-static unsigned char qhbuf [6];
+static ubyte qhbuf [6];
 
 #if 0
 
 static void dumpaddr (struct sockaddr_in *sinP)
 {
-unsigned short ports;
+ushort ports;
 
 memcpy (qhbuf, &sinP->sin_addr, 4);
 ports=htons (((short) ntohs (sinP->sin_port)));
@@ -390,7 +390,7 @@ static void chkbroadsize (void)
 if (broadnum < broadsize)
 	return;
 broadsize = broadsize ? broadsize * 2 : 8;
-chk (broads = (sockaddr_in *) D2_REALLOC (broads, sizeof (*broads) * broadsize));
+chk (broads = reinterpret_cast<sockaddr_in*> (D2_REALLOC (broads, sizeof (*broads) * broadsize)));
 }
 
 //------------------------------------------------------------------------------
@@ -404,7 +404,7 @@ static int ChkDestListSize (void)
 if (destAddrNum < destListSize)
 	return 1;
 destListSize = destListSize ? destListSize * 2 : 8;
-if (!(b = (tDestListEntry *) D2_ALLOC (sizeof (*destList) * destListSize)))
+if (!(b = reinterpret_cast<tDestListEntry*> (D2_ALLOC (sizeof (*destList) * destListSize))))
 	 return -1;
 if (destList) {
 	memcpy (b, destList, sizeof (*destList) * destListSize / 2);
@@ -515,7 +515,7 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	j++;
 	}
 broadsize = j;
-chk (broads = (sockaddr_in *) D2_ALLOC (j * sizeof (*broads)));
+chk (broads = reinterpret_cast<sockaddr_in*> (D2_ALLOC (j * sizeof (*broads))));
 // Second loop to copy the addresses
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
@@ -523,8 +523,8 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	if ((ifa->ifa_flags & IF_NOTFLAGS) || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
 		continue;
 	j++;
-	sinp = (struct sockaddr_in *) ifa->ifa_broadaddr;
-	sinmp = (struct sockaddr_in *) ifa->ifa_dstaddr;
+	sinp = reinterpret_cast<struct sockaddr_in*> (ifa->ifa_broadaddr);
+	sinmp = reinterpret_cast<struct sockaddr_in*> (ifa->ifa_dstaddr);
 
 	// Code common to both getifaddrs () and ioctl () approach
 	broads [j] = *sinp;
@@ -566,7 +566,7 @@ else
 	cnt = cnt * 2 + 2;
 #	endif
 ifconf.ifc_len = cnt * sizeof (struct ifreq);
-chk (ifconf.ifc_req = (ifreq *) D2_ALLOC (ifconf.ifc_len));
+chk (ifconf.ifc_req = reinterpret_cast<ifreq*> (D2_ALLOC (ifconf.ifc_len)));
 #	if DBG
 memset (ifconf.ifc_req, 0, ifconf.ifc_len);
 ioRes = ioctl (sock, SIOCGIFCONF, &ifconf);
@@ -582,7 +582,7 @@ if (ifconf.ifc_len % sizeof (struct ifreq)) {
 	FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
 	}
 cnt = ifconf.ifc_len / sizeof (struct ifreq);
-chk (broads = (sockaddr_in *) D2_ALLOC (cnt * sizeof (*broads)));
+chk (broads = reinterpret_cast<sockaddr_in*> (D2_ALLOC (cnt * sizeof (*broads))));
 broadsize = cnt;
 for (i = j = 0; i < cnt; i++) {
 	if (!_IOCTL (sock, SIOCGIFFLAGS, ifconf.ifc_req + i)) {
@@ -596,12 +596,12 @@ for (i = j = 0; i < cnt; i++) {
 		close (sock);
 		FAIL ("ioctl (UDP (%d),\"%s\",SIOCGIF{DST/BRD}ADDR)\nerror: %m", i, ifconf.ifc_req [i].ifr_name);
 		}
-	sinp = (struct sockaddr_in *) &ifconf.ifc_req [i].ifr_broadaddr;
+	sinp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_broadaddr);
 	if (!_IOCTL (sock, SIOCGIFNETMASK, ifconf.ifc_req + i)) {
 		close (sock);
 		FAIL ("ioctl (UDP (%d),\"%s\",SIOCGIFNETMASK)\nerror: %m", i, ifconf.ifc_req [i].ifr_name);
 		}
-	sinmp = (struct sockaddr_in *)&ifconf.ifc_req [i].ifr_addr;
+	sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_addr);
 	if (sinp->sin_family!=AF_INET || sinmp->sin_family!=AF_INET) 
 		continue;
 	// Code common to both getifaddrs () and ioctl () approach
@@ -644,7 +644,7 @@ broadnum = d;
 
 static void portshift (const char *cs)
 {
-unsigned short port = atol (cs);
+ushort port = atol (cs);
 
 if (port<-PORTSHIFT_TOLERANCE || port>+PORTSHIFT_TOLERANCE)
 	//msg ("Invalid portshift in \"%s\", tolerance is +/-%d",cs,PORTSHIFT_TOLERANCE)
@@ -677,7 +677,7 @@ static void printinaddr (struct sockaddr_in *addr) {
 
     char theAddress [200];
     const char *myResult;
-    myResult = inet_ntop (AF_INET, (const void *) &addr->sin_addr, theAddress, 200);
+    myResult = inet_ntop (AF_INET, reinterpret_cast<const void*> (&addr->sin_addr), theAddress, 200);
     //myResult = inet_net_ntop (family, addr, 32, theAddress, 200);
     printf ("%s", theAddress);
 }
@@ -689,7 +689,7 @@ static void printinaddr (struct sockaddr_in *addr) {
 //------------------------------------------------------------------------------
 /* Do hostname resolve on name "buf" and return the address in buffer "qhbuf".
  */
-static unsigned char *queryhost (char *buf)
+static ubyte *queryhost (char *buf)
 {
 // For some reason, Mac OS X is finicky with the gethostbyname () call. The getaddrinfo () call is
 // apparently newer and seems to work more reliably, but even then it seems to be the case that
@@ -730,8 +730,8 @@ static unsigned char *queryhost (char *buf)
         return NULL;
     
 	//printf ("Found my address: ");
-	//printinaddr ((struct sockaddr_in *)ip->ai_addr);
-    memcpy (qhbuf, & (( (struct sockaddr_in *) ip->ai_addr)->sin_addr), 4);
+	//printinaddr (reinterpret_cast<struct sockaddr_in*> (ip->ai_addr));
+    memcpy (qhbuf, & (reinterpret_cast<struct sockaddr_in*> (ip->ai_addr)->sin_addr), 4);
 	memset (qhbuf+4,0,2);
     
 	freeaddrinfo (info);
@@ -749,7 +749,7 @@ char c=0;
 	  portshift (s+1);
 	  }
 	else memset (qhbuf+4,0,2);
-	he=gethostbyname ((char *)buf);
+	he = gethostbyname (reinterpret_cast<char*> (buf));
 	if (s) *s=c;
 	if (!he) {
 		//msg ("Error resolving my hostname \"%s\"",buf);
@@ -794,7 +794,7 @@ if (s)
 		}
 memset (ipx_MyAddress, 0, 4);
 memcpy (ipx_MyAddress + 4, qhbuf, 6);
-udpBasePorts [gameStates.multi.bServer] += (short) ntohs (*(unsigned short *) (qhbuf + 4));
+udpBasePorts [gameStates.multi.bServer] += (short) ntohs (*reinterpret_cast<ushort*> (qhbuf + 4));
 if (!s || (s && !*s)) 
 	addiflist ();
 else {
@@ -809,7 +809,7 @@ else {
 			break;
 		for (s2=s;*s2 && *s2!=',';s2++)
 			;
-		chk (ns = (char *) D2_ALLOC (s2-s+1));
+		chk (ns = reinterpret_cast<char*> (D2_ALLOC (s2-s+1)));
 		memcpy (ns,s,s2-s);
 		ns [s2-s]='\0';
 		if (!queryhost (ns)) 
@@ -819,7 +819,7 @@ else {
 		sin=broads + broadnum++;
 		sin->sin_family=AF_INET;
 		memcpy (&sin->sin_addr,qhbuf+0,4);
-		sin->sin_port=htons (( (short)ntohs (* (unsigned short *) (qhbuf+4)))+UDP_BASEPORT);
+		sin->sin_port=htons (((short)ntohs (* reinterpret_cast<ushort*> (qhbuf+4)))+UDP_BASEPORT);
 		s=s2+ (*s2==',');
 		}
 	}
@@ -854,7 +854,7 @@ if (!gameStates.multi.bServer) {
 		FAIL ("Error allocating client table");
 	nServerPort = udpBasePorts [0] + networkData.nSocket;
 	sin.sin_family = AF_INET;
-	*((u_short *) (ipx_ServerAddress + 8)) = htons (nServerPort);
+	*reinterpret_cast<u_short*> (ipx_ServerAddress + 8) = htons (nServerPort);
 	memcpy (&sin.sin_addr.s_addr, ipx_ServerAddress + 4, 4);
 	sin.sin_port = htons (nServerPort);
 	if (!gameStates.multi.bUseTracker)	
@@ -867,7 +867,7 @@ if ((sk->fd = socket (AF_INET,SOCK_DGRAM, IPPROTO_UDP)) < 0) {
 	}
 //ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
 fcntl (sk->fd, F_SETFL, O_NONBLOCK);
-*((u_short *) (ipx_MyAddress + 8)) = nLocalPort;
+*(reinterpret_cast<u_short*> (ipx_MyAddress + 8)) = nLocalPort;
 #ifdef UDP_BROADCAST
 if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, &val_one, sizeof (val_one))) {
 	close (sk->fd);
@@ -879,7 +879,7 @@ if (gameStates.multi.bServer || mpParams.udpClientPort) {
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = htonl (INADDR_ANY);
 	sin.sin_port = htons ((ushort) nLocalPort);
-	if (bind (sk->fd, (struct sockaddr *) &sin, sizeof (sin))) {
+	if (bind (sk->fd, reinterpret_cast<struct sockaddr*> (&sin), sizeof (sin))) {
 		close (sk->fd);
 		sk->fd = -1;
 		FAIL ("bind () to UDP nLocalPort %d failed: %m", nLocalPort);
@@ -928,7 +928,7 @@ memcpy (buf, SAFEMODE_ID, SAFEMODE_ID_LEN);
 buf [SAFEMODE_ID_LEN - 2] = extraGameInfo [0].bSafeUDP;
 if (pdl->bSafeMode != -1)
 	buf [SAFEMODE_ID_LEN - 1] = pdl->bSafeMode;
-return sendto (pdl->fd, buf, SAFEMODE_ID_LEN, 0, (struct sockaddr *) &pdl->addr, sizeof (pdl->addr));
+return sendto (pdl->fd, buf, SAFEMODE_ID_LEN, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
 }
 
 //------------------------------------------------------------------------------
@@ -940,7 +940,7 @@ if ((pdl->bSafeMode < 0) && (!--(pdl->modeCountdown))) {
 	int i;
 
 	memcpy (buf, SAFEMODE_ID, SAFEMODE_ID_LEN);
-	i = sendto (pdl->fd, buf, SAFEMODE_ID_LEN, 0, (struct sockaddr *) &pdl->addr, sizeof (pdl->addr));
+	i = sendto (pdl->fd, buf, SAFEMODE_ID_LEN, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
 	pdl->modeCountdown = 2;
 	}
 }
@@ -1001,7 +1001,7 @@ else {
 	}
 destAddr.sin_family = AF_INET;
 memcpy (&destAddr.sin_addr, ipxHeader->Destination.Node, 4);
-destAddr.sin_port = *((ushort *) (((ubyte *) &(ipxHeader->Destination.Node)) + 4));
+destAddr.sin_port = *reinterpret_cast<ushort*> (reinterpret_cast<ubyte*> (&ipxHeader->Destination.Node) + 4);
 #if UDPDEBUG
 msg ("INADDR_BROADCAST = %ld", htonl (INADDR_BROADCAST)); 
 msg ("SendPacket to %d.%d.%d.%d:%d, dataLen=%d", 
@@ -1009,7 +1009,7 @@ msg ("SendPacket to %d.%d.%d.%d:%d, dataLen=%d",
 	  ipxHeader->Destination.Node [1],
 	  ipxHeader->Destination.Node [2],
 	  ipxHeader->Destination.Node [3],
-	  ntohs (* ((short *) ipxHeader->Destination.Socket)), dataLen);
+	  ntohs (*reinterpret_cast<short*> (ipxHeader->Destination.Socket), dataLen);
 #endif
 memset (& (destAddr.sin_zero), '\0', 8);
 
@@ -1063,7 +1063,7 @@ for (; iDest < destAddrNum; iDest++) {
 				ppp = pdl->packetProps + j;
 				ppp->len = dataLen + extraDataLen;
 				ppp->data = pdl->packetBuf + j * (MAX_PACKETSIZE + extraDataLen);
-				* ((int *) (buf + dataLen + 8)) = INTEL_INT (pdl->nSent);
+				* (reinterpret_cast<int*> (buf + dataLen + 8)) = INTEL_INT (pdl->nSent);
 				memcpy (buf + dataLen + 12, "SAFE", 4);
 				memcpy (ppp->data, buf, ppp->len);
 				ppp->id = pdl->nSent++;
@@ -1082,7 +1082,7 @@ for (; iDest < destAddrNum; iDest++) {
 		ntohs (dest->sin_port);
 	*/
 #endif
-	nUdpRes = sendto (mysock->fd, bufP, dataLen + extraDataLen, 0, (struct sockaddr *) dest, sizeof (*dest));
+	nUdpRes = sendto (mysock->fd, bufP, dataLen + extraDataLen, 0, reinterpret_cast<struct sockaddr*> (dest), sizeof (*dest));
 //msg ("sendto (%d) returned %d", dataLen + (gameStates.multi.bTrackerCall ? 0 : 14), iDest);
 	if (bBroadcast <= 0) { 
 		if (gameStates.multi.bTrackerCall)
@@ -1107,9 +1107,9 @@ static void RequestResend (struct tDestListEntry *pdl, int nLastPacket)
 
 //PrintLog ("RequestResend (%d, %d)\n", pdl->nReceived, nLastPacket);
 memcpy (buf, RESEND_ID, RESEND_ID_LEN);
-* ((int *) (buf + RESEND_ID_LEN)) = INTEL_INT (pdl->nReceived);
-* ((int *) (buf + RESEND_ID_LEN + 4)) = INTEL_INT (nLastPacket);
-sendto (pdl->fd, buf, RESEND_ID_LEN + 8, 0, (struct sockaddr *) &pdl->addr, sizeof (pdl->addr));
+*reinterpret_cast<int*> (buf + RESEND_ID_LEN) = INTEL_INT (pdl->nReceived);
+*reinterpret_cast<int*> (buf + RESEND_ID_LEN + 4) = INTEL_INT (nLastPacket);
+sendto (pdl->fd, buf, RESEND_ID_LEN + 8, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
 }
 
 //------------------------------------------------------------------------------
@@ -1122,8 +1122,8 @@ static int DropData (tDestListEntry *pdl, int nDrop)
 	ubyte	buf [40];
 
 memcpy (buf, FORGET_ID, FORGET_ID_LEN);
-* ((int *) (buf + FORGET_ID_LEN)) = INTEL_INT (nDrop);
-sendto (pdl->fd, buf, FORGET_ID_LEN + 4, 0, (struct sockaddr *) &pdl->addr, sizeof (pdl->addr));
+*reinterpret_cast<int*> (buf + FORGET_ID_LEN) = INTEL_INT (nDrop);
+sendto (pdl->fd, buf, FORGET_ID_LEN + 4, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
 return 1;
 }
 
@@ -1136,12 +1136,12 @@ static int ForgetData (struct sockaddr_in *fromAddr, ubyte *buf)
 
 if (!extraGameInfo [0].bSafeUDP)
 	return 0;
-if (strncmp ((char *) buf, FORGET_ID, FORGET_ID_LEN))
+if (strncmp (reinterpret_cast<char*> (buf), FORGET_ID, FORGET_ID_LEN))
 	return 0;
 if (destAddrNum <= (i = FindDestInList (fromAddr)))
 	return 1;
 pdl = destList + i;
-nDrop = * ((int *) (buf + FORGET_ID_LEN));
+nDrop = *reinterpret_cast<int*> (buf + FORGET_ID_LEN);
 pdl->nReceived = INTEL_INT (nDrop);
 return 1;
 }
@@ -1157,13 +1157,13 @@ static int ResendData (struct sockaddr_in *fromAddr, ubyte *buf)
 
 //if (!extraGameInfo [1].bSafeUDP)
 //	return 0;
-if (strncmp ((char *) buf, RESEND_ID, RESEND_ID_LEN))
+if (strncmp (reinterpret_cast<char*> (buf), RESEND_ID, RESEND_ID_LEN))
 	return 0;
 if (destAddrNum <= (i = FindDestInList (fromAddr)))
 	return 1;
-nFirst = * ((int *) (buf + RESEND_ID_LEN));
+nFirst = * (reinterpret_cast<int*> (buf + RESEND_ID_LEN));
 nFirst = INTEL_INT (nFirst);
-nLast = * ((int *) (buf + RESEND_ID_LEN + 4));
+nLast = * (reinterpret_cast<int*> (buf + RESEND_ID_LEN + 4));
 nLast = INTEL_INT (nLast);
 pdl = destList + i;
 if (!pdl->numPackets)
@@ -1195,10 +1195,10 @@ for (i = pdl->numPackets, j = pdl->firstPacket; i; i--, j++) {
 		DropData (pdl, nDrop);
 		nDrop = -1;
 		}
-//	nDrop = * ((int *) (ppp->data + ppp->len - 4));
+//	nDrop = * (reinterpret_cast<int*> (ppp->data + ppp->len - 4));
 //	nDrop = INTEL_INT (nDrop);
 //PrintLog ("   resending packet %d (%d)\n", ppp - pdl->packetProps, pdl->numPackets);
-	sendto (pdl->fd, ppp->data, ppp->len, 0, (struct sockaddr *) &pdl->addr, sizeof (pdl->addr));
+	sendto (pdl->fd, ppp->data, ppp->len, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
 	}
 return 1;
 }
@@ -1217,19 +1217,19 @@ static int UDPReceivePacket (
 {
 	struct sockaddr_in 	fromAddr;
 	int						i, dataLen, bTracker;  
-	unsigned int			fromAddrSize = sizeof (fromAddr);
-	unsigned short 		srcPort;
+	uint			fromAddrSize = sizeof (fromAddr);
+	ushort 		srcPort;
 	//char 						szIP [30];
 #if UDP_SAFEMODE
 	tDestListEntry			pdl;
 	int						packetId = -1, bSafeMode = 0;
 #endif
 
-dataLen = recvfrom (s->fd, outBuf, outBufSize, 0, (struct sockaddr *) &fromAddr, &fromAddrSize);
+dataLen = recvfrom (s->fd, outBuf, outBufSize, 0, reinterpret_cast<struct sockaddr*> (&fromAddr), &fromAddrSize);
 if (0 > dataLen) {
 		return -1;
 	}
-bTracker = IsTracker (* ((unsigned int *) &fromAddr.sin_addr), * ((ushort *) &fromAddr.sin_port));
+bTracker = IsTracker (*reinterpret_cast<uint*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port));
 #if UDPDEBUG
 	//msg ("ReceivePacket, dataLen=%d", dataLen);
 	//printf (MSGHDR "recvfrom ((%d-8=%d),",dataLen,dataLen-8);
@@ -1249,7 +1249,7 @@ if (!(bTracker
 	 || ResendData (&fromAddr, outBuf) || ForgetData (&fromAddr, outBuf)
 #endif	 
 	 )) {
-	rd->src_socket = ntohs (* (unsigned short *) (outBuf + 6));
+	rd->src_socket = ntohs (*reinterpret_cast<ushort*> (outBuf + 6));
 	rd->dst_socket = s->socket;
 	srcPort = ntohs (fromAddr.sin_port);
 	memcpy (ipx_LocalAddress + 4, outBuf + dataLen - 6, 6);
@@ -1271,7 +1271,7 @@ if (!(bTracker
 			ReportSafeMode (pdl);
 		if (pdl->bOurSafeMode == 1) {
 			bSafeMode = 1;
-			packetId = *((int *) (outBuf + dataLen - 14));
+			packetId = *reinterpret_cast<int*> (outBuf + dataLen - 14);
 			packetId = INTEL_INT (packetId);
 			//PrintLog ("received packet %d (%d) from ", packetId, pdl->nReceived); dumpaddr (&pdl->addr); //PrintLog ("\n");
 			if (packetId == pdl->nReceived)
@@ -1312,7 +1312,7 @@ return dataLen;
 
 int UDPPacketReady (ipx_socket_t *s) 
 {
-	unsigned long nAvailBytes = 0;
+	ulong nAvailBytes = 0;
 
 return !fcntl (s->fd, FIONREAD, &nAvailBytes) && (nAvailBytes > 0);
 }

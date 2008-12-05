@@ -189,7 +189,7 @@ int ComputeAvgPixel(CBitmap *newBm)
 	char	*pptr;
 	int	total_red, total_green, total_blue;
 
-	pptr = (char *)newBm->texBuf;
+	pptr = reinterpret_cast<char*> (newBm->texBuf);
 
 	total_red = 0;
 	total_green = 0;
@@ -447,7 +447,6 @@ int bm_init_use_tbl()
 
 	Num_effects = 0;
 	for (i=0; i<MAX_EFFECTS; i++ ) {
-		//Effects [gameStates.app.bD1Data][i].bm_ptr = (CBitmap **) -1;
 		Effects [gameStates.app.bD1Data][i].changingWallTexture = -1;
 		Effects [gameStates.app.bD1Data][i].changingObjectTexture = -1;
 		Effects [gameStates.app.bD1Data][i].nSegment = -1;

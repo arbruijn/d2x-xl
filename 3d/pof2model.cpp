@@ -31,7 +31,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int G3CountPOFModelItems (void *modelP, short *pnSubModels, short *pnVerts, short *pnFaces, short *pnFaceVerts)
 {
-	ubyte *p = (ubyte *) modelP;
+	ubyte *p = reinterpret_cast<ubyte*> (modelP);
 
 G3CheckAndSwap (modelP);
 for (;;) {
@@ -153,7 +153,7 @@ if (psm->nIndex < 0)
 pmf->nVerts = nVerts;
 if ((pmf->bGlow = (nGlow >= 0)))
 	nGlow = -1;
-uvl = (tUVL *) (p + 30 + (nVerts | 1) * 2);
+uvl = reinterpret_cast<tUVL*> (p + 30 + (nVerts | 1) * 2);
 n = pn->ToFloat3();
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
@@ -179,7 +179,7 @@ return ++pmf;
 int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int nThis, int nParent,
 								int bSubObject, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
-	ubyte				*p = (ubyte *) modelP;
+	ubyte				*p = reinterpret_cast<ubyte*> (modelP);
 	tG3SubModel		*psm = pm->pSubModels + nThis;
 	tG3ModelFace	*pmf = pm->pFaces + pm->iFace;
 	int				nChild;

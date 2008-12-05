@@ -44,7 +44,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 #define	G3_ALLOC(_buf,_count,_type,_fill) \
-			if (((_buf) = (_type *) D2_ALLOC (_count * sizeof (_type)))) \
+			if (((_buf) = reinterpret_cast<_type*> (D2_ALLOC (_count * sizeof (_type)))) \
 				memset (_buf, (char) _fill, _count * sizeof (_type)); \
 			else \
 				return G3FreeModelItems (pm);
@@ -77,13 +77,13 @@ if (gameStates.ogl.bHaveVBOs) {
 		return G3FreeModelItems (pm);
 		}
 	glBufferDataARB (GL_ARRAY_BUFFER, pm->nFaceVerts * sizeof (tG3RenderVertex), NULL, GL_STATIC_DRAW_ARB);
-	pm->pVertBuf [1] = (tG3RenderVertex *) glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
+	pm->pVertBuf [1] = reinterpret_cast<tG3RenderVertex*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB));
 	pm->vboIndexHandle = 0;
 	glGenBuffersARB (1, &pm->vboIndexHandle);
 	if (pm->vboIndexHandle) {
 		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->vboIndexHandle);
 		glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->nFaceVerts * sizeof (short), NULL, GL_STATIC_DRAW_ARB);
-		pm->pIndex [1] = (short *) glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
+		pm->pIndex [1] = reinterpret_cast<short*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB));
 		}
 	}
 G3_ALLOC (pm->pVertBuf [0], pm->nFaceVerts, tG3RenderVertex, 0);
@@ -270,10 +270,10 @@ for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
 		}
 	pfi->nId = nId;
 	}
-pm->pVBVerts = (fVector3 *) pm->pVertBuf [0];
+pm->pVBVerts = reinterpret_cast<fVector3*> (pm->pVertBuf [0]);
 pm->pVBNormals = pm->pVBVerts + pm->nFaceVerts;
-pm->pVBColor = (tRgbaColorf *) (pm->pVBNormals + pm->nFaceVerts);
-pm->pVBTexCoord = (tTexCoord2f *) (pm->pVBColor + pm->nFaceVerts);
+pm->pVBColor = reinterpret_cast<tRgbaColorf*> (pm->pVBNormals + pm->nFaceVerts);
+pm->pVBTexCoord = reinterpret_cast<tTexCoord2f*> (pm->pVBColor + pm->nFaceVerts);
 pv = pm->pVBVerts;
 pn = pm->pVBNormals;
 pt = pm->pVBTexCoord;
@@ -460,7 +460,7 @@ if (pm->nType >= 0) {
 		}
 	}
 //first get the biggest distance between any two model vertices
-if ((vertices = (fVector3 *) D2_ALLOC (pm->nFaceVerts * sizeof (fVector3)))) {
+if ((vertices = new fVector3 [pm->nFaceVerts])) {
 		fVector3	*pv, *pvi, *pvj;
 
 	for (i = 0, h = pm->nSubModels, psm = pm->pSubModels, pv = vertices; i < h; i++, psm++) {
@@ -497,7 +497,7 @@ if ((vertices = (fVector3 *) D2_ALLOC (pm->nFaceVerts * sizeof (fVector3)))) {
 		if (fRad < (r = fVector3::Dist(*pv, vCenter)))
 			fRad = r;
 
-	D2_FREE (vertices);
+	delete[] vertices;
 
 	gameData.models.offsets[nModel] = vCenter.ToFix();
 	if (pm->nType >= 0) {

@@ -84,7 +84,7 @@ extern "C" {
 		CBitmap *InputBackground;	//! Dirty rectangle to draw over behind the users background
 		int DispX, DispY;		//! The top left x and y coords of the console on the display screen
 #if 0
-		unsigned char ConsoleAlpha;	//! The consoles alpha level
+		ubyte ConsoleAlpha;	//! The consoles alpha level
 #endif
 		int CommandScrollBack;		//! How much the users scrolled back in the command lines
 		void(*CmdFunction)(struct console_information_td *console, char* command);	//! The Function that is executed if you press <Return> in the console
@@ -117,7 +117,7 @@ extern "C" {
 #if 0
 	/*! Sets the alpha channel of an SDL_Surface to the specified value (0 - transparend,
 		255 - opaque). Use this function also for OpenGL. */
-	void CON_Alpha(ConsoleInformation *console, unsigned char alpha);
+	void CON_Alpha(ConsoleInformation *console, ubyte alpha);
 	/*! Internal: Sets the alpha channel of an SDL_Surface to the specified value.
 		Preconditions: the surface in question is RGBA. 0 <= a <= 255, where 0 is transparent and 255 opaque */
 	void CON_AlphaGL(SDL_Surface *s, int alpha);
@@ -125,7 +125,7 @@ extern "C" {
 #endif
 	int CON_Background(ConsoleInformation *console, CBitmap *image);
 	/*! Sets font info for the console */
-	void CON_Font(ConsoleInformation *console, CFont *font, unsigned int fg, unsigned int bg);
+	void CON_Font(ConsoleInformation *console, CFont *font, uint fg, uint bg);
 	/*! Changes current position of the console */
 	void CON_Position(ConsoleInformation *console, int x, int y);
 	/*! Changes the size of the console */

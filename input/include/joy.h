@@ -148,8 +148,8 @@ int JoyGetButtonDownCnt (int btn);
 // it, and held it down for 6 more ticks. The time returned would be 9.
 fix JoyGetButtonDownTime(int btn);
 
-unsigned int JoyReadRawButtons (void);
-unsigned int JoyReadRawAxis (unsigned int mask, int *axis);
+uint JoyReadRawButtons (void);
+uint JoyReadRawAxis (uint mask, int *axis);
 void JoyFlush (void);
 ubyte JoyGetPresentMask (void);
 void JoySetTimerRate(int maxValue);

@@ -164,11 +164,11 @@ struct sound_slot {
  int looped;    // Play this sample looped?
  fix pan;       // 0 = far left, 1 = far right
  fix volume;    // 0 = nothing, 1 = fully on
- //changed on 980905 by adb from char * to unsigned char * 
- unsigned char *samples;
+ //changed on 980905 by adb from char * to ubyte * 
+ ubyte *samples;
  //end changes by adb
- unsigned int length; // Length of the sample
- unsigned int position; // Position we are at at the moment.
+ uint length; // Length of the sample
+ uint position; // Position we are at at the moment.
 } SoundSlots[MAX_SOUND_SLOTS];
 
 static int gameStates.sound.digi.bSoundsInitialized = 0;

@@ -80,9 +80,9 @@ extern int dpmi_modify_selector_limit( ushort selector, int size  );
 // Sets the PM handler. Returns 0 if succssful
 extern int dpmi_set_pm_handler(unsigned intnum, void _far * isr );
 
-extern unsigned int dpmi_virtual_memory;
-extern unsigned int dpmi_available_memory;
-extern unsigned int dpmi_physical_memory;
-extern unsigned int dpmi_dos_memory;
+extern uint dpmi_virtual_memory;
+extern uint dpmi_available_memory;
+extern uint dpmi_physical_memory;
+extern uint dpmi_dos_memory;
 
 #endif

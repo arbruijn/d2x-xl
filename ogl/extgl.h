@@ -236,7 +236,7 @@ extern "C" {
 
 union ieee_half /* ieee-like 16 bit float */ 
 {
-    unsigned short bits;
+    ushort bits;
     struct 
     {
         unsigned long m : 10; /* mantissa */
@@ -258,7 +258,7 @@ union ieee_single /* ieee-754 single floating point nType */
 
 /* the actual typedef */
 
-typedef unsigned short GLhalf;
+typedef ushort GLhalf;
 
 /* conversion functions */
 
@@ -345,7 +345,7 @@ __inline static GLhalf ftoh(float val)
 
         if (new_exp<-14) 
         { /* this maps to a denorm */
-            unsigned int exp_val = (unsigned int) (-14 - new_exp); // 2^-exp_val
+            uint exp_val = (uint) (-14 - new_exp); // 2^-exp_val
             h.ieee.e = 0;
             switch (exp_val) 
             {
@@ -378,16 +378,16 @@ return h.bits;
 
 /* OpenGL 1.1 definition */
 
-typedef unsigned int GLenum;
-typedef unsigned char GLboolean;
-typedef unsigned int GLbitfield;
+typedef uint GLenum;
+typedef ubyte GLboolean;
+typedef uint GLbitfield;
 typedef signed char GLbyte;
 typedef short GLshort;
 typedef int GLint;
 typedef int GLsizei;
-typedef unsigned char GLubyte;
-typedef unsigned short GLushort;
-typedef unsigned int GLuint;
+typedef ubyte GLubyte;
+typedef ushort GLushort;
+typedef uint GLuint;
 typedef float GLfloat;
 typedef float GLclampf;
 typedef double GLdouble;

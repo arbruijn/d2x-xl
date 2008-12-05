@@ -144,6 +144,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include <stdlib.h>
 #include <ctype.h>
 #include <malloc.h>
+#include <carray.h>
 
 #ifdef _WIN32
 #	include <winsock2.h>
@@ -163,8 +164,8 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "u_mem.h"
 #include "byteswap.h"
 
-unsigned char ipx_LocalAddress[10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
-unsigned char ipx_ServerAddress[10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
+ubyte ipx_LocalAddress[10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
+ubyte ipx_ServerAddress[10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
 
 // #define UDPDEBUG
 
@@ -300,7 +301,7 @@ typedef struct tDestListEntry {
 #endif
 } tDestListEntry;
 
-static tDestListEntry *destList = NULL;
+static CArray<tDestListEntry> destList;
 
 static struct sockaddr_in broadmasks [MAX_BRDINTERFACES];
 
@@ -314,18 +315,9 @@ static int	destAddrNum = 0,
 
 static int ChkDestListSize(void)
 {
-	struct tDestListEntry *b;
-
 if (destAddrNum < destListSize)
 	return 1;
-destListSize = destListSize ? destListSize * 2 : 8;
-if (!(b = (tDestListEntry *) D2_ALLOC (sizeof (*destList) * destListSize)))
-	 return -1;
-if (destList) {
-	memcpy (b, destList, sizeof (*destList) * destListSize / 2);
-	D2_FREE (destList);
-	}
-destList = b;
+destList.Resize (destListSize = destListSize ? destListSize * 2 : 8);
 return 1;
 }
 
@@ -386,10 +378,7 @@ return i;
 
 void FreeDestList (void)
 {
-if (destList) {
-	D2_FREE (destList);
-	destList = NULL;
-	}
+destList.Destroy ();
 destAddrNum =
 masksNum =
 destListSize = 0;
@@ -412,7 +401,7 @@ static int addiflist(void)
 	SOCKET sock;
 	struct sockaddr_in *sinp,*sinmp;
 
-	D2_FREE(destList);
+	destList.Destroy ();
 	if ((sock=socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP))<0)
 		FAIL("Creating socket() failure during broadcast detection.");
 
@@ -424,7 +413,7 @@ static int addiflist(void)
 #endif
 
 	memset(&ifo[0], 0, sizeof(ifo);
-	chk(ifo = D2_ALLOC(cnt * sizeof(INTERFACE_INFO));
+	chk (ifo = new INTERFACE_INFO [cnt]);
 
 	if (wsaioctl(sock, SIO_GET_INTERFACE_LIST, NULL, 0, &ifo[0], cnt * sizeof(INTERFACE_INFO), &br, NULL, NULL)) != 0) {
 		closesocket(sock);
@@ -433,7 +422,8 @@ static int addiflist(void)
 #if 0
 	cnt=ifconf.ifc_len/sizeof(struct ifreq);
 #endif
-	chk(destList=D2_ALLOC(cnt*sizeof(*destList));
+	destList.Create (cnt);
+	chk (destList.Buffer ());
 	destListSize=cnt;
 	for (i=j=0;i<cnt;i++) {
 		if (ioctl(sock,SIOCGIFFLAGS,ifconf.ifc_req+i)) {
@@ -448,15 +438,15 @@ static int addiflist(void)
 			FAIL("ioctl(udp,\"%s\",SIOCGIF{DST/BRD}ADDR) error.",ifconf.ifc_req[i].ifr_name);
 			}
 
-		sinp = (struct sockaddr_in *)&ifconf.ifc_req[i].ifr_broadaddr;
+		sinp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req[i].ifr_broadaddr);
 #if 0 // old, not portable code
-		sinmp = (struct sockaddr_in *)&ifconf.ifc_req[i].ifr_netmask;
+		sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req[i].ifr_netmask);
 #else // portable code
 		if (ioctl(sock, SIOCGIFNETMASK, ifconf.ifc_req+i)) {
 			closesocket(sock);
 			FAIL("ioctl(udp,\"%s\",SIOCGIFNETMASK) error.", ifconf.ifc_req[i].ifr_name);
 		}
-		sinmp = (struct sockaddr_in *)&ifconf.ifc_req[i].ifr_addr;
+		sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req[i].ifr_addr);
 #endif
 		if (sinp->sin_family!=AF_INET || sinmp->sin_family!=AF_INET) continue;
 		destList [j]=*sinp;
@@ -489,7 +479,7 @@ for (s = 0; s < destAddrNum; s++) {
 destAddrNum=d;
 }
 
-static unsigned char qhbuf[6];
+static ubyte qhbuf[6];
 
 //------------------------------------------------------------------------------
 // Parse PORTSHIFT numeric parameter
@@ -510,7 +500,7 @@ ushort srcPort=0;
 //------------------------------------------------------------------------------
 // Do hostname resolve on name "buf" and return the address in buffer "qhbuf".
  
-unsigned char *queryhost(char *buf)
+ubyte *queryhost(char *buf)
 {
 struct hostent *he;
 char *s;
@@ -523,7 +513,7 @@ char c=0;
 		}
 	else 
 		memset(qhbuf+4,0,2);
-	he=gethostbyname((char *)buf);
+	he=gethostbyname(reinterpret_cast<char*> (buf));
 	if (s) 
 		*s=c;
 	if (!he) {
@@ -545,13 +535,13 @@ char c=0;
 //------------------------------------------------------------------------------
 // Dump raw form of IP address/port by fancy output to user
 
-static void dumpraddr(unsigned char *a)
+static void dumpraddr(ubyte *a)
 {
 short port;
 
 PrintLog ("[%u.%u.%u.%u]", a[0],a[1],a[2],a[3]);
 con_printf (0, "[%u.%u.%u.%u]", a[0],a[1],a[2],a[3]);
-port=(signed short)ntohs (*(unsigned short *)(a+4));
+port=(signed short)ntohs (*reinterpret_cast<ushort*> (a+4));
 if (port) {
 	PrintLog (":%+d",port);
 	con_printf (0, ":%+d",port);
@@ -564,7 +554,7 @@ PrintLog ("\n");
 #if 0
 static void dumpaddr(struct sockaddr_in *sin)
 {
-unsigned short srcPort;
+ushort srcPort;
 
 memcpy(qhbuf, &sin->sin_addr, 4);
 srcPort = htons ((u_short) (ntohs (sin->sin_port) - UDP_BASEPORT));
@@ -598,7 +588,7 @@ if (s)
 		}
 memset(ipx_MyAddress, 0, 4);
 memcpy(ipx_MyAddress + 4, qhbuf, 6);
-//udpBasePorts [gameStates.multi.bServer] += (short)ntohs(*(unsigned short *)(qhbuf+4));
+//udpBasePorts [gameStates.multi.bServer] += (short)ntohs(*reinterpret_cast<ushort*> (qhbuf+4));
 if (!(s && *s)) 
 	addiflist();
 else {
@@ -613,16 +603,16 @@ else {
 			break;
 		for (s2 = s; *s2 && *s2 != ','; s2++)
 			;
-		chk (ns = (char *) D2_ALLOC ((unsigned int) (s2 - s + 1)));
+		chk (ns = new char [s2 - s + 1]);
 		memcpy(ns, s, s2 - s);
 		ns[s2-s]='\0';
 		if (!queryhost(ns)) 
 			msg ("Ignored broadcast-destination \"%s\" as being invalid", ns);
-		D2_FREE(ns);
+		delete[] ns;
 		sin = &destList [destAddrNum].addr;
 		sin->sin_family = AF_INET;
 		memcpy(&sin->sin_addr, qhbuf, 4);
-		sin->sin_port = htons ((u_short) (ntohs (*((u_short *) (qhbuf + 4))) + UDP_BASEPORT));
+		sin->sin_port = htons ((u_short) (ntohs (*(reinterpret_cast<u_short*> (qhbuf + 4))) + UDP_BASEPORT));
 		if (AddDestToList (sin) < 0)
 			FAIL ("Error allocating client table");
 		s=s2+(*s2==',');
@@ -662,7 +652,7 @@ if (!gameStates.multi.bServer) {		//set up server address and add it to destinat
 	if (!ChkDestListSize ())
 		FAIL ("Error allocating client table");
 	nServerPort = udpBasePorts [0] + networkData.nSocket;
-	*((u_short *) (ipx_ServerAddress + 8)) = htons (nServerPort);
+	*(reinterpret_cast<u_short*> (ipx_ServerAddress + 8)) = htons (nServerPort);
 	sin.sin_family = AF_INET;
 	memcpy (&sin.sin_addr.s_addr, ipx_ServerAddress + 4, 4);
 	sin.sin_port = htons (nServerPort);
@@ -675,9 +665,9 @@ if (0 > (sk->fd = (int) socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP))) {
 	FAIL ("Couldn't create socket on nLocalPort %d.\nError code: %d.", nLocalPort);
 	}
 ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
-*((u_short *) (ipx_MyAddress + 8)) = nLocalPort;
+*(reinterpret_cast<u_short*> (ipx_MyAddress + 8)) = nLocalPort;
 #ifdef UDP_BROADCAST
-if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, (char *) &val_one, sizeof (val_one))) {
+if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_one), sizeof (val_one))) {
 	closesocket (sk->fd);
 	sk->fd = -1;
 	FAIL ("Setting broadcast socket option failed.");
@@ -687,7 +677,7 @@ if (gameStates.multi.bServer || mpParams.udpClientPort) {
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = htonl (INADDR_ANY); //ipx_ServerAddress + 4);
 	sin.sin_port = htons (nLocalPort);
-	if (bind (sk->fd, (struct sockaddr *) &sin, sizeof (sin))) {
+	if (bind (sk->fd, reinterpret_cast<struct sockaddr*> (&sin), sizeof (sin))) {
 		closesocket (sk->fd);
 		sk->fd = -1;
 		FAIL ("Couldn't bind to nLocalPort %d.", nLocalPort);
@@ -736,7 +726,7 @@ memcpy (buf, SAFEMODE_ID, SAFEMODE_ID_LEN);
 buf [SAFEMODE_ID_LEN - 2] = extraGameInfo [0].bSafeUDP;
 if (pdl->bSafeMode != -1)
 	buf [SAFEMODE_ID_LEN - 1] = pdl->bSafeMode;
-return sendto (pdl->fd, buf, SAFEMODE_ID_LEN, 0, (struct sockaddr *) &pdl->addr, sizeof (pdl->addr));
+return sendto (pdl->fd, buf, SAFEMODE_ID_LEN, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
 }
 
 //------------------------------------------------------------------------------
@@ -748,7 +738,7 @@ if ((pdl->bSafeMode < 0) && (!--(pdl->modeCountdown))) {
 	int i;
 
 	memcpy (buf, SAFEMODE_ID, SAFEMODE_ID_LEN);
-	i = sendto (pdl->fd, buf, SAFEMODE_ID_LEN, 0, (struct sockaddr *) &pdl->addr, sizeof (pdl->addr));
+	i = sendto (pdl->fd, buf, SAFEMODE_ID_LEN, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
 	pdl->modeCountdown = 2;
 	}
 }
@@ -820,7 +810,7 @@ else {
 	}
 destAddr.sin_family = AF_INET;
 memcpy (&destAddr.sin_addr, ipxHeader->Destination.Node, 4);
-destAddr.sin_port = *((ushort *) (ipxHeader->Destination.Node + 4));
+destAddr.sin_port = *(reinterpret_cast<ushort*> (ipxHeader->Destination.Node + 4));
 memset (&(destAddr.sin_zero), '\0', 8);
 
 if (!(gameStates.multi.bTrackerCall || (AddDestToList (&destAddr) >= 0)))
@@ -873,7 +863,7 @@ for (; iDest < destAddrNum; iDest++) {
 				ppp = pdl->packetProps + j;
 				ppp->len = dataLen + extraDataLen;
 				ppp->data = pdl->packetBuf + j * MAX_PACKETSIZE;
-				*((int *) (buf + dataLen + 8)) = INTEL_INT (pdl->nSent);
+				*(reinterpret_cast<int*> (buf + dataLen + 8)) = INTEL_INT (pdl->nSent);
 				memcpy (buf + dataLen + 12, "SAFE", 4);
 				memcpy (ppp->data, buf, ppp->len);
 				ppp->id = pdl->nSent++;
@@ -892,7 +882,7 @@ for (; iDest < destAddrNum; iDest++) {
 		ntohs (dest->sin_port);
 	*/
 #endif
-	nUdpRes = sendto (mysock->fd, (const char *) bufP, dataLen + extraDataLen, 0, (struct sockaddr *) dest, sizeof (*dest));
+	nUdpRes = sendto (mysock->fd, reinterpret_cast<const char*> (bufP), dataLen + extraDataLen, 0, reinterpret_cast<struct sockaddr*> (dest), sizeof (*dest));
 #if DBG
 	if (!gameStates.multi.bTrackerCall && (nUdpRes < extraDataLen + 8))
 		h = WSAGetLastError ();
@@ -920,9 +910,9 @@ static void RequestResend (struct tDestListEntry *pdl, int nLastPacket)
 	static int h = 0;
 
 memcpy (buf, RESEND_ID, RESEND_ID_LEN);
-*((int *) (buf + RESEND_ID_LEN)) = INTEL_INT (pdl->nReceived);
-*((int *) (buf + RESEND_ID_LEN + 4)) = INTEL_INT (nLastPacket);
-i = sendto (pdl->fd, buf, RESEND_ID_LEN + 8, 0, (struct sockaddr *) &pdl->addr, sizeof (pdl->addr));
+*(reinterpret_cast<int*> (buf + RESEND_ID_LEN)) = INTEL_INT (pdl->nReceived);
+*(reinterpret_cast<int*> (buf + RESEND_ID_LEN + 4)) = INTEL_INT (nLastPacket);
+i = sendto (pdl->fd, buf, RESEND_ID_LEN + 8, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
 }
 
 //------------------------------------------------------------------------------
@@ -935,8 +925,8 @@ int DropData (tDestListEntry *pdl, int nDrop)
 	ubyte	buf [40];
 
 memcpy (buf, FORGET_ID, FORGET_ID_LEN);
-*((int *) (buf + FORGET_ID_LEN)) = INTEL_INT (nDrop);
-sendto (pdl->fd, buf, FORGET_ID_LEN + 4, 0, (struct sockaddr *) &pdl->addr, sizeof (pdl->addr));
+*(reinterpret_cast<int*> (buf + FORGET_ID_LEN)) = INTEL_INT (nDrop);
+sendto (pdl->fd, buf, FORGET_ID_LEN + 4, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
 return 1;
 }
 
@@ -954,7 +944,7 @@ if (strncmp (buf, FORGET_ID, FORGET_ID_LEN))
 if (destAddrNum <= (i = FindDestInList (fromAddr)))
 	return 1;
 pdl = destList + i;
-nDrop = *((int *) (buf + FORGET_ID_LEN));
+nDrop = *(reinterpret_cast<int*> (buf + FORGET_ID_LEN));
 pdl->nReceived = INTEL_INT (nDrop);
 return 1;
 }
@@ -974,9 +964,9 @@ if (strncmp (buf, RESEND_ID, sizeof (RESEND_ID) - 1))
 	return 0;
 if (destAddrNum <= (i = FindDestInList (fromAddr)))
 	return 1;
-nFirst = *((int *) (buf + RESEND_ID_LEN));
+nFirst = *(reinterpret_cast<int*> (buf + RESEND_ID_LEN));
 nFirst = INTEL_INT (nFirst);
-nLast = *((int *) (buf + RESEND_ID_LEN + 4));
+nLast = *(reinterpret_cast<int*> (buf + RESEND_ID_LEN + 4));
 nLast = INTEL_INT (nLast);
 pdl = destList + i;
 if (!pdl->numPackets)
@@ -1004,7 +994,7 @@ for (i = pdl->numPackets, j = pdl->firstPacket; i; i--, j++) {
 		DropData (pdl, nDrop);
 		nDrop = -1;
 		}
-	sendto (pdl->fd, ppp->data, ppp->len, 0, (struct sockaddr *) &pdl->addr, sizeof (pdl->addr));
+	sendto (pdl->fd, ppp->data, ppp->len, 0, reinterpret_cast<struct sockaddr*> (&pdl->addr), sizeof (pdl->addr));
 	}
 return 1;
 }
@@ -1021,7 +1011,7 @@ static int UDPReceivePacket
 	int						i, dataLen, bTracker, 
 								fromAddrSize = sizeof (fromAddr);
 	tDestListEntry			*pdl;
-	unsigned short			srcPort;
+	ushort			srcPort;
 #if UDP_SAFEMODE
 	int						packetId = -1, bSafeMode = 0;
 #endif
@@ -1029,13 +1019,13 @@ static int UDPReceivePacket
 	//char						szIP [30];
 #endif
 
-if (0 > (dataLen = recvfrom (s->fd, (char *) outBuf, outBufSize, 0, (struct sockaddr *) &fromAddr, &fromAddrSize))) {
+if (0 > (dataLen = recvfrom (s->fd, reinterpret_cast<char*> (outBuf), outBufSize, 0, reinterpret_cast<struct sockaddr*> (&fromAddr), &fromAddrSize))) {
 #if DBG
 	int error = WSAGetLastError ();
 #endif
 	return -1;
 	}
-bTracker = IsTracker (*((unsigned long *) &fromAddr.sin_addr), *((ushort *) &fromAddr.sin_port));
+bTracker = IsTracker (*reinterpret_cast<ulong*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port));
 if (fromAddr.sin_family != AF_INET) 
 	return -1;
 if ((dataLen < 6) || (!bTracker && (memcmp (outBuf, D2XUDP, 6) 
@@ -1049,7 +1039,7 @@ if (!(bTracker
 	 || ResendData (&fromAddr, outBuf) || ForgetData (&fromAddr, outBuf)
 #endif
 	 )) {
-	rd->src_socket = ntohs (*(unsigned short *) (outBuf + 6));
+	rd->src_socket = ntohs (*reinterpret_cast<ushort*> (outBuf + 6));
 	rd->dst_socket = s->socket;
 	srcPort = ntohs (fromAddr.sin_port);
 	// check if we already have sender of this packet in broadcast list
@@ -1071,7 +1061,7 @@ if (!(bTracker
 			ReportSafeMode (pdl);
 		if (pdl->bOurSafeMode == 1) {
 			bSafeMode = 1;
-			packetId = *((int *) (outBuf + dataLen - 14));
+			packetId = *(reinterpret_cast<int*> (outBuf + dataLen - 14));
 			packetId = INTEL_INT (packetId);
 			if (packetId == pdl->nReceived) 
 				pdl->nReceived++;
@@ -1082,7 +1072,7 @@ if (!(bTracker
 			}
 #	if DBG
 		con_printf (0, "%s: %d bytes, packet id: %d, safe modes: %d,%d", 
-						iptos (szIP, (char *) &fromAddr), dataLen, packetId, pdl->bSafeMode, pdl->bOurSafeMode);
+						iptos (szIP, reinterpret_cast<char*> (&fromAddr), dataLen, packetId, pdl->bSafeMode, pdl->bOurSafeMode);
 #	endif
 #endif //UDP_SAFEMODE
 		}
@@ -1107,7 +1097,7 @@ rd->pktType = 0;
 //printf(MSGHDR "ReceivePacket: dataLen=%d,from=",dataLen);
 con_printf (0, "received %d bytes from %u.%u.%u.%u:%u\n", 
 				dataLen, rd->src_node [0], rd->src_node [1], rd->src_node [2], rd->src_node [3],
-				(signed short)ntohs (*(unsigned short *)(rd->src_node + 4)));
+				(signed short)ntohs (*reinterpret_cast<ushort*> (rd->src_node + 4)));
 //dumpraddr (rd->src_node);
 //putchar('\n');
 #endif
@@ -1118,7 +1108,7 @@ return dataLen;
 
 int UDPPacketReady(ipx_socket_t *s) 
 {
-	unsigned long nAvailBytes = 0;
+	ulong nAvailBytes = 0;
 
 return !ioctlsocket(s->fd, FIONREAD, &nAvailBytes) && (nAvailBytes > 0);
 }

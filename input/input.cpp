@@ -195,7 +195,7 @@ return (int) ((AttenuateAxis (h, i) * gameStates.input.kcPollTime) / 128);
 int ControlsReadJoystick (int *joyAxis)
 {
 	int	rawJoyAxis [JOY_MAX_AXES];
-	unsigned long channelMasks;
+	ulong channelMasks;
 	int	i, bUseJoystick = 0;
 	fix	ctime = 0;
 
@@ -1260,16 +1260,16 @@ if (!gameOpts->legacy.bInput)
 #endif
 
 SetControlType ();
-bUseJoystick = gameOpts->input.joystick.bUse && ControlsReadJoystick ((int *) &joyAxis [0]);
+bUseJoystick = gameOpts->input.joystick.bUse && ControlsReadJoystick (reinterpret_cast<int*> (&joyAxis [0]));
 if (gameOpts->input.mouse.bUse)
 	if (gameStates.input.bCybermouseActive) {
 //		ReadOWL (kc_external_control);
 //		CybermouseAdjust ();
 		} 
 	else if (gameStates.input.nMouseType == CONTROL_CYBERMAN)
-		bUseMouse = ControlsReadCyberman ((int *) &mouseAxis [0], &nMouseButtons);
+		bUseMouse = ControlsReadCyberman (reinterpret_cast<int*> (&mouseAxis [0]), &nMouseButtons);
 	else
-		bUseMouse = ControlsReadMouse ((int *) &mouseAxis [0], &nMouseButtons);
+		bUseMouse = ControlsReadMouse (reinterpret_cast<int*> (&mouseAxis [0]), &nMouseButtons);
 else {
 	mouseAxis [0] =
 	mouseAxis [1] =
@@ -1280,11 +1280,12 @@ else {
 pitchTime = headingTime = 0;
 memset (Controls + 1, 0, 3 * sizeof (tControlInfo));
 for (i = 0; i < 3; i++) {
-	ControlsDoKeyboard (&bSlideOn, &bBankOn, &pitchTime, &headingTime, (int *) &gameStates.input.nCruiseSpeed, i);
+	ControlsDoKeyboard (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
 	if (bUseJoystick)
-		ControlsDoJoystick (&bSlideOn, &bBankOn, &pitchTime, &headingTime, (int *) &gameStates.input.nCruiseSpeed, i);
+		ControlsDoJoystick (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
 	if (bUseMouse)
-		ControlsDoMouse ((int *) &mouseAxis [0], nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime, (int *) &gameStates.input.nCruiseSpeed, i);
+		ControlsDoMouse (reinterpret_cast<int*> (&mouseAxis [0], nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime, 
+							  reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
 	Controls [0].pitchTime = Controls [1].pitchTime + Controls [2].pitchTime + Controls [3].pitchTime;
 	Controls [0].headingTime = Controls [1].headingTime + Controls [2].headingTime + Controls [3].headingTime;
 	Controls [0].bankTime = Controls [1].bankTime + Controls [2].bankTime + Controls [3].bankTime;
@@ -1293,7 +1294,7 @@ for (i = 0; i < 3; i++) {
 		}
 	}
 if (gameOpts->input.bUseHotKeys)
-	ControlsDoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, (int *) &gameStates.input.nCruiseSpeed, i);
+	ControlsDoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
 #ifdef WIN32
 if (ControlsReadTrackIR ())
 	ControlsDoTrackIR ();
@@ -1389,14 +1390,14 @@ void CybermouseAdjust ()
 			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;
 
-			Kconfig_abs_movement = (vmsAngVec *) ((uint)kc_external_control + sizeof (tControlInfo);
+			Kconfig_abs_movement = reinterpret_cast<vmsAngVec*> (((uint)kc_external_control + sizeof (tControlInfo));
 
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
 				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
 				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
 			}
-			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vmsAngVec);
+			oem_message = reinterpret_cast<char*> (((uint)Kconfig_abs_movement + sizeof (vmsAngVec));
 			if (oem_message [0] != '\0')
 				HUDInitMessage (oem_message);
 		}

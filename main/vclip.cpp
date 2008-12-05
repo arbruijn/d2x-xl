@@ -82,7 +82,7 @@ if (vcP->flags & WCF_ALTFMT) {
 		nFrames = ((bmP->Type () != BM_TYPE_ALT) && bmP->Parent ()) ? bmP->Parent ()->FrameCount () : bmP->FrameCount ();
 		}
 	else {
-		bmP = SetupHiresAnim ((short *) vcP->frames, nFrames, -1, 0, 1, &nFrames);
+		bmP = SetupHiresAnim (reinterpret_cast<short*> (vcP->frames), nFrames, -1, 0, 1, &nFrames);
 		if (!bmP)
 			vcP->flags &= ~WCF_ALTFMT;
 		else if (!gameOpts->ogl.bGlTexMerge)
@@ -200,7 +200,7 @@ r = X2F (xSize);
 sd.pPulse = 0;
 G3StartInstanceMatrix(objP->info.position.vPos, &objP->info.position.mOrient);
 for (i = 0; i < 3; i++) {
-	RenderSphere (&sd, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->info.position.vPos),
+	RenderSphere (&sd, reinterpret_cast<tOOF_vector*> (OOF_VecVms2Oof (&p, &objP->info.position.vPos)),
 					  r, r, r, 1, 1, 1, fAlpha, NULL, 1);
 	r *= i ? 0.5f : 0.8f;
 	}

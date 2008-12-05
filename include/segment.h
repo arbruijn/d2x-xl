@@ -222,14 +222,14 @@ typedef struct {
 	short   nSegment;
 	ubyte   nSide;
 	ubyte   count;
-	unsigned short   index;
+	ushort   index;
 } tDlIndexD2;
 
 typedef struct {
 	short   nSegment;
-	unsigned short nSide :3;
-	unsigned short count :13;
-	unsigned short index;
+	ushort nSide :3;
+	ushort count :13;
+	ushort index;
 } tDlIndexD2X;
 
 typedef union {

@@ -312,7 +312,7 @@ else
 	glDepthFunc (GL_LEQUAL);
 	glEnable (GL_BLEND);
 	glDisable (GL_TEXTURE_2D);
-	glColor4fv ((GLfloat *) color);
+	glColor4fv (reinterpret_cast<GLfloat*> (color));
 	glBegin (GL_TRIANGLE_FAN);
 	for (i = 0; i < nVertices; i++)
 		OglVertex3f (*pointList++);
@@ -612,7 +612,7 @@ else
 				G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.V3(), pl->p3_index, NULL, NULL,
 									gameStates.render.nState ? X2F (uvlList [i].l) : 1, 1, 0);
 				glTexCoord2f (X2F (uvlList [i].u), X2F (uvlList [i].v));
-				glVertex3fv ((GLfloat *) &vVertPos);
+				glVertex3fv (reinterpret_cast<GLfloat*> (&vVertPos));
 				}
 			}
 		else {
@@ -623,7 +623,7 @@ else
 									/*gameStates.render.nState ? X2F (uvlList [i].l) :*/ 1, 1, 0);
 				glMultiTexCoord2f (GL_TEXTURE0, X2F (uvlList [i].u), X2F (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL, mask != NULL);
-				glVertex3fv ((GLfloat *) &vVertPos);
+				glVertex3fv (reinterpret_cast<GLfloat*> (&vVertPos));
 				}
 			}
 		}
@@ -634,7 +634,7 @@ else
 					SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 				else {
 					pc = gameData.render.color.vertices + (*ppl)->p3_index;
-					glColor3fv ((GLfloat *) &pc->color);
+					glColor3fv (reinterpret_cast<GLfloat*> (&pc->color));
 					}
 				glTexCoord2f (X2F (uvlList [i].u), X2F (uvlList [i].v));
 				OglVertex3f (*ppl);
@@ -647,7 +647,7 @@ else
 					SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 				else {
 					pc = gameData.render.color.vertices + (*ppl)->p3_index;
-					glColor3fv ((GLfloat *) &pc->color);
+					glColor3fv (reinterpret_cast<GLfloat*> (&pc->color));
 					}
 				glMultiTexCoord2f (GL_TEXTURE0, X2F (uvlList [i].u), X2F (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL, mask != NULL);
@@ -907,7 +907,7 @@ if (bDynLight) {
 		G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.V3(), pl->p3_index, NULL, NULL,
 							/*gameStates.render.nState ? X2F (uvlList [i].l) :*/ 1, 1, 0);
 		glTexCoord2f (X2F (uvlList [i].u), X2F (uvlList [i].v));
-		glVertex3fv ((GLfloat *) &vVertPos);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&vVertPos));
 		}
 	}
 else if (bLight) {
@@ -1042,7 +1042,7 @@ if (bVertexArrays) {
 		if (nColors == nVertices)
 			glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), colorP);
 		else
-			glColor4fv ((GLfloat *) colorP);
+			glColor4fv (reinterpret_cast<GLfloat*> (colorP));
 		}
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), vertexP);
 	glDrawArrays (nPrimitive, 0, nVertices);
@@ -1058,32 +1058,32 @@ else {
 	if (colorP && (nColors == nVertices)) {
 		if (bmP) {
 			for (i = 0; i < nVertices; i++) {
-				glColor4fv ((GLfloat *) (colorP + i));
-				glVertex3fv ((GLfloat *) (vertexP + i));
-				glTexCoord2fv ((GLfloat *) (texCoordP + i));
+				glColor4fv (reinterpret_cast<GLfloat*> (colorP + i));
+				glVertex3fv (reinterpret_cast<GLfloat*> (vertexP + i));
+				glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP + i));
 				}
 			}
 		else {
 			for (i = 0; i < nVertices; i++) {
-				glColor4fv ((GLfloat *) (colorP + i));
-				glVertex3fv ((GLfloat *) (vertexP + i));
+				glColor4fv (reinterpret_cast<GLfloat*> (colorP + i));
+				glVertex3fv (reinterpret_cast<GLfloat*> (vertexP + i));
 				}
 			}
 		}
 	else {
 		if (colorP)
-			glColor4fv ((GLfloat *) colorP);
+			glColor4fv (reinterpret_cast<GLfloat*> (colorP));
 		else
 			glColor3d (1, 1, 1);
 		if (bmP) {
 			for (i = 0; i < nVertices; i++) {
-				glVertex3fv ((GLfloat *) (vertexP + i));
-				glTexCoord2fv ((GLfloat *) (texCoordP + i));
+				glVertex3fv (reinterpret_cast<GLfloat*> (vertexP + i));
+				glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP + i));
 				}
 			}
 		else {
 			for (i = 0; i < nVertices; i++) {
-				glVertex3fv ((GLfloat *) (vertexP + i));
+				glVertex3fv (reinterpret_cast<GLfloat*> (vertexP + i));
 				}
 			}
 		}

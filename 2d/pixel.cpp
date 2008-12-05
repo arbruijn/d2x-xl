@@ -47,7 +47,7 @@ void gr_upixel( int x, int y )
 		gr_video_memory[(ROWSIZE * (y+YOFFSET)) + ((x+XOFFSET)>>2)] = COLOR.index;
 		return;
 	case BM_SVGA:
-		gr_vesa_pixel( COLOR, (unsigned int)DATA + (unsigned int)ROWSIZE * y + x);
+		gr_vesa_pixel( COLOR, (uint)DATA + (uint)ROWSIZE * y + x);
 		return;
 #endif
 	}
@@ -61,7 +61,7 @@ void gr_pixel( int x, int y )
 }
 
 #ifndef D1XD3D
-inline void gr_bm_upixel( CBitmap * bmP, int x, int y, unsigned char color )
+inline void gr_bm_upixel( CBitmap * bmP, int x, int y, ubyte color )
 {
 	tCanvasColor c;
 	switch (bmP->Mode ())
@@ -82,14 +82,14 @@ inline void gr_bm_upixel( CBitmap * bmP, int x, int y, unsigned char color )
 		gr_video_memory[(bmP->RowSize () * y) + (x/4)] = color;
 		return;
 	case BM_SVGA:
-		gr_vesa_pixel(color,(unsigned int)bmP->Buffer () + (unsigned int)bmP->RowSize () * y + x);
+		gr_vesa_pixel(color,(uint)bmP->Buffer () + (uint)bmP->RowSize () * y + x);
 		return;
 #endif
 	}
 }
 #endif
 
-void gr_bm_pixel( CBitmap * bmP, int x, int y, unsigned char color )
+void gr_bm_pixel( CBitmap * bmP, int x, int y, ubyte color )
 {
 	if ((x<0) || (y<0) || (x >= bmP->Width ()) || (y >= bmP->Height ())) return;
 	gr_bm_upixel (bmP, x, y, color);

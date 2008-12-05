@@ -349,7 +349,7 @@ server.sin_family = AF_INET;
 server.sin_addr.s_addr = htonl (INADDR_ANY);
 server.sin_port = htons (port);
 // bind address to socket
-if (bind (ssd.socket, (struct sockaddr *) &server, sizeof (server)) < 0) {
+if (bind (ssd.socket, reinterpret_cast<struct sockaddr*> (&server), sizeof (server)) < 0) {
    closesocket (ssd.socket);
    return WinSockMsg (WSAGetLastError (), NULL);
    }
@@ -386,7 +386,7 @@ if (ssd.nChannels == MAX_PLAYERS)
    return WinSockMsg (-1, "server is full");
 ssd.status.msgCode = 0;
 ssd.status.msgText = "";
-if (0 > (long) (channel = accept (ssd.socket, (struct sockaddr *) &channelAddr, &nLength))) {
+if (0 > (long) (channel = accept (ssd.socket, reinterpret_cast<struct sockaddr*> (&channelAddr), &nLength))) {
    WinSockMsg (WSAGetLastError (), NULL);
    return -1;
    }
@@ -462,7 +462,7 @@ if (GetSocket ())
    return ssd.status.msgCode;
 
 // connect to server.
-if (connect (ssd.socket, (struct sockaddr *) &server, sizeof (server)) == SOCKET_ERROR)
+if (connect (ssd.socket, reinterpret_cast<struct sockaddr*> (&server), sizeof (server)) == SOCKET_ERROR)
    return WinSockMsg (WSAGetLastError (), NULL);
 ssd.port = port;
 ssd.bListen = FALSE;

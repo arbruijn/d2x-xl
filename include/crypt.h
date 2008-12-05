@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 char *jcrypt (char *pszPlain);
-unsigned short Crc16 (unsigned short crc, const unsigned char * bufP, long bufSize);
-unsigned int Crc32 (unsigned int crc, const unsigned char * bufP, long bufSize);
+ushort Crc16 (ushort crc, const ubyte * bufP, long bufSize);
+uint Crc32 (uint crc, const ubyte * bufP, long bufSize);
 
 #endif //__crypt_h

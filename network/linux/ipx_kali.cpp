@@ -16,7 +16,7 @@
 #include "ipx_drv.h"
 #include "ukali.h"
 
-extern unsigned char ipx_MyAddress[10];
+extern ubyte ipx_MyAddress[10];
 
 static int open_sockets = 0;
 static int dynamic_socket = 0x401;
@@ -94,7 +94,7 @@ int ipx_kali_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
 	memcpy(toaddr.sa_nodenum, IPXHeader->Destination.Node, sizeof(toaddr.sa_nodenum));
 	memcpy(&toaddr.sa_socket, IPXHeader->Destination.Socket, sizeof(toaddr.sa_socket));
 
-	if ((i = KaliSendPacket(mysock->fd, (char *)data, dataLen, &toaddr)) < 0)
+	if ((i = KaliSendPacket(mysock->fd, reinterpret_cast<char*> (data), dataLen, &toaddr)) < 0)
 		return -1;
 
 	return i;

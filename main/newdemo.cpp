@@ -652,7 +652,7 @@ if ((objP->info.nType == OBJ_WEAPON) && (objP->info.renderType == RT_WEAPON_VCLI
 else {
 	ubyte b = NDReadByte ();
 	objP->info.xLifeLeft = (fix) b;
-	// MWA old way -- won't work with big endian machines       NDReadByte ((sbyte *) (ubyte *)&(objP->info.xLifeLeft);
+	// MWA old way -- won't work with big endian machines       NDReadByte (reinterpret_cast<sbyte*> (reinterpret_cast<ubyte*> (&(objP->info.xLifeLeft);
 	objP->info.xLifeLeft = (fix) ((int) objP->info.xLifeLeft << 12);
 	}
 if (objP->info.nType == OBJ_ROBOT) {
@@ -1636,7 +1636,7 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 	gameData.multiplayer.nPlayers = (int)c;
 	// changed this to above two lines -- breaks on the mac because of
 	// endian issues
-	//		NDReadByte ((sbyte *)&gameData.multiplayer.nPlayers);
+	//		NDReadByte (reinterpret_cast<sbyte*> (&gameData.multiplayer.nPlayers);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		gameData.multiplayer.players [i].cloakTime = 0;
 		gameData.multiplayer.players [i].invulnerableTime = 0;
@@ -2702,7 +2702,7 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 	gameData.multiplayer.nPlayers = (int)c;
 	// see newdemo_read_start_demo for explanation of
 	// why this is commented out
-	//		NDReadByte ((sbyte *)&gameData.multiplayer.nPlayers);
+	//		NDReadByte (reinterpret_cast<sbyte*> (&gameData.multiplayer.nPlayers);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		NDReadString (gameData.multiplayer.players [i].callsign);
 		gameData.multiplayer.players [i].connected = NDReadByte ();
@@ -2966,7 +2966,7 @@ else {
 				int i, j, nObjects, nLevel, nSig;
 
 				nObjects = gameData.objs.nLastObject [0];
-				curObjs = (tObject *) D2_ALLOC (sizeof (tObject) * (nObjects + 1));
+				curObjs = reinterpret_cast<tObject*> (D2_ALLOC (sizeof (tObject) * (nObjects + 1));
 				if (!
 					curObjs) {
 					Warning (TXT_INTERPOLATE_BOTS, sizeof (tObject) * nObjects);
@@ -3066,7 +3066,7 @@ else
 void NDFinishRecording (void)
 {
 	ubyte cloaked = 0;
-	unsigned short byteCount = 0;
+	ushort byteCount = 0;
 	int l;
 
 NDWriteByte (ND_EVENT_EOF);
@@ -3171,7 +3171,7 @@ if (!gameData.demo.bNoSpace) {
 	}
 else if (gameData.demo.bNoSpace == 1) {
 	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = (char *) TXT_DEMO_SAVE_BAD;
+	m [0].text = reinterpret_cast<char*> (TXT_DEMO_SAVE_BAD);
 	m [1].nType = NM_TYPE_INPUT;
 	m [1].text_len = 8; 
 	m [1].text = filename;
@@ -3179,7 +3179,7 @@ else if (gameData.demo.bNoSpace == 1) {
 	} 
 else if (gameData.demo.bNoSpace == 2) {
 	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = (char *) TXT_DEMO_SAVE_NOSPACE;
+	m [0].text = reinterpret_cast<char*> (TXT_DEMO_SAVE_NOSPACE);
 	m [1].nType = NM_TYPE_INPUT;
 	m [1].text_len = 8; 
 	m [1].text = filename;
@@ -3273,7 +3273,7 @@ if (!filename) {
 	if (!FFF (searchName, &ffs, 0)) {
 		do {
 			if (nFiles == nRandFiles) {
-				filename = (char *)&ffs.name;
+				filename = reinterpret_cast<char*> (&ffs.name);
 				break;
 				}
 			nFiles++;
@@ -3285,7 +3285,7 @@ if (!filename) {
 		if (!FFF (searchName, &ffs, 0)) {
 			do {
 				if (nFiles==nRandFiles) {
-					filename = (char *)&ffs.name;
+					filename = reinterpret_cast<char*> (&ffs.name);
 					break;
 					}
 				nFiles++;
@@ -3351,7 +3351,7 @@ void NDStopPlayback ()
 {
 if (bRevertFormat > 0) {
 	int h = ndInFile.Length () - ndInFile.Tell ();
-	char *p = (char *) D2_ALLOC (h);
+	char *p = reinterpret_cast<char*> (D2_ALLOC (h));
 	if (p) {
 		bRevertFormat = 0;
 		NDRead (p, h, 1);
@@ -3395,7 +3395,7 @@ if (!ndOutFile.Open (outname, "", "wb", 0)) {
 	NDStopPlayback ();
 	return;
 	}
-if (!(buf = (char *) D2_ALLOC (BUF_SIZE))) {
+if (!(buf = reinterpret_cast<char*> (D2_ALLOC (BUF_SIZE)))) {
 	NDErrorMsg ("Mot enough memory for output buffer", NULL, NULL);
 	ndOutFile.Close ();
 	NDStopPlayback ();

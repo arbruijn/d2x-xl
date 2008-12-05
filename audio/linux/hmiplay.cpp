@@ -68,7 +68,7 @@ struct msgbuf *snd;
 SDL_Thread *player_thread=NULL;
 
 Voice_info *voices;
-unsigned char *data=NULL;
+ubyte *data=NULL;
 
 struct synth_info card_info;
 
@@ -397,7 +397,7 @@ void stop_all()
 	}    
 }
 
-int get_dtime(unsigned char *data, int *pos)
+int get_dtime(ubyte *data, int *pos)
 {
 	char buf;
 	int result;
@@ -429,10 +429,10 @@ int get_dtime(unsigned char *data, int *pos)
 	return result;
 }
 
-int do_track_event(unsigned char *data, int *pos)
+int do_track_event(ubyte *data, int *pos)
 {
 	char channel;
-	unsigned char buf[5];
+	ubyte buf[5];
 
 	buf[0]=data[*pos];
 	*pos +=1;

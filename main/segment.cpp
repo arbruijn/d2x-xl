@@ -87,7 +87,7 @@ if ((gameData.segs.skybox.nSegments = CountSkyBoxSegments ())) {
 	short			*segP;
 	int			h, i;
 
-if (!(gameData.segs.skybox.segments = (short *) D2_ALLOC (gameData.segs.nSegments * sizeof (short))))
+if (!(gameData.segs.skybox.segments = reinterpret_cast<short*> (D2_ALLOC (gameData.segs.nSegments * sizeof (short)))))
 	return 0;
 segP = gameData.segs.skybox.segments;
 for (h = gameData.segs.nSegments, i = 0, seg2P = SEGMENT2S; i < h; i++, seg2P++)

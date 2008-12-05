@@ -137,7 +137,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-typedef int _CDECL_	tThreadFunc (void *);
+typedef int _CDECL_	tThreadFunc reinterpret_cast<void *>;
 typedef tThreadFunc *pThreadFunc;
 
 typedef struct tThreadInfo {
@@ -622,12 +622,12 @@ typedef struct tGameplayStates {
 
 
 typedef struct tKeyStates {
-	unsigned char 	nBufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
-	unsigned char 	bRepeat;
-	unsigned char 	bEditorMode;
-	unsigned char 	nLastPressed;
-	unsigned char 	nLastReleased;
-	unsigned char	pressed [256];
+	ubyte 	nBufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
+	ubyte 	bRepeat;
+	ubyte 	bEditorMode;
+	ubyte 	nLastPressed;
+	ubyte 	nLastReleased;
+	ubyte	pressed [256];
 	volatile int	xLastPressTime;
 	} tKeyStates;
 
@@ -1396,7 +1396,7 @@ extern int nMaxNearestLights [21];
 typedef struct tVariableLight {
 	short				nSegment;
 	short				nSide;
-	unsigned int	mask;     // determines flicker pattern
+	uint	mask;     // determines flicker pattern
 	fix				timer;    // time until next change
 	fix				delay;    // time between changes
 } tVariableLight;
@@ -2804,12 +2804,12 @@ typedef struct tSongData {
 
 typedef struct tMenuData {
 	int					bValid;
-	unsigned int		tinyColors [2][2];
-	unsigned int		warnColor;
-	unsigned int		keyColor;
-	unsigned int		tabbedColor;
-	unsigned int		helpColor;
-	unsigned int		colorOverride;
+	uint		tinyColors [2][2];
+	uint		warnColor;
+	uint		keyColor;
+	uint		tabbedColor;
+	uint		helpColor;
+	uint		colorOverride;
 	int					nLineWidth;
 	ubyte					alpha;
 } tMenuData;
@@ -2873,8 +2873,8 @@ typedef struct tDemoData {
 	int				nState;
 	int				nVcrState;
 	int				nStartFrame;
-	unsigned int	nSize;
-	unsigned int	nWritten;
+	uint	nSize;
+	uint	nWritten;
 	int				nGameMode;
 	int				nOldCockpit;
 	sbyte				bNoSpace;
@@ -2971,7 +2971,7 @@ typedef struct tHUDMessage {
 	int					nLast;
 	int					nMessages;
 	fix					xTimer;
-	unsigned int		nColor;
+	uint		nColor;
 	char					szMsgs [HUD_MAX_MSGS][HUD_MESSAGE_LENGTH + 5];
 	int					nMsgIds [HUD_MAX_MSGS];
 } tHUDMessage;

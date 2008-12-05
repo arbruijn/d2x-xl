@@ -415,7 +415,7 @@ void CheckEndian (void)
 {
 	union {
 		short	s;
-		unsigned char	b [2];
+		ubyte	b [2];
 	} h;
 
 h.b [0] = 0;
@@ -2910,7 +2910,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			else {
 #ifdef EDITOR
 				if (Auto_exit) {
-					strcpy ((char *)&gameData.missions.szLevelNames [0], Auto_file);
+					strcpy (reinterpret_cast<char*> (&gameData.missions.szLevelNames [0]), Auto_file);
 					LoadLevel (1, 1, 0);
 					SetFunctionMode (FMODE_EXIT);
 					break;
@@ -2955,9 +2955,6 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 		case FMODE_EDITOR:
 			gameStates.input.keys.bEditorMode = 1;
 			editor ();
-#ifdef __WATCOMC__
-			_harderr ((void*)descent_critical_error_handler);		// Reinstall game error handler
-#endif
 			if (gameStates.app.nFunctionMode == FMODE_GAME) {
 				gameData.app.nGameMode = GM_EDITOR;
 				editor_reset_stuff_onLevel ();

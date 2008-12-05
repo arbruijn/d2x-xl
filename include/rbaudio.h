@@ -19,10 +19,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RBA_MEDIA_CHANGED	-1
 
 typedef struct RBACHANNELCTL {
-	unsigned int out0in, out0vol;
-	unsigned int out1in, out1vol;
-	unsigned int out2in, out2vol;
-	unsigned int out3in, out3vol;
+	uint out0in, out0vol;
+	uint out1in, out1vol;
+	uint out2in, out2vol;
+	uint out3in, out3vol;
 } RBACHANNELCTL;
 
 void RBAInit(void);	//drive a == 0, drive b == 1
@@ -51,6 +51,6 @@ int	RBAResume();
 int RBAGetTrackNum();
 
 // get the cddb discid for the current cd.
-unsigned int RBAGetDiscID();
+uint RBAGetDiscID();
 
 #endif

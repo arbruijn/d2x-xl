@@ -49,7 +49,7 @@
 char szNMTextBuffer [MAX_ACTIVE_NETGAMES + 5][100];
 
 extern void SetFunctionMode (int);
-extern unsigned char ipx_MyAddress [10];
+extern ubyte ipx_MyAddress [10];
 
 //------------------------------------------------------------------------------
 
@@ -830,31 +830,31 @@ do {
 
 #define SetTextOpt(_text) \
 	m [opt].nType = NM_TYPE_TEXT; \
-	m [opt++].text = (char *) _text
+	m [opt++].text = reinterpret_cast<char*> (_text)
 
 #define SetInputOpt(_label, _text, Value, _len) \
 	SetTextOpt (_label); \
 	m [opt].nType = NM_TYPE_INPUT; \
 	sprintf (_text, "%d", Value); \
-	m [opt].text = (char *) _text; \
+	m [opt].text = reinterpret_cast<char*> (_text); \
 	m [opt].value = Value; \
 	m [opt].text_len = _len; \
-	m [opt].szHelp = (char *) HTX_ONLINE_MANUAL
+	m [opt].szHelp = reinterpret_cast<char*> (HTX_ONLINE_MANUAL)
 
 #define SetRadioOpt(_text, _group, _key) \
 	m [opt].nType = NM_TYPE_RADIO; \
-	m [opt].text = (char *) _text; \
+	m [opt].text = reinterpret_cast<char*> (_text); \
 	m [opt].value = 0; \
 	m [opt].group = _group; \
 	m [opt++].key = _key; \
-	m [opt].szHelp = (char *) HTX_ONLINE_MANUAL
+	m [opt].szHelp = reinterpret_cast<char*> (HTX_ONLINE_MANUAL)
 
 #define SetCheckOpt(_text, Value, _key) \
 	m [opt].nType = NM_TYPE_CHECK; \
-	m [opt].text = (char *) _text; \
+	m [opt].text = reinterpret_cast<char*> (_text); \
 	m [opt].value = Value; \
 	m [opt].key = _key; \
-	m [opt].szHelp = (char *) HTX_ONLINE_MANUAL
+	m [opt].szHelp = reinterpret_cast<char*> (HTX_ONLINE_MANUAL)
 
 //------------------------------------------------------------------------------
 
@@ -959,11 +959,11 @@ optShieldDmg = opt++;
 SetTextOpt ("");
 optTogglesMenu = opt;
 m [opt].nType = NM_TYPE_MENU;  
-m [opt].text = (char *) TXT_ENT_TGLMENU; 
+m [opt].text = reinterpret_cast<char*> (TXT_ENT_TGLMENU); 
 m [opt++].key = KEY_E;
 optTextureMenu = opt;
 m [opt].nType = NM_TYPE_MENU;  
-m [opt].text = (char *) TXT_ENT_TEXMENU; 
+m [opt].text = reinterpret_cast<char*> (TXT_ENT_TEXMENU); 
 m [opt++].key = KEY_T;
 Assert (sizeofa (m) >= (size_t) opt);
 
@@ -1376,7 +1376,7 @@ if (m [optMissionName].rebuild) {
 	strncpy (netGame.szMissionName, 
 				(nNewMission < 0) ? "" : gameData.missions.list [nNewMission].filename, 
 				sizeof (netGame.szMissionName) - 1);
-	m [optMissionName].text = (char *) ((nNewMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nNewMission].szMissionName);
+	m [optMissionName].text = (nNewMission < 0) ? reinterpret_cast<char*> (TXT_NONE_SELECTED) : reinterpret_cast<char*> (gameData.missions.list [nNewMission].szMissionName);
 	if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, gameData.missions.nLastLevel);
 		Assert (strlen (szLevelText) < 32);
@@ -1618,10 +1618,10 @@ doMenu:
 		}
 	}
 	m [opt].nType = NM_TYPE_TEXT; 
-	m [opt].text = (char *) ""; 
+	m [opt].text = reinterpret_cast<char*> (""); 
 	opt++;
 	m [opt].nType = NM_TYPE_MENU; 
-	m [opt].text = (char *) TXT_ACCEPT; 
+	m [opt].text = reinterpret_cast<char*> (TXT_ACCEPT); 
 	m [opt].key = KEY_A;
 	opt++;
 
@@ -1762,7 +1762,7 @@ for (i = 0; i < nSavePlayers; i++) {
 			netPlayers.players [gameData.multiplayer.nPlayers].versionMajor = netPlayers.players [i].versionMajor;
 			netPlayers.players [gameData.multiplayer.nPlayers].versionMinor = netPlayers.players [i].versionMinor;
 			netPlayers.players [gameData.multiplayer.nPlayers].rank = netPlayers.players [i].rank;
-			ClipRank ((char *) &netPlayers.players [gameData.multiplayer.nPlayers].rank);
+			ClipRank (reinterpret_cast<char*> (&netPlayers.players [gameData.multiplayer.nPlayers].rank));
 			NetworkCheckForOldVersion ((char)i);
 			}
 		gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = 1;
@@ -2276,7 +2276,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int stoip (char *szServerIpAddr, unsigned char *pIpAddr)
+int stoip (char *szServerIpAddr, ubyte *pIpAddr)
 {
 	char	*pi, *pj, *pFields [5], tmp [22];
 	int	h, i, j;
@@ -2319,7 +2319,7 @@ for (j = 0; j < i; j++) {
 		h = atol (pFields [j]);
 		if ((h < 0) || (h > 255))
 			return 0;
-		pIpAddr [j] = (unsigned char) h;
+		pIpAddr [j] = (ubyte) h;
 		}
 	}
 return 1;
@@ -2429,7 +2429,7 @@ if (choice >= networkData.nActiveGames)
 memset (m, 0, sizeof (m));
 memset (mTexts, 0, sizeof (mTexts));
 for (i = 0; i < 20; i++) {
-	m [i].text = (char *) (mTexts + i);
+	m [i].text = reinterpret_cast<char*> (mTexts + i);
 	m [i].nType = NM_TYPE_TEXT;	
 	}
 sprintf (mTexts [opt], TXT_NGI_GAME, szHighlight, AGI.szGameName); 
@@ -2556,7 +2556,7 @@ void DoShowNetgameHelp()
 
 memset (m, 0, sizeof (m));
 for (i = 0; i < 30; i++) {
-	m [i].text = (char *) mtext [i];
+	m [i].text = reinterpret_cast<char*> (mtext [i]);
 	m [i].nType = NM_TYPE_TEXT;
 	}
 

@@ -134,9 +134,9 @@ D2_FREE (p);
 
 //-----------------------------------------------------------------------
 
-unsigned int FileRead (void *handle, void *buf, unsigned int count)
+uint FileRead (void *handle, void *buf, uint count)
 {
-unsigned int numread = (unsigned int) ((CFile *)handle)->Read (buf, 1, count);
+uint numread = (uint) (reinterpret_cast<CFile*> (handle))->Read (buf, 1, count);
 return numread == count;
 }
 
@@ -224,7 +224,7 @@ TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 
 //-----------------------------------------------------------------------
 //our routine to set the palette, called from the movie code
-void MovieSetPalette (unsigned char *p, unsigned start, unsigned count)
+void MovieSetPalette (ubyte *p, unsigned start, unsigned count)
 {
 	CPalette	palette;
 
@@ -321,7 +321,7 @@ SetScreenMode (SCREEN_MENU);
 paletteManager.LoadEffect  ();
 MVE_sfCallbacks (MovieShowFrame);
 MVE_palCallbacks (MovieSetPalette);
-if (MVE_rmPrepMovie ((void *) &cf, dx, dy, track, libP ? libP->bLittleEndian : 1)) {
+if (MVE_rmPrepMovie (reinterpret_cast<void*> (&cf), dx, dy, track, libP ? libP->bLittleEndian : 1)) {
 	Int3 ();
 	return MOVIE_NOT_PLAYED;
 	}
@@ -378,7 +378,7 @@ err = MVE_rmStepMovie ();
 paletteManager.LoadEffect  ();
 if (err == MVE_ERR_EOF) {   //end of movie, so reset
 	ResetMovieFile (movies.robot.cf);
-	if (MVE_rmPrepMovie ((void *) &movies.robot.cf, 
+	if (MVE_rmPrepMovie (reinterpret_cast<void*> (&movies.robot.cf), 
 								gameStates.menus.bHires ? 280 : 140, 
 								gameStates.menus.bHires ? 200 : 80, 0,
 								movies.robot.bLittleEndian)) {
@@ -426,7 +426,7 @@ MVE_memCallbacks (MPlayAlloc, MPlayFree);
 MVE_ioCallbacks (FileRead);
 MVE_sfCallbacks (MovieShowFrame);
 MVE_palCallbacks (MovieSetPalette);
-if (MVE_rmPrepMovie ((void *) &movies.robot.cf, 
+if (MVE_rmPrepMovie (reinterpret_cast<void*> (&movies.robot.cf), 
 							gameStates.menus.bHires ? 280 : 140, 
 							gameStates.menus.bHires ? 200 : 80, 0,
 							movies.robot.bLittleEndian)) {
@@ -490,7 +490,7 @@ if (readCount != size) {
 	}
 p = subTitles.rawDataP;
 while (p && (p < subTitles.rawDataP + size)) {
-	char *endp = strchr ((char *) p, '\n'); 
+	char *endp = strchr (reinterpret_cast<char*> (p), '\n'); 
 
 	if (endp) {
 		if (endp [-1] == '\r')
@@ -498,20 +498,20 @@ while (p && (p < subTitles.rawDataP + size)) {
 		*endp = 0;			//string termintor
 		}
 	if (bHaveBinary)
-		DecodeTextLine ((char *) p);
+		DecodeTextLine (reinterpret_cast<char*> (p));
 	if (*p != ';') {
-		subTitles.captions [subTitles.nCaptions].first_frame = atoi ((char *) p);
+		subTitles.captions [subTitles.nCaptions].first_frame = atoi (reinterpret_cast<char*> (p));
 		if (!(p = next_field (p))) 
 			continue;
-		subTitles.captions [subTitles.nCaptions].last_frame = atoi ((char *) p);
+		subTitles.captions [subTitles.nCaptions].last_frame = atoi (reinterpret_cast<char*> (p));
 		if (!(p = next_field (p)))
 			continue;
-		subTitles.captions [subTitles.nCaptions].msg = (char *) p;
+		subTitles.captions [subTitles.nCaptions].msg = reinterpret_cast<char*> (p);
 		Assert (subTitles.nCaptions==0 || subTitles.captions [subTitles.nCaptions].first_frame >= subTitles.captions [subTitles.nCaptions-1].first_frame);
 		Assert (subTitles.captions [subTitles.nCaptions].last_frame >= subTitles.captions [subTitles.nCaptions].first_frame);
 		subTitles.nCaptions++;
 		}
-	p = (ubyte *) (endp + 1);
+	p = reinterpret_cast<ubyte*> (endp + 1);
 	}
 return 1;
 }
@@ -627,7 +627,7 @@ tMovieLib *InitOldMovieLib (const char *filename, CFile& cf)
 	nFiles = 0;
 
 	//allocate big table
-table = (tMovieLib *) D2_ALLOC (sizeof (*table) + sizeof (ml_entry) * MAX_MOVIES_PER_LIB);
+table = reinterpret_cast<tMovieLib*> (D2_ALLOC (sizeof (*table) + sizeof (ml_entry) * MAX_MOVIES_PER_LIB));
 while (1) {
 	i = (int) cf.Read (table->movies [nFiles].name, 13, 1);
 	if (i != 1)
@@ -644,7 +644,7 @@ while (1) {
 	}
 	//allocate correct-sized table
 size = sizeof (*table) + sizeof (ml_entry) * nFiles;
-table2 = (tMovieLib *) D2_ALLOC (size);
+table2 = reinterpret_cast<tMovieLib*> (D2_ALLOC (size));
 memcpy (table2, table, size);
 D2_FREE (table);
 table = table2;
@@ -811,7 +811,7 @@ if (movies.libs [i]) {
 
 void _CDECL_ CloseMovies (void)
 {
-	unsigned int i;
+	uint i;
 
 PrintLog ("unloading movies\n");
 for (i = 0; i < N_MOVIE_LIBS; i++)
@@ -824,7 +824,7 @@ static int bMoviesInited = 0;
 //find and initialize the movie libraries
 void InitMovies ()
 {
-	unsigned int i, j;
+	uint i, j;
 	int bIsRobots;
 
 	j = (gameStates.app.bHaveExtraMovies = !gameStates.app.bNostalgia) ? 
@@ -887,7 +887,7 @@ return 0;
 //returns file handle
 int OpenMovieFile (CFile& cf, char *filename, int bRequired)
 {
-	unsigned int i;
+	uint i;
 
 for (i = 0; i < N_MOVIE_LIBS; i++)
 	if (SearchMovieLib (cf, movies.libs [i], filename, bRequired))
@@ -907,7 +907,7 @@ return 0;       //everything is cool
 
 int GetNumMovieLibs (void)
 {
-	unsigned int	i;
+	uint	i;
 
 for (i = 0; i < N_MOVIE_LIBS; i++)
 	if (!movies.libs [i])

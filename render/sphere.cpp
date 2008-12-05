@@ -202,15 +202,15 @@ else {
 for (i = 0; i < sdP->nTessDepth; i++)
 	nFaces *= j;
 for (i = 0; i < 2; i++) {
-	if (!(buf [i] = (tOOF_vector *) D2_ALLOC (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector)))) {
+	if (!(buf [i] = reinterpret_cast<tOOF_vector*> (D2_ALLOC (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector))))) {
 		if (i)
 			D2_FREE (buf [i - 1]);
 		return -1;
 		}
 	}
 j = (sdP->nFaceNodes == 3) ?
-	 BuildSphereTri ((tOOF_triangle **) buf, &nFaces, sdP->nTessDepth) :
-	 BuildSphereQuad ((tOOF_quad **) buf, &nFaces, sdP->nTessDepth);
+	 BuildSphereTri (reinterpret_cast<tOOF_triangle **> (buf), &nFaces, sdP->nTessDepth) :
+	 BuildSphereQuad (reinterpret_cast<tOOF_quad **> (buf), &nFaces, sdP->nTessDepth);
 D2_FREE (buf [!j]);
 sdP->pSphere = buf [j];
 return nFaces;
@@ -372,7 +372,7 @@ if (nSphereCoord == h)
 	return (sphereCoordP != NULL);
 
 FreeSphereCoord ();
-if (!(sphereCoordP = (tSphereCoord *) D2_ALLOC (h * sizeof (tSphereCoord))))
+if (!(sphereCoordP = reinterpret_cast<tSphereCoord*> (D2_ALLOC (h * sizeof (tSphereCoord)))))
 	return 0;
 	nSphereCoord = h;
 h = nRings / 2;
@@ -423,8 +423,8 @@ else {
 	glBegin (nPrimitive);
 	for (i = 0; i < nItems; i++) {
 		if (bTextured)
-			glTexCoord2fv ((GLfloat *) (texCoordP + i));
-		glVertex3fv ((GLfloat *) (vertexP + i));
+			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP + i));
+		glVertex3fv (reinterpret_cast<GLfloat*> (vertexP + i));
 		}
 	glEnd ();
 	}
@@ -457,7 +457,7 @@ if (gameStates.ogl.bUseTransform) {
 				if (bTextured) {
 					tc [i].v.u = psc [0]->uvl.v.u * nTiles;
 					tc [i].v.v = psc [0]->uvl.v.v * nTiles;
-					//glTexCoord2fv ((GLfloat *) (tc + i));
+					//glTexCoord2fv (reinterpret_cast<GLfloat*> (tc + i));
 					}
 				}
 			RenderSphereRing (p, tc, nQuads, bTextured, GL_QUAD_STRIP);
@@ -528,7 +528,7 @@ int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScal
 	int			i, j, nFaces = sdP->nFaces;
 	tOOF_vector *ps,
 					*pSphere = sdP->pSphere,
-					*pRotSphere = (tOOF_vector *) D2_ALLOC (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector));
+					*pRotSphere = reinterpret_cast<tOOF_vector*> (D2_ALLOC (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector)));
 
 if (!pRotSphere)
 	return -1;
@@ -552,15 +552,15 @@ glTranslatef (pPos->x, pPos->y, pPos->z);
 RenderSphereSimple (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 #else
 #	if 1
-pSphere = (tOOF_vector *) RotateSphere (sdP, pRotSphere, pPos, xScale, yScale, zScale);
+pSphere = reinterpret_cast<tOOF_vector*> (RotateSphere (sdP, pRotSphere, pPos, xScale, yScale, zScale));
 #	else
-pSphere = (tOOF_vector *) SortSphere (RotateSphere (pSphere, pRotSphere, pPos, nFaces, xScale, yScale, zScale), 0, nFaces - 1);
+pSphere = reinterpret_cast<tOOF_vector*> (SortSphere (RotateSphere (pSphere, pRotSphere, pPos, nFaces, xScale, yScale, zScale), 0, nFaces - 1));
 #	endif
 if (sdP->nFaceNodes == 3) {
 	glBegin (GL_LINES);
 	for (j = nFaces, ps = pSphere; j; j--, ps++)
 		for (i = 0; i < 3; i++, ps++)
-			glVertex3fv ((GLfloat *) ps);
+			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
 	glEnd ();
 	if (bmP)
 		glColor4f (fScale, fScale, fScale, 1.0f);
@@ -569,7 +569,7 @@ if (sdP->nFaceNodes == 3) {
 	glBegin (GL_TRIANGLES);
 	for (j = nFaces, ps = pSphere; j; j--, ps++)
 		for (i = 0; i < 3; i++, ps++) {
-			glVertex3fv ((GLfloat *) ps);
+			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
 			}
 	glEnd ();
 	}
@@ -577,7 +577,7 @@ else {
 	glBegin (GL_LINES);
 	for (j = nFaces, ps = pSphere; j; j--, ps++)
 		for (i = 0; i < 4; i++, ps++) {
-			glVertex3fv ((GLfloat *) ps);
+			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
 			}
 	glEnd ();
 	if (bTextured)
@@ -589,7 +589,7 @@ else {
 		for (i = 0; i < 4; i++, ps++) {
 			if (bTextured)
 				glTexCoord2f (fTexCoord [i][0], fTexCoord [i][1]);
-			glVertex3fv ((GLfloat *) ps);
+			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
 			}
 	glEnd ();
 	}

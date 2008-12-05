@@ -55,14 +55,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_NO_FADE  32  // An edge that doesn't fade with distance
 #define EF_TOO_FAR  64  // An edge that is too far away
 
-void ModexPrintF (int x,int y, char *s, CFont *font, unsigned int color);
+void ModexPrintF (int x,int y, char *s, CFont *font, uint color);
 
 typedef struct tEdgeInfo {
 	short verts [2];     // 4 bytes
 	ubyte sides [4];     // 4 bytes
 	short nSegment [4];    // 8 bytes  // This might not need to be stored... If you can access the normals of a tSide.
 	ubyte flags;        // 1 bytes  // See the EF_??? defines above.
-	unsigned int color; // 4 bytes
+	uint color; // 4 bytes
 	ubyte num_faces;    // 1 bytes  // 19 bytes...
 } tEdgeInfo;
 
@@ -78,23 +78,23 @@ typedef struct tEdgeInfo {
 #define K_MONSTERBALL_COLOR     RGBA_PAL2 (31, 23, 0)
 
 typedef struct amWallColors {
-	unsigned int	nNormal;
-	unsigned int	nDoor;
-	unsigned int	nDoorBlue;
-	unsigned int	nDoorGold;
-	unsigned int	nDoorRed;
-	unsigned int	nRevealed;
+	uint	nNormal;
+	uint	nDoor;
+	uint	nDoorBlue;
+	uint	nDoorGold;
+	uint	nDoorRed;
+	uint	nRevealed;
 } amWallColors;
 
 typedef struct amColors {
 	amWallColors	walls;
-	unsigned int	nHostage;
-	unsigned int	nMonsterball;
-	unsigned int	nWhite;
-	unsigned int	nMedGreen;
-	unsigned int	nLgtBlue;
-	unsigned int	nLgtRed;
-	unsigned int	nDkGray;
+	uint	nHostage;
+	uint	nMonsterball;
+	uint	nWhite;
+	uint	nMedGreen;
+	uint	nLgtBlue;
+	uint	nLgtRed;
+	uint	nDkGray;
 } amColors;
 
 amColors automapColors;
@@ -248,7 +248,7 @@ for (i = 0; i <= nSides; i++)
 		ang = 2.0f * (float) Pi * (j % nSides) / nSides;
 		v[X] = x + (float) cos (ang) * r;
 		v[Y] = y + (float) sin (ang) * r;
-		glVertex3fv ((GLfloat *) &v);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 		}
 if (CCanvas::Current ()->Color ().rgb)
 	glDisable (GL_BLEND);
@@ -509,7 +509,7 @@ OglSwapBuffers (0, 0);
 //------------------------------------------------------------------------------
 
 //print to canvas & float height
-CCanvas *PrintToCanvas (char *s, CFont *font, unsigned int fc, unsigned int bc, int doubleFlag)
+CCanvas *PrintToCanvas (char *s, CFont *font, uint fc, uint bc, int doubleFlag)
 {
 	int		y;
 	ubyte		*data;
@@ -545,7 +545,7 @@ return canvP;
 
 //------------------------------------------------------------------------------
 //print to buffer, float heights, and blit bitmap to screen
-void ModexPrintF (int x,int y,char *s,CFont *font, unsigned int color)
+void ModexPrintF (int x,int y,char *s,CFont *font, uint color)
 {
 	CCanvas *canvP;
 
@@ -1121,7 +1121,7 @@ return ret ? hash : -1;
 
 //------------------------------------------------------------------------------
 
-void AddOneEdge (int va, int vb, unsigned int color, ubyte tSide, short nSegment, 
+void AddOneEdge (int va, int vb, uint color, ubyte tSide, short nSegment, 
 					  int bHidden, int bGrate, int bNoFade)
 {
 	int found;
@@ -1201,7 +1201,7 @@ if (found != -1)
 void AddSegmentEdges (tSegment *segP)
 {
 	int		 		bIsGrate, bNoFade;
-	unsigned int	color;
+	uint	color;
 	int				wn;
 	ubyte				sn;
 	short				nSegment = SEG_IDX (segP);
