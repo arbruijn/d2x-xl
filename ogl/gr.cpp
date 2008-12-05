@@ -160,8 +160,6 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void GrRemapMonoFonts ();
-
 void ResetTextures (int bReload, int bGame)
 {
 if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
@@ -171,7 +169,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 	DestroyGlareDepthTexture ();
 	NMFreeAltBg (1);
 	if (bReload)
-		GrRemapMonoFonts ();
+		fontManager.RemapMono ();
 	if (bGame) {
 		FreeInventoryIcons ();
 		FreeObjTallyIcons ();

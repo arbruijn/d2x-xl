@@ -41,7 +41,6 @@
 
 //------------------------------------------------------------------------------
 
-void GrRemapMonoFonts (void);
 void FreeInventoryIcons (void);
 
 //------------------------------------------------------------------------------
@@ -214,7 +213,7 @@ if (gameStates.ogl.bInitialized && bRebuild) {
 		RebuildRenderContext (1);
 		}
 	else
-		GrRemapMonoFonts ();
+		fontManager.RemapMono ();
 	}
 D2SetCaption ();
 OglCreateDrawBuffer ();

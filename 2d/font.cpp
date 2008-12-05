@@ -39,14 +39,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "font.h"
 #include "grdef.h"
 #include "error.h"
-
 #include "cfile.h"
 #include "mono.h"
 #include "byteswap.h"
 #include "bitmap.h"
 #include "gamefont.h"
-
 #include "makesig.h"
+#include "ogl_defs.h"
+#include "ogl_bitmap.h"
+#include "args.h"
+
+//------------------------------------------------------------------------------
+
+int Pow2ize (int x);//from ogl.c
 
 CFontManager fontManager;
 
@@ -126,67 +131,6 @@ int CFont::GetCenteredX (const char *s)
 {
 return ((CCanvas::Current ()->Width () - GetLineWidth (s)) / 2);
 }
-
-//------------------------------------------------------------------------------
-//hack to allow color codes to be embedded in strings -MPM
-//note we subtract one from color, since 255 is "transparent" so it'll never be used, and 0 would otherwise end the string.
-//function must already have orig_color var set (or they could be passed as args...)
-//perhaps some sort of recursive orig_color nType thing would be better, but that would be way too much trouble for little gain
-int grMsgColorLevel = 1;
-
-inline char *CheckEmbeddedColors (char *textP, char c, int orig_color)
-{
-if ((c >= 1) && (c <= 3)) {
-	if (*++textP) {
-		if (grMsgColorLevel >= c) {
-			FG_COLOR.rgb = 1;
-			FG_COLOR.color.red = textP [0];
-			FG_COLOR.color.green = textP [1];
-			FG_COLOR.color.blue = textP [2];
-			FG_COLOR.color.alpha = 0;
-			}
-		textP += 3;
-		}
-	}
-else if ((c >= 4) && (c <= 6)) {
-	if (grMsgColorLevel >= *textP - 3) {
-		FG_COLOR.index = orig_color;
-		FG_COLOR.rgb = 0;
-		}
-	textP++;
-	}
-return textP;
-}
-
-#define CHECK_EMBEDDED_COLORS () \
-	if ((c >= 1) && (c <= 3)) { \
-		if (*++textP) { \
-			if (grMsgColorLevel >= c) { \
-				FG_COLOR.rgb = 1; \
-				FG_COLOR.color.red = textP [0] - 128; \
-				FG_COLOR.color.green = textP [1] - 128; \
-				FG_COLOR.color.blue = textP [2] - 128; \
-				FG_COLOR.color.alpha = 0; \
-				} \
-			textP += 3; \
-			} \
-		} \
-	else if ((c >= 4) && (c <= 6)) { \
-		if (grMsgColorLevel >= *textP - 3) { \
-			FG_COLOR.index = orig_color; \
-			FG_COLOR.rgb = 0; \
-			} \
-		textP++; \
-		}
-
-//------------------------------------------------------------------------------
-
-#include "ogl_defs.h"
-#include "ogl_bitmap.h"
-#include "args.h"
-//font handling routines for OpenGL - Added 9/25/99 Matthew Mueller - they are here instead of in arch/ogl because they use all these defines
-
-int Pow2ize (int x);//from ogl.c
 
 //------------------------------------------------------------------------------
 
@@ -472,13 +416,13 @@ dataSize = cf.ReadInt ();
 dataSize -= GRS_FONT_SIZE; // subtract the size of the header.
 Read (cf);
 if (!(fontData || (fontData = new ubyte [dataSize]))) {
-	cf.Unload ();
+	cf.Close ();
 	return NULL;
 	}
 cf.Read (fontData, 1, dataSize);
 if (m_info.flags & FT_COLOR)
 	palette.Read (cf);
-cf.Unload ();
+cf.Close ();
 
 Setup (fontname, fontData, palette);
 return fontData;

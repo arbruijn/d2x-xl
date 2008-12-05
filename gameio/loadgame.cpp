@@ -169,7 +169,6 @@ void CopyDefaultsToRobotsAll (void);
 void HUDClearMessages (); // From hud.c
 #endif
 
-void GrRemapMonoFonts ();
 void SetFunctionMode (int);
 void InitHoardData ();
 
@@ -1810,7 +1809,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 		case 0:
 			if (gameData.multiplayer.nLocalPlayer < 0)
 				return 0;
-			GrRemapMonoFonts ();
+			fontManager.RemapMono ();
 			break;
 		case 1:
 			networkData.nStatus = 2;

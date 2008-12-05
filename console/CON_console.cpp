@@ -409,7 +409,7 @@ void CON_DrawConsole(ConsoleInformation *console) {
 //------------------------------------------------------------------------------
 
 /* Initializes the console */
-ConsoleInformation *CON_Init(CFont *Font, CScreen *DisplayScreen, int lines, int x, int y, int w, int h)
+ConsoleInformation *CON_Init(CFont *font, CScreen *DisplayScreen, int lines, int x, int y, int w, int h)
 {
 	int loop;
 	ConsoleInformation *newinfo;
@@ -443,9 +443,9 @@ ConsoleInformation *CON_Init(CFont *Font, CScreen *DisplayScreen, int lines, int
 	CON_SetTabCompletion(newinfo, Default_TabFunction);
 
 	/* make sure that the size of the console is valid */
-	if(w > newinfo->OutputScreen->Width () || w < Font->width * 32)
+	if(w > newinfo->OutputScreen->Width () || w < font->Width () * 32)
 		w = newinfo->OutputScreen->Width ();
-	if(h > newinfo->OutputScreen->Height () || h < Font->height)
+	if(h > newinfo->OutputScreen->Height () || h < font->Height ())
 		h = newinfo->OutputScreen->Height ();
 	if(x < 0 || x > newinfo->OutputScreen->Width () - w)
 		newinfo->DispX = 0;
@@ -463,7 +463,7 @@ ConsoleInformation *CON_Init(CFont *Font, CScreen *DisplayScreen, int lines, int
 	{
 		CCanvas::Push ();
 		CCanvas::SetCurrent(newinfo->ConsoleSurface);
-		fontManager.SetCurrent(Font);
+		fontManager.SetCurrent(font);
 		fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 		CCanvas::Pop ();
 	}

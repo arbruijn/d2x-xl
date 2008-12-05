@@ -332,7 +332,7 @@ get_line:;
 				FONT->StringSize(s, w, h, aw);
 				x1 = ((gameStates.menus.bHires?320:160)-w)/2;
 				cr_gr_printf (x1 , y, s);
-				FONT->StringSize (pszTemp + 1, &w2, &h, &aw);
+				FONT->StringSize (pszTemp + 1, w2, h, aw);
 				x2 = (gameStates.menus.bHires ? 320 : 160) + (((gameStates.menus.bHires ? 320 : 160) - w2) / 2);
 				cr_gr_printf(x2, y, &pszTemp[1]);
 				dirtyBox [j].left = ((gameStates.menus.bHires?320:160)-w)/2;
