@@ -361,7 +361,7 @@ if (i < destAddrNum) {
 	}
 if (!ChkDestListSize ())
 	return -1;
-pdl = destList + destAddrNum++;
+pdl = &destList [destAddrNum++];
 pdl->addr = *destAddr;
 #if UDP_SAFEMODE
 pdl->nSent = 0;
@@ -825,7 +825,7 @@ for (; iDest < destAddrNum; iDest++) {
 	if (iDest < 0)
 		dest = &destAddr;
 	else {
-		pdl = destList + iDest;
+		pdl = &destList [iDest];
 		dest = &pdl->addr;
 		}
 	// copy destination IP and port to outBuf
