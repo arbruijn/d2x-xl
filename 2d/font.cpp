@@ -543,6 +543,7 @@ do {
 void CFontManager::Init (void)
 {
 memset (m_fonts, 0, sizeof (m_fonts));
+m_save.Create (10);
 }
 
 //------------------------------------------------------------------------------

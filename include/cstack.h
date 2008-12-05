@@ -17,15 +17,17 @@ template < class _T > class CStack : public CArray<_T> {
 			CArray<_T>::Init ();
 			}
 
-		inline bool Push (_T* elem) { 
+		inline bool Push (_T elem) { 
 			if (m_tos <= m_size) 
 				return false;
-			m_buffer [m_tos++] = _T;
+			m_buffer [m_tos++] = elem;
 			return true;
 			}
 
-		inline _T* Pop (void) {
-			return (m_tos) ? m_stack [--m_tos] : NULL;
+		inline _T Pop (void) {
+			if (m_tos)
+				m_tos--;
+			return m_buffer [m_tos];
 			}
 
 		inline void Destroy (void) { 
@@ -35,7 +37,7 @@ template < class _T > class CStack : public CArray<_T> {
 
 		inline _T *Create (unsigned int size) {
 			Destroy ();
-			CArray<_T>::Create (size);
+			return CArray<_T>::Create (size);
 			}
 	};
 

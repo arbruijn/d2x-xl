@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 template < class _T > class CArray {
-	private:
+	protected:
 		_T					*m_buffer;
 		_T					*m_null;
 		unsigned int	m_size;

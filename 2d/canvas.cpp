@@ -25,8 +25,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "canvas.h"
 
 CCanvas*	CCanvas::m_current = NULL;
-CCanvas*	CCanvas::m_save [10];
-int CCanvas::m_tos = 0;
+CStack<CCanvas*> CCanvas::m_save;
 CScreen* CScreen::m_current = NULL;
 
 CScreen screen;
@@ -47,6 +46,7 @@ return canvP;
 void CCanvas::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
+m_save.Create (10);
 }
 
 //	-----------------------------------------------------------------------------

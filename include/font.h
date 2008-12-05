@@ -18,6 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "palette.h"
 #include "bitmap.h"
 #include "gamefont.h"
+#include "cstack.h"
 
 //-----------------------------------------------------------------------------
 
@@ -128,11 +129,10 @@ typedef struct tOpenFont {
 
 class CFontManager {
 	private:
-		tOpenFont	m_fonts [MAX_OPEN_FONTS];
-		CFont			*m_gameFonts [MAX_FONTS];
-		CFont			*m_current;
-		CFont			*m_save [10];
-		int			m_tos;
+		tOpenFont		m_fonts [MAX_OPEN_FONTS];
+		CFont				*m_gameFonts [MAX_FONTS];
+		CFont				*m_current;
+		CStack<CFont*>	m_save;
 
 	public:
 		CFontManager () { Init (); }
@@ -148,8 +148,8 @@ class CFontManager {
 		void SetColor (int fgColor, int bgColor);
 		void SetColorRGB (tRgbaColorb *fgColor, tRgbaColorb *bgColor);
 		void SetColorRGBi (unsigned int fgColor, int bSetFG, unsigned int bgColor, int bSetBG);
-		void Push (void) { if (m_tos < 10) m_save [m_tos++] = m_current; }
-		void Pop (void) { if (m_tos > 0) m_current = m_save [--m_tos]; }
+		void Push (void) { m_save.Push (m_current); }
+		void Pop (void) { m_current = m_save.Pop (); }
 		void RemapColor ();
 		void RemapMono ();
 	};

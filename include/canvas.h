@@ -19,6 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "palette.h"
 #include "bitmap.h"
 #include "font.h"
+#include "cstack.h"
 
 //-----------------------------------------------------------------------------
 
@@ -62,9 +63,8 @@ class CCanvas {
 	private:
 		tCanvas	m_info;
 
-		static CCanvas* m_current;
-		static CCanvas* m_save [10];
-		static int m_tos;
+		static CCanvas*			m_current;
+		static CStack<CCanvas*> m_save;
 
 	public:
 		CCanvas () { Init (); }
@@ -94,14 +94,9 @@ class CCanvas {
 
 		static CCanvas* Current (void) { return m_current; }
 		static void SetCurrent (CCanvas* canvP = NULL);
-		static void Push (void) { 
-			if (m_tos < 10) 
-				m_save [m_tos++] = m_current; 
-			fontManager.Push ();
-			}
+		static void Push (void) { m_save.Push (m_current); }
 		static void Pop (void) { 
-			if (m_tos) 
-				m_current = m_save [--m_tos]; 
+			m_current = m_save.Pop (); 
 			fontManager.Pop ();
 			}
 
