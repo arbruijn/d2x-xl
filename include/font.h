@@ -145,7 +145,7 @@ class CFontManager {
 		void Setup (void);
 		void Destroy (void);
 		CFont* Load (const char* fontname);
-		void Close (CFont* font);
+		void Unload (CFont* font);
 		inline CFont* Current (void) { return m_current; }
 		inline CFont* GameFont (int i) { return ((i >= 0) && (i < MAX_FONTS)) ? m_gameFonts [i] : NULL; }
 		inline void SetCurrent (CFont* fontP) { m_current = fontP; }

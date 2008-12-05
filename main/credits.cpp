@@ -151,22 +151,22 @@ static const char *xlCredits [] = {
 //if filename passed is NULL, show Normal credits
 void ShowCredits(char *credits_filename)
 {
-	int			i, j, l, bDone;
-	CFile			cf;
-	char			buffer [NUM_LINES_HIRES][80];
-	CBitmap	bmBackdrop;
-	int			nPcxError;
+	int				i, j, l, bDone;
+	CFile				cf;
+	char				buffer [NUM_LINES_HIRES][80];
+	CBitmap			bmBackdrop;
+	int				nPcxError;
 	unsigned int	nLine = 0;
 	unsigned int	nXlLine = 0;
-	fix			xTimeout, xDelay = X2I (2800 * 1000);
-	int			nFirstLineOffs, nExtraInc = 0;
-	int			bBinary = 0;
-	char			*pszTemp;
-	char			filename [32];
-	int			xOffs, yOffs;
-	box			dirtyBox [NUM_LINES_HIRES];
-	CCanvas	*creditsOffscreenBuf = NULL;
-	CCanvas	*saveCanv = CCanvas::Current ();
+	fix				xTimeout, xDelay = X2I (2800 * 1000);
+	int				nFirstLineOffs, nExtraInc = 0;
+	int				bBinary = 0;
+	char				*pszTemp;
+	char				filename [32];
+	int				xOffs, yOffs;
+	box				dirtyBox [NUM_LINES_HIRES];
+	CCanvas			*creditsOffscreenBuf = NULL;
+	CCanvas			*saveCanv = CCanvas::Current ();
 
 	// Clear out all tex buffer lines.
 memset (buffer, 0, sizeof (buffer));
@@ -200,9 +200,9 @@ if (yOffs < 0)
 	yOffs = 0;
 creditsPalette = paletteManager.Load ("credits.256", NULL);
 paletteManager.LoadEffect  ();
-header_font = GrInitFont (gameStates.menus.bHires ? (char *) "font1-1h.fnt" : (char *) "font1-1.fnt");
-title_font = GrInitFont (gameStates.menus.bHires ? (char *) "font2-3h.fnt" : (char *) "font2-3.fnt");
-names_font = GrInitFont (gameStates.menus.bHires ? (char *) "font2-2h.fnt" : (char *) "font2-2.fnt");
+header_font = fontManager.Load (gameStates.menus.bHires ? (char *) "font1-1h.fnt" : (char *) "font1-1.fnt");
+title_font = fontManager.Load (gameStates.menus.bHires ? (char *) "font2-3h.fnt" : (char *) "font2-3.fnt");
+names_font = fontManager.Load (gameStates.menus.bHires ? (char *) "font2-2h.fnt" : (char *) "font2-2.fnt");
 bmBackdrop.SetBuffer (NULL);
 bmBackdrop.SetPalette (NULL);
 
@@ -409,9 +409,9 @@ get_line:;
 			xDelay = 1;
 		}
 	else if ((k == KEY_ESC) || (bDone > NUM_LINES)) {
-		GrCloseFont (header_font);
-		GrCloseFont (title_font);
-		GrCloseFont (names_font);
+		fontManager.Unload (header_font);
+		fontManager.Unload (title_font);
+		fontManager.Unload (names_font);
 		paletteManager.FadeOut ();
 		paletteManager.Load (D2_DEFAULT_PALETTE, NULL);
 		bmBackdrop.DestroyBuffer ();

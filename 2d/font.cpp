@@ -472,13 +472,13 @@ dataSize = cf.ReadInt ();
 dataSize -= GRS_FONT_SIZE; // subtract the size of the header.
 Read (cf);
 if (!(fontData || (fontData = new ubyte [dataSize]))) {
-	cf.Close ();
+	cf.Unload ();
 	return NULL;
 	}
 cf.Read (fontData, 1, dataSize);
 if (m_info.flags & FT_COLOR)
 	palette.Read (cf);
-cf.Close ();
+cf.Unload ();
 
 Setup (fontname, fontData, palette);
 return fontData;
@@ -649,7 +649,7 @@ void CFontManager::Destroy (void)
 
 for (i = 0; (i < MAX_OPEN_FONTS); i++)
 	if (m_fonts [i].data)
-		Close (&m_fonts [i].font);
+		Unload (&m_fonts [i].font);
 }
 
 //------------------------------------------------------------------------------
@@ -672,7 +672,7 @@ return &m_fonts [i].font;
 
 //------------------------------------------------------------------------------
 
-void CFontManager::Close (CFont* font)
+void CFontManager::Unload (CFont* font)
 {
 if (!font)
 	return;
