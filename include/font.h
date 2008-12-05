@@ -27,18 +27,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define FT_PROPORTIONAL 2
 #define FT_KERNED       4
 
-#define FONT			CCanvas::Current ()->Font ()
+#define FONT			fontManager.Current ()
 #define FG_COLOR		CCanvas::Current ()->FontColor (0)
 #define BG_COLOR		CCanvas::Current ()->FontColor (1)
-#define FWIDTH       FONT->Width ()
-#define FHEIGHT      FONT->Height ()
-#define FBASELINE    FONT->baseLine
-#define FFLAGS       FONT->flags
-#define FMINCHAR     FONT->minChar
-#define FMAXCHAR     FONT->maxChar
-#define FDATA        FONT->data
-#define FCHARS       FONT->chars
-#define FWIDTHS      FONT->Width ()s
 
 #define BITS_TO_BYTES(x) (((x)+7)>>3)
 

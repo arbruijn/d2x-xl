@@ -14,7 +14,7 @@ template < class _T > class CDataPool {
 			_T		data;
 		};
 
-	class CPoolBuffer : public CArray< CPoolElem<_T> > {};
+	class CPoolBuffer : public CArray< CPoolElem <_T> > {};
 
 	private:
 		CPoolBuffer		m_buffer;

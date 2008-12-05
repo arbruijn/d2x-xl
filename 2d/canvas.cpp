@@ -101,6 +101,7 @@ delete this;
 void CCanvas::SetCurrent (CCanvas *canvP)
 {
 m_current = canvP ? canvP : screen.Canvas ();
+fontManager.SetCurrent (m_current->Font ());
 }
 
 //	-----------------------------------------------------------------------------
