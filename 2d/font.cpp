@@ -332,15 +332,10 @@ if (m_info.bitmaps) {
 m_info.parentBitmap.Destroy ();
 
 // make these offsets relative to font data
-m_info.data = (ubyte *) ((size_t) m_info.data - GRS_FONT_SIZE);
-m_info.widths = (short *) ((size_t) m_info.widths - GRS_FONT_SIZE);
-m_info.kernData = (ubyte *) ((size_t) m_info.kernData - GRS_FONT_SIZE);
-
 nChars = m_info.maxChar - m_info.minChar + 1;
-
 if (m_info.flags & FT_PROPORTIONAL) {
-	m_info.widths = (short *) (fontData + (size_t) m_info.widths);
-	m_info.data = (ubyte *) (fontData + (size_t) m_info.data);
+	m_info.widths = (short *) (fontData + (size_t) m_info.widthOffs - GRS_FONT_SIZE);
+	m_info.data = (ubyte *) (fontData + (size_t) m_info.dataOffs - GRS_FONT_SIZE);
 	m_info.chars = new ubyte* [nChars];
 	ptr = m_info.data;
 	for (i = 0; i < nChars; i++) {
@@ -359,7 +354,7 @@ else  {
 	ptr = m_info.data + (nChars * m_info.width * m_info.height);
 	}
 if (m_info.flags & FT_KERNED)
-	m_info.kernData = (ubyte *) (fontData + (size_t)m_info.kernData);
+	m_info.kernData = (ubyte *) (fontData + (size_t) m_info.kernDataOffs - GRS_FONT_SIZE);
 m_info.parentBitmap.Destroy ();
 if (m_info.flags & FT_COLOR) {		//remap palette
 #ifdef SWAP_0_255			// swap the first and last palette entries (black and white)
@@ -381,7 +376,6 @@ if (m_info.flags & FT_COLOR) {		//remap palette
 	}
 else
 	m_info.parentBitmap.SetPalette (paletteManager.Default (), TRANSPARENCY_COLOR, -1, freq);
-
 Create (fontname);
 }
 
@@ -454,10 +448,10 @@ m_info.baseLine = cf.ReadShort ();
 m_info.minChar = cf.ReadByte ();
 m_info.maxChar = cf.ReadByte ();
 m_info.byteWidth = cf.ReadShort ();
-m_info.data = (ubyte *) (size_t) cf.ReadInt ();
-m_info.chars = (ubyte **) (size_t) cf.ReadInt ();
-m_info.widths = (short *) (size_t) cf.ReadInt ();
-m_info.kernData = (ubyte *) (size_t) cf.ReadInt ();
+m_info.dataOffs = cf.ReadInt ();
+cf.ReadInt (); // Skip
+m_info.widthOffs = cf.ReadInt ();
+m_info.kernDataOffs = cf.ReadInt ();
 }
 
 //------------------------------------------------------------------------------

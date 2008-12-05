@@ -448,13 +448,13 @@ int Pow2ize (int x);//from ogl.c
 
 int OglInternalString (int x, int y, const char *s)
 {
-	const char * textP, * nextRowP, * text_ptr1;
-	int width, spacing, letter;
-	int xx, yy;
-	int orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
-	ubyte c;
-	CBitmap *bmf;
-	tFont font;
+	const char* textP, * nextRowP, * text_ptr1;
+	int			width, spacing, letter;
+	int			xx, yy;
+	int			orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
+	ubyte			c;
+	CBitmap		*bmf;
+	tFont			font;
 
 FONT->GetInfo (font);
 nextRowP = s;
@@ -517,6 +517,7 @@ while (nextRowP != NULL) {
 		textP++;
 		}
 	}
+font.parentBitmap.SetBuffer (NULL);	//beware of the destructor!
 return 0;
 }
 
@@ -686,6 +687,7 @@ while (nextRowP) {
 	}
 bmP->SetPalette (palP);
 //bmP->SetupTexture (0, 2, 1);
+font.parentBitmap.SetBuffer (NULL);	//beware of the destructor!
 return bmP;
 }
 
@@ -895,6 +897,7 @@ while (nextRowP != NULL) {
 		y++;
 		}
 	}
+font.parentBitmap.SetBuffer (NULL);	//beware of the destructor!
 return 0;
 }
 
@@ -909,7 +912,6 @@ int GrInternalStringClippedM (int x, int y, const char *s)
 	tFont font;
 
 FONT->GetInfo (font);
-
 bits = 0;
 nextRowP = s;
 FG_COLOR.rgb = 0;
@@ -990,6 +992,7 @@ while (nextRowP != NULL) {
 		y++;
 		}
 	}
+font.parentBitmap.SetBuffer (NULL);	//beware of the destructor!
 return 0;
 }
 

@@ -57,6 +57,9 @@ typedef struct tFont {
 	ubyte    	**chars;     // Ptrs to data for each char (required for prop font)
 	short     	*widths;     // Array of widths (required for prop font)
 	ubyte     	*kernData;   // Array of kerning triplet data
+	int			dataOffs;
+	int			widthOffs;
+	int			kernDataOffs;
 	// These fields do not participate in disk i/o!
 	CBitmap 		*bitmaps;
 	CBitmap 		parentBitmap;
@@ -103,6 +106,8 @@ class CFont {
 		inline void KernData (ubyte* kernData) { m_info.kernData = kernData; } 
 		inline void SetBitmaps (CBitmap* bitmaps) { m_info.bitmaps = bitmaps; }
 		inline void SetParentBitmap (CBitmap& parent) { m_info.parentBitmap = parent; }
+		inline void SetBuffer (ubyte* buffer) { m_info.parentBitmap.SetBuffer (buffer); }
+
 		inline void GetInfo (tFont& info) { info = m_info; }
 
 		inline bool InFont (char c) { return (c >= 0) && (c <= (char) (m_info.maxChar - m_info.minChar)); }
