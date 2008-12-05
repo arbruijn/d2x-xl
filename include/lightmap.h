@@ -2,8 +2,12 @@
 #define __lightmap_h
 
 #include "ogl_defs.h"
-#include "ogl_texture.h"
 #include "carray.h"
+#include "color.h"
+#include "math.h"
+#include "gr.h"
+#include "newmenu.h"
+#include "ogl_texture.h"
 
 //------------------------------------------------------------------------------
 
@@ -33,23 +37,65 @@ typedef struct tLightmapBuffer {
 	tRgbColorb	bmP [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
 } tLightmapBuffer;
 
-typedef struct tLightmapData {
+typedef struct tLightmapList {
 	CArray<tLightmapInfo>	info;
 	CArray<tLightmapBuffer>	buffers;
 	int							nBuffers;
 	int							nLights; 
 	ushort						nLightmaps;
-} tLightmapData;
+} tLightmapList;
+
+typedef struct tLightmapData {
+	int					nType;
+	int					nColor;
+	vmsVector			vNormal;
+	ushort				sideVerts [4]; 
+	tVertColorData		vcd;
+	tRgbColorb			texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
+	vmsVector			pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
+	double				fOffset [MAX_LIGHTMAP_WIDTH];
+	grsFace				*faceP;
+	} tLightmapData;
+
+class CLightmapManager {
+	private:
+		tLightmapData	m_data;
+		tLightmapList	m_list;
+
+	public:
+		CLightmapManager () { Init (); } 
+		~CLightmapManager () { Destroy (); }
+		void Init (void);
+		void Destroy (void);
+		void RestoreLights (int bVariable);
+		int Bind (int nLightmap);
+		int BindAll (void);
+		void Release (void);
+		int Create (int nLevel);
+		void Build (int nThread);
+		void BuildAll (int nFace, int nThread);
+		int _CDECL_ Thread (void *pThreadId);
+		inline int HaveLightmaps (void) {
+			return !gameStates.app.bNostalgia && (m_list.buffers.Buffer () != NULL);
+			}
+
+
+	private:
+		int Init (int bVariable);
+		inline void ComputePixelPos (vmsVector *vPos, vmsVector v1, vmsVector v2, double fOffset);
+		double SideRad (int nSegment, int nSide);
+		int CountLights (int bVariable);
+		void Copy (tRgbColorb *texColorP, ushort nLightmap);
+		void CreateSpecial (tRgbColorb *texColorP, ushort nLightmap, ubyte nColor);
+		void Realloc (int nBuffers);
+		int Save (int nLevel);
+		int Load (int nLevel);
+		char* Filename (char *pszFilename, int nLevel);
+
+	};
 
 //------------------------------------------------------------------------------
 
-void RestoreLights (int bVariable);
-void ComputeOneLightmap (int nThread);
-int CreateLightmaps (int nLevel);
-void DestroyLightmaps (void);
-int OglCreateLightmap (int nLightmap);
-int OglCreateLightmaps (void);
-void OglDestroyLightmaps (void);
 
 #define	USE_LIGHTMAPS \
 			(gameStates.render.color.bLightmapsOk && \
@@ -63,13 +109,6 @@ void OglDestroyLightmaps (void);
 extern tLightmapData		lightmapData;
 extern int					lightmapWidth [5];
 extern GLhandleARB		lmShaderProgs [3];
-
-//------------------------------------------------------------------------------
-
-static inline int HaveLightmaps (void)
-{
-return !gameStates.app.bNostalgia && (lightmapData.info != NULL);
-}
 
 //------------------------------------------------------------------------------
 

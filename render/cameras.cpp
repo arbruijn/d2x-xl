@@ -177,12 +177,12 @@ if (!CreateBuffer ())
 #endif
 {
 #if CAMERA_READPIXELS
-	if (!(m_info.buffer.Buffer () = reinterpret_cast<char*> (D2_ALLOC (m_info.buffer.Width () * m_info.buffer.Height () * 4))))
+	if (!(m_info.buffer.Create (m_info.buffer.Width () * m_info.buffer.Height () * 4)))
 		return 0;
 	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport)
 		m_info.screenBuf = m_info.buffer.Buffer ();
 	else {
-		m_info.screenBuf = D2_ALLOC (CCanvas::Current ()->Width () * CCanvas::Current ()->Bitmap ().Height () * 4);
+		m_info.screenBuf = new ubyte [CCanvas::Current ()->Width () * CCanvas::Current ()->Bitmap ().Height () * 4];
 		if (!m_info.screenBuf) {
 			gameOpts->render.cameras.bFitToWall = 1;
 			m_info.screenBuf = m_info.buffer.Buffer ();
@@ -248,8 +248,10 @@ void CCamera::Destroy (void)
 {
 m_info.buffer.FreeTexture ();
 OglDeleteTextures (1, &m_info.glTexId);
-if (m_info.screenBuf && (m_info.screenBuf != reinterpret_cast<char*> (m_info.buffer.Buffer ())))
-	D2_FREE (m_info.screenBuf);
+if (m_info.screenBuf && (m_info.screenBuf != m_info.buffer.Buffer ())) {
+	delete m_info.screenBuf;
+	m_info.screenBuf = NULL;
+	}
 if (m_info.buffer.Buffer ()) {
 	m_info.buffer.DestroyBuffer ();
 	}
@@ -633,7 +635,7 @@ if (!gameStates.app.bD2XLevel)
 	return 0;
 PrintLog ("   creating cameras\n");
 if (!m_faceCameras) {
-	GETMEM (char, m_faceCameras, 2 * MAX_SEGMENTS * 6, 0);
+	m_faceCameras = new char [2 * MAX_SEGMENTS * 6];
 	if (!m_faceCameras)
 		return 0;
 	}

@@ -1056,7 +1056,7 @@ if (LoadTranspItemImage (bmBot, item->nColors, 0, item->nWrap, 0, 3, 1, HaveLigh
 		}
 	else {
 		if (item->nColors)
-			glColor4fv (reinterpret_cast<GLfloat*> (item->color);
+			glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 		else
 			glColor3d (1, 1, 1);
 		if (bmBot) {
@@ -1362,7 +1362,7 @@ if (LoadTranspItemImage (item->bmP, 0, 0, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 	glBegin (GL_QUADS);
 	for (i = 0; i < 4; i++) {
 		glTexCoord2fv (reinterpret_cast<GLfloat*> (item->texCoord + i));
-		glVertex3fv (reinterpret_cast<GLfloat*> (tem->vertices + i));
+		glVertex3fv (reinterpret_cast<GLfloat*> (item->vertices + i));
 		}
 	glEnd ();
 	}

@@ -13,7 +13,7 @@ typedef struct tCamera {
 	short				nSegment;
 	short				nSide;
 	CBitmap			buffer;
-	char				*screenBuf;
+	ubyte				*screenBuf;
 	GLuint			glTexId;
 	time_t			nTimeout;
 	char				nType;
@@ -32,7 +32,7 @@ typedef struct tCamera {
 	CTexture		glTex;
 #elif RENDER2TEXTURE == 2
 	CFBO				fbo;
-	CTexture	glTex;
+	CTexture			glTex;
 #endif
 	vmsMatrix		orient;
 	fixang			curAngle;

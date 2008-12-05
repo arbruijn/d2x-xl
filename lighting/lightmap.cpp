@@ -45,6 +45,8 @@ there I just had it exit instead.
 #include "gamemine.h"
 #include "renderthreads.h"
 
+CLightmapManager lightmapManager;
+
 //------------------------------------------------------------------------------
 
 #define LMAP_REND2TEX		0
@@ -78,7 +80,7 @@ int lightmapWidth [5] = {8, 16, 32, 64, 128};
 
 tLightmap dummyLightmap;
 
-tLightmapData lightmapData = {NULL, NULL, 0, 0};
+tLightmapData lightmapData;
 
 //------------------------------------------------------------------------------
 
@@ -86,9 +88,9 @@ int InitLightData (int bVariable);
 
 //------------------------------------------------------------------------------
 
-int OglCreateLightmap (int nLightmap)
+int CLightmapManager::Bind (int nLightmap)
 {
-	tLightmapBuffer	*lmP = lightmapData.buffers + nLightmap;
+	tLightmapBuffer	*lmP = &m_list.buffers [nLightmap];
 #if DBG
 	int					nError;
 #endif
@@ -121,21 +123,21 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OglCreateLightmaps (void)
+int CLightmapManager::BindAll (void)
 {
-for (int i = 0; i < lightmapData.nBuffers; i++)
-	if (!OglCreateLightmap (i))
+for (int i = 0; i < m_list.nBuffers; i++)
+	if (!Bind (i))
 		return 0;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void OglDestroyLightmaps (void)
+void CLightmapManager::Release (void)
 {
-if (lightmapData.buffers) { 
-	tLightmapBuffer *lmP = lightmapData.buffers;
-	for (int i = lightmapData.nBuffers; i; i--, lmP++)
+if (m_list.buffers.Buffer ()) { 
+	tLightmapBuffer *lmP = &m_list.buffers [0];
+	for (int i = m_list.nBuffers; i; i--, lmP++)
 		if (lmP->handle) {
 			OglDeleteTextures (1, reinterpret_cast<GLuint*> (&lmP->handle));
 			lmP->handle = 0;
@@ -145,28 +147,28 @@ if (lightmapData.buffers) {
 
 //------------------------------------------------------------------------------
 
-void DestroyLightmaps (void)
+void CLightmapManager::Destroy (void)
 {
-if (lightmapData.info) { 
-	OglDestroyLightmaps ();
-	lightmapData.info.Destroy ();
-	lightmapData.buffers.Destroy ();
-	lightmapData.nBuffers = 0;
+if (m_list.info.Buffer ()) { 
+	Release ();
+	m_list.info.Destroy ();
+	m_list.buffers.Destroy ();
+	m_list.nBuffers = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-inline void ComputePixelPos (vmsVector *vPos, vmsVector v1, vmsVector v2, double fOffset)
+inline void CLightmapManager::ComputePixelPos (vmsVector *vPos, vmsVector v1, vmsVector v2, double fOffset)
 {
-(*vPos)[X] = (fix) (fOffset * (v2[X] - v1[X])); 
-(*vPos)[Y] = (fix) (fOffset * (v2[Y] - v1[Y])); 
-(*vPos)[Z] = (fix) (fOffset * (v2[Z] - v1[Z])); 
+(*vPos) [X] = (fix) (fOffset * (v2 [X] - v1 [X])); 
+(*vPos) [Y] = (fix) (fOffset * (v2 [Y] - v1 [Y])); 
+(*vPos) [Z] = (fix) (fOffset * (v2 [Z] - v1 [Z])); 
 }
 
 //------------------------------------------------------------------------------
 
-void RestoreLights (int bVariable)
+void CLightmapManager::RestoreLights (int bVariable)
 {
 	tDynLight	*pl;
 	int			i;
@@ -178,7 +180,7 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 
 //------------------------------------------------------------------------------
 
-int CountLights (int bVariable)
+int CLightmapManager::CountLights (int bVariable)
 {
 	tDynLight		*pl;
 	int				i, nLights = 0;
@@ -193,7 +195,7 @@ return nLights;
 
 //------------------------------------------------------------------------------
 
-double SideRad (int nSegment, int nSide)
+double CLightmapManager::SideRad (int nSegment, int nSide)
 {
 	int			i;
 	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
@@ -205,7 +207,7 @@ GetSideVertIndex (sideVerts, nSegment, nSide);
 xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
 for (i = 0; i < 4; i++) {
-	v = gameData.segs.vertices + sideVerts [i];
+	v = gameData.segs.vertices +sideVerts [i];
 	h = (*v)[X];
 	if (xMin > h)
 		xMin = h;
@@ -230,7 +232,7 @@ return sqrt (dx * dx + dy * dy + dz * dz) / (2 * (double) F1_0);
 
 //------------------------------------------------------------------------------
 
-int InitLightData (int bVariable)
+int CLightmapManager::Init (int bVariable)
 {
 	tDynLight		*pl;
 	grsFace			*faceP = NULL;
@@ -240,20 +242,20 @@ int InitLightData (int bVariable)
 	double			sideRad;
 
 //first step find all the lights in the level.  By iterating through every surface in the level.
-if (!(lightmapData.nLights = CountLights (bVariable)))
+if (!(m_list.nLights = CountLights (bVariable)))
 	return 0;
-if (!(lightmapData.info.Create (lightmapData.nLights))
-	return lightmapData.nLights = 0; 
-lightmapData.nBuffers = (gameData.segs.nFaces + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
-if (!(lightmapData.buffers.Create (lightmapData.nBuffers)) {
-	lightmapData.info.Destroy ();
-	return lightmapData.nLights = 0; 
+if (!m_list.info.Create (m_list.nLights))
+	return m_list.nLights = 0; 
+m_list.nBuffers = (gameData.segs.nFaces + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
+if (!m_list.buffers.Create (m_list.nBuffers)) {
+	m_list.info.Destroy ();
+	return m_list.nLights = 0; 
 	}
-lightmapData.buffers.Clear (); 
-lightmapData.info.Clear (); 
-lightmapData.nLights = 0; 
+m_list.buffers.Clear (); 
+m_list.info.Clear (); 
+m_list.nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
-lmiP = lightmapData.info; 
+lmiP = m_list.info.Buffer (); 
 for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dynamic.nLights; i; i--, pl++) {
 	if (pl->info.nType || (pl->info.bVariable && !bVariable))
 		continue;
@@ -274,7 +276,7 @@ for (pl = gameData.render.lights.dynamic.lights, i = gameData.render.lights.dyna
 	lmiP->vDir = vmsVector::Avg(normalP[0], normalP[1]);
 	lmiP++; 
 	}
-return lightmapData.nLights = (int) (lmiP - lightmapData.info); 
+return m_list.nLights = (int) (lmiP - m_list.info.Buffer ()); 
 }
 
 //------------------------------------------------------------------------------
@@ -311,9 +313,9 @@ for (i = 512; i; i--, brightmap++)
 
 //------------------------------------------------------------------------------
 
-void CopyLightmap (tRgbColorb *texColorP, ushort nLightmap)
+void CLightmapManager::Copy (tRgbColorb *texColorP, ushort nLightmap)
 {
-tLightmapBuffer *bufP = lightmapData.buffers + nLightmap / LIGHTMAP_BUFSIZE;
+tLightmapBuffer *bufP = &m_list.buffers [nLightmap / LIGHTMAP_BUFSIZE];
 int i = nLightmap % LIGHTMAP_BUFSIZE;
 int x = (i % LIGHTMAP_ROWSIZE) * LM_W;
 int y = (i / LIGHTMAP_ROWSIZE) * LM_H;
@@ -323,31 +325,24 @@ for (i = 0; i < LM_H; i++, y++, texColorP += LM_W)
 
 //------------------------------------------------------------------------------
 
-void CreateSpecialLightmap (tRgbColorb *texColorP, ushort nLightmap, ubyte nColor)
+void CLightmapManager::CreateSpecial (tRgbColorb *texColorP, ushort nLightmap, ubyte nColor)
 {
 memset (texColorP, nColor, LM_W * LM_H * sizeof (tRgbColorb));
-CopyLightmap (texColorP, nLightmap);
+Copy (texColorP, nLightmap);
 }
 
 //------------------------------------------------------------------------------
+// build one entire lightmap in single threaded mode or the upper and lower halves when multi threaded
 
-static int					nType, nColor;
-static vmsVector			vNormal;
-static ushort				sideVerts [4]; 
-static tVertColorData	vcd;
-static tRgbColorb			texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
-static vmsVector			pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
-static double				fOffset [MAX_LIGHTMAP_WIDTH];
-static grsFace				*faceP;
-
-void ComputeOneLightmap (int nThread)
+void CLightmapManager::Build (int nThread)
 {
-	vmsVector	*pixelPosP, offsetU, offsetV;
-	tRgbColorb	*texColorP;
-	fVector3		color;
-	int			x, y, xMin, xMax;
-	int			v0, v1, v2, v3; 
-	bool			bBlack, bWhite;
+	vmsVector		*pixelPosP, offsetU, offsetV;
+	tRgbColorb		*texColorP;
+	fVector3			color;
+	int				x, y, xMin, xMax;
+	int				v0, v1, v2, v3; 
+	bool				bBlack, bWhite;
+	tVertColorData	vcd = m_data.vcd;
 
 if (nThread < 0) {
 	xMin = 0;
@@ -362,44 +357,44 @@ else {
 	xMax = LM_W / 2;
 	}
 
-pixelPosP = pixelPos + xMin * LM_H;
+pixelPosP = m_data.pixelPos + xMin * LM_H;
 for (x = xMin; x < xMax; x++) {
 	for (y = 0; y < LM_H; y++, pixelPosP++) {
-		if (nType) {
-			v0 = sideVerts [0]; 
-			v2 = sideVerts [2]; 
+		if (m_data.nType) {
+			v0 = m_data.sideVerts [0]; 
+			v2 = m_data.sideVerts [2]; 
 			if (x >= y)	{
-				v1 = sideVerts [1]; 
+				v1 = m_data.sideVerts [1]; 
 				//Next calculate this pixel's place in the world (tricky stuff)
-				ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], fOffset [x]);
-				ComputePixelPos (&offsetV, gameData.segs.vertices [v1], gameData.segs.vertices [v2], fOffset [y]);
+				ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.fOffset [x]);
+				ComputePixelPos (&offsetV, gameData.segs.vertices [v1], gameData.segs.vertices [v2], m_data.fOffset [y]);
 				*pixelPosP = offsetU + offsetV; 
 				*pixelPosP += gameData.segs.vertices [v0];  //This should be the real world position of the pixel.
 				}
 			else {
 				//Next calculate this pixel's place in the world (tricky stuff)
-				v3 = sideVerts [3]; 
-				ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], fOffset [y]); 
-				ComputePixelPos (&offsetU, gameData.segs.vertices [v3], gameData.segs.vertices [v2], fOffset [x]); 
+				v3 = m_data.sideVerts [3]; 
+				ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.fOffset [y]); 
+				ComputePixelPos (&offsetU, gameData.segs.vertices [v3], gameData.segs.vertices [v2], m_data.fOffset [x]); 
 				*pixelPosP = offsetU + offsetV; 
 				*pixelPosP += gameData.segs.vertices [v0];  //This should be the real world position of the pixel.
 				}
 			}
 		else {//SIDE_IS_TRI_02
-			v1 = sideVerts [1]; 
-			v3 = sideVerts [3]; 
+			v1 = m_data.sideVerts [1]; 
+			v3 = m_data.sideVerts [3]; 
 			if (LM_W - x >= y) {
-				v0 = sideVerts [0]; 
-				ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], fOffset [x]);  
-				ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], fOffset [y]);
+				v0 = m_data.sideVerts [0]; 
+				ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.fOffset [x]);  
+				ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.fOffset [y]);
 				*pixelPosP = offsetU + offsetV; 
 				*pixelPosP += gameData.segs.vertices [v0];  //This should be the real world position of the pixel.
 				}
 			else {
-				v2 = sideVerts [2]; 
+				v2 = m_data.sideVerts [2]; 
 				//Not certain this is correct, may need to subtract something
-				ComputePixelPos (&offsetV, gameData.segs.vertices [v2], gameData.segs.vertices [v1], fOffset [LM_W - 1 - y]);  
-				ComputePixelPos (&offsetU, gameData.segs.vertices [v2], gameData.segs.vertices [v3], fOffset [LM_W - 1 - x]); 
+				ComputePixelPos (&offsetV, gameData.segs.vertices [v2], gameData.segs.vertices [v1], m_data.fOffset [LM_W - 1 - y]);  
+				ComputePixelPos (&offsetU, gameData.segs.vertices [v2], gameData.segs.vertices [v3], m_data.fOffset [LM_W - 1 - x]); 
 				*pixelPosP = offsetU + offsetV; 
 				*pixelPosP += gameData.segs.vertices [v2];  //This should be the real world position of the pixel.
 				}
@@ -408,14 +403,15 @@ for (x = xMin; x < xMax; x++) {
 	}
 
 bBlack = bWhite = true;
-pixelPosP = pixelPos + xMin * LM_H;
+pixelPosP = m_data.pixelPos + xMin * LM_H;
 for (x = xMin; x < xMax; x++) {
 	for (y = 0; y < LM_H; y++, pixelPosP++) { 
 #if DBG
-		if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-		if (0 < SetNearestPixelLights (faceP->nSegment, faceP->nSide, &vNormal, pixelPosP, faceP->fRads [1] / 10.0f, nThread)) {
+		if (0 < SetNearestPixelLights (m_data.faceP->nSegment, m_data.faceP->nSide, &m_data.vNormal, 
+												 pixelPosP, m_data.faceP->fRads [1] / 10.0f, nThread)) {
 			vcd.vertPos = pixelPosP->ToFloat3();
 			color.SetZero ();
 			G3AccumVertColor (-1, &color, &vcd, nThread);
@@ -434,7 +430,7 @@ for (x = xMin; x < xMax; x++) {
 				else
 					bWhite = false;
 				}
-			texColorP = texColor + y * LM_W + x;
+			texColorP = m_data.texColor + y * LM_W + x;
 			texColorP->red = (ubyte) (255 * color [R]);
 			texColorP->green = (ubyte) (255 * color [G]);
 			texColorP->blue = (ubyte) (255 * color [B]);
@@ -442,16 +438,16 @@ for (x = xMin; x < xMax; x++) {
 		}
 	}
 if (bBlack)
-	nColor |= 1;
+	m_data.nColor |= 1;
 else if (bWhite)
-	nColor |= 2;
+	m_data.nColor |= 2;
 else 
-	nColor |= 4;
+	m_data.nColor |= 4;
 }
 
 //------------------------------------------------------------------------------
 
-void ComputeLightmaps (int nFace, int nThread)
+void CLightmapManager::BuildAll (int nFace, int nThread)
 {
 	tSide			*sideP; 
 	int			nLastFace; 
@@ -459,10 +455,10 @@ void ComputeLightmaps (int nFace, int nThread)
 	int			nBlackLightmaps = 0, nWhiteLightmaps = 0; 
 
 for (i = 0; i < LM_W; i++)
-	fOffset [i] = (double) i / (double) (LM_W - 1);
-InitVertColorData (vcd);
-vcd.pVertPos = &vcd.vertPos;
-vcd.fMatShininess = 4;
+	m_data.fOffset [i] = (double) i / (double) (LM_W - 1);
+InitVertColorData (m_data.vcd);
+m_data.vcd.pVertPos = &m_data.vcd.vertPos;
+m_data.vcd.fMatShininess = 4;
 
 #if 0
 if (gameStates.app.bMultiThreaded)
@@ -471,42 +467,42 @@ else
 #endif
 	INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
 if (nFace <= 0) {
-	CreateSpecialLightmap (texColor, 0, 0);
-	CreateSpecialLightmap (texColor, 1, 255);
-	lightmapData.nLightmaps = 2;
+	CreateSpecial (m_data.texColor, 0, 0);
+	CreateSpecial (m_data.texColor, 1, 255);
+	m_list.nLightmaps = 2;
 	}
 //Next Go through each surface and create a lightmap for it.
-for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
+for (m_data.faceP = FACES + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
 #if DBG
-	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (SEGMENT2S [faceP->nSegment].special == SEGMENT_IS_SKYBOX)
+	if (SEGMENT2S [m_data.faceP->nSegment].special == SEGMENT_IS_SKYBOX)
 		continue;
-	sideP = SEGMENTS [faceP->nSegment].sides + faceP->nSide;
-	memcpy (sideVerts, faceP->index, sizeof (sideVerts));
-	nType = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
-	vNormal = vmsVector::Avg (sideP->normals [0], sideP->normals [1]);
-	vcd.vertNorm = vNormal.ToFloat3();
-	nColor = 0;
-	memset (texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
+	sideP = SEGMENTS [m_data.faceP->nSegment].sides + m_data.faceP->nSide;
+	memcpy (m_data.sideVerts, m_data.faceP->index, sizeof (m_data.sideVerts));
+	m_data.nType = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
+	m_data.vNormal = vmsVector::Avg (sideP->normals [0], sideP->normals [1]);
+	m_data.vcd.vertNorm = m_data.vNormal.ToFloat3();
+	m_data.nColor = 0;
+	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
 	if (!RunRenderThreads (rtLightmap))
-		ComputeOneLightmap (-1);
+		Build (-1);
 #if DBG
-	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (nColor == 1) {
-		faceP->nLightmap = 0;
+	if (m_data.nColor == 1) {
+		m_data.faceP->nLightmap = 0;
 		nBlackLightmaps++;
 		}
-	else if (nColor == 2) {
-		faceP->nLightmap = 1;
+	else if (m_data.nColor == 2) {
+		m_data.faceP->nLightmap = 1;
 		nWhiteLightmaps++;
 		}
 	else {
-		CopyLightmap (texColor, lightmapData.nLightmaps);
-		faceP->nLightmap = lightmapData.nLightmaps++;
+		Copy (m_data.texColor, m_list.nLightmaps);
+		m_data.faceP->nLightmap = m_list.nLightmaps++;
 		}
 	}
 }
@@ -515,13 +511,13 @@ for (faceP = FACES + nFace; nFace < nLastFace; nFace++, faceP++) {
 
 static tThreadInfo	ti [2];
 
-int _CDECL_ LightmapThread (void *pThreadId)
+int _CDECL_ CLightmapManager::Thread (void *pThreadId)
 {
 	int		nId = *(reinterpret_cast<int*> (pThreadId));
 
 gameData.render.lights.dynamic.shader.index [0][nId].nFirst = MAX_SHADER_LIGHTS;
 gameData.render.lights.dynamic.shader.index [0][nId].nLast = 0;
-ComputeLightmaps (nId ? gameData.segs.nFaces / 2 : 0, nId);
+BuildAll (nId ? gameData.segs.nFaces / 2 : 0, nId);
 SDL_SemPost (ti [nId].done);
 ti [nId].bDone = 1;
 return 0;
@@ -560,51 +556,61 @@ for (i = 0; i < 2; i++) {
 
 static int nFace = 0;
 
-static int CreateLightmapsPoll (int nItems, tMenuItem *m, int *key, int nCurItem)
+static int _CDECL_ CreatePoll (int nItems, tMenuItem *m, int *key, int nCurItem)
 {
 paletteManager.LoadEffect ();
 if (nFace < gameData.segs.nFaces) {
-	ComputeLightmaps (nFace, 0);
+	lightmapManager.BuildAll (nFace, 0);
 	nFace += PROGRESS_INCR;
 	}
 else {
 	*key = -2;
-	paletteManager.LoadEffect  ();
+	paletteManager.LoadEffect ();
 	return nCurItem;
 	}
 m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
-paletteManager.LoadEffect  ();
+paletteManager.LoadEffect ();
 return nCurItem;
 }
 
 //------------------------------------------------------------------------------
 
-char *LightmapDataFilename (char *pszFilename, int nLevel)
+char *CLightmapManager::Filename (char *pszFilename, int nLevel)
 {
 return GameDataFilename (pszFilename, "lmap", nLevel, gameOpts->render.nLightmapQuality);
 }
 
 //------------------------------------------------------------------------------
 
-int SaveLightmapData (int nLevel)
+void CLightmapManager::Realloc (int nBuffers)
+{
+if (m_list.nBuffers > nBuffers) {
+	m_list.buffers.Resize (nBuffers);
+	m_list.nBuffers = nBuffers;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int CLightmapManager::Save (int nLevel)
 {
 	CFile				cf;
 	tLightmapDataHeader ldh = {LIGHTMAP_DATA_VERSION, 
 										gameData.segs.nSegments, 
 										gameData.segs.nVertices, 
 										gameData.segs.nFaces, 
-										lightmapData.nLights, 
+										m_list.nLights, 
 										MAX_LIGHT_RANGE,
-										lightmapData.nBuffers};
+										m_list.nBuffers};
 	int				i, bOk;
 	char				szFilename [FILENAME_LEN];
 	grsFace			*faceP;
 
-if (!(RENDERPATH && gameStates.app.bCacheLightmaps && lightmapData.nLights && lightmapData.nBuffers))
+if (!(RENDERPATH && gameStates.app.bCacheLightmaps && m_list.nLights && m_list.nBuffers))
 	return 0;
-if (!cf.Open (LightmapDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
+if (!cf.Open (Filename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1);
 if (bOk) {
@@ -615,8 +621,8 @@ if (bOk) {
 		}
 	}
 if (bOk) {
-	for (i = 0; i < lightmapData.nBuffers; i++) {
-		bOk = cf.Write (lightmapData.buffers [i].bmP, sizeof (lightmapData.buffers [i].bmP), 1) == 1;
+	for (i = 0; i < m_list.nBuffers; i++) {
+		bOk = cf.Write (m_list.buffers [i].bmP, sizeof (m_list.buffers [i].bmP), 1) == 1;
 		if (!bOk)
 			break;
 		}
@@ -627,17 +633,7 @@ return bOk;
 
 //------------------------------------------------------------------------------
 
-void ReallocLightmaps (int nBuffers)
-{
-if (lightmapData.nBuffers > nBuffers) {
-	lightmapData.buffers.Resize (nBuffers);
-	lightmapData.nBuffers = nBuffers;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-int LoadLightmapData (int nLevel)
+int CLightmapManager::Load (int nLevel)
 {
 	CFile				cf;
 	tLightmapDataHeader ldh;
@@ -647,7 +643,7 @@ int LoadLightmapData (int nLevel)
 
 if (!(RENDERPATH && gameStates.app.bCacheLightmaps))
 	return 0;
-if (!cf.Open (LightmapDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
+if (!cf.Open (Filename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
 	return 0;
 bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
 if (bOk)
@@ -655,7 +651,7 @@ if (bOk)
 			(ldh.nSegments == gameData.segs.nSegments) && 
 			(ldh.nVertices == gameData.segs.nVertices) && 
 			(ldh.nFaces == gameData.segs.nFaces) && 
-			(ldh.nLights == lightmapData.nLights) && 
+			(ldh.nLights == m_list.nLights) && 
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk) {
 	for (i = ldh.nFaces, faceP = gameData.segs.faces.faces; i; i--, faceP++) {
@@ -666,20 +662,30 @@ if (bOk) {
 	}
 if (bOk) {
 	for (i = 0; i < ldh.nBuffers; i++) {
-		bOk = cf.Read (lightmapData.buffers [i].bmP, sizeof (lightmapData.buffers [i].bmP), 1) == 1;
+		bOk = cf.Read (m_list.buffers [i].bmP, sizeof (m_list.buffers [i].bmP), 1) == 1;
 		if (!bOk)
 			break;
 		}
 	}
 if (bOk)
-	ReallocLightmaps (ldh.nBuffers);
+	Realloc (ldh.nBuffers);
 cf.Close ();
 return bOk;
 }
 
 //------------------------------------------------------------------------------
 
-int CreateLightmaps (int nLevel)
+void CLightmapManager::Init (void)
+{
+m_list.nBuffers = 
+m_list.nLights = 0;
+m_list.nLightmaps = 0;
+memset (&m_data, 0, sizeof (m_data)); 
+}
+
+//------------------------------------------------------------------------------
+
+int CLightmapManager::Create (int nLevel)
 {
 if (!(RENDERPATH && gameStates.render.bUsePerPixelLighting))
 	return 0;
@@ -689,10 +695,10 @@ if ((gameStates.render.bUsePerPixelLighting == 1) && !CreateLightmapShader (0))
 if (gameOpts->render.nLightmapQuality > 3)
 	gameOpts->render.nLightmapQuality = 3;
 #endif
-DestroyLightmaps ();
-if (!InitLightData (0))
+Destroy ();
+if (!Init (0))
 	return 0;
-if (LoadLightmapData (nLevel))
+if (Load (nLevel))
 	return 1;
 TransformDynLights (1, 0);
 if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
@@ -710,18 +716,18 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		gameData.render.lights.dynamic.shader.index [0][0].nLast = 0;
 		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 			nFace = 0;
-			NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreateLightmapsPoll);
+			NMProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreatePoll);
 			}
 		else
-			ComputeLightmaps (-1, 0);
+			BuildAll (-1, 0);
 		gameData.render.fAttScale = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
 		}
 	gameStates.render.bLightmaps = 0;
 	gameStates.render.nState = 0;
 	gameOpts->render.color.nSaturation = nSaturation;
-	ReallocLightmaps ((lightmapData.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);
-	OglCreateLightmaps ();
-	SaveLightmapData (nLevel);
+	Realloc ((m_list.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);
+	BindAll ();
+	Save (nLevel);
 	}
 return 1;
 }

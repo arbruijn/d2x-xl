@@ -31,7 +31,7 @@ typedef unsigned char ubyte;
 #if defined(_WIN32)
 typedef unsigned short ushort;
 typedef unsigned int uint;
-typedef unsigned long ulong
+typedef unsigned long ulong;
 #endif
 
 #if defined(_WIN32) || defined(__sun__) // platforms missing (u_)int??_t

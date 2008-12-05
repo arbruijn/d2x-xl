@@ -30,7 +30,7 @@ typedef union dSwap {
 	char		b [8];
 } dSwap;
 
-#define DSWAP(_d)	(reinterpret_cast<dSwap *> &(_d))
+#define DSWAP(_d)	(reinterpret_cast<dSwap *> (&(_d)))
 
 static inline double SWAPDOUBLE (double i)
 {
@@ -75,7 +75,7 @@ typedef union fSwap {
 	char	b [4];
 } fSwap;
 
-#define FSWAP(_f)	(reinterpret_cast<fSwap *> &(_f))
+#define FSWAP(_f)	(reinterpret_cast<fSwap *> (&(_f)))
 
 static inline float SWAPFLOAT (float i)
 {
@@ -112,7 +112,7 @@ typedef union iSwap {
 	char	b [4];
 } iSwap;
 
-#define ISWAP(_i)	(reinterpret_cast<iSwap *> &(_i))
+#define ISWAP(_i)	(reinterpret_cast<iSwap *> (&(_i)))
 
 static inline int SWAPINT (int i)
 {
@@ -136,7 +136,7 @@ typedef union sSwap {
 	char	b [2];
 } sSwap;
 
-#define SSWAP(_s)	(reinterpret_cast<sSwap *> &(_s))
+#define SSWAP(_s)	(reinterpret_cast<sSwap *> (&(_s)))
 
 static inline short SWAPSHORT (short i)
 {

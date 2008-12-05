@@ -240,9 +240,9 @@ void AlignPolyModelData (tPolyModel *pm)
 			    && pm->modelData + pm->subModels.ptrs [i] < cur_old + chunk_len)
 				pm->subModels.ptrs [i] += (cur_new - tmp) - (cur_old - pm->modelData);
  	}
-	D2_FREE (pm->modelData);
+	delete[] pm->modelData;
 	pm->nDataSize += total_correction;
-	pm->modelData = D2_ALLOC (pm->nDataSize);
+	pm->modelData = new ubyte [pm->nDataSize];
 	Assert (pm->modelData != NULL);
 	memcpy (pm->modelData, tmp, pm->nDataSize);
 	D2_FREE (tmp);
@@ -257,37 +257,35 @@ tPolyModel *ReadModelFile (tPolyModel *pm, const char *filename, tRobotInfo *r)
 	short version;
 	int	id, len, next_chunk;
 	int	animFlag = 0;
-	ubyte *model_buf;
+	ubyte modelBuf [MODEL_BUF_SIZE];
 
-if (!(model_buf = reinterpret_cast<ubyte*> (D2_ALLOC (MODEL_BUF_SIZE * sizeof (ubyte)))))
-	Error ("Can't allocate space to read model %s\n", filename);
 if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0))
 	Error ("Can't open file <%s>", filename);
 Assert (cf.Length () <= MODEL_BUF_SIZE);
 Pof_addr = 0;
-Pof_file_end = (int) cf.Read (model_buf, 1, cf.Length ());
+Pof_file_end = (int) cf.Read (modelBuf, 1, cf.Length ());
 cf.Close ();
-id = pof_read_int (model_buf);
+id = pof_read_int (modelBuf);
 if (id!=0x4f505350) /* 'OPSP' */
 	Error ("Bad ID in model file <%s>", filename);
-version = pof_read_short (model_buf);
+version = pof_read_short (modelBuf);
 if (version < PM_COMPATIBLE_VERSION || version > PM_OBJFILE_VERSION)
 	Error ("Bad version (%d) in model file <%s>", version, filename);
 //if (FindArg ("-bspgen"))
 //printf ("bspgen -c1");
-while (POF_ReadIntNew (id, model_buf) == 1) {
+while (POF_ReadIntNew (id, modelBuf) == 1) {
 	id = INTEL_INT (id);
-	//id  = pof_read_int (model_buf);
-	len = pof_read_int (model_buf);
+	//id  = pof_read_int (modelBuf);
+	len = pof_read_int (modelBuf);
 	next_chunk = Pof_addr + len;
 	switch (id) {
 		case ID_OHDR: {		//Object header
 			vmsVector pmmin, pmmax;
-			pm->nModels = pof_read_int (model_buf);
-			pm->rad = pof_read_int (model_buf);
+			pm->nModels = pof_read_int (modelBuf);
+			pm->rad = pof_read_int (modelBuf);
 			Assert (pm->nModels <= MAX_SUBMODELS);
-			pof_read_vecs (&pmmin, 1, model_buf);
-			pof_read_vecs (&pmmax, 1, model_buf);
+			pof_read_vecs (&pmmin, 1, modelBuf);
+			pof_read_vecs (&pmmax, 1, modelBuf);
 			if (FindArg ("-bspgen")) {
 				vmsVector v = pmmax - pmmin;
 				fix l = v[X];
@@ -301,15 +299,15 @@ while (POF_ReadIntNew (id, model_buf) == 1) {
 			}
 
 		case ID_SOBJ: {		//Subobject header
-			int n = pof_read_short (model_buf);
+			int n = pof_read_short (modelBuf);
 			Assert (n < MAX_SUBMODELS);
 			animFlag++;
-			pm->subModels.parents [n] = (char) pof_read_short (model_buf);
-			pof_read_vecs (&pm->subModels.norms [n], 1, model_buf);
-			pof_read_vecs (&pm->subModels.pnts [n], 1, model_buf);
-			pof_read_vecs (&pm->subModels.offsets [n], 1, model_buf);
-			pm->subModels.rads [n] = pof_read_int (model_buf);		//radius
-			pm->subModels.ptrs [n] = pof_read_int (model_buf);	//offset
+			pm->subModels.parents [n] = (char) pof_read_short (modelBuf);
+			pof_read_vecs (&pm->subModels.norms [n], 1, modelBuf);
+			pof_read_vecs (&pm->subModels.pnts [n], 1, modelBuf);
+			pof_read_vecs (&pm->subModels.offsets [n], 1, modelBuf);
+			pm->subModels.rads [n] = pof_read_int (modelBuf);		//radius
+			pm->subModels.ptrs [n] = pof_read_int (modelBuf);	//offset
 			break;
 			}
 
@@ -319,68 +317,68 @@ while (POF_ReadIntNew (id, model_buf) == 1) {
 				int i;
 				vmsVector gun_dir;
 				ubyte gun_used [MAX_GUNS];
-				r->nGuns = pof_read_int (model_buf);
+				r->nGuns = pof_read_int (modelBuf);
 				if (r->nGuns)
 					animFlag++;
 				Assert (r->nGuns <= MAX_GUNS);
 				for (i = 0; i < r->nGuns; i++)
 					gun_used [i] = 0;
 				for (i = 0; i < r->nGuns; i++) {
-					int id = pof_read_short (model_buf);
+					int id = pof_read_short (modelBuf);
 					Assert (id < r->nGuns);
 					Assert (gun_used [id] == 0);
 					gun_used [id] = 1;
-					r->gunSubModels [id] = (char) pof_read_short (model_buf);
+					r->gunSubModels [id] = (char) pof_read_short (modelBuf);
 					Assert (r->gunSubModels [id] != 0xff);
-					pof_read_vecs (&r->gunPoints [id], 1, model_buf);
+					pof_read_vecs (&r->gunPoints [id], 1, modelBuf);
 					if (version >= 7)
-						pof_read_vecs (&gun_dir, 1, model_buf);
+						pof_read_vecs (&gun_dir, 1, modelBuf);
 					}
 				}
 			else
-				POF_CFSeek (model_buf, len, SEEK_CUR);
+				POF_CFSeek (modelBuf, len, SEEK_CUR);
 			break;
 			}
 
 		case ID_ANIM:		//Animation data
 			animFlag++;
 			if (r) {
-				int f, m, n_frames = pof_read_short (model_buf);
+				int f, m, n_frames = pof_read_short (modelBuf);
 				Assert (n_frames == N_ANIM_STATES);
 				for (m = 0; m <pm->nModels; m++)
 					for (f = 0; f < n_frames; f++)
-						pof_read_angs (&anim_angs [f][m], 1, model_buf);
+						pof_read_angs (&anim_angs [f][m], 1, modelBuf);
 							robot_set_angles (r, pm, anim_angs);
 				}
 			else
-				POF_CFSeek (model_buf, len, SEEK_CUR);
+				POF_CFSeek (modelBuf, len, SEEK_CUR);
 			break;
 #endif
 
 		case ID_TXTR: {		//Texture filename list
 			char name_buf [128];
-			int n = pof_read_short (model_buf);
+			int n = pof_read_short (modelBuf);
 			while (n--)
-				pof_read_string (name_buf, 128, model_buf);
+				pof_read_string (name_buf, 128, modelBuf);
 			break;
 			}
 
 		case ID_IDTA:		//Interpreter data
-			pm->modelData = reinterpret_cast<ubyte*> (D2_ALLOC (len));
+			if (!(pm->modelData = new ubyte [len]))
+				Error ("Not enough memory for game models.");
 			pm->nDataSize = len;
-			pof_read (pm->modelData, 1, len, model_buf);
+			pof_read (pm->modelData, 1, len, modelBuf);
 			break;
 
 		default:
-			POF_CFSeek (model_buf, len, SEEK_CUR);
+			POF_CFSeek (modelBuf, len, SEEK_CUR);
 			break;
 		}
 	if (version >= 8)		// Version 8 needs 4-byte alignment!!!
-		POF_CFSeek (model_buf, next_chunk, SEEK_SET);
+		POF_CFSeek (modelBuf, next_chunk, SEEK_SET);
 	}
 //	for (i=0;i<pm->nModels;i++)
 //		pm->subModels.ptrs [i] += (int) pm->modelData;
-D2_FREE (model_buf);
 #ifdef WORDS_NEED_ALIGNMENT
 G3AlignPolyModelData (pm);
 #endif
@@ -398,69 +396,45 @@ int ReadModelGuns (const char *filename, vmsVector *gunPoints, vmsVector *gun_di
 {
 	CFile cf;
 	short version;
-	int id, len;
-	int nGuns=0;
-	ubyte	*model_buf;
+	int	id, len;
+	int	nGuns=0;
+	ubyte	modelBuf [MODEL_BUF_SIZE];
 
-	model_buf = reinterpret_cast<ubyte*> (D2_ALLOC (MODEL_BUF_SIZE * sizeof (ubyte)));
-	if (!model_buf)
-		Error ("Can't allocate space to read model %s\n", filename);
+if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0))
+	Error ("Can't open file <%s>", filename);
+Assert (cf.Length () <= MODEL_BUF_SIZE);
+Pof_addr = 0;
+Pof_file_end = (int) cf.Read (modelBuf, 1, cf.Length ());
+cf.Close ();
+id = pof_read_int (modelBuf);
+if (id!=0x4f505350) /* 'OPSP' */
+	Error ("Bad ID in model file <%s>", filename);
+version = pof_read_short (modelBuf);
+Assert (version >= 7);		//must be 7 or higher for this data
+if (version < PM_COMPATIBLE_VERSION || version > PM_OBJFILE_VERSION)
+	Error ("Bad version (%d) in model file <%s>", version, filename);
+while (POF_ReadIntNew (id, modelBuf) == 1) {
+	id = INTEL_INT (id);
+	//id  = pof_read_int (modelBuf);
+	len = pof_read_int (modelBuf);
+	if (id == ID_GUNS) {		//List of guns on this tObject
+		nGuns = pof_read_int (modelBuf);
+		for (int i = 0; i < nGuns; i++) {
+			int id = pof_read_short (modelBuf);
+			int sm = pof_read_short (modelBuf);
+			if (gunSubModels)
+				gunSubModels [id] = sm;
+			else if (sm!=0)
+				Error ("Invalid gun submodel in file <%s>", filename);
+			pof_read_vecs (&gunPoints [id], 1, modelBuf);
 
-	if (!cf.Open (filename, gameFolders.szDataDir, "rb", 0))
-		Error ("Can't open file <%s>", filename);
-
-	Assert (cf.Length () <= MODEL_BUF_SIZE);
-
-	Pof_addr = 0;
-	Pof_file_end = (int) cf.Read (model_buf, 1, cf.Length ());
-	cf.Close ();
-
-	id = pof_read_int (model_buf);
-
-	if (id!=0x4f505350) /* 'OPSP' */
-		Error ("Bad ID in model file <%s>", filename);
-
-	version = pof_read_short (model_buf);
-
-	Assert (version >= 7);		//must be 7 or higher for this data
-
-	if (version < PM_COMPATIBLE_VERSION || version > PM_OBJFILE_VERSION)
-		Error ("Bad version (%d) in model file <%s>", version, filename);
-
-	while (POF_ReadIntNew (id, model_buf) == 1) {
-		id = INTEL_INT (id);
-		//id  = pof_read_int (model_buf);
-		len = pof_read_int (model_buf);
-
-		if (id == ID_GUNS) {		//List of guns on this tObject
-
-			int i;
-
-			nGuns = pof_read_int (model_buf);
-
-			for (i=0;i<nGuns;i++) {
-				int id, sm;
-
-				id = pof_read_short (model_buf);
-				sm = pof_read_short (model_buf);
-				if (gunSubModels)
-					gunSubModels [id] = sm;
-				else if (sm!=0)
-					Error ("Invalid gun submodel in file <%s>", filename);
-				pof_read_vecs (&gunPoints [id], 1, model_buf);
-
-				pof_read_vecs (&gun_dirs [id], 1, model_buf);
+			pof_read_vecs (&gun_dirs [id], 1, modelBuf);
 			}
-
 		}
 		else
-			POF_CFSeek (model_buf, len, SEEK_CUR);
-
+			POF_CFSeek (modelBuf, len, SEEK_CUR);
 	}
-
-	D2_FREE (model_buf);
-
-	return nGuns;
+return nGuns;
 }
 
 //------------------------------------------------------------------------------
@@ -468,7 +442,7 @@ int ReadModelGuns (const char *filename, vmsVector *gunPoints, vmsVector *gun_di
 void FreeModel (tPolyModel *po)
 {
 if (po->modelData)
-	D2_FREE (po->modelData);
+	delete[] po->modelData;
 }
 
 //------------------------------------------------------------------------------
@@ -932,14 +906,14 @@ void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf)
 {
 if (pm->modelData)
 	D2_FREE (pm->modelData);
-pm->modelData = reinterpret_cast<ubyte*> (D2_ALLOC (pm->nDataSize));
+pm->modelData = new ubyte [pm->nDataSize];
 Assert (pm->modelData != NULL);
 cf.Read (pm->modelData, sizeof (ubyte), pm->nDataSize);
 if (pdm) {
 	if (pdm->modelData)
-		D2_FREE (pdm->modelData);
-	pdm->modelData = reinterpret_cast<ubyte*> (D2_ALLOC (pm->nDataSize));
-	Assert (pdm->modelData != NULL);
+		delete[] pdm->modelData;
+	if (!(pdm->modelData = new ubyte [pm->nDataSize]))
+		Error ("Not enough memory for game models.");
 	memcpy (pdm->modelData, pm->modelData, pm->nDataSize);
 	}
 #ifdef WORDS_NEED_ALIGNMENT

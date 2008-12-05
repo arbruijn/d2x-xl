@@ -50,20 +50,21 @@ void *MemRealloc (void * buffer, uint size);
 void MemFree (void * buffer);
 char *MemStrDup (const char * str);
 
-#define D2_ALLOC(size)			MemAlloc (size)
-#define D2_CALLOC(n, size)		MemAlloc (n * size)
-#define D2_REALLOC(ptr,size)	MemRealloc (ptr,size)
-#define D2_FREE(ptr)				{MemFree (reinterpret_cast<void *> ptr); (ptr) = NULL;}
-#define D2_STRDUP(str)			MemStrDup (str)
+#define D2_ALLOC(_size)			MemAlloc (_size)
+#define D2_CALLOC(n, _size)	MemAlloc (n * _size)
+#define D2_REALLOC(_p,_size)	MemRealloc (_p,_size)
+#define D2_FREE(_p)				{MemFree ((void *) (_p)); (_p) = NULL;}
+#define D2_STRDUP(_s)			MemStrDup (_s)
 
-#define MALLOC(_var, _type, _count)   ((_var) = reinterpret_cast<_type *> D2_ALLOC ((_count) * sizeof (_type)))
+#define MALLOC(_v,_t,_c)		(_v) = new _t [_c]
+#define FREE(_v)					delete[] (_v)
 
 #endif
 
 extern uint nCurAllocd, nMaxAllocd;
 
-#define GETMEM(_t,_p,_s,_f)	(_p) = (_t *) GetMem ((_s) * sizeof (*(_p)), _f)
-#define FREEMEM(_t,_p,_s) {D2_FREE (_p); (_p) = reinterpret_cast<_t *> NULL; }
+#define GETMEM(_t,_p,_s,_f)	if ((_p) = new _t [_s]) memset (_p, (_s) * sizeof (_t), _f)
+#define FREEMEM(_t,_p,_s)		{delete[] (_p); (_p) = reinterpret_cast<_t *> NULL; }
 
 void *GetMem (size_t size, char filler);
 

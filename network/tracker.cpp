@@ -84,7 +84,7 @@ static void CallTracker (int i, ubyte *pData, int nDataLen)
 UDP_ADDR (&tracker) = UDP_ADDR (trackerList.servers + i);
 UDP_PORT (&tracker) = htons (UDP_PORT (trackerList.servers + i));
 gameStates.multi.bTrackerCall = 1;
-IPXSendInternetPacketData (pData, nDataLen, reinterpret_cast<ubyte*> (&network, reinterpret_cast<ubyte*> (&tracker));
+IPXSendInternetPacketData (pData, nDataLen, reinterpret_cast<ubyte*> (&network), reinterpret_cast<ubyte*> (&tracker));
 gameStates.multi.bTrackerCall = 0;
 }
 
@@ -305,7 +305,7 @@ szAddr [21] = '\0';
 if (!(pszPort = strchr (szAddr, ':')))
 	return 0;
 *pszPort++ = '\0';
-if (!stoip (szAddr, reinterpret_cast<ubyte*> (addr)) 
+if (!stoip (szAddr, reinterpret_cast<ubyte*> (addr)))
 	return 0;
 if (!stoport (pszPort, &port, NULL))
 	return 0;

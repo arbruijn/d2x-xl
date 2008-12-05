@@ -811,7 +811,7 @@ if (left < r)
 static int SetActiveShaderLight (tActiveShaderLight *activeLightsP, tShaderLight *psl, short nType, int nThread)
 {
 #if DBG
-if ((reinterpret_cast<char*> (psl - reinterpret_cast<char*> (gameData.render.lights.dynamic.shader.lights)) % sizeof (*psl))
+if ((reinterpret_cast<char*> (psl) - reinterpret_cast<char*> (gameData.render.lights.dynamic.shader.lights)) % sizeof (*psl))
 	return 0;
 #endif
 if (psl->bUsed [nThread])

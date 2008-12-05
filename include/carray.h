@@ -16,7 +16,7 @@ template < class _T > class CArray {
 		~CArray() { Destroy (); }
 		
 		inline void Init (void) { 
-			m_buffer = m_null = reinterpret_cast<_T *> NULL; 
+			m_buffer = m_null = reinterpret_cast<_T *> (NULL); 
 			m_bExternal = m_bChild = false;
 			}
 		inline void Clear (void) { if (m_buffer) memset (m_buffer, 0, m_size); }

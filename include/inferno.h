@@ -137,7 +137,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-typedef int _CDECL_	tThreadFunc reinterpret_cast<void *>;
+typedef int _CDECL_	tThreadFunc (void *);
 typedef tThreadFunc *pThreadFunc;
 
 typedef struct tThreadInfo {

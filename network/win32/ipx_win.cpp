@@ -206,7 +206,7 @@ static int ipx_win_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
   memcpy(&ipxs.sa_netnum, IPXHeader->Destination.Network, 4);
   /* if destination address is 0, then send to my net */
   if (*reinterpret_cast<uint*> (&ipxs.sa_netnum) == 0) {
-    (*reinterpret_cast<uint*> (&ipxs.sa_netnum)= *reinterpret_cast<uint*> (&ipx_MyAddress[0]);
+    *reinterpret_cast<uint*> (&ipxs.sa_netnum) = *reinterpret_cast<uint*> (&ipx_MyAddress[0]);
 /*  ipxs.sa_netnum = htonl(MyNetwork); */
   }
   memcpy(&ipxs.sa_nodenum, IPXHeader->Destination.Node, 6);

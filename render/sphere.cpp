@@ -202,9 +202,9 @@ else {
 for (i = 0; i < sdP->nTessDepth; i++)
 	nFaces *= j;
 for (i = 0; i < 2; i++) {
-	if (!(buf [i] = reinterpret_cast<tOOF_vector*> (D2_ALLOC (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector))))) {
+	if (!(buf [i] = new tOOF_vector [nFaces * (sdP->nFaceNodes + 1)])) {
 		if (i)
-			D2_FREE (buf [i - 1]);
+			delete[] buf [i - 1];
 		return -1;
 		}
 	}
@@ -346,15 +346,15 @@ typedef struct tSphereCoord {
 	tTexCoord3f		uvl;
 } tSphereCoord;
 
-tSphereCoord	*sphereCoordP = NULL;
-int				nSphereCoord = 0;
+CArray<tSphereCoord>	sphereCoord;
+int nSphereCoord = 0;
 
 //------------------------------------------------------------------------------
 
 void FreeSphereCoord (void)
 {
-if (sphereCoordP)
-	D2_FREE (sphereCoordP);
+sphereCoord.Destroy ();
+nSphereCoord = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -369,15 +369,15 @@ if (nRings > MAX_SPHERE_RINGS)
 	nRings = MAX_SPHERE_RINGS;
 h = nRings * (nRings + 1);
 if (nSphereCoord == h)
-	return (sphereCoordP != NULL);
+	return (sphereCoord.Buffer () != NULL);
 
 FreeSphereCoord ();
-if (!(sphereCoordP = reinterpret_cast<tSphereCoord*> (D2_ALLOC (h * sizeof (tSphereCoord)))))
+if (!sphereCoord.Create (h))
 	return 0;
-	nSphereCoord = h;
+nSphereCoord = h;
 h = nRings / 2;
 a = (float) (2 * Pi / nRings);
-psc = sphereCoordP;
+psc = &sphereCoord [0];
 for (j = 0; j < h; j++) {
 	t1 = (float) (j * a - Pi / 2);
 	t2 = t1 + a;
@@ -449,7 +449,7 @@ h = nRings / 2;
 nQuads = 2 * nRings + 2;
 if (gameStates.ogl.bUseTransform) {
 	for (nCull = 0; nCull < 2; nCull++) {
-		psc [0] = psc [1] = sphereCoordP;
+		psc [0] = psc [1] = &sphereCoord [0];
 		glCullFace (nCull ? GL_FRONT : GL_BACK);
 		for (j = 0; j < h; j++) {
 			for (i = 0; i < nQuads; i++, psc [0]++) {
@@ -481,7 +481,7 @@ if (gameStates.ogl.bUseTransform) {
 else {
 	for (nCull = 0; nCull < 2; nCull++) {
 		glCullFace (nCull ? GL_FRONT : GL_BACK);
-		psc [0] = psc [1] = sphereCoordP;
+		psc [0] = psc [1] = &sphereCoord [0];
 		for (j = 0; j < h; j++) {
 			for (i = 0; i < nQuads; i++, psc [0]++) {
 				p [i] = psc [0]->vPos;

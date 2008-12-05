@@ -1252,8 +1252,10 @@ void ShowBoxedMessage (const char *pszMsg)
 	//ubyte save_pal [256*3];
 
 	//memcpy (save_pal, grPalette, sizeof (save_pal));
-if (bg.bmP)
-	D2_FREE (bg.bmP);
+if (bg.bmP) {
+	delete bg.bmP;
+	bg.bmP = NULL;
+	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 fontManager.SetCurrent (MEDIUM1_FONT);
 FONT->StringSize (pszMsg, w, h, aw);
@@ -1282,8 +1284,10 @@ void ClearBoxedMessage ()
 {
 if (bg.bmP) {
 	GrBitmap (bg.x - BOX_BORDER / 2, bg.y - BOX_BORDER / 2, bg.bmP);
-	if (bg.bmP)
-		D2_FREE (bg.bmP);
+	if (bg.bmP) {
+		delete bg.bmP;
+		bg.bmP = NULL;
+		}
 	}
 }
 

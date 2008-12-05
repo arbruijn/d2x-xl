@@ -1761,7 +1761,7 @@ CParticleManager::~CParticleManager ()
 {
 Shutdown ();
 particleImageManager.FreeAll ();
-FREEMEM (short, m_objectSystems, MAX_OBJECTS);
+delete[] m_objectSystems;
 }
 
 //	-----------------------------------------------------------------------------

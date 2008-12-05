@@ -82,8 +82,8 @@ static fVector3 coreBuffer [2][MAX_LIGHTNING_SEGMENTS];
 
 void TRAP (CLightningNode *nodeP)
 {
-if (nodeP->m_child == reinterpret_cast<CLightning*> ((size_t) 0xfeeefeee)
-	nodeP = nodeP;
+if (nodeP->m_child == reinterpret_cast<CLightning*> ((size_t) 0xfeeefeee))
+	int i = 0;
 }
 
 void CHECK (CLightning *lightningP, int i)
@@ -543,7 +543,7 @@ bool CLightning::Create (char nDepth)
 {
 if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 	return NULL;
-if (!(m_nodes = new CLightningNode [nNodes])) 
+if (!(m_nodes = new CLightningNode [m_nNodes])) 
 	return false;
 if (m_bRandom) {
 	m_nTTL = 3 * m_nTTL / 4 + (int) (dbl_rand () * m_nTTL / 2);

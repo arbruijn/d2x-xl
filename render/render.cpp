@@ -94,15 +94,14 @@ void RenderSkyBox (int nWindow);
 
 extern int bLog;
 
-CCanvas * reticleCanvas = NULL;
+CCanvas *reticleCanvas = NULL;
 
 void _CDECL_ FreeReticleCanvas (void)
 {
 if (reticleCanvas) {
 	PrintLog ("unloading reticle data\n");
-	reticleCanvas->Bitmap ().DestroyBuffer ();
-	D2_FREE (reticleCanvas);
-	reticleCanvas	= NULL;
+	reticleCanvas->Destroy ();
+	reticleCanvas = NULL;
 	}
 }
 
