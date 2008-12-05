@@ -474,7 +474,7 @@ else {
 		return;
 	triggers = gameData.trigs.triggers;
 	}
-pl = (triggers [trig].nLinks > 1) ? reinterpret_cast<char*> ("s" : reinterpret_cast<char*> ("");
+pl = (triggers [trig].nLinks > 1) ? reinterpret_cast<char*> ("s") : reinterpret_cast<char*> ("");
 if (!(triggers [trig].flags & TF_NO_MESSAGE) && shot)
 	HUDInitMessage (message, pl);
 }

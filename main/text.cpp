@@ -2549,7 +2549,7 @@ if (!(*pszTexts = reinterpret_cast<char*> (D2_ALLOC (h)))) {
 	return NULL;
 	}
 for (i = 0; i < j; i++) {
-	pSrc = (i < N_BASE_TEXTS) ? reinterpret_cast<char*> (baseGameTexts [i]) : reinterpret_cast<char*> (defaultGameTexts [i - N_BASE_TEXTS][gameStates.app.bEnglish]);
+	pSrc = (i < N_BASE_TEXTS) ? (char*) (baseGameTexts [i]) : (char*) (defaultGameTexts [i - N_BASE_TEXTS][gameStates.app.bEnglish]);
 #if DUMP_TEXTS == 1
 	{
 		char *pi, *pj, s [200];

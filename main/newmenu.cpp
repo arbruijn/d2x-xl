@@ -300,8 +300,8 @@ if (!(bRedraw && gameOpts->menus.nStyle && bgP && bmP)) {
 	else if (!pszCurBg)
 		pszCurBg = filename;
 	if (!filename)
-		filename = gameStates.app.bDemoData ? reinterpret_cast<char*> (MENU_PCX_SHAREWARE) : reinterpret_cast<char*> (MENU_PCX_FULL);
-	if (!(filename && strcmp (filename, reinterpret_cast<char*> (MENU_PCX_FULL)) && strcmp (filename, reinterpret_cast<char*> (MENU_PCX_SHAREWARE)))) {
+		filename = gameStates.app.bDemoData ? (char*) (MENU_PCX_SHAREWARE) : (char*) (MENU_PCX_FULL);
+	if (!(filename && strcmp (filename, (char*) (MENU_PCX_FULL)) && strcmp (filename, (char*) (MENU_PCX_SHAREWARE)))) {
 		NMLoadAltBg ();
 		if (gameOpts->menus.altBg.bHave > 0) {
 			bmP = pAltBg;

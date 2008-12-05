@@ -353,7 +353,7 @@ static int ipx_mcast4_SendGamePacket(ipx_socket_t *sk, ubyte *data, int dataLen)
 
 	//msg("ipx_mcast4_SendGamePacket");
 
-	i = sendto(sk->fd, reinterpret_cast<const char*> ( data, dataLen, 0, reinterpret_cast<struct sockaddr*> (&toaddr), sizeof(toaddr));
+	i = sendto(sk->fd, reinterpret_cast<const char*> (data), dataLen, 0, reinterpret_cast<struct sockaddr*> (&toaddr), sizeof(toaddr));
 
 	return i;
 }

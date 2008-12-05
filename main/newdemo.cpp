@@ -2966,9 +2966,7 @@ else {
 				int i, j, nObjects, nLevel, nSig;
 
 				nObjects = gameData.objs.nLastObject [0];
-				curObjs = reinterpret_cast<tObject*> (D2_ALLOC (sizeof (tObject) * (nObjects + 1));
-				if (!
-					curObjs) {
+				if (!(curObjs = new tObject [nObjects + 1])) {
 					Warning (TXT_INTERPOLATE_BOTS, sizeof (tObject) * nObjects);
 					break;
 					}
@@ -2976,12 +2974,12 @@ else {
 					memcpy (curObjs, OBJECTS, (nObjects + 1) * sizeof (tObject));
 				nLevel = gameData.missions.nCurrentLevel;
 				if (NDReadFrameInfo () == -1) {
-					D2_FREE (curObjs);
+					delete[] curObjs;
 					NDStopPlayback ();
 					return;
 					}
 				if (nLevel != gameData.missions.nCurrentLevel) {
-					D2_FREE (curObjs);
+					delete[] curObjs;
 					if (NDReadFrameInfo () == -1)
 						NDStopPlayback ();
 					break;
@@ -3001,7 +2999,7 @@ else {
 							}
 						}
 					}
-				D2_FREE (curObjs);
+				delete[] curObjs;
 				d_recorded += gameData.demo.xRecordedTime;
 				base_interpolTime = gameData.demo.xPlaybackTotal - gameData.time.xFrame;
 				}
@@ -3171,7 +3169,7 @@ if (!gameData.demo.bNoSpace) {
 	}
 else if (gameData.demo.bNoSpace == 1) {
 	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = reinterpret_cast<char*> (TXT_DEMO_SAVE_BAD);
+	m [0].text = (char*) (TXT_DEMO_SAVE_BAD);
 	m [1].nType = NM_TYPE_INPUT;
 	m [1].text_len = 8; 
 	m [1].text = filename;
@@ -3179,7 +3177,7 @@ else if (gameData.demo.bNoSpace == 1) {
 	} 
 else if (gameData.demo.bNoSpace == 2) {
 	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = reinterpret_cast<char*> (TXT_DEMO_SAVE_NOSPACE);
+	m [0].text = (char*) (TXT_DEMO_SAVE_NOSPACE);
 	m [1].nType = NM_TYPE_INPUT;
 	m [1].text_len = 8; 
 	m [1].text = filename;

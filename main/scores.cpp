@@ -248,7 +248,7 @@ void MaybeAddPlayerScore (int abortFlag)
 		if (position==0)	{
 			strcpy (text1,  "");
 			m [0].nType = NM_TYPE_TEXT; 
-			m [0].text = reinterpret_cast<char*> (TXT_COOL_SAYING);
+			m [0].text = (char*) (TXT_COOL_SAYING);
 			m [1].nType = NM_TYPE_INPUT; 
 			m [1].text = text1; 
 			m [1].text_len = COOL_MESSAGE_LEN - 5;

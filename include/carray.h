@@ -8,7 +8,7 @@
 template < class _T > class CArray {
 	protected:
 		_T		*m_buffer;
-		_T		*m_null;
+		_T		m_null;
 		uint	m_size;
 		bool	m_bExternal;
 		bool	m_bChild;
@@ -18,9 +18,11 @@ template < class _T > class CArray {
 		~CArray() { Destroy (); }
 		
 		inline void Init (void) { 
-			m_buffer = m_null = reinterpret_cast<_T *> (NULL); 
+			m_buffer = reinterpret_cast<_T *> (NULL); 
 			m_bExternal = m_bChild = false;
+			memset (&m_null, 0, sizeof (_T));
 			}
+
 		inline void Clear (ubyte filler = 0) { if (m_buffer) memset (m_buffer, filler, m_size); }
 		
 		inline uint Index (_T* elem) { return elem - m_buffer; }
@@ -72,7 +74,7 @@ template < class _T > class CArray {
 			}
 		inline uint Size (void) { return m_size; }
 #if DBG
-		inline _T& operator[] (uint i) { return (i < m_size) ? m_buffer [i] : m_null [0]; }
+		inline _T& operator[] (uint i) { return (i < m_size) ? m_buffer [i] : m_null; }
 #else
 		inline _T& operator[] (uint i) { return m_buffer [i]; }
 #endif

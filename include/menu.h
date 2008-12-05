@@ -14,6 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _MENU_H
 #define _MENU_H
 
+#include "pstypes.h"
 // returns number of item chosen
 int MainMenu ();
 void ConfigMenu ();
