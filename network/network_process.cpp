@@ -61,7 +61,7 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 void NetworkProcessGameInfo (ubyte *dataP)
 {
 	int i;
-	tNetgameInfo *newGame = reinterpret_cast<tNetGameInfo*> (dataP);
+	tNetgameInfo *newGame = reinterpret_cast<tNetgameInfo*> (dataP);
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tNetgameInfo tmp_info;
@@ -119,13 +119,13 @@ void NetworkProcessLiteInfo (ubyte *dataP)
 	tLiteInfo		tmp_info;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	ReceiveNetGamePacket (dataP, reinterpret_cast<tNetGameInfo*> (&tmp_info), 1);
+	ReceiveNetGamePacket (dataP, reinterpret_cast<tNetgameInfo*> (&tmp_info), 1);
 	newInfo = &tmp_info;
 	}
 #endif
 
 networkData.bGamesChanged = 1;
-i = FindActiveNetGame ((reinterpret_cast<tNetGameInfo*> ( newInfo)->szGameName, reinterpret_cast<tNetGameInfo*> (newInfo)->nSecurity);
+i = FindActiveNetGame (reinterpret_cast<tNetgameInfo*> (newInfo)->szGameName, reinterpret_cast<tNetgameInfo*> (newInfo)->nSecurity);
 if (i == MAX_ACTIVE_NETGAMES)
 	return;
 if (i == networkData.nActiveGames) {

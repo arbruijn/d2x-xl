@@ -216,7 +216,7 @@ int SyncHandler (ubyte *dataP, int nLength)
 if (gameStates.multi.nGameType >= IPX_GAME)
 	ReceiveFullNetGamePacket (dataP, &tempNetInfo);
 else
-	tempNetInfo = *reinterpret_cast<tNetGameInfo*> (dataP);
+	tempNetInfo = *reinterpret_cast<tNetgameInfo*> (dataP);
 if (NetworkBadSecurity (tempNetInfo.nSecurity, "PID_SYNC"))
 	return 0;
 if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
@@ -234,7 +234,7 @@ else {
 	networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_PLAYERS;
 	networkData.nSecurityNum = tempNetInfo.nSecurity;
 	if (NetworkWaitForPlayerInfo ())
-		NetworkReadSyncPacket (reinterpret_cast<tNetGameInfo*> (dataP), 0);
+		NetworkReadSyncPacket (reinterpret_cast<tNetgameInfo*> (dataP), 0);
 	networkData.nSecurityFlag = 0;
 	networkData.nSecurityNum = 0;
 	}
@@ -322,7 +322,7 @@ return 1;
 
 int GameUpdateHandler (ubyte *dataP, int nLength)
 {
-if (NetworkBadSecurity (reinterpret_cast<tNetGameInfo*> (dataP)->nSecurity, "PID_GAME_UPDATE"))
+if (NetworkBadSecurity (reinterpret_cast<tNetgameInfo*> (dataP)->nSecurity, "PID_GAME_UPDATE"))
 	return 0;
 if (networkData.nStatus == NETSTAT_PLAYING) {
 	if (gameStates.multi.nGameType >= IPX_GAME)

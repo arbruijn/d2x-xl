@@ -336,7 +336,7 @@ s = ObjnumLocalToRemote (nObject, reinterpret_cast<sbyte*> (gameData.multigame.m
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, s);
 bufP += 3;
 #if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-CreateShortPos (reinterpret_cast<tShortPos*> ((gameData.multigame.msg.buf + bufP), OBJECTS + nObject, 0);	
+CreateShortPos (reinterpret_cast<tShortPos*> (gameData.multigame.msg.buf + bufP), OBJECTS + nObject, 0);	
 bufP += sizeof (tShortPos);
 #else
 CreateShortPos (&sp, OBJECTS+nObject, 1);

@@ -1,6 +1,8 @@
 #ifndef _CARRAY_H
 #define _CARRAY_H
 
+#include "pstypes.h"
+
 //-----------------------------------------------------------------------------
 
 template < class _T > class CArray {
@@ -73,6 +75,24 @@ template < class _T > class CArray {
 		inline _T& operator[] (uint i) { return (i < m_size) ? m_buffer [i] : m_null [0]; }
 #else
 		inline _T& operator[] (uint i) { return m_buffer [i]; }
+
+		inline _T& operator= (CArray<_T>& source) { return Copy (source); }
+
+		inline _T& Copy ((CArray<_T>& source, uint offset = 0) { 
+			if (source.m_buffer) {
+				if (!m_buffer)
+					Create (source.m_size);
+				memcpy (m_buffer + offset, source.m_buffer, ((m_size < source.m_size) ? m_size : source.m_size) * sizeof (_T)); 
+				}
+			return m_buffer;
+			}
+
+		inline _T& operator+ (CArray<_T>& source) { 
+			uint offset = m_size;
+			if (m_buffer) 
+				Resize (m_size + source.m_size);
+			return Copy (source, offset);
+			}
 #endif
 	};
 

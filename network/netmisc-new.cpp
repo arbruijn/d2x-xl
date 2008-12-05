@@ -388,10 +388,10 @@ BE_GET_BYTE (netgame->bShortPackets);
 //------------------------------------------------------------------------------
 
 #define EGI_INTEL_SHORT_2BUF(_m) \
-  *(reinterpret_cast<short*> (nmBufP + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))) = INTEL_SHORT (extraGameInfo [1]._m);
+  *(reinterpret_cast<short*> (nmBufP) + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))) = INTEL_SHORT (extraGameInfo [1]._m);
 
 #define EGI_INTEL_INT_2BUF(_m) \
-	*(reinterpret_cast<int*> (nmBufP + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))) = INTEL_INT (extraGameInfo [1]._m);
+	*(reinterpret_cast<int*> (nmBufP) + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))) = INTEL_INT (extraGameInfo [1]._m);
 
 #define BUF2_EGI_INTEL_SHORT(_m) \
 	extraGameInfo [1]._m = INTEL_SHORT (*reinterpret_cast<short*> (nmBufP + (reinterpret_cast<char*> (&extraGameInfo [1]._m) - reinterpret_cast<char*> (&extraGameInfo [1]))));
