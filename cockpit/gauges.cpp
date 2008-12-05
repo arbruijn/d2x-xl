@@ -526,7 +526,7 @@ if ((IsMultiGame && !IsCoopGame))
 	sprintf (szScore + 18, "   %s: %5d", TXT_KILLS, LOCALPLAYER.netKillsTotal);
 else
 	sprintf (szScore + 18, "   %s: %5d", TXT_SCORE, LOCALPLAYER.score);
-GrGetStringSize (szScore, &w, &h, &aw);
+FONT->StringSize (szScore, w, h, aw);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Bitmap ().Width ()-w-HUD_LHX (2), 3, szScore);
 }
@@ -551,7 +551,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
 	i = X2I (timevar-gameStates.app.xThisLevelTime);
 	i++;
 	sprintf (szScore, "T - %5d", i);
-	GrGetStringSize (szScore, &w, &h, &aw);
+	FONT->StringSize (szScore, w, h, aw);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	if ((i >= 0) && !gameData.reactor.bDestroyed)
 		nIdTimer = GrPrintF (&nIdTimer, CCanvas::Current ()->Bitmap ().Width ()-w-HUD_LHX (10), HUD_LHX (11), szScore);
@@ -588,7 +588,7 @@ if (scoreTime > 0) {
 		sprintf (szScore, "%s", TXT_CHEATER);
 	else
 		sprintf (szScore, "%5d", scoreDisplay [0]);
-	GrGetStringSize (szScore, &w, &h, &aw);
+	FONT->StringSize (szScore, w, h, aw);
 	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
 	nIdTotalScore = GrPrintF (&nIdTotalScore, CCanvas::Current ()->Bitmap ().Width ()-w-HUD_LHX (2+10), nHUDLineSpacing+4, szScore);
 	}
@@ -686,7 +686,7 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 void HUDShowKeys (void)
 {
 	int y = 3 * nHUDLineSpacing;
-	int dx = GAME_FONT->width + GAME_FONT->width / 2;
+	int dx = GAME_FONT->Width () + GAME_FONT->Width () / 2;
 
 if (HIDE_HUD)
 	return;
@@ -720,17 +720,17 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		y = 2*nHUDLineSpacing;
-		x = 4*GAME_FONT->width;
+		x = 4*GAME_FONT->Width ();
 		}
 	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 		y = nHUDLineSpacing;
-		x = GAME_FONT->width;
+		x = GAME_FONT->Width ();
 		}
 	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ||
 				(gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
 //			y = 5*nHUDLineSpacing;
 		y = nHUDLineSpacing;
-		x = GAME_FONT->width;
+		x = GAME_FONT->Width ();
 		if (gameStates.render.fonts.bHires)
 			y += nHUDLineSpacing;
 		}
@@ -760,7 +760,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 
 			if (t < 0)
 				t = 0;
-			GrGetStringSize (szInfo, &w, &h, &aw);
+			FONT->StringSize (szInfo, w, h, aw);
 			x += w;
 			fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 			sprintf (szInfo, " %d.%d", t / 1000, (t % 1000) / 100);
@@ -783,16 +783,16 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_F
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		y = 2*nHUDLineSpacing;
-		x = 4*GAME_FONT->width;
+		x = 4*GAME_FONT->Width ();
 		}
 	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 		y = nHUDLineSpacing;
-		x = GAME_FONT->width;
+		x = GAME_FONT->Width ();
 		}
 	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ||
 				 (gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
 		y = 5*nHUDLineSpacing;
-		x = GAME_FONT->width;
+		x = GAME_FONT->Width ();
 		if (gameStates.render.fonts.bHires)
 			y += nHUDLineSpacing;
 		}
@@ -1061,7 +1061,7 @@ switch (gameData.weapons.nPrimary) {
 		break;
 	}
 
-GrGetStringSize (szWeapon, &w, &h, &aw);
+FONT->StringSize (szWeapon, w, h, aw);
 nIdWeapons [0] = GrPrintF (nIdWeapons + 0, CCanvas::Current ()->Width () - 5 - w, y-2*nHUDLineSpacing, szWeapon);
 
 if (gameData.weapons.nPrimary == VULCAN_INDEX) {
@@ -1082,7 +1082,7 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 
 pszWeapon = SECONDARY_WEAPON_NAMES_VERY_SHORT (gameData.weapons.nSecondary);
 sprintf (szWeapon, "%s %d", pszWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
-GrGetStringSize (szWeapon, &w, &h, &aw);
+FONT->StringSize (szWeapon, w, h, aw);
 nIdWeapons [1] = GrPrintF (nIdWeapons + 1, CCanvas::Current ()->Width ()-5-w, y-nHUDLineSpacing, szWeapon);
 
 if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != oldAmmoCount [1][gameStates.render.vr.nCurrentPage]) {
@@ -1090,7 +1090,7 @@ if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != oldAmmoCount [1][
 		NDRecordSecondaryAmmo (oldAmmoCount [1][gameStates.render.vr.nCurrentPage], LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 	oldAmmoCount [1][gameStates.render.vr.nCurrentPage] = LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 	}
-ShowBombCount (CCanvas::Current ()->Width ()- (3*GAME_FONT->width+ (gameStates.render.fonts.bHires?0:2)), y-3*nHUDLineSpacing, -1, 1);
+ShowBombCount (CCanvas::Current ()->Width ()- (3*GAME_FONT->Width ()+ (gameStates.render.fonts.bHires?0:2)), y-3*nHUDLineSpacing, -1, 1);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1238,7 +1238,7 @@ if (gameStates.render.bShowTime) {
 
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	nIdTime = GrPrintF (&nIdTime, CCanvas::Current ()->Bitmap ().Width () - 4 * GAME_FONT->width,
+	nIdTime = GrPrintF (&nIdTime, CCanvas::Current ()->Bitmap ().Width () - 4 * GAME_FONT->Width (),
 							  CCanvas::Current ()->Bitmap ().Height () - 4 * nHUDLineSpacing,
 							  "%d:%02d", mins, secs);
 	}
@@ -1810,7 +1810,7 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, co
 		memcpy (szName, pszName, l = p - pszName);
 		szName [l + 1] = '\0';
 		nIdWeapon [0] = HUDPrintF (&nIdWeapon [0], text_x, text_y, szName);
-		nIdWeapon [1] = HUDPrintF (&nIdWeapon [1], text_x, text_y + CCanvas::Current ()->Font ()->height + 1, p + 1);
+		nIdWeapon [1] = HUDPrintF (&nIdWeapon [1], text_x, text_y + CCanvas::Current ()->Font ()->Height () + 1, p + 1);
 		}
 	else {
 		nIdWeapon [2] = HUDPrintF (&nIdWeapon [2], text_x, text_y, pszName);
@@ -1896,14 +1896,14 @@ void DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary)
 
 	static int nIdAmmo [2][2] = {{0, 0},{0, 0}};
 
-w = (CCanvas::Current ()->Font ()->width * (bPrimary ? 7 : 5)) / 2;
+w = (CCanvas::Current ()->Font ()->Width () * (bPrimary ? 7 : 5)) / 2;
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 0, 0));
-GrRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->height));
+GrRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 sprintf (str, "%03d", ammoCount);
 convert_1s (str);
 nIdAmmo [bPrimary][0] = HUDPrintF (&nIdAmmo [bPrimary][0], x, y, str);
-GrRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->height));
+GrRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + CCanvas::Current ()->Font ()->Height ()));
 nIdAmmo [bPrimary][1] = HUDPrintF (&nIdAmmo [bPrimary][1], x, y, str);
 }
 
@@ -2229,8 +2229,8 @@ fontManager.SetCurrent (GAME_FONT);
 n_players = (gameData.multigame.kills.bShowList == 3) ? 2 : MultiGetKillList (player_list);
 n_left = (n_players <= 4) ? n_players : (n_players+1)/2;
 //If font size changes, this code might not work right anymore
-//Assert (GAME_FONT->height==5 && GAME_FONT->width==7);
-fth = GAME_FONT->height;
+//Assert (GAME_FONT->Height ()==5 && GAME_FONT->Width ()==7);
+fth = GAME_FONT->Height ();
 x0 = HUD_LHX (1);
 x1 = (IsCoopGame) ? HUD_LHX (43) : HUD_LHX (43);
 save_y = y = CCanvas::Current ()->Bitmap ().Height () - n_left* (fth+1);
@@ -2240,7 +2240,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 	}
 if (gameStates.render.cockpit.bShowPingStats) {
 	if (faw < 0)
-		faw = get_fontTotal_width (GAME_FONT) / (GAME_FONT->maxChar - GAME_FONT->minChar + 1);
+		faw = GAME_FONT->TotalWidth () / (GAME_FONT->Range ());
 		if (gameData.multigame.kills.bShowList == 2)
 			xo = faw * 24;//was +25;
 		else if (IsCoopGame)
@@ -2312,7 +2312,7 @@ for (i = 0; i < n_players; i++) {
 #else
 			strcpy (name, netGame.szTeamName [i]);
 #endif
-			GrGetStringSize (teamInd, &indent, &sh, &aw);
+			FONT->StringSize (teamInd, indent, sh, aw);
 			}
 		}
 	else
@@ -2332,7 +2332,7 @@ for (i = 0; i < n_players; i++) {
 	x1 += HUD_LHX (100);
 #endif
 	for (l = (int) strlen (name); l;) {
-		GrGetStringSize (name, &sw, &sh, &aw);
+		FONT->StringSize (name, sw, sh, aw);
 		if (sw <= x1 - x0 - HUD_LHX (2))
 			break;
 		name [--l] = '\0';
@@ -2487,7 +2487,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 						}
 
 					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multiplayer.players [p].callsign);
-					GrGetStringSize (s, &w, &h, &aw);
+					FONT->StringSize (s, w, h, aw);
 					fontManager.SetColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b), 1, 0, 0);
 					x1 = x - w / 2;
 					y1 = y - h / 2;
@@ -2550,7 +2550,7 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 //	vr_reset_display ();
   }
 SetCMScales ();
-nHUDLineSpacing = GAME_FONT->height + GAME_FONT->height/4;
+nHUDLineSpacing = GAME_FONT->Height () + GAME_FONT->Height ()/4;
 
 	//	Show score so long as not in rearview
 if (!(gameStates.render.bRearView || bSavingMovieFrames ||
@@ -2733,7 +2733,6 @@ void DoCockpitWindowView (int nWindow, tObject *viewerP, int bRearView, int nUse
 	static CCanvas overlap_canv;
 
 	tObject *viewerSave = gameData.objs.viewerP;
-	CCanvas *save_canv = CCanvas::Current ();
 	static int bOverlapDirty [2]={0, 0};
 	int nBox;
 	static int window_x, window_y;
@@ -2743,6 +2742,7 @@ void DoCockpitWindowView (int nWindow, tObject *viewerP, int bRearView, int nUse
 
 if (HIDE_HUD)
 	return;
+CCanvas::Push ();
 boxP = NULL;
 if (!viewerP) {								//this nUser is done
 	Assert (nUser == WBU_WEAPON || nUser == WBU_STATIC);
@@ -2903,7 +2903,7 @@ oldWeapon [nWindow][gameStates.render.vr.nCurrentPage] = oldAmmoCount [nWindow][
 abort:;
 
 gameData.objs.viewerP = viewerSave;
-CCanvas::SetCurrent (save_canv);
+CCanvas::Pop ();
 gameStates.render.bRearView = bRearViewSave;
 }
 
@@ -2982,8 +2982,8 @@ if (gameStates.render.bShowFrameRate) {
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 	nIdFrameRate = GrPrintF (&nIdFrameRate,
-									 CCanvas::Current ()->Bitmap ().Width () - (x * GAME_FONT->width),
-									 CCanvas::Current ()->Bitmap ().Height () - y * (GAME_FONT->height + GAME_FONT->height / 4),
+									 CCanvas::Current ()->Bitmap ().Width () - (x * GAME_FONT->Width ()),
+									 CCanvas::Current ()->Bitmap ().Height () - y * (GAME_FONT->Height () + GAME_FONT->Height () / 4),
 									 szItem);
 	}
 }

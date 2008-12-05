@@ -239,27 +239,27 @@ else
 gameStates.menus.bDrawCopyright = 0;
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
-GrGetStringSize ("V2.2", &w, &h, &aw);
+FONT->StringSize ("V2.2", &w, &h, &aw);
 fontManager.SetColorRGBi (RGBA_PAL (63, 47, 0), 1, 0, 0);
-GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->height - 2, "visit www.descent2.de");
+GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->Height () - 2, "visit www.descent2.de");
 fontManager.SetColorRGBi (RGBA_PAL (23, 23, 23), 1, 0, 0);
-GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->height - h - 6, TXT_COPYRIGHT);
+GrPrintF (NULL, 0x8000, CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->Height () - h - 6, TXT_COPYRIGHT);
 GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, 
-			 CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->height - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
+			 CCanvas::Current ()->Bitmap ().Height () - GAME_FONT->Height () - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 if (bVertigo < 0)
 	bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
 if (bVertigo) {
 	fontManager.SetCurrent (MEDIUM2_FONT);
-	GrGetStringSize (TXT_VERTIGO, &w, &h, &aw);
+	FONT->StringSize (TXT_VERTIGO, &w, &h, &aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
 				 y + (gameOpts->menus.altBg.bHave ? h + 2 : 0), TXT_VERTIGO);
 	}
 fontManager.SetCurrent (MEDIUM2_FONT);
-GrGetStringSize (D2X_NAME, &w, &h, &aw);
+FONT->StringSize (D2X_NAME, &w, &h, &aw);
 GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
 fontManager.SetCurrent (SMALL_FONT);
-GrGetStringSize (VERSION, &ws, &hs, &aw);
+FONT->StringSize (VERSION, &ws, &hs, &aw);
 fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);

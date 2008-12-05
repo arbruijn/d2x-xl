@@ -1247,7 +1247,7 @@ void ShowEscortMenu (char *msg)
 
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [0]);
 	fontManager.SetCurrent ( GAME_FONT );
-	GrGetStringSize (msg,&w,&h,&aw);
+	FONT->StringSize (msg,&w,&h,&aw);
 	x = (screen.Width ()-w)/2;
 	y = (screen.Height ()-h)/4;
 	fontManager.SetColorRGBi (RGBA (0, PAL2RGBA (28), 0, 255), 1, 0, 0);

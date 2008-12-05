@@ -662,7 +662,7 @@ if ((nRobot < 0) && !*szBitmapName)
 else if (!tImage)
 	tImage = SDL_GetTicks ();
 
-GrGetStringSize (message, &w, &h, &aw);
+FONT->StringSize (message, w, h, aw);
 Assert ((nCurrentColor >= 0) && (nCurrentColor < MAX_BRIEFING_COLORS));
 
 //	Draw cursor if there is some delay and caller says to draw cursor

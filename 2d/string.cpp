@@ -50,8 +50,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)
 
-#define BITS_TO_BYTES(x)    (( (x)+7)>>3)
-
 int GrInternalStringClipped (int x, int y, const char *s);
 int GrInternalStringClippedM (int x, int y, const char *s);
 

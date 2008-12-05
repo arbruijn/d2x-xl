@@ -55,13 +55,13 @@ extern int bSavingMovieFrames;
 void UpdateCockpits (int bForceRedraw);
 
 // Returns the length of the first 'n' characters of a string.
-int string_width (char * s, int n)
+int StringWidth (char * s, int n)
 {
 	int w, h, aw;
 	char p = s [n];
 
 s [n] = 0;
-GrGetStringSize (s, &w, &h, &aw);
+FONT->StringSize (s, w, h, aw);
 s [n] = p;
 return w;
 }
@@ -71,21 +71,22 @@ return w;
 // canvas, then wrap it.
 void DrawCenteredText (int y, char * s)
 {
-	char p;
-	int i, l = (int) strlen (s);
+	char	p;
+	int	i, l = (int) strlen (s);
 
-if (string_width (s, l) < CCanvas::Current ()->Width ())	{
+if (StringWidth (s, l) < CCanvas::Current ()->Width ())	{
 	GrString (0x8000, y, s, NULL);
 	return;
 	}
-
-for (i=0; i<l; i++)	{
-	if (string_width (s, i) > (CCanvas::Current ()->Width () - 16))	{
+int w = CCanvas::Current ()->Width () - 16;
+int h = CCanvas::Current ()->Font ()->Height () + 1;
+for (i = 0; i < l; i++) {
+	if (StringWidth (s, i) > w) {
 		p = s [i];
 		s [i] = 0;
 		GrString (0x8000, y, s, NULL);
 		s [i] = p;
-		GrString (0x8000, y+CCanvas::Current ()->Font ()->height+1, &s [i], NULL);
+		GrString (0x8000, y + h, &s [i], NULL);
 		return;
 		}
 	}
@@ -227,11 +228,11 @@ if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameDa
 		}
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	y = SMALL_FONT->height*4;
+	y = SMALL_FONT->Height () * 4;
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
-		y += SMALL_FONT->height*2;
+		y += SMALL_FONT->Height () * 2;
 	if (gameStates.app.bPlayerIsDead)
-		y += SMALL_FONT->height*2;
+		y += SMALL_FONT->Height () * 2;
 	GrPrintF (NULL, 0x8000, y, "T-%d s", gameData.reactor.countdown.nSecsLeft);
 	}
 }
@@ -267,7 +268,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 		sprintf (message, TXT_DEMO_RECORDING);
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
-	GrGetStringSize (message, &w, &h, &aw);
+	FONT->StringSize (message, w, h, aw);
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		if (CCanvas::Current ()->Bitmap ().Height () > 240)
 			h += 40;
@@ -290,7 +291,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD || (gameStates.re
 		fontManager.SetCurrent (GAME_FONT);
 		fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 		if (gameStates.input.nCruiseSpeed > 0) {
-			int line_spacing = GAME_FONT->height + GAME_FONT->height/4;
+			int line_spacing = GAME_FONT->Height ()  + GAME_FONT->Height () /4;
 
 			if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 				if (gameData.app.nGameMode & GM_MULTI)
@@ -350,7 +351,7 @@ switch (flags & 3) {
 			ExpandRow (dptr, dptr, bmP->Width ());
 			dptr -= bmP->RowSize ();
 			}
-		bmP->SetWidth (bmP->Width () * 2);
+		bmP->SetWidth (bmP->Width () *  2);
 		break;
 
 	case 1:	// expand y
@@ -363,7 +364,7 @@ switch (flags & 3) {
 			dptr -= bmP->RowSize ();
 			sptr -= bmP->RowSize ();
 			}
-		bmP->SetHeight (bmP->Height () * 2);
+		bmP->SetHeight (bmP->Height () *  2);
 		break;
 
 	case 3:	// expand x & y
@@ -377,8 +378,8 @@ switch (flags & 3) {
 			dptr -= bmP->RowSize ();
 			sptr -= bmP->RowSize ();
 			}
-		bmP->SetWidth (bmP->Width () * 2);
-		bmP->SetHeight (bmP->Height () * 2);
+		bmP->SetWidth (bmP->Width () *  2);
+		bmP->SetHeight (bmP->Height () *  2);
 		break;
 	}
 }
@@ -414,14 +415,14 @@ void game_render_frame_stereo ()
 	tObject *gmObjP;
 
 	save_aspect = screen.Aspect ();
-	screen.Aspect () *= 2;	//Muck with aspect ratio
+	screen.Aspect () * = 2;	//Muck with aspect ratio
 
 	sw = dw = gameStates.render.vr.buffers.render [0].Width ();
 	sh = dh = gameStates.render.vr.buffers.render [0].Bitmap ().Height ();
 
 	if (gameStates.render.vr.nLowRes & 1)	{
 		sh /= 2;
-		screen.Aspect () *= 2;  //Muck with aspect ratio
+		screen.Aspect () * = 2;  //Muck with aspect ratio
 	}
 	if (gameStates.render.vr.nLowRes & 2)	{
 		sw /= 2;
@@ -458,7 +459,7 @@ void game_render_frame_stereo ()
 
 		fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 		fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-		GrGetStringSize (msg, &w, &h, &aw);
+		FONT->StringSize (msg, &w, &h, &aw);
 
 		GrPrintF (NULL, (CCanvas::Current ()->Width ()-w)/2, 3, msg);
 
@@ -862,8 +863,8 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	gameData.objs.viewerP = viewerSave;
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-	GrGetStringSize (msg, &w, &h, &aw);
-	GrPrintF (NULL, (CCanvas::Current ()->Width ()-w) / 2, 3, msg);
+	FONT->StringSize (msg, w, h, aw);
+	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, 3, msg);
 	DrawGuidedCrosshair ();
 	HUDRenderMessageFrame ();
 	bNoDrawHUD = 1;
@@ -1255,7 +1256,7 @@ if (bg.bmP)
 	D2_FREE (bg.bmP);
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 fontManager.SetCurrent (MEDIUM1_FONT);
-GrGetStringSize (pszMsg, &w, &h, &aw);
+FONT->StringSize (pszMsg, w, h, aw);
 x = (screen.Width ()-w)/2;
 y = (screen.Height ()-h)/2;
 // Save the background of the display

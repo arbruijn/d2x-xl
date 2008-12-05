@@ -489,7 +489,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (NULL, offs, offs, amLevelNum);
-	GrGetStringSize (amLevelName, &w, &h, &aw);
+	FONT->StringSize (amLevelName, w, h, aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - offs - w, offs, amLevelName);
 	fontManager.SetCurrent (curFont);
 #else
@@ -515,18 +515,15 @@ CCanvas *PrintToCanvas (char *s, CFont *font, unsigned int fc, unsigned int bc, 
 	ubyte		*data;
 	int		rs;
 	CCanvas	*canvP;
-	CFont		*save_font;
 	int		w,h,aw;
 
-save_font = CCanvas::Current ()->Font ();
+CCanvas::Push ();
 fontManager.SetCurrent (font);					//set the font we're going to use
-GrGetStringSize (s,&w,&h,&aw);		//now get the string size
-fontManager.SetCurrent (save_font);				//restore real font
+FONT->StringSize (s, w, h, aw);		//now get the string size
 
 //canvP = GrCreateCanvas (font->width*strlen (s),font->height*2);
-canvP = CCanvas::Create (w, font->height * 2);
+canvP = CCanvas::Create (w, font->Height () * 2);
 canvP->Bitmap ().SetPalette (paletteManager.Game ());
-CCanvas::Push ();
 CCanvas::SetCurrent (canvP);
 fontManager.SetCurrent (font);
 canvP->Clear (0);						//trans color

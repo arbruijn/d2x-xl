@@ -30,15 +30,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define FONT			CCanvas::Current ()->Font ()
 #define FG_COLOR		CCanvas::Current ()->FontColor (0)
 #define BG_COLOR		CCanvas::Current ()->FontColor (1)
-#define FWIDTH       FONT->width
-#define FHEIGHT      FONT->height
+#define FWIDTH       FONT->Width ()
+#define FHEIGHT      FONT->Height ()
 #define FBASELINE    FONT->baseLine
 #define FFLAGS       FONT->flags
 #define FMINCHAR     FONT->minChar
 #define FMAXCHAR     FONT->maxChar
 #define FDATA        FONT->data
 #define FCHARS       FONT->chars
-#define FWIDTHS      FONT->widths
+#define FWIDTHS      FONT->Width ()s
+
+#define BITS_TO_BYTES(x) (((x)+7)>>3)
 
 //-----------------------------------------------------------------------------
 
@@ -109,10 +111,10 @@ class CFont {
 		void GetCharWidth (ubyte c, ubyte c2, int& width, int& spacing);
 		int GetLineWidth (const char *s);
 		int GetCenteredX (const char *s);
+		int TotalWidth (void);
 
 	private:
 		ubyte *FindKernEntry (ubyte first, ubyte second);
-		int TotalWidth (void);
 		void ChooseSize (int gap, int& rw, int& rh);
 		void Setup (const char *fontname, ubyte* fontData, CPalette& palette);
 		void Create (const char *fontname);
@@ -130,9 +132,11 @@ typedef struct tOpenFont {
 
 class CFontManager {
 	private:
-		CFont			*m_current;
 		tOpenFont	m_fonts [MAX_OPEN_FONTS];
 		CFont			*m_gameFonts [MAX_FONTS];
+		CFont			*m_current;
+		CFont			*m_save [10];
+		int			m_tos;
 
 	public:
 		CFontManager () { Init (); }
@@ -147,6 +151,8 @@ class CFontManager {
 		void SetColor (int fgColor, int bgColor);
 		void SetColorRGB (tRgbaColorb *fgColor, tRgbaColorb *bgColor);
 		void SetColorRGBi (unsigned int fgColor, int bSetFG, unsigned int bgColor, int bSetBG);
+		void Push (void) { if (m_tos < 10) m_save [m_tos++] = m_current; }
+		void Pop (void) { if (m_tos > 0) m_current = m_save [--m_tos]; }
 		void RemapColor ();
 		void RemapMono ();
 	};
@@ -159,8 +165,6 @@ int GrString (int x, int y, const char *s, int *idP);
 int GrUString (int x, int y, const char *s);
 int _CDECL_ GrPrintF (int *idP, int x, int y, const char * format, ...);
 int _CDECL_ GrUPrintf (int x, int y, const char * format, ...);
-void GrGetStringSize(const char *s, int& stringWidth, int& stringHeight, int& averageWidth);
-void GrGetStringSizeTabbed (const char *s, int& stringWidth, int& stringHeight, int& averageWidth, int *nTabs, int nMaxWidth);
 CBitmap *CreateStringBitmap (const char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce);
 
 //-----------------------------------------------------------------------------

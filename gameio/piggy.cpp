@@ -523,17 +523,12 @@ const char * szCriticalErrors [13] = {
 
 void PiggyCriticalError (void)
 {
-	CCanvas * save_canv;
-	CFont * save_font;
-	int i;
-	save_canv = CCanvas::Current ();
-	save_font = CCanvas::Current ()->Font ();
-	paletteManager.LoadEffect  ();
-	i = ExecMessageBox ("Disk Error", NULL, 2, "Retry", "Exit", "%s\non drive %c:", szCriticalErrors [descent_critical_errcode&0xf], (descent_critical_deverror&0xf)+'A');
-	if (i == 1)
-		exit (1);
-	CCanvas::SetCurrent (save_canv);
-	CCanvas::Current ()->SetFont (save_font);
+CCanvas::Push ();
+paletteManager.LoadEffect  ();
+int i = ExecMessageBox ("Disk Error", NULL, 2, "Retry", "Exit", "%s\non drive %c:", szCriticalErrors [descent_critical_errcode&0xf], (descent_critical_deverror&0xf)+'A');
+CCanvas::Pop ();
+if (i == 1)
+	exit (1);
 }
 
 //------------------------------------------------------------------------------

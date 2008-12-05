@@ -291,7 +291,7 @@ void _CDECL_ scores_rprintf (int x, int y, const char * format, ...)
 		if (*p=='1') 
 			*p= (char)132;
 
-	GrGetStringSize (buffer, &w, &h, &aw);
+	FONT->StringSize (buffer, &w, &h, &aw);
 
 	GrString (LHX (x)-w+xOffs, LHY (y)+yOffs, buffer, NULL);
 }

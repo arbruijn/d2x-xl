@@ -258,7 +258,7 @@ void ShowPauseMessage (const char *msg)
 
 CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (SMALL_FONT);
-GrGetStringSize (msg, &w, &h, &aw);
+FONT->StringSize (msg, &w, &h, &aw);
 x = (screen.Width () - w) / 2;
 y = (screen.Height () - h) / 2;
 #if 0
@@ -539,7 +539,7 @@ if (nFrame == 0) {
 	nActiveSubTitles = 0;
 	nNextSubTitle = 0;
 	fontManager.SetCurrent (GAME_FONT);
-	nLineSpacing = CCanvas::Current ()->Font ()->height + (CCanvas::Current ()->Font ()->height / 4);
+	nLineSpacing = CCanvas::Current ()->Font ()->Height () + (CCanvas::Current ()->Font ()->Height () / 4);
 	fontManager.SetColor (255, -1);
 	}
 
@@ -689,17 +689,17 @@ int RequestCD (void)
 {
 #if 0
 	ubyte save_pal [256*3];
-	CCanvas *save_canv, *tcanv;
+	CCanvas *tcanv, canvP = CCanvas::Current ();
 	int ret, was_faded=gameStates.render.bPaletteFadedOut;
 
 	GrPaletteStepClear ();
 
-	save_canv = CCanvas::Current ();
+	CCanvas::Push ();
 	tcanv = GrCreateCanvas (CCanvas::Current ()->bm.Width (), CCanvas::Current ()->bm.Height ());
 
 	CCanvas::SetCurrent (tcanv);
-	gr_ubitmap (0, 0, &save_canv->Bitmap ());
-	CCanvas::SetCurrent (save_canv);
+	gr_ubitmap (0, 0, &canvP->Bitmap ());
+	CCanvas::Pop ();
 
 	GrClearCanvas (0);
 

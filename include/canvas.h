@@ -88,13 +88,22 @@ class CCanvas {
 
 		inline void SetBitmap (CBitmap& bm) { m_info.bm = bm; }
 		inline void SetColor (tCanvasColor& color) { m_info.color = color; }
+		inline void SetFontColor (tCanvasColor& color, int i) { m_info.fontColors [i] = color; }
 		inline void SetFont (CFont *font) { m_info.font = font; }
 		inline void SetDrawMode (short nDrawMode) { m_info.nDrawMode = nDrawMode; }
 
 		static CCanvas* Current (void) { return m_current; }
 		static void SetCurrent (CCanvas* canvP = NULL);
-		static void Push (void) { if (m_tos < 10) m_save [m_tos++] = m_current; }
-		static void Pop (void) { if (m_tos) m_current = m_save [--m_tos]; }
+		static void Push (void) { 
+			if (m_tos < 10) 
+				m_save [m_tos++] = m_current; 
+			fontManager.Push ();
+			}
+		static void Pop (void) { 
+			if (m_tos) 
+				m_current = m_save [--m_tos]; 
+			fontManager.Pop ();
+			}
 
 		void Clear (unsigned int color);
 		void SetColor (int color);

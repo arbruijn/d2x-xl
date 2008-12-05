@@ -647,7 +647,7 @@ else {
 			break;
 		}
 	}
-GrGetStringSize (szText, &w, &h, &aw);
+FONT->StringSize (szText, &w, &h, &aw);
 return h;
 }
 
@@ -758,7 +758,7 @@ KCDrawItemExt (items + nCurItem, 1, 0);
 
 //------------------------------------------------------------------------------
 
-void KCQuitMenu (CFont *save_font, bkg *bg, int time_stopped)
+void KCQuitMenu (bkg *bg, int time_stopped)
 {
 CCanvas::Pop ();
 //bg->menu_canvas = NULL;
@@ -790,7 +790,7 @@ for (i = 0, n = (int) (item - All_items); i < Num_items; i++)	{
 item->value = code;					 
 if (gameStates.ogl.nDrawBuffer == GL_FRONT) {
 	KCDrawItem (item, 1);
-	NMRestoreBackground (0, KC_LHY (INFO_Y), xOffs, yOffs, KC_LHX (310), CCanvas::Current ()->Font ()->height);
+	NMRestoreBackground (0, KC_LHY (INFO_Y), xOffs, yOffs, KC_LHX (310), CCanvas::Current ()->Font ()->Height ());
 	}
 GameFlushInputs ();
 fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 1);
@@ -806,7 +806,7 @@ void KCDrawQuestion (kcItem *item)
 	int x, w, h, aw;
 
 
-	GrGetStringSize ("?", &w, &h, &aw);
+	FONT->StringSize ("?", &w, &h, &aw);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21*fades [looper]/31, 0, 24*fades [looper]/31));
 	if (++looper>63) 
 		looper=0;
@@ -1186,15 +1186,15 @@ nLinked |= tableFlags;
 
 void KConfigSub (kcItem * items, int nItems, const char * pszTitle)
 {
-	CFont * save_font;
-	int	mouseState, omouseState, mx, my, x1, x2, y1, y2;
-	int	close_x = 0, close_y = 0, close_size = 0;
+	CFont*	font;
+	int		mouseState, omouseState, mx, my, x1, x2, y1, y2;
+	int		close_x = 0, close_y = 0, close_size = 0;
 
-	int	i,k,ocitem,nCurItem;
-	int	time_stopped = 0;
-	int	bRedraw = 0;
-	int	nChangeMode = BT_NONE, nPrevMode = BT_NONE;
-	bkg	bg;
+	int		i, k, ocitem, nCurItem;
+	int		time_stopped = 0;
+	int		bRedraw = 0;
+	int		nChangeMode = BT_NONE, nPrevMode = BT_NONE;
+	bkg		bg;
 
 All_items = items;
 Num_items = nItems;
@@ -1211,7 +1211,7 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 
 CCanvas::Push ();
 CCanvas::SetCurrent (NULL);	
-save_font = CCanvas::Current ()->Font ();
+font = CCanvas::Current ()->Font ();
 
 FlushInput ();
 NMDrawBackground (&bg, xOffs, yOffs, 
@@ -1381,7 +1381,7 @@ for (;;) {
 			break;
 		case -2:
 		case KEY_ESC:
-			KCQuitMenu (save_font, &bg, time_stopped);
+			KCQuitMenu (&bg, time_stopped);
 			return;
 #if TABLE_CREATION
 		case KEYDBGGED+KEY_F12:	{
@@ -1481,7 +1481,7 @@ for (;;) {
 				y1 = CCanvas::Current ()->Top () + close_y + LHX (1);
 				y2 = y1 + close_size - LHY (1);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
-					KCQuitMenu (save_font, &bg, time_stopped);
+					KCQuitMenu (&bg, time_stopped);
 					return;
 				}
 			}
@@ -1493,7 +1493,7 @@ for (;;) {
 			SDL_ShowCursor (1);
 		}
 	}
-KCQuitMenu (save_font, &bg, time_stopped);
+KCQuitMenu (&bg, time_stopped);
 }
 
 //------------------------------------------------------------------------------
@@ -1574,7 +1574,7 @@ if (bRedraw && gameOpts->menus.nStyle)
 		}
 	}
 	if (item->w1) {
-		GrGetStringSize (szText, &w, &h, &aw);
+		FONT->StringSize (szText, &w, &h, &aw);
 
 		if (is_current)
 			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 0, 24));

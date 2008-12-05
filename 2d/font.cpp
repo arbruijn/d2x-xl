@@ -50,6 +50,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CFontManager fontManager;
 
+#define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)
+
 //------------------------------------------------------------------------------
 
 ubyte *CFont::FindKernEntry (ubyte first, ubyte second)
@@ -579,7 +581,7 @@ do {
 	pj = strchr (pi, '\t');
 	if (pj)
 		*pj = '\0';
-	GrGetStringSize (pi, w, stringHeight, averageWidth);
+	FONT->StringSize (pi, w, stringHeight, averageWidth);
 	if (nTab && nTabs) {
 		stringWidth = LHX (nTabs [nTab - 1]);
 		if (gameStates.multi.bSurfingNet)
