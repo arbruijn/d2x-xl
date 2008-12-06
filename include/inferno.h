@@ -2177,15 +2177,20 @@ typedef struct tOpenALData {
 
 #endif
 
-typedef struct tSoundData {
-	CArray<ubyte>			data [2];
-	tDigiSound				sounds [2][MAX_SOUND_FILES];
-	int						nSoundFiles [2];
-	tDigiSound*				soundP;
+class CSoundData {
+	public:
+		CArray<ubyte>			data [2];
+		CArray<tDigiSound>	sounds [2]; //[MAX_SOUND_FILES];
+		int						nSoundFiles [2];
+		CArray<tDigiSound>	soundP;
 #if USE_OPENAL
-	tOpenALData				openAL;
+		tOpenALData				openAL;
 #endif
-} tSoundData;
+			
+	public:
+		CSoundData ();
+		~CSoundData () {}
+};
 
 //------------------------------------------------------------------------------
 
@@ -2260,7 +2265,7 @@ typedef struct tFlagData {
 class CPigData {
 	public:
 		CTextureData		tex;
-		tSoundData			sound;
+		CSoundData			sound;
 		tShipData			ship;
 		tFlagData			flags [2];
 

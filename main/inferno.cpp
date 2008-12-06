@@ -2203,16 +2203,16 @@ InitVideoStates ();
 void SetDataVersion (int v)
 {
 gameStates.app.bD1Data = (v < 0) ? gameStates.app.bD1Mission && gameStates.app.bHaveD1Data : v;
-gameData.pig.tex.bitmapP = gameData.pig.tex.bitmaps [gameStates.app.bD1Data];
-gameData.pig.tex.altBitmapP = gameData.pig.tex.altBitmaps [gameStates.app.bD1Data];
-gameData.pig.tex.bmIndexP = gameData.pig.tex.bmIndex [gameStates.app.bD1Data];
-gameData.pig.tex.bitmapFileP = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Data];
-gameData.pig.tex.tMapInfoP = gameData.pig.tex.tMapInfo [gameStates.app.bD1Data];
-gameData.pig.sound.soundP = gameData.pig.sound.sounds [gameStates.app.bD1Data];
-gameData.eff.effectP = gameData.eff.effects [gameStates.app.bD1Data];
-gameData.eff.vClipP = gameData.eff.vClips [gameStates.app.bD1Data];
-gameData.walls.animP = gameData.walls.anims [gameStates.app.bD1Data];
-gameData.bots.infoP = gameData.bots.info [gameStates.app.bD1Data];
+gameData.pig.tex.bitmaps [gameStates.app.bD1Data].Clone (gameData.pig.tex.bitmapP);
+gameData.pig.tex.altBitmaps [gameStates.app.bD1Data].Clone (gameData.pig.tex.altBitmapP);
+gameData.pig.tex.bmIndex [gameStates.app.bD1Data].Clone (gameData.pig.tex.bmIndexP);
+gameData.pig.tex.bitmapFiles [gameStates.app.bD1Data].Clone (gameData.pig.tex.bitmapFileP);
+gameData.pig.tex.tMapInfo [gameStates.app.bD1Data].Clone (gameData.pig.tex.tMapInfoP);
+gameData.pig.sound.sounds [gameStates.app.bD1Data].Clone (gameData.pig.sound.soundP);
+gameData.eff.effects [gameStates.app.bD1Data].Clone (gameData.eff.effectP);
+gameData.eff.vClips [gameStates.app.bD1Data].Clone (gameData.eff.vClipP);
+gameData.walls.anims [gameStates.app.bD1Data].Clone (gameData.walls.animP);
+gameData.bots.info [gameStates.app.bD1Data].Clone (gameData.bots.infoP);
 }
 
 // ----------------------------------------------------------------------------
@@ -2339,6 +2339,15 @@ gameData.score.nPhallicMan = -1;
 InitEndLevelData ();
 InitStringPool ();
 SetDataVersion (-1);
+}
+
+// ----------------------------------------------------------------------------
+
+CSoundData::CSoundData ()
+{
+for (int i = 0; i < 2; i++) {
+	sounds [i].Create (MAX_SOUND_FILES); //[MAX_SOUND_FILES];
+sounds [0].Clone (soundP);
 }
 
 // ----------------------------------------------------------------------------
