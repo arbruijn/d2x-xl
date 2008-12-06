@@ -81,11 +81,11 @@ for (i = 0; i < MAX_BOSS_COUNT; i++)
 //	Set *segCountP.
 //	Boss is allowed to teleport to segments he fits in (calls ObjectIntersectsWall) and
 //	he can reach from his initial position (calls FindConnectedDistance).
-//	If bSizeCheck is set, then only add tSegment if boss can fit in it, else any segment is legal.
+//	If bSizeCheck is set, then only add CSegment if boss can fit in it, else any segment is legal.
 //	bOneWallHack added by MK, 10/13/95: A mega-hack! Set to !0 to ignore the
 void InitBossSegments (int objList, short segListP [], short *segCountP, int bSizeCheck, int bOneWallHack)
 {
-	tSegment		*segP;
+	CSegment		*segP;
 	CObject		*bossObjP = OBJECTS + objList;
 	vmsVector	vBossHomePos;
 	int			nBossHomeSeg;
@@ -216,12 +216,12 @@ memset (gameData.boss + BOSS_COUNT, 0, sizeof (gameData.boss [BOSS_COUNT]));
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Return nObject if CObject created, else return -1.
-//	If pos == NULL, pick random spot in tSegment.
+//	If pos == NULL, pick random spot in CSegment.
 int CreateGatedRobot (CObject *bossObjP, short nSegment, ubyte nObjId, vmsVector *pos)
 {
 	int			nObject, nTries = 5;
 	CObject		*objP;
-	tSegment		*segP = gameData.segs.segments + nSegment;
+	CSegment		*segP = gameData.segs.segments + nSegment;
 	vmsVector	vObjPos;
 	tRobotInfo	*botInfoP = &ROBOTINFO (nObjId);
 	int			i, nBoss, count = 0;
@@ -249,7 +249,7 @@ for (;;) {
 	else
 		vObjPos = *pos;
 
-	//	See if legal to place CObject here.  If not, move about in tSegment and try again.
+	//	See if legal to place CObject here.  If not, move about in CSegment and try again.
 	if (CheckObjectObjectIntersection (&vObjPos, objsize, segP)) {
 		if (!--nTries) {
 			gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
@@ -279,7 +279,7 @@ objP->mType.physInfo.flags |= (PF_LEVELLING);
 objP->info.xShields = botInfoP->strength;
 objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
 default_behavior = ROBOTINFO (objP->info.nId).behavior;
-InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
+InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
 ObjectCreateExplosion (nSegment, &vObjPos, I2X (10), VCLIP_MORPHING_ROBOT);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
 MorphStart (objP);
@@ -411,7 +411,7 @@ void TeleportBoss (CObject *objP)
 	short			i, nAttempts = 5, nRandSeg = 0, nRandIndex, nObject = OBJ_IDX (objP);
 	vmsVector	vBossDir, vNewPos;
 
-//	Pick a random tSegment from the list of boss-teleportable-to segments.
+//	Pick a random CSegment from the list of boss-teleportable-to segments.
 Assert (nObject >= 0);
 i = FindBoss (nObject);
 if (i < 0)

@@ -25,7 +25,7 @@ extern void SetDynamicLight (void);
 
 int LightingMethod (void);
 
-// compute the average dynamic light in a tSegment.  Takes the tSegment number
+// compute the average dynamic light in a CSegment.  Takes the CSegment number
 fix ComputeSegDynamicLight (int nSegment);
 
 // compute the lighting for an CObject.  Takes a pointer to the CObject,

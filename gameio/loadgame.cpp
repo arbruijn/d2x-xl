@@ -254,7 +254,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 // the following code takes care of team players being assigned the proper start locations
 // in enhanced CTF
 for (i = 0; i < nPlayers; i++) {
-// find a tPlayer CObject that resides in a tSegment of proper nType for the current
+// find a tPlayer CObject that resides in a CSegment of proper nType for the current
 // tPlayer start info
 	for (j = 0; j < nPlayers; j++) {
 		segNum = startSegs [j];
@@ -608,7 +608,7 @@ if (LOCALPLAYER.timeTotal > I2X (3600))	{
 void SetSoundSources (void)
 {
 	short			nSegment, nSide, nConnSeg, nConnSide, nSound;
-	tSegment		*segP, *connSegP;
+	CSegment		*segP, *connSegP;
 	CObject		*objP;
 	vmsVector	v;
 	int			i, nOvlTex, nEffect;
@@ -632,7 +632,7 @@ for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLas
 		//check for sound on other tSide of tWall.  Don't add on
 		//both walls if sound travels through tWall.  If sound
 		//does travel through tWall, add sound for lower-numbered
-		//tSegment.
+		//CSegment.
 
 		if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
 			 (WALL_IS_DOORWAY (segP, nSide, NULL) & (WID_FLY_FLAG | WID_RENDPAST_FLAG))) {
@@ -940,7 +940,7 @@ if (0 > LoadRobotReplacements (pszLevelName, 0, 0)) {
 LoadHiresModels (1);
 /*---*/PrintLog ("   initializing cambot\n");
 InitCamBots (0);
-networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment) * gameData.segs.nSegments);
+networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (CSegment) * gameData.segs.nSegments);
 ResetNetworkObjects ();
 ResetChildObjects ();
 ResetFlightPath (&externalView, -1, -1);

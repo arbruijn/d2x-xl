@@ -83,8 +83,8 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 #endif
 
 //------------------------------------------------------------
-// Turns a tSegment into a fully charged up fuel center...
-void FuelCenCreate (tSegment *segP, int oldType)
+// Turns a CSegment into a fully charged up fuel center...
+void FuelCenCreate (CSegment *segP, int oldType)
 {
 	short			nSegment = SEG_IDX (segP);
 	tSegment2	*seg2P = gameData.segs.segment2s + nSegment;
@@ -159,7 +159,7 @@ else if (oldType == SEGMENT_IS_ROBOTMAKER) {
 //------------------------------------------------------------
 // Adds a matcen that already is a special nType into the gameData.matCens.fuelCenters array.
 // This function is separate from other fuelcens because we don't want values reset.
-void BotGenCreate (tSegment *segP, int oldType)
+void BotGenCreate (CSegment *segP, int oldType)
 {
 	short			nSegment = SEG_IDX (segP);
 	tSegment2	*seg2P = gameData.segs.segment2s + nSegment;
@@ -214,7 +214,7 @@ for (i = 0; i < gameData.matCens.nEquipCenters; i++)
 //------------------------------------------------------------
 // Adds a matcen that already is a special nType into the gameData.matCens.fuelCenters array.
 // This function is separate from other fuelcens because we don't want values reset.
-void EquipGenCreate (tSegment *segP, int oldType)
+void EquipGenCreate (CSegment *segP, int oldType)
 {
 	short			nSegment = SEG_IDX (segP);
 	tSegment2	*seg2P = gameData.segs.segment2s  + nSegment;
@@ -262,8 +262,8 @@ gameData.matCens.nFuelCenters++;
 }
 
 //------------------------------------------------------------
-// Adds a tSegment that already is a special nType into the gameData.matCens.fuelCenters array.
-void FuelCenActivate (tSegment * segP, int stationType)
+// Adds a CSegment that already is a special nType into the gameData.matCens.fuelCenters array.
+void FuelCenActivate (CSegment * segP, int stationType)
 {
 	tSegment2	*seg2P = gameData.segs.segment2s + SEG_IDX (segP);
 
@@ -285,17 +285,17 @@ else {
 #define	MATCEN_LIFE (I2X (30-2*gameStates.app.nDifficultyLevel))
 
 //------------------------------------------------------------
-//	Trigger (enable) the materialization center in tSegment nSegment
+//	Trigger (enable) the materialization center in CSegment nSegment
 int MatCenTrigger (short nSegment)
 {
-	// -- tSegment		*segP = &gameData.segs.segments [nSegment];
+	// -- CSegment		*segP = &gameData.segs.segments [nSegment];
 	tSegment2		*seg2P = &gameData.segs.segment2s [nSegment];
 	vmsVector		pos, delta;
 	tFuelCenInfo	*matCenP;
 	int				nObject;
 
 #if TRACE
-con_printf (CONDBG, "Trigger matcen, tSegment %i\n", nSegment);
+con_printf (CONDBG, "Trigger matcen, CSegment %i\n", nSegment);
 #endif
 if (seg2P->special == SEGMENT_IS_EQUIPMAKER) {
 	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipGens [seg2P->nMatCen].nFuelCen;
@@ -319,7 +319,7 @@ matCenP->bEnabled = 1;			//	Say this center is enabled, it can create robots.
 matCenP->xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
 matCenP->xDisableTime = MATCEN_LIFE;
 
-//	Create a bright CObject in the tSegment.
+//	Create a bright CObject in the CSegment.
 pos = matCenP->vCenter;
 delta = gameData.segs.vertices[gameData.segs.segments [nSegment].verts [0]] - matCenP->vCenter;
 pos += delta * (F1_0/2);
@@ -338,7 +338,7 @@ return 0;
 }
 
 //------------------------------------------------------------
-//	Trigger (enable) the materialization center in tSegment nSegment
+//	Trigger (enable) the materialization center in CSegment nSegment
 void SpawnBotTrigger (CObject *objP, short nSegment)
 {
 	tSegment2		*seg2P = &gameData.segs.segment2s [nSegment];
@@ -361,9 +361,9 @@ BossSpewRobot (objP, NULL, nType, 1);
 
 #ifdef EDITOR
 //------------------------------------------------------------
-// Takes away a tSegment's fuel center properties.
-//	Deletes the tSegment point entry in the tFuelCenInfo list.
-void FuelCenDelete (tSegment * segP)
+// Takes away a CSegment's fuel center properties.
+//	Deletes the CSegment point entry in the tFuelCenInfo list.
+void FuelCenDelete (CSegment * segP)
 {
 	tSegment2	*seg2P = &gameData.segs.segment2s [SEG_IDX (segP)];
 	int i, j;
@@ -405,7 +405,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++) {
 
 //	----------------------------------------------------------------------------------------------------------
 
-CObject *CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte nObjId)
+CObject *CreateMorphRobot (CSegment *segP, vmsVector *vObjPosP, ubyte nObjId)
 {
 	short			nObject;
 	CObject		*objP;
@@ -433,8 +433,8 @@ objP->mType.physInfo.drag = botInfoP->drag;
 objP->mType.physInfo.flags |= (PF_LEVELLING);
 objP->info.xShields = RobotDefaultShields (objP);
 default_behavior = botInfoP->behavior;
-InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
-CreateNSegmentPath (objP, 6, -1);		//	Create a 6 tSegment path from creation point.
+InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
+CreateNSegmentPath (objP, 6, -1);		//	Create a 6 CSegment path from creation point.
 gameData.ai.localInfo [nObject].mode = AIBehaviorToMode (default_behavior);
 return objP;
 }
@@ -453,7 +453,7 @@ void CreateMatCenEffect (tFuelCenInfo *matCenP, ubyte nVideoClip)
 	CObject		*objP;
 
 COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
-// HACK!!!The 10 under here should be something equal to the 1/2 the size of the tSegment.
+// HACK!!!The 10 under here should be something equal to the 1/2 the size of the CSegment.
 objP = ObjectCreateExplosion ((short) matCenP->nSegment, &vPos, I2X (10), nVideoClip);
 if (objP) {
 	ExtractOrientFromSegment (&objP->info.position.mOrient, gameData.segs.segments + matCenP->nSegment);
@@ -706,14 +706,14 @@ if (!matCenP->bFlag) {
 		matCenP->xTimer /= 2;
 		return;
 		}
-		//	Whack on any robot or tPlayer in the matcen tSegment.
+		//	Whack on any robot or tPlayer in the matcen CSegment.
 	nCount = 0;
 	nSegment = matCenP->nSegment;
 	for (nObject = SEGMENTS [nSegment].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 		nCount++;
 		if (nCount > MAX_OBJECTS) {
 #if TRACE
-			con_printf (CONDBG, "Object list in tSegment %d is circular.", nSegment);
+			con_printf (CONDBG, "Object list in CSegment %d is circular.", nSegment);
 #endif
 			Int3 ();
 			return;
@@ -819,7 +819,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++, fuelCenP++) {
 
 //-------------------------------------------------------------
 
-fix HostileRoomDamageShields (tSegment *segP, fix MaxAmountCanGive)
+fix HostileRoomDamageShields (CSegment *segP, fix MaxAmountCanGive)
 {
 	static fix last_playTime=0;
 	fix amount;
@@ -850,7 +850,7 @@ return amount;
 
 //-------------------------------------------------------------
 
-fix FuelCenGiveFuel (tSegment *segP, fix MaxAmountCanTake)
+fix FuelCenGiveFuel (CSegment *segP, fix MaxAmountCanTake)
 {
 	short			nSegment = SEG_IDX (segP);
 	tSegment2	*seg2P = gameData.segs.segment2s + nSegment;
@@ -901,7 +901,7 @@ return amount;
 // DM/050904
 // Repair centers
 // use same values as fuel centers
-fix RepairCenGiveShields (tSegment *segP, fix MaxAmountCanTake)
+fix RepairCenGiveShields (CSegment *segP, fix MaxAmountCanTake)
 {
 	short		nSegment = SEG_IDX (segP);
 	tSegment2	*seg2P = gameData.segs.segment2s + nSegment;
@@ -948,7 +948,7 @@ return amount;
 
 //--unused-- //-----------------------------------------------------------
 //--unused-- // Damages a fuel center
-//--unused-- void FuelCenDamage (tSegment *segP, fix damage)
+//--unused-- void FuelCenDamage (CSegment *segP, fix damage)
 //--unused-- {
 //--unused-- 	//int i;
 //--unused-- 	// int	station_num = segP->value;
@@ -1014,7 +1014,7 @@ return amount;
 //--unused-- //return though which tSide of seg0 is seg1
 //--unused-- int john_find_connect_side (int seg0,int seg1)
 //--unused-- {
-//--unused-- 	tSegment *Seg=&gameData.segs.segments [seg0];
+//--unused-- 	CSegment *Seg=&gameData.segs.segments [seg0];
 //--unused-- 	int i;
 //--unused--
 //--unused-- 	for (i=MAX_SIDES_PER_SEGMENT;i--;) if (Seg->children [i]==seg1) return i;
@@ -1203,7 +1203,7 @@ return amount;
 //--repair--
 //--repair-- 	}
 //--repair--
-//--repair-- 	UpdateObjectSeg (objP);		//update tSegment
+//--repair-- 	UpdateObjectSeg (objP);		//update CSegment
 //--repair--
 //--repair-- 	return 0;
 //--repair-- }
@@ -1423,7 +1423,7 @@ return 1;
 
 //--------------------------------------------------------------------
 
-void FuelCenCheckForGoal (tSegment *segP)
+void FuelCenCheckForGoal (CSegment *segP)
 {
 	tSegment2	*seg2P = gameData.segs.segment2s + SEG_IDX (segP);
 
@@ -1455,7 +1455,7 @@ else if (seg2P->special == SEGMENT_IS_GOAL_RED) {
 
 //--------------------------------------------------------------------
 
-void FuelCenCheckForHoardGoal (tSegment *segP)
+void FuelCenCheckForHoardGoal (CSegment *segP)
 {
 	tSegment2	*seg2P = &gameData.segs.segment2s [SEG_IDX (segP)];
 

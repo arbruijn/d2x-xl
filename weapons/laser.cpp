@@ -523,7 +523,7 @@ return nObject;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Calls CreateNewWeapon, but takes care of the tSegment and point computation for you.
+//	Calls CreateNewWeapon, but takes care of the CSegment and point computation for you.
 int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short parent, ubyte nWeaponType, int bMakeSound)
 {
 	tFVIQuery	fq;
@@ -531,12 +531,12 @@ int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short par
 	CObject		*parentObjP = OBJECTS + parent;
 	int			fate;
 
-	//	Find tSegment containing laser fire vPosition.  If the robot is straddling a tSegment, the vPosition from
-	//	which it fires may be in a different tSegment, which is bad news for FindVectorIntersection.  So, cast
-	//	a ray from the CObject center (whose tSegment we know) to the laser vPosition.  Then, in the call to CreateNewWeapon
+	//	Find CSegment containing laser fire vPosition.  If the robot is straddling a CSegment, the vPosition from
+	//	which it fires may be in a different CSegment, which is bad news for FindVectorIntersection.  So, cast
+	//	a ray from the CObject center (whose CSegment we know) to the laser vPosition.  Then, in the call to CreateNewWeapon
 	//	use the data returned from this call to FindVectorIntersection.
 	//	Note that while FindVectorIntersection is pretty slow, it is not terribly slow if the destination point is
-	//	in the same tSegment as the source point.
+	//	in the same CSegment as the source point.
 
 fq.p0					= &parentObjP->info.position.vPos;
 fq.startSeg			= parentObjP->info.nSegment;
@@ -810,7 +810,7 @@ float MissileSpeedScale (CObject *objP)
 
 if (!i)
 	return 1;
-return nMslSlowDown [i] * X2F (gameData.time.xGame - objP->xCreationTime);
+return nMslSlowDown [i] * X2F (gameData.time.xGame - objP->CreationTime ());
 }
 
 //-------------------------------------------------------------------------------------------

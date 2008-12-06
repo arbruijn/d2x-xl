@@ -740,7 +740,7 @@ int NetworkLevelSync (void)
 	int result;
 	networkData.bSyncPackInited = 0;
 
-//networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment)* (gameData.segs.nLastSegment+1);
+//networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (CSegment)* (gameData.segs.nLastSegment+1);
 NetworkFlush (); // Flush any old packets
 if (!gameData.multiplayer.nPlayers)
 	result = NetworkWaitForSync ();

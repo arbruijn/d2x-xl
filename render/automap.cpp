@@ -404,7 +404,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 				}
 			}
 		}
-	objP = OBJECTS;
+	objP = OBJECTS.Buffer ();
 	FORALL_OBJS (objP, i) {
 		size = objP->info.xSize;
 		switch (objP->info.nType) {
@@ -1198,7 +1198,7 @@ if (found != -1)
 
 //------------------------------------------------------------------------------
 
-void AddSegmentEdges (tSegment *segP)
+void AddSegmentEdges (CSegment *segP)
 {
 	int		 		bIsGrate, bNoFade;
 	uint	color;
@@ -1331,9 +1331,9 @@ addEdge:
 }
 
 //------------------------------------------------------------------------------
-// Adds all the edges from a tSegment we haven't visited yet.
+// Adds all the edges from a CSegment we haven't visited yet.
 
-void AddUnknownSegmentEdges (tSegment *segP)
+void AddUnknownSegmentEdges (CSegment *segP)
 {
 	int sn;
 	int nSegment = SEG_IDX (segP);

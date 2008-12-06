@@ -80,13 +80,13 @@ class CCamera {
 
 class CCameraManager {
 	private:
-		CCamera	m_cameras [MAX_CAMERAS];
-		short		m_nCameras;
-		char		*m_faceCameras;
-		ushort	*m_objectCameras;
+		CCamera			m_cameras [MAX_CAMERAS];
+		short				m_nCameras;
+		CArray<char>	m_faceCameras;
+		CArray<ushort>	m_objectCameras;
 
 	public:
-		CCameraManager () { m_faceCameras = NULL, m_objectCameras = 0, m_nCameras = 0; };
+		CCameraManager () { m_objectCameras = 0, m_nCameras = 0; };
 		~CCameraManager ();
 		int Create ();
 		void Destroy ();

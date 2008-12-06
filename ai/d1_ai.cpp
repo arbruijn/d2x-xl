@@ -158,7 +158,7 @@ ubyte	john_cheats_3[2*JOHN_CHEATS_SIZE_3+1] = { KEY_Y ^ 0x67,
 
 #define	D1_MAX_AWARENESS_EVENTS	64
 typedef struct awareness_event {
-	short 		nSegment;				// tSegment the event occurred in
+	short 		nSegment;				// CSegment the event occurred in
 	short			type;					// type of event, defines behavior
 	vmsVector	pos;					// absolute 3 space location of event
 } awareness_event;
@@ -870,12 +870,12 @@ void ai_fire_laser_at_player(CObject *objP, vmsVector *fire_point)
 			}
 	}
 
-//--	//	Find tSegment containing laser fire position.  If the robotP is straddling a tSegment, the position from
-//--	//	which it fires may be in a different tSegment, which is bad news for FindVectorIntersection.  So, cast
-//--	//	a ray from the CObject center (whose tSegment we know) to the laser position.  Then, in the call to Laser_create_new
+//--	//	Find CSegment containing laser fire position.  If the robotP is straddling a CSegment, the position from
+//--	//	which it fires may be in a different CSegment, which is bad news for FindVectorIntersection.  So, cast
+//--	//	a ray from the CObject center (whose CSegment we know) to the laser position.  Then, in the call to Laser_create_new
 //--	//	use the data returned from this call to FindVectorIntersection.
 //--	//	Note that while FindVectorIntersection is pretty slow, it is not terribly slow if the destination point is
-//--	//	in the same tSegment as the source point.
+//--	//	in the same CSegment as the source point.
 //--
 //--	fq.p0						= &objP->info.position.vPos;
 //--	fq.startseg				= objP->info.nSegment;
@@ -1371,12 +1371,12 @@ void compute_vis_and_vec(CObject *objP, vmsVector *pos, tAILocalInfo *ailP, vmsV
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Move the CObject objP to a spot in which it doesn't intersect a wall.
-//	It might mean moving it outside its current tSegment.
+//	It might mean moving it outside its current CSegment.
 void move_object_to_legal_spot(CObject *objP)
 {
 	vmsVector	original_pos = objP->info.position.vPos;
 	int		i;
-	tSegment	*segP = &gameData.segs.segments[objP->info.nSegment];
+	CSegment	*segP = &gameData.segs.segments[objP->info.nSegment];
 
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
 		if (WALL_IS_DOORWAY(segP, i, objP) & WID_FLY_FLAG) {
@@ -1405,8 +1405,8 @@ void move_object_to_legal_spot(CObject *objP)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Move CObject one CObject radii from current position towards tSegment center.
-//	If tSegment center is nearer than 2 radii, move it to center.
+//	Move CObject one CObject radii from current position towards CSegment center.
+//	If CSegment center is nearer than 2 radii, move it to center.
 void move_towards_segment_center(CObject *objP)
 {
 	fix			dist_to_center;
@@ -1438,7 +1438,7 @@ void move_towards_segment_center(CObject *objP)
 //	-----------------------------------------------------------------------------------------------------------
 //	Return true if door can be flown through by a suitable type robotP.
 //	Only brains and avoid robots can open doors.
-int ai_door_is_openable(CObject *objP, tSegment *segP, int sidenum)
+int ai_door_is_openable(CObject *objP, CSegment *segP, int sidenum)
 {
 	int	nWall;
 
@@ -1473,7 +1473,7 @@ int ai_door_is_openable(CObject *objP, tSegment *segP, int sidenum)
 //--}
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Return side of openable door in tSegment, if any.  If none, return -1.
+//	Return side of openable door in CSegment, if any.  If none, return -1.
 int openable_doors_in_segment(CObject *objP)
 {
 	int	i;
@@ -1492,7 +1492,7 @@ int openable_doors_in_segment(CObject *objP)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Return true if a special CObject (playerP or control center) is in this tSegment.
+//	Return true if a special CObject (playerP or control center) is in this CSegment.
 int special_object_in_seg (int nSegment)
 {
 	int nObject = SEGMENTS [nSegment].objects;
@@ -1506,10 +1506,10 @@ return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Randomly select a tSegment attached to *segP, reachable by flying.
+//	Randomly select a CSegment attached to *segP, reachable by flying.
 int get_random_child(int nSegment)
 {
-tSegment	*segP = SEGMENTS + nSegment;
+CSegment	*segP = SEGMENTS + nSegment;
 int sidenum = (rand() * 6) >> 15;
 while (!(WALL_IS_DOORWAY(segP, sidenum, NULL) & WID_FLY_FLAG))
 	sidenum = (rand() * 6) >> 15;
@@ -1518,11 +1518,11 @@ return segP->children[sidenum];
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Return true if CObject created, else return false.
-int create_gated_robot( int nSegment, int nObjId)
+int CreateGatedRobot (int nSegment, int nObjId)
 {
 	int			nObject;
 	CObject		*objP;
-	tSegment		*segP = &gameData.segs.segments[nSegment];
+	CSegment		*segP = &gameData.segs.segments [nSegment];
 	vmsVector	vObjPos;
 	tRobotInfo	*botInfoP = &gameData.bots.info [1][nObjId];
 	int			i, count = 0;
@@ -1539,9 +1539,9 @@ int create_gated_robot( int nSegment, int nObjId)
 	}
 
 	COMPUTE_SEGMENT_CENTER (&vObjPos, segP);
-	PickRandomPointInSeg(&vObjPos, segP-gameData.segs.segments);
+	PickRandomPointInSeg (&vObjPos, segP - gameData.segs.segments);
 
-	//	See if legal to place CObject here.  If not, move about in tSegment and try again.
+	//	See if legal to place CObject here.  If not, move about in CSegment and try again.
 	if (CheckObjectObjectIntersection(&vObjPos, objsize, segP)) {
 		gameData.boss [0].nLastGateTime = gameData.time.xGame - 3*gameData.boss [0].nGateInterval/4;
 		return 0;
@@ -1575,7 +1575,7 @@ int create_gated_robot( int nSegment, int nObjId)
 	if (nObjId == 10)						//	This is a toaster guy!
 		default_behavior = D1_AIB_RUN_FROM;
 
-	InitAIObject (OBJ_IDX (objP), default_behavior, -1 );		//	Note, -1 = tSegment this robotP goes to to hide, should probably be something useful
+	InitAIObject (OBJ_IDX (objP), default_behavior, -1 );		//	Note, -1 = CSegment this robotP goes to to hide, should probably be something useful
 
 	ObjectCreateExplosion (nSegment, &vObjPos, I2X(10), VCLIP_MORPHING_ROBOT );
 	DigiLinkSoundToPos( gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
@@ -1599,7 +1599,7 @@ int gate_in_robot(int type, int nSegment)
 
 	Assert((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 
-	return create_gated_robot(nSegment, type);
+	return CreateGatedRobot(nSegment, type);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -2081,7 +2081,7 @@ if (nObject == nDbgObj)
 
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
 	//	Time-slice, don't process all the time, purely an efficiency hack.
-	//	Guys whose behavior is station and are not at their hide tSegment get processed anyway.
+	//	Guys whose behavior is station and are not at their hide CSegment get processed anyway.
 	if (ailP->playerAwarenessType < D1_PA_WEAPON_ROBOT_COLLISION-1) { // If robotP got hit, he gets to attack playerP always!
 		#if DBG
 		if (Break_on_object != nObject) {	//	don't time slice if we're interested in this CObject.

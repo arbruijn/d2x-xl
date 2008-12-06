@@ -12,6 +12,7 @@ template < class _T > class CArray {
 			_T		*buffer;
 			_T		null;
 			uint	size;
+			uint	pos;
 			bool	bExternal;
 			bool	bChild;
 			};
@@ -131,7 +132,26 @@ template < class _T > class CArray {
 			return Copy (source, offset);
 			}
 
+		inline _T* Begin (void) { 
+			if (!m_buffer)
+				return NULL;
+				m_pos = 0;
+			return m_buffer;
+			}
+
+		inline _T* End (void) { 
+			if (!m_buffer)
+				return NULL;
+			return m_buffer + (m_pos = m_size);
+			}
+
+		inline _T* operator++ (void) { return (m_buffer && (m_pos < m_size - 1)) ? m_buffer + ++m_pos : NULL; }
+
+		inline _T* operator-- (void) { return (m_buffer && (m_pos > 0)) ? m_buffer + --m_pos : NULL; }
+
 		inline _T* operator+ (uint i) { return m_data.buffer ? m_data.buffer + i : NULL; }
+
+		inline _T* operator- (uint i) { return m_data.buffer ? m_data.buffer - i : NULL; }
 
 		CArray<_T>& Clone (CArray<_T>& clone) {
 			clone.m_data = m_data;
@@ -139,6 +159,13 @@ template < class _T > class CArray {
 			return clone;
 			}
 	};
+
+int operator- (char* v, CArray<char>& a) { return a.Index (v); }
+int operator- (ubyte* v, CArray<ubyte>& a) { return a.Index (v); }
+int operator- (short* v, CArray<short>& a) { return a.Index (v); }
+int operator- (ushort* v, CArray<ushort>& a) { return a.Index (v); }
+int operator- (int* v, CArray<int>& a) { return a.Index (v); }
+int operator- (uint* v, CArray<uint>& a) { return a.Index (v); }
 
 //-----------------------------------------------------------------------------
 

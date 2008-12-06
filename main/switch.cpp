@@ -371,7 +371,7 @@ int DoChangeWalls (tTrigger *trigP)
 	short 	*sides = trigP->nSide;
 	short 	nSide,nConnSide,nWall,nConnWall;
 	int 		nNewWallType;
-	tSegment *segP, *cSegP;
+	CSegment *segP, *cSegP;
 
 for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 
@@ -517,7 +517,7 @@ void DoIllusionOff (tTrigger *trigP)
 	int i;
 	short *segs = trigP->nSegment;
 	short *sides = trigP->nSide;
-	tSegment *seg;
+	CSegment *seg;
 
 for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	vmsVector	cp;
@@ -548,8 +548,8 @@ if (nStep <= 0) {
 	}
 else
 	n = gameStates.gameplay.vTgtDir;
-// turn the ship so that it is facing the destination nSide of the destination tSegment
-// Invert the Normal as it points into the tSegment
+// turn the ship so that it is facing the destination nSide of the destination CSegment
+// Invert the Normal as it points into the CSegment
 // compute angles from the Normal
 an = n.ToAnglesVec();
 // create new orientation matrix
@@ -686,8 +686,8 @@ if (sbd.bBoosted) {
 			Controls [0].forwardThrustTime =
 			Controls [0].sidewaysThrustTime = 0;
 			memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
-		// turn the ship so that it is facing the destination nSide of the destination tSegment
-		// Invert the Normal as it points into the tSegment
+		// turn the ship so that it is facing the destination nSide of the destination CSegment
+		// Invert the Normal as it points into the CSegment
 			/*
 			n[X] = -n[X];
 			n[Y] = -n[Y];
@@ -697,8 +697,8 @@ if (sbd.bBoosted) {
 		}
 	else {
 		memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
-	// turn the ship so that it is facing the destination nSide of the destination tSegment
-	// Invert the Normal as it points into the tSegment
+	// turn the ship so that it is facing the destination nSide of the destination CSegment
+	// Invert the Normal as it points into the CSegment
 		/*
 		n[X] = -n[X];
 		n[Y] = -n[Y];
@@ -1114,7 +1114,7 @@ while ((i >= 0) && (j < 256)) {
 
 //-----------------------------------------------------------------
 // Checks for a tTrigger whenever an CObject hits a tTrigger nSide.
-void CheckTrigger (tSegment *segP, short nSide, short nObject, int shot)
+void CheckTrigger (CSegment *segP, short nSide, short nObject, int shot)
 {
 	int 		nWall;
 	ubyte		nTrigger;	//, cnTrigger;

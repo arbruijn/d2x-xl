@@ -127,7 +127,7 @@ typedef struct tObjTriggerRef {
 } tObjTriggerRef;
 
 void TriggerInit();
-void CheckTrigger(tSegment *seg, short tSide, short nObject,int shot);
+void CheckTrigger(CSegment *seg, short tSide, short nObject,int shot);
 int CheckTriggerSub (short nObject, tTrigger *triggers, int nTriggerCount, int nTrigger, 
 							int nPlayer, int shot, int bBotTrigger);
 void TriggersFrameProcess();

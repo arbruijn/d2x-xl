@@ -559,7 +559,7 @@ else
 
 //--unused-- int Auto_flythrough=0;  //if set, start flythough automatically
 
-void MovePlayerToSegment (tSegment *segP,int tSide)
+void MovePlayerToSegment (CSegment *segP,int tSide)
 {
 	vmsVector vp;
 
@@ -1038,7 +1038,7 @@ InitGauges ();
 //gameStates.input.keys.bRepeat = 0;                // Don't allow repeat in game
 gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
 #ifdef EDITOR
-	if (gameData.segs.segments[gameData.objs.consoleP->info.nSegment].nSegment == -1)      //tSegment no longer exists
+	if (gameData.segs.segments[gameData.objs.consoleP->info.nSegment].nSegment == -1)      //CSegment no longer exists
 		RelinkObjToSeg (OBJ_IDX (gameData.objs.consoleP), SEG_IDX (Cursegp));
 
 	if (!check_obj_seg (gameData.objs.consoleP))
@@ -1991,7 +1991,7 @@ CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
 
 //	-------------------------------------------------------------------------------------------------------
 //	Make it easier to pick up powerups.
-//	For all powerups in this tSegment, pick them up at up to twice pickuppable distance based on dot product
+//	For all powerups in this CSegment, pick them up at up to twice pickuppable distance based on dot product
 //	from tPlayer to powerup and tPlayer's forward vector.
 //	This has the effect of picking them up more easily left/right and up/down, but not making them disappear
 //	way before the tPlayer gets there.
@@ -2012,7 +2012,7 @@ int	nLastLevelPathCreated = -1;
 #ifdef SHOW_EXIT_PATH
 
 //	------------------------------------------------------------------------------------------------------------------
-//	Create path for tPlayer from current tSegment to goal tSegment.
+//	Create path for tPlayer from current CSegment to goal CSegment.
 //	Return true if path created, else return false.
 int MarkPlayerPathToSegment (int nSegment)
 {

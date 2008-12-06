@@ -2595,7 +2595,7 @@ else {
 if (m_nVersion >= 16) {
 	m_cf.Read (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtracted [0]), (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
 	ApplyAllChangedLight ();
-	//ComputeAllStaticLight ();	//	set xAvgSegLight field in tSegment struct.  See note at that function.
+	//ComputeAllStaticLight ();	//	set xAvgSegLight field in CSegment struct.  See note at that function.
 	}
 else
 	memset (gameData.render.lights.subtracted, 0, sizeof (gameData.render.lights.subtracted));

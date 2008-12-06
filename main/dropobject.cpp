@@ -52,7 +52,7 @@ CObject *FindInitObject (CObject *objP)
 	short	id = objP->info.nId;
 
 // due to OBJECTS being deleted from the CObject list when picked up and recreated when dropped,
-// cannot determine exact respawn tSegment, so randomly chose one from all segments where powerups
+// cannot determine exact respawn CSegment, so randomly chose one from all segments where powerups
 // of this nType had initially been placed in the level.
 if (!objCount)		//no OBJECTS of this nType had initially been placed in the mine.
 	return NULL;	//can happen with missile packs
@@ -63,8 +63,8 @@ h = d_rand () % objCount + 1;
 for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP++) {
 	if ((objP->info.nType != nType) || (objP->info.nId != id))
 		continue;
-	// if the current tSegment does not contain a powerup of the nType being looked for,
-	// return that tSegment
+	// if the current CSegment does not contain a powerup of the nType being looked for,
+	// return that CSegment
 	if (bUseFree) {
 		for (bUsed = 0, j = SEGMENTS [objP->info.nSegment].objects; j != -1; j = OBJECTS [j].info.nNextInSeg)
 			if ((OBJECTS [j].info.nType == nType) && (OBJECTS [j].info.nId == id)) {
@@ -83,7 +83,7 @@ return NULL;
 // --------------------------------------------------------------------------------------------------------------------
 //	Return true if there is a door here and it is openable
 //	It is assumed that the tPlayer has all keys.
-int PlayerCanOpenDoor (tSegment *segP, short nSide)
+int PlayerCanOpenDoor (CSegment *segP, short nSide)
 {
 	short	nWall, wallType;
 
@@ -98,8 +98,8 @@ return 1;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Return a tSegment %i segments away from initial tSegment.
-//	Returns -1 if can't find a tSegment that distance away.
+//	Return a CSegment %i segments away from initial CSegment.
+//	Returns -1 if can't find a CSegment that distance away.
 
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -111,7 +111,7 @@ int PickConnectedSegment (CObject *objP, int nMaxDepth, int *nDepthP)
 	int		nStartSeg;
 	int		nHead, nTail;
 	short		nSide, nWall, nChild;
-	tSegment	*segP;
+	CSegment	*segP;
 	ubyte		bVisited [MAX_SEGMENTS_D2X];
 
 if (!objP)
@@ -156,10 +156,10 @@ return segQueue [nTail + d_rand () % (nHead - nTail + 1)];
 }
 
 //	------------------------------------------------------------------------------------------------------
-//	Choose tSegment to drop a powerup in.
-//	For all active net players, try to create a N tSegment path from the player.  If possible, return that
-//	tSegment.  If not possible, try another player.  After a few tries, use a Random tSegment.
-//	Don't drop if control center in tSegment.
+//	Choose CSegment to drop a powerup in.
+//	For all active net players, try to create a N CSegment path from the player.  If possible, return that
+//	CSegment.  If not possible, try another player.  After a few tries, use a Random CSegment.
+//	Don't drop if control center in CSegment.
 int ChooseDropSegment (CObject *objP, int *pbFixedPos, int nDropState)
 {
 	int			nPlayer = 0;
@@ -251,7 +251,7 @@ if (nSegment != -1)
 #endif
 if (nSegment == -1) {
 #if TRACE
-	con_printf (1, "Warning: Unable to find a connected tSegment.  Picking a random one.\n");
+	con_printf (1, "Warning: Unable to find a connected CSegment.  Picking a random one.\n");
 #endif
 	return (d_rand () * gameData.segs.nLastSegment) >> 15;
 	}
@@ -395,7 +395,7 @@ return 0;
 }
 
 //	------------------------------------------------------------------------------------------------------
-//	Return true if current tSegment contains some CObject.
+//	Return true if current CSegment contains some CObject.
 int SegmentContainsObject (int objType, int obj_id, int nSegment)
 {
 	int	nObject;

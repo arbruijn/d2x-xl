@@ -132,7 +132,7 @@ int NetworkCreateMonitorVector (void)
 	int      nBlownBitmaps = 0;
 	int      nMonitor = 0;
 	int      vector = 0;
-	tSegment *segP = gameData.segs.segments;
+	CSegment *segP = gameData.segs.segments;
 	tSide    *sideP;
 	int      h, i, j, k;
 	int      tm, ec;

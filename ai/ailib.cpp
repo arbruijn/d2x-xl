@@ -51,7 +51,7 @@ int ObjectCanSeePlayer (CObject *objP, vmsVector *pos, fix fieldOfView, vmsVecto
 	fix			dot;
 	tFVIQuery	fq;
 
-	//	Assume that robot's gun tip is in same tSegment as robot's center.
+	//	Assume that robot's gun tip is in same CSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 fq.p0	= pos;
 if (((*pos)[X] != objP->info.position.vPos [X]) ||
@@ -97,7 +97,7 @@ int AICanFireAtPlayer (CObject *objP, vmsVector *vGun, vmsVector *vPlayer)
 	fix			nSize, h;
 	short			nModel, ignoreObjs [2] = {OBJ_IDX (gameData.objs.consoleP), -1};
 
-//	Assume that robot's gun tip is in same tSegment as robot's center.
+//	Assume that robot's gun tip is in same CSegment as robot's center.
 if (vGun->IsZero())
 	return 0;
 if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
@@ -264,7 +264,7 @@ if (OBJ_IDX (objP) == nDbgObj) {
 //	Return true if door can be flown through by a suitable nType robot.
 //	Brains, avoid robots, companions can open doors.
 //	objP == NULL means treat as buddy.
-int AIDoorIsOpenable (CObject *objP, tSegment *segP, short nSide)
+int AIDoorIsOpenable (CObject *objP, CSegment *segP, short nSide)
 {
 	short nWall;
 	tWall	*wallP;
@@ -378,7 +378,7 @@ return 0;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Return tSide of openable door in tSegment, if any.  If none, return -1.
+//	Return tSide of openable door in CSegment, if any.  If none, return -1.
 int OpenableDoorsInSegment (short nSegment)
 {
 	ushort	i;
@@ -404,7 +404,7 @@ int OpenableDoorsInSegment (short nSegment)
 }
 
 // -- // --------------------------------------------------------------------------------------------------------------------
-// -- //	Return true if a special CObject (tPlayer or control center) is in this tSegment.
+// -- //	Return true if a special CObject (tPlayer or control center) is in this CSegment.
 // -- int specialObject_in_seg (int nSegment)
 // -- {
 // -- 	int	nObject;
@@ -422,11 +422,11 @@ int OpenableDoorsInSegment (short nSegment)
 // -- }
 
 // -- // --------------------------------------------------------------------------------------------------------------------
-// -- //	Randomly select a tSegment attached to *segP, reachable by flying.
+// -- //	Randomly select a CSegment attached to *segP, reachable by flying.
 // -- int get_random_child (int nSegment)
 // -- {
 // -- 	int	nSide;
-// -- 	tSegment	*segP = &gameData.segs.segments [nSegment];
+// -- 	CSegment	*segP = &gameData.segs.segments [nSegment];
 // --
 // -- 	nSide = (rand () * 6) >> 15;
 // --
@@ -439,10 +439,10 @@ int OpenableDoorsInSegment (short nSegment)
 // -- }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Return true if placing an CObject of size size at pos *pos intersects a (tPlayer or robot or control center) in tSegment *segP.
-int CheckObjectObjectIntersection (vmsVector *pos, fix size, tSegment *segP)
+//	Return true if placing an CObject of size size at pos *pos intersects a (tPlayer or robot or control center) in CSegment *segP.
+int CheckObjectObjectIntersection (vmsVector *pos, fix size, CSegment *segP)
 {
-//	If this would intersect with another CObject (only check those in this tSegment), then try to move.
+//	If this would intersect with another CObject (only check those in this CSegment), then try to move.
 short nObject = segP->objects;
 CObject *objP;
 while (nObject != -1) {

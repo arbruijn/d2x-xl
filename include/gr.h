@@ -304,6 +304,8 @@ typedef struct tFace {
 	struct tFace		*nextSlidingFace;
 	} tFace;
 
+inline int operator- (tFace* f, CArray<tFace>& a) { return a.Index (f); }
+
 typedef struct tDisplayModeInfo {
 	int	VGA_mode;
 	short	w,h;

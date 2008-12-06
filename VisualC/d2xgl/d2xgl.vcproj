@@ -2550,6 +2550,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\effects\shrapnel.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\effects\sparkeffect.cpp"
 						>
 					</File>
@@ -4585,11 +4589,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

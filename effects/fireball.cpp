@@ -731,7 +731,7 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 		if (gameData.walls.explWalls [i].time > EXPL_WALL_TIME)
 			gameData.walls.explWalls [i].time = EXPL_WALL_TIME;
 		if (gameData.walls.explWalls [i].time> (EXPL_WALL_TIME*3)/4) {
-			tSegment *seg = gameData.segs.segments + nSegment,
+			CSegment *seg = gameData.segs.segments + nSegment,
 						*csegp = gameData.segs.segments + seg->children [nSide];
 			ubyte	a = (ubyte) gameData.walls.walls [WallNumP (seg, nSide)].nClip;
 			short n = AnimFrameCount (gameData.walls.animP + a);

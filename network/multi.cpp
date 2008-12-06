@@ -1503,7 +1503,7 @@ void MultiDoDoorOpen (char *buf)
 {
 	int nSegment;
 	sbyte tSide;
-	tSegment *segP;
+	CSegment *segP;
 	tWall *wallP;
 	ubyte flag;
 
@@ -2901,7 +2901,7 @@ return -1;
 // override a segments texture with the owning team's textures.
 // if nOldTexture  >= 0, only override textures equal to nOldTexture
 
-void OverrideTextures (tSegment *segP, short nTexture, short nOldTexture, short nTexture2, int bFullBright, int bForce)
+void OverrideTextures (CSegment *segP, short nTexture, short nOldTexture, short nTexture2, int bFullBright, int bForce)
 {
 	int j, v;
 
@@ -2932,7 +2932,7 @@ int Goal_blue_segnum, Goal_red_segnum;
 
 void ChangeSegmentTexture (int nSegment, int oldOwner)
 {
-	tSegment	*segP = gameData.segs.segments + nSegment;
+	CSegment	*segP = gameData.segs.segments + nSegment;
 	tSegment2 *seg2P = gameData.segs.segment2s + nSegment;
 	xsegment *xSegP = gameData.segs.xSegments + nSegment;
 	int		bFullBright = ((gameData.app.nGameMode & GM_HOARD) != 0) || ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bBrightenRooms);

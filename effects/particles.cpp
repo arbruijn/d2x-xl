@@ -418,7 +418,7 @@ static vmsVector	*wallNorm;
 
 int CParticle::CollideWithWall (void)
 {
-	tSegment		*segP;
+	CSegment		*segP;
 	tSide			*sideP;
 	int			bInit, nSide, nVert, nChild, nFace, nInFront;
 	fix			nDist;

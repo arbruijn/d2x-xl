@@ -83,19 +83,19 @@ struct me mine_editor;
 
 typedef struct v16_segment {
 	#ifdef EDITOR
-	short   nSegment;             // tSegment number, not sure what it means
+	short   nSegment;             // CSegment number, not sure what it means
 	#endif
 	tSide   sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
 	short   children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
 	short   verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
 	#ifdef  EDITOR
-	short   group;              // group number to which the tSegment belongs.
+	short   group;              // group number to which the CSegment belongs.
 	#endif
-	short   objects;            // pointer to OBJECTS in this tSegment
+	short   objects;            // pointer to OBJECTS in this CSegment
 	ubyte   special;            // what nType of center this is
-	sbyte   nMatCen;         // which center tSegment is associated with.
+	sbyte   nMatCen;         // which center CSegment is associated with.
 	short   value;
-	fix     xAvgSegLight;       // average static light in tSegment
+	fix     xAvgSegLight;       // average static light in CSegment
 	#ifndef EDITOR
 	short   pad;                // make structure longword aligned
 	#endif
@@ -446,7 +446,7 @@ int load_mine_data (CFile& cf)
 	mine_fileinfo.vertex_sizeof     =   sizeof (vmsVector);
 	mine_fileinfo.segment_offset    =   -1;
 	mine_fileinfo.segment_howmany   =   0;
-	mine_fileinfo.segment_sizeof    =   sizeof (tSegment);
+	mine_fileinfo.segment_sizeof    =   sizeof (CSegment);
 	mine_fileinfo.newseg_verts_offset     =   -1;
 	mine_fileinfo.newseg_verts_howmany    =   0;
 	mine_fileinfo.newseg_verts_sizeof     =   sizeof (vmsVector);
@@ -544,7 +544,7 @@ int load_mine_data (CFile& cf)
 	// Set default values
 	mine_editor.current_seg         =   0;
 	mine_editor.newsegment_offset   =   -1; // To be written
-	mine_editor.newsegment_size     =   sizeof (tSegment);
+	mine_editor.newsegment_size     =   sizeof (CSegment);
 	mine_editor.Curside             =   0;
 	mine_editor.Markedsegp          =   -1;
 	mine_editor.Markedside          =   0;
@@ -672,8 +672,8 @@ int load_mine_data (CFile& cf)
 
 		for (i=0; i< mine_fileinfo.segment_howmany; i++ ) {
 
-			// Set the default values for this tSegment (clear to zero )
-			//memset ( &gameData.segs.segments [i], 0, sizeof (tSegment) );
+			// Set the default values for this CSegment (clear to zero )
+			//memset ( &gameData.segs.segments [i], 0, sizeof (CSegment) );
 
 			if (mine_top_fileinfo.fileinfoVersion < 20) {
 				v16_segment v16_seg;
@@ -706,7 +706,7 @@ int load_mine_data (CFile& cf)
 
 			} else  {
 				if (cf.Read (gameData.segs.segments + i, mine_fileinfo.segment_sizeof, 1 )!=1)
-					Error ("Unable to read tSegment %i\n", i);
+					Error ("Unable to read CSegment %i\n", i);
 			}
 
 			SEGMENTS [i].objects = -1;
@@ -767,10 +767,10 @@ int load_mine_data (CFile& cf)
 
 	#ifdef EDITOR
 
-	{		// Default tSegment created.
+	{		// Default CSegment created.
 		vmsVector	sizevec;
 		med_create_new_segment (VmVecMake (&sizevec, DEFAULT_X_SIZE, DEFAULT_Y_SIZE, DEFAULT_Z_SIZE);		// New_segment = gameData.segs.segments [0];
-		//memset ( &New_segment, 0, sizeof (tSegment) );
+		//memset ( &New_segment, 0, sizeof (CSegment) );
 	}
 
 	if (mine_editor.newsegment_offset > -1)
@@ -956,7 +956,7 @@ return 0;
 void LoadSegmentsCompiled (short nSegment, CFile& cf)
 {
 	short			lastSeg, nSide, i;
-	tSegment		*segP;
+	CSegment		*segP;
 	tSegFaces	*segFaceP;
 	tSide			*sideP;
 	short			temp_short;
@@ -1206,7 +1206,7 @@ else {
 	{
 #endif
 #if 0//SHADOWS
-	tSegment	*segP;
+	CSegment	*segP;
 	tSide		*sideP;
 	int		h;
 
@@ -1225,7 +1225,7 @@ else {
 void ComputeSegSideCenters (int nSegment)
 {
 	int			i, j, nSide;
-	tSegment		*segP;
+	CSegment		*segP;
 	tSide			*sideP;
 #if CALC_SEGRADS
 	fix			xSideDists [6], xMinDist, xMaxDist, xDist;
@@ -1423,7 +1423,7 @@ for (i = 0; i < MAX_TEXTURES; i++)
 	tmap_xlate_table [i] = i;
 #endif
 
-//	memset ( gameData.segs.segments, 0, sizeof (tSegment)*MAX_SEGMENTS );
+//	memset ( gameData.segs.segments, 0, sizeof (CSegment)*MAX_SEGMENTS );
 FuelCenReset ();
 //=============================== Reading part ==============================
 nCompiledVersion = cf.ReadByte ();
@@ -1466,7 +1466,7 @@ if (gameData.segs.vMax[Y] < gameData.segs.vertices [i][Y])
 	gameData.segs.vMax[Y] = gameData.segs.vertices [i][Y];
 if (gameData.segs.vMax[Z] < gameData.segs.vertices [i][Z])
 	gameData.segs.vMax[Z] = gameData.segs.vertices [i][Z];
-memset (gameData.segs.segments, 0, MAX_SEGMENTS * sizeof (tSegment));
+memset (gameData.segs.segments, 0, MAX_SEGMENTS * sizeof (CSegment));
 #if TRACE
 con_printf (CONDBG, "   loading segments ...\n");
 #endif

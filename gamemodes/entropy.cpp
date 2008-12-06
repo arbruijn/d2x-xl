@@ -58,7 +58,7 @@ return gameData.entropy.nTotalRooms;
 void ConquerRoom (int newOwner, int oldOwner, int roomId)
 {
 	int			f, h, i, j, jj, k, kk, nObject;
-	tSegment		*segP;
+	CSegment		*segP;
 	xsegment		*xsegP;
 	CObject		*objP;
 	tFuelCenInfo	*fuelP;

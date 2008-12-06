@@ -138,7 +138,7 @@ void MoveAwayFromOtherRobots (CObject *objP, vmsVector& vVecToPlayer)
 	fix				xDist, xAvoidRad;
 	short				nStartSeg, nDestSeg, nObject, nSide, nAvoidObjs;
 	CObject			*avoidObjP;
-	tSegment			*segP;
+	CSegment			*segP;
 	tFVIQuery		fq;
 	tFVIData			hitData;
 	int				hitType;
@@ -457,12 +457,12 @@ return xDistToGoal;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Move the CObject objP to a spot in which it doesn't intersect a tWall.
-//	It might mean moving it outside its current tSegment.
+//	It might mean moving it outside its current CSegment.
 void MoveObjectToLegalSpot (CObject *objP, int bMoveToCenter)
 {
 	vmsVector	vSegCenter, vOrigPos = objP->info.position.vPos;
 	int			i;
-	tSegment		*segP = gameData.segs.segments + objP->info.nSegment;
+	CSegment		*segP = gameData.segs.segments + objP->info.nSegment;
 
 if (bMoveToCenter) {
 	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->info.nSegment);
@@ -500,8 +500,8 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Move CObject one CObject radii from current position towards tSegment center.
-//	If tSegment center is nearer than 2 radii, move it to center.
+//	Move CObject one CObject radii from current position towards CSegment center.
+//	If CSegment center is nearer than 2 radii, move it to center.
 fix MoveTowardsPoint (CObject *objP, vmsVector *vGoal, fix xMinDist)
 {
 	fix			xDistToGoal;
@@ -543,8 +543,8 @@ return xDistToGoal;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Move CObject one CObject radii from current position towards tSegment center.
-//	If tSegment center is nearer than 2 radii, move it to center.
+//	Move CObject one CObject radii from current position towards CSegment center.
+//	If CSegment center is nearer than 2 radii, move it to center.
 fix MoveTowardsSegmentCenter (CObject *objP)
 {
 	vmsVector	vSegCenter;

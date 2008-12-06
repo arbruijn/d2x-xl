@@ -689,7 +689,7 @@ int SpecialCheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, sh
 	int			h, nFaces, nEdge;
 	uint			nEdgeMask;
 	vmsVector	*edge_v0, *edge_v1, edge_vec;
-	tSegment		*segP = gameData.segs.segments + nSegment;
+	CSegment		*segP = gameData.segs.segments + nSegment;
 	vmsVector	closest_point_edge, closest_point_move;
 
 if (bSimpleFVI) {
@@ -1027,13 +1027,13 @@ return (t == nObject);
 
 #define FVI_NEWCODE 2
 
-int CheckTransWall (vmsVector *vPoint, tSegment *segP, short nSide, short iFace);
+int CheckTransWall (vmsVector *vPoint, CSegment *segP, short nSide, short iFace);
 
 int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, vmsVector *p1,
 					 fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList,
 					 short *nSegments, int nEntrySeg)
 {
-	tSegment		*segP;				//the tSegment we're looking at
+	CSegment		*segP;				//the CSegment we're looking at
 	int			startMask, endMask, centerMask;	//mask of faces
 	short			nObject, nFirstObj, nSegment, nSegObjs;
 	tSegMasks	masks;
@@ -1064,7 +1064,7 @@ if (flags & FQ_GET_SEGLIST)
 	*segList = nStartSeg;
 *nSegments = 1;
 gameData.collisions.hitData.nNestCount++;
-//first, see if vector hit any objects in this tSegment
+//first, see if vector hit any objects in this CSegment
 nThisType = (nThisObject < 0) ? -1 : OBJECTS [nThisObject].info.nType;
 #if 1
 if (flags & FQ_CHECK_OBJS) {
@@ -1218,7 +1218,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 				short			subHitSeg, nSaveHitObj = gameData.collisions.hitData.nObject;
 				vmsVector	subHitPoint, vSaveWallNorm = gameData.collisions.hitData.vNormal;
 
-				//do the check recursively on the next tSegment.p.
+				//do the check recursively on the next CSegment.p.
 				nNewSeg = segP->children [nSide];
 				//PrintLog ("   check next seg (%d)\n", nNewSeg);
 				for (i = 0; i < gameData.collisions.nSegsVisited && (nNewSeg != gameData.collisions.segsVisited [i]); i++)
@@ -1311,7 +1311,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 						gameData.collisions.hitData.nNormals++;
 #endif
 						if (!GetSegMasks (vHitPoint, nStartSeg, radP1).centerMask)
-							nHitSegment = nStartSeg;             //hit in this tSegment
+							nHitSegment = nStartSeg;             //hit in this CSegment
 						else
 							gameData.collisions.hitData.nSegment2 = nStartSeg;
 						gameData.collisions.hitData.nSegment = nHitSegment;
@@ -1401,7 +1401,7 @@ gameData.collisions.hitData.nObject = -1;
 //check to make sure start point is in seg its supposed to be in
 //Assert(check_point_in_seg(p0, startseg, 0).centerMask==0);	//start point not in seg
 
-// gameData.objs.viewerP is not in tSegment as claimed, so say there is no hit.
+// gameData.objs.viewerP is not in CSegment as claimed, so say there is no hit.
 masks = GetSegMasks (*fq->p0, fq->startSeg, 0);
 if (masks.centerMask) {
 	hitData->hit.nType = HIT_BAD_P0;
@@ -1470,7 +1470,7 @@ return nHitType;
 //	-----------------------------------------------------------------------------
 //finds the uv coords of the given point on the given seg & side
 //fills in u & v. if l is non-NULL fills it in also
-void FindHitPointUV (fix *u, fix *v, fix *l, vmsVector *pnt, tSegment *segP, int nSide, int iFace)
+void FindHitPointUV (fix *u, fix *v, fix *l, vmsVector *pnt, CSegment *segP, int nSide, int iFace)
 {
 	vmsVector	*vPoints;
 	vmsVector	vNormals;
@@ -1627,7 +1627,7 @@ return 0;
 //	-----------------------------------------------------------------------------
 //check if a particular point on a tWall is a transparent pixel
 //returns 1 if can pass though the tWall, else 0
-int CheckTransWall (vmsVector *pnt, tSegment *segP, short nSide, short iFace)
+int CheckTransWall (vmsVector *pnt, CSegment *segP, short nSide, short iFace)
 {
 	tSide *sideP = segP->sides + nSide;
 	fix	u, v;
@@ -1658,7 +1658,7 @@ return nTranspType;
 int SphereIntersectsWall (vmsVector *vPoint, short nSegment, fix rad)
 {
 	int		faceMask;
-	tSegment *segP;
+	CSegment *segP;
 
 if (nSegment == -1) {
 	Error("nSegment == -1 in SphereIntersectsWall()");

@@ -197,7 +197,7 @@ for (i = 0; i < 4; i++, xSize -= xSize2)
 CreateSphere (&sd);
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft) * 3);
 r = X2F (xSize);
-sd.pPulse = 0;
+sd.pulseP = 0;
 G3StartInstanceMatrix(objP->info.position.vPos, &objP->info.position.mOrient);
 for (i = 0; i < 3; i++) {
 	RenderSphere (&sd, reinterpret_cast<tOOF_vector*> (OOF_VecVms2Oof (&p, &objP->info.position.vPos)),

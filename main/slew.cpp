@@ -162,7 +162,7 @@ int do_slew_movement(CObject *objP, int check_keys, int check_joy )
 	moved |= (movement[X] || movement[Y] || movement[Z]);
 
 	if (moved)
-		UpdateObjectSeg(objP);	//update tSegment id
+		UpdateObjectSeg(objP);	//update CSegment id
 
 	return moved;
 }

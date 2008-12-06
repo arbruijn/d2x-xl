@@ -84,7 +84,7 @@ curSegP->point = vCenter - vPoint;
 nSegment = FindSegByPos (curSegP->point, succSegP->nSegment, 1, 0);
 if (nSegment == -1) {
 #if TRACE
-	con_printf (1, "Warning: point not in ANY tSegment in aipath.c/InsertCenterPoints().\n");
+	con_printf (1, "Warning: point not in ANY CSegment in aipath.c/InsertCenterPoints().\n");
 #endif
 	curSegP->point = vCenter;
 	FindSegByPos (curSegP->point, succSegP->nSegment, 1, 0);
@@ -246,7 +246,7 @@ for (i = 1, --j; i < j; i++) {
 				vGoalPos = ptSegs [i].point;
 			}
 		}
-	//	Only move towards outside if remained inside tSegment.
+	//	Only move towards outside if remained inside CSegment.
 	nNewSeg = FindSegByPos (vGoalPos, ptSegs [i].nSegment, 1, 0);
 	if (nNewSeg == ptSegs [i].nSegment) {
 		newPtSegs [i].point = vGoalPos;
@@ -287,7 +287,7 @@ int CreatePathPoints (CObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	sbyte				randomXlate [MAX_SIDES_PER_SEGMENT];
 	tPointSeg		*origPointSegs = pointSegP;
 	int				lNumPoints;
-	tSegment			*segP;
+	CSegment			*segP;
 	vmsVector		vCenter;
 	int				nParentSeg, nDestSeg;
 	tFVIQuery		fq;
@@ -309,7 +309,7 @@ if (nMaxDepth == -1)
 lNumPoints = 0;
 memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nLastSegment + 1));
 memset (depth, 0, sizeof (depth [0]) * (gameData.segs.nLastSegment + 1));
-//	If there is a tSegment we're not allowed to visit, mark it.
+//	If there is a CSegment we're not allowed to visit, mark it.
 if (nAvoidSeg != -1) {
 	Assert (nAvoidSeg <= gameData.segs.nLastSegment);
 	if ((nStartSeg != nAvoidSeg) && (nEndSeg != nAvoidSeg)) {
@@ -385,7 +385,7 @@ while (nCurSeg != nEndSeg) {
 
 pathTooLong: ;
 	}	//	while (nCurSeg ...
-//	Set qTail to the tSegment which ends at the goal.
+//	Set qTail to the CSegment which ends at the goal.
 while (segmentQ [--qTail].end != nEndSeg)
 	if (qTail < 0) {
 		*numPoints = lNumPoints;
@@ -444,7 +444,7 @@ ValidatePath (3, origPointSegs, lNumPoints);
 #endif
 
 // -- MK, 10/30/95 -- This code causes apparent discontinuities in the path, moving a point
-//	into a new tSegment.  It is not necessarily bad, but it makes it hard to track down actual
+//	into a new CSegment.  It is not necessarily bad, but it makes it hard to track down actual
 //	discontinuity xProblems.
 if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).companion)
 	MoveTowardsOutside (origPointSegs, &lNumPoints, objP, 0);
@@ -586,7 +586,7 @@ FORALL_ROBOT_OBJS (objP, i) {
 #endif
 
 // -- //	-------------------------------------------------------------------------------------------------------
-// -- //	Creates a path from the OBJECTS current tSegment (objP->info.nSegment) to the specified tSegment for the CObject to
+// -- //	Creates a path from the OBJECTS current CSegment (objP->info.nSegment) to the specified CSegment for the CObject to
 // -- //	hide in gameData.ai.localInfo [nObject].nGoalSegment.
 // -- //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 // -- //			objP->cType.aiInfo.nPathLength, 		length of path
@@ -627,7 +627,7 @@ FORALL_ROBOT_OBJS (objP, i) {
 // -- }
 
 //	-------------------------------------------------------------------------------------------------------
-//	Creates a path from the OBJECTS current tSegment (objP->info.nSegment) to the specified tSegment for the CObject to
+//	Creates a path from the OBJECTS current CSegment (objP->info.nSegment) to the specified CSegment for the CObject to
 //	hide in gameData.ai.localInfo [nObject].nGoalSegment.
 //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 //			objP->cType.aiInfo.nPathLength, 		length of path
@@ -669,7 +669,7 @@ MaybeAIPathGarbageCollect ();
 }
 
 //	-------------------------------------------------------------------------------------------------------
-//	Creates a path from the CObject's current tSegment (objP->info.nSegment) to tSegment goalseg.
+//	Creates a path from the CObject's current CSegment (objP->info.nSegment) to CSegment goalseg.
 void CreatePathToSegment (CObject *objP, short goalseg, int nMaxDepth, int bSafeMode)
 {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
@@ -700,7 +700,7 @@ MaybeAIPathGarbageCollect ();
 }
 
 //	-------------------------------------------------------------------------------------------------------
-//	Creates a path from the OBJECTS current tSegment (objP->info.nSegment) to the specified tSegment for the CObject to
+//	Creates a path from the OBJECTS current CSegment (objP->info.nSegment) to the specified CSegment for the CObject to
 //	hide in gameData.ai.localInfo [nObject].nGoalSegment
 //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 //			objP->cType.aiInfo.nPathLength, 		length of path
@@ -836,12 +836,12 @@ objP->info.position.vPos = *vGoalPoint;
 nSegment = FindObjectSeg (objP);
 #if TRACE
 if (nSegment != nGoalSeg)
-	con_printf (1, "Object #%i goal supposed to be in tSegment #%i, but in tSegment #%i\n", OBJ_IDX (objP), nGoalSeg, nSegment);
+	con_printf (1, "Object #%i goal supposed to be in CSegment #%i, but in CSegment #%i\n", OBJ_IDX (objP), nGoalSeg, nSegment);
 #endif
 if (nSegment == -1) {
-	Int3 ();	//	Oops, CObject is not in any tSegment.
+	Int3 ();	//	Oops, CObject is not in any CSegment.
 				// Contact Mike: This is impossible.p.
-	//	Hack, move CObject to center of tSegment it used to be in.
+	//	Hack, move CObject to center of CSegment it used to be in.
 	COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, objP->info.nSegment);
 	}
 else
@@ -918,7 +918,7 @@ if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.freePointSegs - gameData.a
 if (aiP->nPathLength < 2) {
 	if ((aiP->behavior == AIB_SNIPE) || (ailP->mode == AIM_RUN_FROM_OBJECT)) {
 		if (gameData.objs.consoleP->info.nSegment == objP->info.nSegment) {
-			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, -1);			//	Can't avoid tSegment tPlayer is in, robot is already in it!(That's what the -1 is for)
+			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, -1);			//	Can't avoid CSegment tPlayer is in, robot is already in it!(That's what the -1 is for)
 			//--Int3_if ((aiP->nPathLength != 0);
 			}
 		else {
@@ -1359,7 +1359,7 @@ if ((aiP->behavior == AIB_STATION) && (ROBOTINFO (objP->info.nId).companion != 1
 //Int3 ();
 		ailP->mode = AIM_IDLING;
 #if TRACE
-		con_printf (1, "Note: Bashing hide tSegment of robot %i to current tSegment because he's lost.\n", OBJ_IDX (objP));
+		con_printf (1, "Note: Bashing hide CSegment of robot %i to current CSegment because he's lost.\n", OBJ_IDX (objP));
 #endif
 		}
 
@@ -1641,7 +1641,7 @@ void player_follow_path (CObject *objP)
 
 
 //	------------------------------------------------------------------------------------------------------------------
-//	Create path for tPlayer from current tSegment to goal tSegment.
+//	Create path for tPlayer from current CSegment to goal CSegment.
 void create_player_path_to_segment (int nSegment)
 {
 	CObject		*objP = gameData.objs.consoleP;

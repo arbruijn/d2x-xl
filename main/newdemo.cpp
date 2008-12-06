@@ -89,7 +89,7 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_PLAYER_SHIELD      18  // followed by byte shields
 #define ND_EVENT_PLAYER_FLAGS       19  // followed by tPlayer flags
 #define ND_EVENT_PLAYER_WEAPON      20  // followed by weapon nType and weapon number
-#define ND_EVENT_EFFECT_BLOWUP      21  // followed by tSegment, nSide, and pnt
+#define ND_EVENT_EFFECT_BLOWUP      21  // followed by CSegment, nSide, and pnt
 #define ND_EVENT_HOMING_DISTANCE    22  // followed by homing distance
 #define ND_EVENT_LETTERBOX          23  // letterbox mode for death seq.
 #define ND_EVENT_RESTORE_COCKPIT    24  // restore cockpit after death
@@ -109,7 +109,7 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_PLAYER_SCORE       38  // followed by score
 #define ND_EVENT_PRIMARY_AMMO       39  // with old/new ammo count
 #define ND_EVENT_SECONDARY_AMMO     40  // with old/new ammo count
-#define ND_EVENT_DOOR_OPENING       41  // with tSegment/nSide
+#define ND_EVENT_DOOR_OPENING       41  // with CSegment/nSide
 #define ND_EVENT_LASER_LEVEL        42
   // no data
 #define ND_EVENT_PLAYER_AFTERBURNER 43  // followed by byte old ab, current ab
@@ -1296,11 +1296,11 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordEffectBlowup (short tSegment, int nSide, vmsVector *pnt)
+void NDRecordEffectBlowup (short CSegment, int nSide, vmsVector *pnt)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_EFFECT_BLOWUP);
-NDWriteShort (tSegment);
+NDWriteShort (CSegment);
 NDWriteByte ((sbyte)nSide);
 NDWriteVector(*pnt);
 StartTime (0);
@@ -1554,7 +1554,7 @@ void NDSetNewLevel (int level_num)
 {
 	int i;
 	int nSide;
-	tSegment *segP;
+	CSegment *segP;
 
 StopTime ();
 NDWriteByte (ND_EVENT_NEW_LEVEL);
@@ -1704,7 +1704,7 @@ void NDPopCtrlCenTriggers ()
 {
 	short		anim_num, n, i;
 	short		side, nConnSide;
-	tSegment *segP, *connSegP;
+	CSegment *segP, *connSegP;
 
 for (i = 0; i < gameData.reactor.triggers.nLinks; i++) {
 	segP = gameData.segs.segments + gameData.reactor.triggers.nSegment [i];
@@ -1761,7 +1761,7 @@ int NDReadFrameInfo ()
 	static sbyte saved_rearview_cockpit;
 	CObject extraobj;
 	static char LastReadValue=101;
-	tSegment *segP;
+	CSegment *segP;
 
 bDone = 0;
 nTag = 255;
@@ -1818,9 +1818,9 @@ while (!bDone) {
 					gameData.objs.viewerP->info.nSegment = -1;
 
 					// HACK HACK HACK -- since we have multiple level recording, it can be the case
-					// HACK HACK HACK -- that when rewinding the demo, the viewer is in a tSegment
+					// HACK HACK HACK -- that when rewinding the demo, the viewer is in a CSegment
 					// HACK HACK HACK -- that is greater than the highest index of segments.  Bash
-					// HACK HACK HACK -- the viewer to tSegment 0 for bogus view.
+					// HACK HACK HACK -- the viewer to CSegment 0 for bogus view.
 
 					if (nSegment > gameData.segs.nLastSegment)
 						nSegment = 0;
@@ -2485,7 +2485,7 @@ while (!bDone) {
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				int anim_num;
 				int nConnSide;
-				tSegment *segP, *oppSegP;
+				CSegment *segP, *oppSegP;
 
 				segP = gameData.segs.segments + nSegment;
 				oppSegP = gameData.segs.segments + segP->children [nSide];
@@ -2525,7 +2525,7 @@ while (!bDone) {
 		case ND_EVENT_CLOAKING_WALL: {
 			ubyte nBackWall, nFrontWall, nType, state, cloakValue;
 			short l0, l1, l2, l3;
-			tSegment *segP;
+			CSegment *segP;
 			int nSide;
 
 			nFrontWall = NDReadByte ();

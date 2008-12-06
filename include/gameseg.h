@@ -32,10 +32,10 @@ typedef struct tSegMasks {
 } tSegMasks;
 
 
-void ComputeSideCenter (vmsVector *vp,tSegment *sp,int tSide);
+void ComputeSideCenter (vmsVector *vp,CSegment *sp,int tSide);
 void ComputeSideRads (short nSegment, short tSide, fix *prMin, fix *prMax);
-void ComputeSegmentCenter (vmsVector *vp,tSegment *sp);
-int FindConnectedSide (tSegment *base_seg, tSegment *con_seg);
+void ComputeSegmentCenter (vmsVector *vp,CSegment *sp);
+int FindConnectedSide (CSegment *base_seg, CSegment *con_seg);
 
 #define	SEGMENT_CENTER_I(_nSeg)	(gameData.segs.segCenters [0] + (_nSeg))
 
@@ -73,7 +73,7 @@ ubyte GetSideDistsAll (const vmsVector& checkp, int nSegment, fix *xSideDists);
 //      If there is one face, it has 4 vertices.
 //      If there are two faces, they both have three vertices, so face #0 is stored in vertices 0,1,2,
 //      face #1 is stored in vertices 3,4,5.
-// Note: these are not absolute vertex numbers, but are relative to the tSegment
+// Note: these are not absolute vertex numbers, but are relative to the CSegment
 // Note:  for triagulated sides, the middle vertex of each trianle is the one NOT
 //   adjacent on the diagonal edge
 void CreateAllVertexLists (int *num_faces, int *vertices, int nSegment, int nSide);
@@ -93,7 +93,7 @@ void CreateAllVertNumLists(int *num_faces, int *vertnums, int nSegment, int nSid
 extern int GetNumFaces(tSide *sidep);
 
 //returns 3 different bitmasks with info telling if this sphere is in
-//this tSegment.  See tSegMasks structure for info on fields
+//this CSegment.  See tSegMasks structure for info on fields
 tSegMasks GetSideMasks (vmsVector *checkP, int nSegment, int nSide, fix xRad);
 
 tSegMasks GetSegMasks(const vmsVector& checkp,int nSegment,fix rad);
@@ -101,8 +101,8 @@ tSegMasks GetSegMasks(const vmsVector& checkp,int nSegment,fix rad);
 //this macro returns true if the nSegment for an CObject is correct
 #define check_obj_seg(obj) (GetSegMasks(&(obj)->pos,(obj)->nSegment,0).centermask == 0)
 
-//Tries to find a tSegment for a point, in the following way:
-// 1. Check the given tSegment
+//Tries to find a CSegment for a point, in the following way:
+// 1. Check the given CSegment
 // 2. Recursively trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
@@ -118,39 +118,39 @@ int check_lsegments_validity(void);
 
 //      ----------------------------------------------------------------------------------------------------------
 //      Determine whether seg0 and seg1 are reachable using widFlag to go through walls.
-//      For example, set to WID_RENDPAST_FLAG to see if sound can get from one tSegment to the other.
+//      For example, set to WID_RENDPAST_FLAG to see if sound can get from one CSegment to the other.
 //      set to WID_FLY_FLAG to see if a robot could fly from one to the other.
 //      Search up to a maximum depth of max_depth.
 //      Return the distance.
 fix FindConnectedDistance(vmsVector *p0, short seg0, vmsVector *p1, short seg1, int max_depth, int widFlag, int bUseCache);
 
-//create a matrix that describes the orientation of the given tSegment
-void ExtractOrientFromSegment(vmsMatrix *m,tSegment *seg);
+//create a matrix that describes the orientation of the given CSegment
+void ExtractOrientFromSegment(vmsMatrix *m,CSegment *seg);
 
-//      In tSegment.c
-//      Make a just-modified tSegment valid.
+//      In CSegment.c
+//      Make a just-modified CSegment valid.
 //              check all sides to see how many faces they each should have (0,1,2)
 //              create new vector normals
-void ValidateSegment(tSegment *sp);
+void ValidateSegment(CSegment *sp);
 
 void ValidateSegmentAll(void);
 
-//      Extract the forward vector from tSegment *sp, return in *vp.
-//      The forward vector is defined to be the vector from the the center of the front face of the tSegment
-// to the center of the back face of the tSegment.
-void extract_forward_vector_from_segment(tSegment *sp,vmsVector *vp);
+//      Extract the forward vector from CSegment *sp, return in *vp.
+//      The forward vector is defined to be the vector from the the center of the front face of the CSegment
+// to the center of the back face of the CSegment.
+void extract_forward_vector_from_segment(CSegment *sp,vmsVector *vp);
 
-//      Extract the right vector from tSegment *sp, return in *vp.
-//      The forward vector is defined to be the vector from the the center of the left face of the tSegment
-// to the center of the right face of the tSegment.
-void extract_right_vector_from_segment(tSegment *sp,vmsVector *vp);
+//      Extract the right vector from CSegment *sp, return in *vp.
+//      The forward vector is defined to be the vector from the the center of the left face of the CSegment
+// to the center of the right face of the CSegment.
+void extract_right_vector_from_segment(CSegment *sp,vmsVector *vp);
 
-//      Extract the up vector from tSegment *sp, return in *vp.
-//      The forward vector is defined to be the vector from the the center of the bottom face of the tSegment
-// to the center of the top face of the tSegment.
-void extract_up_vector_from_segment(tSegment *sp,vmsVector *vp);
+//      Extract the up vector from CSegment *sp, return in *vp.
+//      The forward vector is defined to be the vector from the the center of the bottom face of the CSegment
+// to the center of the top face of the CSegment.
+void extract_up_vector_from_segment(CSegment *sp,vmsVector *vp);
 
-void CreateWallsOnSide(tSegment *sp, int nSide);
+void CreateWallsOnSide(CSegment *sp, int nSide);
 
 void PickRandomPointInSeg(vmsVector *new_pos, int nSegment);
 

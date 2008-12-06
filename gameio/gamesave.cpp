@@ -74,7 +74,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //version 28->29  ??
 //version 29->30  changed tTrigger structure
 //version 30->31  changed tTrigger structure some more
-//version 31->32  change tSegment structure, make it 512 bytes w/o editor, add gameData.segs.segment2s array.
+//version 31->32  change CSegment structure, make it 512 bytes w/o editor, add gameData.segs.segment2s array.
 
 #define MENU_CURSOR_X_MIN       MENU_X
 #define MENU_CURSOR_X_MAX       MENU_X+6
@@ -1959,7 +1959,7 @@ int saveLevel_sub(char * filename, int compiledVersion)
 
 	compressObjects();		//after this, gameData.objs.nLastObject [0] == num OBJECTS
 
-	//make sure tPlayer is in a tSegment
+	//make sure tPlayer is in a CSegment
 	if (!UpdateObjectSeg(OBJECTS + gameData.multiplayer.players [0].nObject)) {
 		if (gameData.objs.consoleP->info.nSegment > gameData.segs.nLastSegment)
 			gameData.objs.consoleP->info.nSegment = 0;

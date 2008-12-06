@@ -624,7 +624,7 @@ switch (objP->info.nType) {
 //	-----------------------------------------------------------------------------
 //if an effect is hit, and it can blow up, then blow it up
 //returns true if it blew up
-int CheckEffectBlowup (tSegment *segP, short nSide, vmsVector *pnt, CObject *blower, int bForceBlowup)
+int CheckEffectBlowup (CSegment *segP, short nSide, vmsVector *pnt, CObject *blower, int bForceBlowup)
 {
 	int			tm, tmf, ec, nBitmap = 0;
 	int			nWall, nTrigger;
@@ -684,7 +684,7 @@ if (IsMultiGame && netGame.bIndestructibleLights && !nSwitchType)
 	return 0;
 //note: this must get called before the texture changes,
 //because we use the light value of the texture to change
-//the static light in the tSegment
+//the static light in the CSegment
 nWall = WallNumP (segP, nSide);
 bPermaTrigger =
 	IS_WALL (nWall) &&
@@ -788,7 +788,7 @@ return 0;
 
 int CollideWeaponAndWall (CObject *weaponP, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector * vHitPt)
 {
-	tSegment		*segP = gameData.segs.segments + nHitSeg;
+	CSegment		*segP = gameData.segs.segments + nHitSeg;
 	tSide			*sideP = segP->sides + nHitWall;
 	tWeaponInfo *wInfoP = gameData.weapons.info + weaponP->info.nId;
 	CObject		*wObjP = OBJECTS + weaponP->cType.laserInfo.parent.nObject;
@@ -840,7 +840,7 @@ if (gameStates.input.keys.pressed [KEY_LAPOSTRO])
 	if (weaponP->cType.laserInfo.parent.nObject == LOCALPLAYER.nObject) {
 		//	MK: Real pain when you need to know a segP:tSide and you've got quad lasers.
 #if TRACE
-		con_printf (CONDBG, "Your laser hit at tSegment = %i, tSide = %i \n", nHitSeg, nHitWall);
+		con_printf (CONDBG, "Your laser hit at CSegment = %i, tSide = %i \n", nHitSeg, nHitWall);
 #endif
 		//HUDInitMessage ("Hit at segment = %i, side = %i", nHitSeg, nHitWall);
 		if (weaponP->info.nId < 4)
@@ -1374,7 +1374,7 @@ if (robotP->info.nFlags & OF_EXPLODING)
 	return 0;
 if (robotP->info.xShields < 0)
 	return 0;	//robotP already dead...
-if (gameData.time.xGame - robotP->xCreationTime < F1_0)
+if (gameData.time.xGame - robotP->CreationTime () < F1_0)
 	return 0;
 if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
 	// guidebot may kill other bots
@@ -1397,7 +1397,7 @@ if (ROBOTINFO (robotP->info.nId).companion) {
 		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
 		return 0;
 	}
-robotP->xTimeLastHit = gameStates.app.nSDLTicks;
+robotP->TimeLastHit () = gameStates.app.nSDLTicks;
 robotP->info.xShields -= damage;
 //	Do unspeakable hacks to make sure tPlayer doesn't die after killing boss.  Or before, sort of.
 if (bIsBoss) {
@@ -1999,7 +1999,7 @@ int CollidePlayerAndMatCen (CObject *objP)
 {
 	short	tSide;
 	vmsVector	exit_dir;
-	tSegment	*segp = gameData.segs.segments + objP->info.nSegment;
+	CSegment	*segp = gameData.segs.segments + objP->info.nSegment;
 
 DigiLinkSoundToPos (SOUND_PLAYER_GOT_HIT, objP->info.nSegment, 0, &objP->info.position.vPos, 0, F1_0);
 //	DigiPlaySample (SOUND_PLAYER_GOT_HIT, F1_0);
@@ -2031,7 +2031,7 @@ int CollideRobotAndMatCen (CObject *objP)
 {
 	short	tSide;
 	vmsVector	exit_dir;
-	tSegment *segp=gameData.segs.segments + objP->info.nSegment;
+	CSegment *segp=gameData.segs.segments + objP->info.nSegment;
 
 DigiLinkSoundToPos (SOUND_ROBOT_HIT, objP->info.nSegment, 0, &objP->info.position.vPos, 0, F1_0);
 //	DigiPlaySample (SOUND_ROBOT_HIT, F1_0);

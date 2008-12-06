@@ -128,7 +128,7 @@ int CreateNewWeapon(vmsVector * direction, vmsVector * position, short nSegment,
 extern int LaserFireObject(short nObject, ubyte weapon_id, int level, int flags, int nfires);
 
 // Easier to call than CreateNewWeapon because it determines the
-// tSegment containing the firing point and deals with it being stuck
+// CSegment containing the firing point and deals with it being stuck
 // in an CObject or through a tWall.
 // Fires a laser of nType "weaponType" from an CObject (parent) in the
 // direction "direction" from the position "position"

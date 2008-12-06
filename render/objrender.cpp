@@ -294,7 +294,7 @@ return fScale;
 
 void DrawObjectBlob (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
 {
-	CBitmap	*bmP;
+	CBitmap		*bmP;
 	tRgbaColorf	color;
 	int			nType = objP->info.nType;
 	int			nId = objP->info.nId;
@@ -948,7 +948,7 @@ switch (objP->info.renderType) {
 				if (gameData.objs.bIsMissile [objP->info.nId]) {	//make missiles smaller during launch
 					if ((objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
 						 (gameData.models.g3Models [1][108].bValid > 0)) {	//hires player ship
-						float dt = X2F (gameData.time.xGame - objP->xCreationTime);
+						float dt = X2F (gameData.time.xGame - objP->CreationTime ());
 
 						if (dt < 1) {
 							fix xScale = (fix) (F1_0 + F1_0 * dt * dt) / 2;

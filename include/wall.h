@@ -211,23 +211,23 @@ extern char pszWallNames[7][10];
 
 //#define WALL_IS_DOORWAY(seg,tSide) WallIsDoorWay(seg, tSide)
 
-extern int WALL_IS_DOORWAY (tSegment *segP, short nSide, CObject *objP);
+extern int WALL_IS_DOORWAY (CSegment *segP, short nSide, CObject *objP);
 
 // Initializes all walls (i.e. no special walls.)
 void WallInit();
 
 // Automatically checks if a there is a doorway (i.e. can fly through)
-int WallIsDoorWay (tSegment *segP, short nSide, CObject *objP );
+int WallIsDoorWay (CSegment *segP, short nSide, CObject *objP );
 
 // Deteriorate appearance of tWall. (Changes bitmap (paste-ons))
-void WallDamage(tSegment *segP, short nSide, fix damage);
+void WallDamage(CSegment *segP, short nSide, fix damage);
 
 // Destroys a blastable tWall. (So it is an opening afterwards)
-void WallDestroy(tSegment *segP, short nSide);
+void WallDestroy(CSegment *segP, short nSide);
 
-void WallIllusionOn(tSegment *segP, short nSide);
+void WallIllusionOn(CSegment *segP, short nSide);
 
-void WallIllusionOff(tSegment *segP, short nSide);
+void WallIllusionOff(CSegment *segP, short nSide);
 
 // Opens a door, including animation and other processing.
 void DoDoorOpen(int nDoor);
@@ -236,10 +236,10 @@ void DoDoorOpen(int nDoor);
 void DoDoorClose(int nDoor);
 
 // Opens a door
-void WallOpenDoor(tSegment *segP, short nSide);
+void WallOpenDoor(CSegment *segP, short nSide);
 
 // Closes a door
-void WallCloseDoor(tSegment *segP, short nSide);
+void WallCloseDoor(CSegment *segP, short nSide);
 
 //return codes for WallHitProcess()
 #define WHP_NOT_SPECIAL     0       //wasn't a quote-tWall-unquote
@@ -251,10 +251,10 @@ int AnimFrameCount (tWallClip *anim);
 
 // Determines what happens when a tWall is shot
 //obj is the CObject that hit...either a weapon or the tPlayer himself
-extern int WallHitProcess(tSegment *segP, short nSide, fix damage, int playernum, CObject *obj );
+extern int WallHitProcess(CSegment *segP, short nSide, fix damage, int playernum, CObject *obj );
 
 // Opens/destroys specified door.
-void WallToggle(tSegment *segP, short nSide);
+void WallToggle(CSegment *segP, short nSide);
 
 // Tidy up Walls array for load/save purposes.
 void ResetWalls();
@@ -272,18 +272,18 @@ void AddStuckObject (CObject *objP, short nSegment, short nSide);
 void RemoveObsoleteStuckObjects(void);
 
 //set the tmap_num or tmap_num2 field for a tWall/door
-void WallSetTMapNum(tSegment *segP,short nSide,tSegment *csegp, short cside,int anim_num,int nFrame);
+void WallSetTMapNum(CSegment *segP,short nSide,CSegment *csegp, short cside,int anim_num,int nFrame);
 
 void InitDoorAnims (void);
-int AnimateOpeningDoor (tSegment *segP, short nSide, fix xElapsedTime);
-void BlastBlastableWall (tSegment *segP, short nSide);
+int AnimateOpeningDoor (CSegment *segP, short nSide, fix xElapsedTime);
+void BlastBlastableWall (CSegment *segP, short nSide);
 
 // Remove any flares from a tWall
 void KillStuckObjects(int nWall);
 
 //start tWall open <-> closed transitions
-void StartWallCloak(tSegment *segP, short nSide);
-void StartWallDecloak(tSegment *segP, short nSide);
+void StartWallCloak(CSegment *segP, short nSide);
+void StartWallDecloak(CSegment *segP, short nSide);
 
 bool WallIsTriggerTarget (short nWall);
 bool WallIsVolatile (short nWall);

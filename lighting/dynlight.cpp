@@ -668,9 +668,9 @@ memset (&gameData.render.lights.dynamic.headlights, 0, sizeof (gameData.render.l
 if (gameOpts->render.nLightingMethod)
 	memset (gameData.render.color.vertices, 0, sizeof (*gameData.render.color.vertices) * MAX_VERTICES);
 //memset (gameData.render.color.ambient, 0, sizeof (*gameData.render.color.ambient) * MAX_VERTICES);
-pSegLights = gameData.render.lights.dynamic.nNearestSegLights;
+pSegLights = gameData.render.lights.dynamic.nearestSegLights;
 pVertLights = gameData.render.lights.dynamic.nNearestVertLights;
-pVariableLights = gameData.render.lights.dynamic.nVariableVertLights;
+pVariableLights = gameData.render.lights.dynamic.variableVertLights;
 pOwners = gameData.render.lights.dynamic.owners;
 memset (&gameData.render.lights.dynamic, 0xff, sizeof (gameData.render.lights.dynamic));
 memset (&gameData.render.lights.dynamic.shader, 0, sizeof (gameData.render.lights.dynamic.shader));
@@ -678,9 +678,9 @@ memset (&gameData.render.lights.dynamic.shader.activeLights, 0, sizeof (gameData
 memset (pSegLights, 0xff, sizeof (*pSegLights) * MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
 memset (pVertLights, 0xff, sizeof (*pVertLights) * MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
 memset (pOwners, 0xff, sizeof (*pOwners) * MAX_OBJECTS);
-gameData.render.lights.dynamic.nNearestSegLights = pSegLights;
+gameData.render.lights.dynamic.nearestSegLights = pSegLights;
 gameData.render.lights.dynamic.nNearestVertLights = pVertLights;
-gameData.render.lights.dynamic.nVariableVertLights = pVariableLights;
+gameData.render.lights.dynamic.variableVertLights = pVariableLights;
 gameData.render.lights.dynamic.owners = pOwners;
 gameData.render.lights.dynamic.nLights =
 gameData.render.lights.dynamic.nVariable = 0;
@@ -907,7 +907,7 @@ return h;
 
 void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread)
 {
-if (bStatic || gameData.render.lights.dynamic.nVariableVertLights [nVertex]) {
+if (bStatic || gameData.render.lights.dynamic.variableVertLights [nVertex]) {
 	PROF_START
 	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
@@ -1033,7 +1033,7 @@ void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread
 	static short nActiveLights [4] = {-1, -1, -1, -1};
 
 if (gameOpts->render.nLightingMethod) {
-	short						*pnl = gameData.render.lights.dynamic.nNearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
+	short						*pnl = gameData.render.lights.dynamic.nearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	short						i, j;
 	tShaderLight			*psl;
 	tActiveShaderLight	*activeLightsP = gameData.render.lights.dynamic.shader.activeLights [nThread];
@@ -1065,7 +1065,7 @@ nActiveLights [nThread] = gameData.render.lights.dynamic.shader.index [0][nThrea
 void ResetNearestStaticLights (int nSegment, int nThread)
 {
 if (gameOpts->render.nLightingMethod) {
-	short				*pnl = gameData.render.lights.dynamic.nNearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
+	short				*pnl = gameData.render.lights.dynamic.nearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	short				i, j;
 	tShaderLight	*psl;
 
@@ -1301,7 +1301,7 @@ return gameData.render.lights.dynamic.shader.index [0][nThread].nActive;
 int SetNearestAvgSgmLights (short nSegment)
 {
 	int			i;
-	tSegment		*segP = SEGMENTS + nSegment;
+	CSegment		*segP = SEGMENTS + nSegment;
 
 #if DBG
 if (nSegment == nDbgSeg)
@@ -1498,7 +1498,7 @@ gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGa
 gameStates.render.nState = 0;
 TransformDynLights (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++)
-	gameData.render.lights.dynamic.nVariableVertLights [i] = VariableVertexLights (i);
+	gameData.render.lights.dynamic.variableVertLights [i] = VariableVertexLights (i);
 if (RENDERPATH && gameStates.render.bPerPixelLighting && lightmapManager.HaveLightmaps ()) {
 	memset (gameData.render.color.ambient, 0, gameData.segs.nVertices * sizeof (*gameData.render.color.ambient));
 	return;

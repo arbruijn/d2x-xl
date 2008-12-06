@@ -63,7 +63,7 @@ void attempt_to_resume_path(CObject *objP);
 //	When a robot and a player collide, some robots attack!
 void do_ai_robot_hit_attack(CObject *robot, CObject *player, vmsVector *collision_point);
 void ai_open_doors_in_segment(CObject *robot);
-int ai_door_is_openable(CObject *objP, tSegment *segp, int sidenum);
+int ai_door_is_openable(CObject *objP, CSegment *segp, int sidenum);
 int player_is_visible_from_object(CObject *objP, vmsVector *pos, fix field_of_view, vmsVector *vec_to_player);
 void ai_reset_all_paths(void);	//	Reset all paths.  Call at the start of a level.
 int ai_multiplayer_awareness(CObject *objP, int awareness_level);

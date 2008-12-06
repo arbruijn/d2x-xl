@@ -767,7 +767,7 @@ FORALL_WEAPON_OBJS (bombP, i) {
 		if (bombP->info.nSegment == actorP->info.nSegment)
 			bombP->info.xLifeLeft = 1;
 		else {
-			//	Object which is close enough to detonate smart mine is not in same tSegment as smart mine.
+			//	Object which is close enough to detonate smart mine is not in same CSegment as smart mine.
 			//	Need to do a more expensive check to make sure there isn't an obstruction.
 			if (((gameData.app.nFrameCount ^ (i+j)) % 4) == 0) {
 				tFVIQuery	fq;

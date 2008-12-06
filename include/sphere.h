@@ -22,9 +22,9 @@ void DrawMonsterball (CObject *objP, float red, float green, float blue, float a
 
 void DestroySphere (tSphereData *sdP);
 
-void SetSpherePulse (tPulseData *pPulse, float fSpeed, float fMin);
+void SetSpherePulse (tPulseData *pulseP, float fSpeed, float fMin);
 
-void UseSpherePulse (tSphereData *sdP, tPulseData *pPulse);
+void UseSpherePulse (tSphereData *sdP, tPulseData *pulseP);
 
 void FreeSphereCoord (void);
 

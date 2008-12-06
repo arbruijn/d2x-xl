@@ -190,7 +190,7 @@ int OglCacheLevelTextures (void)
 	int			nSegment, nSide;
 	short			nBaseTex, nOvlTex;
 	CBitmap	*bmBot,*bmTop, *bmm;
-	tSegment		*segP;
+	CSegment		*segP;
 	tSide			*sideP;
 	CObject		*objP;
 

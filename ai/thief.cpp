@@ -62,7 +62,7 @@ HUDInitMessage(szMsg);
 }
 
 //	------------------------------------------------------------------------------------------------------
-//	Choose tSegment to recreate thief in.
+//	Choose CSegment to recreate thief in.
 int ChooseThiefRecreationSegment (void)
 {
 	static int	nSegment = -1;
@@ -81,7 +81,7 @@ while (nSegment == -1) {
 if (nSegment >= 0)
 	return nSegment;
 #if TRACE
-con_printf (1, "Warning: Unable to find a connected tSegment for thief recreation.\n");
+con_printf (1, "Warning: Unable to find a connected CSegment for thief recreation.\n");
 #endif
 return (d_rand() * gameData.segs.nLastSegment) >> 15;
 }
@@ -162,7 +162,7 @@ void DoThiefFrame(CObject *objP)
 						ailp->playerAwarenessType = 0;
 						CreateNSegmentPath(objP, 10, gameData.objs.consoleP->info.nSegment);
 
-						//	If path is real short, try again, allowing to go through tPlayer's tSegment
+						//	If path is real short, try again, allowing to go through tPlayer's CSegment
 						if (aip->nPathLength < 4) {
 							CreateNSegmentPath(objP, 10, -1);
 						} else if (objP->info.xShields* 4 < ROBOTINFO (objP->info.nId).strength) {

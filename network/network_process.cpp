@@ -39,7 +39,7 @@ void NetworkProcessMonitorVector (int vector)
 	int		i, j;
 	int		tm, ec, bm;
 	int		count = 0;
-	tSegment	*segP = gameData.segs.segments ;
+	CSegment	*segP = gameData.segs.segments ;
 	tSide		*sideP;
 
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {

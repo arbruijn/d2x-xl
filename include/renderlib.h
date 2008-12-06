@@ -91,7 +91,7 @@ void BumpProcessedFlag (void);
 void BumpVisibleFlag (void);
 
 #if DBG
-void OutlineSegSide (tSegment *seg, int _side, int edge, int vert);
+void OutlineSegSide (CSegment *seg, int _side, int edge, int vert);
 void DrawWindowBox (uint color, short left, short top, short right, short bot);
 #endif
 

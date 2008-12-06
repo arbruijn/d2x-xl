@@ -218,7 +218,7 @@ return gameStates.render.bAmbientColor;
 }
 
 // ----------------------------------------------------------------------------------------------
-//	Return true if we think vertex nVertex is visible from tSegment nSegment.
+//	Return true if we think vertex nVertex is visible from CSegment nSegment.
 //	If some amount of time has gone by, then recompute, else use cached value.
 
 int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *vObjPos, int nObjSeg, vmsVector *vVertPos)
@@ -401,8 +401,8 @@ if (xObjIntensity) {
 		return;
 	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
 	bForceColor = objP && ((nObjType == OBJ_WEAPON) || (nObjType == OBJ_FIREBALL) || (nObjType == OBJ_EXPLOSION));
-	// for pretty dim sources, only process vertices in CObject's own tSegment.
-	//	12/04/95, MK, markers only cast light in own tSegment.
+	// for pretty dim sources, only process vertices in CObject's own CSegment.
+	//	12/04/95, MK, markers only cast light in own CSegment.
 	if (objP && ((abs (obji_64) <= F1_0 * 8) || (nObjType == OBJ_MARKER))) {
 		short *vp = gameData.segs.segments [nObjSeg].verts;
 		for (iVertex = 0; iVertex < MAX_VERTICES_PER_SEGMENT; iVertex++) {
@@ -822,7 +822,7 @@ if (!bKeepDynColoring)
 }
 
 // ----------------------------------------------------------------------------------------------
-//compute the average dynamic light in a tSegment.  Takes the tSegment number
+//compute the average dynamic light in a CSegment.  Takes the CSegment number
 
 fix ComputeSegDynamicLight (int nSegment)
 {
@@ -866,7 +866,7 @@ fix ComputeObjectLight (CObject *objP, vmsVector *vRotated)
 		return F1_0;
 	if (nObject >= gameData.objs.nLastObject [0])
 		return 0;
-	//First, get static light for this tSegment
+	//First, get static light for this CSegment
 if (gameOpts->render.nLightingMethod && !((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
 	gameData.objs.color = *AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
 	light = F1_0;
@@ -894,7 +894,7 @@ else {		//new CObject, initialize
 //Next, add in headlight on this CObject
 // -- Matt code: light += ComputeHeadlight (vRotated,f1_0);
 light += ComputeHeadlightLightOnObject (objP);
-//Finally, add in dynamic light for this tSegment
+//Finally, add in dynamic light for this CSegment
 light += ComputeSegDynamicLight (objP->info.nSegment);
 return light;
 }
@@ -1033,7 +1033,7 @@ return gameData.pig.tex.brightness [tMapNum];
 }
 
 //	------------------------------------------------------------------------------------------
-//cast static light from a tSegment to nearby segments
+//cast static light from a CSegment to nearby segments
 //these constants should match the ones in seguvs
 #define	LIGHT_DISTANCE_THRESHOLD	 (F1_0*80)
 #define	MAGIC_LIGHT_CONSTANT			 (F1_0*16)
@@ -1042,7 +1042,7 @@ return gameData.pig.tex.brightness [tMapNum];
 short changedSegs [MAX_CHANGED_SEGS];
 int nChangedSegs;
 
-void ApplyLightToSegment (tSegment *segP, vmsVector *vSegCenter, fix xBrightness, int nCallDepth)
+void ApplyLightToSegment (CSegment *segP, vmsVector *vSegCenter, fix xBrightness, int nCallDepth)
 {
 	vmsVector	rSegmentCenter;
 	fix			xDistToRSeg;
@@ -1087,11 +1087,11 @@ if (nCallDepth < 2)
 extern CObject *oldViewer;
 
 //	------------------------------------------------------------------------------------------
-//update the xAvgSegLight field in a tSegment, which is used for CObject lighting
+//update the xAvgSegLight field in a CSegment, which is used for CObject lighting
 //this code is copied from the editor routine calim_process_all_lights ()
 void ChangeSegmentLight (short nSegment, short nSide, int dir)
 {
-	tSegment *segP = gameData.segs.segments+nSegment;
+	CSegment *segP = gameData.segs.segments+nSegment;
 
 if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_RENDER_FLAG) {
 	tSide	*sideP = segP->sides+nSide;
@@ -1219,7 +1219,7 @@ for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.
 			}
 		}
 	}
-//recompute static light for tSegment
+//recompute static light for CSegment
 ChangeSegmentLight (nSegment, nSide, dir);
 }
 
@@ -1284,7 +1284,7 @@ memset (gameData.render.lights.subtracted, 0,
 void ComputeAllStaticLight (void)
 {
 	int		h, i, j, k;
-	tSegment	*segP;
+	CSegment	*segP;
 	tSide		*sideP;
 	fix		xTotal;
 

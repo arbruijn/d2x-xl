@@ -18,8 +18,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 
 //------------------------------------------------------------
-// A refueling center is one tSegment... to identify it in the
-// tSegment structure, the "special" field is set to
+// A refueling center is one CSegment... to identify it in the
+// CSegment structure, the "special" field is set to
 // SEGMENT_IS_FUELCEN.  The "value" field is then used for how
 // much fuel the center has left, with a maximum value of 100.
 
@@ -27,49 +27,49 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // To hook into Inferno:
 // * When all segents are deleted or before a new mine is created
 //   or loaded, call FuelCenReset().
-// * Add call to FuelCenCreate(tSegment * segp) to make a tSegment
+// * Add call to FuelCenCreate(CSegment * segp) to make a CSegment
 //   which isn't a fuel center be a fuel center.
 // * When a mine is loaded call fuelcen_activate(segp) with each
-//   new tSegment as it loads. Always do this.
-// * When a tSegment is deleted, always call FuelCenDelete(segp).
+//   new CSegment as it loads. Always do this.
+// * When a CSegment is deleted, always call FuelCenDelete(segp).
 // * Call FuelCenReplenishAll() to fill 'em all up, like when
 //   a new game is started.
-// * When an CObject that needs to be refueled is in a tSegment, call
+// * When an CObject that needs to be refueled is in a CSegment, call
 //   FuelCenGiveFuel(segp) to get fuel. (Call once for any refueling
-//   CObject once per frame with the CObject's current tSegment.) This
+//   CObject once per frame with the CObject's current CSegment.) This
 //   will return a value between 0 and 100 that tells how much fuel
 //   he got.
 
 
-// Destroys all fuel centers, clears tSegment backpointer array.
+// Destroys all fuel centers, clears CSegment backpointer array.
 void FuelCenReset();
 // Create materialization center
-void MatCenCreate ( tSegment * segp, int oldType );
-// Makes a tSegment a fuel center.
-void FuelCenCreate( tSegment * segp, int oldType );
+void MatCenCreate ( CSegment * segp, int oldType );
+// Makes a CSegment a fuel center.
+void FuelCenCreate( CSegment * segp, int oldType );
 // Makes a fuel center active... needs to be called when
-// a tSegment is loaded from disk.
-void FuelCenActivate( tSegment * segp, int stationType );
-// Deletes a tSegment as a fuel center.
-void FuelCenDelete( tSegment * segp );
+// a CSegment is loaded from disk.
+void FuelCenActivate( CSegment * segp, int stationType );
+// Deletes a CSegment as a fuel center.
+void FuelCenDelete( CSegment * segp );
 
 // Charges all fuel centers to max capacity.
 void FuelCenReplenishAll();
 
 // Create a matcen robot
-CObject *CreateMorphRobot (tSegment *segp, vmsVector *object_pos, ubyte object_id);
+CObject *CreateMorphRobot (CSegment *segp, vmsVector *object_pos, ubyte object_id);
 
-// Returns the amount of fuel this tSegment can give up.
+// Returns the amount of fuel this CSegment can give up.
 // Can be from 0 to 100.
-fix FuelCenGiveFuel(tSegment *segp, fix MaxAmountCanTake );
-fix RepairCenGiveShields(tSegment *segp, fix MaxAmountCanTake );
-fix HostileRoomDamageShields (tSegment *segp, fix MaxAmountCanGive);
+fix FuelCenGiveFuel(CSegment *segp, fix MaxAmountCanTake );
+fix RepairCenGiveShields(CSegment *segp, fix MaxAmountCanTake );
+fix HostileRoomDamageShields (CSegment *segp, fix MaxAmountCanGive);
 
 // Call once per frame.
 void FuelcenUpdateAll();
 
 // Called when hit by laser.
-void FuelCenDamage(tSegment *segp, fix AmountOfDamage );
+void FuelCenDamage(CSegment *segp, fix AmountOfDamage );
 
 int GatherFlagGoals (void);
 // Called to repair an CObject
@@ -130,8 +130,8 @@ extern tMatCenInfo RobotCenters [MAX_ROBOT_CENTERS];
 int MatCenTrigger (short nSegment);
 void DisableMatCens (void);
 void InitAllMatCens (void);
-void BotGenCreate (tSegment *segP, int oldType);
-void FuelCenCheckForHoardGoal(tSegment *segp);
+void BotGenCreate (CSegment *segP, int oldType);
+void FuelCenCheckForHoardGoal(CSegment *segp);
 void SpawnBotTrigger (CObject *objP, short nSegment);
 int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags);
 void SetEquipGenStates (void);

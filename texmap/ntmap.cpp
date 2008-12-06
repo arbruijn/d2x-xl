@@ -48,7 +48,7 @@ g3ds_tmap Tmap1;
 CBitmap Texmap_ptrs[NUM_TMAPS];
 CBitmap Texmap4_ptrs[NUM_TMAPS];
 
-int	nCurrentSegDepth;		// HACK INTERFACE: how far away the current tSegment (& thus texture) is
+int	nCurrentSegDepth;		// HACK INTERFACE: how far away the current CSegment (& thus texture) is
 
 int nWindowClipLeft, nWindowClipTop, nWindowClipRight, nWindowClipBot;
 

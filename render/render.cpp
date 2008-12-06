@@ -299,7 +299,7 @@ void RenderFace (tFaceProps *propsP)
 
 	int			i, bIsMonitor, bIsTeleCam, bHaveMonitorBg, nCamNum, bCamBufAvail;
 	g3sPoint		*pointList [8], **pp;
-	tSegment		*segP = gameData.segs.segments + props.segNum;
+	CSegment		*segP = gameData.segs.segments + props.segNum;
 	tSide			*sideP = segP->sides + props.sideNum;
 	CCamera		*cameraP = NULL;
 
@@ -476,7 +476,7 @@ fpDrawTexPolyMulti (
 	}
 gameStates.render.grAlpha = FADE_LEVELS;
 gameStates.ogl.fAlpha = 1;
-	// render the tSegment the tPlayer is in with a transparent color if it is a water or lava tSegment
+	// render the CSegment the tPlayer is in with a transparent color if it is a water or lava CSegment
 	//if (nSegment == OBJECTS->nSegment)
 #if DBG
 if (bOutLineMode)
@@ -500,7 +500,7 @@ fix	Min_n0_n1_dot	= (F1_0*15/16);
 #undef LMAP_LIGHTADJUST
 #define LMAP_LIGHTADJUST 0
 
-void RenderSide (tSegment *segP, short nSide)
+void RenderSide (CSegment *segP, short nSide)
 {
 	tSide			*sideP = segP->sides + nSide;
 	tFaceProps	props;
@@ -623,7 +623,7 @@ else {
 		RenderFace (&props);
 		}
 	else {
-		Error("Illegal tSide nType in RenderSide, nType = %i, tSegment # = %i, tSide # = %i\n", sideP->nType, SEG_IDX (segP), props.sideNum);
+		Error("Illegal tSide nType in RenderSide, nType = %i, CSegment # = %i, tSide # = %i\n", sideP->nType, SEG_IDX (segP), props.sideNum);
 		return;
 		}
 	}
@@ -633,13 +633,13 @@ else {
 
 static int RenderSegmentFaces (short nSegment, int nWindow)
 {
-	tSegment		*segP = gameData.segs.segments + nSegment;
+	CSegment		*segP = gameData.segs.segments + nSegment;
 	g3sCodes 	cc;
 	short			nSide;
 
 OglSetupTransform (0);
 cc = RotateVertexList (8, segP->verts);
-gameData.render.vertP = gameData.segs.fVertices;
+gameData.render.vertP = gameData.segs.fVertices.Buffer ();
 //	return;
 if (cc.ccAnd /*&& !gameStates.render.automap.bDisplay*/)	//all off screen and not rendering the automap
 	return 0;
@@ -848,7 +848,7 @@ tPortal sidePortals [MAX_SEGMENTS_D2X * 6];
 #endif
 ubyte bVisible [MAX_SEGMENTS_D2X];
 
-//Given two sides of tSegment, tell the two verts which form the
+//Given two sides of CSegment, tell the two verts which form the
 //edge between them
 short edgeBetweenTwoSides [6] [6] [2] = {
 	{ {-1, -1}, {3, 7}, {-1, -1}, {2, 6}, {6, 7}, {2, 3} },
@@ -893,7 +893,7 @@ int edgeToSides [8] [8] [2] = {
 //------------------------------------------------------------------------------
 //given an edge and one tSide adjacent to that edge, return the other adjacent tSide
 
-int FindOtherSideOnEdge (tSegment *seg, short *verts, int oppSide)
+int FindOtherSideOnEdge (CSegment *seg, short *verts, int oppSide)
 {
 	int	i;
 	int	i0 = -1, i1 = -1;
@@ -936,9 +936,9 @@ typedef struct tSideNormData {
 	short			t;
 } tSideNormData;
 
-int FindAdjacentSideNorms (tSegment *segP, short s0, short s1, tSideNormData *s)
+int FindAdjacentSideNorms (CSegment *segP, short s0, short s1, tSideNormData *s)
 {
-	tSegment	*seg0, *seg1;
+	CSegment	*seg0, *seg1;
 	tSide		*side0, *side1;
 	short		edgeVerts [2];
 	int		oppSide0, oppSide1;
@@ -970,7 +970,7 @@ return 1;
 //returns 0 if order doesn't matter, 1 if c0 before c1, -1 if c1 before c0
 #if SORT_RENDER_SEGS
 
-static int CompareChildren (tSegment *segP, short c0, short c1)
+static int CompareChildren (CSegment *segP, short c0, short c1)
 {
 	tSideNormData	s [2];
 	vmsVector		temp;
@@ -999,7 +999,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int QuickSortSegChildren (tSegment *segP, short left, short right, short *childList)
+int QuickSortSegChildren (CSegment *segP, short left, short right, short *childList)
 {
 	short	h,
 			l = left,
@@ -1033,9 +1033,9 @@ return bSwap;
 
 //------------------------------------------------------------------------------
 
-//short the children of tSegment to render in the correct order
+//short the children of CSegment to render in the correct order
 //returns non-zero if swaps were made
-static inline int SortSegChildren (tSegment *segP, int nChildren, short *childList)
+static inline int SortSegChildren (CSegment *segP, int nChildren, short *childList)
 {
 #if 1
 
@@ -1422,7 +1422,7 @@ void BuildRenderObjLists (int nSegCount)
 {
 PROF_START
 	CObject		*objP;
-	tSegment		*segP;
+	CSegment		*segP;
 	tSegMasks	mask;
 	short			nSegment, nNewSeg, nChild, nSide, sideFlag;
 	int			nListPos;
@@ -1604,7 +1604,7 @@ void BuildRenderSegList (short nStartSeg, int nWindow)
 	tPortal	*curPortal;
 	short		childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
 	int		nChildren, bCullIfBehind;					//how many sides in childList
-	tSegment	*segP;
+	CSegment	*segP;
 
 gameData.render.zMin = 0x7fffffff;
 gameData.render.zMax = -0x7fffffff;
@@ -1675,7 +1675,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		segP = gameData.segs.segments + nSegment;
 		sv = segP->verts;
 		bRotated = 0;
-		//look at all sides of this tSegment.
+		//look at all sides of this CSegment.
 		//tricky code to look at sides in correct order follows
 		for (nChild = nChildren = 0; nChild < MAX_SIDES_PER_SEGMENT; nChild++) {		//build list of sides
 			nChildSeg = segP->children [nChild];
@@ -2062,7 +2062,7 @@ void RenderSkyBoxObjects (void)
 	short		*segP;
 
 gameStates.render.nType = 1;
-for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++)
+for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments.Buffer (); i; i--, segP++)
 	for (nObject = SEGMENTS [*segP].objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 		DoRenderObject (nObject, gameStates.render.nWindow);
 }
@@ -2082,7 +2082,7 @@ if (gameStates.render.bHaveSkyBox && (!gameStates.render.automap.bDisplay || gam
 
 		gameStates.render.nType = 4;
 		gameStates.render.bFullBright = 1;
-		for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++)
+		for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments.Buffer (); i; i--, segP++)
 			RenderSegmentFaces (*segP, nWindow);
 		gameStates.render.bFullBright = bFullBright;
 		}
@@ -2327,7 +2327,7 @@ void RenderObjectSearch(CObject *objP)
 
 extern int render_3d_in_big_tPortal;
 
-//finds what tSegment is at a given x&y -  seg, tSide, face are filled in
+//finds what CSegment is at a given x&y -  seg, tSide, face are filled in
 //works on last frame rendered. returns true if found
 //if seg<0, then an CObject was found, and the CObject number is -seg-1
 int FindSegSideFace(short x, short y, int *seg, int *tSide, int *face, int *poly)

@@ -394,7 +394,7 @@ void PrintCmdLineHelp ()
 	con_printf ((int) con_threshold.value, "  -legacyhomers     %s\n", "Turn off frame-rate independant homing missile turn rate");
 	con_printf ((int) con_threshold.value, "  -legacyinput      %s\n", "Turn off enhanced input handling");
 	con_printf ((int) con_threshold.value, "  -legacymouse      %s\n", "Turn off frame-rate independant mouse sensitivity");
-	con_printf ((int) con_threshold.value, "  -legacyrender     %s\n", "Turn off colored tSegment rendering");
+	con_printf ((int) con_threshold.value, "  -legacyrender     %s\n", "Turn off colored CSegment rendering");
 	con_printf ((int) con_threshold.value, "  -legacyzbuf       %s\n", "Turn off OpenGL depth buffer");
 	con_printf ((int) con_threshold.value, "  -legacyswitches   %s\n", "Turn off fault-tolerant switch handling");
 	con_printf ((int) con_threshold.value, "  -legacywalls      %s\n", "Turn off fault-tolerant tWall handling");
@@ -2417,7 +2417,7 @@ void AllocSegmentData (void)
 {
 GETMEM (vmsVector, gameData.segs.vertices, 65536, 0);
 GETMEM (fVector, gameData.segs.fVertices, 65536, 0);
-GETMEM (tSegment, gameData.segs.segments, MAX_SEGMENTS, 0);
+GETMEM (CSegment, gameData.segs.segments, MAX_SEGMENTS, 0);
 GETMEM (tSegment2, gameData.segs.segment2s, MAX_SEGMENTS, 0);
 GETMEM (xsegment, gameData.segs.xSegments, MAX_SEGMENTS, 0);
 GETMEM (g3sPoint, gameData.segs.points, 65536, 0);
@@ -2605,7 +2605,7 @@ void FreeSegmentData (void)
 {
 FREEMEM (vmsVector, gameData.segs.vertices, MAX_VERTICES);
 FREEMEM (fVector, gameData.segs.fVertices, MAX_VERTICES);
-FREEMEM (tSegment, gameData.segs.segments, MAX_SEGMENTS);
+FREEMEM (CSegment, gameData.segs.segments, MAX_SEGMENTS);
 FREEMEM (tSegment2, gameData.segs.segment2s, MAX_SEGMENTS);
 FREEMEM (xsegment, gameData.segs.xSegments, MAX_SEGMENTS);
 FREEMEM (g3sPoint, gameData.segs.points, MAX_VERTICES);

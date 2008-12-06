@@ -130,7 +130,7 @@ return (abs (delta0 = a - b) < abs (delta1 = b - a)) ? delta0 : delta1;
 //return though which tSide of seg0 is seg1
 int ELFindConnectedSide (int seg0, int seg1)
 {
-	tSegment *segP = gameData.segs.segments + seg0;
+	CSegment *segP = gameData.segs.segments + seg0;
 	int		i;
 
 for (i = MAX_SIDES_PER_SEGMENT;i--; )
@@ -708,7 +708,7 @@ int FindExitSide (CObject *objP)
 	vmsVector	vPreferred, vSegCenter, vSide;
 	fix			d, xBestVal = -f2_0;
 	int			nBestSide, i;
-	tSegment		*segP = gameData.segs.segments + objP->info.nSegment;
+	CSegment		*segP = gameData.segs.segments + objP->info.nSegment;
 
 //find exit tSide
 vmsVector::NormalizedDir (vPreferred, objP->info.position.vPos, objP->info.vLastPos);
@@ -925,7 +925,7 @@ return dest;
 void DoEndLevelFlyThrough (int n)
 {
 	CObject *objP;
-	tSegment *segP;
+	CSegment *segP;
 	int nOldPlayerSeg;
 
 exitFlightDataP = exitFlightObjects + n;

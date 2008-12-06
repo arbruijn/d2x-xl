@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // Constants indicating currently moving forward or backward through
 // path.  Note that you can add aip->direction to aip_path_index to
-// get next tSegment on path.
+// get next CSegment on path.
 #define AI_DIR_FORWARD  1
 #define AI_DIR_BACKWARD (-AI_DIR_FORWARD)
 
@@ -123,7 +123,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CURRENT_STATE   flags[1]    // current behavioral state
 #define GOAL_STATE      flags[2]    // goal state
 #define PATH_DIR        flags[3]    // direction traveling path, 1 = forward, -1 = backward, other = error!
-#define SUB_FLAGS       flags[4]    // bit 0: Set -> Robot's current gun in different tSegment than robot's center.
+#define SUB_FLAGS       flags[4]    // bit 0: Set -> Robot's current gun in different CSegment than robot's center.
 #define GOALSIDE        flags[5]    // for guys who open doors, this is the tSide they are going after.
 #define CLOAKED         flags[6]    // Cloaked now.
 #define SKIP_AI_COUNT   flags[7]    // Skip AI this frame, but decrement in DoAIFrame.
@@ -174,7 +174,7 @@ typedef struct tAILocalInfo {
 	int     mode;                 // current mode within behavior
 	int     nPrevVisibility;		// Visibility of tPlayer last time we checked.
 	int     nRapidFireCount;      // number of shots fired rapidly
-	int     nGoalSegment;         // goal tSegment for current path
+	int     nGoalSegment;         // goal CSegment for current path
 
 	// -- MK, 10/21/95, unused -- fix     last_seeTime, last_attackTime; // For sound effects, time at which tPlayer last seen, attacked
 

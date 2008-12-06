@@ -115,7 +115,7 @@ return 0;
 
 int ComputeNearestSegmentLights (int i)
 {
-	tSegment				*segP;
+	CSegment				*segP;
 	tDynLight			*pl;
 	int					h, j, k, l, m, n, nMaxLights;
 	vmsVector			center;
@@ -152,9 +152,9 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	h = (nMaxLights < n) ? nMaxLights : n;
 	k = i * MAX_NEAREST_LIGHTS;
 	for (l = 0; l < h; l++)
-		gameData.render.lights.dynamic.nNearestSegLights [k + l] = pDists [l].nIndex;
+		gameData.render.lights.dynamic.nearestSegLights [k + l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
-		gameData.render.lights.dynamic.nNearestSegLights [k + l] = -1;
+		gameData.render.lights.dynamic.nearestSegLights [k + l] = -1;
 	}
 delete[] pDists;
 return 1;
@@ -321,7 +321,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 
 void ComputeSingleSegmentVisibility (short nStartSeg)
 {
-	tSegment		*segP, *childP;
+	CSegment		*segP, *childP;
 	tSide			*sideP;
 	short			nSegment, nSide, nChildSeg, nChildSide, i;
 	vmsVector	vNormal;
@@ -503,7 +503,7 @@ if (bOk)
 #if 0
 			(cf.Read (gameData.segs.bVertVis, sizeof (ubyte) * ldh.nVertices * VERTVIS_FLAGS, 1) == 1) &&
 #endif
-			(cf.Read (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1) == 1) &&
+			(cf.Read (gameData.render.lights.dynamic.nearestSegLights, sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1) == 1) &&
 			(cf.Read (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1) == 1);
 cf.Close ();
 return bOk;
@@ -533,7 +533,7 @@ bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
 #if 0
 		(cf.Write (gameData.segs.bVertVis, sizeof (ubyte) * ldh.nVertices * VERTVIS_FLAGS, 1) == 1) &&
 #endif
-		(cf.Write (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1) == 1) &&
+		(cf.Write (gameData.render.lights.dynamic.nearestSegLights, sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1) == 1) &&
 		(cf.Write (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1) == 1);
 cf.Close ();
 return bOk;

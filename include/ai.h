@@ -90,7 +90,7 @@ void AttemptToResumePath (CObject *objP);
 void DoAIRobotHitAttack (CObject *robot, CObject *tPlayer, vmsVector *collision_point);
 void DoD1AIRobotHitAttack(CObject *robot, CObject *player, vmsVector *collision_point);
 void AIOpenDoorsInSegment (CObject *robot);
-int AIDoorIsOpenable (CObject *objP, tSegment *segp, short nSide);
+int AIDoorIsOpenable (CObject *objP, CSegment *segp, short nSide);
 int ObjectCanSeePlayer (CObject *objP, vmsVector *pos, fix fieldOfView, vmsVector *vec_to_player);
 void AIResetAllPaths (void);   // Reset all paths.  Call at the start of a level.
 int AIMultiplayerAwareness (CObject *objP, int awarenessLevel);
@@ -134,7 +134,7 @@ extern vmsVector vLastPlayerPosFiredAt;
 
 #define MAX_AWARENESS_EVENTS 256
 typedef struct tAwarenessEvent {
-	short       nSegment; // tSegment the event occurred in
+	short       nSegment; // CSegment the event occurred in
 	short       nType;   // nType of event, defines behavior
 	vmsVector	pos;    // absolute 3 space location of event
 } tAwarenessEvent;
@@ -284,7 +284,7 @@ int AISaveUniState (CFile& cf);
 int AIRestoreBinState (CFile& cf, int version);
 int AIRestoreUniState (CFile& cf, int version);
 
-int CheckObjectObjectIntersection (vmsVector *pos, fix size, tSegment *segP);
+int CheckObjectObjectIntersection (vmsVector *pos, fix size, CSegment *segP);
 int DoRobotDyingFrame (CObject *objP, fix StartTime, fix xRollDuration, sbyte *bDyingSoundPlaying, short deathSound, fix xExplScale, fix xSoundScale);
 
 void TeleportBoss (CObject *objP);

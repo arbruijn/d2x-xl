@@ -1379,9 +1379,9 @@ typedef struct tHeadlightData {
 
 typedef struct tDynLightData {
 	tDynLight			lights [MAX_OGL_LIGHTS];
-	CArray<short>		nearestSegLights;		//the 8 nearest static lights for every tSegment
-	CArray<short>		nearestVertLights;		//the 8 nearest static lights for every tSegment
-	CArray<ubyte>		variableVertLights;	//the 8 nearest static lights for every tSegment
+	CArray<short>		nearestSegLights;		//the 8 nearest static lights for every CSegment
+	CArray<short>		nearestVertLights;		//the 8 nearest static lights for every CSegment
+	CArray<ubyte>		variableVertLights;	//the 8 nearest static lights for every CSegment
 	CArray<short>		owners;
 	short					nLights;
 	short					nVariable;
@@ -1677,7 +1677,7 @@ typedef struct tFaceData {
 	CArray<fVector3>		vertices;
 	CArray<fVector3>		normals;
 	CArray<tTexCoord2f>	texCoord;
-	tTexCoord2f*			ovlTexCoord;
+	CArray<tTexCoord2f>	ovlTexCoord;
 	CArray<tTexCoord2f>	lMapTexCoord;
 	CArray<tRgbaColorf>	color;
 	CArray<ushort>			faceVerts;
@@ -1712,12 +1712,12 @@ typedef struct tSegmentData {
 	int						nMaxSegments;
 	CArray<vmsVector>		vertices;
 	CArray<fVector>		fVertices;
-	CArray<tSegment>		segments;
+	CArray<CSegment>		segments;
 	CArray<tSegment2>		segment2s;
 	CArray<xsegment>		xSegments;
 	CArray<tSegFaces>		segFaces;
 	CArray<g3sPoint>		points;
-	CArray<tSegList>		skybox;
+	tSegList					skybox;
 #if CALC_SEGRADS
 	CArray<fix>				segRads [2];
 	CArray<tSegExtent>	extent;
@@ -1852,10 +1852,38 @@ typedef struct tShrapnel {
 	time_t		tUpdate;
 } tShrapnel;
 
-typedef struct tShrapnelData {
-	int					nShrapnels;
-	CArray<tShrapnel>	shrapnels;
-} tShrapnelData;
+class CShrapnel {
+	private:
+		tShrapnel	m_info;
+
+	public:
+		void Create (CObject* objP);
+		void Destroy (void);
+		void Move (void);
+		void Draw (void);
+		int Update (void);
+};
+
+class CShrapnelCloud : private CStack<CShrapnel> {
+	public:
+		~CShrapnelCloud () { Destroy (); }
+		int Create (CObject* objP);
+		uint Update (void);
+		void Draw (void);
+		void Destroy (void);
+	};
+
+class CShrapnelManager : private CArray<CShrapnelCloud> {
+	public:
+		int Create (CObject *objP);
+		void Draw (CObject *objP);
+		int Update (CObject *objP);
+		void Move (CObject *objP);
+		void Destroy (CObject *objP); 
+		void DoFrame (void);
+	};
+
+extern CShrapnelManager shrapnelManager;
 
 //------------------------------------------------------------------------------
 
@@ -1931,8 +1959,7 @@ typedef struct tObjectData {
 	int							nDeadControlCenter;
 	int							nVertigoBotFlags;
 	CArray<short>				nHitObjects;
-	CArray<tShrapnelData>	shrapnels;
-	tPowerupData*				pwrUp;
+	tPowerupData				pwrUp;
 	ubyte							collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 	CArray<tObjectViewData>	viewData;
 	ubyte							bIsMissile [MAX_WEAPONS];
@@ -2891,7 +2918,7 @@ typedef struct tMatCenData {
 	tSegmentSparks	sparks [2][MAX_FUEL_CENTERS];	//0: repair, 1: fuel center
 	short				sparkSegs [2 * MAX_FUEL_CENTERS];
 	short				nSparkSegs;
-	tSegment			*playerSegP;
+	CSegment			*playerSegP;
 } tMatCenData;
 
 //------------------------------------------------------------------------------
@@ -3259,7 +3286,7 @@ extern char szAutoMission [255];
 extern char szAutoHogFile [255];
 
 static inline ushort WallNumS (tSide *sideP) { return (sideP)->nWall; }
-static inline ushort WallNumP (tSegment *segP, short nSide) { return WallNumS ((segP)->sides + (nSide)); }
+static inline ushort WallNumP (CSegment *segP, short nSide) { return WallNumS ((segP)->sides + (nSide)); }
 static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(gameData.segs.segments + (nSegment), nSide); }
 
 //-----------------------------------------------------------------------------

@@ -58,7 +58,7 @@ int	bOutLineMode = 0,
 int FaceIsVisible (short nSegment, short nSide)
 {
 #if SW_CULLING
-tSegment *segP = SEGMENTS + nSegment;
+CSegment *segP = SEGMENTS + nSegment;
 tSide *sideP = segP->sides + nSide;
 vmsVector v;
 v = gameData.render.mine.viewerEye - *SIDE_CENTER_I(nSegment, nSide); //gameData.segs.vertices + segP->verts [sideToVerts [nSide][0]]);
@@ -754,7 +754,7 @@ return bHaveMonitorBg || gameOpts->render.cameras.bFitToWall;
 #define CROSS_WIDTH  I2X(8)
 #define CROSS_HEIGHT I2X(8)
 
-void OutlineSegSide (tSegment *seg, int _side, int edge, int vert)
+void OutlineSegSide (CSegment *seg, int _side, int edge, int vert)
 {
 	g3sCodes cc;
 
@@ -863,8 +863,8 @@ for (i = 0; i < nVertices; i++) {
 void RotateSideNorms (void)
 {
 	int			i, j;
-	tSegment		*segP = gameData.segs.segments;
-	tSegment2	*seg2P = gameData.segs.segment2s;
+	CSegment		*segP = gameData.segs.segments.Buffer ();
+	tSegment2	*seg2P = gameData.segs.segment2s.Buffer ();
 	tSide			*sideP;
 	tSide2		*side2P;
 
@@ -923,7 +923,7 @@ if (!++gameData.render.mine.nVisible) {
 
 int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist)
 {
-	tSegment	*segP;
+	CSegment	*segP;
 	int		nSegment, nChildSeg, nChild, h, i, j;
 
 if (gameData.render.mine.bVisible [nStartSeg] == gameData.render.mine.nVisible)

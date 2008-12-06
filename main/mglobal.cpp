@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //lsegment	Lsegments[MAX_SEGMENTS];
 
 // Number of vertices in current mine (ie, gameData.segs.vertices, pointed to by Vp)
-//	Translate table to get opposite tSide of a face on a tSegment.
+//	Translate table to get opposite tSide of a face on a CSegment.
 char	sideOpposite[MAX_SIDES_PER_SEGMENT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
 
 #ifdef PASSWORD

@@ -161,9 +161,9 @@ void DumpSegments (void)
 	FILE * fp;
 
 fp = fopen ("TEST.DMP", "wb");
-fwrite (gameData.segs.segments, sizeof (tSegment)* (gameData.segs.nLastSegment+1), 1, fp);    
+fwrite (gameData.segs.segments, sizeof (CSegment)* (gameData.segs.nLastSegment+1), 1, fp);    
 fclose (fp);
-con_printf (CONDBG, "SS=%d\n", sizeof (tSegment));
+con_printf (CONDBG, "SS=%d\n", sizeof (CSegment));
 }
 #endif
 

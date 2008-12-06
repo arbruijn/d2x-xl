@@ -86,7 +86,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Movement types
 #define MT_NONE         0   // doesn't move
 #define MT_PHYSICS      1   // moves by physics
-#define MT_STATIC		2	 // completely still and immoveable
+#define MT_STATIC			2	 // completely still and immoveable
 #define MT_SPINNING     3   // this CObject doesn't move, just sits and spins
 
 // Render types
@@ -573,53 +573,58 @@ typedef struct tBaseObject {
 #endif
 } tBaseObject;
 
-class CObjectInfo : public CTransformation, public CObjContainerInfo {
-	private:
-		tBaseObject	m_object;
+class CObjectInfo : public CTransformation, public CObjContainerInfo, public tBaseObject {
 	public:
 		CObjectInfo () { memset (&info, 0, sizeof (info)); }
+#if 0
+	private:
+		tBaseObject	m_object;
 
-		inline tBaseObject* GetInfo (void) { return &m_object.info; }; 
-		inline void GetInfo (tBaseObject* m_object.infoP) { m_object.info = *m_object.infoP; }; 
-		inline int GetSignature () { return m_object.info.nSignature; }
-		inline ubyte GetId () { return m_object.info.nId; }
-		inline fix GetSize () { return m_object.info.xSize; }
-		inline fix GetShields () { return m_object.info.xShields; }
-		inline fix GetLifeLeft () { return m_object.info.xLifeLeft; }
-		inline short GetSegment () { return m_object.info.nSegment; }
-		inline short GetAttachedObj () { return m_object.info.nAttachedObj; }
-		inline short GetNextInSeg () { return m_object.info.nNextInSeg; }
-		inline short GetPrevInSeg () { return m_object.info.nPrevInSeg; }
-		inline sbyte GetCreator () { return m_object.info.nCreator; }
-		inline ubyte GetType () { return m_object.info.nType; }
-		inline ubyte GetControlType () { return m_object.info.controlType; }
-		inline ubyte GetMovementType () { return m_object.info.movementType; }
-		inline ubyte GetRenderType () { return m_object.info.renderType; }
-		inline ubyte GetFlags () { return m_object.info.nFlags; }
-		inline vmsVector GetLastPos () { return m_object.info.vLastPos; }
+	public:
+		inline tBaseObject* GetInfo (void) { return &info; }; 
+		inline void GetInfo (tBaseObject* infoP) { info = *infoP; }; 
+#endif
 
-		inline void SetSignature (int nSignature) { m_object.info.nSignature = nSignature; }
-		inline void SetId (ubyte nId) { m_object.info.nId = nId; }
-		inline void SetSize (fix xSize) { m_object.info.xSize = xSize; }
-		inline void SetShields (fix xShields) { m_object.info.xShields = xShields; }
-		inline void SetLifeLeft (fix xLifeLeft) { m_object.info.xLifeLeft = xLifeLeft; }
-		inline void SetSegment (short nSegment) { m_object.info.nSegment = nSegment; }
-		inline void SetAttachedObj (short nAttachedObj) { m_object.info.nAttachedObj = nAttachedObj; }
-		inline void SetNextInSeg (short nNextInSeg) { m_object.info.nNextInSeg = nNextInSeg; }
-		inline void SetPrevInSeg ( short nPrevInSeg) { m_object.info.nPrevInSeg = nPrevInSeg; }
-		inline void SetCreator (sbyte nCreator) { m_object.info.nCreator = nCreator; }
-		inline void SetType (ubyte nType) { m_object.info.nType = nType; }
-		inline void SetControlType (ubyte controlType) { m_object.info.controlType = controlType; }
-		inline void SetMovementType (ubyte movementType) { m_object.info.movementType = movementType; }
-		inline void SetRenderType (ubyte renderType) { m_object.info.renderType = renderType; }
-		inline void SetFlags (ubyte nFlags) { m_object.info.nFlags = nFlags; }
-		inline void SetLastPos (const vmsVector *vLastPos) { m_object.info.vLastPos = *vLastPos; }
+	public:
+		inline int Signature () { return info.nSignature; }
+		inline ubyte Id () { return info.nId; }
+		inline fix Size () { return info.xSize; }
+		inline fix Shields () { return info.xShields; }
+		inline fix LifeLeft () { return info.xLifeLeft; }
+		inline short Segment () { return info.nSegment; }
+		inline short AttachedObj () { return info.nAttachedObj; }
+		inline short NextInSeg () { return info.nNextInSeg; }
+		inline short PrevInSeg () { return info.nPrevInSeg; }
+		inline sbyte Creator () { return info.nCreator; }
+		inline ubyte Type () { return info.nType; }
+		inline ubyte ControlType () { return info.controlType; }
+		inline ubyte MovementType () { return info.movementType; }
+		inline ubyte RenderType () { return info.renderType; }
+		inline ubyte Flags () { return info.nFlags; }
+		inline vmsVector LastPos () { return info.vLastPos; }
+
+		inline void SetSignature (int nSignature) { info.nSignature = nSignature; }
+		inline void SetId (ubyte nId) { info.nId = nId; }
+		inline void SetSize (fix xSize) { info.xSize = xSize; }
+		inline void SetShields (fix xShields) { info.xShields = xShields; }
+		inline void SetLifeLeft (fix xLifeLeft) { info.xLifeLeft = xLifeLeft; }
+		inline void SetSegment (short nSegment) { info.nSegment = nSegment; }
+		inline void SetAttachedObj (short nAttachedObj) { info.nAttachedObj = nAttachedObj; }
+		inline void SetNextInSeg (short nNextInSeg) { info.nNextInSeg = nNextInSeg; }
+		inline void SetPrevInSeg ( short nPrevInSeg) { info.nPrevInSeg = nPrevInSeg; }
+		inline void SetCreator (sbyte nCreator) { info.nCreator = nCreator; }
+		inline void SetType (ubyte nType) { info.nType = nType; }
+		inline void SetControlType (ubyte controlType) { info.controlType = controlType; }
+		inline void SetMovementType (ubyte movementType) { info.movementType = movementType; }
+		inline void SetRenderType (ubyte renderType) { info.renderType = renderType; }
+		inline void SetFlags (ubyte nFlags) { info.nFlags = nFlags; }
+		inline void SetLastPos (const vmsVector *vLastPos) { info.vLastPos = *vLastPos; }
 };
 
 struct tObject;
 
 typedef struct tObjListLink {
-	CObject	*prev, *next;
+	tObject	*prev, *next;
 } tObjListLink;
 
 typedef struct tShotInfo {
@@ -635,13 +640,20 @@ typedef struct tObject : public tBaseObject {
 	fix				xTimeLastHit;
 	tShotInfo		shots;
 	vmsVector		vStartVel;
-} CObject;
+} tObject;
+
+class CObject;
+
+class CObjListLink {
+	public:
+		CObject	*prev, *next;
+};
 
 class CObject : public CObjectInfo {
 	private:
-		short				m_nObject;
+		short				m_nId;
 		CObject			*m_prev, *m_next;
-		tObjListLink	m_links [3];		// link into list of objects in same category (0: all, 1: same type, 2: same class)
+		CObjListLink	m_links [3];		// link into list of objects in same category (0: all, 1: same type, 2: same class)
 		ubyte				m_nLinkedType;
 		ubyte				m_nTracers;
 		fix				m_xCreationTime;
@@ -652,29 +664,45 @@ class CObject : public CObjectInfo {
 	public:
 		CObject ();
 		~CObject ();
-		// initialize a new CObject.  adds to the list for the given tSegment
+		// initialize a new CObject.  adds to the list for the given CSegment
 		// returns the CObject number
 		int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
 						const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 
-		inline CObject* GetPrev (void) { return m_prev; }
-		inline CObject* GetNext (void) { return m_next; }
-		inline void SetPrev (CObject *prev) { m_prev = prev; }
-		inline void SetNext (CObject *next) { m_next = next; }
-		inline void Kill (void) { SetFlags (GetFlags () | OF_SHOULD_BE_DEAD); }
-		inline bool Exists (void) { return !(GetFlags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
-		// unlinks an CObject from a tSegment's list of objects
+		inline void Kill (void) { SetFlags (Flags () | OF_SHOULD_BE_DEAD); }
+		inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
+		// unlinks an CObject from a CSegment's list of objects
 		void Link (void);
 		void Unlink (void);
 		void LinkToSeg (int nSegment);
 		void Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
 							  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 		void ToBaseObject (tBaseObject *objP);
-		inline short Index (void) { return m_nObject; }
 
-		int operator- (CArray<CObject>& a) { return a.Index (this); }
+		inline short Id (void) { return m_nId; }
+		inline CObject* Prev (void) { return m_prev; }
+		inline CObject* Next (void) { return m_next; }
+		inline CObjListLink& Links (uint i) { return m_links [i]; }
+		inline ubyte LinkedType (void) { return m_nLinkedType; }
+		inline ubyte Tracers (void) { return m_nTracers; }
+		inline fix CreationTime (void) { return m_xCreationTime; }
+		inline fix TimeLastHit (void) { return m_xTimeLastHit; }
+		inline tShotInfo& Shots (void) { return m_shots; }
+		inline vmsVector* StartVel (void) { return m_vStartVel; }
+
+		inline void SetId (short nId) { m_nId = nId; }
+		inline void SetPrev (CObject* prev) { m_prev = prev; }
+		inline void SetNext (CObject* next) { m_next = next; }
+		inline void SetLinkedType (ubyte nLinkedType) { m_nLinkedType = nLinkedType; }
+		inline void SetTracers (ubyte nTracers) { m_nTracers = nTracers; }
+		inline void SetCreationTime (fix xCreationTime) { m_xCreationTime = xCreationTime; }
+		inline void SetTimeLastHit (fix xTimeLastHit) { m_xTimeLastHit = xTimeLastHit; }
+		inline void SetStartVel (vmsVector* vStartVel) { m_vStartVel = vStartVel; }
+
+		//inline short Index (void) { return gameData.objs.objects.Index (this); }
 };
 
+int operator- (CObject* o, CArray<CObject>& a) { return a.Index (o); }
 
 #if 0
 
@@ -731,8 +759,8 @@ class CParticleObject : public CObject, public CSmokeInfo {
 
 typedef struct tObjPosition {
 	tTransformation	position;
-	short					nSegment;     // tSegment number containing CObject
-	short					nSegType;		// nType of tSegment
+	short					nSegment;     // CSegment number containing CObject
+	short					nSegType;		// nType of CSegment
 } tObjPosition;
 
 class CObjPosition : public CTransformation {
@@ -822,13 +850,13 @@ int CreateFireball (ubyte nId, short nSegment, const vmsVector& vPos, fix xSize,
 int CreateDebris (CObject *parentP, short nSubModel);
 int CreateCamera (CObject *parentP);
 int CreateLight (ubyte nId, short nSegment, const vmsVector& vPos);
-// returns tSegment number CObject is in.  Searches out from CObject's current
+// returns CSegment number CObject is in.  Searches out from CObject's current
 // seg, so this shouldn't be called if the CObject has "jumped" to a new seg
 // -- unused --
 //int obj_get_new_seg(CObject *obj);
 
-// when an CObject has moved into a new tSegment, this function unlinks it
-// from its old tSegment, and links it into the new tSegment
+// when an CObject has moved into a new CSegment, this function unlinks it
+// from its old CSegment, and links it into the new CSegment
 void RelinkObjToSeg (int nObject, int nNewSeg);
 
 void ResetSegObjLists (void);
@@ -836,18 +864,18 @@ void LinkAllObjsToSegs (void);
 void RelinkAllObjsToSegs (void);
 bool CheckSegObjList (CObject *objP, short nObject, short nFirstObj);
 
-// move an CObject from one tSegment to another. unlinks & relinks
+// move an CObject from one CSegment to another. unlinks & relinks
 // -- unused --
 //void obj_set_new_seg(int nObject,int newsegnum);
 
-// links an CObject into a tSegment's list of objects.
-// takes CObject number and tSegment number
+// links an CObject into a CSegment's list of objects.
+// takes CObject number and CSegment number
 void LinkObjToSeg(int nObject,int nSegment);
 
-// unlinks an CObject from a tSegment's list of objects
+// unlinks an CObject from a CSegment's list of objects
 void UnlinkObjFromSeg (CObject *objP);
 
-// initialize a new CObject.  adds to the list for the given tSegment
+// initialize a new CObject.  adds to the list for the given CSegment
 // returns the CObject number
 //int CObject::Create(ubyte nType, char id, short owner, short nSegment, const vmsVector& pos,
 //               const vmsMatrix& orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
@@ -896,13 +924,13 @@ void InitPlayerObject();
 int UpdateObjectSeg(CObject *objP, bool bMove = true);
 
 
-// Finds what tSegment *obj is in, returns tSegment number.  If not in
-// any tSegment, returns -1.  Note: This function is defined in
+// Finds what CSegment *obj is in, returns CSegment number.  If not in
+// any CSegment, returns -1.  Note: This function is defined in
 // gameseg.h, but object[HA] depends on gameseg.h, and object[HA] is where
 // CObject is defined...get it?
 int FindObjectSeg(CObject * obj);
 
-// go through all objects and make sure they have the correct tSegment
+// go through all objects and make sure they have the correct CSegment
 // numbers used when debugging is on
 void FixObjectSegs();
 
@@ -1046,11 +1074,11 @@ extern CObject *dbgObjP;
 #	define FORALL_POWERUP_OBJS(_objP,_i)			FORALL_CLASS_OBJS (OBJ_POWERUP, _objP, _i)
 #	define FORALL_WEAPON_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_WEAPON, _objP, _i)
 #	define FORALL_EFFECT_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_EFFECT, _objP, _i)
-�	define IS_OBJECT(_objP, _i)						((_i) <= gameData.objs.nLastObject [0])
+#	define IS_OBJECT(_objP, _i)						((_i) <= gameData.objs.nLastObject [0])
 #else
-#	define FORALL_OBJS(_objP,_i)							for ((_objP) = gameData.objs.lists.all.head; (_objP); (_objP) = (_objP)->links [0].next)
-#	define FORALL_SUPERCLASS_OBJS(_list,_objP,_i)	for ((_objP) = (_list).head; (_objP); (_objP) = (_objP)->links [2].next)
-#	define FORALL_CLASS_OBJS(_list,_objP,_i)			for ((_objP) = (_list).head; (_objP); (_objP) = (_objP)->links [1].next)
+#	define FORALL_OBJS(_objP,_i)							for ((_objP) = gameData.objs.lists.all.head; (_objP); (_objP) = (_objP)->Links (0).next)
+#	define FORALL_SUPERCLASS_OBJS(_list,_objP,_i)	for ((_objP) = (_list).head; (_objP); (_objP) = (_objP)->Links (2).next)
+#	define FORALL_CLASS_OBJS(_list,_objP,_i)			for ((_objP) = (_list).head; (_objP); (_objP) = (_objP)->Links (1).next)
 #	define FORALL_PLAYER_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.players, _objP, _i)
 #	define FORALL_ROBOT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.robots, _objP, _i)
 #	define FORALL_POWERUP_OBJS(_objP,_i)				FORALL_CLASS_OBJS (gameData.objs.lists.powerups, _objP, _i)

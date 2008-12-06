@@ -233,16 +233,16 @@ return 1;
 //------------------------------------------------------------------------------
 //The following code is an attempt to find all objects that cast a shadow visible
 //to the player. To accomplish that, for each robot the line of sight to each
-//tSegment visible to the tPlayer is computed. If there is a los to any of these 
+//CSegment visible to the tPlayer is computed. If there is a los to any of these 
 //segments, the CObject's shadow is rendered. Far from perfect solution though. :P
 
 void RenderObjectShadows (void)
 {
-	CObject		*objP = OBJECTS;
+	CObject		*objP;
 	int			i, j, bSee;
 	CObject		fakePlayerPos = *gameData.objs.viewerP;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
+FORALL_ACTOR_OBJS (objP, i)
 	if (objP == gameData.objs.consoleP)
 		RenderObject (objP, 0, 0);
 	else if ((objP->info.nType == OBJ_PLAYER) || 
@@ -350,7 +350,7 @@ for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 FORALL_OBJS (objP, h) {
 	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;
-	pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->info.nSegment * MAX_NEAREST_LIGHTS;
+	pnl = gameData.render.lights.dynamic.nearestSegLights + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
 		psl = gameData.render.lights.dynamic.shader.lights + *pnl;
@@ -434,7 +434,7 @@ gameData.render.shadows.nLights = GatherShadowLightSources ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, psl++) {
 	if (!psl->bShadow)
 		continue;
-	gameData.render.shadows.pLight = psl;
+	gameData.render.shadows.lights = psl;
 	psl->bExclusive = 1;
 #if 1
 	gameStates.render.nShadowPass = 2;

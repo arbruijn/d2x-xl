@@ -1609,7 +1609,7 @@ if (SHOW_LIGHTNINGS) {
 #	endif
 #endif
 	SEM_ENTER (SEM_LIGHTNINGS)
-	for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject [1]; i++, objP++) {
+	for (i = 0, objP = OBJECTS.Buffer (); i < gameData.objs.nLastObject [1]; i++, objP++) {
 		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNINGS) {
 			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNINGS;
 			DestroyForObject (objP);

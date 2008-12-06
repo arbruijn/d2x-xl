@@ -21,6 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //#include "inferno.h"
 #include "cfile.h"
 #include "gr.h"
+#include "carray.h"
 
 // Version 1 - Initial version
 // Version 2 - Mike changed some shorts to bytes in segments, so incompatible!
@@ -125,6 +126,12 @@ typedef struct tSegment {
 } tSegment;
 
 #endif //!EDITOR
+
+class CSegment : public tSegment {
+	public:
+	};
+
+int operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }
 
 typedef struct tSegFaces {
 	tFace	*pFaces;

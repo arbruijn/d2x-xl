@@ -78,8 +78,8 @@ void DoPhysicsAlignObject (CObject * objP)
 	int			i, best_side;
 
 best_side = 0;
-// bank tPlayer according to tSegment orientation
-//find tSide of tSegment that tPlayer is most aligned with
+// bank tPlayer according to CSegment orientation
+//find tSide of CSegment that tPlayer is most aligned with
 for (i = 0; i < 6; i++) {
 	d = vmsVector::Dot(gameData.segs.segments [objP->info.nSegment].sides [i].normals[0], objP->info.position.mOrient[UVEC]);
 	if (d > largest_d) {largest_d = d; best_side=i;}
@@ -271,10 +271,10 @@ void DoBumpHack (CObject *objP)
 #if DBG
 HUDMessage (0, "BUMP HACK");
 #endif
-//bump tPlayer a little towards vCenter of tSegment to unstick
+//bump tPlayer a little towards vCenter of CSegment to unstick
 COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->info.nSegment);
 //HUDMessage (0, "BUMP! %d %d", d1, d2);
-//don't bump tPlayer towards center of reactor tSegment
+//don't bump tPlayer towards center of reactor CSegment
 vmsVector::NormalizedDir(vBump, vCenter, objP->info.position.vPos);
 if (SEGMENT2S [objP->info.nSegment].special == SEGMENT_IS_CONTROLCEN)
 	vBump.Neg();
@@ -723,11 +723,11 @@ retryMove:
 		break;
 		}
 	Assert ((fviResult != HIT_WALL) || ((nWallHitSeg > -1) && (nWallHitSeg <= gameData.segs.nLastSegment)));
-	// update CObject's position and tSegment number
+	// update CObject's position and CSegment number
 	objP->info.position.vPos = iPos;
 	if (iSeg != objP->info.nSegment)
 		RelinkObjToSeg (nObject, iSeg);
-	//if start point not in tSegment, move CObject to center of tSegment
+	//if start point not in CSegment, move CObject to center of CSegment
 	if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).centerMask) {	//object stuck
 		int n = FindObjectSeg (objP);
 		if (n == -1) {
@@ -766,7 +766,7 @@ retryMove:
 		if ((fviResult == HIT_WALL) && (vmsVector::Dot (vMoveNormal, vFrame) < 0)) {		//moved backwards
 			//don't change position or xSimTime
 			objP->info.position.vPos = vSavePos;
-			//iSeg = objP->info.nSegment;		//don't change tSegment
+			//iSeg = objP->info.nSegment;		//don't change CSegment
 			if (nSaveSeg != iSeg)
 				RelinkObjToSeg (nObject, nSaveSeg);
 			if (bDoSpeedBoost) {
@@ -931,7 +931,7 @@ retryMove:
 		}
 #if DBG
 	else if (fviResult == HIT_BAD_P0) {
-		Int3 ();		// Unexpected collision nType: start point not in specified tSegment.
+		Int3 ();		// Unexpected collision nType: start point not in specified CSegment.
 #if TRACE
 		con_printf (CONDBG, "Warning: Bad p0 in physics!!!\n");
 #endif
@@ -1011,7 +1011,7 @@ if (objP->info.controlType == CT_AI) {
 			}
 		}
 
-//if end point not in tSegment, move CObject to last pos, or tSegment center
+//if end point not in CSegment, move CObject to last pos, or CSegment center
 if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).centerMask) {
 	if (FindObjectSeg (objP) == -1) {
 		int n;

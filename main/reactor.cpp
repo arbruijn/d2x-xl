@@ -289,7 +289,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		vmsVector	vecToPlayer;
 		fix			xDistToPlayer;
 		int			i;
-		tSegment		*segP = gameData.segs.segments + objP->info.nSegment;
+		CSegment		*segP = gameData.segs.segments + objP->info.nSegment;
 
 		// This is a hack.  Since the control center is not processed by
 		// ai_do_frame, it doesn't know how to deal with cloaked dudes.  It

@@ -144,7 +144,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void LoadFaceBitmaps (tSegment *segP, tFace *faceP)
+void LoadFaceBitmaps (CSegment *segP, tFace *faceP)
 {
 	tSide	*sideP = segP->sides + faceP->nSide;
 	short	nFrame = sideP->nFrame;
@@ -239,7 +239,7 @@ if ((newFaceP->bIsLight = IsLight (newFaceP->nBaseTex)))
 
 //------------------------------------------------------------------------------
 
-void FixTriangleFan (tSegment *segP, tFace *faceP)
+void FixTriangleFan (CSegment *segP, tFace *faceP)
 {
 if (((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
 	{
@@ -270,7 +270,7 @@ if (((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//r
 
 //------------------------------------------------------------------------------
 
-bool RenderSolidFace (tSegment *segP, tFace *faceP, int bDepthOnly)
+bool RenderSolidFace (CSegment *segP, tFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return false;
@@ -283,7 +283,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderWallFace (tSegment *segP, tFace *faceP, int bDepthOnly)
+bool RenderWallFace (CSegment *segP, tFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return false;
@@ -296,7 +296,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderColoredFace (tSegment *segP, tFace *faceP, int bDepthOnly)
+bool RenderColoredFace (CSegment *segP, tFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return false;
@@ -315,7 +315,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderCoronaFace (tSegment *segP, tFace *faceP, int bDepthOnly)
+bool RenderCoronaFace (CSegment *segP, tFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return false;
@@ -331,7 +331,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderSkyBoxFace (tSegment *segP, tFace *faceP, int bDepthOnly)
+bool RenderSkyBoxFace (CSegment *segP, tFace *faceP, int bDepthOnly)
 {
 LoadFaceBitmaps (segP, faceP);
 G3DrawFaceArrays (faceP, faceP->bmBot, faceP->bmTop, 1, 1, 0);
@@ -341,15 +341,15 @@ return true;
 //------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
-typedef bool (__fastcall * pRenderHandler) (tSegment *segP, tFace *faceP, int bDepthOnly);
+typedef bool (__fastcall * pRenderHandler) (CSegment *segP, tFace *faceP, int bDepthOnly);
 #else
-typedef bool (* pRenderHandler) (tSegment *segP, tFace *faceP, int bDepthOnly);
+typedef bool (* pRenderHandler) (CSegment *segP, tFace *faceP, int bDepthOnly);
 #endif
 
 static pRenderHandler renderHandlers [] = {RenderSolidFace, RenderWallFace, RenderColoredFace, RenderCoronaFace, RenderSkyBoxFace};
 
 
-static inline bool RenderMineFace (tSegment *segP, tFace *faceP, int nType, int bDepthOnly)
+static inline bool RenderMineFace (CSegment *segP, tFace *faceP, int nType, int bDepthOnly)
 {
 if (!faceP->bVisible)
 	return false;
@@ -554,33 +554,33 @@ else
 #endif
 	{
 	if (bNormals)
-		glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals);
+		glNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.normals.Buffer ()));
 	if (!bDepthOnly) {
 		if (bLightmaps)
-			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.lMapTexCoord);
+			glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.lMapTexCoord.Buffer ()));
 		else
-			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
+			glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.texCoord.Buffer ()));
 		if (!gameStates.render.bFullBright)
-			glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+			glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.color.Buffer ()));
 		}
-	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.vertices.Buffer ()));
 	if (bLightmaps) {
 		G3EnableClientStates (1, !gameStates.render.bFullBright, bNormals, GL_TEXTURE1);
-		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
+		glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.texCoord.Buffer ()));
 		if (!gameStates.render.bFullBright)
-			glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
-		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+			glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.color.Buffer ()));
+		glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.vertices.Buffer ()));
 		}
 	G3EnableClientStates (1, !gameStates.render.bFullBright, bNormals, GL_TEXTURE1 + bLightmaps);
-	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.ovlTexCoord.Buffer ()));
 	if (!gameStates.render.bFullBright)
-		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
-	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+		glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.color.Buffer ()));
+	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid*> (gameData.segs.faces.vertices.Buffer ()));
 	G3EnableClientStates (1, !gameStates.render.bFullBright, 0, GL_TEXTURE2 + bLightmaps);
-	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.ovlTexCoord.Buffer ()));
 	if (!gameStates.render.bFullBright)
-		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
-	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+		glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.color.Buffer ()));
+	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (gameData.segs.faces.vertices.Buffer ()));
 	}
 if (bNormals)
 	G3EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
@@ -634,7 +634,7 @@ if (nType != 3) {
 else 	if (CoronaStyle () == 2)
 	UnloadGlareShader ();
 else if (gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (CoronaStyle () == 1))
-	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
+	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 OglClearError (0);
 }
@@ -653,7 +653,7 @@ if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.nType = 4;
 	gameStates.render.bFullBright = 1;
 	bVertexArrays = BeginRenderFaces (4, 0);
-	for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++) {
+	for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments.Buffer (); i; i--, segP++) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
 		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
@@ -895,7 +895,7 @@ short RenderSegments (int nType, int bVertexArrays, int bDepthOnly, int bHeadlig
 
 if (nType) {
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
-		tFace *faceP = gameData.segs.faces.faces;
+		tFace *faceP = gameData.segs.faces.faces.Buffer ();
 		for (i = gameData.segs.nFaces; i; i--, faceP++)
 			if (RenderMineFace (SEGMENTS + faceP->nSegment, faceP, nType, bDepthOnly))
 				nFaces++;
@@ -940,7 +940,7 @@ int nCoronaStyle = CoronaStyle ();
 if (nCoronaStyle != 1)
 	return 0;
 if (gameStates.ogl.bOcclusionQuery) {
-	glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
+	glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
 	QueryCoronas (0, 1);
 	}
 int bVertexArrays = BeginRenderFaces (0, 1);
@@ -996,7 +996,7 @@ EndRenderFaces (nType, bVertexArrays, 0);
 
 // -----------------------------------------------------------------------------------
 
-inline int SegmentIsVisible (tSegment *segP)
+inline int SegmentIsVisible (CSegment *segP)
 {
 if (gameStates.render.automap.bDisplay)
 	return 1;
@@ -1005,7 +1005,7 @@ return RotateVertexList (8, segP->verts).ccAnd == 0;
 
 //------------------------------------------------------------------------------
 
-int SetupFace (short nSegment, short nSide, tSegment *segP, tFace *faceP, tFaceColor *pFaceColor, float *pfAlpha)
+int SetupFace (short nSegment, short nSide, CSegment *segP, tFace *faceP, tFaceColor *pFaceColor, float *pfAlpha)
 {
 	ubyte	bTextured, bWall;
 	int	nColor = 0;
@@ -1054,7 +1054,7 @@ void UpdateSlidingFaces (void)
 	tTexCoord2f	*texCoordP, *ovlTexCoordP;
 	tUVL			*uvlP;
 
-for (faceP = gameData.segs.faces.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
+for (faceP = gameData.segs.faces.slidingFaces.Buffer (); faceP; faceP = faceP->nextSlidingFace) {
 #if DBG
 	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		faceP = faceP;
@@ -1513,7 +1513,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 					c.color = gameData.render.color.ambient [nVertex].color;
 					tFaceColor *pvc = gameData.render.color.vertices + nVertex;
 					if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
-						if (nLights + gameData.render.lights.dynamic.nVariableVertLights [nVertex] == 0) {
+						if (nLights + gameData.render.lights.dynamic.variableVertLights [nVertex] == 0) {
 							pvc->color = c.color;
 							pvc->index = gameStates.render.nFrameFlipFlop + 1;
 							}
@@ -1556,7 +1556,7 @@ gameStates.ogl.bUseTransform = 0;
 void ComputeDynamicQuadLight (int nStart, int nEnd, int nThread)
 {
 PROF_START
-	tSegment		*segP;
+	CSegment		*segP;
 	tSegFaces	*segFaceP;
 	tFace		*faceP;
 	tRgbaColorf	*pc;
@@ -1641,7 +1641,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 					else {
 						tFaceColor *pvc = gameData.render.color.vertices + nVertex;
 						if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
-							if (nLights + gameData.render.lights.dynamic.nVariableVertLights [nVertex] == 0) {
+							if (nLights + gameData.render.lights.dynamic.variableVertLights [nVertex] == 0) {
 								pvc->color.red = c.color.red + gameData.render.color.ambient [nVertex].color.red;
 								pvc->color.green = c.color.green + gameData.render.color.ambient [nVertex].color.green;
 								pvc->color.blue = c.color.blue + gameData.render.color.ambient [nVertex].color.blue;
@@ -1691,7 +1691,7 @@ gameStates.ogl.bUseTransform = 0;
 void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
 {
 PROF_START
-	tSegment		*segP;
+	CSegment		*segP;
 	tSegFaces	*segFaceP;
 	tFace		*faceP;
 	grsTriangle	*triP;
@@ -1783,7 +1783,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 					else {
 						tFaceColor *pvc = gameData.render.color.vertices + nVertex;
 						if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
-							if (nLights + gameData.render.lights.dynamic.nVariableVertLights [nVertex] == 0) {
+							if (nLights + gameData.render.lights.dynamic.variableVertLights [nVertex] == 0) {
 								pvc->color.red = c.color.red + gameData.render.color.ambient [nVertex].color.red;
 								pvc->color.green = c.color.green + gameData.render.color.ambient [nVertex].color.green;
 								pvc->color.blue = c.color.blue + gameData.render.color.ambient [nVertex].color.blue;
@@ -1828,7 +1828,7 @@ gameStates.ogl.bUseTransform = 0;
 
 void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 {
-	tSegment		*segP;
+	CSegment		*segP;
 	tSegFaces	*segFaceP;
 	tFace		*faceP;
 	tRgbaColorf	*pc;
@@ -1908,7 +1908,7 @@ gameStates.ogl.bUseTransform = 0;
 
 int CountRenderFaces (void)
 {
-	tSegment		*segP;
+	CSegment		*segP;
 	short			nSegment;
 	int			h, i, j, nFaces, nSegments;
 

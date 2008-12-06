@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SOF_USED				1 		// Set if this sample is used
 #define SOF_PLAYING			2		// Set if this sample is playing on a channel
 #define SOF_LINK_TO_OBJ		4		// Sound is linked to a moving CObject. If CObject dies, then finishes play and quits.
-#define SOF_LINK_TO_POS		8		// Sound is linked to tSegment, pos
+#define SOF_LINK_TO_POS		8		// Sound is linked to CSegment, pos
 #define SOF_PLAY_FOREVER	16		// Play bForever (or until level is stopped), otherwise plays once
 #define SOF_PERMANENT		32		// Part of the level, like a waterfall or fan
 

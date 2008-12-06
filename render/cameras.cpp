@@ -616,8 +616,6 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 
 CCameraManager::~CCameraManager ()
 {
-D2_FREE (m_faceCameras);
-D2_FREE (m_objectCameras);
 Destroy ();
 }
 
@@ -634,19 +632,13 @@ int CCameraManager::Create (void)
 if (!gameStates.app.bD2XLevel)
 	return 0;
 PrintLog ("   creating cameras\n");
-if (!m_faceCameras) {
-	m_faceCameras = new char [2 * MAX_SEGMENTS * 6];
-	if (!m_faceCameras)
-		return 0;
-	}
-if (!m_objectCameras) {
-	GETMEM (ushort, m_objectCameras, MAX_OBJECTS, 0);
-	if (!m_objectCameras)
-		return 0;
-	}
-memset (m_faceCameras, 0xFF, MAX_SEGMENTS * 6 * sizeof (*m_faceCameras));
-memset (m_objectCameras, 0xFF, MAX_OBJECTS * sizeof (*m_objectCameras));
-for (i = 0, wallP = gameData.walls.walls; (i < gameData.walls.nWalls) && (m_nCameras < MAX_CAMERAS); i++, wallP++) {
+if (!(m_faceCameras.Buffer() || m_faceCameras.Create (2 * MAX_SEGMENTS * 6)))
+	return 0;
+if (!(m_objectCameras.Buffer() || m_objectCameras.Create (MAX_OBJECTS)))
+	return 0;
+m_faceCameras.Clear (0xFF);
+m_objectCameras.Clear (0xFF);
+for (i = 0, wallP = gameData.walls.walls.Buffer (); (i < gameData.walls.nWalls) && (m_nCameras < MAX_CAMERAS); i++, wallP++) {
 	t = wallP->nTrigger;
 	if (t >= gameData.trigs.nTriggers)
 		continue;
@@ -698,8 +690,7 @@ if (gameStates.ogl.bRender2TextureOk)
 PrintLog ("Destroying cameras\n");
 for (int i = 0; i < m_nCameras; i++)
 	m_cameras [i].Destroy ();
-if (m_faceCameras)
-	memset (m_faceCameras, 0xFF, MAX_SEGMENTS * 6 * sizeof (*m_faceCameras));
+m_faceCameras.Clear (0xFF);
 m_nCameras = 0;
 }
 
@@ -748,7 +739,7 @@ return 0;
 
 inline int CCameraManager::GetObjectCamera (int nObject) 
 {
-if (!(m_cameras && m_objectCameras) || (nObject < 0) || (nObject >= MAX_OBJECTS))
+if (!(m_cameras && m_objectCameras.Buffer ()) || (nObject < 0) || (nObject >= MAX_OBJECTS))
 	return -1;
 return m_objectCameras [nObject];
 }
@@ -757,7 +748,7 @@ return m_objectCameras [nObject];
 
 inline void CCameraManager::SetObjectCamera (int nObject, int i) 
 {
-if (m_objectCameras && (nObject >= 0) && (nObject < MAX_OBJECTS))
+if (m_objectCameras.Buffer () && (nObject >= 0) && (nObject < MAX_OBJECTS))
 	m_objectCameras [nObject] = i;
 }
 
@@ -765,14 +756,14 @@ if (m_objectCameras && (nObject >= 0) && (nObject < MAX_OBJECTS))
 
 int CCameraManager::GetFaceCamera (int nFace) 
 {
-return (m_cameras && m_faceCameras) ? m_faceCameras [nFace] : -1;
+return (m_cameras && m_faceCameras.Buffer()) ? m_faceCameras [nFace] : -1;
 }
 
 //------------------------------------------------------------------------------
 
 void CCameraManager::SetFaceCamera (int nFace, int i) 
 {
-if (m_faceCameras)
+if (m_faceCameras.Buffer ())
 	m_faceCameras [nFace] = i;
 }
 

@@ -193,7 +193,7 @@ if (!(mdP = MorphFindData (objP))) {	//maybe loaded half-morphed from disk
 	return;
 	}
 pmP = gameData.models.polyModels + mdP->objP->rType.polyObjInfo.nModel;
-G3CheckAndSwap (pmP->modelData);
+G3CheckAndSwap (reinterpret_cast<void*> (pmP->modelData.Buffer ()));
 for (i = 0; i < pmP->nModels; i++)
 	if (mdP->submodelActive [i] == 1) {
 		if (!MorphUpdatePoints (pmP, i, mdP))
@@ -261,7 +261,7 @@ objP->info.renderType = RT_MORPH;
 objP->info.movementType = MT_PHYSICS;		//RT_NONE;
 objP->mType.physInfo.rotVel = morph_rotvel;
 pmP = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
-G3CheckAndSwap (pmP->modelData);
+G3CheckAndSwap (reinterpret_cast<void*> (pmP->modelData.Buffer ()));
 MorphFindModelBounds (pmP, 0, pmmin, pmmax);
 vBoxSize[X] = max (-pmmin[X], pmmax[X]) / 2;
 vBoxSize[Y] = max (-pmmin[Y], pmmax[Y]) / 2;

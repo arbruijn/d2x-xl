@@ -438,8 +438,8 @@ for (i = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
 	memset (objP->links, 0, sizeof (objP->links));
 	objP->shots.nObject = -1;
 	objP->shots.nSignature = -1;
-	objP->xCreationTime =
-	objP->xTimeLastHit = 0;
+	objP->CreationTime () =
+	objP->TimeLastHit () = 0;
 	objP->vStartVel.SetZero ();
 	}
 ResetSegObjLists ();
@@ -543,7 +543,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 		#if DBG
 		if (count > MAX_OBJECTS)	{
 #if TRACE
-			con_printf (1, "Object list in tSegment %d is circular.\n", nSegment);
+			con_printf (1, "Object list in CSegment %d is circular.\n", nSegment);
 #endif
 			Int3 ();
 		}
@@ -551,7 +551,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 		if (OBJECTS [nObject].info.nSegment != nSegment)	{
 			#if DBG
 #if TRACE
-			con_printf (CONDBG, "Removing CObject %d from tSegment %d.\n", nObject, nSegment);
+			con_printf (CONDBG, "Removing CObject %d from CSegment %d.\n", nObject, nSegment);
 #endif
 			Int3 ();
 			#endif
@@ -627,7 +627,7 @@ return false;
 
 //------------------------------------------------------------------------------
 
-//link the CObject into the list for its tSegment
+//link the CObject into the list for its CSegment
 void LinkObjToSeg (int nObject, int nSegment)
 {
 	CObject *objP;
@@ -1396,9 +1396,9 @@ return m_nObject;
 }
 
 //-----------------------------------------------------------------------------
-//initialize a new CObject.  adds to the list for the given tSegment
+//initialize a new CObject.  adds to the list for the given CSegment
 //note that nSegment is really just a suggestion, since this routine actually
-//searches for the correct tSegment
+//searches for the correct CSegment
 //returns the CObject number
 
 int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, const vmsMatrix& mOrient,
@@ -1478,7 +1478,7 @@ if (objP->info.movementType == MT_PHYSICS)
 	objP->vStartVel.SetZero();
 if (objP->info.renderType == RT_POLYOBJ)
 	objP->rType.polyObjInfo.nTexOverride = -1;
-objP->xCreationTime = gameData.time.xGame;
+objP->CreationTime () = gameData.time.xGame;
 
 if (objP->info.nType == OBJ_WEAPON) {
 	Assert (objP->info.controlType == CT_WEAPON);
@@ -1517,7 +1517,7 @@ memcpy (cloneP, objP, sizeof (CObject));
 cloneP->info.nSignature = nSignature;
 cloneP->info.nCreator = -1;
 cloneP->mType.physInfo.thrust.SetZero();
-cloneP->xCreationTime = gameData.time.xGame;
+cloneP->CreationTime () = gameData.time.xGame;
 nSegment = objP->info.nSegment;
 cloneP->info.nSegment = cloneP->info.nPrevInSeg = cloneP->info.nNextInSeg = -1;
 memset (cloneP->links, 0, sizeof (cloneP->links));
@@ -1982,8 +1982,8 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 }
 
 //--------------------------------------------------------------------
-//when an CObject has moved into a new tSegment, this function unlinks it
-//from its old tSegment, and links it into the new tSegment
+//when an CObject has moved into a new CSegment, this function unlinks it
+//from its old CSegment, and links it into the new CSegment
 void RelinkObjToSeg (int nObject, int nNewSeg)
 {
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
@@ -2024,7 +2024,7 @@ objP->info.position.mOrient.CheckAndFix();
 }
 
 extern void MultiSendDropBlobs (char);
-extern void FuelCenCheckForGoal (tSegment *);
+extern void FuelCenCheckForGoal (CSegment *);
 
 //see if tWall is volatile, and if so, cause damage to tPlayer
 //returns true if tPlayer is in lava
@@ -2142,7 +2142,7 @@ if (!bUnderLavaFall && nLavaFallHissPlaying [objP->info.nId]) {
 void HandleSpecialSegments (CObject *objP)
 {
 	fix fuel, shields;
-	tSegment *segP = gameData.segs.segments + objP->info.nSegment;
+	CSegment *segP = gameData.segs.segments + objP->info.nSegment;
 	xsegment *xsegP = gameData.segs.xSegments + objP->info.nSegment;
 	tPlayer *playerPP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 
@@ -2750,15 +2750,15 @@ nDebrisObjectCount = 0;
 }
 
 //------------------------------------------------------------------------------
-//Tries to find a tSegment for an CObject, using FindSegByPos ()
+//Tries to find a CSegment for an CObject, using FindSegByPos ()
 int FindObjectSeg (CObject * objP)
 {
 return FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 }
 
 //------------------------------------------------------------------------------
-//If an CObject is in a tSegment, set its nSegment field and make sure it's
-//properly linked.  If not in any tSegment, returns 0, else 1.
+//If an CObject is in a CSegment, set its nSegment field and make sure it's
+//properly linked.  If not in any CSegment, returns 0, else 1.
 //callers should generally use FindVectorIntersection ()
 int UpdateObjectSeg (CObject * objP, bool bMove)
 {
@@ -2782,7 +2782,7 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-//go through all OBJECTS and make sure they have the correct tSegment numbers
+//go through all OBJECTS and make sure they have the correct CSegment numbers
 void FixObjectSegs (void)
 {
 	CObject	*objP;

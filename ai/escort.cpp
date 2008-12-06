@@ -88,7 +88,7 @@ gameData.escort.nLastKey = -1;
 }
 
 //	-----------------------------------------------------------------------------
-//	See if tSegment from curseg through nSide is reachable.
+//	See if CSegment from curseg through nSide is reachable.
 //	Return true if it is reachable, else return false.
 int SegmentIsReachable (int curseg, short nSide)
 {
@@ -97,13 +97,13 @@ return AIDoorIsOpenable (NULL, gameData.segs.segments + curseg, nSide);
 
 
 //	-----------------------------------------------------------------------------
-//	Create a breadth-first list of segments reachable from current tSegment.
+//	Create a breadth-first list of segments reachable from current CSegment.
 //	max_segs is maximum number of segments to search.  Use MAX_SEGMENTS to search all.
 //	On exit, *length <= max_segs.
 //	Input:
 //		start_seg
 //	Output:
-//		bfs_list:	array of shorts, each reachable tSegment.  Includes start tSegment.
+//		bfs_list:	array of shorts, each reachable CSegment.  Includes start CSegment.
 //		length:		number of elements in bfs_list
 void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs)
 {
@@ -120,7 +120,7 @@ void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs)
 while ((head != tail) && (head < max_segs)) {
 	int		i;
 	short		curseg;
-	tSegment	*cursegp;
+	CSegment	*cursegp;
 
 	curseg = bfs_list [tail++];
 	cursegp = gameData.segs.segments + curseg;
@@ -145,12 +145,12 @@ while ((head != tail) && (head < max_segs)) {
 
 //	-----------------------------------------------------------------------------
 //	Return true if ok for buddy to talk, else return false.
-//	Buddy is allowed to talk if the tSegment he is in does not contain a blastable tWall that has not been blasted
+//	Buddy is allowed to talk if the CSegment he is in does not contain a blastable tWall that has not been blasted
 //	AND he has never yet, since being initialized for level, been allowed to talk.
 int BuddyMayTalk (void)
 {
 	int		i;
-	tSegment	*segP;
+	CSegment	*segP;
 	CObject	*objP;
 
 if ((gameData.escort.nObjNum < 0) || (OBJECTS [gameData.escort.nObjNum].info.nType != OBJ_ROBOT)) {
@@ -179,7 +179,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	//	Check one level deeper.
 	if (IS_CHILD (segP->children [i])) {
 		int		j;
-		tSegment	*connSegP = gameData.segs.segments + segP->children [i];
+		CSegment	*connSegP = gameData.segs.segments + segP->children [i];
 
 		for (j = 0; j<MAX_SIDES_PER_SEGMENT; j++) {
 			short	wall2 = WallNumP (connSegP, (short) j);

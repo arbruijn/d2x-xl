@@ -236,7 +236,7 @@ switch (objP->info.nType) {
 
 //------------------------------------------------------------------------------
 
-void PagingTouchSide (tSegment * segP, short nSide)
+void PagingTouchSide (CSegment * segP, short nSide)
 {
 	int tmap1, tmap2;
 
@@ -278,7 +278,7 @@ if (!(gameData.pig.tex.tMapInfoP [tmap1].flags & TMI_VOLATILE) && (gameData.pig.
 
 //------------------------------------------------------------------------------
 
-void PagingTouchRobotMaker (tSegment * segP)
+void PagingTouchRobotMaker (CSegment * segP)
 {
 	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 	int			i;
@@ -311,7 +311,7 @@ FORALL_OBJS (objP, i)
 
 //------------------------------------------------------------------------------
 
-void PagingTouchSegment (tSegment * segP)
+void PagingTouchSegment (CSegment * segP)
 {
 	short			nSide, nObject;
 	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];

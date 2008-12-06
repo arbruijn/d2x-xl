@@ -64,11 +64,11 @@ extern	int	Interpolation_method;
 // Set Lighting_on to 0/1/2 for no lighting/intensity lighting/rgb lighting
 extern	int	Lighting_on;
 
-// HACK INTERFACE: how far away the current tSegment (& thus texture) is
+// HACK INTERFACE: how far away the current CSegment (& thus texture) is
 extern	int	nCurrentSegDepth;	
-extern	int	Max_perspective_depth;		//	Deepest tSegment at which perspective interpolation will be used.
-extern	int	Max_linear_depth;				//	Deepest tSegment at which linear interpolation will be used.
-extern	int	Max_flat_depth;				//	Deepest tSegment at which flat shading will be used. (If not flat shading, then what?)
+extern	int	Max_perspective_depth;		//	Deepest CSegment at which perspective interpolation will be used.
+extern	int	Max_linear_depth;				//	Deepest CSegment at which linear interpolation will be used.
+extern	int	Max_flat_depth;				//	Deepest CSegment at which flat shading will be used. (If not flat shading, then what?)
 
 //	These are pointers to texture maps.  If you want to render texture map #7, then you will render
 //	the texture map defined by Texmap_ptrs[7].

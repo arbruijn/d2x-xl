@@ -45,7 +45,7 @@ if (OBJ_IDX (objP) == nDbgObj)
 #endif
 if (gameOpts->gameplay.bIdleAnims) {
 		int			h, i, j;
-		tSegment		*segP = gameData.segs.segments + objP->info.nSegment;
+		CSegment		*segP = gameData.segs.segments + objP->info.nSegment;
 		vmsVector	*vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [OBJ_IDX (objP)];
 
 	for (i = 0; i < 8; i++) {

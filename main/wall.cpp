@@ -93,12 +93,12 @@ if (nFrames == anim->nFrameCount)
 return (fix) (((double) pt * (double) anim->nFrameCount) / (double) nFrames);
 }
 
-// This function determines whether the current tSegment/nSide is transparent
+// This function determines whether the current CSegment/nSide is transparent
 //		1 = YES
 //		0 = NO
 //-----------------------------------------------------------------
 
-int CheckTransparency (tSegment *segP, short nSide)
+int CheckTransparency (CSegment *segP, short nSide)
 {
 	tSide *sideP = segP->sides + nSide;
 	CBitmap	*bmP;
@@ -137,7 +137,7 @@ return gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (sideP
 //		WID_ILLUSORY_WALL			3	//	1/1/0		illusory tWall
 //		WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory tWall
 //		WID_NO_WALL					5	//	1/0/1		no tWall, can fly through
-int WallIsDoorWay (tSegment * segP, short nSide, CObject *objP)
+int WallIsDoorWay (CSegment * segP, short nSide, CObject *objP)
 {
 	int	flags, nType;
 	int	state;
@@ -215,7 +215,7 @@ return WID_WALL; // There are children behind the door.
 
 //-----------------------------------------------------------------
 
-int WALL_IS_DOORWAY (tSegment *segP, short nSide, CObject *objP)
+int WALL_IS_DOORWAY (CSegment *segP, short nSide, CObject *objP)
 {
 	int	nWall, bIsWall, nSegment, nChild = segP->children [nSide];
 
@@ -270,7 +270,7 @@ gameData.walls.nCloaking = 0;
 
 //-----------------------------------------------------------------
 // Initializes one tWall.
-void WallReset (tSegment *segP, short nSide)
+void WallReset (CSegment *segP, short nSide)
 {
 	tWall *wallP;
 	int i = WallNumP (segP, nSide);
@@ -295,7 +295,7 @@ wallP->nLinkedWall = NO_WALL;
 
 //-----------------------------------------------------------------
 //set the nBaseTex or nOvlTex field for a tWall/door
-void WallSetTMapNum (tSegment *segP, short nSide, tSegment *connSegP, short cSide, int nAnim, int nFrame)
+void WallSetTMapNum (CSegment *segP, short nSide, CSegment *connSegP, short cSide, int nAnim, int nFrame)
 {
 	tWallClip	*anim = gameData.walls.animP + nAnim;
 	short			tmap = anim->frames [(anim->flags & WCF_ALTFMT) ? 0 : nFrame];
@@ -351,10 +351,10 @@ if (connSegP)
 
 // -------------------------------------------------------------------------------
 //when the tWall has used all its hitpoints, this will destroy it
-void BlastBlastableWall (tSegment *segP, short nSide)
+void BlastBlastableWall (CSegment *segP, short nSide)
 {
 	short nConnSide;
-	tSegment *connSegP;
+	CSegment *connSegP;
 	int a, n;
 	short nWall, nConnWall;
 	tWall *wallP;
@@ -397,7 +397,7 @@ else {
 
 //-----------------------------------------------------------------
 // Destroys a blastable tWall.
-void WallDestroy (tSegment *segP, short nSide)
+void WallDestroy (CSegment *segP, short nSide)
 {
 Assert (IS_WALL (WallNumP (segP, nSide)));
 Assert (SEG_IDX (segP) != 0);
@@ -409,12 +409,12 @@ else
 
 //-----------------------------------------------------------------
 // Deteriorate appearance of tWall. (Changes bitmap (paste-ons))
-void WallDamage (tSegment *segP, short nSide, fix damage)
+void WallDamage (CSegment *segP, short nSide, fix damage)
 {
 	int		a, i, n;
 	short		nConnSide, nConnWall, nWall = WallNumP (segP, nSide);
 	tWall		*wallP;
-	tSegment *connSegP;
+	CSegment *connSegP;
 
 if (!IS_WALL (nWall)) {
 #if TRACE
@@ -461,12 +461,12 @@ else {
 
 //-----------------------------------------------------------------
 // Opens a door
-void WallOpenDoor (tSegment *segP, short nSide)
+void WallOpenDoor (CSegment *segP, short nSide)
 {
 	tWall			*wallP;
 	tActiveDoor *doorP;
 	short			nConnSide, nWall, nConnWall = NO_WALL;
-	tSegment		*connSegP;
+	CSegment		*connSegP;
 
 nWall = WallNumP (segP, nSide);
 Assert(IS_WALL (nWall)); 	//Opening door on illegal tWall
@@ -534,7 +534,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordDoorOpening (SEG_IDX (segP), nSide);
 if (IS_WALL (wallP->nLinkedWall) && IS_WALL (nConnWall) && (wallP->nLinkedWall == nConnWall)) {
 	tWall *wallP2 = gameData.walls.walls + wallP->nLinkedWall;
-	tSegment *segP2 = gameData.segs.segments + wallP2->nSegment;
+	CSegment *segP2 = gameData.segs.segments + wallP2->nSegment;
 	wallP2->state = WALL_DOOR_OPENING;
 	connSegP = gameData.segs.segments + segP2->children [wallP2->nSide];
 	nConnSide = FindConnectedSide(segP2, connSegP);
@@ -558,12 +558,12 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 
 //-----------------------------------------------------------------
 // start the transition from closed -> open tWall
-void StartWallCloak (tSegment *segP, short nSide)
+void StartWallCloak (CSegment *segP, short nSide)
 {
 	tWall				*wallP;
 	tCloakingWall	*cloakWallP;
 	short				nConnSide;
-	tSegment			*connSegP;
+	CSegment			*connSegP;
 	int				i;
 	short				nConnWall;
 
@@ -628,12 +628,12 @@ for (i = 0; i < 4; i++) {
 
 //-----------------------------------------------------------------
 // start the transition from open -> closed tWall
-void StartWallDecloak (tSegment *segP, short nSide)
+void StartWallDecloak (CSegment *segP, short nSide)
 {
 	tWall				*wallP;
 	tCloakingWall	*cloakWallP;
 	short				nConnSide;
-	tSegment			*connSegP;
+	CSegment			*connSegP;
 	int				i;
 	short				nConnWall;
 
@@ -717,7 +717,7 @@ d = gameData.walls.activeDoors + nDoor;
 for (p = 0; p < d->nPartCount; p++) {
 		tWall		*w = gameData.walls.walls + d->nFrontWall [p];
 		short		nConnSide, nSide = w->nSide;
-		tSegment *segP = gameData.segs.segments + w->nSegment,
+		CSegment *segP = gameData.segs.segments + w->nSegment,
 					*connSegP = gameData.segs.segments + segP->children [nSide];
 
 	nConnSide = FindConnectedSide(segP, connSegP);
@@ -749,10 +749,10 @@ return 0;		//does not!
 
 //-----------------------------------------------------------------
 //returns true of door in unobjstructed (& thus can close)
-int DoorIsBlocked (tSegment *segP, short nSide)
+int DoorIsBlocked (CSegment *segP, short nSide)
 {
 	short		nConnSide;
-	tSegment *connSegP;
+	CSegment *connSegP;
 	short		nObject, t;
 
 connSegP = gameData.segs.segments + segP->children [nSide];
@@ -774,12 +774,12 @@ return 0; 	//doorway is D2_FREE!
 
 //-----------------------------------------------------------------
 // Closes a door
-void WallCloseDoor (tSegment *segP, short nSide)
+void WallCloseDoor (CSegment *segP, short nSide)
 {
 	tWall *wallP;
 	tActiveDoor *doorP;
 	short nConnSide, nWall, nConnWall;
-	tSegment *connSegP;
+	CSegment *connSegP;
 
 Assert(IS_WALL (WallNumP (segP, nSide))); 	//Opening door on illegal tWall
 
@@ -842,7 +842,7 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 
 //-----------------------------------------------------------------
 
-int AnimateOpeningDoor (tSegment *segP, short nSide, fix xElapsedTime)
+int AnimateOpeningDoor (CSegment *segP, short nSide, fix xElapsedTime)
 {
 	tWall	*wallP;
 	int	i, nFrames, nWall;
@@ -886,7 +886,7 @@ void DoDoorOpen (int nDoor)
 	tActiveDoor *doorP;
 	tWall			*wallP;
 	short			cSide, nSide;
-	tSegment		*connSegP, *segP;
+	CSegment		*connSegP, *segP;
 	int			i, nWall, bFlags = 3;
 
 if (nDoor < -1)
@@ -928,7 +928,7 @@ if (bFlags & 1)
 
 //-----------------------------------------------------------------
 
-int AnimateClosingDoor (tSegment *segP, short nSide, fix xElapsedTime)
+int AnimateClosingDoor (CSegment *segP, short nSide, fix xElapsedTime)
 {
 	tWall	*wallP;
 	int	i, nFrames, nWall;
@@ -963,7 +963,7 @@ void DoDoorClose (int nDoor)
 	tWall			*wallP;
 	int			i, bFlags = 1;
 	short			cSide, nSide;
-	tSegment		*connSegP, *segP;
+	CSegment		*connSegP, *segP;
 
 
 if (nDoor < -1)
@@ -1019,9 +1019,9 @@ else
 //-----------------------------------------------------------------
 // Turns off an illusionary tWall (This will be used primarily for
 //  tWall switches or triggers that can turn on/off illusionary walls.)
-void WallIllusionOff (tSegment *segP, short nSide)
+void WallIllusionOff (CSegment *segP, short nSide)
 {
-	tSegment *connSegP;
+	CSegment *connSegP;
 	short		cSide, nWall;
 
 if (segP->children [nSide] < 0) {
@@ -1058,9 +1058,9 @@ if (connSegP) {
 //-----------------------------------------------------------------
 // Turns on an illusionary tWall (This will be used primarily for
 //  tWall switches or triggers that can turn on/off illusionary walls.)
-void WallIllusionOn (tSegment *segP, short nSide)
+void WallIllusionOn (CSegment *segP, short nSide)
 {
-	tSegment *connSegP;
+	CSegment *connSegP;
 	short		cSide, nWall;
 
 if (segP->children [nSide] < 0) {
@@ -1131,7 +1131,7 @@ void InitDoorAnims (void)
 {
 	int			h, i;
 	tWall			*wallP;
-	tSegment		*segP;
+	CSegment		*segP;
 	tWallClip	*animP;
 
 for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; wallP++, i++) {
@@ -1152,7 +1152,7 @@ for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; wallP++, i+
 //obj is the CObject that hit...either a weapon or the tPlayer himself
 //nPlayer is the number the tPlayer who hit the tWall or fired the weapon,
 //or -1 if a robot fired the weapon
-int WallHitProcess (tSegment *segP, short nSide, fix damage, int nPlayer, CObject *objP)
+int WallHitProcess (CSegment *segP, short nSide, fix damage, int nPlayer, CObject *objP)
 {
 	tWall	*wallP;
 	short	nWall;
@@ -1233,14 +1233,14 @@ return WHP_NOT_SPECIAL;		//default is treat like Normal tWall
 
 //-----------------------------------------------------------------
 // Opens doors/destroys tWall/shuts off triggers.
-void WallToggle (tSegment *segP, short nSide)
+void WallToggle (CSegment *segP, short nSide)
 {
 	tWall	*wallP;
 	int	nWall;
 
 if (SEG_IDX (segP) > gameData.segs.nLastSegment) {
 #if DBG
-	Warning("Can't toggle nSide %d of tSegment %d - nonexistent tSegment!\n", nSide, SEG_IDX (segP));
+	Warning("Can't toggle nSide %d of CSegment %d - nonexistent CSegment!\n", nSide, SEG_IDX (segP));
 #endif
 	return;
 	}
@@ -1593,7 +1593,7 @@ if (nStuckObjects)
 // -----------------------------------------------------------------------------------
 #define	MAX_BLAST_GLASS_DEPTH	5
 
-void BngProcessSegment(CObject *objP, fix damage, tSegment *segp, int depth, sbyte *visited)
+void BngProcessSegment(CObject *objP, fix damage, CSegment *segp, int depth, sbyte *visited)
 {
 	int	i;
 	short	nSide;
@@ -1693,7 +1693,7 @@ void BlastNearbyGlass(CObject *objP, fix damage)
 {
 	int		i;
 	sbyte   visited [MAX_SEGMENTS_D2X];
-	tSegment	*cursegp;
+	CSegment	*cursegp;
 
 	cursegp = &gameData.segs.segments [objP->info.nSegment];
 	for (i=0; i<=gameData.segs.nLastSegment; i++)

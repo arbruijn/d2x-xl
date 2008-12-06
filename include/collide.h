@@ -33,7 +33,7 @@ int CollidePlayerAndNastyRobot (CObject * nPlayer, CObject * robot, vmsVector *v
 
 int NetDestroyReactor (CObject *reactorP);
 int CollidePlayerAndPowerup (CObject * nPlayer, CObject * powerup, vmsVector *vCollision);
-int CheckEffectBlowup (tSegment *segP, short nSide, vmsVector *vPos, CObject *blowerP, int bForceBlowup);
+int CheckEffectBlowup (CSegment *segP, short nSide, vmsVector *vPos, CObject *blowerP, int bForceBlowup);
 void ApplyDamageToReactor (CObject *reactorP, fix xDamage, short nAttacker);
 void BumpOneObject (CObject *objP, vmsVector *vHitDir, fix xDamage);
 void SetDebrisCollisions (void);

@@ -278,13 +278,13 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 //	the vector from the gun point to the player.  But we need to know whether the gun point
 //	is separated from the robot's center by a tWall.  If so, don't fire!
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
-	//	Well, the gun point is in a different tSegment than the robot's center.
+	//	Well, the gun point is in a different CSegment than the robot's center.
 	//	This is almost always ok, but it is not ok if something solid is in between.
 	int	nGunSeg = FindSegByPos (*vFirePoint, objP->info.nSegment, 1, 0);
 	//	See if these segments are connected, which should almost always be the case.
 	short nConnSide = FindConnectedSide (&gameData.segs.segments [nGunSeg], &gameData.segs.segments [objP->info.nSegment]);
 	if (nConnSide != -1) {
-		//	They are connected via nConnSide in tSegment objP->info.nSegment.
+		//	They are connected via nConnSide in CSegment objP->info.nSegment.
 		//	See if they are unobstructed.
 		if (!(WALL_IS_DOORWAY (gameData.segs.segments + objP->info.nSegment, nConnSide, NULL) & WID_FLY_FLAG)) {
 			//	Can't fly through, so don't let this bot fire through!

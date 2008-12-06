@@ -212,7 +212,7 @@ j = (sdP->nFaceNodes == 3) ?
 	 BuildSphereTri (reinterpret_cast<tOOF_triangle **> (buf), &nFaces, sdP->nTessDepth) :
 	 BuildSphereQuad (reinterpret_cast<tOOF_quad **> (buf), &nFaces, sdP->nTessDepth);
 D2_FREE (buf [!j]);
-sdP->pSphere = buf [j];
+sdP->sphere = buf [j];
 return nFaces;
 }
 
@@ -222,7 +222,7 @@ tOOF_triangle *RotateSphere (tSphereData *sdP, tOOF_vector *pRotSphere, tOOF_vec
 {
 	tOOF_matrix	m;
 	tOOF_vector	h, v, p,
-					*pSphere = sdP->pSphere,
+					*pSphere = sdP->sphere,
 					*s = pRotSphere;
 	int			nFaces;
 
@@ -275,21 +275,21 @@ int InitSphereSurface (tSphereData *sdP, float red, float green, float blue, flo
 	float	fScale;
 	int	bTextured = 0;
 
-if (sdP->pPulse) {
+if (sdP->pulseP) {
 	static time_t	t0 = 0;
 	if (gameStates.app.nSDLTicks - t0 > 25) {
 		t0 = gameStates.app.nSDLTicks;
-		sdP->pPulse->fScale += sdP->pPulse->fDir;
-		if (sdP->pPulse->fScale > 1.0f) {
-			sdP->pPulse->fScale = 1.0f;
-			sdP->pPulse->fDir = -sdP->pPulse->fSpeed;
+		sdP->pulseP->fScale += sdP->pulseP->fDir;
+		if (sdP->pulseP->fScale > 1.0f) {
+			sdP->pulseP->fScale = 1.0f;
+			sdP->pulseP->fDir = -sdP->pulseP->fSpeed;
 			}
-		else if (sdP->pPulse->fScale < sdP->pPulse->fMin) {
-			sdP->pPulse->fScale = sdP->pPulse->fMin;
-			sdP->pPulse->fDir = sdP->pPulse->fSpeed;
+		else if (sdP->pulseP->fScale < sdP->pulseP->fMin) {
+			sdP->pulseP->fScale = sdP->pulseP->fMin;
+			sdP->pulseP->fDir = sdP->pulseP->fSpeed;
 			}
 		}
-	fScale = sdP->pPulse->fScale;
+	fScale = sdP->pulseP->fScale;
 	}
 else
 	fScale = 1;
@@ -327,7 +327,7 @@ if (alpha < 1.0f) {
 #if ADDITIVE_SPHERE_BLENDING
 	fScale *= coronaIntensities [gameOpts->render.coronas.nObjIntensity];
 #endif
-	if (sdP->pPulse && sdP->pPulse->fScale) {
+	if (sdP->pulseP && sdP->pulseP->fScale) {
 		red *= fScale;
 		green *= fScale;
 		blue *= fScale;
@@ -527,7 +527,7 @@ int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScal
 #if !SIMPLE_SPHERE
 	int			i, j, nFaces = sdP->nFaces;
 	tOOF_vector *ps,
-					*pSphere = sdP->pSphere,
+					*pSphere = sdP->sphere,
 					*pRotSphere = reinterpret_cast<tOOF_vector*> (D2_ALLOC (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector)));
 
 if (!pRotSphere)
@@ -642,7 +642,7 @@ if (gameData.render.shield.nFaces > 0)
 		RenderSphere (&gameData.render.shield, &p, r, r, r, red, green, blue, alpha, bmpShield, 1, 1);
 		G3DoneInstance ();
 		gameStates.ogl.bUseTransform = 0;
-		fScale = gameData.render.shield.pPulse->fScale;
+		fScale = gameData.render.shield.pulseP->fScale;
 		G3StartInstanceMatrix (vPos, posP->mOrient);
 		vPos.SetZero();
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
@@ -686,7 +686,7 @@ if (gameData.render.monsterball.nFaces > 0)
 void DestroySphere (tSphereData *sdP)
 {
 if (sdP) {
-	D2_FREE (sdP->pSphere);
+	D2_FREE (sdP->sphere);
 	sdP->nFaces = 0;
 	}
 }
@@ -707,19 +707,19 @@ DestroySphere (&gameData.render.monsterball);
 
 //------------------------------------------------------------------------------
 
-void UseSpherePulse (tSphereData *sdP, tPulseData *pPulse)
+void UseSpherePulse (tSphereData *sdP, tPulseData *pulseP)
 {
-sdP->pPulse = pPulse;
+sdP->pulseP = pulseP;
 }
 
 //------------------------------------------------------------------------------
 
-void SetSpherePulse (tPulseData *pPulse, float fSpeed, float fMin)
+void SetSpherePulse (tPulseData *pulseP, float fSpeed, float fMin)
 {
-pPulse->fScale =
-pPulse->fMin = fMin;
-pPulse->fSpeed =
-pPulse->fDir = fSpeed;
+pulseP->fScale =
+pulseP->fMin = fMin;
+pulseP->fSpeed =
+pulseP->fDir = fSpeed;
 }
 
 //------------------------------------------------------------------------------
