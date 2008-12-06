@@ -218,54 +218,54 @@ return nFaces;
 
 //------------------------------------------------------------------------------
 
-tOOF_triangle *RotateSphere (tSphereData *sdP, tOOF_vector *pRotSphere, tOOF_vector *pPos, float xScale, float yScale, float zScale)
+tOOF_triangle *RotateSphere (tSphereData *sdP, tOOF_vector *rotSphereP, tOOF_vector *pPos, float xScale, float yScale, float zScale)
 {
 	tOOF_matrix	m;
 	tOOF_vector	h, v, p,
-					*pSphere = sdP->sphere,
-					*s = pRotSphere;
+					*sphereP = sdP->sphere.Buffer (),
+					*s = rotSphereP;
 	int			nFaces;
 
 OOF_MatVms2Oof (&m, viewInfo.view[0]);
 OOF_VecVms2Oof (&p, viewInfo.pos);
-for (nFaces = sdP->nFaces * (sdP->nFaceNodes + 1); nFaces; nFaces--, pSphere++, pRotSphere++) {
-	v = *pSphere;
+for (nFaces = sdP->nFaces * (sdP->nFaceNodes + 1); nFaces; nFaces--, sphereP++, rotSphereP++) {
+	v = *sphereP;
 	v.x *= xScale;
 	v.y *= yScale;
 	v.z *= zScale;
-	OOF_VecRot (pRotSphere, OOF_VecSub (&h, &v, &p), &m);
+	OOF_VecRot (rotSphereP, OOF_VecSub (&h, &v, &p), &m);
 	}
 return (tOOF_triangle *) s;
 }
 
 //------------------------------------------------------------------------------
 
-tOOF_triangle *SortSphere (tOOF_triangle *pSphere, int left, int right)
+tOOF_triangle *SortSphere (tOOF_triangle *sphereP, int left, int right)
 {
 	int	l = left,
 			r = right;
-	float	m = pSphere [(l + r) / 2].c.z;
+	float	m = sphereP [(l + r) / 2].c.z;
 
 do {
-	while (pSphere [l].c.z < m)
+	while (sphereP [l].c.z < m)
 		l++;
-	while (pSphere [r].c.z > m)
+	while (sphereP [r].c.z > m)
 		r--;
 	if (l <= r) {
 		if (l < r) {
-			tOOF_triangle h = pSphere [l];
-			pSphere [l] = pSphere [r];
-			pSphere [r] = h;
+			tOOF_triangle h = sphereP [l];
+			sphereP [l] = sphereP [r];
+			sphereP [r] = h;
 			}
 		}
 	++l;
 	--r;
 	} while (l <= r);
 if (right > l)
-   SortSphere (pSphere, l, right);
+   SortSphere (sphereP, l, right);
 if (r > left)
-   SortSphere (pSphere, left, r);
-return pSphere;
+   SortSphere (sphereP, left, r);
+return sphereP;
 }
 
 //------------------------------------------------------------------------------
@@ -527,10 +527,10 @@ int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScal
 #if !SIMPLE_SPHERE
 	int			i, j, nFaces = sdP->nFaces;
 	tOOF_vector *ps,
-					*pSphere = sdP->sphere,
-					*pRotSphere = reinterpret_cast<tOOF_vector*> (D2_ALLOC (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector)));
+					*sphereP = sdP->sphere,
+					*rotSphereP = reinterpret_cast<tOOF_vector*> (D2_ALLOC (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector)));
 
-if (!pRotSphere)
+if (!rotSphereP)
 	return -1;
 #endif
 glEnable (GL_BLEND);
@@ -552,13 +552,13 @@ glTranslatef (pPos->x, pPos->y, pPos->z);
 RenderSphereSimple (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 #else
 #	if 1
-pSphere = reinterpret_cast<tOOF_vector*> (RotateSphere (sdP, pRotSphere, pPos, xScale, yScale, zScale));
+sphereP = reinterpret_cast<tOOF_vector*> (RotateSphere (sdP, rotSphereP, pPos, xScale, yScale, zScale));
 #	else
-pSphere = reinterpret_cast<tOOF_vector*> (SortSphere (RotateSphere (pSphere, pRotSphere, pPos, nFaces, xScale, yScale, zScale), 0, nFaces - 1));
+sphereP = reinterpret_cast<tOOF_vector*> (SortSphere (RotateSphere (sphereP, rotSphereP, pPos, nFaces, xScale, yScale, zScale), 0, nFaces - 1));
 #	endif
 if (sdP->nFaceNodes == 3) {
 	glBegin (GL_LINES);
-	for (j = nFaces, ps = pSphere; j; j--, ps++)
+	for (j = nFaces, ps = sphereP; j; j--, ps++)
 		for (i = 0; i < 3; i++, ps++)
 			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
 	glEnd ();
@@ -567,7 +567,7 @@ if (sdP->nFaceNodes == 3) {
 	else
 		glColor4f (red, green, blue, alpha);
 	glBegin (GL_TRIANGLES);
-	for (j = nFaces, ps = pSphere; j; j--, ps++)
+	for (j = nFaces, ps = sphereP; j; j--, ps++)
 		for (i = 0; i < 3; i++, ps++) {
 			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
 			}
@@ -575,7 +575,7 @@ if (sdP->nFaceNodes == 3) {
 	}
 else {
 	glBegin (GL_LINES);
-	for (j = nFaces, ps = pSphere; j; j--, ps++)
+	for (j = nFaces, ps = sphereP; j; j--, ps++)
 		for (i = 0; i < 4; i++, ps++) {
 			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
 			}
@@ -585,7 +585,7 @@ else {
 	else
 		glColor4f (red, green, blue, alpha);
 	glBegin (GL_QUADS);
-	for (j = nFaces, ps = pSphere; j; j--, ps++)
+	for (j = nFaces, ps = sphereP; j; j--, ps++)
 		for (i = 0; i < 4; i++, ps++) {
 			if (bTextured)
 				glTexCoord2f (fTexCoord [i][0], fTexCoord [i][1]);
@@ -593,7 +593,7 @@ else {
 			}
 	glEnd ();
 	}
-D2_FREE (pRotSphere);
+D2_FREE (rotSphereP);
 #endif //SIMPLE_SPHERE
 glDepthMask (1);
 glDepthFunc (GL_LESS);
@@ -608,11 +608,11 @@ if (!LoadShield ())
 	return 0;
 #if !SIMPLE_SPHERE
 if (gameData.render.shield.nTessDepth != gameOpts->render.textures.nQuality + 2) {
-	if (gameData.render.shield.pSphere)
+	if (gameData.render.shield.sphereP)
 		DestroySphere (&gameData.render.shield);
 	gameData.render.shield.nTessDepth = gameOpts->render.textures.nQuality + 2;
 	}
-if (!gameData.render.shield.pSphere)
+if (!gameData.render.shield.sphereP)
 	gameData.render.shield.nFaces = CreateSphere (&gameData.render.shield);
 #endif
 return 1;
@@ -656,7 +656,7 @@ if (gameData.render.shield.nFaces > 0)
 void DrawMonsterball (CObject *objP, float red, float green, float blue, float alpha)
 {
 #if !SIMPLE_SPHERE
-if (!gameData.render.monsterball.pSphere) {
+if (!gameData.render.monsterball.sphereP) {
 	gameData.render.monsterball.nTessDepth = 3;
 	gameData.render.monsterball.nFaces = CreateSphere (&gameData.render.monsterball);
 	}
@@ -686,7 +686,7 @@ if (gameData.render.monsterball.nFaces > 0)
 void DestroySphere (tSphereData *sdP)
 {
 if (sdP) {
-	D2_FREE (sdP->sphere);
+	sdP->sphere.Destroy ();
 	sdP->nFaces = 0;
 	}
 }
