@@ -367,7 +367,7 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 			if (!pm->modelData.Create (len))
 				Error ("Not enough memory for game models.");
 			pm->nDataSize = len;
-			pof_read (pm->modelData, 1, len, modelBuf);
+			pof_read (pm->modelData.Buffer (), 1, len, modelBuf);
 			break;
 
 		default:
@@ -441,8 +441,7 @@ return nGuns;
 //D2_FREE up a model, getting rid of all its memory
 void FreeModel (tPolyModel *po)
 {
-if (po->modelData)
-	delete[] po->modelData;
+po->modelData.Destroy ();
 }
 
 //------------------------------------------------------------------------------
@@ -493,7 +492,7 @@ if (gameStates.app.bEndLevelSequence &&
 	bIsDefModel = 1;
 	}
 else {
-	bHaveAltModel = gameData.models.altPolyModels [nModel].modelData != NULL;
+	bHaveAltModel = gameData.models.altPolyModels [nModel].modelData.Buffer () != NULL;
 	bIsDefModel = IsDefaultModel (nModel);
 	}
 #if DBG
@@ -605,7 +604,7 @@ if (!(po = GetPolyModel (objP, pos, nModel, flags))) {
 if (gameStates.render.nShadowPass == 2) {
 	if (!bHires) {
 		G3SetModelPoints (gameData.models.polyModelPoints);
-		G3DrawPolyModelShadow (objP, po->modelData, animAngles, nModel);
+		G3DrawPolyModelShadow (objP, po->modelData.Buffer (), animAngles, nModel);
 		}
 	return 1;
 	}
@@ -635,7 +634,7 @@ if (!flags)	{	//draw entire tObject
 			(gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
 			!(SHOW_DYN_LIGHT && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
 		G3StartInstanceMatrix (*pos, *orient);
-		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
+		G3DrawPolyModel (objP, po->modelData.Buffer (), gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
 		G3DoneInstance ();
 		}
 	}
@@ -904,8 +903,6 @@ return i;
  */
 void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf)
 {
-if (pm->modelData)
-	D2_FREE (pm->modelData);
 if (!pm->modelData.Create (pm->nDataSize))
 	Error ("Not enough memory for game models.");
 cf.Read (pm->modelData.Buffer (), sizeof (ubyte), pm->nDataSize);
@@ -918,7 +915,7 @@ if (pdm) {
 #ifdef WORDS_NEED_ALIGNMENT
 AlignPolyModelData (pm);
 #endif
-G3CheckAndSwap (pm->modelData);
+G3CheckAndSwap (pm->modelData.Buffer ());
 //verify (pm->modelData);
 G3InitPolyModel (pm, nModel);
 }

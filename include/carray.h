@@ -62,8 +62,10 @@ template < class _T > class CArray {
 			}
 			
 		inline _T *Create (uint size) {
-			Destroy ();
-			m_size = (m_buffer = new _T [size]) ? size : 0;
+			if (m_size != size) {
+				Destroy ();
+				m_size = (m_buffer = new _T [size]) ? size : 0;
+				}
 			return m_buffer;
 			}
 			
@@ -103,6 +105,7 @@ template < class _T > class CArray {
 		inline _T& operator= (_T* source) { 
 			if (m_buffer)
 				memcpy (m_buffer, source, m_size * sizeof (_T)); 
+			return m_buffer [0];
 			}
 
 		inline _T& Copy (CArray<_T>& source, uint offset = 0) { 
