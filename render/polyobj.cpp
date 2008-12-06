@@ -550,7 +550,7 @@ if (altTextures) {
 	}
 else {
 	for (i = 0, j = po->nFirstTexture; i < nTextures; i++, j++) {
-		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [j]];
+		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [j]];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
 #ifdef _3DFX
       gameData.models.textures [i]->nId = gameData.models.textureIndex [i].index;

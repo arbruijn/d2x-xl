@@ -693,7 +693,7 @@ void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int leve
 
 			for (i=0; i<po->nTextures; i++) {
 
-				int	tli = gameData.pig.tex.objBmIndex[gameData.pig.tex.pObjBmIndex[po->nFirstTexture+i]].index;
+				int	tli = gameData.pig.tex.objBmIndex[gameData.pig.tex.objBmIndexP[po->nFirstTexture+i]].index;
 				if ((tli < MAX_BITMAP_FILES) && (tli >= 0)) {
 					tmap_buf[tli]++;
 					if (level_tmap_buf[tli] == -1)

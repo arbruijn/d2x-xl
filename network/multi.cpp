@@ -1871,9 +1871,9 @@ else {
 	//Assert (N_PLAYER_SHIP_TEXTURES == po->nTextures);
 	bmiP = mpTextureIndex [--id];
 	for (i = 0, j = po->nFirstTexture; i < N_PLAYER_SHIP_TEXTURES; i++, j++)
-		bmiP [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [j]];
-	bmiP [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap + id * 2]];
-	bmiP [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap + id * 2 + 1]];
+		bmiP [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [j]];
+	bmiP [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + id * 2]];
+	bmiP [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + id * 2 + 1]];
 	objP->rType.polyObjInfo.nAltTextures = id;
 	}
 }

@@ -308,8 +308,8 @@ for (i = 0; i < sort_n; i++) {
 	if (mn == nSubModel) {
  		int i;
 		for (i=0;i<pmP->nTextures;i++) {
-			gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pmP->nFirstTexture+i]];
-			gameData.models.textures [i] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pmP->nFirstTexture+i]]*/gameData.models.textureIndex [i].index;
+			gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [pmP->nFirstTexture+i]];
+			gameData.models.textures [i] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [pmP->nFirstTexture+i]]*/gameData.models.textureIndex [i].index;
 			}
 
 #ifdef PIGGY_USE_PAGING

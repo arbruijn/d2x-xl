@@ -282,7 +282,7 @@ gameData.pig.tex.nObjBitmaps = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d tObject bitmap indices\n", gameData.pig.tex.nObjBitmaps);
 BitmapIndexReadN (gameData.pig.tex.objBmIndex, gameData.pig.tex.nObjBitmaps, cf);
 for (i = 0; i < gameData.pig.tex.nObjBitmaps; i++)
-	gameData.pig.tex.pObjBmIndex [i] = cf.ReadShort ();
+	gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
 
 /*---*/PrintLog ("      Loading tPlayer ship description\n");
 PlayerShipRead (&gameData.pig.ship.only, cf);
@@ -882,7 +882,7 @@ void BMReadWeaponInfoD1 (CFile& cf)
 	cf.Read (gameData.models.nDeadModels, sizeof (int), MAX_POLYGON_MODELS, cf);
 
 	cf.Read (gameData.pig.tex.objBmIndex, sizeof (tBitmapIndex), MAX_OBJ_BITMAPS, cf);
-	cf.Read (gameData.pig.tex.pObjBmIndex, sizeof (ushort), MAX_OBJ_BITMAPS, cf);
+	cf.Read (gameData.pig.tex.objBmIndexP, sizeof (ushort), MAX_OBJ_BITMAPS, cf);
 
 	cf.Read (&gameData.pig.ship.only, sizeof (tPlayerShip), 1, cf);
 
@@ -1023,7 +1023,7 @@ void BMReadAllD1 (CFile& cf)
 	//BitmapIndexReadN (gameData.pig.tex.objBmIndex, D1_MAX_OBJ_BITMAPS, cf);
 	cf.Seek (fp, D1_MAX_OBJ_BITMAPS * sizeof (tBitmapIndex), SEEK_CUR);
 	for (i = 0;i < D1_MAX_OBJ_BITMAPS;i++)
-		cf.Seek (fp, 2, SEEK_CUR);//gameData.pig.tex.pObjBmIndex [i] = cf.ReadShort ();
+		cf.Seek (fp, 2, SEEK_CUR);//gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
 
 	//PlayerShipRead (&gameData.pig.ship.only, cf);
 	cf.Seek (fp, sizeof (tPlayerShip), SEEK_CUR);
@@ -1209,7 +1209,7 @@ if (N_D2_OBJBITMAPPTRS + t >= MAX_OBJ_BITMAPS) {
 	return -1;
 	}
 for (i = N_D2_OBJBITMAPPTRS; i < (N_D2_OBJBITMAPPTRS + t); i++)
-	gameData.pig.tex.pObjBmIndex [i] = cf.ReadShort ();
+	gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
 cf.Close ();
 return 1;
 }
@@ -1371,7 +1371,7 @@ for (j = 0; j < t; j++) {
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
 		}
-	gameData.pig.tex.pObjBmIndex [i] = cf.ReadShort ();
+	gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
 	}
 cf.Close ();
 return 1;
@@ -1435,7 +1435,7 @@ if (!(i = bip->index))
 	return NULL;
 //if (gameData.pig.tex.bitmaps [0][i].Width () != 64 || gameData.pig.tex.bitmaps [0][i].Height () != 64)
 //	Error ("Bitmap <%s> is not 64x64", name);
-gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nObjBitmaps] = gameData.pig.tex.nObjBitmaps;
+gameData.pig.tex.objBmIndexP [gameData.pig.tex.nObjBitmaps] = gameData.pig.tex.nObjBitmaps;
 gameData.pig.tex.nObjBitmaps++;
 Assert (gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 return gameData.pig.tex.bitmaps [0] + i;

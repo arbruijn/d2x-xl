@@ -1205,10 +1205,10 @@ CBitmap *load_polymodel_bitmap(char *name)
 
 		if (Effects [gameStates.app.bD1Data][nEffectClip].changingObjectTexture == -1) {		//first time referenced
 			Effects [gameStates.app.bD1Data][nEffectClip].changingObjectTexture = gameData.pig.tex.nObjBitmaps;
-			gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = gameData.pig.tex.nObjBitmaps;
+			gameData.pig.tex.objBmIndexP[N_ObjBitmapPtrs++] = gameData.pig.tex.nObjBitmaps;
 			gameData.pig.tex.nObjBitmaps++;
 		} else {
-			gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = Effects [gameStates.app.bD1Data][nEffectClip].changingObjectTexture;
+			gameData.pig.tex.objBmIndexP[N_ObjBitmapPtrs++] = Effects [gameStates.app.bD1Data][nEffectClip].changingObjectTexture;
 		}
 		Assert(gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 		Assert(N_ObjBitmapPtrs < MAX_OBJ_BITMAPS);
@@ -1218,7 +1218,7 @@ CBitmap *load_polymodel_bitmap(char *name)
 		gameData.pig.tex.objBmIndex[gameData.pig.tex.nObjBitmaps] = bm_load_sub(name);
 		if (GameBitmaps[gameData.pig.tex.objBmIndex[gameData.pig.tex.nObjBitmaps].index].props.w!=64 || GameBitmaps[gameData.pig.tex.objBmIndex[gameData.pig.tex.nObjBitmaps].index].props.h!=64)
 			Error("Bitmap <%bObjectRendered> is not 64x64",name);
-		gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = gameData.pig.tex.nObjBitmaps;
+		gameData.pig.tex.objBmIndexP[N_ObjBitmapPtrs++] = gameData.pig.tex.nObjBitmaps;
 		gameData.pig.tex.nObjBitmaps++;
 		Assert(gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 		Assert(N_ObjBitmapPtrs < MAX_OBJ_BITMAPS);
@@ -2302,9 +2302,9 @@ fprintf(tfile,"Num gauge bitmaps = %d, gameData.cockpit.gauges [1] array = %d, g
 	t = MAX_OBJ_BITMAPS;
 	fwrite( &t, sizeof(int), 1, fp );
 	fwrite( gameData.pig.tex.objBmIndex, sizeof(tBitmapIndex), t, fp );
-	fwrite( gameData.pig.tex.pObjBmIndex, sizeof(ushort), t, fp );
+	fwrite( gameData.pig.tex.objBmIndexP, sizeof(ushort), t, fp );
 
-fprintf(tfile,"Num obj bitmaps = %d, gameData.pig.tex.objBmIndex array = %d, gameData.pig.tex.pObjBmIndex array = %d\n",t,sizeof(tBitmapIndex)*t,sizeof(ushort)*t);
+fprintf(tfile,"Num obj bitmaps = %d, gameData.pig.tex.objBmIndex array = %d, gameData.pig.tex.objBmIndexP array = %d\n",t,sizeof(tBitmapIndex)*t,sizeof(ushort)*t);
 
 	fwrite( &only_player_ship, sizeof(tPlayerShip), 1, fp );
 
@@ -2387,9 +2387,9 @@ void bm_write_extraRobots()
 
 	t = N_ObjBitmapPtrs - N_D2_OBJBITMAPPTRS;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( &gameData.pig.tex.pObjBmIndex[N_D2_OBJBITMAPPTRS], sizeof(ushort), t, fp );
+	fwrite( &gameData.pig.tex.objBmIndexP[N_D2_OBJBITMAPPTRS], sizeof(ushort), t, fp );
 
-	fwrite( gameData.pig.tex.pObjBmIndex, sizeof(ushort), t, fp );
+	fwrite( gameData.pig.tex.objBmIndexP, sizeof(ushort), t, fp );
 
 	fclose(fp);
 }

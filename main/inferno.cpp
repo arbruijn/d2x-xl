@@ -111,7 +111,7 @@ extern int SDL_HandleSpecialKeys;
 
 tGameOptions	gameOptions [2];
 tGameStates		gameStates;
-tGameData		gameData;
+CGameData		gameData;
 
 //static const char desc_id_checksum_str[] = DESC_ID_CHKSUM_TAG "0000"; // 4-byte checksum
 char desc_id_exit_num = 0;
@@ -2339,6 +2339,33 @@ gameData.score.nPhallicMan = -1;
 InitEndLevelData ();
 InitStringPool ();
 SetDataVersion (-1);
+}
+
+// ----------------------------------------------------------------------------
+
+CTextureData::CTextureData ()
+{
+for (int i = 0; i < 2; i++) {
+	bitmapFiles [i].Create (MAX_BITMAP_FILES);
+	bitmapFlags [i].Create (MAX_BITMAP_FILES);
+	bitmaps [i].Create (MAX_BITMAP_FILES);
+	altBitmaps [i].Create (MAX_BITMAP_FILES);
+	bmIndex [i].Create (MAX_TEXTURES);
+	textureIndex [i].Create (MAX_BITMAP_FILES);
+	tMapInfo [i].Create (MAX_TEXTURES);
+	}
+objBmIndex.Create (MAX_OBJ_BITMAPS);
+addonBitmaps.Create (MAX_ADDON_BITMAP_FILES);
+bitmapXlat.Create (MAX_BITMAP_FILES);
+aliases.Create (MAX_ALIASES);
+objBmIndexP.Create (MAX_OBJ_BITMAPS);
+cockpitBmIndex.Create (N_COCKPIT_BITMAPS);
+bitmapColors.Create (MAX_BITMAP_FILES);
+bitmaps [0].Clone (bitmapP);
+altBitmaps [0].Clone (altBitmapP);
+ bmIndex [0].Clone (bmIndexP);
+bitmapFiles [0].Clone (bitmapFileP);
+tMapInfo [0].Clone (tMapInfoP);
 }
 
 // ----------------------------------------------------------------------------

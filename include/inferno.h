@@ -2192,38 +2192,43 @@ typedef struct tSoundData {
 #define N_COCKPIT_BITMAPS 6
 #define D1_N_COCKPIT_BITMAPS 4
 
-typedef struct tTextureData {
-	tBitmapFile			bitmapFiles [2][MAX_BITMAP_FILES];
-	sbyte					bitmapFlags [2][MAX_BITMAP_FILES];
-	CBitmap				bitmaps [2][MAX_BITMAP_FILES];
-	CBitmap				altBitmaps [2][MAX_BITMAP_FILES];
-	CBitmap				addonBitmaps [MAX_ADDON_BITMAP_FILES];
-	ushort				bitmapXlat [MAX_BITMAP_FILES];
-	alias					aliases [MAX_ALIASES];
-	tBitmapIndex		bmIndex [2][MAX_TEXTURES];
-	tBitmapIndex		objBmIndex [MAX_OBJ_BITMAPS];
-	short					textureIndex [2][MAX_BITMAP_FILES];
-	ushort				pObjBmIndex [MAX_OBJ_BITMAPS];
-	tBitmapIndex		cockpitBmIndex [N_COCKPIT_BITMAPS];
-	tRgbColorf			bitmapColors [MAX_BITMAP_FILES];
-	int					nBitmaps [2];
-	int					nObjBitmaps;
-	int					bPageFlushed;
-	tTexMapInfo      	tMapInfo [2][MAX_TEXTURES];
-	int					nExtraBitmaps;
-	int					nAliases;
-	int					nHamFileVersion;
-	int					nTextures [2];
-	int					nFirstMultiBitmap;
-	tBitmapFile			*bitmapFileP;
-	CBitmap				*bitmapP;
-	CBitmap				*altBitmapP;
-	tBitmapIndex		*bmIndexP;
-	tTexMapInfo			*tMapInfoP;
-	CArray<ubyte>		rleBuffer;
-	int					brightness [MAX_WALL_TEXTURES];
-	int					defaultBrightness [2][MAX_WALL_TEXTURES];
-} tTextureData;
+class CTextureData {
+	public:
+		CArray<tBitmapFile>		bitmapFiles [2]; //[MAX_BITMAP_FILES];
+		CArray<sbyte>				bitmapFlags [2]; //[MAX_BITMAP_FILES];
+		CArray<CBitmap>			bitmaps [2]; //[MAX_BITMAP_FILES];
+		CArray<CBitmap>			altBitmaps [2]; //[MAX_BITMAP_FILES];
+		CArray<CBitmap>			addonBitmaps ; //[MAX_ADDON_BITMAP_FILES];
+		CArray<ushort>				bitmapXlat ; //[MAX_BITMAP_FILES];
+		CArray<alias>				aliases ; //[MAX_ALIASES];
+		CArray<tBitmapIndex>		bmIndex [2]; //[MAX_TEXTURES];
+		CArray<tBitmapIndex>		objBmIndex ; //[MAX_OBJ_BITMAPS];
+		CArray<short>				textureIndex [2]; //[MAX_BITMAP_FILES];
+		CArray<ushort>				objBmIndexP ; //[MAX_OBJ_BITMAPS];
+		CArray<tBitmapIndex>		cockpitBmIndex; //[N_COCKPIT_BITMAPS];
+		CArray<tRgbColorf>		bitmapColors ; //[MAX_BITMAP_FILES];
+		int							nBitmaps [2];
+		int							nObjBitmaps;
+		int							bPageFlushed;
+		CArray<tTexMapInfo>		tMapInfo [2] ; //[MAX_TEXTURES];
+		int							nExtraBitmaps;
+		int							nAliases;
+		int							nHamFileVersion;
+		int							nTextures [2];
+		int							nFirstMultiBitmap;
+		CArray<tBitmapFile>		bitmapFileP;
+		CArray<CBitmap>			bitmapP;
+		CArray<CBitmap>			altBitmapP;
+		CArray<tBitmapIndex>		bmIndexP;
+		CArray<tTexMapInfo>		tMapInfoP;
+		CArray<ubyte>				rleBuffer;
+		int							brightness [MAX_WALL_TEXTURES];
+		int							defaultBrightness [2][MAX_WALL_TEXTURES];
+
+	public:
+		CTextureData ();
+		~CTextureData () {}
+};
 
 //------------------------------------------------------------------------------
 
@@ -2252,12 +2257,17 @@ typedef struct tFlagData {
 
 //------------------------------------------------------------------------------
 
-typedef struct tPigData {
-	tTextureData		tex;
-	tSoundData			sound;
-	tShipData			ship;
-	tFlagData			flags [2];
-} tPigData;
+class CPigData {
+	public:
+		CTextureData		tex;
+		tSoundData			sound;
+		tShipData			ship;
+		tFlagData			flags [2];
+
+	public:
+		CPigData () {}
+		~CPigData () {}
+};
 
 //------------------------------------------------------------------------------
 
@@ -3146,63 +3156,68 @@ typedef struct tCockpitData {
 	tBitmapIndex		gauges [2][MAX_GAUGE_BMS];
 } tCockpitData;
 
-typedef struct tGameData {
-	tSegmentData		segs;
-	tWallData			walls;
-	tTriggerData		trigs;
-	tObjectData			objs;
-	tRobotData			bots;
-	tRenderData			render;
-	tEffectData			eff;
-	tPigData				pig;
-	tModelData			models;
-	tMultiplayerData	multiplayer;
-	tMultiGameData		multigame;
-	tMuzzleData			muzzle;
-	tWeaponData			weapons;
-	tMissionData		missions;
-	tEntropyData		entropy;
-	tReactorData		reactor;
-	tMarkerData			marker;
-	tBossData			boss [MAX_BOSS_COUNT];
-	tAIData				ai;
-	tSongData			songs;
-	tEndLevelData		endLevel;
-	tMenuData			menu;
-	tMatCenData			matCens;
-	tDemoData			demo;
-	tParticleData		particles;
-	tEscortData			escort;
-	tThiefData			thief;
-	tHoardData			hoard;
-	tHUDData				hud;
-	tTerrainData		terrain;
-	tTimeData			time;
-	tFCDData				fcd;
-	tVertColorData		vertColor;
-	tThreadData			threads;
-#if DBG
-	tSpeedtestData		speedtest;
-#endif
-	tPhysicsData		physics;
-	tLaserData			laser;
-	tFusionData			fusion;
-	tOmegaData			omega;
-	tMissileData		missiles;
-	tCockpitData		cockpit;
-	tCollisionData		collisions;
-	tScoreData			score;
-	tTrackIRData		trackIR;
-	tStatsData			stats;
-	tTextData			messages [2];
-	tTextData			sounds;
-	tApplicationData	app;
+class CGameData {
+	public:
+		tSegmentData		segs;
+		tWallData			walls;
+		tTriggerData		trigs;
+		tObjectData			objs;
+		tRobotData			bots;
+		tRenderData			render;
+		tEffectData			eff;
+		CPigData				pig;
+		tModelData			models;
+		tMultiplayerData	multiplayer;
+		tMultiGameData		multigame;
+		tMuzzleData			muzzle;
+		tWeaponData			weapons;
+		tMissionData		missions;
+		tEntropyData		entropy;
+		tReactorData		reactor;
+		tMarkerData			marker;
+		tBossData			boss [MAX_BOSS_COUNT];
+		tAIData				ai;
+		tSongData			songs;
+		tEndLevelData		endLevel;
+		tMenuData			menu;
+		tMatCenData			matCens;
+		tDemoData			demo;
+		tParticleData		particles;
+		tEscortData			escort;
+		tThiefData			thief;
+		tHoardData			hoard;
+		tHUDData				hud;
+		tTerrainData		terrain;
+		tTimeData			time;
+		tFCDData				fcd;
+		tVertColorData		vertColor;
+		tThreadData			threads;
+	#if DBG
+		tSpeedtestData		speedtest;
+	#endif
+		tPhysicsData		physics;
+		tLaserData			laser;
+		tFusionData			fusion;
+		tOmegaData			omega;
+		tMissileData		missiles;
+		tCockpitData		cockpit;
+		tCollisionData		collisions;
+		tScoreData			score;
+		tTrackIRData		trackIR;
+		tStatsData			stats;
+		tTextData			messages [2];
+		tTextData			sounds;
+		tApplicationData	app;
 #if PROFILING
-	tProfilerData		profiler;
+		tProfilerData		profiler;
 #endif
-} tGameData;
 
-extern tGameData gameData;
+	public:
+		CGameData () {}
+		~CGameData () {}
+};
+
+extern CGameData gameData;
 
 typedef struct tBossProps {
 	ubyte		bTeleports;
