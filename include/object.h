@@ -35,8 +35,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_HIT_OBJECTS		20
 
 // Object types
-#define OBJ_NONE        255 // unused tObject
-#define OBJ_WALL        0   // A tWall... not really an tObject, but used for collisions
+#define OBJ_NONE        255 // unused CObject
+#define OBJ_WALL        0   // A tWall... not really an CObject, but used for collisions
 #define OBJ_FIREBALL    1   // a fireball, part of an explosion
 #define OBJ_ROBOT       2   // an evil enemy
 #define OBJ_HOSTAGE     3   // a hostage you need to rescue
@@ -50,7 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_CLUTTER     11  // misc objects
 #define OBJ_GHOST       12  // what the tPlayer turns into when dead
 #define OBJ_LIGHT       13  // a light source, & not much else
-#define OBJ_COOP        14  // a cooperative tPlayer tObject.
+#define OBJ_COOP        14  // a cooperative tPlayer CObject.
 #define OBJ_MARKER      15  // a map marker
 #define OBJ_CAMBOT		16	 // a camera
 #define OBJ_MONSTERBALL	17	 // a monsterball
@@ -59,14 +59,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_EFFECT		20	 // lightnings
 
 // WARNING!! If you add a nType here, add its name to ObjectType_names
-// in tObject.c
+// in CObject.c
 #define MAX_OBJECT_TYPES 21
 
 // Result types
 #define RESULT_NOTHING  0   // Ignore this collision
 #define RESULT_CHECK    1   // Check for this collision
 
-// Control types - what tells this tObject what do do
+// Control types - what tells this CObject what do do
 #define CT_NONE         0   // doesn't move (or change movement)
 #define CT_AI           1   // driven by AI
 #define CT_EXPLOSION    2   // explosion sequencer
@@ -75,7 +75,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CT_FLYTHROUGH   6   // the flythrough system
 #define CT_WEAPON       9   // laser, etc.
 #define CT_REPAIRCEN    10  // under the control of the repair center
-#define CT_MORPH        11  // this tObject is being morphed
+#define CT_MORPH        11  // this CObject is being morphed
 #define CT_DEBRIS       12  // this is a piece of debris
 #define CT_POWERUP      13  // animating powerup blob
 #define CT_LIGHT        14  // doesn't actually do anything
@@ -87,7 +87,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MT_NONE         0   // doesn't move
 #define MT_PHYSICS      1   // moves by physics
 #define MT_STATIC		2	 // completely still and immoveable
-#define MT_SPINNING     3   // this tObject doesn't move, just sits and spins
+#define MT_SPINNING     3   // this CObject doesn't move, just sits and spins
 
 // Render types
 #define RT_NONE         0   // does not render
@@ -110,14 +110,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SINGLE_LIGHT_ID		0
 #define CLUSTER_LIGHT_ID	1
 
-// misc tObject flags
-#define OF_EXPLODING        1   // this tObject is exploding
-#define OF_SHOULD_BE_DEAD   2   // this tObject should be dead, so next time we can, we should delete this tObject.
+// misc CObject flags
+#define OF_EXPLODING        1   // this CObject is exploding
+#define OF_SHOULD_BE_DEAD   2   // this CObject should be dead, so next time we can, we should delete this CObject.
 #define OF_DESTROYED        4   // this has been killed, and is showing the dead version
 #define OF_SILENT           8   // this makes no sound when it hits a tWall.  Added by MK for weapons, if you extend it to other types, do it completely!
-#define OF_ATTACHED         16  // this tObject is a fireball attached to another tObject
-#define OF_HARMLESS         32  // this tObject does no damage.  Added to make quad lasers do 1.5 damage as normal lasers.
-#define OF_PLAYER_DROPPED   64  // this tObject was dropped by the tPlayer...
+#define OF_ATTACHED         16  // this CObject is a fireball attached to another CObject
+#define OF_HARMLESS         32  // this CObject does no damage.  Added to make quad lasers do 1.5 damage as normal lasers.
+#define OF_PLAYER_DROPPED   64  // this CObject was dropped by the tPlayer...
 #define OF_ARMAGEDDON		 128 // destroyed by cheat
 
 // Different Weapon ID types...
@@ -130,14 +130,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // physics flags
 #define PF_TURNROLL         0x01    // roll when turning
-#define PF_LEVELLING        0x02    // level tObject with closest tSide
+#define PF_LEVELLING        0x02    // level CObject with closest tSide
 #define PF_BOUNCE           0x04    // bounce (not slide) when hit will
 #define PF_WIGGLE           0x08    // wiggle while flying
-#define PF_STICK            0x10    // tObject sticks (stops moving) when hits tWall
-#define PF_PERSISTENT       0x20    // tObject keeps going even after it hits another tObject (eg, fusion cannon)
-#define PF_USES_THRUST      0x40    // this tObject uses its thrust
+#define PF_STICK            0x10    // CObject sticks (stops moving) when hits tWall
+#define PF_PERSISTENT       0x20    // CObject keeps going even after it hits another CObject (eg, fusion cannon)
+#define PF_USES_THRUST      0x40    // this CObject uses its thrust
 #define PF_HAS_BOUNCED      0x80    // Weapon has bounced once.
-#define PF_FREE_SPINNING    0x100   // Drag does not apply to rotation of this tObject
+#define PF_FREE_SPINNING    0x100   // Drag does not apply to rotation of this CObject
 #define PF_BOUNCES_TWICE    0x200   // This weapon bounces twice, then dies
 
 #define IMMORTAL_TIME   0x3fffffff  // Time assigned to immortal objects, about 32768 seconds, or about 9 hours.
@@ -204,11 +204,11 @@ class RenderSmokeInfo : public RenderInfo { };
 class RenderLightningInfo : public RenderInfo { };
 #endif
 
-// information for physics sim for an tObject
+// information for physics sim for an CObject
 typedef struct tPhysicsInfo {
-	vmsVector	velocity;   // velocity vector of this tObject
-	vmsVector	thrust;     // constant force applied to this tObject
-	fix         mass;       // the mass of this tObject
+	vmsVector	velocity;   // velocity vector of this CObject
+	vmsVector	thrust;     // constant force applied to this CObject
+	fix         mass;       // the mass of this CObject
 	fix         drag;       // how fast this slows down
 	fix         brakes;     // how much brakes applied
 	vmsVector	rotVel;     // rotational velecity (angles)
@@ -252,8 +252,8 @@ typedef struct nParentInfo {
 typedef struct tLaserInfo  {
 	tParentInfo	parent;
 	fix			xCreationTime;      // Absolute time of creation.
-	short			nLastHitObj;       // For persistent weapons (survive tObject collision), tObject it most recently hit.
-	short			nHomingTarget;				// Object this tObject is tracking.
+	short			nLastHitObj;       // For persistent weapons (survive CObject collision), CObject it most recently hit.
+	short			nHomingTarget;				// Object this CObject is tracking.
 	fix			xScale;        // Power if this is a fusion bolt (or other super weapon to be added).
 } tLaserInfo;
 
@@ -279,7 +279,7 @@ class CLaserInfo {
 };
 
 typedef struct tAttachedObjInfo {
-	short	nParent;	// explosion is attached to this tObject
+	short	nParent;	// explosion is attached to this CObject
 	short	nPrev;	// previous explosion in attach list
 	short	nNext;	// next explosion in attach list
 } tAttachedObjInfo;
@@ -299,8 +299,8 @@ class CAttachedInfo {
 
 typedef struct tExplosionInfo {
     fix     nSpawnTime;       // when lifeleft is < this, spawn another
-    fix     nDeleteTime;      // when to delete tObject
-    short   nDeleteObj;			// and what tObject to delete
+    fix     nDeleteTime;      // when to delete CObject
+    short   nDeleteObj;			// and what CObject to delete
 	 tAttachedObjInfo	attached;
 } tExplosionInfo;
 
@@ -522,26 +522,26 @@ class CObjContainerInfo {
 };
 
 typedef struct tObjectInfo {
-	int     				nSignature;    // Every tObject ever has a unique nSignature...
-	ubyte   				nType;         // what nType of tObject this is... robot, weapon, hostage, powerup, fireball
-	ubyte   				nId;           // which form of tObject...which powerup, robot, etc.
+	int     				nSignature;    // Every CObject ever has a unique nSignature...
+	ubyte   				nType;         // what nType of CObject this is... robot, weapon, hostage, powerup, fireball
+	ubyte   				nId;           // which form of CObject...which powerup, robot, etc.
 #ifdef WORDS_NEED_ALIGNMENT
 	short   				pad;
 #endif
 	short   				nNextInSeg, 
-							nPrevInSeg;  // id of next and previous connected tObject in Objects, -1 = no connection
-	ubyte   				controlType;   // how this tObject is controlled
-	ubyte   				movementType;  // how this tObject moves
-	ubyte   				renderType;    // how this tObject renders
+							nPrevInSeg;  // id of next and previous connected CObject in Objects, -1 = no connection
+	ubyte   				controlType;   // how this CObject is controlled
+	ubyte   				movementType;  // how this CObject moves
+	ubyte   				renderType;    // how this CObject renders
 	ubyte   				nFlags;        // misc flags
 	short					nSegment;
-	short   				nAttachedObj;  // number of attached fireball tObject
+	short   				nAttachedObj;  // number of attached fireball CObject
 	tTransformation	position;
-	fix     				xSize;         // 3d size of tObject - for collision detection
-	fix     				xShields;      // Starts at maximum, when <0, tObject dies..
-	vmsVector 			vLastPos;		// where tObject was last frame
+	fix     				xSize;         // 3d size of CObject - for collision detection
+	fix     				xShields;      // Starts at maximum, when <0, CObject dies..
+	vmsVector 			vLastPos;		// where CObject was last frame
 	tObjContainerInfo	contains;
-	sbyte   				nCreator; // Materialization center that created this tObject, high bit set if matcen-created
+	sbyte   				nCreator; // Materialization center that created this CObject, high bit set if matcen-created
 	fix     				xLifeLeft;      // how long until goes away, or 7fff if immortal
 } tObjectInfo;
 
@@ -550,7 +550,7 @@ typedef struct tBaseObject {
 	tObjectInfo			info;
 	// movement info, determined by MOVEMENT_TYPE
 	union {
-		tPhysicsInfo	physInfo; // a physics tObject
+		tPhysicsInfo	physInfo; // a physics CObject
 		vmsVector   	spinRate; // for spinning objects
 		} mType;
 	// control info, determined by CONTROL_TYPE
@@ -573,51 +573,53 @@ typedef struct tBaseObject {
 #endif
 } tBaseObject;
 
-class CObjectInfo : public CTransformation, public CObjContainerInfo, private tBaseObject {
+class CObjectInfo : public CTransformation, public CObjContainerInfo {
+	private:
+		tBaseObject	m_object;
 	public:
 		CObjectInfo () { memset (&info, 0, sizeof (info)); }
 
-		inline tBaseObject* GetInfo (void) { return &info; }; 
-		inline void GetInfo (tBaseObject* infoP) { info = *infoP; }; 
-		inline int GetSignature () { return info.nSignature; }
-		inline ubyte GetId () { return info.nId; }
-		inline fix GetSize () { return info.xSize; }
-		inline fix GetShields () { return info.xShields; }
-		inline fix GetLifeLeft () { return info.xLifeLeft; }
-		inline short GetSegment () { return info.nSegment; }
-		inline short GetAttachedObj () { return info.nAttachedObj; }
-		inline short GetNextInSeg () { return info.nNextInSeg; }
-		inline short GetPrevInSeg () { return info.nPrevInSeg; }
-		inline sbyte GetCreator () { return info.nCreator; }
-		inline ubyte GetType () { return info.nType; }
-		inline ubyte GetControlType () { return info.controlType; }
-		inline ubyte GetMovementType () { return info.movementType; }
-		inline ubyte GetRenderType () { return info.renderType; }
-		inline ubyte GetFlags () { return info.nFlags; }
-		inline vmsVector GetLastPos () { return info.vLastPos; }
+		inline tBaseObject* GetInfo (void) { return &m_object.info; }; 
+		inline void GetInfo (tBaseObject* m_object.infoP) { m_object.info = *m_object.infoP; }; 
+		inline int GetSignature () { return m_object.info.nSignature; }
+		inline ubyte GetId () { return m_object.info.nId; }
+		inline fix GetSize () { return m_object.info.xSize; }
+		inline fix GetShields () { return m_object.info.xShields; }
+		inline fix GetLifeLeft () { return m_object.info.xLifeLeft; }
+		inline short GetSegment () { return m_object.info.nSegment; }
+		inline short GetAttachedObj () { return m_object.info.nAttachedObj; }
+		inline short GetNextInSeg () { return m_object.info.nNextInSeg; }
+		inline short GetPrevInSeg () { return m_object.info.nPrevInSeg; }
+		inline sbyte GetCreator () { return m_object.info.nCreator; }
+		inline ubyte GetType () { return m_object.info.nType; }
+		inline ubyte GetControlType () { return m_object.info.controlType; }
+		inline ubyte GetMovementType () { return m_object.info.movementType; }
+		inline ubyte GetRenderType () { return m_object.info.renderType; }
+		inline ubyte GetFlags () { return m_object.info.nFlags; }
+		inline vmsVector GetLastPos () { return m_object.info.vLastPos; }
 
-		inline void SetSignature (int nSignature) { info.nSignature = nSignature; }
-		inline void SetId (ubyte nId) { info.nId = nId; }
-		inline void SetSize (fix xSize) { info.xSize = xSize; }
-		inline void SetShields (fix xShields) { info.xShields = xShields; }
-		inline void SetLifeLeft (fix xLifeLeft) { info.xLifeLeft = xLifeLeft; }
-		inline void SetSegment (short nSegment) { info.nSegment = nSegment; }
-		inline void SetAttachedObj (short nAttachedObj) { info.nAttachedObj = nAttachedObj; }
-		inline void SetNextInSeg (short nNextInSeg) { info.nNextInSeg = nNextInSeg; }
-		inline void SetPrevInSeg ( short nPrevInSeg) { info.nPrevInSeg = nPrevInSeg; }
-		inline void SetCreator (sbyte nCreator) { info.nCreator = nCreator; }
-		inline void SetType (ubyte nType) { info.nType = nType; }
-		inline void SetControlType (ubyte controlType) { info.controlType = controlType; }
-		inline void SetMovementType (ubyte movementType) { info.movementType = movementType; }
-		inline void SetRenderType (ubyte renderType) { info.renderType = renderType; }
-		inline void SetFlags (ubyte nFlags) { info.nFlags = nFlags; }
-		inline void SetLastPos (const vmsVector *vLastPos) { info.vLastPos = *vLastPos; }
+		inline void SetSignature (int nSignature) { m_object.info.nSignature = nSignature; }
+		inline void SetId (ubyte nId) { m_object.info.nId = nId; }
+		inline void SetSize (fix xSize) { m_object.info.xSize = xSize; }
+		inline void SetShields (fix xShields) { m_object.info.xShields = xShields; }
+		inline void SetLifeLeft (fix xLifeLeft) { m_object.info.xLifeLeft = xLifeLeft; }
+		inline void SetSegment (short nSegment) { m_object.info.nSegment = nSegment; }
+		inline void SetAttachedObj (short nAttachedObj) { m_object.info.nAttachedObj = nAttachedObj; }
+		inline void SetNextInSeg (short nNextInSeg) { m_object.info.nNextInSeg = nNextInSeg; }
+		inline void SetPrevInSeg ( short nPrevInSeg) { m_object.info.nPrevInSeg = nPrevInSeg; }
+		inline void SetCreator (sbyte nCreator) { m_object.info.nCreator = nCreator; }
+		inline void SetType (ubyte nType) { m_object.info.nType = nType; }
+		inline void SetControlType (ubyte controlType) { m_object.info.controlType = controlType; }
+		inline void SetMovementType (ubyte movementType) { m_object.info.movementType = movementType; }
+		inline void SetRenderType (ubyte renderType) { m_object.info.renderType = renderType; }
+		inline void SetFlags (ubyte nFlags) { m_object.info.nFlags = nFlags; }
+		inline void SetLastPos (const vmsVector *vLastPos) { m_object.info.vLastPos = *vLastPos; }
 };
 
 struct tObject;
 
 typedef struct tObjListLink {
-	tObject	*prev, *next;
+	CObject	*prev, *next;
 } tObjListLink;
 
 typedef struct tShotInfo {
@@ -633,7 +635,7 @@ typedef struct tObject : public tBaseObject {
 	fix				xTimeLastHit;
 	tShotInfo		shots;
 	vmsVector		vStartVel;
-} tObject;
+} CObject;
 
 class CObject : public CObjectInfo {
 	private:
@@ -650,8 +652,8 @@ class CObject : public CObjectInfo {
 	public:
 		CObject ();
 		~CObject ();
-		// initialize a new tObject.  adds to the list for the given tSegment
-		// returns the tObject number
+		// initialize a new CObject.  adds to the list for the given tSegment
+		// returns the CObject number
 		int Create (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
 						const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 
@@ -661,7 +663,7 @@ class CObject : public CObjectInfo {
 		inline void SetNext (CObject *next) { m_next = next; }
 		inline void Kill (void) { SetFlags (GetFlags () | OF_SHOULD_BE_DEAD); }
 		inline bool Exists (void) { return !(GetFlags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
-		// unlinks an tObject from a tSegment's list of objects
+		// unlinks an CObject from a tSegment's list of objects
 		void Link (void);
 		void Unlink (void);
 		void LinkToSeg (int nSegment);
@@ -729,7 +731,7 @@ class CParticleObject : public CObject, public CSmokeInfo {
 
 typedef struct tObjPosition {
 	tTransformation	position;
-	short					nSegment;     // tSegment number containing tObject
+	short					nSegment;     // tSegment number containing CObject
 	short					nSegType;		// nType of tSegment
 } tObjPosition;
 
@@ -744,7 +746,7 @@ class CObjPosition : public CTransformation {
 
 typedef struct tWindowRenderedData {
 	int     nFrame;
-	tObject *viewerP;
+	CObject *viewerP;
 	int     bRearView;
 	int     nUser;
 	int     nObjects;
@@ -760,7 +762,7 @@ class WIndowRenderedData {
 		inline int& User () { return m_data.nUser; }
 		inline int& Objects () { return m_data.nObjects; }
 		inline short& RenderedObjects (int i) { return m_data.renderedObjects [i]; }
-		inline tObject *Viewer () { return m_data.viewerP; }
+		inline CObject *Viewer () { return m_data.viewerP; }
 };
 
 typedef struct tObjDropInfo {
@@ -800,7 +802,7 @@ extern tWindowRenderedData windowRenderedData [MAX_RENDERED_WINDOWS];
 
 extern char *robot_names[];         // name of each robot
 
-extern tObject Follow;
+extern CObject Follow;
 
 /*
  * FUNCTIONS
@@ -812,48 +814,48 @@ void InitObjects();
 
 int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, const vmsMatrix& mOrient,
 					   fix xSize, ubyte cType, ubyte mType, ubyte rType);
-int CloneObject (tObject *objP);
+int CloneObject (CObject *objP);
 int CreateRobot (ubyte nId, short nSegment, const vmsVector& vPos);
 int CreatePowerup (ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, int bIgnoreLimits);
 int CreateWeapon (ubyte nId, short nCreator, short nSegment, const vmsVector& vPos, fix xSize, ubyte rType);
 int CreateFireball (ubyte nId, short nSegment, const vmsVector& vPos, fix xSize, ubyte rType);
-int CreateDebris (tObject *parentP, short nSubModel);
-int CreateCamera (tObject *parentP);
+int CreateDebris (CObject *parentP, short nSubModel);
+int CreateCamera (CObject *parentP);
 int CreateLight (ubyte nId, short nSegment, const vmsVector& vPos);
-// returns tSegment number tObject is in.  Searches out from tObject's current
-// seg, so this shouldn't be called if the tObject has "jumped" to a new seg
+// returns tSegment number CObject is in.  Searches out from CObject's current
+// seg, so this shouldn't be called if the CObject has "jumped" to a new seg
 // -- unused --
-//int obj_get_new_seg(tObject *obj);
+//int obj_get_new_seg(CObject *obj);
 
-// when an tObject has moved into a new tSegment, this function unlinks it
+// when an CObject has moved into a new tSegment, this function unlinks it
 // from its old tSegment, and links it into the new tSegment
 void RelinkObjToSeg (int nObject, int nNewSeg);
 
 void ResetSegObjLists (void);
 void LinkAllObjsToSegs (void);
 void RelinkAllObjsToSegs (void);
-bool CheckSegObjList (tObject *objP, short nObject, short nFirstObj);
+bool CheckSegObjList (CObject *objP, short nObject, short nFirstObj);
 
-// move an tObject from one tSegment to another. unlinks & relinks
+// move an CObject from one tSegment to another. unlinks & relinks
 // -- unused --
 //void obj_set_new_seg(int nObject,int newsegnum);
 
-// links an tObject into a tSegment's list of objects.
-// takes tObject number and tSegment number
+// links an CObject into a tSegment's list of objects.
+// takes CObject number and tSegment number
 void LinkObjToSeg(int nObject,int nSegment);
 
-// unlinks an tObject from a tSegment's list of objects
-void UnlinkObjFromSeg (tObject *objP);
+// unlinks an CObject from a tSegment's list of objects
+void UnlinkObjFromSeg (CObject *objP);
 
-// initialize a new tObject.  adds to the list for the given tSegment
-// returns the tObject number
+// initialize a new CObject.  adds to the list for the given tSegment
+// returns the CObject number
 //int CObject::Create(ubyte nType, char id, short owner, short nSegment, const vmsVector& pos,
 //               const vmsMatrix& orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
 
-// make a copy of an tObject. returs num of new tObject
+// make a copy of an CObject. returs num of new CObject
 int ObjectCreateCopy(int nObject, vmsVector *new_pos, int newsegnum);
 
-// remove tObject from the world
+// remove CObject from the world
 void ReleaseObject(short nObject);
 
 // called after load.  Takes number of objects, and objects should be
@@ -862,10 +864,10 @@ void ResetObjects (int nObjects);
 void ConvertObjects (void);
 void SetupEffects (void);
 
-// make tObject array non-sparse
+// make CObject array non-sparse
 void compressObjects(void);
 
-// Draw a blob-nType tObject, like a fireball
+// Draw a blob-nType CObject, like a fireball
 // Deletes all objects that have been marked for death.
 void CleanupObjects();
 
@@ -875,93 +877,93 @@ void object_toggle_lock_targets();
 // move all objects for the current frame
 int UpdateAllObjects();     // moves all objects
 
-// set viewer tObject to next tObject in array
+// set viewer CObject to next CObject in array
 void object_goto_nextViewer();
 
 // draw target boxes for nearby robots
 void object_render_targets(void);
 
-// move an tObject for the current frame
-int UpdateObject(tObject * obj);
+// move an CObject for the current frame
+int UpdateObject(CObject * obj);
 
 // make object0 the tPlayer, setting all relevant fields
 void InitPlayerObject();
 
-// check if tObject is in tObject->nSegment.  if not, check the adjacent
+// check if CObject is in CObject->nSegment.  if not, check the adjacent
 // segs.  if not any of these, returns false, else sets obj->nSegment &
 // returns true callers should really use FindVectorIntersection()
 // Note: this function is in gameseg.c
-int UpdateObjectSeg(tObject *objP, bool bMove = true);
+int UpdateObjectSeg(CObject *objP, bool bMove = true);
 
 
 // Finds what tSegment *obj is in, returns tSegment number.  If not in
 // any tSegment, returns -1.  Note: This function is defined in
 // gameseg.h, but object[HA] depends on gameseg.h, and object[HA] is where
-// tObject is defined...get it?
-int FindObjectSeg(tObject * obj);
+// CObject is defined...get it?
+int FindObjectSeg(CObject * obj);
 
 // go through all objects and make sure they have the correct tSegment
 // numbers used when debugging is on
 void FixObjectSegs();
 
 // Drops objects contained in objp.
-int ObjectCreateEgg(tObject *objp);
+int ObjectCreateEgg(CObject *objp);
 
 // Interface to ObjectCreateEgg, puts count objects of nType nType, id
 // = id in objp and then drops them.
-int CallObjectCreateEgg(tObject *objp, int count, int nType, int id);
+int CallObjectCreateEgg(CObject *objp, int count, int nType, int id);
 
 extern void DeadPlayerEnd(void);
 
-// Extract information from an tObject (objp->orient, objp->pos,
+// Extract information from an CObject (objp->orient, objp->pos,
 // objp->nSegment), stuff in a tShortPos structure.  See typedef
 // tShortPos.
-extern void CreateShortPos(tShortPos *spp, tObject *objp, int swap_bytes);
+extern void CreateShortPos(tShortPos *spp, CObject *objp, int swap_bytes);
 
 // Extract information from a tShortPos, stuff in objp->orient
 // (matrix), objp->pos, objp->nSegment
-extern void ExtractShortPos(tObject *objp, tShortPos *spp, int swap_bytes);
+extern void ExtractShortPos(CObject *objp, tShortPos *spp, int swap_bytes);
 
 // delete objects, such as weapons & explosions, that shouldn't stay
 // between levels if clear_all is set, clear even proximity bombs
 void ClearTransientObjects(int clear_all);
 
-// returns the number of a free tObject, updating HighestObject_index.
-// Generally, CObject::Create() should be called to get an tObject, since it
+// returns the number of a free CObject, updating HighestObject_index.
+// Generally, CObject::Create() should be called to get an CObject, since it
 // fills in important fields and does the linking.  returns -1 if no
 // free objects
 int AllocObject(void);
 int InsertObject (int nObject);
 
-// frees up an tObject.  Generally, ReleaseObject() should be called to
-// get rid of an tObject.  This function deallocates the tObject entry
-// after the tObject has been unlinked
+// frees up an CObject.  Generally, ReleaseObject() should be called to
+// get rid of an CObject.  This function deallocates the CObject entry
+// after the CObject has been unlinked
 void FreeObject(int nObject);
 
 // after calling initObject(), the network code has grabbed specific
-// tObject slots without allocating them.  Go though the objects &
+// CObject slots without allocating them.  Go though the objects &
 // build the free list, then set the apporpriate globals Don't call
 // this function if you don't know what you're doing.
 void SpecialResetObjects(void);
 
-// attaches an tObject, such as a fireball, to another tObject, such as
+// attaches an CObject, such as a fireball, to another CObject, such as
 // a robot
-void AttachObject(tObject *parent, tObject *sub);
+void AttachObject(CObject *parent, CObject *sub);
 
-extern void CreateSmallFireballOnObject(tObject *objp, fix size_scale, int soundFlag);
+extern void CreateSmallFireballOnObject(CObject *objp, fix size_scale, int soundFlag);
 
-// returns tObject number
+// returns CObject number
 int DropMarkerObject(vmsVector *pos, short nSegment, vmsMatrix *orient, ubyte marker_num);
 
-extern void WakeupRenderedObjects(tObject *gmissp, int window_num);
+extern void WakeupRenderedObjects(CObject *gmissp, int window_num);
 
 extern void AdjustMineSpawn();
 
 void ResetPlayerObject(void);
-void StopObjectMovement (tObject *obj);
+void StopObjectMovement (CObject *obj);
 void StopPlayerMovement (void);
 
-int ObjectSoundClass (tObject *objP);
+int ObjectSoundClass (CObject *objP);
 
 void ObjectGotoNextViewer();
 void ObjectGotoPrevViewer();
@@ -970,37 +972,37 @@ int ObjectCount (int nType);
 
 void ResetChildObjects (void);
 int AddChildObjectN (int nParent, int nChild);
-int AddChildObjectP (tObject *pParent, tObject *pChild);
+int AddChildObjectP (CObject *pParent, CObject *pChild);
 int DelObjChildrenN (int nParent);
-int DelObjChildrenP (tObject *pParent);
+int DelObjChildrenP (CObject *pParent);
 int DelObjChildN (int nChild);
-int DelObjChildP (tObject *pChild);
+int DelObjChildP (CObject *pChild);
 
-void LinkObject (tObject *objP);
-void UnlinkObject (tObject *objP);
+void LinkObject (CObject *objP);
+void UnlinkObject (CObject *objP);
 
 void BuildObjectModels (void);
 
 tObjectRef *GetChildObjN (short nParent, tObjectRef *pChildRef);
-tObjectRef *GetChildObjP (tObject *pParent, tObjectRef *pChildRef);
+tObjectRef *GetChildObjP (CObject *pParent, tObjectRef *pChildRef);
 
-tObject *ObjFindFirstOfType (int nType);
+CObject *ObjFindFirstOfType (int nType);
 void InitWeaponFlags (void);
-float ObjectDamage (tObject *objP);
+float ObjectDamage (CObject *objP);
 int FindBoss (int nObject);
 void InitGateIntervals (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);
 void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
-vmsMatrix *ObjectView (tObject *objP);
+vmsMatrix *ObjectView (CObject *objP);
 
 vmsVector *PlayerSpawnPos (int nPlayer);
 vmsMatrix *PlayerSpawnOrient (int nPlayer);
-void GetPlayerSpawn (int nPlayer, tObject *objP);
-void RecreateThief(tObject *objP);
+void GetPlayerSpawn (int nPlayer, CObject *objP);
+void RecreateThief(CObject *objP);
 void DeadPlayerFrame (void);
 
-void SetObjectType (tObject *objP, ubyte nNewType);
+void SetObjectType (CObject *objP, ubyte nNewType);
 
 extern ubyte bIsMissile [];
 
@@ -1024,7 +1026,7 @@ extern ubyte bIsMissile [];
 #define	IS_MISSILE_I(_i)		IS_MISSILE (gameData.objs.objects + (_i))
 
 #if DBG
-extern tObject *dbgObjP;
+extern CObject *dbgObjP;
 #endif
 
 #define SET_COLLISION(type1, type2, result) \
@@ -1062,7 +1064,7 @@ extern tObject *dbgObjP;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static inline void KillObject (tObject *objP)
+static inline void KillObject (CObject *objP)
 {
 objP->info.nFlags |= OF_SHOULD_BE_DEAD;
 #if DBG

@@ -1355,7 +1355,7 @@ if (SHOW_LIGHTNINGS) {
 
 void CLightningSystem::MoveForObject (void)
 {
-	tObject *objP = OBJECTS + m_nObject;
+	CObject *objP = OBJECTS + m_nObject;
 
 Move (&OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
 }
@@ -1556,14 +1556,14 @@ if (SHOW_LIGHTNINGS && (IsUsed (i) >= 0))
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::MoveForObject (tObject *objP)
+void CLightningManager::MoveForObject (CObject *objP)
 {
 Move (m_objects [OBJ_IDX (objP)], &OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
 }
 
 //------------------------------------------------------------------------------
 
-tRgbaColorf *CLightningManager::LightningColor (tObject *objP)
+tRgbaColorf *CLightningManager::LightningColor (CObject *objP)
 {
 if (objP->info.nType == OBJ_ROBOT) {
 	if (ROBOTINFO (objP->info.nId).energyDrain) {
@@ -1591,7 +1591,7 @@ void CLightningManager::Update (void)
 {
 if (SHOW_LIGHTNINGS) {
 
-		tObject	*objP;
+		CObject	*objP;
 		ubyte		h;
 		int		i, n;
 
@@ -1657,7 +1657,7 @@ if (SHOW_LIGHTNINGS) {
 
 //------------------------------------------------------------------------------
 #if 0
-void MoveForObject (tObject *objP)
+void MoveForObject (CObject *objP)
 {
 SEM_ENTER (SEM_LIGHTNINGS)
 MoveForObjectInternal (objP);
@@ -1666,7 +1666,7 @@ SEM_LEAVE (SEM_LIGHTNINGS)
 #endif
 //------------------------------------------------------------------------------
 
-void CLightningManager::DestroyForObject (tObject *objP)
+void CLightningManager::DestroyForObject (CObject *objP)
 {
 	int i = OBJ_IDX (objP);
 
@@ -1680,7 +1680,7 @@ if (m_objects [i] >= 0) {
 
 void CLightningManager::DestroyForAllObjects (int nType, int nId)
 {
-	tObject	*objP;
+	CObject	*objP;
 	int		i;
 
 FORALL_OBJS (objP, i) {
@@ -1734,10 +1734,10 @@ if (SHOW_LIGHTNINGS) {
 
 //------------------------------------------------------------------------------
 
-vmsVector *CLightningManager::FindTargetPos (tObject *emitterP, short nTarget)
+vmsVector *CLightningManager::FindTargetPos (CObject *emitterP, short nTarget)
 {
 	int				i;
-	tObject			*objP;
+	CObject			*objP;
 
 if (!nTarget)
 	return 0;
@@ -1753,7 +1753,7 @@ return NULL;
 void CLightningManager::StaticFrame (void)
 {
 	int				h, i;
-	tObject			*objP;
+	CObject			*objP;
 	vmsVector		*vEnd, *vDelta, v;
 	tLightningInfo	*pli;
 	tRgbaColorf		color;
@@ -1912,7 +1912,7 @@ if (SHOW_LIGHTNINGS) {
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::CreateForExplosion (tObject *objP, tRgbaColorf *colorP, int nRods, int nRad, int nTTL)
+void CLightningManager::CreateForExplosion (CObject *objP, tRgbaColorf *colorP, int nRods, int nRad, int nTTL)
 {
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bExplosions) {
 	//m_objects [OBJ_IDX (objP)] =
@@ -1924,7 +1924,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bExplosions) {
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::CreateForShaker (tObject *objP)
+void CLightningManager::CreateForShaker (CObject *objP)
 {
 static tRgbaColorf color = {0.1f, 0.1f, 0.8f, 0.2f};
 
@@ -1933,7 +1933,7 @@ CreateForExplosion (objP, &color, 30, 20 * F1_0, 750);
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::CreateForShakerMega (tObject *objP)
+void CLightningManager::CreateForShakerMega (CObject *objP)
 {
 static tRgbaColorf color = {0.1f, 0.1f, 0.6f, 0.2f};
 
@@ -1942,7 +1942,7 @@ CreateForExplosion (objP, &color, 20, 15 * F1_0, 750);
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::CreateForMega (tObject *objP)
+void CLightningManager::CreateForMega (CObject *objP)
 {
 static tRgbaColorf color = {0.8f, 0.1f, 0.1f, 0.2f};
 
@@ -1951,7 +1951,7 @@ CreateForExplosion (objP, &color, 30, 15 * F1_0, 750);
 
 //------------------------------------------------------------------------------
 
-int CLightningManager::CreateForMissile (tObject *objP)
+int CLightningManager::CreateForMissile (CObject *objP)
 {
 if (gameData.objs.bIsMissile [objP->info.nId]) {
 	if ((objP->info.nId == EARTHSHAKER_ID) || (objP->info.nId == EARTHSHAKER_ID))
@@ -1969,7 +1969,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::CreateForBlowup (tObject *objP)
+void CLightningManager::CreateForBlowup (CObject *objP)
 {
 static tRgbaColorf color = {0.1f, 0.1f, 0.8f, 0.2f};
 
@@ -1980,7 +1980,7 @@ CreateForExplosion (objP, &color, h + rand () % h, h * (F1_0 + F1_0 / 2), 500);
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::CreateForRobot (tObject *objP, tRgbaColorf *colorP)
+void CLightningManager::CreateForRobot (CObject *objP, tRgbaColorf *colorP)
 {
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (objP)) {
 		int h, i = OBJ_IDX (objP);
@@ -1998,7 +1998,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (obj
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::CreateForPlayer (tObject *objP, tRgbaColorf *colorP)
+void CLightningManager::CreateForPlayer (CObject *objP, tRgbaColorf *colorP)
 {
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bPlayers && OBJECT_EXISTS (objP)) {
 	int h, i = OBJ_IDX (objP);
@@ -2016,7 +2016,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bPlayers && OBJECT_EXISTS (ob
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::CreateForDamage (tObject *objP, tRgbaColorf *colorP)
+void CLightningManager::CreateForDamage (CObject *objP, tRgbaColorf *colorP)
 {
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (objP)) {
 		int h, n, i = OBJ_IDX (objP);
@@ -2062,7 +2062,7 @@ typedef union tPolyKey {
 	short	s [4];
 } tPolyKey;
 
-void CLightningManager::RenderForDamage (tObject *objP, g3sPoint **pointList, tG3ModelVertex *pVerts, int nVertices)
+void CLightningManager::RenderForDamage (CObject *objP, g3sPoint **pointList, tG3ModelVertex *pVerts, int nVertices)
 {
 	CLightningSystem	*systemP;
 	fVector				v, vPosf, vEndf, vNormf, vDeltaf;
@@ -2191,7 +2191,7 @@ else {
 
 // ---------------------------------------------------------------------------------
 
-vmsVector *COmegaLightnings::GetGunPoint (tObject *objP, vmsVector *vMuzzle)
+vmsVector *COmegaLightnings::GetGunPoint (CObject *objP, vmsVector *vMuzzle)
 {
 	vmsVector			*vGunPoints;
 	int					bSpectate;
@@ -2214,7 +2214,7 @@ return vMuzzle;
 
 // ---------------------------------------------------------------------------------
 
-int COmegaLightnings::Update (tObject *parentObjP, tObject *targetObjP)
+int COmegaLightnings::Update (CObject *parentObjP, CObject *targetObjP)
 {
 	vmsVector					vMuzzle;
 	tOmegaLightningHandles	*handleP;
@@ -2266,7 +2266,7 @@ return 1;
 
 #define OMEGA_PLASMA 0
 
-int COmegaLightnings::Create (vmsVector *vTargetPos, tObject *parentObjP, tObject *targetObjP)
+int COmegaLightnings::Create (vmsVector *vTargetPos, CObject *parentObjP, CObject *targetObjP)
 {
 	tOmegaLightningHandles	*handleP;
 	int							nObject;

@@ -145,9 +145,9 @@ if (gameStates.ogl.bUseTransform) {
 vOffs = viewInfo.pos - vPos;
 
 	int i;
-	//step 2: rotate view vector through tObject matrix
+	//step 2: rotate view vector through CObject matrix
 	viewInfo.pos = mOrient * vOffs;
-	//step 3: rotate tObject matrix through view_matrix (vm = ob * vm)
+	//step 3: rotate CObject matrix through view_matrix (vm = ob * vm)
 	mTrans = mOrient.Transpose ();
 	for (i = 0; i < 2; i++) {
 		mRot = mTrans * viewInfo.view [i];

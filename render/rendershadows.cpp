@@ -234,13 +234,13 @@ return 1;
 //The following code is an attempt to find all objects that cast a shadow visible
 //to the player. To accomplish that, for each robot the line of sight to each
 //tSegment visible to the tPlayer is computed. If there is a los to any of these 
-//segments, the tObject's shadow is rendered. Far from perfect solution though. :P
+//segments, the CObject's shadow is rendered. Far from perfect solution though. :P
 
 void RenderObjectShadows (void)
 {
-	tObject		*objP = OBJECTS;
+	CObject		*objP = OBJECTS;
 	int			i, j, bSee;
-	tObject		fakePlayerPos = *gameData.objs.viewerP;
+	CObject		fakePlayerPos = *gameData.objs.viewerP;
 
 for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++)
 	if (objP == gameData.objs.consoleP)
@@ -336,7 +336,7 @@ DestroyShadowMaps ();
 
 int GatherShadowLightSources (void)
 {
-	tObject			*objP;
+	CObject			*objP;
 	int				h, i, j, k, n, m = gameOpts->render.shadows.nLights;
 	short				*pnl;
 //	tDynLight		*pl;

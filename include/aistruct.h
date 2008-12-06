@@ -119,7 +119,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //  Constants defining meaning of flags in aiState
 #define MAX_AI_FLAGS    11          // This MUST cause word (4 bytes) alignment in tAIStaticInfo, allowing for one byte mode
 
-#define CURRENT_GUN     flags[0]    // This is the last gun the tObject fired from
+#define CURRENT_GUN     flags[0]    // This is the last gun the CObject fired from
 #define CURRENT_STATE   flags[1]    // current behavioral state
 #define GOAL_STATE      flags[2]    // goal state
 #define PATH_DIR        flags[3]    // direction traveling path, 1 = forward, -1 = backward, other = error!
@@ -127,11 +127,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define GOALSIDE        flags[5]    // for guys who open doors, this is the tSide they are going after.
 #define CLOAKED         flags[6]    // Cloaked now.
 #define SKIP_AI_COUNT   flags[7]    // Skip AI this frame, but decrement in DoAIFrame.
-#define  REMOTE_OWNER   flags[8]    // Who is controlling this remote AI tObject (multiplayer use only)
+#define  REMOTE_OWNER   flags[8]    // Who is controlling this remote AI CObject (multiplayer use only)
 #define  REMOTE_SLOT_NUM flags[9]   // What slot # is this robot in for remote control purposes (multiplayer use only)
 #define  MULTI_ANGER    flags[10]   // How angry is a robot in multiplayer mode
 
-// This is the stuff that is permanent for an AI tObject and is
+// This is the stuff that is permanent for an AI CObject and is
 // therefore saved to disk.
 typedef struct tAIStaticInfo {
 	ubyte   behavior;               //
@@ -169,7 +169,7 @@ typedef struct tAILocalInfo {
 // playerAwarenessType..nRapidFireCount used to be bytes
 // nGoalSegment used to be short.
 	int     playerAwarenessType;	// nType of awareness of tPlayer
-	int     nRetryCount;          // number of retries in physics last time this tObject got moved.
+	int     nRetryCount;          // number of retries in physics last time this CObject got moved.
 	int     nConsecutiveRetries;  // number of retries in consecutive frames (ie, without a nRetryCount of 0)
 	int     mode;                 // current mode within behavior
 	int     nPrevVisibility;		// Visibility of tPlayer last time we checked.
@@ -188,7 +188,7 @@ typedef struct tAILocalInfo {
 	fix     timeSinceProcessed;				// time since this robot last processed in DoAIFrame
 	vmsAngVec goalAngles [MAX_SUBMODELS];  // angles for each subobject
 	vmsAngVec deltaAngles [MAX_SUBMODELS]; // angles for each subobject
-	sbyte   goalState [MAX_SUBMODELS];     // Goal state for this sub-tObject
+	sbyte   goalState [MAX_SUBMODELS];     // Goal state for this sub-CObject
 	sbyte   achievedState [MAX_SUBMODELS]; // Last achieved state
 } tAILocalInfo;
 

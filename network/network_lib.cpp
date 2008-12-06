@@ -205,7 +205,7 @@ return i;
 
 int NetworkObjnumIsPast (int nObject, tNetworkSyncData *syncP)
 {
-	// determine whether or not a given tObject number has already been sent
+	// determine whether or not a given CObject number has already been sent
 	// to a re-joining player.
 	int nPlayer = syncP->player [1].player.connected;
 	int nObjMode = !((gameData.multigame.nObjOwner [nObject] == -1) || (gameData.multigame.nObjOwner [nObject] == nPlayer));
@@ -312,7 +312,7 @@ return -1;
 void NetworkCountPowerupsInMine (void)
 {
   int 		i;
-  tObject	*objP;
+  CObject	*objP;
 
 memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
 FORALL_POWERUP_OBJS (objP, i) {

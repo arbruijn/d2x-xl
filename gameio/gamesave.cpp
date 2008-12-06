@@ -83,9 +83,9 @@ tGameFileInfo	gameFileInfo;
 game_top_fileinfo	gameTopFileInfo;
 
 //  LINT: adding function prototypes
-void ReadObject(tObject *objP, CFile *f, int version);
+void ReadObject(CObject *objP, CFile *f, int version);
 #ifdef EDITOR
-void writeObject(tObject *objP, FILE *f);
+void writeObject(CObject *objP, FILE *f);
 void DoLoadSaveLevels(int save);
 #endif
 #if DBG
@@ -122,9 +122,9 @@ return !strnicmp(&filename [len-11], "level", 5);
 
 //------------------------------------------------------------------------------
 
-void VerifyObject (tObject * objP)
+void VerifyObject (CObject * objP)
 {
-objP->info.xLifeLeft = IMMORTAL_TIME;		//all loaded tObject are immortal, for now
+objP->info.xLifeLeft = IMMORTAL_TIME;		//all loaded CObject are immortal, for now
 if (objP->info.nType == OBJ_ROBOT) {
 	nGameSaveOrgRobots++;
 	// Make sure valid id...
@@ -311,8 +311,8 @@ static void gs_write_angvec(vmsAngVec *v,FILE *file)
 //------------------------------------------------------------------------------
 
 int MultiPowerupIs4Pack(int);
-//reads one tObject of the given version from the given file
-void ReadObject (tObject *objP, CFile& cf, int version)
+//reads one CObject of the given version from the given file
+void ReadObject (CObject *objP, CFile& cf, int version)
 {
 	int	i;
 
@@ -440,7 +440,7 @@ switch (objP->info.renderType) {
 			int xlated_tmo = tmap_xlate_table [tmo];
 			if (xlated_tmo < 0)	{
 #if TRACE
-				con_printf (CONDBG, "Couldn't find texture for demo tObject, nModel = %d\n", objP->rType.polyObjInfo.nModel);
+				con_printf (CONDBG, "Couldn't find texture for demo CObject, nModel = %d\n", objP->rType.polyObjInfo.nModel);
 #endif
 				Int3();
 				xlated_tmo = 0;
@@ -517,8 +517,8 @@ switch (objP->info.renderType) {
 //------------------------------------------------------------------------------
 #ifdef EDITOR
 
-//writes one tObject to the given file
-void writeObject(tObject *objP,FILE *f)
+//writes one CObject to the given file
+void writeObject(CObject *objP,FILE *f)
 {
 	gs_write_byte(objP->info.nType,f);
 	gs_write_byte(objP->info.nId,f);
@@ -631,7 +631,7 @@ void writeObject(tObject *objP,FILE *f)
 			break;
 
 		case CT_CNTRLCEN:
-			break;			//control center tObject.
+			break;			//control center CObject.
 
 		case CT_MORPH:
 		case CT_REPAIRCEN:
@@ -784,7 +784,7 @@ gameFileInfo.player.offset		=	-1;
 gameFileInfo.player.size		=	sizeof(tPlayer);
 gameFileInfo.objects.offset	=	-1;
 gameFileInfo.objects.count		=	0;
-gameFileInfo.objects.size		=	sizeof(tObject);  
+gameFileInfo.objects.size		=	sizeof(CObject);  
 gameFileInfo.walls.offset		=	-1;
 gameFileInfo.walls.count		=	0;
 gameFileInfo.walls.size			=	sizeof(tWall);  
@@ -911,12 +911,12 @@ static int ReadObjectInfo (CFile& cf)
 	int	i;
 
 if (gameFileInfo.objects.offset > -1) {
-	tObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS;
 	if (cf.Seek (gameFileInfo.objects.offset, SEEK_SET)) {
 		Error ("Error seeking to object data\n(file damaged or invalid)");
 		return -1;
 		}
-	memset (OBJECTS, 0, gameFileInfo.objects.count * sizeof (tObject));
+	memset (OBJECTS, 0, gameFileInfo.objects.count * sizeof (CObject));
 	for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 		ReadObject (objP, cf, gameTopFileInfo.fileinfoVersion);
 		objP->info.nSignature = gameData.objs.nNextSignature++;
@@ -1282,7 +1282,7 @@ return 0;
 static void CheckAndLinkObjects (void)
 {
 	int		i, nObjSeg;
-	tObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS;
 
 for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 	objP->info.nNextInSeg = OBJECTS [i].info.nPrevInSeg = -1;
@@ -1774,7 +1774,7 @@ int CountDeltaLightRecords(void)
 // Save game
 int SaveGameData(FILE * SaveFile)
 {
-	int  player.offset, tObject.offset, walls.offset, doors.offset, triggers.offset, control.offset, botGen.offset; //, links.offset;
+	int  player.offset, CObject.offset, walls.offset, doors.offset, triggers.offset, control.offset, botGen.offset; //, links.offset;
 	int	gameData.render.lights.deltaIndices.offset, deltaLight.offset;
 	int start_offset,end_offset;
 
@@ -1790,7 +1790,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.player.size		=	sizeof(tPlayer);
 	gameFileInfo.objects.offset		=	-1;
 	gameFileInfo.objects.count		=	gameData.objs.nLastObject [0]+1;
-	gameFileInfo.objects.size		=	sizeof(tObject);
+	gameFileInfo.objects.size		=	sizeof(CObject);
 	gameFileInfo.walls.offset			=	-1;
 	gameFileInfo.walls.count		=	gameData.walls.nWalls;
 	gameFileInfo.walls.size			=	sizeof(tWall);
@@ -1831,8 +1831,8 @@ int SaveGameData(FILE * SaveFile)
 
 	//==================== SAVE OBJECT INFO ===========================
 
-	tObject.offset = ftell(SaveFile);
-	//fwrite(&OBJECTS, sizeof(tObject), gameFileInfo.objects.count, SaveFile);
+	CObject.offset = ftell(SaveFile);
+	//fwrite(&OBJECTS, sizeof(CObject), gameFileInfo.objects.count, SaveFile);
 	{
 		int i;
 		for (i=0;i<gameFileInfo.objects.count;i++)
@@ -1876,7 +1876,7 @@ int SaveGameData(FILE * SaveFile)
 
 	// Update the offset fields
 	gameFileInfo.player.offset		=	player.offset;
-	gameFileInfo.objects.offset		=	tObject.offset;
+	gameFileInfo.objects.offset		=	CObject.offset;
 	gameFileInfo.walls.offset			=	walls.offset;
 	gameFileInfo.doors.offset			=	doors.offset;
 	gameFileInfo.triggers.offset		=	triggers.offset;

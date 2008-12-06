@@ -2391,7 +2391,7 @@ extern int bSavingMovieFrames;
 #define bSavingMovieFrames 0
 #endif
 
-//returns true if viewerP can see tObject
+//returns true if viewerP can see CObject
 //	-----------------------------------------------------------------------------
 
 int CanSeeObject (int nObject, int bCheckObjs)
@@ -2450,8 +2450,8 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 		nObject = gameData.multiplayer.players [p].nObject;
 	else {
 		//if this is a demo, the nObject in the tPlayer struct is wrong,
-		//so we search the tObject list for the nObject
-		tObject *objP;
+		//so we search the CObject list for the nObject
+		CObject *objP;
 		FORALL_PLAYER_OBJS (objP, nObject)
 			if (objP->info.nId == p)
 				break;
@@ -2720,19 +2720,19 @@ int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
 //	---------------------------------------------------------------------------------------------------------
 //draws a 3d view into one of the cockpit windows.  win is 0 for left,
-//1 for right.  viewerP is tObject.  NULL tObject means give up window
+//1 for right.  viewerP is CObject.  NULL CObject means give up window
 //nUser is one of the WBU_ constants.  If bRearView is set, show a
 //rear view.  If label is non-NULL, print the label at the top of the
 //window.
 
 int cockpitWindowScale [4] = {6, 5, 4, 3};
 
-void DoCockpitWindowView (int nWindow, tObject *viewerP, int bRearView, int nUser, const char *pszLabel)
+void DoCockpitWindowView (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel)
 {
 	CCanvas windowCanv;
 	static CCanvas overlap_canv;
 
-	tObject *viewerSave = gameData.objs.viewerP;
+	CObject *viewerSave = gameData.objs.viewerP;
 	static int bOverlapDirty [2]={0, 0};
 	int nBox;
 	static int window_x, window_y;

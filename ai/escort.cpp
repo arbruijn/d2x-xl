@@ -69,7 +69,7 @@ int nEscortGoalText [MAX_ESCORT_GOALS] = {
 void InitBuddyForLevel (void)
 {
 	int		i;
-	tObject	*objP;
+	CObject	*objP;
 
 gameData.escort.bMayTalk = 0;
 gameData.escort.nObjNum = -1;
@@ -151,7 +151,7 @@ int BuddyMayTalk (void)
 {
 	int		i;
 	tSegment	*segP;
-	tObject	*objP;
+	CObject	*objP;
 
 if ((gameData.escort.nObjNum < 0) || (OBJECTS [gameData.escort.nObjNum].info.nType != OBJ_ROBOT)) {
 	gameData.escort.bMayTalk = 0;
@@ -200,7 +200,7 @@ void DetectEscortGoalAccomplished (int index)
 {
 	int		i, j;
 	int		bDetected = 0;
-	tObject	*objP;
+	CObject	*objP;
 	short		*childI, *childJ;
 
 //	If goal is to go away, how can it be achieved?
@@ -353,7 +353,7 @@ if ((gameData.escort.xLastMsgTime + F1_0 < gameData.time.xGame) ||
 int MarkerExistsInMine (int id)
 {
 	int		i;
-	tObject	*objP;
+	CObject	*objP;
 
 FORALL_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_MARKER) && (objP->info.nId == id))
@@ -371,7 +371,7 @@ if (!gameData.escort.bMayTalk) {
 	BuddyMayTalk ();
 	if (!gameData.escort.bMayTalk) {
 		int		i;
-		tObject	*objP;
+		CObject	*objP;
 
 		FORALL_ROBOT_OBJS (objP, i)
 			if (IS_GUIDEBOT (objP)) {
@@ -461,7 +461,7 @@ int GetBossId (void)
 }
 
 //	-----------------------------------------------------------------------------
-//	Return tObject index if tObject of objtype, objid exists in mine, else return -1
+//	Return CObject index if CObject of objtype, objid exists in mine, else return -1
 //	"special" is used to find OBJECTS spewed by tPlayer which is hacked into flags field of powerup.
 int ExistsInMine2 (int nSegment, int objtype, int objid, int special)
 {
@@ -471,7 +471,7 @@ if (nObject != -1) {
 	int		id;
 
 	while (nObject != -1) {
-		tObject	*curObjP = OBJECTS + nObject;
+		CObject	*curObjP = OBJECTS + nObject;
 
 		if (special == ESCORT_GOAL_PLAYER_SPEW) {
 			if (curObjP->info.nFlags & OF_PLAYER_DROPPED)
@@ -504,10 +504,10 @@ return -1;
 }
 
 //	-----------------------------------------------------------------------------
-//	Return nearest tObject of interest.
-//	If special == ESCORT_GOAL_PLAYER_SPEW, then looking for any tObject spewed by player.
-//	-1 means tObject does not exist in mine.
-//	-2 means tObject does exist in mine, but buddy-bot can't reach it (eg, behind triggered tWall)
+//	Return nearest CObject of interest.
+//	If special == ESCORT_GOAL_PLAYER_SPEW, then looking for any CObject spewed by player.
+//	-1 means CObject does not exist in mine.
+//	-2 means CObject does exist in mine, but buddy-bot can't reach it (eg, behind triggered tWall)
 int ExistsInMine (int start_seg, int objtype, int objid, int special)
 {
 	int	nSegIdx, nSegment;
@@ -637,7 +637,7 @@ switch (goal_num) {
 
 //	-----------------------------------------------------------------------------
 
-void EscortCreatePathToGoal (tObject *objP)
+void EscortCreatePathToGoal (CObject *objP)
 {
 	short			nGoalSeg = -1;
 	short			nObject = OBJ_IDX (objP);
@@ -781,8 +781,8 @@ else {
 }
 
 //	-----------------------------------------------------------------------------
-//	Escort robot chooses goal tObject based on tPlayer's keys, location.
-//	Returns goal tObject.
+//	Escort robot chooses goal CObject based on tPlayer's keys, location.
+//	Returns goal CObject.
 int EscortSetGoalObject (void)
 {
 if (gameData.escort.nSpecialGoal != -1)
@@ -814,7 +814,7 @@ fix	xBuddyLastSeenPlayer = 0, Buddy_last_player_path_created;
 
 //	-----------------------------------------------------------------------------
 
-int TimeToVisitPlayer (tObject *objP, tAILocalInfo *ailp, tAIStaticInfo *aip)
+int TimeToVisitPlayer (CObject *objP, tAILocalInfo *ailp, tAIStaticInfo *aip)
 {
 	//	Note: This one has highest priority because, even if already going towards tPlayer,
 	//	might be necessary to create a new path, as tPlayer can move.
@@ -838,7 +838,7 @@ fix Buddy_last_missileTime;
 
 void BashBuddyWeaponInfo (int nWeaponObj)
 {
-	tObject	*objP = OBJECTS + nWeaponObj;
+	CObject	*objP = OBJECTS + nWeaponObj;
 
 objP->cType.laserInfo.parent.nObject = OBJ_IDX (gameData.objs.consoleP);
 objP->cType.laserInfo.parent.nType = OBJ_PLAYER;
@@ -849,8 +849,8 @@ objP->cType.laserInfo.parent.nSignature = gameData.objs.consoleP->info.nSignatur
 
 int MaybeBuddyFireMega (short nObject)
 {
-	tObject		*objP = OBJECTS + nObject;
-	tObject		*buddyObjP = OBJECTS + gameData.escort.nObjNum;
+	CObject		*objP = OBJECTS + nObject;
+	CObject		*buddyObjP = OBJECTS + gameData.escort.nObjNum;
 	fix			dist, dot;
 	vmsVector	vVecToRobot;
 	int			nWeaponObj;
@@ -885,8 +885,8 @@ return 1;
 
 int MaybeBuddyFireSmart (short nObject)
 {
-	tObject	*objP = &OBJECTS [nObject];
-	tObject	*buddyObjP = &OBJECTS [gameData.escort.nObjNum];
+	CObject	*objP = &OBJECTS [nObject];
+	CObject	*buddyObjP = &OBJECTS [gameData.escort.nObjNum];
 	fix		dist;
 	short		nWeaponObj;
 
@@ -910,7 +910,7 @@ return 1;
 void DoBuddyDudeStuff (void)
 {
 	short		i;
-	tObject	*objP;
+	CObject	*objP;
 
 if (!BuddyMayTalk ())
 	return;
@@ -938,7 +938,7 @@ if (Buddy_last_missileTime + F1_0*2 < gameData.time.xGame) {
 
 //	-----------------------------------------------------------------------------
 //	Called every frame (or something).
-void DoEscortFrame (tObject *objP, fix xDistToPlayer, int player_visibility)
+void DoEscortFrame (CObject *objP, fix xDistToPlayer, int player_visibility)
 {
 	int			nObject = OBJ_IDX (objP);
 	tAIStaticInfo	*aip = &objP->cType.aiInfo;
@@ -967,7 +967,7 @@ if (!gameData.escort.bMayTalk)
 	if (xDistToPlayer > F1_0*100)
 		aip->SKIP_AI_COUNT = (sbyte) ((F1_0 / 4) / (gameData.time.xFrame ? gameData.time.xFrame : 1));
 //	AIM_WANDER has been co-opted for buddy behavior (didn't want to modify aistruct.h)
-//	It means the tObject has been told to get lost and has come to the end of its path.
+//	It means the CObject has been told to get lost and has come to the end of its path.
 //	If the tPlayer is now visible, then create a path.
 if (ailp->mode == AIM_WANDER)
 	if (player_visibility) {
@@ -1091,7 +1091,7 @@ void DoEscortMenu (void)
 	int		paused;
 	int		next_goal;
 	char		szGoal [32], tstr [32];
-	tObject	*objP;
+	CObject	*objP;
 
 if (gameData.app.nGameMode & GM_MULTI) {
 	HUDInitMessage (TXT_GB_MULTIPLAYER);

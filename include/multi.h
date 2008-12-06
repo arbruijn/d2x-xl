@@ -177,7 +177,7 @@ void MultiSendHostageDoorStatus (int wallnum);
 void MultiSendNetPlayerStatsRequest (ubyte nPlayer);
 void MultiSendDropWeapon (int nObject,int seed);
 void MultiSendDropMarker (int nPlayer,vmsVector position,char messagenum,char text[]);
-void MultiSendGuidedInfo (tObject *miss,char);
+void MultiSendGuidedInfo (CObject *miss,char);
 void MultiSendReturnFlagHome (short nObject);
 void MultiSendCaptureBonus (char pnum);
 void MultiSendShields (void);
@@ -465,7 +465,7 @@ void MultiSendDoorOpenSpecific (int nPlayer, int nSegment, int tSide, ubyte flag
 void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ubyte flags, ubyte state);
 void MultiSendLightSpecific (int nPlayer, int nSegment, ubyte val);
 void MultiSendTriggerSpecific (char nPlayer, ubyte trig);
-void MultiResetObjectTexture (tObject *objP);
+void MultiResetObjectTexture (CObject *objP);
 void MultiSendSeismic (fix start, fix end);
 
 void InitDefaultPlayerShip (void);

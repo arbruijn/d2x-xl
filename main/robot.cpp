@@ -79,9 +79,9 @@ tJointPos test_joints [MAX_ROBOT_JOINTS] = {
 #endif
 
 //	-----------------------------------------------------------------------------------------------------------
-//given an tObject and a gun number, return position in 3-space of gun
+//given an CObject and a gun number, return position in 3-space of gun
 //fills in gun_point
-int CalcGunPoint (vmsVector *vGunPoint, tObject *objP, int nGun)
+int CalcGunPoint (vmsVector *vGunPoint, CObject *objP, int nGun)
 {
 	tPolyModel	*pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 	tRobotInfo	*botInfoP;
@@ -105,7 +105,7 @@ while (nSubModel != 0) {
 	vGunPos = vRot + pm->subModels.offsets[nSubModel];
 	nSubModel = pm->subModels.parents [nSubModel];
 	}
-//now instance for the entire tObject
+//now instance for the entire CObject
 //VmVecInc (&vGunPos, gameData.models.offsets + botInfoP->nModel);
 *vGunPoint = *ObjectView(objP) * vGunPos;
 *vGunPoint += objP->info.position.vPos;
@@ -114,7 +114,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------------------------------------
 //fills in ptr to list of joints, and returns the number of joints in list
-//takes the robot nType (tObject id), gun number, and desired state
+//takes the robot nType (CObject id), gun number, and desired state
 int RobotGetAnimState (tJointPos **jointPosP, int robotType, int nGun, int state)
 {
 Assert(nGun <= ROBOTINFO (robotType).nGuns);
@@ -125,7 +125,7 @@ return ROBOTINFO (robotType).animStates[nGun][state].n_joints;
 
 //	-----------------------------------------------------------------------------------------------------------
 //for test, set a robot to a specific state
-void setRobotState(tObject *objP,int state)
+void setRobotState(CObject *objP,int state)
 {
 	int g,j,jo;
 	tRobotInfo *ri;
@@ -194,7 +194,7 @@ for (g = 0; g < r->nGuns + 1; g++) {
 void InitCamBots (int bReset)
 {
 	tRobotInfo&	camBotInfo = gameData.bots.info [0][gameData.bots.nCamBotId];
-	tObject		*objP;
+	CObject		*objP;
 	int			i;
 
 if ((gameData.bots.nCamBotId < 0) || gameStates.app.bD1Mission)

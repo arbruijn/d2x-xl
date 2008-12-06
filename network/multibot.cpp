@@ -61,7 +61,7 @@ extern int MultiPowerupIsAllowed (int);
 int MultiCanRemoveRobot (int nObject, int agitation)
 {
 	int nRemOwner;
-	tObject *objP = OBJECTS + nObject;
+	CObject *objP = OBJECTS + nObject;
 
 	// Claim robot if necessary.
 if (gameStates.app.bPlayerExploded)
@@ -137,7 +137,7 @@ void MultiStripRobots (int nPlayer)
 	// (tPlayer died or exited the game)
 
 	int 		i;
-	tObject	*objP;
+	CObject	*objP;
 
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS) {
 	if (nPlayer == gameData.multiplayer.nLocalPlayer)
@@ -219,7 +219,7 @@ return 1;
 }
 
 //-----------------------------------------------------------------------------
-// Delete robot tObject number nObject from list of controlled robots because it is dead
+// Delete robot CObject number nObject from list of controlled robots because it is dead
 
 void MultiDeleteControlledRobot (int nObject)
 {
@@ -475,10 +475,10 @@ bufP += 2; // We won't network map this nObject since it's the boss
 gameData.multigame.msg.buf [bufP++] = (sbyte)action;  // What is the boss doing?
 gameData.multigame.msg.buf [bufP++] = (sbyte)secondary;  // More info for what he is doing
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nObject);                  
-bufP += 2; // Objnum of tObject created by gate-in action
+bufP += 2; // Objnum of CObject created by gate-in action
 if (action == 3) {
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, OBJECTS [nObject].info.nSegment); 
-	bufP += 2; // Segment number tObject created in (for gate only)
+	bufP += 2; // Segment number CObject created in (for gate only)
 	}
 else 
 	bufP += 2; // Dummy
@@ -501,7 +501,7 @@ MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 //-----------------------------------------------------------------------------
 // Send create robot information
 
-void MultiSendCreateRobotPowerups (tObject *delObjP)
+void MultiSendCreateRobotPowerups (CObject *delObjP)
 {
 	int	bufP = 0, hBufP;
 	int	i, j = 0;
@@ -667,11 +667,11 @@ else
 
 //-----------------------------------------------------------------------------
 
-extern void DropStolenItems (tObject*);
+extern void DropStolenItems (CObject*);
 
 int MultiExplodeRobotSub (int nRobot, int nKiller,char bIsThief)
 {
-	tObject *robotP;
+	CObject *robotP;
 
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0])) { // Objnum in range?
 	Int3 (); // See rob
@@ -757,7 +757,7 @@ void MultiDoCreateRobot (char *buf)
 
 	tFuelCenInfo *robotcen;
 	vmsVector curObject_loc, direction;
-	tObject *objP;
+	CObject *objP;
 
 nObject = GET_INTEL_SHORT (buf + 3);
 if ((nPlayer < 0) || (nObject < 0) || (nFuelCen < 0) || 
@@ -778,7 +778,7 @@ robotcen->bFlag = 0;
 robotcen->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
 robotcen->xTimer = 0;
 if (! (objP = CreateMorphRobot (gameData.segs.segments + robotcen->nSegment, &curObject_loc, nType)))
-	return; // Cannot create tObject!
+	return; // Cannot create CObject!
 objP->info.nCreator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80;
 //	ExtractOrientFromSegment (&objP->info.position.mOrient, &gameData.segs.segments [robotcen->nSegment]);
 direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
@@ -795,7 +795,7 @@ void MultiDoBossActions (char *buf)
 {
 	// Code to handle remote-controlled boss actions
 
-	tObject	*bossObjP;
+	CObject	*bossObjP;
 	short		nBossObj, nBossIdx;
 	int		nPlayer;
 	int		action;
@@ -899,7 +899,7 @@ switch (action)  {
 
 void MultiDoCreateRobotPowerups (char *buf)
 {
-	tObject	delObjP;
+	CObject	delObjP;
 	int		nPlayer, nEggObj, i, bufP = 1;
 	short		s;
 
@@ -939,7 +939,7 @@ for (i = 0; i < gameData.multigame.create.nLoc; i++) {
 
 void MultiDropRobotPowerups (int nObject)
 {
-	tObject		*delObjP;
+	CObject		*delObjP;
 	int			nEggObj = -1;
 	tRobotInfo	*robotP; 
 
@@ -988,7 +988,7 @@ else if (robotP->containsCount) {
 			nEggObj = ObjectCreateEgg (delObjP);
 		}
 	}
-if (nEggObj >= 0) // Transmit the tObject creation to the other players	 
+if (nEggObj >= 0) // Transmit the CObject creation to the other players	 
 	MultiSendCreateRobotPowerups (delObjP);
 }
 
@@ -997,7 +997,7 @@ if (nEggObj >= 0) // Transmit the tObject creation to the other players
 //	Note: This function will be called regardless of whether gameData.app.nGameMode is a multiplayer mode, so it
 //	should quick-out if not in a multiplayer mode.  On the other hand, it only gets called when a
 //	tPlayer or tPlayer weapon whacks a robot, so it happens rarely.
-void MultiRobotRequestChange (tObject *robot, int player_num)
+void MultiRobotRequestChange (CObject *robot, int player_num)
 {
 	int	slot, nRemoteObj;
 	sbyte dummy;

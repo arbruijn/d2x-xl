@@ -326,7 +326,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg)
 	short			nSegment, nSide, nChildSeg, nChildSide, i;
 	vmsVector	vNormal;
 	vmsAngVec	vAngles;
-	tObject		viewer;
+	CObject		viewer;
 
 //PrintLog ("computing visibility of segment %d\n", nStartSeg);
 gameStates.ogl.bUseTransform = 1;

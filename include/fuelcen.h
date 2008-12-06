@@ -34,9 +34,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // * When a tSegment is deleted, always call FuelCenDelete(segp).
 // * Call FuelCenReplenishAll() to fill 'em all up, like when
 //   a new game is started.
-// * When an tObject that needs to be refueled is in a tSegment, call
+// * When an CObject that needs to be refueled is in a tSegment, call
 //   FuelCenGiveFuel(segp) to get fuel. (Call once for any refueling
-//   tObject once per frame with the tObject's current tSegment.) This
+//   CObject once per frame with the CObject's current tSegment.) This
 //   will return a value between 0 and 100 that tells how much fuel
 //   he got.
 
@@ -57,7 +57,7 @@ void FuelCenDelete( tSegment * segp );
 void FuelCenReplenishAll();
 
 // Create a matcen robot
-tObject *CreateMorphRobot (tSegment *segp, vmsVector *object_pos, ubyte object_id);
+CObject *CreateMorphRobot (tSegment *segp, vmsVector *object_pos, ubyte object_id);
 
 // Returns the amount of fuel this tSegment can give up.
 // Can be from 0 to 100.
@@ -72,16 +72,16 @@ void FuelcenUpdateAll();
 void FuelCenDamage(tSegment *segp, fix AmountOfDamage );
 
 int GatherFlagGoals (void);
-// Called to repair an tObject
-//--repair-- int refuel_do_repair_effect( tObject * obj, int firstTime, int repair_seg );
+// Called to repair an CObject
+//--repair-- int refuel_do_repair_effect( CObject * obj, int firstTime, int repair_seg );
 
 extern char Special_names[MAX_CENTER_TYPES][11];
 
 //--repair-- //do the repair center for this frame
-//--repair-- void do_repair_sequence(tObject *obj);
+//--repair-- void do_repair_sequence(CObject *obj);
 //--repair--
 //--repair-- //see if we should start the repair center
-//--repair-- void check_start_repair_center(tObject *obj);
+//--repair-- void check_start_repair_center(CObject *obj);
 //--repair--
 //--repair-- //if repairing, cut it short
 //--repair-- abort_repair_center();
@@ -98,7 +98,7 @@ typedef struct tFuelCenInfo {
 	fix     xMaxCapacity;
 	fix     xTimer;          // used in matcen for when next robot comes out
 	fix     xDisableTime;   // Time until center disabled.
-	//tObject  *last_created_obj;
+	//CObject  *last_created_obj;
 	//int     last_created_sig;
 	vmsVector vCenter;
 } tFuelCenInfo;
@@ -123,7 +123,7 @@ typedef struct tMatCenInfo {
 
 extern tMatCenInfo RobotCenters [MAX_ROBOT_CENTERS];
 
-//--repair-- extern tObject *RepairObj;  // which tObject getting repaired, or NULL
+//--repair-- extern CObject *RepairObj;  // which CObject getting repaired, or NULL
 
 // Called when a materialization center gets triggered by the tPlayer
 // flying through some tTrigger!
@@ -132,7 +132,7 @@ void DisableMatCens (void);
 void InitAllMatCens (void);
 void BotGenCreate (tSegment *segP, int oldType);
 void FuelCenCheckForHoardGoal(tSegment *segp);
-void SpawnBotTrigger (tObject *objP, short nSegment);
+void SpawnBotTrigger (CObject *objP, short nSegment);
 int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags);
 void SetEquipGenStates (void);
 

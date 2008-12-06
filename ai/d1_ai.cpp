@@ -165,7 +165,7 @@ typedef struct awareness_event {
 
 
 //	These globals are set by a call to FindVectorIntersection, which is a slow routine,
-//	so we don't want to call it again (for this tObject) unless we have to.
+//	so we don't want to call it again (for this CObject) unless we have to.
 vmsVector	Hit_pos;
 int			hitType, Hit_seg;
 tFVIData		hitData;
@@ -214,7 +214,7 @@ int	D1_AI_animation_test=0;
 #endif
 
 // Current state indicates where the robotP current is, or has just done.
-//	Transition table between states for an AI tObject.
+//	Transition table between states for an AI CObject.
 //	 First dimension is trigger event.
 //	Second dimension is current state.
 //	 Third dimension is goal state.
@@ -222,7 +222,7 @@ int	D1_AI_animation_test=0;
 //	ERR_ means something impossible has happened.
 ubyte D1_AI_transition_table[D1_AI_MAX_EVENT][D1_AI_MAX_STATE][D1_AI_MAX_STATE] = {
 	{
-	//	Event = AIE_FIRE, a nearby tObject fired
+	//	Event = AIE_FIRE, a nearby CObject fired
 	//	none			rest			srch			lock			flin			fire			reco				// CURRENT is rows, GOAL is columns
 	{	D1_AIS_ERR_,	D1_AIS_LOCK,	D1_AIS_LOCK,	D1_AIS_LOCK,	D1_AIS_FLIN,	D1_AIS_FIRE,	D1_AIS_RECO},		//	none
 	{	D1_AIS_ERR_,	D1_AIS_LOCK,	D1_AIS_LOCK,	D1_AIS_LOCK,	D1_AIS_FLIN,	D1_AIS_FIRE,	D1_AIS_RECO},		//	rest
@@ -233,7 +233,7 @@ ubyte D1_AI_transition_table[D1_AI_MAX_EVENT][D1_AI_MAX_STATE][D1_AI_MAX_STATE] 
 	{	D1_AIS_ERR_,	D1_AIS_LOCK,	D1_AIS_LOCK,	D1_AIS_LOCK,	D1_AIS_FLIN,	D1_AIS_FIRE,	D1_AIS_FIRE}		//	recoil
 	},
 
-	//	Event = AIE_HITT, a nearby tObject was hit (or a wall was hit)
+	//	Event = AIE_HITT, a nearby CObject was hit (or a wall was hit)
 	{
 	{	D1_AIS_ERR_,	D1_AIS_LOCK,	D1_AIS_LOCK,	D1_AIS_LOCK,	D1_AIS_FLIN,	D1_AIS_FIRE,	D1_AIS_RECO},
 	{	D1_AIS_ERR_,	D1_AIS_LOCK,	D1_AIS_LOCK,	D1_AIS_LOCK,	D1_AIS_FLIN,	D1_AIS_FIRE,	D1_AIS_RECO},
@@ -399,10 +399,10 @@ void set_rotvel_and_saturate(fix *dest, fix delta)
 #define	D1_AI_TURN_SCALE	1
 #define	BABY_SPIDER_ID	14
 
-extern void PhysicsTurnTowardsVector(vmsVector *vGoal, tObject *objP, fix rate);
+extern void PhysicsTurnTowardsVector(vmsVector *vGoal, CObject *objP, fix rate);
 
 //-------------------------------------------------------------------------------------------
-void ai_turn_towards_vector(vmsVector *vGoal, tObject *objP, fix rate)
+void ai_turn_towards_vector(vmsVector *vGoal, CObject *objP, fix rate)
 {
 	vmsVector	new_fVec;
 	fix			dot;
@@ -430,7 +430,7 @@ objP->info.position.mOrient = vmsMatrix::CreateFR(new_fVec, objP->info.position.
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void ai_turn_randomly(vmsVector *vec_to_player, tObject *objP, fix rate, int nPrevVisibility)
+void ai_turn_randomly(vmsVector *vec_to_player, CObject *objP, fix rate, int nPrevVisibility)
 {
 	vmsVector	curVec;
 
@@ -542,12 +542,12 @@ void john_cheat_func_4(int key)
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Returns:
-//		0		Player is not visible from tObject, obstruction or something.
+//		0		Player is not visible from CObject, obstruction or something.
 //		1		Player is visible, but not in field of view.
 //		2		Player is visible and in field of view.
 //	Note: Uses gameData.ai.vBelievedPlayerPos as playerP's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
-int player_is_visible_from_object(tObject *objP, vmsVector *pos, fix fieldOfView, vmsVector *vec_to_player)
+int player_is_visible_from_object(CObject *objP, vmsVector *pos, fix fieldOfView, vmsVector *vec_to_player)
 {
 	fix			dot;
 	tFVIQuery	fq;
@@ -588,7 +588,7 @@ int player_is_visible_from_object(tObject *objP, vmsVector *pos, fix fieldOfView
 
 // ------------------------------------------------------------------------------------------------------------------
 //	Return 1 if animates, else return 0
-int do_silly_animation(tObject *objP)
+int do_silly_animation(CObject *objP)
 {
 	int				nObject = OBJ_IDX (objP);
 	tJointPos 		*jp_list;
@@ -717,11 +717,11 @@ int do_silly_animation(tObject *objP)
 }
 
 //	------------------------------------------------------------------------------------------
-//	Move all sub-objects in an tObject towards their goals.
-//	Current orientation of tObject is at:	polyObjInfo.anim_angles
-//	Goal orientation of tObject is at:		aiInfo.goalAngles
-//	Delta orientation of tObject is at:		aiInfo.deltaAngles
-void ai_frame_animation(tObject *objP)
+//	Move all sub-objects in an CObject towards their goals.
+//	Current orientation of CObject is at:	polyObjInfo.anim_angles
+//	Goal orientation of CObject is at:		aiInfo.goalAngles
+//	Delta orientation of CObject is at:		aiInfo.deltaAngles
+void ai_frame_animation(CObject *objP)
 {
 	int	nObject = OBJ_IDX (objP);
 	int	joint;
@@ -795,7 +795,7 @@ void SetNextPrimaryFireTime(tAILocalInfo *ailP, tRobotInfo *botInfoP)
 // ----------------------------------------------------------------------------------
 //	When some robots collide with the playerP, they attack.
 //	If playerP is cloaked, then robotP probably didn't actually collide, deal with that here.
-void DoD1AIRobotHitAttack(tObject *robotP, tObject *playerP, vmsVector *vCollision)
+void DoD1AIRobotHitAttack(CObject *robotP, CObject *playerP, vmsVector *vCollision)
 {
 	tAILocalInfo	*ailP = &gameData.ai.localInfo [OBJECTS.Index (robotP)];
 	tRobotInfo		*botInfoP = &gameData.bots.info [1][robotP->info.nId];
@@ -835,7 +835,7 @@ if (IsMultiGame)
 //	Note: Parameter vec_to_player is only passed now because guns which aren't on the forward vector from the
 //	center of the robotP will not fire right at the playerP.  We need to aim the guns at the playerP.  Barring that, we cheat.
 //	When this routine is complete, the parameter vec_to_player should not be necessary.
-void ai_fire_laser_at_player(tObject *objP, vmsVector *fire_point)
+void ai_fire_laser_at_player(CObject *objP, vmsVector *fire_point)
 {
 	int			nObject = OBJ_IDX (objP);
 	tAILocalInfo		*ailP = &gameData.ai.localInfo [nObject];
@@ -872,7 +872,7 @@ void ai_fire_laser_at_player(tObject *objP, vmsVector *fire_point)
 
 //--	//	Find tSegment containing laser fire position.  If the robotP is straddling a tSegment, the position from
 //--	//	which it fires may be in a different tSegment, which is bad news for FindVectorIntersection.  So, cast
-//--	//	a ray from the tObject center (whose tSegment we know) to the laser position.  Then, in the call to Laser_create_new
+//--	//	a ray from the CObject center (whose tSegment we know) to the laser position.  Then, in the call to Laser_create_new
 //--	//	use the data returned from this call to FindVectorIntersection.
 //--	//	Note that while FindVectorIntersection is pretty slow, it is not terribly slow if the destination point is
 //--	//	in the same tSegment as the source point.
@@ -943,7 +943,7 @@ void ai_fire_laser_at_player(tObject *objP, vmsVector *fire_point)
 
 // --------------------------------------------------------------------------------------------------------------------
 //	vec_goal must be normalized, or close to it.
-void move_towards_vector(tObject *objP, vmsVector *vec_goal)
+void move_towards_vector(CObject *objP, vmsVector *vec_goal)
 {
 	tPhysicsInfo	*piP = &objP->mType.physInfo;
 	fix				speed, dot, xMaxSpeed;
@@ -984,7 +984,7 @@ void move_towards_vector(tObject *objP, vmsVector *vec_goal)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void move_towards_player(tObject *objP, vmsVector *vec_to_player)
+void move_towards_player(CObject *objP, vmsVector *vec_to_player)
 //	vec_to_player must be normalized, or close to it.
 {
 	move_towards_vector(objP, vec_to_player);
@@ -992,7 +992,7 @@ void move_towards_player(tObject *objP, vmsVector *vec_to_player)
 
 // --------------------------------------------------------------------------------------------------------------------
 //	I am ashamed of this: fast_flag == -1 means Normal slide about.  fast_flag = 0 means no evasion.
-void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
+void move_around_player(CObject *objP, vmsVector *vec_to_player, int fast_flag)
 {
 	tPhysicsInfo	*piP = &objP->mType.physInfo;
 	fix				speed;
@@ -1081,7 +1081,7 @@ void move_around_player(tObject *objP, vmsVector *vec_to_player, int fast_flag)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void move_away_from_player(tObject *objP, vmsVector *vec_to_player, int attackType)
+void move_away_from_player(CObject *objP, vmsVector *vec_to_player, int attackType)
 {
 	fix				speed;
 	tPhysicsInfo	*piP = &objP->mType.physInfo;
@@ -1144,9 +1144,9 @@ void move_away_from_player(tObject *objP, vmsVector *vec_to_player, int attackTy
 //	Move towards, away_from or around playerP.
 //	Also deals with evasion.
 //	If the flag evade_only is set, then only allowed to evade, not allowed to move otherwise (must have mode == D1_AIM_STILL).
-void ai_move_relative_to_player(tObject *objP, tAILocalInfo *ailP, fix dist_to_player, vmsVector *vec_to_player, fix circle_distance, int evade_only)
+void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_player, vmsVector *vec_to_player, fix circle_distance, int evade_only)
 {
-	tObject		*dangerObjP;
+	CObject		*dangerObjP;
 	tRobotInfo	*botInfoP = &gameData.bots.info [1][objP->info.nId];
 
 	//	See if should take avoidance.
@@ -1199,7 +1199,7 @@ void ai_move_relative_to_player(tObject *objP, tAILocalInfo *ailP, fix dist_to_p
 	if ((!botInfoP->attackType) && evade_only)
 		return;
 
-	//	If we fall out of above, then no tObject to be avoided.
+	//	If we fall out of above, then no CObject to be avoided.
 	objP->cType.aiInfo.nDangerLaser = -1;
 
 	//	Green guy selects move around/towards/away based on firing time, not distance.
@@ -1229,7 +1229,7 @@ void ai_move_relative_to_player(tObject *objP, tAILocalInfo *ailP, fix dist_to_p
 //	-------------------------------------------------------------------------------------------------------------------
 int	Break_on_object = -1;
 
-void do_firing_stuff(tObject *objP, int player_visibility, vmsVector *vec_to_player)
+void do_firing_stuff(CObject *objP, int player_visibility, vmsVector *vec_to_player)
 {
 	if (player_visibility >= 1) {
 		//	Now, if in robotP's field of view, lock onto playerP
@@ -1265,7 +1265,7 @@ void do_firing_stuff(tObject *objP, int player_visibility, vmsVector *vec_to_pla
 
 // --------------------------------------------------------------------------------------------------------------------
 //	If a hiding robotP gets bumped or hit, he decides to find another hiding place.
-void DoD1AIRobotHit (tObject *objP, int type)
+void DoD1AIRobotHit (CObject *objP, int type)
 {
 	if (objP->info.controlType == CT_AI) {
 		if ((type == D1_PA_WEAPON_ROBOT_COLLISION) || (type == D1_PA_PLAYER_COLLISION))
@@ -1297,7 +1297,7 @@ int	Do_ai_flag=1;
 //	If the playerP is cloaked, set vec_to_player based on time playerP cloaked and last uncloaked position.
 //	Updates ailP->nPrevVisibility if playerP is not cloaked, in which case the previous visibility is left unchanged
 //	and is copied to player_visibility
-void compute_vis_and_vec(tObject *objP, vmsVector *pos, tAILocalInfo *ailP, vmsVector *vec_to_player, int *player_visibility, tRobotInfo *botInfoP, int *flag)
+void compute_vis_and_vec(CObject *objP, vmsVector *pos, tAILocalInfo *ailP, vmsVector *vec_to_player, int *player_visibility, tRobotInfo *botInfoP, int *flag)
 {
 	if (!*flag) {
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
@@ -1370,9 +1370,9 @@ void compute_vis_and_vec(tObject *objP, vmsVector *pos, tAILocalInfo *ailP, vmsV
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Move the tObject objP to a spot in which it doesn't intersect a wall.
+//	Move the CObject objP to a spot in which it doesn't intersect a wall.
 //	It might mean moving it outside its current tSegment.
-void move_object_to_legal_spot(tObject *objP)
+void move_object_to_legal_spot(CObject *objP)
 {
 	vmsVector	original_pos = objP->info.position.vPos;
 	int		i;
@@ -1405,9 +1405,9 @@ void move_object_to_legal_spot(tObject *objP)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Move tObject one tObject radii from current position towards tSegment center.
+//	Move CObject one CObject radii from current position towards tSegment center.
 //	If tSegment center is nearer than 2 radii, move it to center.
-void move_towards_segment_center(tObject *objP)
+void move_towards_segment_center(CObject *objP)
 {
 	fix			dist_to_center;
 	vmsVector	vSegCenter, goal_dir;
@@ -1438,11 +1438,11 @@ void move_towards_segment_center(tObject *objP)
 //	-----------------------------------------------------------------------------------------------------------
 //	Return true if door can be flown through by a suitable type robotP.
 //	Only brains and avoid robots can open doors.
-int ai_door_is_openable(tObject *objP, tSegment *segP, int sidenum)
+int ai_door_is_openable(CObject *objP, tSegment *segP, int sidenum)
 {
 	int	nWall;
 
-	//	The mighty console tObject can open all doors (for purposes of determining paths).
+	//	The mighty console CObject can open all doors (for purposes of determining paths).
 	if (objP == gameData.objs.consoleP) {
 		int	nWall = segP->sides[sidenum].nWall;
 
@@ -1462,8 +1462,8 @@ int ai_door_is_openable(tObject *objP, tSegment *segP, int sidenum)
 }
 
 //--//	-----------------------------------------------------------------------------------------------------------
-//--//	Return true if tObject *objP is allowed to open door at nWall
-//--int door_openable_by_robot(tObject *objP, int nWall)
+//--//	Return true if CObject *objP is allowed to open door at nWall
+//--int door_openable_by_robot(CObject *objP, int nWall)
 //--{
 //--	if (objP->info.nId == ROBOT_BRAIN)
 //--		if (WALLS[nWall].keys == KEY_NONE)
@@ -1474,7 +1474,7 @@ int ai_door_is_openable(tObject *objP, tSegment *segP, int sidenum)
 
 //	-----------------------------------------------------------------------------------------------------------
 //	Return side of openable door in tSegment, if any.  If none, return -1.
-int openable_doors_in_segment(tObject *objP)
+int openable_doors_in_segment(CObject *objP)
 {
 	int	i;
 	int	nSegment = objP->info.nSegment;
@@ -1492,7 +1492,7 @@ int openable_doors_in_segment(tObject *objP)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Return true if a special tObject (playerP or control center) is in this tSegment.
+//	Return true if a special CObject (playerP or control center) is in this tSegment.
 int special_object_in_seg (int nSegment)
 {
 	int nObject = SEGMENTS [nSegment].objects;
@@ -1517,11 +1517,11 @@ return segP->children[sidenum];
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Return true if tObject created, else return false.
+//	Return true if CObject created, else return false.
 int create_gated_robot( int nSegment, int nObjId)
 {
 	int			nObject;
-	tObject		*objP;
+	CObject		*objP;
 	tSegment		*segP = &gameData.segs.segments[nSegment];
 	vmsVector	vObjPos;
 	tRobotInfo	*botInfoP = &gameData.bots.info [1][nObjId];
@@ -1541,7 +1541,7 @@ int create_gated_robot( int nSegment, int nObjId)
 	COMPUTE_SEGMENT_CENTER (&vObjPos, segP);
 	PickRandomPointInSeg(&vObjPos, segP-gameData.segs.segments);
 
-	//	See if legal to place tObject here.  If not, move about in tSegment and try again.
+	//	See if legal to place CObject here.  If not, move about in tSegment and try again.
 	if (CheckObjectObjectIntersection(&vObjPos, objsize, segP)) {
 		gameData.boss [0].nLastGateTime = gameData.time.xGame - 3*gameData.boss [0].nGateInterval/4;
 		return 0;
@@ -1556,7 +1556,7 @@ int create_gated_robot( int nSegment, int nObjId)
 
 	objP = &OBJECTS[nObject];
 
-	//Set polygon-tObject-specific data
+	//Set polygon-CObject-specific data
 
 	objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 	objP->rType.polyObjInfo.nSubObjFlags = 0;
@@ -1588,7 +1588,7 @@ int create_gated_robot( int nSegment, int nObjId)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Make tObject objP gate in a robotP.
+//	Make CObject objP gate in a robotP.
 //	The process of him bringing in a robotP takes one second.
 //	Then a robotP appears somewhere near the playerP.
 //	Return true if robotP successfully created, else return false
@@ -1603,7 +1603,7 @@ int gate_in_robot(int type, int nSegment)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-int boss_fits_in_seg(tObject *bossObjP, int nSegment)
+int boss_fits_in_seg(CObject *bossObjP, int nSegment)
 {
 	vmsVector	segcenter;
 	int			boss_objnum = bossObjP-OBJECTS;
@@ -1632,16 +1632,16 @@ int boss_fits_in_seg(tObject *bossObjP, int nSegment)
 #define	QUEUE_SIZE	256
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Called for an AI tObject if it is fairly aware of the playerP.
+//	Called for an AI CObject if it is fairly aware of the playerP.
 //	awareness_level is in 0..100.  Larger numbers indicate greater awareness (eg, 99 if firing at playerP).
-//	In a given frame, might not get called for an tObject, or might be called more than once.
-//	The fact that this routine is not called for a given tObject does not mean that tObject is not interested in the playerP.
+//	In a given frame, might not get called for an CObject, or might be called more than once.
+//	The fact that this routine is not called for a given CObject does not mean that CObject is not interested in the playerP.
 //	OBJECTS are moved by physics, so they can move even if not interested in a playerP.  However, if their velocity or
 //	orientation is changing, this routine will be called.
 //	Return value:
 //		0	this playerP IS NOT allowed to move this robotP.
 //		1	this playerP IS allowed to move this robotP.
-int ai_multiplayer_awareness(tObject *objP, int awareness_level)
+int ai_multiplayer_awareness(CObject *objP, int awareness_level)
 {
 	int	rval=1;
 
@@ -1659,7 +1659,7 @@ fix	Prev_boss_shields = -1;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Do special stuff for a boss.
-void do_boss_stuff(tObject *objP)
+void do_boss_stuff(CObject *objP)
 {
     //  New code, fixes stupid bug which meant boss never gated in robots if > 32767 seconds played.
     if (gameData.boss [0].nLastTeleportTime > gameData.time.xGame)
@@ -1702,7 +1702,7 @@ void do_boss_stuff(tObject *objP)
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Do special stuff for a boss.
-void do_super_boss_stuff(tObject *objP, fix dist_to_player, int player_visibility)
+void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibility)
 {
 	static int eclipState = 0;
 	do_boss_stuff(objP);
@@ -1749,8 +1749,8 @@ void do_super_boss_stuff(tObject *objP, fix dist_to_player, int player_visibilit
 
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Returns true if this tObject should be allowed to fire at the playerP.
-int maybe_ai_do_actual_firing_stuff(tObject *objP, tAIStaticInfo *aiP)
+//	Returns true if this CObject should be allowed to fire at the playerP.
+int maybe_ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP)
 {
 	if (IsMultiGame)
 		if ((aiP->GOAL_STATE != D1_AIS_FLIN) && (objP->info.nId != ROBOT_BRAIN))
@@ -1761,7 +1761,7 @@ int maybe_ai_do_actual_firing_stuff(tObject *objP, tAIStaticInfo *aiP)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void ai_do_actual_firing_stuff(tObject *objP, tAIStaticInfo *aiP, tAILocalInfo *ailP, tRobotInfo *botInfoP, vmsVector *vec_to_player, fix dist_to_player, vmsVector *vGunPoint, int player_visibility, int object_animates)
+void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *ailP, tRobotInfo *botInfoP, vmsVector *vec_to_player, fix dist_to_player, vmsVector *vGunPoint, int player_visibility, int object_animates)
 {
 	fix	dot;
 
@@ -1829,7 +1829,7 @@ void ai_do_actual_firing_stuff(tObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void DoD1AIFrame (tObject *objP)
+void DoD1AIFrame (CObject *objP)
 {
 	int				nObject = OBJ_IDX (objP);
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
@@ -2084,7 +2084,7 @@ if (nObject == nDbgObj)
 	//	Guys whose behavior is station and are not at their hide tSegment get processed anyway.
 	if (ailP->playerAwarenessType < D1_PA_WEAPON_ROBOT_COLLISION-1) { // If robotP got hit, he gets to attack playerP always!
 		#if DBG
-		if (Break_on_object != nObject) {	//	don't time slice if we're interested in this tObject.
+		if (Break_on_object != nObject) {	//	don't time slice if we're interested in this CObject.
 		#endif
 			if ((dist_to_player > F1_0*250) && (ailP->timeSinceProcessed <= F1_0*2))
 				return;
@@ -2580,7 +2580,7 @@ if (nObject == nDbgObj)
 }
 
 //--mk, 121094 -- // ----------------------------------------------------------------------------------
-//--mk, 121094 -- void spin_robot(tObject *robotP, vmsVector *vCollision)
+//--mk, 121094 -- void spin_robot(CObject *robotP, vmsVector *vCollision)
 //--mk, 121094 -- {
 //--mk, 121094 -- 	if (vCollision->p.x != 3) {
 //--mk, 121094 -- 		robotP->physInfo.rotVel[X] = 0x1235;
@@ -2607,7 +2607,7 @@ void ai_do_cloak_stuff(void)
 
 //	-----------------------------------------------------------------------------------
 //	Returns false if awareness is considered too puny to add, else returns true.
-int add_awareness_event(tObject *objP, int type)
+int add_awareness_event(CObject *objP, int type)
 {
 	//	If playerP cloaked and hit a robotP, then increase awareness
 	if ((type == D1_PA_WEAPON_ROBOT_COLLISION) || (type == D1_PA_WEAPON_WALL_COLLISION) || (type == D1_PA_PLAYER_COLLISION))
@@ -2660,7 +2660,7 @@ void dump_ai_objects_all()
 		fprintf(D1_AI_dump_file, "Error message: %s\n", D1_AI_error_message);
 
 	for (nObject=0; nObject <= gameData.objs.nLastObject; nObject++) {
-		tObject		*objP = &OBJECTS[nObject];
+		CObject		*objP = &OBJECTS[nObject];
 		tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 		tAILocalInfo		*ailP = &gameData.ai.localInfo [nObject];
 		fix			dist_to_player;

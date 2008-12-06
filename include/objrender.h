@@ -25,18 +25,18 @@ typedef struct tCloakInfo {
 
 //------------------------------------------------------------------------------
 
-void DrawObjectBlob (tObject *obj, int bmi0, int bmi, int iFrame, tRgbaColorf *color, float alpha);
-// draw an tObject that is a texture-mapped rod
-void DrawObjectRodTexPoly (tObject *obj, tBitmapIndex bitmap, int bLit, int iFrame);
-int DrawPolygonObject (tObject *objP, int bDepthSort, int bForce);
-void CalcShipThrusterPos (tObject *objP, vmsVector *vPos);
-int InitAddonPowerup (tObject *objP);
-void ConvertWeaponToPowerup (tObject *objP);
-int ConvertPowerupToWeapon (tObject *objP);
+void DrawObjectBlob (CObject *obj, int bmi0, int bmi, int iFrame, tRgbaColorf *color, float alpha);
+// draw an CObject that is a texture-mapped rod
+void DrawObjectRodTexPoly (CObject *obj, tBitmapIndex bitmap, int bLit, int iFrame);
+int DrawPolygonObject (CObject *objP, int bDepthSort, int bForce);
+void CalcShipThrusterPos (CObject *objP, vmsVector *vPos);
+int InitAddonPowerup (CObject *objP);
+void ConvertWeaponToPowerup (CObject *objP);
+int ConvertPowerupToWeapon (CObject *objP);
 void ConvertAllPowerupsToWeapons (void);
-int RenderObject(tObject *objP, int nWindowNum, int bForce);
-void TransformHitboxf (tObject *objP, fVector *vertList, int iSubObj);
-int GetCloakInfo (tObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP);
+int RenderObject(CObject *objP, int nWindowNum, int bForce);
+void TransformHitboxf (CObject *objP, fVector *vertList, int iSubObj);
+int GetCloakInfo (CObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP);
 
 //------------------------------------------------------------------------------
 

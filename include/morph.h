@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_VECS 10000
 
 typedef struct tMorphInfo {
-	tObject			*objP;                                // tObject which is morphing
+	CObject			*objP;                                // CObject which is morphing
 	vmsVector		vecs [MAX_VECS];
 	vmsVector		deltas [MAX_VECS];
 	fix				times [MAX_VECS];
@@ -45,15 +45,15 @@ typedef struct tMorphInfo {
 
 #define MORPH_RATE (f1_0*3)
 
-void MorphStart(tObject *obj);
-void MorphDrawObject(tObject *obj);
+void MorphStart(CObject *obj);
+void MorphDrawObject(CObject *obj);
 
-//process the morphing tObject for one frame
-void DoMorphFrame(tObject *obj);
+//process the morphing CObject for one frame
+void DoMorphFrame(CObject *obj);
 
 //called at the start of a level
 void MorphInit();
 
-extern tMorphInfo *MorphFindData (tObject *obj);
+extern tMorphInfo *MorphFindData (CObject *obj);
 
 #endif /* _H */

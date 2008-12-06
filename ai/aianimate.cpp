@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void AIIdleAnimation (tObject *objP)
+void AIIdleAnimation (CObject *objP)
 {
 #if DBG
 if (OBJ_IDX (objP) == nDbgObj)
@@ -84,7 +84,7 @@ int     nFlinchScale = 4;
 int     nAttackScale = 24;
 sbyte   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
 
-int DoSillyAnimation (tObject *objP)
+int DoSillyAnimation (CObject *objP)
 {
 	int				nObject = OBJ_IDX (objP);
 	tJointPos 		*jp_list;
@@ -213,11 +213,11 @@ int DoSillyAnimation (tObject *objP)
 }
 
 //	------------------------------------------------------------------------------------------
-//	Move all sub-OBJECTS in an tObject towards their goals.
-//	Current orientation of tObject is at:	polyObjInfo.animAngles
-//	Goal orientation of tObject is at:		aiInfo.goalAngles
-//	Delta orientation of tObject is at:		aiInfo.deltaAngles
-void AIFrameAnimation (tObject *objP)
+//	Move all sub-OBJECTS in an CObject towards their goals.
+//	Current orientation of CObject is at:	polyObjInfo.animAngles
+//	Goal orientation of CObject is at:		aiInfo.goalAngles
+//	Delta orientation of CObject is at:		aiInfo.deltaAngles
+void AIFrameAnimation (CObject *objP)
 {
 	int	nObject = OBJ_IDX (objP);
 	int	nJoint;
@@ -276,9 +276,9 @@ void AIFrameAnimation (tObject *objP)
 
 //	----------------------------------------------------------------------
 //	General purpose robot-dies-with-death-roll-and-groan code.
-//	Return true if tObject just died.
+//	Return true if CObject just died.
 //	scale: F1_0*4 for boss, much smaller for much smaller guys
-int DoRobotDyingFrame (tObject *objP, fix StartTime, fix xRollDuration, sbyte *bDyingSoundPlaying, short deathSound, fix xExplScale, fix xSoundScale)
+int DoRobotDyingFrame (CObject *objP, fix StartTime, fix xRollDuration, sbyte *bDyingSoundPlaying, short deathSound, fix xExplScale, fix xSoundScale)
 {
 	fix	xRollVal, temp;
 	fix	xSoundDuration;
@@ -324,7 +324,7 @@ return (StartTime + xRollDuration < gameData.time.xGame);
 
 //	----------------------------------------------------------------------
 
-void StartRobotDeathSequence (tObject *objP)
+void StartRobotDeathSequence (CObject *objP)
 {
 objP->cType.aiInfo.xDyingStartTime = gameData.time.xGame;
 objP->cType.aiInfo.bDyingSoundPlaying = 0;
@@ -334,7 +334,7 @@ objP->cType.aiInfo.SKIP_AI_COUNT = 0;
 
 //	----------------------------------------------------------------------
 
-int DoAnyRobotDyingFrame (tObject *objP)
+int DoAnyRobotDyingFrame (CObject *objP)
 {
 if (objP->cType.aiInfo.xDyingStartTime) {
 	int bDeathRoll = ROBOTINFO (objP->info.nId).bDeathRoll;

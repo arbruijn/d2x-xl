@@ -132,7 +132,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3BuildModelFromOOF (tObject *objP, int nModel)
+int G3BuildModelFromOOF (CObject *objP, int nModel)
 {
 	tOOFObject	*po = gameData.models.modelToOOF [1][nModel];
 	tG3Model		*pm;

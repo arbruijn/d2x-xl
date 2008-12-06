@@ -28,8 +28,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #if DBG
 
-void slew_init(tObject *obj);                // say this is slew obj
-int slew_stop();                            // Stops tObject
+void slew_init(CObject *obj);                // say this is slew obj
+int slew_stop();                            // Stops CObject
 void slew_reset_orient();                   // Resets orientation
 int slew_frame(int dont_check_keys);        // Does slew frame
 

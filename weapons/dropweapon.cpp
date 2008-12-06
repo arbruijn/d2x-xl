@@ -34,10 +34,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //this function is for when the tPlayer intentionally drops a powerup
 //this function is based on DropPowerup()
-int SpitPowerup (tObject *spitterP, ubyte id, int seed)
+int SpitPowerup (CObject *spitterP, ubyte id, int seed)
 {
 	short			nObject;
-	tObject		*objP;
+	CObject		*objP;
 	vmsVector	newVelocity, newPos;
 	tTransformation	*posP = OBJPOS (spitterP);
 

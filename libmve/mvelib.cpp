@@ -303,7 +303,7 @@ mve_free (movie);
 }
 
 //-----------------------------------------------------------------------
-// open the file stream in thie tObject
+// open the file stream in thie CObject
 
 static int _mvefile_open (MVEFILE *file, void *stream)
 {
@@ -453,7 +453,7 @@ mve_free (movie);
 }
 
 //-----------------------------------------------------------------------
-// open an MVESTREAM tObject
+// open an MVESTREAM CObject
 
 static int _mvestream_open (MVESTREAM *movie, void *stream)
 {

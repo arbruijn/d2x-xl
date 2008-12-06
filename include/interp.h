@@ -40,12 +40,12 @@ fix G3PolyModelSize (tPolyModel *pm, int nModel);
 //gives the interpreter an array of points to use
 void G3SetModelPoints(g3sPoint *pointlist);
 
-//calls the tObject interpreter to render an tObject.  The tObject renderer
+//calls the CObject interpreter to render an CObject.  The CObject renderer
 //is really a seperate pipeline. returns true if drew
-int G3DrawPolyModel (tObject *objP, void *modelP, CBitmap **modelBitmaps, vmsAngVec *animAngles, vmsVector *vOffset,
+int G3DrawPolyModel (CObject *objP, void *modelP, CBitmap **modelBitmaps, vmsAngVec *animAngles, vmsVector *vOffset,
 							 fix light, fix *glowValues, tRgbaColorf *obj_colors, tPOFObject *po, int nModel);
 
-int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, int nModel);
+int G3DrawPolyModelShadow (CObject *objP, void *modelP, vmsAngVec *pAnimAngles, int nModel);
 
 int G3FreePolyModelItems (tPOFObject *po);
 
@@ -55,7 +55,7 @@ void G3InitPolyModel(tPolyModel *pm, int nModel);
 //un-initialize, i.e., convert color entries back to RGB15
 void g3_uninit_polygon_model(void *model_ptr);
 
-//alternate interpreter for morphing tObject
+//alternate interpreter for morphing CObject
 int G3DrawMorphingModel(void *model_ptr,CBitmap **model_bitmaps,vmsAngVec *animAngles, vmsVector *vOffset,
 								 fix light, vmsVector *new_points, int nModel);
 
@@ -98,10 +98,10 @@ int get_chunks(ubyte *data, ubyte *new_data, chunk *list, int *no);
 
 void G3SwapPolyModelData (ubyte *data);
 
-int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
+int G3RenderModel (CObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
 						 vmsAngVec *pAnimAngles, vmsVector *pOffs, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor);
 
-void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
+void G3DynLightModel (CObject *objP, tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
 
 int G3ModelMinMax (int nModel, tHitbox *phb);
 

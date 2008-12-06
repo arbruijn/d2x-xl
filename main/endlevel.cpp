@@ -52,11 +52,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 typedef struct tExitFlightData {
-	tObject		*objP;
+	CObject		*objP;
 	vmsAngVec	angles;			//orientation in angles
 	vmsVector	step;				//how far in a second
 	vmsVector	angstep;			//rotation per second
-	fix			speed;			//how fast tObject is moving
+	fix			speed;			//how fast CObject is moving
 	vmsVector 	headvec;			//where we want to be pointing
 	int			firstTime;		//flag for if first time through
 	fix			offset_frac;	//how far off-center as portion of way
@@ -72,9 +72,9 @@ typedef struct tExitFlightData {
 
 void DoEndLevelFlyThrough (int n);
 void DrawStars ();
-int FindExitSide (tObject *objP);
+int FindExitSide (CObject *objP);
 void GenerateStarfield ();
-void StartEndLevelFlyThrough (int n, tObject *objP, fix speed);
+void StartEndLevelFlyThrough (int n, CObject *objP, fix speed);
 void StartRenderedEndLevelSequence ();
 
 char movieTable [2] [30] = {
@@ -212,7 +212,7 @@ gameData.endLevel.satellite.bmInstance.SetBuffer (NULL);
 
 //------------------------------------------------------------------------------
 
-tObject externalExplosion;
+CObject externalExplosion;
 
 vmsAngVec vExitAngles = vmsAngVec::Create(-0xa00, 0, 0);
 
@@ -221,7 +221,7 @@ vmsMatrix mSurfaceOrient;
 void StartEndLevelSequence (int bSecret)
 {
 	int		i, nMoviePlayed = MOVIE_NOT_PLAYED;
-	tObject	*objP;
+	CObject	*objP;
 
 if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 	gameData.demo.nState = ND_STATE_PAUSED;
@@ -463,7 +463,7 @@ if (!gameStates.render.bOutsideMine) {
 
 		tvec = gameData.objs.consoleP->info.position.vPos - gameData.endLevel.exit.vSideExit;
 		if (vmsVector::Dot (tvec, gameData.endLevel.exit.mOrient [FVEC]) > 0) {
-			tObject *objP;
+			CObject *objP;
 			gameStates.render.bOutsideMine = 1;
 			objP = ObjectCreateExplosion (gameData.endLevel.exit.nSegNum, &gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (objP) {
@@ -481,7 +481,7 @@ if (!gameStates.render.bOutsideMine) {
 	if ((explosion_wait1 -= gameData.time.xFrame) < 0) {
 		vmsVector	tpnt;
 		short			nSegment;
-		tObject		*expl;
+		CObject		*expl;
 		static int	soundCount;
 
 		tpnt = gameData.objs.consoleP->info.position.vPos + gameData.objs.consoleP->info.position.mOrient [FVEC] * (-gameData.objs.consoleP->info.xSize * 5);
@@ -541,9 +541,9 @@ switch (gameStates.app.bEndLevelSequence) {
 			else {
 				gameStates.app.bEndLevelSequence = EL_LOOKBACK;
 				int nObject = CreateCamera (gameData.objs.consoleP);
-				if (nObject == -1) { //can't get tObject, so abort
+				if (nObject == -1) { //can't get CObject, so abort
 #if TRACE
-					con_printf (1, "Can't get tObject for endlevel sequence.  Aborting endlevel sequence.\n");
+					con_printf (1, "Can't get CObject for endlevel sequence.  Aborting endlevel sequence.\n");
 #endif
 					StopEndLevelSequence ();
 					return;
@@ -703,7 +703,7 @@ switch (gameStates.app.bEndLevelSequence) {
 #define MIN_D 0x100
 
 //find which tSide to fly out of
-int FindExitSide (tObject *objP)
+int FindExitSide (CObject *objP)
 {
 	vmsVector	vPreferred, vSegCenter, vSide;
 	fix			d, xBestVal = -f2_0;
@@ -896,7 +896,7 @@ fixang DeltaAng (fixang a, fixang b);
 #define MIN_D 0x100
 
 //if speed is zero, use default speed
-void StartEndLevelFlyThrough (int n, tObject *objP, fix speed)
+void StartEndLevelFlyThrough (int n, CObject *objP, fix speed)
 {
 exitFlightDataP = exitFlightObjects + n;
 exitFlightDataP->objP = objP;
@@ -924,7 +924,7 @@ return dest;
 
 void DoEndLevelFlyThrough (int n)
 {
-	tObject *objP;
+	CObject *objP;
 	tSegment *segP;
 	int nOldPlayerSeg;
 
@@ -974,7 +974,7 @@ if (UpdateObjectSeg (objP, false)) {
 		//update target point & angles
 		COMPUTE_SIDE_CENTER (&vDest, segP, nExitSide);
 		//update target point and movement points
-		//offset tObject sideways
+		//offset CObject sideways
 		if (exitFlightDataP->offset_frac) {
 			int s0=-1, s1=0, i;
 			vmsVector s0p, s1p;
@@ -1023,7 +1023,7 @@ exitFlightDataP->firstTime = 0;
 //------------------------------------------------------------------------------
 
 #ifdef SLEW_ON		//this is a special routine for slewing around external scene
-int DoSlewMovement (tObject *objP, int check_keys, int check_joy)
+int DoSlewMovement (CObject *objP, int check_keys, int check_joy)
 {
 	int moved = 0;
 	vmsVector svel, movement;				//scaled velocity (per this frame)

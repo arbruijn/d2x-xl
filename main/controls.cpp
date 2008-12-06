@@ -34,11 +34,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 static fix wiggleTime;
 
-void WiggleObject (tObject *objP)
+void WiggleObject (CObject *objP)
 {
 	fix		xWiggle;
 	int		nParent;
-	tObject	*pParent;
+	CObject	*pParent;
 
 if (gameStates.render.nShadowPass == 2)
 	return;
@@ -66,10 +66,10 @@ else {
 #define AFTERBURNER_USE_SECS	3				//use up in 3 seconds
 #define DROP_DELTA_TIME			(f1_0/15)	//drop 3 per second
 
-void ReadFlyingControls (tObject *objP)
+void ReadFlyingControls (CObject *objP)
 {
 	fix	forwardThrustTime;
-	tObject *gmObjP;
+	CObject *gmObjP;
 	int	bMulti;
 #if 0
 	Assert(gameData.time.xFrame > 0); 		//Get MATT if hit this!
@@ -157,7 +157,7 @@ void ReadFlyingControls (tObject *objP)
 			LOCALPLAYER.energy -= charge_up * 100 / 10;	//full charge uses 10% of energy
 		}
 	}
-	// Set tObject's thrust vector for forward/backward
+	// Set CObject's thrust vector for forward/backward
 	objP->mType.physInfo.thrust = objP->info.position.mOrient[FVEC] * forwardThrustTime;
 	// slide left/right
 	objP->mType.physInfo.thrust += objP->info.position.mOrient[RVEC] * Controls [0].sidewaysThrustTime;

@@ -51,7 +51,7 @@ gameData.ai.nBelievedPlayerSeg = gameData.ai.cloakInfo [0].nLastSeg;
 
 // ----------------------------------------------------------------------------
 // Returns false if awareness is considered too puny to add, else returns true.
-int AddAwarenessEvent (tObject *objP, int nType)
+int AddAwarenessEvent (CObject *objP, int nType)
 {
 	// If tPlayer cloaked and hit a robot, then increase awareness
 if (nType >= WEAPON_WALL_COLLISION)
@@ -72,8 +72,8 @@ return 1;
 
 // ----------------------------------------------------------------------------------
 // Robots will become aware of the tPlayer based on something that occurred.
-// The tObject (probably tPlayer or weapon) which created the awareness is objP.
-void CreateAwarenessEvent (tObject *objP, int nType)
+// The CObject (probably tPlayer or weapon) which created the awareness is objP.
+void CreateAwarenessEvent (CObject *objP, int nType)
 {
 	// If not in multiplayer, or in multiplayer with robots, do this, else unnecessary!
 if (IsRobotGame) {
@@ -129,7 +129,7 @@ void SetPlayerAwarenessAll (void)
 {
 	int		i;
 	short		nSegment;
-	tObject	*objP;
+	CObject	*objP;
 
 ProcessAwarenessEvents ();
 FORALL_OBJS (objP, i)
@@ -149,11 +149,11 @@ FORALL_OBJS (objP, i)
 // ----------------------------------------------------------------------------------
 // Do things which need to get done for all AI OBJECTS each frame.
 // This includes:
-//  Setting player_awareness (a fix, time in seconds which tObject is aware of tPlayer)
+//  Setting player_awareness (a fix, time in seconds which CObject is aware of tPlayer)
 void DoAIFrameAll (void)
 {
 	int		h, i, j;
-	tObject	*objP;
+	CObject	*objP;
 
 SetPlayerAwarenessAll ();
 if (USE_D1_AI)
@@ -172,7 +172,7 @@ for (h = BOSS_COUNT, j = 0; j < h; j++)
 		if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 			DoBossDyingFrame (OBJECTS + gameData.boss [j].nDying);
 		else {
-			tObject *objP = OBJECTS;
+			CObject *objP = OBJECTS;
 			FORALL_ROBOT_OBJS (objP, i)
 				if (ROBOTINFO (objP->info.nId).bossFlag)
 					DoBossDyingFrame (objP);

@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //-------------------------------------------------------------------------------------------
 
-fix AITurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate)
+fix AITurnTowardsVector (vmsVector *vGoal, CObject *objP, fix rate)
 {
 	vmsVector	new_fvec;
 	fix			dot;
@@ -86,7 +86,7 @@ return dot;
 // --------------------------------------------------------------------------------------------------------------------
 //	vGoalVec must be normalized, or close to it.
 //	if bDotBased set, then speed is based on direction of movement relative to heading
-void MoveTowardsVector (tObject *objP, vmsVector *vGoalVec, int bDotBased)
+void MoveTowardsVector (CObject *objP, vmsVector *vGoalVec, int bDotBased)
 {
 	tPhysicsInfo	*pptr = &objP->mType.physInfo;
 	fix				speed, dot, xMaxSpeed, t, d;
@@ -132,12 +132,12 @@ if (speed > xMaxSpeed) {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void MoveAwayFromOtherRobots (tObject *objP, vmsVector& vVecToPlayer)
+void MoveAwayFromOtherRobots (CObject *objP, vmsVector& vVecToPlayer)
 {
 	vmsVector		vPos, vAvoidPos, vNewPos;
 	fix				xDist, xAvoidRad;
 	short				nStartSeg, nDestSeg, nObject, nSide, nAvoidObjs;
-	tObject			*avoidObjP;
+	CObject			*avoidObjP;
 	tSegment			*segP;
 	tFVIQuery		fq;
 	tFVIData			hitData;
@@ -198,7 +198,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void MoveTowardsPlayer (tObject *objP, vmsVector *vVecToPlayer)
+void MoveTowardsPlayer (CObject *objP, vmsVector *vVecToPlayer)
 //	gameData.ai.vVecToPlayer must be normalized, or close to it.
 {
 MoveAwayFromOtherRobots (objP, *vVecToPlayer);
@@ -207,7 +207,7 @@ MoveTowardsVector (objP, vVecToPlayer, 1);
 
 // --------------------------------------------------------------------------------------------------------------------
 //	I am ashamed of this: fastFlag == -1 means Normal slide about.  fastFlag = 0 means no evasion.
-void MoveAroundPlayer (tObject *objP, vmsVector *vVecToPlayer, int fastFlag)
+void MoveAroundPlayer (CObject *objP, vmsVector *vVecToPlayer, int fastFlag)
 {
 	tPhysicsInfo	*pptr = &objP->mType.physInfo;
 	fix				speed;
@@ -302,7 +302,7 @@ void MoveAroundPlayer (tObject *objP, vmsVector *vVecToPlayer, int fastFlag)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void MoveAwayFromPlayer (tObject *objP, vmsVector *vVecToPlayer, int attackType)
+void MoveAwayFromPlayer (CObject *objP, vmsVector *vVecToPlayer, int attackType)
 {
 	fix				speed;
 	tPhysicsInfo	*pptr = &objP->mType.physInfo;
@@ -349,11 +349,11 @@ void MoveAwayFromPlayer (tObject *objP, vmsVector *vVecToPlayer, int attackType)
 //	Move towards, away_from or around player.
 //	Also deals with evasion.
 //	If the flag bEvadeOnly is set, then only allowed to evade, not allowed to move otherwise (must have mode == AIM_IDLING).
-void AIMoveRelativeToPlayer (tObject *objP, tAILocalInfo *ailP, fix xDistToPlayer,
+void AIMoveRelativeToPlayer (CObject *objP, tAILocalInfo *ailP, fix xDistToPlayer,
 									  vmsVector *vVecToPlayer, fix circleDistance, int bEvadeOnly,
 									  int nPlayerVisibility)
 {
-	tObject		*dObjP;
+	CObject		*dObjP;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
 
 	Assert (gameData.ai.nPlayerVisibility != -1);
@@ -403,7 +403,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 //	Hmm, perhaps brilliant insight.  If want claw-nType guys to keep coming, don't return here after evasion.
 if (!(botInfoP->attackType || botInfoP->thief) && bEvadeOnly)
 	return;
-//	If we fall out of above, then no tObject to be avoided.
+//	If we fall out of above, then no CObject to be avoided.
 objP->cType.aiInfo.nDangerLaser = -1;
 //	Green guy selects move around/towards/away based on firing time, not distance.
 if (botInfoP->attackType == 1) {
@@ -443,7 +443,7 @@ else {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-fix MoveObjectToLegalPoint (tObject *objP, vmsVector *vGoal)
+fix MoveObjectToLegalPoint (CObject *objP, vmsVector *vGoal)
 {
 	vmsVector	vGoalDir;
 	fix			xDistToGoal;
@@ -456,9 +456,9 @@ return xDistToGoal;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Move the tObject objP to a spot in which it doesn't intersect a tWall.
+//	Move the CObject objP to a spot in which it doesn't intersect a tWall.
 //	It might mean moving it outside its current tSegment.
-void MoveObjectToLegalSpot (tObject *objP, int bMoveToCenter)
+void MoveObjectToLegalSpot (CObject *objP, int bMoveToCenter)
 {
 	vmsVector	vSegCenter, vOrigPos = objP->info.position.vPos;
 	int			i;
@@ -500,9 +500,9 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Move tObject one tObject radii from current position towards tSegment center.
+//	Move CObject one CObject radii from current position towards tSegment center.
 //	If tSegment center is nearer than 2 radii, move it to center.
-fix MoveTowardsPoint (tObject *objP, vmsVector *vGoal, fix xMinDist)
+fix MoveTowardsPoint (CObject *objP, vmsVector *vGoal, fix xMinDist)
 {
 	fix			xDistToGoal;
 	vmsVector	vGoalDir;
@@ -543,9 +543,9 @@ return xDistToGoal;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Move tObject one tObject radii from current position towards tSegment center.
+//	Move CObject one CObject radii from current position towards tSegment center.
 //	If tSegment center is nearer than 2 radii, move it to center.
-fix MoveTowardsSegmentCenter (tObject *objP)
+fix MoveTowardsSegmentCenter (CObject *objP)
 {
 	vmsVector	vSegCenter;
 

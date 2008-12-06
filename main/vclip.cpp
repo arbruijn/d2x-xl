@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //----------------- Variables for video clips -------------------
 
-inline int CurFrame (tObject *objP, int nClip, fix timeToLive)
+inline int CurFrame (CObject *objP, int nClip, fix timeToLive)
 {
 tVideoClip	*pvc = gameData.eff.vClips [0] + nClip;
 int nFrames = pvc->nFrameCount;
@@ -49,7 +49,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 
 //------------------------------------------------------------------------------
 
-tRgbColorb *VClipColor (tObject *objP)
+tRgbColorb *VClipColor (CObject *objP)
 {
 	int				nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
 	tBitmapIndex	bmi;
@@ -96,13 +96,13 @@ return nFrames;
 }
 
 //------------------------------------------------------------------------------
-//draw an tObject which renders as a tVideoClip
+//draw an CObject which renders as a tVideoClip
 
 #define	FIREBALL_ALPHA		0.8
 #define	THRUSTER_ALPHA		(1.0 / 4.0)
 #define	WEAPON_ALPHA		0.7
 
-void DrawVClipObject (tObject *objP, fix timeToLive, int bLit, int nVClip, tRgbaColorf *color)
+void DrawVClipObject (CObject *objP, fix timeToLive, int bLit, int nVClip, tRgbaColorf *color)
 {
 	double		ta = 0, alpha = 0;
 	tVideoClip	*vcP = gameData.eff.vClips [0] + nVClip;
@@ -145,7 +145,7 @@ if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION))
 
 // -----------------------------------------------------------------------------
 
-void DrawExplBlast (tObject *objP)
+void DrawExplBlast (CObject *objP)
 {
 	float			fLife, fAlpha;
 	fix			xSize;
@@ -211,7 +211,7 @@ glDepthMask (1);
 
 // -----------------------------------------------------------------------------
 
-void ConvertPowerupToVClip (tObject *objP)
+void ConvertPowerupToVClip (CObject *objP)
 {
 objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -225,7 +225,7 @@ objP->mType.physInfo.drag = 512;
 
 // -----------------------------------------------------------------------------
 
-void ConvertWeaponToVClip (tObject *objP)
+void ConvertWeaponToVClip (CObject *objP)
 {
 objP->rType.vClipInfo.nClipIndex = gameData.weapons.info [objP->info.nId].nVClipIndex;
 objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -240,7 +240,7 @@ objP->info.movementType = MT_PHYSICS;
 
 // -----------------------------------------------------------------------------
 
-int ConvertVClipToPolymodel (tObject *objP)
+int ConvertVClipToPolymodel (CObject *objP)
 {
 	vmsAngVec	a;
 	short			nModel;
@@ -281,7 +281,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void DrawWeaponVClip (tObject *objP)
+void DrawWeaponVClip (CObject *objP)
 {
 	int	nVClip;
 	fix	modtime, playTime;

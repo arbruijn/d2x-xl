@@ -1449,7 +1449,7 @@ typedef struct tShadowData {
 	CArray<tShaderLight>	lights;
 	short						nShadowMaps;
 	CCamera					shadowMaps [MAX_SHADOW_MAPS];
-	tObject					lightSource;
+	CObject					lightSource;
 	tOOF_vector				vLightPos;
 	vmsVector				vLightDir [MAX_SHADOW_LIGHTS];
 	CArray<short>			objLights;
@@ -1872,12 +1872,12 @@ typedef struct tLightObjId {
 } tLightObjId;
 
 typedef struct tGuidedMissileInfo {
-	tObject				*objP;
+	CObject				*objP;
 	int					nSignature;
 } tGuidedMissileInfo;
 
 typedef struct tObjListRef {
-	tObject	*head, *tail;
+	CObject	*head, *tail;
 	short		nObjects;
 } tObjListRef;
 
@@ -1895,14 +1895,14 @@ typedef struct tObjLists {
 
 typedef struct tObjectData {
 	CArray<tObjTypeData>		types;
-	CArray<tObject>			objects;
+	CArray<CObject>			objects;
 	tObjLists					lists;
 	CArray<short>				freeList;
 	CArray<short>				parentObjs;
 	CArray<tObjectRef>		childObjs;
 	CArray<short>				firstChild;
 	CArray<tLightObjId>		lightObjs;
-	CArray<tObject>			init;
+	CArray<CObject>			init;
 	CArray<tObjDropInfo>		dropInfo;
 	CArray<tSpeedBoostData>	speedBoost;
 	CArray<vmsVector>			vRobotGoals;
@@ -1915,12 +1915,12 @@ typedef struct tObjectData {
 	short							nFreeDropped;
 	short							nDropped;
 	tGuidedMissileInfo		guidedMissile [MAX_PLAYERS];
-	tObject*						consoleP;
-	tObject*						viewerP;
-	tObject*						trackGoals [2];
-	tObject*						missileViewerP;
-	tObject*						deadPlayerCamera;
-	tObject*						endLevelCamera;
+	CObject*						consoleP;
+	CObject*						viewerP;
+	CObject*						trackGoals [2];
+	CObject*						missileViewerP;
+	CObject*						deadPlayerCamera;
+	CObject*						endLevelCamera;
 	int							nObjects;
 	int							nLastObject [2];
 	int							nObjectLimit;
@@ -2415,7 +2415,7 @@ typedef struct tAutoNetGame {
 } tAutoNetGame;
 
 typedef struct tLeftoverPowerup {
-	tObject				*spitterP;
+	CObject				*spitterP;
 	ubyte					nCount;
 	ubyte					nType;
 } tLeftoverPowerup;
@@ -2508,9 +2508,9 @@ typedef struct tMultiGameData {
 	tMultiMenuData		menu;
 	tMultiKillData		kills;
 	tMultiRobotData	robots;
-	CArray<short>		remoteToLocal;  // Remote tObject number for each local tObject
+	CArray<short>		remoteToLocal;  // Remote CObject number for each local CObject
 	CArray<short>		localToRemote;
-	CArray<sbyte>		nObjOwner;   // Who created each tObject in my universe, -1 = loaded at start
+	CArray<sbyte>		nObjOwner;   // Who created each CObject in my universe, -1 = loaded at start
 	int					bGotoSecret;
 	int					nTypingTimeout;
 } tMultiGameData;
@@ -2994,7 +2994,7 @@ typedef struct tHoardData {
 	tHoardItem	monsterball;
 	short			nMonsterballSeg;
 	vmsVector	vMonsterballPos;
-	tObject		*monsterballP;
+	CObject		*monsterballP;
 	short			nLastHitter;
 } tHoardData;
 
@@ -3043,7 +3043,7 @@ typedef struct tVertColorThreadData {
 	} tVertColorThreadData;
 
 typedef struct tClipDistData {
-	tObject			*objP;
+	CObject			*objP;
 	tPOFObject		*po;
 	tPOFSubObject	*pso;
 	float				fClipDist [2];
@@ -3287,7 +3287,7 @@ static inline fix SegmentVolume (short nSegment)
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static inline short ObjIdx (tObject *objP)
+static inline short ObjIdx (CObject *objP)
 {
 return gameData.objs.objects.Index (objP);
 }
@@ -3388,7 +3388,7 @@ extern fix nDebrisLife [];
 
 //	-----------------------------------------------------------------------------
 
-static inline vmsVector *PolyObjPos (tObject *objP, vmsVector *vPosP)
+static inline vmsVector *PolyObjPos (CObject *objP, vmsVector *vPosP)
 {
 vmsVector vPos = OBJPOS (objP)->vPos;
 if (objP->info.renderType == RT_POLYOBJ) {
@@ -3402,7 +3402,7 @@ return vPosP;
 
 //	-----------------------------------------------------------------------------
 
-static inline void RequestEffects (tObject *objP, ubyte nEffects)
+static inline void RequestEffects (CObject *objP, ubyte nEffects)
 {
 gameData.objs.bWantEffect [OBJ_IDX (objP)] |= nEffects;
 }

@@ -56,7 +56,7 @@ if ((gameOpts->render.coronas.bShots && (bCorona ? LoadCorona () : LoadHalo ()))
 
 // -----------------------------------------------------------------------------
 
-void RenderPowerupCorona (tObject *objP, float red, float green, float blue, float alpha)
+void RenderPowerupCorona (CObject *objP, float red, float green, float blue, float alpha)
 {
 	int	bAdditive = gameOpts->render.coronas.bAdditiveObjs;
 
@@ -104,7 +104,7 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 
 //------------------------------------------------------------------------------
 
-void TransformHitboxf (tObject *objP, fVector *vertList, int iSubObj)
+void TransformHitboxf (CObject *objP, fVector *vertList, int iSubObj)
 {
 
 	fVector		hv;
@@ -125,7 +125,7 @@ for (i = 0; i < 8; i++) {
 
 #if RENDER_HITBOX
 
-void RenderHitbox (tObject *objP, float red, float green, float blue, float alpha)
+void RenderHitbox (CObject *objP, float red, float green, float blue, float alpha)
 {
 	fVector		vertList [8], v;
 	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
@@ -207,7 +207,7 @@ G3DoneInstance ();
 float r = X2F (VmVecDist (&pmhb->vMin, &pmhb->vMax) / 2);
 #if 0//def _DEBUG	//display collision point
 if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].tHit < 500) {
-	tObject	o;
+	CObject	o;
 
 	o.position.vPos = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].vHit;
 	o.position.mOrient = objP->info.position.mOrient;
@@ -224,7 +224,7 @@ glDepthFunc (GL_LESS);
 
 // -----------------------------------------------------------------------------
 
-void RenderPlayerShield (tObject *objP)
+void RenderPlayerShield (CObject *objP)
 {
 	int			bStencil, dt = 0, i = objP->info.nId, nColor = 0;
 	float			alpha, scale = 1;
@@ -291,7 +291,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 
 // -----------------------------------------------------------------------------
 
-void RenderRobotShield (tObject *objP)
+void RenderRobotShield (CObject *objP)
 {
 	static tRgbaColorf shieldColors [3] = {{0.75f, 0, 0.75f, 1}, {0, 0.5f, 1},{1, 0.5f, 0, 1}};
 
@@ -326,7 +326,7 @@ else if (!gameOpts->render.effects.bOnlyShieldHits) {
 
 // -----------------------------------------------------------------------------
 
-static inline tRgbColorf *ObjectFrameColor (tObject *objP, tRgbColorf *pc)
+static inline tRgbColorf *ObjectFrameColor (CObject *objP, tRgbColorf *pc)
 {
 	static tRgbColorf	defaultColor = {0, 1.0f, 0};
 	static tRgbColorf	botDefColor = {1.0f, 0, 0};
@@ -353,7 +353,7 @@ return &defaultColor;
 
 // -----------------------------------------------------------------------------
 
-void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
+void RenderDamageIndicator (CObject *objP, tRgbColorf *pc)
 {
 	vmsVector	vPos;
 	fVector		fPos, fVerts [4];
@@ -436,7 +436,7 @@ static int				nMslLockColor [2] = {0, 0};
 static int				nMslLockColorIncr [2] = {-1, -1};
 static float			fMslLockGreen [2] = {0.65f, 0.0f};
 
-void RenderMslLockIndicator (tObject *objP)
+void RenderMslLockIndicator (CObject *objP)
 {
 	#define INDICATOR_POSITIONS	60
 
@@ -584,7 +584,7 @@ glEnable (GL_CULL_FACE);
 
 // -----------------------------------------------------------------------------
 
-void RenderTargetIndicator (tObject *objP, tRgbColorf *pc)
+void RenderTargetIndicator (CObject *objP, tRgbColorf *pc)
 {
 	vmsVector	vPos;
 	fVector		fPos, fVerts [4];
@@ -716,7 +716,7 @@ RenderDamageIndicator (objP, pc);
 
 // -----------------------------------------------------------------------------
 
-void RenderTowedFlag (tObject *objP)
+void RenderTowedFlag (CObject *objP)
 {
 	static fVector fVerts [4] = {
 		fVector::Create(0.0f, 2.0f / 3.0f, 0.0f, 1.0f),
@@ -852,7 +852,7 @@ if (!bHaveFlame) {
 
 // -----------------------------------------------------------------------------
 
-void CalcShipThrusterPos (tObject *objP, vmsVector *vPos)
+void CalcShipThrusterPos (CObject *objP, vmsVector *vPos)
 {
 	tTransformation	*pPos = OBJPOS (objP);
 
@@ -875,7 +875,7 @@ else {
 
 // -----------------------------------------------------------------------------
 
-int CalcThrusterPos (tObject *objP, tThrusterInfo *tiP, int bAfterburnerBlob)
+int CalcThrusterPos (CObject *objP, tThrusterInfo *tiP, int bAfterburnerBlob)
 {
 	tThrusterInfo		ti;
 	tThrusterData		*pt = NULL;
@@ -1021,7 +1021,7 @@ else {
 
 // -----------------------------------------------------------------------------
 
-void RenderThrusterFlames (tObject *objP)
+void RenderThrusterFlames (CObject *objP)
 {
 	int					h, i, j, k, l, nStyle, nThrusters, bStencil, bSpectate, bTextured;
 	tRgbaColorf			c [2];
@@ -1202,7 +1202,7 @@ StencilOn (bStencil);
 
 // -----------------------------------------------------------------------------
 
-void RenderLaserCorona (tObject *objP, tRgbaColorf *colorP, float alpha, float fScale)
+void RenderLaserCorona (CObject *objP, tRgbaColorf *colorP, float alpha, float fScale)
 {
 	int	bAdditive = 1; //gameOpts->render.bAdditive
 if (!SHOW_OBJ_FX)
@@ -1347,7 +1347,7 @@ else
 
 // -----------------------------------------------------------------------------
 
-int RenderWeaponCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset,
+int RenderWeaponCorona (CObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset,
 								float fScale, int bSimple, int bViewerOffset, int bDepthSort)
 {
 if (!SHOW_OBJ_FX)
@@ -1450,7 +1450,7 @@ return 0;
 
 //extern vmsAngVec vmsAngVec::ZERO;
 
-void RenderShockwave (tObject *objP)
+void RenderShockwave (CObject *objP)
 {
 if (!SHOW_OBJ_FX)
 	return;
@@ -1536,7 +1536,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 
 #define TRACER_WIDTH	3
 
-void RenderTracers (tObject *objP)
+void RenderTracers (CObject *objP)
 {
 if (!SHOW_OBJ_FX)
 	return;
@@ -1614,7 +1614,7 @@ void Laser_draw_one (int nObject, CBitmap * bmp)
 {
 	int t1, t2, t3;
 	g3sPoint p1, p2;
-	tObject *objP = OBJECTS + nObject;
+	CObject *objP = OBJECTS + nObject;
 	vmsVector start_pos,vEndPos;
 	fix Laser_length = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad * 2;
 	fix Laser_width = Laser_length / 8;
@@ -1654,7 +1654,7 @@ static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,
 												{{{0,0,0}},{{0,10,-5}},{{0,10,-50}},{{0,0,-50}}}};
 #endif
 
-void RenderLightTrail (tObject *objP)
+void RenderLightTrail (CObject *objP)
 {
 	tRgbaColorf		color, *colorP;
 	int				nTrailItem = -1, nCoronaItem = -1, bGatling = 0, bAdditive = 1; //gameOpts->render.coronas.bAdditiveObjs;
@@ -1790,7 +1790,7 @@ else
 
 // -----------------------------------------------------------------------------
 
-void DrawDebrisCorona (tObject *objP)
+void DrawDebrisCorona (CObject *objP)
 {
 	static	tRgbaColorf	debrisGlow = {0.66f, 0, 0, 1};
 	static	tRgbaColorf	markerGlow = {0, 0.66f, 0, 1};
@@ -1823,10 +1823,10 @@ else if ((objP->info.nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 fix flashDist=F2X (.9);
 
 //create flash for tPlayer appearance
-void CreatePlayerAppearanceEffect (tObject *playerObjP)
+void CreatePlayerAppearanceEffect (CObject *playerObjP)
 {
 	vmsVector	pos;
-	tObject		*effectObjP;
+	CObject		*effectObjP;
 
 if (playerObjP == gameData.objs.viewerP)
 	pos = playerObjP->info.position.vPos + playerObjP->info.position.mOrient [FVEC] * FixMul(playerObjP->info.xSize,flashDist);

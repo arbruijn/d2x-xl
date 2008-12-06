@@ -10,18 +10,18 @@
 #include "trackobject.h"
 
 #define	OMEGA_MIN_TRACKABLE_DOT			 (15 * F1_0 / 16)		//	Larger values mean narrower cone.  F1_0 means damn near impossible.  0 means 180 degree field of view.
-#define	OMEGA_MAX_TRACKABLE_DIST		MAX_OMEGA_DIST	//	An tObject must be at least this close to be tracked.
+#define	OMEGA_MAX_TRACKABLE_DIST		MAX_OMEGA_DIST	//	An CObject must be at least this close to be tracked.
 
 fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Return true if weapon *trackerP is able to track tObject OBJECTS [nHomingTarget], else return false.
-//	In order for the tObject to be trackable, it must be within a reasonable turning radius for the missile
+//	Return true if weapon *trackerP is able to track CObject OBJECTS [nHomingTarget], else return false.
+//	In order for the CObject to be trackable, it must be within a reasonable turning radius for the missile
 //	and it must not be obstructed by a tWall.
-int ObjectIsTrackeable (int nHomingTarget, tObject *trackerP, fix *xDot)
+int ObjectIsTrackeable (int nHomingTarget, CObject *trackerP, fix *xDot)
 {
 	vmsVector	vGoal;
-	tObject		*objP;
+	CObject		*objP;
 
 if (nHomingTarget == -1)
 	return 0;
@@ -31,7 +31,7 @@ objP = OBJECTS + nHomingTarget;
 //	Don't track tPlayer if he's cloaked.
 if ((nHomingTarget == LOCALPLAYER.nObject) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return 0;
-//	Can't track AI tObject if he's cloaked.
+//	Can't track AI CObject if he's cloaked.
 if (objP->info.nType == OBJ_ROBOT) {
 	if (objP->cType.aiInfo.CLOAKED)
 		return 0;
@@ -50,7 +50,7 @@ if ((*xDot < xMinTrackableDot) && (*xDot > 9 * F1_0 / 10)) {
 
 if ((*xDot >= xMinTrackableDot) || 
 	 (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == EARTHSHAKER_MEGA_ID) /*&& (*xDot >= 0)*/)) {
-	//	xDot is in legal range, now see if tObject is visible
+	//	xDot is in legal range, now see if CObject is visible
 	return ObjectToObjectVisibility (trackerP, objP, FQ_TRANSWALL);
 	}
 return 0;
@@ -58,7 +58,7 @@ return 0;
 
 //	--------------------------------------------------------------------------------------------
 
-int CallFindHomingObjectComplete (tObject *trackerP, vmsVector *vCurPos)
+int CallFindHomingObjectComplete (CObject *trackerP, vmsVector *vCurPos)
 {
 if (!IsMultiGame)
 	return FindHomingObjectComplete (vCurPos, trackerP, OBJ_ROBOT, -1);
@@ -76,9 +76,9 @@ return FindHomingObjectComplete (vCurPos, trackerP, OBJ_PLAYER, gameStates.app.c
 }
 
 //	--------------------------------------------------------------------------------------------
-//	Find tObject to home in on.
+//	Find CObject to home in on.
 //	Scan list of OBJECTS rendered last frame, find one that satisfies function of nearness to center and distance.
-int FindHomingObject (vmsVector *vTrackerPos, tObject *trackerP)
+int FindHomingObject (vmsVector *vTrackerPos, CObject *trackerP)
 {
 	int	i, bOmega, bGuidedMslView;
 	fix	maxDot = -F1_0*2;
@@ -86,7 +86,7 @@ int FindHomingObject (vmsVector *vTrackerPos, tObject *trackerP)
 	int	curMinTrackableDot;
 	int	bSpectate;
 
-//	Find an tObject to track based on game mode (eg, whether in network play) and who fired it.
+//	Find an CObject to track based on game mode (eg, whether in network play) and who fired it.
 #if DBG
 if ((trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == SMARTMINE_BLOB_ID))
 	nDbgObj = nDbgObj;
@@ -138,12 +138,12 @@ else {
 		fix			dot; //, dist;
 		vmsVector	vecToCurObj;
 		int			nObject = windowRenderedData [nWindow].renderedObjects [i];
-		tObject		*curObjP = OBJECTS + nObject;
+		CObject		*curObjP = OBJECTS + nObject;
 
 		if (nObject == LOCALPLAYER.nObject)
 			continue;
 
-		//	Can't track AI tObject if he's cloaked.
+		//	Can't track AI CObject if he's cloaked.
 		if (curObjP->info.nType == OBJ_ROBOT) {
 			if (curObjP->cType.aiInfo.CLOAKED)
 				continue;
@@ -164,8 +164,8 @@ else {
 			dot = vmsVector::Dot(vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient[FVEC] : trackerP->info.position.mOrient[FVEC]);
 
 			//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
-			//	to determine if an tObject is initially trackable.  FindHomingObject is called on subsequent
-			//	frames to determine if the tObject remains trackable.
+			//	to determine if an CObject is initially trackable.  FindHomingObject is called on subsequent
+			//	frames to determine if the CObject remains trackable.
 			if (dot > curMinTrackableDot) {
 				if (dot > maxDot) {
 					if (ObjectToObjectVisibility (trackerP, OBJECTS + nObject, FQ_TRANSWALL)) {
@@ -193,18 +193,18 @@ return nBestObj;
 }
 
 //	--------------------------------------------------------------------------------------------
-//	Find tObject to home in on.
+//	Find CObject to home in on.
 //	Scan list of OBJECTS rendered last frame, find one that satisfies function of nearness to center and distance.
 //	Can track two kinds of OBJECTS.  If you are only interested in one nType, set trackObjType2 to NULL
 //	Always track proximity bombs.  --MK, 06/14/95
 //	Make homing OBJECTS not track parent's prox bombs.
-int FindHomingObjectComplete (vmsVector *vCurPos, tObject *trackerP, int trackObjType1, int trackObjType2)
+int FindHomingObjectComplete (vmsVector *vCurPos, CObject *trackerP, int trackObjType1, int trackObjType2)
 {
 	fix		maxDot = -F1_0*2;
 	int		nBestObj = -1;
 	fix		maxTrackableDist;
 	fix		minTrackableDot;
-	tObject	*curObjP;
+	CObject	*curObjP;
 
 	//	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
 //Assert ((WI_homingFlag (trackerP->info.nId)) || (trackerP->info.nId == OMEGA_ID));
@@ -249,13 +249,13 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 			continue;
 		// Don't track teammates in team games
 		if (IsTeamGame) {
-			tObject *parentObjP = OBJECTS + trackerP->cType.laserInfo.parent.nObject;
+			CObject *parentObjP = OBJECTS + trackerP->cType.laserInfo.parent.nObject;
 			if ((parentObjP->info.nType == OBJ_PLAYER) && (GetTeam (curObjP->info.nId) == GetTeam (parentObjP->info.nId)))
 				continue;
 			}
 		}
 
-	//	Can't track AI tObject if he's cloaked.
+	//	Can't track AI CObject if he's cloaked.
 	if ((curObjP->info.nType == OBJ_ROBOT) && (curObjP->cType.aiInfo.CLOAKED))
 		continue;
 	//	Your missiles don't track your escort.
@@ -273,8 +273,8 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 		dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
 
 	//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
-	//	to determine if an tObject is initially trackable.  FindHomingObject is called on subsequent
-	//	frames to determine if the tObject remains trackable.
+	//	to determine if an CObject is initially trackable.  FindHomingObject is called on subsequent
+	//	frames to determine if the CObject remains trackable.
 	if ((dot > minTrackableDot) && (dot > maxDot) && (ObjectToObjectVisibility (trackerP, curObjP, FQ_TRANSWALL))) {
 		maxDot = dot;
 		nBestObj = OBJ_IDX (curObjP);
@@ -284,17 +284,17 @@ return nBestObj;
 }
 
 //	------------------------------------------------------------------------------------------------------------
-//	See if legal to keep tracking currently tracked tObject.  If not, see if another tObject is trackable.  If not, return -1,
-//	else return tObject number of tracking tObject.
+//	See if legal to keep tracking currently tracked CObject.  If not, see if another CObject is trackable.  If not, return -1,
+//	else return CObject number of tracking CObject.
 //	Computes and returns a fairly precise dot product.
-int TrackHomingTarget (int nHomingTarget, tObject *trackerP, fix *dot)
+int TrackHomingTarget (int nHomingTarget, CObject *trackerP, fix *dot)
 {
 	int	rVal = -2;
 	int	nFrame;
 	int	goalType, goal2Type = -1;
 
 //if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
-	//	Every 8 frames for each tObject, scan all OBJECTS.
+	//	Every 8 frames for each CObject, scan all OBJECTS.
 nFrame = OBJ_IDX (trackerP) ^ gameData.app.nFrameCount;
 if (ObjectIsTrackeable (nHomingTarget, trackerP, dot)) {
 	if (gameOpts->legacy.bHomers) {
@@ -308,7 +308,7 @@ if (ObjectIsTrackeable (nHomingTarget, trackerP, dot)) {
 	}
 
 if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
-	//	If tPlayer fired missile, then search for an tObject, if not, then give up.
+	//	If tPlayer fired missile, then search for an CObject, if not, then give up.
 	if (OBJECTS [trackerP->cType.laserInfo.parent.nObject].info.nType == OBJ_PLAYER) {
 		if (nHomingTarget == -1) {
 			if (IsMultiGame) {

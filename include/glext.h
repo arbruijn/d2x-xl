@@ -3060,9 +3060,9 @@ typedef ptrdiff_t GLsizeiptrARB;
 #endif
 
 #ifndef GL_ARB_shaderObjects
-/* GL types for handling shader tObject handles and program/shader text */
+/* GL types for handling shader CObject handles and program/shader text */
 typedef char GLcharARB;		/* native character */
-typedef unsigned int GLhandleARB;	/* shader tObject handle */
+typedef unsigned int GLhandleARB;	/* shader CObject handle */
 #endif
 
 /* GL types for "half" precision (s10e5) float data in host memory */
@@ -6145,8 +6145,8 @@ typedef void (APIENTRYP PFNGLSETFENCEAPPLEPROC) (GLuint fence);
 typedef GLboolean (APIENTRYP PFNGLISFENCEAPPLEPROC) (GLuint fence);
 typedef GLboolean (APIENTRYP PFNGLTESTFENCEAPPLEPROC) (GLuint fence);
 typedef void (APIENTRYP PFNGLFINISHFENCEAPPLEPROC) (GLuint fence);
-typedef GLboolean (APIENTRYP PFNGLTESTOBJECTAPPLEPROC) (GLenum tObject, GLuint name);
-typedef void (APIENTRYP PFNGLFINISHOBJECTAPPLEPROC) (GLenum tObject, GLint name);
+typedef GLboolean (APIENTRYP PFNGLTESTOBJECTAPPLEPROC) (GLenum CObject, GLuint name);
+typedef void (APIENTRYP PFNGLFINISHOBJECTAPPLEPROC) (GLenum CObject, GLint name);
 #endif
 
 #ifndef GL_APPLE_vertex_arrayObject

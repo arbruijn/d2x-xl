@@ -194,7 +194,7 @@ int CountRobotsInLevel (void)
 {
 	int robotCount = 0;
 	int 		i;
-	tObject	*objP;
+	CObject	*objP;
 
 FORALL_ROBOT_OBJS (objP, i)
 	robotCount++;
@@ -207,7 +207,7 @@ int CountHostagesInLevel (void)
 {
 	int 		count = 0;
 	int 		i;
-	tObject	*objP;
+	CObject	*objP;
 
 FORALL_STATIC_OBJS (objP, i)
 	if (objP->info.nType == OBJ_HOSTAGE)
@@ -223,9 +223,9 @@ void GameStartInitNetworkPlayers (void)
 				segNum, segType,
 				playerObjs [MAX_PLAYERS], startSegs [MAX_PLAYERS],
 				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS : MAX_PLAYERS;
-	tObject	*objP, *nextObjP;
+	CObject	*objP, *nextObjP;
 
-	// Initialize network tPlayer start locations and tObject numbers
+	// Initialize network tPlayer start locations and CObject numbers
 
 memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsTyping));
 //VerifyConsoleObject ();
@@ -254,7 +254,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 // the following code takes care of team players being assigned the proper start locations
 // in enhanced CTF
 for (i = 0; i < nPlayers; i++) {
-// find a tPlayer tObject that resides in a tSegment of proper nType for the current
+// find a tPlayer CObject that resides in a tSegment of proper nType for the current
 // tPlayer start info
 	for (j = 0; j < nPlayers; j++) {
 		segNum = startSegs [j];
@@ -609,7 +609,7 @@ void SetSoundSources (void)
 {
 	short			nSegment, nSide, nConnSeg, nConnSide, nSound;
 	tSegment		*segP, *connSegP;
-	tObject		*objP;
+	CObject		*objP;
 	vmsVector	v;
 	int			i, nOvlTex, nEffect;
 
@@ -661,7 +661,7 @@ gameStates.sound.bDontStartObjects = 0;
 
 void SetVertigoRobotFlags (void)
 {
-	tObject	*objP;
+	CObject	*objP;
 	int		i;
 
 gameData.objs.nVertigoBotFlags = 0;
@@ -1054,7 +1054,7 @@ int StartNewGame (int nStartLevel)
 gameData.app.nGameMode = GM_NORMAL;
 SetFunctionMode (FMODE_GAME);
 gameData.missions.nNextLevel = 0;
-InitMultiPlayerObject ();				//make sure tPlayer's tObject set up
+InitMultiPlayerObject ();				//make sure tPlayer's CObject set up
 InitPlayerStatsGame ();		//clear all stats
 gameData.multiplayer.nPlayers = 1;
 gameData.objs.nLastObject [0] = 0;
@@ -1709,7 +1709,7 @@ if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] && (gam
 gameStates.entropy.bConquering = 0;
 #ifdef EDITOR
 if (gameData.app.nGameMode == GM_EDITOR) {			//test mine, not real level
-	tObject * playerobj = OBJECTS + LOCALPLAYER.nObject;
+	CObject * playerobj = OBJECTS + LOCALPLAYER.nObject;
 	//ExecMessageBox ("You're Dead!", 1, "Continue", "Not a real game, though.");
 	LoadLevelSub ("gamesave.lvl");
 	InitPlayerStatsNewShip ();
@@ -1881,7 +1881,7 @@ return 1;
 
 void BashToShield (int i, const char *s)
 {
-	tObject *objP = OBJECTS + i;
+	CObject *objP = OBJECTS + i;
 	int id = objP->info.nId;
 
 gameData.multiplayer.powerupsInMine [id] =
@@ -1899,7 +1899,7 @@ objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo
 
 void BashToEnergy (int i, const char *s)
 {
-	tObject *objP = OBJECTS + i;
+	CObject *objP = OBJECTS + i;
 	int id = objP->info.nId;
 
 gameData.multiplayer.powerupsInMine [id] =
@@ -1918,7 +1918,7 @@ objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo
 void FilterObjectsFromLevel (void)
 {
   int 		i;
-	tObject	*objP;
+	CObject	*objP;
 
 FORALL_POWERUP_OBJS (objP, i) {
 	if ((objP->info.nId == POW_REDFLAG) || (objP->info.nId == POW_BLUEFLAG))
@@ -2067,7 +2067,7 @@ if (left < r)
 
 int GetRandomPlayerPosition (void)
 {
-	tObject		*objP;
+	CObject		*objP;
 	tSpawnMap	spawnMap [MAX_NUM_NET_PLAYERS];
 	int			nSpawnPos = 0;
 	int			nSpawnSegs = 0;
@@ -2129,7 +2129,7 @@ return nSpawnPos;
 }
 
 //------------------------------------------------------------------------------
-//initialize the tPlayer tObject position & orientation (at start of game, or new ship)
+//initialize the tPlayer CObject position & orientation (at start of game, or new ship)
 void InitPlayerPosition (int bRandom)
 {
 	int nSpawnPos = 0;
@@ -2155,7 +2155,7 @@ ResetCruise ();
 
 //------------------------------------------------------------------------------
 
-fix RobotDefaultShields (tObject *objP)
+fix RobotDefaultShields (CObject *objP)
 {
 	tRobotInfo	*botInfoP;
 	int			objId, i;
@@ -2199,7 +2199,7 @@ return shields;
 //------------------------------------------------------------------------------
 //	Initialize default parameters for one robot, copying from gameData.bots.infoP to *objP.
 //	What about setting size!?  Where does that come from?
-void CopyDefaultsToRobot (tObject *objP)
+void CopyDefaultsToRobot (CObject *objP)
 {
 objP->info.xShields = RobotDefaultShields (objP);
 }
@@ -2211,7 +2211,7 @@ objP->info.xShields = RobotDefaultShields (objP);
 void CopyDefaultsToRobotsAll ()
 {
 	int		i;
-	tObject	*objP;
+	CObject	*objP;
 
 FORALL_ROBOT_OBJS (objP, i)
 	CopyDefaultsToRobot (objP);

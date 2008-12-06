@@ -179,7 +179,7 @@ if (ROBOTINFO (robotIndex).bossFlag == 2) {
 
 //------------------------------------------------------------------------------
 
-void PagingTouchObject (tObject *objP)
+void PagingTouchObject (CObject *objP)
 {
 	int v;
 
@@ -302,7 +302,7 @@ for (i = 0, robotIndex = 0; i < 2; i++, robotIndex += 32)
 void PagingTouchObjects (int nType)
 {
 	int		i;
-	tObject	*objP;
+	CObject	*objP;
 
 FORALL_OBJS (objP, i)
 	if ((nType < 0) || (objP->info.nType == nType))

@@ -34,7 +34,7 @@ for (i = 0; i < N_PLAYER_GUNS; i++)
 
 //-------------------------------------------------------------------------
 
-int EquippedPlayerGun (tObject *objP)
+int EquippedPlayerGun (CObject *objP)
 {
 if (objP->info.nType == OBJ_PLAYER) {
 		int		nPlayer = objP->info.nId;
@@ -49,7 +49,7 @@ return 0;
 
 static int nBombIds [] = {SMART_INDEX, MEGA_INDEX, EARTHSHAKER_INDEX};
 
-int EquippedPlayerBomb (tObject *objP)
+int EquippedPlayerBomb (CObject *objP)
 {
 if (objP->info.nType == OBJ_PLAYER) {
 		int		nPlayer = objP->info.nId;
@@ -66,7 +66,7 @@ return 0;
 
 static int nMissileIds [] = {CONCUSSION_INDEX, HOMING_INDEX, FLASHMSL_INDEX, GUIDED_INDEX, MERCURY_INDEX};
 
-int EquippedPlayerMissile (tObject *objP, int *nMissiles)
+int EquippedPlayerMissile (CObject *objP, int *nMissiles)
 {
 if (objP->info.nType == OBJ_PLAYER) {
 		int		nPlayer = objP->info.nId;

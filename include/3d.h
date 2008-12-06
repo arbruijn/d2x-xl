@@ -74,12 +74,12 @@ typedef struct g3sPoint {
 	g3sNormal	p3_normal;
 } g3sPoint;
 
-//An tObject, such as a robot
+//An CObject, such as a robot
 typedef struct g3sObject {
-	vmsVector o3_pos;       //location of this tObject
-	vmsAngVec o3_orient;    //orientation of this tObject
-	int o3_nverts;          //number of points in the tObject
-	int o3_nfaces;          //number of faces in the tObject
+	vmsVector o3_pos;       //location of this CObject
+	vmsAngVec o3_orient;    //orientation of this CObject
+	int o3_nverts;          //number of points in the CObject
+	int o3_nfaces;          //number of faces in the CObject
 
 	//this will be filled in later
 
@@ -285,7 +285,7 @@ int G3DrawLine (g3sPoint *p0,g3sPoint *p1);
 //returns 1 if off screen, 0 if drew
 int G3DrawRodPoly (g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width);
 
-//draw a bitmap tObject that is always facing you
+//draw a bitmap CObject that is always facing you
 //returns 1 if off screen, 0 if drew
 int G3DrawRodTexPoly (CBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width,fix light, tUVL *uvlList);
 

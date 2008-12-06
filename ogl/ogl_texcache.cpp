@@ -192,7 +192,7 @@ int OglCacheLevelTextures (void)
 	CBitmap	*bmBot,*bmTop, *bmm;
 	tSegment		*segP;
 	tSide			*sideP;
-	tObject		*objP;
+	CObject		*objP;
 
 if (gameStates.render.bBriefing)
 	return 0;

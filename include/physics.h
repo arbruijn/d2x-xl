@@ -27,30 +27,30 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 extern short physSegList [MAX_FVI_SEGS], nPhysSegs;
 
 // Read contrls and set physics vars
-void ReadFlyingControls(tObject *obj);
+void ReadFlyingControls(CObject *obj);
 
-// Simulate a physics tObject for this frame
-void DoPhysicsSim(tObject *obj);
+// Simulate a physics CObject for this frame
+void DoPhysicsSim(CObject *obj);
 
-// tell us what the given tObject will do (as far as hiting walls) in
+// tell us what the given CObject will do (as far as hiting walls) in
 // the given time (in seconds) t.  Igores acceleration (sorry)
 // if checkObjects is set, check with objects, else just with walls
 // returns fate, fills in hit time.  If fate==HIT_NONE, hitTime undefined
 // Stuff hit_info with fvi data as set by FindVectorIntersection.
 // for fviFlags, refer to fvi[HA] for the fvi query flags
-int physics_lookahead(tObject *obj, fix t, int fviFlags, fix *hitTime, tFVIData *hit_info);
+int physics_lookahead(CObject *obj, fix t, int fviFlags, fix *hitTime, tFVIData *hit_info);
 
-// Applies an instantaneous force on an tObject, resulting in an instantaneous
+// Applies an instantaneous force on an CObject, resulting in an instantaneous
 // change in velocity.
-void PhysApplyForce(tObject *obj, vmsVector *force_vec);
-void PhysApplyRot(tObject *obj, vmsVector *force_vec);
+void PhysApplyForce(CObject *obj, vmsVector *force_vec);
+void PhysApplyRot(CObject *obj, vmsVector *force_vec);
 
-// this routine will set the thrust for an tObject to a value that will
-// (hopefully) maintain the tObject's current velocity
-void SetThrustFromVelocity(tObject *obj);
+// this routine will set the thrust for an CObject to a value that will
+// (hopefully) maintain the CObject's current velocity
+void SetThrustFromVelocity(CObject *obj);
 
-void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate);
+void PhysicsTurnTowardsVector (vmsVector *vGoal, CObject *objP, fix rate);
 
-void UnstickObject (tObject *objP);
+void UnstickObject (CObject *objP);
 
 #endif /* _PHYSICS_H */

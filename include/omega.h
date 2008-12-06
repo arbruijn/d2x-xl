@@ -31,8 +31,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	If you want the Omega Cannon view cone to be different than the Homing Missile viewcone, contact MK to make the change.
 //	 (Unless you are a programmer, in which case, do it yourself!)
 
-void DoOmegaStuff (tObject *parentObjP, vmsVector *vFiringPos, tObject *weaponObjP);
-int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP);
+void DoOmegaStuff (CObject *parentObjP, vmsVector *vFiringPos, CObject *weaponObjP);
+int UpdateOmegaLightnings (CObject *parentObjP, CObject *targetObjP);
 void DestroyOmegaLightnings (short nObject);
 void SetMaxOmegaCharge (void);
 

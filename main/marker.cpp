@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // -------------------------------------------------------------
 
-static inline tObject *MarkerObj (int nPlayer, int nMarker)
+static inline CObject *MarkerObj (int nPlayer, int nMarker)
 {
 short nObject = gameData.marker.objects [((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer) * 2 + nMarker];
 return (nObject < 0) ? NULL : OBJECTS + nObject;
@@ -107,7 +107,7 @@ void DrawMarkers (void)
 {
 	g3sPoint spherePoint;
 	int		i, j, nMaxDrop, bSpawn;
-	tObject	*objP;
+	CObject	*objP;
 
 	static int cyc = 10, cycdir = 1;
 	static ubyte	colors [2][3] = {{20, 30, 40},{40, 50, 60}};
@@ -146,7 +146,7 @@ else {
 
 int MoveSpawnMarker (tTransformation *posP, short nSegment)
 {
-	tObject	*markerP;
+	CObject	*markerP;
 
 if (!(markerP = SpawnMarkerObject (-1)))
 	return 0;
@@ -160,7 +160,7 @@ return 1;
 void DropMarker (char nPlayerMarker, int bSpawn)
 {
 	ubyte		nMarker = (gameData.multiplayer.nLocalPlayer * 2) + nPlayerMarker;
-	tObject	*playerP = OBJECTS + LOCALPLAYER.nObject;
+	CObject	*playerP = OBJECTS + LOCALPLAYER.nObject;
 
 if (!(bSpawn && MoveSpawnMarker (&playerP->info.position, playerP->info.nSegment))) {
 	gameData.marker.point [nMarker] = playerP->info.position.vPos;
@@ -193,7 +193,7 @@ if ((!IsMultiGame || IsCoopGame) && !(gameStates.app.bPlayerExploded || gameStat
 
 //------------------------------------------------------------------------------
 
-void DropBuddyMarker (tObject *objP)
+void DropBuddyMarker (CObject *objP)
 {
 	ubyte	nMarker;
 
@@ -256,7 +256,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-tObject *SpawnMarkerObject (int nPlayer)
+CObject *SpawnMarkerObject (int nPlayer)
 {
 	int	i = (IsCoopGame || !IsMultiGame) ? SpawnMarkerIndex (nPlayer) : -1;
 
@@ -265,7 +265,7 @@ return (i < 0) ? NULL : OBJECTS + gameData.marker.objects [i];
 
 //------------------------------------------------------------------------------
 
-int IsSpawnMarkerObject (tObject *objP)
+int IsSpawnMarkerObject (CObject *objP)
 {
 if (objP->info.nType == OBJ_MARKER) {
 	int nMaxDrop, h, i, nObject = OBJ_IDX (objP);
@@ -322,7 +322,7 @@ if (!IsMultiGame || IsCoopGame) {
 	if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
 		gameData.objs.viewerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
 		if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
-			tObject	*markerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
+			CObject	*markerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
 
 #if !DBG
 			LOCALPLAYER.energy -= F1_0 * 25;

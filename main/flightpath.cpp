@@ -25,7 +25,7 @@ pPath->tUpdate = -1;
 
 //------------------------------------------------------------------------------
 
-void SetPathPoint (tFlightPath *pPath, tObject *objP)
+void SetPathPoint (tFlightPath *pPath, CObject *objP)
 {
 	time_t	t = SDL_GetTicks () - pPath->tUpdate;
 

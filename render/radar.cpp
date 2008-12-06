@@ -38,7 +38,7 @@ static vmsAngVec	aRadar = vmsAngVec::Create(F1_0 / 4, 0, 0);
 static vmsMatrix	mRadar;
 static float		yRadar = 20;
 
-void RenderRadarBlip (tObject *objP, float r, float g, float b, float a)
+void RenderRadarBlip (CObject *objP, float r, float g, float b, float a)
 {
 	vmsVector	n, v [2];
 	fix			m;
@@ -142,7 +142,7 @@ if (!bHaveShipColors) {
 void RenderRadar (void)
 {
 	int			i, bStencil;
-	tObject		*objP;
+	CObject		*objP;
 	GLint			depthFunc;
 	tRgbColorf	*pc;
 

@@ -72,7 +72,7 @@ class CSaveGameHandler {
 		void SaveCloakingWall (tCloakingWall *wallP);
 		void SaveExplWall (tExplWall *wallP);
 		void SaveWall (tWall *wallP);
-		void SaveObject (tObject *objP);
+		void SaveObject (CObject *objP);
 		void SavePlayer (tPlayer *playerP);
 		void SaveNetPlayers (void);
 		void SaveNetGame (void);
@@ -88,7 +88,7 @@ class CSaveGameHandler {
 		void LoadNetGame (void);
 		void LoadNetPlayers (void);
 		void LoadPlayer (tPlayer *playerP);
-		void LoadObject (tObject *objP);
+		void LoadObject (CObject *objP);
 		void LoadWall (tWall *wallP);
 		void LoadExplWall (tExplWall *wallP);
 		void LoadCloakingWall (tCloakingWall *wallP);

@@ -107,7 +107,7 @@ void _CDECL_ CloseGame(void);
 void InitCockpit(void);
 void CalcFrameTime(void);
 
-int do_flythrough(tObject *obj,int firstTime);
+int do_flythrough(CObject *obj,int firstTime);
 
 extern jmp_buf gameExitPoint;       // Do a long jump to this when game is over.
 extern int DifficultyLevel;    // Difficulty level in 0..NDL-1, 0 = easiest, NDL-1 = hardest
@@ -152,7 +152,7 @@ extern int Game_window_w,       // width and height of tPlayer's game window
 extern int RearView;           // if true, looking back.
 
 // initalize flying
-void FlyInit(tObject *obj);
+void FlyInit(CObject *obj);
 
 // selects a given cockpit (or lack of one).
 void SelectCockpit(int mode);
@@ -180,7 +180,7 @@ void ResetRearView(void);
 extern int Game_turbo_mode;
 
 // returns ptr to escort robot, or NULL
-tObject *find_escort();
+CObject *find_escort();
 
 extern void ApplyModifiedPalette(void);
 

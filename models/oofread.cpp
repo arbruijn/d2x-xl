@@ -203,7 +203,7 @@ if (!stricmp (command,"$rotate=")) { // constant rotation for a subobject
 	return;
 	}
 
-if (!strnicmp (command,"$jitter",7)) {	// this subobject is a jittery tObject
+if (!strnicmp (command,"$jitter",7)) {	// this subobject is a jittery CObject
 	pso->nFlags |= OOF_SOF_JITTER;
 	return;
 	}
@@ -332,7 +332,7 @@ if (!stricmp (command,"$viewer")) { // this subobject is a viewer
 	return;
 	}
 
-if (!stricmp (command,"$layer")) { // this subobject is a layer to be drawn after original tObject.
+if (!stricmp (command,"$layer")) { // this subobject is a layer to be drawn after original CObject.
 	pso->nFlags |= OOF_SOF_LAYER;
 	return;
 	}
@@ -1033,7 +1033,7 @@ int OOF_ReadSubObject (CFile& cf, tOOFObject *po, int bFlipV)
 	char				szId [20] = "";
 
 nIndent += 2;
-OOF_PrintLog ("reading sub tObject\n");
+OOF_PrintLog ("reading sub CObject\n");
 memset (&so, 0, sizeof (so));
 so.nIndex = OOF_ReadInt (cf, "nIndex");
 if (so.nIndex >= OOF_MAX_SUBOBJECTS) {
@@ -1273,7 +1273,7 @@ int OOF_ReadObject (CFile& cf, tOOFObject *po)
 	tOOFObject	o = *po;
 
 nIndent += 2;
-OOF_PrintLog ("reading tObject\n");
+OOF_PrintLog ("reading CObject\n");
 o.nVersion = po->nVersion;
 o.nSubObjects = OOF_ReadInt (cf, "nSubObjects");
 if (o.nSubObjects >= OOF_MAX_SUBOBJECTS) {

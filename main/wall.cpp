@@ -137,7 +137,7 @@ return gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (sideP
 //		WID_ILLUSORY_WALL			3	//	1/1/0		illusory tWall
 //		WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory tWall
 //		WID_NO_WALL					5	//	1/0/1		no tWall, can fly through
-int WallIsDoorWay (tSegment * segP, short nSide, tObject *objP)
+int WallIsDoorWay (tSegment * segP, short nSide, CObject *objP)
 {
 	int	flags, nType;
 	int	state;
@@ -215,7 +215,7 @@ return WID_WALL; // There are children behind the door.
 
 //-----------------------------------------------------------------
 
-int WALL_IS_DOORWAY (tSegment *segP, short nSide, tObject *objP)
+int WALL_IS_DOORWAY (tSegment *segP, short nSide, CObject *objP)
 {
 	int	nWall, bIsWall, nSegment, nChild = segP->children [nSide];
 
@@ -737,7 +737,7 @@ DeleteActiveDoor (nDoor);
 
 int CheckPoke (int nObject, int nSegment, short nSide)
 {
-tObject *objP = OBJECTS + nObject;
+CObject *objP = OBJECTS + nObject;
 
 	//note: don't let OBJECTS with zero size block door
 if (nObject == 126)
@@ -759,7 +759,7 @@ connSegP = gameData.segs.segments + segP->children [nSide];
 nConnSide = FindConnectedSide (segP, connSegP);
 Assert(nConnSide != -1);
 
-//go through each tObject in each of two segments, and see if
+//go through each CObject in each of two segments, and see if
 //it pokes into the connecting segP
 
 for (nObject = segP->objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
@@ -1149,10 +1149,10 @@ for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; wallP++, i+
 //-----------------------------------------------------------------
 // Determines what happens when a tWall is shot
 //returns info about tWall.  see wall[HA] for codes
-//obj is the tObject that hit...either a weapon or the tPlayer himself
+//obj is the CObject that hit...either a weapon or the tPlayer himself
 //nPlayer is the number the tPlayer who hit the tWall or fired the weapon,
 //or -1 if a robot fired the weapon
-int WallHitProcess (tSegment *segP, short nSide, fix damage, int nPlayer, tObject *objP)
+int WallHitProcess (tSegment *segP, short nSide, fix damage, int nPlayer, CObject *objP)
 {
 	tWall	*wallP;
 	short	nWall;
@@ -1471,9 +1471,9 @@ int				nStuckObjects = 0;
 tStuckObject	stuckObjects [MAX_STUCK_OBJECTS];
 
 //-----------------------------------------------------------------
-//	An tObject got stuck in a door (like a flare).
+//	An CObject got stuck in a door (like a flare).
 //	Add global entry.
-void AddStuckObject (tObject *objP, short nSegment, short nSide)
+void AddStuckObject (CObject *objP, short nSegment, short nSide)
 {
 	int				i;
 	short				nWall;
@@ -1496,19 +1496,19 @@ if (IS_WALL (nWall)) {
 #if TRACE
 	if (i == MAX_STUCK_OBJECTS)
 		con_printf (1,
-			"Warning: Unable to add tObject %i which got stuck in tWall %i to stuckObjects\n",
+			"Warning: Unable to add CObject %i which got stuck in tWall %i to stuckObjects\n",
 			OBJ_IDX (objP), nWall);
 #endif
 	}
 }
 
 //	--------------------------------------------------------------------------------------------------
-//	Look at the list of stuck OBJECTS, clean up in case an tObject has gone away, but not been removed here.
+//	Look at the list of stuck OBJECTS, clean up in case an CObject has gone away, but not been removed here.
 //	Removes up to one/frame.
 void RemoveObsoleteStuckObjects (void)
 {
 	short	nObject, nWall;
-	tObject			*objP;
+	CObject			*objP;
 	tStuckObject	*stuckObjP;
 
 	//	Safety and efficiency code.  If no stuck OBJECTS, should never get inside the IF, but this is faster.
@@ -1533,7 +1533,7 @@ void KillStuckObjects (int nWall)
 {
 	int				i;
 	tStuckObject	*stuckObjP;
-	tObject			*objP;
+	CObject			*objP;
 
 if (!IS_WALL (nWall) || (nStuckObjects == 0))
 	return;
@@ -1547,7 +1547,7 @@ for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++)
 		else {
 #if TRACE
 			con_printf (1,
-				"Warning: Stuck tObject of nType %i, expected to be of nType %i, see tWall.c\n",
+				"Warning: Stuck CObject of nType %i, expected to be of nType %i, see tWall.c\n",
 				objP->info.nType, OBJ_WEAPON);
 #endif
 			// Int3();	//	What?  This looks bad.  Object is not a weapon and it is stuck in a tWall!
@@ -1575,7 +1575,7 @@ nStuckObjects = 0;
 void ClearStuckObjects (void)
 {
 	tStuckObject	*stuckObjP = stuckObjects;
-	tObject			*objP;
+	CObject			*objP;
 
 for (int i = 0; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
 	if (IS_WALL (stuckObjP->nWall)) {
@@ -1593,7 +1593,7 @@ if (nStuckObjects)
 // -----------------------------------------------------------------------------------
 #define	MAX_BLAST_GLASS_DEPTH	5
 
-void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sbyte *visited)
+void BngProcessSegment(CObject *objP, fix damage, tSegment *segp, int depth, sbyte *visited)
 {
 	int	i;
 	short	nSide;
@@ -1689,7 +1689,7 @@ return !WallIsTriggerTarget (nWall);
 // -----------------------------------------------------------------------------------
 //	objP is going to detonate
 //	blast nearby monitors, lights, maybe other things
-void BlastNearbyGlass(tObject *objP, fix damage)
+void BlastNearbyGlass(CObject *objP, fix damage)
 {
 	int		i;
 	sbyte   visited [MAX_SEGMENTS_D2X];

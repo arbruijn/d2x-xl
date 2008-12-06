@@ -101,7 +101,7 @@ if (EGI_FLAG (bDamageExplosions, 1, 0, 0) &&
 
 //------------------------------------------------------------------------------
 #if 0
-void CreateThrusterFlames (tObject *objP)
+void CreateThrusterFlames (CObject *objP)
 {
 	static int nThrusters = -1;
 
@@ -132,7 +132,7 @@ for (j = 0; j < 2; j++)
 
 //------------------------------------------------------------------------------
 
-void KillPlayerBullets (tObject *objP)
+void KillPlayerBullets (CObject *objP)
 {
 	int	i = gameData.multiplayer.bulletEmitters [objP->info.nId];
 
@@ -144,7 +144,7 @@ if (i >= 0) {
 
 //------------------------------------------------------------------------------
 
-void KillGatlingSmoke (tObject *objP)
+void KillGatlingSmoke (CObject *objP)
 {
 	int	i = gameData.multiplayer.gatlingSmoke [objP->info.nId];
 
@@ -160,7 +160,7 @@ if (i >= 0) {
 #define BULLET_PART_LIFE	-2000
 #define BULLET_PART_SPEED	50
 
-void DoPlayerBullets (tObject *objP)
+void DoPlayerBullets (CObject *objP)
 {
 if (RENDERPATH && gameOpts->render.ship.bBullets) {
 		int	nModel = objP->rType.polyObjInfo.nModel;
@@ -218,7 +218,7 @@ if (RENDERPATH && gameOpts->render.ship.bBullets) {
 #define GATLING_PART_LIFE	-1000
 #define GATLING_PART_SPEED	30
 
-void DoGatlingSmoke (tObject *objP)
+void DoGatlingSmoke (CObject *objP)
 {
 	int	nModel = objP->rType.polyObjInfo.nModel;
 	int	bHires = G3HaveModel (nModel) - 1;
@@ -273,7 +273,7 @@ if (bHires >= 0) {
 
 //------------------------------------------------------------------------------
 
-void DoPlayerSmoke (tObject *objP, int i)
+void DoPlayerSmoke (CObject *objP, int i)
 {
 	int					h, j, d, nParts, nType;
 	float					nScale;
@@ -393,7 +393,7 @@ KillGatlingSmoke (objP);
 
 //------------------------------------------------------------------------------
 
-void DoRobotSmoke (tObject *objP)
+void DoRobotSmoke (CObject *objP)
 {
 	int			h = -1, i, nShields = 0, nParts;
 	float			nScale;
@@ -449,7 +449,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void DoReactorSmoke (tObject *objP)
+void DoReactorSmoke (CObject *objP)
 {
 	int			h = -1, i, nShields = 0, nParts;
 	vmsVector	vDir, vPos;
@@ -493,7 +493,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void DoMissileSmoke (tObject *objP)
+void DoMissileSmoke (CObject *objP)
 {
 	int				nParts, nSpeed, nLife, i;
 	float				nScale = 1.5f;
@@ -542,7 +542,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void DoDebrisSmoke (tObject *objP)
+void DoDebrisSmoke (CObject *objP)
 {
 	int			nParts, i;
 	float			nScale = 2;
@@ -577,7 +577,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void DoStaticParticles (tObject *objP)
+void DoStaticParticles (CObject *objP)
 {
 	int			i, j, bBubbles = objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES;
 	vmsVector	pos, offs, dir;
@@ -629,7 +629,7 @@ if (objP->rType.particleInfo.nSide <= 0) {	//don't vary emitter position for smo
 
 //------------------------------------------------------------------------------
 
-void DoBombSmoke (tObject *objP)
+void DoBombSmoke (CObject *objP)
 {
 	int			nParts, i;
 	vmsVector	pos, offs;
@@ -658,7 +658,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void DoParticleTrail (tObject *objP)
+void DoParticleTrail (CObject *objP)
 {
 	int			nParts, i, id = objP->info.nId, bGatling = (id == VULCAN_ID) || (id == GAUSS_ID);
 	float			nScale;
@@ -729,7 +729,7 @@ particleManager.SetPos (particleManager.GetObjectSystem (i), &pos, NULL, objP->i
 
 static float fShrapnelScale [5] = {0, 5.0f / 3.0f, 2.5f, 10.0f / 3.0f, 5};
 
-int CreateShrapnels (tObject *parentObjP)
+int CreateShrapnels (CObject *parentObjP)
 {
 if (!SHOW_SMOKE)
 	return 0;
@@ -745,7 +745,7 @@ if ((parentObjP->info.nType != OBJ_PLAYER) && (parentObjP->info.nType != OBJ_ROB
 	vmsVector		vDir;
 	int				i, h = (int) (X2F (parentObjP->info.xSize) * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
 	short				nObject;
-	tObject			*objP;
+	CObject			*objP;
 	tRgbaColorf		color = {1,1,1,0.5};
 
 nObject = CreateFireball (0, parentObjP->info.nSegment, parentObjP->info.position.vPos, 1, RT_SHRAPNELS);
@@ -793,7 +793,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-void DestroyShrapnels (tObject *objP)
+void DestroyShrapnels (CObject *objP)
 {
 if ((objP->info.nType != OBJ_FIREBALL) || (objP->info.renderType != RT_SHRAPNELS))
 	return;
@@ -855,7 +855,7 @@ if ((shrapnelP->xTTL > 0) && LoadExplBlast ()) {
 
 // -----------------------------------------------------------------------------
 
-void DrawShrapnels (tObject *objP)
+void DrawShrapnels (CObject *objP)
 {
 	tShrapnelData	*sdP = gameData.objs.shrapnels + OBJ_IDX (objP);
 	tShrapnel		*shrapnelP = sdP->shrapnels;
@@ -867,7 +867,7 @@ for (i = sdP->nShrapnels; i; i--, shrapnelP++)
 
 // -----------------------------------------------------------------------------
 
-int UpdateShrapnels (tObject *objP)
+int UpdateShrapnels (CObject *objP)
 {
 	tShrapnelData	*sdP = gameData.objs.shrapnels + OBJ_IDX (objP);
 	tShrapnel		*shrapnelP = sdP->shrapnels;
@@ -902,7 +902,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int DoObjectSmoke (tObject *objP)
+int DoObjectSmoke (CObject *objP)
 {
 int t = objP->info.nType;
 #if 0
@@ -968,7 +968,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 void ObjectParticleFrame (void)
 {
 	int		i;
-	tObject	*objP;
+	CObject	*objP;
 
 if (!SHOW_SMOKE)
 	return;
@@ -988,7 +988,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject [1]; i++, objP++) {
 
 void StaticParticlesFrame (void)
 {
-	tObject	*objP;
+	CObject	*objP;
 
 if (!SHOW_SMOKE)
 	return;
@@ -1002,7 +1002,7 @@ FORALL_EFFECT_OBJS (objP, i) {
 
 void ShrapnelFrame (void)
 {
-	tObject	*objP;
+	CObject	*objP;
 	int		i;
 
 if (!SHOW_SMOKE)

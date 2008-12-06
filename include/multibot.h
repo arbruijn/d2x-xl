@@ -48,6 +48,6 @@ void MultiDumpRobots(void);
 void MultiStripRobots(int playernum);
 void MultiCheckRobotTimeout(void);
 
-void MultiRobotRequestChange(tObject *robot, int playernum);
+void MultiRobotRequestChange(CObject *robot, int playernum);
 
 #endif /* _MULTIBOT_H */

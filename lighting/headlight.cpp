@@ -54,11 +54,11 @@ if (PlayerHasHeadlight (-1)) {
 #define	HEADLIGHT_SCALE			(F1_0*10)
 
 //	Flag array of OBJECTS lit last frame.  Guaranteed to process this frame if lit last frame.
-tObject	*Headlights [MAX_HEADLIGHTS];
+CObject	*Headlights [MAX_HEADLIGHTS];
 int		nHeadlights;
 fix		xBeamBrightness = (F1_0/2);	//global saying how bright the light beam is
 
-fix ComputeHeadlightLightOnObject (tObject *objP)
+fix ComputeHeadlightLightOnObject (CObject *objP)
 {
 	int	i;
 	fix	light;
@@ -69,7 +69,7 @@ light = 0;
 for (i = 0; i < nHeadlights; i++) {
 	fix			dot, dist;
 	vmsVector	vecToObj;
-	tObject		*lightObjP;
+	CObject		*lightObjP;
 	lightObjP = Headlights [i];
 	vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
 	dist = vmsVector::Normalize(vecToObj);
@@ -131,7 +131,7 @@ gameData.render.lights.dynamic.headlights.nLights++;
 
 //------------------------------------------------------------------------------
 
-int AddOglHeadlight (tObject *objP)
+int AddOglHeadlight (CObject *objP)
 {
 #if 0
 	static float spotExps [] = {12.0f, 5.0f, 0.0f};
@@ -161,7 +161,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void RemoveOglHeadlight (tObject *objP)
+void RemoveOglHeadlight (CObject *objP)
 {
 if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlights [objP->info.nId] >= 0)) {
 	DeleteDynLight (gameData.render.lights.dynamic.nHeadlights [objP->info.nId]);
@@ -175,7 +175,7 @@ if (gameOpts->render.nLightingMethod && (gameData.render.lights.dynamic.nHeadlig
 void UpdateOglHeadlight (void)
 {
 	tDynLight	*pl;
-	tObject		*objP;
+	CObject		*objP;
 	short			nPlayer;
 
 for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {

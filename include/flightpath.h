@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 extern tFlightPath externalView;
 
 void ResetFlightPath (tFlightPath *pPath, int nSize, int nFPS);
-void SetPathPoint (tFlightPath *pPath, tObject *objP);
+void SetPathPoint (tFlightPath *pPath, CObject *objP);
 tPathPoint *GetPathPoint (tFlightPath *pPath);
 void GetViewPoint (void);
 

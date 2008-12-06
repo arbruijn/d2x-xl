@@ -300,7 +300,7 @@ typedef float glMatrixf [4*4];
 
 int OOF_ReadFile (char *pszFile, tOOFObject *po, short nModel, short nType, int bFlipV, int bCustom);
 int OOF_FreeObject (tOOFObject *po);
-int OOF_Render (tObject *objP, tOOFObject *po, float *fLight, int bCloaked);
+int OOF_Render (CObject *objP, tOOFObject *po, float *fLight, int bCloaked);
 float *OOF_MatVms2Gl (float *pDest, const vmsMatrix& src);
 float *OOF_VecVms2Gl (float *pDest, const vmsVector& src);
 float *OOF_VecVms2Oof (tOOF_vector *pDest, const vmsVector& src);

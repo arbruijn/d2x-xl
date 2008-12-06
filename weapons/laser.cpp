@@ -44,7 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "tactile.h"
 #endif
 
-void BlastNearbyGlass (tObject *objP, fix damage);
+void BlastNearbyGlass (CObject *objP, fix damage);
 void NDRecordGuidedEnd (void);
 void NDRecordGuidedStart (void);
 
@@ -73,7 +73,7 @@ return (int) (HOMINGMSL_SCALE * sqrt (gameStates.gameplay.slowmo [0].fSpeed));
 // Called by render code.... determines if the laser is from a robot or the
 // tPlayer and calls the appropriate routine.
 
-void RenderLaser (tObject *objP)
+void RenderLaser (CObject *objP)
 {
 
 //	Commented out by John (sort of, typed by Mike) on 6/8/94
@@ -128,7 +128,7 @@ else
 
 int LasersAreRelated (int o1, int o2)
 {
-	tObject	*objP1, *objP2;
+	CObject	*objP1, *objP2;
 	short		id1, id2;
 	fix		ct1, ct2;
 
@@ -198,13 +198,13 @@ if (gameData.muzzle.queueIndex >= MUZZLE_QUEUE_MAX)
 }
 
 //---------------------------------------------------------------------------------
-//creates a weapon tObject
+//creates a weapon CObject
 int CreateWeaponObject (ubyte nWeaponType, short nSegment, vmsVector *vPosition, short nParent)
 {
 	int		rType = -1;
 	fix		xLaserRadius = -1;
 	int		nObject;
-	tObject	*objP;
+	CObject	*objP;
 
 switch (gameData.weapons.info [nWeaponType].renderType)	{
 	case WEAPON_RENDER_BLOB:
@@ -259,12 +259,12 @@ return nObject;
 // ---------------------------------------------------------------------------------
 
 // Initializes a laser after Fire is pressed
-//	Returns tObject number.
+//	Returns CObject number.
 int CreateNewWeapon (vmsVector *vDirection, vmsVector *vPosition, short nSegment,
 						  short nParent, ubyte nWeaponType, int bMakeSound)
 {
 	int			nObject, nViewer, bBigMsl;
-	tObject		*objP, *parentP = (nParent < 0) ? NULL : OBJECTS + nParent;
+	CObject		*objP, *parentP = (nParent < 0) ? NULL : OBJECTS + nParent;
 	tWeaponInfo	*weaponInfoP;
 	fix			xParentSpeed, xWeaponSpeed;
 	fix			volume;
@@ -407,14 +407,14 @@ objP->cType.laserInfo.parent.nObject	= nParent;
 if (parentP->info.nType == OBJ_WEAPON) {
 	int	nHighestParent = nParent;
 	int	count = 0;
-	tObject	*parentObjP = OBJECTS + nHighestParent;
+	CObject	*parentObjP = OBJECTS + nHighestParent;
 
 	while ((count++ < 10) && (parentObjP->info.nType == OBJ_WEAPON)) {
 		int nNextParent = parentObjP->cType.laserInfo.parent.nObject;
 		if (OBJECTS [nNextParent].info.nSignature != parentObjP->cType.laserInfo.parent.nSignature)
 			break;	//	Probably means nParent was killed.  Just continue.
 		if (nNextParent == nHighestParent) {
-			Int3 ();	//	Hmm, tObject is nParent of itself.  This would seem to be bad, no?
+			Int3 ();	//	Hmm, CObject is nParent of itself.  This would seem to be bad, no?
 			break;
 			}
 		nHighestParent = nNextParent;
@@ -528,12 +528,12 @@ int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short par
 {
 	tFVIQuery	fq;
 	tFVIData		hitData;
-	tObject		*parentObjP = OBJECTS + parent;
+	CObject		*parentObjP = OBJECTS + parent;
 	int			fate;
 
 	//	Find tSegment containing laser fire vPosition.  If the robot is straddling a tSegment, the vPosition from
 	//	which it fires may be in a different tSegment, which is bad news for FindVectorIntersection.  So, cast
-	//	a ray from the tObject center (whose tSegment we know) to the laser vPosition.  Then, in the call to CreateNewWeapon
+	//	a ray from the CObject center (whose tSegment we know) to the laser vPosition.  Then, in the call to CreateNewWeapon
 	//	use the data returned from this call to FindVectorIntersection.
 	//	Note that while FindVectorIntersection is pretty slow, it is not terribly slow if the destination point is
 	//	in the same tSegment as the source point.
@@ -555,7 +555,7 @@ return CreateNewWeapon (vDirection, &hitData.hit.vPoint, (short) hitData.hit.nSe
 
 //	-----------------------------------------------------------------------------------------------------------
 
-vmsVector *GetGunPoints (tObject *objP, int nGun)
+vmsVector *GetGunPoints (CObject *objP, int nGun)
 {
 if (!objP)
 	return NULL;
@@ -588,7 +588,7 @@ return vGunPoints;
 
 //-------------- Initializes a laser after Fire is pressed -----------------
 
-vmsVector *TransformGunPoint (tObject *objP, vmsVector *vGunPoints, int nGun,
+vmsVector *TransformGunPoint (CObject *objP, vmsVector *vGunPoints, int nGun,
 										fix xDelay, ubyte nLaserType, vmsVector *vMuzzle, vmsMatrix *mP)
 {
 	int			bSpectate = SPECTATOR (objP);
@@ -634,7 +634,7 @@ return vMuzzle;
 //-------------- Initializes a laser after Fire is pressed -----------------
 
 int LaserPlayerFireSpreadDelay (
-	tObject *objP,
+	CObject *objP,
 	ubyte nLaserType,
 	int nGun,
 	fix xSpreadR,
@@ -650,7 +650,7 @@ int LaserPlayerFireSpreadDelay (
 	tFVIQuery	fq;
 	tFVIData		hitData;
 	int			nObject;
-	tObject		*laserP;
+	CObject		*laserP;
 #if FULL_COCKPIT_OFFS
 	int bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) &&
 							(OBJ_IDX (objP) == LOCALPLAYER.nObject));
@@ -781,7 +781,7 @@ return nObject;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void CreateFlare (tObject *objP)
+void CreateFlare (CObject *objP)
 {
 	fix	xEnergyUsage = WI_energy_usage (FLARE_ID);
 
@@ -804,7 +804,7 @@ if (IsMultiGame) {
 
 static int nMslSlowDown [4] = {1, 4, 3, 2};
 
-float MissileSpeedScale (tObject *objP)
+float MissileSpeedScale (CObject *objP)
 {
 	int	i = extraGameInfo [IsMultiGame].nMslStartSpeed;
 
@@ -816,7 +816,7 @@ return nMslSlowDown [i] * X2F (gameData.time.xGame - objP->xCreationTime);
 //-------------------------------------------------------------------------------------------
 //	Set object *objP's orientation to (or towards if I'm ambitious) its velocity.
 
-void HomingMissileTurnTowardsVelocity (tObject *objP, vmsVector *vNormVel)
+void HomingMissileTurnTowardsVelocity (CObject *objP, vmsVector *vNormVel)
 {
 	vmsVector	vNewDir;
 	fix 			frameTime;
@@ -845,15 +845,15 @@ return HOMINGMSL_STRAIGHT_TIME * nMslSlowDown [(int) extraGameInfo [IsMultiGame]
 }
 
 //-------------------------------------------------------------------------------------------
-//sequence this laser tObject for this _frame_ (underscores added here to aid MK in his searching!)
-void LaserDoWeaponSequence (tObject *objP)
+//sequence this laser CObject for this _frame_ (underscores added here to aid MK in his searching!)
+void LaserDoWeaponSequence (CObject *objP)
 {
-	tObject	*gmObjP;
+	CObject	*gmObjP;
 	fix		xWeaponSpeed, xScaleFactor, xDistToPlayer;
 
 Assert (objP->info.controlType == CT_WEAPON);
 //	Ok, this is a big hack by MK.
-//	If you want an tObject to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME
+//	If you want an CObject to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME
 if (objP->info.xLifeLeft == ONE_FRAME_TIME) {
 	if (IsMultiGame)
 		objP->info.xLifeLeft = OMEGA_MULTI_LIFELEFT;
@@ -904,7 +904,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 			 (nObjId == EARTHSHAKER_MEGA_ID))
 			objP->mType.physInfo.flags &= ~PF_BOUNCE;
 
-		//	Make sure the tObject we are tracking is still trackable.
+		//	Make sure the CObject we are tracking is still trackable.
 		nHomingTarget = TrackHomingTarget (nHomingTarget, objP, &dot);
 		if (nHomingTarget != -1) {
 			if (nHomingTarget == LOCALPLAYER.nObject) {
@@ -1164,7 +1164,7 @@ return rVal;
 // --
 // -- 	for (i=0; i<num_blobs; i++) {
 // -- 		int			tPointSeg;
-// -- 		tObject		*obj;
+// -- 		CObject		*obj;
 // --
 // -- 		VmVecInc (&point_pos, &delta_pos);
 // -- 		tPointSeg = FindSegByPos (&point_pos, start_segnum, 1, 0);
@@ -1209,7 +1209,7 @@ return rVal;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-short CreateClusterLight (tObject *objP)
+short CreateClusterLight (CObject *objP)
 {
 if (!gameStates.render.bClusterLights)
 	return -1;
@@ -1222,14 +1222,14 @@ return nObject;
 //	--------------------------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
-typedef int ( __fastcall * pWeaponHandler) (tObject *, int, int, int);
+typedef int ( __fastcall * pWeaponHandler) (CObject *, int, int, int);
 #else
-typedef int (* pWeaponHandler) (tObject *, int, int, int);
+typedef int (* pWeaponHandler) (CObject *, int, int, int);
 #endif
 
 //-------------------------------------------
 
-int LaserHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
+int LaserHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	ubyte	nLaser = (nLevel <= MAX_LASER_LEVEL) ? LASER_ID + nLevel : SUPERLASER_ID + (nLevel - MAX_LASER_LEVEL - 1);
 	short	nLightObj = CreateClusterLight (objP);
@@ -1247,7 +1247,7 @@ return nRoundsPerShot;
 
 //-------------------------------------------
 
-int VulcanHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
+int VulcanHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 #	define VULCAN_SPREAD	(d_rand ()/8 - 32767/16)
 
@@ -1267,7 +1267,7 @@ return nRoundsPerShot;
 
 //-------------------------------------------
 
-int SpreadfireHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
+int SpreadfireHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	short	nLightObj = CreateClusterLight (objP);
 
@@ -1285,7 +1285,7 @@ return nRoundsPerShot;
 
 //-------------------------------------------
 
-int PlasmaHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
+int PlasmaHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	short	nLightObj = CreateClusterLight (objP);
 
@@ -1302,7 +1302,7 @@ return nRoundsPerShot;
 
 //-------------------------------------------
 
-int FusionHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
+int FusionHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	vmsVector	vForce;
 	short			nLightObj = CreateClusterLight (objP);
@@ -1330,7 +1330,7 @@ return nRoundsPerShot;
 
 //-------------------------------------------
 
-int SuperlaserHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
+int SuperlaserHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	ubyte nSuperLevel = 3;		//make some new kind of laser eventually
 	short	nLightObj = CreateClusterLight (objP);
@@ -1348,7 +1348,7 @@ return nRoundsPerShot;
 
 //-------------------------------------------
 
-int GaussHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
+int GaussHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 #	define GAUSS_SPREAD		(VULCAN_SPREAD / 5)
 
@@ -1371,7 +1371,7 @@ return nRoundsPerShot;
 
 //-------------------------------------------
 
-int HelixHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
+int HelixHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	typedef struct tSpread {
 		fix	r, u;
@@ -1401,7 +1401,7 @@ return nRoundsPerShot;
 
 //-------------------------------------------
 
-int PhoenixHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
+int PhoenixHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 	short	nLightObj = CreateClusterLight (objP);
 
@@ -1417,7 +1417,7 @@ return nRoundsPerShot;
 
 //-------------------------------------------
 
-int OmegaHandler (tObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
+int OmegaHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 {
 LaserPlayerFire (objP, OMEGA_ID, 6, 1, 0, -1);
 return nRoundsPerShot;
@@ -1443,7 +1443,7 @@ pWeaponHandler weaponHandlers [] = {
 //	--------------------------------------------------------------------------------------------------
 //	Object "nObject" fires weapon "weapon_num" of level "level". (Right now (9/24/94) level is used only for nType 0 laser.
 //	Flags are the tPlayer flags.  For network mode, set to 0.
-//	It is assumed that this is a tPlayer tObject (as in multiplayer), and therefore the gun positions are known.
+//	It is assumed that this is a tPlayer CObject (as in multiplayer), and therefore the gun positions are known.
 //	Returns number of times a weapon was fired.  This is typically 1, but might be more for low frame rates.
 //	More than one shot is fired with a pseudo-delay so that players on show machines can fire (for themselves
 //	or other players) often enough for things like the vulcan cannon.
@@ -1467,7 +1467,7 @@ return nRoundsPerShot;
 
 //	-------------------------------------------------------------------------------------------
 //	if nGoalObj == -1, then create Random vector
-int CreateHomingWeapon (tObject *objP, int nGoalObj, ubyte objType, int bMakeSound)
+int CreateHomingWeapon (CObject *objP, int nGoalObj, ubyte objType, int bMakeSound)
 {
 	short			nObject;
 	vmsVector	vGoal, vRandom;
@@ -1488,7 +1488,7 @@ return nObject;
 
 //-----------------------------------------------------------------------------
 // Create the children of a smart bomb, which is a bunch of homing missiles.
-void CreateSmartChildren (tObject *objP, int nSmartChildren)
+void CreateSmartChildren (CObject *objP, int nSmartChildren)
 {
 	tParentInfo	parent;
 	int			bMakeSound;
@@ -1504,7 +1504,7 @@ else if (nObjType == OBJ_ROBOT) {
 	parent.nObject = OBJ_IDX (objP);
 	}
 else {
-	Int3 ();	//	Hey, what kind of tObject is this!?
+	Int3 ();	//	Hey, what kind of CObject is this!?
 	parent.nType = 0;
 	parent.nObject = 0;
 	}
@@ -1521,7 +1521,7 @@ if ((nObjType != OBJ_ROBOT) && ((nObjType != OBJ_WEAPON) || (gameData.weapons.in
 	return;
 
 int		i, nObject;
-tObject	*curObjP;
+CObject	*curObjP;
 
 if (IsMultiGame)
 	d_srand (8321L);
@@ -1606,7 +1606,7 @@ void DoMissileFiring (int bAutoSelect)
 	short		nObject;
 	ubyte		nWeaponId;
 	int		nGun;
-	tObject	*gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+	CObject	*gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
 	tPlayer	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 
 Assert (gameData.weapons.nSecondary < MAX_SECONDARY_WEAPONS);
@@ -1697,7 +1697,7 @@ if (gameStates.app.bPlayerIsDead)
 	int			nWeapon, nObject, nGun, h, i, j;
 	vmsVector	*vGunPoints, vGunPos;
 	vmsMatrix	*viewP;
-	tObject		*objP;
+	CObject		*objP;
 
 gameData.objs.trackGoals [0] =
 gameData.objs.trackGoals [1] = NULL;

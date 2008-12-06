@@ -58,7 +58,7 @@ typedef struct tPolyModel {
 } tPolyModel;
 
 // array of pointers to polygon objects
-// switch to simpler model when the tObject has depth
+// switch to simpler model when the CObject has depth
 // greater than this value times its radius.
 extern int nSimpleModelThresholdScale;
 
@@ -75,7 +75,7 @@ int LoadPolygonModel(const char *filename,int n_textures,CBitmap ***textures);
 #endif
 
 // draw a polygon model
-int DrawPolygonModel (tObject *objP, vmsVector *pos,vmsMatrix *orient,vmsAngVec *animAngles, int nModel, int flags, fix light, 
+int DrawPolygonModel (CObject *objP, vmsVector *pos,vmsMatrix *orient,vmsAngVec *animAngles, int nModel, int flags, fix light, 
 							 fix *glowValues, tBitmapIndex nAltTextures[], tRgbaColorf *obj_color);
 
 // fills in arrays gunPoints & gun_dirs, returns the number of guns read
@@ -104,7 +104,7 @@ extern int PolyModelReadN(tPolyModel *pm, int n, CFile& cf);
  */
 void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf);
 
-tPolyModel *GetPolyModel (tObject *objP, vmsVector *pos, int nModel, int flags);
+tPolyModel *GetPolyModel (CObject *objP, vmsVector *pos, int nModel, int flags);
 
 int LoadModelTextures (tPolyModel *po, tBitmapIndex *altTextures);
 

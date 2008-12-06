@@ -2450,13 +2450,13 @@ gameData.segs.faces.ovlTexCoord = gameData.segs.faces.texCoord + MAX_FACES * 4;
 
 void AllocObjectData (void)
 {
-GETMEM (tObject, gameData.objs.objects, MAX_OBJECTS, 0);
+GETMEM (CObject, gameData.objs.objects, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.freeList, MAX_OBJECTS, 0);
 GETMEM (tLightObjId, gameData.objs.lightObjs, MAX_OBJECTS, (char) 0xff);
 GETMEM (short, gameData.objs.parentObjs, MAX_OBJECTS, (char) 0xff);
 GETMEM (tObjectRef, gameData.objs.childObjs, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.firstChild, MAX_OBJECTS, (char) 0xff);
-GETMEM (tObject, gameData.objs.init, MAX_OBJECTS, 0);
+GETMEM (CObject, gameData.objs.init, MAX_OBJECTS, 0);
 GETMEM (tObjDropInfo, gameData.objs.dropInfo, MAX_OBJECTS, 0);
 GETMEM (tSpeedBoostData, gameData.objs.speedBoost, MAX_OBJECTS, 0);
 GETMEM (vmsVector, gameData.objs.vRobotGoals, MAX_OBJECTS, 0);
@@ -2559,9 +2559,9 @@ GETMEM (tRgbaColorf, gameData.weapons.color, MAX_OBJECTS, 0);
 void AllocMultiData (void)
 {
 GETMEM (tLeftoverPowerup, gameData.multiplayer.leftoverPowerups, MAX_OBJECTS, 0);
-GETMEM (short, gameData.multigame.remoteToLocal, MAX_NUM_NET_PLAYERS * MAX_OBJECTS, 0);  // Remote tObject number for each local tObject
+GETMEM (short, gameData.multigame.remoteToLocal, MAX_NUM_NET_PLAYERS * MAX_OBJECTS, 0);  // Remote CObject number for each local CObject
 GETMEM (short, gameData.multigame.localToRemote, MAX_OBJECTS, 0);
-GETMEM (sbyte, gameData.multigame.nObjOwner, MAX_OBJECTS, 0);   // Who created each tObject in my universe, -1 = loaded at start
+GETMEM (sbyte, gameData.multigame.nObjOwner, MAX_OBJECTS, 0);   // Who created each CObject in my universe, -1 = loaded at start
 }
 
 // ----------------------------------------------------------------------------
@@ -2637,12 +2637,12 @@ FREEMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS);
 
 void FreeObjectData (void)
 {
-FREEMEM (tObject, gameData.objs.objects, MAX_OBJECTS);
+FREEMEM (CObject, gameData.objs.objects, MAX_OBJECTS);
 FREEMEM (short, gameData.objs.freeList, MAX_OBJECTS);
 FREEMEM (tLightObjId, gameData.objs.lightObjs, MAX_OBJECTS);
 FREEMEM (tObjectRef, gameData.objs.childObjs, MAX_OBJECTS);
 FREEMEM (short, gameData.objs.firstChild, MAX_OBJECTS);
-FREEMEM (tObject, gameData.objs.init, MAX_OBJECTS);
+FREEMEM (CObject, gameData.objs.init, MAX_OBJECTS);
 FREEMEM (tObjDropInfo, gameData.objs.dropInfo, MAX_OBJECTS);
 FREEMEM (tSpeedBoostData, gameData.objs.speedBoost, MAX_OBJECTS);
 FREEMEM (vmsVector, gameData.objs.vRobotGoals, MAX_OBJECTS);
@@ -2747,9 +2747,9 @@ FREEMEM (tRgbaColorf, gameData.weapons.color, MAX_OBJECTS);
 void FreeMultiData (void)
 {
 FREEMEM (tLeftoverPowerup, gameData.multiplayer.leftoverPowerups, MAX_OBJECTS);
-FREEMEM (short, gameData.multigame.remoteToLocal, MAX_NUM_NET_PLAYERS * MAX_OBJECTS);  // Remote tObject number for each local tObject
+FREEMEM (short, gameData.multigame.remoteToLocal, MAX_NUM_NET_PLAYERS * MAX_OBJECTS);  // Remote CObject number for each local CObject
 FREEMEM (short, gameData.multigame.localToRemote, MAX_OBJECTS);
-FREEMEM (sbyte, gameData.multigame.nObjOwner, MAX_OBJECTS);   // Who created each tObject in my universe, -1 = loaded at start
+FREEMEM (sbyte, gameData.multigame.nObjOwner, MAX_OBJECTS);   // Who created each CObject in my universe, -1 = loaded at start
 }
 
 // ----------------------------------------------------------------------------

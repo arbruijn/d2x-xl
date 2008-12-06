@@ -258,7 +258,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void DrawPlayer (tObject * objP)
+void DrawPlayer (CObject * objP)
 {
 	vmsVector	vArrowPos, vHeadPos;
 	g3sPoint		spherePoint, arrowPoint, headPoint;
@@ -320,7 +320,7 @@ PROF_START
 					bAutomapFrame = !gameStates.render.automap.bRadar && 
 										 (gameStates.render.cockpit.nMode != CM_FULL_SCREEN) && 
 										 (gameStates.render.cockpit.nMode != CM_LETTERBOX);
-	tObject		*objP;
+	CObject		*objP;
 	g3sPoint		spherePoint;
 	vmsMatrix	vmRadar;
 
@@ -611,7 +611,7 @@ int InitAutomap (int bPauseGame, fix *pxEntryTime, vmsAngVec& pvTAngles)
 {
 		int		i, nPCXError;
 		fix		t1, t2;
-		tObject	*playerP;
+		CObject	*playerP;
 
 gameStates.render.automap.bDisplay = 1;
 gameStates.ogl.nContrast = 8;
@@ -695,7 +695,7 @@ return bPauseGame;
 
 int UpdateAutomap (vmsAngVec& pvTAngles)
 {
-	tObject		*playerP = OBJECTS + LOCALPLAYER.nObject;
+	CObject		*playerP = OBJECTS + LOCALPLAYER.nObject;
 	vmsMatrix	m;
 
 if (Controls [0].firePrimaryDownCount)	{

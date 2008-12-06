@@ -30,7 +30,7 @@
 #define POF_SOF_GLOW			0x0200000	// This subobject glows
 #define POF_SOF_CUSTOM		0x0400000	// This subobject has textures/colors that are customizable
 #define POF_SOF_THRUSTER	0x0800000   // This is a thruster subobject
-#define POF_SOF_JITTER		0x01000000  // This tObject jitters by itself
+#define POF_SOF_JITTER		0x01000000  // This CObject jitters by itself
 #define POF_SOF_HEADLIGHT	0x02000000	// This suboject is a headlight
 
 #define POF_MAX_GUNS_PER_MODEL	      64

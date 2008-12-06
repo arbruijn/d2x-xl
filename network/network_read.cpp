@@ -243,7 +243,7 @@ void NetworkReadPDataPacket (tFrameInfo *pd)
 {
 	int nTheirPlayer;
 	int theirObjNum;
-	tObject * theirObjP = NULL;
+	CObject * theirObjP = NULL;
 
 // tFrameInfo should be aligned...for mac, make the necessary adjustments
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
@@ -327,7 +327,7 @@ if  (pd->nPackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot) {
 #endif
 	gameData.multiplayer.players [nTheirPlayer].nPacketsGot = pd->nPackets;
 	}
-//------------ Read the tPlayer's ship's tObject info ----------------------
+//------------ Read the tPlayer's ship's CObject info ----------------------
 theirObjP->info.position.vPos = pd->objPos;
 theirObjP->info.position.mOrient = pd->objOrient;
 theirObjP->mType.physInfo.velocity = pd->physVelocity;
@@ -399,7 +399,7 @@ void NetworkReadPDataShortPacket (tFrameInfoShort *pd)
 {
 	int nTheirPlayer;
 	int theirObjNum;
-	tObject * theirObjP = NULL;
+	CObject * theirObjP = NULL;
 	tFrameInfoShort new_pd;
 
 // short frame info is not aligned because of tShortPos.  The mac
@@ -468,7 +468,7 @@ if  (new_pd.nPackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot)
 #endif
 		gameData.multiplayer.players [nTheirPlayer].nPacketsGot = new_pd.nPackets;
 	}
-//------------ Read the tPlayer's ship's tObject info ----------------------
+//------------ Read the tPlayer's ship's CObject info ----------------------
 ExtractShortPos (theirObjP, &new_pd.objPos, 0);
 if ((theirObjP->info.renderType != new_pd.objRenderType) && (new_pd.objRenderType == RT_POLYOBJ))
 	MultiMakeGhostPlayer (nTheirPlayer);
@@ -511,7 +511,7 @@ int NetworkVerifyPlayers (void)
 {
 	int		i, j, t, bCoop = IsCoopGame;
 	int		nPlayers, nPlayerObjs [MAX_PLAYERS], bHaveReactor = !bCoop;
-	tObject	*objP;
+	CObject	*objP;
 	tPlayer	*playerP;
 
 for (j = 0, playerP = gameData.multiplayer.players; j < MAX_PLAYERS; j++, playerP++)
@@ -574,7 +574,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-inline bool ObjectIsLinked (tObject *objP, short nSegment)
+inline bool ObjectIsLinked (CObject *objP, short nSegment)
 {
 if (nSegment != -1) {
 	short nObject = OBJ_IDX (objP);
@@ -597,7 +597,7 @@ void NetworkReadObjectPacket (ubyte *dataP)
 	static short	objectCount = 0;
 
 	// Object from another net tPlayer we need to sync with
-	tObject	*objP;
+	CObject	*objP;
 	short		nObject, nRemoteObj;
 	sbyte		nObjOwner;
 	short		nSegment, i;
@@ -629,7 +629,7 @@ else if (i < 0)
 	NW_GET_BYTE (dataP, bufI, nObjOwner);
 	NW_GET_SHORT (dataP, bufI, nRemoteObj);
 	if ((nObject == -1) || (nObject == -3)) {
-		// Clear tObject array
+		// Clear CObject array
 		nPlayer = nObjOwner;
 		ChangePlayerNumTo (nPlayer);
 		nMode = 1;
@@ -693,7 +693,7 @@ else if (i < 0)
 			UnlinkObject (objP);
 			while (ObjectIsLinked (objP, objP->info.nSegment))
 				UnlinkObjFromSeg (objP);
-			NW_GET_BYTES (dataP, bufI, objP, sizeof (tObject));
+			NW_GET_BYTES (dataP, bufI, objP, sizeof (CObject));
 			if (objP->info.nType != OBJ_NONE) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
 					SwapObject (objP);
@@ -717,7 +717,7 @@ else if (i < 0)
 				}
 			}
 		} // For a standard onbject
-	} // For each tObject in packet
+	} // For each CObject in packet
 gameData.objs.nObjects = objectCount;
 //gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
 }

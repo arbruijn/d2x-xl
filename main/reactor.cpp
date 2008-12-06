@@ -35,8 +35,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void DoCountdownFrame ();
 
 //	-----------------------------------------------------------------------------
-//return the position & orientation of a gun on the control center tObject
-void CalcReactorGunPoint (vmsVector *vGunPoint, vmsVector *vGunDir, tObject *objP, int nGun)
+//return the position & orientation of a gun on the control center CObject
+void CalcReactorGunPoint (vmsVector *vGunPoint, vmsVector *vGunDir, CObject *objP, int nGun)
 {
 	tReactorProps	*props;
 	vmsMatrix		*viewP = ObjectView (objP);
@@ -200,9 +200,9 @@ if (bReactorDestroyed)
 //	-----------------------------------------------------------------------------
 //	Called when control center gets destroyed.
 //	This code is common to whether control center is implicitly imbedded in a boss,
-//	or is an tObject of its own.
+//	or is an CObject of its own.
 //	if objP == NULL that means the boss was the control center and don't set gameData.reactor.nDeadObj
-void DoReactorDestroyedStuff (tObject *objP)
+void DoReactorDestroyedStuff (CObject *objP)
 {
 	int		i, bFinalCountdown, bReactor = objP && (objP->info.nType == OBJ_REACTOR);
 	tTrigger	*trigP = NULL;
@@ -238,7 +238,7 @@ if (bReactor) {
 
 //	-----------------------------------------------------------------------------
 
-int FindReactor (tObject *objP)
+int FindReactor (CObject *objP)
 {
 	int	i, nObject = OBJ_IDX (objP);
 
@@ -250,7 +250,7 @@ return -1;
 
 //	-----------------------------------------------------------------------------
 
-void RemoveReactor (tObject *objP)
+void RemoveReactor (CObject *objP)
 {
 	int	i = FindReactor (objP);
 
@@ -264,7 +264,7 @@ memset (gameData.reactor.states + gameStates.gameplay.nReactorCount, 0,
 
 //	-----------------------------------------------------------------------------
 //do whatever this thing does in a frame
-void DoReactorFrame (tObject *objP)
+void DoReactorFrame (CObject *objP)
 {
 	int				nBestGun, i;
 	tReactorStates	*rStatP;
@@ -405,12 +405,12 @@ return I2X (gameData.reactor.nStrength);
 
 //	-----------------------------------------------------------------------------
 //	This must be called at the start of each level.
-//	If this level contains a boss and mode != multiplayer, don't do control center stuff.  (Ghost out control center tObject.)
+//	If this level contains a boss and mode != multiplayer, don't do control center stuff.  (Ghost out control center CObject.)
 //	If this level contains a boss and mode == multiplayer, do control center stuff.
 void InitReactorForLevel (int bRestore)
 {
 	int		i, j = 0, nGuns, bNew;
-	tObject	*objP;
+	CObject	*objP;
 	short		nBossObj = -1;
 	tReactorStates	*rStatP = gameData.reactor.states;
 

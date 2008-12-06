@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void PagingTouchAll ();
 int PagingGaugeSize ();
-void PagingTouchObject (tObject *objP);
+void PagingTouchObject (CObject *objP);
 void PagingTouchObjects (int nType);
 
 #endif /* _PAGING_H */

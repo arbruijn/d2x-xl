@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern int Cyberman_installed;	//SWIFT device present
 
-void ReadFlyingControls( tObject * obj );
+void ReadFlyingControls( CObject * obj );
 
 extern ubyte Controls_stopped;
 extern ubyte Controls_always_move;

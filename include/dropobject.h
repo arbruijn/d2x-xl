@@ -19,20 +19,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CHECK_DROP	2
 #define EXEC_DROP		3
 
-int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState);
-int ObjectCreateEgg (tObject *objP);
-int CallObjectCreateEgg (tObject *objP, int count, int nType, int id);
+int ChooseDropSegment (CObject *objP, int *pbFixedPos, int nDropState);
+int ObjectCreateEgg (CObject *objP);
+int CallObjectCreateEgg (CObject *objP, int count, int nType, int id);
 int MaybeDropNetPowerup (short nObject, int powerupType, int nDropState);
 void RespawnDestroyedWeapon (short nObject);
-void MaybeReplacePowerupWithEnergy (tObject *del_obj);
+void MaybeReplacePowerupWithEnergy (CObject *del_obj);
 void DropPowerups ();
 int DropPowerup (ubyte nType, ubyte id, short owner, int num, const vmsVector& init_vel, const vmsVector& pos, short nSegment);
-// creates afterburner blobs behind the specified tObject
-void DropAfterburnerBlobs (tObject *obj, int count, fix size_scale, fix lifetime, tObject *pParent, int bThruster);
-int MaybeDropPrimaryWeaponEgg (tObject *playerObjP, int weapon_index);
-void MaybeDropSecondaryWeaponEgg (tObject *playerObjP, int weapon_index, int count);
-void DropPlayerEggs (tObject *playerObjP);
-int ReturnFlagHome (tObject *pObj);
-int PickConnectedSegment (tObject *objP, int nMaxDepth, int *nDepthP);
+// creates afterburner blobs behind the specified CObject
+void DropAfterburnerBlobs (CObject *obj, int count, fix size_scale, fix lifetime, CObject *pParent, int bThruster);
+int MaybeDropPrimaryWeaponEgg (CObject *playerObjP, int weapon_index);
+void MaybeDropSecondaryWeaponEgg (CObject *playerObjP, int weapon_index, int count);
+void DropPlayerEggs (CObject *playerObjP);
+int ReturnFlagHome (CObject *pObj);
+int PickConnectedSegment (CObject *objP, int nMaxDepth, int *nDepthP);
 
 #endif /* _DROPOBJECT_H */

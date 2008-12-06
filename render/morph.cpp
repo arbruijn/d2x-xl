@@ -27,8 +27,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "interp.h"
 
 //-------------------------------------------------------------
-//returns ptr to data for this tObject, or NULL if none
-tMorphInfo *MorphFindData (tObject *objP)
+//returns ptr to data for this CObject, or NULL if none
+tMorphInfo *MorphFindData (CObject *objP)
 {
 	int i;
 
@@ -181,8 +181,8 @@ return 1;
 
 
 //-------------------------------------------------------------
-//process the morphing tObject for one frame
-void DoMorphFrame (tObject *objP)
+//process the morphing CObject for one frame
+void DoMorphFrame (CObject *objP)
 {
 	int			i, t;
 	tPolyModel	*pmP;
@@ -208,7 +208,7 @@ for (i = 0; i < pmP->nModels; i++)
 			}
 		}
 if (!mdP->nSubmodelsActive) {			//done morphing!
-	tObject *objP = mdP->objP;
+	CObject *objP = mdP->objP;
 	objP->info.controlType = mdP->saveControlType;
 	objP->info.movementType = mdP->saveMovementType;
 	objP->info.renderType = RT_POLYOBJ;
@@ -231,8 +231,8 @@ for (i = 0; i < MAX_MORPH_OBJECTS; i++)
 
 
 //-------------------------------------------------------------
-//make the tObject morph
-void MorphStart (tObject *objP)
+//make the CObject morph
+void MorphStart (CObject *objP)
 {
 	tPolyModel *pmP;
 	vmsVector pmmin, pmmax;
@@ -313,7 +313,7 @@ for (i = 0; i < sort_n; i++) {
 			}
 
 #ifdef PIGGY_USE_PAGING
-		// Make sure the textures for this tObject are paged in..
+		// Make sure the textures for this CObject are paged in..
 		gameData.pig.tex.bPageFlushed = 0;
 		for (i = 0; i < pmP->nTextures;i++)
 			PIGGY_PAGE_IN (gameData.models.textureIndex [i].index, 0);
@@ -345,7 +345,7 @@ for (i = 0; i < sort_n; i++) {
 
 //-------------------------------------------------------------
 
-void MorphDrawObject (tObject *objP)
+void MorphDrawObject (CObject *objP)
 {
 //	int save_light;
 	tPolyModel *pmP;

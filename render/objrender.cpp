@@ -68,7 +68,7 @@ return gameData.weapons.info [nId].nModel;
 
 //------------------------------------------------------------------------------
 
-short WeaponModel (tObject *objP)
+short WeaponModel (CObject *objP)
 {
 	short	nModel;
 
@@ -79,7 +79,7 @@ return objP->rType.polyObjInfo.nModel;
 
 //------------------------------------------------------------------------------
 
-int InitAddonPowerup (tObject *objP)
+int InitAddonPowerup (CObject *objP)
 {
 if (objP->info.nId == POW_SLOWMOTION)
 	objP->rType.vClipInfo.nClipIndex = -1;
@@ -94,7 +94,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-void ConvertWeaponToPowerup (tObject *objP)
+void ConvertWeaponToPowerup (CObject *objP)
 {
 if (!InitAddonPowerup (objP)) {
 	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
@@ -110,7 +110,7 @@ objP->mType.physInfo.drag = 512;
 
 // -----------------------------------------------------------------------------
 
-int ConvertHostageToModel (tObject *objP)
+int ConvertHostageToModel (CObject *objP)
 {
 if (objP->info.renderType == RT_POLYOBJ)
 	return 1;
@@ -128,7 +128,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-int ConvertModelToHostage (tObject *objP)
+int ConvertModelToHostage (CObject *objP)
 {
 objP->rType.vClipInfo.nClipIndex = nHostageVClips [0];
 objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -143,7 +143,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-int ConvertPowerupToWeapon (tObject *objP)
+int ConvertPowerupToWeapon (CObject *objP)
 {
 	vmsAngVec	a;
 	short			nModel, nId;
@@ -213,7 +213,7 @@ return 1;
 void ConvertAllPowerupsToWeapons (void)
 {
 	int		i;
-	tObject	*objP;
+	CObject	*objP;
 
 FORALL_OBJS (objP, i)
 	if (objP->info.renderType == RT_POWERUP) {
@@ -225,7 +225,7 @@ FORALL_OBJS (objP, i)
 // -----------------------------------------------------------------------------
 //this routine checks to see if an robot rendered near the middle of
 //the screen, and if so and the tPlayer had fired, "warns" the robot
-void SetRobotLocationInfo (tObject *objP)
+void SetRobotLocationInfo (CObject *objP)
 {
 if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 	g3sPoint temp;
@@ -233,7 +233,7 @@ if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 	G3TransformAndEncodePoint(&temp, objP->info.position.vPos);
 	if (temp.p3_codes & CC_BEHIND)		//robot behind the screen
 		return;
-	//the code below to check for tObject near the center of the screen
+	//the code below to check for CObject near the center of the screen
 	//completely ignores z, which may not be good
 	if ((abs (temp.p3_vec[X]) < F1_0 * 4) && (abs (temp.p3_vec[Y]) < F1_0 * 4)) {
 		objP->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
@@ -244,7 +244,7 @@ if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 
 //------------------------------------------------------------------------------
 
-fix CalcObjectLight (tObject *objP, fix *xEngineGlow)
+fix CalcObjectLight (CObject *objP, fix *xEngineGlow)
 {
 	fix xLight;
 
@@ -271,7 +271,7 @@ return xLight;
 
 //------------------------------------------------------------------------------
 
-static float ObjectBlobColor (tObject *objP, CBitmap *bmP, tRgbaColorf *colorP)
+static float ObjectBlobColor (CObject *objP, CBitmap *bmP, tRgbaColorf *colorP)
 {
 	float	fScale;
 
@@ -290,9 +290,9 @@ return fScale;
 }
 
 //------------------------------------------------------------------------------
-//draw an tObject that has one bitmap & doesn't rotate
+//draw an CObject that has one bitmap & doesn't rotate
 
-void DrawObjectBlob (tObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
+void DrawObjectBlob (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
 {
 	CBitmap	*bmP;
 	tRgbaColorf	color;
@@ -416,8 +416,8 @@ gameData.render.nTotalSprites++;
 }
 
 //------------------------------------------------------------------------------
-//draw an tObject that is a texture-mapped rod
-void DrawObjectRodTexPoly (tObject *objP, tBitmapIndex bmi, int bLit, int iFrame)
+//draw an CObject that is a texture-mapped rod
+void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame)
 {
 	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 	fix light;
@@ -469,7 +469,7 @@ int	bLinearTMapPolyObjs = 1;
 
 //------------------------------------------------------------------------------
 
-int GetCloakInfo (tObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP)
+int GetCloakInfo (CObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP)
 {
 	tCloakInfo	ci = {0, CLOAKED_FADE_LEVEL, F1_0, F1_0, F1_0, 0, 0};
 	int			i;
@@ -526,7 +526,7 @@ else if ((xCloakStartTime == 0x7fffffff) || (gameData.time.xGame < xCloakEndTime
 	static int nCloakDelta = 0, nCloakDir = 1;
 	static fix xCloakTimer = 0;
 
-	//note, if more than one cloaked tObject is visible at once, the
+	//note, if more than one cloaked CObject is visible at once, the
 	//pulse rate will change!
 	xCloakTimer -= gameData.time.xFrame;
 	while (xCloakTimer < 0) {
@@ -552,7 +552,7 @@ return ci.bFading;
 
 //------------------------------------------------------------------------------
 //do special cloaked render
-int DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime, fix xCloakEndTime)
+int DrawCloakedObject (CObject *objP, fix light, fix *glow, fix xCloakStartTime, fix xCloakEndTime)
 {
 	tTransformation	*posP = OBJPOS (objP);
 	tCloakInfo	ci;
@@ -596,7 +596,7 @@ return bOk;
 
 //------------------------------------------------------------------------------
 
-static inline int ObjectIsCloaked (tObject *objP)
+static inline int ObjectIsCloaked (CObject *objP)
 {
 if (gameStates.render.bBuildModels)
 	return 0;
@@ -610,7 +610,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int DrawHiresObject (tObject *objP, fix xLight, fix *xEngineGlow)
+int DrawHiresObject (CObject *objP, fix xLight, fix *xEngineGlow)
 {
 	float			fLight [3];
 	short			nModel = 0;
@@ -643,10 +643,10 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-//draw an tObject which renders as a polygon model
+//draw an CObject which renders as a polygon model
 #define MAX_MODEL_TEXTURES 63
 
-int DrawPolygonObject (tObject *objP, int bDepthSort, int bForce)
+int DrawPolygonObject (CObject *objP, int bDepthSort, int bForce)
 {
 	fix	xLight;
 	int	imSave = 0;
@@ -789,7 +789,7 @@ return bOk;
 
 // -----------------------------------------------------------------------------
 
-int RenderObject (tObject *objP, int nWindowNum, int bForce)
+int RenderObject (CObject *objP, int nWindowNum, int bForce)
 {
 PROF_START
 	short			nObject = OBJ_IDX (objP);

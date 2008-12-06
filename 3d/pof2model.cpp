@@ -331,7 +331,7 @@ for (pmf = pm->pFaces, i = pm->nFaces; i; i--, pmf++)
 
 //------------------------------------------------------------------------------
 
-int G3BuildModelFromPOF (tObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
+int G3BuildModelFromPOF (CObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *objColorP)
 {
 	tG3Model	*pm = gameData.models.g3Models [0] + nModel;
 

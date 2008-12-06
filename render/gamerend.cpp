@@ -388,7 +388,7 @@ switch (flags & 3) {
 
 static inline bool GuidedMissileActive (void)
 {
-tObject *gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+CObject *gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
 return gmObjP &&
 		 (gmObjP->info.nType == OBJ_WEAPON) &&
 		 (gmObjP->info.nId == GUIDEDMSL_ID) &&
@@ -412,7 +412,7 @@ void game_render_frame_stereo ()
 	int actual_eye_offset;
 	CCanvas RenderCanvas [2];
 	int bNoDrawHUD = 0, bGMView = 0;
-	tObject *gmObjP;
+	CObject *gmObjP;
 
 	save_aspect = screen.Aspect ();
 	screen.Aspect () * = 2;	//Muck with aspect ratio
@@ -448,7 +448,7 @@ void game_render_frame_stereo ()
 
 	if (bGMView) {
 		char *msg = "Guided Missile View";
-		tObject *viewerSave = gameData.objs.viewerP;
+		CObject *viewerSave = gameData.objs.viewerP;
 		int w, h, aw;
 
 		gameData.objs.viewerP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
@@ -666,7 +666,7 @@ void game_render_frame_stereo ()
 
 ubyte nDemoDoingRight = 0, nDemoDoingLeft = 0;
 extern ubyte nDemoDoRight, nDemoDoLeft;
-extern tObject demoRightExtra, demoLeftExtra;
+extern CObject demoRightExtra, demoLeftExtra;
 
 char DemoWBUType []={0, WBUMSL, WBUMSL, WBU_REAR, WBU_ESCORT, WBU_MARKER, WBUMSL};
 char DemoRearCheck []={0, 0, 0, 1, 0, 0, 0};
@@ -676,7 +676,7 @@ const char *DemoExtraMessage []={"PLAYER", "GUIDED", "MISSILE", "REAR", "GUIDE-B
 
 int ShowMissileView (void)
 {
-	tObject	*objP = NULL;
+	CObject	*objP = NULL;
 
 if (GuidedMslView (&objP)) {
 	if (gameOpts->render.cockpit.bGuidedInMainView)	{
@@ -768,7 +768,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 			break;
 
 		case CV_ESCORT: {
-			tObject *buddy = find_escort ();
+			CObject *buddy = find_escort ();
 			if (!buddy) {
 				DoCockpitWindowView (w, NULL, 0, WBU_WEAPON, NULL);
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
@@ -846,7 +846,7 @@ lightningManager.SetLights ();
 if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	int w, h, aw;
 	const char *msg = "Guided Missile View";
-	tObject *viewerSave = gameData.objs.viewerP;
+	CObject *viewerSave = gameData.objs.viewerP;
 
    if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		gameStates.render.cockpit.bBigWindowSwitch = 1;

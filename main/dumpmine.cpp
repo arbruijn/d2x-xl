@@ -247,17 +247,17 @@ void write_key_text(FILE *my_file)
 	for (i=0; i<=gameData.objs.nLastObject [0]; i++) {
 		if (OBJECTS[i].nType == OBJ_POWERUP)
 			if (OBJECTS[i].id == POW_KEY_BLUE) {
-				fprintf(my_file, "The BLUE key is tObject %i in tSegment %i\n", i, OBJECTS[i].nSegment);
+				fprintf(my_file, "The BLUE key is CObject %i in tSegment %i\n", i, OBJECTS[i].nSegment);
 				blueCount2++;
 			}
 		if (OBJECTS[i].nType == OBJ_POWERUP)
 			if (OBJECTS[i].id == POW_KEY_RED) {
-				fprintf(my_file, "The RED key is tObject %i in tSegment %i\n", i, OBJECTS[i].nSegment);
+				fprintf(my_file, "The RED key is CObject %i in tSegment %i\n", i, OBJECTS[i].nSegment);
 				redCount2++;
 			}
 		if (OBJECTS[i].nType == OBJ_POWERUP)
 			if (OBJECTS[i].id == POW_KEY_GOLD) {
-				fprintf(my_file, "The GOLD key is tObject %i in tSegment %i\n", i, OBJECTS[i].nSegment);
+				fprintf(my_file, "The GOLD key is CObject %i in tSegment %i\n", i, OBJECTS[i].nSegment);
 				goldCount2++;
 			}
 
@@ -265,15 +265,15 @@ void write_key_text(FILE *my_file)
 			if (OBJECTS[i].containsType == OBJ_POWERUP) {
 				switch (OBJECTS[i].containsId) {
 					case POW_KEY_BLUE:
-						fprintf(my_file, "The BLUE key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[OBJECTS[i].nType], gameData.bots.names[OBJECTS[i].id], OBJECTS[i].nSegment);
+						fprintf(my_file, "The BLUE key is contained in CObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[OBJECTS[i].nType], gameData.bots.names[OBJECTS[i].id], OBJECTS[i].nSegment);
 						blueCount2 += OBJECTS[i].containsCount;
 						break;
 					case POW_KEY_GOLD:
-						fprintf(my_file, "The GOLD key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[OBJECTS[i].nType], gameData.bots.names[OBJECTS[i].id], OBJECTS[i].nSegment);
+						fprintf(my_file, "The GOLD key is contained in CObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[OBJECTS[i].nType], gameData.bots.names[OBJECTS[i].id], OBJECTS[i].nSegment);
 						goldCount2 += OBJECTS[i].containsCount;
 						break;
 					case POW_KEY_RED:
-						fprintf(my_file, "The RED key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[OBJECTS[i].nType], gameData.bots.names[OBJECTS[i].id], OBJECTS[i].nSegment);
+						fprintf(my_file, "The RED key is contained in CObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[OBJECTS[i].nType], gameData.bots.names[OBJECTS[i].id], OBJECTS[i].nSegment);
 						redCount2 += OBJECTS[i].containsCount;
 						break;
 					default:
@@ -326,7 +326,7 @@ void write_control_center_text(FILE *my_file)
 				nObject = OBJECTS[nObject].next;
 			}
 			if (count2 == 0)
-				fprintf(my_file, "No control center tObject in control center tSegment.\n");
+				fprintf(my_file, "No control center CObject in control center tSegment.\n");
 			else if (count2 != 1)
 				fprintf(my_file, "%i control center OBJECTS in control center tSegment.\n", count2);
 		}
@@ -506,7 +506,7 @@ void write_player_text(FILE *my_file)
 	for (i=0; i<=gameData.objs.nLastObject [0]; i++) {
 		if (OBJECTS[i].nType == OBJ_PLAYER) {
 			num_players++;
-			fprintf(my_file, "Player %2i is tObject #%3i in tSegment #%3i.\n", OBJECTS[i].id, i, OBJECTS[i].nSegment);
+			fprintf(my_file, "Player %2i is CObject #%3i in tSegment #%3i.\n", OBJECTS[i].id, i, OBJECTS[i].nSegment);
 		}
 	}
 
@@ -686,7 +686,7 @@ void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int leve
 
 	//	Process robots.
 	for (nObject=0; nObject<=gameData.objs.nLastObject [0]; nObject++) {
-		tObject *objP = &OBJECTS[nObject];
+		CObject *objP = &OBJECTS[nObject];
 
 		if (objP->info.renderType == RT_POLYOBJ) {
 			tPolyModel *po = &gameData.models.polyModels[objP->rType.polyObjInfo.nModel];

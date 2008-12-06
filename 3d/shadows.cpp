@@ -1069,7 +1069,7 @@ return //fScale ? X2F (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale :
 
 //------------------------------------------------------------------------------
 
-inline float G3FaceClipDist (tObject *objP, tPOF_face *pf)
+inline float G3FaceClipDist (CObject *objP, tPOF_face *pf)
 {
 	vmsVector	vCenter = vmsVector::Create((fix) (pf->vCenterf.x * 65536.0f),
 	                                        (fix) (pf->vCenterf.y * 65536.0f),
@@ -1080,7 +1080,7 @@ return NearestShadowedWallDist (OBJ_IDX (objP), objP->info.nSegment, &vCenter, 0
 //------------------------------------------------------------------------------
 // use face centers to determine clipping distance
 
-float G3ClipDistByFaceCenters (tObject *objP, tPOFObject *po, tPOFSubObject *pso, int i, int incr)
+float G3ClipDistByFaceCenters (CObject *objP, tPOFObject *po, tPOFSubObject *pso, int i, int incr)
 {
 	tPOF_face	*pf, **ppf;
 	short			h;
@@ -1101,7 +1101,7 @@ return fMaxDist;
 
 //------------------------------------------------------------------------------
 
-float G3ClipDistByFaceVerts (tObject *objP, tPOFObject *po, tPOFSubObject *pso,
+float G3ClipDistByFaceVerts (CObject *objP, tPOFObject *po, tPOFSubObject *pso,
 									  float fMaxDist, int i, int incr)
 {
 	tOOF_vector	*pv;
@@ -1141,7 +1141,7 @@ return fMaxDist;
 
 //------------------------------------------------------------------------------
 
-float G3ClipDistByLitVerts (tObject *objP, tPOFObject *po, float fMaxDist, int i, int incr)
+float G3ClipDistByLitVerts (CObject *objP, tPOFObject *po, float fMaxDist, int i, int incr)
 {
 	tOOF_vector	*pv;
 	vmsVector	v;
@@ -1229,7 +1229,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 //------------------------------------------------------------------------------
 // use face centers and vertices to determine clipping distance
 
-float G3SubModelClipDist (tObject *objP, tPOFObject *po, tPOFSubObject *pso)
+float G3SubModelClipDist (CObject *objP, tPOFObject *po, tPOFSubObject *pso)
 {
 	float	fMaxDist = 0;
 
@@ -1265,7 +1265,7 @@ return pso->fClipDist = (fMaxDist ? fMaxDist : (fInf < G3_INFINITY) ? fInf : G3_
 
 //------------------------------------------------------------------------------
 
-int G3RenderSubModelShadowCaps (tObject *objP, tPOFObject *po, tPOFSubObject *pso, int bCullFront)
+int G3RenderSubModelShadowCaps (CObject *objP, tPOFObject *po, tPOFSubObject *pso, int bCullFront)
 {
 	tOOF_vector	*pvf, v0, v1;
 	tPOF_face	*pf, **ppf;
@@ -1377,7 +1377,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3DrawSubModelShadow (tObject *objP, tPOFObject *po, tPOFSubObject *pso)
+int G3DrawSubModelShadow (CObject *objP, tPOFObject *po, tPOFSubObject *pso)
 {
 	int			h = 1, i;
 
@@ -1409,7 +1409,7 @@ return h;
 
 //------------------------------------------------------------------------------
 
-int POFGatherPolyModelItems (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, tPOFObject *po, int bShadowData)
+int POFGatherPolyModelItems (CObject *objP, void *modelP, vmsAngVec *pAnimAngles, tPOFObject *po, int bShadowData)
 {
 	int			j;
 	vmsVector	*pv;
@@ -1449,7 +1449,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, int nModel)
+int G3DrawPolyModelShadow (CObject *objP, void *modelP, vmsAngVec *pAnimAngles, int nModel)
 {
 #if SHADOWS
 	vmsVector		v, vLightDir;

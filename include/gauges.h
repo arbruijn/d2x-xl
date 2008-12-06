@@ -78,11 +78,11 @@ extern rgb playerColors[];
 #define WBU_RADAR_HEADSUP	9
 
 // draws a 3d view into one of the cockpit windows.  win is 0 for
-// left, 1 for right.  viewer is tObject.  NULL tObject means give up
+// left, 1 for right.  viewer is CObject.  NULL CObject means give up
 // window user is one of the WBU_ constants.  If rearViewFlag is
 // set, show a rear view.  If label is non-NULL, print the label at
 // the top of the window.
-void DoCockpitWindowView(int win, tObject *viewer, int rearViewFlag, int user, const char *label);
+void DoCockpitWindowView(int win, CObject *viewer, int rearViewFlag, int user, const char *label);
 void FreeInventoryIcons (void);
 void FreeObjTallyIcons (void);
 void HUDShowIcons (void);

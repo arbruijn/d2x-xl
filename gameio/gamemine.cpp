@@ -127,7 +127,7 @@ struct mfi_v19 {
 	tGameItemInfo	walls;
 	tGameItemInfo	triggers;
 	tGameItemInfo	links;
-	tGameItemInfo	tObject;
+	tGameItemInfo	CObject;
 	int     unused_offset;      // was: doors.offset
 	int     unused_howmamy;     // was: doors.count
 	int     unused_sizeof;      // was: doors.size
@@ -464,7 +464,7 @@ int load_mine_data (CFile& cf)
 	mine_fileinfo.triggers.size	  =	sizeof (tTrigger);
 	mine_fileinfo.object.offset		=	-1;
 	mine_fileinfo.object.count		=	1;
-	mine_fileinfo.object.size		=	sizeof (tObject);
+	mine_fileinfo.object.size		=	sizeof (CObject);
 
 	mine_fileinfo.level_shake_frequency		=	0;
 	mine_fileinfo.level_shake_duration		=	0;
@@ -833,7 +833,7 @@ int load_mine_data (CFile& cf)
 	gameData.segs.nLastVertex = gameData.segs.nVertices-1;
 	gameData.segs.nLastSegment = gameData.segs.nSegments-1;
 
-	ResetObjects (1);		//one tObject, the tPlayer
+	ResetObjects (1);		//one CObject, the tPlayer
 
 	#ifdef EDITOR
 	gameData.segs.nLastVertex = MAX_SEGMENT_VERTICES-1;
@@ -1484,7 +1484,7 @@ else {
 	ComputeSegSideCenters (-1);
 	}
 gameData.segs.fRad = X2F (vmsVector::Dist(gameData.segs.vMax, gameData.segs.vMin));
-ResetObjects (1);		//one tObject, the player
+ResetObjects (1);		//one CObject, the player
 return 0;
 }
 

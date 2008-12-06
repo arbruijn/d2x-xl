@@ -78,7 +78,7 @@ void SetRenderView (fix nEyeOffset, short *pnStartSeg, int bOglScale);
 void RenderMine (short nStartSeg, fix xExeOffset, int nWindow);
 void RenderShadowQuad (int bWhite);
 int RenderShadowMap (tDynLight *pLight);
-void UpdateRenderedData (int window_num, tObject *viewer, int rearViewFlag, int user);
+void UpdateRenderedData (int window_num, CObject *viewer, int rearViewFlag, int user);
 void RenderObjList (int nListPos, int nWindow);
 void RenderMineSegment (int nn);
 void RenderEffects (int nWindow);
@@ -93,9 +93,9 @@ void CloseDynLighting (void);
 
 //------------------------------------------------------------------------------
 
-static inline bool GuidedMslView (tObject ** objPP)
+static inline bool GuidedMslView (CObject ** objPP)
 {
-	tObject *objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+	CObject *objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
 
 *objPP = objP;
 return objP && 
@@ -106,12 +106,12 @@ return objP &&
 
 //------------------------------------------------------------------------------
 
-static inline tObject *GuidedInMainView (void)
+static inline CObject *GuidedInMainView (void)
 {
 if (!gameOpts->render.cockpit.bGuidedInMainView)
 	return NULL;
 
-tObject *objP;
+CObject *objP;
 
 return GuidedMslView (&objP) ? objP : NULL;
 }

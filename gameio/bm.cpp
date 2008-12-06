@@ -68,7 +68,7 @@ fix	gameData.objs.types.nType.nStrength [MAX_OBJTYPE];
 //right now there's only one tPlayer ship, but we can have another by
 //adding an array and setting the pointer to the active ship.
 
-//---------------- Variables for tObject textures ----------------
+//---------------- Variables for CObject textures ----------------
 
 #if 0//def FAST_FILE_IO /*disabled for a reason!*/
 #define ReadTMapInfoN(ti, n, fp) cf.Read (ti, sizeof (tTexMapInfo), n, fp)
@@ -279,7 +279,7 @@ BitmapIndexReadN (gameData.cockpit.gauges [1], t, cf);
 BitmapIndexReadN (gameData.cockpit.gauges [0], t, cf);
 
 gameData.pig.tex.nObjBitmaps = cf.ReadInt ();
-/*---*/PrintLog ("      Loading %d tObject bitmap indices\n", gameData.pig.tex.nObjBitmaps);
+/*---*/PrintLog ("      Loading %d CObject bitmap indices\n", gameData.pig.tex.nObjBitmaps);
 BitmapIndexReadN (gameData.pig.tex.objBmIndex, gameData.pig.tex.nObjBitmaps, cf);
 for (i = 0; i < gameData.pig.tex.nObjBitmaps; i++)
 	gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
@@ -1198,14 +1198,14 @@ for (i = j; i < gameData.models.nPolyModels; i++)
 
 t = cf.ReadInt ();
 if (N_D2_OBJBITMAPS + t >= MAX_OBJ_BITMAPS) {
-	Warning ("Too many tObject bitmaps (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPS);
+	Warning ("Too many CObject bitmaps (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPS);
 	return -1;
 	}
 BitmapIndexReadN (&gameData.pig.tex.objBmIndex [N_D2_OBJBITMAPS], t, cf);
 
 t = cf.ReadInt ();
 if (N_D2_OBJBITMAPPTRS + t >= MAX_OBJ_BITMAPS) {
-	Warning ("Too many tObject bitmap pointers (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPPTRS);
+	Warning ("Too many CObject bitmap pointers (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPPTRS);
 	return -1;
 	}
 for (i = N_D2_OBJBITMAPPTRS; i < (N_D2_OBJBITMAPPTRS + t); i++)

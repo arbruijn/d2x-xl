@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void MakeNearbyRobotSnipe (void)
 {
-	tObject		*objP;
+	CObject		*objP;
 	tRobotInfo	*botInfoP;
 	short			bfsList [MNRS_SEG_MAX];
 	int			nObject, nBfsLength, i;
@@ -70,7 +70,7 @@ for (i = 0; i < nBfsLength; i++) {
 
 //	-------------------------------------------------------------------------------------------------
 
-void DoSnipeWait (tObject *objP, tAILocalInfo *ailP)
+void DoSnipeWait (CObject *objP, tAILocalInfo *ailP)
 {
 	fix xConnectedDist;
 
@@ -88,7 +88,7 @@ if (xConnectedDist < MAX_SNIPE_DIST) {
 
 //	-------------------------------------------------------------------------------------------------
 
-void DoSnipeAttack (tObject *objP, tAILocalInfo *ailP)
+void DoSnipeAttack (CObject *objP, tAILocalInfo *ailP)
 {
 if (ailP->nextActionTime < 0) {
 	ailP->mode = AIM_SNIPE_RETREAT;
@@ -107,7 +107,7 @@ else {
 
 //	-------------------------------------------------------------------------------------------------
 
-void DoSnipeFire (tObject *objP, tAILocalInfo *ailP)
+void DoSnipeFire (CObject *objP, tAILocalInfo *ailP)
 {
 if (ailP->nextActionTime < 0) {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
@@ -123,7 +123,7 @@ if (ailP->nextActionTime < 0) {
 
 //	-------------------------------------------------------------------------------------------------
 
-void DoSnipeRetreat (tObject *objP, tAILocalInfo *ailP)
+void DoSnipeRetreat (CObject *objP, tAILocalInfo *ailP)
 {
 if (ailP->nextActionTime < 0) {
 	ailP->mode = AIM_SNIPE_WAIT;
@@ -142,15 +142,15 @@ else {
 //	-------------------------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
-typedef void __fastcall tAISnipeHandler (tObject *, tAILocalInfo *);
+typedef void __fastcall tAISnipeHandler (CObject *, tAILocalInfo *);
 #else
-typedef void tAISnipeHandler (tObject *, tAILocalInfo *);
+typedef void tAISnipeHandler (CObject *, tAILocalInfo *);
 #endif
 typedef tAISnipeHandler *pAISnipeHandler;
 
 pAISnipeHandler aiSnipeHandlers [] = {DoSnipeAttack, DoSnipeFire, DoSnipeRetreat, DoSnipeRetreat, DoSnipeWait};
 
-void DoSnipeFrame (tObject *objP)
+void DoSnipeFrame (CObject *objP)
 {
 if (gameData.ai.xDistToPlayer <= MAX_SNIPE_DIST) {
 	tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);

@@ -693,7 +693,7 @@ end:
 //------------------------------------------------------------------------------
 
 //initialize flying
-void FlyInit (tObject *objP)
+void FlyInit (CObject *objP)
 {
 	objP->info.controlType = CT_FLYING;
 	objP->info.movementType = MT_PHYSICS;
@@ -1336,16 +1336,16 @@ uint nDebugSlowdown = 0;
 #endif
 
 #ifdef EDITOR
-extern void player_follow_path (tObject *objP);
+extern void player_follow_path (CObject *objP);
 extern void check_create_player_path (void);
 
 #endif
 
 //returns ptr to escort robot, or NULL
-tObject *find_escort ()
+CObject *find_escort ()
 {
 	int 		i;
-	tObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS;
 
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP))
@@ -1973,9 +1973,9 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 //	-------------------------------------------------------------------------------------------------------
 //	If tPlayer is close enough to nObject, which ought to be a powerup, pick it up!
 //	This could easily be made difficulty level dependent.
-void PowerupGrabCheat (tObject *playerP, int nObject)
+void PowerupGrabCheat (CObject *playerP, int nObject)
 {
-	tObject		*powerupP = OBJECTS + nObject;
+	CObject		*powerupP = OBJECTS + nObject;
 	tTransformation	*posP = OBJPOS (playerP);
 	vmsVector	vCollision;
 
@@ -2017,7 +2017,7 @@ int	nLastLevelPathCreated = -1;
 int MarkPlayerPathToSegment (int nSegment)
 {
 	int		i;
-	tObject	*objP = gameData.objs.consoleP;
+	CObject	*objP = gameData.objs.consoleP;
 	short		player_path_length=0;
 	int		player_hide_index=-1;
 
@@ -2042,7 +2042,7 @@ if ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs) + MAX_PATH_LENGTH*
 for (i = 1; i < player_path_length; i++) {
 	short			nSegment, nObject;
 	vmsVector	vSegCenter;
-	tObject		*objP;
+	CObject		*objP;
 
 	nSegment = gameData.ai.pointSegs [player_hide_index + i].nSegment;
 #if TRACE
@@ -2089,7 +2089,7 @@ void show_freeObjects (void)
 {
 	if (!(gameData.app.nFrameCount & 8)) {
 		int		i;
-		tObject	*objP;
+		CObject	*objP;
 		int		count = 0;
 
 #if TRACE

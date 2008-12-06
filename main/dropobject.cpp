@@ -19,7 +19,7 @@
 
 //------------------------------------------------------------------------------
 
-int InitObjectCount (tObject *objP)
+int InitObjectCount (CObject *objP)
 {
 	int	nFree, nTotal, i, j, bFree;
 	short	nType = objP->info.nType;
@@ -43,7 +43,7 @@ return nFree ? -nFree : nTotal;
 
 //------------------------------------------------------------------------------
 
-tObject *FindInitObject (tObject *objP)
+CObject *FindInitObject (CObject *objP)
 {
 	int	h, i, j, bUsed,
 			bUseFree,
@@ -51,7 +51,7 @@ tObject *FindInitObject (tObject *objP)
 	short	nType = objP->info.nType;
 	short	id = objP->info.nId;
 
-// due to OBJECTS being deleted from the tObject list when picked up and recreated when dropped,
+// due to OBJECTS being deleted from the CObject list when picked up and recreated when dropped,
 // cannot determine exact respawn tSegment, so randomly chose one from all segments where powerups
 // of this nType had initially been placed in the level.
 if (!objCount)		//no OBJECTS of this nType had initially been placed in the mine.
@@ -105,7 +105,7 @@ return 1;
 
 static int	segQueue [MAX_SEGMENTS_D2X];
 
-int PickConnectedSegment (tObject *objP, int nMaxDepth, int *nDepthP)
+int PickConnectedSegment (CObject *objP, int nMaxDepth, int *nDepthP)
 {
 	int		nCurDepth;
 	int		nStartSeg;
@@ -160,7 +160,7 @@ return segQueue [nTail + d_rand () % (nHead - nTail + 1)];
 //	For all active net players, try to create a N tSegment path from the player.  If possible, return that
 //	tSegment.  If not possible, try another player.  After a few tries, use a Random tSegment.
 //	Don't drop if control center in tSegment.
-int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState)
+int ChooseDropSegment (CObject *objP, int *pbFixedPos, int nDropState)
 {
 	int			nPlayer = 0;
 	short			nSegment = -1;
@@ -178,7 +178,7 @@ int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState)
 con_printf (CONDBG, "ChooseDropSegment:");
 #endif
 if (bUseInitSgm) {
-	tObject *initObjP = FindInitObject (objP);
+	CObject *initObjP = FindInitObject (objP);
 	if (initObjP) {
 		*pbFixedPos = 1;
 		objP->info.position.vPos = initObjP->info.position.vPos;
@@ -395,7 +395,7 @@ return 0;
 }
 
 //	------------------------------------------------------------------------------------------------------
-//	Return true if current tSegment contains some tObject.
+//	Return true if current tSegment contains some CObject.
 int SegmentContainsObject (int objType, int obj_id, int nSegment)
 {
 	int	nObject;
@@ -433,14 +433,14 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 
 //	------------------------------------------------------------------------------------------------------
 //	Return true if some powerup is nearby (within 3 segments).
-int WeaponNearby (tObject *objP, int weapon_id)
+int WeaponNearby (CObject *objP, int weapon_id)
 {
 return ObjectNearbyAux (objP->info.nSegment, OBJ_POWERUP, weapon_id, 3);
 }
 
 //	------------------------------------------------------------------------------------------------------
 
-void MaybeReplacePowerupWithEnergy (tObject *delObjP)
+void MaybeReplacePowerupWithEnergy (CObject *delObjP)
 {
 	int	nWeapon=-1;
 
@@ -540,7 +540,7 @@ if ((gameData.app.nGameMode & GM_MULTI) && (delObjP->info.contains.nId == POW_EX
 int DropPowerup (ubyte nType, ubyte id, short owner, int num, const vmsVector& init_vel, const vmsVector& pos, short nSegment)
 {
 	short			nObject=-1;
-	tObject		*objP;
+	CObject		*objP;
 	vmsVector	new_velocity, vNewPos;
 	fix			old_mag;
    int			count;
@@ -631,7 +631,7 @@ switch (nType) {
 			nObject = CreateRobot (id, nSegment, vNewPos);
 			if (nObject < 0) {
 #if TRACE
-				con_printf (1, "Can't create tObject in ObjectCreateEgg, robots.  Aborting.\n");
+				con_printf (1, "Can't create CObject in ObjectCreateEgg, robots.  Aborting.\n");
 #endif
 				Int3 ();
 				return nObject;
@@ -639,7 +639,7 @@ switch (nType) {
 			if (gameData.app.nGameMode & GM_MULTI)
 				gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
 			objP = &OBJECTS [nObject];
-			//Set polygon-tObject-specific data
+			//Set polygon-CObject-specific data
 			objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
 			objP->rType.polyObjInfo.nSubObjFlags = 0;
 			//set Physics info
@@ -664,15 +664,15 @@ switch (nType) {
 		break;
 
 	default:
-		Error ("Error: Illegal nType (%i) in tObject spawning.\n", nType);
+		Error ("Error: Illegal nType (%i) in CObject spawning.\n", nType);
 	}
 return nObject;
 }
 
 // ----------------------------------------------------------------------------
-// Returns created tObject number.
-// If tObject dropped by tPlayer, set flag.
-int ObjectCreateEgg (tObject *objP)
+// Returns created CObject number.
+// If CObject dropped by tPlayer, set flag.
+int ObjectCreateEgg (CObject *objP)
 {
 	int	nObject;
 
@@ -751,8 +751,8 @@ return nObject;
 
 //	-------------------------------------------------------------------------------------------------------
 //	Put count OBJECTS of nType nType (eg, powerup), id = id (eg, energy) into *objP, then drop them! Yippee!
-//	Returns created tObject number.
-int CallObjectCreateEgg (tObject *objP, int count, int nType, int id)
+//	Returns created CObject number.
+int CallObjectCreateEgg (CObject *objP, int count, int nType, int id)
 {
 if (count <= 0)
 	return -1;
@@ -763,11 +763,11 @@ return ObjectCreateEgg (objP);
 }
 
 //------------------------------------------------------------------------------
-//creates afterburner blobs behind the specified tObject
-void DropAfterburnerBlobs (tObject *objP, int count, fix xSizeScale, fix xLifeTime, tObject *pParent, int bThruster)
+//creates afterburner blobs behind the specified CObject
+void DropAfterburnerBlobs (CObject *objP, int count, fix xSizeScale, fix xLifeTime, CObject *pParent, int bThruster)
 {
 	short				i, nSegment, nThrusters;
-	tObject			*blobObjP;
+	CObject			*blobObjP;
 	tThrusterInfo	ti;
 
 nThrusters = CalcThrusterPos (objP, &ti, 1);
@@ -792,7 +792,7 @@ for (i = 0; i < nThrusters; i++) {
 
 //	-----------------------------------------------------------------------------
 
-int MaybeDropPrimaryWeaponEgg (tObject *playerObjP, int nWeapon)
+int MaybeDropPrimaryWeaponEgg (CObject *playerObjP, int nWeapon)
 {
 	int nWeaponFlag = HAS_FLAG (nWeapon);
 	int nPowerup = primaryWeaponToPowerup [nWeapon];
@@ -806,7 +806,7 @@ else
 
 //	-----------------------------------------------------------------------------
 
-void MaybeDropSecondaryWeaponEgg (tObject *playerObjP, int nWeapon, int count)
+void MaybeDropSecondaryWeaponEgg (CObject *playerObjP, int nWeapon, int count)
 {
 	int nWeaponFlag = HAS_FLAG (nWeapon);
 	int nPowerup = secondaryWeaponToPowerup [nWeapon];
@@ -821,7 +821,7 @@ if (gameData.multiplayer.players [playerObjP->info.nId].secondaryWeaponFlags & n
 
 //	-----------------------------------------------------------------------------
 
-void MaybeDropDeviceEgg (tPlayer *playerP, tObject *playerObjP, int nDeviceFlag, int nPowerupId)
+void MaybeDropDeviceEgg (tPlayer *playerP, CObject *playerObjP, int nDeviceFlag, int nPowerupId)
 {
 if ((gameData.multiplayer.players [playerObjP->info.nId].flags & nDeviceFlag) &&
 	 !(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nDevices & nDeviceFlag)))
@@ -830,7 +830,7 @@ if ((gameData.multiplayer.players [playerObjP->info.nId].flags & nDeviceFlag) &&
 
 //	-----------------------------------------------------------------------------
 
-void DropMissile1or4 (tObject *playerObjP, int nMissileIndex)
+void DropMissile1or4 (CObject *playerObjP, int nMissileIndex)
 {
 	int nMissiles, nPowerupId;
 
@@ -851,7 +851,7 @@ if ((nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAm
 
 //	-----------------------------------------------------------------------------
 
-void DropPlayerEggs (tObject *playerObjP)
+void DropPlayerEggs (CObject *playerObjP)
 {
 if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHOST)) {
 	int			rthresh, nFlag;
@@ -1026,9 +1026,9 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 
 //	------------------------------------------------------------------------------------------------------
 
-int ReturnFlagHome (tObject *objP)
+int ReturnFlagHome (CObject *objP)
 {
-	tObject	*initObjP;
+	CObject	*initObjP;
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
 	if (gameData.segs.segment2s [objP->info.nSegment].special == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))

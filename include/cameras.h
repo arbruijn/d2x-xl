@@ -7,8 +7,8 @@
 #define MAX_CAMERAS	100
 
 typedef struct tCamera {
-	tObject			obj;
-	tObject			*objP;
+	CObject			obj;
+	CObject			*objP;
 	short				nId;
 	short				nSegment;
 	short				nSide;
@@ -53,7 +53,7 @@ class CCamera {
 		void Rotate (void);
 		void GetUVL (tFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP);
 		int Create (short nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
-						tObject *objP, int bShadowMap, int bTeleport);
+						CObject *objP, int bShadowMap, int bTeleport);
 		void Destroy (void);
 		int HaveBuffer (int bCheckTexture);
 		int HaveTexture (void);
@@ -64,7 +64,7 @@ class CCamera {
 		inline vmsMatrix& Orient (void) { return m_info.orient; }
 		inline CBitmap& Texture (void) { return m_info.buffer; }
 		inline tTexCoord2f* TexCoord (void) { return m_info.texCoord; }
-		inline tObject* GetObject (void) { return m_info.objP; }
+		inline CObject* GetObject (void) { return m_info.objP; }
 		inline CFBO& FrameBuffer (void) { return m_info.fbo; } 
 
 	private:
@@ -91,10 +91,10 @@ class CCameraManager {
 		int Create ();
 		void Destroy ();
 		int Render ();
-		void Rotate (tObject *objP);
+		void Rotate (CObject *objP);
 		inline CCamera* Cameras (void) { return m_cameras; }
 		inline CCamera* Camera ( short i = 0 ) { return Cameras () + i; }
-		CCamera* Camera (tObject *objP);
+		CCamera* Camera (CObject *objP);
 		inline int GetObjectCamera (int nObject);
 		inline void SetObjectCamera (int nObject, int i);
 		int GetFaceCamera (int nFace);

@@ -86,7 +86,7 @@ for (i = 0; i < MAX_BOSS_COUNT; i++)
 void InitBossSegments (int objList, short segListP [], short *segCountP, int bSizeCheck, int bOneWallHack)
 {
 	tSegment		*segP;
-	tObject		*bossObjP = OBJECTS + objList;
+	CObject		*bossObjP = OBJECTS + objList;
 	vmsVector	vBossHomePos;
 	int			nBossHomeSeg;
 	int			head, tail, w, childSeg;
@@ -215,12 +215,12 @@ memset (gameData.boss + BOSS_COUNT, 0, sizeof (gameData.boss [BOSS_COUNT]));
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Return nObject if tObject created, else return -1.
+//	Return nObject if CObject created, else return -1.
 //	If pos == NULL, pick random spot in tSegment.
-int CreateGatedRobot (tObject *bossObjP, short nSegment, ubyte nObjId, vmsVector *pos)
+int CreateGatedRobot (CObject *bossObjP, short nSegment, ubyte nObjId, vmsVector *pos)
 {
 	int			nObject, nTries = 5;
-	tObject		*objP;
+	CObject		*objP;
 	tSegment		*segP = gameData.segs.segments + nSegment;
 	vmsVector	vObjPos;
 	tRobotInfo	*botInfoP = &ROBOTINFO (nObjId);
@@ -249,7 +249,7 @@ for (;;) {
 	else
 		vObjPos = *pos;
 
-	//	See if legal to place tObject here.  If not, move about in tSegment and try again.
+	//	See if legal to place CObject here.  If not, move about in tSegment and try again.
 	if (CheckObjectObjectIntersection (&vObjPos, objsize, segP)) {
 		if (!--nTries) {
 			gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
@@ -269,7 +269,7 @@ if (nObject < 0) {
 gameData.multigame.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
 objP = OBJECTS + nObject;
 objP->info.xLifeLeft = F1_0 * 30 + F0_5 * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
-//Set polygon-tObject-specific data
+//Set polygon-CObject-specific data
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 objP->rType.polyObjInfo.nSubObjFlags = 0;
 //set Physics info
@@ -291,7 +291,7 @@ return OBJ_IDX (objP);
 
 //	----------------------------------------------------------------------------------------------------------
 //	objP points at a boss.  He was presumably just hit and he's supposed to create a bot at the hit location *pos.
-int BossSpewRobot (tObject *objP, vmsVector *pos, short objType, int bObjTrigger)
+int BossSpewRobot (CObject *objP, vmsVector *pos, short objType, int bObjTrigger)
 {
 	short			nObject, nSegment, maxRobotTypes;
 	short			nBossIndex, nBossId = ROBOTINFO (objP->info.nId).bossFlag;
@@ -327,7 +327,7 @@ if (objType == 255) {	// spawn an arbitrary robot
 nObject = CreateGatedRobot (objP, nSegment, (ubyte) objType, pos);
 //	Make spewed robot come tumbling out as if blasted by a flash missile.
 if (nObject != -1) {
-	tObject	*newObjP = OBJECTS + nObject;
+	CObject	*newObjP = OBJECTS + nObject;
 	int		force_val = F1_0 / (gameData.time.xFrame ? gameData.time.xFrame : 1);
 	if (force_val) {
 		newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
@@ -346,7 +346,7 @@ return nObject;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Make tObject objP gate in a robot.
+//	Make CObject objP gate in a robot.
 //	The process of him bringing in a robot takes one second.
 //	Then a robot appears somewhere near the player.
 //	Return nObject if robot successfully created, else return -1
@@ -364,7 +364,7 @@ return CreateGatedRobot (OBJECTS + nObject, nSegment, nType, NULL);
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int BossFitsInSeg (tObject *bossObjP, int nSegment)
+int BossFitsInSeg (CObject *bossObjP, int nSegment)
 {
 	int			nObject = OBJ_IDX (bossObjP);
 	int			nPos;
@@ -390,7 +390,7 @@ return 0;
 
 int IsValidTeleportDest (vmsVector *vPos, int nMinDist)
 {
-	tObject		*objP;
+	CObject		*objP;
 	int			i;
 	vmsVector	vOffs;
 	fix			xDist;
@@ -406,7 +406,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void TeleportBoss (tObject *objP)
+void TeleportBoss (CObject *objP)
 {
 	short			i, nAttempts = 5, nRandSeg = 0, nRandIndex, nObject = OBJ_IDX (objP);
 	vmsVector	vBossDir, vNewPos;
@@ -448,7 +448,7 @@ gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
 
 //	----------------------------------------------------------------------
 
-void StartBossDeathSequence (tObject *objP)
+void StartBossDeathSequence (CObject *objP)
 {
 if (ROBOTINFO (objP->info.nId).bossFlag) {
 	int	nObject = OBJ_IDX (objP),
@@ -465,7 +465,7 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 
 //	----------------------------------------------------------------------
 
-void DoBossDyingFrame (tObject *objP)
+void DoBossDyingFrame (CObject *objP)
 {
 	int	rval, i = FindBoss (OBJ_IDX (objP));
 
@@ -484,7 +484,7 @@ if (rval) {
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Do special stuff for a boss.
-void DoBossStuff (tObject *objP, int nPlayerVisibility)
+void DoBossStuff (CObject *objP, int nPlayerVisibility)
 {
 	int	i, nBossId, nBossIndex, nObject;
 
@@ -498,7 +498,7 @@ nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #if DBG
 if (objP->info.xShields != gameData.boss [i].xPrevShields) {
 #if TRACE
-	con_printf (CONDBG, "Boss shields = %7.3f, tObject %i\n", X2F (objP->info.xShields), OBJ_IDX (objP));
+	con_printf (CONDBG, "Boss shields = %7.3f, CObject %i\n", X2F (objP->info.xShields), OBJ_IDX (objP));
 #endif
 	gameData.boss [i].xPrevShields = objP->info.xShields;
 	}

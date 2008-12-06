@@ -1008,7 +1008,7 @@ return 1;
 char CParticleEmitter::ObjectClass (int nObject)
 {
 if ((nObject >= 0) && (nObject < 0x70000000)) {
-	tObject	*objP = OBJECTS + nObject;
+	CObject	*objP = OBJECTS + nObject;
 	if (objP->info.nType == OBJ_PLAYER)
 		return 1;
 	if (objP->info.nType == OBJ_ROBOT)
@@ -1032,7 +1032,7 @@ return (m_nSegment < 0) || SegmentMayBeVisible (m_nSegment, 5, -1);
 
 float  CParticleEmitter::Brightness (void)
 {
-	tObject	*objP;
+	CObject	*objP;
 
 if (m_nObject >= 0x70000000)
 	return 0.5f;

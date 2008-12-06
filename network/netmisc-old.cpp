@@ -118,7 +118,7 @@ return BECalcSegmentCheckSum();
 #include "powerup.h"
 #include "error.h"
 
-ubyte out_buffer [MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending tObject data
+ubyte out_buffer [MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending CObject data
 
 //------------------------------------------------------------------------------
 
@@ -620,9 +620,9 @@ missingObjFrames->nFrame = INTEL_SHORT (missingObjFrames->nFrame);
 
 //------------------------------------------------------------------------------
 
-void BESwapObject(tObject *objP)
+void BESwapObject(CObject *objP)
 {
-// swap the short and int entries for this tObject
+// swap the short and int entries for this CObject
 objP->info.nSignature = INTEL_INT (objP->info.nSignature);
 objP->info.nNextInSeg = INTEL_SHORT(objP->info.nNextInSeg);
 objP->info.nPrevInSeg = INTEL_SHORT(objP->info.nPrevInSeg);

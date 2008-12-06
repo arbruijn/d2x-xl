@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Tried to fix modem to work with new multi stuff.  Still a bit jacked up, tho.
  *
  * Revision 1.12  1994/10/05  19:14:50  rob
- * Exported macros and arrays to support network tObject mapping.
+ * Exported macros and arrays to support network CObject mapping.
  *
  * Revision 1.11  1994/10/05  17:48:59  rob
  * Several changes, most to end_ofLevel sequencing.

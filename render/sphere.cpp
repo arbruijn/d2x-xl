@@ -620,7 +620,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void DrawShieldSphere (tObject *objP, float red, float green, float blue, float alpha)
+void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha)
 {
 if (!CreateShieldSphere ())
 	return;
@@ -653,7 +653,7 @@ if (gameData.render.shield.nFaces > 0)
 
 //------------------------------------------------------------------------------
 
-void DrawMonsterball (tObject *objP, float red, float green, float blue, float alpha)
+void DrawMonsterball (CObject *objP, float red, float green, float blue, float alpha)
 {
 #if !SIMPLE_SPHERE
 if (!gameData.render.monsterball.pSphere) {

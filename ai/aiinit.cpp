@@ -97,7 +97,7 @@ return AIM_IDLING;
 //	initial_mode == -1 means leave mode unchanged.
 void InitAIObject (short nObject, short behavior, short nHideSegment)
 {
-	tObject		*objP = OBJECTS + nObject;
+	CObject		*objP = OBJECTS + nObject;
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 	tAILocalInfo		*ailP = gameData.ai.localInfo + nObject;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
@@ -165,7 +165,7 @@ aiP->xDyingStartTime = 0;
 void InitAIObjects (void)
 {
 	short		h, i, j;
-	tObject	*objP;
+	CObject	*objP;
 
 gameData.ai.freePointSegs = gameData.ai.pointSegs;
 for (i = 0; i < MAX_BOSS_COUNT; i++) {

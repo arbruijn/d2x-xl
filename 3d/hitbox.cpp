@@ -205,7 +205,7 @@ for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 
 #if 0
 
-void TransformHitbox (tObject *objP, vmsVector *vPos, int iSubObj)
+void TransformHitbox (CObject *objP, vmsVector *vPos, int iSubObj)
 {
 	tHitbox			*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iSubObj;
 	tQuad				*pf = phb->faces;
@@ -235,7 +235,7 @@ for (i = 0; i < 6; i++, pf++) {
 
 #if G3_HITBOX_TRANSFORM
 
-void TransformHitboxes (tObject *objP, vmsVector *vPos, tBox *phb)
+void TransformHitboxes (CObject *objP, vmsVector *vPos, tBox *phb)
 {
 	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
 	tQuad			*pf;
@@ -265,7 +265,7 @@ G3DoneInstance ();
 
 #else //G3_HITBOX_TRANSFORM
 
-void TransformHitboxes (tObject *objP, vmsVector *vPos, tBox *phb)
+void TransformHitboxes (CObject *objP, vmsVector *vPos, tBox *phb)
 {
 	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
 	tQuad			*pf;

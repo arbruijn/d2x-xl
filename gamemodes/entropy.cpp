@@ -60,7 +60,7 @@ void ConquerRoom (int newOwner, int oldOwner, int roomId)
 	int			f, h, i, j, jj, k, kk, nObject;
 	tSegment		*segP;
 	xsegment		*xsegP;
-	tObject		*objP;
+	CObject		*objP;
 	tFuelCenInfo	*fuelP;
 	short			virusGens [MAX_FUEL_CENTERS];
 

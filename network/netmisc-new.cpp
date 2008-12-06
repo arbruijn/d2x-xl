@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "netmisc.h"
 #include "error.h"
 
-static ubyte nmDataBuf [MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending tObject data
+static ubyte nmDataBuf [MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending CObject data
 static ubyte *nmBufP = NULL;
 
 // if using the following macros in loops, the loop's body *must* be enclosed in curly braces,
@@ -458,9 +458,9 @@ missingObjFrames->nFrame = INTEL_SHORT (missingObjFrames->nFrame);
 
 //------------------------------------------------------------------------------
 
-void BESwapObject (tObject *objP)
+void BESwapObject (CObject *objP)
 {
-// swap the short and int entries for this tObject
+// swap the short and int entries for this CObject
 objP->info.nSignature = INTEL_INT (objP->info.nSignature);
 objP->info.nNextInSeg = INTEL_SHORT (objP->info.nNextInSeg);
 objP->info.nPrevInSeg = INTEL_SHORT (objP->info.nPrevInSeg);

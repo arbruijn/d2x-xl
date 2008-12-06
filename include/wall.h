@@ -211,13 +211,13 @@ extern char pszWallNames[7][10];
 
 //#define WALL_IS_DOORWAY(seg,tSide) WallIsDoorWay(seg, tSide)
 
-extern int WALL_IS_DOORWAY (tSegment *segP, short nSide, tObject *objP);
+extern int WALL_IS_DOORWAY (tSegment *segP, short nSide, CObject *objP);
 
 // Initializes all walls (i.e. no special walls.)
 void WallInit();
 
 // Automatically checks if a there is a doorway (i.e. can fly through)
-int WallIsDoorWay (tSegment *segP, short nSide, tObject *objP );
+int WallIsDoorWay (tSegment *segP, short nSide, CObject *objP );
 
 // Deteriorate appearance of tWall. (Changes bitmap (paste-ons))
 void WallDamage(tSegment *segP, short nSide, fix damage);
@@ -250,8 +250,8 @@ void WallCloseDoor(tSegment *segP, short nSide);
 int AnimFrameCount (tWallClip *anim);
 
 // Determines what happens when a tWall is shot
-//obj is the tObject that hit...either a weapon or the tPlayer himself
-extern int WallHitProcess(tSegment *segP, short nSide, fix damage, int playernum, tObject *obj );
+//obj is the CObject that hit...either a weapon or the tPlayer himself
+extern int WallHitProcess(tSegment *segP, short nSide, fix damage, int playernum, CObject *obj );
 
 // Opens/destroys specified door.
 void WallToggle(tSegment *segP, short nSide);
@@ -266,9 +266,9 @@ void WallFrameProcess();
 
 extern tStuckObject StuckObjects [MAX_STUCK_OBJECTS];
 
-//  An tObject got stuck in a door (like a flare).
+//  An CObject got stuck in a door (like a flare).
 //  Add global entry.
-void AddStuckObject (tObject *objP, short nSegment, short nSide);
+void AddStuckObject (CObject *objP, short nSegment, short nSide);
 void RemoveObsoleteStuckObjects(void);
 
 //set the tmap_num or tmap_num2 field for a tWall/door

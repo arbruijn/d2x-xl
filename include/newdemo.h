@@ -33,8 +33,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Functions called during recording process...
 void NDRecordStartDemo();
 void NDRecordStartFrame(int frame_number, fix frameTime );
-void NDRecordRenderObject(tObject * obj);
-void NDRecordViewerObject(tObject * obj);
+void NDRecordRenderObject(CObject * obj);
+void NDRecordViewerObject(CObject * obj);
 void NDRecordSound3D( int soundno, int angle, int volume );
 void NDRecordSound3DOnce( int soundno, int angle, int volume );
 void newdemo_recordSound_once( int soundno );

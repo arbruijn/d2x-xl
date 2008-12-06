@@ -51,7 +51,7 @@ void StartLevel(int randomFlag);
 // Actually does the work to start new level
 int StartNewLevelSub(int nLevel, int bPageInTextures, int bSecret, int bRestore);
 
-void InitMultiPlayerObject (void);            //make sure tPlayer's tObject set up
+void InitMultiPlayerObject (void);            //make sure tPlayer's CObject set up
 void InitPlayerStatsGame (void);      //clear all stats
 void GameStartInitNetworkPlayers (void);
 
@@ -104,7 +104,7 @@ extern int NumNetPlayerPositions;
 void BashToShield(int, const char *);
 void BashToEnergy(int, const char *);
 
-fix RobotDefaultShields (tObject *objP);
+fix RobotDefaultShields (CObject *objP);
 
 char *LevelName (int nLevel);
 char *LevelSongName (int nLevel);

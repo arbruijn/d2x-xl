@@ -782,7 +782,7 @@ if (mag_d == 0) {
 	}
 wDist = vmsVector::Dot(dn, w);
 if (wDist < 0)
-	return 0;	//moving away from tObject
+	return 0;	//moving away from CObject
 if (wDist > mag_d + xSphereRad)
 	return 0;	//cannot hit
 vClosestPoint = *p0 + dn * wDist;
@@ -807,7 +807,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckHitboxToHitbox (vmsVector *intP, tObject *objP1, tObject *objP2, vmsVector *p0, vmsVector *p1)
+fix CheckHitboxToHitbox (vmsVector *intP, CObject *objP1, CObject *objP2, vmsVector *p0, vmsVector *p1)
 {
 	vmsVector		vHit, vPos = objP2->info.position.vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
@@ -862,7 +862,7 @@ return nHits ? dMax ? dMax : 1 : 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckVectorToHitbox (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVector *pn, vmsVector *vPos, tObject *objP, fix rad)
+fix CheckVectorToHitbox (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVector *pn, vmsVector *vPos, CObject *objP, fix rad)
 {
 	tQuad				*pf;
 	vmsVector		hitP, v;
@@ -912,7 +912,7 @@ return xDist;
 
 //	-----------------------------------------------------------------------------
 
-static inline int UseHitbox (tObject *objP)
+static inline int UseHitbox (CObject *objP)
 {
 return (objP->info.renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0) && 
 		 ((objP->info.nType != OBJ_WEAPON) || ((objP->info.nId != GAUSS_ID) && (objP->info.nId != VULCAN_ID)));
@@ -920,7 +920,7 @@ return (objP->info.renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel 
 
 //	-----------------------------------------------------------------------------
 
-static inline int UseSphere (tObject *objP)
+static inline int UseSphere (CObject *objP)
 {
 	int nType = objP->info.nType;
 
@@ -928,10 +928,10 @@ return (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POW
 }
 
 //	-----------------------------------------------------------------------------
-//determine if a vector intersects with an tObject
+//determine if a vector intersects with an CObject
 //if no intersects, returns 0, else fills in intP and returns dist
 fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad,
-								 tObject *thisObjP, tObject *otherObjP)
+								 CObject *thisObjP, CObject *otherObjP)
 {
 	fix			size, dist;
 	vmsVector	hitP, v0, v1, vn, vPos;
@@ -1054,7 +1054,7 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 #endif
 	int			widResult;
 	int			nThisType, nOtherType;
-	tObject		*otherObjP,
+	CObject		*otherObjP,
 					*thisObjP = (nThisObject < 0) ? NULL : OBJECTS + nThisObject;
 #endif
 
@@ -1377,8 +1377,8 @@ return nHitType;
 //  p0 & startseg 	describe the start of the vector
 //  p1 					the end of the vector
 //  rad 					the radius of the cylinder
-//  thisObjNum 		used to prevent an tObject with colliding with itself
-//  ingore_obj			ignore collisions with this tObject
+//  thisObjNum 		used to prevent an CObject with colliding with itself
+//  ingore_obj			ignore collisions with this CObject
 //  check_objFlag	determines whether collisions with OBJECTS are checked
 //Returns the hitData->nHitType
 int FindVectorIntersection (tFVIQuery *fq, tFVIData *hitData)
@@ -1436,7 +1436,7 @@ if (nHitSegment == -1) {
 	short nNewHitSeg2=-1;
 	vmsVector vNewHitPoint;
 
-	//because of code that deal with tObject with non-zero radius has
+	//because of code that deal with CObject with non-zero radius has
 	//problems, try using zero radius and see if we hit a tWall
 	nNewHitType = FVICompute (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->startSeg, fq->p1, 0, 0,
 								     (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, hitData->segList,
@@ -1702,15 +1702,15 @@ return 0;
 }
 
 //	-----------------------------------------------------------------------------
-//Returns true if the tObject is through any walls
-int ObjectIntersectsWall (tObject *objP)
+//Returns true if the CObject is through any walls
+int ObjectIntersectsWall (CObject *objP)
 {
 return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, objP->info.xSize);
 }
 
 //------------------------------------------------------------------------------
 
-int CanSeePoint (tObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment)
+int CanSeePoint (CObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment)
 {
 	tFVIQuery	fq;
 	int			nHitType;
@@ -1736,7 +1736,7 @@ return nHitType != HIT_WALL;
 //	-----------------------------------------------------------------------------------------------------------
 //	Determine if two OBJECTS are on a line of sight.  If so, return true, else return false.
 //	Calls fvi.
-int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
+int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType)
 {
 	tFVIQuery	fq;
 	tFVIData		hit_data;

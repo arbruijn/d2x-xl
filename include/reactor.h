@@ -45,11 +45,11 @@ typedef struct tReactorProps {
 extern vmsVector Gun_pos[MAX_CONTROLCEN_GUNS];
 
 // do whatever this thing does in a frame
-void DoReactorFrame(tObject *obj);
+void DoReactorFrame(CObject *obj);
 // Initialize control center for a level.
 // Call when a new level is started.
 void InitReactorForLevel(int bRestore);
-void DoReactorDestroyedStuff(tObject *objp);
+void DoReactorDestroyedStuff(CObject *objp);
 void DoReactorDeadFrame(void);
 fix ReactorStrength (void);
 
@@ -68,7 +68,7 @@ extern int ReactorReadN(tReactorProps *r, int n, CFile& cf);
 extern int ControlCenterTriggersReadN(tReactorTriggers *cct, int n, CFile& cf);
 #endif
 
-int FindReactor (tObject *objP);
+int FindReactor (CObject *objP);
 void InitCountdown (tTrigger *trigP, int bReactorDestroyed, int nTimer);
 
 #endif /* _CNTRLCEN_H */

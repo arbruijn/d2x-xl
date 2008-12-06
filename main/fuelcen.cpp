@@ -319,7 +319,7 @@ matCenP->bEnabled = 1;			//	Say this center is enabled, it can create robots.
 matCenP->xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
 matCenP->xDisableTime = MATCEN_LIFE;
 
-//	Create a bright tObject in the tSegment.
+//	Create a bright CObject in the tSegment.
 pos = matCenP->vCenter;
 delta = gameData.segs.vertices[gameData.segs.segments [nSegment].verts [0]] - matCenP->vCenter;
 pos += delta * (F1_0/2);
@@ -339,7 +339,7 @@ return 0;
 
 //------------------------------------------------------------
 //	Trigger (enable) the materialization center in tSegment nSegment
-void SpawnBotTrigger (tObject *objP, short nSegment)
+void SpawnBotTrigger (CObject *objP, short nSegment)
 {
 	tSegment2		*seg2P = &gameData.segs.segment2s [nSegment];
 	tFuelCenInfo	*matCenP;
@@ -405,10 +405,10 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++) {
 
 //	----------------------------------------------------------------------------------------------------------
 
-tObject *CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte nObjId)
+CObject *CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte nObjId)
 {
 	short			nObject;
-	tObject		*objP;
+	CObject		*objP;
 	tRobotInfo	*botInfoP;
 	ubyte			default_behavior;
 
@@ -423,7 +423,7 @@ if (nObject < 0) {
 	return NULL;
 	}
 objP = OBJECTS + nObject;
-//Set polygon-tObject-specific data
+//Set polygon-CObject-specific data
 botInfoP = &ROBOTINFO (objP->info.nId);
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 objP->rType.polyObjInfo.nSubObjFlags = 0;
@@ -450,7 +450,7 @@ int	FrameCount_last_msg = 0;
 void CreateMatCenEffect (tFuelCenInfo *matCenP, ubyte nVideoClip)
 {
 	vmsVector	vPos;
-	tObject		*objP;
+	CObject		*objP;
 
 COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
 // HACK!!!The 10 under here should be something equal to the 1/2 the size of the tSegment.
@@ -496,7 +496,7 @@ return objTypes [(d_rand () * nTypes) / 32768];
 void EquipGenHandler (tFuelCenInfo * matCenP)
 {
 	int			nObject, nMatCen, nType;
-	tObject		*objP;
+	CObject		*objP;
 	vmsVector	vPos;
 	fix			topTime;
 
@@ -560,7 +560,7 @@ else {
 void VirusGenHandler (tFuelCenInfo * matCenP)
 {
 	int			nObject, nMatCen;
-	tObject		*objP;
+	CObject		*objP;
 	vmsVector	vPos;
 	fix			topTime;
 
@@ -628,7 +628,7 @@ void BotGenHandler (tFuelCenInfo * matCenP)
 	fix			xDistToPlayer;
 	vmsVector	vPos, vDir;
 	int			nMatCen, nSegment, nObject;
-	tObject		*objP;
+	CObject		*objP;
 	fix			topTime;
 	int			nType, nMyStation, nCount, i;
 
@@ -1032,7 +1032,7 @@ return amount;
 
 //--repair-- int Repairing;
 //--repair-- vmsVector repair_save_uvec;		//the tPlayer's upvec when enter repaircen
-//--repair-- tObject *RepairObj=NULL;		//which tObject getting repaired
+//--repair-- CObject *RepairObj=NULL;		//which CObject getting repaired
 //--repair-- int disable_repair_center=0;
 //--repair-- fix repair_rate;
 //--repair-- #define FULL_REPAIR_RATE I2X (10)
@@ -1049,7 +1049,7 @@ return amount;
 //--unused-- int SideUpVector [] = {WBOTTOM, WFRONT, WBOTTOM, WFRONT, WBOTTOM, WBOTTOM };
 
 //--repair-- //	----------------------------------------------------------------------------------------------------------
-//--repair-- void refuel_calc_deltas (tObject *objP, int next_side, int repair_seg)
+//--repair-- void refuel_calc_deltas (CObject *objP, int next_side, int repair_seg)
 //--repair-- {
 //--repair-- 	vmsVector nextcenter, headfvec, *headuvec;
 //--repair-- 	vmsMatrix goal_orient;
@@ -1105,7 +1105,7 @@ return amount;
 //--repair-- }
 //--repair--
 //--repair-- //	----------------------------------------------------------------------------------------------------------
-//--repair-- int refuel_do_repair_effect (tObject * objP, int firstTime, int repair_seg)	{
+//--repair-- int refuel_do_repair_effect (CObject * objP, int firstTime, int repair_seg)	{
 //--repair--
 //--repair-- 	objP->mType.physInfo.velocity.x = 0;
 //--repair-- 	objP->mType.physInfo.velocity.y = 0;
@@ -1187,12 +1187,12 @@ return amount;
 //--repair--
 //--repair-- 		factor = FixDiv (currentTime,deltaTime);
 //--repair--
-//--repair-- 		// Find tObject's current position
+//--repair-- 		// Find CObject's current position
 //--repair-- 		objP->info.position.vPos = delta_pos;
 //--repair-- 		VmVecScale (&objP->info.position.vPos, factor);
 //--repair-- 		VmVecInc (&objP->info.position.vPos, &start_pos);
 //--repair--
-//--repair-- 		// Find tObject's current orientation
+//--repair-- 		// Find CObject's current orientation
 //--repair-- 		p	= FixMul (deltaAngles.p,factor);
 //--repair-- 		b	= FixMul (deltaAngles.b,factor);
 //--repair-- 		h	= FixMul (deltaAngles.h,factor);
@@ -1210,7 +1210,7 @@ return amount;
 //--repair--
 //--repair-- //	----------------------------------------------------------------------------------------------------------
 //--repair-- //do the repair center for this frame
-//--repair-- void do_repair_sequence (tObject *objP)
+//--repair-- void do_repair_sequence (CObject *objP)
 //--repair-- {
 //--repair-- 	Assert (obj == RepairObj);
 //--repair--
@@ -1233,7 +1233,7 @@ return amount;
 //--repair--
 //--repair-- //	----------------------------------------------------------------------------------------------------------
 //--repair-- //see if we should start the repair center
-//--repair-- void check_start_repair_center (tObject *objP)
+//--repair-- void check_start_repair_center (CObject *objP)
 //--repair-- {
 //--repair-- 	if (RepairObj != NULL) return;		//already in repair center
 //--repair--
@@ -1391,7 +1391,7 @@ void MultiSendCaptureBonus (char);
 int FlagAtHome (int nFlagId)
 {
 	int		i, j;
-	tObject	*objP;
+	CObject	*objP;
 
 for (i = flagGoalRoots [nFlagId - POW_BLUEFLAG]; i >= 0; i = flagGoalList [i])
 	for (j = SEGMENTS [i].objects; j >= 0; j = objP->info.nNextInSeg) {

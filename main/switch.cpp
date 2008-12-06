@@ -153,7 +153,7 @@ SpawnBotTrigger (OBJECTS + nObject, trigP->nLinks ? trigP->nSegment [0] : -1);
 void DoTeleportBot (tTrigger *trigP, short nObject)
 {
 if (trigP->nLinks) {
-	tObject *objP = OBJECTS + nObject;
+	CObject *objP = OBJECTS + nObject;
 	short nSegment = trigP->nSegment [d_rand () % trigP->nLinks];
 	if (objP->info.nSegment != nSegment) {
 		objP->info.nSegment = nSegment;
@@ -568,7 +568,7 @@ void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPo
 	vmsAngVec	ad, an, av;
 	vmsVector	vel, n;
 	vmsMatrix	rm;
-	tObject		*objP = OBJECTS + nObject;
+	CObject		*objP = OBJECTS + nObject;
 
 TriggerSetOrient (&objP->info.position, nSegment, nSide, bSetPos, nStep);
 if (nStep <= 0) {
@@ -659,7 +659,7 @@ void SetSpeedBoostVelocity (short nObject, fix speed,
 									 int bSetOrient)
 {
 	vmsVector			n, h;
-	tObject				*objP = OBJECTS + nObject;
+	CObject				*objP = OBJECTS + nObject;
 	int					v;
 	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
 
@@ -816,7 +816,7 @@ int CheckTriggerSub (short nObject, tTrigger *triggers, int nTriggerCount,
 							int nTrigger, int nPlayer, int shot, int bObjTrigger)
 {
 	tTrigger	*trigP;
-	tObject	*objP = OBJECTS + nObject;
+	CObject	*objP = OBJECTS + nObject;
 	ubyte		bIsPlayer = (objP->info.nType == OBJ_PLAYER);
 
 if (nTrigger >= nTriggerCount)
@@ -1113,12 +1113,12 @@ while ((i >= 0) && (j < 256)) {
 }
 
 //-----------------------------------------------------------------
-// Checks for a tTrigger whenever an tObject hits a tTrigger nSide.
+// Checks for a tTrigger whenever an CObject hits a tTrigger nSide.
 void CheckTrigger (tSegment *segP, short nSide, short nObject, int shot)
 {
 	int 		nWall;
 	ubyte		nTrigger;	//, cnTrigger;
-	tObject	*objP = OBJECTS + nObject;
+	CObject	*objP = OBJECTS + nObject;
 
 nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall)) 
@@ -1184,7 +1184,7 @@ return wallP ? wallP->nSegment * 65536 + wallP->nSide : -1;
 int ObjTriggerIsValid (int nTrigger)
 {
 	int		h, i, j;
-	tObject	*objP;
+	CObject	*objP;
 
 FORALL_OBJS (objP, i) {
 	j = gameData.trigs.firstObjTrigger [OBJ_IDX (objP)];

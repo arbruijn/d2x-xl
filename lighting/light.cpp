@@ -107,7 +107,7 @@ static void ResetClusterLights (void)
 if (!gameStates.render.bClusterLights)
 	return;
 
-	tObject	*objP;
+	CObject	*objP;
 	int		i;
 
 FORALL_LIGHT_OBJS (objP, i)
@@ -124,7 +124,7 @@ static void SetClusterLights (void)
 if (!gameStates.render.bClusterLights)
 	return;
 
-	tObject	*objP;
+	CObject	*objP;
 	int		h, i;
 
 FORALL_LIGHT_OBJS (objP, i) {
@@ -173,12 +173,12 @@ if (0 > nLightObj)
 if (nDbgObj == nLightObj)
 	nDbgObj = nDbgObj;
 #endif
-tObject *lightObjP = OBJECTS + nLightObj;
+CObject *lightObjP = OBJECTS + nLightObj;
 if (lightObjP->info.nSignature != gameData.objs.lightObjs [nObject].nSignature) {
 	gameData.objs.lightObjs [nObject].nObject = -1;
 	return 0;
 	}
-tObject *objP = OBJECTS + nObject;
+CObject *objP = OBJECTS + nObject;
 if (lightObjP->info.xLifeLeft < objP->info.xLifeLeft)
 	lightObjP->info.xLifeLeft = objP->info.xLifeLeft;
 if (!lightObjP->cType.lightInfo.nObjects++) {
@@ -238,7 +238,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 	nSegment = FindSegByPos (*vObjPos, nObjSeg, 1, 0);
 	if (nSegment == -1) {
 		Int3 ();		//	Obj_pos is not in nObjSeg!
-		return 0;		//	Done processing this tObject.
+		return 0;		//	Done processing this CObject.
 	}
 	#endif
 	fq.p0					= vObjPos;
@@ -313,7 +313,7 @@ else {
 
 // ----------------------------------------------------------------------------------------------
 
-bool SkipPowerup (tObject *objP)
+bool SkipPowerup (CObject *objP)
 {
 if (objP->info.nType != OBJ_POWERUP)
 	return false;
@@ -347,7 +347,7 @@ void ApplyLight (
 	ubyte			nObjType;
 	vmsVector	*vVertPos;
 	fix			dist, xOrigIntensity = xObjIntensity;
-	tObject		*lightObjP, *objP = (nObject < 0) ? NULL : OBJECTS + nObject;
+	CObject		*lightObjP, *objP = (nObject < 0) ? NULL : OBJECTS + nObject;
 	tPlayer		*playerP = objP ? gameData.multiplayer.players + objP->info.nId : NULL;
 
 nObjType = objP ? objP->info.nType : OBJ_NONE;
@@ -401,7 +401,7 @@ if (xObjIntensity) {
 		return;
 	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
 	bForceColor = objP && ((nObjType == OBJ_WEAPON) || (nObjType == OBJ_FIREBALL) || (nObjType == OBJ_EXPLOSION));
-	// for pretty dim sources, only process vertices in tObject's own tSegment.
+	// for pretty dim sources, only process vertices in CObject's own tSegment.
 	//	12/04/95, MK, markers only cast light in own tSegment.
 	if (objP && ((abs (obji_64) <= F1_0 * 8) || (nObjType == OBJ_MARKER))) {
 		short *vp = gameData.segs.segments [nObjSeg].verts;
@@ -539,7 +539,7 @@ fix	objLightXlat [16] =
 
 fix ComputeLightIntensity (int nObject, tRgbaColorf *colorP, char *pbGotColor)
 {
-	tObject		*objP = OBJECTS + nObject;
+	CObject		*objP = OBJECTS + nObject;
 	int			nObjType = objP->info.nType;
    fix			hoardlight, s;
 	static tRgbaColorf powerupColors [9] = {
@@ -673,7 +673,7 @@ switch (nObjType) {
 		lightval &= 0xffff;
 		lightval = 8 * abs (F1_0/2 - lightval);
 		if (objP->info.xLifeLeft < F1_0*1000)
-			objP->info.xLifeLeft += F1_0;	//	Make sure this tObject doesn't go out.
+			objP->info.xLifeLeft += F1_0;	//	Make sure this CObject doesn't go out.
 		colorP->red = 0.1f;
 		colorP->green = 1.0f;
 		colorP->blue = 0.1f;
@@ -711,7 +711,7 @@ void SetDynamicLight (void)
 	int			nRenderVertices;
 	int			iRenderSeg, v;
 	char			bGotColor, bKeepDynColoring = 0;
-	tObject		*objP;
+	CObject		*objP;
 	vmsVector	*objPos;
 	fix			xObjIntensity;
 	tRgbaColorf	color;
@@ -839,22 +839,22 @@ return sum >> 3;
 }
 // ----------------------------------------------------------------------------------------------
 
-tObject *oldViewer;
+CObject *oldViewer;
 int bResetLightingHack;
 
 #define LIGHT_RATE I2X (4)		//how fast the light ramps up
 
-void StartLightingFrame (tObject *viewer)
+void StartLightingFrame (CObject *viewer)
 {
 bResetLightingHack = (viewer != oldViewer);
 oldViewer = viewer;
 }
 
 // ----------------------------------------------------------------------------------------------
-//compute the lighting for an tObject.  Takes a pointer to the tObject,
+//compute the lighting for an CObject.  Takes a pointer to the CObject,
 //and possibly a rotated 3d point.  If the point isn't specified, the
 //object's center point is rotated.
-fix ComputeObjectLight (tObject *objP, vmsVector *vRotated)
+fix ComputeObjectLight (CObject *objP, vmsVector *vRotated)
 {
 #if DBG
    if (!objP)
@@ -887,11 +887,11 @@ if (!bResetLightingHack && (gameData.objs.nLightSig [nObject] == objP->info.nSig
 		else
 			light = gameData.objs.xLight [nObject] += xFrameDelta;
 	}
-else {		//new tObject, initialize
+else {		//new CObject, initialize
 	gameData.objs.nLightSig [nObject] = objP->info.nSignature;
 	gameData.objs.xLight [nObject] = light;
 	}
-//Next, add in headlight on this tObject
+//Next, add in headlight on this CObject
 // -- Matt code: light += ComputeHeadlight (vRotated,f1_0);
 light += ComputeHeadlightLightOnObject (objP);
 //Finally, add in dynamic light for this tSegment
@@ -901,7 +901,7 @@ return light;
 
 // ----------------------------------------------------------------------------------------------
 
-void ComputeEngineGlow (tObject *objP, fix *xEngineGlowValue)
+void ComputeEngineGlow (CObject *objP, fix *xEngineGlowValue)
 {
 xEngineGlowValue [0] = f1_0/5;
 if (objP->info.movementType == MT_PHYSICS) {
@@ -1084,10 +1084,10 @@ if (nCallDepth < 2)
 		}
 }
 
-extern tObject *oldViewer;
+extern CObject *oldViewer;
 
 //	------------------------------------------------------------------------------------------
-//update the xAvgSegLight field in a tSegment, which is used for tObject lighting
+//update the xAvgSegLight field in a tSegment, which is used for CObject lighting
 //this code is copied from the editor routine calim_process_all_lights ()
 void ChangeSegmentLight (short nSegment, short nSide, int dir)
 {
@@ -1106,7 +1106,7 @@ if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_RENDER_FLAG) {
 		}
 	}
 //this is a horrible hack to get around the horrible hack used to
-//smooth lighting values when an tObject moves between segments
+//smooth lighting values when an CObject moves between segments
 oldViewer = NULL;
 }
 

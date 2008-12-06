@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define ID_OHDR 0x5244484f // 'RDHO'  //Object header
 #define ID_SOBJ 0x4a424f53 // 'JBOS'  //Subobject header
-#define ID_GUNS 0x534e5547 // 'SNUG'  //List of guns on this tObject
+#define ID_GUNS 0x534e5547 // 'SNUG'  //List of guns on this CObject
 #define ID_ANIM 0x4d494e41 // 'MINA'  //Animation data
 #define ID_IDTA 0x41544449 // 'ATDI'  //Interpreter data
 #define ID_TXTR 0x52545854 // 'RTXT'  //Texture filename list
@@ -83,7 +83,7 @@ int pof_read_int (ubyte *bufp)
 	return INTEL_INT (i);
 
 //	if (cf.Read (&i, sizeof (i), 1, f) != 1)
-//		Error ("Unexpected end-of-file while reading tObject");
+//		Error ("Unexpected end-of-file while reading CObject");
 //
 //	return i;
 }
@@ -107,7 +107,7 @@ short pof_read_short (ubyte *bufp)
 	Pof_addr += 2;
 	return INTEL_SHORT (s);
 //	if (cf.Read (&s, sizeof (s), 1, f) != 1)
-//		Error ("Unexpected end-of-file while reading tObject");
+//		Error ("Unexpected end-of-file while reading CObject");
 //
 //	return s;
 }
@@ -312,7 +312,7 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 			}
 
 #ifndef DRIVE
-		case ID_GUNS: {		//List of guns on this tObject
+		case ID_GUNS: {		//List of guns on this CObject
 			if (r) {
 				int i;
 				vmsVector gun_dir;
@@ -417,7 +417,7 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 	id = INTEL_INT (id);
 	//id  = pof_read_int (modelBuf);
 	len = pof_read_int (modelBuf);
-	if (id == ID_GUNS) {		//List of guns on this tObject
+	if (id == ID_GUNS) {		//List of guns on this CObject
 		nGuns = pof_read_int (modelBuf);
 		for (int i = 0; i < nGuns; i++) {
 			int id = pof_read_short (modelBuf);
@@ -446,7 +446,7 @@ po->modelData.Destroy ();
 
 //------------------------------------------------------------------------------
 
-int ObjectHasShadow (tObject *objP)
+int ObjectHasShadow (CObject *objP)
 {
 if (objP->info.nType == OBJ_ROBOT) {
 	if (!gameOpts->render.shadows.bRobots)
@@ -481,7 +481,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-tPolyModel *GetPolyModel (tObject *objP, vmsVector *pos, int nModel, int flags)
+tPolyModel *GetPolyModel (CObject *objP, vmsVector *pos, int nModel, int flags)
 {
 	tPolyModel	*po = NULL;
 	int			bHaveAltModel, bIsDefModel;
@@ -558,7 +558,7 @@ else {
 		}
 	}
 #ifdef PIGGY_USE_PAGING
-// Make sure the textures for this tObject are paged in...
+// Make sure the textures for this CObject are paged in...
 gameData.pig.tex.bPageFlushed = 0;
 for (i = 0; i < nTextures; i++)
 	PIGGY_PAGE_IN (gameData.models.textureIndex [i].index, gameStates.app.bD1Model);
@@ -579,7 +579,7 @@ return nTextures;
 
 //draw a polygon model
 int DrawPolygonModel (
-	tObject			*objP,
+	CObject			*objP,
 	vmsVector		*pos,
 	vmsMatrix		*orient,
 	vmsAngVec		*animAngles,
@@ -616,7 +616,7 @@ nTextures = bHires ? 0 : LoadModelTextures (po, altTextures);
 gameStates.ogl.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints);
 gameData.render.vertP = gameData.models.fPolyModelVerts;
-if (!flags)	{	//draw entire tObject
+if (!flags)	{	//draw entire CObject
 	if (!G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
 		if (bHires)
 			return 0;

@@ -1534,11 +1534,11 @@ sbyte convert_to_byte (fix f)
 #define VEL_PRECISION 12
 
 // -------------------------------------------------------------------------------
-//	Create a tShortPos struct from an tObject.
+//	Create a tShortPos struct from an CObject.
 //	Extract the matrix into byte values.
 //	Create a position relative to vertex 0 with 1/256 Normal "fix" precision.
 //	Stuff tSegment in a short.
-void CreateShortPos (tShortPos *spp, tObject *objP, int swap_bytes)
+void CreateShortPos (tShortPos *spp, CObject *objP, int swap_bytes)
 {
 	// int	nSegment;
 	vmsMatrix orient = objP->info.position.mOrient;
@@ -1581,7 +1581,7 @@ void CreateShortPos (tShortPos *spp, tObject *objP, int swap_bytes)
 
 // -------------------------------------------------------------------------------
 
-void ExtractShortPos (tObject *objP, tShortPos *spp, int swap_bytes)
+void ExtractShortPos (CObject *objP, tShortPos *spp, int swap_bytes)
 {
 	int	nSegment;
 	sbyte   *segP;

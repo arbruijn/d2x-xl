@@ -113,7 +113,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 2 - Added gameStates.app.cheats.bEnabled flag
 // 3 - Added between levels save.
 // 4 - Added mission support
-// 5 - Mike changed ai and tObject structure.
+// 5 - Mike changed ai and CObject structure.
 // 6 - Added buggin' cheat save
 // 7 - Added other cheat saves and game_id.
 // 8 - Added AI stuff for escort and thief.
@@ -133,7 +133,7 @@ void SetFunctionMode (int);
 void InitPlayerStatsNewShip (void);
 void ShowLevelIntro (int level_num);
 void DoCloakInvulSecretStuff (fix xOldGameTime);
-void CopyDefaultsToRobot (tObject *objP);
+void CopyDefaultsToRobot (CObject *objP);
 void MultiInitiateSaveGame ();
 void MultiInitiateRestoreGame ();
 void ApplyAllChangedLight (void);
@@ -673,7 +673,7 @@ void CSaveGameHandler::SavePlayer (tPlayer *playerP)
 m_cf.Write (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this tPlayer, for net purposes.
 m_cf.Write (playerP->netAddress, 1, 6);					// The network address of the player.
 m_cf.WriteByte (playerP->connected);            // Is the tPlayer connected or not?
-m_cf.WriteInt (playerP->nObject);                // What tObject number this tPlayer is. (made an int by mk because it's very often referenced)
+m_cf.WriteInt (playerP->nObject);                // What CObject number this tPlayer is. (made an int by mk because it's very often referenced)
 m_cf.WriteInt (playerP->nPacketsGot);         // How many packets we got from them
 m_cf.WriteInt (playerP->nPacketsSent);        // How many packets we sent to them
 m_cf.WriteInt ((int) playerP->flags);           // Powerup flags, see below...
@@ -717,14 +717,14 @@ m_cf.WriteShort ((short) playerP->hostages.nRescued); // Total number of hostage
 m_cf.WriteShort ((short) playerP->hostages.nTotal);         // Total number of hostages.
 m_cf.WriteByte ((sbyte) playerP->hostages.nOnBoard);      // Number of hostages on ship.
 m_cf.WriteByte ((sbyte) playerP->hostages.nLevel);         // Number of hostages on this level.
-m_cf.WriteFix (playerP->homingObjectDist);     // Distance of nearest homing tObject.
+m_cf.WriteFix (playerP->homingObjectDist);     // Distance of nearest homing CObject.
 m_cf.WriteByte (playerP->hoursLevel);            // Hours played (since timeTotal can only go up to 9 hours)
 m_cf.WriteByte (playerP->hoursTotal);            // Hours played (since timeTotal can only go up to 9 hours)
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::SaveObject (tObject *objP)
+void CSaveGameHandler::SaveObject (CObject *objP)
 {
 m_cf.WriteInt (objP->info.nSignature);      
 m_cf.WriteByte ((sbyte) objP->info.nType); 
@@ -991,7 +991,7 @@ void CSaveGameHandler::SaveGameData (void)
 {
 	int		i, j;
 	short		nObjsWithTrigger, nObject, nFirstTrigger;
-	tObject	*objP;
+	CObject	*objP;
 
 m_cf.WriteInt (gameData.segs.nMaxSegments);
 // Save the Between levels flag...
@@ -1041,7 +1041,7 @@ if (!m_bBetweenLevels)	{
 		else if (objP->info.renderType == RT_MORPH) {
 			tMorphInfo *md = MorphFindData (objP);
 			if (md) {
-				tObject *mdObjP = md->objP;
+				CObject *mdObjP = md->objP;
 				mdObjP->info.controlType = md->saveControlType;
 				mdObjP->info.movementType = md->saveMovementType;
 				mdObjP->info.renderType = RT_POLYOBJ;
@@ -1057,7 +1057,7 @@ if (!m_bBetweenLevels)	{
 			}
 		}
 	DBG (fPos = m_cf.Tell ());
-//Save tObject info
+//Save CObject info
 	i = gameData.objs.nLastObject [0] + 1;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
@@ -1427,7 +1427,7 @@ else {
 	strcpy (pszOrgCallSign, gameData.multiplayer.players [0].callsign);
 	gameData.multiplayer.nPlayers = 1;
 	if (!m_bSecret) {
-		InitMultiPlayerObject ();	//make sure tPlayer's tObject set up
+		InitMultiPlayerObject ();	//make sure tPlayer's CObject set up
 		InitPlayerStatsGame ();		//clear all stats
 		}
 	}
@@ -1528,7 +1528,7 @@ if (NetworkIAmMaster ()) {
 void CSaveGameHandler::FixNetworkObjects (int nServerPlayer, int nOtherObjNum, int nServerObjNum)
 {
 if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 0)) {
-	tObject h = OBJECTS [nServerObjNum];
+	CObject h = OBJECTS [nServerObjNum];
 	OBJECTS [nServerObjNum] = OBJECTS [nOtherObjNum];
 	OBJECTS [nOtherObjNum] = h;
 	OBJECTS [nServerObjNum].info.nId = nServerObjNum;
@@ -1548,7 +1548,7 @@ if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 
 
 void CSaveGameHandler::FixObjects (void)
 {
-	tObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS;
 	int		i, j, nSegment;
 
 ConvertObjects ();
@@ -1720,7 +1720,7 @@ void CSaveGameHandler::LoadPlayer (tPlayer *playerP)
 m_cf.Read (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this tPlayer, for net purposes.
 m_cf.Read (playerP->netAddress, 1, 6);					// The network address of the player.
 playerP->connected = m_cf.ReadByte ();            // Is the tPlayer connected or not?
-playerP->nObject = m_cf.ReadInt ();                // What tObject number this tPlayer is. (made an int by mk because it's very often referenced)
+playerP->nObject = m_cf.ReadInt ();                // What CObject number this tPlayer is. (made an int by mk because it's very often referenced)
 playerP->nPacketsGot = m_cf.ReadInt ();         // How many packets we got from them
 playerP->nPacketsSent = m_cf.ReadInt ();        // How many packets we sent to them
 playerP->flags = (uint) m_cf.ReadInt ();           // Powerup flags, see below...
@@ -1762,14 +1762,14 @@ playerP->hostages.nRescued = (ushort) m_cf.ReadShort (); // Total number of host
 playerP->hostages.nTotal = (ushort) m_cf.ReadShort ();         // Total number of hostages.
 playerP->hostages.nOnBoard = (ubyte) m_cf.ReadByte ();      // Number of hostages on ship.
 playerP->hostages.nLevel = (ubyte) m_cf.ReadByte ();         // Number of hostages on this level.
-playerP->homingObjectDist = m_cf.ReadFix ();     // Distance of nearest homing tObject.
+playerP->homingObjectDist = m_cf.ReadFix ();     // Distance of nearest homing CObject.
 playerP->hoursLevel = m_cf.ReadByte ();            // Hours played (since timeTotal can only go up to 9 hours)
 playerP->hoursTotal = m_cf.ReadByte ();            // Hours played (since timeTotal can only go up to 9 hours)
 }
 
 //------------------------------------------------------------------------------
 
-void CSaveGameHandler::LoadObject (tObject *objP)
+void CSaveGameHandler::LoadObject (CObject *objP)
 {
 objP->info.nSignature = m_cf.ReadInt ();      
 objP->info.nType = (ubyte) m_cf.ReadByte (); 
@@ -2199,7 +2199,7 @@ if (!m_bBetweenLevels)	{
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
 		CSaveGameHandler::LoadTrigger (gameData.trigs.triggers + i);
 	DBG (fPos = m_cf.Tell ());
-	//Restore tObject tTrigger info
+	//Restore CObject tTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nObjTriggers))
 		return 0;
 	if (gameData.trigs.nObjTriggers > 0) {
@@ -2438,7 +2438,7 @@ if (!m_bBetweenLevels)	{
 	//Read objects, and pop 'em into their respective segments.
 	m_cf.Read (&i, sizeof (int), 1);
 	gameData.objs.nLastObject [0] = i - 1;
-	m_cf.Read (OBJECTS, sizeof (tObject), i);
+	m_cf.Read (OBJECTS, sizeof (CObject), i);
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	FixObjects ();
 	SpecialResetObjects ();
@@ -2479,7 +2479,7 @@ if (!m_bBetweenLevels)	{
 		return 0;
 	m_cf.Read (gameData.trigs.triggers, sizeof (tTrigger), gameData.trigs.nTriggers);
 	if (m_nVersion >= 26) {
-		//Restore tObject tTrigger info
+		//Restore CObject tTrigger info
 
 		m_cf.Read (&gameData.trigs.nObjTriggers, sizeof (gameData.trigs.nObjTriggers), 1);
 		if (gameData.trigs.nObjTriggers > 0) {

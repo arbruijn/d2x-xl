@@ -50,7 +50,7 @@ return (ailP->nextPrimaryFire <= 0) || ((botInfoP->nSecWeaponType != -1) && (ail
 }
 
 // ----------------------------------------------------------------------------------
-void SetNextFireTime (tObject *objP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int nGun)
+void SetNextFireTime (CObject *objP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int nGun)
 {
 	//	For guys in snipe mode, they have a 50% shot of getting this shot in D2_FREE.
 if ((nGun != 0) || (botInfoP->nSecWeaponType == -1))
@@ -73,7 +73,7 @@ else {
 // ----------------------------------------------------------------------------------
 //	When some robots collide with the tPlayer, they attack.
 //	If tPlayer is cloaked, then robot probably didn't actually collide, deal with that here.
-void DoAIRobotHitAttack (tObject *robotP, tObject *playerobjP, vmsVector *vCollision)
+void DoAIRobotHitAttack (CObject *robotP, CObject *playerobjP, vmsVector *vCollision)
 {
 	tAILocalInfo	*ailP = gameData.ai.localInfo + OBJ_IDX (robotP);
 	tRobotInfo		*botInfoP = &ROBOTINFO (robotP->info.nId);
@@ -125,7 +125,7 @@ return FixDiv (player_pos - robot_pos, elapsedTime) + player_vel;
 //		Player not farther away than MAX_LEAD_DISTANCE
 //		dot (vector_to_player, player_direction) must be in -LEAD_RANGE,LEAD_RANGE
 //		if firing a matter weapon, less leading, based on skill level.
-int LeadPlayer (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayerPos, int nGuns, vmsVector *vFire)
+int LeadPlayer (CObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayerPos, int nGuns, vmsVector *vFire)
 {
 	fix			dot, xPlayerSpeed, xDistToPlayer, xMaxWeaponSpeed, xProjectedTime;
 	vmsVector	vPlayerMovementDir, vVecToPlayer;
@@ -183,7 +183,7 @@ return 1;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void AICreateClusterLight (tObject *objP, short nObject, short nShot)
+void AICreateClusterLight (CObject *objP, short nObject, short nShot)
 {
 if (!gameStates.render.bClusterLights)
 	return;
@@ -195,9 +195,9 @@ if (nObject == nDbgObj)
 	nObject = nDbgObj;
 #endif
 if (nPrevShot >= 0) {
-	tObject *prevShotP = OBJECTS + nPrevShot;
+	CObject *prevShotP = OBJECTS + nPrevShot;
 	if (prevShotP->info.nSignature == objP->shots.nSignature) {
-		tObject *lightP, *shotP = OBJECTS + nShot;
+		CObject *lightP, *shotP = OBJECTS + nShot;
 		short nLight = gameData.objs.lightObjs [nPrevShot].nObject;
 		if (nLight < 0)
 			lightP = prevShotP;
@@ -233,7 +233,7 @@ if (nPrevShot >= 0) {
 //	Note: Parameter gameData.ai.vVecToPlayer is only passed now because guns which aren't on the forward vector from the
 //	center of the robot will not fire right at the player.  We need to aim the guns at the player.  Barring that, we cheat.
 //	When this routine is complete, the parameter gameData.ai.vVecToPlayer should not be necessary.
-void AIFireLaserAtPlayer (tObject *objP, vmsVector *vFirePoint, int nGun, vmsVector *vBelievedPlayerPos)
+void AIFireLaserAtPlayer (CObject *objP, vmsVector *vFirePoint, int nGun, vmsVector *vBelievedPlayerPos)
 {
 	short				nShot, nObject = OBJ_IDX (objP);
 	tAILocalInfo	*ailP = gameData.ai.localInfo + nObject;
@@ -375,7 +375,7 @@ SetNextFireTime (objP, ailP, botInfoP, nGun);
 
 //	-------------------------------------------------------------------------------------------------------------------
 
-void DoFiringStuff (tObject *objP, int nPlayerVisibility, vmsVector *vVecToPlayer)
+void DoFiringStuff (CObject *objP, int nPlayerVisibility, vmsVector *vVecToPlayer)
 {
 if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) ||
 	 (gameData.ai.nPlayerVisibility >= 1)) {
@@ -413,7 +413,7 @@ if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) 
 
 // --------------------------------------------------------------------------------------------------------------------
 //	If a hiding robot gets bumped or hit, he decides to find another hiding place.
-void DoAIRobotHit (tObject *objP, int nType)
+void DoAIRobotHit (CObject *objP, int nType)
 {
 	int	r;
 
@@ -447,8 +447,8 @@ int	Gun_point_hack=0;
 #endif
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Returns true if this tObject should be allowed to fire at the player.
-int AIMaybeDoActualFiringStuff (tObject *objP, tAIStaticInfo *aiP)
+//	Returns true if this CObject should be allowed to fire at the player.
+int AIMaybeDoActualFiringStuff (CObject *objP, tAIStaticInfo *aiP)
 {
 if (IsMultiGame &&
 	 (aiP->GOAL_STATE != AIS_FLINCH) && (objP->info.nId != ROBOT_BRAIN) &&
@@ -460,7 +460,7 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 //	If fire_anyway, fire even if tPlayer is not visible.  We're firing near where we believe him to be.  Perhaps he's
 //	lurking behind a corner.
-void AIDoActualFiringStuff (tObject *objP, tAIStaticInfo *aiP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int nGun)
+void AIDoActualFiringStuff (CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int nGun)
 {
 	fix	dot;
 

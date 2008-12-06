@@ -210,22 +210,22 @@ class CLightningManager : public tLightningData {
 		void Render (void);
 		void Update (void);
 		void Move (int i, vmsVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
-		void MoveForObject (tObject *objP);
+		void MoveForObject (CObject *objP);
 		void Render (tLightning *pl, int nLightnings, short nDepth, int bDepthSort);
 		void RenderBuffered (tLightning *plRoot, int nStart, int nLightnings, int nDepth, int nThread);
 		void RenderSystem (void);
-		void RenderForDamage (tObject *objP, g3sPoint **pointList, tG3ModelVertex *pVerts, int nVertices);
+		void RenderForDamage (CObject *objP, g3sPoint **pointList, tG3ModelVertex *pVerts, int nVertices);
 		void Animate (tLightning *pl, int nStart, int nLightnings, int nDepth);
-		int CreateForMissile (tObject *objP);
-		void CreateForShaker (tObject *objP);
-		void CreateForShakerMega (tObject *objP);
-		void CreateForMega (tObject *objP);
-		void CreateForBlowup (tObject *objP);
-		void CreateForDamage (tObject *objP, tRgbaColorf *colorP);
-		void CreateForRobot (tObject *objP, tRgbaColorf *colorP);
-		void CreateForPlayer (tObject *objP, tRgbaColorf *colorP);
-		void CreateForExplosion (tObject *objP, tRgbaColorf *colorP, int nRods, int nRad, int nTTL);
-		void DestroyForObject (tObject *objP);
+		int CreateForMissile (CObject *objP);
+		void CreateForShaker (CObject *objP);
+		void CreateForShakerMega (CObject *objP);
+		void CreateForMega (CObject *objP);
+		void CreateForBlowup (CObject *objP);
+		void CreateForDamage (CObject *objP, tRgbaColorf *colorP);
+		void CreateForRobot (CObject *objP, tRgbaColorf *colorP);
+		void CreateForPlayer (CObject *objP, tRgbaColorf *colorP);
+		void CreateForExplosion (CObject *objP, tRgbaColorf *colorP, int nRods, int nRad, int nTTL);
+		void DestroyForObject (CObject *objP);
 		void DestroyForAllObjects (int nType, int nId);
 		void DestroyForPlayers (void);
 		void DestroyForRobots (void);
@@ -236,14 +236,14 @@ class CLightningManager : public tLightningData {
 		void StaticFrame (void);
 		int FindDamageLightning (short nObject, int *pKey);
 		void SetSegmentLight (short nSegment, vmsVector *vPosP, tRgbaColorf *colorP);
-		tRgbaColorf *LightningColor (tObject *objP);
+		tRgbaColorf *LightningColor (CObject *objP);
 		inline short GetObjectSystem (short nObject) { return (m_objects && (nObject >= 0)) ? m_objects [nObject] : -1; }
 		inline void SetObjectSystem (short nObject, int i) { if (m_objects && (nObject >= 0)) m_objects [nObject] = i; }
 		inline tLightningLight* GetLight (short nSegment) { return m_lights + nSegment; }
 	private:
 		int IsUsed (int iLightning);
 		CLightningSystem *PrevSystem (int iLightning);
-		vmsVector *FindTargetPos (tObject *emitterP, short nTarget);
+		vmsVector *FindTargetPos (CObject *emitterP, short nTarget);
 
 };
 
@@ -267,13 +267,13 @@ class COmegaLightnings {
 		COmegaLightnings () { m_nHandles = 0; };
 		~COmegaLightnings () {};
 		void Init (void) { m_nHandles = 0; };
-		int Create (vmsVector *vTargetPos, tObject *parentObjP, tObject *targetObjP);
-		int Update (tObject *parentObjP, tObject *targetObjP);
+		int Create (vmsVector *vTargetPos, CObject *parentObjP, CObject *targetObjP);
+		int Update (CObject *parentObjP, CObject *targetObjP);
 		void Destroy (short nObject);
 	private:
 		int Find (short nObject);
 		void Delete (short nHandle);
-		vmsVector *GetGunPoint (tObject *objP, vmsVector *vMuzzle);
+		vmsVector *GetGunPoint (CObject *objP, vmsVector *vMuzzle);
 };
 
 extern COmegaLightnings	omegaLightnings;

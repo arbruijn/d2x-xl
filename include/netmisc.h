@@ -40,7 +40,7 @@ void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *netAddress);
 void BEReceiveExtraGameInfo(ubyte *data, tExtraGameInfo *extraGameInfo);
 void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress);
 void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *missingObjFrames);
-void BESwapObject (tObject *obj);
+void BESwapObject (CObject *obj);
 
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 

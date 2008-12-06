@@ -60,7 +60,7 @@ for (short i = 0; i < networkData.nJoining; )
 
 static int objFilter [] = {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1};
 
-static inline int NetworkFilterObject (tObject *objP)
+static inline int NetworkFilterObject (CObject *objP)
 {
 	short t = objP->info.nType;
 #if DBG
@@ -93,7 +93,7 @@ ubyte objBuf [MAX_PACKETSIZE];
 
 void NetworkSyncObjects (tNetworkSyncData *syncP)
 {
-	tObject	*objP;
+	CObject	*objP;
 	sbyte		owner;
 	short		nRemoteObj;
 	int		bufI, i, h;
@@ -132,8 +132,8 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			if ((gameData.multigame.nObjOwner [i] == -1) || (gameData.multigame.nObjOwner [i] == nPlayer))
 				continue;
 			}
-		if ((DATALIMIT - bufI - 1) < (int) sizeof (tObject) + 5)
-			break; // Not enough room for another tObject
+		if ((DATALIMIT - bufI - 1) < (int) sizeof (CObject) + 5)
+			break; // Not enough room for another CObject
 		nObjFrames++;
 		syncP->objs.nSent++;
 		nRemoteObj = ObjnumLocalToRemote ((short) i, &owner);
@@ -141,9 +141,9 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 		NW_SET_SHORT (objBuf, bufI, i);      
 		NW_SET_BYTE (objBuf, bufI, owner);                                 
 		NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
-		NW_SET_BYTES (objBuf, bufI, objP, sizeof (tObject));
+		NW_SET_BYTES (objBuf, bufI, objP, sizeof (CObject));
 		if (gameStates.multi.nGameType >= IPX_GAME)
-			SwapObject (reinterpret_cast<tObject*> (objBuf + bufI - sizeof (tBaseObject)));
+			SwapObject (reinterpret_cast<CObject*> (objBuf + bufI - sizeof (tBaseObject)));
 		}
 	if (nObjFrames) {	// Send any objects we've buffered
 		syncP->objs.nCurrent = i;	
@@ -204,7 +204,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 // Send sync packet which tells the tPlayer who he is and to start!
 NetworkSendRejoinSync (nPlayer, syncP);
 
-// Turn off send tObject mode
+// Turn off send CObject mode
 syncP->objs.nCurrent = -1;
 syncP->nState = 3;
 syncP->objs.nSent = 0;
@@ -370,7 +370,7 @@ networkData.toSyncPoll = SDL_GetTicks () + SyncPollTimeout ();
 
 void NetworkPackObjects (void)
 {
-// Switching modes, pack the tObject array
+// Switching modes, pack the CObject array
 SpecialResetObjects ();
 }                               
 

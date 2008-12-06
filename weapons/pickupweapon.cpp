@@ -73,7 +73,7 @@ return 1;
 //called when one of these weapons is picked up
 //when you pick up a secondary, you always get the weapon & ammo for it
 //	Returns true if powerup picked up, else returns false.
-int PickupSecondary (tObject *objP, int nWeaponIndex, int nAmount, int nPlayer)
+int PickupSecondary (CObject *objP, int nWeaponIndex, int nAmount, int nPlayer)
 {
 	int		nMaxAmount;
 	int		nPickedUp;
@@ -185,7 +185,7 @@ return ammoCount;	//return amount used
 
 //------------------------------------------------------------------------------
 
-int PickupVulcanAmmo (tObject *objP, int nPlayer)
+int PickupVulcanAmmo (CObject *objP, int nPlayer)
 {
 	int		bUsed = 0;
 
@@ -211,7 +211,7 @@ return bUsed;
 
 //------------------------------------------------------------------------------
 
-int PickupLaser (tObject *objP, int nId, int nPlayer)
+int PickupLaser (CObject *objP, int nId, int nPlayer)
 {
 	tPlayer *playerP = gameData.multiplayer.players + nPlayer;
 
@@ -233,7 +233,7 @@ return PickupEnergyBoost (objP, nPlayer);
 
 //------------------------------------------------------------------------------
 
-int PickupSuperLaser (tObject *objP, int nId, int nPlayer)
+int PickupSuperLaser (CObject *objP, int nId, int nPlayer)
 {
 	tPlayer *playerP = gameData.multiplayer.players + nPlayer;
 
@@ -264,7 +264,7 @@ return PickupEnergyBoost (objP, nPlayer);
 
 //------------------------------------------------------------------------------
 
-int PickupQuadLaser (tObject *objP, int nId, int nPlayer)
+int PickupQuadLaser (CObject *objP, int nId, int nPlayer)
 {
 	tPlayer *playerP = gameData.multiplayer.players + nPlayer;
 
@@ -283,7 +283,7 @@ return PickupEnergyBoost (objP, nPlayer);
 
 //------------------------------------------------------------------------------
 
-int PickupGun (tObject *objP, int nId, int nPlayer)
+int PickupGun (CObject *objP, int nId, int nPlayer)
 {
 if (PickupPrimary (nId, nPlayer)) {
 	if ((nId == OMEGA_INDEX) && (nPlayer == gameData.multiplayer.nLocalPlayer))
@@ -297,7 +297,7 @@ return PickupEnergyBoost (NULL, nPlayer);
 
 //	-----------------------------------------------------------------------------
 
-int PickupGatlingGun (tObject *objP, int nId, int nPlayer)
+int PickupGatlingGun (CObject *objP, int nId, int nPlayer)
 {
 	int nAmmo = objP->cType.powerupInfo.nCount;
 	int bUsed = PickupPrimary (nId, nPlayer);

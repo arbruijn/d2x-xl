@@ -662,7 +662,7 @@ int bm_init_use_tbl()
 				  (Effects [gameStates.app.bD1Data][i].changingObjectTexture!=-1)
              )
 			 && (Effects [gameStates.app.bD1Data][i].vc.nFrameCount==-1) )
-			Error("EClip %d referenced (by polygon tObject?), but not defined",i);
+			Error("EClip %d referenced (by polygon CObject?), but not defined",i);
 
 	#if DBG
 	{
@@ -713,7 +713,7 @@ void verify_textures()
 		if (Effects [gameStates.app.bD1Data][i].changingObjectTexture != -1)
 			if (GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObjectTexture].index].props.w!=64 || 
 				 GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObjectTexture].index].props.h!=64)
-				Error("Effect %d is used on tObject, but is not 64x64",i);
+				Error("Effect %d is used on CObject, but is not 64x64",i);
 
 }
 
@@ -871,7 +871,7 @@ void bm_read_eclip()
 			gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][nClip].changingObjectTexture] = Effects [gameStates.app.bD1Data][nClip].vc.frames[0];
 		}
 
-		//if for an tObject, Effects_bm_ptrs set in tObject load
+		//if for an CObject, Effects_bm_ptrs set in CObject load
 
 		for(clipCount=1;clipCount < Effects [gameStates.app.bD1Data][nClip].vc.nFrameCount; clipCount++) {
 			set_lightingFlag( &GameBitmaps[bm[clipCount].index].props.flags);
@@ -1562,7 +1562,7 @@ void bm_read_reactor()
 		gameData.models.nDeadModels[nModel] = -1;
 
 	if (nType == -1)
-		Error("No tObject nType specfied for tObject in BITMAPS.TBL on line %d\n",linenum);
+		Error("No CObject nType specfied for CObject in BITMAPS.TBL on line %d\n",linenum);
 
 	Reactors[Num_reactors].nModel = nModel;
 	Reactors[Num_reactors].nGuns = read_model_guns(model_name,Reactors[Num_reactors].gunPoints,Reactors[Num_reactors].gun_dirs,NULL);
@@ -1578,7 +1578,7 @@ void bm_read_reactor()
 	Num_reactors++;
 }
 
-//read the marker tObject
+//read the marker CObject
 void bm_read_marker()
 {
 	char *model_name;
@@ -1847,7 +1847,7 @@ void bm_read_weapon(int unusedFlag)
 	}
 
 	// Initialize weapon array
-	Weapon_info[n].renderType = WEAPON_RENDER_NONE;		// 0=laser, 1=blob, 2=tObject
+	Weapon_info[n].renderType = WEAPON_RENDER_NONE;		// 0=laser, 1=blob, 2=CObject
 	Weapon_info[n].bitmap.index = 0;
 	Weapon_info[n].nModel = -1;
 	Weapon_info[n].nInnerModel = -1;

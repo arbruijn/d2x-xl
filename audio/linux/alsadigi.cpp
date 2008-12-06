@@ -112,7 +112,7 @@ static const ubyte mix8[] =
 
 #define SOF_USED			1		// Set if this sample is used
 #define SOF_PLAYING			2		// Set if this sample is playing on a channel
-#define SOF_LINK_TO_OBJ		4		// Sound is linked to a moving tObject. If tObject dies, then finishes play and quits.
+#define SOF_LINK_TO_OBJ		4		// Sound is linked to a moving CObject. If CObject dies, then finishes play and quits.
 #define SOF_LINK_TO_POS		8		// Sound is linked to tSegment, pos
 #define SOF_PLAY_FOREVER	16		// Play forever (or until level is stopped), otherwise plays once
 
@@ -563,7 +563,7 @@ void DigiGetSoundLoc (vmsMatrix * listener, vmsVector * vListenerPos, int nListe
 int DigiLinkSoundToObject2(int orgSoundnum, short nObject, int forever, fix maxVolume, fix  maxDistance)
 {
 	int i,volume,pan;
-	tObject * objP;
+	CObject * objP;
 	int nSound;
 
 	nSound = DigiXlatSound(orgSoundnum);
@@ -746,7 +746,7 @@ void DigiKillSoundLinkedToObject(int nObject)
 	// If this assert happens, it means that there were 2 sounds
 	// that got deleted. Weird, get John.
 	if (killed > 1)	{
-		con_printf (1, "ERROR: More than 1 sounds were deleted from tObject %d\n", nObject);
+		con_printf (1, "ERROR: More than 1 sounds were deleted from CObject %d\n", nObject);
 	}
 }
 
@@ -782,12 +782,12 @@ void DigiSyncSounds()
                         &SoundObjects[i].volume, &SoundObjects[i].pan, SoundObjects[i].maxDistance, SoundObjects [i].nDecay);
 
 			} else if (SoundObjects[i].flags & SOF_LINK_TO_OBJ)	{
-				tObject * objP;
+				CObject * objP;
 
 				objP = &OBJECTS[SoundObjects[i].lo_objnum];
 	
 				if ((objP->info.nType==OBJ_NONE) || (objP->info.nSignature!=SoundObjects[i].lo_objsignature))  {
-					// The tObject that this is linked to is dead, so just end this sound if it is looping.
+					// The CObject that this is linked to is dead, so just end this sound if it is looping.
 					if ((SoundObjects[i].flags & SOF_PLAYING)  && (SoundObjects[i].flags & SOF_PLAY_FOREVER))	{
 					     LOCK();
 					     SoundSlots[SoundObjects[i].handle].playing = 0;

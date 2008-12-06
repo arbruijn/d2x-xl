@@ -41,12 +41,12 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Returns:
-//		0		Player is not visible from tObject, obstruction or something.
+//		0		Player is not visible from CObject, obstruction or something.
 //		1		Player is visible, but not in field of view.
 //		2		Player is visible and in field of view.
 //	Note: Uses gameData.ai.vBelievedPlayerPos as tPlayer's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
-int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVector *vVecToPlayer)
+int ObjectCanSeePlayer (CObject *objP, vmsVector *pos, fix fieldOfView, vmsVector *vVecToPlayer)
 {
 	fix			dot;
 	tFVIQuery	fq;
@@ -91,7 +91,7 @@ return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 
 // ------------------------------------------------------------------------------------------------------------------
 
-int AICanFireAtPlayer (tObject *objP, vmsVector *vGun, vmsVector *vPlayer)
+int AICanFireAtPlayer (CObject *objP, vmsVector *vGun, vmsVector *vPlayer)
 {
 	tFVIQuery	fq;
 	fix			nSize, h;
@@ -161,7 +161,7 @@ if ((xMaxVisibleDist > 0) && (gameData.ai.xDistToPlayer > xMaxVisibleDist) && (a
 //	If the tPlayer is cloaked, set gameData.ai.vVecToPlayer based on time tPlayer cloaked and last uncloaked position.
 //	Updates ailP->nPrevVisibility if tPlayer is not cloaked, in which case the previous visibility is left unchanged
 //	and is copied to gameData.ai.nPlayerVisibility
-void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocalInfo *ailP, tRobotInfo *botInfoP, int *flag,
+void ComputeVisAndVec (CObject *objP, vmsVector *pos, tAILocalInfo *ailP, tRobotInfo *botInfoP, int *flag,
 							  fix xMaxVisibleDist)
 {
 if (*flag) {
@@ -264,7 +264,7 @@ if (OBJ_IDX (objP) == nDbgObj) {
 //	Return true if door can be flown through by a suitable nType robot.
 //	Brains, avoid robots, companions can open doors.
 //	objP == NULL means treat as buddy.
-int AIDoorIsOpenable (tObject *objP, tSegment *segP, short nSide)
+int AIDoorIsOpenable (CObject *objP, tSegment *segP, short nSide)
 {
 	short nWall;
 	tWall	*wallP;
@@ -274,7 +274,7 @@ if (!IS_CHILD (segP->children [nSide]))
 nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall))		//if there's no door at alld:\temp\dm_test.
 	return 1;				//d:\temp\dm_testthen say it can't be opened
-	//	The mighty console tObject can open all doors (for purposes of determining paths).
+	//	The mighty console CObject can open all doors (for purposes of determining paths).
 if (objP == gameData.objs.consoleP) {
 	if (gameData.walls.walls [nWall].nType == WALL_DOOR)
 		return 1;
@@ -404,7 +404,7 @@ int OpenableDoorsInSegment (short nSegment)
 }
 
 // -- // --------------------------------------------------------------------------------------------------------------------
-// -- //	Return true if a special tObject (tPlayer or control center) is in this tSegment.
+// -- //	Return true if a special CObject (tPlayer or control center) is in this tSegment.
 // -- int specialObject_in_seg (int nSegment)
 // -- {
 // -- 	int	nObject;
@@ -439,12 +439,12 @@ int OpenableDoorsInSegment (short nSegment)
 // -- }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Return true if placing an tObject of size size at pos *pos intersects a (tPlayer or robot or control center) in tSegment *segP.
+//	Return true if placing an CObject of size size at pos *pos intersects a (tPlayer or robot or control center) in tSegment *segP.
 int CheckObjectObjectIntersection (vmsVector *pos, fix size, tSegment *segP)
 {
-//	If this would intersect with another tObject (only check those in this tSegment), then try to move.
+//	If this would intersect with another CObject (only check those in this tSegment), then try to move.
 short nObject = segP->objects;
-tObject *objP;
+CObject *objP;
 while (nObject != -1) {
 	objP = OBJECTS + nObject;
 	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR)) {
@@ -457,17 +457,17 @@ return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Called for an AI tObject if it is fairly aware of the player.
+//	Called for an AI CObject if it is fairly aware of the player.
 //	awarenessLevel is in 0..100.  Larger numbers indicate greater awareness (eg, 99 if firing at tPlayer).
-//	In a given frame, might not get called for an tObject, or might be called more than once.
-//	The fact that this routine is not called for a given tObject does not mean that tObject is not interested in the player.
+//	In a given frame, might not get called for an CObject, or might be called more than once.
+//	The fact that this routine is not called for a given CObject does not mean that CObject is not interested in the player.
 //	OBJECTS are moved by physics, so they can move even if not interested in a player.  However, if their velocity or
 //	orientation is changing, this routine will be called.
 //	Return value:
 //		0	this tPlayer IS NOT allowed to move this robot.
 //		1	this tPlayer IS allowed to move this robot.
 
-int AIMultiplayerAwareness (tObject *objP, int awarenessLevel)
+int AIMultiplayerAwareness (CObject *objP, int awarenessLevel)
 {
 if (!IsMultiGame)
 	return 1;

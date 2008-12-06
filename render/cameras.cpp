@@ -150,7 +150,7 @@ memset (&m_info, 0, sizeof (m_info));
 //------------------------------------------------------------------------------
 
 int CCamera::Create (short nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
-							tObject *objP, int bShadowMap, int bTeleport)
+							CObject *objP, int bShadowMap, int bTeleport)
 {
 	vmsAngVec	a;
 	int			h, i;
@@ -628,7 +628,7 @@ int CCameraManager::Create (void)
 	int		h, i, j, k, r;
 	ubyte		t;
 	tWall		*wallP;
-	tObject	*objP;
+	CObject	*objP;
 	tTrigger	*triggerP;
 
 if (!gameStates.app.bD2XLevel)
@@ -709,7 +709,7 @@ int CCameraManager::Render (void)
 {
 	int		i;
 	CCamera	*cameraP = NULL;
-	tObject	*viewerSave = gameData.objs.viewerP;
+	CObject	*viewerSave = gameData.objs.viewerP;
 	time_t	t;
 	int		nCamsRendered;
 	int		cm = gameStates.render.cockpit.nMode;
@@ -778,7 +778,7 @@ if (m_faceCameras)
 
 //--------------------------------------------------------------------
 
-CCamera* CCameraManager::Camera (tObject *objP)
+CCamera* CCameraManager::Camera (CObject *objP)
 {
 	short i = GetObjectCamera (OBJ_IDX (objP));
 
@@ -787,7 +787,7 @@ return (i < 0) ? NULL : m_cameras + i;
 
 //--------------------------------------------------------------------
 
-void CCameraManager::Rotate (tObject *objP)
+void CCameraManager::Rotate (CObject *objP)
 {
 	short i = GetObjectCamera (OBJ_IDX (objP));
 

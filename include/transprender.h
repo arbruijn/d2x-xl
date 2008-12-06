@@ -40,7 +40,7 @@ typedef struct tTranspPoly {
 } tTranspPoly;
 
 typedef struct tTranspObject {
-	tObject				*objP;
+	CObject				*objP;
 } tTranspObject;
 
 typedef struct tTranspSprite {
@@ -76,7 +76,7 @@ typedef enum tTranspSphereType {
 typedef struct tTranspSphere {
 	tTranspSphereType	nType;
 	tRgbaColorf			color;
-	tObject				*objP;
+	CObject				*objP;
 } tTranspSphere;
 
 typedef struct tTranspLightning {
@@ -158,11 +158,11 @@ int TIAddPoly (tFace *faceP, grsTriangle *triP, CBitmap *bmP,
 					fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 					short nSegment);
-int TIAddObject (tObject *objP);
+int TIAddObject (CObject *objP);
 int TIAddSprite (CBitmap *bmP, const vmsVector& position, tRgbaColorf *color,
 					  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad);
 int TIAddSpark (const vmsVector& position, char nType, int nSize, char nFrame);
-int TIAddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, tObject *objP);
+int TIAddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP);
 int TIAddParticle (CParticle *particle, float fBrightness, int nThread);
 int TIAddLightning (CLightning *lightningP, short nDepth);
 int TIAddLightTrail (CBitmap *bmP, fVector *vThruster, tTexCoord2f *tcThruster, fVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP);

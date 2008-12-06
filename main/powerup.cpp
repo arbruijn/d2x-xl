@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "editor/editor.h"
 #endif
 //#define _DEBUG
-int ReturnFlagHome (tObject *pObj);
+int ReturnFlagHome (CObject *pObj);
 void InvalidateEscortGoal (void);
 char GetKeyValue (char);
 void MultiSendGotFlag (char);
@@ -172,7 +172,7 @@ if (!gameStates.app.bDemoData) {
 
 //------------------------------------------------------------------------------
 //process this powerup for this frame
-void DoPowerupFrame (tObject *objP)
+void DoPowerupFrame (CObject *objP)
 {
 //if (gameStates.app.tick40fps.bTick) 
 	tVClipInfo	*vciP = &objP->rType.vClipInfo;
@@ -212,7 +212,7 @@ void DrawBlobOutline (void)
 
 //------------------------------------------------------------------------------
 
-void DrawPowerup (tObject *objP)
+void DrawPowerup (CObject *objP)
 {
 #if DBG
 //return;
@@ -287,7 +287,7 @@ UpdateLaserWeaponInfo ();
 
 //------------------------------------------------------------------------------
 
-int PickupEnergyBoost (tObject *objP, int nPlayer)
+int PickupEnergyBoost (CObject *objP, int nPlayer)
 {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 
@@ -310,7 +310,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int PickupShieldBoost (tObject *objP, int nPlayer)
+int PickupShieldBoost (CObject *objP, int nPlayer)
 {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 
@@ -335,7 +335,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-int PickupCloakingDevice (tObject *objP, int nPlayer)
+int PickupCloakingDevice (CObject *objP, int nPlayer)
 {
 	tPlayer *playerP = gameData.multiplayer.players + nPlayer;
 
@@ -352,7 +352,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-int PickupInvulnerability (tObject *objP, int nPlayer)
+int PickupInvulnerability (CObject *objP, int nPlayer)
 {
 	tPlayer *playerP = gameData.multiplayer.players + nPlayer;
 
@@ -369,7 +369,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int PickupExtraLife (tObject *objP, int nPlayer)
+int PickupExtraLife (CObject *objP, int nPlayer)
 {
 gameData.multiplayer.players [nPlayer].lives++;
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
@@ -379,7 +379,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int PickupHoardOrb (tObject *objP, int nPlayer)
+int PickupHoardOrb (CObject *objP, int nPlayer)
 {
 	tPlayer *playerP = gameData.multiplayer.players + nPlayer;
 
@@ -418,7 +418,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int PickupEquipment (tObject *objP, int nEquipment, const char *pszHave, const char *pszGot, int nPlayer)
+int PickupEquipment (CObject *objP, int nEquipment, const char *pszHave, const char *pszGot, int nPlayer)
 {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 	int		id, bUsed = 0;
@@ -446,7 +446,7 @@ return bUsed;
 
 //	-----------------------------------------------------------------------------
 
-int PickupHeadlight (tObject *objP, int nPlayer)
+int PickupHeadlight (CObject *objP, int nPlayer)
 {
 	tPlayer *playerP = gameData.multiplayer.players + nPlayer;
 	char		szTemp [50];
@@ -467,7 +467,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int PickupFullMap (tObject *objP, int nPlayer)
+int PickupFullMap (CObject *objP, int nPlayer)
 {
 return PickupEquipment (objP, PLAYER_FLAGS_FULLMAP, TXT_THE_FULLMAP, TXT_GOT_FULLMAP, nPlayer) ? 1 : 0;
 }
@@ -475,7 +475,7 @@ return PickupEquipment (objP, PLAYER_FLAGS_FULLMAP, TXT_THE_FULLMAP, TXT_GOT_FUL
 
 //	-----------------------------------------------------------------------------
 
-int PickupConverter (tObject *objP, int nPlayer)
+int PickupConverter (CObject *objP, int nPlayer)
 {
 	char		szTemp [50];
 
@@ -486,14 +486,14 @@ return PickupEquipment (objP, PLAYER_FLAGS_CONVERTER, TXT_THE_CONVERTER, szTemp,
 
 //	-----------------------------------------------------------------------------
 
-int PickupAmmoRack (tObject *objP, int nPlayer)
+int PickupAmmoRack (CObject *objP, int nPlayer)
 {
 return PickupEquipment (objP, PLAYER_FLAGS_AMMO_RACK, TXT_THE_AMMORACK, TXT_GOT_AMMORACK, nPlayer) != 0;
 }
 
 //	-----------------------------------------------------------------------------
 
-int PickupAfterburner (tObject *objP, int nPlayer)
+int PickupAfterburner (CObject *objP, int nPlayer)
 {
 	int bUsed = PickupEquipment (objP, PLAYER_FLAGS_AFTERBURNER, TXT_THE_BURNER, TXT_GOT_BURNER, nPlayer);
 	
@@ -505,21 +505,21 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int PickupSlowMotion (tObject *objP, int nPlayer)
+int PickupSlowMotion (CObject *objP, int nPlayer)
 {
 return PickupEquipment (objP, PLAYER_FLAGS_SLOWMOTION, TXT_THE_SLOWMOTION, TXT_GOT_SLOWMOTION, nPlayer) != 0;
 }
 
 //	-----------------------------------------------------------------------------
 
-int PickupBulletTime (tObject *objP, int nPlayer)
+int PickupBulletTime (CObject *objP, int nPlayer)
 {
 return PickupEquipment (objP, PLAYER_FLAGS_BULLETTIME, TXT_THE_BULLETTIME, TXT_GOT_BULLETTIME, nPlayer) != 0;
 }
 
 //------------------------------------------------------------------------------
 
-int PickupKey (tObject *objP, int nKey, const char *pszKey, int nPlayer)
+int PickupKey (CObject *objP, int nKey, const char *pszKey, int nPlayer)
 {
 if (ISLOCALPLAYER (nPlayer)) {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
@@ -538,7 +538,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int PickupFlag (tObject *objP, int nThisTeam, int nOtherTeam, const char *pszFlag, int nPlayer)
+int PickupFlag (CObject *objP, int nThisTeam, int nOtherTeam, const char *pszFlag, int nPlayer)
 {
 if (ISLOCALPLAYER (nPlayer)) {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
@@ -650,22 +650,22 @@ return 1;
 //------------------------------------------------------------------------------
 
 #if defined (_WIN32) && !defined (_DEBUG)
-typedef int (__fastcall * pPickupGun) (tObject *, int, int);
-typedef int (__fastcall * pPickupMissile) (tObject *, int, int, int);
-typedef int (__fastcall * pPickupEquipment) (tObject *, int);
-typedef int (__fastcall * pPickupKey) (tObject *, int, const char *, int);
-typedef int (__fastcall * pPickupFlag) (tObject *, int, int, const char *, int);
+typedef int (__fastcall * pPickupGun) (CObject *, int, int);
+typedef int (__fastcall * pPickupMissile) (CObject *, int, int, int);
+typedef int (__fastcall * pPickupEquipment) (CObject *, int);
+typedef int (__fastcall * pPickupKey) (CObject *, int, const char *, int);
+typedef int (__fastcall * pPickupFlag) (CObject *, int, int, const char *, int);
 #else
-typedef int (* pPickupGun) (tObject *, int, int);
-typedef int (* pPickupMissile) (tObject *, int, int, int);
-typedef int (* pPickupEquipment) (tObject *, int);
-typedef int (* pPickupKey) (tObject *, int, const char *, int);
-typedef int (* pPickupFlag) (tObject *, int, int, const char *, int);
+typedef int (* pPickupGun) (CObject *, int, int);
+typedef int (* pPickupMissile) (CObject *, int, int, int);
+typedef int (* pPickupEquipment) (CObject *, int);
+typedef int (* pPickupKey) (CObject *, int, const char *, int);
+typedef int (* pPickupFlag) (CObject *, int, int, const char *, int);
 #endif
 
 
 //	returns true if powerup consumed
-int DoPowerup (tObject *objP, int nPlayer)
+int DoPowerup (CObject *objP, int nPlayer)
 {
 	tPlayer	*playerP;
 	int		bUsed = 0;
@@ -938,12 +938,12 @@ return bUsed;
 
 //------------------------------------------------------------------------------
 
-int SpawnPowerup (tObject *spitterP, ubyte nId, int nCount)
+int SpawnPowerup (CObject *spitterP, ubyte nId, int nCount)
 {
 	int			i;
 	short			nObject;
 	vmsVector	velSave;
-	tObject		*objP;
+	CObject		*objP;
 
 if (nCount <= 0)
 	return 0;
@@ -975,7 +975,7 @@ memset (gameData.multiplayer.leftoverPowerups + nObject, 0,
 void CheckInventory (void)
 {
 	tPlayer	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
-	tObject	*objP = OBJECTS + playerP->nObject;
+	CObject	*objP = OBJECTS + playerP->nObject;
 
 if (SpawnPowerup (objP, POW_CLOAK, playerP->nCloaks - MAX_INV_ITEMS))
 	playerP->nCloaks = MAX_INV_ITEMS;

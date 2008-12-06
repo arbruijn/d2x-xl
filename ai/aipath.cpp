@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define	PATH_VALIDATION	1
 #endif
 
-void AIPathSetOrientAndVel (tObject *objP, vmsVector* vGoalPoint, int nPlayerVisibility, vmsVector *vec_to_player);
+void AIPathSetOrientAndVel (CObject *objP, vmsVector* vGoalPoint, int nPlayerVisibility, vmsVector *vec_to_player);
 void MaybeAIPathGarbageCollect (void);
 void AIPathGarbageCollect (void);
 #if PATH_VALIDATION
@@ -148,7 +148,7 @@ int	Ai_path_debug=0;
 //	Move points halfway to outside of segment.
 static tPointSeg newPtSegs [MAX_SEGMENTS_D2X];
 
-void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, tObject *objP, int bRandom)
+void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, CObject *objP, int bRandom)
 {
 	int			i, j;
 	int			nNewSeg;
@@ -270,10 +270,10 @@ if (j > 1)
 //	If randomFlag !0, then introduce randomness into path by looking at sides in random order.  This means
 //	that a path between two segments won't always be the same, unless it is unique.p.
 //	If bSafeMode is set, then additional points are added to "make sure" that points are reachable.p.  I would
-//	like to say that it ensures that the tObject can move between the points, but that would require knowing what
-//	the tObject is (which isn't passed, right?) and making fvi calls (slow, right?).  So, consider it the more_or_less_safeFlag.
+//	like to say that it ensures that the CObject can move between the points, but that would require knowing what
+//	the CObject is (which isn't passed, right?) and making fvi calls (slow, right?).  So, consider it the more_or_less_safeFlag.
 //	If nEndSeg == -2, then end seg will never be found and this routine will drop out due to depth (xProbably called by CreateNSegmentPath).
-int CreatePathPoints (tObject *objP, int nStartSeg, int nEndSeg, tPointSeg *pointSegP, short *numPoints,
+int CreatePathPoints (CObject *objP, int nStartSeg, int nEndSeg, tPointSeg *pointSegP, short *numPoints,
 							 int nMaxDepth, int bRandom, int bSafeMode, int nAvoidSeg)
 {
 	short				nCurSeg;
@@ -469,7 +469,7 @@ int	Last_buddy_polish_path_frame;
 //	Starting position in pointSegP doesn't change.p.
 //	Changed, MK, 10/18/95.  I think this was causing robots to get hung up on walls.
 //				Only drop up to the first three points.
-int SmoothPath (tObject *objP, tPointSeg *pointSegP, int numPoints)
+int SmoothPath (CObject *objP, tPointSeg *pointSegP, int numPoints)
 {
 #if 1
 return numPoints;
@@ -572,7 +572,7 @@ return 1;
 void ValidateAllPaths (void)
 {
 	int				i;
-	tObject			*objP;
+	CObject			*objP;
 	tAIStaticInfo	*aiP;
 
 FORALL_ROBOT_OBJS (objP, i) {
@@ -586,12 +586,12 @@ FORALL_ROBOT_OBJS (objP, i) {
 #endif
 
 // -- //	-------------------------------------------------------------------------------------------------------
-// -- //	Creates a path from the OBJECTS current tSegment (objP->info.nSegment) to the specified tSegment for the tObject to
+// -- //	Creates a path from the OBJECTS current tSegment (objP->info.nSegment) to the specified tSegment for the CObject to
 // -- //	hide in gameData.ai.localInfo [nObject].nGoalSegment.
 // -- //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 // -- //			objP->cType.aiInfo.nPathLength, 		length of path
 // -- //			gameData.ai.freePointSegs				global pointer into gameData.ai.pointSegs array
-// -- void create_path (tObject *objP)
+// -- void create_path (CObject *objP)
 // -- {
 // -- 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 // -- 	tAILocalInfo		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
@@ -627,14 +627,14 @@ FORALL_ROBOT_OBJS (objP, i) {
 // -- }
 
 //	-------------------------------------------------------------------------------------------------------
-//	Creates a path from the OBJECTS current tSegment (objP->info.nSegment) to the specified tSegment for the tObject to
+//	Creates a path from the OBJECTS current tSegment (objP->info.nSegment) to the specified tSegment for the CObject to
 //	hide in gameData.ai.localInfo [nObject].nGoalSegment.
 //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 //			objP->cType.aiInfo.nPathLength, 		length of path
 //			gameData.ai.freePointSegs				global pointer into gameData.ai.pointSegs array
 //	Change, 10/07/95: Used to create path to gameData.objs.consoleP->info.position.vPos.p.  Now creates path to gameData.ai.vBelievedPlayerPos.p.
 
-void CreatePathToPlayer (tObject *objP, int nMaxDepth, int bSafeMode)
+void CreatePathToPlayer (CObject *objP, int nMaxDepth, int bSafeMode)
 {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 	tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
@@ -669,8 +669,8 @@ MaybeAIPathGarbageCollect ();
 }
 
 //	-------------------------------------------------------------------------------------------------------
-//	Creates a path from the tObject's current tSegment (objP->info.nSegment) to tSegment goalseg.
-void CreatePathToSegment (tObject *objP, short goalseg, int nMaxDepth, int bSafeMode)
+//	Creates a path from the CObject's current tSegment (objP->info.nSegment) to tSegment goalseg.
+void CreatePathToSegment (CObject *objP, short goalseg, int nMaxDepth, int bSafeMode)
 {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 	tAILocalInfo		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
@@ -700,12 +700,12 @@ MaybeAIPathGarbageCollect ();
 }
 
 //	-------------------------------------------------------------------------------------------------------
-//	Creates a path from the OBJECTS current tSegment (objP->info.nSegment) to the specified tSegment for the tObject to
+//	Creates a path from the OBJECTS current tSegment (objP->info.nSegment) to the specified tSegment for the CObject to
 //	hide in gameData.ai.localInfo [nObject].nGoalSegment
 //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 //			objP->cType.aiInfo.nPathLength, 		length of path
 //			gameData.ai.freePointSegs				global pointer into gameData.ai.pointSegs array
-void CreatePathToStation (tObject *objP, int nMaxDepth)
+void CreatePathToStation (CObject *objP, int nMaxDepth)
 {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 	tAILocalInfo		*ailP = &gameData.ai.localInfo [OBJ_IDX (objP)];
@@ -740,11 +740,11 @@ MaybeAIPathGarbageCollect ();
 
 
 //	-------------------------------------------------------------------------------------------------------
-//	Create a path of length nPathLength for an tObject, stuffing info in aiInfo field.
+//	Create a path of length nPathLength for an CObject, stuffing info in aiInfo field.
 
 static int nObject = 0;
 
-void CreateNSegmentPath (tObject *objP, int nPathLength, short nAvoidSeg)
+void CreateNSegmentPath (CObject *objP, int nPathLength, short nAvoidSeg)
 {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 	tAILocalInfo		*ailP = gameData.ai.localInfo + OBJ_IDX (objP);
@@ -781,7 +781,7 @@ MaybeAIPathGarbageCollect ();
 
 //	-------------------------------------------------------------------------------------------------------
 
-void CreateNSegmentPathToDoor (tObject *objP, int nPathLength, short nAvoidSeg)
+void CreateNSegmentPathToDoor (CObject *objP, int nPathLength, short nAvoidSeg)
 {
 CreateNSegmentPath (objP, nPathLength, nAvoidSeg);
 }
@@ -790,7 +790,7 @@ CreateNSegmentPath (objP, nPathLength, nAvoidSeg);
 
 //	----------------------------------------------------------------------------------------------------
 
-void MoveObjectToGoal (tObject *objP, vmsVector *vGoalPoint, short nGoalSeg)
+void MoveObjectToGoal (CObject *objP, vmsVector *vGoalPoint, short nGoalSeg)
 {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 	int			nSegment;
@@ -839,9 +839,9 @@ if (nSegment != nGoalSeg)
 	con_printf (1, "Object #%i goal supposed to be in tSegment #%i, but in tSegment #%i\n", OBJ_IDX (objP), nGoalSeg, nSegment);
 #endif
 if (nSegment == -1) {
-	Int3 ();	//	Oops, tObject is not in any tSegment.
+	Int3 ();	//	Oops, CObject is not in any tSegment.
 				// Contact Mike: This is impossible.p.
-	//	Hack, move tObject to center of tSegment it used to be in.
+	//	Hack, move CObject to center of tSegment it used to be in.
 	COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, objP->info.nSegment);
 	}
 else
@@ -849,10 +849,10 @@ else
 }
 
 // -- too much work -- //	----------------------------------------------------------------------------------------------------------
-// -- too much work -- //	Return true if the tObject the companion wants to kill is reachable.p.
-// -- too much work -- int attackKillObject (tObject *objP)
+// -- too much work -- //	Return true if the CObject the companion wants to kill is reachable.p.
+// -- too much work -- int attackKillObject (CObject *objP)
 // -- too much work -- {
-// -- too much work -- 	tObject		*kill_objp;
+// -- too much work -- 	CObject		*kill_objp;
 // -- too much work -- 	tFVIData		hitData;
 // -- too much work -- 	int			fate;
 // -- too much work -- 	tFVIQuery	fq;
@@ -880,7 +880,7 @@ else
 
 //	----------------------------------------------------------------------------------------------------------
 //	Optimization: If current velocity will take robot near goal, don't change velocity
-void AIFollowPath (tObject *objP, int nPlayerVisibility, int nPrevVisibility, vmsVector *vec_to_player)
+void AIFollowPath (CObject *objP, int nPlayerVisibility, int nPrevVisibility, vmsVector *vec_to_player)
 {
 	tAIStaticInfo		*aiP = &objP->cType.aiInfo;
 
@@ -909,7 +909,7 @@ if ((aiP->nHideIndex == -1) || (aiP->nPathLength == 0)) {
 if ((aiP->nHideIndex + aiP->nPathLength > gameData.ai.freePointSegs - gameData.ai.pointSegs) && (aiP->nPathLength>0)) {
 	Int3 ();	//	Contact Mike: Bad.  Path goes into what is believed to be D2_FREE space.p.
 	//	This is debugging code.p.  Figure out why garbage collection
-	//	didn't compress this tObject's path information.
+	//	didn't compress this CObject's path information.
 	AIPathGarbageCollect ();
 	//force_dump_aiObjects_all ("Error in AIFollowPath");
 	AIResetAllPaths ();
@@ -1146,7 +1146,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 		}
 		//--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 	}	//	end while
-//	Set velocity (objP->mType.physInfo.velocity) and orientation (objP->info.position.mOrient) for this tObject.
+//	Set velocity (objP->mType.physInfo.velocity) and orientation (objP->info.position.mOrient) for this CObject.
 //--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 AIPathSetOrientAndVel (objP, &vGoalPoint, nPlayerVisibility, vec_to_player);
 //--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
@@ -1169,7 +1169,7 @@ return 0;
 
 //	----------------------------------------------------------------------------------------------------------
 //	Set orientation matrix and velocity for objP based on its desire to get to a point.
-void AIPathSetOrientAndVel (tObject *objP, vmsVector *vGoalPoint, int nPlayerVisibility, vmsVector *vec_to_player)
+void AIPathSetOrientAndVel (CObject *objP, vmsVector *vGoalPoint, int nPlayerVisibility, vmsVector *vec_to_player)
 {
 	vmsVector	vCurVel = objP->mType.physInfo.velocity;
 	vmsVector	vNormCurVel;
@@ -1238,7 +1238,7 @@ void AIPathGarbageCollect (void)
 	int				nPathObjects = 0;
 	int				nObject;
 	int				nObjIdx, i, nOldIndex;
-	tObject			*objP;
+	CObject			*objP;
 	tAIStaticInfo	*aiP;
 	obj_path			objectList [MAX_OBJECTS_D2X];
 
@@ -1331,7 +1331,7 @@ else if (gameData.ai.freePointSegs - gameData.ai.pointSegs > MAX_POINT_SEGS/2) {
 void AIResetAllPaths (void)
 {
 	int		i;
-	tObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS;
 
 FORALL_OBJS (objP, i)
 	if (objP->info.controlType == CT_AI) {
@@ -1344,7 +1344,7 @@ AIPathGarbageCollect ();
 //	---------------------------------------------------------------------------------------------------------
 //	Probably called because a robot bashed a tWall, getting a bunch of retries.
 //	Try to resume path.
-void AttemptToResumePath (tObject *objP)
+void AttemptToResumePath (CObject *objP)
 {
 	//int				nObject = OBJ_IDX (objP);
 	tAIStaticInfo		*aiP = &objP->cType.aiInfo;
@@ -1509,7 +1509,7 @@ int	Player_following_pathFlag=0;
 
 //	------------------------------------------------------------------------------------------------------------------
 //	Set orientation matrix and velocity for objP based on its desire to get to a point.
-void player_path_set_orient_and_vel (tObject *objP, vmsVector *vGoalPoint)
+void player_path_set_orient_and_vel (CObject *objP, vmsVector *vGoalPoint)
 {
 	vmsVector	vCurVel = objP->mType.physInfo.velocity;
 	vmsVector	vNormCurVel;
@@ -1564,7 +1564,7 @@ void player_path_set_orient_and_vel (tObject *objP, vmsVector *vGoalPoint)
 
 //	----------------------------------------------------------------------------------------------------------
 //	Optimization: If current velocity will take robot near goal, don't change velocity
-void player_follow_path (tObject *objP)
+void player_follow_path (CObject *objP)
 {
 	vmsVector	vGoalPoint;
 	fix			xDistToGoal;
@@ -1634,7 +1634,7 @@ void player_follow_path (tObject *objP)
 
 	}	//	end while
 
-	//	Set velocity (objP->mType.physInfo.velocity) and orientation (objP->info.position.mOrient) for this tObject.
+	//	Set velocity (objP->mType.physInfo.velocity) and orientation (objP->info.position.mOrient) for this CObject.
 	player_path_set_orient_and_vel (objP, &vGoalPoint);
 
 }
@@ -1644,7 +1644,7 @@ void player_follow_path (tObject *objP)
 //	Create path for tPlayer from current tSegment to goal tSegment.
 void create_player_path_to_segment (int nSegment)
 {
-	tObject		*objP = gameData.objs.consoleP;
+	CObject		*objP = gameData.objs.consoleP;
 
 	Player_path_length=0;
 	Player_hide_index=-1;

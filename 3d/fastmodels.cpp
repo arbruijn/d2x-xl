@@ -68,7 +68,7 @@ extern int bZPass;
 
 //------------------------------------------------------------------------------
 
-void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts)
+void G3DynLightModel (CObject *objP, tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts)
 {
 	fVector			vPos, vVertex;
 	fVector3			*pv, *pn;
@@ -106,7 +106,7 @@ for (i = iFaceVerts, h = iFaceVerts, pmv = pm->pFaceVerts + iFaceVerts; i < nFac
 
 //------------------------------------------------------------------------------
 
-void G3LightModel (tObject *objP, int nModel, fix xModelLight, fix *xGlowValues, int bHires)
+void G3LightModel (CObject *objP, int nModel, fix xModelLight, fix *xGlowValues, int bHires)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3ModelVertex	*pmv;
@@ -219,7 +219,7 @@ pm->fScale *= fScale;
 
 //------------------------------------------------------------------------------
 
-void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector *vOffsetP,
+void G3GetThrusterPos (CObject *objP, short nModel, tG3ModelFace *pmf, vmsVector *vOffsetP,
 							  vmsVector *vNormal, int nRad, int bHires)
 {
 	tG3Model				*pm = gameData.models.g3Models [bHires] + nModel;
@@ -284,7 +284,7 @@ mtP->nCount++;
 
 static int bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1};
 
-int G3FilterSubModel (tObject *objP, tG3SubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
+int G3FilterSubModel (CObject *objP, tG3SubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	int nId = objP->info.nId;
 
@@ -363,7 +363,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static inline int ObjectHasThruster (tObject *objP)
+static inline int ObjectHasThruster (CObject *objP)
 {
 return (objP->info.nType == OBJ_PLAYER) ||
 		 (objP->info.nType == OBJ_ROBOT) ||
@@ -372,7 +372,7 @@ return (objP->info.nType == OBJ_PLAYER) ||
 
 //------------------------------------------------------------------------------
 
-int G3AnimateSubModel (tObject *objP, tG3SubModel *psm, short nModel)
+int G3AnimateSubModel (CObject *objP, tG3SubModel *psm, short nModel)
 {
 	tFiringData	*fP;
 	float			nTimeout, y;
@@ -411,7 +411,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclusive, CBitmap **modelBitmaps,
+void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclusive, CBitmap **modelBitmaps,
 						   vmsAngVec *pAnimAngles, vmsVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
@@ -552,7 +552,7 @@ if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
 
 //------------------------------------------------------------------------------
 
-void G3DrawModel (tObject *objP, short nModel, short nSubModel, CBitmap **modelBitmaps,
+void G3DrawModel (CObject *objP, short nModel, short nSubModel, CBitmap **modelBitmaps,
 						vmsAngVec *pAnimAngles, vmsVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
@@ -688,7 +688,7 @@ OglResetTransform (1);
 
 //------------------------------------------------------------------------------
 
-void G3RenderDamageLightnings (tObject *objP, short nModel, short nSubModel,
+void G3RenderDamageLightnings (CObject *objP, short nModel, short nSubModel,
 										 vmsAngVec *pAnimAngles, vmsVector *vOffsetP, int bHires)
 {
 	tG3Model			*pm;
@@ -733,7 +733,7 @@ if (vOffsetP)
 
 //------------------------------------------------------------------------------
 
-int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
+int G3RenderModel (CObject *objP, short nModel, short nSubModel, tPolyModel *pp, CBitmap **modelBitmaps,
 						 vmsAngVec *pAnimAngles, vmsVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;

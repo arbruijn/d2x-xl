@@ -43,7 +43,7 @@ return xEnergyUsed;
 }
 
 // ---------------------------------------------------------------------------------
-//	*objP is the tObject firing the omega cannon
+//	*objP is the CObject firing the omega cannon
 //	*pos is the location from which the omega bolt starts
 
 int nOmegaDuration [7] = {1, 2, 3, 5, 7, 10, 15};
@@ -59,11 +59,11 @@ if (gameData.omega.xCharge [IsMultiGame] > gameData.omega.xMaxCharge) {
 
 //	-------------------------------------------------------------------------------------------------------------------------------
 
-void DeleteOldOmegaBlobs (tObject *parentObjP)
+void DeleteOldOmegaBlobs (CObject *parentObjP)
 {
 	int		count = 0;
 	int		nParentObj = parentObjP->cType.laserInfo.parent.nObject;
-	tObject	*objP;
+	CObject	*objP;
 	short		i;
 
 FORALL_WEAPON_OBJS (objP, i)
@@ -77,7 +77,7 @@ FORALL_WEAPON_OBJS (objP, i)
 
 // ---------------------------------------------------------------------------------
 
-void CreateOmegaBlobs (short nFiringSeg, vmsVector *vMuzzle, vmsVector *vTargetPos, tObject *parentObjP, tObject *targetObjP)
+void CreateOmegaBlobs (short nFiringSeg, vmsVector *vMuzzle, vmsVector *vTargetPos, CObject *parentObjP, CObject *targetObjP)
 {
 	short			nLastSeg, nLastCreatedObj = -1;
 	vmsVector	vGoal;
@@ -139,7 +139,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 	vmsVector	vTempPos;
 	short			nBlobObj, nSegment;
 
-	//	This will put the last blob right at the destination tObject, causing damage.
+	//	This will put the last blob right at the destination CObject, causing damage.
 	if (i == nOmegaBlobs-1)
 		vBlobPos += vOmegaDelta * (15*F1_0/32);	//	Move last blob another (almost) half section
 	//	Every so often, re-perturb blobs
@@ -152,7 +152,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 	vTempPos = vBlobPos + vPerturb * xPerturbArray[i];
 	nSegment = FindSegByPos (vTempPos, nLastSeg, 1, 0);
 	if (nSegment != -1) {
-		tObject		*objP;
+		CObject		*objP;
 
 		nLastSeg = nSegment;
 		nBlobObj = CreateWeapon (OMEGA_ID, -1, nSegment, vTempPos, 0, RT_WEAPON_VCLIP);
@@ -226,7 +226,7 @@ if (LOCALPLAYER.energy) {
 
 // ---------------------------------------------------------------------------------
 
-void DoOmegaStuff (tObject *parentObjP, vmsVector *vMuzzle, tObject *weaponObjP)
+void DoOmegaStuff (CObject *parentObjP, vmsVector *vMuzzle, CObject *weaponObjP)
 {
 	short			nTargetObj, nFiringSeg, nParentSeg;
 	vmsVector	vTargetPos;
@@ -286,7 +286,7 @@ if (parentObjP == gameData.objs.viewerP)
 else
 	DigiLinkSoundToPos (gameData.weapons.info [weaponObjP->info.nId].flashSound,
 							  weaponObjP->info.nSegment, 0, &weaponObjP->info.position.vPos, 0, F1_0);
-//	Delete the original tObject.  Its only purpose in life was to determine which tObject to home in on.
+//	Delete the original CObject.  Its only purpose in life was to determine which CObject to home in on.
 ReleaseObject (OBJ_IDX (weaponObjP));
 if (nTargetObj != -1)
 	vTargetPos = OBJECTS [nTargetObj].info.position.vPos;

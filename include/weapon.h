@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WIF_PLACABLE        1   // can be placed by level designer
 
 typedef struct tWeaponInfo {
-	sbyte   renderType;        // How to draw 0=laser, 1=blob, 2=tObject
+	sbyte   renderType;        // How to draw 0=laser, 1=blob, 2=CObject
 	sbyte   persistent;         // 0 = dies when it hits something, 1 = continues (eg, fusion cannon)
 	short   nModel;          // Model num if rendertype==2.
 	short   nInnerModel;    // Model num of inner part if rendertype==2.
@@ -41,7 +41,7 @@ typedef struct tWeaponInfo {
 	short   wall_hitSound;     // What sound for impact with tWall
 
 	sbyte   destroyable;        // If !0, this weapon can be destroyed by another weapon.
-	sbyte   matter;             // Flag: set if this tObject is matter (as opposed to energy)
+	sbyte   matter;             // Flag: set if this CObject is matter (as opposed to energy)
 	sbyte   bounce;             // 1==always bounces, 2=bounces twice
 	sbyte   homingFlag;        // Set if this weapon can home in on a target.
 
@@ -83,7 +83,7 @@ typedef struct tWeaponInfo {
 } __pack__ tWeaponInfo;
 
 typedef struct tD1WeaponInfo {
-	sbyte	renderType;				// How to draw 0=laser, 1=blob, 2=tObject
+	sbyte	renderType;				// How to draw 0=laser, 1=blob, 2=CObject
 	sbyte	nModel;					// Model num if rendertype==2.
 	sbyte	nInnerModel;			// Model num of inner part if rendertype==2.
 	sbyte	persistent;					//	0 = dies when it hits something, 1 = continues (eg, fusion cannon)
@@ -100,8 +100,8 @@ typedef struct tD1WeaponInfo {
 
 	sbyte	nVClipIndex;				//	Vclip to render for the weapon, itself.
 	sbyte	destroyable;				//	If !0, this weapon can be destroyed by another weapon.
-	sbyte	matter;						//	Flag: set if this tObject is matter (as opposed to energy)
-	sbyte	bounce;						//	Flag: set if this tObject bounces off walls
+	sbyte	matter;						//	Flag: set if this CObject is matter (as opposed to energy)
+	sbyte	bounce;						//	Flag: set if this CObject bounces off walls
 
 	sbyte	homingFlag;				//	Set if this weapon can home in on a target.
 	sbyte	dum1, dum2, dum3;
@@ -133,8 +133,8 @@ typedef struct D2D1_weapon_info {
 	sbyte	fireCount;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
 	sbyte	ammo_usage;					//	How many units of ammunition it uses.
 	sbyte	destroyable;				//	If !0, this weapon can be destroyed by another weapon.
-	sbyte	matter;						//	Flag: set if this tObject is matter (as opposed to energy)
-	sbyte	bounce;						//	Flag: set if this tObject bounces off walls
+	sbyte	matter;						//	Flag: set if this CObject is matter (as opposed to energy)
+	sbyte	bounce;						//	Flag: set if this CObject bounces off walls
 	sbyte	homingFlag;				//	Set if this weapon can home in on a target.
 	fix	energy_usage;				//	How much fuel is consumed to fire this weapon.
 	fix	fire_wait;					//	Time until this weapon can be fired again.
@@ -169,7 +169,7 @@ typedef struct D2D1_weapon_info {
 
 #define REARM_TIME                  (F1_0)
 
-#define WEAPON_DEFAULT_LIFETIME     (F1_0*12)   // Lifetime of an tObject if a bozo forgets to define it.
+#define WEAPON_DEFAULT_LIFETIME     (F1_0*12)   // Lifetime of an CObject if a bozo forgets to define it.
 
 #define WEAPON_TYPE_WEAK_LASER      0
 #define WEAPON_TYPE_STRONG_LASER    1
@@ -284,7 +284,7 @@ int PlayerHasWeapon (int nWeapon, int secondaryFlag, int nPlayer, int bAll);
 
 //called when one of these weapons is picked up
 //when you pick up a secondary, you always get the weapon & ammo for it
-int PickupSecondary (tObject *objP, int nWeaponIndex, int nAmount, int nPlayer);
+int PickupSecondary (CObject *objP, int nWeaponIndex, int nAmount, int nPlayer);
 
 //called when a primary weapon is picked up
 //returns true if actually picked up
@@ -293,17 +293,17 @@ int PickupPrimary (int nWeaponIndex, int nPlayer);
 //called when ammo (for the vulcan cannon) is picked up
 int PickupAmmo (int classFlag, int nWeaponIndex, int ammoCount, int nPlayer);
 
-int PickupLaser (tObject *objP, int nId, int nPlayer);
-int PickupSuperLaser (tObject *objP, int nId, int nPlayer);
-int PickupQuadLaser (tObject *objP, int nId, int nPlayer);
-int PickupGun (tObject *objP, int nId, int nPlayer);
-int PickupGatlingGun (tObject *objP, int nId, int nPlayer);
-int PickupVulcanAmmo (tObject *objP, int nPlayer);
+int PickupLaser (CObject *objP, int nId, int nPlayer);
+int PickupSuperLaser (CObject *objP, int nId, int nPlayer);
+int PickupQuadLaser (CObject *objP, int nId, int nPlayer);
+int PickupGun (CObject *objP, int nId, int nPlayer);
+int PickupGatlingGun (CObject *objP, int nId, int nPlayer);
+int PickupVulcanAmmo (CObject *objP, int nPlayer);
 
-int AttemptToStealItem (tObject *objp, int player_num);
+int AttemptToStealItem (CObject *objp, int player_num);
 
 //this function is for when the tPlayer intentionally drops a powerup
-extern int SpitPowerup (tObject *spitter, ubyte id, int seed);
+extern int SpitPowerup (CObject *spitter, ubyte id, int seed);
 
 #define SMEGA_ID    40
 

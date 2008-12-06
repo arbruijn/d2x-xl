@@ -197,7 +197,7 @@ if (*progP)
 *progP = glCreateProgramObject (); 
 if (*progP)
 	return 1;
-PrintLog ("   Couldn't create shader program tObject\n");
+PrintLog ("   Couldn't create shader program CObject\n");
 return 0; 
 }
 

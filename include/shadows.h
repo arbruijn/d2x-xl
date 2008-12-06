@@ -14,7 +14,7 @@
 void G3SetCullAndStencil (int bCullFront, int bZPass);
 void G3RenderShadowVolumeFace (tOOF_vector *pv);
 void G3RenderFarShadowCapFace (tOOF_vector *pv, int nVertices);
-int POFGatherPolyModelItems (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, tPOFObject *po, int bShadowData);
+int POFGatherPolyModelItems (CObject *objP, void *modelP, vmsAngVec *pAnimAngles, tPOFObject *po, int bShadowData);
 int POFFreePolyModelItems (tPOFObject *po);
 void POFFreeAllPolyModelItems (void);
 

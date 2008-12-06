@@ -82,7 +82,7 @@ typedef struct tPortal {
 
 // ------------------------------------------------------------------------------
 
-void StartLightingFrame (tObject *viewer);
+void StartLightingFrame (CObject *viewer);
 void ShowReticle(int force_big);
 
 uint	nClearWindowColor = 0;
@@ -665,7 +665,7 @@ void DoRenderObject (int nObject, int nWindow)
 #ifdef EDITOR
 	int save_3d_outline=0;
 #endif
-	tObject *objP = OBJECTS + nObject, *hObj;
+	CObject *objP = OBJECTS + nObject, *hObj;
 	tWindowRenderedData *wrd = windowRenderedData + nWindow;
 	int nType, count = 0;
 	int n;
@@ -706,7 +706,7 @@ if ((count++ > MAX_OBJECTS) || (objP->info.nNextInSeg == nObject)) {
 	return;					// get out of this infinite loop!
 	}
 	//g3_drawObject(objP->class_id, &objP->info.position.vPos, &objP->info.position.mOrient, objP->info.xSize);
-	//check for editor tObject
+	//check for editor CObject
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode == FMODE_EDITOR && nObject == CurObject_index) {
 	save_3d_outline = g3d_interp_outline;
@@ -1391,7 +1391,7 @@ if (!ShowGameMessage (gameData.messages, -1, -1))
 
 int nFirstTerminalSeg;
 
-void UpdateRenderedData (int nWindow, tObject *viewer, int rearViewFlag, int user)
+void UpdateRenderedData (int nWindow, CObject *viewer, int rearViewFlag, int user)
 {
 	Assert(nWindow < MAX_RENDERED_WINDOWS);
 	windowRenderedData [nWindow].nFrame = gameData.app.nFrameCount;
@@ -1421,7 +1421,7 @@ pi->xDist = vmsVector::Dist (OBJECTS [nObject].info.position.vPos, gameData.rend
 void BuildRenderObjLists (int nSegCount)
 {
 PROF_START
-	tObject		*objP;
+	CObject		*objP;
 	tSegment		*segP;
 	tSegMasks	mask;
 	short			nSegment, nNewSeg, nChild, nSide, sideFlag;
@@ -1447,7 +1447,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		objP = OBJECTS + nObject;
 		Assert (objP->info.nSegment == nSegment);
 		if (objP->info.nFlags & OF_ATTACHED)
-			continue;		//ignore this tObject
+			continue;		//ignore this CObject
 		nNewSeg = nSegment;
 		if ((objP->info.nType != OBJ_REACTOR) && ((objP->info.nType != OBJ_ROBOT) || (objP->info.nId == 65))) { //don't migrate controlcen
 			mask = GetSegMasks (OBJPOS (objP)->vPos, nNewSeg, objP->info.xSize);
@@ -2293,13 +2293,13 @@ void CheckFace(int nSegment, int nSide, int facenum, int nVertices, short *vp, i
 
 //------------------------------------------------------------------------------
 
-void RenderObjectSearch(tObject *objP)
+void RenderObjectSearch(CObject *objP)
 {
 	int changed=0;
 
-	//note that we draw each pixel tObject twice, since we cannot control
-	//what color the tObject draws in, so we try color 0, then color 1,
-	//in case the tObject itself is rendering color 0
+	//note that we draw each pixel CObject twice, since we cannot control
+	//what color the CObject draws in, so we try color 0, then color 1,
+	//in case the CObject itself is rendering color 0
 
 	CCanvas::Current ()->SetColor(0);
 	gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
@@ -2329,7 +2329,7 @@ extern int render_3d_in_big_tPortal;
 
 //finds what tSegment is at a given x&y -  seg, tSide, face are filled in
 //works on last frame rendered. returns true if found
-//if seg<0, then an tObject was found, and the tObject number is -seg-1
+//if seg<0, then an CObject was found, and the CObject number is -seg-1
 int FindSegSideFace(short x, short y, int *seg, int *tSide, int *face, int *poly)
 {
 	bSearchMode = -1;

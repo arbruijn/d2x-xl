@@ -423,7 +423,7 @@ pl->info.bPowerup = 0;
 //2: object/lightning
 //3: headlight
 if (nObject >= 0) {
-	tObject *objP = OBJECTS + nObject;
+	CObject *objP = OBJECTS + nObject;
 	//HUDMessage (0, "Adding object light %d, type %d", gameData.render.lights.dynamic.nLights, objP->info.nType);
 	pl->info.nType = 2;
 	if (objP->info.nType == OBJ_POWERUP) {

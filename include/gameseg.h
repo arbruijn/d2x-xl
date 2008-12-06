@@ -98,7 +98,7 @@ tSegMasks GetSideMasks (vmsVector *checkP, int nSegment, int nSide, fix xRad);
 
 tSegMasks GetSegMasks(const vmsVector& checkp,int nSegment,fix rad);
 
-//this macro returns true if the nSegment for an tObject is correct
+//this macro returns true if the nSegment for an CObject is correct
 #define check_obj_seg(obj) (GetSegMasks(&(obj)->pos,(obj)->nSegment,0).centermask == 0)
 
 //Tries to find a tSegment for a point, in the following way:

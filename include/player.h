@@ -78,7 +78,7 @@ typedef struct tPlayer {
 	char    callsign[CALLSIGN_LEN+1];   // The callsign of this tPlayer, for net purposes.
 	ubyte   netAddress[6];         // The network address of the tPlayer.
 	sbyte   connected;              // Is the tPlayer connected or not?
-	int     nObject;                 // What tObject number this tPlayer is. (made an int by mk because it's very often referenced)
+	int     nObject;                 // What CObject number this tPlayer is. (made an int by mk because it's very often referenced)
 	int     nPacketsGot;          // How many packets we got from them
 	int     nPacketsSent;         // How many packets we sent to them
 
@@ -122,7 +122,7 @@ typedef struct tPlayer {
 	short   numRobotsLevel;       // Number of initial robots this level
 	short   numRobotsTotal;       // Number of robots total
 	tPlayerHostages	hostages;
-	fix     homingObjectDist;     // Distance of nearest homing tObject.
+	fix     homingObjectDist;     // Distance of nearest homing CObject.
 	sbyte   hoursLevel;            // Hours played (since timeTotal can only go up to 9 hours)
 	sbyte   hoursTotal;            // Hours played (since timeTotal can only go up to 9 hours)
 } __pack__ tPlayer;
@@ -138,7 +138,7 @@ typedef struct player16 {
 	char    callsign[CALLSIGN_LEN+1]; // The callsign of this tPlayer, for net purposes.
 	ubyte   netAddress[6];         // The network address of the tPlayer.
 	sbyte   connected;              // Is the tPlayer connected or not?
-	int     nObject;                 // What tObject number this tPlayer is. (made an int by mk because it's very often referenced)
+	int     nObject;                 // What CObject number this tPlayer is. (made an int by mk because it's very often referenced)
 	int     nPacketsGot;          // How many packets we got from them
 	int     nPacketsSent;         // How many packets we sent to them
 
@@ -176,7 +176,7 @@ typedef struct player16 {
 	short   numRobotsLevel;       // Number of initial robots this level
 	short   numRobotsTotal;       // Number of robots total
 	tPlayerHostages	hostages;
-	fix     homingObjectDist;     // Distance of nearest homing tObject.
+	fix     homingObjectDist;     // Distance of nearest homing CObject.
 	sbyte   hoursLevel;            // Hours played (since timeTotal can only go up to 9 hours)
 	sbyte   hoursTotal;            // Hours played (since timeTotal can only go up to 9 hours)
 } __pack__ player16;
@@ -202,9 +202,9 @@ typedef struct tPlayerShip {
  * reads a tPlayerShip structure from a CFILE
  */
 void PlayerShipRead(tPlayerShip *ps, CFile& cf);
-int EquippedPlayerGun (tObject *objP);
-int EquippedPlayerBomb (tObject *objP);
-int EquippedPlayerMissile (tObject *objP, int *nMissiles);
+int EquippedPlayerGun (CObject *objP);
+int EquippedPlayerBomb (CObject *objP);
+int EquippedPlayerMissile (CObject *objP, int *nMissiles);
 void UpdatePlayerWeaponInfo (void);
 
 #endif

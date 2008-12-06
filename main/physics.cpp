@@ -68,7 +68,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void DoPhysicsAlignObject (tObject * objP)
+void DoPhysicsAlignObject (CObject * objP)
 {
 	vmsVector	desiredUpVec;
 	fixang		delta_ang, roll_ang;
@@ -134,7 +134,7 @@ if (labs (vmsVector::Dot(desiredUpVec, objP->info.position.mOrient[FVEC])) < f1_
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void SetObjectTurnRoll (tObject *objP)
+void SetObjectTurnRoll (CObject *objP)
 {
 //if (!gameStates.app.bD1Mission)
 {
@@ -161,7 +161,7 @@ short physSegList [MAX_FVI_SEGS], nPhysSegs;
 #endif
 
 #ifdef EXTRADBG
-tObject *debugObjP=NULL;
+CObject *debugObjP=NULL;
 #endif
 
 #if DBG
@@ -174,7 +174,7 @@ int	bDontMoveAIObjects=0;
 extern int bSimpleFVI;
 //	-----------------------------------------------------------------------------------------------------------
 // add rotational velocity & acceleration
-void DoPhysicsSimRot (tObject *objP)
+void DoPhysicsSimRot (CObject *objP)
 {
 	vmsAngVec	turnAngles;
 	vmsMatrix	mRotate, mNewOrient;
@@ -221,8 +221,8 @@ if (objP->mType.physInfo.drag) {
 		objP->mType.physInfo.rotVel *= xTotalDrag;
 		}
 	}
-//now rotate tObject
-//unrotate tObject for bank caused by turn
+//now rotate CObject
+//unrotate CObject for bank caused by turn
 if (objP->mType.physInfo.turnRoll) {
 	vmsMatrix mOrient;
 
@@ -265,7 +265,7 @@ objP->info.position.mOrient.CheckAndFix();
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void DoBumpHack (tObject *objP)
+void DoBumpHack (CObject *objP)
 {
 	vmsVector vCenter, vBump;
 #if DBG
@@ -288,7 +288,7 @@ if (SEGMENT2S [objP->info.nSegment].special == SEGMENT_IS_CONTROLCEN)
 
 #if 1 //UNSTICK_OBJS
 
-int BounceObject (tObject *objP, tFVIData	hi, float fOffs, fix *pxSideDists)
+int BounceObject (CObject *objP, tFVIData	hi, float fOffs, fix *pxSideDists)
 {
 	fix	xSideDist, xSideDists [6];
 	short	nSegment;
@@ -331,7 +331,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void UnstickObject (tObject *objP)
+void UnstickObject (CObject *objP)
 {
 	tFVIData			hi;
 	tFVIQuery		fq;
@@ -365,7 +365,7 @@ if (fviResult == HIT_WALL)
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void UpdateStats (tObject *objP, int nHitType)
+void UpdateStats (CObject *objP, int nHitType)
 {
 	int	i;
 
@@ -418,9 +418,9 @@ else
 
 //	-----------------------------------------------------------------------------------------------------------
 
-//Simulate a physics tObject for this frame
+//Simulate a physics CObject for this frame
 
-void DoPhysicsSim (tObject *objP)
+void DoPhysicsSim (CObject *objP)
 {
 	short					nIgnoreObjs;
 	int					iSeg, i;
@@ -547,7 +547,7 @@ else
 	xTimeScale = 100;
 nTries = 0;
 do {
-	//Move the tObject
+	//Move the CObject
 	float fScale = !gameStates.app.bNostalgia && (IS_MISSILE (objP) && (objP->info.nId != EARTHSHAKER_MEGA_ID) && (objP->info.nId != ROBOT_SHAKER_MEGA_ID)) ?
 						MissileSpeedScale (objP) : 1;
 	bRetry = 0;
@@ -617,7 +617,7 @@ retryMove:
 	memset (&hi, 0, sizeof (hi));
 	fviResult = FindVectorIntersection (&fq, &hi);
 	UpdateStats (objP, fviResult);
-	vSavePos = objP->info.position.vPos;			//save the tObject's position
+	vSavePos = objP->info.position.vPos;			//save the CObject's position
 	nSaveSeg = objP->info.nSegment;
 #if 0//def _DEBUG
 	if (objP->info.nType == OBJ_PLAYER)
@@ -681,7 +681,7 @@ retryMove:
 		}
 	//	Matt: Mike's hack.
 	else if (fviResult == HIT_OBJECT) {
-		tObject	*hitObjP = OBJECTS + hi.hit.nObject;
+		CObject	*hitObjP = OBJECTS + hi.hit.nObject;
 
 		if (ObjIsPlayerMine (hitObjP))
 			nTries--;
@@ -723,11 +723,11 @@ retryMove:
 		break;
 		}
 	Assert ((fviResult != HIT_WALL) || ((nWallHitSeg > -1) && (nWallHitSeg <= gameData.segs.nLastSegment)));
-	// update tObject's position and tSegment number
+	// update CObject's position and tSegment number
 	objP->info.position.vPos = iPos;
 	if (iSeg != objP->info.nSegment)
 		RelinkObjToSeg (nObject, iSeg);
-	//if start point not in tSegment, move tObject to center of tSegment
+	//if start point not in tSegment, move CObject to center of tSegment
 	if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).centerMask) {	//object stuck
 		int n = FindObjectSeg (objP);
 		if (n == -1) {
@@ -836,7 +836,7 @@ retryMove:
 				bObjStopped = 1;
 				bRetry = 0;
 				}
-			else {				// Slide tObject along tWall
+			else {				// Slide CObject along tWall
 				int bCheckVel = 0;
 				//We're constrained by a wall, so subtract wall part from velocity vector
 
@@ -857,7 +857,7 @@ retryMove:
 						else
 							objP->mType.physInfo.flags |= PF_HAS_BOUNCED;
 						}
-					bBounced = 1;		//this tObject bBounced
+					bBounced = 1;		//this CObject bBounced
 					}
 				objP->mType.physInfo.velocity += hi.hit.vNormal * (-xWallPart);
 				if (bCheckVel) {
@@ -876,8 +876,8 @@ retryMove:
 		vmsVector	vOldVel;
 		vmsVector	*ppos0, *ppos1, vHitPos;
 		fix			size0, size1;
-		// Mark the hit tObject so that on a retry the fvi code
-		// ignores this tObject.
+		// Mark the hit CObject so that on a retry the fvi code
+		// ignores this CObject.
 		//if (bSpeedBoost && (objP == gameData.objs.consoleP))
 		//	break;
 #if DBG
@@ -991,7 +991,7 @@ if (objP->info.controlType == CT_AI) {
 				fix	dist;
 				int	vertexList [6];
 
-				//bump tObject back
+				//bump CObject back
 				sideP = gameData.segs.segments [nOrigSegment].sides + nSide;
 				if (nOrigSegment == -1)
 					Error ("nOrigSegment == -1 in physics");
@@ -1011,7 +1011,7 @@ if (objP->info.controlType == CT_AI) {
 			}
 		}
 
-//if end point not in tSegment, move tObject to last pos, or tSegment center
+//if end point not in tSegment, move CObject to last pos, or tSegment center
 if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).centerMask) {
 	if (FindObjectSeg (objP) == -1) {
 		int n;
@@ -1035,10 +1035,10 @@ UnstickObject (objP);
 }
 
 //	----------------------------------------------------------------
-//Applies an instantaneous force on an tObject, resulting in an instantaneous
+//Applies an instantaneous force on an CObject, resulting in an instantaneous
 //change in velocity.
 
-void PhysApplyForce (tObject *objP, vmsVector *vForce)
+void PhysApplyForce (CObject *objP, vmsVector *vForce)
 {
 #if DBG
 	fix mag;
@@ -1089,13 +1089,13 @@ else {
 //	------------------------------------------------------------------------------------------------------
 //	Note: This is the old AITurnTowardsVector code.
 //	PhysApplyRot used to call AITurnTowardsVector until I fixed it, which broke PhysApplyRot.
-void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate)
+void PhysicsTurnTowardsVector (vmsVector *vGoal, CObject *objP, fix rate)
 {
 	vmsAngVec	dest_angles, cur_angles;
 	fix			delta_p, delta_h;
 	vmsVector&	pvRotVel = objP->mType.physInfo.rotVel;
 
-// Make this tObject turn towards the vGoal.  Changes orientation, doesn't change direction of movement.
+// Make this CObject turn towards the vGoal.  Changes orientation, doesn't change direction of movement.
 // If no one moves, will be facing vGoal in 1 second.
 
 //	Detect null vector.
@@ -1136,9 +1136,9 @@ pvRotVel [Z] = 0;
 }
 
 //	-----------------------------------------------------------------------------
-//	Applies an instantaneous whack on an tObject, resulting in an instantaneous
+//	Applies an instantaneous whack on an CObject, resulting in an instantaneous
 //	change in orientation.
-void PhysApplyRot (tObject *objP, vmsVector *vForce)
+void PhysApplyRot (CObject *objP, vmsVector *vForce)
 {
 	fix	xRate, xMag;
 
@@ -1175,9 +1175,9 @@ PhysicsTurnTowardsVector (vForce, objP, xRate);
 }
 
 
-//this routine will set the thrust for an tObject to a value that will
-// (hopefully) maintain the tObject's current velocity
-void SetThrustFromVelocity (tObject *objP)
+//this routine will set the thrust for an CObject to a value that will
+// (hopefully) maintain the CObject's current velocity
+void SetThrustFromVelocity (CObject *objP)
 {
 	fix k;
 

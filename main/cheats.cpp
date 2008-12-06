@@ -117,7 +117,7 @@ return i;
 int KillAllBuddyBots (int bVerbose)
 {
 	int	i, nKilled = 0;
-	tObject *objP;
+	CObject *objP;
 	//int	boss_index = -1;
 
 FORALL_ROBOT_OBJS (objP, i)
@@ -140,7 +140,7 @@ return nKilled;
 void KillAllRobots (int bVerbose)
 {
 	int	i, nKilled = 0;
-	tObject *objP;
+	CObject *objP;
 	//int	boss_index = -1;
 
 // Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
@@ -166,7 +166,7 @@ if (bVerbose)
 void KillAllBossRobots (int bVerbose)
 {
 	int		i, nKilled = 0;
-	tObject	*objP;
+	CObject	*objP;
 
 if (gameStates.gameplay.bKillBossCheat)
 	gameStates.gameplay.bKillBossCheat = 0;
@@ -196,7 +196,7 @@ if (bVerbose)
 void KillEverything (int bVerbose)
 {
 	int     	i, j;
-	tObject	*objP;
+	CObject	*objP;
 
 if (bVerbose)
 	HUDInitMessage (TXT_KILL_ETC);
@@ -237,7 +237,7 @@ gameStates.gameplay.bKillBossCheat = 0;
 void KillThief (int bVerbose)
 {
 	int     i;
-	tObject *objP;
+	CObject *objP;
 
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_THIEF (objP)) {
@@ -259,7 +259,7 @@ FORALL_ROBOT_OBJS (objP, i)
 void KillAllSnipers (int bVerbose)
 {
 	int		i, nKilled = 0;
-	tObject	*objP;
+	CObject	*objP;
 
 //	Kill all snipers.
 FORALL_ROBOT_OBJS (objP, i)
@@ -278,7 +278,7 @@ if (bVerbose)
 void KillBuddy (int bVerbose)
 {
 	int     	i;
-	tObject	*objP;
+	CObject	*objP;
 
 //	Kill buddy.
 FORALL_ROBOT_OBJS (objP, i)

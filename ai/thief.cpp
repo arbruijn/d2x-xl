@@ -88,11 +88,11 @@ return (d_rand() * gameData.segs.nLastSegment) >> 15;
 
 //	----------------------------------------------------------------------
 
-void RecreateThief(tObject *objP)
+void RecreateThief(CObject *objP)
 {
 	int			nSegment;
 	vmsVector	center_point;
-	tObject		*new_obj;
+	CObject		*new_obj;
 
 	nSegment = ChooseThiefRecreationSegment();
 	COMPUTE_SEGMENT_CENTER_I (&center_point, nSegment);
@@ -104,7 +104,7 @@ void RecreateThief(tObject *objP)
 
 //	----------------------------------------------------------------------------
 
-void DoThiefFrame(tObject *objP)
+void DoThiefFrame(CObject *objP)
 {
 	int			nObject = OBJ_IDX (objP);
 	tAILocalInfo		*ailp = gameData.ai.localInfo + nObject;
@@ -351,7 +351,7 @@ int MaybeStealPrimaryWeapon(int nPlayer, int nWeapon)
 //	If a item successfully stolen, returns true, else returns false.
 //	If a wapon successfully stolen, do everything, removing it from tPlayer,
 //	updating gameData.thief.stolenItems information, deselecting, etc.
-int AttemptToStealItem3(tObject *objP, int nPlayer)
+int AttemptToStealItem3(CObject *objP, int nPlayer)
 {
 	int	i;
 
@@ -406,7 +406,7 @@ int AttemptToStealItem3(tObject *objP, int nPlayer)
 }
 
 //	----------------------------------------------------------------------------
-int AttemptToStealItem2(tObject *objP, int nPlayer)
+int AttemptToStealItem2(CObject *objP, int nPlayer)
 {
 	int	rval;
 
@@ -426,7 +426,7 @@ int AttemptToStealItem2(tObject *objP, int nPlayer)
 //	If a item successfully stolen, returns true, else returns false.
 //	If a wapon successfully stolen, do everything, removing it from tPlayer,
 //	updating gameData.thief.stolenItems information, deselecting, etc.
-int AttemptToStealItem(tObject *objP, int nPlayer)
+int AttemptToStealItem(CObject *objP, int nPlayer)
 {
 	int	i;
 	int	rval = 0;
@@ -480,7 +480,7 @@ memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
 
 // --------------------------------------------------------------------------------------------------------------
 
-void DropStolenItems(tObject *objP)
+void DropStolenItems(CObject *objP)
 {
 	int	i;
 #if TRACE

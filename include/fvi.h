@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //return values for FindVectorIntersection() - what did we hit?
 #define HIT_NONE		0		//we hit nothing
 #define HIT_WALL		1		//we hit - guess - a tWall
-#define HIT_OBJECT	2		//we hit an tObject - which one?  no way to tell...
+#define HIT_OBJECT	2		//we hit an CObject - which one?  no way to tell...
 #define HIT_BAD_P0	3		//start point is not in specified tSegment
 
 #define MAX_FVI_SEGS 200
@@ -33,7 +33,7 @@ typedef struct tFVIHitInfo {
 	short 		nSide;						//if hit tWall, which tSide
 	short			nFace;
 	short 		nSideSegment;				//what tSegment the hit tSide is in
-	short 		nObject;						//if tObject hit, which tObject
+	short 		nObject;						//if CObject hit, which CObject
 	vmsVector	vPoint;						//where we hit
 	vmsVector 	vNormal;						//if hit tWall, ptr to its surface normal
 	int			nNormals;
@@ -72,7 +72,7 @@ typedef struct tFVIQuery {
 //  p0 & startseg 	describe the start of the vector
 //  p1 					the end of the vector
 //  rad 					the radius of the cylinder
-//  thisobjnum 		used to prevent an tObject with colliding with itself
+//  thisobjnum 		used to prevent an CObject with colliding with itself
 //  ingore_obj_list	NULL, or ptr to a list of objnums to ignore, terminated with -1
 //  check_objFlag	determines whether collisions with objects are checked
 //Returns the hit_data->hitType
@@ -82,17 +82,17 @@ int FindVectorIntersection(tFVIQuery *fq,tFVIData *hit_data);
 //fills in u & v. if l is non-NULL fills it in also
 void FindHitPointUV(fix *u,fix *v,fix *l, vmsVector *pnt,tSegment *seg,int nSide,int facenum);
 
-//Returns true if the tObject is through any walls
-int ObjectIntersectsWall (tObject *objP);
+//Returns true if the CObject is through any walls
+int ObjectIntersectsWall (CObject *objP);
 
 int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
 
 int CheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, 
 							short nSegment, short nSide, short iFace, int nv, fix rad);
 
-int CanSeePoint (tObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment);
+int CanSeePoint (CObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment);
 
-int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType);
+int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType);
 
 int CheckTransWall (vmsVector *vPoint, tSegment *segP, short nSide, short iFace);
 

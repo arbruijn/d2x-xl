@@ -340,7 +340,7 @@ return OOF_DrawShadowVolume (po, pso, 0) &&
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float *fLight)
+int OOF_DrawSubObject (CObject *objP, tOOFObject *po, tOOF_subObject *pso, float *fLight)
 {
 	tOOF_face		*pf;
 	tOOF_faceVert	*pfv;
@@ -530,7 +530,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 
 //------------------------------------------------------------------------------
 
-int OOF_RenderSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, tOOF_vector vo, 
+int OOF_RenderSubObject (CObject *objP, tOOFObject *po, tOOF_subObject *pso, tOOF_vector vo, 
 								 int nIndex, float *fLight)
 {
 	tOOF_subObject	*psc;
@@ -560,7 +560,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_RenderModel (tObject *objP, tOOFObject *po, float *fLight)
+int OOF_RenderModel (CObject *objP, tOOFObject *po, float *fLight)
 {
 	tOOF_subObject	*pso;
 	int				r = 1, i;
@@ -588,7 +588,7 @@ return r;
 
 //------------------------------------------------------------------------------
 
-int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
+int OOF_RenderShadow (CObject *objP, tOOFObject *po, float *fLight)
 {
 	short			i, *pnl = gameData.render.lights.dynamic.nNearestSegLights + gameData.objs.consoleP->info.nSegment * MAX_NEAREST_LIGHTS;
 
@@ -609,7 +609,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_Render (tObject *objP, tOOFObject *po, float *fLight, int bCloaked)
+int OOF_Render (CObject *objP, tOOFObject *po, float *fLight, int bCloaked)
 {
 	float	dt;
 

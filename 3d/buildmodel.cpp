@@ -305,7 +305,7 @@ G3_FREE (pm->pSortedVerts);
 
 //------------------------------------------------------------------------------
 
-int G3ShiftModel (tObject *objP, int nModel, int bHires, fVector3 *vOffsetfP)
+int G3ShiftModel (CObject *objP, int nModel, int bHires, fVector3 *vOffsetfP)
 {
 #if 1
 return 0;
@@ -351,7 +351,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3SubModelSize (tObject *objP, int nModel, int nSubModel, vmsVector *vOffset, int bHires)
+void G3SubModelSize (CObject *objP, int nModel, int nSubModel, vmsVector *vOffset, int bHires)
 {
 	tG3Model		*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel	*psm = pm->pSubModels + nSubModel;
@@ -438,7 +438,7 @@ return (short) (pi - vertices) + 1;
 
 //------------------------------------------------------------------------------
 
-fix G3ModelRad (tObject *objP, int nModel, int bHires)
+fix G3ModelRad (CObject *objP, int nModel, int bHires)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel		*psm;
@@ -531,7 +531,7 @@ return F2X (fRad);
 
 //------------------------------------------------------------------------------
 
-fix G3ModelSize (tObject *objP, tG3Model *pm, int nModel, int bHires)
+fix G3ModelSize (CObject *objP, tG3Model *pm, int nModel, int bHires)
 {
 	int			nSubModels = pm->nSubModels;
 	tG3SubModel	*psm;
@@ -716,7 +716,7 @@ for (i = 0, pp = po->gunPoints.pPoints; i < j; i++, pp++) {
 
 //------------------------------------------------------------------------------
 
-void G3SetGunPoints (tObject *objP, tG3Model *pm, int nModel, int bASE)
+void G3SetGunPoints (CObject *objP, tG3Model *pm, int nModel, int bASE)
 {
 	vmsVector		*vGunPoints;
 	int				nParent, h, i, j;
@@ -771,7 +771,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int G3BuildModel (tObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *pObjColor, int bHires)
+int G3BuildModel (CObject *objP, int nModel, tPolyModel *pp, CBitmap **modelBitmaps, tRgbaColorf *pObjColor, int bHires)
 {
 	tG3Model	*pm = gameData.models.g3Models [bHires] + nModel;
 

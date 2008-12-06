@@ -741,11 +741,11 @@ void ProcessSmartMinesFrame (void)
 	int			i, j;
 	int			nParentObj;
 	fix			dist;
-	tObject		*bombP, *actorP;
+	CObject		*bombP, *actorP;
 	vmsVector	*vBombPos;
 
 	//	If we don't know of there being any super mines in the level, just
-	//	check every 8th tObject each frame.
+	//	check every 8th CObject each frame.
 gameStates.gameplay.bHaveSmartMines = 0;
 
 FORALL_WEAPON_OBJS (bombP, i) {

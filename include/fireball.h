@@ -22,23 +22,23 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define BLAST_LIFE	(2 * F1_0 / 5)
 #define BLAST_SCALE	(5 * F1_0 / BLAST_LIFE)
 
-tObject *ObjectCreateBadassExplosion(tObject *objp, short nSegment,
+CObject *ObjectCreateBadassExplosion(CObject *objp, short nSegment,
 		vmsVector *position, fix size, ubyte vclipType,
 		fix maxdamage, fix maxdistance, fix maxforce, short parent);
 
 // blows up a badass weapon, creating the badass explosion
-// return the explosion tObject
-tObject *ExplodeBadassWeapon(tObject *obj,vmsVector *pos);
+// return the explosion CObject
+CObject *ExplodeBadassWeapon(CObject *obj,vmsVector *pos);
 
 // blows up the tPlayer with a badass explosion
-// return the explosion tObject
-tObject *ExplodeBadassPlayer(tObject *obj);
-tObject *CreateExplBlast (tObject *objP);
-void ExplodeObject(tObject *obj,fix delayTime);
-void DoExplosionSequence(tObject *obj);
-void DoDebrisFrame(tObject *obj);      // deal with debris for this frame
-void DrawFireball(tObject *obj);
-tObject *ObjectCreateExplosionSub (tObject *objP, short nSegment, vmsVector *vPos, fix xSize, 
+// return the explosion CObject
+CObject *ExplodeBadassPlayer(CObject *obj);
+CObject *CreateExplBlast (CObject *objP);
+void ExplodeObject(CObject *obj,fix delayTime);
+void DoExplosionSequence(CObject *obj);
+void DoDebrisFrame(CObject *obj);      // deal with debris for this frame
+void DrawFireball(CObject *obj);
+CObject *ObjectCreateExplosionSub (CObject *objP, short nSegment, vmsVector *vPos, fix xSize, 
 											  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent);
 
 
@@ -46,18 +46,18 @@ void ExplodeWall(short nSegment, short nSide);
 void DoExplodingWallFrame(void);
 void InitExplodingWalls(void);
 
-short GetExplosionVClip(tObject *obj, int stage);
+short GetExplosionVClip(CObject *obj, int stage);
 
 //------------------------------------------------------------------------------
 
-static inline tObject *ObjectCreateMuzzleFlash (short nSegment, vmsVector * position, fix size, ubyte nVClip)
+static inline CObject *ObjectCreateMuzzleFlash (short nSegment, vmsVector * position, fix size, ubyte nVClip)
 {
 return ObjectCreateExplosionSub (NULL, nSegment, position, size, nVClip, 0, 0, 0, -1);
 }
 
 //------------------------------------------------------------------------------
 
-static inline tObject *ObjectCreateExplosion (short nSegment, vmsVector * position, fix size, ubyte nVClip)
+static inline CObject *ObjectCreateExplosion (short nSegment, vmsVector * position, fix size, ubyte nVClip)
 {
 return ObjectCreateExplosionSub (NULL, nSegment, position, size, nVClip, 0, 0, 0, -1);
 }

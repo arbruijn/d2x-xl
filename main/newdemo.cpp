@@ -71,8 +71,8 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_EOF                0   // EOF
 #define ND_EVENT_START_DEMO         1   // Followed by 16 character, NULL terminated filename of .SAV file to use
 #define ND_EVENT_START_FRAME        2   // Followed by integer frame number, then a fix gameData.time.xFrame
-#define ND_EVENT_VIEWER_OBJECT      3   // Followed by an tObject structure
-#define ND_EVENT_RENDER_OBJECT      4   // Followed by an tObject structure
+#define ND_EVENT_VIEWER_OBJECT      3   // Followed by an CObject structure
+#define ND_EVENT_RENDER_OBJECT      4   // Followed by an CObject structure
 #define ND_EVENT_SOUND              5   // Followed by int soundum
 #define ND_EVENT_SOUND_ONCE         6   // Followed by int soundum
 #define ND_EVENT_SOUND_3D           7   // Followed by int soundum, int angle, int volume
@@ -188,7 +188,7 @@ return 0;
 
 #define VEL_PRECISION 12
 
-void my_extract_shortpos (tObject *objP, tShortPos *spp)
+void my_extract_shortpos (CObject *objP, tShortPos *spp)
 {
 	int nSegment;
 	sbyte *sp;
@@ -219,7 +219,7 @@ objP->mType.physInfo.velocity [Z] = (spp->vel [Z] << VEL_PRECISION);
 int NDFindObject (int nSignature)
 {
 	int 		i;
-	tObject 	*objP = OBJECTS;
+	CObject 	*objP = OBJECTS;
 
 FORALL_OBJSi (objP, i)
 	if ((objP->info.nType != OBJ_NONE) && (objP->info.nSignature == nSignature))
@@ -361,7 +361,7 @@ ndOutFile.WriteMatrix(m);
 
 //	-----------------------------------------------------------------------------
 
-void NDWritePosition (tObject *objP)
+void NDWritePosition (CObject *objP)
 {
 	ubyte			renderType = objP->info.renderType;
 	tShortPos	sp;
@@ -505,7 +505,7 @@ if (bRevertFormat > 0)
 
 //	-----------------------------------------------------------------------------
 
-static void NDReadPosition (tObject *objP, int bSkip)
+static void NDReadPosition (CObject *objP, int bSkip)
 {
 	tShortPos sp;
 	ubyte renderType;
@@ -548,16 +548,16 @@ if (!(bRevertFormat || bSkip)) {
 
 //	-----------------------------------------------------------------------------
 
-tObject *prevObjP = NULL;      //ptr to last tObject read in
+CObject *prevObjP = NULL;      //ptr to last CObject read in
 
-void NDReadObject (tObject *objP)
+void NDReadObject (CObject *objP)
 {
 	int		bSkip = 0;
 
-memset (objP, 0, sizeof (tObject));
+memset (objP, 0, sizeof (CObject));
 /*
  * Do render nType first, since with renderType == RT_NONE, we
- * blow by all other tObject information
+ * blow by all other CObject information
  */
 if (bRevertFormat > 0)
 	bRevertFormat = 0;
@@ -687,7 +687,7 @@ switch (objP->info.controlType) {
 		objP->cType.explInfo.attached.nNext = 
 		objP->cType.explInfo.attached.nPrev = 
 		objP->cType.explInfo.attached.nParent = -1;
-		if (objP->info.nFlags & OF_ATTACHED) {     //attach to previous tObject
+		if (objP->info.nFlags & OF_ATTACHED) {     //attach to previous CObject
 			Assert (prevObjP != NULL);
 			if (prevObjP->info.controlType == CT_EXPLOSION) {
 				if ((prevObjP->info.nFlags & OF_ATTACHED) && (prevObjP->cType.explInfo.attached.nParent != -1))
@@ -777,7 +777,7 @@ if (!bRevertFormat)
 
 //------------------------------------------------------------------------------
 //process this powerup for this frame
-void NDSetPowerupClip (tObject *objP)
+void NDSetPowerupClip (CObject *objP)
 {
 //if (gameStates.app.tick40fps.bTick) 
 	tVClipInfo	*vciP = &objP->rType.vClipInfo;
@@ -788,10 +788,10 @@ vciP->nCurFrame = vcP->xFrameTime ? ((gameData.time.xGame - gameData.demo.xStart
 
 //	-----------------------------------------------------------------------------
 
-void NDWriteObject (tObject *objP)
+void NDWriteObject (CObject *objP)
 {
 	int		life;
-	tObject	o = *objP;
+	CObject	o = *objP;
 
 if ((o.info.renderType > RT_WEAPON_VCLIP) && ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat)))
 	return;
@@ -1017,7 +1017,7 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordRenderObject (tObject * objP)
+void NDRecordRenderObject (CObject * objP)
 {
 if (gameData.demo.bViewWasRecorded [OBJ_IDX (objP)])
 	return;
@@ -1031,7 +1031,7 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordViewerObject (tObject * objP)
+void NDRecordViewerObject (CObject * objP)
 {
 	int	i = OBJ_IDX (objP);
 	int	h = gameData.demo.bViewWasRecorded [i];
@@ -1750,16 +1750,16 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void NDRenderExtras (ubyte, tObject *); extern void MultiApplyGoalTextures ();
+void NDRenderExtras (ubyte, CObject *); extern void MultiApplyGoalTextures ();
 
 int NDReadFrameInfo ()
 {
 	int bDone, nSegment, nTexture, nSide, nObject, soundno, angle, volume, i, shot;
-	tObject *objP;
+	CObject *objP;
 	ubyte nTag, nPrevTag, WhichWindow;
 	static sbyte saved_letter_cockpit;
 	static sbyte saved_rearview_cockpit;
-	tObject extraobj;
+	CObject extraobj;
 	static char LastReadValue=101;
 	tSegment *segP;
 
@@ -1798,7 +1798,7 @@ while (!bDone) {
 			break;
 			}
 
-		case ND_EVENT_VIEWER_OBJECT:        // Followed by an tObject structure
+		case ND_EVENT_VIEWER_OBJECT:        // Followed by an CObject structure
 			WhichWindow = NDReadByte ();
 			if (WhichWindow&15) {
 				NDReadObject (&extraobj);
@@ -1829,7 +1829,7 @@ while (!bDone) {
 				}
 			break;
 
-		case ND_EVENT_RENDER_OBJECT:       // Followed by an tObject structure
+		case ND_EVENT_RENDER_OBJECT:       // Followed by an CObject structure
 			nObject = AllocObject ();
 			if (nObject == -1)
 				break;
@@ -2162,9 +2162,9 @@ while (!bDone) {
 			short nSegment;
 			sbyte nSide;
 			vmsVector pnt;
-			tObject dummy;
+			CObject dummy;
 
-			//create a dummy tObject which will be the weapon that hits
+			//create a dummy CObject which will be the weapon that hits
 			//the monitor. the blowup code wants to know who the parent of the
 			//laser is, so create a laser whose parent is the tPlayer
 			dummy.cType.laserInfo.parent.nType = OBJ_PLAYER;
@@ -2759,7 +2759,7 @@ for (i = nFrames; i; i--) {
 
 /*
  *  routine to interpolate the viewer position.  the current position is
- *  stored in the gameData.objs.viewerP tObject.  Save this position, and read the next
+ *  stored in the gameData.objs.viewerP CObject.  Save this position, and read the next
  *  frame to get all OBJECTS read in.  Calculate the delta playback and
  *  the delta recording frame times between the two frames, then intepolate
  *  the viewers position accordingly.  gameData.demo.xRecordedTime is the time that it
@@ -2775,19 +2775,19 @@ void NDInterpolateFrame (fix d_play, fix d_recorded)
 	fix         mag1;
 	fix			delta_x, delta_y, delta_z;
 	ubyte			renderType;
-	tObject		*curObjP, *objP, *i, *j;
+	CObject		*curObjP, *objP, *i, *j;
 
-	static tObject curObjs [MAX_OBJECTS_D2X];
+	static CObject curObjs [MAX_OBJECTS_D2X];
 
 factor = FixDiv (d_play, d_recorded);
 if (factor > F1_0)
 	factor = F1_0;
 nCurObjs = gameData.objs.nLastObject [0];
 #if 1
-memcpy (curObjs, OBJECTS, sizeof (tObject) * (nCurObjs + 1));
+memcpy (curObjs, OBJECTS, sizeof (CObject) * (nCurObjs + 1));
 #else
 for (i = 0; i <= nCurObjs; i++)
-	memcpy (&(curObjs [i]), &(OBJECTS [i]), sizeof (tObject));
+	memcpy (&(curObjs [i]), &(OBJECTS [i]), sizeof (CObject));
 #endif
 gameData.demo.nVcrState = ND_STATE_PAUSED;
 if (NDReadFrameInfo () == -1) {
@@ -2802,7 +2802,7 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 			renderType = curObjP->info.renderType;
 			//fix delta_p, delta_h, delta_b;
 			//vmsAngVec cur_angles, dest_angles;
-			//  Extract the angles from the tObject orientation matrix.
+			//  Extract the angles from the CObject orientation matrix.
 			//  Some of this code taken from AITurnTowardsVector
 			//  Don't do the interpolation on certain render types which don't use an orientation matrix
 			if ((renderType != RT_LASER) &&
@@ -2827,7 +2827,7 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 					//curObjP->info.position.mOrient = vmsMatrix::CreateFR(fvec1, NULL, &rvec1);
 					}
 				}
-			// Interpolate the tObject position.  This is just straight linear
+			// Interpolate the CObject position.  This is just straight linear
 			// interpolation.
 			delta_x = objP->info.position.vPos[X] - curObjP->info.position.vPos[X];
 			delta_y = objP->info.position.vPos[Y] - curObjP->info.position.vPos[Y];
@@ -2838,15 +2838,15 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 			curObjP->info.position.vPos[X] += delta_x;
 			curObjP->info.position.vPos[Y] += delta_y;
 			curObjP->info.position.vPos[Z] += delta_z;
-				// -- old fashioned way --// stuff the new angles back into the tObject structure
+				// -- old fashioned way --// stuff the new angles back into the CObject structure
 				// -- old fashioned way --				VmAngles2Matrix (&(curObjs [i].info.position.mOrient), &cur_angles);
 			}
 		}
 	}
 
 // get back to original position in the demo file.  Reread the current
-// frame information again to reset all of the tObject stuff not covered
-// with gameData.objs.nLastObject [0] and the tObject array (previously rendered
+// frame information again to reset all of the CObject stuff not covered
+// with gameData.objs.nLastObject [0] and the CObject array (previously rendered
 // OBJECTS, etc....)
 NDBackFrames (1);
 NDBackFrames (1);
@@ -2854,10 +2854,10 @@ if (NDReadFrameInfo () == -1)
 	NDStopPlayback ();
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
 #if 1
-memcpy (OBJECTS, curObjs, sizeof (tObject) * (nCurObjs + 1));
+memcpy (OBJECTS, curObjs, sizeof (CObject) * (nCurObjs + 1));
 #else
 for (i = 0; i <= nCurObjs; i++)
-	memcpy (&(OBJECTS [i]), &(curObjs [i]), sizeof (tObject));
+	memcpy (&(OBJECTS [i]), &(curObjs [i]), sizeof (CObject));
 #endif
 gameData.objs.nLastObject [0] = nCurObjs;
 }
@@ -2962,16 +2962,16 @@ else {
 		if (gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal < gameData.time.xFrame) {
 			d_recorded = gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal;
 			while (gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal < gameData.time.xFrame) {
-				tObject *curObjs, *objP;
+				CObject *curObjs, *objP;
 				int i, j, nObjects, nLevel, nSig;
 
 				nObjects = gameData.objs.nLastObject [0];
-				if (!(curObjs = new tObject [nObjects + 1])) {
-					Warning (TXT_INTERPOLATE_BOTS, sizeof (tObject) * nObjects);
+				if (!(curObjs = new CObject [nObjects + 1])) {
+					Warning (TXT_INTERPOLATE_BOTS, sizeof (CObject) * nObjects);
 					break;
 					}
 				for (i = 0; i <= nObjects; i++)
-					memcpy (curObjs, OBJECTS, (nObjects + 1) * sizeof (tObject));
+					memcpy (curObjs, OBJECTS, (nObjects + 1) * sizeof (CObject));
 				nLevel = gameData.missions.nCurrentLevel;
 				if (NDReadFrameInfo () == -1) {
 					delete[] curObjs;
@@ -2984,9 +2984,9 @@ else {
 						NDStopPlayback ();
 					break;
 					}
-				//  for each new tObject in the frame just read in, determine if there is
-				//  a corresponding tObject that we have been interpolating.  If so, then
-				//  copy that interpolated tObject to the new OBJECTS array so that the
+				//  for each new CObject in the frame just read in, determine if there is
+				//  a corresponding CObject that we have been interpolating.  If so, then
+				//  copy that interpolated CObject to the new OBJECTS array so that the
 				//  interpolated position and orientation can be preserved.
 				for (i = 0; i <= nObjects; i++) {
 					nSig = curObjs [i].info.nSignature;
@@ -3442,10 +3442,10 @@ particleManager.Shutdown ();
 
 //	-----------------------------------------------------------------------------
 
-tObject demoRightExtra, demoLeftExtra;
+CObject demoRightExtra, demoLeftExtra;
 ubyte nDemoDoRight=0, nDemoDoLeft=0;
 
-void NDRenderExtras (ubyte which, tObject *objP)
+void NDRenderExtras (ubyte which, CObject *objP)
 {
 	ubyte w=which>>4;
 	ubyte nType=which&15;
@@ -3456,11 +3456,11 @@ if (which==255) {
 	return;
 	}
 if (w) {
-	memcpy (&demoRightExtra, objP, sizeof (tObject));  
+	memcpy (&demoRightExtra, objP, sizeof (CObject));  
 	nDemoDoRight=nType;
 	}
 else {
-	memcpy (&demoLeftExtra, objP, sizeof (tObject)); 
+	memcpy (&demoLeftExtra, objP, sizeof (CObject)); 
 	nDemoDoLeft = nType;
 	}
 }

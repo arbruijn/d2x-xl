@@ -117,7 +117,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 
 //------------------------------------------------------------------------------
 
-int G3BuildModelFromASE (tObject *objP, int nModel)
+int G3BuildModelFromASE (CObject *objP, int nModel)
 {
 	tASEModel	*pa = gameData.models.modelToASE [1][nModel];
 	tG3Model		*pm;

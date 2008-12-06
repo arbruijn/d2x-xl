@@ -28,12 +28,12 @@ int LightingMethod (void);
 // compute the average dynamic light in a tSegment.  Takes the tSegment number
 fix ComputeSegDynamicLight (int nSegment);
 
-// compute the lighting for an tObject.  Takes a pointer to the tObject,
+// compute the lighting for an CObject.  Takes a pointer to the CObject,
 // and possibly a rotated 3d point.  If the point isn't specified, the
-// tObject's center point is rotated.
-fix ComputeObjectLight(tObject *obj,vmsVector *rotated_pnt);
+// CObject's center point is rotated.
+fix ComputeObjectLight(CObject *obj,vmsVector *rotated_pnt);
 
-void ComputeEngineGlow (tObject *obj, fix *engine_glowValue);
+void ComputeEngineGlow (CObject *obj, fix *engine_glowValue);
 
 // returns ptr to flickering light structure, or NULL if can't find
 tVariableLight *FindVariableLight (int nSegment, int nSide);

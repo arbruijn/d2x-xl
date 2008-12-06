@@ -105,12 +105,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // For muzzle firing casting light.
 #define MUZZLE_QUEUE_MAX    8
 
-void RenderLaser(tObject *obj);
-void find_goal_texture(tObject * obj, ubyte nType, int gun_num, int makeSound, int harmlessFlag);
-void LaserDoWeaponSequence(tObject *obj);
-void CreateFlare(tObject *obj);
+void RenderLaser(CObject *obj);
+void find_goal_texture(CObject * obj, ubyte nType, int gun_num, int makeSound, int harmlessFlag);
+void LaserDoWeaponSequence(CObject *obj);
+void CreateFlare(CObject *obj);
 int LasersAreRelated(int o1, int o2);
-int LaserPlayerFireSpreadDelay (tObject *objP, ubyte laserType, int gun_num, fix spreadr, 
+int LaserPlayerFireSpreadDelay (CObject *objP, ubyte laserType, int gun_num, fix spreadr, 
 										  fix spreadu, fix delayTime, int makeSound, int harmless, short nLightObj);
 int LocalPlayerFireLaser(void);
 void DoMissileFiring(int do_autoselect);
@@ -119,8 +119,8 @@ void NetMissileFiring(int tPlayer, int weapon, int flags);
 int CreateNewWeapon(vmsVector * direction, vmsVector * position, short nSegment, short parent, ubyte nType, int makeSound);
 
 // Fires a laser-nType weapon (a Primary weapon)
-// Fires from tObject nObject, weapon nType weapon_id.
-// Assumes that it is firing from a tPlayer tObject, so it knows which
+// Fires from CObject nObject, weapon nType weapon_id.
+// Assumes that it is firing from a tPlayer CObject, so it knows which
 // gun to fire from.
 // Returns the number of shots actually fired, which will typically be
 // 1, but could be higher for low frame rates when rapidfire weapons,
@@ -129,33 +129,33 @@ extern int LaserFireObject(short nObject, ubyte weapon_id, int level, int flags,
 
 // Easier to call than CreateNewWeapon because it determines the
 // tSegment containing the firing point and deals with it being stuck
-// in an tObject or through a tWall.
-// Fires a laser of nType "weaponType" from an tObject (parent) in the
+// in an CObject or through a tWall.
+// Fires a laser of nType "weaponType" from an CObject (parent) in the
 // direction "direction" from the position "position"
-// Returns tObject number of laser fired or -1 if not possible to fire
+// Returns CObject number of laser fired or -1 if not possible to fire
 // laser.
-short CreateClusterLight (tObject *objP);
+short CreateClusterLight (CObject *objP);
 
 int CreateNewLaserEasy(vmsVector * direction, vmsVector * position, short parent, ubyte weaponType, int makeSound);
 
-// creates a weapon tObject
+// creates a weapon CObject
 int CreateWeaponObject (ubyte weaponType, short nSegment,vmsVector *position, short nParent);
 
 // give up control of the guided missile
 void ReleaseGuidedMissile(int player_num);
 
-void CreateSmartChildren(tObject *objp, int count);
-int FindHomingObject (vmsVector *curpos, tObject *tracker);
-int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP);
+void CreateSmartChildren(CObject *objp, int count);
+int FindHomingObject (vmsVector *curpos, CObject *tracker);
+int UpdateOmegaLightnings (CObject *parentObjP, CObject *targetObjP);
 void StopPrimaryFire (void);
 void StopSecondaryFire (void);
-float MissileSpeedScale (tObject *objP);
+float MissileSpeedScale (CObject *objP);
 
 int GetPlayerGun (int nPlayer, int *bFiring);
 
 void GetPlayerMslLock (void);
-vmsVector *GetGunPoints (tObject *objP, int nGun);
-vmsVector *TransformGunPoint (tObject *objP, vmsVector *vGunPoints, int nGun, 
+vmsVector *GetGunPoints (CObject *objP, int nGun);
+vmsVector *TransformGunPoint (CObject *objP, vmsVector *vGunPoints, int nGun, 
 										fix xDelay, ubyte nLaserType, vmsVector *vMuzzle, vmsMatrix *mP);
 typedef struct tMuzzleInfo {
 	fix         createTime;
@@ -171,7 +171,7 @@ extern int nOmegaDuration [7];
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static inline int LaserPlayerFireSpread (tObject *objP, ubyte laserType, int nGun, fix spreadr, fix spreadu, 
+static inline int LaserPlayerFireSpread (CObject *objP, ubyte laserType, int nGun, fix spreadr, fix spreadu, 
 									int makeSound, int harmless, short nLightObj)
 {
 return LaserPlayerFireSpreadDelay (objP, laserType, nGun, spreadr, spreadu, 0, makeSound, harmless, nLightObj);
@@ -179,7 +179,7 @@ return LaserPlayerFireSpreadDelay (objP, laserType, nGun, spreadr, spreadu, 0, m
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static int inline LaserPlayerFire (tObject *objP, ubyte laserType, int nGun, int makeSound, int harmless, short nLightObj)
+static int inline LaserPlayerFire (CObject *objP, ubyte laserType, int nGun, int makeSound, int harmless, short nLightObj)
 {
 return LaserPlayerFireSpread (objP, laserType, nGun, 0, 0, makeSound, harmless, nLightObj);
 }
@@ -200,14 +200,14 @@ return WeaponIsPlayerMine (nId) || (nId == ROBOT_SMARTMINE_ID);
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static inline int ObjIsPlayerMine (tObject *objP)
+static inline int ObjIsPlayerMine (CObject *objP)
 {
 return (objP->info.nType == OBJ_WEAPON) && WeaponIsPlayerMine (objP->info.nId);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static inline int ObjIsMine (tObject *objP)
+static inline int ObjIsMine (CObject *objP)
 {
 return (objP->info.nType == OBJ_WEAPON) && WeaponIsMine (objP->info.nId);
 }

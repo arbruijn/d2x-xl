@@ -113,13 +113,13 @@ extern tPowerupTypeInfo powerupInfo[MAX_POWERUP_TYPES];
 
 void InitPowerupTables (void);
 
-void DrawPowerup(tObject *objP);
+void DrawPowerup(CObject *objP);
 
 //returns true if powerup consumed
-int DoPowerup(tObject *objP, int nPlayer);
+int DoPowerup(CObject *objP, int nPlayer);
 
 //process (animate) a powerup for one frame
-void DoPowerupFrame(tObject *objP);
+void DoPowerupFrame(CObject *objP);
 void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject);
 void UpdateFlagClips (void);
 
@@ -151,8 +151,8 @@ short PowerupsOnShips (int nPowerup);
 void SpawnLeftoverPowerups (short nObject);
 void CheckInventory (void);
 
-int PickupEnergyBoost (tObject *objP, int nPlayer);
-int PickupEquipment (tObject *objP, int nEquipment, const char *pszHave, const char *pszGot, int nPlayer);
+int PickupEnergyBoost (CObject *objP, int nPlayer);
+int PickupEquipment (CObject *objP, int nEquipment, const char *pszHave, const char *pszGot, int nPlayer);
 
 #define	PowerupsInMine(_nPowerup) \
 			((gameStates.multi.nGameType == UDP_GAME) ? \

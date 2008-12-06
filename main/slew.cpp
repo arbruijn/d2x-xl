@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //variables for slew system
 
-tObject *slewObjP=NULL;	//what tObject is slewing, or NULL if none
+CObject *slewObjP=NULL;	//what CObject is slewing, or NULL if none
 
 #define JOY_NULL 15
 #define ROT_SPEED 8		//rate of rotation while key held down
@@ -40,8 +40,8 @@ int slew_stop(void);
 
 
 // -------------------------------------------------------------------
-//say start slewing with this tObject
-void slew_init(tObject *objP)
+//say start slewing with this CObject
+void slew_init(CObject *objP)
 {
 	slewObjP = objP;
 
@@ -75,7 +75,7 @@ slewObjP->info.position.mOrient[FVEC][X] =
 slewObjP->info.position.mOrient[FVEC][Y] = 0;
 }
 
-int do_slew_movement(tObject *objP, int check_keys, int check_joy )
+int do_slew_movement(CObject *objP, int check_keys, int check_joy )
 {
 	int moved = 0;
 	vmsVector svel, movement;				//scaled velocity (per this frame)

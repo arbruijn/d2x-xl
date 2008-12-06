@@ -284,7 +284,7 @@ return TISplitPoly (split, nDepth + 1) && TISplitPoly (split + 1, nDepth + 1);
 
 //------------------------------------------------------------------------------
 
-int TIAddObject (tObject *objP)
+int TIAddObject (CObject *objP)
 {
 	tTranspObject	item;
 	vmsVector		vPos;
@@ -486,7 +486,7 @@ return AddTranspItem (tiSpark, &item, sizeof (item), vPos [Z], vPos [Z]);
 
 //------------------------------------------------------------------------------
 
-int TIAddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, tObject *objP)
+int TIAddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP)
 {
 	tTranspSphere	item;
 	vmsVector		vPos;
@@ -1268,7 +1268,7 @@ gameOpts->render.bDepthSort = bDepthSort;
 
 void TIRenderBullet (CParticle *pParticle)
 {
-	tObject	o;
+	CObject	o;
 
 memset (&o, 0, sizeof (o));
 o.info.nType = OBJ_POWERUP;
