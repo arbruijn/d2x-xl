@@ -19,7 +19,7 @@ template < class _T > class CStack : public CArray<_T> {
 			}
 
 		inline bool Push (_T elem) { 
-			if (m_tos <= m_data.size) 
+			if (m_tos <= m_data.length) 
 				return false;
 			m_data.buffer [m_tos++] = elem;
 			return true;
@@ -42,9 +42,9 @@ template < class _T > class CStack : public CArray<_T> {
 			Init ();
 			}
 
-		inline _T *Create (uint size) {
+		inline _T *Create (uint length) {
 			Destroy ();
-			return CArray<_T>::Create (size);
+			return CArray<_T>::Create (length);
 			}
 	};
 
