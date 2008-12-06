@@ -1747,19 +1747,24 @@ typedef struct tSegmentData {
 
 //------------------------------------------------------------------------------
 
-typedef struct tWallData {
-	tWall						walls [MAX_WALLS];
-	tExplWall				explWalls [MAX_EXPLODING_WALLS];
-	tActiveDoor				activeDoors [MAX_DOORS];
-	tCloakingWall			cloaking [MAX_CLOAKING_WALLS];
-	tWallClip				anims [2][MAX_WALL_ANIMS];
-	int						bitmaps [MAX_WALL_ANIMS];
-	int						nWalls;
-	int						nOpenDoors; 
-	int						nCloaking;
-	int						nAnims [2];
-	tWallClip*				animP;
-} tWallData;
+class CWallData {
+	public:
+		CArray<tWall>				walls ; //[MAX_WALLS];
+		CArray<tExplWall>			explWalls ; //[MAX_EXPLODING_WALLS];
+		CArray<tActiveDoor>		activeDoors ; //[MAX_DOORS];
+		CArray<tCloakingWall>	cloaking ; //[MAX_CLOAKING_WALLS];
+		CArray<tWallClip>			anims [2]; //[MAX_WALL_ANIMS];
+		CArray<int>					bitmaps ; //[MAX_WALL_ANIMS];
+		int							nWalls;
+		int							nOpenDoors; 
+		int							nCloaking;
+		int							nAnims [2];
+		CArray<tWallClip>			animP;
+
+	public:
+		CWallData ();
+		~CWallData () {}
+};
 
 //------------------------------------------------------------------------------
 
@@ -2146,22 +2151,26 @@ typedef struct tG3Model {
 
 #define MAX_POLYGON_VERTS 1000
 
-typedef struct tRobotData {
-	char*						robotNames [MAX_ROBOT_TYPES][ROBOT_NAME_LENGTH];
-	tRobotInfo				info [2][MAX_ROBOT_TYPES];
-	tRobotInfo				defaultInfo [MAX_ROBOT_TYPES];
-	tJointPos				joints [MAX_ROBOT_JOINTS];
-	tJointPos				defaultJoints [MAX_ROBOT_JOINTS];
-	int						nJoints;
-	int						nDefaultJoints;
-	int						nCamBotId;
-	int						nCamBotModel;
-	int						nTypes [2];
-	int						nDefaultTypes;
-	int						bReplacementsLoaded;
-	tRobotInfo*				infoP;
-	CArray<tPOFObject>	pofData;
-} tRobotData;
+class CRobotData {
+	public:
+		char*						robotNames [MAX_ROBOT_TYPES][ROBOT_NAME_LENGTH];
+		CArray<tRobotInfo>	info [2]; //[MAX_ROBOT_TYPES];
+		CArray<tRobotInfo>	defaultInfo ; //[MAX_ROBOT_TYPES];
+		CArray<tJointPos>		joints ; //[MAX_ROBOT_JOINTS];
+		CArray<tJointPos>		defaultJoints ; //[MAX_ROBOT_JOINTS];
+		int						nJoints;
+		int						nDefaultJoints;
+		int						nCamBotId;
+		int						nCamBotModel;
+		int						nTypes [2];
+		int						nDefaultTypes;
+		int						bReplacementsLoaded;
+		CArray<tRobotInfo>	infoP;
+		CArray<tPOFObject>	pofData;
+	public:
+		CRobotData ();
+		~CRobotData () {}
+};
 
 #define D1ROBOT(_id)		(gameStates.app.bD1Mission && ((_id) < gameData.bots.nTypes [1]))
 #define ROBOTINFO(_id)	gameData.bots.info [D1ROBOT (_id)][_id]
@@ -2237,13 +2246,18 @@ class CTextureData {
 
 //------------------------------------------------------------------------------
 
-typedef struct tEffectData {
-	tEffectClip			effects [2][MAX_EFFECTS];
-	tVideoClip 			vClips [2][VCLIP_MAXNUM];
-	int					nEffects [2];
-	int 					nClips [2];
-	tEffectClip			*effectP;
-	tVideoClip			*vClipP;
+class CEffectData {
+	public:
+		CArray<tEffectClip>	effects [2]; //[MAX_EFFECTS];
+		CArray<tVideoClip>	vClips [2]; //[VCLIP_MAXNUM];
+		int						nEffects [2];
+		int 						nClips [2];
+		CArray<tEffectClip>	effectP;
+		CArray<tVideoClip>	vClipP;
+
+	public:
+		CEffectData ();
+		~CEffectData () {}
 } tEffectData;
 
 typedef struct tShipData {
@@ -3164,12 +3178,12 @@ typedef struct tCockpitData {
 class CGameData {
 	public:
 		tSegmentData		segs;
-		tWallData			walls;
+		CWallData			walls;
 		tTriggerData		trigs;
 		tObjectData			objs;
-		tRobotData			bots;
+		CRobotData			bots;
 		tRenderData			render;
-		tEffectData			eff;
+		CEffectData			eff;
 		CPigData				pig;
 		tModelData			models;
 		tMultiplayerData	multiplayer;

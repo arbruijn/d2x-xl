@@ -2343,9 +2343,43 @@ SetDataVersion (-1);
 
 // ----------------------------------------------------------------------------
 
-CSoundData::CSoundData ()
+CRobotData::CRobotData () 
+{
+for (int i = 0; i < 2; i++)
+	info [i].Create (MAX_ROBOT_TYPES);
+defaultInfo.Create (MAX_ROBOT_TYPES);
+joints .Create (MAX_ROBOT_JOINTS);
+defaultJoints.Create (MAX_ROBOT_JOINTS);
+}
+
+// ----------------------------------------------------------------------------
+
+CWallData::CWallData ()
+{
+walls.Create (MAX_WALLS);
+explWalls.Create (MAX_EXPLODING_WALLS);
+activeDoors.Create (MAX_DOORS);
+cloaking.Create (MAX_CLOAKING_WALLS);
+for (int i = 0; i < 2; i++)
+	anims [i].Create (MAX_WALL_ANIMS);
+bitmaps.Create (MAX_WALL_ANIMS);
+}
+
+// ----------------------------------------------------------------------------
+
+CEffectData::CEffectData ()
 {
 for (int i = 0; i < 2; i++) {
+	effects [i].Create (MAX_EFFECTS);
+	vClips [i].Create (VCLIP_MAXNUM);
+	}
+}
+
+// ----------------------------------------------------------------------------
+
+CSoundData::CSoundData ()
+{
+for (int i = 0; i < 2; i++)
 	sounds [i].Create (MAX_SOUND_FILES); //[MAX_SOUND_FILES];
 sounds [0].Clone (soundP);
 }
