@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define LIGHT_DATA_VERSION 10
 
 #define	VERTVIS(_nSegment, _nVertex) \
-	(gameData.segs.bVertVis ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
+	(gameData.segs.bVertVis.Buffer () ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
 
 //------------------------------------------------------------------------------
 
@@ -229,9 +229,9 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 	h = (nMaxLights < n) ? nMaxLights : n;
 	k = nVertex * MAX_NEAREST_LIGHTS;
 	for (l = 0; l < h; l++)
-		gameData.render.lights.dynamic.nNearestVertLights [k + l] = pDists [l].nIndex;
+		gameData.render.lights.dynamic.nearestVertLights [k + l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
-		gameData.render.lights.dynamic.nNearestVertLights [k + l] = -1;
+		gameData.render.lights.dynamic.nearestVertLights [k + l] = -1;
 	}
 delete[] pDists;
 return 1;
@@ -246,7 +246,7 @@ inline int SetVertVis (short nSegment, short nVertex, ubyte b)
 if (bSemaphore)
 	return 0;
 bSemaphore = 1;
-if (gameData.segs.bVertVis)
+if (gameData.segs.bVertVis.Buffer ())
 	gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 3)] |= (1 << (nVertex & 7));
 bSemaphore = 0;
 return 1;
@@ -387,10 +387,9 @@ void ComputeSegmentVisibility (int startI)
 PrintLog ("computing segment visibility (%d)\n", startI);
 if (startI <= 0) {
 	i = sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS;
-	if (!(gameData.segs.bVertVis = new ubyte [i]))
+	if (!gameData.segs.bVertVis.Create (i))
 		return;
-	memset (gameData.segs.bVertVis, 0, i);
-	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * gameData.segs.nSegments * SEGVIS_FLAGS);
+	gameData.segs.bVertVis.Clear ();
 	}
 else if (!gameData.segs.bVertVis)
 	return;
@@ -499,12 +498,12 @@ if (bOk)
 			((ldh.bPerPixelLighting != 0) == (gameStates.render.bPerPixelLighting != 0)));
 if (bOk)
 	bOk =
-			(cf.Read (gameData.segs.bSegVis, sizeof (ubyte) * ldh.nSegments * SEGVIS_FLAGS, 1) == 1) &&
+			(cf.Read (gameData.segs.bSegVis.Buffer (), sizeof (ubyte) * ldh.nSegments * SEGVIS_FLAGS, 1) == 1) &&
 #if 0
-			(cf.Read (gameData.segs.bVertVis, sizeof (ubyte) * ldh.nVertices * VERTVIS_FLAGS, 1) == 1) &&
+			(cf.Read (gameData.segs.bVertVis.Buffer (), sizeof (ubyte) * ldh.nVertices * VERTVIS_FLAGS, 1) == 1) &&
 #endif
-			(cf.Read (gameData.render.lights.dynamic.nearestSegLights, sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1) == 1) &&
-			(cf.Read (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1) == 1);
+			(cf.Read (gameData.render.lights.dynamic.nearestSegLights.Buffer (), sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1) == 1) &&
+			(cf.Read (gameData.render.lights.dynamic.nearestVertLights.Buffer (), sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1) == 1);
 cf.Close ();
 return bOk;
 }
@@ -529,12 +528,12 @@ if (!gameStates.app.bCacheLights)
 if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
-		(cf.Write (gameData.segs.bSegVis, sizeof (ubyte) * ldh.nSegments * SEGVIS_FLAGS, 1) == 1) &&
+		(cf.Write (gameData.segs.bSegVis.Buffer (), sizeof (ubyte) * ldh.nSegments * SEGVIS_FLAGS, 1) == 1) &&
 #if 0
-		(cf.Write (gameData.segs.bVertVis, sizeof (ubyte) * ldh.nVertices * VERTVIS_FLAGS, 1) == 1) &&
+		(cf.Write (gameData.segs.bVertVis.Buffer (), sizeof (ubyte) * ldh.nVertices * VERTVIS_FLAGS, 1) == 1) &&
 #endif
-		(cf.Write (gameData.render.lights.dynamic.nearestSegLights, sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1) == 1) &&
-		(cf.Write (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1) == 1);
+		(cf.Write (gameData.render.lights.dynamic.nearestSegLights.Buffer (), sizeof (short) * ldh.nSegments * MAX_NEAREST_LIGHTS, 1) == 1) &&
+		(cf.Write (gameData.render.lights.dynamic.nearestVertLights.Buffer (), sizeof (short) * ldh.nVertices * MAX_NEAREST_LIGHTS, 1) == 1);
 cf.Close ();
 return bOk;
 }
@@ -641,7 +640,7 @@ else {
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}
-delete[] gameData.segs.bVertVis;
+gameData.segs.bVertVis.Destroy ();
 PrintLog ("Saving precompiled light data\n");
 SaveLightData (nLevel);
 }

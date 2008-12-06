@@ -199,16 +199,16 @@ class CParticleSystem : public tParticleSystem {
 class CParticleManager {
 	private:
 		CParticleSystem	m_systems [MAX_PARTICLE_SYSTEMS];
-		short*				m_objectSystems;
+		CArray<short>		m_objectSystems;
 		int					m_nFree;
 		int					m_nUsed;
 
 	public:
-		CParticleManager () { m_objectSystems = NULL; };
+		CParticleManager () {}
 		~CParticleManager ();
 		void Init (void);
 		inline void InitObjects (void)
-			{ memset (m_objectSystems, 0xff, sizeof (*m_objectSystems) * MAX_OBJECTS); }
+			{ m_objectSystems.Clear (0xff); }
 		int Update (void);
 		void Render (void);
 		int Create (vmsVector *vPos, vmsVector *vDir, vmsMatrix *mOrient,

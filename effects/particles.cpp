@@ -1612,7 +1612,7 @@ for (i = 0; i < VERT_BUFFER_SIZE; i++, pf++) {
 	*pf++ = 1.0f;
 	}
 #endif
-if (!m_objectSystems)
+if (!m_objectSystems.Buffer ())
 	GETMEM (short, m_objectSystems, MAX_OBJECTS, (char) 0xff);
 for (i = 0, j = 1; j < MAX_PARTICLE_SYSTEMS; i++, j++)
 	m_systems [i].Init (i, j);
@@ -1761,7 +1761,7 @@ CParticleManager::~CParticleManager ()
 {
 Shutdown ();
 particleImageManager.FreeAll ();
-delete[] m_objectSystems;
+m_objectSystems.Destroy ();
 }
 
 //	-----------------------------------------------------------------------------

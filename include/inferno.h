@@ -1429,9 +1429,9 @@ typedef struct tLightData {
 	CArray<fix>						dynamicLight;
 	CArray<tRgbColorf>			dynamicColor;
 	CArray<ubyte>					bGotDynColor;
-	char								bGotGlobalDynColor;
-	char								bStartDynColoring;
-	char								bInitDynColoring;
+	ubyte								bGotGlobalDynColor;
+	ubyte								bStartDynColoring;
+	ubyte								bInitDynColoring;
 	tRgbColorf						globalDynColor;
 	CArray<short>					vertices;
 	CArray<sbyte>					vertexFlags;
@@ -1440,6 +1440,9 @@ typedef struct tLightData {
 	CArray<GLuint>					coronaQueries;
 	CArray<GLuint>					coronaSamples;
 } tLightData;
+
+int operator- (tLightDeltaIndex* o, CArray<tLightDeltaIndex>& a) { return a.Index (o); }
+int operator- (tLightDelta* o, CArray<tLightDelta>& a) { return a.Index (o); }
 
 //------------------------------------------------------------------------------
 
@@ -1697,6 +1700,10 @@ typedef struct tFaceData {
 	int						iOvlTexCoord;
 	int						iLMapTexCoord;
 	} tFaceData;
+
+int operator- (grsTriangle* o, CArray<grsTriangle>& a) { return a.Index (o); }
+int operator- (fVector3* o, CArray<fVector3>& a) { return a.Index (o); }
+int operator- (tTexCoord2f* o, CArray<tTexCoord2f>& a) { return a.Index (o); }
 
 typedef struct tSegList {
 	int					nSegments;

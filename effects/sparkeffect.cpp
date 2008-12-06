@@ -212,7 +212,7 @@ if (gameOpts->render.effects.bEnergySparks) {
 
 int BuildSparkSegList (void)
 {
-	tSegment2	*seg2P = gameData.segs.segment2s;
+	tSegment2	*seg2P = gameData.segs.segment2s.Buffer ();
 	short			nSegment;
 
 gameData.matCens.nSparkSegs = 0;

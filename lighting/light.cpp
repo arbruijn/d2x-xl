@@ -276,7 +276,7 @@ void InitDynColoring (void)
 {
 if (!gameOpts->render.nLightingMethod && gameData.render.lights.bInitDynColoring) {
 	gameData.render.lights.bInitDynColoring = 0;
-	memset (gameData.render.lights.bGotDynColor, 0, sizeof (*gameData.render.lights.bGotDynColor) * gameData.segs.nVertices);
+	gameData.render.lights.bGotDynColor.Clear ();
 	}
 gameData.render.lights.bGotGlobalDynColor = 0;
 gameData.render.lights.bStartDynColoring = 0;
@@ -284,7 +284,7 @@ gameData.render.lights.bStartDynColoring = 0;
 
 // ----------------------------------------------------------------------------------------------
 
-void SetDynColor (tRgbaColorf *color, tRgbColorf *dynColorP, int nVertex, char *bGotDynColorP, int bForce)
+void SetDynColor (tRgbaColorf *color, tRgbColorf *dynColorP, int nVertex, ubyte *bGotDynColorP, int bForce)
 {
 if (!color)
 	return;
@@ -331,14 +331,8 @@ return false;
 
 // ----------------------------------------------------------------------------------------------
 
-void ApplyLight (
-	fix			xObjIntensity,
-	int			nObjSeg,
-	vmsVector	*vObjPos,
-	int			nRenderVertices,
-	short			*renderVertexP,
-	int			nObject,
-	tRgbaColorf	*color)
+void ApplyLight (fix xObjIntensity, int nObjSeg, vmsVector *vObjPos, int nRenderVertices,
+					  CArray<short>& renderVertices,	int nObject, tRgbaColorf *color)
 {
 	int			iVertex, bUseColor, bForceColor;
 	int			nVertex;
@@ -457,7 +451,7 @@ if (xObjIntensity) {
 			}
 		// -- for (iVertex=gameData.app.nFrameCount&1; iVertex<nRenderVertices; iVertex+=2) {
 		for (iVertex = 0; iVertex < nRenderVertices; iVertex++) {
-			nVertex = renderVertexP [iVertex];
+			nVertex = renderVertices [iVertex];
 #if DBG
 			if (nVertex == nDbgVertex)
 				nVertex = nVertex;
@@ -510,7 +504,7 @@ if (xObjIntensity) {
 #define	FLASH_LEN_FIXED_SECONDS	 (F1_0/3)
 #define	FLASH_SCALE					 (3*F1_0/FLASH_LEN_FIXED_SECONDS)
 
-void CastMuzzleFlashLight (int nRenderVertices, short *renderVertexP)
+void CastMuzzleFlashLight (int nRenderVertices, CArray<short>& renderVertices)
 {
 	int	i;
 	short	time_since_flash;
@@ -522,7 +516,7 @@ for (i = 0; i < MUZZLE_QUEUE_MAX; i++) {
 		if (time_since_flash < FLASH_LEN_FIXED_SECONDS)
 			ApplyLight ((FLASH_LEN_FIXED_SECONDS - time_since_flash) * FLASH_SCALE,
 							gameData.muzzle.info [i].nSegment, &gameData.muzzle.info [i].pos,
-							nRenderVertices, renderVertexP, -1, NULL);
+							nRenderVertices, renderVertices, -1, NULL);
 		else
 			gameData.muzzle.info [i].createTime = 0;		// turn off this muzzle flash
 		}
@@ -719,7 +713,7 @@ void SetDynamicLight (void)
 nHeadlights = 0;
 if (!gameOpts->render.debug.bDynamicLight)
 	return;
-memset (gameData.render.lights.vertexFlags, 0, gameData.segs.nLastVertex + 1);
+gameData.render.lights.vertexFlags.Clear ();
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameData.render.lights.bStartDynColoring = 1;
 if (gameData.render.lights.bInitDynColoring) {
@@ -761,7 +755,7 @@ if (!gameOpts->render.nLightingMethod) {
 		}
 	}
 CastMuzzleFlashLight (nRenderVertices, gameData.render.lights.vertices);
-memset (gameData.render.lights.newObjects, 0, sizeof (gameData.render.lights.newObjects));
+gameData.render.lights.newObjects.Clear ();
 if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.nLightingMethod) {
 	tLightningLight	*pll;
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
@@ -1271,8 +1265,7 @@ for (i=0; i <= gameData.segs.nLastSegment; i++) {
 //	to change the status of static light in the mine.
 void ClearLightSubtracted (void)
 {
-memset (gameData.render.lights.subtracted, 0,
-		  gameData.segs.nLastSegment * sizeof (gameData.render.lights.subtracted [0]));
+gameData.render.lights.subtracted.Clear ();
 }
 
 //------------------------------------------------------------------------------
@@ -1288,7 +1281,7 @@ void ComputeAllStaticLight (void)
 	tSide		*sideP;
 	fix		xTotal;
 
-for (i = 0, segP = gameData.segs.segments; i <= gameData.segs.nLastSegment; i++, segP++) {
+for (i = 0, segP = gameData.segs.segments.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++) {
 	xTotal = 0;
 	for (h = j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
 		if ((segP->children [j] < 0) || IS_WALL (sideP->nWall)) {

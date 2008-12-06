@@ -1035,7 +1035,7 @@ for (i = 0; i < 2; i++, m_triP++) {
 
 void CQuadMeshBuilder::BuildSlidingFaceList (void)
 {
-	tFace	*faceP = gameData.segs.faces.faces;
+	tFace	*faceP = gameData.segs.faces.faces.Buffer ();
 
 gameData.segs.faces.slidingFaces = NULL;
 for (int i = gameData.segs.nFaces; i; i--, faceP++)

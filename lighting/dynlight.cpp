@@ -650,8 +650,8 @@ void AddDynGeometryLights (void)
 	int			nFace, nSegment, nSide, nTexture, nLight;
 	tFace		*faceP;
 	tFaceColor	*pc;
-	short			*pSegLights, *pVertLights, *pOwners;
-	ubyte			*pVariableLights;
+	short			*segLightP, *vertLightP, *ownerP;
+	ubyte			*variableLightP;
 
 #if 0
 for (nTexture = 0; nTexture < 910; nTexture++)
@@ -666,26 +666,26 @@ gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMu
 memset (&gameData.render.lights.dynamic.headlights, 0, sizeof (gameData.render.lights.dynamic.headlights));
 //glEnable (GL_LIGHTING);
 if (gameOpts->render.nLightingMethod)
-	memset (gameData.render.color.vertices, 0, sizeof (*gameData.render.color.vertices) * MAX_VERTICES);
+	gameData.render.color.vertices.Clear ();
 //memset (gameData.render.color.ambient, 0, sizeof (*gameData.render.color.ambient) * MAX_VERTICES);
-pSegLights = gameData.render.lights.dynamic.nearestSegLights;
-pVertLights = gameData.render.lights.dynamic.nNearestVertLights;
-pVariableLights = gameData.render.lights.dynamic.variableVertLights;
-pOwners = gameData.render.lights.dynamic.owners;
+segLightP = gameData.render.lights.dynamic.nearestSegLights.Buffer ();
+vertLightP = gameData.render.lights.dynamic.nearestVertLights.Buffer ();
+variableLightP = gameData.render.lights.dynamic.variableVertLights.Buffer ();
+ownerP = gameData.render.lights.dynamic.owners.Buffer ();
 memset (&gameData.render.lights.dynamic, 0xff, sizeof (gameData.render.lights.dynamic));
 memset (&gameData.render.lights.dynamic.shader, 0, sizeof (gameData.render.lights.dynamic.shader));
 memset (&gameData.render.lights.dynamic.shader.activeLights, 0, sizeof (gameData.render.lights.dynamic.shader.activeLights));
-memset (pSegLights, 0xff, sizeof (*pSegLights) * MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
-memset (pVertLights, 0xff, sizeof (*pVertLights) * MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
-memset (pOwners, 0xff, sizeof (*pOwners) * MAX_OBJECTS);
-gameData.render.lights.dynamic.nearestSegLights = pSegLights;
-gameData.render.lights.dynamic.nNearestVertLights = pVertLights;
-gameData.render.lights.dynamic.variableVertLights = pVariableLights;
-gameData.render.lights.dynamic.owners = pOwners;
+memset (segLightP, 0xff, sizeof (*segLightP) * MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
+memset (vertLightP, 0xff, sizeof (*vertLightP) * MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
+memset (ownerP, 0xff, sizeof (*ownerP) * MAX_OBJECTS);
+gameData.render.lights.dynamic.nearestSegLights.SetBuffer (segLightP);
+gameData.render.lights.dynamic.nearestVertLights.SetBuffer (vertLightP);
+gameData.render.lights.dynamic.variableVertLights.SetBuffer (variableLightP);
+gameData.render.lights.dynamic.owners.SetBuffer (ownerP);
 gameData.render.lights.dynamic.nLights =
 gameData.render.lights.dynamic.nVariable = 0;
 gameData.render.lights.dynamic.material.bValid = 0;
-for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces; nFace; nFace--, faceP++) {
+for (nFace = gameData.segs.nFaces, faceP = gameData.segs.faces.faces.Buffer (); nFace; nFace--, faceP++) {
 	nSegment = faceP->nSegment;
 	if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX)
 		continue;
@@ -887,7 +887,7 @@ return psl;
 
 ubyte VariableVertexLights (int nVertex)
 {
-	short	*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
+	short	*pnl = gameData.render.lights.dynamic.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	short	i, j;
 	ubyte	h;
 
@@ -909,7 +909,7 @@ void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte 
 {
 if (bStatic || gameData.render.lights.dynamic.variableVertLights [nVertex]) {
 	PROF_START
-	short						*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
+	short						*pnl = gameData.render.lights.dynamic.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	tShaderLightIndex		*sliP = &gameData.render.lights.dynamic.shader.index [0][nThread];
 	short						i, j, nActiveLightI = sliP->nActive;
 	tShaderLight			*psl;
@@ -1085,7 +1085,7 @@ void ResetNearestVertexLights (int nVertex, int nThread)
 {
 //if (gameOpts->render.nLightingMethod)
 	{
-	short				*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
+	short				*pnl = gameData.render.lights.dynamic.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	short				i, j;
 	tShaderLight	*psl;
 
@@ -1452,7 +1452,7 @@ return psc;
 
 void ResetSegmentLights (void)
 {
-	tFaceColor	*psc = gameData.render.color.segments;
+	tFaceColor	*psc = gameData.render.color.segments.Buffer ();
 
 for (short i = gameData.segs.nSegments; i; i--, psc++)
 	psc->index = -1;
@@ -1500,18 +1500,18 @@ TransformDynLights (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++)
 	gameData.render.lights.dynamic.variableVertLights [i] = VariableVertexLights (i);
 if (RENDERPATH && gameStates.render.bPerPixelLighting && lightmapManager.HaveLightmaps ()) {
-	memset (gameData.render.color.ambient, 0, gameData.segs.nVertices * sizeof (*gameData.render.color.ambient));
+	gameData.render.color.ambient.Clear ();
 	return;
 	}
 if (gameOpts->render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
-		tFaceColor		*pfh, *pf = gameData.render.color.ambient;
+		tFaceColor		*pfh, *pf = gameData.render.color.ambient.Buffer ();
 		tSegment2		*seg2P;
 
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
 	if (!RunRenderThreads (rtStaticVertLight))
 		ComputeStaticVertexLights (0, gameData.segs.nVertices, 0);
-	pf = gameData.render.color.ambient;
-	for (i = 0, seg2P = gameData.segs.segment2s; i < gameData.segs.nSegments; i++, seg2P++) {
+	pf = gameData.render.color.ambient.Buffer ();
+	for (i = 0, seg2P = gameData.segs.segment2s.Buffer (); i < gameData.segs.nSegments; i++, seg2P++) {
 		if (seg2P->special == SEGMENT_IS_SKYBOX) {
 			short	*sv = SEGMENTS [i].verts;
 			for (j = 8; j; j--, sv++) {
