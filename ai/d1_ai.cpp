@@ -797,7 +797,7 @@ void SetNextPrimaryFireTime(tAILocalInfo *ailP, tRobotInfo *botInfoP)
 //	If playerP is cloaked, then robotP probably didn't actually collide, deal with that here.
 void DoD1AIRobotHitAttack(tObject *robotP, tObject *playerP, vmsVector *vCollision)
 {
-	tAILocalInfo	*ailP = &gameData.ai.localInfo [robotP-OBJECTS];
+	tAILocalInfo	*ailP = &gameData.ai.localInfo [OBJECTS.Index (robotP)];
 	tRobotInfo		*botInfoP = &gameData.bots.info [1][robotP->info.nId];
 
 //#if DBG

@@ -545,49 +545,6 @@ typedef struct tObjectInfo {
 	fix     				xLifeLeft;      // how long until goes away, or 7fff if immortal
 } tObjectInfo;
 
-class CObjectInfo : public CTransformation, public CObjContainerInfo {
-	private:
-		tObjectInfo	m_info;
-	public:
-		CObjectInfo () { memset (&m_info, 0, sizeof (m_info)); }
-
-		inline tObjectInfo* GetInfo (void) { return &m_info; }; 
-		inline void GetInfo (tObjectInfo* info) { m_info = *info; }; 
-		inline int GetSignature () { return m_info.nSignature; }
-		inline ubyte GetId () { return m_info.nId; }
-		inline fix GetSize () { return m_info.xSize; }
-		inline fix GetShields () { return m_info.xShields; }
-		inline fix GetLifeLeft () { return m_info.xLifeLeft; }
-		inline short GetSegment () { return m_info.nSegment; }
-		inline short GetAttachedObj () { return m_info.nAttachedObj; }
-		inline short GetNextInSeg () { return m_info.nNextInSeg; }
-		inline short GetPrevInSeg () { return m_info.nPrevInSeg; }
-		inline sbyte GetCreator () { return m_info.nCreator; }
-		inline ubyte GetType () { return m_info.nType; }
-		inline ubyte GetControlType () { return m_info.controlType; }
-		inline ubyte GetMovementType () { return m_info.movementType; }
-		inline ubyte GetRenderType () { return m_info.renderType; }
-		inline ubyte GetFlags () { return m_info.nFlags; }
-		inline vmsVector GetLastPos () { return m_info.vLastPos; }
-
-		inline void SetSignature (int nSignature) { m_info.nSignature = nSignature; }
-		inline void SetId (ubyte nId) { m_info.nId = nId; }
-		inline void SetSize (fix xSize) { m_info.xSize = xSize; }
-		inline void SetShields (fix xShields) { m_info.xShields = xShields; }
-		inline void SetLifeLeft (fix xLifeLeft) { m_info.xLifeLeft = xLifeLeft; }
-		inline void SetSegment (short nSegment) { m_info.nSegment = nSegment; }
-		inline void SetAttachedObj (short nAttachedObj) { m_info.nAttachedObj = nAttachedObj; }
-		inline void SetNextInSeg (short nNextInSeg) { m_info.nNextInSeg = nNextInSeg; }
-		inline void SetPrevInSeg ( short nPrevInSeg) { m_info.nPrevInSeg = nPrevInSeg; }
-		inline void SetCreator (sbyte nCreator) { m_info.nCreator = nCreator; }
-		inline void SetType (ubyte nType) { m_info.nType = nType; }
-		inline void SetControlType (ubyte controlType) { m_info.controlType = controlType; }
-		inline void SetMovementType (ubyte movementType) { m_info.movementType = movementType; }
-		inline void SetRenderType (ubyte renderType) { m_info.renderType = renderType; }
-		inline void SetFlags (ubyte nFlags) { m_info.nFlags = nFlags; }
-		inline void SetLastPos (const vmsVector *vLastPos) { m_info.vLastPos = *vLastPos; }
-};
-
 // TODO get rid of the structs (former unions) and the union
 typedef struct tBaseObject {
 	tObjectInfo			info;
@@ -615,6 +572,47 @@ typedef struct tBaseObject {
 	short   nPad;
 #endif
 } tBaseObject;
+
+class CObjectInfo : public CTransformation, public CObjContainerInfo, private tBaseObject {
+	public:
+		CObjectInfo () { memset (&info, 0, sizeof (info)); }
+
+		inline tBaseObject* GetInfo (void) { return &info; }; 
+		inline void GetInfo (tBaseObject* infoP) { info = *infoP; }; 
+		inline int GetSignature () { return info.nSignature; }
+		inline ubyte GetId () { return info.nId; }
+		inline fix GetSize () { return info.xSize; }
+		inline fix GetShields () { return info.xShields; }
+		inline fix GetLifeLeft () { return info.xLifeLeft; }
+		inline short GetSegment () { return info.nSegment; }
+		inline short GetAttachedObj () { return info.nAttachedObj; }
+		inline short GetNextInSeg () { return info.nNextInSeg; }
+		inline short GetPrevInSeg () { return info.nPrevInSeg; }
+		inline sbyte GetCreator () { return info.nCreator; }
+		inline ubyte GetType () { return info.nType; }
+		inline ubyte GetControlType () { return info.controlType; }
+		inline ubyte GetMovementType () { return info.movementType; }
+		inline ubyte GetRenderType () { return info.renderType; }
+		inline ubyte GetFlags () { return info.nFlags; }
+		inline vmsVector GetLastPos () { return info.vLastPos; }
+
+		inline void SetSignature (int nSignature) { info.nSignature = nSignature; }
+		inline void SetId (ubyte nId) { info.nId = nId; }
+		inline void SetSize (fix xSize) { info.xSize = xSize; }
+		inline void SetShields (fix xShields) { info.xShields = xShields; }
+		inline void SetLifeLeft (fix xLifeLeft) { info.xLifeLeft = xLifeLeft; }
+		inline void SetSegment (short nSegment) { info.nSegment = nSegment; }
+		inline void SetAttachedObj (short nAttachedObj) { info.nAttachedObj = nAttachedObj; }
+		inline void SetNextInSeg (short nNextInSeg) { info.nNextInSeg = nNextInSeg; }
+		inline void SetPrevInSeg ( short nPrevInSeg) { info.nPrevInSeg = nPrevInSeg; }
+		inline void SetCreator (sbyte nCreator) { info.nCreator = nCreator; }
+		inline void SetType (ubyte nType) { info.nType = nType; }
+		inline void SetControlType (ubyte controlType) { info.controlType = controlType; }
+		inline void SetMovementType (ubyte movementType) { info.movementType = movementType; }
+		inline void SetRenderType (ubyte renderType) { info.renderType = renderType; }
+		inline void SetFlags (ubyte nFlags) { info.nFlags = nFlags; }
+		inline void SetLastPos (const vmsVector *vLastPos) { info.vLastPos = *vLastPos; }
+};
 
 struct tObject;
 
@@ -670,9 +668,13 @@ class CObject : public CObjectInfo {
 		void Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
 							  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 		void ToBaseObject (tBaseObject *objP);
-		inline short ObjIdx (void) { return m_nObject; }
+		inline short Index (void) { return m_nObject; }
+
+		int operator- (CArray<CObject>& a) { return a.Index (this); }
 };
 
+
+#if 0
 
 class CRobotObject : public CObject, public CPhysicsInfo, public CAIStaticInfo, public CPolyObjInfo {
 	public:
@@ -722,7 +724,7 @@ class CParticleObject : public CObject, public CSmokeInfo {
 		void ToBaseObject (tBaseObject *objP);
 };
 
-
+#endif
 
 
 typedef struct tObjPosition {
