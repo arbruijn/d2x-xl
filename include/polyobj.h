@@ -47,7 +47,7 @@ typedef struct tPolyModel {
 	short				nType;
 	int				nModels;
 	int				nDataSize;
-	ubyte				*modelData;
+	CArray<ubyte>	modelData;
 	tSubModelData	subModels;
 	vmsVector		mins,maxs;                       // min,max for whole model
 	fix				rad;

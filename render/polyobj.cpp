@@ -198,7 +198,7 @@ void AlignPolyModelData (tPolyModel *pm)
 	chunk ch_list [MAX_CHUNKS];
 	int no_chunks = 0;
 	int tmp_size = pm->nDataSize + SHIFT_SPACE;
-	ubyte *tmp = D2_ALLOC (tmp_size); // where we build the aligned version of pm->modelData
+	ubyte *tmp = new ubyte [tmp_size]; // where we build the aligned version of pm->modelData
 
 	Assert (tmp != NULL);
 	//start with first chunk (is always aligned!)
@@ -240,12 +240,12 @@ void AlignPolyModelData (tPolyModel *pm)
 			    && pm->modelData + pm->subModels.ptrs [i] < cur_old + chunk_len)
 				pm->subModels.ptrs [i] += (cur_new - tmp) - (cur_old - pm->modelData);
  	}
-	delete[] pm->modelData;
+	pm->modelData.Destroy ();
 	pm->nDataSize += total_correction;
-	pm->modelData = new ubyte [pm->nDataSize];
-	Assert (pm->modelData != NULL);
-	memcpy (pm->modelData, tmp, pm->nDataSize);
-	D2_FREE (tmp);
+	if (!pm->modelData.Create (pm->nDataSize))
+		Error ("Not enough memory for game models.");
+	pm->modelData = tmp;
+	delete[] tmp;
 }
 #endif //def WORDS_NEED_ALIGNMENT
 
@@ -364,7 +364,7 @@ while (POF_ReadIntNew (id, modelBuf) == 1) {
 			}
 
 		case ID_IDTA:		//Interpreter data
-			if (!(pm->modelData = new ubyte [len]))
+			if (!pm->modelData.Create (len))
 				Error ("Not enough memory for game models.");
 			pm->nDataSize = len;
 			pof_read (pm->modelData, 1, len, modelBuf);
@@ -906,15 +906,14 @@ void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf)
 {
 if (pm->modelData)
 	D2_FREE (pm->modelData);
-pm->modelData = new ubyte [pm->nDataSize];
-Assert (pm->modelData != NULL);
-cf.Read (pm->modelData, sizeof (ubyte), pm->nDataSize);
+if (!pm->modelData.Create (pm->nDataSize))
+	Error ("Not enough memory for game models.");
+cf.Read (pm->modelData.Buffer (), sizeof (ubyte), pm->nDataSize);
 if (pdm) {
-	if (pdm->modelData)
-		delete[] pdm->modelData;
-	if (!(pdm->modelData = new ubyte [pm->nDataSize]))
+	pdm->modelData.Destroy ();
+	pdm->modelData = pm->modelData;
+	if (!pdm->modelData.Buffer ())
 		Error ("Not enough memory for game models.");
-	memcpy (pdm->modelData, pm->modelData, pm->nDataSize);
 	}
 #ifdef WORDS_NEED_ALIGNMENT
 AlignPolyModelData (pm);

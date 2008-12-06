@@ -100,6 +100,11 @@ template < class _T > class CArray {
 
 		inline _T& operator= (CArray<_T>& source) { return Copy (source); }
 
+		inline _T& operator= (_T* source) { 
+			if (m_buffer)
+				memcpy (m_buffer, source, m_size * sizeof (_T)); 
+			}
+
 		inline _T& Copy (CArray<_T>& source, uint offset = 0) { 
 			if (source.m_buffer) {
 				if (!m_buffer)
