@@ -310,12 +310,12 @@ if (!nTexture)
 	return 0;
 if (IsMultiGame && netGame.bIndestructibleLights)
 	return 0;
-short nClip = gameData.pig.tex.pTMapInfo [nTexture].nEffectClip;
-tEffectClip	*ecP = (nClip < 0) ? NULL : gameData.eff.pEffects + nClip;
+short nClip = gameData.pig.tex.tMapInfoP [nTexture].nEffectClip;
+tEffectClip	*ecP = (nClip < 0) ? NULL : gameData.eff.effectP + nClip;
 short	nDestBM = ecP ? ecP->nDestBm : -1;
 ubyte	bOneShot = ecP ? (ecP->flags & EF_ONE_SHOT) != 0 : 0;
 if (nClip == -1)
-	return gameData.pig.tex.pTMapInfo [nTexture].destroyed != -1;
+	return gameData.pig.tex.tMapInfoP [nTexture].destroyed != -1;
 return (nDestBM != -1) && !bOneShot;
 }
 
@@ -343,7 +343,7 @@ return j ? i / j : 1;
 
 //------------------------------------------------------------------------------
 
-int AddDynLight (grsFace *faceP, tRgbaColorf *pc, fix xBrightness, short nSegment,
+int AddDynLight (tFace *faceP, tRgbaColorf *pc, fix xBrightness, short nSegment,
 					  short nSide, short nObject, short nTexture, vmsVector *vPos)
 {
 	tDynLight	*pl;
@@ -648,7 +648,7 @@ if (left < r)
 void AddDynGeometryLights (void)
 {
 	int			nFace, nSegment, nSide, nTexture, nLight;
-	grsFace		*faceP;
+	tFace		*faceP;
 	tFaceColor	*pc;
 	short			*pSegLights, *pVertLights, *pOwners;
 	ubyte			*pVariableLights;
@@ -983,7 +983,7 @@ if (nVertex == nDbgVertex)
 
 //------------------------------------------------------------------------------
 
-int SetNearestFaceLights (grsFace *faceP, int bTextured)
+int SetNearestFaceLights (tFace *faceP, int bTextured)
 {
 PROF_START
 #if 0

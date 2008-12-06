@@ -42,7 +42,7 @@ for (i = 0; i < nVertices; i++) {
 	if (p->p3_index < 0)
 		OOF_VecVms2Oof (v + i, p->p3_vec);
 	else
-		memcpy (v + i, gameData.render.pVerts + p->p3_index, sizeof (tOOF_vector));
+		memcpy (v + i, gameData.render.vertP + p->p3_index, sizeof (tOOF_vector));
 	}
 v [nVertices] = v [0];
 glEnableClientState (GL_VERTEX_ARRAY);

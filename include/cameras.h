@@ -51,7 +51,7 @@ class CCamera {
 		int Ready (time_t t);
 		void Reset (void);
 		void Rotate (void);
-		void GetUVL (grsFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP);
+		void GetUVL (tFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP);
 		int Create (short nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
 						tObject *objP, int bShadowMap, int bTeleport);
 		void Destroy (void);

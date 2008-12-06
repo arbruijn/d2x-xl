@@ -80,8 +80,8 @@ CBitmap *OglLoadFaceBitmap (short nTexture, short nFrameIdx)
 	CBitmap	*bmP;
 	int			nFrames;
 
-PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [nTexture].index, gameStates.app.bD1Mission);
-bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [nTexture].index;
+PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
+bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
 if (bmP->Override ()) {
 	bmP = bmP->Override ();
 	if (bmP->WallAnim ()) {

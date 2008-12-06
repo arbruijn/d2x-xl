@@ -294,7 +294,7 @@ if (gameOpts->render.bDepthSort > 0) {
 	fVector	vertices [8];
 
 	for (i = 0; i < nVertices; i++)
-		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
+		vertices [i] = gameData.render.vertP [pointList [i]->p3_index];
 	TIAddPoly (NULL, NULL, NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 	}
 else
@@ -388,13 +388,13 @@ return 0;
 			if ((_src)->p3_index < 0) \
 				(_dest) = ((_src)->p3_vec).ToFloat(); \
 			else \
-				_dest = gameData.render.pVerts [(_src)->p3_index];
+				_dest = gameData.render.vertP [(_src)->p3_index];
 
 #define	G3VERTPOS3(_dest,_src) \
 			if ((_src)->p3_index < 0) \
 				(_dest) = ((_src)->p3_vec).ToFloat3(); \
 			else \
-				_dest = gameData.render.pVerts [(_src)->p3_index];
+				_dest = gameData.render.vertP [(_src)->p3_index];
 
 //------------------------------------------------------------------------------
 
@@ -426,7 +426,7 @@ int G3DrawTexPolyMulti (
 	fVector		vNormal, vVertPos;
 #endif
 #if G3_DRAW_ARRAYS
-	int			bVertexArrays = gameData.render.pVerts != NULL;
+	int			bVertexArrays = gameData.render.vertP != NULL;
 #else
 	int			bVertexArrays = 0;
 #endif
@@ -553,7 +553,7 @@ if (bVertexArrays || bDepthSort) {
 		if (pl->p3_index < 0)
 			vertices[i] = pl->p3_vec.ToFloat();
 		else
-			vertices [i] = gameData.render.pVerts [pl->p3_index];
+			vertices [i] = gameData.render.vertP [pl->p3_index];
 		texCoord [0][i].v.u = X2F (uvlList [i].u);
 		texCoord [0][i].v.v = X2F (uvlList [i].v);
 		SetTexCoord (uvlList + i, orient, 1, texCoord [1] + i, 0);

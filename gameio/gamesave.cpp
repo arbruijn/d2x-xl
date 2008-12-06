@@ -1315,8 +1315,8 @@ for (i = 0; i < gameData.segs.nSegments; i++) {
 		w = gameData.walls.walls + nWall;
 		if (w->nClip == -1)
 			continue;
-		if (gameData.walls.pAnims [w->nClip].flags & WCF_TMAP1) {
-			sideP->nBaseTex = gameData.walls.pAnims [w->nClip].frames [0];
+		if (gameData.walls.animP [w->nClip].flags & WCF_TMAP1) {
+			sideP->nBaseTex = gameData.walls.animP [w->nClip].frames [0];
 			sideP->nOvlTex = 0;
 			}
 		}

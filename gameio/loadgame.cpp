@@ -620,12 +620,12 @@ for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLas
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (!(WALL_IS_DOORWAY (segP,nSide, NULL) & WID_RENDER_FLAG))
 			continue;
-		nEffect = (nOvlTex = segP->sides [nSide].nOvlTex) ? gameData.pig.tex.pTMapInfo [nOvlTex].nEffectClip : -1;
+		nEffect = (nOvlTex = segP->sides [nSide].nOvlTex) ? gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip : -1;
 		if (nEffect < 0)
-			nEffect = gameData.pig.tex.pTMapInfo [segP->sides [nSide].nBaseTex].nEffectClip;
+			nEffect = gameData.pig.tex.tMapInfoP [segP->sides [nSide].nBaseTex].nEffectClip;
 		if (nEffect < 0)
 			continue;
-		if ((nSound = gameData.eff.pEffects [nEffect].nSound) == -1)
+		if ((nSound = gameData.eff.effectP [nEffect].nSound) == -1)
 			continue;
 		nConnSeg = segP->children [nSide];
 
@@ -2197,7 +2197,7 @@ return shields;
 }
 
 //------------------------------------------------------------------------------
-//	Initialize default parameters for one robot, copying from gameData.bots.pInfo to *objP.
+//	Initialize default parameters for one robot, copying from gameData.bots.infoP to *objP.
 //	What about setting size!?  Where does that come from?
 void CopyDefaultsToRobot (tObject *objP)
 {

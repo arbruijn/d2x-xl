@@ -98,7 +98,7 @@ void ConvertWeaponToPowerup (tObject *objP)
 {
 if (!InitAddonPowerup (objP)) {
 	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-	objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 	objP->rType.vClipInfo.nCurFrame = 0;
 	objP->info.xSize = gameData.objs.pwrUp.info [objP->info.nId].size;
 	}
@@ -131,7 +131,7 @@ return 1;
 int ConvertModelToHostage (tObject *objP)
 {
 objP->rType.vClipInfo.nClipIndex = nHostageVClips [0];
-objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 objP->rType.vClipInfo.nCurFrame = 0;
 objP->info.xSize = 289845;
 objP->info.controlType = CT_POWERUP;

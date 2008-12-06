@@ -586,9 +586,9 @@ int load_mine_data (CFile& cf)
 		// Remove all the file extensions in the textures list
 
 		for (i=0;i<gameData.pig.tex.nTextures;i++)	{
-			temptr = strchr (gameData.pig.tex.pTMapInfo [i].filename, '.');
+			temptr = strchr (gameData.pig.tex.tMapInfoP [i].filename, '.');
 			if (temptr) *temptr = '\0';
-			HashTableInsert ( &ht, gameData.pig.tex.pTMapInfo [i].filename, i );
+			HashTableInsert ( &ht, gameData.pig.tex.tMapInfoP [i].filename, i );
 		}
 
 		// For every texture, search through the texture list
@@ -929,10 +929,10 @@ else {
 //------------------------------------------------------------------------------
 
 #if DBG
-grsFace *FindDupFace (short nSegment, short nSide)
+tFace *FindDupFace (short nSegment, short nSide)
 {
 	tSegFaces	*segFaceP = SEGFACES + nSegment;
-	grsFace		*faceP0, *faceP1;
+	tFace		*faceP0, *faceP1;
 	int			i, j;
 
 for (i = segFaceP->nFaces, faceP0 = segFaceP->pFaces; i; faceP0++, i--)

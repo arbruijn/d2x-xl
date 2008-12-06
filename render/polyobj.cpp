@@ -616,7 +616,7 @@ if (nModel == nDbgModel)
 nTextures = bHires ? 0 : LoadModelTextures (po, altTextures);
 gameStates.ogl.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints);
-gameData.render.pVerts = gameData.models.fPolyModelVerts;
+gameData.render.vertP = gameData.models.fPolyModelVerts;
 if (!flags)	{	//draw entire tObject
 	if (!G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
 		if (bHires)
@@ -668,7 +668,7 @@ else {
 	//G3DoneInstance ();
 	}
 gameStates.ogl.bUseTransform = 0;
-gameData.render.pVerts = NULL;
+gameData.render.vertP = NULL;
 #if 0
 {
 	g3sPoint p0, p1;

@@ -25,9 +25,28 @@ template < class _T > class CArray {
 
 		inline void Clear (ubyte filler = 0) { if (m_buffer) memset (m_buffer, filler, m_size); }
 		
+#ifdef _DEBUG
+		inline uint Index (_T* elem) { 
+			if (!m_buffer || (elem < m_buffer) || (elem >= m_buffer + m_size))
+				return -1;	// no buffer or element out of buffer
+			uint i = static_cast<uint> (reinterpret_cast<ubyte*> (elem) - reinterpret_cast<ubyte*> (m_buffer));
+			if (i % sizeof (_T))	
+				return -1;	// elem in the buffer, but not properly aligned
+			return elem - m_buffer; 
+			}
+#else
 		inline uint Index (_T* elem) { return elem - m_buffer; }
+#endif
 
+#ifdef _DEBUG
+		inline _T* Pointer (uint i) { 
+			if (!m_buffer || (i >= m_size))
+				return NULL;
+			return m_buffer + i; 
+			}
+#else
 		inline _T* Pointer (uint i) { return m_buffer + i; }
+#endif
 
 		inline void Destroy (void) { 
 			if (m_buffer) {

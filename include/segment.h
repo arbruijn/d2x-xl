@@ -127,7 +127,7 @@ typedef struct tSegment {
 #endif //!EDITOR
 
 typedef struct tSegFaces {
-	grsFace	*pFaces;
+	tFace	*pFaces;
 	ubyte		nFaces;
 	ubyte		bVisible;
 } tSegFaces;

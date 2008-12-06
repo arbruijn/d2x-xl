@@ -1225,7 +1225,7 @@ for (buddy_id = 0; buddy_id < gameData.bots.nTypes [0]; buddy_id++)
 
 	if (buddy_id == gameData.bots.nTypes [0]) {
 #if TRACE
-		con_printf (CONDBG, "Can't create Buddy.  No 'companion' bot found in gameData.bots.pInfo!\n");
+		con_printf (CONDBG, "Can't create Buddy.  No 'companion' bot found in gameData.bots.infoP!\n");
 #endif
 		return;
 	}

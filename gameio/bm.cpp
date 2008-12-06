@@ -405,15 +405,15 @@ while (CFGetS (szInput, LINEBUF_SIZE, &infoFile)) {
 		else IFTOK ("$EFFECTS")		{bmFlag = BM_EFFECTS;	nClip = 0;}
 		else IFTOK ("$ALIAS")			bm_read_alias ();
 
-		else IFTOK ("lighting") 			gameData.pig.tex.pTMapInfo [textureCount-1].lighting = F2X (get_float ();
-		else IFTOK ("damage") 			gameData.pig.tex.pTMapInfo [textureCount-1].damage = F2X (get_float ();
-		else IFTOK ("volatile") 			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_VOLATILE;
-		else IFTOK ("goal_blue")			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_GOAL_BLUE;
-		else IFTOK ("goal_red")			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_GOAL_RED;
-		else IFTOK ("water")	 			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_WATER;
-		else IFTOK ("force_field")		gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_FORCE_FIELD;
-		else IFTOK ("slide")	 			{gameData.pig.tex.pTMapInfo [textureCount-1].slide_u = F2X (get_float ())>>8; gameData.pig.tex.pTMapInfo [textureCount-1].slide_v = F2X (get_float ())>>8;}
-		else IFTOK ("destroyed")	 		{int t=textureCount-1; gameData.pig.tex.pTMapInfo [t].destroyed = get_texture (strtok (NULL, space);}
+		else IFTOK ("lighting") 			gameData.pig.tex.tMapInfoP [textureCount-1].lighting = F2X (get_float ();
+		else IFTOK ("damage") 			gameData.pig.tex.tMapInfoP [textureCount-1].damage = F2X (get_float ();
+		else IFTOK ("volatile") 			gameData.pig.tex.tMapInfoP [textureCount-1].flags |= TMI_VOLATILE;
+		else IFTOK ("goal_blue")			gameData.pig.tex.tMapInfoP [textureCount-1].flags |= TMI_GOAL_BLUE;
+		else IFTOK ("goal_red")			gameData.pig.tex.tMapInfoP [textureCount-1].flags |= TMI_GOAL_RED;
+		else IFTOK ("water")	 			gameData.pig.tex.tMapInfoP [textureCount-1].flags |= TMI_WATER;
+		else IFTOK ("force_field")		gameData.pig.tex.tMapInfoP [textureCount-1].flags |= TMI_FORCE_FIELD;
+		else IFTOK ("slide")	 			{gameData.pig.tex.tMapInfoP [textureCount-1].slide_u = F2X (get_float ())>>8; gameData.pig.tex.tMapInfoP [textureCount-1].slide_v = F2X (get_float ())>>8;}
+		else IFTOK ("destroyed")	 		{int t=textureCount-1; gameData.pig.tex.tMapInfoP [t].destroyed = get_texture (strtok (NULL, space);}
 		//else IFTOK ("gameData.eff.nEffects")		gameData.eff.nEffects = get_int ();
 		else IFTOK ("gameData.walls.nAnims")	gameData.walls.nAnims = get_int ();
 		else IFTOK ("nClip")			nClip = get_int ();
@@ -477,7 +477,7 @@ while (CFGetS (szInput, LINEBUF_SIZE, &infoFile)) {
 gameData.pig.tex.nTextures = textureCount;
 nTMaps [gameStates.app.bD1Data] = tmapCount;
 
-gameData.pig.tex.pBmIndex [gameData.pig.tex.nTextures++].index = 0;		//entry for bogus tmap
+gameData.pig.tex.bmIndexP [gameData.pig.tex.nTextures++].index = 0;		//entry for bogus tmap
 
 cf.Close (&infoFile);
 }
@@ -1411,7 +1411,7 @@ else
 	bmP->Remap (NULL, -1, 254);
 bmP->AvgColorIndex ();
 bmi.index = gameData.pig.tex.nExtraBitmaps;
-gameData.pig.tex.pBitmaps [gameData.pig.tex.nExtraBitmaps++] = *bmP;
+gameData.pig.tex.bitmapP [gameData.pig.tex.nExtraBitmaps++] = *bmP;
 return bmi;
 }
 

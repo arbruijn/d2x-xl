@@ -71,19 +71,19 @@ for (i = 0; i < vc->nFrameCount; i++)
 void PagingTouchWallEffects (int nTexture)
 {
 	int	i;
-	tEffectClip *ecP = gameData.eff.pEffects;
+	tEffectClip *ecP = gameData.eff.effectP;
 
 for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 	if (ecP->changingWallTexture == nTexture) {
 		PagingTouchVClip (&ecP->vc, gameStates.app.bD1Data);
 		if (ecP->nDestBm > -1)
-			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [ecP->nDestBm].index, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
+			PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [ecP->nDestBm].index, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
 		if (ecP->dest_vclip > -1)
-			PagingTouchVClip (&gameData.eff.pVClips [ecP->dest_vclip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
+			PagingTouchVClip (&gameData.eff.vClipP [ecP->dest_vclip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
 		if (ecP->dest_eclip > -1)
-			PagingTouchVClip (&gameData.eff.pEffects [ecP->dest_eclip].vc, gameStates.app.bD1Data); //what tEffectClip to play when exploding
+			PagingTouchVClip (&gameData.eff.effectP [ecP->dest_eclip].vc, gameStates.app.bD1Data); //what tEffectClip to play when exploding
 		if (ecP->crit_clip > -1)
-			PagingTouchVClip (&gameData.eff.pEffects [ecP->crit_clip].vc, gameStates.app.bD1Data); //what tEffectClip to play when mine critical
+			PagingTouchVClip (&gameData.eff.effectP [ecP->crit_clip].vc, gameStates.app.bD1Data); //what tEffectClip to play when mine critical
 		}
 	}
 }
@@ -93,7 +93,7 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 void PagingTouchObjectEffects (int nTexture)
 {
 	int	i;
-	tEffectClip *ecP = gameData.eff.pEffects;
+	tEffectClip *ecP = gameData.eff.effectP;
 
 for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
 	if (ecP->changingObjectTexture == nTexture)
@@ -251,16 +251,16 @@ tmap1 = segP->sides [nSide].nBaseTex;
 PagingTouchWallEffects (tmap1);
 tmap2 = segP->sides [nSide].nOvlTex;
 if (tmap2) {
-	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap2].index, gameStates.app.bD1Data);
+	PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tmap2].index, gameStates.app.bD1Data);
 	PagingTouchWallEffects (tmap2);
 	}
 //else
-	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap1].index, gameStates.app.bD1Data);
+	PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tmap1].index, gameStates.app.bD1Data);
 
 // PSX STUFF
 #ifdef PSX_BUILD_TOOLS
 // If there is water on the level, then force the water splash into memory
-if (!(gameData.pig.tex.pTMapInfo [tmap1].flags & TMI_VOLATILE) && (gameData.pig.tex.pTMapInfo [tmap1].flags & TMI_WATER)) {
+if (!(gameData.pig.tex.tMapInfoP [tmap1].flags & TMI_VOLATILE) && (gameData.pig.tex.tMapInfoP [tmap1].flags & TMI_WATER)) {
 	tBitmapIndex Splash;
 	Splash.index = 1098;
 	PIGGY_PAGE_IN (Splash.index);
@@ -336,9 +336,9 @@ void PagingTouchWall (tWall *wallP)
 	tWallClip *anim;
 
 if (wallP->nClip > -1)	{
-	anim = gameData.walls.pAnims + wallP->nClip;
+	anim = gameData.walls.animP + wallP->nClip;
 	for (j=0; j < anim->nFrameCount; j++)
-		PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [anim->frames [j]].index, gameStates.app.bD1Data);
+		PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [anim->frames [j]].index, gameStates.app.bD1Data);
 	}
 }
 

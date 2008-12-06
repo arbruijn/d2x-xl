@@ -2203,16 +2203,16 @@ InitVideoStates ();
 void SetDataVersion (int v)
 {
 gameStates.app.bD1Data = (v < 0) ? gameStates.app.bD1Mission && gameStates.app.bHaveD1Data : v;
-gameData.pig.tex.pBitmaps = gameData.pig.tex.bitmaps [gameStates.app.bD1Data];
-gameData.pig.tex.pAltBitmaps = gameData.pig.tex.altBitmaps [gameStates.app.bD1Data];
-gameData.pig.tex.pBmIndex = gameData.pig.tex.bmIndex [gameStates.app.bD1Data];
-gameData.pig.tex.pBitmapFiles = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Data];
-gameData.pig.tex.pTMapInfo = gameData.pig.tex.tMapInfo [gameStates.app.bD1Data];
-gameData.pig.sound.pSounds = gameData.pig.sound.sounds [gameStates.app.bD1Data];
-gameData.eff.pEffects = gameData.eff.effects [gameStates.app.bD1Data];
-gameData.eff.pVClips = gameData.eff.vClips [gameStates.app.bD1Data];
-gameData.walls.pAnims = gameData.walls.anims [gameStates.app.bD1Data];
-gameData.bots.pInfo = gameData.bots.info [gameStates.app.bD1Data];
+gameData.pig.tex.bitmapP = gameData.pig.tex.bitmaps [gameStates.app.bD1Data];
+gameData.pig.tex.altBitmapP = gameData.pig.tex.altBitmaps [gameStates.app.bD1Data];
+gameData.pig.tex.bmIndexP = gameData.pig.tex.bmIndex [gameStates.app.bD1Data];
+gameData.pig.tex.bitmapFileP = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Data];
+gameData.pig.tex.tMapInfoP = gameData.pig.tex.tMapInfo [gameStates.app.bD1Data];
+gameData.pig.sound.soundP = gameData.pig.sound.sounds [gameStates.app.bD1Data];
+gameData.eff.effectP = gameData.eff.effects [gameStates.app.bD1Data];
+gameData.eff.vClipP = gameData.eff.vClips [gameStates.app.bD1Data];
+gameData.walls.animP = gameData.walls.anims [gameStates.app.bD1Data];
+gameData.bots.infoP = gameData.bots.info [gameStates.app.bD1Data];
 }
 
 // ----------------------------------------------------------------------------
@@ -2362,7 +2362,7 @@ GETMEM (vmsVector, gameData.segs.sideCenters, MAX_SEGMENTS * 6, 0);
 GETMEM (ubyte, gameData.segs.bSegVis, MAX_SEGMENTS * MAX_SEGVIS_FLAGS, 0);
 GETMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS, 0);
 GETMEM (tSegFaces, gameData.segs.segFaces, MAX_SEGMENTS, 0);
-GETMEM (grsFace, gameData.segs.faces.faces, MAX_FACES, 0);
+GETMEM (tFace, gameData.segs.faces.faces, MAX_FACES, 0);
 GETMEM (grsTriangle, gameData.segs.faces.tris, MAX_TRIANGLES, 0);
 GETMEM (fVector3, gameData.segs.faces.vertices, MAX_TRIANGLES * 3, 0);
 #if USE_RANGE_ELEMENTS
@@ -2435,9 +2435,9 @@ GETMEM (tLightRef, gameData.render.color.visibleLights, MAX_SEGMENTS * 6, 0);
 void AllocRenderLightData (void)
 {
 if (!gameStates.app.bNostalgia) {
-	GETMEM (short, gameData.render.lights.dynamic.nNearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
-	GETMEM (short, gameData.render.lights.dynamic.nNearestVertLights, MAX_VERTICES * MAX_NEAREST_LIGHTS, 0);
-	GETMEM (ubyte, gameData.render.lights.dynamic.nVariableVertLights, MAX_VERTICES, 0);
+	GETMEM (short, gameData.render.lights.dynamic.nearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
+	GETMEM (short, gameData.render.lights.dynamic.nearestVertLights, MAX_VERTICES * MAX_NEAREST_LIGHTS, 0);
+	GETMEM (ubyte, gameData.render.lights.dynamic.variableVertLights, MAX_VERTICES, 0);
 	GETMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS, (char) 0xff);
 	}
 GETMEM (fix, gameData.render.lights.segDeltas, MAX_SEGMENTS * 6, 0);
@@ -2545,7 +2545,7 @@ FREEMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS);
 FREEMEM (tSegExtent, gameData.segs.extent, MAX_SEGMENTS);
 #endif
 FREEMEM (tSegFaces, gameData.segs.segFaces, MAX_SEGMENTS);
-FREEMEM (grsFace, gameData.segs.faces.faces, MAX_FACES);
+FREEMEM (tFace, gameData.segs.faces.faces, MAX_FACES);
 FREEMEM (grsTriangle, gameData.segs.faces.tris, MAX_TRIANGLES);
 FREEMEM (fVector3, gameData.segs.faces.vertices, MAX_TRIANGLES * 3);
 #if USE_RANGE_ELEMENTS
@@ -2623,9 +2623,9 @@ FREEMEM (tLightRef, gameData.render.color.visibleLights, MAX_SEGMENTS * 6);
 void FreeRenderLightData (void)
 {
 if (!gameStates.app.bNostalgia) {
-	FREEMEM (short, gameData.render.lights.dynamic.nNearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
-	FREEMEM (short, gameData.render.lights.dynamic.nNearestVertLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
-	FREEMEM (ubyte, gameData.render.lights.dynamic.nVariableVertLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
+	FREEMEM (short, gameData.render.lights.dynamic.nearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
+	FREEMEM (short, gameData.render.lights.dynamic.nearestVertLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
+	FREEMEM (ubyte, gameData.render.lights.dynamic.variableVertLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
 	FREEMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS);
 	}
 FREEMEM (fix, gameData.render.lights.segDeltas, MAX_SEGMENTS * 6);

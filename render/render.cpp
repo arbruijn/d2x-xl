@@ -405,8 +405,8 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 #endif
 			}
 		else {
-			bmBot = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [props.nBaseTex].index;
-			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [props.nBaseTex].index, gameStates.app.bD1Mission);
+			bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [props.nBaseTex].index;
+			PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [props.nBaseTex].index, gameStates.app.bD1Mission);
 			}
 		}
 	}
@@ -639,7 +639,7 @@ static int RenderSegmentFaces (short nSegment, int nWindow)
 
 OglSetupTransform (0);
 cc = RotateVertexList (8, segP->verts);
-gameData.render.pVerts = gameData.segs.fVertices;
+gameData.render.vertP = gameData.segs.fVertices;
 //	return;
 if (cc.ccAnd /*&& !gameStates.render.automap.bDisplay*/)	//all off screen and not rendering the automap
 	return 0;

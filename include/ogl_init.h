@@ -348,7 +348,7 @@ extern GLenum curDrawBuffer;
 
 int G3DrawWhitePoly (int nv, g3sPoint **pointList);
 int G3DrawPolyAlpha (int nv, g3sPoint **pointlist, tRgbaColorf *color, char bDepthMask);
-int G3DrawFace (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bDrawArrays, int bTextured, int bDepthOnly);
+int G3DrawFace (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bDrawArrays, int bTextured, int bDepthOnly);
 void G3FlushFaceBuffer (int bForce);
 
 int G3DrawTexPolyMulti (

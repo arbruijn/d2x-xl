@@ -17,7 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	MAX_LIGHTS_PER_PIXEL 8
 
 void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
-int AddDynLight (grsFace *faceP, tRgbaColorf *pc, fix xBrightness, 
+int AddDynLight (tFace *faceP, tRgbaColorf *pc, fix xBrightness, 
 					  short nSegment, short nSide, short nOwner, short nTexture, vmsVector *vPos);
 int RemoveDynLight (short nSegment, short nSide, short nObject);
 void AddDynGeometryLights (void);
@@ -33,7 +33,7 @@ short FindDynLight (short nSegment, short nSide, short nObject);
 int ToggleDynLight (short nSegment, short nSide, short nObject, int bState);
 void SetDynLightMaterial (short nSegment, short nSide, short nObject);
 void SetNearestVertexLights (int nFace, int nVertex, vmsVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
-int SetNearestFaceLights (grsFace *faceP, int bTextured);
+int SetNearestFaceLights (tFace *faceP, int bTextured);
 short SetNearestPixelLights (short nSegment, short nSide, vmsVector *vNormal, vmsVector *vPixelPos, float fLightRad, int nThread);
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread);
 void ResetNearestStaticLights (int nSegment, int nThread);

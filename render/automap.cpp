@@ -1263,7 +1263,7 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 					bNoFade = 1;
 					color = automapColors.walls.nDoorRed;
 					}
-				else if (!(gameData.walls.pAnims [wallP->nClip].flags & WCF_HIDDEN)) {
+				else if (!(gameData.walls.animP [wallP->nClip].flags & WCF_HIDDEN)) {
 					short	connected_seg = segP->children [sn];
 					if (connected_seg != -1) {
 						short connected_side = FindConnectedSide (segP, &gameData.segs.segments [connected_seg]);

@@ -1839,8 +1839,8 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	bIsSlideSeg = 0;
 	for (nSide = 0; nSide < 6; nSide++) {
 		nTexture = gameData.segs.segments [nSegment].sides [nSide].nBaseTex;
-		if (gameData.pig.tex.pTMapInfo [nTexture].slide_u  ||
-			 gameData.pig.tex.pTMapInfo [nTexture].slide_v) {
+		if (gameData.pig.tex.tMapInfoP [nTexture].slide_u  ||
+			 gameData.pig.tex.tMapInfoP [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
 				bIsSlideSeg = 1;
 				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSegment = nSegment;
@@ -1874,8 +1874,8 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 		if (!(sides & (1 << nSide)))
 			continue;
 		tmn = sideP->nBaseTex;
-		slideU = (fix) gameData.pig.tex.pTMapInfo [tmn].slide_u;
-		slideV = (fix) gameData.pig.tex.pTMapInfo [tmn].slide_v;
+		slideU = (fix) gameData.pig.tex.tMapInfoP [tmn].slide_u;
+		slideV = (fix) gameData.pig.tex.tMapInfoP [tmn].slide_v;
 		if (!(slideU || slideV))
 			continue;
 #if DBG

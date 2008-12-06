@@ -73,7 +73,7 @@ objP->mType.physInfo.drag = 512;	//1024;
 objP->mType.physInfo.mass = F1_0;
 objP->mType.physInfo.flags = PF_BOUNCE;
 objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 objP->rType.vClipInfo.nCurFrame = 0;
 if (spitterP == gameData.objs.consoleP)
 	objP->cType.powerupInfo.nFlags |= PF_SPAT_BY_PLAYER;

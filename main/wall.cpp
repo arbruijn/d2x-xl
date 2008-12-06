@@ -74,7 +74,7 @@ int AnimFrameCount (tWallClip *anim)
 {
 	int	n;
 
-CBitmap *bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [anim->frames [0]].index;
+CBitmap *bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [anim->frames [0]].index;
 if (bmP->Override ())
 	bmP = bmP->Override ();
 n = (bmP->Type () == BM_TYPE_ALT) ? bmP->FrameCount () : anim->nFrameCount;
@@ -104,13 +104,13 @@ int CheckTransparency (tSegment *segP, short nSide)
 	CBitmap	*bmP;
 
 if (sideP->nOvlTex) {
-	bmP = gameData.pig.tex.pBitmaps [gameData.pig.tex.pBmIndex [sideP->nOvlTex].index].Override (-1);
+	bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [sideP->nOvlTex].index].Override (-1);
 	if (bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT)
 		return 1;
 	if (!(bmP->Flags () & BM_FLAG_TRANSPARENT))
 		return 0;
 	}
-bmP = gameData.pig.tex.pBitmaps [gameData.pig.tex.pBmIndex [sideP->nBaseTex].index].Override (-1);
+bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [sideP->nBaseTex].index].Override (-1);
 if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
 if (gameStates.app.bD2XLevel) {
@@ -297,7 +297,7 @@ wallP->nLinkedWall = NO_WALL;
 //set the nBaseTex or nOvlTex field for a tWall/door
 void WallSetTMapNum (tSegment *segP, short nSide, tSegment *connSegP, short cSide, int nAnim, int nFrame)
 {
-	tWallClip	*anim = gameData.walls.pAnims + nAnim;
+	tWallClip	*anim = gameData.walls.animP + nAnim;
 	short			tmap = anim->frames [(anim->flags & WCF_ALTFMT) ? 0 : nFrame];
 	CBitmap	*bmP;
 	int			nFrames;
@@ -382,12 +382,12 @@ if (IS_WALL (nConnWall))
 	KillStuckObjects (nConnWall);
 
 //if this is an exploding wall, explode it
-if ((gameData.walls.pAnims [wallP->nClip].flags & WCF_EXPLODES) && !(wallP->flags & WALL_BLASTED))
+if ((gameData.walls.animP [wallP->nClip].flags & WCF_EXPLODES) && !(wallP->flags & WALL_BLASTED))
 	ExplodeWall (SEG_IDX (segP), nSide);
 else {
 	//if not exploding, set final frame, and make door passable
 	a = wallP->nClip;
-	n = AnimFrameCount (gameData.walls.pAnims + a);
+	n = AnimFrameCount (gameData.walls.animP + a);
 	WallSetTMapNum (segP, nSide, connSegP, nConnSide, a, n - 1);
 	wallP->flags |= WALL_BLASTED;
 	if (IS_WALL (nConnWall))
@@ -446,7 +446,7 @@ wallP->hps -= damage;
 if (IS_WALL (nConnWall))
 	gameData.walls.walls [nConnWall].hps -= damage;
 a = wallP->nClip;
-n = AnimFrameCount (gameData.walls.pAnims + a);
+n = AnimFrameCount (gameData.walls.animP + a);
 if (wallP->hps < WALL_HPS * 1 / n) {
 	BlastBlastableWall (segP, nSide);
 	if (IsMultiGame)
@@ -493,7 +493,7 @@ if (wallP->state == WALL_DOOR_CLOSING) {		//closing, so reuse door
 
 foundDoor:
 
-	doorP->time = (fix) (gameData.walls.pAnims [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - doorP->time;
+	doorP->time = (fix) (gameData.walls.animP [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - doorP->time;
 	if (doorP->time < 0)
 		doorP->time = 0;
 	}
@@ -551,8 +551,8 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	// NOTE THE LINK TO ABOVE!!!!
 	vmsVector cp;
 	COMPUTE_SIDE_CENTER (&cp, segP, nSide);
-	if (gameData.walls.pAnims [wallP->nClip].openSound > -1)
-		DigiLinkSoundToPos (gameData.walls.pAnims [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
+	if (gameData.walls.animP [wallP->nClip].openSound > -1)
+		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 	}
 }
 
@@ -803,7 +803,7 @@ if (wallP->state == WALL_DOOR_OPENING) {	//reuse door
 	if (i >= gameData.walls.nOpenDoors)	//no matching open door found
 		return;
 	Assert(doorP != NULL); // Get John!
-	doorP->time = (fix) (gameData.walls.pAnims [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - doorP->time;
+	doorP->time = (fix) (gameData.walls.animP [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - doorP->time;
 	if (doorP->time < 0)
 		doorP->time = 0;
 	}
@@ -835,8 +835,8 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	// NOTE THE LINK TO ABOVE!!!!
 	vmsVector cp;
 	COMPUTE_SIDE_CENTER (&cp, segP, nSide);
-	if (gameData.walls.pAnims [wallP->nClip].openSound > -1)
-		DigiLinkSoundToPos (gameData.walls.pAnims [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
+	if (gameData.walls.animP [wallP->nClip].openSound > -1)
+		DigiLinkSoundToPos (gameData.walls.animP [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 	}
 }
 
@@ -853,10 +853,10 @@ if (!segP || (nSide < 0))
 nWall = WallNumP (segP, nSide);
 Assert(IS_WALL (nWall));		//Trying to DoDoorOpen on illegal tWall
 wallP = gameData.walls.walls + nWall;
-nFrames = AnimFrameCount (gameData.walls.pAnims + wallP->nClip);
+nFrames = AnimFrameCount (gameData.walls.animP + wallP->nClip);
 if (!nFrames)
 	return 3;
-xTotalTime = (fix) (gameData.walls.pAnims [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed);
+xTotalTime = (fix) (gameData.walls.animP [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed);
 xFrameTime = xTotalTime / nFrames;
 i = (xElapsedTime < 0) ? nFrames : xElapsedTime / xFrameTime;
 if (i < nFrames)
@@ -939,10 +939,10 @@ if (!segP || (nSide < 0))
 nWall = WallNumP (segP, nSide);
 Assert(IS_WALL (nWall));		//Trying to DoDoorOpen on illegal tWall
 wallP = gameData.walls.walls + nWall;
-nFrames = AnimFrameCount (gameData.walls.pAnims + wallP->nClip);
+nFrames = AnimFrameCount (gameData.walls.animP + wallP->nClip);
 if (!nFrames)
 	return 0;
-xTotalTime = (fix) (gameData.walls.pAnims [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed);
+xTotalTime = (fix) (gameData.walls.animP [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed);
 xFrameTime = xTotalTime / nFrames;
 i = nFrames - xElapsedTime / xFrameTime - 1;
 if (i < nFrames / 2)
@@ -1000,8 +1000,8 @@ for (i = 0; i < doorP->nPartCount; i++) {
 		continue;
 		}
 	if ((gameData.demo.nState != ND_STATE_PLAYBACK) && !(i || doorP->time)) {
-		if (gameData.walls.pAnims [wallP->nClip].closeSound  > -1)
-			DigiLinkSoundToPos ((short) gameData.walls.pAnims [gameData.walls.walls [WallNumP (segP, nSide)].nClip].closeSound,
+		if (gameData.walls.animP [wallP->nClip].closeSound  > -1)
+			DigiLinkSoundToPos ((short) gameData.walls.animP [gameData.walls.walls [WallNumP (segP, nSide)].nClip].closeSound,
 									  SEG_IDX (segP), nSide, SIDE_CENTER_I (wallP->nSegment, nSide), 0, F1_0);
 		}
 	doorP->time += gameData.time.xFrame;
@@ -1136,7 +1136,7 @@ void InitDoorAnims (void)
 
 for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; wallP++, i++) {
 	if (wallP->nType == WALL_DOOR) {
-		animP = gameData.walls.pAnims + wallP->nClip;
+		animP = gameData.walls.animP + wallP->nClip;
 		if (!(animP->flags & WCF_ALTFMT))
 			continue;
 		h = (animP->flags & WCF_TMAP1) ? -1 : 1;
@@ -1613,12 +1613,12 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 			int	ec, db;
 			tEffectClip *ecP;
 
-			ec=gameData.pig.tex.pTMapInfo [tm].nEffectClip;
-			ecP = (ec < 0) ? NULL : gameData.eff.pEffects + ec;
+			ec=gameData.pig.tex.tMapInfoP [tm].nEffectClip;
+			ecP = (ec < 0) ? NULL : gameData.eff.effectP + ec;
 			db = ecP ? ecP->nDestBm : -1;
 
 			if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
-			 	 ((ec == -1) && (gameData.pig.tex.pTMapInfo [tm].destroyed != -1))) {
+			 	 ((ec == -1) && (gameData.pig.tex.tMapInfoP [tm].destroyed != -1))) {
 				COMPUTE_SIDE_CENTER(&pnt, segp, nSide);
 				dist = vmsVector::Dist(pnt, objP->info.position.vPos);
 				if (dist < damage/2) {

@@ -68,7 +68,7 @@ class CTriMeshBuilder {
 
 class CQuadMeshBuilder {
 	private:
-		grsFace			*m_faceP;
+		tFace			*m_faceP;
 		grsTriangle		*m_triP;
 		fVector3			*m_vertexP;
 		fVector3			*m_normalP;

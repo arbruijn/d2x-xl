@@ -334,7 +334,7 @@ if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 
 		if (nClip == -1)
 			return 1;
-		else if (gameData.walls.pAnims [nClip].flags & WCF_HIDDEN) {
+		else if (gameData.walls.animP [nClip].flags & WCF_HIDDEN) {
 			if (wallP->state == WALL_DOOR_CLOSED)
 				return 0;
 			else
@@ -353,7 +353,7 @@ if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 			if (nClip == -1)
 				return 1;
 			//	Buddy allowed to go through secret doors to get to player.
-			else if ((ailp_mode != AIM_GOTO_PLAYER) && (gameData.walls.pAnims [nClip].flags & WCF_HIDDEN)) {
+			else if ((ailp_mode != AIM_GOTO_PLAYER) && (gameData.walls.animP [nClip].flags & WCF_HIDDEN)) {
 				if (wallP->state == WALL_DOOR_CLOSED)
 					return 0;
 				else
@@ -394,7 +394,7 @@ int OpenableDoorsInSegment (short nSegment)
 				 (wallP->keys == KEY_NONE) &&
 				 (wallP->state == WALL_DOOR_CLOSED) &&
 				 !(wallP->flags & WALL_DOOR_LOCKED) &&
-				 !(gameData.walls.pAnims [wallP->nClip].flags & WCF_HIDDEN))
+				 !(gameData.walls.animP [wallP->nClip].flags & WCF_HIDDEN))
 				return i;
 		}
 	}

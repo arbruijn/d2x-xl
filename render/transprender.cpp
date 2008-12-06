@@ -298,7 +298,7 @@ return AddTranspItem (tiObject, &item, sizeof (item), vPos [Z], vPos [Z]);
 
 //------------------------------------------------------------------------------
 
-int TIAddPoly (grsFace *faceP, grsTriangle *triP, CBitmap *bmP,
+int TIAddPoly (tFace *faceP, grsTriangle *triP, CBitmap *bmP,
 					fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 					short nSegment)
@@ -380,7 +380,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int TIAddFaceTris (grsFace *faceP)
+int TIAddFaceTris (tFace *faceP)
 {
 	grsTriangle	*triP;
 	fVector		vertices [3];
@@ -416,7 +416,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int TIAddFace (grsFace *faceP)
+int TIAddFace (tFace *faceP)
 {
 if (gameStates.render.bTriangleMesh)
 	return TIAddFaceTris (faceP);
@@ -813,7 +813,7 @@ glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices + nIndex);
 void TIRenderPoly (tTranspPoly *item)
 {
 PROF_START
-	grsFace		*faceP;
+	tFace		*faceP;
 	grsTriangle	*triP;
 	CBitmap		*bmBot = item->bmP, *bmTop = NULL, *mask;
 	int			i, j, nIndex, bLightmaps, bDecal, bSoftBlend = 0;

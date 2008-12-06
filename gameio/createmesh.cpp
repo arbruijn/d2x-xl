@@ -282,7 +282,7 @@ m_nVertices = gameData.segs.nVertices;
 if (!AllocData ())
 	return 0;
 
-grsFace *faceP;
+tFace *faceP;
 grsTriangle *grsTriP;
 tTriangle *triP;
 int i, nFace = -1;
@@ -323,7 +323,7 @@ tTriangle *triP = &m_triangles [nTri];
 if (triP->nPass < -1)
 	return 1;
 
-grsFace *faceP = FACES + triP->nFace;
+tFace *faceP = FACES + triP->nFace;
 
 #if DBG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -471,7 +471,7 @@ do {
 		if (m_triangles [i].nPass != nPass - 1)
 			continue;
 #if DBG
-		grsFace *faceP = FACES + m_triangles [i].nFace;
+		tFace *faceP = FACES + m_triangles [i].nFace;
 		if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
@@ -561,7 +561,7 @@ int CTriMeshBuilder::InsertTriangles (void)
 {
 	tTriangle	*triP = &m_triangles [0];
 	grsTriangle	*grsTriP = TRIANGLES;
-	grsFace		*m_faceP = NULL;
+	tFace		*m_faceP = NULL;
 	vmsVector	vNormal;
 	int			h, i, nFace = -1;
 	GLuint		nIndex = 0;
@@ -659,7 +659,7 @@ if (left < r)
 void CTriMeshBuilder::CreateFaceVertLists (void)
 {
 	int			*bTags = new int [gameData.segs.nVertices];
-	grsFace		*faceP;
+	tFace		*faceP;
 	grsTriangle	*triP;
 	int			h, i, j, k, nFace;
 
@@ -907,13 +907,13 @@ void CQuadMeshBuilder::InitTexturedFace (void)
 m_faceP->nBaseTex = m_sideP->nBaseTex;
 if ((m_faceP->nOvlTex = m_sideP->nOvlTex))
 	m_nOvlTexCount++;
-m_faceP->bSlide = (gameData.pig.tex.pTMapInfo [m_faceP->nBaseTex].slide_u || gameData.pig.tex.pTMapInfo [m_faceP->nBaseTex].slide_v);
+m_faceP->bSlide = (gameData.pig.tex.tMapInfoP [m_faceP->nBaseTex].slide_u || gameData.pig.tex.tMapInfoP [m_faceP->nBaseTex].slide_v);
 m_faceP->nCamera = IsMonitorFace (m_faceP->nSegment, m_faceP->nSide, 1);
 m_faceP->bIsLight = IsLight (m_faceP->nBaseTex) || (m_faceP->nOvlTex && IsLight (m_faceP->nOvlTex));
 m_faceP->nOvlOrient = (ubyte) m_sideP->nOvlOrient;
 m_faceP->bTextured = 1;
 m_faceP->bTransparent = 0;
-char *pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [m_faceP->nOvlTex ? m_faceP->nOvlTex : m_faceP->nBaseTex].index].name;
+char *pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.bmIndexP [m_faceP->nOvlTex ? m_faceP->nOvlTex : m_faceP->nBaseTex].index].name;
 m_faceP->bSparks = (strstr (pszName, "misc17") != NULL);
 if (m_nWallType < 2)
 	m_faceP->bAdditive = 0;
@@ -1035,7 +1035,7 @@ for (i = 0; i < 2; i++, m_triP++) {
 
 void CQuadMeshBuilder::BuildSlidingFaceList (void)
 {
-	grsFace	*faceP = gameData.segs.faces.faces;
+	tFace	*faceP = gameData.segs.faces.faces;
 
 gameData.segs.faces.slidingFaces = NULL;
 for (int i = gameData.segs.nFaces; i; i--, faceP++)

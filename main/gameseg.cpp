@@ -2243,8 +2243,8 @@ for (i=0; i<=gameData.segs.nLastSegment; i++) {
 	for (j=0; j<MAX_SIDES_PER_SEGMENT; j++) {
 		tSide	*sideP = &segp->sides [j];
 
-		if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & tmi_bit) ||
-			   (gameData.pig.tex.pTMapInfo [sideP->nOvlTex].flags & tmi_bit)) {
+		if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & tmi_bit) ||
+			   (gameData.pig.tex.tMapInfoP [sideP->nOvlTex].flags & tmi_bit)) {
 			if (!IS_CHILD (segp->children [j]) || IS_WALL (sideP->nWall)) {
 				seg2p->s2Flags |= s2f_bit;
 				marked_segs [i] = 1;		//	Say it's itself that it is close enough to to hear something.

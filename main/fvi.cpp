@@ -1569,9 +1569,9 @@ int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v)
 
 //	Assert(WALL_IS_DOORWAY(seg, nSide) == WID_TRANSPARENT_WALL);
 
-bmiP = gameData.pig.tex.pBmIndex + (nTexture);
+bmiP = gameData.pig.tex.bmIndexP + (nTexture);
 PIGGY_PAGE_IN (*bmiP, gameStates.app.bD1Data);
-bmP = BmOverride (gameData.pig.tex.pBitmaps + bmiP->index);
+bmP = BmOverride (gameData.pig.tex.bitmapP + bmiP->index);
 #else
 bmP = LoadFaceBitmap (nTexture, nFrame);
 #endif

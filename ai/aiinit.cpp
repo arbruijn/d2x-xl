@@ -42,28 +42,28 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // ---------------------------------------------------------
 //	On entry, gameData.bots.nTypes had darn sure better be set.
-//	Mallocs gameData.bots.nTypes tRobotInfo structs into global gameData.bots.pInfo.
+//	Mallocs gameData.bots.nTypes tRobotInfo structs into global gameData.bots.infoP.
 void InitAISystem (void)
 {
 #if 0
 	int	i;
 
 #if TRACE
-	con_printf (CONDBG, "Trying to D2_ALLOC %i bytes for gameData.bots.pInfo.\n",
-					gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
+	con_printf (CONDBG, "Trying to D2_ALLOC %i bytes for gameData.bots.infoP.\n",
+					gameData.bots.nTypes * sizeof (*gameData.bots.infoP));
 #endif
-	gameData.bots.pInfo = reinterpret_cast<tRobotInfo*> (D2_ALLOC (gameData.bots.nTypes * sizeof (*gameData.bots.pInfo)));
+	gameData.bots.infoP = reinterpret_cast<tRobotInfo*> (D2_ALLOC (gameData.bots.nTypes * sizeof (*gameData.bots.infoP)));
 #if TRACE
-	con_printf (CONDBG, "gameData.bots.pInfo = %i\n", gameData.bots.pInfo);
+	con_printf (CONDBG, "gameData.bots.infoP = %i\n", gameData.bots.infoP);
 #endif
 	for (i = 0; i < gameData.bots.nTypes; i++) {
-		gameData.bots.pInfo [i].fieldOfView = F1_0/2;
-		gameData.bots.pInfo [i].primaryFiringWait = F1_0;
-		gameData.bots.pInfo [i].turnTime = F1_0*2;
-		// -- gameData.bots.pInfo [i].fire_power = F1_0;
-		// -- gameData.bots.pInfo [i].shield = F1_0/2;
-		gameData.bots.pInfo [i].xMaxSpeed = F1_0*10;
-		gameData.bots.pInfo [i].always_0xabcd = 0xabcd;
+		gameData.bots.infoP [i].fieldOfView = F1_0/2;
+		gameData.bots.infoP [i].primaryFiringWait = F1_0;
+		gameData.bots.infoP [i].turnTime = F1_0*2;
+		// -- gameData.bots.infoP [i].fire_power = F1_0;
+		// -- gameData.bots.infoP [i].shield = F1_0/2;
+		gameData.bots.infoP [i].xMaxSpeed = F1_0*10;
+		gameData.bots.infoP [i].always_0xabcd = 0xabcd;
 	}
 #endif
 
@@ -204,12 +204,12 @@ gameStates.app.bLunacy = 1;
 nDiffSave = gameStates.app.nDifficultyLevel;
 gameStates.app.nDifficultyLevel = NDL-1;
 for (i = 0; i < MAX_ROBOT_TYPES; i++) {
-	Firing_wait_copy [i] = gameData.bots.pInfo [i].primaryFiringWait [NDL-1];
-	Firing_wait2_copy [i] = gameData.bots.pInfo [i].secondaryFiringWait [NDL-1];
-	RapidfireCount_copy [i] = gameData.bots.pInfo [i].nRapidFireCount [NDL-1];
-	gameData.bots.pInfo [i].primaryFiringWait [NDL-1] = gameData.bots.pInfo [i].primaryFiringWait [1];
-	gameData.bots.pInfo [i].secondaryFiringWait [NDL-1] = gameData.bots.pInfo [i].secondaryFiringWait [1];
-	gameData.bots.pInfo [i].nRapidFireCount [NDL-1] = gameData.bots.pInfo [i].nRapidFireCount [1];
+	Firing_wait_copy [i] = gameData.bots.infoP [i].primaryFiringWait [NDL-1];
+	Firing_wait2_copy [i] = gameData.bots.infoP [i].secondaryFiringWait [NDL-1];
+	RapidfireCount_copy [i] = gameData.bots.infoP [i].nRapidFireCount [NDL-1];
+	gameData.bots.infoP [i].primaryFiringWait [NDL-1] = gameData.bots.infoP [i].primaryFiringWait [1];
+	gameData.bots.infoP [i].secondaryFiringWait [NDL-1] = gameData.bots.infoP [i].secondaryFiringWait [1];
+	gameData.bots.infoP [i].nRapidFireCount [NDL-1] = gameData.bots.infoP [i].nRapidFireCount [1];
 	}
 }
 
@@ -223,9 +223,9 @@ if (!gameStates.app.bLunacy)	//already off
 	return;
 gameStates.app.bLunacy = 0;
 for (i = 0; i < MAX_ROBOT_TYPES; i++) {
-	gameData.bots.pInfo [i].primaryFiringWait [NDL-1] = Firing_wait_copy [i];
-	gameData.bots.pInfo [i].secondaryFiringWait [NDL-1] = Firing_wait2_copy [i];
-	gameData.bots.pInfo [i].nRapidFireCount [NDL-1] = RapidfireCount_copy [i];
+	gameData.bots.infoP [i].primaryFiringWait [NDL-1] = Firing_wait_copy [i];
+	gameData.bots.infoP [i].secondaryFiringWait [NDL-1] = Firing_wait2_copy [i];
+	gameData.bots.infoP [i].nRapidFireCount [NDL-1] = RapidfireCount_copy [i];
 	}
 gameStates.app.nDifficultyLevel = nDiffSave;
 }

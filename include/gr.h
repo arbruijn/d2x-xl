@@ -256,7 +256,7 @@ typedef struct grsTriangle {
 	int					nIndex;
 	} grsTriangle;
 
-typedef struct grsFace {
+typedef struct tFace {
 	ushort				index [4];
 	ushort				*triIndex;
 	int					nIndex;
@@ -301,8 +301,8 @@ typedef struct grsFace {
 	char					nType;
 	char					nSegColor;
 	char					nShader;
-	struct grsFace		*nextSlidingFace;
-	} grsFace;
+	struct tFace		*nextSlidingFace;
+	} tFace;
 
 typedef struct tDisplayModeInfo {
 	int	VGA_mode;

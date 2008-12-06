@@ -171,11 +171,11 @@ if (!bInFile) {
 #endif
 	nBitmapFilesNew++;
 	}
-strncpy (gameData.pig.tex.pBitmapFiles [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, name, 12);
+strncpy (gameData.pig.tex.bitmapFileP [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, name, 12);
 HashTableInsert (bitmapNames + gameStates.app.bD1Mission, 
-					  gameData.pig.tex.pBitmapFiles [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, 
+					  gameData.pig.tex.bitmapFileP [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]].name, 
 					  gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
-gameData.pig.tex.pBitmaps [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = *bmP;
+gameData.pig.tex.bitmapP [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = *bmP;
 bmP->SetBuffer (NULL);	//avoid automatic destruction trying to delete the same buffer twice
 if (!bInFile) {
 	bitmapOffsets [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = 0;
@@ -823,7 +823,7 @@ PiggyBitmapReadD1 (cf, newBm, nBmDataOffs, &bmh, 0, d1ColorMap);
 cf.Close ();
 newBm->SetAvgColorIndex (0);
 bmi.index = gameData.pig.tex.nExtraBitmaps;
-gameData.pig.tex.pBitmaps [gameData.pig.tex.nExtraBitmaps++] = *newBm;
+gameData.pig.tex.bitmapP [gameData.pig.tex.nExtraBitmaps++] = *newBm;
 return bmi;
 }
 

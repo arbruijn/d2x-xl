@@ -197,7 +197,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 
 	//check if tmap2 casts light before turning the light on.  This
 	//is to keep us from turning on blown-out lights
-	if (gameData.pig.tex.pTMapInfo [gameData.segs.segments [nSegment].sides [nSide].nOvlTex].lighting) {
+	if (gameData.pig.tex.tMapInfoP [gameData.segs.segments [nSegment].sides [nSide].nOvlTex].lighting) {
 		ret |= AddLight (nSegment, nSide); 		//any light sets flag
 		EnableVariableLight (nSegment, nSide);
 	}
@@ -221,7 +221,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 
 	//check if tmap2 casts light before turning the light off.  This
 	//is to keep us from turning off blown-out lights
-	if (gameData.pig.tex.pTMapInfo [gameData.segs.segments [nSegment].sides [nSide].nOvlTex].lighting) {
+	if (gameData.pig.tex.tMapInfoP [gameData.segs.segments [nSegment].sides [nSide].nOvlTex].lighting) {
 		ret |= SubtractLight (nSegment, nSide); 	//any light sets flag
 		DisableVariableLight (nSegment, nSide);
 	}
@@ -418,7 +418,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	ret = 1;
 	switch (trigP->nType) {
 		case TT_OPEN_WALL:
-			if (!(gameData.pig.tex.pTMapInfo [segP->sides [nSide].nBaseTex].flags & TMI_FORCE_FIELD)) 
+			if (!(gameData.pig.tex.tMapInfoP [segP->sides [nSide].nBaseTex].flags & TMI_FORCE_FIELD)) 
 				StartWallCloak (segP,nSide);
 			else {
 				vmsVector pos;
@@ -435,7 +435,7 @@ for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 			break;
 
 		case TT_CLOSE_WALL:
-			if (!(gameData.pig.tex.pTMapInfo [segP->sides [nSide].nBaseTex].flags & TMI_FORCE_FIELD)) 
+			if (!(gameData.pig.tex.tMapInfoP [segP->sides [nSide].nBaseTex].flags & TMI_FORCE_FIELD)) 
 				StartWallDecloak (segP,nSide);
 			else {
 				vmsVector pos;
@@ -805,7 +805,7 @@ int WallIsForceField (tTrigger *trigP)
 	short *sides = trigP->nSide;
 
 for (i = trigP->nLinks; i > 0; i--, segs++, sides++)
-	if ((gameData.pig.tex.pTMapInfo [gameData.segs.segments [*segs].sides [*sides].nBaseTex].flags & TMI_FORCE_FIELD))
+	if ((gameData.pig.tex.tMapInfoP [gameData.segs.segments [*segs].sides [*sides].nBaseTex].flags & TMI_FORCE_FIELD))
 		break;
 return (i > 0);
 }
@@ -1216,13 +1216,13 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 	nOvlTex = gameData.segs.segments [nSegSide / 65536].sides [nSegSide & 0xffff].nOvlTex;
 	if (nOvlTex <= 0)
 		continue;
-	ec = gameData.pig.tex.pTMapInfo [nOvlTex].nEffectClip;
+	ec = gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip;
 	if (ec < 0) {
-		if (gameData.pig.tex.pTMapInfo [nOvlTex].destroyed == -1)
+		if (gameData.pig.tex.tMapInfoP [nOvlTex].destroyed == -1)
 			continue;
 		}
 	else {
-		tEffectClip *ecP = gameData.eff.pEffects + ec;
+		tEffectClip *ecP = gameData.eff.effectP + ec;
 		if (ecP->flags & EF_ONE_SHOT)
 			continue;
 		if (ecP->nDestBm < 0)

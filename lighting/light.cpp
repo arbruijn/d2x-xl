@@ -589,7 +589,7 @@ switch (nObjType) {
 			tVideoClip *vcP = gameData.eff.vClips [0] + objP->info.nId;
 			fix		xLight = vcP->lightValue;
 			int		i, j;
-			CBitmap	*bmP = gameData.pig.tex.pBitmaps [vcP->frames [0].index].Override ();
+			CBitmap	*bmP = gameData.pig.tex.bitmapP [vcP->frames [0].index].Override ();
 			if (bmP) {
 				bmP->GetAvgColor (colorP);
 				*pbGotColor = 1;
@@ -1096,7 +1096,7 @@ void ChangeSegmentLight (short nSegment, short nSide, int dir)
 if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_RENDER_FLAG) {
 	tSide	*sideP = segP->sides+nSide;
 	fix	xBrightness;
-	xBrightness = gameData.pig.tex.pTMapInfo [sideP->nBaseTex].lighting + gameData.pig.tex.pTMapInfo [sideP->nOvlTex].lighting;
+	xBrightness = gameData.pig.tex.tMapInfoP [sideP->nBaseTex].lighting + gameData.pig.tex.tMapInfoP [sideP->nOvlTex].lighting;
 	xBrightness *= dir;
 	nChangedSegs = 0;
 	if (xBrightness) {

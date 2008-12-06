@@ -416,9 +416,9 @@ if (playerObjP->info.nId != gameData.multiplayer.nLocalPlayer) // Execute only f
 	return;
 nBaseTex = gameData.segs.segments [nHitSeg].sides [nHitWall].nBaseTex;
 //	If this tWall does damage, don't make *BONK* sound, we'll be making another sound.
-if (gameData.pig.tex.pTMapInfo [nBaseTex].damage > 0)
+if (gameData.pig.tex.tMapInfoP [nBaseTex].damage > 0)
 	return;
-if (gameData.pig.tex.pTMapInfo [nBaseTex].flags & TMI_FORCE_FIELD) {
+if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
 	vmsVector vForce;
 	paletteManager.BumpEffect (0, 0, 60);	//flash blue
 	//knock tPlayer around
@@ -456,8 +456,8 @@ if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [nHitSeg].special == SE
 damage = (xHitSpeed / DAMAGE_SCALE) * (bForceFieldHit * 8 + 1);
 nOvlTex = gameData.segs.segments [nHitSeg].sides [nHitWall].nOvlTex;
 //don't do tWall damage and sound if hit lava or water
-if ((gameData.pig.tex.pTMapInfo [nBaseTex].flags & (TMI_WATER|TMI_VOLATILE)) ||
-		(nOvlTex && (gameData.pig.tex.pTMapInfo [nOvlTex].flags & (TMI_WATER|TMI_VOLATILE))))
+if ((gameData.pig.tex.tMapInfoP [nBaseTex].flags & (TMI_WATER|TMI_VOLATILE)) ||
+		(nOvlTex && (gameData.pig.tex.tMapInfoP [nOvlTex].flags & (TMI_WATER|TMI_VOLATILE))))
 	damage = 0;
 if (damage >= DAMAGE_THRESHOLD) {
 	int	volume = (xHitSpeed- (DAMAGE_SCALE*DAMAGE_THRESHOLD)) / WALL_LOUDNESS_SCALE ;
@@ -493,8 +493,8 @@ int CheckVolatileWall (tObject *objP, int nSegment, int nSide, vmsVector *vHitPt
 
 Assert (objP->info.nType == OBJ_PLAYER);
 nTexture = gameData.segs.segments [nSegment].sides [nSide].nBaseTex;
-d = gameData.pig.tex.pTMapInfo [nTexture].damage;
-water = (gameData.pig.tex.pTMapInfo [nTexture].flags & TMI_WATER);
+d = gameData.pig.tex.tMapInfoP [nTexture].damage;
+water = (gameData.pig.tex.tMapInfoP [nTexture].flags & TMI_WATER);
 if (d > 0 || water) {
 	if (objP->info.nId == gameData.multiplayer.nLocalPlayer) {
 		if (d > 0) {
@@ -653,15 +653,15 @@ if (!(tm = segP->sides [nSide].nOvlTex))
 	return 0;
 
 tmf = segP->sides [nSide].nOvlOrient;		//tm flags
-ec = gameData.pig.tex.pTMapInfo [tm].nEffectClip;
+ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip;
 if (ec < 0) {
-	if (gameData.pig.tex.pTMapInfo [tm].destroyed == -1)
+	if (gameData.pig.tex.tMapInfoP [tm].destroyed == -1)
 		return 0;
 	nBitmap = -1;
 	nSwitchType = 0;
 	}
 else {
-	ecP = gameData.eff.pEffects + ec;
+	ecP = gameData.eff.effectP + ec;
 	if (ecP->flags & EF_ONE_SHOT)
 		return 0;
 	nBitmap = ecP->nDestBm;
@@ -670,8 +670,8 @@ else {
 	nSwitchType = 1;
 	}
 //check if it's an animation (monitor) or casts light
-bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tm].index;
-PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tm].index, gameStates.app.bD1Data);
+bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [tm].index;
+PIGGY_PAGE_IN (gameData.pig.tex.bmIndexP [tm].index, gameStates.app.bD1Data);
 //this can be blown up...did we hit it?
 if (!bForceBlowup) {
 	FindHitPointUV (&u, &v, NULL, pnt, segP, nSide, 0);	//evil: always say face zero
@@ -704,12 +704,12 @@ else {
 	}
 ObjectCreateExplosion (SEG_IDX (segP), pnt, xDestSize, vc);
 if (nSwitchType) {
-	if ((nSound = gameData.eff.pVClips [vc].nSound) != -1)
+	if ((nSound = gameData.eff.vClipP [vc].nSound) != -1)
 		DigiLinkSoundToPos (nSound, SEG_IDX (segP), 0, pnt,  0, F1_0);
 	if ((nSound = ecP->nSound) != -1)		//kill sound
 		DigiKillSoundLinkedToSegment (SEG_IDX (segP), nSide, nSound);
-	if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.pEffects [ecP->dest_eclip].nSegment == -1)) {
-		tEffectClip	*newEcP = gameData.eff.pEffects + ecP->dest_eclip;
+	if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.effectP [ecP->dest_eclip].nSegment == -1)) {
+		tEffectClip	*newEcP = gameData.eff.effectP + ecP->dest_eclip;
 		int nNewBm = newEcP->changingWallTexture;
 		newEcP->time_left = EffectFrameTime (newEcP);
 		newEcP->nCurFrame = 0;
@@ -729,7 +729,7 @@ if (nSwitchType) {
 	}
 else {
 	if (!bPermaTrigger)
-		segP->sides [nSide].nOvlTex = gameData.pig.tex.pTMapInfo [tm].destroyed;
+		segP->sides [nSide].nOvlTex = gameData.pig.tex.tMapInfoP [tm].destroyed;
 	//assume this is a light, and play light sound
 	DigiLinkSoundToPos (SOUND_LIGHT_BLOWNUP, SEG_IDX (segP), 0, pnt,  0, F1_0);
 	}
@@ -825,7 +825,7 @@ bBounce = (weaponP->mType.physInfo.flags & PF_BOUNCE) != 0;
 if (!bBounce)
 	CreateWeaponEffects (weaponP, 1);
 //if an energy weaponP hits a forcefield, let it bounce
-if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_FORCE_FIELD) &&
+if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_FORCE_FIELD) &&
 	 ((weaponP->info.nType != OBJ_WEAPON) || wInfoP->energy_usage)) {
 
 	//make sound
@@ -879,8 +879,8 @@ if (weaponP->info.nId == EARTHSHAKER_ID)
 	ShakerRockStuff ();
 wallType = WallHitProcess (segP, nHitWall, weaponP->info.xShields, nPlayer, weaponP);
 // Wall is volatile if either tmap 1 or 2 is volatile
-if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_VOLATILE) ||
-	 (sideP->nOvlTex && (gameData.pig.tex.pTMapInfo [sideP->nOvlTex].flags & TMI_VOLATILE))) {
+if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_VOLATILE) ||
+	 (sideP->nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->nOvlTex].flags & TMI_VOLATILE))) {
 	ubyte tVideoClip;
 	//we've hit a volatile tWall
 	DigiLinkSoundToPos (SOUND_VOLATILE_WALL_HIT, nHitSeg, 0, vHitPt, 0, F1_0);
@@ -899,8 +899,8 @@ if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_VOLATILE) ||
 			weaponP->cType.laserInfo.parent.nObject);
 	KillObject (weaponP);		//make flares die in lava
 	}
-else if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_WATER) ||
-			(sideP->nOvlTex && (gameData.pig.tex.pTMapInfo [sideP->nOvlTex].flags & TMI_WATER))) {
+else if ((gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_WATER) ||
+			(sideP->nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->nOvlTex].flags & TMI_WATER))) {
 	//we've hit water
 	//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
 	if (wInfoP->matter) {
@@ -955,7 +955,7 @@ if ((weaponP->cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 		}
 
 	//don't let flares stick in vForce fields
-	if ((weaponP->info.nId == FLARE_ID) && (gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_FORCE_FIELD)) {
+	if ((weaponP->info.nId == FLARE_ID) && (gameData.pig.tex.tMapInfoP [sideP->nBaseTex].flags & TMI_FORCE_FIELD)) {
 		KillObject (weaponP);
 		}
 	if (!(weaponP->info.nFlags & OF_SILENT)) {

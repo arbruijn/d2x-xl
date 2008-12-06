@@ -150,7 +150,7 @@ int IsOpaqueDoor (int i)
 
 if (i >= 0)
 	for (p = d2OpaqueDoors; *p >= 0; p++)
-		if (i == gameData.pig.tex.pBmIndex [*p].index)
+		if (i == gameData.pig.tex.bmIndexP [*p].index)
 			return 1;
 return 0;
 }
@@ -232,7 +232,7 @@ int FindTextureByIndex (int nIndex)
 	int	i, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Mission];
 
 for (i = 0; i < j; i++)
-	if (gameData.pig.tex.pBmIndex [i].index == nIndex)
+	if (gameData.pig.tex.bmIndexP [i].index == nIndex)
 		return i;
 return -1;
 }
@@ -250,9 +250,9 @@ tEffectClip *FindEffect (tEffectClip *ecP, int tNum)
 	tBitmapIndex	*frameP;
 
 if (ecP)
-	i = (int) (++ecP - gameData.eff.pEffects);
+	i = (int) (++ecP - gameData.eff.effectP);
 else {
-	ecP = gameData.eff.pEffects;
+	ecP = gameData.eff.effectP;
 	i = 0;
 	}
 for (h = gameData.eff.nEffects [gameStates.app.bD1Data]; i < h; i++, ecP++) {
@@ -290,11 +290,11 @@ return NULL;
 tWallClip *FindWallAnim (int tNum)
 {
 	int	h, i, j;
-	tWallClip *wcP = gameData.walls.pAnims;
+	tWallClip *wcP = gameData.walls.animP;
 
 for (i = gameData.walls.nAnims [gameStates.app.bD1Data]; i; i--, wcP++)
 	for (h = wcP->nFrameCount, j = 0; j < h; j++)
-		if (gameData.pig.tex.pBmIndex [wcP->frames [j]].index == tNum)
+		if (gameData.pig.tex.bmIndexP [wcP->frames [j]].index == tNum)
 			return wcP;
 return NULL;
 }
@@ -445,7 +445,7 @@ pf->vci.nCurFrame = 0;
 
 int IsAnimatedTexture (short nTexture)
 {
-return (nTexture > 0) && (strchr (gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [nTexture].index].name, '#') != NULL);
+return (nTexture > 0) && (strchr (gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.bmIndexP [nTexture].index].name, '#') != NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -751,7 +751,7 @@ int PiggyBitmapExistsSlow (char * name)
 	int i, j;
 
 	for (i=0, j=gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]; i<j; i++) {
-		if (!strcmp (gameData.pig.tex.pBitmapFiles[i].name, name))
+		if (!strcmp (gameData.pig.tex.bitmapFileP[i].name, name))
 			return 1;
 	}
 	return 0;
@@ -856,24 +856,24 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			j = indices [i];
 			bm.SetId (j);
 			bm.RLEExpand (NULL, 0);
-			*bm.Props () = *gameData.pig.tex.pBitmaps [j].Props ();
+			*bm.Props () = *gameData.pig.tex.bitmapP [j].Props ();
 			bm.Remap (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
 		PiggyFreeBitmap (NULL, j, 0);
 		bm.SetFromPog (1);
 		char szName [20];
-		if (*gameData.pig.tex.pBitmaps [j].Name ())
-			sprintf (szName, "[%s]", gameData.pig.tex.pBitmaps [j].Name ());
+		if (*gameData.pig.tex.bitmapP [j].Name ())
+			sprintf (szName, "[%s]", gameData.pig.tex.bitmapP [j].Name ());
 		else
 			sprintf (szName, "POG#%04d", j);
 		bm.SetName (szName);
-		gameData.pig.tex.pAltBitmaps [j] = bm;
-		gameData.pig.tex.pBitmaps [j].SetOverride (gameData.pig.tex.pAltBitmaps + j);
-		CBitmap* bmP = gameData.pig.tex.pAltBitmaps + j;
+		gameData.pig.tex.altBitmapP [j] = bm;
+		gameData.pig.tex.bitmapP [j].SetOverride (gameData.pig.tex.altBitmapP + j);
+		CBitmap* bmP = gameData.pig.tex.altBitmapP + j;
 		tRgbColorf color;
 		if (0 <= bmP->AvgColor (&color))
 			bmP->SetAvgColorIndex (bmP->Palette ()->ClosestColor (&color));
-		UseBitmapCache (gameData.pig.tex.pAltBitmaps + j, (int) bm.Width () * (int) bm.RowSize ());
+		UseBitmapCache (gameData.pig.tex.altBitmapP + j, (int) bm.Width () * (int) bm.RowSize ());
 		}
 	D2_FREE (indices);
 	D2_FREE (bmh);

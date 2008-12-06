@@ -172,9 +172,9 @@ if (!gameData.hoard.bInitialized) {
 	ecP->flags &= ~EF_INITIALIZED;
 
 	i = gameData.pig.tex.nTextures [0];
-	gameData.pig.tex.pTMapInfo [i] = gameData.pig.tex.pTMapInfo [MultiFindGoalTexture (TMI_GOAL_BLUE)];
-	gameData.pig.tex.pTMapInfo [i].nEffectClip = gameData.hoard.goal.nClip;
-	gameData.pig.tex.pTMapInfo [i].flags = TMI_GOAL_HOARD;
+	gameData.pig.tex.tMapInfoP [i] = gameData.pig.tex.tMapInfoP [MultiFindGoalTexture (TMI_GOAL_BLUE)];
+	gameData.pig.tex.tMapInfoP [i].nEffectClip = gameData.hoard.goal.nClip;
+	gameData.pig.tex.tMapInfoP [i].flags = TMI_GOAL_HOARD;
 	gameData.pig.tex.nTextures [0]++;
 	Assert (gameData.pig.tex.nTextures [0] < MAX_TEXTURES);
 	bmDataP = new ubyte [gameData.hoard.goal.nSize];

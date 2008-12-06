@@ -726,7 +726,7 @@ void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int leve
 					for (j=0; j<1; j++) {	//	Used to do through nFrameCount, but don't really want all the door01#3 stuff.
 						int	nBaseTex;
 
-						nBaseTex = gameData.pig.tex.pBmIndex[gameData.walls.anims[nClip].frames[j]].index;
+						nBaseTex = gameData.pig.tex.bmIndexP[gameData.walls.anims[nClip].frames[j]].index;
 						Assert((nBaseTex >= 0) && (nBaseTex < MAX_BITMAP_FILES);
 						tmap_buf[nBaseTex]++;
 						if (level_tmap_buf[nBaseTex] == -1)
@@ -737,19 +737,19 @@ void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int leve
 
 				if (sideP->nBaseTex >= 0)
 					if (sideP->nBaseTex < MAX_BITMAP_FILES) {
-						Assert(gameData.pig.tex.pBmIndex[sideP->nBaseTex].index < MAX_BITMAP_FILES);
-						tmap_buf[gameData.pig.tex.pBmIndex[sideP->nBaseTex].index]++;
-						if (level_tmap_buf[gameData.pig.tex.pBmIndex[sideP->nBaseTex].index] == -1)
-							level_tmap_buf[gameData.pig.tex.pBmIndex[sideP->nBaseTex].index] = level_num;
+						Assert(gameData.pig.tex.bmIndexP[sideP->nBaseTex].index < MAX_BITMAP_FILES);
+						tmap_buf[gameData.pig.tex.bmIndexP[sideP->nBaseTex].index]++;
+						if (level_tmap_buf[gameData.pig.tex.bmIndexP[sideP->nBaseTex].index] == -1)
+							level_tmap_buf[gameData.pig.tex.bmIndexP[sideP->nBaseTex].index] = level_num;
 					} else
 						Int3();	//	Error, bogus texture map.  Should not be greater than max_tmap.
 
 				if ((sideP->nOvlTex) != 0)
 					if ((sideP->nOvlTex) < MAX_BITMAP_FILES) {
-						Assert(gameData.pig.tex.pBmIndex[sideP->nOvlTex].index < MAX_BITMAP_FILES);
-						tmap_buf[gameData.pig.tex.pBmIndex[sideP->nOvlTex].index]++;
-						if (level_tmap_buf[gameData.pig.tex.pBmIndex[sideP->nOvlTex].index] == -1)
-							level_tmap_buf[gameData.pig.tex.pBmIndex[sideP->nOvlTex].index] = level_num;
+						Assert(gameData.pig.tex.bmIndexP[sideP->nOvlTex].index < MAX_BITMAP_FILES);
+						tmap_buf[gameData.pig.tex.bmIndexP[sideP->nOvlTex].index]++;
+						if (level_tmap_buf[gameData.pig.tex.bmIndexP[sideP->nOvlTex].index] == -1)
+							level_tmap_buf[gameData.pig.tex.bmIndexP[sideP->nOvlTex].index] = level_num;
 					} else {
 						if (!Ignore_tmap_num2_error)
 							Int3();	//	Error, bogus texture map.  Should not be greater than max_tmap.
@@ -805,7 +805,7 @@ void say_used_tmaps(FILE *my_file, int *tb)
 // --05/17/95--				level_name = SharewareLevel_names[level_num];
 // --05/17/95--			}
 // --05/17/95--
-// --05/17/95--			fprintf(my_file, "Texture %3i %8s used only once on level %s\n", i, gameData.pig.tex.pTMapInfo[i].filename, level_name);
+// --05/17/95--			fprintf(my_file, "Texture %3i %8s used only once on level %s\n", i, gameData.pig.tex.tMapInfoP[i].filename, level_name);
 // --05/17/95--		}
 // --05/17/95--}
 
@@ -832,7 +832,7 @@ void say_unused_tmaps(FILE *my_file, int *tb)
 
 	for (i=0; i<MAX_BITMAP_FILES; i++)
 		if (!tb[i]) {
-			if (gameData.pig.tex.bitmaps[gameData.pig.tex.pBmIndex[i].index].texBuf == &bogus_data)
+			if (gameData.pig.tex.bitmaps[gameData.pig.tex.bmIndexP[i].index].texBuf == &bogus_data)
 				fprintf(my_file, "U");
 			else
 				fprintf(my_file, " ");

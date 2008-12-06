@@ -359,9 +359,9 @@ pmP = gameData.models.polyModels+objP->rType.polyObjInfo.nModel;
 light = ComputeObjectLight (objP, NULL);
 G3StartInstanceMatrix(objP->info.position.vPos, objP->info.position.mOrient);
 G3SetModelPoints (gameData.models.polyModelPoints);
-gameData.render.pVerts = gameData.models.fPolyModelVerts;
+gameData.render.vertP = gameData.models.fPolyModelVerts;
 MorphDrawModel (pmP, 0, objP->rType.polyObjInfo.animAngles, light, mdP, objP->rType.polyObjInfo.nModel);
-gameData.render.pVerts = NULL;
+gameData.render.vertP = NULL;
 G3DoneInstance ();
 
 #ifdef NEWDEMO

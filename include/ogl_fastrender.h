@@ -13,35 +13,35 @@
 
 //------------------------------------------------------------------------------
 
-int G3DrawFaceSimple (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-int G3DrawFaceArrays (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-int G3DrawFaceArraysPPLM (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-int G3DrawHeadlights (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-int G3DrawHeadlightsPPLM (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-int G3DrawFaceArraysLM (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int G3DrawFaceSimple (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int G3DrawFaceArrays (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int G3DrawFaceArraysPPLM (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int G3DrawHeadlights (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int G3DrawHeadlightsPPLM (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int G3DrawFaceArraysLM (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 void G3FlushFaceBuffer (int bForce);
-int G3SetupPerPixelShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadlight);
-int G3SetupLightmapShader (grsFace *faceP, int bDepthOnly, int nType, bool bHeadlight);
+int G3SetupPerPixelShader (tFace *faceP, int bDepthOnly, int nType, bool bHeadlight);
+int G3SetupLightmapShader (tFace *faceP, int bDepthOnly, int nType, bool bHeadlight);
 int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP);
 int G3SetupTexMergeShader (int bColorKey, int bColored, int nType);
 int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP);
-int G3SetupShader (grsFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
+int G3SetupShader (tFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
 void InitGrayScaleShader (void);
 
-typedef int (*tG3FaceDrawerP) (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+typedef int (*tG3FaceDrawerP) (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 
 extern tG3FaceDrawerP g3FaceDrawer;
 
 //------------------------------------------------------------------------------
 
-static inline int FaceIsAdditive (grsFace *faceP)
+static inline int FaceIsAdditive (tFace *faceP)
 {
 return (int) ((faceP->bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->FromPog ()) : faceP->bAdditive);
 }
 
 //------------------------------------------------------------------------------
 
-static inline int G3DrawFace (grsFace *faceP, CBitmap *bmBot, CBitmap *bmTop, 
+static inline int G3DrawFace (tFace *faceP, CBitmap *bmBot, CBitmap *bmTop, 
 										 int bBlend, int bTextured, int bDepthOnly, int bVertexArrays, int bPPLM)
 {
 return bPPLM ? 

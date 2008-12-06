@@ -104,7 +104,7 @@ strncpy (sounds [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameSta
 HashTableInsert (&soundNames [gameStates.app.bD1Data], 
 						sounds [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]].name, 
 						gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]);
-gameData.pig.sound.pSounds [gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = *soundP;
+gameData.pig.sound.soundP [gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = *soundP;
 if (!nInFile)
 	soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = 0;
 i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data];
@@ -356,7 +356,7 @@ void PiggyReadSounds (void)
 	CFile			cf;
 	ubyte			*ptr;
 	int			i, j, sbytes;
-	tDigiSound	*soundP = gameData.pig.sound.pSounds;
+	tDigiSound	*soundP = gameData.pig.sound.soundP;
 
 ptr = gameData.pig.sound.data [gameStates.app.bD1Data];
 sbytes = 0;

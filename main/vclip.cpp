@@ -214,7 +214,7 @@ glDepthMask (1);
 void ConvertPowerupToVClip (tObject *objP)
 {
 objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 objP->rType.vClipInfo.nCurFrame = 0;
 objP->info.xSize = gameData.objs.pwrUp.info [objP->info.nId].size;
 objP->info.controlType = CT_POWERUP;
@@ -228,7 +228,7 @@ objP->mType.physInfo.drag = 512;
 void ConvertWeaponToVClip (tObject *objP)
 {
 objP->rType.vClipInfo.nClipIndex = gameData.weapons.info [objP->info.nId].nVClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.xFrameTime = gameData.eff.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 objP->rType.vClipInfo.nCurFrame = 0;
 objP->info.controlType = CT_WEAPON;
 objP->info.renderType = RT_WEAPON_VCLIP;
@@ -289,7 +289,7 @@ void DrawWeaponVClip (tObject *objP)
 Assert (objP->info.nType == OBJ_WEAPON);
 nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
 modtime = objP->info.xLifeLeft;
-playTime = gameData.eff.pVClips [nVClip].xTotalTime;
+playTime = gameData.eff.vClipP [nVClip].xTotalTime;
 //	Special values for modtime were causing enormous slowdown for omega blobs.
 if (modtime == IMMORTAL_TIME)
 	modtime = playTime;

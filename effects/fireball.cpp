@@ -734,7 +734,7 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++) {
 			tSegment *seg = gameData.segs.segments + nSegment,
 						*csegp = gameData.segs.segments + seg->children [nSide];
 			ubyte	a = (ubyte) gameData.walls.walls [WallNumP (seg, nSide)].nClip;
-			short n = AnimFrameCount (gameData.walls.pAnims + a);
+			short n = AnimFrameCount (gameData.walls.animP + a);
 			short cside = FindConnectedSide (seg, csegp);
 			WallSetTMapNum (seg, nSide, csegp, cside, a, n - 1);
 			gameData.walls.walls [WallNumP (seg, nSide)].flags |= WALL_BLASTED;

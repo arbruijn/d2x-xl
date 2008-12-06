@@ -323,7 +323,7 @@ else {
 			break;
 		}
 	}
-pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [nTexture].index].name;
+pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.bmIndexP [nTexture].index].name;
 if (strstr (pszName, "metl") || strstr (pszName, "rock") || strstr (pszName, "water"))
 	return 0;
 if (bAdditiveP)

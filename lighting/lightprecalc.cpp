@@ -102,7 +102,7 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-static inline int IsLightVert (int nVertex, grsFace *faceP)
+static inline int IsLightVert (int nVertex, tFace *faceP)
 {
 ushort *pv = (gameStates.render.bTriangleMesh ? faceP->triIndex : faceP->index);
 for (int i = faceP->nVerts; i; i--, pv++)
@@ -291,7 +291,7 @@ while (!SetSegVis (nStartSeg, nSegment))
 	;
 
 	tSegFaces	*segFaceP = SEGFACES + nSegment;
-	grsFace		*faceP;
+	tFace		*faceP;
 	grsTriangle	*triP;
 	int			i, nFaces, nTris;
 

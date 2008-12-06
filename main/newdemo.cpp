@@ -1712,13 +1712,13 @@ for (i = 0; i < gameData.reactor.triggers.nLinks; i++) {
 	connSegP = gameData.segs.segments + segP->children [side];
 	nConnSide = FindConnectedSide (segP, connSegP);
 	anim_num = gameData.walls.walls [WallNumP (segP, side)].nClip;
-	n = gameData.walls.pAnims [anim_num].nFrameCount;
-	if (gameData.walls.pAnims [anim_num].flags & WCF_TMAP1)
+	n = gameData.walls.animP [anim_num].nFrameCount;
+	if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
 		segP->sides [side].nBaseTex = 
-		connSegP->sides [nConnSide].nBaseTex = gameData.walls.pAnims [anim_num].frames [n-1];
+		connSegP->sides [nConnSide].nBaseTex = gameData.walls.animP [anim_num].frames [n-1];
 	else
 		segP->sides [side].nOvlTex = 
-		connSegP->sides [nConnSide].nOvlTex = gameData.walls.pAnims [anim_num].frames [n-1];
+		connSegP->sides [nConnSide].nOvlTex = gameData.walls.animP [anim_num].frames [n-1];
 	}
 }
 
@@ -2491,12 +2491,12 @@ while (!bDone) {
 				oppSegP = gameData.segs.segments + segP->children [nSide];
 				nConnSide = FindConnectedSide (segP, oppSegP);
 				anim_num = gameData.walls.walls [WallNumP (segP, nSide)].nClip;
-				if (gameData.walls.pAnims [anim_num].flags & WCF_TMAP1)
+				if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
 					segP->sides [nSide].nBaseTex = oppSegP->sides [nConnSide].nBaseTex =
-						gameData.walls.pAnims [anim_num].frames [0];
+						gameData.walls.animP [anim_num].frames [0];
 				else
 					segP->sides [nSide].nOvlTex = 
-					oppSegP->sides [nConnSide].nOvlTex = gameData.walls.pAnims [anim_num].frames [0];
+					oppSegP->sides [nConnSide].nOvlTex = gameData.walls.animP [anim_num].frames [0];
 				}
 			else
 				WallOpenDoor (gameData.segs.segments + nSegment, nSide);

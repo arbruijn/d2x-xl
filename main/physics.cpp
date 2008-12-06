@@ -829,7 +829,7 @@ retryMove:
 			int bForceFieldBounce;		//bounce off a forcefield
 
 			///Assert (gameStates.app.cheats.bBouncingWeapons || ((objP->mType.physInfo.flags & (PF_STICK | PF_BOUNCE)) != (PF_STICK | PF_BOUNCE)));	//can't be bounce and stick
-			bForceFieldBounce = (gameData.pig.tex.pTMapInfo [gameData.segs.segments [nWallHitSeg].sides [nWallHitSide].nBaseTex].flags & TMI_FORCE_FIELD);
+			bForceFieldBounce = (gameData.pig.tex.tMapInfoP [gameData.segs.segments [nWallHitSeg].sides [nWallHitSide].nBaseTex].flags & TMI_FORCE_FIELD);
 			if (!bForceFieldBounce && (objP->mType.physInfo.flags & PF_STICK)) {		//stop moving
 				AddStuckObject (objP, nWallHitSeg, nWallHitSide);
 				objP->mType.physInfo.velocity.SetZero();

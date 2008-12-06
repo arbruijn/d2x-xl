@@ -2888,7 +2888,7 @@ int MultiFindGoalTexture (short t)
 if (t == TMI_FUELCEN)
 	return 333;
 for (i = 0;i<gameData.pig.tex.nTextures [gameStates.app.bD1Data];i++)
-	if (gameData.pig.tex.pTMapInfo [i].flags & t)
+	if (gameData.pig.tex.tMapInfoP [i].flags & t)
 		return i;
 Int3 (); // Hey, there is no goal texture for this PIG!!!!
 // Edit bitmaps.tbl and designate two textures to be RED and BLUE
