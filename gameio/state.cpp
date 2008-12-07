@@ -1176,7 +1176,7 @@ m_cf.WriteFix (paletteManager.LastEffectTime ());
 m_cf.WriteShort (paletteManager.RedEffect ());
 m_cf.WriteShort (paletteManager.GreenEffect ());
 m_cf.WriteShort (paletteManager.BlueEffect ());
-m_cf.Write (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtracted [0]), MAX_SEGMENTS);
+m_cf.Write (gameData.render.lights.subtracted.Buffer (), sizeof (gameData.render.lights.subtracted [0]), MAX_SEGMENTS);
 m_cf.WriteInt (gameStates.app.bFirstSecretVisit);
 m_cf.WriteFix (gameData.omega.xCharge [0]);
 m_cf.WriteShort (gameData.missions.nEnteredFromLevel);
@@ -2170,7 +2170,7 @@ if (!m_bBetweenLevels)	{
 	//Restore tWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
 		return 0;
-	for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
+	for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
 		CSaveGameHandler::LoadWall (wallP);
 		if (wallP->nType == WALL_OPEN)
 			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
@@ -2237,7 +2237,7 @@ if (!m_bBetweenLevels)	{
 		}
 	DBG (fPos = m_cf.Tell ());
 	//Restore the fuelcen info
-	for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
+	for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
 		if ((wallP->nType == WALL_DOOR) && (wallP->flags & WALL_DOOR_OPENED))
 			AnimateOpeningDoor (SEGMENTS + wallP->nSegment, wallP->nSide, -1);
 		else if ((wallP->nType == WALL_BLASTABLE) && (wallP->flags & WALL_BLASTED))
@@ -2333,7 +2333,7 @@ paletteManager.SetLastEffectTime (m_cf.ReadFix ());
 paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
 paletteManager.SetBlueEffect ((ubyte) m_cf.ReadShort ());
-m_cf.Read (gameData.render.lights.subtracted, 
+m_cf.Read (gameData.render.lights.subtracted.Buffer (), 
 		  sizeof (gameData.render.lights.subtracted [0]), 
 		  (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
 ApplyAllChangedLight ();
@@ -2438,7 +2438,7 @@ if (!m_bBetweenLevels)	{
 	//Read objects, and pop 'em into their respective segments.
 	m_cf.Read (&i, sizeof (int), 1);
 	gameData.objs.nLastObject [0] = i - 1;
-	m_cf.Read (OBJECTS, sizeof (CObject), i);
+	m_cf.Read (OBJECTS.Buffer (), sizeof (CObject), i);
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	FixObjects ();
 	SpecialResetObjects ();
@@ -2454,25 +2454,25 @@ if (!m_bBetweenLevels)	{
 	//Restore tWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
 		return 0;
-	m_cf.Read (gameData.walls.walls, sizeof (tWall), gameData.walls.nWalls);
+	m_cf.Read (gameData.walls.walls.Buffer (), sizeof (tWall), gameData.walls.nWalls);
 	//now that we have the walls, check if any sounds are linked to
 	//walls that are now open
-	for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++)
+	for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; i++, wallP++)
 		if (wallP->nType == WALL_OPEN)
 			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
 	//Restore exploding wall info
 	if (m_nVersion >= 10) {
 		m_cf.Read (&i, sizeof (int), 1);
-		m_cf.Read (gameData.walls.explWalls, sizeof (*gameData.walls.explWalls), i);
+		m_cf.Read (gameData.walls.explWalls.Buffer (), sizeof (gameData.walls.explWalls [0]), i);
 		}
 	//Restore door info
 	if (ReadBoundedInt (MAX_DOORS, &gameData.walls.nOpenDoors))
 		return 0;
-	m_cf.Read (gameData.walls.activeDoors, sizeof (tActiveDoor), gameData.walls.nOpenDoors);
+	m_cf.Read (gameData.walls.activeDoors.Buffer (), sizeof (tActiveDoor), gameData.walls.nOpenDoors);
 	if (m_nVersion >= 14) {		//Restore cloaking tWall info
 		if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nCloaking))
 			return 0;
-		m_cf.Read (gameData.walls.cloaking, sizeof (tCloakingWall), gameData.walls.nCloaking);
+		m_cf.Read (gameData.walls.cloaking.Buffer (), sizeof (tCloakingWall), gameData.walls.nCloaking);
 		}
 	//Restore tTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers))
@@ -2593,12 +2593,13 @@ else {
 
 //	Load gameData.render.lights.subtracted
 if (m_nVersion >= 16) {
-	m_cf.Read (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtracted [0]), (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
+	m_cf.Read (gameData.render.lights.subtracted.Buffer (), sizeof (gameData.render.lights.subtracted [0]), 
+				  (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2);
 	ApplyAllChangedLight ();
 	//ComputeAllStaticLight ();	//	set xAvgSegLight field in CSegment struct.  See note at that function.
 	}
 else
-	memset (gameData.render.lights.subtracted, 0, sizeof (gameData.render.lights.subtracted));
+	gameData.render.lights.subtracted.Clear ();
 
 if (m_bSecret) 
 	gameStates.app.bFirstSecretVisit = 0;

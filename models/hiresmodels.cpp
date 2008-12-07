@@ -240,8 +240,8 @@ if (!PolyModelRead (pm, 1, cf)) {
 	cf.Close ();
 	return ++i;
 	}
-pm->modelData = 
-pm->modelData = NULL;
+pm->modelData.SetBuffer (NULL); 
+pm->modelData.SetBuffer (NULL);
 PolyModelDataRead (pm, nModel, gameData.models.defPolyModels + nModel, cf);
 cf.Close ();
 pm->rad = G3PolyModelSize (pm, nModel);

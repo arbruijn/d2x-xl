@@ -31,7 +31,10 @@ template < class _T > class CArray {
 			memset (&m_data.null, 0, sizeof (_T));
 			}
 
-		inline void Clear (ubyte filler = 0) { if (m_data.buffer) memset (m_data.buffer, filler, m_data.length); }
+		inline void Clear (ubyte filler = 0, uint count = 0xffffffff) { 
+			if (m_data.buffer) 
+				memset (m_data.buffer, filler, (count < m_data.length) ? count : m_data.length); 
+			}
 		
 #ifdef _DEBUG
 		inline int Index (_T* elem) { 

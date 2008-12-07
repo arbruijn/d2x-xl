@@ -916,7 +916,7 @@ if (gameFileInfo.objects.offset > -1) {
 		Error ("Error seeking to object data\n(file damaged or invalid)");
 		return -1;
 		}
-	memset (OBJECTS, 0, gameFileInfo.objects.count * sizeof (CObject));
+	OBJECTS.Clear (0, gameFileInfo.objects.count);
 	for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 		ReadObject (objP, cf, gameTopFileInfo.fileinfoVersion);
 		objP->info.nSignature = gameData.objs.nNextSignature++;

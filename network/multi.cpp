@@ -3507,7 +3507,7 @@ if (gameData.reactor.bDestroyed) {
 #endif
 countDown = -1;
 gameStates.entropy.bExitSequence = 0;
-for (i = 0, xSegP = gameData.segs.xSegments; i <= gameData.segs.nLastSegment; i++, xSegP++)
+for (i = 0, xSegP = gameData.segs.xSegments.Buffer (); i <= gameData.segs.nLastSegment; i++, xSegP++)
 	if ((t = (int) xSegP->owner) > 0) {
 		bGotRoom [--t] = 1;
 		if (bGotRoom [!t])
@@ -3527,7 +3527,7 @@ for (h = i = 0; i < gameData.multiplayer.nPlayers; i++)
 if ((h  >= extraGameInfo [1].entropy.nCaptureVirusLimit) && extraGameInfo [1].entropy.nVirusStability)
 	return;
 HUDInitMessage (TXT_WINNING_TEAM, t ? TXT_RED : TXT_BLUE);
-for (i = 0, xSegP = gameData.segs.xSegments; i <= gameData.segs.nLastSegment; i++, xSegP++) {
+for (i = 0, xSegP = gameData.segs.xSegments.Buffer (); i <= gameData.segs.nLastSegment; i++, xSegP++) {
 	if (xSegP->owner != t + 1)
 		xSegP->owner = t + 1;
 	ChangeSegmentTexture (i, -1);

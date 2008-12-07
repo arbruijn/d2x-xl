@@ -232,7 +232,7 @@ memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsT
 nPlayers = 0;
 j = 0;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
-	nextObjP = objP->links [0].next;
+	nextObjP = objP->Links (0).next;
 	t = objP->info.nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
 		i = OBJ_IDX (objP);
@@ -616,7 +616,7 @@ void SetSoundSources (void)
 gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds && !gameOpts->sound.bHires;
 DigiInitSounds ();		//clear old sounds
 gameStates.sound.bDontStartObjects = 1;
-for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++)
+for (segP = gameData.segs.segments.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++)
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (!(WALL_IS_DOORWAY (segP,nSide, NULL) & WID_RENDER_FLAG))
 			continue;
@@ -745,8 +745,8 @@ memset (gameData.multiplayer.weaponStates, 0xff, sizeof (gameData.multiplayer.we
 memset (gameData.multiplayer.bWasHit, 0, sizeof (gameData.multiplayer.bWasHit));
 memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLastHitTime));
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
-memset (gameData.objs.objects, 0, MAX_OBJECTS * sizeof (*gameData.objs.objects));
-memset (gameData.objs.lightObjs, (char) 0xff, MAX_OBJECTS * sizeof (*gameData.objs.lightObjs));
+gameData.objs.objects.Clear ();
+gameData.objs.lightObjs.Clear (0xff);
 memset (gameData.render.faceIndex [0].roots, 0xff, sizeof (gameData.render.faceIndex [0].roots));
 memset (gameData.render.faceIndex [1].roots, 0xff, sizeof (gameData.render.faceIndex [1].roots));
 memset (gameData.render.faceIndex [0].tails, 0xff, sizeof (gameData.render.faceIndex [0].tails));
@@ -837,7 +837,7 @@ omegaLightnings.Destroy (-1);
 lightningManager.Shutdown (1);
 /*---*/PrintLog ("   Initializing smoke manager\n");
 InitObjectSmoke ();
-memset (gameData.pig.tex.bitmapColors, 0, sizeof (gameData.pig.tex.bitmapColors));
+gameData.pig.tex.bitmapColors.Clear ();
 memset (gameData.models.thrusters, 0, sizeof (gameData.models.thrusters));
 gameData.render.lights.flicker.nLights = 0;
 save_player = LOCALPLAYER;
@@ -870,7 +870,7 @@ ShowBoxedMessage (TXT_LOADING);
 /*---*/PrintLog ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
-memset (gameData.segs.xSegments, 0xff, sizeof (*gameData.segs.xSegments) * MAX_SEGMENTS);
+gameData.segs.xSegments.Clear (0xff);
 /*---*/PrintLog ("   loading texture brightness info\n");
 SetDataVersion (-1);
 
@@ -940,7 +940,7 @@ if (0 > LoadRobotReplacements (pszLevelName, 0, 0)) {
 LoadHiresModels (1);
 /*---*/PrintLog ("   initializing cambot\n");
 InitCamBots (0);
-networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (CSegment) * gameData.segs.nSegments);
+networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments.Buffer (), sizeof (CSegment) * gameData.segs.nSegments);
 ResetNetworkObjects ();
 ResetChildObjects ();
 ResetFlightPath (&externalView, -1, -1);
@@ -964,7 +964,7 @@ else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) ||
 		gameData.app.nGameMode |= GM_TEAM;
 		}
 	}
-memset (gameData.render.lights.segDeltas, 0, sizeof (*gameData.render.lights.segDeltas) * MAX_SEGMENTS * 6);
+gameData.render.lights.segDeltas.Clear ();
 /*---*/PrintLog ("   initializing door animations\n");
 InitDoorAnims ();
 LOCALPLAYER = save_player;
@@ -990,10 +990,10 @@ gameStates.app.cheats.nUnlockLevel = 0;
 gameStates.render.nFrameFlipFlop = 0;
 gameStates.app.bUsingConverter = 0;
 /*---*/PrintLog ("   resetting color information\n");
-memset (gameData.render.color.vertices, 0, sizeof (*gameData.render.color.vertices) * MAX_VERTICES);
-memset (gameData.render.color.segments, 0, sizeof (*gameData.render.color.segments) * MAX_SEGMENTS);
+gameData.render.color.vertices.Clear ();
+gameData.render.color.segments.Clear ();
 /*---*/PrintLog ("   resetting speed boost information\n");
-memset (gameData.objs.speedBoost, 0, sizeof (*gameData.objs.speedBoost) * MAX_SEGMENTS);
+gameData.objs.speedBoost.Clear ();
 if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
 D2SetCaption ();

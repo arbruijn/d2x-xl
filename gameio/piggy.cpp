@@ -412,7 +412,7 @@ if (gameData.pig.tex.nHamFileVersion < 3) // hamfile contains sound info
 #ifndef EDITOR
 	BMReadAll (cf);
 /*---*/PrintLog ("      Loading bitmap index translation table\n");
-	cf.Read (gameData.pig.tex.bitmapXlat, sizeof (ushort)*MAX_BITMAP_FILES, 1);
+	cf.Read (gameData.pig.tex.bitmapXlat.Buffer (), sizeof (ushort)*MAX_BITMAP_FILES, 1);
 #endif
 if (gameData.pig.tex.nHamFileVersion < 3) {
 	cf.Seek (nSoundOffset, SEEK_SET);
@@ -929,7 +929,7 @@ PrintLog ("unloading textures\n");
 PiggyCloseFile ();
 PrintLog ("unloading sounds\n");
 for (i = 0; i < 2; i++) {
-	for (j = 0, dsP = gameData.pig.sound.sounds [i]; j < MAX_SOUND_FILES; j++, dsP++)
+	for (j = 0, dsP = gameData.pig.sound.sounds [i].Buffer (); j < MAX_SOUND_FILES; j++, dsP++)
 		if (dsP->bHires) {
 			delete[] dsP->data [0];
 			dsP->data [0] = NULL;
@@ -940,8 +940,7 @@ for (i = 0; i < 2; i++) {
 			dsP->data [1] = NULL;
 			dsP->bDTX = 0;
 			}
-	if (gameData.pig.sound.data [i])
-		delete[] gameData.pig.sound.data [i];
+	gameData.pig.sound.data [i].Destroy ();
 	HashTableFree (bitmapNames + i);
 	HashTableFree (soundNames + i);
 	}

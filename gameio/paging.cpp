@@ -71,7 +71,7 @@ for (i = 0; i < vc->nFrameCount; i++)
 void PagingTouchWallEffects (int nTexture)
 {
 	int	i;
-	tEffectClip *ecP = gameData.eff.effectP;
+	tEffectClip *ecP = gameData.eff.effectP.Buffer ();
 
 for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 	if (ecP->changingWallTexture == nTexture) {
@@ -93,7 +93,7 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 void PagingTouchObjectEffects (int nTexture)
 {
 	int	i;
-	tEffectClip *ecP = gameData.eff.effectP;
+	tEffectClip *ecP = gameData.eff.effectP.Buffer ();
 
 for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
 	if (ecP->changingObjectTexture == nTexture)
