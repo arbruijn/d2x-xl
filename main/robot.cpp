@@ -268,88 +268,73 @@ static int JointListReadN(jointlist *jl, int n, CFile& cf)
 /*
  * reads n tRobotInfo structs from a CFile
  */
-int RobotInfoReadN (CArray>tRobotInfo>& pri, int n, CFile& cf)
+int RobotInfoReadN (CArray<tRobotInfo>& pri, int n, CFile& cf)
 {
 	int i, j;
 
-for (i = 0; i < n; i++, pri++) {
-	pri->nModel = cf.ReadInt ();
+for (i = 0; i < n; i++) {
+	pri [i].nModel = cf.ReadInt ();
 	for (j = 0; j < MAX_GUNS; j++)
-		cf.ReadVector(pri->gunPoints[j]);
-	cf.Read(pri->gunSubModels, MAX_GUNS, 1);
+		cf.ReadVector(pri [i].gunPoints[j]);
+	cf.Read(pri [i].gunSubModels, MAX_GUNS, 1);
 
-	pri->nExp1VClip = cf.ReadShort ();
-	pri->nExp1Sound = cf.ReadShort ();
-
-	pri->nExp2VClip = cf.ReadShort ();
-	pri->nExp2Sound = cf.ReadShort ();
-
-	pri->nWeaponType = cf.ReadByte ();
-	pri->nSecWeaponType = cf.ReadByte ();
-	pri->nGuns = cf.ReadByte ();
-	pri->containsId = cf.ReadByte ();
-
-	pri->containsCount = cf.ReadByte ();
-	pri->containsProb = cf.ReadByte ();
-	pri->containsType = cf.ReadByte ();
-	pri->kamikaze = cf.ReadByte ();
-
-	pri->scoreValue = cf.ReadShort ();
-	pri->badass = cf.ReadByte ();
-	pri->energyDrain = cf.ReadByte ();
-
-	pri->lighting = cf.ReadFix ();
-	pri->strength = cf.ReadFix ();
-
-	pri->mass = cf.ReadFix ();
-	pri->drag = cf.ReadFix ();
+	pri [i].nExp1VClip = cf.ReadShort ();
+	pri [i].nExp1Sound = cf.ReadShort ();
+	pri [i].nExp2VClip = cf.ReadShort ();
+	pri [i].nExp2Sound = cf.ReadShort ();
+	pri [i].nWeaponType = cf.ReadByte ();
+	pri [i].nSecWeaponType = cf.ReadByte ();
+	pri [i].nGuns = cf.ReadByte ();
+	pri [i].containsId = cf.ReadByte ();
+	pri [i].containsCount = cf.ReadByte ();
+	pri [i].containsProb = cf.ReadByte ();
+	pri [i].containsType = cf.ReadByte ();
+	pri [i].kamikaze = cf.ReadByte ();
+	pri [i].scoreValue = cf.ReadShort ();
+	pri [i].badass = cf.ReadByte ();
+	pri [i].energyDrain = cf.ReadByte ();
+	pri [i].lighting = cf.ReadFix ();
+	pri [i].strength = cf.ReadFix ();
+	pri [i].mass = cf.ReadFix ();
+	pri [i].drag = cf.ReadFix ();
 
 	for (j = 0; j < NDL; j++)
-		pri->fieldOfView[j] = cf.ReadFix ();
+		pri [i].fieldOfView[j] = cf.ReadFix ();
 	for (j = 0; j < NDL; j++)
-		pri->primaryFiringWait[j] = cf.ReadFix ();
+		pri [i].primaryFiringWait[j] = cf.ReadFix ();
 	for (j = 0; j < NDL; j++)
-		pri->secondaryFiringWait[j] = cf.ReadFix ();
+		pri [i].secondaryFiringWait[j] = cf.ReadFix ();
 	for (j = 0; j < NDL; j++)
-		pri->turnTime[j] = cf.ReadFix ();
+		pri [i].turnTime[j] = cf.ReadFix ();
 	for (j = 0; j < NDL; j++)
-		pri->xMaxSpeed[j] = cf.ReadFix ();
+		pri [i].xMaxSpeed[j] = cf.ReadFix ();
 	for (j = 0; j < NDL; j++)
-		pri->circleDistance[j] = cf.ReadFix ();
-	cf.Read(pri->nRapidFireCount, NDL, 1);
-
-	cf.Read(pri->evadeSpeed, NDL, 1);
-
-	pri->cloakType = cf.ReadByte ();
-	pri->attackType = cf.ReadByte ();
-
-	pri->seeSound = cf.ReadByte ();
-	pri->attackSound = cf.ReadByte ();
-	pri->clawSound = cf.ReadByte ();
-	pri->tauntSound = cf.ReadByte ();
-
-	pri->bossFlag = cf.ReadByte ();
-	pri->companion = cf.ReadByte ();
-	pri->smartBlobs = cf.ReadByte ();
-	pri->energyBlobs = cf.ReadByte ();
-
-	pri->thief = cf.ReadByte ();
-	pri->pursuit = cf.ReadByte ();
-	pri->lightcast = cf.ReadByte ();
-	pri->bDeathRoll = cf.ReadByte ();
-
-	pri->flags = cf.ReadByte ();
-	cf.Read(pri->pad, 3, 1);
-
-	pri->deathrollSound = cf.ReadByte ();
-	pri->glow = cf.ReadByte ();
-	pri->behavior = cf.ReadByte ();
-	pri->aim = cf.ReadByte ();
-
+		pri [i].circleDistance[j] = cf.ReadFix ();
+	cf.Read(pri [i].nRapidFireCount, NDL, 1);
+	cf.Read(pri [i].evadeSpeed, NDL, 1);
+	pri [i].cloakType = cf.ReadByte ();
+	pri [i].attackType = cf.ReadByte ();
+	pri [i].seeSound = cf.ReadByte ();
+	pri [i].attackSound = cf.ReadByte ();
+	pri [i].clawSound = cf.ReadByte ();
+	pri [i].tauntSound = cf.ReadByte ();
+	pri [i].bossFlag = cf.ReadByte ();
+	pri [i].companion = cf.ReadByte ();
+	pri [i].smartBlobs = cf.ReadByte ();
+	pri [i].energyBlobs = cf.ReadByte ();
+	pri [i].thief = cf.ReadByte ();
+	pri [i].pursuit = cf.ReadByte ();
+	pri [i].lightcast = cf.ReadByte ();
+	pri [i].bDeathRoll = cf.ReadByte ();
+	pri [i].flags = cf.ReadByte ();
+	cf.Read(pri [i].pad, 3, 1);
+	pri [i].deathrollSound = cf.ReadByte ();
+	pri [i].glow = cf.ReadByte ();
+	pri [i].behavior = cf.ReadByte ();
+	pri [i].aim = cf.ReadByte ();
 	for (j = 0; j < MAX_GUNS + 1; j++)
-		JointListReadN (pri->animStates[j], N_ANIM_STATES, cf);
-
-	pri->always_0xabcd = cf.ReadInt ();
+		JointListReadN (pri [i].animStates[j], N_ANIM_STATES, cf);
+	pri [i].always_0xabcd = cf.ReadInt ();
 	}
 return i;
 }
