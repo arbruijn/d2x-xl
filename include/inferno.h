@@ -1449,7 +1449,7 @@ int operator- (tLightDelta* o, CArray<tLightDelta>& a) { return a.Index (o); }
 typedef struct tShadowData {
 	short						nLight;
 	short						nLights;
-	CArray<tShaderLight>	lights;
+	tShaderLight*			lights;
 	short						nShadowMaps;
 	CCamera					shadowMaps [MAX_SHADOW_MAPS];
 	CObject					lightSource;
@@ -2005,7 +2005,7 @@ typedef struct tPhysicsData {
 
 typedef struct tPOF_face {
 	short					nVerts;
-	CArray<short>		verts;
+	short*				verts;
 	vmsVector			vCenter;
 	vmsVector			vNorm;
 	vmsVector			vRotNorm;
@@ -2028,8 +2028,8 @@ typedef struct tPOF_faceList {
 } tPOF_faceList;
 
 typedef struct tPOF_faceRef {
-	short						nFaces;
-	CArray<tPOF_face*>	*faceP;
+	short			nFaces;
+	tPOF_face*	*faces;
 } tPOF_faceRef;
 
 typedef struct tPOFSubObject {
@@ -2044,6 +2044,8 @@ typedef struct tPOFSubObject {
 	short					bCalcClipDist;
 } tPOFSubObject;
 
+int operator- (tPOFSubObject* o, CArray<tPOFSubObject>& a) { return a.Index (o); }
+
 typedef struct tPOF_subObjList {
 	short							nSubObjs;
 	CArray<tPOFSubObject>	subObjs;
@@ -2057,14 +2059,14 @@ typedef struct tPOFObject {
 	CArray<float>			fClipDist;
 	CArray<ubyte>			vertFlags;
 	CArray<g3sNormal>		vertNorms;
-	CArray<vmsVector>		center;
+	vmsVector				vCenter;
 	CArray<vmsVector>		rotVerts;
 	tPOF_faceList			faces;
-	tPOF_faceRef			litFaces;
+	CStack<tPOF_face*>	litFaces;
 	short						nAdjFaces;
 	CArray<short>			adjFaces;
-	CArray<short>			*faceVerts;
-	CArray<short>			*vertMap;
+	CArray<short>			faceVerts;
+	CArray<short>			vertMap;
 	short						iSubObj;
 	short						iVert;
 	short						iFace;

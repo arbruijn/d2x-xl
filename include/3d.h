@@ -65,11 +65,11 @@ typedef struct tScreenPos {
 typedef struct g3sPoint {
 	vmsVector	p3_src;			//untransformed point
 	vmsVector	p3_vec;			//x,y,z of rotated point
-	tUVL		p3_uvl;			//u,v,l coords
+	tUVL			p3_uvl;			//u,v,l coords
 	tScreenPos	p3_screen;		//screen x&y
-	ubyte		p3_codes;		//clipping codes
-	ubyte		p3_flags;		//projected?
-	short		p3_key;
+	ubyte			p3_codes;		//clipping codes
+	ubyte			p3_flags;		//projected?
+	short			p3_key;
 	int			p3_index;		//keep structure longword aligned
 	g3sNormal	p3_normal;
 } g3sPoint;

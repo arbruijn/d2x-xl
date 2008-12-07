@@ -13,8 +13,10 @@ template < class _T > class CStack : public CArray<_T> {
 		CStack () { Init (); }
 		~CStack() { Destroy (); }
 
+		inline void Reset (void) { m_tos = 0; }
+
 		inline void Init (void) { 
-			m_tos = false;
+			Reset ();
 			CArray<_T>::Init ();
 			}
 
@@ -24,6 +26,9 @@ template < class _T > class CStack : public CArray<_T> {
 			m_data.buffer [m_tos++] = elem;
 			return true;
 			}
+
+	
+		inline _T* Top (void) { return m_data.buffer ? m_data.buffer + m_tos : NULL; }
 
 		inline _T Pop (void) {
 			if (m_tos)
