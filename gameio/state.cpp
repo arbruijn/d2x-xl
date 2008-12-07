@@ -1548,7 +1548,7 @@ if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 
 
 void CSaveGameHandler::FixObjects (void)
 {
-	CObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS.Buffer ();
 	int		i, j, nSegment;
 
 ConvertObjects ();

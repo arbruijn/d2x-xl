@@ -451,7 +451,7 @@ for (i = 0, objP = OBJECTS.Buffer (); i < MAX_OBJECTS; i++, objP++) {
 	}
 ResetSegObjLists ();
 gameData.objs.consoleP =
-gameData.objs.viewerP = OBJECTS;
+gameData.objs.viewerP = OBJECTS.Buffer ();
 InitPlayerObject ();
 LinkObjToSeg (OBJ_IDX (gameData.objs.consoleP), 0);	//put in the world in segment 0
 gameData.objs.nObjects = 1;						//just the tPlayer
@@ -727,57 +727,41 @@ SetNext (NULL);
 
 CObject::~CObject ()
 {
-if (GetPrev ())
-	GetPrev ()->SetNext (GetNext ());
-if (GetNext ())
-	GetNext ()->SetPrev (GetPrev ());
+if (Prev ())
+	Prev ()->SetNext (Next ());
+if (Next ())
+	Next ()->SetPrev (Prev ());
 SetPrev (NULL);
 SetNext (NULL);
 }
 
 //------------------------------------------------------------------------------
 
-void CObject::Unlink (void)
-{
-#if 0
-if (GetPrev ())
-	GetPrev ().SetNext (GetNext ());
-else
-	SEGMENTS [GetSegment ()].objects = GetNext ();
-if (GetNext ())
-	GetNext ().SetPrev (GetPrev ());
-
-SetSegment (-1);
-SetNext (NULL);
-SetPrev (NULL);
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-void UnlinkObjFromSeg (CObject *objP)
+void CObject::UnlinkFromSeg (void)
 {
 #if DBG
-if ((OBJ_IDX (objP) == nDbgObj) && (objP->info.nFlags & OF_SHOULD_BE_DEAD))
+if ((OBJ_IDX (objP) == nDbgObj) && (info.nFlags & OF_SHOULD_BE_DEAD))
 	objP = objP;
 #endif
-if (objP->info.nPrevInSeg == -1)
-	SEGMENTS [objP->info.nSegment].objects = objP->info.nNextInSeg;
+if (info.nPrevInSeg == -1)
+	SEGMENTS [info.nSegment].objects = info.nNextInSeg;
 else
-	OBJECTS [objP->info.nPrevInSeg].info.nNextInSeg = objP->info.nNextInSeg;
-if (objP->info.nNextInSeg != -1)
-	OBJECTS [objP->info.nNextInSeg].info.nPrevInSeg = objP->info.nPrevInSeg;
-objP->info.nSegment = objP->info.nNextInSeg = objP->info.nPrevInSeg = -1;
+	OBJECTS [info.nPrevInSeg].info.nNextInSeg = info.nNextInSeg;
+if (info.nNextInSeg != -1)
+	OBJECTS [info.nNextInSeg].info.nPrevInSeg = info.nPrevInSeg;
+info.nSegment = info.nNextInSeg = info.nPrevInSeg = -1;
 }
 
 //------------------------------------------------------------------------------
 
 void CObject::ToBaseObject (tBaseObject *objP)
 {
-objP->info = *GetInfo ();
+objP->info = *this;
 }
 
 //------------------------------------------------------------------------------
+
+#if 0
 
 void CRobotObject::ToBaseObject (tBaseObject *objP)
 {
@@ -828,6 +812,8 @@ void CParticleObject::ToBaseObject (tBaseObject *objP)
 objP->info = *CObject::GetInfo ();
 objP->rType.particleInfo = *CSmokeInfo::GetInfo ();
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -887,7 +873,7 @@ if (objP->info.nType != OBJ_NONE)
 #endif
 memset (objP, 0, sizeof (*objP));
 objP->info.nType = 
-objP->nLinkedType = OBJ_NONE;
+objP->SetLinkedType (OBJ_NONE);
 objP->info.nAttachedObj =
 objP->cType.explInfo.attached.nNext =
 objP->cType.explInfo.attached.nPrev =
@@ -913,9 +899,9 @@ return false;
 
 //------------------------------------------------------------------------------
 
-void LinkObjToList (tObjListRef& ref, CObject *objP, int nLink)
+void CObject::Link (tObjListRef& ref, CObject *objP, int nLink)
 {
-	tObjListLink& link = objP->links [nLink];
+	CObjListLink& link = m_links [nLink];
 
 #if DBG
 if (ObjIsInList (ref, objP, nLink)) {
@@ -942,9 +928,9 @@ ref.nObjects++;
 
 //------------------------------------------------------------------------------
 
-void UnlinkObjFromList (tObjListRef& ref, CObject *objP, int nLink)
+void CObject::Unlink (tObjListRef& ref, CObject *objP, int nLink)
 {
-	tObjListLink& link = objP->links [nLink];
+	CObjListLink& link = m_links [nLink];
 
 if (link.prev || link.next) {
 	if (ref.nObjects <= 0)
@@ -1253,15 +1239,8 @@ return nOrgNumToFree - nToFree;
 
 //-----------------------------------------------------------------------------
 
-void CObject::Link (void)
-{
-}
-
-//-----------------------------------------------------------------------------
-
 void CObject::LinkToSeg (int nSegment)
 {
-#if 0
 if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
 	nSegment = FindSegByPos (GetPosition (), 0, 0, 0);
 	if (nSegment < 0)
@@ -1280,7 +1259,6 @@ SetPrevInSeg (NULL);
 SEGMENTS [nSegment].objects = nObject;
 if (objP->info.nNextInSeg != -1)
 	OBJECTS [objP->info.nNextInSeg].info.nPrevInSeg = nObject;
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2611,7 +2589,7 @@ void compressObjects (void)
 int ObjectCount (int nType)
 {
 	int		h = 0, i;
-	CObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_OBJS (objP, i)
 	if (objP->info.nType == nType)
@@ -2738,7 +2716,7 @@ void ResetObjects (int nObjects)
 	CObject	*objP;
 
 gameData.objs.nObjects = nObjects;
-for (i = 0, objP = OBJECTS; i < nObjects; i++, objP++)
+for (i = 0, objP = OBJECTS.Buffer (); i < nObjects; i++, objP++)
 	if (objP->info.nType != OBJ_DEBRIS)
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 for (; i < MAX_OBJECTS; i++, objP++) {
@@ -2818,7 +2796,7 @@ FORALL_OBJS (objP, i) {
 void FixObjectSizes (void)
 {
 	int 		i;
-	CObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_ROBOT_OBJS (objP, i)
 	objP->info.xSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
@@ -3173,7 +3151,7 @@ return &viewP->mView;
 void BuildObjectModels (void)
 {
 	int      h, i, j;
-	CObject	o, *objP = OBJECTS;
+	CObject	o, *objP = OBJECTS.Buffer ();
 	const char		*pszHires;
 
 if (!RENDERPATH)

@@ -911,7 +911,7 @@ static int ReadObjectInfo (CFile& cf)
 	int	i;
 
 if (gameFileInfo.objects.offset > -1) {
-	CObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS.Buffer ();
 	if (cf.Seek (gameFileInfo.objects.offset, SEEK_SET)) {
 		Error ("Error seeking to object data\n(file damaged or invalid)");
 		return -1;
@@ -1282,7 +1282,7 @@ return 0;
 static void CheckAndLinkObjects (void)
 {
 	int		i, nObjSeg;
-	CObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS.Buffer ();
 
 for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 	objP->info.nNextInSeg = OBJECTS [i].info.nPrevInSeg = -1;

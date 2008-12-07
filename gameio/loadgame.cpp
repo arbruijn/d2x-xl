@@ -290,7 +290,7 @@ for (i = 0; i < nPlayers; i++) {
 		break;
 		}
 	}
-gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS; // + LOCALPLAYER.nObject;
+gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS.Buffer (); // + LOCALPLAYER.nObject;
 gameData.multiplayer.nPlayerPositions = nPlayers;
 
 #if DBG

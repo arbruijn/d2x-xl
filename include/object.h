@@ -649,6 +649,11 @@ class CObjListLink {
 		CObject	*prev, *next;
 };
 
+typedef struct tObjListRef {
+	CObject	*head, *tail;
+	short		nObjects;
+} tObjListRef;
+
 class CObject : public CObjectInfo {
 	private:
 		short				m_nId;
@@ -659,7 +664,7 @@ class CObject : public CObjectInfo {
 		fix				m_xCreationTime;
 		fix				m_xTimeLastHit;
 		tShotInfo		m_shots;
-		vmsVector		*m_vStartVel;
+		vmsVector		m_vStartVel;
 
 	public:
 		CObject ();
@@ -673,8 +678,8 @@ class CObject : public CObjectInfo {
 		inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
 		// unlinks an CObject from a CSegment's list of objects
 		void Init (void);
-		void Link (void);
-		void Unlink (void);
+		void Link (tObjListRef& ref, CObject *objP, int nLink);
+		void Unlink (tObjListRef& ref, CObject *objP, int nLink);
 		void LinkToSeg (int nSegment);
 		void Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
 							  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
@@ -689,7 +694,7 @@ class CObject : public CObjectInfo {
 		inline fix CreationTime (void) { return m_xCreationTime; }
 		inline fix TimeLastHit (void) { return m_xTimeLastHit; }
 		inline tShotInfo& Shots (void) { return m_shots; }
-		inline vmsVector* StartVel (void) { return m_vStartVel; }
+		inline vmsVector StartVel (void) { return m_vStartVel; }
 
 		inline void SetId (short nId) { m_nId = nId; }
 		inline void SetPrev (CObject* prev) { m_prev = prev; }
@@ -698,7 +703,7 @@ class CObject : public CObjectInfo {
 		inline void SetTracers (ubyte nTracers) { m_nTracers = nTracers; }
 		inline void SetCreationTime (fix xCreationTime) { m_xCreationTime = xCreationTime; }
 		inline void SetTimeLastHit (fix xTimeLastHit) { m_xTimeLastHit = xTimeLastHit; }
-		inline void SetStartVel (vmsVector* vStartVel) { m_vStartVel = vStartVel; }
+		inline void SetStartVel (vmsVector* vStartVel) { m_vStartVel = *vStartVel; }
 
 		inline void InitLinks (void) { memset (m_links, 0, sizeof (m_links)); }
 

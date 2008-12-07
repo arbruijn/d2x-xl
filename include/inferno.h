@@ -1911,11 +1911,6 @@ typedef struct tGuidedMissileInfo {
 	int					nSignature;
 } tGuidedMissileInfo;
 
-typedef struct tObjListRef {
-	CObject	*head, *tail;
-	short		nObjects;
-} tObjListRef;
-
 typedef struct tObjLists {
 	tObjListRef				all;
 	tObjListRef				players;

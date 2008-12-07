@@ -219,7 +219,7 @@ objP->mType.physInfo.velocity [Z] = (spp->vel [Z] << VEL_PRECISION);
 int NDFindObject (int nSignature)
 {
 	int 		i;
-	CObject 	*objP = OBJECTS;
+	CObject 	*objP = OBJECTS.Buffer ();
 
 FORALL_OBJSi (objP, i)
 	if ((objP->info.nType != OBJ_NONE) && (objP->info.nSignature == nSignature))
@@ -1808,7 +1808,7 @@ while (!bDone) {
 					}
 				}
 			else {
-				gameData.objs.viewerP = OBJECTS;
+				gameData.objs.viewerP = OBJECTS.Buffer ();
 				NDReadObject (gameData.objs.viewerP);
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
@@ -3314,7 +3314,7 @@ else
 bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
 strncpy (gameData.demo.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
-gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS;   // play properly as if console tPlayer
+gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS.Buffer ();   // play properly as if console tPlayer
 if (NDReadDemoStart (bRandom)) {
 	ndInFile.Close ();
 	ndOutFile.Close ();

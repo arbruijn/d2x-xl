@@ -172,7 +172,7 @@ for (h = BOSS_COUNT, j = 0; j < h; j++)
 		if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 			DoBossDyingFrame (OBJECTS + gameData.boss [j].nDying);
 		else {
-			CObject *objP = OBJECTS;
+			CObject *objP = OBJECTS.Buffer ();
 			FORALL_ROBOT_OBJS (objP, i)
 				if (ROBOTINFO (objP->info.nId).bossFlag)
 					DoBossDyingFrame (objP);

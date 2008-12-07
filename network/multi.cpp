@@ -4721,7 +4721,7 @@ switch (whichplay) {
 
 void MultiDoReturnFlagHome (char *buf)
 {
-	CObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS.Buffer ();
 	int		i;
 	ushort	nType = buf [1];
 	ushort	id = buf [2];

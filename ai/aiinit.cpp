@@ -174,7 +174,7 @@ for (i = 0; i < MAX_BOSS_COUNT; i++) {
 //	gameData.boss [i].xPrevShields = -1;
 #endif
 	}
-for (i = j = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
+for (i = j = 0, objP = OBJECTS.Buffer (); i < MAX_OBJECTS; i++, objP++) {
 	if (objP->info.controlType == CT_AI)
 		InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
 	if ((objP->info.nType == OBJ_ROBOT) && (ROBOTINFO (objP->info.nId).bossFlag))

@@ -1345,7 +1345,7 @@ extern void check_create_player_path (void);
 CObject *find_escort ()
 {
 	int 		i;
-	CObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP))

@@ -1331,7 +1331,7 @@ else if (gameData.ai.freePointSegs - gameData.ai.pointSegs > MAX_POINT_SEGS/2) {
 void AIResetAllPaths (void)
 {
 	int		i;
-	CObject	*objP = OBJECTS;
+	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_OBJS (objP, i)
 	if (objP->info.controlType == CT_AI) {

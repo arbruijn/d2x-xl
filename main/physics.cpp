@@ -552,12 +552,12 @@ do {
 						MissileSpeedScale (objP) : 1;
 	bRetry = 0;
 	if (fScale < 1) {
-		vmsVector vStartVel = *objP->StartVel ();
+		vmsVector vStartVel = objP->StartVel ();
 		vmsVector::Normalize (vStartVel);
 		fix xDot = vmsVector::Dot (objP->info.position.mOrient[FVEC], vStartVel);
-		vFrame = objP->mType.physInfo.velocity + *objP->StartVel ();
+		vFrame = objP->mType.physInfo.velocity + objP->StartVel ();
 		vFrame *= F2X (fScale * fScale);
-		vFrame += *objP->StartVel () * ((xDot > 0) ? -xDot : xDot);
+		vFrame += objP->StartVel () * ((xDot > 0) ? -xDot : xDot);
 		vFrame *= FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1));
 		}
 	else
