@@ -324,7 +324,7 @@ DBG (i = CFTell (fp));
 for (i = 0; i < h; i++)
 	LoadAILocalInfo (gameData.ai.localInfo + i);
 nMaxPointSegs = (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
-memset (gameData.ai.pointSegs, 0, sizeof (*gameData.ai.pointSegs) * nMaxPointSegs);
+gameData.ai.pointSegs.Clear ();
 DBG (i = CFTell (fp));
 for (i = 0; i < nMaxPointSegs; i++)
 	LoadAIPointSeg (gameData.ai.pointSegs + i);

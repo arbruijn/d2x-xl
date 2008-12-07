@@ -2766,7 +2766,7 @@ typedef struct tReactorData {
 
 #include "ai.h"
 
-Class tAIData {
+class CAIData {
 	public:
 		int						bInitialized;
 		int						nOverallAgitation;
@@ -2798,6 +2798,10 @@ Class tAIData {
 	public:
 		CAIData ();
 };
+
+int operator- (tAILocalInfo* o, CArray<tAILocalInfo>& a) { return a.Index (o); }
+int operator- (tAICloakInfo* o, CArray<tAICloakInfo>& a) { return a.Index (o); }
+int operator- (tPointSeg* o, CArray<tPointSeg>& a) { return a.Index (o); }
 
 //------------------------------------------------------------------------------
 
@@ -3234,7 +3238,7 @@ class CGameData {
 		tReactorData		reactor;
 		tMarkerData			marker;
 		tBossData			boss [MAX_BOSS_COUNT];
-		tAIData				ai;
+		CAIData				ai;
 		tSongData			songs;
 		tEndLevelData		endLevel;
 		tMenuData			menu;
