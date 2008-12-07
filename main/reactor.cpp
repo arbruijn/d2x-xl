@@ -524,7 +524,7 @@ if (gameData.reactor.bDestroyed) {
 /*
  * reads n reactor structs from a CFile
  */
-extern int ReactorReadN (tReactorProps *r, int n, CFile& cf)
+extern int ReadReactors (tReactorProps *r, int n, CFile& cf)
 {
 	int i, j;
 
@@ -543,7 +543,7 @@ return i;
 /*
  * reads a tReactorTriggers structure from a CFile
  */
-extern int ControlCenterTriggersReadN (tReactorTriggers *cct, int n, CFile& cf)
+extern int ReadReactorTriggers (tReactorTriggers *cct, int n, CFile& cf)
 {
 	int i, j;
 

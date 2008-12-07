@@ -1355,7 +1355,7 @@ return h;
 /*
  * reads n tPowerupTypeInfo structs from a CFile
  */
-extern int PowerupTypeInfoReadN (tPowerupTypeInfo *pti, int n, CFile& cf)
+extern int ReadPowerupTypeInfos (tPowerupTypeInfo *pti, int n, CFile& cf)
 {
 	int i;
 

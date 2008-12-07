@@ -267,7 +267,7 @@ static int JointListReadN(jointlist *jl, int n, CFile& cf)
 /*
  * reads n tRobotInfo structs from a CFile
  */
-int RobotInfoReadN (CArray<tRobotInfo>& pri, int n, CFile& cf, int o)
+int ReadRobotInfos (CArray<tRobotInfo>& pri, int n, CFile& cf, int o)
 {
 	int h, i, j;
 
@@ -343,7 +343,7 @@ return i;
 /*
  * reads n tJointPos structs from a CFile
  */
-int JointPosReadN (CArray<tJointPos>& jp, int n, CFile& cf, int o)
+int ReadJointPositions (CArray<tJointPos>& jp, int n, CFile& cf, int o)
 {
 	int i;
 

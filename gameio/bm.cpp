@@ -232,28 +232,28 @@ gameData.eff.effects [0][32].vc.xTotalTime *= 10;
 gameData.eff.effects [0][32].vc.xFrameTime *= 10;
 gameData.walls.nAnims [0] = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d tWall animations\n", gameData.walls.nAnims [0]);
-WClipReadN (gameData.walls.anims [0], gameData.walls.nAnims [0], cf);
+ReadWallClips (gameData.walls.anims [0], gameData.walls.nAnims [0], cf);
 
 gameData.bots.nTypes [0] = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d robot descriptions\n", gameData.bots.nTypes [0]);
-RobotInfoReadN (gameData.bots.info [0], gameData.bots.nTypes [0], cf);
+ReadRobotInfos (gameData.bots.info [0], gameData.bots.nTypes [0], cf);
 gameData.bots.nDefaultTypes = gameData.bots.nTypes [0];
 gameData.bots.defaultInfo = gameData.bots.info [0];
 
 gameData.bots.nJoints = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d robot joint descriptions\n", gameData.bots.nJoints);
-JointPosReadN (gameData.bots.joints, gameData.bots.nJoints, cf);
+ReadJointPositions (gameData.bots.joints, gameData.bots.nJoints, cf);
 gameData.bots.nDefaultJoints = gameData.bots.nJoints;
 gameData.bots.defaultJoints = gameData.bots.joints;
 
 gameData.weapons.nTypes [0] = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d weapon descriptions\n", gameData.weapons.nTypes [0]);
-WeaponInfoReadN (gameData.weapons.info, gameData.weapons.nTypes [0], cf, gameData.pig.tex.nHamFileVersion);
+ReadWeaponInfos (gameData.weapons.info, gameData.weapons.nTypes [0], cf, gameData.pig.tex.nHamFileVersion);
 BMSetAfterburnerSizes ();
 
 gameData.objs.pwrUp.nTypes = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d powerup descriptions\n", gameData.objs.pwrUp.nTypes);
-PowerupTypeInfoReadN (gameData.objs.pwrUp.info, gameData.objs.pwrUp.nTypes, cf);
+ReadPowerupTypeInfos (gameData.objs.pwrUp.info, gameData.objs.pwrUp.nTypes, cf);
 
 gameData.models.nPolyModels = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d tPolyModel descriptions\n", gameData.models.nPolyModels);
@@ -294,7 +294,7 @@ gameData.pig.tex.nFirstMultiBitmap = cf.ReadInt ();
 
 gameData.reactor.nReactors = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d reactor descriptions\n", gameData.reactor.nReactors);
-ReactorReadN (gameData.reactor.props, gameData.reactor.nReactors, cf);
+ReadReactors (gameData.reactor.props, gameData.reactor.nReactors, cf);
 
 gameData.models.nMarkerModel = cf.ReadInt ();
 if (gameData.pig.tex.nHamFileVersion < 3) {
@@ -985,23 +985,23 @@ void BMReadAllD1 (CFile& cf)
 
 	/*
 	gameData.walls.nAnims = cf.ReadInt ();
-	wclip_read_n_d1 (gameData.walls.anims, D1_MAX_WALL_ANIMS, cf);
+	ReadD1WallClips (gameData.walls.anims, D1_MAX_WALL_ANIMS, cf);
 	*/
 
 	/*
 	gameData.bots.nTypes = cf.ReadInt ();
-	//RobotInfoReadN (gameData.bots.info [0], D1_MAX_ROBOT_TYPES, cf);
+	//ReadRobotInfos (gameData.bots.info [0], D1_MAX_ROBOT_TYPES, cf);
 	cf.Seek (fp, D1_MAX_ROBOT_TYPES * D1_ROBOT_INFO_SIZE, SEEK_CUR);
 
 	gameData.bots.nJoints = cf.ReadInt ();
-	JointPosReadN (gameData.bots.joints, D1_MAX_ROBOT_JOINTS, cf);
+	ReadJointPositions (gameData.bots.joints, D1_MAX_ROBOT_JOINTS, cf);
 
 	gameData.weapons.nTypes [0] = cf.ReadInt ();
-	//WeaponInfoReadN (gameData.weapons.info, D1_MAX_WEAPON_TYPES, fp, gameData.pig.tex.nHamFileVersion);
+	//ReadWeaponInfos (gameData.weapons.info, D1_MAX_WEAPON_TYPES, fp, gameData.pig.tex.nHamFileVersion);
 	cf.Seek (fp, D1_MAX_WEAPON_TYPES * D1_WEAPON_INFO_SIZE, SEEK_CUR);
 
 	gameData.objs.pwrUp.nTypes = cf.ReadInt ();
-	PowerupTypeInfoReadN (gameData.objs.pwrUp.info, MAX_POWERUP_TYPES_D1, cf);
+	ReadPowerupTypeInfos (gameData.objs.pwrUp.info, MAX_POWERUP_TYPES_D1, cf);
 	*/
 
 	/* in the following code are bugs, solved by hack
@@ -1145,7 +1145,7 @@ if (gameData.weapons.nTypes [0] >= MAX_WEAPON_TYPES) {
 	Warning ("Too many weapons (%d) in <%s>.  Max is %d.",t,fname,MAX_WEAPON_TYPES-N_D2_WEAPON_TYPES);
 	return -1;
 	}
-WeaponInfoReadN (gameData.weapons.info + N_D2_WEAPON_TYPES, t, cf, 3);
+ReadWeaponInfos (gameData.weapons.info + N_D2_WEAPON_TYPES, t, cf, 3);
 
 //now read robot info
 
@@ -1155,7 +1155,7 @@ if (gameData.bots.nTypes [0] >= MAX_ROBOT_TYPES) {
 	Warning ("Too many robots (%d) in <%s>.  Max is %d.",t,fname,MAX_ROBOT_TYPES-N_D2_ROBOT_TYPES);
 	return -1;
 	}
-RobotInfoReadN (gameData.bots.info [0], t, cf, N_D2_ROBOT_TYPES);
+ReadRobotInfos (gameData.bots.info [0], t, cf, N_D2_ROBOT_TYPES);
 if (bVertigoData) {
 	gameData.bots.nDefaultTypes = gameData.bots.nTypes [0];
 	memcpy (&gameData.bots.defaultInfo [N_D2_ROBOT_TYPES], &gameData.bots.info [0][N_D2_ROBOT_TYPES], sizeof (gameData.bots.info [0][0]) * t);
@@ -1167,7 +1167,7 @@ if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
 	Warning ("Too many robot joints (%d) in <%s>.  Max is %d.",t,fname,MAX_ROBOT_JOINTS-N_D2_ROBOT_JOINTS);
 	return -1;
 	}
-JointPosReadN (gameData.bots.joints, t, cf, N_D2_ROBOT_JOINTS);
+ReadJointPositions (gameData.bots.joints, t, cf, N_D2_ROBOT_JOINTS);
 if (bVertigoData) {
 	gameData.bots.nDefaultJoints = gameData.bots.nJoints;
 	memcpy (&gameData.bots.defaultJoints [N_D2_ROBOT_TYPES], &gameData.bots.joints [N_D2_ROBOT_TYPES], sizeof (gameData.bots.joints [0]) * t);
@@ -1257,7 +1257,7 @@ for (j = 0; j < t; j++) {
 		cf.Seek (sizeof (tRobotInfo), SEEK_CUR);
 	else {
 		botInfoSave = gameData.bots.info [0][i];
-		RobotInfoReadN (gameData.bots.info [0], 1, cf, i);
+		ReadRobotInfos (gameData.bots.info [0], 1, cf, i);
 		}
 	}
 t = cf.ReadInt ();			//read number of joints
@@ -1283,7 +1283,7 @@ for (j = 0; j < t; j++) {
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
 		}
-	JointPosReadN (gameData.bots.joints, 1, cf, i);
+	ReadJointPositions (gameData.bots.joints, 1, cf, i);
 	}
 t = cf.ReadInt ();			//read number of polygon models
 for (j = 0; j < t; j++) {

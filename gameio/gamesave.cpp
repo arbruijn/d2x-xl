@@ -1153,7 +1153,7 @@ if (gameFileInfo.control.offset > -1) {
 		Error ("Error seeking to reactor data\n(file damaged or invalid)");
 		return -1;
 		}
-	ControlCenterTriggersReadN (&gameData.reactor.triggers, gameFileInfo.control.count, cf);
+	ReadReactorTriggers (&gameData.reactor.triggers, gameFileInfo.control.count, cf);
 	}
 return 0;
 }

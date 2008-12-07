@@ -912,7 +912,7 @@ if (TactileStick) {
 /*
  * reads n tWeaponInfo structs from a CFile
  */
-int WeaponInfoReadN (tWeaponInfo *pwi, int n, CFile& cf, int fileVersion)
+int ReadWeaponInfos (tWeaponInfo *pwi, int n, CFile& cf, int fileVersion)
 {
 	int i, j;
 

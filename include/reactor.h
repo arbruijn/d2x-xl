@@ -56,12 +56,12 @@ fix ReactorStrength (void);
 /*
  * reads n reactor structs from a CFILE
  */
-int ReactorReadN(tReactorProps *r, int n, CFile& cf);
+int ReadReactors (tReactorProps *r, int n, CFile& cf);
 
 /*
  * reads n tReactorTriggers structs from a CFILE
  */
-int ControlCenterTriggersReadN(tReactorTriggers *cct, int n, CFile& cf);
+int ReadReactorTriggers (tReactorTriggers *cct, int n, CFile& cf);
 
 int FindReactor (CObject *objP);
 void InitCountdown (tTrigger *trigP, int bReactorDestroyed, int nTimer);

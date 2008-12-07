@@ -130,14 +130,11 @@ void DoMegaWowPowerup(int quantity);
 
 void _CDECL_ PowerupBasic(int redadd, int greenadd, int blueadd, int score, const char *format, ...);
 
-#if 0
-#define PowerupTypeInfoReadN(pti, n, fp) CFRead(pti, sizeof(tPowerupTypeInfo), n, fp)
-#else
 /*
  * reads n tPowerupTypeInfo structs from a CFILE
  */
-extern int PowerupTypeInfoReadN(tPowerupTypeInfo *pti, int n, CFile& cf);
-#endif
+int ReadPowerupTypeInfos (tPowerupTypeInfo *pti, int n, CFile& cf);
+
 int ApplyCloak (int bForce, int nPlayer);
 int ApplyInvul (int bForce, int nPlayer);
 

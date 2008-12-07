@@ -1714,7 +1714,7 @@ void BlastNearbyGlass(CObject *objP, fix damage)
 /*
  * reads a tWallClip structure from a CFile
  */
-int wclip_read_n_d1(tWallClip *wc, int n, CFile& cf)
+int ReadD1WallClips(tWallClip *wc, int n, CFile& cf)
 {
 	int i, j;
 
@@ -1736,7 +1736,7 @@ int wclip_read_n_d1(tWallClip *wc, int n, CFile& cf)
 /*
  * reads a tWallClip structure from a CFile
  */
-int WClipReadN(CArray<tWallClip>& wc, int n, CFile& cf)
+int ReadWallClips(CArray<tWallClip>& wc, int n, CFile& cf)
 {
 	int i, j;
 
