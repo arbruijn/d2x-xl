@@ -1155,10 +1155,10 @@ if (gameData.bots.nTypes [0] >= MAX_ROBOT_TYPES) {
 	Warning ("Too many robots (%d) in <%s>.  Max is %d.",t,fname,MAX_ROBOT_TYPES-N_D2_ROBOT_TYPES);
 	return -1;
 	}
-RobotInfoReadN (gameData.bots.info [0] + N_D2_ROBOT_TYPES, t, cf);
+RobotInfoReadN (gameData.bots.info [0], t, cf, N_D2_ROBOT_TYPES);
 if (bVertigoData) {
 	gameData.bots.nDefaultTypes = gameData.bots.nTypes [0];
-	memcpy (gameData.bots.defaultInfo + N_D2_ROBOT_TYPES, gameData.bots.info [0] + N_D2_ROBOT_TYPES, sizeof (*gameData.bots.info [0]) * t);
+	memcpy (&gameData.bots.defaultInfo [N_D2_ROBOT_TYPES], &gameData.bots.info [0][N_D2_ROBOT_TYPES], sizeof (gameData.bots.info [0][0]) * t);
 	}
 
 t = cf.ReadInt ();
@@ -1167,10 +1167,10 @@ if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
 	Warning ("Too many robot joints (%d) in <%s>.  Max is %d.",t,fname,MAX_ROBOT_JOINTS-N_D2_ROBOT_JOINTS);
 	return -1;
 	}
-JointPosReadN (gameData.bots.joints + N_D2_ROBOT_JOINTS, t, cf);
+JointPosReadN (gameData.bots.joints, t, cf, N_D2_ROBOT_JOINTS);
 if (bVertigoData) {
 	gameData.bots.nDefaultJoints = gameData.bots.nJoints;
-	memcpy (gameData.bots.defaultJoints + N_D2_ROBOT_TYPES, gameData.bots.joints + N_D2_ROBOT_TYPES, sizeof (*gameData.bots.joints) * t);
+	memcpy (&gameData.bots.defaultJoints [N_D2_ROBOT_TYPES], &gameData.bots.joints [N_D2_ROBOT_TYPES], sizeof (gameData.bots.joints [0]) * t);
 	}
 
 t = cf.ReadInt ();
@@ -1201,7 +1201,7 @@ if (N_D2_OBJBITMAPS + t >= MAX_OBJ_BITMAPS) {
 	Warning ("Too many CObject bitmaps (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPS);
 	return -1;
 	}
-BitmapIndexReadN (&gameData.pig.tex.objBmIndex [N_D2_OBJBITMAPS], t, cf);
+BitmapIndexReadN (gameData.pig.tex.objBmIndex, t, cf, N_D2_OBJBITMAPS);
 
 t = cf.ReadInt ();
 if (N_D2_OBJBITMAPPTRS + t >= MAX_OBJ_BITMAPS) {
@@ -1257,7 +1257,7 @@ for (j = 0; j < t; j++) {
 		cf.Seek (sizeof (tRobotInfo), SEEK_CUR);
 	else {
 		botInfoSave = gameData.bots.info [0][i];
-		RobotInfoReadN (gameData.bots.info [0] + i, 1, cf);
+		RobotInfoReadN (gameData.bots.info [0], 1, cf, i);
 		}
 	}
 t = cf.ReadInt ();			//read number of joints
@@ -1283,7 +1283,7 @@ for (j = 0; j < t; j++) {
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
 		}
-	JointPosReadN (gameData.bots.joints + i, 1, cf);
+	JointPosReadN (gameData.bots.joints, 1, cf, i);
 	}
 t = cf.ReadInt ();			//read number of polygon models
 for (j = 0; j < t; j++) {
@@ -1565,7 +1565,7 @@ for (i = 0; i < gameData.models.nDefPolyModels; i++) {
 	if (gameData.models.defPolyModels [i].modelData.Buffer ()) {
 		if (!p)
 			p = new ubyte [gameData.models.defPolyModels [i].nDataSize];
-		memcpy (p, gameData.models.defPolyModels [i].modelData, gameData.models.defPolyModels [i].nDataSize);
+		memcpy (p, gameData.models.defPolyModels [i].modelData.Buffer (), gameData.models.defPolyModels [i].nDataSize);
 		gameData.models.polyModels [i].modelData.SetBuffer (p);
 		}
 	else if (p) {

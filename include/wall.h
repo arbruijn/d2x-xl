@@ -301,7 +301,7 @@ extern int wclip_read_n_d1(tWallClip *wc, int n, CFile& cf);
 /*
  * reads n tWallClip structs from a CFILE
  */
-extern int WClipReadN(tWallClip *wc, int n, CFile& cf);
+extern int WClipReadN(CArray<tWallClip>& wc, int n, CFile& cf);
 
 /*
  * reads a tWallV16 structure from a CFILE

@@ -43,7 +43,7 @@ void NetworkSendDoorUpdates (int nPlayer)
 	tWall *wallP;
    
 //   Assert (nPlayer>-1 && nPlayer<gameData.multiplayer.nPlayers);
-for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
+for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
    if ((wallP->nType == WALL_DOOR) && 
 		 ((wallP->state == WALL_DOOR_OPENING) || 
 		  (wallP->state == WALL_DOOR_WAITING) || 

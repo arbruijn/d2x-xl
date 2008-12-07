@@ -3203,9 +3203,12 @@ typedef struct tTextData {
 #define MAX_GAUGE_BMS 100   // increased from 56 to 80 by a very unhappy MK on 10/24/94.
 #define D1_MAX_GAUGE_BMS 80   // increased from 56 to 80 by a very unhappy MK on 10/24/94.
 
-typedef struct tCockpitData {
-	tBitmapIndex		gauges [2][MAX_GAUGE_BMS];
-} tCockpitData;
+class CCockpitData {
+	public:
+		CArray<tBitmapIndex>	gauges [2]; //[MAX_GAUGE_BMS];
+	public:
+		CCockpitData ();
+	};
 
 class CGameData {
 	public:
@@ -3251,7 +3254,7 @@ class CGameData {
 		tFusionData			fusion;
 		tOmegaData			omega;
 		tMissileData		missiles;
-		tCockpitData		cockpit;
+		CCockpitData		cockpit;
 		tCollisionData		collisions;
 		tScoreData			score;
 		tTrackIRData		trackIR;

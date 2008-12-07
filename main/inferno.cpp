@@ -2413,6 +2413,14 @@ tMapInfo [0].Clone (tMapInfoP);
 
 // ----------------------------------------------------------------------------
 
+CCockpitData::CCockpitData ()
+{
+for (int i = 0; i < 2; i++)
+	gauges [i].Create (MAX_GAUGE_BMS);
+}
+
+// ----------------------------------------------------------------------------
+
 void AllocSegmentData (void)
 {
 GETMEM (vmsVector, gameData.segs.vertices, 65536, 0);
