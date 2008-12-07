@@ -417,6 +417,27 @@ gameData.objs.idToOOF [MEGAMSL_ID] = OOF_MEGA;
 }
 
 //------------------------------------------------------------------------------
+
+void CObject::Init (void)
+{
+info.nType = OBJ_NONE;
+info.nSegment =
+info.nPrevInSeg =
+info.nNextInSeg =
+cType.explInfo.attached.nNext =
+cType.explInfo.attached.nPrev =
+cType.explInfo.attached.nParent =
+info.nAttachedObj = -1;
+info.nFlags = 0;
+memset (m_links, 0, sizeof (m_links));
+m_shots.nObject = -1;
+m_shots.nSignature = -1;
+m_xCreationTime =
+m_xTimeLastHit = 0;
+m_vStartVel.SetZero ();
+}
+
+//------------------------------------------------------------------------------
 //sets up the D2_FREE list & init tPlayer & whatever else
 void InitObjects (void)
 {
@@ -424,23 +445,9 @@ void InitObjects (void)
 	int		i;
 
 CollideInit ();
-for (i = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
+for (i = 0, objP = OBJECTS.Buffer (); i < MAX_OBJECTS; i++, objP++) {
 	gameData.objs.freeList [i] = i;
-	objP->info.nType = OBJ_NONE;
-	objP->info.nSegment =
-	objP->info.nPrevInSeg =
-	objP->info.nNextInSeg =
-	objP->cType.explInfo.attached.nNext =
-	objP->cType.explInfo.attached.nPrev =
-	objP->cType.explInfo.attached.nParent =
-	objP->info.nAttachedObj = -1;
-	objP->info.nFlags = 0;
-	memset (objP->links, 0, sizeof (objP->links));
-	objP->shots.nObject = -1;
-	objP->shots.nSignature = -1;
-	objP->CreationTime () =
-	objP->TimeLastHit () = 0;
-	objP->vStartVel.SetZero ();
+	objP->Init ();
 	}
 ResetSegObjLists ();
 gameData.objs.consoleP =
@@ -465,7 +472,7 @@ gameData.objs.nObjects = MAX_OBJECTS;
 gameData.objs.nLastObject [0] = 0;
 memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
 Assert (OBJECTS [0].info.nType != OBJ_NONE);		//0 should be used
-for (objP = OBJECTS + MAX_OBJECTS, i = MAX_OBJECTS; i; ) {
+for (objP = OBJECTS.Buffer () + MAX_OBJECTS, i = MAX_OBJECTS; i; ) {
 	objP--, i--;
 #if DBG
 	if (i == nDbgObj) {
@@ -474,7 +481,7 @@ for (objP = OBJECTS + MAX_OBJECTS, i = MAX_OBJECTS; i; ) {
 			dbgObjInstances++;
 		}
 #endif
-	memset (objP->links, 0, sizeof (objP->links));
+	objP->InitLinks ();
 	if (objP->info.nType == OBJ_NONE)
 		gameData.objs.freeList [--gameData.objs.nObjects] = i;
 	else {

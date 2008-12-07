@@ -672,6 +672,7 @@ class CObject : public CObjectInfo {
 		inline void Kill (void) { SetFlags (Flags () | OF_SHOULD_BE_DEAD); }
 		inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
 		// unlinks an CObject from a CSegment's list of objects
+		void Init (void);
 		void Link (void);
 		void Unlink (void);
 		void LinkToSeg (int nSegment);
@@ -698,6 +699,8 @@ class CObject : public CObjectInfo {
 		inline void SetCreationTime (fix xCreationTime) { m_xCreationTime = xCreationTime; }
 		inline void SetTimeLastHit (fix xTimeLastHit) { m_xTimeLastHit = xTimeLastHit; }
 		inline void SetStartVel (vmsVector* vStartVel) { m_vStartVel = vStartVel; }
+
+		inline void InitLinks (void) { memset (m_links, 0, sizeof (m_links)); }
 
 		//inline short Index (void) { return gameData.objs.objects.Index (this); }
 };
