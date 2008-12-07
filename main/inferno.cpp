@@ -2413,6 +2413,14 @@ tMapInfo [0].Clone (tMapInfoP);
 
 // ----------------------------------------------------------------------------
 
+CAIData::CAIData ()
+{
+cloakInfo.Create (MAX_AI_CLOAK_INFO);
+pointSegs.Create (MAX_POINT_SEGS);
+}
+
+// ----------------------------------------------------------------------------
+
 CCockpitData::CCockpitData ()
 {
 for (int i = 0; i < 2; i++)

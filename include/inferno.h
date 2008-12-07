@@ -2766,34 +2766,38 @@ typedef struct tReactorData {
 
 #include "ai.h"
 
-typedef struct tAIData {
-	int						bInitialized;
-	int						nOverallAgitation;
-	int						bEvaded;
-	int						bEnableAnimation;
-	int						bInfoEnabled;
-	vmsVector				vHitPos;
-	int						nHitType;
-	int						nHitSeg;
-	tFVIData					hitData;
-	short						nBelievedPlayerSeg;
-	vmsVector				vBelievedPlayerPos;
-	vmsVector				vLastPlayerPosFiredAt;
-	fix						nDistToLastPlayerPosFiredAt;
-	CArray<tAILocalInfo>	localInfo;
-	tAICloakInfo			cloakInfo [MAX_AI_CLOAK_INFO];
-	tPointSeg				pointSegs [MAX_POINT_SEGS];
-	tPointSeg*				freePointSegs;
-	int						nAwarenessEvents;
-	int						nMaxAwareness;
-	fix						xDistToPlayer;
-	vmsVector				vVecToPlayer;
-	vmsVector				vGunPoint;
-	int						nPlayerVisibility;
-	int						bObjAnimates;
-	int						nLastMissileCamera;
-	tAwarenessEvent		awarenessEvents [MAX_AWARENESS_EVENTS];
-} tAIData;
+Class tAIData {
+	public:
+		int						bInitialized;
+		int						nOverallAgitation;
+		int						bEvaded;
+		int						bEnableAnimation;
+		int						bInfoEnabled;
+		vmsVector				vHitPos;
+		int						nHitType;
+		int						nHitSeg;
+		tFVIData					hitData;
+		short						nBelievedPlayerSeg;
+		vmsVector				vBelievedPlayerPos;
+		vmsVector				vLastPlayerPosFiredAt;
+		fix						nDistToLastPlayerPosFiredAt;
+		CArray<tAILocalInfo>	localInfo;
+		CArray<tAICloakInfo>	cloakInfo; // [MAX_AI_CLOAK_INFO];
+		CArray<tPointSeg>		pointSegs; // [MAX_POINT_SEGS];
+		tPointSeg*				freePointSegs;
+		int						nAwarenessEvents;
+		int						nMaxAwareness;
+		fix						xDistToPlayer;
+		vmsVector				vVecToPlayer;
+		vmsVector				vGunPoint;
+		int						nPlayerVisibility;
+		int						bObjAnimates;
+		int						nLastMissileCamera;
+		tAwarenessEvent		awarenessEvents [MAX_AWARENESS_EVENTS];
+
+	public:
+		CAIData ();
+};
 
 //------------------------------------------------------------------------------
 

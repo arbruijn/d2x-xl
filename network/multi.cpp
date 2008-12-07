@@ -374,9 +374,9 @@ gameData.multigame.localToRemote [nLocalObj] = nLocalObj;
 
 void ResetNetworkObjects ()
 {
-memset (gameData.multigame.localToRemote, -1, MAX_OBJECTS * sizeof (short));
-memset (gameData.multigame.remoteToLocal, -1, MAX_NUM_NET_PLAYERS * MAX_OBJECTS * sizeof (short));
-memset (gameData.multigame.nObjOwner, -1, MAX_OBJECTS);
+gameData.multigame.localToRemote.Clear (0xff);
+gameData.multigame.remoteToLocal.Clear (0xff);
+gameData.multigame.nObjOwner.Clear (0xff);
 }
 
 //
@@ -3343,7 +3343,7 @@ else if (++fun >= 50)
 		ReleaseGuidedMissile (nPlayer);
 		return;
 		}
-	if ((gmObjP < OBJECTS) ||
+	if ((gmObjP < OBJECTS.Buffer ()) ||
 		 (gmObjP - OBJECTS > gameData.objs.nLastObject [0])) {
 		Int3 ();  // Get Jason immediately!
 		return;
