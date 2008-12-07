@@ -135,7 +135,7 @@ void FreeSoundReplacements (void)
 
 PrintLog ("unloading custom sounds\n");
 for (i = 0; i < 2; i++)
-	for (j = 0, dsP = gameData.pig.sound.sounds [i]; j < MAX_SOUND_FILES; j++, dsP++)
+	for (j = 0, dsP = gameData.pig.sound.sounds [i].Buffer (); j < MAX_SOUND_FILES; j++, dsP++)
 		if (dsP->bDTX) {
 			delete[] dsP->data [1];
 			dsP->bDTX = 0;
@@ -356,9 +356,9 @@ void PiggyReadSounds (void)
 	CFile			cf;
 	ubyte			*ptr;
 	int			i, j, sbytes;
-	tDigiSound	*soundP = gameData.pig.sound.soundP;
+	tDigiSound	*soundP = gameData.pig.sound.soundP.Buffer ();
 
-ptr = gameData.pig.sound.data [gameStates.app.bD1Data];
+ptr = gameData.pig.sound.data [gameStates.app.bD1Data].Buffer ();
 sbytes = 0;
 if (!cf.Open (gameStates.app.bD1Mission ? reinterpret_cast<char*> ("descent.pig") : reinterpret_cast<char*> (DEFAULT_SNDFILE), 
 				  gameFolders.szDataDir, "rb", 0))

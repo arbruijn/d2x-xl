@@ -750,7 +750,7 @@ if (!gameOpts->render.nLightingMethod) {
 			{
 			gameData.render.lights.dynamicLight [nVertex] = 0;
 			gameData.render.lights.bGotDynColor [nVertex] = 0;
-			memset (gameData.render.lights.dynamicColor + nVertex, 0, sizeof (*gameData.render.lights.dynamicColor));
+			memset (gameData.render.lights.dynamicColor + nVertex, 0, sizeof (gameData.render.lights.dynamicColor [0]));
 			}
 		}
 	}

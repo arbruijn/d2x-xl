@@ -1684,7 +1684,7 @@ typedef struct tFaceData {
 	CArray<tTexCoord2f>	lMapTexCoord;
 	CArray<tRgbaColorf>	color;
 	CArray<ushort>			faceVerts;
-	CArray<tFace>			slidingFaces;
+	tFace*					slidingFaces;
 #if USE_RANGE_ELEMENTS
 	CArray<GLuint			vertIndex;
 #endif
@@ -2293,6 +2293,9 @@ class CEffectData {
 		CEffectData ();
 		~CEffectData () {}
 } tEffectData;
+
+int operator- (tEffectClip* o, CArray<tEffectClip>& a) { return a.Index (o); }
+int operator- (tVideoClip* o, CArray<tVideoClip>& a) { return a.Index (o); }
 
 typedef struct tShipData {
 	tPlayerShip			only;

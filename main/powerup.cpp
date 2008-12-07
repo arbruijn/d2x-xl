@@ -966,8 +966,8 @@ void SpawnLeftoverPowerups (short nObject)
 SpawnPowerup (gameData.multiplayer.leftoverPowerups [nObject].spitterP, 
 				  gameData.multiplayer.leftoverPowerups [nObject].nType,
 				  gameData.multiplayer.leftoverPowerups [nObject].nCount);
-memset (gameData.multiplayer.leftoverPowerups + nObject, 0, 
-		  sizeof (*gameData.multiplayer.leftoverPowerups));
+memset (&gameData.multiplayer.leftoverPowerups [nObject], 0, 
+		  sizeof (gameData.multiplayer.leftoverPowerups [0]));
 }
 
 //------------------------------------------------------------------------------

@@ -552,12 +552,12 @@ do {
 						MissileSpeedScale (objP) : 1;
 	bRetry = 0;
 	if (fScale < 1) {
-		vmsVector vStartVel = objP->vStartVel;
+		vmsVector vStartVel = *objP->StartVel ();
 		vmsVector::Normalize (vStartVel);
 		fix xDot = vmsVector::Dot (objP->info.position.mOrient[FVEC], vStartVel);
-		vFrame = objP->mType.physInfo.velocity + objP->vStartVel;
+		vFrame = objP->mType.physInfo.velocity + *objP->StartVel ();
 		vFrame *= F2X (fScale * fScale);
-		vFrame += objP->vStartVel * (-(abs (xDot)));
+		vFrame += *objP->StartVel () * ((xDot > 0) ? -xDot : xDot);
 		vFrame *= FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1));
 		}
 	else
@@ -604,7 +604,7 @@ retryMove:
 	fq.p1 = &vNewPos;
 	fq.radP0 = fq.radP1 = objP->info.xSize;
 	fq.thisObjNum = nObject;
-	fq.ignoreObjList = gameData.physics.ignoreObjs;
+	fq.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
 	fq.flags = FQ_CHECK_OBJS;
 
 	if (objP->info.nType == OBJ_WEAPON)

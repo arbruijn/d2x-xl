@@ -252,7 +252,7 @@ tEffectClip *FindEffect (tEffectClip *ecP, int tNum)
 if (ecP)
 	i = (int) (++ecP - gameData.eff.effectP);
 else {
-	ecP = gameData.eff.effectP;
+	ecP = gameData.eff.effectP.Buffer ();
 	i = 0;
 	}
 for (h = gameData.eff.nEffects [gameStates.app.bD1Data]; i < h; i++, ecP++) {
@@ -274,7 +274,7 @@ return NULL;
 tVideoClip *FindVClip (int tNum)
 {
 	int	h, i, j;
-	tVideoClip *vcP = gameData.eff.vClips [0];
+	tVideoClip *vcP = gameData.eff.vClips [0].Buffer ();
 
 for (i = gameData.eff.nClips [0]; i; i--, vcP++) {
 	for (h = vcP->nFrameCount, j = 0; j < h; j++)
@@ -290,7 +290,7 @@ return NULL;
 tWallClip *FindWallAnim (int tNum)
 {
 	int	h, i, j;
-	tWallClip *wcP = gameData.walls.animP;
+	tWallClip *wcP = gameData.walls.animP.Buffer ();
 
 for (i = gameData.walls.nAnims [gameStates.app.bD1Data]; i; i--, wcP++)
 	for (h = wcP->nFrameCount, j = 0; j < h; j++)
@@ -369,7 +369,7 @@ void PiggyFreeHiresAnimations (void)
 	int		i, bD1;
 	CBitmap	*bmP;
 
-for (bD1 = 0, bmP = gameData.pig.tex.bitmaps [bD1]; bD1 < 2; bD1++)
+for (bD1 = 0, bmP = gameData.pig.tex.bitmaps [bD1].Buffer (); bD1 < 2; bD1++)
 	for (i = gameData.pig.tex.nBitmaps [bD1]; i; i--, bmP++)
 		PiggyFreeHiresAnimation (bmP, bD1);
 }
@@ -407,7 +407,7 @@ TexMergeFlush ();
 RLECacheFlush ();
 for (bD1 = 0; bD1 < 2; bD1++) {
 	bitmapCacheNext [bD1] = 0;
-	for (i = 0, bmP = gameData.pig.tex.bitmaps [bD1]; 
+	for (i = 0, bmP = gameData.pig.tex.bitmaps [bD1].Buffer (); 
 		  i < gameData.pig.tex.nBitmaps [bD1]; 
 		  i++, bmP++) {
 		if (bmP->Buffer () && (bitmapOffsets [bD1][i] > 0)) { // only page out bitmaps read from disk

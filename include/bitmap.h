@@ -287,6 +287,8 @@ class CBitmap {
 		void Unlink (int bAddon);
 	};
 
+int operator- (CBitmap* o, CArray<CBitmap>& a) { return a.Index (o); }
+	
 //-----------------------------------------------------------------------------
 
 void LoadBackgroundBitmap (void);

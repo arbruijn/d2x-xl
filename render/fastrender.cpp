@@ -1054,7 +1054,7 @@ void UpdateSlidingFaces (void)
 	tTexCoord2f	*texCoordP, *ovlTexCoordP;
 	tUVL			*uvlP;
 
-for (faceP = gameData.segs.faces.slidingFaces.Buffer (); faceP; faceP = faceP->nextSlidingFace) {
+for (faceP = gameData.segs.faces.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 #if DBG
 	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		faceP = faceP;

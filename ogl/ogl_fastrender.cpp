@@ -374,13 +374,13 @@ if (bmTop) {
 	glActiveTexture (GL_TEXTURE1 + bLightmaps);
 	glClientActiveTexture (GL_TEXTURE1 + bLightmaps);
 	glEnable (GL_TEXTURE_2D);
-	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (gameData.segs.faces.ovlTexCoord.Buffer ()));
 	gameStates.render.history.bmTop = NULL;
 	}
 else {
 	glActiveTexture (GL_TEXTURE0 + bLightmaps);
 	glClientActiveTexture (GL_TEXTURE0 + bLightmaps);
-	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
+	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (gameData.segs.faces.texCoord.Buffer ()));
 	gameStates.render.history.bmBot = NULL;
 	}
 }

@@ -386,7 +386,7 @@ void ComputeSegmentVisibility (int startI)
 
 PrintLog ("computing segment visibility (%d)\n", startI);
 if (startI <= 0) {
-	i = sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS;
+	i = sizeof (gameData.segs.bVertVis [0]) * gameData.segs.nVertices * VERTVIS_FLAGS;
 	if (!gameData.segs.bVertVis.Create (i))
 		return;
 	gameData.segs.bVertVis.Clear ();

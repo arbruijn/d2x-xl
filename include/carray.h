@@ -161,7 +161,7 @@ template < class _T > class CArray {
 			return clone;
 			}
 
-		inline bool operator! () { return m_buffer == NULL; }
+		inline bool operator! () { return m_data.buffer == NULL; }
 	};
 
 int operator- (char* v, CArray<char>& a) { return a.Index (v); }

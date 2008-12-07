@@ -1397,7 +1397,7 @@ if (ROBOTINFO (robotP->info.nId).companion) {
 		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
 		return 0;
 	}
-robotP->TimeLastHit () = gameStates.app.nSDLTicks;
+robotP->SetTimeLastHit (gameStates.app.nSDLTicks);
 robotP->info.xShields -= damage;
 //	Do unspeakable hacks to make sure tPlayer doesn't die after killing boss.  Or before, sort of.
 if (bIsBoss) {
