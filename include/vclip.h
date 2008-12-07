@@ -63,7 +63,7 @@ tRgbColorb *VClipColor (CObject *objP);
 /*
  * reads n tVideoClip structs from a CFILE
  */
-extern int VClipReadN(tVideoClip *vc, int n, CFile& cf);
+int VClipReadN (CArray<tVideoClip>& vc, int n, CFile& cf);
 #endif
 
 #endif /* _VCLIP_H */

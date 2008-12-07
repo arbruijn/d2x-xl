@@ -842,7 +842,7 @@ bi->index = cf.ReadShort ();
 /*
  * reads n tBitmapIndex structs from a CFile
  */
-int BitmapIndexReadN (tBitmapIndex *pbi, int n, CFile& cf)
+int BitmapIndexReadN (CArray<tBitmapIndex>& pbi, int n, CFile& cf)
 {
 	int		i;
 

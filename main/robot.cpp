@@ -268,7 +268,7 @@ static int JointListReadN(jointlist *jl, int n, CFile& cf)
 /*
  * reads n tRobotInfo structs from a CFile
  */
-int RobotInfoReadN(tRobotInfo *pri, int n, CFile& cf)
+int RobotInfoReadN (CArray>tRobotInfo>& pri, int n, CFile& cf)
 {
 	int i, j;
 
@@ -358,13 +358,13 @@ return i;
 /*
  * reads n tJointPos structs from a CFile
  */
-int JointPosReadN(tJointPos *jp, int n, CFile& cf)
+int JointPosReadN (CArray<tJointPos>& jp, int n, CFile& cf)
 {
 	int i;
 
 	for (i = 0; i < n; i++) {
-		jp[i].jointnum = cf.ReadShort ();
-		cf.ReadAngVec(jp[i].angles);
+		jp [i].jointnum = cf.ReadShort ();
+		cf.ReadAngVec (jp [i].angles);
 	}
 	return i;
 }

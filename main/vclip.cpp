@@ -320,7 +320,7 @@ else
 /*
  * reads n tVideoClip structs from a CFile
  */
-int VClipReadN(tVideoClip *vc, int n, CFile& cf)
+int VClipReadN (CArray<tVideoClip>& vc, int n, CFile& cf)
 {
 	int i, j;
 

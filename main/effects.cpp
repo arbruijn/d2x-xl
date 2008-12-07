@@ -398,7 +398,7 @@ gameData.eff.effectP [effect_num].flags &= ~EF_STOPPED;
 /*
  * reads n tEffectClip structs from a CFile
  */
-int EClipReadN(tEffectClip *ecP, int n, CFile& cf)
+int EClipReadN(CArray<tEffectClip>& ecP, int n, CFile& cf)
 {
 	int i = n;
 

@@ -76,7 +76,7 @@ fix	gameData.objs.types.nType.nStrength [MAX_OBJTYPE];
 /*
  * reads n tTexMapInfo structs from a CFile
  */
-int ReadTMapInfoN (tTexMapInfo *ti, int n, CFile& cf)
+int ReadTMapInfoN (CArray<tTexMapInfo>& ti, int n, CFile& cf)
 {
 	int i;
 
@@ -194,8 +194,8 @@ if (left < r)
 
 void BuildTextureIndex (int i, int n)
 {
-	short				*pti = gameData.pig.tex.textureIndex [i];
-	tBitmapIndex	*pbi = gameData.pig.tex.bmIndex [i];
+	short				*pti = gameData.pig.tex.textureIndex [i].Buffer ();
+	tBitmapIndex	*pbi = gameData.pig.tex.bmIndex [i].Buffer ();
 
 memset (pti, 0xff, sizeof (gameData.pig.tex.textureIndex [i]));
 for (i = 0; i < n; i++)
@@ -238,13 +238,13 @@ gameData.bots.nTypes [0] = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d robot descriptions\n", gameData.bots.nTypes [0]);
 RobotInfoReadN (gameData.bots.info [0], gameData.bots.nTypes [0], cf);
 gameData.bots.nDefaultTypes = gameData.bots.nTypes [0];
-memcpy (gameData.bots.defaultInfo, gameData.bots.info [0], gameData.bots.nTypes [0] * sizeof (*gameData.bots.defaultInfo));
+gameData.bots.defaultInfo = gameData.bots.info [0];
 
 gameData.bots.nJoints = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d robot joint descriptions\n", gameData.bots.nJoints);
 JointPosReadN (gameData.bots.joints, gameData.bots.nJoints, cf);
 gameData.bots.nDefaultJoints = gameData.bots.nJoints;
-memcpy (gameData.bots.defaultJoints, gameData.bots.joints, gameData.bots.nJoints * sizeof (*gameData.bots.defaultJoints));
+gameData.bots.defaultJoints = gameData.bots.joints;
 
 gameData.weapons.nTypes [0] = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d weapon descriptions\n", gameData.weapons.nTypes [0]);
@@ -263,8 +263,8 @@ memcpy (gameData.models.defPolyModels, gameData.models.polyModels, gameData.mode
 
 /*---*/PrintLog ("      Loading poly model data\n");
 for (i = 0; i < gameData.models.nPolyModels; i++) {
-	gameData.models.polyModels [i].modelData = 
-	gameData.models.defPolyModels [i].modelData = NULL;
+	gameData.models.polyModels [i].modelData.SetBuffer (NULL);
+	gameData.models.defPolyModels [i].modelData.SetBuffer (NULL);
 	PolyModelDataRead (gameData.models.polyModels + i, i, gameData.models.defPolyModels + i, cf);
 	}
 
@@ -616,7 +616,7 @@ for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++)
 	}
 cf.Read (&gameData.bots.nTypes [1], sizeof (int), 1);
 /*---*/PrintLog ("         Loading %d robot descriptions\n", gameData.bots.nTypes [1]);
-memcpy (gameData.bots.info [1], gameData.bots.info [0], MAX_ROBOT_TYPES * sizeof (tRobotInfo));
+gameData.bots.info [1] = gameData.bots.info [0];
 if (!gameOpts->sound.bUseD1Sounds)
 	return;
 #if 1
@@ -1187,8 +1187,8 @@ if (bVertigoData) {
 	memcpy (gameData.models.defPolyModels + j, gameData.models.polyModels + j, sizeof (*gameData.models.polyModels) * t);
 	}
 for (i = j; i < gameData.models.nPolyModels; i++) {
-	gameData.models.defPolyModels [i].modelData =
-	gameData.models.polyModels [i].modelData = NULL;
+	gameData.models.defPolyModels [i].modelData.SetBuffer (NULL);
+	gameData.models.polyModels [i].modelData.SetBuffer (NULL);
 	PolyModelDataRead (gameData.models.polyModels + i, i, bVertigoData ? gameData.models.defPolyModels + i : NULL, cf);
 	}
 for (i = j; i < gameData.models.nPolyModels; i++)
@@ -1553,25 +1553,23 @@ void RestoreDefaultRobots (void)
 	int	i;
 	ubyte	*p;
 
-memcpy (gameData.bots.info [0], gameData.bots.defaultInfo, gameData.bots.nDefaultTypes * sizeof (*gameData.bots.defaultInfo));
-memcpy (gameData.bots.joints, gameData.bots.defaultJoints, gameData.bots.nDefaultJoints * sizeof (*gameData.bots.defaultJoints));
+gameData.bots.info [0] = gameData.bots.defaultInfo;
+gameData.bots.joints = gameData.bots.defaultJoints;
 for (i = 0; i < gameData.models.nDefPolyModels; i++) {
-	p = gameData.models.polyModels [i].modelData;
+	p = gameData.models.polyModels [i].modelData.Buffer ();
 	if (gameData.models.defPolyModels [i].nDataSize != gameData.models.polyModels [i].nDataSize) {
-		D2_FREE (p);
+		gameData.models.polyModels [i].modelData.Destroy ();
 		p = NULL;
 		}
-	memcpy (gameData.models.polyModels + i, gameData.models.defPolyModels + i, sizeof (*gameData.models.defPolyModels));
-	if (gameData.models.defPolyModels [i].modelData) {
+	memcpy (gameData.models.polyModels + i, gameData.models.defPolyModels + i, sizeof (gameData.models.polyModels [0]));
+	if (gameData.models.defPolyModels [i].modelData.Buffer ()) {
 		if (!p)
-			p = reinterpret_cast<ubyte*> (D2_ALLOC (gameData.models.defPolyModels [i].nDataSize));
-		Assert (p != NULL);
+			p = new ubyte [gameData.models.defPolyModels [i].nDataSize];
 		memcpy (p, gameData.models.defPolyModels [i].modelData, gameData.models.defPolyModels [i].nDataSize);
-		gameData.models.polyModels [i].modelData = p;
+		gameData.models.polyModels [i].modelData.SetBuffer (p);
 		}
 	else if (p) {
-		D2_FREE (p);
-		gameData.models.polyModels [i].modelData = NULL;
+		gameData.models.polyModels [i].modelData.Destroy ();
 		}
 	}
 for (;i < gameData.models.nPolyModels; i++)

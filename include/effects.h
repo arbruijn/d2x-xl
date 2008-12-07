@@ -76,7 +76,7 @@ void RestartEffect(int effect_num);
 /*
  * reads n tEffectClip structs from a CFILE
  */
-extern int EClipReadN(tEffectClip *ec, int n, CFile& cf);
+int EClipReadN (CArray<tEffectClip>& ec, int n, CFile& cf);
 #endif
 
 CBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObj, int *pnFrames);

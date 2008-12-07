@@ -137,6 +137,14 @@ template < class _T > class CArray {
 			return Copy (source, offset);
 			}
 
+		inline bool operator== (CArray<_T>& other) { 
+			return (m_data.length == other.m_data.length) && !(m_data.length && memcmp (m_data.buffer, other.m_data.buffer)); 
+			}
+
+		inline bool operator!= (CArray<_T>& other) { 
+			return (m_data.length != other.m_data.length) || (m_data.length && memcmp (m_data.buffer, other.m_data.buffer)); 
+			}
+
 		inline _T* Begin (void) { 
 			if (!m_buffer)
 				return NULL;

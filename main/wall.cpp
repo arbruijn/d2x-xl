@@ -1732,7 +1732,7 @@ int wclip_read_n_d1(tWallClip *wc, int n, CFile& cf)
 /*
  * reads a tWallClip structure from a CFile
  */
-int WClipReadN(tWallClip *wc, int n, CFile& cf)
+int WClipReadN(CArray<tWallClip>& wc, int n, CFile& cf)
 {
 	int i, j;
 

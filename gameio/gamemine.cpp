@@ -938,7 +938,7 @@ tFace *FindDupFace (short nSegment, short nSide)
 for (i = segFaceP->nFaces, faceP0 = segFaceP->pFaces; i; faceP0++, i--)
 	if (faceP0->nSide == nSide)
 		break;
-for (i = 0, segFaceP = SEGFACES; i < gameData.segs.nSegments; i++, segFaceP++) {
+for (i = 0, segFaceP = SEGFACES.Buffer (); i < gameData.segs.nSegments; i++, segFaceP++) {
 	for (j = segFaceP->nFaces, faceP1 = segFaceP->pFaces; j; faceP1++, j--) {
 		if (faceP1 == faceP0)
 			continue;
@@ -1130,7 +1130,7 @@ if (gameStates.app.bD2XLevel) {
 int HasColoredLight (void)
 {
 	int			i, bColored = 0;
-	tFaceColor	*pvc = gameData.render.color.ambient;
+	tFaceColor	*pvc = gameData.render.color.ambient.Buffer ();
 
 if (!gameStates.app.bD2XLevel)
 	return 0;
@@ -1466,7 +1466,7 @@ if (gameData.segs.vMax[Y] < gameData.segs.vertices [i][Y])
 	gameData.segs.vMax[Y] = gameData.segs.vertices [i][Y];
 if (gameData.segs.vMax[Z] < gameData.segs.vertices [i][Z])
 	gameData.segs.vMax[Z] = gameData.segs.vertices [i][Z];
-memset (gameData.segs.segments, 0, MAX_SEGMENTS * sizeof (CSegment));
+gameData.segs.segments.Clear ();
 #if TRACE
 con_printf (CONDBG, "   loading segments ...\n");
 #endif

@@ -212,7 +212,7 @@ void BitmapIndexRead (tBitmapIndex *bi, CFile& cf);
 /*
  * reads n tBitmapIndex structs from a CFILE
  */
-int BitmapIndexReadN (tBitmapIndex *bi, int n, CFile& cf);
+int BitmapIndexReadN (CArray<tBitmapIndex>& bi, int n, CFile& cf);
 #endif // FAST_FILE_IO
 
 /*
