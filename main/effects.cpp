@@ -392,14 +392,14 @@ gameData.eff.effectP [effect_num].flags &= ~EF_STOPPED;
 }
 
 // ----------------------------------------------------------------------------
-#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
+
 /*
  * reads n tEffectClip structs from a CFile
  */
 
-int ReadEffectClip (tEffectClip& ec, CFile& cf)
+void ReadEffectClip (tEffectClip& ec, CFile& cf)
 {
-ReadVideoClip (ec [i].vc, cf);
+ReadVideoClip (ec.vc, cf);
 ec.time_left = cf.ReadFix ();
 ec.nCurFrame = cf.ReadInt ();
 ec.changingWallTexture = cf.ReadShort ();
@@ -417,11 +417,12 @@ ec.nSide = cf.ReadInt ();
 
 int ReadEffectClips (CArray<tEffectClip>& ec, int n, CFile& cf)
 {
-for (int i = 0; i < n; i++) {
-	ReadEffectClip (ec [i]);
+	int i;
+
+for (i = 0; i < n; i++) {
+	ReadEffectClip (ec [i], cf);
 	}
-	return i;
+return i;
 }
-#endif
 
 // ----------------------------------------------------------------------------

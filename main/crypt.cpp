@@ -36,7 +36,7 @@ for (i = 0; i < len; i++) {
 		}
 	}
 szCrypt [i] = 0;
-return (reinterpret_cast<char*> (szCrypt);
+return reinterpret_cast<char*> (szCrypt);
 }
 
 //------------------------------------------------------------------------------

@@ -26,7 +26,7 @@ int InitObjectCount (CObject *objP)
 	short	id = objP->info.nId;
 
 nFree = nTotal = 0;
-for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP++) {
+for (i = 0, objP = gameData.objs.init.Buffer (); i < gameFileInfo.objects.count; i++, objP++) {
 	if ((objP->info.nType != nType) || (objP->info.nId != id))
 		continue;
 	nTotal++;
@@ -60,7 +60,7 @@ d_srand (TimerGetFixedSeconds ());
 if ((bUseFree = (objCount < 0)))
 	objCount = -objCount;
 h = d_rand () % objCount + 1;
-for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP++) {
+for (i = 0, objP = gameData.objs.init.Buffer (); i < gameFileInfo.objects.count; i++, objP++) {
 	if ((objP->info.nType != nType) || (objP->info.nId != id))
 		continue;
 	// if the current CSegment does not contain a powerup of the nType being looked for,

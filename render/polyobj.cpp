@@ -831,11 +831,10 @@ if (gameStates.ogl.nDrawBuffer != GL_BACK)
 
 //------------------------------------------------------------------------------
 
-#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
  * reads a tPolyModel structure from a CFile
  */
-int ReadPolyModel (tPolyModel *pm, int bHMEL, CFile& cf)
+int ReadPolyModel (tPolyModel& pm, int bHMEL, CFile& cf)
 {
 	int	i;
 
@@ -850,35 +849,35 @@ if (bHMEL) {
 		return 0;
 	nElement = cf.ReadInt ();
 	nBlocks = cf.ReadInt ();
-	pm->nModels = 1;
+	pm.nModels = 1;
 	}
 else
-	pm->nModels = cf.ReadInt ();
-pm->nDataSize = cf.ReadInt ();
+	pm.nModels = cf.ReadInt ();
+pm.nDataSize = cf.ReadInt ();
 cf.ReadInt ();
-pm->modelData = NULL;
+pm.modelData = NULL;
 for (i = 0; i < MAX_SUBMODELS; i++)
-	pm->subModels.ptrs [i] = cf.ReadInt ();
+	pm.subModels.ptrs [i] = cf.ReadInt ();
 for (i = 0; i < MAX_SUBMODELS; i++)
-	cf.ReadVector (pm->subModels.offsets[i]);
+	cf.ReadVector (pm.subModels.offsets[i]);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	cf.ReadVector (pm->subModels.norms[i]);
+	cf.ReadVector (pm.subModels.norms[i]);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	cf.ReadVector (pm->subModels.pnts[i]);
+	cf.ReadVector (pm.subModels.pnts[i]);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	pm->subModels.rads [i] = cf.ReadFix ();
-cf.Read (pm->subModels.parents, MAX_SUBMODELS, 1);
+	pm.subModels.rads [i] = cf.ReadFix ();
+cf.Read (pm.subModels.parents, MAX_SUBMODELS, 1);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	cf.ReadVector (pm->subModels.mins[i]);
+	cf.ReadVector (pm.subModels.mins[i]);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	cf.ReadVector (pm->subModels.maxs[i]);
-cf.ReadVector (pm->mins);
-cf.ReadVector (pm->maxs);
-pm->rad = cf.ReadFix ();
-pm->nTextures = cf.ReadByte ();
-pm->nFirstTexture = cf.ReadShort ();
-pm->nSimplerModel = cf.ReadByte ();
-pm->nType = 0;
+	cf.ReadVector (pm.subModels.maxs[i]);
+cf.ReadVector (pm.mins);
+cf.ReadVector (pm.maxs);
+pm.rad = cf.ReadFix ();
+pm.nTextures = cf.ReadByte ();
+pm.nFirstTexture = cf.ReadShort ();
+pm.nSimplerModel = cf.ReadByte ();
+pm.nType = 0;
 return 1;
 }
 
@@ -888,12 +887,13 @@ return 1;
  */
 int ReadPolyModels (tPolyModel *pm, int n, CFile& cf)
 {
-for (int i = n; i; i--, pm++)
-	if (!ReadPolyModel (pm, 0, cf))
+	int i;
+
+for (i = 0; i < n; i++)
+	if (!ReadPolyModel (pm [i], 0, cf))
 		break;
 return i;
 }
-#endif
 
 //------------------------------------------------------------------------------
 /*

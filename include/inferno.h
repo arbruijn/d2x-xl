@@ -2020,6 +2020,8 @@ typedef struct tPOF_face {
 	short					nAdjFaces;
 } tPOF_face;
 
+int operator- (tPOF_face* f, CArray<tPOF_face>& a) { return a.Index (f); }
+
 typedef struct tPOF_faceList {
 	short					nFaces;
 	CArray<tPOF_face>	faces;
@@ -2055,8 +2057,8 @@ typedef struct tPOFObject {
 	CArray<float>			fClipDist;
 	CArray<ubyte>			vertFlags;
 	CArray<g3sNormal>		vertNorms;
-	CArray<vmsVector>		vCenter;
-	CArray<vmsVector>		vRotVerts;
+	CArray<vmsVector>		center;
+	CArray<vmsVector>		rotVerts;
 	tPOF_faceList			faces;
 	tPOF_faceRef			litFaces;
 	short						nAdjFaces;

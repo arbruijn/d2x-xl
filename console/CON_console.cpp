@@ -416,7 +416,7 @@ ConsoleInformation *CON_Init(CFont *font, CScreen *DisplayScreen, int lines, int
 
 
 	/* Create a new console struct and init it. */
-	if((newinfo = reinterpret_cast<ConsoleInformation*> (D2_ALLOC(sizeof(ConsoleInformation))) == NULL) {
+	if(!(newinfo = new ConsoleInformation)) {
 		//PRINT_ERROR("Could not allocate the space for a new console info struct.\n");
 		return NULL;
 	}
@@ -487,11 +487,11 @@ ConsoleInformation *CON_Init(CFont *font, CScreen *DisplayScreen, int lines, int
 		newinfo->LineBuffer = lines;
 
 
-	newinfo->ConsoleLines = reinterpret_cast<char **> (D2_ALLOC (sizeof (char *) * newinfo->LineBuffer));
-	newinfo->CommandLines = reinterpret_cast<char **> (D2_ALLOC (sizeof (char *) * newinfo->LineBuffer));
+	newinfo->ConsoleLines = new char* [newinfo->LineBuffer];
+	newinfo->CommandLines = new char* [newinfo->LineBuffer];
 	for(loop = 0; loop < newinfo->LineBuffer; loop++) {
-		newinfo->ConsoleLines[loop] = reinterpret_cast<char*> (D2_CALLOC (CON_CHARS_PER_LINE, sizeof (char)));
-		newinfo->CommandLines[loop] = reinterpret_cast<char*> (D2_CALLOC (CON_CHARS_PER_LINE, sizeof (char)));
+		newinfo->ConsoleLines [loop] = new char [CON_CHARS_PER_LINE];
+		newinfo->CommandLines [loop] = new char [CON_CHARS_PER_LINE];
 	}
 	memset(newinfo->Command, 0, CON_CHARS_PER_LINE);
 	memset(newinfo->LCommand, 0, CON_CHARS_PER_LINE);
@@ -545,11 +545,11 @@ void CON_Free(ConsoleInformation *console) {
 
 	//CON_DestroyCommands();
 	for(i = 0; i <= console->LineBuffer - 1; i++) {
-		D2_FREE(console->ConsoleLines[i]);
-		D2_FREE(console->CommandLines[i]);
+		delete[] console->ConsoleLines[i];
+		delete[] console->CommandLines[i];
 	}
-	D2_FREE(console->ConsoleLines);
-	D2_FREE(console->CommandLines);
+	delete[] console->ConsoleLines;
+	delete[] console->CommandLines;
 
 	console->ConsoleLines = NULL;
 	console->CommandLines = NULL;
@@ -558,10 +558,11 @@ void CON_Free(ConsoleInformation *console) {
 	console->ConsoleSurface = NULL;
 
 	if (console->BackgroundImage)
-		D2_FREE (console->BackgroundImage);
+		delete console->BackgroundImage;
 	console->BackgroundImage = NULL;
 
-	D2_FREE (console->InputBackground);
+	if (console->InputBackground)
+		delete console->InputBackground;
 	console->InputBackground = NULL;
 
 	D2_FREE(console);

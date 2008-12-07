@@ -316,11 +316,10 @@ else
 
 //------------------------------------------------------------------------------
 
-#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
  * reads n tVideoClip structs from a CFile
  */
-int ReadVideoClip (tVideoClip>& vc, CFile& cf)
+void ReadVideoClip (tVideoClip& vc, CFile& cf)
 {
 vc.xTotalTime = cf.ReadFix ();
 vc.nFrameCount = cf.ReadInt ();
@@ -335,10 +334,11 @@ vc.lightValue = cf.ReadFix ();
 
 int ReadVideoClips (CArray<tVideoClip>& vc, int n, CFile& cf)
 {
-for (int i = 0; i < n; i++)
+	int i;
+
+for (i = 0; i < n; i++)
 	ReadVideoClip (vc [i], cf);
 return i;
 }
-#endif
 
 //------------------------------------------------------------------------------

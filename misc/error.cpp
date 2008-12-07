@@ -41,7 +41,7 @@ FILE *fErr = NULL;
 int err_initialized=0;
 //end edit -MM
 
-static void (*ErrorPrintFunc) (char *) ();
+static void (*ErrorPrintFunc) (const char *);
 
 char szExitMsg[MAX_MSG_LEN]="";
 char szWarnMsg[MAX_MSG_LEN];
@@ -210,7 +210,7 @@ gameStates.app.bShowError = 0;
 
 //------------------------------------------------------------------------------
 //initialize error handling system, and set default message. returns 0=ok
-int _CDECL_ error_init (void (*func) (const char*) (, const char *fmt, ...)
+int _CDECL_ error_init (void (*func)(const char *), const char *fmt, ...)
 {
 	va_list arglist;
 	int len;
