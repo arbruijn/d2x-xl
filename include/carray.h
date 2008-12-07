@@ -5,7 +5,8 @@
 
 //-----------------------------------------------------------------------------
 
-template < class _T > class CArray {
+template < class _T > 
+class CArray {
 
 	template < class _T > class CArrayData {
 		public:
@@ -21,6 +22,39 @@ template < class _T > class CArray {
 		CArrayData<_T>	m_data;
 
 	public:
+		template < class _T >
+		class Iterator {
+			private:
+				_T*			m_start;
+				_T*			m_end;
+				_T*			m_p;
+				CArray<_T>&	m_a;
+			public:
+				Iterator (CArray<_T>& a) { m_a = a, m_p = NULL; }
+				operator bool() const { return m_p != NULL; }
+				_T* operator*() const { return m_p; }
+				Iterator& operator++() { 
+					if (m_p) {
+						if (m_p < m_end)
+							m_p++;
+						else
+							m_p = NULL;
+						}
+					return *this;
+					}
+				Iterator& operator--() { 
+					if (m_p) {
+						if (m_p > m_end)
+							m_p--;
+						else
+							m_p = NULL;
+						}
+					return *this;
+					}
+				_T* Start (void) { m_p = m_start = m_a.Start (); m_end = m_a.End (); }
+				_T* End (void) { m_p = m_start = m_a.End (); m_end = m_a.Start (); }
+			};
+
 		CArray () { Init (); }
 		
 		~CArray() { Destroy (); }
@@ -141,22 +175,15 @@ template < class _T > class CArray {
 			return (m_data.length == other.m_data.length) && !(m_data.length && memcmp (m_data.buffer, other.m_data.buffer)); 
 			}
 
+		//inline operator bool() const { return m_data.buffer != 0; }
+
 		inline bool operator!= (CArray<_T>& other) { 
 			return (m_data.length != other.m_data.length) || (m_data.length && memcmp (m_data.buffer, other.m_data.buffer)); 
 			}
 
-		inline _T* Begin (void) { 
-			if (!m_buffer)
-				return NULL;
-				m_pos = 0;
-			return m_buffer;
-			}
+		inline _T* Start (void) { return m_data.buffer; }
 
-		inline _T* End (void) { 
-			if (!m_buffer)
-				return NULL;
-			return m_buffer + (m_pos = m_size);
-			}
+		inline _T* End (void) { return (m_data.buffer && m_data.length) ? m_data.buffer + m_data.length - 1 : NULL; }
 
 		inline _T* operator++ (void) { return (m_buffer && (m_pos < m_size - 1)) ? m_buffer + ++m_pos : NULL; }
 

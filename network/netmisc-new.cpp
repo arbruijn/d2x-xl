@@ -88,7 +88,7 @@ ushort BECalcSegmentCheckSum (void)
 	vmsVector		*normP;
 
 sum1 = sum2 = 0;
-for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
+for (i = 0, segP = gameData.segs.segments.Buffer (); i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
 		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&sideP->nType), 1, &sum1, &sum2);
 		BEDoCheckSumCalc (reinterpret_cast<ubyte*> (&sideP->nFrame), 1, &sum1, &sum2);
