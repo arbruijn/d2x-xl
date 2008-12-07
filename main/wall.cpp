@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 #include "render.h"
 #include "light.h"
+#include "segment.h"
 #include "dynlight.h"
 
 #ifdef EDITOR
@@ -366,7 +367,7 @@ wallP->hps = -1;	//say it's blasted
 
 if (segP->children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
-		Warning (TXT_BLAST_SINGLE, gameData.segs.segments - segP, nSide, nWall);
+		Warning (TXT_BLAST_SINGLE, segP - gameData.segs.segments, nSide, nWall);
 	connSegP = NULL;
 	nConnSide = -1;
 	nConnWall = NO_WALL;
@@ -430,8 +431,7 @@ if ((wallP->flags & WALL_BLASTED) || (wallP->hps < 0))
 
 if (segP->children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
-		Warning (TXT_DMG_SINGLE,
-			gameData.segs.segments - segP, nSide, nWall);
+		Warning (TXT_DMG_SINGLE, segP - gameData.segs.segments, nSide, nWall);
 	connSegP = NULL;
 	nConnSide = -1;
 	nConnWall = NO_WALL;
@@ -482,7 +482,7 @@ if ((wallP->state == WALL_DOOR_OPENING) ||	//already opening
 	return;
 
 if (wallP->state == WALL_DOOR_CLOSING) {		//closing, so reuse door
-	doorP = gameData.walls.activeDoors;
+	doorP = gameData.walls.activeDoors.Buffer ();
 	for (int i = 0; i < gameData.walls.nOpenDoors; i++, doorP++) {		//find door
 		for (int j = 0; j < doorP->nPartCount; j++)
 			if ((doorP->nFrontWall [j] == nWall) || (doorP->nBackWall [j] == nWall))
@@ -511,7 +511,7 @@ wallP->state = WALL_DOOR_OPENING;
 // So that door can't be shot while opening
 if (segP->children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
-		Warning (TXT_OPEN_SINGLE, gameData.segs.segments - segP, nSide, nWall);
+		Warning (TXT_OPEN_SINGLE, segP - gameData.segs.segments, nSide, nWall);
 	connSegP = NULL;
 	nConnSide = -1;
 	nConnWall = NO_WALL;
@@ -584,7 +584,7 @@ if (wallP->state == WALL_DOOR_DECLOAKING) {	//decloaking, so reuse door
 
 	for (i = 0, cloakWallP = NULL; i < gameData.walls.nCloaking; i++) {		//find door
 		cloakWallP = gameData.walls.cloaking + i;
-		if ((cloakWallP->nFrontWall == wallP-gameData.walls.walls) || (cloakWallP->nBackWall == wallP-gameData.walls.walls))
+		if ((cloakWallP->nFrontWall == wallP - gameData.walls.walls) || (cloakWallP->nBackWall == wallP-gameData.walls.walls))
 			break;
 		}
 	Assert(i < gameData.walls.nCloaking);				//didn't find door!
@@ -794,7 +794,7 @@ if (DoorIsBlocked (segP,nSide))
 	return;
 if (wallP->state == WALL_DOOR_OPENING) {	//reuse door
 	int i;
-	doorP = gameData.walls.activeDoors;
+	doorP = gameData.walls.activeDoors.Buffer ();
 	for (i = 0; i <gameData.walls.nOpenDoors; i++, doorP++) {		//find door
 		if ((doorP->nFrontWall [0]== nWall) || (doorP->nBackWall [0] == nWall) ||
 			((doorP->nPartCount == 2) && ((doorP->nFrontWall [1] == nWall) || (doorP->nBackWall [1] == nWall))))
@@ -1026,7 +1026,7 @@ void WallIllusionOff (CSegment *segP, short nSide)
 
 if (segP->children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
-		Warning (TXT_ILLUS_SINGLE,	gameData.segs.segments - segP, nSide);
+		Warning (TXT_ILLUS_SINGLE,	segP - gameData.segs.segments, nSide);
 	connSegP = NULL;
 	cSide = -1;
 	}
@@ -1065,7 +1065,7 @@ void WallIllusionOn (CSegment *segP, short nSide)
 
 if (segP->children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
-		Warning (TXT_ILLUS_SINGLE, gameData.segs.segments - segP, nSide);
+		Warning (TXT_ILLUS_SINGLE, segP - gameData.segs.segments, nSide);
 	connSegP = NULL;
 	cSide = -1;
 	}
@@ -1108,7 +1108,7 @@ void UnlockAllWalls (int bOnlyDoors)
 	int	i;
 	tWall	*wallP;
 
-for (i = gameData.walls.nWalls, wallP = gameData.walls.walls; i; wallP++, i--) {
+for (i = gameData.walls.nWalls, wallP = gameData.walls.walls.Buffer (); i; wallP++, i--) {
 	if (wallP->nType == WALL_DOOR) {
 		wallP->flags &= ~WALL_DOOR_LOCKED;
 		wallP->keys = 0;
@@ -1134,7 +1134,7 @@ void InitDoorAnims (void)
 	CSegment		*segP;
 	tWallClip	*animP;
 
-for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; wallP++, i++) {
+for (i = 0, wallP = gameData.walls.walls.Buffer (); i < gameData.walls.nWalls; wallP++, i++) {
 	if (wallP->nType == WALL_DOOR) {
 		animP = gameData.walls.animP + wallP->nClip;
 		if (!(animP->flags & WCF_ALTFMT))
@@ -1308,9 +1308,13 @@ if (cloakWallP->time > CLOAKING_WALL_TIME) {
 		backWallP->state = WALL_DOOR_CLOSED;		//why closed? why not?
 		}
 	if (nCloakingWall < --gameData.walls.nCloaking)
+#if 1
+		gameData.walls.cloaking [nCloakingWall] = gameData.walls.cloaking [gameData.walls.nCloaking];
+#else
 		memcpy (gameData.walls.cloaking + nCloakingWall,
 				  gameData.walls.cloaking + nCloakingWall + 1,
-				  (gameData.walls.nCloaking - nCloakingWall) * sizeof (*gameData.walls.cloaking));
+				  (gameData.walls.nCloaking - nCloakingWall) * sizeof (gameData.walls.cloaking [0]));
+#endif
 	}
 else if (SHOW_DYN_LIGHT || (cloakWallP->time > CLOAKING_WALL_TIME / 2)) {
 	int oldType = frontWallP->nType;
@@ -1414,7 +1418,7 @@ void WallFrameProcess (void)
 {
 	int				i;
 	tCloakingWall	*cloakWallP;
-	tActiveDoor		*doorP = gameData.walls.activeDoors;
+	tActiveDoor		*doorP = gameData.walls.activeDoors.Buffer ();
 	tWall				*wallP, *backWallP;
 
 for (i = 0; i < gameData.walls.nOpenDoors; i++, doorP++) {
@@ -1453,7 +1457,7 @@ for (i = 0; i < gameData.walls.nOpenDoors; i++, doorP++) {
 		}
 	}
 
-cloakWallP = gameData.walls.cloaking;
+cloakWallP = gameData.walls.cloaking.Buffer ();
 for (i = 0; i < gameData.walls.nCloaking; i++, cloakWallP++) {
 	ubyte s = gameData.walls.walls [cloakWallP->nFrontWall].state;
 	if (s == WALL_DOOR_CLOAKING)

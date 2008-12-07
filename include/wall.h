@@ -153,7 +153,10 @@ typedef struct tWall {
 	sbyte   controllingTrigger;	// which tTrigger causes something to happen here.  Not like "tTrigger" above, which is the tTrigger on this tWall.
 											//  Note: This gets stuffed at load time in gamemine.c.  Don't try to use it in the editor.  You will be sorry!
 	sbyte   cloakValue;				// if this tWall is cloaked, the fade value
-} __pack__ tWall;
+} tWall;
+
+int operator- (tWall* o, CArray<tWall>& a) { return a.Index (o); }
+
 
 typedef struct tActiveDoor {
 	int     nPartCount;           // for linked walls

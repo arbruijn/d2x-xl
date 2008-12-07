@@ -188,7 +188,7 @@ void AICreateClusterLight (CObject *objP, short nObject, short nShot)
 if (!gameStates.render.bClusterLights)
 	return;
 
-short nPrevShot = objP->shots.nObject;
+short nPrevShot = objP->Shots ().nObject;
 
 #if DBG
 if (nObject == nDbgObj)
@@ -196,7 +196,7 @@ if (nObject == nDbgObj)
 #endif
 if (nPrevShot >= 0) {
 	CObject *prevShotP = OBJECTS + nPrevShot;
-	if (prevShotP->info.nSignature == objP->shots.nSignature) {
+	if (prevShotP->info.nSignature == objP->Shots ().nSignature) {
 		CObject *lightP, *shotP = OBJECTS + nShot;
 		short nLight = gameData.objs.lightObjs [nPrevShot].nObject;
 		if (nLight < 0)
@@ -354,8 +354,8 @@ if (0 > (nShot = CreateNewLaserEasy (&vFire, vFirePoint, OBJ_IDX (objP), (ubyte)
 	return;
 
 AICreateClusterLight (objP, nObject, nShot);
-objP->shots.nObject = nShot;
-objP->shots.nSignature = OBJECTS [nShot].info.nSignature;
+objP->Shots ().nObject = nShot;
+objP->Shots ().nSignature = OBJECTS [nShot].info.nSignature;
 
 if (IsMultiGame) {
 	AIMultiSendRobotPos (nObject, -1);

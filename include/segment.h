@@ -128,7 +128,7 @@ typedef struct tSegment {
 #endif //!EDITOR
 
 class CSegment : public tSegment {
-	public:
+	//public:
 	};
 
 int operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }

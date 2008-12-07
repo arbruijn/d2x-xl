@@ -64,7 +64,7 @@ int CountSkyBoxSegments (void)
 	tSegment2	*seg2P;
 	int			i, nSegments;
 
-for (i = gameData.segs.nSegments, nSegments = 0, seg2P = SEGMENT2S; i; i--, seg2P++)
+for (i = gameData.segs.nSegments, nSegments = 0, seg2P = SEGMENT2S.Buffer (); i; i--, seg2P++)
 	if (seg2P->special == SEGMENT_IS_SKYBOX)
 		nSegments++;
 return nSegments;
@@ -74,7 +74,7 @@ return nSegments;
 
 void FreeSkyBoxSegList (void)
 {
-D2_FREE (gameData.segs.skybox.segments);
+gameData.segs.skybox.segments.Destroy ();
 }
 
 //------------------------------------------------------------------------------
@@ -89,8 +89,8 @@ if ((gameData.segs.skybox.nSegments = CountSkyBoxSegments ())) {
 
 if (!(gameData.segs.skybox.segments = reinterpret_cast<short*> (D2_ALLOC (gameData.segs.nSegments * sizeof (short)))))
 	return 0;
-segP = gameData.segs.skybox.segments;
-for (h = gameData.segs.nSegments, i = 0, seg2P = SEGMENT2S; i < h; i++, seg2P++)
+segP = gameData.segs.skybox.segments.Buffer ();
+for (h = gameData.segs.nSegments, i = 0, seg2P = SEGMENT2S.Buffer (); i < h; i++, seg2P++)
 	if (seg2P->special == SEGMENT_IS_SKYBOX)
 		*segP++ = i;
 	}

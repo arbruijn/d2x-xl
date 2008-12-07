@@ -1082,9 +1082,9 @@ extern CObject *dbgObjP;
 
 #define DISABLE_COLLISION(type1, type2)	SET_COLLISION(type1, type2, RESULT_NOTHING)
 
-#define OBJECT_EXISTS(_objP)	 ((_objP) && !((_objP)->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+#define OBJECT_EXISTS(_objP)	 ((_objP) && !((_objP)->Flags() & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 
-#	define FORALL_OBJSi(_objP,_i)						for ((_objP) = OBJECTS, (_i) = 0; (_i) <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++)
+#	define FORALL_OBJSi(_objP,_i)						for ((_objP) = OBJECTS.Buffer (), (_i) = 0; (_i) <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++)
 #if 0
 #	define FORALL_CLASS_OBJS(_type,_objP,_i)		for ((_objP) = OBJECTS, (_i) = 0; i <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++) if ((_objP)->info.nType == _type)
 #	define FORALL_ACTOR_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_ROBOT, _objP, _i)
