@@ -162,6 +162,8 @@ typedef struct tSegment2 {
 	tSide2		sides [MAX_SIDES_PER_SEGMENT];
 } tSegment2;
 
+int operator- (tSegment2* s, CArray<tSegment2>& a) { return a.Index (s); }
+
 //values for special field
 #define SEGMENT_IS_NOTHING			0
 #define SEGMENT_IS_FUELCEN			1

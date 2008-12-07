@@ -1002,8 +1002,8 @@ if (gameData.demo.bNoSpace) {
 	return;
 	}
 StopTime ();
-memset (gameData.demo.bWasRecorded, 0, sizeof (*gameData.demo.bWasRecorded) * MAX_OBJECTS);
-memset (gameData.demo.bViewWasRecorded, 0, sizeof (*gameData.demo.bViewWasRecorded) * MAX_OBJECTS);
+gameData.demo.bWasRecorded.Clear ();
+gameData.demo.bViewWasRecorded.Clear ();
 memset (gameData.demo.bRenderingWasRecorded, 0, sizeof (gameData.demo.bRenderingWasRecorded));
 nFrameNumber -= gameData.demo.nStartFrame;
 Assert (nFrameNumber >= 0);
@@ -2784,7 +2784,7 @@ if (factor > F1_0)
 	factor = F1_0;
 nCurObjs = gameData.objs.nLastObject [0];
 #if 1
-memcpy (curObjs, OBJECTS, sizeof (CObject) * (nCurObjs + 1));
+memcpy (curObjs, OBJECTS.Buffer (), OBJECTS.Size ());
 #else
 for (i = 0; i <= nCurObjs; i++)
 	memcpy (&(curObjs [i]), &(OBJECTS [i]), sizeof (CObject));
@@ -2853,12 +2853,7 @@ NDBackFrames (1);
 if (NDReadFrameInfo () == -1)
 	NDStopPlayback ();
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
-#if 1
-memcpy (OBJECTS, curObjs, sizeof (CObject) * (nCurObjs + 1));
-#else
-for (i = 0; i <= nCurObjs; i++)
-	memcpy (&(OBJECTS [i]), &(curObjs [i]), sizeof (CObject));
-#endif
+OBJECTS = curObjs;
 gameData.objs.nLastObject [0] = nCurObjs;
 }
 
@@ -2970,8 +2965,7 @@ else {
 					Warning (TXT_INTERPOLATE_BOTS, sizeof (CObject) * nObjects);
 					break;
 					}
-				for (i = 0; i <= nObjects; i++)
-					memcpy (curObjs, OBJECTS, (nObjects + 1) * sizeof (CObject));
+				memcpy (curObjs, OBJECTS.Buffer (), (nObjects + 1) * sizeof (CObject));
 				nLevel = gameData.missions.nCurrentLevel;
 				if (NDReadFrameInfo () == -1) {
 					delete[] curObjs;

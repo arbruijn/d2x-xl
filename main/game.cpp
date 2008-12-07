@@ -825,7 +825,7 @@ gameStates.gameplay.xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge
 
 //------------------------------------------------------------------------------
 
-#define ADD_HELP_OPT(_text)	m [opt].nType = NM_TYPE_TEXT; m [opt++].text = reinterpret_cast<char*> (_text);
+#define ADD_HELP_OPT(_text)	m [opt].nType = NM_TYPE_TEXT; m [opt++].text = const_cast<char*> (_text);
 
 void ShowHelp ()
 {
@@ -1274,7 +1274,7 @@ FreeHiresModels (0);
 PrintLog ("unloading tracker list\n");
 DestroyTrackerList ();
 PrintLog ("unloading lightmap data\n");
-DestroyLightmaps ();
+lightmapManager.Destroy ();
 PrintLog ("unloading particle data\n");
 particleManager.Shutdown ();
 PrintLog ("unloading shield sphere data\n");

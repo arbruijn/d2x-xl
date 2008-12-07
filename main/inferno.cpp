@@ -2276,7 +2276,7 @@ gameData.ai.bEnableAnimation = 1;
 gameData.ai.bInfoEnabled = 0;
 gameData.ai.nAwarenessEvents = 0;
 gameData.ai.nDistToLastPlayerPosFiredAt = 0;
-gameData.ai.freePointSegs = gameData.ai.pointSegs;
+gameData.ai.freePointSegs = gameData.ai.pointSegs.Buffer ();
 gameData.menu.colorOverride = 0;
 gameData.menu.alpha = 5 * 16 - 1;	//~ 0.3
 gameData.menu.nLineWidth = 1;
@@ -2481,7 +2481,7 @@ GETMEM (fix, gameData.objs.xLight, MAX_OBJECTS, 0);
 GETMEM (int, gameData.objs.nLightSig, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS, 0);
 GETMEM (tObjectViewData, gameData.objs.viewData, MAX_OBJECTS, (char) 0xFF);
-GETMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS, 0);
+shrapnelManager.Init ();
 }
 
 // ----------------------------------------------------------------------------
@@ -2667,7 +2667,6 @@ FREEMEM (fix, gameData.objs.xLight, MAX_OBJECTS);
 FREEMEM (int, gameData.objs.nLightSig, MAX_OBJECTS);
 FREEMEM (short, gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS);
 FREEMEM (tObjectViewData, gameData.objs.viewData, MAX_OBJECTS);
-FREEMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS);
 }
 
 // ----------------------------------------------------------------------------

@@ -1226,7 +1226,7 @@ if (bDoingLightingHack || !bExhaustive) {
 con_printf (1, "Warning: doing exhaustive search to find point CSegment (%i times)\n", nExhaustiveCount);
 #endif
 if (bSkyBox) {
-	for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++)
+	for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments.Buffer (); i; i--, segP++)
 		if (!GetSegMasks (p, *segP, 0).centerMask)
 			goto funcExit;
 	}
@@ -2005,7 +2005,7 @@ void ComputeVertexNormals (void)
 	int		h, i;
 	g3sPoint	*pp;
 
-for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
+for (i = gameData.segs.nVertices, pp = gameData.segs.points.Buffer (); i; i--, pp++) {
 	if (1 < (h = pp->p3_normal.nFaces)) {
 		pp->p3_normal.vNormal /= (float) h;
 		/*
@@ -2041,7 +2041,7 @@ void ResetVertexNormals (void)
 	int		i;
 	g3sPoint	*pp;
 
-for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
+for (i = gameData.segs.nVertices, pp = gameData.segs.points.Buffer (); i; i--, pp++) {
 	pp->p3_normal.vNormal.SetZero();
 	pp->p3_normal.nFaces = 0;
 	}
@@ -2072,7 +2072,7 @@ void ValidateSegmentAll (void)
 	int	s;
 
 gameOpts->render.nMathFormat = 0;
-memset (gameData.segs.points, 0, sizeof (*gameData.segs.points) * MAX_VERTICES);
+gameData.segs.points.Clear ();
 for (s = 0; s <= gameData.segs.nLastSegment; s++)
 #ifdef EDITOR
 	if (gameData.segs.segments [s].nSegment != -1)
