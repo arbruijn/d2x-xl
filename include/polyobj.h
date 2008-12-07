@@ -92,17 +92,17 @@ void FreeModel (tPolyModel *po);
 
 #define MAX_POLYOBJ_TEXTURES 100
 
-int PolyModelRead(tPolyModel *pm, int bHMEL, CFile &cf);
+int ReadPolyModel (tPolyModel *pm, int bHMEL, CFile &cf);
 
 /*
  * reads n tPolyModel structs from a CFILE
  */
-extern int PolyModelReadN(tPolyModel *pm, int n, CFile& cf);
+int ReadPolyModels (tPolyModel *pm, int n, CFile& cf);
 
 /*
  * routine which allocates, reads, and inits a tPolyModel's modelData
  */
-void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf);
+void ReadPolyModelData (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf);
 
 tPolyModel *GetPolyModel (CObject *objP, vmsVector *pos, int nModel, int flags);
 

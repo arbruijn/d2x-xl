@@ -833,7 +833,7 @@ return bmi;
 /*
  * reads a tBitmapIndex structure from a CFile
  */
-void BitmapIndexRead (tBitmapIndex *bi, CFile& cf)
+void ReadBitmapIndex (tBitmapIndex *bi, CFile& cf)
 {
 bi->index = cf.ReadShort ();
 }
@@ -842,7 +842,7 @@ bi->index = cf.ReadShort ();
 /*
  * reads n tBitmapIndex structs from a CFile
  */
-int BitmapIndexReadN (CArray<tBitmapIndex>& bi, int n, CFile& cf, int o)
+int ReadBitmapIndices (CArray<tBitmapIndex>& bi, int n, CFile& cf, int o)
 {
 	int		i;
 

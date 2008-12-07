@@ -236,13 +236,13 @@ if (!(replacementModels [i].pszLores &&
 	return ++i;
 nModel = replacementModels [i].nModel;
 pm = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
-if (!PolyModelRead (pm, 1, cf)) {
+if (!ReadPolyModel (pm, 1, cf)) {
 	cf.Close ();
 	return ++i;
 	}
 pm->modelData.SetBuffer (NULL); 
 pm->modelData.SetBuffer (NULL);
-PolyModelDataRead (pm, nModel, gameData.models.defPolyModels + nModel, cf);
+ReadPolyModelData (pm, nModel, gameData.models.defPolyModels + nModel, cf);
 cf.Close ();
 pm->rad = G3PolyModelSize (pm, nModel);
 do {

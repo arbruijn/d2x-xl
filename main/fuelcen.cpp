@@ -1364,7 +1364,7 @@ short blueFlagGoals = -1;
 int GatherFlagGoals (void)
 {
 	int			h, i, j;
-	tSegment2	*seg2P = gameData.segs.segment2s;
+	tSegment2	*seg2P = gameData.segs.segment2s.Buffer ();
 
 memset (flagGoalList, 0xff, sizeof (flagGoalList));
 for (h = i = 0; i <= gameData.segs.nLastSegment; i++, seg2P++) {

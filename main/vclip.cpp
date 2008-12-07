@@ -320,20 +320,23 @@ else
 /*
  * reads n tVideoClip structs from a CFile
  */
-int VClipReadN (CArray<tVideoClip>& vc, int n, CFile& cf)
+int ReadVideoClip (tVideoClip>& vc, CFile& cf)
 {
-	int i, j;
+vc.xTotalTime = cf.ReadFix ();
+vc.nFrameCount = cf.ReadInt ();
+vc.xFrameTime = cf.ReadFix ();
+vc.flags = cf.ReadInt ();
+vc.nSound = cf.ReadShort ();
+for (int j = 0; j < VCLIP_MAX_FRAMES; j++)
+	vc.frames [j].index = cf.ReadShort ();
+vc.lightValue = cf.ReadFix ();
+}
 
-for (i = 0; i < n; i++) {
-	vc[i].xTotalTime = cf.ReadFix ();
-	vc[i].nFrameCount = cf.ReadInt ();
-	vc[i].xFrameTime = cf.ReadFix ();
-	vc[i].flags = cf.ReadInt ();
-	vc[i].nSound = cf.ReadShort ();
-	for (j = 0; j < VCLIP_MAX_FRAMES; j++)
-		vc[i].frames[j].index = cf.ReadShort ();
-	vc[i].lightValue = cf.ReadFix ();
-	}
+
+int ReadVideoClips (CArray<tVideoClip>& vc, int n, CFile& cf)
+{
+for (int i = 0; i < n; i++)
+	ReadVideoClip (vc [i], cf);
 return i;
 }
 #endif

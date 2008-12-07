@@ -835,7 +835,7 @@ if (gameStates.ogl.nDrawBuffer != GL_BACK)
 /*
  * reads a tPolyModel structure from a CFile
  */
-int PolyModelRead (tPolyModel *pm, int bHMEL, CFile& cf)
+int ReadPolyModel (tPolyModel *pm, int bHMEL, CFile& cf)
 {
 	int	i;
 
@@ -886,12 +886,10 @@ return 1;
 /*
  * reads n tPolyModel structs from a CFile
  */
-int PolyModelReadN (tPolyModel *pm, int n, CFile& cf)
+int ReadPolyModels (tPolyModel *pm, int n, CFile& cf)
 {
-	int i;
-
-for (i = n; i; i--, pm++)
-	if (!PolyModelRead (pm, 0, cf))
+for (int i = n; i; i--, pm++)
+	if (!ReadPolyModel (pm, 0, cf))
 		break;
 return i;
 }
@@ -901,7 +899,7 @@ return i;
 /*
  * routine which allocates, reads, and inits a tPolyModel's modelData
  */
-void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf)
+void ReadPolyModelData (tPolyModel *pm, int nModel, tPolyModel *pdm, CFile& cf)
 {
 if (!pm->modelData.Create (pm->nDataSize))
 	Error ("Not enough memory for game models.");

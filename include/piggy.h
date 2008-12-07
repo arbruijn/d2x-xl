@@ -200,20 +200,15 @@ void LoadBitmapReplacements (const char *level_name);
 //if descent.pig exists, loads descent 1 texture bitmaps
 void LoadD1BitmapReplacements();
 
-#if 0
-#define BitmapIndexRead(bi, fp) CFRead(bi, sizeof(tBitmapIndex), 1, fp)
-#define BitmapIndexReadN(bi, n, fp) CFRead(bi, sizeof(tBitmapIndex), n, fp)
-#else
 /*
  * reads a tBitmapIndex structure from a CFILE
  */
-void BitmapIndexRead (tBitmapIndex *bi, CFile& cf);
+void ReadBitmapIndex (tBitmapIndex *bi, CFile& cf);
 
 /*
  * reads n tBitmapIndex structs from a CFILE
  */
-int BitmapIndexReadN (CArray<tBitmapIndex>& bi, int n, CFile& cf, int o = 0);
-#endif // FAST_FILE_IO
+int ReadBitmapIndices (CArray<tBitmapIndex>& bi, int n, CFile& cf, int o = 0);
 
 /*
  * Find and load the named bitmap from descent.pig

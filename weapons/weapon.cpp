@@ -972,7 +972,7 @@ for (i = 0; i < n; i++, pwi++) {
 		pwi->multi_damage_scale = cf.ReadFix ();
 	else /* FIXME: hack this to set the real values */
 		pwi->multi_damage_scale = F1_0;
-	BitmapIndexRead (&pwi->bitmap, cf);
+	ReadBitmapIndex (&pwi->bitmap, cf);
 	pwi->blob_size = cf.ReadFix ();
 	pwi->xFlashSize = cf.ReadFix ();
 	pwi->impact_size = cf.ReadFix ();
@@ -993,9 +993,9 @@ for (i = 0; i < n; i++, pwi++) {
 		pwi->light = 3 * F1_0 / 2;
 	pwi->lifetime = cf.ReadFix ();
 	pwi->damage_radius = cf.ReadFix ();
-	BitmapIndexRead (&pwi->picture, cf);
+	ReadBitmapIndex (&pwi->picture, cf);
 	if (fileVersion >= 3)
-		BitmapIndexRead (&pwi->hires_picture, cf);
+		ReadBitmapIndex (&pwi->hires_picture, cf);
 	else
 		pwi->hires_picture.index = pwi->picture.index;
 	}

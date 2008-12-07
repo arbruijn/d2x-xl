@@ -70,14 +70,11 @@ void StopEffect(int effect_num);
 //restart a stopped effect
 void RestartEffect(int effect_num);
 
-#if 0
-#define EClipReadN(ec, n, fp) CFRead(ec, sizeof(tEffectClip), n, fp)
-#else
 /*
  * reads n tEffectClip structs from a CFILE
  */
-int EClipReadN (CArray<tEffectClip>& ec, int n, CFile& cf);
-#endif
+int ReadEffectClip (tEffectClip& ec, CFile& cf);
+int ReadEffectClips (CArray<tEffectClip>& ec, int n, CFile& cf);
 
 CBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObj, int *pnFrames);
 void ResetPogEffects (void);

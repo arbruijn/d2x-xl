@@ -34,8 +34,8 @@ typedef struct tReactorTriggers {
 typedef struct tReactorProps {
 	int nModel;
 	int nGuns;
-	vmsVector gunPoints[MAX_CONTROLCEN_GUNS];
-	vmsVector gun_dirs[MAX_CONTROLCEN_GUNS];
+	vmsVector gunPoints [MAX_CONTROLCEN_GUNS];
+	vmsVector gun_dirs [MAX_CONTROLCEN_GUNS];
 } tReactorProps;
 
 #define MAX_REACTORS 7
@@ -53,20 +53,15 @@ void DoReactorDestroyedStuff(CObject *objp);
 void DoReactorDeadFrame(void);
 fix ReactorStrength (void);
 
-#if 0
-#define ReactorReadN(r, n, fp) CFRead(r, sizeof(reactor), n, fp)
-#define ControlCenterTriggersReadN(cct, n, fp) CFRead(cct, sizeof(tReactorTriggers), n, fp)
-#else
 /*
  * reads n reactor structs from a CFILE
  */
-extern int ReactorReadN(tReactorProps *r, int n, CFile& cf);
+int ReactorReadN(tReactorProps *r, int n, CFile& cf);
 
 /*
  * reads n tReactorTriggers structs from a CFILE
  */
-extern int ControlCenterTriggersReadN(tReactorTriggers *cct, int n, CFile& cf);
-#endif
+int ControlCenterTriggersReadN(tReactorTriggers *cct, int n, CFile& cf);
 
 int FindReactor (CObject *objP);
 void InitCountdown (tTrigger *trigP, int bReactorDestroyed, int nTimer);

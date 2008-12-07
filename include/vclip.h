@@ -57,13 +57,7 @@ void ConvertWeaponToVClip (CObject *objP);
 int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP);
 tRgbColorb *VClipColor (CObject *objP);
 
-#if 0
-#define VClipReadN(vc, n, fp) CFRead(vc, sizeof(tVideoClip), n, fp)
-#else
-/*
- * reads n tVideoClip structs from a CFILE
- */
-int VClipReadN (CArray<tVideoClip>& vc, int n, CFile& cf);
-#endif
+int ReadVideoClip (tVideoClip& vc, CFile& cf);
+int ReadVideoClips (CArray<tVideoClip>& vc, int n, CFile& cf);
 
 #endif /* _VCLIP_H */
