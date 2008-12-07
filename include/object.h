@@ -678,9 +678,18 @@ class CObject : public CObjectInfo {
 		inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
 		// unlinks an CObject from a CSegment's list of objects
 		void Init (void);
-		void Link (tObjListRef& ref, CObject *objP, int nLink);
-		void Unlink (tObjListRef& ref, CObject *objP, int nLink);
+		void Link (void);
+		void Unlink (void);
+		void Link (tObjListRef& ref, int nLink);
+		void Unlink (tObjListRef& ref, int nLink);
+#if DBG
+		bool IsInList (tObjListRef& ref, int nLink);
+#endif
+		void SetType (ubyte nNewType);
 		void LinkToSeg (int nSegment);
+		void UnlinkFromSeg (void);
+		void RelinkToSeg (int nNewSeg);
+		bool IsLinkedToSeg (short nSegment);
 		void Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const vmsVector& vPos,
 							  const vmsMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 		void ToBaseObject (tBaseObject *objP);
