@@ -131,7 +131,7 @@ class CSegment : public tSegment {
 	//public:
 	};
 
-int operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }
+inline int operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }
 
 typedef struct tSegFaces {
 	tFace	*pFaces;
@@ -162,7 +162,7 @@ typedef struct tSegment2 {
 	tSide2		sides [MAX_SIDES_PER_SEGMENT];
 } tSegment2;
 
-int operator- (tSegment2* s, CArray<tSegment2>& a) { return a.Index (s); }
+inline int operator- (tSegment2* s, CArray<tSegment2>& a) { return a.Index (s); }
 
 //values for special field
 #define SEGMENT_IS_NOTHING			0

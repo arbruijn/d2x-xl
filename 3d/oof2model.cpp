@@ -151,7 +151,7 @@ G3CountOOFModelItems (po, pm);
 if (!G3AllocModel (pm))
 	return 0;
 G3GetOOFModelItems (nModel, po, pm, /*((nModel == 108) || (nModel == 110)) ? 0.805f :*/ 1.0f);
-pm->textures = po->textures.bitmaps;
+pm->textures = po->textures.m_bitmaps;
 memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
 pm->nType = -1;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);

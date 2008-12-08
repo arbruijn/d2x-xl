@@ -719,7 +719,7 @@ class CObject : public CObjectInfo {
 		//inline short Index (void) { return gameData.objs.objects.Index (this); }
 };
 
-int operator- (CObject* o, CArray<CObject>& a) { return a.Index (o); }
+inline int operator- (CObject* o, CArray<CObject>& a) { return a.Index (o); }
 
 #if 0
 

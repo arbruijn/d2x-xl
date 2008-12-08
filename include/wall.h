@@ -155,7 +155,7 @@ typedef struct tWall {
 	sbyte   cloakValue;				// if this tWall is cloaked, the fade value
 } tWall;
 
-int operator- (tWall* o, CArray<tWall>& a) { return a.Index (o); }
+inline int operator- (tWall* o, CArray<tWall>& a) { return a.Index (o); }
 
 
 typedef struct tActiveDoor {

@@ -1441,8 +1441,8 @@ typedef struct tLightData {
 	CArray<GLuint>					coronaSamples;
 } tLightData;
 
-int operator- (tLightDeltaIndex* o, CArray<tLightDeltaIndex>& a) { return a.Index (o); }
-int operator- (tLightDelta* o, CArray<tLightDelta>& a) { return a.Index (o); }
+inline int operator- (tLightDeltaIndex* o, CArray<tLightDeltaIndex>& a) { return a.Index (o); }
+inline int operator- (tLightDelta* o, CArray<tLightDelta>& a) { return a.Index (o); }
 
 //------------------------------------------------------------------------------
 
@@ -1701,9 +1701,9 @@ typedef struct tFaceData {
 	int						iLMapTexCoord;
 	} tFaceData;
 
-int operator- (grsTriangle* o, CArray<grsTriangle>& a) { return a.Index (o); }
-int operator- (fVector3* o, CArray<fVector3>& a) { return a.Index (o); }
-int operator- (tTexCoord2f* o, CArray<tTexCoord2f>& a) { return a.Index (o); }
+inline int operator- (grsTriangle* o, CArray<grsTriangle>& a) { return a.Index (o); }
+inline int operator- (fVector3* o, CArray<fVector3>& a) { return a.Index (o); }
+inline int operator- (tTexCoord2f* o, CArray<tTexCoord2f>& a) { return a.Index (o); }
 
 typedef struct tSegList {
 	int					nSegments;
@@ -2020,7 +2020,7 @@ typedef struct tPOF_face {
 	short					nAdjFaces;
 } tPOF_face;
 
-int operator- (tPOF_face* f, CArray<tPOF_face>& a) { return a.Index (f); }
+inline int operator- (tPOF_face* f, CArray<tPOF_face>& a) { return a.Index (f); }
 
 typedef struct tPOF_faceList {
 	short					nFaces;
@@ -2044,7 +2044,7 @@ typedef struct tPOFSubObject {
 	short					bCalcClipDist;
 } tPOFSubObject;
 
-int operator- (tPOFSubObject* o, CArray<tPOFSubObject>& a) { return a.Index (o); }
+inline int operator- (tPOFSubObject* o, CArray<tPOFSubObject>& a) { return a.Index (o); }
 
 typedef struct tPOF_subObjList {
 	short							nSubObjs;
@@ -2096,7 +2096,7 @@ typedef struct tG3ModelVertex {
 	char						bTextured;
 } tG3ModelVertex;
 
-int operator- (tG3ModelVertex* f, CArray<tG3ModelVertex>& a) { return a.Index (f); }
+inline int operator- (tG3ModelVertex* f, CArray<tG3ModelVertex>& a) { return a.Index (f); }
 
 typedef struct tG3ModelFace {
 	vmsVector				vNormal;
@@ -2109,7 +2109,7 @@ typedef struct tG3ModelFace {
 	ubyte						bThruster :1;
 } tG3ModelFace;
 
-int operator- (tG3ModelFace* f, CArray<tG3ModelFace>& a) { return a.Index (f); }
+inline int operator- (tG3ModelFace* f, CArray<tG3ModelFace>& a) { return a.Index (f); }
 
 typedef struct tG3SubModel {
 #if DBG
@@ -2143,7 +2143,7 @@ typedef struct tG3SubModel {
 	time_t					tFrame;
 } tG3SubModel;
 
-int operator- (tG3SubModel* f, CArray<tG3SubModel>& a) { return a.Index (f); }
+inline int operator- (tG3SubModel* f, CArray<tG3SubModel>& a) { return a.Index (f); }
 
 
 typedef struct tG3VertNorm {
@@ -2299,10 +2299,10 @@ class CEffectData {
 	public:
 		CEffectData ();
 		~CEffectData () {}
-} tEffectData;
+};
 
-int operator- (tEffectClip* o, CArray<tEffectClip>& a) { return a.Index (o); }
-int operator- (tVideoClip* o, CArray<tVideoClip>& a) { return a.Index (o); }
+inline int operator- (tEffectClip* o, CArray<tEffectClip>& a) { return a.Index (o); }
+inline int operator- (tVideoClip* o, CArray<tVideoClip>& a) { return a.Index (o); }
 
 typedef struct tShipData {
 	tPlayerShip			only;
@@ -2811,9 +2811,9 @@ class CAIData {
 		CAIData ();
 };
 
-int operator- (tAILocalInfo* o, CArray<tAILocalInfo>& a) { return a.Index (o); }
-int operator- (tAICloakInfo* o, CArray<tAICloakInfo>& a) { return a.Index (o); }
-int operator- (tPointSeg* o, CArray<tPointSeg>& a) { return a.Index (o); }
+inline int operator- (tAILocalInfo* o, CArray<tAILocalInfo>& a) { return a.Index (o); }
+inline int operator- (tAICloakInfo* o, CArray<tAICloakInfo>& a) { return a.Index (o); }
+inline int operator- (tPointSeg* o, CArray<tPointSeg>& a) { return a.Index (o); }
 
 //------------------------------------------------------------------------------
 

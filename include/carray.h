@@ -138,6 +138,7 @@ class CArray {
 			delete[] m_data.buffer;
 			return m_data.buffer = p;
 			}
+
 		inline uint Length (void) { return m_data.length; }
 
 		inline size_t Size (void) { return m_data.length * sizeof (_T); }
@@ -202,12 +203,12 @@ class CArray {
 		inline bool operator! () { return m_data.buffer == NULL; }
 	};
 
-int operator- (char* v, CArray<char>& a) { return a.Index (v); }
-int operator- (ubyte* v, CArray<ubyte>& a) { return a.Index (v); }
-int operator- (short* v, CArray<short>& a) { return a.Index (v); }
-int operator- (ushort* v, CArray<ushort>& a) { return a.Index (v); }
-int operator- (int* v, CArray<int>& a) { return a.Index (v); }
-int operator- (uint* v, CArray<uint>& a) { return a.Index (v); }
+inline int operator- (char* v, CArray<char>& a) { return a.Index (v); }
+inline int operator- (ubyte* v, CArray<ubyte>& a) { return a.Index (v); }
+inline int operator- (short* v, CArray<short>& a) { return a.Index (v); }
+inline int operator- (ushort* v, CArray<ushort>& a) { return a.Index (v); }
+inline int operator- (int* v, CArray<int>& a) { return a.Index (v); }
+inline int operator- (uint* v, CArray<uint>& a) { return a.Index (v); }
 
 //-----------------------------------------------------------------------------
 

@@ -44,8 +44,8 @@ void G3GetASEModelItems (int nModel, tASEModel *pa, tG3Model *pm, float fScale)
 	tASESubModel		*psa;
 	tASEFace				*pfa;
 	tG3SubModel			*psm;
-	tG3ModelFace		*pmf = pm->faces;
-	tG3ModelVertex		*pmv = pm->faceVerts;
+	tG3ModelFace		*pmf = pm->faces.Buffer ();
+	tG3ModelVertex		*pmv = pm->faceVerts.Buffer ();
 	CBitmap				*bmP;
 	int					h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
 	int					bTextured;
@@ -76,14 +76,14 @@ for (pml = pa->subModels; pml; pml = pml->pNextModel) {
 	psm->nFrames = psa->bBarrel ? 32 : 0;
 	psm->vOffset = psa->vOffset.ToFix();
 	G3InitSubModelMinMax (psm);
-	for (pfa = psa->faces, iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
+	for (pfa = psa->faces.Buffer (), iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
 		pmf->nIndex = nIndex;
 #if 1
 		i = psa->nBitmap;
 #else
 		i = pfa->nBitmap;
 #endif
-		bmP = pa->textures.bitmaps + i;
+		bmP = pa->textures.m_bitmaps + i;
 		bTextured = !bmP->Flat ();
 		pmf->nBitmap = bTextured ? i : -1;
 		pmf->nVerts = 3;
@@ -101,8 +101,8 @@ for (pml = pa->subModels; pml; pml = pml->pNextModel) {
 			pmv->renderColor = pmv->baseColor;
 			pmv->normal = psa->verts [h].normal;
 			pmv->vertex = psa->verts [h].vertex * fScale;
-			if (psa->pTexCoord)
-				pmv->texCoord = psa->pTexCoord [pfa->nTexCoord [i]];
+			if (psa->texCoord.Buffer ())
+				pmv->texCoord = psa->texCoord [pfa->nTexCoord [i]];
 			h += nVerts;
 			pm->verts [h] = pmv->vertex;
 			pm->vertNorms [h] = pmv->normal;
@@ -137,8 +137,8 @@ G3CountASEModelItems (pa, pm);
 if (!G3AllocModel (pm))
 	return 0;
 G3GetASEModelItems (nModel, pa, pm, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.145f : 1.0f);
-pm->textures = pa->textures.bitmaps;
-pm->nTextures = pa->textures.nBitmaps;
+pm->textures = pa->textures.m_bitmaps;
+pm->nTextures = pa->textures.m_nBitmaps;
 memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
 for (i = 0; i < pm->nTextures; i++)
 	if ((j = (int) pm->textures [i].Team ()))
