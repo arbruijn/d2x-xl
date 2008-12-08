@@ -48,7 +48,7 @@ typedef struct tASESubModelList {
 
 typedef struct tASEModel {
 	CModelTextures			textures;
-	tASESubModelList		subModels;
+	tASESubModelList*		subModels;
 	int						nModel;
 	int						nType;
 	int						nSubModels;

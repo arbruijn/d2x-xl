@@ -459,35 +459,35 @@ while ((pszToken = ASE_ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_NUMVERTEX")) {
-		if (psm->verts)
+		if (psm->verts.Buffer ())
 			return ASE_Error ("duplicate vertex list");
 		psm->nVerts = IntTok (" \t");
 		if (!psm->nVerts)
 			return ASE_Error ("no vertices found");
 		pm->nVerts += psm->nVerts;
-		if (!(psm->verts = reinterpret_cast<tASEVertex*> (D2_ALLOC (psm->nVerts * sizeof (tASEVertex)))))
+		if (!(psm->verts.Create (psm->nVerts)))
 			return ASE_Error ("out of memory");
-		memset (psm->verts, 0, psm->nVerts * sizeof (tASEVertex));
+		psm->verts.Clear ();
 		}
 	else if (!strcmp (pszToken, "*MESH_NUMTVERTEX")) {
-		if (psm->texCoord)
+		if (psm->texCoord.Buffer ())
 			return ASE_Error ("no texture coordinates found");
 		psm->nTexCoord = IntTok (" \t");
 		if (psm->nTexCoord) {
-			if (!(psm->texCoord = reinterpret_cast<tTexCoord2f*> (D2_ALLOC (psm->nTexCoord * sizeof (tTexCoord2f)))))
+			if (!(psm->texCoord.Create (psm->nTexCoord)))
 				return ASE_Error ("out of memory");
 			}
 		}
 	else if (!strcmp (pszToken, "*MESH_NUMFACES")) {
-		if (psm->faces)
+		if (psm->faces.Buffer ())
 			return ASE_Error ("no faces found");
 		psm->nFaces = IntTok (" \t");
 		if (!psm->nFaces)
 			return ASE_Error ("no faces specified");
 		pm->nFaces += psm->nFaces;
-		if (!(psm->faces = reinterpret_cast<tASEFace*> (D2_ALLOC (psm->nFaces * sizeof (tASEFace)))))
+		if (!(psm->faces.Create (psm->nFaces)))
 			return ASE_Error ("out of memory");
-		memset (psm->faces, 0, psm->nFaces * sizeof (tASEFace));
+		psm->faces.Clear ();
 		}
 	else if (!strcmp (pszToken, "*MESH_VERTEX_LIST")) {
 		if (!ASE_ReadMeshVertexList (cf, pm))
