@@ -840,7 +840,7 @@ switch (action)  {
 			return;
 			}
 		COMPUTE_SEGMENT_CENTER_I (&bossObjP->info.position.vPos, nTeleportSeg);
-		RelinkObjToSeg (nBossObj, nTeleportSeg);
+		OBJECTS [nBossObj].RelinkToSeg (nTeleportSeg);
 		gameData.boss [nBossIdx].nLastTeleportTime = gameData.time.xGame;
 		vBossDir = OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.position.vPos - bossObjP->info.position.vPos;
 /*

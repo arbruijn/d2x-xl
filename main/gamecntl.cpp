@@ -367,7 +367,7 @@ void SpeedtestFrame(void)
 	gameData.objs.viewerP->info.position.vPos[Y] -= 0x10;	
 	gameData.objs.viewerP->info.position.vPos[Z] += 0x17;
 
-	RelinkObjToSeg(OBJ_IDX (gameData.objs.viewerP), gameData.speedtest.nSegment);
+	gameData.objs.viewerP->RelinkToSeg (gameData.speedtest.nSegment);
 	COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[gameData.speedtest.nSegment], gameData.speedtest.nSide);
 	vmsVector::NormalizedDir(view_dir, center_point, gameData.objs.viewerP->info.position.vPos);
 	/*

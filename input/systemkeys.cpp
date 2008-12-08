@@ -430,7 +430,7 @@ switch (key) {
 			}
 		else {
 			gameData.objs.viewerP->info.position = gameStates.app.playerPos;
-			RelinkObjToSeg (OBJ_IDX (gameData.objs.viewerP), gameStates.app.nPlayerSegment);
+			gameData.objs.viewerP->RelinkToSeg (gameStates.app.nPlayerSegment);
 			}
 		break;
 

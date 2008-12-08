@@ -319,7 +319,7 @@ if (/*(0 <= xSideDist) && */
 		}
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments) || (nSegment == objP->info.nSegment))
 		return 0;
-	RelinkObjToSeg (OBJ_IDX (objP), nSegment);
+	objP->RelinkToSeg (nSegment);
 #if DBG
 	if (objP->info.nType == OBJ_PLAYER)
 		HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->info.xSize - pxSideDists [hi.hit.nSide], r);
@@ -726,7 +726,7 @@ retryMove:
 	// update CObject's position and CSegment number
 	objP->info.position.vPos = iPos;
 	if (iSeg != objP->info.nSegment)
-		RelinkObjToSeg (nObject, iSeg);
+		OBJECTS [nObject].RelinkToSeg (iSeg);
 	//if start point not in CSegment, move CObject to center of CSegment
 	if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).centerMask) {	//object stuck
 		int n = FindObjectSeg (objP);
@@ -735,7 +735,7 @@ retryMove:
 				n = FindSegByPos (objP->info.vLastPos, objP->info.nSegment, 1, 0);
 			if (n == -1) {
 				objP->info.position.vPos = objP->info.vLastPos;
-				RelinkObjToSeg (nObject, objP->info.nSegment);
+				OBJECTS [nObject].RelinkToSeg (objP->info.nSegment);
 				}
 			else {
 				vmsVector vCenter;
@@ -768,7 +768,7 @@ retryMove:
 			objP->info.position.vPos = vSavePos;
 			//iSeg = objP->info.nSegment;		//don't change CSegment
 			if (nSaveSeg != iSeg)
-				RelinkObjToSeg (nObject, nSaveSeg);
+				OBJECTS [nObject].RelinkToSeg (nSaveSeg);
 			if (bDoSpeedBoost) {
 				objP->info.position.vPos = vStartPos;
 				SetSpeedBoostVelocity (nObject, -1, -1, -1, -1, -1, &vStartPos, &sbd.vDest, 0);
@@ -1018,7 +1018,7 @@ if (GetSegMasks (objP->info.position.vPos, objP->info.nSegment, 0).centerMask) {
 
 		if (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) && (n = FindSegByPos (objP->info.vLastPos, objP->info.nSegment, 1, 0)) != -1) {
 			objP->info.position.vPos = objP->info.vLastPos;
-			RelinkObjToSeg (nObject, n);
+			OBJECTS [nObject].RelinkToSeg (n);
 			}
 		else {
 			COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, objP->info.nSegment);

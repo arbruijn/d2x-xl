@@ -1392,7 +1392,7 @@ void move_object_to_legal_spot(CObject *objP)
 				int	nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 
 				if (nNewSeg != -1) {
-					RelinkObjToSeg(OBJ_IDX (objP), nNewSeg);
+					objP->RelinkToSeg (nNewSeg);
 					return;
 				}
 			} else
@@ -1621,7 +1621,7 @@ int boss_fits_in_seg(CObject *bossObjP, int nSegment)
 		} else
 			bossObjP->info.position.vPos = segcenter;
 
-		RelinkObjToSeg(boss_objnum, nSegment);
+		OBJECTS [boss_objnum].RelinkToSeg(nSegment);
 		if (!ObjectIntersectsWall(bossObjP))
 			return 1;
 	}

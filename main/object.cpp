@@ -2719,7 +2719,7 @@ if (0 > (nNewSeg = FindObjectSeg (objP))) {
 	objP->info.position.vPos = *SEGMENT_CENTER_I (nNewSeg) + vOffset * MinSegRad (nNewSeg);
 	}
 if (nNewSeg != objP->info.nSegment)
-	RelinkObjToSeg (OBJ_IDX (objP), nNewSeg);
+	objP->RelinkToSeg (nNewSeg);
 return 1;
 }
 
@@ -3059,14 +3059,14 @@ void GetPlayerSpawn (int nSpawnPos, CObject *objP)
 
 if (markerP) {
 	objP->info.position = markerP->info.position;
- 	RelinkObjToSeg (OBJ_IDX (objP), markerP->info.nSegment);
+ 	objP->RelinkToSeg (markerP->info.nSegment);
 	}
 else {
 	if ((gameData.multiplayer.playerInit [nSpawnPos].nSegment < 0) || 
 		 (gameData.multiplayer.playerInit [nSpawnPos].nSegment >= gameData.segs.nSegments))
 	GameStartInitNetworkPlayers ();
 	objP->info.position = gameData.multiplayer.playerInit [nSpawnPos].position;
- 	RelinkObjToSeg (OBJ_IDX (objP), gameData.multiplayer.playerInit [nSpawnPos].nSegment);
+ 	objP->RelinkToSeg (gameData.multiplayer.playerInit [nSpawnPos].nSegment);
 	}
 }
 

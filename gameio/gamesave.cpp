@@ -1292,7 +1292,7 @@ for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 			objP->info.nType = OBJ_NONE;
 		else {
 			objP->info.nSegment = -1;	
-			LinkObjToSeg (i, nObjSeg);
+			OBJECTS [i].LinkToSeg (nObjSeg);
 			}
 		}
 	}

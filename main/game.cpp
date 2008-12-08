@@ -571,7 +571,7 @@ gameData.objs.consoleP->info.position.mOrient = vmsMatrix::Create(vp, NULL, NULL
 */
 // TODO: MatrixCreateFCheck
 gameData.objs.consoleP->info.position.mOrient = vmsMatrix::CreateF(vp);
-RelinkObjToSeg (OBJ_IDX (gameData.objs.consoleP), SEG_IDX (segP));
+gameData.objs.consoleP->RelinkToSeg (SEG_IDX (segP));
 }
 
 //------------------------------------------------------------------------------
@@ -1039,7 +1039,7 @@ InitGauges ();
 gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
 #ifdef EDITOR
 	if (gameData.segs.segments[gameData.objs.consoleP->info.nSegment].nSegment == -1)      //CSegment no longer exists
-		RelinkObjToSeg (OBJ_IDX (gameData.objs.consoleP), SEG_IDX (Cursegp));
+		gameData.objs.consoleP->RelinkToSeg (SEG_IDX (Cursegp));
 
 	if (!check_obj_seg (gameData.objs.consoleP))
 		MovePlayerToSegment (Cursegp,Curside);

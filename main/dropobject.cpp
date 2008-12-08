@@ -387,7 +387,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	MultiSendCreatePowerup (nPowerupType, nSegment, nObject, &vNewPos);
 	if (!bFixedPos)
 		OBJECTS [nObject].info.position.vPos = vNewPos;
-	RelinkObjToSeg (nObject, nSegment);
+	OBJECTS [nObject].RelinkToSeg (nSegment);
 	ObjectCreateExplosion (nSegment, &vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;
 	}
@@ -1037,7 +1037,7 @@ if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
 	//objP->info.nSegment = initObjP->info.nSegment;
 		objP->info.position.vPos = initObjP->info.position.vPos;
 		objP->info.position.mOrient = initObjP->info.position.mOrient;
-		RelinkObjToSeg (OBJ_IDX (objP), initObjP->info.nSegment);
+		objP->RelinkToSeg (initObjP->info.nSegment);
 		HUDInitMessage (TXT_FLAG_RETURN);
 		DigiPlaySample (SOUND_DROP_WEAPON, F1_0);
 		MultiSendReturnFlagHome (OBJ_IDX (objP));

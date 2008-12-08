@@ -845,7 +845,7 @@ if (nSegment == -1) {
 	COMPUTE_SEGMENT_CENTER_I (&objP->info.position.vPos, objP->info.nSegment);
 	}
 else
-	RelinkObjToSeg (OBJ_IDX (objP), nSegment);
+	objP->RelinkToSeg (nSegment);
 }
 
 // -- too much work -- //	----------------------------------------------------------------------------------------------------------

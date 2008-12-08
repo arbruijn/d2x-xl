@@ -334,7 +334,7 @@ theirObjP->mType.physInfo.velocity = pd->physVelocity;
 theirObjP->mType.physInfo.rotVel = pd->physRotVel;
 if ((theirObjP->info.renderType != pd->objRenderType) && (pd->objRenderType == RT_POLYOBJ))
 	MultiMakeGhostPlayer (nTheirPlayer);
-RelinkObjToSeg (theirObjNum, pd->nObjSeg);
+OBJECTS [theirObjNum].RelinkToSeg (pd->nObjSeg);
 if (theirObjP->info.movementType == MT_PHYSICS)
 	SetThrustFromVelocity (theirObjP);
 //------------ Welcome them back if reconnecting --------------
@@ -705,7 +705,7 @@ else if (i < 0)
 				if (nSegment < 0)
 					nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);
 				if (!ObjectIsLinked (objP, nSegment))
-					LinkObjToSeg (OBJ_IDX (objP), nSegment);
+					objP->LinkToSeg (nSegment);
 				if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_GHOST))
 					RemapLocalPlayerObject (nObject, nRemoteObj);
 				if (nObjOwner == nPlayer)

@@ -328,7 +328,7 @@ if (!IsMultiGame || IsCoopGame) {
 			LOCALPLAYER.energy -= F1_0 * 25;
 #endif
 			OBJECTS [LOCALPLAYER.nObject].info.position.vPos = markerP->info.position.vPos;
-			RelinkObjToSeg (LOCALPLAYER.nObject, markerP->info.nSegment);
+			OBJECTS [LOCALPLAYER.nObject].RelinkToSeg (markerP->info.nSegment);
 			gameStates.render.bDoAppearanceEffect = 1;
 			}
 		gameData.objs.viewerP = gameData.objs.consoleP;

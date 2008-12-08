@@ -1564,7 +1564,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		}
 	objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
 	if (objP->info.nType != OBJ_NONE) {
-		LinkObjToSeg (i, nSegment);
+		OBJECTS [i].LinkToSeg (nSegment);
 		if (objP->info.nSignature > gameData.objs.nNextSignature)
 			gameData.objs.nNextSignature = objP->info.nSignature;
 		}

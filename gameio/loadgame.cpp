@@ -1685,7 +1685,7 @@ void SetPosFromReturnSegment (int bRelink)
 COMPUTE_SEGMENT_CENTER_I (&OBJECTS [nPlayerObj].info.position.vPos, 
 							     gameData.segs.secret.nReturnSegment);
 if (bRelink)
-	RelinkObjToSeg (nPlayerObj, gameData.segs.secret.nReturnSegment);
+	OBJECTS [nPlayerObj].RelinkToSeg (gameData.segs.secret.nReturnSegment);
 ResetPlayerObject ();
 OBJECTS [nPlayerObj].info.position.mOrient = gameData.segs.secret.returnOrient;
 }

@@ -1824,7 +1824,7 @@ while (!bDone) {
 
 					if (nSegment > gameData.segs.nLastSegment)
 						nSegment = 0;
-					LinkObjToSeg (OBJ_IDX (gameData.objs.viewerP), nSegment);
+					gameData.objs.viewerP->LinkToSeg (nSegment);
 					}
 				}
 			break;
@@ -1845,7 +1845,7 @@ while (!bDone) {
 				// HACK HACK HACK -- (see above)
 				if (nSegment > gameData.segs.nLastSegment)
 					break;
-				LinkObjToSeg (OBJ_IDX (objP), nSegment);
+				objP->LinkToSeg (nSegment);
 				if ((objP->info.nType == OBJ_PLAYER) && IsMultiGame) {
 					int tPlayer = IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId;
 					if (tPlayer == 0)
@@ -1975,7 +1975,7 @@ while (!bDone) {
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					nSegment = objP->info.nSegment;
 					objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
-					LinkObjToSeg (OBJ_IDX (objP), nSegment);
+					objP->LinkToSeg (nSegment);
 					}
 				}
 			}

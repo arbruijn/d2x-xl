@@ -157,7 +157,7 @@ errorExit:
 
 bossObjP->info.xSize = xBossSizeSave;
 bossObjP->info.position.vPos = vBossHomePos;
-RelinkObjToSeg (objList, nBossHomeSeg);
+OBJECTS [objList].RelinkToSeg (nBossHomeSeg);
 *segCountP = nSegments;
 }
 
@@ -379,7 +379,7 @@ for (nPos = 0; nPos < 9; nPos++) {
 		vVertPos = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [nPos-1]];
 		bossObjP->info.position.vPos = vmsVector::Avg(vVertPos, vSegCenter);
 		}
-	RelinkObjToSeg (nObject, nSegment);
+	OBJECTS [nObject].RelinkToSeg (nSegment);
 	if (!ObjectIntersectsWall (bossObjP))
 		return 1;
 	}
@@ -432,7 +432,7 @@ do {
 	while (--nAttempts);
 if (!nAttempts)
 	return;
-RelinkObjToSeg (nObject, nRandSeg);
+OBJECTS [nObject].RelinkToSeg (nRandSeg);
 gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
 //	make boss point right at tPlayer
 objP->info.position.vPos = vNewPos;
