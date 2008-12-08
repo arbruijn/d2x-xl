@@ -280,7 +280,7 @@ for (i = 0; i < nPlayers; i++) {
 			}
 #endif
 		objP = OBJECTS + playerObjs [j];
-		SetObjectType (objP, OBJ_PLAYER);
+		objP->SetType (OBJ_PLAYER);
 		gameData.multiplayer.playerInit [i].position = objP->info.position;
 		gameData.multiplayer.playerInit [i].nSegment = objP->info.nSegment;
 		gameData.multiplayer.playerInit [i].nSegType = segType;
@@ -1037,7 +1037,7 @@ LOCALPLAYER.nObject = 0;
 LOCALPLAYER.nInvuls =
 LOCALPLAYER.nCloaks = 0;
 gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
-SetObjectType (gameData.objs.consoleP, OBJ_PLAYER);
+gameData.objs.consoleP->SetType (OBJ_PLAYER);
 gameData.objs.consoleP->info.nId = gameData.multiplayer.nLocalPlayer;
 gameData.objs.consoleP->info.controlType	= CT_FLYING;
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;
@@ -1886,7 +1886,7 @@ void BashToShield (int i, const char *s)
 
 gameData.multiplayer.powerupsInMine [id] =
 gameData.multiplayer.maxPowerupsAllowed [id] = 0;
-SetObjectType (objP, OBJ_POWERUP);
+objP->SetType (OBJ_POWERUP);
 objP->info.nId = POW_SHIELD_BOOST;
 objP->info.renderType = RT_POWERUP;
 objP->info.controlType = CT_POWERUP;
@@ -1904,7 +1904,7 @@ void BashToEnergy (int i, const char *s)
 
 gameData.multiplayer.powerupsInMine [id] =
 gameData.multiplayer.maxPowerupsAllowed [id] = 0;
-SetObjectType (objP, OBJ_POWERUP);
+objP->SetType (OBJ_POWERUP);
 objP->info.nId = POW_ENERGY;
 objP->info.renderType = RT_POWERUP;
 objP->info.controlType = CT_POWERUP;

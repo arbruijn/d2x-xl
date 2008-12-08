@@ -487,7 +487,7 @@ for (objP = OBJECTS.Buffer () + MAX_OBJECTS, i = MAX_OBJECTS; i; ) {
 	else {
 		if (i > gameData.objs.nLastObject [0])
 			gameData.objs.nLastObject [0] = i;
-		LinkObject (objP);
+		objP->Link ();
 		}
 	}
 }
@@ -1021,7 +1021,7 @@ if (nObject == nDbgObj) {
 		nDbgObj = nDbgObj;
 	}
 #endif
-UnlinkObject (objP);
+objP->Unlink ();
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
 gameData.objs.bWantEffect [nObject] = 0;
@@ -1573,7 +1573,7 @@ objP = OBJECTS + newObjNum;
 *objP = OBJECTS [nObject];
 objP->info.position.vPos = objP->info.vLastPos = *new_pos;
 objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
-LinkObject (objP);
+objP->Link ();
 objP->LinkToSeg (nNewSegnum);
 objP->info.nSignature = gameData.objs.nNextSignature++;
 //we probably should initialize sub-structures here

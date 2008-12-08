@@ -57,7 +57,7 @@ if (nDropSeg >= 0) {
 	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, vmsVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
 	if (nObject >= 0) {
 		gameData.hoard.monsterballP = OBJECTS + nObject;
-		SetObjectType (gameData.hoard.monsterballP, OBJ_MONSTERBALL);
+		gameData.hoard.monsterballP->SetType (OBJ_MONSTERBALL);
 		gameData.hoard.monsterballP->mType.physInfo.mass = F1_0 * 10;
 		gameData.hoard.monsterballP->mType.physInfo.thrust.SetZero();
 		gameData.hoard.monsterballP->mType.physInfo.rotThrust.SetZero();

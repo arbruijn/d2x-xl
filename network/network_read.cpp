@@ -230,7 +230,7 @@ if (!networkData.nJoinState) {
 		GetPlayerSpawn (j, OBJECTS + gameData.multiplayer.players [i].nObject);
 		}
 	}
-SetObjectType (OBJECTS + LOCALPLAYER.nObject, OBJ_PLAYER);
+OBJECTS [LOCALPLAYER.nObject].SetType (OBJ_PLAYER);
 networkData.nStatus = (NetworkIAmMaster () || (networkData.nJoinState >= 4)) ? NETSTAT_PLAYING : NETSTAT_WAITING;
 SetFunctionMode (FMODE_GAME);
 networkData.bHaveSync = 1;
@@ -690,9 +690,9 @@ else if (i < 0)
 			if (objP->info.nSegment >= 0)
 				nDbgObj = OBJ_IDX (objP);
 #endif
-			UnlinkObject (objP);
+			objP->Unlink ();
 			while (ObjectIsLinked (objP, objP->info.nSegment))
-				UnlinkObjFromSeg (objP);
+				objP->UnlinkFromSeg ();
 			NW_GET_BYTES (dataP, bufI, objP, sizeof (CObject));
 			if (objP->info.nType != OBJ_NONE) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
@@ -701,7 +701,7 @@ else if (i < 0)
 				PrintLog ("receiving object %d (type: %d, segment: %d)\n", nObject, objP->info.nType, nSegment);
 				objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
 				objP->info.nAttachedObj = -1;
-				LinkObject (objP);
+				objP->Link ();
 				if (nSegment < 0)
 					nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);
 				if (!ObjectIsLinked (objP, nSegment))

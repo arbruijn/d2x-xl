@@ -1074,7 +1074,7 @@ switch (objP->info.renderType) {
 		if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
 			return 0;
 		if (gameStates.render.nShadowPass != 2)
-			DrawShrapnels (objP);
+			shrapnelManager.Draw (objP);
 		break;
 
 	case RT_WEAPON_VCLIP:

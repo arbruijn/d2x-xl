@@ -151,7 +151,7 @@ int MoveSpawnMarker (tTransformation *posP, short nSegment)
 if (!(markerP = SpawnMarkerObject (-1)))
 	return 0;
 markerP->info.position = *posP;
-RelinkObjToSeg (OBJ_IDX (markerP), nSegment);
+markerP->RelinkToSeg (nSegment);
 return 1;
 }
 

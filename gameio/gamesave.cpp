@@ -239,7 +239,7 @@ else if (objP->info.nType == OBJ_HOSTAGE) {
 	objP->info.renderType = RT_HOSTAGE;
 	objP->info.controlType = CT_POWERUP;
 	}
-LinkObject (objP);
+objP->Link ();
 }
 
 //------------------------------------------------------------------------------

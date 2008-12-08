@@ -722,7 +722,7 @@ if ((nPlayer == gameData.multiplayer.nLocalPlayer) || (nPlayer >= MAX_NUM_NET_PL
 	return;
 	}
 objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
-SetObjectType (objP, OBJ_GHOST);
+objP->SetType (OBJ_GHOST);
 objP->info.renderType = RT_NONE;
 objP->info.movementType = MT_NONE;
 MultiResetPlayerObject (objP);
@@ -741,7 +741,7 @@ if ((nPlayer == gameData.multiplayer.nLocalPlayer) || (nPlayer  >= MAX_NUM_NET_P
 	return;
 	}
 objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
-SetObjectType (objP, OBJ_PLAYER);
+objP->SetType (OBJ_PLAYER);
 objP->info.movementType = MT_PHYSICS;
 MultiResetPlayerObject (objP);
 }
