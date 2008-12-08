@@ -44,8 +44,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 #define	G3_ALLOC(_buf,_count,_type,_fill) \
-			if (((_buf) = reinterpret_cast<_type*> (D2_ALLOC (_count * sizeof (_type)))) \
-				memset (_buf, (char) _fill, _count * sizeof (_type)); \
+			if ((_buf).Create (_count)) \
+				(_buf).Clear (_fill); \
 			else \
 				return G3FreeModelItems (pm);
 
@@ -53,8 +53,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int G3AllocModel (tG3Model *pm)
 {
-G3_ALLOC (pm->pVerts, pm->nVerts, fVector3, 0);
-G3_ALLOC (pm->pColor, pm->nVerts, tFaceColor, 0xff);
+G3_ALLOC (pm->verts, pm->nVerts, fVector3, 0);
+G3_ALLOC (pm->color, pm->nVerts, tFaceColor, 0xff);
 if (gameStates.ogl.bHaveVBOs) {
 	int i;
 	glGenBuffersARB (1, &pm->vboDataHandle);
@@ -77,44 +77,45 @@ if (gameStates.ogl.bHaveVBOs) {
 		return G3FreeModelItems (pm);
 		}
 	glBufferDataARB (GL_ARRAY_BUFFER, pm->nFaceVerts * sizeof (tG3RenderVertex), NULL, GL_STATIC_DRAW_ARB);
-	pm->pVertBuf [1] = reinterpret_cast<tG3RenderVertex*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB));
+	pm->vertBuf [1].SetBuffer (reinterpret_cast<tG3RenderVertex*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)));
 	pm->vboIndexHandle = 0;
 	glGenBuffersARB (1, &pm->vboIndexHandle);
 	if (pm->vboIndexHandle) {
 		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->vboIndexHandle);
 		glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->nFaceVerts * sizeof (short), NULL, GL_STATIC_DRAW_ARB);
-		pm->pIndex [1] = reinterpret_cast<short*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB));
+		pm->index [1].SetBuffer (reinterpret_cast<short*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)));
 		}
 	}
-G3_ALLOC (pm->pVertBuf [0], pm->nFaceVerts, tG3RenderVertex, 0);
-G3_ALLOC (pm->pFaceVerts, pm->nFaceVerts, tG3ModelVertex, 0);
-G3_ALLOC (pm->pVertNorms, pm->nFaceVerts, fVector3, 0);
-G3_ALLOC (pm->pSubModels, pm->nSubModels, tG3SubModel, 0);
-G3_ALLOC (pm->pFaces, pm->nFaces, tG3ModelFace, 0);
-G3_ALLOC (pm->pIndex [0], pm->nFaceVerts, short, 0);
-G3_ALLOC (pm->pSortedVerts, pm->nFaceVerts, tG3ModelVertex, 0);
+G3_ALLOC (pm->vertBuf [0], pm->nFaceVerts, tG3RenderVertex, 0);
+G3_ALLOC (pm->faceVerts, pm->nFaceVerts, tG3ModelVertex, 0);
+G3_ALLOC (pm->vertNorms, pm->nFaceVerts, fVector3, 0);
+G3_ALLOC (pm->subModels, pm->nSubModels, tG3SubModel, 0);
+G3_ALLOC (pm->faces, pm->nFaces, tG3ModelFace, 0);
+G3_ALLOC (pm->index [0], pm->nFaceVerts, short, 0);
+G3_ALLOC (pm->sortedVerts, pm->nFaceVerts, tG3ModelVertex, 0);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-#define G3_FREE(_p)	{if (_p) D2_FREE (_p);}
+#define G3_FREE(_p)	{ (_p).Destroy (); }
 
 int G3FreeModelItems (tG3Model *pm)
 {
-G3_FREE (pm->pFaces);
-G3_FREE (pm->pSubModels);
+G3_FREE (pm->faces);
+G3_FREE (pm->subModels);
 if (gameStates.ogl.bHaveVBOs && pm->vboDataHandle)
 	glDeleteBuffersARB (1, &pm->vboDataHandle);
-G3_FREE (pm->pVertBuf [0]);
-G3_FREE (pm->pFaceVerts);
-G3_FREE (pm->pColor);
-G3_FREE (pm->pVertNorms);
-G3_FREE (pm->pVerts);
-G3_FREE (pm->pSortedVerts);
+G3_FREE (pm->vertBuf [0]);
+pm->vertBuf [1].SetBuffer (0);	//avoid trying to delete memory allocated by the graphics driver
+G3_FREE (pm->faceVerts);
+G3_FREE (pm->color);
+G3_FREE (pm->vertNorms);
+G3_FREE (pm->verts);
+G3_FREE (pm->sortedVerts);
 if (gameStates.ogl.bHaveVBOs && pm->vboIndexHandle)
 	glDeleteBuffersARB (1, &pm->vboIndexHandle);
-G3_FREE (pm->pIndex [0]);
+G3_FREE (pm->index [0]);
 memset (pm, 0, sizeof (*pm));
 return 0;
 }
@@ -167,12 +168,12 @@ if (psm->vMax[Z] < v[Z])
 
 //------------------------------------------------------------------------------
 
-inline int G3CmpFaces (tG3ModelFace *pmf, tG3ModelFace *pm, CBitmap *pTextures)
+inline int G3CmpFaces (tG3ModelFace *pmf, tG3ModelFace *pm, CBitmap *textureP)
 {
-if (pTextures && (pmf->nBitmap >= 0) && (pm->nBitmap >= 0)) {
-	if (pTextures [pmf->nBitmap].BPP () < pTextures [pm->nBitmap].BPP ())
+if (textureP && (pmf->nBitmap >= 0) && (pm->nBitmap >= 0)) {
+	if (textureP [pmf->nBitmap].BPP () < textureP [pm->nBitmap].BPP ())
 		return -1;
-	if (pTextures [pmf->nBitmap].BPP () > pTextures [pm->nBitmap].BPP ())
+	if (textureP [pmf->nBitmap].BPP () > textureP [pm->nBitmap].BPP ())
 		return 1;
 	}
 if (pmf->nBitmap < pm->nBitmap)
@@ -188,31 +189,31 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void G3SortFaces (tG3SubModel *psm, int left, int right, CBitmap *pTextures)
+void G3SortFaces (tG3SubModel *psm, int left, int right, CBitmap *textureP)
 {
 	int				l = left,
 						r = right;
-	tG3ModelFace	m = psm->pFaces [(l + r) / 2];
+	tG3ModelFace	m = psm->faces [(l + r) / 2];
 
 do {
-	while (G3CmpFaces (psm->pFaces + l, &m, pTextures) < 0)
+	while (G3CmpFaces (psm->faces + l, &m, textureP) < 0)
 		l++;
-	while (G3CmpFaces (psm->pFaces + r, &m, pTextures) > 0)
+	while (G3CmpFaces (psm->faces + r, &m, textureP) > 0)
 		r--;
 	if (l <= r) {
 		if (l < r) {
-			tG3ModelFace h = psm->pFaces [l];
-			psm->pFaces [l] = psm->pFaces [r];
-			psm->pFaces [r] = h;
+			tG3ModelFace h = psm->faces [l];
+			psm->faces [l] = psm->faces [r];
+			psm->faces [r] = h;
 			}
 		l++;
 		r--;
 		}
 	} while (l <= r);
 if (l < right)
-	G3SortFaces (psm, l, right, pTextures);
+	G3SortFaces (psm, l, right, textureP);
 if (left < r)
-	G3SortFaces (psm, left, r, pTextures);
+	G3SortFaces (psm, left, r, textureP);
 }
 
 //------------------------------------------------------------------------------
@@ -220,11 +221,11 @@ if (left < r)
 void G3SortFaceVerts (tG3Model *pm, tG3SubModel *psm, tG3ModelVertex *psv)
 {
 	tG3ModelFace	*pmf;
-	tG3ModelVertex	*pmv = pm->pFaceVerts;
+	tG3ModelVertex	*pmv = pm->faceVerts.Buffer ();
 	int				i, j, nIndex = psm->nIndex;
 
 psv += nIndex;
-for (i = psm->nFaces, pmf = psm->pFaces; i; i--, pmf++, psv += j) {
+for (i = psm->nFaces, pmf = psm->faces; i; i--, pmf++, psv += j) {
 	j = pmf->nVerts;
 	if (nIndex + j > pm->nFaceVerts)
 		break;
@@ -240,59 +241,59 @@ void G3SetupModel (tG3Model *pm, int bHires, int bSort)
 {
 	tG3SubModel		*psm;
 	tG3ModelFace	*pfi, *pfj;
-	tG3ModelVertex	*pmv, *pSortedVerts;
+	tG3ModelVertex	*pmv, *sortedVerts;
 	fVector3			*pv, *pn;
 	tTexCoord2f		*pt;
 	tRgbaColorf		*pc;
-	CBitmap		*pTextures = bHires ? pm->pTextures : NULL;
+	CBitmap			*textureP = bHires ? pm->textures.Buffer () : NULL;
 	int				i, j;
 	short				nId;
 
 pm->fScale = 1;
-pSortedVerts = pm->pSortedVerts;
+sortedVerts = pm->sortedVerts.Buffer ();
 for (i = 0, j = pm->nFaceVerts; i < j; i++)
-	pm->pIndex [0][i] = i;
+	pm->index [0][i] = i;
 //sort each submodel's faces
-for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
+for (i = pm->nSubModels, psm = pm->subModels.Buffer (); i; i--, psm++) {
 	if (bSort) {
-		G3SortFaces (psm, 0, psm->nFaces - 1, pTextures);
-		G3SortFaceVerts (pm, psm, pSortedVerts);
+		G3SortFaces (psm, 0, psm->nFaces - 1, textureP);
+		G3SortFaceVerts (pm, psm, sortedVerts);
 		}
-	for (nId = 0, j = psm->nFaces - 1, pfi = psm->pFaces; j; j--) {
+	for (nId = 0, j = psm->nFaces - 1, pfi = psm->faces; j; j--) {
 		pfi->nId = nId;
 		pfj = pfi++;
-		if (G3CmpFaces (pfi, pfj, pTextures))
+		if (G3CmpFaces (pfi, pfj, textureP))
 			nId++;
 #if G3_ALLOW_TRANSPARENCY
-		if (pTextures && (pTextures [pfi->nBitmap].props.flags & BM_FLAG_TRANSPARENT))
+		if (textureP && (textureP [pfi->nBitmap].props.flags & BM_FLAG_TRANSPARENT))
 			pm->bHasTransparency = 1;
 #endif
 		}
 	pfi->nId = nId;
 	}
-pm->pVBVerts = reinterpret_cast<fVector3*> (pm->pVertBuf [0]);
-pm->pVBNormals = pm->pVBVerts + pm->nFaceVerts;
-pm->pVBColor = reinterpret_cast<tRgbaColorf*> (pm->pVBNormals + pm->nFaceVerts);
-pm->pVBTexCoord = reinterpret_cast<tTexCoord2f*> (pm->pVBColor + pm->nFaceVerts);
-pv = pm->pVBVerts;
-pn = pm->pVBNormals;
-pt = pm->pVBTexCoord;
-pc = pm->pVBColor;
-pmv = bSort ? pSortedVerts : pm->pFaceVerts;
+pm->vbVerts = reinterpret_cast<fVector3*> (pm->vertBuf [0].Buffer ());
+pm->vbNormals = pm->vbVerts + pm->nFaceVerts;
+pm->vbColor = reinterpret_cast<tRgbaColorf*> (pm->vbNormals + pm->nFaceVerts);
+pm->vbTexCoord = reinterpret_cast<tTexCoord2f*> (pm->vbColor + pm->nFaceVerts);
+pv = pm->vbVerts.Buffer ();
+pn = pm->vbNormals.Buffer ();
+pt = pm->vbTexCoord.Buffer ();
+pc = pm->vbColor.Buffer ();
+pmv = bSort ? sortedVerts : pm->faceVerts.Buffer ();
 for (i = 0, j = pm->nFaceVerts; i < j; i++, pmv++) {
 	pv [i] = pmv->vertex;
 	pn [i] = pmv->normal;
 	pc [i] = pmv->baseColor;
 	pt [i] = pmv->texCoord;
 	}
-if (pm->pVertBuf [1])
-	memcpy (pm->pVertBuf [1], pm->pVertBuf [0], pm->nFaceVerts * sizeof (tG3RenderVertex));
-if (pm->pIndex [1])
-	memcpy (pm->pIndex [1], pm->pIndex [0], pm->nFaceVerts * sizeof (short));
+if (pm->vertBuf [1].Buffer ())
+	pm->vertBuf [1] = pm->vertBuf [0];
+if (pm->index [1].Buffer ())
+	pm->index [1] = pm->index [0];
 if (bSort)
-	memcpy (pm->pFaceVerts, pSortedVerts, pm->nFaceVerts * sizeof (tG3ModelVertex));
+	pm->faceVerts = sortedVerts;
 else
-	memcpy (pSortedVerts, pm->pFaceVerts, pm->nFaceVerts * sizeof (tG3ModelVertex));
+	memcpy (sortedVerts, pm->faceVerts.Buffer (), pm->nFaceVerts * sizeof (tG3ModelVertex));
 pm->bValid = 1;
 if (gameStates.ogl.bHaveVBOs) {
 	glUnmapBufferARB (GL_ARRAY_BUFFER_ARB);
@@ -300,7 +301,7 @@ if (gameStates.ogl.bHaveVBOs) {
 	glUnmapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB);
 	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 	}
-G3_FREE (pm->pSortedVerts);
+G3_FREE (pm->sortedVerts);
 }
 
 //------------------------------------------------------------------------------
@@ -329,14 +330,14 @@ else
 if (!(vOffsetf[X] || vOffsetf[Y] || vOffsetf[Z]))
 	return 0;
 if (vOffsetfP) {
-	for (i = pm->nFaceVerts, pmv = pm->pFaceVerts; i; i--, pmv++) {
+	for (i = pm->nFaceVerts, pmv = pm->faceVerts; i; i--, pmv++) {
 		pmv->vertex[X] += vOffsetf[X];
 		pmv->vertex[Y] += vOffsetf[Y];
 		pmv->vertex[Z] += vOffsetf[Z];
 		}
 	}
 else {
-	for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
+	for (i = pm->nSubModels, psm = pm->subModels; i; i--, psm++) {
 		psm->vMin[X] += vOffsetf[X];
 		psm->vMin[Y] += vOffsetf[Y];
 		psm->vMin[Z] += vOffsetf[Z];
@@ -354,7 +355,7 @@ return 1;
 void G3SubModelSize (CObject *objP, int nModel, int nSubModel, vmsVector *vOffset, int bHires)
 {
 	tG3Model		*pm = gameData.models.g3Models [bHires] + nModel;
-	tG3SubModel	*psm = pm->pSubModels + nSubModel;
+	tG3SubModel	*psm = pm->subModels + nSubModel;
 	tHitbox		*phb = (psm->nHitbox < 0) ? NULL : gameData.models.hitboxes [nModel].hitboxes + psm->nHitbox;
 	vmsVector	vMin, vMax, vOffs;
 	int			i, j;
@@ -377,7 +378,7 @@ if (psm->bBullets) {
 	pm->vBullets = psm->vCenter;
 	}
 psm->nRad = vmsVector::Dist(vMin, vMax) / 2;
-for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
+for (i = 0, j = pm->nSubModels, psm = pm->subModels.Buffer (); i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
 		G3SubModelSize (objP, nModel, i, &vOffs, bHires);
 }
@@ -463,11 +464,11 @@ if (pm->nType >= 0) {
 if ((vertices = new fVector3 [pm->nFaceVerts])) {
 		fVector3	*pv, *pvi, *pvj;
 
-	for (i = 0, h = pm->nSubModels, psm = pm->pSubModels, pv = vertices; i < h; i++, psm++) {
+	for (i = 0, h = pm->nSubModels, psm = pm->subModels.Buffer (), pv = vertices; i < h; i++, psm++) {
 		if (psm->nHitbox > 0) {
 			vOffset = gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset.ToFloat3();
-			for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
-				for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++, pv++)
+			for (j = psm->nFaces, pmf = psm->faces; j; j--, pmf++) {
+				for (k = pmf->nVerts, pmv = pm->faceVerts + pmf->nIndex; k; k--, pmv++, pv++)
 					*pv = pmv->vertex + vOffset;
 				}
 			}
@@ -512,11 +513,11 @@ else {
 	// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
 	// around the center with the radius computed above
 	vCenter = gameData.models.offsets[nModel].ToFloat3();
-	for (i = 0, h = pm->nSubModels, psm = pm->pSubModels; i < h; i++, psm++) {
+	for (i = 0, h = pm->nSubModels, psm = pm->subModels.Buffer (); i < h; i++, psm++) {
 		if (psm->nHitbox > 0) {
 			vOffset = gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset.ToFloat3();
-			for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
-				for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++) {
+			for (j = psm->nFaces, pmf = psm->faces; j; j--, pmf++) {
+				for (k = pmf->nVerts, pmv = pm->faceVerts + pmf->nIndex; k; k--, pmv++) {
 					v = pmv->vertex + vOffset;
 					if (fRad < (r = fVector3::Dist(v, vCenter)))
 						fRad = r;
@@ -545,7 +546,7 @@ fix G3ModelSize (CObject *objP, tG3Model *pm, int nModel, int bHires)
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
-psm = pm->pSubModels;
+psm = pm->subModels.Buffer ();
 vOffset = psm->vMin;
 
 j = 1;
@@ -568,13 +569,13 @@ do {
 	// walk through all submodels, getting their sizes
 	if (bHires) {
 		for (i = 0; i < pm->nSubModels; i++)
-			if (pm->pSubModels [i].nParent == -1)
+			if (pm->subModels [i].nParent == -1)
 				G3SubModelSize (objP, nModel, i, NULL, 1);
 		}
 	else
 		G3SubModelSize (objP, nModel, 0, NULL, 0);
 	// determine min and max size
-	for (i = 0, psm = pm->pSubModels; i < nSubModels; i++, psm++) {
+	for (i = 0, psm = pm->subModels.Buffer (); i < nSubModels; i++, psm++) {
 		if (0 < (j = psm->nHitbox)) {
 			phb [j].vMin[X] = F2X (psm->vMin[X]);
 			phb [j].vMin[Y] = F2X (psm->vMin[Y]);
@@ -616,7 +617,7 @@ do {
 		}
 	} while (G3ShiftModel (objP, nModel, bHires, NULL));
 
-psm = pm->pSubModels;
+psm = pm->subModels.Buffer ();
 vOffset = psm->vMin - vOffset;
 gameData.models.offsets[nModel] = vOffset.ToFix();
 #if DBG
@@ -681,7 +682,7 @@ for (i = 0, pp = po->gunPoints.pPoints; i < (po->gunPoints.nPoints = N_PLAYER_GU
 	if (nGunSubModels [i] >= pm->nSubModels)
 		continue;
 	pm->nGunSubModels [i] = nGunSubModels [i];
-	psm = pm->pSubModels + nGunSubModels [i];
+	psm = pm->subModels + nGunSubModels [i];
 	pp->vPos.x = (psm->vMax[X] + psm->vMin[X]) / 2;
 	if (3 == (pp->nParent = nGunSubModels [i])) {
 		pp->vPos.y = (psm->vMax[Z] + 3 * psm->vMin[Y]) / 4;
@@ -707,7 +708,7 @@ void SetRobotGunPoints (tOOFObject *po, tG3Model *pm)
 
 for (i = 0, pp = po->gunPoints.pPoints; i < j; i++, pp++) {
 	pm->nGunSubModels [i] = pp->nParent;
-	psm = pm->pSubModels + pp->nParent;
+	psm = pm->subModels + pp->nParent;
 	pp->vPos.x = (psm->vMax[X] + psm->vMin[X]) / 2;
 	pp->vPos.y = (psm->vMax[Y] + psm->vMin[Y]) / 2;
   	pp->vPos.z = psm->vMax[Z];
@@ -722,7 +723,7 @@ void G3SetGunPoints (CObject *objP, tG3Model *pm, int nModel, int bASE)
 	int				nParent, h, i, j;
 
 if (bASE) {
-	tG3SubModel	*psm = pm->pSubModels;
+	tG3SubModel	*psm = pm->subModels.Buffer ();
 
 	vGunPoints = gameData.models.gunInfo [nModel].vGunPoints;
 	for (i = 0, j = 0; i < pm->nSubModels; i++, psm++) {
@@ -762,7 +763,7 @@ else {
 			(*vGunPoints)[Z] = F2X (pp->vPos.z);
 			for (nParent = pp->nParent; nParent >= 0; nParent = pso->nParent) {
 				pso = po->pSubObjects + nParent;
-				(*vGunPoints) += pm->pSubModels [nParent].vOffset;
+				(*vGunPoints) += pm->subModels [nParent].vOffset;
 				}
 			}
 		}
@@ -803,7 +804,7 @@ int G3ModelMinMax (int nModel, tHitbox *phb)
 if (!((pm = gameData.models.g3Models [1] + nModel) ||
 	   (pm = gameData.models.g3Models [0] + nModel)))
 	return 0;
-for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
+for (i = pm->nSubModels, psm = pm->subModels.Buffer (); i; i--, psm++) {
 	if (!psm->bThruster && (psm->nGunPoint < 0)) {
 		phb->vMin[X] = F2X (psm->vMin[X]);
 		phb->vMin[Y] = F2X (psm->vMin[Y]);

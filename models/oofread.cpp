@@ -532,11 +532,11 @@ int OOF_FreeSpecialList (tOOF_specialList *pList)
 {
 	int	i;
 
-if (pList->pVerts) {
+if (pList->verts) {
 	for (i = 0; i < pList->nVerts; i++)
-		OOF_FreeSpecialPoint (pList->pVerts + i);
-	delete[] pList->pVerts;
-	pList->pVerts = NULL;
+		OOF_FreeSpecialPoint (pList->verts + i);
+	delete[] pList->verts;
+	pList->verts = NULL;
 	}
 return 0;
 }
@@ -550,10 +550,10 @@ int OOF_ReadSpecialList (CFile& cf, tOOF_specialList *pList)
 pList->nVerts = OOF_ReadInt (cf, "nVerts");
 if (!pList->nVerts)
 	return 1;
-if (!(pList->pVerts= new tOOF_specialPoint [pList->nVerts]))
+if (!(pList->verts= new tOOF_specialPoint [pList->nVerts]))
 	return 0;
 for (i = 0; i < pList->nVerts; i++)
-	OOF_ReadSpecialPoint (cf, pList->pVerts + i);
+	OOF_ReadSpecialPoint (cf, pList->verts + i);
 return 1;
 }
 
@@ -774,8 +774,8 @@ return 1;
 int OOF_FreeFace (tOOF_face *pf)
 {
 #if !OOF_MEM_OPT
-delete[] pf->pVerts;
-pf->pVerts = NULL;
+delete[] pf->verts;
+pf->verts = NULL;
 #endif
 return 0;
 }
@@ -787,7 +787,7 @@ int OOF_FindVertex (tOOF_subObject *pso, int i)
 	tOOF_vector	v, *pv;
 	int			j;
 
-pv = pso->pvVerts;
+pv = pso->verts;
 v = pv [i];
 for (j = 0; i < i; j++, pv++)
 	if ((v.x == pv->x) && (v.y == pv->y) && (v.z == pv->z))
@@ -814,12 +814,12 @@ for (i = 0; i < pso->edges.nEdges; i++) {
 	if (((h.v0 [0] == i0) && (h.v1 [0] == i1)) || ((h.v0 [0] == i1) && (h.v1 [0] == i0)))
 		return i;
 	}
-v0 = pso->pvVerts [i0]; 
-v1 = pso->pvVerts [i1]; 
+v0 = pso->verts [i0]; 
+v1 = pso->verts [i1]; 
 for (i = 0; i < pso->edges.nEdges; i++) {
 	h = pso->edges.pEdges [i];
-	hv0 = pso->pvVerts [h.v0 [0]]; 
-	hv1 = pso->pvVerts [h.v1 [0]]; 
+	hv0 = pso->verts [h.v0 [0]]; 
+	hv1 = pso->verts [h.v1 [0]]; 
 	if ((hv0.x == v0.x) && (hv0.y == v0.y) && (hv0.z == v0.z) &&
 		 (hv1.x == v1.x) && (hv1.y == v1.y) && (hv1.z == v1.z))
 		return i;
@@ -829,12 +829,12 @@ for (i = 0; i < pso->edges.nEdges; i++) {
 	}
 for (i = 0; i < pso->edges.nEdges; i++) {
 	h = pso->edges.pEdges [i];
-	OOF_VecSub (&hv0, pso->pvVerts + h.v0 [0], &v0);
-	OOF_VecSub (&hv1, pso->pvVerts + h.v1 [0], &v1);
+	OOF_VecSub (&hv0, pso->verts + h.v0 [0], &v0);
+	OOF_VecSub (&hv1, pso->verts + h.v1 [0], &v1);
 	if ((OOF_VecMag (&hv0) < MAXGAP) && (OOF_VecMag (&hv1) < MAXGAP))
 		return i;
-	OOF_VecSub (&hv0, pso->pvVerts + h.v0 [0], &v1);
-	OOF_VecSub (&hv1, pso->pvVerts + h.v1 [0], &v0);
+	OOF_VecSub (&hv0, pso->verts + h.v0 [0], &v1);
+	OOF_VecSub (&hv1, pso->verts + h.v1 [0], &v0);
 	if ((OOF_VecMag (&hv0) < MAXGAP) && (OOF_VecMag (&hv1) < MAXGAP))
 		return i;
 	}
@@ -884,8 +884,8 @@ return i;
 
 inline tOOF_vector *OOF_CalcFaceCenter (tOOF_subObject *pso, tOOF_face *pf)
 {
-	tOOF_faceVert	*pfv = pf->pVerts;
-	tOOF_vector		vc, *pv = pso->pvVerts;
+	tOOF_faceVert	*pfv = pf->verts;
+	tOOF_vector		vc, *pv = pso->verts;
 	int				i;
 
 vc.x = vc.y = vc.z = 0.0f;
@@ -900,8 +900,8 @@ return &pf->vCenter;
 
 inline tOOF_vector *OOF_CalcFaceNormal (tOOF_subObject *pso, tOOF_face *pf)
 {
-	tOOF_vector		*pv = pso->pvRotVerts;
-	tOOF_faceVert	*pfv = pf->pVerts;
+	tOOF_vector		*pv = pso->rotVerts;
+	tOOF_faceVert	*pfv = pf->verts;
 
 return OOF_VecNormal (&pf->vRotNormal, pv + pfv [0].nIndex, pv + pfv [1].nIndex, pv + pfv [2].nIndex);
 }
@@ -943,9 +943,9 @@ else {
 	}
 #if OOF_MEM_OPT
 if (pfv) {
-	f.pVerts = pfv;
+	f.verts = pfv;
 #else
-	if (!(f.pVerts= new tOOF_faceVert [f.nVerts])) {
+	if (!(f.verts= new tOOF_faceVert [f.nVerts])) {
 		nIndent -= 2;
 		return OOF_FreeFace (&f);
 		}
@@ -953,14 +953,14 @@ if (pfv) {
 	OOF_InitMinMax (&f.vMin, &f.vMax);
 	e.v1 [0] = -1;
 	for (i = 0; i < f.nVerts; i++)
-		if (!OOF_ReadFaceVert (cf, f.pVerts + i, bFlipV)) {
+		if (!OOF_ReadFaceVert (cf, f.verts + i, bFlipV)) {
 			nIndent -= 2;
 			return OOF_FreeFace (&f);
 			}
 		else {
 			e.v0 [0] = e.v1 [0];
-			e.v1 [0] = f.pVerts [i].nIndex;
-			OOF_GetMinMax (pso->pvVerts + e.v1 [0], &f.vMin, &f.vMax);
+			e.v1 [0] = f.verts [i].nIndex;
+			OOF_GetMinMax (pso->verts + e.v1 [0], &f.vMin, &f.vMax);
 			if (i)
 				OOF_AddEdge (pso, pf, e.v0 [0], e.v1 [0]);
 			else
@@ -993,28 +993,28 @@ delete[] pso->pszName;
 pso->pszName = NULL;
 delete[] pso->pszProps;
 pso->pszProps = NULL;
-delete[] pso->pvVerts;
-pso->pvVerts = NULL;
-delete[] pso->pvRotVerts;
-pso->pvRotVerts = NULL;
-delete[] pso->pVertColors;
-pso->pVertColors = NULL;
-delete[] pso->pvNormals;
-pso->pvNormals = NULL;
+delete[] pso->verts;
+pso->verts = NULL;
+delete[] pso->rotVerts;
+pso->rotVerts = NULL;
+delete[] pso->vertColors;
+pso->vertColors = NULL;
+delete[] pso->normals;
+pso->normals = NULL;
 delete[] pso->pfAlpha;
 pso->pfAlpha = NULL;
 OOF_FreePosAnim (&pso->posAnim);
 OOF_FreeRotAnim (&pso->rotAnim);
-if (pso->faces.pFaces) {
+if (pso->faces.faces) {
 #if OOF_MEM_OPT
-	delete[] pso->faces.pFaceVerts;
-	pso->faces.pFaceVerts = NULL;
+	delete[] pso->faces.faceVerts;
+	pso->faces.faceVerts = NULL;
 #else
 	for (i = 0; i < pso->faces.nFaces; i++)
-		OOF_FreeFace (pso->faces.pFaces + i);
+		OOF_FreeFace (pso->faces.faces + i);
 #endif
-	delete[] pso->faces.pFaces;
-	pso->faces.pFaces = NULL;
+	delete[] pso->faces.faces;
+	pso->faces.faces = NULL;
 	}
 delete[] pso->edges.pEdges;
 pso->edges.pEdges = NULL;
@@ -1062,22 +1062,22 @@ if ((so.nFSLists = OOF_ReadInt (cf, "nFSLists")))
 	cf.Seek (so.nFSLists * sizeof (int), SEEK_CUR);
 so.nVerts = OOF_ReadInt (cf, "nVerts");
 if (so.nVerts) {
-	if (!(so.pvVerts = OOF_ReadVertList (cf, so.nVerts, &so.vMin, &so.vMax))) {
+	if (!(so.verts = OOF_ReadVertList (cf, so.nVerts, &so.vMin, &so.vMax))) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		OOF_VecAdd (&so.vCenter, &so.vMin, &so.vMax);
 		OOF_VecScale (&so.vCenter, 0.5f);
 		}
-	if (!(so.pvRotVerts = new tOOF_vector [so.nVerts])) {
+	if (!(so.rotVerts = new tOOF_vector [so.nVerts])) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
-	if (!(so.pVertColors = new tFaceColor [so.nVerts])) {
+	if (!(so.vertColors = new tFaceColor [so.nVerts])) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
-	memset (so.pVertColors, 0, so.nVerts * sizeof (tFaceColor));
-	if (!(so.pvNormals = OOF_ReadVertList (cf, so.nVerts, NULL, NULL))) {
+	memset (so.vertColors, 0, so.nVerts * sizeof (tFaceColor));
+	if (!(so.normals = OOF_ReadVertList (cf, so.nVerts, NULL, NULL))) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
@@ -1097,7 +1097,7 @@ if (so.nVerts) {
 			}
 	}
 so.faces.nFaces = OOF_ReadInt (cf, "nFaces");
-if (!(so.faces.pFaces = new tOOF_face [so.faces.nFaces])) {
+if (!(so.faces.faces = new tOOF_face [so.faces.nFaces])) {
 	nIndent -= 2;
 	return OOF_FreeSubObject (&so);
 	}
@@ -1107,7 +1107,7 @@ so.edges.nEdges = 0;
 for (bReadData = 0; bReadData < 2; bReadData++) {
 	cf.Seek (nPos, SEEK_SET);
 	if (bReadData) {
-		if (!(so.faces.pFaceVerts= new tOOF_faceVert [nFaceVerts])) {
+		if (!(so.faces.faceVerts= new tOOF_faceVert [nFaceVerts])) {
 			nIndent -= 2;
 			return OOF_FreeSubObject (&so);
 			}
@@ -1119,7 +1119,7 @@ for (bReadData = 0; bReadData < 2; bReadData++) {
 		so.edges.nEdges = 0;
 		}
 	for (i = 0, nFaceVerts = 0; i < so.faces.nFaces; i++) {
-		if (!(h = OOF_ReadFace (cf, &so, so.faces.pFaces + i, bReadData ? so.faces.pFaceVerts + nFaceVerts : NULL, bFlipV))) {
+		if (!(h = OOF_ReadFace (cf, &so, so.faces.faces + i, bReadData ? so.faces.faceVerts + nFaceVerts : NULL, bFlipV))) {
 			nIndent -= 2;
 			return OOF_FreeSubObject (&so);
 			}
@@ -1128,7 +1128,7 @@ for (bReadData = 0; bReadData < 2; bReadData++) {
 	}
 #else
 for (i = 0; i < so.faces.nFaces; i++)
-	if (!OOF_ReadFace (cf, &so, so.faces.pFaces + i, NULL, bFlipV)) {
+	if (!OOF_ReadFace (cf, &so, so.faces.faces + i, NULL, bFlipV)) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
@@ -1456,10 +1456,10 @@ for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 
 	if (pso->nFlags & OOF_SOF_FACING) {
 		tOOF_vector v [30], avg;
-		tOOF_face	*pf = pso->faces.pFaces;
+		tOOF_face	*pf = pso->faces.faces;
 
 		for (j = 0; j < pf->nVerts; j++)
-			v [j] = pso->pvVerts [pf->pVerts [j].nIndex];
+			v [j] = pso->verts [pf->verts [j].nIndex];
 	
 		pso->fRadius = (float) (sqrt (OOF_Centroid (&avg, v, pf->nVerts)) / 2);
 		po->nFlags |= OOF_PMF_FACING;
@@ -1468,10 +1468,10 @@ for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 
 	if (pso->nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)) {
 		tOOF_vector v [30];
-		tOOF_face	*pf = pso->faces.pFaces;
+		tOOF_face	*pf = pso->faces.faces;
 
 		for (j = 0; j < pf->nVerts; j++)
-			v [j] = pso->pvVerts [pf->pVerts [j].nIndex];
+			v [j] = pso->verts [pf->verts [j].nIndex];
 		OOF_VecNormal (&pso->glowInfo.vNormal, v, v + 1, v + 2);
 		po->nFlags |= OOF_PMF_FACING;	// Set this so we know when to draw
 		}

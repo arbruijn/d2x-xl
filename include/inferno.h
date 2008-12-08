@@ -2096,6 +2096,8 @@ typedef struct tG3ModelVertex {
 	char						bTextured;
 } tG3ModelVertex;
 
+int operator- (tG3ModelVertex* f, CArray<tG3ModelVertex>& a) { return a.Index (f); }
+
 typedef struct tG3ModelFace {
 	vmsVector				vNormal;
 	short						nVerts;
@@ -2107,6 +2109,8 @@ typedef struct tG3ModelFace {
 	ubyte						bThruster :1;
 } tG3ModelFace;
 
+int operator- (tG3ModelFace* f, CArray<tG3ModelFace>& a) { return a.Index (f); }
+
 typedef struct tG3SubModel {
 #if DBG
 	char						szName [256];
@@ -2115,7 +2119,7 @@ typedef struct tG3SubModel {
 	vmsVector				vCenter;
 	fVector3					vMin;
 	fVector3					vMax;
-	CArray<tG3ModelFace>	faces;
+	tG3ModelFace*			faces;
 	short						nParent;
 	short						nFaces;
 	short						nIndex;
@@ -2138,6 +2142,9 @@ typedef struct tG3SubModel {
 	ubyte						iFrame;
 	time_t					tFrame;
 } tG3SubModel;
+
+int operator- (tG3SubModel* f, CArray<tG3SubModel>& a) { return a.Index (f); }
+
 
 typedef struct tG3VertNorm {
 	fVector3					vNormal;

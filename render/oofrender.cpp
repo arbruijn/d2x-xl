@@ -78,8 +78,8 @@ return OOF_FacingPoint (pv, pn, &vrLightPos);
 
 tOOF_vector *OOF_CalcFacePerp (tOOF_subObject *pso, tOOF_face *pf)
 {
-	tOOF_vector		*pv = pso->pvVerts;
-	tOOF_faceVert	*pfv = pf->pVerts;
+	tOOF_vector		*pv = pso->verts;
+	tOOF_faceVert	*pfv = pf->verts;
 
 #if 0
 OOF_CalcFaceNormal (pso, pf);
@@ -96,7 +96,7 @@ return pf->bFacingLight =
 #if 1
 	OOF_FacingLight (&pf->vRotCenter, &pf->vRotNormal); 
 #else
-	OOF_FacingLight (pso->pvRotVerts + pf->pVerts->nIndex, &pf->vRotNormal); //OOF_CalcFacePerp (pso, pf)); 
+	OOF_FacingLight (pso->rotVerts + pf->verts->nIndex, &pf->vRotNormal); //OOF_CalcFacePerp (pso, pf)); 
 #endif
 }
 
@@ -107,7 +107,7 @@ int OOF_FrontFace (tOOF_subObject *pso, tOOF_face *pf)
 #if 0
 return OOF_FacingViewer (&pf->vRotCenter, &pf->vRotNormal);
 #else
-return OOF_FacingViewer (pso->pvRotVerts + pf->pVerts->nIndex, &pf->vRotNormal);	//OOF_CalcFacePerp (pso, pf));
+return OOF_FacingViewer (pso->rotVerts + pf->verts->nIndex, &pf->vRotNormal);	//OOF_CalcFacePerp (pso, pf));
 #endif
 }
 
@@ -118,7 +118,7 @@ int OOF_GetLitFaces (tOOF_subObject *pso)
 	tOOF_face		*pf;
 	int				i;
 
-for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
+for (i = pso->faces.nFaces, pf = pso->faces.faces; i; i--, pf++) {
 	pf->bFacingLight = OOF_LitFace (pso, pf);
 #if 0
 	if (bSWCulling)
@@ -137,7 +137,7 @@ int OOF_GetSilhouette (tOOF_subObject *pso)
 	int				h, i, j;
 
 OOF_GetLitFaces (pso);
-pv = pso->pvRotVerts;
+pv = pso->rotVerts;
 for (h = j = 0, i = pso->edges.nEdges, pe = pso->edges.pEdges; i; i--, pe++) {
 	if (pe->pf [0] && pe->pf [1]) {
 		if ((pe->bContour = (pe->pf [0]->bFacingLight != pe->pf [1]->bFacingLight)))
@@ -205,7 +205,7 @@ if (bShadowTest < 2)
 	glColor4fv (reinterpret_cast<GLfloat*> (shadowColor + bCullFront));
 #endif
 OOF_SetCullAndStencil (bCullFront);
-pv = pso->pvRotVerts;
+pv = pso->rotVerts;
 #if DBG_SHADOWS
 if (bShadowTest < 2)
 	glBegin (GL_QUADS);
@@ -279,18 +279,18 @@ if (bShadowTest > 4)
 	return 1;
 glColor4fv (reinterpret_cast<GLfloat*> (modelColor));
 #endif
-pv = pso->pvRotVerts;
+pv = pso->rotVerts;
 OOF_SetCullAndStencil (bCullFront);
 if (bCullFront) {
 #if DBG_SHADOWS
 	if (!bRearCap)
 		return 1;
 #endif
-	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
+	for (i = pso->faces.nFaces, pf = pso->faces.faces; i; i--, pf++) {
 		if (pf->bReverse)
 			glFrontFace (GL_CCW);
 		glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
+		for (j = pf->nVerts, pfv = pf->verts; j; j--, pfv++) {
 			v0 = pv [pfv->nIndex];
 			OOF_VecSub (&v1, &v0, &vrLightPos);
 #	if NORM_INF
@@ -313,11 +313,11 @@ else {
 	if (!bFrontCap)
 		return 1;
 #endif
-	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
+	for (i = pso->faces.nFaces, pf = pso->faces.faces; i; i--, pf++) {
 		if (pf->bReverse)
 			glFrontFace (GL_CCW);
 		glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
+		for (j = pf->nVerts, pfv = pf->verts; j; j--, pfv++) {
 			glVertex3fv (reinterpret_cast<GLfloat*> (pv + pfv->nIndex));
 			}
 		glEnd ();
@@ -356,9 +356,9 @@ int OOF_DrawSubObject (CObject *objP, tOOFObject *po, tOOF_subObject *pso, float
 if (bShadowTest && (bShadowTest < 4))
 	return 1;
 #endif
-pv = pso->pvRotVerts;
-pvn = pso->pvNormals;
-pvc = pso->pVertColors;
+pv = pso->rotVerts;
+pvn = pso->normals;
+pvc = pso->vertColors;
 //memset (pvc, 0, pso->nVerts * sizeof (tFaceColor));
 glEnable (GL_CULL_FACE);
 OglCullFace (0);
@@ -368,10 +368,10 @@ if (!bDynLighting) {
 	if (sc.index != gameStates.render.nFrameFlipFlop + 1)
 		sc.color.red = sc.color.green = sc.color.blue = 1;
 	}
-for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
+for (i = pso->faces.nFaces, pf = pso->faces.faces; i; i--, pf++) {
 	if (pf->bReverse)
 		glFrontFace (GL_CCW);
-	pfv = pf->pVerts;
+	pfv = pf->verts;
 #if 0
 	if (!(gameStates.ogl.bUseTransform || OOF_FrontFace (pso, pf)))
 		continue;
@@ -471,7 +471,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		b = fl * (float) pf->texProps.color.b / 255.0f;
 		glColor4f (r, g, b, pso->pfAlpha [pfv->nIndex] * fAlpha);
 		glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
+		for (j = pf->nVerts, pfv = pf->verts; j; j--, pfv++) {
 			glVertex3fv (reinterpret_cast<GLfloat*> (pv + pfv->nIndex));
 			}
 		glEnd ();
@@ -505,9 +505,9 @@ void OOF_RotModelVerts (tOOF_subObject *pso, tOOF_vector vo)
 	tOOF_face	*pf;
 	int			i;
 
-for (i = pso->nVerts, pv = pso->pvVerts, prv = pso->pvRotVerts; i; i--, pv++, prv++)
+for (i = pso->nVerts, pv = pso->verts, prv = pso->rotVerts; i; i--, pv++, prv++)
 	OOF_RotVert (prv, pv, &vo);
-for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
+for (i = pso->faces.nFaces, pf = pso->faces.faces; i; i--, pf++) {
 #if 0
 	OOF_CalcFacePerp (pso, pf);
 	pf->vNormal = pf->vRotNormal;

@@ -112,7 +112,7 @@ typedef struct tOOF_face {
 		int				nTexId;
 		tOOF_rgb			color;
 		} texProps;
-	tOOF_faceVert		*pVerts;
+	tOOF_faceVert		*verts;
 	float					fBoundingLength;
 	float					fBoundingWidth;
 	tOOF_vector			vMin;
@@ -124,8 +124,8 @@ typedef struct tOOF_face {
 
 typedef struct tOOF_faceList {
 	int					nFaces;
-	tOOF_face			*pFaces;
-	tOOF_faceVert		*pFaceVerts;
+	tOOF_face			*faces;
+	tOOF_faceVert		*faceVerts;
 } tOOF_faceList;
 
 typedef struct tOOF_glowInfo {
@@ -145,7 +145,7 @@ typedef struct tOOF_specialPoint {
 
 typedef struct tOOF_specialList {
 	int					nVerts;
-	tOOF_specialPoint	*pVerts;
+	tOOF_specialPoint	*verts;
 } tOOF_specialList;
 
 typedef struct tOOF_point {
@@ -248,10 +248,10 @@ typedef struct tOOF_subObject {
 	int					nFSLists;
 	int					*pFSList;
 	int					nVerts;
-	tOOF_vector			*pvVerts;
-	tOOF_vector			*pvRotVerts;
-	tOOF_vector			*pvNormals;
-	tFaceColor			*pVertColors;
+	tOOF_vector			*verts;
+	tOOF_vector			*rotVerts;
+	tOOF_vector			*normals;
+	tFaceColor			*vertColors;
 	float					*pfAlpha;	// only present if version >= 2300
 	tOOF_faceList		faces;
 	tOOF_edgeList		edges;

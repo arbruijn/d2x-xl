@@ -381,7 +381,7 @@ if ((h >= 0) && (h <= OP_GLOW))
 ShortSwap (&h);
 if ((h < 0) || (h > OP_GLOW))
 	return 0;
-G3SwapPolyModelData (reinterpret_cast<ubyte*> (modelP);
+G3SwapPolyModelData (reinterpret_cast<ubyte*> (modelP));
 return 1;
 }
 
@@ -476,7 +476,7 @@ for (;;) {
 		break;
 	else if (nTag == OP_DEFPOINTS) {
 		int n = WORDVAL (p+2);
-		RotatePointList (modelPointList, VECPTR (p+4), po ? po->pVertNorms : NULL, n, 0);
+		RotatePointList (modelPointList, VECPTR (p+4), po ? po->vertNorms.Buffer () : NULL, n, 0);
 		p += n * sizeof (vmsVector) + 4;
 		break;
 		}
@@ -484,7 +484,7 @@ for (;;) {
 		int n = WORDVAL (p+2);
 		int s = WORDVAL (p+4);
 
-		RotatePointList (modelPointList, VECPTR (p+8), po ? po->pVertNorms : NULL, n, s);
+		RotatePointList (modelPointList, VECPTR (p+8), po ? po->vertNorms.Buffer () : NULL, n, s);
 		p += n * sizeof (vmsVector) + 8;
 		}
 	else if (nTag == OP_FLATPOLY) {
@@ -834,8 +834,8 @@ void G3InitPolyModel (tPolyModel *pm, int nModel)
 #endif
 
 nHighestTexture = -1;
-G3CheckAndSwap (pm->modelData);
-InitSubModel (reinterpret_cast<ubyte*> (pm->modelData);
+G3CheckAndSwap (pm->modelData.Buffer ());
+InitSubModel (pm->modelData.Buffer ());
 G3PolyModelSize (pm, nModel);
 }
 

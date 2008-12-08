@@ -43,7 +43,7 @@ for (pso = po->pSubObjects; i; i--, pso++) {
 	j = pso->faces.nFaces;
 	pm->nFaces += j;
 	pm->nVerts += pso->nVerts;
-	for (pf = pso->faces.pFaces; j; j--, pf++)
+	for (pf = pso->faces.faces; j; j--, pf++)
 		pm->nFaceVerts += pf->nVerts;
 	}
 return 1;
@@ -57,15 +57,15 @@ int G3GetOOFModelItems (int nModel, tOOFObject *po, tG3Model *pm, float fScale)
 	tOOF_face		*pof;
 	tOOF_faceVert	*pfv;
 	tG3SubModel		*psm;
-	fVector3			*pvn = pm->pVertNorms, vNormal;
-	tG3ModelVertex	*pmv = pm->pFaceVerts;
-	tG3ModelFace	*pmf = pm->pFaces;
+	fVector3			*pvn = pm->vertNorms.Buffer (), vNormal;
+	tG3ModelVertex	*pmv = pm->faceVerts.Buffer ();
+	tG3ModelFace	*pmf = pm->faces.Buffer ();
 	int				h, i, j, n, nIndex = 0;
 
-for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, pso++, psm++) {
+for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->subModels.Buffer (); i; i--, pso++, psm++) {
 	psm->nParent = pso->nParent;
 	if (psm->nParent < 0)
-		pm->iSubModel = (short) (psm - pm->pSubModels);
+		pm->iSubModel = (short) (psm - pm->subModels);
 	psm->vOffset[X] = F2X (pso->vOffset.x * fScale);
 	psm->vOffset[Y] = F2X (pso->vOffset.y * fScale);
 	psm->vOffset[Z] = F2X (pso->vOffset.z * fScale);
@@ -81,9 +81,9 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 	j = pso->faces.nFaces;
 	psm->nIndex = nIndex;
 	psm->nFaces = j;
-	psm->pFaces = pmf;
+	psm->faces = pmf;
 	G3InitSubModelMinMax (psm);
-	for (pof = pso->faces.pFaces; j; j--, pof++, pmf++) {
+	for (pof = pso->faces.faces; j; j--, pof++, pmf++) {
 		pmf->nIndex = nIndex;
 		pmf->bThruster = 0;
 		pmf->bGlow = 0;
@@ -93,13 +93,13 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 			pmf->nBitmap = pof->texProps.nTexId;
 		else
 			pmf->nBitmap = -1;
-		pfv = pof->pVerts;
+		pfv = pof->verts;
 		h = pfv->nIndex;
 		if (nModel > 200) {
 			vNormal = fVector3::Normal(
-							*reinterpret_cast<fVector3*> (pso->pvVerts + pfv [0].nIndex),
-							*reinterpret_cast<fVector3*> (pso->pvVerts + pfv [1].nIndex),
-							*reinterpret_cast<fVector3*> (pso->pvVerts + pfv [2].nIndex));
+							*reinterpret_cast<fVector3*> (pso->verts + pfv [0].nIndex),
+							*reinterpret_cast<fVector3*> (pso->verts + pfv [1].nIndex),
+							*reinterpret_cast<fVector3*> (pso->verts + pfv [2].nIndex));
 			}
 		else
 			memcpy (&vNormal, &pof->vNormal, sizeof (fVector3));
@@ -109,8 +109,8 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 			pmv->texCoord.v.u = pfv->fu;
 			pmv->texCoord.v.v = pfv->fv;
 			pmv->normal = vNormal;
-			*reinterpret_cast<fVector*> (pm->pVerts + h) = *reinterpret_cast<fVector*> (pso->pvVerts + h) * fScale;
-			pmv->vertex = pm->pVerts [h];
+			*reinterpret_cast<fVector*> (pm->verts + h) = *reinterpret_cast<fVector*> (pso->verts + h) * fScale;
+			pmv->vertex = pm->verts [h];
 			G3SetSubModelMinMax (psm, &pmv->vertex);
 			*pvn = vNormal;
 			if ((pmv->bTextured = pof->bTextured))
@@ -151,7 +151,7 @@ G3CountOOFModelItems (po, pm);
 if (!G3AllocModel (pm))
 	return 0;
 G3GetOOFModelItems (nModel, po, pm, /*((nModel == 108) || (nModel == 110)) ? 0.805f :*/ 1.0f);
-pm->pTextures = po->textures.bitmaps;
+pm->textures = po->textures.bitmaps;
 memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
 pm->nType = -1;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);

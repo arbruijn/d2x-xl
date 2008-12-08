@@ -314,7 +314,7 @@ for (i = 0; i <= MAX_HITBOXES; i++) {
 	phb [i].vOffset[X] = phb [i].vOffset[Y] = phb [i].vOffset[Z] = 0;
 	}
 if (!(nSubModels = G3ModelMinMax (nModel, phb + 1)))
-	nSubModels = GetPolyModelMinMax (reinterpret_cast<void*> (pm->modelData), phb + 1, 0) + 1;
+	nSubModels = GetPolyModelMinMax (reinterpret_cast<void*> (pm->modelData.Buffer ()), phb + 1, 0) + 1;
 for (i = 1; i <= nSubModels; i++) {
 	dx = (phb [i].vMax[X] - phb [i].vMin[X]) / 2;
 	dy = (phb [i].vMax[Y] - phb [i].vMin[Y]) / 2;

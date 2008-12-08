@@ -79,7 +79,7 @@ void G3DynLightModel (CObject *objP, tG3Model *pm, short iVerts, short nVerts, s
 
 if (!gameStates.render.bBrightObject) {
 	vPos = objP->info.position.vPos.ToFloat();
-	for (i = iVerts, pv = pm->pVerts + iVerts, pn = pm->pVertNorms + iVerts, pc = pm->pColor + iVerts;
+	for (i = iVerts, pv = pm->verts + iVerts, pn = pm->vertNorms + iVerts, pc = pm->color + iVerts;
 		  i < nVerts;
 		  i++, pv++, pn++, pc++) {
 		pc->index = 0;
@@ -87,19 +87,19 @@ if (!gameStates.render.bBrightObject) {
 		G3VertexColor (reinterpret_cast<fVector3*> (pn), vVertex.V3(), i, pc, NULL, 1, 0, 0);
 		}
 	}
-for (i = iFaceVerts, h = iFaceVerts, pmv = pm->pFaceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {
+for (i = iFaceVerts, h = iFaceVerts, pmv = pm->faceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {
 	if (gameStates.render.bBrightObject || bEmissive) {
-		pm->pVBColor [h] = pmv->baseColor;
-		pm->pVBColor [h].alpha = fAlpha;
+		pm->vbColor [h] = pmv->baseColor;
+		pm->vbColor [h].alpha = fAlpha;
 		}
 	else if (pmv->bTextured)
-		pm->pVBColor [h] = pm->pColor [pmv->nIndex].color;
+		pm->vbColor [h] = pm->color [pmv->nIndex].color;
 	else {
-		pc = pm->pColor + pmv->nIndex;
-		pm->pVBColor [h].red = pmv->baseColor.red * pc->color.red;
-		pm->pVBColor [h].green = pmv->baseColor.green * pc->color.green;
-		pm->pVBColor [h].blue = pmv->baseColor.blue * pc->color.blue;
-		pm->pVBColor [h].alpha = pmv->baseColor.alpha;
+		pc = pm->color + pmv->nIndex;
+		pm->vbColor [h].red = pmv->baseColor.red * pc->color.red;
+		pm->vbColor [h].green = pmv->baseColor.green * pc->color.green;
+		pm->vbColor [h].blue = pmv->baseColor.blue * pc->color.blue;
+		pm->vbColor [h].alpha = pmv->baseColor.alpha;
 		}
 	}
 }
@@ -138,7 +138,7 @@ else {
 	else
 		baseColor.red = baseColor.green = baseColor.blue = 1;
 	baseColor.alpha = fAlpha;
-	for (i = pm->nFaces, pmf = pm->pFaces; i; i--, pmf++) {
+	for (i = pm->nFaces, pmf = pm->faces.Buffer (); i; i--, pmf++) {
 		if (pmf->nBitmap >= 0)
 			colorP = &baseColor;
 		else
@@ -153,19 +153,19 @@ else {
 			l = FixMul (l, xModelLight);
 			}
 		fLight = X2F (l);
-		for (j = pmf->nVerts, h = pmf->nIndex, pmv = pm->pFaceVerts + pmf->nIndex; j; j--, h++, pmv++) {
+		for (j = pmf->nVerts, h = pmf->nIndex, pmv = pm->faceVerts + pmf->nIndex; j; j--, h++, pmv++) {
 #if G3_DRAW_ARRAYS
 			if (colorP) {
-				pm->pVBColor [h].red = colorP->red * fLight;
-				pm->pVBColor [h].green = colorP->green * fLight;
-				pm->pVBColor [h].blue = colorP->blue * fLight;
-				pm->pVBColor [h].alpha = fAlpha;
+				pm->vbColor [h].red = colorP->red * fLight;
+				pm->vbColor [h].green = colorP->green * fLight;
+				pm->vbColor [h].blue = colorP->blue * fLight;
+				pm->vbColor [h].alpha = fAlpha;
 				}
 			else {
-				pm->pVBColor [h].red = pmv->baseColor.red * fLight;
-				pm->pVBColor [h].green = pmv->baseColor.green * fLight;
-				pm->pVBColor [h].blue = pmv->baseColor.blue * fLight;
-				pm->pVBColor [h].alpha = fAlpha;
+				pm->vbColor [h].red = pmv->baseColor.red * fLight;
+				pm->vbColor [h].green = pmv->baseColor.green * fLight;
+				pm->vbColor [h].blue = pmv->baseColor.blue * fLight;
+				pm->vbColor [h].alpha = fAlpha;
 				}
 #else
 			if (colorP) {
@@ -205,13 +205,13 @@ else
 if (pm->fScale == fScale)
 	return;
 fScale /= pm->fScale;
-for (i = pm->nVerts, pv = pm->pVerts; i; i--, pv++) {
+for (i = pm->nVerts, pv = pm->verts; i; i--, pv++) {
 	pv->p.x *= fScale;
 	pv->p.y *= fScale;
 	pv->p.z *= fScale;
 	}
-for (i = pm->nFaceVerts, pmv = pm->pFaceVerts; i; i--, pmv++)
-	pmv->vertex = pm->pVerts [pmv->nIndex];
+for (i = pm->nFaceVerts, pmv = pm->faceVerts; i; i--, pmv++)
+	pmv->vertex = pm->verts [pmv->nIndex];
 pm->fScale *= fScale;
 }
 
@@ -239,7 +239,7 @@ vn = (pmf ? pmf->vNormal.ToFloat3() : vNormal->ToFloat3());
 if (fVector3::Dot(vn, vForward) > -1.0f / 3.0f)
 	return;
 if (pmf) {
-	for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
+	for (i = 0, j = pmf->nVerts, pmv = pm->faceVerts + pmf->nIndex; i < j; i++)
 		v += pmv [i].vertex;
 	v[X] /= j;
 	v[Y] /= j;
@@ -416,7 +416,7 @@ void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclus
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
-	tG3SubModel		*psm = pm->pSubModels + nSubModel;
+	tG3SubModel		*psm = pm->subModels + nSubModel;
 	tG3ModelFace	*pmf;
 	CBitmap		*bmP = NULL;
 	vmsAngVec		va = pAnimAngles ? pAnimAngles [psm->nAngles] : vmsAngVec::ZERO;
@@ -433,7 +433,7 @@ else
 if (psm->bThruster) {
 	if (!nPass) {
 		vo = psm->vOffset + psm->vCenter;
-		G3GetThrusterPos (objP, nModel, NULL, &vo, &psm->pFaces->vNormal, psm->nRad, bHires);
+		G3GetThrusterPos (objP, nModel, NULL, &vo, &psm->faces->vNormal, psm->nRad, bHires);
 	}
 	return;
 	}
@@ -452,7 +452,7 @@ if (vOffsetP && (nExclusive < 0)) {
 bAnimate = G3AnimateSubModel (objP, psm, nModel);
 #if G3_DRAW_SUBMODELS
 // render any dependent submodels
-for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
+for (i = 0, j = pm->nSubModels, psm = pm->subModels.Buffer (); i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
 		G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, pAnimAngles, &vo, bHires,
 							 bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
@@ -466,7 +466,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	glDisable (GL_TEXTURE_2D);
 	if (gameStates.render.bCloaked)
 		glColor4f (0, 0, 0, GrAlpha ());
-	for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pmf = psm->pFaces; i; ) {
+	for (psm = pm->subModels + nSubModel, i = psm->nFaces, pmf = psm->faces; i; ) {
 		if (bTextured && (nBitmap != pmf->nBitmap)) {
 			if (0 > (nBitmap = pmf->nBitmap))
 				glDisable (GL_TEXTURE_2D);
@@ -474,10 +474,10 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				if (!bHires)
 					bmP = modelBitmaps [nBitmap];
 				else {
-					bmP = pm->pTextures + nBitmap;
+					bmP = pm->textures + nBitmap;
 					if (nTeamColor && bmP->Team () && (0 <= (h = pm->teamTextures [nTeamColor % MAX_PLAYERS]))) {
 						nBitmap = h;
-						bmP = pm->pTextures + nBitmap;
+						bmP = pm->textures + nBitmap;
 						}
 					}
 				glActiveTexture (GL_TEXTURE0);
@@ -530,7 +530,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			else
 				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
-											pm->pIndex [0] + nIndex);
+											pm->index [0] + nIndex);
 #ifdef _WIN32
 		else
 			if (bUseVBO)
@@ -538,7 +538,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 									 nVerts, GL_UNSIGNED_SHORT, G3_BUFFER_OFFSET (nIndex * sizeof (short)));
 			else
 				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-									 nVerts, GL_UNSIGNED_SHORT, pm->pIndex + nIndex);
+									 nVerts, GL_UNSIGNED_SHORT, pm->index + nIndex);
 #endif
 		}
 	}
@@ -661,12 +661,12 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	pm = gameData.models.g3Models [bHires] + nModel;
 	if (bHires) {
 		for (int i = 0; i < pm->nSubModels; i++)
-			if (pm->pSubModels [i].nParent == -1)
-				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->pSubModels->vOffset : vOffsetP,
+			if (pm->subModels [i].nParent == -1)
+				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->subModels [0].vOffset : vOffsetP,
 									 bHires, bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 		}
 	else
-		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->pSubModels->vOffset : vOffsetP,
+		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->subModels [0].vOffset : vOffsetP,
 							 bHires, bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 	//if (nSubModel < 0)
 		G3DoneInstance ();
@@ -706,7 +706,7 @@ if (pm->bValid < 1) {
 	if (pm->bValid < 1)
 		return;
 	}
-psm = pm->pSubModels + nSubModel;
+psm = pm->subModels + nSubModel;
 va = pAnimAngles ? pAnimAngles + psm->nAngles : &vmsAngVec::ZERO;
 if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage))
 	return;
@@ -721,12 +721,12 @@ if (vOffsetP) {
 	vo += *vOffsetP;
 	}
 // render any dependent submodels
-for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
+for (i = 0, j = pm->nSubModels, psm = pm->subModels.Buffer (); i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
 		G3RenderDamageLightnings (objP, nModel, i, pAnimAngles, &vo, bHires);
 // render the lightnings
-for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pmf = psm->pFaces; i; i--, pmf++)
-	lightningManager.RenderForDamage (objP, NULL, pm->pFaceVerts + pmf->nIndex, pmf->nVerts);
+for (psm = pm->subModels + nSubModel, i = psm->nFaces, pmf = psm->faces; i; i--, pmf++)
+	lightningManager.RenderForDamage (objP, NULL, pm->faceVerts + pmf->nIndex, pmf->nVerts);
 if (vOffsetP)
 	G3DoneInstance ();
 }
@@ -804,10 +804,10 @@ if (bUseVBO) {
 		}
 	}
 else {
-	pm->pVBVerts = reinterpret_cast<fVector3*> (pm->pVertBuf [0]);
-	pm->pVBNormals = pm->pVBVerts + pm->nFaceVerts;
-	pm->pVBColor = reinterpret_cast<tRgbaColorf*> (pm->pVBNormals + pm->nFaceVerts);
-	pm->pVBTexCoord = reinterpret_cast<tTexCoord2f*> (pm->pVBColor + pm->nFaceVerts);
+	pm->vbVerts = reinterpret_cast<fVector3*> (pm->vertBuf [0].Buffer ());
+	pm->vbNormals = pm->vbVerts + pm->nFaceVerts;
+	pm->vbColor = reinterpret_cast<tRgbaColorf*> (pm->vbNormals + pm->nFaceVerts);
+	pm->vbTexCoord = reinterpret_cast<tTexCoord2f*> (pm->vbColor + pm->nFaceVerts);
 	}
 #if G3_SW_SCALING
 G3ScaleModel (nModel);
@@ -832,12 +832,12 @@ if (bUseVBO) {
 else
 	{
 	if (!gameStates.render.bCloaked) {
-		glTexCoordPointer (2, GL_FLOAT, 0, pm->pVBTexCoord);
+		glTexCoordPointer (2, GL_FLOAT, 0, pm->vbTexCoord.Buffer ());
 		if (gameOpts->ogl.bObjLighting)
-			glNormalPointer (GL_FLOAT, 0, pm->pVBNormals);
-		glColorPointer (4, GL_FLOAT, 0, pm->pVBColor);
+			glNormalPointer (GL_FLOAT, 0, pm->vbNormals.Buffer ());
+		glColorPointer (4, GL_FLOAT, 0, pm->vbColor.Buffer ());
 		}
-	glVertexPointer (3, GL_FLOAT, 0, pm->pVBVerts);
+	glVertexPointer (3, GL_FLOAT, 0, pm->vbVerts.Buffer ());
 	}
 nGunId = EquippedPlayerGun (objP);
 nBombId = EquippedPlayerBomb (objP);
