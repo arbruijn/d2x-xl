@@ -1148,7 +1148,7 @@ int OOF_ReleaseTextures (void)
 PrintLog ("releasing OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
-		ReleaseModelTextures (&po->textures);
+		po->textures.Release ();
 return 0;
 }
 
@@ -1162,7 +1162,7 @@ int OOF_ReloadTextures (void)
 PrintLog ("reloading OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
-		if (!ReadModelTextures (&po->textures, po->nType, bCustom)) {
+		if (!po->textures.Read (po->nType, bCustom)) {
 			OOF_FreeObject (po);
 			return 0;
 			}
@@ -1173,7 +1173,7 @@ return 1;
 
 int OOF_FreeTextures (tOOFObject *po)
 {
-FreeModelTextures (&po->textures);
+po->textures.Destroy ();
 return 0;
 }
 
@@ -1190,39 +1190,33 @@ int OOF_ReadTextures (CFile& cf, tOOFObject *po, short nType, int bCustom)
 
 nIndent += 2;
 OOF_PrintLog ("reading textures\n");
-o.textures.nBitmaps = OOF_ReadInt (cf, "nBitmaps");
+int nBitmaps = OOF_ReadInt (cf, "nBitmaps");
 #if OOF_TEST_CUBE
 /*!!!*/o.textures.nBitmaps = 6;
 #endif
-if (!(o.textures.pszNames = new char* [o.textures.nBitmaps])) {
+if (!(o.textures.Create (nBitmaps))) {
 	nIndent -= 2;
 	return OOF_FreeTextures (&o);
 	}
-memset (o.textures.pszNames, 0, o.textures.nBitmaps * sizeof (char **));
-if (!(o.textures.bitmaps = new CBitmap [o.textures.nBitmaps])) {
-	nIndent -= 2;
-	return OOF_FreeTextures (&o);
-	}
-memset (o.textures.bitmaps, 0, o.textures.nBitmaps * sizeof (CBitmap));
-for (i = 0; i < o.textures.nBitmaps; i++) {
+for (i = 0; i < o.textures.m_nBitmaps; i++) {
 	if (bLogOOF)
 		sprintf (szId, "textures.pszId [%d]", i);
 #if OOF_TEST_CUBE
 if (!i)	//cube.oof only contains one texture
 #endif
-	if (!(o.textures.pszNames [i] = OOF_ReadString (cf, szId, "\001"))) {
+	if (!(o.textures.m_names [i] = OOF_ReadString (cf, szId, "\001"))) {
 		nIndent -= 2;
 		return OOF_FreeTextures (&o);
 		}
 #if OOF_TEST_CUBE
 if (!i) {
-	delete[] o.textures.pszNames [i];
-	o.textures.pszNames [i] = NULL;
+	delete[] o.textures.m_names [i];
+	o.textures.m_names [i] = NULL;
 	}
-o.textures.pszNames [i] = new char [20];
-sprintf (o.textures.pszNames [i], "%d.tga", i + 1);
+o.textures.m_names [i] = new char [20];
+sprintf (o.textures.m_names [i], "%d.tga", i + 1);
 #endif
-	if (!ReadModelTGA (o.textures.pszNames [i], o.textures.bitmaps + i, nType, bCustom)) {
+	if (!ReadModelTGA (o.textures.m_names [i], o.textures.m_bitmaps + i, nType, bCustom)) {
 #if DBG
 		bOk = 0;
 #else

@@ -22,12 +22,20 @@ typedef struct {
     char  descriptor;         // image descriptor bits (vh flip bits)
 } tTgaHeader;
 
-typedef struct tModelTextures {
-	int					nBitmaps;
-	char					**pszNames;
-	CBitmap				*bitmaps;
-	ubyte					*nTeam;
-} tModelTextures;
+class CModelTextures {
+	public:
+		int					m_nBitmaps;
+		CArray<char*>		m_names;
+		CArray<CBitmap>	m_bitmaps;
+		CArray<ubyte>		m_nTeam;
+
+	public:
+		CModelTextures () { m_nBitmaps = 0; }
+		void Release (void);
+		int Read (int nType, int bCustom);
+		bool Create (int nBitmaps);
+		void Destroy (void);
+};
 
 int ShrinkTGA (CBitmap *bm, int xFactor, int yFactor, int bRealloc);
 int ReadTGAHeader (CFile& cf, tTgaHeader *ph, CBitmap *pb);
@@ -44,8 +52,5 @@ void TGAChangeBrightness (CBitmap *bmP, double dScale, int bInverse, int nOffset
 int TGAInterpolate (CBitmap *bmP, int nScale);
 int TGAMakeSquare (CBitmap *bmP);
 int ReadModelTGA (const char *pszFile, CBitmap *bmP, short nType, int bCustom);
-int ReadModelTextures (tModelTextures *pt, int nType, int bCustom);
-void ReleaseModelTextures (tModelTextures *pt);
-void FreeModelTextures (tModelTextures *pt);
 
 #endif //_TGA_H

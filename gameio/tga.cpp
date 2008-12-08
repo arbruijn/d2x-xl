@@ -749,56 +749,75 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int ReadModelTextures (tModelTextures *pt, int nType, int bCustom)
+int CModelTextures::Read (int nType, int bCustom)
 {
 	CBitmap	*bmP;
 	int		i;
 
-for (i = 0; i < pt->nBitmaps; i++) {
-	if (!ReadModelTGA (pt->pszNames [i], bmP = pt->bitmaps + i, nType, bCustom))
+for (i = 0; i < m_nBitmaps; i++) {
+	if (!ReadModelTGA (m_pszNames [i], bmP = m_bitmaps + i, nType, bCustom))
 		return 0;
 	bmP = bmP->Override (-1);
 	if (bmP->Frames ())
 		bmP = bmP->CurFrame ();
 	bmP->Bind (1, 3);
-	pt->bitmaps [i].SetTeam (pt->nTeam ? pt->nTeam [i] : 0);
+	m_bitmaps [i].SetTeam (m_nTeam ? m_nTeam [i] : 0);
 	}
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void ReleaseModelTextures (tModelTextures *pt)
+void CModelTextures::Release (void)
 {
 	CBitmap	*bmP;
 	int		i;
 
-if ((bmP = pt->bitmaps)) {
-	for (i = pt->nBitmaps; i; i--, bmP++) {
+if ((bmP = m_bitmaps)) {
+	for (i = m_nBitmaps; i; i--, bmP++) {
 		UseBitmapCache (bmP, (int) -bmP->Width () * (int) bmP->RowSize ());
 		delete bmP;
 		}
-	memset (pt->bitmaps, 0, pt->nBitmaps * sizeof (CBitmap));
+	m_bitmaps.Clear ();
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void FreeModelTextures (tModelTextures *pt)
+void CModelTextures::Destroy (void)
 {
 	int	i;
 
-if (pt->pszNames) {
-	for (i = 0; i < pt->nBitmaps; i++) {
-		D2_FREE (pt->pszNames [i]);
-		if (pt->bitmaps)
-			pt->bitmaps [i].Destroy ();
+if (m_pszNames) {
+	for (i = 0; i < m_nBitmaps; i++) {
+		delete[] m_pszNames [i];
+		if (m_bitmaps)
+			m_bitmaps [i].Destroy ();
 		}
-	D2_FREE (pt->nTeam);
-	D2_FREE (pt->pszNames);
-	D2_FREE (pt->bitmaps);
-	pt->nBitmaps = 0;
+	m_nTeam.Destroy ();
+	m_pszNames.Destroy ();
+	m_bitmaps.Destroy ();
+	m_nBitmaps = 0;
 	}
+}
+
+//------------------------------------------------------------------------------
+
+bool CModelTextures::Create (int nBitmaps)
+{
+if (nBitmaps <= 0)
+	return false;
+if (!(pm->textures.m_bitmaps.Create (nBitmaps)))
+	return false;
+if (!(pm->textures.m_names.Create (nBitmaps)))
+	return false;
+if (!(pm->textures.m_nTeam.Create (nBitmaps)))
+	return false;
+pm->textures.m_nBitmaps = nBitmaps;
+pm->textures.m_bitmaps.Clear ();
+pm->textures.m_names.Clear ();
+pm->textures.m_nTeam.Clear ();
+return true;
 }
 
 //------------------------------------------------------------------------------

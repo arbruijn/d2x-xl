@@ -285,7 +285,7 @@ typedef struct tOOFObject {
 	tOOF_attachList	attachPoints;
 	tOOF_specialList	specialPoints;
 	tOOF_armament		armament;
-	tModelTextures		textures;
+	CModelTextures		textures;
 	tOOF_frameInfo		frameInfo;
 	int					bCloaked;
 	int					nCloakPulse;
