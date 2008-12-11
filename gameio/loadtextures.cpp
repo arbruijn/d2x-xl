@@ -782,8 +782,8 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 		return;
 		}
 	nBitmapNum = cf.ReadInt ();
-	MALLOC (indices, ushort, nBitmapNum);
-	MALLOC (bmh, tPIGBitmapHeader, nBitmapNum);
+	indices = new ushort [nBitmapNum];
+	bmh = new tPIGBitmapHeader [nBitmapNum];
 #if 0
 	cf.Read (indices, nBitmapNum * sizeof (ushort), 1);
 	cf.Read (bmh, nBitmapNum * sizeof (tPIGBitmapHeader), 1);
@@ -875,8 +875,8 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			bmP->SetAvgColorIndex (bmP->Palette ()->ClosestColor (&color));
 		UseBitmapCache (gameData.pig.tex.altBitmapP + j, (int) bm.Width () * (int) bm.RowSize ());
 		}
-	D2_FREE (indices);
-	D2_FREE (bmh);
+	delete[] indices;
+	delete[] bmh;
 	cf.Close ();
 	paletteManager.SetLastPig ("");
 	TexMergeFlush ();       //for re-merging with new textures

@@ -17,7 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 extern int bShowMemInfo;
 
 #if DBG
-#	define DBG_MALLOC	0
+#	define DBG_MALLOC	1
 #else
 #	define DBG_MALLOC 0
 #endif
@@ -35,10 +35,10 @@ void MemInit ();
 #define D2_ALLOC(size)			MemAlloc ((size), "Unknown", __FILE__, __LINE__, 0)
 #define D2_CALLOC(n,size)		MemAlloc ((n*size), "Unknown", __FILE__, __LINE__, 1)
 #define D2_REALLOC(ptr,size)	MemRealloc ((ptr), (size), "Unknown", __FILE__, __LINE__)
-#define D2_FREE(ptr)				{MemFree (reinterpret_cast<void *> ptr); ptr = NULL;} 
+#define D2_FREE(ptr)				{MemFree (reinterpret_cast<void *> (ptr)); ptr = NULL;} 
 #define D2_STRDUP(str)			MemStrDup ((str), "Unknown", __FILE__, __LINE__)
 
-#define MALLOC(_var, _type, _count)   ((_var) = reinterpret_cast<_type *> MemAlloc ((_count) * sizeof (_type), #_var, __FILE__, __LINE__, 0))
+#define MALLOC(_var, _type, _count)   ((_var) = reinterpret_cast<_type *> (MemAlloc ((_count) * sizeof (_type), #_var, __FILE__, __LINE__, 0)))
 
 // Checks to see if any blocks are overwritten
 void MemValidateHeap ();

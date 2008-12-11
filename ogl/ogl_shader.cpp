@@ -98,7 +98,7 @@ if (fSize <= 0) {
 	}
 #endif
 
-if (!(bufP = reinterpret_cast<char*> (D2_ALLOC (sizeof (char) *(fSize + 1))))) {
+if (!(bufP = new char [fSize + 1])) {
 	fclose (fp);
 	return NULL;	// out of memory
 	}
@@ -125,30 +125,29 @@ void PrintShaderInfoLog (GLhandleARB handle, int bProgram)
 #ifdef GL_VERSION_20
 if (bProgram) {
 	glGetProgramiv (_HANDLE, GL_INFO_LOG_LENGTH, &nLogLen);
-	if ((nLogLen > 0) && (infoLog = reinterpret_cast<char*> (D2_ALLOC (nLogLen)))) {
-		infoLog = reinterpret_cast<char*> (D2_ALLOC (nLogLen));
+	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 		glGetProgramInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			PrintLog ("\n%s\n\n", infoLog);
-		D2_FREE (infoLog);
+		delete[] infoLog;
 		}
 	}
 else {
 	glGetShaderiv (_HANDLE, GL_INFO_LOG_LENGTH, &nLogLen);
-	if ((nLogLen > 0) && (infoLog = reinterpret_cast<char*> (D2_ALLOC (nLogLen)))) {
+	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 		glGetShaderInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			PrintLog ("\n%s\n\n", infoLog);
-		D2_FREE (infoLog);
+		delete[] infoLog;
 		}
 	}
 #else
 glGetObjectParameteriv (_HANDLE, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
-if ((nLogLen > 0) && (infoLog = reinterpret_cast<char*> (D2_ALLOC (nLogLen)))) {
+if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 	glGetInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 	if (*infoLog)
 		PrintLog ("\n%s\n\n", infoLog);
-	D2_FREE (infoLog);
+	delete[] infoLog;
 	}
 #endif
 }

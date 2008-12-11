@@ -1074,7 +1074,7 @@ char *BuildLightingShader (const char *pszTemplate, int nLights)
 	int	l = (int) strlen (pszTemplate) + 1;
 	char	*pszFS, szLights [2];
 
-if (!(pszFS = reinterpret_cast<char*> (D2_ALLOC (l))))
+if (!(pszFS = new char [l]))
 	return NULL;
 if (nLights > MAX_LIGHTS_PER_PIXEL)
 	nLights = MAX_LIGHTS_PER_PIXEL;
@@ -1157,8 +1157,8 @@ for (h = 0; h <= 3; h++) {
 					CreateShaderProg (perPixelLightingShaderProgs [i] + h) &&
 					CreateShaderFunc (perPixelLightingShaderProgs [i] + h, ppLfs [i] + h, ppLvs [i] + h, pszFS, pszVS, 1) &&
 					LinkShaderProg (perPixelLightingShaderProgs [i] + h);
-			D2_FREE (pszFS);
-			D2_FREE (pszVS);
+			delete[] pszFS;
+			delete[] pszVS;
 			if (!bOk) {
 				gameStates.ogl.bPerPixelLightingOk =
 				gameStates.render.bPerPixelLighting = 0;

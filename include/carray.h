@@ -118,6 +118,8 @@ template < class _T > class CArray {
 		
 		inline void SetBuffer (_T *buffer, bool bChild = false, uint length = 0xffffffff) {
 			if (m_data.buffer != buffer) {
+				if (m_data.buffer && !m_data.bChild)
+					delete[] m_data.buffer;
 				m_data.buffer = buffer;
 				m_data.length = length;
 				m_data.bChild = bChild;
@@ -134,7 +136,7 @@ template < class _T > class CArray {
 			_T* p = new _T [length];
 			if (!p)
 				return m_data.buffer;
-			memcpy (p, m_data.buffer, ((length < m_data.length) ? m_data.length : length) * sizeof (_T)); 
+			memcpy (p, m_data.buffer, ((length > m_data.length) ? m_data.length : length) * sizeof (_T)); 
 			delete[] m_data.buffer;
 			return m_data.buffer = p;
 			}

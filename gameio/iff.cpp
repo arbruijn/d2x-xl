@@ -405,7 +405,7 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 					return IFF_BM_MISMATCH;
 				}
 			else {
-				MALLOC (bmHeader->raw_data, ubyte, bmHeader->w * bmHeader->h);
+				bmHeader->raw_data = new ubyte [bmHeader->w * bmHeader->h];
 				if (!bmHeader->raw_data)
 					return IFF_NO_MEM;
 				}
@@ -418,7 +418,7 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 			bmHeader->w = prevBmP->Width ();
 			bmHeader->h = prevBmP->Height ();
 			bmHeader->nType = prevBmP->Mode ();
-			MALLOC (bmHeader->raw_data, ubyte, bmHeader->w * bmHeader->h);
+			bmHeader->raw_data = new ubyte [bmHeader->w * bmHeader->h];
 			memcpy (bmHeader->raw_data, prevBmP->Buffer (), bmHeader->w * bmHeader->h);
 			SkipChunk (len);
 			break;
@@ -468,7 +468,7 @@ int CIFF::ConvertToPBM (tIFFBitmapHeader *bmHeader)
 	int bytes_per_row, byteofs;
 	ubyte checkmask, newbyte, setbit;
 
-MALLOC(new_data, ubyte, bmHeader->w * bmHeader->h);
+new_data = new ubyte [bmHeader->w * bmHeader->h];
 if (new_data == NULL) 
 	return IFF_NO_MEM;
 destptr = new_data;
@@ -486,7 +486,7 @@ for (y=0;y<bmHeader->h;y++) {
 		if ((checkmask >>= 1) == 0) checkmask=0x80;
 		}
 	}
-D2_FREE(bmHeader->raw_data);
+delete[] bmHeader->raw_data;
 bmHeader->raw_data = new_data;
 bmHeader->nType = TYPE_PBM;
 return IFF_NO_ERROR;
@@ -528,7 +528,7 @@ Data() = NULL;
 if (!cf.Open (cfname, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission))
 	return IFF_NO_FILE;
 SetLen (cf.Length ());
-MALLOC (Data(), ubyte, Len());
+Data() = new ubyte [Len ()];
 if (cf.Read (Data(), 1, Len()) < (size_t) Len())
 	ret = IFF_READ_ERROR;
 else
@@ -543,7 +543,7 @@ return ret;
 void CIFF::Close (void)
 {
 if (Data ())
-	D2_FREE (Data ());
+	delete[] Data ();
 SetPos (0);
 SetLen (0);
 }
@@ -584,7 +584,7 @@ else
 	ret = IFF_UNKNOWN_FORM;
 if (ret != IFF_NO_ERROR) {		//got an error parsing
 	if (bmHeader.raw_data) 
-		D2_FREE (bmHeader.raw_data);
+		delete[] bmHeader.raw_data;
 	return ret;
 	}
 //If IFF file is ILBM, convert to PPB
@@ -748,7 +748,7 @@ int CIFF::WriteBody (FILE *fp, tIFFBitmapHeader *bitmap_header, int bCompression
 PutSig(body_sig, fp);
 save_pos = ftell(fp);
 PutLong(len, fp);
-MALLOC(new_span, ubyte, bitmap_header->w + (bitmap_header->w/128+2)*2);
+new_span = new ubyte [bitmap_header->w + (bitmap_header->w/128+2)*2];
 if (new_span == NULL) 
 	return IFF_NO_MEM;
 for (y=bitmap_header->h;y--;) {
@@ -766,7 +766,7 @@ if (bCompression) {		//write actual data length
 	Assert(fseek(fp, total_len, SEEK_CUR)==0);
 	if (total_len&1) fputc(0, fp);		//pad to even
 	}
-D2_FREE(new_span);
+delete[] new_span;
 return ((bCompression) ? (EVEN(total_len)+8) : (len+8));
 }
 
@@ -874,8 +874,8 @@ else if (formType == anim_sig) {
 		while (Pos() < anim_end && *n_bitmaps < max_bitmaps) {
 			CBitmap *prevBmP;
 			prevBmP = *n_bitmaps>0?bm_list[*n_bitmaps-1]:NULL;
-			MALLOC(bm_list[*n_bitmaps] , CBitmap, 1);
-			bm_list[*n_bitmaps]->SetBuffer (NULL);
+			bm_list [*n_bitmaps] = new CBitmap;
+			bm_list [*n_bitmaps]->SetBuffer (NULL);
 			ret = ParseBitmap (bm_list[*n_bitmaps], formType, prevBmP);
 			if (ret != IFF_NO_ERROR)
 				goto done;

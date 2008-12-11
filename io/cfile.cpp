@@ -811,10 +811,10 @@ char *CFile::ReadData (const char *filename, const char *folder, int bUseD1Hog)
 if (!Open (filename, folder, "rb", bUseD1Hog))
 	return NULL;
 nSize = Length ();
-if (!(pData = reinterpret_cast<char*> (D2_ALLOC ((uint) nSize))))
+if (!(pData = new char [nSize]))
 	return NULL;
 if (!Read (pData, nSize, 1)) {
-	D2_FREE (pData);
+	delete[] pData;
 	pData = NULL;
 	}
 Close ();

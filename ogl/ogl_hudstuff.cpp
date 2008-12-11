@@ -51,7 +51,7 @@ return bHaveDeadzone > 0;
 void FreeDeadzone (void)
 {
 if (bmpDeadzone) {
-	D2_FREE (bmpDeadzone);
+	delete bmpDeadzone;
 	bHaveDeadzone = 0;
 	}
 }
